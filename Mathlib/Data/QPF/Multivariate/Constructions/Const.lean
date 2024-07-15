@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020 Simon Hudon All rights reserved.
+Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
@@ -42,15 +42,15 @@ open MvFunctor MvPFunctor
 variable {n} {A : Type u} {α β : TypeVec.{u} n} (f : α ⟹ β)
 
 /-- Constructor for constant functor -/
-protected def mk (x : A) : (Const n A) α := x
+protected def mk (x : A) : Const n A α := x
 #align mvqpf.const.mk MvQPF.Const.mk
 
 /-- Destructor for constant functor -/
-protected def get (x : (Const n A) α) : A := x
+protected def get (x : Const n A α) : A := x
 #align mvqpf.const.get MvQPF.Const.get
 
 @[simp]
-protected theorem mk_get (x : (Const n A) α) : Const.mk (Const.get x) = x := rfl
+protected theorem mk_get (x : Const n A α) : Const.mk (Const.get x) = x := rfl
 #align mvqpf.const.mk_get MvQPF.Const.mk_get
 
 @[simp]
@@ -58,7 +58,7 @@ protected theorem get_mk (x : A) : Const.get (Const.mk x : Const n A α) = x := 
 #align mvqpf.const.get_mk MvQPF.Const.get_mk
 
 /-- `map` for constant functor -/
-protected def map : (Const n A) α → (Const n A) β := fun x => x
+protected def map : Const n A α → Const n A β := fun x => x
 #align mvqpf.const.map MvQPF.Const.map
 
 instance MvFunctor : MvFunctor (Const n A) where map _f := Const.map
@@ -69,7 +69,7 @@ theorem map_mk (x : A) : f <$$> Const.mk x = Const.mk x := rfl
 theorem get_map (x : (Const n A) α) : Const.get (f <$$> x) = Const.get x := rfl
 #align mvqpf.const.get_map MvQPF.Const.get_map
 
-instance mvqpf : @MvQPF _ (Const n A) MvQPF.Const.MvFunctor where
+instance mvqpf : @MvQPF _ (Const n A) where
   P := MvPFunctor.const n A
   abs x := MvPFunctor.const.get x
   repr x := MvPFunctor.const.mk n x
@@ -80,4 +80,3 @@ instance mvqpf : @MvQPF _ (Const n A) MvQPF.Const.MvFunctor where
 end Const
 
 end MvQPF
-

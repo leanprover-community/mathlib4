@@ -10,10 +10,13 @@ import Mathlib.Algebra.NeZero
 # Lemmas about nonzero elements of an `AddMonoidWithOne`
 -/
 
+open Nat
+
 namespace NeZero
 
-lemma natCast_ne (n : ℕ) (R) [AddMonoidWithOne R] [h : NeZero (n : R)] :
-  (n : R) ≠ 0 := h.out
+theorem one_le {n : ℕ} [NeZero n] : 1 ≤ n := by have := NeZero.ne n; omega
+
+lemma natCast_ne (n : ℕ) (R) [AddMonoidWithOne R] [h : NeZero (n : R)] : (n : R) ≠ 0 := h.out
 #align ne_zero.nat_cast_ne NeZero.natCast_ne
 
 lemma of_neZero_natCast (R) [AddMonoidWithOne R] {n : ℕ} [h : NeZero (n : R)] : NeZero n :=

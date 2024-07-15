@@ -53,7 +53,7 @@ def mk' (L : y.LeftMoves ≃ x.LeftMoves) (R : y.RightMoves ≃ x.RightMoves)
 #align pgame.relabelling.mk' SetTheory.PGame.Relabelling.mk'
 
 /-- The equivalence between left moves of `x` and `y` given by the relabelling. -/
-def leftMovesEquiv : ∀ _ : x ≡r y, x.LeftMoves ≃ y.LeftMoves
+def leftMovesEquiv : x ≡r y → x.LeftMoves ≃ y.LeftMoves
   | ⟨L,_, _,_⟩ => L
 #align pgame.relabelling.left_moves_equiv SetTheory.PGame.Relabelling.leftMovesEquiv
 
@@ -69,7 +69,7 @@ theorem mk'_leftMovesEquiv {x y L R hL hR} :
 #align pgame.relabelling.mk'_left_moves_equiv SetTheory.PGame.Relabelling.mk'_leftMovesEquiv
 
 /-- The equivalence between right moves of `x` and `y` given by the relabelling. -/
-def rightMovesEquiv : ∀ _ : x ≡r y, x.RightMoves ≃ y.RightMoves
+def rightMovesEquiv : x ≡r y → x.RightMoves ≃ y.RightMoves
   | ⟨_, R, _, _⟩ => R
 #align pgame.relabelling.right_moves_equiv SetTheory.PGame.Relabelling.rightMovesEquiv
 
@@ -111,7 +111,7 @@ def moveRightSymm :
 @[refl]
 def refl (x : PGame) : x ≡r x :=
   ⟨Equiv.refl _, Equiv.refl _, fun i => refl _, fun j => refl _⟩
-termination_by _ => x
+termination_by x
 #align pgame.relabelling.refl SetTheory.PGame.Relabelling.refl
 
 instance (x : PGame) : Inhabited (x ≡r x) :=
@@ -127,7 +127,7 @@ theorem le {x y : PGame} (r : x ≡r y) : x ≤ y :=
   le_def.2
     ⟨fun i => Or.inl ⟨_, (r.moveLeft i).le⟩, fun j =>
       Or.inr ⟨_, (r.moveRightSymm j).le⟩⟩
-termination_by _ => x
+termination_by x
 #align pgame.relabelling.le SetTheory.PGame.Relabelling.le
 
 theorem ge {x y : PGame} (r : x ≡r y) : y ≤ x :=
@@ -197,15 +197,15 @@ def Relabelling.negCongr : ∀ {x y : PGame}, x ≡r y → -x ≡r -y
 /-- `x + 0` has exactly the same moves as `x`. -/
 def addZeroRelabelling : ∀ x : PGame.{u}, x + 0 ≡r x
   | ⟨xl, xr, xL, xR⟩ => by
-    refine' ⟨Equiv.sumEmpty xl PEmpty, Equiv.sumEmpty xr PEmpty, _, _⟩ <;> rintro (⟨i⟩ | ⟨⟨⟩⟩) <;>
+    refine ⟨Equiv.sumEmpty xl PEmpty, Equiv.sumEmpty xr PEmpty, ?_, ?_⟩ <;> rintro (⟨i⟩ | ⟨⟨⟩⟩) <;>
       apply addZeroRelabelling
-termination_by _ x => x
+termination_by x => x
 #align pgame.add_zero_relabelling SetTheory.PGame.addZeroRelabelling
 
 /-- `0 + x` has exactly the same moves as `x`. -/
 def zeroAddRelabelling : ∀ x : PGame.{u}, 0 + x ≡r x
   | ⟨xl, xr, xL, xR⟩ => by
-    refine' ⟨Equiv.emptySum PEmpty xl, Equiv.emptySum PEmpty xr, _, _⟩ <;> rintro (⟨⟨⟩⟩ | ⟨i⟩) <;>
+    refine ⟨Equiv.emptySum PEmpty xl, Equiv.emptySum PEmpty xr, ?_, ?_⟩ <;> rintro (⟨⟨⟩⟩ | ⟨i⟩) <;>
       apply zeroAddRelabelling
 #align pgame.zero_add_relabelling SetTheory.PGame.zeroAddRelabelling
 
@@ -216,12 +216,12 @@ def Relabelling.addCongr : ∀ {w x y z : PGame.{u}}, w ≡r x → y ≡r z → 
     ⟨L₂, R₂, hL₂, hR₂⟩ => by
     let Hwx : ⟨wl, wr, wL, wR⟩ ≡r ⟨xl, xr, xL, xR⟩ := ⟨L₁, R₁, hL₁, hR₁⟩
     let Hyz : ⟨yl, yr, yL, yR⟩ ≡r ⟨zl, zr, zL, zR⟩ := ⟨L₂, R₂, hL₂, hR₂⟩
-    refine' ⟨Equiv.sumCongr L₁ L₂, Equiv.sumCongr R₁ R₂, _, _⟩ <;> rintro (i | j)
+    refine ⟨Equiv.sumCongr L₁ L₂, Equiv.sumCongr R₁ R₂, ?_, ?_⟩ <;> rintro (i | j)
     · exact (hL₁ i).addCongr Hyz
     · exact Hwx.addCongr (hL₂ j)
     · exact (hR₁ i).addCongr Hyz
     · exact Hwx.addCongr (hR₂ j)
-termination_by _ w x y z _ _ => (x, z)
+termination_by _ x _ z => (x, z)
 #align pgame.relabelling.add_congr SetTheory.PGame.Relabelling.addCongr
 
 /-- If `w` has the same moves as `x` and `y` has the same moves as `z`,
@@ -233,27 +233,27 @@ def Relabelling.subCongr {w x y z : PGame} (h₁ : w ≡r x) (h₂ : y ≡r z) :
 /-- `-(x + y)` has exactly the same moves as `-x + -y`. -/
 def negAddRelabelling : ∀ x y : PGame, -(x + y) ≡r -x + -y
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
-    refine' ⟨Equiv.refl _, Equiv.refl _, _, _⟩
+    refine ⟨Equiv.refl _, Equiv.refl _, ?_, ?_⟩
     all_goals
       exact fun j =>
         Sum.casesOn j (fun j => negAddRelabelling _ _) fun j =>
           negAddRelabelling ⟨xl, xr, xL, xR⟩ _
-termination_by _ x y => (x, y)
+termination_by x y => (x, y)
 #align pgame.neg_add_relabelling SetTheory.PGame.negAddRelabelling
 
 /-- `x + y` has exactly the same moves as `y + x`. -/
 def addCommRelabelling : ∀ x y : PGame.{u}, x + y ≡r y + x
   | mk xl xr xL xR, mk yl yr yL yR => by
-    refine' ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, _, _⟩ <;> rintro (_ | _) <;>
-      · dsimp [leftMoves_add, rightMoves_add]
+    refine ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, ?_, ?_⟩ <;> rintro (_ | _) <;>
+      · dsimp
         apply addCommRelabelling
-termination_by _ x y => (x, y)
+termination_by x y => (x, y)
 #align pgame.add_comm_relabelling SetTheory.PGame.addCommRelabelling
 
 /-- `(x + y) + z` has exactly the same moves as `x + (y + z)`. -/
 def addAssocRelabelling : ∀ x y z : PGame.{u}, x + y + z ≡r x + (y + z)
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩, ⟨zl, zr, zL, zR⟩ => by
-    refine' ⟨Equiv.sumAssoc _ _ _, Equiv.sumAssoc _ _ _, _, _⟩
+    refine ⟨Equiv.sumAssoc _ _ _, Equiv.sumAssoc _ _ _, ?_, ?_⟩
     · rintro (⟨i | i⟩ | i)
       · apply addAssocRelabelling
       · apply addAssocRelabelling ⟨xl, xr, xL, xR⟩ (yL i)
@@ -262,23 +262,22 @@ def addAssocRelabelling : ∀ x y z : PGame.{u}, x + y + z ≡r x + (y + z)
       · apply addAssocRelabelling
       · apply addAssocRelabelling ⟨xl, xr, xL, xR⟩ (yR i)
       · apply addAssocRelabelling ⟨xl, xr, xL, xR⟩ ⟨yl, yr, yL, yR⟩ (zR i)
-termination_by _ x y z => (x, y, z)
+termination_by x y z => (x, y, z)
 #align pgame.add_assoc_relabelling SetTheory.PGame.addAssocRelabelling
 
 /-- `x * y` and `y * x` have the same moves. -/
 def mulCommRelabelling (x y : PGame.{u}) : x * y ≡r y * x :=
   match x, y with
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
-    refine' ⟨Equiv.sumCongr (Equiv.prodComm _ _) (Equiv.prodComm _ _),
-      (Equiv.sumComm _ _).trans (Equiv.sumCongr (Equiv.prodComm _ _) (Equiv.prodComm _ _)), _, _⟩
+    refine ⟨Equiv.sumCongr (Equiv.prodComm _ _) (Equiv.prodComm _ _),
+      (Equiv.sumComm _ _).trans (Equiv.sumCongr (Equiv.prodComm _ _) (Equiv.prodComm _ _)), ?_, ?_⟩
       <;>
     rintro (⟨i, j⟩ | ⟨i, j⟩) <;>
     { dsimp
       exact ((addCommRelabelling _ _).trans <|
         (mulCommRelabelling _ _).addCongr (mulCommRelabelling _ _)).subCongr
         (mulCommRelabelling _ _) }
-  termination_by _ => (x, y)
-  decreasing_by pgame_wf_tac
+  termination_by (x, y)
 #align pgame.mul_comm_relabelling SetTheory.PGame.mulCommRelabelling
 
 /-- `x * 0` has exactly the same moves as `0`. -/
@@ -291,25 +290,25 @@ def zeroMulRelabelling (x : PGame) : 0 * x ≡r 0 :=
   Relabelling.isEmpty _
 #align pgame.zero_mul_relabelling SetTheory.PGame.zeroMulRelabelling
 
+
 /-- `-x * y` and `-(x * y)` have the same moves. -/
 def negMulRelabelling (x y : PGame.{u}) : -x * y ≡r -(x * y) :=
   match x, y with
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
-      refine' ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, _, _⟩ <;>
+      refine ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, ?_, ?_⟩ <;>
       rintro (⟨i, j⟩ | ⟨i, j⟩) <;>
       · dsimp
         apply ((negAddRelabelling _ _).trans _).symm
         apply ((negAddRelabelling _ _).trans (Relabelling.addCongr _ _)).subCongr
         -- Porting note: we used to just do `<;> exact (negMulRelabelling _ _).symm` from here.
-        exact (negMulRelabelling _ _).symm
-        exact (negMulRelabelling _ _).symm
+        · exact (negMulRelabelling _ _).symm
+        · exact (negMulRelabelling _ _).symm
         -- Porting note: not sure what has gone wrong here.
         -- The goal is hideous here, and the `exact` doesn't work,
         -- but if we just `change` it to look like the mathlib3 goal then we're fine!?
         change -(mk xl xr xL xR * _) ≡r _
         exact (negMulRelabelling _ _).symm
-  termination_by _ => (x, y)
-  decreasing_by pgame_wf_tac
+  termination_by (x, y)
 #align pgame.neg_mul_relabelling SetTheory.PGame.negMulRelabelling
 
 /-- `x * -y` and `-(x * y)` have the same moves. -/
@@ -325,13 +324,10 @@ def mulOneRelabelling : ∀ x : PGame.{u}, x * 1 ≡r x
     unfold One.one
     unfold instOnePGame
     change mk _ _ _ _ * mk _ _ _ _ ≡r _
-    -- Porting note: changed `refine'` to `refine`,
-    -- otherwise there are typeclass inference failures.
     refine ⟨(Equiv.sumEmpty _ _).trans (Equiv.prodPUnit _),
       (Equiv.emptySum _ _).trans (Equiv.prodPUnit _), ?_, ?_⟩ <;>
     (try rintro (⟨i, ⟨⟩⟩ | ⟨i, ⟨⟩⟩)) <;>
-    { (try intro i)
-      dsimp
+    { dsimp
       apply (Relabelling.subCongr (Relabelling.refl _) (mulZeroRelabelling _)).trans
       rw [sub_zero_eq_add_zero]
       exact (addZeroRelabelling _).trans <|
@@ -346,7 +342,7 @@ def oneMulRelabelling (x : PGame) : 1 * x ≡r x :=
 /-- `inv' 0` has exactly the same moves as `1`. -/
 def inv'Zero : inv' 0 ≡r 1 := by
   change mk _ _ _ _ ≡r 1
-  refine' ⟨_, _, fun i => _, IsEmpty.elim _⟩
+  refine ⟨?_, ?_, fun i => ?_, IsEmpty.elim ?_⟩
   · apply Equiv.equivPUnit (InvTy _ _ _)
   · apply Equiv.equivPEmpty (InvTy _ _ _)
   · -- Porting note: had to add `rfl`, because `simp` only uses the built-in `rfl`.
@@ -361,7 +357,7 @@ def inv'One : inv' 1 ≡r (1 : PGame.{u}) := by
   have : IsEmpty { _i : PUnit.{u + 1} // (0 : PGame.{u}) < 0 } := by
     rw [lt_self_iff_false]
     infer_instance
-  refine' ⟨_, _, fun i => _, IsEmpty.elim _⟩ <;> dsimp
+  refine ⟨?_, ?_, fun i => ?_, IsEmpty.elim ?_⟩ <;> dsimp
   · apply Equiv.equivPUnit
   · apply Equiv.equivOfIsEmpty
   · -- Porting note: had to add `rfl`, because `simp` only uses the built-in `rfl`.

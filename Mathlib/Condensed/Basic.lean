@@ -19,10 +19,6 @@ of Clausen-Scholze and Barwick-Haine.
 We use the coherent Grothendieck topology on `CompHaus`, and define condensed objects in `C` to
 be `C`-valued sheaves, with respect to this Grothendieck topology.
 
-In future work, we will define similar Grothendieck topologies on the category of profinite sets
-and extremally disconnected sets, and show that the three categories are equivalent (under
-suitable assumptions on `C`).
-
 Note: Our definition more closely resembles "Pyknotic objects" in the sense of Barwick-Haine,
 as we do not impose cardinality bounds, and manage universes carefully instead.
 
@@ -48,3 +44,9 @@ def Condensed (C : Type w) [Category.{v} C] :=
 
 instance {C : Type w} [Category.{v} C] : Category (Condensed.{u} C) :=
   show Category (Sheaf _ _) from inferInstance
+
+/--
+Condensed sets (types) with the appropriate universe levels, i.e. `Type (u+1)`-valued
+sheaves on `CompHaus.{u}`.
+-/
+abbrev CondensedSet := Condensed.{u} (Type (u+1))

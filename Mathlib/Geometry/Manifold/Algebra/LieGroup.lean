@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
@@ -18,13 +18,25 @@ Note that, since a manifold here is not second-countable and Hausdorff a Lie gro
 guaranteed to be second-countable (even though it can be proved it is Hausdorff). Note also that Lie
 groups here are not necessarily finite dimensional.
 
-## Main definitions and statements
+## Main definitions
 
 * `LieAddGroup I G` : a Lie additive group where `G` is a manifold on the model with corners `I`.
-* `LieGroup I G`     : a Lie multiplicative group where `G` is a manifold on the model with
-                        corners `I`.
+* `LieGroup I G` : a Lie multiplicative group where `G` is a manifold on the model with corners `I`.
+* `SmoothInv₀`: typeclass for smooth manifolds with `0` and `Inv` such that inversion is a smooth
+  map at each non-zero point. This includes complete normed fields and (multiplicative) Lie groups.
+
+
+## Main results
+* `ContMDiff.inv`, `ContMDiff.div` and variants: point-wise inversion and division of maps `M → G`
+  is smooth
+* `ContMDiff.inv₀` and variants: if `SmoothInv₀ N`, point-wise inversion of smooth maps `f : M → N`
+  is smooth at all points at which `f` doesn't vanish.
+* `ContMDiff.div₀` and variants: if also `SmoothMul N` (i.e., `N` is a Lie group except possibly
+  for smoothness of inversion at `0`), similar results hold for point-wise division.
 * `normedSpaceLieAddGroup` : a normed vector space over a nontrivially normed field
-                                 is an additive Lie group.
+  is an additive Lie group.
+* `Instances/UnitsOfNormedAlgebra` shows that the group of units of a complete normed `𝕜`-algebra
+  is a multiplicative Lie group.
 
 ## Implementation notes
 
@@ -37,15 +49,12 @@ so the definition does not apply. Hence the definition should be more general, a
 `I : ModelWithCorners 𝕜 E H`.
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 open scoped Manifold
 
 -- See note [Design choices about smooth algebraic structures]
-/-- A Lie (additive) group is a group and a smooth manifold at the same time in which
+/-- An additive Lie group is a group and a smooth manifold at the same time in which
 the addition and negation operations are smooth. -/
 class LieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (G : Type*)
@@ -55,7 +64,7 @@ class LieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Top
 #align lie_add_group LieAddGroup
 
 -- See note [Design choices about smooth algebraic structures]
-/-- A Lie group is a group and a smooth manifold at the same time in which
+/-- A (multiplicative) Lie group is a group and a smooth manifold at the same time in which
 the multiplication and inverse operations are smooth. -/
 @[to_additive]
 class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
@@ -65,7 +74,13 @@ class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Topolo
   smooth_inv : Smooth I I fun a : G => a⁻¹
 #align lie_group LieGroup
 
-section LieGroup
+/-!
+  ### Smoothness of inversion, negation, division and subtraction
+
+  Let `f : M → G` be a `C^n` or smooth functions into a Lie group, then `f` is point-wise
+  invertible with smooth inverse `f`. If `f` and `g` are two such functions, the quotient
+  `f / g` (i.e., the point-wise product of `f` and the point-wise inverse of `g`) is also smooth. -/
+section PointwiseDivision
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {F : Type*}
@@ -81,7 +96,8 @@ section
 
 variable (I)
 
-@[to_additive]
+/-- In a Lie group, inversion is a smooth map. -/
+@[to_additive "In an additive Lie group, inversion is a smooth map."]
 theorem smooth_inv : Smooth I I fun x : G => x⁻¹ :=
   LieGroup.smooth_inv
 #align smooth_inv smooth_inv
@@ -208,9 +224,10 @@ nonrec theorem Smooth.div {f g : M → G} (hf : Smooth I' I f) (hg : Smooth I' I
 #align smooth.div Smooth.div
 #align smooth.sub Smooth.sub
 
-end LieGroup
+end PointwiseDivision
 
-section ProdLieGroup
+/-! Binary product of Lie groups -/
+section Product
 
 -- Instance of product group
 @[to_additive]
@@ -222,7 +239,7 @@ instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalS
     [Group G'] [LieGroup I' G'] : LieGroup (I.prod I') (G × G') :=
   { SmoothMul.prod _ _ _ _ with smooth_inv := smooth_fst.inv.prod_mk smooth_snd.inv }
 
-end ProdLieGroup
+end Product
 
 /-! ### Normed spaces are Lie groups -/
 
@@ -231,7 +248,12 @@ instance normedSpaceLieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E
   smooth_neg := contDiff_neg.contMDiff
 #align normed_space_lie_add_group normedSpaceLieAddGroup
 
-section HasSmoothInv
+/-! ## Smooth manifolds with smooth inversion away from zero
+
+Typeclass for smooth manifolds with `0` and `Inv` such that inversion is smooth at all non-zero
+points. (This includes multiplicative Lie groups, but also complete normed semifields.)
+Point-wise inversion is smooth when the function/denominator is non-zero. -/
+section SmoothInv₀
 
 -- See note [Design choices about smooth algebraic structures]
 /-- A smooth manifold with `0` and `Inv` such that `fun x ↦ x⁻¹` is smooth at all nonzero points.
@@ -268,7 +290,7 @@ theorem hasContinuousInv₀_of_hasSmoothInv₀ : HasContinuousInv₀ G :=
 theorem SmoothOn_inv₀ : SmoothOn I I (Inv.inv : G → G) {0}ᶜ := fun _x hx =>
   (smoothAt_inv₀ I hx).smoothWithinAt
 
-variable {I}
+variable {I} {s : Set M} {a : M}
 
 theorem ContMDiffWithinAt.inv₀ (hf : ContMDiffWithinAt I' I n f s a) (ha : f a ≠ 0) :
     ContMDiffWithinAt I' I n (fun x => (f x)⁻¹) s a :=
@@ -301,8 +323,13 @@ theorem SmoothOn.inv₀ (hf : SmoothOn I' I f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
     SmoothOn I' I (fun x => (f x)⁻¹) s :=
   ContMDiffOn.inv₀ hf h0
 
-end HasSmoothInv
+end SmoothInv₀
 
+/-! ### Point-wise division of smooth functions
+
+If `[SmoothMul I N]` and `[SmoothInv₀ I N]`, point-wise division of smooth functions `f : M → N`
+is smooth whenever the denominator is non-zero. (This includes `N` being a completely normed field.)
+-/
 section Div
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
@@ -310,7 +337,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalS
   [TopologicalSpace G] [ChartedSpace H G] [GroupWithZero G] [SmoothInv₀ I G] [SmoothMul I G]
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
-  {f g : M → G}
+  {f g : M → G} {s : Set M} {a : M} {n : ℕ∞}
 
 theorem ContMDiffWithinAt.div₀
     (hf : ContMDiffWithinAt I' I n f s a) (hg : ContMDiffWithinAt I' I n g s a) (h₀ : g a ≠ 0) :

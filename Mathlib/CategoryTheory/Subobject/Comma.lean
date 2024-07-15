@@ -17,7 +17,7 @@ and `S : D` as a subtype of the subobjects of `A.right`. We deduce that `Structu
 well-powered if `C` is.
 
 ## Main declarations
-* `StructuredArrow.subobjectEquiv `: the order-equivalence between `Subobject A` and a subtype of
+* `StructuredArrow.subobjectEquiv`: the order-equivalence between `Subobject A` and a subtype of
   `Subobject A.right`.
 
 ## Implementation notes
@@ -48,9 +48,9 @@ variable {S : D} {T : C ⥤ D}
     object. -/
 def projectSubobject [HasLimits C] [PreservesLimits T] {A : StructuredArrow S T} :
     Subobject A → Subobject A.right := by
-  refine' Subobject.lift (fun P f hf => Subobject.mk f.right) _
+  refine Subobject.lift (fun P f hf => Subobject.mk f.right) ?_
   intro P Q f g hf hg i hi
-  refine' Subobject.mk_eq_mk_of_comm _ _ ((proj S T).mapIso i) _
+  refine Subobject.mk_eq_mk_of_comm _ _ ((proj S T).mapIso i) ?_
   exact congr_arg CommaMorphism.right hi
 #align category_theory.structured_arrow.project_subobject CategoryTheory.StructuredArrow.projectSubobject
 
@@ -106,13 +106,17 @@ def subobjectEquiv [HasLimits C] [PreservesLimits T] (A : StructuredArrow S T) :
   map_rel_iff' := by
     apply Subobject.ind₂
     intro P Q f g hf hg
-    refine' ⟨fun h => Subobject.mk_le_mk_of_comm _ _, fun h => _⟩
+    refine ⟨fun h => Subobject.mk_le_mk_of_comm ?_ ?_, fun h => ?_⟩
     · exact homMk (Subobject.ofMkLEMk _ _ h)
         ((cancel_mono (T.map g.right)).1 (by simp [← T.map_comp]))
     · aesop_cat
-    · refine' Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).right _
+    · refine Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).right ?_
       exact congr_arg CommaMorphism.right (Subobject.ofMkLEMk_comp h)
 #align category_theory.structured_arrow.subobject_equiv CategoryTheory.StructuredArrow.subobjectEquiv
+
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] CategoryTheory.StructuredArrow.subobjectEquiv_symm_apply
+  CategoryTheory.StructuredArrow.subobjectEquiv_apply_coe
 
 /-- If `C` is well-powered and complete and `T` preserves limits, then `StructuredArrow S T` is
     well-powered. -/
@@ -131,9 +135,9 @@ variable {S : C ⥤ D} {T : D}
     object. -/
 def projectQuotient [HasColimits C] [PreservesColimits S] {A : CostructuredArrow S T} :
     Subobject (op A) → Subobject (op A.left) := by
-  refine' Subobject.lift (fun P f hf => Subobject.mk f.unop.left.op) _
+  refine Subobject.lift (fun P f hf => Subobject.mk f.unop.left.op) ?_
   intro P Q f g hf hg i hi
-  refine' Subobject.mk_eq_mk_of_comm _ _ ((proj S T).mapIso i.unop).op (Quiver.Hom.unop_inj _)
+  refine Subobject.mk_eq_mk_of_comm _ _ ((proj S T).mapIso i.unop).op (Quiver.Hom.unop_inj ?_)
   have := congr_arg Quiver.Hom.unop hi
   simpa using congr_arg CommaMorphism.left this
 #align category_theory.costructured_arrow.project_quotient CategoryTheory.CostructuredArrow.projectQuotient
@@ -184,9 +188,9 @@ theorem lift_projectQuotient [HasColimits C] [PreservesColimits S] {A : Costruct
     (by
       intro P f hf q hq
       fapply Subobject.mk_eq_mk_of_comm
-      · refine' (Iso.op (isoMk _ _) : _ ≅ op (unop P))
+      · refine (Iso.op (isoMk ?_ ?_) : _ ≅ op (unop P))
         · exact (Subobject.underlyingIso f.unop.left.op).unop
-        · refine' (cancel_epi (S.map f.unop.left)).1 _
+        · refine (cancel_epi (S.map f.unop.left)).1 ?_
           simpa [← Category.assoc, ← S.map_comp] using hq
       · exact Quiver.Hom.unop_inj (by aesop_cat))
 #align category_theory.costructured_arrow.lift_project_quotient CategoryTheory.CostructuredArrow.lift_projectQuotient
@@ -216,16 +220,16 @@ def quotientEquiv [HasColimits C] [PreservesColimits S] (A : CostructuredArrow S
   map_rel_iff' := by
     apply Subobject.ind₂
     intro P Q f g hf hg
-    refine' ⟨fun h => Subobject.mk_le_mk_of_comm _ _, fun h => _⟩
-    · refine' (homMk (Subobject.ofMkLEMk _ _ h).unop ((cancel_epi (S.map g.unop.left)).1 _)).op
+    refine ⟨fun h => Subobject.mk_le_mk_of_comm ?_ ?_, fun h => ?_⟩
+    · refine (homMk (Subobject.ofMkLEMk _ _ h).unop ((cancel_epi (S.map g.unop.left)).1 ?_)).op
       dsimp
       simp only [← S.map_comp_assoc, unop_left_comp_ofMkLEMk_unop, unop_op, CommaMorphism.w,
         Functor.const_obj_obj, right_eq_id, Functor.const_obj_map, Category.comp_id]
     · apply Quiver.Hom.unop_inj
       ext
       exact unop_left_comp_ofMkLEMk_unop _
-    · refine' Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).unop.left.op _
-      refine' Quiver.Hom.unop_inj _
+    · refine Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).unop.left.op ?_
+      refine Quiver.Hom.unop_inj ?_
       have := congr_arg Quiver.Hom.unop (Subobject.ofMkLEMk_comp h)
       simpa only [unop_op, Functor.id_obj, Functor.const_obj_obj, MonoOver.mk'_obj, Over.mk_left,
         MonoOver.mk'_arrow, unop_comp, Quiver.Hom.unop_op, comp_left]

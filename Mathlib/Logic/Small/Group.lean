@@ -3,16 +3,16 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Logic.Small.Basic
+import Mathlib.Logic.Small.Defs
 import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
 # Transfer group structures from `α` to `Shrink α`.
 -/
 
-set_option autoImplicit true
-
 noncomputable section
+
+variable {α : Type*}
 
 -- FIXME: here and below, why doesn't `to_additive` work?
 -- We're waiting on the fix for https://github.com/leanprover/lean4/issues/2077 to arrive.

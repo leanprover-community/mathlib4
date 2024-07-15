@@ -3,9 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Instances.Int
 import Mathlib.Topology.Instances.Nat
 import Mathlib.Topology.Instances.Real
 
@@ -112,9 +110,7 @@ theorem uniformContinuous_abs : UniformContinuous (abs : ℚ → ℚ) :=
 
 instance : TopologicalRing ℚ := inferInstance
 
-@[deprecated continuous_mul]
-protected theorem continuous_mul : Continuous fun p : ℚ × ℚ => p.1 * p.2 := continuous_mul
-#align rat.continuous_mul Rat.continuous_mul
+#align rat.continuous_mul continuous_mul
 
 nonrec theorem totallyBounded_Icc (a b : ℚ) : TotallyBounded (Icc a b) := by
   simpa only [preimage_cast_Icc] using

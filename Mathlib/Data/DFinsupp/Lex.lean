@@ -3,6 +3,7 @@ Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Junyan Xu
 -/
+import Mathlib.Algebra.Order.Group.PiLex
 import Mathlib.Data.DFinsupp.Order
 import Mathlib.Data.DFinsupp.NeLocus
 import Mathlib.Order.WellFoundedSet
@@ -53,7 +54,7 @@ theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι 
   classical
   have : (x.neLocus y : Set ι).WellFoundedOn r := (x.neLocus y).finite_toSet.wellFoundedOn
   obtain ⟨i, hi, hl⟩ := this.has_min { i | x i < y i } ⟨⟨j, mem_neLocus.2 hlt.ne⟩, hlt⟩
-  refine' ⟨i, fun k hk ↦ ⟨hle k, _⟩, hi⟩
+  refine ⟨i, fun k hk ↦ ⟨hle k, ?_⟩, hi⟩
   exact of_not_not fun h ↦ hl ⟨k, mem_neLocus.2 (ne_of_not_le h).symm⟩ ((hle k).lt_of_not_le h) hk
 #align dfinsupp.lex_lt_of_lt_of_preorder DFinsupp.lex_lt_of_lt_of_preorder
 
@@ -63,20 +64,22 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (α i)] (r) [IsStrictOrder ι r] {x y 
   exact lex_lt_of_lt_of_preorder r hlt
 #align dfinsupp.lex_lt_of_lt DFinsupp.lex_lt_of_lt
 
-instance Lex.isStrictOrder [LinearOrder ι] [∀ i, PartialOrder (α i)] :
+variable [LinearOrder ι]
+
+instance Lex.isStrictOrder [∀ i, PartialOrder (α i)] :
     IsStrictOrder (Lex (Π₀ i, α i)) (· < ·) :=
   let i : IsStrictOrder (Lex (∀ i, α i)) (· < ·) := Pi.Lex.isStrictOrder
   { irrefl := toLex.surjective.forall.2 fun _ ↦ @irrefl _ _ i.toIsIrrefl _
     trans := toLex.surjective.forall₃.2 fun _ _ _ ↦ @trans _ _ i.toIsTrans _ _ _ }
 #align dfinsupp.lex.is_strict_order DFinsupp.Lex.isStrictOrder
 
-variable [LinearOrder ι]
-
 /-- The partial order on `DFinsupp`s obtained by the lexicographic ordering.
 See `DFinsupp.Lex.linearOrder` for a proof that this partial order is in fact linear. -/
-instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π₀ i, α i)) :=
-  PartialOrder.lift (fun x ↦ toLex (⇑(ofLex x)))
-    (FunLike.coe_injective (F := DFinsupp fun i => α i))
+instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π₀ i, α i)) where
+  lt := (· < ·)
+  le x y := ⇑(ofLex x) = ⇑(ofLex y) ∨ x < y
+  __ := PartialOrder.lift (fun x : Lex (Π₀ i, α i) ↦ toLex (⇑(ofLex x)))
+    (DFunLike.coe_injective (F := DFinsupp α))
 #align dfinsupp.lex.partial_order DFinsupp.Lex.partialOrder
 
 section LinearOrder
@@ -100,7 +103,7 @@ private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) �
 /-- The less-or-equal relation for the lexicographic ordering is decidable. -/
 irreducible_def Lex.decidableLE : @DecidableRel (Lex (Π₀ i, α i)) (· ≤ ·) :=
   lt_trichotomy_rec (fun h ↦ isTrue <| Or.inr h)
-    (fun h ↦ isTrue <| Or.inl <| congr_arg _ <| congr_arg _ h)
+    (fun h ↦ isTrue <| Or.inl <| congr_arg _ h)
     fun h ↦ isFalse fun h' ↦ lt_irrefl _ (h.trans_le h')
 #align dfinsupp.lex.decidable_le DFinsupp.Lex.decidableLE
 
@@ -111,16 +114,16 @@ irreducible_def Lex.decidableLT : @DecidableRel (Lex (Π₀ i, α i)) (· < ·) 
 
 -- Porting note: Added `DecidableEq` for `LinearOrder`.
 instance : DecidableEq (Lex (Π₀ i, α i)) :=
-  lt_trichotomy_rec (fun h ↦ isFalse fun h' => h'.not_lt h) (fun h ↦ isTrue h)
-    fun h ↦ isFalse fun h' => h'.symm.not_lt h
+  lt_trichotomy_rec (fun h ↦ isFalse fun h' ↦ h'.not_lt h) isTrue
+    fun h ↦ isFalse fun h' ↦ h'.symm.not_lt h
 
 /-- The linear order on `DFinsupp`s obtained by the lexicographic ordering. -/
-instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) :=
-  { Lex.partialOrder with
-    le_total := lt_trichotomy_rec (fun h ↦ Or.inl h.le) (fun h ↦ Or.inl h.le) fun h ↦ Or.inr h.le
-    decidableLT := decidableLT
-    decidableLE := decidableLE
-    decidableEq := inferInstance }
+instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) where
+  __ := Lex.partialOrder
+  le_total := lt_trichotomy_rec (fun h ↦ Or.inl h.le) (fun h ↦ Or.inl h.le) fun h ↦ Or.inr h.le
+  decidableLT := decidableLT
+  decidableLE := decidableLE
+  decidableEq := inferInstance
 #align dfinsupp.lex.linear_order DFinsupp.Lex.linearOrder
 
 end LinearOrder
@@ -129,7 +132,7 @@ variable [∀ i, PartialOrder (α i)]
 
 theorem toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := by
   intro a b h
-  refine' le_of_lt_or_eq (or_iff_not_imp_right.2 fun hne ↦ _)
+  refine le_of_lt_or_eq (or_iff_not_imp_right.2 fun hne ↦ ?_)
   classical
   exact ⟨Finset.min' _ (nonempty_neLocus_iff.2 hne),
     fun j hj ↦ not_mem_neLocus.1 fun h ↦ (Finset.min'_le _ _ h).not_lt hj,
@@ -192,7 +195,8 @@ section OrderedAddMonoid
 
 variable [LinearOrder ι]
 
-instance Lex.orderBot [∀ i, CanonicallyOrderedAddMonoid (α i)] : OrderBot (Lex (Π₀ i, α i)) where
+instance Lex.orderBot [∀ i, CanonicallyOrderedAddCommMonoid (α i)] :
+    OrderBot (Lex (Π₀ i, α i)) where
   bot := 0
   bot_le _ := DFinsupp.toLex_monotone bot_le
 
@@ -208,12 +212,12 @@ instance Lex.orderedAddCommGroup [∀ i, OrderedAddCommGroup (α i)] :
 instance Lex.linearOrderedCancelAddCommMonoid
     [∀ i, LinearOrderedCancelAddCommMonoid (α i)] :
     LinearOrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) where
-  __ := (inferInstance : LinearOrder (Lex (Π₀ i, α i)))
-  __ := (inferInstance : OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)))
+  __ : LinearOrder (Lex (Π₀ i, α i)) := inferInstance
+  __ : OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) := inferInstance
 
 instance Lex.linearOrderedAddCommGroup [∀ i, LinearOrderedAddCommGroup (α i)] :
     LinearOrderedAddCommGroup (Lex (Π₀ i, α i)) where
-  __ := (inferInstance : LinearOrder (Lex (Π₀ i, α i)))
+  __ : LinearOrder (Lex (Π₀ i, α i)) := inferInstance
   add_le_add_left _ _ := add_le_add_left
 
 end OrderedAddMonoid

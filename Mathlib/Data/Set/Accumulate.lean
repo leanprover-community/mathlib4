@@ -35,9 +35,17 @@ theorem mem_accumulate [LE α] {x : α} {z : β} : z ∈ Accumulate s x ↔ ∃ 
 theorem subset_accumulate [Preorder α] {x : α} : s x ⊆ Accumulate s x := fun _ => mem_biUnion le_rfl
 #align set.subset_accumulate Set.subset_accumulate
 
+theorem accumulate_subset_iUnion [Preorder α] (x : α) : Accumulate s x ⊆ ⋃ i, s i :=
+  (biUnion_subset_biUnion_left (subset_univ _)).trans_eq (biUnion_univ _)
+
 theorem monotone_accumulate [Preorder α] : Monotone (Accumulate s) := fun _ _ hxy =>
   biUnion_subset_biUnion_left fun _ hz => le_trans hz hxy
 #align set.monotone_accumulate Set.monotone_accumulate
+
+@[gcongr]
+theorem accumulate_subset_accumulate [Preorder α] {x y} (h : x ≤ y) :
+    Accumulate s x ⊆ Accumulate s y :=
+  monotone_accumulate h
 
 theorem biUnion_accumulate [Preorder α] (x : α) : ⋃ y ≤ x, Accumulate s y = ⋃ y ≤ x, s y := by
   apply Subset.antisymm

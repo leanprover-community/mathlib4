@@ -35,9 +35,7 @@ open DirectSum
 section General
 
 variable {R : Type u} [Semiring R]
-
 variable {ι : Type v} [dec_ι : DecidableEq ι]
-
 variable {M : ι → Type w} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
 instance : Module R (⨁ i, M i) :=
@@ -96,14 +94,12 @@ theorem support_smul [∀ (i : ι) (x : M i), Decidable (x ≠ 0)] (c : R) (v : 
 #align direct_sum.support_smul DirectSum.support_smul
 
 variable {N : Type u₁} [AddCommMonoid N] [Module R N]
-
 variable (φ : ∀ i, M i →ₗ[R] N)
-
 variable (R ι N)
 
 /-- The linear map constructed using the universal property of the coproduct. -/
 def toModule : (⨁ i, M i) →ₗ[R] N :=
-  FunLike.coe (DFinsupp.lsum ℕ) φ
+  DFunLike.coe (DFinsupp.lsum ℕ) φ
 #align direct_sum.to_module DirectSum.toModule
 
 /-- Coproducts in the categories of modules and additive monoids commute with the forgetful functor
@@ -248,7 +244,6 @@ end CongrLeft
 section Sigma
 
 variable {α : ι → Type*} {δ : ∀ i, α i → Type w}
-
 variable [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (δ i j)]
 
 /-- `curry` as a linear map. -/
@@ -303,11 +298,8 @@ section Submodule
 section Semiring
 
 variable {R : Type u} [Semiring R]
-
 variable {ι : Type v} [dec_ι : DecidableEq ι]
-
 variable {M : Type*} [AddCommMonoid M] [Module R M]
-
 variable (A : ι → Submodule R M)
 
 /-- The canonical embedding from `⨁ i, A i` to `M` where `A` is a collection of `Submodule R M`
@@ -323,6 +315,28 @@ theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i
 #align direct_sum.coe_linear_map_of DirectSum.coeLinearMap_of
 
 variable {A}
+
+@[simp]
+theorem IsInternal.ofBijective_coeLinearMap_same (h : IsInternal A)
+    {i : ι} (x : A i) :
+    (LinearEquiv.ofBijective (coeLinearMap A) h).symm x i = x := by
+  rw [← coeLinearMap_of, LinearEquiv.ofBijective_symm_apply_apply, of_eq_same]
+
+@[simp]
+theorem IsInternal.ofBijective_coeLinearMap_of_ne (h : IsInternal A)
+    {i j : ι} (hij : i ≠ j) (x : A i) :
+    (LinearEquiv.ofBijective (coeLinearMap A) h).symm x j = 0 := by
+  rw [← coeLinearMap_of, LinearEquiv.ofBijective_symm_apply_apply, of_eq_of_ne _ i j _ hij]
+
+theorem IsInternal.ofBijective_coeLinearMap_of_mem (h : IsInternal A)
+    {i : ι} {x : M} (hx : x ∈ A i) :
+    (LinearEquiv.ofBijective (coeLinearMap A) h).symm x i = ⟨x, hx⟩ :=
+  h.ofBijective_coeLinearMap_same ⟨x, hx⟩
+
+theorem IsInternal.ofBijective_coeLinearMap_of_mem_ne (h : IsInternal A)
+    {i j : ι} (hij : i ≠ j) {x : M} (hx : x ∈ A i) :
+    (LinearEquiv.ofBijective (coeLinearMap A) h).symm x j = 0 :=
+  h.ofBijective_coeLinearMap_of_ne hij ⟨x, hx⟩
 
 /-- If a direct sum of submodules is internal then the submodules span the module. -/
 theorem IsInternal.submodule_iSup_eq_top (h : IsInternal A) : iSup A = ⊤ := by
@@ -373,6 +387,18 @@ theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) (a : Σi, α i) : h.collectedBasis v a ∈ A a.1 := by simp
 #align direct_sum.is_internal.collected_basis_mem DirectSum.IsInternal.collectedBasis_mem
 
+theorem IsInternal.collectedBasis_repr_of_mem (h : IsInternal A) {α : ι → Type*}
+    (v : ∀ i, Basis (α i) R (A i)) {x : M} {i : ι} {a : α i} (hx : x ∈ A i) :
+    (h.collectedBasis v).repr x ⟨i, a⟩ = (v i).repr ⟨x, hx⟩ a := by
+  change (sigmaFinsuppLequivDFinsupp R).symm (DFinsupp.mapRange _ (fun i ↦ map_zero _) _) _ = _
+  simp [h.ofBijective_coeLinearMap_of_mem hx]
+
+theorem IsInternal.collectedBasis_repr_of_mem_ne (h : IsInternal A) {α : ι → Type*}
+    (v : ∀ i, Basis (α i) R (A i)) {x : M} {i j : ι} (hij : i ≠ j) {a : α j} (hx : x ∈ A i) :
+    (h.collectedBasis v).repr x ⟨j, a⟩ = 0 := by
+  change (sigmaFinsuppLequivDFinsupp R).symm (DFinsupp.mapRange _ (fun i ↦ map_zero _) _) _ = _
+  simp [h.ofBijective_coeLinearMap_of_mem_ne hij hx]
+
 /-- When indexed by only two distinct elements, `DirectSum.IsInternal` implies
 the two submodules are complementary. Over a `Ring R`, this is true as an iff, as
 `DirectSum.isInternal_submodule_iff_isCompl`. -/
@@ -388,9 +414,7 @@ end Semiring
 section Ring
 
 variable {R : Type u} [Ring R]
-
 variable {ι : Type v} [dec_ι : DecidableEq ι]
-
 variable {M : Type*} [AddCommGroup M] [Module R M]
 
 /-- Note that this is not generally true for `[Semiring R]`; see
@@ -398,7 +422,9 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 theorem isInternal_submodule_of_independent_of_iSup_eq_top {A : ι → Submodule R M}
     (hi : CompleteLattice.Independent A) (hs : iSup A = ⊤) : IsInternal A :=
   ⟨hi.dfinsupp_lsum_injective,
-    LinearMap.range_eq_top.1 <| (Submodule.iSup_eq_range_dfinsupp_lsum _).symm.trans hs⟩
+    -- Note: #8386 had to specify value of `f`
+    (LinearMap.range_eq_top (f := DFinsupp.lsum _ _)).1 <|
+      (Submodule.iSup_eq_range_dfinsupp_lsum _).symm.trans hs⟩
 #align direct_sum.is_internal_submodule_of_independent_of_supr_eq_top DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
 
 /-- `iff` version of `DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top`,
@@ -418,6 +444,26 @@ theorem isInternal_submodule_iff_isCompl (A : ι → Submodule R M) {i j : ι} (
     Set.image_insert_eq, Set.image_singleton, sSup_pair, CompleteLattice.independent_pair hij this]
   exact ⟨fun ⟨hd, ht⟩ ↦ ⟨hd, codisjoint_iff.mpr ht⟩, fun ⟨hd, ht⟩ ↦ ⟨hd, ht.eq_top⟩⟩
 #align direct_sum.is_internal_submodule_iff_is_compl DirectSum.isInternal_submodule_iff_isCompl
+
+@[simp]
+theorem isInternal_ne_bot_iff {A : ι → Submodule R M} :
+    IsInternal (fun i : {i // A i ≠ ⊥} ↦ A i) ↔ IsInternal A := by
+  simp only [isInternal_submodule_iff_independent_and_iSup_eq_top]
+  exact Iff.and CompleteLattice.independent_ne_bot_iff_independent <| by simp
+
+lemma isInternal_biSup_submodule_of_independent {A : ι → Submodule R M} (s : Set ι)
+    (h : CompleteLattice.Independent <| fun i : s ↦ A i) :
+    IsInternal <| fun (i : s) ↦ (A i).comap (⨆ i ∈ s, A i).subtype := by
+  refine (isInternal_submodule_iff_independent_and_iSup_eq_top _).mpr ⟨?_, by simp [iSup_subtype]⟩
+  let p := ⨆ i ∈ s, A i
+  have hp : ∀ i ∈ s, A i ≤ p := fun i hi ↦ le_biSup A hi
+  let e : Submodule R p ≃o Set.Iic p := p.mapIic
+  suffices (e ∘ fun i : s ↦ (A i).comap p.subtype) = fun i ↦ ⟨A i, hp i i.property⟩ by
+    rw [← CompleteLattice.independent_map_orderIso_iff e, this]
+    exact CompleteLattice.independent_of_independent_coe_Iic_comp h
+  ext i m
+  change m ∈ ((A i).comap p.subtype).map p.subtype ↔ _
+  rw [Submodule.map_comap_subtype, inf_of_le_right (hp i i.property)]
 
 /-! Now copy the lemmas for subgroup and submonoids. -/
 

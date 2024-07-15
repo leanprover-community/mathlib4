@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Invertible.GroupWithZero
+import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.Data.Sigma.Basic
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Int.Cast.Basic
+import Qq.MetaM
 
 /-!
 ## The `Result` type for `norm_num`
@@ -107,7 +108,7 @@ def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
     let a' : Q(ℚ) := q(OfNat.ofNat $lit : ℚ)
     pure ⟨a', (q(Eq.refl $a') : Expr)⟩
   else
-    let some n := lit.natLit? | failure
+    let some n := lit.rawNatLit? | failure
     match n with
     | 0 => pure ⟨q(0 : $α), (q(Nat.cast_zero (R := $α)) : Expr)⟩
     | 1 => pure ⟨q(1 : $α), (q(Nat.cast_one (R := $α)) : Expr)⟩
@@ -193,7 +194,11 @@ A "raw rat cast" is an expression of the form:
 
 * `(Nat.rawCast lit : α)` where `lit` is a raw natural number literal
 * `(Int.rawCast (Int.negOfNat lit) : α)` where `lit` is a nonzero raw natural number literal
-* `(Rat.rawCast n d : α)` where `n` is a raw int cast, `d` is a raw nat cast, and `d` is not 1 or 0.
+* `(Rat.rawCast n d : α)` where `n` is a raw int literal, `d` is a raw nat literal, and `d` is not
+  `1` or `0`.
+
+(where a raw int literal is of the form `Int.ofNat lit` or `Int.negOfNat nzlit` where `lit` is a raw
+nat literal)
 
 This representation is used by tactics like `ring` to decrease the number of typeclass arguments
 required in each use of a number literal at type `α`.
@@ -434,12 +439,29 @@ def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.
   Note that `BoolResult p b` is definitionally equal to `Expr`, and if you write `match b with ...`,
   then in the `true` branch `BoolResult p true` is reducibly equal to `Q($p)` and
   in the `false` branch it is reducibly equal to `Q(¬ $p)`. -/
-@[reducible]
-def BoolResult (p : Q(Prop)) (b : Bool) : Type :=
+abbrev BoolResult (p : Q(Prop)) (b : Bool) : Type :=
   Q(Bool.rec (¬ $p) ($p) $b)
 
 /-- Obtain a `Result` from a `BoolResult`. -/
 def Result.ofBoolResult {p : Q(Prop)} {b : Bool} (prf : BoolResult p b) : Result q(Prop) :=
   Result'.isBool b prf
+
+/-- If `a = b` and we can evaluate `b`, then we can evaluate `a`. -/
+def Result.eqTrans {α : Q(Type u)} {a b : Q($α)} (eq : Q($a = $b)) : Result b → Result a
+  | .isBool true proof =>
+    have a : Q(Prop) := a
+    have b : Q(Prop) := b
+    have eq : Q($a = $b) := eq
+    have proof : Q($b) := proof
+    Result.isTrue (x := a) q($eq ▸ $proof)
+  | .isBool false proof =>
+    have a : Q(Prop) := a
+    have b : Q(Prop) := b
+    have eq : Q($a = $b) := eq
+    have proof : Q(¬ $b) := proof
+    Result.isFalse (x := a) q($eq ▸ $proof)
+  | .isNat inst lit proof => Result.isNat inst lit q($eq ▸ $proof)
+  | .isNegNat inst lit proof => Result.isNegNat inst lit q($eq ▸ $proof)
+  | .isRat inst q n d proof => Result.isRat inst q n d q($eq ▸ $proof)
 
 end Meta.NormNum

@@ -63,13 +63,8 @@ private theorem ghostComponent_teichmullerFun (r : R) (n : ℕ) :
   rw [ghostComponent_apply, aeval_wittPolynomial, Finset.sum_eq_single 0, pow_zero, one_mul,
     tsub_zero]
   · rfl
-  · intro i hi h0
-    convert mul_zero (M₀ := R) _
-    convert zero_pow (M := R) _
-    · cases i
-      · contradiction
-      · rfl
-    · exact pow_pos hp.1.pos _
+  · intro i _ h0
+    simp [teichmullerFun, h0, hp.1.ne_zero]
   · rw [Finset.mem_range]; intro h; exact (h (Nat.succ_pos n)).elim
 
 private theorem map_teichmullerFun (f : R →+* S) (r : R) :
@@ -87,8 +82,8 @@ private theorem teichmuller_mul_aux₁ (x y : MvPolynomial R ℚ) :
 
 private theorem teichmuller_mul_aux₂ (x y : MvPolynomial R ℤ) :
     teichmullerFun p (x * y) = teichmullerFun p x * teichmullerFun p y := by
-  refine' map_injective (MvPolynomial.map (Int.castRingHom ℚ))
-    (MvPolynomial.map_injective _ Int.cast_injective) _
+  refine map_injective (MvPolynomial.map (Int.castRingHom ℚ))
+    (MvPolynomial.map_injective _ Int.cast_injective) ?_
   simp only [teichmuller_mul_aux₁, map_teichmullerFun, RingHom.map_mul]
 
 /-- The Teichmüller lift of an element of `R` to `𝕎 R`.

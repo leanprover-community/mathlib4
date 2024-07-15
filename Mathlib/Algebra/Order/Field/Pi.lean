@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Fintype.Lattice
+import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Fintype.Card
 
 #align_import algebra.order.field.pi from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 

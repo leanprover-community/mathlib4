@@ -40,7 +40,6 @@ open CategoryTheory
 namespace ModuleCat
 
 variable {k : Type u} [Field k]
-
 variable {A : Type w} [Ring A] [Algebra k A]
 
 /-- Type synonym for considering a module over a `k`-algebra as a `k`-module. -/
@@ -61,12 +60,14 @@ example (M N : ModuleCat.{v} A) : Module k (M ⟶ N) := LinearMap.module
 -- Porting note: used to be `by infer_instance` instead of `LinearMap.module`
 
 instance linearOverField : Linear k (ModuleCat.{v} A) where
-  --Porting note: used to be `by infer_instance` instead of `LinearMap.module`
+  -- Porting note: used to be `by infer_instance` instead of `LinearMap.module`
   homModule M N := LinearMap.module
   smul_comp := by
     -- Porting note: this was automatic by `aesop_cat`
-    aesop_cat_nonterminal
-    rw [LinearMap.smul_apply, LinearMap.smul_apply, LinearMap.map_smul_of_tower]
+    intros
+    ext
+    dsimp only [coe_comp, Function.comp_apply]
+    rw [LinearMap.smul_apply, LinearMap.map_smul_of_tower]
     rfl
 #align Module.linear_over_field ModuleCat.linearOverField
 

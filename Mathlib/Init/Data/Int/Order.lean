@@ -7,7 +7,20 @@ Authors: Jeremy Avigad
 import Mathlib.Init.Order.Defs
 import Mathlib.Init.Data.Int.Basic
 
-/-! # The order relation on the integers -/
+/-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+
+# The order relation on the integers
+-/
 
 open Nat
 
@@ -43,7 +56,7 @@ alias ⟨lt_of_ofNat_lt_ofNat, ofNat_lt_ofNat_of_lt⟩ := ofNat_lt
 #align int.lt_of_coe_nat_lt_coe_nat Int.lt_of_ofNat_lt_ofNat
 #align int.coe_nat_lt_coe_nat_of_lt Int.ofNat_lt_ofNat_of_lt
 
-instance instLinearOrderInt : LinearOrder ℤ where
+instance instLinearOrder : LinearOrder ℤ where
   le := (·≤·)
   le_refl := Int.le_refl
   le_trans := @Int.le_trans

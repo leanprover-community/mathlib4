@@ -71,17 +71,9 @@ theorem mapBicone_whisker {K : Type w₂} {g : K ≃ J} {f : J → C} (c : Bicon
 end Bicone
 
 /-- The image of a binary bicone under a functor. -/
-@[simps]
-def mapBinaryBicone {X Y : C} (b : BinaryBicone X Y) : BinaryBicone (F.obj X) (F.obj Y) where
-  pt := F.obj b.pt
-  fst := F.map b.fst
-  snd := F.map b.snd
-  inl := F.map b.inl
-  inr := F.map b.inr
-  inl_fst := by rw [← F.map_comp, b.inl_fst, F.map_id]
-  inl_snd := by rw [← F.map_comp, b.inl_snd, F.map_zero]
-  inr_fst := by rw [← F.map_comp, b.inr_fst, F.map_zero]
-  inr_snd := by rw [← F.map_comp, b.inr_snd, F.map_id]
+@[simps!]
+def mapBinaryBicone {X Y : C} (b : BinaryBicone X Y) : BinaryBicone (F.obj X) (F.obj Y) :=
+  (BinaryBicones.functoriality _ _ F).obj b
 #align category_theory.functor.map_binary_bicone CategoryTheory.Functor.mapBinaryBicone
 
 end Map
@@ -419,7 +411,7 @@ theorem biproduct.map_lift_mapBiprod (g : ∀ j, W ⟶ f j) :
     haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
     F.map (biproduct.lift g) ≫ (F.mapBiproduct f).hom = biproduct.lift fun j => F.map (g j) := by
   ext j
-  dsimp only [Function.comp]
+  dsimp only [Function.comp_def]
   haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
   simp only [mapBiproduct_hom, Category.assoc, biproduct.lift_π, ← F.map_comp]
 #align category_theory.limits.biproduct.map_lift_map_biprod CategoryTheory.Limits.biproduct.map_lift_mapBiprod
@@ -429,7 +421,7 @@ theorem biproduct.mapBiproduct_inv_map_desc (g : ∀ j, f j ⟶ W) :
     haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
     (F.mapBiproduct f).inv ≫ F.map (biproduct.desc g) = biproduct.desc fun j => F.map (g j) := by
   ext j
-  dsimp only [Function.comp]
+  dsimp only [Function.comp_def]
   haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
   simp only [mapBiproduct_inv, ← Category.assoc, biproduct.ι_desc ,← F.map_comp]
 #align category_theory.limits.biproduct.map_biproduct_inv_map_desc CategoryTheory.Limits.biproduct.mapBiproduct_inv_map_desc

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang
+Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang, Fangming Li
 -/
 import Mathlib.Algebra.DirectSum.Algebra
 import Mathlib.Algebra.DirectSum.Decomposition
@@ -41,14 +41,13 @@ graded algebra, graded ring, graded semiring, decomposition
 -/
 
 
-open DirectSum BigOperators
+open DirectSum
 
 variable {ι R A σ : Type*}
 
 section GradedRing
 
 variable [DecidableEq ι] [AddMonoid ι] [CommSemiring R] [Semiring A] [Algebra R A]
-
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ)
 
 open DirectSum
@@ -130,7 +129,6 @@ section AddCancelMonoid
 open DirectSum
 
 variable [DecidableEq ι] [Semiring A] [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ)
-
 variable {i j : ι}
 
 namespace DirectSum
@@ -166,13 +164,11 @@ end AddCancelMonoid
 section GradedAlgebra
 
 variable [DecidableEq ι] [AddMonoid ι] [CommSemiring R] [Semiring A] [Algebra R A]
-
 variable (𝒜 : ι → Submodule R A)
 
 /-- A special case of `GradedRing` with `σ = Submodule R A`. This is useful both because it
 can avoid typeclass search, and because it provides a more concise name. -/
-@[reducible]
-def GradedAlgebra :=
+abbrev GradedAlgebra :=
   GradedRing 𝒜
 #align graded_algebra GradedAlgebra
 
@@ -181,8 +177,7 @@ available. This makes the `left_inv` condition easier to prove, and phrases the 
 condition in a way that allows custom `@[ext]` lemmas to apply.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[R] ⨁ i, 𝒜 i)
+abbrev GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[R] ⨁ i, 𝒜 i)
     (right_inv : (DirectSum.coeAlgHom 𝒜).comp decompose = AlgHom.id R A)
     (left_inv : ∀ i (x : 𝒜 i), decompose (x : A) = DirectSum.of (fun i => ↥(𝒜 i)) i x) :
     GradedAlgebra 𝒜 where
@@ -190,9 +185,7 @@ def GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[R] 
   left_inv := AlgHom.congr_fun right_inv
   right_inv := by
     suffices decompose.comp (DirectSum.coeAlgHom 𝒜) = AlgHom.id _ _ from AlgHom.congr_fun this
-    -- Porting note: was ext i x : 2
-    refine DirectSum.algHom_ext' _ _ fun i => ?_
-    ext x
+    ext i x : 2
     exact (decompose.congr_arg <| DirectSum.coeAlgHom_of _ _ _).trans (left_inv i x)
 #align graded_algebra.of_alg_hom GradedAlgebra.ofAlgHom
 
@@ -202,13 +195,31 @@ namespace DirectSum
 
 /-- If `A` is graded by `ι` with degree `i` component `𝒜 i`, then it is isomorphic as
 an algebra to a direct sum of components. -/
-@[simps!]
+-- Porting note: deleted [simps] and added the corresponding lemmas by hand
 def decomposeAlgEquiv : A ≃ₐ[R] ⨁ i, 𝒜 i :=
   AlgEquiv.symm
     { (decomposeAddEquiv 𝒜).symm with
-      map_mul' := (coeAlgHom 𝒜).map_mul
+      map_mul' := map_mul (coeAlgHom 𝒜)
       commutes' := (coeAlgHom 𝒜).commutes }
 #align direct_sum.decompose_alg_equiv DirectSum.decomposeAlgEquiv
+
+@[simp]
+lemma decomposeAlgEquiv_apply (a : A) :
+    decomposeAlgEquiv 𝒜 a = decompose 𝒜 a := rfl
+
+@[simp]
+lemma decomposeAlgEquiv_symm_apply (a : ⨁ i, 𝒜 i) :
+    (decomposeAlgEquiv 𝒜).symm a = (decompose 𝒜).symm a := rfl
+
+@[simp]
+lemma decompose_algebraMap (r : R) :
+    decompose 𝒜 (algebraMap R A r) = algebraMap R (⨁ i, 𝒜 i) r :=
+  (decomposeAlgEquiv 𝒜).commutes r
+
+@[simp]
+lemma decompose_symm_algebraMap (r : R) :
+    (decompose 𝒜).symm (algebraMap R (⨁ i, 𝒜 i) r) = algebraMap R A r :=
+  (decomposeAlgEquiv 𝒜).symm.commutes r
 
 end DirectSum
 
@@ -242,9 +253,7 @@ section CanonicalOrder
 open SetLike.GradedMonoid DirectSum
 
 variable [Semiring A] [DecidableEq ι]
-
-variable [CanonicallyOrderedAddMonoid ι]
-
+variable [CanonicallyOrderedAddCommMonoid ι]
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
 
 /-- If `A` is graded by a canonically ordered add monoid, then the projection map `x ↦ x₀` is a ring
@@ -265,22 +274,22 @@ def GradedRing.projZeroRingHom : A →+* A where
     rw [decompose_add]
     rfl
   map_mul' := by
-    refine' DirectSum.Decomposition.inductionOn 𝒜 (fun x => _) _ _
+    refine DirectSum.Decomposition.inductionOn 𝒜 (fun x => ?_) ?_ ?_
     · simp only [zero_mul, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
     · rintro i ⟨c, hc⟩
-      refine' DirectSum.Decomposition.inductionOn 𝒜 _ _ _
+      refine DirectSum.Decomposition.inductionOn 𝒜 ?_ ?_ ?_
       · simp only [mul_zero, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
       · rintro j ⟨c', hc'⟩
-        · simp only [Subtype.coe_mk]
-          by_cases h : i + j = 0
-          · rw [decompose_of_mem_same 𝒜
-                (show c * c' ∈ 𝒜 0 from h ▸ SetLike.GradedMul.mul_mem hc hc'),
-              decompose_of_mem_same 𝒜 (show c ∈ 𝒜 0 from (add_eq_zero_iff.mp h).1 ▸ hc),
-              decompose_of_mem_same 𝒜 (show c' ∈ 𝒜 0 from (add_eq_zero_iff.mp h).2 ▸ hc')]
-          · rw [decompose_of_mem_ne 𝒜 (SetLike.GradedMul.mul_mem hc hc') h]
-            cases' show i ≠ 0 ∨ j ≠ 0 by rwa [add_eq_zero_iff, not_and_or] at h with h' h'
-            · simp only [decompose_of_mem_ne 𝒜 hc h', zero_mul]
-            · simp only [decompose_of_mem_ne 𝒜 hc' h', mul_zero]
+        simp only [Subtype.coe_mk]
+        by_cases h : i + j = 0
+        · rw [decompose_of_mem_same 𝒜
+              (show c * c' ∈ 𝒜 0 from h ▸ SetLike.GradedMul.mul_mem hc hc'),
+            decompose_of_mem_same 𝒜 (show c ∈ 𝒜 0 from (add_eq_zero_iff.mp h).1 ▸ hc),
+            decompose_of_mem_same 𝒜 (show c' ∈ 𝒜 0 from (add_eq_zero_iff.mp h).2 ▸ hc')]
+        · rw [decompose_of_mem_ne 𝒜 (SetLike.GradedMul.mul_mem hc hc') h]
+          cases' show i ≠ 0 ∨ j ≠ 0 by rwa [add_eq_zero_iff, not_and_or] at h with h' h'
+          · simp only [decompose_of_mem_ne 𝒜 hc h', zero_mul]
+          · simp only [decompose_of_mem_ne 𝒜 hc' h', mul_zero]
       · intro _ _ hd he
         simp only at hd he -- Porting note: added
         simp only [mul_add, decompose_add, add_apply, AddMemClass.coe_add, hd, he]
@@ -288,6 +297,27 @@ def GradedRing.projZeroRingHom : A →+* A where
       simp only at ha hb -- Porting note: added
       simp only [add_mul, decompose_add, add_apply, AddMemClass.coe_add, ha, hb]
 #align graded_ring.proj_zero_ring_hom GradedRing.projZeroRingHom
+
+section GradeZero
+
+/-- The ring homomorphism from `A` to `𝒜 0` sending every `a : A` to `a₀`. -/
+def GradedRing.projZeroRingHom' : A →+* 𝒜 0 :=
+  ((GradedRing.projZeroRingHom 𝒜).codRestrict _ fun _x => SetLike.coe_mem _ :
+  A →+* SetLike.GradeZero.subsemiring 𝒜)
+
+@[simp] lemma GradedRing.coe_projZeroRingHom'_apply (a : A) :
+    (GradedRing.projZeroRingHom' 𝒜 a : A) = GradedRing.projZeroRingHom 𝒜 a := rfl
+
+@[simp] lemma GradedRing.projZeroRingHom'_apply_coe (a : 𝒜 0) :
+    GradedRing.projZeroRingHom' 𝒜 a = a := by
+  ext; simp only [coe_projZeroRingHom'_apply, projZeroRingHom_apply, decompose_coe, of_eq_same]
+
+/-- The ring homomorphism `GradedRing.projZeroRingHom' 𝒜` is surjective. -/
+lemma GradedRing.projZeroRingHom'_surjective :
+    Function.Surjective (GradedRing.projZeroRingHom' 𝒜) :=
+  Function.RightInverse.surjective (GradedRing.projZeroRingHom'_apply_coe 𝒜)
+
+end GradeZero
 
 variable {a b : A} {n i : ι}
 

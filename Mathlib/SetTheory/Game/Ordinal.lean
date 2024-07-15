@@ -39,7 +39,7 @@ noncomputable def toPGame : Ordinal.{u} → PGame.{u}
       have := Ordinal.typein_lt_self x
       (typein (· < ·) x).toPGame,
       PEmpty.elim⟩
-termination_by toPGame x => x
+termination_by x => x
 #align ordinal.to_pgame Ordinal.toPGame
 
 @[nolint unusedHavesSuffices]
@@ -100,10 +100,11 @@ theorem toPGame_moveLeft {o : Ordinal} (i) :
 /-- `0.toPGame` has the same moves as `0`. -/
 lemma zero_toPGame : toPGame 0 ≡ 0 :=
   identical_zero _
+#align ordinal.zero_to_pgame_relabelling Ordinal.zero_toPGame
 
-noncomputable instance uniqueOneToPgameLeftMoves : Unique (toPGame 1).LeftMoves :=
+noncomputable instance uniqueOneToPGameLeftMoves : Unique (toPGame 1).LeftMoves :=
   (Equiv.cast <| toPGame_leftMoves 1).unique
-#align ordinal.unique_one_to_pgame_left_moves Ordinal.uniqueOneToPgameLeftMoves
+#align ordinal.unique_one_to_pgame_left_moves Ordinal.uniqueOneToPGameLeftMoves
 
 @[simp]
 theorem one_toPGame_leftMoves_default_eq :
@@ -114,7 +115,7 @@ theorem one_toPGame_leftMoves_default_eq :
 @[simp]
 theorem to_leftMoves_one_toPGame_symm (i) :
     (@toLeftMovesToPGame 1).symm i = ⟨0, Set.mem_Iio.mpr zero_lt_one⟩ := by
-  simp
+  simp [eq_iff_true_of_subsingleton]
 #align ordinal.to_left_moves_one_to_pgame_symm Ordinal.to_leftMoves_one_toPGame_symm
 
 theorem one_toPGame_moveLeft (x) : (toPGame 1).moveLeft x = toPGame 0 := by simp
@@ -128,13 +129,14 @@ lemma one_toPGame : toPGame.{u} 1 ≡ (1 : PGame.{u}) := by
     exact Identical.congr_right zero_toPGame
   · unfold memᵣ
     simp
+#align ordinal.one_to_pgame_relabelling Ordinal.one_toPGame
 
 theorem toPGame_lf {a b : Ordinal} (h : a < b) : a.toPGame ⧏ b.toPGame := by
   convert moveLeft_lf (toLeftMovesToPGame ⟨a, h⟩); rw [toPGame_moveLeft]
 #align ordinal.to_pgame_lf Ordinal.toPGame_lf
 
 theorem toPGame_le {a b : Ordinal} (h : a ≤ b) : a.toPGame ≤ b.toPGame := by
-  refine' le_iff_forall_lf.2 ⟨fun i => _, isEmptyElim⟩
+  refine le_iff_forall_lf.2 ⟨fun i => ?_, isEmptyElim⟩
   rw [toPGame_moveLeft']
   exact toPGame_lf ((toLeftMovesToPGame_symm_lt i).trans_le h)
 #align ordinal.to_pgame_le Ordinal.toPGame_le
@@ -189,7 +191,7 @@ noncomputable def toPGameEmbedding : Ordinal.{u} ↪o PGame.{u} where
 /-- The sum of ordinals as games corresponds to natural addition of ordinals. -/
 theorem toPGame_add : ∀ a b : Ordinal.{u}, a.toPGame + b.toPGame ≈ (a ♯ b).toPGame
   | a, b => by
-    refine' ⟨le_of_forall_lf (fun i => _) isEmptyElim, le_of_forall_lf (fun i => _) isEmptyElim⟩
+    refine ⟨le_of_forall_lf (fun i => ?_) isEmptyElim, le_of_forall_lf (fun i => ?_) isEmptyElim⟩
     · apply leftMoves_add_cases i <;>
       intro i <;>
       let wf := toLeftMovesToPGame_symm_lt i <;>
@@ -206,7 +208,7 @@ theorem toPGame_add : ∀ a b : Ordinal.{u}, a.toPGame + b.toPGame ≈ (a ♯ b)
         rwa [toPGame_lf_iff]
       · apply add_lf_add_left
         rwa [toPGame_lf_iff]
-termination_by toPGame_add a b => (a, b)
+termination_by a b => (a, b)
 #align ordinal.to_pgame_add Ordinal.toPGame_add
 
 @[simp]

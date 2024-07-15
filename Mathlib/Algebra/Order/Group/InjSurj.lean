@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Basic
-import Mathlib.Algebra.Order.Group.Instances
 
 #align_import algebra.order.group.inj_surj from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 
@@ -23,9 +22,11 @@ def Function.Injective.orderedCommGroup [OrderedCommGroup α] {β : Type*} [One 
     [Div β] [Pow β ℕ] [Pow β ℤ] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : OrderedCommGroup β :=
-  { PartialOrder.lift f hf, hf.orderedCommMonoid f one mul npow,
-    hf.commGroup f one mul inv div npow zpow with }
+    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : OrderedCommGroup β where
+  toCommGroup := hf.commGroup f one mul inv div npow zpow
+  toPartialOrder := PartialOrder.lift f hf
+  __ := hf.orderedCommMonoid f one mul npow
+
 #align function.injective.ordered_comm_group Function.Injective.orderedCommGroup
 #align function.injective.ordered_add_comm_group Function.Injective.orderedAddCommGroup
 
@@ -37,8 +38,9 @@ def Function.Injective.linearOrderedCommGroup [LinearOrderedCommGroup α] {β : 
     (hf : Function.Injective f) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
-    (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
-    LinearOrderedCommGroup β :=
-  { LinearOrder.lift f hf hsup hinf, hf.orderedCommGroup f one mul inv div npow zpow with }
+    (sup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (inf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
+    LinearOrderedCommGroup β where
+  toOrderedCommGroup := hf.orderedCommGroup f one mul inv div npow zpow
+  __ := LinearOrder.lift f hf sup inf
 #align function.injective.linear_ordered_comm_group Function.Injective.linearOrderedCommGroup
 #align function.injective.linear_ordered_add_comm_group Function.Injective.linearOrderedAddCommGroup

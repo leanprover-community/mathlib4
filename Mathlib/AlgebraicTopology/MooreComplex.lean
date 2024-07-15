@@ -81,10 +81,10 @@ def objD : ∀ n : ℕ, (objX X (n + 1) : C) ⟶ (objX X n : C)
   | n + 1 => by
     -- The differential is `Subobject.arrow _ ≫ X.δ (0 : Fin (n+3))`,
     -- factored through the intersection of the kernels.
-    refine' factorThru _ (arrow _ ≫ X.δ (0 : Fin (n + 3))) _
+    refine factorThru _ (arrow _ ≫ X.δ (0 : Fin (n + 3))) ?_
     -- We now need to show that it factors!
     -- A morphism factors through an intersection of subobjects if it factors through each.
-    refine' (finset_inf_factors _).mpr fun i _ => _
+    refine (finset_inf_factors _).mpr fun i _ => ?_
     -- A morphism `f` factors through the kernel of `g` exactly if `f ≫ g = 0`.
     apply kernelSubobject_factors
     dsimp [objX]
@@ -132,7 +132,7 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
     (fun n => factorThru _ (arrow _ ≫ f.app (op (SimplexCategory.mk n))) (by
       cases n <;> dsimp
       · apply top_factors
-      · refine' (finset_inf_factors _).mpr fun i _ => kernelSubobject_factors _ _ _
+      · refine (finset_inf_factors _).mpr fun i _ => kernelSubobject_factors _ _ ?_
         erw [Category.assoc, ← f.naturality,
           ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ i (by simp)),
           Category.assoc, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]))
@@ -167,10 +167,10 @@ set_option linter.uppercaseLean3 false in
 
 variable {C}
 
--- porting note: removed @[simp] as it is not in normal form
+-- Porting note: removed @[simp] as it is not in normal form
 theorem normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :
     ((normalizedMooreComplex C).obj X).d (n + 1) n = NormalizedMooreComplex.objD X n :=
--- porting note: in mathlib, `apply ChainComplex.of_d` was enough
+-- Porting note: in mathlib, `apply ChainComplex.of_d` was enough
   ChainComplex.of_d _ _ (d_squared X) n
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.normalized_Moore_complex_obj_d AlgebraicTopology.normalizedMooreComplex_objD
