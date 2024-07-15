@@ -557,64 +557,6 @@ theorem ext_experiment (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) : ∀
   have H := inf_restrict'' T hT hC i γ
   simp only [ne_eq, H, Submodule.mem_top, implies_true]
 
-theorem indexed_matching (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) (μ : 𝕜) (μ : 𝕜) :
-   Submodule.map (Submodule.subtype (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)))
-      (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ)
-       = (eigenspace (T i) μ ⊓ ⨅ j, eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by sorry
-
-theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
-    ⨆ μ, Submodule.map (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype
-    (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) =
-    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by
-  simp only [iSup, sSup, ne_eq, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-  ext v
-  constructor
-  · intro h
-    simp only [Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
-      SetLike.mem_coe] at h
-    simp only [iInf, sInf, Set.mem_range, Subtype.exists, Set.iInter_exists, Submodule.mem_mk,
-      AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe]
-    intro K j hj HH
-    apply h
-    rw [← HH]
-    intro a w hw
-    simp only [iInf, sInf, Submodule.mem_map, Subtype.exists, Set.mem_range, Set.iInter_exists,
-      Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
-      SetLike.mem_coe] at hw
-    obtain ⟨a, ⟨ha, hb⟩⟩ := hw
-    rw [← hb.2]
-    exact ha (eigenspace (Subtype.restrict (fun x ↦ ¬i = x) T ⟨j, hj⟩) (γ ⟨j, hj⟩)) j hj rfl
-  · have B := inf_restrict'' T hT hC i γ
-    simp only [Submodule.mem_iInf, Subtype.forall, Submodule.mem_mk, AddSubmonoid.mem_mk,
-      AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe]
-    intro h F hH
-    have HH := ext_experiment T hT hC i γ
-
-
-    --have C : ↑v ∈ sSup {x | ∃ y, eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) y = x} := by sorry
-    sorry --must show that these eigenspaces exhaust...should be the symmetric operator exhaust
-         --result...probably need to rewrite the approach.
-         --the whole result may need revisiting...
-#exit
-
-theorem index_post_exhaust (i : n) [Nontrivial n] :
-    (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓ (⨅ (j : {x // i ≠ x}),
-    eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))))) = ⨆ (γ : {x // i ≠ x} → 𝕜),
-    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by
-  simp only [ne_eq, Submodule.orthogonal_eq_bot_iff]
-  conv =>
-   lhs
-   rhs
-   ext γ
-   rhs
-   ext μ
-   rw [index_convert T hC i]
-  conv =>
-   lhs
-   rhs
-   ext γ
-   rw [prelim_sub_exhaust T hT hC]
-
 @[simp]
 theorem ultra_silly_lemma (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
     (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) =
@@ -706,7 +648,95 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
       exact B
     exact h K A
 
-theorem simple(A : Prop) : A →  A := by simp only [imp_self]
+/-This is just index_convert, so we can probably remove later.-/
+theorem indexed_matching (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) (μ : 𝕜) :
+   Submodule.map (Submodule.subtype (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)))
+      (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ)
+       = (eigenspace (T i) μ ⊓ ⨅ j, eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by
+  rw [← index_convert T hC i μ fun j ↦ γ j]
+
+/-
+theorem Blaaaah (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) (μ : 𝕜) :
+      Submodule.map (Submodule.subtype (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)))
+      (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) =
+      Submodule.map ((⨅ (j: {x // i ≠ x}), (eigenspace (T ↑j) (γ j))).subtype)
+      (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) := by
+  rfl --rw [indexed_matching T hC i (fun j ↦ γ j) μ]
+ -/
+--Submodule.map (⨅ j, eigenspace (T ↑j) (γ j)).subtype (eigenspace ((T i).restrict ⋯) a)
+
+theorem Damnit (i : n) [h : Nontrivial n] : Nonempty {x | i ≠ x} := by
+   simp only [ne_eq, Set.coe_setOf, nonempty_subtype]
+   simp only [nontrivial_iff, ne_eq] at h
+   obtain ⟨k, l , hkl⟩ := h
+   by_contra h1
+   push_neg at *
+   have A := h1 k
+   have B := h1 l
+   rw [A] at B
+   contradiction
+
+theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // i ≠ x} → 𝕜) :
+    ⨆ μ, Submodule.map (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype
+    (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) =
+    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by
+  simp only [iSup, sSup, ne_eq, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+  ext v
+  constructor
+  · intro h
+    simp only [Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
+      SetLike.mem_coe] at h
+    simp only [iInf, sInf, Set.mem_range, Subtype.exists, Set.iInter_exists, Submodule.mem_mk,
+      AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe]
+    intro K j hj HH
+    apply h
+    rw [← HH]
+    intro a w hw
+    simp only [iInf, sInf, Submodule.mem_map, Subtype.exists, Set.mem_range, Set.iInter_exists,
+      Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
+      SetLike.mem_coe] at hw
+    obtain ⟨a, ⟨ha, hb⟩⟩ := hw
+    rw [← hb.2]
+    exact ha (eigenspace (Subtype.restrict (fun x ↦ ¬i = x) T ⟨j, hj⟩) (γ ⟨j, hj⟩)) j hj rfl
+  · have B := inf_restrict'' T hT hC i γ
+    simp only [Submodule.mem_iInf, Subtype.forall, Submodule.mem_mk, AddSubmonoid.mem_mk,
+      AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe]
+    intro h F hH
+    have hH1 : ∀ (a : 𝕜), Submodule.map (⨅ (j : {x // i ≠ x}) , eigenspace (T ↑j) (γ j)).subtype (eigenspace
+        ((T i).restrict ((invariance_iInf' T hC i γ))) a) ≤ F := by exact fun a ↦ hH a
+    have L : ∃ j : n, i ≠ j := by
+      have J := Damnit i
+      simp only [ne_eq, Set.coe_setOf, nonempty_subtype] at J
+      exact J
+    obtain ⟨j, hj⟩ := L
+    have LQ := h j hj
+
+
+
+
+    --have HH := ext_experiment T hT hC i γ
+    --have C : ↑v ∈ sSup {x | ∃ y, eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) y = x} := by sorry
+    sorry --must show that these eigenspaces exhaust...should be the symmetric operator exhaust
+         --result...probably need to rewrite the approach.
+         --the whole result may need revisiting...
+
+theorem index_post_exhaust (i : n) [Nontrivial n] :
+    (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓ (⨅ (j : {x // i ≠ x}),
+    eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))))) = ⨆ (γ : {x // i ≠ x} → 𝕜),
+    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by
+  simp only [ne_eq, Submodule.orthogonal_eq_bot_iff]
+  conv =>
+   lhs
+   rhs
+   ext γ
+   rhs
+   ext μ
+   rw [index_convert T hC i]
+  conv =>
+   lhs
+   rhs
+   ext γ
+   rw [prelim_sub_exhaust T hT hC]
 
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
