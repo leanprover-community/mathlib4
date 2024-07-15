@@ -275,7 +275,8 @@ instance (priority := 10) GroupWithZero.noZeroDivisors : NoZeroDivisors G₀ :=
 @[simp]
 theorem Units.mk0_mul (x y : G₀) (hxy) :
     Units.mk0 (x * y) hxy =
-      Units.mk0 x (mul_ne_zero_iff.mp hxy).1 * Units.mk0 y (mul_ne_zero_iff.mp hxy).2 := by
+      Units.mk0 x (mul_ne_zero_iff (M₀ := G₀).mp hxy).1 *
+        Units.mk0 y (mul_ne_zero_iff (M₀ := G₀).mp hxy).2 := by
   ext; rfl
 #align units.mk0_mul Units.mk0_mul
 

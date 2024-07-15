@@ -290,7 +290,7 @@ instance galgebra : DirectSum.GAlgebra R fun i => ⨂[R]^i M where
 #align tensor_power.galgebra TensorPower.galgebra
 
 theorem galgebra_toFun_def (r : R) :
-    @DirectSum.GAlgebra.toFun ℕ R (fun i => ⨂[R]^i M) _ _ _ _ _ _ _ r = algebraMap₀ r :=
+    DirectSum.GAlgebra.toFun (A := fun i => ⨂[R]^i M) r = algebraMap₀ r :=
   rfl
 #align tensor_power.galgebra_to_fun_def TensorPower.galgebra_toFun_def
 

@@ -203,16 +203,16 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
   | .isRat _i q n d p =>
     let _a ← synthInstanceQ q(LinearOrderedRing $α)
     assumeInstancesCommute
-    have p : Q(NormNum.IsRat $e $n $d) := p
+    have p : Q(@NormNum.IsRat _ StrictOrderedRing.toRing $e $n $d) := p
     if 0 < q then
       haveI' w : decide (0 < $n) =Q true := ⟨⟩
-      pure (.positive q(pos_of_isRat $p $w))
+      pure (.positive (q(pos_of_isRat $p $w) : Expr))
     else if q = 0 then -- should not be reachable, but just in case
       haveI' w : decide ($n = 0) =Q true := ⟨⟩
-      pure (.nonnegative q(nonneg_of_isRat $p $w))
+      pure (.nonnegative (q(nonneg_of_isRat $p $w) : Expr))
     else
       haveI' w : decide ($n < 0) =Q true := ⟨⟩
-      pure (.nonzero q(nz_of_isRat $p $w))
+      pure (.nonzero (q(nz_of_isRat $p $w) : Expr))
 
 /-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAddCommMonoid`. -/
 def positivityCanon (e : Q($α)) : MetaM (Strictness zα pα e) := do

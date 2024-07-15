@@ -223,7 +223,7 @@ namespace Orientation
 respect to an empty index type. (Note that these are only orientations of `M` of in the conventional
 mathematical sense if `M` is zero-dimensional.) -/
 theorem eq_or_eq_neg_of_isEmpty [IsEmpty ι] (o : Orientation R M ι) :
-    o = positiveOrientation ∨ o = -positiveOrientation := by
+    o = positiveOrientation ∨ o = -(positiveOrientation : Orientation R M ι) := by
   induction' o using Module.Ray.ind with x hx
   dsimp [positiveOrientation]
   simp only [ray_eq_iff, sameRay_neg_swap]

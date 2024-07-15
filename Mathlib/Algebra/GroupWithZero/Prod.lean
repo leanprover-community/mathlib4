@@ -46,8 +46,7 @@ instance instMonoidWithZero [MonoidWithZero M₀] [MonoidWithZero N₀] : Monoid
 
 instance instCommMonoidWithZero [CommMonoidWithZero M₀] [CommMonoidWithZero N₀] :
     CommMonoidWithZero (M₀ × N₀) where
-  zero_mul := by simp [Prod.mul_def]
-  mul_zero := by simp [Prod.mul_def]
+  mul_comm := mul_comm
 
 end Prod
 

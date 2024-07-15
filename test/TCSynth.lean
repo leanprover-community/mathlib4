@@ -40,7 +40,7 @@ section
 
 -- Initial issue: https://github.com/leanprover-community/mathlib4/issues/12227
 
-/-- info: NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring -/
+/-- info: NonAssocSemiring.toNonUnitalNonAssocSemiring -/
 #guard_msgs in
 variable {A : Type} [NormedRing A] [NormedAlgebra ℂ A] [StarRing A]
   [CstarRing A] [StarModule ℂ A] (x : A) in

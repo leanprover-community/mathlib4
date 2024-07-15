@@ -65,7 +65,7 @@ theorem not_a_field : maximalIdeal R ≠ ⊥ :=
 
 /-- A discrete valuation ring `R` is not a field. -/
 theorem not_isField : ¬IsField R :=
-  LocalRing.isField_iff_maximalIdeal_eq.not.mpr (not_a_field R)
+  LocalRing.isField_iff_maximalIdeal_eq (R := R).not.mpr (not_a_field R)
 #align discrete_valuation_ring.not_is_field DiscreteValuationRing.not_isField
 
 variable {R}
