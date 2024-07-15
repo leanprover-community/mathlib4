@@ -593,10 +593,7 @@ lemma onag_1_10_iii_right' {l r} (L : l → PGame) (R : r → PGame)
 /-! ### The main lemma -/
 
 lemma onag_1_10 :
-    (∀ i, x * ((x.inv').moveLeft i) < 1) ∧ (∀ j, 1 < x * ((x.inv').moveRight j)) ∧ -- (i)
     (x.inv').Numeric ∧ -- (ii)
-    (∀ i, ((normalization x) * x.inv').moveLeft i < 1) ∧ -- (iii) left
-    (∀ j, 1 < ((normalization x) * x.inv').moveRight j) ∧ --- (iii) right
     x * x.inv' ≈ 1 := by -- (iv)
   induction x
   case mk xl xr xL xR ih_xl ih_xr =>
@@ -610,21 +607,21 @@ lemma onag_1_10 :
     have h3 : ∀ (i : xl), 0 < xL i → (xL i).inv'.Numeric := by
       intros i xlpos
       specialize ih_xl i xlpos
-      exact ih_xl.2.2.1
+      exact ih_xl.1
     have h4 : ∀ (j : xr), (xR j).inv'.Numeric := by
       intro i
       specialize ih_xr i
-      exact (ih_xr (right_pos_of_pos x_num x_pos i)).2.2.1
+      exact (ih_xr (right_pos_of_pos x_num x_pos i)).1
     have inv_l : ∀ (i : { i // 0 < xL i }),
         mk (xL i) (xl_num _) * mk (xL ↑i).inv' (h3 i i.2) = 1 := by
       intro i
       specialize ih_xl i i.2
-      have := ih_xl.2.2.2.2.2
+      have := ih_xl.2
       simpa [← mk_mul, one_def, mk_eq_mk]
     have inv_r : ∀ (j : xr), mk (xR j) (xr_num _) * mk (xR j).inv' (h4 j) = 1 := by
       intro i
       specialize ih_xr i (right_pos_of_pos x_num x_pos i)
-      have := ih_xr.2.2.2.2.2
+      have := ih_xr.2
       simpa [← mk_mul, one_def, mk_eq_mk]
 
     have onag_1_10_i :
@@ -760,12 +757,11 @@ lemma onag_1_10 :
         exact this
       rwa [pos_num_eq_normalization x_num x_pos]
 
-    exact ⟨onag_1_10_i.1, onag_1_10_i.2, onag_1_10_ii, onag_1_10_iii_left,
-      onag_1_10_iii_right, onag_1_10_iv⟩
+    exact ⟨onag_1_10_ii, onag_1_10_iv⟩
 
-lemma onag_1_10_ii : (x.inv').Numeric := (onag_1_10 x_num x_pos).2.2.1
+lemma onag_1_10_ii : (x.inv').Numeric := (onag_1_10 x_num x_pos).1
 
-lemma onag_1_10_iv : x * x.inv' ≈ 1 := (onag_1_10 x_num x_pos).2.2.2.2.2
+lemma onag_1_10_iv : x * x.inv' ≈ 1 := (onag_1_10 x_num x_pos).2
 
 end Positive
 
