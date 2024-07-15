@@ -707,15 +707,16 @@ theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // i ≠ x} → 𝕜)
       have J := Damnit i
       simp only [ne_eq, Set.coe_setOf, nonempty_subtype] at J
       exact J
-    obtain ⟨j, hj⟩ := L
-    have LQ := h j hj
+    obtain ⟨_, _⟩ := L
     simp only [ne_eq, ultra_silly_lemma, Submodule.map_iSup, Submodule.map_top,
       Submodule.range_subtype] at B
     have RR : (⨆ μ : 𝕜, Submodule.map (⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype
         (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ)) ≤ F := by
       simp only [ne_eq, ultra_silly_lemma, iSup_le_iff, hH1, implies_true]
     rw [B] at RR
-    sorry
+    have Final : v ∈ ⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j) := (Submodule.mem_iInf
+      fun (i_1 : {x // i ≠ x}) ↦ eigenspace (T ↑i_1) (γ i_1)).mpr fun i_1 ↦ h (↑i_1) i_1.property
+    exact RR Final
 
 theorem index_post_exhaust (i : n) [Nontrivial n] :
     (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓ (⨅ (j : {x // i ≠ x}),
