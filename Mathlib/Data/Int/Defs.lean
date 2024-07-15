@@ -81,6 +81,9 @@ protected lemma one_nonneg : 0 ≤ (1 : ℤ) := Int.le_of_lt Int.zero_lt_one
 lemma zero_le_ofNat (n : ℕ) : 0 ≤ ofNat n := @le.intro _ _ n (by rw [Int.zero_add]; rfl)
 #align int.zero_le_of_nat Int.zero_le_ofNat
 
+protected theorem neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 h
+#align int.neg_inj Int.neg_eq_neg
+
 -- We want to use these lemmas earlier than the lemmas simp can prove them with
 @[simp, nolint simpNF]
 protected lemma neg_pos : 0 < -a ↔ a < 0 := ⟨Int.neg_of_neg_pos, Int.neg_pos_of_neg⟩
@@ -102,6 +105,15 @@ protected lemma sub_pos : 0 < a - b ↔ b < a := ⟨Int.lt_of_sub_pos, Int.sub_p
 protected lemma sub_nonneg : 0 ≤ a - b ↔ b ≤ a := ⟨Int.le_of_sub_nonneg, Int.sub_nonneg_of_le⟩
 
 instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
+
+protected theorem ofNat_add_out (m n : ℕ) : ↑m + ↑n = (↑(m + n) : ℤ) := rfl
+#align int.coe_nat_add_out Int.ofNat_add_out
+
+protected theorem ofNat_mul_out (m n : ℕ) : ↑m * ↑n = (↑(m * n) : ℤ) := rfl
+#align int.coe_nat_mul_out Int.ofNat_mul_out
+
+protected theorem ofNat_add_one_out (n : ℕ) : ↑n + (1 : ℤ) = ↑(succ n) := rfl
+#align int.coe_nat_add_one_out Int.ofNat_add_one_out
 
 @[simp] lemma ofNat_injective : Function.Injective ofNat := @Int.ofNat.inj
 
@@ -832,6 +844,10 @@ theorem toNat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - 
 lemma toNat_lt' {n : ℕ} (hn : n ≠ 0) : m.toNat < n ↔ m < n := by
   rw [← toNat_lt_toNat, toNat_natCast]; omega
 #align int.to_nat_lt Int.toNat_lt'
+
+/-- The modulus of an integer by another as a natural. Uses the E-rounding convention. -/
+def natMod (m n : ℤ) : ℕ := (m % n).toNat
+#align int.nat_mod Int.natMod
 
 lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
   (toNat_lt' hn).2 <| emod_lt_of_pos _ <| by omega
