@@ -48,22 +48,10 @@ instance instStarOrderedRing : StarOrderedRing (Unitization ℂ A) := CstarRing.
 lemma inr_le_iff {a b : A} (ha : IsSelfAdjoint a := by cfc_tac)
     (hb : IsSelfAdjoint b := by cfc_tac) :
     (a : Unitization ℂ A) ≤ (b : Unitization ℂ A) ↔ a ≤ b := by
-  have hsub : (b : Unitization ℂ A) - a = .inr (b - a) := (inr_sub ℂ b a).symm
-  refine ⟨fun h => ?mp, fun h => ?mpr⟩
-  case mp =>
-    rw [← sub_nonneg] at h ⊢
-    rw [StarOrderedRing.nonneg_iff_spectrum_nonneg (R := ℝ) _] at h
-    rw [StarOrderedRing.nonneg_iff_quasispectrum_nonneg (R := ℝ) _]
-    rw [hsub] at h
-    intro x hx
-    simp only [Unitization.quasispectrum_eq_spectrum_inr' ℝ ℂ (b - a)] at hx
-    exact h x hx
-  case mpr =>
-    rw [← sub_nonneg] at h ⊢
-    rw [StarOrderedRing.nonneg_iff_spectrum_nonneg (R := ℝ) _]
-    rw [StarOrderedRing.nonneg_iff_quasispectrum_nonneg (R := ℝ) _] at h
-    rw [hsub]
-    simpa only [Unitization.quasispectrum_eq_spectrum_inr' ℝ ℂ (b - a)] using h
+  -- TODO: prove the more general result for star monomorphisms and use it here.
+  rw [← sub_nonneg, ← sub_nonneg (a := b), StarOrderedRing.nonneg_iff_spectrum_nonneg (R := ℝ) _,
+    ← inr_sub ℂ b a, ← Unitization.quasispectrum_eq_spectrum_inr' ℝ ℂ]
+  exact StarOrderedRing.nonneg_iff_quasispectrum_nonneg _ |>.symm
 
 @[simp, norm_cast]
 lemma inr_nonneg_iff {a : A} : 0 ≤ (a : Unitization ℂ A) ↔ 0 ≤ a := by
