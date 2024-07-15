@@ -22,6 +22,10 @@ and time `n`.
 
 ## Tags
 entropy
+
+## TODO
+In the context of (pseudo-e)metric spaces, relate the usual definition of dynamical balls with
+these dynamical uniformities
 -/
 
 namespace DynamicalUniformity
