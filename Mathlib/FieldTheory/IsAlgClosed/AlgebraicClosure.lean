@@ -211,8 +211,7 @@ private theorem toStepOfLE'.succ (m n : ℕ) (h : m ≤ n) :
     toStepOfLE' k m (Nat.succ n) (h.trans n.le_succ) =
     (toStepSucc k n) ∘ toStepOfLE' k m n h := by
   ext x
-  convert Nat.leRecOn_succ h x
-  exact h.trans n.le_succ
+  exact Nat.leRecOn_succ h x
 
 /-- The canonical ring homomorphism to a step with a greater index. -/
 def toStepOfLE (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n where

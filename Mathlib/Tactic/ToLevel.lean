@@ -16,8 +16,6 @@ override the ones from Lean 4 core.
 
 -/
 
-set_option autoImplicit true
-
 namespace Lean
 
 /-- A class to create `Level` expressions that denote particular universe levels in Lean.
@@ -35,6 +33,8 @@ attribute [pp_with_univ] toLevel
 
 instance : ToLevel.{0} where
   toLevel := .zero
+
+universe u v
 
 instance [ToLevel.{u}] : ToLevel.{u+1} where
   toLevel := .succ toLevel.{u}

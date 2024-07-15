@@ -297,16 +297,14 @@ attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 @[simps pt]
 def BinaryFan.mk {P : C} (π₁ : P ⟶ X) (π₂ : P ⟶ Y) : BinaryFan X Y where
   pt := P
-  π :=
-    { app := fun ⟨j⟩ => by cases j <;> simpa }
+  π := { app := fun | { as := j } => match j with | left => π₁ | right => π₂ }
 #align category_theory.limits.binary_fan.mk CategoryTheory.Limits.BinaryFan.mk
 
 /-- A binary cofan with vertex `P` consists of the two inclusions `ι₁ : X ⟶ P` and `ι₂ : Y ⟶ P`. -/
 @[simps pt]
 def BinaryCofan.mk {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : BinaryCofan X Y where
   pt := P
-  ι :=
-    { app := fun ⟨j⟩ => by cases j <;> simpa }
+  ι := { app := fun | { as := j } => match j with | left => ι₁ | right => ι₂ }
 #align category_theory.limits.binary_cofan.mk CategoryTheory.Limits.BinaryCofan.mk
 
 end
