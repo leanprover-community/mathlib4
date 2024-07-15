@@ -4395,6 +4395,7 @@ import Mathlib.Topology.MetricSpace.Perfect
 import Mathlib.Topology.MetricSpace.PiNat
 import Mathlib.Topology.MetricSpace.Polish
 import Mathlib.Topology.MetricSpace.ProperSpace
+import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 import Mathlib.Topology.MetricSpace.Pseudo.Constructions
 import Mathlib.Topology.MetricSpace.Pseudo.Defs
 import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
