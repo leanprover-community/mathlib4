@@ -76,6 +76,7 @@ theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {a : ℝ≥0} :
   embedding_coe.tendsto_nhds_iff.symm
 #align ennreal.tendsto_coe ENNReal.tendsto_coe
 
+@[fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ≥0∞) :=
   embedding_coe.continuous
 #align ennreal.continuous_coe ENNReal.continuous_coe
@@ -632,21 +633,30 @@ theorem iSup_add_iSup {ι : Sort*} {f g : ι → ℝ≥0∞} (h : ∀ i j, ∃ k
     exact le_iSup_of_le k hk
 #align ennreal.supr_add_supr ENNReal.iSup_add_iSup
 
-theorem iSup_add_iSup_of_monotone {ι : Type*} [SemilatticeSup ι] {f g : ι → ℝ≥0∞} (hf : Monotone f)
-    (hg : Monotone g) : iSup f + iSup g = ⨆ a, f a + g a :=
-  iSup_add_iSup fun i j => ⟨i ⊔ j, add_le_add (hf <| le_sup_left) (hg <| le_sup_right)⟩
+theorem iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
+    {f g : ι → ℝ≥0∞} (hf : Monotone f) (hg : Monotone g) : iSup f + iSup g = ⨆ a, f a + g a :=
+  iSup_add_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules
 #align ennreal.supr_add_supr_of_monotone ENNReal.iSup_add_iSup_of_monotone
 
-theorem finset_sum_iSup_nat {α} {ι} [SemilatticeSup ι] {s : Finset α} {f : α → ι → ℝ≥0∞}
-    (hf : ∀ a, Monotone (f a)) : (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n := by
-  refine Finset.induction_on s ?_ ?_
-  · simp
-  · intro a s has ih
-    simp only [Finset.sum_insert has]
-    rw [ih, iSup_add_iSup_of_monotone (hf a)]
-    intro i j h
-    exact Finset.sum_le_sum fun a _ => hf a h
-#align ennreal.finset_sum_supr_nat ENNReal.finset_sum_iSup_nat
+theorem finsetSum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℝ≥0∞}
+    (hf : ∀ i j, ∃ k, ∀ a, f a i ≤ f a k ∧ f a j ≤ f a k) :
+    ∑ a ∈ s, ⨆ i, f a i = ⨆ i, ∑ a ∈ s, f a i := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha ihs =>
+    simp_rw [Finset.sum_cons, ihs]
+    refine iSup_add_iSup fun i j ↦ (hf i j).imp fun k hk ↦ ?_
+    gcongr
+    exacts [(hk a).1, (hk _).2]
+
+theorem finsetSum_iSup_of_monotone {α} {ι} [Preorder ι] [IsDirected ι (· ≤ ·)]
+    {s : Finset α} {f : α → ι → ℝ≥0∞} (hf : ∀ a, Monotone (f a)) :
+    (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n :=
+  finsetSum_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ a ↦ ⟨hf a hi, hf a hj⟩
+#align ennreal.finset_sum_supr_nat ENNReal.finsetSum_iSup_of_monotone
+
+@[deprecated (since := "2024-07-14")]
+alias finset_sum_iSup_nat := finsetSum_iSup_of_monotone
 
 theorem mul_iSup {ι : Sort*} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : a * iSup f = ⨆ i, a * f i := by
   by_cases hf : ∀ i, f i = 0
@@ -1662,13 +1672,13 @@ lemma liminf_sub_const (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : �
     (fun _ _ h ↦ tsub_le_tsub_right h c) (continuous_sub_right c).continuousAt).symm
 
 lemma limsup_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞)
-    {c : ℝ≥0∞} (c_ne_top : c ≠ ∞):
+    {c : ℝ≥0∞} (c_ne_top : c ≠ ∞) :
     Filter.limsup (fun i ↦ c - f i) F = c - Filter.liminf f F :=
   (Antitone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm
 
 lemma liminf_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞)
-    {c : ℝ≥0∞} (c_ne_top : c ≠ ∞):
+    {c : ℝ≥0∞} (c_ne_top : c ≠ ∞) :
     Filter.liminf (fun i ↦ c - f i) F = c - Filter.limsup f F :=
   (Antitone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm

@@ -60,10 +60,12 @@ lemma exists_set_linearIndependent :
   HasRankNullity.exists_set_linearIndependent M
 
 variable (R) in
-instance (priority := 100) : Nontrivial R := by
+theorem nontrivial_of_hasRankNullity : Nontrivial R := by
   refine (subsingleton_or_nontrivial R).resolve_left fun H ↦ ?_
   have := rank_quotient_add_rank (R := R) (M := PUnit) ⊥
   simp [one_add_one_eq_two] at this
+
+attribute [local instance] nontrivial_of_hasRankNullity
 
 theorem lift_rank_range_add_rank_ker (f : M →ₗ[R] M') :
     lift.{u} (Module.rank R (LinearMap.range f)) + lift.{v} (Module.rank R (LinearMap.ker f)) =
