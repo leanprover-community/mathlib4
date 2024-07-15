@@ -41,16 +41,16 @@ def instAddMonoidWithOneNat : AddMonoidWithOne ℕ := inferInstance
 def instAddMonoidWithOne {α : Type u} [Ring α] : AddMonoidWithOne α := inferInstance
 
 /-- Helper function to synthesize a typed `AddMonoidWithOne α` expression. -/
-def inferAddMonoidWithOne {u : Level} (α : Q(Type u)) : MetaM Q(AddMonoidWithOne $α) :=
+def inferAddMonoidWithOne (α : Q(Type u)) : MetaM Q(AddMonoidWithOne $α) :=
   return ← synthInstanceQ (q(AddMonoidWithOne $α) : Q(Type u)) <|>
     throwError "not an AddMonoidWithOne"
 
 /-- Helper function to synthesize a typed `Semiring α` expression. -/
-def inferSemiring {u : Level} (α : Q(Type u)) : MetaM Q(Semiring $α) :=
+def inferSemiring (α : Q(Type u)) : MetaM Q(Semiring $α) :=
   return ← synthInstanceQ (q(Semiring $α) : Q(Type u)) <|> throwError "not a semiring"
 
 /-- Helper function to synthesize a typed `Ring α` expression. -/
-def inferRing {u : Level} (α : Q(Type u)) : MetaM Q(Ring $α) :=
+def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
   return ← synthInstanceQ (q(Ring $α) : Q(Type u)) <|> throwError "not a ring"
 
 /--
@@ -98,7 +98,7 @@ This function is performance-critical, as many higher level tactics have to cons
 So rather than using typeclass search we hardcode the (relatively small) set of solutions
 to the typeclass problem.
 -/
-def mkOfNat {u : Level} (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
+def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
     MetaM ((a' : Q($α)) × Q($lit = $a')) := do
   if α.isConstOf ``Nat then
     let a' : Q(ℕ) := q(OfNat.ofNat $lit : ℕ)
@@ -252,8 +252,6 @@ inductive Result' where
   /-- Untyped version of `Result.isRat`. -/
   | isRat (inst : Expr) (q : Rat) (n d proof : Expr)
   deriving Inhabited
-
-variable {u : Level}
 
 section
 set_option linter.unusedVariables false
