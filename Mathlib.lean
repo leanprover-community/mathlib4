@@ -2730,7 +2730,6 @@ import Mathlib.Init.Data.Quot
 import Mathlib.Init.Data.Rat.Basic
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Init.Data.Sigma.Lex
-import Mathlib.Logic.Function.Defs
 import Mathlib.Init.Logic
 import Mathlib.Init.Meta.WellFoundedTactics
 import Mathlib.Init.Order.Defs
@@ -2982,9 +2981,11 @@ import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Function.CompTypeclasses
 import Mathlib.Logic.Function.Conjugate
+import Mathlib.Logic.Function.Defs
 import Mathlib.Logic.Function.FromTypes
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Logic.Function.OfArity
+import Mathlib.Logic.Function.ULift
 import Mathlib.Logic.Godel.GodelBetaFunction
 import Mathlib.Logic.Hydra
 import Mathlib.Logic.IsEmpty
