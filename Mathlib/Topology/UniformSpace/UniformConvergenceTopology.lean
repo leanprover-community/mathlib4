@@ -6,6 +6,7 @@ Authors: Anatole Dedecker
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.Equiv
+import Mathlib.Topology.RestrictGenTopology
 
 #align_import topology.uniform_space.uniform_convergence_topology from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
@@ -785,7 +786,7 @@ protected theorem uniformity_eq_of_basis {ι : Sort*} {p : ι → Prop} {V : ι 
   simp_rw [iInf_uniformity, uniformity_comap,
     (UniformFun.hasBasis_uniformity_of_basis _ _ h).eq_biInf, comap_iInf, comap_principal,
     Function.comp_apply, UniformFun.gen, Subtype.forall, UniformOnFun.gen, preimage_setOf_eq,
-    Prod.map_apply, Function.comp_apply, UniformFun.toFun_ofFun, restrict_apply]
+    Prod.map_fst, Prod.map_snd, Function.comp_apply, UniformFun.toFun_ofFun, restrict_apply]
 
 protected theorem uniformity_eq : 𝓤 (α →ᵤ[𝔖] β) = ⨅ s ∈ 𝔖, ⨅ V ∈ 𝓤 β, 𝓟 (UniformOnFun.gen 𝔖 s V) :=
   UniformOnFun.uniformity_eq_of_basis _ _ (𝓤 β).basis_sets
@@ -859,6 +860,10 @@ theorem uniformContinuous_eval_of_mem_sUnion {x : α} (hx : x ∈ ⋃₀ 𝔖) :
   uniformContinuous_eval_of_mem _ _ hxs hs
 
 variable {β} {𝔖}
+
+theorem uniformContinuous_eval (h : ⋃₀ 𝔖 = univ) (x : α) :
+    UniformContinuous ((Function.eval x : (α → β) → β) ∘ toFun 𝔖) :=
+  uniformContinuous_eval_of_mem_sUnion _ _ <| h.symm ▸ mem_univ _
 
 /-- If `u` is a family of uniform structures on `γ`, then
 `𝒱(α, γ, 𝔖, (⨅ i, u i)) = ⨅ i, 𝒱(α, γ, 𝔖, u i)`. -/
@@ -989,10 +994,29 @@ that of pointwise convergence. -/
 protected theorem uniformContinuous_toFun (h : ⋃₀ 𝔖 = univ) :
     UniformContinuous (toFun 𝔖 : (α →ᵤ[𝔖] β) → α → β) := by
   rw [uniformContinuous_pi]
-  intro x
-  obtain ⟨s : Set α, hs : s ∈ 𝔖, hxs : x ∈ s⟩ := sUnion_eq_univ_iff.mp h x
-  exact uniformContinuous_eval_of_mem β 𝔖 hxs hs
+  exact uniformContinuous_eval h
 #align uniform_on_fun.uniform_continuous_to_fun UniformOnFun.uniformContinuous_toFun
+
+/-- If `f : α →ᵤ[𝔖] β` is continuous at `x` and `x` admits a neighbourhood `V ∈ 𝔖`,
+then evaluation of `g : α →ᵤ[𝔖] β` at `y : α` is continuous in `(g, y)` at `(f, x)`. -/
+protected theorem continuousAt_eval₂ [TopologicalSpace α] {f : α →ᵤ[𝔖] β} {x : α}
+    (h𝔖 : ∃ V ∈ 𝔖, V ∈ 𝓝 x) (hc : ContinuousAt (toFun 𝔖 f) x) :
+    ContinuousAt (fun fx : (α →ᵤ[𝔖] β) × α ↦ toFun 𝔖 fx.1 fx.2) (f, x) := by
+  rw [ContinuousAt, nhds_eq_comap_uniformity, tendsto_comap_iff, ← lift'_comp_uniformity,
+    tendsto_lift']
+  intro U hU
+  rcases h𝔖 with ⟨V, hV, hVx⟩
+  filter_upwards [prod_mem_nhds (UniformOnFun.gen_mem_nhds _ _ _ hV hU)
+    (inter_mem hVx <| hc <| UniformSpace.ball_mem_nhds _ hU)]
+    with ⟨g, y⟩ ⟨hg, hyV, hy⟩ using ⟨toFun 𝔖 f y, hy, hg y hyV⟩
+
+/-- If each point of `α` admits a neighbourhood `V ∈ 𝔖`,
+then the evaluation of `f : α →ᵤ[𝔖] β` at `x : α` is continuous in `(f, x)`
+on the set of `(f, x)` such that `f` is continuous at `x`. -/
+protected theorem continuousOn_eval₂ [TopologicalSpace α] (h𝔖 : ∀ x, ∃ V ∈ 𝔖, V ∈ 𝓝 x) :
+    ContinuousOn (fun fx : (α →ᵤ[𝔖] β) × α ↦ toFun 𝔖 fx.1 fx.2)
+      {fx | ContinuousAt (toFun 𝔖 fx.1) fx.2} := fun (_f, x) hc ↦
+  (UniformOnFun.continuousAt_eval₂ (h𝔖 x) hc).continuousWithinAt
 
 /-- Convergence in the topology of `𝔖`-convergence means uniform convergence on `S` (in the sense
 of `TendstoUniformlyOn`) for all `S ∈ 𝔖`. -/
@@ -1058,7 +1082,7 @@ protected def uniformEquivProdArrow [UniformSpace γ] :
 variable (𝔖) (δ : ι → Type*) [∀ i, UniformSpace (δ i)] in
 /-- The natural bijection between `α → Π i, δ i` and `Π i, α → δ i`, upgraded to a uniform
 isomorphism between `α →ᵤ[𝔖] (Π i, δ i)` and `Π i, α →ᵤ[𝔖] δ i`. -/
-protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((i:ι) → α →ᵤ[𝔖] δ i) :=
+protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i : ι) → δ i)) ≃ᵤ ((i : ι) → α →ᵤ[𝔖] δ i) :=
   -- Denote `φ` this bijection. We want to show that
   -- `comap φ (Π i, 𝒱(α, δ i, 𝔖, uδ i)) = 𝒱(α, (Π i, δ i), 𝔖, (Π i, uδ i))`.
   -- But `Π i, uδ i` is defined as `⨅ i, comap (eval i) (uδ i)`, so we just have to apply
@@ -1066,7 +1090,7 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((
   -- which leaves us to check that some square commutes.
   -- We could also deduce this from `UniformFun.uniformEquivPiComm`, but it turns out
   -- to be more annoying.
-  @Equiv.toUniformEquivOfUniformInducing (α →ᵤ[𝔖] ((i:ι) → δ i)) ((i:ι) → α →ᵤ[𝔖] δ i)
+  @Equiv.toUniformEquivOfUniformInducing (α →ᵤ[𝔖] ((i : ι) → δ i)) ((i : ι) → α →ᵤ[𝔖] δ i)
       _ _ (Equiv.piComm _) <| by
     constructor
     change comap (Prod.map Function.swap Function.swap) _ = _
@@ -1084,15 +1108,21 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((
 
 Then the set of continuous functions is closed
 in the topology of uniform convergence on the sets of `𝔖`. -/
+theorem isClosed_setOf_continuous [TopologicalSpace α] (h : RestrictGenTopology 𝔖) :
+    IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} := by
+  refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ h.continuous_iff.2 fun s hs ↦ ?_
+  rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf
+  exact (huf s hs).continuousOn <| hu fun _ ↦ Continuous.continuousOn
+
+/-- Suppose that the topology on `α` is defined by its restrictions to the sets of `𝔖`.
+
+Then the set of continuous functions is closed
+in the topology of uniform convergence on the sets of `𝔖`. -/
+@[deprecated isClosed_setOf_continuous (since := "2024-06-29")]
 theorem isClosed_setOf_continuous_of_le [t : TopologicalSpace α]
     (h : t ≤ ⨆ s ∈ 𝔖, .coinduced (Subtype.val : s → α) inferInstance) :
-    IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} := by
-  refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ ?_
-  rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf
-  have hcont : ∀ s ∈ 𝔖, ContinuousOn f s := fun s hs ↦
-    (huf s hs).continuousOn <| hu fun _ ↦ Continuous.continuousOn
-  refine continuous_le_dom h ?_
-  simpa only [continuous_iSup_dom, continuous_coinduced_dom] using fun s hs ↦ (hcont s hs).restrict
+    IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} :=
+  isClosed_setOf_continuous ⟨fun u hu ↦ h _ <| by simpa only [isOpen_iSup_iff, isOpen_coinduced]⟩
 
 variable (𝔖) in
 theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} (φ₁ : δ₁ → α) (φ₂ : δ₂ → α)

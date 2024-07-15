@@ -5,7 +5,7 @@ Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
 
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Field.Defs
 import Mathlib.RingTheory.OreLocalization.Basic
 
@@ -16,7 +16,7 @@ import Mathlib.RingTheory.OreLocalization.Basic
 # Module and Ring instances of Ore Localizations
 
 The `Monoid` and `DistribMulAction` instances and additive versions are provided in
-`RingTheory/OreLocalization/Basic.lean`.
+`Mathlib/RingTheory/OreLocalization/Basic.lean`.
 
 -/
 
@@ -86,9 +86,8 @@ theorem right_distrib (x y z : R[S⁻¹]) : (x + y) * z = x * z + y * z :=
 #align ore_localization.right_distrib OreLocalization.right_distrib
 
 instance : Semiring R[S⁻¹] where
-  __ := inferInstanceAs (Monoid (R[S⁻¹]))
-  zero_mul := OreLocalization.zero_mul
-  mul_zero := OreLocalization.mul_zero
+  __ := inferInstanceAs (MonoidWithZero (R[S⁻¹]))
+  __ := inferInstanceAs (AddCommMonoid (R[S⁻¹]))
   left_distrib := OreLocalization.left_distrib
   right_distrib := right_distrib
 
@@ -97,6 +96,38 @@ variable {X : Type*} [AddCommMonoid X] [Module R X]
 instance : Module R[S⁻¹] X[S⁻¹] where
   add_smul := OreLocalization.add_smul
   zero_smul := OreLocalization.zero_smul
+
+instance {R₀} [Semiring R₀] [Module R₀ X] [Module R₀ R]
+    [IsScalarTower R₀ R X] [IsScalarTower R₀ R R] :
+    Module R₀ X[S⁻¹] where
+  add_smul r s x := by simp only [← smul_one_oreDiv_one_smul, add_smul, ← add_oreDiv]
+  zero_smul x := by rw [← smul_one_oreDiv_one_smul, zero_smul, zero_oreDiv, zero_smul]
+
+@[simp]
+lemma nsmul_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
+    letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
+    HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
+  letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
+  exact congr($(AddCommMonoid.natModule.unique.2 inst).smul n x)
+
+/-- The ring homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the fraction `r /ₒ 1`. -/
+@[simps!]
+def numeratorRingHom : R →+* R[S⁻¹] where
+  __ := numeratorHom
+  map_zero' := by with_unfolding_all exact OreLocalization.zero_def
+  map_add' _ _ := add_oreDiv.symm
+
+instance {R₀} [CommSemiring R₀] [Algebra R₀ R] : Algebra R₀ R[S⁻¹] where
+  __ := inferInstanceAs (Module R₀ R[S⁻¹])
+  __ := numeratorRingHom.comp (algebraMap R₀ R)
+  commutes' r x := by
+    induction' x using OreLocalization.ind with r₁ s₁
+    dsimp
+    rw [mul_div_one, oreDiv_mul_char _ _ _ _ (algebraMap R₀ R r) s₁ (Algebra.commutes _ _).symm,
+      Algebra.commutes, mul_one]
+  smul_def' r x := by
+    dsimp
+    rw [Algebra.algebraMap_eq_smul_one, ← smul_eq_mul, smul_one_oreDiv_one_smul]
 
 section UMP
 
@@ -108,19 +139,13 @@ variable (hf : ∀ s : S, f s = fS s)
 units of `T`, to a ring homomorphism `R[S⁻¹] →+* T`. This extends the construction on
 monoids. -/
 def universalHom : R[S⁻¹] →+* T :=
-  {
-    universalMulHom f.toMonoidHom fS
-      hf with
+  { universalMulHom f.toMonoidHom fS hf with
     map_zero' := by
-      -- Porting note: `change` required because of new `Coe`
-      change (universalMulHom f.toMonoidHom fS hf : R[S⁻¹] → T) 0 = 0
+      simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe]
       rw [OreLocalization.zero_def, universalMulHom_apply]
       simp
     map_add' := fun x y => by
-      -- Porting note: `change` required because of new `Coe`
-      change (universalMulHom f.toMonoidHom fS hf : R[S⁻¹] → T) (x + y)
-        = (universalMulHom f.toMonoidHom fS hf : R[S⁻¹] → T) x
-        + (universalMulHom f.toMonoidHom fS hf : R[S⁻¹] → T) y
+      simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe]
       induction' x with r₁ s₁
       induction' y with r₂ s₂
       rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨r₃, s₃, h₃, h₃'⟩
@@ -162,10 +187,18 @@ end Semiring
 section Ring
 
 variable {R : Type*} [Ring R] {S : Submonoid R} [OreSet S]
+variable {X : Type*} [AddCommGroup X] [Module R X]
 
 instance : Ring R[S⁻¹] where
   __ := inferInstanceAs (Semiring R[S⁻¹])
   __ := inferInstanceAs (AddGroup R[S⁻¹])
+
+@[simp]
+lemma zsmul_eq_zsmul (n : ℤ) (x : X[S⁻¹]) :
+    letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
+    HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
+  letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
+  exact congr($(AddCommGroup.intModule.unique.2 inst).smul n x)
 
 open nonZeroDivisors
 
@@ -211,6 +244,7 @@ variable [NoZeroDivisors R]
 
 /-- The inversion of Ore fractions for a ring without zero divisors, satisying `0⁻¹ = 0` and
 `(r /ₒ r')⁻¹ = r' /ₒ r` for `r ≠ 0`. -/
+@[irreducible]
 protected def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=
   liftExpand
     (fun r s =>
@@ -234,19 +268,18 @@ instance inv' : Inv R[R⁰⁻¹] :=
 protected theorem inv_def {r : R} {s : R⁰} :
     (r /ₒ s)⁻¹ =
       if hr : r = (0 : R) then (0 : R[R⁰⁻¹])
-      else s /ₒ ⟨r, fun _ => eq_zero_of_ne_zero_of_mul_right_eq_zero hr⟩ :=
-  rfl
+      else s /ₒ ⟨r, fun _ => eq_zero_of_ne_zero_of_mul_right_eq_zero hr⟩ := by
+  with_unfolding_all rfl
 #align ore_localization.inv_def OreLocalization.inv_def
 
 protected theorem mul_inv_cancel (x : R[R⁰⁻¹]) (h : x ≠ 0) : x * x⁻¹ = 1 := by
   induction' x with r s
   rw [OreLocalization.inv_def, OreLocalization.one_def]
-  by_cases hr : r = 0
-  · exfalso
-    apply h
-    simp [hr]
-  · simp only [hr, ↓reduceDite]
-    apply OreLocalization.mul_inv ⟨r, _⟩
+  have hr : r ≠ 0 := by
+    rintro rfl
+    simp at h
+  simp only [hr]
+  with_unfolding_all apply OreLocalization.mul_inv ⟨r, _⟩
 #align ore_localization.mul_inv_cancel OreLocalization.mul_inv_cancel
 
 protected theorem inv_zero : (0 : R[R⁰⁻¹])⁻¹ = 0 := by
@@ -261,5 +294,38 @@ instance : DivisionRing R[R⁰⁻¹] where
   qsmul := _
 
 end DivisionRing
+
+section CommSemiring
+
+variable {R : Type*} [CommSemiring R] {S : Submonoid R} [OreSet S]
+
+instance : CommSemiring R[S⁻¹] where
+  __ := inferInstanceAs (Semiring R[S⁻¹])
+  __ := inferInstanceAs (CommMonoid R[S⁻¹])
+
+end CommSemiring
+
+section CommRing
+
+variable {R : Type*} [CommRing R] {S : Submonoid R} [OreSet S]
+
+instance : CommRing R[S⁻¹] where
+  __ := inferInstanceAs (Ring R[S⁻¹])
+  __ := inferInstanceAs (CommMonoid R[S⁻¹])
+
+end CommRing
+
+section Field
+
+open nonZeroDivisors
+
+variable {R : Type*} [CommRing R] [Nontrivial R] [NoZeroDivisors R] [OreSet R⁰]
+
+noncomputable
+instance : Field R[R⁰⁻¹] where
+  __ := inferInstanceAs (DivisionRing R[R⁰⁻¹])
+  __ := inferInstanceAs (CommMonoid R[R⁰⁻¹])
+
+end Field
 
 end OreLocalization

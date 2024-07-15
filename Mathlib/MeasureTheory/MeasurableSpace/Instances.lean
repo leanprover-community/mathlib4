@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
 import Mathlib.Data.Rat.Init
+import Mathlib.Data.ZMod.Defs
 
 #align_import measure_theory.measurable_space from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 
@@ -32,6 +33,8 @@ instance Nat.instMeasurableSpace : MeasurableSpace ℕ := ⊤
 
 instance Fin.instMeasurableSpace (n : ℕ) : MeasurableSpace (Fin n) := ⊤
 
+instance ZMod.instMeasurableSpace (n : ℕ) : MeasurableSpace (ZMod n) := ⊤
+
 instance Int.instMeasurableSpace : MeasurableSpace ℤ := ⊤
 #align int.measurable_space Int.instMeasurableSpace
 
@@ -56,6 +59,9 @@ instance Nat.instMeasurableSingletonClass : MeasurableSingletonClass ℕ := ⟨f
 #align nat.measurable_singleton_class Nat.instMeasurableSingletonClass
 
 instance Fin.instMeasurableSingletonClass (n : ℕ) : MeasurableSingletonClass (Fin n) :=
+  ⟨fun _ => trivial⟩
+
+instance ZMod.instMeasurableSingletonClass (n : ℕ) : MeasurableSingletonClass (ZMod n) :=
   ⟨fun _ => trivial⟩
 
 instance Int.instMeasurableSingletonClass : MeasurableSingletonClass ℤ := ⟨fun _ => trivial⟩

@@ -310,12 +310,12 @@ theorem isMaximal_iff {I : Ideal α} :
   isMaximal_def.trans <|
     and_congr I.ne_top_iff_one <|
       forall_congr' fun J => by
-        rw [lt_iff_le_not_le];
-          exact
-            ⟨fun H x h hx₁ hx₂ => J.eq_top_iff_one.1 <| H ⟨h, not_subset.2 ⟨_, hx₂, hx₁⟩⟩,
-              fun H ⟨h₁, h₂⟩ =>
-              let ⟨x, xJ, xI⟩ := not_subset.1 h₂
-              J.eq_top_iff_one.2 <| H x h₁ xI xJ⟩
+        rw [lt_iff_le_not_le]
+        exact
+          ⟨fun H x h hx₁ hx₂ => J.eq_top_iff_one.1 <| H ⟨h, not_subset.2 ⟨_, hx₂, hx₁⟩⟩,
+            fun H ⟨h₁, h₂⟩ =>
+            let ⟨x, xJ, xI⟩ := not_subset.1 h₂
+            J.eq_top_iff_one.2 <| H x h₁ xI xJ⟩
 #align ideal.is_maximal_iff Ideal.isMaximal_iff
 
 theorem IsMaximal.eq_of_le {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) (IJ : I ≤ J) : I = J :=
@@ -619,7 +619,7 @@ theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : �
 
 theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : ℕ) :
     s.sum ^ (Multiset.card s * n + 1) ∈
-    span ((s.map fun (x:α) ↦ x ^ (n + 1)).toFinset : Set α) := by
+    span ((s.map fun (x : α) ↦ x ^ (n + 1)).toFinset : Set α) := by
   induction' s using Multiset.induction_on with a s hs
   · simp
   simp only [Finset.coe_insert, Multiset.map_cons, Multiset.toFinset_cons, Multiset.sum_cons,
@@ -668,7 +668,7 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
   rintro _ hx
   simp_rw [Set.mem_image] at hx
   rcases hx with ⟨x, _, rfl⟩
-  have : span ({(x:α) ^ (n + 1)} : Set α) ≤ span ((fun x : α => x ^ (n + 1)) '' s) := by
+  have : span ({(x : α) ^ (n + 1)} : Set α) ≤ span ((fun x : α => x ^ (n + 1)) '' s) := by
     rw [span_le, Set.singleton_subset_iff]
     exact subset_span ⟨x, x.prop, rfl⟩
   refine this ?_

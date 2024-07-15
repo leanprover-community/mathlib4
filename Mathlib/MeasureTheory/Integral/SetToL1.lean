@@ -161,7 +161,7 @@ theorem map_iUnion_fin_meas_set_eq_sum (T : Set α → β) (T_empty : T ∅ = 0)
   intro a s has h hps h_disj
   rw [Finset.sum_insert has, ← h]
   swap; · exact fun i hi => hps i (Finset.mem_insert_of_mem hi)
-  swap;
+  swap
   · exact fun i hi j hj hij =>
       h_disj i (Finset.mem_insert_of_mem hi) j (Finset.mem_insert_of_mem hj) hij
   rw [←

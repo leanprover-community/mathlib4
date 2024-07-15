@@ -200,7 +200,7 @@ contains the data used to check a family of elements for a presieve is compatibl
 def firstMap : FirstObj P R ⟶ SecondObj P R :=
   Pi.lift fun fg =>
     haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
-    Pi.π _ _ ≫ P.map pullback.fst.op
+    Pi.π _ _ ≫ P.map (pullback.fst _ _).op
 #align category_theory.equalizer.presieve.first_map CategoryTheory.Equalizer.Presieve.firstMap
 
 instance [HasPullbacks C] : Inhabited (SecondObj P (⊥ : Presieve X)) :=
@@ -210,7 +210,7 @@ instance [HasPullbacks C] : Inhabited (SecondObj P (⊥ : Presieve X)) :=
 def secondMap : FirstObj P R ⟶ SecondObj P R :=
   Pi.lift fun fg =>
     haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
-    Pi.π _ _ ≫ P.map pullback.snd.op
+    Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 #align category_theory.equalizer.presieve.second_map CategoryTheory.Equalizer.Presieve.secondMap
 
 theorem w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
@@ -309,13 +309,15 @@ def forkMap : P.obj (op B) ⟶ FirstObj P X := Pi.lift (fun i ↦ P.map (π i).o
 The first of the two parallel morphisms of the fork diagram, induced by the first projection in
 each pullback.
 -/
-def firstMap : FirstObj P X ⟶ SecondObj P X π := Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.fst.op
+def firstMap : FirstObj P X ⟶ SecondObj P X π :=
+  Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.fst _ _).op
 
 /--
 The second of the two parallel morphisms of the fork diagram, induced by the second projection in
 each pullback.
 -/
-def secondMap : FirstObj P X ⟶ SecondObj P X π := Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.snd.op
+def secondMap : FirstObj P X ⟶ SecondObj P X π :=
+  Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 
 theorem w : forkMap P X π ≫ firstMap P X π = forkMap P X π ≫ secondMap P X π := by
   ext x ij
@@ -366,3 +368,5 @@ end Presieve
 end
 
 end Equalizer
+
+end CategoryTheory

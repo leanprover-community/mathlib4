@@ -189,7 +189,7 @@ theorem eq_zero_of_tgt {X Y : C} (o : IsZero Y) (f : X ⟶ Y) : f = 0 :=
 theorem iff_id_eq_zero (X : C) : IsZero X ↔ 𝟙 X = 0 :=
   ⟨fun h => h.eq_of_src _ _, fun h =>
     ⟨fun Y => ⟨⟨⟨0⟩, fun f => by
-        rw [← id_comp f, ← id_comp (0: X ⟶ Y), h, zero_comp, zero_comp]; simp only⟩⟩,
+        rw [← id_comp f, ← id_comp (0 : X ⟶ Y), h, zero_comp, zero_comp]; simp only⟩⟩,
     fun Y => ⟨⟨⟨0⟩, fun f => by
         rw [← comp_id f, ← comp_id (0 : Y ⟶ X), h, comp_zero, comp_zero]; simp only ⟩⟩⟩⟩
 #align category_theory.limits.is_zero.iff_id_eq_zero CategoryTheory.Limits.IsZero.iff_id_eq_zero
@@ -548,7 +548,7 @@ theorem hasZeroObject_of_hasInitial_object [HasZeroMorphisms C] [HasInitial C] :
   refine ⟨⟨⊥_ C, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩⟩
   calc
     f = f ≫ 𝟙 _ := (Category.comp_id _).symm
-    _ = f ≫ 0 := by congr!; apply Subsingleton.elim
+    _ = f ≫ 0 := by congr!; subsingleton
     _ = 0 := HasZeroMorphisms.comp_zero _ _
 #align category_theory.limits.has_zero_object_of_has_initial_object CategoryTheory.Limits.hasZeroObject_of_hasInitial_object
 
@@ -558,7 +558,7 @@ theorem hasZeroObject_of_hasTerminal_object [HasZeroMorphisms C] [HasTerminal C]
   refine ⟨⟨⊤_ C, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩⟩⟩
   calc
     f = 𝟙 _ ≫ f := (Category.id_comp _).symm
-    _ = 0 ≫ f := by congr!; apply Subsingleton.elim
+    _ = 0 ≫ f := by congr!; subsingleton
     _ = 0 := zero_comp
 #align category_theory.limits.has_zero_object_of_has_terminal_object CategoryTheory.Limits.hasZeroObject_of_hasTerminal_object
 
