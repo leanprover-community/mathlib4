@@ -87,11 +87,10 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
   #adaptation_note /-- nightly-2024-03-16: simp was
   -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, Bool.cond_eq_ite] -/
   simp only [bit, ite_apply, Bool.cond_eq_ite]
-  have h1 x :     (x + x) % 2 = 0 := by rw [← two_mul, mul_comm]; apply mul_mod_left
   have h2 x : (x + x + 1) % 2 = 1 := by rw [← two_mul, add_comm]; apply add_mul_mod_self_left
   have h3 x :     (x + x) / 2 = x := by omega
   have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
-  cases a <;> cases b <;> simp [h1, h2, h3, h4] <;> split_ifs
+  cases a <;> cases b <;> simp [h2, h3, h4] <;> split_ifs
     <;> simp_all (config := {decide := true}) [two_mul]
 #align nat.bitwise_bit Nat.bitwise_bit
 
@@ -267,7 +266,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
       convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_bit_succ]
     have this' : 2 * n < 2 * m := Nat.mul_lt_mul' (le_refl _) this Nat.two_pos
     cases b <;> cases b'
-    <;> simp only [bit_false, bit_true, bit0_val n, bit1_val n, bit0_val m, bit1_val m]
+    <;> simp only [bit_false, bit_true]
     · exact this'
     · exact Nat.lt_add_right 1 this'
     · calc

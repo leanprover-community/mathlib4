@@ -236,14 +236,8 @@ set_option linter.deprecated false
 
 variable {M : Type u} [AddMonoid M] {a b c : M}
 
-@[simp]
-theorem bit0_zero : 2 • (0 : M) = 0 :=
-  nsmul_zero _
-#align bit0_zero bit0_zero
-
-@[simp]
-theorem bit1_zero [One M] : (2 • (0 : M) + 1) = 1 := by rw [bit0_zero, zero_add]
-#align bit1_zero bit1_zero
+#noalign bit0_zero
+#noalign bit1_zero
 
 end AddMonoid
 

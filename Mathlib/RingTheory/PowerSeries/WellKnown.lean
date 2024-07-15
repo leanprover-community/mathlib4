@@ -176,31 +176,10 @@ theorem constantCoeff_exp : constantCoeff A (exp A) = 1 := by
   simp
 #align power_series.constant_coeff_exp PowerSeries.constantCoeff_exp
 
-set_option linter.deprecated false in
-@[simp]
-theorem coeff_sin_bit0 : coeff A (2 * n) (sin A) = 0 := by
-  rw [sin, coeff_mk, if_pos (even_bit0 n)]
-#align power_series.coeff_sin_bit0 PowerSeries.coeff_sin_bit0
-
-set_option linter.deprecated false in
-@[simp]
-theorem coeff_sin_bit1 : coeff A (2 * n + 1) (sin A) = (-1) ^ n * coeff A (2 * n + 1) (exp A) := by
-  rw [sin, coeff_mk, if_neg n.not_even_bit1, Nat.bit1_div_two, ← mul_one_div, map_mul, map_pow,
-    map_neg, map_one, coeff_exp]
-#align power_series.coeff_sin_bit1 PowerSeries.coeff_sin_bit1
-
-set_option linter.deprecated false in
-@[simp]
-theorem coeff_cos_bit0 : coeff A (2 * n) (cos A) = (-1) ^ n * coeff A (2 * n) (exp A) := by
-  rw [cos, coeff_mk, if_pos (even_bit0 n), Nat.bit0_div_two, ← mul_one_div, map_mul, map_pow,
-    map_neg, map_one, coeff_exp]
-#align power_series.coeff_cos_bit0 PowerSeries.coeff_cos_bit0
-
-set_option linter.deprecated false in
-@[simp]
-theorem coeff_cos_bit1 : coeff A (2 * n + 1) (cos A) = 0 := by
-  rw [cos, coeff_mk, if_neg n.not_even_bit1]
-#align power_series.coeff_cos_bit1 PowerSeries.coeff_cos_bit1
+#noalign power_series.coeff_sin_bit0
+#noalign power_series.coeff_sin_bit1
+#noalign power_series.coeff_cos_bit0
+#noalign power_series.coeff_cos_bit1
 
 @[simp]
 theorem map_exp : map (f : A →+* A') (exp A) = exp A' := by

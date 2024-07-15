@@ -16,14 +16,6 @@ import Mathlib.Data.Num.Bitwise
 # Properties of the binary representation of integers
 -/
 
-/-
-Porting note:
-`bit0` and `bit1` are deprecated because it is mainly used to represent number literal in Lean3 but
-not in Lean4 anymore. However, this file uses them for encoding numbers so this linter is
-unnecessary.
--/
-set_option linter.deprecated false
-
 -- Porting note: Required for the notation `-[n+1]`.
 open Int Function
 
@@ -56,8 +48,8 @@ theorem cast_bit1 [One α] [Add α] (n : PosNum) : (n.bit1 : α) = ((n : α) + n
 @[simp, norm_cast]
 theorem cast_to_nat [AddMonoidWithOne α] : ∀ n : PosNum, ((n : ℕ) : α) = n
   | 1 => Nat.cast_one
-  | bit0 p => (Nat.cast_bit0 _).trans <| congr_arg (fun n ↦ n + n) p.cast_to_nat
-  | bit1 p => (Nat.cast_bit1 _).trans <| congr_arg (fun n ↦ (n + n) + 1) p.cast_to_nat
+  | bit0 p => by dsimp; rw [Nat.cast_add, p.cast_to_nat]
+  | bit1 p => by dsimp; rw [Nat.cast_add, Nat.cast_add, Nat.cast_one, p.cast_to_nat]
 #align pos_num.cast_to_nat PosNum.cast_to_nat
 
 @[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
@@ -365,6 +357,7 @@ theorem of_to_nat' : ∀ n : Num, Num.ofNat' (n : ℕ) = n
   | pos p => p.of_to_nat'
 #align num.of_to_nat' Num.of_to_nat'
 
+set_option linter.deprecated false in
 lemma toNat_injective : Injective (castNum : Num → ℕ) := LeftInverse.injective of_to_nat'
 
 @[norm_cast]
@@ -952,8 +945,7 @@ theorem castNum_shiftLeft (m : Num) (n : Nat) : ↑(m <<< n) = (m : ℕ) <<< (n 
   simp only [cast_pos]
   induction' n with n IH
   · rfl
-  simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftLeft_succ, IH,
-        Nat.bit0_val, pow_succ, ← mul_assoc, mul_comm,
+  simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftLeft_succ, IH, pow_succ, ← mul_assoc, mul_comm,
         -shiftl_eq_shiftLeft, -PosNum.shiftl_eq_shiftLeft, shiftl, mul_two]
 #align num.shiftl_to_nat Num.castNum_shiftLeft
 

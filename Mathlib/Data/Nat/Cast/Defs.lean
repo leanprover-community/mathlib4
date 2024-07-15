@@ -191,17 +191,9 @@ theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
 #align nat.bin_cast_eq Nat.binCast_eq
 
 section deprecated
-set_option linter.deprecated false
 
-@[norm_cast, deprecated (since := "2022-11-19")]
-theorem cast_bit0 [AddMonoidWithOne R] (n : ℕ) : ((n + n : ℕ) : R) = (n : R) + n :=
-  Nat.cast_add _ _
-#align nat.cast_bit0 Nat.cast_bit0
-
-@[norm_cast, deprecated (since := "2022-11-19")]
-theorem cast_bit1 [AddMonoidWithOne R] (n : ℕ) : (((n + n) + 1 : ℕ) : R) = ((n : R) + n) + 1 := by
-  rw [cast_add_one, cast_bit0]
-#align nat.cast_bit1 Nat.cast_bit1
+#noalign nat.cast_bit0
+#noalign nat.cast_bit1
 
 end deprecated
 

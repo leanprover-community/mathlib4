@@ -23,8 +23,8 @@ dealing with `bit0` and `bit1`. -/
 def evenOddRec {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ n, P n → P (2 * n))
     (h_odd : ∀ n, P n → P (2 * n + 1)) (n : ℕ) : P n :=
   binaryRec h0 (fun
-    | false, i, hi => (bit0_val i ▸ h_even i hi : P (2 * i))
-    | true, i, hi => (bit1_val i ▸ h_odd i hi : P (2 * i + 1))) n
+    | false, i, hi => (h_even i hi : P (2 * i))
+    | true, i, hi => (h_odd i hi : P (2 * i + 1))) n
 #align nat.even_odd_rec Nat.evenOddRec
 
 @[simp]
