@@ -102,7 +102,8 @@ def dependentTypeclassLinter : Linter where
             if let some decl := decl then
               dependentTypeclassRef.modify (·.push d)
               let preString := (← liftTermElabM (ppExpr decl)).pretty
-              let fmtStr := (preString.replace "fun " "").replace " => inferInstance" ""
+              let fmtStr := ((preString.replace "fun " "").replace " => inferInstance" "")
+                |>.replace " ↦ inferInstance" ""
               msgs := msgs.push (d, fmtStr)
           set s
           for (d, fmtStr) in msgs do
