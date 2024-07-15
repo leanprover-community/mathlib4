@@ -209,7 +209,7 @@ theorem IntermediateField.eq_bot_of_isAlgClosed_of_isAlgebraic {k K : Type*} [Fi
   exact ⟨y, congr_arg (algebraMap L K) hy⟩
 
 lemma Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed (K : Type v) [Field K] [IsAlgClosed K]
-    [Algebra k K] (p q : k[X]) : IsCoprime p q ↔ ∀ a : K, ¬(aeval a p = 0 ∧ aeval a q = 0) := by
+    [Algebra k K] (p q : k[X]) : IsCoprime p q ↔ ∀ a : K, aeval a p ≠ 0 ∨ aeval a q ≠ 0 := by
   refine ⟨fun h => aeval_ne_zero_of_isCoprime h, fun h => isCoprime_of_dvd _ _ ?_ fun x hu h0 => ?_⟩
   · replace h := h 0
     contrapose! h
@@ -217,7 +217,7 @@ lemma Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed (K : Type v) [Field 
   · rintro ⟨_, rfl⟩ ⟨_, rfl⟩
     obtain ⟨a, ha : _ = _⟩ := IsAlgClosed.exists_root (x.map <| algebraMap k K) <| by
       simpa only [degree_map] using (ne_of_lt <| degree_pos_of_ne_zero_of_nonunit h0 hu).symm
-    exact h a <| by rw [eval_map_algebraMap] at ha; simp only [map_mul, ha, zero_mul, true_and]
+    exact not_and_or.mpr (h a) (by simp_rw [map_mul, ← eval_map_algebraMap, ha, zero_mul, true_and])
 
 /-- Typeclass for an extension being an algebraic closure. -/
 class IsAlgClosure (R : Type u) (K : Type v) [CommRing R] [Field K] [Algebra R K]
