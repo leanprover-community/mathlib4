@@ -162,11 +162,14 @@ def LinearMap.toMatrixₛₗ₂' : ((n → R₁) →ₛₗ[σ₁] (m → R₂) �
     right_inv := Matrix.toMatrix₂Aux_toLinearMap₂'Aux (R := R) }
 #align linear_map.to_matrixₛₗ₂' LinearMap.toMatrixₛₗ₂'
 
+variable (R)
+
 /-- The linear equivalence between bilinear maps and `n × m` matrices -/
 def LinearMap.toMatrix₂' : ((n → S₁) →ₗ[S₁] (m → S₂) →ₗ[S₂] N₂) ≃ₗ[R] Matrix n m N₂ :=
   LinearMap.toMatrixₛₗ₂'
 #align linear_map.to_matrix₂' LinearMap.toMatrix₂'
 
+variable {R}
 variable (σ₁ σ₂)
 
 /-- The linear equivalence between `n × n` matrices and sesquilinear maps on `n → R` -/
@@ -174,10 +177,14 @@ def Matrix.toLinearMapₛₗ₂' : Matrix n m N₂ ≃ₗ[R] (n → R₁) →ₛ
   LinearMap.toMatrixₛₗ₂'.symm
 #align matrix.to_linear_mapₛₗ₂' Matrix.toLinearMapₛₗ₂'
 
+variable (R)
+
 /-- The linear equivalence between `n × n` matrices and bilinear maps on `n → R` -/
 def Matrix.toLinearMap₂' : Matrix n m N₂ ≃ₗ[R] (n → S₁) →ₗ[S₁] (m → S₂) →ₗ[S₂] N₂ :=
-  LinearMap.toMatrix₂'.symm
+  (LinearMap.toMatrix₂' R).symm
 #align matrix.to_linear_map₂' Matrix.toLinearMap₂'
+
+variable {R}
 
 theorem Matrix.toLinearMapₛₗ₂'_aux_eq (M : Matrix n m N₂) :
     Matrix.toLinearMap₂'Aux σ₁ σ₂ M = Matrix.toLinearMapₛₗ₂' (R := R) σ₁ σ₂ M :=
@@ -243,7 +250,7 @@ theorem Matrix.toLinearMapₛₗ₂'_toMatrix' (B : (n → R₁) →ₛₗ[σ₁
 @[simp]
 theorem Matrix.toLinearMap₂'_toMatrix' (B : (n → S₁) →ₗ[S₁] (m → S₂) →ₗ[S₂] N₂) :
     Matrix.toLinearMap₂' (R := R) (LinearMap.toMatrix₂' (R := R) B) = B :=
-  Matrix.toLinearMap₂'.apply_symm_apply B
+  (Matrix.toLinearMap₂' R).apply_symm_apply B
 #align matrix.to_linear_map₂'_to_matrix' Matrix.toLinearMap₂'_toMatrix'
 
 @[simp]
@@ -338,7 +345,7 @@ theorem LinearMap.toMatrix₂'_mul (B : (n → R) →ₗ[R] (m → R) →ₗ[R] 
 theorem Matrix.toLinearMap₂'_comp (M : Matrix n m R) (P : Matrix n n' R) (Q : Matrix m m' R) :
     LinearMap.compl₁₂ (Matrix.toLinearMap₂' (R := R) M) (toLin' P) (toLin' Q) =
       toLinearMap₂' (R := R) (Pᵀ * M * Q) :=
-  LinearMap.toMatrix₂'.injective (by
+  (LinearMap.toMatrix₂' R).injective (by
     rw [toMatrix₂'_compl₁₂, toMatrix'_toLin', toMatrix'_toLinearMap₂', toMatrix'_toLin',
       toMatrix'_toLinearMap₂'])
 #align matrix.to_linear_map₂'_comp Matrix.toLinearMap₂'_comp
@@ -369,7 +376,7 @@ variable (b₁ : Basis n R M₁) (b₂ : Basis m R M₂)
 respectively. -/
 noncomputable def LinearMap.toMatrix₂ : (M₁ →ₗ[R] M₂ →ₗ[R] N₂) ≃ₗ[R] Matrix n m N₂ :=
   (b₁.equivFun.arrowCongr (b₂.equivFun.arrowCongr (LinearEquiv.refl R N₂))).trans
-    LinearMap.toMatrix₂'
+    (LinearMap.toMatrix₂' R)
 #align linear_map.to_matrix₂ LinearMap.toMatrix₂
 
 /-- `Matrix.toLinearMap₂ b₁ b₂` is the equivalence between `R`-bilinear maps on `M` and
@@ -415,7 +422,7 @@ theorem Matrix.toLinearMap₂_symm :
 #align matrix.to_linear_map₂_symm Matrix.toLinearMap₂_symm
 
 theorem Matrix.toLinearMap₂_basisFun :
-    Matrix.toLinearMap₂ (Pi.basisFun R n) (Pi.basisFun R m) = Matrix.toLinearMap₂' (N₂ := N₂) := by
+    Matrix.toLinearMap₂ (Pi.basisFun R n) (Pi.basisFun R m) = Matrix.toLinearMap₂' R (N₂ := N₂) := by
   ext M
   simp only [coe_comp, coe_single, Function.comp_apply, toLinearMap₂_apply, Pi.basisFun_repr,
     toLinearMap₂'_apply]
@@ -423,7 +430,7 @@ theorem Matrix.toLinearMap₂_basisFun :
 
 theorem LinearMap.toMatrix₂_basisFun :
     LinearMap.toMatrix₂ (Pi.basisFun R n) (Pi.basisFun R m) =
-    LinearMap.toMatrix₂' (N₂ := N₂) := by
+    LinearMap.toMatrix₂' R (N₂ := N₂) := by
   ext B
   rw [LinearMap.toMatrix₂_apply, LinearMap.toMatrix₂'_apply, Pi.basisFun_apply, Pi.basisFun_apply]
 #align linear_map.to_matrix₂_basis_fun LinearMap.toMatrix₂_basisFun
@@ -574,7 +581,7 @@ theorem isAdjointPair_toLinearMap₂' :
     intro B B'
     constructor <;> intro h
     · rw [h]
-    · exact LinearMap.toMatrix₂'.injective h
+    · exact (LinearMap.toMatrix₂' R).injective h
   simp_rw [h, LinearMap.toMatrix₂'_comp, LinearMap.toMatrix₂'_compl₂,
     LinearMap.toMatrix'_toLin', LinearMap.toMatrix'_toLinearMap₂']
   rfl
