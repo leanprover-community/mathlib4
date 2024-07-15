@@ -77,6 +77,7 @@ import Mathlib.Algebra.Category.Grp.Subobject
 import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.Algebra.Category.GrpWithZero
+import Mathlib.Algebra.Category.HopfAlgebraCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 import Mathlib.Algebra.Category.ModuleCat.Algebra
