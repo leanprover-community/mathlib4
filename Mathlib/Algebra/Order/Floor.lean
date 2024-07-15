@@ -982,7 +982,7 @@ lemma fract_pos : 0 < fract a ↔ a ≠ ⌊a⌋ :=
   (fract_nonneg a).lt_iff_ne.trans <| ne_comm.trans sub_ne_zero
 #align int.fract_pos Int.fract_pos
 
-lemma fract_eq_zero_iff: fract a = 0 ↔ a = ⌊a⌋ := by
+lemma fract_eq_zero_iff : fract a = 0 ↔ a = ⌊a⌋ := by
   rw [← not_iff_not, ← ne_eq, ← ne_eq, ← fract_pos]
   exact (LE.le.gt_iff_ne <| fract_nonneg _).symm
 
