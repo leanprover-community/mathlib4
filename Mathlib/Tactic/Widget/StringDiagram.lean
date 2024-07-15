@@ -68,7 +68,7 @@ def Node.srcList : Node → MetaM (List (Node × Atom₁))
 /-- The codomain of the 2-morphism associated with a node as a list
 (the first component is the node itself). -/
 def Node.tarList : Node → MetaM (List (Node × Atom₁))
-  | Node.atom n => return (← n.atom.tar).toList.map (fun f ↦ (.atom n, f))
+  | Node.atom n => return (← n.atom.tgt).toList.map (fun f ↦ (.atom n, f))
   | Node.id n => return [(.id n, n.id)]
 
 /-- The vertical position of a node in a string diagram. -/
