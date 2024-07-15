@@ -43,6 +43,10 @@ def valuation : Valuation K ℝ≥0 where
 
 theorem valuation_apply (x : K) : valuation h x = ‖x‖₊ := rfl
 
+theorem isTriviallyValued (ε : ℝ):
+    (valuation h).rangeGroup = ⊥ ∨ (∃ (x : K), ‖x‖₊ ≠ 0 ∧ ‖x‖₊ < ε) := by
+  sorry
+
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
 def toValued : Valued K ℝ≥0 :=
   { hK.toUniformSpace,
@@ -50,10 +54,50 @@ def toValued : Valued K ℝ≥0 :=
     v := valuation h
     is_topological_valuation := fun U => by
       rw [Metric.mem_nhds_iff]
-      exact ⟨fun ⟨ε, hε, h⟩  =>
+      constructor
+      · intro ⟨ε, hε, hU⟩
+        rcases isTriviallyValued h ε with (H | ⟨x, hpos, h_lt⟩)
+        · use 1, one_mem _
+          intro x hx
+          simp only [Units.val_one, mem_setOf_eq] at hx
+          suffices x = 0 by
+            apply hU
+            simp only [this, Metric.mem_ball, dist_self, hε]
+          by_cases hx' : valuation h x = 0
+          · by_contra hx_ne
+            have : valuation h 1 = 1 := Valuation.map_one (valuation h)
+            rw [← CommGroupWithZero.mul_inv_cancel x hx_ne] at this
+            simp only [_root_.map_mul, map_inv₀, hx', zero_mul] at this
+            apply zero_ne_one this
+          · exfalso
+            apply not_le.mpr hx
+            apply le_of_eq
+            symm
+            rw [← Units.val_mk0 hx', ← Units.val_one, Units.eq_iff,
+              ← Subgroup.mem_bot, ← H]
+            exact mem_rangeGroup _ rfl
+        · use Units.mk0 _ hpos, mem_rangeGroup _ rfl
+          intro y
+          simp only [Units.val_mk0, mem_setOf_eq]
+          intro hy
+          apply hU
+          simp only [Metric.mem_ball, dist_zero_right]
+          exact lt_trans hy h_lt
+
+      · rintro ⟨γ, _, hU⟩
+        use (γ : ℝ)
+        constructor
+        · simp only [NNReal.coe_pos, gt_iff_lt, pos_iff_ne_zero, ← isUnit_iff_ne_zero, Units.isUnit]
+        · intro x hx
+          apply hU
+          simpa only [Metric.mem_ball, dist_zero_right, mem_setOf_eq] using hx
+
+/-       exact ⟨fun ⟨ε, hε, h⟩  =>
           ⟨Units.mk0 ⟨ε, le_of_lt hε⟩ (ne_of_gt hε), fun x hx ↦ h (mem_ball_zero_iff.mpr hx)⟩,
         fun ⟨ε, hε⟩ => ⟨(ε : ℝ), NNReal.coe_pos.mpr (Units.zero_lt _),
-          fun x hx ↦ hε (mem_ball_zero_iff.mp hx)⟩⟩ }
+          fun x hx ↦ hε (mem_ball_zero_iff.mp hx)⟩⟩  -/
+
+          }
 
 end NormedField
 
