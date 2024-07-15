@@ -624,18 +624,9 @@ lemma onag_1_10 :
       have := ih_xr.2
       simpa [← mk_mul, one_def, mk_eq_mk]
 
-    have onag_1_10_i :
-        (∀ i, x * ((x.inv').moveLeft i) < 1) ∧ (∀ j, 1 < x * ((x.inv').moveRight j)) := by
-      simp only [inv', leftMoves_mk, moveLeft_mk, rightMoves_mk, moveRight_mk]
-      constructor
-      · have := onag_1_10_i' xL xR xl_num xr_num h3 h4 x_num false inv_l inv_r x_pos
-        rw [x_rfl]
-        simp only [← mk_mul, one_def, mk_lt_mk] at this
-        exact this
-      · have := onag_1_10_i' xL xR xl_num xr_num h3 h4 x_num true inv_l inv_r x_pos
-        rw [x_rfl]
-        simp only [one_def, ← mk_mul, mk_lt_mk] at this
-        exact this
+    have onag_1_10_i_left := onag_1_10_i' xL xR xl_num xr_num h3 h4 x_num false inv_l inv_r x_pos
+    have onag_1_10_i_right := onag_1_10_i' xL xR xl_num xr_num h3 h4 x_num true inv_l inv_r x_pos
+    simp only at onag_1_10_i_left onag_1_10_i_right
 
     have onag_1_10_ii : (x.inv').Numeric := by
       rw [numeric_def]
@@ -645,10 +636,10 @@ lemma onag_1_10 :
         inv'_numeric_right x_num x_pos h3 h4
       constructor
       · intros i j
-        have : x * x.inv'.moveLeft i < x * x.inv'.moveRight j := lt_trans (onag_1_10_i.1 i)
-          (onag_1_10_i.2 j)
-        exact mul_lt_mul_left' x_num (left_inv_options_numeric i) (right_inv_options_numeric j)
-          x_pos this
+        have := lt_trans (onag_1_10_i_left i) (onag_1_10_i_right j)
+        apply (mul_lt_mul_left (by simpa only [zero_lt_mk])).mp at this
+        rw [mk_lt_mk] at this
+        simpa [inv']
       · constructor
         · exact left_inv_options_numeric
         · exact right_inv_options_numeric
@@ -671,11 +662,7 @@ lemma onag_1_10 :
           · cases val
             rw [Game.PGame.lt_iff_game_lt]
             simp only [Sum.elim_inr, quot_sub, quot_add, quot_zero_mul, add_sub_cancel_left]
-            have := onag_1_10_i.1
-            rw [x_rfl] at this
-            specialize this j
-            rw [← mk_lt_mk, mk_mul x_num (inv'_numeric_left x_num x_pos h3 h4 j)] at this
-            on_goal 2 => exact numeric_one
+            have := onag_1_10_i_left j
             rw [pos_num_eq_normalization x_num x_pos] at this
             simp only [normalization, insertLeft, inv', moveLeft_mk] at this
             exact this
@@ -708,11 +695,7 @@ lemma onag_1_10 :
           · cases val
             rw [Game.PGame.lt_iff_game_lt]
             simp only [Sum.elim_inr, quot_sub, quot_add, quot_zero_mul, add_sub_cancel_left]
-            have := onag_1_10_i.2
-            rw [x_rfl] at this
-            specialize this j
-            rw [← mk_lt_mk, mk_mul x_num (inv'_numeric_right x_num x_pos h3 h4 j)] at this
-            on_goal 2 => exact numeric_one
+            have := onag_1_10_i_right j
             rw [pos_num_eq_normalization x_num x_pos] at this
             simp only [normalization, insertLeft, inv', moveRight_mk] at this
             exact this

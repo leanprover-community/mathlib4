@@ -538,11 +538,4 @@ lemma mul_left_cancel {x y z : PGame} (hx : x.Numeric) (hy : y.Numeric) (hz : z.
   apply mul_left_cancel₀ (by simpa only [ne_eq, mk_eq_zero]) at this
   rwa [mk_eq_mk] at this
 
-lemma mul_lt_mul_left' {x y z : PGame} (hx : x.Numeric) (hy : y.Numeric) (hz : z.Numeric)
-    (h : 0 < x) (h' : x * y < x * z) : y < z := by
-  have: Surreal.mk x hx * Surreal.mk y hy < Surreal.mk x hx * Surreal.mk z hz := by
-    simpa [mk_lt_mk, ← mk_mul]
-  apply (mul_lt_mul_left (by simpa only [zero_lt_mk])).mp at this
-  rwa [mk_lt_mk] at this
-
 end Surreal
