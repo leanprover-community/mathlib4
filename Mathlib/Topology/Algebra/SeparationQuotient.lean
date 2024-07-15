@@ -415,6 +415,6 @@ theorem outCLM_uniformEmbedding : UniformEmbedding (outCLM K E) where
 theorem outCLM_uniformContinuous : UniformContinuous (outCLM K E) :=
   (outCLM_uniformInducing K E).uniformContinuous
 
-end VectorSpaceUniform    
+end VectorSpaceUniform
 
 end SeparationQuotient
