@@ -45,7 +45,7 @@ iterated Fréchet derivative.
 
 noncomputable section
 
-open scoped Classical Topology BigOperators
+open scoped Classical Topology
 
 open Filter Asymptotics Set
 
@@ -248,7 +248,7 @@ theorem iteratedDeriv_zero : iteratedDeriv 0 f = f := by ext x; simp [iteratedDe
 #align iterated_deriv_zero iteratedDeriv_zero
 
 @[simp]
-theorem iteratedDeriv_one : iteratedDeriv 1 f = deriv f := by ext x; simp [iteratedDeriv]; rfl
+theorem iteratedDeriv_one : iteratedDeriv 1 f = deriv f := by ext x; simp [iteratedDeriv]
 #align iterated_deriv_one iteratedDeriv_one
 
 /-- The property of being `C^n`, initially defined in terms of the Fréchet derivative, can be

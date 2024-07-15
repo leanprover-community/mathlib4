@@ -82,8 +82,6 @@ variable {F : Type uF} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 open scoped TensorProduct
 
-open BigOperators
-
 namespace PiTensorProduct
 
 section seminorm
@@ -266,7 +264,7 @@ linear equivalence between `ContinuousMultilinearMap 𝕜 E F` and `(⨂[𝕜] i
 (induced by `PiTensorProduct.lift`). Here we give the upgrade of this equivalence to
 an isometric linear equivalence; in particular, it is a continuous linear equivalence.
 -/
-noncomputable def liftIsometry  : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F :=
+noncomputable def liftIsometry : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F :=
   { liftEquiv 𝕜 E F with
     norm_map' := by
       intro f
@@ -447,7 +445,7 @@ noncomputable def mapLMultilinear : ContinuousMultilinearMap 𝕜 (fun (i : ι) 
     ((⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E' i) :=
   MultilinearMap.mkContinuous
   { toFun := mapL
-    map_smul':= fun _ _ _ _ ↦ PiTensorProduct.mapL_smul _ _ _ _
+    map_smul' := fun _ _ _ _ ↦ PiTensorProduct.mapL_smul _ _ _ _
     map_add' := fun _ _ _ _ ↦ PiTensorProduct.mapL_add _ _ _ _ }
   1 (fun f ↦ by rw [one_mul]; exact mapL_opNorm f)
 

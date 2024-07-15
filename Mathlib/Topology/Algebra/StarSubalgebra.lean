@@ -128,16 +128,14 @@ theorem _root_.Subalgebra.topologicalClosure_star_comm (s : Subalgebra R A) :
 
 /-- If a star subalgebra of a topological star algebra is commutative, then so is its topological
 closure. See note [reducible non-instances]. -/
-@[reducible]
-def commSemiringTopologicalClosure [T2Space A] (s : StarSubalgebra R A)
+abbrev commSemiringTopologicalClosure [T2Space A] (s : StarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
   s.toSubalgebra.commSemiringTopologicalClosure hs
 #align star_subalgebra.comm_semiring_topological_closure StarSubalgebra.commSemiringTopologicalClosure
 
 /-- If a star subalgebra of a topological star algebra is commutative, then so is its topological
 closure. See note [reducible non-instances]. -/
-@[reducible]
-def commRingTopologicalClosure {R A} [CommRing R] [StarRing R] [TopologicalSpace A] [Ring A]
+abbrev commRingTopologicalClosure {R A} [CommRing R] [StarRing R] [TopologicalSpace A] [Ring A]
     [Algebra R A] [StarRing A] [StarModule R A] [TopologicalRing A] [ContinuousStar A] [T2Space A]
     (s : StarSubalgebra R A) (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
   s.toSubalgebra.commRingTopologicalClosure hs
@@ -152,7 +150,7 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
     φ = ψ := by
   rw [DFunLike.ext'_iff]
   have : Dense (Set.range <| inclusion (le_topologicalClosure S)) := by
-    refine' embedding_subtype_val.toInducing.dense_iff.2 fun x => _
+    refine embedding_subtype_val.toInducing.dense_iff.2 fun x => ?_
     convert show ↑x ∈ closure (S : Set A) from x.prop
     rw [← Set.range_comp]
     exact
@@ -160,7 +158,7 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
         ⟨by
           rintro ⟨y, rfl⟩
           exact y.prop, fun hy => ⟨⟨y, hy⟩, rfl⟩⟩
-  refine' Continuous.ext_on this hφ hψ _
+  refine Continuous.ext_on this hφ hψ ?_
   rintro _ ⟨x, rfl⟩
   simpa only using DFunLike.congr_fun h x
 #align star_alg_hom.ext_topological_closure StarAlgHom.ext_topologicalClosure

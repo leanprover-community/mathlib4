@@ -5,6 +5,7 @@ Authors: Johan Commelin, Kenny Lau
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.MvPowerSeries.Basic
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
@@ -46,8 +47,6 @@ Occasionally this leads to proofs that are uglier than expected.
 -/
 
 noncomputable section
-
-open BigOperators
 
 open Finset (antidiagonal mem_antidiagonal)
 
@@ -166,6 +165,10 @@ theorem ext_iff {φ ψ : R⟦X⟧} : φ = ψ ↔ ∀ n, coeff R n φ = coeff R n
   ⟨fun h n => congr_arg (coeff R n) h, ext⟩
 #align power_series.ext_iff PowerSeries.ext_iff
 
+instance [Subsingleton R] : Subsingleton R⟦X⟧ := by
+  simp only [subsingleton_iff, ext_iff]
+  exact fun _ _ _ ↦ (subsingleton_iff).mp (by infer_instance) _ _
+
 /-- Constructor for formal power series. -/
 def mk {R} (f : ℕ → R) : R⟦X⟧ := fun s => f (s ())
 #align power_series.mk PowerSeries.mk
@@ -228,8 +231,8 @@ theorem coeff_zero_eq_constantCoeff : ⇑(coeff R 0) = constantCoeff R := by
   rfl
 #align power_series.coeff_zero_eq_constant_coeff PowerSeries.coeff_zero_eq_constantCoeff
 
-theorem coeff_zero_eq_constantCoeff_apply (φ : R⟦X⟧) : coeff R 0 φ = constantCoeff R φ :=
-  by rw [coeff_zero_eq_constantCoeff]
+theorem coeff_zero_eq_constantCoeff_apply (φ : R⟦X⟧) : coeff R 0 φ = constantCoeff R φ := by
+  rw [coeff_zero_eq_constantCoeff]
 #align power_series.coeff_zero_eq_constant_coeff_apply PowerSeries.coeff_zero_eq_constantCoeff_apply
 
 @[simp]
@@ -260,6 +263,16 @@ theorem coeff_ne_zero_C {a : R} {n : ℕ} (h : n ≠ 0) : coeff R n (C R a) = 0 
 @[simp]
 theorem coeff_succ_C {a : R} {n : ℕ} : coeff R (n + 1) (C R a) = 0 :=
   coeff_ne_zero_C n.succ_ne_zero
+
+theorem C_injective : Function.Injective (C R) := by
+  intro a b H
+  have := (ext_iff (φ := C R a) (ψ := C R b)).mp H 0
+  rwa [coeff_zero_C, coeff_zero_C] at this
+
+protected theorem subsingleton_iff : Subsingleton R⟦X⟧ ↔ Subsingleton R := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
+  rw [subsingleton_iff] at h ⊢
+  exact fun a b ↦ C_injective (h (C R a) (C R b))
 
 theorem X_eq : (X : R⟦X⟧) = monomial R 1 1 :=
   rfl
@@ -315,7 +328,7 @@ theorem coeff_zero_one : coeff R 0 (1 : R⟦X⟧) = 1 :=
 #align power_series.coeff_zero_one PowerSeries.coeff_zero_one
 
 theorem coeff_mul (n : ℕ) (φ ψ : R⟦X⟧) :
-    coeff R n (φ * ψ) = ∑ p in antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
+    coeff R n (φ * ψ) = ∑ p ∈ antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
   -- `rw` can't see that `PowerSeries = MvPowerSeries Unit`, so use `.trans`
   refine (MvPowerSeries.coeff_mul _ φ ψ).trans ?_
   rw [Finsupp.antidiagonal_single, Finset.sum_map]
@@ -339,6 +352,11 @@ theorem coeff_smul {S : Type*} [Semiring S] [Module R S] (n : ℕ) (φ : PowerSe
     coeff S n (a • φ) = a • coeff S n φ :=
   rfl
 #align power_series.coeff_smul PowerSeries.coeff_smul
+
+@[simp]
+theorem constantCoeff_smul {S : Type*} [Semiring S] [Module R S] (φ : PowerSeries S) (a : R) :
+    constantCoeff S (a • φ) = a • constantCoeff S φ :=
+  rfl
 
 theorem smul_eq_C_mul (f : R⟦X⟧) (a : R) : a • f = C R a * f := by
   ext
@@ -392,6 +410,9 @@ theorem constantCoeff_X : constantCoeff R X = 0 :=
 set_option linter.uppercaseLean3 false in
 #align power_series.constant_coeff_X PowerSeries.constantCoeff_X
 
+@[simp]
+theorem constantCoeff_mk {f : ℕ → R} : constantCoeff R (mk f) = f 0 := rfl
+
 theorem coeff_zero_mul_X (φ : R⟦X⟧) : coeff R 0 (φ * X) = 0 := by simp
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_zero_mul_X PowerSeries.coeff_zero_mul_X
@@ -399,6 +420,9 @@ set_option linter.uppercaseLean3 false in
 theorem coeff_zero_X_mul (φ : R⟦X⟧) : coeff R 0 (X * φ) = 0 := by simp
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_zero_X_mul PowerSeries.coeff_zero_X_mul
+
+theorem constantCoeff_surj : Function.Surjective (constantCoeff R) :=
+  fun r => ⟨(C R) r, constantCoeff_C r⟩
 
 -- The following section duplicates the API of `Data.Polynomial.Coeff` and should attempt to keep
 -- up to date with that
@@ -445,7 +469,7 @@ theorem coeff_mul_X_pow' (p : R⟦X⟧) (n d : ℕ) :
     coeff R d (p * X ^ n) = ite (n ≤ d) (coeff R (d - n) p) 0 := by
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
-  · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
     rw [coeff_X_pow, if_neg, mul_zero]
     exact ((le_of_add_le_right (mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
 set_option linter.uppercaseLean3 false in
@@ -456,7 +480,7 @@ theorem coeff_X_pow_mul' (p : R⟦X⟧) (n d : ℕ) :
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_X_pow_mul]
     simp
-  · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
     rw [coeff_X_pow, if_neg, zero_mul]
     have := mem_antidiagonal.mp hx
     rw [add_comm] at this
@@ -637,10 +661,10 @@ variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 
 /-- Coefficients of a product of power series -/
 theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
-    coeff R d (∏ j in s, f j) = ∑ l in piAntidiagonal s d, ∏ i in s, coeff R (l i) (f i) := by
+    coeff R d (∏ j ∈ s, f j) = ∑ l ∈ finsuppAntidiag s d, ∏ i ∈ s, coeff R (l i) (f i) := by
   simp only [coeff]
   convert MvPowerSeries.coeff_prod _ _ _
-  rw [← AddEquiv.finsuppUnique_symm d, ← mapRange_piAntidiagonal_eq, sum_map, sum_congr rfl]
+  rw [← AddEquiv.finsuppUnique_symm d, ← mapRange_finsuppAntidiag_eq, sum_map, sum_congr rfl]
   intro x _
   apply prod_congr rfl
   intro i _
@@ -649,11 +673,54 @@ theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
     Equiv.coe_toEmbedding, Finsupp.mapRange.equiv_apply, AddEquiv.coe_toEquiv_symm,
     Finsupp.mapRange_apply, AddEquiv.finsuppUnique_symm]
 
+/-- The `n`-th coefficient of the `k`-th power of a power series. -/
+lemma coeff_pow (k n : ℕ) (φ : R⟦X⟧) :
+    coeff R n (φ ^ k) = ∑ l ∈ finsuppAntidiag (range k) n, ∏ i ∈ range k, coeff R (l i) φ := by
+  have h₁ (i : ℕ) : Function.const ℕ φ i = φ := rfl
+  have h₂ (i : ℕ) : ∏ j ∈ range i, Function.const ℕ φ j = φ ^ i := by
+    apply prod_range_induction (fun _ => φ) (fun i => φ ^ i) rfl (congrFun rfl) i
+  rw [← h₂, ← h₁ k]
+  apply coeff_prod (f := Function.const ℕ φ) (d := n) (s := range k)
+
+/-- First coefficient of the product of two power series. -/
+lemma coeff_one_mul (φ ψ : R⟦X⟧) : coeff R 1 (φ * ψ) =
+    coeff R 1 φ * constantCoeff R ψ + coeff R 1 ψ * constantCoeff R φ := by
+  have : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
+  rw [coeff_mul, this, Finset.sum_insert, Finset.sum_singleton, coeff_zero_eq_constantCoeff,
+    mul_comm, add_comm]
+  norm_num
+
+/-- First coefficient of the `n`-th power of a power series with constant coefficient 1. -/
+lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) (hC : constantCoeff R φ = 1) :
+    coeff R 1 (φ ^ n) = n * coeff R 1 φ := by
+  induction n with
+  | zero => simp only [pow_zero, coeff_one, one_ne_zero, ↓reduceIte, Nat.cast_zero, zero_mul]
+  | succ n' ih =>
+      have h₁ (m : ℕ) : φ ^ (m + 1) = φ ^ m * φ := by exact rfl
+      have h₂ : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
+      rw [h₁, coeff_mul, h₂, Finset.sum_insert, Finset.sum_singleton]
+      simp only [coeff_zero_eq_constantCoeff, map_pow, Nat.cast_add, Nat.cast_one,
+        ih, hC, one_pow, one_mul, mul_one, ← one_add_mul, add_comm]
+      decide
+
 end CommSemiring
 
 section CommRing
 
 variable {A : Type*} [CommRing A]
+
+theorem not_isField : ¬IsField A⟦X⟧ := by
+  by_cases hA : Subsingleton A
+  · exact not_isField_of_subsingleton _
+  · nontriviality A
+    rw [Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]
+    use Ideal.span {X}
+    constructor
+    · rw [bot_lt_iff_ne_bot, Ne, Ideal.span_singleton_eq_bot]
+      exact X_ne_zero
+    · rw [lt_top_iff_ne_top, Ne, Ideal.eq_top_iff_one, Ideal.mem_span_singleton,
+        X_dvd_iff, constantCoeff_one]
+      exact one_ne_zero
 
 @[simp]
 theorem rescale_X (a : A) : rescale a X = C A a * X := by
@@ -758,6 +825,9 @@ theorem X_prime : Prime (X : R⟦X⟧) := by
 set_option linter.uppercaseLean3 false in
 #align power_series.X_prime PowerSeries.X_prime
 
+/-- The variable of the power series ring over an integral domain is irreducible. -/
+theorem X_irreducible : Irreducible (X : R⟦X⟧) := X_prime.irreducible
+
 theorem rescale_injective {a : R} (ha : a ≠ 0) : Function.Injective (rescale a) := by
   intro p q h
   rw [PowerSeries.ext_iff] at *
@@ -853,18 +923,8 @@ theorem coe_C (a : R) : ((C a : R[X]) : PowerSeries R) = PowerSeries.C R a := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.coe_C Polynomial.coe_C
 
-
-set_option linter.deprecated false in
-@[simp, norm_cast]
-theorem coe_bit0 : ((bit0 φ : R[X]) : PowerSeries R) = bit0 (φ : PowerSeries R) :=
-  coe_add φ φ
-#align polynomial.coe_bit0 Polynomial.coe_bit0
-
-set_option linter.deprecated false in
-@[simp, norm_cast]
-theorem coe_bit1 : ((bit1 φ : R[X]) : PowerSeries R) = bit1 (φ : PowerSeries R) := by
-  rw [bit1, bit1, coe_add, coe_one, coe_bit0]
-#align polynomial.coe_bit1 Polynomial.coe_bit1
+#noalign polynomial.coe_bit0
+#noalign polynomial.coe_bit1
 
 @[simp, norm_cast]
 theorem coe_X : ((X : R[X]) : PowerSeries R) = PowerSeries.X :=

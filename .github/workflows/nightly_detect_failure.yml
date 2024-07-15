@@ -114,7 +114,7 @@ jobs:
 
     - name: Check for matching bump/nightly-YYYY-MM-DD branch
       id: check_branch
-      uses: actions/github-script@v5
+      uses: actions/github-script@v7
       with:
         script: |
           const branchName = `bump/nightly-${process.env.NIGHTLY}`;
@@ -140,7 +140,7 @@ jobs:
 
     - name: Fetch latest bump branch name
       id: latest_bump_branch
-      uses: actions/github-script@v5
+      uses: actions/github-script@v7
       with:
         script: |
           const branches = await github.paginate(github.rest.repos.listBranches, {
@@ -159,7 +159,7 @@ jobs:
 
     - name: Fetch lean-toolchain from latest bump branch
       id: bump_version
-      uses: actions/github-script@v5
+      uses: actions/github-script@v7
       with:
         script: |
           const response = await github.rest.repos.getContent({
@@ -181,19 +181,33 @@ jobs:
       run: |
         import os
         import zulip
-        client = zulip.Client(email='github-mathlib4-bot@leanprover.zulipchat.com', api_key=os.getenv('ZULIP_API_KEY'), site='https://leanprover.zulipchat.com')
+        client = zulip.Client(email='github-mathlib4-bot@leanprover.zulipchat.com', api_key='${{ secrets.ZULIP_API_KEY }}', site='https://leanprover.zulipchat.com')
         current_version = os.getenv('NIGHTLY')
         bump_version = os.getenv('BUMP_VERSION')
         bump_branch = os.getenv('BUMP_BRANCH')
         print(f'Current version: {current_version}, Bump version: {bump_version}')
         if current_version > bump_version:
             print('Lean toolchain in `nightly-testing` is ahead of the bump branch.')
+            # Get the last message in the 'Mathlib bump branch reminders' topic
             request = {
-                'type': 'stream',
-                'to': 'nightly-testing',
-                'topic': 'Mathlib status update',
-                'content': f"🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing, and then PR that to {bump_branch}."
+              'anchor': 'newest',
+              'num_before': 1,
+              'num_after': 0,
+              'narrow': [{'operator': 'stream', 'operand': 'nightly-testing'}, {'operator': 'topic', 'operand': 'Mathlib bump branch reminders'}],
+              'apply_markdown': False    # Otherwise the content test below fails.
             }
-            result = client.send_message(request)
+            response = client.get_messages(request)
+            messages = response['messages']
+            payload = f"🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing, and then PR that to {bump_branch}."
+            if not messages or messages[0]['content'] != payload:
+                # Post the reminder message
+                request = {
+                    'type': 'stream',
+                    'to': 'nightly-testing',
+                    'topic': 'Mathlib bump branch reminders',
+                    'content': payload
+                }
+                result = client.send_message(request)
+                print(result)
         else:
             print('No action needed.')

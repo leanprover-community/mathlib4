@@ -434,8 +434,8 @@ namespace ModularForm
 section GradedRing
 
 /-- Cast for modular forms, which is useful for avoiding `Heq`s. -/
-def mcast {a b : ℤ} {Γ : Subgroup SL(2, ℤ)} (h : a = b) (f : ModularForm Γ a) : ModularForm Γ b
-    where
+def mcast {a b : ℤ} {Γ : Subgroup SL(2, ℤ)} (h : a = b) (f : ModularForm Γ a) :
+    ModularForm Γ b where
   toFun := (f : ℍ → ℂ)
   slash_action_eq' A := h ▸ f.slash_action_eq' A
   holo' := f.holo'
@@ -480,3 +480,7 @@ instance instGAlgebra (Γ : Subgroup SL(2, ℤ)) : DirectSum.GAlgebra ℂ (Modul
 
 open scoped DirectSum in
 example (Γ : Subgroup SL(2, ℤ)) : Algebra ℂ (⨁ i, ModularForm Γ i) := inferInstance
+
+end GradedRing
+
+end ModularForm

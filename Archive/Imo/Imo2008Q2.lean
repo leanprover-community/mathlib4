@@ -3,12 +3,12 @@ Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
-import Mathlib.Algebra.Parity
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 #align_import imo.imo2008_q2 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
 
@@ -103,9 +103,9 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
         set z : ℚ := -t * (t + 1) with hz_def
         simp only [t, W, K, g, Set.mem_image, Prod.exists]
         use x, y, z; constructor
-        simp only [Set.mem_setOf_eq]
-        · use x, y, z; constructor
-          rfl
+        · simp only [Set.mem_setOf_eq]
+          use x, y, z; constructor
+          · rfl
           · use t; constructor
             · simp only [t, gt_iff_lt, lt_max_iff]; right; trivial
             exact ⟨rfl, rfl, rfl⟩

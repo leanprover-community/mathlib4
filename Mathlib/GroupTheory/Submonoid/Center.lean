@@ -3,7 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.GroupTheory.Submonoid.Operations
+import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.GroupTheory.Subsemigroup.Center
 
 #align_import group_theory.submonoid.center from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
@@ -34,7 +34,7 @@ in `M` -/
       in `M`"]
 def center : Submonoid M where
   carrier := Set.center M
-  one_mem' := Set.one_mem_center M
+  one_mem' := Set.one_mem_center
   mul_mem' := Set.mul_mem_center
 #align submonoid.center Submonoid.center
 #align add_submonoid.center AddSubmonoid.center

@@ -3,9 +3,9 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
@@ -48,8 +48,6 @@ additive, preadditive, Hom group, Ab-category, Ab-enriched
 universe v u
 
 open CategoryTheory.Limits
-
-open BigOperators
 
 namespace CategoryTheory
 
@@ -181,13 +179,13 @@ theorem comp_zsmul (n : ℤ) : f ≫ (n • g) = n • f ≫ g :=
 
 @[reassoc]
 theorem comp_sum {P Q R : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J → (Q ⟶ R)) :
-    (f ≫ ∑ j in s, g j) = ∑ j in s, f ≫ g j :=
+    (f ≫ ∑ j ∈ s, g j) = ∑ j ∈ s, f ≫ g j :=
   map_sum (leftComp R f) _ _
 #align category_theory.preadditive.comp_sum CategoryTheory.Preadditive.comp_sum
 
 @[reassoc]
 theorem sum_comp {P Q R : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g : Q ⟶ R) :
-    (∑ j in s, f j) ≫ g = ∑ j in s, f j ≫ g :=
+    (∑ j ∈ s, f j) ≫ g = ∑ j ∈ s, f j ≫ g :=
   map_sum (rightComp P g) _ _
 #align category_theory.preadditive.sum_comp CategoryTheory.Preadditive.sum_comp
 
@@ -475,10 +473,10 @@ instance : SMul (Units ℤ) (X ≅ Y) where
         simp only [comp_zsmul, zsmul_comp, smul_smul, Units.mul_inv, one_smul, e.inv_hom_id] }
 
 @[simp]
-lemma smul_iso_hom (a : Units ℤ) (e : X ≅ Y) : (a • e).hom = (a : ℤ) • e.hom := rfl
+lemma smul_iso_hom (a : Units ℤ) (e : X ≅ Y) : (a • e).hom = a • e.hom := rfl
 
 @[simp]
-lemma smul_iso_inv (a : Units ℤ) (e : X ≅ Y) : (a • e).inv = ((a⁻¹ : Units ℤ) : ℤ) • e.inv := rfl
+lemma smul_iso_inv (a : Units ℤ) (e : X ≅ Y) : (a • e).inv = a⁻¹ • e.inv := rfl
 
 instance : Neg (X ≅ Y) where
   neg e :=

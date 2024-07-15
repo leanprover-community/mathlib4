@@ -44,7 +44,7 @@ acted on by an `AddGroup G` with a transitive and free action given
 by the `+ᵥ` operation and a corresponding subtraction given by the
 `-ᵥ` operation. In the case of a vector space, it is an affine
 space. -/
-class AddTorsor (G : outParam (Type*)) (P : Type*) [outParam <| AddGroup G] extends AddAction G P,
+class AddTorsor (G : outParam Type*) (P : Type*) [AddGroup G] extends AddAction G P,
   VSub G P where
   [nonempty : Nonempty P]
   /-- Torsor subtraction and addition with the same element cancels out. -/
@@ -62,8 +62,7 @@ attribute [instance 100] AddTorsor.nonempty
 /-- An `AddGroup G` is a torsor for itself. -/
 -- Porting note(#12096): linter not ported yet
 --@[nolint instance_priority]
-instance addGroupIsAddTorsor (G : Type*) [AddGroup G] : AddTorsor G G
-    where
+instance addGroupIsAddTorsor (G : Type*) [AddGroup G] : AddTorsor G G where
   vsub := Sub.sub
   vsub_vadd' := sub_add_cancel
   vadd_vsub' := add_sub_cancel_right
@@ -153,7 +152,7 @@ theorem vsub_add_vsub_cancel (p₁ p₂ p₃ : P) : p₁ -ᵥ p₂ + (p₂ -ᵥ 
 of subtracting them. -/
 @[simp]
 theorem neg_vsub_eq_vsub_rev (p₁ p₂ : P) : -(p₁ -ᵥ p₂) = p₂ -ᵥ p₁ := by
-  refine' neg_eq_of_add_eq_zero_right (vadd_right_cancel p₁ _)
+  refine neg_eq_of_add_eq_zero_right (vadd_right_cancel p₁ ?_)
   rw [vsub_add_vsub_cancel, vsub_self]
 #align neg_vsub_eq_vsub_rev neg_vsub_eq_vsub_rev
 
@@ -224,7 +223,7 @@ theorem vsub_left_injective (p : P) : Function.Injective ((· -ᵥ p) : P → G)
 /-- If subtracting two points from the same point produces equal
 results, those points are equal. -/
 theorem vsub_right_cancel {p₁ p₂ p : P} (h : p -ᵥ p₁ = p -ᵥ p₂) : p₁ = p₂ := by
-  refine' vadd_left_cancel (p -ᵥ p₂) _
+  refine vadd_left_cancel (p -ᵥ p₂) ?_
   rw [vsub_vadd, ← h, vsub_vadd]
 #align vsub_right_cancel vsub_right_cancel
 
@@ -468,20 +467,20 @@ theorem pointReflection_involutive (x : P) : Involutive (pointReflection x : P �
 set_option linter.deprecated false
 /-- `x` is the only fixed point of `pointReflection x`. This lemma requires
 `x + x = y + y ↔ x = y`. There is no typeclass to use here, so we add it as an explicit argument. -/
-theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P} (h : Injective (bit0 : G → G)) :
+theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P} (h : Injective (2 • · : G → G)) :
     pointReflection x y = y ↔ y = x := by
   rw [pointReflection_apply, eq_comm, eq_vadd_iff_vsub_eq, ← neg_vsub_eq_vsub_rev,
-    neg_eq_iff_add_eq_zero, ← bit0, ← bit0_zero, h.eq_iff, vsub_eq_zero_iff_eq, eq_comm]
+    neg_eq_iff_add_eq_zero, ← two_nsmul, ← nsmul_zero 2, h.eq_iff, vsub_eq_zero_iff_eq, eq_comm]
 #align equiv.point_reflection_fixed_iff_of_injective_bit0 Equiv.pointReflection_fixed_iff_of_injective_bit0
 
 -- Porting note: need this to calm down CI
 theorem injective_pointReflection_left_of_injective_bit0 {G P : Type*} [AddCommGroup G]
-    [AddTorsor G P] (h : Injective (bit0 : G → G)) (y : P) :
+    [AddTorsor G P] (h : Injective (2 • · : G → G)) (y : P) :
     Injective fun x : P => pointReflection x y :=
   fun x₁ x₂ (hy : pointReflection x₁ y = pointReflection x₂ y) => by
   rwa [pointReflection_apply, pointReflection_apply, vadd_eq_vadd_iff_sub_eq_vsub,
-    vsub_sub_vsub_cancel_right, ← neg_vsub_eq_vsub_rev, neg_eq_iff_add_eq_zero, ← bit0, ← bit0_zero,
-    h.eq_iff, vsub_eq_zero_iff_eq] at hy
+    vsub_sub_vsub_cancel_right, ← neg_vsub_eq_vsub_rev, neg_eq_iff_add_eq_zero,
+    ← two_nsmul, ← nsmul_zero 2, h.eq_iff, vsub_eq_zero_iff_eq] at hy
 #align equiv.injective_point_reflection_left_of_injective_bit0 Equiv.injective_pointReflection_left_of_injective_bit0
 
 end Equiv

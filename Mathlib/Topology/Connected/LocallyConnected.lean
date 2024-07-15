@@ -94,10 +94,10 @@ theorem locallyConnectedSpace_iff_connectedComponentIn_open :
     exact fun F hF x _ => hF.connectedComponentIn
   · intro h
     rw [locallyConnectedSpace_iff_open_connected_subsets]
-    refine' fun x U hU =>
+    refine fun x U hU =>
         ⟨connectedComponentIn (interior U) x,
-          (connectedComponentIn_subset _ _).trans interior_subset, h _ isOpen_interior x _,
-          mem_connectedComponentIn _, isConnected_connectedComponentIn_iff.mpr _⟩ <;>
+          (connectedComponentIn_subset _ _).trans interior_subset, h _ isOpen_interior x ?_,
+          mem_connectedComponentIn ?_, isConnected_connectedComponentIn_iff.mpr ?_⟩ <;>
       exact mem_interior_iff_mem_nhds.mpr hU
 #align locally_connected_space_iff_connected_component_in_open locallyConnectedSpace_iff_connectedComponentIn_open
 
@@ -109,7 +109,7 @@ theorem locallyConnectedSpace_iff_connected_subsets :
     rcases h x U hxU with ⟨V, hVU, hV₁, hxV, hV₂⟩
     exact ⟨V, hV₁.mem_nhds hxV, hV₂.isPreconnected, hVU⟩
   · rw [locallyConnectedSpace_iff_connectedComponentIn_open]
-    refine' fun h U hU x _ => isOpen_iff_mem_nhds.mpr fun y hy => _
+    refine fun h U hU x _ => isOpen_iff_mem_nhds.mpr fun y hy => ?_
     rw [connectedComponentIn_eq hy]
     rcases h y U (hU.mem_nhds <| (connectedComponentIn_subset _ _) hy) with ⟨V, hVy, hV, hVU⟩
     exact Filter.mem_of_superset hVy (hV.subset_connectedComponentIn (mem_of_mem_nhds hVy) hVU)

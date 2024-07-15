@@ -3,8 +3,8 @@ Copyright (c) 2018 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.BigOperators.Basic
 
 #align_import data.holor from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
@@ -36,7 +36,6 @@ Based on the tensor library found in <https://www.isa-afp.org/entries/Deep_Learn
 universe u
 
 open List
-open BigOperators
 
 /-- `HolorIndex ds` is the type of valid index tuples used to identify an entry of a holor
 of dimensions `ds`. -/
@@ -106,64 +105,16 @@ instance [Neg α] : Neg (Holor α ds) :=
   ⟨fun a t => -a t⟩
 
 instance [AddSemigroup α] : AddSemigroup (Holor α ds) := Pi.addSemigroup
--- Porting note: Previous code was:
--- by
--- refine_struct { add := (· + ·).. } <;> pi_instance_derive_field
---
--- `refine_struct` has not been ported yet.
 
 instance [AddCommSemigroup α] : AddCommSemigroup (Holor α ds) := Pi.addCommSemigroup
--- Porting note: Previous code was:
--- by
--- refine_struct { add := (· + ·).. } <;> pi_instance_derive_field
---
--- `refine_struct` has not been ported yet.
 
 instance [AddMonoid α] : AddMonoid (Holor α ds) := Pi.addMonoid
--- Porting note: Previous code was:
--- by
--- refine_struct
---     { zero := (0 : Holor α ds)
---       add := (· + ·)
---       nsmul := fun n x i => n • x i } <;>
---   pi_instance_derive_field
---
--- `refine_struct` has not been ported yet.
 
 instance [AddCommMonoid α] : AddCommMonoid (Holor α ds) := Pi.addCommMonoid
--- Porting note: Previous code was:
--- by
--- refine_struct
---     { zero := (0 : Holor α ds)
---       add := (· + ·)
---       nsmul := AddMonoid.nsmul } <;>
---   pi_instance_derive_field
---
--- `refine_struct` has not been ported yet.
 
 instance [AddGroup α] : AddGroup (Holor α ds) := Pi.addGroup
--- Porting note: Previous code was:
--- by
--- refine_struct
---     { zero := (0 : Holor α ds)
---       add := (· + ·)
---       nsmul := AddMonoid.nsmul
---       zsmul := fun n x i => n • x i } <;>
---   pi_instance_derive_field
---
--- `refine_struct` has not been ported yet.
 
 instance [AddCommGroup α] : AddCommGroup (Holor α ds) := Pi.addCommGroup
--- Porting note: Previous code was:
--- by
--- refine_struct
---     { zero := (0 : Holor α ds)
---       add := (· + ·)
---       nsmul := AddMonoid.nsmul
---       zsmul := SubNegMonoid.zsmul } <;>
---   pi_instance_derive_field
---
--- `refine_struct` has not been ported yet.
 
 -- scalar product
 instance [Mul α] : SMul α (Holor α ds) :=
@@ -198,7 +149,7 @@ theorem mul_assoc0 [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z :
     unfold mul
     rw [mul_assoc, ← HolorIndex.take_take, ← HolorIndex.drop_take, ← HolorIndex.drop_drop,
       cast_type]
-    rfl
+    · rfl
     rw [append_assoc]
 #align holor.mul_assoc0 Holor.mul_assoc0
 
@@ -278,9 +229,9 @@ theorem slice_zero [Zero α] (i : ℕ) (hid : i < d) : slice (0 : Holor α (d ::
 #align holor.slice_zero Holor.slice_zero
 
 theorem slice_sum [AddCommMonoid α] {β : Type} (i : ℕ) (hid : i < d) (s : Finset β)
-    (f : β → Holor α (d :: ds)) : (∑ x in s, slice (f x) i hid) = slice (∑ x in s, f x) i hid := by
+    (f : β → Holor α (d :: ds)) : (∑ x ∈ s, slice (f x) i hid) = slice (∑ x ∈ s, f x) i hid := by
   letI := Classical.decEq β
-  refine' Finset.induction_on s _ _
+  refine Finset.induction_on s ?_ ?_
   · simp [slice_zero]
   · intro _ _ h_not_in ih
     rw [Finset.sum_insert h_not_in, ih, slice_add, Finset.sum_insert h_not_in]
@@ -290,7 +241,7 @@ theorem slice_sum [AddCommMonoid α] {β : Type} (i : ℕ) (hid : i < d) (s : Fi
 summing up. -/
 @[simp]
 theorem sum_unitVec_mul_slice [Ring α] (x : Holor α (d :: ds)) :
-    (∑ i in (Finset.range d).attach,
+    (∑ i ∈ (Finset.range d).attach,
         unitVec d i ⊗ slice x i (Nat.succ_le_of_lt (Finset.mem_range.1 i.prop))) =
       x := by
   apply slice_eq _ _ _
@@ -361,7 +312,7 @@ theorem cprankMax_mul [Ring α] :
 #align holor.cprank_max_mul Holor.cprankMax_mul
 
 theorem cprankMax_sum [Ring α] {β} {n : ℕ} (s : Finset β) (f : β → Holor α ds) :
-    (∀ x ∈ s, CPRankMax n (f x)) → CPRankMax (s.card * n) (∑ x in s, f x) :=
+    (∀ x ∈ s, CPRankMax n (f x)) → CPRankMax (s.card * n) (∑ x ∈ s, f x) :=
   letI := Classical.decEq β
   Finset.induction_on s (by simp [CPRankMax.zero])
     (by
@@ -369,7 +320,7 @@ theorem cprankMax_sum [Ring α] {β} {n : ℕ} (s : Finset β) (f : β → Holor
       simp only [Finset.sum_insert h_x_notin_s, Finset.card_insert_of_not_mem h_x_notin_s]
       rw [Nat.right_distrib]
       simp only [Nat.one_mul, Nat.add_comm]
-      have ih' : CPRankMax (Finset.card s * n) (∑ x in s, f x) := by
+      have ih' : CPRankMax (Finset.card s * n) (∑ x ∈ s, f x) := by
         apply ih
         intro (x : β) (h_x_in_s : x ∈ s)
         simp only [h_cprank, Finset.mem_insert_of_mem, h_x_in_s]
@@ -387,12 +338,12 @@ theorem cprankMax_upper_bound [Ring α] : ∀ {ds}, ∀ x : Holor α ds, CPRankM
       simp [Finset.card_range]
     have :
       CPRankMax (Finset.card (Finset.attach (Finset.range d)) * prod ds)
-        (∑ i in Finset.attach (Finset.range d),
+        (∑ i ∈ Finset.attach (Finset.range d),
           unitVec d i.val ⊗ slice x i.val (mem_range.1 i.2)) :=
       cprankMax_sum (Finset.range d).attach _ fun i _ => h_summands i
     have h_cprankMax_sum :
       CPRankMax (Finset.card (Finset.range d) * prod ds)
-        (∑ i in Finset.attach (Finset.range d),
+        (∑ i ∈ Finset.attach (Finset.range d),
           unitVec d i.val ⊗ slice x i.val (mem_range.1 i.2)) := by rwa [Finset.card_attach] at this
     rw [← sum_unitVec_mul_slice x]
     rw [h_dds_prod]

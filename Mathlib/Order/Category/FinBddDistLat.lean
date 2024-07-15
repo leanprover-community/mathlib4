@@ -30,7 +30,7 @@ structure FinBddDistLat where
 
 namespace FinBddDistLat
 
-instance : CoeSort FinBddDistLat (Type*) :=
+instance : CoeSort FinBddDistLat Type* :=
   ⟨fun X => X.toBddDistLat⟩
 
 instance (X : FinBddDistLat) : DistribLattice X :=

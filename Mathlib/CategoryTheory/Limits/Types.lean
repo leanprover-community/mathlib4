@@ -84,6 +84,7 @@ theorem isLimitEquivSections_symm_apply {c : Cone F} (t : IsLimit c)
     (x : F.sections) (j : J) :
     c.π.app j ((isLimitEquivSections t).symm x) = (x : ∀ j, F.obj j) j := by
   conv_rhs => rw [← (isLimitEquivSections t).right_inv x]
+  rfl
 #align category_theory.limits.types.is_limit_equiv_sections_symm_apply CategoryTheory.Limits.Types.isLimitEquivSections_symm_apply
 
 end limit_characterization
@@ -143,7 +144,7 @@ end
 
 end Small
 
-theorem hasLimit_iff_small_sections (F : J ⥤ Type u): HasLimit F ↔ Small.{u} F.sections :=
+theorem hasLimit_iff_small_sections (F : J ⥤ Type u) : HasLimit F ↔ Small.{u} F.sections :=
   ⟨fun _ => .mk ⟨_, ⟨(Equiv.ofBijective _
     ((isLimit_iff_bijective_sectionOfCone (limit.cone F)).mp ⟨limit.isLimit _⟩)).symm⟩⟩,
    fun _ => ⟨_, Small.limitConeIsLimit F⟩⟩
@@ -234,7 +235,7 @@ theorem limitEquivSections_symm_apply (x : F.sections) (j : J) :
 --theorem limitEquivSections_symm_apply' (F : J ⥤ Type v) (x : F.sections) (j : J) :
 --    limit.π F j ((limitEquivSections.{v, v} F).symm x) = (x : ∀ j, F.obj j) j :=
 --  isLimitEquivSections_symm_apply _ _ _
---#align category_theory.limits.types.limit_equiv_sections_symm_apply' CategoryTheory.Limits.Types.limitEquivSections_symm_apply'
+-- #align category_theory.limits.types.limit_equiv_sections_symm_apply' CategoryTheory.Limits.Types.limitEquivSections_symm_apply'
 
 -- Porting note (#11182): removed @[ext]
 /-- Construct a term of `limit F : Type u` from a family of terms `x : Π j, F.obj j`
@@ -616,6 +617,11 @@ theorem jointly_surjective' (x : colimit F) :
     ∃ j y, colimit.ι F j y = x :=
   jointly_surjective F (colimit.isColimit F) x
 #align category_theory.limits.types.jointly_surjective' CategoryTheory.Limits.Types.jointly_surjective'
+
+/-- If a colimit is nonempty, also its index category is nonempty. -/
+theorem nonempty_of_nonempty_colimit {F : J ⥤ Type u} [HasColimit F] :
+    Nonempty (colimit F) → Nonempty J :=
+  Nonempty.map <| Sigma.fst ∘ Quot.out ∘ (colimitEquivQuot F).toFun
 
 variable {α β : Type u} (f : α ⟶ β)
 

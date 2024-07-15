@@ -6,9 +6,9 @@ Authors: Michael Stoll
 import Mathlib.NumberTheory.DirichletCharacter.Bounds
 import Mathlib.NumberTheory.LSeries.Convolution
 import Mathlib.NumberTheory.LSeries.Deriv
+import Mathlib.NumberTheory.LSeries.RiemannZeta
 import Mathlib.NumberTheory.SumPrimeReciprocals
 import Mathlib.NumberTheory.VonMangoldt
-import Mathlib.NumberTheory.ZetaFunction
 
 /-!
 # L-series of Dirichlet characters and arithmetic functions
@@ -54,7 +54,7 @@ open LSeries Nat Complex
 lemma not_LSeriesSummable_moebius_at_one : ¬ LSeriesSummable ↗μ 1 := by
   intro h
   refine not_summable_one_div_on_primes <| summable_ofReal.mp <| Summable.of_neg ?_
-  simp only [← Pi.neg_def, Set.indicator_comp_of_zero ofReal_zero, ofReal_inv, ofReal_nat_cast]
+  simp only [← Pi.neg_def, Set.indicator_comp_of_zero ofReal_zero, ofReal_inv, ofReal_natCast]
   refine (h.indicator {n | n.Prime}).congr (fun n ↦ ?_)
   by_cases hn : n ∈ {p | p.Prime}
   · simp only [Pi.neg_apply, Set.indicator_of_mem hn, term_of_ne_zero hn.ne_zero,
@@ -92,11 +92,11 @@ lemma ArithmeticFunction.const_one_eq_zeta {R : Type*} [Semiring R] {n : ℕ} (h
     (1 : ℕ → R) n = (ζ ·) n := by
   simp only [Pi.one_apply, zeta_apply, hn, ↓reduceIte, cast_one]
 
-lemma LSeries.one_convolution_eq_zeta_convolution {R : Type*} [Semiring R] (f : ℕ → R):
+lemma LSeries.one_convolution_eq_zeta_convolution {R : Type*} [Semiring R] (f : ℕ → R) :
     (1 : ℕ → R) ⍟ f = ((ArithmeticFunction.zeta ·) : ℕ → R) ⍟ f :=
   convolution_congr ArithmeticFunction.const_one_eq_zeta fun _ ↦ rfl
 
-lemma LSeries.convolution_one_eq_convolution_zeta {R : Type*} [Semiring R] (f : ℕ → R):
+lemma LSeries.convolution_one_eq_convolution_zeta {R : Type*} [Semiring R] (f : ℕ → R) :
     f ⍟ (1 : ℕ → R) = f ⍟ ((ArithmeticFunction.zeta ·) : ℕ → R) :=
   convolution_congr (fun _ ↦ rfl) ArithmeticFunction.const_one_eq_zeta
 
@@ -249,8 +249,9 @@ lemma LSeries_zeta_eq : L ↗ζ = L 1 := by
 theorem LSeriesSummable_zeta_iff {s : ℂ} : LSeriesSummable (ζ ·) s ↔ 1 < s.re :=
   (LSeriesSummable_congr s const_one_eq_zeta).symm.trans <| LSeriesSummable_one_iff
 #align nat.arithmetic_function.zeta_l_series_summable_iff_one_lt_re ArithmeticFunction.LSeriesSummable_zeta_iff
--- deprecated 2024-03-29
-@[deprecated] alias zeta_LSeriesSummable_iff_one_lt_re := LSeriesSummable_zeta_iff
+
+@[deprecated (since := "2024-03-29")]
+alias zeta_LSeriesSummable_iff_one_lt_re := LSeriesSummable_zeta_iff
 
 /-- The abscissa of (absolute) convergence of the arithmetic function `ζ` is `1`. -/
 lemma abscissaOfAbsConv_zeta : abscissaOfAbsConv ↗ζ = 1 := by
@@ -342,7 +343,7 @@ lemma LSeriesSummable_vonMangoldt {s : ℂ} (hs : 1 < s.re) : LSeriesSummable �
   refine Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun n ↦ norm_term_le s ?_) hf
   have hΛ : ‖↗Λ n‖ ≤ ‖Complex.log n‖ := by
     simp only [norm_eq_abs, abs_ofReal, _root_.abs_of_nonneg vonMangoldt_nonneg,
-      ← Complex.natCast_log, _root_.abs_of_nonneg <| Real.log_nat_cast_nonneg n]
+      ← Complex.natCast_log, _root_.abs_of_nonneg <| Real.log_natCast_nonneg n]
     exact ArithmeticFunction.vonMangoldt_le_log
   exact hΛ.trans <| by simp only [norm_eq_abs, norm_mul, Pi.one_apply, norm_one, mul_one, le_refl]
 
@@ -400,3 +401,7 @@ lemma LSeries_vonMangoldt_eq_deriv_riemannZeta_div {s : ℂ} (hs : 1 < s.re) :
   refine Filter.EventuallyEq.deriv_eq <| Filter.eventuallyEq_iff_exists_mem.mpr ?_
   exact ⟨{z | 1 < z.re}, (isOpen_lt continuous_const continuous_re).mem_nhds hs,
     fun _ ↦ LSeries_one_eq_riemannZeta⟩
+
+end ArithmeticFunction
+
+end vonMangoldt

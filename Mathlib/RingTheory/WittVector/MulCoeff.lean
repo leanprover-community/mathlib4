@@ -42,12 +42,10 @@ local notation "𝕄" => MvPolynomial (Fin 2 × ℕ) ℤ
 
 open Finset MvPolynomial
 
-open scoped BigOperators
-
 /--
 ```
-(∑ i in range n, (y.coeff i)^(p^(n-i)) * p^i.val) *
-(∑ i in range n, (y.coeff i)^(p^(n-i)) * p^i.val)
+(∑ i ∈ range n, (y.coeff i)^(p^(n-i)) * p^i.val) *
+(∑ i ∈ range n, (y.coeff i)^(p^(n-i)) * p^i.val)
 ```
 -/
 def wittPolyProd (n : ℕ) : 𝕄 :=
@@ -58,24 +56,24 @@ def wittPolyProd (n : ℕ) : 𝕄 :=
 theorem wittPolyProd_vars (n : ℕ) : (wittPolyProd p n).vars ⊆ univ ×ˢ range (n + 1) := by
   rw [wittPolyProd]
   apply Subset.trans (vars_mul _ _)
-  refine' union_subset _ _ <;>
-  · refine' Subset.trans (vars_rename _ _) _
+  refine union_subset ?_ ?_ <;>
+  · refine Subset.trans (vars_rename _ _) ?_
     simp [wittPolynomial_vars, image_subset_iff]
 #align witt_vector.witt_poly_prod_vars WittVector.wittPolyProd_vars
 
 /-- The "remainder term" of `WittVector.wittPolyProd`. See `mul_polyOfInterest_aux2`. -/
 def wittPolyProdRemainder (n : ℕ) : 𝕄 :=
-  ∑ i in range n, (p : 𝕄) ^ i * wittMul p i ^ p ^ (n - i)
+  ∑ i ∈ range n, (p : 𝕄) ^ i * wittMul p i ^ p ^ (n - i)
 #align witt_vector.witt_poly_prod_remainder WittVector.wittPolyProdRemainder
 
 theorem wittPolyProdRemainder_vars (n : ℕ) :
     (wittPolyProdRemainder p n).vars ⊆ univ ×ˢ range n := by
   rw [wittPolyProdRemainder]
-  refine' Subset.trans (vars_sum_subset _ _) _
+  refine Subset.trans (vars_sum_subset _ _) ?_
   rw [biUnion_subset]
   intro x hx
   apply Subset.trans (vars_mul _ _)
-  refine' union_subset _ _
+  refine union_subset ?_ ?_
   · apply Subset.trans (vars_pow _ _)
     have : (p : 𝕄) = C (p : ℤ) := by simp only [Int.cast_natCast, eq_intCast]
     rw [this, vars_C]
@@ -92,17 +90,17 @@ theorem wittPolyProdRemainder_vars (n : ℕ) :
 but `remainder` will only have variables up to `n`.
 -/
 def remainder (n : ℕ) : 𝕄 :=
-  (∑ x : ℕ in range (n + 1),
+  (∑ x ∈ range (n + 1),
     (rename (Prod.mk 0)) ((monomial (Finsupp.single x (p ^ (n + 1 - x)))) ((p : ℤ) ^ x))) *
-   ∑ x : ℕ in range (n + 1),
+   ∑ x ∈ range (n + 1),
     (rename (Prod.mk 1)) ((monomial (Finsupp.single x (p ^ (n + 1 - x)))) ((p : ℤ) ^ x))
 #align witt_vector.remainder WittVector.remainder
 
 theorem remainder_vars (n : ℕ) : (remainder p n).vars ⊆ univ ×ˢ range (n + 1) := by
   rw [remainder]
   apply Subset.trans (vars_mul _ _)
-  refine' union_subset _ _ <;>
-  · refine' Subset.trans (vars_sum_subset _ _) _
+  refine union_subset ?_ ?_ <;>
+  · refine Subset.trans (vars_sum_subset _ _) ?_
     rw [biUnion_subset]
     intro x hx
     rw [rename_monomial, vars_monomial, Finsupp.mapDomain_single]
@@ -120,11 +118,11 @@ def polyOfInterest (n : ℕ) : 𝕄 :=
 #align witt_vector.poly_of_interest WittVector.polyOfInterest
 
 theorem mul_polyOfInterest_aux1 (n : ℕ) :
-    ∑ i in range (n + 1), (p : 𝕄) ^ i * wittMul p i ^ p ^ (n - i) = wittPolyProd p n := by
+    ∑ i ∈ range (n + 1), (p : 𝕄) ^ i * wittMul p i ^ p ^ (n - i) = wittPolyProd p n := by
   simp only [wittPolyProd]
   convert wittStructureInt_prop p (X (0 : Fin 2) * X 1) n using 1
   · simp only [wittPolynomial, wittMul]
-    rw [AlgHom.map_sum]
+    rw [map_sum]
     congr 1 with i
     congr 1
     have hsupp : (Finsupp.single i (p ^ (n - i))).support = {i} := by
@@ -154,7 +152,7 @@ theorem mul_polyOfInterest_aux3 (n : ℕ) : wittPolyProd p (n + 1) =
   -- Porting note: the original proof applies `sum_range_succ` through a non-`conv` rewrite,
   -- but this does not work in Lean 4; the whole proof also times out very badly. The proof has been
   -- nearly totally rewritten here and now finishes quite fast.
-  rw [wittPolyProd, wittPolynomial, AlgHom.map_sum, AlgHom.map_sum]
+  rw [wittPolyProd, wittPolynomial, map_sum, map_sum]
   conv_lhs =>
     arg 1
     rw [sum_range_succ, ← C_mul_X_pow_eq_monomial, tsub_self, pow_zero, pow_one, map_mul,
@@ -199,7 +197,7 @@ theorem mul_polyOfInterest_vars (n : ℕ) :
     ((p : 𝕄) ^ (n + 1) * polyOfInterest p n).vars ⊆ univ ×ˢ range (n + 1) := by
   rw [mul_polyOfInterest_aux5]
   apply Subset.trans (vars_sub_subset _)
-  refine' union_subset _ _
+  refine union_subset ?_ ?_
   · apply remainder_vars
   · apply wittPolyProdRemainder_vars
 #align witt_vector.mul_poly_of_interest_vars WittVector.mul_polyOfInterest_vars
@@ -221,8 +219,8 @@ theorem polyOfInterest_vars (n : ℕ) : (polyOfInterest p n).vars ⊆ univ ×ˢ 
 theorem peval_polyOfInterest (n : ℕ) (x y : 𝕎 k) :
     peval (polyOfInterest p n) ![fun i => x.coeff i, fun i => y.coeff i] =
     (x * y).coeff (n + 1) + p ^ (n + 1) * x.coeff (n + 1) * y.coeff (n + 1) -
-      y.coeff (n + 1) * ∑ i in range (n + 1 + 1), p ^ i * x.coeff i ^ p ^ (n + 1 - i) -
-      x.coeff (n + 1) * ∑ i in range (n + 1 + 1), p ^ i * y.coeff i ^ p ^ (n + 1 - i) := by
+      y.coeff (n + 1) * ∑ i ∈ range (n + 1 + 1), p ^ i * x.coeff i ^ p ^ (n + 1 - i) -
+      x.coeff (n + 1) * ∑ i ∈ range (n + 1 + 1), p ^ i * y.coeff i ^ p ^ (n + 1 - i) := by
   simp only [polyOfInterest, peval, map_natCast, Matrix.head_cons, map_pow,
     Function.uncurry_apply_pair, aeval_X, Matrix.cons_val_one, map_mul, Matrix.cons_val_zero,
     map_sub]
@@ -242,7 +240,7 @@ theorem peval_polyOfInterest' (n : ℕ) (x y : 𝕎 k) :
   have : (p : k) = 0 := CharP.cast_eq_zero k p
   simp only [this, Nat.cast_pow, ne_eq, add_eq_zero, and_false, zero_pow, zero_mul, add_zero,
     not_false_eq_true]
-  have sum_zero_pow_mul_pow_p (y : 𝕎 k) : ∑ x : ℕ in range (n + 1 + 1),
+  have sum_zero_pow_mul_pow_p (y : 𝕎 k) : ∑ x ∈ range (n + 1 + 1),
       (0 : k) ^ x * y.coeff x ^ p ^ (n + 1 - x) = y.coeff 0 ^ p ^ (n + 1) := by
     rw [Finset.sum_eq_single_of_mem 0] <;> simp (config := { contextual := true })
   congr <;> apply sum_zero_pow_mul_pow_p
@@ -265,7 +263,7 @@ theorem nth_mul_coeff' (n : ℕ) :
     apply Function.uncurry ![x, y]
     simp_rw [product_val, this, Multiset.mem_product, mem_univ_val, true_and_iff, range_val,
       Multiset.range_succ, Multiset.mem_cons, Multiset.mem_range] at ha
-    refine' ⟨a.fst, ⟨a.snd, _⟩⟩
+    refine ⟨a.fst, ⟨a.snd, ?_⟩⟩
     cases' ha with ha ha <;> omega
   use f
   intro x y

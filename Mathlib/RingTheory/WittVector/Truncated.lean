@@ -282,11 +282,17 @@ theorem truncateFun_pow (x : 𝕎 R) (m : ℕ) : truncateFun n (x ^ m) = truncat
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_pow WittVector.truncateFun_pow
 
-theorem truncateFun_nat_cast (m : ℕ) : truncateFun n (m : 𝕎 R) = m := rfl
-#align witt_vector.truncate_fun_nat_cast WittVector.truncateFun_nat_cast
+theorem truncateFun_natCast (m : ℕ) : truncateFun n (m : 𝕎 R) = m := rfl
+#align witt_vector.truncate_fun_nat_cast WittVector.truncateFun_natCast
 
-theorem truncateFun_int_cast (m : ℤ) : truncateFun n (m : 𝕎 R) = m := rfl
-#align witt_vector.truncate_fun_int_cast WittVector.truncateFun_int_cast
+@[deprecated (since := "2024-04-17")]
+alias truncateFun_nat_cast := truncateFun_natCast
+
+theorem truncateFun_intCast (m : ℤ) : truncateFun n (m : 𝕎 R) = m := rfl
+#align witt_vector.truncate_fun_int_cast WittVector.truncateFun_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias truncateFun_int_cast := truncateFun_intCast
 
 end WittVector
 
@@ -300,8 +306,8 @@ variable [CommRing R]
 instance instCommRing : CommRing (TruncatedWittVector p n R) :=
   (truncateFun_surjective p n R).commRing _ (truncateFun_zero p n R) (truncateFun_one p n R)
     (truncateFun_add n) (truncateFun_mul n) (truncateFun_neg n) (truncateFun_sub n)
-    (truncateFun_nsmul n) (truncateFun_zsmul n) (truncateFun_pow n) (truncateFun_nat_cast n)
-    (truncateFun_int_cast n)
+    (truncateFun_nsmul n) (truncateFun_zsmul n) (truncateFun_pow n) (truncateFun_natCast n)
+    (truncateFun_intCast n)
 
 end TruncatedWittVector
 
@@ -474,11 +480,11 @@ to a ring hom `S → 𝕎 R`.
 `lift` defines the universal property of `𝕎 R` as the inverse limit of `TruncatedWittVector n`.
 -/
 def lift : S →+* 𝕎 R := by
-  refine' { toFun := liftFun f
-            map_zero' := _
-            map_one' := _
-            map_add' := _
-            map_mul' := _ } <;>
+  refine {  toFun := liftFun f
+            map_zero' := ?_
+            map_one' := ?_
+            map_add' := ?_
+            map_mul' := ?_ } <;>
   ( intros
     dsimp only
     rw [← sub_eq_zero, ← Ideal.mem_bot, ← iInf_ker_truncate, Ideal.mem_iInf]

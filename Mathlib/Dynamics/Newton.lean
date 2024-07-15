@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir, Oliver Nash
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Identities
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Polynomial.Nilpotent
 import Mathlib.RingTheory.Polynomial.Tower
 
@@ -25,7 +25,7 @@ such as Hensel's lemma and Jordan-Chevalley decomposition.
  * `Polynomial.isFixedPt_newtonMap_of_isUnit_iff`: `x` is a fixed point for Newton iteration iff
    it is a root of `P` (provided `P'(x)` is a unit).
  * `Polynomial.exists_unique_nilpotent_sub_and_aeval_eq_zero`: if `x` is almost a root of `P` in the
-   sense that that `P(x)` is nilpotent (and `P'(x)` is a unit) then we may write `x` as a sum
+   sense that `P(x)` is nilpotent (and `P'(x)` is a unit) then we may write `x` as a sum
    `x = n + r` where `n` is nilpotent and `r` is a root of `P`. This can be used to prove the
    Jordan-Chevalley decomposition of linear endomorphims.
 
@@ -98,7 +98,7 @@ theorem aeval_pow_two_pow_dvd_aeval_iterate_newtonMap
     · rw [neg_mul, even_two.neg_pow, mul_pow, pow_succ, pow_mul]
       exact dvd_mul_of_dvd_right (pow_dvd_pow_of_dvd ih 2) _
 
-/-- If `x` is almost a root of `P` in the sense that that `P(x)` is nilpotent (and `P'(x)` is a
+/-- If `x` is almost a root of `P` in the sense that `P(x)` is nilpotent (and `P'(x)` is a
 unit) then we may write `x` as a sum `x = n + r` where `n` is nilpotent and `r` is a root of `P`.
 Moreover, `n` and `r` are unique.
 

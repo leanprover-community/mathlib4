@@ -56,8 +56,7 @@ theorem revAtFun_inj {N : ℕ} : Function.Injective (revAtFun N) := by
 Essentially, this embedding is only used for `i ≤ N`.
 The advantage of `revAt N i` over `N - i` is that `revAt` is an involution.
 -/
-def revAt (N : ℕ) : Function.Embedding ℕ ℕ
-    where
+def revAt (N : ℕ) : Function.Embedding ℕ ℕ where
   toFun i := ite (i ≤ N) (N - i) i
   inj' := revAtFun_inj
 #align polynomial.rev_at Polynomial.revAt
@@ -221,9 +220,9 @@ variable {S : Type*} [CommSemiring S]
 
 theorem eval₂_reflect_mul_pow (i : R →+* S) (x : S) [Invertible x] (N : ℕ) (f : R[X])
     (hf : f.natDegree ≤ N) : eval₂ i (⅟ x) (reflect N f) * x ^ N = eval₂ i x f := by
-  refine'
-    induction_with_natDegree_le (fun f => eval₂ i (⅟ x) (reflect N f) * x ^ N = eval₂ i x f) _ _ _
-      _ f hf
+  refine
+    induction_with_natDegree_le (fun f => eval₂ i (⅟ x) (reflect N f) * x ^ N = eval₂ i x f) _ ?_ ?_
+      ?_ f hf
   · simp
   · intro n r _ hnN
     simp only [revAt_le hnN, reflect_C_mul_X_pow, eval₂_X_pow, eval₂_C, eval₂_mul]
@@ -283,7 +282,7 @@ theorem natDegree_eq_reverse_natDegree_add_natTrailingDegree (f : R[X]) :
   by_cases hf : f = 0
   · rw [hf, reverse_zero, natDegree_zero, natTrailingDegree_zero]
   apply le_antisymm
-  · refine' tsub_le_iff_right.mp _
+  · refine tsub_le_iff_right.mp ?_
     apply le_natDegree_of_ne_zero
     rw [reverse, coeff_reflect, ← revAt_le f.natTrailingDegree_le_natDegree, revAt_invol]
     exact trailingCoeff_nonzero_iff_nonzero.mpr hf
@@ -357,7 +356,8 @@ theorem coeff_one_reverse (f : R[X]) : coeff (reverse f) 1 = nextCoeff f := by
   rw [commute_X p, reverse_mul_X]
 
 @[simp] lemma reverse_mul_X_pow (p : R[X]) (n : ℕ) : reverse (p * X ^ n) = reverse p := by
-  induction' n with n ih; simp
+  induction' n with n ih
+  · simp
   rw [pow_succ, ← mul_assoc, reverse_mul_X, ih]
 
 @[simp] lemma reverse_X_pow_mul (p : R[X]) (n : ℕ) : reverse (X ^ n * p) = reverse p := by

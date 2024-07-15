@@ -662,8 +662,7 @@ section lift
 
 -- See note [reducible non-instances]
 /-- Pullback an `OrderTop`. -/
-@[reducible]
-def OrderTop.lift [LE α] [Top α] [LE β] [OrderTop β] (f : α → β)
+abbrev OrderTop.lift [LE α] [Top α] [LE β] [OrderTop β] (f : α → β)
     (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_top : f ⊤ = ⊤) : OrderTop α :=
   ⟨fun a =>
     map_le _ _ <| by
@@ -674,8 +673,7 @@ def OrderTop.lift [LE α] [Top α] [LE β] [OrderTop β] (f : α → β)
 
 -- See note [reducible non-instances]
 /-- Pullback an `OrderBot`. -/
-@[reducible]
-def OrderBot.lift [LE α] [Bot α] [LE β] [OrderBot β] (f : α → β)
+abbrev OrderBot.lift [LE α] [Bot α] [LE β] [OrderBot β] (f : α → β)
     (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_bot : f ⊥ = ⊥) : OrderBot α :=
   ⟨fun a =>
     map_le _ _ <| by
@@ -686,8 +684,7 @@ def OrderBot.lift [LE α] [Bot α] [LE β] [OrderBot β] (f : α → β)
 
 -- See note [reducible non-instances]
 /-- Pullback a `BoundedOrder`. -/
-@[reducible]
-def BoundedOrder.lift [LE α] [Top α] [Bot α] [LE β] [BoundedOrder β] (f : α → β)
+abbrev BoundedOrder.lift [LE α] [Top α] [Bot α] [LE β] [BoundedOrder β] (f : α → β)
     (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) :
     BoundedOrder α where
   __ := OrderTop.lift f map_le map_top
@@ -705,24 +702,21 @@ variable {p : α → Prop}
 
 -- See note [reducible non-instances]
 /-- A subtype remains a `⊥`-order if the property holds at `⊥`. -/
-@[reducible]
-protected def orderBot [LE α] [OrderBot α] (hbot : p ⊥) : OrderBot { x : α // p x } where
+protected abbrev orderBot [LE α] [OrderBot α] (hbot : p ⊥) : OrderBot { x : α // p x } where
   bot := ⟨⊥, hbot⟩
   bot_le _ := bot_le
 #align subtype.order_bot Subtype.orderBot
 
 -- See note [reducible non-instances]
 /-- A subtype remains a `⊤`-order if the property holds at `⊤`. -/
-@[reducible]
-protected def orderTop [LE α] [OrderTop α] (htop : p ⊤) : OrderTop { x : α // p x } where
+protected abbrev orderTop [LE α] [OrderTop α] (htop : p ⊤) : OrderTop { x : α // p x } where
   top := ⟨⊤, htop⟩
   le_top _ := le_top
 #align subtype.order_top Subtype.orderTop
 
 -- See note [reducible non-instances]
 /-- A subtype remains a bounded order if the property holds at `⊥` and `⊤`. -/
-@[reducible]
-protected def boundedOrder [LE α] [BoundedOrder α] (hbot : p ⊥) (htop : p ⊤) :
+protected abbrev boundedOrder [LE α] [BoundedOrder α] (hbot : p ⊥) (htop : p ⊤) :
     BoundedOrder (Subtype p) where
   __ := Subtype.orderTop htop
   __ := Subtype.orderBot hbot

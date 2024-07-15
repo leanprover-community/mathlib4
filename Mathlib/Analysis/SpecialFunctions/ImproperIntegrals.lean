@@ -30,18 +30,18 @@ open Real Set Filter MeasureTheory intervalIntegral
 open scoped Topology
 
 theorem integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) := by
-  refine'
+  refine
     integrableOn_Iic_of_intervalIntegral_norm_bounded (exp c) c
       (fun y => intervalIntegrable_exp.1) tendsto_id
-      (eventually_of_mem (Iic_mem_atBot 0) fun y _ => _)
+      (eventually_of_mem (Iic_mem_atBot 0) fun y _ => ?_)
   simp_rw [norm_of_nonneg (exp_pos _).le, integral_exp, sub_le_self_iff]
   exact (exp_pos _).le
 #align integrable_on_exp_Iic integrableOn_exp_Iic
 
 theorem integral_exp_Iic (c : ℝ) : ∫ x : ℝ in Iic c, exp x = exp c := by
-  refine'
+  refine
     tendsto_nhds_unique
-      (intervalIntegral_tendsto_integral_Iic _ (integrableOn_exp_Iic _) tendsto_id) _
+      (intervalIntegral_tendsto_integral_Iic _ (integrableOn_exp_Iic _) tendsto_id) ?_
   simp_rw [integral_exp, show 𝓝 (exp c) = 𝓝 (exp c - 0) by rw [sub_zero]]
   exact tendsto_exp_atBot.const_sub _
 #align integral_exp_Iic integral_exp_Iic
@@ -96,7 +96,7 @@ theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) 
   · have : IntegrableOn (fun x ↦ x ^ s) (Ioo (0 : ℝ) 1) := h.mono Ioo_subset_Ioi_self le_rfl
     rw [integrableOn_Ioo_rpow_iff zero_lt_one] at this
     exact hs.not_lt this
-  · have : IntegrableOn (fun x ↦ x ^ s) (Ioi 1) := h.mono (Ioi_subset_Ioi zero_le_one) le_rfl
+  · have : IntegrableOn (fun x ↦ x ^ s) (Ioi (1 : ℝ)) := h.mono (Ioi_subset_Ioi zero_le_one) le_rfl
     rw [integrableOn_Ioi_rpow_iff zero_lt_one] at this
     exact hs.not_lt this
 
@@ -119,10 +119,10 @@ theorem integral_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
 theorem integrableOn_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
     IntegrableOn (fun t : ℝ => (t : ℂ) ^ a) (Ioi c) := by
   rw [IntegrableOn, ← integrable_norm_iff, ← IntegrableOn]
-  refine' (integrableOn_Ioi_rpow_of_lt ha hc).congr_fun (fun x hx => _) measurableSet_Ioi
-  · dsimp only
-    rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos (hc.trans hx)]
-  · refine' ContinuousOn.aestronglyMeasurable (fun t ht => _) measurableSet_Ioi
+  · refine (integrableOn_Ioi_rpow_of_lt ha hc).congr_fun (fun x hx => ?_) measurableSet_Ioi
+    · dsimp only
+      rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos (hc.trans hx)]
+  · refine ContinuousOn.aestronglyMeasurable (fun t ht => ?_) measurableSet_Ioi
     exact
       (Complex.continuousAt_ofReal_cpow_const _ _ (Or.inr (hc.trans ht).ne')).continuousWithinAt
 #align integrable_on_Ioi_cpow_of_lt integrableOn_Ioi_cpow_of_lt
@@ -156,25 +156,25 @@ theorem setIntegral_Ioi_zero_cpow (s : ℂ) : ∫ x in Ioi (0 : ℝ), (x : ℂ) 
 
 theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
     (∫ t : ℝ in Ioi c, (t : ℂ) ^ a) = -(c : ℂ) ^ (a + 1) / (a + 1) := by
-  refine'
+  refine
     tendsto_nhds_unique
-      (intervalIntegral_tendsto_integral_Ioi c (integrableOn_Ioi_cpow_of_lt ha hc) tendsto_id) _
+      (intervalIntegral_tendsto_integral_Ioi c (integrableOn_Ioi_cpow_of_lt ha hc) tendsto_id) ?_
   suffices
     Tendsto (fun x : ℝ => ((x : ℂ) ^ (a + 1) - (c : ℂ) ^ (a + 1)) / (a + 1)) atTop
       (𝓝 <| -c ^ (a + 1) / (a + 1)) by
-    refine' this.congr' ((eventually_gt_atTop 0).mp (eventually_of_forall fun x hx => _))
+    refine this.congr' ((eventually_gt_atTop 0).mp (eventually_of_forall fun x hx => ?_))
     dsimp only
     rw [integral_cpow, id]
-    refine' Or.inr ⟨_, not_mem_uIcc_of_lt hc hx⟩
+    refine Or.inr ⟨?_, not_mem_uIcc_of_lt hc hx⟩
     apply_fun Complex.re
     rw [Complex.neg_re, Complex.one_re]
     exact ha.ne
   simp_rw [← zero_sub, sub_div]
-  refine' (Tendsto.div_const _ _).sub_const _
+  refine (Tendsto.div_const ?_ _).sub_const _
   rw [tendsto_zero_iff_norm_tendsto_zero]
-  refine'
+  refine
     (tendsto_rpow_neg_atTop (by linarith : 0 < -(a.re + 1))).congr'
-      ((eventually_gt_atTop 0).mp (eventually_of_forall fun x hx => _))
+      ((eventually_gt_atTop 0).mp (eventually_of_forall fun x hx => ?_))
   simp_rw [neg_neg, Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos hx, Complex.add_re,
     Complex.one_re]
 #align integral_Ioi_cpow_of_lt integral_Ioi_cpow_of_lt

@@ -3,13 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Set.Lattice
 import Mathlib.Algebra.Group.Prod
+import Mathlib.Data.Set.Lattice
 
 #align_import data.nat.pairing from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
-#  Naturals pairing function
+# Naturals pairing function
 
 This file defines a pairing function for the naturals as follows:
 ```text
@@ -24,21 +24,20 @@ It has the advantage of being monotone in both directions and sending `⟦0, n^2
 `⟦0, n - 1⟧²`.
 -/
 
+assert_not_exists MonoidWithZero
 
 open Prod Decidable Function
 
 namespace Nat
 
 /-- Pairing function for the natural numbers. -/
--- Porting note: no pp_nodot
---@[pp_nodot]
+@[pp_nodot]
 def pair (a b : ℕ) : ℕ :=
   if a < b then b * b + a else a * a + a + b
 #align nat.mkpair Nat.pair
 
 /-- Unpairing function for the natural numbers. -/
--- Porting note: no pp_nodot
---@[pp_nodot]
+@[pp_nodot]
 def unpair (n : ℕ) : ℕ × ℕ :=
   let s := sqrt n
   if n - s * s < s then (n - s * s, s) else (s, n - s * s - s)
@@ -127,13 +126,13 @@ theorem pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair
   · by_cases h₂ : a₂ < b <;> simp [pair, h₂, h]
     simp? at h₂ says simp only [not_lt] at h₂
     apply Nat.add_lt_add_of_le_of_lt
-    exact Nat.mul_self_le_mul_self h₂
-    exact Nat.lt_add_right _ h
+    · exact Nat.mul_self_le_mul_self h₂
+    · exact Nat.lt_add_right _ h
   · simp at h₁
     simp only [not_lt_of_gt (lt_of_le_of_lt h₁ h), ite_false]
     apply add_lt_add
-    exact Nat.mul_self_lt_mul_self h
-    apply Nat.add_lt_add_right; assumption
+    · exact Nat.mul_self_lt_mul_self h
+    · apply Nat.add_lt_add_right; assumption
 #align nat.mkpair_lt_mkpair_left Nat.pair_lt_pair_left
 
 theorem pair_lt_pair_right (a) {b₁ b₂} (h : b₁ < b₂) : pair a b₁ < pair a b₂ := by
@@ -155,7 +154,7 @@ theorem pair_lt_max_add_one_sq (m n : ℕ) : pair m n < (max m n + 1) ^ 2 := by
 theorem max_sq_add_min_le_pair (m n : ℕ) : max m n ^ 2 + min m n ≤ pair m n := by
   rw [pair]
   cases' lt_or_le m n with h h
-  rw [if_pos h, max_eq_right h.le, min_eq_left h.le, Nat.pow_two]
+  · rw [if_pos h, max_eq_right h.le, min_eq_left h.le, Nat.pow_two]
   rw [if_neg h.not_lt, max_eq_left h, min_eq_right h, Nat.pow_two, Nat.add_assoc,
     Nat.add_le_add_iff_left]
   exact Nat.le_add_left _ _
@@ -195,8 +194,6 @@ end CompleteLattice
 
 namespace Set
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem iUnion_unpair_prod {α β} {s : ℕ → Set α} {t : ℕ → Set β} :
     ⋃ n : ℕ, s n.unpair.fst ×ˢ t n.unpair.snd = (⋃ n, s n) ×ˢ ⋃ n, t n := by
   rw [← Set.iUnion_prod]

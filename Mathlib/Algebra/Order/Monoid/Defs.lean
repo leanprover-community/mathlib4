@@ -3,8 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Monoid.Lemmas
-import Mathlib.Order.BoundedOrder
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
 #align_import algebra.order.monoid.defs from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
@@ -42,12 +41,10 @@ instance OrderedCommMonoid.toCovariantClassLeft : CovariantClass α α (· * ·)
 #align ordered_comm_monoid.to_covariant_class_left OrderedCommMonoid.toCovariantClassLeft
 #align ordered_add_comm_monoid.to_covariant_class_left OrderedAddCommMonoid.toCovariantClassLeft
 
-/- This instance can be proven with `by infer_instance`.  However, `WithBot ℕ` does not
-pick up a `CovariantClass M M (Function.swap (*)) (≤)` instance without it (see PR mathlib#7940). -/
 @[to_additive]
-instance OrderedCommMonoid.toCovariantClassRight (M : Type*) [OrderedCommMonoid M] :
+theorem OrderedCommMonoid.toCovariantClassRight (M : Type*) [OrderedCommMonoid M] :
     CovariantClass M M (swap (· * ·)) (· ≤ ·) :=
-  covariant_swap_mul_of_covariant_mul M _
+  inferInstance
 #align ordered_comm_monoid.to_covariant_class_right OrderedCommMonoid.toCovariantClassRight
 #align ordered_add_comm_monoid.to_covariant_class_right OrderedAddCommMonoid.toCovariantClassRight
 
@@ -90,14 +87,10 @@ instance OrderedCancelCommMonoid.toContravariantClassLeft :
 #align ordered_cancel_comm_monoid.to_contravariant_class_left OrderedCancelCommMonoid.toContravariantClassLeft
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_left OrderedCancelAddCommMonoid.toContravariantClassLeft
 
-/- This instance can be proven with `by infer_instance`.  However, by analogy with the
-instance `OrderedCancelCommMonoid.to_covariantClass_right` above, I imagine that without
-this instance, some Type would not have a `ContravariantClass M M (function.swap (*)) (<)`
-instance. -/
 @[to_additive]
-instance OrderedCancelCommMonoid.toContravariantClassRight :
+theorem OrderedCancelCommMonoid.toContravariantClassRight :
     ContravariantClass α α (swap (· * ·)) (· < ·) :=
-  contravariant_swap_mul_of_contravariant_mul α _
+  inferInstance
 #align ordered_cancel_comm_monoid.to_contravariant_class_right OrderedCancelCommMonoid.toContravariantClassRight
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_right OrderedCancelAddCommMonoid.toContravariantClassRight
 
@@ -117,10 +110,7 @@ instance (priority := 100) OrderedCancelCommMonoid.toCancelCommMonoid : CancelCo
 
 end OrderedCancelCommMonoid
 
-set_option linter.deprecated false in
-@[deprecated] theorem bit0_pos [OrderedAddCommMonoid α] {a : α} (h : 0 < a) : 0 < bit0 a :=
-  add_pos' h h
-#align bit0_pos bit0_pos
+#noalign bit0_pos
 
 /-- A linearly ordered additive commutative monoid. -/
 class LinearOrderedAddCommMonoid (α : Type*) extends OrderedAddCommMonoid α, LinearOrder α
@@ -145,31 +135,6 @@ class LinearOrderedCancelCommMonoid (α : Type*) extends OrderedCancelCommMonoid
 #align linear_ordered_cancel_comm_monoid LinearOrderedCancelCommMonoid
 
 attribute [to_additive existing] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid
-
-/-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
-  Instances should include number systems with an infinite element adjoined. -/
-class LinearOrderedAddCommMonoidWithTop (α : Type*) extends LinearOrderedAddCommMonoid α,
-    OrderTop α where
-  /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is invariant under addition. -/
-  protected top_add' : ∀ x : α, ⊤ + x = ⊤
-#align linear_ordered_add_comm_monoid_with_top LinearOrderedAddCommMonoidWithTop
-#align linear_ordered_add_comm_monoid_with_top.to_order_top LinearOrderedAddCommMonoidWithTop.toOrderTop
-
-section LinearOrderedAddCommMonoidWithTop
-
-variable [LinearOrderedAddCommMonoidWithTop α] {a b : α}
-
-@[simp]
-theorem top_add (a : α) : ⊤ + a = ⊤ :=
-  LinearOrderedAddCommMonoidWithTop.top_add' a
-#align top_add top_add
-
-@[simp]
-theorem add_top (a : α) : a + ⊤ = ⊤ :=
-  Trans.trans (add_comm _ _) (top_add _)
-#align add_top add_top
-
-end LinearOrderedAddCommMonoidWithTop
 
 variable [LinearOrderedCommMonoid α] {a : α}
 

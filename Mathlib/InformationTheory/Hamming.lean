@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
 -/
 import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Topology.Instances.Discrete
 
 #align_import information_theory.hamming from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 
@@ -424,25 +425,24 @@ instance : PseudoMetricSpace (Hamming β) where
   dist_triangle := by
     push_cast
     exact mod_cast hammingDist_triangle
-  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
   toUniformSpace := ⊥
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ fun s => by
     push_cast
     constructor
-    · refine' fun hs => ⟨1, zero_lt_one, fun hab => _⟩
+    · refine fun hs => ⟨1, zero_lt_one, fun hab => ?_⟩
       rw_mod_cast [hammingDist_lt_one] at hab
       rw [ofHamming_inj, ← mem_idRel] at hab
       exact hs hab
     · rintro ⟨_, hε, hs⟩ ⟨_, _⟩ hab
       rw [mem_idRel] at hab
       rw [hab]
-      refine' hs (lt_of_eq_of_lt _ hε)
+      refine hs (lt_of_eq_of_lt ?_ hε)
       exact mod_cast hammingDist_self _
   toBornology := ⟨⊥, bot_le⟩
   cobounded_sets := by
     ext
     push_cast
-    refine' iff_of_true (Filter.mem_sets.mpr Filter.mem_bot) ⟨Fintype.card ι, fun _ _ _ _ => _⟩
+    refine iff_of_true (Filter.mem_sets.mpr Filter.mem_bot) ⟨Fintype.card ι, fun _ _ _ _ => ?_⟩
     exact mod_cast hammingDist_le_card_fintype
 
 @[simp, push_cast]

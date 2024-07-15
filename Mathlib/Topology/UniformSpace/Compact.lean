@@ -49,13 +49,13 @@ variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
 /-- On a compact uniform space, the topology determines the uniform structure, entourages are
 exactly the neighborhoods of the diagonal. -/
 theorem nhdsSet_diagonal_eq_uniformity [CompactSpace α] : 𝓝ˢ (diagonal α) = 𝓤 α := by
-  refine' nhdsSet_diagonal_le_uniformity.antisymm _
+  refine nhdsSet_diagonal_le_uniformity.antisymm ?_
   have :
     (𝓤 (α × α)).HasBasis (fun U => U ∈ 𝓤 α) fun U =>
       (fun p : (α × α) × α × α => ((p.1.1, p.2.1), p.1.2, p.2.2)) ⁻¹' U ×ˢ U := by
     rw [uniformity_prod_eq_comap_prod]
     exact (𝓤 α).basis_sets.prod_self.comap _
-  refine' (isCompact_diagonal.nhdsSet_basis_uniformity this).ge_iff.2 fun U hU => _
+  refine (isCompact_diagonal.nhdsSet_basis_uniformity this).ge_iff.2 fun U hU => ?_
   exact mem_of_superset hU fun ⟨x, y⟩ hxy => mem_iUnion₂.2
     ⟨(x, x), rfl, refl_mem_uniformity hU, hxy⟩
 #align nhds_set_diagonal_eq_uniformity nhdsSet_diagonal_eq_uniformity
@@ -76,8 +76,7 @@ theorem unique_uniformity_of_compact [t : TopologicalSpace γ] [CompactSpace γ]
 #align unique_uniformity_of_compact unique_uniformity_of_compact
 
 /-- The unique uniform structure inducing a given compact topological structure. -/
-def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ] : UniformSpace γ
-    where
+def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ] : UniformSpace γ where
   uniformity := 𝓝ˢ (diagonal γ)
   symm := continuous_swap.tendsto_nhdsSet fun x => Eq.symm
   comp := by
@@ -117,7 +116,7 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     have W_in : W ∈ 𝓝Δ := by
       rw [mem_nhdsSet_iff_forall]
       rintro ⟨z, z'⟩ (rfl : z = z')
-      refine' IsOpen.mem_nhds _ _
+      refine IsOpen.mem_nhds ?_ ?_
       · apply_rules [IsOpen.union, IsOpen.prod]
       · simp only [W, mem_union, mem_prod, and_self_iff]
         exact (_root_.em _).imp_left fun h => union_subset_union VU₁ VU₂ h
@@ -190,7 +189,7 @@ theorem IsCompact.uniformContinuousAt_of_continuousAt {r : Set (β × β)} {s : 
   rintro ⟨a₁, a₂⟩ h h₁
   obtain ⟨a, ha, haU⟩ := Set.mem_iUnion₂.1 (hsU h₁)
   apply htr
-  refine' ⟨f a, htsymm.mk_mem_comm.1 (hb _ _ _ haU _), hb _ _ _ haU _⟩
+  refine ⟨f a, htsymm.mk_mem_comm.1 (hb _ _ _ haU ?_), hb _ _ _ haU ?_⟩
   exacts [mem_ball_self _ (hT a a.2), mem_iInter₂.1 h a ha]
 #align is_compact.uniform_continuous_at_of_continuous_at IsCompact.uniformContinuousAt_of_continuousAt
 
@@ -210,21 +209,6 @@ theorem Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : �
     apply htr
     exact ⟨x, htsymm.mk_mem_comm.1 (hst h₁), hst h₂⟩
 #align continuous.uniform_continuous_of_tendsto_cocompact Continuous.uniformContinuous_of_tendsto_cocompact
-
-/-- If `f` has compact multiplicative support, then `f` tends to 1 at infinity. -/
-@[to_additive "If `f` has compact support, then `f` tends to zero at infinity."]
-theorem HasCompactMulSupport.is_one_at_infty {f : α → γ} [TopologicalSpace γ] [One γ]
-    (h : HasCompactMulSupport f) : Tendsto f (cocompact α) (𝓝 1) := by
-  -- Porting note: move to src/topology/support.lean once the port is over
-  intro N hN
-  rw [mem_map, mem_cocompact']
-  refine' ⟨mulTSupport f, h.isCompact, _⟩
-  rw [compl_subset_comm]
-  intro v hv
-  rw [mem_preimage, image_eq_one_of_nmem_mulTSupport hv]
-  exact mem_of_mem_nhds hN
-#align has_compact_mul_support.is_one_at_infty HasCompactMulSupport.is_one_at_infty
-#align has_compact_support.is_zero_at_infty HasCompactSupport.is_zero_at_infty
 
 @[to_additive]
 theorem HasCompactMulSupport.uniformContinuous_of_continuous {f : α → β} [One β]

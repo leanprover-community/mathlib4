@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Intervals.Pi
 import Mathlib.Order.Filter.Interval
+import Mathlib.Order.Interval.Set.Pi
 import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.NormNum
 import Mathlib.Topology.Order.LeftRight
@@ -133,7 +133,7 @@ instance tendstoIccClassNhds (a : α) : TendstoIxxClass Icc (𝓝 a) (𝓝 a) :=
   refine
     ((hasBasis_iInf_principal_finite _).inf (hasBasis_iInf_principal_finite _)).tendstoIxxClass
       fun s _ => ?_
-  refine' ((ordConnected_biInter _).inter (ordConnected_biInter _)).out <;> intro _ _
+  refine ((ordConnected_biInter ?_).inter (ordConnected_biInter ?_)).out <;> intro _ _
   exacts [ordConnected_Ioi, ordConnected_Iio]
 #align tendsto_Icc_class_nhds tendstoIccClassNhds
 
@@ -191,15 +191,13 @@ instance tendstoIccClassNhdsPi {ι : Type*} {α : ι → Type*} [∀ i, Preorder
     TendstoIxxClass Icc (𝓝 f) (𝓝 f) := by
   constructor
   conv in (𝓝 f).smallSets => rw [nhds_pi, Filter.pi]
-  simp only [smallSets_iInf, smallSets_comap, tendsto_iInf, tendsto_lift', (· ∘ ·),
-    mem_powerset_iff]
-  intro i s hs
+  simp only [smallSets_iInf, smallSets_comap_eq_comap_image, tendsto_iInf, tendsto_comap_iff]
+  intro i
   have : Tendsto (fun g : ∀ i, α i => g i) (𝓝 f) (𝓝 (f i)) := (continuous_apply i).tendsto f
-  refine' (tendsto_lift'.1 ((this.comp tendsto_fst).Icc (this.comp tendsto_snd)) s hs).mono _
-  exact fun p hp g hg => hp ⟨hg.1 _, hg.2 _⟩
+  refine (this.comp tendsto_fst).Icc (this.comp tendsto_snd) |>.smallSets_mono ?_
+  filter_upwards [] using fun ⟨f, g⟩ ↦ image_subset_iff.mpr fun p hp ↦ ⟨hp.1 i, hp.2 i⟩
 #align tendsto_Icc_class_nhds_pi tendstoIccClassNhdsPi
 
--- Porting note (#10756): new lemma
 theorem induced_topology_le_preorder [Preorder α] [Preorder β] [TopologicalSpace β]
     [OrderTopology β] {f : α → β} (hf : ∀ {x y}, f x < f y ↔ x < y) :
     induced f ‹TopologicalSpace β› ≤ Preorder.topology α := by
@@ -209,7 +207,6 @@ theorem induced_topology_le_preorder [Preorder α] [Preorder β] [TopologicalSpa
   refine inf_le_inf (le_iInf₂ fun a ha => ?_) (le_iInf₂ fun a ha => ?_)
   exacts [iInf₂_le (f a) ha, iInf₂_le (f a) ha]
 
--- Porting note (#10756): new lemma
 theorem induced_topology_eq_preorder [Preorder α] [Preorder β] [TopologicalSpace β]
     [OrderTopology β] {f : α → β} (hf : ∀ {x y}, f x < f y ↔ x < y)
     (H₁ : ∀ {a b x}, b < f a → ¬(b < f x) → ∃ y, y < a ∧ b ≤ f y)
@@ -276,7 +273,7 @@ instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [Line
 theorem nhdsWithin_Ici_eq'' [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
     𝓝[≥] a = (⨅ (u) (_ : a < u), 𝓟 (Iio u)) ⊓ 𝓟 (Ici a) := by
   rw [nhdsWithin, nhds_eq_order]
-  refine' le_antisymm (inf_le_inf_right _ inf_le_right) (le_inf (le_inf _ inf_le_left) inf_le_right)
+  refine le_antisymm (inf_le_inf_right _ inf_le_right) (le_inf (le_inf ?_ inf_le_left) inf_le_right)
   exact inf_le_right.trans (le_iInf₂ fun l hl => principal_mono.2 <| Ici_subset_Ioi.2 hl)
 #align nhds_within_Ici_eq'' nhdsWithin_Ici_eq''
 
@@ -415,7 +412,7 @@ theorem exists_Ico_subset_of_mem_nhds' {a : α} {s : Set α} (hs : s ∈ 𝓝 a)
 
 theorem exists_Ico_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝 a) (h : ∃ u, a < u) :
     ∃ u, a < u ∧ Ico a u ⊆ s :=
-  let ⟨_l', hl'⟩ := h;
+  let ⟨_l', hl'⟩ := h
   let ⟨l, hl⟩ := exists_Ico_subset_of_mem_nhds' hs hl'
   ⟨l, hl.1.1, hl.2⟩
 #align exists_Ico_subset_of_mem_nhds exists_Ico_subset_of_mem_nhds
@@ -429,7 +426,7 @@ theorem exists_Icc_mem_subset_of_mem_nhdsWithin_Ici {a : α} {s : Set α} (hs : 
     rcases eq_empty_or_nonempty (Ioo a b) with (H | ⟨c, hac, hcb⟩)
     · have : Ico a b = Icc a a := by rw [← Icc_union_Ioo_eq_Ico le_rfl hab, H, union_empty]
       exact ⟨a, le_rfl, this ▸ ⟨Ico_mem_nhdsWithin_Ici' hab, hbs⟩⟩
-    · refine' ⟨c, hac.le, Icc_mem_nhdsWithin_Ici' hac, _⟩
+    · refine ⟨c, hac.le, Icc_mem_nhdsWithin_Ici' hac, ?_⟩
       exact (Icc_subset_Ico_right hcb).trans hbs
 #align exists_Icc_mem_subset_of_mem_nhds_within_Ici exists_Icc_mem_subset_of_mem_nhdsWithin_Ici
 
@@ -445,7 +442,7 @@ theorem exists_Icc_mem_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝
     ⟨b, hba, hb_nhds, hbs⟩
   rcases exists_Icc_mem_subset_of_mem_nhdsWithin_Ici (nhdsWithin_le_nhds hs) with
     ⟨c, hac, hc_nhds, hcs⟩
-  refine' ⟨b, c, ⟨hba, hac⟩, _⟩
+  refine ⟨b, c, ⟨hba, hac⟩, ?_⟩
   rw [← Icc_union_Icc_eq_Icc hba hac, ← nhds_left_sup_nhds_right]
   exact ⟨union_mem_sup hb_nhds hc_nhds, union_subset hbs hcs⟩
 #align exists_Icc_mem_subset_of_mem_nhds exists_Icc_mem_subset_of_mem_nhds
@@ -529,13 +526,13 @@ theorem Dense.topology_eq_generateFrom [DenselyOrdered α] {s : Set α} (hs : De
       let _ := generateFrom (Ioi '' s ∪ Iio '' s)
       exact isOpen_iUnion fun x ↦ isOpen_iUnion fun h ↦ .basic _ <| .inr <| mem_image_of_mem _ h.1
 
-@[deprecated OrderBot.atBot_eq] -- 2024-02-14
+@[deprecated OrderBot.atBot_eq (since := "2024-02-14")]
 theorem atBot_le_nhds_bot [OrderBot α] : (atBot : Filter α) ≤ 𝓝 ⊥ := by
   rw [OrderBot.atBot_eq]
   apply pure_le_nhds
 #align at_bot_le_nhds_bot atBot_le_nhds_bot
 
-@[deprecated OrderTop.atTop_eq] -- 2024-02-14
+@[deprecated OrderTop.atTop_eq (since := "2024-02-14")]
 theorem atTop_le_nhds_top [OrderTop α] : (atTop : Filter α) ≤ 𝓝 ⊤ :=
   set_option linter.deprecated false in @atBot_le_nhds_bot αᵒᵈ _ _ _
 #align at_top_le_nhds_top atTop_le_nhds_top
@@ -553,7 +550,6 @@ theorem SecondCountableTopology.of_separableSpace_orderTopology [DenselyOrdered 
 
 variable {α}
 
--- Porting note (#10756): new lemma
 /-- The set of points which are isolated on the right is countable when the space is
 second-countable. -/
 theorem countable_setOf_covBy_right [SecondCountableTopology α] :
@@ -568,7 +564,7 @@ theorem countable_setOf_covBy_right [SecondCountableTopology α] :
       rcases (isBasis_countableBasis α).exists_mem_of_ne (hy x hx).ne with ⟨a, ab, xa, ya⟩
       exact mem_iUnion₂.2 ⟨a, ab, hx, xa, ya⟩
     refine Set.Countable.mono this ?_
-    refine' Countable.biUnion (countable_countableBasis α) fun a ha => H _ _
+    refine Countable.biUnion (countable_countableBasis α) fun a ha => H _ ?_
     exact isOpen_of_mem_countableBasis ha
   intro a ha
   suffices H : Set.Countable { x | (x ∈ s ∧ x ∈ a ∧ y x ∉ a) ∧ ¬IsBot x } from
@@ -582,27 +578,21 @@ theorem countable_setOf_covBy_right [SecondCountableTopology α] :
   choose! z hz h'z using this
   have : PairwiseDisjoint t fun x => Ioc (z x) x := fun x xt x' x't hxx' => by
     rcases hxx'.lt_or_lt with (h' | h')
-    · refine' disjoint_left.2 fun u ux ux' => xt.2.2.1 _
-      refine' h'z x' x't ⟨ux'.1.trans_le (ux.2.trans (hy x xt.1).le), _⟩
+    · refine disjoint_left.2 fun u ux ux' => xt.2.2.1 ?_
+      refine h'z x' x't ⟨ux'.1.trans_le (ux.2.trans (hy x xt.1).le), ?_⟩
       by_contra! H
       exact lt_irrefl _ ((Hy _ _ xt.1 H).trans_lt h')
-    · refine' disjoint_left.2 fun u ux ux' => x't.2.2.1 _
-      refine' h'z x xt ⟨ux.1.trans_le (ux'.2.trans (hy x' x't.1).le), _⟩
+    · refine disjoint_left.2 fun u ux ux' => x't.2.2.1 ?_
+      refine h'z x xt ⟨ux.1.trans_le (ux'.2.trans (hy x' x't.1).le), ?_⟩
       by_contra! H
       exact lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h')
-  refine' this.countable_of_isOpen (fun x hx => _) fun x hx => ⟨x, hz x hx, le_rfl⟩
+  refine this.countable_of_isOpen (fun x hx => ?_) fun x hx => ⟨x, hz x hx, le_rfl⟩
   suffices H : Ioc (z x) x = Ioo (z x) (y x) by
     rw [H]
     exact isOpen_Ioo
   exact Subset.antisymm (Ioc_subset_Ioo_right (hy x hx.1).lt) fun u hu => ⟨hu.1, Hy _ _ hx.1 hu.2⟩
 
-/-- The set of points which are isolated on the right is countable when the space is
-second-countable. -/
-@[deprecated countable_setOf_covBy_right]
-theorem countable_of_isolated_right' [SecondCountableTopology α] :
-    Set.Countable { x : α | ∃ y, x < y ∧ Ioo x y = ∅ } := by
-  simpa only [← covBy_iff_Ioo_eq] using countable_setOf_covBy_right
-#align countable_of_isolated_right countable_of_isolated_right'
+#align countable_of_isolated_right countable_setOf_covBy_rightₓ
 
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/
@@ -625,7 +615,7 @@ empty (but in fact this can happen only for countably many of them). -/
 theorem Set.PairwiseDisjoint.countable_of_Ioo [SecondCountableTopology α] {y : α → α} {s : Set α}
     (h : PairwiseDisjoint s fun x => Ioo x (y x)) (h' : ∀ x ∈ s, x < y x) : s.Countable :=
   have : (s \ { x | ∃ y, x ⋖ y }).Countable :=
-    (h.subset (diff_subset _ _)).countable_of_isOpen (fun _ _ => isOpen_Ioo)
+    (h.subset diff_subset).countable_of_isOpen (fun _ _ => isOpen_Ioo)
       fun x hx => (h' _ hx.1).exists_lt_lt (mt (Exists.intro (y x)) hx.2)
   this.of_diff countable_setOf_covBy_right
 #align set.pairwise_disjoint.countable_of_Ioo Set.PairwiseDisjoint.countable_of_Ioo
@@ -758,7 +748,7 @@ theorem pi_Icc_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : I
 variable [Nonempty ι]
 
 theorem pi_Iio_mem_nhds (ha : ∀ i, x i < a i) : Iio a ∈ 𝓝 x := by
-  refine' mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => _) (pi_univ_Iio_subset a)
+  refine mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => ?_) (pi_univ_Iio_subset a)
   exact Iio_mem_nhds (ha i)
 #align pi_Iio_mem_nhds pi_Iio_mem_nhds
 
@@ -775,7 +765,7 @@ theorem pi_Ioi_mem_nhds' (ha : ∀ i, a' i < x' i) : Ioi a' ∈ 𝓝 x' :=
 #align pi_Ioi_mem_nhds' pi_Ioi_mem_nhds'
 
 theorem pi_Ioc_mem_nhds (ha : ∀ i, a i < x i) (hb : ∀ i, x i < b i) : Ioc a b ∈ 𝓝 x := by
-  refine' mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => _) (pi_univ_Ioc_subset a b)
+  refine mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => ?_) (pi_univ_Ioc_subset a b)
   exact Ioc_mem_nhds (ha i) (hb i)
 #align pi_Ioc_mem_nhds pi_Ioc_mem_nhds
 
@@ -784,7 +774,7 @@ theorem pi_Ioc_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : I
 #align pi_Ioc_mem_nhds' pi_Ioc_mem_nhds'
 
 theorem pi_Ico_mem_nhds (ha : ∀ i, a i < x i) (hb : ∀ i, x i < b i) : Ico a b ∈ 𝓝 x := by
-  refine' mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => _) (pi_univ_Ico_subset a b)
+  refine mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => ?_) (pi_univ_Ico_subset a b)
   exact Ico_mem_nhds (ha i) (hb i)
 #align pi_Ico_mem_nhds pi_Ico_mem_nhds
 
@@ -793,7 +783,7 @@ theorem pi_Ico_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : I
 #align pi_Ico_mem_nhds' pi_Ico_mem_nhds'
 
 theorem pi_Ioo_mem_nhds (ha : ∀ i, a i < x i) (hb : ∀ i, x i < b i) : Ioo a b ∈ 𝓝 x := by
-  refine' mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => _) (pi_univ_Ioo_subset a b)
+  refine mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => ?_) (pi_univ_Ioo_subset a b)
   exact Ioo_mem_nhds (ha i) (hb i)
 #align pi_Ioo_mem_nhds pi_Ioo_mem_nhds
 
@@ -802,5 +792,9 @@ theorem pi_Ioo_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : I
 #align pi_Ioo_mem_nhds' pi_Ioo_mem_nhds'
 
 end Pi
+
+end OrderTopology
+
+end LinearOrder
 
 end OrderTopology

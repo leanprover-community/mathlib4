@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Antoine Labelle
 -/
 import Mathlib.LinearAlgebra.Contraction
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 
 #align_import linear_algebra.trace from "leanprover-community/mathlib"@"4cf7ca0e69e048b006674cf4499e5c7d296a89e0"
 
@@ -26,8 +27,6 @@ noncomputable section
 universe u v w
 
 namespace LinearMap
-
-open BigOperators
 
 open Matrix
 
@@ -201,7 +200,7 @@ theorem trace_id : trace R M id = (finrank R M : R) := by rw [← one_eq_id, tra
 theorem trace_transpose : trace R (Module.Dual R M) ∘ₗ Module.Dual.transpose = trace R M := by
   let e := dualTensorHomEquiv R M M
   have h : Function.Surjective e.toLinearMap := e.surjective
-  refine' (cancel_right h).1 _
+  refine (cancel_right h).1 ?_
   ext f m; simp [e]
 #align linear_map.trace_transpose LinearMap.trace_transpose
 
@@ -210,7 +209,7 @@ theorem trace_prodMap :
       (coprod id id : R × R →ₗ[R] R) ∘ₗ prodMap (trace R M) (trace R N) := by
   let e := (dualTensorHomEquiv R M M).prod (dualTensorHomEquiv R N N)
   have h : Function.Surjective e.toLinearMap := e.surjective
-  refine' (cancel_right h).1 _
+  refine (cancel_right h).1 ?_
   ext
   · simp only [e, dualTensorHomEquiv, LinearEquiv.coe_prod, dualTensorHomEquivOfBasis_toLinearMap,
       AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars, coe_comp, coe_inl,
@@ -302,7 +301,7 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
     haveI := (Module.free_def R N).mpr ⟨_, ⟨(b.map e).reindex (e.toEquiv.image _)⟩⟩
     rw [e.conj_apply, trace_comp_comm', ← comp_assoc, LinearEquiv.comp_coe,
       LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, id_comp]
-  · rw [trace, trace, dif_neg hM, dif_neg]; rfl
+  · rw [trace, trace, dif_neg hM, dif_neg ?_, zero_apply, zero_apply]
     rintro ⟨s, ⟨b⟩⟩
     exact hM ⟨s.image e.symm, ⟨(b.map e.symm).reindex
       ((e.symm.toEquiv.image s).trans (Equiv.Set.ofEq Finset.coe_image.symm))⟩⟩

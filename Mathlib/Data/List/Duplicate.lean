@@ -86,7 +86,7 @@ theorem Duplicate.elim_singleton {y : α} (h : x ∈+ [y]) : False :=
 #align list.duplicate.elim_singleton List.Duplicate.elim_singleton
 
 theorem duplicate_cons_iff {y : α} : x ∈+ y :: l ↔ y = x ∧ x ∈ l ∨ x ∈+ l := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · cases' h with _ hm _ _ hm
     · exact Or.inl ⟨rfl, hm⟩
     · exact Or.inr hm
@@ -118,9 +118,9 @@ theorem duplicate_iff_sublist : x ∈+ l ↔ [x, x] <+ l := by
   induction' l with y l IH
   · simp
   · by_cases hx : x = y
-    · simp [hx, cons_sublist_cons_iff, singleton_sublist]
+    · simp [hx, cons_sublist_cons, singleton_sublist]
     · rw [duplicate_cons_iff_of_ne hx, IH]
-      refine' ⟨sublist_cons_of_sublist y, fun h => _⟩
+      refine ⟨sublist_cons_of_sublist y, fun h => ?_⟩
       cases h
       · assumption
       · contradiction
@@ -139,7 +139,7 @@ theorem Duplicate.not_nodup (h : x ∈+ l) : ¬Nodup l := fun H =>
 #align list.duplicate.not_nodup List.Duplicate.not_nodup
 
 theorem duplicate_iff_two_le_count [DecidableEq α] : x ∈+ l ↔ 2 ≤ count x l := by
-  simp [duplicate_iff_sublist, le_count_iff_replicate_sublist]
+  simp [replicate_succ, duplicate_iff_sublist, le_count_iff_replicate_sublist]
 #align list.duplicate_iff_two_le_count List.duplicate_iff_two_le_count
 
 instance decidableDuplicate [DecidableEq α] (x : α) : ∀ l : List α, Decidable (x ∈+ l)

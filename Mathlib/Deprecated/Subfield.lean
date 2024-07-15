@@ -3,6 +3,7 @@ Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow
 -/
+import Mathlib.Algebra.Field.Basic
 import Mathlib.Deprecated.Subring
 
 #align_import deprecated.subfield from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"

@@ -47,7 +47,7 @@ More not-yet-PRed stuff is available on the branch `sperner_again`.
 
 
 open scoped Classical
-open Affine BigOperators
+open Affine
 
 open Set
 
@@ -128,7 +128,7 @@ halfspace doesn't intersect `A`. -/
 theorem eq_inter_halfspace [Nontrivial 𝕜] {A B : Set E} (hAB : IsExposed 𝕜 A B) :
     ∃ l : E →L[𝕜] 𝕜, ∃ a, B = { x ∈ A | a ≤ l x } := by
   obtain rfl | hB := B.eq_empty_or_nonempty
-  · refine' ⟨0, 1, _⟩
+  · refine ⟨0, 1, ?_⟩
     rw [eq_comm, eq_empty_iff_forall_not_mem]
     rintro x ⟨-, h⟩
     rw [ContinuousLinearMap.zero_apply] at h
@@ -142,11 +142,11 @@ protected theorem inter [ContinuousAdd 𝕜] {A B C : Set E} (hB : IsExposed �
   rintro ⟨w, hwB, hwC⟩
   obtain ⟨l₁, rfl⟩ := hB ⟨w, hwB⟩
   obtain ⟨l₂, rfl⟩ := hC ⟨w, hwC⟩
-  refine' ⟨l₁ + l₂, Subset.antisymm _ _⟩
+  refine ⟨l₁ + l₂, Subset.antisymm ?_ ?_⟩
   · rintro x ⟨⟨hxA, hxB⟩, ⟨-, hxC⟩⟩
     exact ⟨hxA, fun z hz => add_le_add (hxB z hz) (hxC z hz)⟩
   rintro x ⟨hxA, hx⟩
-  refine' ⟨⟨hxA, fun y hy => _⟩, hxA, fun y hy => _⟩
+  refine ⟨⟨hxA, fun y hy => ?_⟩, hxA, fun y hy => ?_⟩
   · exact
       (add_le_add_iff_right (l₂ x)).1 ((add_le_add (hwB.2 y hy) (hwC.2 x hxA)).trans (hx w hwB.1))
   · exact
@@ -251,12 +251,12 @@ protected theorem convex (hAB : IsExposed 𝕜 A B) (hA : Convex 𝕜 A) : Conve
 #align is_exposed.convex IsExposed.convex
 
 protected theorem isExtreme (hAB : IsExposed 𝕜 A B) : IsExtreme 𝕜 A B := by
-  refine' ⟨hAB.subset, fun x₁ hx₁A x₂ hx₂A x hxB hx => _⟩
+  refine ⟨hAB.subset, fun x₁ hx₁A x₂ hx₂A x hxB hx => ?_⟩
   obtain ⟨l, rfl⟩ := hAB ⟨x, hxB⟩
   have hl : ConvexOn 𝕜 univ l := l.toLinearMap.convexOn convex_univ
   have hlx₁ := hxB.2 x₁ hx₁A
   have hlx₂ := hxB.2 x₂ hx₂A
-  refine' ⟨⟨hx₁A, fun y hy => _⟩, ⟨hx₂A, fun y hy => _⟩⟩
+  refine ⟨⟨hx₁A, fun y hy => ?_⟩, ⟨hx₂A, fun y hy => ?_⟩⟩
   · rw [hlx₁.antisymm (hl.le_left_of_right_le (mem_univ _) (mem_univ _) hx hlx₂)]
     exact hxB.2 y hy
   · rw [hlx₂.antisymm (hl.le_right_of_left_le (mem_univ _) (mem_univ _) hx hlx₁)]

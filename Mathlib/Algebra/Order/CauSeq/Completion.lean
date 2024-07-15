@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Robert Y. Lewis
 -/
 import Mathlib.Algebra.Order.CauSeq.Basic
+import Mathlib.Data.Rat.Cast.Defs
 
 #align_import data.real.cau_seq_completion from "leanprover-community/mathlib"@"cf4c49c445991489058260d75dae0ff2b1abca28"
 
@@ -203,12 +204,11 @@ section
 variable {α : Type*} [LinearOrderedField α]
 variable {β : Type*} [DivisionRing β] {abv : β → α} [IsAbsoluteValue abv]
 
-instance : RatCast (Cauchy abv) :=
-  ⟨fun q => ofRat q⟩
+instance instNNRatCast : NNRatCast (Cauchy abv) where nnratCast q := ofRat q
+instance instRatCast : RatCast (Cauchy abv) where ratCast q := ofRat q
 
-@[simp, coe]
-theorem ofRat_ratCast (q : ℚ) : ofRat (↑q : β) = (q : (Cauchy abv)) :=
-  rfl
+@[simp, norm_cast] lemma ofRat_nnratCast (q : ℚ≥0) : ofRat (q : β) = (q : Cauchy abv) := rfl
+@[simp, norm_cast] lemma ofRat_ratCast (q : ℚ) : ofRat (q : β) = (q : Cauchy abv) := rfl
 #align cau_seq.completion.of_rat_rat_cast CauSeq.Completion.ofRat_ratCast
 
 noncomputable instance : Inv (Cauchy abv) :=
@@ -237,7 +237,7 @@ theorem inv_mk {f} (hf) : (@mk α _ β _ abv _ f)⁻¹ = mk (inv f hf) :=
 #align cau_seq.completion.inv_mk CauSeq.Completion.inv_mk
 
 theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h =>
-  have : LimZero (1 - 0) := Setoid.symm h
+  have : LimZero (1 - 0 : CauSeq _ abv) := Setoid.symm h
   have : LimZero 1 := by simpa
   by apply one_ne_zero <| const_limZero.1 this
 #align cau_seq.completion.cau_seq_zero_ne_one CauSeq.Completion.cau_seq_zero_ne_one
@@ -275,8 +275,11 @@ noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩
   inv_zero := inv_zero
   mul_inv_cancel x := CauSeq.Completion.mul_inv_cancel
-  ratCast_def q := by rw [← ofRat_ratCast, Rat.cast_def, ofRat_div, ofRat_natCast, ofRat_intCast]
+  nnqsmul := (· • ·)
   qsmul := (· • ·)
+  nnratCast_def q := by simp_rw [← ofRat_nnratCast, NNRat.cast_def, ofRat_div, ofRat_natCast]
+  ratCast_def q := by rw [← ofRat_ratCast, Rat.cast_def, ofRat_div, ofRat_natCast, ofRat_intCast]
+  nnqsmul_def q x := Quotient.inductionOn x fun f ↦ congr_arg mk <| ext fun i ↦ NNRat.smul_def _ _
   qsmul_def q x := Quotient.inductionOn x fun f ↦ congr_arg mk <| ext fun i ↦ Rat.smul_def _ _
 
 /-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.

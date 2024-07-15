@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Aut
-import Mathlib.Algebra.Invertible.Basic
+import Mathlib.Algebra.Group.Invertible.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.GroupTheory.GroupAction.Units
 
 #align_import group_theory.group_action.group from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
@@ -21,28 +22,9 @@ universe u v w
 variable {α : Type u} {β : Type v} {γ : Type w}
 
 section MulAction
-
-/-- `Monoid.toMulAction` is faithful on cancellative monoids. -/
-@[to_additive " `AddMonoid.toAddAction` is faithful on additive cancellative monoids. "]
-instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=
-  ⟨fun h => mul_right_cancel (h 1)⟩
-#align right_cancel_monoid.to_has_faithful_smul RightCancelMonoid.faithfulSMul
-#align add_right_cancel_monoid.to_has_faithful_vadd AddRightCancelMonoid.faithfulVAdd
-
 section Group
 
 variable [Group α] [MulAction α β]
-
-@[to_additive (attr := simp)]
-theorem inv_smul_smul (c : α) (x : β) : c⁻¹ • c • x = x := by rw [smul_smul, mul_left_inv, one_smul]
-#align inv_smul_smul inv_smul_smul
-#align neg_vadd_vadd neg_vadd_vadd
-
-@[to_additive (attr := simp)]
-theorem smul_inv_smul (c : α) (x : β) : c • c⁻¹ • x = x := by
-  rw [smul_smul, mul_right_inv, one_smul]
-#align smul_inv_smul smul_inv_smul
-#align vadd_neg_vadd vadd_neg_vadd
 
 /-- Given an action of a group `α` on `β`, each `g : α` defines a permutation of `β`. -/
 @[to_additive (attr := simps)]
@@ -107,41 +89,6 @@ instance Equiv.Perm.applyFaithfulSMul (α : Type*) : FaithfulSMul (Equiv.Perm α
 variable {α} {β}
 
 @[to_additive]
-theorem inv_smul_eq_iff {a : α} {x y : β} : a⁻¹ • x = y ↔ x = a • y :=
-  (MulAction.toPerm a).symm_apply_eq
-#align inv_smul_eq_iff inv_smul_eq_iff
-#align neg_vadd_eq_iff neg_vadd_eq_iff
-
-@[to_additive]
-theorem eq_inv_smul_iff {a : α} {x y : β} : x = a⁻¹ • y ↔ a • x = y :=
-  (MulAction.toPerm a).eq_symm_apply
-#align eq_inv_smul_iff eq_inv_smul_iff
-#align eq_neg_vadd_iff eq_neg_vadd_iff
-
-theorem smul_inv [Group β] [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (x : β) :
-    (c • x)⁻¹ = c⁻¹ • x⁻¹ := by
-  rw [inv_eq_iff_mul_eq_one, smul_mul_smul, mul_right_inv, mul_right_inv, one_smul]
-#align smul_inv smul_inv
-
-theorem smul_zpow [Group β] [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (x : β) (p : ℤ) :
-    (c • x) ^ p = c ^ p • x ^ p := by
-  cases p <;>
-  simp [smul_pow, smul_inv]
-#align smul_zpow smul_zpow
-
-@[simp]
-theorem Commute.smul_right_iff [Mul β] [SMulCommClass α β β] [IsScalarTower α β β] {a b : β}
-    (r : α) : Commute a (r • b) ↔ Commute a b :=
-  ⟨fun h => inv_smul_smul r b ▸ h.smul_right r⁻¹, fun h => h.smul_right r⟩
-#align commute.smul_right_iff Commute.smul_right_iff
-
-@[simp]
-theorem Commute.smul_left_iff [Mul β] [SMulCommClass α β β] [IsScalarTower α β β] {a b : β}
-    (r : α) : Commute (r • a) b ↔ Commute a b := by
-  rw [Commute.symm_iff, Commute.smul_right_iff, Commute.symm_iff]
-#align commute.smul_left_iff Commute.smul_left_iff
-
-@[to_additive]
 protected theorem MulAction.bijective (g : α) : Function.Bijective (g • · : β → β) :=
   (MulAction.toPerm g).bijective
 #align mul_action.bijective MulAction.bijective
@@ -193,7 +140,7 @@ theorem smul_invOf_smul : c • (⅟ c • x) = x := smul_inv_smul (unitOfInvert
 variable {c x y}
 
 theorem invOf_smul_eq_iff : ⅟c • x = y ↔ x = c • y :=
-  inv_smul_eq_iff (a := unitOfInvertible c)
+  inv_smul_eq_iff (g := unitOfInvertible c)
 
 theorem smul_eq_iff_eq_invOf_smul : c • x = y ↔ x = ⅟c • y :=
   smul_eq_iff_eq_inv_smul (g := unitOfInvertible c)
@@ -231,13 +178,13 @@ theorem eq_inv_smul_iff₀ {a : α} (ha : a ≠ 0) {x y : β} : x = a⁻¹ • y
 @[simp]
 theorem Commute.smul_right_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTower α β β] {a b : β}
     {c : α} (hc : c ≠ 0) : Commute a (c • b) ↔ Commute a b :=
-  Commute.smul_right_iff (Units.mk0 c hc)
+  Commute.smul_right_iff (g := Units.mk0 c hc)
 #align commute.smul_right_iff₀ Commute.smul_right_iff₀
 
 @[simp]
 theorem Commute.smul_left_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTower α β β] {a b : β} {c : α}
     (hc : c ≠ 0) : Commute (c • a) b ↔ Commute a b :=
-  Commute.smul_left_iff (Units.mk0 c hc)
+  Commute.smul_left_iff (g := Units.mk0 c hc)
 #align commute.smul_left_iff₀ Commute.smul_left_iff₀
 
 /-- Right scalar multiplication as an order isomorphism. -/

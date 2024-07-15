@@ -80,7 +80,7 @@ instance estimator' :
   | [], split, eq => by
     simp only [List.reverse_nil, List.nil_append] at split
     rw [e.distances_eq] at eq
-    simp only [List.getElem_eq_get] at eq
+    simp only [← List.get_eq_getElem] at eq
     rw [split] at eq
     exact eq.le
   | y :: t, split, eq => by
@@ -99,13 +99,14 @@ instance estimator' :
     | [], split, eq, _ =>
       simp only [List.reverse_nil, List.nil_append] at split
       rw [e.distances_eq] at eq
-      simp only [List.getElem_eq_get] at eq
+      simp only [← List.get_eq_getElem] at eq
       rw [split] at eq
       exact eq
     | [y], split, b_eq, d_eq =>
       simp only [EstimatorData.bound, Prod.lt_iff, List.reverse_nil, List.nil_append]
       right
-      have b_eq : e.bound = (List.minimum_of_length_pos _, List.length e.suff) := by
+      have b_eq :
+          e.bound = (List.minimum_of_length_pos e.distances.property, List.length e.suff) := by
         simpa using b_eq
       rw [b_eq]
       constructor
@@ -116,7 +117,8 @@ instance estimator' :
     | y₁ :: y₂ :: t, split, b_eq, d_eq =>
       simp only [EstimatorData.bound, Prod.lt_iff]
       right
-      have b_eq : e.bound = (List.minimum_of_length_pos _, List.length e.suff) := by
+      have b_eq :
+          e.bound = (List.minimum_of_length_pos e.distances.property, List.length e.suff) := by
         simpa using b_eq
       rw [b_eq]
       constructor

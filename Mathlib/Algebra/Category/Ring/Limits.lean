@@ -5,8 +5,8 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Algebra.Category.GroupCat.Limits
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Category.Grp.Limits
+import Mathlib.Algebra.Ring.Subring.Basic
 
 #align_import algebra.category.Ring.limits from "leanprover-community/mathlib"@"c43486ecf2a5a17479a32ce09e4818924145e90e"
 
@@ -134,7 +134,6 @@ instance hasLimit : HasLimit F := ⟨limitCone.{v, u} F, limitConeIsLimit.{v, u}
 /-- If `J` is `u`-small, `SemiRingCat.{u}` has limits of shape `J`. -/
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J SemiRingCat.{u} where
 
-/- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of rings has all limits. -/
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} SemiRingCat.{u} where
   has_limits_of_shape _ _ := { }
@@ -299,7 +298,6 @@ instance hasLimit : HasLimit F := ⟨limitCone.{v, u} F, limitConeIsLimit.{v, u}
 /-- If `J` is `u`-small, `CommSemiRingCat.{u}` has limits of shape `J`. -/
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommSemiRingCat.{u} where
 
-/- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of rings has all limits. -/
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommSemiRingCat.{u} where
 set_option linter.uppercaseLean3 false in
@@ -363,11 +361,11 @@ set_option linter.uppercaseLean3 false in
 /-- The flat sections of a functor into `RingCat` form a subring of all sections.
 -/
 def sectionsSubring : Subring (∀ j, F.obj j) :=
-  letI f : J ⥤ AddGroupCat.{u} :=
-    F ⋙ forget₂ RingCat.{u} AddCommGroupCat.{u} ⋙
-    forget₂ AddCommGroupCat.{u} AddGroupCat.{u}
+  letI f : J ⥤ AddGrp.{u} :=
+    F ⋙ forget₂ RingCat.{u} AddCommGrp.{u} ⋙
+    forget₂ AddCommGrp.{u} AddGrp.{u}
   letI g : J ⥤ SemiRingCat.{u} := F ⋙ forget₂ RingCat.{u} SemiRingCat.{u}
-  { AddGroupCat.sectionsAddSubgroup (J := J) f,
+  { AddGrp.sectionsAddSubgroup (J := J) f,
     SemiRingCat.sectionsSubsemiring (J := J) g with
     carrier := (F ⋙ forget RingCat.{u}).sections }
 set_option linter.uppercaseLean3 false in
@@ -387,7 +385,7 @@ All we need to do is notice that the limit point has a `Ring` instance available
 and then reuse the existing limit.
 -/
 instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
-  letI : (forget₂ RingCat SemiRingCat).ReflectsIsomorphisms :=
+  have : (forget₂ RingCat SemiRingCat).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   have : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
@@ -431,7 +429,6 @@ instance hasLimit : HasLimit F :=
 /-- If `J` is `u`-small, `RingCat.{u}` has limits of shape `J`. -/
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J RingCat.{u} where
 
-/- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of rings has all limits. -/
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} RingCat.{u} where
 set_option linter.uppercaseLean3 false in
@@ -461,19 +458,19 @@ set_option linter.uppercaseLean3 false in
 /-- An auxiliary declaration to speed up typechecking.
 -/
 def forget₂AddCommGroupPreservesLimitsAux :
-    IsLimit ((forget₂ RingCat.{u} AddCommGroupCat).mapCone (limitCone.{v, u} F)) := by
+    IsLimit ((forget₂ RingCat.{u} AddCommGrp).mapCone (limitCone.{v, u} F)) := by
   -- Porting note: inline `f` would not compile
-  letI f := F ⋙ forget₂ RingCat.{u} AddCommGroupCat.{u}
+  letI f := F ⋙ forget₂ RingCat.{u} AddCommGrp.{u}
   letI : Small.{u} (Functor.sections (f ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
-  apply AddCommGroupCat.limitConeIsLimit.{v, u} f
+  apply AddCommGrp.limitConeIsLimit.{v, u} f
 set_option linter.uppercaseLean3 false in
 #align Ring.forget₂_AddCommGroup_preserves_limits_aux RingCat.forget₂AddCommGroupPreservesLimitsAux
 
 /-- The forgetful functor from rings to additive commutative groups preserves all limits.
 -/
 instance forget₂AddCommGroupPreservesLimitsOfSize [UnivLE.{v, u}] :
-    PreservesLimitsOfSize.{v, v} (forget₂ RingCat.{u} AddCommGroupCat.{u}) where
+    PreservesLimitsOfSize.{v, v} (forget₂ RingCat.{u} AddCommGrp.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
@@ -482,7 +479,7 @@ set_option linter.uppercaseLean3 false in
 #align Ring.forget₂_AddCommGroup_preserves_limits_of_size RingCat.forget₂AddCommGroupPreservesLimitsOfSize
 
 instance forget₂AddCommGroupPreservesLimits :
-    PreservesLimits (forget₂ RingCat AddCommGroupCat.{u}) :=
+    PreservesLimits (forget₂ RingCat AddCommGrp.{u}) :=
   RingCat.forget₂AddCommGroupPreservesLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align Ring.forget₂_AddCommGroup_preserves_limits RingCat.forget₂AddCommGroupPreservesLimits
@@ -545,7 +542,7 @@ instance :
     but it seems this would introduce additional identity morphisms in `limit.π`.
     -/
     -- Porting note: need to add these instances manually
-    letI : (forget₂ CommRingCat.{u} RingCat.{u}).ReflectsIsomorphisms :=
+    have : (forget₂ CommRingCat.{u} RingCat.{u}).ReflectsIsomorphisms :=
       CategoryTheory.reflectsIsomorphisms_forget₂ _ _
     have : Small.{u} (Functor.sections ((F ⋙ forget₂ CommRingCat RingCat) ⋙ forget RingCat)) :=
       inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
@@ -597,7 +594,6 @@ instance hasLimit : HasLimit F :=
 /-- If `J` is `u`-small, `CommRingCat.{u}` has limits of shape `J`. -/
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommRingCat.{u} where
 
-/- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of commutative rings has all limits. -/
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommRingCat.{u} where
 set_option linter.uppercaseLean3 false in
