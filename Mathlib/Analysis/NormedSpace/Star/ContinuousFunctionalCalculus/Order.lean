@@ -55,16 +55,12 @@ lemma inr_le_iff (a b : A) (ha : IsSelfAdjoint a := by cfc_tac)
 
 @[simp, norm_cast]
 lemma inr_nonneg_iff {a : A} : 0 ≤ (a : Unitization ℂ A) ↔ 0 ≤ a := by
-  have h₁ : (0 : Unitization ℂ A) = Unitization.inr (0 : A) := by rfl
-  rw [h₁]
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · refine (Unitization.inr_le_iff (isSelfAdjoint_zero A) ?_).mp h
-    have ha : IsSelfAdjoint (a : Unitization ℂ A) := by
-      rw [← h₁] at h
-      exact IsSelfAdjoint.of_nonneg h
-    exact isSelfAdjoint_inr.mp ha
-  · have ha : IsSelfAdjoint a := by exact IsSelfAdjoint.of_nonneg h
-    exact (Unitization.inr_le_iff (isSelfAdjoint_zero A) ha).mpr h
+  by_cases ha : IsSelfAdjoint a
+  · exact inr_zero ℂ (A := A) ▸ inr_le_iff 0 a
+  · refine ⟨?_, ?_⟩
+    all_goals refine fun h ↦ (ha ?_).elim
+    · exact isSelfAdjoint_inr (R := ℂ) |>.mp <| .of_nonneg h
+    · exact .of_nonneg h
 
 end Unitization
 
