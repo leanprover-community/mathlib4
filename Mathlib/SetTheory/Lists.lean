@@ -326,7 +326,7 @@ theorem Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l�
       exact ⟨a₁, m₁, (IH _ m₁ e₂₁.symm e₃₂.symm).symm⟩
   · rintro _ ⟨⟩
   · intro a l IH₁ IH₂
-    simpa using ⟨IH₁, IH₂⟩ 
+    simpa using ⟨IH₁, IH₂⟩
 #align lists.equiv.trans Lists.Equiv.trans
 
 instance instSetoidLists : Setoid (Lists α) :=
