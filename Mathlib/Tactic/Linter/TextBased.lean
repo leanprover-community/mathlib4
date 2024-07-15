@@ -410,9 +410,6 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 
   let mut styleExceptions := parseStyleExceptions exceptions
   let nolints ← IO.FS.lines ("scripts" / "nolints-style.txt")
   styleExceptions := styleExceptions.append (parseStyleExceptions nolints)
-  let errorStyle := match mode with
-  | OutputSetting.print style => style
-  | OutputSetting.update => ErrorFormat.humanReadable
 
   let mut numberErrorFiles : UInt32 := 0
   let mut allUnexpectedErrors := #[]
@@ -434,13 +431,14 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 
     if errors.size > 0 then
       allUnexpectedErrors := allUnexpectedErrors.append errors
       numberErrorFiles := numberErrorFiles + 1
-  formatErrors allUnexpectedErrors errorStyle
   match mode with
-  | OutputSetting.print _ =>
+  | OutputSetting.print style =>
+    formatErrors allUnexpectedErrors style
     if numberErrorFiles > 0 && mode matches OutputSetting.print _ then
       IO.println s!"error: found {numberErrorFiles} new style errors\n\
         run `lake exe lint_style --update` to ignore all of them"
   | OutputSetting.update =>
+    formatErrors allUnexpectedErrors ErrorFormat.humanReadable
     -- Regenerate the style exceptions file, including the Python output.
     IO.FS.writeFile exceptionsFilePath ""
     let python_output ← IO.Process.run { cmd := "./scripts/print-style-errors.sh" }
