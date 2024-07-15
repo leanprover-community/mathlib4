@@ -16,7 +16,8 @@ infinite list. In this file we define `Stream'` and some functions that take and
 Note that we already have `Stream` to represent a similar object, hence the awkward naming.
 -/
 
-set_option autoImplicit true
+universe u v w
+variable {α : Type u} {β : Type v} {δ : Type w}
 
 /-- A stream `Stream' α` is an infinite sequence of elements of `α`. -/
 def Stream' (α : Type u) := ℕ → α

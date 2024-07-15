@@ -406,7 +406,6 @@ theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
 
 #align list.replicate_zero List.replicate_zero
 
-attribute [simp] replicate_succ
 #align list.replicate_succ List.replicate_succ
 
 #align list.replicate_one List.replicate_one
@@ -417,7 +416,7 @@ attribute [simp] replicate_succ
 
 theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length a ↔ ∀ b ∈ l, b = a
   | [] => by simp
-  | (b :: l) => by simp [eq_replicate_length]
+  | (b :: l) => by simp [eq_replicate_length, replicate_succ]
 #align list.eq_replicate_length List.eq_replicate_length
 
 #align list.eq_replicate_of_mem List.eq_replicate_of_mem
@@ -472,7 +471,7 @@ theorem replicate_left_inj {a : α} {n m : ℕ} : replicate n a = replicate m a 
 #align list.replicate_left_inj List.replicate_left_inj
 
 @[simp] theorem head_replicate (n : ℕ) (a : α) (h) : head (replicate n a) h = a := by
-  cases n <;> simp at h ⊢
+  cases n <;> simp [replicate_succ] at h ⊢
 
 /-! ### pure -/
 
@@ -902,11 +901,6 @@ theorem nthLe_cons {l : List α} {a : α} {n} (hl) :
 
 end deprecated
 
--- Porting note: List.modifyHead has @[simp], and Lean 4 treats this as
--- an invitation to unfold modifyHead in any context,
--- not just use the equational lemmas.
-
--- @[simp]
 @[simp 1100]
 theorem modifyHead_modifyHead (l : List α) (f g : α → α) :
     (l.modifyHead f).modifyHead g = l.modifyHead (g ∘ f) := by cases l <;> simp
@@ -988,7 +982,7 @@ theorem bidirectionalRec_nil {motive : List α → Sort*}
 @[simp]
 theorem bidirectionalRec_singleton {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
-    (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) (a : α):
+    (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) (a : α) :
     bidirectionalRec nil singleton cons_append [a] = singleton a := by
   simp [bidirectionalRec]
 

@@ -151,10 +151,13 @@ theorem isCompact_basicOpen (X : Scheme) {U : Opens X} (hU : IsCompact (U : Set 
     exact Set.Subset.rfl
 #align algebraic_geometry.is_compact_basic_open AlgebraicGeometry.isCompact_basicOpen
 
+instance : QuasiCompact.affineProperty.toProperty.RespectsIso := by
+  apply AffineTargetMorphismProperty.respectsIso_mk <;> rintro X Y Z e _ _ H
+  exacts [@Homeomorph.compactSpace _ _ _ _ H (TopCat.homeoOfIso (asIso e.inv.1.base)), H]
+
 theorem QuasiCompact.affineProperty_isLocal : (QuasiCompact.affineProperty : _).IsLocal := by
   constructor
-  · apply AffineTargetMorphismProperty.respectsIso_mk <;> rintro X Y Z e _ _ H
-    exacts [@Homeomorph.compactSpace _ _ _ _ H (TopCat.homeoOfIso (asIso e.inv.1.base)), H]
+  · infer_instance
   · introv H
     dsimp [affineProperty] at H ⊢
     change CompactSpace ((Opens.map f.val.base).obj (Y.basicOpen r))
@@ -198,12 +201,12 @@ theorem QuasiCompact.openCover_tfae {X Y : Scheme.{u}} (f : X ⟶ Y) :
     List.TFAE
       [QuasiCompact f,
         ∃ 𝒰 : Scheme.OpenCover.{u} Y,
-          ∀ i : 𝒰.J, QuasiCompact (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
+          ∀ i : 𝒰.J, QuasiCompact (pullback.snd _ _ : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
         ∀ (𝒰 : Scheme.OpenCover.{u} Y) (i : 𝒰.J),
-          QuasiCompact (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
+          QuasiCompact (pullback.snd _ _ : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
         ∀ U : Opens Y, QuasiCompact (f ∣_ U),
         ∀ {U : Scheme} (g : U ⟶ Y) [IsOpenImmersion g],
-          QuasiCompact (pullback.snd : pullback f g ⟶ _),
+          QuasiCompact (pullback.snd f g),
         ∃ (ι : Type u) (U : ι → Opens Y) (_ : iSup U = ⊤), ∀ i, QuasiCompact (f ∣_ U i)] :=
   quasiCompact_eq_affineProperty.symm ▸
     QuasiCompact.affineProperty_isLocal.targetAffineLocally_isLocal.openCover_TFAE f
@@ -226,14 +229,14 @@ theorem QuasiCompact.affine_openCover_iff {X Y : Scheme.{u}} (𝒰 : Scheme.Open
 #align algebraic_geometry.quasi_compact.affine_open_cover_iff AlgebraicGeometry.QuasiCompact.affine_openCover_iff
 
 theorem QuasiCompact.openCover_iff {X Y : Scheme.{u}} (𝒰 : Scheme.OpenCover.{u} Y) (f : X ⟶ Y) :
-    QuasiCompact f ↔ ∀ i, QuasiCompact (pullback.snd : pullback f (𝒰.map i) ⟶ _) :=
+    QuasiCompact f ↔ ∀ i, QuasiCompact (pullback.snd f (𝒰.map i)) :=
   quasiCompact_eq_affineProperty.symm ▸
     QuasiCompact.affineProperty_isLocal.targetAffineLocally_isLocal.openCover_iff f 𝒰
 #align algebraic_geometry.quasi_compact.open_cover_iff AlgebraicGeometry.QuasiCompact.openCover_iff
 
-theorem quasiCompact_respectsIso : MorphismProperty.RespectsIso @QuasiCompact :=
-  quasiCompact_eq_affineProperty.symm ▸
-    targetAffineLocally_respectsIso QuasiCompact.affineProperty_isLocal.1
+instance quasiCompact_respectsIso : MorphismProperty.RespectsIso @QuasiCompact := by
+  rw [quasiCompact_eq_affineProperty]
+  infer_instance
 #align algebraic_geometry.quasi_compact_respects_iso AlgebraicGeometry.quasiCompact_respectsIso
 
 instance quasiCompact_isStableUnderComposition :
@@ -259,12 +262,10 @@ theorem quasiCompact_stableUnderBaseChange : MorphismProperty.StableUnderBaseCha
 
 variable {Z : Scheme.{u}}
 
-instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] :
-    QuasiCompact (pullback.fst : pullback f g ⟶ X) :=
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] : QuasiCompact (pullback.fst f g) :=
   quasiCompact_stableUnderBaseChange.fst f g inferInstance
 
-instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] :
-    QuasiCompact (pullback.snd : pullback f g ⟶ Y) :=
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] : QuasiCompact (pullback.snd f g) :=
   quasiCompact_stableUnderBaseChange.snd f g inferInstance
 
 @[elab_as_elim]
@@ -340,5 +341,31 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
   rwa [mul_zero, ← mul_assoc, ← pow_add, tsub_add_cancel_of_le] at hn
   apply Finset.le_sup (Finset.mem_univ i)
 #align algebraic_geometry.exists_pow_mul_eq_zero_of_res_basic_open_eq_zero_of_is_compact AlgebraicGeometry.exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact
+
+/-- A section over a compact open of a scheme is nilpotent if and only if its associated
+basic open is empty. -/
+lemma Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact {X : Scheme.{u}}
+    {U : Opens X} (hU : IsCompact U.carrier) (f : Γ(X, U)) :
+    IsNilpotent f ↔ X.basicOpen f = ⊥ := by
+  refine ⟨X.basicOpen_eq_bot_of_isNilpotent U f, fun hf ↦ ?_⟩
+  have h : (1 : Γ(X, U)) |_ X.basicOpen f = (0 : Γ(X, X.basicOpen f)) := by
+    have e : X.basicOpen f ≤ ⊥ := by rw [hf]
+    rw [← X.presheaf.restrict_restrict e bot_le]
+    have : Subsingleton Γ(X, ⊥) :=
+      CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
+    rw [Subsingleton.eq_zero (1 |_ ⊥)]
+    show X.presheaf.map _ 0 = 0
+    rw [map_zero]
+  obtain ⟨n, hn⟩ := exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact X hU 1 f h
+  rw [mul_one] at hn
+  use n
+
+/-- The zero locus of a set of sections over a compact open of a scheme is `X` if and only if
+`s` is contained in the nilradical of `Γ(X, U)`. -/
+lemma Scheme.zeroLocus_eq_top_iff_subset_nilradical_of_isCompact {X : Scheme.{u}} {U : Opens X}
+    (hU : IsCompact U.carrier) (s : Set Γ(X, U)) :
+    X.zeroLocus s = ⊤ ↔ s ⊆ (nilradical Γ(X, U)).carrier := by
+  simp [Scheme.zeroLocus_def, ← Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact hU,
+    ← mem_nilradical, Set.subset_def]
 
 end AlgebraicGeometry
