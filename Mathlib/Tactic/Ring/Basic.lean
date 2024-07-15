@@ -226,7 +226,7 @@ structure Result {α : Q(Type u)} (E : Q($α) → Type) (e : Q($α)) where
   /-- A proof that the original expression is equal to the normalized result. -/
   proof : Q($e = $expr)
 
-instance {α : Q(Type u)} {E : Q(«$α») → Type} {e : Q(«$α»)} [Inhabited (Σ e, E e)] :
+instance {α : Q(Type u)} {E : Q($α) → Type} {e : Q($α)} [Inhabited (Σ e, E e)] :
     Inhabited (Result E e) :=
   let ⟨e', v⟩ : Σ e, E e := default; ⟨e', v, default⟩
 
@@ -1047,7 +1047,7 @@ def isAtomOrDerivable {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 Evaluates expression `e` of type `α` into a normalized representation as a polynomial.
 This is the main driver of `ring`, which calls out to `evalAdd`, `evalMul` etc.
 -/
-partial def eval {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     (c : Cache sα) (e : Q($α)) : AtomM (Result (ExSum sα) e) := Lean.withIncRecDepth do
   let els := do
     try evalCast sα (← derive e)

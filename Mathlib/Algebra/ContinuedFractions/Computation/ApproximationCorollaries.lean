@@ -16,8 +16,7 @@ import Mathlib.Topology.Order.LeftRightNhds
 
 ## Summary
 
-We show that the generalized continued fraction given by `GenContFract.of` in fact
-is a (regular) continued fraction. Using the equivalence of the convergents computations
+Using the equivalence of the convergents computations
 (`GenContFract.convs` and `GenContFract.convs'`) for
 continued fractions (see `Algebra.ContinuedFractions.ConvergentsEquiv`), it follows that the
 convergents computations for `GenContFract.of` are equivalent.
@@ -46,26 +45,6 @@ variable {K : Type*} (v : K) [LinearOrderedField K] [FloorRing K]
 open GenContFract (of)
 open GenContFract
 open scoped Topology
-
-theorem GenContFract.of_isSimpContFract :
-    (of v).IsSimpContFract := fun _ _ nth_partNum_eq =>
-  of_partNum_eq_one nth_partNum_eq
-#align generalized_continued_fraction.of_is_simple_continued_fraction GenContFract.of_isSimpContFract
-
-/-- Creates the simple continued fraction of a value. -/
-nonrec def SimpContFract.of : SimpContFract K :=
-  ⟨of v, GenContFract.of_isSimpContFract v⟩
-#align simple_continued_fraction.of SimpContFract.of
-
-theorem SimpContFract.of_isContFract :
-    (SimpContFract.of v).IsContFract := fun _ _ nth_partDen_eq =>
-  lt_of_lt_of_le zero_lt_one (of_one_le_get?_partDen nth_partDen_eq)
-#align simple_continued_fraction.of_is_continued_fraction SimpContFract.of_isContFract
-
-/-- Creates the continued fraction of a value. -/
-def ContFract.of : ContFract K :=
-  ⟨SimpContFract.of v, SimpContFract.of_isContFract v⟩
-#align continued_fraction.of ContFract.of
 
 namespace GenContFract
 
