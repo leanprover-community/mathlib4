@@ -43,6 +43,19 @@ def valuation : Valuation K ℝ≥0 where
 
 theorem valuation_apply (x : K) : valuation h x = ‖x‖₊ := rfl
 
+
+/- NB. Si (valuation h).rangeGroup était `LinearOrderedCommGroupWith Zero`,
+on peurrait plutôt appliquer `NNReal.exists_lt_of_strictMono` -/
+
+theorem isTriviallyValued_or_exists' {ε : ℝ} (hε : 0 < ε):
+    (valuation h).rangeGroup = ⊥ ∨ (∃ (x : K), ‖x‖₊ ≠ 0 ∧ ‖x‖₊ < ε) := by
+  rw [Classical.or_iff_not_imp_left]
+  intro H
+  have _ : Nontrivial ((valuation h).rangeGroup) :=
+    (Subgroup.nontrivial_iff_ne_bot (valuation h).rangeGroup).mpr H
+  -- have := NNReal.exists_lt_of_strictMono
+  sorry
+
 theorem isTriviallyValued_or_exists {ε : ℝ} (hε : 0 < ε):
     (valuation h).rangeGroup = ⊥ ∨ (∃ (x : K), ‖x‖₊ ≠ 0 ∧ ‖x‖₊ < ε) := by
   rw [Classical.or_iff_not_imp_right]
@@ -59,13 +72,12 @@ theorem isTriviallyValued_or_exists {ε : ℝ} (hε : 0 < ε):
     apply ne_zero_of_lt (b := 0)
     rw [nnnorm_zpow, ← valuation_apply, hx]
     apply zpow_pos_of_pos
-    simp only [NNReal.coe_pos, gt_iff_lt, pos_iff_ne_zero, ← isUnit_iff_ne_zero, Units.isUnit]
+    apply NNReal.coe_unit_pos
   rcases lt_trichotomy (γ : ℝ) 1 with (h1 | h2 | h3)
   · exfalso
     have h1' : 1 < ((γ⁻¹ : ℝ≥0ˣ) : ℝ) := by
       rw [Units.val_inv_eq_inv_val, NNReal.coe_inv]
-      refine one_lt_inv ?_ h1
-      simp only [NNReal.coe_pos, gt_iff_lt, pos_iff_ne_zero, ← isUnit_iff_ne_zero, Units.isUnit]
+      refine one_lt_inv (NNReal.coe_unit_pos γ) h1
     obtain ⟨n, hn⟩ := exists_mem_Ioc_zpow hε h1'
     simp only [mem_Ioc, ← not_le] at hn
     apply hn.1
@@ -76,11 +88,6 @@ theorem isTriviallyValued_or_exists {ε : ℝ} (hε : 0 < ε):
     obtain ⟨n, hn⟩ := exists_mem_Ioc_zpow hε h3
     simp only [mem_Ioc, ← not_le] at hn
     exact hn.1 (hγ' n)
-
-
-
-
-
 
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
 def toValued : Valued K ℝ≥0 :=
@@ -120,12 +127,10 @@ def toValued : Valued K ℝ≥0 :=
           exact lt_trans hy h_lt
 
       · rintro ⟨γ, _, hU⟩
-        use (γ : ℝ)
-        constructor
-        · simp only [NNReal.coe_pos, gt_iff_lt, pos_iff_ne_zero, ← isUnit_iff_ne_zero, Units.isUnit]
-        · intro x hx
-          apply hU
-          simpa only [Metric.mem_ball, dist_zero_right, mem_setOf_eq] using hx
+        use (γ : ℝ), NNReal.coe_unit_pos γ
+        intro x hx
+        apply hU
+        simpa only [Metric.mem_ball, dist_zero_right, mem_setOf_eq] using hx
 
 /-       exact ⟨fun ⟨ε, hε, h⟩  =>
           ⟨Units.mk0 ⟨ε, le_of_lt hε⟩ (ne_of_gt hε), fun x hx ↦ h (mem_ball_zero_iff.mpr hx)⟩,
@@ -184,12 +189,13 @@ def toNormedField : NormedField L :=
             rw [hδ, ← _root_.map_zero hv.hom]
             exact hv.strictMono (Units.zero_lt ε)
           use δ, hδ_pos
-          apply subset_trans _ hε
+          apply subset_trans _ hε.2
           intro x hx
           simp only [mem_setOf_eq, norm, hδ, NNReal.val_eq_coe, NNReal.coe_lt_coe] at hx
           rw [mem_setOf, ← neg_sub, Valuation.map_neg]
           exact (RankOne.strictMono Valued.v).lt_iff_lt.mp hx
-        · haveI : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
+        · -- ici, il faut raffiner l'argument
+          haveI : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
             ⟨RankOne.unit val.v, RankOne.unit_ne_one val.v⟩
           obtain ⟨u, hu⟩ := Real.exists_lt_of_strictMono hv.strictMono hr_pos
           use u

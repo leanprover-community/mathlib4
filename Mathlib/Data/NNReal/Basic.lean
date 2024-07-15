@@ -1223,6 +1223,9 @@ section StrictMono
 
 open NNReal
 
+theorem NNReal.coe_unit_pos (γ : ℝ≥0ˣ) : 0 < (γ : ℝ) := by
+  simp only [NNReal.coe_pos, gt_iff_lt, pos_iff_ne_zero, ← isUnit_iff_ne_zero, Units.isUnit]
+
 variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
 /-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is strictly monotone, then for any positive
