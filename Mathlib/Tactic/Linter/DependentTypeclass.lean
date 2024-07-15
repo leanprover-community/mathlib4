@@ -25,6 +25,10 @@ register_option linter.dependentTypeclass : Bool := {
   descr := "enable the dependentTypeclass linter"
 }
 
+/-- `dependentTypeclassRef` is a counter to collect all the already-known-to-be-superfluous
+typeclass assumptions. -/
+initialize dependentTypeclassRef : IO.Ref (Array Syntax) ← IO.mkRef {}
+
 namespace DependentTypeclass
 
 /-- Gets the value of the `linter.dependentTypeclass` option. -/
@@ -51,6 +55,7 @@ def dependentTypeclassLinter : Linter where
           let mut implied := #[]
           let s ← get
           for d in insts do
+            if (← dependentTypeclassRef.get).contains d then continue
             -- we remove "all" `d`s, to deal better with the variable update
             -- `variable (α : Type) [Add α] variable {α} [Add α]`
             let noDvar := varDecls.filter (· != d)
@@ -58,7 +63,9 @@ def dependentTypeclassLinter : Linter where
               elabCommand (← `(command| #synth $(⟨d.raw[2]⟩)))
             if (← get).messages.hasErrors then
               set s
-            else implied := implied.push (d, insts.filter (· != d))
+            else
+              dependentTypeclassRef.modify fun r => r.push d
+              implied := implied.push (d, insts.filter (· != d))
           set s
           for (d, ctx) in implied do
             Linter.logLint linter.dependentTypeclass d m!"Typeclass '{d}' is implied by {ctx}"
