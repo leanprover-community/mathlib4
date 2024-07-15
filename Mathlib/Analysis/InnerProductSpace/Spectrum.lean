@@ -282,21 +282,17 @@ theorem eigenspace_invariant  (α : 𝕜) : ∀ v ∈ (eigenspace A α), (B v �
 
 theorem restrict_exhaust: (⨆ γ , (eigenspace (LinearMap.restrict B
     (eigenspace_invariant hAB α)) γ)) = ⊤ := by
-    have h:= LinearMap.IsSymmetric.restrict_invariant hB (eigenspace_invariant hAB α)
-    have H: (⨆ γ , (eigenspace (LinearMap.restrict B (eigenspace_invariant hAB α)) γ))ᗮ = ⊥ := by
-      exact h.orthogonalComplement_iSup_eigenspaces_eq_bot
     rw [← Submodule.orthogonal_eq_bot_iff]
-    apply H
+    exact orthogonalComplement_iSup_eigenspaces_eq_bot (LinearMap.IsSymmetric.restrict_invariant hB
+    (eigenspace_invariant hAB α))
 
 theorem eigen_extend (γ : 𝕜) (x : E) : x ∈ Submodule.map (Submodule.subtype (eigenspace A α))
     (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ) → x ∈ eigenspace B γ := by
-  intro h
   simp only [mem_ker, sub_apply, Module.algebraMap_end_apply, Submodule.mem_map, mem_ker, sub_apply,
   Module.algebraMap_end_apply, Submodule.coeSubtype, Subtype.exists, SetLike.mk_smul_mk, exists_and_right,
   exists_eq_right] at *
-  obtain ⟨y, hy⟩ := h
-  exact (AddSubmonoid.mk_eq_zero
-  (ker (A - (algebraMap 𝕜 (Module.End 𝕜 E)) α)).toAddSubgroup.toAddSubmonoid).mp hy
+  intro ⟨y, hy⟩
+  exact (AddSubmonoid.mk_eq_zero (ker (A - (algebraMap 𝕜 (Module.End 𝕜 E)) α)).toAddSubgroup.toAddSubmonoid).mp hy
 
 theorem matching (γ : 𝕜) : Submodule.map (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ)
        = (eigenspace B γ ⊓ eigenspace A α) := by
@@ -335,7 +331,7 @@ theorem pre_exhaust': (fun (α : 𝕜 ) ↦  eigenspace A α)  = fun(α : 𝕜) 
 funext; exact (semi_final_exhaust hB hAB).symm
 
 theorem exhaust : (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α))) = ⊤ := by
-  rw [← hA.pre_exhaust, pre_exhaust' hB hAB]
+  rw [← pre_exhaust hA, pre_exhaust' hB hAB]
 
 theorem post_exhaust: (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)))ᗮ = ⊥ := by
   rw [Submodule.orthogonal_eq_bot_iff]
@@ -524,8 +520,7 @@ theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // i ≠ x} → 
     · simp only [ne_eq, Submodule.mem_map, Subtype.exists, Submodule.mem_iInf, Subtype.forall] at h
       obtain ⟨w, hw, A, B⟩ := h
       simp only [SetLike.mem_coe, eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply]
-      simp only [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply,
-      SetLike.mk_smul_mk] at A
+      simp only [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply, SetLike.mk_smul_mk] at A
       rw [← B]
       exact
         (AddSubmonoid.mk_eq_zero
@@ -570,13 +565,8 @@ theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
       AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe]
     intro h F H
     simp only [iInf, sInf] at *
-    --simp only [ne_eq, iSup, Set.range, Set.mem_setOf_eq] at B
-    simp only [Submodule.map] at H
-    have D : Submodule.map (Submodule.subtype ((⨆ (μ : 𝕜) , eigenspace ((T i).restrict
-    ((invariance_iInf' T hC i γ))) μ))) =
-      (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by sorry
-
-     --maybe `matching` version is needed.
+    simp only [ne_eq, iSup, Set.range, Set.mem_setOf_eq] at B
+    simp only [Submodule.map] at H --maybe `matching` version is needed.
 
     --have C : ↑v ∈ sSup {x | ∃ y, eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) y = x} := by sorry
     sorry --must show that these eigenspaces exhaust...should be the symmetric operator exhaust
@@ -691,6 +681,8 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
       apply hgv
       exact B
     exact h K A
+
+theorem simple(A : Prop) : A →  A := by simp only [imp_self]
 
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
