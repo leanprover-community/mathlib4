@@ -6,6 +6,7 @@ Authors: María Inés de Frutos-Fernández
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
+import Mathlib.Topology.MetricSpace.Ultra.Normed
 
 /-!
 # Correspondence between nontrivial nonarchimedean norms and rank one valuations
@@ -29,7 +30,9 @@ open Filter Set Valuation
 
 open scoped NNReal
 
-variable {K : Type*} [hK : NormedField K] (h : IsNonarchimedean (norm : K → ℝ))
+section
+
+variable {K : Type*} [hK : NormedField K] [IsUltrametricDist K]
 
 namespace NormedField
 
@@ -39,15 +42,15 @@ def valuation : Valuation K ℝ≥0 where
   map_zero'       := nnnorm_zero
   map_one'        := nnnorm_one
   map_mul'        := nnnorm_mul
-  map_add_le_max' := h
+  map_add_le_max' := IsUltrametricDist.norm_add_le_max
 
-theorem valuation_apply (x : K) : valuation h x = ‖x‖₊ := rfl
+theorem valuation_apply (x : K) : valuation x = ‖x‖₊ := rfl
 
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
 def toValued : Valued K ℝ≥0 :=
   { hK.toUniformSpace,
     @NonUnitalNormedRing.toNormedAddCommGroup K _ with
-    v := valuation h
+    v := valuation
     is_topological_valuation := fun U => by
       rw [Metric.mem_nhds_iff]
       exact ⟨fun ⟨ε, hε, h⟩  =>
@@ -56,6 +59,8 @@ def toValued : Valued K ℝ≥0 :=
           fun x hx ↦ hε (mem_ball_zero_iff.mp hx)⟩⟩ }
 
 end NormedField
+
+end
 
 namespace Valued
 
