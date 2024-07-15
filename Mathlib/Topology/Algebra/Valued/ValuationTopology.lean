@@ -77,8 +77,7 @@ theorem subgroups_basis :
         rintro y _
         change v (x * y) < _
         simp only [_root_.map_mul, Hx, zero_mul, Units.zero_lt]
-      · have : γx ∈ v.rangeGroup := sorry
-        use ⟨γx, this⟩⁻¹ * γ
+      · use ⟨γx, mem_rangeGroup v Hx⟩⁻¹ * γ
         rintro y (vy_lt : v y < ↑(γx⁻¹ * γ))
         simp only [mem_preimage, SetLike.mem_coe, mem_ltAddSubgroup_iff, _root_.map_mul]
         rw [Hx, mul_comm]
@@ -92,8 +91,7 @@ theorem subgroups_basis :
         change v (y * x) < _
         rw [Valuation.map_mul, Hx, mul_zero]
         exact @Units.zero_lt Γ₀ _ γ
-      · have : γx ∈ v.rangeGroup := sorry
-        use ⟨γx, this⟩⁻¹ * γ
+      · use ⟨γx, mem_rangeGroup v Hx⟩⁻¹ * γ
         rintro y (vy_lt : v y < ↑(γx⁻¹ * γ))
         simp only [mem_preimage, SetLike.mem_coe, mem_ltAddSubgroup_iff, _root_.map_mul, Hx]
         rw [Units.val_mul, mul_comm] at vy_lt
@@ -171,13 +169,10 @@ theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔
 #align valued.mem_nhds_zero Valued.mem_nhds_zero
 
 theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
-  -- sorry -- c'est facile
   rw [mem_nhds]
-  let u := Units.mk0 _ h
-  have : u ∈ _i.v.rangeGroup := sorry
-  use ⟨u, this⟩
-  intro y y_in
-  exact Valuation.map_eq_of_sub_lt _ y_in
+  use ⟨_, (mem_rangeGroup v rfl : Units.mk0 _ h ∈ _i.v.rangeGroup)⟩
+  intro y
+  exact Valuation.map_eq_of_sub_lt _
 #align valued.loc_const Valued.loc_const
 
 instance (priority := 100) : TopologicalRing R :=
