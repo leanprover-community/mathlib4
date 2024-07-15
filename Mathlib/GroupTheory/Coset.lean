@@ -813,8 +813,8 @@ namespace MonoidHom
 
 variable [Group α] {H : Type*} [Group H]
 
-/-- An equivalence between any fiber of a `MonoidHom` and its kernel. -/
-@[to_additive "An equivalence between any fiber of an `AddMonoidHom` and its kernel."]
+/-- An equivalence between any non-empty fiber of a `MonoidHom` and its kernel. -/
+@[to_additive "An equivalence between any non-empty fiber of an `AddMonoidHom` and its kernel."]
 def fiberEquivKer (f : α →* H) (a : α) : f ⁻¹' {f a} ≃ f.ker :=
   (Equiv.setCongr <| Set.ext fun _ => by erw [mem_singleton_iff, mem_smul_set_iff_inv_smul_mem,
     mem_ker, map_mul, map_inv, inv_mul_eq_one, eq_comm]).trans <| Subgroup.leftCosetEquivSubgroup a
@@ -834,8 +834,8 @@ noncomputable def fiberEquivKerOfSurjective {f : α →* H} (hf : Function.Surje
     f ⁻¹' {h} ≃ f.ker :=
   (hf h).choose_spec ▸ f.fiberEquivKer (hf h).choose
 
-/-- An equivalence between any two fibers of a `MonoidHom`. -/
-@[to_additive "An equivalence between any two fibers of an `AddMonoidHom`."]
+/-- An equivalence between any two non-empty fibers of a `MonoidHom`. -/
+@[to_additive "An equivalence between any two non-empty fibers of an `AddMonoidHom`."]
 def fiberEquiv (f : α →* H) (a b : α) : f ⁻¹' {f a} ≃ f ⁻¹' {f b} :=
   (f.fiberEquivKer a).trans (f.fiberEquivKer b).symm
 
