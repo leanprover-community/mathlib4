@@ -404,9 +404,18 @@ theorem msymm_zero : msymm σ R (.indiscrete 0) = 1 := by
 
 @[simp]
 theorem msymm_one : msymm σ R (.indiscrete 1) = ∑ i, X i := by
+  have : (fun (x : Sym σ 1) ↦ x ∈ Set.univ) =
+      (fun x ↦ Nat.Partition.ofSym x = Nat.Partition.indiscrete 1) := by
+    simp_rw [Set.mem_univ, Nat.Partition.ofSym_one]
   symm
-  apply Fintype.sum_equiv (Nat.Partition.ofSym_equiv_indiscrete σ)
-  simp
+  rw [Fintype.sum_equiv (Equiv.trans Sym.oneEquiv (Equiv.Set.univ (Sym σ 1)).symm)
+    _ (fun s ↦ (s.1.1.map X).prod)]
+  · apply Fintype.sum_equiv (Equiv.subtypeEquivProp this)
+    intro x
+    congr
+  · intro x
+    rw [← Multiset.prod_singleton (X x), ← Multiset.map_singleton]
+    congr
 
 @[simp]
 theorem rename_msymm (μ : n.Partition) (e : σ ≃ τ) :
