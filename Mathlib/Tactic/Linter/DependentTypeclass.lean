@@ -34,6 +34,14 @@ def getBinders : Expr → Array String
     (getBinders body).push (s!"{l} {na} : {type}{r}")
   | _ => default
 
+/-- `getMinInstsFor d varDecls` takes as input a `bracketedBinder` `d` and an array of `varDecls`
+of ``bracketedBinder`.
+It assumes that `d` represents a typeclass assumption and it tries to synthesize an instance of
+`d` from `varDecls` using `inferInstance` or `sorry`.
+If `inferInstance` is successful, then it returns the `Expr`ession representing a proof of
+`d` using `varDecls`.
+Otherwise it returns `none`.
+-/
 def getMinInstsFor (d : TSyntax ``Lean.Parser.Term.bracketedBinder)
   (varDecls : Array (TSyntax ``Lean.Parser.Term.bracketedBinder)) :
       CommandElabM (Option Expr) := do
