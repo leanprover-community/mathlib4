@@ -524,7 +524,8 @@ theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // i ≠ x} → 
     · simp only [ne_eq, Submodule.mem_map, Subtype.exists, Submodule.mem_iInf, Subtype.forall] at h
       obtain ⟨w, hw, A, B⟩ := h
       simp only [SetLike.mem_coe, eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply]
-      simp only [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply, SetLike.mk_smul_mk] at A
+      simp only [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply,
+      SetLike.mk_smul_mk] at A
       rw [← B]
       exact
         (AddSubmonoid.mk_eq_zero
@@ -569,8 +570,13 @@ theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
       AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe]
     intro h F H
     simp only [iInf, sInf] at *
-    simp only [ne_eq, iSup, Set.range, Set.mem_setOf_eq] at B
-    simp only [Submodule.map] at H --maybe `matching` version is needed.
+    --simp only [ne_eq, iSup, Set.range, Set.mem_setOf_eq] at B
+    simp only [Submodule.map] at H
+    have D : Submodule.map (Submodule.subtype ((⨆ (μ : 𝕜) , eigenspace ((T i).restrict
+    ((invariance_iInf' T hC i γ))) μ))) =
+      (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by sorry
+
+     --maybe `matching` version is needed.
 
     --have C : ↑v ∈ sSup {x | ∃ y, eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) y = x} := by sorry
     sorry --must show that these eigenspaces exhaust...should be the symmetric operator exhaust
