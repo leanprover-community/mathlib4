@@ -198,7 +198,7 @@ section DiagramBuilderM
 /-! # `DiagramBuilderM` -/
 
 /-- A monad to easily build Penrose diagrams in. -/
-abbrev DiagramBuilderM (m : Type → Type) [Monad m] := StateT DiagramState m
+abbrev DiagramBuilderM (m : Type → Type) := StateT DiagramState m
 
 namespace DiagramBuilderM
 
@@ -245,6 +245,7 @@ def addExpr [Monad m] [MonadLiftT MetaM m] (tp : String) (e : Expr) : DiagramBui
 def addInstruction [Monad m] (i : String) : DiagramBuilderM m Unit := do
   modify fun st => { st with sub := st.sub ++ s!"{i}\n" }
 
+/-- Run a computation in the `DiagramBuilderM` monad. -/
 def run {α : Type} [Monad m] (x : DiagramBuilderM m α) : m α :=
   x.run' {}
 
