@@ -91,7 +91,7 @@ Mathlib/Order/Filter/AtTopBot.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2
 Mathlib/Order/Filter/Basic.lean : line 1 : ERR_NUM_LIN : 3600 file contains 3406 lines, try to split it up
 Mathlib/Order/Hom/Lattice.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1890 lines, try to split it up
 Mathlib/Order/Interval/Set/Basic.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2006 lines, try to split it up
-Mathlib/Order/LiminfLimsup.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1538 lines, try to split it up
+Mathlib/Order/LiminfLimsup.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1791 lines, try to split it up
 Mathlib/Order/SuccPred/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1599 lines, try to split it up
 Mathlib/Order/UpperLower/Basic.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2041 lines, try to split it up
 Mathlib/RingTheory/DedekindDomain/Ideal.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1562 lines, try to split it up
