@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
 import Mathlib.Analysis.Convex.Jensen
+import Mathlib.Analysis.Convex.Mul
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.Data.Real.ConjExponents
@@ -277,7 +278,7 @@ namespace Real
 version for real-valued nonnegative functions. -/
 theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hs : s.Nonempty) (hw : ∀ i ∈ s, 0 < w i)
     (hw' : ∑ i in s, w i = 1) (hz : ∀ i ∈ s, 0 < z i) :
-    (∑ i in s, w i / z i)⁻¹ ≤ ∏ i in s, z i ^ w i  := by
+    (∑ i ∈ s, w i / z i)⁻¹ ≤ ∏ i ∈ s, z i ^ w i  := by
     have : ∏ i in s, (1 / z) i ^ w i ≤ ∑ i in s, w i * (1 / z) i :=
       geom_mean_le_arith_mean_weighted s w (1/z) (fun i hi ↦ le_of_lt (hw i hi)) hw'
       (fun i hi ↦ one_div_nonneg.2 (le_of_lt (hz i hi)))
@@ -299,8 +300,8 @@ theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hs : s.Nonempty) (hw
 /-- **HM-GM inequality**: The **harmonic mean is less than or equal to the geometric mean. --/
 theorem harm_mean_le_geom_mean {ι : Type*} (s : Finset ι) (hs : s.Nonempty) (w : ι → ℝ)
     (z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i) (hw' : 0 < ∑ i in s, w i) (hz : ∀ i ∈ s, 0 < z i) :
-    (∑ i in s, w i) / (∑ i in s, w i / z i) ≤ (∏ i in s, z i ^ w i) ^ (∑ i in s, w i)⁻¹ := by
-  have := harm_mean_le_geom_mean_weighted s (fun i => (w i) / ∑ i in s, w i) z hs ?_ ?_ hz
+    (∑ i ∈ s, w i) / (∑ i ∈ s, w i / z i) ≤ (∏ i ∈ s, z i ^ w i) ^ (∑ i ∈ s, w i)⁻¹ := by
+  have := harm_mean_le_geom_mean_weighted s (fun i => (w i) / ∑ i ∈ s, w i) z hs ?_ ?_ hz
   · simp only at this
     set n := ∑ i in s, w i
     nth_rw 1 [div_eq_mul_inv, (show n = (n⁻¹)⁻¹ by norm_num), ← mul_inv, Finset.mul_sum _ _ n⁻¹]
@@ -316,6 +317,39 @@ theorem harm_mean_le_geom_mean {ι : Type*} (s : Finset ι) (hs : s.Nonempty) (w
 end Real
 
 end HarmMeanLEGeomMean
+
+
+
+section ArithMeanLEQuadMean
+
+/-! ### AM-QM inequality -/
+
+namespace Real
+
+
+/-- **AM-QM inequality**: The arithmetic mean is less than or equal to the quadratic mean, weighted
+version for real-valued nonnegative functions. -/
+theorem arith_mean_le_quad_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
+    (hw' : ∑ i in s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
+    ∑ i in s, w i * z i ≤ Real.sqrt (∑ i in s, w i * (z i ^ 2)) := by
+    have am_pos := sum_nonneg fun i hi => mul_nonneg (hw i hi) (hz i hi)
+    have qm_pos := sum_nonneg fun i hi => mul_nonneg (hw i hi) (sq_nonneg (z i))
+    apply (Real.le_sqrt am_pos qm_pos).mpr
+    exact (convexOn_pow 2).map_sum_le hw hw' hz
+
+
+
+/-- **HM-GM inequality**: The **harmonic mean is less than or equal to the geometric mean. --/
+theorem arith_mean_le_quad_mean {ι : Type*} (s : Finset ι) (hs : s.Nonempty) (w : ι → ℝ)
+    (z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i) (hw' : 0 < ∑ i in s, w i) (hz : ∀ i ∈ s, 0 < z i) :
+    (∑ i in s, w i) / (∑ i in s, w i / z i) ≤ (∏ i in s, z i ^ w i) ^ (∑ i in s, w i)⁻¹ := by
+  sorry
+  -- see ConvexOn.map_sum_le
+
+end Real
+
+end ArithMeanLEQuadMean
+
 
 
 section Young
