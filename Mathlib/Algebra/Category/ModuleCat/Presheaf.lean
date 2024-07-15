@@ -523,20 +523,14 @@ noncomputable def forgetToPresheafModuleCatObj
   map := fun {c₁ c₂} f =>
     { toFun := fun x => M.presheaf.map f x
       map_add' := M.presheaf.map f |>.map_add
-      map_smul' := fun r (m : M.presheaf.obj c₁) => by
-        change M.presheaf.map f (R.1.map (hX.to c₁) _ • m) = R.1.map (hX.to c₂) _ • _
-        rw [M.map_smul, ← CategoryTheory.comp_apply, ← R.map_comp]
+      map_smul' := fun r (m :  ModuleCat.restrictScalars _ |>.obj _) => by
+        simp only [ModuleCat.restrictScalars.smul_def, RingHom.id_apply, M.map_smul]
+        rw [← CategoryTheory.comp_apply, ← R.map_comp]
         congr
         apply hX.hom_ext }
-  map_id := fun c => by
-      ext x
-      change M.presheaf.map _ x = x
-      rw [M.presheaf.map_id]
-      rfl
+  map_id := fun c => by ext; simp_rw [M.presheaf.map_id]; rfl
   map_comp := fun {c₁ c₂ c₃} f g => by
-      ext x
-      change M.presheaf.map _ x = (M.presheaf.map _ ≫ M.presheaf.map _) x
-      rw [← M.presheaf.map_comp]
+      ext x; simp_rw [M.presheaf.map_comp]; rfl
 
 /--
 Implementation of the functor `PresheafOfModules R ⥤ Cᵒᵖ ⥤ ModuleCat (R.obj X)`
