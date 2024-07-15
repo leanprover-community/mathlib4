@@ -622,16 +622,14 @@ theorem coeFn_const (b : β) : (const α b : α →ₘ[μ] β) =ᵐ[μ] Function
 #align measure_theory.ae_eq_fun.coe_fn_const MeasureTheory.AEEqFun.coeFn_const
 
 /-- If the measure is nonzero, we can strengthen `coeFn_const` to get an equality. -/
+@[simp]
 theorem coeFn_const_eq [NeZero μ] (b : β) (x : α) : (const α b : α →ₘ[μ] β) x = b := by
   simp only [cast]
-  have h : cast.Cond (const α b : α →ₘ[μ] β) :=
-    ⟨(fun _ : α ↦ b), stronglyMeasurable_const, rfl, ⟨b, rfl⟩⟩
-  rw [dif_pos h]
-  obtain ⟨hf, h2f, c', h3f⟩ := Classical.choose_spec h
-  nth_rw 1 [const] at h2f
-  rw [mk_eq_mk, ← h3f, EventuallyEq, ← const_def] at h2f
-  simp only [eventually_const] at h2f
-  rw [← h3f, h2f, Function.const]
+  split_ifs with h; swap; exact h.elim ⟨b, rfl⟩
+  have := Classical.choose_spec h
+  set b' := Classical.choose h
+  simp_rw [const, mk_eq_mk, EventuallyEq, ← const_def, eventually_const] at this
+  rw [Function.const, this]
 
 variable {α}
 
