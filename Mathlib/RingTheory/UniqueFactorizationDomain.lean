@@ -195,13 +195,16 @@ class UniqueFactorizationMonoid (α : Type*) [CancelCommMonoidWithZero α] exten
 #align unique_factorization_monoid UniqueFactorizationMonoid
 
 /-- Can't be an instance because it would cause a loop `ufm → WfDvdMonoid → ufm → ...`. -/
-theorem ufm_of_decomposition_of_wfDvdMonoid [CancelCommMonoidWithZero α] [WfDvdMonoid α]
-    [DecompositionMonoid α] : UniqueFactorizationMonoid α :=
+instance (priority := 100) ufm_of_decomposition_of_wfDvdMonoid
+    [CancelCommMonoidWithZero α] [WfDvdMonoid α] [DecompositionMonoid α] :
+    UniqueFactorizationMonoid α :=
   { ‹WfDvdMonoid α› with irreducible_iff_prime := irreducible_iff_prime }
 #align ufm_of_gcd_of_wf_dvd_monoid ufm_of_decomposition_of_wfDvdMonoid
 
-@[deprecated (since := "2024-02-12")]
-alias ufm_of_gcd_of_wfDvdMonoid := ufm_of_decomposition_of_wfDvdMonoid
+@[deprecated ufm_of_decomposition_of_wfDvdMonoid (since := "2024-02-12")]
+theorem ufm_of_gcd_of_wfDvdMonoid [CancelCommMonoidWithZero α] [WfDvdMonoid α]
+    [DecompositionMonoid α] : UniqueFactorizationMonoid α :=
+  ufm_of_decomposition_of_wfDvdMonoid
 
 instance Associates.ufm [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α] :
     UniqueFactorizationMonoid (Associates α) :=
