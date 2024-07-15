@@ -37,8 +37,6 @@ open Function Set
 
 universe u
 
-section
-
 variable (X : Type u) [TopologicalSpace X]
 
 /-- An extremally disconnected topological space is a space
@@ -314,3 +312,5 @@ instance instExtremallyDisconnected {ι : Type*} {π : ι → Type*} [∀ i, Top
     · rw [sigma_mk_preimage_image' ij]
       exact isOpen_empty
   · continuity
+
+end

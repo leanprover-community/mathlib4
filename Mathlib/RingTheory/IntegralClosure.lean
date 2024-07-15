@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Polynomial.Expand
-import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 import Mathlib.RingTheory.Adjoin.FG
 import Mathlib.RingTheory.FiniteType
