@@ -416,9 +416,7 @@ lemma eq2 {l r} (L : l → PGame) (R : r → PGame)
         rw [mul_assoc (mk (R j) _) _ _, mul_comm (mk (R j) _), mul_assoc]
         simp [inv_r]
         rw [pow_two, mul_assoc (mk (R j) _) _ _, mul_assoc (mk (R j) _) _ _,
-          mul_comm (mk (R j) _) (mk (invVal (fun (i : {i // 0 < L i}) => L i) R
-            (fun i => (L i).inv') (fun j => (R j).inv') (PGame.mk l r L R) i1) _),
-          mul_assoc]
+          mul_comm (mk (R j) _) (mk (invVal _ _ _ _ _ _) _), mul_assoc]
         simp [inv_r]
       }
       ring
@@ -431,9 +429,7 @@ lemma eq2 {l r} (L : l → PGame) (R : r → PGame)
         rw [mul_assoc (mk (L j) _) _ _, mul_comm (mk (L j) _), mul_assoc]
         simp [inv_l]
         rw [pow_two, mul_assoc (mk (L j) _) _ _, mul_assoc (mk (L j) _) _ _,
-          mul_comm (mk (L j) _) (mk (invVal (fun (i : {i // 0 < L i}) => L i) R
-            (fun i => (L i).inv') (fun j => (R j).inv') (PGame.mk l r L R) i1) _),
-          mul_assoc]
+          mul_comm (mk (L j) _) (mk (invVal _ _ _ _ _ _) _), mul_assoc]
         simp [inv_l]
       }
       ring
@@ -446,9 +442,7 @@ lemma eq2 {l r} (L : l → PGame) (R : r → PGame)
         rw [mul_assoc (mk (L j) _) _ _, mul_comm (mk (L j) _), mul_assoc]
         simp [inv_l]
         rw [pow_two, mul_assoc (mk (L j) _) _ _, mul_assoc (mk (L j) _) _ _,
-          mul_comm (mk (L j) _) (mk (invVal (fun (i : {i // 0 < L i}) => L i) R
-            (fun i => (L i).inv') (fun j => (R j).inv') (PGame.mk l r L R) i1) _),
-          mul_assoc]
+          mul_comm (mk (L j) _) (mk (invVal _ _ _ _ _ _) _), mul_assoc]
         simp [inv_l]
       }
       ring
@@ -461,9 +455,7 @@ lemma eq2 {l r} (L : l → PGame) (R : r → PGame)
         rw [mul_assoc (mk (R j) _) _ _, mul_comm (mk (R j) _), mul_assoc]
         simp [inv_r]
         rw [pow_two, mul_assoc (mk (R j) _) _ _, mul_assoc (mk (R j) _) _ _,
-          mul_comm (mk (R j) _) (mk (invVal (fun (i : {i // 0 < L i}) => L i) R
-            (fun i => (L i).inv') (fun j => (R j).inv') (PGame.mk l r L R) i1) _),
-          mul_assoc]
+          mul_comm (mk (R j) _) (mk (invVal _ _ _ _ _ _) _), mul_assoc]
         simp [inv_r]
       }
       ring
@@ -493,7 +485,7 @@ lemma onag_1_10_iii_left' {l r} (L : l → PGame) (R : r → PGame)
         (fun j => (R j).inv') (PGame.mk l r L R) j)
         (by apply invVal_numeric <;> tauto)
       x' * y + x * y' - x' * y' < 1 := by
-  rcases ij <;> simp
+  rcases ij <;> simp only
   · case _ val =>
       rcases val with ⟨i, j⟩
       simp only
@@ -558,7 +550,7 @@ lemma onag_1_10_iii_right' {l r} (L : l → PGame) (R : r → PGame)
         (fun j => (R j).inv') (PGame.mk l r L R) j)
         (by apply invVal_numeric <;> tauto)
       1 < x' * y + x * y' - x' * y' := by
-  rcases ij <;> simp
+  rcases ij <;> simp only
   · case _ val =>
       rcases val with ⟨i, j⟩
       simp only
