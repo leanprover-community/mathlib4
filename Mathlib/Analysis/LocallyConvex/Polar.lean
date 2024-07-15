@@ -164,16 +164,7 @@ theorem polar_subMulAction {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m 
 
 /-- The polar of a set closed under scalar multiplication as a submodule -/
 def polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) : Submodule 𝕜 F :=
-  ⟨⟨⟨B.polar m, by
-    intro _ _ ha hb
-    rw [polar_subMulAction, Set.mem_setOf_eq] at *
-    intro _ hx
-    rw [map_add, (ha _ hx), (hb _ hx), add_zero]⟩, zero_mem_polar B ↑m ⟩, fun _ y hy => by
-    simp only
-    simp only at hy
-    rw [polar_subMulAction, Set.mem_setOf_eq] at *
-    intro _ hx
-    rw [CompatibleSMul.map_smul (B _) _ y, (hy _ hx), smul_zero]⟩
+  .copy (⨅ x ∈ m, LinearMap.ker (B x)) (B.polar m) <| by ext; simp [polar_subMulAction]
 
 end NontriviallyNormedField
 
