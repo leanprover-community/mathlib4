@@ -281,16 +281,7 @@ theorem eigenspace_invariant  (α : 𝕜) : ∀ v ∈ (eigenspace A α), (B v �
   comp_apply B A v, ← map_smul, ← map_sub, hv, map_zero] at *
 
 theorem restrict_exhaust: (⨆ γ , (eigenspace (LinearMap.restrict B
-  rw [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply, ← comp_apply A B v, hAB,
-  comp_apply B A v, ← map_smul, ← map_sub, hv, map_zero] at *
-
-theorem restrict_exhaust: (⨆ γ , (eigenspace (LinearMap.restrict B
     (eigenspace_invariant hAB α)) γ)) = ⊤ := by
-    have h:= LinearMap.IsSymmetric.restrict_invariant hB (eigenspace_invariant hAB α)
-    have H: (⨆ γ , (eigenspace (LinearMap.restrict B (eigenspace_invariant hAB α)) γ))ᗮ = ⊥ := by
-      exact h.orthogonalComplement_iSup_eigenspaces_eq_bot
-    rw [← Submodule.orthogonal_eq_bot_iff]
-    apply H
     have h:= LinearMap.IsSymmetric.restrict_invariant hB (eigenspace_invariant hAB α)
     have H: (⨆ γ , (eigenspace (LinearMap.restrict B (eigenspace_invariant hAB α)) γ))ᗮ = ⊥ := by
       exact h.orthogonalComplement_iSup_eigenspaces_eq_bot
@@ -306,8 +297,6 @@ theorem eigen_extend (γ : 𝕜) (x : E) : x ∈ Submodule.map (Submodule.subtyp
   obtain ⟨y, hy⟩ := h
   exact (AddSubmonoid.mk_eq_zero
   (ker (A - (algebraMap 𝕜 (Module.End 𝕜 E)) α)).toAddSubgroup.toAddSubmonoid).mp hy
-  exact (AddSubmonoid.mk_eq_zero
-  (ker (A - (algebraMap 𝕜 (Module.End 𝕜 E)) α)).toAddSubgroup.toAddSubmonoid).mp hy
 
 theorem matching (γ : 𝕜) : Submodule.map (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ)
        = (eigenspace B γ ⊓ eigenspace A α) := by
@@ -319,21 +308,13 @@ theorem matching (γ : 𝕜) : Submodule.map (Submodule.subtype (eigenspace A α
   · constructor
     <;> rw [SetLike.mem_coe]
     · apply eigen_extend hAB γ x
-  <;> intro ⟨x1, x2⟩
-  · constructor
-    <;> rw [SetLike.mem_coe]
-    · apply eigen_extend hAB γ x
       simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
         exists_eq_right]
       use x1
     · apply x1
   · use x2
-    · apply x1
-  · use x2
     refine mem_eigenspace_iff.mpr ?h.a
     refine SetCoe.ext ?h.a.a
-    rw [restrict_coe_apply]
-    exact mem_eigenspace_iff.mp x1
     rw [restrict_coe_apply]
     exact mem_eigenspace_iff.mp x1
 
@@ -346,16 +327,12 @@ theorem function_version : (fun (γ : 𝕜) ↦ Submodule.map (Submodule.subtype
 theorem semi_final_exhaust : (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) = eigenspace A α := by
    rw [← function_version hAB, ← Submodule.map_iSup, restrict_exhaust hB hAB, Submodule.map_top,
    Submodule.range_subtype]
-   rw [← function_version hAB, ← Submodule.map_iSup, restrict_exhaust hB hAB, Submodule.map_top,
-   Submodule.range_subtype]
 
 theorem pre_exhaust :  (⨆ (γ : 𝕜), eigenspace A γ) =  ⊤ := by
   exact Submodule.orthogonal_eq_bot_iff.mp (hA.orthogonalComplement_iSup_eigenspaces_eq_bot)
 
 theorem pre_exhaust': (fun (α : 𝕜 ) ↦  eigenspace A α)  = fun(α : 𝕜) ↦  (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) := by
-theorem pre_exhaust': (fun (α : 𝕜 ) ↦  eigenspace A α)  = fun(α : 𝕜) ↦  (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) := by
-funext
-exact (semi_final_exhaust hB hAB).symm
+funext; exact (semi_final_exhaust hB hAB).symm
 
 theorem exhaust : (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α))) = ⊤ := by
   rw [← hA.pre_exhaust, pre_exhaust' hB hAB]
