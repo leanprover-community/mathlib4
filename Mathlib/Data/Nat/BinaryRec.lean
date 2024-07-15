@@ -29,8 +29,7 @@ theorem shiftRight_one (n) : n >>> 1 = n / 2 := rfl
 
 theorem bit_testBit_zero_shiftRight_one (n : Nat) : bit (n.testBit 0) (n >>> 1) = n := by
   simp only [bit, testBit_zero]
-  cases mod_two_eq_zero_or_one n with | _ h =>
-    simpa [h, shiftRight_one] using Eq.trans (by simp [h, Nat.shiftLeft_succ]) (Nat.div_add_mod n 2)
+  cases mod_two_eq_zero_or_one n with | _ h => simpa [h] using Nat.div_add_mod n 2
 
 @[simp]
 theorem bit_eq_zero_iff {n : Nat} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = false := by

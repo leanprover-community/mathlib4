@@ -248,7 +248,7 @@ theorem ofNat'_succ : ∀ {n}, ofNat' (n + 1) = ofNat' n + 1 :=
     cases b
     · erw [ofNat'_bit true n, ofNat'_bit]
       simp only [← bit1_of_bit1, ← bit0_of_bit0, cond]
-    · erw [show n.bit true + 1 = (n + 1).bit false by simp [Nat.bit, mul_add],
+    · erw [show n.bit true + 1 = (n + 1).bit false by simp [Nat.bit_val, mul_add],
         ofNat'_bit, ofNat'_bit, ih]
       simp only [cond, add_one, bit1_succ])
 #align num.of_nat'_succ Num.ofNat'_succ
@@ -757,7 +757,7 @@ theorem ofNat'_eq : ∀ n, Num.ofNat' n = n :=
     rw [ofNat'] at IH ⊢
     rw [Nat.binaryRec_eq, IH]
     -- Porting note: `Nat.cast_bit0` & `Nat.cast_bit1` are not `simp` theorems anymore.
-    · cases b <;> simp [Nat.bit, ← bit0_of_bit0, ← bit1_of_bit1, _root_.bit0, _root_.bit1]
+    · cases b <;> simp [Nat.bit_val, two_mul, ← bit0_of_bit0, ← bit1_of_bit1]
     · left; rfl
 #align num.of_nat'_eq Num.ofNat'_eq
 
@@ -985,8 +985,8 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
     induction' n with n IH generalizing m <;> cases' m with m m
         <;> dsimp only [PosNum.testBit, Nat.zero_eq]
     · rfl
-    · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_zero]
-    · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_zero]
+    · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.bit_testBit_zero]
+    · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.bit_testBit_zero]
     · simp
     · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_succ, IH]
     · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_succ, IH]
