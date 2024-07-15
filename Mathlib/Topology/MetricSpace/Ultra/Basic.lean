@@ -3,7 +3,7 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 /-!
 ## Ultrametric spaces
@@ -21,6 +21,11 @@ so that it can apply on pseudometric spaces as well.
 The mixin could have been defined as a hypothesis to be carried around, instead of relying on
 typeclass synthesis. However, since we declare a (pseudo)metric space on a type using
 typeclass arguments, one can declare the ultrametricity at the same time.
+For example, one could say `[Norm K] [Fact (IsNonarchimedean (norm : K → ℝ))]`,
+
+The file imports a later file in the hierarchy of pseudometric spaces, since
+`Metric.isClosed_ball` and `Metric.isClosed_sphere` is proven in a later file
+using more conceptual results.
 
 TODO: Generalize to ultrametric uniformities
 
@@ -215,7 +220,7 @@ lemma isOpen_closedBall {r : ℝ} (hr : r ≠ 0) : IsOpen (closedBall x r) := by
       simp [closedBall_eq_of_mem hy, h.not_lt] at hd
 
 lemma isClopen_closedBall {r : ℝ} (hr : r ≠ 0) : IsClopen (closedBall x r) :=
-  ⟨isClosed_closedBall x r, isOpen_closedBall x hr⟩
+  ⟨Metric.isClosed_ball, isOpen_closedBall x hr⟩
 
 lemma frontier_closedBall_eq_empty {r : ℝ} (hr : r ≠ 0) : frontier (closedBall x r) = ∅ :=
   isClopen_iff_frontier_eq_empty.mp (isClopen_closedBall x hr)
@@ -224,11 +229,7 @@ lemma isOpen_sphere {r : ℝ} (hr : r ≠ 0) : IsOpen (sphere x r) := by
   rw [← closedBall_diff_ball, sdiff_eq]
   exact (isOpen_closedBall x hr).inter (isClosed_ball x r).isOpen_compl
 
-lemma isClosed_sphere : IsClosed (sphere x r) := by
-  rw [← closedBall_diff_ball, sdiff_eq]
-  exact (isClosed_closedBall x r).inter isOpen_ball.isClosed_compl
-
 lemma isClopen_sphere {r : ℝ} (hr : r ≠ 0) : IsClopen (sphere x r) :=
-  ⟨isClosed_sphere x r, isOpen_sphere x hr⟩
+  ⟨Metric.isClosed_sphere, isOpen_sphere x hr⟩
 
 end IsUltrametricDist
