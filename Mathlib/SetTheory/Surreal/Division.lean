@@ -85,8 +85,8 @@ lemma right_pos_of_pos : ∀ j, 0 < x.moveRight j := by
 
 /-! ### Normalization of a positive numeric game -/
 
-/-- If x is a positive numeric game, then keeping only the positive Left options then inserting
-  0 as a Left option, results in an equal game. This game is called the normalization of x.
+/-- If `x` is a positive numeric game, then keeping only the positive Left options then inserting
+  0 as a Left option, results in an equal game. This game is called the normalization of `x`.
 -/
 def normalization (x : PGame) : PGame :=
   match x with
