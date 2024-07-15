@@ -208,9 +208,6 @@ section Finite
 
 variable [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
 
-instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v ∈ c.supp) :=
-  c.recOn fun w ↦ decidable_of_iff (G.Reachable v w) <| by simp fun _ _ _ _ ↦ Subsingleton.elim _ _
-
 lemma even_card_of_isPerfectMatching (c : ConnectedComponent G) (hM : M.IsPerfectMatching) :
     Even (Fintype.card c.supp) := by
   classical simpa using (hM.induce_connectedComponent_isMatching c).even_card
