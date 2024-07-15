@@ -329,8 +329,8 @@ lemma densityProcess_mono_kernel_left {κ' : kernel α (γ × β)} (hκκ' : κ 
   have h_le : κ' a (countablePartitionSet n x ×ˢ s) ≤ ν a (countablePartitionSet n x) :=
     meas_countablePartitionSet_le_of_fst_le hκ'ν n a x s
   rw [ENNReal.toReal_le_toReal]
-  · gcongr
-    exact hκκ' _ _
+  · gcongr (?_ : Measure α) _ / _ -- TODO: why `gcongr` fails?
+    exact hκκ' _
   · rw [ne_eq, ENNReal.div_eq_top]
     simp only [ne_eq, h0, and_false, false_or, not_and, not_not]
     refine fun h_top ↦ eq_top_mono ?_ h_top
@@ -350,7 +350,7 @@ lemma densityProcess_antitone_kernel_right {ν' : kernel α γ}
   have h0' : ν' a (countablePartitionSet n x) ≠ 0 :=
     fun h ↦ h0 (le_antisymm ((hνν' _ _).trans h.le) zero_le')
   rw [ENNReal.toReal_le_toReal]
-  · gcongr
+  · gcongr _ / ?_ -- TODO why `gcongr` fails?
     exact hνν' _ _
   · simp only [ne_eq, ENNReal.div_eq_top, h0', and_false, false_or, not_and, not_not]
     refine fun h_top ↦ eq_top_mono ?_ h_top
