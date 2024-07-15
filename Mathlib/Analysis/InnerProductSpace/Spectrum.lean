@@ -555,12 +555,9 @@ theorem index_eigen_extend (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) (
     (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) →
     x ∈ (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by
   intro h
-  simp only [ne_eq, Submodule.mem_iInf, Subtype.forall]
-  simp only [ne_eq, Submodule.mem_map, Subtype.exists, Submodule.mem_iInf, Subtype.forall] at h
+  simp only [ne_eq, Submodule.mem_map, Subtype.exists, Submodule.mem_iInf, Subtype.forall] at *
   intro a b
   obtain ⟨a', ⟨ha, ⟨h1, h2⟩⟩⟩ := h
-  have ha' := ha
-  specialize ha' a b
   rw [← h2]
   exact ha a b
 
