@@ -641,7 +641,6 @@
  ["docBlame", "Mathlib.Tactic.revertTargetDeps"],
  ["docBlame", "Mathlib.Tactic.rintro?"],
  ["docBlame", "Mathlib.Tactic.rsimp"],
- ["docBlame", "Mathlib.Tactic.rwSearch?"],
  ["docBlame", "Mathlib.Tactic.safe"],
  ["docBlame", "Mathlib.Tactic.sample"],
  ["docBlame", "Mathlib.Tactic.setArgsRest"],
