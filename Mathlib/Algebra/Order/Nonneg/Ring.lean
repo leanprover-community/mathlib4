@@ -139,3 +139,4 @@ instance orderedSub [LinearOrderedRing α] : OrderedSub { x : α // 0 ≤ x } :=
       Subtype.coe_mk]⟩
 #align nonneg.has_ordered_sub Nonneg.orderedSub
 
+end Nonneg
