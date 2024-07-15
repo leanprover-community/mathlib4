@@ -41,6 +41,8 @@ def listEquivLazyList (α : Type*) : List α ≃ LazyList α where
     · simpa [ofList, toList]
 #align lazy_list.list_equiv_lazy_list LazyList.listEquivLazyList
 
+#align lazy_list.traverse LazyList.traverse
+
 instance : Traversable LazyList where
   map := @LazyList.traverse Id _
   traverse := @LazyList.traverse
