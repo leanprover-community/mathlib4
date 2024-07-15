@@ -77,7 +77,7 @@ lemma norm_add_one_le_max_norm_one [IsUltrametricDist K] (x : K) :
 
 lemma norm_sub_one_le_one_of_norm_le_one [IsUltrametricDist K] {x : K} (h : ‖x‖ ≤ 1) :
     ‖x - 1‖ ≤ 1 := by
-  simpa [←sub_eq_add_neg, h] using norm_add_le_max x (-1)
+  simpa [← sub_eq_add_neg, h] using norm_add_le_max x (-1)
 
 lemma isUltrametricDist_of_forall_norm_add_one_le_max_norm_one
     (h : ∀ x : K, ‖x + 1‖ ≤ max ‖x‖ 1) : IsUltrametricDist K := by

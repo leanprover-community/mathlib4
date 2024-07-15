@@ -20,8 +20,7 @@ open Metric IsUltrametricDist
 instance {X : Type*} [MetricSpace X] [IsUltrametricDist X] : TotallyDisconnectedSpace X :=
   totallyDisconnectedSpace_iff_connectedComponent_subsingleton.mpr fun x =>
   suffices IsTotallyDisconnected (connectedComponent x) from
-    this _ Set.Subset.rfl isPreconnected_connectedComponent
-      by
+    this _ Set.Subset.rfl isPreconnected_connectedComponent; by
     intro t _ ht' y hy z hz
     contrapose! ht'
     intro H
