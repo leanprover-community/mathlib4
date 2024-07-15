@@ -633,9 +633,9 @@ theorem iSup_add_iSup {ι : Sort*} {f g : ι → ℝ≥0∞} (h : ∀ i j, ∃ k
     exact le_iSup_of_le k hk
 #align ennreal.supr_add_supr ENNReal.iSup_add_iSup
 
-theorem iSup_add_iSup_of_monotone {ι : Type*} [SemilatticeSup ι] {f g : ι → ℝ≥0∞} (hf : Monotone f)
-    (hg : Monotone g) : iSup f + iSup g = ⨆ a, f a + g a :=
-  iSup_add_iSup fun i j => ⟨i ⊔ j, add_le_add (hf <| le_sup_left) (hg <| le_sup_right)⟩
+theorem iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
+    {f g : ι → ℝ≥0∞} (hf : Monotone f) (hg : Monotone g) : iSup f + iSup g = ⨆ a, f a + g a :=
+  iSup_add_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules
 #align ennreal.supr_add_supr_of_monotone ENNReal.iSup_add_iSup_of_monotone
 
 theorem finset_sum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℝ≥0∞}
@@ -649,9 +649,10 @@ theorem finset_sum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℝ�
     gcongr
     exacts [(hk a).1, (hk _).2]
 
-theorem finset_sum_iSup_of_monotone {α} {ι} [SemilatticeSup ι] {s : Finset α} {f : α → ι → ℝ≥0∞}
-    (hf : ∀ a, Monotone (f a)) : (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n :=
-  finset_sum_iSup fun i j ↦ ⟨i ⊔ j, fun a ↦ ⟨hf a le_sup_left, hf a le_sup_right⟩⟩
+theorem finset_sum_iSup_of_monotone {α} {ι} [Preorder ι] [IsDirected ι (· ≤ ·)]
+    {s : Finset α} {f : α → ι → ℝ≥0∞} (hf : ∀ a, Monotone (f a)) :
+    (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n :=
+  finset_sum_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ a ↦ ⟨hf a hi, hf a hj⟩
 #align ennreal.finset_sum_supr_nat ENNReal.finset_sum_iSup_of_monotone
 
 @[deprecated finset_sum_iSup_of_monotone (since := "2024-07-14")]
