@@ -96,20 +96,6 @@ section NonUnital
 
 variable [NonUnitalNormedRing E] [StarRing E] [CstarRing E]
 
-theorem norm_star_mul_self {x : E} : ‖x⋆ * x‖ = ‖x‖ * ‖x‖ := by
-    by_cases hx : x = 0
-    · simp [hx]
-    · refine le_antisymm ?_ (CstarRing.norm_mul_self_le x)
-      push_neg at hx
-      have hx' : 0 < ‖x‖ := norm_pos_iff'.mpr hx
-      have h₁ : ∀ z : E, ‖z⋆ * z‖ ≤ ‖z⋆‖ * ‖z‖ := fun z => norm_mul_le z⋆ z
-      have h₂ : ∀ z : E, 0 < ‖z‖ → ‖z‖ ≤ ‖z⋆‖ := fun z hz => by
-        rw [← mul_le_mul_right hz]; exact (CstarRing.norm_mul_self_le z).trans (h₁ z)
-      have h₃ : ‖x⋆‖ ≤ ‖x‖ := by
-        conv_rhs => rw [← star_star x]
-        exact h₂ x⋆ (gt_of_ge_of_gt (h₂ x hx') hx')
-      exact (h₁ x).trans (by gcongr)
-
 -- see Note [lower instance priority]
 /-- In a C*-ring, star preserves the norm. -/
 instance (priority := 100) to_normedStarGroup : NormedStarGroup E :=
@@ -118,18 +104,18 @@ instance (priority := 100) to_normedStarGroup : NormedStarGroup E :=
     by_cases htriv : x = 0
     · simp only [htriv, star_zero]
     · have hnt : 0 < ‖x‖ := norm_pos_iff.mpr htriv
-      have hnt_star : 0 < ‖x⋆‖ :=
-        norm_pos_iff.mpr ((AddEquiv.map_ne_zero_iff starAddEquiv (M := E)).mpr htriv)
-      have h₁ :=
-        calc
-          ‖x‖ * ‖x‖ = ‖x⋆ * x‖ := norm_star_mul_self.symm
-          _ ≤ ‖x⋆‖ * ‖x‖ := norm_mul_le _ _
-      have h₂ :=
-        calc
-          ‖x⋆‖ * ‖x⋆‖ = ‖x * x⋆‖ := by rw [← norm_star_mul_self, star_star]
-          _ ≤ ‖x‖ * ‖x⋆‖ := norm_mul_le _ _
-      exact le_antisymm (le_of_mul_le_mul_right h₂ hnt_star) (le_of_mul_le_mul_right h₁ hnt)⟩
+      have h₁ : ∀ z : E, ‖z⋆ * z‖ ≤ ‖z⋆‖ * ‖z‖ := fun z => norm_mul_le z⋆ z
+      have h₂ : ∀ z : E, 0 < ‖z‖ → ‖z‖ ≤ ‖z⋆‖ := fun z hz => by
+        rw [← mul_le_mul_right hz]; exact (CstarRing.norm_mul_self_le z).trans (h₁ z)
+      have h₃ : ‖x⋆‖ ≤ ‖x‖ := by
+        conv_rhs => rw [← star_star x]
+        exact h₂ x⋆ (gt_of_ge_of_gt (h₂ x hnt) hnt)
+      exact le_antisymm h₃ (h₂ x hnt)⟩
 #align cstar_ring.to_normed_star_group CstarRing.to_normedStarGroup
+
+theorem norm_star_mul_self {x : E} : ‖x⋆ * x‖ = ‖x‖ * ‖x‖ :=
+  le_antisymm ((norm_mul_le _ _).trans (by rw [norm_star])) (CstarRing.norm_mul_self_le x)
+#align cstar_ring.norm_star_mul_self CstarRing.norm_star_mul_self
 
 theorem norm_self_mul_star {x : E} : ‖x * x⋆‖ = ‖x‖ * ‖x‖ := by
   nth_rw 1 [← star_star x]
