@@ -514,6 +514,15 @@ theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type*} [AddGroup G] [Fintyp
 
 attribute [to_additive existing] exists_prime_orderOf_dvd_card
 
+/-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
+`p` in `G`. This is known as Cauchy's theorem. -/
+@[to_additive]
+theorem _root_.exists_prime_orderOf_dvd_card' {G : Type*} [Group G] [Finite G] (p : ℕ)
+    [hp : Fact p.Prime] (hdvd : p ∣ Nat.card G) : ∃ x : G, orderOf x = p := by
+  have := Fintype.ofFinite G
+  rw [Nat.card_eq_fintype_card] at hdvd
+  exact exists_prime_orderOf_dvd_card p hdvd
+
 end Cauchy
 
 theorem subgroup_eq_top_of_swap_mem [DecidableEq α] {H : Subgroup (Perm α)}
