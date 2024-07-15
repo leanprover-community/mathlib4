@@ -18,12 +18,13 @@ differences explained below. There are four lemmas stated there, (i) through (iv
 proved for positive numbers `x`. Once we have defined the inverse for positive `x`, it is extended
 in the obvious way to negative numbers.
 
-In our proof, lemmas (i) through (iv) are proved for positive numbers in the section labeled
-`Positive` by a series of preliminary lemmas, culminating in the lemma `onag_1_10` which
-proves (i) through (iv) by a joint induction over all four statements.
-
 The desired final results are (ii) and (iv) which state that `x⁻¹` is a number and is a
 multiplicative inverse, respectively.
+
+In our proof, lemmas (i) through (iv) are proved for positive numbers in the section labeled
+`Positive` by a series of preliminary lemmas, culminating in the lemma `onag_1_10` which
+proves (ii) and (iv) by a joint induction over the two statements. Lemmas (i) and (iii) are used
+only within the proof of `onag_1_10` and are not needed as induction hypotheses.
 
 We do not use the notation `x⁻¹` in the proof of lemmas (i) to (iv); we use `x.inv'` instead
 since that is the definition for positive `x`. We only use `x⁻¹` at the very end when we define
