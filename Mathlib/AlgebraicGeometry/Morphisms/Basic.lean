@@ -329,7 +329,7 @@ structure PropertyIsLocalAtTarget (P : MorphismProperty Scheme) : Prop where
 
 /-- The intersection of two morphism properties that are local at the target is again local at
 the target. -/
-def propertyIsLocalAtTarget_inf (P Q : MorphismProperty Scheme) (hP : PropertyIsLocalAtTarget P)
+lemma propertyIsLocalAtTarget_inf (P Q : MorphismProperty Scheme) (hP : PropertyIsLocalAtTarget P)
     (hQ : PropertyIsLocalAtTarget Q) : PropertyIsLocalAtTarget (P ⊓ Q) where
   RespectsIso :=
     letI := hP.RespectsIso
