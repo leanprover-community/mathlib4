@@ -276,7 +276,7 @@ end ToMatrix'
 
 section CommToMatrix'
 
--- TODO: Introduce matirx multiplication by matrices of scalars
+-- TODO: Introduce matrix multiplication by matrices of scalars
 
 variable {R : Type*} [CommSemiring R]
 variable [Fintype n] [Fintype m]
