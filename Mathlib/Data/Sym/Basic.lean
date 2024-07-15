@@ -534,6 +534,19 @@ theorem mem_append_iff {s' : Sym α m} : a ∈ s.append s' ↔ a ∈ s ∨ a ∈
   Multiset.mem_add
 #align sym.mem_append_iff Sym.mem_append_iff
 
+/-- Defines an equivalence between `α` and `Sym α 1`. -/
+@[simps apply]
+def oneEquiv : α ≃ Sym α 1 where
+  toFun a := ⟨{a}, by simp⟩
+  invFun s := (Equiv.subtypeQuotientEquivQuotientSubtype
+      (·.length = 1) _ (fun l ↦ Iff.rfl) (fun l l' ↦ by rfl) s).liftOn
+    (fun l ↦ l.1.head <| List.length_pos.mp <| by simp)
+    fun ⟨_, _⟩ ⟨_, h⟩ ↦ fun perm ↦ by
+      obtain ⟨a, rfl⟩ := List.length_eq_one.mp h
+      exact List.eq_of_mem_singleton (perm.mem_iff.mp <| List.head_mem _)
+  left_inv a := by rfl
+  right_inv := by rintro ⟨⟨l⟩, h⟩; obtain ⟨a, rfl⟩ := List.length_eq_one.mp h; rfl
+
 /-- Fill a term `m : Sym α (n - i)` with `i` copies of `a` to obtain a term of `Sym α n`.
 This is a convenience wrapper for `m.append (replicate i a)` that adjusts the term using
 `Sym.cast`. -/
