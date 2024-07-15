@@ -76,6 +76,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
   let T : Set (Set ι) := { u | u ⊆ t ∧ u.PairwiseDisjoint B ∧
     ∀ a ∈ t, ∀ b ∈ u, (B a ∩ B b).Nonempty → ∃ c ∈ u, (B a ∩ B c).Nonempty ∧ δ a ≤ τ * δ c }
   -- By Zorn, choose a maximal family in the good set `T` of disjoint families.
+
   have hzorn : ∃ m, Maximal (fun x ↦ x ∈ T) m := by
     refine zorn_subset _ fun U UT hU => ?_
     refine ⟨⋃₀ U, ?_, fun s hs => subset_sUnion_of_mem hs⟩
@@ -97,7 +98,6 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
     intro c hc
     by_contra h
     rw [not_disjoint_iff_nonempty_inter] at h
-    have := hu.prop
     obtain ⟨d, du, ad, hd⟩ : ∃ d, d ∈ u ∧ (B a ∩ B d).Nonempty ∧ δ a ≤ τ * δ d :=
       hu.prop.2.2 a hat c hc h
     exact lt_irrefl _ ((hcon d du ad).trans_le hd)
