@@ -1608,7 +1608,7 @@ protected theorem nat_succ (n : ℕ) : ((n + 1 : ℕ) : PGame) = n + 1 :=
   rfl
 #align pgame.nat_succ SetTheory.PGame.nat_succ
 
-instance isEmpty_leftMoves_add (x y : PGame) [IsEmpty x.LeftMoves] [IsEmpty y.LeftMoves] :
+instance isEmpty_leftMoves_add (x y : PGame.{u}) [IsEmpty x.LeftMoves] [IsEmpty y.LeftMoves] :
     IsEmpty (x + y).LeftMoves := by
   cases x
   cases y
@@ -1616,7 +1616,7 @@ instance isEmpty_leftMoves_add (x y : PGame) [IsEmpty x.LeftMoves] [IsEmpty y.Le
   assumption'
 #align pgame.is_empty_left_moves_add SetTheory.PGame.isEmpty_leftMoves_add
 
-instance isEmpty_rightMoves_add (x y : PGame) [IsEmpty x.RightMoves] [IsEmpty y.RightMoves] :
+instance isEmpty_rightMoves_add (x y : PGame.{u}) [IsEmpty x.RightMoves] [IsEmpty y.RightMoves] :
     IsEmpty (x + y).RightMoves := by
   cases x
   cases y
@@ -1647,20 +1647,6 @@ between them. -/
 def toRightMovesAdd {x y : PGame} : (x.RightMoves ⊕ y.RightMoves) ≃ (x + y).RightMoves :=
   Equiv.cast (rightMoves_add x y).symm
 #align pgame.to_right_moves_add SetTheory.PGame.toRightMovesAdd
-
-@[elab_as_elim]
-def leftMoves_add_casesOn {x y : PGame} {motive : (x + y).LeftMoves → Sort*}
-    (i : (x + y).LeftMoves)
-    (mk : ∀ i, motive (toLeftMovesAdd i)) :
-    motive i := by
-  cases x; cases y; apply mk
-
-@[elab_as_elim]
-def rightMoves_add_casesOn {x y : PGame} {motive : (x + y).RightMoves → Sort*}
-    (i : (x + y).RightMoves)
-    (mk : ∀ i, motive (toRightMovesAdd i)) :
-    motive i := by
-  cases x; cases y; apply mk
 
 @[simp]
 theorem mk_add_moveLeft_inl {xl xr yl yr} {xL xR yL yR} {i} :
@@ -2137,20 +2123,6 @@ def toRightMovesMul {x y : PGame} :
   Equiv.cast (rightMoves_mul x y).symm
 #align pgame.to_right_moves_mul SetTheory.PGame.toRightMovesMul
 
-@[elab_as_elim]
-def leftMoves_mul_casesOn {x y : PGame} {motive : (x * y).LeftMoves → Sort*}
-    (i : (x * y).LeftMoves)
-    (mk : ∀ i, motive (toLeftMovesMul i)) :
-    motive i := by
-  cases x; cases y; apply mk
-
-@[elab_as_elim]
-def rightMoves_mul_casesOn {x y : PGame} {motive : (x * y).RightMoves → Sort*}
-    (i : (x * y).RightMoves)
-    (mk : ∀ i, motive (toRightMovesMul i)) :
-    motive i := by
-  cases x; cases y; apply mk
-
 @[simp]
 theorem mk_mul_moveLeft_inl {xl xr yl yr} {xL xR yL yR} {i j} :
     (mk xl xr xL xR * mk yl yr yL yR).moveLeft (Sum.inl (i, j)) =
@@ -2159,9 +2131,9 @@ theorem mk_mul_moveLeft_inl {xl xr yl yr} {xL xR yL yR} {i j} :
 #align pgame.mk_mul_move_left_inl SetTheory.PGame.mk_mul_moveLeft_inl
 
 @[simp]
-theorem mul_moveLeft_inl {x y : PGame} {i} :
-    (x * y).moveLeft (toLeftMovesMul (Sum.inl i)) =
-      x.moveLeft i.1 * y + x * y.moveLeft i.2 - x.moveLeft i.1 * y.moveLeft i.2 := by
+theorem mul_moveLeft_inl {x y : PGame} {i j} :
+    (x * y).moveLeft (toLeftMovesMul (Sum.inl (i, j))) =
+      x.moveLeft i * y + x * y.moveLeft j - x.moveLeft i * y.moveLeft j := by
   cases x
   cases y
   rfl
@@ -2175,9 +2147,9 @@ theorem mk_mul_moveLeft_inr {xl xr yl yr} {xL xR yL yR} {i j} :
 #align pgame.mk_mul_move_left_inr SetTheory.PGame.mk_mul_moveLeft_inr
 
 @[simp]
-theorem mul_moveLeft_inr {x y : PGame} {i} :
-    (x * y).moveLeft (toLeftMovesMul (Sum.inr i)) =
-      x.moveRight i.1 * y + x * y.moveRight i.2 - x.moveRight i.1 * y.moveRight i.2 := by
+theorem mul_moveLeft_inr {x y : PGame} {i j} :
+    (x * y).moveLeft (toLeftMovesMul (Sum.inr (i, j))) =
+      x.moveRight i * y + x * y.moveRight j - x.moveRight i * y.moveRight j := by
   cases x
   cases y
   rfl
@@ -2191,9 +2163,9 @@ theorem mk_mul_moveRight_inl {xl xr yl yr} {xL xR yL yR} {i j} :
 #align pgame.mk_mul_move_right_inl SetTheory.PGame.mk_mul_moveRight_inl
 
 @[simp]
-theorem mul_moveRight_inl {x y : PGame} {i} :
-    (x * y).moveRight (toRightMovesMul (Sum.inl i)) =
-      x.moveLeft i.1 * y + x * y.moveRight i.2 - x.moveLeft i.1 * y.moveRight i.2 := by
+theorem mul_moveRight_inl {x y : PGame} {i j} :
+    (x * y).moveRight (toRightMovesMul (Sum.inl (i, j))) =
+      x.moveLeft i * y + x * y.moveRight j - x.moveLeft i * y.moveRight j := by
   cases x
   cases y
   rfl
@@ -2207,9 +2179,9 @@ theorem mk_mul_moveRight_inr {xl xr yl yr} {xL xR yL yR} {i j} :
 #align pgame.mk_mul_move_right_inr SetTheory.PGame.mk_mul_moveRight_inr
 
 @[simp]
-theorem mul_moveRight_inr {x y : PGame} {i} :
-    (x * y).moveRight (toRightMovesMul (Sum.inr i)) =
-      x.moveRight i.1 * y + x * y.moveLeft i.2 - x.moveRight i.1 * y.moveLeft i.2 := by
+theorem mul_moveRight_inr {x y : PGame} {i j} :
+    (x * y).moveRight (toRightMovesMul (Sum.inr (i, j))) =
+      x.moveRight i * y + x * y.moveLeft j - x.moveRight i * y.moveLeft j := by
   cases x
   cases y
   rfl
@@ -2462,7 +2434,6 @@ lemma memᵣ_mul_iff' : ∀ {x y₁ y₂ : PGame},
     ⟨fun ⟨i, j, hi⟩ ↦ ⟨_, ⟨_, refl _⟩, _, ⟨_, refl _⟩, hi⟩,
       fun ⟨_, ⟨i, hi⟩, _, ⟨j, hj⟩, h⟩ ↦ ⟨i, j, h.trans
         ((hi.mul_right.add hj.mul_left).sub (hi.mul hj))⟩⟩
-
 
 /-! ### Inserting an option -/
 
