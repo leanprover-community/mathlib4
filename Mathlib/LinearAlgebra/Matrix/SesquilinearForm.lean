@@ -109,7 +109,7 @@ def LinearMap.toMatrix₂Aux (b₁ : n → M₁) (b₂ : m → M₂) :
 
 @[simp]
 theorem LinearMap.toMatrix₂Aux_apply (f : M₁ →ₛₗ[σ₁] M₂ →ₛₗ[σ₂] N₂) (b₁ : n → M₁) (b₂ : m → M₂)
-    (i : n) (j : m) : LinearMap.toMatrix₂Aux (R := R) b₁ b₂ f i j = f (b₁ i) (b₂ j) :=
+    (i : n) (j : m) : LinearMap.toMatrix₂Aux R b₁ b₂ f i j = f (b₁ i) (b₂ j) :=
   rfl
 #align linear_map.to_matrix₂_aux_apply LinearMap.toMatrix₂Aux_apply
 
@@ -118,7 +118,7 @@ variable [DecidableEq n] [DecidableEq m]
 
 theorem LinearMap.toLinearMap₂'Aux_toMatrix₂Aux (f : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) :
     Matrix.toLinearMap₂'Aux σ₁ σ₂
-        (LinearMap.toMatrix₂Aux (R := R) (fun i => stdBasis R₁ (fun _ => R₁) i 1)
+        (LinearMap.toMatrix₂Aux R (fun i => stdBasis R₁ (fun _ => R₁) i 1)
           (fun j => stdBasis R₂ (fun _ => R₂) j 1) f) =
       f := by
   refine ext_basis (Pi.basisFun R₁ n) (Pi.basisFun R₂ m) fun i j => ?_
@@ -126,7 +126,7 @@ theorem LinearMap.toLinearMap₂'Aux_toMatrix₂Aux (f : (n → R₁) →ₛₗ[
 #align linear_map.to_linear_map₂'_aux_to_matrix₂_aux LinearMap.toLinearMap₂'Aux_toMatrix₂Aux
 
 theorem Matrix.toMatrix₂Aux_toLinearMap₂'Aux (f : Matrix n m N₂) :
-    LinearMap.toMatrix₂Aux (R := R) (fun i => LinearMap.stdBasis R₁ (fun _ => R₁) i 1)
+    LinearMap.toMatrix₂Aux R (fun i => LinearMap.stdBasis R₁ (fun _ => R₁) i 1)
         (fun j => LinearMap.stdBasis R₂ (fun _ => R₂) j 1) (f.toLinearMap₂'Aux σ₁ σ₂) =
       f := by
   ext i j
@@ -153,13 +153,13 @@ variable [DecidableEq n] [DecidableEq m]
 
 /-- The linear equivalence between sesquilinear maps and `n × m` matrices -/
 def LinearMap.toMatrixₛₗ₂' : ((n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) ≃ₗ[R] Matrix n m N₂ :=
-  { LinearMap.toMatrix₂Aux (R := R) (fun i => stdBasis R₁ (fun _ => R₁) i 1) fun j =>
+  { LinearMap.toMatrix₂Aux R (fun i => stdBasis R₁ (fun _ => R₁) i 1) fun j =>
       stdBasis R₂ (fun _ => R₂) j
         1 with
-    toFun := LinearMap.toMatrix₂Aux (R := R) _ _
+    toFun := LinearMap.toMatrix₂Aux R _ _
     invFun := Matrix.toLinearMap₂'Aux σ₁ σ₂
-    left_inv := LinearMap.toLinearMap₂'Aux_toMatrix₂Aux (R := R)
-    right_inv := Matrix.toMatrix₂Aux_toLinearMap₂'Aux (R := R) }
+    left_inv := LinearMap.toLinearMap₂'Aux_toMatrix₂Aux R
+    right_inv := Matrix.toMatrix₂Aux_toLinearMap₂'Aux R }
 #align linear_map.to_matrixₛₗ₂' LinearMap.toMatrixₛₗ₂'
 
 variable (R)
@@ -201,7 +201,7 @@ theorem Matrix.toLinearMapₛₗ₂'_apply (M : Matrix n m N₂) (x : n → R₁
 
 theorem Matrix.toLinearMap₂'_apply (M : Matrix n m N₂) (x : n → S₁) (y : m → S₂) :
     -- porting note: we don't seem to have `∑ i j` as valid notation yet
-    Matrix.toLinearMap₂' (R := R) M x y = ∑ i, ∑ j, x i • y j • M i j :=
+    Matrix.toLinearMap₂' R M x y = ∑ i, ∑ j, x i • y j • M i j :=
   Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ => by
     rw [RingHom.id_apply, RingHom.id_apply, smul_comm]
 #align matrix.to_linear_map₂'_apply Matrix.toLinearMap₂'_apply
@@ -224,7 +224,7 @@ theorem Matrix.toLinearMapₛₗ₂'_stdBasis (M : Matrix n m N₂) (i : n) (j :
 
 @[simp]
 theorem Matrix.toLinearMap₂'_stdBasis (M : Matrix n m N₂) (i : n) (j : m) :
-    Matrix.toLinearMap₂' (R := R) M (LinearMap.stdBasis R (fun _ => R) i 1)
+    Matrix.toLinearMap₂' R M (LinearMap.stdBasis R (fun _ => R) i 1)
       (LinearMap.stdBasis R (fun _ => R) j 1) = M i j :=
   Matrix.toLinearMap₂'Aux_stdBasis _ _ M i j
 #align matrix.to_linear_map₂'_std_basis Matrix.toLinearMap₂'_stdBasis
@@ -249,7 +249,7 @@ theorem Matrix.toLinearMapₛₗ₂'_toMatrix' (B : (n → R₁) →ₛₗ[σ₁
 
 @[simp]
 theorem Matrix.toLinearMap₂'_toMatrix' (B : (n → S₁) →ₗ[S₁] (m → S₂) →ₗ[S₂] N₂) :
-    Matrix.toLinearMap₂' (R := R) (LinearMap.toMatrix₂' (R := R) B) = B :=
+    Matrix.toLinearMap₂' R (LinearMap.toMatrix₂' R B) = B :=
   (Matrix.toLinearMap₂' R).apply_symm_apply B
 #align matrix.to_linear_map₂'_to_matrix' Matrix.toLinearMap₂'_toMatrix'
 
@@ -261,7 +261,7 @@ theorem LinearMap.toMatrix'_toLinearMapₛₗ₂' (M : Matrix n m N₂) :
 
 @[simp]
 theorem LinearMap.toMatrix'_toLinearMap₂' (M : Matrix n m N₂) :
-    LinearMap.toMatrix₂' (R := R) (Matrix.toLinearMap₂' (R := R) (S₁ := S₁) (S₂ := S₂) M) = M :=
+    LinearMap.toMatrix₂' R (Matrix.toLinearMap₂' R (S₁ := S₁) (S₂ := S₂) M) = M :=
   LinearMap.toMatrixₛₗ₂'.apply_symm_apply M
 #align linear_map.to_matrix'_to_linear_map₂' LinearMap.toMatrix'_toLinearMap₂'
 
@@ -274,7 +274,7 @@ theorem LinearMap.toMatrixₛₗ₂'_apply (B : (n → R₁) →ₛₗ[σ₁] (m
 
 @[simp]
 theorem LinearMap.toMatrix₂'_apply (B : (n → S₁) →ₗ[S₁] (m → S₂) →ₗ[S₂] N₂) (i : n) (j : m) :
-    LinearMap.toMatrix₂' (R := R) B i j =
+    LinearMap.toMatrix₂' R B i j =
       B (stdBasis S₁ (fun _ => S₁) i 1) (stdBasis S₂ (fun _ => S₂) j 1) :=
   rfl
 #align linear_map.to_matrix₂'_apply LinearMap.toMatrix₂'_apply
@@ -294,7 +294,7 @@ variable [DecidableEq n'] [DecidableEq m']
 @[simp]
 theorem LinearMap.toMatrix₂'_compl₁₂ (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (l : (n' → R) →ₗ[R] n → R)
     (r : (m' → R) →ₗ[R] m → R) :
-    toMatrix₂' (R := R) (B.compl₁₂ l r) = (toMatrix' l)ᵀ * toMatrix₂' (R := R) B * toMatrix' r := by
+    toMatrix₂' R (B.compl₁₂ l r) = (toMatrix' l)ᵀ * toMatrix₂' R B * toMatrix' r := by
   ext i j
   simp only [LinearMap.toMatrix₂'_apply, LinearMap.compl₁₂_apply, transpose_apply, Matrix.mul_apply,
     LinearMap.toMatrix', LinearEquiv.coe_mk, sum_mul]
@@ -315,36 +315,36 @@ theorem LinearMap.toMatrix₂'_compl₁₂ (B : (n → R) →ₗ[R] (m → R) �
 #align linear_map.to_matrix₂'_compl₁₂ LinearMap.toMatrix₂'_compl₁₂
 
 theorem LinearMap.toMatrix₂'_comp (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (f : (n' → R) →ₗ[R] n → R) :
-    toMatrix₂' (R := R) (B.comp f) = (toMatrix' f)ᵀ * toMatrix₂' (R := R) B := by
+    toMatrix₂' R (B.comp f) = (toMatrix' f)ᵀ * toMatrix₂' R B := by
   rw [← LinearMap.compl₂_id (B.comp f), ← LinearMap.compl₁₂]
   simp
 #align linear_map.to_matrix₂'_comp LinearMap.toMatrix₂'_comp
 
 theorem LinearMap.toMatrix₂'_compl₂ (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (f : (m' → R) →ₗ[R] m → R) :
-    toMatrix₂' (R := R) (B.compl₂ f) = toMatrix₂' (R := R) B * toMatrix' f := by
+    toMatrix₂' R (B.compl₂ f) = toMatrix₂' R B * toMatrix' f := by
   rw [← LinearMap.comp_id B, ← LinearMap.compl₁₂]
   simp
 #align linear_map.to_matrix₂'_compl₂ LinearMap.toMatrix₂'_compl₂
 
 theorem LinearMap.mul_toMatrix₂'_mul (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (M : Matrix n' n R)
     (N : Matrix m m' R) :
-    M * toMatrix₂' (R := R) B * N = toMatrix₂' (R := R) (B.compl₁₂ (toLin' Mᵀ) (toLin' N)) := by
+    M * toMatrix₂' R B * N = toMatrix₂' R (B.compl₁₂ (toLin' Mᵀ) (toLin' N)) := by
   simp
 #align linear_map.mul_to_matrix₂'_mul LinearMap.mul_toMatrix₂'_mul
 
 theorem LinearMap.mul_toMatrix' (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (M : Matrix n' n R) :
-    M * toMatrix₂' (R := R) B = toMatrix₂' (R := R) (B.comp <| toLin' Mᵀ) := by
+    M * toMatrix₂' R B = toMatrix₂' R (B.comp <| toLin' Mᵀ) := by
   simp only [B.toMatrix₂'_comp, transpose_transpose, toMatrix'_toLin']
 #align linear_map.mul_to_matrix' LinearMap.mul_toMatrix'
 
 theorem LinearMap.toMatrix₂'_mul (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (M : Matrix m m' R) :
-    toMatrix₂' (R := R) B * M = toMatrix₂' (R := R) (B.compl₂ <| toLin' M) := by
+    toMatrix₂' R B * M = toMatrix₂' R (B.compl₂ <| toLin' M) := by
   simp only [B.toMatrix₂'_compl₂, toMatrix'_toLin']
 #align linear_map.to_matrix₂'_mul LinearMap.toMatrix₂'_mul
 
 theorem Matrix.toLinearMap₂'_comp (M : Matrix n m R) (P : Matrix n n' R) (Q : Matrix m m' R) :
-    LinearMap.compl₁₂ (Matrix.toLinearMap₂' (R := R) M) (toLin' P) (toLin' Q) =
-      toLinearMap₂' (R := R) (Pᵀ * M * Q) :=
+    LinearMap.compl₁₂ (Matrix.toLinearMap₂' R M) (toLin' P) (toLin' Q) =
+      toLinearMap₂' R (Pᵀ * M * Q) :=
   (LinearMap.toMatrix₂' R).injective (by
     rw [toMatrix₂'_compl₁₂, toMatrix'_toLin', toMatrix'_toLinearMap₂', toMatrix'_toLin',
       toMatrix'_toLinearMap₂'])
@@ -571,13 +571,13 @@ variable [DecidableEq n] [DecidableEq n']
 
 @[simp]
 theorem isAdjointPair_toLinearMap₂' :
-    LinearMap.IsAdjointPair (Matrix.toLinearMap₂' (R := R) J) (Matrix.toLinearMap₂' (R := R) J')
+    LinearMap.IsAdjointPair (Matrix.toLinearMap₂' R J) (Matrix.toLinearMap₂' R J')
         (Matrix.toLin' A) (Matrix.toLin' A') ↔
       Matrix.IsAdjointPair J J' A A' := by
   rw [isAdjointPair_iff_comp_eq_compl₂]
   have h :
     ∀ B B' : (n → R) →ₗ[R] (n' → R) →ₗ[R] R,
-      B = B' ↔ LinearMap.toMatrix₂' (R := R) B = LinearMap.toMatrix₂' (R := R) B' := by
+      B = B' ↔ LinearMap.toMatrix₂' R B = LinearMap.toMatrix₂' R B' := by
     intro B B'
     constructor <;> intro h
     · rw [h]
@@ -632,8 +632,8 @@ theorem Matrix.isAdjointPair_equiv (P : Matrix n n R) (h : IsUnit P) :
 /-- The submodule of pair-self-adjoint matrices with respect to bilinear forms corresponding to
 given matrices `J`, `J₂`. -/
 def pairSelfAdjointMatricesSubmodule : Submodule R (Matrix n n R) :=
-  (isPairSelfAdjointSubmodule (R := R) (Matrix.toLinearMap₂' (R := R) J)
-    (Matrix.toLinearMap₂' (R := R) J₂)).map
+  (isPairSelfAdjointSubmodule (Matrix.toLinearMap₂' R J)
+    (Matrix.toLinearMap₂' R J₂)).map
     ((LinearMap.toMatrix' : ((n → R) →ₗ[R] n → R) ≃ₗ[R] Matrix n n R) :
       ((n → R) →ₗ[R] n → R) →ₗ[R] Matrix n n R)
 #align pair_self_adjoint_matrices_submodule pairSelfAdjointMatricesSubmodule

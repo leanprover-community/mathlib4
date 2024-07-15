@@ -379,14 +379,14 @@ variable {n : Type*} [Fintype n]
 theorem posDef_of_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)}
     (hQ : Q.toMatrix'.PosDef) : Q.PosDef := by
   rw [← toQuadraticMap_associated ℝ Q,
-    ← LinearMap.toMatrix₂'.left_inv (R := ℝ) ((associatedHom (R := ℝ) ℝ) Q)]
+    ← (LinearMap.toMatrix₂' ℝ).left_inv ((associatedHom (R := ℝ) ℝ) Q)]
   exact hQ.toQuadraticForm'
 #align quadratic_form.pos_def_of_to_matrix' QuadraticForm.posDef_of_toMatrix'
 
 theorem posDef_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)} (hQ : Q.PosDef) :
     Q.toMatrix'.PosDef := by
   rw [← toQuadraticMap_associated ℝ Q, ←
-    LinearMap.toMatrix₂'.left_inv (R := ℝ) ((associatedHom (R := ℝ) ℝ) Q)] at hQ
+    (LinearMap.toMatrix₂' ℝ).left_inv ((associatedHom (R := ℝ) ℝ) Q)] at hQ
   exact .of_toQuadraticForm' (isSymm_toMatrix' Q) hQ
 #align quadratic_form.pos_def_to_matrix' QuadraticForm.posDef_toMatrix'
 

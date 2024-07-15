@@ -105,7 +105,7 @@ variable [DecidableEq n] [DecidableEq o]
 
 /-- The linear equivalence between bilinear forms on `n → R` and `n × n` matrices -/
 def LinearMap.BilinForm.toMatrix' : BilinForm R₂ (n → R₂) ≃ₗ[R₂] Matrix n n R₂ :=
-  LinearMap.toMatrix₂'
+  LinearMap.toMatrix₂' R₂
 #align bilin_form.to_matrix' LinearMap.BilinForm.toMatrix'
 
 @[simp]
@@ -166,7 +166,7 @@ namespace LinearMap
 @[simp]
 theorem BilinForm.toMatrix'_toBilin' (M : Matrix n n R₂) :
     BilinForm.toMatrix' (Matrix.toBilin' M) = M :=
-  LinearMap.toMatrix₂'.apply_symm_apply M
+  (LinearMap.toMatrix₂' R₂).apply_symm_apply M
 #align bilin_form.to_matrix'_to_bilin' LinearMap.BilinForm.toMatrix'_toBilin'
 
 @[simp]
@@ -463,7 +463,7 @@ theorem _root_.Matrix.nondegenerate_toBilin_iff {M : Matrix ι ι R₃} (b : Bas
 
 @[simp]
 theorem nondegenerate_toMatrix'_iff {B : BilinForm R₃ (ι → R₃)} :
-    B.toMatrix'.Nondegenerate (R := R₃) (m := ι) ↔ B.Nondegenerate :=
+    B.toMatrix'.Nondegenerate (m := ι) ↔ B.Nondegenerate :=
   Matrix.nondegenerate_toBilin'_iff.symm.trans <| (Matrix.toBilin'_toMatrix' B).symm ▸ Iff.rfl
 #align bilin_form.nondegenerate_to_matrix'_iff LinearMap.BilinForm.nondegenerate_toMatrix'_iff
 
