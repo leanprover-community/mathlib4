@@ -202,7 +202,7 @@ theorem congr_fun (h : Q = Q') (x : M) : Q x = Q' x :=
   DFunLike.congr_fun h _
 #align quadratic_form.congr_fun QuadraticMap.congr_fun
 
-/-- Copy of a `QuadraticForm` with a new `toFun` equal to the old one. Useful to fix definitional
+/-- Copy of a `QuadraticMap` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (Q : QuadraticMap R M N) (Q' : M → N) (h : Q' = ⇑Q) : QuadraticMap R M N where
   toFun := Q'
