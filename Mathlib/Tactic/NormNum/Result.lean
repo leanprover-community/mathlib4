@@ -32,6 +32,8 @@ open Lean.Meta Qq Lean.Elab Term
 namespace Mathlib
 namespace Meta.NormNum
 
+variable {u : Level}
+
 /-- A shortcut (non)instance for `AddMonoidWithOne ℕ` to shrink generated proofs. -/
 def instAddMonoidWithOneNat : AddMonoidWithOne ℕ := inferInstance
 
@@ -259,7 +261,7 @@ set_option linter.unusedVariables false
 /-- The result of `norm_num` running on an expression `x` of type `α`. -/
 @[nolint unusedArguments] def Result {α : Q(Type u)} (x : Q($α)) := Result'
 
-instance {α : Q(Type u)} {x : Q(«$α»)} : Inhabited (Result x) := inferInstanceAs (Inhabited Result')
+instance {α : Q(Type u)} {x : Q($α)} : Inhabited (Result x) := inferInstanceAs (Inhabited Result')
 
 /-- The result is `proof : x`, where `x` is a (true) proposition. -/
 @[match_pattern, inline] def Result.isTrue {x : Q(Prop)} :
@@ -311,7 +313,7 @@ def Result.isRat' {α : Q(Type u)} {x : Q($α)} (inst : Q(DivisionRing $α) := b
   else
     .isRat inst q n d proof
 
-instance {α : Q(Type u)} {x : Q(«$α»)} : ToMessageData (Result x) where
+instance {α : Q(Type u)} {x : Q($α)} : ToMessageData (Result x) where
   toMessageData
   | .isBool true proof => m!"isTrue ({proof})"
   | .isBool false proof => m!"isFalse ({proof})"
@@ -320,7 +322,7 @@ instance {α : Q(Type u)} {x : Q(«$α»)} : ToMessageData (Result x) where
   | .isRat _ q _ _ proof => m!"isRat {q} ({proof})"
 
 /-- Returns the rational number that is the result of `norm_num` evaluation. -/
-def Result.toRat {α : Q(Type u)} {e : Q(«$α»)} : Result e → Option Rat
+def Result.toRat {α : Q(Type u)} {e : Q($α)} : Result e → Option Rat
   | .isBool .. => none
   | .isNat _ lit _ => some lit.natLit!
   | .isNegNat _ lit _ => some (-lit.natLit!)
@@ -328,7 +330,7 @@ def Result.toRat {α : Q(Type u)} {e : Q(«$α»)} : Result e → Option Rat
 
 /-- Returns the rational number that is the result of `norm_num` evaluation, along with a proof
 that the denominator is nonzero in the `isRat` case. -/
-def Result.toRatNZ {α : Q(Type u)} {e : Q(«$α»)} : Result e → Option (Rat × Option Expr)
+def Result.toRatNZ {α : Q(Type u)} {e : Q($α)} : Result e → Option (Rat × Option Expr)
   | .isBool .. => none
   | .isNat _ lit _ => some (lit.natLit!, none)
   | .isNegNat _ lit _ => some (-lit.natLit!, none)

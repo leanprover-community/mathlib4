@@ -164,7 +164,7 @@ theorem isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} 
 set_option autoImplicit true in
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℕ`. -/
-@[norm_num (_ : α) ^ (_ : ℕ)]
+@[norm_num _ ^ (_ : ℕ)]
 def evalPow : NormNumExt where eval {u α} e := do
   let .app (.app (f : Q($α → ℕ → $α)) (a : Q($α))) (b : Q(ℕ)) ← whnfR e | failure
   let ⟨nb, pb⟩ ← deriveNat b q(instAddMonoidWithOneNat)
@@ -240,7 +240,7 @@ blocks below were not necessary: we just did it once outside the `match rb with`
 set_option autoImplicit true in
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℤ`. -/
-@[norm_num (_ : α) ^ (_ : ℤ)]
+@[norm_num _ ^ (_ : ℤ)]
 def evalZPow : NormNumExt where eval {u α} e := do
   let .app (.app (f : Q($α → ℤ → $α)) (a : Q($α))) (b : Q(ℤ)) ← whnfR e | failure
   let _c ← synthInstanceQ q(DivisionSemiring $α)
