@@ -18,6 +18,10 @@ presentation, if its jacobian is invertible.
 
 Finally, a standard smooth algebra is an algebra that admits a submersive presentation.
 
+While every standard smooth algebra is smooth, the converse does not hold. But if `S` is `R`-smooth,
+then `S` is `R`-standard smooth locally on `S`, i.e. there exists a set `{ t }` of `S` that generates
+the unit ideal, such that `Sₜ` is `R`-standard smooth for every `t` (TODO, see below).
+
 ## Main definitions
 
 All of these are in the `Algebra` namespace. Let `S` be an `R`-algebra.
@@ -40,20 +44,21 @@ For a presubmersive presentation `P` of `S` over `R` we make the following defin
 
 Furthermore, for algebras we define:
 
-- `IsStandardSmooth`: `S` is `R`-standard smooth if `S` admits a submersive
+- `Algebra.IsStandardSmooth`: `S` is `R`-standard smooth if `S` admits a submersive
   `R`-presentation.
-- `IsStandardSmooth.relativeDimension`: If `S` is `R`-standard smooth this is the dimension
+- `Algebra.IsStandardSmooth.relativeDimension`: If `S` is `R`-standard smooth this is the dimension
   of an arbitrary submersive `R`-presentation of `S`. This is independent of the choice
   of the presentation (TODO, see below).
-- `IsStandardSmoothOfRelativeDimension n`: `S` is `R`-standard smooth of relative dimension `n`
-  if it admits a submersive `R`-presentation of dimension `n`.
+- `Algebra.IsStandardSmoothOfRelativeDimension n`: `S` is `R`-standard smooth of relative dimension
+  `n` if it admits a submersive `R`-presentation of dimension `n`.
 
-Finally, in the `RingHom` namespace we define
+Finally, for ring homomorphisms we define:
 
-- `IsStandardSmooth`: A ring homomorphism `R →+* S` is standard smooth if `S` is standard smooth
-  as `R`-algebra.
-- `IsStandardSmoothOfRelativeDimension n`: A ring homomorphism `R →+* S` is standard smooth of
-  relative dimension `n` if `S` is standard smooth of relative dimension `n` as `R`-algebra.
+- `RingHom.IsStandardSmooth`: A ring homomorphism `R →+* S` is standard smooth if `S` is standard
+  smooth as `R`-algebra.
+- `RingHom.IsStandardSmoothOfRelativeDimension n`: A ring homomorphism `R →+* S` is standard
+  smooth of relative dimension `n` if `S` is standard smooth of relative dimension `n` as
+  `R`-algebra.
 
 ## TODO
 
@@ -66,6 +71,9 @@ Finally, in the `RingHom` namespace we define
 - Show that the module of Kaehler differentials of a standard smooth `R`-algebra `S` of relative
   dimension `n` is `S`-free of rank `n`. In particular this shows that the relative dimension
   is independent of the choice of the standard smooth presentation.
+- Show that standard smooth algebras are smooth. This relies on the computation of the module of
+  Kaehler differentials.
+- Show that locally on the target, smooth algebras are standard smooth.
 
 ## Implementation details
 
@@ -135,7 +143,7 @@ noncomputable def differential : (P.rels → P.Ring) →ₗ[P.Ring] (P.rels → 
     (fun j i : P.rels ↦ MvPolynomial.pderiv (P.map i) (P.relation j))
 
 /-- The jacobian of a `P : PreSubmersivePresentation` is the determinant
-of `P.linearMap` viewed as element of `S`. -/
+of `P.differential` viewed as element of `S`. -/
 noncomputable def jacobian : S :=
   algebraMap P.Ring S <| LinearMap.det P.differential
 
@@ -198,7 +206,7 @@ class IsStandardSmoothOfRelativeDimension : Prop where
 
 variable {R} {S}
 
-lemma isStandardSmooth_of_isStandardSmoothOfRelativeDimension
+lemma IsStandardSmoothOfRelativeDimension.isStandardSmooth
     [IsStandardSmoothOfRelativeDimension.{t, w} n R S] :
     IsStandardSmooth.{t, w} R S :=
   ⟨‹IsStandardSmoothOfRelativeDimension n R S›.out.nonempty⟩
@@ -219,11 +227,11 @@ def IsStandardSmooth (f : R →+* S) : Prop :=
 def IsStandardSmoothOfRelativeDimension (f : R →+* S) : Prop :=
   @Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n _ _ _ _ f.toAlgebra
 
-lemma isStandardSmooth_of_isStandardSmoothOfRelativeDimension (f : R →+* S)
+lemma IsStandardSmoothOfRelativeDimension.isStandardSmooth (f : R →+* S)
     (hf : IsStandardSmoothOfRelativeDimension.{t, w} n f) :
     IsStandardSmooth.{t, w} f :=
   letI : Algebra R S := f.toAlgebra
   letI : Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n R S := hf
-  Algebra.isStandardSmooth_of_isStandardSmoothOfRelativeDimension n
+  Algebra.IsStandardSmoothOfRelativeDimension.isStandardSmooth n
 
 end RingHom
