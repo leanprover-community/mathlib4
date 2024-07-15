@@ -49,8 +49,8 @@ lemma Maximal.prop (h : Maximal P x) : P x :=
 lemma Minimal.le_of_le (h : Minimal P x) (hy : P y) (hle : y ≤ x) : x ≤ y :=
   h.2 hy hle
 
-lemma Maximal.le_of_le (h : Maximal P x) (hy : P y) (hle : x ≤ y) : y ≤ x :=
-  h.2 hy hle
+lemma Maximal.le_of_ge (h : Maximal P x) (hy : P y) (hge : x ≤ y) : y ≤ x :=
+  h.2 hy hge
 
 @[simp] theorem minimal_toDual_iff : Minimal (fun x ↦ P (ofDual x)) (toDual x) ↔ Maximal P x :=
   Iff.rfl
@@ -117,10 +117,10 @@ theorem Minimal.and_left (h : Minimal P x) (hQ : Q x) : Minimal (fun x ↦ (Q x 
   ⟨⟨hQ, h.prop⟩, fun _ hy ↦ h.le_of_le hy.2⟩
 
 theorem Maximal.and_right (h : Maximal P x) (hQ : Q x) : Maximal (fun x ↦ (P x ∧ Q x)) x :=
-  ⟨⟨h.prop, hQ⟩, fun _ hy ↦ h.le_of_le hy.1⟩
+  ⟨⟨h.prop, hQ⟩, fun _ hy ↦ h.le_of_ge hy.1⟩
 
 theorem Maximal.and_left (h : Maximal P x) (hQ : Q x) : Maximal (fun x ↦ (Q x ∧ P x)) x :=
-  ⟨⟨hQ, h.prop⟩, fun _ hy ↦ h.le_of_le hy.2⟩
+  ⟨⟨hQ, h.prop⟩, fun _ hy ↦ h.le_of_ge hy.2⟩
 
 theorem minimal_and_iff_right_of_imp (hPQ : ∀ ⦃x⦄, P x → Q x) :
     Minimal (fun x ↦ P x ∧ Q x) x ↔ (Minimal P x) ∧ Q x := by
@@ -161,7 +161,7 @@ theorem minimal_iff_isMin (hP : ∀ ⦃x y⦄, P y → x ≤ y → P x) : Minima
 /-- If `P` is up-closed, then maximal elements satisfying `P` are exactly the globally maximal
 elements satisfying `P`. -/
 theorem maximal_iff_isMax (hP : ∀ ⦃x y⦄, P y → y ≤ x → P x) : Maximal P x ↔ (P x) ∧ IsMax x :=
-  ⟨fun h ↦ ⟨h.prop, fun _ h' ↦ h.le_of_le (hP h.prop h') h'⟩, fun h ↦ ⟨h.1, fun _ _  h' ↦ h.2 h'⟩⟩
+  ⟨fun h ↦ ⟨h.prop, fun _ h' ↦ h.le_of_ge (hP h.prop h') h'⟩, fun h ↦ ⟨h.1, fun _ _  h' ↦ h.2 h'⟩⟩
 
 @[simp] theorem minimal_le_iff : Minimal (· ≤ y) x ↔ x ≤ y ∧ IsMin x :=
   minimal_iff_isMin (fun _ _ h h' ↦ h'.trans h)
@@ -181,14 +181,20 @@ section PartialOrder
 
 variable [PartialOrder α]
 
-theorem Minimal.eq_of_le (hx : Minimal P x) (hy : P y) (hle : y ≤ x) : x = y :=
-  (hx.2 hy hle).antisymm hle
+theorem Minimal.eq_of_ge (hx : Minimal P x) (hy : P y) (hge : y ≤ x) : x = y :=
+  (hx.2 hy hge).antisymm hge
+
+theorem Minimal.eq_of_le (hx : Minimal P x) (hy : P y) (hle : y ≤ x) : y = x :=
+  (hx.eq_of_ge hy hle).symm
 
 theorem Maximal.eq_of_le (hx : Maximal P x) (hy : P y) (hle : x ≤ y) : x = y :=
   hle.antisymm <| hx.2 hy hle
 
+theorem Maximal.eq_of_ge (hx : Maximal P x) (hy : P y) (hge : x ≤ y) : y = x :=
+  (hx.eq_of_le hy hge).symm
+
 theorem minimal_iff : Minimal P x ↔ P x ∧ ∀ ⦃y⦄, P y → y ≤ x → x = y :=
-  ⟨fun h ↦ ⟨h.1, fun _ ↦ h.eq_of_le⟩, fun h ↦ ⟨h.1, fun _ hy hle ↦ (h.2 hy hle).le⟩⟩
+  ⟨fun h ↦ ⟨h.1, fun _ ↦ h.eq_of_ge⟩, fun h ↦ ⟨h.1, fun _ hy hle ↦ (h.2 hy hle).le⟩⟩
 
 theorem maximal_iff : Maximal P x ↔ P x ∧ ∀ ⦃y⦄, P y → x ≤ y → x = y :=
   minimal_iff (α := αᵒᵈ)
@@ -202,7 +208,7 @@ theorem maximal_mem_iff {s : Set α} : Maximal (· ∈ s) x ↔ x ∈ s ∧ ∀ 
 /-- If `P y` holds, and everything satisfying `P` is above `y`, then `y` is the unique minimal
 element satisfying `P`. -/
 theorem minimal_iff_eq (hy : P y) (hP : ∀ ⦃x⦄, P x → y ≤ x) : Minimal P x ↔ x = y :=
-  ⟨fun h ↦ h.eq_of_le hy (hP h.prop), by rintro rfl; exact ⟨hy, fun z hz _ ↦ hP hz⟩⟩
+  ⟨fun h ↦ h.eq_of_ge hy (hP h.prop), by rintro rfl; exact ⟨hy, fun z hz _ ↦ hP hz⟩⟩
 
 /-- If `P y` holds, and everything satisfying `P` is below `y`, then `y` is the unique maximal
 element satisfying `P`. -/
@@ -254,11 +260,17 @@ section Subset
 
 variable {P : Set α → Prop} {s t : Set α}
 
-theorem Minimal.eq_of_subset (h : Minimal P s) (ht : P t) (hts : t ⊆ s) : s = t :=
-  h.eq_of_le ht hts
+theorem Minimal.eq_of_superset (h : Minimal P s) (ht : P t) (hts : t ⊆ s) : s = t :=
+  h.eq_of_ge ht hts
 
 theorem Maximal.eq_of_subset (h : Maximal P s) (ht : P t) (hst : s ⊆ t) : s = t :=
   h.eq_of_le ht hst
+
+theorem Minimal.eq_of_subset (h : Minimal P s) (ht : P t) (hts : t ⊆ s) : t = s :=
+  h.eq_of_le ht hts
+
+theorem Maximal.eq_of_superset (h : Maximal P s) (ht : P t) (hst : s ⊆ t) : t = s :=
+  h.eq_of_ge ht hst
 
 theorem minimal_subset_iff : Minimal P s ↔ P s ∧ ∀ ⦃t⦄, P t → t ⊆ s → s = t :=
   _root_.minimal_iff
@@ -287,11 +299,17 @@ theorem Minimal.not_prop_of_ssubset (h : Minimal P s) (ht : t ⊂ s) : ¬ P t :=
 theorem Minimal.not_ssubset (h : Minimal P s) (ht : P t) : ¬ t ⊂ s :=
   h.not_lt ht
 
+theorem Maximal.mem_of_prop_insert (h : Maximal P s) (hx : P (insert x s)) : x ∈ s :=
+  h.eq_of_subset hx (subset_insert _ _) ▸ mem_insert ..
+
+theorem Minimal.not_mem_of_prop_diff_singleton (h : Minimal P s) (hx : P (s \ {x})) : x ∉ s :=
+  fun hxs ↦ ((h.eq_of_superset hx diff_subset).subset hxs).2 rfl
+
 theorem Set.minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
     Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s \ {x}) :=
-  ⟨fun h ↦ ⟨h.prop, fun x hxs hx ↦ by simpa using h.le_of_le hx diff_subset hxs⟩,
-    fun h ↦ ⟨h.1, fun t ht hts x hxs ↦ by_contra fun hxt ↦
-        h.2 x hxs <| hP ht (subset_diff_singleton hts hxt)⟩⟩
+  ⟨fun h ↦ ⟨h.1, fun _ hx hP ↦ h.not_mem_of_prop_diff_singleton hP hx⟩,
+    fun h ↦ ⟨h.1, fun _ ht hts x hxs ↦ by_contra fun hxt ↦
+      h.2 x hxs (hP ht <| subset_diff_singleton hts hxt)⟩⟩
 
 theorem Set.exists_diff_singleton_of_not_minimal (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) (hs : P s)
     (h : ¬ Minimal P s) : ∃ x ∈ s, P (s \ {x}) := by
@@ -308,9 +326,9 @@ theorem Maximal.not_ssubset (h : Maximal P s) (ht : P t) : ¬ s ⊂ t :=
 
 theorem Set.maximal_iff_forall_insert (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) :
     Maximal P s ↔ P s ∧ ∀ x ∉ s, ¬ P (insert x s) := by
-  simp only [Maximal, and_congr_right_iff]
-  exact fun _ ↦ ⟨fun h x hxs hx ↦ hxs <| h hx (subset_insert _ _) (mem_insert _ _),
-    fun h t ht hst x hxt ↦ by_contra fun hxs ↦ h x hxs (hP ht (insert_subset hxt hst))⟩
+  simp only [not_imp_not]
+  exact ⟨fun h ↦ ⟨h.1, fun x ↦ h.mem_of_prop_insert⟩,
+    fun h ↦ ⟨h.1, fun t ht hst x hxt ↦ h.2 x (hP ht <| insert_subset hxt hst)⟩⟩
 
 theorem Set.exists_insert_of_not_maximal (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) (hs : P s)
     (h : ¬ Maximal P s) : ∃ x ∉ s, P (insert x s) := by
@@ -318,12 +336,6 @@ theorem Set.exists_insert_of_not_maximal (hP : ∀ ⦃s t⦄, P t → s ⊆ t �
 
 /- TODO : generalize `minimal_iff_forall_diff_singleton` and `maximal_iff_forall_insert`
 to `StronglyAtomic` orders. -/
-
-theorem Maximal.mem_of_prop_insert (h : Maximal P s) (hx : P (insert x s)) : x ∈ s :=
-  h.eq_of_subset hx (subset_insert _ _) ▸ mem_insert ..
-
-theorem Minimal.not_mem_of_prop_diff_singleton (h : Minimal P s) (hx : P (s \ {x})) : x ∉ s :=
-  fun hxs ↦ ((h.eq_of_subset hx diff_subset).subset hxs).2 rfl
 
 end Subset
 
@@ -389,7 +401,7 @@ theorem IsAntichain.minimal_mem_upperClosure_iff_mem (hs : IsAntichain (· ≤ �
   simp only [upperClosure, UpperSet.mem_mk, mem_setOf_eq]
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨⟨x, h, rfl.le⟩, fun b ⟨a, has, hab⟩ hbx ↦ ?_⟩⟩
   · obtain ⟨a, has, hax⟩ := h.prop
-    rwa [h.eq_of_le ⟨a, has, rfl.le⟩ hax]
+    rwa [h.eq_of_ge ⟨a, has, rfl.le⟩ hax]
   rwa [← hs.eq has h (hab.trans hbx)]
 
 theorem IsAntichain.maximal_mem_lowerClosure_iff_mem (hs : IsAntichain (· ≤ ·) s) :
@@ -397,7 +409,7 @@ theorem IsAntichain.maximal_mem_lowerClosure_iff_mem (hs : IsAntichain (· ≤ �
   hs.to_dual.minimal_mem_upperClosure_iff_mem
 
 theorem IsLeast.minimal_iff (h : IsLeast s a) : Minimal (· ∈ s) x ↔ x = a :=
-  ⟨fun h' ↦ h'.eq_of_le h.1 (h.2 h'.prop), fun h' ↦ h' ▸ h.minimal⟩
+  ⟨fun h' ↦ h'.eq_of_ge h.1 (h.2 h'.prop), fun h' ↦ h' ▸ h.minimal⟩
 
 theorem IsGreatest.maximal_iff (h : IsGreatest s a) : Maximal (· ∈ s) x ↔ x = a :=
   ⟨fun h' ↦ h'.eq_of_le h.1 (h.2 h'.prop), fun h' ↦ h' ▸ h.maximal⟩
