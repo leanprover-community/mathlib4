@@ -156,7 +156,8 @@ def Methods.getBound (m : Methods) (e : Expr) (pf : Expr) (lb : Bool) :
   let .true ← withNewMCtxDepth <| withReducible <| isDefEq e e' | failure
   pure c
 
-theorem le_of_not_le_of_le {hi n lo : α} [LinearOrder α] (h1 : ¬hi ≤ n) (h2 : hi ≤ lo) : (n:α) ≤ lo :=
+theorem le_of_not_le_of_le {hi n lo : α} [LinearOrder α] (h1 : ¬hi ≤ n) (h2 : hi ≤ lo) :
+    (n:α) ≤ lo :=
   le_trans (le_of_not_le h1) h2
 
 /--
