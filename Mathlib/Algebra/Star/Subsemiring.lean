@@ -43,7 +43,7 @@ instance subsemiringClass : SubsemiringClass (StarSubsemiring R) R where
   zero_mem {s} := s.zero_mem'
   one_mem {s} := s.one_mem'
 
--- this uses the `Star` instance `s` inherits from `StarMemClass (StarSubalgebra R A) A`
+-- this uses the `Star` instance `s` inherits from `StarMemClass (StarSubsemiring R A) A`
 instance starRing (s : StarSubsemiring R) : StarRing s :=
   { StarMemClass.instStar s with
     star_involutive := fun r => Subtype.ext (star_star (r : R))
