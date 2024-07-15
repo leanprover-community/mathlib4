@@ -52,25 +52,22 @@ structure ClosedNManifold (n : ℕ) (M : Type*) [TopologicalSpace M] [T2Space M]
 
 end Basic
 
-variable {X : Type*} [TopologicalSpace X]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  -- declare a smooth manifold `M` over the pair `(E, H)`.
+  {E : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners 𝕜 E H} {M : Type*} [hM : TopologicalSpace M] [ChartedSpace H M]
+  [hI : SmoothManifoldWithCorners I M]
 
-/-- A singular `n`-manifold on a topological space X consists of a closed smooth n-manifold M
+-- SingularNManifold n X M
+/-- A singular `n`-manifold on a topological space `X` consists of a closed smooth `n`-manifold `M`
 and a continuous map `f : M → X`.-/
 structure SingularNManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    (n : ℕ) (X : Type*) [TopologicalSpace X] where
-  -- TODO: what's not quite the right way --- remember how to do this right!
-  E : Type*
-  h₁ : NormedAddCommGroup E
-  h₂ : NormedSpace 𝕜 E
-  h₃ : FiniteDimensional 𝕜 E
-  H : Type*
-  hH : TopologicalSpace H
-  I : ModelWithCorners 𝕜 E H
-  M : Type*
-  hM1 : TopologicalSpace M
-  hM2 : ChartedSpace H M
-  hM3 : SmoothManifoldWithCorners I M
-  -- Interesting part: can the previous things be typeclass stuff?
+    (X : Type*) [TopologicalSpace X] (n : ℕ)
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E]
+    {H : Type*} [TopologicalSpace H]
+    (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+    (I : ModelWithCorners 𝕜 E H) [SmoothManifoldWithCorners I M] where
   hdim : FiniteDimensional.finrank 𝕜 E = n
   hcompact : CompactSpace M
   hbd : I.Boundaryless
@@ -87,7 +84,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 /-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself. -/
 def trivialSingularNManifold [I.Boundaryless] [CompactSpace M]
-    (hdim : FiniteDimensional.finrank 𝕜 E = n) : SingularNManifold (𝕜 := 𝕜) n M where
+    (hdim : FiniteDimensional.finrank 𝕜 E = n) : SingularNManifold (n := n) (𝕜 := 𝕜) M M where
   E := E
   M := M
   I := I
