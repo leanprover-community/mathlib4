@@ -5,7 +5,6 @@ Authors: Patricio Gallardo Candela, Johan Commelin, Yun Liu, Sophie Morel, David
 Weihong Xu
 -/
 import Mathlib.AlgebraicGeometry.Gluing
-import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.Localization.LocalizationLocalization
