@@ -1399,11 +1399,8 @@ lemma mul_add_mod_of_lt (h : c < b) : (a * b + c) % b = c := by
 
 set_option linter.deprecated false in
 @[simp]
-protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ bit1 n := by
-  rw [bit1, Nat.dvd_add_right, Nat.dvd_one]
-  · decide
-  · rw [bit0, ← Nat.two_mul]
-    exact Nat.dvd_mul_right _ _
+protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
+  omega
 #align nat.not_two_dvd_bit1 Nat.not_two_dvd_bit1
 
 /-- A natural number `m` divides the sum `m + n` if and only if `m` divides `n`.-/
