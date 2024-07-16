@@ -45,7 +45,7 @@ has as `n`-simplices the continuous maps `[n].toTop → X`.
 Here, `[n].toTop` is the standard topological `n`-simplex,
 defined as `{ f : Fin (n+1) → ℝ≥0 // ∑ i, f i = 1 }` with its subspace topology. -/
 noncomputable def TopCat.toSSet : TopCat ⥤ SSet :=
-  ColimitAdj.restrictedYoneda SimplexCategory.toTop
+  Presheaf.restrictedYoneda SimplexCategory.toTop
 set_option linter.uppercaseLean3 false in
 #align Top.to_sSet TopCat.toSSet
 
@@ -54,13 +54,14 @@ the left Kan extension of `SimplexCategory.toTop` along the Yoneda embedding.
 
 It is left adjoint to `TopCat.toSSet`, as witnessed by `sSetTopAdj`. -/
 noncomputable def SSet.toTop : SSet ⥤ TopCat :=
-  ColimitAdj.extendAlongYoneda SimplexCategory.toTop
+  yoneda.leftKanExtension SimplexCategory.toTop
 set_option linter.uppercaseLean3 false in
 #align sSet.to_Top SSet.toTop
 
 /-- Geometric realization is left adjoint to the singular simplicial set construction. -/
 noncomputable def sSetTopAdj : SSet.toTop ⊣ TopCat.toSSet :=
-  ColimitAdj.yonedaAdjunction _
+  Presheaf.yonedaAdjunction (yoneda.leftKanExtension SimplexCategory.toTop)
+    (yoneda.leftKanExtensionUnit SimplexCategory.toTop)
 set_option linter.uppercaseLean3 false in
 #align sSet_Top_adj sSetTopAdj
 
@@ -68,6 +69,6 @@ set_option linter.uppercaseLean3 false in
   with the usual topological simplices. -/
 noncomputable def SSet.toTopSimplex :
     (yoneda : SimplexCategory ⥤ _) ⋙ SSet.toTop ≅ SimplexCategory.toTop :=
-  ColimitAdj.isExtensionAlongYoneda _
+  Presheaf.isExtensionAlongYoneda _
 set_option linter.uppercaseLean3 false in
 #align sSet.to_Top_simplex SSet.toTopSimplex

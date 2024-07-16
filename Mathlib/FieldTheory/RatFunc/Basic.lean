@@ -234,6 +234,7 @@ variable [IsScalarTower R K[X] K[X]]
 
 theorem mk_smul (c : R) (p q : K[X]) : RatFunc.mk (c • p) q = c • RatFunc.mk p q := by
   by_cases hq : q = 0
+  letI : SMulZeroClass R (FractionRing K[X]) := inferInstance
   · rw [hq, mk_zero, mk_zero, ← ofFractionRing_smul, smul_zero]
   · rw [mk_eq_localization_mk _ hq, mk_eq_localization_mk _ hq, ← Localization.smul_mk, ←
       ofFractionRing_smul]
@@ -1146,3 +1147,5 @@ theorem num_mul_denom_add_denom_mul_num_ne_zero {x y : RatFunc K} (hxy : x + y �
 #align ratfunc.num_mul_denom_add_denom_mul_num_ne_zero RatFunc.num_mul_denom_add_denom_mul_num_ne_zero
 
 end NumDenom
+
+end RatFunc

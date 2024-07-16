@@ -180,7 +180,7 @@ structure FunctionTheorem where
   /-- function name -/
   funOrigin   : Origin
   /-- array of argument indices about which this theorem is about -/
-  mainArgs  : Array Nat
+  mainArgs    : Array Nat
   /-- total number of arguments applied to the function  -/
   appliedArgs : Nat
   /-- priority  -/
@@ -329,7 +329,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       | throwError "unrecognized function property `{← ppExpr b}`"
     let funPropName := decl.funPropName
 
-    let fData? ← getFunctionData? f defaultUnfoldPred {zeta:=false}
+    let fData? ← getFunctionData? f defaultUnfoldPred {zeta := false}
 
     if let .some thmArgs ← detectLambdaTheoremArgs (← fData?.get) xs then
       return .lam {

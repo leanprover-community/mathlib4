@@ -1014,6 +1014,15 @@ theorem neg_lt_iff_neg_lt {a b : EReal} : -a < b ↔ -b < a := by
 theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := neg_lt_iff_neg_lt.1 h
 #align ereal.neg_lt_of_neg_lt EReal.neg_lt_of_neg_lt
 
+lemma neg_add {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊤) (h2 : x ≠ ⊤ ∨ y ≠ ⊥) :
+    - (x + y) = - x - y := by
+  induction x <;> induction y <;> try tauto
+  rw [← coe_add, ← coe_neg, ← coe_neg, ← coe_sub, neg_add']
+
+lemma neg_sub {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊥) (h2 : x ≠ ⊤ ∨ y ≠ ⊤) :
+    - (x - y) = - x + y := by
+  rw [sub_eq_add_neg, neg_add _ _, sub_eq_add_neg, neg_neg] <;> simp_all
+
 /-!
 ### Subtraction
 
@@ -1309,6 +1318,28 @@ lemma le_iff_le_forall_real_gt (x y : EReal) : (∀ z : ℝ, x < z → y ≤ z) 
       exact not_le_of_lt (coe_lt_top (_ + 1)) h
   · exact le_top
 
+lemma ge_iff_le_forall_real_lt (x y : EReal) : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
+  refine ⟨fun h ↦ ?_, fun h z z_lt_y ↦ le_trans (le_of_lt z_lt_y) h⟩
+  induction x with
+  | h_bot =>
+    refine ((eq_bot_iff_forall_lt y).2 fun z ↦ ?_).le
+    refine lt_of_not_le fun z_le_y ↦ (not_le_of_lt (bot_lt_coe (z - 1)) (h (z - 1)
+      (lt_of_lt_of_le ?_ z_le_y)))
+    exact_mod_cast sub_one_lt z
+  | h_real x =>
+    induction y with
+    | h_bot => exact bot_le
+    | h_real y =>
+      norm_cast at h ⊢
+      by_contra! x_lt_y
+      rcases exists_between x_lt_y with ⟨z, x_lt_z, z_lt_y⟩
+      exact not_le_of_lt x_lt_z (h z z_lt_y)
+    | h_top =>
+      exfalso
+      norm_cast at h
+      exact not_le_of_lt (lt_add_one x) <| h (x + 1) (coe_lt_top (x + 1))
+  | h_top => exact le_top
+
 /-! ### Absolute value -/
 
 -- Porting note (#11215): TODO: use `Real.nnabs` for the case `(x : ℝ)`
@@ -1471,6 +1502,14 @@ theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x :
   map_pow (⟨⟨(↑), coe_ennreal_one⟩, coe_ennreal_mul⟩ : ℝ≥0∞ →* EReal) _ _
 #align ereal.coe_ennreal_pow EReal.coe_ennreal_pow
 
+/-! ### Min and Max -/
+
+lemma min_neg_neg (x y : EReal) : min (-x) (-y) = -max x y := by
+  rcases le_total x y with (h | h) <;> simp_all
+
+lemma max_neg_neg (x y : EReal) : max (-x) (-y) = -min x y := by
+  rcases le_total x y with (h | h) <;> simp_all
+
 /-! ### Inverse -/
 
 /-- Multiplicative inverse of an `EReal`. We choose `0⁻¹ = 0` to guarantee several good properties,
@@ -1531,7 +1570,7 @@ lemma sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ :=
         coe_ennreal_ofReal, max_eq_left (abs_nonneg a), ← coe_neg |a|, abs_of_neg a_neg, neg_neg]
     · rw [coe_zero, sign_zero, SignType.coe_zero, abs_zero, coe_ennreal_zero, inv_zero, mul_zero]
     · rw [sign_coe, _root_.sign_pos a_pos, SignType.coe_one, one_mul]
-      simp only [abs_def a, coe_ennreal_ofReal, ge_iff_le, abs_nonneg, max_eq_left]
+      simp only [abs_def a, coe_ennreal_ofReal, abs_nonneg, max_eq_left]
       congr
       exact abs_of_pos a_pos
 
