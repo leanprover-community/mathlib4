@@ -464,7 +464,6 @@ theorem pointReflection_involutive (x : P) : Involutive (pointReflection x : P �
   (Equiv.apply_eq_iff_eq_symm_apply _).2 <| by rw [pointReflection_symm]
 #align equiv.point_reflection_involutive Equiv.pointReflection_involutive
 
-set_option linter.deprecated false
 /-- `x` is the only fixed point of `pointReflection x`. This lemma requires
 `x + x = y + y ↔ x = y`. There is no typeclass to use here, so we add it as an explicit argument. -/
 theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P} (h : Injective (2 • · : G → G)) :
