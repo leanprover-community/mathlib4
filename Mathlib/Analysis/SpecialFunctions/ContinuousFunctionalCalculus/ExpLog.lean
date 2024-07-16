@@ -94,7 +94,8 @@ variable {A : Type*} {p : A → Prop} [PartialOrder A] [NormedRing A] [StarRing 
   [UniqueContinuousFunctionalCalculus ℂ A]
 
 lemma complex_exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
-    cfc Complex.exp a = exp ℂ a := by rw [Complex.exp_eq_exp_ℂ]; exact exp_eq_normedSpace_exp ha
+    cfc Complex.exp a = exp ℂ a :=
+  Complex.exp_eq_exp_ℂ ▸ exp_eq_normedSpace_exp ha
 
 end ComplexNormed
 
