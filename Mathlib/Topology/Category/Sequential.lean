@@ -101,3 +101,5 @@ def isoEquivHomeo {X Y : Sequential.{u}} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   right_inv f := by
     ext
     rfl
+
+end Sequential
