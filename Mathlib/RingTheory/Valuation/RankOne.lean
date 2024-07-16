@@ -44,6 +44,15 @@ variable (v : Valuation R Γ₀) [RankOne v]
 
 lemma strictMono : StrictMono (hom v) := strictMono'
 
+def hom_rangeGroup : v.rangeGroup →* ℝ≥0 where
+  toFun := (hom v ·.val)
+  map_one' := by simp
+  map_mul' := by simp
+
+theorem strictMono_rangeGroup : StrictMono (hom_rangeGroup v) := by
+  intro x y h
+  simpa only [Units.val_lt_val, Subtype.coe_lt_coe, h] using (strictMono v h)
+
 lemma nontrivial : ∃ r : R, v r ≠ 0 ∧ v r ≠ 1 := nontrivial'
 
 /-- If `v` is a rank one valuation and `x : Γ₀` has image `0` under `RankOne.hom v`, then
@@ -67,6 +76,15 @@ def unit : Γ₀ˣ :=
 theorem unit_ne_one : unit v ≠ 1 := by
   rw [Ne, ← Units.eq_iff, Units.val_one]
   exact ((nontrivial v).choose_spec ).2
+
+theorem rangeGroup_ne_one : v.rangeGroup ≠ ⊥ := by
+  simp only [Subgroup.ne_bot_iff_exists_ne_one, ne_eq, Subtype.exists, Submonoid.mk_eq_one,
+    exists_prop]
+  exact ⟨unit v, mem_rangeGroup v (by rfl), unit_ne_one v⟩
+
+@[nontriviality]
+theorem nontrivial_range : Nontrivial (v.rangeGroup) :=
+  (Subgroup.nontrivial_iff_ne_bot v.rangeGroup).mpr (rangeGroup_ne_one v)
 
 end RankOne
 

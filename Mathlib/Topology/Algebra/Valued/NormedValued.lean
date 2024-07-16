@@ -195,10 +195,15 @@ def toNormedField : NormedField L :=
           rw [mem_setOf, ← neg_sub, Valuation.map_neg]
           exact (RankOne.strictMono Valued.v).lt_iff_lt.mp hx
         · -- ici, il faut raffiner l'argument
-          haveI : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
+          have : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
             ⟨RankOne.unit val.v, RankOne.unit_ne_one val.v⟩
-          obtain ⟨u, hu⟩ := Real.exists_lt_of_strictMono hv.strictMono hr_pos
-          use u
+
+          have bar : ∃ w : Γ₀ˣ, RankOne.hom (R := L) v (w : Γ₀) < r := Real.exists_lt_of_strictMono hv.strictMono hr_pos
+
+          have foo : ∃ u : rangeGroup (R := L) v, RankOne.hom (R := L) v u.1 < r := by sorry
+
+          obtain ⟨⟨u, mem_u⟩, hu⟩ := foo
+          refine ⟨u, ⟨mem_u, ?_⟩⟩
           apply subset_trans _ hr
           intro x hx
           simp only [norm, mem_setOf_eq]
@@ -210,6 +215,7 @@ def toNormedField : NormedField L :=
         use min x y
         simp only [le_principal_iff, mem_principal, setOf_subset_setOf, Prod.forall]
         exact ⟨fun a b hab => lt_of_lt_of_le hab (min_le_left _ _), fun a b hab =>
-            lt_of_lt_of_le hab (min_le_right _ _)⟩ }
+            lt_of_lt_of_le hab (min_le_right _ _)⟩
+      }
 
 end Valued
