@@ -3,7 +3,6 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.Instances.Sphere
@@ -128,9 +127,10 @@ end examples
 end ClosedManifold
 
 -- Let M, M' and W be smooth manifolds.
-variable {E E' E'' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup E']
-    [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
-  {H H' H'' : Type*} [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H'']
+variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
+  [NormedAddCommGroup E'''] [NormedSpace ℝ E''']
+  [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H''] [TopologicalSpace H''']
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
@@ -181,15 +181,19 @@ end SingularNManifold
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  {I' : ModelWithCorners ℝ E' H'} [SmoothManifoldWithCorners I' M'] {n : ℕ}
+  {I' : ModelWithCorners ℝ E' H'} [SmoothManifoldWithCorners I' M']
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
+  {I'' : ModelWithCorners ℝ E'' H''} [SmoothManifoldWithCorners I'' M''] {n : ℕ}
   [CompactSpace M] [I.Boundaryless] [FiniteDimensional ℝ E]
   [CompactSpace M'] [I'.Boundaryless] [FiniteDimensional ℝ E']
+  [CompactSpace M''] [I''.Boundaryless] [FiniteDimensional ℝ E'']
 
+namespace UnorientedCobordism
 
 /-- An **unoriented cobordism** between two singular `n`-manifolds (M,f) and (N,g) on `X`
 is a compact smooth `n`-manifold `W` with a continuous map `F: W→ X` whose boundary is diffeomorphic
 to the disjoint union M ⊔ N such that F restricts to f resp. g in the obvious way. -/
-structure UnorientedCobordism (s : SingularNManifold X n M I) (t : SingularNManifold X n M' I')
+structure _root_.UnorientedCobordism (s : SingularNManifold X n M I) (t : SingularNManifold X n M' I')
     (W : Type*) [TopologicalSpace W] [ChartedSpace H'' W]
     (J : ModelWithCorners ℝ E'' H'') [SmoothManifoldWithCorners J W] where
   hW : CompactSpace W
@@ -214,8 +218,8 @@ instance Icc_smooth_manifold2 : SmoothManifoldWithCorners (𝓡∂ 1) (Icc 0 1) 
 with
   SmoothManifoldWithCorners (modelWithCornersEuclideanHalfSpace 1) ↑(Icc (@OfNat.ofNat ℕ 0 (instOfNatNat 0)) 1) -/
 
-/-- Each singular `n`-manifold (M,f)` is cobordant to itself. -/
-noncomputable def UnorientedCobordism.refl (s : SingularNManifold X n M I) :
+/-- Each singular `n`-manifold `(M,f)` is cobordant to itself. -/
+def refl (s : SingularNManifold X n M I) :
     UnorientedCobordism s s (M × (Icc 0 1)) (I.prod (𝓡∂ 1)) where
   hW := by infer_instance
   hW' := by sorry
@@ -231,19 +235,63 @@ noncomputable def UnorientedCobordism.refl (s : SingularNManifold X n M I) :
 
 variable (s : SingularNManifold X n M I) (t : SingularNManifold X n M' I')
   {W : Type*} [TopologicalSpace W] [ChartedSpace H'' W]
-  {J : ModelWithCorners ℝ E'' H''} [SmoothManifoldWithCorners J W] {n : ℕ}
+  {J : ModelWithCorners ℝ E'' H''} [SmoothManifoldWithCorners J W]
 
 /-- Being cobordant is symmetric. -/
-noncomputable def UnorientedCobordism.symm (φ : UnorientedCobordism s t W J) :
-    UnorientedCobordism t s W J where
+def symm (φ : UnorientedCobordism s t W J) : UnorientedCobordism t s W J where
   hW := φ.hW
   hW' := φ.hW'
   F := φ.F
   hF := φ.hF
   -- TODO: boundary stuff...
 
--- next one: transitivity... will omit for now: really depends on boundary material,
--- and the collar neighbourhood theorem, which I don't want to formalise for now
+-- Fleshing out the details for transitivity will take us too far: we merely sketch the necessary
+-- pieces.
+section transSketch
+
+variable {u : SingularNManifold X n M'' I''}
+  {W' : Type*} [TopologicalSpace W'] [ChartedSpace H''' W']
+  {J' : ModelWithCorners ℝ E''' H'''} [SmoothManifoldWithCorners J' W']
+variable {s t}
+
+-- Idea: glue the cobordisms W and W' along their common boundary M',
+-- as identified by the diffeomorphism W → M' ← W'.
+-- This could be formalised as an adjunction/attaching maps: these are a special case of pushouts
+-- (in the category of topological spaces).
+-- mathlib has abstract pushouts (and proved that TopCat has them);
+-- `Topology/Category/TopCat/Limits/Pullbacks.lean` provides a concrete description of pullbacks
+-- in TopCat. A good next step would be to adapt this argument to pushouts, and use this here.
+def glue (φ : UnorientedCobordism s t W J) (ψ : UnorientedCobordism t u W' J') : Type* := sorry
+
+instance (φ : UnorientedCobordism s t W J) (ψ : UnorientedCobordism t u W' J') :
+    TopologicalSpace (glue φ ψ) := sorry
+
+-- TODO: Using E and H in this declaration and the next one is wrong...
+-- Do I need to demand that all manifolds are modeled on the same spaces H and E,
+-- or choose an explicit isomorphism? What's the best way here?
+-- (In practice, post-composing with a suitable equivalence allows assuming H and E are the same...
+-- the question is where this complexity should go.)
+
+-- This and the next item require the collar neighbourhood theorem-
+instance (φ : UnorientedCobordism s t W J) (ψ : UnorientedCobordism t u W' J') :
+    ChartedSpace H (glue φ ψ) := sorry
+
+def glueModel (φ : UnorientedCobordism s t W J) (ψ : UnorientedCobordism t u W' J') :
+    ModelWithCorners ℝ E H := sorry
+
+instance (φ : UnorientedCobordism s t W J) (ψ : UnorientedCobordism t u W' J') :
+    SmoothManifoldWithCorners (glueModel φ ψ) (glue φ ψ) := sorry
+
+noncomputable def trans (φ : UnorientedCobordism s t W J) (ψ : UnorientedCobordism t u W' J') :
+    UnorientedCobordism s u (glue φ ψ) (glueModel φ ψ) where
+  hW := sorry
+  hW' := sorry
+  F := sorry
+  hF := sorry
+
+end transSketch
+
+end UnorientedCobordism
 
 -- how to encode this in Lean?
 -- Two singular `n`-manifolds are cobordant iff there exists a smooth cobordism between them.
