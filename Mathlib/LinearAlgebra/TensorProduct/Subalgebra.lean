@@ -24,6 +24,13 @@ mainly used in the definition of linearly disjointness.
 - `Subalgebra.mulMap'`: the natural `R`-algebra homomorphism `A ⊗[R] B →ₗ[R] A ⊔ B`
   induced by multiplication in `S`, which is surjective (`Subalgebra.mulMap'_surjective`).
 
+- `Subalgebra.lTensorBot`, `Subalgebra.rTensorBot`: the natural isomorphism of `R`-algebras between
+  `i(R) ⊗[R] A` and `A`, resp. `A ⊗[R] i(R)` and `A`, induced by multiplication in `S`,
+  here `i : R → S` is the structure map. They generalize `Algebra.TensorProduct.lid`
+  and `Algebra.TensorProduct.rid`, as `i(R)` is not necessarily isomorphic to `R`.
+
+  They are `Subalgebra` versions of `Submodule.lTensorOne` and `Submodule.rTensorOne`.
+
 -/
 
 open scoped Classical TensorProduct
@@ -46,7 +53,9 @@ variable (A : Subalgebra R S)
 
 /-- If `A` is a subalgebra of `S/R`, there is the natural `R`-algebra isomorphism between
 `i(R) ⊗[R] A` and `A` induced by multiplication in `S`, here `i : R → S` is the structure map.
-This generalizes `Algebra.TensorProduct.lid` as `i(R)` is not necessarily isomorphic to `R`. -/
+This generalizes `Algebra.TensorProduct.lid` as `i(R)` is not necessarily isomorphic to `R`.
+
+This is the `Subalgebra` version of `Submodule.lTensorOne` -/
 def lTensorBot : (⊥ : Subalgebra R S) ⊗[R] A ≃ₐ[R] A := by
   refine Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct (toSubmodule A).lTensorOne ?_ ?_
   · rintro x y a b
@@ -78,7 +87,9 @@ variable (A)
 
 /-- If `A` is a subalgebra of `S/R`, there is the natural `R`-algebra isomorphism between
 `A ⊗[R] i(R)` and `A` induced by multiplication in `S`, here `i : R → S` is the structure map.
-This generalizes `Algebra.TensorProduct.rid` as `i(R)` is not necessarily isomorphic to `R`. -/
+This generalizes `Algebra.TensorProduct.rid` as `i(R)` is not necessarily isomorphic to `R`.
+
+This is the `Subalgebra` version of `Submodule.rTensorOne` -/
 def rTensorBot : A ⊗[R] (⊥ : Subalgebra R S) ≃ₐ[R] A := by
   refine Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct (toSubmodule A).rTensorOne ?_ ?_
   · rintro a b x y
@@ -126,7 +137,8 @@ variable [CommSemiring R] [CommSemiring S] [Algebra R S]
 
 variable (A B : Subalgebra R S)
 
-/-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, there is the natural map
+/-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`,
+there is the natural `R`-algebra homomorphism
 `A ⊗[R] B →ₐ[R] S` induced by multiplication in `S`. -/
 def mulMap : A ⊗[R] B →ₐ[R] S := Algebra.TensorProduct.productMap A.val B.val
 
@@ -148,7 +160,8 @@ theorem mulMap_bot_left_eq : mulMap ⊥ A = A.val.comp A.lTensorBot.toAlgHom :=
 theorem mulMap_bot_right_eq : mulMap A ⊥ = A.val.comp A.rTensorBot.toAlgHom :=
   AlgHom.toLinearMap_injective (toSubmodule A).mulMap_one_right_eq
 
-/-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, there is the natural map
+/-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`,
+there is the natural `R`-algebra homomorphism
 `A ⊗[R] B →ₐ[R] A ⊔ B` induced by multiplication in `S`,
 which is surjective (`Subalgebra.mulMap'_surjective`). -/
 def mulMap' : A ⊗[R] B →ₐ[R] ↥(A ⊔ B) :=
