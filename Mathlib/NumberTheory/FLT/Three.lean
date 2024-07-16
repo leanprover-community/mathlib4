@@ -11,7 +11,7 @@ import Mathlib.Algebra.Ring.Divisibility.Lemmas
 
 /-!
 # Fermat Last Theorem in the case `n = 3`
-The goal of this file is to prove Fermat Last Theorem in the case `n = 3`.
+The goal of this file is to prove Fermat's Last Theorem in the case `n = 3`.
 
 ## Main results
 * `fermatLastTheoremThree`: Fermat's Last Theorem for `n = 3`: if `a b c : ℕ` are all non-zero then
