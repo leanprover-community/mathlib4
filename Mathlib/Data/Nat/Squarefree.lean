@@ -31,10 +31,16 @@ theorem squarefree_iff_nodup_primeFactorsList {n : ℕ} (h0 : n ≠ 0) :
   simp
 #align nat.squarefree_iff_nodup_factors Nat.squarefree_iff_nodup_primeFactorsList
 
+@[deprecated (since := "2024-07-17")]
+alias squarefree_iff_nodup_factors := squarefree_iff_nodup_primeFactorsList
+
 end Nat
 
 theorem Squarefree.nodup_primeFactorsList {n : ℕ} (hn : Squarefree n) : n.primeFactorsList.Nodup :=
   (Nat.squarefree_iff_nodup_primeFactorsList hn.ne_zero).mp hn
+
+@[deprecated (since := "2024-07-17")]
+alias Squarefree.nodup_factors := Squarefree.nodup_primeFactorsList
 
 namespace Nat
 variable {s : Finset ℕ} {m n p : ℕ}

@@ -544,10 +544,16 @@ theorem primeFactors_eq_to_filter_divisors_prime (n : ℕ) :
     simpa [hn, hn.ne', mem_primeFactorsList] using and_comm
 #align nat.prime_divisors_eq_to_filter_divisors_prime Nat.primeFactors_eq_to_filter_divisors_prime
 
+@[deprecated (since := "2024-07-17")]
+alias prime_divisors_eq_to_filter_divisors_prime := primeFactors_eq_to_filter_divisors_prime
+
 lemma primeFactors_filter_dvd_of_dvd {m n : ℕ} (hn : n ≠ 0) (hmn : m ∣ n) :
     n.primeFactors.filter (· ∣ m) = m.primeFactors := by
   simp_rw [primeFactors_eq_to_filter_divisors_prime, filter_comm,
     divisors_filter_dvd_of_dvd hn hmn]
+
+@[deprecated (since := "2024-07-17")]
+alias prime_divisors_filter_dvd_of_dvd := primeFactors_filter_dvd_of_dvd
 
 @[simp]
 theorem image_div_divisors_eq_divisors (n : ℕ) :

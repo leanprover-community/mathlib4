@@ -87,6 +87,10 @@ theorem factorization_eq_primeFactorsList_multiset (n : ℕ) :
   simp
 #align nat.factorization_eq_factors_multiset Nat.factorization_eq_primeFactorsList_multiset
 
+@[deprecated (since := "2024-07-16")] alias factors_count_eq := primeFactorsList_count_eq
+@[deprecated (since := "2024-07-16")]
+alias factorization_eq_factors_multiset := factorization_eq_primeFactorsList_multiset
+
 theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) :
     multiplicity p n = n.factorization p := by
   simp [factorization, pp, padicValNat_def' pp.ne_one hn.bot_lt]

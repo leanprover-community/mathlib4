@@ -155,7 +155,7 @@ lemma prod_mem_factoredNumbers (s : Finset ℕ) (n : ℕ) :
     (fun _ hq ↦ (prime_of_mem_primeFactorsList (List.mem_of_mem_filter hq)).prime) H₂
 
 /-- The sets of `s`-factored and of `s ∪ {N}`-factored numbers are the same when `N` is not prime.
-  See `Nat.equivProdNatFactoredNumbers` for when `N` is prime. -/
+See `Nat.equivProdNatFactoredNumbers` for when `N` is prime. -/
 lemma factoredNumbers_insert (s : Finset ℕ) {N : ℕ} (hN : ¬ N.Prime) :
     factoredNumbers (insert N s) = factoredNumbers s := by
   ext m
