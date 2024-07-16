@@ -197,7 +197,7 @@ structure _root_.UnorientedCobordism (s : SingularNManifold X n M I) (t : Singul
     (W : Type*) [TopologicalSpace W] [ChartedSpace H'' W]
     (J : ModelWithCorners ℝ E'' H'') [SmoothManifoldWithCorners J W] where
   hW : CompactSpace W
-  hW' : finrank E'' = n + 1
+  hW' : finrank ℝ E'' = n + 1
   F : W → X
   hF : Continuous F
   -- φ : Diffeomorph (∂ W) (induced J) (M ⊔ M') I.disjUnion I'
@@ -210,15 +210,7 @@ open Set
 def refl (s : SingularNManifold X n M I) :
     UnorientedCobordism s s (M × (Icc (0 : ℝ) 1)) (I.prod (𝓡∂ 1)) where
   hW := by infer_instance
-  hW' := by
-    sorry
-    -- calc finrank (E × EuclideanSpace ℝ (Fin 1))
-    --   _ = finrank E + (finrank (EuclideanSpace ℝ (Fin 1))) := sorry
-    --   _ = n + (finrank (EuclideanSpace ℝ (Fin 1))) := sorry
-    --   _ = n + 1 := sorry
-      --let s := finrank_prod (R := ℝ) (M := E) (M' := EuclideanSpace ℝ (Fin 1))
-    --rw [s]
-    --sorry--apply? -- is n+1-dimensional
+  hW' := by rw [finrank_prod, s.hdim, finrank_euclideanSpace_fin]
   F := s.f ∘ (fun p ↦ p.1)
   hF := s.hf.comp continuous_fst
 
