@@ -91,8 +91,6 @@ theorem add_self_eq_zero {a : R} : a + a = 0 ↔ a = 0 := by
   simp only [(two_mul a).symm, mul_eq_zero, two_ne_zero, false_or_iff]
 #align add_self_eq_zero add_self_eq_zero
 
-set_option linter.deprecated false
-
 #noalign bit0_eq_zero
 #noalign zero_eq_bit0
 #noalign bit0_ne_zero
