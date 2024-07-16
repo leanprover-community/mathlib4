@@ -394,10 +394,10 @@ theorem LinearMap.toMatrix₂_apply (B : M₁ →ₗ[R] M₂ →ₗ[R] N₂) (i 
 
 @[simp]
 theorem Matrix.toLinearMap₂_apply (M : Matrix n m N₂) (x : M₁) (y : M₂) :
-    Matrix.toLinearMap₂ b₁ b₂ M x y = ∑ i, ∑ j, b₁.repr x i • b₂.repr y j • M i j := by
-  exact Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ =>
-        smul_algebra_smul_comm ((RingHom.id R) ((Basis.equivFun b₁) x _))
-          ((RingHom.id R) ((Basis.equivFun b₂) y _)) (M _ _)
+    Matrix.toLinearMap₂ b₁ b₂ M x y = ∑ i, ∑ j, b₁.repr x i • b₂.repr y j • M i j :=
+  Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ =>
+    smul_algebra_smul_comm ((RingHom.id R) ((Basis.equivFun b₁) x _))
+    ((RingHom.id R) ((Basis.equivFun b₂) y _)) (M _ _)
 #align matrix.to_linear_map₂_apply Matrix.toLinearMap₂_apply
 
 -- Not a `simp` lemma since `LinearMap.toMatrix₂` needs an extra argument
