@@ -150,7 +150,7 @@ instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
 /--
 `M^~` as a presheaf of abelian groups over `Spec R`
 -/
-def pretildeInAddCommGrp : Presheaf AddCommGrp (PrimeSpectrum.Top R) where
+def preTildeInAddCommGrp : Presheaf AddCommGrp (PrimeSpectrum.Top R) where
   obj U := .of ((M.tildeInType).1.obj U)
   map {U V} i :=
     { toFun := M.tildeInType.1.map i
@@ -161,7 +161,7 @@ def pretildeInAddCommGrp : Presheaf AddCommGrp (PrimeSpectrum.Top R) where
 `M^~` as a sheaf of abelian groups over `Spec R`
 -/
 def tildeInAddCommGrp : Sheaf AddCommGrp (PrimeSpectrum.Top R) :=
-  ⟨M.pretildeInAddCommGrp,
+  ⟨M.preTildeInAddCommGrp,
     TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrp) _ |>.mpr
       (TopCat.Presheaf.isSheaf_of_iso (NatIso.ofComponents (fun _ => Iso.refl _) fun _ => rfl)
         M.tildeInType.2)⟩
