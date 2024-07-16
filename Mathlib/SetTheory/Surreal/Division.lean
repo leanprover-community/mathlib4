@@ -631,10 +631,6 @@ lemma onag_1_10 :
 
     have onag_1_10_ii : (x.inv').Numeric := by
       rw [numeric_def]
-      have left_inv_options_numeric : ∀ i, (x.inv'.moveLeft i).Numeric :=
-        inv'_numeric_left x_num x_pos h3 h4
-      have right_inv_options_numeric : ∀ j, (x.inv'.moveRight j).Numeric :=
-        inv'_numeric_right x_num x_pos h3 h4
       constructor
       · intros i j
         have := lt_trans (onag_1_10_i_left i) (onag_1_10_i_right j)
@@ -642,8 +638,8 @@ lemma onag_1_10 :
         rw [mk_lt_mk] at this
         simpa [inv']
       · constructor
-        · exact left_inv_options_numeric
-        · exact right_inv_options_numeric
+        · exact inv'_numeric_left x_num x_pos h3 h4
+        · exact inv'_numeric_right x_num x_pos h3 h4
 
     have onag_1_10_iii_left : ∀ i, ((normalization x) * x.inv').moveLeft i < 1 := by
       have := onag_1_10_iii_left' xL xR xl_num xr_num h3 h4 x_num inv_l inv_r
