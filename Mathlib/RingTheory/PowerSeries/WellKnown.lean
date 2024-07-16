@@ -82,9 +82,7 @@ Note that the power series `1 + X + X^2 + ...` is written as `mk 1` where `1` is
 function so that `mk 1` is the power series with all coefficients equal to one.
 -/
 theorem mk_one_mul_one_sub_eq_one : (mk 1 : S⟦X⟧) * (1 - X) = 1 := by
-  rw [mul_comm]
-  #adaptation_note /-- (2024-07-08): was rw, using simp_rw to prevent creating an instance goal -/
-  simp_rw [PowerSeries.ext_iff]
+  rw [mul_comm, PowerSeries.ext_iff]
   intro n
   cases n with
   | zero => simp
@@ -178,31 +176,10 @@ theorem constantCoeff_exp : constantCoeff A (exp A) = 1 := by
   simp
 #align power_series.constant_coeff_exp PowerSeries.constantCoeff_exp
 
-set_option linter.deprecated false in
-@[simp]
-theorem coeff_sin_bit0 : coeff A (bit0 n) (sin A) = 0 := by
-  rw [sin, coeff_mk, if_pos (even_bit0 n)]
-#align power_series.coeff_sin_bit0 PowerSeries.coeff_sin_bit0
-
-set_option linter.deprecated false in
-@[simp]
-theorem coeff_sin_bit1 : coeff A (bit1 n) (sin A) = (-1) ^ n * coeff A (bit1 n) (exp A) := by
-  rw [sin, coeff_mk, if_neg n.not_even_bit1, Nat.bit1_div_two, ← mul_one_div, map_mul, map_pow,
-    map_neg, map_one, coeff_exp]
-#align power_series.coeff_sin_bit1 PowerSeries.coeff_sin_bit1
-
-set_option linter.deprecated false in
-@[simp]
-theorem coeff_cos_bit0 : coeff A (bit0 n) (cos A) = (-1) ^ n * coeff A (bit0 n) (exp A) := by
-  rw [cos, coeff_mk, if_pos (even_bit0 n), Nat.bit0_div_two, ← mul_one_div, map_mul, map_pow,
-    map_neg, map_one, coeff_exp]
-#align power_series.coeff_cos_bit0 PowerSeries.coeff_cos_bit0
-
-set_option linter.deprecated false in
-@[simp]
-theorem coeff_cos_bit1 : coeff A (bit1 n) (cos A) = 0 := by
-  rw [cos, coeff_mk, if_neg n.not_even_bit1]
-#align power_series.coeff_cos_bit1 PowerSeries.coeff_cos_bit1
+#noalign power_series.coeff_sin_bit0
+#noalign power_series.coeff_sin_bit1
+#noalign power_series.coeff_cos_bit0
+#noalign power_series.coeff_cos_bit1
 
 @[simp]
 theorem map_exp : map (f : A →+* A') (exp A) = exp A' := by

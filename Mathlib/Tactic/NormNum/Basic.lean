@@ -23,7 +23,7 @@ This file adds `norm_num` plugins for
 See other files in this directory for many more plugins.
 -/
 
-set_option autoImplicit true
+universe u
 
 namespace Mathlib
 open Lean hiding Rat mkRat
@@ -53,7 +53,7 @@ theorem isNat_one (α) [AddMonoidWithOne α] : IsNat (One.one : α) (nat_lit 1) 
   match e with
   | ~q(One.one) => return .isNat sα (mkRawNatLit 1) q(isNat_one $α)
 
-theorem isNat_ofNat (α : Type u_1) [AddMonoidWithOne α] {a : α} {n : ℕ}
+theorem isNat_ofNat (α : Type u) [AddMonoidWithOne α] {a : α} {n : ℕ}
     (h : n = a) : IsNat a n := ⟨h.symm⟩
 
 /-- The `norm_num` extension which identifies an expression `OfNat.ofNat n`, returning `n`. -/
@@ -432,12 +432,12 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return .isNat mα c q(isNat_mul (f := $f) (.refl $f) $pa $pb (.refl $c))
   core
 
-theorem isRat_div [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} → IsRat (a * b⁻¹) cn cd →
-    IsRat (a / b) cn cd
+theorem isRat_div {α : Type u} [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} →
+    IsRat (a * b⁻¹) cn cd → IsRat (a / b) cn cd
   | _, _, _, _, h => by simpa [div_eq_mul_inv] using h
 
 /-- Helper function to synthesize a typed `DivisionRing α` expression. -/
-def inferDivisionRing (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
+def inferDivisionRing {u : Level} (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
   return ← synthInstanceQ (q(DivisionRing $α) : Q(Type u)) <|> throwError "not a division ring"
 
 /-- The `norm_num` extension which identifies expressions of the form `a / b`,
@@ -474,6 +474,8 @@ such that `norm_num` successfully recognises `a`. -/
 
 /-! # (In)equalities -/
 
+variable {α : Type u}
+
 theorem isNat_eq_true [AddMonoidWithOne α] : {a b : α} → {c : ℕ} →
     IsNat a c → IsNat b c → a = b
   | _, _, _, ⟨rfl⟩, ⟨rfl⟩ => rfl
@@ -489,9 +491,9 @@ theorem isRat_eq_true [Ring α] : {a b : α} → {n : ℤ} → {d : ℕ} →
   | _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩ => by congr; apply Subsingleton.elim
 
 theorem eq_of_true {a b : Prop} (ha : a) (hb : b) : a = b := propext (iff_of_true ha hb)
-theorem ne_of_false_of_true (ha : ¬a) (hb : b) : a ≠ b := mt (· ▸ hb) ha
-theorem ne_of_true_of_false (ha : a) (hb : ¬b) : a ≠ b := mt (· ▸ ha) hb
-theorem eq_of_false (ha : ¬a) (hb : ¬b) : a = b := propext (iff_of_false ha hb)
+theorem ne_of_false_of_true {a b : Prop} (ha : ¬a) (hb : b) : a ≠ b := mt (· ▸ hb) ha
+theorem ne_of_true_of_false {a b : Prop} (ha : a) (hb : ¬b) : a ≠ b := mt (· ▸ ha) hb
+theorem eq_of_false {a b : Prop} (ha : ¬a) (hb : ¬b) : a = b := propext (iff_of_false ha hb)
 
 /-! # Nat operations -/
 
@@ -593,3 +595,9 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     have nc : Q(ℕ) := mkRawNatLit c
     have : Q(Nat.mod $nb $na = Nat.succ $nc) := (q(Eq.refl (Nat.succ $nc)) : Expr)
     return .isFalse q(isNat_dvd_false $pa $pb $this)
+
+end NormNum
+
+end Meta
+
+end Mathlib

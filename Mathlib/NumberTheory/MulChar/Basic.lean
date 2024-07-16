@@ -631,3 +631,5 @@ lemma val_neg_one_eq_one_of_odd_order {χ : MulChar R R'} {n : ℕ} (hn : Odd n)
   exact MulChar.one_apply_coe (-1)
 
 end Ring
+
+end MulChar

@@ -837,10 +837,7 @@ theorem forall_eq_apply_imp_iff' {f : α → β} {p : β → Prop} :
 
 #align forall_eq_apply_imp_iff' forall_eq_apply_imp_iff
 #align forall_apply_eq_imp_iff₂ forall_apply_eq_imp_iff₂
-
-@[simp] theorem exists_eq_right' {a' : α} : (∃ a, p a ∧ a' = a) ↔ p a' := by simp [@eq_comm _ a']
 #align exists_eq_right' exists_eq_right'
-
 #align exists_comm exists_comm
 
 theorem exists₂_comm
@@ -1049,6 +1046,12 @@ protected noncomputable def byContradiction' {α : Sort*} (H : ¬(α → False))
 def choice_of_byContradiction' {α : Sort*} (contra : ¬(α → False) → α) : Nonempty α → α :=
   fun H ↦ contra H.elim
 #align classical.choice_of_by_contradiction' Classical.choice_of_byContradiction'
+
+@[simp] lemma choose_eq (a : α) : @Exists.choose _ (· = a) ⟨a, rfl⟩ = a := @choose_spec _ (· = a) _
+
+@[simp]
+lemma choose_eq' (a : α) : @Exists.choose _ (a = ·) ⟨a, rfl⟩ = a :=
+  (@choose_spec _ (a = ·) _).symm
 
 end Classical
 
@@ -1283,7 +1286,7 @@ theorem apply_ite₂ {α β γ : Sort*} (f : α → β → γ) (P : Prop) [Decid
 /-- A 'dite' producing a `Pi` type `Π a, σ a`, applied to a value `a : α` is a `dite` that applies
 either branch to `a`. -/
 theorem dite_apply (f : P → ∀ a, σ a) (g : ¬P → ∀ a, σ a) (a : α) :
-    (dite P f g) a = dite P (fun h ↦ f h a) fun h ↦ g h a := by by_cases h:P <;> simp [h]
+    (dite P f g) a = dite P (fun h ↦ f h a) fun h ↦ g h a := by by_cases h : P <;> simp [h]
 #align dite_apply dite_apply
 
 /-- A 'ite' producing a `Pi` type `Π a, σ a`, applied to a value `a : α` is a `ite` that applies

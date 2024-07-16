@@ -117,9 +117,7 @@ theorem powerSeriesPart_eq_zero (x : LaurentSeries R) : x.powerSeriesPart = 0 �
   · contrapose!
     simp only [ne_eq]
     intro h
-    #adaptation_note /-- (2024-07-08): this was all in one rw, but that created an instance goal -/
-    simp_rw [PowerSeries.ext_iff]
-    rw [not_forall]
+    rw [PowerSeries.ext_iff, not_forall]
     refine ⟨0, ?_⟩
     simp [coeff_order_ne_zero h]
   · rintro rfl
@@ -326,7 +324,7 @@ theorem coe_coe (P : Polynomial F) : (P : LaurentSeries F) = (P : RatFunc F) := 
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : RatFunc F) : LaurentSeries F) = 0 :=
-  (coeAlgHom F).map_zero
+  map_zero (coeAlgHom F)
 #align ratfunc.coe_zero RatFunc.coe_zero
 
 theorem coe_ne_zero {f : Polynomial F} (hf : f ≠ 0) : (↑f : PowerSeries F) ≠ 0 := by
@@ -334,32 +332,32 @@ theorem coe_ne_zero {f : Polynomial F} (hf : f ≠ 0) : (↑f : PowerSeries F) �
 
 @[simp, norm_cast]
 theorem coe_one : ((1 : RatFunc F) : LaurentSeries F) = 1 :=
-  (coeAlgHom F).map_one
+  map_one (coeAlgHom F)
 #align ratfunc.coe_one RatFunc.coe_one
 
 @[simp, norm_cast]
 theorem coe_add : ((f + g : RatFunc F) : LaurentSeries F) = f + g :=
-  (coeAlgHom F).map_add _ _
+  map_add (coeAlgHom F) _ _
 #align ratfunc.coe_add RatFunc.coe_add
 
 @[simp, norm_cast]
 theorem coe_sub : ((f - g : RatFunc F) : LaurentSeries F) = f - g :=
-  (coeAlgHom F).map_sub _ _
+  map_sub (coeAlgHom F) _ _
 #align ratfunc.coe_sub RatFunc.coe_sub
 
 @[simp, norm_cast]
 theorem coe_neg : ((-f : RatFunc F) : LaurentSeries F) = -f :=
-  (coeAlgHom F).map_neg _
+  map_neg (coeAlgHom F) _
 #align ratfunc.coe_neg RatFunc.coe_neg
 
 @[simp, norm_cast]
 theorem coe_mul : ((f * g : RatFunc F) : LaurentSeries F) = f * g :=
-  (coeAlgHom F).map_mul _ _
+  map_mul (coeAlgHom F) _ _
 #align ratfunc.coe_mul RatFunc.coe_mul
 
 @[simp, norm_cast]
 theorem coe_pow (n : ℕ) : ((f ^ n : RatFunc F) : LaurentSeries F) = (f : LaurentSeries F) ^ n :=
-  (coeAlgHom F).map_pow _ _
+  map_pow (coeAlgHom F) _ _
 #align ratfunc.coe_pow RatFunc.coe_pow
 
 @[simp, norm_cast]

@@ -411,7 +411,7 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
   | b :: l, h => by
     obtain rfl | ⟨ne, h⟩ := List.eq_or_ne_mem_of_mem h
     · simp only [map, erase_cons_head, prod_cons]
-    · simp only [map, erase_cons_tail _ (not_beq_of_ne ne.symm), prod_cons, prod_map_erase _ h,
+    · simp only [map, erase_cons_tail (not_beq_of_ne ne.symm), prod_cons, prod_map_erase _ h,
         mul_left_comm (f a) (f b)]
 #align list.prod_map_erase List.prod_map_erase
 #align list.sum_map_erase List.sum_map_erase

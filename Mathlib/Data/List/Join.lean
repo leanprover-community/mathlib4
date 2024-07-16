@@ -26,20 +26,11 @@ namespace List
 theorem join_singleton (l : List α) : [l].join = l := by rw [join, join, append_nil]
 #align list.join_singleton List.join_singleton
 
-@[simp]
-theorem join_eq_nil : ∀ {L : List (List α)}, join L = [] ↔ ∀ l ∈ L, l = []
-  | [] => iff_of_true rfl (forall_mem_nil _)
-  | l :: L => by simp only [join, append_eq_nil, join_eq_nil, forall_mem_cons]
-#align list.join_eq_nil List.join_eq_nil
+@[deprecated join_eq_nil_iff (since := "2024-07-10")]
+theorem join_eq_nil : ∀ {L : List (List α)}, join L = [] ↔ ∀ l ∈ L, l = [] := join_eq_nil_iff
+#align list.join_eq_nil List.join_eq_nil_iff
 
-@[simp]
-theorem join_append (L₁ L₂ : List (List α)) : join (L₁ ++ L₂) = join L₁ ++ join L₂ := by
-  induction L₁
-  · rfl
-  · simp [*]
 #align list.join_append List.join_append
-
-theorem join_concat (L : List (List α)) (l : List α) : join (L.concat l) = join L ++ l := by simp
 #align list.join_concat List.join_concat
 
 @[simp]
@@ -92,7 +83,7 @@ lemma count_bind' [BEq β] (l : List α) (f : α → List β) (x : β) :
 
 @[simp]
 theorem bind_eq_nil {l : List α} {f : α → List β} : List.bind l f = [] ↔ ∀ x ∈ l, f x = [] :=
-  join_eq_nil.trans <| by
+  join_eq_nil_iff.trans <| by
     simp only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
 #align list.bind_eq_nil List.bind_eq_nil
 
@@ -201,18 +192,7 @@ theorem append_join_map_append (L : List (List α)) (x : List α) :
   · rw [map_cons, join, map_cons, join, append_assoc, ih, append_assoc, append_assoc]
 #align list.append_join_map_append List.append_join_map_append
 
-/-- Reversing a join is the same as reversing the order of parts and reversing all parts. -/
-theorem reverse_join (L : List (List α)) :
-    L.join.reverse = (L.map reverse).reverse.join := by
-  induction' L with _ _ ih
-  · rfl
-  · rw [join, reverse_append, ih, map_cons, reverse_cons', join_concat]
 #align list.reverse_join List.reverse_join
-
-/-- Joining a reverse is the same as reversing all parts and reversing the joined result. -/
-theorem join_reverse (L : List (List α)) :
-    L.reverse.join = (L.map reverse).join.reverse := by
-  simpa [reverse_reverse, map_reverse] using congr_arg List.reverse (reverse_join L.reverse)
 #align list.join_reverse List.join_reverse
 
 /-- Any member of `L : List (List α))` is a sublist of `L.join` -/

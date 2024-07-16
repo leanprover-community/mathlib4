@@ -14,8 +14,6 @@ This implements the `trans` tactic, which can apply transitivity theorems with a
 variable argument.
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Tactic
 open Lean Meta Elab
 
@@ -50,14 +48,16 @@ initialize registerBuiltinAttribute {
     transExt.add (decl, key) kind
 }
 
+universe u v in
 /-- Composition using the `Trans` class in the homogeneous case. -/
-def _root_.Trans.simple {a b c : α} [Trans r r r] : r a b → r b c → r a c := trans
+def _root_.Trans.simple {α : Sort u} {r : α → α → Sort v} {a b c : α} [Trans r r r] :
+    r a b → r b c → r a c := trans
 
+set_option autoImplicit true in -- TODO, handle better - use Sort*?
 /-- Composition using the `Trans` class in the general case. -/
 def _root_.Trans.het {a : α} {b : β} {c : γ}
     {r : α → β → Sort u} {s : β → γ → Sort v} {t : outParam (α → γ → Sort w)}
     [Trans r s t] : r a b → s b c → t a c := trans
-
 
 open Lean.Elab.Tactic
 
