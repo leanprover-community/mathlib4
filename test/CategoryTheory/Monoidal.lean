@@ -43,3 +43,8 @@ example : f ≫ g = f ≫ g := by
   monoidal_nf
   repeat' apply congrArg₂ (· ≫ ·) ?_ <| congrArg₂ (· ≫ ·) rfl ?_
   all_goals simp
+
+example : (f ⊗ g) ▷ X = (α_ _ _ _).hom ≫ (f ⊗ g ▷ X) ≫ (α_ _ _ _).inv := by
+  monoidal_nf
+  repeat' apply congrArg₂ (· ≫ ·) ?_ <| congrArg₂ (· ≫ ·) rfl ?_
+  all_goals simp
