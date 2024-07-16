@@ -121,7 +121,7 @@ end examples
 
 end ClosedManifold
 
--- Lemmas about boundary and interior, should go there.
+-- Lemmas about the interior and boundary of a product: move to `InteriorBoundary.lean`
 section Boundary
 
 variable {E E' E'' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup E']
@@ -132,25 +132,35 @@ variable {E E' E'' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAd
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {I' : ModelWithCorners ℝ E' H'} [SmoothManifoldWithCorners I' M'] {x : M} {y : M'}
 
+open Set hiding prod
+
 -- xxx good name!
 lemma mem_interior_of_components (hx : x ∈ I.interior M) (hy : y ∈ I'.interior M') :
     (x, y) ∈ (I.prod I').interior (M × M') := by
-  rw [ModelWithCorners.interior]
+  have aux : (interior (range ↑I)) ×ˢ (interior (range I')) = interior (range (I.prod I')) := by
+    rw [← interior_prod_eq, ← Set.range_prod_map, modelWithCorners_prod_coe]
+  have hx' : extChartAt I x x ∈ interior (range I) := hx
+  have hy' : extChartAt I' y y ∈ interior (range I') := hy
+  have : (extChartAt (I.prod I') (x, y)) (x, y) ∈ interior (range ↑I) ×ˢ interior (range ↑I') := by
+    apply mem_prod.mpr; constructor; exacts [hx', hy']
+  have aux' : Set.prod (interior (range ↑I)) (interior (range I')) ⊆ interior (range (I.prod I')) := by
+    rw [← aux]
+    exact fun ⦃a⦄ a ↦ a
+  exact aux' this
+
+-- xxx good name!
+lemma foo : (I.interior M) ×ˢ (I'.interior M') ⊆ (I.prod I').interior (M × M') := by
+  intro p hp
+  obtain ⟨h₁, h₂⟩ := Set.mem_prod.mp hp
+  exact mem_interior_of_components h₁ h₂
+
+-- TODO: good name! prove this converse to foo!
+lemma bar : (I.prod I').interior (M × M') ⊆ (I.interior M) ×ˢ (I'.interior M') := by
   sorry
 
--- TODO: converse direction
-
--- TODO: cannot even state my full result yet...
--- #check (((I.interior M) : Set M) × ((I'.interior M') : Set M')) : Set (M × M')
-
--- lemma sdf : -- fails, Lean thinks both sides are a type
---   (((I.interior M) : Set M) × ((I'.interior M') : Set M')) ⊆ (I.prod I').interior (M × M') := sorry
-
--- TODO: is not what I want it to be!
 lemma interior_prod :
-    (I.prod I').interior (M × M') = (((I.interior M) : Set M) × ((I'.interior M') : Set M')) := by
---   apply le_antisymm -- doesn't work, currently Lean thinks both sides are a type...
-  sorry
+    (I.prod I').interior (M × M') = (I.interior M) ×ˢ (I'.interior M') := by
+  apply le_antisymm bar foo
 
 -- The boundary of M × N is ∂M × N ∪ (M × ∂N).
 
@@ -162,29 +172,29 @@ lemma boundary_prod {p : M × M'} (hp : p ∈ (I.prod I').boundary (M × M')) :
   have h₂ : p.2 ∈ I'.interior M' := by have := I'.isInteriorPoint_or_isBoundaryPoint p.2; tauto
   have h3 : p ∈ (I.prod I').interior (M × M') := mem_interior_of_components this h₂
   rw [(I.prod I').boundary_eq_complement_interior (M := M × M')] at hp
-  have : p ∉ (I.prod I').interior (M × M') := Set.not_mem_of_mem_compl hp
+  have : p ∉ (I.prod I').interior (M × M') := not_mem_of_mem_compl hp
   tauto
 
 -- TODO: deduce converse also!
 
--- -- TODO good name; make Lean interpret these as sets!
--- lemma boundary_prod_types :
---     (I.prod I').boundary (M × M') = (M × I'.boundary M') ∪ (I.boundary M × M') := by
---   sorry -- just the lemma upstairs...
+-- -- TODO good name
+lemma boundary_prod_types :
+    (I.prod I').boundary (M × M') = Set.prod univ (I'.boundary M') ∪ Set.prod (I.boundary M) univ :=
+  sorry -- just boundary_prod and its converse
 
 -- In particular, if `M` is boundaryless, ∂(M×N) = M × ∂N (and similarly for N).
 
--- apply previous lemma... TODO make Lean interpret these as sets!
+-- apply previous lemma
 lemma boundary_of_boundaryless_left [I.Boundaryless] :
-    (I.prod I').boundary (M × M') = (M × (I'.boundary M')) := by
+    (I.prod I').boundary (M × M') = Set.prod (univ : Set M) (I'.boundary M') := by
   sorry
 
 -- apply previous lemma... TODO make Lean interpret these as sets!
 lemma boundary_of_boundaryless_right [I'.Boundaryless] :
-    (I.prod I').boundary (M × M') = ((I.boundary M) × M') := by
+    (I.prod I').boundary (M × M') = Set.prod (I.boundary M) (univ : Set M') := by
   sorry
 
--- cor. If M is a smooth manifold without boundary, M x I has boundary M× {0,1};
+-- Corollary. If M is a smooth manifold without boundary, M x I has boundary M× {0,1};
 --   this is diffeomorphic to M ⊔ M.
 
 end Boundary
@@ -253,10 +263,10 @@ structure UnorientedCobordism (s : SingularNManifold X n M I) (t : SingularNMani
 
 open Set
 
-instance : ChartedSpace (EuclideanHalfSpace 1) (Set.Icc 0 1) := by
+instance : ChartedSpace (EuclideanHalfSpace 1) (Icc 0 1) := by
   sorry -- apply IccManifold 0 1 almost does it!
 
--- instance : ChartedSpace (EuclideanHalfSpace (n + 1)) (M × (Set.Icc 0 1)) := sorry
+-- instance : ChartedSpace (EuclideanHalfSpace (n + 1)) (M × (Icc 0 1)) := sorry
 
 instance Icc_smooth_manifold2 : SmoothManifoldWithCorners (𝓡∂ 1) (Icc 0 1) := by
   sorry -- apply Icc_smooth_manifold 0 1 errors with
@@ -267,7 +277,7 @@ with
 
 /-- Each singular `n`-manifold (M,f)` is cobordant to itself. -/
 noncomputable def UnorientedCobordism.refl (s : SingularNManifold X n M I) :
-    UnorientedCobordism s s (M × (Set.Icc 0 1)) (I.prod (𝓡∂ 1)) where
+    UnorientedCobordism s s (M × (Icc 0 1)) (I.prod (𝓡∂ 1)) where
   hW := by infer_instance
   hW' := by sorry
     -- calc finrank (E × EuclideanSpace ℝ (Fin 1))
