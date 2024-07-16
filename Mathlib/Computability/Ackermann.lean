@@ -350,7 +350,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
       · apply (ha m).trans (ack_strictMono_left m <| (le_max_left a b).trans_lt _)
         omega
       · -- We get rid of the first `pair`.
-        simp only [ge_iff_le]
+        simp only
         apply (hb _).trans ((ack_pair_lt _ _ _).trans_le _)
         -- If m is the maximum, we get a very weak inequality.
         cases' lt_or_le _ m with h₁ h₁
