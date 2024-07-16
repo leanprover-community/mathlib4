@@ -106,7 +106,7 @@ protected theorem Commute.geom_sum₂_mul_add {x y : α} (h : Commute x y) (n : 
   let f :  ℕ → ℕ → α := fun m i : ℕ => (x + y) ^ i * y ^ (m - 1 - i)
   -- Porting note: adding `hf` here, because below in two places `dsimp [f]` didn't work
   have hf : ∀ m i : ℕ, f m i = (x + y) ^ i * y ^ (m - 1 - i) := by
-    simp only [ge_iff_le, tsub_le_iff_right, forall_const]
+    simp only [tsub_le_iff_right, forall_const]
   change (∑ i ∈ range n, (f n) i) * x + y ^ n = (x + y) ^ n
   induction' n with n ih
   · rw [range_zero, sum_empty, zero_mul, zero_add, pow_zero, pow_zero]

@@ -490,17 +490,8 @@ theorem coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
 #align complex.coe_im_add_group_hom Complex.coe_imAddGroupHom
 
 section
-set_option linter.deprecated false
-@[simp]
-theorem I_pow_bit0 (n : ℕ) : I ^ (2 * n) = (-1 : ℂ) ^ n := by rw [pow_bit0', Complex.I_mul_I]
-set_option linter.uppercaseLean3 false in
-#align complex.I_pow_bit0 Complex.I_pow_bit0
-
-@[simp]
-theorem I_pow_bit1 (n : ℕ) : I ^ (2 * n + 1) = (-1 : ℂ) ^ n * I := by rw [pow_bit1', Complex.I_mul_I]
-set_option linter.uppercaseLean3 false in
-#align complex.I_pow_bit1 Complex.I_pow_bit1
-
+#noalign complex.I_pow_bit0
+#noalign complex.I_pow_bit1
 end
 
 /-! ### Cast lemmas -/

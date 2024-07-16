@@ -9,10 +9,6 @@ import Mathlib.Data.Nat.Bits
 #align_import data.nat.even_odd_rec from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 /-! # A recursion principle based on even and odd numbers. -/
 
--- Porting note (#11215): TODO:
--- Remove dependence on deprecated definitions bit0, bit1.
-set_option linter.deprecated false
-
 namespace Nat
 
 /-- Recursion principle on even and odd numbers: if we have `P 0`, and for all `i : ℕ` we can
