@@ -511,6 +511,14 @@ instance CstarRing.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A :=
       rw [← StarOrderedRing.nonneg_iff] at x_mem y_mem
       exact hx.nnreal_add (.of_nonneg x_mem) (.of_nonneg y_mem) hy
 
+open ComplexOrder in
+instance CstarRing.instNonnegSpectrumClassComplexUnital : NonnegSpectrumClass ℂ A where
+  quasispectrum_nonneg_of_nonneg a ha x := by
+    rw [mem_quasispectrum_iff]
+    refine (Or.elim · ge_of_eq fun hx ↦ ?_)
+    obtain ⟨y, hy, rfl⟩ := (IsSelfAdjoint.of_nonneg ha).spectrumRestricts.algebraMap_image ▸ hx
+    simpa using spectrum_nonneg_of_nonneg ha hy
+
 end NonnegSpectrumClass
 
 section SpectralOrder
