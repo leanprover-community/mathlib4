@@ -76,11 +76,8 @@ lemma IsSelfAdjoint.coe_mem_spectrum_complex {a : A} {x : ℝ} (ha : IsSelfAdjoi
 
 lemma coe_mem_spectrum_real_of_nonneg {a : A} {x : ℝ≥0} (ha : 0 ≤ a := by cfc_tac) :
     (x : ℝ) ∈ spectrum ℝ a ↔ x ∈ spectrum ℝ≥0 a := by
-  have hsr : SpectrumRestricts a ContinuousMap.realToNNReal :=
-    SpectrumRestricts.nnreal_of_nonneg ha
-  simp only [← hsr.algebraMap_image, Set.mem_image]
-  refine ⟨fun ⟨z, hz₁, hz₂⟩ => ?_, fun h => ⟨x, h, rfl⟩⟩
-  rwa [← NNReal.coe_injective hz₂]
+  simp [← (SpectrumRestricts.nnreal_of_nonneg ha).algebraMap_image, Set.mem_image,
+    NNReal.algebraMap_eq_coe]
 
 end generic
 
