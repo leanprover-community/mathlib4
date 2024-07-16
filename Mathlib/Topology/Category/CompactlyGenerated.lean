@@ -147,3 +147,5 @@ def isoEquivHomeo {X Y : CompactlyGenerated.{u, w}} : (X ≅ Y) ≃ (X ≃ₜ Y)
   right_inv f := by
     ext
     rfl
+
+end CompactlyGenerated
