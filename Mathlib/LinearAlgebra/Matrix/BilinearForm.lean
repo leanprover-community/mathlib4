@@ -128,8 +128,8 @@ theorem Matrix.toBilin'Aux_eq (M : Matrix n n R₂) : Matrix.toBilin'Aux M = Mat
 
 theorem Matrix.toBilin'_apply (M : Matrix n n R₂) (x y : n → R₂) :
     Matrix.toBilin' M x y = ∑ i, ∑ j, x i * M i j * y j :=
-  Finset.sum_congr rfl fun _  _ => Finset.sum_congr rfl fun _  _ => by
-          simp only [RingHom.id_apply, smul_eq_mul, mul_comm, mul_assoc]
+  (Matrix.toLinearMap₂'_apply _ _ _).trans
+    (by simp only [smul_eq_mul, mul_assoc, mul_comm, mul_left_comm])
 #align matrix.to_bilin'_apply Matrix.toBilin'_apply
 
 theorem Matrix.toBilin'_apply' (M : Matrix n n R₂) (v w : n → R₂) :
