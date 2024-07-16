@@ -589,7 +589,8 @@ def ofSubsingleton (a : α) [Subsingleton α] : Fintype α :=
   ⟨{a}, fun _ => Finset.mem_singleton.2 (Subsingleton.elim _ _)⟩
 #align fintype.of_subsingleton Fintype.ofSubsingleton
 
-@[simp]
+-- In principle, this could be a `simp` theorem but it applies to any occurence of `univ` and
+-- required unification of the (possibly very complex) `Fintype` instances.
 theorem univ_ofSubsingleton (a : α) [Subsingleton α] : @univ _ (ofSubsingleton a) = {a} :=
   rfl
 #align fintype.univ_of_subsingleton Fintype.univ_ofSubsingleton
