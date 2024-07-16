@@ -620,4 +620,63 @@ instance Scheme.pullback_map_isOpenImmersion {X Y S X' Y' S' : Scheme}
   rw [pullback_map_eq_pullbackFstFstIso_inv]
   infer_instance
 
+section Spec
+
+variable (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+
+open TensorProduct Algebra.TensorProduct CommRingCat RingHomClass
+
+/-- The isomorphism between the fiber product of two schemes `Spec S` and `Spec T`
+over a scheme `Spec R` and the `Spec` of the tensor product `S ⊗[R] T`.-/
+noncomputable
+def pullbackSpecIso :
+    pullback (Spec.map (CommRingCat.ofHom (algebraMap R S)))
+      (Spec.map (CommRingCat.ofHom (algebraMap R T))) ≅ Spec (.of <| S ⊗[R] T) :=
+  letI H := IsLimit.equivIsoLimit (PullbackCone.eta _)
+    (PushoutCocone.isColimitEquivIsLimitOp _ (CommRingCat.pushoutCoconeIsColimit R S T))
+  limit.isoLimitCone ⟨_, isLimitPullbackConeMapOfIsLimit Scheme.Spec _ H⟩
+/--
+The composition of the inverse of the isomorphism `pullbackSepcIso R S T` (from the pullback of
+`Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the first projection is
+the morphism `Spec (S ⊗[R] T) ⟶ Spec S` obtained by applying `Spec.map` to the ring morphism
+`s ↦ s ⊗ₜ[R] 1`.
+-/
+@[reassoc (attr := simp)]
+lemma pullbackSpecIso_inv_fst :
+    (pullbackSpecIso R S T).inv ≫ pullback.fst _ _ = Spec.map (ofHom includeLeftRingHom) :=
+  limit.isoLimitCone_inv_π _ _
+/--
+The composition of the inverse of the isomorphism `pullbackSepcIso R S T` (from the pullback of
+`Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the second projection is
+the morphism `Spec (S ⊗[R] T) ⟶ Spec T` obtained by applying `Spec.map` to the ring morphism
+`t ↦ 1 ⊗ₜ[R] t`.
+-/
+@[reassoc (attr := simp)]
+lemma pullbackSpecIso_inv_snd :
+    (pullbackSpecIso R S T).inv ≫ pullback.snd _ _ = Spec.map (ofHom (toRingHom includeRight)) :=
+  limit.isoLimitCone_inv_π _ _
+/--
+The composition of the isomorphism `pullbackSepcIso R S T` (from the pullback of
+`Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the morphism
+`Spec (S ⊗[R] T) ⟶ Spec S` obtained by applying `Spec.map` to the ring morphism `s ↦ s ⊗ₜ[R] 1`
+is the first projection.
+-/
+@[reassoc (attr := simp)]
+lemma pullbackSpecIso_hom_fst :
+    (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom includeLeftRingHom) = pullback.fst _ _ := by
+  rw [← pullbackSpecIso_inv_fst, Iso.hom_inv_id_assoc]
+/--
+The composition of the isomorphism `pullbackSepcIso R S T` (from the pullback of
+`Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the morphism
+`Spec (S ⊗[R] T) ⟶ Spec T` obtained by applying `Spec.map` to the ring morphism `t ↦ 1 ⊗ₜ[R] t`
+is the second projection.
+-/
+@[reassoc (attr := simp)]
+lemma pullbackSpecIso_hom_snd :
+    (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (toRingHom includeRight)) = pullback.snd _ _ := by
+  rw [← pullbackSpecIso_inv_snd, Iso.hom_inv_id_assoc]
+
+end Spec
+
+
 end AlgebraicGeometry

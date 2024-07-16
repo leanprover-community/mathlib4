@@ -347,11 +347,7 @@ theorem add_self (x : Tropical R) : x + x = x :=
   untrop_injective (min_eq_right le_rfl)
 #align tropical.add_self Tropical.add_self
 
-set_option linter.deprecated false in
-@[simp]
-theorem bit0 (x : Tropical R) : bit0 x = x :=
-  add_self x
-#align tropical.bit0 Tropical.bit0
+#noalign tropical.bit0
 
 theorem add_eq_iff {x y z : Tropical R} : x + y = z ↔ x = z ∧ x ≤ y ∨ y = z ∧ y ≤ x := by
   rw [trop_add_def, trop_eq_iff_eq_untrop]
