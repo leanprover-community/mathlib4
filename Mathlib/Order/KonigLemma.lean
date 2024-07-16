@@ -45,7 +45,7 @@ section Sequence
 
 variable {α : Type*} [PartialOrder α] [IsStronglyAtomic α] {a b : α}
 
-/-- **Kőnig's infinity lemma** : if each element in an infinite strongly atomic order
+/-- **Kőnig's infinity lemma** : if each element in a strongly atomic order
 is covered by only finitely many others, and `b` is an element with infinitely many things above it,
 then there is a sequence starting with `b` in which each element is covered by the next. -/
 theorem exists_seq_covby_of_forall_covby_finite (hfin : ∀ (a : α), {x | a ⋖ x}.Finite)
@@ -68,7 +68,7 @@ theorem exists_orderEmbedding_covby_of_forall_covby_finite_of_bot [OrderBot α] 
 
 theorem GradeMinOrder.exists_nat_orderEmbedding_of_forall_covby_finite
     [GradeMinOrder ℕ α] [OrderBot α] [Infinite α] (hfin : ∀ (a : α), {x | a ⋖ x}.Finite) :
-  ∃ f : ℕ ↪o α, f 0 = ⊥ ∧ (∀ i, f i ⋖ f (i+1)) ∧ ∀ i, grade ℕ (f i) = i := by
+    ∃ f : ℕ ↪o α, f 0 = ⊥ ∧ (∀ i, f i ⋖ f (i+1)) ∧ ∀ i, grade ℕ (f i) = i := by
   obtain ⟨f, h0, hf⟩ := exists_orderEmbedding_covby_of_forall_covby_finite_of_bot hfin
   refine ⟨f, h0, hf, fun i ↦ ?_⟩
   induction' i with i ih; simp [h0]
