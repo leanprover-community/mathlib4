@@ -32,8 +32,6 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 open CategoryTheory.MorphismProperty
 
-open AlgebraicGeometry.MorphismProperty (topologically)
-
 /-- A morphism of schemes `f : X ⟶ Y` is universally closed if the base change `X ×[Y] Y' ⟶ Y'`
 along any morphism `Y' ⟶ Y` is (topologically) a closed map.
 -/
