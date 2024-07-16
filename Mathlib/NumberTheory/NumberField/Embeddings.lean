@@ -1023,8 +1023,9 @@ noncomputable instance : DecidablePred (IsReal : InfinitePlace K → Prop) :=
   letI (v : InfinitePlace K) : Decidable (∀ (i : Fin (FiniteDimensional.finrank ℚ K)),
     (v.embedding ((FiniteDimensional.finBasis ℚ K) i)).im = 0) := Fintype.decidableForallFintype
   fun v => decidable_of_iff
-    (∀ (i : Fin (FiniteDimensional.finrank ℚ K)), (v.embedding ((FiniteDimensional.finBasis ℚ K) i)).im = 0)
-      v.isReal_iff_basis_im_eq_zero.symm
+    (∀ (i : Fin (FiniteDimensional.finrank ℚ K)),
+      (v.embedding ((FiniteDimensional.finBasis ℚ K) i)).im = 0)
+        v.isReal_iff_basis_im_eq_zero.symm
 
 end NumberField.InfinitePlace
 
