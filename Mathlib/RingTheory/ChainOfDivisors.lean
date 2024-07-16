@@ -29,7 +29,7 @@ and the set of factors of `a`.
   `multiplicity p a = multiplicity (d p) b`
 
 
-## Todo
+## TODO
 - Create a structure for chains of divisors.
 - Simplify proof of `mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors` using
   `mem_normalizedFactors_factor_order_iso_of_mem_normalizedFactors` or vice versa.

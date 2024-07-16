@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.PUnitInstances.Algebra
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Order.Heyting.Basic
 
 #align_import algebra.punit_instances from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
@@ -29,3 +29,5 @@ instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid PUn
 
 instance : LinearOrderedAddCommMonoidWithTop PUnit where
   top_add' _ := rfl
+
+end PUnit

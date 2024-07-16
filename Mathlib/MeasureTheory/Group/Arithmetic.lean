@@ -36,7 +36,7 @@ For the heuristics of `@[to_additive]` it is important that the type with a mult
 
 measurable function, arithmetic operator
 
-## Todo
+## TODO
 
 * Uniformize the treatment of `pow` and `smul`.
 * Use `@[to_additive]` to send `MeasurablePow` to `MeasurableSMul₂`.
@@ -101,7 +101,7 @@ section Mul
 variable {M α : Type*} [MeasurableSpace M] [Mul M] {m : MeasurableSpace α} {f g : α → M}
   {μ : Measure α}
 
-@[to_additive (attr := measurability)]
+@[to_additive (attr := fun_prop, measurability)]
 theorem Measurable.const_mul [MeasurableMul M] (hf : Measurable f) (c : M) :
     Measurable fun x => c * f x :=
   (measurable_const_mul c).comp hf
@@ -223,12 +223,12 @@ theorem AEMeasurable.pow (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
   measurable_pow.comp_aemeasurable (hf.prod_mk hg)
 #align ae_measurable.pow AEMeasurable.pow
 
-@[measurability]
+@[fun_prop, measurability]
 theorem Measurable.pow_const (hf : Measurable f) (c : γ) : Measurable fun x => f x ^ c :=
   hf.pow measurable_const
 #align measurable.pow_const Measurable.pow_const
 
-@[measurability]
+@[fun_prop, measurability]
 theorem AEMeasurable.pow_const (hf : AEMeasurable f μ) (c : γ) :
     AEMeasurable (fun x => f x ^ c) μ :=
   hf.pow aemeasurable_const

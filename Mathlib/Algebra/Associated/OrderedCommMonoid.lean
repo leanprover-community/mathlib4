@@ -37,3 +37,4 @@ instance : CanonicallyOrderedCommMonoid (Associates α) where
   le_self_mul _ b := ⟨b, rfl⟩
   bot_le _ := one_le
 
+end Associates

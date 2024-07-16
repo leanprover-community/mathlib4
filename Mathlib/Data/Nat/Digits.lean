@@ -627,9 +627,9 @@ theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1
   rw [bits_append_bit _ _ fun hn => absurd hn h]
   cases b
   · rw [digits_def' one_lt_two]
-    · simpa [Nat.bit, Nat.bit0_val n]
-    · simpa [Nat.bit, pos_iff_ne_zero, Nat.bit0_eq_zero]
-  · simpa [Nat.bit, Nat.bit1_val n, add_comm, digits_add 2 one_lt_two 1 n, Nat.add_mul_div_left]
+    · simpa [Nat.bit]
+    · simpa [Nat.bit, pos_iff_ne_zero]
+  · simpa [Nat.bit, add_comm, digits_add 2 one_lt_two 1 n, Nat.add_mul_div_left]
 #align nat.digits_two_eq_bits Nat.digits_two_eq_bits
 
 /-! ### Modular Arithmetic -/
@@ -804,7 +804,7 @@ lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Cha
     if hnb : (n / b) = 0 then
       simp only [hnb, if_true, List.length]
     else
-      generalize hx: Nat.digitChar (n % b) = x
+      generalize hx : Nat.digitChar (n % b) = x
       simp only [hx, hnb, if_false] at ih
       simp only [hnb, if_false]
       specialize ih (n / b) c (x :: tl)
@@ -822,7 +822,7 @@ lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n /
 the number of digits in `n < e` for some base `b`. Since this works with any base greater
 than one, it can be used for binary, decimal, and hex. -/
 lemma toDigitsCore_length (b : Nat) (h : 2 <= b) (f n e : Nat)
-    (hlt : n < b ^ e) (h_e_pos: 0 < e) : (Nat.toDigitsCore b f n []).length <= e := by
+    (hlt : n < b ^ e) (h_e_pos : 0 < e) : (Nat.toDigitsCore b f n []).length <= e := by
   induction f generalizing n e hlt h_e_pos with
     simp only [Nat.toDigitsCore, List.length, Nat.zero_le]
   | succ f ih =>
