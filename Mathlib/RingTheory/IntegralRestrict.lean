@@ -277,7 +277,7 @@ variable [IsIntegrallyClosed A]
 /-- The restriction of the norm on `L/K` restricted onto `B/A` in an AKLB setup.
 See `Algebra.intNorm` instead. -/
 noncomputable
-def Algebra.intNormAux [IsSeparable K L] :
+def Algebra.intNormAux [Algebra.IsSeparable K L] :
     B →* A where
   toFun := fun s ↦ IsIntegralClosure.mk' (R := A) A (Algebra.norm K (algebraMap B L s))
     (isIntegral_norm K <| IsIntegral.map (IsScalarTower.toAlgHom A B L)
@@ -287,7 +287,7 @@ def Algebra.intNormAux [IsSeparable K L] :
 
 variable {A K L B}
 
-lemma Algebra.map_intNormAux [IsIntegrallyClosed A] [IsSeparable K L] (x : B) :
+lemma Algebra.map_intNormAux [IsIntegrallyClosed A] [Algebra.IsSeparable K L] (x : B) :
     algebraMap A K (Algebra.intNormAux A K L B x) = Algebra.norm K (algebraMap B L x) := by
   dsimp [Algebra.intNormAux]
   exact IsIntegralClosure.algebraMap_mk' _ _ _
@@ -295,7 +295,7 @@ lemma Algebra.map_intNormAux [IsIntegrallyClosed A] [IsSeparable K L] (x : B) :
 variable (A B)
 variable [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B]
 variable [Module.Finite A B] [NoZeroSMulDivisors A B]
-variable [IsSeparable (FractionRing A) (FractionRing B)] -- TODO: remove this
+variable [Algebra.IsSeparable (FractionRing A) (FractionRing B)] -- TODO: remove this
 
 /-- The norm of a finite extension of integrally closed domains `B/A` is the restriction of
 the norm on `Frac(B)/Frac(A)` onto `B/A`. See `Algebra.algebraMap_intNorm`. -/
@@ -381,7 +381,7 @@ lemma Algebra.intNorm_ne_zero {x : B} : Algebra.intNorm A B x ≠ 0 ↔ x ≠ 0 
 
 variable [IsDomain Aₘ] [IsIntegrallyClosed Aₘ] [IsDomain Bₘ] [IsIntegrallyClosed Bₘ]
 variable [NoZeroSMulDivisors Aₘ Bₘ] [Module.Finite Aₘ Bₘ]
-variable [IsSeparable (FractionRing Aₘ) (FractionRing Bₘ)]
+variable [Algebra.IsSeparable (FractionRing Aₘ) (FractionRing Bₘ)]
 
 lemma Algebra.intNorm_eq_of_isLocalization (x : B) :
     algebraMap A Aₘ (Algebra.intNorm A B x) = Algebra.intNorm Aₘ Bₘ (algebraMap B Bₘ x) := by

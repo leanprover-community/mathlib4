@@ -202,22 +202,19 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
   refine Finset.card_bij φ ?_ ?_ ?_
   · intro a ha
     simp only [φ, not_forall, not_exists, not_and, exists_prop, mem_filter]
-    rw [mem_finsuppAntidiag']
+    rw [mem_finsuppAntidiag]
     dsimp only [ne_eq, smul_eq_mul, id_eq, eq_mpr_eq_cast, le_eq_subset, Finsupp.coe_mk]
     simp only [mem_univ, forall_true_left, not_and, not_forall, exists_prop,
       mem_filter, true_and] at ha
-    constructor
-    constructor
-    · intro i
-      simp only [ne_eq, Multiset.mem_toFinset, not_not, mem_filter, and_imp]
-      exact fun hi _ => ha.2 i hi
+    refine ⟨⟨?_, fun i ↦ ?_⟩, fun i _ ↦ ⟨a.parts.count i, ha.1 i, rfl⟩⟩
     · conv_rhs => simp [← a.parts_sum]
       rw [sum_multiset_count_of_subset _ s]
       · simp only [smul_eq_mul]
       · intro i
         simp only [Multiset.mem_toFinset, not_not, mem_filter]
         apply ha.2
-    · exact fun i _ => ⟨Multiset.count i a.parts, ha.1 i, rfl⟩
+    · simp only [ne_eq, Multiset.mem_toFinset, not_not, mem_filter, and_imp]
+      exact fun hi _ ↦ ha.2 i hi
   · dsimp only
     intro p₁ hp₁ p₂ hp₂ h
     apply Nat.Partition.ext
@@ -236,7 +233,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
   · simp only [φ, mem_filter, mem_finsuppAntidiag, mem_univ, exists_prop, true_and_iff, and_assoc]
     rintro f ⟨hf, hf₃, hf₄⟩
     have hf' : f ∈ finsuppAntidiag s n := mem_finsuppAntidiag.mpr ⟨hf, hf₃⟩
-    simp only [mem_finsuppAntidiag'] at hf'
+    simp only [mem_finsuppAntidiag] at hf'
     refine ⟨⟨∑ i ∈ s, Multiset.replicate (f i / i) i, ?_, ?_⟩, ?_, ?_, ?_⟩
     · intro i hi
       simp only [exists_prop, mem_sum, mem_map, Function.Embedding.coeFn_mk] at hi
@@ -244,7 +241,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       apply hs
       rwa [Multiset.eq_of_mem_replicate z]
     · simp_rw [Multiset.sum_sum, Multiset.sum_replicate, Nat.nsmul_eq_mul]
-      rw [← hf'.2]
+      rw [← hf'.1]
       refine sum_congr rfl fun i hi => Nat.div_mul_cancel ?_
       rcases hf₄ i hi with ⟨w, _, hw₂⟩
       rw [← hw₂]
@@ -269,7 +266,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
         apply Dvd.intro_left _ hw₂
       · apply symm
         rw [← Finsupp.not_mem_support_iff]
-        exact not_mem_mono hf h
+        exact not_mem_mono hf'.2 h
 #align theorems_100.partial_gf_prop Theorems100.partialGF_prop
 
 theorem partialOddGF_prop [Field α] (n m : ℕ) :
