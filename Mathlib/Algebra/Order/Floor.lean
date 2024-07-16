@@ -1180,10 +1180,10 @@ theorem lt_fmod_of_pos (a : Int) {b : Int} (h : b < 0) : b < a.fmod b := by
       linarith
 
 -- TODO: find a better place and golf
-theorem fmod_nonpos (a : Int) {b : Int}  (hb : b < 0) : a.fmod b ≤ 0 := by
+theorem fmod_nonpos (a : Int) {b : Int}  (h : b < 0) : a.fmod b ≤ 0 := by
   induction' b with b b
   · by_contra
-    exact (negSucc_not_nonneg b).mp hb
+    exact (negSucc_not_nonneg b).mp h
   · induction' a with a a
     · cases' a with a a
       · simp
