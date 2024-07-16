@@ -345,7 +345,7 @@ theorem coeff_zero_eq_aeval_zero' (p : R[X]) : algebraMap R A (p.coeff 0) = aeva
   simp [aeval_def]
 #align polynomial.coeff_zero_eq_aeval_zero' Polynomial.coeff_zero_eq_aeval_zero'
 
-theorem map_aeval_eq_aeval_map {S T U : Type*} [CommSemiring S] [CommSemiring T] [Semiring U]
+theorem map_aeval_eq_aeval_map {S T U : Type*} [Semiring S] [CommSemiring T] [Semiring U]
     [Algebra R S] [Algebra T U] {φ : R →+* T} {ψ : S →+* U}
     (h : (algebraMap T U).comp φ = ψ.comp (algebraMap R S)) (p : R[X]) (a : S) :
     ψ (aeval a p) = aeval (ψ a) (p.map φ) := by
