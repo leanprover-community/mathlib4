@@ -143,7 +143,7 @@ variable {R : Type*} [DivisionSemiring R] [NeZero (2 : R)]
 theorem add_halves (a : R) : a / 2 + a / 2 = a := by rw [← add_div, add_self_div_two]
 #align add_halves add_halves
 #align add_halves' add_halves
-@[deprecated (since := "2024-07-16")] alias add_havles' := add_halves
+@[deprecated (since := "2024-07-16")] alias add_halves' := add_halves
 
 end
 section
