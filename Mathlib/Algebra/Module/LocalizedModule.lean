@@ -139,12 +139,6 @@ theorem liftOn₂_mk {α : Type*} (f : M × S → M × S → α)
 instance : Zero (LocalizedModule S M) :=
   ⟨mk 0 1⟩
 
-lemma zero_def : (0 : LocalizedModule S M) = mk 0 1 := rfl
-
-lemma mk_eq_zero {m : M} {s : S} : mk m s = 0 ↔ ∃ t : S, t • m = 0 := by
-  rw [zero_def, mk_eq]
-  simp only [one_smul, smul_zero, Subtype.exists, Submonoid.mk_smul, exists_prop]
-
 /-- If `S` contains `0` then the localization at `S` is trivial. -/
 theorem subsingleton (h : 0 ∈ S) : Subsingleton (LocalizedModule S M) := by
   refine ⟨fun a b ↦ ?_⟩
