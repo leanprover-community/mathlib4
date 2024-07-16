@@ -2055,8 +2055,8 @@ lemma prod_mul_eq_prod_mul_of_exists [DecidableEq α] {s : Finset α} {f : α �
   rw [mul_assoc, mul_comm, mul_assoc, mul_comm b₁, h, ← mul_assoc, mul_comm _ (f a)]
 
 @[to_additive]
-lemma IsSquare_finset_prod {s : Finset ι} [CommMonoid α] (f : ι → α)
-    (h : ∀ (c : s), IsSquare (f c)) : IsSquare (∏ i ∈ s, f i) := by
+lemma isSquare_prod {s : Finset ι} [CommMonoid α] (f : ι → α)
+    (h : ∀ c ∈ s, IsSquare (f c)) : IsSquare (∏ i ∈ s, f i) := by
   rw [isSquare_iff_exists_sq]
   use (∏ x, ((isSquare_iff_exists_sq _).mp (h x)).choose)
   rw [@sq, ← Finset.prod_mul_distrib, ← Finset.prod_coe_sort]
