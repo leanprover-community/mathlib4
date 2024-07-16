@@ -172,7 +172,7 @@ abelian groups `{Mⱼ}` with the same filtered indexing category `j ∈ J`, if f
 `Mⱼ` is an `Rⱼ`-module such that the `Rⱼ`-actions are compatible with the morphisms in `J`,
 then there is a scalar multiplication `Rⱼ → M → M` for every `j ∈ J`.
 -/
-noncomputable def sMulColimit {c : J} (r : ℛ.obj c) (m : colimit (C := 𝔄𝔟) ℳ) :
+noncomputable def smulColimit {c : J} (r : ℛ.obj c) (m : colimit (C := 𝔄𝔟) ℳ) :
     colimit (C := 𝔄𝔟) ℳ :=
   colimit.ι ℳ (IsFiltered.max c (Concrete.indexRepColimit ℳ m))
    (hSMul (IsFiltered.leftToMax _ _) (IsFiltered.rightToMax _ _)
@@ -263,7 +263,7 @@ abelian groups `{Mⱼ}`  with the same filtered indexing category `J`. If for ea
 `Rⱼ`-module such that the `Rⱼ`-actions are compatible with the morphisms in `J`, then there is a
 natural scalar multiplication `R → M → M`.
 -/
-noncomputable def colimitsMulColimit (r : colimit (C := ℜ𝔦𝔫𝔤) ℛ) (m : colimit (C := 𝔄𝔟) ℳ) :
+noncomputable def colimitSMulColimit (r : colimit (C := ℜ𝔦𝔫𝔤) ℛ) (m : colimit (C := 𝔄𝔟) ℳ) :
     colimit (C := 𝔄𝔟) ℳ :=
   (sMulColimit (Concrete.repColimit ℛ r) m)
 
