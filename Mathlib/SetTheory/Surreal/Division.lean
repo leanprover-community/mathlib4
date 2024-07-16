@@ -5,6 +5,7 @@ Authors: Theodore Hwa
 -/
 import Mathlib.SetTheory.Surreal.Multiplication
 import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Surreal division
@@ -257,14 +258,6 @@ lemma eq1 {l r} (L : l → PGame) (R : r → PGame)
     | _ => 1 - x*y'' = (1 - x * y')*(x' - x)*x'_inv := by
   cases i'' <;> simp only [components]
   all_goals
-    ring_nf
-  on_goal 1 => case' _ j i1' => rw [mul_assoc _ (mk (R j) _) (mk (R j).inv' _), inv_r j]
-  on_goal 2 => case' _ j i1 => rw [mul_assoc _ (mk (L j) _) (mk (L j).inv' _), inv_l j]
-  on_goal 3 => case' _ j i1 => rw [mul_assoc _ (mk (L j) _) (mk (L j).inv' _), inv_l j]
-  on_goal 4 => case' _ j i1' => rw [mul_assoc _ (mk (R j) _) (mk (R j).inv' _), inv_r j]
-  all_goals
-    ring_nf
-    rw [sub_eq_add_neg, add_assoc, add_left_cancel_iff]
     simp only [inv', moveLeft_mk, invVal, moveRight_mk]
     rw [mk_mul, mk_add, mk_mul, mk_sub]
     any_goals
@@ -273,27 +266,38 @@ lemma eq1 {l r} (L : l → PGame) (R : r → PGame)
       apply invVal_numeric <;> tauto
     on_goal 2 => exact numeric_one
     simp only [← one_def]
-    ring_nf
-  · conv in _ * mk (R j) _ * _ * mk (R j).inv' _ => {
-      rw [mul_assoc _ (mk (R j) _) _, mul_assoc, mul_comm (mk (R j) _) _, mul_assoc]
-    }
-    rw [inv_r j]
-    simp
-  · conv in _ * mk (L j) _ * _ * mk (L j).inv' _ => {
-      rw [mul_assoc _ (mk (L j) _) _, mul_assoc, mul_comm (mk (L j) _) _, mul_assoc]
-    }
-    rw [inv_l j]
-    simp
-  · conv in _ * mk (L j) _ * _ * mk (L j).inv' _ => {
-      rw [mul_assoc _ (mk (L j) _) _, mul_assoc, mul_comm (mk (L j) _) _, mul_assoc]
-    }
-    rw [inv_l j]
-    simp
-  · conv in _ * mk (R j) _ * _ * mk (R j).inv' _ => {
-      rw [mul_assoc _ (mk (R j) _) _, mul_assoc, mul_comm (mk (R j) _) _, mul_assoc]
-    }
-    rw [inv_r j]
-    simp
+  on_goal 3 =>
+    case _ j _ => exact h3 j j.2
+  on_goal 4 =>
+    case _ j _ => exact h3 j j.2
+  case' left₁ i j =>
+      specialize inv_r i
+      have : IsUnit (Surreal.mk (R i) (by tauto)) := by
+        use ⟨_, _, inv_r, by rw [mul_comm]; exact inv_r⟩
+      lift (Surreal.mk (R i) (by tauto)) to Surrealˣ using id this with s
+      have : mk (R i).inv' (by tauto) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_r)
+  case' left₂ i j =>
+      specialize inv_l i
+      have : IsUnit (Surreal.mk (L i) (by tauto)) := by
+        use ⟨_, _, inv_l, by rw [mul_comm]; exact inv_l⟩
+      lift (Surreal.mk (L i) (by tauto)) to Surrealˣ using id this with s
+      have : mk (L i).inv' (h3 i i.2) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_l)
+  case' right₁ i j =>
+      specialize inv_l i
+      have : IsUnit (Surreal.mk (L i) (by tauto)) := by
+        use ⟨_, _, inv_l, by rw [mul_comm]; exact inv_l⟩
+      lift (Surreal.mk (L i) (by tauto)) to Surrealˣ using id this with s
+      have : mk (L i).inv' (h3 i i.2) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_l)
+  case' right₂ i j =>
+      specialize inv_r i
+      have : IsUnit (Surreal.mk (R i) (by tauto)) := by
+        use ⟨_, _, inv_r, by rw [mul_comm]; exact inv_r⟩
+      lift (Surreal.mk (R i) (by tauto)) to Surrealˣ using id this with s
+      have : mk (R i).inv' (by tauto) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_r)
+  all_goals
+    rw [this]
+    field_simp
+    ring
 
 lemma onag_1_10_i' {l r} (L : l → PGame) (R : r → PGame)
     (h1 : ∀ i, (L i).Numeric) (h2 : ∀ j, (R j).Numeric) (h3 : ∀ i, 0 < (L i) → (L i).inv'.Numeric)
@@ -394,18 +398,17 @@ lemma eq2 {l r} (L : l → PGame) (R : r → PGame)
   all_goals
     simp only [invVal]
     rw [mk_mul, mk_add, mk_mul, mk_sub]
-  any_goals
-    tauto
-  any_goals
-    apply invVal_numeric <;> tauto
-  any_goals
-    exact numeric_one
+    any_goals
+      tauto
+    on_goal 2 =>
+      apply invVal_numeric <;> tauto
+    on_goal 2 => exact numeric_one
+    simp only [← one_def]
   on_goal 3 =>
     case _ j _ => exact h3 j j.2
   on_goal 4 =>
     case _ j _ => exact h3 j j.2
   all_goals
-    simp only [← one_def]
     ring_nf
     first | simp only [inv_r] | simp only [inv_l]
   · case _ j i1 =>
