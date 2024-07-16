@@ -87,9 +87,7 @@ lemma Dvd.dvd.even (hab : a ∣ b) (ha : Even a) : Even b := ha.trans_dvd hab
   simp [eq_comm, two_mul, Even]
 #align range_two_mul range_two_mul
 
-set_option linter.deprecated false in
-@[simp] lemma even_bit0 (a : α) : Even (bit0 a) := ⟨a, rfl⟩
-#align even_bit0 even_bit0
+#noalign even_bit0
 
 @[simp] lemma even_two : Even (2 : α) := ⟨1, by rw [one_add_one_eq_two]⟩
 #align even_two even_two
@@ -112,15 +110,13 @@ def Odd (a : α) : Prop := ∃ k, a = 2 * k + 1
 #align odd Odd
 
 set_option linter.deprecated false in
-lemma odd_iff_exists_bit1 : Odd a ↔ ∃ b, a = bit1 b := exists_congr fun b ↦ by rw [two_mul]; rfl
+lemma odd_iff_exists_bit1 : Odd a ↔ ∃ b, a = 2 * b + 1 := exists_congr fun b ↦ by rw [two_mul]
 #align odd_iff_exists_bit1 odd_iff_exists_bit1
 
 alias ⟨Odd.exists_bit1, _⟩ := odd_iff_exists_bit1
 #align odd.exists_bit1 Odd.exists_bit1
 
-set_option linter.deprecated false in
-@[simp] lemma odd_bit1 (a : α) : Odd (bit1 a) := odd_iff_exists_bit1.2 ⟨a, rfl⟩
-#align odd_bit1 odd_bit1
+#noalign odd_bit1
 
 @[simp] lemma range_two_mul_add_one (α : Type*) [Semiring α] :
     Set.range (fun x : α ↦ 2 * x + 1) = {a | Odd a} := by ext x; simp [Odd, eq_comm]
@@ -306,7 +302,7 @@ lemma even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by
 #align nat.even_add' Nat.even_add'
 
 set_option linter.deprecated false in
-@[simp] lemma not_even_bit1 (n : ℕ) : ¬Even (bit1 n) := by simp [bit1, parity_simps]
+@[simp] lemma not_even_bit1 (n : ℕ) : ¬Even (2 * n + 1) := by simp [parity_simps]
 #align nat.not_even_bit1 Nat.not_even_bit1
 
 lemma not_even_two_mul_add_one (n : ℕ) : ¬ Even (2 * n + 1) :=
@@ -376,41 +372,14 @@ lemma one_add_div_two_mul_two_of_odd (h : Odd n) : 1 + n / 2 * 2 = n := by
   rw [← odd_iff.mp h, mod_add_div']
 #align nat.one_add_div_two_mul_two_of_odd Nat.one_add_div_two_mul_two_of_odd
 
-set_option linter.deprecated false in
 section
 
-lemma bit0_div_two : bit0 n / 2 = n := Nat.bit0_inj $ by
-  rw [bit0_eq_two_mul, two_mul_div_two_of_even (even_bit0 n)]
-#align nat.bit0_div_two Nat.bit0_div_two
-
-lemma bit1_div_two : bit1 n / 2 = n := Nat.bit1_inj $ by
-  rw [bit1, bit0_eq_two_mul, Nat.two_mul_div_two_add_one_of_odd (odd_bit1 n)]
-#align nat.bit1_div_two Nat.bit1_div_two
-
-@[simp]
-lemma bit0_div_bit0 : bit0 n / bit0 m = n / m := by
-  rw [bit0_eq_two_mul m, ← Nat.div_div_eq_div_mul, bit0_div_two]
-#align nat.bit0_div_bit0 Nat.bit0_div_bit0
-
-@[simp]
-lemma bit1_div_bit0 : bit1 n / bit0 m = n / m := by
-  rw [bit0_eq_two_mul, ← Nat.div_div_eq_div_mul, bit1_div_two]
-#align nat.bit1_div_bit0 Nat.bit1_div_bit0
-
-@[simp]
-lemma bit0_mod_bit0 : bit0 n % bit0 m = bit0 (n % m) := by
-  rw [bit0_eq_two_mul n, bit0_eq_two_mul m, bit0_eq_two_mul (n % m), Nat.mul_mod_mul_left]
-#align nat.bit0_mod_bit0 Nat.bit0_mod_bit0
-
-@[simp]
-lemma bit1_mod_bit0 : bit1 n % bit0 m = bit1 (n % m) := by
-  have h₁ := congr_arg bit1 (Nat.div_add_mod n m)
-  -- `∀ m n : ℕ, bit0 m * n = bit0 (m * n)` seems to be missing...
-  rw [bit1_add, bit0_eq_two_mul, ← mul_assoc, ← bit0_eq_two_mul] at h₁
-  have h₂ := Nat.div_add_mod (bit1 n) (bit0 m)
-  rw [bit1_div_bit0] at h₂
-  exact Nat.add_left_cancel (h₂.trans h₁.symm)
-#align nat.bit1_mod_bit0 Nat.bit1_mod_bit0
+#noalign nat.bit0_div_two
+#noalign nat.bit1_div_two
+#noalign nat.bit0_div_bit0
+#noalign nat.bit1_div_bit0
+#noalign nat.bit0_mod_bit0
+#noalign nat.bit1_mod_bit0
 
 end
 
@@ -434,12 +403,12 @@ variable {α : Type*} {f : α → α} {n : ℕ}
 set_option linter.deprecated false in
 section
 
-lemma iterate_bit0 (hf : Involutive f) (n : ℕ) : f^[bit0 n] = id := by
-  rw [bit0, ← two_mul, iterate_mul, involutive_iff_iter_2_eq_id.1 hf, iterate_id]
+lemma iterate_bit0 (hf : Involutive f) (n : ℕ) : f^[2 * n] = id := by
+  rw [iterate_mul, involutive_iff_iter_2_eq_id.1 hf, iterate_id]
 #align function.involutive.iterate_bit0 Function.Involutive.iterate_bit0
 
-lemma iterate_bit1 (hf : Involutive f) (n : ℕ) : f^[bit1 n] = f := by
-  rw [bit1, ← succ_eq_add_one, iterate_succ, hf.iterate_bit0, id_comp]
+lemma iterate_bit1 (hf : Involutive f) (n : ℕ) : f^[2 * n + 1] = f := by
+  rw [← succ_eq_add_one, iterate_succ, hf.iterate_bit0, id_comp]
 #align function.involutive.iterate_bit1 Function.Involutive.iterate_bit1
 
 end

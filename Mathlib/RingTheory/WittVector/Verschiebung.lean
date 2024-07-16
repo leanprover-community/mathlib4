@@ -41,7 +41,7 @@ def verschiebungFun (x : 𝕎 R) : 𝕎 R :=
 
 theorem verschiebungFun_coeff (x : 𝕎 R) (n : ℕ) :
     (verschiebungFun x).coeff n = if n = 0 then 0 else x.coeff (n - 1) := by
-  simp only [verschiebungFun, ge_iff_le]
+  simp only [verschiebungFun]
 #align witt_vector.verschiebung_fun_coeff WittVector.verschiebungFun_coeff
 
 theorem verschiebungFun_coeff_zero (x : 𝕎 R) : (verschiebungFun x).coeff 0 = 0 := by
@@ -86,7 +86,7 @@ theorem verschiebungPoly_zero : verschiebungPoly 0 = 0 :=
 theorem aeval_verschiebung_poly' (x : 𝕎 R) (n : ℕ) :
     aeval x.coeff (verschiebungPoly n) = (verschiebungFun x).coeff n := by
   cases' n with n
-  · simp only [verschiebungPoly, Nat.zero_eq, ge_iff_le, tsub_eq_zero_of_le, ite_true, map_zero,
+  · simp only [verschiebungPoly, Nat.zero_eq, tsub_eq_zero_of_le, ite_true, map_zero,
     verschiebungFun_coeff_zero]
   · rw [verschiebungPoly, verschiebungFun_coeff_succ, if_neg n.succ_ne_zero, aeval_X,
       add_tsub_cancel_right]

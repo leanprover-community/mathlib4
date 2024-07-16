@@ -146,7 +146,7 @@ def inf {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A where
   map k :=
     { app := fun g => by
         apply homMk _ _
-        · apply pullback.lift pullback.fst (pullback.snd ≫ k.left) _
+        · apply pullback.lift (pullback.fst _ _) (pullback.snd _ _ ≫ k.left) _
           rw [pullback.condition, assoc, w k]
         dsimp
         rw [pullback.lift_snd_assoc, assoc, w k] }

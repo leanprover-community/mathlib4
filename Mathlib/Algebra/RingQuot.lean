@@ -438,7 +438,7 @@ theorem ringQuot_ext [Semiring T] {r : R → R → Prop} (f g : RingQuot r →+*
 
 variable [Semiring T]
 
-irreducible_def preLift {r : R → R → Prop} { f : R →+* T } (h : ∀ ⦃x y⦄, r x y → f x = f y) :
+irreducible_def preLift {r : R → R → Prop} {f : R →+* T} (h : ∀ ⦃x y⦄, r x y → f x = f y) :
   RingQuot r →+* T :=
   { toFun := fun x ↦ Quot.lift f
         (by
@@ -603,7 +603,7 @@ theorem ringQuot_ext' {s : A → A → Prop} (f g : RingQuot s →ₐ[S] B)
   exact AlgHom.congr_fun w x
 #align ring_quot.ring_quot_ext' RingQuot.ringQuot_ext'
 
-irreducible_def preLiftAlgHom {s : A → A → Prop} { f : A →ₐ[S] B }
+irreducible_def preLiftAlgHom {s : A → A → Prop} {f : A →ₐ[S] B}
   (h : ∀ ⦃x y⦄, s x y → f x = f y) : RingQuot s →ₐ[S] B :=
 { toFun := fun x ↦ Quot.lift f
             (by
@@ -614,14 +614,14 @@ irreducible_def preLiftAlgHom {s : A → A → Prop} { f : A →ₐ[S] B }
               | mul_left _ r' => simp only [map_mul, r']
               | mul_right _ r' => simp only [map_mul, r'])
             x.toQuot
-  map_zero' := by simp only [← zero_quot, f.map_zero]
+  map_zero' := by simp only [← zero_quot, map_zero]
   map_add' := by
     rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
-    simp only [add_quot, f.map_add x y]
-  map_one' := by simp only [← one_quot, f.map_one]
+    simp only [add_quot, map_add _ x y]
+  map_one' := by simp only [← one_quot, map_one]
   map_mul' := by
     rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
-    simp only [mul_quot, f.map_mul x y]
+    simp only [mul_quot, map_mul _ x y]
   commutes' := by
     rintro x
     simp [← one_quot, smul_quot, Algebra.algebraMap_eq_smul_one] }

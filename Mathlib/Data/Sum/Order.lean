@@ -781,7 +781,7 @@ namespace WithTop
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
   ⟨(Equiv.optionEquivSumPUnit α).trans toLex, @fun a b => by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
-      ge_iff_le, Lex.toLex_le_toLex, le_refl, lex_inr_inr, le_top]
+      Lex.toLex_le_toLex, le_refl, lex_inr_inr, le_top]
     cases' a <;> cases' b
     · simp only [lex_inr_inr, le_top]
     · simp only [lex_inr_inl, false_iff]

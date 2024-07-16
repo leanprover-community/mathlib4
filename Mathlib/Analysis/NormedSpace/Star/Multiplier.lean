@@ -673,7 +673,7 @@ variable [NonUnitalNormedRing A] [StarRing A] [CstarRing A]
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] [StarModule 𝕜 A]
 
 instance instCstarRing : CstarRing 𝓜(𝕜, A) where
-  norm_star_mul_self := @fun (a : 𝓜(𝕜, A)) => congr_arg ((↑) : ℝ≥0 → ℝ) <|
+  norm_mul_self_le := fun (a : 𝓜(𝕜, A)) => le_of_eq <| Eq.symm <| congr_arg ((↑) : ℝ≥0 → ℝ) <|
     show ‖star a * a‖₊ = ‖a‖₊ * ‖a‖₊ by
     /- The essence of the argument is this: let `a = (L,R)` and recall `‖a‖ = ‖L‖`.
     `star a = (star ∘ R ∘ star, star ∘ L ∘ star)`. Then for any `x y : A`, we have
