@@ -3,6 +3,7 @@ Copyright (c) 2021 Vladimir Goryachev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Scott Morrison, Eric Rodriguez
 -/
+import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Count
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Set.Monotone
@@ -23,10 +24,10 @@ and provides lemmas that deal with this function and its connection to `Nat.coun
 
 ## Main results
 
-* `Nat.nth_eq_orderEmbOfFin`: For a fintely-often true `p`, gives the cardinality of the set of
+* `Nat.nth_eq_orderEmbOfFin`: For a finitely-often true `p`, gives the cardinality of the set of
   numbers satisfying `p` above particular values of `nth p`
 * `Nat.gc_count_nth`: Establishes a Galois connection between `Nat.nth p` and `Nat.count p`.
-* `Nat.nth_eq_orderIsoOfNat`: For an infinitely-ofter true predicate, `nth` agrees with the
+* `Nat.nth_eq_orderIsoOfNat`: For an infinitely-often true predicate, `nth` agrees with the
   order-isomorphism of the subtype to the natural numbers.
 
 There has been some discussion on the subject of whether both of `nth` and
@@ -105,7 +106,7 @@ theorem nth_injOn (hf : (setOf p).Finite) : (Set.Iio hf.toFinset.card).InjOn (nt
 #align nat.nth_inj_on Nat.nth_injOn
 
 theorem range_nth_of_finite (hf : (setOf p).Finite) : Set.range (nth p) = insert 0 (setOf p) := by
-  simpa only [← nth_eq_getD_sort hf, mem_sort, Set.Finite.mem_toFinset]
+  simpa only [← List.getD_eq_getElem?, ← nth_eq_getD_sort hf, mem_sort, Set.Finite.mem_toFinset]
     using Set.range_list_getD (hf.toFinset.sort (· ≤ ·)) 0
 #align nat.range_nth_of_finite Nat.range_nth_of_finite
 

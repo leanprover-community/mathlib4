@@ -146,7 +146,7 @@ def coconeOfCoconeUncurry {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj 
                   dsimp; simp only [Category.comp_id]
                   conv_lhs =>
                     arg 1; equals (F.map (𝟙 _)).app _ ≫  (F.obj j).map f =>
-                      simp;
+                      simp
                   conv_lhs => arg 1; rw [← uncurry_obj_map F ((𝟙 j,f) : (j,k) ⟶ (j,k'))]
                   rw [c.w] } }
       naturality := fun j j' f =>

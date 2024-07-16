@@ -204,11 +204,7 @@ theorem essInf_antitone_measure {f : α → β} (hμν : μ ≪ ν) : essInf f �
 
 theorem essSup_smul_measure {f : α → β} {c : ℝ≥0∞} (hc : c ≠ 0) :
     essSup f (c • μ) = essSup f μ := by
-  simp_rw [essSup]
-  suffices h_smul : ae (c • μ) = ae μ by rw [h_smul]
-  ext1
-  simp_rw [mem_ae_iff]
-  simp [hc]
+  simp_rw [essSup, Measure.ae_smul_measure_eq hc]
 #align ess_sup_smul_measure essSup_smul_measure
 
 section TopologicalSpace
@@ -303,5 +299,29 @@ theorem coe_essSup {f : α → ℝ≥0} (hf : IsBoundedUnder (· ≤ ·) (ae μ)
     eq_of_forall_le_iff fun r => by
       simp [essSup, limsup, limsSup, eventually_map, ENNReal.forall_ennreal]; rfl
 #align ennreal.coe_ess_sup ENNReal.coe_essSup
+
+lemma essSup_restrict_eq_of_support_subset {s : Set α} {f : α → ℝ≥0∞} (hsf : f.support ⊆ s) :
+    essSup f (μ.restrict s) = essSup f μ := by
+  apply le_antisymm (essSup_mono_measure' Measure.restrict_le_self)
+  apply le_of_forall_lt (fun c hc ↦ ?_)
+  obtain ⟨d, cd, hd⟩ : ∃ d, c < d ∧ d < essSup f μ := exists_between hc
+  let t := {x | d < f x}
+  have A : 0 < (μ.restrict t) t := by
+    simp only [Measure.restrict_apply_self]
+    rw [essSup_eq_sInf] at hd
+    have : d ∉ {a | μ {x | a < f x} = 0} := not_mem_of_lt_csInf hd (OrderBot.bddBelow _)
+    exact bot_lt_iff_ne_bot.2 this
+  have B : 0 < (μ.restrict s) t := by
+    have : μ.restrict t ≤ μ.restrict s := by
+      apply Measure.restrict_mono _ le_rfl
+      apply subset_trans _ hsf
+      intro x (hx : d < f x)
+      exact (lt_of_le_of_lt bot_le hx).ne'
+    exact lt_of_lt_of_le A (this _)
+  apply cd.trans_le
+  rw [essSup_eq_sInf]
+  apply le_sInf (fun b hb ↦ ?_)
+  contrapose! hb
+  exact ne_of_gt (B.trans_le (measure_mono (fun x hx ↦ hb.trans hx)))
 
 end ENNReal

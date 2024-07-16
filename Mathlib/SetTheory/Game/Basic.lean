@@ -520,7 +520,7 @@ theorem quot_mul_neg (x y : PGame) : ⟦x * -y⟧ = (-⟦x * y⟧ : Game) :=
   Quot.sound (mulNegRelabelling x y).equiv
 #align pgame.quot_mul_neg SetTheory.PGame.quot_mul_neg
 
-theorem quot_neg_mul_neg (x y : PGame) : ⟦-x * -y⟧ = (⟦x * y⟧: Game) := by simp
+theorem quot_neg_mul_neg (x y : PGame) : ⟦-x * -y⟧ = (⟦x * y⟧ : Game) := by simp
 
 @[simp]
 theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * y⟧ + ⟦x * z⟧ :=
@@ -847,20 +847,20 @@ theorem mul_assoc_equiv (x y z : PGame) : x * y * z ≈ x * (y * z) :=
 #align pgame.mul_assoc_equiv SetTheory.PGame.mul_assoc_equiv
 
 /-- The left options of `x * y` of the first kind, i.e. of the form `xL * y + x * yL - xL * yL`. -/
-def mulOption (x y : PGame) (i: LeftMoves x) (j: LeftMoves y) : PGame :=
-    x.moveLeft i * y + x * y.moveLeft j - x.moveLeft i * y.moveLeft j
+def mulOption (x y : PGame) (i : LeftMoves x) (j : LeftMoves y) : PGame :=
+  x.moveLeft i * y + x * y.moveLeft j - x.moveLeft i * y.moveLeft j
 
 /-- Any left option of `x * y` of the first kind is also a left option of `x * -(-y)` of
   the first kind. -/
 lemma mulOption_neg_neg {x} (y) {i j} :
-    mulOption x y i j = mulOption x (-(-y)) i (toLeftMovesNeg $ toRightMovesNeg j) := by
+    mulOption x y i j = mulOption x (-(-y)) i (toLeftMovesNeg <| toRightMovesNeg j) := by
   dsimp only [mulOption]
   congr 2
   rw [neg_neg]
   iterate 2 rw [moveLeft_neg, moveRight_neg, neg_neg]
 
 /-- The left options of `x * y` agree with that of `y * x` up to equivalence. -/
-lemma mulOption_symm (x y) {i j} : ⟦mulOption x y i j⟧ = (⟦mulOption y x j i⟧: Game) := by
+lemma mulOption_symm (x y) {i j} : ⟦mulOption x y i j⟧ = (⟦mulOption y x j i⟧ : Game) := by
   dsimp only [mulOption, quot_sub, quot_add]
   rw [add_comm]
   congr 1
@@ -940,18 +940,18 @@ instance uniqueInvTy (l r : Type u) [IsEmpty l] [IsEmpty r] : Unique (InvTy l r 
 /-- Because the two halves of the definition of `inv` produce more elements
 of each side, we have to define the two families inductively.
 This is the function part, defined by recursion on `InvTy`. -/
-def invVal {l r} (L : l → PGame) (R : r → PGame) (IHl : l → PGame) (IHr : r → PGame) :
-    ∀ {b}, InvTy l r b → PGame
+def invVal {l r} (L : l → PGame) (R : r → PGame) (IHl : l → PGame) (IHr : r → PGame)
+    (x : PGame) : ∀ {b}, InvTy l r b → PGame
   | _, InvTy.zero => 0
-  | _, InvTy.left₁ i j => (1 + (R i - mk l r L R) * invVal L R IHl IHr j) * IHr i
-  | _, InvTy.left₂ i j => (1 + (L i - mk l r L R) * invVal L R IHl IHr j) * IHl i
-  | _, InvTy.right₁ i j => (1 + (L i - mk l r L R) * invVal L R IHl IHr j) * IHl i
-  | _, InvTy.right₂ i j => (1 + (R i - mk l r L R) * invVal L R IHl IHr j) * IHr i
+  | _, InvTy.left₁ i j => (1 + (R i - x) * invVal L R IHl IHr x j) * IHr i
+  | _, InvTy.left₂ i j => (1 + (L i - x) * invVal L R IHl IHr x j) * IHl i
+  | _, InvTy.right₁ i j => (1 + (L i - x) * invVal L R IHl IHr x j) * IHl i
+  | _, InvTy.right₂ i j => (1 + (R i - x) * invVal L R IHl IHr x j) * IHr i
 #align pgame.inv_val SetTheory.PGame.invVal
 
 @[simp]
-theorem invVal_isEmpty {l r : Type u} {b} (L R IHl IHr) (i : InvTy l r b) [IsEmpty l] [IsEmpty r] :
-    invVal L R IHl IHr i = 0 := by
+theorem invVal_isEmpty {l r : Type u} {b} (L R IHl IHr) (i : InvTy l r b) (x) [IsEmpty l]
+    [IsEmpty r] : invVal L R IHl IHr x i = 0 := by
   cases' i with a _ a _ a _ a
   · rfl
   all_goals exact isEmptyElim a
@@ -964,12 +964,13 @@ given by `x⁻¹ = {0,
 Because the two halves `x⁻¹L, x⁻¹R` of `x⁻¹` are used in their own
 definition, the sets and elements are inductively generated. -/
 def inv' : PGame → PGame
-  | ⟨_, r, L, R⟩ =>
+  | ⟨l, r, L, R⟩ =>
     let l' := { i // 0 < L i }
     let L' : l' → PGame := fun i => L i.1
     let IHl' : l' → PGame := fun i => inv' (L i.1)
     let IHr i := inv' (R i)
-    ⟨InvTy l' r false, InvTy l' r true, invVal L' R IHl' IHr, invVal L' R IHl' IHr⟩
+    let x := mk l r L R
+    ⟨InvTy l' r false, InvTy l' r true, invVal L' R IHl' IHr x, invVal L' R IHl' IHr x⟩
 #align pgame.inv' SetTheory.PGame.inv'
 
 theorem zero_lf_inv' : ∀ x : PGame, 0 ⧏ inv' x
@@ -1046,3 +1047,5 @@ theorem inv_one_equiv : (1⁻¹ : PGame) ≈ 1 :=
 #align pgame.inv_one_equiv SetTheory.PGame.inv_one_equiv
 
 end PGame
+
+end SetTheory

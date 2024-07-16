@@ -20,7 +20,7 @@ In this file we define `∫ x in a..b, f x ∂μ` to be `∫ x in Ioc a b, f x �
 ### Avoiding `if`, `min`, and `max`
 
 In order to avoid `if`s in the definition, we define `IntervalIntegrable f μ a b` as
-`integrable_on f (Ioc a b) μ ∧ integrable_on f (Ioc b a) μ`. For any `a`, `b` one of these
+`IntegrableOn f (Ioc a b) μ ∧ IntegrableOn f (Ioc b a) μ`. For any `a`, `b` one of these
 intervals is empty and the other coincides with `Set.uIoc a b = Set.Ioc (min a b) (max a b)`.
 
 Similarly, we define `∫ x in a..b, f x ∂μ` to be `∫ x in Ioc a b, f x ∂μ - ∫ x in Ioc b a, f x ∂μ`.
@@ -505,7 +505,7 @@ theorem intervalIntegral_eq_integral_uIoc (f : ℝ → E) (a b : ℝ) (μ : Meas
     ∫ x in a..b, f x ∂μ = (if a ≤ b then 1 else -1 : ℝ) • ∫ x in Ι a b, f x ∂μ := by
   split_ifs with h
   · simp only [integral_of_le h, uIoc_of_le h, one_smul]
-  · simp only [integral_of_ge (not_le.1 h).le, uIoc_of_lt (not_le.1 h), neg_one_smul]
+  · simp only [integral_of_ge (not_le.1 h).le, uIoc_of_ge (not_le.1 h).le, neg_one_smul]
 #align interval_integral.interval_integral_eq_integral_uIoc intervalIntegral.intervalIntegral_eq_integral_uIoc
 
 theorem norm_intervalIntegral_eq (f : ℝ → E) (a b : ℝ) (μ : Measure ℝ) :
@@ -1234,8 +1234,9 @@ theorem _root_.MeasureTheory.Integrable.hasSum_intervalIntegral (hfi : Integrabl
 #align measure_theory.integrable.has_sum_interval_integral MeasureTheory.Integrable.hasSum_intervalIntegral
 
 theorem _root_.MeasureTheory.Integrable.hasSum_intervalIntegral_comp_add_int (hfi : Integrable f) :
-    HasSum (fun n : ℤ => ∫ x in (0:ℝ)..(1:ℝ), f (x + n)) (∫ x, f x) := by
-  simpa only [integral_comp_add_right, zero_add, add_comm (1:ℝ)] using hfi.hasSum_intervalIntegral 0
+    HasSum (fun n : ℤ => ∫ x in (0 : ℝ)..(1 : ℝ), f (x + n)) (∫ x, f x) := by
+  simpa only [integral_comp_add_right, zero_add, add_comm (1 : ℝ)] using
+    hfi.hasSum_intervalIntegral 0
 #align measure_theory.integrable.has_sum_interval_integral_comp_add_int MeasureTheory.Integrable.hasSum_intervalIntegral_comp_add_int
 
 end HasSum

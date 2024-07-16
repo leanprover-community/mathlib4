@@ -3,6 +3,7 @@ Copyright (c) 2023 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Yaël Dillies
 -/
+import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Algebra.GroupWithZero.Divisibility
@@ -152,7 +153,7 @@ lemma dvd_c_of_prime_of_dvd_a_of_dvd_b_of_FLT {n : ℕ} {p : ℤ} (hp : Prime p)
   rw [add_eq_zero_iff_eq_neg] at HF
   exact HF.symm ▸ dvd_add (dvd_pow hpa hn) (dvd_pow hpb hn)
 
-lemma isCoprime_of_gcd_eq_one_of_FLT {n : ℕ} {a b c : ℤ} (Hgcd: Finset.gcd {a, b, c} id = 1)
+lemma isCoprime_of_gcd_eq_one_of_FLT {n : ℕ} {a b c : ℤ} (Hgcd : Finset.gcd {a, b, c} id = 1)
     (HF : a ^ n + b ^ n + c ^ n = 0) : IsCoprime a b := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [pow_zero, Int.reduceAdd, OfNat.ofNat_ne_zero] at HF
