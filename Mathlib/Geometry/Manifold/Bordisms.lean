@@ -12,6 +12,7 @@ import Mathlib.Geometry.Manifold.InteriorBoundary
 # Unoriented bordism theory
 
 In this file, we sketch the beginnings of unoriented bordism theory.
+Some pieces can already go in mathlib already.
 This is not ready for mathlib yet (as we still need the instance that the boundary
 of a manifold is a manifold again, might might need some hypotheses to be true).
 -/
@@ -22,7 +23,7 @@ Missing API for this to work nicely:
   the boundary is a manifold, and the inclusion is smooth (perhaps with demanding "dimension one less")
   The current definition of boundary and corners will not satisfy this, but many nice manifolds
   will. Prove that boundaryless manifolds are of this form, or so.
-- add disjoint union of top. spaces and induced maps: mathlib has this in abstract nonsense form
+- add disjoint union of top. spaces and induced maps: mathlib has this
 - define the disjoint union of smooth manifolds, and the associated maps: show they are smooth
 (perhaps prove as abstract nonsense? will see!)
 
@@ -176,6 +177,43 @@ lemma map_comp (s : SingularNManifold X n M I)
     ((s.map hφ).map hψ).f = (s.map (hψ.comp hφ)).f := rfl
 
 end SingularNManifold
+
+section HasNiceBoundary
+
+/-- We say a smooth manifold `M` *has nice boundary* if its boundary (as a subspace)
+is a smooth manifold such that the inclusion is smooth.
+`NiceBoundaryData` gathers all data included in such a choice: a charted space structure
+on the boundary, a model with corners and a manifold atlas. -/
+structure NiceBoundaryData (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+    (I : ModelWithCorners ℝ E H) [SmoothManifoldWithCorners I M] where
+  E' : Type*
+  [normedGroup : NormedAddCommGroup E']
+  [normedSpace : NormedSpace ℝ E']
+  H' : Type*
+  [topH : TopologicalSpace H']
+  charts : ChartedSpace H' (I.boundary M)
+  J : ModelWithCorners ℝ E' H'
+  [mfd : SmoothManifoldWithCorners J (I.boundary M)]
+
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
+
+/-- `HasNiceBoundary M I J` means the boundary of the manifold `M` modelled on `I`
+has a charted space structure and model (included in `s`) which makes it a smooth manifold,
+such that the inclusion `∂M → M` is smooth. -/
+class HasNiceBoundary (s : NiceBoundaryData M I) where
+-- TODO: this errors! do I need to include additional compatibility conditions?
+-- can I encode the above better?
+-- synthesized type class instance is not definitionally equal to expression inferred by typing rules, synthesized
+--   this
+-- inferred
+--   s.normedGroup
+  -- smoothInclusion :
+  --   haveI := s.normedGroup;
+  --   haveI c := s.charts;
+  --   ContMDiff s.J I ∞ ((fun ⟨x, _⟩ ↦ x) : (I.boundary M) → M)
+
+end HasNiceBoundary
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
