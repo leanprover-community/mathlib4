@@ -6,6 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad
 import Batteries.Data.Nat.Lemmas
 import Batteries.Logic
 import Batteries.WF
+import Mathlib.Data.Nat.Notation
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Util.AssertExists
 
