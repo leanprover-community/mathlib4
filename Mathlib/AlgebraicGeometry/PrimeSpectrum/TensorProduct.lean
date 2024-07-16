@@ -40,7 +40,7 @@ lemma PrimeSpectrum.embedding_tensorProductTo_of_surjectiveOnStalks_aux
   let g : T →+* S ⊗[R] T := Algebra.TensorProduct.includeRight.toRingHom
   intros x hxp₁
   by_contra hxp₂
-  obtain ⟨t, r, a, ht, e⟩ := RingHom.exists_mul_eq_tmul_of_surjectiveOnStalks hRT x
+  obtain ⟨t, r, a, ht, e⟩ := hRT.exists_mul_eq_tmul x
     (p₂.asIdeal.comap g) inferInstance
   have h₁ : a ⊗ₜ[R] t ∈ p₁.asIdeal := e ▸ p₁.asIdeal.mul_mem_left (1 ⊗ₜ[R] (r • t)) hxp₁
   have h₂ : a ⊗ₜ[R] t ∉ p₂.asIdeal := e ▸ p₂.asIdeal.primeCompl.mul_mem ht hxp₂
