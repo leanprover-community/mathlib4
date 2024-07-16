@@ -479,22 +479,6 @@ theorem eventually_nhdsWithin_of_eventually_nhds {α : Type*} [TopologicalSpace 
   mem_nhdsWithin_of_mem_nhds h
 #align eventually_nhds_within_of_eventually_nhds eventually_nhdsWithin_of_eventually_nhds
 
-lemma map_nhdsWithin_le_nhdsWithin_apply {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-    {x : α} {S : Set β}
-    {f : α → β} (hf1 : Continuous f) : map f (𝓝[f ⁻¹' S] x) ≤ 𝓝[S] f x := by
-  rw [Filter.le_def]
-  intro U hu
-  rw [mem_nhdsWithin] at hu
-  obtain ⟨u, hu1, hu2, hu3⟩ := hu
-  simp only [mem_map, mem_nhdsWithin]
-  use f ⁻¹' u
-  simp only [hu1, IsOpen.preimage hf1, Set.mem_preimage, hu2, true_and]
-  intro x
-  simp only [Set.mem_inter_iff, Set.mem_preimage, and_imp] at hu3 ⊢
-  intros
-  apply hu3
-  simp [*]
-
 /-!
 ### `nhdsWithin` and subtypes
 -/
