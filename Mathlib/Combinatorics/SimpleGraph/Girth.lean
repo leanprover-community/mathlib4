@@ -71,11 +71,11 @@ acyclic.
 noncomputable def girth (G : SimpleGraph α) : ℕ :=
   G.egirth.toNat
 
-@[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = 0 := by
-  simp [girth]
-
 lemma three_le_girth (hG : ¬ G.IsAcyclic) : 3 ≤ G.girth :=
   ENat.toNat_le_toNat three_le_egirth <| egirth_eq_top.not.mpr hG
+
+@[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = 0 := by
+  simp [girth]
 
 end girth
 
