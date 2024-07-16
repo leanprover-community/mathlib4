@@ -93,7 +93,6 @@ def sℕ : Q(CommSemiring ℕ) := q(instCommSemiringNat)
 
 -- In this file, we would like to use multi-character auto-implicits.
 set_option relaxedAutoImplicit true
-
 set_option autoImplicit true
 
 mutual
@@ -210,6 +209,7 @@ partial def ExSum.cast : ExSum sα a → Σ a, ExSum sβ a
 end
 
 set_option autoImplicit false
+set_option relaxedAutoImplicit false
 
 variable {u : Lean.Level}
 
@@ -428,12 +428,11 @@ partial def evalMulProd (va : ExProd sα a) (vb : ExProd sα b) : Result (ExProd
 
 theorem mul_zero (a : R) : a * 0 = 0 := by simp
 
-set_option autoImplicit true in
 --variable {a a₁ a₂ a₃ b b₁ b₂ b₃ c : R} in
-theorem mul_add (_ : (a : R) * b₁ = c₁) (_ : a * b₂ = c₂) (_ : c₁ + 0 + c₂ = d) :
+theorem mul_add {a b₁ c₁ b₂ c₂ d : R} (_ : (a : R) * b₁ = c₁) (_ : a * b₂ = c₂) (_ : c₁ + 0 + c₂ = d) :
     a * (b₁ + b₂) = d := by subst_vars; simp [_root_.mul_add]
 
-set_option autoImplicit true in
+set_option autoImplicit true in -- TODO!
 /-- Multiplies a monomial `va` to a polynomial `vb` to get a normalized result polynomial.
 
 * `a * 0 = 0`
@@ -450,11 +449,10 @@ def evalMul₁ (va : ExProd sα a) (vb : ExSum sα b) : Result (ExSum sα) q($a 
 
 theorem zero_mul (b : R) : 0 * b = 0 := by simp
 
-set_option autoImplicit true in
-theorem add_mul (_ : (a₁ : R) * b = c₁) (_ : a₂ * b = c₂) (_ : c₁ + c₂ = d) :
+theorem add_mul {a₁ b c₁ a₂ c₂ d : R} (_ : (a₁ : R) * b = c₁) (_ : a₂ * b = c₂) (_ : c₁ + c₂ = d) :
     (a₁ + a₂) * b = d := by subst_vars; simp [_root_.add_mul]
 
-set_option autoImplicit true in
+set_option autoImplicit true in -- TODO!
 /-- Multiplies two polynomials `va, vb` together to get a normalized result polynomial.
 
 * `0 * b = 0`
@@ -471,14 +469,12 @@ def evalMul (va : ExSum sα a) (vb : ExSum sα b) : Result (ExSum sα) q($a * $b
 
 theorem natCast_nat (n) : ((Nat.rawCast n : ℕ) : R) = Nat.rawCast n := by simp
 
-set_option autoImplicit true in
-theorem natCast_mul (a₂) (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₃ : ℕ) : R) = b₃) :
+theorem natCast_mul {a₁ a₃ : ℕ} {b₁ b₃ : R} (a₂) (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₃ : ℕ) : R) = b₃) :
     ((a₁ ^ a₂ * a₃ : ℕ) : R) = b₁ ^ a₂ * b₃ := by subst_vars; simp
 
 theorem natCast_zero : ((0 : ℕ) : R) = 0 := Nat.cast_zero
 
-set_option autoImplicit true in
-theorem natCast_add (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b₂) :
+theorem natCast_add {a₁ a₂ : ℕ} {b₁ b₂ : R} (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b₂) :
     ((a₁ + a₂ : ℕ) : R) = b₁ + b₂ := by subst_vars; simp
 
 set_option autoImplicit true
@@ -530,9 +526,12 @@ partial def ExSum.evalNatCast (va : ExSum sℕ a) : AtomM (Result (ExSum sα) q(
 
 end
 
-theorem smul_nat (_ : (a * b : ℕ) = c) : a • b = c := by subst_vars; simp
+set_option autoImplicit false
 
-theorem smul_eq_cast (_ : ((a : ℕ) : R) = a') (_ : a' * b = c) : a • b = c := by subst_vars; simp
+theorem smul_nat {a b c : ℕ} (_ : (a * b : ℕ) = c) : a • b = c := by subst_vars; simp
+
+theorem smul_eq_cast {a : ℕ} {a' b c : R} (_ : ((a : ℕ) : R) = a') (_ : a' * b = c) : a • b = c := by
+  subst_vars; simp
 
 /-- Constructs the scalar multiplication `n • a`, where both `n : ℕ` and `a : α` are normalized
 polynomial expressions.
@@ -540,7 +539,8 @@ polynomial expressions.
 * `a • b = a * b` if `α = ℕ`
 * `a • b = ↑a * b` otherwise
 -/
-def evalNSMul (va : ExSum sℕ a) (vb : ExSum sα b) : AtomM (Result (ExSum sα) q($a • $b)) := do
+def evalNSMul {α : Q(Type u)} (sα : Q(CommSemiring $α)) {a : Q(ℕ)} {b : Q($α)}
+    (va : ExSum sℕ a) (vb : ExSum sα b) : AtomM (Result (ExSum sα) q($a • $b)) := do
   if ← isDefEq sα sℕ then
     let ⟨_, va'⟩ := va.cast
     have _b : Q(ℕ) := b
@@ -557,12 +557,14 @@ theorem neg_one_mul {R} [Ring R] {a b : R} (_ : (Int.negOfNat (nat_lit 1)).rawCa
 theorem neg_mul {R} [Ring R] (a₁ : R) (a₂) {a₃ b : R}
     (_ : -a₃ = b) : -(a₁ ^ a₂ * a₃) = a₁ ^ a₂ * b := by subst_vars; simp
 
+set_option autoImplicit true in
 /-- Negates a monomial `va` to get another monomial.
 
 * `-c = (-c)` (for `c` coefficient)
 * `-(a₁ * a₂) = a₁ * -a₂`
 -/
-def evalNegProd (rα : Q(Ring $α)) (va : ExProd sα a) : Result (ExProd sα) q(-$a) :=
+def evalNegProd --{u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring «$α»)) {a : Q(«$α»)}
+    (rα : Q(Ring $α)) (va : ExProd sα a) : Result (ExProd sα) q(-$a) :=
   match va with
   | .const za ha =>
     let lit : Q(ℕ) := mkRawNatLit 1
@@ -583,12 +585,14 @@ theorem neg_zero {R} [Ring R] : -(0 : R) = 0 := by simp
 theorem neg_add {R} [Ring R] {a₁ a₂ b₁ b₂ : R}
     (_ : -a₁ = b₁) (_ : -a₂ = b₂) : -(a₁ + a₂) = b₁ + b₂ := by subst_vars; simp [add_comm]
 
+set_option autoImplicit true in
 /-- Negates a polynomial `va` to get another polynomial.
 
 * `-0 = 0` (for `c` coefficient)
 * `-(a₁ + a₂) = -a₁ + -a₂`
 -/
-def evalNeg (rα : Q(Ring $α)) (va : ExSum sα a) : Result (ExSum sα) q(-$a) :=
+def evalNeg -- TODO: {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring «$α»)) {a : Q(«$α»)}
+    (rα : Q(Ring $α)) (va : ExSum sα a) : Result (ExSum sα) q(-$a) :=
   match va with
   | .zero => ⟨_, .zero, (q(neg_zero (R := $α)) : Expr)⟩
   | .add va₁ va₂ =>
@@ -603,13 +607,15 @@ theorem sub_pf {R} [Ring R] {a b c d : R}
 
 * `a - b = a + -b`
 -/
-def evalSub (rα : Q(Ring $α)) (va : ExSum sα a) (vb : ExSum sα b) : Result (ExSum sα) q($a - $b) :=
+def evalSub {α : Q(Type u)} (sα : Q(CommSemiring $α)) {a b : Q($α)}
+    (rα : Q(Ring $α)) (va : ExSum sα a) (vb : ExSum sα b) : Result (ExSum sα) q($a - $b) :=
   let ⟨_c, vc, pc⟩ := evalNeg sα rα vb
   let ⟨d, vd, (pd : Q($a + $_c = $d))⟩ := evalAdd sα va vc
   ⟨d, vd, (q(sub_pf $pc $pd) : Expr)⟩
 
 theorem pow_prod_atom (a : R) (b) : a ^ b = (a + 0) ^ b * (nat_lit 1).rawCast := by simp
 
+set_option autoImplicit true in
 /--
 The fallback case for exponentiating polynomials is to use `ExBase.toProd` to just build an
 exponent expression. (This has a slightly different normalization than `evalPowAtom` because
@@ -628,17 +634,18 @@ exponent expression.
 
 * `x ^ e = x ^ e * 1 + 0`
 -/
-def evalPowAtom (va : ExBase sα a) (vb : ExProd sℕ b) : Result (ExSum sα) q($a ^ $b) :=
+def evalPowAtom {α : Q(Type u)} (sα : Q(CommSemiring $α)) {a : Q($α)} {b : Q(ℕ)}
+    (va : ExBase sα a) (vb : ExProd sℕ b) : Result (ExSum sα) q($a ^ $b) :=
   ⟨_, (va.toProd vb).toSum, q(pow_atom $a $b)⟩
 
 theorem const_pos (n : ℕ) (h : Nat.ble 1 n = true) : 0 < (n.rawCast : ℕ) := Nat.le_of_ble_eq_true h
 
-theorem mul_exp_pos (n) (h₁ : 0 < a₁) (h₂ : 0 < a₂) : 0 < a₁ ^ n * a₂ :=
+theorem mul_exp_pos {a₁ a₂ : ℕ} (n) (h₁ : 0 < a₁) (h₂ : 0 < a₂) : 0 < a₁ ^ n * a₂ :=
   Nat.mul_pos (Nat.pos_pow_of_pos _ h₁) h₂
 
-theorem add_pos_left (a₂) (h : 0 < a₁) : 0 < a₁ + a₂ := Nat.lt_of_lt_of_le h (Nat.le_add_right ..)
+theorem add_pos_left {a₁ : ℕ} (a₂) (h : 0 < a₁) : 0 < a₁ + a₂ := Nat.lt_of_lt_of_le h (Nat.le_add_right ..)
 
-theorem add_pos_right (a₁) (h : 0 < a₂) : 0 < a₁ + a₂ := Nat.lt_of_lt_of_le h (Nat.le_add_left ..)
+theorem add_pos_right {a₂ : ℕ} (a₁) (h : 0 < a₂) : 0 < a₁ + a₂ := Nat.lt_of_lt_of_le h (Nat.le_add_left ..)
 
 mutual
 
@@ -647,7 +654,7 @@ mutual
 * Atoms are not (necessarily) positive
 * Sums defer to `ExSum.evalPos`
 -/
-partial def ExBase.evalPos (va : ExBase sℕ a) : Option Q(0 < $a) :=
+partial def ExBase.evalPos {a : Q(ℕ)} (va : ExBase sℕ a) : Option Q(0 < $a) :=
   match va with
   | .atom _ => none
   | .sum va => va.evalPos
@@ -657,7 +664,7 @@ partial def ExBase.evalPos (va : ExBase sℕ a) : Option Q(0 < $a) :=
 * `0 < c` (where `c` is a numeral) is true by the normalization invariant (`c` is not zero)
 * `0 < x ^ e * b` if `0 < x` and `0 < b`
 -/
-partial def ExProd.evalPos (va : ExProd sℕ a) : Option Q(0 < $a) :=
+partial def ExProd.evalPos {a : Q(ℕ)} (va : ExProd sℕ a) : Option Q(0 < $a) :=
   match va with
   | .const _ _ =>
     -- it must be positive because it is a nonzero nat literal
@@ -675,7 +682,7 @@ partial def ExProd.evalPos (va : ExProd sℕ a) : Option Q(0 < $a) :=
 * `0 < 0` fails
 * `0 < a + b` if `0 < a` or `0 < b`
 -/
-partial def ExSum.evalPos (va : ExSum sℕ a) : Option Q(0 < $a) :=
+partial def ExSum.evalPos {a : Q(ℕ)} (va : ExSum sℕ a) : Option Q(0 < $a) :=
   match va with
   | .zero => none
   | .add (a := a₁) (b := a₂) va₁ va₂ => do
@@ -687,13 +694,15 @@ end
 
 theorem pow_one (a : R) : a ^ nat_lit 1 = a := by simp
 
-theorem pow_bit0 (_ : (a : R) ^ k = b) (_ : b * b = c) : a ^ (Nat.mul (nat_lit 2) k) = c := by
+theorem pow_bit0 {a : R} {k : ℕ} {b c : R} (_ : (a : R) ^ k = b) (_ : b * b = c) :
+    a ^ (Nat.mul (nat_lit 2) k) = c := by
   subst_vars; simp [Nat.succ_mul, pow_add]
 
-theorem pow_bit1 (_ : (a : R) ^ k = b) (_ : b * b = c) (_ : c * a = d) :
+theorem pow_bit1 {a : R} {k : ℕ} {b c d : R} (_ : (a : R) ^ k = b) (_ : b * b = c) (_ : c * a = d) :
     a ^ (Nat.add (Nat.mul (nat_lit 2) k) (nat_lit 1)) = d := by
   subst_vars; simp [Nat.succ_mul, pow_add]
 
+set_option autoImplicit true in -- TODO!
 /--
 The main case of exponentiation of ring expressions is when `va` is a polynomial and `n` is a
 nonzero literal expression, like `(x + y)^5`. In this case we work out the polynomial completely
@@ -722,9 +731,10 @@ partial def evalPowNat (va : ExSum sα a) (n : Q(ℕ)) : Result (ExSum sα) q($a
 
 theorem one_pow (b : ℕ) : ((nat_lit 1).rawCast : R) ^ b = (nat_lit 1).rawCast := by simp
 
-theorem mul_pow (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂) :
+theorem mul_pow {ea₁ b c₁ : ℕ} {a₂ c₂ xa₁ : R} (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂) :
     (xa₁ ^ ea₁ * a₂ : R) ^ b = xa₁ ^ c₁ * c₂ := by subst_vars; simp [_root_.mul_pow, pow_mul]
 
+set_option autoImplicit true in
 /-- There are several special cases when exponentiating monomials:
 
 * `1 ^ n = 1`
@@ -733,7 +743,8 @@ theorem mul_pow (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂) :
 
 In all other cases we use `evalPowProdAtom`.
 -/
-def evalPowProd (va : ExProd sα a) (vb : ExProd sℕ b) : Result (ExProd sα) q($a ^ $b) :=
+def evalPowProd -- TODO: {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring «$α»)) {a : Q(«$α»)} {b : Q(ℕ)}
+    (va : ExProd sα a) (vb : ExProd sℕ b) : Result (ExProd sα) q($a ^ $b) :=
   let res : Option (Result (ExProd sα) q($a ^ $b)) := do
     match va, vb with
     | .const 1, _ => some ⟨_, va, (q(one_pow (R := $α) $b) : Expr)⟩
@@ -770,7 +781,7 @@ structure ExtractCoeff (e : Q(ℕ)) where
 
 theorem coeff_one (k : ℕ) : k.rawCast = (nat_lit 1).rawCast * k := by simp
 
-theorem coeff_mul (a₁ a₂ : ℕ) (_ : a₃ = c₂ * k) : a₁ ^ a₂ * a₃ = (a₁ ^ a₂ * c₂) * k := by
+theorem coeff_mul {a₃ c₂ k : ℕ} (a₁ a₂ : ℕ) (_ : a₃ = c₂ * k) : a₁ ^ a₂ * a₃ = (a₁ ^ a₂ * c₂) * k := by
   subst_vars; rw [mul_assoc]
 
 /-- Given a monomial expression `va`, splits off the leading coefficient `k` and the remainder
@@ -779,7 +790,7 @@ theorem coeff_mul (a₁ a₂ : ℕ) (_ : a₃ = c₂ * k) : a₁ ^ a₂ * a₃ =
 * `c = 1 * c` (if `c` is a constant)
 * `a * b = (a * b') * k` if `b = b' * k`
 -/
-def extractCoeff (va : ExProd sℕ a) : ExtractCoeff a :=
+def extractCoeff {a : Q(ℕ)} (va : ExProd sℕ a) : ExtractCoeff a :=
   match va with
   | .const _ _ =>
     have k : Q(ℕ) := a.appArg!
@@ -790,13 +801,16 @@ def extractCoeff (va : ExProd sℕ a) : ExtractCoeff a :=
 
 theorem pow_one_cast (a : R) : a ^ (nat_lit 1).rawCast = a := by simp
 
-theorem zero_pow (_ : 0 < b) : (0 : R) ^ b = 0 := match b with | b+1 => by simp [pow_succ]
+theorem zero_pow {b : ℕ} (_ : 0 < b) : (0 : R) ^ b = 0 := match b with | b+1 => by simp [pow_succ]
 
-theorem single_pow (_ : (a : R) ^ b = c) : (a + 0) ^ b = c + 0 := by simp [*]
+theorem single_pow {a : R} {b : ℕ} {c : R} (_ : (a : R) ^ b = c) : (a + 0) ^ b = c + 0 := by
+  simp [*]
 
-theorem pow_nat (_ : b = c * k) (_ : a ^ c = d) (_ : d ^ k = e) : (a : R) ^ b = e := by
+theorem pow_nat {b c k : ℕ} {a d e : R} (_ : b = c * k) (_ : a ^ c = d) (_ : d ^ k = e) :
+    (a : R) ^ b = e := by
   subst_vars; simp [pow_mul]
 
+set_option autoImplicit true in -- TODO!
 /-- Exponentiates a polynomial `va` by a monomial `vb`, including several special cases.
 
 * `a ^ 1 = a`
@@ -827,9 +841,11 @@ partial def evalPow₁ (va : ExSum sα a) (vb : ExProd sℕ b) : Result (ExSum s
 
 theorem pow_zero (a : R) : a ^ 0 = (nat_lit 1).rawCast + 0 := by simp
 
-theorem pow_add (_ : a ^ b₁ = c₁) (_ : a ^ b₂ = c₂) (_ : c₁ * c₂ = d) :
-    (a : R) ^ (b₁ + b₂) = d := by subst_vars; simp [_root_.pow_add]
+theorem pow_add  {a : R} {b₁ : ℕ} {c₁ : R} {b₂ : ℕ} {c₂ d : R}
+    (_ : a ^ b₁ = c₁) (_ : a ^ b₂ = c₂) (_ : c₁ * c₂ = d) : (a : R) ^ (b₁ + b₂) = d := by
+  subst_vars; simp [_root_.pow_add]
 
+set_option autoImplicit true in -- TODO!
 /-- Exponentiates two polynomials `va, vb`.
 
 * `a ^ 0 = 1`
@@ -860,16 +876,16 @@ def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) : MetaM (Cache sα) :=
     dα := (← trySynthInstanceQ q(DivisionRing $α)).toOption
     czα := (← trySynthInstanceQ q(CharZero $α)).toOption }
 
-theorem cast_pos : IsNat (a : R) n → a = n.rawCast + 0
+theorem cast_pos {a : R} {n : ℕ} : IsNat (a : R) n → a = n.rawCast + 0
   | ⟨e⟩ => by simp [e]
 
-theorem cast_zero : IsNat (a : R) (nat_lit 0) → a = 0
+theorem cast_zero {a : R} : IsNat (a : R) (nat_lit 0) → a = 0
   | ⟨e⟩ => by simp [e]
 
-theorem cast_neg {R} [Ring R] {a : R} : IsInt a (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
+theorem cast_neg {n : ℕ} {R} [Ring R] {a : R} : IsInt a (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
   | ⟨e⟩ => by simp [e]
 
-theorem cast_rat {R} [DivisionRing R] {a : R} : IsRat a n d → a = Rat.rawCast n d + 0
+theorem cast_rat {n : ℤ} {d : ℕ} {R} [DivisionRing R] {a : R} : IsRat a n d → a = Rat.rawCast n d + 0
   | ⟨_, e⟩ => by simp [e, div_eq_mul_inv]
 
 /-- Converts a proof by `norm_num` that `e` is a numeral, into a normalization as a monomial:
@@ -879,7 +895,8 @@ theorem cast_rat {R} [DivisionRing R] {a : R} : IsRat a n d → a = Rat.rawCast 
 * `e = Int.rawCast n + 0` if `norm_num` returns `IsInt e n`
 * `e = Rat.rawCast n d + 0` if `norm_num` returns `IsRat e n d`
 -/
-def evalCast : NormNum.Result e → Option (Result (ExSum sα) e)
+def evalCast {α : Q(Type u)} (sα : Q(CommSemiring $α)) {e : Q($α)} :
+    NormNum.Result e → Option (Result (ExSum sα) e)
   | .isNat _ (.lit (.natVal 0)) p => do
     assumeInstancesCommute
     pure ⟨_, .zero, q(cast_zero $p)⟩
@@ -892,10 +909,10 @@ def evalCast : NormNum.Result e → Option (Result (ExSum sα) e)
     pure ⟨_, (ExProd.mkRat sα dα q n d q(IsRat.den_nz $p)).2.toSum, (q(cast_rat $p) : Expr)⟩
   | _ => none
 
-theorem toProd_pf (p : (a : R) = a') :
+theorem toProd_pf {a a' : R} (p : (a : R) = a') :
     a = a' ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast := by simp [*]
 theorem atom_pf (a : R) : a = a ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast + 0 := by simp
-theorem atom_pf' (p : (a : R) = a') :
+theorem atom_pf' {a a' : R} (p : (a : R) = a') :
     a = a' ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast + 0 := by simp [*]
 
 /--
@@ -921,7 +938,7 @@ nonrec theorem inv_zero {R} [DivisionRing R] : (0 : R)⁻¹ = 0 := inv_zero
 
 theorem inv_single {R} [DivisionRing R] {a b : R}
     (_ : (a : R)⁻¹ = b) : (a + 0)⁻¹ = b + 0 := by simp [*]
-
+set_option autoImplicit true in
 theorem inv_add (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b₂) :
     ((a₁ + a₂ : ℕ) : R) = b₁ + b₂ := by subst_vars; simp
 
@@ -934,6 +951,7 @@ def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase sα) q($a⁻¹)) := do
   let i ← addAtom a'
   pure ⟨a', ExBase.atom i, (q(Eq.refl $a') : Expr)⟩
 
+set_option autoImplicit true in -- TODO
 /-- Inverts a polynomial `va` to get a normalized result polynomial.
 
 * `c⁻¹ = (c⁻¹)` if `c` is a constant
@@ -964,7 +982,7 @@ def ExProd.evalInv (czα : Option Q(CharZero $α)) (va : ExProd sα a) :
 * `0⁻¹ = 0`
 * `a⁻¹ = (a⁻¹)` if `a` is a nontrivial sum
 -/
-def ExSum.evalInv (czα : Option Q(CharZero $α)) (va : ExSum sα a) :
+def ExSum.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExSum sα a) :
     AtomM (Result (ExSum sα) q($a⁻¹)) :=
   match va with
   | ExSum.zero => pure ⟨_, .zero, (q(inv_zero (R := $α)) : Expr)⟩
@@ -984,22 +1002,22 @@ theorem div_pf {R} [DivisionRing R] {a b c d : R}
 
 * `a / b = a * b⁻¹`
 -/
-def evalDiv (rα : Q(DivisionRing $α)) (czα : Option Q(CharZero $α)) (va : ExSum sα a)
+def evalDiv {a b : Q($α)} (rα : Q(DivisionRing $α)) (czα : Option Q(CharZero $α)) (va : ExSum sα a)
     (vb : ExSum sα b) : AtomM (Result (ExSum sα) q($a / $b)) := do
   let ⟨_c, vc, pc⟩ ← vb.evalInv sα rα czα
   let ⟨d, vd, (pd : Q($a * $_c = $d))⟩ := evalMul sα va vc
   pure ⟨d, vd, (q(div_pf $pc $pd) : Expr)⟩
 
-theorem add_congr (_ : a = a') (_ : b = b')
+theorem add_congr {a a' b b' c : R} (_ : a = a') (_ : b = b')
     (_ : a' + b' = c) : (a + b : R) = c := by subst_vars; rfl
 
-theorem mul_congr (_ : a = a') (_ : b = b')
+theorem mul_congr {a a' b b' c : R} (_ : a = a') (_ : b = b')
     (_ : a' * b' = c) : (a * b : R) = c := by subst_vars; rfl
 
-theorem nsmul_congr (_ : (a : ℕ) = a') (_ : b = b')
+theorem nsmul_congr {a a' : ℕ} {b b' c : R} (_ : (a : ℕ) = a') (_ : b = b')
     (_ : a' • b' = c) : (a • (b : R)) = c := by subst_vars; rfl
 
-theorem pow_congr (_ : a = a') (_ : b = b')
+theorem pow_congr {a a' c : R} {b b' : ℕ} (_ : a = a') (_ : b = b')
     (_ : a' ^ b' = c) : (a ^ b : R) = c := by subst_vars; rfl
 
 theorem neg_congr {R} [Ring R] {a a' b : R} (_ : a = a')
@@ -1111,6 +1129,8 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     | _ => els
   | _, _, _ => els
 
+universe u
+
 /-- `CSLift α β` is a typeclass used by `ring` for lifting operations from `α`
 (which is not a commutative semiring) into a commutative semiring `β` by using an injective map
 `lift : α → β`. -/
@@ -1136,7 +1156,7 @@ theorem of_lift {α β} [inst : CSLift α β] {a b : α} {a' b' : β}
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
 
-theorem of_eq (_ : (a : R) = c) (_ : b = c) : a = b := by subst_vars; rfl
+theorem of_eq {a c b : R} (_ : (a : R) = c) (_ : b = c) : a = b := by subst_vars; rfl
 
 /--
 This is a routine which is used to clean up the unsolved subgoal
