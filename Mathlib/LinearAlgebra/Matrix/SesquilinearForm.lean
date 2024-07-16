@@ -74,9 +74,9 @@ theorem Matrix.toLinearMap₂'Aux_stdBasis (f : Matrix n m N₂) (i : n) (j : m)
     f.toLinearMap₂'Aux σ₁ σ₂ (LinearMap.stdBasis R₁ (fun _ => R₁) i 1)
       (LinearMap.stdBasis R₂ (fun _ => R₂) j 1) = f i j := by
   rw [Matrix.toLinearMap₂'Aux, mk₂'ₛₗ_apply]
-  have : (∑ i', ∑ j',
-    (if i = i' then (1 : S₁) else (0 : S₁)) • (if j = j' then (1 : S₂) else (0 : S₂)) • f i' j') =
-    f i j := by
+  have : (∑ i', ∑ j', (if i = i' then (1 : S₁) else (0 : S₁)) •
+        (if j = j' then (1 : S₂) else (0 : S₂)) • f i' j') =
+      f i j := by
     simp_rw [← Finset.smul_sum]
     simp only [op_smul_eq_smul, ite_smul, one_smul, zero_smul, sum_ite_eq, mem_univ, ↓reduceIte]
   rw [← this]
