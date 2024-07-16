@@ -822,7 +822,7 @@ theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = - (v x) :=
 #align add_valuation.map_inv AddValuation.map_inv
 
 @[simp]
-theorem map_div (v : AddValuation K Γ₀) {x y : K} : v (x / y) = (v x) - (v y) :=
+theorem map_div (v : AddValuation K Γ₀) {x y : K} : v (x / y) = v x - v y :=
   map_div₀ v.valuation x y
 
 @[simp]
