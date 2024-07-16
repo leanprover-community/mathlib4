@@ -2721,8 +2721,6 @@ import Mathlib.Init.Align
 import Mathlib.Init.Classes.Order
 import Mathlib.Init.Classical
 import Mathlib.Init.Core
-import Mathlib.Init.Data.Bool.Basic
-import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Buffer.Parser
 import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Init.Data.Int.DivMod
