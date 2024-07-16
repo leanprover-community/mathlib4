@@ -17,6 +17,17 @@ Let `R` be the filtered colimit of rings `{Rⱼ}` and `M` be the filtered colimi
 an `Rⱼ`-module such that the `Rⱼ`-actions are compatible, then `M` is an `Rⱼ`-module for all `j`
 and `M` is an `R`-module.
 
+# Main results
+
+- `Module.overFilteredColimits.moduleColimitColimit`: Let `R` and `M` be as above, then `M` is an
+  `R`-module.
+- `Module.overFilteredColimits.smul_spec`: Let `R` and `M` be as above, then the `R`-action on `M`
+  is given by the following: if `s : Rⱼ₁` and `t : Mⱼ₂` where `j₁ ≤ j₃` and `j₂ ≤ j₃`, then
+  `[s] • [m]` is equal to `[s|ⱼ₃ • m |ⱼ₃]` where `[...]` is the equivalence class in the colimit.
+
+Other than these two results, everything else in this file is only implementation details and is
+probably not very useful.
+
 ## Implementation notes
 
 We choose not to use `PresheafOfModules` to avoid code duplication:
