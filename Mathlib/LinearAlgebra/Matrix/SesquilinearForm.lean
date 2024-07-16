@@ -342,9 +342,7 @@ theorem LinearMap.toMatrix₂'_mul (B : (n → R) →ₗ[R] (m → R) →ₗ[R] 
 theorem Matrix.toLinearMap₂'_comp (M : Matrix n m R) (P : Matrix n n' R) (Q : Matrix m m' R) :
     LinearMap.compl₁₂ (Matrix.toLinearMap₂' R M) (toLin' P) (toLin' Q) =
       toLinearMap₂' R (Pᵀ * M * Q) :=
-  (LinearMap.toMatrix₂' R).injective (by
-    rw [toMatrix₂'_compl₁₂, toMatrix'_toLin', toMatrix'_toLinearMap₂', toMatrix'_toLin',
-      toMatrix'_toLinearMap₂'])
+  (LinearMap.toMatrix₂' R).injective (by simp)
 #align matrix.to_linear_map₂'_comp Matrix.toLinearMap₂'_comp
 
 end CommToMatrix'
