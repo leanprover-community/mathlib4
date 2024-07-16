@@ -54,6 +54,7 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### Automatically choosing `lean-toolchain` and `lake-manifest.json` from the 'newer' branch"
   echo "### In this case, the 'newer' branch is 'bump/$BUMPVERSION'"
   git checkout bump/$BUMPVERSION -- lean-toolchain lake-manifest.json
+fi
 
 # Check if there are more merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -78,6 +79,7 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### Automatically choosing `lean-toolchain` and `lake-manifest.json` from the 'newer' branch"
   echo "### In this case, the 'newer' branch is 'origin/nightly-testing'"
   git checkout origin/nightly-testing -- lean-toolchain lake-manifest.json
+fi
 
 # Check if there are more merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -133,6 +135,7 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### Automatically choosing `lean-toolchain` and `lake-manifest.json` from the 'newer' branch"
   echo "### In this case, the 'newer' branch is 'bump/nightly-$NIGHTLYDATE'"
   git checkout bump/nightly-$NIGHTLYDATE -- lean-toolchain lake-manifest.json
+fi
 
 # Check if there are more merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
