@@ -47,7 +47,7 @@ open FiniteDimensional
 
 noncomputable section
 
--- Some preliminaries, which should go in more basic files
+-- Closed and n-dimensional manifolds: these should also move to a separate file.
 section ClosedManifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -86,15 +86,13 @@ instance ClosedNManifold.prod {m n : ℕ} [FiniteDimensional 𝕜 E] [FiniteDime
     [CompactSpace M] [I.Boundaryless] [CompactSpace N] [J.Boundaryless]
     (s : ClosedNManifold M I m) (t : ClosedNManifold N J n) :
     ClosedNManifold (M × N) (I.prod J) (m + n) where
-  -- TODO: can I inherit this from NManifold.prod?
+  -- TODO: can I inherit this from `NManifold.prod`?
   hdim := by rw [s.hdim.symm, t.hdim.symm]; apply finrank_prod
 
 section examples
 
--- Assume `M` is a finite-dimensional real manifold over the pair `(E, H)`.
+-- Let `E` be a finite-dimensional real normed space.
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  {H : Type*} [TopologicalSpace H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-  (I : ModelWithCorners ℝ E H) [SmoothManifoldWithCorners I M]
 
 /-- The standard `n`-sphere is a closed manifold. -/
 example {n : ℕ} [Fact (finrank ℝ E = n + 1)] : ClosedManifold (sphere (0 : E) 1) (𝓡 n) where
@@ -107,6 +105,14 @@ example [Fact (finrank ℝ E = 1 + 1)] :
 example (n : ℕ) {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace ℝ (Fin n)) M]
     [SmoothManifoldWithCorners (𝓡 n) M] : NManifold n M (𝓡 n) where
   hdim := finrank_euclideanSpace_fin
+
+-- this fails with error:
+-- has type
+--   ChartedSpace (EuclideanSpace ℝ (Fin n)) ↑(sphere (@OfNat.ofNat ℕ 0 Zero.toOfNat0) 1) : Type
+-- but is expected to have type
+--   ChartedSpace (EuclideanSpace ℝ (Fin n)) ↑(sphere (@OfNat.ofNat ℕ 0 (instOfNatNat 0)) 1) :
+-- instance foo {n : ℕ} [Fact (finrank ℝ E = n + 1)] : ChartedSpace (EuclideanSpace ℝ (Fin n)) ↑(sphere 0 1) :=
+--    EuclideanSpace.instChartedSpaceSphere
 
 -- /-- The standard `n`-sphere is an `n`-manifold. -/
 -- example (n : ℕ) [Fact (finrank ℝ E = n + 1)] :
