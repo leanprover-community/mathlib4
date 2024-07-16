@@ -211,8 +211,6 @@ end pdf
 
 end MeasureTheory
 
-noncomputable section
-
 namespace PMF
 
 variable {α β γ : Type*}
