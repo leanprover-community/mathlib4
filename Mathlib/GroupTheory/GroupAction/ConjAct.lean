@@ -149,6 +149,9 @@ theorem smul_def (g : ConjAct G) (h : G) : g • h = ofConjAct g * h * (ofConjAc
   rfl
 #align conj_act.smul_def ConjAct.smul_def
 
+theorem toConjAct_smul (g h : G) : toConjAct g • h = g * h * g⁻¹ :=
+  rfl
+
 end DivInvMonoid
 
 section Units

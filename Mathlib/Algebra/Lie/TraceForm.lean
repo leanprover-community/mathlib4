@@ -422,3 +422,5 @@ lemma range_traceForm_le_span_weight :
   exact Submodule.smul_mem _ _ <| Submodule.smul_mem _ _ <| subset_span <| mem_range_self χ
 
 end LieModule
+
+end LieAlgebra

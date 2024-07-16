@@ -101,7 +101,7 @@ lemma isSheafFor_of_factorsThru
     (P : Cᵒᵖ ⥤ Type*)
     (H : S.FactorsThru T) (hS : S.IsSheafFor P)
     (h : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, T f → ∃ (R : Presieve Y),
-      R.IsSeparatedFor P ∧ R.FactorsThruAlong S f):
+      R.IsSeparatedFor P ∧ R.FactorsThruAlong S f) :
     T.IsSheafFor P := by
   simp only [← Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor] at *
   choose W i e h1 h2 using H
@@ -310,7 +310,7 @@ Grothendieck topology.
 -/
 theorem mem_toGrothendieck_sieves_of_superset (K : Coverage C) {X : C} {S : Sieve X}
     {R : Presieve X} (h : R ≤ S) (hR : R ∈ K.covering X) : S ∈ (K.toGrothendieck C).sieves X :=
-  K.saturate_of_superset ((Sieve.sets_iff_generate _ _).mpr h) (Coverage.Saturate.of X _ hR)
+  K.saturate_of_superset ((Sieve.generate_le_iff _ _).mpr h) (Coverage.Saturate.of X _ hR)
 
 end Coverage
 
