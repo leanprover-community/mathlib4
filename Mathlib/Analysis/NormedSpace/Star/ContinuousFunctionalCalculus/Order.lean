@@ -163,9 +163,9 @@ lemma CstarRing.norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_t
   intro a b ha hab
   have hb_nonneg : 0 ≤ b := ha.trans hab
   have : 0 ≤ a := by cfc_tac
-  have h₂ : cfc (p := (IsSelfAdjoint : Unitization ℂ A → Prop)) (id : ℝ → ℝ) a ≤ cfc (fun _ => ‖b‖) a := by
+  have h₂ : cfc (id : ℝ → ℝ) a ≤ cfc (fun _ => ‖b‖) a := by
     calc _ = a := by rw [cfc_id ℝ a]
-      _ ≤ cfc (p := (IsSelfAdjoint : Unitization ℂ A → Prop)) id b := (cfc_id ℝ b) ▸ hab
+      _ ≤ cfc id b := (cfc_id ℝ b) ▸ hab
       _ ≤ cfc (fun _ => ‖b‖) b := by
           refine cfc_mono fun x hx => ?_
           calc x = ‖x‖ := (Real.norm_of_nonneg (spectrum_nonneg_of_nonneg hb_nonneg hx)).symm
