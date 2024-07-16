@@ -9,11 +9,11 @@ import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Tactic.Tauto
+import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 
 #align_import algebra.order.ring.char_zero from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 #align_import algebra.order.ring.defs from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"
@@ -1204,7 +1204,7 @@ lemma max_mul_mul_le_max_mul_max (b c : α) (ha : 0 ≤ a) (hd : 0 ≤ d) :
   max_le (by simpa [mul_comm, max_comm] using ba) (by simpa [mul_comm, max_comm] using cd)
 #align max_mul_mul_le_max_mul_max max_mul_mul_le_max_mul_max
 
-lemma min_mul_min_le_mul_min_min {b c} (ha : 0 ≤ a) (hb : 0 ≤ b) (hc : 0 ≤ c) (hd : 0 ≤ d):
+lemma min_mul_min_le_mul_min_min {b c} (ha : 0 ≤ a) (hb : 0 ≤ b) (hc : 0 ≤ c) (hd : 0 ≤ d) :
     min a c * min b d ≤ min (a * b) (c * d) :=
   have ab : min a c * min b d ≤ a * b :=
     mul_le_mul (min_le_left a c) (min_le_left b d) (le_min hb hd) ha
