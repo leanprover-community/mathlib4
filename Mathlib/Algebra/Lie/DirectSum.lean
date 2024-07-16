@@ -132,8 +132,8 @@ theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : i ≠ j) (x : L i) (y : 
   refine DFinsupp.ext fun k => ?_
   rw [bracket_apply]
   obtain rfl | hik := Decidable.eq_or_ne i k
-  · rw [of_eq_of_ne _ _ _ _ hij.symm, lie_zero, zero_apply]
-  · rw [of_eq_of_ne _ _ _ _ hik, zero_lie, zero_apply]
+  · rw [of_eq_of_ne _ _ _ hij.symm, lie_zero, zero_apply]
+  · rw [of_eq_of_ne _ _ _ hik, zero_lie, zero_apply]
 #align direct_sum.lie_of_of_ne DirectSum.lie_of_of_ne
 
 @[simp]
