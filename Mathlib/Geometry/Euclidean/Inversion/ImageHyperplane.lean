@@ -84,3 +84,5 @@ theorem image_inversion_affineSubspace_of_mem {p : AffineSubspace ℝ P} (hR : R
     inversion c R '' p = p :=
   (mapsTo_inversion_affineSubspace_of_mem hp).image_subset.antisymm fun x hx ↦
     ⟨inversion c R x, mapsTo_inversion_affineSubspace_of_mem hp hx, inversion_inversion _ hR _⟩
+
+end EuclideanGeometry
