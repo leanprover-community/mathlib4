@@ -368,7 +368,7 @@ theorem diagonal_pullback_fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     diagonal (pullback.fst f g) =
       (pullbackSymmetry _ _).hom ≫
         ((Over.pullback f).map
-              (Over.homMk (diagonal g) : Over.mk g ⟶ Over.mk (pullback.snd ≫ g))).left ≫
+              (Over.homMk (diagonal g) : Over.mk g ⟶ Over.mk (pullback.snd _ _ ≫ g))).left ≫
           (diagonalObjPullbackFstIso f g).inv := by
   ext <;> dsimp <;> simp
 #align category_theory.limits.diagonal_pullback_fst CategoryTheory.Limits.diagonal_pullback_fst
