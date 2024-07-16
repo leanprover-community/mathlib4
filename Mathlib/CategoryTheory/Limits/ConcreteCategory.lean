@@ -144,6 +144,14 @@ theorem Concrete.colimit_rep_eq_iff_exists [HasColimit F] {i j : J} (x : F.obj i
   ⟨Concrete.colimit_exists_of_rep_eq.{t} _ _ _, Concrete.colimit_rep_eq_of_exists _ _ _⟩
 #align category_theory.limits.concrete.colimit_rep_eq_iff_exists CategoryTheory.Limits.Concrete.colimit_rep_eq_iff_exists
 
+theorem Concrete.colimit_rep_eq_zero [∀ c : C, Zero c] [∀ {c c' : C}, ZeroHomClass (c ⟶ c') c c'] [HasColimit F]
+    (j : J) (x : F.obj j) (hx : colimit.ι F j x = 0) :
+    ∃ (j' : J) (i : j ⟶ j'), F.map i x = 0 := by
+  rw [show (0 : (forget C).obj (colimit F)) = colimit.ι F j 0 by simp,
+    Concrete.colimit_rep_eq_iff_exists] at hx
+  obtain ⟨j', i, y, g⟩ := hx
+  exact ⟨j', i, g ▸ by simp⟩
+
 end FilteredColimits
 
 end Colimits
