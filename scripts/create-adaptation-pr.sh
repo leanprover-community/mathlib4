@@ -16,12 +16,12 @@ if ! command -v gh &> /dev/null; then
     exit 1
 fi
 
-# # Check the CI status of the latest commit on the 'nightly-testing' branch
-# status=$(gh api repos/leanprover-community/mathlib4/commits/nightly-testing/status | jq -r '.state')
-# if [ "$status" != "success" ]; then
-#   echo "The latest commit on the 'nightly-testing' branch did not pass CI. Please fix the issues and try again."
-#   exit 1
-# fi
+# Check the CI status of the latest commit on the 'nightly-testing' branch
+status=$(gh run list --branch nightly-testing | grep -m1 . | awk '{print $1}')
+if [ "$status" != "completed" ]; then
+  echo "The latest commit on the 'nightly-testing' branch did not pass CI. Please fix the issues and try again."
+  exit 1
+fi
 
 echo "### Creating a PR for the nightly adaptation for $NIGHTLYDATE"
 echo "### [auto] checkout master and pull the latest changes"
@@ -71,10 +71,9 @@ git push --set-upstream origin "bump/nightly-$NIGHTLYDATE"
 
 echo
 echo "### [auto/user] create a PR for the new branch"
-echo "Create a pull request, label with 'awaiting-review' and 'awaiting-CI'"
-echo "Set the base of the PR to 'bump/$BUMPVERSION'"
+echo "Create a pull request. Set the base of the PR to 'bump/$BUMPVERSION'"
 echo "Here is a suggested 'gh' command to do this:"
-gh_command="gh pr create -t \"$pr_title\" -b '' -l awaiting-review -l awaiting-CI -B bump/$BUMPVERSION"
+gh_command="gh pr create -t \"$pr_title\" -b '' -B bump/$BUMPVERSION"
 echo "> $gh_command"
 echo "Shall I run this command for you? (y/n)"
 read answer

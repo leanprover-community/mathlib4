@@ -113,11 +113,7 @@ namespace OplaxFunctor
 
 attribute [reassoc (attr := simp)]
   mapComp_naturality_left mapComp_naturality_right map₂_associator
-
--- the simpNF linter complains that `map₂_leftUnitor_assoc` etc can be
--- proved with `simp` so I move them here
-attribute [reassoc] map₂_leftUnitor map₂_rightUnitor
-attribute [simp] map₂_leftUnitor map₂_rightUnitor
+attribute [simp, reassoc] map₂_leftUnitor map₂_rightUnitor
 
 section
 
@@ -220,3 +216,5 @@ end
 end OplaxFunctor
 
 end
+
+end CategoryTheory
