@@ -9,13 +9,13 @@ import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Topology.ContinuousFunction.FunctionalCalculus
 
 /-!
-# The exp and log functions based on the continuous functional calculus
+# The exponential and logarithm based on the continuous functional calculus
 
-This file defines the log function via the continuous functional calculus and build its API.
+This file defines the logarithm via the continuous functional calculus (CFC) and builds its API.
 This allows one to take logs of matrices, operators, elements of a C⋆-algebra, etc.
 
-It also shows that exponentials defined via the CFC are equal to `NormedSpace.exp` (defined via
-power series) whenever the former are not junk values.
+It also shows that exponentials defined via the continuous functional calculus are equal to
+`NormedSpace.exp` (defined via power series) whenever the former are not junk values.
 
 ## Main declarations
 
