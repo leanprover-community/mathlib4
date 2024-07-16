@@ -86,6 +86,14 @@ section Cstar_unital
 variable {A : Type*} [NormedRing A] [StarRing A] [CstarRing A] [CompleteSpace A]
 variable [NormedAlgebra ℂ A] [StarModule ℂ A] [PartialOrder A] [StarOrderedRing A]
 
+open ComplexOrder in
+instance CstarRing.instNonnegSpectrumClassComplexUnital : NonnegSpectrumClass ℂ A where
+  quasispectrum_nonneg_of_nonneg a ha x := by
+    rw [mem_quasispectrum_iff]
+    refine (Or.elim · ge_of_eq fun hx ↦ ?_)
+    obtain ⟨y, hy, rfl⟩ := (IsSelfAdjoint.of_nonneg ha).spectrumRestricts.algebraMap_image ▸ hx
+    simpa using spectrum_nonneg_of_nonneg ha hy
+
 lemma IsSelfAdjoint.le_algebraMap_norm_self {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
     a ≤ algebraMap ℝ A ‖a‖ := by
   by_cases nontriv : Nontrivial A
@@ -110,29 +118,16 @@ lemma CstarRing.star_mul_le_algebraMap_norm_sq {a : A} : star a * a ≤ algebraM
   have : star a * a ≤ algebraMap ℝ A ‖star a * a‖ := IsSelfAdjoint.le_algebraMap_norm_self
   rwa [CstarRing.norm_star_mul_self, ← pow_two] at this
 
-lemma CstarRing.norm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by cfc_tac) :
-    ‖a‖ ∈ spectrum ℝ a := by
-  have ha' : IsSelfAdjoint a := IsSelfAdjoint.of_nonneg ha
-  obtain ⟨z, hz₁, hz₂⟩ := spectrum.exists_nnnorm_eq_spectralRadius a
-  rw [ha'.spectralRadius_eq_nnnorm] at hz₂
-  have hz₂' : ‖z‖ = ‖a‖ := by
-    have := congr_arg ENNReal.toReal hz₂
-    simpa only [toReal_coe_nnnorm] using this
-  rw [← hz₂']
-  have hz₃ : z = z.re := ha'.mem_spectrum_eq_re hz₁
-  rw [hz₃, ha'.coe_mem_spectrum_complex] at hz₁
-  have hz₄ : 0 ≤ z.re := spectrum_nonneg_of_nonneg ha hz₁
-  have : z.re = ‖z‖ := by
-    rw [hz₃]
-    simp only [Complex.norm_real, Complex.ofReal_re, Real.norm_eq_abs]
-    apply Eq.symm
-    rwa [abs_eq_self]
-  rwa [← this]
-
 lemma CstarRing.nnnorm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖₊ ∈ spectrum ℝ≥0 a := by
-  rw [← coe_mem_spectrum_real_of_nonneg ha, coe_nnnorm]
-  exact norm_mem_spectrum_of_nonneg ha
+  have : IsSelfAdjoint a := .of_nonneg ha
+  convert NNReal.spectralRadius_mem_spectrum (a := a) ?_ (.nnreal_of_nonneg ha)
+  · simp [this.spectrumRestricts.spectralRadius_eq, this.spectralRadius_eq_nnnorm]
+  · exact this.spectrumRestricts.image ▸ (spectrum.nonempty a).image _
+
+lemma CstarRing.norm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by cfc_tac) :
+    ‖a‖ ∈ spectrum ℝ a := by
+  simpa using spectrum.algebraMap_mem ℝ <| CstarRing.nnnorm_mem_spectrum_of_nonneg ha
 
 end Cstar_unital
 
@@ -141,6 +136,12 @@ section Cstar_nonunital
 variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A] [PartialOrder A] [StarRing A]
   [StarOrderedRing A] [CstarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
   [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
+
+open ComplexOrder in
+instance CstarRing.instNonnegSpectrumClassComplexNonUnital : NonnegSpectrumClass ℂ A where
+  quasispectrum_nonneg_of_nonneg a ha x hx := by
+    rw [Unitization.quasispectrum_eq_spectrum_inr' ℂ ℂ a] at hx
+    exact spectrum_nonneg_of_nonneg (Unitization.inr_nonneg_iff.mpr ha) hx
 
 lemma CstarRing.norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab : a ≤ b) :
     ‖a‖ ≤ ‖b‖ := by

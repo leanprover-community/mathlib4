@@ -676,6 +676,22 @@ lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : s
     rw [← NNReal.coe_le_coe, coe_nnnorm, Real.norm_eq_abs, abs_le] at h_le
     linarith [h_le.2]
 
+lemma _root_.NNReal.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+    [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty)
+    (ha' : SpectrumRestricts a ContinuousMap.realToNNReal) :
+    (spectralRadius ℝ a).toNNReal ∈ spectrum ℝ≥0 a := by
+  obtain ⟨x, hx₁, hx₂⟩ := spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty ha
+  rw [← hx₂, ENNReal.toNNReal_coe, ← spectrum.algebraMap_mem_iff ℝ, NNReal.algebraMap_eq_coe]
+  have : 0 ≤ x := ha'.rightInvOn hx₁ ▸ NNReal.zero_le_coe
+  convert hx₁
+  simpa
+
+lemma _root_.Real.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+    [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty)
+    (ha' : SpectrumRestricts a ContinuousMap.realToNNReal) :
+    (spectralRadius ℝ a).toReal ∈ spectrum ℝ a :=
+  NNReal.spectralRadius_mem_spectrum ha ha'
+
 end SpectrumRestricts
 
 namespace QuasispectrumRestricts
