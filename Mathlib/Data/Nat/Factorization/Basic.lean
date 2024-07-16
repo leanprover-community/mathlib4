@@ -123,7 +123,7 @@ theorem factorization_one : factorization 1 = 0 := by ext; simp [factorization]
 
 #noalign nat.support_factorization
 
-#align nat.factor_iff_mem_factorization Nat.mem_primeFactors_iff_mem_factors
+#align nat.factor_iff_mem_factorization Nat.mem_primeFactors_iff_mem_primeFactorsList
 #align nat.prime_of_mem_factorization Nat.prime_of_mem_primeFactors
 #align nat.pos_of_mem_factorization Nat.pos_of_mem_primeFactors
 #align nat.le_of_mem_factorization Nat.le_of_mem_primeFactors
@@ -160,7 +160,7 @@ theorem factorization_one_right (n : ℕ) : n.factorization 1 = 0 :=
 #align nat.factorization_one_right Nat.factorization_one_right
 
 theorem dvd_of_factorization_pos {n p : ℕ} (hn : n.factorization p ≠ 0) : p ∣ n :=
-  dvd_of_mem_primeFactorsList <| mem_primeFactors_iff_mem_factors.1 <| mem_support_iff.2 hn
+  dvd_of_mem_primeFactorsList <| mem_primeFactors_iff_mem_primeFactorsList.1 <| mem_support_iff.2 hn
 #align nat.dvd_of_factorization_pos Nat.dvd_of_factorization_pos
 
 theorem Prime.factorization_pos_of_dvd {n p : ℕ} (hp : p.Prime) (hn : n ≠ 0) (h : p ∣ n) :

@@ -45,7 +45,7 @@ lemma primeFactors_mono (hmn : m ∣ n) (hn : n ≠ 0) : primeFactors m ⊆ prim
   simp only [subset_iff, mem_primeFactors, and_imp]
   exact fun p hp hpm _ ↦ ⟨hp, hpm.trans hmn, hn⟩
 
-lemma mem_primeFactors_iff_mem_factors : p ∈ n.primeFactors ↔ p ∈ n.primeFactorsList := by
+lemma mem_primeFactors_iff_mem_primeFactorsList : p ∈ n.primeFactors ↔ p ∈ n.primeFactorsList := by
   simp only [primeFactors, List.mem_toFinset]
 
 lemma prime_of_mem_primeFactors (hp : p ∈ n.primeFactors) : p.Prime := (mem_primeFactors.1 hp).1
@@ -83,7 +83,7 @@ lemma nonempty_primeFactors {n : ℕ} : n.primeFactors.Nonempty ↔ 1 < n := by
 
 lemma primeFactors_mul (ha : a ≠ 0) (hb : b ≠ 0) :
     (a * b).primeFactors = a.primeFactors ∪ b.primeFactors := by
-  ext; simp only [Finset.mem_union, mem_primeFactors_iff_mem_factors,
+  ext; simp only [Finset.mem_union, mem_primeFactors_iff_mem_primeFactorsList,
     mem_primeFactorsList_mul ha hb]
 #align nat.factors_mul_to_finset Nat.primeFactors_mul
 

@@ -111,7 +111,7 @@ lemma primeFactors_subset_of_mem_factoredNumbers {s : Finset ℕ} {m : ℕ}
     (hm : m ∈ factoredNumbers s) :
     m.primeFactors ⊆ s := by
   rw [mem_factoredNumbers] at hm
-  exact fun n hn ↦ hm.2 n (mem_primeFactors_iff_mem_factors.mp hn)
+  exact fun n hn ↦ hm.2 n (mem_primeFactors_iff_mem_primeFactorsList.mp hn)
 
 /-- If `m ≠ 0` and the `Finset` of prime factors of `m` is contained in `s`, then `m`
 is `s`-factored. -/
@@ -119,7 +119,7 @@ lemma mem_factoredNumbers_of_primeFactors_subset {s : Finset ℕ} {m : ℕ} (hm 
     (hp : m.primeFactors ⊆ s) :
     m ∈ factoredNumbers s := by
   rw [mem_factoredNumbers]
-  exact ⟨hm, fun p hp' ↦ hp <| mem_primeFactors_iff_mem_factors.mpr hp'⟩
+  exact ⟨hm, fun p hp' ↦ hp <| mem_primeFactors_iff_mem_primeFactorsList.mpr hp'⟩
 
 /-- `m` is `s`-factored if and only if `m ≠ 0` and its `Finset` of prime factors
 is contained in `s`. -/
