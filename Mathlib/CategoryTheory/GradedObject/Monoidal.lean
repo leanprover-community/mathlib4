@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Kim Morrison
 -/
 import Mathlib.CategoryTheory.GradedObject.Unitor
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.Data.Fintype.Prod
 
 /-!
@@ -573,13 +572,13 @@ instance (n : ℕ) : Finite ({ i : (ℕ × ℕ × ℕ) | i.1 + i.2.1 + i.2.2 = n
   rintro ⟨⟨_, _, _⟩, _⟩ ⟨⟨_, _, _⟩, _⟩ h
   simpa using h
 
--- Note: this is stated as a lemma instead of an example, because otherwise
--- CI would complain that importing `Mathlib.CategoryTheory.Limits.Preserves.Finite`
--- is unnecessary.
-lemma exists_monoidalCategory [HasFiniteCoproducts C]
-    [∀ (X : C), PreservesFiniteCoproducts ((curriedTensor C).obj X)]
-    [∀ (X : C), PreservesFiniteCoproducts ((curriedTensor C).flip.obj X)] :
-    Nonempty (MonoidalCategory (GradedObject ℕ C)) := ⟨inferInstance⟩
+/-!
+The monoidal category structure on `GradedObject ℕ C` can be inferred
+from the assumptions `[HasFiniteCoproducts C]`,
+`[∀ (X : C), PreservesFiniteCoproducts ((curriedTensor C).obj X)]` and
+`[∀ (X : C), PreservesFiniteCoproducts ((curriedTensor C).flip.obj X)]`.
+This requires importing `Mathlib.CategoryTheory.Limits.Preserves.Finite`.
+-/
 
 end
 
