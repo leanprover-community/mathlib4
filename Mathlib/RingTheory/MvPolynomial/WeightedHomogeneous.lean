@@ -506,8 +506,6 @@ variable (R w)
 
 open DirectSum
 
--- Should we keep these three specific `DirectSum` lemmas?
--- Should the name space be `MvPolynomial.DirectSum`?
 theorem DirectSum.coeLinearMap_eq_dfinsupp_sum [DecidableEq σ] [DecidableEq R] [DecidableEq M]
     (x : DirectSum M fun i : M => ↥(weightedHomogeneousSubmodule R w i)) :
     (coeLinearMap fun i : M => weightedHomogeneousSubmodule R w i) x =
@@ -651,9 +649,9 @@ theorem decompose'_apply [DecidableEq M] (φ : MvPolynomial σ R) (m : M) :
     (decompose' R w φ m : MvPolynomial σ R) = weightedHomogeneousComponent w m φ := by
   rw [decompose']
   by_cases hm : m ∈ Finset.image (weightedDegree w) φ.support
-  simp only [DirectSum.mk_apply_of_mem hm, Subtype.coe_mk]
-  rw [DirectSum.mk_apply_of_not_mem hm, Submodule.coe_zero,
-    weightedHomogeneousComponent_eq_zero_of_not_mem w φ m hm]
+  · simp only [DirectSum.mk_apply_of_mem hm, Subtype.coe_mk]
+  · rw [DirectSum.mk_apply_of_not_mem hm, Submodule.coe_zero,
+      weightedHomogeneousComponent_eq_zero_of_not_mem w φ m hm]
 
 /-- Given a weight `w`, the decomposition of `MvPolynomial σ R` into weighted homogeneous
 submodules -/
