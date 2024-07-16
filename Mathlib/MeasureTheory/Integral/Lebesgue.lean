@@ -1895,6 +1895,65 @@ lemma tendsto_of_lintegral_tendsto_of_antitone {α : Type*} {mα : MeasurableSpa
   refine tendsto_nhds_unique ?_ hf_tendsto
   exact lintegral_tendsto_of_tendsto_of_antitone hf_meas hf_mono h0 hF'_tendsto
 
+variable (μ) in
+/-- If `μ` is an s-finite measure, then for any function `f`
+there exists a measurable function `g ≤ f`
+that has the same Lebesgue integral over every set.
+
+For the integral over the whole space, the statement is true without extra assumptions,
+see `exists_measurable_le_lintegral_eq`.
+See also `MeasureTheory.Measure.restrict_toMeasurable_of_sFinite` for a similar result. -/
+theorem exists_measurable_le_forall_setLIntegral_eq [SFinite μ] (f : α → ℝ≥0∞) :
+    ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ ∀ s, ∫⁻ a in s, f a ∂μ = ∫⁻ a in s, g a ∂μ := by
+  -- We only need to prove the `≤` inequality for the integrals, the other one follows from `g ≤ f`.
+  rsuffices ⟨g, hgm, hgle, hleg⟩ :
+      ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ ∀ s, ∫⁻ a in s, f a ∂μ ≤ ∫⁻ a in s, g a ∂μ
+  · exact ⟨g, hgm, hgle, fun s ↦ (hleg s).antisymm (lintegral_mono hgle)⟩
+  -- Without loss of generality, `μ` is a finite measure.
+  wlog h : IsFiniteMeasure μ generalizing μ
+  · choose g hgm hgle hgint using fun n ↦ @this (sFiniteSeq μ n) _ inferInstance
+    refine ⟨fun x ↦ ⨆ n, g n x, measurable_iSup hgm, fun x ↦ iSup_le (hgle · x), fun s ↦ ?_⟩
+    rw [← sum_sFiniteSeq μ, Measure.restrict_sum_of_countable,
+      lintegral_sum_measure, lintegral_sum_measure]
+    exact ENNReal.tsum_le_tsum fun n ↦ (hgint n s).trans (lintegral_mono fun x ↦ le_iSup (g · x) _)
+  -- According to `exists_measurable_le_lintegral_eq`, for any natural `n`
+  -- we can choose a measurable function $g_{n}$
+  -- such that $g_{n}(x) ≤ \min (f(x), n)$ for all $x$
+  -- and both sides have the same integral over the whole space w.r.t. $μ$.
+  have (n : ℕ): ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ g ≤ n ∧
+      ∫⁻ a, min (f a) n ∂μ = ∫⁻ a, g a ∂μ := by
+    simpa [and_assoc] using exists_measurable_le_lintegral_eq μ (f ⊓ n)
+  choose g hgm hgf hgle hgint using this
+  -- Let `φ` be the pointwise supremum of the functions $g_{n}$.
+  -- Clearly, `φ` is a measurable function and `φ ≤ f`.
+  set φ : α → ℝ≥0∞ := fun x ↦ ⨆ n, g n x
+  have hφm : Measurable φ := by measurability
+  have hφle : φ ≤ f := fun x ↦ iSup_le (hgf · x)
+  refine ⟨φ, hφm, hφle, fun s ↦ ?_⟩
+  -- Now we show the inequality between set integrals.
+  -- Choose a simple function `ψ ≤ f` with values in `ℝ≥0` and prove  for `ψ`.
+  rw [lintegral_eq_nnreal]
+  refine iSup₂_le fun ψ hψ ↦ ?_
+  -- Choose `n` such that `ψ x ≤ n` for all `x`.
+  obtain ⟨n, hn⟩ : ∃ n : ℕ, ∀ x, ψ x ≤ n := by
+    rcases ψ.range.bddAbove with ⟨C, hC⟩
+    exact ⟨⌈C⌉₊, fun x ↦ (hC <| ψ.mem_range_self x).trans (Nat.le_ceil _)⟩
+  calc
+    (ψ.map (↑)).lintegral (μ.restrict s) = ∫⁻ a in s, ψ a ∂μ :=
+      SimpleFunc.lintegral_eq_lintegral .. |>.symm
+    _ ≤ ∫⁻ a in s, min (f a) n ∂μ :=
+      lintegral_mono fun a ↦ le_min (hψ _) (ENNReal.coe_le_coe.2 (hn a))
+    _ ≤ ∫⁻ a in s, g n a ∂μ := by
+      have : ∫⁻ a in (toMeasurable μ s)ᶜ, min (f a) n ∂μ ≠ ∞ :=
+        IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal _ ⟨n, fun _ ↦ min_le_right ..⟩ |>.ne
+      have hsm : MeasurableSet (toMeasurable μ s) := measurableSet_toMeasurable ..
+      apply ENNReal.le_of_add_le_add_right this
+      rw [← μ.restrict_toMeasurable_of_sFinite, lintegral_add_compl _ hsm, hgint,
+        ← lintegral_add_compl _ hsm]
+      gcongr with x
+      exact le_min (hgf n x) (hgle n x)
+    _ ≤ _ := lintegral_mono fun x ↦ le_iSup (g · x) n
+
 end Lintegral
 
 open MeasureTheory.SimpleFunc
