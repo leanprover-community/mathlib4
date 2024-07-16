@@ -41,7 +41,7 @@ sub-relation of the adjacency relation of the simple graph.
 * Recall that subgraphs are not determined by their vertex sets, so `SetLike` does not apply to
   this kind of subobject.
 
-## Todo
+## TODO
 
 * Images of graph homomorphisms as subgraphs.
 
@@ -157,6 +157,8 @@ def IsSpanning (G' : Subgraph G) : Prop :=
 theorem isSpanning_iff {G' : Subgraph G} : G'.IsSpanning ↔ G'.verts = Set.univ :=
   Set.eq_univ_iff_forall.symm
 #align simple_graph.subgraph.is_spanning_iff SimpleGraph.Subgraph.isSpanning_iff
+
+protected alias ⟨IsSpanning.verts_eq_univ, _⟩ := isSpanning_iff
 
 /-- Coercion from `Subgraph G` to `SimpleGraph V`.  If `G'` is a spanning
 subgraph, then `G'.spanningCoe` yields an isomorphic graph.
@@ -1030,7 +1032,7 @@ lemma coeSubgraph_restrict_eq {H : G.Subgraph} (H' : G.Subgraph) :
   ext
   · simp [and_comm]
   · simp_rw [coeSubgraph_adj, restrict_adj]
-    simp only [exists_and_left, exists_prop, ge_iff_le, inf_adj, and_congr_right_iff]
+    simp only [exists_and_left, exists_prop, inf_adj, and_congr_right_iff]
     intro h
     simp [H.edge_vert h, H.edge_vert h.symm]
 

@@ -6,6 +6,14 @@ Authors: Daniel Selsam
 import Lean.Elab.Command
 import Lean.Linter.Util
 
+/-!
+# Mathport infrastructure for tracking renaming Lean 3 to Lean 4 names
+
+This file defines mathport infrastructure for tracking renaming of Lean 3 declarations to
+their Lean 4 counterparts. This correspondence is declared in the ported file using the
+`#align` command (and its variants with `ₓ` and `#noalign`).
+-/
+
 namespace Mathlib.Prelude.Rename
 
 open Lean
@@ -53,9 +61,9 @@ def RenameMap.insert (m : RenameMap) (e : NameEntry) : RenameMap :=
 /-- Look up a lean 4 name from the lean 3 name. Also return the `dubious` error message. -/
 def RenameMap.find? (m : RenameMap) : Name → Option (String × Name) := m.toLean4.find?
 
-set_option autoImplicit true in
+universe u in
 -- TODO: upstream into core/std
-instance [Inhabited α] : Inhabited (Thunk α) where
+instance {α : Type u} [Inhabited α] : Inhabited (Thunk α) where
   default := .pure default
 
 /-- This extension stores the lookup data generated from `#align` commands. -/

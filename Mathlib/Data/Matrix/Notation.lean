@@ -32,8 +32,6 @@ already appears in the input.
 
 This file provide notation `!![a, b; c, d]` for matrices, which corresponds to
 `Matrix.of ![![a, b], ![c, d]]`.
-TODO: until we implement a `Lean.PrettyPrinter.Unexpander` for `Matrix.of`, the pretty-printer will
-not show `!!` notation, instead showing the version with `of ![![...]]`.
 
 ## Examples
 
@@ -70,7 +68,7 @@ protected instance toExpr [ToLevel.{u}] [ToLevel.{uₘ}] [ToLevel.{uₙ}]
 end toExpr
 
 section Parser
-open Lean Elab Term Macro TSyntax
+open Lean Meta Elab Term Macro TSyntax PrettyPrinter.Delaborator SubExpr
 
 /-- Notation for m×n matrices, aka `Matrix (Fin m) (Fin n) α`.
 
@@ -93,9 +91,9 @@ syntax (name := matrixNotation)
   "!![" ppRealGroup(sepBy1(ppGroup(term,+,?), ";", "; ", allowTrailingSep)) "]" : term
 
 @[inherit_doc matrixNotation]
-syntax (name := matrixNotationRx0) "!![" ";"* "]" : term
+syntax (name := matrixNotationRx0) "!![" ";"+ "]" : term
 @[inherit_doc matrixNotation]
-syntax (name := matrixNotation0xC) "!![" ","+ "]" : term
+syntax (name := matrixNotation0xC) "!![" ","* "]" : term
 
 macro_rules
   | `(!![$[$[$rows],*];*]) => do
@@ -113,6 +111,27 @@ macro_rules
     let emptyVecs := semicolons.map (fun _ => emptyVec)
     `(@Matrix.of (Fin $(quote semicolons.size)) (Fin 0) _ ![$emptyVecs,*])
   | `(!![$[,%$commas]*]) => `(@Matrix.of (Fin 0) (Fin $(quote commas.size)) _ ![])
+
+/-- Delaborator for the `!![]` notation. -/
+@[delab app.DFunLike.coe]
+def delabMatrixNotation : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <|
+  withOverApp 6 do
+    let mkApp3 (.const ``Matrix.of _) (.app (.const ``Fin _) em) (.app (.const ``Fin _) en) _ :=
+      (← getExpr).appFn!.appArg! | failure
+    let some m ← withNatValue em (pure ∘ some) | failure
+    let some n ← withNatValue en (pure ∘ some) | failure
+    withAppArg do
+      if m = 0 then
+        guard <| (← getExpr).isAppOfArity ``vecEmpty 1
+        let commas := mkArray n (mkAtom ",")
+        `(!![$[,%$commas]*])
+      else
+        if n = 0 then
+          let `(![$[![]%$evecs],*]) ← delab | failure
+          `(!![$[;%$evecs]*])
+        else
+          let `(![$[![$[$melems],*]],*]) ← delab | failure
+          `(!![$[$[$melems],*];*])
 
 end Parser
 

@@ -195,38 +195,41 @@ namespace Vector
 
 open List
 
+open Mathlib (Vector)
+
 instance (n : ℕ) : TopologicalSpace (Vector α n) := by unfold Vector; infer_instance
 
 theorem tendsto_cons {n : ℕ} {a : α} {l : Vector α n} :
     Tendsto (fun p : α × Vector α n => p.1 ::ᵥ p.2) (𝓝 a ×ˢ 𝓝 l) (𝓝 (a ::ᵥ l)) := by
-  rw [tendsto_subtype_rng, cons_val]
+  rw [tendsto_subtype_rng, Vector.cons_val]
   exact tendsto_fst.cons (Tendsto.comp continuousAt_subtype_val tendsto_snd)
 #align vector.tendsto_cons Vector.tendsto_cons
 
 theorem tendsto_insertNth {n : ℕ} {i : Fin (n + 1)} {a : α} :
     ∀ {l : Vector α n},
-      Tendsto (fun p : α × Vector α n => insertNth p.1 i p.2) (𝓝 a ×ˢ 𝓝 l) (𝓝 (insertNth a i l))
+      Tendsto (fun p : α × Vector α n => Vector.insertNth p.1 i p.2) (𝓝 a ×ˢ 𝓝 l)
+        (𝓝 (Vector.insertNth a i l))
   | ⟨l, hl⟩ => by
-    rw [insertNth, tendsto_subtype_rng]
-    simp only [insertNth_val]
+    rw [Vector.insertNth, tendsto_subtype_rng]
+    simp only [Vector.insertNth_val]
     exact List.tendsto_insertNth tendsto_fst (Tendsto.comp continuousAt_subtype_val tendsto_snd : _)
 #align vector.tendsto_insert_nth Vector.tendsto_insertNth
 
 theorem continuous_insertNth' {n : ℕ} {i : Fin (n + 1)} :
-    Continuous fun p : α × Vector α n => insertNth p.1 i p.2 :=
+    Continuous fun p : α × Vector α n => Vector.insertNth p.1 i p.2 :=
   continuous_iff_continuousAt.mpr fun ⟨a, l⟩ => by
     rw [ContinuousAt, nhds_prod_eq]; exact tendsto_insertNth
 #align vector.continuous_insert_nth' Vector.continuous_insertNth'
 
 theorem continuous_insertNth {n : ℕ} {i : Fin (n + 1)} {f : β → α} {g : β → Vector α n}
-    (hf : Continuous f) (hg : Continuous g) : Continuous fun b => insertNth (f b) i (g b) :=
+    (hf : Continuous f) (hg : Continuous g) : Continuous fun b => Vector.insertNth (f b) i (g b) :=
   continuous_insertNth'.comp (hf.prod_mk hg : _)
 #align vector.continuous_insert_nth Vector.continuous_insertNth
 
 theorem continuousAt_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
-    ∀ {l : Vector α (n + 1)}, ContinuousAt (eraseIdx i) l
+    ∀ {l : Vector α (n + 1)}, ContinuousAt (Vector.eraseIdx i) l
   | ⟨l, hl⟩ => by
-    rw [ContinuousAt, eraseIdx, tendsto_subtype_rng]
+    rw [ContinuousAt, Vector.eraseIdx, tendsto_subtype_rng]
     simp only [Vector.eraseIdx_val]
     exact Tendsto.comp List.tendsto_eraseIdx continuousAt_subtype_val
 #align vector.continuous_at_remove_nth Vector.continuousAt_eraseIdx
@@ -234,7 +237,7 @@ theorem continuousAt_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
 @[deprecated (since := "2024-05-04")] alias continuousAt_removeNth := continuousAt_eraseIdx
 
 theorem continuous_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
-    Continuous (eraseIdx i : Vector α (n + 1) → Vector α n) :=
+    Continuous (Vector.eraseIdx i : Vector α (n + 1) → Vector α n) :=
   continuous_iff_continuousAt.mpr fun ⟨_a, _l⟩ => continuousAt_eraseIdx
 #align vector.continuous_remove_nth Vector.continuous_eraseIdx
 

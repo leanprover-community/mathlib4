@@ -99,7 +99,7 @@ theorem card_le_of_injective [Finite β] (f : α → β) (hf : Function.Injectiv
     Nat.card α ≤ Nat.card β := by
   haveI := Fintype.ofFinite β
   haveI := Fintype.ofInjective f hf
-  simpa only [Nat.card_eq_fintype_card, ge_iff_le] using Fintype.card_le_of_injective f hf
+  simpa only [Nat.card_eq_fintype_card] using Fintype.card_le_of_injective f hf
 #align finite.card_le_of_injective Finite.card_le_of_injective
 
 theorem card_le_of_embedding [Finite β] (f : α ↪ β) : Nat.card α ≤ Nat.card β :=
@@ -110,7 +110,7 @@ theorem card_le_of_surjective [Finite α] (f : α → β) (hf : Function.Surject
     Nat.card β ≤ Nat.card α := by
   haveI := Fintype.ofFinite α
   haveI := Fintype.ofSurjective f hf
-  simpa only [Nat.card_eq_fintype_card, ge_iff_le] using Fintype.card_le_of_surjective f hf
+  simpa only [Nat.card_eq_fintype_card] using Fintype.card_le_of_surjective f hf
 #align finite.card_le_of_surjective Finite.card_le_of_surjective
 
 theorem card_eq_zero_iff [Finite α] : Nat.card α = 0 ↔ IsEmpty α := by
@@ -179,7 +179,7 @@ theorem card_range_le [Finite α] (f : α → β) : Nat.card (Set.range f) ≤ N
 
 theorem card_subtype_le [Finite α] (p : α → Prop) : Nat.card { x // p x } ≤ Nat.card α := by
   haveI := Fintype.ofFinite α
-  simpa only [Nat.card_eq_fintype_card, ge_iff_le] using Fintype.card_subtype_le p
+  simpa only [Nat.card_eq_fintype_card] using Fintype.card_subtype_le p
 #align finite.card_subtype_le Finite.card_subtype_le
 
 theorem card_subtype_lt [Finite α] {p : α → Prop} {x : α} (hx : ¬p x) :

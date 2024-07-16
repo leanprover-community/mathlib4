@@ -200,16 +200,9 @@ def toΓSpecSheafedSpace : X.toSheafedSpace ⟶ Spec.toSheafedSpace.obj (op (Γ.
       X.toΓSpecCBasicOpens
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace
 
--- Porting Note: Now need much more hand holding: all variables explicit, and need to tidy up
--- significantly, was `TopCat.Sheaf.extend_hom_app _ _ _ _`
 theorem toΓSpecSheafedSpace_app_eq :
     X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) = X.toΓSpecCApp r := by
-  have := TopCat.Sheaf.extend_hom_app (Spec.toSheafedSpace.obj (op (Γ.obj (op X)))).presheaf
-    ((TopCat.Sheaf.pushforward _ X.toΓSpecBase).obj X.𝒪)
-    isBasis_basic_opens X.toΓSpecCBasicOpens r
-  dsimp at this
-  rw [← this]
-  dsimp
+  apply TopCat.Sheaf.extend_hom_app _ _ _
 
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace_app_eq AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace_app_eq
 
@@ -260,11 +253,7 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     rw [← toStalk_stalkMap_toΓSpec]
     erw [comp_apply, ← he]
     rw [RingHom.map_mul]
-    -- Porting note: `IsLocalization.map_units` and the goal needs to be simplified before Lean
-    -- realize it is useful
-    have := IsLocalization.map_units (R := Γ.obj (op X)) S s
-    dsimp at this ⊢
-    exact ht.mul <| this.map _
+    exact ht.mul <| (IsLocalization.map_units (R := Γ.obj (op X)) S s).map _
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec AlgebraicGeometry.LocallyRingedSpace.toΓSpec
 
 /-- On a locally ringed space `X`, the preimage of the zero locus of the prime spectrum

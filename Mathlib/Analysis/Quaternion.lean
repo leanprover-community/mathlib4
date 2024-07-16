@@ -101,7 +101,8 @@ noncomputable instance : NormedAlgebra ℝ ℍ where
   toAlgebra := Quaternion.algebra
 
 instance : CstarRing ℍ where
-  norm_star_mul_self {x} := (norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_star x)
+  norm_mul_self_le x :=
+    le_of_eq <| Eq.symm <| (norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_star x)
 
 /-- Coercion from `ℂ` to `ℍ`. -/
 @[coe] def coeComplex (z : ℂ) : ℍ := ⟨z.re, z.im, 0, 0⟩
