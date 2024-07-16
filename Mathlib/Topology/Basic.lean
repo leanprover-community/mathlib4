@@ -1158,7 +1158,6 @@ theorem acc_iff_cluster (x : X) (F : Filter X) : AccPt x F ↔ ClusterPt x (𝓟
   rw [AccPt, nhdsWithin, ClusterPt, inf_assoc]
 #align acc_iff_cluster acc_iff_cluster
 
-
 /-- `x` is an accumulation point of a set `C` iff it is a cluster point of `C ∖ {x}`. -/
 theorem acc_principal_iff_cluster (x : X) (C : Set X) :
     AccPt x (𝓟 C) ↔ ClusterPt x (𝓟 (C \ {x})) := by
