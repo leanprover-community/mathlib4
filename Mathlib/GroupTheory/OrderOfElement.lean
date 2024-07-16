@@ -1347,8 +1347,8 @@ lemma charP_of_prime_pow_injective (R) [Ring R] [Fintype R] (p n : ℕ) [hp : Fa
 
 namespace SemiconjBy
 
-variable [Group G] (a:G) {x y : G} (h:SemiconjBy a x y) in
-@[to_additive] lemma orderOf_eq : orderOf x = orderOf y := by
+@[to_additive]
+lemma orderOf_eq [Group G] (a : G) {x y : G} (h : SemiconjBy a x y) : orderOf x = orderOf y := by
   rw [orderOf_eq_orderOf_iff]
   intro n
   exact (h.pow_right n).eq_one_iff
