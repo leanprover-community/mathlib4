@@ -127,7 +127,7 @@ variable {𝕜}
 
 /-- The norm on `Unitization 𝕜 E` satisfies the C⋆-property -/
 instance Unitization.instCstarRing : CstarRing (Unitization 𝕜 E) where
-  norm_star_mul_self {x} := by
+  norm_mul_self_le x := by
     -- rewrite both sides as a `⊔`
     simp only [Unitization.norm_def, Prod.norm_def, ← sup_eq_max]
     -- Show that `(Unitization.splitMul 𝕜 E x).snd` satisifes the C⋆-property, in two stages:
