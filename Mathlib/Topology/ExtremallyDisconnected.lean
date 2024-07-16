@@ -37,8 +37,6 @@ open Function Set
 
 universe u
 
-section
-
 variable (X : Type u) [TopologicalSpace X]
 
 /-- An extremally disconnected topological space is a space

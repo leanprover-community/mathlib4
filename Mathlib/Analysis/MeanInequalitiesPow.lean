@@ -195,8 +195,9 @@ theorem add_rpow_le_rpow_add {p : ℝ} (a b : ℝ≥0) (hp1 : 1 ≤ p) : a ^ p +
 
 theorem rpow_add_rpow_le_add {p : ℝ} (a b : ℝ≥0) (hp1 : 1 ≤ p) :
     (a ^ p + b ^ p) ^ (1 / p) ≤ a + b := by
-  rw [← @NNReal.le_rpow_one_div_iff _ _ (1 / p) (by simp [lt_of_lt_of_le zero_lt_one hp1])]
-  rw [one_div_one_div]
+  rw [one_div]
+  rw [← @NNReal.le_rpow_inv_iff _ _ p⁻¹ (by simp [lt_of_lt_of_le zero_lt_one hp1])]
+  rw [inv_inv]
   exact add_rpow_le_rpow_add _ _ hp1
 #align nnreal.rpow_add_rpow_le_add NNReal.rpow_add_rpow_le_add
 
@@ -209,7 +210,7 @@ theorem rpow_add_rpow_le {p q : ℝ} (a b : ℝ≥0) (hp_pos : 0 < p) (hpq : p �
     ((a ^ p) ^ (q / p) + (b ^ p) ^ (q / p)) ^ (1 / (q / p)) ≤ a ^ p + b ^ p := by
     refine rpow_add_rpow_le_add (a ^ p) (b ^ p) ?_
     rwa [one_le_div hp_pos]
-  rw [h_rpow a, h_rpow b, NNReal.le_rpow_one_div_iff hp_pos, ← NNReal.rpow_mul, mul_comm,
+  rw [h_rpow a, h_rpow b, one_div p, NNReal.le_rpow_inv_iff hp_pos, ← NNReal.rpow_mul, mul_comm,
     mul_one_div]
   rwa [one_div_div] at h_rpow_add_rpow_le_add
 #align nnreal.rpow_add_rpow_le NNReal.rpow_add_rpow_le
@@ -219,9 +220,9 @@ theorem rpow_add_le_add_rpow {p : ℝ} (a b : ℝ≥0) (hp : 0 ≤ p) (hp1 : p �
   rcases hp.eq_or_lt with (rfl | hp_pos)
   · simp
   have h := rpow_add_rpow_le a b hp_pos hp1
-  rw [one_div_one] at h
+  rw [one_div_one, one_div] at h
   repeat' rw [NNReal.rpow_one] at h
-  exact (NNReal.le_rpow_one_div_iff hp_pos).mp h
+  exact (NNReal.le_rpow_inv_iff hp_pos).mp h
 #align nnreal.rpow_add_le_add_rpow NNReal.rpow_add_le_add_rpow
 
 end NNReal
@@ -311,8 +312,8 @@ theorem add_rpow_le_rpow_add {p : ℝ} (a b : ℝ≥0∞) (hp1 : 1 ≤ p) : a ^ 
 
 theorem rpow_add_rpow_le_add {p : ℝ} (a b : ℝ≥0∞) (hp1 : 1 ≤ p) :
     (a ^ p + b ^ p) ^ (1 / p) ≤ a + b := by
-  rw [← @ENNReal.le_rpow_one_div_iff _ _ (1 / p) (by simp [lt_of_lt_of_le zero_lt_one hp1])]
-  rw [one_div_one_div]
+  rw [one_div, ← @ENNReal.le_rpow_inv_iff _ _ p⁻¹ (by simp [lt_of_lt_of_le zero_lt_one hp1])]
+  rw [inv_inv]
   exact add_rpow_le_rpow_add _ _ hp1
 #align ennreal.rpow_add_rpow_le_add ENNReal.rpow_add_rpow_le_add
 
@@ -324,7 +325,7 @@ theorem rpow_add_rpow_le {p q : ℝ} (a b : ℝ≥0∞) (hp_pos : 0 < p) (hpq : 
     ((a ^ p) ^ (q / p) + (b ^ p) ^ (q / p)) ^ (1 / (q / p)) ≤ a ^ p + b ^ p := by
     refine rpow_add_rpow_le_add (a ^ p) (b ^ p) ?_
     rwa [one_le_div hp_pos]
-  rw [h_rpow a, h_rpow b, ENNReal.le_rpow_one_div_iff hp_pos, ← ENNReal.rpow_mul, mul_comm,
+  rw [h_rpow a, h_rpow b, one_div p, ENNReal.le_rpow_inv_iff hp_pos, ← ENNReal.rpow_mul, mul_comm,
     mul_one_div]
   rwa [one_div_div] at h_rpow_add_rpow_le_add
 #align ennreal.rpow_add_rpow_le ENNReal.rpow_add_rpow_le
@@ -334,9 +335,9 @@ theorem rpow_add_le_add_rpow {p : ℝ} (a b : ℝ≥0∞) (hp : 0 ≤ p) (hp1 : 
   rcases hp.eq_or_lt with (rfl | hp_pos)
   · simp
   have h := rpow_add_rpow_le a b hp_pos hp1
-  rw [one_div_one] at h
+  rw [one_div_one, one_div] at h
   repeat' rw [ENNReal.rpow_one] at h
-  exact (ENNReal.le_rpow_one_div_iff hp_pos).mp h
+  exact (ENNReal.le_rpow_inv_iff hp_pos).mp h
 #align ennreal.rpow_add_le_add_rpow ENNReal.rpow_add_le_add_rpow
 
 end ENNReal

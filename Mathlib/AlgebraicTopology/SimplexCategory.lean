@@ -158,7 +158,7 @@ lemma id_toOrderHom (a : SimplexCategory) :
     Hom.toOrderHom (𝟙 a) = OrderHom.id := rfl
 
 @[simp]
-lemma comp_toOrderHom {a b c: SimplexCategory} (f : a ⟶ b) (g : b ⟶ c) :
+lemma comp_toOrderHom {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c) :
     (f ≫ g).toOrderHom = g.toOrderHom.comp f.toOrderHom := rfl
 
 -- Porting note: added because `Hom.ext'` is not triggered automatically

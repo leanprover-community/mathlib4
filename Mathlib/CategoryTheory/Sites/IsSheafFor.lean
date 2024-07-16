@@ -153,7 +153,7 @@ For a more explicit version in the case where `R` is of the form `Presieve.ofAr
 def FamilyOfElements.PullbackCompatible (x : FamilyOfElements P R) [R.hasPullbacks] : Prop :=
   ∀ ⦃Y₁ Y₂⦄ ⦃f₁ : Y₁ ⟶ X⦄ ⦃f₂ : Y₂ ⟶ X⦄ (h₁ : R f₁) (h₂ : R f₂),
     haveI := hasPullbacks.has_pullbacks h₁ h₂
-    P.map (pullback.fst : Limits.pullback f₁ f₂ ⟶ _).op (x f₁ h₁) = P.map pullback.snd.op (x f₂ h₂)
+    P.map (pullback.fst f₁ f₂).op (x f₁ h₁) = P.map (pullback.snd f₁ f₂).op (x f₂ h₂)
 #align category_theory.presieve.family_of_elements.pullback_compatible CategoryTheory.Presieve.FamilyOfElements.PullbackCompatible
 
 theorem pullbackCompatible_iff (x : FamilyOfElements P R) [R.hasPullbacks] :
@@ -779,8 +779,8 @@ variable [(ofArrows X π).hasPullbacks]
 A more explicit version of `FamilyOfElements.PullbackCompatible` for a `Presieve.ofArrows`.
 -/
 def Arrows.PullbackCompatible (x : (i : I) → P.obj (op (X i))) : Prop :=
-  ∀ i j, P.map (pullback.fst (f := π i) (g := π j)).op (x i) =
-    P.map (pullback.snd (f := π i) (g := π j)).op (x j)
+  ∀ i j, P.map (pullback.fst (π i) (π j)).op (x i) =
+    P.map (pullback.snd (π i) (π j)).op (x j)
 
 theorem Arrows.pullbackCompatible_iff (x : (i : I) → P.obj (op (X i))) :
     Compatible P π x ↔ PullbackCompatible P π x := by

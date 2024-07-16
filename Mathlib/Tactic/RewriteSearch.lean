@@ -44,8 +44,6 @@ This limitation would need to be resolved in the `rw?` tactic first.
 
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Tactic.RewriteSearch
 
 open Lean Meta
