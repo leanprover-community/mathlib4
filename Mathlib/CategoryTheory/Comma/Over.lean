@@ -243,6 +243,7 @@ def mapComp {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     map (f ≫ g) ≅ (map f) ⋙ (map g) := eqToIso (mapComp_eq f g)
 #align category_theory.over.map_comp CategoryTheory.Over.mapComp
 
+variable (T) in
 /-- The functor defined by the over categories.-/
 @[simps] def mapFunctor : T ⥤ Cat where
   obj X := Cat.of (Over X)
@@ -572,8 +573,9 @@ def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map g ⋙ 
   eqToIso (mapComp_eq f g)
 #align category_theory.under.map_comp CategoryTheory.Under.mapComp
 
+variable (T) in
 /-- The functor defined by the under categories.-/
-def mapFunctor : Tᵒᵖ ⥤ Cat where
+@[simps] def mapFunctor : Tᵒᵖ  ⥤ Cat where
   obj X := Cat.of (Under X.unop)
   map f := map f.unop
   map_id X := mapId_eq X.unop
