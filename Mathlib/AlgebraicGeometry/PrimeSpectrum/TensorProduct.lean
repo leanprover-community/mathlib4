@@ -12,7 +12,7 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 
 ## Main result
 - `PrimeSpectrum.embedding_tensorProductTo_of_surjectiveOnStalks`:
-  If `R →+* T` is surjective on stalks,
+  If `R →+* T` is surjective on stalks (see Mathlib/RingTheory/SurjectiveOnStalks.lean),
   then `Spec(S ⊗[R] T) → Spec S × Spec T` is a topological embedding
   (where `Spec S × Spec T` is the cartesian product with the product topology).
 -/
@@ -60,11 +60,9 @@ lemma PrimeSpectrum.embedding_tensorProductTo_of_surjectiveOnStalks :
     (embedding_tensorProductTo_of_surjectiveOnStalks_aux R S T hRT p₁ p₂ e).antisymm
       (embedding_tensorProductTo_of_surjectiveOnStalks_aux R S T hRT p₂ p₁ e.symm)⟩
   let g : T →+* S ⊗[R] T := Algebra.TensorProduct.includeRight.toRingHom
-  refine ⟨(continuous_tensorProductTo R S T).le_induced.antisymm ?_⟩
-  conv_rhs => rw [isBasis_basic_opens.eq_generateFrom]
-  rw [TopologicalSpace.le_generateFrom_iff_subset_isOpen]
-  rintro _ ⟨_, ⟨f, rfl⟩, rfl⟩
-  rw [Set.mem_setOf_eq, @isOpen_iff_forall_mem_open]
+  refine ⟨(continuous_tensorProductTo ..).le_induced.antisymm (isBasis_basic_opens.le_iff.mpr ?_)⟩
+  rintro _ ⟨f, rfl⟩
+  rw [@isOpen_iff_forall_mem_open]
   rintro J (hJ : f ∉ J.asIdeal)
   obtain ⟨t, r, a, ht, e⟩ := RingHom.exists_mul_eq_tmul_of_surjectiveOnStalks hRT f
     (J.asIdeal.comap g) inferInstance
