@@ -71,12 +71,17 @@ theorem hasPullback_of_left_iso : HasPullback f g :=
 
 attribute [local instance] hasPullback_of_left_iso
 
-instance pullback_snd_iso_of_left_iso : IsIso (pullback.snd : pullback f g ⟶ _) := by
+instance pullback_snd_iso_of_left_iso : IsIso (pullback.snd f g) := by
   refine ⟨⟨pullback.lift (g ≫ inv f) (𝟙 _) (by simp), ?_, by simp⟩⟩
   ext
   · simp [← pullback.condition_assoc]
   · simp [pullback.condition_assoc]
 #align category_theory.limits.pullback_snd_iso_of_left_iso CategoryTheory.Limits.pullback_snd_iso_of_left_iso
+
+@[reassoc (attr := simp)]
+lemma pullback_inv_snd_fst_of_left_isIso :
+    inv (pullback.snd f g) ≫ pullback.fst f g = g ≫ inv f := by
+  rw [IsIso.inv_comp_eq, ← pullback.condition_assoc, IsIso.hom_inv_id, Category.comp_id]
 
 end PullbackLeftIso
 
@@ -129,12 +134,17 @@ theorem hasPullback_of_right_iso : HasPullback f g :=
 
 attribute [local instance] hasPullback_of_right_iso
 
-instance pullback_snd_iso_of_right_iso : IsIso (pullback.fst : pullback f g ⟶ _) := by
+instance pullback_snd_iso_of_right_iso : IsIso (pullback.fst f g) := by
   refine ⟨⟨pullback.lift (𝟙 _) (f ≫ inv g) (by simp), ?_, by simp⟩⟩
   ext
   · simp
   · simp [pullback.condition_assoc]
 #align category_theory.limits.pullback_snd_iso_of_right_iso CategoryTheory.Limits.pullback_snd_iso_of_right_iso
+
+@[reassoc (attr := simp)]
+lemma pullback_inv_fst_snd_of_right_isIso :
+    inv (pullback.fst f g) ≫ pullback.snd f g = f ≫ inv g := by
+  rw [IsIso.inv_comp_eq, pullback.condition_assoc, IsIso.hom_inv_id, Category.comp_id]
 
 end PullbackRightIso
 
@@ -187,12 +197,17 @@ theorem hasPushout_of_left_iso : HasPushout f g :=
 
 attribute [local instance] hasPushout_of_left_iso
 
-instance pushout_inr_iso_of_left_iso : IsIso (pushout.inr : _ ⟶ pushout f g) := by
+instance pushout_inr_iso_of_left_iso : IsIso (pushout.inr f g) := by
   refine ⟨⟨pushout.desc (inv f ≫ g) (𝟙 _) (by simp), by simp, ?_⟩⟩
   ext
   · simp [← pushout.condition]
   · simp [pushout.condition_assoc]
 #align category_theory.limits.pushout_inr_iso_of_left_iso CategoryTheory.Limits.pushout_inr_iso_of_left_iso
+
+@[reassoc (attr := simp)]
+lemma pushout_inl_inv_inr_of_right_isIso :
+    pushout.inl f g ≫ inv (pushout.inr f g) = inv f ≫ g := by
+  rw [IsIso.eq_inv_comp, pushout.condition_assoc, IsIso.hom_inv_id, Category.comp_id]
 
 end PushoutLeftIso
 
@@ -245,12 +260,17 @@ theorem hasPushout_of_right_iso : HasPushout f g :=
 
 attribute [local instance] hasPushout_of_right_iso
 
-instance pushout_inl_iso_of_right_iso : IsIso (pushout.inl : _ ⟶ pushout f g) := by
+instance pushout_inl_iso_of_right_iso : IsIso (pushout.inl _ _ : _ ⟶ pushout f g) := by
   refine ⟨⟨pushout.desc (𝟙 _) (inv g ≫ f) (by simp), by simp, ?_⟩⟩
   ext
   · simp [← pushout.condition]
   · simp [pushout.condition]
 #align category_theory.limits.pushout_inl_iso_of_right_iso CategoryTheory.Limits.pushout_inl_iso_of_right_iso
+
+@[reassoc (attr := simp)]
+lemma pushout_inr_inv_inl_of_right_isIso :
+    pushout.inr f g ≫ inv (pushout.inl f g) = inv g ≫ f := by
+  rw [IsIso.eq_inv_comp, ← pushout.condition_assoc, IsIso.hom_inv_id, Category.comp_id]
 
 end PushoutRightIso
 

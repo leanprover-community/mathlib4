@@ -115,7 +115,10 @@ def ι : M →ₗ[R] CliffordAlgebra Q :=
 /-- As well as being linear, `ι Q` squares to the quadratic form -/
 @[simp]
 theorem ι_sq_scalar (m : M) : ι Q m * ι Q m = algebraMap R _ (Q m) := by
-  erw [← AlgHom.map_mul, RingQuot.mkAlgHom_rel R (Rel.of m), AlgHom.commutes]
+  rw [ι]
+  erw [LinearMap.comp_apply]
+  rw [AlgHom.toLinearMap_apply, ← map_mul (RingQuot.mkAlgHom R (Rel Q)),
+    RingQuot.mkAlgHom_rel R (Rel.of m), AlgHom.commutes]
   rfl
 #align clifford_algebra.ι_sq_scalar CliffordAlgebra.ι_sq_scalar
 
@@ -124,7 +127,7 @@ variable {Q} {A : Type*} [Semiring A] [Algebra R A]
 @[simp]
 theorem comp_ι_sq_scalar (g : CliffordAlgebra Q →ₐ[R] A) (m : M) :
     g (ι Q m) * g (ι Q m) = algebraMap _ _ (Q m) := by
-  rw [← AlgHom.map_mul, ι_sq_scalar, AlgHom.commutes]
+  rw [← map_mul, ι_sq_scalar, AlgHom.commutes]
 #align clifford_algebra.comp_ι_sq_scalar CliffordAlgebra.comp_ι_sq_scalar
 
 variable (Q)
@@ -140,7 +143,7 @@ def lift :
     RingQuot.liftAlgHom R
       ⟨TensorAlgebra.lift R (f : M →ₗ[R] A), fun x y (h : Rel Q x y) => by
         induction h
-        rw [AlgHom.commutes, AlgHom.map_mul, TensorAlgebra.lift_ι_apply, f.prop]⟩
+        rw [AlgHom.commutes, map_mul, TensorAlgebra.lift_ι_apply, f.prop]⟩
   invFun F :=
     ⟨F.toLinearMap.comp (ι Q), fun m => by
       rw [LinearMap.comp_apply, AlgHom.toLinearMap_apply, comp_ι_sq_scalar]⟩
@@ -232,14 +235,14 @@ theorem induction {C : CliffordAlgebra Q → Prop}
 
 theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [Algebra R A]
     (f : M →ₗ[R] A) (hf : ∀ x, f x * f x = algebraMap _ _ (Q x)) (a b : M) :
-    f a * f b + f b * f a = algebraMap R _ (QuadraticForm.polar Q a b) :=
+    f a * f b + f b * f a = algebraMap R _ (QuadraticMap.polar Q a b) :=
   calc
     f a * f b + f b * f a = f (a + b) * f (a + b) - f a * f a - f b * f b := by
       rw [f.map_add, mul_add, add_mul, add_mul]; abel
     _ = algebraMap R _ (Q (a + b)) - algebraMap R _ (Q a) - algebraMap R _ (Q b) := by
       rw [hf, hf, hf]
     _ = algebraMap R _ (Q (a + b) - Q a - Q b) := by rw [← RingHom.map_sub, ← RingHom.map_sub]
-    _ = algebraMap R _ (QuadraticForm.polar Q a b) := rfl
+    _ = algebraMap R _ (QuadraticMap.polar Q a b) := rfl
 
 /-- An alternative way to provide the argument to `CliffordAlgebra.lift` when `2` is invertible.
 
@@ -252,18 +255,18 @@ theorem forall_mul_self_eq_iff {A : Type*} [Ring A] [Algebra R A] (h2 : IsUnit (
         Q.polarBilin.compr₂ (Algebra.linearMap R A) := by
   simp_rw [DFunLike.ext_iff]
   refine ⟨mul_add_swap_eq_polar_of_forall_mul_self_eq _, fun h x => ?_⟩
-  change ∀ x y : M, f x * f y + f y * f x = algebraMap R A (QuadraticForm.polar Q x y) at h
+  change ∀ x y : M, f x * f y + f y * f x = algebraMap R A (QuadraticMap.polar Q x y) at h
   apply h2.mul_left_cancel
-  rw [two_mul, two_mul, h x x, QuadraticForm.polar_self, two_mul, map_add]
+  rw [two_mul, two_mul, h x x, QuadraticMap.polar_self, two_smul, map_add]
 
 /-- The symmetric product of vectors is a scalar -/
 theorem ι_mul_ι_add_swap (a b : M) :
-    ι Q a * ι Q b + ι Q b * ι Q a = algebraMap R _ (QuadraticForm.polar Q a b) :=
+    ι Q a * ι Q b + ι Q b * ι Q a = algebraMap R _ (QuadraticMap.polar Q a b) :=
   mul_add_swap_eq_polar_of_forall_mul_self_eq _ (ι_sq_scalar _) _ _
 #align clifford_algebra.ι_mul_ι_add_swap CliffordAlgebra.ι_mul_ι_add_swap
 
 theorem ι_mul_ι_comm (a b : M) :
-    ι Q a * ι Q b = algebraMap R _ (QuadraticForm.polar Q a b) - ι Q b * ι Q a :=
+    ι Q a * ι Q b = algebraMap R _ (QuadraticMap.polar Q a b) - ι Q b * ι Q a :=
   eq_sub_of_add_eq (ι_mul_ι_add_swap a b)
 #align clifford_algebra.ι_mul_comm CliffordAlgebra.ι_mul_ι_comm
 
@@ -290,7 +293,7 @@ end isOrtho
 
 /-- $aba$ is a vector. -/
 theorem ι_mul_ι_mul_ι (a b : M) :
-    ι Q a * ι Q b * ι Q a = ι Q (QuadraticForm.polar Q a b • a - Q a • b) := by
+    ι Q a * ι Q b * ι Q a = ι Q (QuadraticMap.polar Q a b • a - Q a • b) := by
   rw [ι_mul_ι_comm, sub_mul, mul_assoc, ι_sq_scalar, ← Algebra.smul_def, ← Algebra.commutes, ←
     Algebra.smul_def, ← map_smul, ← map_smul, ← map_sub]
 #align clifford_algebra.ι_mul_ι_mul_ι CliffordAlgebra.ι_mul_ι_mul_ι
