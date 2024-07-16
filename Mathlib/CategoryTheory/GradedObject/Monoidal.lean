@@ -292,7 +292,7 @@ abbrev _root_.CategoryTheory.GradedObject.HasLeftTensor₃ObjExt (j : I) := Pres
 
 variable {X₁ X₂ X₃}
 
-@[ext]
+@[ext (iff := false)]
 lemma left_tensor_tensorObj₃_ext {j : I} {A : C} (Z : C)
     (f g : Z ⊗ tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
     [H : HasGoodTensorTensor₂₃ X₁ X₂ X₃]
@@ -339,7 +339,7 @@ abbrev _root_.CategoryTheory.GradedObject.HasTensor₄ObjExt :=
 
 variable {X₁ X₂ X₃ X₄}
 
-@[ext]
+@[ext (iff := false)]
 lemma tensorObj₄_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ (tensorObj X₃ X₄)) j ⟶ A)
     [HasGoodTensorTensor₂₃ X₂ X₃ X₄]
     [H : HasTensor₄ObjExt X₁ X₂ X₃ X₄]
