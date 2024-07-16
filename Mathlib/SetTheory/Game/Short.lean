@@ -232,7 +232,7 @@ instance shortNeg : ∀ (x : PGame.{u}) [Short x], Short (-x)
 
 instance shortAdd : ∀ (x y : PGame.{u}) [Short x] [Short y], Short (x + y)
   | mk xl xr xL xR, mk yl yr yL yR, _, _ => by
-    apply Short.mk;
+    apply Short.mk
     all_goals
       rintro ⟨i⟩
       · apply shortAdd
@@ -249,11 +249,11 @@ instance shortOfNat (n : ℕ) [Nat.AtLeastTwo n] : Short (no_index (OfNat.ofNat 
 
 -- Porting note: `bit0` and `bit1` are deprecated so these instances can probably be removed.
 set_option linter.deprecated false in
-instance shortBit0 (x : PGame.{u}) [Short x] : Short (bit0 x) := by dsimp [bit0]; infer_instance
+instance shortBit0 (x : PGame.{u}) [Short x] : Short (x + x) := by infer_instance
 #align pgame.short_bit0 SetTheory.PGame.shortBit0
 
 set_option linter.deprecated false in
-instance shortBit1 (x : PGame.{u}) [Short x] : Short (bit1 x) := by dsimp [bit1]; infer_instance
+instance shortBit1 (x : PGame.{u}) [Short x] : Short ((x + x) + 1) := shortAdd _ _
 #align pgame.short_bit1 SetTheory.PGame.shortBit1
 
 /-- Auxiliary construction of decidability instances.
@@ -318,3 +318,5 @@ example : Decidable ((1 : PGame) ≤ 1) := by infer_instance
 -- example : (0 : PGame.{u}) ≤ 0 := by decide
 -- example : (1 : PGame.{u}) ≤ 1 := by decide
 end PGame
+
+end SetTheory

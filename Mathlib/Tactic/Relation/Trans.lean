@@ -6,6 +6,7 @@ Authors: Siddhartha Gadgil, Mario Carneiro
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Elab.Tactic.Basic
 import Lean.Elab.Tactic.ElabTerm
+import Mathlib.Tactic.TypeStar
 
 /-!
 # `trans` tactic
@@ -13,8 +14,6 @@ import Lean.Elab.Tactic.ElabTerm
 This implements the `trans` tactic, which can apply transitivity theorems with an optional middle
 variable argument.
 -/
-
-set_option autoImplicit true
 
 namespace Mathlib.Tactic
 open Lean Meta Elab
@@ -50,14 +49,16 @@ initialize registerBuiltinAttribute {
     transExt.add (decl, key) kind
 }
 
+universe u v in
 /-- Composition using the `Trans` class in the homogeneous case. -/
-def _root_.Trans.simple {a b c : α} [Trans r r r] : r a b → r b c → r a c := trans
+def _root_.Trans.simple {α : Sort u} {r : α → α → Sort v} {a b c : α} [Trans r r r] :
+    r a b → r b c → r a c := trans
 
+universe u v w in
 /-- Composition using the `Trans` class in the general case. -/
-def _root_.Trans.het {a : α} {b : β} {c : γ}
-    {r : α → β → Sort u} {s : β → γ → Sort v} {t : outParam (α → γ → Sort w)}
-    [Trans r s t] : r a b → s b c → t a c := trans
-
+def _root_.Trans.het {α β γ : Sort*} {a : α} {b : β} {c : γ}
+    {r : α → β → Sort u} {s : β → γ → Sort v} {t : outParam (α → γ → Sort w)} [Trans r s t] :
+    r a b → s b c → t a c := trans
 
 open Lean.Elab.Tactic
 

@@ -410,3 +410,5 @@ theorem grundyValue_add (G H : PGame) [G.Impartial] [H.Impartial] {n m : ℕ} (h
 #align pgame.grundy_value_add SetTheory.PGame.grundyValue_add
 
 end PGame
+
+end SetTheory

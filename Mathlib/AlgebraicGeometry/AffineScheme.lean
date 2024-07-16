@@ -225,6 +225,10 @@ instance Scheme.isAffine_affineBasisCover (X : Scheme) (i : X.affineBasisCover.J
   isAffine_Spec _
 #align algebraic_geometry.Scheme.affine_basis_cover_is_affine AlgebraicGeometry.Scheme.isAffine_affineBasisCover
 
+instance Scheme.isAffine_affineOpenCover (X : Scheme) (𝒰 : X.AffineOpenCover) (i: 𝒰.J) :
+    IsAffine (𝒰.openCover.obj i) :=
+  inferInstanceAs (IsAffine (Spec (𝒰.obj i)))
+
 theorem isBasis_affine_open (X : Scheme) : Opens.IsBasis X.affineOpens := by
   rw [Opens.isBasis_iff_nbhd]
   rintro U x (hU : x ∈ (U : Set X))
@@ -233,6 +237,13 @@ theorem isBasis_affine_open (X : Scheme) : Opens.IsBasis X.affineOpens := by
   rcases hS with ⟨i, rfl⟩
   exact isAffineOpen_opensRange _
 #align algebraic_geometry.is_basis_affine_open AlgebraicGeometry.isBasis_affine_open
+
+theorem iSup_affineOpens_eq_top (X : Scheme) : ⨆ i : X.affineOpens, (i : Opens X) = ⊤ := by
+  apply Opens.ext
+  rw [Opens.coe_iSup]
+  apply IsTopologicalBasis.sUnion_eq
+  rw [← Set.image_eq_range]
+  exact isBasis_affine_open X
 
 theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
     (X : Scheme) [IsAffine X] (f : Scheme.Γ.obj (op X)) :
@@ -288,7 +299,7 @@ theorem range_fromSpec :
 theorem opensRange_fromSpec : Scheme.Hom.opensRange hU.fromSpec = U := Opens.ext (range_fromSpec hU)
 
 @[reassoc (attr := simp)]
-theorem map_fromSpec {V : Opens X} (hV : IsAffineOpen V) (f : op U ⟶ op V):
+theorem map_fromSpec {V : Opens X} (hV : IsAffineOpen V) (f : op U ⟶ op V) :
     Spec.map (X.presheaf.map f) ≫ hU.fromSpec = hV.fromSpec := by
   have : IsAffine (X.restrictFunctor.obj U).left := hU
   haveI : IsAffine _ := hV
@@ -424,7 +435,7 @@ theorem basicOpen :
   exact Opens.ext (PrimeSpectrum.localization_away_comap_range (Localization.Away f) f).symm
 #align algebraic_geometry.is_affine_open.basic_open_is_affine AlgebraicGeometry.IsAffineOpen.basicOpen
 
-theorem ιOpens_basicOpen_preimage (r : Γ(X, ⊤)):
+theorem ιOpens_basicOpen_preimage (r : Γ(X, ⊤)) :
     IsAffineOpen (Scheme.ιOpens (X.basicOpen r) ⁻¹ᵁ U) := by
   apply (Scheme.ιOpens (X.basicOpen r)).isAffineOpen_iff_of_isOpenImmersion.mp
   dsimp [Scheme.Hom.opensFunctor, LocallyRingedSpace.IsOpenImmersion.opensFunctor]
