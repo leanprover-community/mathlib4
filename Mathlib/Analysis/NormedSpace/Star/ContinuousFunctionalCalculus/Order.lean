@@ -118,6 +118,17 @@ lemma CstarRing.star_mul_le_algebraMap_norm_sq {a : A} : star a * a ≤ algebraM
   have : star a * a ≤ algebraMap ℝ A ‖star a * a‖ := IsSelfAdjoint.le_algebraMap_norm_self
   rwa [CstarRing.norm_star_mul_self, ← pow_two] at this
 
+lemma IsSelfAdjoint.toReal_spectralRadius_eq_norm {a : A} (ha : IsSelfAdjoint a) :
+    (spectralRadius ℝ a).toReal = ‖a‖ := by
+  simp [ha.spectrumRestricts.spectralRadius_eq, ha.spectralRadius_eq_nnnorm]
+
+lemma CstarRing.norm_or_neg_norm_mem_spectrum [Nontrivial A] {a : A}
+    (ha : IsSelfAdjoint a := by cfc_tac) : ‖a‖ ∈ spectrum ℝ a ∨ -‖a‖ ∈ spectrum ℝ a := by
+  have ha' : SpectrumRestricts a Complex.reCLM := ha.spectrumRestricts
+  have := ha.toReal_spectralRadius_eq_norm
+  convert Real.spectralRadius_mem_spectrum_or (ha'.image ▸ (spectrum.nonempty a).image _)
+    <;> exact id (Eq.symm this)
+
 lemma CstarRing.nnnorm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖₊ ∈ spectrum ℝ≥0 a := by
   have : IsSelfAdjoint a := .of_nonneg ha

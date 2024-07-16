@@ -69,6 +69,10 @@ theorem IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
   simp
 #align is_self_adjoint.spectral_radius_eq_nnnorm IsSelfAdjoint.spectralRadius_eq_nnnorm
 
+lemma IsSelfAdjoint.toReal_spectralRadius_complex_eq_norm {a : A} (ha : IsSelfAdjoint a) :
+    (spectralRadius ℂ a).toReal = ‖a‖ := by
+  simp [ha.spectralRadius_eq_nnnorm]
+
 theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
     spectralRadius ℂ a = ‖a‖₊ := by
   refine (ENNReal.pow_strictMono two_ne_zero).injective ?_

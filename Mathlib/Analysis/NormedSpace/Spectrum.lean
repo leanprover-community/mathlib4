@@ -692,6 +692,13 @@ lemma _root_.Real.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [Normed
     (spectralRadius ℝ a).toReal ∈ spectrum ℝ a :=
   NNReal.spectralRadius_mem_spectrum ha ha'
 
+lemma _root_.Real.spectralRadius_mem_spectrum_or {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+    [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty) :
+    (spectralRadius ℝ a).toReal ∈ spectrum ℝ a ∨ -(spectralRadius ℝ a).toReal ∈ spectrum ℝ a := by
+  obtain ⟨x, hx₁, hx₂⟩ := spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty ha
+  simp only [← hx₂, ENNReal.coe_toReal, coe_nnnorm, Real.norm_eq_abs]
+  exact abs_choice x |>.imp (fun h ↦ by rwa [h]) (fun h ↦ by simpa [h])
+
 end SpectrumRestricts
 
 namespace QuasispectrumRestricts
