@@ -354,21 +354,6 @@ def NormalExpr.rightUnitor (f : Mor₁) : NormalExpr :=
 def NormalExpr.rightUnitorInv (f : Mor₁) : NormalExpr :=
   .nil <| .atom <| .rightUnitorInv f
 
--- /-- Return `η` for `η ▷ g₁ ▷ ... ▷ gₙ`. -/
--- def WhiskerRightExpr.atom : WhiskerRightExpr → Atom
---   | WhiskerRightExpr.of η => η
---   | WhiskerRightExpr.whisker η _ => η.atom
-
---   /-- Return `η` for `η ▷ g₁ ▷ ... ▷ gₙ`. -/
--- def TensorHomExpr.atom : TensorHomExpr → Atom
---   | TensorHomExpr.of η => η
---   | TensorHomExpr.cons η _ => η.atom
-
--- /-- Return `η` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
--- def WhiskerLeftExpr.atom : WhiskerLeftExpr → Atom
---   | WhiskerLeftExpr.of η => η.atom
---   | WhiskerLeftExpr.whisker _ η => η.atom
-
 /-- Construct a `Structural` expression from a Lean expression for a structural 2-morphism. -/
 partial def structural? (e : Expr) : MetaM Structural := do
   match (← whnfR e).getAppFnArgs with
@@ -420,164 +405,6 @@ def NormalExpr.ofNormalExpr (α : Structural) (e : NormalExpr) : MetaM NormalExp
   | .nil β => return .nil (α.comp β)
   | .cons β η ηs => return .cons (α.comp β) η ηs
 
-mutual
-
-/-- Evaluate the expression `η ≫ θ` into a normalized form. -/
-partial def evalComp : NormalExpr → NormalExpr → MetaM NormalExpr
-  | .nil α, .cons β η ηs => do
-    return (.cons (α.comp β) η ηs)
-  | .nil α, .nil α' => do
-    return .nil (α.comp α')
-  | .cons α η ηs, θ => do
-    let ι ← evalComp ηs θ
-    return .cons α η ι
-
-/-- Evaluate the expression `f ◁ η` into a normalized form. -/
-partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MetaM NormalExpr
-  | f, .nil α => return .nil (.whiskerLeft f α)
-  | .of f, .cons α η ηs => do
-    let η' := WhiskerLeftExpr.whisker f η
-    let θ ← evalWhiskerLeftExpr (.of f) ηs
-    return .cons (.whiskerLeft (.of f) α) η' θ
-  | .comp f g, η => do
-    let θ ← evalWhiskerLeftExpr g η
-    let ι ← evalWhiskerLeftExpr f θ
-    let h := η.src
-    let h' := η.tgt
-    let ι' ← evalComp ι (NormalExpr.associatorInv f g h')
-    let ι'' ← evalComp (NormalExpr.associator f g h) ι'
-    return ι''
-  | .id, η => do
-    let f := η.src
-    let g := η.tgt
-    let η' ← evalComp η (NormalExpr.leftUnitorInv g)
-    let η'' ← evalComp (NormalExpr.leftUnitor f) η'
-    return η''
-
-/-- Evaluate the expression `η ▷ f` into a normalized form. -/
-partial def evalWhiskerRightExprAux : TensorHomExpr → Atom₁ → MetaM NormalExpr
-  | .of η, f => NormalExpr.of <| .of <| .of <| .whisker η f
-  | .cons η ηs, f => do
-    let ηs' ← evalWhiskerRightExprAux ηs f
-    let η₁ ← evalTensorHomExpr (← NormalExpr.of <| .of <| .of η) ηs'
-    let η₂ ← evalComp η₁ (.associatorInv (← η.tgt) (← ηs.tgt) (.of f))
-    let η₃ ← evalComp (.associator (← η.src) (← ηs.src) (.of f)) η₂
-    return η₃
-
-/-- Evaluate the expression `η ▷ f` into a normalized form. -/
-partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
-  | .nil α, h => return .nil (.whiskerRight α h)
-  | .cons α (.of η) ηs, .of f => do
-    let ηs₁ ← evalWhiskerRightExpr ηs (.of f)
-    let η₁ ← evalWhiskerRightExprAux η f
-    let η₂ ← evalComp η₁ ηs₁
-    let η₃ ← NormalExpr.ofNormalExpr (.whiskerRight α (.of f)) η₂
-    return η₃
-  | .cons α (.whisker f η) ηs, h => do
-    let g ← η.src
-    let g' ← η.tgt
-    let η₁ ← evalWhiskerRightExpr (← NormalExpr.of η) h
-    let η₂ ← evalWhiskerLeftExpr (.of f) η₁
-    let ηs₁ ← evalWhiskerRightExpr ηs h
-    let ηs₂ ← evalComp (.associatorInv (.of f) g' h) ηs₁
-    let η₃ ← evalComp η₂ ηs₂
-    let η₄ ← evalComp (.associator (.of f) g h) η₃
-    let η₅ ← NormalExpr.ofNormalExpr (.whiskerRight α h) η₄
-    return η₅
-  | η, .comp g h => do
-    let η₁ ← evalWhiskerRightExpr η g
-    let η₂ ← evalWhiskerRightExpr η₁ h
-    let f := η.src
-    let f' := η.tgt
-    let η₃ ← evalComp η₂ (.associator f' g h)
-    let η₄ ← evalComp (.associatorInv f g h) η₃
-    return η₄
-  | η, .id => do
-    let f := η.src
-    let g := η.tgt
-    let η₁ ← evalComp η (.rightUnitorInv g)
-    let η₂ ← evalComp (.rightUnitor f) η₁
-    return η₂
-
-/-- Evaluate the expression `η ⊗ θ` into a normalized form. -/
-partial def evalTensorHomAux : TensorHomExpr → TensorHomExpr → MetaM NormalExpr
-  | .of η, θ => NormalExpr.of <| .of <| .cons η θ
-  | .cons η ηs, θ => do
-    let α := NormalExpr.associator (← η.src) (← ηs.src) (← θ.src)
-    let α' := NormalExpr.associatorInv (← η.tgt) (← ηs.tgt) (← θ.tgt)
-    let ηθ ← evalTensorHomAux ηs θ
-    let η₁ ← evalTensorHomExpr (← NormalExpr.of <| .of <| .of η) ηθ
-    let ηθ₁ ← evalComp η₁ α'
-    let ηθ₂ ← evalComp α ηθ₁
-    return ηθ₂
-
-/-- Evaluate the expression `η ⊗ θ` into a normalized form. -/
-partial def evalTensorHomAux' : WhiskerLeftExpr → WhiskerLeftExpr → MetaM NormalExpr
-  | .of η, .of θ => evalTensorHomAux η θ
-  | .whisker f η, θ => do
-    let ηθ ← evalTensorHomAux' η θ
-    let ηθ₁ ← evalWhiskerLeftExpr (.of f) ηθ
-    let ηθ₂ ← evalComp ηθ₁ (.associatorInv (.of f) (← η.tgt) (← θ.tgt))
-    let ηθ₃ ← evalComp (.associator (.of f) (← η.src) (← θ.src)) ηθ₂
-    return ηθ₃
-  | .of η, .whisker f θ => do
-    let η₁ ← evalWhiskerRightExprAux η f
-    let ηθ ← evalTensorHomExpr η₁ (← NormalExpr.of θ)
-    let ηθ₁ ← evalComp ηθ (.associator (← η.tgt) (.of f) (← θ.tgt))
-    let ηθ₂ ← evalComp (.associatorInv (← η.src) (.of f) (← θ.src)) ηθ₁
-    return ηθ₂
-
-/-- Evaluate the expression `η ⊗ θ` into a normalized form. -/
-partial def evalTensorHomExpr : NormalExpr → NormalExpr → MetaM NormalExpr
-  | .nil α, .nil β => do
-    return .nil (α.tensorHom β)
-  | .nil α, .cons β η ηs => do
-    let η₁ ← evalWhiskerLeftExpr α.tgt (← NormalExpr.of η)
-    let ηs₁ ← evalWhiskerLeftExpr α.tgt ηs
-    let η₂ ← evalComp η₁ ηs₁
-    let η₃ ← NormalExpr.ofNormalExpr (α.tensorHom β) η₂
-    return η₃
-  | .cons α η ηs, .nil β => do
-    let η₁ ← evalWhiskerRightExpr (← NormalExpr.of η) β.tgt
-    let ηs₁ ← evalWhiskerRightExpr ηs β.tgt
-    let η₂ ← evalComp η₁ ηs₁
-    let η₃ ← NormalExpr.ofNormalExpr (α.tensorHom β) η₂
-    return η₃
-  | .cons α η ηs, .cons β θ θs => do
-    let ηθ ← evalTensorHomAux' η θ
-    let ηθs ← evalTensorHomExpr ηs θs
-    let ηθ₁ ← evalComp ηθ ηθs
-    let ηθ₂ ← NormalExpr.ofNormalExpr (α.tensorHom β) ηθ₁
-    return ηθ₂
-
-end
-
-/-- Evaluate the expression of a 2-morphism into a normalized form. -/
-partial def eval (e : Expr) : MetaM NormalExpr := do
-  if let .some e' ← structuralAtom? e then return .nil <| .atom e' else
-    match e.getAppFnArgs with
-    | (``CategoryStruct.id, #[_, _, f]) =>
-      return .nil (.id (← toMor₁ f))
-    | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) =>
-      let η_e ← eval η
-      let θ_e ← eval θ
-      let ηθ ← evalComp η_e θ_e
-      return ηθ
-    | (``MonoidalCategoryStruct.whiskerLeft, #[_, _, _, f, _, _, η]) =>
-      evalWhiskerLeftExpr (← toMor₁ f) (← eval η)
-    | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, h]) =>
-      evalWhiskerRightExpr (← eval η) (← toMor₁ h)
-    | (``monoidalComp, #[C, _, _, _, _, _, _, η, θ]) =>
-      let η_e ← eval η
-      let α₀ ← structuralOfMonoidalComp C e
-      let α := NormalExpr.nil α₀
-      let θ_e ← eval θ
-      let αθ ← evalComp α θ_e
-      let ηαθ ← evalComp η_e αθ
-      return ηαθ
-    | (``MonoidalCategoryStruct.tensorHom, #[_, _, _, _, _, _, _, η, θ]) =>
-      evalTensorHomExpr (← eval η) (← eval θ)
-    | _ => NormalExpr.ofExpr e
 section
 
 open scoped MonoidalCategory
@@ -759,6 +586,8 @@ structure Result where
   /-- The proof that the normalized expression is equal to the original expression. -/
   proof : Expr
 
+mutual
+
 /-- Evaluate the expression `η ≫ θ` into a normalized form. -/
 partial def evalComp : NormalExpr → NormalExpr → MonoidalM Result
   | .nil α, .cons β η ηs => do
@@ -803,30 +632,35 @@ partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MonoidalM Result
     catch _ => return ⟨η'', mkConst ``True⟩
 
 /-- Evaluate the expression `η ▷ f` into a normalized form. -/
+partial def evalWhiskerRightExprAux : TensorHomExpr → Atom₁ → MonoidalM Result
+  | .of η, f => return ⟨← NormalExpr.of <| .of <| .of <| .whisker η f, mkConst ``True⟩
+  | .cons η ηs, f => do
+    let ⟨ηs', pf_ηs'⟩ ← evalWhiskerRightExprAux ηs f
+    let ⟨η₁, pf_η₁⟩ ← evalTensorHomExpr (← NormalExpr.of <| .of <| .of η) ηs'
+    let ⟨η₂, pf_η₂⟩ ← evalComp η₁ (.associatorInv (← η.tgt) (← ηs.tgt) (.of f))
+    let ⟨η₃, pf_η₃⟩ ← evalComp (.associator (← η.src) (← ηs.src) (.of f)) η₂
+    return ⟨η₃, mkConst ``True⟩
+
+/-- Evaluate the expression `η ▷ f` into a normalized form. -/
 partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MonoidalM Result
-  | .nil α, h => do
-    try return ⟨.nil (.whiskerRight α h), ← mkAppM ``evalWhiskerRight_nil #[← α.e, ← h.e]⟩
-    catch _ => return ⟨.nil (.whiskerRight α h), mkConst ``True⟩
+  | .nil α, h => return ⟨.nil (.whiskerRight α h), mkConst ``True⟩
   | .cons α (.of η) ηs, .of f => do
-    let ⟨θ, pf_θ⟩ ← evalWhiskerRightExpr ηs (.of f)
-    let η' := .cons (.whiskerRight α (.of f)) (.of (.whisker η f)) θ
-    try return ⟨η', ← mkAppM ``evalWhiskerRight_cons_of_of #[← α.e, ← η.e, pf_θ]⟩
-    catch _ => return ⟨η', mkConst ``True⟩
+    let ⟨ηs₁, pf_ηs₁⟩ ← evalWhiskerRightExpr ηs (.of f)
+    let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExprAux η f
+    let ⟨η₂, pf_η₂⟩ ← evalComp η₁ ηs₁
+    let η₃ ← NormalExpr.ofNormalExpr (.whiskerRight α (.of f)) η₂
+    return ⟨η₃, mkConst ``True⟩
   | .cons α (.whisker f η) ηs, h => do
     let g ← η.src
     let g' ← η.tgt
-    let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExpr (.cons (.id g) η (.nil (.id g'))) h
+    let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExpr (← NormalExpr.of η) h
     let ⟨η₂, pf_η₂⟩ ← evalWhiskerLeftExpr (.of f) η₁
     let ⟨ηs₁, pf_ηs₁⟩ ← evalWhiskerRightExpr ηs h
-    let α' := .whiskerRight α h
     let ⟨ηs₂, pf_ηs₂⟩ ← evalComp (.associatorInv (.of f) g' h) ηs₁
     let ⟨η₃, pf_η₃⟩ ← evalComp η₂ ηs₂
     let ⟨η₄, pf_η₄⟩ ← evalComp (.associator (.of f) g h) η₃
-    let ⟨η₅, pf_η₅⟩ ← evalComp (.nil α') η₄
-    try return ⟨η₅,
-      ← mkAppM ``evalWhiskerRight_cons_whisker
-        #[pf_η₁, pf_η₂, pf_ηs₁, pf_ηs₂, pf_η₃, pf_η₄, pf_η₅]⟩
-    catch _ => return ⟨η₅, mkConst ``True⟩
+    let η₅ ← NormalExpr.ofNormalExpr (.whiskerRight α h) η₄
+    return ⟨η₅, mkConst ``True⟩
   | η, .comp g h => do
     let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExpr η g
     let ⟨η₂, pf_η₂⟩ ← evalWhiskerRightExpr η₁ h
@@ -834,15 +668,108 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MonoidalM Result
     let f' := η.tgt
     let ⟨η₃, pf_η₃⟩ ← evalComp η₂ (.associator f' g h)
     let ⟨η₄, pf_η₄⟩ ← evalComp (.associatorInv f g h) η₃
-    try return ⟨η₄, ← mkAppM ``evalWhiskerRight_comp #[pf_η₁, pf_η₂, pf_η₃, pf_η₄]⟩
-    catch _ => return ⟨η₄, mkConst ``True⟩
+    return ⟨η₄, mkConst ``True⟩
   | η, .id => do
     let f := η.src
     let g := η.tgt
     let ⟨η₁, pf_η₁⟩ ← evalComp η (.rightUnitorInv g)
     let ⟨η₂, pf_η₂⟩ ← evalComp (.rightUnitor f) η₁
-    try return ⟨η₂, ← mkAppM ``evalWhiskerRight_id #[pf_η₁, pf_η₂]⟩
-    catch _ => return ⟨η₂, mkConst ``True⟩
+    return ⟨η₂, mkConst ``True⟩
+
+/-- Evaluate the expression `η ⊗ θ` into a normalized form. -/
+partial def evalTensorHomAux : TensorHomExpr → TensorHomExpr → MonoidalM Result
+  | .of η, θ => return ⟨← NormalExpr.of <| .of <| .cons η θ, mkConst ``True⟩
+  | .cons η ηs, θ => do
+    let α := NormalExpr.associator (← η.src) (← ηs.src) (← θ.src)
+    let α' := NormalExpr.associatorInv (← η.tgt) (← ηs.tgt) (← θ.tgt)
+    let ⟨ηθ, pf_ηθ⟩ ← evalTensorHomAux ηs θ
+    let ⟨η₁, pf_η₁⟩ ← evalTensorHomExpr (← NormalExpr.of <| .of <| .of η) ηθ
+    let ⟨ηθ₁, pf_ηθ₁⟩ ← evalComp η₁ α'
+    let ⟨ηθ₂, pf_ηθ₂⟩ ← evalComp α ηθ₁
+    return ⟨ηθ₂, mkConst ``True⟩
+
+/-- Evaluate the expression `η ⊗ θ` into a normalized form. -/
+partial def evalTensorHomAux' : WhiskerLeftExpr → WhiskerLeftExpr → MonoidalM Result
+  | .of η, .of θ => evalTensorHomAux η θ
+  | .whisker f η, θ => do
+    let ⟨ηθ, pf_ηθ⟩ ← evalTensorHomAux' η θ
+    let ⟨ηθ₁, pf_ηθ₁⟩ ← evalWhiskerLeftExpr (.of f) ηθ
+    let ⟨ηθ₂, pf_ηθ₂⟩ ← evalComp ηθ₁ (.associatorInv (.of f) (← η.tgt) (← θ.tgt))
+    let ⟨ηθ₃, pf_ηθ₃⟩ ← evalComp (.associator (.of f) (← η.src) (← θ.src)) ηθ₂
+    return ⟨ηθ₃, mkConst ``True⟩
+  | .of η, .whisker f θ => do
+    let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExprAux η f
+    let ⟨ηθ, pf_ηθ⟩ ← evalTensorHomExpr η₁ (← NormalExpr.of θ)
+    let ⟨ηθ₁, pf_ηθ₁⟩ ← evalComp ηθ (.associator (← η.tgt) (.of f) (← θ.tgt))
+    let ⟨ηθ₂, pf_ηθ₂⟩ ← evalComp (.associatorInv (← η.src) (.of f) (← θ.src)) ηθ₁
+    return ⟨ηθ₂, mkConst ``True⟩
+
+/-- Evaluate the expression `η ⊗ θ` into a normalized form. -/
+partial def evalTensorHomExpr : NormalExpr → NormalExpr → MonoidalM Result
+  | .nil α, .nil β => do
+    return ⟨.nil (α.tensorHom β), mkConst ``True⟩
+  | .nil α, .cons β η ηs => do
+    let ⟨η₁, pf_η₁⟩ ← evalWhiskerLeftExpr α.tgt (← NormalExpr.of η)
+    let ⟨ηs₁, pf_ηs₁⟩ ← evalWhiskerLeftExpr α.tgt ηs
+    let ⟨η₂, pf_η₂⟩ ← evalComp η₁ ηs₁
+    let η₃ ← NormalExpr.ofNormalExpr (α.tensorHom β) η₂
+    return ⟨η₃, mkConst ``True⟩
+  | .cons α η ηs, .nil β => do
+    let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExpr (← NormalExpr.of η) β.tgt
+    let ⟨ηs₁, pf_ηs₁⟩ ← evalWhiskerRightExpr ηs β.tgt
+    let ⟨η₂, pf_η₂⟩ ← evalComp η₁ ηs₁
+    let η₃ ← NormalExpr.ofNormalExpr (α.tensorHom β) η₂
+    return ⟨η₃, mkConst ``True⟩
+  | .cons α η ηs, .cons β θ θs => do
+    let ⟨ηθ, pf_ηθ⟩ ← evalTensorHomAux' η θ
+    let ⟨ηθs, pf_ηθs⟩ ← evalTensorHomExpr ηs θs
+    let ⟨ηθ₁, pf_ηθ₁⟩ ← evalComp ηθ ηθs
+    let ηθ₂ ← NormalExpr.ofNormalExpr (α.tensorHom β) ηθ₁
+    return ⟨ηθ₂, mkConst ``True⟩
+
+-- /-- Evaluate the expression `η ▷ f` into a normalized form. -/
+-- partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MonoidalM Result
+--   | .nil α, h => do
+--     try return ⟨.nil (.whiskerRight α h), ← mkAppM ``evalWhiskerRight_nil #[← α.e, ← h.e]⟩
+--     catch _ => return ⟨.nil (.whiskerRight α h), mkConst ``True⟩
+--   | .cons α (.of η) ηs, .of f => do
+--     let ⟨θ, pf_θ⟩ ← evalWhiskerRightExpr ηs (.of f)
+--     let η' := .cons (.whiskerRight α (.of f)) (.of (.whisker η f)) θ
+--     try return ⟨η', ← mkAppM ``evalWhiskerRight_cons_of_of #[← α.e, ← η.e, pf_θ]⟩
+--     catch _ => return ⟨η', mkConst ``True⟩
+--   | .cons α (.whisker f η) ηs, h => do
+--     let g ← η.src
+--     let g' ← η.tgt
+--     let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExpr (.cons (.id g) η (.nil (.id g'))) h
+--     let ⟨η₂, pf_η₂⟩ ← evalWhiskerLeftExpr (.of f) η₁
+--     let ⟨ηs₁, pf_ηs₁⟩ ← evalWhiskerRightExpr ηs h
+--     let α' := .whiskerRight α h
+--     let ⟨ηs₂, pf_ηs₂⟩ ← evalComp (.associatorInv (.of f) g' h) ηs₁
+--     let ⟨η₃, pf_η₃⟩ ← evalComp η₂ ηs₂
+--     let ⟨η₄, pf_η₄⟩ ← evalComp (.associator (.of f) g h) η₃
+--     let ⟨η₅, pf_η₅⟩ ← evalComp (.nil α') η₄
+--     try return ⟨η₅,
+--       ← mkAppM ``evalWhiskerRight_cons_whisker
+--         #[pf_η₁, pf_η₂, pf_ηs₁, pf_ηs₂, pf_η₃, pf_η₄, pf_η₅]⟩
+--     catch _ => return ⟨η₅, mkConst ``True⟩
+--   | η, .comp g h => do
+--     let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExpr η g
+--     let ⟨η₂, pf_η₂⟩ ← evalWhiskerRightExpr η₁ h
+--     let f := η.src
+--     let f' := η.tgt
+--     let ⟨η₃, pf_η₃⟩ ← evalComp η₂ (.associator f' g h)
+--     let ⟨η₄, pf_η₄⟩ ← evalComp (.associatorInv f g h) η₃
+--     try return ⟨η₄, ← mkAppM ``evalWhiskerRight_comp #[pf_η₁, pf_η₂, pf_η₃, pf_η₄]⟩
+--     catch _ => return ⟨η₄, mkConst ``True⟩
+--   | η, .id => do
+--     let f := η.src
+--     let g := η.tgt
+--     let ⟨η₁, pf_η₁⟩ ← evalComp η (.rightUnitorInv g)
+--     let ⟨η₂, pf_η₂⟩ ← evalComp (.rightUnitor f) η₁
+--     try return ⟨η₂, ← mkAppM ``evalWhiskerRight_id #[pf_η₁, pf_η₂]⟩
+--     catch _ => return ⟨η₂, mkConst ``True⟩
+
+end
 
 /-- Evaluate the expression of a 2-morphism into a normalized form. -/
 partial def eval (e : Expr) : MonoidalM Result := do
@@ -879,6 +806,11 @@ partial def eval (e : Expr) : MonoidalM Result := do
       let ⟨ηαθ, pf_ηαθ⟩ ← evalComp η_e αθ
       try return ⟨ηαθ, ← mkAppM ``eval_monoidalComp #[pf_η, pf_θ, pf_θα, pf_ηαθ]⟩
       catch _ => return ⟨ηαθ, mkConst ``True⟩
+    | (``MonoidalCategoryStruct.tensorHom, #[_, _, _, _, _, _, _, η, θ]) =>
+      let ⟨η_e, pf_η⟩ ← eval η
+      let ⟨θ_e, pf_θ⟩ ← eval θ
+      let ⟨ηθ, pf⟩ ← evalTensorHomExpr η_e θ_e
+      return ⟨ηθ, mkConst ``True⟩
     | _ =>
       try return ⟨← NormalExpr.ofExpr e, ← mkAppM ``eval_of #[e]⟩
       catch _ => return ⟨← NormalExpr.ofExpr e, mkConst ``True⟩
