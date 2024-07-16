@@ -212,34 +212,11 @@ theorem mul_rotate' (a b c : G) : a * (b * c) = b * (c * a) := by
 
 end CommSemigroup
 
-section AddCommSemigroup
-set_option linter.deprecated false
-
-variable {M : Type u} [AddCommSemigroup M]
-
-theorem bit0_add (a b : M) : (a + b) + (a + b) = (a + a) + (b + b) :=
-  add_add_add_comm _ _ _ _
-#align bit0_add bit0_add
-
-theorem bit1_add [One M] (a b : M) : ((a + b) + (a + b)) + 1 = (a + a) + ((b + b) + 1) :=
-  (congr_arg (· + (1 : M)) <| bit0_add a b : _).trans (add_assoc _ _ _)
-#align bit1_add bit1_add
-
-theorem bit1_add' [One M] (a b : M) : ((a + b) + (a + b)) + 1 = ((a + a) + 1) + (b + b) := by
-  rw [add_comm a b, bit1_add, add_comm]
-#align bit1_add' bit1_add'
-
-end AddCommSemigroup
-
-section AddMonoid
-set_option linter.deprecated false
-
-variable {M : Type u} [AddMonoid M] {a b c : M}
-
+#noalign bit0_add
+#noalign bit1_add
+#noalign bit1_add'
 #noalign bit0_zero
 #noalign bit1_zero
-
-end AddMonoid
 
 attribute [local simp] mul_assoc sub_eq_add_neg
 
@@ -701,15 +678,7 @@ theorem div_mul_eq_div_div_swap : a / (b * c) = a / c / b := by
 
 end DivisionMonoid
 
-section SubtractionMonoid
-
-set_option linter.deprecated false
-
-lemma bit0_neg [SubtractionMonoid α] (a : α) : (2:ℕ) • (-a) = -(2 • a) := by
-  rw [two_nsmul, two_nsmul, (neg_add_rev _ _).symm]
-#align bit0_neg bit0_neg
-
-end SubtractionMonoid
+#noalign bit0_neg
 
 section DivisionCommMonoid
 
