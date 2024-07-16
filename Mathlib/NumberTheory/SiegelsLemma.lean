@@ -75,7 +75,7 @@ private lemma image_T_subset_S (v) (hv : v ∈ T) : A *ᵥ v ∈ S := by
   refine ⟨fun i ↦ ?_, fun i ↦ ?_⟩
   all_goals
     simp only [mul_neg]
-    gcongr ∑ _ : α , ?_ with j _ -- Get rid of sums
+    gcongr ∑ _ : α, ?_ with j _ -- Get rid of sums
     rw [← mul_comm (v j)] -- Move A i j to the right of the products
     rcases le_total 0 (A i j) with hsign | hsign-- We have to distinguish cases: we have now 4 goals
   · rw [negPart_eq_zero.2 hsign]
@@ -108,7 +108,7 @@ private lemma N_le_P_add_one (i : α) : N i ≤ P i + 1 := by
     intro j _
     exact mul_nonneg (Nat.cast_nonneg B) (posPart_nonneg (A i j))
 
-private lemma card_S_eq : (Finset.Icc N P).card = ∏ i : α , (P i - N i + 1) := by
+private lemma card_S_eq : (Finset.Icc N P).card = ∏ i : α, (P i - N i + 1) := by
   rw [Pi.card_Icc N P, Nat.cast_prod]
   congr
   ext i
@@ -138,7 +138,7 @@ private lemma card_S_lt_card_T : (S).card < (T).card := by
   rw [card_T_eq m n cardβ, card_S_eq]
   rify -- This is necessary because ‖A‖ is a real number
   calc
-  ∏ x : α , (∑ x_1 : β , ↑B * ↑(A x x_1)⁺ - ∑ x_1 : β , ↑B * -↑(A x x_1)⁻ + 1)
+  ∏ x : α, (∑ x_1 : β, ↑B * ↑(A x x_1)⁺ - ∑ x_1 : β, ↑B * -↑(A x x_1)⁻ + 1)
     ≤ (n * ‖A‖ * B + 1) ^ m := by
       nth_rw 7 [← cardα]
       rw [← card_univ, ← prod_const]
@@ -147,7 +147,7 @@ private lemma card_S_lt_card_T : (S).card < (T).card := by
         rify at h
         linarith only [h]
       · simp only [mul_neg, sum_neg_distrib, sub_neg_eq_add, add_le_add_iff_right]
-        have h1 : n * ‖A‖ * B = ∑ _ : β , ‖A‖ * B := by
+        have h1 : n * ‖A‖ * B = ∑ _ : β, ‖A‖ * B := by
           simp only [sum_const, card_univ, nsmul_eq_mul, cardβ]
           ring
         simp_rw [h1, ← Finset.sum_add_distrib, ← mul_add, mul_comm ‖A‖, ← Int.cast_add]
