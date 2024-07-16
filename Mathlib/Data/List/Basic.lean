@@ -173,7 +173,7 @@ attribute [simp] List.mem_bind
 
 #align list.length_pos_iff_exists_mem List.length_pos_iff_exists_mem
 
-alias ⟨ne_nil_of_length_pos, length_pos_of_ne_nil⟩ := length_pos
+alias ⟨_, length_pos_of_ne_nil⟩ := length_pos
 #align list.ne_nil_of_length_pos List.ne_nil_of_length_pos
 #align list.length_pos_of_ne_nil List.length_pos_of_ne_nil
 
@@ -470,9 +470,6 @@ theorem replicate_left_inj {a : α} {n m : ℕ} : replicate n a = replicate m a 
   (replicate_left_injective a).eq_iff
 #align list.replicate_left_inj List.replicate_left_inj
 
-@[simp] theorem head_replicate (n : ℕ) (a : α) (h) : head (replicate n a) h = a := by
-  cases n <;> simp [replicate_succ] at h ⊢
-
 /-! ### pure -/
 
 theorem mem_pure (x y : α) : x ∈ (pure y : List α) ↔ x = y := by simp
@@ -599,13 +596,13 @@ theorem getLast_cons {a : α} {l : List α} :
 #align list.last_cons List.getLast_cons
 
 theorem getLast_append_singleton {a : α} (l : List α) :
-    getLast (l ++ [a]) (append_ne_nil_of_ne_nil_right l _ (cons_ne_nil a _)) = a := by
-  simp only [getLast_append]
+    getLast (l ++ [a]) (append_ne_nil_of_ne_nil_right l (cons_ne_nil a _)) = a := by
+  simp [getLast_append]
 #align list.last_append_singleton List.getLast_append_singleton
 
 -- Porting note: name should be fixed upstream
 theorem getLast_append' (l₁ l₂ : List α) (h : l₂ ≠ []) :
-    getLast (l₁ ++ l₂) (append_ne_nil_of_ne_nil_right l₁ l₂ h) = getLast l₂ h := by
+    getLast (l₁ ++ l₂) (append_ne_nil_of_ne_nil_right l₁ h) = getLast l₂ h := by
   induction' l₁ with _ _ ih
   · simp
   · simp only [cons_append]
@@ -613,8 +610,8 @@ theorem getLast_append' (l₁ l₂ : List α) (h : l₂ ≠ []) :
     exact ih
 #align list.last_append List.getLast_append'
 
-theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne_nil a l) = a :=
-  getLast_concat ..
+theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne_nil a l) = a := by
+  simp
 #align list.last_concat List.getLast_concat'
 
 @[simp]
@@ -732,7 +729,7 @@ theorem getLastI_eq_getLast? [Inhabited α] : ∀ l : List α, l.getLastI = l.ge
   | _ :: _ :: c :: l => by simp [getLastI, getLastI_eq_getLast? (c :: l)]
 #align list.ilast_eq_last' List.getLastI_eq_getLast?
 
-@[simp]
+#adaptation_note /-- 2024-07-10: removed `@[simp]` since the LHS simplifies using the simp set. -/
 theorem getLast?_append_cons :
     ∀ (l₁ : List α) (a : α) (l₂ : List α), getLast? (l₁ ++ a :: l₂) = getLast? (a :: l₂)
   | [], a, l₂ => rfl
@@ -749,13 +746,13 @@ theorem getLast?_append_of_ne_nil (l₁ : List α) :
   | b :: l₂, _ => getLast?_append_cons l₁ b l₂
 #align list.last'_append_of_ne_nil List.getLast?_append_of_ne_nil
 
-theorem getLast?_append {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?) :
+theorem mem_getLast?_append_of_mem_getLast? {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?) :
     x ∈ (l₁ ++ l₂).getLast? := by
   cases l₂
   · contradiction
   · rw [List.getLast?_append_cons]
     exact h
-#align list.last'_append List.getLast?_append
+#align list.last'_append List.mem_getLast?_append_of_mem_getLast?
 
 /-! ### head(!?) and tail -/
 
@@ -805,11 +802,12 @@ theorem head!_append [Inhabited α] (t : List α) {s : List α} (h : s ≠ []) :
   · rfl
 #align list.head_append List.head!_append
 
-theorem head?_append {s t : List α} {x : α} (h : x ∈ s.head?) : x ∈ (s ++ t).head? := by
+theorem mem_head?_append_of_mem_head? {s t : List α} {x : α} (h : x ∈ s.head?) :
+    x ∈ (s ++ t).head? := by
   cases s
   · contradiction
   · exact h
-#align list.head'_append List.head?_append
+#align list.head'_append List.mem_head?_append_of_mem_head?
 
 theorem head?_append_of_ne_nil :
     ∀ (l₁ : List α) {l₂ : List α} (_ : l₁ ≠ []), head? (l₁ ++ l₂) = head? l₁
@@ -843,9 +841,6 @@ theorem head!_mem_self [Inhabited α] {l : List α} (h : l ≠ nil) : l.head! �
   have h' := mem_cons_self l.head! l.tail
   rwa [cons_head!_tail h] at h'
 #align list.head_mem_self List.head!_mem_self
-
-theorem head_mem {l : List α} : ∀ (h : l ≠ nil), l.head h ∈ l := by
-  cases l <;> simp
 
 #align list.head'_map List.head?_map
 
@@ -1094,17 +1089,8 @@ alias sublist_nil_iff_eq_nil := sublist_nil
   constructor <;> rintro (_ | _) <;> aesop
 
 #align list.replicate_sublist_replicate List.replicate_sublist_replicate
-
-theorem sublist_replicate_iff {l : List α} {a : α} {n : ℕ} :
-    l <+ replicate n a ↔ ∃ k ≤ n, l = replicate k a :=
-  ⟨fun h =>
-    ⟨l.length, h.length_le.trans_eq (length_replicate _ _),
-      eq_replicate_length.mpr fun b hb => eq_of_mem_replicate (h.subset hb)⟩,
-    by rintro ⟨k, h, rfl⟩; exact (replicate_sublist_replicate _).mpr h⟩
 #align list.sublist_replicate_iff List.sublist_replicate_iff
-
 #align list.sublist.eq_of_length List.Sublist.eq_of_length
-
 #align list.sublist.eq_of_length_le List.Sublist.eq_of_length_le
 
 theorem Sublist.antisymm (s₁ : l₁ <+ l₂) (s₂ : l₂ <+ l₁) : l₁ = l₂ :=
@@ -2354,7 +2340,7 @@ theorem splitOnP_spec (as : List α) :
     · rw [if_pos h, h, map, cons_append, zipWith, nil_append, join, cons_append, cons_inj_right]
       exact ih
     · rw [if_neg h, eq_false_of_ne_true h, join_zipWith (splitOnP_ne_nil _ _)
-        (append_ne_nil_of_ne_nil_right _ [[]] (cons_ne_nil [] [])), cons_inj_right]
+        (append_ne_nil_of_ne_nil_right _ (cons_ne_nil [] [])), cons_inj_right]
       exact ih
 where
   join_zipWith {xs ys : List (List α)} {a : α} (hxs : xs ≠ []) (hys : ys ≠ []) :
@@ -2441,7 +2427,7 @@ theorem modifyLast.go_append_one (f : α → α) (a : α) (tl : List α) (r : Ar
   | cons hd tl =>
     simp only [cons_append]
     rw [modifyLast.go, modifyLast.go]
-    case x_3 | x_3 => exact append_ne_nil_of_ne_nil_right tl [a] (cons_ne_nil a [])
+    case x_3 | x_3 => exact append_ne_nil_of_ne_nil_right tl (cons_ne_nil a [])
     rw [modifyLast.go_append_one _ _ tl _, modifyLast.go_append_one _ _ tl (Array.push #[] hd)]
     simp only [Array.toListAppend_eq, Array.push_data, Array.data_toArray, nil_append, append_assoc]
 
@@ -2453,7 +2439,7 @@ theorem modifyLast_append_one (f : α → α) (a : α) (l : List α) :
   | cons _ tl =>
     simp only [cons_append, modifyLast]
     rw [modifyLast.go]
-    case x_3 => exact append_ne_nil_of_ne_nil_right tl [a] (cons_ne_nil a [])
+    case x_3 => exact append_ne_nil_of_ne_nil_right tl (cons_ne_nil a [])
     rw [modifyLast.go_append_one, Array.toListAppend_eq, Array.push_data, Array.data_toArray,
       nil_append, cons_append, nil_append, cons_inj_right]
     exact modifyLast_append_one _ _ tl
@@ -2801,7 +2787,7 @@ attribute [simp 1100] filterMap_cons_some
 
 #align list.filter_map_some List.filterMap_some
 
-#align list.map_filter_map_some_eq_filter_map_is_some List.map_filterMap_some_eq_filter_map_is_some
+#align list.map_filter_map_some_eq_filter_map_is_some List.map_filterMap_some_eq_filter_map_isSome
 
 #align list.mem_filter_map List.mem_filterMap
 
@@ -2815,8 +2801,6 @@ attribute [simp 1100] filterMap_cons_some
 
 #align list.sublist.filter_map List.Sublist.filterMap
 
-theorem Sublist.map (f : α → β) {l₁ l₂ : List α} (s : l₁ <+ l₂) : map f l₁ <+ map f l₂ :=
-  filterMap_eq_map f ▸ s.filterMap _
 #align list.sublist.map List.Sublist.map
 
 theorem filterMap_eq_bind_toList (f : α → Option β) (l : List α) :
@@ -2907,13 +2891,13 @@ theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
   induction' l with hd tl IH
   · rfl
   · by_cases hp : p hd
-    · rw [filter_cons_of_pos _ hp, filter_cons_of_pos _ (h _ hp)]
+    · rw [filter_cons_of_pos hp, filter_cons_of_pos (h _ hp)]
       exact IH.cons_cons hd
-    · rw [filter_cons_of_neg _ hp]
+    · rw [filter_cons_of_neg hp]
       by_cases hq : q hd
-      · rw [filter_cons_of_pos _ hq]
+      · rw [filter_cons_of_pos hq]
         exact sublist_cons_of_sublist hd IH
-      · rw [filter_cons_of_neg _ hq]
+      · rw [filter_cons_of_neg hq]
         exact IH
 #align list.monotone_filter_right List.monotone_filter_right
 
@@ -2996,14 +2980,6 @@ theorem dropWhile_eq_nil_iff : dropWhile p l = [] ↔ ∀ x ∈ l, p x := by
   · simp [dropWhile]
   · by_cases hp : p x <;> simp [hp, dropWhile, IH]
 #align list.drop_while_eq_nil_iff List.dropWhile_eq_nil_iff
-
-theorem takeWhile_cons_of_pos {x : α} (h : p x) :
-    List.takeWhile p (x :: l) = x :: takeWhile p l := by
-  simp [takeWhile_cons, h]
-
-theorem takeWhile_cons_of_neg {x : α} (h : ¬ p x) :
-    List.takeWhile p (x :: l) = [] := by
-  simp [takeWhile_cons, h]
 
 @[simp]
 theorem takeWhile_eq_self_iff : takeWhile p l = l ↔ ∀ x ∈ l, p x := by
@@ -3198,7 +3174,7 @@ theorem erase_diff_erase_sublist_of_sublist {a : α} :
   | b :: l₁, l₂, h =>
     if heq : b = a then by simp only [heq, erase_cons_head, diff_cons]; rfl
     else by
-      simp only [erase_cons_head b l₁, erase_cons_tail l₁ (not_beq_of_ne heq),
+      simp only [erase_cons_head b l₁, erase_cons_tail (not_beq_of_ne heq),
         diff_cons ((List.erase l₂ a)) (List.erase l₁ a) b, diff_cons l₂ l₁ b, erase_comm a b l₂]
       have h' := h.erase b
       rw [erase_cons_head] at h'
@@ -3534,14 +3510,6 @@ end Forall
 
 /-! ### Miscellaneous lemmas -/
 
-theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
-    (hl' : 0 < l.length := (by
-      contrapose! hl
-      simpa [length_eq_zero] using hl)) :
-    l.reverse.getLast hl = l.get ⟨0, hl'⟩ := by
-  rw [getLast_eq_get, get_reverse']
-  · simp
-  · simpa using hl'
 #align list.last_reverse List.getLast_reverse
 
 #noalign list.ilast'_mem --List.ilast'_mem

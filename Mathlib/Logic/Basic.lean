@@ -837,10 +837,7 @@ theorem forall_eq_apply_imp_iff' {f : α → β} {p : β → Prop} :
 
 #align forall_eq_apply_imp_iff' forall_eq_apply_imp_iff
 #align forall_apply_eq_imp_iff₂ forall_apply_eq_imp_iff₂
-
-@[simp] theorem exists_eq_right' {a' : α} : (∃ a, p a ∧ a' = a) ↔ p a' := by simp [@eq_comm _ a']
 #align exists_eq_right' exists_eq_right'
-
 #align exists_comm exists_comm
 
 theorem exists₂_comm

@@ -100,7 +100,7 @@ theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
 
 #align list.subset List.Subset
 -- This is relying on an automatically generated instance name from Batteries.
-#align list.has_subset List.instHasSubset_batteries
+#align list.has_subset List.instHasSubset
 #align list.nil_subset List.nil_subset
 #align list.subset.refl List.Subset.refl
 #align list.subset.trans List.Subset.trans
