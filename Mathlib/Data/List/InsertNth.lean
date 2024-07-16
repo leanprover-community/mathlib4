@@ -135,9 +135,9 @@ theorem length_insertNth_le_succ (l : List α) (x : α) (n : ℕ) :
     exact (Nat.lt_succ_self _).le
 #align list.length_insert_nth_le_succ List.length_insertNth_le_succ
 
-theorem get_insertNth_of_lt (l : List α) (x : α) (n k : ℕ) (hn : k < n) (hk : k < l.length)
+theorem getElem_insertNth_of_lt (l : List α) (x : α) (n k : ℕ) (hn : k < n) (hk : k < l.length)
     (hk' : k < (insertNth n x l).length := hk.trans_le (length_le_length_insertNth _ _ _)) :
-    (insertNth n x l).get ⟨k, hk'⟩ = l.get ⟨k, hk⟩ := by
+    (insertNth n x l)[k] = l[k] := by
   induction' n with n IH generalizing k l
   · simp at hn
   · cases' l with hd tl
@@ -147,6 +147,11 @@ theorem get_insertNth_of_lt (l : List α) (x : α) (n k : ℕ) (hn : k < n) (hk 
       · rw [Nat.succ_lt_succ_iff] at hn
         simpa using IH _ _ hn _
 
+theorem get_insertNth_of_lt (l : List α) (x : α) (n k : ℕ) (hn : k < n) (hk : k < l.length)
+    (hk' : k < (insertNth n x l).length := hk.trans_le (length_le_length_insertNth _ _ _)) :
+    (insertNth n x l).get ⟨k, hk'⟩ = l.get ⟨k, hk⟩ := by
+  simp_all [getElem_insertNth_of_lt]
+
 set_option linter.deprecated false in
 @[deprecated get_insertNth_of_lt (since := "2023-01-05")]
 theorem nthLe_insertNth_of_lt : ∀ (l : List α) (x : α) (n k : ℕ), k < n → ∀ (hk : k < l.length)
@@ -155,17 +160,22 @@ theorem nthLe_insertNth_of_lt : ∀ (l : List α) (x : α) (n k : ℕ), k < n �
 #align list.nth_le_insert_nth_of_lt List.nthLe_insertNth_of_lt
 
 @[simp]
-theorem get_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length)
+theorem getElem_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length)
     (hn' : n < (insertNth n x l).length := (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff])) :
-    (insertNth n x l).get ⟨n, hn'⟩ = x := by
+    (insertNth n x l)[n] = x := by
   induction' l with hd tl IH generalizing n
   · simp only [length] at hn
     cases hn
-    simp only [insertNth_zero, get_singleton]
+    simp only [insertNth_zero, getElem_singleton]
   · cases n
     · simp
     · simp only [Nat.succ_le_succ_iff, length] at hn
       simpa using IH _ hn
+
+theorem get_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length)
+    (hn' : n < (insertNth n x l).length := (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff])) :
+    (insertNth n x l).get ⟨n, hn'⟩ = x := by
+  simp [hn, hn']
 
 set_option linter.deprecated false in
 @[simp, deprecated get_insertNth_self (since := "2023-01-05")]
@@ -174,15 +184,21 @@ theorem nthLe_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.leng
     (insertNth n x l).nthLe n hn' = x := get_insertNth_self _ _ _ hn
 #align list.nth_le_insert_nth_self List.nthLe_insertNth_self
 
-theorem get_insertNth_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
+theorem getElem_insertNth_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (insertNth n x l).length := (by
-      rwa [length_insertNth _ _ (by omega), Nat.succ_lt_succ_iff])):
-    (insertNth n x l).get ⟨n + k + 1, hk⟩ = get l ⟨n + k, hk'⟩ := by
+      rwa [length_insertNth _ _ (by omega), Nat.succ_lt_succ_iff])) :
+    (insertNth n x l)[n + k + 1] = l[n + k] := by
   induction' l with hd tl IH generalizing n k
   · simp at hk'
   · cases n
     · simp
     · simpa [Nat.add_right_comm] using IH _ _ _
+
+theorem get_insertNth_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
+    (hk : n + k + 1 < (insertNth n x l).length := (by
+      rwa [length_insertNth _ _ (by omega), Nat.succ_lt_succ_iff])) :
+    (insertNth n x l).get ⟨n + k + 1, hk⟩ = get l ⟨n + k, hk'⟩ := by
+  simp [getElem_insertNth_add_succ, hk, hk']
 
 set_option linter.deprecated false in
 @[deprecated get_insertNth_add_succ (since := "2023-01-05")]
@@ -202,3 +218,5 @@ theorem insertNth_injective (n : ℕ) (x : α) : Function.Injective (insertNth n
 #align list.insert_nth_injective List.insertNth_injective
 
 end InsertNth
+
+end List

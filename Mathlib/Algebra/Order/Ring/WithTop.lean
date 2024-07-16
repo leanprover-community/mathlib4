@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Synonym
-import Mathlib.Algebra.Order.Monoid.WithTop
+import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Ring.Hom.Defs
 
@@ -57,7 +57,6 @@ lemma top_mul' : ∀ (b : WithTop α), ⊤ * b = if b = 0 then 0 else ⊤
 @[simp] lemma top_mul (hb : b ≠ 0) : ⊤ * b = ⊤ := by rw [top_mul', if_neg hb]
 #align with_top.top_mul WithTop.top_mul
 
--- eligible for dsimp
 @[simp] lemma top_mul_top : (⊤ * ⊤ : WithTop α) = ⊤ := rfl
 #align with_top.top_mul_top WithTop.top_mul_top
 
@@ -167,6 +166,10 @@ instance instMonoidWithZero : MonoidWithZero (WithTop α) where
 
 @[simp, norm_cast] lemma coe_pow (a : α) (n : ℕ) : (↑(a ^ n) : WithTop α) = a ^ n := rfl
 
+theorem top_pow {n : ℕ} (n_pos : 0 < n) : (⊤ : WithTop α) ^ n = ⊤ :=
+  Nat.le_induction (pow_one _) (fun m _ hm => by rw [pow_succ, hm, top_mul_top]) _
+    (Nat.succ_le_of_lt n_pos)
+
 end MonoidWithZero
 
 instance instCommMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
@@ -236,7 +239,6 @@ lemma bot_mul' : ∀ (b : WithBot α), ⊥ * b = if b = 0 then 0 else ⊥
 @[simp] lemma bot_mul (hb : b ≠ 0) : ⊥ * b = ⊥ := by rw [bot_mul', if_neg hb]
 #align with_bot.bot_mul WithBot.bot_mul
 
--- eligible for dsimp
 @[simp] lemma bot_mul_bot : (⊥ * ⊥ : WithBot α) = ⊥ := rfl
 #align with_bot.bot_mul_bot WithBot.bot_mul_bot
 

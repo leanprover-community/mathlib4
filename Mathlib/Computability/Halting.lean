@@ -19,6 +19,7 @@ A universal partial recursive function, Rice's theorem, and the halting problem.
 -/
 
 
+open Mathlib (Vector)
 open Encodable Denumerable
 
 namespace Nat.Partrec
@@ -285,7 +286,7 @@ open Vector Part
 inductive Partrec' : ∀ {n}, (Vector ℕ n →. ℕ) → Prop
   | prim {n f} : @Primrec' n f → @Partrec' n f
   | comp {m n f} (g : Fin n → Vector ℕ m →. ℕ) :
-    Partrec' f → (∀ i, Partrec' (g i)) → Partrec' fun v => (mOfFn fun i => g i v) >>= f
+    Partrec' f → (∀ i, Partrec' (g i)) → Partrec' fun v => (Vector.mOfFn fun i => g i v) >>= f
   | rfind {n} {f : Vector ℕ (n + 1) → ℕ} :
     @Partrec' (n + 1) f → Partrec' fun v => rfind fun n => some (f (n ::ᵥ v) = 0)
 #align nat.partrec' Nat.Partrec'
@@ -294,7 +295,7 @@ end Nat
 
 namespace Nat.Partrec'
 
-open Vector Partrec Computable
+open Mathlib.Vector Partrec Computable
 
 open Nat (Partrec')
 

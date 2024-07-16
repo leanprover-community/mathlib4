@@ -87,7 +87,7 @@ theorem ext {C₁ C₂ : HomologicalComplex V c} (h_X : C₁.X = C₂.X)
   subst h_X
   simp only [mk.injEq, heq_eq_eq, true_and]
   ext i j
-  by_cases hij: c.Rel i j
+  by_cases hij : c.Rel i j
   · simpa only [comp_id, id_comp, eqToHom_refl] using h_d i j hij
   · rw [s₁ i j hij, s₂ i j hij]
 #align homological_complex.ext HomologicalComplex.ext
@@ -317,8 +317,8 @@ theorem isZero_zero [HasZeroObject V] : IsZero (zero : HomologicalComplex V c) :
   refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
   all_goals
     ext
-    dsimp [zero]
-    apply Subsingleton.elim
+    dsimp only [zero]
+    subsingleton
 #align homological_complex.is_zero_zero HomologicalComplex.isZero_zero
 
 instance [HasZeroObject V] : HasZeroObject (HomologicalComplex V c) :=
@@ -356,6 +356,8 @@ def eval (i : ι) : HomologicalComplex V c ⥤ V where
   obj C := C.X i
   map f := f.f i
 #align homological_complex.eval HomologicalComplex.eval
+
+instance (i : ι) : (eval V c i).PreservesZeroMorphisms where
 
 /-- The functor forgetting the differential in a complex, obtaining a graded object. -/
 @[simps]
@@ -1061,7 +1063,7 @@ then a function which takes a differential,
 and returns the next object, its differential, and the fact it composes appropriately to zero.
 -/
 def mk' (X₀ X₁ : V) (d : X₀ ⟶ X₁)
-    -- (succ' : ∀  : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0) :
+    -- (succ' : ∀ : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0) :
     (succ' : ∀ {X₀ X₁ : V} (f : X₀ ⟶ X₁), Σ' (X₂ : V) (d : X₁ ⟶ X₂), f ≫ d = 0) :
     CochainComplex V ℕ :=
   mk _ _ _ _ _ (succ' d).2.2 (fun S => succ' S.g)

@@ -34,7 +34,7 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
     rw [RingEquiv.map_zero]
     convert h finZeroElim
   · apply (finSuccEquiv R n).injective
-    simp only [AlgEquiv.map_zero]
+    simp only [map_zero]
     refine Polynomial.funext fun q => ?_
     rw [Polynomial.eval_zero]
     apply ih fun x => ?_
@@ -51,7 +51,7 @@ theorem funext {σ : Type*} {p q : MvPolynomial σ R} (h : ∀ x : σ → R, eva
   clear h p q
   intro p h
   obtain ⟨n, f, hf, p, rfl⟩ := exists_fin_rename p
-  suffices p = 0 by rw [this, AlgHom.map_zero]
+  suffices p = 0 by rw [this, map_zero]
   apply funext_fin
   intro x
   classical
