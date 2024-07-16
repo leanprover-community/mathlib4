@@ -431,8 +431,8 @@ instance (priority := 900) : IsLocalAtTarget P := by
       refine (P.arrow_mk_iso_iff
         (morphismRestrictEq _ ?_ ≪≫ morphismRestrictOpensRange f (𝒰.map i))).mp (H i)
       exact (opensRange_ιOpens _).symm
-    rw [← Q.cancel_left_of_respectsIso (𝒰.pullbackCoverAffineRefinementObj f _).inv,
-      𝒰.pullbackCoverAffineRefinementObj_inv_pullbackHom]
+    rw [← Q.cancel_left_of_respectsIso (𝒰.pullbackCoverAffineRefinementObjIso f _).inv,
+      𝒰.pullbackCoverAffineRefinementObjIso_inv_pullbackHom]
     exact of_isPullback (.of_hasPullback _ _) this
 #align algebraic_geometry.affine_target_morphism_property.is_local.target_affine_locally_is_local AlgebraicGeometry.HasAffineProperty.instIsLocalAtTarget
 
