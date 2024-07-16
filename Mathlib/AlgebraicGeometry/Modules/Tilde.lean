@@ -57,7 +57,7 @@ The property of a function `f : ∏_{x ∈ U}, Mₓ` being a fraction is stable 
 -/
 def isFractionPrelocal : PrelocalPredicate (Localizations M) where
   pred {U} f := isFraction M f
-  res := by rintro V U i f ⟨m, s, w⟩; exact ⟨m, s, fun x ↦ w (i x)⟩
+  res := by rintro V U i f ⟨m, s, w⟩; exact ⟨m, s, fun x => w (i x)⟩
 
 /--
 For any open subset `U ⊆ Spec R`, `IsLocallyFraction` is the predicate expressing that a function
@@ -97,7 +97,7 @@ of `∏_{𝔭 ∈ U} M_𝔭`. -/
 def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
     Submodule ((Spec.structureSheaf R).1.obj U) (∀ x : U.unop, Localizations M x.1) where
   carrier := { f | (isLocallyFraction M).pred f }
-  zero_mem' x := ⟨unop U, x.2, 𝟙 _, 0, 1, fun y ↦
+  zero_mem' x := ⟨unop U, x.2, 𝟙 _, 0, 1, fun y =>
     ⟨Ideal.ne_top_iff_one _ |>.1 y.1.isPrime.1, by simp⟩⟩
   add_mem' := by
     intro a b ha hb x
@@ -153,7 +153,7 @@ def preTildeInAddCommGrp : Presheaf AddCommGrp (PrimeSpectrum.Top R) where
   map {U V} i :=
     { toFun := M.tildeInType.1.map i
       map_zero' := rfl
-      map_add' := fun x y ↦ rfl}
+      map_add' := fun x y => rfl}
 
 /--
 `M^~` as a sheaf of abelian groups over `Spec R`
@@ -161,7 +161,7 @@ def preTildeInAddCommGrp : Presheaf AddCommGrp (PrimeSpectrum.Top R) where
 def tildeInAddCommGrp : Sheaf AddCommGrp (PrimeSpectrum.Top R) :=
   ⟨M.preTildeInAddCommGrp,
     TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrp) _ |>.mpr
-      (TopCat.Presheaf.isSheaf_of_iso (NatIso.ofComponents (fun _ ↦ Iso.refl _) fun _ ↦ rfl)
+      (TopCat.Presheaf.isSheaf_of_iso (NatIso.ofComponents (fun _ => Iso.refl _) fun _ ↦ rfl)
         M.tildeInType.2)⟩
 
 noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
@@ -175,7 +175,7 @@ noncomputable def tilde : (Spec (CommRingCat.of R)).Modules where
   val :=
   { presheaf := M.tildeInAddCommGrp.1
     module := inferInstance
-    map_smul := fun _ _ _ ↦ rfl }
+    map_smul := fun _ _ _ => rfl }
   isSheaf := M.tildeInAddCommGrp.2
 
 /--
