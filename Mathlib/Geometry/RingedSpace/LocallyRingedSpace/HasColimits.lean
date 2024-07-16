@@ -34,7 +34,8 @@ variable {J : Type v} [Category.{v} J] (F : J ⥤ SheafedSpace.{_, _, v} C)
 
 theorem isColimit_exists_rep {c : Cocone F} (hc : IsColimit c) (x : c.pt) :
     ∃ (i : J) (y : F.obj i), (c.ι.app i).base y = x :=
-  Concrete.isColimit_exists_rep (F ⋙ forget C) (isColimitOfPreserves (forget C) hc) x
+  Concrete.isColimit_exists_rep (F ⋙ SheafedSpace.forget C)
+    (isColimitOfPreserves (SheafedSpace.forget C) hc) x
 #align algebraic_geometry.SheafedSpace.is_colimit_exists_rep AlgebraicGeometry.SheafedSpaceₓ.isColimit_exists_rep
 
 -- Porting note: argument `C` of colimit need to be made explicit, odd
