@@ -1167,14 +1167,14 @@ variable [CommRing R] [AddCommMonoid M] [Module R M]
 
 /-- `M.toQuadraticMap'` is the map `fun x ↦ row x * M * col x` as a quadratic form. -/
 def Matrix.toQuadraticMap' (M : Matrix n n R) : QuadraticMap R (n → R) R :=
-  LinearMap.BilinMap.toQuadraticMap (Matrix.toLinearMap₂' M)
+  LinearMap.BilinMap.toQuadraticMap (Matrix.toLinearMap₂' R M)
 #align matrix.to_quadratic_form' Matrix.toQuadraticMap'
 
 variable [Invertible (2 : R)]
 
 /-- A matrix representation of the quadratic form. -/
 def QuadraticMap.toMatrix' (Q : QuadraticMap R (n → R) R) : Matrix n n R :=
-  LinearMap.toMatrix₂' (associated (R := R) Q)
+  LinearMap.toMatrix₂' R (associated Q)
 #align quadratic_form.to_matrix' QuadraticMap.toMatrix'
 
 open QuadraticMap

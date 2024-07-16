@@ -557,6 +557,7 @@ theorem conj_im (z : ℂ) : (conj z).im = -z.im :=
   rfl
 #align complex.conj_im Complex.conj_im
 
+@[simp]
 theorem conj_ofReal (r : ℝ) : conj (r : ℂ) = r :=
   Complex.ext_iff.2 <| by simp [star]
 #align complex.conj_of_real Complex.conj_ofReal
