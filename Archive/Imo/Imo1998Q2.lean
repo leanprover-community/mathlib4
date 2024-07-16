@@ -131,6 +131,7 @@ theorem A_fibre_over_contestant_card (c : C) :
   rw [A_fibre_over_contestant r]
   apply Finset.card_image_of_injOn
   unfold Set.InjOn
+  rintro ⟨a, p⟩ h ⟨a', p'⟩ h' rfl
   aesop
 #align imo1998_q2.A_fibre_over_contestant_card Imo1998Q2.A_fibre_over_contestant_card
 
