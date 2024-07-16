@@ -551,12 +551,17 @@ lemma HomogeneousSubmodule.gradedMonoid :
     SetLike.GradedMonoid (homogeneousSubmodule σ R) :=
   WeightedHomogeneousSubmodule.gradedMonoid
 
-/-- The decomposition of `MvPolynomial σ R` into homogeneous submodules -/
+/-- The decomposition of `MvPolynomial σ R` into homogeneous submodules. -/
 abbrev decomposition :
     DirectSum.Decomposition (homogeneousSubmodule σ R) :=
   weightedDecomposition R (1 : σ → ℕ)
 
-/-- Given a weight, `MvPolynomial σ R` as a graded algebra -/
+/-- `MvPolynomial σ R` as a graded algebra, graded by the degree.
+We do not make this a global instance because one may want to consider a different
+graded algebra structure on `MvPolynomial σ R`, induced by another weight function.
+To make it a local instance, you may use
+`attribute [local instance] MvPolynomial.gradedAlgebra`.
+-/
 abbrev gradedAlgebra : GradedAlgebra (homogeneousSubmodule σ R) :=
   weightedGradedAlgebra R (1 : σ → ℕ)
 
