@@ -82,7 +82,6 @@ for a discussion about this notation, and whether to enable it globally (note th
 currently global but broken, hence actually only works locally).
 -/
 
-
 variable (α : Type*)
 
 set_option quotPrecheck false in

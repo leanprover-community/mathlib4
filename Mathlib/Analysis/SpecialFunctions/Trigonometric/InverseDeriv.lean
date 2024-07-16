@@ -169,7 +169,7 @@ theorem differentiableWithinAt_arccos_Iic {x : ℝ} :
 #align real.differentiable_within_at_arccos_Iic Real.differentiableWithinAt_arccos_Iic
 
 theorem differentiableAt_arccos {x : ℝ} : DifferentiableAt ℝ arccos x ↔ x ≠ -1 ∧ x ≠ 1 :=
-  (differentiableAt_const_sub_iff _).trans differentiableAt_arcsin
+  (differentiableAt_const _).sub_iff_right.trans differentiableAt_arcsin
 #align real.differentiable_at_arccos Real.differentiableAt_arccos
 
 @[simp]

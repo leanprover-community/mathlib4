@@ -233,7 +233,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     have := mem_iInter.1 hx e
     rcases mem_iUnion.1 this with ⟨n, hn⟩
     refine ⟨n, fun p q hp hq => ?_⟩
-    simp only [mem_iInter, ge_iff_le] at hn
+    simp only [mem_iInter] at hn
     rcases mem_iUnion.1 (hn p hp q hq) with ⟨L, hL⟩
     exact ⟨L, exists_prop.mp <| mem_iUnion.1 hL⟩
   /- Recast the assumptions: for each `e`, there exist `n e` and linear maps `L e p q` in `K`
@@ -586,7 +586,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     have := mem_iInter.1 hx e
     rcases mem_iUnion.1 this with ⟨n, hn⟩
     refine ⟨n, fun p q hp hq => ?_⟩
-    simp only [mem_iInter, ge_iff_le] at hn
+    simp only [mem_iInter] at hn
     rcases mem_iUnion.1 (hn p hp q hq) with ⟨L, hL⟩
     exact ⟨L, exists_prop.mp <| mem_iUnion.1 hL⟩
   /- Recast the assumptions: for each `e`, there exist `n e` and linear maps `L e p q` in `K`
