@@ -347,7 +347,7 @@ theorem chromaticNumber_pos [Nonempty V] {n : ℕ} (hc : G.Colorable n) : 0 < G.
   by_contra h'
   simp only [not_le] at h'
   obtain ⟨i, hi⟩ := hm.some (Classical.arbitrary V)
-  have h₁: i < 0 := lt_of_lt_of_le hi (Nat.le_of_lt_succ h')
+  have h₁ : i < 0 := lt_of_lt_of_le hi (Nat.le_of_lt_succ h')
   exact Nat.not_lt_zero _ h₁
 #align simple_graph.chromatic_number_pos SimpleGraph.chromaticNumber_pos
 

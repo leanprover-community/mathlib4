@@ -186,7 +186,7 @@ theorem exists_mul_le_one_eqOn_ge (f : C(X, ℝ≥0)) {c : ℝ≥0} (hc : 0 < c)
     fun x =>
     (inv_mul_le_iff (hc.trans_le le_sup_right)).mpr ((mul_one (f x ⊔ c)).symm ▸ le_sup_left),
     fun x hx => by
-    simpa only [coe_const, ge_iff_le, mul_apply, coe_mk, Pi.inv_apply, Pi.sup_apply,
+    simpa only [coe_const, mul_apply, coe_mk, Pi.inv_apply, Pi.sup_apply,
       Function.const_apply, sup_eq_left.mpr (Set.mem_setOf.mp hx), ne_eq, Pi.one_apply]
       using inv_mul_cancel (hc.trans_le hx).ne' ⟩
 #align continuous_map.exists_mul_le_one_eq_on_ge ContinuousMap.exists_mul_le_one_eqOn_ge
@@ -236,8 +236,8 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
             simp only [coe_sub, coe_one, coe_comp, ContinuousMap.coe_coe, Pi.sub_apply,
               Pi.one_apply, Function.comp_apply, algebraMapCLM_apply]
           _ = ‖algebraMap ℝ≥0 𝕜 (1 - g x)‖₊ := by
-            simp only [Algebra.algebraMap_eq_smul_one, NNReal.smul_def, ge_iff_le,
-              NNReal.coe_sub (hg x), NNReal.coe_one, sub_smul, one_smul]
+            simp only [Algebra.algebraMap_eq_smul_one, NNReal.smul_def, NNReal.coe_sub (hg x),
+              NNReal.coe_one, sub_smul, one_smul]
           _ ≤ 1 := (nnnorm_algebraMap_nnreal 𝕜 (1 - g x)).trans_le tsub_le_self
       calc
         ‖f x - f x * (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g x‖₊ =

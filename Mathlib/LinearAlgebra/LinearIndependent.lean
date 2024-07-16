@@ -391,7 +391,7 @@ theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Modu
     (li : LinearIndependent K v) : LinearIndependent R v := by
   refine linearIndependent_iff'.mpr fun s g hg i hi => hinj ?_
   dsimp only; rw [zero_smul]
-  refine (linearIndependent_iff'.mp li : _) _ (g · • (1:K)) ?_ i hi
+  refine (linearIndependent_iff'.mp li : _) _ (g · • (1 : K)) ?_ i hi
   simp_rw [smul_assoc, one_smul]
   exact hg
 #align linear_independent.restrict_scalars LinearIndependent.restrict_scalars

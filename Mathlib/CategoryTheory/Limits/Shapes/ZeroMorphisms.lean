@@ -189,7 +189,7 @@ theorem eq_zero_of_tgt {X Y : C} (o : IsZero Y) (f : X ⟶ Y) : f = 0 :=
 theorem iff_id_eq_zero (X : C) : IsZero X ↔ 𝟙 X = 0 :=
   ⟨fun h => h.eq_of_src _ _, fun h =>
     ⟨fun Y => ⟨⟨⟨0⟩, fun f => by
-        rw [← id_comp f, ← id_comp (0: X ⟶ Y), h, zero_comp, zero_comp]; simp only⟩⟩,
+        rw [← id_comp f, ← id_comp (0 : X ⟶ Y), h, zero_comp, zero_comp]; simp only⟩⟩,
     fun Y => ⟨⟨⟨0⟩, fun f => by
         rw [← comp_id f, ← comp_id (0 : Y ⟶ X), h, comp_zero, comp_zero]; simp only ⟩⟩⟩⟩
 #align category_theory.limits.is_zero.iff_id_eq_zero CategoryTheory.Limits.IsZero.iff_id_eq_zero

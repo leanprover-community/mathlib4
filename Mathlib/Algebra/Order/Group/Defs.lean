@@ -116,14 +116,6 @@ addition is monotone. -/
 class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, LinearOrder α
 #align linear_ordered_add_comm_group LinearOrderedAddCommGroup
 
-/-- A linearly ordered commutative group with an additively absorbing `⊤` element.
-  Instances should include number systems with an infinite element adjoined. -/
-class LinearOrderedAddCommGroupWithTop (α : Type*) extends LinearOrderedAddCommMonoidWithTop α,
-  SubNegMonoid α, Nontrivial α where
-  protected neg_top : -(⊤ : α) = ⊤
-  protected add_neg_cancel : ∀ a : α, a ≠ ⊤ → a + -a = 0
-#align linear_ordered_add_comm_group_with_top LinearOrderedAddCommGroupWithTop
-
 /-- A linearly ordered commutative group is a
 commutative group with a linear order in which
 multiplication is monotone. -/

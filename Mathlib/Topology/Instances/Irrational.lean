@@ -44,7 +44,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
   refine Real.isTopologicalBasis_Ioo_rat.dense_iff.2 ?_
-  simp only [gt_iff_lt, Rat.cast_lt, not_lt, ge_iff_le, Rat.cast_le, mem_iUnion, mem_singleton_iff,
+  simp only [gt_iff_lt, Rat.cast_lt, not_lt, Rat.cast_le, mem_iUnion, mem_singleton_iff,
     exists_prop, forall_exists_index, and_imp]
   rintro _ a b hlt rfl _
   rw [inter_comm]
