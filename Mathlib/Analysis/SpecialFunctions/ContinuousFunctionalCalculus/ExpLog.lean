@@ -149,27 +149,17 @@ lemma log_algebraMap {r : ℝ} : log (algebraMap ℝ A r) = algebraMap ℝ A (Re
   simp [log]
 
 -- TODO: Relate the hypothesis to a notion of strict positivity
-lemma log_smul {r : ℝ} {a : A} (ha₁ : IsSelfAdjoint a := by cfc_tac)
-    (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) (hr : 0 < r) :
+lemma log_smul {r : ℝ} (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) (hr : 0 < r)
+    (ha₁ : IsSelfAdjoint a := by cfc_tac) :
     log (r • a) = algebraMap ℝ A (Real.log r) + log a := by
-  have ha₂' : ContinuousOn Real.log (spectrum ℝ a)  := by
-    refine ContinuousOn.mono Real.continuousOn_log fun x hx => ?_
-    rw [Set.mem_compl_singleton_iff]
-    exact ne_of_gt (ha₂ x hx)
-  have ha₂'' : ContinuousOn Real.log ((r • ·) '' spectrum ℝ a)  := by
-    refine ContinuousOn.mono Real.continuousOn_log fun x hx => ?_
-    rw [Set.mem_compl_singleton_iff]
-    rw [Set.mem_image] at hx
-    obtain ⟨z, hz⟩ := hx
-    rw [← hz.2]
-    have : 0 < r • z := (smul_pos_iff_of_pos_left hr).mpr (ha₂ z hz.1)
-    exact ne_of_gt this
-  rw [log, ← cfc_smul_id (S := ℝ) (R := ℝ) r a ha₁, ← cfc_comp Real.log (r • ·) a ha₁ ha₂'', log]
-  have hmain : Set.EqOn (Real.log ∘ (r • ·)) (fun z => Real.log r + Real.log z) (spectrum ℝ a) := by
-    intro x hx
-    simp only [smul_eq_mul, Function.comp_apply]
-    exact Real.log_mul (ne_of_gt hr) <| ne_of_gt (ha₂ x hx)
-  rw [cfc_congr hmain, cfc_const_add _ a _ ha₁ ha₂']
+  have : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by peel ha₂ with x hx h; exact h.ne'
+  have ha₂' : ContinuousOn Real.log (spectrum ℝ a) := by fun_prop (disch := assumption)
+  have ha₂'' : ContinuousOn Real.log ((r • ·) '' spectrum ℝ a)  := by fun_prop (disch := aesop)
+  rw [log, ← cfc_smul_id (R := ℝ) r a ha₁, ← cfc_comp Real.log (r • ·) a ha₁ ha₂'', log]
+  calc
+    _ = cfc (fun z => Real.log r + Real.log z) a :=
+      cfc_congr (Real.log_mul hr.ne' <| ne_of_gt <| ha₂ · ·)
+    _ = _ := by rw [cfc_const_add _ a _ ha₁ ha₂']
 
 -- TODO: Relate the hypothesis to a notion of strict positivity
 lemma log_pow {n : ℕ} {a : A} (ha₁ : IsSelfAdjoint a := by cfc_tac)
