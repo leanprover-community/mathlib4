@@ -153,7 +153,6 @@ lemma ModelWithCorners.interior_prod :
 /-- The boundary of `M × N` is `∂M × N ∪ (M × ∂N)`. -/
 lemma ModelWithCorners.boundary_prod :
     (I.prod I').boundary (M × M') = Set.prod univ (I'.boundary M') ∪ Set.prod (I.boundary M) univ := by
-  -- better proof: decompose M× M' into interior and boundary; show the latter is the complement!
   let h := calc (I.prod I').boundary (M × M')
     _ = ((I.prod I').interior (M × M'))ᶜ := (I.prod I').boundary_eq_complement_interior
     _ = ((I.interior M) ×ˢ (I'.interior M'))ᶜ := by rw [ModelWithCorners.interior_prod]
@@ -165,18 +164,18 @@ lemma ModelWithCorners.boundary_prod :
 lemma boundary_of_boundaryless_left [I.Boundaryless] :
     (I.prod I').boundary (M × M') = Set.prod (univ : Set M) (I'.boundary M') := by
   rw [ModelWithCorners.boundary_prod, ModelWithCorners.Boundaryless.boundary_eq_empty I]
-  have : Set.prod (∅ : Set M) (univ : Set M') = ∅ := by sorry -- how can this be so hard?
+  have : Set.prod (∅ : Set M) (univ : Set M') = ∅ := Set.empty_prod
   rw [this, union_empty]
 
 /-- If `N` is boundaryless, `∂(M×N) = ∂M × N`. -/
 lemma boundary_of_boundaryless_right [I'.Boundaryless] :
     (I.prod I').boundary (M × M') = Set.prod (I.boundary M) (univ : Set M') := by
   rw [ModelWithCorners.boundary_prod, ModelWithCorners.Boundaryless.boundary_eq_empty I']
-  have : Set.prod (univ : Set M) (∅ : Set M') = ∅ := by sorry -- how can this be so hard?
+  have : Set.prod (univ : Set M) (∅ : Set M') = ∅ := Set.prod_empty
   rw [this, empty_union]
 
--- Corollary. If M is a smooth manifold without boundary, M x I has boundary M× {0,1};
---   this is diffeomorphic to M ⊔ M.
+-- Corollary. If `M` is a smooth manifold without boundary, `M x I` has boundary `M × {0,1}`,
+-- diffeomorphic to the disjoint union `M ⊔ M`.
 
 end Boundary
 
