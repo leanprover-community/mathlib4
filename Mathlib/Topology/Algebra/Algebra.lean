@@ -211,7 +211,7 @@ theorem map_smul_of_tower {R S : Type*} [CommSemiring S] [SMul R A] [Algebra S A
     f (c • x) = c • f x :=
   map_smul f c x
 
-@[deprecated _root_.map_sum]
+@[deprecated _root_.map_sum (since := "2023-09-16")]
 protected theorem map_sum {ι : Type*} (f : A →A[R] B) (s : Finset ι) (g : ι → A) :
     f (∑ i in s, g i) = ∑ i in s, f (g i) :=
   map_sum ..
