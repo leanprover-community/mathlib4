@@ -270,30 +270,18 @@ lemma eq1 {l r} (L : l → PGame) (R : r → PGame)
     case _ j _ => exact h3 j j.2
   on_goal 4 =>
     case _ j _ => exact h3 j j.2
-  case' left₁ i j =>
+  case' left₁ i j | right₂ i j =>
       specialize inv_r i
       have : IsUnit (Surreal.mk (R i) (by tauto)) := by
         use ⟨_, _, inv_r, by rw [mul_comm]; exact inv_r⟩
       lift (Surreal.mk (R i) (by tauto)) to Surrealˣ using id this with s
       have : mk (R i).inv' (by tauto) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_r)
-  case' left₂ i j =>
+  case' left₂ i j | right₁ i j =>
       specialize inv_l i
       have : IsUnit (Surreal.mk (L i) (by tauto)) := by
         use ⟨_, _, inv_l, by rw [mul_comm]; exact inv_l⟩
       lift (Surreal.mk (L i) (by tauto)) to Surrealˣ using id this with s
       have : mk (L i).inv' (h3 i i.2) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_l)
-  case' right₁ i j =>
-      specialize inv_l i
-      have : IsUnit (Surreal.mk (L i) (by tauto)) := by
-        use ⟨_, _, inv_l, by rw [mul_comm]; exact inv_l⟩
-      lift (Surreal.mk (L i) (by tauto)) to Surrealˣ using id this with s
-      have : mk (L i).inv' (h3 i i.2) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_l)
-  case' right₂ i j =>
-      specialize inv_r i
-      have : IsUnit (Surreal.mk (R i) (by tauto)) := by
-        use ⟨_, _, inv_r, by rw [mul_comm]; exact inv_r⟩
-      lift (Surreal.mk (R i) (by tauto)) to Surrealˣ using id this with s
-      have : mk (R i).inv' (by tauto) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_r)
   all_goals
     rw [this]
     field_simp
@@ -408,7 +396,7 @@ lemma eq2 {l r} (L : l → PGame) (R : r → PGame)
     case _ j _ => exact h3 j j.2
   on_goal 4 =>
     case _ j _ => exact h3 j j.2
-  case' left₁ i j =>
+  case' left₁ i j | right₂ i j =>
     apply_fun (fun x => x - mk (R i) (h2 i) * mk (PGame.mk l r L R).inv' inv_numeric)
       using sub_left_injective
     ring_nf
@@ -418,7 +406,7 @@ lemma eq2 {l r} (L : l → PGame) (R : r → PGame)
       use ⟨_, _, inv_r, by rw [mul_comm]; exact inv_r⟩
     lift (Surreal.mk (R i) (by tauto)) to Surrealˣ using id this with s
     have : mk (R i).inv' (by tauto) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_r)
-  case' left₂ i j =>
+  case' left₂ i j | right₁ i j =>
     apply_fun (fun x => x - mk (L i) (h1 i) * mk (PGame.mk l r L R).inv' inv_numeric)
       using sub_left_injective
     ring_nf
@@ -428,26 +416,6 @@ lemma eq2 {l r} (L : l → PGame) (R : r → PGame)
       use ⟨_, _, inv_l, by rw [mul_comm]; exact inv_l⟩
     lift (Surreal.mk (L i) (by tauto)) to Surrealˣ using id this with s
     have : mk (L i).inv' (h3 i i.2) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_l)
-  case' right₁ i j =>
-    apply_fun (fun x => x - mk (L i) (h1 i) * mk (PGame.mk l r L R).inv' inv_numeric)
-      using sub_left_injective
-    ring_nf
-    conv_lhs => simp [inv']
-    specialize inv_l i
-    have : IsUnit (Surreal.mk (L i) (by tauto)) := by
-      use ⟨_, _, inv_l, by rw [mul_comm]; exact inv_l⟩
-    lift (Surreal.mk (L i) (by tauto)) to Surrealˣ using id this with s
-    have : mk (L i).inv' (h3 i i.2) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_l)
-  case' right₂ i j =>
-    apply_fun (fun x => x - mk (R i) (h2 i) * mk (PGame.mk l r L R).inv' inv_numeric)
-      using sub_left_injective
-    ring_nf
-    conv_lhs => simp [inv']
-    specialize inv_r i
-    have : IsUnit (Surreal.mk (R i) (by tauto)) := by
-      use ⟨_, _, inv_r, by rw [mul_comm]; exact inv_r⟩
-    lift (Surreal.mk (R i) (by tauto)) to Surrealˣ using id this with s
-    have : mk (R i).inv' (by tauto) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_r)
   all_goals
     rw [this]
     field_simp
