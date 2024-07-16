@@ -65,15 +65,35 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 /-- A topological manifold is called **closed** iff it is compact without boundary. -/
 structure ClosedManifold [CompactSpace M] [I.Boundaryless]
 
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] (N : Type*) [TopologicalSpace N] [ChartedSpace H' N]
+  (J : ModelWithCorners 𝕜 E' H') [SmoothManifoldWithCorners J N]
+
+instance ClosedManifold.prod [CompactSpace M] [I.Boundaryless] [CompactSpace N] [J.Boundaryless] :
+  ClosedManifold (M × N) (I.prod J) where
+
 /-- An **n-manifold** is a smooth `n`-dimensional manifold. -/
 structure NManifold (n : ℕ) [NormedAddCommGroup E]  [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E]
     {H : Type*} [TopologicalSpace H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners 𝕜 E H) [SmoothManifoldWithCorners I M] where
   hdim : finrank 𝕜 E = n
 
+/-- The product of an `n`- and and an `m`-manifold is an `n+m`-manifold. -/
+instance NManifold.prod {m n : ℕ} [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 E']
+    (s : NManifold m M I) (t : NManifold n N J) : NManifold (m + n) (M × N) (I.prod J) where
+  hdim := by rw [s.hdim.symm, t.hdim.symm]; apply finrank_prod
+
 structure ClosedNManifold (n : ℕ) [CompactSpace M] [I.Boundaryless] [FiniteDimensional 𝕜 E]
     extends ClosedManifold M I where
   hdim : finrank 𝕜 E = n
+
+/-- The product of a closed `n`- and a closed closed `m`-manifold is a closed `n+m`-manifold. -/
+instance ClosedNManifold.prod {m n : ℕ} [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 E']
+    [CompactSpace M] [I.Boundaryless] [CompactSpace N] [J.Boundaryless]
+    (s : ClosedNManifold M I m) (t : ClosedNManifold N J n) :
+    ClosedNManifold (M × N) (I.prod J) (m + n) where
+  -- TODO: can I inherit this from NManifold.prod?
+  hdim := by rw [s.hdim.symm, t.hdim.symm]; apply finrank_prod
 
 section examples
 
@@ -84,6 +104,10 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimension
 
 /-- The standard `n`-sphere is a closed manifold. -/
 example {n : ℕ} [Fact (finrank ℝ E = n + 1)] : ClosedManifold (sphere (0 : E) 1) (𝓡 n) where
+
+/-- The standard `2`-torus is a closed manifold. -/
+example [Fact (finrank ℝ E = 1 + 1)] :
+    ClosedManifold ((sphere (0 : E) 1) × (sphere (0 : E) 1)) ((𝓡 2).prod (𝓡 2)) where
 
 -- The standard Euclidean space is an `n`-manifold. -/
 example (n : ℕ) {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace ℝ (Fin n)) M]
