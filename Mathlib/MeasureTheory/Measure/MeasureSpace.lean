@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.MeasureTheory.Measure.NullMeasurable
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
+import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 #align_import measure_theory.measure.measure_space from "leanprover-community/mathlib"@"343e80208d29d2d15f8050b929aa50fe4ce71b55"
@@ -967,9 +967,13 @@ theorem nnreal_smul_coe_apply {_m : MeasurableSpace α} (c : ℝ≥0) (μ : Meas
 
 theorem ae_smul_measure_iff {p : α → Prop} {c : ℝ≥0∞} (hc : c ≠ 0) :
     (∀ᵐ x ∂c • μ, p x) ↔ ∀ᵐ x ∂μ, p x := by
-    simp only [ae_iff, Algebra.id.smul_eq_mul, smul_apply, or_iff_right_iff_imp, mul_eq_zero]
-    simp only [IsEmpty.forall_iff, hc]
+  simp [ae_iff, hc]
 #align measure_theory.measure.ae_smul_measure_iff MeasureTheory.Measure.ae_smul_measure_iff
+
+@[simp]
+theorem ae_smul_measure_eq {c : ℝ≥0∞} (hc : c ≠ 0) : ae (c • μ) = ae μ := by
+  ext
+  exact ae_smul_measure_iff hc
 
 theorem measure_eq_left_of_subset_of_measure_add_eq {s t : Set α} (h : (μ + ν) t ≠ ∞) (h' : s ⊆ t)
     (h'' : (μ + ν) s = (μ + ν) t) : μ s = μ t := by
@@ -1565,9 +1569,11 @@ theorem sum_cond (μ ν : Measure α) : (sum fun b => cond b μ ν) = μ + ν :=
 #align measure_theory.measure.sum_cond MeasureTheory.Measure.sum_cond
 
 @[simp]
-theorem sum_of_empty [IsEmpty ι] (μ : ι → Measure α) : sum μ = 0 := by
+theorem sum_of_isEmpty [IsEmpty ι] (μ : ι → Measure α) : sum μ = 0 := by
   rw [← measure_univ_eq_zero, sum_apply _ MeasurableSet.univ, tsum_empty]
-#align measure_theory.measure.sum_of_empty MeasureTheory.Measure.sum_of_empty
+#align measure_theory.measure.sum_of_empty MeasureTheory.Measure.sum_of_isEmpty
+
+@[deprecated (since := "2024-06-11")] alias sum_of_empty := sum_of_isEmpty
 
 theorem sum_add_sum_compl (s : Set ι) (μ : ι → Measure α) :
     ((sum fun i : s => μ i) + sum fun i : ↥sᶜ => μ i) = sum μ := by
@@ -2153,9 +2159,10 @@ namespace MeasurableEmbedding
 
 open MeasureTheory Measure
 
-variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β} (hf : MeasurableEmbedding f)
+variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β} {μ ν : Measure α}
 
-nonrec theorem map_apply (μ : Measure α) (s : Set β) : μ.map f s = μ (f ⁻¹' s) := by
+nonrec theorem map_apply (hf : MeasurableEmbedding f) (μ : Measure α) (s : Set β) :
+    μ.map f s = μ (f ⁻¹' s) := by
   refine le_antisymm ?_ (le_map_apply hf.measurable.aemeasurable s)
   set t := f '' toMeasurable μ (f ⁻¹' s) ∪ (range f)ᶜ
   have htm : MeasurableSet t :=
@@ -2172,10 +2179,17 @@ nonrec theorem map_apply (μ : Measure α) (s : Set β) : μ.map f s = μ (f ⁻
     _ = μ (f ⁻¹' s) := by rw [map_apply hf.measurable htm, hft, measure_toMeasurable]
 #align measurable_embedding.map_apply MeasurableEmbedding.map_apply
 
-lemma comap_add (μ ν : Measure β) : (μ + ν).comap f = μ.comap f + ν.comap f := by
+lemma comap_add (hf : MeasurableEmbedding f) (μ ν : Measure β) :
+    (μ + ν).comap f = μ.comap f + ν.comap f := by
   ext s hs
   simp only [← comapₗ_eq_comap _ hf.injective (fun _ ↦ hf.measurableSet_image.mpr) _ hs,
     _root_.map_add, add_apply]
+
+lemma absolutelyContinuous_map (hf : MeasurableEmbedding f) (hμν : μ ≪ ν) :
+    μ.map f ≪ ν.map f := by
+  intro t ht
+  rw [hf.map_apply] at ht ⊢
+  exact hμν ht
 
 end MeasurableEmbedding
 

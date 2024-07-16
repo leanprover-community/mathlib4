@@ -149,8 +149,8 @@ theorem degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * 
   classical
   exact if hp : p = 0 then by simp only [hp, zero_mul, le_refl]
   else by
-    rw [degree_mul, degree_eq_natDegree hp, degree_eq_natDegree hq];
-      exact WithBot.coe_le_coe.2 (Nat.le_add_right _ _)
+    rw [degree_mul, degree_eq_natDegree hp, degree_eq_natDegree hq]
+    exact WithBot.coe_le_coe.2 (Nat.le_add_right _ _)
 #align polynomial.degree_le_mul_left Polynomial.degree_le_mul_left
 
 theorem natDegree_le_of_dvd {p q : R[X]} (h1 : p ∣ q) (h2 : q ≠ 0) : p.natDegree ≤ q.natDegree := by
@@ -298,8 +298,7 @@ theorem Monic.not_irreducible_iff_exists_add_mul_eq_coeff (hm : p.Monic) (hnd : 
   · push_neg
     constructor
     · rintro ⟨a, b, ha, hb, rfl, hdb⟩
-      simp only [zero_lt_two, Nat.div_self, ge_iff_le,
-        Nat.Ioc_succ_singleton, zero_add, mem_singleton] at hdb
+      simp only [zero_lt_two, Nat.div_self, Nat.Ioc_succ_singleton, zero_add, mem_singleton] at hdb
       have hda := hnd
       rw [ha.natDegree_mul hb, hdb] at hda
       use a.coeff 0, b.coeff 0, mul_coeff_zero a b
@@ -337,33 +336,38 @@ end Ring
 
 section CommSemiring
 
-variable [CommSemiring R]
+variable [CommSemiring R] {a p : R[X]}
 
-theorem Monic.C_dvd_iff_isUnit {p : R[X]} (hp : Monic p) {a : R} :
-    C a ∣ p ↔ IsUnit a :=
+section Monic
+
+variable (hp : p.Monic)
+
+theorem Monic.C_dvd_iff_isUnit {a : R} : C a ∣ p ↔ IsUnit a :=
   ⟨fun h => isUnit_iff_dvd_one.mpr <|
       hp.coeff_natDegree ▸ (C_dvd_iff_dvd_coeff _ _).mp h p.natDegree,
    fun ha => (ha.map C).dvd⟩
 
-theorem degree_pos_of_not_isUnit_of_dvd_monic {a p : R[X]} (ha : ¬ IsUnit a)
-    (hap : a ∣ p) (hp : Monic p) :
-    0 < degree a :=
-  lt_of_not_ge <| fun h => ha <| by
-    rw [Polynomial.eq_C_of_degree_le_zero h] at hap ⊢
-    simpa [hp.C_dvd_iff_isUnit, isUnit_C] using hap
+theorem Monic.natDegree_pos : 0 < natDegree p ↔ p ≠ 1 :=
+  Nat.pos_iff_ne_zero.trans hp.natDegree_eq_zero.not
 
-theorem natDegree_pos_of_not_isUnit_of_dvd_monic {a p : R[X]} (ha : ¬ IsUnit a)
-    (hap : a ∣ p) (hp : Monic p) :
-    0 < natDegree a :=
-  natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_not_isUnit_of_dvd_monic ha hap hp
+theorem Monic.degree_pos : 0 < degree p ↔ p ≠ 1 :=
+  natDegree_pos_iff_degree_pos.symm.trans hp.natDegree_pos
 
-theorem degree_pos_of_monic_of_not_isUnit {a : R[X]} (hu : ¬ IsUnit a) (ha : Monic a) :
-    0 < degree a :=
-  degree_pos_of_not_isUnit_of_dvd_monic hu dvd_rfl ha
+theorem Monic.degree_pos_of_not_isUnit (hu : ¬IsUnit p) : 0 < degree p :=
+  hp.degree_pos.mpr (fun hp' ↦ (hp' ▸ hu) isUnit_one)
 
-theorem natDegree_pos_of_monic_of_not_isUnit {a : R[X]} (hu : ¬ IsUnit a) (ha : Monic a) :
-    0 < natDegree a :=
-  natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_monic_of_not_isUnit hu ha
+theorem Monic.natDegree_pos_of_not_isUnit (hu : ¬IsUnit p) : 0 < natDegree p :=
+  hp.natDegree_pos.mpr (fun hp' ↦ (hp' ▸ hu) isUnit_one)
+
+theorem degree_pos_of_not_isUnit_of_dvd_monic (ha : ¬IsUnit a) (hap : a ∣ p) : 0 < degree a := by
+  contrapose! ha with h
+  rw [Polynomial.eq_C_of_degree_le_zero h] at hap ⊢
+  simpa [hp.C_dvd_iff_isUnit, isUnit_C] using hap
+
+theorem natDegree_pos_of_not_isUnit_of_dvd_monic (ha : ¬IsUnit a) (hap : a ∣ p) : 0 < natDegree a :=
+  natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_not_isUnit_of_dvd_monic hp ha hap
+
+end Monic
 
 theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 → r = 0) :
     ∀ (Q : R[X]), P * Q = 0 → Q = 0 := by
@@ -430,9 +434,9 @@ theorem le_rootMultiplicity_iff {p : R[X]} (p0 : p ≠ 0) {a : R} {n : ℕ} :
   rw [rootMultiplicity_eq_nat_find_of_nonzero p0, @Nat.le_find_iff _ (_)]
   simp_rw [Classical.not_not]
   refine ⟨fun h => ?_, fun h m hm => (pow_dvd_pow _ hm).trans h⟩
-  cases' n with n;
+  cases' n with n
   · rw [pow_zero]
-    apply one_dvd;
+    apply one_dvd
   · exact h n n.lt_succ_self
 #align polynomial.le_root_multiplicity_iff Polynomial.le_rootMultiplicity_iff
 
@@ -797,8 +801,8 @@ theorem exists_multiset_roots [DecidableEq R] :
             congr
             exact mod_cast Multiset.card_cons _ _
           _ ≤ degree p := by
-            rw [← degree_add_divByMonic (monic_X_sub_C x) hdeg, degree_X_sub_C, add_comm];
-              exact add_le_add (le_refl (1 : WithBot ℕ)) htd,
+            rw [← degree_add_divByMonic (monic_X_sub_C x) hdeg, degree_X_sub_C, add_comm]
+            exact add_le_add (le_refl (1 : WithBot ℕ)) htd,
         by
           change ∀ (a : R), count a (x ::ₘ t) = rootMultiplicity a p
           intro a
@@ -816,7 +820,7 @@ termination_by p => natDegree p
 decreasing_by {
   simp_wf
   apply (Nat.cast_lt (α := WithBot ℕ)).mp
-  simp only [degree_eq_natDegree hp, degree_eq_natDegree hd0] at wf;
+  simp only [degree_eq_natDegree hp, degree_eq_natDegree hd0] at wf
   assumption}
 #align polynomial.exists_multiset_roots Polynomial.exists_multiset_roots
 
@@ -866,7 +870,7 @@ theorem Monic.irreducible_of_irreducible_map (f : R[X]) (h_mon : Monic f)
     (congr_arg (Polynomial.map φ) h).trans (Polynomial.map_mul φ)).imp ?_ ?_ <;>
       apply isUnit_of_isUnit_leadingCoeff_of_isUnit_map <;>
     apply isUnit_of_mul_eq_one
-  · exact q;
+  · exact q
   · rw [mul_comm]
     exact q
 #align polynomial.monic.irreducible_of_irreducible_map Polynomial.Monic.irreducible_of_irreducible_map

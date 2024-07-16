@@ -5,7 +5,6 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Data.Finsupp.Fin
@@ -644,6 +643,14 @@ lemma sum_cons' [AddCommMonoid M] [AddCommMonoid N] (n : ℕ) (σ : Fin n →₀
   simp_rw [Fin.sum_univ_succ, cons_zero, cons_succ]
   congr
 
+@[to_additive]
+lemma prod_mul_eq_prod_mul_of_exists [DecidableEq α] [Zero M] [CommMonoid N]
+    {f : α →₀ M} {g : α → M → N} {n₁ n₂ : N}
+    (a : α) (ha : a ∈ f.support)
+    (h : g a (f a) * n₁ = g a (f a) * n₂) :
+    f.prod g * n₁ = f.prod g * n₂ :=
+  Finset.prod_mul_eq_prod_mul_of_exists a ha h
+
 end Finsupp
 
 theorem Finset.sum_apply' : (∑ k ∈ s, f k) i = ∑ k ∈ s, f k i :=
@@ -683,9 +690,10 @@ namespace Nat
 
 -- Porting note: Needed to replace pow with (· ^ ·)
 /-- If `0 : ℕ` is not in the support of `f : ℕ →₀ ℕ` then `0 < ∏ x ∈ f.support, x ^ (f x)`. -/
-theorem prod_pow_pos_of_zero_not_mem_support {f : ℕ →₀ ℕ} (hf : 0 ∉ f.support) :
+theorem prod_pow_pos_of_zero_not_mem_support {f : ℕ →₀ ℕ} (nhf : 0 ∉ f.support) :
     0 < f.prod (· ^ ·) :=
- Finset.prod_pos fun a ha => pos_iff_ne_zero.mpr (pow_ne_zero _ fun H => by subst H; exact hf ha)
+  Nat.pos_iff_ne_zero.mpr <| Finset.prod_ne_zero_iff.mpr fun _ hf =>
+    pow_ne_zero _ fun H => by subst H; exact nhf hf
 #align nat.prod_pow_pos_of_zero_not_mem_support Nat.prod_pow_pos_of_zero_not_mem_support
 
 end Nat

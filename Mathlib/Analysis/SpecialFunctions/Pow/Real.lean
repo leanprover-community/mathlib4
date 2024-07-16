@@ -49,7 +49,7 @@ theorem rpow_def (x y : ℝ) : x ^ y = ((x : ℂ) ^ (y : ℂ)).re := rfl
 theorem rpow_def_of_nonneg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) :
     x ^ y = if x = 0 then if y = 0 then 1 else 0 else exp (log x * y) := by
   simp only [rpow_def, Complex.cpow_def]; split_ifs <;>
-  simp_all [(Complex.ofReal_log hx).symm, -Complex.ofReal_mul, -RCLike.ofReal_mul,
+  simp_all [(Complex.ofReal_log hx).symm, -Complex.ofReal_mul,
       (Complex.ofReal_mul _ _).symm, Complex.exp_ofReal_re, Complex.ofReal_eq_zero]
 #align real.rpow_def_of_nonneg Real.rpow_def_of_nonneg
 
@@ -262,6 +262,10 @@ theorem rpow_sub' {x : ℝ} (hx : 0 ≤ x) {y z : ℝ} (h : y - z ≠ 0) : x ^ (
   simp only [sub_eq_add_neg] at h ⊢
   simp only [rpow_add' hx h, rpow_neg hx, div_eq_mul_inv]
 #align real.rpow_sub' Real.rpow_sub'
+
+protected theorem _root_.HasCompactSupport.rpow_const {α : Type*} [TopologicalSpace α] {f : α → ℝ}
+    (hf : HasCompactSupport f) {r : ℝ} (hr : r ≠ 0) : HasCompactSupport (fun x ↦ f x ^ r) :=
+  hf.comp_left (g := (· ^ r)) (Real.zero_rpow hr)
 
 end Real
 
@@ -637,7 +641,7 @@ theorem rpow_lt_rpow_of_exponent_neg {x y z : ℝ} (hy : 0 < y) (hxy : y < x) (h
   exact Real.rpow_lt_rpow (by positivity) hxy <| neg_pos_of_neg hz
 
 theorem strictAntiOn_rpow_Ioi_of_exponent_neg {r : ℝ} (hr : r < 0) :
-    StrictAntiOn (fun (x:ℝ) => x ^ r) (Set.Ioi 0) :=
+    StrictAntiOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) :=
   fun _ ha _ _ hab => rpow_lt_rpow_of_exponent_neg ha hab hr
 
 theorem rpow_le_rpow_of_exponent_nonpos {x y : ℝ} (hy : 0 < y) (hxy : y ≤ x) (hz : z ≤ 0) :
@@ -652,7 +656,7 @@ theorem rpow_le_rpow_of_exponent_nonpos {x y : ℝ} (hy : 0 < y) (hxy : y ≤ x)
   case inr => simp
 
 theorem antitoneOn_rpow_Ioi_of_exponent_nonpos {r : ℝ} (hr : r ≤ 0) :
-    AntitoneOn (fun (x:ℝ) => x ^ r) (Set.Ioi 0) :=
+    AntitoneOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) :=
   fun _ ha _ _ hab => rpow_le_rpow_of_exponent_nonpos ha hab hr
 
 @[simp]

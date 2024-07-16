@@ -38,12 +38,13 @@ theorem Finset.sum_smul {f : ι → R} {s : Finset ι} {x : M} :
     (∑ i ∈ s, f i) • x = ∑ i ∈ s, f i • x := map_sum ((smulAddHom R M).flip x) f s
 #align finset.sum_smul Finset.sum_smul
 
-theorem Finset.sum_smul_sum {f : α → R} {g : β → M} {s : Finset α} {t : Finset β} :
-    ((∑ i ∈ s, f i) • ∑ i ∈ t, g i) = ∑ p ∈ s ×ˢ t, f p.fst • g p.snd := by
-  rw [Finset.sum_product, Finset.sum_smul, Finset.sum_congr rfl]
-  intros
-  rw [Finset.smul_sum]
+lemma Finset.sum_smul_sum (s : Finset α) (t : Finset β) {f : α → R} {g : β → M} :
+    (∑ i ∈ s, f i) • ∑ j ∈ t, g j = ∑ i ∈ s, ∑ j ∈ t, f i • g j := by
+  simp_rw [sum_smul, ← smul_sum]
 #align finset.sum_smul_sum Finset.sum_smul_sum
+
+lemma Fintype.sum_smul_sum [Fintype α] [Fintype β] (f : α → R) (g : β → M) :
+    (∑ i, f i) • ∑ j, g j = ∑ i, ∑ j, f i • g j := Finset.sum_smul_sum _ _
 
 end AddCommMonoid
 

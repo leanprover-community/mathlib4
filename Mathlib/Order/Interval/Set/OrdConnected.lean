@@ -354,3 +354,7 @@ theorem ordConnected_iff_uIcc_subset_right (hx : x ∈ s) :
     OrdConnected s ↔ ∀ ⦃y⦄, y ∈ s → [[y, x]] ⊆ s := by
   simp_rw [ordConnected_iff_uIcc_subset_left hx, uIcc_comm]
 #align set.ord_connected_iff_uIcc_subset_right Set.ordConnected_iff_uIcc_subset_right
+
+end LinearOrder
+
+end Set

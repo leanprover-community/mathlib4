@@ -278,8 +278,7 @@ theorem compactOpen_eq_iInf_induced :
   refine le_generateFrom <| forall_image2_iff.2 fun K (hK : IsCompact K) U hU ↦ ?_
   refine TopologicalSpace.le_def.1 (iInf₂_le K hK) _ ?_
   convert isOpen_induced (isOpen_setOf_mapsTo (isCompact_iff_isCompact_univ.1 hK) hU)
-  simp only [mapsTo_univ_iff, Subtype.forall]
-  rfl
+  simp [mapsTo_univ_iff, Subtype.forall, MapsTo]
 #align continuous_map.compact_open_eq_Inf_induced ContinuousMap.compactOpen_eq_iInf_induced
 
 @[deprecated (since := "2024-03-05")]
@@ -374,7 +373,7 @@ section Curry
     If `a × β` is locally compact, this is continuous. If `α` and `β` are both locally
     compact, then this is a homeomorphism, see `Homeomorph.curry`. -/
 def curry (f : C(X × Y, Z)) : C(X, C(Y, Z)) where
-  toFun a := ⟨Function.curry f a, f.continuous.comp <| by continuity⟩
+  toFun a := ⟨Function.curry f a, f.continuous.comp <| by fun_prop⟩
   continuous_toFun := (continuous_comp f).comp continuous_coev
 #align continuous_map.curry ContinuousMap.curry
 

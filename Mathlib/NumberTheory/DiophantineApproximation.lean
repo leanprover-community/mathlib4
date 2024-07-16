@@ -49,8 +49,8 @@ Both statements are combined to give an equivalence,
 
 There are two versions of Legendre's Theorem. One, `Real.exists_rat_eq_convergent`, uses
 `Real.convergent`, a simple recursive definition of the convergents that is also defined
-in this file, whereas the other, `Real.exists_continued_fraction_convergent_eq_rat`, uses
-`GeneralizedContinuedFraction.convergents` of `GeneralizedContinuedFraction.of ξ`.
+in this file, whereas the other, `Real.exists_convs_eq_rat`, uses
+`GenContFract.convs` of `GenContFract.of ξ`.
 
 ## Implementation notes
 
@@ -322,14 +322,13 @@ open Int
 
 /-- We give a direct recursive definition of the convergents of the continued fraction
 expansion of a real number `ξ`. The main reason for that is that we want to have the
-convergents as rational numbers; the versions
-`(GeneralizedContinuedFraction.of ξ).convergents` and
-`(GeneralizedContinuedFraction.of ξ).convergents'` always give something of the
-same type as `ξ`. We can then also use dot notation `ξ.convergent n`.
+convergents as rational numbers; the versions `(GenContFract.of ξ).convs` and
+`(GenContFract.of ξ).convs'` always give something of the same type as `ξ`.
+We can then also use dot notation `ξ.convergent n`.
 Another minor reason is that this demonstrates that the proof
 of Legendre's theorem does not need anything beyond this definition.
 We provide a proof that this definition agrees with the other one;
-see `Real.continued_fraction_convergent_eq_convergent`.
+see `Real.convs_eq_convergent`.
 (Note that we use the fact that `1/0 = 0` here to make it work for rational `ξ`.) -/
 noncomputable def convergent : ℝ → ℕ → ℚ
   | ξ, 0 => ⌊ξ⌋
@@ -369,22 +368,20 @@ theorem convergent_of_int {ξ : ℤ} (n : ℕ) : convergent ξ n = ξ := by
 #align real.convergent_of_int Real.convergent_of_int
 
 /-!
-Our `convergent`s agree with `GeneralizedContinuedFraction.convergents`.
+Our `convergent`s agree with `GenContFract.convs`.
 -/
 
 
-open GeneralizedContinuedFraction
+open GenContFract
 
-/-- The `n`th convergent of the `GeneralizedContinuedFraction.of ξ`
-agrees with `ξ.convergent n`. -/
-theorem continued_fraction_convergent_eq_convergent (ξ : ℝ) (n : ℕ) :
-    (GeneralizedContinuedFraction.of ξ).convergents n = ξ.convergent n := by
+/-- The `n`th convergent of the `GenContFract.of ξ` agrees with `ξ.convergent n`. -/
+theorem convs_eq_convergent (ξ : ℝ) (n : ℕ) :
+    (GenContFract.of ξ).convs n = ξ.convergent n := by
   induction' n with n ih generalizing ξ
-  · simp only [Nat.zero_eq, zeroth_convergent_eq_h, of_h_eq_floor, convergent_zero,
-      Rat.cast_intCast]
-  · rw [convergents_succ, ih (fract ξ)⁻¹, convergent_succ, one_div]
+  · simp only [Nat.zero_eq, zeroth_conv_eq_h, of_h_eq_floor, convergent_zero, Rat.cast_intCast]
+  · rw [convs_succ, ih (fract ξ)⁻¹, convergent_succ, one_div]
     norm_cast
-#align real.continued_fraction_convergent_eq_convergent Real.continued_fraction_convergent_eq_convergent
+#align real.continued_fraction_convergent_eq_convergent Real.convs_eq_convergent
 
 end Real
 
@@ -597,12 +594,11 @@ theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ
 /-- The main result, *Legendre's Theorem* on rational approximation:
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
-This is the version using `generalized_contined_fraction.convergents`. -/
-theorem exists_continued_fraction_convergent_eq_rat {q : ℚ}
-    (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) :
-    ∃ n, (GeneralizedContinuedFraction.of ξ).convergents n = q := by
+This is the version using `GenContFract.convs`. -/
+theorem exists_convs_eq_rat {q : ℚ}
+    (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) : ∃ n, (GenContFract.of ξ).convs n = q := by
   obtain ⟨n, hn⟩ := exists_rat_eq_convergent h
-  exact ⟨n, hn.symm ▸ continued_fraction_convergent_eq_convergent ξ n⟩
-#align real.exists_continued_fraction_convergent_eq_rat Real.exists_continued_fraction_convergent_eq_rat
+  exact ⟨n, hn.symm ▸ convs_eq_convergent ξ n⟩
+#align real.exists_continued_fraction_convergent_eq_rat Real.exists_convs_eq_rat
 
 end Real

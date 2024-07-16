@@ -3,10 +3,11 @@ Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Gin-ge Chen, Yaël Dillies
 -/
-import Mathlib.Algebra.PUnitInstances
+import Mathlib.Algebra.PUnitInstances.Algebra
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
 import Mathlib.Order.Hom.Lattice
+import Mathlib.Algebra.Ring.Equiv
 
 #align_import algebra.ring.boolean_ring from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -333,8 +334,7 @@ theorem toBoolAlg_mul (a b : α) : toBoolAlg (a * b) = toBoolAlg a ⊓ toBoolAlg
   rfl
 #align to_boolalg_mul toBoolAlg_mul
 
--- `toBoolAlg_add` simplifies the LHS but this lemma is eligible to `dsimp`
-@[simp, nolint simpNF]
+@[simp]
 theorem toBoolAlg_add_add_mul (a b : α) : toBoolAlg (a + b + a * b) = toBoolAlg a ⊔ toBoolAlg b :=
   rfl
 #align to_boolalg_add_add_mul toBoolAlg_add_add_mul
@@ -491,8 +491,7 @@ theorem ofBoolRing_one : ofBoolRing (1 : AsBoolRing α) = ⊤ :=
   rfl
 #align of_boolring_one ofBoolRing_one
 
--- `sub_eq_add` proves this lemma but it is eligible for `dsimp`
-@[simp, nolint simpNF]
+@[simp]
 theorem ofBoolRing_neg (a : AsBoolRing α) : ofBoolRing (-a) = ofBoolRing a :=
   rfl
 #align of_boolring_neg ofBoolRing_neg
@@ -502,8 +501,7 @@ theorem ofBoolRing_add (a b : AsBoolRing α) : ofBoolRing (a + b) = ofBoolRing a
   rfl
 #align of_boolring_add ofBoolRing_add
 
--- `sub_eq_add` simplifies the LHS but this lemma is eligible for `dsimp`
-@[simp, nolint simpNF]
+@[simp]
 theorem ofBoolRing_sub (a b : AsBoolRing α) : ofBoolRing (a - b) = ofBoolRing a ∆ ofBoolRing b :=
   rfl
 #align of_boolring_sub ofBoolRing_sub

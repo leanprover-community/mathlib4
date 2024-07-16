@@ -371,8 +371,8 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
     have hss' : s ⊆ s' := fun x hx => measure_mono fun y hy => hST <| mk_mem_prod hx hy
     calc
       μ s * ν t ≤ μ s' * ν t := by gcongr
-      _ = ∫⁻ _ in s', ν t ∂μ := by rw [set_lintegral_const, mul_comm]
-      _ ≤ ∫⁻ x in s', f x ∂μ := set_lintegral_mono measurable_const hfm fun x => id
+      _ = ∫⁻ _ in s', ν t ∂μ := by rw [setLIntegral_const, mul_comm]
+      _ ≤ ∫⁻ x in s', f x ∂μ := setLIntegral_mono hfm fun x => id
       _ ≤ ∫⁻ x, f x ∂μ := lintegral_mono' restrict_le_self le_rfl
       _ = μ.prod ν ST := (prod_apply hSTm).symm
       _ = μ.prod ν (s ×ˢ t) := measure_toMeasurable _
@@ -441,9 +441,7 @@ instance prod.instIsFiniteMeasureOnCompacts {α β : Type*} [TopologicalSpace α
     exact ⟨⟨y, hxy⟩, ⟨x, hxy⟩⟩
   apply lt_of_le_of_lt (measure_mono this)
   rw [hL, prod_prod]
-  exact
-    mul_lt_top (IsCompact.measure_lt_top (hK.image continuous_fst)).ne
-      (IsCompact.measure_lt_top (hK.image continuous_snd)).ne
+  exact mul_lt_top (hK.image continuous_fst).measure_ne_top (hK.image continuous_snd).measure_ne_top
 #align measure_theory.measure.prod.measure_theory.is_finite_measure_on_compacts MeasureTheory.Measure.prod.instIsFiniteMeasureOnCompacts
 
 instance {X Y : Type*}
@@ -908,11 +906,13 @@ theorem AEMeasurable.prod_swap [SFinite μ] [SFinite ν] {f : β × α → γ}
   exact hf.comp_measurable measurable_swap
 #align ae_measurable.prod_swap AEMeasurable.prod_swap
 
+-- TODO: make this theorem usable with `fun_prop`
 theorem AEMeasurable.fst [SFinite ν] {f : α → γ} (hf : AEMeasurable f μ) :
     AEMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 #align ae_measurable.fst AEMeasurable.fst
 
+-- TODO: make this theorem usable with `fun_prop`
 theorem AEMeasurable.snd [SFinite ν] {f : β → γ} (hf : AEMeasurable f ν) :
     AEMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd

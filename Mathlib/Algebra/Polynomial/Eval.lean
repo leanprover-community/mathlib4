@@ -565,7 +565,6 @@ theorem natCast_comp {n : ℕ} : (n : R[X]).comp p = n := by rw [← C_eq_natCas
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_comp := natCast_comp
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem ofNat_comp (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : R[X]).comp p = n :=
   natCast_comp
@@ -658,16 +657,8 @@ theorem pow_comp {R : Type*} [CommSemiring R] (p q : R[X]) (n : ℕ) :
     p n
 #align polynomial.pow_comp Polynomial.pow_comp
 
-set_option linter.deprecated false in
-@[simp]
-theorem bit0_comp : comp (bit0 p : R[X]) q = bit0 (p.comp q) := by simp only [bit0, add_comp]
-#align polynomial.bit0_comp Polynomial.bit0_comp
-
-set_option linter.deprecated false in
-@[simp]
-theorem bit1_comp : comp (bit1 p : R[X]) q = bit1 (p.comp q) := by
-  simp only [bit1, add_comp, bit0_comp, one_comp]
-#align polynomial.bit1_comp Polynomial.bit1_comp
+#noalign polynomial.bit0_comp
+#noalign polynomial.bit1_comp
 
 @[simp]
 theorem smul_comp [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S) (p q : R[X]) :
@@ -786,7 +777,6 @@ protected theorem map_natCast (n : ℕ) : (n : R[X]).map f = n :=
 @[deprecated (since := "2024-04-17")]
 alias map_nat_cast := map_natCast
 
--- Porting note (#10756): new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :

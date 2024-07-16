@@ -8,6 +8,7 @@ import Mathlib.Init.Data.Int.Order
 import Mathlib.Order.Compare
 import Mathlib.Order.Max
 import Mathlib.Order.RelClasses
+import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Choose
 
 #align_import order.monotone.basic from "leanprover-community/mathlib"@"554bb38de8ded0dafe93b7f18f0bfee6ef77dc5d"
@@ -140,6 +141,18 @@ instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a < b → f b < f a)] :
     Decidable (StrictAntiOn f s) := i
 
 end Decidable
+
+lemma monotone_inclusion_le_le_of_le [Preorder α] {k j : α} (hkj : k ≤ j) :
+    Monotone (fun ⟨i, hi⟩ => ⟨i, hi.trans hkj⟩ : { i // i ≤ k } → { i // i ≤ j}) :=
+  fun _ _ h => h
+
+lemma monotone_inclusion_lt_le_of_le [Preorder α] {k j : α} (hkj : k ≤ j) :
+    Monotone (fun ⟨i, hi⟩ => ⟨i, hi.le.trans hkj⟩ : { i // i < k } → { i // i ≤ j}) :=
+  fun _ _ h => h
+
+lemma monotone_inclusion_lt_lt_of_le [Preorder α] {k j : α} (hkj : k ≤ j) :
+    Monotone (fun ⟨i, hi⟩ => ⟨i, lt_of_lt_of_le hi hkj⟩ : { i // i < k } → { i // i < j}) :=
+  fun _ _ h => h
 
 /-! ### Monotonicity on the dual order
 
@@ -626,15 +639,22 @@ theorem StrictAnti.isMin_of_apply (hf : StrictAnti f) (ha : IsMax (f a)) : IsMin
     (hf hb).not_isMax ha
 #align strict_anti.is_min_of_apply StrictAnti.isMin_of_apply
 
+lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : m + f n ≤ f (m + n)  := by
+  rw [Nat.add_comm m, Nat.add_comm m]
+  induction' m with m ih
+  · rw [Nat.add_zero, Nat.add_zero]
+  · rw [← Nat.add_assoc, ← Nat.add_assoc, Nat.succ_le]
+    exact ih.trans_lt (hf (n + m).lt_succ_self)
+
 protected theorem StrictMono.ite' (hf : StrictMono f) (hg : StrictMono g) {p : α → Prop}
     [DecidablePred p]
     (hp : ∀ ⦃x y⦄, x < y → p y → p x) (hfg : ∀ ⦃x y⦄, p x → ¬p y → x < y → f x < g y) :
     StrictMono fun x ↦ if p x then f x else g x := by
   intro x y h
-  by_cases hy:p y
+  by_cases hy : p y
   · have hx : p x := hp h hy
     simpa [hx, hy] using hf h
-  by_cases hx:p x
+  by_cases hx : p x
   · simpa [hx, hy] using hfg hx hy h
   · simpa [hx, hy] using hg h
 #align strict_mono.ite' StrictMono.ite'
@@ -1249,3 +1269,17 @@ theorem const_strictMono [Nonempty β] : StrictMono (const β : α → β → α
 #align function.const_strict_mono Function.const_strictMono
 
 end Function
+
+section apply
+variable {ι α : Type*} {β : ι → Type*} [∀ i, Preorder (β i)] [Preorder α] {f : α → ∀ i, β i}
+
+lemma monotone_iff_apply₂ : Monotone f ↔ ∀ i, Monotone (f · i) := by
+  simp [Monotone, Pi.le_def, @forall_swap ι]
+
+lemma antitone_iff_apply₂ : Antitone f ↔ ∀ i, Antitone (f · i) := by
+  simp [Antitone, Pi.le_def, @forall_swap ι]
+
+alias ⟨Monotone.apply₂, Monotone.of_apply₂⟩ := monotone_iff_apply₂
+alias ⟨Antitone.apply₂, Antitone.of_apply₂⟩ := antitone_iff_apply₂
+
+end apply

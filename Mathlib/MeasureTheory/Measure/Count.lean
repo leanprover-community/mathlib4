@@ -13,12 +13,10 @@ as `MeasureTheory.Measure.sum MeasureTheory.Measure.dirac`
 and prove basic properties of this measure.
 -/
 
-set_option autoImplicit true
-
 open Set
 open scoped ENNReal Classical
 
-variable [MeasurableSpace α] [MeasurableSpace β] {s : Set α}
+variable {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] {s : Set α}
 
 noncomputable section
 
@@ -185,3 +183,7 @@ instance count.isFiniteMeasure [Finite α] :
     cases nonempty_fintype α
     simpa [Measure.count_apply, tsum_fintype] using (ENNReal.natCast_ne_top _).lt_top⟩
 #align measure_theory.measure.count.is_finite_measure MeasureTheory.Measure.count.isFiniteMeasure
+
+end Measure
+
+end MeasureTheory
