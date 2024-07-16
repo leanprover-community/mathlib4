@@ -72,7 +72,7 @@ theorem isUnit_one_sub_single {g : Γ} (hg : 0 < g) (r : R) : IsUnit (1 - single
   rw [← PowerSeries.invOneSubPow_inv_eq_one_sub_pow 0]
   exact Units.isUnit (PowerSeries.invOneSubPow 0)⁻¹
 
-theorem one_sub_single_npow_coeff_nsmul {g : Γ} (hg : 0 < g) (r : R) (n k : ℕ) :
+theorem one_sub_single_npow_coeff {g : Γ} (hg : 0 < g) (r : R) (n k : ℕ) :
     ((1 - single g r) ^ n).coeff (k • g) = (-1) ^ k • Nat.choose n k • r ^ k := by
   rw [← meval_X hg, ← RingHom.map_one (meval hg r), ← RingHom.map_sub, ← RingHom.map_pow]
   by_cases hn : n = 0
@@ -90,8 +90,17 @@ theorem one_sub_single_npow_coeff_nsmul {g : Γ} (hg : 0 < g) (r : R) (n k : ℕ
       Polynomial.coeff_one_add_X_pow R n k, mul_rotate']
     simp
 
--- theorem one_sub_single_negSuccPow_coeff_nsmul
+/-!
+theorem one_sub_single_negSuccPow_coeff {g : Γ} (hg : 0 < g) (r : R) (n k : ℕ) :
+    ((isUnit_one_sub_single hg r).unit ^ (Int.negSucc n)).val.coeff (k • g) =
+      Nat.choose (n + k) k • r ^ k := by
+  have hm : ((isUnit_one_sub_single hg r).unit ^ (Int.negSucc n)).val =
+      (meval hg r) (PowerSeries.invOneSubPow n).val := by
+    rw [@zpow_negSucc]
 
+    sorry
+  sorry
+-/
 -- theorem one_sub_single_npow_coeff_notin_range
 
 /-- An invertible binomial, i.e., one with invertible leading term. -/

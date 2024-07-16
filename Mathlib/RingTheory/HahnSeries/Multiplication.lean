@@ -145,9 +145,10 @@ instance instBaseMod {V} [Semiring R] [AddCommMonoid V] [Module R V] :
 
 end
 
-variable [PartialOrder Γ'] [VAdd Γ Γ'] [MonoVAddReflectLE Γ Γ']
+variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [MonoVAddReflectLE Γ Γ'] [Zero R]
+[AddCommMonoid V] [SMul R V]
 
-instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ' R V) where
+instance instSMul : SMul (HahnSeries Γ R) (HahnModule Γ' R V) where
   smul x y := {
     coeff := fun a =>
       ∑ ij ∈ VAddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a,
@@ -163,7 +164,7 @@ instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ' R V) where
           simp [not_nonempty_iff_eq_empty.1 ha]
         isPWO_support_VAddAntidiagonal.mono h }
 
-theorem smul_coeff [Zero R] (x : HahnSeries Γ R) (y : HahnModule Γ' R V) (a : Γ') :
+theorem smul_coeff (x : HahnSeries Γ R) (y : HahnModule Γ' R V) (a : Γ') :
     ((of R).symm <| x • y).coeff a =
       ∑ ij ∈ VAddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a,
         x.coeff ij.fst • ((of R).symm y).coeff ij.snd :=
@@ -172,8 +173,6 @@ theorem smul_coeff [Zero R] (x : HahnSeries Γ R) (y : HahnModule Γ' R V) (a : 
 end SMul
 
 section SMulZeroClass
-
-section
 
 variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [MonoVAddReflectLE Γ Γ'] [Zero R]
   [AddCommMonoid V]

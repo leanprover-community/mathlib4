@@ -112,7 +112,7 @@ theorem ascPochhammer_succ_succ (r : R) (k : ℕ) :
     smeval (ascPochhammer ℕ (k + 1)) (r + 1) = Nat.factorial (k + 1) • multichoose (r + 1) k +
     smeval (ascPochhammer ℕ (k + 1)) r := by
   nth_rw 1 [ascPochhammer_succ_right, ascPochhammer_succ_left, mul_comm (ascPochhammer ℕ k)]
-  simp only [smeval_mul, smeval_comp ℕ _ _ r, smeval_add, smeval_X]
+  simp only [smeval_mul, smeval_comp, smeval_add, smeval_X]
   rw [Nat.factorial, mul_smul, factorial_nsmul_multichoose_eq_ascPochhammer]
   simp only [smeval_one, npow_one, npow_zero, one_smul]
   rw [← C_eq_natCast, smeval_C, npow_zero, add_assoc, add_mul, add_comm 1, @nsmul_one, add_mul]
@@ -374,7 +374,7 @@ alias choose_nat_cast := choose_natCast
 
 @[simp]
 theorem choose_zero_right' (r : R) : choose r 0 = (r + 1) ^ 0 := by
-  unfold choose
+  dsimp [choose]
   refine nsmul_right_injective (Nat.factorial 0) (Nat.factorial_ne_zero 0) ?_
   simp only
   rw [factorial_nsmul_multichoose_eq_ascPochhammer, Nat.factorial_zero, ascPochhammer_zero,
@@ -385,10 +385,8 @@ theorem choose_zero_right [NatPowAssoc R] (r : R) : choose r 0 = 1 := by
 
 @[simp]
 theorem choose_zero_succ (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S] [BinomialRing S]
-    (n : ℕ) : choose (0 : S) (Nat.succ n) = 0 := by
-  unfold choose
-  rw [Nat.cast_succ, zero_sub, neg_add, neg_add_cancel_right, ← Nat.add_one,
-    multichoose_succ_neg_natCast]
+    (n : ℕ) : choose (0 : S) (n + 1) = 0 := by
+  rw [choose, Nat.cast_succ, zero_sub, neg_add, neg_add_cancel_right, multichoose_succ_neg_natCast]
 
 theorem choose_zero_pos (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S] [BinomialRing S]
     {k : ℕ} (h_pos: 0 < k) : choose (0 : S) k = 0 := by
@@ -408,24 +406,24 @@ theorem choose_one_right [NatPowAssoc R] (r : R) : choose r 1 = r := by
   rw [choose_one_right', npow_one]
 
 theorem descPochhammer_succ_succ_smeval {S : Type*} [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S]
-    (r : S) (k : ℕ) : smeval (descPochhammer ℤ (Nat.succ k)) (r + 1) =
-    (k + 1) • smeval (descPochhammer ℤ k) r + smeval (descPochhammer ℤ (Nat.succ k)) r := by
+    (r : S) (k : ℕ) : smeval (descPochhammer ℤ (k + 1)) (r + 1) =
+    (k + 1) • smeval (descPochhammer ℤ k) r + smeval (descPochhammer ℤ (k + 1)) r := by
   nth_rw 1 [descPochhammer_succ_left]
   rw [descPochhammer_succ_right, mul_comm (descPochhammer ℤ k)]
-  simp only [smeval_comp ℤ _ _ (r + 1), smeval_sub, smeval_add, smeval_mul, smeval_X, smeval_one,
+  simp only [smeval_comp, smeval_sub, smeval_add, smeval_mul, smeval_X, smeval_one,
   npow_one, npow_zero, one_smul, add_sub_cancel_right, sub_mul, add_mul, add_smul, one_mul]
   rw [← C_eq_natCast, smeval_C, npow_zero, add_comm (k • smeval (descPochhammer ℤ k) r) _,
     add_assoc, add_comm (k • smeval (descPochhammer ℤ k) r) _, ← add_assoc,  ← add_sub_assoc,
     nsmul_eq_mul, zsmul_one, Int.cast_natCast, sub_add_cancel, add_comm]
 
-theorem choose_succ_succ [NatPowAssoc R] (r:R) (k : ℕ) :
-    choose (r+1) (Nat.succ k) = choose r k + choose r (Nat.succ k) := by
+theorem choose_succ_succ [NatPowAssoc R] (r : R) (k : ℕ) :
+    choose (r+1) (k + 1) = choose r k + choose r (k + 1) := by
   refine nsmul_right_injective (Nat.factorial (k + 1)) (Nat.factorial_ne_zero (k + 1)) ?_
   simp only [smul_add, ← descPochhammer_eq_factorial_smul_choose]
-  rw [Nat.factorial_succ, mul_smul,
-    ← descPochhammer_eq_factorial_smul_choose r, descPochhammer_succ_succ_smeval r k]
+  rw [Nat.factorial_succ, mul_smul, ← descPochhammer_eq_factorial_smul_choose r,
+    descPochhammer_succ_succ_smeval r k]
 
-theorem choose_mul [NatPowAssoc R] (r : R) (n k : ℕ) (hkn : k ≤ n) :
+theorem choose_smul_choose [NatPowAssoc R] (r : R) (n k : ℕ) (hkn : k ≤ n) :
     (Nat.choose n k) • choose r n = choose r k * choose (r - k) (n - k) := by
   refine nsmul_right_injective (Nat.factorial n) (Nat.factorial_ne_zero n) ?_
   simp only
@@ -437,10 +435,77 @@ theorem choose_mul [NatPowAssoc R] (r : R) (n k : ℕ) (hkn : k ≤ n) :
   rw [add_comm, ← descPochhammer_mul, smeval_mul, smeval_comp, smeval_sub, smeval_X,
     ← C_eq_natCast, smeval_C, npow_one, npow_zero, zsmul_one, Int.cast_natCast, nsmul_eq_mul]
 
-theorem choose_mul' [NatPowAssoc R] (r : R) (n k : ℕ) :
+theorem choose_add_smul_choose [NatPowAssoc R] (r : R) (n k : ℕ) :
     (Nat.choose (n + k) k) • choose (r + k) (n + k) = choose (r + k) k * choose r n := by
-  rw [choose_mul (r + k) (n + k) k (Nat.le_add_left k n), Nat.add_sub_cancel, add_sub_cancel_right]
+  rw [choose_smul_choose (r + k) (n + k) k (Nat.le_add_left k n), Nat.add_sub_cancel,
+    add_sub_cancel_right]
 
+-- Pochhammer version of Vandermonde identity
+theorem add_descFactorial_eq {R} [Ring R] (r s : R) (k : ℕ) (h: Commute r s) :
+    (descPochhammer ℤ k).smeval (r + s) = ∑ ij ∈ Finset.HasAntidiagonal.antidiagonal k,
+    Nat.choose k ij.1 * ((descPochhammer ℤ ij.1).smeval r * (descPochhammer ℤ ij.2).smeval s) := by
+  induction k with
+  | zero => simp [descPochhammer_zero, Finset.Nat.antidiagonal_zero, Finset.sum_singleton]
+  | succ k ih =>
+    rw [descPochhammer_succ_right, mul_comm, smeval_mul, Finset.sum_antidiagonal_choose_succ_mul
+      fun i j => ((descPochhammer ℤ i).smeval r * (descPochhammer ℤ j).smeval s),
+      ←Finset.sum_add_distrib, smeval_sub, smeval_X, smeval_natCast, pow_zero, pow_one, ih,
+      Finset.mul_sum]
+    refine Finset.sum_congr rfl ?_
+    intro ij h₁ -- try to move descPochhammers to right, gather multipliers.
+    have hdx : (descPochhammer ℤ ij.1).smeval r * (X - (ij.2 : ℤ[X])).smeval s =
+        (X - (ij.2 : ℤ[X])).smeval s * (descPochhammer ℤ ij.1).smeval r := by
+      refine (commute_iff_eq ((descPochhammer ℤ ij.1).smeval r)
+        ((X - (ij.2 : ℤ[X])).smeval s)).mp ?_
+      exact smeval_commute ℤ (descPochhammer ℤ ij.1) (X - (ij.2 : ℤ[X])) h
+    rw [descPochhammer_succ_right, mul_comm, smeval_mul, descPochhammer_succ_right, mul_comm,
+      smeval_mul, ← mul_assoc ((descPochhammer ℤ ij.1).smeval r), hdx]
+    simp only [mul_assoc _ ((descPochhammer ℤ ij.1).smeval r) _,
+      ← mul_assoc _ _ (((descPochhammer ℤ ij.1).smeval r) * _)]
+    have hl : (r + s - k • 1) * (k.choose ij.1) = (k.choose ij.1) * (X - (ij.2 : ℤ[X])).smeval s +
+        ↑(k.choose ij.2) * (X - (ij.1 : ℤ[X])).smeval r := by
+      simp only [smeval_sub, smeval_X, pow_one, smeval_natCast, pow_zero, ← mul_sub]
+      rw [(Nat.choose_symm_of_eq_add (List.Nat.mem_antidiagonal.mp h₁).symm).symm,
+        (List.Nat.mem_antidiagonal.mp h₁).symm, ← mul_add, Nat.cast_comm, add_smul]
+      abel_nf
+    rw [hl, ← add_mul]
+
+/-!
+/-- Vandermonde's identity for binomial rings -/
+theorem add_choose_eq [BinomialRing R] (r s : R) (k : ℕ) (h: Commute r s):
+  choose (r+s) k = ∑ ij : ℕ × ℕ in antidiagonal k, choose r ij.1 * choose s ij.2 := by
+  refine eq_of_mul_eq_mul_factorial (k) ?_
+  rw [← descFactorial_eq_factorial_mul_choose, Finset.mul_sum, add_descFactorial_eq]
+  refine Finset.sum_congr rfl ?_
+  intro x h₂
+  have h₃ : x.fst ≤ k := by
+    exact antidiagonal.fst_le h₂
+  have h₄ : x.fst + x.snd = k := by
+    exact Iff.mp List.Nat.mem_antidiagonal h₂
+  have h₅ : x.snd = k - x.fst := by
+    exact Eq.symm (tsub_eq_of_eq_add_rev (id (Eq.symm h₄)))
+  rw [← Nat.choose_mul_factorial_mul_factorial h₃, ← h₅, Nat.cast_mul, mul_assoc,
+    ← mul_assoc ↑(Nat.factorial x.snd) (choose r x.fst), Nat.cast_commute (Nat.factorial x.snd),
+    mul_assoc, ← descFactorial_eq_factorial_mul_choose, Nat.cast_mul, mul_assoc,
+    ← mul_assoc (↑(Nat.factorial x.fst)) (choose r x.fst), ← descFactorial_eq_factorial_mul_choose]
+  exact h
+
+theorem choose_mul_choose [BinomialRing R] (r:R) (n k : ℕ) :
+    choose r n * choose r k = ∑ m in range (min (n+1) (k+1)) Nat.choose (m+n-k) (m-k) *
+      Nat.choose n k * choose r (m+n-k) := by
+  sorry
+
+theorem mul_choose [BinomialRing R] (r s:R) (n : ℕ) :
+    choose (r*s) n = ∑ j_1 + 2j_2 + \cdots + nj_n = n (fun j ↦ choose (∑ j_i) (j_i) *
+      choose s (∑ j_i) * ∏ choose r j_i := by
+  sorry
+
+theorem binomial_series_smul [BinomialRing R] [AddCommGroup A] [CommAlgebra R A] [Ideal A I]
+    [AdicComplete A I] : [Module R (1+I)] where
+  smul r (1+x) := ∑ (i ∈ ℕ) (fun i => (Ring.choose r i) • x^i)
+
+  etc.  -- Need to define I-adically complete CommRing first, and group structure on 1+I.
+-/
 end Ring
 
 end Choose
