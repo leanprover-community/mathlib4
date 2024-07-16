@@ -18,7 +18,7 @@ the smallest exponent in the support.
 
 namespace MvPowerSeries
 
-variable {σ R : Type}
+variable {σ R : Type*}
 variable [Semiring R]
 
 section LexOrder
@@ -182,25 +182,5 @@ theorem lexOrder_mul [NoZeroDivisors R] (φ ψ : MvPowerSeries σ R) :
   exact ⟨coeff_ne_zero_of_lexOrder hp.symm, coeff_ne_zero_of_lexOrder hq.symm⟩
 
 end LexOrder
-
-section
--- This belongs to some other file
-/-- The opposite linear order to a given linear order -/
-def LinearOrder.swap (_ : LinearOrder σ) : LinearOrder σ :=
-  inferInstanceAs <| LinearOrder (OrderDual σ)
-
--- This belongs to `NoZeroDivisors.lean` once this is merged from #14454
-theorem noZeroDivisors [NoZeroDivisors R] :
-    NoZeroDivisors (MvPowerSeries σ R) where
-  eq_zero_or_eq_zero_of_mul_eq_zero {φ ψ} h := by
-    letI : LinearOrder σ := LinearOrder.swap WellOrderingRel.isWellOrder.linearOrder
-    letI : WellFoundedGT σ := by
-      unfold WellFoundedGT
-      suffices IsWellFounded σ fun x y ↦ WellOrderingRel x y by
-        exact this
-      exact IsWellOrder.toIsWellFounded
-    simpa only [eq_zero_iff_lexOrder_eq_top, lexOrder_mul, WithTop.add_eq_top] using h
-
-end
 
 end MvPowerSeries

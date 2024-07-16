@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.RingTheory.MvPowerSeries.Basic
+-- import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Data.Finsupp.WellFounded
+import Mathlib.RingTheory.MvPowerSeries.LexOrder
 
 /-! # ZeroDivisors in a MvPowerSeries ring
 
@@ -62,6 +63,24 @@ theorem mem_nonZeroDivisors_of_constantCoeff {φ : MvPowerSeries σ R}
       false_implies]
 
 end Semiring
+
+section
+
+variable {σ R : Type*} [Semiring R] [NoZeroDivisors R]
+
+-- This belongs to `NoZeroDivisors.lean` once this is merged from #14454
+instance : NoZeroDivisors (MvPowerSeries σ R) where
+  eq_zero_or_eq_zero_of_mul_eq_zero {φ ψ} h := by
+    letI : LinearOrder σ := LinearOrder.swap WellOrderingRel.isWellOrder.linearOrder
+    letI : WellFoundedGT σ := by
+      unfold WellFoundedGT
+      suffices IsWellFounded σ fun x y ↦ WellOrderingRel x y by
+        exact this
+      exact IsWellOrder.toIsWellFounded
+    simpa only [eq_zero_iff_lexOrder_eq_top, lexOrder_mul, WithTop.add_eq_top] using h
+
+end
+
 
 end MvPowerSeries
 
