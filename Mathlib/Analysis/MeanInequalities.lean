@@ -326,7 +326,6 @@ section ArithMeanLEQuadMean
 
 namespace Real
 
-
 /-- **AM-QM inequality**: The arithmetic mean is less than or equal to the quadratic mean, weighted
 version for real-valued nonnegative functions. -/
 theorem arith_mean_le_quad_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
@@ -336,15 +335,6 @@ theorem arith_mean_le_quad_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0
     have qm_pos := sum_nonneg fun i hi => mul_nonneg (hw i hi) (sq_nonneg (z i))
     apply (Real.le_sqrt am_pos qm_pos).mpr
     exact (convexOn_pow 2).map_sum_le hw hw' hz
-
-
-
-/-- **HM-GM inequality**: The **harmonic mean is less than or equal to the geometric mean. --/
-theorem arith_mean_le_quad_mean {ι : Type*} (s : Finset ι) (hs : s.Nonempty) (w : ι → ℝ)
-    (z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i) (hw' : 0 < ∑ i in s, w i) (hz : ∀ i ∈ s, 0 < z i) :
-    (∑ i in s, w i) / (∑ i in s, w i / z i) ≤ (∏ i in s, z i ^ w i) ^ (∑ i in s, w i)⁻¹ := by
-  sorry
-  -- see ConvexOn.map_sum_le
 
 end Real
 
