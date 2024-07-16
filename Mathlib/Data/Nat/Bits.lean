@@ -29,10 +29,6 @@ and `Nat.digits`.
 /-- `bxor` denotes the `xor` function i.e. the exclusive-or function on type `Bool`. -/
 local notation "bxor" => _root_.xor
 
--- As this file is all about `bit0` and `bit1`,
--- we turn off the deprecated linter for the whole file.
-set_option linter.deprecated false
-
 namespace Nat
 universe u
 variable {m n : ℕ}
@@ -469,38 +465,11 @@ lemma bit1_lt_bit0_iff : 2 * m + 1 < 2 * n ↔ m < n :=
   ⟨fun h ↦ bit1_le_bit0_iff.1 (le_of_lt h), Nat.bit1_lt_bit0⟩
 #align nat.bit1_lt_bit0_iff Nat.bit1_lt_bit0_iff
 
--- Porting note: temporarily porting only needed portions
-/-
-@[simp]
-theorem one_le_bit0_iff : 1 ≤ bit0 n ↔ 0 < n := by
-  convert bit1_le_bit0_iff
-  rfl
-#align nat.one_le_bit0_iff Nat.one_le_bit0_iff
-
-@[simp]
-theorem one_lt_bit0_iff : 1 < bit0 n ↔ 1 ≤ n := by
-  convert bit1_lt_bit0_iff
-  rfl
-#align nat.one_lt_bit0_iff Nat.one_lt_bit0_iff
-
-@[simp]
-theorem bit_le_bit_iff : ∀ {b : Bool}, bit b m ≤ bit b n ↔ m ≤ n
-  | false => bit0_le_bit0
-  | true => bit1_le_bit1
-#align nat.bit_le_bit_iff Nat.bit_le_bit_iff
-
-@[simp]
-theorem bit_lt_bit_iff : ∀ {b : Bool}, bit b m < bit b n ↔ m < n
-  | false => bit0_lt_bit0
-  | true => bit1_lt_bit1
-#align nat.bit_lt_bit_iff Nat.bit_lt_bit_iff
-
-@[simp]
-theorem bit_le_bit1_iff : ∀ {b : Bool}, bit b m ≤ bit1 n ↔ m ≤ n
-  | false => bit0_le_bit1_iff
-  | true => bit1_le_bit1
-#align nat.bit_le_bit1_iff Nat.bit_le_bit1_iff
--/
+#noalign nat.one_le_bit0_iff
+#noalign nat.one_lt_bit0_iff
+#noalign nat.bit_le_bit_iff
+#noalign nat.bit_lt_bit_iff
+#noalign nat.bit_le_bit1_iff
 
 /--
 The same as `binaryRec_eq`,

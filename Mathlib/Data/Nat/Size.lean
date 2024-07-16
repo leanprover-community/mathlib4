@@ -15,7 +15,6 @@ namespace Nat
 /-! ### `shiftLeft` and `shiftRight` -/
 
 section
-set_option linter.deprecated false
 
 theorem shiftLeft_eq_mul_pow (m) : ∀ n, m <<< n = m * 2 ^ n := shiftLeft_eq _
 #align nat.shiftl_eq_mul_pow Nat.shiftLeft_eq_mul_pow
@@ -60,21 +59,13 @@ theorem size_bit {b n} (h : bit b n ≠ 0) : size (bit b n) = succ (size n) := b
 #align nat.size_bit Nat.size_bit
 
 section
-set_option linter.deprecated false
 
-@[simp]
-theorem size_bit0 {n} (h : n ≠ 0) : size (2 * n) = succ (size n) :=
-  @size_bit false n (Nat.bit0_ne_zero h)
-#align nat.size_bit0 Nat.size_bit0
-
-@[simp]
-theorem size_bit1 (n) : size (2 * n + 1) = succ (size n) :=
-  @size_bit true n (Nat.bit1_ne_zero n)
-#align nat.size_bit1 Nat.size_bit1
+#noalign nat.size_bit0
+#noalign nat.size_bit1
 
 @[simp]
 theorem size_one : size 1 = 1 :=
-  show size (2 * 0 + 1) = 1 by rw [size_bit1, size_zero]
+  show size (bit true 0) = 1 by rw [size_bit, size_zero]; exact Nat.one_ne_zero
 #align nat.size_one Nat.size_one
 
 end

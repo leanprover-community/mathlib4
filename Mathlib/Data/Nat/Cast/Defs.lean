@@ -190,12 +190,8 @@ theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
         simp only [Nat.cast_add, Nat.cast_one]
 #align nat.bin_cast_eq Nat.binCast_eq
 
-section deprecated
-
 #noalign nat.cast_bit0
 #noalign nat.cast_bit1
-
-end deprecated
 
 theorem cast_two [AddMonoidWithOne R] : ((2 : ℕ) : R) = (2 : R) := rfl
 #align nat.cast_two Nat.cast_two
