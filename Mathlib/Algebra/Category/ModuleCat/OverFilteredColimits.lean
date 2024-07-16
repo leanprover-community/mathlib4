@@ -7,6 +7,7 @@ import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Module.Defs
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Module structures of filtered colimits of abelian groups over filtered colimts of rings
@@ -34,8 +35,6 @@ and abelian groups respectively.
 open CategoryTheory Category Limits Opposite
 
 universe u u' v v' w w' uc₁ uc₂
-
-section
 
 variable {J : Type w} [Category.{w'} J] [IsFiltered J]
 variable {ℜ𝔦𝔫𝔤 : Type u} [Category.{u'} ℜ𝔦𝔫𝔤] [ConcreteCategory.{max uc₁ w} ℜ𝔦𝔫𝔤]
@@ -178,11 +177,11 @@ noncomputable def smulColimit {c : J} (r : ℛ.obj c) (m : colimit (C := 𝔄�
    (hSMul (IsFiltered.leftToMax _ _) (IsFiltered.rightToMax _ _)
     r (Concrete.repColimit ℳ m))
 
-section sMulColimit
+section smulColimit
 
 @[simp]
-lemma sMulColimit_smul_rep (c₁ c₂ : J) (r : ℛ.obj c₁) (m : ℳ.obj c₂) :
-    sMulColimit r (colimit.ι ℳ c₂ m) =
+lemma smulColimit_smul_rep (c₁ c₂ : J) (r : ℛ.obj c₁) (m : ℳ.obj c₂) :
+    smulColimit r (colimit.ι ℳ c₂ m) =
     colimit.ι ℳ (IsFiltered.max c₁ c₂)
     (hSMul (IsFiltered.leftToMax _ _) (IsFiltered.rightToMax _ _) r m) := by
   apply hSMul_respect_ι
@@ -190,16 +189,16 @@ lemma sMulColimit_smul_rep (c₁ c₂ : J) (r : ℛ.obj c₁) (m : ℳ.obj c₂)
   · rw [Concrete.ι_repColimit_eq]
 
 @[simp]
-lemma sMulColimit_one_smul (c : J) (m : colimit (C := 𝔄𝔟) ℳ) :
-    sMulColimit (1 : ℛ.obj c) m = m := by
+lemma smulColimit_one_smul (c : J) (m : colimit (C := 𝔄𝔟) ℳ) :
+    smulColimit (1 : ℛ.obj c) m = m := by
   rw [show m = colimit.ι ℳ (Concrete.indexRepColimit ℳ m) _ by
-    rw [Concrete.ι_repColimit_eq], sMulColimit_smul_rep, one_hSMul, colimit.w_apply]
+    rw [Concrete.ι_repColimit_eq], smulColimit_smul_rep, one_hSMul, colimit.w_apply]
 
-lemma sMulColimit_mul_smul (c : J) (r₁ r₂ : ℛ.obj c)
+lemma smulColimit_mul_smul (c : J) (r₁ r₂ : ℛ.obj c)
     (m : colimit (C := 𝔄𝔟) ℳ) :
-    sMulColimit (r₁ * r₂) m = sMulColimit r₁ (sMulColimit r₂ m) := by
+    smulColimit (r₁ * r₂) m = smulColimit r₁ (smulColimit r₂ m) := by
   simp only [show m = colimit.ι ℳ (Concrete.indexRepColimit ℳ m) _ by
-    rw [Concrete.ι_repColimit_eq], sMulColimit_smul_rep, mul_hSMul]
+    rw [Concrete.ι_repColimit_eq], smulColimit_smul_rep, mul_hSMul]
   apply hSMul_respect_ι
   · rfl
   · apply hSMul_respect_ι
@@ -207,12 +206,12 @@ lemma sMulColimit_mul_smul (c : J) (r₁ r₂ : ℛ.obj c)
     · rw [Concrete.ι_repColimit_eq]
 
 @[simp]
-lemma sMulColimit_smul_zero (c : J) (r : ℛ.obj c) : sMulColimit (ℳ := ℳ) r 0 = 0 := by
+lemma smulColimit_smul_zero (c : J) (r : ℛ.obj c) : smulColimit (ℳ := ℳ) r 0 = 0 := by
   rw [show (0 : colimit (C := 𝔄𝔟) ℳ) = colimit.ι (C := 𝔄𝔟) ℳ c 0 by rw [map_zero],
-    sMulColimit_smul_rep, hSMul_zero, map_zero, map_zero]
+    smulColimit_smul_rep, hSMul_zero, map_zero, map_zero]
 
-lemma sMulColimit_smul_add (c : J) (r : ℛ.obj c) (m₁ m₂ : colimit (C := 𝔄𝔟) ℳ) :
-    sMulColimit r (m₁ + m₂) = sMulColimit r m₁ + sMulColimit r m₂ := by
+lemma smulColimit_smul_add (c : J) (r : ℛ.obj c) (m₁ m₂ : colimit (C := 𝔄𝔟) ℳ) :
+    smulColimit r (m₁ + m₂) = smulColimit r m₁ + smulColimit r m₂ := by
   classical
   let O : Finset J :=
     { c, Concrete.indexRepColimit ℳ m₁, Concrete.indexRepColimit ℳ m₂ }
@@ -231,30 +230,30 @@ lemma sMulColimit_smul_add (c : J) (r : ℛ.obj c) (m₁ m₂ : colimit (C := �
 
   rw [eq₃]
   conv_rhs => rw [eq₁]; rhs; rw [eq₂]
-  rw [sMulColimit_smul_rep, sMulColimit_smul_rep, sMulColimit_smul_rep, hSMul_add, map_add]
+  rw [smulColimit_smul_rep, smulColimit_smul_rep, smulColimit_smul_rep, hSMul_add, map_add]
 
-lemma sMulColimit_add_smul (c : J) (r₁ r₂ : ℛ.obj c) (m : colimit (C := 𝔄𝔟) ℳ) :
-    sMulColimit (r₁ + r₂) m = sMulColimit r₁ m + sMulColimit r₂ m := by
+lemma smulColimit_add_smul (c : J) (r₁ r₂ : ℛ.obj c) (m : colimit (C := 𝔄𝔟) ℳ) :
+    smulColimit (r₁ + r₂) m = smulColimit r₁ m + smulColimit r₂ m := by
   simp only [show m = colimit.ι ℳ (Concrete.indexRepColimit ℳ m) _ by
-    rw [Concrete.ι_repColimit_eq], sMulColimit_smul_rep, add_hSMul, map_add]
+    rw [Concrete.ι_repColimit_eq], smulColimit_smul_rep, add_hSMul, map_add]
 
 @[simp]
-lemma sMulColimit_zero_smul (c : J) (m : colimit (C := 𝔄𝔟) ℳ) :
-    sMulColimit (ℳ := ℳ) (0 : ℛ.obj c) m = 0 := by
+lemma smulColimit_zero_smul (c : J) (m : colimit (C := 𝔄𝔟) ℳ) :
+    smulColimit (ℳ := ℳ) (0 : ℛ.obj c) m = 0 := by
   simp only [show m = colimit.ι ℳ (Concrete.indexRepColimit ℳ m) _ by
-    rw [Concrete.ι_repColimit_eq], sMulColimit_smul_rep, zero_hSMul, map_zero]
+    rw [Concrete.ι_repColimit_eq], smulColimit_smul_rep, zero_hSMul, map_zero]
 
-end sMulColimit
+end smulColimit
 
 noncomputable instance moduleObjColimit (j : J) :
     Module (ℛ.obj j) (colimit (C := 𝔄𝔟) ℳ) where
-  smul := sMulColimit
-  one_smul := sMulColimit_one_smul _ _ _
-  mul_smul := sMulColimit_mul_smul _ _ _
-  smul_zero := sMulColimit_smul_zero _ _ _
-  smul_add := sMulColimit_smul_add _ _ _
-  add_smul := sMulColimit_add_smul _ _ _
-  zero_smul := sMulColimit_zero_smul _ _ _
+  smul := smulColimit
+  one_smul := smulColimit_one_smul _ _ _
+  mul_smul := smulColimit_mul_smul _ _ _
+  smul_zero := smulColimit_smul_zero _ _ _
+  smul_add := smulColimit_smul_add _ _ _
+  add_smul := smulColimit_add_smul _ _ _
+  zero_smul := smulColimit_zero_smul _ _ _
 
 variable {ℛ ℳ} in
 /--
@@ -263,31 +262,31 @@ abelian groups `{Mⱼ}`  with the same filtered indexing category `J`. If for ea
 `Rⱼ`-module such that the `Rⱼ`-actions are compatible with the morphisms in `J`, then there is a
 natural scalar multiplication `R → M → M`.
 -/
-noncomputable def colimitSMulColimit (r : colimit (C := ℜ𝔦𝔫𝔤) ℛ) (m : colimit (C := 𝔄𝔟) ℳ) :
+noncomputable def colimitsmulColimit (r : colimit (C := ℜ𝔦𝔫𝔤) ℛ) (m : colimit (C := 𝔄𝔟) ℳ) :
     colimit (C := 𝔄𝔟) ℳ :=
-  (sMulColimit (Concrete.repColimit ℛ r) m)
+  (smulColimit (Concrete.repColimit ℛ r) m)
 
-section colimitsMulColimit
+section colimitsmulColimit
 
 @[simp]
-lemma colimitsMulColimit_rep_smul {c : J} (r : ℛ.obj c) (m : colimit (C := 𝔄𝔟) ℳ) :
-    colimitsMulColimit (colimit.ι ℛ c r) m = sMulColimit r m := by
+lemma colimitsmulColimit_rep_smul {c : J} (r : ℛ.obj c) (m : colimit (C := 𝔄𝔟) ℳ) :
+    colimitsmulColimit (colimit.ι ℛ c r) m = smulColimit r m := by
   rw [show m = colimit.ι ℳ (Concrete.indexRepColimit ℳ m) _ by
-    rw [Concrete.ι_repColimit_eq], sMulColimit_smul_rep]
+    rw [Concrete.ι_repColimit_eq], smulColimit_smul_rep]
   apply hSMul_respect_ι
   · rw [Concrete.ι_repColimit_eq]
   · rw [Concrete.ι_repColimit_eq, Concrete.ι_repColimit_eq]
 
 @[simp]
-lemma colimitsMulColimit_one_smul (m : colimit (C := 𝔄𝔟) ℳ) :
-    colimitsMulColimit (1 : colimit (C := ℜ𝔦𝔫𝔤) ℛ) m = m := by
+lemma colimitsmulColimit_one_smul (m : colimit (C := 𝔄𝔟) ℳ) :
+    colimitsmulColimit (1 : colimit (C := ℜ𝔦𝔫𝔤) ℛ) m = m := by
   let c : J := (inferInstance : IsFiltered J).2.some
   rw [show (1 : colimit (C := ℜ𝔦𝔫𝔤) ℛ) = colimit.ι ℛ c 1 by
-    rw [map_one], colimitsMulColimit_rep_smul, sMulColimit_one_smul]
+    rw [map_one], colimitsmulColimit_rep_smul, smulColimit_one_smul]
 
-lemma colimitsMulColimit_mul_smul
+lemma colimitsmulColimit_mul_smul
     (r₁ r₂ : colimit (C := ℜ𝔦𝔫𝔤) ℛ) (m : colimit (C := 𝔄𝔟) ℳ) :
-    colimitsMulColimit (r₁ * r₂) m = colimitsMulColimit r₁ (colimitsMulColimit r₂ m) := by
+    colimitsmulColimit (r₁ * r₂) m = colimitsmulColimit r₁ (colimitsmulColimit r₂ m) := by
   classical
   let O : Finset J :=
     {  Concrete.indexRepColimit ℛ r₁, Concrete.indexRepColimit ℛ r₂ }
@@ -305,23 +304,23 @@ lemma colimitsMulColimit_mul_smul
       Concrete.ι_repColimit_eq]
   rw [eq₃]
   conv_rhs => rw [eq₁]; rhs; rw [eq₂]
-  rw [colimitsMulColimit_rep_smul, colimitsMulColimit_rep_smul, colimitsMulColimit_rep_smul,
-    sMulColimit_mul_smul]
+  rw [colimitsmulColimit_rep_smul, colimitsmulColimit_rep_smul, colimitsmulColimit_rep_smul,
+    smulColimit_mul_smul]
 
 @[simp]
-lemma colimitsMulColimit_smul_zero (r : colimit (C := ℜ𝔦𝔫𝔤) ℛ) :
-    colimitsMulColimit (ℳ := ℳ) r 0 = 0 := by
+lemma colimitsmulColimit_smul_zero (r : colimit (C := ℜ𝔦𝔫𝔤) ℛ) :
+    colimitsmulColimit (ℳ := ℳ) r 0 = 0 := by
   rw [show r = colimit.ι ℛ (Concrete.indexRepColimit ℛ r) _ by
-    rw [Concrete.ι_repColimit_eq], colimitsMulColimit_rep_smul, sMulColimit_smul_zero]
+    rw [Concrete.ι_repColimit_eq], colimitsmulColimit_rep_smul, smulColimit_smul_zero]
 
-lemma colimitsMulColimit_smul_add (r : colimit (C := ℜ𝔦𝔫𝔤) ℛ) (m₁ m₂ : colimit (C := 𝔄𝔟) ℳ) :
-    colimitsMulColimit r (m₁ + m₂) = colimitsMulColimit r m₁ + colimitsMulColimit r m₂ := by
+lemma colimitsmulColimit_smul_add (r : colimit (C := ℜ𝔦𝔫𝔤) ℛ) (m₁ m₂ : colimit (C := 𝔄𝔟) ℳ) :
+    colimitsmulColimit r (m₁ + m₂) = colimitsmulColimit r m₁ + colimitsmulColimit r m₂ := by
   simp only [show r = colimit.ι ℛ (Concrete.indexRepColimit ℛ r) _ by
       rw [Concrete.ι_repColimit_eq],
-    colimitsMulColimit_rep_smul, sMulColimit_smul_add]
+    colimitsmulColimit_rep_smul, smulColimit_smul_add]
 
-lemma colimitsMulColimit_add_smul (r₁ r₂ : colimit (C := ℜ𝔦𝔫𝔤) ℛ) (m : colimit (C := 𝔄𝔟) ℳ) :
-    colimitsMulColimit (r₁ + r₂) m = colimitsMulColimit r₁ m + colimitsMulColimit r₂ m := by
+lemma colimitsmulColimit_add_smul (r₁ r₂ : colimit (C := ℜ𝔦𝔫𝔤) ℛ) (m : colimit (C := 𝔄𝔟) ℳ) :
+    colimitsmulColimit (r₁ + r₂) m = colimitsmulColimit r₁ m + colimitsmulColimit r₂ m := by
   classical
   let O : Finset J :=
     {  Concrete.indexRepColimit ℛ r₁, Concrete.indexRepColimit ℛ r₂ }
@@ -339,34 +338,34 @@ lemma colimitsMulColimit_add_smul (r₁ r₂ : colimit (C := ℜ𝔦𝔫𝔤) �
     rw [colimit.w_apply, colimit.w_apply, Concrete.ι_repColimit_eq, Concrete.ι_repColimit_eq]
   rw [eq₃]
   conv_rhs => rw [eq₁]; rhs; rw [eq₂]
-  rw [colimitsMulColimit_rep_smul, colimitsMulColimit_rep_smul, colimitsMulColimit_rep_smul,
-    sMulColimit_add_smul]
+  rw [colimitsmulColimit_rep_smul, colimitsmulColimit_rep_smul, colimitsmulColimit_rep_smul,
+    smulColimit_add_smul]
 
 @[simp]
-lemma colimitsMulColimit_zero_smul (m : colimit (C := 𝔄𝔟) ℳ) :
-    colimitsMulColimit (0 : colimit (C := ℜ𝔦𝔫𝔤) ℛ) m = 0 := by
+lemma colimitsmulColimit_zero_smul (m : colimit (C := 𝔄𝔟) ℳ) :
+    colimitsmulColimit (0 : colimit (C := ℜ𝔦𝔫𝔤) ℛ) m = 0 := by
   let c : J := (inferInstance : IsFiltered J).2.some
   rw [show (0 : colimit (C := ℜ𝔦𝔫𝔤) ℛ) = colimit.ι ℛ c 0 by rw [map_zero],
-    colimitsMulColimit_rep_smul, sMulColimit_zero_smul]
+    colimitsmulColimit_rep_smul, smulColimit_zero_smul]
 
-end colimitsMulColimit
+end colimitsmulColimit
 
 noncomputable instance moduleColimitColimit :
     Module (colimit (C := ℜ𝔦𝔫𝔤) ℛ) (colimit (C := 𝔄𝔟) ℳ) where
-  smul := colimitsMulColimit
-  one_smul := colimitsMulColimit_one_smul _ _
-  mul_smul := colimitsMulColimit_mul_smul _ _
-  smul_zero := colimitsMulColimit_smul_zero _ _
-  smul_add := colimitsMulColimit_smul_add _ _
-  add_smul := colimitsMulColimit_add_smul _ _
-  zero_smul := colimitsMulColimit_zero_smul _ _
+  smul := colimitsmulColimit
+  one_smul := colimitsmulColimit_one_smul _ _
+  mul_smul := colimitsmulColimit_mul_smul _ _
+  smul_zero := colimitsmulColimit_smul_zero _ _
+  smul_add := colimitsmulColimit_smul_add _ _
+  add_smul := colimitsmulColimit_add_smul _ _
+  zero_smul := colimitsmulColimit_zero_smul _ _
 
 lemma smul_spec
     (j₁ j₂ j₃ : J) (i₁ : j₁ ⟶ j₃) (i₂ : j₂ ⟶ j₃)
     (s : ℛ.obj j₁) (t : ℳ.obj j₂):
     colimit.ι ℛ j₁ s • colimit.ι ℳ j₂ t = colimit.ι ℳ j₃ (ℛ.map i₁ s • ℳ.map i₂ t) :=
-  show colimitsMulColimit _ _ = colimit.ι ℳ j₃ (ℛ.map i₁ s • ℳ.map i₂ t) by
-    rw [colimitsMulColimit_rep_smul, sMulColimit_smul_rep]
+  show colimitsmulColimit _ _ = colimit.ι ℳ j₃ (ℛ.map i₁ s • ℳ.map i₂ t) by
+    rw [colimitsmulColimit_rep_smul, smulColimit_smul_rep]
     apply hSMul_respect_ι <;> rfl
 
 end Module.overFilteredColimits
