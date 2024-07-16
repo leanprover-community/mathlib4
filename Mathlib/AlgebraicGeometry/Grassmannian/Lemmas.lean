@@ -134,18 +134,24 @@ end Matrix
 
 section
 
-variable (R : Type*) [CommRing R] (f : R)
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (f : R) [IsLocalization.Away f S]
 
-lemma Localization.Away.map_unit : IsUnit (algebraMap R (Localization.Away f) f) := by
+lemma IsLocalization.Away.map_unit : IsUnit (algebraMap R S f) := by
    refine isUnit_iff_exists_inv.mpr ?_
    existsi IsLocalization.Away.invSelf f
    simp only [IsLocalization.Away.mul_invSelf]
 
 lemma IsLocalization.Away.invSelf_unit :
-    IsUnit (IsLocalization.Away.invSelf (S := Localization.Away f) f) := by
+    IsUnit (IsLocalization.Away.invSelf (S := S) f) := by
    refine isUnit_iff_exists_inv.mpr ?_
-   existsi algebraMap R (Localization.Away f) f
+   existsi algebraMap R S f
    rw [mul_comm]; simp only [mul_invSelf]
+
+lemma IsLocalization.Away.invSelf_eq :
+    IsLocalization.Away.invSelf f = Ring.inverse (algebraMap R S f) := by
+  rw [← one_mul (Ring.inverse _), Ring.eq_mul_inverse_iff_mul_eq _ _ _
+    (IsLocalization.Away.map_unit f), mul_comm]
+  exact IsLocalization.Away.mul_invSelf f
 
 end
 
