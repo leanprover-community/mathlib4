@@ -268,3 +268,5 @@ theorem LocalRing.split_injective_iff_lTensor_residueField_injective
     have := (Exact.split_tfae l.exact_map_mkQ_range this (Submodule.mkQ_surjective _)).out 0 1
     rw [← this]
     exact Module.projective_lifting_property _ _ (Submodule.mkQ_surjective _)
+
+end

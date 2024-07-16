@@ -418,7 +418,7 @@ instance hasPullback_of_right : HasPullback g f :=
   hasLimit_of_created (cospan g f) forget
 #align algebraic_geometry.IsOpenImmersion.has_pullback_of_right AlgebraicGeometry.IsOpenImmersion.hasPullback_of_right
 
-instance pullback_snd_of_left : IsOpenImmersion (pullback.snd : pullback f g ⟶ _) := by
+instance pullback_snd_of_left : IsOpenImmersion (pullback.snd f g) := by
   have := PreservesPullback.iso_hom_snd forget f g
   dsimp only [Scheme.forgetToLocallyRingedSpace, inducedFunctor_map] at this
   rw [← this]
@@ -426,7 +426,7 @@ instance pullback_snd_of_left : IsOpenImmersion (pullback.snd : pullback f g ⟶
   infer_instance
 #align algebraic_geometry.IsOpenImmersion.pullback_snd_of_left AlgebraicGeometry.IsOpenImmersion.pullback_snd_of_left
 
-instance pullback_fst_of_right : IsOpenImmersion (pullback.fst : pullback g f ⟶ _) := by
+instance pullback_fst_of_right : IsOpenImmersion (pullback.fst g f) := by
   rw [← pullbackSymmetry_hom_comp_snd]
   -- Porting note: was just `infer_instance`, it is a bit weird that no explicit class instance is
   -- provided but still class inference fail to find this
@@ -457,13 +457,13 @@ instance forgetToTopPreservesOfRight : PreservesLimit (cospan g f) Scheme.forget
 #align algebraic_geometry.IsOpenImmersion.forget_to_Top_preserves_of_right AlgebraicGeometry.IsOpenImmersion.forgetToTopPreservesOfRight
 
 theorem range_pullback_snd_of_left :
-    Set.range (pullback.snd : pullback f g ⟶ Y).1.base = (g ⁻¹ᵁ f.opensRange).1 := by
-  rw [← show _ = (pullback.snd : pullback f g ⟶ _).1.base from
+    Set.range (pullback.snd f g).1.base = (g ⁻¹ᵁ f.opensRange).1 := by
+  rw [← show _ = (pullback.snd f g).1.base from
       PreservesPullback.iso_hom_snd Scheme.forgetToTop f g]
   -- Porting note (#10691): was `rw`
   erw [coe_comp]
   rw [Set.range_comp, Set.range_iff_surjective.mpr, ←
-    @Set.preimage_univ _ _ (pullback.fst : pullback f.1.base g.1.base ⟶ _)]
+    @Set.preimage_univ _ _ (pullback.fst f.1.base g.1.base)]
   -- Porting note (#10691): was `rw`
   · erw [TopCat.pullback_snd_image_fst_preimage]
     rw [Set.image_univ]
@@ -473,18 +473,18 @@ theorem range_pullback_snd_of_left :
 #align algebraic_geometry.IsOpenImmersion.range_pullback_snd_of_left AlgebraicGeometry.IsOpenImmersion.range_pullback_snd_of_left
 
 theorem opensRange_pullback_snd_of_left :
-    (pullback.snd : pullback f g ⟶ Y).opensRange = g ⁻¹ᵁ f.opensRange :=
+    (pullback.snd f g).opensRange = g ⁻¹ᵁ f.opensRange :=
   Opens.ext (range_pullback_snd_of_left f g)
 
 theorem range_pullback_fst_of_right :
-    Set.range (pullback.fst : pullback g f ⟶ Y).1.base =
+    Set.range (pullback.fst g f).1.base =
       ((Opens.map g.1.base).obj ⟨Set.range f.1.base, H.base_open.isOpen_range⟩).1 := by
-  rw [← show _ = (pullback.fst : pullback g f ⟶ _).1.base from
+  rw [← show _ = (pullback.fst g f).1.base from
       PreservesPullback.iso_hom_fst Scheme.forgetToTop g f]
   -- Porting note (#10691): was `rw`
   erw [coe_comp]
   rw [Set.range_comp, Set.range_iff_surjective.mpr, ←
-    @Set.preimage_univ _ _ (pullback.snd : pullback g.1.base f.1.base ⟶ _)]
+    @Set.preimage_univ _ _ (pullback.snd g.1.base f.1.base)]
   -- Porting note (#10691): was `rw`
   · erw [TopCat.pullback_fst_image_snd_preimage]
     rw [Set.image_univ]
@@ -494,11 +494,11 @@ theorem range_pullback_fst_of_right :
 #align algebraic_geometry.IsOpenImmersion.range_pullback_fst_of_right AlgebraicGeometry.IsOpenImmersion.range_pullback_fst_of_right
 
 theorem opensRange_pullback_fst_of_right :
-    (pullback.fst : pullback g f ⟶ Y).opensRange = g ⁻¹ᵁ f.opensRange :=
+    (pullback.fst g f).opensRange = g ⁻¹ᵁ f.opensRange :=
   Opens.ext (range_pullback_fst_of_right f g)
 
 theorem range_pullback_to_base_of_left :
-    Set.range (pullback.fst ≫ f : pullback f g ⟶ Z).1.base =
+    Set.range (pullback.fst f g ≫ f).1.base =
       Set.range f.1.base ∩ Set.range g.1.base := by
   rw [pullback.condition, Scheme.comp_val_base, TopCat.coe_comp, Set.range_comp,
     range_pullback_snd_of_left, Opens.carrier_eq_coe, Opens.map_obj, Opens.coe_mk,
@@ -506,7 +506,7 @@ theorem range_pullback_to_base_of_left :
 #align algebraic_geometry.IsOpenImmersion.range_pullback_to_base_of_left AlgebraicGeometry.IsOpenImmersion.range_pullback_to_base_of_left
 
 theorem range_pullback_to_base_of_right :
-    Set.range (pullback.fst ≫ g : pullback g f ⟶ Z).1.base =
+    Set.range (pullback.fst g f ≫ g).1.base =
       Set.range g.1.base ∩ Set.range f.1.base := by
   rw [Scheme.comp_val_base, TopCat.coe_comp, Set.range_comp, range_pullback_fst_of_right,
     Opens.map_obj, Opens.carrier_eq_coe, Opens.coe_mk, Set.image_preimage_eq_inter_range,
@@ -607,6 +607,13 @@ lemma ΓIso_hom_map {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Op
     f.app U ≫ (ΓIso f U).hom = Y.presheaf.map (homOfLE inf_le_right).op := by
   rw [← map_ΓIso_inv]
   simp [-ΓIso_inv]
+
+/-- Given an open immersion `f : U ⟶ X`, the isomorphism between global sections
+  of `U` and the sections of `X` at the image of `f`. -/
+noncomputable
+def ΓIsoTop {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    Γ(X, ⊤) ≅ Γ(Y, f.opensRange) :=
+  IsOpenImmersion.ΓIso f ⊤ ≪≫ (Y.presheaf.mapIso (eqToIso (inf_top_eq f.opensRange)).op).symm
 
 end IsOpenImmersion
 
