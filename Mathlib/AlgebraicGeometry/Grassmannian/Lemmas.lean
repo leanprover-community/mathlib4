@@ -45,7 +45,7 @@ def AlgebraicGeometry.Scheme.GlueData.glueMorphisms (GD : Scheme.GlueData)
     Category.assoc]
   exact hf
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem AlgebraicGeometry.Scheme.GlueData.ι_glueMorphisms (GD : Scheme.GlueData) {Y : Scheme}
     (f : (i : GD.J) → GD.U i ⟶ Y) (hf : ∀ (i j : GD.J), GD.f i j ≫ (f i) =
     GD.t i j ≫ GD.f j i ≫ (f j)) (i : GD.J) : GD.ι i ≫ GD.glueMorphisms f hf = f i := by
