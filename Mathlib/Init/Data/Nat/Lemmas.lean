@@ -7,6 +7,7 @@ import Batteries.Data.Nat.Lemmas
 import Batteries.WF
 import Mathlib.Util.AssertExists
 import Mathlib.Mathport.Rename
+import Mathlib.Data.Nat.Notation
 
 #align_import init.data.nat.lemmas from "leanprover-community/lean"@"38b59111b2b4e6c572582b27e8937e92fc70ac02"
 
