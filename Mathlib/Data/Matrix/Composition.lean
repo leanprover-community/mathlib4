@@ -5,9 +5,14 @@ Authors: Kevin Buzzard, Yunzhou Xie
 -/
 
 import Mathlib.Data.Matrix.Basic
-import Mathlib.LinearAlgebra.Matrix.Reindex
+
 /-!
 # Composition of matrices
+
+This file shows that Mₙ(Mₘ(R)) ≃ Mₙₘ(R), Mₙ(Rᵒᵖ) ≃ₐ[K] Mₙ(R)ᵒᵖ
+and also different levels of equivalence when R is an AddCommMonoid,
+Semiring, and Algebra over a CommSemiring K.
+
 ## Main results
 
 * `Matrix.comp` is an equivalence between `Matrix I J (Matrix K L R)` and
@@ -15,9 +20,6 @@ import Mathlib.LinearAlgebra.Matrix.Reindex
 * `Matrix.swap` is an equivalence between `(I × J)` by `(K × L)` matrices and
   `J × I` by `L × K` matrices.
 
-This file shows that Mₙ(Mₘ(R)) ≃ Mₙₘ(R), Mₙ(Mₘ(R)) ≃ Mₘ(Mₙ(R)), Mn(Rᵒᵖ) ≃ₐ[K] Mₙ(R)ᵒᵖ
-and also different levels of equivalence when R is an AddCommMonoid,
-Semiring, and Algebra over a CommSemiring K.
 -/
 
 namespace Matrix
