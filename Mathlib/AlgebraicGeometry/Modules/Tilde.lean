@@ -204,7 +204,7 @@ lemma smul_stalk_no_nonzero_divisor {x : PrimeSpectrum R}
     st = 0 := by
   refine Limits.Concrete.colimit_no_zero_smul_divisor (hx := hst)
     ⟨op ⟨PrimeSpectrum.basicOpen r.1, r.2⟩, fun U i s hs ↦ Subtype.eq $ funext fun pt ↦ ?_⟩
-  exact LocalizedModule.eq_zero_of_smul_eq_zero (hx := (congr_fun (Subtype.ext_iff.1 hs) pt : r • s.1 pt = 0)) $
+  exact LocalizedModule.eq_zero_of_smul_eq_zero (hx := congr_fun (Subtype.ext_iff.1 hs) pt) $
     i.unop pt |>.2
 
 /--
