@@ -561,7 +561,7 @@ noncomputable def mapHomologicalComplexXIso' (n m : ℤ) (hnm : n + 1 = m) :
       H.map ((snd φ).v n n (add_zero n)) ≫
         (inr ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).f n
   inv := (fst ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).1.v n m (by omega) ≫
-      H.map ((inl φ).v m n (by linarith)) +
+      H.map ((inl φ).v m n (by omega)) +
       (snd ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).v n n (add_zero n) ≫
         H.map ((inr φ).f n)
   hom_inv_id := by
@@ -608,7 +608,7 @@ noncomputable def mapHomologicalComplexIso :
       simp only [Functor.mapHomologicalComplex_obj_X, Functor.mapHomologicalComplex_obj_d,
         comp_neg, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc, zero_comp,
         comp_zero, add_zero, comp_add, inl_v_fst_v, comp_id, inr_f_fst_v, ← H.map_comp,
-        d_fst_v φ n (n + 1) (n + 2) rfl (by linarith), Functor.map_neg]
+        d_fst_v φ n (n + 1) (n + 2) rfl (by omega), Functor.map_neg]
     · dsimp
       simp only [comp_add, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc,
         Functor.mapHomologicalComplex_obj_X, zero_comp, comp_zero, add_zero, inl_v_snd_v_assoc,
