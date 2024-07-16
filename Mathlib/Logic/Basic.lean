@@ -9,6 +9,8 @@ import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Basic
 import Batteries.Util.LibraryNote
 import Batteries.Tactic.Lint.Basic
+import Mathlib.Data.Nat.Notation
+import Mathlib.Data.Int.Notation
 
 #align_import logic.basic from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 #align_import init.ite_simp from "leanprover-community/lean"@"4a03bdeb31b3688c31d02d7ff8e0ff2e5d6174db"
