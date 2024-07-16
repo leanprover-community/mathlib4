@@ -63,13 +63,10 @@ variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [PartialOrder
 
 lemma exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc (exp 𝕜 : 𝕜 → 𝕜) a = exp 𝕜 a := by
-  have h₁ : a = cfc (R := 𝕜) id a := (cfc_id 𝕜 a ha).symm
-  have ha' : p a := ha    -- Shouldn't be needed but I get a weird autoparam bug without it
-  conv_rhs => rw [h₁, cfc_apply id a ha]
-  let φ := cfcHom (R := 𝕜) ha'
-  have h₂ : Continuous φ := (cfcHom_closedEmbedding ha').continuous
-  have _ : ContinuousOn (exp 𝕜) (spectrum 𝕜 a) := Continuous.continuousOn exp_continuous
-  simp_rw [← map_exp 𝕜 φ h₂, cfc_apply (exp 𝕜) a ha, φ]
+  conv_rhs => rw [← cfc_id 𝕜 a ha, cfc_apply id a ha]
+  have h := (cfcHom_closedEmbedding (R := 𝕜) (show p a from ha)).continuous
+  have _ : ContinuousOn (exp 𝕜) (spectrum 𝕜 a) := exp_continuous.continuousOn
+  simp_rw [← map_exp 𝕜 _ h, cfc_apply (exp 𝕜) a ha]
   congr 1
   ext
   simp [exp_continuousMap_eq]
