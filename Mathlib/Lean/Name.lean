@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Lean.Meta.Match.MatcherInfo
+import Lean.Meta.Tactic.Delta
 import Std.Data.HashMap.Basic
 
 /-!
@@ -52,3 +53,11 @@ def Lean.Name.decapitalize (n : Name) : Name :=
   n.modifyBase fun
     | .str p s => .str p s.decapitalize
     | n       => n
+
+/-- Whether the lemma has a name of the form produced by `Lean.Meta.mkAuxLemma`. -/
+def Lean.Name.isAuxLemma (n : Name) : Bool := n matches .num (.str _ "_auxLemma") _
+
+/-- Unfold all lemmas created by `Lean.Meta.mkAuxLemma`.
+The names of these lemmas end in `_auxLemma.nn` where `nn` is a number. -/
+def Lean.Meta.unfoldAuxLemmas (e : Expr) : MetaM Expr := do
+  deltaExpand e Lean.Name.isAuxLemma

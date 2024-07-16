@@ -393,8 +393,6 @@ lemma pow_four_le_pow_two_of_pow_two_le (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
   (pow_mul a 2 2).symm ▸ pow_le_pow_left (sq_nonneg a) h 2
 #align pow_four_le_pow_two_of_pow_two_le pow_four_le_pow_two_of_pow_two_le
 
-section deprecated
-
 #noalign pow_bit0_nonneg
 #noalign pow_bit0_pos
 #noalign pow_bit0_pos_iff
@@ -404,7 +402,6 @@ section deprecated
 #noalign pow_bit1_pos_iff
 #noalign strict_mono_pow_bit1
 
-end deprecated
 end LinearOrderedSemiring
 
 /-!

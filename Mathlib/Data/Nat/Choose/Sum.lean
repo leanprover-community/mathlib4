@@ -41,7 +41,7 @@ theorem add_pow (h : Commute x y) (n : ℕ) :
   have h_first : ∀ n, t n 0 = y ^ n := fun n ↦ by
     simp only [t, choose_zero_right, _root_.pow_zero, Nat.cast_one, mul_one, one_mul, tsub_zero]
   have h_last : ∀ n, t n n.succ = 0 := fun n ↦ by
-    simp only [t, ge_iff_le, choose_succ_self, cast_zero, mul_zero]
+    simp only [t, choose_succ_self, cast_zero, mul_zero]
   have h_middle :
     ∀ n i : ℕ, i ∈ range n.succ → (t n.succ ∘ Nat.succ) i =
       x * t n i + y * t n i.succ := by

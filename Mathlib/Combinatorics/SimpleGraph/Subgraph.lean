@@ -1032,7 +1032,7 @@ lemma coeSubgraph_restrict_eq {H : G.Subgraph} (H' : G.Subgraph) :
   ext
   · simp [and_comm]
   · simp_rw [coeSubgraph_adj, restrict_adj]
-    simp only [exists_and_left, exists_prop, ge_iff_le, inf_adj, and_congr_right_iff]
+    simp only [exists_and_left, exists_prop, inf_adj, and_congr_right_iff]
     intro h
     simp [H.edge_vert h, H.edge_vert h.symm]
 
