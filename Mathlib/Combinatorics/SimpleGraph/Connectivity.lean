@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
-import Mathlib.Data.List.Rotate
 
 #align_import combinatorics.simple_graph.connectivity from "leanprover-community/mathlib"@"b99e2d58a5e6861833fa8de11e51a81144258db4"
 
@@ -2001,6 +2000,9 @@ theorem reachable_iff_nonempty_univ {u v : V} :
   Set.nonempty_iff_univ_nonempty
 #align simple_graph.reachable_iff_nonempty_univ SimpleGraph.reachable_iff_nonempty_univ
 
+lemma not_reachable_iff_isEmpty_walk {u v : V} : ¬G.Reachable u v ↔ IsEmpty (G.Walk u v) :=
+  not_nonempty_iff
+
 protected theorem Reachable.elim {p : Prop} {u v : V} (h : G.Reachable u v)
     (hp : G.Walk u v → p) : p :=
   Nonempty.elim h hp
@@ -2227,6 +2229,19 @@ theorem _root_.SimpleGraph.Preconnected.subsingleton_connectedComponent (h : G.P
   ⟨ConnectedComponent.ind₂ fun v w => ConnectedComponent.sound (h v w)⟩
 #align simple_graph.preconnected.subsingleton_connected_component SimpleGraph.Preconnected.subsingleton_connectedComponent
 
+/-- This is `Quot.recOn` specialized to connected components.
+For convenience, it strengthens the assumptions in the hypothesis
+to provide a path between the vertices. -/
+@[elab_as_elim]
+def recOn
+    {motive : G.ConnectedComponent → Sort*}
+    (c : G.ConnectedComponent)
+    (f : (v : V) → motive (G.connectedComponentMk v))
+    (h : ∀ (u v : V) (p : G.Walk u v) (_ : p.IsPath),
+      ConnectedComponent.sound p.reachable ▸ f u = f v) :
+    motive c :=
+  Quot.recOn c f fun u v r => r.elim_path fun p => h u v p p.2
+
 /-- The map on connected components induced by a graph homomorphism. -/
 def map (φ : G →g G') (C : G.ConnectedComponent) : G'.ConnectedComponent :=
   C.lift (fun v => G'.connectedComponentMk (φ v)) fun _ _ p _ =>
@@ -2356,6 +2371,16 @@ def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
   right_inv v := Subtype.ext_val (φ.toEquiv.right_inv ↑v)
 #align simple_graph.connected_component.iso_equiv_supp SimpleGraph.ConnectedComponent.isoEquivSupp
 
+lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.coe}
+    (hv : v ∈ (↑) '' (c : Set H.verts)) (hw : w ∈ H.verts)
+    (hadj : H.Adj v w) : w ∈ (↑) '' (c : Set H.verts) := by
+  rw [Set.mem_image]
+  obtain ⟨v', hv'⟩ := hv
+  use ⟨w, hw⟩
+  refine ⟨?_, rfl⟩
+  rw [← (ConnectedComponent.mem_supp_iff ..).mp hv'.1]
+  exact ConnectedComponent.connectedComponentMk_eq_of_adj ((hv'.2 ▸ hadj.symm).coe)
+
 end ConnectedComponent
 
 theorem Preconnected.set_univ_walk_nonempty (hconn : G.Preconnected) (u v : V) :
@@ -2369,257 +2394,8 @@ theorem Connected.set_univ_walk_nonempty (hconn : G.Connected) (u v : V) :
   hconn.preconnected.set_univ_walk_nonempty u v
 #align simple_graph.connected.set_univ_walk_nonempty SimpleGraph.Connected.set_univ_walk_nonempty
 
-
-/-! ### Walks as subgraphs -/
-
-namespace Walk
-
-variable {u v w : V}
-
-/-- The subgraph consisting of the vertices and edges of the walk. -/
-@[simp]
-protected def toSubgraph {u v : V} : G.Walk u v → G.Subgraph
-  | nil => G.singletonSubgraph u
-  | cons h p => G.subgraphOfAdj h ⊔ p.toSubgraph
-#align simple_graph.walk.to_subgraph SimpleGraph.Walk.toSubgraph
-
-theorem toSubgraph_cons_nil_eq_subgraphOfAdj (h : G.Adj u v) :
-    (cons h nil).toSubgraph = G.subgraphOfAdj h := by simp
-#align simple_graph.walk.to_subgraph_cons_nil_eq_subgraph_of_adj SimpleGraph.Walk.toSubgraph_cons_nil_eq_subgraphOfAdj
-
-theorem mem_verts_toSubgraph (p : G.Walk u v) : w ∈ p.toSubgraph.verts ↔ w ∈ p.support := by
-  induction' p with _ x y z h p' ih
-  · simp
-  · have : w = y ∨ w ∈ p'.support ↔ w ∈ p'.support :=
-      ⟨by rintro (rfl | h) <;> simp [*], by simp (config := { contextual := true })⟩
-    simp [ih, or_assoc, this]
-#align simple_graph.walk.mem_verts_to_subgraph SimpleGraph.Walk.mem_verts_toSubgraph
-
-lemma start_mem_verts_toSubgraph (p : G.Walk u v) : u ∈ p.toSubgraph.verts := by
-  simp [mem_verts_toSubgraph]
-
-lemma end_mem_verts_toSubgraph (p : G.Walk u v) : v ∈ p.toSubgraph.verts := by
-  simp [mem_verts_toSubgraph]
-
-@[simp]
-theorem verts_toSubgraph (p : G.Walk u v) : p.toSubgraph.verts = { w | w ∈ p.support } :=
-  Set.ext fun _ => p.mem_verts_toSubgraph
-#align simple_graph.walk.verts_to_subgraph SimpleGraph.Walk.verts_toSubgraph
-
-theorem mem_edges_toSubgraph (p : G.Walk u v) {e : Sym2 V} :
-    e ∈ p.toSubgraph.edgeSet ↔ e ∈ p.edges := by induction p <;> simp [*]
-#align simple_graph.walk.mem_edges_to_subgraph SimpleGraph.Walk.mem_edges_toSubgraph
-
-@[simp]
-theorem edgeSet_toSubgraph (p : G.Walk u v) : p.toSubgraph.edgeSet = { e | e ∈ p.edges } :=
-  Set.ext fun _ => p.mem_edges_toSubgraph
-#align simple_graph.walk.edge_set_to_subgraph SimpleGraph.Walk.edgeSet_toSubgraph
-
-@[simp]
-theorem toSubgraph_append (p : G.Walk u v) (q : G.Walk v w) :
-    (p.append q).toSubgraph = p.toSubgraph ⊔ q.toSubgraph := by induction p <;> simp [*, sup_assoc]
-#align simple_graph.walk.to_subgraph_append SimpleGraph.Walk.toSubgraph_append
-
-@[simp]
-theorem toSubgraph_reverse (p : G.Walk u v) : p.reverse.toSubgraph = p.toSubgraph := by
-  induction p with
-  | nil => simp
-  | cons _ _ _ =>
-    simp only [*, Walk.toSubgraph, reverse_cons, toSubgraph_append, subgraphOfAdj_symm]
-    rw [sup_comm]
-    congr
-    ext <;> simp [-Set.bot_eq_empty]
-#align simple_graph.walk.to_subgraph_reverse SimpleGraph.Walk.toSubgraph_reverse
-
-@[simp]
-theorem toSubgraph_rotate [DecidableEq V] (c : G.Walk v v) (h : u ∈ c.support) :
-    (c.rotate h).toSubgraph = c.toSubgraph := by
-  rw [rotate, toSubgraph_append, sup_comm, ← toSubgraph_append, take_spec]
-#align simple_graph.walk.to_subgraph_rotate SimpleGraph.Walk.toSubgraph_rotate
-
-@[simp]
-theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) :
-    (p.map f).toSubgraph = p.toSubgraph.map f := by induction p <;> simp [*, Subgraph.map_sup]
-#align simple_graph.walk.to_subgraph_map SimpleGraph.Walk.toSubgraph_map
-
-@[simp]
-theorem finite_neighborSet_toSubgraph (p : G.Walk u v) : (p.toSubgraph.neighborSet w).Finite := by
-  induction p with
-  | nil =>
-    rw [Walk.toSubgraph, neighborSet_singletonSubgraph]
-    apply Set.toFinite
-  | cons ha _ ih =>
-    rw [Walk.toSubgraph, Subgraph.neighborSet_sup]
-    refine Set.Finite.union ?_ ih
-    refine Set.Finite.subset ?_ (neighborSet_subgraphOfAdj_subset ha)
-    apply Set.toFinite
-#align simple_graph.walk.finite_neighbor_set_to_subgraph SimpleGraph.Walk.finite_neighborSet_toSubgraph
-
-lemma toSubgraph_le_induce_support (p : G.Walk u v) :
-    p.toSubgraph ≤ (⊤ : G.Subgraph).induce {v | v ∈ p.support} := by
-  convert Subgraph.le_induce_top_verts
-  exact p.verts_toSubgraph.symm
-
-end Walk
-
-
-/-! ### Walks of a given length -/
-
-section WalkCounting
-
-theorem set_walk_self_length_zero_eq (u : V) : {p : G.Walk u u | p.length = 0} = {Walk.nil} := by
-  ext p
-  simp
-#align simple_graph.set_walk_self_length_zero_eq SimpleGraph.set_walk_self_length_zero_eq
-
-theorem set_walk_length_zero_eq_of_ne {u v : V} (h : u ≠ v) :
-    {p : G.Walk u v | p.length = 0} = ∅ := by
-  ext p
-  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false_iff]
-  exact fun h' => absurd (Walk.eq_of_length_eq_zero h') h
-#align simple_graph.set_walk_length_zero_eq_of_ne SimpleGraph.set_walk_length_zero_eq_of_ne
-
-theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
-    {p : G.Walk u v | p.length = n.succ} =
-      ⋃ (w : V) (h : G.Adj u w), Walk.cons h '' {p' : G.Walk w v | p'.length = n} := by
-  ext p
-  cases' p with _ _ w _ huw pwv
-  · simp [eq_comm]
-  · simp only [Nat.succ_eq_add_one, Set.mem_setOf_eq, Walk.length_cons, add_left_inj,
-      Set.mem_iUnion, Set.mem_image, exists_prop]
-    constructor
-    · rintro rfl
-      exact ⟨w, huw, pwv, rfl, rfl⟩
-    · rintro ⟨w, huw, pwv, rfl, rfl, rfl⟩
-      rfl
-#align simple_graph.set_walk_length_succ_eq SimpleGraph.set_walk_length_succ_eq
-
-variable (G) [DecidableEq V]
-
-/-- Walks of length two from `u` to `v` correspond bijectively to common neighbours of `u` and `v`.
-Note that `u` and `v` may be the same. -/
-@[simps]
-def walkLengthTwoEquivCommonNeighbors (u v : V) :
-    {p : G.Walk u v // p.length = 2} ≃ G.commonNeighbors u v where
-  toFun p := ⟨p.val.getVert 1, match p with
-    | ⟨.cons _ (.cons _ .nil), hp⟩ => ⟨‹G.Adj u _›, ‹G.Adj _ v›.symm⟩⟩
-  invFun w := ⟨w.prop.1.toWalk.concat w.prop.2.symm, rfl⟩
-  left_inv | ⟨.cons _ (.cons _ .nil), hp⟩ => by rfl
-  right_inv _ := rfl
-
-section LocallyFinite
-
-variable [LocallyFinite G]
-
-/-- The `Finset` of length-`n` walks from `u` to `v`.
-This is used to give `{p : G.walk u v | p.length = n}` a `Fintype` instance, and it
-can also be useful as a recursive description of this set when `V` is finite.
-
-See `SimpleGraph.coe_finsetWalkLength_eq` for the relationship between this `Finset` and
-the set of length-`n` walks. -/
-def finsetWalkLength (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
-  match n with
-  | 0 =>
-    if h : u = v then by
-      subst u
-      exact {Walk.nil}
-    else ∅
-  | n + 1 =>
-    Finset.univ.biUnion fun (w : G.neighborSet u) =>
-      (finsetWalkLength n w v).map ⟨fun p => Walk.cons w.property p, fun _ _ => by simp⟩
-#align simple_graph.finset_walk_length SimpleGraph.finsetWalkLength
-
-theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
-    (G.finsetWalkLength n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length = n} := by
-  induction' n with n ih generalizing u v
-  · obtain rfl | huv := eq_or_ne u v <;> simp [finsetWalkLength, set_walk_length_zero_eq_of_ne, *]
-  · simp only [finsetWalkLength, set_walk_length_succ_eq, Finset.coe_biUnion, Finset.mem_coe,
-      Finset.mem_univ, Set.iUnion_true]
-    ext p
-    simp only [mem_neighborSet, Finset.coe_map, Embedding.coeFn_mk, Set.iUnion_coe_set,
-      Set.mem_iUnion, Set.mem_image, Finset.mem_coe, Set.mem_setOf_eq]
-    congr!
-    rename_i w _ q
-    have := Set.ext_iff.mp (ih w v) q
-    simp only [Finset.mem_coe, Set.mem_setOf_eq] at this
-    rw [← this]
-#align simple_graph.coe_finset_walk_length_eq SimpleGraph.coe_finsetWalkLength_eq
-
-variable {G}
-
-theorem Walk.mem_finsetWalkLength_iff_length_eq {n : ℕ} {u v : V} (p : G.Walk u v) :
-    p ∈ G.finsetWalkLength n u v ↔ p.length = n :=
-  Set.ext_iff.mp (G.coe_finsetWalkLength_eq n u v) p
-#align simple_graph.walk.mem_finset_walk_length_iff_length_eq SimpleGraph.Walk.mem_finsetWalkLength_iff_length_eq
-
-variable (G)
-
-instance fintypeSetWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v | p.length = n} :=
-  Fintype.ofFinset (G.finsetWalkLength n u v) fun p => by
-    rw [← Finset.mem_coe, coe_finsetWalkLength_eq]
-#align simple_graph.fintype_set_walk_length SimpleGraph.fintypeSetWalkLength
-
-instance fintypeSubtypeWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v // p.length = n} :=
-  fintypeSetWalkLength G u v n
-
-theorem set_walk_length_toFinset_eq (n : ℕ) (u v : V) :
-    {p : G.Walk u v | p.length = n}.toFinset = G.finsetWalkLength n u v := by
-  ext p
-  simp [← coe_finsetWalkLength_eq]
-#align simple_graph.set_walk_length_to_finset_eq SimpleGraph.set_walk_length_toFinset_eq
-
-/- See `SimpleGraph.adjMatrix_pow_apply_eq_card_walk` for the cardinality in terms of the `n`th
-power of the adjacency matrix. -/
-theorem card_set_walk_length_eq (u v : V) (n : ℕ) :
-    Fintype.card {p : G.Walk u v | p.length = n} = (G.finsetWalkLength n u v).card :=
-  Fintype.card_ofFinset (G.finsetWalkLength n u v) fun p => by
-    rw [← Finset.mem_coe, coe_finsetWalkLength_eq]
-#align simple_graph.card_set_walk_length_eq SimpleGraph.card_set_walk_length_eq
-
-instance fintypeSetPathLength (u v : V) (n : ℕ) :
-    Fintype {p : G.Walk u v | p.IsPath ∧ p.length = n} :=
-  Fintype.ofFinset ((G.finsetWalkLength n u v).filter Walk.IsPath) <| by
-    simp [Walk.mem_finsetWalkLength_iff_length_eq, and_comm]
-#align simple_graph.fintype_set_path_length SimpleGraph.fintypeSetPathLength
-
-end LocallyFinite
-
-section Finite
-
-variable [Fintype V] [DecidableRel G.Adj]
-
-theorem reachable_iff_exists_finsetWalkLength_nonempty (u v : V) :
-    G.Reachable u v ↔ ∃ n : Fin (Fintype.card V), (G.finsetWalkLength n u v).Nonempty := by
-  constructor
-  · intro r
-    refine r.elim_path fun p => ?_
-    refine ⟨⟨_, p.isPath.length_lt⟩, p, ?_⟩
-    simp [Walk.mem_finsetWalkLength_iff_length_eq]
-  · rintro ⟨_, p, _⟩
-    exact ⟨p⟩
-#align simple_graph.reachable_iff_exists_finset_walk_length_nonempty SimpleGraph.reachable_iff_exists_finsetWalkLength_nonempty
-
-instance : DecidableRel G.Reachable := fun u v =>
-  decidable_of_iff' _ (reachable_iff_exists_finsetWalkLength_nonempty G u v)
-
-instance : Fintype G.ConnectedComponent :=
-  @Quotient.fintype _ _ G.reachableSetoid (inferInstance : DecidableRel G.Reachable)
-
-instance : Decidable G.Preconnected :=
-  inferInstanceAs <| Decidable (∀ u v, G.Reachable u v)
-
-instance : Decidable G.Connected := by
-  rw [connected_iff, ← Finset.univ_nonempty_iff]
-  infer_instance
-
-end Finite
-
-end WalkCounting
-
-section BridgeEdges
-
-
 /-! ### Bridge edges -/
+section BridgeEdges
 
 /-- An edge of a graph is a *bridge* if, after removing it, its incident vertices
 are no longer reachable from one another. -/

@@ -336,7 +336,7 @@ theorem Measurable.ite {p : α → Prop} {_ : DecidablePred p} (hp : MeasurableS
   Measurable.piecewise hp hf hg
 #align measurable.ite Measurable.ite
 
-@[measurability]
+@[measurability, fun_prop]
 theorem Measurable.indicator [Zero β] (hf : Measurable f) (hs : MeasurableSet s) :
     Measurable (s.indicator f) :=
   hf.piecewise hs measurable_const
@@ -772,7 +772,7 @@ theorem measurable_prod {f : α → β × γ} :
   ⟨fun hf => ⟨measurable_fst.comp hf, measurable_snd.comp hf⟩, fun h => Measurable.prod h.1 h.2⟩
 #align measurable_prod measurable_prod
 
-@[measurability]
+@[fun_prop, measurability]
 theorem measurable_swap : Measurable (Prod.swap : α × β → β × α) :=
   Measurable.prod measurable_snd measurable_fst
 #align measurable_swap measurable_swap
@@ -890,15 +890,7 @@ theorem exists_measurable_piecewise {ι} [Countable ι] [Nonempty ι] (t : ι �
     simp only [dif_pos (mem_iUnion.2 ⟨i, hx⟩)]
     exact iUnionLift_of_mem ⟨x, mem_iUnion.2 ⟨i, hx⟩⟩ hx
 
-/-- Given countably many disjoint measurable sets `t n` and countably many measurable
-functions `g n`, one can construct a measurable function that coincides with `g n` on `t n`. -/
-@[deprecated exists_measurable_piecewise (since := "2023-02-11")]
-theorem exists_measurable_piecewise_nat {m : MeasurableSpace α} (t : ℕ → Set β)
-    (t_meas : ∀ n, MeasurableSet (t n)) (t_disj : Pairwise (Disjoint on t)) (g : ℕ → β → α)
-    (hg : ∀ n, Measurable (g n)) : ∃ f : β → α, Measurable f ∧ ∀ n x, x ∈ t n → f x = g n x :=
-  exists_measurable_piecewise t t_meas g hg <| t_disj.mono fun i j h => by
-    simp only [h.inter_eq, eqOn_empty]
-#align exists_measurable_piecewise_nat exists_measurable_piecewise_nat
+#align exists_measurable_piecewise_nat exists_measurable_piecewise
 
 end Prod
 
