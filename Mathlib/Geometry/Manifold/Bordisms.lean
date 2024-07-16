@@ -49,7 +49,7 @@ noncomputable section
 -- Closed and n-dimensional manifolds: these should also move to a separate file.
 section ClosedManifold
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable (n : ℕ) {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a smooth manifold `M` over the pair `(E, H)`.
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
@@ -66,7 +66,7 @@ instance ClosedManifold.prod [CompactSpace M] [I.Boundaryless] [CompactSpace N] 
   ClosedManifold (M × N) (I.prod J) where
 
 /-- An **n-manifold** is a smooth `n`-dimensional manifold. -/
-structure NManifold (n : ℕ) [NormedAddCommGroup E]  [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E]
+structure NManifold [NormedAddCommGroup E]  [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E]
     {H : Type*} [TopologicalSpace H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners 𝕜 E H) [SmoothManifoldWithCorners I M] where
   hdim : finrank 𝕜 E = n
@@ -76,15 +76,19 @@ instance NManifold.prod {m n : ℕ} [FiniteDimensional 𝕜 E] [FiniteDimensiona
     (s : NManifold m M I) (t : NManifold n N J) : NManifold (m + n) (M × N) (I.prod J) where
   hdim := by rw [s.hdim.symm, t.hdim.symm]; apply finrank_prod
 
-structure ClosedNManifold (n : ℕ) [CompactSpace M] [I.Boundaryless] [FiniteDimensional 𝕜 E]
-    extends ClosedManifold M I where
-  hdim : finrank 𝕜 E = n
+structure ClosedNManifold [CompactSpace M] [I.Boundaryless] [FiniteDimensional 𝕜 E]
+    extends NManifold n M I
+
+instance ClosedNManifold.ClosedManifold [CompactSpace M] [I.Boundaryless] [FiniteDimensional 𝕜 E] :
+  ClosedManifold M I where
+
+variable {n}
 
 /-- The product of a closed `n`- and a closed closed `m`-manifold is a closed `n+m`-manifold. -/
 instance ClosedNManifold.prod {m n : ℕ} [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 E']
     [CompactSpace M] [I.Boundaryless] [CompactSpace N] [J.Boundaryless]
-    (s : ClosedNManifold M I m) (t : ClosedNManifold N J n) :
-    ClosedNManifold (M × N) (I.prod J) (m + n) where
+    (s : ClosedNManifold m M I) (t : ClosedNManifold n N J) :
+    ClosedNManifold (m + n) (M × N) (I.prod J) where
   -- TODO: can I inherit this from `NManifold.prod`?
   hdim := by rw [s.hdim.symm, t.hdim.symm]; apply finrank_prod
 
@@ -102,18 +106,19 @@ example [FiniteDimensional ℝ E] [Fact (finrank ℝ E = 1 + 1)] :
     ClosedManifold ((sphere (0 : E) 1) × (sphere (0 : E) 1)) ((𝓡 2).prod (𝓡 2)) where
 
 -- The standard Euclidean space is an `n`-manifold. -/
-example (n : ℕ) {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace ℝ (Fin n)) M]
+example {n : ℕ} {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace ℝ (Fin n)) M]
     [SmoothManifoldWithCorners (𝓡 n) M] : NManifold n M (𝓡 n) where
   hdim := finrank_euclideanSpace_fin
 
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
+
 /-- The standard `n`-sphere is a closed `n`-manifold. -/
-example (n : ℕ) [Fact (finrank ℝ F = n + 1)] : ClosedNManifold (sphere (0 : F) 1) (𝓡 n) n where
+example {n : ℕ} [Fact (finrank ℝ F = n + 1)] : ClosedNManifold n (sphere (0 : F) 1) (𝓡 n) where
   hdim := finrank_euclideanSpace_fin
 
 /-- The standard 2-torus is a closed two-manifold. -/
 example [Fact (finrank ℝ F = 1 + 1)] :
-    ClosedNManifold ((sphere (0 : F) 1) × (sphere (0 : F) 1)) ((𝓡 1).prod (𝓡 1)) 2 where
+    ClosedNManifold 2 ((sphere (0 : F) 1) × (sphere (0 : F) 1)) ((𝓡 1).prod (𝓡 1)) where
   hdim := by rw [finrank_prod, finrank_euclideanSpace_fin]
 
 end examples
@@ -135,7 +140,7 @@ closed smooth `n`-manifold `M` and a continuous map `f : M → X`. -/
 structure _root_.SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ)
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) [SmoothManifoldWithCorners I M]
-    [CompactSpace M] [I.Boundaryless] [FiniteDimensional ℝ E] extends ClosedNManifold M I n where
+    [CompactSpace M] [I.Boundaryless] [FiniteDimensional ℝ E] extends ClosedNManifold n M I where
   f : M → X
   hf : Continuous f
 
