@@ -134,21 +134,8 @@ variable {E E' E'' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAd
 
 open Set hiding prod
 
--- xxx good name! TODO: remove in favour of lemma below
-lemma mem_interior_of_components (hx : x ∈ I.interior M) (hy : y ∈ I'.interior M') :
-    (x, y) ∈ (I.prod I').interior (M × M') := by
-  have aux : (interior (range ↑I)) ×ˢ (interior (range I')) = interior (range (I.prod I')) := by
-    rw [← interior_prod_eq, ← Set.range_prod_map, modelWithCorners_prod_coe]
-  have hx' : extChartAt I x x ∈ interior (range I) := hx
-  have hy' : extChartAt I' y y ∈ interior (range I') := hy
-  have : (extChartAt (I.prod I') (x, y)) (x, y) ∈ interior (range ↑I) ×ˢ interior (range ↑I') := by
-    apply mem_prod.mpr; constructor; exacts [hx', hy']
-  have aux' : Set.prod (interior (range ↑I)) (interior (range I')) ⊆ interior (range (I.prod I')) := by
-    rw [← aux]
-    exact fun ⦃a⦄ a ↦ a
-  exact aux' this
-
-lemma interior_prod :
+/-- The interior of `M × N` is the product of the interiors of `M` and `N`. -/
+lemma ModelWithCorners.interior_prod :
     (I.prod I').interior (M × M') = (I.interior M) ×ˢ (I'.interior M') := by
   ext p
   have aux : (interior (range ↑I)) ×ˢ (interior (range I')) = interior (range (I.prod I')) := by
@@ -163,53 +150,30 @@ lemma interior_prod :
     rw [ModelWithCorners.IsInteriorPoint, ← aux]
     apply mem_prod.mpr; constructor; exacts [h₁, h₂]
 
--- The boundary of M × N is ∂M × N ∪ (M × ∂N).
-
-lemma boundary_prod {p : M × M'} (hp : p ∈ (I.prod I').boundary (M × M')) :
-    p.1 ∈ I.boundary M ∨ p.2 ∈ I'.boundary M' := by
-  by_contra h
-  push_neg at h
-  have : p.1 ∈ I.interior M := by have := I.isInteriorPoint_or_isBoundaryPoint p.1; tauto
-  have h₂ : p.2 ∈ I'.interior M' := by have := I'.isInteriorPoint_or_isBoundaryPoint p.2; tauto
-  have h3 : p ∈ (I.prod I').interior (M × M') := mem_interior_of_components this h₂
-  rw [(I.prod I').boundary_eq_complement_interior (M := M × M')] at hp
-  have : p ∉ (I.prod I').interior (M × M') := not_mem_of_mem_compl hp
-  tauto
-
--- TODO: deduce converse also!
-
--- -- TODO good name
-lemma boundary_prod_types :
+/-- The boundary of `M × N` is `∂M × N ∪ (M × ∂N)`. -/
+lemma ModelWithCorners.boundary_prod :
     (I.prod I').boundary (M × M') = Set.prod univ (I'.boundary M') ∪ Set.prod (I.boundary M) univ := by
-  ext p
-  constructor <;> intro hp
-  · let res := boundary_prod hp
-    rcases res with (h | h)
-    · have : p.1 ∈ I.boundary M := by
-        show I.IsBoundaryPoint p.1 -- missing lemma!
-        rw [I.isBoundaryPoint_iff, frontier]
-        exact h
-      right
-      sorry -- rest should be obvious!
-    · have : p.2 ∈ I'.boundary M' := by
-        show I'.IsBoundaryPoint p.2 -- missing lemma!
-        rw [I'.isBoundaryPoint_iff, frontier]
-        exact h
-      left
-      sorry -- rest should be obvious
-  · sorry -- just boundary_prod and its converse
+  -- better proof: decompose M× M' into interior and boundary; show the latter is the complement!
+  let h := calc (I.prod I').boundary (M × M')
+    _ = ((I.prod I').interior (M × M'))ᶜ := (I.prod I').boundary_eq_complement_interior
+    _ = ((I.interior M) ×ˢ (I'.interior M'))ᶜ := by rw [ModelWithCorners.interior_prod]
+    _ = (I.interior M)ᶜ ×ˢ univ ∪ univ ×ˢ (I'.interior M')ᶜ := by rw [compl_prod_eq_union]
+  rw [h, I.boundary_eq_complement_interior, I'.boundary_eq_complement_interior, union_comm]
+  rfl
 
--- In particular, if `M` is boundaryless, ∂(M×N) = M × ∂N (and similarly for N).
-
--- apply previous lemma
+/-- If `M` is boundaryless, `∂(M×N) = M × ∂N`. -/
 lemma boundary_of_boundaryless_left [I.Boundaryless] :
     (I.prod I').boundary (M × M') = Set.prod (univ : Set M) (I'.boundary M') := by
-  sorry
+  rw [ModelWithCorners.boundary_prod, ModelWithCorners.Boundaryless.boundary_eq_empty I]
+  have : Set.prod (∅ : Set M) (univ : Set M') = ∅ := by sorry -- how can this be so hard?
+  rw [this, union_empty]
 
--- apply previous lemma... TODO make Lean interpret these as sets!
+/-- If `N` is boundaryless, `∂(M×N) = ∂M × N`. -/
 lemma boundary_of_boundaryless_right [I'.Boundaryless] :
     (I.prod I').boundary (M × M') = Set.prod (I.boundary M) (univ : Set M') := by
-  sorry
+  rw [ModelWithCorners.boundary_prod, ModelWithCorners.Boundaryless.boundary_eq_empty I']
+  have : Set.prod (univ : Set M) (∅ : Set M') = ∅ := by sorry -- how can this be so hard?
+  rw [this, empty_union]
 
 -- Corollary. If M is a smooth manifold without boundary, M x I has boundary M× {0,1};
 --   this is diffeomorphic to M ⊔ M.
