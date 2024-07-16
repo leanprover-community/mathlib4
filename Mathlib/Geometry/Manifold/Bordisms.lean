@@ -91,13 +91,14 @@ instance ClosedNManifold.prod {m n : ℕ} [FiniteDimensional 𝕜 E] [FiniteDime
 section examples
 
 -- Let `E` be a finite-dimensional real normed space.
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- The standard `n`-sphere is a closed manifold. -/
-example {n : ℕ} [Fact (finrank ℝ E = n + 1)] : ClosedManifold (sphere (0 : E) 1) (𝓡 n) where
+example {n : ℕ} [FiniteDimensional ℝ E] [Fact (finrank ℝ E = n + 1)] :
+  ClosedManifold (sphere (0 : E) 1) (𝓡 n) where
 
 /-- The standard `2`-torus is a closed manifold. -/
-example [Fact (finrank ℝ E = 1 + 1)] :
+example [FiniteDimensional ℝ E] [Fact (finrank ℝ E = 1 + 1)] :
     ClosedManifold ((sphere (0 : E) 1) × (sphere (0 : E) 1)) ((𝓡 2).prod (𝓡 2)) where
 
 -- The standard Euclidean space is an `n`-manifold. -/
@@ -105,22 +106,15 @@ example (n : ℕ) {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace
     [SmoothManifoldWithCorners (𝓡 n) M] : NManifold n M (𝓡 n) where
   hdim := finrank_euclideanSpace_fin
 
--- this fails with error:
--- has type
---   ChartedSpace (EuclideanSpace ℝ (Fin n)) ↑(sphere (@OfNat.ofNat ℕ 0 Zero.toOfNat0) 1) : Type
--- but is expected to have type
---   ChartedSpace (EuclideanSpace ℝ (Fin n)) ↑(sphere (@OfNat.ofNat ℕ 0 (instOfNatNat 0)) 1) :
--- instance foo {n : ℕ} [Fact (finrank ℝ E = n + 1)] : ChartedSpace (EuclideanSpace ℝ (Fin n)) ↑(sphere 0 1) :=
---    EuclideanSpace.instChartedSpaceSphere
+variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
+/-- The standard `n`-sphere is a closed `n`-manifold. -/
+example (n : ℕ) [Fact (finrank ℝ F = n + 1)] : ClosedNManifold (sphere (0 : F) 1) (𝓡 n) n where
+  hdim := finrank_euclideanSpace_fin
 
--- /-- The standard `n`-sphere is an `n`-manifold. -/
--- example (n : ℕ) [Fact (finrank ℝ E = n + 1)] :
---     (
---     haveI := EuclideanSpace.instChartedSpaceSphere; NManifold n (sphere (0 : E) 1) (𝓡 n)) where
-
---   --hdim := finrank_euclideanSpace_fin
-
--- the 2-torus is an n-manifold
+/-- The standard 2-torus is a closed two-manifold. -/
+example [Fact (finrank ℝ F = 1 + 1)] :
+    ClosedNManifold ((sphere (0 : F) 1) × (sphere (0 : F) 1)) ((𝓡 1).prod (𝓡 1)) 2 where
+  hdim := by rw [finrank_prod, finrank_euclideanSpace_fin]
 
 end examples
 
