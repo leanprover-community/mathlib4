@@ -159,14 +159,10 @@ theorem Concrete.colimit_rep_eq_zero
 if `r` has no zero smul divisors for all small-enough sections, then `r` has no zero smul divisors
 on the level of stalks.
 -/
-lemma Concrete.colimit_no_zero_smul_divisor [HasColimit F]
-    (R : Type*) [Semiring R]
-    [∀ c : C, AddCommMonoid c]
-    [∀ c : C, Module R c] [∀ {c c' : C}, LinearMapClass (c ⟶ c') R c c']
-    (r : R)
-    (H : ∃ (j' : J), ∀ (j : J) (_ : j' ⟶ j), ∀ (c : F.obj j), r • c = 0 → c = 0)
-    (x : (forget C).obj (colimit F)) (hx : r • x = 0) :
-    x = 0 := by
+lemma Concrete.colimit_no_zero_smul_divisor [HasColimit F] (R : Type*) [Semiring R]
+    [∀ c : C, AddCommMonoid c] [∀ c : C, Module R c] [∀ {c c' : C}, LinearMapClass (c ⟶ c') R c c']
+    (r : R) (H : ∃ (j' : J), ∀ (j : J) (_ : j' ⟶ j), ∀ (c : F.obj j), r • c = 0 → c = 0)
+    (x : (forget C).obj (colimit F)) (hx : r • x = 0) : x = 0 := by
   classical
   obtain ⟨j, x, rfl⟩ := Concrete.colimit_exists_rep F x
   rw [← LinearMapClass.map_smul] at hx
