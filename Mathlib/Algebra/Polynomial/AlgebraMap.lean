@@ -200,7 +200,9 @@ def mapAlgEquiv (f : A ≃ₐ[R] B) : Polynomial A ≃ₐ[R] Polynomial B :=
 
 theorem mapAlgHom_eq_eval₂AlgHom'_CAlgHom (f : A →ₐ[R] B) : mapAlgHom f = eval₂AlgHom'
     (CAlgHom.comp f) X (fun a => (commute_X (C (f a))).symm) := by
-  apply AlgHom.ext ; intro x ; congr
+  apply AlgHom.ext
+  intro x
+  congr
 
 end Map
 
