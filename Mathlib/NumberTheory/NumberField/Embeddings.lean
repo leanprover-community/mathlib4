@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Xavier Roblot
 -/
 import Mathlib.Analysis.Complex.Polynomial
-import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Norm.Basic
@@ -1006,77 +1005,26 @@ lemma card_eq_card_isUnramifiedIn [NumberField k] [IsGalois k K] :
       Finset.card (Finset.univ.filter <| IsUnramifiedIn K (k := k))ᶜ * (finrank k K / 2) := by
   rw [← card_isUnramified, ← card_isUnramified_compl, Finset.card_add_card_compl]
 
-noncomputable section InfiniteCompletion
+variable {K}
 
-variable {K : Type*} [Field K] [NumberField K] (v : InfinitePlace K)
+/-- An infinite place is real if and only if the imaginary parts of the finitely-many basis
+elements of a number field over ℚ are all zero. -/
+theorem isReal_iff_basis_im_eq_zero (v : InfinitePlace K) :
+    IsReal v ↔ ∀ (i : Fin (FiniteDimensional.finrank ℚ K)),
+      (v.embedding ((FiniteDimensional.finBasis ℚ K) i)).im = 0 := by
+  simp only [isReal_iff, ComplexEmbedding.isReal_iff, RingHom.ext_iff,
+      ComplexEmbedding.conjugate_coe_eq, Complex.conj_eq_iff_im]
+  refine ⟨fun hv _ => hv _, fun hv x => ?_⟩
+  · rw [← (FiniteDimensional.finBasis ℚ K).sum_repr x]
+    simp only [map_sum, Complex.im_sum, map_rat_smul, Complex.smul_im, hv, smul_zero,
+      Finset.sum_const_zero]
 
-/-- The normed field structure of a number field coming from the embedding asociated to
-an infinite place. -/
-abbrev normedField : NormedField K :=
-  NormedField.induced _ _ v.embedding v.embedding.injective
-
-/-- The embedding associated to an infinite place is a uniform embedding. -/
-theorem uniformEmbedding : letI := v.normedField; UniformEmbedding v.embedding :=
-  letI := v.normedField; ⟨uniformInducing_iff_uniformSpace.2 rfl, v.embedding.injective⟩
-
-/-- The completion of a number field at an infinite place. -/
-def completion :=
-  letI := v.normedField; UniformSpace.Completion K
-
-namespace Completion
-
-instance : NormedField v.completion :=
-  letI := v.normedField; UniformSpace.Completion.instNormedField K
-
-instance : CompleteSpace v.completion :=
-  letI := v.normedField; UniformSpace.Completion.completeSpace K
-
-instance : Inhabited v.completion := ⟨0⟩
-
-instance : Coe K v.completion :=
-  letI := v.normedField; inferInstanceAs (Coe K (UniformSpace.Completion K))
-
-instance : Algebra K v.completion :=
-  letI := v.normedField; UniformSpace.Completion.algebra K _
-
-/-- The embedding associated to an infinite place extended to an embedding `v.completion →+* ℂ`. -/
-def extensionEmbedding : v.completion →+* ℂ :=
-  letI := v.normedField
-  UniformSpace.Completion.extensionHom _ v.uniformEmbedding.uniformContinuous.continuous
-
-variable {v}
-
-/-- The embedding `v.completion →+* ℂ` preserves distances. -/
-theorem extensionEmbedding_dist_eq (x y : v.completion) :
-    dist (extensionEmbedding v x) (extensionEmbedding v y) =
-      dist x y := by
-  letI := v.normedField
-  refine (UniformSpace.Completion.induction_on₂ x y ?_ (fun x y => ?_))
-  · refine isClosed_eq ?_ continuous_dist
-    · exact (continuous_iff_continuous_dist.1 (UniformSpace.Completion.continuous_extension))
-  · rw [extensionEmbedding, UniformSpace.Completion.extensionHom, RingHom.coe_mk,
-      MonoidHom.coe_mk, OneHom.coe_mk, UniformSpace.Completion.dist_eq]
-    simp only [UniformSpace.Completion.extension_coe v.uniformEmbedding.uniformContinuous]
-    exact Isometry.dist_eq v.uniformEmbedding.to_isometry _ _
-
-variable (v)
-
-/-- The embedding `v.completion →+* ℂ` is an isometry. -/
-theorem isometry_extensionEmbedding :
-    Isometry (extensionEmbedding v) :=
-  Isometry.of_dist_eq extensionEmbedding_dist_eq
-
-/-- The embedding `v.completion →+* ℂ` is a closed embedding. -/
-theorem closedEmbedding_extensionEmbedding: ClosedEmbedding (extensionEmbedding v) :=
-  (isometry_extensionEmbedding v).closedEmbedding
-
-/-- The completion of a number field at an infinite place is locally compact. -/
-instance locallyCompactSpace : LocallyCompactSpace (v.completion) :=
-  (closedEmbedding_extensionEmbedding v).locallyCompactSpace
-
-end Completion
-
-end InfiniteCompletion
+noncomputable instance : DecidablePred (IsReal : InfinitePlace K → Prop) :=
+  letI (v : InfinitePlace K) : Decidable (∀ (i : Fin (FiniteDimensional.finrank ℚ K)),
+    (v.embedding ((FiniteDimensional.finBasis ℚ K) i)).im = 0) := Fintype.decidableForallFintype
+  fun v => decidable_of_iff
+    (∀ (i : Fin (FiniteDimensional.finrank ℚ K)), (v.embedding ((FiniteDimensional.finBasis ℚ K) i)).im = 0)
+      v.isReal_iff_basis_im_eq_zero.symm
 
 end NumberField.InfinitePlace
 
