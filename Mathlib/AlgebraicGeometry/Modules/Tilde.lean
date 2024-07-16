@@ -199,68 +199,6 @@ lemma smul_section_apply (r : R) (U : Opens (PrimeSpectrum.Top R))
     (s : (tildeInModuleCat M).1.obj (op U)) (x : U) :
     (r • s).1 x = r • (s.1 x) := rfl
 
-lemma smul_germ (r : R) (U : Opens (PrimeSpectrum.Top R)) (x : U)
-    (s : (tildeInModuleCat M).1.obj (op U)) :
-    r • (tildeInModuleCat M).germ x s =
-    (tildeInModuleCat M).germ x (r • s) := by rw [map_smul]
-
-/-- The ring homomorphism that takes a section of the structure sheaf of `R` on the open set `U`,
-implemented as a subtype of dependent functions to localizations at prime ideals, and evaluates
-the section on the point corresponding to a given prime ideal. -/
-def openToLocalization (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R) (hx : x ∈ U) :
-    (tildeInModuleCat M).1.obj (op U) ⟶
-    ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) where
-  toFun s := (s.1 ⟨x, hx⟩ : _)
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-
-@[simp]
-theorem coe_openToLocalization (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R)
-    (hx : x ∈ U) :
-    (openToLocalization M U x hx :
-        (tildeInAddCommGrp M).1.obj (op U) → LocalizedModule x.asIdeal.primeCompl M) =
-      fun s => (s.1 ⟨x, hx⟩ : _) :=
-  rfl
-
-theorem openToLocalization_apply (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R)
-    (hx : x ∈ U) (s : (tildeInAddCommGrp M).1.obj (op U)) :
-    openToLocalization M U x hx s = (s.1 ⟨x, hx⟩ : _) :=
-  rfl
-
-/--
-The morphism of `R`-modules from the stalk of `M^~` at `x` to the localization of `M` at the
-prime ideal of `R` corresponding to `x`.
--/
-noncomputable def stalkToFiberLinearMap (x : PrimeSpectrum.Top R) :
-    TopCat.Presheaf.stalk (tildeInModuleCat M) x ⟶
-    ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) :=
-  Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (tildeInModuleCat M))
-    { pt := _
-      ι :=
-      { app := fun U =>
-          (openToLocalization M ((OpenNhds.inclusion _).obj (unop U)) x (unop U).2)
-        naturality := fun {U V} i => by aesop_cat } }
-
-@[simp]
-theorem germ_comp_stalkToFiberLinearMap (U : Opens (PrimeSpectrum.Top R)) (x : U) :
-    TopCat.Presheaf.germ (tildeInModuleCat M) x ≫ stalkToFiberLinearMap M x =
-    openToLocalization M U x x.2 :=
-  Limits.colimit.ι_desc _ _
-
-@[simp]
-theorem stalkToFiberLinearMap_germ' (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R)
-    (hx : x ∈ U) (s : (tildeInModuleCat M).1.obj (op U)) :
-    stalkToFiberLinearMap M x
-      (TopCat.Presheaf.germ (tildeInModuleCat M) ⟨x, hx⟩ s) = (s.1 ⟨x, hx⟩ : _) :=
-  DFunLike.ext_iff.1 (germ_comp_stalkToFiberLinearMap M U ⟨x, hx⟩ : _) s
-
-@[simp]
-theorem stalkToFiberLinearMap_germ (U : Opens (PrimeSpectrum.Top R)) (x : U)
-    (s : (tildeInModuleCat M).1.obj (op U)) :
-    stalkToFiberLinearMap M x (TopCat.Presheaf.germ (tildeInModuleCat M) x s) =
-    s.1 x := by
-  cases x; exact stalkToFiberLinearMap_germ' M U _ _ _
-
 /--
 If `U` is an open subset of `Spec R`, this is the morphism of `R`-modules from `M` to
 `M^~(U)`.
@@ -289,14 +227,6 @@ noncomputable def toStalk (x : PrimeSpectrum.Top R) :
     ModuleCat.of R M ⟶ TopCat.Presheaf.stalk (tildeInModuleCat M) x :=
   (toOpen M ⊤ ≫ TopCat.Presheaf.germ (tildeInModuleCat M) ⟨x, by trivial⟩)
 
-@[simp]
-theorem toOpen_germ (U : Opens (PrimeSpectrum.Top R)) (x : U) :
-    toOpen M U ≫ TopCat.Presheaf.germ (tildeInModuleCat M) x = toStalk M x := by
-  rw [← toOpen_res M ⊤ U (homOfLE le_top : U ⟶ ⊤), Category.assoc, Presheaf.germ_res]; rfl
-
-theorem germ_toOpen (U : Opens (PrimeSpectrum.Top R)) (x : U) (f : M) :
-    (M.tildeInModuleCat.germ x) ((ModuleCat.Tilde.toOpen M U) f) = toStalk M x f := by
-  rw [← toOpen_germ]; rfl
 
 lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
     IsUnit ((algebraMap R (Module.End R ((tildeInModuleCat M).stalk x))) r) := by
