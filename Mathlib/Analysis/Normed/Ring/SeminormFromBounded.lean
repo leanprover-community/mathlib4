@@ -8,9 +8,9 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 /-!
 # seminormFromBounded
-In this file, we prove [BGR, Proposition 1.2.1/2] : given a nonzero additive group seminorm on a
-commutative ring `R` such that for some `c : ℝ` and every `x y : R`, the inequality
-`f (x * y) ≤ c * f x * f y)` is satisfied, we create a ring seminorm on `R`.
+In this file, we prove [BGR, Proposition 1.2.1/2][bosch-guntzer-remmert] : given a nonzero
+additive group seminorm on a commutative ring `R` such that for some `c : ℝ` and every `x y : R`,
+the inequality `f (x * y) ≤ c * f x * f y)` is satisfied, we create a ring seminorm on `R`.
 
 In the file comments, we will use the expression `f is multiplicatively bounded` to indicate that
 this condition holds.
@@ -79,12 +79,12 @@ theorem map_pow_ne_zero (f_nonneg : 0 ≤ f) {x : R} (hx : IsUnit x) (hfx : f x 
 theorem map_mul_zero_of_map_zero (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) {x : R} (hx : f x = 0)
     (y : R) : f (x * y) = 0 := by
-  replace hxy : f (x * y) ≤ 0 := by simpa [hx] using f_mul x y
-  exact le_antisymm hxy (f_nonneg _)
+  replace f_mul : f (x * y) ≤ 0 := by simpa [hx] using f_mul x y
+  exact le_antisymm f_mul (f_nonneg _)
 
 /-- `seminormFromBounded' f` preserves `0`. -/
 theorem seminormFromBounded_zero (f_zero : f 0 = 0) : seminormFromBounded' f (0 : R) = 0 := by
-  simp_rw [seminormFromBounded', MulZeroClass.zero_mul, f_zero, zero_div, ciSup_const]
+  simp_rw [seminormFromBounded', zero_mul, f_zero, zero_div, ciSup_const]
 
 theorem seminormFromBounded_aux (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) (x : R) : 0 ≤ c * f x := by
@@ -130,9 +130,9 @@ theorem seminormFromBounded_ge (f_nonneg : 0 ≤ f)
     f x ≤ f 1 * seminormFromBounded' f x := by
   by_cases h1 : f 1 = 0
   · specialize f_mul x 1
-    rw [mul_one, h1, MulZeroClass.mul_zero] at f_mul
-    have hx0 : f x = 0 := le_antisymm f_mul (f_nonneg _)
-    rw [hx0, h1, MulZeroClass.zero_mul]
+    rw [mul_one, h1, mul_zero] at f_mul
+    have hx0 : f x = 0 := f_mul.antisymm (f_nonneg _)
+    rw [hx0, h1, zero_mul]
   · rw [mul_comm, ← div_le_iff (lt_of_le_of_ne' (f_nonneg _) h1)]
     conv_lhs => rw [← mul_one x]
     exact le_ciSup (seminormFromBounded_bddAbove_range f_nonneg f_mul x) (1 : R)
@@ -152,12 +152,12 @@ theorem seminormFromBounded_eq_zero_iff (f_nonneg : 0 ≤ f)
     seminormFromBounded' f x = 0 ↔ f x = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · have hf := seminormFromBounded_ge f_nonneg f_mul x
-    rw [h, MulZeroClass.mul_zero] at hf
-    exact le_antisymm hf (f_nonneg _)
+    rw [h, mul_zero] at hf
+    exact hf.antisymm  (f_nonneg _)
   · have hf : seminormFromBounded' f x ≤ c * f x :=
       seminormFromBounded_le f_nonneg f_mul x
-    rw [h, MulZeroClass.mul_zero] at hf
-    exact le_antisymm hf (seminormFromBounded_nonneg f_nonneg f_mul x)
+    rw [h, mul_zero] at hf
+    exact hf.antisymm  (seminormFromBounded_nonneg f_nonneg f_mul x)
 
 /-- If `f` is invariant under negation of `x`, then so is `seminormFromBounded'`.-/
 theorem seminormFromBounded_neg (f_neg : ∀ x : R, f (-x) = f x) (x : R) :
@@ -281,7 +281,7 @@ theorem seminormFromBounded_of_mul_apply (f_nonneg : 0 ≤ f)
   apply le_antisymm
   · refine ciSup_le (fun x ↦ ?_)
     by_cases hx : f x = 0
-    · rw [hx, div_zero, MulZeroClass.mul_zero]; exact f_nonneg _
+    · rw [hx, div_zero, mul_zero]; exact f_nonneg _
     · rw [div_self hx, mul_one]
   · by_cases f_ne_zero : f ≠ 0
     · conv_lhs => rw [← mul_one (f x)]
@@ -290,11 +290,11 @@ theorem seminormFromBounded_of_mul_apply (f_nonneg : 0 ≤ f)
         use f x
         rintro r ⟨y, rfl⟩
         by_cases hy0 : f y = 0
-        · simp only [hy0, div_zero, MulZeroClass.mul_zero]; exact f_nonneg _
+        · simp only [hy0, div_zero, mul_zero]; exact f_nonneg _
         · simp only [div_self hy0, mul_one, le_refl]
       exact le_ciSup h_bdd (1 : R)
     · push_neg at f_ne_zero
-      simp_rw [f_ne_zero, Pi.zero_apply, zero_div, MulZeroClass.zero_mul, ciSup_const]; rfl
+      simp_rw [f_ne_zero, Pi.zero_apply, zero_div, zero_mul, ciSup_const]; rfl
 
 /-- If `f : R → ℝ` is a nonnegative function and `x : R` is submultiplicative for `f`, then
   `seminormFromBounded' f x = f x`. -/
@@ -319,7 +319,7 @@ theorem seminormFromBounded_of_mul_le (f_nonneg : 0 ≤ f) {x : R}
     by_cases h0 : f x = 0
     · rw [mul_one, h0, zero_div]
     · have heq : f 1 = 1 := by
-        apply le_antisymm h_one
+        apply h_one.antisymm
         specialize hx 1
         rw [mul_one, le_mul_iff_one_le_right (lt_of_le_of_ne (f_nonneg _) (Ne.symm h0))] at hx
         exact hx
