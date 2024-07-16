@@ -94,8 +94,8 @@ theorem hasseDeriv_comp_coeff (k l : ℕ) (f : LaurentSeries V) (n : ℤ) :
     HahnSeries.coeff ((Nat.choose (k + l) k) • hasseDeriv R (k + l) f) n := by
   rw [nsmul_eq_smul_cast R, smul_coeff]
   simp only [hasseDeriv_coeff]
-  rw [smul_smul, mul_comm, ← Ring.choose_mul' (n + k), add_assoc, Nat.choose_symm_add, Nat.cast_add,
-    smul_assoc, ← nsmul_eq_smul_cast]
+  rw [smul_smul, mul_comm, ← Ring.choose_add_smul_choose (n + k), add_assoc, Nat.choose_symm_add,
+    Nat.cast_add, smul_assoc, ← nsmul_eq_smul_cast]
 
 theorem hasseDeriv_comp' (k l : ℕ) (f : LaurentSeries V) :
     hasseDeriv R k (hasseDeriv R l f) = (k + l).choose k • hasseDeriv R (k + l) f := by
