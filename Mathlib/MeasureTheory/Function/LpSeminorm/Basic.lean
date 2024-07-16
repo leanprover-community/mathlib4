@@ -1171,7 +1171,7 @@ section UnifTight
 
 /-- A single function that is `Memℒp f p μ` is tight with respect to `μ`. -/
 theorem Memℒp.exists_snorm_indicator_compl_lt {β : Type*} [NormedAddCommGroup β] (hp_top : p ≠ ∞)
-    {f : α → β} (hf : Memℒp f p μ) {ε : ℝ≥0} (hε : ε ≠ 0) :
+    {f : α → β} (hf : Memℒp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧ snorm (sᶜ.indicator f) p μ < ε := by
   rcases eq_or_ne p 0 with rfl | hp₀
   · use ∅; simp [pos_iff_ne_zero.2 hε] -- first take care of `p = 0`

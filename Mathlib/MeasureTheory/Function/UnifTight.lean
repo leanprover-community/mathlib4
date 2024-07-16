@@ -59,7 +59,7 @@ theorem unifTight_ennreal_iff {_ : MeasurableSpace α} (f : ι → α → β) (p
   · intro hut eε heε
     by_cases heε_top : eε = ∞
     · exact ⟨∅, (by measurability), fun _ => heε_top.symm ▸ le_top⟩
-    have hε := ENNReal.toNNReal_pos heε.ne.symm heε_top
+    have hε := toNNReal_pos heε.ne.symm heε_top
     have hεeε := coe_toNNReal heε_top
     obtain ⟨s, hμs, hfε⟩ := hut hε
     use s, hμs; intro i
@@ -99,13 +99,13 @@ protected theorem exists_measurableSet_indicator (hf : UnifTight f p μ) {ε : �
 protected theorem add (hf : UnifTight f p μ) (hg : UnifTight g p μ)
     (hf_meas : ∀ i, AEStronglyMeasurable (f i) μ) (hg_meas : ∀ i, AEStronglyMeasurable (g i) μ) :
     UnifTight (f + g) p μ := fun ε hε ↦ by
-  rcases exists_Lp_half β μ p (ENNReal.coe_ne_zero.mpr hε.ne') with ⟨η, hη_pos, hη⟩
+  rcases exists_Lp_half β μ p (coe_ne_zero.mpr hε.ne') with ⟨η, hη_pos, hη⟩
   by_cases hη_top : η = ∞
   · replace hη := hη_top ▸ hη
     refine ⟨∅, (by measurability), fun i ↦ ?_⟩
     simp only [compl_empty, indicator_univ, Pi.add_apply]
     exact (hη (f i) (g i) (hf_meas i) (hg_meas i) le_top le_top).le
-  have nnη_nz := (ENNReal.toNNReal_ne_zero.mpr ⟨hη_pos.ne',hη_top⟩)
+  have nnη_nz := (toNNReal_ne_zero.mpr ⟨hη_pos.ne',hη_top⟩)
   obtain ⟨s, hμs, hsm, hfs, hgs⟩ :
       ∃ s ∈ μ.cofinite, MeasurableSet s ∧
         (∀ i, snorm (s.indicator (f i)) p μ ≤ η.toNNReal) ∧
@@ -152,7 +152,7 @@ theorem unifTight_const {g : α → β} (hp_ne_top : p ≠ ∞) (hg : Memℒp g 
   intro ε hε
   by_cases hε_top : ε = ∞
   · exact ⟨∅, (by measurability), fun _ => hε_top.symm ▸ le_top⟩
-  obtain ⟨s, _, hμs, hgε⟩ := hg.exists_snorm_indicator_compl_lt hp_ne_top hε.ne'
+  obtain ⟨s, _, hμs, hgε⟩ := hg.exists_snorm_indicator_compl_lt hp_ne_top (coe_ne_zero.mpr hε.ne')
   exact ⟨s, ne_of_lt hμs, fun _ => hgε.le⟩
 
 /-- A single function is tight. -/
@@ -163,7 +163,7 @@ theorem unifTight_of_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
   by_cases hι : Nonempty ι
   case neg => exact ⟨∅, (by measurability), fun i => False.elim <| hι <| Nonempty.intro i⟩
   cases' hι with i
-  obtain ⟨s, _, hμs, hfε⟩ := (hf i).exists_snorm_indicator_compl_lt hp_top hε.ne'
+  obtain ⟨s, _, hμs, hfε⟩ := (hf i).exists_snorm_indicator_compl_lt hp_top (coe_ne_zero.mpr hε.ne')
   refine ⟨s, ne_of_lt hμs, fun j => ?_⟩
   convert hfε.le
 
@@ -182,7 +182,7 @@ private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α �
   let g : Fin n → α → β := fun k => f k
   have hgLp : ∀ i, Memℒp (g i) p μ := fun i => hfLp i
   obtain ⟨S, hμS, hFε⟩ := h hgLp hε
-  obtain ⟨s, _, hμs, hfε⟩ := (hfLp n).exists_snorm_indicator_compl_lt hp_top hε.ne'
+  obtain ⟨s, _, hμs, hfε⟩ :=(hfLp n).exists_snorm_indicator_compl_lt hp_top (coe_ne_zero.mpr hε.ne')
   refine ⟨s ∪ S, (by measurability), fun i => ?_⟩
   by_cases hi : i.val < n
   · rw [(_ : f i = g ⟨i.val, hi⟩)]
