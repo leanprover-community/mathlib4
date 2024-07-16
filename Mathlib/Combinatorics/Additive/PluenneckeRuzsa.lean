@@ -149,8 +149,6 @@ theorem ruzsa_triangle_inequality_mul_mul_mul (A B C : Finset α) :
   rw [← mul_div_right_comm, ← mul_assoc]
   refine (le_div_iff <| cast_pos.2 hU.1.card_pos).2 ?_
   exact mod_cast pluennecke_petridis_inequality_mul C (mul_aux hU.1 hU.2 hUA)
-#align finset.card_mul_mul_card_le_card_mul_mul_card_mul Finset.ruzsa_triangle_inequality_mul_mul_mul
-#align finset.card_add_mul_card_le_card_add_mul_card_add Finset.ruzsa_triangle_inequality_add_add_add
 
 /-- **Ruzsa's triangle inequality**. Mul-div-div version. -/
 @[to_additive "**Ruzsa's triangle inequality**. Add-sub-sub version."]
