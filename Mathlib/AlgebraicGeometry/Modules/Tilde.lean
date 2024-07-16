@@ -296,7 +296,6 @@ theorem toOpen_germ (U : Opens (PrimeSpectrum.Top R)) (x : U) :
     toOpen M U ≫ TopCat.Presheaf.germ (tildeInModuleCat M) x = toStalk M x := by
   rw [← toOpen_res M ⊤ U (homOfLE le_top : U ⟶ ⊤), Category.assoc, Presheaf.germ_res]; rfl
 
-@[simp]
 theorem germ_toOpen (U : Opens (PrimeSpectrum.Top R)) (x : U) (f : M) :
     (M.tildeInModuleCat.germ x) ((ModuleCat.Tilde.toOpen M U) f) = toStalk M x f := by
   rw [← toOpen_germ]; rfl
@@ -411,9 +410,8 @@ theorem toStalk_comp_stalkToFiberLinearMap (x : PrimeSpectrum.Top R) :
     LocalizedModule.mkLinearMap x.asIdeal.primeCompl M := by
   erw [toStalk, Category.assoc, germ_comp_stalkToFiberLinearMap]; rfl
 
-@[simp]
 theorem stalkToFiberRingHom_toStalk (x : PrimeSpectrum.Top R) (m : M) :
-    (ModuleCat.Tilde.stalkToFiberLinearMap M x) ((ModuleCat.Tilde.toStalk M x) m) =
+    (stalkToFiberLinearMap M x) ((toStalk M x) m) =
     LocalizedModule.mk m 1 :=
   LinearMap.ext_iff.1 (toStalk_comp_stalkToFiberLinearMap M x) _
 
