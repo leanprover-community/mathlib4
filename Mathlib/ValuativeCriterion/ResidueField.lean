@@ -121,7 +121,12 @@ by `Epi (X.toResidueField x)` and `Scheme.stalkMap_fromSpecStalk` and `residue_r
 -/
 lemma Scheme.hom.residueFieldMap_fromSpecResidueField (x : X) :
     Spec.map (f.residueFieldMap x) ≫ Y.fromSpecResidueField _ =
-      X.fromSpecResidueField x ≫ f := sorry
+      X.fromSpecResidueField x ≫ f := by
+  have : Epi (X.toResidueField x) := inferInstance
+  have h1 := Scheme.stalkMap_fromSpecStalk f (x := x)
+  have h2 := residue_residueFieldMap f x
+  dsimp only [fromSpecResidueField]
+  sorry
 
 @[reassoc (attr := simp)]
 lemma Scheme.residueFieldCongr_fromSpecResidueField {x y : X} (h : x = y) :
@@ -137,7 +142,15 @@ lemma Scheme.fromSpecResidueField_apply (x : X.carrier) (s) :
 
 -- by the previous lemma
 lemma Scheme.range_fromSpecResidueField  (x : X.carrier) :
-    Set.range (X.fromSpecResidueField x).1.base = {x} := sorry
+    Set.range (X.fromSpecResidueField x).1.base = {x} := by
+  ext s
+  simp only [Set.mem_range, fromSpecResidueField_apply, Set.mem_singleton_iff, eq_comm (a := s)]
+  constructor
+  · rintro ⟨-, h⟩
+    exact h
+  · rintro rfl
+    refine ⟨?_, rfl⟩
+    sorry
 
 attribute [instance] isLocalRingHom_stalkClosedPointTo
 

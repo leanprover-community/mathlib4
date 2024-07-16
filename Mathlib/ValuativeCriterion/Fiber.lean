@@ -21,8 +21,9 @@ def Scheme.Hom.fiberToResidueField (f : X.Hom Y) (y : Y) :
     f.fiber y ⟶ Spec (Y.residueField y) :=
   pullback.snd _ _
 
-/-- Uses `Scheme.Pullback.range_fst` and `Scheme.range_fromSpecResidueField`. -/
 lemma Scheme.Hom.range_fiberι (f : X.Hom Y) (y : Y) :
-    Set.range (f.fiberι y).1.base = f.1.base ⁻¹' {y} := sorry
+    Set.range (f.fiberι y).1.base = f.1.base ⁻¹' {y} := by
+  dsimp [fiber, fiberι]
+  rw [Scheme.Pullback.range_fst, Scheme.range_fromSpecResidueField]
 
 end AlgebraicGeometry
