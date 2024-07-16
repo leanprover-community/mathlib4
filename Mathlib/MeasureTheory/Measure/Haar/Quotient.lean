@@ -174,7 +174,7 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimag
     rw [this]
     rfl
   have : SigmaFinite μ' := i.sigmaFiniteQuotient
-  rw [measure_eq_div_smul μ' μ meas_V neZeroV neTopV, hV]
+  rw [measure_eq_div_smul μ' μ neZeroV neTopV, hV]
   symm
   suffices (μ' V / ν (QuotientGroup.mk ⁻¹' V ∩ s)) = 1 by rw [this, one_smul]
   rw [Measure.map_apply meas_π meas_V, Measure.restrict_apply]

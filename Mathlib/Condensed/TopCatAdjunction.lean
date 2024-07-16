@@ -25,11 +25,11 @@ attribute [local instance] ConcreteCategory.instFunLike
 
 variable (X : CondensedSet.{u})
 
-/-- Auxiliary defiinition to define the topology on `X(*)` for a condensed set `X`. -/
+/-- Auxiliary definition to define the topology on `X(*)` for a condensed set `X`. -/
 private def _root_.CompHaus.const (S : CompHaus.{u}) (s : S) : CompHaus.of PUnit.{u+1} ⟶ S :=
   ContinuousMap.const _ s
 
-/-- Auxiliary defiinition to define the topology on `X(*)` for a condensed set `X`. -/
+/-- Auxiliary definition to define the topology on `X(*)` for a condensed set `X`. -/
 private def CondensedSet.coinducingCoprod :
     (Σ (i : (S : CompHaus.{u}) × X.val.obj ⟨S⟩), i.fst) → X.val.obj ⟨CompHaus.of PUnit⟩ :=
   fun ⟨⟨S, i⟩, s⟩ ↦ X.val.map (S.const s).op i

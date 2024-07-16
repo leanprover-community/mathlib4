@@ -698,36 +698,36 @@ noncomputable def pullbackIsoPullback : pullback f g ≅ PullbackObj f g :=
 
 @[simp]
 theorem pullbackIsoPullback_hom_fst (p : pullback f g) :
-    ((pullbackIsoPullback f g).hom p : X × Y).fst = (pullback.fst : _ ⟶ X) p :=
+    ((pullbackIsoPullback f g).hom p : X × Y).fst = (pullback.fst f g) p :=
   congr_fun ((pullbackConeIsoPullback f g).hom.w left) p
 #align category_theory.limits.types.pullback_iso_pullback_hom_fst CategoryTheory.Limits.Types.pullbackIsoPullback_hom_fst
 
 @[simp]
 theorem pullbackIsoPullback_hom_snd (p : pullback f g) :
-    ((pullbackIsoPullback f g).hom p : X × Y).snd = (pullback.snd : _ ⟶ Y) p :=
+    ((pullbackIsoPullback f g).hom p : X × Y).snd = (pullback.snd f g) p :=
   congr_fun ((pullbackConeIsoPullback f g).hom.w right) p
 #align category_theory.limits.types.pullback_iso_pullback_hom_snd CategoryTheory.Limits.Types.pullbackIsoPullback_hom_snd
 
 @[simp]
 theorem pullbackIsoPullback_inv_fst :
-    (pullbackIsoPullback f g).inv ≫ pullback.fst = fun p => (p.1 : X × Y).fst :=
+    (pullbackIsoPullback f g).inv ≫ pullback.fst _ _ = fun p => (p.1 : X × Y).fst :=
   (pullbackConeIsoPullback f g).inv.w left
 #align category_theory.limits.types.pullback_iso_pullback_inv_fst CategoryTheory.Limits.Types.pullbackIsoPullback_inv_fst
 
 @[simp]
 theorem pullbackIsoPullback_inv_fst_apply (x : (Types.pullbackCone f g).pt) :
-    (pullback.fst : _ ⟶ X) ((pullbackIsoPullback f g).inv x) = (fun p => (p.1 : X × Y).fst) x := by
+    (pullback.fst f g) ((pullbackIsoPullback f g).inv x) = (fun p => (p.1 : X × Y).fst) x := by
   rw [elementwise_of% pullbackIsoPullback_inv_fst]
 
 @[simp]
 theorem pullbackIsoPullback_inv_snd :
-    (pullbackIsoPullback f g).inv ≫ pullback.snd = fun p => (p.1 : X × Y).snd :=
+    (pullbackIsoPullback f g).inv ≫ pullback.snd _ _ = fun p => (p.1 : X × Y).snd :=
   (pullbackConeIsoPullback f g).inv.w right
 #align category_theory.limits.types.pullback_iso_pullback_inv_snd CategoryTheory.Limits.Types.pullbackIsoPullback_inv_snd
 
 @[simp]
 theorem pullbackIsoPullback_inv_snd_apply (x : (Types.pullbackCone f g).pt) :
-    (pullback.snd : _ ⟶ Y) ((pullbackIsoPullback f g).inv x) = (fun p => (p.1 : X × Y).snd) x := by
+    (pullback.snd f g) ((pullbackIsoPullback f g).inv x) = (fun p => (p.1 : X × Y).snd) x := by
   rw [elementwise_of% pullbackIsoPullback_inv_snd]
 
 end Pullback
