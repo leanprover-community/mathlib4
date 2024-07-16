@@ -251,9 +251,8 @@ theorem BilinForm.toMatrix_apply (B : BilinForm R₂ M₂) (i j : n) :
 @[simp]
 theorem Matrix.toBilin_apply (M : Matrix n n R₂) (x y : M₂) :
     Matrix.toBilin b M x y = ∑ i, ∑ j, b.repr x i * M i j * b.repr y j :=
-  Finset.sum_congr rfl fun i  _ => Finset.sum_congr rfl fun j _ => by
-    simp only [LinearEquiv.coe_coe, Basis.equivFun_apply, RingHom.id_apply, smul_eq_mul, mul_comm,
-      mul_assoc]
+  (Matrix.toLinearMap₂_apply _ _ _ _ _).trans
+    (by simp only [smul_eq_mul, mul_assoc, mul_comm, mul_left_comm])
 
 #align matrix.to_bilin_apply Matrix.toBilin_apply
 
