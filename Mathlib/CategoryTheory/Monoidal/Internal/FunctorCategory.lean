@@ -44,7 +44,7 @@ variable {C D}
 
 /-- A monoid object in a functor category induces a functor to the category of monoid objects. -/
 @[simps]
-def functor_obj' (A : Mon_ (C ⥤ D)) : C ⥤ Mon_ D where
+def functorObj (A : Mon_ (C ⥤ D)) : C ⥤ Mon_ D where
   obj X :=
   { X := A.X.obj X
     one := A.one.app X
@@ -64,7 +64,7 @@ to a functor into the category of monoid objects.
 -/
 @[simps]
 def functor : Mon_ (C ⥤ D) ⥤ C ⥤ Mon_ D where
-  obj := functor_obj'
+  obj := functorObj
   map f :=
   { app := fun X =>
     { hom := f.hom.app X
@@ -74,7 +74,7 @@ def functor : Mon_ (C ⥤ D) ⥤ C ⥤ Mon_ D where
 /-- A functor to the category of monoid objects can be translated as a monoid object
 in the functor category. -/
 @[simps]
-def inverse_obj' (F : C ⥤ Mon_ D) : Mon_ (C ⥤ D) where
+def inverseObj (F : C ⥤ Mon_ D) : Mon_ (C ⥤ D) where
   X := F ⋙ Mon_.forget D
   one := { app := fun X => (F.obj X).one }
   mul := { app := fun X => (F.obj X).mul }
@@ -84,7 +84,7 @@ to a monoid object in the functor category
 -/
 @[simps]
 def inverse : (C ⥤ Mon_ D) ⥤ Mon_ (C ⥤ D) where
-  obj := inverse_obj'
+  obj := inverseObj
   map α :=
   { hom :=
     { app := fun X => (α.app X).hom
@@ -130,7 +130,7 @@ variable {C D}
 A comonoid object in a functor category induces a functor to the category of comonoid objects.
 -/
 @[simps]
-private def functor_obj' (A : Comon_ (C ⥤ D)) : C ⥤ Comon_ D where
+def functorObj (A : Comon_ (C ⥤ D)) : C ⥤ Comon_ D where
   obj X :=
   { X := A.X.obj X
     counit := A.counit.app X
@@ -149,8 +149,8 @@ private def functor_obj' (A : Comon_ (C ⥤ D)) : C ⥤ Comon_ D where
 to a functor into the category of comonoid objects.
 -/
 @[simps]
-private def functor : Comon_ (C ⥤ D) ⥤ C ⥤ Comon_ D where
-  obj := functor_obj'
+def functor : Comon_ (C ⥤ D) ⥤ C ⥤ Comon_ D where
+  obj := functorObj
   map f :=
   { app := fun X =>
     { hom := f.hom.app X
@@ -160,7 +160,7 @@ private def functor : Comon_ (C ⥤ D) ⥤ C ⥤ Comon_ D where
 /-- A functor to the category of comonoid objects can be translated as a comonoid object
 in the functor category. -/
 @[simps]
-def inverse_obj' (F : C ⥤ Comon_ D) : Comon_ (C ⥤ D) where
+def inverseObj (F : C ⥤ Comon_ D) : Comon_ (C ⥤ D) where
   X := F ⋙ Comon_.forget D
   counit := { app := fun X => (F.obj X).counit }
   comul := { app := fun X => (F.obj X).comul }
@@ -170,7 +170,7 @@ to a comonoid object in the functor category
 -/
 @[simps]
 private def inverse : (C ⥤ Comon_ D) ⥤ Comon_ (C ⥤ D) where
-  obj := inverse_obj'
+  obj := inverseObj
   map α :=
   { hom :=
     { app := fun X => (α.app X).hom
