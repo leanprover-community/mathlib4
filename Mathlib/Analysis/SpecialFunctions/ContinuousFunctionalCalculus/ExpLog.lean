@@ -131,19 +131,14 @@ lemma log_exp (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : log (NormedSpace.ex
   rw [hcomp, cfc_id (R := ℝ) a ha]
 
 -- TODO: Relate the hypothesis to a notion of strict positivity
-lemma exp_log {a : A} (ha₁ : IsSelfAdjoint a := by cfc_tac) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) :
+lemma exp_log (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) (ha₁ : IsSelfAdjoint a := by cfc_tac) :
     NormedSpace.exp ℝ (log a) = a := by
   have ha₃ : ContinuousOn Real.log (spectrum ℝ a) := by
-    refine ContinuousOn.mono Real.continuousOn_log fun x hx => ?_
-    rw [Set.mem_compl_singleton_iff]
-    exact ne_of_gt <| ha₂ x hx
-  have hcont : ContinuousOn Real.exp (Real.log '' spectrum ℝ a) := by fun_prop
-  rw [← real_exp_eq_normedSpace_exp isSelfAdjoint_log,
-      log, ← cfc_comp Real.exp Real.log a ha₁ hcont ha₃]
+    have : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by peel ha₂ with x hx h; exact h.ne'
+    fun_prop (disch := assumption)
+  rw [← real_exp_eq_normedSpace_exp .log, log, ← cfc_comp' Real.exp Real.log a (by fun_prop) ha₃]
   conv_rhs => rw [← cfc_id (R := ℝ) a ha₁]
-  refine cfc_congr ?_
-  intro x hx
-  simp only [Function.comp_apply, Real.exp_log (ha₂ x hx), id_eq]
+  exact cfc_congr (Real.exp_log <| ha₂ · ·)
 
 @[simp] lemma log_zero : log (0 : A) = 0 := by simp [log]
 
