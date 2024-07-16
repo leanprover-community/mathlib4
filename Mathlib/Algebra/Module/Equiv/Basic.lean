@@ -790,3 +790,5 @@ theorem funCongrLeft_symm (e : m ≃ n) : (funCongrLeft R M e).symm = funCongrLe
 end LinearEquiv
 
 end FunLeft
+
+end AddCommMonoid
