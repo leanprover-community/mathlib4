@@ -268,6 +268,7 @@ lemma Algebra.intTrace_eq_of_isLocalization
   rw [← IsScalarTower.algebraMap_apply, Algebra.algebraMap_intTrace_fractionRing,
     Algebra.algebraMap_intTrace (L := L), ← IsScalarTower.algebraMap_apply]
 
+variable {A} in
 lemma isIntegrallyClosed_of_isLocalization [IsIntegrallyClosed A] [IsDomain A] (M : Submonoid A)
     (hM : M ≤ A⁰) [IsLocalization M B] : IsIntegrallyClosed B := by
   let K := FractionRing A
