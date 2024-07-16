@@ -48,25 +48,25 @@ but add these assumptions later as needed. (Quite a few results still do not req
   `extChartAt I x` is the canonical such partial equiv around `x`.
 
 As specific examples of models with corners, we define (in `Geometry.Manifold.Instances.Real`)
-* `modelWithCornersSelf ℝ (EuclideanSpace (Fin n))` for the model space used to define
+* `modelWithCornersSelf ℝ (EuclideanSpace ℝ (Fin n))` for the model space used to define
   `n`-dimensional real manifolds without boundary (with notation `𝓡 n` in the locale `Manifold`)
-* `ModelWithCorners ℝ (EuclideanSpace (Fin n)) (EuclideanHalfSpace n)` for the model space
+* `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
   used to define `n`-dimensional real manifolds with boundary (with notation `𝓡∂ n` in the locale
   `Manifold`)
-* `ModelWithCorners ℝ (EuclideanSpace (Fin n)) (EuclideanQuadrant n)` for the model space used
+* `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
   to define `n`-dimensional real manifolds with corners
 
 With these definitions at hand, to invoke an `n`-dimensional real manifold without boundary,
 one could use
 
-  `variable {n : ℕ} {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace (Fin n)) M]
+  `variable {n : ℕ} {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace ℝ (Fin n)) M]
    [SmoothManifoldWithCorners (𝓡 n) M]`.
 
 However, this is not the recommended way: a theorem proved using this assumption would not apply
 for instance to the tangent space of such a manifold, which is modelled on
-`(EuclideanSpace (Fin n)) × (EuclideanSpace (Fin n))` and not on `EuclideanSpace (Fin (2 * n))`!
+`(EuclideanSpace ℝ (Fin n)) × (EuclideanSpace ℝ (Fin n))` and not on `EuclideanSpace ℝ (Fin (2 * n))`!
 In the same way, it would not apply to product manifolds, modelled on
-`(EuclideanSpace (Fin n)) × (EuclideanSpace (Fin m))`.
+`(EuclideanSpace ℝ (Fin n)) × (EuclideanSpace ℝ (Fin m))`.
 The right invocation does not focus on one specific construction, but on all constructions sharing
 the right properties, like
 
