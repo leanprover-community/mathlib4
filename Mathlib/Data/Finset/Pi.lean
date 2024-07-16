@@ -128,7 +128,8 @@ theorem pi_disjoint_of_disjoint {δ : α → Type*} {s : Finset α} (t₁ t₂ :
 
 variable {ι : Type*} [DecidableEq (ι → α)] {s : Finset α} {f : ι → α}
 
-/-- The diagonal of a finset `s : Finset α` as a finset of functions `ι → α`. -/
+/-- The diagonal of a finset `s : Finset α` as a finset of functions `ι → α`, namely the set of
+constant functions valued in `s`. -/
 def piDiag (s : Finset α) (ι : Type*) [DecidableEq (ι → α)] : Finset (ι → α) := s.image (const ι)
 
 @[simp] lemma mem_piDiag : f ∈ s.piDiag ι ↔ ∃ a ∈ s, const ι a = f := mem_image
