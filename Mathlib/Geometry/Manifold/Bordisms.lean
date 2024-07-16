@@ -6,7 +6,7 @@ Authors: Michael Rothgang
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.Instances.Real
-import Mathlib.Util.Superscript
+import Mathlib.Geometry.Manifold.Instances.Sphere
 
 /-!
 # Unoriented bordism theory
@@ -51,6 +51,8 @@ open scoped Manifold
 open Metric (sphere)
 open FiniteDimensional
 
+noncomputable section
+
 -- Some preliminaries, which should go in more basic files
 section ClosedManifold
 
@@ -64,7 +66,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 structure ClosedManifold [CompactSpace M] [I.Boundaryless]
 
 /-- An **n-manifold** is a smooth `n`-dimensional manifold. -/
--- xxx: does this mention all data? is there a nicer way to do this?
 structure NManifold (n : ℕ) [NormedAddCommGroup E]  [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E]
     {H : Type*} [TopologicalSpace H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners 𝕜 E H) [SmoothManifoldWithCorners I M] where
@@ -73,6 +74,32 @@ structure NManifold (n : ℕ) [NormedAddCommGroup E]  [NormedSpace 𝕜 E] [Fini
 structure ClosedNManifold (n : ℕ) [CompactSpace M] [I.Boundaryless] [FiniteDimensional 𝕜 E]
     extends ClosedManifold M I where
   hdim : finrank 𝕜 E = n
+
+section examples
+
+-- Assume `M` is a finite-dimensional real manifold over the pair `(E, H)`.
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  {H : Type*} [TopologicalSpace H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+  (I : ModelWithCorners ℝ E H) [SmoothManifoldWithCorners I M]
+
+/-- The standard `n`-sphere is a closed manifold. -/
+example {n : ℕ} [Fact (finrank ℝ E = n + 1)] : ClosedManifold (sphere (0 : E) 1) (𝓡 n) where
+
+-- The standard Euclidean space is an `n`-manifold. -/
+example (n : ℕ) {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace ℝ (Fin n)) M]
+    [SmoothManifoldWithCorners (𝓡 n) M] : NManifold n M (𝓡 n) where
+  hdim := finrank_euclideanSpace_fin
+
+-- /-- The standard `n`-sphere is an `n`-manifold. -/
+-- example (n : ℕ) [Fact (finrank ℝ E = n + 1)] :
+--     (
+--     haveI := EuclideanSpace.instChartedSpaceSphere; NManifold n (sphere (0 : E) 1) (𝓡 n)) where
+
+--   --hdim := finrank_euclideanSpace_fin
+
+-- the 2-torus is an n-manifold
+
+end examples
 
 end ClosedManifold
 
