@@ -1161,7 +1161,7 @@ theorem fract_div_natCast_eq_div_natCast_mod {m n : ℕ} : fract ((m : k) / n) =
 #align int.fract_div_nat_cast_eq_div_nat_cast_mod Int.fract_div_natCast_eq_div_natCast_mod
 
 -- TODO: find a better place and golf
-theorem lt_fmod_of_pos (a b : Int) (h : b < 0) : b < a.fmod b := by
+theorem lt_fmod_of_pos (a : Int) {b : Int} (h : b < 0) : b < a.fmod b := by
   induction' b with b b
   · by_contra
     exact (negSucc_not_nonneg b).mp h
@@ -1180,7 +1180,7 @@ theorem lt_fmod_of_pos (a b : Int) (h : b < 0) : b < a.fmod b := by
       linarith
 
 -- TODO: find a better place and golf
-theorem fmod_nonpos {a b : Int}  (hb : b < 0) : a.fmod b ≤ 0 := by
+theorem fmod_nonpos (a : Int) {b : Int}  (hb : b < 0) : a.fmod b ≤ 0 := by
   induction' b with b b
   · by_contra
     exact (negSucc_not_nonneg b).mp hb
@@ -1240,11 +1240,11 @@ theorem fract_div_intCast_eq_div_intCast_fmod {m : ℤ} {n : ℤ} :
           · exact h₂
           · rw [h₁]
             simp only [le_sub_self_iff, cast_nonpos, ge_iff_le]
-            convert fmod_nonpos _
+            convert fmod_nonpos _ _
             omega
         · refine (div_lt_iff_of_neg h₂).mpr ?_
           rw [add_mul, mul_comm, h₁, one_mul]
-          have : (n : k) <  m.fmod n  := cast_lt.mpr <| lt_fmod_of_pos m n h₃
+          have : (n : k) <  m.fmod n  := cast_lt.mpr <| lt_fmod_of_pos m h₃
           linarith
     rw [h]
     simp
