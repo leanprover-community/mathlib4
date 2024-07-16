@@ -135,3 +135,7 @@ lemma Γevaluation_naturality_apply (x : X) (a : Y.presheaf.obj (op ⊤)) :
     residueFieldMap f x (Y.Γevaluation (f.val.base x) a) =
       X.Γevaluation x (f.val.c.app (op ⊤) a) :=
   evaluation_naturality_apply f ⟨x, by simp only [Opens.map_top]; trivial⟩ a
+
+end LocallyRingedSpace
+
+end AlgebraicGeometry

@@ -14,7 +14,6 @@ zero.
 -/
 
 open Function
-open scoped BigOperators
 
 variable {ι κ G₀ M₀ : Type*}
 

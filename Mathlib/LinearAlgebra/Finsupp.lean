@@ -355,7 +355,7 @@ variable {M R}
 section
 
 @[simp]
-theorem restrictDom_apply (s : Set α) (l : α →₀ M) [DecidablePred (· ∈ s)]:
+theorem restrictDom_apply (s : Set α) (l : α →₀ M) [DecidablePred (· ∈ s)] :
     (restrictDom M R s l : α →₀ M) = Finsupp.filter (· ∈ s) l := rfl
 #align finsupp.restrict_dom_apply Finsupp.restrictDom_apply
 

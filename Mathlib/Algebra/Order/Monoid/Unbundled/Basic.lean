@@ -34,6 +34,20 @@ Almost no monoid is actually present in this file: most assumptions have been ge
 -- after the `ordered`-refactor is done.
 open Function
 
+section Nat
+
+instance Nat.instCovariantClassMulLE : CovariantClass ℕ ℕ (· * ·) (· ≤ ·) where
+  elim := fun _ _ _ h => mul_le_mul_left _ h
+
+end Nat
+
+section Int
+
+instance Int.instCovariantClassAddLE : CovariantClass ℤ ℤ ((· + ·)) (· ≤ ·) where
+  elim := fun _ _ _ h => Int.add_le_add_left h _
+
+end Int
+
 variable {α β : Type*}
 
 section Mul

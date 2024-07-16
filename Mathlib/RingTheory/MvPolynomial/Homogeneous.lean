@@ -42,6 +42,10 @@ TODO
 /-- The degree of a monomial. -/
 def degree (d : σ →₀ ℕ) := ∑ i ∈ d.support, d i
 
+lemma degree_eq_zero_iff (d : σ →₀ ℕ) : degree d = 0 ↔ d = 0 := by
+  simp only [degree, Finset.sum_eq_zero_iff, Finsupp.mem_support_iff, ne_eq, Decidable.not_imp_self,
+    DFunLike.ext_iff, Finsupp.coe_zero, Pi.zero_apply]
+
 theorem weightedDegree_one (d : σ →₀ ℕ) :
     weightedDegree 1 d = degree d := by
   simp [weightedDegree, degree, Finsupp.total, Finsupp.sum]
@@ -273,12 +277,12 @@ theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ =
   obtain ⟨d, hd⟩ : ∃ d, coeff d φ ≠ 0 := exists_coeff_ne_zero h
   simp only [← hφ hd, MvPolynomial.totalDegree, Finsupp.sum]
   replace hd := Finsupp.mem_support_iff.mpr hd
-  simp only [weightedDegree_apply,Pi.one_apply, smul_eq_mul, mul_one, ge_iff_le]
+  simp only [weightedDegree_apply,Pi.one_apply, smul_eq_mul, mul_one]
   -- Porting note: Original proof did not define `f`
   exact Finset.le_sup (f := fun s ↦ ∑ x ∈ s.support, s x) hd
 #align mv_polynomial.is_homogeneous.total_degree MvPolynomial.IsHomogeneous.totalDegree
 
-theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n):
+theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n) :
     (rename f φ).IsHomogeneous n := by
   rw [← φ.support_sum_monomial_coeff, map_sum]; simp_rw [rename_monomial]
   apply IsHomogeneous.sum _ _ _ fun d hd ↦ isHomogeneous_monomial _ _
