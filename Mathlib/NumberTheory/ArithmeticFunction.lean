@@ -828,7 +828,7 @@ theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R
     apply Finset.prod_congr rfl
     intro p _
     rcases Nat.le_or_le (x.factorization p) (y.factorization p) with h | h <;>
-      simp only [factorization_lcm hx hy, ge_iff_le, Finsupp.sup_apply, h, sup_of_le_right,
+      simp only [factorization_lcm hx hy, Finsupp.sup_apply, h, sup_of_le_right,
         sup_of_le_left, inf_of_le_right, Nat.factorization_gcd hx hy, Finsupp.inf_apply,
         inf_of_le_left, mul_comm]
   · apply Finset.subset_union_right
