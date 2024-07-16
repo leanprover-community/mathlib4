@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, AntoineChambert-Loir, María Inés de Frutos-Fernández
+Authors: Scott Morrison, Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Topology.Algebra.Module.Basic
@@ -30,7 +30,7 @@ TODO: add continuous algebra isomorphisms.
 -/
 
 open scoped Classical
-open Set TopologicalSpace Algebra  BigOperators
+open Set TopologicalSpace Algebra BigOperators
 
 open scoped Classical
 
@@ -145,12 +145,12 @@ instance funLike : FunLike (A →A[R] B) A B where
 
 instance continuousAlgHomClass :
     ContinuousAlgHomClass (A →A[R] B) R A B where
-      map_mul f x y    := map_mul f.toAlgHom x y
-      map_one f        := map_one f.toAlgHom
-      map_add f        := map_add f.toAlgHom
-      map_zero f       := map_zero f.toAlgHom
-      commutes f r     := f.toAlgHom.commutes r
-      map_continuous f := f.2
+  map_mul f x y    := map_mul f.toAlgHom x y
+  map_one f        := map_one f.toAlgHom
+  map_add f        := map_add f.toAlgHom
+  map_zero f       := map_zero f.toAlgHom
+  commutes f r     := f.toAlgHom.commutes r
+  map_continuous f := f.2
 
 theorem coe_mk (f : A →ₐ[R] B) (h) : (mk f h : A →ₐ[R] B) = f := rfl
 
@@ -204,7 +204,7 @@ protected theorem map_zero (f : A →A[R] B) : f (0 : A) = 0 := map_zero f
 protected theorem map_add (f : A →A[R] B) (x y : A) : f (x + y) = f x + f y := map_add f x y
 
 protected theorem map_smul (f : A →A[R] B) (c : R) (x : A) :
-    f (c • x) = c • f x := (toAlgHom _).map_smul _ _
+    f (c • x) = c • f x := map_smul _ _ _
 
 theorem map_smul_of_tower {R S : Type*} [CommSemiring S] [SMul R A] [Algebra S A] [SMul R B]
     [Algebra S B] [MulActionHomClass (A →A[S] B) R A B] (f : A →A[S] B) (c : R) (x : A) :
