@@ -157,8 +157,6 @@ theorem card_mul_mul_card_le_card_mul_mul_card_mul (A B C : Finset α) :
   rw [← mul_div_right_comm, ← mul_assoc]
   refine (le_div_iff <| Nat.cast_pos.2 hU.1.card_pos).2 ?_
   exact mod_cast mul_pluennecke_petridis C (mul_aux hU.1 hU.2 hUA)
-#align finset.card_mul_mul_card_le_card_mul_mul_card_mul Finset.card_mul_mul_card_le_card_mul_mul_card_mul
-#align finset.card_add_mul_card_le_card_add_mul_card_add Finset.card_add_mul_card_le_card_add_mul_card_add
 
 /-- **Ruzsa's triangle inequality**. Mul-div-div version. -/
 @[to_additive card_add_mul_le_card_sub_mul_card_sub

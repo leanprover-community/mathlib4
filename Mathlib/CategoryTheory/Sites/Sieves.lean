@@ -414,15 +414,17 @@ def bind (S : Presieve X) (R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y) :
 
 open Order Lattice
 
-theorem sets_iff_generate (R : Presieve X) (S : Sieve X) : generate R ≤ S ↔ R ≤ S :=
+theorem generate_le_iff (R : Presieve X) (S : Sieve X) : generate R ≤ S ↔ R ≤ S :=
   ⟨fun H Y g hg => H _ ⟨_, 𝟙 _, _, hg, id_comp _⟩, fun ss Y f => by
     rintro ⟨Z, f, g, hg, rfl⟩
     exact S.downward_closed (ss Z hg) f⟩
-#align category_theory.sieve.sets_iff_generate CategoryTheory.Sieve.sets_iff_generate
+#align category_theory.sieve.sets_iff_generate CategoryTheory.Sieve.generate_le_iff
+
+@[deprecated (since := "2024-07-13")] alias sets_iff_generate := generate_le_iff
 
 /-- Show that there is a galois insertion (generate, set_over). -/
 def giGenerate : GaloisInsertion (generate : Presieve X → Sieve X) arrows where
-  gc := sets_iff_generate
+  gc := generate_le_iff
   choice 𝒢 _ := generate 𝒢
   choice_eq _ _ := rfl
   le_l_u _ _ _ hf := ⟨_, 𝟙 _, _, hf, id_comp _⟩
