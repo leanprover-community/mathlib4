@@ -5,7 +5,7 @@ Authors: Michael Rothgang
 -/
 
 import Batteries.Data.String.Matcher
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Notation
 
 /-!
 ## Text-based linters

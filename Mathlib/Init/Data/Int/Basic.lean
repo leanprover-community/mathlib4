@@ -6,7 +6,7 @@ Authors: Jeremy Avigad
 The integers, with addition, multiplication, and subtraction.
 -/
 import Mathlib.Mathport.Rename
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Notation
 
 /-!
 # Note about `Mathlib/Init/`

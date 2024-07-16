@@ -48,7 +48,7 @@
   "Mathlib.Geometry.Manifold.Instances.Real",
   "Mathlib.Init.Align",
   "Mathlib.Init.Data.Int.Basic",
-  "Mathlib.Init.Data.Nat.Notation",
+  "Mathlib.Data.Nat.Notation",
   "Mathlib.LinearAlgebra.AffineSpace.Basic",
   "Mathlib.Mathport.Attributes",
   "Mathlib.Mathport.Notation",
