@@ -10,19 +10,18 @@ import Mathlib.RingTheory.HahnSeries.Multiplication
 
 /-!
 # Summable families of Hahn Series
-If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of formal series over `Γ` with
-coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
-`Γ`, we can add further structure on `HahnSeries Γ R`.  We introduce a notion of summability for
-possibly infinite families of series.
+We introduce a notion of formal summability for families of Hahn series, and define a formal sum
+function. This theory is applied to characterize invertible Hahn series whose coefficients are in a
+commutative domain.
 
 ## Main Definitions
-  * A `HahnSeries.SummableFamily` is a family of Hahn series such that the union of their supports
-  is partially well-ordered and only finitely many are nonzero at any given coefficient.
+  * A `HahnSeries.SummableFamily` is a family of Hahn series such that the union of the supports
+  is partially well-ordered and only finitely many are nonzero at any given coefficient. Note that
+  this is different from `Summable` in the valuation topology, because there are topologically
+  summable families that do not satisfy the axioms of `HahnSeries.SummableFamily`, and formally
+  summable families whose sums do not converge topologically.
   * The formal sum, `HahnSeries.SummableFamily.hsum` can be bundled as a `LinearMap` via
-  `HahnSeries.SummableFamily.lsum`. Note that this is different from `Summable` in the valuation
-  topology, because there are topologically summable families that do not satisfy the axioms of
-  `HahnSeries.SummableFamily`, and formally summable families whose sums do not converge
-  topologically.
+  `HahnSeries.SummableFamily.lsum`.
 
 ## Main results
   * If `R` is a commutative domain, and `Γ` is a linearly ordered additive commutative group, then
@@ -72,7 +71,7 @@ variable (Γ) (R) [PartialOrder Γ] [AddCommMonoid R]
 /-- A family of Hahn series whose formal coefficient-wise sum is a Hahn series.  For each
 coefficient of the sum to be well-defined, we require that only finitely many series are nonzero at
 any given coefficient.  For the formal sum to be a Hahn series, we require that the union of the
-supports of the constituent series is well-founded. -/
+supports of the constituent series is partially well-ordered. -/
 structure SummableFamily (α : Type*) where
   /-- A parametrized family of Hahn series. -/
   toFun : α → HahnSeries Γ R
