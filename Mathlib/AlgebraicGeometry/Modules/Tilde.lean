@@ -243,27 +243,26 @@ open LocalizedModule in
 lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
     IsUnit ((algebraMap R (Module.End R ((tildeInModuleCat M).stalk x))) r) := by
   rw [Module.End_isUnit_iff]
-  refine ⟨LinearMap.ker_eq_bot.1 $ eq_bot_iff.2 fun st (h : r.1 • st = 0) ↦ ?_, fun st ↦ ?_⟩
-  · exact smul_stalk_no_nonzero_divisor M r st h
-
-  · obtain ⟨U, mem, s, rfl⟩ := TopCat.Presheaf.germ_exist (F := (tildeInModuleCat M)) x st
-    let O := U ⊓ (PrimeSpectrum.basicOpen r)
-    refine ⟨TopCat.Presheaf.germ (tildeInModuleCat M) (⟨x, ⟨mem, r.2⟩⟩ : O)
-      ⟨fun q ↦ (Localization.mk 1 ⟨r, q.2.2⟩ : Localization.AtPrime q.1.asIdeal) • s.1
-        ⟨q.1, q.2.1⟩, fun q ↦ ?_⟩, ?_⟩
-    · obtain ⟨V, mem_V, iV, num, den, hV⟩ := s.2 ⟨q.1, q.2.1⟩
-      refine ⟨V ⊓ O, ⟨mem_V, q.2⟩, homOfLE inf_le_right, num, r * den, fun y ↦ ?_⟩
-      obtain ⟨h1, h2⟩ := hV ⟨y, y.2.1⟩
-      refine ⟨y.1.asIdeal.primeCompl.mul_mem y.2.2.2 h1, ?_⟩
-      simp only [Opens.coe_inf, isLocallyFraction_pred, mkLinearMap_apply] at h2 ⊢
-      rw [smul_eq_iff_of_mem (S := y.1.asIdeal.primeCompl) (hr := h1), mk_smul_mk, one_smul,
-        mul_one] at h2
-      rw [h2, mk_smul_mk, one_smul, smul'_mk, mk_eq]
-      exact ⟨1, by simp only [one_smul]; rfl⟩
-    · simp only [isLocallyFraction_pred, mkLinearMap_apply, Module.algebraMap_end_apply, ← map_smul]
-      exact TopCat.Presheaf.germ_ext (W := O) (hxW := ⟨mem, r.2⟩) (iWU := 𝟙 _)
-        (iWV := homOfLE inf_le_left) _ $ Subtype.eq <| funext fun y ↦
-        smul_eq_iff_of_mem (S := y.1.asIdeal.primeCompl) _ y.2.2 _ _ |>.2 rfl
+  refine ⟨LinearMap.ker_eq_bot.1 $ eq_bot_iff.2 fun st (h : r.1 • st = 0) ↦
+    smul_stalk_no_nonzero_divisor M r st h, fun st ↦ ?_⟩
+  obtain ⟨U, mem, s, rfl⟩ := TopCat.Presheaf.germ_exist (F := (tildeInModuleCat M)) x st
+  let O := U ⊓ (PrimeSpectrum.basicOpen r)
+  refine ⟨TopCat.Presheaf.germ (tildeInModuleCat M) (⟨x, ⟨mem, r.2⟩⟩ : O)
+    ⟨fun q ↦ (Localization.mk 1 ⟨r, q.2.2⟩ : Localization.AtPrime q.1.asIdeal) • s.1
+      ⟨q.1, q.2.1⟩, fun q ↦ ?_⟩, ?_⟩
+  · obtain ⟨V, mem_V, iV, num, den, hV⟩ := s.2 ⟨q.1, q.2.1⟩
+    refine ⟨V ⊓ O, ⟨mem_V, q.2⟩, homOfLE inf_le_right, num, r * den, fun y ↦ ?_⟩
+    obtain ⟨h1, h2⟩ := hV ⟨y, y.2.1⟩
+    refine ⟨y.1.asIdeal.primeCompl.mul_mem y.2.2.2 h1, ?_⟩
+    simp only [Opens.coe_inf, isLocallyFraction_pred, mkLinearMap_apply] at h2 ⊢
+    rw [smul_eq_iff_of_mem (S := y.1.asIdeal.primeCompl) (hr := h1), mk_smul_mk, one_smul,
+      mul_one] at h2
+    rw [h2, mk_smul_mk, one_smul, smul'_mk, mk_eq]
+    exact ⟨1, by simp only [one_smul]; rfl⟩
+  · simp only [isLocallyFraction_pred, mkLinearMap_apply, Module.algebraMap_end_apply, ← map_smul]
+    exact TopCat.Presheaf.germ_ext (W := O) (hxW := ⟨mem, r.2⟩) (iWU := 𝟙 _)
+      (iWV := homOfLE inf_le_left) _ $ Subtype.eq <| funext fun y ↦
+      smul_eq_iff_of_mem (S := y.1.asIdeal.primeCompl) _ y.2.2 _ _ |>.2 rfl
 
 /--
 The morphism of `R`-modules from the localization of `M` at the prime ideal corresponding to `x`
