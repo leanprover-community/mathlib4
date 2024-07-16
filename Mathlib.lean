@@ -55,6 +55,7 @@ import Mathlib.Algebra.Category.AlgebraCat.Symmetric
 import Mathlib.Algebra.Category.BialgebraCat.Basic
 import Mathlib.Algebra.Category.BoolRing
 import Mathlib.Algebra.Category.CoalgebraCat.Basic
+import Mathlib.Algebra.Category.CoalgebraCat.ComonEquivalence
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Limits
 import Mathlib.Algebra.Category.Grp.AB5
