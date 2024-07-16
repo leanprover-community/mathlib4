@@ -38,12 +38,13 @@ open Matrix Finset
 
 namespace Int.Matrix
 
-variable {α β : Type _} [Fintype α] [Fintype β] [DecidableEq β] [DecidableEq α] (m n : ℕ)
-  (cardα : Fintype.card α = m) (cardβ : Fintype.card β = n) (A : Matrix α β ℤ) (v : β → ℤ)
-  (hn : m < n) (hm : 0 < m)
+variable {α β : Type _} [Fintype α] [Fintype β] [DecidableEq β] [DecidableEq α]
+  (A : Matrix α β ℤ) (v : β → ℤ) (hn : Fintype.card α < Fintype.card β) (hm : 0 < Fintype.card α)
 
 -- Some definitions and relative properties
 
+local notation3 "m" => Fintype.card α
+local notation3 "n" => Fintype.card β
 local notation3 "e" => m / ((n : ℝ) - m) -- exponent
 local notation3 "B" => Nat.floor (((n : ℝ) * ‖A‖) ^ e)
 -- B' is the vector with all components = B
@@ -93,7 +94,7 @@ private lemma image_T_subset_S (v) (hv : v ∈ T) : A *ᵥ v ∈ S := by
 private lemma card_T_eq : (T).card = (B + 1) ^ n := by
   rw [Pi.card_Icc 0 B']
   simp only [Pi.zero_apply, card_Icc, sub_zero, toNat_ofNat_add_one, prod_const, card_univ,
-    add_pos_iff, zero_lt_one, or_true, cardβ]
+    add_pos_iff, zero_lt_one, or_true]
 
 -- This lemma is necessary to be able to apply the formula (Icc a b).card = b + 1 - a
 private lemma N_le_P_add_one (i : α) : N i ≤ P i + 1 := by
@@ -112,7 +113,7 @@ private lemma card_S_eq : (Finset.Icc N P).card = ∏ i : α, (P i - N i + 1) :=
   rw [Pi.card_Icc N P, Nat.cast_prod]
   congr
   ext i
-  rw [Int.card_Icc_of_le (N i) (P i) (N_le_P_add_one m n A i)]
+  rw [Int.card_Icc_of_le (N i) (P i) (N_le_P_add_one A i)]
   exact add_sub_right_comm (P i) 1 (N i)
 
 variable  (hA : A ≠ 0)
@@ -135,25 +136,24 @@ open Real Nat
 
 private lemma card_S_lt_card_T : (S).card < (T).card := by
   zify -- This is necessary to use card_S_eq
-  rw [card_T_eq m n cardβ, card_S_eq]
+  rw [card_T_eq A, card_S_eq]
   rify -- This is necessary because ‖A‖ is a real number
   calc
   ∏ x : α, (∑ x_1 : β, ↑B * ↑(A x x_1)⁺ - ∑ x_1 : β, ↑B * -↑(A x x_1)⁻ + 1)
-    ≤ (n * ‖A‖ * B + 1) ^ m := by
-      nth_rw 7 [← cardα]
-      rw [← card_univ, ← prod_const]
+    ≤ ∏ x : α, (n * ‖A‖ * B + 1) := by
       refine Finset.prod_le_prod (fun i _ ↦ ?_) (fun i _ ↦ ?_)
-      · have h := N_le_P_add_one m n A i
+      · have h := N_le_P_add_one A i
         rify at h
         linarith only [h]
       · simp only [mul_neg, sum_neg_distrib, sub_neg_eq_add, add_le_add_iff_right]
         have h1 : n * ‖A‖ * B = ∑ _ : β, ‖A‖ * B := by
-          simp only [sum_const, card_univ, nsmul_eq_mul, cardβ]
+          simp only [sum_const, card_univ, nsmul_eq_mul]
           ring
         simp_rw [h1, ← Finset.sum_add_distrib, ← mul_add, mul_comm ‖A‖, ← Int.cast_add]
         gcongr with j _
         rw [posPart_add_negPart (A i j), Int.cast_abs]
         exact norm_entry_le_entrywise_sup_norm A
+  _  = (n * ‖A‖ * B + 1) ^ m := by simp only [prod_const, card_univ]
   _  ≤ (n * ‖A‖) ^ m * (B + 1) ^ m := by
         rw [← mul_pow, mul_add, mul_one]
         gcongr
@@ -161,7 +161,7 @@ private lemma card_S_lt_card_T : (S).card < (T).card := by
         exact one_le_mul_of_one_le_of_one_le H <| one_le_norm_A_of_ne_zero A hA
   _ = ((n * ‖A‖) ^ (m / ((n : ℝ) - m))) ^ ((n : ℝ) - m)  * (B + 1) ^ m := by
         congr 1
-        rw [← rpow_mul (mul_nonneg n.cast_nonneg (norm_nonneg A)), ← Real.rpow_natCast,
+        rw [← rpow_mul (mul_nonneg (Nat.cast_nonneg' n) (norm_nonneg A)), ← Real.rpow_natCast,
           div_mul_cancel₀]
         exact sub_ne_zero_of_ne (mod_cast hn.ne')
   _ < (B + 1) ^ ((n : ℝ) - m) * (B + 1) ^ m := by
@@ -177,7 +177,7 @@ theorem exists_ne_zero_int_vec_norm_le (hA_nezero : A ≠ 0) : ∃ t : β → �
     A *ᵥ t = 0 ∧ ‖t‖ ≤ (n * ‖A‖) ^ ((m : ℝ) / (n - m)) := by
   -- Pigeonhole
   rcases Finset.exists_ne_map_eq_of_card_lt_of_maps_to
-    (card_S_lt_card_T m n cardα cardβ A hn hm hA_nezero) (image_T_subset_S m n A)
+    (card_S_lt_card_T A hn hm hA_nezero) (image_T_subset_S A)
     with ⟨x, hxT, y, hyT, hneq, hfeq⟩
   -- Proofs that x - y ≠ 0 and x - y is a solution
   refine ⟨x - y, sub_ne_zero.mpr hneq, by simp only [mulVec_sub, sub_eq_zero, hfeq], ?_⟩
