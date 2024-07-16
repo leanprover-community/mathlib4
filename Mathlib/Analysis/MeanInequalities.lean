@@ -319,7 +319,6 @@ end Real
 end HarmMeanLEGeomMean
 
 
-
 section ArithMeanLEQuadMean
 
 /-! ### AM-QM inequality -/
@@ -329,8 +328,8 @@ namespace Real
 /-- **AM-QM inequality**: The arithmetic mean is less than or equal to the quadratic mean, weighted
 version for real-valued nonnegative functions. -/
 theorem arith_mean_le_quad_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
-    (hw' : ∑ i in s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
-    ∑ i in s, w i * z i ≤ Real.sqrt (∑ i in s, w i * (z i ^ 2)) := by
+    (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
+    ∑ i ∈ s, w i * z i ≤ Real.sqrt (∑ i ∈ s, w i * (z i ^ 2)) := by
     have am_pos := sum_nonneg fun i hi => mul_nonneg (hw i hi) (hz i hi)
     have qm_pos := sum_nonneg fun i hi => mul_nonneg (hw i hi) (sq_nonneg (z i))
     apply (Real.le_sqrt am_pos qm_pos).mpr
