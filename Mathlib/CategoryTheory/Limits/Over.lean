@@ -20,8 +20,6 @@ any colimits that `C` has (as well as the dual that `forget X : Under X ⟶ C` c
 Note that the folder `CategoryTheory.Limits.Shapes.Constructions.Over` further shows that
 `forget X : Over X ⥤ C` creates connected limits (so `Over X` has connected limits), and that
 `Over X` has `J`-indexed products if `C` has `J`-indexed wide pullbacks.
-
-TODO: If `C` has binary products, then `forget X : Over X ⥤ C` has a right adjoint.
 -/
 
 
