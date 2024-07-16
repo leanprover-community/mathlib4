@@ -213,7 +213,7 @@ lemma away_of_isIdempotentElem {R S} [CommRing R] [CommRing S] [Algebra R S]
   exists_of_eq {x y} h := by
     rw [← sub_eq_zero, ← map_sub, ← RingHom.mem_ker, H, Ideal.mem_span_singleton] at h
     obtain ⟨k, hk⟩ := h
-    refine ⟨⟨e, Submonoid.mem_spowers e⟩, ?_⟩
+    refine ⟨⟨e, Submonoid.mem_powers e⟩, ?_⟩
     rw [← sub_eq_zero, ← mul_sub, hk, ← mul_assoc, mul_sub, mul_one, he.eq, sub_self, zero_mul]
 
 instance away_fst {R S} [CommRing R] [CommRing S] :
