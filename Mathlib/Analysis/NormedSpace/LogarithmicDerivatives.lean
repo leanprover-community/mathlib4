@@ -79,7 +79,7 @@ theorem logDeriv_prod {α : Type*} (s : Finset α) (f : α → 𝕜 → 𝕜') (
       rw [← this]
       congr
       exact Finset.prod_fn s fun c ↦ f c
-    . exact hf.1
+    · exact hf.1
     · simp only [Finset.prod_apply, Finset.prod_ne_zero_iff]
       exact hf.2
     · apply hd
