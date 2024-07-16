@@ -178,8 +178,8 @@ def extensionEmbedding_of_comp
 /-- If the absolute value of a normed field factors through a normed embedding, then the extended
 embedding `v.completion →+* A` preserves distances. -/
 theorem extensionEmbedding_dist_eq_of_comp
-      (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : A → ℝ)).comp f.injective)
-      (x y : v.completion) :
+    (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : A → ℝ)).comp f.injective)
+    (x y : v.completion) :
     dist (extensionEmbedding_of_comp h x) (extensionEmbedding_of_comp h y) =
       dist x y := by
   refine (UniformSpace.Completion.induction_on₂ x y ?_ (fun x y => ?_))
