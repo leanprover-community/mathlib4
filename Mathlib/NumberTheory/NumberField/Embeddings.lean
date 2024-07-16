@@ -1005,28 +1005,6 @@ lemma card_eq_card_isUnramifiedIn [NumberField k] [IsGalois k K] :
       Finset.card (Finset.univ.filter <| IsUnramifiedIn K (k := k))ᶜ * (finrank k K / 2) := by
   rw [← card_isUnramified, ← card_isUnramified_compl, Finset.card_add_card_compl]
 
-variable {K}
-
-/-- An infinite place is real if and only if the imaginary parts of the finitely-many basis
-elements of a number field over ℚ are all zero. -/
-theorem isReal_iff_basis_im_eq_zero (v : InfinitePlace K) :
-    IsReal v ↔ ∀ (i : Fin (FiniteDimensional.finrank ℚ K)),
-      (v.embedding ((FiniteDimensional.finBasis ℚ K) i)).im = 0 := by
-  simp only [isReal_iff, ComplexEmbedding.isReal_iff, RingHom.ext_iff,
-      ComplexEmbedding.conjugate_coe_eq, Complex.conj_eq_iff_im]
-  refine ⟨fun hv _ => hv _, fun hv x => ?_⟩
-  · rw [← (FiniteDimensional.finBasis ℚ K).sum_repr x]
-    simp only [map_sum, Complex.im_sum, map_rat_smul, Complex.smul_im, hv, smul_zero,
-      Finset.sum_const_zero]
-
-noncomputable instance : DecidablePred (IsReal : InfinitePlace K → Prop) :=
-  letI (v : InfinitePlace K) : Decidable (∀ (i : Fin (FiniteDimensional.finrank ℚ K)),
-    (v.embedding ((FiniteDimensional.finBasis ℚ K) i)).im = 0) := Fintype.decidableForallFintype
-  fun v => decidable_of_iff
-    (∀ (i : Fin (FiniteDimensional.finrank ℚ K)),
-      (v.embedding ((FiniteDimensional.finBasis ℚ K) i)).im = 0)
-        v.isReal_iff_basis_im_eq_zero.symm
-
 end NumberField.InfinitePlace
 
 variable (k K F)

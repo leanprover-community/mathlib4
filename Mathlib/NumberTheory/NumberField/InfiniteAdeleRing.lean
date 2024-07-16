@@ -40,6 +40,8 @@ space `ℝ ^ r₁ × ℂ ^ r₂` used in
 infinite adele ring, number field
 -/
 
+open scoped Classical
+
 noncomputable section
 
 namespace NumberField
