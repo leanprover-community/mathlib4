@@ -81,7 +81,7 @@ variable {A : Type*} {p : A → Prop} [PartialOrder A] [NormedRing A] [StarRing 
   [UniqueContinuousFunctionalCalculus ℝ A]
 
 lemma real_exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
-    cfc Real.exp a = exp ℝ a := 
+    cfc Real.exp a = exp ℝ a :=
   Real.exp_eq_exp_ℝ ▸ exp_eq_normedSpace_exp ha
 
 end RealNormed
