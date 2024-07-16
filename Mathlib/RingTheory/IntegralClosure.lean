@@ -625,7 +625,7 @@ theorem leadingCoeff_smul_normalizeScaleRoots (p : R[X]) :
   simp only [coeff_scaleRoots, normalizeScaleRoots, coeff_monomial, coeff_smul, Finset.smul_sum,
     Ne, Finset.sum_ite_eq', finset_sum_coeff, smul_ite, smul_zero, mem_support_iff]
   -- Porting note: added the following `simp only`
-  simp only [ge_iff_le, tsub_le_iff_right, smul_eq_mul, mul_ite, mul_one, mul_zero,
+  simp only [tsub_le_iff_right, smul_eq_mul, mul_ite, mul_one, mul_zero,
     Finset.sum_ite_eq', mem_support_iff, ne_eq, ite_not]
   split_ifs with h₁ h₂
   · simp [*]

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Notation
 
 #align_import data.stream.defs from "leanprover-community/mathlib"@"39af7d3bf61a98e928812dbc3e16f4ea8b795ca3"
 
