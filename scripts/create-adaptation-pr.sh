@@ -16,12 +16,12 @@ if ! command -v gh &> /dev/null; then
     exit 1
 fi
 
-# # Check the CI status of the latest commit on the 'nightly-testing' branch
-# status=$(gh api repos/leanprover-community/mathlib4/commits/nightly-testing/status | jq -r '.state')
-# if [ "$status" != "success" ]; then
-#   echo "The latest commit on the 'nightly-testing' branch did not pass CI. Please fix the issues and try again."
-#   exit 1
-# fi
+# Check the CI status of the latest commit on the 'nightly-testing' branch
+status=$(gh run list --branch nightly-testing | grep -m1 . | awk '{print $1}')
+if [ "$status" != "completed" ]; then
+  echo "The latest commit on the 'nightly-testing' branch did not pass CI. Please fix the issues and try again."
+  exit 1
+fi
 
 echo "### Creating a PR for the nightly adaptation for $NIGHTLYDATE"
 echo "### [auto] checkout master and pull the latest changes"

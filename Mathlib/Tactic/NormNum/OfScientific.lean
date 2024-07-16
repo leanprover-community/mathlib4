@@ -10,14 +10,14 @@ import Mathlib.Data.Rat.Cast.Lemmas
 ## `norm_num` plugin for scientific notation.
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib
 open Lean hiding Rat mkRat
 open Meta
 
 namespace Meta.NormNum
 open Qq
+
+variable {α : Type*}
 
 -- see note [norm_num lemma function equality]
 theorem isRat_ofScientific_of_true [DivisionRing α] :

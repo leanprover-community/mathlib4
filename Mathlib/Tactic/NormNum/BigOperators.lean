@@ -38,13 +38,13 @@ In particular, we can't use the plugin on sums containing variables.
    normalization?)
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Meta
 
 open Lean hiding Rat mkRat
 open Meta
 open Qq
+
+variable {u v : Level}
 
 /-- This represents the result of trying to determine whether the given expression `n : Q(ℕ)`
 is either `zero` or `succ`. -/
@@ -109,7 +109,7 @@ set_option linter.unusedVariables false in
 
 Fails if we cannot determine which of the alternatives apply to the expression.
 -/
-partial def List.proveNilOrCons {α : Q(Type u)} (s : Q(List $α)) :
+partial def List.proveNilOrCons {u : Level} {α : Q(Type u)} (s : Q(List $α)) :
     MetaM (List.ProveNilOrConsResult s) :=
   s.withApp fun e a =>
   match (e, e.constName, a) with
