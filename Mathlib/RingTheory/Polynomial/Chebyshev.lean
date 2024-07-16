@@ -122,11 +122,11 @@ theorem T_neg (n : ℤ) : T R (-n) = T R n := by
   | add_two n ih1 ih2 =>
     have h₁ := T_add_two R n
     have h₂ := T_sub_two R (-n)
-    linear_combination (norm := ring_nf) (2 * (X:R[X])) * ih1 - ih2 - h₁ + h₂
+    linear_combination (norm := ring_nf) (2 * (X : R[X])) * ih1 - ih2 - h₁ + h₂
   | neg_add_one n ih1 ih2 =>
     have h₁ := T_add_one R n
     have h₂ := T_sub_one R (-n)
-    linear_combination (norm := ring_nf) (2 * (X:R[X])) * ih1 - ih2 + h₁ - h₂
+    linear_combination (norm := ring_nf) (2 * (X : R[X])) * ih1 - ih2 + h₁ - h₂
 
 theorem T_natAbs (n : ℤ) : T R n.natAbs = T R n := by
   obtain h | h := Int.natAbs_eq n <;> nth_rw 2 [h]; simp
@@ -191,11 +191,11 @@ theorem U_neg_sub_one (n : ℤ) : U R (-n - 1) = -U R (n - 1) := by
   | add_two n ih1 ih2 =>
     have h₁ := U_add_one R n
     have h₂ := U_sub_two R (-n - 1)
-    linear_combination (norm := ring_nf) 2 * (X:R[X]) * ih1 - ih2 + h₁ + h₂
+    linear_combination (norm := ring_nf) 2 * (X : R[X]) * ih1 - ih2 + h₁ + h₂
   | neg_add_one n ih1 ih2 =>
     have h₁ := U_eq R n
     have h₂ := U_sub_two R (-n)
-    linear_combination (norm := ring_nf) 2 * (X:R[X]) * ih1 - ih2 + h₁ + h₂
+    linear_combination (norm := ring_nf) 2 * (X : R[X]) * ih1 - ih2 + h₁ + h₂
 
 theorem U_neg (n : ℤ) : U R (-n) = -U R (n - 2) := by simpa [sub_sub] using U_neg_sub_one R (n - 1)
 
@@ -211,12 +211,12 @@ theorem U_eq_X_mul_U_add_T (n : ℤ) : U R (n + 1) = X * U R n + T R (n + 1) := 
     have h₁ := U_add_two R (n + 1)
     have h₂ := U_add_two R n
     have h₃ := T_add_two R (n + 1)
-    linear_combination (norm := ring_nf) -h₃ - (X:R[X]) * h₂ + h₁ + 2 * (X:R[X]) * ih1 - ih2
+    linear_combination (norm := ring_nf) -h₃ - (X : R[X]) * h₂ + h₁ + 2 * (X : R[X]) * ih1 - ih2
   | neg_add_one n ih1 ih2 =>
     have h₁ := U_add_two R (-n - 1)
     have h₂ := U_add_two R (-n)
     have h₃ := T_add_two R (-n)
-    linear_combination (norm := ring_nf) -h₃ + h₂ - (X:R[X]) * h₁ - ih2 + 2 * (X:R[X]) * ih1
+    linear_combination (norm := ring_nf) -h₃ + h₂ - (X : R[X]) * h₁ - ih2 + 2 * (X : R[X]) * ih1
 #align polynomial.chebyshev.U_eq_X_mul_U_add_T Polynomial.Chebyshev.U_eq_X_mul_U_add_T
 
 theorem T_eq_U_sub_X_mul_U (n : ℤ) : T R n = U R n - X * U R (n - 1) := by
@@ -227,7 +227,7 @@ theorem T_eq_X_mul_T_sub_pol_U (n : ℤ) : T R (n + 2) = X * T R (n + 1) - (1 - 
   have h₁ := U_eq_X_mul_U_add_T R n
   have h₂ := U_eq_X_mul_U_add_T R (n + 1)
   have h₃ := U_add_two R n
-  linear_combination (norm := ring_nf) h₃ - h₂ + (X:R[X]) * h₁
+  linear_combination (norm := ring_nf) h₃ - h₂ + (X : R[X]) * h₁
 #align polynomial.chebyshev.T_eq_X_mul_T_sub_pol_U Polynomial.Chebyshev.T_eq_X_mul_T_sub_pol_U
 
 theorem one_sub_X_sq_mul_U_eq_pol_in_T (n : ℤ) :
@@ -244,10 +244,10 @@ theorem map_T (f : R →+* S) (n : ℤ) : map f (T R n) = T S n := by
   | one => simp
   | add_two n ih1 ih2 =>
     simp_rw [T_add_two, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_ofNat, map_X,
-      ih1, ih2];
+      ih1, ih2]
   | neg_add_one n ih1 ih2 =>
     simp_rw [T_sub_one, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_ofNat, map_X, ih1,
-      ih2];
+      ih2]
 #align polynomial.chebyshev.map_T Polynomial.Chebyshev.map_T
 
 @[simp]
@@ -257,10 +257,10 @@ theorem map_U (f : R →+* S) (n : ℤ) : map f (U R n) = U S n := by
   | one => simp
   | add_two n ih1 ih2 =>
     simp_rw [U_add_two, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_ofNat, map_X, ih1,
-      ih2];
+      ih2]
   | neg_add_one n ih1 ih2 =>
     simp_rw [U_sub_one, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_ofNat, map_X, ih1,
-      ih2];
+      ih2]
 #align polynomial.chebyshev.map_U Polynomial.Chebyshev.map_U
 
 theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by
@@ -274,14 +274,14 @@ theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by
     have h₃ := T_eq_U_sub_X_mul_U R (n + 1)
     simp only [derivative_sub, derivative_mul, derivative_ofNat, derivative_X] at h₁
     linear_combination (norm := (push_cast; ring_nf))
-      h₁ - ih2 + 2 * (X:R[X]) * ih1 + 2 * h₃ - n * h₂
+      h₁ - ih2 + 2 * (X : R[X]) * ih1 + 2 * h₃ - n * h₂
   | neg_add_one n ih1 ih2 =>
     have h₁ := congr_arg derivative (T_sub_one R (-n))
     have h₂ := U_sub_two R (-n)
     have h₃ := T_eq_U_sub_X_mul_U R (-n)
     simp only [derivative_sub, derivative_mul, derivative_ofNat, derivative_X] at h₁
     linear_combination (norm := (push_cast; ring_nf))
-      -ih2 + 2 * (X:R[X]) * ih1 + h₁ + 2 * h₃ + (n + 1) * h₂
+      -ih2 + 2 * (X : R[X]) * ih1 + h₁ + 2 * h₃ + (n + 1) * h₂
 #align polynomial.chebyshev.T_derivative_eq_U Polynomial.Chebyshev.T_derivative_eq_U
 
 theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℤ) :
@@ -290,7 +290,7 @@ theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℤ) :
   have H₂ := T_derivative_eq_U (R := R) (n + 1)
   have h₁ := T_add_two R n
   linear_combination (norm := (push_cast; ring_nf))
-    (-n - 1) * h₁ + (-(X:R[X]) ^ 2 + 1) * H₂ + (n + 1) * H₁
+    (-n - 1) * h₁ + (-(X : R[X]) ^ 2 + 1) * H₂ + (n + 1) * H₁
 #align polynomial.chebyshev.one_sub_X_sq_mul_derivative_T_eq_poly_in_T Polynomial.Chebyshev.one_sub_X_sq_mul_derivative_T_eq_poly_in_T
 
 theorem add_one_mul_T_eq_poly_in_U (n : ℤ) :
@@ -315,12 +315,12 @@ theorem mul_T (m k : ℤ) : 2 * T R m * T R k = T R (m + k) + T R (m - k) := by
     have h₁ := T_add_two R (m + k)
     have h₂ := T_sub_two R (m - k)
     have h₃ := T_add_two R k
-    linear_combination (norm := ring_nf) 2 * T R m * h₃ - h₂ - h₁ - ih2 + 2 * (X:R[X]) * ih1
+    linear_combination (norm := ring_nf) 2 * T R m * h₃ - h₂ - h₁ - ih2 + 2 * (X : R[X]) * ih1
   | neg_add_one k ih1 ih2 =>
     have h₁ := T_add_two R (m + (-k - 1))
     have h₂ := T_sub_two R (m - (-k - 1))
     have h₃ := T_add_two R (-k - 1)
-    linear_combination (norm := ring_nf) 2 * T R m * h₃ - h₂ - h₁ - ih2 + 2 * (X:R[X]) * ih1
+    linear_combination (norm := ring_nf) 2 * T R m * h₃ - h₂ - h₁ - ih2 + 2 * (X : R[X]) * ih1
 #align polynomial.chebyshev.mul_T Polynomial.Chebyshev.mul_T
 
 /-- The `(m * n)`-th Chebyshev `T` polynomial is the composition of the `m`-th and `n`-th. -/

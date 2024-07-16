@@ -133,7 +133,7 @@ def M.corecContents {α : TypeVec.{u} n}
     (g₂ : ∀ b : β, P.last.B (g₀ b) → β)
     (x : _)
     (b : β)
-    (h: x = M.corecShape P g₀ g₂ b) :
+    (h : x = M.corecShape P g₀ g₂ b) :
     M.Path P x ⟹ α
   | _, M.Path.root x a f h' i c =>
     have : a = g₀ b := by
@@ -227,8 +227,8 @@ theorem M.bisim_lemma {α : TypeVec n} {a₁ : (mp P).A} {f₁ : (mp P).B a₁ �
       f' = M.pathDestLeft P e₁' f₁ ∧
         f₁' = fun x : (last P).B a' => ⟨g₁' x, M.pathDestRight P e₁' f₁ x⟩ := by
   generalize ef : @splitFun n _ (append1 α (M P α)) f' f₁' = ff at e₁
-  let he₁' := PFunctor.M.dest a₁;
-  rcases e₁' : he₁' with ⟨a₁', g₁'⟩;
+  let he₁' := PFunctor.M.dest a₁
+  rcases e₁' : he₁' with ⟨a₁', g₁'⟩
   rw [M.dest_eq_dest' _ e₁'] at e₁
   cases e₁; exact ⟨_, e₁', splitFun_inj ef⟩
 #align mvpfunctor.M.bisim_lemma MvPFunctor.M.bisim_lemma

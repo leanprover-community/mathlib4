@@ -744,7 +744,7 @@ theorem mk'_eq_of_eq' {a₁ b₁ : M} {a₂ b₂ : S} (H : b₁ * ↑a₂ = a₁
 @[to_additive]
 theorem mk'_cancel (a : M) (b c : S) :
     f.mk' (a * c) (b * c) = f.mk' a b :=
-  mk'_eq_of_eq' f (by rw [Submonoid.coe_mul, mul_comm (b:M), mul_assoc])
+  mk'_eq_of_eq' f (by rw [Submonoid.coe_mul, mul_comm (b : M), mul_assoc])
 
 @[to_additive]
 theorem mk'_eq_of_same {a b} {d : S} :
@@ -1187,6 +1187,20 @@ theorem map_injective_of_injective (hg : Injective g) (k : LocalizationMap (S.ma
   simp_rw [← map_mul, hg.eq_iff] at eq
   rw [← (f.map_units x).mul_left_inj, hxz, hxw, f.eq_iff_exists]
   exact ⟨⟨c, hc⟩, eq⟩
+
+/-- Given a surjective `CommMonoid` homomorphism `g : M →* P`, and a submonoid `S ⊆ M`,
+the induced monoid homomorphism from the localization of `M` at `S` to the
+localization of `P` at `g S`, is surjective.
+-/
+@[to_additive "Given a surjective `AddCommMonoid` homomorphism `g : M →+ P`, and a
+submonoid `S ⊆ M`, the induced monoid homomorphism from the localization of `M` at `S`
+to the localization of `P` at `g S`, is surjective. "]
+theorem map_surjective_of_surjective (hg : Surjective g) (k : LocalizationMap (S.map g) Q) :
+    Surjective (map f (apply_coe_mem_map g S) k) := fun z ↦ by
+  obtain ⟨y, ⟨y', s, hs, rfl⟩, rfl⟩ := k.mk'_surjective z
+  obtain ⟨x, rfl⟩ := hg y
+  use f.mk' x ⟨s, hs⟩
+  rw [map_mk']
 
 section AwayMap
 
@@ -1861,7 +1875,7 @@ theorem leftCancelMulZero_of_le_isLeftRegular
       _ = a * g b.2 * (z * g x.2 * g y.2) := by
         rw [mul_assoc a, mul_comm z, ← mul_assoc a, mul_assoc, mul_assoc z]
       _ = g b.1 * g (y.2 * x.1) := by rw [hx, hb, mul_comm (g x.1), ← map_mul g]
-      _ = g (b.1 * (y.2 * x.1)):= by rw [← map_mul g]
+      _ = g (b.1 * (y.2 * x.1)) := by rw [← map_mul g]
  -- The hypothesis `h` gives that `f` (so, `g`) is injective, and we can cancel out `b.1`.
   exact (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero b1ne0
       ((LocalizationMap.toMap_injective_iff fl).mpr h main)).symm

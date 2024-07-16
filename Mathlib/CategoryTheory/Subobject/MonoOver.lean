@@ -239,7 +239,7 @@ theorem pullback_obj_left (f : X ⟶ Y) (g : MonoOver Y) :
 
 @[simp]
 theorem pullback_obj_arrow (f : X ⟶ Y) (g : MonoOver Y) :
-    ((pullback f).obj g).arrow = pullback.snd :=
+    ((pullback f).obj g).arrow = pullback.snd _ _ :=
   rfl
 #align category_theory.mono_over.pullback_obj_arrow CategoryTheory.MonoOver.pullback_obj_arrow
 

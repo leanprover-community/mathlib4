@@ -85,13 +85,13 @@ noncomputable def shiftIso (n a a' : ℤ) (ha' : n + a = a') :
       (ShortComplex.homologyFunctor C) ≪≫
     (homologyFunctorIso C (ComplexShape.up ℤ) a').symm
 
-lemma shiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ):
+lemma shiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ) :
     (shiftIso C n a a' ha').hom.app K =
       ShortComplex.homologyMap ((shiftShortComplexFunctorIso C n a a' ha').hom.app K) := by
   dsimp [shiftIso]
   erw [id_comp, id_comp, comp_id]
 
-lemma shiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ):
+lemma shiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ) :
     (shiftIso C n a a' ha').inv.app K =
       ShortComplex.homologyMap ((shiftShortComplexFunctorIso C n a a' ha').inv.app K) := by
   dsimp [shiftIso]

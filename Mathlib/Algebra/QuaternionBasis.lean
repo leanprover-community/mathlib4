@@ -154,12 +154,12 @@ def liftHom : ℍ[R,c₁,c₂] →ₐ[R] A :=
 @[simps i j k]
 def compHom (F : A →ₐ[R] B) : Basis B c₁ c₂ where
   i := F q.i
-  i_mul_i := by rw [← F.map_mul, q.i_mul_i, F.map_smul, F.map_one]
+  i_mul_i := by rw [← map_mul, q.i_mul_i, map_smul, map_one]
   j := F q.j
-  j_mul_j := by rw [← F.map_mul, q.j_mul_j, F.map_smul, F.map_one]
+  j_mul_j := by rw [← map_mul, q.j_mul_j, map_smul, map_one]
   k := F q.k
-  i_mul_j := by rw [← F.map_mul, q.i_mul_j]
-  j_mul_i := by rw [← F.map_mul, q.j_mul_i, F.map_neg]
+  i_mul_j := by rw [← map_mul, q.i_mul_j]
+  j_mul_i := by rw [← map_mul, q.j_mul_i, map_neg]
 #align quaternion_algebra.basis.comp_hom QuaternionAlgebra.Basis.compHom
 
 end Basis
@@ -174,7 +174,7 @@ def lift : Basis A c₁ c₂ ≃ (ℍ[R,c₁,c₂] →ₐ[R] A) where
     ext
     dsimp [Basis.lift]
     rw [← F.commutes]
-    simp only [← F.commutes, ← F.map_smul, ← F.map_add, mk_add_mk, smul_mk, smul_zero,
+    simp only [← F.commutes, ← map_smul, ← map_add, mk_add_mk, smul_mk, smul_zero,
       algebraMap_eq]
     congr <;> simp
 #align quaternion_algebra.lift QuaternionAlgebra.lift
