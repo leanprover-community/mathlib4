@@ -132,9 +132,13 @@ variable {E E' E'' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAd
     [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
   {H H' H'' : Type*} [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H'']
 
+variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+
+namespace SingularNManifold
+
 /-- A **singular `n`-manifold** on a topological space `X` consists of a
 closed smooth `n`-manifold `M` and a continuous map `f : M → X`. -/
-structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ)
+structure _root_.SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ)
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) [SmoothManifoldWithCorners I M]
     [CompactSpace M] [I.Boundaryless] [FiniteDimensional ℝ E] extends ClosedNManifold M I n where
@@ -150,30 +154,37 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [I.Boundaryless] [CompactSpace M] [FiniteDimensional ℝ E]
 
 /-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself. -/
-noncomputable def SingularNManifold.refl (hdim : finrank ℝ E = n) : SingularNManifold M n M I where
+noncomputable def refl (hdim : finrank ℝ E = n) : SingularNManifold M n M I where
   hdim := hdim
   f := id
   hf := continuous_id
 
-variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 -- functoriality: pre-step towards functoriality of the bordism groups
 -- xxx: good name?
-noncomputable def SingularNManifold.map (s : SingularNManifold X n M I)
+noncomputable def map (s : SingularNManifold X n M I)
     {φ : X → Y} (hφ : Continuous φ) : SingularNManifold Y n M I where
   hdim := s.hdim
   f := φ ∘ s.f
   hf := hφ.comp s.hf
 
 @[simp]
-lemma SingularNManifold.map_f (s : SingularNManifold X n M I) {φ : X → Y} (hφ : Continuous φ) :
+lemma map_f (s : SingularNManifold X n M I) {φ : X → Y} (hφ : Continuous φ) :
     (s.map hφ).f = φ ∘ s.f := rfl
 
 -- useful, or special case of the above?
-lemma SingularNManifold.map_comp (s : SingularNManifold X n M I)
+lemma map_comp (s : SingularNManifold X n M I)
     {φ : X → Y} {ψ : Y → Z} (hφ : Continuous φ) (hψ : Continuous ψ):
     ((s.map hφ).map hψ).f = (s.map (hψ.comp hφ)).f := rfl
 
-variable [CompactSpace M'] [I'.Boundaryless] [FiniteDimensional ℝ E']
+end SingularNManifold
+
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  {I' : ModelWithCorners ℝ E' H'} [SmoothManifoldWithCorners I' M'] {n : ℕ}
+  [CompactSpace M] [I.Boundaryless] [FiniteDimensional ℝ E]
+  [CompactSpace M'] [I'.Boundaryless] [FiniteDimensional ℝ E']
+
 
 /-- An **unoriented cobordism** between two singular `n`-manifolds (M,f) and (N,g) on `X`
 is a compact smooth `n`-manifold `W` with a continuous map `F: W→ X` whose boundary is diffeomorphic
