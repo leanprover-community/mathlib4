@@ -503,3 +503,5 @@ lemma measurable_measure_stieltjesOfMeasurableRat (hf : Measurable f) :
 end Measure
 
 end stieltjesOfMeasurableRat
+
+end ProbabilityTheory

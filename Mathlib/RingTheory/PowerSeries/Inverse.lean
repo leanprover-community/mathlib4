@@ -101,10 +101,20 @@ theorem constantCoeff_invOfUnit (φ : R⟦X⟧) (u : Rˣ) :
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_invOfUnit, if_pos rfl]
 #align power_series.constant_coeff_inv_of_unit PowerSeries.constantCoeff_invOfUnit
 
+@[simp]
 theorem mul_invOfUnit (φ : R⟦X⟧) (u : Rˣ) (h : constantCoeff R φ = u) :
     φ * invOfUnit φ u = 1 :=
   MvPowerSeries.mul_invOfUnit φ u <| h
 #align power_series.mul_inv_of_unit PowerSeries.mul_invOfUnit
+
+@[simp]
+theorem invOfUnit_mul (φ : R⟦X⟧) (u : Rˣ) (h : constantCoeff R φ = u) :
+    invOfUnit φ u * φ = 1 :=
+  MvPowerSeries.invOfUnit_mul φ u h
+
+theorem isUnit_iff_constantCoeff {φ : R⟦X⟧} :
+    IsUnit φ ↔ IsUnit (constantCoeff R φ) :=
+  MvPowerSeries.isUnit_iff_constantCoeff
 
 /-- Two ways of removing the constant coefficient of a power series are the same. -/
 theorem sub_const_eq_shift_mul_X (φ : R⟦X⟧) :

@@ -5,7 +5,7 @@ Authors: Michael Rothgang
 -/
 
 import Batteries.Data.String.Matcher
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Notation
 
 /-!
 ## Text-based linters
@@ -115,8 +115,7 @@ def StyleError.normalise (err : StyleError) : StyleError := match err with
   -- NB: keep this in sync with `parse?_errorContext` below.
   | StyleError.fileTooLong _ _ => StyleError.fileTooLong 0 0
   -- We do *not* care about the *kind* of wrong copyright.
-  | StyleError.copyright _ => StyleError.copyright ""
-  | StyleError.lineLength _ => StyleError.lineLength 0
+  | StyleError.copyright _ => StyleError.copyright none
   | _ => err
 
 /-- Careful: we do not want to compare `ErrorContexts` exactly; we ignore some details. -/
@@ -128,7 +127,8 @@ instance : BEq ErrorContext where
       && (ctx.error).normalise == (ctx'.error).normalise
 
 /-- Output the formatted error message, containing its context.
-`style` specifies if the error should be formatted for humans or for github output matchers -/
+`style` specifies if the error should be formatted for humans to read, github problem matchers
+to consume, or for the style exceptions file. -/
 def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
   let error_message := errctx.error.errorMessage style
   match style with
@@ -150,7 +150,7 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
   let parts := line.split (· == ' ')
   match parts with
-    | filename :: ":" :: "line" :: _line_number :: ":" :: error_code :: ":" :: error_message =>
+    | filename :: ":" :: "line" :: line_number :: ":" :: error_code :: ":" :: error_message =>
       -- Turn the filename into a path. In general, this is ambiguous if we don't know if we're
       -- dealing with e.g. Windows or POSIX paths. In our setting, this is fine, since no path
       -- component contains any path separator.
@@ -160,8 +160,13 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
       let err : Option StyleError := match error_code with
         -- Use default values for parameters which are normalised.
         -- NB: keep this in sync with `normalise` above!
-        | "ERR_COP" => some (StyleError.copyright "")
-        | "ERR_LIN" => some (StyleError.lineLength 0)
+        | "ERR_COP" => some (StyleError.copyright none)
+        | "ERR_LIN" =>
+          if let some n := error_message.get? 2 then
+            match String.toNat? n with
+              | some n => return StyleError.lineLength n
+              | none => none
+          else none
         | "ERR_AUT" => some (StyleError.authors)
         | "ERR_ADN" => some (StyleError.adaptationNote)
         | "ERR_IMP" =>
@@ -180,8 +185,9 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
             | _ => none
           | _ => none
         | _ => none
-      -- Omit the line number, as we don't use it anyway.
-      err.map fun e ↦ (ErrorContext.mk e 0 path)
+      match String.toNat? line_number with
+      | some n => err.map fun e ↦ (ErrorContext.mk e n path)
+      | _ => none
     -- It would be nice to print an error on any line which doesn't match the above format,
     -- but is awkward to do so (this `def` is not in any IO monad). Hopefully, this is not necessary
     -- anyway as the style exceptions file is mostly automatically generated.
@@ -194,7 +200,8 @@ def parseStyleExceptions (lines : Array String) : Array ErrorContext := Id.run d
   Array.filterMap (parse?_errorContext ·) (lines.filter (fun line ↦ !line.startsWith "--"))
 
 /-- Print information about all errors encountered to standard output.
-`style` specifies if we print errors for humand or github consumption. -/
+`style` specifies if the error should be formatted for humans to read, github problem matchers
+to consume, or for the style exceptions file. -/
 def formatErrors (errors : Array ErrorContext) (style : ErrorFormat) : IO Unit := do
   for e in errors do
     IO.println (outputMessage e style)
@@ -332,18 +339,16 @@ def allLinters : Array TextbasedLinter := #[
     copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, lineLengthLinter
   ]
 
-/-- Read a file, apply all text-based linters and print the formatted errors.
+/-- Read a file and apply all text-based linters. Return a list of all unexpected errors.
 `sizeLimit` is any pre-existing limit on this file's size.
-`exceptions` are any other style exceptions.
-`style` specifies if errors should be formatted for github or human consumption.
-Return `true` if there were new errors (and `false` otherwise). -/
-def lintFile (path : FilePath) (sizeLimit : Option ℕ)
-  (exceptions : Array ErrorContext) (style : ErrorFormat) : IO Bool := do
+`exceptions` are any other style exceptions. -/
+def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array ErrorContext) :
+    IO (Array ErrorContext) := do
   let lines ← IO.FS.lines path
   -- We don't need to run any checks on imports-only files.
   -- NB. The Python script used to still run a few linters; this is in fact not necessary.
   if isImportsOnlyFile lines then
-    return false
+    return #[]
   let mut errors := #[]
   if let some (StyleError.fileTooLong n limit) := checkFileLength lines sizeLimit then
     errors := #[ErrorContext.mk (StyleError.fileTooLong n limit) 1 path]
@@ -351,15 +356,14 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ)
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) allLinters
   -- This this list is not sorted: for github, this is fine.
   errors := errors.append (allOutput.flatten.filter (fun e ↦ !exceptions.contains e))
-  formatErrors errors style
-  return errors.size > 0
+  return errors
 
-/-- Lint all files referenced in a given import-only file.
+/-- Lint a collection of modules for style violations.
+Print formatted errors for all unexpected style violations to standard output.
 Return the number of files which had new style errors.
-`style` specifies if errors should be formatted for github or human consumption. -/
-def lintAllFiles (path : FilePath) (style : ErrorFormat) : IO UInt32 := do
-  -- Read all module names from the file at `path`.
-  let allModules ← IO.FS.lines path
+`style` specifies if the error should be formatted for humans to read, github problem matchers
+to consume or for the style exceptions file. -/
+def lintModules (moduleNames : Array String) (style : ErrorFormat) : IO UInt32 := do
   -- Read the style exceptions file.
   -- We also have a `nolints` file with manual exceptions for the linter.
   let exceptions ← IO.FS.lines (mkFilePath ["scripts", "style-exceptions.txt"])
@@ -368,8 +372,8 @@ def lintAllFiles (path : FilePath) (style : ErrorFormat) : IO UInt32 := do
   styleExceptions := styleExceptions.append (parseStyleExceptions nolints)
 
   let mut numberErrorFiles := 0
-  for module in allModules do
-    let module := module.stripPrefix "import "
+  let mut allUnexpectedErrors := #[]
+  for module in moduleNames do
     -- Convert the module name to a file name, then lint that file.
     let path := (mkFilePath (module.split (· == '.'))).addExtension "lean"
     -- Find all size limits for this given file.
@@ -378,6 +382,9 @@ def lintAllFiles (path : FilePath) (style : ErrorFormat) : IO UInt32 := do
       match errctx.error with
       | StyleError.fileTooLong _ limit => some limit
       | _ => none)
-    if ← lintFile path (sizeLimits.get? 0) styleExceptions style then
+    let errors := ← lintFile path (sizeLimits.get? 0) styleExceptions
+    if errors.size > 0 then
+      allUnexpectedErrors := allUnexpectedErrors.append errors
       numberErrorFiles := numberErrorFiles + 1
+  formatErrors allUnexpectedErrors style
   return numberErrorFiles
