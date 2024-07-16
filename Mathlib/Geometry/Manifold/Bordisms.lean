@@ -134,7 +134,7 @@ variable {E E' E'' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAd
 
 open Set hiding prod
 
--- xxx good name!
+-- xxx good name! TODO: remove in favour of lemma below
 lemma mem_interior_of_components (hx : x ∈ I.interior M) (hy : y ∈ I'.interior M') :
     (x, y) ∈ (I.prod I').interior (M × M') := by
   have aux : (interior (range ↑I)) ×ˢ (interior (range I')) = interior (range (I.prod I')) := by
@@ -148,19 +148,20 @@ lemma mem_interior_of_components (hx : x ∈ I.interior M) (hy : y ∈ I'.interi
     exact fun ⦃a⦄ a ↦ a
   exact aux' this
 
--- xxx good name!
-lemma foo : (I.interior M) ×ˢ (I'.interior M') ⊆ (I.prod I').interior (M × M') := by
-  intro p hp
-  obtain ⟨h₁, h₂⟩ := Set.mem_prod.mp hp
-  exact mem_interior_of_components h₁ h₂
-
--- TODO: good name! prove this converse to foo!
-lemma bar : (I.prod I').interior (M × M') ⊆ (I.interior M) ×ˢ (I'.interior M') := by
-  sorry
-
 lemma interior_prod :
     (I.prod I').interior (M × M') = (I.interior M) ×ˢ (I'.interior M') := by
-  apply le_antisymm bar foo
+  ext p
+  have aux : (interior (range ↑I)) ×ˢ (interior (range I')) = interior (range (I.prod I')) := by
+    rw [← interior_prod_eq, ← Set.range_prod_map, modelWithCorners_prod_coe]
+  constructor <;> intro hp
+  · replace hp : (I.prod I').IsInteriorPoint p := hp
+    rw [ModelWithCorners.IsInteriorPoint, ← aux] at hp
+    exact hp
+  · obtain ⟨h₁, h₂⟩ := Set.mem_prod.mp hp
+    rw [ModelWithCorners.interior] at h₁ h₂
+    show (I.prod I').IsInteriorPoint p
+    rw [ModelWithCorners.IsInteriorPoint, ← aux]
+    apply mem_prod.mpr; constructor; exacts [h₁, h₂]
 
 -- The boundary of M × N is ∂M × N ∪ (M × ∂N).
 
