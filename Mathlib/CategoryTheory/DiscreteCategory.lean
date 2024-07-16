@@ -188,7 +188,7 @@ theorem functor_map {I : Type u₁} (F : I → C) {i : Discrete I} (f : i ⟶ i)
     (Discrete.functor F).map f = 𝟙 (F i.as) := by aesop_cat
 #align category_theory.discrete.functor_map CategoryTheory.Discrete.functor_map
 #align category_theory.free_monoidal_category.discrete_functor_map_eq_id CategoryTheory.Discrete.functor_map
-@[decrecated (since := "2024-07-16")]
+@[deprecated (since := "2024-07-16")]
 alias CategoryTheory.FreeMonoidalCategory.discrete_functor_map_eq_id := functor_map
 
 @[simp]
