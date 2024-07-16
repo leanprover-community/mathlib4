@@ -217,8 +217,8 @@ theorem res_apply (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U)
   rfl
 
 lemma smul_section_apply (r : R) (U : Opens (PrimeSpectrum.Top R))
-  (s : (TildeInModuleCat R M).1.obj (op U)) (x : U) :
-  (r • s).1 x = r • (s.1 x) := rfl
+    (s : (TildeInModuleCat R M).1.obj (op U)) (x : U) :
+    (r • s).1 x = r • (s.1 x) := rfl
 
 lemma smul_germ (r : R) (U : Opens (PrimeSpectrum.Top R)) (x : U)
     (s : (TildeInModuleCat R M).1.obj (op U)) :
@@ -334,7 +334,7 @@ lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
       rw [this, map_zero]
 
     refine Subtype.ext $ funext fun q => show _ = 0 from ?_
-    obtain ⟨den_not_mem, eq1⟩ := eq1 ⟨q.1, q.2.1⟩
+    obtain ⟨_, eq1⟩ := eq1 ⟨q.1, q.2.1⟩
     simp only [isLocallyFraction_pred, LocalizedModule.mkLinearMap_apply, res_apply] at eq1
     change s.1 ⟨q, _⟩ = 0
     apply_fun (TildeInModuleCat R M).map (op iW) at h
