@@ -57,7 +57,7 @@ The property of a function `f : ∏_{x ∈ U}, Mₓ` being a fraction is stable 
 -/
 def isFractionPrelocal : PrelocalPredicate (Localizations M) where
   pred {U} f := isFraction M f
-  res := by rintro V U i f ⟨m, s, w⟩; exact ⟨m, s, fun x => w (i x)⟩
+  res := by rintro V U i f ⟨m, s, w⟩; exact ⟨m, s, fun x ↦ w (i x)⟩
 
 /--
 For any open subset `U ⊆ Spec R`, `IsLocallyFraction` is the predicate expressing that a function
@@ -97,7 +97,7 @@ of `∏_{𝔭 ∈ U} M_𝔭`. -/
 def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
     Submodule ((Spec.structureSheaf R).1.obj U) (∀ x : U.unop, Localizations M x.1) where
   carrier := { f | (isLocallyFraction M).pred f }
-  zero_mem' x := ⟨unop U, x.2, 𝟙 _, 0, 1, fun y =>
+  zero_mem' x := ⟨unop U, x.2, 𝟙 _, 0, 1, fun y ↦
     ⟨Ideal.ne_top_iff_one _ |>.1 y.1.isPrime.1, by simp⟩⟩
   add_mem' := by
     intro a b ha hb x
@@ -153,7 +153,7 @@ def preTildeInAddCommGrp : Presheaf AddCommGrp (PrimeSpectrum.Top R) where
   map {U V} i :=
     { toFun := M.tildeInType.1.map i
       map_zero' := rfl
-      map_add' := fun x y => rfl}
+      map_add' := fun x y ↦ rfl}
 
 /--
 `M^~` as a sheaf of abelian groups over `Spec R`
@@ -161,7 +161,7 @@ def preTildeInAddCommGrp : Presheaf AddCommGrp (PrimeSpectrum.Top R) where
 def tildeInAddCommGrp : Sheaf AddCommGrp (PrimeSpectrum.Top R) :=
   ⟨M.preTildeInAddCommGrp,
     TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrp) _ |>.mpr
-      (TopCat.Presheaf.isSheaf_of_iso (NatIso.ofComponents (fun _ => Iso.refl _) fun _ => rfl)
+      (TopCat.Presheaf.isSheaf_of_iso (NatIso.ofComponents (fun _ ↦ Iso.refl _) fun _ ↦ rfl)
         M.tildeInType.2)⟩
 
 noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
@@ -175,7 +175,7 @@ noncomputable def tilde : (Spec (CommRingCat.of R)).Modules where
   val :=
   { presheaf := M.tildeInAddCommGrp.1
     module := inferInstance
-    map_smul := fun _ _ _ => rfl }
+    map_smul := fun _ _ _ ↦ rfl }
   isSheaf := M.tildeInAddCommGrp.2
 
 /--
@@ -206,9 +206,9 @@ If `U` is an open subset of `Spec R`, this is the morphism of `R`-modules from `
 def toOpen (U : Opens (PrimeSpectrum.Top R)) :
     ModuleCat.of R M ⟶ (tildeInModuleCat M).1.obj (op U) where
   toFun f :=
-  ⟨fun x => LocalizedModule.mkLinearMap _ _ f, fun x =>
-    ⟨U, x.2, 𝟙 _, f, 1, fun y => ⟨(Ideal.ne_top_iff_one _).1 y.1.2.1, by simp⟩⟩⟩
-  map_add' f g := Subtype.eq <| funext fun x => LinearMap.map_add _ _ _
+  ⟨fun x ↦ LocalizedModule.mkLinearMap _ _ f, fun x ↦
+    ⟨U, x.2, 𝟙 _, f, 1, fun y ↦ ⟨(Ideal.ne_top_iff_one _).1 y.1.2.1, by simp⟩⟩⟩
+  map_add' f g := Subtype.eq <| funext fun x ↦ LinearMap.map_add _ _ _
   map_smul' r m := by
     simp only [isLocallyFraction_pred, LocalizedModule.mkLinearMap_apply, LinearMapClass.map_smul,
       RingHom.id_apply]
@@ -231,42 +231,33 @@ noncomputable def toStalk (x : PrimeSpectrum.Top R) :
 lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
     IsUnit ((algebraMap R (Module.End R ((tildeInModuleCat M).stalk x))) r) := by
   rw [Module.End_isUnit_iff]
-  refine ⟨?_, ?_⟩
-  · rw [← LinearMap.ker_eq_bot, eq_bot_iff]
-    rintro st (h : r.1 • st = 0)
-    simp only [LinearMap.mem_ker, Module.algebraMap_end_apply, Submodule.mem_bot] at h ⊢
-
+  refine ⟨LinearMap.ker_eq_bot.1 $ eq_bot_iff.2 fun st (h : r.1 • st = 0) ↦ ?_, fun st ↦ ?_⟩
+  · simp only [LinearMap.mem_ker, Module.algebraMap_end_apply, Submodule.mem_bot] at h ⊢
     obtain ⟨U, mem, s, rfl⟩ := TopCat.Presheaf.germ_exist (F := (tildeInModuleCat M)) x st
     erw [← (M.tildeInModuleCat.germ ⟨x, mem⟩).map_smul r.1 s] at h
     obtain ⟨⟨⟨W, (mem_W : x ∈ W)⟩⟩, iU, (h : M.tildeInModuleCat.map _ _ = 0)⟩ :=
       Limits.Concrete.colimit_rep_eq_zero (hx := h)
-    dsimp only [Functor.comp_obj, Functor.op_obj, OpenNhds.inclusion_obj, Functor.comp_map,
-      Functor.op_map] at h
-
     obtain ⟨W', (mem_W' : x ∈ W'), (iW : W' ⟶ W), num, _, _⟩ :=
       ((tildeInModuleCat M).map iU) s |>.2 ⟨x, mem_W⟩
     let O := W' ⊓ (PrimeSpectrum.basicOpen r)
     suffices (tildeInModuleCat M).map
         (op $ (homOfLE $ inf_le_left.trans (leOfHom $ iW ≫ iU.unop) : O ⟶ U)) s = 0 by
-      have := congr((tildeInModuleCat M).germ (⟨x, ⟨mem_W', r.2⟩⟩ :
-        (W' ⊓ PrimeSpectrum.basicOpen r.1 : Opens _)) $this)
-      rw [this.symm.trans (TopCat.Presheaf.germ_res_apply _ _ _ _) |>.symm, map_zero]
+      rw [congr((tildeInModuleCat M).germ (⟨x, ⟨mem_W', r.2⟩⟩ :
+        (W' ⊓ PrimeSpectrum.basicOpen r.1 : Opens _)) $this).symm.trans
+        (TopCat.Presheaf.germ_res_apply _ _ _ _) |>.symm, map_zero]
 
-    refine Subtype.ext $ funext fun q => show _ = 0 from ?_
-    apply_fun (tildeInModuleCat M).map (op iW) at h
-    rw [map_smul] at h
-    replace h := congr_fun (Subtype.ext_iff.1 h) ⟨q.1, q.2.1⟩
-    exact LocalizedModule.eq_zero_of_smul_eq_zero (hx := h) q.2.2
+    exact Subtype.ext $ funext fun q ↦ LocalizedModule.eq_zero_of_smul_eq_zero
+      (hx := congr_fun (Subtype.ext_iff.1 congr((tildeInModuleCat M).map (op iW) $h)) ⟨q.1, q.2.1⟩)
+      q.2.2
 
-  · intro st
-    obtain ⟨U, mem, s, rfl⟩ := TopCat.Presheaf.germ_exist (F := (tildeInModuleCat M)) x st
+  · obtain ⟨U, mem, s, rfl⟩ := TopCat.Presheaf.germ_exist (F := (tildeInModuleCat M)) x st
     let O := U ⊓ (PrimeSpectrum.basicOpen r)
     have mem_O : x ∈ O := ⟨mem, r.2⟩
     refine ⟨TopCat.Presheaf.germ (tildeInModuleCat M) ⟨x, mem_O⟩
-      ⟨fun q => (Localization.mk 1 ⟨r, q.2.2⟩ : Localization.AtPrime q.1.asIdeal) • s.1
-        ⟨q.1, q.2.1⟩, fun q => ?_⟩, ?_⟩
+      ⟨fun q ↦ (Localization.mk 1 ⟨r, q.2.2⟩ : Localization.AtPrime q.1.asIdeal) • s.1
+        ⟨q.1, q.2.1⟩, fun q ↦ ?_⟩, ?_⟩
     · obtain ⟨V, mem_V, (iV : V ⟶ U), num, den, hV⟩ := s.2 ⟨q.1, q.2.1⟩
-      refine ⟨V ⊓ O, ⟨mem_V, q.2⟩, homOfLE inf_le_right, num, r * den, fun y => ?_⟩
+      refine ⟨V ⊓ O, ⟨mem_V, q.2⟩, homOfLE inf_le_right, num, r * den, fun y ↦ ?_⟩
       obtain ⟨h1, h2⟩ := hV ⟨y, y.2.1⟩
       refine ⟨y.1.asIdeal.primeCompl.mul_mem y.2.2.2 h1, ?_⟩
       simp only [Opens.coe_inf, isLocallyFraction_pred, LocalizedModule.mkLinearMap_apply] at h2 ⊢
@@ -277,12 +268,8 @@ lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
     · simp only [isLocallyFraction_pred, LocalizedModule.mkLinearMap_apply,
         Module.algebraMap_end_apply]
       rw [← map_smul]
-      fapply TopCat.Presheaf.germ_ext
-      · exact O
-      · exact mem_O
-      · exact 𝟙 _
-      · exact homOfLE inf_le_left
-      refine Subtype.eq <| funext fun y => ?_
+      refine TopCat.Presheaf.germ_ext (W := O) (hxW := mem_O) (iWU := 𝟙 _)
+        (iWV := homOfLE inf_le_left) _ $ Subtype.eq <| funext fun y ↦ ?_
       simp only [isLocallyFraction_pred, LocalizedModule.mkLinearMap_apply, op_id,
         CategoryTheory.Functor.map_id, LinearMapClass.map_smul,
         id_apply]
