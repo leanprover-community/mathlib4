@@ -3,8 +3,7 @@ Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Equiv
+import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Order.Bounds.OrderIso
@@ -429,18 +428,6 @@ theorem one_le_one_div (h1 : 0 < a) (h2 : a ≤ 1) : 1 ≤ 1 / a := by
 ### Results about halving.
 The equalities also hold in semifields of characteristic `0`.
 -/
-
-
-/- TODO: Unify `add_halves` and `add_halves'` into a single lemma about
-`DivisionSemiring` + `CharZero` -/
-theorem add_halves (a : α) : a / 2 + a / 2 = a := by
-  rw [div_add_div_same, ← two_mul, mul_div_cancel_left₀ a two_ne_zero]
-#align add_halves add_halves
-
--- TODO: Generalize to `DivisionSemiring`
-theorem add_self_div_two (a : α) : (a + a) / 2 = a := by
-  rw [← mul_two, mul_div_cancel_right₀ a two_ne_zero]
-#align add_self_div_two add_self_div_two
 
 theorem half_pos (h : 0 < a) : 0 < a / 2 :=
   div_pos h zero_lt_two
