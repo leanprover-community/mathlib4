@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat
-import Mathlib.Init.Data.Nat.Lemmas
 
 #align_import data.nat.psub from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
@@ -79,7 +78,7 @@ theorem psub_eq_some {m : ℕ} : ∀ {n k}, psub m n = some k ↔ k + n = m
   | n + 1, k => by
     apply Option.bind_eq_some.trans
     simp only [psub_eq_some, ppred_eq_some]
-    simp [add_comm, add_left_comm, Nat.succ_eq_add_one]
+    simp [add_comm, add_left_comm]
 #align nat.psub_eq_some Nat.psub_eq_some
 
 theorem psub_eq_none {m n : ℕ} : psub m n = none ↔ m < n := by

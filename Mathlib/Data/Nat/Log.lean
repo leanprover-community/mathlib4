@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
 -/
 import Mathlib.Data.Nat.Defs
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Tactic.Monotonicity.Attr
 
@@ -28,7 +29,7 @@ namespace Nat
 
 /-- `log b n`, is the logarithm of natural number `n` in base `b`. It returns the largest `k : ℕ`
 such that `b^k ≤ n`, so if `b^k = n`, it returns exactly `k`. -/
---@[pp_nodot] porting note: unknown attribute
+@[pp_nodot]
 def log (b : ℕ) : ℕ → ℕ
   | n => if h : b ≤ n ∧ 1 < b then log b (n / b) + 1 else 0
 decreasing_by
@@ -237,7 +238,7 @@ theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / 
 
 /-- `clog b n`, is the upper logarithm of natural number `n` in base `b`. It returns the smallest
 `k : ℕ` such that `n ≤ b^k`, so if `b^k = n`, it returns exactly `k`. -/
---@[pp_nodot]
+@[pp_nodot]
 def clog (b : ℕ) : ℕ → ℕ
   | n => if h : 1 < b ∧ 1 < n then clog b ((n + b - 1) / b) + 1 else 0
 decreasing_by

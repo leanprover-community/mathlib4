@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Star.SelfAdjoint
+import Mathlib.Algebra.Star.StarRingHom
 import Mathlib.Algebra.Regular.Basic
 
 #align_import algebra.star.order from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
@@ -50,7 +51,8 @@ convenient to declare instances using `StarOrderedRing.of_nonneg_iff`.
 
 Porting note: dropped an unneeded assumption
 `add_le_add_left : ∀ {x y}, x ≤ y → ∀ z, z + x ≤ z + y` -/
-class StarOrderedRing (R : Type u) [NonUnitalSemiring R] [PartialOrder R] [StarRing R] : Prop where
+class StarOrderedRing (R : Type u) [NonUnitalSemiring R] [PartialOrder R]
+    [StarRing R] : Prop where
   /-- characterization of the order in terms of the `StarRing` structure. -/
   le_iff :
     ∀ x y : R, x ≤ y ↔ ∃ p, p ∈ AddSubmonoid.closure (Set.range fun s => star s * s) ∧ y = x + p
@@ -231,14 +233,28 @@ lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelf
   rintro - ⟨s, rfl⟩
   simp
 
+@[aesop 10% apply]
 lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
-  (isSelfAdjoint_zero R).mono hx
+  .mono hx <| .zero R
+
+theorem conjugate_lt_conjugate {a b : R} (hab : a < b) {c : R} (hc : IsRegular c) :
+    star c * a * c < star c * b * c := by
+  rw [(conjugate_le_conjugate hab.le _).lt_iff_ne, hc.right.ne_iff, hc.star.left.ne_iff]
+  exact hab.ne
+
+theorem conjugate_lt_conjugate' {a b : R} (hab : a < b) {c : R} (hc : IsRegular c) :
+    c * a * star c < c * b * star c := by
+  simpa only [star_star] using conjugate_lt_conjugate hab hc.star
+
+theorem conjugate_pos {a : R} (ha : 0 < a) {c : R} (hc : IsRegular c) : 0 < star c * a * c := by
+  simpa only [mul_zero, zero_mul] using conjugate_lt_conjugate ha hc
+
+theorem conjugate_pos' {a : R} (ha : 0 < a) {c : R} (hc : IsRegular c) : 0 < c * a * star c := by
+  simpa only [star_star] using conjugate_pos ha hc.star
 
 theorem star_mul_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < star x * x := by
-  rw [(star_mul_self_nonneg _).lt_iff_ne]
-  intro h
-  rw [← mul_zero (star x), hx.star.left.eq_iff] at h
-  exact hx.ne_zero h.symm
+  rw [(star_mul_self_nonneg _).lt_iff_ne, ← mul_zero (star x), hx.star.left.ne_iff]
+  exact hx.ne_zero.symm
 
 theorem mul_star_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < x * star x := by
   simpa using star_mul_self_pos hx.star
@@ -266,40 +282,74 @@ lemma star_lt_one_iff {x : R} : star x < 1 ↔ x < 1 := by
 
 end Semiring
 
+section StarModule
+
+variable {A : Type*} [Semiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
+  [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A] [Module R A]
+  [StarModule R A] [NoZeroSMulDivisors R A] [IsScalarTower R A A] [SMulCommClass R A A]
+
+lemma StarModule.smul_lt_smul_of_pos {a b : A} {c : R} (hab : a < b) (hc : 0 < c) :
+    c • a < c • b := by
+  rw [← sub_pos] at hab ⊢
+  rw [← smul_sub]
+  refine lt_of_le_of_ne ?le ?ne
+  case le =>
+    have hab := le_of_lt hab
+    rw [StarOrderedRing.nonneg_iff] at hab ⊢
+    refine AddSubmonoid.closure_induction hab ?mem ?zero ?add
+    case mem =>
+      intro x hx
+      have hc := le_of_lt hc
+      rw [StarOrderedRing.nonneg_iff] at hc
+      refine AddSubmonoid.closure_induction hc ?memc ?zeroc ?addc
+      case memc =>
+        intro c' hc'
+        obtain ⟨z, hz⟩ := hc'
+        obtain ⟨y, hy⟩ := hx
+        apply AddSubmonoid.subset_closure
+        refine ⟨z • y, ?_⟩
+        simp only [star_smul, smul_mul_smul, hz, hy]
+      case zeroc => simpa only [zero_smul] using zero_mem _
+      case addc => exact fun c' d ↦ by simpa only [add_smul] using add_mem
+    case zero => simpa only [smul_zero] using zero_mem _
+    case add => exact fun x y ↦ by simpa only [smul_add] using add_mem
+  case ne =>
+    refine (smul_ne_zero ?_ ?_).symm
+    · exact (ne_of_lt hc).symm
+    · exact (ne_of_lt hab).symm
+
+end StarModule
+
 section OrderClass
 
-variable {F R S : Type*} [NonUnitalSemiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
+variable {F R S : Type*} [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
+  [StarOrderedRing R]
 variable [NonUnitalSemiring S] [PartialOrder S] [StarRing S] [StarOrderedRing S]
 
 -- we prove this auxiliary lemma in order to avoid duplicating the proof twice below.
-lemma NonUnitalRingHom.map_le_map_of_map_star (f : R →ₙ+* S) (hf : ∀ r, f (star r) = star (f r))
-    {x y : R} (hxy : x ≤ y) : f x ≤ f y := by
+lemma NonUnitalStarRingHom.map_le_map_of_map_star (f : R →⋆ₙ+* S) {x y : R} (hxy : x ≤ y) :
+    f x ≤ f y := by
   rw [StarOrderedRing.le_iff] at hxy ⊢
   obtain ⟨p, hp, rfl⟩ := hxy
   refine ⟨f p, ?_, map_add f _ _⟩
   induction hp using AddSubmonoid.closure_induction'
+  have hf : ∀ r, f (star r) = star (f r) := map_star _
   all_goals aesop
 
-instance (priority := 100) StarRingHomClass.instOrderHomClass [FunLike F R S] [StarHomClass F R S]
-    [NonUnitalRingHomClass F R S] : OrderHomClass F R S where
-  map_rel f := (f : R →ₙ+* S).map_le_map_of_map_star (map_star f)
+instance (priority := 100) StarRingHomClass.instOrderHomClass [FunLike F R S]
+    [NonUnitalSemiring R] [StarRing R] [StarOrderedRing R] [NonUnitalSemiring S]
+    [StarRing S] [StarOrderedRing S] [NonUnitalRingHomClass F R S]
+    [NonUnitalStarRingHomClass F R S] : OrderHomClass F R S where
+  map_rel f := (f : R →⋆ₙ+* S).map_le_map_of_map_star
 
--- This doesn't require any module structure, but the only morphism we currently have bundling
--- `star` is `starAlgHom`. So we have to build the inverse morphism by hand.
-instance (priority := 100) StarRingHomClass.instOrderIsoClass [EquivLike F R S] [StarHomClass F R S]
-    [RingEquivClass F R S] : OrderIsoClass F R S where
+instance (priority := 100) StarRingEquivClass.instOrderIsoClass [EquivLike F R S]
+    [StarRingEquivClass F R S] : OrderIsoClass F R S where
   map_le_map_iff f x y := by
     refine ⟨fun h ↦ ?_, map_rel f⟩
-    let f_inv : S →ₙ+* R :=
-      { toFun := EquivLike.inv f
-        map_mul' := fun _ _ ↦ EmbeddingLike.injective f <| by simp
-        map_add' := fun _ _ ↦ EmbeddingLike.injective f <| by simp
-        map_zero' := EmbeddingLike.injective f <| by simp }
-    have f_inv_star (s : S) : f_inv (star s) = star (f_inv s) := EmbeddingLike.injective f <| by
-      simp only [map_star f, show ∀ s, f (f_inv s) = s from EquivLike.apply_inv_apply f]
+    let f_inv : S →⋆ₙ+* R := (f : R ≃⋆+* S).symm
     have f_inv_f (r : R) : f_inv (f r) = r := EquivLike.inv_apply_apply f r
     rw [← f_inv_f x, ← f_inv_f y]
-    exact f_inv.map_le_map_of_map_star f_inv_star h
+    exact NonUnitalStarRingHom.map_le_map_of_map_star f_inv h
 
 end OrderClass
 

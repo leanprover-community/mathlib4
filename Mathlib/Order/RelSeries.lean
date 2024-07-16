@@ -348,8 +348,7 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
           rw [Fin.insertNth_apply_above]
           swap
           · exact hm.trans (lt_add_one _)
-          simp only [Fin.val_succ, Nat.zero_eq, Fin.pred_succ, eq_rec_constant, ge_iff_le,
-            Fin.succ_mk]
+          simp only [Fin.val_succ, Nat.zero_eq, Fin.pred_succ, eq_rec_constant, Fin.succ_mk]
           congr
           exact Fin.ext <| Eq.symm <| Nat.succ_pred_eq_of_pos (lt_trans (Nat.zero_lt_succ _) hm)
       · convert connect_next
@@ -553,7 +552,7 @@ lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.len
 @[simp] lemma head_smash {p q : RelSeries r} (h : p.last = q.head) :
     (smash p q h).head = p.head := by
   delta head smash
-  simp only [Fin.val_zero, Fin.zero_eta, ge_iff_le, zero_le, tsub_eq_zero_of_le, dite_eq_ite,
+  simp only [Fin.val_zero, Fin.zero_eta, zero_le, tsub_eq_zero_of_le, dite_eq_ite,
     ite_eq_left_iff, not_lt, nonpos_iff_eq_zero]
   intro H; convert h.symm; congr; aesop
 
@@ -654,3 +653,10 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
 end LTSeries
 
 end LTSeries
+
+/-- If `f : α → β` is a strictly monotonic function and `α` is an infinite dimensional type then so
+  is `β`. -/
+lemma infiniteDimensionalOrder_of_strictMono [Preorder α] [Preorder β]
+    (f : α → β) (hf : StrictMono f) [InfiniteDimensionalOrder α] :
+    InfiniteDimensionalOrder β :=
+  ⟨fun n ↦ ⟨(LTSeries.withLength _ n).map f hf, LTSeries.length_withLength α n⟩⟩

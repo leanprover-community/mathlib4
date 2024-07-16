@@ -31,16 +31,16 @@ Finsets give a basic foundation for defining finite sums and products over types
   2. `∏ i ∈ (s : Finset α), f i`.
 
 Lean refers to these operations as big operators.
-More information can be found in `Mathlib.Algebra.BigOperators.Group.Finset`.
+More information can be found in `Mathlib/Algebra/BigOperators/Group/Finset.lean`.
 
 Finsets are directly used to define fintypes in Lean.
 A `Fintype α` instance for a type `α` consists of a universal `Finset α` containing every term of
-`α`, called `univ`. See `Mathlib.Data.Fintype.Basic`.
+`α`, called `univ`. See `Mathlib/Data/Fintype/Basic.lean`.
 There is also `univ'`, the noncomputable partner to `univ`,
 which is defined to be `α` as a finset if `α` is finite,
-and the empty finset otherwise. See `Mathlib.Data.Fintype.Basic`.
+and the empty finset otherwise. See `Mathlib/Data/Fintype/Basic.lean`.
 
-`Finset.card`, the size of a finset is defined in `Mathlib.Data.Finset.Card`.
+`Finset.card`, the size of a finset is defined in `Mathlib/Data/Finset/Card.lean`.
 This is then used to define `Fintype.card`, the size of a type.
 
 ## Main declarations
@@ -78,8 +78,8 @@ This is then used to define `Fintype.card`, the size of a type.
 
 There is a natural lattice structure on the subsets of a set.
 In Lean, we use lattice notation to talk about things involving unions and intersections. See
-`Mathlib.Order.Lattice`. For the lattice structure on finsets, `⊥` is called `bot` with `⊥ = ∅` and
-`⊤` is called `top` with `⊤ = univ`.
+`Mathlib/Order/Lattice.lean`. For the lattice structure on finsets, `⊥` is called `bot` with
+`⊥ = ∅` and `⊤` is called `top` with `⊤ = univ`.
 
 * `Finset.instHasSubsetFinset`: Lots of API about lattices, otherwise behaves as one would expect.
 * `Finset.instUnionFinset`: Defines `s ∪ t` (or `s ⊔ t`) as the union of `s` and `t`.
@@ -97,7 +97,7 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 * `Finset.erase`: For any `a : α`, `erase s a` returns `s` with the element `a` removed.
 * `Finset.instSDiffFinset`: Defines the set difference `s \ t` for finsets `s` and `t`.
 * `Finset.product`: Given finsets of `α` and `β`, defines finsets of `α × β`.
-  For arbitrary dependent products, see `Mathlib.Data.Finset.Pi`.
+  For arbitrary dependent products, see `Mathlib/Data/Finset/Pi.lean`.
 
 ### Predicates on finsets
 
@@ -107,8 +107,8 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 
 ### Equivalences between finsets
 
-* The `Mathlib.Data.Equiv` files describe a general type of equivalence, so look in there for any
-  lemmas. There is some API for rewriting sums and products from `s` to `t` given that `s ≃ t`.
+* The `Mathlib/Data/Equiv.lean` files describe a general type of equivalence, so look in there for
+  any lemmas. There is some API for rewriting sums and products from `s` to `t` given that `s ≃ t`.
   TODO: examples
 
 ## Tags
@@ -1900,7 +1900,6 @@ theorem not_mem_erase (a : α) (s : Finset α) : a ∉ erase s a :=
   s.2.not_mem_erase
 #align finset.not_mem_erase Finset.not_mem_erase
 
--- While this can be solved by `simp`, this lemma is eligible for `dsimp`
 @[simp]
 theorem erase_empty (a : α) : erase ∅ a = ∅ :=
   rfl
@@ -3355,7 +3354,7 @@ theorem mem_toList {a : α} {s : Finset α} : a ∈ s.toList ↔ a ∈ s :=
 
 @[simp]
 theorem toList_eq_nil {s : Finset α} : s.toList = [] ↔ s = ∅ :=
-  toList_eq_nil.trans val_eq_zero
+  Multiset.toList_eq_nil.trans val_eq_zero
 #align finset.to_list_eq_nil Finset.toList_eq_nil
 
 @[simp]
@@ -3561,10 +3560,11 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
   -- We want this to be fast, so use only the basic and `Finset.Nonempty`-specific rules.
   let rulesets ← Aesop.Frontend.getGlobalRuleSets #[`builtin, `finsetNonempty]
   let options : Aesop.Options' :=
-    { terminal := true, -- Fail if the new goal is not closed.
-      generateScript := false,
-      useDefaultSimpSet := false, -- Avoiding the whole simp set to speed up the tactic.
-      warnOnNonterminal := false } -- Don't show a warning on failure, simply return `none`.
+    { terminal := true -- Fail if the new goal is not closed.
+      generateScript := false
+      useDefaultSimpSet := false -- Avoiding the whole simp set to speed up the tactic.
+      warnOnNonterminal := false -- Don't show a warning on failure, simply return `none`.
+      forwardMaxDepth? := none }
   let rules ← Aesop.mkLocalRuleSet rulesets options
   let (remainingGoals, _) ←
     try Aesop.search (options := options.toOptions) mvar (.some rules)

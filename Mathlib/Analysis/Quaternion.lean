@@ -101,7 +101,8 @@ noncomputable instance : NormedAlgebra ℝ ℍ where
   toAlgebra := Quaternion.algebra
 
 instance : CstarRing ℍ where
-  norm_star_mul_self {x} := (norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_star x)
+  norm_mul_self_le x :=
+    le_of_eq <| Eq.symm <| (norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_star x)
 
 /-- Coercion from `ℂ` to `ℍ`. -/
 @[coe] def coeComplex (z : ℂ) : ℍ := ⟨z.re, z.im, 0, 0⟩
@@ -146,7 +147,7 @@ theorem coeComplex_one : ((1 : ℂ) : ℍ) = 1 :=
   rfl
 #align quaternion.coe_complex_one Quaternion.coeComplex_one
 
-@[simp, norm_cast] -- Porting note (#10959): simp cannot prove this
+@[simp, norm_cast]
 theorem coe_real_complex_mul (r : ℝ) (z : ℂ) : (r • z : ℍ) = ↑r * ↑z := by ext <;> simp
 #align quaternion.coe_real_complex_mul Quaternion.coe_real_complex_mul
 

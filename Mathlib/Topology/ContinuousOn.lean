@@ -1189,6 +1189,11 @@ theorem OpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf : OpenEmbed
   rw [inter_assoc, inter_self]
 #align open_embedding.map_nhds_within_preimage_eq OpenEmbedding.map_nhdsWithin_preimage_eq
 
+theorem QuotientMap.continuousOn_isOpen_iff {f : α → β} {g : β → γ} (h : QuotientMap f) {s : Set β}
+    (hs : IsOpen s) : ContinuousOn g s ↔ ContinuousOn (g ∘ f) (f ⁻¹' s) := by
+  simp only [continuousOn_iff_continuous_restrict, (h.restrictPreimage_isOpen hs).continuous_iff]
+  rfl
+
 theorem continuousWithinAt_of_not_mem_closure {f : α → β} {s : Set α} {x : α} (hx : x ∉ closure s) :
     ContinuousWithinAt f s x := by
   rw [mem_closure_iff_nhdsWithin_neBot, not_neBot] at hx
@@ -1412,3 +1417,5 @@ theorem continuousWithinAt_prod_iff {f : α → β × γ} {s : Set α} {x : α} 
       ContinuousWithinAt (Prod.fst ∘ f) s x ∧ ContinuousWithinAt (Prod.snd ∘ f) s x :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun ⟨h1, h2⟩ => h1.prod h2⟩
 #align continuous_within_at_prod_iff continuousWithinAt_prod_iff
+
+end Pi

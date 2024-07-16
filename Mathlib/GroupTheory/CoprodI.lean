@@ -982,7 +982,7 @@ condition is only needed if `# ι = 2`, and we accept `3 ≤ # ι` as an alterna
 theorem lift_injective_of_ping_pong : Function.Injective (lift f) := by
   classical
     apply (injective_iff_map_eq_one (lift f)).mpr
-    rw [(CoprodI.Word.equiv).forall_congr_left']
+    rw [(CoprodI.Word.equiv).forall_congr_left]
     intro w Heq
     dsimp [Word.equiv] at *
     rw [empty_of_word_prod_eq_one f hcard X hXnonempty hXdisj hpp Heq, Word.prod_empty]
@@ -1077,7 +1077,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   · show Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
     rintro i j hij
     -- use free_group unit ≃ ℤ
-    refine FreeGroup.freeGroupUnitEquivInt.forall_congr_left'.mpr ?_
+    refine FreeGroup.freeGroupUnitEquivInt.forall_congr_left.mpr ?_
     intro n hne1
     change FreeGroup.lift (fun _ => a i) (FreeGroup.of () ^ n) • X' j ⊆ X' i
     simp only [map_zpow, FreeGroup.lift.of]
