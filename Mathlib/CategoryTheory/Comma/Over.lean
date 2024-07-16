@@ -244,7 +244,7 @@ def mapComp {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
 #align category_theory.over.map_comp CategoryTheory.Over.mapComp
 
 /-- The functor defined by the over categories.-/
-def mapFunctor : T ⥤ Cat where
+@[simps] def mapFunctor : T ⥤ Cat where
   obj X := Cat.of (Over X)
   map := map
   map_id := mapId_eq
