@@ -320,11 +320,11 @@ end IsWeightedHomogeneous
 variable {R}
 
 /-- The weighted homogeneous submodules form a graded monoid. -/
-lemma WeightedHomogeneousSubmodule.gcomm_monoid {w : σ → M} :
+lemma WeightedHomogeneousSubmodule.gradedMonoid {w : σ → M} :
     SetLike.GradedMonoid (weightedHomogeneousSubmodule R w) where
   one_mem := isWeightedHomogeneous_one R w
   mul_mem _ _ _ _ := IsWeightedHomogeneous.mul
-#align mv_polynomial.is_weighted_homogeneous.weighted_homogeneous_submodule.gcomm_monoid MvPolynomial.WeightedHomogeneousSubmodule.gcomm_monoid
+#align mv_polynomial.is_weighted_homogeneous.weighted_homogeneous_submodule.gcomm_monoid MvPolynomial.WeightedHomogeneousSubmodule.gradedMonoid
 
 /-- `weightedHomogeneousComponent w n φ` is the part of `φ` that is weighted homogeneous of
   weighted degree `n`, with respect to the weights `w`.
@@ -663,8 +663,7 @@ def weightedDecomposition [DecidableEq M] :
   left_inv φ := by
     classical
     conv_rhs => rw [← sum_weightedHomogeneousComponent w φ]
-    rw [← DirectSum.sum_support_of (fun m => ↥(weightedHomogeneousSubmodule R w m))
-        (decompose' R w φ)]
+    rw [← DirectSum.sum_support_of (decompose' R w φ)]
     simp only [DirectSum.coeAddMonoidHom_of, MvPolynomial.coeff_sum, map_sum,
       finsum_eq_sum _ (weightedHomogeneousComponent_finsupp φ)]
     apply Finset.sum_congr _ (fun m _ ↦ by rw [decompose'_apply])
@@ -685,7 +684,7 @@ def weightedDecomposition [DecidableEq M] :
 def weightedGradedAlgebra [DecidableEq M] :
     GradedAlgebra (weightedHomogeneousSubmodule R w) where
   toDecomposition := weightedDecomposition R w
-  toGradedMonoid  := WeightedHomogeneousSubmodule.gcomm_monoid
+  toGradedMonoid  := WeightedHomogeneousSubmodule.gradedMonoid
 
 theorem weightedDecomposition.decompose'_eq [DecidableEq M] :
     (weightedDecomposition R w).decompose' = fun φ : MvPolynomial σ R =>

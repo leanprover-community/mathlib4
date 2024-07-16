@@ -547,12 +547,12 @@ noncomputable section GradedAlgebra
 
 /-- The homogeneous submodules form a graded ring.
 This instance is used by `DirectSum.commSemiring` and `DirectSum.algebra`. -/
-lemma HomogeneousSubmodule.gcomm_monoid :
+lemma HomogeneousSubmodule.gradedMonoid :
     SetLike.GradedMonoid (homogeneousSubmodule σ R) :=
-  WeightedHomogeneousSubmodule.gcomm_monoid
+  WeightedHomogeneousSubmodule.gradedMonoid
 
-/-- The decomposition of `MvPolynomial σ R` into  homogeneous submodules -/
-abbrev decomposition  :
+/-- The decomposition of `MvPolynomial σ R` into homogeneous submodules -/
+abbrev decomposition :
     DirectSum.Decomposition (homogeneousSubmodule σ R) :=
   weightedDecomposition R (1 : σ → ℕ)
 

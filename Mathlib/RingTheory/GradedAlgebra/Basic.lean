@@ -367,40 +367,26 @@ end CanonicalOrder
 
 namespace DirectSum.IsInternal
 
-
 variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 variable {ι : Type*} [DecidableEq ι] [AddMonoid ι]
 variable {M : ι → Submodule R A} [SetLike.GradedMonoid M]
 
 -- The following lines were given on Zulip by Adam Topaz
-/-- The canonical isomorphism of an internal direct sum with the ambiant algebra -/
-noncomputable def coeAlgIso (hM : DirectSum.IsInternal M) :
+/-- The canonical isomorphism of an internal direct sum with the ambient algebra -/
+noncomputable def coeAlgEquiv (hM : DirectSum.IsInternal M) :
     (DirectSum ι fun i => ↥(M i)) ≃ₐ[R] A :=
   { RingEquiv.ofBijective (DirectSum.coeAlgHom M) hM with commutes' := fun r => by simp }
 
 /-- Given an `R`-algebra `A` and a family `ι → Submodule R A` of submodules
 parameterized by an additive monoid `ι`
 and statisfying `SetLike.GradedMonoid M` (essentially, is multiplicative)
-such that `DirectSum.is_internal M` (`A` is the direct sum of the `M i`),
+such that `DirectSum.IsInternal M` (`A` is the direct sum of the `M i`),
 we endow `A` with the structure of a graded algebra.
-The submodules are the *homogeneous* parts -/
+The submodules are the *homogeneous* parts. -/
 noncomputable def gradedAlgebra (hM : DirectSum.IsInternal M) : GradedAlgebra M :=
   { (inferInstance : SetLike.GradedMonoid M) with
-    decompose' := hM.coeAlgIso.symm
-    left_inv := hM.coeAlgIso.symm.left_inv
-    right_inv := hM.coeAlgIso.left_inv }
+    decompose' := hM.coeAlgEquiv.symm
+    left_inv := hM.coeAlgEquiv.symm.left_inv
+    right_inv := hM.coeAlgEquiv.left_inv }
 
 end DirectSum.IsInternal
-
-/-
-namespace DirectSum.Decomposition
-
-variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
-variable {ι : Type*} [DecidableEq ι] [AddMonoid ι]
-variable {M : ι → Submodule R A} [SetLike.GradedMonoid M]
-
-def gradedAlgebra (dM : DirectSum.Decomposition M) : GradedAlgebra M :=
-  { (inferInstance : SetLike.GradedMonoid M) with toDecomposition := dM }
-
-end DirectSum.Decomposition
--/

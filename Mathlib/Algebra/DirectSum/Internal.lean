@@ -188,7 +188,7 @@ theorem coe_mul_apply_eq_dfinsupp_sum [AddMonoid ι] [SetLike.GradedMonoid A]
   · subst h
     rw [of_eq_same]
     rfl
-  · rw [of_eq_of_ne _ _ _ _ h]
+  · rw [of_eq_of_ne _ _ _ h]
     rfl
 #align direct_sum.coe_mul_apply_eq_dfinsupp_sum DirectSum.coe_mul_apply_eq_dfinsupp_sum
 

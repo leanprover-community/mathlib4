@@ -119,6 +119,8 @@ def of (i : ι) : β i →+ ⨁ i, β i :=
   DFinsupp.singleAddHom β i
 #align direct_sum.of DirectSum.of
 
+variable {β}
+
 @[simp]
 theorem of_eq_same (i : ι) (x : β i) : (of _ i x) i = x :=
   DFinsupp.single_eq_same
@@ -131,13 +133,11 @@ theorem of_eq_of_ne (i j : ι) (x : β i) (h : i ≠ j) : (of _ i x) j = 0 :=
 lemma of_apply {i : ι} (j : ι) (x : β i) : of β i x j = if h : i = j then Eq.recOn h x else 0 :=
   DFinsupp.single_apply
 
-variable {β} in
 theorem mk_apply_of_mem {s : Finset ι} {f : ∀ i : (↑s : Set ι), β i.val} {n : ι} (hn : n ∈ s) :
     mk β s f n = f ⟨n, hn⟩ := by
   dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk, DFinsupp.mk_apply]
   rw [dif_pos hn]
 
-variable {β} in
 theorem mk_apply_of_not_mem {s : Finset ι} {f : ∀ i : (↑s : Set ι), β i.val} {n : ι} (hn : n ∉ s) :
     mk β s f n = 0 := by
   dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk, DFinsupp.mk_apply]
@@ -169,8 +169,6 @@ theorem sum_univ_of [Fintype ι] (x : ⨁ i, β i) :
   apply DFinsupp.ext (fun i ↦ ?_)
   rw [DFinsupp.finset_sum_apply]
   simp [of_apply]
-
-variable {β}
 
 theorem mk_injective (s : Finset ι) : Function.Injective (mk β s) :=
   DFinsupp.mk_injective s
@@ -395,7 +393,7 @@ theorem coe_of_apply {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S
     (of (fun i ↦ {x // x ∈ A i}) i x j : M) = if i = j then x else 0 := by
   obtain rfl | h := Decidable.eq_or_ne i j
   · rw [DirectSum.of_eq_same, if_pos rfl]
-  · rw [DirectSum.of_eq_of_ne _ _ _ _ h, if_neg h, ZeroMemClass.coe_zero, ZeroMemClass.coe_zero]
+  · rw [DirectSum.of_eq_of_ne _ _ _ h, if_neg h, ZeroMemClass.coe_zero, ZeroMemClass.coe_zero]
 #align direct_sum.coe_of_apply DirectSum.coe_of_apply
 
 /-- The `DirectSum` formed by a collection of additive submonoids (or subgroups, or submodules) of
@@ -417,6 +415,7 @@ theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddCom
 
 variable  {M S : Type*} [DecidableEq ι] [DecidableEq M] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S)
+
 theorem support_subset (x : DirectSum ι fun i => A i) :
     (Function.support fun i => (x i : M)) ⊆ ↑(DFinsupp.support x) := by
   intro m
