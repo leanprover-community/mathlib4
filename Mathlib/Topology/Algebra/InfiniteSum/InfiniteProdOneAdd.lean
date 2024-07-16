@@ -660,4 +660,5 @@ lemma A3 (f : ℕ → ℂ → ℂ) (g : ℂ → ℂ) (K : Set ℂ) (hf : Tendsto
 
 
 
+
   sorry
