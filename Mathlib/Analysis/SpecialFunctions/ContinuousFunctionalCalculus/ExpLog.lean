@@ -113,7 +113,8 @@ variable {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A] [StarOrderedRi
 matrices, operators on a Hilbert space, elements of a C⋆-algebra, etc. -/
 noncomputable def log (a : A) : A := cfc Real.log a
 
-@[simp] lemma isSelfAdjoint_log {a : A} : IsSelfAdjoint (log a) := cfc_predicate _ a
+@[simp]
+protected lemma _root_.IsSelfAdjoint.log {a : A} : IsSelfAdjoint (log a) := cfc_predicate _ a
 
 lemma log_exp {a : A} (ha : IsSelfAdjoint a := by cfc_tac) : log (NormedSpace.exp ℝ a) = a := by
   have hcont : ContinuousOn Real.log (Real.exp '' spectrum ℝ a) := by
