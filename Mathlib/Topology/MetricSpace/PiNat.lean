@@ -428,7 +428,6 @@ protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, Unifor
     dist_comm := PiNat.dist_comm
     dist_self := PiNat.dist_self
     eq_of_dist_eq_zero := PiNat.eq_of_dist_eq_zero _ _
-    edist_dist := fun _ _ ↦ by exact ENNReal.coe_nnreal_eq _
     toUniformSpace := Pi.uniformSpace _
     uniformity_dist := by
       simp [Pi.uniformity, comap_iInf, gt_iff_lt, preimage_setOf_eq, comap_principal,
@@ -879,7 +878,6 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
           min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i))) :=
         tsum_le_tsum I (dist_summable x z) ((dist_summable x y).add (dist_summable y z))
       _ = dist x y + dist y z := tsum_add (dist_summable x y) (dist_summable y z)
-  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
   eq_of_dist_eq_zero hxy := by
     ext1 n
     rw [← dist_le_zero, ← hxy]

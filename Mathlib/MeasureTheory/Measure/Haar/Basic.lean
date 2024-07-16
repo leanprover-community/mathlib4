@@ -277,7 +277,7 @@ theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (inte
   refine ⟨s.map (Equiv.mulRight g⁻¹).toEmbedding, ?_, Finset.card_map _⟩
   simp only [mem_setOf_eq]; refine Subset.trans (image_subset _ h1s) ?_
   rintro _ ⟨g₁, ⟨_, ⟨g₂, rfl⟩, ⟨_, ⟨hg₂, rfl⟩, hg₁⟩⟩, rfl⟩
-  simp only [mem_preimage] at hg₁;
+  simp only [mem_preimage] at hg₁
   simp only [exists_prop, mem_iUnion, Finset.mem_map, Equiv.coe_mulRight,
     exists_exists_and_eq_and, mem_preimage, Equiv.toEmbedding_apply]
   refine ⟨_, hg₂, ?_⟩; simp only [mul_assoc, hg₁, inv_mul_cancel_left]
@@ -643,7 +643,7 @@ instance isMulLeftInvariant_haarMeasure (K₀ : PositiveCompacts G) :
 theorem haarMeasure_self {K₀ : PositiveCompacts G} : haarMeasure K₀ K₀ = 1 := by
   haveI : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
   simp only [haarMeasure, coe_smul, Pi.smul_apply, smul_eq_mul]
-  rw [← OuterRegular.measure_closure_eq_of_isCompact K₀.isCompact,
+  rw [← K₀.isCompact.measure_closure,
     Content.measure_apply _ isClosed_closure.measurableSet, ENNReal.inv_mul_cancel]
   · exact (haarContent_outerMeasure_closure_pos K₀).ne'
   · exact (Content.outerMeasure_lt_top_of_isCompact _ K₀.isCompact.closure).ne
@@ -655,7 +655,7 @@ theorem haarMeasure_self {K₀ : PositiveCompacts G} : haarMeasure K₀ K₀ = 1
 instance regular_haarMeasure {K₀ : PositiveCompacts G} : (haarMeasure K₀).Regular := by
   haveI : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
   apply Regular.smul
-  rw [← OuterRegular.measure_closure_eq_of_isCompact K₀.isCompact,
+  rw [← K₀.isCompact.measure_closure,
     Content.measure_apply _ isClosed_closure.measurableSet, ENNReal.inv_ne_top]
   exact (haarContent_outerMeasure_closure_pos K₀).ne'
 #align measure_theory.measure.regular_haar_measure MeasureTheory.Measure.regular_haarMeasure
@@ -751,19 +751,21 @@ variable [SecondCountableTopology G]
   σ-finite left-invariant measure is a scalar multiple of the Haar measure.
   This is slightly weaker than assuming that `μ` is a Haar measure (in particular we don't require
   `μ ≠ 0`).
-  See also `isHaarMeasure_eq_smul_of_regular` for a statement not assuming second-countability. -/
+  See also `isMulLeftInvariant_eq_smul_of_regular`
+  for a statement not assuming second-countability. -/
 @[to_additive
 "**Uniqueness of left-invariant measures**: In a second-countable locally compact additive group,
   any σ-finite left-invariant measure is a scalar multiple of the additive Haar measure.
   This is slightly weaker than assuming that `μ` is a additive Haar measure (in particular we don't
   require `μ ≠ 0`).
-  See also `isAddHaarMeasure_eq_smul_of_regular` for a statement not assuming second-countability."]
+  See also `isAddLeftInvariant_eq_smul_of_regular`
+  for a statement not assuming second-countability."]
 theorem haarMeasure_unique (μ : Measure G) [SigmaFinite μ] [IsMulLeftInvariant μ]
     (K₀ : PositiveCompacts G) : μ = μ K₀ • haarMeasure K₀ := by
   have A : Set.Nonempty (interior (closure (K₀ : Set G))) :=
     K₀.interior_nonempty.mono (interior_mono subset_closure)
-  have := measure_eq_div_smul μ (haarMeasure K₀) (isClosed_closure (s := K₀)).measurableSet
-    (measure_pos_of_nonempty_interior _ A).ne' K₀.isCompact.closure.measure_lt_top.ne
+  have := measure_eq_div_smul μ (haarMeasure K₀)
+    (measure_pos_of_nonempty_interior _ A).ne' K₀.isCompact.closure.measure_ne_top
   rwa [haarMeasure_closure_self, div_one, K₀.isCompact.measure_closure] at this
 #align measure_theory.measure.haar_measure_unique MeasureTheory.Measure.haarMeasure_unique
 #align measure_theory.measure.add_haar_measure_unique MeasureTheory.Measure.addHaarMeasure_unique

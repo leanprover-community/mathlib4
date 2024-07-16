@@ -165,8 +165,7 @@ instance instMetricSpace : MetricSpace (Completion α) :=
       dist_triangle := Completion.dist_triangle
       dist := dist
       toUniformSpace := inferInstance
-      uniformity_dist := Completion.uniformity_dist
-      edist_dist := fun x y ↦ rfl } _
+      uniformity_dist := Completion.uniformity_dist } _
 #align uniform_space.completion.metric_space UniformSpace.Completion.instMetricSpace
 
 @[deprecated eq_of_dist_eq_zero (since := "2024-03-10")]

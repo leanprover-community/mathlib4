@@ -1320,25 +1320,25 @@ lemma le_iff_le_forall_real_gt (x y : EReal) : (∀ z : ℝ, x < z → y ≤ z) 
 
 lemma ge_iff_le_forall_real_lt (x y : EReal) : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
   refine ⟨fun h ↦ ?_, fun h z z_lt_y ↦ le_trans (le_of_lt z_lt_y) h⟩
-  induction x
-  case h_bot =>
+  induction x with
+  | h_bot =>
     refine ((eq_bot_iff_forall_lt y).2 fun z ↦ ?_).le
     refine lt_of_not_le fun z_le_y ↦ (not_le_of_lt (bot_lt_coe (z - 1)) (h (z - 1)
       (lt_of_lt_of_le ?_ z_le_y)))
     exact_mod_cast sub_one_lt z
-  case h_real =>
-    induction y
-    case h_bot => exact bot_le
-    case h_real x y =>
+  | h_real x =>
+    induction y with
+    | h_bot => exact bot_le
+    | h_real y =>
       norm_cast at h ⊢
       by_contra! x_lt_y
       rcases exists_between x_lt_y with ⟨z, x_lt_z, z_lt_y⟩
       exact not_le_of_lt x_lt_z (h z z_lt_y)
-    case h_top x =>
+    | h_top =>
       exfalso
       norm_cast at h
       exact not_le_of_lt (lt_add_one x) <| h (x + 1) (coe_lt_top (x + 1))
-  case h_top => exact le_top
+  | h_top => exact le_top
 
 /-! ### Absolute value -/
 
@@ -1570,7 +1570,7 @@ lemma sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ :=
         coe_ennreal_ofReal, max_eq_left (abs_nonneg a), ← coe_neg |a|, abs_of_neg a_neg, neg_neg]
     · rw [coe_zero, sign_zero, SignType.coe_zero, abs_zero, coe_ennreal_zero, inv_zero, mul_zero]
     · rw [sign_coe, _root_.sign_pos a_pos, SignType.coe_one, one_mul]
-      simp only [abs_def a, coe_ennreal_ofReal, ge_iff_le, abs_nonneg, max_eq_left]
+      simp only [abs_def a, coe_ennreal_ofReal, abs_nonneg, max_eq_left]
       congr
       exact abs_of_pos a_pos
 
