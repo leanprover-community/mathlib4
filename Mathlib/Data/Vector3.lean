@@ -44,7 +44,7 @@ def nil : Vector3 α 0 :=
 /-- The vector cons operation -/
 @[match_pattern]
 def cons (a : α) (v : Vector3 α n) : Vector3 α (n + 1) := fun i => by
-  refine' i.cases' _ _
+  refine i.cases' ?_ ?_
   · exact a
   · exact v
 #align vector3.cons Vector3.cons
@@ -266,7 +266,7 @@ theorem vectorAllP_nil (p : α → Prop) : VectorAllP p [] = True :=
   rfl
 #align vector_allp_nil vectorAllP_nil
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
+@[simp]
 theorem vectorAllP_singleton (p : α → Prop) (x : α) : VectorAllP p (cons x []) = p x :=
   rfl
 #align vector_allp_singleton vectorAllP_singleton
@@ -285,7 +285,7 @@ theorem vectorAllP_iff_forall (p : α → Prop) (v : Vector3 α n) :
     refine fun {n} a v IH =>
       (and_congr_right fun _ => IH).trans
         ⟨fun ⟨pa, h⟩ i => by
-          refine' i.cases' _ _
+          refine i.cases' ?_ ?_
           exacts [pa, h], fun h => ⟨?_, fun i => ?_⟩⟩
     · simpa using h fz
     · simpa using h (fs i)

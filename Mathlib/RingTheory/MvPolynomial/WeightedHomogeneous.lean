@@ -65,7 +65,7 @@ def weightedDegree (w : σ → M) : (σ →₀ ℕ) →+ M :=
   (Finsupp.total σ M ℕ w).toAddMonoidHom
 #align mv_polynomial.weighted_degree' MvPolynomial.weightedDegree
 
-theorem weightedDegree_apply (w : σ → M) (f : σ →₀ ℕ):
+theorem weightedDegree_apply (w : σ → M) (f : σ →₀ ℕ) :
     weightedDegree w f = Finsupp.sum f (fun i c => c • w i) := by
   rfl
 section SemilatticeSup
@@ -86,8 +86,9 @@ theorem weightedTotalDegree'_eq_bot_iff (w : σ → M) (p : MvPolynomial σ R) :
 #align mv_polynomial.weighted_total_degree'_eq_bot_iff MvPolynomial.weightedTotalDegree'_eq_bot_iff
 
 /-- The `weightedTotalDegree'` of the zero polynomial is `⊥`. -/
-theorem weightedTotalDegree'_zero (w : σ → M) : weightedTotalDegree' w (0 : MvPolynomial σ R) = ⊥ :=
-  by simp only [weightedTotalDegree', support_zero, Finset.sup_empty]
+theorem weightedTotalDegree'_zero (w : σ → M) :
+    weightedTotalDegree' w (0 : MvPolynomial σ R) = ⊥ := by
+  simp only [weightedTotalDegree', support_zero, Finset.sup_empty]
 #align mv_polynomial.weighted_total_degree'_zero MvPolynomial.weightedTotalDegree'_zero
 
 section OrderBot
@@ -116,8 +117,9 @@ theorem weightedTotalDegree_coe (w : σ → M) (p : MvPolynomial σ R) (hp : p �
 #align mv_polynomial.weighted_total_degree_coe MvPolynomial.weightedTotalDegree_coe
 
 /-- The `weightedTotalDegree` of the zero polynomial is `⊥`. -/
-theorem weightedTotalDegree_zero (w : σ → M) : weightedTotalDegree w (0 : MvPolynomial σ R) = ⊥ :=
-  by simp only [weightedTotalDegree, support_zero, Finset.sup_empty]
+theorem weightedTotalDegree_zero (w : σ → M) :
+    weightedTotalDegree w (0 : MvPolynomial σ R) = ⊥ := by
+  simp only [weightedTotalDegree, support_zero, Finset.sup_empty]
 #align mv_polynomial.weighted_total_degree_zero MvPolynomial.weightedTotalDegree_zero
 
 theorem le_weightedTotalDegree (w : σ → M) {φ : MvPolynomial σ R} {d : σ →₀ ℕ}

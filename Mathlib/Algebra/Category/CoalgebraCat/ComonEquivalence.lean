@@ -42,9 +42,7 @@ variable {R : Type u} [CommRing R]
   comul := ModuleCat.ofHom Coalgebra.comul
   counit_comul := by simpa only [ModuleCat.of_coe] using Coalgebra.rTensor_counit_comp_comul
   comul_counit := by simpa only [ModuleCat.of_coe] using Coalgebra.lTensor_counit_comp_comul
-  comul_assoc := by
-    simp_rw [← Category.assoc, Iso.comp_inv_eq, ModuleCat.of_coe]
-    exact Coalgebra.coassoc.symm
+  comul_assoc := by simp_rw [ModuleCat.of_coe]; exact Coalgebra.coassoc.symm
 
 variable (R) in
 /-- The natural functor from `R`-coalgebras to comonoid objects in the category of `R`-modules. -/
@@ -68,9 +66,9 @@ instance ofComonObjCoalgebraStruct (X : Comon_ (ModuleCat R)) :
 structure. -/
 def ofComonObj (X : Comon_ (ModuleCat R)) : CoalgebraCat R where
   carrier := X.X
-  isCoalgebra :=
+  instCoalgebra :=
     { ofComonObjCoalgebraStruct X with
-      coassoc := (LinearEquiv.eq_toLinearMap_symm_comp _ _).1 X.comul_assoc.symm
+      coassoc := X.comul_assoc.symm
       rTensor_counit_comp_comul := X.counit_comul
       lTensor_counit_comp_comul := X.comul_counit }
 

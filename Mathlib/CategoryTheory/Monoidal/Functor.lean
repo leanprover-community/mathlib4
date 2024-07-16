@@ -81,10 +81,10 @@ structure LaxMonoidalFunctor extends C ⥤ D where
         (α_ (obj X) (obj Y) (obj Z)).hom ≫ obj X ◁ μ Y Z ≫ μ X (Y ⊗ Z) := by
     aesop_cat
   -- unitality
-  left_unitality : ∀ X : C, (λ_ (obj X)).hom = ε ▷ obj X ≫ μ (𝟙_ C) X ≫ map (λ_ X).hom :=
-    by aesop_cat
-  right_unitality : ∀ X : C, (ρ_ (obj X)).hom = obj X ◁ ε ≫ μ X (𝟙_ C) ≫ map (ρ_ X).hom :=
-    by aesop_cat
+  left_unitality : ∀ X : C, (λ_ (obj X)).hom = ε ▷ obj X ≫ μ (𝟙_ C) X ≫ map (λ_ X).hom := by
+    aesop_cat
+  right_unitality : ∀ X : C, (ρ_ (obj X)).hom = obj X ◁ ε ≫ μ X (𝟙_ C) ≫ map (ρ_ X).hom := by
+    aesop_cat
 #align category_theory.lax_monoidal_functor CategoryTheory.LaxMonoidalFunctor
 
 -- Porting note (#11215): TODO: remove this configuration and use the default configuration.
@@ -137,11 +137,11 @@ def LaxMonoidalFunctor.ofTensorHom (F : C ⥤ D)
       aesop_cat)
     /- unitality -/
     (left_unitality :
-      ∀ X : C, (λ_ (F.obj X)).hom = (ε ⊗ 𝟙 (F.obj X)) ≫ μ (𝟙_ C) X ≫ F.map (λ_ X).hom :=
-        by aesop_cat)
+      ∀ X : C, (λ_ (F.obj X)).hom = (ε ⊗ 𝟙 (F.obj X)) ≫ μ (𝟙_ C) X ≫ F.map (λ_ X).hom := by
+        aesop_cat)
     (right_unitality :
-      ∀ X : C, (ρ_ (F.obj X)).hom = (𝟙 (F.obj X) ⊗ ε) ≫ μ X (𝟙_ C) ≫ F.map (ρ_ X).hom :=
-        by aesop_cat) :
+      ∀ X : C, (ρ_ (F.obj X)).hom = (𝟙 (F.obj X) ⊗ ε) ≫ μ X (𝟙_ C) ≫ F.map (ρ_ X).hom := by
+        aesop_cat) :
         LaxMonoidalFunctor C D where
   obj := F.obj
   map := F.map
@@ -207,10 +207,10 @@ structure OplaxMonoidalFunctor extends C ⥤ D where
         map (α_ X Y Z).hom ≫ δ X (Y ⊗ Z) ≫ obj X ◁ δ Y Z := by
     aesop_cat
   -- unitality
-  left_unitality : ∀ X : C, (λ_ (obj X)).inv = map (λ_ X).inv ≫ δ (𝟙_ C) X ≫ η ▷ obj X :=
-    by aesop_cat
-  right_unitality : ∀ X : C, (ρ_ (obj X)).inv = map (ρ_ X).inv ≫ δ X (𝟙_ C) ≫ obj X ◁ η :=
-    by aesop_cat
+  left_unitality : ∀ X : C, (λ_ (obj X)).inv = map (λ_ X).inv ≫ δ (𝟙_ C) X ≫ η ▷ obj X := by
+    aesop_cat
+  right_unitality : ∀ X : C, (ρ_ (obj X)).inv = map (ρ_ X).inv ≫ δ X (𝟙_ C) ≫ obj X ◁ η := by
+    aesop_cat
 
 initialize_simps_projections OplaxMonoidalFunctor (+toFunctor, -obj, -map)
 
@@ -286,6 +286,7 @@ noncomputable def MonoidalFunctor.μIso (F : MonoidalFunctor.{v₁, v₂} C D) (
 #align category_theory.monoidal_functor.μ_iso CategoryTheory.MonoidalFunctor.μIso
 
 /-- The underlying oplax monoidal functor of a (strong) monoidal functor. -/
+@[simps]
 noncomputable def MonoidalFunctor.toOplaxMonoidalFunctor (F : MonoidalFunctor C D) :
     OplaxMonoidalFunctor C D :=
   { F with

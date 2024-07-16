@@ -87,7 +87,7 @@ theorem ext {C₁ C₂ : HomologicalComplex V c} (h_X : C₁.X = C₂.X)
   subst h_X
   simp only [mk.injEq, heq_eq_eq, true_and]
   ext i j
-  by_cases hij: c.Rel i j
+  by_cases hij : c.Rel i j
   · simpa only [comp_id, id_comp, eqToHom_refl] using h_d i j hij
   · rw [s₁ i j hij, s₂ i j hij]
 #align homological_complex.ext HomologicalComplex.ext
@@ -317,8 +317,8 @@ theorem isZero_zero [HasZeroObject V] : IsZero (zero : HomologicalComplex V c) :
   refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
   all_goals
     ext
-    dsimp [zero]
-    apply Subsingleton.elim
+    dsimp only [zero]
+    subsingleton
 #align homological_complex.is_zero_zero HomologicalComplex.isZero_zero
 
 instance [HasZeroObject V] : HasZeroObject (HomologicalComplex V c) :=
@@ -356,6 +356,8 @@ def eval (i : ι) : HomologicalComplex V c ⥤ V where
   obj C := C.X i
   map f := f.f i
 #align homological_complex.eval HomologicalComplex.eval
+
+instance (i : ι) : (eval V c i).PreservesZeroMorphisms where
 
 /-- The functor forgetting the differential in a complex, obtaining a graded object. -/
 @[simps]
@@ -516,8 +518,9 @@ set_option linter.uppercaseLean3 false in
 #align homological_complex.X_prev_iso_self_comp_d_to HomologicalComplex.xPrevIsoSelf_comp_dTo
 
 @[reassoc (attr := simp)]
-theorem dFrom_comp_xNextIso {i j : ι} (r : c.Rel i j) : C.dFrom i ≫ (C.xNextIso r).hom = C.d i j :=
-  by simp [C.dFrom_eq r]
+theorem dFrom_comp_xNextIso {i j : ι} (r : c.Rel i j) :
+    C.dFrom i ≫ (C.xNextIso r).hom = C.d i j := by
+  simp [C.dFrom_eq r]
 set_option linter.uppercaseLean3 false in
 #align homological_complex.d_from_comp_X_next_iso HomologicalComplex.dFrom_comp_xNextIso
 
@@ -589,7 +592,7 @@ theorem isoOfComponents_app (f : ∀ i, C₁.X i ≅ C₂.X i)
 #align homological_complex.hom.iso_of_components_app HomologicalComplex.Hom.isoOfComponents_app
 
 theorem isIso_of_components (f : C₁ ⟶ C₂) [∀ n : ι, IsIso (f.f n)] : IsIso f :=
-  IsIso.of_iso (HomologicalComplex.Hom.isoOfComponents fun n => asIso (f.f n))
+  (HomologicalComplex.Hom.isoOfComponents fun n => asIso (f.f n)).isIso_hom
 #align homological_complex.hom.is_iso_of_components HomologicalComplex.Hom.isIso_of_components
 
 /-! Lemmas relating chain maps and `dTo`/`dFrom`. -/
@@ -1060,7 +1063,7 @@ then a function which takes a differential,
 and returns the next object, its differential, and the fact it composes appropriately to zero.
 -/
 def mk' (X₀ X₁ : V) (d : X₀ ⟶ X₁)
-    -- (succ' : ∀  : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0) :
+    -- (succ' : ∀ : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0) :
     (succ' : ∀ {X₀ X₁ : V} (f : X₀ ⟶ X₁), Σ' (X₂ : V) (d : X₁ ⟶ X₂), f ≫ d = 0) :
     CochainComplex V ℕ :=
   mk _ _ _ _ _ (succ' d).2.2 (fun S => succ' S.g)

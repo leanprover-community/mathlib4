@@ -8,8 +8,10 @@ import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Finset.NoncommProd
-import Mathlib.Data.Int.Order.Lemmas
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Util.AssertExists
 
 #align_import group_theory.submonoid.membership from "leanprover-community/mathlib"@"e655e4ea5c6d02854696f97494997ba4c31be802"
 
@@ -35,6 +37,9 @@ In this file we prove various facts about membership in a submonoid:
 ## Tags
 submonoid, submonoids
 -/
+
+-- We don't need ordered structures to establish basic membership facts for submonoids
+assert_not_exists OrderedSemiring
 
 variable {M A B : Type*}
 
@@ -405,7 +410,7 @@ theorem exists_list_of_mem_closure {s : Set M} {x : M} (hx : x ∈ closure s) :
 
 @[to_additive]
 theorem exists_multiset_of_mem_closure {M : Type*} [CommMonoid M] {s : Set M} {x : M}
-    (hx : x ∈ closure s) : ∃ (l : Multiset M) (_ : ∀ y ∈ l, y ∈ s), l.prod = x := by
+    (hx : x ∈ closure s) : ∃ l : Multiset M, (∀ y ∈ l, y ∈ s) ∧ l.prod = x := by
   obtain ⟨l, h1, h2⟩ := exists_list_of_mem_closure hx
   exact ⟨l, h1, (Multiset.prod_coe l).trans h2⟩
 #align submonoid.exists_multiset_of_mem_closure Submonoid.exists_multiset_of_mem_closure
@@ -419,7 +424,7 @@ theorem closure_induction_left {s : Set M} {p : (m : M) → m ∈ closure s → 
     p x h := by
   simp_rw [closure_eq_mrange] at h
   obtain ⟨l, rfl⟩ := h
-  induction' l using FreeMonoid.recOn with x y ih
+  induction' l with x y ih
   · exact one
   · simp only [map_mul, FreeMonoid.lift_eval_of]
     refine mul_left _ x.prop (FreeMonoid.lift Subtype.val y) _ (ih ?_)
@@ -644,7 +649,7 @@ theorem sup_eq_range (s t : Submonoid N) : s ⊔ t = mrange (s.subtype.coprod t.
 
 @[to_additive]
 theorem mem_sup {s t : Submonoid N} {x : N} : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x := by
-  simp only [ge_iff_le, sup_eq_range, mem_mrange, coprod_apply, coe_subtype, Prod.exists,
+  simp only [sup_eq_range, mem_mrange, coprod_apply, coe_subtype, Prod.exists,
     Subtype.exists, exists_prop]
 #align submonoid.mem_sup Submonoid.mem_sup
 #align add_submonoid.mem_sup AddSubmonoid.mem_sup
@@ -722,8 +727,8 @@ and an element of `M` is contained in the additive closure of `M`. -/
 theorem mul_right_mem_add_closure (ha : a ∈ AddSubmonoid.closure (S : Set R)) (hb : b ∈ S) :
     a * b ∈ AddSubmonoid.closure (S : Set R) := by
   revert b
-  refine' @AddSubmonoid.closure_induction _ _ _
-    (fun z => ∀ (b : R), b ∈ S → z * b ∈ AddSubmonoid.closure S) _ ha _ _ _ <;> clear ha a
+  apply @AddSubmonoid.closure_induction _ _ _
+    (fun z => ∀ (b : R), b ∈ S → z * b ∈ AddSubmonoid.closure S) _ ha <;> clear ha a
   · exact fun r hr b hb => AddSubmonoid.mem_closure.mpr fun y hy => hy (mul_mem hr hb)
   · exact fun b _ => by simp only [zero_mul, (AddSubmonoid.closure (S : Set R)).zero_mem]
   · simp_rw [add_mul]
@@ -735,9 +740,9 @@ additive closure of `M`. -/
 theorem mul_mem_add_closure (ha : a ∈ AddSubmonoid.closure (S : Set R))
     (hb : b ∈ AddSubmonoid.closure (S : Set R)) : a * b ∈ AddSubmonoid.closure (S : Set R) := by
   revert a
-  refine' @AddSubmonoid.closure_induction _ _ _
+  apply @AddSubmonoid.closure_induction _ _ _
     (fun z => ∀ {a : R}, a ∈ AddSubmonoid.closure ↑S → a * z ∈ AddSubmonoid.closure ↑S)
-      _ hb _ _ _ <;> clear hb b
+      _ hb <;> clear hb b
   · exact fun r hr b hb => MulMemClass.mul_right_mem_add_closure hb hr
   · exact fun _ => by simp only [mul_zero, (AddSubmonoid.closure (S : Set R)).zero_mem]
   · simp_rw [mul_add]

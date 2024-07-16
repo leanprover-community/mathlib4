@@ -84,13 +84,9 @@ function so that `mk 1` is the power series with all coefficients equal to one.
 theorem mk_one_mul_one_sub_eq_one : (mk 1 : S⟦X⟧) * (1 - X) = 1 := by
   rw [mul_comm, ext_iff]
   intro n
-  by_cases hn : n = 0
-  · subst hn
-    simp only [coeff_zero_eq_constantCoeff, map_mul, map_sub, map_one, constantCoeff_X, sub_zero,
-      one_mul, coeff_one, ↓reduceIte]
-    rfl
-  · rw [show n = n - 1 + 1 by exact (Nat.succ_pred hn).symm, sub_mul]
-    simp
+  cases n with
+  | zero => simp
+  | succ n => simp [sub_mul]
 
 /--
 Note that `mk 1` is the constant function `1` so the power series `1 + X + X^2 + ...`. This theorem
@@ -102,10 +98,12 @@ theorem mk_one_pow_eq_mk_choose_add :
   induction d with
   | zero => ext; simp
   | succ d hd =>
-      ext n; rw [pow_add, hd, pow_one, mul_comm, coeff_mul]
-      simp_rw [coeff_mk, Pi.one_apply, one_mul]; norm_cast
-      rw [Finset.sum_antidiagonal_choose_add, ← Nat.choose_succ_succ]; congr
-      exact add_right_comm d n 1
+      ext n
+      rw [pow_add, hd, pow_one, mul_comm, coeff_mul]
+      simp_rw [coeff_mk, Pi.one_apply, one_mul]
+      norm_cast
+      rw [Finset.sum_antidiagonal_choose_add, ← Nat.choose_succ_succ, Nat.succ_eq_add_one,
+        add_right_comm]
 
 /--
 The power series `mk fun n => Nat.choose (d + n) d`, whose multiplicative inverse is
@@ -178,31 +176,10 @@ theorem constantCoeff_exp : constantCoeff A (exp A) = 1 := by
   simp
 #align power_series.constant_coeff_exp PowerSeries.constantCoeff_exp
 
-set_option linter.deprecated false in
-@[simp]
-theorem coeff_sin_bit0 : coeff A (bit0 n) (sin A) = 0 := by
-  rw [sin, coeff_mk, if_pos (even_bit0 n)]
-#align power_series.coeff_sin_bit0 PowerSeries.coeff_sin_bit0
-
-set_option linter.deprecated false in
-@[simp]
-theorem coeff_sin_bit1 : coeff A (bit1 n) (sin A) = (-1) ^ n * coeff A (bit1 n) (exp A) := by
-  rw [sin, coeff_mk, if_neg n.not_even_bit1, Nat.bit1_div_two, ← mul_one_div, map_mul, map_pow,
-    map_neg, map_one, coeff_exp]
-#align power_series.coeff_sin_bit1 PowerSeries.coeff_sin_bit1
-
-set_option linter.deprecated false in
-@[simp]
-theorem coeff_cos_bit0 : coeff A (bit0 n) (cos A) = (-1) ^ n * coeff A (bit0 n) (exp A) := by
-  rw [cos, coeff_mk, if_pos (even_bit0 n), Nat.bit0_div_two, ← mul_one_div, map_mul, map_pow,
-    map_neg, map_one, coeff_exp]
-#align power_series.coeff_cos_bit0 PowerSeries.coeff_cos_bit0
-
-set_option linter.deprecated false in
-@[simp]
-theorem coeff_cos_bit1 : coeff A (bit1 n) (cos A) = 0 := by
-  rw [cos, coeff_mk, if_neg n.not_even_bit1]
-#align power_series.coeff_cos_bit1 PowerSeries.coeff_cos_bit1
+#noalign power_series.coeff_sin_bit0
+#noalign power_series.coeff_sin_bit1
+#noalign power_series.coeff_cos_bit0
+#noalign power_series.coeff_cos_bit1
 
 @[simp]
 theorem map_exp : map (f : A →+* A') (exp A) = exp A' := by

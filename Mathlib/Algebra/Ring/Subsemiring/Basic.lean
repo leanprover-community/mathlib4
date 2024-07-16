@@ -41,8 +41,7 @@ theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := 
 #align nat_cast_mem natCast_mem
 #align coe_nat_mem natCast_mem
 
--- 2024-04-05
-@[deprecated] alias coe_nat_mem := natCast_mem
+@[deprecated (since := "2024-04-05")] alias coe_nat_mem := natCast_mem
 
 @[aesop safe apply (rule_sets := [SetLike])]
 lemma ofNat_mem [AddSubmonoidWithOneClass S R] (s : S) (n : ℕ) [n.AtLeastTwo] :
@@ -632,7 +631,7 @@ variable (R) [NonAssocSemiring R]
 with everything in `R` -/
 def center : Subsemiring R :=
   { NonUnitalSubsemiring.center R with
-    one_mem' := Set.one_mem_center R }
+    one_mem' := Set.one_mem_center }
 #align subsemiring.center Subsemiring.center
 
 theorem coe_center : ↑(center R) = Set.center R :=
@@ -686,7 +685,7 @@ section Centralizer
 def centralizer {R} [Semiring R] (s : Set R) : Subsemiring R :=
   { Submonoid.centralizer s with
     carrier := s.centralizer
-    zero_mem' := Set.zero_mem_centralizer _
+    zero_mem' := Set.zero_mem_centralizer
     add_mem' := Set.add_mem_centralizer }
 #align subsemiring.centralizer Subsemiring.centralizer
 
@@ -723,6 +722,16 @@ theorem centralizer_eq_top_iff_subset {R} [Semiring R] {s : Set R} :
 theorem centralizer_univ {R} [Semiring R] : centralizer Set.univ = center R :=
   SetLike.ext' (Set.centralizer_univ R)
 #align subsemiring.centralizer_univ Subsemiring.centralizer_univ
+
+lemma le_centralizer_centralizer {R} [Semiring R] {s : Subsemiring R} :
+    s ≤ centralizer (centralizer (s : Set R)) :=
+  Set.subset_centralizer_centralizer
+
+@[simp]
+lemma centralizer_centralizer_centralizer {R} [Semiring R] {s : Set R} :
+    centralizer s.centralizer.centralizer = centralizer s := by
+  apply SetLike.coe_injective
+  simp only [coe_centralizer, Set.centralizer_centralizer_centralizer]
 
 end Centralizer
 
@@ -864,7 +873,7 @@ theorem closure_induction' {s : Set R} {p : ∀ x, x ∈ closure s → Prop}
     (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     {a : R} (ha : a ∈ closure s) : p a ha := by
   refine Exists.elim ?_ fun (ha : a ∈ closure s) (hc : p a ha) => hc
-  refine'
+  refine
     closure_induction ha (fun m hm => ⟨subset_closure hm, mem m hm⟩) ⟨zero_mem _, zero⟩
       ⟨one_mem _, one⟩ ?_ ?_
   · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
@@ -1362,7 +1371,7 @@ def closureCommSemiringOfComm {s : Set R'} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a 
     mul_comm := fun x y => by
       ext
       simp only [Subsemiring.coe_mul]
-      refine'
+      refine
         closure_induction₂ x.prop y.prop hcomm (fun x => by simp only [zero_mul, mul_zero])
           (fun x => by simp only [zero_mul, mul_zero]) (fun x => by simp only [one_mul, mul_one])
           (fun x => by simp only [one_mul, mul_one])

@@ -30,7 +30,7 @@ is a generalization of `Algebra.Polynomial.Eval`.
 * `smeval_mul`, `smeval_comp`: multiplicativity of evaluation, given power-associativity.
 * `eval₂_eq_smeval`, `leval_eq_smeval.linearMap`, `aeval = smeval.algebraMap`, etc.: comparisons
 
-## To do
+## TODO
 
 * `smeval_neg` and `smeval_intCast` for `R` a ring and `S` an `AddCommGroup`.
 * Nonunital evaluation for polynomials with vanishing constant term for `Pow S ℕ+` (different file?)
@@ -67,7 +67,7 @@ theorem eval_eq_smeval : p.eval r = p.smeval r := by
   rfl
 
 theorem eval₂_eq_smeval (R : Type*) [Semiring R] {S : Type*} [Semiring S] (f : R →+* S) (p : R[X])
-    (x: S) : letI : Module R S := RingHom.toModule f
+    (x : S) : letI : Module R S := RingHom.toModule f
     p.eval₂ f x = p.smeval x := by
   letI : Module R S := RingHom.toModule f
   rw [smeval_eq_sum, eval₂_eq_sum]
@@ -113,6 +113,9 @@ theorem smeval_natCast (n : ℕ) : (n : R[X]).smeval x = n • x ^ 0 := by
   · simp only [smeval_zero, Nat.cast_zero, Nat.zero_eq, zero_smul]
   · rw [n.cast_succ, smeval_add, ih, smeval_one, ← add_nsmul]
 
+@[deprecated (since := "2024-04-17")]
+alias smeval_nat_cast := smeval_natCast
+
 @[simp]
 theorem smeval_smul (r : R) : (r • p).smeval x = r • p.smeval x := by
   induction p using Polynomial.induction_on' with
@@ -152,13 +155,20 @@ variable (R : Type*) [Ring R] {S : Type*} [AddCommGroup S] [Pow S ℕ] [Module R
 
 @[simp]
 theorem smeval_neg : (-p).smeval x = - p.smeval x := by
-  have h : (p + -p).smeval x = 0 := by rw [add_neg_self, smeval_zero]
-  rw [smeval_add, add_eq_zero_iff_neg_eq] at h
-  exact id h.symm
+  rw [← add_eq_zero_iff_eq_neg, ← smeval_add, add_left_neg, smeval_zero]
 
 @[simp]
 theorem smeval_sub : (p - q).smeval x = p.smeval x - q.smeval x := by
   rw [sub_eq_add_neg, smeval_add, smeval_neg, sub_eq_add_neg]
+
+theorem smeval_neg_nat (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S] (q : ℕ[X])
+    (n : ℕ) : q.smeval (-(n : S)) = q.smeval (-n : ℤ) := by
+  rw [smeval_eq_sum, smeval_eq_sum]
+  simp only [Polynomial.smul_pow, sum_def, Int.cast_sum, Int.cast_mul, Int.cast_npow]
+  refine Finset.sum_congr rfl ?_
+  intro k _
+  rw [show -(n : S) = (-n : ℤ) by simp only [Int.cast_neg, Int.cast_natCast], nsmul_eq_mul,
+    ← AddGroupWithOne.intCast_ofNat, ← Int.cast_npow, ← Int.cast_mul, ← nsmul_eq_mul]
 
 end Neg
 
@@ -176,7 +186,7 @@ variable (R : Type*) [Semiring R] {p : R[X]} (r : R) (p q : R[X]) {S : Type*}
   [NonAssocSemiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S] [Pow S ℕ]
   [NatPowAssoc S] (x : S)
 
-theorem smeval_at_natCast (q : ℕ[X]): ∀(n : ℕ), q.smeval (n : S) = q.smeval n := by
+theorem smeval_at_natCast (q : ℕ[X]) : ∀(n : ℕ), q.smeval (n : S) = q.smeval n := by
   induction q using Polynomial.induction_on' with
   | h_add p q ph qh =>
     intro n
@@ -184,6 +194,9 @@ theorem smeval_at_natCast (q : ℕ[X]): ∀(n : ℕ), q.smeval (n : S) = q.smeva
   | h_monomial n a =>
     intro n
     rw [smeval_monomial, smeval_monomial, nsmul_eq_mul, smul_eq_mul, Nat.cast_mul, Nat.cast_npow]
+
+@[deprecated (since := "2024-04-17")]
+alias smeval_at_nat_cast := smeval_at_natCast
 
 theorem smeval_at_zero : p.smeval (0 : S) = (p.coeff 0) • (1 : S)  := by
   induction p using Polynomial.induction_on' with
@@ -291,3 +304,5 @@ theorem aeval_coe_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S
     (x : S) : ⇑(aeval x) = fun (p : R[X]) => p.smeval x := funext fun p => aeval_eq_smeval x p
 
 end Algebra
+
+end Polynomial

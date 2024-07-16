@@ -261,7 +261,7 @@ theorem cauchySeq_iff' {u : ℕ → α} :
 
 theorem cauchySeq_iff {u : ℕ → α} :
     CauchySeq u ↔ ∀ V ∈ 𝓤 α, ∃ N, ∀ k ≥ N, ∀ l ≥ N, (u k, u l) ∈ V := by
-  simp only [cauchySeq_iff', Filter.eventually_atTop_prod_self', mem_preimage, Prod_map]
+  simp only [cauchySeq_iff', Filter.eventually_atTop_prod_self', mem_preimage, Prod.map_apply]
 #align cauchy_seq_iff cauchySeq_iff
 
 theorem CauchySeq.prod_map {γ δ} [UniformSpace β] [Preorder γ] [Preorder δ] {u : γ → α}
@@ -329,7 +329,7 @@ theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u 
   rw [cauchySeq_iff_tendsto, ← prod_atTop_atTop_eq]
   refine (atTop_basis.prod_self.tendsto_iff h).trans ?_
   simp only [exists_prop, true_and_iff, MapsTo, preimage, subset_def, Prod.forall, mem_prod_eq,
-    mem_setOf_eq, mem_Ici, and_imp, Prod.map, ge_iff_le, @forall_swap (_ ≤ _) β]
+    mem_setOf_eq, mem_Ici, and_imp, Prod.map, @forall_swap (_ ≤ _) β]
 #align filter.has_basis.cauchy_seq_iff Filter.HasBasis.cauchySeq_iff
 
 theorem Filter.HasBasis.cauchySeq_iff' {γ} [Nonempty β] [SemilatticeSup β] {u : β → α}
@@ -393,7 +393,7 @@ theorem isComplete_iUnion_separated {ι : Sort*} {s : ι → Set α} (hs : ∀ i
   cases' cauchy_iff.1 hl with hl_ne hl'
   obtain ⟨t, htS, htl, htU⟩ : ∃ t, t ⊆ S ∧ t ∈ l ∧ t ×ˢ t ⊆ U := by
     rcases hl' U hU with ⟨t, htl, htU⟩
-    refine ⟨t ∩ S, inter_subset_right _ _, inter_mem htl hls, Subset.trans ?_ htU⟩
+    refine ⟨t ∩ S, inter_subset_right, inter_mem htl hls, Subset.trans ?_ htU⟩
     gcongr <;> apply inter_subset_left
   obtain ⟨i, hi⟩ : ∃ i, t ⊆ s i := by
     rcases Filter.nonempty_of_mem htl with ⟨x, hx⟩
@@ -533,9 +533,7 @@ theorem TotallyBounded.exists_subset {s : Set α} (hs : TotallyBounded s) {U : S
 theorem totallyBounded_iff_subset {s : Set α} :
     TotallyBounded s ↔
       ∀ d ∈ 𝓤 α, ∃ t, t ⊆ s ∧ Set.Finite t ∧ s ⊆ ⋃ y ∈ t, { x | (x, y) ∈ d } :=
-  ⟨fun H _ hd => H.exists_subset hd, fun H d hd =>
-    let ⟨t, _, ht⟩ := H d hd
-    ⟨t, ht⟩⟩
+  ⟨fun H _ hd ↦ H.exists_subset hd, fun H d hd ↦ let ⟨t, _, ht⟩ := H d hd; ⟨t, ht⟩⟩
 #align totally_bounded_iff_subset totallyBounded_iff_subset
 
 theorem Filter.HasBasis.totallyBounded_iff {ι} {p : ι → Prop} {U : ι → Set (α × α)}
@@ -552,15 +550,14 @@ theorem totallyBounded_of_forall_symm {s : Set α}
     simpa only [ball_eq_of_symmetry hV.2] using h V hV.1 hV.2
 #align totally_bounded_of_forall_symm totallyBounded_of_forall_symm
 
-theorem totallyBounded_subset {s₁ s₂ : Set α} (hs : s₁ ⊆ s₂) (h : TotallyBounded s₂) :
+theorem TotallyBounded.subset {s₁ s₂ : Set α} (hs : s₁ ⊆ s₂) (h : TotallyBounded s₂) :
     TotallyBounded s₁ := fun d hd =>
   let ⟨t, ht₁, ht₂⟩ := h d hd
   ⟨t, ht₁, Subset.trans hs ht₂⟩
-#align totally_bounded_subset totallyBounded_subset
+#align totally_bounded_subset TotallyBounded.subset
 
-theorem totallyBounded_empty : TotallyBounded (∅ : Set α) := fun _ _ =>
-  ⟨∅, finite_empty, empty_subset _⟩
-#align totally_bounded_empty totallyBounded_empty
+@[deprecated (since := "2024-06-01")]
+alias totallyBounded_subset := TotallyBounded.subset
 
 /-- The closure of a totally bounded set is totally bounded. -/
 theorem TotallyBounded.closure {s : Set α} (h : TotallyBounded s) : TotallyBounded (closure s) :=
@@ -570,6 +567,70 @@ theorem TotallyBounded.closure {s : Set α} (h : TotallyBounded s) : TotallyBoun
       closure_minimal hst <|
         htf.isClosed_biUnion fun _ _ => hV.2.preimage (continuous_id.prod_mk continuous_const)⟩
 #align totally_bounded.closure TotallyBounded.closure
+
+@[simp]
+lemma totallyBounded_closure {s : Set α} : TotallyBounded (closure s) ↔ TotallyBounded s :=
+  ⟨fun h ↦ h.subset subset_closure, TotallyBounded.closure⟩
+
+/-- A finite indexed union is totally bounded
+if and only if each set of the family is totally bounded. -/
+@[simp]
+lemma totallyBounded_iUnion {ι : Sort*} [Finite ι] {s : ι → Set α} :
+    TotallyBounded (⋃ i, s i) ↔ ∀ i, TotallyBounded (s i) := by
+  refine ⟨fun h i ↦ h.subset (subset_iUnion _ _), fun h U hU ↦ ?_⟩
+  choose t htf ht using (h · U hU)
+  refine ⟨⋃ i, t i, finite_iUnion htf, ?_⟩
+  rw [biUnion_iUnion]
+  gcongr; apply ht
+
+/-- A union indexed by a finite set is totally bounded
+if and only if each set of the family is totally bounded. -/
+lemma totallyBounded_biUnion {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set α} :
+    TotallyBounded (⋃ i ∈ I, s i) ↔ ∀ i ∈ I, TotallyBounded (s i) := by
+  have := hI.to_subtype
+  rw [biUnion_eq_iUnion, totallyBounded_iUnion, Subtype.forall]
+
+/-- A union of a finite family of sets is totally bounded
+if and only if each set of the family is totally bounded. -/
+lemma totallyBounded_sUnion {S : Set (Set α)} (hS : S.Finite) :
+    TotallyBounded (⋃₀ S) ↔ ∀ s ∈ S, TotallyBounded s := by
+  rw [sUnion_eq_biUnion, totallyBounded_biUnion hS]
+
+/-- A finite set is totally bounded. -/
+lemma Set.Finite.totallyBounded {s : Set α} (hs : s.Finite) : TotallyBounded s := fun _U hU ↦
+  ⟨s, hs, fun _x hx ↦ mem_biUnion hx <| refl_mem_uniformity hU⟩
+
+/-- A subsingleton is totally bounded. -/
+lemma Set.Subsingleton.totallyBounded {s : Set α} (hs : s.Subsingleton) :
+    TotallyBounded s :=
+  hs.finite.totallyBounded
+
+@[simp]
+lemma totallyBounded_singleton (a : α) : TotallyBounded {a} := (finite_singleton a).totallyBounded
+
+@[simp]
+theorem totallyBounded_empty : TotallyBounded (∅ : Set α) := finite_empty.totallyBounded
+#align totally_bounded_empty totallyBounded_empty
+
+/-- The union of two sets is totally bounded
+if and only if each of the two sets is totally bounded.-/
+@[simp]
+lemma totallyBounded_union {s t : Set α} :
+    TotallyBounded (s ∪ t) ↔ TotallyBounded s ∧ TotallyBounded t := by
+  rw [union_eq_iUnion, totallyBounded_iUnion]
+  simp [and_comm]
+
+/-- The union of two totally bounded sets is totally bounded. -/
+protected lemma TotallyBounded.union {s t : Set α} (hs : TotallyBounded s) (ht : TotallyBounded t) :
+    TotallyBounded (s ∪ t) :=
+  totallyBounded_union.2 ⟨hs, ht⟩
+
+@[simp]
+lemma totallyBounded_insert (a : α) {s : Set α} :
+    TotallyBounded (insert a s) ↔ TotallyBounded s := by
+  simp_rw [← singleton_union, totallyBounded_union, totallyBounded_singleton, true_and]
+
+protected alias ⟨_, TotallyBounded.insert⟩ := totallyBounded_insert
 
 /-- The image of a totally bounded set under a uniformly continuous map is totally bounded. -/
 theorem TotallyBounded.image [UniformSpace β] {f : α → β} {s : Set α} (hs : TotallyBounded s)
@@ -662,9 +723,9 @@ theorem isCompact_of_totallyBounded_isClosed [CompleteSpace α] {s : Set α} (ht
 /-- Every Cauchy sequence over `ℕ` is totally bounded. -/
 theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) :
     TotallyBounded (range s) := by
-  refine totallyBounded_iff_subset.2 fun a ha => ?_
+  intro a ha
   cases' cauchySeq_iff.1 hs a ha with n hn
-  refine ⟨s '' { k | k ≤ n }, image_subset_range _ _, (finite_le_nat _).image _, ?_⟩
+  refine ⟨s '' { k | k ≤ n }, (finite_le_nat _).image _, ?_⟩
   rw [range_subset_iff, biUnion_image]
   intro m
   rw [mem_iUnion₂]
@@ -779,9 +840,9 @@ theorem complete_of_convergent_controlled_sequences (U : ℕ → Set (α × α))
   have Hmem : ∀ n, U n ∩ U' n ∈ 𝓤 α := fun n => inter_mem (U_mem n) (hU'.2 ⟨n, Subset.refl _⟩)
   refine ⟨fun hf => (HU (seq hf Hmem) fun N m n hm hn => ?_).imp <|
     le_nhds_of_seq_tendsto_nhds _ _ fun s hs => ?_⟩
-  · exact inter_subset_left _ _ (seq_pair_mem hf Hmem hm hn)
+  · exact inter_subset_left (seq_pair_mem hf Hmem hm hn)
   · rcases hU'.1 hs with ⟨N, hN⟩
-    exact ⟨N, Subset.trans (inter_subset_right _ _) hN⟩
+    exact ⟨N, Subset.trans inter_subset_right hN⟩
 #align uniform_space.complete_of_convergent_controlled_sequences UniformSpace.complete_of_convergent_controlled_sequences
 
 /-- A sequentially complete uniform space with a countable basis of the uniformity filter is

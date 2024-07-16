@@ -127,7 +127,7 @@ def alephIdx.relIso : @RelIso Cardinal.{u} Ordinal.{u} (· < ·) (· < ·) :=
   @RelIso.ofSurjective Cardinal.{u} Ordinal.{u} (· < ·) (· < ·) alephIdx.initialSeg.{u} <|
     (InitialSeg.eq_or_principal alephIdx.initialSeg.{u}).resolve_right fun ⟨o, e⟩ => by
       have : ∀ c, alephIdx c < o := fun c => (e _).2 ⟨_, rfl⟩
-      refine' Ordinal.inductionOn o _ this; intro α r _ h
+      refine Ordinal.inductionOn o ?_ this; intro α r _ h
       let s := ⨆ a, invFun alephIdx (Ordinal.typein r a)
       apply (lt_succ s).not_le
       have I : Injective.{u+2, u+2} alephIdx := alephIdx.initialSeg.toEmbedding.injective
@@ -526,7 +526,7 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
     (?_ : _ ≤ card (succ (typein (· < ·) (g p))) * card (succ (typein (· < ·) (g p)))) ?_
   · have : { q | s q p } ⊆ insert (g p) { x | x < g p } ×ˢ insert (g p) { x | x < g p } := by
       intro q h
-      simp only [s, f, Preimage, ge_iff_le, Embedding.coeFn_mk, Prod.lex_def, typein_lt_typein,
+      simp only [s, f, Preimage, Embedding.coeFn_mk, Prod.lex_def, typein_lt_typein,
         typein_inj, mem_setOf_eq] at h
       exact max_le_iff.1 (le_iff_lt_or_eq.2 <| h.imp_right And.left)
     suffices H : (insert (g p) { x | r x (g p) } : Set α) ≃ Sum { x | r x (g p) } PUnit from
@@ -958,16 +958,16 @@ theorem add_nat_le_add_nat_iff {α β : Cardinal} (n : ℕ) : α + n ≤ β + n 
   add_le_add_iff_of_lt_aleph0 (nat_lt_aleph0 n)
 #align cardinal.add_nat_le_add_nat_iff_of_lt_aleph_0 Cardinal.add_nat_le_add_nat_iff
 
-@[deprecated]
-alias add_nat_le_add_nat_iff_of_lt_aleph_0 := add_nat_le_add_nat_iff  -- deprecated on 2024-02-12
+@[deprecated (since := "2024-02-12")]
+alias add_nat_le_add_nat_iff_of_lt_aleph_0 := add_nat_le_add_nat_iff
 
 @[simp]
 theorem add_one_le_add_one_iff {α β : Cardinal} : α + 1 ≤ β + 1 ↔ α ≤ β :=
   add_le_add_iff_of_lt_aleph0 one_lt_aleph0
 #align cardinal.add_one_le_add_one_iff_of_lt_aleph_0 Cardinal.add_one_le_add_one_iff
 
-@[deprecated]
-alias add_one_le_add_one_iff_of_lt_aleph_0 := add_one_le_add_one_iff  -- deprecated on 2024-02-12
+@[deprecated (since := "2024-02-12")]
+alias add_one_le_add_one_iff_of_lt_aleph_0 := add_one_le_add_one_iff
 
 /-! ### Properties about power -/
 section pow
@@ -1209,8 +1209,8 @@ theorem mk_finsupp_lift_of_infinite (α : Type u) (β : Type v) [Infinite α] [Z
   · calc
       #(α →₀ β) ≤ #(Finset (α × β)) := mk_le_of_injective (Finsupp.graph_injective α β)
       _ = #(α × β) := mk_finset_of_infinite _
-      _ = max (lift.{v} #α) (lift.{u} #β) :=
-        by rw [mk_prod, mul_eq_max_of_aleph0_le_left] <;> simp
+      _ = max (lift.{v} #α) (lift.{u} #β) := by
+        rw [mk_prod, mul_eq_max_of_aleph0_le_left] <;> simp
 
   · apply max_le <;> rw [← lift_id #(α →₀ β), ← lift_umax]
     · cases' exists_ne (0 : β) with b hb
@@ -1379,7 +1379,7 @@ theorem extend_function {α β : Type*} {s : Set α} (f : s ↪ β)
 
 theorem extend_function_finite {α : Type u} {β : Type v} [Finite α] {s : Set α} (f : s ↪ β)
     (h : Nonempty (α ≃ β)) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
-  apply extend_function.{v, u} f
+  apply extend_function.{u, v} f
   cases' id h with g
   rw [← lift_mk_eq.{u, v, max u v}] at h
   rw [← lift_mk_eq.{u, v, max u v}, mk_compl_eq_mk_compl_finite_lift.{u, v, max u v} h]
@@ -1668,3 +1668,7 @@ lemma mk_iUnion_Ordinal_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
 end Cardinal
 
 end OrdinalIndices
+
+end Ordinal
+
+end Initial

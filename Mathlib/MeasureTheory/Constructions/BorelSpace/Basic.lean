@@ -3,10 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Topology.GDelta
 import Mathlib.MeasureTheory.Group.Arithmetic
+import Mathlib.Topology.GDelta
 import Mathlib.Topology.Instances.EReal
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Topology.Instances.Rat
 
 #align_import measure_theory.constructions.borel_space.basic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
@@ -348,7 +348,7 @@ theorem measurable_of_isClosed' {f : δ → γ}
 
 instance nhds_isMeasurablyGenerated (a : α) : (𝓝 a).IsMeasurablyGenerated := by
   rw [nhds, iInf_subtype']
-  refine' @Filter.iInf_isMeasurablyGenerated α _ _ _ fun i => _
+  refine @Filter.iInf_isMeasurablyGenerated α _ _ _ fun i => ?_
   exact i.2.2.measurableSet.principal_isMeasurablyGenerated
 #align nhds_is_measurably_generated nhds_isMeasurablyGenerated
 
@@ -386,7 +386,7 @@ instance Pi.opensMeasurableSpace {ι : Type*} {π : ι → Type*} [Countable ι]
   rw [borel_eq_generateFrom_of_subbasis this]
   apply generateFrom_le
   rintro _ ⟨s, i, hi, rfl⟩
-  refine' MeasurableSet.pi i.countable_toSet fun a ha => IsOpen.measurableSet _
+  refine MeasurableSet.pi i.countable_toSet fun a ha => IsOpen.measurableSet ?_
   rw [eq_generateFrom_countableBasis (π a)]
   exact .basic _ (hi a ha)
 #align pi.opens_measurable_space Pi.opensMeasurableSpace
@@ -501,6 +501,7 @@ instance separatesPointsOfOpensMeasurableSpaceOfT0Space [T0Space α] :
 
 /-- A continuous function from an `OpensMeasurableSpace` to a `BorelSpace`
 is measurable. -/
+@[fun_prop]
 theorem Continuous.measurable {f : α → γ} (hf : Continuous f) : Measurable f :=
   hf.borel_measurable.mono OpensMeasurableSpace.borel_le (le_of_eq <| BorelSpace.measurable_eq)
 #align continuous.measurable Continuous.measurable
@@ -594,6 +595,7 @@ theorem ContinuousMap.measurable (f : C(α, γ)) : Measurable f :=
   f.continuous.measurable
 #align continuous_map.measurable ContinuousMap.measurable
 
+@[fun_prop]
 theorem measurable_of_continuousOn_compl_singleton [T1Space α] {f : α → γ} (a : α)
     (hf : ContinuousOn f {a}ᶜ) : Measurable f :=
   measurable_of_measurable_on_compl_singleton a

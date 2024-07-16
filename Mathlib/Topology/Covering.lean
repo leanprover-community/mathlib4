@@ -107,7 +107,7 @@ protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
   let e := (hf (f x) hx).toTrivialization
   have h := (hf (f x) hx).mem_toTrivialization_baseSet
   let he := e.mem_source.2 h
-  refine'
+  refine
     ⟨e.toPartialHomeomorph.trans
         { toFun := fun p => p.1
           invFun := fun p => ⟨p, x, rfl⟩
@@ -156,7 +156,8 @@ theorem mk (F : X → Type*) [∀ x, TopologicalSpace (F x)] [∀ x, DiscreteTop
     (IsCoveringMapOn.mk f Set.univ F (fun x _ => e x) fun x _ => h x)
 #align is_covering_map.mk IsCoveringMap.mk
 
-variable {f} (hf : IsCoveringMap f)
+variable {f}
+variable (hf : IsCoveringMap f)
 
 protected theorem continuous : Continuous f :=
   continuous_iff_continuousOn_univ.mpr hf.isCoveringMapOn.continuousOn

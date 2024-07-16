@@ -37,8 +37,6 @@ open Function Set
 
 universe u
 
-section
-
 variable (X : Type u) [TopologicalSpace X]
 
 /-- An extremally disconnected topological space is a space
@@ -47,6 +45,12 @@ class ExtremallyDisconnected : Prop where
   /-- The closure of every open set is open. -/
   open_closure : ∀ U : Set X, IsOpen U → IsOpen (closure U)
 #align extremally_disconnected ExtremallyDisconnected
+
+theorem extremallyDisconnected_of_homeo {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [ExtremallyDisconnected X] (e : X ≃ₜ Y) : ExtremallyDisconnected Y where
+  open_closure U hU := by
+    rw [e.symm.inducing.closure_eq_preimage_closure_image, Homeomorph.isOpen_preimage]
+    exact ExtremallyDisconnected.open_closure _ (e.symm.isOpen_image.mpr hU)
 
 section TotallySeparated
 
@@ -94,7 +98,7 @@ theorem StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneC
 
 protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [T2Space X]
     (h : CompactT2.Projective X) : ExtremallyDisconnected X := by
-  refine' { open_closure := fun U hU => _ }
+  refine { open_closure := fun U hU => ?_ }
   let Z₁ : Set (X × Bool) := Uᶜ ×ˢ {true}
   let Z₂ : Set (X × Bool) := closure U ×ˢ {false}
   let Z : Set (X × Bool) := Z₁ ∪ Z₂
@@ -119,7 +123,7 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
       ← preimage_subtype_coe_eq_compl Subset.rfl]
     · exact hZ₁.preimage hφ
     · rw [hZ₁₂.inter_eq, inter_empty]
-  refine' (closure_minimal _ <| hZ₂.preimage hφ).antisymm fun x hx => _
+  refine (closure_minimal ?_ <| hZ₂.preimage hφ).antisymm fun x hx => ?_
   · intro x hx
     have : φ x ∈ Z₁ ∪ Z₂ := (g x).2
     -- Porting note: Originally `simpa [hx, hφ₁] using this`
@@ -308,3 +312,5 @@ instance instExtremallyDisconnected {ι : Type*} {π : ι → Type*} [∀ i, Top
     · rw [sigma_mk_preimage_image' ij]
       exact isOpen_empty
   · continuity
+
+end

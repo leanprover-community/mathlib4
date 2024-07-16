@@ -296,8 +296,9 @@ theorem isBounded_sUnion {S : Set (Set α)} (hs : S.Finite) :
 #align bornology.is_bounded_sUnion Bornology.isBounded_sUnion
 
 @[simp]
-theorem isBounded_iUnion [Finite ι] {s : ι → Set α} : IsBounded (⋃ i, s i) ↔ ∀ i, IsBounded (s i) :=
-  by rw [← sUnion_range, isBounded_sUnion (finite_range s), forall_mem_range]
+theorem isBounded_iUnion [Finite ι] {s : ι → Set α} :
+    IsBounded (⋃ i, s i) ↔ ∀ i, IsBounded (s i) := by
+  rw [← sUnion_range, isBounded_sUnion (finite_range s), forall_mem_range]
 #align bornology.is_bounded_Union Bornology.isBounded_iUnion
 
 lemma eventually_ne_cobounded (a : α) : ∀ᶠ x in cobounded α, x ≠ a :=
@@ -370,3 +371,22 @@ theorem cobounded_eq_bot : cobounded α = ⊥ :=
 #align bornology.cobounded_eq_bot Bornology.cobounded_eq_bot
 
 end Bornology
+
+namespace OrderDual
+variable [Bornology α]
+
+instance instBornology : Bornology αᵒᵈ := ‹Bornology α›
+
+@[simp] lemma isCobounded_preimage_ofDual {s : Set α} :
+    IsCobounded (ofDual ⁻¹' s) ↔ IsCobounded s := Iff.rfl
+
+@[simp] lemma isCobounded_preimage_toDual {s : Set αᵒᵈ} :
+    IsCobounded (toDual ⁻¹' s) ↔ IsCobounded s := Iff.rfl
+
+@[simp] lemma isBounded_preimage_ofDual {s : Set α} :
+    IsBounded (ofDual ⁻¹' s) ↔ IsBounded s := Iff.rfl
+
+@[simp] lemma isBounded_preimage_toDual {s : Set αᵒᵈ} :
+    IsBounded (toDual ⁻¹' s) ↔ IsBounded s := Iff.rfl
+
+end OrderDual

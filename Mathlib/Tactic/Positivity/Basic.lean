@@ -3,13 +3,12 @@ Copyright (c) 2022 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Group.PosPart
+import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Int.CharZero
-import Mathlib.Data.NNRat.Defs
-import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Rat.Order
+import Mathlib.Data.NNRat.Defs
 import Mathlib.Data.PNat.Defs
 import Mathlib.Tactic.Positivity.Core
 import Qq
@@ -264,7 +263,6 @@ def evalPowZeroNat : PositivityExt where eval {u α} _zα _pα e := do
   _ ← synthInstanceQ (q(Nontrivial $α) : Q(Prop))
   pure (.positive (q(pow_zero_pos $a) : Expr))
 
-set_option linter.deprecated false in
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℕ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity (_ : α) ^ (_ : ℕ)]
@@ -275,11 +273,11 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     let some n := (b.getRevArg! 1).rawNatLit? | throwError "not a ^ n where n is a literal"
     guard (n % 2 = 0)
     have m : Q(ℕ) := mkRawNatLit (n / 2)
-    haveI' : $b =Q bit0 $m := ⟨⟩
+    haveI' : $b =Q 2 * $m := ⟨⟩
     let _a ← synthInstanceQ q(LinearOrderedRing $α)
     haveI' : $e =Q $a ^ $b := ⟨⟩
     assumeInstancesCommute
-    pure (.nonnegative q(pow_bit0_nonneg $a $m))
+    pure (.nonnegative q((even_two_mul $m).pow_nonneg $a))
   orElse result do
     let ra ← core zα pα a
     let ofNonneg (pa : Q(0 ≤ $a)) (_oα : Q(OrderedSemiring $α)) : MetaM (Strictness zα pα e) := do
@@ -522,3 +520,9 @@ def evalNegPart : PositivityExt where eval _ _ e := do
     assertInstancesCommute
     return .nonnegative q(negPart_nonneg $a)
   | _ => throwError "not `negPart`"
+
+end Positivity
+
+end Meta
+
+end Mathlib

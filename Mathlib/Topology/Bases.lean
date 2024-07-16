@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.Set.Constructions
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousOn
 
@@ -46,7 +47,7 @@ conditions are equivalent in this case).
 For our applications we are interested that there exists a countable basis, but we do not need the
 concrete basis itself. This allows us to declare these type classes as `Prop` to use them as mixins.
 
-### TODO:
+## TODO
 
 More fine grained instances for `FirstCountableTopology`,
 `TopologicalSpace.SeparableSpace`, and more.
@@ -97,7 +98,7 @@ theorem IsTopologicalBasis.diff_empty {s : Set (Set α)} (h : IsTopologicalBasis
     obtain ⟨t₃, h₃, hs⟩ := h.exists_subset_inter _ h₁ _ h₂ x hx
     exact ⟨t₃, ⟨h₃, Nonempty.ne_empty ⟨x, hs.1⟩⟩, hs⟩
   · rw [h.eq_generateFrom]
-    refine le_antisymm (generateFrom_anti <| diff_subset s _) (le_generateFrom fun t ht => ?_)
+    refine le_antisymm (generateFrom_anti diff_subset) (le_generateFrom fun t ht => ?_)
     obtain rfl | he := eq_or_ne t ∅
     · exact @isOpen_empty _ (generateFrom _)
     · exact .basic t ⟨ht, he⟩
@@ -118,6 +119,18 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
   · rw [← sInter_singleton t]
     exact ⟨{t}, ⟨finite_singleton t, singleton_subset_iff.2 ht⟩, rfl⟩
 #align topological_space.is_topological_basis_of_subbasis TopologicalSpace.isTopologicalBasis_of_subbasis
+
+theorem isTopologicalBasis_of_subbasis_of_finiteInter {s : Set (Set α)} (hsg : t = generateFrom s)
+    (hsi : FiniteInter s) : IsTopologicalBasis s := by
+  convert isTopologicalBasis_of_subbasis hsg
+  refine le_antisymm (fun t ht ↦ ⟨{t}, by simpa using ht⟩) ?_
+  rintro _ ⟨g, ⟨hg, hgs⟩, rfl⟩
+  lift g to Finset (Set α) using hg
+  exact hsi.finiteInter_mem g hgs
+
+theorem isTopologicalBasis_of_subbasis_of_inter {r : Set (Set α)} (hsg : t = generateFrom r)
+    (hsi : ∀ ⦃s⦄, s ∈ r → ∀ ⦃t⦄, t ∈ r → s ∩ t ∈ r) : IsTopologicalBasis (insert univ r) :=
+  isTopologicalBasis_of_subbasis_of_finiteInter (by simpa using hsg) (FiniteInter.mk₂ hsi)
 
 theorem IsTopologicalBasis.of_hasBasis_nhds {s : Set (Set α)}
     (h_nhds : ∀ a, (𝓝 a).HasBasis (fun t ↦ t ∈ s ∧ a ∈ t) id) : IsTopologicalBasis s where
@@ -147,8 +160,8 @@ theorem IsTopologicalBasis.mem_nhds_iff {a : α} {s : Set α} {b : Set (Set α)}
   · simp [and_assoc, and_left_comm]
   · rintro s ⟨hs₁, hs₂⟩ t ⟨ht₁, ht₂⟩
     let ⟨u, hu₁, hu₂, hu₃⟩ := hb.1 _ hs₂ _ ht₂ _ ⟨hs₁, ht₁⟩
-    exact ⟨u, ⟨hu₂, hu₁⟩, le_principal_iff.2 (hu₃.trans (inter_subset_left _ _)),
-      le_principal_iff.2 (hu₃.trans (inter_subset_right _ _))⟩
+    exact ⟨u, ⟨hu₂, hu₁⟩, le_principal_iff.2 (hu₃.trans inter_subset_left),
+      le_principal_iff.2 (hu₃.trans inter_subset_right)⟩
   · rcases eq_univ_iff_forall.1 hb.sUnion_eq a with ⟨i, h1, h2⟩
     exact ⟨i, h2, h1⟩
 #align topological_space.is_topological_basis.mem_nhds_iff TopologicalSpace.IsTopologicalBasis.mem_nhds_iff
@@ -298,7 +311,7 @@ protected theorem IsTopologicalBasis.continuous_iff {β : Type*} [TopologicalSpa
     Continuous f ↔ ∀ s ∈ B, IsOpen (f ⁻¹' s) := by
   rw [hB.eq_generateFrom, continuous_generateFrom_iff]
 
-@[deprecated]
+@[deprecated (since := "2023-12-24")]
 protected theorem IsTopologicalBasis.continuous {β : Type*} [TopologicalSpace β] {B : Set (Set β)}
     (hB : IsTopologicalBasis B) (f : α → β) (hf : ∀ s ∈ B, IsOpen (f ⁻¹' s)) : Continuous f :=
   hB.continuous_iff.2 hf
@@ -553,14 +566,14 @@ theorem IsSeparable.of_subtype (s : Set α) [SeparableSpace s] : IsSeparable s :
   simpa using isSeparable_range (continuous_subtype_val (p := (· ∈ s)))
 #align topological_space.is_separable_of_separable_space_subtype TopologicalSpace.IsSeparable.of_subtype
 
-@[deprecated] -- Since 2024-02-05
+@[deprecated (since := "2024-02-05")]
 alias isSeparable_of_separableSpace_subtype := IsSeparable.of_subtype
 
 theorem IsSeparable.of_separableSpace [h : SeparableSpace α] (s : Set α) : IsSeparable s :=
   IsSeparable.mono (isSeparable_univ_iff.2 h) (subset_univ _)
 #align topological_space.is_separable_of_separable_space TopologicalSpace.IsSeparable.of_separableSpace
 
-@[deprecated] -- Since 2024-02-05
+@[deprecated (since := "2024-02-05")]
 alias isSeparable_of_separableSpace := IsSeparable.of_separableSpace
 
 end TopologicalSpace
@@ -617,6 +630,23 @@ theorem isTopologicalBasis_subtype
     IsTopologicalBasis (Set.preimage (Subtype.val (p := p)) '' B) :=
   h.inducing ⟨rfl⟩
 
+section
+variable {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+
+lemma isOpenMap_eval (i : ι) : IsOpenMap (Function.eval i : (∀ i, π i) → π i) := by
+  classical
+  refine (isTopologicalBasis_pi fun _ ↦ isTopologicalBasis_opens).isOpenMap_iff.2 ?_
+  rintro _ ⟨U, s, hU, rfl⟩
+  obtain h | h := ((s : Set ι).pi U).eq_empty_or_nonempty
+  · simp [h]
+  by_cases hi : i ∈ s
+  · rw [eval_image_pi (mod_cast hi) h]
+    exact hU _ hi
+  · rw [eval_image_pi_of_not_mem (mod_cast hi), if_pos h]
+    exact isOpen_univ
+
+end
+
 -- Porting note: moved `DenseRange.separableSpace` up
 
 theorem Dense.exists_countable_dense_subset {α : Type*} [TopologicalSpace α] {s : Set α}
@@ -637,9 +667,9 @@ theorem Dense.exists_countable_dense_subset_bot_top {α : Type*} [TopologicalSpa
       ∀ x, IsTop x → x ∈ s → x ∈ t := by
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, htd⟩
   refine ⟨(t ∪ ({ x | IsBot x } ∪ { x | IsTop x })) ∩ s, ?_, ?_, ?_, ?_, ?_⟩
-  exacts [inter_subset_right _ _,
-    (htc.union ((countable_isBot α).union (countable_isTop α))).mono (inter_subset_left _ _),
-    htd.mono (subset_inter (subset_union_left _ _) hts), fun x hx hxs => ⟨Or.inr <| Or.inl hx, hxs⟩,
+  exacts [inter_subset_right,
+    (htc.union ((countable_isBot α).union (countable_isTop α))).mono inter_subset_left,
+    htd.mono (subset_inter subset_union_left hts), fun x hx hxs => ⟨Or.inr <| Or.inl hx, hxs⟩,
     fun x hx hxs => ⟨Or.inr <| Or.inr hx, hxs⟩]
 #align dense.exists_countable_dense_subset_bot_top Dense.exists_countable_dense_subset_bot_top
 
@@ -677,7 +707,7 @@ attribute [instance] FirstCountableTopology.nhds_generated_countable
 first-countable. -/
 theorem firstCountableTopology_induced (α β : Type*) [t : TopologicalSpace β]
     [FirstCountableTopology β] (f : α → β) : @FirstCountableTopology α (t.induced f) :=
-  let _ := t.induced f;
+  let _ := t.induced f
   ⟨fun x ↦ nhds_induced f x ▸ inferInstance⟩
 
 variable {α}
@@ -754,7 +784,7 @@ theorem exists_countable_basis [SecondCountableTopology α] :
     ∃ b : Set (Set α), b.Countable ∧ ∅ ∉ b ∧ IsTopologicalBasis b := by
   obtain ⟨b, hb₁, hb₂⟩ := @SecondCountableTopology.is_open_generated_countable α _ _
   refine ⟨_, ?_, not_mem_diff_of_mem ?_, (isTopologicalBasis_of_subbasis hb₂).diff_empty⟩
-  exacts [((countable_setOf_finite_subset hb₁).image _).mono (diff_subset _ _), rfl]
+  exacts [((countable_setOf_finite_subset hb₁).image _).mono diff_subset, rfl]
 #align topological_space.exists_countable_basis TopologicalSpace.exists_countable_basis
 
 /-- A countable topological basis of `α`. -/
@@ -803,7 +833,7 @@ instance (priority := 100) SecondCountableTopology.to_firstCountableTopology
     [SecondCountableTopology α] : FirstCountableTopology α :=
   ⟨fun _ => HasCountableBasis.isCountablyGenerated <|
       ⟨(isBasis_countableBasis α).nhds_hasBasis,
-        (countable_countableBasis α).mono <| inter_subset_left _ _⟩⟩
+        (countable_countableBasis α).mono inter_subset_left⟩⟩
 #align topological_space.second_countable_topology.to_first_countable_topology TopologicalSpace.SecondCountableTopology.to_firstCountableTopology
 
 /-- If `β` is a second-countable space, then its induced topology via

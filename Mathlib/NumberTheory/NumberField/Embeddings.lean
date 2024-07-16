@@ -6,7 +6,7 @@ Authors: Alex J. Best, Xavier Roblot
 import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.RingTheory.Norm
+import Mathlib.RingTheory.Norm.Basic
 import Mathlib.Topology.Instances.Complex
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
@@ -88,7 +88,7 @@ variable {A : Type*} [NormedField A] [IsAlgClosed A] [NormedAlgebra ℚ A]
 
 theorem coeff_bdd_of_norm_le {B : ℝ} {x : K} (h : ∀ φ : K →+* A, ‖φ x‖ ≤ B) (i : ℕ) :
     ‖(minpoly ℚ x).coeff i‖ ≤ max B 1 ^ finrank ℚ K * (finrank ℚ K).choose (finrank ℚ K / 2) := by
-  have hx := IsSeparable.isIntegral ℚ x
+  have hx := Algebra.IsSeparable.isIntegral ℚ x
   rw [← norm_algebraMap' A, ← coeff_map (algebraMap ℚ A)]
   refine coeff_bdd_of_roots_le _ (minpoly.monic hx)
       (IsAlgClosed.splits_codomain _) (minpoly.natDegree_le x) (fun z hz => ?_) i
@@ -455,6 +455,17 @@ theorem not_isReal_of_mk_isComplex {φ : K →+* ℂ} (h : IsComplex (mk φ)) :
 define it, see `card_filter_mk_eq`. -/
 noncomputable def mult (w : InfinitePlace K) : ℕ := if (IsReal w) then 1 else 2
 
+theorem mult_pos {w : InfinitePlace K} : 0 < mult w := by
+  rw [mult]
+  split_ifs <;> norm_num
+
+@[simp]
+theorem mult_ne_zero {w : InfinitePlace K} : mult w ≠ 0 := ne_of_gt mult_pos
+
+theorem one_le_mult {w : InfinitePlace K} : (1 : ℝ) ≤ mult w := by
+  rw [← Nat.cast_one, Nat.cast_le]
+  exact mult_pos
+
 theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) :
     (Finset.univ.filter fun φ => mk φ = w).card = mult w := by
   conv_lhs =>
@@ -526,7 +537,7 @@ theorem prod_eq_abs_norm (x : K) :
 
 theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
     (h : ∀ ⦃z⦄, z ≠ w → z a < 1) : 1 ≤ w a := by
-  suffices (1:ℝ) ≤ |Algebra.norm ℚ (a : K)| by
+  suffices (1 : ℝ) ≤ |Algebra.norm ℚ (a : K)| by
     contrapose! this
     rw [← InfinitePlace.prod_eq_abs_norm, ← Finset.prod_const_one]
     refine Finset.prod_lt_prod_of_nonempty (fun _ _ ↦ ?_) (fun z _ ↦ ?_) Finset.univ_nonempty
@@ -890,8 +901,7 @@ lemma even_nat_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified
     Even (Nat.card <| K ≃ₐ[k] K) := by
   by_cases H : Finite (K ≃ₐ[k] K)
   · cases nonempty_fintype (K ≃ₐ[k] K)
-    rw [even_iff_two_dvd, Nat.card_eq_fintype_card,
-      ← not_isUnramified_iff_card_stabilizer_eq_two.mp hw, Nat.card_eq_fintype_card]
+    rw [even_iff_two_dvd, ← not_isUnramified_iff_card_stabilizer_eq_two.mp hw]
     exact Subgroup.card_subgroup_dvd_card (Stab w)
   · convert even_zero
     by_contra e

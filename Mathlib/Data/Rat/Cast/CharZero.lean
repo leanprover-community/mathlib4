@@ -3,9 +3,8 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Rat.Cast.Defs
-import Mathlib.Data.Int.CharZero
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Data.Rat.Cast.Defs
 
 #align_import data.rat.cast from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
@@ -66,21 +65,8 @@ theorem cast_mul [CharZero α] (m n) : ((m * n : ℚ) : α) = m * n :=
   cast_mul_of_ne_zero (Nat.cast_ne_zero.2 <| ne_of_gt m.pos) (Nat.cast_ne_zero.2 <| ne_of_gt n.pos)
 #align rat.cast_mul Rat.cast_mul
 
-section
-
-set_option linter.deprecated false
-
-@[simp, norm_cast]
-theorem cast_bit0 [CharZero α] (n : ℚ) : ((bit0 n : ℚ) : α) = (bit0 n : α) :=
-  cast_add _ _
-#align rat.cast_bit0 Rat.cast_bit0
-
-@[simp, norm_cast]
-theorem cast_bit1 [CharZero α] (n : ℚ) : ((bit1 n : ℚ) : α) = (bit1 n : α) := by
-  rw [bit1, cast_add, cast_one, cast_bit0]; rfl
-#align rat.cast_bit1 Rat.cast_bit1
-
-end
+#noalign rat.cast_bit0
+#noalign rat.cast_bit1
 
 variable (α)
 variable [CharZero α]

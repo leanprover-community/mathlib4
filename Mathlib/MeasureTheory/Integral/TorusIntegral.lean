@@ -140,7 +140,7 @@ theorem function_integrable [NormedSpace ℂ E] (hf : TorusIntegrable f c R) :
     IntegrableOn (fun θ : ℝⁿ => (∏ i, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ))
       (Icc (0 : ℝⁿ) fun _ => 2 * π) volume := by
   refine (hf.norm.const_mul (∏ i, |R i|)).mono' ?_ ?_
-  · refine (Continuous.aestronglyMeasurable ?_).smul hf.1; continuity
+  · refine (Continuous.aestronglyMeasurable ?_).smul hf.1; fun_prop
   simp [norm_smul, map_prod]
 #align torus_integrable.function_integrable TorusIntegrable.function_integrable
 
@@ -197,8 +197,7 @@ theorem norm_torusIntegral_le_of_norm_le_const {C : ℝ} (hf : ∀ θ, ‖f (tor
       norm_setIntegral_le_of_norm_le_const' measure_Icc_lt_top measurableSet_Icc fun θ _ =>
         calc
           ‖(∏ i : Fin n, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ)‖ =
-              (∏ i : Fin n, |R i|) * ‖f (torusMap c R θ)‖ :=
-            by simp [norm_smul]
+              (∏ i : Fin n, |R i|) * ‖f (torusMap c R θ)‖ := by simp [norm_smul]
           _ ≤ (∏ i : Fin n, |R i|) * C := mul_le_mul_of_nonneg_left (hf _) <| by positivity
     _ = ((2 * π) ^ (n : ℕ) * ∏ i, |R i|) * C := by
       simp only [Pi.zero_def, Real.volume_Icc_pi_toReal fun _ => Real.two_pi_pos.le, sub_zero,

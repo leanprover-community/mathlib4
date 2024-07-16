@@ -78,15 +78,15 @@ theorem antidiagonal_succ' {n : ℕ} :
   simp only [antidiagonal, range_succ, Nat.add_sub_cancel_left, map_append, append_assoc,
     Nat.sub_self, singleton_append, map_map, map]
   congr 1
-  apply map_congr
-  simp (config := { contextual := true }) [le_of_lt, Nat.succ_eq_add_one, Nat.sub_add_comm]
+  apply map_congr_left
+  simp (config := { contextual := true }) [le_of_lt, Nat.sub_add_comm]
 #align list.nat.antidiagonal_succ' List.Nat.antidiagonal_succ'
 
 theorem antidiagonal_succ_succ' {n : ℕ} :
     antidiagonal (n + 2) =
       (0, n + 2) :: (antidiagonal n).map (Prod.map Nat.succ Nat.succ) ++ [(n + 2, 0)] := by
   rw [antidiagonal_succ']
-  simp only [antidiagonal_succ, map_cons, Prod_map, id_eq, map_map, cons_append, cons.injEq,
+  simp only [antidiagonal_succ, map_cons, Prod.map_apply, id_eq, map_map, cons_append, cons.injEq,
     append_cancel_right_eq, true_and]
   ext
   simp
@@ -96,7 +96,7 @@ theorem map_swap_antidiagonal {n : ℕ} :
     (antidiagonal n).map Prod.swap = (antidiagonal n).reverse := by
   rw [antidiagonal, map_map, ← List.map_reverse, range_eq_range', reverse_range', ←
     range_eq_range', map_map]
-  apply map_congr
+  apply map_congr_left
   simp (config := { contextual := true }) [Nat.sub_sub_self, Nat.lt_succ_iff]
 #align list.nat.map_swap_antidiagonal List.Nat.map_swap_antidiagonal
 

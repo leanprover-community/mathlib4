@@ -113,7 +113,7 @@ lemma scaleRoots_one (p : R[X]) :
 lemma scaleRoots_zero (p : R[X]) :
     p.scaleRoots 0 = p.leadingCoeff • X ^ p.natDegree := by
   ext n
-  simp only [coeff_scaleRoots, ge_iff_le, ne_eq, tsub_eq_zero_iff_le, not_le, zero_pow_eq, mul_ite,
+  simp only [coeff_scaleRoots, ne_eq, tsub_eq_zero_iff_le, not_le, zero_pow_eq, mul_ite,
     mul_one, mul_zero, coeff_smul, coeff_X_pow, smul_eq_mul]
   split_ifs with h₁ h₂ h₂
   · subst h₂; rfl
@@ -136,8 +136,8 @@ theorem scaleRoots_eval₂_mul_of_commute {p : S[X]} (f : S →+* A) (a : A) (s 
     eval₂ f (f s * a) (scaleRoots p s) = f s ^ p.natDegree * eval₂ f a p := by
    calc
     _ = (scaleRoots p s).support.sum fun i =>
-          f (coeff p i * s ^ (p.natDegree - i)) * (f s * a) ^ i :=
-      by simp [eval₂_eq_sum, sum_def]
+          f (coeff p i * s ^ (p.natDegree - i)) * (f s * a) ^ i := by
+      simp [eval₂_eq_sum, sum_def]
     _ = p.support.sum fun i => f (coeff p i * s ^ (p.natDegree - i)) * (f s * a) ^ i :=
       (Finset.sum_subset (support_scaleRoots_le p s) fun i _hi hi' => by
         let this : coeff p i * s ^ (p.natDegree - i) = 0 := by simpa using hi'
@@ -170,6 +170,7 @@ theorem scaleRoots_aeval_eq_zero [Algebra R A] {p : R[X]} {a : A} {r : R} (ha : 
 theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+* K}
     (hf : Function.Injective f) {r s : S} (hr : eval₂ f (f r / f s) p = 0)
     (hs : s ∈ nonZeroDivisors S) : eval₂ f (f r) (scaleRoots p s) = 0 := by
+  -- The proof works without this option, but *much* slower.
   set_option tactic.skipAssignedInstances false in
   nontriviality S using Subsingleton.eq_zero
   convert @scaleRoots_eval₂_eq_zero _ _ _ _ p f _ s hr

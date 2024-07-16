@@ -7,7 +7,7 @@ import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Ring.Pow
-import Mathlib.Data.Int.Parity
+import Mathlib.Algebra.Ring.Int
 
 #align_import algebra.order.field.power from "leanprover-community/mathlib"@"acb3d204d4ee883eb686f45d486a2a6811a01329"
 
@@ -82,7 +82,7 @@ theorem zpow_lt_iff_lt (hx : 1 < a) : a ^ m < a ^ n ↔ m < n :=
 
 @[gcongr] alias ⟨_, GCongr.zpow_lt_of_lt⟩ := zpow_lt_iff_lt
 
-@[deprecated] alias zpow_lt_of_lt := GCongr.zpow_lt_of_lt -- Since 2024-02-10
+@[deprecated (since := "2024-02-10")] alias zpow_lt_of_lt := GCongr.zpow_lt_of_lt
 
 @[simp]
 theorem zpow_le_iff_le (hx : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
@@ -182,11 +182,7 @@ theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
   cases' abs_choice a with h h <;> simp only [h, hp.neg_zpow _]
 #align even.zpow_abs Even.zpow_abs
 
-set_option linter.deprecated false in
-@[simp]
-theorem zpow_bit0_abs (a : α) (p : ℤ) : |a| ^ bit0 p = a ^ bit0 p :=
-  (even_bit0 _).zpow_abs _
-#align zpow_bit0_abs zpow_bit0_abs
+#noalign zpow_bit0_abs
 
 /-! ### Bernoulli's inequality -/
 

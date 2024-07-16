@@ -180,12 +180,12 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
         (fun k _ => (NNReal.hasSum_coe.2 δc).summable) ?_
     intro i _
     simp only [Nat.cofinite_eq_atTop, Pi.smul_apply, Algebra.id.smul_eq_mul,
-      Filter.eventually_atTop, ge_iff_le]
+      Filter.eventually_atTop]
     exact ⟨i, fun n hn x => hr _ _ hn _⟩
   · rintro - ⟨y, rfl⟩
     refine ⟨tsum_nonneg fun n => mul_nonneg (rpos n).le (g_nonneg n y), le_trans ?_ c_lt.le⟩
     have A : HasSum (fun n => (δ n : ℝ)) c := NNReal.hasSum_coe.2 δc
-    simp only [Pi.smul_apply, smul_eq_mul, NNReal.val_eq_coe, ← A.tsum_eq, ge_iff_le]
+    simp only [Pi.smul_apply, smul_eq_mul, NNReal.val_eq_coe, ← A.tsum_eq]
     apply tsum_le_tsum _ (S y) A.summable
     intro n
     apply (le_abs_self _).trans
@@ -294,7 +294,7 @@ theorem u_int_pos : 0 < ∫ x : E, u x ∂μ := by
 #align exists_cont_diff_bump_base.u_int_pos ExistsContDiffBumpBase.u_int_pos
 
 variable {E}
--- Porting note: `W` upper case
+
 set_option linter.uppercaseLean3 false
 
 /-- An auxiliary function to construct partitions of unity on finite-dimensional real vector spaces,
@@ -512,7 +512,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
       mem_Icc := fun R x => by
         simp only [mem_Icc]
         split_ifs with h
-        · refine' ⟨y_nonneg _ _, y_le_one _ (IR R h)⟩
+        · refine ⟨y_nonneg _ _, y_le_one _ (IR R h)⟩
         · simp only [le_refl, zero_le_one, and_self]
       symmetric := fun R x => by
         simp only
@@ -529,14 +529,14 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
           simp only [hR, uncurry_apply_pair, if_true, Function.comp_apply]
         apply (y_smooth E).comp
         · apply ContDiffOn.prod
-          · refine'
-              (contDiffOn_fst.sub contDiffOn_const).div (contDiffOn_fst.add contDiffOn_const) _
+          · refine
+              (contDiffOn_fst.sub contDiffOn_const).div (contDiffOn_fst.add contDiffOn_const) ?_
             rintro ⟨R, x⟩ ⟨hR : 1 < R, _⟩
             apply ne_of_gt
             dsimp only
             linarith
           · apply ContDiffOn.smul _ contDiffOn_snd
-            refine' ((contDiffOn_fst.add contDiffOn_const).div_const _).inv _
+            refine ((contDiffOn_fst.add contDiffOn_const).div_const _).inv ?_
             rintro ⟨R, x⟩ ⟨hR : 1 < R, _⟩
             apply ne_of_gt
             dsimp only
@@ -559,7 +559,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
         have C : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
         simp only [hR, if_true, support_comp_inv_smul₀ A.ne', y_support _ (IR R hR) C,
           _root_.smul_ball A.ne', Real.norm_of_nonneg A.le, smul_zero]
-        refine' congr (congr_arg ball (Eq.refl 0)) _
+        refine congr (congr_arg ball (Eq.refl 0)) ?_
         field_simp; ring }
 
 end ExistsContDiffBumpBase

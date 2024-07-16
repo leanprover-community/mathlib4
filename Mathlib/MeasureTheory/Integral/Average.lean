@@ -21,18 +21,15 @@ average w.r.t. the volume, one can omit `∂volume`.
 Both have a version for the Lebesgue integral rather than Bochner.
 
 We prove several version of the first moment method: An integrable function is below/above its
-average on a set of positive measure.
+average on a set of positive measure:
+* `measure_le_setLaverage_pos` for the Lebesgue integral
+* `measure_le_setAverage_pos` for the Bochner integral
 
 ## Implementation notes
 
 The average is defined as an integral over `(μ univ)⁻¹ • μ` so that all theorems about Bochner
 integrals work for the average without modifications. For theorems that require integrability of a
 function, we provide a convenience lemma `MeasureTheory.Integrable.to_average`.
-
-## TODO
-
-Provide the first moment method for the Lebesgue integral as well. A draft is available on branch
-`first_moment_lintegral` in mathlib3 repository.
 
 ## Tags
 
@@ -147,12 +144,12 @@ theorem laverage_congr {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) : ⨍⁻ x, 
 #align measure_theory.laverage_congr MeasureTheory.laverage_congr
 
 theorem setLaverage_congr (h : s =ᵐ[μ] t) : ⨍⁻ x in s, f x ∂μ = ⨍⁻ x in t, f x ∂μ := by
-  simp only [setLaverage_eq, set_lintegral_congr h, measure_congr h]
+  simp only [setLaverage_eq, setLIntegral_congr h, measure_congr h]
 #align measure_theory.set_laverage_congr MeasureTheory.setLaverage_congr
 
 theorem setLaverage_congr_fun (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
     ⨍⁻ x in s, f x ∂μ = ⨍⁻ x in s, g x ∂μ := by
-  simp only [laverage_eq, set_lintegral_congr_fun hs h]
+  simp only [laverage_eq, setLIntegral_congr_fun hs h]
 #align measure_theory.set_laverage_congr_fun MeasureTheory.setLaverage_congr_fun
 
 theorem laverage_lt_top (hf : ∫⁻ x, f x ∂μ ≠ ∞) : ⨍⁻ x, f x ∂μ < ∞ := by
@@ -188,8 +185,8 @@ theorem measure_mul_setLaverage (f : α → ℝ≥0∞) (h : μ s ≠ ∞) :
 
 theorem laverage_union (hd : AEDisjoint μ s t) (ht : NullMeasurableSet t μ) :
     ⨍⁻ x in s ∪ t, f x ∂μ =
-      μ s / (μ s + μ t) * ⨍⁻ x in s, f x ∂μ + μ t / (μ s + μ t) * ⨍⁻ x in t, f x ∂μ :=
-  by rw [restrict_union₀ hd ht, laverage_add_measure, restrict_apply_univ, restrict_apply_univ]
+      μ s / (μ s + μ t) * ⨍⁻ x in s, f x ∂μ + μ t / (μ s + μ t) * ⨍⁻ x in t, f x ∂μ := by
+  rw [restrict_union₀ hd ht, laverage_add_measure, restrict_apply_univ, restrict_apply_univ]
 #align measure_theory.laverage_union MeasureTheory.laverage_union
 
 theorem laverage_union_mem_openSegment (hd : AEDisjoint μ s t) (ht : NullMeasurableSet t μ)

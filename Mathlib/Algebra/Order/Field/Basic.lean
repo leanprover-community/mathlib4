@@ -3,8 +3,7 @@ Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Equiv
+import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Order.Bounds.OrderIso
@@ -69,7 +68,7 @@ theorem div_le_iff (hb : 0 < b) : a / b ≤ c ↔ a ≤ c * b :=
       a / b = a * (1 / b) := div_eq_mul_one_div a b
       _ ≤ c * b * (1 / b) := mul_le_mul_of_nonneg_right h (one_div_pos.2 hb).le
       _ = c * b / b := (div_eq_mul_one_div (c * b) b).symm
-      _ = c := by refine' (div_eq_iff (ne_of_gt hb)).mpr rfl
+      _ = c := by refine (div_eq_iff (ne_of_gt hb)).mpr rfl
       ⟩
 #align div_le_iff div_le_iff
 
@@ -293,11 +292,10 @@ lemma div_lt_div_of_pos_left (ha : 0 < a) (hc : 0 < c) (h : c < b) : a / b < a /
   simpa only [div_eq_mul_inv, mul_lt_mul_left ha, inv_lt_inv (hc.trans h) hc]
 #align div_lt_div_of_lt_left div_lt_div_of_pos_left
 
--- 2024-02-16
-@[deprecated] alias div_le_div_of_le_of_nonneg := div_le_div_of_nonneg_right
-@[deprecated] alias div_lt_div_of_lt := div_lt_div_of_pos_right
-@[deprecated] alias div_le_div_of_le_left := div_le_div_of_nonneg_left
-@[deprecated] alias div_lt_div_of_lt_left := div_lt_div_of_pos_left
+@[deprecated (since := "2024-02-16")] alias div_le_div_of_le_of_nonneg := div_le_div_of_nonneg_right
+@[deprecated (since := "2024-02-16")] alias div_lt_div_of_lt := div_lt_div_of_pos_right
+@[deprecated (since := "2024-02-16")] alias div_le_div_of_le_left := div_le_div_of_nonneg_left
+@[deprecated (since := "2024-02-16")] alias div_lt_div_of_lt_left := div_lt_div_of_pos_left
 
 @[deprecated div_le_div_of_nonneg_right (since := "2024-02-16")]
 lemma div_le_div_of_le (hc : 0 ≤ c) (hab : a ≤ b) : a / c ≤ b / c :=
@@ -430,18 +428,6 @@ theorem one_le_one_div (h1 : 0 < a) (h2 : a ≤ 1) : 1 ≤ 1 / a := by
 ### Results about halving.
 The equalities also hold in semifields of characteristic `0`.
 -/
-
-
-/- TODO: Unify `add_halves` and `add_halves'` into a single lemma about
-`DivisionSemiring` + `CharZero` -/
-theorem add_halves (a : α) : a / 2 + a / 2 = a := by
-  rw [div_add_div_same, ← two_mul, mul_div_cancel_left₀ a two_ne_zero]
-#align add_halves add_halves
-
--- TODO: Generalize to `DivisionSemiring`
-theorem add_self_div_two (a : α) : (a + a) / 2 = a := by
-  rw [← mul_two, mul_div_cancel_right₀ a two_ne_zero]
-#align add_self_div_two add_self_div_two
 
 theorem half_pos (h : 0 < a) : 0 < a / 2 :=
   div_pos h zero_lt_two
@@ -758,22 +744,22 @@ theorem sub_inv_antitoneOn_Icc_left (ha : b < c) :
   · simp [hab, Set.Subsingleton.antitoneOn]
 
 theorem inv_antitoneOn_Ioi :
-    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Ioi 0) := by
+    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Ioi 0) := by
   convert sub_inv_antitoneOn_Ioi
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Iio :
-    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Iio 0) := by
+    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Iio 0) := by
   convert sub_inv_antitoneOn_Iio
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Icc_right (ha : 0 < a) :
-    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Icc a b) := by
+    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Icc a b) := by
   convert sub_inv_antitoneOn_Icc_right ha
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Icc_left (hb : b < 0) :
-    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Icc a b) := by
+    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Icc a b) := by
   convert sub_inv_antitoneOn_Icc_left hb
   exact (sub_zero _).symm
 
@@ -1066,7 +1052,7 @@ def evalInv : PositivityExt where eval {u α} zα pα e := do
   | .none => pure .none
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℤ)`. -/
-@[positivity _ ^ (0:ℤ), Pow.pow _ (0:ℤ)]
+@[positivity _ ^ (0 : ℤ), Pow.pow _ (0 : ℤ)]
 def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
   _ ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))

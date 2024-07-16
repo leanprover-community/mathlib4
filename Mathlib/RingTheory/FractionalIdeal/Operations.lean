@@ -55,7 +55,7 @@ theorem _root_.IsFractional.map (g : P →ₐ[R] P') {I : Submodule R P} :
       rw [AlgHom.toLinearMap_apply] at hb'
       obtain ⟨x, hx⟩ := hI b' b'_mem
       use x
-      rw [← g.commutes, hx, g.map_smul, hb']⟩
+      rw [← g.commutes, hx, _root_.map_smul, hb']⟩
 #align is_fractional.map IsFractional.map
 
 /-- `I.map g` is the pushforward of the fractional ideal `I` along the algebra morphism `g` -/
@@ -580,7 +580,7 @@ variable (R₁)
 def spanFinset {ι : Type*} (s : Finset ι) (f : ι → K) : FractionalIdeal R₁⁰ K :=
   ⟨Submodule.span R₁ (f '' s), by
     obtain ⟨a', ha'⟩ := IsLocalization.exist_integer_multiples R₁⁰ s f
-    refine' ⟨a', a'.2, fun x hx => Submodule.span_induction hx _ _ _ _⟩
+    refine ⟨a', a'.2, fun x hx => Submodule.span_induction hx ?_ ?_ ?_ ?_⟩
     · rintro _ ⟨i, hi, rfl⟩
       exact ha' i hi
     · rw [smul_zero]

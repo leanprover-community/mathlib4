@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.BigOperators.Ring.Multiset
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.Fintype.Powerset
@@ -67,6 +67,10 @@ lemma sum_mul_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → α) (
   simp_rw [sum_mul, ← mul_sum]
 #align finset.sum_mul_sum Finset.sum_mul_sum
 
+lemma _root_.Fintype.sum_mul_sum {κ : Type*} [Fintype ι] [Fintype κ] (f : ι → α) (g : κ → α) :
+    (∑ i, f i) * ∑ j, g j = ∑ i, ∑ j, f i * g j :=
+  Finset.sum_mul_sum _ _ _ _
+
 lemma _root_.Commute.sum_right [NonUnitalNonAssocSemiring α] (s : Finset ι) (f : ι → α) (b : α)
     (h : ∀ i ∈ s, Commute b (f i)) : Commute b (∑ i ∈ s, f i) :=
   (Commute.multiset_sum_right _ _) fun b hb => by
@@ -105,7 +109,7 @@ lemma sum_mul_boole (s : Finset ι) (f : ι → α) (i : ι) :
 #align finset.sum_mul_boole Finset.sum_mul_boole
 
 lemma sum_boole_mul (s : Finset ι) (f : ι → α) (i : ι) :
-    ∑ j ∈ s, ite (i = j) 1 0 * f i = ite (i ∈ s) (f i) 0 := by simp
+    ∑ j ∈ s, ite (i = j) 1 0 * f j = ite (i ∈ s) (f i) 0 := by simp
 #align finset.sum_boole_mul Finset.sum_boole_mul
 
 end NonAssocSemiring
@@ -307,8 +311,9 @@ variable {ι κ α : Type*} [DecidableEq ι] [Fintype ι] [Fintype κ] [CommSemi
 lemma sum_pow (f : ι → α) (n : ℕ) : (∑ a, f a) ^ n = ∑ p : Fin n → ι, ∏ i, f (p i) := by
   simp [sum_pow']
 
-lemma sum_mul_sum (f : ι → α) (g : κ → α) : (∑ i, f i) * ∑ j, g j = ∑ i, ∑ j, f i * g j :=
-  Finset.sum_mul_sum _ _ _ _
+/-- A product of sums can be written as a sum of products. -/
+lemma prod_sum {κ : ι → Type*} [Fintype ι] [∀ i, Fintype (κ i)] (f : ∀ i, κ i → α) :
+    ∏ i, ∑ j, f i j = ∑ x : ∀ i, κ i, ∏ i, f i (x i) := Finset.prod_univ_sum _ _
 
 lemma prod_add (f g : ι → α) : ∏ a, (f a + g a) = ∑ t, (∏ a ∈ t, f a) * ∏ a ∈ tᶜ, g a := by
   simpa [compl_eq_univ_sdiff] using Finset.prod_add f g univ
@@ -361,6 +366,14 @@ lemma cast_prod [CommSemiring β] (f : α → ℕ) (s : Finset α) :
 end Nat
 
 namespace Int
+variable {ι : Type*} {s : Finset ι} {f : ι → ℤ} {n : ℤ}
+
+protected lemma sum_div (hf : ∀ i ∈ s, n ∣ f i) : (∑ i ∈ s, f i) / n = ∑ i ∈ s, f i / n := by
+  obtain rfl | hn := eq_or_ne n 0
+  · simp
+  rw [Int.ediv_eq_iff_eq_mul_left hn (dvd_sum hf), sum_mul]
+  refine sum_congr rfl fun s hs ↦ ?_
+  rw [Int.ediv_mul_cancel (hf _ hs)]
 
 @[simp, norm_cast]
 lemma cast_list_sum [AddGroupWithOne β] (s : List ℤ) : (↑s.sum : β) = (s.map (↑)).sum :=

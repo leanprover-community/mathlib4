@@ -274,7 +274,7 @@ theorem mapRange.addEquiv_symm (f : M ≃+ N) :
 
 @[simp]
 theorem mapRange.addEquiv_toAddMonoidHom (f : M ≃+ N) :
-    (mapRange.addEquiv f : (α →₀ _) ≃+ _).toAddMonoidHom =
+    ((mapRange.addEquiv f : (α →₀ _) ≃+ _) : _ →+ _) =
       (mapRange.addMonoidHom f.toAddMonoidHom : (α →₀ _) →+ _) :=
   AddMonoidHom.ext fun _ => rfl
 #align finsupp.map_range.add_equiv_to_add_monoid_hom Finsupp.mapRange.addEquiv_toAddMonoidHom
@@ -349,7 +349,7 @@ theorem equivMapDomain_zero {f : α ≃ β} : equivMapDomain f (0 : α →₀ M)
 #align finsupp.equiv_map_domain_zero Finsupp.equivMapDomain_zero
 
 @[to_additive (attr := simp)]
-theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g : β → M → N):
+theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g : β → M → N) :
     prod (equivMapDomain f l) g = prod l (fun a m => g (f a) m) := by
   simp [prod, equivMapDomain]
 
@@ -358,7 +358,7 @@ theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g 
 
 This is the finitely-supported version of `Equiv.piCongrLeft`. -/
 def equivCongrLeft (f : α ≃ β) : (α →₀ M) ≃ (β →₀ M) := by
-  refine' ⟨equivMapDomain f, equivMapDomain f.symm, fun f => _, fun f => _⟩ <;> ext x <;>
+  refine ⟨equivMapDomain f, equivMapDomain f.symm, fun f => ?_, fun f => ?_⟩ <;> ext x <;>
     simp only [equivMapDomain_apply, Equiv.symm_symm, Equiv.symm_apply_apply,
       Equiv.apply_symm_apply]
 #align finsupp.equiv_congr_left Finsupp.equivCongrLeft
@@ -572,7 +572,7 @@ theorem mapDomain_support_of_injOn [DecidableEq β] {f : α → β} (s : α →�
 
 theorem mapDomain_support_of_injective [DecidableEq β] {f : α → β} (hf : Function.Injective f)
     (s : α →₀ M) : (mapDomain f s).support = Finset.image f s.support :=
-  mapDomain_support_of_injOn s (hf.injOn _)
+  mapDomain_support_of_injOn s hf.injOn
 #align finsupp.map_domain_support_of_injective Finsupp.mapDomain_support_of_injective
 
 @[to_additive]
@@ -721,7 +721,7 @@ section Zero
 variable [Zero M]
 
 lemma embDomain_comapDomain {f : α ↪ β} {g : β →₀ M} (hg : ↑g.support ⊆ Set.range f) :
-    embDomain f (comapDomain f g (f.injective.injOn _)) = g := by
+    embDomain f (comapDomain f g f.injective.injOn) = g := by
   ext b
   by_cases hb : b ∈ Set.range f
   · obtain ⟨a, rfl⟩ := hb
@@ -765,15 +765,15 @@ theorem comapDomain_add (v₁ v₂ : β →₀ M) (hv₁ : Set.InjOn f (f ⁻¹'
 
 /-- A version of `Finsupp.comapDomain_add` that's easier to use. -/
 theorem comapDomain_add_of_injective (hf : Function.Injective f) (v₁ v₂ : β →₀ M) :
-    comapDomain f (v₁ + v₂) (hf.injOn _) =
-      comapDomain f v₁ (hf.injOn _) + comapDomain f v₂ (hf.injOn _) :=
+    comapDomain f (v₁ + v₂) hf.injOn =
+      comapDomain f v₁ hf.injOn + comapDomain f v₂ hf.injOn :=
   comapDomain_add _ _ _ _ _
 #align finsupp.comap_domain_add_of_injective Finsupp.comapDomain_add_of_injective
 
 /-- `Finsupp.comapDomain` is an `AddMonoidHom`. -/
 @[simps]
 def comapDomain.addMonoidHom (hf : Function.Injective f) : (β →₀ M) →+ α →₀ M where
-  toFun x := comapDomain f x (hf.injOn _)
+  toFun x := comapDomain f x hf.injOn
   map_zero' := comapDomain_zero f
   map_add' := comapDomain_add_of_injective hf
 #align finsupp.comap_domain.add_monoid_hom Finsupp.comapDomain.addMonoidHom
@@ -784,7 +784,7 @@ variable [AddCommMonoid M] (f : α → β)
 
 theorem mapDomain_comapDomain (hf : Function.Injective f) (l : β →₀ M)
     (hl : ↑l.support ⊆ Set.range f) :
-    mapDomain f (comapDomain f l (hf.injOn _)) = l := by
+    mapDomain f (comapDomain f l hf.injOn) = l := by
   conv_rhs => rw [← embDomain_comapDomain (f := ⟨f, hf⟩) hl (M := M), embDomain_eq_mapDomain]
   rfl
 #align finsupp.map_domain_comap_domain Finsupp.mapDomain_comapDomain
@@ -1073,7 +1073,7 @@ def subtypeDomainAddMonoidHom : (α →₀ M) →+ Subtype p →₀ M where
 #align finsupp.subtype_domain_add_monoid_hom Finsupp.subtypeDomainAddMonoidHom
 
 /-- `Finsupp.filter` as an `AddMonoidHom`. -/
-def filterAddHom (p : α → Prop) [DecidablePred p]: (α →₀ M) →+ α →₀ M where
+def filterAddHom (p : α → Prop) [DecidablePred p] : (α →₀ M) →+ α →₀ M where
   toFun := filter p
   map_zero' := filter_zero p
   map_add' f g := DFunLike.coe_injective <| by
@@ -1321,8 +1321,8 @@ This is the `Finsupp` version of `Equiv.sum_arrow_equiv_prod_arrow`. -/
 @[simps apply symm_apply]
 def sumFinsuppEquivProdFinsupp {α β γ : Type*} [Zero γ] : (Sum α β →₀ γ) ≃ (α →₀ γ) × (β →₀ γ) where
   toFun f :=
-    ⟨f.comapDomain Sum.inl (Sum.inl_injective.injOn _),
-      f.comapDomain Sum.inr (Sum.inr_injective.injOn _)⟩
+    ⟨f.comapDomain Sum.inl Sum.inl_injective.injOn,
+      f.comapDomain Sum.inr Sum.inr_injective.injOn⟩
   invFun fg := sumElim fg.1 fg.2
   left_inv f := by
     ext ab
@@ -1607,7 +1607,7 @@ theorem comapDomain_smul [AddMonoid M] [Monoid R] [DistribMulAction R M] {f : α
 /-- A version of `Finsupp.comapDomain_smul` that's easier to use. -/
 theorem comapDomain_smul_of_injective [AddMonoid M] [Monoid R] [DistribMulAction R M] {f : α → β}
     (hf : Function.Injective f) (r : R) (v : β →₀ M) :
-    comapDomain f (r • v) (hf.injOn _) = r • comapDomain f v (hf.injOn _) :=
+    comapDomain f (r • v) hf.injOn = r • comapDomain f v hf.injOn :=
   comapDomain_smul _ _ _ _
 #align finsupp.comap_domain_smul_of_injective Finsupp.comapDomain_smul_of_injective
 
@@ -1741,7 +1741,10 @@ theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, 
   ext a
   by_cases h : P a
   · exact dif_pos h
-  · dsimp
+  · #adaptation_note
+    /-- Prior to nightly-2024-06-18, this `rw` was done by `dsimp`. -/
+    rw [extendDomain_toFun]
+    dsimp
     rw [if_neg h, eq_comm, ← not_mem_support_iff]
     refine mt ?_ h
     exact @hf _
@@ -1750,7 +1753,9 @@ theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, 
 theorem extendDomain_single (a : Subtype P) (m : M) :
     (single a m).extendDomain = single a.val m := by
   ext a'
-  dsimp only [extendDomain_toFun]
+  #adaptation_note
+  /-- Prior to nightly-2024-06-18, this `rw` was instead `dsimp only`. -/
+  rw [extendDomain_toFun]
   obtain rfl | ha := eq_or_ne a.val a'
   · simp_rw [single_eq_same, dif_pos a.prop]
   · simp_rw [single_eq_of_ne ha, dite_eq_right_iff]

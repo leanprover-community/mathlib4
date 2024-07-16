@@ -117,8 +117,9 @@ theorem abs_circleMap_zero (R : ℝ) (θ : ℝ) : abs (circleMap 0 R θ) = |R| :
 theorem circleMap_mem_sphere' (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∈ sphere c |R| := by simp
 #align circle_map_mem_sphere' circleMap_mem_sphere'
 
-theorem circleMap_mem_sphere (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) : circleMap c R θ ∈ sphere c R :=
-  by simpa only [_root_.abs_of_nonneg hR] using circleMap_mem_sphere' c R θ
+theorem circleMap_mem_sphere (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
+    circleMap c R θ ∈ sphere c R := by
+  simpa only [_root_.abs_of_nonneg hR] using circleMap_mem_sphere' c R θ
 #align circle_map_mem_sphere circleMap_mem_sphere
 
 theorem circleMap_mem_closedBall (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
@@ -179,12 +180,12 @@ theorem differentiable_circleMap (c : ℂ) (R : ℝ) : Differentiable ℝ (circl
   (hasDerivAt_circleMap c R θ).differentiableAt
 #align differentiable_circle_map differentiable_circleMap
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_circleMap (c : ℂ) (R : ℝ) : Continuous (circleMap c R) :=
   (differentiable_circleMap c R).continuous
 #align continuous_circle_map continuous_circleMap
 
-@[measurability]
+@[fun_prop, measurability]
 theorem measurable_circleMap (c : ℂ) (R : ℝ) : Measurable (circleMap c R) :=
   (continuous_circleMap c R).measurable
 #align measurable_circle_map measurable_circleMap
@@ -194,8 +195,8 @@ theorem deriv_circleMap (c : ℂ) (R : ℝ) (θ : ℝ) : deriv (circleMap c R) �
   (hasDerivAt_circleMap _ _ _).deriv
 #align deriv_circle_map deriv_circleMap
 
-theorem deriv_circleMap_eq_zero_iff {c : ℂ} {R : ℝ} {θ : ℝ} : deriv (circleMap c R) θ = 0 ↔ R = 0 :=
-  by simp [I_ne_zero]
+theorem deriv_circleMap_eq_zero_iff {c : ℂ} {R : ℝ} {θ : ℝ} :
+    deriv (circleMap c R) θ = 0 ↔ R = 0 := by simp [I_ne_zero]
 #align deriv_circle_map_eq_zero_iff deriv_circleMap_eq_zero_iff
 
 theorem deriv_circleMap_ne_zero {c : ℂ} {R : ℝ} {θ : ℝ} (hR : R ≠ 0) :
@@ -214,7 +215,7 @@ theorem continuous_circleMap_inv {R : ℝ} {z w : ℂ} (hw : w ∈ ball z R) :
     simp_rw [sub_ne_zero]
     exact fun θ => circleMap_ne_mem_ball hw θ
   -- Porting note: was `continuity`
-  exact Continuous.inv₀ (by continuity) this
+  exact Continuous.inv₀ (by fun_prop) this
 #align continuous_circle_map_inv continuous_circleMap_inv
 
 /-!
@@ -295,9 +296,7 @@ theorem ContinuousOn.circleIntegrable {f : ℂ → E} {c : ℂ} {R : ℝ} (hR : 
 
 /-- The function `fun z ↦ (z - w) ^ n`, `n : ℤ`, is circle integrable on the circle with center `c`
 and radius `|R|` if and only if `R = 0` or `0 ≤ n`, or `w` does not belong to this circle. -/
--- Adaptation note: nightly-2024-04-01
--- The simpNF linter now times out on this lemma.
-@[simp, nolint simpNF]
+@[simp]
 theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
     CircleIntegrable (fun z => (z - w) ^ n) c R ↔ R = 0 ∨ 0 ≤ n ∨ w ∉ sphere c |R| := by
   constructor
@@ -331,9 +330,7 @@ theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
           sub_ne_zero.2 <| ne_of_mem_of_not_mem hz hw).circleIntegrable']
 #align circle_integrable_sub_zpow_iff circleIntegrable_sub_zpow_iff
 
--- Adaptation note: nightly-2024-04-01
--- The simpNF linter now times out on this lemma.
-@[simp, nolint simpNF]
+@[simp]
 theorem circleIntegrable_sub_inv_iff {c w : ℂ} {R : ℝ} :
     CircleIntegrable (fun z => (z - w)⁻¹) c R ↔ R = 0 ∨ w ∉ sphere c |R| := by
   simp only [← zpow_neg_one, circleIntegrable_sub_zpow_iff]; norm_num
@@ -541,9 +538,9 @@ theorem cauchyPowerSeries_apply (f : ℂ → E) (c : ℂ) (R : ℝ) (n : ℕ) (w
 theorem norm_cauchyPowerSeries_le (f : ℂ → E) (c : ℂ) (R : ℝ) (n : ℕ) :
     ‖cauchyPowerSeries f c R n‖ ≤
       ((2 * π)⁻¹ * ∫ θ : ℝ in (0)..2 * π, ‖f (circleMap c R θ)‖) * |R|⁻¹ ^ n :=
-  calc
-    ‖cauchyPowerSeries f c R n‖ = (2 * π)⁻¹ * ‖∮ z in C(c, R), (z - c)⁻¹ ^ n • (z - c)⁻¹ • f z‖ :=
-      by simp [cauchyPowerSeries, norm_smul, Real.pi_pos.le]
+  calc ‖cauchyPowerSeries f c R n‖
+    _ = (2 * π)⁻¹ * ‖∮ z in C(c, R), (z - c)⁻¹ ^ n • (z - c)⁻¹ • f z‖ := by
+      simp [cauchyPowerSeries, norm_smul, Real.pi_pos.le]
     _ ≤ (2 * π)⁻¹ * ∫ θ in (0)..2 * π, ‖deriv (circleMap c R) θ •
         (circleMap c R θ - c)⁻¹ ^ n • (circleMap c R θ - c)⁻¹ • f (circleMap c R θ)‖ :=
       (mul_le_mul_of_nonneg_left
@@ -574,7 +571,7 @@ theorem le_radius_cauchyPowerSeries (f : ℂ → E) (c : ℂ) (R : ℝ≥0) :
     exact mul_nonneg (inv_nonneg.2 Real.two_pi_pos.le)
       (intervalIntegral.integral_nonneg Real.two_pi_pos.le fun _ _ => norm_nonneg _)
   · rw [inv_pow]
-    have : (R:ℝ) ^ n ≠ 0 := by norm_cast at hR ⊢
+    have : (R : ℝ) ^ n ≠ 0 := by norm_cast at hR ⊢
     rw [inv_mul_cancel_right₀ this]
 #align le_radius_cauchy_power_series le_radius_cauchyPowerSeries
 
@@ -592,10 +589,9 @@ theorem hasSum_two_pi_I_cauchyPowerSeries_integral {f : ℂ → E} {c : ℂ} {R 
       (fun n θ => ‖f (circleMap c R θ)‖ * (abs w / R) ^ n) (fun n => ?_) (fun n => ?_) ?_ ?_ ?_
   · simp only [deriv_circleMap]
     apply_rules [AEStronglyMeasurable.smul, hf.def'.1] <;> apply Measurable.aestronglyMeasurable
-    -- Porting note: these were `measurability`
-    · exact (measurable_circleMap 0 R).mul_const I
-    · exact (((measurable_circleMap c R).sub measurable_const).const_div w).pow measurable_const
-    · exact ((measurable_circleMap c R).sub measurable_const).inv
+    · fun_prop
+    · fun_prop
+    · fun_prop
   · simp [norm_smul, abs_of_pos hR, mul_left_comm R, inv_mul_cancel_left₀ hR.ne', mul_comm ‖_‖]
   · exact eventually_of_forall fun _ _ => (summable_geometric_of_lt_one hwR.1 hwR.2).mul_left _
   · simpa only [tsum_mul_left, tsum_geometric_of_lt_one hwR.1 hwR.2] using

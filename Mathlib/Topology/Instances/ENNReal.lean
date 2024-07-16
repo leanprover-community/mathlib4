@@ -76,6 +76,7 @@ theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {a : ℝ≥0} :
   embedding_coe.tendsto_nhds_iff.symm
 #align ennreal.tendsto_coe ENNReal.tendsto_coe
 
+@[fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ≥0∞) :=
   embedding_coe.continuous
 #align ennreal.continuous_coe ENNReal.continuous_coe
@@ -195,8 +196,13 @@ theorem tendsto_coe_nhds_top {f : α → ℝ≥0} {l : Filter α} :
   rw [tendsto_nhds_top_iff_nnreal, atTop_basis_Ioi.tendsto_right_iff]; simp
 #align ennreal.tendsto_coe_nhds_top ENNReal.tendsto_coe_nhds_top
 
+@[simp]
+theorem tendsto_ofReal_nhds_top {f : α → ℝ} {l : Filter α} :
+    Tendsto (fun x ↦ ENNReal.ofReal (f x)) l (𝓝 ∞) ↔ Tendsto f l atTop :=
+  tendsto_coe_nhds_top.trans Real.tendsto_toNNReal_atTop_iff
+
 theorem tendsto_ofReal_atTop : Tendsto ENNReal.ofReal atTop (𝓝 ∞) :=
-  tendsto_coe_nhds_top.2 tendsto_real_toNNReal_atTop
+  tendsto_ofReal_nhds_top.2 tendsto_id
 #align ennreal.tendsto_of_real_at_top ENNReal.tendsto_ofReal_atTop
 
 theorem nhds_zero : 𝓝 (0 : ℝ≥0∞) = ⨅ (a) (_ : a ≠ 0), 𝓟 (Iio a) :=
@@ -272,7 +278,6 @@ theorem biInf_le_nhds : ∀ x : ℝ≥0∞, ⨅ ε > 0, 𝓟 (Icc (x - ε) (x + 
     simpa only [← coe_one, top_sub_coe, top_add, Icc_self, principal_singleton] using pure_le_nhds _
   | (x : ℝ≥0) => (nhds_of_ne_top coe_ne_top).ge
 
--- Porting note (#10756): new lemma
 protected theorem tendsto_nhds_of_Icc {f : Filter α} {u : α → ℝ≥0∞} {a : ℝ≥0∞}
     (h : ∀ ε > 0, ∀ᶠ x in f, u x ∈ Icc (a - ε) (a + ε)) : Tendsto u f (𝓝 a) := by
   refine Tendsto.mono_right ?_ (biInf_le_nhds _)
@@ -296,7 +301,7 @@ protected theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {f : β → �
 #align ennreal.tendsto_at_top ENNReal.tendsto_atTop
 
 instance : ContinuousAdd ℝ≥0∞ := by
-  refine' ⟨continuous_iff_continuousAt.2 _⟩
+  refine ⟨continuous_iff_continuousAt.2 ?_⟩
   rintro ⟨_ | a, b⟩
   · exact tendsto_nhds_top_mono' continuousAt_fst fun p => le_add_right le_rfl
   rcases b with (_ | b)
@@ -628,21 +633,30 @@ theorem iSup_add_iSup {ι : Sort*} {f g : ι → ℝ≥0∞} (h : ∀ i j, ∃ k
     exact le_iSup_of_le k hk
 #align ennreal.supr_add_supr ENNReal.iSup_add_iSup
 
-theorem iSup_add_iSup_of_monotone {ι : Type*} [SemilatticeSup ι] {f g : ι → ℝ≥0∞} (hf : Monotone f)
-    (hg : Monotone g) : iSup f + iSup g = ⨆ a, f a + g a :=
-  iSup_add_iSup fun i j => ⟨i ⊔ j, add_le_add (hf <| le_sup_left) (hg <| le_sup_right)⟩
+theorem iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
+    {f g : ι → ℝ≥0∞} (hf : Monotone f) (hg : Monotone g) : iSup f + iSup g = ⨆ a, f a + g a :=
+  iSup_add_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules
 #align ennreal.supr_add_supr_of_monotone ENNReal.iSup_add_iSup_of_monotone
 
-theorem finset_sum_iSup_nat {α} {ι} [SemilatticeSup ι] {s : Finset α} {f : α → ι → ℝ≥0∞}
-    (hf : ∀ a, Monotone (f a)) : (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n := by
-  refine Finset.induction_on s ?_ ?_
-  · simp
-  · intro a s has ih
-    simp only [Finset.sum_insert has]
-    rw [ih, iSup_add_iSup_of_monotone (hf a)]
-    intro i j h
-    exact Finset.sum_le_sum fun a _ => hf a h
-#align ennreal.finset_sum_supr_nat ENNReal.finset_sum_iSup_nat
+theorem finsetSum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℝ≥0∞}
+    (hf : ∀ i j, ∃ k, ∀ a, f a i ≤ f a k ∧ f a j ≤ f a k) :
+    ∑ a ∈ s, ⨆ i, f a i = ⨆ i, ∑ a ∈ s, f a i := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha ihs =>
+    simp_rw [Finset.sum_cons, ihs]
+    refine iSup_add_iSup fun i j ↦ (hf i j).imp fun k hk ↦ ?_
+    gcongr
+    exacts [(hk a).1, (hk _).2]
+
+theorem finsetSum_iSup_of_monotone {α} {ι} [Preorder ι] [IsDirected ι (· ≤ ·)]
+    {s : Finset α} {f : α → ι → ℝ≥0∞} (hf : ∀ a, Monotone (f a)) :
+    (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n :=
+  finsetSum_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ a ↦ ⟨hf a hi, hf a hj⟩
+#align ennreal.finset_sum_supr_nat ENNReal.finsetSum_iSup_of_monotone
+
+@[deprecated (since := "2024-07-14")]
+alias finset_sum_iSup_nat := finsetSum_iSup_of_monotone
 
 theorem mul_iSup {ι : Sort*} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : a * iSup f = ⨆ i, a * f i := by
   by_cases hf : ∀ i, f i = 0
@@ -756,15 +770,15 @@ theorem exists_upcrossings_of_not_bounded_under {ι : Type*} {l : Filter ι} {x 
     refine ⟨q, q + 1, (lt_add_iff_pos_right _).2 zero_lt_one, ?_, ?_⟩
     · refine fun hcon => hR ?_
       filter_upwards [hcon] with x hx using not_lt.2 (lt_of_lt_of_le hq (not_lt.1 hx)).le
-    · simp only [IsBoundedUnder, IsBounded, eventually_map, eventually_atTop, ge_iff_le,
-        not_exists, not_forall, not_le, exists_prop] at hbdd
+    · simp only [IsBoundedUnder, IsBounded, eventually_map, eventually_atTop, not_exists,
+        not_forall, not_le, exists_prop] at hbdd
       refine fun hcon => hbdd ↑(q + 1) ?_
       filter_upwards [hcon] with x hx using not_lt.1 hx
   · obtain ⟨R, hR⟩ := exists_frequently_lt_of_liminf_ne_top' hf
     obtain ⟨q, hq⟩ := exists_rat_lt R
     refine ⟨q - 1, q, (sub_lt_self_iff _).2 zero_lt_one, ?_, ?_⟩
-    · simp only [IsBoundedUnder, IsBounded, eventually_map, eventually_atTop, ge_iff_le,
-        not_exists, not_forall, not_le, exists_prop] at hbdd
+    · simp only [IsBoundedUnder, IsBounded, eventually_map, eventually_atTop, not_exists,
+        not_forall, not_le, exists_prop] at hbdd
       refine fun hcon => hbdd ↑(q - 1) ?_
       filter_upwards [hcon] with x hx using not_lt.1 hx
     · refine fun hcon => hR ?_
@@ -1082,6 +1096,13 @@ theorem finset_card_const_le_le_of_tsum_le {ι : Type*} {a : ι → ℝ≥0∞} 
     _ ≤ ∑' i, a i := ENNReal.sum_le_tsum _
     _ ≤ c := tsum_le_c
 #align ennreal.finset_card_const_le_le_of_tsum_le ENNReal.finset_card_const_le_le_of_tsum_le
+
+theorem tsum_fiberwise (f : β → ℝ≥0∞) (g : β → γ) :
+    ∑' x, ∑' b : g ⁻¹' {x}, f b = ∑' i, f i := by
+  apply HasSum.tsum_eq
+  let equiv := Equiv.sigmaFiberEquiv g
+  apply (equiv.hasSum_iff.mpr ENNReal.summable.hasSum).sigma
+  exact fun _ ↦ ENNReal.summable.hasSum_iff.mpr rfl
 
 end tsum
 
@@ -1518,21 +1539,18 @@ theorem ediam_eq {s : Set ℝ} (h : Bornology.IsBounded s) :
   rcases eq_empty_or_nonempty s with (rfl | hne)
   · simp
   refine le_antisymm (Metric.ediam_le_of_forall_dist_le fun x hx y hy => ?_) ?_
-  · have := Real.subset_Icc_sInf_sSup_of_isBounded h
-    exact Real.dist_le_of_mem_Icc (this hx) (this hy)
+  · exact Real.dist_le_of_mem_Icc (h.subset_Icc_sInf_sSup hx) (h.subset_Icc_sInf_sSup hy)
   · apply ENNReal.ofReal_le_of_le_toReal
     rw [← Metric.diam, ← Metric.diam_closure]
-    have h' := Real.isBounded_iff_bddBelow_bddAbove.1 h
     calc sSup s - sInf s ≤ dist (sSup s) (sInf s) := le_abs_self _
-    _ ≤ Metric.diam (closure s) := dist_le_diam_of_mem h.closure (csSup_mem_closure hne h'.2)
-        (csInf_mem_closure hne h'.1)
+    _ ≤ Metric.diam (closure s) := dist_le_diam_of_mem h.closure (csSup_mem_closure hne h.bddAbove)
+        (csInf_mem_closure hne h.bddBelow)
 #align real.ediam_eq Real.ediam_eq
 
 /-- For a bounded set `s : Set ℝ`, its `Metric.diam` is equal to `sSup s - sInf s`. -/
 theorem diam_eq {s : Set ℝ} (h : Bornology.IsBounded s) : Metric.diam s = sSup s - sInf s := by
   rw [Metric.diam, Real.ediam_eq h, ENNReal.toReal_ofReal]
-  rw [Real.isBounded_iff_bddBelow_bddAbove] at h
-  exact sub_nonneg.2 (Real.sInf_le_sSup s h.1 h.2)
+  exact sub_nonneg.2 (Real.sInf_le_sSup s h.bddBelow h.bddAbove)
 #align real.diam_eq Real.diam_eq
 
 @[simp]
@@ -1585,7 +1603,8 @@ theorem edist_le_tsum_of_edist_le_of_tendsto {f : ℕ → α} (d : ℕ → ℝ�
     (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
     edist (f n) a ≤ ∑' m, d (n + m) := by
   refine le_of_tendsto (tendsto_const_nhds.edist ha) (mem_atTop_sets.2 ⟨n, fun m hnm => ?_⟩)
-  refine' le_trans (edist_le_Ico_sum_of_edist_le hnm fun _ _ => hf _) _
+  change edist _ _ ≤ _
+  refine le_trans (edist_le_Ico_sum_of_edist_le hnm fun _ _ => hf _) ?_
   rw [Finset.sum_Ico_eq_sum_range]
   exact sum_le_tsum _ (fun _ _ => zero_le _) ENNReal.summable
 #align edist_le_tsum_of_edist_le_of_tendsto edist_le_tsum_of_edist_le_of_tendsto
@@ -1611,14 +1630,14 @@ lemma truncateToReal_eq_toReal {t x : ℝ≥0∞} (t_ne_top : t ≠ ∞) (x_le :
     truncateToReal t x = x.toReal := by
   have x_lt_top : x < ∞ := lt_of_le_of_lt x_le t_ne_top.lt_top
   have obs : min t x ≠ ∞ := by
-    simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+    simp_all only [ne_eq, min_eq_top, false_and, not_false_eq_true]
   exact (ENNReal.toReal_eq_toReal obs x_lt_top.ne).mpr (min_eq_right x_le)
 
 lemma truncateToReal_le {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) {x : ℝ≥0∞} :
     truncateToReal t x ≤ t.toReal := by
   rw [truncateToReal]
   apply (toReal_le_toReal _ t_ne_top).mpr (min_le_left t x)
-  simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+  simp_all only [ne_eq, min_eq_top, false_and, not_false_eq_true]
 
 lemma truncateToReal_nonneg {t x : ℝ≥0∞} : 0 ≤ truncateToReal t x := toReal_nonneg
 
@@ -1626,9 +1645,9 @@ lemma truncateToReal_nonneg {t x : ℝ≥0∞} : 0 ≤ truncateToReal t x := toR
 lemma monotone_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) : Monotone (truncateToReal t) := by
   intro x y x_le_y
   have obs_x : min t x ≠ ∞ := by
-    simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+    simp_all only [ne_eq, min_eq_top, false_and, not_false_eq_true]
   have obs_y : min t y ≠ ∞ := by
-    simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+    simp_all only [ne_eq, min_eq_top, false_and, not_false_eq_true]
   exact (ENNReal.toReal_le_toReal obs_x obs_y).mpr (min_le_min_left t x_le_y)
 
 /-- The truncated cast `ENNReal.truncateToReal t : ℝ≥0∞ → ℝ` is continuous when `t ≠ ∞`. -/
@@ -1653,13 +1672,13 @@ lemma liminf_sub_const (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : �
     (fun _ _ h ↦ tsub_le_tsub_right h c) (continuous_sub_right c).continuousAt).symm
 
 lemma limsup_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞)
-    {c : ℝ≥0∞} (c_ne_top : c ≠ ∞):
+    {c : ℝ≥0∞} (c_ne_top : c ≠ ∞) :
     Filter.limsup (fun i ↦ c - f i) F = c - Filter.liminf f F :=
   (Antitone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm
 
 lemma liminf_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞)
-    {c : ℝ≥0∞} (c_ne_top : c ≠ ∞):
+    {c : ℝ≥0∞} (c_ne_top : c ≠ ∞) :
     Filter.liminf (fun i ↦ c - f i) F = c - Filter.limsup f F :=
   (Antitone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm

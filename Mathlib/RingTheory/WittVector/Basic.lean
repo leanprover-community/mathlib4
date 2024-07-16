@@ -131,10 +131,16 @@ theorem natCast (n : ℕ) : mapFun f (n : 𝕎 R) = n :=
     induction n <;> simp [*, Nat.unaryCast, add, one, zero] <;> rfl
 #align witt_vector.map_fun.nat_cast WittVector.mapFun.natCast
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast := natCast
+
 theorem intCast (n : ℤ) : mapFun f (n : 𝕎 R) = n :=
   show mapFun f n.castDef = (n : WittVector p S) by
     cases n <;> simp [*, Int.castDef, add, one, neg, zero, natCast] <;> rfl
 #align witt_vector.map_fun.int_cast WittVector.mapFun.intCast
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast := intCast
 
 end mapFun
 
@@ -152,7 +158,6 @@ private def ghostFun : 𝕎 R → ℕ → R := fun x n => aeval x.coeff (W_ ℤ 
 section Tactic
 open Lean Elab Tactic
 
--- porting note: removed mathport output related to meta code.
 /-- An auxiliary tactic for proving that `ghostFun` respects the ring operations. -/
 elab "ghost_fun_tac" φ:term "," fn:term : tactic => do
   evalTactic (← `(tactic| (
@@ -193,6 +198,9 @@ private theorem ghostFun_natCast (i : ℕ) : ghostFun (i : 𝕎 R) = i :=
     induction i <;>
       simp [*, Nat.unaryCast, ghostFun_zero, ghostFun_one, ghostFun_add, -Pi.natCast_def]
 
+@[deprecated (since := "2024-04-17")]
+alias ghostFun_nat_cast := ghostFun_natCast
+
 private theorem ghostFun_sub : ghostFun (x - y) = ghostFun x - ghostFun y := by
   ghost_fun_tac X 0 - X 1, ![x.coeff, y.coeff]
 
@@ -206,15 +214,14 @@ private theorem ghostFun_intCast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
     cases i <;> simp [*, Int.castDef, ghostFun_natCast, ghostFun_neg, -Pi.natCast_def,
       -Pi.intCast_def]
 
+@[deprecated (since := "2024-04-17")]
+alias ghostFun_int_cast := ghostFun_intCast
+
 private lemma ghostFun_nsmul (m : ℕ) (x : WittVector p R) : ghostFun (m • x) = m • ghostFun x := by
-  -- porting note: I had to add the explicit type ascription.
-  -- This could very well be due to my poor tactic writing!
-  ghost_fun_tac m • (X 0 : MvPolynomial _ ℤ), ![x.coeff]
+  ghost_fun_tac m • (X 0), ![x.coeff]
 
 private lemma ghostFun_zsmul (m : ℤ) (x : WittVector p R) : ghostFun (m • x) = m • ghostFun x := by
-  -- porting note: I had to add the explicit type ascription.
-  -- This could very well be due to my poor tactic writing!
-  ghost_fun_tac m • (X 0 : MvPolynomial _ ℤ), ![x.coeff]
+  ghost_fun_tac m • (X 0), ![x.coeff]
 
 private theorem ghostFun_pow (m : ℕ) : ghostFun (x ^ m) = ghostFun x ^ m := by
   ghost_fun_tac X 0 ^ m, ![x.coeff]
@@ -244,8 +251,6 @@ private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
 
 @[local instance]
 private def comm_ring_aux₁ : CommRing (𝕎 (MvPolynomial R ℚ)) :=
-  -- Porting note: no longer needed?
-  -- letI : CommRing (MvPolynomial R ℚ) := MvPolynomial.commRing
   (ghostEquiv' p (MvPolynomial R ℚ)).injective.commRing ghostFun ghostFun_zero ghostFun_one
     ghostFun_add ghostFun_mul ghostFun_neg ghostFun_sub ghostFun_nsmul ghostFun_zsmul
     ghostFun_pow ghostFun_natCast ghostFun_intCast

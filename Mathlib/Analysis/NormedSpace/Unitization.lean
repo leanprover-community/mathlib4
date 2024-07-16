@@ -91,7 +91,7 @@ theorem splitMul_injective_of_clm_mul_injective
     Function.Injective (splitMul 𝕜 A) := by
   rw [injective_iff_map_eq_zero]
   intro x hx
-  induction x using Unitization.ind
+  induction x
   rw [map_add] at hx
   simp only [splitMul_apply, fst_inl, snd_inl, map_zero, add_zero, fst_inr, snd_inr,
     zero_add, Prod.mk_add_mk, Prod.mk_eq_zero] at hx
@@ -200,6 +200,10 @@ end Aux
 instance instUniformSpace : UniformSpace (Unitization 𝕜 A) :=
   instUniformSpaceProd.comap (addEquiv 𝕜 A)
 
+/-- The natural equivalence between `Unitization 𝕜 A` and `𝕜 × A` as a uniform equivalence. -/
+def uniformEquivProd : (Unitization 𝕜 A) ≃ᵤ (𝕜 × A) :=
+  Equiv.toUniformEquivOfUniformInducing (addEquiv 𝕜 A) ⟨rfl⟩
+
 /-- The bornology on `Unitization 𝕜 A` is inherited from `𝕜 × A`. -/
 instance instBornology : Bornology (Unitization 𝕜 A) :=
   Bornology.induced <| addEquiv 𝕜 A
@@ -237,7 +241,7 @@ instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
 
 instance instNormOneClass : NormOneClass (Unitization 𝕜 A) where
   norm_one := by simpa only [norm_eq_sup, fst_one, norm_one, snd_one, map_one, map_zero,
-      add_zero, ge_iff_le, sup_eq_left] using opNorm_le_bound _ zero_le_one fun x => by simp
+      add_zero, sup_eq_left] using opNorm_le_bound _ zero_le_one fun x => by simp
 
 lemma norm_inr (a : A) : ‖(a : Unitization 𝕜 A)‖ = ‖a‖ := by
   simp [norm_eq_sup]

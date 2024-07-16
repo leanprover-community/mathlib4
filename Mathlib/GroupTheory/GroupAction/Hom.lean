@@ -7,7 +7,6 @@ Authors: Kenny Lau, Antoine Chambert-Loir
 
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Ring.Action.Basic
-import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Group.Hom.CompTypeclasses
 
 #align_import algebra.hom.group_action from "leanprover-community/mathlib"@"e7bab9a85e92cf46c02cb4725a7be2f04691e3a7"
@@ -89,8 +88,8 @@ notation:25 (name := «MulActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => MulA
 
 You should extend this class when you extend `MulActionHom`. -/
 class MulActionSemiHomClass (F : Type*)
-    {M N : outParam (Type*)} (φ : outParam (M → N))
-    (X Y : outParam (Type*)) [SMul M X] [SMul N Y] [FunLike F X Y] : Prop where
+    {M N : outParam Type*} (φ : outParam (M → N))
+    (X Y : outParam Type*) [SMul M X] [SMul N Y] [FunLike F X Y] : Prop where
   /-- The proposition that the function preserves the action. -/
   map_smulₛₗ : ∀ (f : F) (c : M) (x : X), f (c • x) = (φ c) • (f x)
 #align smul_hom_class MulActionSemiHomClass
@@ -100,8 +99,8 @@ export MulActionSemiHomClass (map_smulₛₗ)
 /-- `MulActionHomClass F M X Y` states that `F` is a type of
 morphisms which are equivariant with respect to actions of `M`
 This is an abbreviation of `MulActionSemiHomClass`. -/
-abbrev MulActionHomClass (F : Type*) (M : outParam (Type*))
-    (X Y : outParam (Type*)) [SMul M X] [SMul M Y] [FunLike F X Y] :=
+abbrev MulActionHomClass (F : Type*) (M : outParam Type*)
+    (X Y : outParam Type*) [SMul M X] [SMul M Y] [FunLike F X Y] :=
   MulActionSemiHomClass F (@id M) X Y
 
 instance : FunLike (MulActionHom φ X Y) X Y where
@@ -294,7 +293,7 @@ theorem inverse'_inverse'
     inverse' (inverse' f g k₂ h₁ h₂) f k₁ h₂ h₁ = f :=
   ext fun _ => rfl
 
-theorem comp_inverse' {f : X →ₑ[φ] Y } {g : Y → X}
+theorem comp_inverse' {f : X →ₑ[φ] Y} {g : Y → X}
     {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     (inverse' f g k₂ h₁ h₂).comp f (κ := CompTriple.comp_inv k₁)
@@ -304,7 +303,7 @@ theorem comp_inverse' {f : X →ₑ[φ] Y } {g : Y → X}
   simp only [comp_apply, inverse_apply, id_apply]
   exact h₁ x
 
-theorem inverse'_comp {f : X →ₑ[φ] Y } {g : Y → X}
+theorem inverse'_comp {f : X →ₑ[φ] Y} {g : Y → X}
     {k₂ : Function.RightInverse φ' φ}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     f.comp (inverse' f g k₂ h₁ h₂) (κ := CompTriple.comp_inv k₂) = MulActionHom.id N := by
@@ -331,7 +330,7 @@ section DistribMulAction
 variable {M : Type*} [Monoid M]
 variable {N : Type*} [Monoid N]
 variable {P : Type*} [Monoid P]
-variable (φ: M →* N) (φ' : N →* M) (ψ : N →* P) (χ : M →* P)
+variable (φ : M →* N) (φ' : N →* M) (ψ : N →* P) (χ : M →* P)
 variable (A : Type*) [AddMonoid A] [DistribMulAction M A]
 variable (B : Type*) [AddMonoid B] [DistribMulAction N B]
 variable (B₁ : Type*) [AddMonoid B₁] [DistribMulAction M B₁]
@@ -368,8 +367,8 @@ notation:25 (name := «DistribMulActionHomIdLocal≺»)
   preserving the additive monoid structure and equivariant with respect to `φ`.
     You should extend this class when you extend `DistribMulActionSemiHom`. -/
 class DistribMulActionSemiHomClass (F : Type*)
-    {M N : outParam (Type*)} (φ : outParam (M → N))
-    (A B : outParam (Type*))
+    {M N : outParam Type*} (φ : outParam (M → N))
+    (A B : outParam Type*)
     [Monoid M] [Monoid N]
     [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction N B]
     [FunLike F A B]
@@ -380,8 +379,8 @@ class DistribMulActionSemiHomClass (F : Type*)
   the additive monoid structure and equivariant with respect to the action of `M`.
     It is an abbreviation to `DistribMulActionHomClass F (MonoidHom.id M) A B`
 You should extend this class when you extend `DistribMulActionHom`. -/
-abbrev DistribMulActionHomClass (F : Type*) (M : outParam (Type*))
-    (A B : outParam (Type*)) [Monoid M] [AddMonoid A] [AddMonoid B]
+abbrev DistribMulActionHomClass (F : Type*) (M : outParam Type*)
+    (A B : outParam Type*) [Monoid M] [AddMonoid A] [AddMonoid B]
     [DistribMulAction M A] [DistribMulAction M B] [FunLike F A B] :=
     DistribMulActionSemiHomClass F (MonoidHom.id M) A B
 
@@ -658,9 +657,9 @@ the ring structure and equivariant with respect to `φ`.
 
 You should extend this class when you extend `MulSemiringActionHom`. -/
 class MulSemiringActionSemiHomClass (F : Type*)
-    {M N : outParam (Type*)} [Monoid M] [Monoid N]
+    {M N : outParam Type*} [Monoid M] [Monoid N]
     (φ : outParam (M → N))
-    (R S : outParam (Type*)) [Semiring R] [Semiring S]
+    (R S : outParam Type*) [Semiring R] [Semiring S]
     [DistribMulAction M R] [DistribMulAction N S] [FunLike F R S]
     extends DistribMulActionSemiHomClass F φ R S, RingHomClass F R S : Prop
 #align mul_semiring_action_hom_class MulSemiringActionSemiHomClass
@@ -670,8 +669,8 @@ the ring structure and equivariant with respect to a `DistribMulAction`of `M` on
  -/
 abbrev MulSemiringActionHomClass
     (F : Type*)
-    {M : outParam (Type*)} [Monoid M]
-    (R S : outParam (Type*)) [Semiring R] [Semiring S]
+    {M : outParam Type*} [Monoid M]
+    (R S : outParam Type*) [Semiring R] [Semiring S]
     [DistribMulAction M R] [DistribMulAction M S] [FunLike F R S] :=
   MulSemiringActionSemiHomClass F (MonoidHom.id M) R S
 
@@ -851,3 +850,5 @@ def inverse {S₁ : Type*} [Semiring S₁] [MulSemiringAction M S₁]
 #align mul_semiring_action_hom.inverse MulSemiringActionHom.inverse
 
 end MulSemiringActionHom
+
+end DistribMulAction

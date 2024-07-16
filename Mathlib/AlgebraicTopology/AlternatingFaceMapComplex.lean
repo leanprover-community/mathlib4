@@ -93,12 +93,12 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
       by simpa [Fin.castSucc_castLT] using congr_arg Fin.castSucc (congr_arg Prod.fst h)⟩
   · -- φ : S → Sᶜ is surjective
     rintro ⟨i', j'⟩ hij'
-    simp only [S, Finset.mem_univ, forall_true_left, Prod.forall, ge_iff_le, Finset.compl_filter,
+    simp only [S, Finset.mem_univ, forall_true_left, Prod.forall, Finset.compl_filter,
       not_le, Finset.mem_filter, true_and] at hij'
     refine ⟨(j'.pred <| ?_, Fin.castSucc i'), ?_, ?_⟩
     · rintro rfl
       simp only [Fin.val_zero, not_lt_zero'] at hij'
-    · simpa only [S, Finset.mem_univ, forall_true_left, Prod.forall, ge_iff_le, Finset.mem_filter,
+    · simpa only [S, Finset.mem_univ, forall_true_left, Prod.forall, Finset.mem_filter,
         Fin.coe_castSucc, Fin.coe_pred, true_and] using Nat.le_sub_one_of_lt hij'
     · simp only [φ, Fin.castLT_castSucc, Fin.succ_pred]
   · -- identification of corresponding terms in both sums
@@ -130,8 +130,9 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem obj_d_eq (X : SimplicialObject C) (n : ℕ) :
-    (AlternatingFaceMapComplex.obj X).d (n + 1) n = ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i : ℕ) • X.δ i :=
-  by apply ChainComplex.of_d
+    (AlternatingFaceMapComplex.obj X).d (n + 1) n
+      = ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i : ℕ) • X.δ i := by
+  apply ChainComplex.of_d
 #align algebraic_topology.alternating_face_map_complex.obj_d_eq AlgebraicTopology.AlternatingFaceMapComplex.obj_d_eq
 
 variable {X} {Y}
@@ -141,7 +142,7 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
   ChainComplex.ofHom _ _ _ _ _ _ (fun n => f.app (op [n])) fun n => by
     dsimp
     rw [comp_sum, sum_comp]
-    refine' Finset.sum_congr rfl fun _ _ => _
+    refine Finset.sum_congr rfl fun _ _ => ?_
     rw [comp_zsmul, zsmul_comp]
     congr 1
     symm
@@ -224,7 +225,7 @@ def ε [Limits.HasZeroObject C] :
     SimplicialObject.Augmented.drop ⋙ AlgebraicTopology.alternatingFaceMapComplex C ⟶
       SimplicialObject.Augmented.point ⋙ ChainComplex.single₀ C where
   app X := by
-    refine' (ChainComplex.toSingle₀Equiv _ _).symm _
+    refine (ChainComplex.toSingle₀Equiv _ _).symm ?_
     refine ⟨X.hom.app (op [0]), ?_⟩
     dsimp
     rw [alternatingFaceMapComplex_obj_d, objD, Fin.sum_univ_two, Fin.val_zero,
@@ -336,7 +337,7 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
   CochainComplex.ofHom _ _ _ _ _ _ (fun n => f.app [n]) fun n => by
     dsimp
     rw [comp_sum, sum_comp]
-    refine' Finset.sum_congr rfl fun x _ => _
+    refine Finset.sum_congr rfl fun x _ => ?_
     rw [comp_zsmul, zsmul_comp]
     congr 1
     symm

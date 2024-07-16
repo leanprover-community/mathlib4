@@ -29,7 +29,6 @@ If you're happy using the bundled `ModuleCat R`, it may be possible to mostly
 use this as an interface and not need to interact much with the implementation details.
 -/
 
--- Porting note: Module
 set_option linter.uppercaseLean3 false
 
 suppress_compilation
@@ -73,14 +72,14 @@ def whiskerRight {M₁ M₂ : ModuleCat R} (f : M₁ ⟶ M₂) (N : ModuleCat R)
   f.rTensor N
 
 theorem tensor_id (M N : ModuleCat R) : tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
-  -- Porting note: even with high priority ext fails to find this
+  -- Porting note (#11041): even with high priority `ext` fails to find this.
   apply TensorProduct.ext
   rfl
 #align Module.monoidal_category.tensor_id ModuleCat.MonoidalCategory.tensor_id
 
 theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁)
     (g₂ : Y₂ ⟶ Z₂) : tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ := by
-  -- Porting note: even with high priority ext fails to find this
+  -- Porting note (#11041): even with high priority `ext` fails to find this.
   apply TensorProduct.ext
   rfl
 #align Module.monoidal_category.tensor_comp ModuleCat.MonoidalCategory.tensor_comp
@@ -283,7 +282,7 @@ open Opposite
 
 -- Porting note: simp wasn't firing but rw was, annoying
 instance : MonoidalPreadditive (ModuleCat.{u} R) := by
-  refine' ⟨_, _, _, _⟩
+  refine ⟨?_, ?_, ?_, ?_⟩
   · dsimp only [autoParam]; intros
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
@@ -317,7 +316,7 @@ instance : MonoidalPreadditive (ModuleCat.{u} R) := by
 
 -- Porting note: simp wasn't firing but rw was, annoying
 instance : MonoidalLinear R (ModuleCat.{u} R) := by
-  refine' ⟨_, _⟩
+  refine ⟨?_, ?_⟩
   · dsimp only [autoParam]; intros
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]

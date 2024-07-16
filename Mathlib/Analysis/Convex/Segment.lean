@@ -31,7 +31,6 @@ Should we rename `segment` and `openSegment` to `convex.Icc` and `convex.Ioo`? S
 define `clopenSegment`/`convex.Ico`/`convex.Ioc`?
 -/
 
-
 variable {𝕜 E F G ι : Type*} {π : ι → Type*}
 
 open Function Set
@@ -61,14 +60,14 @@ def openSegment (x y : E) : Set E :=
 
 theorem segment_eq_image₂ (x y : E) :
     [x -[𝕜] y] =
-      (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 ≤ p.1 ∧ 0 ≤ p.2 ∧ p.1 + p.2 = 1 } :=
-  by simp only [segment, image, Prod.exists, mem_setOf_eq, exists_prop, and_assoc]
+      (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 ≤ p.1 ∧ 0 ≤ p.2 ∧ p.1 + p.2 = 1 } := by
+  simp only [segment, image, Prod.exists, mem_setOf_eq, exists_prop, and_assoc]
 #align segment_eq_image₂ segment_eq_image₂
 
 theorem openSegment_eq_image₂ (x y : E) :
     openSegment 𝕜 x y =
-      (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 < p.1 ∧ 0 < p.2 ∧ p.1 + p.2 = 1 } :=
-  by simp only [openSegment, image, Prod.exists, mem_setOf_eq, exists_prop, and_assoc]
+      (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 < p.1 ∧ 0 < p.2 ∧ p.1 + p.2 = 1 } := by
+  simp only [openSegment, image, Prod.exists, mem_setOf_eq, exists_prop, and_assoc]
 #align open_segment_eq_image₂ openSegment_eq_image₂
 
 theorem segment_symm (x y : E) : [x -[𝕜] y] = [y -[𝕜] x] :=
@@ -388,7 +387,7 @@ theorem mem_openSegment_iff_div : x ∈ openSegment 𝕜 y z ↔
     use a, b, ha, hb
     rw [hab, div_one, div_one]
   · rintro ⟨a, b, ha, hb, rfl⟩
-    have hab : 0 < a + b := by positivity
+    have hab : 0 < a + b := add_pos' ha hb
     refine ⟨a / (a + b), b / (a + b), by positivity, by positivity, ?_, rfl⟩
     rw [← add_div, div_self hab.ne']
 #align mem_open_segment_iff_div mem_openSegment_iff_div
@@ -560,16 +559,14 @@ theorem segment_eq_uIcc (x y : 𝕜) : [x -[𝕜] y] = uIcc x y :=
 /-- A point is in an `Icc` iff it can be expressed as a convex combination of the endpoints. -/
 theorem Convex.mem_Icc (h : x ≤ y) :
     z ∈ Icc x y ↔ ∃ a b, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ a * x + b * y = z := by
-  rw [← segment_eq_Icc h]
-  rfl
+  simp only [← segment_eq_Icc h, segment, mem_setOf_eq, smul_eq_mul, exists_and_left]
 #align convex.mem_Icc Convex.mem_Icc
 
 /-- A point is in an `Ioo` iff it can be expressed as a strict convex combination of the endpoints.
 -/
 theorem Convex.mem_Ioo (h : x < y) :
     z ∈ Ioo x y ↔ ∃ a b, 0 < a ∧ 0 < b ∧ a + b = 1 ∧ a * x + b * y = z := by
-  rw [← openSegment_eq_Ioo h]
-  rfl
+  simp only [← openSegment_eq_Ioo h, openSegment, smul_eq_mul, exists_and_left, mem_setOf_eq]
 #align convex.mem_Ioo Convex.mem_Ioo
 
 /-- A point is in an `Ioc` iff it can be expressed as a semistrict convex combination of the

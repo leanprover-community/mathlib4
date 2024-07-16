@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
+import Mathlib.Algebra.Module.Prod
+import Mathlib.Algebra.Module.Submodule.EqLocus
+import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Data.Set.Pointwise.SMul
-import Mathlib.LinearAlgebra.Basic
 import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.OmegaCompletePartialOrder
 
@@ -205,7 +207,7 @@ theorem span_induction' {p : ∀ x, x ∈ span R s → Prop}
     (smul : ∀ (a : R) (x hx), p x hx → p (a • x) (Submodule.smul_mem _ _ ‹_›)) {x}
     (hx : x ∈ span R s) : p x hx := by
   refine Exists.elim ?_ fun (hx : x ∈ span R s) (hc : p x hx) => hc
-  refine'
+  refine
     span_induction hx (fun m hm => ⟨subset_span hm, mem m hm⟩) ⟨zero_mem _, zero⟩
       (fun x y hx hy =>
         Exists.elim hx fun hx' hx =>
@@ -375,7 +377,7 @@ theorem span_smul_eq_of_isUnit (s : Set M) (r : R) (hr : IsUnit r) : span R (r �
 
 @[simp]
 theorem coe_iSup_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M)
-    (H : Directed (· ≤ ·) S) : ((iSup S: Submodule R M) : Set M) = ⋃ i, S i :=
+    (H : Directed (· ≤ ·) S) : ((iSup S : Submodule R M) : Set M) = ⋃ i, S i :=
   let s : Submodule R M :=
     { __ := AddSubmonoid.copy _ _ (AddSubmonoid.coe_iSup_of_directed H).symm
       smul_mem' := fun r _ hx ↦ have ⟨i, hi⟩ := Set.mem_iUnion.mp hx
@@ -846,10 +848,9 @@ theorem prod_top : (prod ⊤ ⊤ : Submodule R (M × M')) = ⊤ := by ext; simp
 theorem prod_bot : (prod ⊥ ⊥ : Submodule R (M × M')) = ⊥ := by ext ⟨x, y⟩; simp [Prod.zero_eq_mk]
 #align submodule.prod_bot Submodule.prod_bot
 
--- Porting note: Added nonrec
-nonrec theorem prod_mono {p p' : Submodule R M} {q q' : Submodule R M'} :
+theorem prod_mono {p p' : Submodule R M} {q q' : Submodule R M'} :
     p ≤ p' → q ≤ q' → prod p q ≤ prod p' q' :=
-  prod_mono
+  Set.prod_mono
 #align submodule.prod_mono Submodule.prod_mono
 
 @[simp]
@@ -895,7 +896,7 @@ instance : IsModularLattice (Submodule R M) :=
     rw [mem_inf, mem_sup] at ha
     rcases ha with ⟨⟨b, hb, c, hc, rfl⟩, haz⟩
     rw [mem_sup]
-    refine' ⟨b, hb, c, mem_inf.2 ⟨hc, _⟩, rfl⟩
+    refine ⟨b, hb, c, mem_inf.2 ⟨hc, ?_⟩, rfl⟩
     rw [← add_sub_cancel_right c b, add_comm]
     apply z.sub_mem haz (xz hb)⟩
 

@@ -9,7 +9,7 @@ import Mathlib.Data.Set.Lattice
 #align_import data.nat.pairing from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
-#  Naturals pairing function
+# Naturals pairing function
 
 This file defines a pairing function for the naturals as follows:
 ```text
@@ -31,15 +31,13 @@ open Prod Decidable Function
 namespace Nat
 
 /-- Pairing function for the natural numbers. -/
--- Porting note: no pp_nodot
---@[pp_nodot]
+@[pp_nodot]
 def pair (a b : ℕ) : ℕ :=
   if a < b then b * b + a else a * a + a + b
 #align nat.mkpair Nat.pair
 
 /-- Unpairing function for the natural numbers. -/
--- Porting note: no pp_nodot
---@[pp_nodot]
+@[pp_nodot]
 def unpair (n : ℕ) : ℕ × ℕ :=
   let s := sqrt n
   if n - s * s < s then (n - s * s, s) else (s, n - s * s - s)
@@ -92,7 +90,7 @@ theorem pair_eq_pair {a b c d : ℕ} : pair a b = pair c d ↔ a = c ∧ b = d :
 
 theorem unpair_lt {n : ℕ} (n1 : 1 ≤ n) : (unpair n).1 < n := by
   let s := sqrt n
-  simp only [unpair, ge_iff_le, Nat.sub_le_iff_le_add]
+  simp only [unpair, Nat.sub_le_iff_le_add]
   by_cases h : n - s * s < s <;> simp [h]
   · exact lt_of_lt_of_le h (sqrt_le_self _)
   · simp at h
@@ -196,8 +194,6 @@ end CompleteLattice
 
 namespace Set
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem iUnion_unpair_prod {α β} {s : ℕ → Set α} {t : ℕ → Set β} :
     ⋃ n : ℕ, s n.unpair.fst ×ˢ t n.unpair.snd = (⋃ n, s n) ×ˢ ⋃ n, t n := by
   rw [← Set.iUnion_prod]

@@ -438,8 +438,8 @@ noncomputable def invFun {α : Sort u} {β} [Nonempty α] (f : α → β) : β �
   fun y ↦ if h : (∃ x, f x = y) then h.choose else Classical.arbitrary α
 #align function.inv_fun Function.invFun
 
-theorem invFun_eq (h : ∃ a, f a = b) : f (invFun f b) = b :=
-  by simp only [invFun, dif_pos h, h.choose_spec]
+theorem invFun_eq (h : ∃ a, f a = b) : f (invFun f b) = b := by
+  simp only [invFun, dif_pos h, h.choose_spec]
 #align function.inv_fun_eq Function.invFun_eq
 
 theorem apply_invFun_apply {α β : Type*} {f : α → β} {a : α} :
@@ -651,7 +651,7 @@ theorem update_comp_eq_of_injective {β : Sort*} (g : α' → β) {f : α → α
 theorem apply_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*} (f : ∀ i, α i → β i)
     (g : ∀ i, α i) (i : ι) (v : α i) (j : ι) :
     f j (update g i v j) = update (fun k ↦ f k (g k)) i (f i v) j := by
-  by_cases h:j = i
+  by_cases h : j = i
   · subst j
     simp
   · simp [h]
@@ -660,7 +660,7 @@ theorem apply_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*} (f : �
 theorem apply_update₂ {ι : Sort*} [DecidableEq ι] {α β γ : ι → Sort*} (f : ∀ i, α i → β i → γ i)
     (g : ∀ i, α i) (h : ∀ i, β i) (i : ι) (v : α i) (w : β i) (j : ι) :
     f j (update g i v j) (update h i w j) = update (fun k ↦ f k (g k) (h k)) i (f i v w) j := by
-  by_cases h:j = i
+  by_cases h : j = i
   · subst j
     simp
   · simp [h]
@@ -863,7 +863,7 @@ variable {α β γ δ : Type*}
 /-- Records a way to turn an element of `α` into a function from `β` to `γ`. The most generic use
 is to recursively uncurry. For instance `f : α → β → γ → δ` will be turned into
 `↿f : α × β × γ → δ`. One can also add instances for bundled maps. -/
-class HasUncurry (α : Type*) (β : outParam (Type*)) (γ : outParam (Type*)) where
+class HasUncurry (α : Type*) (β : outParam Type*) (γ : outParam Type*) where
   /-- Uncurrying operator. The most generic use is to recursively uncurry. For instance
   `f : α → β → γ → δ` will be turned into `↿f : α × β × γ → δ`. One can also add instances
   for bundled maps. -/
@@ -913,8 +913,8 @@ protected theorem bijective : Bijective f := ⟨h.injective, h.surjective⟩
 #align function.involutive.bijective Function.Involutive.bijective
 
 /-- Involuting an `ite` of an involuted value `x : α` negates the `Prop` condition in the `ite`. -/
-protected theorem ite_not (P : Prop) [Decidable P] (x : α) : f (ite P x (f x)) = ite (¬P) x (f x) :=
-  by rw [apply_ite f, h, ite_not]
+protected theorem ite_not (P : Prop) [Decidable P] (x : α) :
+    f (ite P x (f x)) = ite (¬P) x (f x) := by rw [apply_ite f, h, ite_not]
 #align function.involutive.ite_not Function.Involutive.ite_not
 
 /-- An involution commutes across an equality. Compare to `Function.Injective.eq_iff`. -/
@@ -994,8 +994,8 @@ theorem sometimes_eq {p : Prop} {α} [Nonempty α] (f : p → α) (a : p) : some
 #align function.sometimes_eq Function.sometimes_eq
 
 theorem sometimes_spec {p : Prop} {α} [Nonempty α] (P : α → Prop) (f : p → α) (a : p)
-    (h : P (f a)) : P (sometimes f) :=
-  by rwa [sometimes_eq]
+    (h : P (f a)) : P (sometimes f) := by
+  rwa [sometimes_eq]
 #align function.sometimes_spec Function.sometimes_spec
 
 end Sometimes

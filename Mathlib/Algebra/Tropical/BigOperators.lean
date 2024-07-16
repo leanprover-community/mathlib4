@@ -3,7 +3,7 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.List.MinMax
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
@@ -112,7 +112,7 @@ theorem Multiset.untrop_sum [LinearOrder R] [OrderTop R] (s : Multiset (Tropical
     untrop s.sum = Multiset.inf (s.map untrop) := by
   induction' s using Multiset.induction with s x IH
   · simp
-  · simp only [sum_cons, ge_iff_le, untrop_add, untrop_le_iff, map_cons, inf_cons, ← IH]
+  · simp only [sum_cons, untrop_add, untrop_le_iff, map_cons, inf_cons, ← IH]
     rfl
 #align multiset.untrop_sum Multiset.untrop_sum
 

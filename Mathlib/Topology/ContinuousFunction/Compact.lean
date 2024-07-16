@@ -26,7 +26,6 @@ you should restate it here. You can also use
 
 -/
 
-
 noncomputable section
 
 open scoped Classical
@@ -253,7 +252,7 @@ section
 variable {R : Type*} [NormedRing R]
 
 instance : NormedRing C(α, R) :=
-  { (inferInstance : NormedAddCommGroup C(α, R)), ContinuousMap.instRingContinuousMap with
+  { (inferInstance : NormedAddCommGroup C(α, R)), ContinuousMap.instRing with
     norm_mul := fun f g => norm_mul_le (mkOfCompact f) (mkOfCompact g) }
 
 end
@@ -435,9 +434,9 @@ def compRightContinuousMap {X Y : Type*} (T : Type*) [TopologicalSpace X] [Compa
     [TopologicalSpace Y] [CompactSpace Y] [MetricSpace T] (f : C(X, Y)) : C(C(Y, T), C(X, T)) where
   toFun g := g.comp f
   continuous_toFun := by
-    refine' Metric.continuous_iff.mpr _
+    refine Metric.continuous_iff.mpr ?_
     intro g ε ε_pos
-    refine' ⟨ε, ε_pos, fun g' h => _⟩
+    refine ⟨ε, ε_pos, fun g' h => ?_⟩
     rw [ContinuousMap.dist_lt_iff ε_pos] at h ⊢
     exact fun x => h (f x)
 #align continuous_map.comp_right_continuous_map ContinuousMap.compRightContinuousMap
@@ -531,20 +530,12 @@ variable {α : Type*} {β : Type*}
 variable [TopologicalSpace α] [NormedRing β] [StarRing β]
 
 instance [CompactSpace α] [CstarRing β] : CstarRing C(α, β) where
-  norm_star_mul_self {f} := by
-    refine' le_antisymm _ _
-    · rw [← sq, ContinuousMap.norm_le _ (sq_nonneg _)]
-      intro x
-      simp only [ContinuousMap.coe_mul, coe_star, Pi.mul_apply, Pi.star_apply,
-        CstarRing.norm_star_mul_self, ← sq]
-      refine' sq_le_sq' _ _
-      · linarith [norm_nonneg (f x), norm_nonneg f]
-      · exact ContinuousMap.norm_coe_le_norm f x
-    · rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _),
-        ContinuousMap.norm_le _ (Real.sqrt_nonneg _)]
-      intro x
-      rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CstarRing.norm_star_mul_self]
-      exact ContinuousMap.norm_coe_le_norm (star f * f) x
+  norm_mul_self_le f := by
+    rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _),
+      ContinuousMap.norm_le _ (Real.sqrt_nonneg _)]
+    intro x
+    rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CstarRing.norm_star_mul_self]
+    exact ContinuousMap.norm_coe_le_norm (star f * f) x
 
 end CstarRing
 

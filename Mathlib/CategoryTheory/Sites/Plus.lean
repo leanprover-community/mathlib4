@@ -41,9 +41,9 @@ variable (P : Cᵒᵖ ⥤ D)
 @[simps]
 def diagram (X : C) : (J.Cover X)ᵒᵖ ⥤ D where
   obj S := multiequalizer (S.unop.index P)
-  map {S _} f :=
-    Multiequalizer.lift _ _ (fun I => Multiequalizer.ι (S.unop.index P) (I.map f.unop)) fun I =>
-      Multiequalizer.condition (S.unop.index P) (I.map f.unop)
+  map {S T} f :=
+    Multiequalizer.lift _ _ (fun I => Multiequalizer.ι (S.unop.index P) (I.map f.unop))
+      (fun I => Multiequalizer.condition (S.unop.index P) (Cover.Relation.mk' (I.r.map f.unop)))
 #align category_theory.grothendieck_topology.diagram CategoryTheory.GrothendieckTopology.diagram
 
 /-- A helper definition used to define the morphisms for `plus`. -/
@@ -51,7 +51,7 @@ def diagram (X : C) : (J.Cover X)ᵒᵖ ⥤ D where
 def diagramPullback {X Y : C} (f : X ⟶ Y) : J.diagram P Y ⟶ (J.pullback f).op ⋙ J.diagram P X where
   app S :=
     Multiequalizer.lift _ _ (fun I => Multiequalizer.ι (S.unop.index P) I.base) fun I =>
-      Multiequalizer.condition (S.unop.index P) I.base
+      Multiequalizer.condition (S.unop.index P) (Cover.Relation.mk' I.r.base)
   naturality S T f := Multiequalizer.hom_ext _ _ _ (fun I => by dsimp; simp; rfl)
 #align category_theory.grothendieck_topology.diagram_pullback CategoryTheory.GrothendieckTopology.diagramPullback
 
@@ -114,14 +114,14 @@ def plusObj : Cᵒᵖ ⥤ D where
   map f := colimMap (J.diagramPullback P f.unop) ≫ colimit.pre _ _
   map_id := by
     intro X
-    refine' colimit.hom_ext (fun S => _)
+    refine colimit.hom_ext (fun S => ?_)
     dsimp
     simp only [diagramPullback_app, colimit.ι_pre, ι_colimMap_assoc, Category.comp_id]
     let e := S.unop.pullbackId
     dsimp only [Functor.op, pullback_obj]
     erw [← colimit.w _ e.inv.op, ← Category.assoc]
     convert Category.id_comp (colimit.ι (diagram J P (unop X)) S)
-    refine' Multiequalizer.hom_ext _ _ _ (fun I => _)
+    refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
     dsimp
     simp only [Multiequalizer.lift_ι, Category.id_comp, Category.assoc]
     dsimp [Cover.Arrow.map, Cover.Arrow.base]
@@ -130,7 +130,7 @@ def plusObj : Cᵒᵖ ⥤ D where
     simp
   map_comp := by
     intro X Y Z f g
-    refine' colimit.hom_ext (fun S => _)
+    refine colimit.hom_ext (fun S => ?_)
     dsimp
     simp only [diagramPullback_app, colimit.ι_pre_assoc, colimit.ι_pre, ι_colimMap_assoc,
       Category.assoc]
@@ -138,7 +138,7 @@ def plusObj : Cᵒᵖ ⥤ D where
     dsimp only [Functor.op, pullback_obj]
     erw [← colimit.w _ e.inv.op, ← Category.assoc, ← Category.assoc]
     congr 1
-    refine' Multiequalizer.hom_ext _ _ _ (fun I => _)
+    refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
     dsimp
     simp only [Multiequalizer.lift_ι, Category.assoc]
     cases I
@@ -210,7 +210,7 @@ def toPlus : P ⟶ J.plusObj P where
     let e : (J.pullback f.unop).obj ⊤ ⟶ ⊤ := homOfLE (OrderTop.le_top _)
     rw [← colimit.w _ e.op, ← Category.assoc, ← Category.assoc, ← Category.assoc]
     congr 1
-    refine' Multiequalizer.hom_ext _ _ _ (fun I => _)
+    refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
     simp only [Multiequalizer.lift_ι, Category.assoc]
     dsimp [Cover.Arrow.base]
     simp
@@ -256,18 +256,9 @@ theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
     ← Category.assoc, ← Category.assoc]
   congr 1
   refine Multiequalizer.hom_ext _ _ _ (fun II => ?_)
-  convert (Multiequalizer.condition (S.unop.index P)
-      ⟨_, _, _, II.f, 𝟙 _, I.f, II.f ≫ I.f, I.hf,
-        Sieve.downward_closed _ I.hf _, by simp⟩) using 1
-  · dsimp [diagram]
-    cases I
-    simp only [Category.assoc, limit.lift_π, Multifork.ofι_pt, Multifork.ofι_π_app,
-      Cover.Arrow.map_Y, Cover.Arrow.map_f]
-    rfl
-  · erw [Multiequalizer.lift_ι]
-    dsimp [Cover.index]
-    simp only [Functor.map_id, Category.comp_id]
-    rfl
+  convert Multiequalizer.condition (S.unop.index P)
+    (Cover.Relation.mk I II.base { g₁ := II.f, g₂ := 𝟙 _ }) using 1
+  all_goals dsimp; simp
 #align category_theory.grothendieck_topology.plus_map_to_plus CategoryTheory.GrothendieckTopology.plusMap_toPlus
 
 theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P) := by

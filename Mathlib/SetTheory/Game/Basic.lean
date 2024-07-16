@@ -3,6 +3,7 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison, Apurva Nakade
 -/
+import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Ring.Int
 import Mathlib.SetTheory.Game.PGame
 import Mathlib.Tactic.Abel
@@ -264,7 +265,7 @@ instance : Mul PGame.{u} :=
     induction' x with xl xr _ _ IHxl IHxr generalizing y
     induction' y with yl yr yL yR IHyl IHyr
     have y := mk yl yr yL yR
-    refine' ⟨Sum (xl × yl) (xr × yr), Sum (xl × yr) (xr × yl), _, _⟩ <;> rintro (⟨i, j⟩ | ⟨i, j⟩)
+    refine ⟨Sum (xl × yl) (xr × yr), Sum (xl × yr) (xr × yl), ?_, ?_⟩ <;> rintro (⟨i, j⟩ | ⟨i, j⟩)
     · exact IHxl i y + IHyl j - IHxl i (yL j)
     · exact IHxr i y + IHyr j - IHxr i (yR j)
     · exact IHxl i y + IHyr j - IHxl i (yR j)
@@ -414,8 +415,8 @@ theorem rightMoves_mul_cases {x y : PGame} (k) {P : (x * y).RightMoves → Prop}
 def mulCommRelabelling (x y : PGame.{u}) : x * y ≡r y * x :=
   match x, y with
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
-    refine' ⟨Equiv.sumCongr (Equiv.prodComm _ _) (Equiv.prodComm _ _),
-      (Equiv.sumComm _ _).trans (Equiv.sumCongr (Equiv.prodComm _ _) (Equiv.prodComm _ _)), _, _⟩
+    refine ⟨Equiv.sumCongr (Equiv.prodComm _ _) (Equiv.prodComm _ _),
+      (Equiv.sumComm _ _).trans (Equiv.sumCongr (Equiv.prodComm _ _) (Equiv.prodComm _ _)), ?_, ?_⟩
       <;>
     rintro (⟨i, j⟩ | ⟨i, j⟩) <;>
     { dsimp
@@ -488,7 +489,7 @@ theorem quot_zero_mul (x : PGame) : (⟦0 * x⟧ : Game) = ⟦0⟧ :=
 def negMulRelabelling (x y : PGame.{u}) : -x * y ≡r -(x * y) :=
   match x, y with
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
-      refine' ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, _, _⟩ <;>
+      refine ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, ?_, ?_⟩ <;>
       rintro (⟨i, j⟩ | ⟨i, j⟩) <;>
       · dsimp
         apply ((negAddRelabelling _ _).trans _).symm
@@ -518,6 +519,8 @@ def mulNegRelabelling (x y : PGame) : x * -y ≡r -(x * y) :=
 theorem quot_mul_neg (x y : PGame) : ⟦x * -y⟧ = (-⟦x * y⟧ : Game) :=
   Quot.sound (mulNegRelabelling x y).equiv
 #align pgame.quot_mul_neg SetTheory.PGame.quot_mul_neg
+
+theorem quot_neg_mul_neg (x y : PGame) : ⟦-x * -y⟧ = (⟦x * y⟧ : Game) := by simp
 
 @[simp]
 theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * y⟧ + ⟦x * z⟧ :=
@@ -652,8 +655,6 @@ def mulOneRelabelling : ∀ x : PGame.{u}, x * 1 ≡r x
     unfold One.one
     unfold instOnePGame
     change mk _ _ _ _ * mk _ _ _ _ ≡r _
-    -- Porting note: changed `refine'` to `refine`,
-    -- otherwise there are typeclass inference failures.
     refine ⟨(Equiv.sumEmpty _ _).trans (Equiv.prodPUnit _),
       (Equiv.emptySum _ _).trans (Equiv.prodPUnit _), ?_, ?_⟩ <;>
     (try rintro (⟨i, ⟨⟩⟩ | ⟨i, ⟨⟩⟩)) <;>
@@ -845,6 +846,72 @@ theorem mul_assoc_equiv (x y z : PGame) : x * y * z ≈ x * (y * z) :=
   Quotient.exact <| quot_mul_assoc _ _ _
 #align pgame.mul_assoc_equiv SetTheory.PGame.mul_assoc_equiv
 
+/-- The left options of `x * y` of the first kind, i.e. of the form `xL * y + x * yL - xL * yL`. -/
+def mulOption (x y : PGame) (i : LeftMoves x) (j : LeftMoves y) : PGame :=
+  x.moveLeft i * y + x * y.moveLeft j - x.moveLeft i * y.moveLeft j
+
+/-- Any left option of `x * y` of the first kind is also a left option of `x * -(-y)` of
+  the first kind. -/
+lemma mulOption_neg_neg {x} (y) {i j} :
+    mulOption x y i j = mulOption x (-(-y)) i (toLeftMovesNeg <| toRightMovesNeg j) := by
+  dsimp only [mulOption]
+  congr 2
+  rw [neg_neg]
+  iterate 2 rw [moveLeft_neg, moveRight_neg, neg_neg]
+
+/-- The left options of `x * y` agree with that of `y * x` up to equivalence. -/
+lemma mulOption_symm (x y) {i j} : ⟦mulOption x y i j⟧ = (⟦mulOption y x j i⟧ : Game) := by
+  dsimp only [mulOption, quot_sub, quot_add]
+  rw [add_comm]
+  congr 1
+  on_goal 1 => congr 1
+  all_goals rw [quot_mul_comm]
+
+/-- The left options of `x * y` of the second kind are the left options of `(-x) * (-y)` of the
+  first kind, up to equivalence. -/
+lemma leftMoves_mul_iff {x y : PGame} (P : Game → Prop) :
+    (∀ k, P ⟦(x * y).moveLeft k⟧) ↔
+    (∀ i j, P ⟦mulOption x y i j⟧) ∧ (∀ i j, P ⟦mulOption (-x) (-y) i j⟧) := by
+  cases x; cases y
+  constructor <;> intro h
+  on_goal 1 =>
+    constructor <;> intros i j
+    · exact h (Sum.inl (i, j))
+    convert h (Sum.inr (i, j)) using 1
+  on_goal 2 =>
+    rintro (⟨i, j⟩ | ⟨i, j⟩)
+    exact h.1 i j
+    convert h.2 i j using 1
+  all_goals
+    dsimp only [mk_mul_moveLeft_inr, quot_sub, quot_add, neg_def, mulOption, moveLeft_mk]
+    rw [← neg_def, ← neg_def]
+    congr 1
+    on_goal 1 => congr 1
+    all_goals rw [quot_neg_mul_neg]
+
+/-- The right options of `x * y` are the left options of `x * (-y)` and of `(-x) * y` of the first
+  kind, up to equivalence. -/
+lemma rightMoves_mul_iff {x y : PGame} (P : Game → Prop) :
+    (∀ k, P ⟦(x * y).moveRight k⟧) ↔
+    (∀ i j, P (-⟦mulOption x (-y) i j⟧)) ∧ (∀ i j, P (-⟦mulOption (-x) y i j⟧)) := by
+  cases x; cases y
+  constructor <;> intro h
+  on_goal 1 =>
+    constructor <;> intros i j
+    convert h (Sum.inl (i, j))
+  on_goal 2 => convert h (Sum.inr (i, j))
+  on_goal 3 =>
+    rintro (⟨i, j⟩ | ⟨i, j⟩)
+    convert h.1 i j using 1
+    on_goal 2 => convert h.2 i j using 1
+  all_goals
+    dsimp [mulOption]
+    rw [neg_sub', neg_add, ← neg_def]
+    congr 1
+    on_goal 1 => congr 1
+  any_goals rw [quot_neg_mul, neg_neg]
+  iterate 6 rw [quot_mul_neg, neg_neg]
+
 /-- Because the two halves of the definition of `inv` produce more elements
 on each side, we have to define the two families inductively.
 This is the indexing set for the function, and `invVal` is the function part. -/
@@ -873,18 +940,18 @@ instance uniqueInvTy (l r : Type u) [IsEmpty l] [IsEmpty r] : Unique (InvTy l r 
 /-- Because the two halves of the definition of `inv` produce more elements
 of each side, we have to define the two families inductively.
 This is the function part, defined by recursion on `InvTy`. -/
-def invVal {l r} (L : l → PGame) (R : r → PGame) (IHl : l → PGame) (IHr : r → PGame) :
-    ∀ {b}, InvTy l r b → PGame
+def invVal {l r} (L : l → PGame) (R : r → PGame) (IHl : l → PGame) (IHr : r → PGame)
+    (x : PGame) : ∀ {b}, InvTy l r b → PGame
   | _, InvTy.zero => 0
-  | _, InvTy.left₁ i j => (1 + (R i - mk l r L R) * invVal L R IHl IHr j) * IHr i
-  | _, InvTy.left₂ i j => (1 + (L i - mk l r L R) * invVal L R IHl IHr j) * IHl i
-  | _, InvTy.right₁ i j => (1 + (L i - mk l r L R) * invVal L R IHl IHr j) * IHl i
-  | _, InvTy.right₂ i j => (1 + (R i - mk l r L R) * invVal L R IHl IHr j) * IHr i
+  | _, InvTy.left₁ i j => (1 + (R i - x) * invVal L R IHl IHr x j) * IHr i
+  | _, InvTy.left₂ i j => (1 + (L i - x) * invVal L R IHl IHr x j) * IHl i
+  | _, InvTy.right₁ i j => (1 + (L i - x) * invVal L R IHl IHr x j) * IHl i
+  | _, InvTy.right₂ i j => (1 + (R i - x) * invVal L R IHl IHr x j) * IHr i
 #align pgame.inv_val SetTheory.PGame.invVal
 
 @[simp]
-theorem invVal_isEmpty {l r : Type u} {b} (L R IHl IHr) (i : InvTy l r b) [IsEmpty l] [IsEmpty r] :
-    invVal L R IHl IHr i = 0 := by
+theorem invVal_isEmpty {l r : Type u} {b} (L R IHl IHr) (i : InvTy l r b) (x) [IsEmpty l]
+    [IsEmpty r] : invVal L R IHl IHr x i = 0 := by
   cases' i with a _ a _ a _ a
   · rfl
   all_goals exact isEmptyElim a
@@ -897,12 +964,13 @@ given by `x⁻¹ = {0,
 Because the two halves `x⁻¹L, x⁻¹R` of `x⁻¹` are used in their own
 definition, the sets and elements are inductively generated. -/
 def inv' : PGame → PGame
-  | ⟨_, r, L, R⟩ =>
+  | ⟨l, r, L, R⟩ =>
     let l' := { i // 0 < L i }
     let L' : l' → PGame := fun i => L i.1
     let IHl' : l' → PGame := fun i => inv' (L i.1)
     let IHr i := inv' (R i)
-    ⟨InvTy l' r false, InvTy l' r true, invVal L' R IHl' IHr, invVal L' R IHl' IHr⟩
+    let x := mk l r L R
+    ⟨InvTy l' r false, InvTy l' r true, invVal L' R IHl' IHr x, invVal L' R IHl' IHr x⟩
 #align pgame.inv' SetTheory.PGame.inv'
 
 theorem zero_lf_inv' : ∀ x : PGame, 0 ⧏ inv' x
@@ -914,7 +982,7 @@ theorem zero_lf_inv' : ∀ x : PGame, 0 ⧏ inv' x
 /-- `inv' 0` has exactly the same moves as `1`. -/
 def inv'Zero : inv' 0 ≡r 1 := by
   change mk _ _ _ _ ≡r 1
-  refine' ⟨_, _, fun i => _, IsEmpty.elim _⟩
+  refine ⟨?_, ?_, fun i => ?_, IsEmpty.elim ?_⟩
   · apply Equiv.equivPUnit (InvTy _ _ _)
   · apply Equiv.equivPEmpty (InvTy _ _ _)
   · -- Porting note: had to add `rfl`, because `simp` only uses the built-in `rfl`.
@@ -933,7 +1001,7 @@ def inv'One : inv' 1 ≡r (1 : PGame.{u}) := by
   have : IsEmpty { _i : PUnit.{u + 1} // (0 : PGame.{u}) < 0 } := by
     rw [lt_self_iff_false]
     infer_instance
-  refine' ⟨_, _, fun i => _, IsEmpty.elim _⟩ <;> dsimp
+  refine ⟨?_, ?_, fun i => ?_, IsEmpty.elim ?_⟩ <;> dsimp
   · apply Equiv.equivPUnit
   · apply Equiv.equivOfIsEmpty
   · -- Porting note: had to add `rfl`, because `simp` only uses the built-in `rfl`.
@@ -979,3 +1047,5 @@ theorem inv_one_equiv : (1⁻¹ : PGame) ≈ 1 :=
 #align pgame.inv_one_equiv SetTheory.PGame.inv_one_equiv
 
 end PGame
+
+end SetTheory

@@ -320,7 +320,7 @@ def whiskerToCocone {f : J → C} (c : Bicone f) (g : K ≃ J) :
 /-- Whiskering a bicone with an equivalence between types preserves being a bilimit bicone. -/
 def whiskerIsBilimitIff {f : J → C} (c : Bicone f) (g : K ≃ J) :
     (c.whisker g).IsBilimit ≃ c.IsBilimit := by
-  refine' equivOfSubsingletonOfSubsingleton (fun hc => ⟨_, _⟩) fun hc => ⟨_, _⟩
+  refine equivOfSubsingletonOfSubsingleton (fun hc => ⟨?_, ?_⟩) fun hc => ⟨?_, ?_⟩
   · let this := IsLimit.ofIsoLimit hc.isLimit (Bicone.whiskerToCone c g)
     let this := (IsLimit.postcomposeHomEquiv (Discrete.functorComp f g).symm _) this
     exact IsLimit.ofWhiskerEquivalence (Discrete.equivalence g) this
@@ -1109,7 +1109,7 @@ variable (C)
 /-- A category with finite biproducts has a zero object. -/
 instance (priority := 100) hasZeroObject_of_hasFiniteBiproducts [HasFiniteBiproducts C] :
     HasZeroObject C := by
-  refine' ⟨⟨biproduct Empty.elim, fun X => ⟨⟨⟨0⟩, _⟩⟩, fun X => ⟨⟨⟨0⟩, _⟩⟩⟩⟩
+  refine ⟨⟨biproduct Empty.elim, fun X => ⟨⟨⟨0⟩, ?_⟩⟩, fun X => ⟨⟨⟨0⟩, ?_⟩⟩⟩⟩
   · intro a; apply biproduct.hom_ext'; simp
   · intro a; apply biproduct.hom_ext; simp
 #align category_theory.limits.has_zero_object_of_has_finite_biproducts CategoryTheory.Limits.hasZeroObject_of_hasFiniteBiproducts
@@ -1766,7 +1766,7 @@ theorem biprod.map_eq_map' {W X Y Z : C} [HasBinaryBiproduct W X] [HasBinaryBipr
   ext
   · simp only [mapPair_left, IsColimit.ι_map, IsLimit.map_π, biprod.inl_fst_assoc,
       Category.assoc, ← BinaryBicone.toCone_π_app_left, ← BinaryBiproduct.bicone_fst, ←
-      BinaryBicone.toCocone_ι_app_left, ← BinaryBiproduct.bicone_inl];
+      BinaryBicone.toCocone_ι_app_left, ← BinaryBiproduct.bicone_inl]
     dsimp; simp
   · simp only [mapPair_left, IsColimit.ι_map, IsLimit.map_π, zero_comp, biprod.inl_snd_assoc,
       Category.assoc, ← BinaryBicone.toCone_π_app_right, ← BinaryBiproduct.bicone_snd, ←
@@ -2162,8 +2162,8 @@ theorem biprod.symmetry' (P Q : C) :
 
 /-- The braiding isomorphism is symmetric. -/
 @[reassoc]
-theorem biprod.symmetry (P Q : C) : (biprod.braiding P Q).hom ≫ (biprod.braiding Q P).hom = 𝟙 _ :=
-  by simp
+theorem biprod.symmetry (P Q : C) :
+    (biprod.braiding P Q).hom ≫ (biprod.braiding Q P).hom = 𝟙 _ := by simp
 #align category_theory.limits.biprod.symmetry CategoryTheory.Limits.biprod.symmetry
 
 /-- The associator isomorphism which associates a binary biproduct. -/

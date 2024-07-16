@@ -96,7 +96,7 @@ theorem mul_eq_mul_right : c ≠ 0 → c ≠ ∞ → (a * c = b * c ↔ a = b) :
 #align ennreal.mul_eq_mul_right ENNReal.mul_eq_mul_right
 
 -- Porting note (#11215): TODO: generalize to `WithTop`
-theorem mul_le_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : (a * b ≤ a * c ↔ b ≤ c) :=
+theorem mul_le_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b ≤ a * c ↔ b ≤ c :=
   (mul_left_strictMono h0 hinf).le_iff_le
 #align ennreal.mul_le_mul_left ENNReal.mul_le_mul_left
 
@@ -106,7 +106,7 @@ theorem mul_le_mul_right : c ≠ 0 → c ≠ ∞ → (a * c ≤ b * c ↔ a ≤ 
 #align ennreal.mul_le_mul_right ENNReal.mul_le_mul_right
 
 -- Porting note (#11215): TODO: generalize to `WithTop`
-theorem mul_lt_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : (a * b < a * c ↔ b < c) :=
+theorem mul_lt_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b < a * c ↔ b < c :=
   (mul_left_strictMono h0 hinf).lt_iff_lt
 #align ennreal.mul_lt_mul_left ENNReal.mul_lt_mul_left
 
@@ -219,10 +219,7 @@ theorem top_mul_top : ∞ * ∞ = ∞ := WithTop.top_mul_top
 #align ennreal.top_mul_top ENNReal.top_mul_top
 
 -- Porting note (#11215): TODO: assume `n ≠ 0` instead of `0 < n`
--- Porting note (#11215): TODO: generalize to `WithTop`
-theorem top_pow {n : ℕ} (h : 0 < n) : ∞ ^ n = ∞ :=
-  Nat.le_induction (pow_one _) (fun m _ hm => by rw [pow_succ, hm, top_mul_top]) _
-    (Nat.succ_le_of_lt h)
+theorem top_pow {n : ℕ} (n_pos : 0 < n) : (∞ : ℝ≥0∞) ^ n = ∞ := WithTop.top_pow n_pos
 #align ennreal.top_pow ENNReal.top_pow
 
 theorem mul_eq_top : a * b = ∞ ↔ a ≠ 0 ∧ b = ∞ ∨ a = ∞ ∧ b ≠ 0 :=
@@ -382,6 +379,9 @@ theorem sub_ne_top (ha : a ≠ ∞) : a - b ≠ ∞ := mt sub_eq_top_iff.mp <| m
 theorem natCast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℝ≥0∞) := by
   rw [← coe_natCast, Nat.cast_tsub, coe_sub, coe_natCast, coe_natCast]
 #align ennreal.nat_cast_sub ENNReal.natCast_sub
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_sub := natCast_sub
 
 protected theorem sub_eq_of_eq_add (hb : b ≠ ∞) : a = c + b → a - b = c :=
   (cancel_of_ne hb).tsub_eq_of_eq_add

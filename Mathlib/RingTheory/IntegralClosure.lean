@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Polynomial.Expand
-import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 import Mathlib.RingTheory.Adjoin.FG
 import Mathlib.RingTheory.FiniteType
@@ -346,7 +345,7 @@ theorem RingHom.IsIntegralElem.of_mem_closure {x y z : S} (hx : f.IsIntegralElem
   rw [← Algebra.adjoin_union_coe_submodule, Set.singleton_union] at this
   exact
     IsIntegral.of_mem_of_fg (Algebra.adjoin R {x, y}) this z
-      (Algebra.mem_adjoin_iff.2 <| Subring.closure_mono (Set.subset_union_right _ _) hz)
+      (Algebra.mem_adjoin_iff.2 <| Subring.closure_mono Set.subset_union_right hz)
 #align ring_hom.is_integral_of_mem_closure RingHom.IsIntegralElem.of_mem_closure
 
 nonrec theorem IsIntegral.of_mem_closure {x y z : A} (hx : IsIntegral R x) (hy : IsIntegral R y)
@@ -626,7 +625,7 @@ theorem leadingCoeff_smul_normalizeScaleRoots (p : R[X]) :
   simp only [coeff_scaleRoots, normalizeScaleRoots, coeff_monomial, coeff_smul, Finset.smul_sum,
     Ne, Finset.sum_ite_eq', finset_sum_coeff, smul_ite, smul_zero, mem_support_iff]
   -- Porting note: added the following `simp only`
-  simp only [ge_iff_le, tsub_le_iff_right, smul_eq_mul, mul_ite, mul_one, mul_zero,
+  simp only [tsub_le_iff_right, smul_eq_mul, mul_ite, mul_one, mul_zero,
     Finset.sum_ite_eq', mem_support_iff, ne_eq, ite_not]
   split_ifs with h₁ h₂
   · simp [*]

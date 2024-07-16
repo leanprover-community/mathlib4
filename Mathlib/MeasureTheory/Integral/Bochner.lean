@@ -124,7 +124,7 @@ Use `isClosed_property` or `DenseRange.induction_on` for this argument.
 
 ## Notations
 
-* `α →ₛ E`  : simple functions (defined in `MeasureTheory/Integration`)
+* `α →ₛ E` : simple functions (defined in `MeasureTheory/Integration`)
 * `α →₁[μ] E` : functions in L1 space, i.e., equivalence classes of integrable functions (defined in
                 `MeasureTheory/LpSpace`)
 * `α →₁ₛ[μ] E` : simple functions in L1 space, i.e., equivalence classes of integrable simple
@@ -662,8 +662,8 @@ def integralCLM : (α →₁[μ] E) →L[ℝ] E :=
 
 -- Porting note: added `(E := E)` in several places below.
 /-- The Bochner integral in L1 space -/
-irreducible_def integral (f : α →₁[μ] E) : E :=
-  integralCLM (E := E) f
+irreducible_def integral : (α →₁[μ] E) → E :=
+  integralCLM (E := E)
 #align measure_theory.L1.integral MeasureTheory.L1.integral
 
 theorem integral_eq (f : α →₁[μ] E) : integral f = integralCLM (E := E) f := by
@@ -755,7 +755,7 @@ theorem integral_eq_norm_posPart_sub (f : α →₁[μ] ℝ) :
       (simpleFunc.denseRange one_ne_top) (isClosed_eq ?_ ?_) ?_ f
   · simp only [integral]
     exact cont _
-  · refine' Continuous.sub (continuous_norm.comp Lp.continuous_posPart)
+  · refine Continuous.sub (continuous_norm.comp Lp.continuous_posPart)
       (continuous_norm.comp Lp.continuous_negPart)
   -- Show that the property holds for all simple functions in the `L¹` space.
   · intro s
@@ -991,7 +991,7 @@ theorem HasFiniteIntegral.tendsto_setIntegral_nhds_zero {ι} {f : α → G}
   simp_rw [← coe_nnnorm, ← NNReal.coe_zero, NNReal.tendsto_coe, ← ENNReal.tendsto_coe,
     ENNReal.coe_zero]
   exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-    (tendsto_set_lintegral_zero (ne_of_lt hf) hs) (fun i => zero_le _)
+    (tendsto_setLIntegral_zero (ne_of_lt hf) hs) (fun i => zero_le _)
     fun i => ennnorm_integral_le_lintegral_ennnorm _
 #align measure_theory.has_finite_integral.tendsto_set_integral_nhds_zero MeasureTheory.HasFiniteIntegral.tendsto_setIntegral_nhds_zero
 
@@ -1185,7 +1185,7 @@ theorem integral_eq_integral_pos_part_sub_integral_neg_part {f : α → ℝ} (hf
 
 theorem integral_nonneg_of_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f) : 0 ≤ ∫ a, f a ∂μ := by
   have A : CompleteSpace ℝ := by infer_instance
-  simp only [integral_def, A, L1.integral_def, dite_true, ge_iff_le]
+  simp only [integral_def, A, L1.integral_def, dite_true]
   exact setToFun_nonneg (dominatedFinMeasAdditive_weightedSMul μ)
     (fun s _ _ => weightedSMul_nonneg s) hf
 #align measure_theory.integral_nonneg_of_ae MeasureTheory.integral_nonneg_of_ae
@@ -1574,7 +1574,7 @@ theorem tendsto_integral_norm_approxOn_sub [MeasurableSpace E] [BorelSpace E] {f
   · simp
   · apply (SimpleFunc.aestronglyMeasurable _).sub
     apply (stronglyMeasurable_iff_measurable_separable.2 ⟨fmeas, ?_⟩ ).aestronglyMeasurable
-    exact .mono (.of_subtype (range f ∪ {0})) (subset_union_left _ _)
+    exact .mono (.of_subtype (range f ∪ {0})) subset_union_left
 
 variable {ν : Measure α}
 
@@ -2015,7 +2015,7 @@ theorem integral_trim_ae (hm : m ≤ m0) {f : β → G} (hf : AEStronglyMeasurab
 theorem ae_eq_trim_of_stronglyMeasurable [TopologicalSpace γ] [MetrizableSpace γ] (hm : m ≤ m0)
     {f g : β → γ} (hf : StronglyMeasurable[m] f) (hg : StronglyMeasurable[m] g)
     (hfg : f =ᵐ[μ] g) : f =ᵐ[μ.trim hm] g := by
-  rwa [EventuallyEq, @ae_iff _ m, trim_measurableSet_eq hm _]
+  rwa [EventuallyEq, ae_iff, trim_measurableSet_eq hm]
   exact (hf.measurableSet_eq_fun hg).compl
 #align measure_theory.ae_eq_trim_of_strongly_measurable MeasureTheory.ae_eq_trim_of_stronglyMeasurable
 
@@ -2029,7 +2029,7 @@ theorem ae_le_trim_of_stronglyMeasurable [LinearOrder γ] [TopologicalSpace γ]
     [OrderClosedTopology γ] [PseudoMetrizableSpace γ] (hm : m ≤ m0) {f g : β → γ}
     (hf : StronglyMeasurable[m] f) (hg : StronglyMeasurable[m] g) (hfg : f ≤ᵐ[μ] g) :
     f ≤ᵐ[μ.trim hm] g := by
-  rwa [EventuallyLE, @ae_iff _ m, trim_measurableSet_eq hm _]
+  rwa [EventuallyLE, ae_iff, trim_measurableSet_eq hm]
   exact (hf.measurableSet_le hg).compl
 #align measure_theory.ae_le_trim_of_strongly_measurable MeasureTheory.ae_le_trim_of_stronglyMeasurable
 
@@ -2086,7 +2086,7 @@ theorem snorm_one_le_of_le {r : ℝ≥0} {f : α → ℝ} (hfint : Integrable f 
     max_zero_add_max_neg_zero_eq_abs_self, ← Real.coe_toNNReal']
   rw [integral_add hfint.real_toNNReal]
   · simp only [Real.coe_toNNReal', ENNReal.toReal_mul, ENNReal.one_toReal, ENNReal.coe_toReal,
-      ge_iff_le, Left.nonneg_neg_iff, Left.neg_nonpos_iff, toReal_ofNat] at hfint' ⊢
+      Left.nonneg_neg_iff, Left.neg_nonpos_iff, toReal_ofNat] at hfint' ⊢
     refine (add_le_add_left hfint' _).trans ?_
     rwa [← two_mul, mul_assoc, mul_le_mul_left (two_pos : (0 : ℝ) < 2)]
   · exact hfint.neg.sup (integrable_zero _ _ μ)

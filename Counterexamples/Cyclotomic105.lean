@@ -45,7 +45,6 @@ theorem properDivisors_35 : Nat.properDivisors 35 = {1, 5, 7} :=
   rfl
 #align counterexample.proper_divisors_35 Counterexample.properDivisors_35
 
-set_option maxRecDepth 1024 in
 theorem properDivisors_105 : Nat.properDivisors 105 = {1, 3, 5, 7, 15, 21, 35} :=
   rfl
 #align counterexample.proper_divisors_105 Counterexample.properDivisors_105

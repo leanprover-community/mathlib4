@@ -95,7 +95,7 @@ variable {A : Type*} [Semiring A] [Algebra R A]
 
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem comp_ι_sq_zero (g : ExteriorAlgebra R M →ₐ[R] A) (m : M) : g (ι R m) * g (ι R m) = 0 := by
-  rw [← AlgHom.map_mul, ι_sq_zero, AlgHom.map_zero]
+  rw [← map_mul, ι_sq_zero, map_zero]
 #align exterior_algebra.comp_ι_sq_zero ExteriorAlgebra.comp_ι_sq_zero
 
 variable (R)
@@ -311,10 +311,10 @@ def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
           exact ι_mul_prod_list (f ∘ Fin.succ) _
         -- ignore the left-most term and induct on the remaining ones, decrementing indices
         · convert mul_zero (ι R (f 0))
-          refine'
+          refine
             hn
               (fun i => f <| Fin.succ i) (x.pred hx)
-              (y.pred (ne_of_lt <| lt_of_le_of_lt x.zero_le h).symm) _
+              (y.pred (ne_of_lt <| lt_of_le_of_lt x.zero_le h).symm) ?_
               (Fin.pred_lt_pred_iff.mpr h)
           simp only [Fin.succ_pred]
           exact hfxy

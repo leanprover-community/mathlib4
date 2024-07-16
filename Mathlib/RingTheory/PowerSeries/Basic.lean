@@ -231,8 +231,8 @@ theorem coeff_zero_eq_constantCoeff : ⇑(coeff R 0) = constantCoeff R := by
   rfl
 #align power_series.coeff_zero_eq_constant_coeff PowerSeries.coeff_zero_eq_constantCoeff
 
-theorem coeff_zero_eq_constantCoeff_apply (φ : R⟦X⟧) : coeff R 0 φ = constantCoeff R φ :=
-  by rw [coeff_zero_eq_constantCoeff]
+theorem coeff_zero_eq_constantCoeff_apply (φ : R⟦X⟧) : coeff R 0 φ = constantCoeff R φ := by
+  rw [coeff_zero_eq_constantCoeff]
 #align power_series.coeff_zero_eq_constant_coeff_apply PowerSeries.coeff_zero_eq_constantCoeff_apply
 
 @[simp]
@@ -409,6 +409,9 @@ theorem constantCoeff_X : constantCoeff R X = 0 :=
   MvPowerSeries.coeff_zero_X _
 set_option linter.uppercaseLean3 false in
 #align power_series.constant_coeff_X PowerSeries.constantCoeff_X
+
+@[simp]
+theorem constantCoeff_mk {f : ℕ → R} : constantCoeff R (mk f) = f 0 := rfl
 
 theorem coeff_zero_mul_X (φ : R⟦X⟧) : coeff R 0 (φ * X) = 0 := by simp
 set_option linter.uppercaseLean3 false in
@@ -658,10 +661,10 @@ variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 
 /-- Coefficients of a product of power series -/
 theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
-    coeff R d (∏ j ∈ s, f j) = ∑ l ∈ piAntidiagonal s d, ∏ i ∈ s, coeff R (l i) (f i) := by
+    coeff R d (∏ j ∈ s, f j) = ∑ l ∈ finsuppAntidiag s d, ∏ i ∈ s, coeff R (l i) (f i) := by
   simp only [coeff]
   convert MvPowerSeries.coeff_prod _ _ _
-  rw [← AddEquiv.finsuppUnique_symm d, ← mapRange_piAntidiagonal_eq, sum_map, sum_congr rfl]
+  rw [← AddEquiv.finsuppUnique_symm d, ← mapRange_finsuppAntidiag_eq, sum_map, sum_congr rfl]
   intro x _
   apply prod_congr rfl
   intro i _
@@ -669,6 +672,36 @@ theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
   simp only [AddEquiv.toEquiv_eq_coe, Finsupp.mapRange.addEquiv_toEquiv, AddEquiv.toEquiv_symm,
     Equiv.coe_toEmbedding, Finsupp.mapRange.equiv_apply, AddEquiv.coe_toEquiv_symm,
     Finsupp.mapRange_apply, AddEquiv.finsuppUnique_symm]
+
+/-- The `n`-th coefficient of the `k`-th power of a power series. -/
+lemma coeff_pow (k n : ℕ) (φ : R⟦X⟧) :
+    coeff R n (φ ^ k) = ∑ l ∈ finsuppAntidiag (range k) n, ∏ i ∈ range k, coeff R (l i) φ := by
+  have h₁ (i : ℕ) : Function.const ℕ φ i = φ := rfl
+  have h₂ (i : ℕ) : ∏ j ∈ range i, Function.const ℕ φ j = φ ^ i := by
+    apply prod_range_induction (fun _ => φ) (fun i => φ ^ i) rfl (congrFun rfl) i
+  rw [← h₂, ← h₁ k]
+  apply coeff_prod (f := Function.const ℕ φ) (d := n) (s := range k)
+
+/-- First coefficient of the product of two power series. -/
+lemma coeff_one_mul (φ ψ : R⟦X⟧) : coeff R 1 (φ * ψ) =
+    coeff R 1 φ * constantCoeff R ψ + coeff R 1 ψ * constantCoeff R φ := by
+  have : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
+  rw [coeff_mul, this, Finset.sum_insert, Finset.sum_singleton, coeff_zero_eq_constantCoeff,
+    mul_comm, add_comm]
+  norm_num
+
+/-- First coefficient of the `n`-th power of a power series with constant coefficient 1. -/
+lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) (hC : constantCoeff R φ = 1) :
+    coeff R 1 (φ ^ n) = n * coeff R 1 φ := by
+  induction n with
+  | zero => simp only [pow_zero, coeff_one, one_ne_zero, ↓reduceIte, Nat.cast_zero, zero_mul]
+  | succ n' ih =>
+      have h₁ (m : ℕ) : φ ^ (m + 1) = φ ^ m * φ := by exact rfl
+      have h₂ : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
+      rw [h₁, coeff_mul, h₂, Finset.sum_insert, Finset.sum_singleton]
+      simp only [coeff_zero_eq_constantCoeff, map_pow, Nat.cast_add, Nat.cast_one,
+        ih, hC, one_pow, one_mul, mul_one, ← one_add_mul, add_comm]
+      decide
 
 end CommSemiring
 
@@ -890,18 +923,8 @@ theorem coe_C (a : R) : ((C a : R[X]) : PowerSeries R) = PowerSeries.C R a := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.coe_C Polynomial.coe_C
 
-
-set_option linter.deprecated false in
-@[simp, norm_cast]
-theorem coe_bit0 : ((bit0 φ : R[X]) : PowerSeries R) = bit0 (φ : PowerSeries R) :=
-  coe_add φ φ
-#align polynomial.coe_bit0 Polynomial.coe_bit0
-
-set_option linter.deprecated false in
-@[simp, norm_cast]
-theorem coe_bit1 : ((bit1 φ : R[X]) : PowerSeries R) = bit1 (φ : PowerSeries R) := by
-  rw [bit1, bit1, coe_add, coe_one, coe_bit0]
-#align polynomial.coe_bit1 Polynomial.coe_bit1
+#noalign polynomial.coe_bit0
+#noalign polynomial.coe_bit1
 
 @[simp, norm_cast]
 theorem coe_X : ((X : R[X]) : PowerSeries R) = PowerSeries.X :=

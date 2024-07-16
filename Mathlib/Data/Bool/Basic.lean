@@ -3,8 +3,8 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Function
+import Mathlib.Logic.Function.Defs
+import Mathlib.Init.Order.Defs
 
 #align_import data.bool.basic from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
@@ -21,44 +21,153 @@ bool, boolean, Bool, De Morgan
 
 namespace Bool
 
-theorem decide_True {h} : @decide True h = true :=
-  _root_.decide_eq_true True.intro
-#align bool.to_bool_true Bool.decide_True
+#align bor or
+#align band and
+#align bnot not
+#align bxor xor
 
-theorem decide_False {h} : @decide False h = false :=
-  _root_.decide_eq_false id
-#align bool.to_bool_false Bool.decide_False
+section
+
+/-!
+This section contains lemmas about booleans which were present in core Lean 3.
+The remainder of this file contains lemmas about booleans from mathlib 3.
+-/
+
+theorem true_eq_false_eq_False : ¬true = false := by decide
+#align tt_eq_ff_eq_false Bool.true_eq_false_eq_False
+
+theorem false_eq_true_eq_False : ¬false = true := by decide
+#align ff_eq_tt_eq_false Bool.false_eq_true_eq_False
+
+theorem eq_false_eq_not_eq_true (b : Bool) : (¬b = true) = (b = false) := by simp
+#align eq_ff_eq_not_eq_tt Bool.eq_false_eq_not_eq_true
+
+theorem eq_true_eq_not_eq_false (b : Bool) : (¬b = false) = (b = true) := by simp
+#align eq_tt_eq_not_eq_ft Bool.eq_true_eq_not_eq_false
+
+theorem eq_false_of_not_eq_true {b : Bool} : ¬b = true → b = false :=
+  Eq.mp (eq_false_eq_not_eq_true b)
+#align eq_ff_of_not_eq_tt Bool.eq_false_of_not_eq_true
+
+theorem eq_true_of_not_eq_false {b : Bool} : ¬b = false → b = true :=
+  Eq.mp (eq_true_eq_not_eq_false b)
+#align eq_tt_of_not_eq_ff Bool.eq_true_of_not_eq_false
+
+theorem and_eq_true_eq_eq_true_and_eq_true (a b : Bool) :
+    ((a && b) = true) = (a = true ∧ b = true) := by simp
+#align band_eq_true_eq_eq_tt_and_eq_tt Bool.and_eq_true_eq_eq_true_and_eq_true
+
+theorem or_eq_true_eq_eq_true_or_eq_true (a b : Bool) :
+    ((a || b) = true) = (a = true ∨ b = true) := by simp
+#align bor_eq_true_eq_eq_tt_or_eq_tt Bool.or_eq_true_eq_eq_true_or_eq_true
+
+theorem not_eq_true_eq_eq_false (a : Bool) : (not a = true) = (a = false) := by cases a <;> simp
+#align bnot_eq_true_eq_eq_ff Bool.not_eq_true_eq_eq_false
+
+#adaptation_note /-- this is no longer a simp lemma,
+  as after nightly-2024-03-05 the LHS simplifies. -/
+theorem and_eq_false_eq_eq_false_or_eq_false (a b : Bool) :
+    ((a && b) = false) = (a = false ∨ b = false) := by
+  cases a <;> cases b <;> simp
+#align band_eq_false_eq_eq_ff_or_eq_ff Bool.and_eq_false_eq_eq_false_or_eq_false
+
+theorem or_eq_false_eq_eq_false_and_eq_false (a b : Bool) :
+    ((a || b) = false) = (a = false ∧ b = false) := by
+  cases a <;> cases b <;> simp
+#align bor_eq_false_eq_eq_ff_and_eq_ff Bool.or_eq_false_eq_eq_false_and_eq_false
+
+theorem not_eq_false_eq_eq_true (a : Bool) : (not a = false) = (a = true) := by cases a <;> simp
+#align bnot_eq_ff_eq_eq_tt Bool.not_eq_false_eq_eq_true
+
+theorem coe_false : ↑false = False := by simp
+#align coe_ff Bool.coe_false
+
+theorem coe_true : ↑true = True := by simp
+#align coe_tt Bool.coe_true
+
+theorem coe_sort_false : (false : Prop) = False := by simp
+#align coe_sort_ff Bool.coe_sort_false
+
+theorem coe_sort_true : (true : Prop) = True := by simp
+#align coe_sort_tt Bool.coe_sort_true
+
+theorem decide_iff (p : Prop) [d : Decidable p] : decide p = true ↔ p := by simp
+#align to_bool_iff Bool.decide_iff
+
+theorem decide_true {p : Prop} [Decidable p] : p → decide p :=
+  (decide_iff p).2
+#align to_bool_true Bool.decide_true
+#align to_bool_tt Bool.decide_true
+
+theorem of_decide_true {p : Prop} [Decidable p] : decide p → p :=
+  (decide_iff p).1
+#align of_to_bool_true Bool.of_decide_true
+
+theorem bool_iff_false {b : Bool} : ¬b ↔ b = false := by cases b <;> decide
+#align bool_iff_false Bool.bool_iff_false
+
+theorem bool_eq_false {b : Bool} : ¬b → b = false :=
+  bool_iff_false.1
+#align bool_eq_false Bool.bool_eq_false
+
+theorem decide_false_iff (p : Prop) {_ : Decidable p} : decide p = false ↔ ¬p :=
+  bool_iff_false.symm.trans (not_congr (decide_iff _))
+#align to_bool_ff_iff Bool.decide_false_iff
+
+theorem decide_false {p : Prop} [Decidable p] : ¬p → decide p = false :=
+  (decide_false_iff p).2
+#align to_bool_ff Bool.decide_false
+
+theorem of_decide_false {p : Prop} [Decidable p] : decide p = false → ¬p :=
+  (decide_false_iff p).1
+#align of_to_bool_ff Bool.of_decide_false
+
+theorem decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) : decide p = decide q :=
+  decide_eq_decide.mpr h
+#align to_bool_congr Bool.decide_congr
+
+@[deprecated (since := "2024-06-07")] alias coe_or_iff := or_eq_true_iff
+#align bor_coe_iff Bool.or_eq_true_iff
+
+@[deprecated (since := "2024-06-07")] alias coe_and_iff := and_eq_true_iff
+#align band_coe_iff Bool.and_eq_true_iff
+
+theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
+  cases a <;> cases b <;> decide
+#align bxor_coe_iff Bool.coe_xor_iff
+
+end
+
+@[deprecated (since := "2024-06-07")] alias decide_True := decide_true_eq_true
+#align bool.to_bool_true decide_true_eq_true
+
+@[deprecated (since := "2024-06-07")] alias decide_False := decide_false_eq_false
+#align bool.to_bool_false decide_false_eq_false
 
 #align bool.to_bool_coe Bool.decide_coe
 
-theorem coe_decide (p : Prop) [d : Decidable p] : decide p ↔ p :=
-  match d with
-  | isTrue hp => ⟨fun _ ↦ hp, fun _ ↦ rfl⟩
-  | isFalse hnp => ⟨fun h ↦ Bool.noConfusion h, fun hp ↦ (hnp hp).elim⟩
-#align bool.coe_to_bool Bool.coe_decide
+@[deprecated (since := "2024-06-07")] alias coe_decide := decide_eq_true_iff
+#align bool.coe_to_bool decide_eq_true_iff
 
-theorem of_decide_iff {p : Prop} [Decidable p] : decide p ↔ p :=
-  coe_decide p
-#align bool.of_to_bool_iff Bool.of_decide_iff
+@[deprecated decide_eq_true_iff (since := "2024-06-07")]
+alias of_decide_iff := decide_eq_true_iff
+#align bool.of_to_bool_iff decide_eq_true_iff
 
 #align bool.tt_eq_to_bool_iff true_eq_decide_iff
 #align bool.ff_eq_to_bool_iff false_eq_decide_iff
 
-theorem decide_not (p : Prop) [Decidable p] : (decide ¬p) = !(decide p) := by
-  by_cases p <;> simp [*]
-#align bool.to_bool_not Bool.decide_not
+@[deprecated (since := "2024-06-07")] alias decide_not := decide_not
+#align bool.to_bool_not decide_not
 
 #align bool.to_bool_and Bool.decide_and
 #align bool.to_bool_or Bool.decide_or
 
 #align bool.to_bool_eq decide_eq_decide
 
-theorem not_false' : ¬false := nofun
-#align bool.not_ff Bool.not_false'
+@[deprecated (since := "2024-06-07")] alias not_false' := false_ne_true
+#align bool.not_ff Bool.false_ne_true
 
--- Porting note (#10756): new theorem
-theorem eq_iff_eq_true_iff {a b : Bool} : a = b ↔ ((a = true) ↔ (b = true)) := by
-  cases a <;> cases b <;> simp
+@[deprecated (since := "2024-06-07")] alias eq_iff_eq_true_iff := eq_iff_iff
 
 #align bool.default_bool Bool.default_bool
 
@@ -82,15 +191,8 @@ theorem exists_bool {p : Bool → Prop} : (∃ b, p b) ↔ p false ∨ p true :=
   exists_bool' false
 #align bool.exists_bool Bool.exists_bool
 
-/-- If `p b` is decidable for all `b : Bool`, then `∀ b, p b` is decidable -/
-instance decidableForallBool {p : Bool → Prop} [∀ b, Decidable (p b)] : Decidable (∀ b, p b) :=
-  decidable_of_decidable_of_iff forall_bool.symm
-#align bool.decidable_forall_bool Bool.decidableForallBool
-
-/-- If `p b` is decidable for all `b : Bool`, then `∃ b, p b` is decidable -/
-instance decidableExistsBool {p : Bool → Prop} [∀ b, Decidable (p b)] : Decidable (∃ b, p b) :=
-  decidable_of_decidable_of_iff exists_bool.symm
-#align bool.decidable_exists_bool Bool.decidableExistsBool
+#align bool.decidable_forall_bool Bool.instDecidableForallOfDecidablePred
+#align bool.decidable_exists_bool Bool.instDecidableExistsOfDecidablePred
 
 #align bool.cond_eq_ite Bool.cond_eq_ite
 #align bool.cond_to_bool Bool.cond_decide
@@ -101,11 +203,11 @@ theorem not_ne_id : not ≠ id := fun h ↦ false_ne_true <| congrFun h true
 
 #align bool.coe_bool_iff Bool.coe_iff_coe
 
-theorem eq_true_of_ne_false : ∀ {a : Bool}, a ≠ false → a = true := by decide
-#align bool.eq_tt_of_ne_ff Bool.eq_true_of_ne_false
+@[deprecated (since := "2024-06-07")] alias eq_true_of_ne_false := eq_true_of_ne_false
+#align bool.eq_tt_of_ne_ff eq_true_of_ne_false
 
-theorem eq_false_of_ne_true : ∀ {a : Bool}, a ≠ true → a = false := by decide
-#align bool.eq_ff_of_ne_tt Bool.eq_false_of_ne_true
+@[deprecated (since := "2024-06-07")] alias eq_false_of_ne_true := eq_false_of_ne_true
+#align bool.eq_ff_of_ne_tt eq_true_of_ne_false
 
 #align bool.bor_comm Bool.or_comm
 #align bool.bor_assoc Bool.or_assoc
@@ -150,8 +252,8 @@ theorem ne_not {a b : Bool} : a ≠ !b ↔ a = b :=
   not_eq_not
 #align bool.ne_bnot Bool.ne_not
 
-theorem not_ne : ∀ {a b : Bool}, (!a) ≠ b ↔ a = b := not_not_eq
-#align bool.bnot_ne Bool.not_ne
+@[deprecated (since := "2024-06-07")] alias not_ne := not_not_eq
+#align bool.bnot_ne Bool.not_not_eq
 
 lemma not_ne_self : ∀ b : Bool, (!b) ≠ b := by decide
 #align bool.bnot_ne_self Bool.not_ne_self
@@ -202,12 +304,8 @@ theorem xor_iff_ne : ∀ {x y : Bool}, xor x y = true ↔ x ≠ y := by decide
 
 /-! ### De Morgan's laws for booleans-/
 
-attribute [simp] not_and
 #align bool.bnot_band Bool.not_and
-
-attribute [simp] not_or
 #align bool.bnot_bor Bool.not_or
-
 #align bool.bnot_inj Bool.not_inj
 
 instance linearOrder : LinearOrder Bool where
@@ -222,8 +320,6 @@ instance linearOrder : LinearOrder Bool where
   max_def := by decide
   min_def := by decide
 #align bool.linear_order Bool.linearOrder
-
-attribute [simp] Bool.max_eq_or Bool.min_eq_and
 
 #align bool.ff_le Bool.false_le
 #align bool.le_tt Bool.le_true
@@ -276,7 +372,7 @@ theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
   | isFalse hn =>
     cases Nat.decEq m 0 with
     | isFalse hm => rw [_root_.decide_eq_false hm]; exact Bool.le_true _
-    | isTrue hm => subst hm; have h := le_antisymm h (Nat.zero_le n); contradiction
+    | isTrue hm => subst hm; have h := Nat.le_antisymm h (Nat.zero_le n); contradiction
 #align bool.of_nat_le_of_nat Bool.ofNat_le_ofNat
 
 theorem toNat_le_toNat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toNat b₁ := by

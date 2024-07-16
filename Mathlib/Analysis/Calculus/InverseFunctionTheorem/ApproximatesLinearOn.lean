@@ -208,8 +208,8 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
     rw [div_mul_eq_mul_div, div_le_iff]; swap; · linarith
     calc
       (f'symm.nnnorm : ℝ) * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) * dist (f b) y =
-          f'symm.nnnorm * dist (f b) y * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) :=
-        by ring
+          f'symm.nnnorm * dist (f b) y * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) := by
+        ring
       _ ≤ f'symm.nnnorm * dist (f b) y * 1 := by
         gcongr
         rw [sub_le_self_iff]
@@ -269,7 +269,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
   -- It remains to check that `f x = y`. This follows from continuity of `f` on `closedBall b ε`
   -- and from the fact that `f uₙ` is converging to `y` by construction.
   have hx' : Tendsto u atTop (𝓝[closedBall b ε] x) := by
-    simp only [nhdsWithin, tendsto_inf, hx, true_and_iff, ge_iff_le, tendsto_principal]
+    simp only [nhdsWithin, tendsto_inf, hx, true_and_iff, tendsto_principal]
     exact eventually_of_forall fun n => C n _ (D n).2
   have T1 : Tendsto (f ∘ u) atTop (𝓝 (f x)) :=
     (hf.continuousOn.mono hε x xmem).tendsto.comp hx'
@@ -303,8 +303,8 @@ theorem map_nhds_eq (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearR
   refine
     le_antisymm ((hf.continuousOn x (mem_of_mem_nhds hs)).continuousAt hs) (le_map fun t ht => ?_)
   have : f '' (s ∩ t) ∈ 𝓝 (f x) :=
-    (hf.mono_set (inter_subset_left s t)).image_mem_nhds f'symm (inter_mem hs ht) hc
-  exact mem_of_superset this (image_subset _ (inter_subset_right _ _))
+    (hf.mono_set inter_subset_left).image_mem_nhds f'symm (inter_mem hs ht) hc
+  exact mem_of_superset this (image_subset _ inter_subset_right)
 #align approximates_linear_on.map_nhds_eq ApproximatesLinearOn.map_nhds_eq
 
 end LocallyOnto
@@ -438,7 +438,7 @@ theorem toPartialHomeomorph_target (hf : ApproximatesLinearOn f (f' : E →L[�
 /-- A function `f` that approximates a linear equivalence on the whole space is a homeomorphism. -/
 def toHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
     (hc : Subsingleton E ∨ c < N⁻¹) : E ≃ₜ F := by
-  refine' (hf.toPartialHomeomorph _ _ hc isOpen_univ).toHomeomorphOfSourceEqUnivTargetEqUniv rfl _
+  refine (hf.toPartialHomeomorph _ _ hc isOpen_univ).toHomeomorphOfSourceEqUnivTargetEqUniv rfl ?_
   rw [toPartialHomeomorph_target, image_univ, range_iff_surjective]
   exact hf.surjective hc
 #align approximates_linear_on.to_homeomorph ApproximatesLinearOn.toHomeomorph

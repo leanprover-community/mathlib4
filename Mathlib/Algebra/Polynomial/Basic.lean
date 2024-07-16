@@ -348,8 +348,8 @@ instance isScalarTower {S₁ S₂} [SMul S₁ S₂] [SMulZeroClass S₁ R] [SMul
 instance isScalarTower_right {α K : Type*} [Semiring K] [DistribSMul α K] [IsScalarTower α K K] :
     IsScalarTower α K[X] K[X] :=
   ⟨by
-    rintro _ ⟨⟩ ⟨⟩;
-      simp_rw [smul_eq_mul, ← ofFinsupp_smul, ← ofFinsupp_mul, ← ofFinsupp_smul, smul_mul_assoc]⟩
+    rintro _ ⟨⟩ ⟨⟩
+    simp_rw [smul_eq_mul, ← ofFinsupp_smul, ← ofFinsupp_mul, ← ofFinsupp_smul, smul_mul_assoc]⟩
 #align polynomial.is_scalar_tower_right Polynomial.isScalarTower_right
 
 instance isCentralScalar {S} [SMulZeroClass S R] [SMulZeroClass Sᵐᵒᵖ R] [IsCentralScalar S R] :
@@ -363,7 +363,7 @@ instance unique [Subsingleton R] : Unique R[X] :=
   { Polynomial.inhabited with
     uniq := by
       rintro ⟨x⟩
-      refine' congr_arg ofFinsupp _
+      apply congr_arg ofFinsupp
       simp [eq_iff_true_of_subsingleton] }
 #align polynomial.unique Polynomial.unique
 
@@ -474,7 +474,7 @@ theorem monomial_mul_monomial (n m : ℕ) (r s : R) :
 theorem monomial_pow (n : ℕ) (r : R) (k : ℕ) : monomial n r ^ k = monomial (n * k) (r ^ k) := by
   induction' k with k ih
   · simp [pow_zero, monomial_zero_one]
-  · simp [pow_succ, ih, monomial_mul_monomial, Nat.succ_eq_add_one, mul_add, add_comm]
+  · simp [pow_succ, ih, monomial_mul_monomial, mul_add, add_comm]
 #align polynomial.monomial_pow Polynomial.monomial_pow
 
 theorem smul_monomial {S} [SMulZeroClass S R] (a : S) (n : ℕ) (b : R) :
@@ -535,16 +535,8 @@ theorem smul_C {S} [SMulZeroClass S R] (s : S) (r : R) : s • C r = C (s • r)
   smul_monomial _ _ r
 #align polynomial.smul_C Polynomial.smul_C
 
-set_option linter.deprecated false in
--- @[simp] -- Porting note (#10618): simp can prove this
-theorem C_bit0 : C (bit0 a) = bit0 (C a) :=
-  C_add
-#align polynomial.C_bit0 Polynomial.C_bit0
-
-set_option linter.deprecated false in
--- @[simp] -- Porting note (#10618): simp can prove this
-theorem C_bit1 : C (bit1 a) = bit1 (C a) := by simp [bit1, C_bit0]
-#align polynomial.C_bit1 Polynomial.C_bit1
+#noalign polynomial.C_bit0
+#noalign polynomial.C_bit1
 
 theorem C_pow : C (a ^ n) = C a ^ n :=
   C.map_pow a n
@@ -554,6 +546,9 @@ theorem C_pow : C (a ^ n) = C a ^ n :=
 theorem C_eq_natCast (n : ℕ) : C (n : R) = (n : R[X]) :=
   map_natCast C n
 #align polynomial.C_eq_nat_cast Polynomial.C_eq_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias C_eq_nat_cast := C_eq_natCast
 
 @[simp]
 theorem C_mul_monomial : C a * monomial n b = monomial n (a * b) := by
@@ -648,7 +643,7 @@ theorem monomial_mul_X_pow (n : ℕ) (r : R) (k : ℕ) :
     monomial n r * X ^ k = monomial (n + k) r := by
   induction' k with k ih
   · simp
-  · simp [ih, pow_succ, ← mul_assoc, add_assoc, Nat.succ_eq_add_one]
+  · simp [ih, pow_succ, ← mul_assoc, add_assoc]
 #align polynomial.monomial_mul_X_pow Polynomial.monomial_mul_X_pow
 
 @[simp]
@@ -669,7 +664,6 @@ def coeff : R[X] → ℕ → R
   | ⟨p⟩ => p
 #align polynomial.coeff Polynomial.coeff
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem coeff_ofFinsupp (p) : coeff (⟨p⟩ : R[X]) = p := by rw [coeff]
 
@@ -756,6 +750,9 @@ lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff
 @[simp]
 theorem coeff_natCast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
   simp only [← C_eq_natCast, coeff_C, Nat.cast_ite, Nat.cast_zero]
+
+@[deprecated (since := "2024-04-17")]
+alias coeff_nat_cast_ite := coeff_natCast_ite
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
@@ -967,6 +964,9 @@ theorem natCast_mul (n : ℕ) (p : R[X]) : (n : R[X]) * p = n • p :=
   (nsmul_eq_mul _ _).symm
 #align polynomial.nat_cast_mul Polynomial.natCast_mul
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_mul := natCast_mul
+
 /-- Summing the values of a function applied to the coefficients of a polynomial -/
 def sum {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) : S :=
   ∑ n ∈ p.support, f n (p.coeff n)
@@ -1036,6 +1036,14 @@ theorem sum_smul_index {S : Type*} [AddCommMonoid S] (p : R[X]) (b : R) (f : ℕ
     (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a => f n (b * a) :=
   Finsupp.sum_smul_index hf
 #align polynomial.sum_smul_index Polynomial.sum_smul_index
+
+theorem sum_smul_index' {S T : Type*} [DistribSMul T R] [AddCommMonoid S] (p : R[X]) (b : T)
+    (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a => f n (b • a) :=
+  Finsupp.sum_smul_index' hf
+
+protected theorem smul_sum {S T : Type*} [AddCommMonoid S] [DistribSMul T S] (p : R[X]) (b : T)
+    (f : ℕ → R → S) : b • p.sum f = p.sum fun n a => b • f n a :=
+  Finsupp.smul_sum
 
 @[simp]
 theorem sum_monomial_eq : ∀ p : R[X], (p.sum fun n a => monomial n a) = p
@@ -1224,6 +1232,9 @@ theorem support_neg {p : R[X]} : (-p).support = p.support := by
 theorem C_eq_intCast (n : ℤ) : C (n : R) = n := by simp
 #align polynomial.C_eq_int_cast Polynomial.C_eq_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias C_eq_int_cast := C_eq_intCast
+
 theorem C_neg : C (-a) = -C a :=
   RingHom.map_neg C a
 #align polynomial.C_neg Polynomial.C_neg
@@ -1300,7 +1311,7 @@ protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
           if coeff p n = 1
           then (80, "X ^ " ++ Nat.repr n)
           else (70, "C " ++ reprArg (coeff p n) ++ " * X ^ " ++ Nat.repr n))
-      (p.support.sort (· ≤ ·));
+      (p.support.sort (· ≤ ·))
     match termPrecAndReprs with
     | [] => "0"
     | [(tprec, t)] => if prec ≥ tprec then Lean.Format.paren t else t

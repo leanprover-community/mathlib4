@@ -5,6 +5,7 @@ Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Finset.Slice
+import Mathlib.Data.Nat.BitIndices
 import Mathlib.Order.SupClosed
 
 #align_import combinatorics.colex from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
@@ -242,11 +243,11 @@ lemma toColex_sdiff_lt_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
 
 @[simp] lemma toColex_sdiff_le_toColex_sdiff' :
     toColex (s \ t) ≤ toColex (t \ s) ↔ toColex s ≤ toColex t := by
-  simpa using toColex_sdiff_le_toColex_sdiff (inter_subset_left s t) (inter_subset_right s t)
+  simpa using toColex_sdiff_le_toColex_sdiff (inter_subset_left (s₁ := s)) inter_subset_right
 
 @[simp] lemma toColex_sdiff_lt_toColex_sdiff' :
  toColex (s \ t) < toColex (t \ s) ↔ toColex s < toColex t := by
-  simpa using toColex_sdiff_lt_toColex_sdiff (inter_subset_left s t) (inter_subset_right s t)
+  simpa using toColex_sdiff_lt_toColex_sdiff (inter_subset_left (s₁ := s)) inter_subset_right
 
 end PartialOrder
 
@@ -406,19 +407,50 @@ lemma geomSum_ofColex_strictMono (hn : 2 ≤ n) : StrictMono fun s ↦ ∑ k ∈
   exact (Nat.geomSum_lt hn <| by simpa).trans_le <| single_le_sum (fun _ _ ↦ by positivity) <|
     mem_sdiff.2 ⟨hat, has⟩
 
-/-- For finsets of naturals of naturals, the colexicographic order is equivalent to the order
-induced by the `n`-ary expansion. -/
+/-- For finsets of naturals, the colexicographic order is equivalent to the order induced by the
+`n`-ary expansion. -/
 lemma geomSum_le_geomSum_iff_toColex_le_toColex (hn : 2 ≤ n) :
     ∑ k ∈ s, n ^ k ≤ ∑ k ∈ t, n ^ k ↔ toColex s ≤ toColex t :=
   (geomSum_ofColex_strictMono hn).le_iff_le
 
-/-- For finsets of naturals of naturals, the colexicographic order is equivalent to the order
-induced by the `n`-ary expansion. -/
+/-- For finsets of naturals, the colexicographic order is equivalent to the order induced by the
+`n`-ary expansion. -/
 lemma geomSum_lt_geomSum_iff_toColex_lt_toColex (hn : 2 ≤ n) :
     ∑ i ∈ s, n ^ i < ∑ i ∈ t, n ^ i ↔ toColex s < toColex t :=
   (geomSum_ofColex_strictMono hn).lt_iff_lt
 
--- TODO: Package the above in the `n = 2` case as an order isomorphism `Colex ℕ ≃o ℕ`
+theorem geomSum_injective {n : ℕ} (hn : 2 ≤ n) :
+    Function.Injective (fun s : Finset ℕ ↦ ∑ i in s, n ^ i) := by
+  intro _ _ h
+  rwa [le_antisymm_iff, geomSum_le_geomSum_iff_toColex_le_toColex hn,
+    geomSum_le_geomSum_iff_toColex_le_toColex hn, ← le_antisymm_iff, Colex.toColex.injEq] at h
+
+theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i in s, n ^ i :=
+  (Nat.lt_pow_self hn a).trans_le <| single_le_sum (by simp) hi
+
+@[simp] theorem toFinset_bitIndices_twoPowSum (s : Finset ℕ) :
+    (∑ i in s, 2 ^ i).bitIndices.toFinset = s := by
+  simp [← (geomSum_injective rfl.le).eq_iff, List.sum_toFinset _ Nat.bitIndices_sorted.nodup]
+
+@[simp] theorem twoPowSum_toFinset_bitIndices (n : ℕ) :
+    ∑ i in n.bitIndices.toFinset, 2 ^ i = n := by
+  simp [List.sum_toFinset _ Nat.bitIndices_sorted.nodup]
+
+/-- The equivalence between `ℕ` and `Finset ℕ` that maps `∑ i in s, 2^i` to `s`. -/
+@[simps] def equivBitIndices : ℕ ≃ Finset ℕ where
+  toFun n := n.bitIndices.toFinset
+  invFun s := ∑ i in s, 2^i
+  left_inv := twoPowSum_toFinset_bitIndices
+  right_inv := toFinset_bitIndices_twoPowSum
+
+/-- The equivalence `Nat.equivBitIndices` enumerates `Finset ℕ` in colexicographic order. -/
+@[simps] def orderIsoColex : ℕ ≃o Colex ℕ where
+  toFun n := Colex.toColex (equivBitIndices n)
+  invFun s := equivBitIndices.symm s.ofColex
+  left_inv n := equivBitIndices.symm_apply_apply n
+  right_inv s :=  Finset.toColex_inj.2 (equivBitIndices.apply_symm_apply s.ofColex)
+  map_rel_iff' := by simp [← (Finset.geomSum_le_geomSum_iff_toColex_le_toColex rfl.le),
+    toFinset_bitIndices_twoPowSum]
 
 end Nat
 end Finset

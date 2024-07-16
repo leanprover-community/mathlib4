@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma, Oliver Nash
 -/
 import Mathlib.Algebra.Associated
+import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Ring.Opposite
-import Mathlib.GroupTheory.GroupAction.Opposite
 
 #align_import ring_theory.non_zero_divisors from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
@@ -145,8 +145,9 @@ theorem mul_cancel_right_coe_nonZeroDivisors {x y : R} {c : R⁰} : x * c = y * 
 #align mul_cancel_right_coe_non_zero_divisor mul_cancel_right_coe_nonZeroDivisors
 
 @[simp]
-theorem mul_cancel_left_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) : r * x = r * y ↔ x = y :=
-  by simp_rw [mul_comm r, mul_cancel_right_mem_nonZeroDivisors hr]
+theorem mul_cancel_left_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) :
+    r * x = r * y ↔ x = y := by
+  simp_rw [mul_comm r, mul_cancel_right_mem_nonZeroDivisors hr]
 #align mul_cancel_left_mem_non_zero_divisor mul_cancel_left_mem_nonZeroDivisors
 
 theorem mul_cancel_left_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : (c : R') * x = c * y ↔ x = y :=
@@ -174,6 +175,7 @@ theorem nonZeroDivisors.ne_zero [Nontrivial M] {x} (hx : x ∈ M⁰) : x ≠ 0 :
   ne_of_mem_of_not_mem hx zero_not_mem_nonZeroDivisors
 #align non_zero_divisors.ne_zero nonZeroDivisors.ne_zero
 
+@[simp]
 theorem nonZeroDivisors.coe_ne_zero [Nontrivial M] (x : M⁰) : (x : M) ≠ 0 :=
   nonZeroDivisors.ne_zero x.2
 #align non_zero_divisors.coe_ne_zero nonZeroDivisors.coe_ne_zero

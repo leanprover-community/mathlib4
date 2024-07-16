@@ -70,7 +70,10 @@ variable {r : R} {x y : M}
 variable (p)
 
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
-protected def subtype : p →ₗ[R] M := by refine' { toFun := Subtype.val.. } <;> simp [coe_smul]
+protected def subtype : p →ₗ[R] M where
+  toFun := Subtype.val
+  map_add' := by simp [coe_smul]
+  map_smul' := by simp [coe_smul]
 #align submodule.subtype Submodule.subtype
 
 theorem subtype_apply (x : p) : p.subtype x = x :=
@@ -141,8 +144,10 @@ theorem domRestrict_apply (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) (
 
 /-- A linear map `f : M₂ → M` whose values lie in a submodule `p ⊆ M` can be restricted to a
 linear map M₂ → p. -/
-def codRestrict (p : Submodule R₂ M₂) (f : M →ₛₗ[σ₁₂] M₂) (h : ∀ c, f c ∈ p) : M →ₛₗ[σ₁₂] p := by
-  refine' { toFun := fun c => ⟨f c, h c⟩.. } <;> intros <;> apply SetCoe.ext <;> simp
+def codRestrict (p : Submodule R₂ M₂) (f : M →ₛₗ[σ₁₂] M₂) (h : ∀ c, f c ∈ p) : M →ₛₗ[σ₁₂] p where
+  toFun c := ⟨f c, h c⟩
+  map_add' _ _ := by simp
+  map_smul' _ _ := by simp
 #align linear_map.cod_restrict LinearMap.codRestrict
 
 @[simp]

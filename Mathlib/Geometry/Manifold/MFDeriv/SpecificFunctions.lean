@@ -277,8 +277,8 @@ theorem mfderiv_fst {x : M × M'} :
 theorem mfderivWithin_fst {s : Set (M × M')} {x : M × M'}
     (hxs : UniqueMDiffWithinAt (I.prod I') s x) :
     mfderivWithin (I.prod I') I Prod.fst s x =
-      ContinuousLinearMap.fst 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2) :=
-  by rw [MDifferentiable.mfderivWithin (mdifferentiableAt_fst I I') hxs]; exact mfderiv_fst I I'
+      ContinuousLinearMap.fst 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2) := by
+  rw [MDifferentiable.mfderivWithin (mdifferentiableAt_fst I I') hxs]; exact mfderiv_fst I I'
 #align mfderiv_within_fst mfderivWithin_fst
 
 @[simp, mfld_simps]
@@ -349,8 +349,8 @@ theorem mfderiv_snd {x : M × M'} :
 theorem mfderivWithin_snd {s : Set (M × M')} {x : M × M'}
     (hxs : UniqueMDiffWithinAt (I.prod I') s x) :
     mfderivWithin (I.prod I') I' Prod.snd s x =
-      ContinuousLinearMap.snd 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2) :=
-  by rw [MDifferentiable.mfderivWithin (mdifferentiableAt_snd I I') hxs]; exact mfderiv_snd I I'
+      ContinuousLinearMap.snd 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2) := by
+  rw [MDifferentiable.mfderivWithin (mdifferentiableAt_snd I I') hxs]; exact mfderiv_snd I I'
 #align mfderiv_within_snd mfderivWithin_snd
 
 @[simp, mfld_simps]
@@ -432,7 +432,8 @@ canonical, but in this case (the tangent space of a vector space) it is canonica
 
 section Group
 
-variable {I} {z : M} {f g : M → E'} {f' g' : TangentSpace I z →L[𝕜] E'}
+variable {I}
+variable {z : M} {f g : M → E'} {f' g' : TangentSpace I z →L[𝕜] E'}
 
 theorem HasMFDerivAt.add (hf : HasMFDerivAt I 𝓘(𝕜, E') f z f')
     (hg : HasMFDerivAt I 𝓘(𝕜, E') g z g') : HasMFDerivAt I 𝓘(𝕜, E') (f + g) z (f' + g') :=
@@ -535,7 +536,8 @@ end Group
 
 section AlgebraOverRing
 
-variable {I} {z : M} {F' : Type*} [NormedRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
+variable {I}
+variable {z : M} {F' : Type*} [NormedRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
   {p' q' : TangentSpace I z →L[𝕜] F'}
 
 theorem HasMFDerivWithinAt.mul' (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p')
@@ -575,7 +577,8 @@ end AlgebraOverRing
 
 section AlgebraOverCommRing
 
-variable {I} {z : M} {F' : Type*} [NormedCommRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
+variable {I}
+variable {z : M} {F' : Type*} [NormedCommRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
   {p' q' : TangentSpace I z →L[𝕜] F'}
 
 theorem HasMFDerivWithinAt.mul (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p')

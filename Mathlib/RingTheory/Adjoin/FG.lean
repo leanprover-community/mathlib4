@@ -3,6 +3,7 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
@@ -49,7 +50,7 @@ theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t
     · have : x ∈ Subalgebra.toSubmodule (adjoin R s) := by
         rw [← hp']
         exact subset_span hx
-      exact adjoin_mono (Set.subset_union_left _ _) this
+      exact adjoin_mono Set.subset_union_left this
     have : y ∈ Subalgebra.toSubmodule (adjoin (adjoin R s) t) := by
       rw [← hq']
       exact subset_span hy

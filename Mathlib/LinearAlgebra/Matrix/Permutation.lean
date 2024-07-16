@@ -6,7 +6,7 @@ Authors: Anne Baanen
 
 import Mathlib.Data.Matrix.PEquiv
 import Mathlib.Data.Set.Card
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
@@ -25,7 +25,7 @@ This file defines the matrix associated with a permutation
 
 -/
 
-open BigOperators Matrix Equiv
+open Equiv
 
 variable {n R : Type*} [DecidableEq n] [Fintype n] (σ : Perm n)
 

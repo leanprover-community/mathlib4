@@ -6,7 +6,7 @@ Authors: Devon Tuma
 import Mathlib.RingTheory.Jacobson
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.MvPolynomial
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+import Mathlib.RingTheory.PrimeSpectrum
 
 #align_import ring_theory.nullstellensatz from "leanprover-community/mathlib"@"9556784a5b84697562e9c6acb40500d4a82e675a"
 
@@ -118,8 +118,8 @@ instance vanishingIdeal_singleton_isMaximal {x : σ → k} :
     RingEquiv.ofBijective
       (Ideal.Quotient.lift _ (eval x) fun p h => (mem_vanishingIdeal_singleton_iff x p).mp h)
       (by
-        refine'
-          ⟨(injective_iff_map_eq_zero _).mpr fun p hp => _, fun z =>
+        refine
+          ⟨(injective_iff_map_eq_zero _).mpr fun p hp => ?_, fun z =>
             ⟨(Ideal.Quotient.mk (vanishingIdeal {x} : Ideal (MvPolynomial σ k))) (C z), by simp⟩⟩
         obtain ⟨q, rfl⟩ := Quotient.mk_surjective p
         rwa [Ideal.Quotient.lift_mk, ← mem_vanishingIdeal_singleton_iff,
@@ -133,7 +133,7 @@ theorem radical_le_vanishingIdeal_zeroLocus (I : Ideal (MvPolynomial σ k)) :
   intro p hp x hx
   rw [← mem_vanishingIdeal_singleton_iff]
   rw [radical_eq_sInf] at hp
-  refine'
+  refine
     (mem_sInf.mp hp)
       ⟨le_trans (le_vanishingIdeal_zeroLocus I)
           (vanishingIdeal_anti_mono fun y hy => hy.symm ▸ hx),
