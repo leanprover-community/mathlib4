@@ -180,8 +180,24 @@ lemma boundary_prod {p : M × M'} (hp : p ∈ (I.prod I').boundary (M × M')) :
 
 -- -- TODO good name
 lemma boundary_prod_types :
-    (I.prod I').boundary (M × M') = Set.prod univ (I'.boundary M') ∪ Set.prod (I.boundary M) univ :=
-  sorry -- just boundary_prod and its converse
+    (I.prod I').boundary (M × M') = Set.prod univ (I'.boundary M') ∪ Set.prod (I.boundary M) univ := by
+  ext p
+  constructor <;> intro hp
+  · let res := boundary_prod hp
+    rcases res with (h | h)
+    · have : p.1 ∈ I.boundary M := by
+        show I.IsBoundaryPoint p.1 -- missing lemma!
+        rw [I.isBoundaryPoint_iff, frontier]
+        exact h
+      right
+      sorry -- rest should be obvious!
+    · have : p.2 ∈ I'.boundary M' := by
+        show I'.IsBoundaryPoint p.2 -- missing lemma!
+        rw [I'.isBoundaryPoint_iff, frontier]
+        exact h
+      left
+      sorry -- rest should be obvious
+  · sorry -- just boundary_prod and its converse
 
 -- In particular, if `M` is boundaryless, ∂(M×N) = M × ∂N (and similarly for N).
 
