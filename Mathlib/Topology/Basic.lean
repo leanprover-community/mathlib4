@@ -861,6 +861,16 @@ theorem eventually_nhds_iff {p : X → Prop} :
   mem_nhds_iff.trans <| by simp only [subset_def, exists_prop, mem_setOf_eq]
 #align eventually_nhds_iff eventually_nhds_iff
 
+theorem frequently_nhds_iff {p : X → Prop} :
+    (∃ᶠ x in 𝓝 x, p x) ↔ ∀ U : Set X, IsOpen U → x ∈ U → ∃ x ∈ U, p x := by
+  simp only [frequently_iff, mem_nhds_iff, forall_exists_index, and_imp]
+  constructor
+  · intro a b c d
+    exact a b subset_rfl c d
+  · intro a _ c d e f
+    obtain ⟨v, hv, hv2⟩ := a c e f
+    exact ⟨v, d hv, hv2⟩
+
 theorem mem_interior_iff_mem_nhds : x ∈ interior s ↔ s ∈ 𝓝 x :=
   mem_interior.trans mem_nhds_iff.symm
 #align mem_interior_iff_mem_nhds mem_interior_iff_mem_nhds
@@ -1140,9 +1150,14 @@ theorem mapClusterPt_of_comp {F : Filter α} {φ : β → α} {p : Filter β}
   exact neBot_of_le this
 #align map_cluster_pt_of_comp mapClusterPt_of_comp
 
+theorem accPt_sup (x : X) (F G : Filter X) :
+    AccPt x (F ⊔ G) ↔ AccPt x F ∨ AccPt x G := by
+  simp only [AccPt, inf_sup_left, sup_neBot]
+
 theorem acc_iff_cluster (x : X) (F : Filter X) : AccPt x F ↔ ClusterPt x (𝓟 {x}ᶜ ⊓ F) := by
   rw [AccPt, nhdsWithin, ClusterPt, inf_assoc]
 #align acc_iff_cluster acc_iff_cluster
+
 
 /-- `x` is an accumulation point of a set `C` iff it is a cluster point of `C ∖ {x}`. -/
 theorem acc_principal_iff_cluster (x : X) (C : Set X) :
@@ -1168,6 +1183,26 @@ theorem accPt_iff_frequently (x : X) (C : Set X) : AccPt x (𝓟 C) ↔ ∃ᶠ y
 theorem AccPt.mono {F G : Filter X} (h : AccPt x F) (hFG : F ≤ G) : AccPt x G :=
   NeBot.mono h (inf_le_inf_left _ hFG)
 #align acc_pt.mono AccPt.mono
+
+theorem AccPt.clusterPt (x : X) (F : Filter X) (h : AccPt x F) : ClusterPt x F :=
+  ((acc_iff_cluster x F).mp h).mono inf_le_right
+
+nonrec theorem AccPt.map {Y : Type*} [TopologicalSpace Y] {F : Filter Y} {x : Y}
+    (h : AccPt x F) {f : Y → X} (hf1 : Continuous f) (hf2 : Function.Injective f)
+    : AccPt (f x) (map f F) := by
+  have : (map f (𝓝 x ⊓ 𝓟 {x}ᶜ ⊓ F)).NeBot := map_neBot (hf := h)
+  simp only [Filter.map_inf hf2, map_principal] at this
+  apply NeBot.mono this
+  unfold nhdsWithin
+  gcongr
+  · simp only [le_nhds_iff, mem_map, mem_nhds_iff]
+    intro s hs hs2
+    use f ⁻¹' s
+    simp [hs, hf1.isOpen_preimage, hs2, subset_rfl]
+  · simp only [subset_compl_singleton_iff, mem_image, mem_compl_iff, mem_singleton_iff, not_exists,
+    not_and]
+    intro y hy h
+    exact hy (hf2 h)
 
 /-!
 ### Interior, closure and frontier in terms of neighborhoods
