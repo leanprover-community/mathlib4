@@ -203,11 +203,4 @@ theorem exists_ne_zero_int_vec_norm_le (hA_nezero : A ≠ 0) : ∃ t : β → �
     simp only [le_add_iff_nonneg_right]
     exact hyT.1 i
 
-theorem exists_ne_zero_int_vec_norm_le' (A : Matrix (Fin m) (Fin n) ℤ) (hA_nezero : A ≠ 0) :
-    ∃ t : Fin n → ℤ, t ≠ 0 ∧ A *ᵥ t = 0 ∧ ‖t‖ ≤ (n * ‖A‖) ^ ((m : ℝ) / (n - m)) := by
-  have h1 : Fintype.card (Fin m) = m := by exact Fintype.card_fin m
-  have h2 : Fintype.card (Fin n) = n := by exact Fintype.card_fin n
-  obtain ⟨t, h⟩ := exists_ne_zero_int_vec_norm_le m n h1 h2 A hn hm hA_nezero
-  use t
-
 end Int.Matrix
