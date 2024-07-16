@@ -1187,8 +1187,8 @@ theorem AccPt.clusterPt (x : X) (F : Filter X) (h : AccPt x F) : ClusterPt x F :
   ((acc_iff_cluster x F).mp h).mono inf_le_right
 
 nonrec theorem AccPt.map {Y : Type*} [TopologicalSpace Y] {F : Filter Y} {x : Y}
-    (h : AccPt x F) {f : Y → X} (hf1 : Continuous f) (hf2 : Function.Injective f)
-    : AccPt (f x) (map f F) := by
+    (h : AccPt x F) {f : Y → X} (hf1 : Continuous f) (hf2 : Function.Injective f) :
+    AccPt (f x) (map f F) := by
   have : (map f (𝓝 x ⊓ 𝓟 {x}ᶜ ⊓ F)).NeBot := map_neBot (hf := h)
   simp only [Filter.map_inf hf2, map_principal] at this
   apply NeBot.mono this
