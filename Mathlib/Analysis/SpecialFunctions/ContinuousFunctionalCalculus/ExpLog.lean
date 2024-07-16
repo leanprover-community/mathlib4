@@ -116,7 +116,10 @@ noncomputable def log (a : A) : A := cfc Real.log a
 @[simp]
 protected lemma _root_.IsSelfAdjoint.log {a : A} : IsSelfAdjoint (log a) := cfc_predicate _ a
 
-lemma log_exp {a : A} (ha : IsSelfAdjoint a := by cfc_tac) : log (NormedSpace.exp ℝ a) = a := by
+lemma log_exp (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : log (NormedSpace.exp ℝ a) = a := by
+  have hcont : ContinuousOn Real.log (Real.exp '' spectrum ℝ a) := by fun_prop (disch := aesop)
+  rw [log, ← real_exp_eq_normedSpace_exp, ← cfc_comp' Real.log Real.exp a hcont]
+  simp [cfc_id' (R := ℝ) a]
   have hcont : ContinuousOn Real.log (Real.exp '' spectrum ℝ a) := by
     refine ContinuousOn.log (continuousOn_id' _) fun x hx => ?_
     rw [Set.mem_image] at hx
