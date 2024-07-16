@@ -517,8 +517,12 @@ def centerToCentroidCenter :
     NonUnitalSubsemiring.center α →ₙ+* Subsemiring.center (CentroidHom α) where
   toFun z :=
     { L (z : α) with
-      map_mul_left' := z.prop.left_comm
-      map_mul_right' := z.prop.left_assoc }
+      val := ⟨L z, z.prop.left_comm, z.prop.left_assoc ⟩
+      property := by
+        rw [Subsemiring.mem_center_iff]
+        intros g
+        ext a
+        exact map_mul_left g (↑z) a }
   map_zero' := by
     simp only [ZeroMemClass.coe_zero, map_zero]
     exact rfl
