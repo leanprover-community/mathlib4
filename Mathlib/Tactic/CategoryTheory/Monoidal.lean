@@ -268,9 +268,9 @@ def TensorHomExpr.src : TensorHomExpr → MetaM Mor₁
   | TensorHomExpr.cons η ηs => return (← η.src).comp (← ηs.src)
 
 /-- The codomain of a 2-morphism. -/
-def TensorHomExpr.tar : TensorHomExpr → MetaM Mor₁
-  | TensorHomExpr.of η => η.tar
-  | TensorHomExpr.cons η ηs => return (← η.tar).comp (← ηs.tar)
+def TensorHomExpr.tgt : TensorHomExpr → MetaM Mor₁
+  | TensorHomExpr.of η => η.tgt
+  | TensorHomExpr.cons η ηs => return (← η.tgt).comp (← ηs.tgt)
 
 /-- The domain of a 2-morphism. -/
 def WhiskerLeftExpr.src : WhiskerLeftExpr → MetaM Mor₁
@@ -279,7 +279,7 @@ def WhiskerLeftExpr.src : WhiskerLeftExpr → MetaM Mor₁
 
 /-- The codomain of a 2-morphism. -/
 def WhiskerLeftExpr.tgt : WhiskerLeftExpr → MetaM Mor₁
-  | WhiskerLeftExpr.of η => WhiskerRightExpr.tgt η
+  | WhiskerLeftExpr.of η => TensorHomExpr.tgt η
   | WhiskerLeftExpr.whisker f η => return (Mor₁.of f).comp (← WhiskerLeftExpr.tgt η)
 
 /-- The domain of a 2-morphism. -/
@@ -317,6 +317,7 @@ def Structural.tgt : Structural → Mor₁
   | .comp _ β => β.tgt
   | .whiskerLeft f η => f.comp η.tgt
   | .whiskerRight η f => η.tgt.comp f
+  | .tensorHom α β => α.tgt.comp β.tgt
   | .monoidalCoherence _ g _ => g
 
 /-- The domain of a 2-morphism. -/
@@ -442,13 +443,13 @@ partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MetaM NormalExpr
     let θ ← evalWhiskerLeftExpr g η
     let ι ← evalWhiskerLeftExpr f θ
     let h := η.src
-    let h' := η.tar
+    let h' := η.tgt
     let ι' ← evalComp ι (NormalExpr.associatorInv f g h')
     let ι'' ← evalComp (NormalExpr.associator f g h) ι'
     return ι''
   | .id, η => do
     let f := η.src
-    let g := η.tar
+    let g := η.tgt
     let η' ← evalComp η (NormalExpr.leftUnitorInv g)
     let η'' ← evalComp (NormalExpr.leftUnitor f) η'
     return η''
@@ -459,7 +460,7 @@ partial def evalWhiskerRightExprAux : TensorHomExpr → Atom₁ → MetaM Normal
   | .cons η ηs, f => do
     let ηs' ← evalWhiskerRightExprAux ηs f
     let η₁ ← evalTensorHomExpr (← NormalExpr.of <| .of <| .of η) ηs'
-    let η₂ ← evalComp η₁ (.associatorInv (← η.tar) (← ηs.tar) (.of f))
+    let η₂ ← evalComp η₁ (.associatorInv (← η.tgt) (← ηs.tgt) (.of f))
     let η₃ ← evalComp (.associator (← η.src) (← ηs.src) (.of f)) η₂
     return η₃
 
@@ -474,7 +475,7 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
     return η₃
   | .cons α (.whisker f η) ηs, h => do
     let g ← η.src
-    let g' ← η.tar
+    let g' ← η.tgt
     let η₁ ← evalWhiskerRightExpr (← NormalExpr.of η) h
     let η₂ ← evalWhiskerLeftExpr (.of f) η₁
     let ηs₁ ← evalWhiskerRightExpr ηs h
@@ -487,13 +488,13 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
     let η₁ ← evalWhiskerRightExpr η g
     let η₂ ← evalWhiskerRightExpr η₁ h
     let f := η.src
-    let f' := η.tar
+    let f' := η.tgt
     let η₃ ← evalComp η₂ (.associator f' g h)
     let η₄ ← evalComp (.associatorInv f g h) η₃
     return η₄
   | η, .id => do
     let f := η.src
-    let g := η.tar
+    let g := η.tgt
     let η₁ ← evalComp η (.rightUnitorInv g)
     let η₂ ← evalComp (.rightUnitor f) η₁
     return η₂
@@ -503,7 +504,7 @@ partial def evalTensorHomAux : TensorHomExpr → TensorHomExpr → MetaM NormalE
   | .of η, θ => NormalExpr.of <| .of <| .cons η θ
   | .cons η ηs, θ => do
     let α := NormalExpr.associator (← η.src) (← ηs.src) (← θ.src)
-    let α' := NormalExpr.associatorInv (← η.tar) (← ηs.tar) (← θ.tar)
+    let α' := NormalExpr.associatorInv (← η.tgt) (← ηs.tgt) (← θ.tgt)
     let ηθ ← evalTensorHomAux ηs θ
     let η₁ ← evalTensorHomExpr (← NormalExpr.of <| .of <| .of η) ηθ
     let ηθ₁ ← evalComp η₁ α'
@@ -516,13 +517,13 @@ partial def evalTensorHomAux' : WhiskerLeftExpr → WhiskerLeftExpr → MetaM No
   | .whisker f η, θ => do
     let ηθ ← evalTensorHomAux' η θ
     let ηθ₁ ← evalWhiskerLeftExpr (.of f) ηθ
-    let ηθ₂ ← evalComp ηθ₁ (.associatorInv (.of f) (← η.tar) (← θ.tar))
+    let ηθ₂ ← evalComp ηθ₁ (.associatorInv (.of f) (← η.tgt) (← θ.tgt))
     let ηθ₃ ← evalComp (.associator (.of f) (← η.src) (← θ.src)) ηθ₂
     return ηθ₃
   | .of η, .whisker f θ => do
     let η₁ ← evalWhiskerRightExprAux η f
     let ηθ ← evalTensorHomExpr η₁ (← NormalExpr.of θ)
-    let ηθ₁ ← evalComp ηθ (.associator (← η.tar) (.of f) (← θ.tar))
+    let ηθ₁ ← evalComp ηθ (.associator (← η.tgt) (.of f) (← θ.tgt))
     let ηθ₂ ← evalComp (.associatorInv (← η.src) (.of f) (← θ.src)) ηθ₁
     return ηθ₂
 
@@ -531,14 +532,14 @@ partial def evalTensorHomExpr : NormalExpr → NormalExpr → MetaM NormalExpr
   | .nil α, .nil β => do
     return .nil (α.tensorHom β)
   | .nil α, .cons β η ηs => do
-    let η₁ ← evalWhiskerLeftExpr α.tar (← NormalExpr.of η)
-    let ηs₁ ← evalWhiskerLeftExpr α.tar ηs
+    let η₁ ← evalWhiskerLeftExpr α.tgt (← NormalExpr.of η)
+    let ηs₁ ← evalWhiskerLeftExpr α.tgt ηs
     let η₂ ← evalComp η₁ ηs₁
     let η₃ ← NormalExpr.ofNormalExpr (α.tensorHom β) η₂
     return η₃
   | .cons α η ηs, .nil β => do
-    let η₁ ← evalWhiskerRightExpr (← NormalExpr.of η) β.tar
-    let ηs₁ ← evalWhiskerRightExpr ηs β.tar
+    let η₁ ← evalWhiskerRightExpr (← NormalExpr.of η) β.tgt
+    let ηs₁ ← evalWhiskerRightExpr ηs β.tgt
     let η₂ ← evalComp η₁ ηs₁
     let η₃ ← NormalExpr.ofNormalExpr (α.tensorHom β) η₂
     return η₃
