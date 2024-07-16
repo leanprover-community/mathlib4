@@ -183,3 +183,5 @@ instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v 
 end Finite
 
 end WalkCounting
+
+end SimpleGraph
