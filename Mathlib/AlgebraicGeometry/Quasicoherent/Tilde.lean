@@ -468,8 +468,8 @@ theorem res_const (f : M) (g : R) (U hu V hv i) :
     (TildeInModuleCat R M).map i (const R M f g U hu) = const R M f g V hv :=
   rfl
 
-theorem res_const' (f : M) (g : R) (V hv) :
-    (TildeInModuleCat R M).map (homOfLE hv).op (const R M f g (PrimeSpectrum.basicOpen g) fun _ => id) =
+theorem res_const' (f : M) (g : R) (V hv) : (TildeInModuleCat R M).map (homOfLE hv).op
+    (const R M f g (PrimeSpectrum.basicOpen g) fun _ => id) =
       const R M f g V hv :=
   rfl
 
