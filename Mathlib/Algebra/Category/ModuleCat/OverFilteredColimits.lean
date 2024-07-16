@@ -362,10 +362,14 @@ noncomputable instance moduleColimitColimit :
 
 lemma smul_spec
     (j₁ j₂ j₃ : J) (i₁ : j₁ ⟶ j₃) (i₂ : j₂ ⟶ j₃)
-    (s : ℛ.obj j₁) (t : ℳ.obj j₂):
+    (s : ℛ.obj j₁) (t : ℳ.obj j₂) :
     colimit.ι ℛ j₁ s • colimit.ι ℳ j₂ t = colimit.ι ℳ j₃ (ℛ.map i₁ s • ℳ.map i₂ t) :=
   show colimitsmulColimit _ _ = colimit.ι ℳ j₃ (ℛ.map i₁ s • ℳ.map i₂ t) by
     rw [colimitsmulColimit_rep_smul, smulColimit_smul_rep]
     apply hSMul_respect_ι <;> rfl
+
+lemma smul_spec' {j : J} (s : ℛ.obj j) (t : ℳ.obj j) :
+    colimit.ι ℛ j s • colimit.ι ℳ j t = colimit.ι ℳ j (s • t) := by
+  simp only [smul_spec _ _ j j j (𝟙 _) (𝟙 _), CategoryTheory.Functor.map_id, id_apply]
 
 end Module.overFilteredColimits
