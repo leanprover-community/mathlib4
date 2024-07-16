@@ -161,7 +161,7 @@ def preTildeInAddCommGrp : Presheaf AddCommGrp (PrimeSpectrum.Top R) where
 def tildeInAddCommGrp : Sheaf AddCommGrp (PrimeSpectrum.Top R) :=
   ⟨M.preTildeInAddCommGrp,
     TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrp) _ |>.mpr
-      (TopCat.Presheaf.isSheaf_of_iso (NatIso.ofComponents (fun _ => Iso.refl _) fun _ ↦ rfl)
+      (TopCat.Presheaf.isSheaf_of_iso (NatIso.ofComponents (fun _ => Iso.refl _) fun _ => rfl)
         M.tildeInType.2)⟩
 
 noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
