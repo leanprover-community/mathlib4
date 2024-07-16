@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Amelia Livingston, Joël Riou
 -/
 import Mathlib.CategoryTheory.Abelian.Opposite
-import Mathlib.CategoryTheory.Abelian.Homology
 import Mathlib.Algebra.Homology.Additive
+import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 #align_import algebra.homology.opposite from "leanprover-community/mathlib"@"8c75ef3517d4106e89fe524e6281d0b0545f47fc"
@@ -63,27 +63,6 @@ theorem imageToKernel_unop {X Y Z : Vᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f 
     ← unop_comp, factorThruImage_comp_imageUnopOp_inv, Quiver.Hom.unop_op, imageSubobject_arrow]
 #align image_to_kernel_unop imageToKernel_unop
 
-/-- Given `f, g` with `f ≫ g = 0`, the homology of `g.op, f.op` is the opposite of the homology of
-`f, g`. -/
-def homology'Op {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
-    homology' g.op f.op (by rw [← op_comp, w, op_zero]) ≅ Opposite.op (homology' f g w) :=
-  cokernelIsoOfEq (imageToKernel_op _ _ w) ≪≫ cokernelEpiComp _ _ ≪≫ cokernelCompIsIso _ _ ≪≫
-    cokernelOpOp _ ≪≫ (homology'IsoKernelDesc _ _ _ ≪≫
-    kernelIsoOfEq (by ext; simp only [image.fac, cokernel.π_desc, cokernel.π_desc_assoc]) ≪≫
-    kernelCompMono _ (image.ι g)).op
-#align homology_op homology'Op
-
-/-- Given morphisms `f, g` in `Vᵒᵖ` with `f ≫ g = 0`, the homology of `g.unop, f.unop` is the
-opposite of the homology of `f, g`. -/
-def homology'Unop {X Y Z : Vᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
-    homology' g.unop f.unop (by rw [← unop_comp, w, unop_zero]) ≅
-      Opposite.unop (homology' f g w) :=
-  cokernelIsoOfEq (imageToKernel_unop _ _ w) ≪≫ cokernelEpiComp _ _ ≪≫ cokernelCompIsIso _ _ ≪≫
-    cokernelUnopUnop _ ≪≫ (homology'IsoKernelDesc _ _ _ ≪≫
-    kernelIsoOfEq (by ext; simp only [image.fac, cokernel.π_desc, cokernel.π_desc_assoc]) ≪≫
-    kernelCompMono _ (image.ι g)).unop
-#align homology_unop homology'Unop
-
 end
 
 namespace HomologicalComplex
@@ -92,7 +71,7 @@ variable {ι V : Type*} [Category V] {c : ComplexShape ι}
 
 section
 
-variable [Preadditive V]
+variable [HasZeroMorphisms V]
 
 /-- Sends a complex `X` with objects in `V` to the corresponding complex with objects in `Vᵒᵖ`. -/
 @[simps]
@@ -244,14 +223,6 @@ def unopEquivalence : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≌ HomologicalComple
     exact Category.comp_id _
 #align homological_complex.unop_equivalence HomologicalComplex.unopEquivalence
 
-variable {V c}
-
-instance opFunctor_additive : (@opFunctor ι V _ c _).Additive where
-#align homological_complex.op_functor_additive HomologicalComplex.opFunctor_additive
-
-instance unopFunctor_additive : (@unopFunctor ι V _ c _).Additive where
-#align homological_complex.unop_functor_additive HomologicalComplex.unopFunctor_additive
-
 instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
     K.op.HasHomology i :=
   (inferInstance : (K.sc i).op.HasHomology)
@@ -259,6 +230,8 @@ instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
 instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.HasHomology i :=
   (inferInstance : (K.sc i).unop.HasHomology)
+
+variable {V c}
 
 /-- If `K` is a homological complex, then the homology of `K.op` identifies to
 the opposite of the homology of `K`. -/
@@ -274,33 +247,16 @@ def homologyUnop (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
 
 end
 
-variable [Abelian V] (C : HomologicalComplex V c) (i : ι)
+section
 
-/-- Auxiliary tautological definition for `homologyOp`. -/
-def homology'OpDef : C.op.homology' i ≅
-    _root_.homology' (C.dFrom i).op (C.dTo i).op (by rw [← op_comp, C.dTo_comp_dFrom i, op_zero]) :=
-  Iso.refl _
-#align homological_complex.homology_op_def HomologicalComplex.homology'OpDef
+variable [Preadditive V]
 
-/-- Given a complex `C` of objects in `V`, the `i`th homology of its 'opposite' complex (with
-objects in `Vᵒᵖ`) is the opposite of the `i`th homology of `C`. -/
-nonrec def homology'Op : C.op.homology' i ≅ Opposite.op (C.homology' i) :=
-  homology'OpDef _ _ ≪≫ homology'Op _ _ _
-#align homological_complex.homology_op HomologicalComplex.homology'Op
+instance opFunctor_additive : (@opFunctor ι V _ c _).Additive where
+#align homological_complex.op_functor_additive HomologicalComplex.opFunctor_additive
 
-/-- Auxiliary tautological definition for `homologyUnop`. -/
-def homology'UnopDef (C : HomologicalComplex Vᵒᵖ c) :
-    C.unop.homology' i ≅
-      _root_.homology' (C.dFrom i).unop (C.dTo i).unop
-        (by rw [← unop_comp, C.dTo_comp_dFrom i, unop_zero]) :=
-  Iso.refl _
-#align homological_complex.homology_unop_def HomologicalComplex.homology'UnopDef
+instance unopFunctor_additive : (@unopFunctor ι V _ c _).Additive where
+#align homological_complex.unop_functor_additive HomologicalComplex.unopFunctor_additive
 
-/-- Given a complex `C` of objects in `Vᵒᵖ`, the `i`th homology of its 'opposite' complex (with
-objects in `V`) is the opposite of the `i`th homology of `C`. -/
-nonrec def homology'Unop (C : HomologicalComplex Vᵒᵖ c) :
-    C.unop.homology' i ≅ Opposite.unop (C.homology' i) :=
-  homology'UnopDef _ _ ≪≫ homology'Unop _ _ _
-#align homological_complex.homology_unop HomologicalComplex.homology'Unop
+end
 
 end HomologicalComplex

@@ -95,9 +95,6 @@ successor (and actually a predecessor as well), so it is a `SuccOrder`, but it's
 as `Icc (-1) 1` is infinite.
 -/
 
-set_option autoImplicit true
-
-
 open Finset Function
 
 /-- This is a mixin class describing a locally finite order,
@@ -1268,6 +1265,8 @@ end Finite
 
 /-! We make the instances below low priority
 so when alternative constructions are available they are preferred. -/
+
+variable {y : α}
 
 instance (priority := low) [Preorder α] [DecidableRel ((· : α) ≤ ·)] [LocallyFiniteOrder α] :
     LocallyFiniteOrderTop { x : α // x ≤ y } where

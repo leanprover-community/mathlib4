@@ -233,7 +233,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     have := mem_iInter.1 hx e
     rcases mem_iUnion.1 this with ⟨n, hn⟩
     refine ⟨n, fun p q hp hq => ?_⟩
-    simp only [mem_iInter, ge_iff_le] at hn
+    simp only [mem_iInter] at hn
     rcases mem_iUnion.1 (hn p hp q hq) with ⟨L, hL⟩
     exact ⟨L, exists_prop.mp <| mem_iUnion.1 hL⟩
   /- Recast the assumptions: for each `e`, there exist `n e` and linear maps `L e p q` in `K`
@@ -313,7 +313,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     refine ⟨(1 / 2) ^ (n e + 1), P, fun y hy => ?_⟩
     -- We need to show that `f (x + y) - f x - f' y` is small. For this, we will work at scale
     -- `k` where `k` is chosen with `‖y‖ ∼ 2 ^ (-k)`.
-    by_cases y_pos : y = 0;
+    by_cases y_pos : y = 0
     · simp [y_pos]
     have yzero : 0 < ‖y‖ := norm_pos_iff.mpr y_pos
     have y_lt : ‖y‖ < (1 / 2) ^ (n e + 1) := by simpa using mem_ball_iff_norm.1 hy
@@ -392,7 +392,7 @@ theorem measurableSet_of_differentiableAt : MeasurableSet { x | DifferentiableAt
   simp
 #align measurable_set_of_differentiable_at measurableSet_of_differentiableAt
 
-@[measurability]
+@[measurability, fun_prop]
 theorem measurable_fderiv : Measurable (fderiv 𝕜 f) := by
   refine measurable_of_isClosed fun s hs => ?_
   have :
@@ -406,7 +406,7 @@ theorem measurable_fderiv : Measurable (fderiv 𝕜 f) := by
       ((measurableSet_of_differentiableAt _ _).compl.inter (MeasurableSet.const _))
 #align measurable_fderiv measurable_fderiv
 
-@[measurability]
+@[measurability, fun_prop]
 theorem measurable_fderiv_apply_const [MeasurableSpace F] [BorelSpace F] (y : E) :
     Measurable fun x => fderiv 𝕜 f x y :=
   (ContinuousLinearMap.measurable_apply y).comp (measurable_fderiv 𝕜 f)
@@ -414,7 +414,7 @@ theorem measurable_fderiv_apply_const [MeasurableSpace F] [BorelSpace F] (y : E)
 
 variable {𝕜}
 
-@[measurability]
+@[measurability, fun_prop]
 theorem measurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [MeasurableSpace F]
     [BorelSpace F] (f : 𝕜 → F) : Measurable (deriv f) := by
   simpa only [fderiv_deriv] using measurable_fderiv_apply_const 𝕜 f 1
@@ -586,7 +586,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     have := mem_iInter.1 hx e
     rcases mem_iUnion.1 this with ⟨n, hn⟩
     refine ⟨n, fun p q hp hq => ?_⟩
-    simp only [mem_iInter, ge_iff_le] at hn
+    simp only [mem_iInter] at hn
     rcases mem_iUnion.1 (hn p hp q hq) with ⟨L, hL⟩
     exact ⟨L, exists_prop.mp <| mem_iUnion.1 hL⟩
   /- Recast the assumptions: for each `e`, there exist `n e` and linear maps `L e p q` in `K`
@@ -747,7 +747,7 @@ theorem measurableSet_of_differentiableWithinAt_Ici :
   simp
 #align measurable_set_of_differentiable_within_at_Ici measurableSet_of_differentiableWithinAt_Ici
 
-@[measurability]
+@[measurability, fun_prop]
 theorem measurable_derivWithin_Ici [MeasurableSpace F] [BorelSpace F] :
     Measurable fun x => derivWithin f (Ici x) x := by
   refine measurable_of_isClosed fun s hs => ?_
@@ -800,7 +800,7 @@ theorem measurableSet_of_differentiableWithinAt_Ioi :
   simpa [differentiableWithinAt_Ioi_iff_Ici] using measurableSet_of_differentiableWithinAt_Ici f
 #align measurable_set_of_differentiable_within_at_Ioi measurableSet_of_differentiableWithinAt_Ioi
 
-@[measurability]
+@[measurability, fun_prop]
 theorem measurable_derivWithin_Ioi [MeasurableSpace F] [BorelSpace F] :
     Measurable fun x => derivWithin f (Ioi x) x := by
   simpa [derivWithin_Ioi_eq_Ici] using measurable_derivWithin_Ici f

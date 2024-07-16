@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.Algebra.Category.ModuleCat.Presheaf
+import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 import Mathlib.CategoryTheory.Sites.Whiskering
 
@@ -22,7 +23,7 @@ where `P` is a presheaf of rings and `R` a sheaf of rings such that `α` identif
 
 -/
 
-universe v v₁ u₁ u
+universe v v₁ u₁ u w
 
 open CategoryTheory
 
@@ -92,23 +93,18 @@ def toSheaf : SheafOfModules.{v} R ⥤ Sheaf J AddCommGrp.{v} where
   obj M := ⟨_, M.isSheaf⟩
   map f := { val := f.val.hom }
 
+/--
+The forgetful functor from sheaves of modules over sheaf of ring `R` to sheaves of `R(X)`-module
+when `X` is initial.
+-/
 @[simps]
-noncomputable def forgetToSheafModuleCat (X : Cᵒᵖ) (hX : Limits.IsInitial X)  :
-    SheafOfModules R ⥤ Sheaf J (ModuleCat (R.1.obj X)) where
-  obj M := ⟨(PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1, by
-    rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget J
-      ((PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1)
-      (CategoryTheory.forget.{max v₁ u₁} (ModuleCat (R.1.obj X)))]
-    let e : (PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.val ⋙
-          CategoryTheory.forget (ModuleCat ↑(R.val.obj X)) ≅
-          (M.1.presheaf ⋙ CategoryTheory.forget AddCommGrp) :=
-      NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
-    rw [Presheaf.isSheaf_of_iso_iff e]
-    apply Presheaf.isSheaf_comp_of_isSheaf
-    exact M.2⟩
-  map f := {val := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.1}
-  map_id := by aesop_cat
-  map_comp := by aesop_cat
+noncomputable def forgetToSheafModuleCat
+      (X : Cᵒᵖ) (hX : Limits.IsInitial X)  :
+    SheafOfModules.{w} R ⥤ Sheaf J (ModuleCat.{w} (R.1.obj X)) where
+  obj M := ⟨(PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1,
+    Presheaf.isSheaf_of_isSheaf_comp _ _
+      (forget₂ (ModuleCat.{w} (R.1.obj X)) AddCommGrp.{w}) M.isSheaf⟩
+  map f := { val := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.1 }
 
 /-- The canonical isomorphism between
 `SheafOfModules.toSheaf R ⋙ sheafToPresheaf J AddCommGrp.{v}`
@@ -136,6 +132,7 @@ instance : (forget R).Additive where
 instance : (toSheaf R).Additive where
 
 variable {R}
+
 /-- The type of sections of a sheaf of modules. -/
 abbrev sections (M : SheafOfModules.{v} R) : Type _ := M.val.sections
 
