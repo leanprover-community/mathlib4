@@ -77,6 +77,7 @@ theorem finrank_quotient_map_of_localRing :
     rw [← Set.range_comp, show Ideal.Quotient.mk pS ∘ b' = ⇑b from funext hb']
     exact b.span_eq
 
+/-- Given a basis of `S`, the induced basis of `S / Ideal.map (algebraMap R S) p`. -/
 noncomputable
 def basisQuotientOfLocalRing {ι} [Fintype ι] (b : Basis ι R S) : Basis ι (R ⧸ p) (S ⧸ pS) :=
   basisOfTopLeSpanOfCardEqFinrank (Ideal.Quotient.mk pS ∘ b) (by
@@ -132,6 +133,8 @@ variable (Rₚ)
 
 attribute [local instance] Ideal.Quotient.field
 
+/-- The isomorphism `R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ`, where `Rₚ` satisfies
+`IsLocalization.AtPrime Rₚ p`. -/
 noncomputable
 def equivQuotMaximalIdealOfIsLocalization : R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ := by
   refine (Ideal.quotEquivOfEq ?_).trans
@@ -198,6 +201,7 @@ lemma comap_map_eq_map_of_isLocalization_algebraMapSubmonoid :
 
 variable (S Sₚ)
 
+/-- The isomorphism `S ⧸ pS ≃+* Sₚ ⧸ pSₚ`. -/
 noncomputable
 def quotMapEquivQuotMapMaximalIdealOfIsLocalization : S ⧸ pS ≃+* Sₚ ⧸ pSₚ := by
   haveI h : pSₚ = Ideal.map (algebraMap S Sₚ) pS := by
