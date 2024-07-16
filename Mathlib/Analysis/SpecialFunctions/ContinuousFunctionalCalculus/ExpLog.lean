@@ -120,15 +120,6 @@ lemma log_exp (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : log (NormedSpace.ex
   have hcont : ContinuousOn Real.log (Real.exp '' spectrum ℝ a) := by fun_prop (disch := aesop)
   rw [log, ← real_exp_eq_normedSpace_exp, ← cfc_comp' Real.log Real.exp a hcont]
   simp [cfc_id' (R := ℝ) a]
-  have hcont : ContinuousOn Real.log (Real.exp '' spectrum ℝ a) := by
-    refine ContinuousOn.log (continuousOn_id' _) fun x hx => ?_
-    rw [Set.mem_image] at hx
-    obtain ⟨z, hz⟩ := hx
-    rw [← hz.2]
-    exact Real.exp_ne_zero z
-  have hcomp : Real.log ∘ Real.exp = id := by ext; simp
-  rw [log, ← real_exp_eq_normedSpace_exp, ← cfc_comp Real.log Real.exp a ha hcont]
-  rw [hcomp, cfc_id (R := ℝ) a ha]
 
 -- TODO: Relate the hypothesis to a notion of strict positivity
 lemma exp_log (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) (ha₁ : IsSelfAdjoint a := by cfc_tac) :
@@ -153,13 +144,11 @@ lemma log_smul {r : ℝ} (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) (hr :
     (ha₁ : IsSelfAdjoint a := by cfc_tac) :
     log (r • a) = algebraMap ℝ A (Real.log r) + log a := by
   have : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by peel ha₂ with x hx h; exact h.ne'
-  have ha₂' : ContinuousOn Real.log (spectrum ℝ a) := by fun_prop (disch := assumption)
-  have ha₂'' : ContinuousOn Real.log ((r • ·) '' spectrum ℝ a)  := by fun_prop (disch := aesop)
-  rw [log, ← cfc_smul_id (R := ℝ) r a ha₁, ← cfc_comp Real.log (r • ·) a ha₁ ha₂'', log]
+  rw [log, ← cfc_smul_id (R := ℝ) r a, ← cfc_comp Real.log (r • ·) a, log]
   calc
     _ = cfc (fun z => Real.log r + Real.log z) a :=
       cfc_congr (Real.log_mul hr.ne' <| ne_of_gt <| ha₂ · ·)
-    _ = _ := by rw [cfc_const_add _ a _ ha₁ ha₂']
+    _ = _ := by rw [cfc_const_add _ _ _]
 
 -- TODO: Relate the hypothesis to a notion of strict positivity
 lemma log_pow (n : ℕ) (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x)
