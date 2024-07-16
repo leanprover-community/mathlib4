@@ -180,7 +180,7 @@ instance nodupDecidable [DecidableEq α] (s : Multiset α) : Decidable (Nodup s)
 theorem Nodup.erase_eq_filter [DecidableEq α] (a : α) {s} :
     Nodup s → s.erase a = Multiset.filter (· ≠ a) s :=
   Quot.induction_on s fun _ d =>
-    congr_arg ((↑) : List α → Multiset α) <| List.Nodup.erase_eq_filter d a
+    congr_arg ((↑) : List α → Multiset α) <| by simpa using List.Nodup.erase_eq_filter d a
 #align multiset.nodup.erase_eq_filter Multiset.Nodup.erase_eq_filter
 
 theorem Nodup.erase [DecidableEq α] (a : α) {l} : Nodup l → Nodup (l.erase a) :=

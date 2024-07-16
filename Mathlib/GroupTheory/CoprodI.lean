@@ -703,7 +703,7 @@ theorem toList_head? {i j} (w : NeWord M i j) : w.toList.head? = Option.some ⟨
   induction w
   · rw [Option.mem_def]
     rfl
-  · exact List.head?_append (by assumption)
+  · exact List.mem_head?_append_of_mem_head? (by assumption)
 #align free_product.neword.to_list_head' Monoid.CoprodI.NeWord.toList_head?
 
 @[simp]
@@ -712,7 +712,7 @@ theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.so
   induction w
   · rw [Option.mem_def]
     rfl
-  · exact List.getLast?_append (by assumption)
+  · exact List.mem_getLast?_append_of_mem_getLast? (by assumption)
 #align free_product.neword.to_list_last' Monoid.CoprodI.NeWord.toList_getLast?
 
 /-- The `Word M` represented by a `NeWord M i j` -/

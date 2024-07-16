@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Data.List.Join
+import Mathlib.Data.List.Basic
 
 #align_import data.list.of_fn from "leanprover-community/mathlib"@"bf27744463e9620ca4e4ebe951fe83530ae6949b"
 
@@ -149,7 +149,7 @@ theorem ofFn_eq_nil_iff {n : ℕ} {f : Fin n → α} : ofFn f = [] ↔ n = 0 := 
 
 theorem last_ofFn {n : ℕ} (f : Fin n → α) (h : ofFn f ≠ [])
     (hn : n - 1 < n := Nat.pred_lt <| ofFn_eq_nil_iff.not.mp h) :
-    getLast (ofFn f) h = f ⟨n - 1, hn⟩ := by simp [getLast_eq_get]
+    getLast (ofFn f) h = f ⟨n - 1, hn⟩ := by simp [getLast_eq_getElem]
 #align list.last_of_fn List.last_ofFn
 
 theorem last_ofFn_succ {n : ℕ} (f : Fin n.succ → α)
@@ -184,7 +184,8 @@ theorem ofFn_mul {m n} (f : Fin (m * n) → α) :
       _ ≤ _ := Nat.mul_le_mul_right _ i.prop⟩) := by
   induction' m with m IH
   · simp [ofFn_zero, Nat.zero_mul, ofFn_zero, join]
-  · simp_rw [ofFn_succ', succ_mul, join_concat, ofFn_add, IH]
+  · simp_rw [ofFn_succ', succ_mul]
+    simp [join_concat, ofFn_add, IH]
     rfl
 #align list.of_fn_mul List.ofFn_mul
 

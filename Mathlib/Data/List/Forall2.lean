@@ -302,10 +302,10 @@ theorem rel_filter {p : α → Bool} {q : β → Bool}
     dsimp [LiftFun] at hpq
     by_cases h : p a
     · have : q b := by rwa [← hpq h₁]
-      simp only [filter_cons_of_pos _ h, filter_cons_of_pos _ this, forall₂_cons, h₁, true_and_iff,
+      simp only [filter_cons_of_pos h, filter_cons_of_pos this, forall₂_cons, h₁, true_and_iff,
         rel_filter hpq h₂]
     · have : ¬q b := by rwa [← hpq h₁]
-      simp only [filter_cons_of_neg _ h, filter_cons_of_neg _ this, rel_filter hpq h₂]
+      simp only [filter_cons_of_neg h, filter_cons_of_neg this, rel_filter hpq h₂]
 #align list.rel_filter List.rel_filter
 
 theorem rel_filterMap : ((R ⇒ Option.Rel P) ⇒ Forall₂ R ⇒ Forall₂ P) filterMap filterMap
