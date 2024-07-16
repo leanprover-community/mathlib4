@@ -7,6 +7,7 @@ import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.Instances.Sphere
+import Mathlib.Geometry.Manifold.InteriorBoundary
 
 /-!
 # Unoriented bordism theory
@@ -25,13 +26,6 @@ Missing API for this to work nicely:
 - add disjoint union of top. spaces and induced maps: mathlib has this in abstract nonsense form
 - define the disjoint union of smooth manifolds, and the associated maps: show they are smooth
 (perhaps prove as abstract nonsense? will see!)
-
-- basic lemmas about boundary and interior
-interior(M × N) = interior (M) × interior(N)
-cor. The boundary of M × N is ∂M × N ∪ (M × ∂N)
-cor. if M is boundaryless, ∂(M×N) = M × ∂N
-cor. If M is a smooth manifold without boundary, M x I has boundary M× {0,1};
-  this is diffeomorphic to M ⊔ M.
 
 - then: complete definition of unoriented cobordisms; complete constructions I had
 - fight DTT hell: why is the product with an interval not recognised?
@@ -126,6 +120,74 @@ example (n : ℕ) {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace
 end examples
 
 end ClosedManifold
+
+-- Lemmas about boundary and interior, should go there.
+section Boundary
+
+variable {E E' E'' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup E']
+    [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
+  {H H' H'' : Type*} [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H'']
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  {I' : ModelWithCorners ℝ E' H'} [SmoothManifoldWithCorners I' M'] {x : M} {y : M'}
+
+-- xxx good name!
+lemma mem_interior_of_components (hx : x ∈ I.interior M) (hy : y ∈ I'.interior M') :
+    (x, y) ∈ (I.prod I').interior (M × M') := by
+  rw [ModelWithCorners.interior]
+  sorry
+
+-- TODO: converse direction
+
+-- TODO: cannot even state my full result yet...
+-- #check (((I.interior M) : Set M) × ((I'.interior M') : Set M')) : Set (M × M')
+
+-- lemma sdf : -- fails, Lean thinks both sides are a type
+--   (((I.interior M) : Set M) × ((I'.interior M') : Set M')) ⊆ (I.prod I').interior (M × M') := sorry
+
+-- TODO: is not what I want it to be!
+lemma interior_prod :
+    (I.prod I').interior (M × M') = (((I.interior M) : Set M) × ((I'.interior M') : Set M')) := by
+--   apply le_antisymm -- doesn't work, currently Lean thinks both sides are a type...
+  sorry
+
+-- The boundary of M × N is ∂M × N ∪ (M × ∂N).
+
+lemma boundary_prod {p : M × M'} (hp : p ∈ (I.prod I').boundary (M × M')) :
+    p.1 ∈ I.boundary M ∨ p.2 ∈ I'.boundary M' := by
+  by_contra h
+  push_neg at h
+  have : p.1 ∈ I.interior M := by have := I.isInteriorPoint_or_isBoundaryPoint p.1; tauto
+  have h₂ : p.2 ∈ I'.interior M' := by have := I'.isInteriorPoint_or_isBoundaryPoint p.2; tauto
+  have h3 : p ∈ (I.prod I').interior (M × M') := mem_interior_of_components this h₂
+  rw [(I.prod I').boundary_eq_complement_interior (M := M × M')] at hp
+  have : p ∉ (I.prod I').interior (M × M') := Set.not_mem_of_mem_compl hp
+  tauto
+
+-- TODO: deduce converse also!
+
+-- -- TODO good name; make Lean interpret these as sets!
+-- lemma boundary_prod_types :
+--     (I.prod I').boundary (M × M') = (M × I'.boundary M') ∪ (I.boundary M × M') := by
+--   sorry -- just the lemma upstairs...
+
+-- In particular, if `M` is boundaryless, ∂(M×N) = M × ∂N (and similarly for N).
+
+-- apply previous lemma... TODO make Lean interpret these as sets!
+lemma boundary_of_boundaryless_left [I.Boundaryless] :
+    (I.prod I').boundary (M × M') = (M × (I'.boundary M')) := by
+  sorry
+
+-- apply previous lemma... TODO make Lean interpret these as sets!
+lemma boundary_of_boundaryless_right [I'.Boundaryless] :
+    (I.prod I').boundary (M × M') = ((I.boundary M) × M') := by
+  sorry
+
+-- cor. If M is a smooth manifold without boundary, M x I has boundary M× {0,1};
+--   this is diffeomorphic to M ⊔ M.
+
+end Boundary
 
 -- Let M, M' and W be smooth manifolds.
 variable {E E' E'' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup E']
