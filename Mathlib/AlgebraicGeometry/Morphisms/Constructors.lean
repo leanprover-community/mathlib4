@@ -87,7 +87,7 @@ theorem HasAffineProperty.diagonal_of_openCover
     ext <;> simp [Scheme.OpenCover.pullbackHom]
 #align algebraic_geometry.diagonal_target_affine_locally_of_open_cover AlgebraicGeometry.HasAffineProperty.diagonal_of_openCover
 
-theorem HasAffineProperty.diagonal_of_openCover_diagonal_affineProperty
+theorem HasAffineProperty.diagonal_of_openCover_diagonal
     (P) {Q} [HasAffineProperty P Q]
     {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} Y) [∀ i, IsAffine (𝒰.obj i)]
     (h𝒰 : ∀ i, Q.diagonal (𝒰.pullbackHom f i)) :
@@ -98,7 +98,7 @@ theorem HasAffineProperty.diagonal_of_openCover_diagonal_affineProperty
 instance {X} [IsAffine X] (i) : IsAffine ((Scheme.openCoverOfIsIso (𝟙 X)).obj i) := by
   dsimp; infer_instance
 
-theorem HasAffineProperty.affineProperty_diagonal_of_diagonal_of_isPullback
+theorem HasAffineProperty.diagonal_of_diagonal_of_isPullback
     (P) {Q} [HasAffineProperty P Q]
     {X Y U V : Scheme.{u}} {f : X ⟶ Y} {g : U ⟶ Y}
     [IsAffine U] [IsOpenImmersion g]

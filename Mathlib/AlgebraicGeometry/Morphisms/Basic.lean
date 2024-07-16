@@ -300,7 +300,7 @@ instance (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso] :
     exact H ⟨(Opens.map e.hom.val.base).obj U, hU.preimage_of_isIso e.hom⟩
 
 /--
-`IsLocalAtTarget P Q` is a type class asserting that `P` is local at target, and over affine
+`IsLocalAtTarget P Q` is a type class asserting that `P` is local at the target, and over affine
 schemes, it is equivalent to `Q : AffineTargetMorphismProperty`.
 To make the proofs easier, we state it instead as
 1. `Q` is local at the target
