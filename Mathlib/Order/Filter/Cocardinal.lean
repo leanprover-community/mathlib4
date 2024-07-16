@@ -51,7 +51,6 @@ instance instCardinalInterFilter_cocardinal : CardinalInterFilter (cocardinal (Î
     apply lt_of_le_of_lt (mk_sUnion_le _)
     apply mul_lt_of_lt hreg.aleph0_le (lt_of_le_of_lt mk_image_le hS)
     apply iSup_lt_of_isRegular hreg <| lt_of_le_of_lt mk_image_le hS
-    intro i
     aesop
 
 @[simp]

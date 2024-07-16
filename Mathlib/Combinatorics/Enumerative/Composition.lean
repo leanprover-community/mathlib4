@@ -826,9 +826,9 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
           simp only [Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, i_ne_last, or_false] at this
         exact Nat.pred_lt_pred i_ne_zero this
       · convert i_mem
-        simp only [ge_iff_le]
+        simp only
         rwa [add_comm]
-      · simp only [ge_iff_le]
+      · simp only
         symm
         rwa [add_comm]
   right_inv := by

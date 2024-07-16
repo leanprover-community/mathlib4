@@ -245,7 +245,7 @@ theorem identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
       len_mk, NatTrans.naturality, PInfty_f_idem_assoc,
       PInfty_f_naturality_assoc, app_idem_assoc]
     erw [P.X.map_id, comp_id]
-  simp only [Karoubi.comp_f, HomologicalComplex.comp_f, Karoubi.id_eq, N₂_obj_p_f, assoc,
+  simp only [Karoubi.comp_f, HomologicalComplex.comp_f, Karoubi.id_f, N₂_obj_p_f, assoc,
     eq₁, eq₂, PInfty_f_naturality_assoc, app_idem, PInfty_f_idem_assoc]
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.identity_N₂_objectwise AlgebraicTopology.DoldKan.identity_N₂_objectwise

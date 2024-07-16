@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.Set.Constructions
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousOn
 
@@ -46,7 +47,7 @@ conditions are equivalent in this case).
 For our applications we are interested that there exists a countable basis, but we do not need the
 concrete basis itself. This allows us to declare these type classes as `Prop` to use them as mixins.
 
-### TODO:
+## TODO
 
 More fine grained instances for `FirstCountableTopology`,
 `TopologicalSpace.SeparableSpace`, and more.
@@ -118,6 +119,18 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
   · rw [← sInter_singleton t]
     exact ⟨{t}, ⟨finite_singleton t, singleton_subset_iff.2 ht⟩, rfl⟩
 #align topological_space.is_topological_basis_of_subbasis TopologicalSpace.isTopologicalBasis_of_subbasis
+
+theorem isTopologicalBasis_of_subbasis_of_finiteInter {s : Set (Set α)} (hsg : t = generateFrom s)
+    (hsi : FiniteInter s) : IsTopologicalBasis s := by
+  convert isTopologicalBasis_of_subbasis hsg
+  refine le_antisymm (fun t ht ↦ ⟨{t}, by simpa using ht⟩) ?_
+  rintro _ ⟨g, ⟨hg, hgs⟩, rfl⟩
+  lift g to Finset (Set α) using hg
+  exact hsi.finiteInter_mem g hgs
+
+theorem isTopologicalBasis_of_subbasis_of_inter {r : Set (Set α)} (hsg : t = generateFrom r)
+    (hsi : ∀ ⦃s⦄, s ∈ r → ∀ ⦃t⦄, t ∈ r → s ∩ t ∈ r) : IsTopologicalBasis (insert univ r) :=
+  isTopologicalBasis_of_subbasis_of_finiteInter (by simpa using hsg) (FiniteInter.mk₂ hsi)
 
 theorem IsTopologicalBasis.of_hasBasis_nhds {s : Set (Set α)}
     (h_nhds : ∀ a, (𝓝 a).HasBasis (fun t ↦ t ∈ s ∧ a ∈ t) id) : IsTopologicalBasis s where
@@ -694,7 +707,7 @@ attribute [instance] FirstCountableTopology.nhds_generated_countable
 first-countable. -/
 theorem firstCountableTopology_induced (α β : Type*) [t : TopologicalSpace β]
     [FirstCountableTopology β] (f : α → β) : @FirstCountableTopology α (t.induced f) :=
-  let _ := t.induced f;
+  let _ := t.induced f
   ⟨fun x ↦ nhds_induced f x ▸ inferInstance⟩
 
 variable {α}

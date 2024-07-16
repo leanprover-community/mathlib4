@@ -9,7 +9,6 @@ import Mathlib.Data.List.Cycle
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.PNat.Basic
 import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.GroupTheory.GroupAction.Group
 
 #align_import dynamics.periodic_pts from "leanprover-community/mathlib"@"d07245fd37786daa997af4f1a73a49fa3b748408"
 

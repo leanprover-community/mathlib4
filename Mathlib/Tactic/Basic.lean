@@ -11,8 +11,6 @@ import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Linter.OldObtain
 
-set_option autoImplicit true
-
 namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
@@ -30,7 +28,7 @@ Recall that variables linked this way should be considered to be semantically id
 
 The effect of this is, for example, the unused variable linter will see that variables
 from the first array are used if corresponding variables in the second array are used. -/
-def pushFVarAliasInfo [Monad m] [MonadInfoTree m]
+def pushFVarAliasInfo {m : Type → Type} [Monad m] [MonadInfoTree m]
     (oldFVars newFVars : Array FVarId) (newLCtx : LocalContext) : m Unit := do
   for old in oldFVars, new in newFVars do
     if old != new then
