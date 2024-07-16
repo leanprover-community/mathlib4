@@ -4,12 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Group.Hom
+import Mathlib.Analysis.NormedSpace.IndicatorFunction
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Data.Set.Image
 import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
 import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
 import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 import Mathlib.MeasureTheory.Measure.OpenPos
+import Mathlib.MeasureTheory.Measure.Typeclasses
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Topology.ContinuousFunction.Compact
 import Mathlib.Order.Filter.IndicatorFunction
 
@@ -70,8 +73,7 @@ noncomputable section
 set_option linter.uppercaseLean3 false
 
 open TopologicalSpace MeasureTheory Filter
-
-open scoped NNReal ENNReal Topology MeasureTheory Uniformity
+open scoped NNReal ENNReal Topology MeasureTheory Uniformity symmDiff
 
 variable {α E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
@@ -118,6 +120,8 @@ namespace Memℒp
 def toLp (f : α → E) (h_mem_ℒp : Memℒp f p μ) : Lp E p μ :=
   ⟨AEEqFun.mk f h_mem_ℒp.1, h_mem_ℒp.snorm_mk_lt_top⟩
 #align measure_theory.mem_ℒp.to_Lp MeasureTheory.Memℒp.toLp
+
+theorem toLp_val {f : α → E} (h : Memℒp f p μ) : (toLp f h).1 = AEEqFun.mk f h.1 := rfl
 
 theorem coeFn_toLp {f : α → E} (hf : Memℒp f p μ) : hf.toLp f =ᵐ[μ] f :=
   AEEqFun.coeFn_mk _ _
@@ -739,17 +743,37 @@ protected lemma Memℒp.piecewise [DecidablePred (· ∈ s)] {g}
   · have h : ∀ᵐ (x : α) ∂μ, x ∈ s →
         (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) ^ p.toReal = (‖f x‖₊ : ℝ≥0∞) ^ p.toReal := by
       filter_upwards with a ha using by simp [ha]
-    rw [set_lintegral_congr_fun hs h]
+    rw [setLIntegral_congr_fun hs h]
     exact lintegral_rpow_nnnorm_lt_top_of_snorm_lt_top hp_zero hp_top hf.2
   · have h : ∀ᵐ (x : α) ∂μ, x ∈ sᶜ →
         (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) ^ p.toReal = (‖g x‖₊ : ℝ≥0∞) ^ p.toReal := by
       filter_upwards with a ha
       have ha' : a ∉ s := ha
       simp [ha']
-    rw [set_lintegral_congr_fun hs.compl h]
+    rw [setLIntegral_congr_fun hs.compl h]
     exact lintegral_rpow_nnnorm_lt_top_of_snorm_lt_top hp_zero hp_top hg.2
 
 end Indicator
+
+section Topology
+variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
+  {μ : Measure X} [IsFiniteMeasureOnCompacts μ]
+
+/-- A bounded measurable function with compact support is in L^p. -/
+theorem _root_.HasCompactSupport.memℒp_of_bound {f : X → E} (hf : HasCompactSupport f)
+    (h2f : AEStronglyMeasurable f μ) (C : ℝ) (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : Memℒp f p μ := by
+  have := memℒp_top_of_bound h2f C hfC
+  exact this.memℒp_of_exponent_le_of_measure_support_ne_top
+    (fun x ↦ image_eq_zero_of_nmem_tsupport) (hf.measure_lt_top.ne) le_top
+
+/-- A continuous function with compact support is in L^p. -/
+theorem _root_.Continuous.memℒp_of_hasCompactSupport [OpensMeasurableSpace X]
+    {f : X → E} (hf : Continuous f) (h'f : HasCompactSupport f) : Memℒp f p μ := by
+  have := hf.memℒp_top_of_hasCompactSupport h'f μ
+  exact this.memℒp_of_exponent_le_of_measure_support_ne_top
+    (fun x ↦ image_eq_zero_of_nmem_tsupport) (h'f.measure_lt_top.ne) le_top
+
+end Topology
 
 section IndicatorConstLp
 
@@ -819,6 +843,15 @@ theorem norm_indicatorConstLp_le :
     ENNReal.toReal_rpow, ENNReal.ofReal_toReal]
   exact ENNReal.rpow_ne_top_of_nonneg (by positivity) hμs
 
+theorem nnnorm_indicatorConstLp_le :
+    ‖indicatorConstLp p hs hμs c‖₊ ≤ ‖c‖₊ * (μ s).toNNReal ^ (1 / p.toReal) :=
+  norm_indicatorConstLp_le
+
+theorem ennnorm_indicatorConstLp_le :
+    (‖indicatorConstLp p hs hμs c‖₊ : ℝ≥0∞) ≤ ‖c‖₊ * (μ s) ^ (1 / p.toReal) := by
+  refine (ENNReal.coe_le_coe.mpr nnnorm_indicatorConstLp_le).trans_eq ?_
+  simp [← ENNReal.coe_rpow_of_nonneg, ENNReal.coe_toNNReal hμs]
+
 theorem edist_indicatorConstLp_eq_nnnorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     edist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp p (hs.symmDiff ht) (measure_symmDiff_ne_top hμs hμt) c‖₊ := by
@@ -829,6 +862,28 @@ theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt 
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp p (hs.symmDiff ht) (measure_symmDiff_ne_top hμs hμt) c‖ := by
   rw [Lp.dist_edist, edist_indicatorConstLp_eq_nnnorm, ENNReal.coe_toReal, Lp.coe_nnnorm]
+
+/-- A family of `indicatorConstLp` functions tends to an `indicatorConstLp`,
+if the underlying sets tend to the set in the sense of the measure of the symmetric difference. -/
+theorem tendsto_indicatorConstLp_set [hp₁ : Fact (1 ≤ p)] {β : Type*} {l : Filter β} {t : β → Set α}
+    {ht : ∀ b, MeasurableSet (t b)} {hμt : ∀ b, μ (t b) ≠ ∞} (hp : p ≠ ∞)
+    (h : Tendsto (fun b ↦ μ (t b ∆ s)) l (𝓝 0)) :
+    Tendsto (fun b ↦ indicatorConstLp p (ht b) (hμt b) c) l (𝓝 (indicatorConstLp p hs hμs c)) := by
+  rw [tendsto_iff_dist_tendsto_zero]
+  have hp₀ : p ≠ 0 := (one_pos.trans_le hp₁.out).ne'
+  simp only [dist_indicatorConstLp_eq_norm, norm_indicatorConstLp hp₀ hp]
+  convert tendsto_const_nhds.mul
+    (((ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp h).rpow_const _)
+  · simp [Real.rpow_eq_zero_iff_of_nonneg, ENNReal.toReal_eq_zero_iff, hp, hp₀]
+  · simp
+
+/-- A family of `indicatorConstLp` functions is continuous in the parameter,
+if `μ (s y ∆ s x)` tends to zero as `y` tends to `x` for all `x`. -/
+theorem continuous_indicatorConstLp_set [Fact (1 ≤ p)] {X : Type*} [TopologicalSpace X]
+    {s : X → Set α} {hs : ∀ x, MeasurableSet (s x)} {hμs : ∀ x, μ (s x) ≠ ∞} (hp : p ≠ ∞)
+    (h : ∀ x, Tendsto (fun y ↦ μ (s y ∆ s x)) (𝓝 x) (𝓝 0)) :
+    Continuous fun x ↦ indicatorConstLp p (hs x) (hμs x) c :=
+  continuous_iff_continuousAt.2 fun x ↦ tendsto_indicatorConstLp_set hp (h x)
 
 @[simp]
 theorem indicatorConstLp_empty :
@@ -999,6 +1054,15 @@ theorem coeFn_compMeasurePreserving (g : Lp E p μb) (hf : MeasurePreserving f �
 theorem norm_compMeasurePreserving (g : Lp E p μb) (hf : MeasurePreserving f μ μb) :
     ‖compMeasurePreserving f hf g‖ = ‖g‖ :=
   congr_arg ENNReal.toReal <| g.1.snorm_compMeasurePreserving hf
+
+theorem toLp_compMeasurePreserving {g : β → E} (hg : Memℒp g p μb) (hf : MeasurePreserving f μ μb) :
+    compMeasurePreserving f hf (hg.toLp g) = (hg.comp_measurePreserving hf).toLp _ := rfl
+
+theorem indicatorConstLp_compMeasurePreserving {s : Set β} (hs : MeasurableSet s)
+    (hμs : μb s ≠ ∞) (c : E) (hf : MeasurePreserving f μ μb) :
+    Lp.compMeasurePreserving f hf (indicatorConstLp p hs hμs c) =
+      indicatorConstLp p (hs.preimage hf.measurable) (by rwa [hf.measure_preimage hs]) c :=
+  rfl
 
 variable (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
@@ -1254,7 +1318,7 @@ theorem indicatorConstLp_eq_toSpanSingleton_compLp {s : Set α} [NormedSpace ℝ
   dsimp only
   rw [hy]
   simp_rw [ContinuousLinearMap.toSpanSingleton_apply]
-  by_cases hy_mem : y ∈ s <;> simp [hy_mem, ContinuousLinearMap.lsmul_apply]
+  by_cases hy_mem : y ∈ s <;> simp [hy_mem]
 #align measure_theory.indicator_const_Lp_eq_to_span_singleton_comp_Lp MeasureTheory.indicatorConstLp_eq_toSpanSingleton_compLp
 
 namespace Lp
@@ -1354,7 +1418,7 @@ theorem snorm'_lim_le_liminf_snorm' {E} [NormedAddCommGroup E] {f : ℕ → α �
     (h_lim : ∀ᵐ x : α ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (f_lim x))) :
     snorm' f_lim p μ ≤ atTop.liminf fun n => snorm' (f n) p μ := by
   rw [snorm'_lim_eq_lintegral_liminf hp_pos.le h_lim]
-  rw [← ENNReal.le_rpow_one_div_iff (by simp [hp_pos] : 0 < 1 / p), one_div_one_div]
+  rw [one_div, ← ENNReal.le_rpow_inv_iff (by simp [hp_pos] : 0 < p⁻¹), inv_inv]
   refine (lintegral_liminf_le' fun m => (hf m).ennnorm.pow_const _).trans_eq ?_
   have h_pow_liminf :
     (atTop.liminf fun n => snorm' (f n) p μ) ^ p = atTop.liminf fun n => snorm' (f n) p μ ^ p := by
@@ -1515,9 +1579,8 @@ private theorem lintegral_rpow_sum_coe_nnnorm_sub_le_rpow_tsum
     (∫⁻ a, (∑ i ∈ Finset.range (n + 1), ‖f (i + 1) a - f i a‖₊ : ℝ≥0∞) ^ p ∂μ) ≤
       (∑' i, B i) ^ p := by
   have hp_pos : 0 < p := zero_lt_one.trans_le hp1
-  rw [← one_div_one_div p, @ENNReal.le_rpow_one_div_iff _ _ (1 / p) (by simp [hp_pos]),
-    one_div_one_div p]
-  simp_rw [snorm'] at hn
+  rw [← inv_inv p, @ENNReal.le_rpow_inv_iff _ _ p⁻¹ (by simp [hp_pos]), inv_inv p]
+  simp_rw [snorm', one_div] at hn
   have h_nnnorm_nonneg :
     (fun a => (‖∑ i ∈ Finset.range (n + 1), ‖f (i + 1) a - f i a‖‖₊ : ℝ≥0∞) ^ p) = fun a =>
       (∑ i ∈ Finset.range (n + 1), (‖f (i + 1) a - f i a‖₊ : ℝ≥0∞)) ^ p := by
@@ -1529,7 +1592,7 @@ private theorem lintegral_rpow_sum_coe_nnnorm_sub_le_rpow_tsum
       exact Finset.sum_nonneg fun x _ => norm_nonneg _
     · exact fun x _ => norm_nonneg _
   change
-    (∫⁻ a, (fun x => ↑‖∑ i ∈ Finset.range (n + 1), ‖f (i + 1) x - f i x‖‖₊ ^ p) a ∂μ) ^ (1 / p) ≤
+    (∫⁻ a, (fun x => ↑‖∑ i ∈ Finset.range (n + 1), ‖f (i + 1) x - f i x‖‖₊ ^ p) a ∂μ) ^ p⁻¹ ≤
       ∑' i, B i at hn
   rwa [h_nnnorm_nonneg] at hn
 
@@ -1542,7 +1605,7 @@ private theorem lintegral_rpow_tsum_coe_nnnorm_sub_le_tsum {f : ℕ → α → E
     (∫⁻ a, (∑' i, ‖f (i + 1) a - f i a‖₊ : ℝ≥0∞) ^ p ∂μ) ^ (1 / p) ≤ ∑' i, B i := by
   have hp_pos : 0 < p := zero_lt_one.trans_le hp1
   suffices h_pow : (∫⁻ a, (∑' i, ‖f (i + 1) a - f i a‖₊ : ℝ≥0∞) ^ p ∂μ) ≤ (∑' i, B i) ^ p by
-    rwa [← ENNReal.le_rpow_one_div_iff (by simp [hp_pos] : 0 < 1 / p), one_div_one_div]
+      rwa [one_div, ← ENNReal.le_rpow_inv_iff (by simp [hp_pos] : 0 < p⁻¹), inv_inv]
   have h_tsum_1 :
     ∀ g : ℕ → ℝ≥0∞, ∑' i, g i = atTop.liminf fun n => ∑ i ∈ Finset.range (n + 1), g i := by
     intro g
@@ -1575,13 +1638,13 @@ private theorem tsum_nnnorm_sub_ae_lt_top {f : ℕ → α → E} (hf : ∀ n, AE
   have h_integral : (∫⁻ a, (∑' i, ‖f (i + 1) a - f i a‖₊ : ℝ≥0∞) ^ p ∂μ) < ∞ := by
     have h_tsum_lt_top : (∑' i, B i) ^ p < ∞ := ENNReal.rpow_lt_top_of_nonneg hp_pos.le hB
     refine lt_of_le_of_lt ?_ h_tsum_lt_top
-    rwa [← ENNReal.le_rpow_one_div_iff (by simp [hp_pos] : 0 < 1 / p), one_div_one_div] at h
+    rwa [one_div, ← ENNReal.le_rpow_inv_iff (by simp [hp_pos] : 0 < p⁻¹), inv_inv] at h
   have rpow_ae_lt_top : ∀ᵐ x ∂μ, (∑' i, ‖f (i + 1) x - f i x‖₊ : ℝ≥0∞) ^ p < ∞ := by
     refine ae_lt_top' (AEMeasurable.pow_const ?_ _) h_integral.ne
     exact AEMeasurable.ennreal_tsum fun n => ((hf (n + 1)).sub (hf n)).ennnorm
   refine rpow_ae_lt_top.mono fun x hx => ?_
-  rwa [← ENNReal.lt_rpow_one_div_iff hp_pos,
-    ENNReal.top_rpow_of_pos (by simp [hp_pos] : 0 < 1 / p)] at hx
+  rwa [← ENNReal.lt_rpow_inv_iff hp_pos,
+    ENNReal.top_rpow_of_pos (by simp [hp_pos] : 0 < p⁻¹)] at hx
 
 theorem ae_tendsto_of_cauchy_snorm' [CompleteSpace E] {f : ℕ → α → E} {p : ℝ}
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hp1 : 1 ≤ p) {B : ℕ → ℝ≥0∞} (hB : ∑' i, B i ≠ ∞)

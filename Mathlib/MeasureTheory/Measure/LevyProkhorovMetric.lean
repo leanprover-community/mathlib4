@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Measure.Portmanteau
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Integral.Layercake
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
@@ -27,7 +28,7 @@ import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
   probability measures on a separable space coincides with the topology of convergence in
   distribution, and in particular convergence in distribution is then pseudometrizable.
 
-## Todo
+## TODO
 
 * Show that in Borel spaces, the Lévy-Prokhorov distance is a metric; not just a pseudometric.
 

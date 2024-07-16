@@ -198,8 +198,8 @@ set_option linter.deprecated false
 @[deprecated (since := "2022-11-18"), coe]
 def castPosNum : PosNum → α
   | 1 => 1
-  | PosNum.bit0 a => bit0 (castPosNum a)
-  | PosNum.bit1 a => bit1 (castPosNum a)
+  | PosNum.bit0 a => castPosNum a + castPosNum a
+  | PosNum.bit1 a => castPosNum a + castPosNum a + 1
 #align cast_pos_num castPosNum
 
 /-- `castNum` casts a `Num` into any type which has `0`, `1` and `+`. -/
@@ -210,12 +210,13 @@ def castNum [Zero α] : Num → α
 #align cast_num castNum
 
 -- see Note [coercion into rings]
-@[deprecated] instance (priority := 900) posNumCoe : CoeHTCT PosNum α :=
+@[deprecated (since := "2023-03-31")] instance (priority := 900) posNumCoe : CoeHTCT PosNum α :=
   ⟨castPosNum⟩
 #align pos_num_coe posNumCoe
 
 -- see Note [coercion into rings]
-@[deprecated] instance (priority := 900) numNatCoe [Zero α] : CoeHTCT Num α :=
+@[deprecated (since := "2023-03-31")]
+instance (priority := 900) numNatCoe [Zero α] : CoeHTCT Num α :=
   ⟨castNum⟩
 #align num_nat_coe numNatCoe
 
@@ -682,7 +683,7 @@ def castZNum : ZNum → α
 #align cast_znum castZNum
 
 -- see Note [coercion into rings]
-@[deprecated] instance (priority := 900) znumCoe : CoeHTCT ZNum α :=
+@[deprecated (since := "2023-03-31")] instance (priority := 900) znumCoe : CoeHTCT ZNum α :=
   ⟨castZNum⟩
 #align znum_coe znumCoe
 

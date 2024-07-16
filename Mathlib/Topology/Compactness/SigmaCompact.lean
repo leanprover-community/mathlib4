@@ -207,7 +207,10 @@ theorem iUnion_compactCovering : ⋃ n, compactCovering X n = univ := by
   exact (Classical.choose_spec SigmaCompactSpace.exists_compact_covering).2
 #align Union_compact_covering iUnion_compactCovering
 
-@[mono]
+theorem iUnion_closure_compactCovering : ⋃ n, closure (compactCovering X n) = univ :=
+  eq_top_mono (iUnion_mono fun _ ↦ subset_closure) (iUnion_compactCovering X)
+
+@[mono, gcongr]
 theorem compactCovering_subset ⦃m n : ℕ⦄ (h : m ≤ n) : compactCovering X m ⊆ compactCovering X n :=
   monotone_accumulate h
 #align compact_covering_subset compactCovering_subset
@@ -260,7 +263,6 @@ protected theorem ClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : ClosedEm
       rw [← preimage_iUnion, iUnion_compactCovering, preimage_univ]⟩⟩
 #align closed_embedding.sigma_compact_space ClosedEmbedding.sigmaCompactSpace
 
--- Porting note (#10756): new lemma
 theorem IsClosed.sigmaCompactSpace {s : Set X} (hs : IsClosed s) : SigmaCompactSpace s :=
   (closedEmbedding_subtype_val hs).sigmaCompactSpace
 

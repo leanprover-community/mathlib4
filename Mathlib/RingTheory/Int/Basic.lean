@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Algebra.GCDMonoid.Nat
+import Mathlib.Data.Nat.Prime.Basic
 
 #align_import ring_theory.int.basic from "leanprover-community/mathlib"@"e655e4ea5c6d02854696f97494997ba4c31be802"
 
@@ -141,27 +143,30 @@ theorem span_natAbs (a : ℤ) : Ideal.span ({(a.natAbs : ℤ)} : Set ℤ) = Idea
   exact (associated_natAbs _).symm
 #align int.span_nat_abs Int.span_natAbs
 
-section bit
-set_option linter.deprecated false
-
-theorem eq_pow_of_mul_eq_pow_bit1_left {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ}
-    (h : a * b = c ^ bit1 k) : ∃ d, a = d ^ bit1 k := by
+theorem eq_pow_of_mul_eq_pow_odd_left {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ} (hk : Odd k)
+    (h : a * b = c ^ k) : ∃ d, a = d ^ k := by
   obtain ⟨d, hd⟩ := exists_associated_pow_of_mul_eq_pow' hab h
   replace hd := hd.symm
-  rw [associated_iff_natAbs, natAbs_eq_natAbs_iff, ← neg_pow_bit1] at hd
+  rw [associated_iff_natAbs, natAbs_eq_natAbs_iff, ← hk.neg_pow] at hd
   obtain rfl | rfl := hd <;> exact ⟨_, rfl⟩
-#align int.eq_pow_of_mul_eq_pow_bit1_left Int.eq_pow_of_mul_eq_pow_bit1_left
+#align int.eq_pow_of_mul_eq_pow_bit1_left Int.eq_pow_of_mul_eq_pow_odd_left
 
-theorem eq_pow_of_mul_eq_pow_bit1_right {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ}
-    (h : a * b = c ^ bit1 k) : ∃ d, b = d ^ bit1 k :=
-  eq_pow_of_mul_eq_pow_bit1_left hab.symm (by rwa [mul_comm] at h)
-#align int.eq_pow_of_mul_eq_pow_bit1_right Int.eq_pow_of_mul_eq_pow_bit1_right
+@[deprecated (since := "2024-07-12")]
+alias eq_pow_of_mul_eq_pow_bit1_left := eq_pow_of_mul_eq_pow_odd_left
 
-theorem eq_pow_of_mul_eq_pow_bit1 {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ}
-    (h : a * b = c ^ bit1 k) : (∃ d, a = d ^ bit1 k) ∧ ∃ e, b = e ^ bit1 k :=
-  ⟨eq_pow_of_mul_eq_pow_bit1_left hab h, eq_pow_of_mul_eq_pow_bit1_right hab h⟩
-#align int.eq_pow_of_mul_eq_pow_bit1 Int.eq_pow_of_mul_eq_pow_bit1
+theorem eq_pow_of_mul_eq_pow_odd_right {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ} (hk : Odd k)
+    (h : a * b = c ^ k) : ∃ d, b = d ^ k :=
+  eq_pow_of_mul_eq_pow_odd_left hab.symm hk (by rwa [mul_comm] at h)
+#align int.eq_pow_of_mul_eq_pow_bit1_right Int.eq_pow_of_mul_eq_pow_odd_right
 
-end bit
+@[deprecated (since := "2024-07-12")]
+alias eq_pow_of_mul_eq_pow_bit1_right := eq_pow_of_mul_eq_pow_odd_right
+
+theorem eq_pow_of_mul_eq_pow_odd {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ} (hk : Odd k)
+    (h : a * b = c ^ k) : (∃ d, a = d ^ k) ∧ ∃ e, b = e ^ k :=
+  ⟨eq_pow_of_mul_eq_pow_odd_left hab hk h, eq_pow_of_mul_eq_pow_odd_right hab hk h⟩
+#align int.eq_pow_of_mul_eq_pow_bit1 Int.eq_pow_of_mul_eq_pow_odd
+
+@[deprecated (since := "2024-07-12")] alias eq_pow_of_mul_eq_pow_bit1 := eq_pow_of_mul_eq_pow_odd
 
 end Int

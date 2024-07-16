@@ -85,3 +85,9 @@ alias rat_cast_ne := ratCast_ne
 -- See note [no_index around OfNat.ofNat]
 @[rify_simps] lemma ofNat_rat_real (a : ℕ) [a.AtLeastTwo] :
     ((no_index (OfNat.ofNat a : ℚ)) : ℝ) = (OfNat.ofNat a : ℝ) := rfl
+
+end Rify
+
+end Tactic
+
+end Mathlib

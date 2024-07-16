@@ -57,7 +57,7 @@ theorem aeval_apply_of_hasEigenvector {f : End K V} {p : K[X]} {μ : K} {x : V}
   · intro a; simp [Module.algebraMap_end_apply]
   · intro p q hp hq; simp [hp, hq, add_smul]
   · intro n a hna
-    rw [mul_comm, pow_succ', mul_assoc, AlgHom.map_mul, LinearMap.mul_apply, mul_comm, hna]
+    rw [mul_comm, pow_succ', mul_assoc, map_mul, LinearMap.mul_apply, mul_comm, hna]
     simp only [mem_eigenspace_iff.1 h.1, smul_smul, aeval_X, eval_mul, eval_C, eval_pow, eval_X,
       LinearMap.map_smulₛₗ, RingHom.id_apply, mul_comm]
 #align module.End.aeval_apply_of_has_eigenvector Module.End.aeval_apply_of_hasEigenvector
@@ -111,3 +111,25 @@ noncomputable instance : Fintype f.Eigenvalues :=
 end End
 
 end Module
+
+section FiniteSpectrum
+
+/-- An endomorphism of a finite-dimensional vector space has a finite spectrum. -/
+theorem Module.End.finite_spectrum {K : Type v} {V : Type w} [Field K] [AddCommGroup V]
+    [Module K V] [FiniteDimensional K V] (f : Module.End K V) :
+    Set.Finite (spectrum K f) := by
+  convert f.finite_hasEigenvalue
+  ext f x
+  exact Module.End.hasEigenvalue_iff_mem_spectrum.symm
+
+variable {n R : Type*} [Field R] [Fintype n] [DecidableEq n]
+
+/-- An n x n matrix over a field has a finite spectrum. -/
+theorem Matrix.finite_spectrum (A : Matrix n n R) : Set.Finite (spectrum R A) := by
+  rw [← AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv <| Pi.basisFun R n) A]
+  exact Module.End.finite_spectrum _
+
+instance Matrix.instFiniteSpectrum (A : Matrix n n R) : Finite (spectrum R A) :=
+  Set.finite_coe_iff.mpr (Matrix.finite_spectrum A)
+
+end FiniteSpectrum

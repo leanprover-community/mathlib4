@@ -198,7 +198,7 @@ theorem ascPochhammer_pos (n : ℕ) (s : S) (h : 0 < s) : 0 < (ascPochhammer S n
     exact zero_lt_one
   · rw [ascPochhammer_succ_right, mul_add, eval_add, ← Nat.cast_comm, eval_natCast_mul, eval_mul_X,
       Nat.cast_comm, ← mul_add]
-    exact mul_pos ih (lt_of_lt_of_le h ((le_add_iff_nonneg_right _).mpr (Nat.cast_nonneg n)))
+    exact mul_pos ih (lt_of_lt_of_le h (le_add_of_nonneg_right (Nat.cast_nonneg n)))
 #align pochhammer_pos ascPochhammer_pos
 
 end StrictOrderedSemiring
@@ -339,7 +339,7 @@ theorem descPochhammer_succ_comp_X_sub_one (n : ℕ) :
   ring
 
 theorem descPochhammer_eq_ascPochhammer (n : ℕ) :
-    descPochhammer ℤ n = (ascPochhammer ℤ n).comp ((X:ℤ[X])  - n + 1) := by
+    descPochhammer ℤ n = (ascPochhammer ℤ n).comp ((X : ℤ[X]) - n + 1) := by
   induction n with
   | zero => rw [descPochhammer_zero, ascPochhammer_zero, one_comp]
   | succ n ih =>

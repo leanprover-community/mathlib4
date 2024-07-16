@@ -111,7 +111,7 @@ theorem gal_X_pow_sub_one_isSolvable (n : ℕ) : IsSolvable (X ^ n - 1 : F[X]).G
     exact map_rootsOfUnity_eq_pow_self σ.toAlgHom (rootsOfUnity.mkOfPowEq a ha)
   obtain ⟨c, hc⟩ := key σ
   obtain ⟨d, hd⟩ := key τ
-  rw [σ.mul_apply, τ.mul_apply, hc, τ.map_pow, hd, σ.map_pow, hc, ← pow_mul, pow_mul']
+  rw [σ.mul_apply, τ.mul_apply, hc, map_pow, hd, map_pow, hc, ← pow_mul, pow_mul']
 set_option linter.uppercaseLean3 false in
 #align gal_X_pow_sub_one_is_solvable gal_X_pow_sub_one_isSolvable
 
@@ -132,7 +132,7 @@ theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
       (c ^ n = 1 → (∃ d, algebraMap F (X ^ n - C a).SplittingField d = c)) := fun {c} hc =>
     RingHom.mem_range.mp (minpoly.mem_range_of_degree_eq_one F c (h.def.resolve_left hn'''
       (minpoly.irreducible ((SplittingField.instNormal (X ^ n - C a)).isIntegral c))
-      (minpoly.dvd F c (by rwa [map_id, AlgHom.map_sub, sub_eq_zero, aeval_X_pow, aeval_one]))))
+      (minpoly.dvd F c (by rwa [map_id, map_sub, sub_eq_zero, aeval_X_pow, aeval_one]))))
   apply isSolvable_of_comm
   intro σ τ
   ext b hb
@@ -143,13 +143,13 @@ theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
     exact ha' hb.symm
   have key : ∀ σ : (X ^ n - C a).Gal, ∃ c, σ b = b * algebraMap F _ c := by
     intro σ
-    have key : (σ b / b) ^ n = 1 := by rw [div_pow, ← σ.map_pow, hb, σ.commutes, div_self ha']
+    have key : (σ b / b) ^ n = 1 := by rw [div_pow, ← map_pow, hb, σ.commutes, div_self ha']
     obtain ⟨c, hc⟩ := mem_range key
     use c
     rw [hc, mul_div_cancel₀ (σ b) hb']
   obtain ⟨c, hc⟩ := key σ
   obtain ⟨d, hd⟩ := key τ
-  rw [σ.mul_apply, τ.mul_apply, hc, τ.map_mul, τ.commutes, hd, σ.map_mul, σ.commutes, hc,
+  rw [σ.mul_apply, τ.mul_apply, hc, map_mul, τ.commutes, hd, map_mul, σ.commutes, hc,
     mul_assoc, mul_assoc, mul_right_inj' hb', mul_comm]
 set_option linter.uppercaseLean3 false in
 #align gal_X_pow_sub_C_is_solvable_aux gal_X_pow_sub_C_isSolvable_aux
@@ -349,7 +349,7 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
     refine minpoly.eq_of_irreducible_of_monic
       (minpoly.irreducible (isIntegral γ)) ?_ (minpoly.monic (isIntegral γ))
     suffices aeval (⟨γ, hγ⟩ : F⟮α, β⟯) (minpoly F γ) = 0 by
-      rw [aeval_algHom_apply, this, AlgHom.map_zero]
+      rw [aeval_algHom_apply, this, map_zero]
     apply (algebraMap (↥F⟮α, β⟯) (solvableByRad F E)).injective
     simp only [map_zero, _root_.map_eq_zero]
     -- Porting note: end of the proof was `exact minpoly.aeval F γ`.

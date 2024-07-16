@@ -5,8 +5,10 @@ Authors: Kevin Buzzard, Mario Carneiro
 -/
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Image
+import Mathlib.Tactic.Ring
 
 #align_import data.complex.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -336,6 +338,15 @@ theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 +
   ext <;> simp [Complex.equivRealProd, ofReal']
 #align complex.equiv_real_prod_symm_apply Complex.equivRealProd_symm_apply
 
+/-- The natural `AddEquiv` from `ℂ` to `ℝ × ℝ`. -/
+@[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
+def equivRealProdAddHom : ℂ ≃+ ℝ × ℝ :=
+  { equivRealProd with map_add' := by simp }
+#align complex.equiv_real_prod_add_hom Complex.equivRealProdAddHom
+
+theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
+    equivRealProdAddHom.symm p = p.1 + p.2 * I := equivRealProd_symm_apply p
+
 /-! ### Commutative ring instance and lemmas -/
 
 
@@ -415,7 +426,7 @@ instance addGroupWithOne : AddGroupWithOne ℂ :=
     intCast_negSucc := fun n => by
       ext
       · simp [AddGroupWithOne.intCast_negSucc]
-        show -(1: ℝ) + (-n) = -(↑(n + 1))
+        show -(1 : ℝ) + (-n) = -(↑(n + 1))
         simp [Nat.cast_add, add_comm]
       · simp [AddGroupWithOne.intCast_negSucc]
         show im ⟨n, 0⟩ = 0
@@ -479,17 +490,8 @@ theorem coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
 #align complex.coe_im_add_group_hom Complex.coe_imAddGroupHom
 
 section
-set_option linter.deprecated false
-@[simp]
-theorem I_pow_bit0 (n : ℕ) : I ^ bit0 n = (-1 : ℂ) ^ n := by rw [pow_bit0', Complex.I_mul_I]
-set_option linter.uppercaseLean3 false in
-#align complex.I_pow_bit0 Complex.I_pow_bit0
-
-@[simp]
-theorem I_pow_bit1 (n : ℕ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [pow_bit1', Complex.I_mul_I]
-set_option linter.uppercaseLean3 false in
-#align complex.I_pow_bit1 Complex.I_pow_bit1
-
+#noalign complex.I_pow_bit0
+#noalign complex.I_pow_bit1
 end
 
 /-! ### Cast lemmas -/
@@ -615,8 +617,7 @@ theorem star_def : (Star.star : ℂ → ℂ) = conj :=
 
 
 /-- The norm squared function. -/
--- Porting note: `@[pp_nodot]` not found
--- @[pp_nodot]
+@[pp_nodot]
 def normSq : ℂ →*₀ ℝ where
   toFun z := z.re * z.re + z.im * z.im
   map_zero' := by simp
@@ -708,10 +709,7 @@ theorem normSq_pos {z : ℂ} : 0 < normSq z ↔ z ≠ 0 :=
   (normSq_nonneg z).lt_iff_ne.trans <| not_congr (eq_comm.trans normSq_eq_zero)
 #align complex.norm_sq_pos Complex.normSq_pos
 
-#adaptation_note /-- nightly-2024-04-01
-The simpNF linter now times out on this lemma.
-See https://github.com/leanprover-community/mathlib4/issues/12228 -/
-@[simp, nolint simpNF]
+@[simp]
 theorem normSq_neg (z : ℂ) : normSq (-z) = normSq z := by simp [normSq]
 #align complex.norm_sq_neg Complex.normSq_neg
 

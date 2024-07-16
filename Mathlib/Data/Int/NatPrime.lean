@@ -3,7 +3,7 @@ Copyright (c) 2020 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker, Bryan Gin-ge Chen
 -/
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Basic
 
 #align_import data.int.nat_prime from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
@@ -38,3 +38,5 @@ theorem Prime.dvd_natAbs_of_coe_dvd_sq {p : ℕ} (hp : p.Prime) (k : ℤ) (h : (
   apply @Nat.Prime.dvd_of_dvd_pow _ _ 2 hp
   rwa [sq, ← natAbs_mul, ← natCast_dvd, ← sq]
 #align int.prime.dvd_nat_abs_of_coe_dvd_sq Int.Prime.dvd_natAbs_of_coe_dvd_sq
+
+end Int
