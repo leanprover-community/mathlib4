@@ -53,7 +53,7 @@ variable {M₁ : Type*} {M₂ : Type*} [Mul M₁]
 
 /-- A type endowed with `*` has cancellative multiplication, if it admits an injective map that
 preserves `*` to a type with cancellative multiplication. See note [reducible non-instances]. -/
-@[to_additive (attr := reducible) isCancelAdd "A type endowed with `+` has
+@[to_additive isCancelAdd "A type endowed with `+` has
 cancellative addition, if it admits an injective map that preserves `+` to a type with
 cancellative addition."]
 theorem isCancelMul [Mul M₂] [IsCancelMul M₂]
