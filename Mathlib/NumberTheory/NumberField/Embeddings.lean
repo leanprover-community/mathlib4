@@ -9,7 +9,6 @@ import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Norm.Basic
 import Mathlib.Topology.Instances.Complex
 import Mathlib.RingTheory.RootsOfUnity.Basic
-import Mathlib.Topology.Algebra.UniformField
 
 #align_import number_theory.number_field.embeddings from "leanprover-community/mathlib"@"caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c"
 
