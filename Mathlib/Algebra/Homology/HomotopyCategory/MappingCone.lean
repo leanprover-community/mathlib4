@@ -550,8 +550,12 @@ variable (H : C ⥤ D) [H.Additive]
   [HasHomotopyCofiber ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)]
 
 /-- If `H : C ⥤ D` is an additive functor and `φ` is a morphism of cochain complexes
-in `C`, this is the comparison isomorphism (in each degree) between the image
-by `H` of `mappingCone φ` and the mapping cone of the image by `H` of `φ`. -/
+in `C`, this is the comparison isomorphism (in each degree `n`) between the image
+by `H` of `mappingCone φ` and the mapping cone of the image by `H` of `φ`.
+It is an auxiliary definition for `mapHomologicalComplexXIso` and
+`mapHomologicalComplexIso`. This definition takes an extra
+parameter `m : ℤ` such that `n + 1 = m` which may help getting better
+definitional properties. See also the equational lemma `mapHomologicalComplexXIso_eq`. -/
 @[simps]
 noncomputable def mapHomologicalComplexXIso' (n m : ℤ) (hnm : n + 1 = m) :
     ((H.mapHomologicalComplex (ComplexShape.up ℤ)).obj (mappingCone φ)).X n ≅
@@ -583,7 +587,7 @@ by `H` of `mappingCone φ` and the mapping cone of the image by `H` of `φ`. -/
 noncomputable def mapHomologicalComplexXIso (n : ℤ) :
     ((H.mapHomologicalComplex (ComplexShape.up ℤ)).obj (mappingCone φ)).X n ≅
       (mappingCone ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).X n :=
-  mapHomologicalComplexXIso' φ H n (n+1) rfl
+  mapHomologicalComplexXIso' φ H n (n + 1) rfl
 
 lemma mapHomologicalComplexXIso_eq (n m : ℤ) (hnm : n + 1 = m) :
     mapHomologicalComplexXIso φ H n = mapHomologicalComplexXIso' φ H n m hnm := by
