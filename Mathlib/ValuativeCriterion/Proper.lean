@@ -16,6 +16,9 @@ class IsProper extends IsSeparated f, UniversallyClosed f, LocallyOfFiniteType f
 
 -- by def
 lemma isProper_eq : @IsProper =
-    (@IsSeparated ⊓ @UniversallyClosed : MorphismProperty Scheme) ⊓ @LocallyOfFiniteType := sorry
+    (@IsSeparated ⊓ @UniversallyClosed : MorphismProperty Scheme) ⊓ @LocallyOfFiniteType := by
+  ext X Y f
+  rw [isProper_iff, ← and_assoc]
+  rfl
 
 end AlgebraicGeometry
