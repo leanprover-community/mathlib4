@@ -169,9 +169,7 @@ variable [CompleteSemilatticeInf P] {F : PFilter P}
 
 theorem sInf_gc :
     GaloisConnection (fun x => toDual (principal x)) fun F => sInf (ofDual F : PFilter P) :=
-  fun x F => by
-  simp only [le_sInf_iff, SetLike.mem_coe]
-  rfl
+  fun x F => by simp only [le_sInf_iff, SetLike.mem_coe, toDual_le, SetLike.le_def, mem_principal]
 #align order.pfilter.Inf_gc Order.PFilter.sInf_gc
 
 /-- If a poset `P` admits arbitrary `Inf`s, then `principal` and `Inf` form a Galois coinsertion. -/

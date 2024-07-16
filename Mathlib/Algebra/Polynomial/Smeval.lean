@@ -30,7 +30,7 @@ is a generalization of `Algebra.Polynomial.Eval`.
 * `smeval_mul`, `smeval_comp`: multiplicativity of evaluation, given power-associativity.
 * `eval₂_eq_smeval`, `leval_eq_smeval.linearMap`, `aeval = smeval.algebraMap`, etc.: comparisons
 
-## To do
+## TODO
 
 * `smeval_neg` and `smeval_intCast` for `R` a ring and `S` an `AddCommGroup`.
 * Nonunital evaluation for polynomials with vanishing constant term for `Pow S ℕ+` (different file?)
@@ -67,7 +67,7 @@ theorem eval_eq_smeval : p.eval r = p.smeval r := by
   rfl
 
 theorem eval₂_eq_smeval (R : Type*) [Semiring R] {S : Type*} [Semiring S] (f : R →+* S) (p : R[X])
-    (x: S) : letI : Module R S := RingHom.toModule f
+    (x : S) : letI : Module R S := RingHom.toModule f
     p.eval₂ f x = p.smeval x := by
   letI : Module R S := RingHom.toModule f
   rw [smeval_eq_sum, eval₂_eq_sum]
@@ -186,7 +186,7 @@ variable (R : Type*) [Semiring R] {p : R[X]} (r : R) (p q : R[X]) {S : Type*}
   [NonAssocSemiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S] [Pow S ℕ]
   [NatPowAssoc S] (x : S)
 
-theorem smeval_at_natCast (q : ℕ[X]): ∀(n : ℕ), q.smeval (n : S) = q.smeval n := by
+theorem smeval_at_natCast (q : ℕ[X]) : ∀(n : ℕ), q.smeval (n : S) = q.smeval n := by
   induction q using Polynomial.induction_on' with
   | h_add p q ph qh =>
     intro n
@@ -304,3 +304,5 @@ theorem aeval_coe_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S
     (x : S) : ⇑(aeval x) = fun (p : R[X]) => p.smeval x := funext fun p => aeval_eq_smeval x p
 
 end Algebra
+
+end Polynomial

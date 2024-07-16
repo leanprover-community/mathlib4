@@ -38,8 +38,6 @@ See chapter 8 of [Barry Simon, *Convexity*][simon2011]
 ## TODO
 
 Prove lemmas relating extreme sets and points to the intrinsic frontier.
-
-More not-yet-PRed stuff is available on the mathlib3 branch `sperner_again`.
 -/
 
 

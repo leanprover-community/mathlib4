@@ -31,6 +31,7 @@ for this.)
 -/
 
 
+open Mathlib (Vector)
 open Denumerable Encodable Function
 
 namespace Nat
@@ -1440,7 +1441,7 @@ end Primrec
 
 namespace Nat
 
-open Vector
+open Mathlib.Vector
 
 /-- An alternative inductive definition of `Primrec` which
   does not use the pairing function on ℕ, and so has to
@@ -1464,7 +1465,7 @@ end Nat
 
 namespace Nat.Primrec'
 
-open Vector Primrec
+open Mathlib.Vector Primrec
 
 theorem to_prim {n f} (pf : @Nat.Primrec' n f) : Primrec f := by
   induction pf with
@@ -1581,8 +1582,8 @@ theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
     have :=
       @prec' 1 _ _
         (fun v => by
-          have x := v.head; have y := v.tail.head;
-            exact if x.succ < y.succ * y.succ then y else y.succ)
+          have x := v.head; have y := v.tail.head
+          exact if x.succ < y.succ * y.succ then y else y.succ)
         head (const 0) ?_
     · exact this
     have x1 : @Primrec' 3 fun v => v.head.succ := succ.comp₁ _ head

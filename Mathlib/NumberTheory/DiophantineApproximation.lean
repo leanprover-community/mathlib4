@@ -49,7 +49,7 @@ Both statements are combined to give an equivalence,
 
 There are two versions of Legendre's Theorem. One, `Real.exists_rat_eq_convergent`, uses
 `Real.convergent`, a simple recursive definition of the convergents that is also defined
-in this file, whereas the other, `Real.exists_genContFract_convs_eq_rat`, uses
+in this file, whereas the other, `Real.exists_convs_eq_rat`, uses
 `GenContFract.convs` of `GenContFract.of ξ`.
 
 ## Implementation notes
@@ -595,10 +595,10 @@ theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
 This is the version using `GenContFract.convs`. -/
-theorem exists_genContFract_convs_eq_rat {q : ℚ}
+theorem exists_convs_eq_rat {q : ℚ}
     (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) : ∃ n, (GenContFract.of ξ).convs n = q := by
   obtain ⟨n, hn⟩ := exists_rat_eq_convergent h
   exact ⟨n, hn.symm ▸ convs_eq_convergent ξ n⟩
-#align real.exists_continued_fraction_convergent_eq_rat Real.exists_genContFract_convs_eq_rat
+#align real.exists_continued_fraction_convergent_eq_rat Real.exists_convs_eq_rat
 
 end Real
