@@ -7,6 +7,8 @@ import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.TypesFiltered
 import Mathlib.CategoryTheory.Limits.Yoneda
+import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Tactic.CategoryTheory.Elementwise
 
 #align_import category_theory.limits.concrete_category from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 
@@ -152,6 +154,33 @@ theorem Concrete.colimit_rep_eq_zero
     Concrete.colimit_rep_eq_iff_exists] at hx
   obtain ⟨j', i, y, g⟩ := hx
   exact ⟨j', i, g ▸ by simp⟩
+
+/--
+if `r` has no zero smul divisors for all small-enough sections, then `r` has no zero smul divisors
+on the level of stalks.
+-/
+lemma Concrete.colimit_no_zero_smul_divisor [HasColimit F]
+    (R : Type*) [Semiring R]
+    [∀ c : C, AddCommMonoid c]
+    [∀ c : C, Module R c] [∀ {c c' : C}, LinearMapClass (c ⟶ c') R c c']
+    (r : R)
+    (no_zero_smul_divisor :
+      ∃ (j' : J), ∀ (j : J) (_ : j' ⟶ j), ∀ (c : F.obj j), r • c = 0 → c = 0)
+    (x : (forget C).obj (colimit F)) (hx : r • x = 0) :
+    x = 0 := by
+  classical
+  obtain ⟨j, x, rfl⟩ := Concrete.colimit_exists_rep F x
+  rw [← LinearMapClass.map_smul] at hx
+  obtain ⟨j', i, h⟩ := Concrete.colimit_rep_eq_zero (hx := hx)
+  obtain ⟨j'', H⟩ := no_zero_smul_divisor
+  let s : J := IsFiltered.sup {j, j', j''} { ⟨j, j', by simp, by simp, i⟩ }
+  replace H := H s (IsFiltered.toSup _ _ $ by simp) (F.map (IsFiltered.toSup _ _ $ by simp) x)
+  rw [← LinearMapClass.map_smul, ← IsFiltered.toSup_commutes, F.map_comp, comp_apply, h, map_zero,
+    ← F.map_comp, IsFiltered.toSup_commutes] at H
+  have := congr(colimit.ι F _ $(H rfl))
+  all_goals try simp
+  simp only [elementwise_of% (colimit.w F), map_zero] at this
+  aesop
 
 end FilteredColimits
 

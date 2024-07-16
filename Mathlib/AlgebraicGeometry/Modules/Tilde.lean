@@ -199,6 +199,18 @@ lemma smul_section_apply (r : R) (U : Opens (PrimeSpectrum.Top R))
     (s : (tildeInModuleCat M).1.obj (op U)) (x : U) :
     (r • s).1 x = r • (s.1 x) := rfl
 
+lemma smul_stalk_no_nonzero_divisor {x : PrimeSpectrum R}
+    (r : x.asIdeal.primeCompl) (st : (tildeInModuleCat M).stalk x) (hst : r.1 • st = 0) :
+    st = 0 := by
+  apply Limits.Concrete.colimit_no_zero_smul_divisor
+    (C := ModuleCat.{u} R) (R := R) (hx := hst)
+  refine ⟨op ⟨PrimeSpectrum.basicOpen r.1, r.2⟩, ?_⟩
+  rintro ⟨⟨U, mem_U⟩⟩ i (s : M.tildeInModuleCat.obj (op U)) hs
+  refine Subtype.eq $ funext fun pt ↦ show s.1 pt = 0 from ?_
+  have eq : r.1 • s.1 pt = 0 := congr_fun (Subtype.ext_iff.1 hs) pt
+  apply LocalizedModule.eq_zero_of_smul_eq_zero (hx := eq)
+  exact i.unop pt |>.2
+
 /--
 If `U` is an open subset of `Spec R`, this is the morphism of `R`-modules from `M` to
 `M^~(U)`.
@@ -232,21 +244,7 @@ lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
     IsUnit ((algebraMap R (Module.End R ((tildeInModuleCat M).stalk x))) r) := by
   rw [Module.End_isUnit_iff]
   refine ⟨LinearMap.ker_eq_bot.1 $ eq_bot_iff.2 fun st (h : r.1 • st = 0) ↦ ?_, fun st ↦ ?_⟩
-  · simp only [LinearMap.mem_ker, Module.algebraMap_end_apply, Submodule.mem_bot] at h ⊢
-    obtain ⟨U, mem, s, rfl⟩ := TopCat.Presheaf.germ_exist (F := (tildeInModuleCat M)) x st
-    erw [← (M.tildeInModuleCat.germ ⟨x, mem⟩).map_smul r.1 s] at h
-    obtain ⟨⟨⟨W, (mem_W : x ∈ W)⟩⟩, iU, (h : M.tildeInModuleCat.map _ _ = 0)⟩ :=
-      Limits.Concrete.colimit_rep_eq_zero (hx := h)
-    obtain ⟨W', mem_W', iW, num, _, _⟩ := (tildeInModuleCat M).map iU s |>.2 ⟨x, mem_W⟩
-    let O := W' ⊓ (PrimeSpectrum.basicOpen r)
-    suffices (tildeInModuleCat M).map
-        (op $ (homOfLE $ inf_le_left.trans (leOfHom $ iW ≫ iU.unop) : O ⟶ U)) s = 0 by
-      rw [congr((tildeInModuleCat M).germ (⟨x, ⟨mem_W', r.2⟩⟩ :
-        (W' ⊓ PrimeSpectrum.basicOpen r.1 : Opens _)) $this).symm.trans
-        (TopCat.Presheaf.germ_res_apply _ _ _ _) |>.symm, map_zero]
-
-    exact Subtype.ext $ funext fun q ↦ eq_zero_of_smul_eq_zero (hr := q.2.2)
-      (hx := congr_fun (Subtype.ext_iff.1 congr(M.tildeInModuleCat.map (op iW) $h)) ⟨q.1, q.2.1⟩)
+  · exact smul_stalk_no_nonzero_divisor M r st h
 
   · obtain ⟨U, mem, s, rfl⟩ := TopCat.Presheaf.germ_exist (F := (tildeInModuleCat M)) x st
     let O := U ⊓ (PrimeSpectrum.basicOpen r)
