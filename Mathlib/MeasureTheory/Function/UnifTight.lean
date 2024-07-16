@@ -52,7 +52,7 @@ exists some measurable set `s` with finite measure such that the Lp-norm of
 def UnifTight {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
   ∀ ⦃ε : ℝ≥0⦄, 0 < ε → ∃ s : Set α, μ s ≠ ∞ ∧ ∀ i, snorm (sᶜ.indicator (f i)) p μ ≤ ε
 
-theorem unifTight_ennreal_iff {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
+theorem unifTight_iff_ennreal {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
     UnifTight f p μ ↔ ∀ ⦃ε : ℝ≥0∞⦄, 0 < ε → ∃ s : Set α,
       μ s ≠ ∞ ∧ ∀ i, snorm (sᶜ.indicator (f i)) p μ ≤ ε := by
   constructor
@@ -68,7 +68,7 @@ theorem unifTight_ennreal_iff {_ : MeasurableSpace α} (f : ι → α → β) (p
     have heε := ENNReal.coe_pos.mpr hε
     exact hut heε
 
-theorem unifTight_real_iff {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
+theorem unifTight_iff_real {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
     UnifTight f p μ ↔ ∀ ⦃ε : ℝ⦄, 0 < ε → ∃ s : Set α,
       μ s ≠ ∞ ∧ ∀ i, snorm (sᶜ.indicator (f i)) p μ ≤ .ofReal ε := by
   constructor
@@ -141,7 +141,7 @@ protected theorem aeeq (hf : UnifTight f p μ) (hfg : ∀ n, f n =ᵐ[μ] g n) :
 
 end UnifTight
 
-/-- If two functions agree a.e., one is tight iff the other is tight. -/
+/-- If two functions agree a.e., then one is tight iff the other is tight. -/
 theorem unifTight_congr_ae {g : ι → α → β} (hfg : ∀ n, f n =ᵐ[μ] g n) :
     UnifTight f p μ ↔ UnifTight g p μ :=
   ⟨fun h => h.aeeq hfg, fun h => h.aeeq fun i => (hfg i).symm⟩
