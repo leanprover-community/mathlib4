@@ -1265,11 +1265,12 @@ noncomputable def fintypeOfAlgHomAdjoinIntegral (h : IsIntegral F α) : Fintype 
   PowerBasis.AlgHom.fintype (adjoin.powerBasis h)
 #align intermediate_field.fintype_of_alg_hom_adjoin_integral IntermediateField.fintypeOfAlgHomAdjoinIntegral
 
-theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : (minpoly F α).Separable)
+theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F α)
     (h_splits : (minpoly F α).Splits (algebraMap F K)) :
     @Fintype.card (F⟮α⟯ →ₐ[F] K) (fintypeOfAlgHomAdjoinIntegral F h) = (minpoly F α).natDegree := by
   rw [AlgHom.card_of_powerBasis] <;>
-    simp only [adjoin.powerBasis_dim, adjoin.powerBasis_gen, minpoly_gen, h_sep, h_splits]
+    simp only [IsSeparable, adjoin.powerBasis_dim, adjoin.powerBasis_gen, minpoly_gen, h_splits]
+  exact h_sep
 #align intermediate_field.card_alg_hom_adjoin_integral IntermediateField.card_algHom_adjoin_integral
 
 -- Apparently `K⟮root f⟯ →+* K⟮root f⟯` is expensive to unify during instance synthesis.
@@ -1432,8 +1433,8 @@ theorem algEquivOfEq_apply_root {p q : K[X]} (hp : p ≠ 0) (h_eq : p = q) :
     algEquivOfEq hp h_eq (root p) = root q := by
   rw [← coe_algHom, algEquivOfEq_toAlgHom, liftHom_root]
 
-/-- The canonical algebraic equivalence between `AdjoinRoot p` and `AdjoinRoot q`, where
-  the two polynomial `p q : K[X]` are associated.-/
+/-- The canonical algebraic equivalence between `AdjoinRoot p` and `AdjoinRoot q`,
+where the two polynomials `p q : K[X]` are associated.-/
 noncomputable def algEquivOfAssociated {p q : K[X]} (hp : p ≠ 0) (hpq : Associated p q) :
     AdjoinRoot p ≃ₐ[K] AdjoinRoot q :=
   ofAlgHom (liftHom p (root q) (by simp only [aeval_eq, mk_eq_zero, hpq.symm.dvd] ))

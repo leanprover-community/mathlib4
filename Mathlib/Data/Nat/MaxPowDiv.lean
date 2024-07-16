@@ -107,3 +107,7 @@ theorem le_of_dvd {p n pow : ℕ} (hp : 1 < p) (hn : 0 < n) (h : p ^ pow ∣ n) 
     rw [h',mul_zero] at hc
     exact not_eq_zero_of_lt hn hc
   simp [hc, base_pow_mul hp this]
+
+end maxPowDiv
+
+end Nat

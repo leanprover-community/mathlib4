@@ -48,7 +48,7 @@ theorem zero_pow_le_one : ∀ n : ℕ, (0 : R) ^ n ≤ 1
 
 theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y ^ n ≤ (x + y) ^ n := by
   rcases Nat.exists_eq_succ_of_ne_zero hn with ⟨k, rfl⟩
-  induction' k with k ih;
+  induction' k with k ih
   · have eqn : Nat.succ Nat.zero = 1 := rfl
     rw [eqn]
     simp only [pow_one, le_refl]
@@ -393,43 +393,15 @@ lemma pow_four_le_pow_two_of_pow_two_le (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
   (pow_mul a 2 2).symm ▸ pow_le_pow_left (sq_nonneg a) h 2
 #align pow_four_le_pow_two_of_pow_two_le pow_four_le_pow_two_of_pow_two_le
 
-section deprecated
-set_option linter.deprecated false
+#noalign pow_bit0_nonneg
+#noalign pow_bit0_pos
+#noalign pow_bit0_pos_iff
+#noalign pow_bit1_neg_iff
+#noalign pow_bit1_nonneg_iff
+#noalign pow_bit1_nonpos_iff
+#noalign pow_bit1_pos_iff
+#noalign strict_mono_pow_bit1
 
-@[deprecated Even.pow_nonneg (since := "2024-04-06")]
-lemma pow_bit0_nonneg (a : R) (n : ℕ) : 0 ≤ a ^ bit0 n := (even_bit0 _).pow_nonneg _
-#align pow_bit0_nonneg pow_bit0_nonneg
-
-@[deprecated Even.pow_pos (since := "2024-04-06")]
-lemma pow_bit0_pos {a : R} (h : a ≠ 0) (n : ℕ) : 0 < a ^ bit0 n := (even_bit0 _).pow_pos h
-#align pow_bit0_pos pow_bit0_pos
-
-@[deprecated Even.pow_pos_iff (since := "2024-04-06")]
-lemma pow_bit0_pos_iff (a : R) {n : ℕ} (hn : n ≠ 0) : 0 < a ^ bit0 n ↔ a ≠ 0 :=
-  (even_bit0 _).pow_pos_iff (by simpa [bit0])
-#align pow_bit0_pos_iff pow_bit0_pos_iff
-
-@[simp, deprecated Odd.pow_neg_iff (since := "2024-04-06")]
-lemma pow_bit1_neg_iff : a ^ bit1 n < 0 ↔ a < 0 := (odd_bit1 _).pow_neg_iff
-#align pow_bit1_neg_iff pow_bit1_neg_iff
-
-@[simp, deprecated Odd.pow_nonneg_iff (since := "2024-04-06")]
-lemma pow_bit1_nonneg_iff : 0 ≤ a ^ bit1 n ↔ 0 ≤ a := (odd_bit1 _).pow_nonneg_iff
-#align pow_bit1_nonneg_iff pow_bit1_nonneg_iff
-
-@[simp, deprecated Odd.pow_nonpos_iff (since := "2024-04-06")]
-lemma pow_bit1_nonpos_iff : a ^ bit1 n ≤ 0 ↔ a ≤ 0 := (odd_bit1 _).pow_nonpos_iff
-#align pow_bit1_nonpos_iff pow_bit1_nonpos_iff
-
-@[simp, deprecated Odd.pow_pos_iff (since := "2024-04-06")]
-lemma pow_bit1_pos_iff : 0 < a ^ bit1 n ↔ 0 < a := (odd_bit1 _).pow_pos_iff
-#align pow_bit1_pos_iff pow_bit1_pos_iff
-
-@[deprecated Odd.strictMono_pow (since := "2024-04-06")]
-lemma strictMono_pow_bit1 (n : ℕ) : StrictMono (· ^ bit1 n : R → R) := (odd_bit1 _).strictMono_pow
-#align strict_mono_pow_bit1 strictMono_pow_bit1
-
-end deprecated
 end LinearOrderedSemiring
 
 /-!

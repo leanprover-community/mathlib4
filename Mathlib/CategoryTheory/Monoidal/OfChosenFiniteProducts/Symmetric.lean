@@ -79,7 +79,7 @@ theorem symmetry (X Y : C) :
         (Limits.BinaryFan.braiding (ℬ Y X).isLimit (ℬ X Y).isLimit).hom =
       𝟙 (tensorObj ℬ X Y) := by
   dsimp [tensorHom, Limits.BinaryFan.braiding]
-  apply (ℬ _ _).isLimit.hom_ext;
+  apply (ℬ _ _).isLimit.hom_ext
   rintro ⟨⟨⟩⟩ <;> · dsimp [Limits.IsLimit.conePointUniqueUpToIso]; simp
 #align category_theory.monoidal_of_chosen_finite_products.symmetry CategoryTheory.MonoidalOfChosenFiniteProducts.symmetry
 

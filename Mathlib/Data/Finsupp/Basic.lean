@@ -349,7 +349,7 @@ theorem equivMapDomain_zero {f : α ≃ β} : equivMapDomain f (0 : α →₀ M)
 #align finsupp.equiv_map_domain_zero Finsupp.equivMapDomain_zero
 
 @[to_additive (attr := simp)]
-theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g : β → M → N):
+theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g : β → M → N) :
     prod (equivMapDomain f l) g = prod l (fun a m => g (f a) m) := by
   simp [prod, equivMapDomain]
 
@@ -1073,7 +1073,7 @@ def subtypeDomainAddMonoidHom : (α →₀ M) →+ Subtype p →₀ M where
 #align finsupp.subtype_domain_add_monoid_hom Finsupp.subtypeDomainAddMonoidHom
 
 /-- `Finsupp.filter` as an `AddMonoidHom`. -/
-def filterAddHom (p : α → Prop) [DecidablePred p]: (α →₀ M) →+ α →₀ M where
+def filterAddHom (p : α → Prop) [DecidablePred p] : (α →₀ M) →+ α →₀ M where
   toFun := filter p
   map_zero' := filter_zero p
   map_add' f g := DFunLike.coe_injective <| by
