@@ -39,10 +39,18 @@ namespace FGModuleCat
 variable {J : Type} [SmallCategory J] [FinCategory J]
 variable {k : Type v} [Field k]
 
+variable {R : Type v} [Ring R] [IsNoetherianRing R]
+
 instance {J : Type} [Finite J] (Z : J → ModuleCat.{v} k) [∀ j, FiniteDimensional k (Z j)] :
     FiniteDimensional k (∏ᶜ fun j => Z j : ModuleCat.{v} k) :=
   haveI : FiniteDimensional k (ModuleCat.of k (∀ j, Z j)) := by unfold ModuleCat.of; infer_instance
   FiniteDimensional.of_injective (ModuleCat.piIsoPi _).hom
+    ((ModuleCat.mono_iff_injective _).1 (by infer_instance))
+
+instance {J : Type} [Finite J] (Z : J → ModuleCat R) [∀ j, Module.Finite R (Z j)] :
+    Module.Finite R (∏ fun j => Z j : ModuleCat R) :=
+  haveI : Module.Finite R (ModuleCat.of R (∀ j, Z j)) := by unfold ModuleCat.of; infer_instance
+  Module.Finite.of_injective (ModuleCat.piIsoPi _).hom
     ((ModuleCat.mono_iff_injective _).1 (by infer_instance))
 
 /-- Finite limits of finite dimensional vectors spaces are finite dimensional,
@@ -55,6 +63,14 @@ instance (F : J ⥤ FGModuleCat k) :
     (limitSubobjectProduct (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)))
     ((ModuleCat.mono_iff_injective _).1 inferInstance)
 
+instance (F : J ⥤ FGModuleCat R) :
+    Module.Finite R (limit (F ⋙ forget₂ (FGModuleCat R) (ModuleCat.{v} R)) : ModuleCat.{v} R) :=
+  haveI : ∀ j, Module.Finite R ((F ⋙ forget₂ (FGModuleCat R) (ModuleCat.{v} R)).obj j) := by
+    intro j; change Module.Finite R (F.obj j); infer_instance
+  Module.Finite.of_injective
+    (limitSubobjectProduct (F ⋙ forget₂ (FGModuleCat R) (ModuleCat.{v} R)))
+    ((ModuleCat.mono_iff_injective _).1 inferInstance)
+
 /-- The forgetful functor from `FGModuleCat k` to `ModuleCat k` creates all finite limits. -/
 def forget₂CreatesLimit (F : J ⥤ FGModuleCat k) :
     CreatesLimit F (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) :=
@@ -64,18 +80,40 @@ def forget₂CreatesLimit (F : J ⥤ FGModuleCat k) :
 set_option linter.uppercaseLean3 false in
 #align fgModule.forget₂_creates_limit FGModuleCat.forget₂CreatesLimit
 
+/-- The forgetful functor from `FGModuleCat R` to `ModuleCat R` creates all finite limits when `R`
+is Noetherian. -/
+def forget₂CreatesLimitOfNoetherian (F : J ⥤ FGModuleCat R) :
+    CreatesLimit F (forget₂ (FGModuleCat R) (ModuleCat.{v} R)) :=
+  createsLimitOfFullyFaithfulOfIso
+    ⟨(limit (F ⋙ forget₂ (FGModuleCat R) (ModuleCat.{v} R)) : ModuleCat.{v} R), inferInstance⟩
+    (Iso.refl _)
+
 instance : CreatesLimitsOfShape J (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where
   CreatesLimit {F} := forget₂CreatesLimit F
+
+instance : CreatesLimitsOfShape J (forget₂ (FGModuleCat R) (ModuleCat.{v} R)) where
+  CreatesLimit {F} := forget₂CreatesLimitOfNoetherian F
 
 instance (J : Type) [Category J] [FinCategory J] :
     HasLimitsOfShape J (FGModuleCat.{v} k) :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape
     (forget₂ (FGModuleCat k) (ModuleCat.{v} k))
 
+instance (J : Type) [Category J] [FinCategory J] :
+    HasLimitsOfShape J (FGModuleCat.{v} R) :=
+  hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape
+    (forget₂ (FGModuleCat R) (ModuleCat.{v} R))
+
 instance : HasFiniteLimits (FGModuleCat k) where
   out _ _ _ := inferInstance
 
+instance : HasFiniteLimits (FGModuleCat R) where
+  out _ _ _ := inferInstance
+
 instance : PreservesFiniteLimits (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where
+  preservesFiniteLimits _ _ _ := inferInstance
+
+instance : PreservesFiniteLimits (forget₂ (FGModuleCat R) (ModuleCat.{v} R)) where
   preservesFiniteLimits _ _ _ := inferInstance
 
 end FGModuleCat

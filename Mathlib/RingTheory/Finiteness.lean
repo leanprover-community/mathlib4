@@ -244,6 +244,14 @@ theorem FG.prod {sb : Submodule R M} {sc : Submodule R P} (hsb : sb.FG) (hsc : s
       by rw [LinearMap.span_inl_union_inr, htb.2, htc.2]⟩
 #align submodule.fg.prod Submodule.FG.prod
 
+/--
+A finite subset of `R` which spans the finitely generated ideal `I.toIdeal`.
+-/
+noncomputable def FG.spanningSet {I : Submodule R M} (hI : I.FG) : Finset M := hI.choose
+
+lemma FG.spanningSet_span_eq {I : Submodule R M} (hI : I.FG) :
+    Submodule.span R hI.spanningSet = I := hI.choose_spec
+
 theorem fg_pi {ι : Type*} {M : ι → Type*} [Finite ι] [∀ i, AddCommMonoid (M i)]
     [∀ i, Module R (M i)] {p : ∀ i, Submodule R (M i)} (hsb : ∀ i, (p i).FG) :
     (Submodule.pi Set.univ p).FG := by
@@ -484,6 +492,14 @@ This is defeq to `Submodule.FG`, but unfolds more nicely. -/
 def FG (I : Ideal R) : Prop :=
   ∃ S : Finset R, Ideal.span ↑S = I
 #align ideal.fg Ideal.FG
+
+/--
+A finite subset of `R` which spans the finitely generated ideal `I.toIdeal`.
+-/
+noncomputable def FG.spanningSet (I : Ideal R) (hI : I.FG) : Finset R := hI.choose
+
+lemma FG.spanningSet_span_eq (I : Ideal R) (hI : I.FG) :
+    Ideal.span (FG.spanningSet I hI) = I := hI.choose_spec
 
 /-- The image of a finitely generated ideal is finitely generated.
 
