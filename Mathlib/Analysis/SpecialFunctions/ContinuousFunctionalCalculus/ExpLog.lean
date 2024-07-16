@@ -162,22 +162,13 @@ lemma log_smul {r : ℝ} (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) (hr :
     _ = _ := by rw [cfc_const_add _ a _ ha₁ ha₂']
 
 -- TODO: Relate the hypothesis to a notion of strict positivity
-lemma log_pow {n : ℕ} {a : A} (ha₁ : IsSelfAdjoint a := by cfc_tac)
-    (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) : log (a ^ n) = n • log a := by
-  have ha₂' : ContinuousOn Real.log (spectrum ℝ a) := by
-    refine ContinuousOn.mono Real.continuousOn_log fun x hx => ?_
-    rw [Set.mem_compl_singleton_iff]
-    exact ne_of_gt (ha₂ x hx)
-  have ha₂'' : ContinuousOn Real.log ((· ^ n) '' spectrum ℝ a)  := by
-    refine ContinuousOn.mono Real.continuousOn_log fun x hx => ?_
-    rw [Set.mem_compl_singleton_iff]
-    rw [Set.mem_image] at hx
-    obtain ⟨z, hz⟩ := hx
-    rw [← hz.2]
-    exact ne_of_gt (pow_pos (ha₂ z hz.1) n)
-  rw [log, ← cfc_pow_id (R := ℝ) a n ha₁, ← cfc_comp Real.log (· ^ n) a ha₁ ha₂'', log]
-  have hmain : Real.log ∘ (· ^ n) = fun z => n • Real.log z := by ext; simp
-  rw [hmain, cfc_smul n Real.log a ha₂']
+lemma log_pow (n : ℕ) (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x)
+    (ha₁ : IsSelfAdjoint a := by cfc_tac) : log (a ^ n) = n • log a := by
+  have : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by peel ha₂ with x hx h; exact h.ne'
+  have ha₂' : ContinuousOn Real.log (spectrum ℝ a) := by fun_prop (disch := assumption)
+  have ha₂'' : ContinuousOn Real.log ((· ^ n) '' spectrum ℝ a)  := by fun_prop (disch := aesop)
+  rw [log, ← cfc_pow_id (R := ℝ) a n ha₁, ← cfc_comp' Real.log (· ^ n) a ha₂'', log]
+  simp_rw [Real.log_pow, nsmul_eq_smul_cast ℝ n, cfc_const_mul (n : ℝ) Real.log a ha₂']
 
 end real_log
 end CFC
