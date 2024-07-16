@@ -42,8 +42,6 @@ open Function
 
 namespace Nat
 
-set_option linter.deprecated false
-
 section
 variable {f : Bool → Bool → Bool}
 
@@ -263,7 +261,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
     simp only [testBit_bit_succ] at hn hm
     have := hn' _ hn hm fun j hj => by
       convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_bit_succ]
-    have this' : 2 * n < 2 * m := Nat.mul_lt_mul' (le_refl _) this Nat.two_pos
+    have this' : 2 * n < 2 * m := Nat.mul_lt_mul_of_le_of_lt (le_refl _) this Nat.two_pos
     cases b <;> cases b'
     <;> simp only [bit_false, bit_true]
     · exact this'

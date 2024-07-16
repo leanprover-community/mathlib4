@@ -39,9 +39,8 @@ inductive Strictness (e : Q($α)) where
   | none
   deriving Repr
 
-set_option autoImplicit true in
 /-- Gives a generic description of the `positivity` result. -/
-def Strictness.toString : Strictness zα pα e → String
+def Strictness.toString {e : Q($α)} : Strictness zα pα e → String
   | positive _ => "positive"
   | nonnegative _ => "nonnegative"
   | nonzero _ => "nonzero"
@@ -118,31 +117,30 @@ initialize registerBuiltinAttribute {
     | _ => throwUnsupportedSyntax
 }
 
-variable {A : Type*}
-set_option autoImplicit true
+variable {A : Type*} {e : A}
 
 lemma lt_of_le_of_ne' {a b : A} [PartialOrder A] :
     (a : A) ≤ b → b ≠ a → a < b := fun h₁ h₂ => lt_of_le_of_ne h₁ h₂.symm
 
-lemma pos_of_isNat [StrictOrderedSemiring A]
+lemma pos_of_isNat {n : ℕ} [StrictOrderedSemiring A]
     (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 0 < (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
   apply Nat.cast_pos.2
   simpa using w
 
-lemma nonneg_of_isNat [OrderedSemiring A]
+lemma nonneg_of_isNat {n : ℕ} [OrderedSemiring A]
     (h : NormNum.IsNat e n) : 0 ≤ (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
   exact Nat.cast_nonneg n
 
-lemma nz_of_isNegNat [StrictOrderedRing A]
+lemma nz_of_isNegNat {n : ℕ} [StrictOrderedRing A]
     (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.ble 1 n = true) : (e : A) ≠ 0 := by
   rw [NormNum.IsInt.neg_to_eq h rfl]
   simp only [ne_eq, neg_eq_zero]
   apply ne_of_gt
   simpa using w
 
-lemma pos_of_isRat [LinearOrderedRing A] :
+lemma pos_of_isRat {n : ℤ} {d : ℕ} [LinearOrderedRing A] :
     (NormNum.IsRat e n d) → (decide (0 < n)) → ((0 : A) < (e : A))
   | ⟨inv, eq⟩, h => by
     have pos_invOf_d : (0 < ⅟ (d : A)) := pos_invOf_of_invertible_cast d
@@ -150,11 +148,11 @@ lemma pos_of_isRat [LinearOrderedRing A] :
     rw [eq]
     exact mul_pos pos_n pos_invOf_d
 
-lemma nonneg_of_isRat [LinearOrderedRing A] :
+lemma nonneg_of_isRat {n : ℤ} {d : ℕ} [LinearOrderedRing A] :
     (NormNum.IsRat e n d) → (decide (n = 0)) → (0 ≤ (e : A))
   | ⟨inv, eq⟩, h => by rw [eq, of_decide_eq_true h]; simp
 
-lemma nz_of_isRat [LinearOrderedRing A] :
+lemma nz_of_isRat {n : ℤ} {d : ℕ} [LinearOrderedRing A] :
     (NormNum.IsRat e n d) → (decide (n < 0)) → ((e : A) ≠ 0)
   | ⟨inv, eq⟩, h => by
     have pos_invOf_d : (0 < ⅟ (d : A)) := pos_invOf_of_invertible_cast d
@@ -166,7 +164,7 @@ lemma nz_of_isRat [LinearOrderedRing A] :
 variable {zα pα} in
 /-- Converts a `MetaM Strictness` which can fail
 into one that never fails and returns `.none` instead. -/
-def catchNone (t : MetaM (Strictness zα pα e)) : MetaM (Strictness zα pα e) :=
+def catchNone {e : Q($α)} (t : MetaM (Strictness zα pα e)) : MetaM (Strictness zα pα e) :=
   try t catch e =>
     trace[Tactic.positivity.failure] "{e.toMessageData}"
     pure .none
@@ -174,7 +172,7 @@ def catchNone (t : MetaM (Strictness zα pα e)) : MetaM (Strictness zα pα e) 
 variable {zα pα} in
 /-- Converts a `MetaM Strictness` which can return `.none`
 into one which never returns `.none` but fails instead. -/
-def throwNone [Monad m] [Alternative m]
+def throwNone {m : Type → Type*} {e : Q($α)} [Monad m] [Alternative m]
     (t : m (Strictness zα pα e)) : m (Strictness zα pα e) := do
   match ← t with
   | .none => failure
@@ -298,7 +296,7 @@ variable {zα pα} in
 It assumes `t₁` has already been run for a result, and runs `t₂` and takes the best result.
 It will skip `t₂` if `t₁` is already a proof of `.positive`, and can also combine
 `.nonnegative` and `.nonzero` to produce a `.positive` result. -/
-def orElse (t₁ : Strictness zα pα e) (t₂ : MetaM (Strictness zα pα e)) :
+def orElse {e : Q($α)} (t₁ : Strictness zα pα e) (t₂ : MetaM (Strictness zα pα e)) :
     MetaM (Strictness zα pα e) := do
   match t₁ with
   | .none => catchNone t₂

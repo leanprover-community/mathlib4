@@ -24,7 +24,7 @@ open Qq Meta
 
 namespace Ring
 
-variable {a : Level} {arg : Q(Type a)} {sα : Q(CommSemiring «$arg»)} {a : Q(«$arg»)}
+variable {u : Level} {arg : Q(Type u)} {sα : Q(CommSemiring $arg)} {a : Q($arg)}
 
 /-- True if this represents an atomic expression. -/
 def ExBase.isAtom : ExBase sα a → Bool
