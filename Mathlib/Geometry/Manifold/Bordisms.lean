@@ -117,7 +117,8 @@ structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ)
   f : M → X
   hf : Continuous f
 
--- Declare afterwards, so I can fix the argument order above.
+-- We declare these variables *after* the definition above, so `SingularNManifold` can have
+-- its current order of arguments.
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
@@ -139,9 +140,11 @@ noncomputable def SingularNManifold.map (s : SingularNManifold X n M I)
   f := φ ∘ s.f
   hf := hφ.comp s.hf
 
--- lemma SingularNManifold.map_refl (s : SingularNManifold X n M I) :
---   (s.map (continuous_id)).f = s.refl s.hdim := sorry
+@[simp]
+lemma SingularNManifold.map_f (s : SingularNManifold X n M I) {φ : X → Y} (hφ : Continuous φ) :
+    (s.map hφ).f = φ ∘ s.f := rfl
 
+-- useful, or special case of the above?
 lemma SingularNManifold.map_comp (s : SingularNManifold X n M I)
     {φ : X → Y} {ψ : Y → Z} (hφ : Continuous φ) (hψ : Continuous ψ):
     ((s.map hφ).map hψ).f = (s.map (hψ.comp hφ)).f := rfl
