@@ -90,7 +90,7 @@ lemma basisQuotientOfLocalRing_apply {ι} [Fintype ι] (b : Basis ι R S) (i) :
   rw [coe_basisOfTopLeSpanOfCardEqFinrank, Function.comp_apply]
 
 lemma basisQuotientOfLocalRing_repr {ι} [Fintype ι] (b : Basis ι R S) (x) (i) :
-  (basisQuotientOfLocalRing b).repr (Ideal.Quotient.mk pS x) i =
+    (basisQuotientOfLocalRing b).repr (Ideal.Quotient.mk pS x) i =
     Ideal.Quotient.mk p (b.repr x i) := by
   refine congr_fun (g := Ideal.Quotient.mk p ∘ b.repr x) ?_ i
   apply (Finsupp.linearEquivFunOnFinite (R ⧸ p) _ _).symm.injective
