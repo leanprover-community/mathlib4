@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Andrew Yang
 -/
 
-import Mathlib.CategoryTheory.Adjunction.Unique
+import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.CategoryTheory.Monad.Products
@@ -88,14 +88,14 @@ noncomputable alias mapAdjunction := mapPullbackAdj
 
 /-- pullback (𝟙 X) : Over X ⥤ Over X is the identity functor. -/
 def pullbackId {X : C} : pullback (𝟙 X) ≅ 𝟭 _ :=
-  Adjunction.rightAdjointUniq (mapPullbackAdj _) (Adjunction.id.ofNatIsoLeft (Over.mapId X).symm)
+  conjugateIsoEquiv (mapPullbackAdj (𝟙 _)) (Adjunction.id (C := Over _)) (Over.mapId _).symm
 #align category_theory.over.pullback_id CategoryTheory.Over.pullbackId
 
 /-- pullback commutes with composition (up to natural isomorphism). -/
 def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
-  Adjunction.rightAdjointUniq (mapPullbackAdj _)
-    (((mapPullbackAdj _).comp (mapPullbackAdj _)).ofNatIsoLeft (Over.mapComp _ _).symm)
+  conjugateIsoEquiv (mapPullbackAdj _) ((mapPullbackAdj _).comp (mapPullbackAdj _))
+    (Over.mapComp _ _).symm
 #align category_theory.over.pullback_comp CategoryTheory.Over.pullbackComp
 
 instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) : (pullback f).IsRightAdjoint  :=
@@ -167,14 +167,15 @@ def mapPushoutAdj {X Y : C} (f : X ⟶ Y) : pushout f ⊣ map f :=
     }
   }
 
-/-- pushoutback (𝟙 X) : Over X ⥤ Over X is the identity functor. -/
+/-- pushout (𝟙 X) : Under X ⥤ Under X is the identity functor. -/
 def pushoutId {X : C} : pushout (𝟙 X) ≅ 𝟭 _ :=
-  (mapPushoutAdj (𝟙 X)).leftAdjointUniq (Adjunction.id.ofNatIsoRight mapId.symm)
+  (conjugateIsoEquiv (Adjunction.id (C := Under _)) (mapPushoutAdj (𝟙 _)) ).symm
+    (Under.mapId X).symm
 
 /-- pushout commutes with composition (up to natural isomorphism). -/
 def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : pushout (f ≫ g) ≅ pushout f ⋙ pushout g :=
-  (mapPushoutAdj (f ≫ g)).leftAdjointUniq
-    (((mapPushoutAdj f).comp (mapPushoutAdj g)).ofNatIsoRight (mapComp f g).symm)
+  (conjugateIsoEquiv ((mapPushoutAdj _).comp (mapPushoutAdj _)) (mapPushoutAdj _) ).symm
+    (mapComp f g).symm
 
 instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) : (pushout f).IsLeftAdjoint  :=
   ⟨_, ⟨mapPushoutAdj f⟩⟩
