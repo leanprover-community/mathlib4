@@ -7,6 +7,10 @@ import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Data.String.Defs
 import Mathlib.Tactic.Basic
 
+/-!
+# Miscellaneous lemmas about strings
+-/
+
 namespace String
 
 lemma congr_append : ∀ (a b : String), a ++ b = String.mk (a.data ++ b.data)

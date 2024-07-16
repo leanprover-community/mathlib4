@@ -155,8 +155,7 @@ theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Finite
   conv_lhs => rw [← Category.id_comp w, ← biproduct.total]
   simp only [Preadditive.sum_comp, Preadditive.comp_sum]
   apply Finset.sum_congr_set
-  · intros
-    simp
+  · simp
   · intro b nm
     simp only [Set.mem_preimage, Set.mem_singleton_iff] at nm
     simp only [Category.assoc]

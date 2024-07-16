@@ -25,8 +25,6 @@ Contributions assisting with this are appreciated.
 These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
 -/
 
-set_option autoImplicit true
-
 universe u v
 variable {α : Sort u}
 
