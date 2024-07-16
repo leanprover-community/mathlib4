@@ -631,6 +631,6 @@ theorem maximal_mem_Ioc (hab : a < b) : Maximal (· ∈ Ioc a b) x ↔ x = b :=
   maximal_iff_eq ⟨hab, rfl.le⟩ (fun _ ↦ And.right)
 
 /- Note : The one-sided interval versions of these lemmas are unnecessary,
-since  `simp` handles them with `maximal_le_iff` and `minimal_ge_iff`. -/
+since `simp` handles them with `maximal_le_iff` and `minimal_ge_iff`. -/
 
 end Interval
