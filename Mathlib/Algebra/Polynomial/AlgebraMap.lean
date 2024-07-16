@@ -195,6 +195,7 @@ theorem mapAlgHom_comp (C : Type z) [Semiring C] [Algebra R C] (f : B →ₐ[R] 
   simp [AlgHom.comp_algebraMap, map_map]
   congr
 
+/-- If `A` and `B` are isomorphic as `R`-algebras, then so are their polynomial rings -/
 def mapAlgEquiv (f : A ≃ₐ[R] B) : Polynomial A ≃ₐ[R] Polynomial B :=
   AlgEquiv.ofAlgHom (mapAlgHom f.toAlgHom) (mapAlgHom f.symm.toAlgHom) (by simp) (by simp)
 
