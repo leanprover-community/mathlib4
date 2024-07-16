@@ -260,14 +260,15 @@ section
 variable {sα}
 
 /-- Embed an exponent (an `ExBase, ExProd` pair) as an `ExProd` by multiplying by 1. -/
-def ExBase.toProd {α : Q(Type u)} {sα : Q(CommSemiring «$α»)} {a : Q(«$α»)} {b : Q(ℕ)} (va : ExBase sα a) (vb : ExProd sℕ b) :
+def ExBase.toProd {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a : Q($α)} {b : Q(ℕ)}
+    (va : ExBase sα a) (vb : ExProd sℕ b) :
     ExProd sα q($a ^ $b * (nat_lit 1).rawCast) := .mul va vb (.const 1 none)
 
 /-- Embed `ExProd` in `ExSum` by adding 0. -/
-def ExProd.toSum {sα : Q(CommSemiring «$α»)} {e : Q(«$α»)} (v : ExProd sα e) : ExSum sα q($e + 0) := .add v .zero
+def ExProd.toSum {sα : Q(CommSemiring $α)} {e : Q($α)} (v : ExProd sα e) : ExSum sα q($e + 0) := .add v .zero
 
 /-- Get the leading coefficient of an `ExProd`. -/
-def ExProd.coeff {sα : Q(CommSemiring «$α»)} {e : Q(«$α»)} : ExProd sα e → ℚ
+def ExProd.coeff {sα : Q(CommSemiring $α)} {e : Q($α)} : ExProd sα e → ℚ
   | .const q _ => q
   | .mul _ _ v => v.coeff
 end
@@ -299,7 +300,8 @@ If the monomials are not compatible, returns `none`.
 For example, `xy + 2xy = 3xy` is a `.nonzero` overlap, while `xy + xz` returns `none`
 and `xy + -xy = 0` is a `.zero` overlap.
 -/
-def evalAddOverlap {a b : Q(«$α»)} (va : ExProd sα a) (vb : ExProd sα b) : Option (Overlap sα q($a + $b)) :=
+def evalAddOverlap {a b : Q($α)} (va : ExProd sα a) (vb : ExProd sα b) :
+    Option (Overlap sα q($a + $b)) :=
   match va, vb with
   | .const za ha, .const zb hb => do
     let ra := Result.ofRawRat za a ha; let rb := Result.ofRawRat zb b hb
@@ -330,7 +332,8 @@ theorem add_pf_add_overlap_zero {a₁ b₁ a₂ b₂ c : R}
     (h : IsNat (a₁ + b₁) (nat_lit 0)) (h₄ : a₂ + b₂ = c) : (a₁ + a₂ : R) + (b₁ + b₂) = c := by
   subst_vars; rw [add_add_add_comm, h.1, Nat.cast_zero, add_pf_zero_add]
 
-theorem add_pf_add_lt {a₂ b c : R} (a₁ : R) (_ : a₂ + b = c) : (a₁ + a₂) + b = a₁ + c := by simp [*, add_assoc]
+theorem add_pf_add_lt {a₂ b c : R} (a₁ : R) (_ : a₂ + b = c) : (a₁ + a₂) + b = a₁ + c := by
+  simp [*, add_assoc]
 
 theorem add_pf_add_gt {a b₂ c : R} (b₁ : R) (_ : a + b₂ = c) : a + (b₁ + b₂) = b₁ + c := by
   subst_vars; simp [add_left_comm]
