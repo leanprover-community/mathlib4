@@ -50,6 +50,13 @@ git merge origin/master
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
+  echo "### [auto] Conflict resolution"
+  echo "### Automatically choosing `lean-toolchain` and `lake-manifest.json` from the 'newer' branch"
+  echo "### In this case, the 'newer' branch is 'bump/$BUMPVERSION'"
+  git checkout bump/$BUMPVERSION -- lean-toolchain lake-manifest.json
+
+# Check if there are more merge conflicts
+if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### [user] Conflict resolution"
   echo "There seem to be conflicts: please resolve them"
   echo "Open `pwd` in a new terminal and run 'git status'"
@@ -66,6 +73,13 @@ git checkout -b "bump/nightly-$NIGHTLYDATE"
 git merge --squash origin/nightly-testing
 
 # Check if there are merge conflicts
+if git diff --name-only --diff-filter=U | grep -q .; then
+  echo "### [auto] Conflict resolution"
+  echo "### Automatically choosing `lean-toolchain` and `lake-manifest.json` from the 'newer' branch"
+  echo "### In this case, the 'newer' branch is 'origin/nightly-testing'"
+  git checkout origin/nightly-testing -- lean-toolchain lake-manifest.json
+
+# Check if there are more merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### [user] Conflict resolution"
   echo "There seem to be conflicts: please resolve them"
@@ -114,6 +128,13 @@ git pull
 git merge "bump/nightly-$NIGHTLYDATE"
 
 # Check if there are merge conflicts
+if git diff --name-only --diff-filter=U | grep -q .; then
+  echo "### [auto] Conflict resolution"
+  echo "### Automatically choosing `lean-toolchain` and `lake-manifest.json` from the 'newer' branch"
+  echo "### In this case, the 'newer' branch is 'bump/nightly-$NIGHTLYDATE'"
+  git checkout bump/nightly-$NIGHTLYDATE -- lean-toolchain lake-manifest.json
+
+# Check if there are more merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### [user] Conflict resolution"
   echo "There seem to be conflicts: please resolve them"
