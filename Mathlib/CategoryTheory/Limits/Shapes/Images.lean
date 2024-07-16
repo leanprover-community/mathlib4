@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
@@ -991,10 +991,10 @@ instance (priority := 100) hasStrongEpiImages_of_hasPullbacks_of_hasEqualizers [
         { l :=
             image.lift
                 { I := pullback h y
-                  m := pullback.snd ≫ image.ι f
+                  m := pullback.snd h y ≫ image.ι f
                   m_mono := mono_comp _ _
                   e := pullback.lift _ _ sq.w } ≫
-              pullback.fst
+              pullback.fst h y
           fac_left := by simp only [image.fac_lift_assoc, pullback.lift_fst]
           fac_right := by
             apply image.ext

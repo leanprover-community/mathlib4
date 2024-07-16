@@ -414,8 +414,6 @@ theorem ghDist_eq_hausdorffDist (X : Type u) [MetricSpace X] [CompactSpace X] [N
 /-- The Gromov-Hausdorff distance defines a genuine distance on the Gromov-Hausdorff space. -/
 instance : MetricSpace GHSpace where
   dist := dist
-  -- Porting note: why does Lean 4 want this?
-  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
   dist_self x := by
     rcases exists_rep x with ⟨y, hy⟩
     refine le_antisymm ?_ ?_
@@ -812,7 +810,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
     intro p
     by_cases hp : p ∉ t
     · have : Nonempty (Equiv (∅ : Set p.Rep) (Fin 0)) := by
-        rw [← Fintype.card_eq];
+        rw [← Fintype.card_eq]
         simp only [empty_card', Fintype.card_fin]
       use ∅, 0, bot_le, this.some
       -- Porting note: unclear why this next line wasn't needed in Lean 3
@@ -832,7 +830,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
     ⟨⟨N p, lt_of_le_of_lt (hN p) (Nat.lt_succ_self _)⟩, fun a b =>
       ⟨min M ⌊ε⁻¹ * dist ((E p).symm a) ((E p).symm b)⌋₊,
         (min_le_left _ _).trans_lt (Nat.lt_succ_self _)⟩⟩
-  refine ⟨_, ?_, fun p => F p, ?_⟩;
+  refine ⟨_, ?_, fun p => F p, ?_⟩
   · infer_instance
   -- It remains to show that if `F p = F q`, then `p` and `q` are `ε`-close
   rintro ⟨p, pt⟩ ⟨q, qt⟩ hpq

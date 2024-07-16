@@ -33,27 +33,10 @@ theorem two_eq_zero : (2 : R) = 0 := by rw [← Nat.cast_two, CharP.cast_eq_zero
 theorem add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_smul R x, two_eq_zero, zero_smul]
 #align char_two.add_self_eq_zero CharTwo.add_self_eq_zero
 
-set_option linter.deprecated false in
-@[simp]
-theorem bit0_eq_zero : (bit0 : R → R) = 0 := by
-  funext
-  exact add_self_eq_zero _
-#align char_two.bit0_eq_zero CharTwo.bit0_eq_zero
-
-set_option linter.deprecated false in
-theorem bit0_apply_eq_zero (x : R) : (bit0 x : R) = 0 := by simp
-#align char_two.bit0_apply_eq_zero CharTwo.bit0_apply_eq_zero
-
-set_option linter.deprecated false in
-@[simp]
-theorem bit1_eq_one : (bit1 : R → R) = 1 := by
-  funext
-  simp [bit1]
-#align char_two.bit1_eq_one CharTwo.bit1_eq_one
-
-set_option linter.deprecated false in
-theorem bit1_apply_eq_one (x : R) : (bit1 x : R) = 1 := by simp
-#align char_two.bit1_apply_eq_one CharTwo.bit1_apply_eq_one
+#noalign char_two.bit0_eq_zero
+#noalign char_two.bit0_apply_eq_zero
+#noalign char_two.bit1_eq_one
+#noalign char_two.bit1_apply_eq_one
 
 end Semiring
 

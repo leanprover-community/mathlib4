@@ -304,10 +304,10 @@ noncomputable instance Quotient.fintype [Fintype M] (S : Submodule R M) : Fintyp
   @_root_.Quotient.fintype _ _ _ fun _ _ => Classical.dec _
 #align submodule.quotient.fintype Submodule.Quotient.fintype
 
-theorem card_eq_card_quotient_mul_card [Fintype M] (S : Submodule R M) [DecidablePred (· ∈ S)] :
-    Fintype.card M = Fintype.card S * Fintype.card (M ⧸ S) := by
-  rw [mul_comm, ← Fintype.card_prod]
-  exact Fintype.card_congr AddSubgroup.addGroupEquivQuotientProdAddSubgroup
+theorem card_eq_card_quotient_mul_card (S : Submodule R M) :
+    Nat.card M = Nat.card S * Nat.card (M ⧸ S) := by
+  rw [mul_comm, ← Nat.card_prod]
+  exact Nat.card_congr AddSubgroup.addGroupEquivQuotientProdAddSubgroup
 #align submodule.card_eq_card_quotient_mul_card Submodule.card_eq_card_quotient_mul_card
 
 section

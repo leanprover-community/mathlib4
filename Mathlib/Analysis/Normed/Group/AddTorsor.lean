@@ -206,8 +206,6 @@ is not an instance because it depends on `V` to define a `MetricSpace P`. -/
 def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAddCommGroup V]
     [AddTorsor V P] : PseudoMetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
-  -- Porting note: `edist_dist` is no longer an `autoParam`
-  edist_dist _ _ := by simp only [← ENNReal.ofReal_eq_coe_nnreal]
   dist_self x := by simp
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
   dist_triangle x y z := by
@@ -221,7 +219,6 @@ is not an instance because it depends on `V` to define a `MetricSpace P`. -/
 def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormedAddCommGroup V]
     [AddTorsor V P] : MetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
-  edist_dist _ _ := by simp only; rw [ENNReal.ofReal_eq_coe_nnreal]
   dist_self x := by simp
   eq_of_dist_eq_zero h := by simpa using h
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
