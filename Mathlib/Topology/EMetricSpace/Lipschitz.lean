@@ -111,7 +111,7 @@ lemma locallyLipschitzOn_iff_restrict :
   congr! with x K
   constructor
   · rintro ⟨t, ht, hft⟩
-    exact ⟨_, ⟨t, ht, Subset.rfl⟩, hft.mono $ inter_subset_right.trans $ image_preimage_subset ..⟩
+    exact ⟨_, ⟨t, ht, Subset.rfl⟩, hft.mono <| inter_subset_right.trans <| image_preimage_subset ..⟩
   · rintro ⟨t, ⟨u, hu, hut⟩, hft⟩
     exact ⟨s ∩ u, Filter.inter_mem self_mem_nhdsWithin hu,
       hft.mono fun x hx ↦ ⟨hx.1, ⟨x, hx.1⟩, hut hx.2, rfl⟩⟩
@@ -120,13 +120,13 @@ alias ⟨LipschitzOnWith.to_restrict, _⟩ := lipschitzOnWith_iff_restrict
 alias ⟨LocallyLipschitzOn.restrict, _⟩ := locallyLipschitzOn_iff_restrict
 #align lipschitz_on_with.to_restrict LipschitzOnWith.to_restrict
 
-theorem MapsTo.lipschitzOnWith_iff_restrict [PseudoEMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0}
-    {f : α → β} {s : Set α} {t : Set β} (h : MapsTo f s t) :
+lemma Set.MapsTo.lipschitzOnWith_iff_restrict [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+    {K : ℝ≥0} {f : α → β} {s : Set α} {t : Set β} (h : MapsTo f s t) :
     LipschitzOnWith K f s ↔ LipschitzWith K (h.restrict f s t) :=
   _root_.lipschitzOnWith_iff_restrict
-#align maps_to.lipschitz_on_with_iff_restrict MapsTo.lipschitzOnWith_iff_restrict
+#align maps_to.lipschitz_on_with_iff_restrict Set.MapsTo.lipschitzOnWith_iff_restrict
 
-alias ⟨LipschitzOnWith.to_restrict_mapsTo, _⟩ := MapsTo.lipschitzOnWith_iff_restrict
+alias ⟨LipschitzOnWith.to_restrict_mapsTo, _⟩ := Set.MapsTo.lipschitzOnWith_iff_restrict
 #align lipschitz_on_with.to_restrict_maps_to LipschitzOnWith.to_restrict_mapsTo
 
 end PseudoEMetricSpace
