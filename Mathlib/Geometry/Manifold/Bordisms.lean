@@ -227,6 +227,33 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 namespace UnorientedCobordism
 
+-- TODO: for now, assume all manifolds are modelled on the same chart and model space...
+
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+  {I' : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I' M']
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
+  {I'' : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I'' M''] {n : ℕ}
+  [CompactSpace M] [I.Boundaryless]
+  [CompactSpace M'] [I'.Boundaryless] [CompactSpace M''] [I''.Boundaryless]
+
+-- All this is full sci-fi, but let's pretend this for now to limp along!!
+namespace ScifiBoundary
+
+variable {E₀ : Type*} [NormedAddCommGroup E₀] [NormedSpace ℝ E₀] [FiniteDimensional ℝ E₀]
+  (hE : finrank ℝ E = n + 1) (hE₀ : finrank ℝ E₀ = n)
+  {H₀ : Type*} [TopologicalSpace H₀]
+
+instance charts : ChartedSpace H₀ (I.boundary M) := sorry
+
+-- TODO: this depends on I and M
+def model : ModelWithCorners ℝ E₀ H₀ := sorry
+
+instance manifold : SmoothManifoldWithCorners (H := H₀) (E := E₀) model/-(model I M)-/ (I.boundary M) := sorry
+
+namespace ScifiBoundary
+
 /-- An **unoriented cobordism** between two singular `n`-manifolds (M,f) and (N,g) on `X`
 is a compact smooth `n`-manifold `W` with a continuous map `F: W→ X` whose boundary is diffeomorphic
 to the disjoint union M ⊔ N such that F restricts to f resp. g in the obvious way. -/
@@ -237,6 +264,7 @@ structure _root_.UnorientedCobordism (s : SingularNManifold X n M I) (t : Singul
   hW' : finrank ℝ E'' = n + 1
   F : W → X
   hF : Continuous F
+  -- φ : Diffeomorph model I (J.boundary W) M ∞--(I.disjUnion I') (M ⊔ M')
   -- φ : Diffeomorph (∂ W) (induced J) (M ⊔ M') I.disjUnion I'
   -- hFf : F.restrict φ^{-1}(M) = s.f
   -- hFg : F.restrict φ^{-1}(N) = t.f
