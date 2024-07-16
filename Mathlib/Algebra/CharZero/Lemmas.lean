@@ -91,8 +91,6 @@ theorem add_self_eq_zero {a : R} : a + a = 0 ↔ a = 0 := by
   simp only [(two_mul a).symm, mul_eq_zero, two_ne_zero, false_or_iff]
 #align add_self_eq_zero add_self_eq_zero
 
-set_option linter.deprecated false
-
 #noalign bit0_eq_zero
 #noalign zero_eq_bit0
 #noalign bit0_ne_zero
@@ -132,17 +130,27 @@ end
 
 section
 
-variable {R : Type*} [DivisionRing R] [CharZero R]
+variable {R : Type*} [DivisionSemiring R] [NeZero (2 : R)]
 
-@[simp] lemma half_add_self (a : R) : (a + a) / 2 = a := by
+@[simp] lemma add_self_div_two (a : R) : (a + a) / 2 = a := by
   rw [← mul_two, mul_div_cancel_right₀ a two_ne_zero]
-#align half_add_self half_add_self
+#align add_self_div_two add_self_div_two
+#align half_add_self add_self_div_two
+@[deprecated (since := "2024-07-16")] alias half_add_self := add_self_div_two
+
 
 @[simp]
-theorem add_halves' (a : R) : a / 2 + a / 2 = a := by rw [← add_div, half_add_self]
-#align add_halves' add_halves'
+theorem add_halves (a : R) : a / 2 + a / 2 = a := by rw [← add_div, add_self_div_two]
+#align add_halves add_halves
+#align add_halves' add_halves
+@[deprecated (since := "2024-07-16")] alias add_halves' := add_halves
 
-theorem sub_half (a : R) : a - a / 2 = a / 2 := by rw [sub_eq_iff_eq_add, add_halves']
+end
+section
+
+variable {R : Type*} [DivisionRing R] [CharZero R]
+
+theorem sub_half (a : R) : a - a / 2 = a / 2 := by rw [sub_eq_iff_eq_add, add_halves]
 #align sub_half sub_half
 
 theorem half_sub (a : R) : a / 2 - a = -(a / 2) := by rw [← neg_sub, sub_half]

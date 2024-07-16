@@ -6,6 +6,7 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Functor.Hom
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.Data.ULift
+import Mathlib.Logic.Function.ULift
 
 #align_import category_theory.yoneda from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 

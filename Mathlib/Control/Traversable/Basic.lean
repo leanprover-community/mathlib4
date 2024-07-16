@@ -5,6 +5,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Data.Option.Defs
 import Mathlib.Control.Functor
+import Batteries.Data.List.Basic
 
 #align_import control.traversable.basic from "leanprover-community/mathlib"@"1fc36cc9c8264e6e81253f88be7fb2cb6c92d76a"
 

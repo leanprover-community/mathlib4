@@ -1,5 +1,17 @@
 #!/usr/bin/env bash
 
+# We need to make the script robust against changes on disk
+# that might have happened during the script execution, e.g. from switching branches.
+# We do that by making sure the entire script is parsed before execution starts
+# using the following pattern
+# {
+# # script content
+# exit
+# }
+# (see https://stackoverflow.com/a/2358432).
+# So please do not delete the following line, or the final two lines of this script.
+{
+
 if [ $# -ne 2 ]; then
   echo "Usage: $0 <BUMPVERSION> <NIGHTLYDATE>"
   echo "BUMPVERSION: The upcoming release that we are targetting, e.g., 'v4.10.0'"
@@ -38,6 +50,13 @@ git merge origin/master
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
+  echo "### [auto] Conflict resolution"
+  echo "### Automatically choosing `lean-toolchain` and `lake-manifest.json` from the 'newer' branch"
+  echo "### In this case, the 'newer' branch is 'bump/$BUMPVERSION'"
+  git checkout bump/$BUMPVERSION -- lean-toolchain lake-manifest.json
+
+# Check if there are more merge conflicts
+if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### [user] Conflict resolution"
   echo "There seem to be conflicts: please resolve them"
   echo "Open `pwd` in a new terminal and run 'git status'"
@@ -54,6 +73,13 @@ git checkout -b "bump/nightly-$NIGHTLYDATE"
 git merge --squash origin/nightly-testing
 
 # Check if there are merge conflicts
+if git diff --name-only --diff-filter=U | grep -q .; then
+  echo "### [auto] Conflict resolution"
+  echo "### Automatically choosing `lean-toolchain` and `lake-manifest.json` from the 'newer' branch"
+  echo "### In this case, the 'newer' branch is 'origin/nightly-testing'"
+  git checkout origin/nightly-testing -- lean-toolchain lake-manifest.json
+
+# Check if there are more merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### [user] Conflict resolution"
   echo "There seem to be conflicts: please resolve them"
@@ -103,6 +129,13 @@ git merge "bump/nightly-$NIGHTLYDATE"
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
+  echo "### [auto] Conflict resolution"
+  echo "### Automatically choosing `lean-toolchain` and `lake-manifest.json` from the 'newer' branch"
+  echo "### In this case, the 'newer' branch is 'bump/nightly-$NIGHTLYDATE'"
+  git checkout bump/nightly-$NIGHTLYDATE -- lean-toolchain lake-manifest.json
+
+# Check if there are more merge conflicts
+if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### [user] Conflict resolution"
   echo "There seem to be conflicts: please resolve them"
   echo "Open `pwd` in a new terminal and run 'git status'"
@@ -111,3 +144,9 @@ if git diff --name-only --diff-filter=U | grep -q .; then
 fi
 
 git push
+
+# These last two lines are needed to make the script robust against changes on disk
+# that might have happened during the script execution, e.g. from switching branches
+# See the top of the file for more details.
+exit
+}

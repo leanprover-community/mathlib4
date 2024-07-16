@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
-import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Data.Bool.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.Conv
