@@ -75,9 +75,9 @@ private lemma image_T_subset_S (v) (hv : v ∈ T) : A *ᵥ v ∈ S := by
   refine ⟨fun i ↦ ?_, fun i ↦ ?_⟩
   all_goals
     simp only [mul_neg]
-    gcongr ∑ _ : α , ?_ with j _ -- get rid of sums
-    rw [← mul_comm (v j)] -- move A i j to the right of the products
-    rcases le_total 0 (A i j) with hsign | hsign--we have to distinguish cases: we have now 4 goals
+    gcongr ∑ _ : α , ?_ with j _ -- Get rid of sums
+    rw [← mul_comm (v j)] -- Move A i j to the right of the products
+    rcases le_total 0 (A i j) with hsign | hsign-- We have to distinguish cases: we have now 4 goals
   · rw [negPart_eq_zero.2 hsign]
     exact mul_nonneg (hv.1 j) hsign
   · rw [negPart_eq_neg.2 hsign]
@@ -117,7 +117,7 @@ private lemma card_S_eq : (Finset.Icc N P).card = ∏ i : α , (P i - N i + 1) :
 
 variable  (hA : A ≠ 0)
 
-/-- The sup norm of a non-zero integer matrix is at lest one  -/
+/-- The sup norm of a non-zero integer matrix is at least one  -/
 lemma one_le_norm_A_of_ne_zero : 1 ≤ ‖A‖ := by
   by_contra! h
   apply hA
@@ -134,9 +134,9 @@ lemma one_le_norm_A_of_ne_zero : 1 ≤ ‖A‖ := by
 open Real Nat
 
 private lemma card_S_lt_card_T : (S).card < (T).card := by
-  zify --this is necessary to use card_S_eq
+  zify -- This is necessary to use card_S_eq
   rw [card_T_eq m n cardβ, card_S_eq]
-  rify --this is necessary because ‖A‖ is a real number
+  rify -- This is necessary because ‖A‖ is a real number
   calc
   ∏ x : α , (∑ x_1 : β , ↑B * ↑(A x x_1)⁺ - ∑ x_1 : β , ↑B * -↑(A x x_1)⁻ + 1)
     ≤ (n * ‖A‖ * B + 1) ^ m := by
@@ -175,13 +175,13 @@ end preparation
 
 theorem exists_ne_zero_int_vec_norm_le (hA_nezero : A ≠ 0) : ∃ t : β → ℤ, t ≠ 0 ∧
     A *ᵥ t = 0 ∧ ‖t‖ ≤ (n * ‖A‖) ^ ((m : ℝ) / (n - m)) := by
-  --Pigeonhole
+  -- Pigeonhole
   rcases Finset.exists_ne_map_eq_of_card_lt_of_maps_to
     (card_S_lt_card_T m n cardα cardβ A hn hm hA_nezero) (image_T_subset_S m n A)
     with ⟨x, hxT, y, hyT, hneq, hfeq⟩
-  --proofs that x - y ≠ 0 and x - y is a solution
+  -- Proofs that x - y ≠ 0 and x - y is a solution
   refine ⟨x - y, sub_ne_zero.mpr hneq, by simp only [mulVec_sub, sub_eq_zero, hfeq], ?_⟩
-  --Inequality
+  -- Inequality
   have n_mul_norm_A_pow_e_nonneg : 0 ≤ (n * ‖A‖) ^ e := by positivity
   rw [← norm_col (ι := Unit), norm_le_iff n_mul_norm_A_pow_e_nonneg]
   intro i j
