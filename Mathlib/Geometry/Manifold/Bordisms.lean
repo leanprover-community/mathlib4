@@ -206,23 +206,12 @@ structure _root_.UnorientedCobordism (s : SingularNManifold X n M I) (t : Singul
 
 open Set
 
-instance : ChartedSpace (EuclideanHalfSpace 1) (Icc 0 1) := by
-  sorry -- apply IccManifold 0 1 almost does it!
-
--- instance : ChartedSpace (EuclideanHalfSpace (n + 1)) (M × (Icc 0 1)) := sorry
-
-instance Icc_smooth_manifold2 : SmoothManifoldWithCorners (𝓡∂ 1) (Icc 0 1) := by
-  sorry -- apply Icc_smooth_manifold 0 1 errors with
-  /- tactic 'apply' failed, failed to unify
-  SmoothManifoldWithCorners (modelWithCornersEuclideanHalfSpace 1) ↑(Icc (@OfNat.ofNat ℝ 0 Zero.toOfNat0) 1)
-with
-  SmoothManifoldWithCorners (modelWithCornersEuclideanHalfSpace 1) ↑(Icc (@OfNat.ofNat ℕ 0 (instOfNatNat 0)) 1) -/
-
 /-- Each singular `n`-manifold `(M,f)` is cobordant to itself. -/
 def refl (s : SingularNManifold X n M I) :
-    UnorientedCobordism s s (M × (Icc 0 1)) (I.prod (𝓡∂ 1)) where
+    UnorientedCobordism s s (M × (Icc (0 : ℝ) 1)) (I.prod (𝓡∂ 1)) where
   hW := by infer_instance
-  hW' := by sorry
+  hW' := by
+    sorry
     -- calc finrank (E × EuclideanSpace ℝ (Fin 1))
     --   _ = finrank E + (finrank (EuclideanSpace ℝ (Fin 1))) := sorry
     --   _ = n + (finrank (EuclideanSpace ℝ (Fin 1))) := sorry
