@@ -516,6 +516,12 @@ theorem span_lt_top_of_card_lt_finrank {s : Set M} [Fintype s]
   lt_top_of_finrank_lt_finrank (lt_of_le_of_lt (finrank_span_le_card _) card_lt)
 #align span_lt_top_of_card_lt_finrank span_lt_top_of_card_lt_finrank
 
+lemma finrank_le_of_span_eq_top {ι} [Fintype ι] {v : ι → M}
+    (hv : Submodule.span R (Set.range v) = ⊤) : finrank R M ≤ Fintype.card ι := by
+  classical
+  rw [← finrank_top, ← hv]
+  exact (finrank_span_le_card _).trans (by convert Fintype.card_range_le v; rw [Set.toFinset_card])
+
 end Span
 
 section SubalgebraRank
