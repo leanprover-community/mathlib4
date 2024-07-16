@@ -244,3 +244,5 @@ theorem uniqueBaseOn_restrict (h : I ⊆ E) (R : Set α) :
   rw [uniqueBaseOn_restrict', inter_right_comm, inter_eq_self_of_subset_left h]
 
 end uniqueBaseOn
+
+end Matroid

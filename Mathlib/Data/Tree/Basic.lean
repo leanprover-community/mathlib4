@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Wojciech Nawrocki
 -/
 import Batteries.Data.RBMap.Basic
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Notation
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.TypeStar
 import Mathlib.Util.CompileInductive

@@ -394,7 +394,7 @@ theorem maximum_le_of_forall_le {b : WithBot α} (h : ∀ a ∈ l, a ≤ b) : l.
   induction l with
   | nil => simp
   | cons a l ih =>
-    simp only [maximum_cons, ge_iff_le, max_le_iff, WithBot.coe_le_coe]
+    simp only [maximum_cons, max_le_iff, WithBot.coe_le_coe]
     exact ⟨h a (by simp), ih fun a w => h a (mem_cons.mpr (Or.inr w))⟩
 
 theorem le_minimum_of_forall_le {b : WithTop α} (h : ∀ a ∈ l, b ≤ a) : b ≤ l.minimum :=

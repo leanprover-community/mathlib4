@@ -827,19 +827,8 @@ theorem coe_C (a : R) : ((C a : MvPolynomial σ R) : MvPowerSeries σ R) = MvPow
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.coe_C MvPolynomial.coe_C
 
-set_option linter.deprecated false in
-@[simp, norm_cast]
-theorem coe_bit0 :
-    ((bit0 φ : MvPolynomial σ R) : MvPowerSeries σ R) = bit0 (φ : MvPowerSeries σ R) :=
-  coe_add _ _
-#align mv_polynomial.coe_bit0 MvPolynomial.coe_bit0
-
-set_option linter.deprecated false in
-@[simp, norm_cast]
-theorem coe_bit1 :
-    ((bit1 φ : MvPolynomial σ R) : MvPowerSeries σ R) = bit1 (φ : MvPowerSeries σ R) := by
-  rw [bit1, bit1, coe_add, coe_one, coe_bit0]
-#align mv_polynomial.coe_bit1 MvPolynomial.coe_bit1
+#noalign mv_polynomial.coe_bit0
+#noalign mv_polynomial.coe_bit1
 
 @[simp, norm_cast]
 theorem coe_X (s : σ) : ((X s : MvPolynomial σ R) : MvPowerSeries σ R) = MvPowerSeries.X s :=

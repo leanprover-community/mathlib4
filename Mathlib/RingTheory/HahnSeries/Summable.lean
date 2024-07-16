@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Algebra.Order.Group.WithTop
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.Valuation.Basic
 
@@ -52,51 +51,39 @@ variable (Γ R) [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R]
 /-- The additive valuation on `HahnSeries Γ R`, returning the smallest index at which
   a Hahn Series has a nonzero coefficient, or `⊤` for the 0 series.  -/
 def addVal : AddValuation (HahnSeries Γ R) (WithTop Γ) :=
-  AddValuation.of (fun x => if x = (0 : HahnSeries Γ R) then (⊤ : WithTop Γ) else x.order)
-    (if_pos rfl) ((if_neg one_ne_zero).trans (by simp [order_of_ne]))
-    (fun x y => by
-      by_cases hx : x = 0
-      · by_cases hy : y = 0 <;> · simp [hx, hy]
-      · by_cases hy : y = 0
-        · simp [hx, hy]
-        · simp only [hx, hy, support_nonempty_iff, if_neg, not_false_iff, isWF_support]
-          by_cases hxy : x + y = 0
-          · simp [hxy]
-          rw [if_neg hxy, ← WithTop.coe_min, WithTop.coe_le_coe]
-          exact min_order_le_order_add hxy)
-    fun x y => by
-    by_cases hx : x = 0
-    · simp [hx]
-    by_cases hy : y = 0
-    · simp [hy]
-    dsimp only
-    rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← WithTop.coe_add, WithTop.coe_eq_coe,
+  AddValuation.of orderTop orderTop_zero (orderTop_one) (fun x y => min_orderTop_le_orderTop_add)
+  fun x y => by
+    by_cases hx : x = 0; · simp [hx]
+    by_cases hy : y = 0; · simp [hy]
+    rw [← order_eq_orderTop_of_ne hx, ← order_eq_orderTop_of_ne hy,
+      ← order_eq_orderTop_of_ne (mul_ne_zero hx hy), ← WithTop.coe_add, WithTop.coe_eq_coe,
       order_mul hx hy]
 #align hahn_series.add_val HahnSeries.addVal
 
 variable {Γ} {R}
 
 theorem addVal_apply {x : HahnSeries Γ R} :
-    addVal Γ R x = if x = (0 : HahnSeries Γ R) then (⊤ : WithTop Γ) else x.order :=
+    addVal Γ R x = x.orderTop :=
   AddValuation.of_apply _
 #align hahn_series.add_val_apply HahnSeries.addVal_apply
 
 @[simp]
 theorem addVal_apply_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) : addVal Γ R x = x.order :=
-  if_neg hx
+  addVal_apply.trans (order_eq_orderTop_of_ne hx).symm
 #align hahn_series.add_val_apply_of_ne HahnSeries.addVal_apply_of_ne
 
 theorem addVal_le_of_coeff_ne_zero {x : HahnSeries Γ R} {g : Γ} (h : x.coeff g ≠ 0) :
-    addVal Γ R x ≤ g := by
-  rw [addVal_apply_of_ne (ne_zero_of_coeff_ne_zero h), WithTop.coe_le_coe]
-  exact order_le_of_coeff_ne_zero h
+    addVal Γ R x ≤ g :=
+  orderTop_le_of_coeff_ne_zero h
 #align hahn_series.add_val_le_of_coeff_ne_zero HahnSeries.addVal_le_of_coeff_ne_zero
 
 end Valuation
+
 theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R]
-    {x : HahnSeries Γ R} (hx : 0 < addVal Γ R x) : (⋃ n : ℕ, (x ^ n).support).IsPWO := by
+    {x : HahnSeries Γ R} (hx : 0 < x.orderTop) : (⋃ n : ℕ, (x ^ n).support).IsPWO := by
   apply (x.isWF_support.isPWO.addSubmonoid_closure _).mono _
-  · exact fun g hg => WithTop.coe_le_coe.1 (le_trans (le_of_lt hx) (addVal_le_of_coeff_ne_zero hg))
+  · exact fun g hg => WithTop.coe_le_coe.1
+      (le_trans (le_of_lt hx) (orderTop_le_of_coeff_ne_zero hg))
   refine Set.iUnion_subset fun n => ?_
   induction' n with n ih <;> intro g hn
   · simp only [Nat.zero_eq, pow_zero, support_one, Set.mem_singleton_iff] at hn
@@ -464,7 +451,7 @@ section powers
 variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] [IsDomain R]
 
 /-- The powers of an element of positive valuation form a summable family. -/
-def powers (x : HahnSeries Γ R) (hx : 0 < addVal Γ R x) : SummableFamily Γ R ℕ where
+def powers (x : HahnSeries Γ R) (hx : 0 < x.orderTop) : SummableFamily Γ R ℕ where
   toFun n := x ^ n
   isPWO_iUnion_support' := isPWO_iUnion_support_powers hx
   finite_co_support' g := by
@@ -483,7 +470,7 @@ def powers (x : HahnSeries Γ R) (hx : 0 < addVal Γ R x) : SummableFamily Γ R 
     · obtain ⟨hi, _, rfl⟩ := mem_addAntidiagonal.1 (mem_coe.1 hij)
       rw [← zero_add ij.snd, ← add_assoc, add_zero]
       exact
-        add_lt_add_right (WithTop.coe_lt_coe.1 (lt_of_lt_of_le hx (addVal_le_of_coeff_ne_zero hi)))
+        add_lt_add_right (WithTop.coe_lt_coe.1 (lt_of_lt_of_le hx (orderTop_le_of_coeff_ne_zero hi)))
           _
     · rintro (_ | n) hn
       · exact Set.mem_union_right _ (Set.mem_singleton 0)
@@ -494,7 +481,7 @@ def powers (x : HahnSeries Γ R) (hx : 0 < addVal Γ R x) : SummableFamily Γ R 
         exact ⟨hj, ⟨n, hi⟩, add_comm j i⟩
 #align hahn_series.summable_family.powers HahnSeries.SummableFamily.powers
 
-variable {x : HahnSeries Γ R} (hx : 0 < addVal Γ R x)
+variable {x : HahnSeries Γ R} (hx : 0 < x.orderTop)
 
 @[simp]
 theorem coe_powers : ⇑(powers x hx) = HPow.hPow x :=
@@ -533,24 +520,26 @@ section IsDomain
 
 variable [CommRing R] [IsDomain R]
 
-theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.coeff x.order = 1) :
-    0 < addVal Γ R (1 - C r * single (-x.order) 1 * x) := by
-  have h10 : (1 : R) ≠ 0 := one_ne_zero
-  have x0 : x ≠ 0 := ne_zero_of_coeff_ne_zero (right_ne_zero_of_mul_eq_one hr)
-  refine lt_of_le_of_ne ((addVal Γ R).map_le_sub (ge_of_eq (addVal Γ R).map_one) ?_) ?_
-  · simp only [AddValuation.map_mul]
-    rw [addVal_apply_of_ne x0, addVal_apply_of_ne (single_ne_zero h10), addVal_apply_of_ne _,
-      order_C, order_single h10, WithTop.coe_zero, zero_add, ← WithTop.coe_add, neg_add_self,
-      WithTop.coe_zero]
-    exact C_ne_zero (left_ne_zero_of_mul_eq_one hr)
-  · rw [addVal_apply, ← WithTop.coe_zero]
-    split_ifs with h
-    · apply WithTop.coe_ne_top
-    rw [Ne, WithTop.coe_eq_coe]
-    intro con
-    apply coeff_order_ne_zero h
-    rw [← con, mul_assoc, sub_coeff, one_coeff, if_pos rfl, C_mul_eq_smul, smul_coeff, smul_eq_mul,
-      ← add_neg_self x.order, single_mul_coeff_add, one_mul, hr, sub_self]
+theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1) :
+    0 < (1 - C r * single (-x.order) 1 * x).orderTop := by
+  by_cases hx : x = 0; · simp_all [hx]
+  have hrz : r ≠ 0 := by
+    intro h
+    rw [h, zero_mul] at hr
+    exact (zero_ne_one' R) hr
+  refine lt_of_le_of_ne (LE.le.trans ?_ min_orderTop_le_orderTop_sub) fun h => ?_
+  · refine le_min (by rw [orderTop_one]) ?_
+    refine LE.le.trans ?_ orderTop_add_orderTop_le_orderTop_mul
+    by_cases h : x = 0; · simp [h]
+    rw [← order_eq_orderTop_of_ne h, C_apply, single_mul_single, zero_add, mul_one,
+      orderTop_single (fun _ => by simp_all only [zero_mul, zero_ne_one]), ← @WithTop.coe_add,
+      WithTop.coe_nonneg, add_left_neg]
+  · apply coeff_orderTop_ne h.symm
+    simp only [C_apply, single_mul_single, zero_add, mul_one, sub_coeff', Pi.sub_apply, one_coeff,
+      ↓reduceIte]
+    have hrc := mul_coeff_order_add_order ((single (-x.order)) r) x
+    rw [order_single hrz, single_coeff_same, neg_add_self, ← leadingCoeff_eq, hr] at hrc
+    rw [hrc, sub_self]
 #align hahn_series.unit_aux HahnSeries.unit_aux
 
 theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.coeff x.order) := by
@@ -563,7 +552,7 @@ theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.coeff x.order)
     rw [← order_mul (left_ne_zero_of_mul_eq_one ui) (right_ne_zero_of_mul_eq_one ui), ui, order_one]
   · rintro ⟨⟨u, i, ui, iu⟩, h⟩
     rw [Units.val_mk] at h
-    rw [h] at iu
+    rw [h, ← leadingCoeff_eq] at iu
     have h := SummableFamily.one_sub_self_mul_hsum_powers (unit_aux x iu)
     rw [sub_sub_cancel] at h
     exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h)
@@ -577,14 +566,14 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
     if x0 : x = 0 then 0
     else
       C (x.coeff x.order)⁻¹ * (single (-x.order)) 1 *
-        (SummableFamily.powers _ (unit_aux x (inv_mul_cancel (coeff_order_ne_zero x0)))).hsum
+        (SummableFamily.powers _ (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mpr x0)))).hsum
   inv_zero := dif_pos rfl
   mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans $ by
     have h :=
       SummableFamily.one_sub_self_mul_hsum_powers
-        (unit_aux x (inv_mul_cancel (coeff_order_ne_zero x0)))
+        (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mpr x0)))
     rw [sub_sub_cancel] at h
-    rw [← mul_assoc, mul_comm x, h]
+    rw [← mul_assoc, mul_comm x, ← leadingCoeff_eq, h]
   nnqsmul := _
   qsmul := _
 

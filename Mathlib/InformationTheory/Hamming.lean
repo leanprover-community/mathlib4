@@ -425,7 +425,6 @@ instance : PseudoMetricSpace (Hamming β) where
   dist_triangle := by
     push_cast
     exact mod_cast hammingDist_triangle
-  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
   toUniformSpace := ⊥
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ fun s => by
     push_cast
