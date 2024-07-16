@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Lean.Meta.Match.MatcherInfo
-import Std.Data.HashMap.Basic
 import Lean.Meta.Tactic.Delta
+import Std.Data.HashMap.Basic
 
 /-!
 # Additional functions on `Lean.Name`.
