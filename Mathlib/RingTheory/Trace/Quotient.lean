@@ -256,7 +256,7 @@ lemma trace_quotient_eq_trace_localization_quotient (x) :
 open nonZeroDivisors in
 /-- The trace map on `B → A` coincides with the trace map on `B⧸pB → A⧸p`. -/
 lemma Algebra.trace_quotient_eq_of_isDedekindDomain (x) [IsDedekindDomain R] [IsDomain S]
-  [NoZeroSMulDivisors R S] [Module.Finite R S] [IsIntegrallyClosed S] :
+    [NoZeroSMulDivisors R S] [Module.Finite R S] [IsIntegrallyClosed S] :
     Algebra.trace (R ⧸ p) (S ⧸ pS) (Ideal.Quotient.mk pS x) =
       Ideal.Quotient.mk p (Algebra.intTrace R S x) := by
   let Rₚ := Localization.AtPrime p
