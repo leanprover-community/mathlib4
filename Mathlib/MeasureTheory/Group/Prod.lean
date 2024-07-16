@@ -173,13 +173,19 @@ theorem quasiMeasurePreserving_inv : QuasiMeasurePreserving (Inv.inv : G → G) 
 #align measure_theory.quasi_measure_preserving_inv MeasureTheory.quasiMeasurePreserving_inv
 #align measure_theory.quasi_measure_preserving_neg MeasureTheory.quasiMeasurePreserving_neg
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem measure_inv_null : μ s⁻¹ = 0 ↔ μ s = 0 := by
   refine ⟨fun hs => ?_, (quasiMeasurePreserving_inv μ).preimage_null⟩
   rw [← inv_inv s]
   exact (quasiMeasurePreserving_inv μ).preimage_null hs
 #align measure_theory.measure_inv_null MeasureTheory.measure_inv_null
 #align measure_theory.measure_neg_null MeasureTheory.measure_neg_null
+
+@[to_additive (attr := simp)]
+theorem inv_ae : (ae μ)⁻¹ = ae μ := by
+  refine le_antisymm (quasiMeasurePreserving_inv μ).tendsto_ae ?_
+  nth_rewrite 1 [← inv_inv (ae μ)]
+  exact Filter.map_mono (quasiMeasurePreserving_inv μ).tendsto_ae
 
 @[to_additive]
 theorem inv_absolutelyContinuous : μ.inv ≪ μ :=
