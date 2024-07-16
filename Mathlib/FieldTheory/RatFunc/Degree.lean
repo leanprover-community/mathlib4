@@ -53,13 +53,15 @@ theorem intDegree_one : intDegree (1 : RatFunc K) = 0 := by
 @[simp]
 theorem intDegree_C (k : K) : intDegree (C k) = 0 := by
   rw [intDegree, num_C, natDegree_C, denom_C, natDegree_one, sub_self]
-set_option linter.uppercaseLean3 false in #align ratfunc.int_degree_C RatFunc.intDegree_C
+set_option linter.uppercaseLean3 false in
+#align ratfunc.int_degree_C RatFunc.intDegree_C
 
 @[simp]
 theorem intDegree_X : intDegree (X : RatFunc K) = 1 := by
   rw [intDegree, num_X, Polynomial.natDegree_X, denom_X, Polynomial.natDegree_one,
     Int.ofNat_one, Int.ofNat_zero, sub_zero]
-set_option linter.uppercaseLean3 false in #align ratfunc.int_degree_X RatFunc.intDegree_X
+set_option linter.uppercaseLean3 false in
+#align ratfunc.int_degree_X RatFunc.intDegree_X
 
 @[simp]
 theorem intDegree_polynomial {p : K[X]} :
@@ -122,3 +124,5 @@ theorem intDegree_add_le {x y : RatFunc K} (hy : y ≠ 0) (hxy : x + y ≠ 0) :
 #align ratfunc.int_degree_add_le RatFunc.intDegree_add_le
 
 end IntDegree
+
+end RatFunc

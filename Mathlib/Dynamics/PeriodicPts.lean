@@ -6,10 +6,9 @@ Authors: Yury G. Kudryashov
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.List.Cycle
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.PNat.Basic
 import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.GroupTheory.GroupAction.Group
 
 #align_import dynamics.periodic_pts from "leanprover-community/mathlib"@"d07245fd37786daa997af4f1a73a49fa3b748408"
 
@@ -590,11 +589,6 @@ end Function
 namespace Function
 
 variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
-
-@[simp]
-theorem iterate_prod_map (f : α → α) (g : β → β) (n : ℕ) :
-    (Prod.map f g)^[n] = Prod.map (f^[n]) (g^[n]) := by induction n <;> simp [*, Prod.map_comp_map]
-#align function.iterate_prod_map Function.iterate_prod_map
 
 @[simp]
 theorem isFixedPt_prod_map (x : α × β) :

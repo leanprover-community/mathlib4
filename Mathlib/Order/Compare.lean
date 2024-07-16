@@ -33,13 +33,13 @@ def cmpLE {α} [LE α] [@DecidableRel α (· ≤ ·)] (x y : α) : Ordering :=
 
 theorem cmpLE_swap {α} [LE α] [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] (x y : α) :
     (cmpLE x y).swap = cmpLE y x := by
-  by_cases xy:x ≤ y <;> by_cases yx:y ≤ x <;> simp [cmpLE, *, Ordering.swap]
+  by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, *, Ordering.swap]
   cases not_or_of_not xy yx (total_of _ _ _)
 #align cmp_le_swap cmpLE_swap
 
 theorem cmpLE_eq_cmp {α} [Preorder α] [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)]
     [@DecidableRel α (· < ·)] (x y : α) : cmpLE x y = cmp x y := by
-  by_cases xy:x ≤ y <;> by_cases yx:y ≤ x <;> simp [cmpLE, lt_iff_le_not_le, *, cmp, cmpUsing]
+  by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, lt_iff_le_not_le, *, cmp, cmpUsing]
   cases not_or_of_not xy yx (total_of _ _ _)
 #align cmp_le_eq_cmp cmpLE_eq_cmp
 
