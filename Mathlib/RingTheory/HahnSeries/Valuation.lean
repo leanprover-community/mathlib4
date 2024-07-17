@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson, Scott Carnahan
+Authors: Aaron Anderson
 -/
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.Valuation.Basic
@@ -9,17 +9,17 @@ import Mathlib.RingTheory.Valuation.Basic
 #align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
 
 /-!
-# Additive Valuation on Hahn series
-If `Γ` is linearly ordered cancellative additive commutative monoid and `R` is a commutative domain,
-then `HahnSeries Γ R` admits an additive valuation.
+# Valuations on Hahn Series rings
+If `Γ` is a `LinearOrderedCancelAddCommMonoid` and `R` is a domain, then the domain `HahnSeries Γ R`
+admits an additive valuation given by `orderTop`.
 
 ## Main Definitions
   * `HahnSeries.addVal Γ R` defines an `AddValuation` on `HahnSeries Γ R` when `Γ` is linearly
     ordered.
 
-## Main results
-
-  * comparison with `order` and `orderTop`
+## TODO
+  * Multiplicative valuations
+  * Add any API for Laurent series valuations that do not depend on `Γ = ℤ`.
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
@@ -27,14 +27,9 @@ then `HahnSeries Γ R` admits an additive valuation.
 
 set_option linter.uppercaseLean3 false
 
-open Finset Function
-
-open scoped Classical
-open BigOperators Pointwise
-
 noncomputable section
 
-variable {Γ : Type*} {R : Type*}
+variable {Γ R : Type*}
 
 namespace HahnSeries
 
@@ -56,7 +51,8 @@ def addVal : AddValuation (HahnSeries Γ R) (WithTop Γ) :=
 
 variable {Γ} {R}
 
-theorem addVal_apply {x : HahnSeries Γ R} : addVal Γ R x = x.orderTop :=
+theorem addVal_apply {x : HahnSeries Γ R} :
+    addVal Γ R x = x.orderTop :=
   AddValuation.of_apply _
 #align hahn_series.add_val_apply HahnSeries.addVal_apply
 

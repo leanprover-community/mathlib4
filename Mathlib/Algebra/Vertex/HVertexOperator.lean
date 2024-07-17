@@ -52,24 +52,29 @@ variable {Γ : Type*} [PartialOrder Γ] {R : Type*} {V W : Type*} [CommRing R]
 open HahnModule
 
 @[ext]
-theorem ext (A B : HVertexOperator Γ R V W) (h : ∀(v : V), A v = B v) :
+theorem ext (A B : HVertexOperator Γ R V W) (h : ∀ v : V, A v = B v) :
     A = B := LinearMap.ext h
+
+@[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.HetVertexOperator.ext := ext
 
 /-- The coefficient of a heterogeneous vertex operator, viewed as a formal power series with
 coefficients in linear maps. -/
 @[simps]
 def coeff (A : HVertexOperator Γ R V W) (n : Γ) : V →ₗ[R] W where
-  toFun := fun (x : V) => ((of R).symm (A x)).coeff n
-  map_add' := by
-      intro x y
-      simp only [map_add, of_symm_add, HahnSeries.add_coeff', Pi.add_apply]
-  map_smul' := by
-      intro r x
-      simp only [LinearMapClass.map_smul, of_symm_smul, HahnSeries.smul_coeff, RingHom.id_apply]
+  toFun v := ((of R).symm (A v)).coeff n
+  map_add' _ _ := by simp
+  map_smul' _ _ := by
+    simp only [map_smul, RingHom.id_apply]
+    exact rfl
+
+@[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.coeff := coeff
 
 theorem coeff_isPWOsupport (A : HVertexOperator Γ R V W) (v : V) :
     ((of R).symm (A v)).coeff.support.IsPWO :=
   ((of R).symm (A v)).isPWO_support'
+
+@[deprecated (since := "2024-06-18")]
+alias _root_.VertexAlg.coeff_isPWOsupport := coeff_isPWOsupport
 
 @[ext]
 theorem coeff_inj : Function.Injective (coeff : HVertexOperator Γ R V W → Γ → (V →ₗ[R] W)) := by
@@ -77,22 +82,20 @@ theorem coeff_inj : Function.Injective (coeff : HVertexOperator Γ R V W → Γ 
   ext v n
   exact congrFun (congrArg DFunLike.coe (congrFun h n)) v
 
+@[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.coeff_inj := coeff_inj
+
 /-- Given a coefficient function valued in linear maps satisfying a partially well-ordered support
 condition, we produce a heterogeneous vertex operator. -/
 @[simps]
 def of_coeff (f : Γ → V →ₗ[R] W)
-    (hf : ∀(x : V), (Function.support (f · x)).IsPWO) : HVertexOperator Γ R V W where
-  toFun := fun x => (of R) (
-  { coeff := fun g => f g x
-    isPWO_support' := hf x } )
-  map_add' := by
-    intros
-    simp only [map_add]
-    exact rfl
-  map_smul' := by
-    intros
-    simp only [LinearMapClass.map_smul, RingHom.id_apply]
-    exact rfl
+    (hf : ∀ x : V , (Function.support (f · x)).IsPWO) : HVertexOperator Γ R V W where
+  toFun x := (of R) { coeff := fun g => f g x, isPWO_support' := hf x }
+  map_add' _ _ := by
+    ext
+    simp
+  map_smul' _ _ := by
+    ext
+    simp
 
 @[simp]
 theorem coeff_of_coeff (f : Γ → V →ₗ[R] W)

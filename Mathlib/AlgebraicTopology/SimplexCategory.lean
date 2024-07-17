@@ -298,8 +298,7 @@ theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
   ext ⟨j, hj⟩
   simp? at hj says simp only [len_mk] at hj
   dsimp [σ, δ, Fin.predAbove, Fin.succAbove]
-  simp only [Fin.lt_iff_val_lt_val, Fin.dite_val, Fin.ite_val, Fin.coe_pred, ge_iff_le,
-    Fin.coe_castLT, dite_eq_ite]
+  simp only [Fin.lt_iff_val_lt_val, Fin.dite_val, Fin.ite_val, Fin.coe_pred, Fin.coe_castLT]
   split_ifs
   any_goals simp
   all_goals omega
@@ -709,7 +708,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
       cases' Nat.le.dest h' with c hc
       cases c
       · exfalso
-        simp only [Nat.zero_eq, add_zero, len_mk, Fin.coe_pred, ge_iff_le] at hc
+        simp only [Nat.zero_eq, add_zero, len_mk, Fin.coe_pred] at hc
         rw [hc] at h''
         exact h'' rfl
       · rw [← hc]

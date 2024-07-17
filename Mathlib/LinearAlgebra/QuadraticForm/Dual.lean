@@ -154,7 +154,7 @@ def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] :
       sub_eq_add_neg (Q x.1) (Q x.2)]
 #align quadratic_form.to_dual_prod QuadraticForm.toDualProdₓ
 
-#align quadratic_form.to_dual_prod_isometry QuadraticForm.Isometry.map_appₓ
+#align quadratic_form.to_dual_prod_isometry QuadraticMap.Isometry.map_appₓ
 
 /-!
 TODO: show that `QuadraticForm.toDualProd` is an `QuadraticForm.IsometryEquiv`

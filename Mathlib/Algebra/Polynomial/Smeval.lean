@@ -5,8 +5,6 @@ Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Group.NatPowAssoc
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Induction
-import Mathlib.Algebra.Polynomial.Eval
 
 /-!
 # Scalar-multiple polynomial evaluation over commutative semirings

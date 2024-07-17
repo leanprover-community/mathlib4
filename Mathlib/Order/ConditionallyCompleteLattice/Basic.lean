@@ -1104,12 +1104,12 @@ theorem cbiSup_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : �
       refine ⟨c ⊔ sSup ∅, ?_⟩
       rintro - ⟨i, rfl⟩
       by_cases hi : p i
-      · simp only [hi, dite_true, ge_iff_le, le_sup_iff, hc (mem_range_self _), true_or]
-      · simp only [hi, dite_false, ge_iff_le, le_sup_right]
+      · simp only [hi, dite_true, le_sup_iff, hc (mem_range_self _), true_or]
+      · simp only [hi, dite_false, le_sup_right]
     apply le_antisymm
     · apply ciSup_le (fun i ↦ ?_)
       by_cases hi : p i
-      · simp only [hi, dite_true, ge_iff_le, le_sup_iff]
+      · simp only [hi, dite_true, le_sup_iff]
         left
         exact le_ciSup H _
       · simp [hi]

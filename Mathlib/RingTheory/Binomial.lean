@@ -26,13 +26,26 @@ integers is injective, and demand that the evaluation of the ascending Pochhamme
 because for `r` a natural number, it is the number of multisets of cardinality `k` taken from a type
 of cardinality `n`.
 
+## Definitions
+
+* `BinomialRing`: a mixin class specifying a suitable `multichoose` function.
+* `Ring.multichoose`: the quotient of an ascending Pochhammer evaluation by a factorial.
+* `Ring.choose`: the quotient of a descending Pochhammer evaluation by a factorial.
+
+## Results
+
+* Basic results with choose and multichoose, e.g., `choose_zero_right`
+* Relations between choose and multichoose, negated input.
+* Fundamental recursion: `choose_succ_succ`
+* Chu-Vandermonde identity: `add_choose_eq`
+* Pochhammer API
+
 ## References
 
 * [J. Elliott, *Binomial rings, integer-valued polynomials, and λ-rings*][elliott2006binomial]
 
 ## TODO
 
-* Generalized versions of basic identities of Nat.choose.
 Further results in Elliot's paper:
 * A CommRing is binomial if and only if it admits a λ-ring structure with trivial Adams operations.
 * The free commutative binomial ring on a set `X` is the ring of integer-valued polynomials in the
@@ -47,15 +60,15 @@ section Multichoose
 open Function Polynomial
 
 /-- A binomial ring is a ring for which ascending Pochhammer evaluations are uniquely divisible by
-suitable factorials. We define this notion for a additive commutative monoids with natural number
-powers, but retain the ring name. We introduce `Ring.multichoose` as the uniquely defined
+suitable factorials. We define this notion as a mixin for additive commutative monoids with natural
+number powers, but retain the ring name. We introduce `Ring.multichoose` as the uniquely defined
 quotient. -/
 class BinomialRing (R : Type*) [AddCommMonoid R] [Pow R ℕ] where
   /-- Scalar multiplication by positive integers is injective -/
   nsmul_right_injective (n : ℕ) (h : n ≠ 0) : Injective (n • · : R → R)
   /-- A multichoose function, giving the quotient of Pochhammer evaluations by factorials. -/
   multichoose : R → ℕ → R
-  /-- The `n`th ascending Pochhammer polynomial evaluated at any element is divisible by n! -/
+  /-- The `n`th ascending Pochhammer polynomial evaluated at any element is divisible by `n!` -/
   factorial_nsmul_multichoose (r : R) (n : ℕ) :
     n.factorial • multichoose r n = (ascPochhammer ℕ n).smeval r
 

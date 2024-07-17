@@ -770,15 +770,15 @@ theorem exists_upcrossings_of_not_bounded_under {ι : Type*} {l : Filter ι} {x 
     refine ⟨q, q + 1, (lt_add_iff_pos_right _).2 zero_lt_one, ?_, ?_⟩
     · refine fun hcon => hR ?_
       filter_upwards [hcon] with x hx using not_lt.2 (lt_of_lt_of_le hq (not_lt.1 hx)).le
-    · simp only [IsBoundedUnder, IsBounded, eventually_map, eventually_atTop, ge_iff_le,
-        not_exists, not_forall, not_le, exists_prop] at hbdd
+    · simp only [IsBoundedUnder, IsBounded, eventually_map, eventually_atTop, not_exists,
+        not_forall, not_le, exists_prop] at hbdd
       refine fun hcon => hbdd ↑(q + 1) ?_
       filter_upwards [hcon] with x hx using not_lt.1 hx
   · obtain ⟨R, hR⟩ := exists_frequently_lt_of_liminf_ne_top' hf
     obtain ⟨q, hq⟩ := exists_rat_lt R
     refine ⟨q - 1, q, (sub_lt_self_iff _).2 zero_lt_one, ?_, ?_⟩
-    · simp only [IsBoundedUnder, IsBounded, eventually_map, eventually_atTop, ge_iff_le,
-        not_exists, not_forall, not_le, exists_prop] at hbdd
+    · simp only [IsBoundedUnder, IsBounded, eventually_map, eventually_atTop, not_exists,
+        not_forall, not_le, exists_prop] at hbdd
       refine fun hcon => hbdd ↑(q - 1) ?_
       filter_upwards [hcon] with x hx using not_lt.1 hx
     · refine fun hcon => hR ?_
@@ -1630,14 +1630,14 @@ lemma truncateToReal_eq_toReal {t x : ℝ≥0∞} (t_ne_top : t ≠ ∞) (x_le :
     truncateToReal t x = x.toReal := by
   have x_lt_top : x < ∞ := lt_of_le_of_lt x_le t_ne_top.lt_top
   have obs : min t x ≠ ∞ := by
-    simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+    simp_all only [ne_eq, min_eq_top, false_and, not_false_eq_true]
   exact (ENNReal.toReal_eq_toReal obs x_lt_top.ne).mpr (min_eq_right x_le)
 
 lemma truncateToReal_le {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) {x : ℝ≥0∞} :
     truncateToReal t x ≤ t.toReal := by
   rw [truncateToReal]
   apply (toReal_le_toReal _ t_ne_top).mpr (min_le_left t x)
-  simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+  simp_all only [ne_eq, min_eq_top, false_and, not_false_eq_true]
 
 lemma truncateToReal_nonneg {t x : ℝ≥0∞} : 0 ≤ truncateToReal t x := toReal_nonneg
 
@@ -1645,9 +1645,9 @@ lemma truncateToReal_nonneg {t x : ℝ≥0∞} : 0 ≤ truncateToReal t x := toR
 lemma monotone_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) : Monotone (truncateToReal t) := by
   intro x y x_le_y
   have obs_x : min t x ≠ ∞ := by
-    simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+    simp_all only [ne_eq, min_eq_top, false_and, not_false_eq_true]
   have obs_y : min t y ≠ ∞ := by
-    simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+    simp_all only [ne_eq, min_eq_top, false_and, not_false_eq_true]
   exact (ENNReal.toReal_le_toReal obs_x obs_y).mpr (min_le_min_left t x_le_y)
 
 /-- The truncated cast `ENNReal.truncateToReal t : ℝ≥0∞ → ℝ` is continuous when `t ≠ ∞`. -/
