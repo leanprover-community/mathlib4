@@ -272,7 +272,7 @@
   ["Mathlib.Tactic.CategoryTheory.MonoidalComp"],
   "Mathlib.Tactic.CC.Addition":
   ["Mathlib.Logic.Basic", "Mathlib.Tactic.CC.Lemmas"],
-  "Mathlib.Tactic.Basic": ["Batteries", "Mathlib.Tactic.Linter.OldObtain"],
+  "Mathlib.Tactic.Basic": ["Mathlib.Tactic.Linter.OldObtain"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
