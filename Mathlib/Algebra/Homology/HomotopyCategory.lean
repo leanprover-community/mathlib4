@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.Linear
+import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 import Mathlib.CategoryTheory.Quotient.Linear
 import Mathlib.CategoryTheory.Quotient.Preadditive
 
@@ -16,9 +17,6 @@ import Mathlib.CategoryTheory.Quotient.Preadditive
 `HomotopyCategory V c` gives the category of chain complexes of shape `c` in `V`,
 with chain maps identified when they are homotopic.
 -/
-
-set_option autoImplicit true
-
 
 universe v u
 
@@ -51,7 +49,7 @@ def HomotopyCategory :=
   CategoryTheory.Quotient (homotopic V c)
 #align homotopy_category HomotopyCategory
 
-instance : Category (HomotopyCategory V v) := by
+instance : Category (HomotopyCategory V c) := by
   dsimp only [HomotopyCategory]
   infer_instance
 
@@ -67,9 +65,9 @@ def quotient : HomologicalComplex V c ⥤ HomotopyCategory V c :=
   CategoryTheory.Quotient.functor _
 #align homotopy_category.quotient HomotopyCategory.quotient
 
-instance : Full (quotient V c) := Quotient.fullFunctor _
+instance : (quotient V c).Full := Quotient.full_functor _
 
-instance : EssSurj (quotient V c) := Quotient.essSurj_functor _
+instance : (quotient V c).EssSurj := Quotient.essSurj_functor _
 
 instance : (quotient V c).Additive where
 
@@ -92,6 +90,12 @@ instance [HasZeroObject V] : Inhabited (HomotopyCategory V c) :=
 instance [HasZeroObject V] : HasZeroObject (HomotopyCategory V c) :=
   ⟨(quotient V c).obj 0, by
     rw [IsZero.iff_id_eq_zero, ← (quotient V c).map_id, id_zero, Functor.map_zero]⟩
+
+instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (quotient V c)).Full :=
+  Quotient.full_whiskeringLeft_functor _ _
+
+instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (quotient V c)).Faithful :=
+  Quotient.faithful_whiskeringLeft_functor _ _
 
 variable {V c}
 
@@ -183,42 +187,6 @@ variable (V c)
 
 section
 
-variable [HasEqualizers V] [HasImages V] [HasImageMaps V] [HasCokernels V]
-
-/-- The `i`-th homology, as a functor from the homotopy category. -/
-def homology'Functor (i : ι) : HomotopyCategory V c ⥤ V :=
-  CategoryTheory.Quotient.lift _ (_root_.homology'Functor V c i) fun _ _ _ _ ⟨h⟩ =>
-    homology'_map_eq_of_homotopy h i
-#align homotopy_category.homology_functor HomotopyCategory.homology'Functor
-
-/-- The homology functor on the homotopy category is just the usual homology functor. -/
-def homology'Factors (i : ι) :
-    quotient V c ⋙ homology'Functor V c i ≅ _root_.homology'Functor V c i :=
-  CategoryTheory.Quotient.lift.isLift _ _ _
-#align homotopy_category.homology_factors HomotopyCategory.homology'Factors
-
-@[simp]
-theorem homology'Factors_hom_app (i : ι) (C : HomologicalComplex V c) :
-    (homology'Factors V c i).hom.app C = 𝟙 _ :=
-  rfl
-#align homotopy_category.homology_factors_hom_app HomotopyCategory.homology'Factors_hom_app
-
-@[simp]
-theorem homology'Factors_inv_app (i : ι) (C : HomologicalComplex V c) :
-    (homology'Factors V c i).inv.app C = 𝟙 _ :=
-  rfl
-#align homotopy_category.homology_factors_inv_app HomotopyCategory.homology'Factors_inv_app
-
-theorem homology'Functor_map_factors (i : ι) {C D : HomologicalComplex V c} (f : C ⟶ D) :
-    (_root_.homology'Functor V c i).map f =
-      ((homology'Functor V c i).map ((quotient V c).map f) : _) :=
-  (CategoryTheory.Quotient.lift_map_functor_map _ (_root_.homology'Functor V c i) _ f).symm
-#align homotopy_category.homology_functor_map_factors HomotopyCategory.homology'Functor_map_factors
-
-end
-
-section
-
 variable [CategoryWithHomology V]
 
 /-- The `i`-th homology, as a functor from the homotopy category. -/
@@ -258,7 +226,6 @@ def Functor.mapHomotopyCategory (F : V ⥤ W) [F.Additive] (c : ComplexShape ι)
     (fun _ _ _ _ ⟨h⟩ => HomotopyCategory.eq_of_homotopy _ _ (F.mapHomotopy h))
 #align category_theory.functor.map_homotopy_category CategoryTheory.Functor.mapHomotopyCategory
 
--- Porting note (#10756): added lemma because of new definition of `Functor.mapHomotopyCategory`
 @[simp]
 lemma Functor.mapHomotopyCategory_map (F : V ⥤ W) [F.Additive] {c : ComplexShape ι}
     {K L : HomologicalComplex V c} (f : K ⟶ L) :

@@ -38,7 +38,7 @@ universe u v w
 
 noncomputable section
 
-open Module MonoidAlgebra BigOperators
+open Module MonoidAlgebra
 
 /-!
 We now do the key calculation in Maschke's theorem.
@@ -63,7 +63,6 @@ variable {V : Type v} [AddCommGroup V] [Module k V] [Module (MonoidAlgebra k G) 
 variable [IsScalarTower k (MonoidAlgebra k G) V]
 variable {W : Type w} [AddCommGroup W] [Module k W] [Module (MonoidAlgebra k G) W]
 variable [IsScalarTower k (MonoidAlgebra k G) W]
-
 variable (π : W →ₗ[k] V)
 
 /-- We define the conjugate of `π` by `g`, as a `k`-linear map. -/

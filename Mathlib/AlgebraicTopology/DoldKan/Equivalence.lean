@@ -90,7 +90,7 @@ obtained by composing the previous equivalence with the equivalences
 `SimplicialObject C ≌ Karoubi (SimplicialObject C)` and
 `Karoubi (ChainComplex C ℕ) ≌ ChainComplex C ℕ`. Instead, we polish this construction
 in `Compatibility.lean` by ensuring good definitional properties of the equivalence (e.g.
-the inverse functor is definitionallly equal to
+the inverse functor is definitionally equal to
 `Γ₀' : ChainComplex C ℕ ⥤ SimplicialObject C`) and
 showing compatibilities for the unit and counit isomorphisms.
 
@@ -165,11 +165,8 @@ set_option linter.uppercaseLean3 false in
 
 /-- The Dold-Kan equivalence for abelian categories -/
 @[simps! functor]
-def equivalence : SimplicialObject A ≌ ChainComplex A ℕ := by
-  let F : SimplicialObject A ⥤ _ := Idempotents.DoldKan.N
-  let hF : IsEquivalence F := IsEquivalence.ofEquivalence Idempotents.DoldKan.equivalence
-  letI : IsEquivalence (N : SimplicialObject A ⥤ _) := IsEquivalence.ofIso comparisonN.symm hF
-  exact N.asEquivalence
+def equivalence : SimplicialObject A ≌ ChainComplex A ℕ :=
+  (Idempotents.DoldKan.equivalence (C := A)).changeFunctor comparisonN.symm
 #align category_theory.abelian.dold_kan.equivalence CategoryTheory.Abelian.DoldKan.equivalence
 
 theorem equivalence_inverse : (equivalence : SimplicialObject A ≌ _).inverse = Γ :=

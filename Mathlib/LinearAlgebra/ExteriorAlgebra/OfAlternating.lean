@@ -26,9 +26,7 @@ import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 
 
 variable {R M N N' : Type*}
-
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [AddCommGroup N']
-
 variable [Module R M] [Module R N] [Module R N']
 
 -- This instance can't be found where it's needed if we don't remind lean that it exists.
@@ -47,23 +45,21 @@ def liftAlternating : (∀ i, M [⋀^Fin i]→ₗ[R] N) →ₗ[R] ExteriorAlgebr
   suffices
     (∀ i, M [⋀^Fin i]→ₗ[R] N) →ₗ[R]
       ExteriorAlgebra R M →ₗ[R] ∀ i, M [⋀^Fin i]→ₗ[R] N by
-    refine' LinearMap.compr₂ this _
-    refine' (LinearEquiv.toLinearMap _).comp (LinearMap.proj 0)
+    refine LinearMap.compr₂ this ?_
+    refine (LinearEquiv.toLinearMap ?_).comp (LinearMap.proj 0)
     exact AlternatingMap.constLinearEquivOfIsEmpty.symm
-  refine' CliffordAlgebra.foldl _ _ _
-  · refine'
-      LinearMap.mk₂ R (fun m f i => (f i.succ).curryLeft m) (fun m₁ m₂ f => _) (fun c m f => _)
-        (fun m f₁ f₂ => _) fun c m f => _
+  refine CliffordAlgebra.foldl _ ?_ ?_
+  · refine
+      LinearMap.mk₂ R (fun m f i => (f i.succ).curryLeft m) (fun m₁ m₂ f => ?_) (fun c m f => ?_)
+        (fun m f₁ f₂ => ?_) fun c m f => ?_
     all_goals
       ext i : 1
       simp only [map_smul, map_add, Pi.add_apply, Pi.smul_apply, AlternatingMap.curryLeft_add,
         AlternatingMap.curryLeft_smul, map_add, map_smul, LinearMap.add_apply, LinearMap.smul_apply]
   · -- when applied twice with the same `m`, this recursive step produces 0
     intro m x
-    dsimp only [LinearMap.mk₂_apply, QuadraticForm.coeFn_zero, Pi.zero_apply]
-    simp_rw [zero_smul]
-    ext i : 1
-    exact AlternatingMap.curryLeft_same _ _
+    ext
+    simp
 #align exterior_algebra.lift_alternating ExteriorAlgebra.liftAlternating
 
 @[simp]
@@ -152,8 +148,7 @@ theorem liftAlternating_ιMulti :
 
 /-- `ExteriorAlgebra.liftAlternating` is an equivalence. -/
 @[simps apply symm_apply]
-def liftAlternatingEquiv : (∀ i, M [⋀^Fin i]→ₗ[R] N) ≃ₗ[R] ExteriorAlgebra R M →ₗ[R] N
-    where
+def liftAlternatingEquiv : (∀ i, M [⋀^Fin i]→ₗ[R] N) ≃ₗ[R] ExteriorAlgebra R M →ₗ[R] N where
   toFun := liftAlternating (R := R)
   map_add' := map_add _
   map_smul' := map_smul _

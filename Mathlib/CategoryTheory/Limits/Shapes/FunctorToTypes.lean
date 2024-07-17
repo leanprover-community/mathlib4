@@ -22,7 +22,6 @@ universe w v u
 namespace CategoryTheory.FunctorToTypes
 
 variable {C : Type u} [Category.{v} C]
-
 variable (F G : C ⥤ Type w)
 
 section prod
@@ -34,7 +33,7 @@ def prod : C ⥤ Type w where
 
 variable {F G}
 
-  /-- The first projection of `prod F G`, onto `F`. -/
+/-- The first projection of `prod F G`, onto `F`. -/
 @[simps]
 def prod.fst : prod F G ⟶ F where
   app _ a := a.1
@@ -175,7 +174,7 @@ variable {F G}
 def coprod.inl : F ⟶ coprod F G where
   app _ x := .inl x
 
-  /-- The right inclusion of `G` into `coprod F G`. -/
+/-- The right inclusion of `G` into `coprod F G`. -/
 @[simps]
 def coprod.inr : G ⟶ coprod F G where
   app _ x := .inr x
@@ -189,7 +188,7 @@ def coprod.desc {F₁ F₂ : C ⥤ Type w} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ �
      cases x with
      | inl x => exact τ₁.app a x
      | inr x => exact τ₂.app a x
-  naturality _ _ _:= by
+  naturality _ _ _ := by
     ext x
     cases x with | _ => simp only [coprod, types_comp_apply, FunctorToTypes.naturality]
 
@@ -282,12 +281,11 @@ variable (F G)
 noncomputable
 def binaryCoproductEquiv (a : C) :
     (F ⨿ G).obj a ≃ (F.obj a) ⊕ (G.obj a) where
-  toFun z := ((binaryCoproductIso F G).hom.app a z)
-  invFun z := ((binaryCoproductIso F G).inv.app a z)
+  toFun z := (binaryCoproductIso F G).hom.app a z
+  invFun z := (binaryCoproductIso F G).inv.app a z
   left_inv _ := by simp only [hom_inv_id_app_apply]
   right_inv _ := by simp only [inv_hom_id_app_apply]
 
 end coprod
 
 end CategoryTheory.FunctorToTypes
-

@@ -3,10 +3,6 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Analytic.Basic
-import Mathlib.Analysis.Analytic.Composition
-import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Geometry.Manifold.ChartedSpace
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.Analysis.Calculus.ContDiff.Basic
@@ -51,30 +47,31 @@ but add these assumptions later as needed. (Quite a few results still do not req
   we register them as `PartialEquiv`s.
   `extChartAt I x` is the canonical such partial equiv around `x`.
 
-As specific examples of models with corners, we define (in the file `real_instances.lean`)
-* `modelWithCornersSelf ℝ (EuclideanSpace (Fin n))` for the model space used to define
-  `n`-dimensional real manifolds without boundary (with notation `𝓡 n` in the locale `manifold`)
-* `ModelWithCorners ℝ (EuclideanSpace (Fin n)) (euclidean_half_space n)` for the model space
+As specific examples of models with corners, we define (in `Geometry.Manifold.Instances.Real`)
+* `modelWithCornersSelf ℝ (EuclideanSpace ℝ (Fin n))` for the model space used to define
+  `n`-dimensional real manifolds without boundary (with notation `𝓡 n` in the locale `Manifold`)
+* `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
   used to define `n`-dimensional real manifolds with boundary (with notation `𝓡∂ n` in the locale
-  `manifold`)
-* `ModelWithCorners ℝ (EuclideanSpace (Fin n)) (euclidean_quadrant n)` for the model space used
+  `Manifold`)
+* `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
   to define `n`-dimensional real manifolds with corners
 
 With these definitions at hand, to invoke an `n`-dimensional real manifold without boundary,
 one could use
 
-  `variables {n : ℕ} {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace (Fin n)) M]
+  `variable {n : ℕ} {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace ℝ (Fin n)) M]
    [SmoothManifoldWithCorners (𝓡 n) M]`.
 
 However, this is not the recommended way: a theorem proved using this assumption would not apply
 for instance to the tangent space of such a manifold, which is modelled on
-`(EuclideanSpace (Fin n)) × (EuclideanSpace (Fin n))` and not on `EuclideanSpace (Fin (2 * n))`!
+`(EuclideanSpace ℝ (Fin n)) × (EuclideanSpace ℝ (Fin n))`
+and not on `EuclideanSpace ℝ (Fin (2 * n))`!
 In the same way, it would not apply to product manifolds, modelled on
-`(EuclideanSpace (Fin n)) × (EuclideanSpace (Fin m))`.
+`(EuclideanSpace ℝ (Fin n)) × (EuclideanSpace ℝ (Fin m))`.
 The right invocation does not focus on one specific construction, but on all constructions sharing
 the right properties, like
 
-  `variables {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  `variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   {I : ModelWithCorners ℝ E E} [I.Boundaryless]
   {M : Type*} [TopologicalSpace M] [ChartedSpace E M] [SmoothManifoldWithCorners I M]`
 
@@ -82,8 +79,8 @@ Here, `I.Boundaryless` is a typeclass property ensuring that there is no boundar
 instance the case for `modelWithCornersSelf`, or products of these). Note that one could consider
 as a natural assumption to only use the trivial model with corners `modelWithCornersSelf ℝ E`,
 but again in product manifolds the natural model with corners will not be this one but the product
-one (and they are not defeq as `(λp : E × F, (p.1, p.2))` is not defeq to the identity). So, it is
-important to use the above incantation to maximize the applicability of theorems.
+one (and they are not defeq as `(fun p : E × F ↦ (p.1, p.2))` is not defeq to the identity).
+So, it is important to use the above incantation to maximize the applicability of theorems.
 
 ## Implementation notes
 
@@ -128,6 +125,7 @@ open Set Filter Function
 
 open scoped Manifold Filter Topology
 
+/-- The extended natural number `∞` -/
 scoped[Manifold] notation "∞" => (⊤ : ℕ∞)
 
 /-! ### Models with corners. -/
@@ -137,7 +135,7 @@ scoped[Manifold] notation "∞" => (⊤ : ℕ∞)
 model vector space `E` over the field `𝕜`. This is all what is needed to
 define a smooth manifold with model space `H`, and model vector space `E`.
 -/
-@[ext] -- Porting note: was nolint has_nonempty_instance
+@[ext] -- Porting note(#5171): was nolint has_nonempty_instance
 structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] extends
     PartialEquiv H E where
@@ -262,7 +260,7 @@ protected theorem unique_diff : UniqueDiffOn 𝕜 (range I) :=
 #align model_with_corners.unique_diff ModelWithCorners.unique_diff
 
 @[simp, mfld_simps]
-protected theorem left_inv (x : H) : I.symm (I x) = x := by refine' I.left_inv' _; simp
+protected theorem left_inv (x : H) : I.symm (I x) = x := by refine I.left_inv' ?_; simp
 #align model_with_corners.left_inv ModelWithCorners.left_inv
 
 protected theorem leftInverse : LeftInverse I.symm I :=
@@ -292,7 +290,7 @@ theorem preimage_image (s : Set H) : I ⁻¹' (I '' s) = s :=
 #align model_with_corners.preimage_image ModelWithCorners.preimage_image
 
 protected theorem image_eq (s : Set H) : I '' s = I.symm ⁻¹' s ∩ range I := by
-  refine' (I.toPartialEquiv.image_eq_target_inter_inv_preimage _).trans _
+  refine (I.toPartialEquiv.image_eq_target_inter_inv_preimage ?_).trans ?_
   · rw [I.source_eq]; exact subset_univ _
   · rw [inter_comm, I.target_eq, I.toPartialEquiv_coe_symm]
 #align model_with_corners.image_eq ModelWithCorners.image_eq
@@ -301,9 +299,11 @@ protected theorem closedEmbedding : ClosedEmbedding I :=
   I.leftInverse.closedEmbedding I.continuous_symm I.continuous
 #align model_with_corners.closed_embedding ModelWithCorners.closedEmbedding
 
-theorem closed_range : IsClosed (range I) :=
-  I.closedEmbedding.closed_range
-#align model_with_corners.closed_range ModelWithCorners.closed_range
+theorem isClosed_range : IsClosed (range I) :=
+  I.closedEmbedding.isClosed_range
+#align model_with_corners.closed_range ModelWithCorners.isClosed_range
+
+@[deprecated (since := "2024-03-17")] alias closed_range := isClosed_range
 
 theorem map_nhds_eq (x : H) : map I (𝓝 x) = 𝓝[range I] I x :=
   I.closedEmbedding.toEmbedding.map_nhds_eq x
@@ -343,12 +343,12 @@ theorem unique_diff_at_image {x : H} : UniqueDiffWithinAt 𝕜 (range I) (I x) :
 theorem symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {f : H → X} {s : Set H}
     {x : H} :
     ContinuousWithinAt (f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I x) ↔ ContinuousWithinAt f s x := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · have := h.comp I.continuousWithinAt (mapsTo_preimage _ _)
     simp_rw [preimage_inter, preimage_preimage, I.left_inv, preimage_id', preimage_range,
       inter_univ] at this
     rwa [Function.comp.assoc, I.symm_comp_self] at this
-  · rw [← I.left_inv x] at h; exact h.comp I.continuousWithinAt_symm (inter_subset_left _ _)
+  · rw [← I.left_inv x] at h; exact h.comp I.continuousWithinAt_symm inter_subset_left
 #align model_with_corners.symm_continuous_within_at_comp_right_iff ModelWithCorners.symm_continuousWithinAt_comp_right_iff
 
 protected theorem locallyCompactSpace [LocallyCompactSpace E] (I : ModelWithCorners 𝕜 E H) :
@@ -357,9 +357,9 @@ protected theorem locallyCompactSpace [LocallyCompactSpace E] (I : ModelWithCorn
       fun s => I.symm '' (s ∩ range I) := fun x ↦ by
     rw [← I.symm_map_nhdsWithin_range]
     exact ((compact_basis_nhds (I x)).inf_principal _).map _
-  refine' .of_hasBasis this _
+  refine .of_hasBasis this ?_
   rintro x s ⟨-, hsc⟩
-  exact (hsc.inter_right I.closed_range).image I.continuous_symm
+  exact (hsc.inter_right I.isClosed_range).image I.continuous_symm
 #align model_with_corners.locally_compact ModelWithCorners.locallyCompactSpace
 
 open TopologicalSpace
@@ -434,8 +434,7 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
 
 /-- Special case of product model with corners, which is trivial on the second factor. This shows up
 as the model to tangent bundles. -/
-@[reducible]
-def ModelWithCorners.tangent {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
+abbrev ModelWithCorners.tangent {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) : ModelWithCorners 𝕜 (E × E) (ModelProd H E) :=
   I.prod 𝓘(𝕜, E)
@@ -598,10 +597,10 @@ theorem contDiffGroupoid_zero_eq : contDiffGroupoid 0 I = continuousGroupoid H :
   rw [contDiffGroupoid, mem_groupoid_of_pregroupoid, contDiffPregroupoid]
   simp only [contDiffOn_zero]
   constructor
-  · refine' I.continuous.comp_continuousOn (u.continuousOn.comp I.continuousOn_symm _)
-    exact (mapsTo_preimage _ _).mono_left (inter_subset_left _ _)
-  · refine' I.continuous.comp_continuousOn (u.symm.continuousOn.comp I.continuousOn_symm _)
-    exact (mapsTo_preimage _ _).mono_left (inter_subset_left _ _)
+  · refine I.continuous.comp_continuousOn (u.continuousOn.comp I.continuousOn_symm ?_)
+    exact (mapsTo_preimage _ _).mono_left inter_subset_left
+  · refine I.continuous.comp_continuousOn (u.symm.continuousOn.comp I.continuousOn_symm ?_)
+    exact (mapsTo_preimage _ _).mono_left inter_subset_left
 #align cont_diff_groupoid_zero_eq contDiffGroupoid_zero_eq
 
 variable (n)
@@ -650,168 +649,12 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
 instance : ClosedUnderRestriction (contDiffGroupoid n I) :=
   (closedUnderRestriction_iff_id_le _).mpr
     (by
-      apply StructureGroupoid.le_iff.mpr
+      rw [StructureGroupoid.le_iff]
       rintro e ⟨s, hs, hes⟩
       apply (contDiffGroupoid n I).mem_of_eqOnSource' _ _ _ hes
       exact ofSet_mem_contDiffGroupoid n I hs)
 
 end contDiffGroupoid
-
-section analyticGroupoid
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*}
-  [TopologicalSpace M]
-
-/-- Given a model with corners `(E, H)`, we define the groupoid of analytic transformations of `H`
-as the maps that are analytic and map interior to interior when read in `E` through `I`. We also
-explicitly define that they are `C^∞` on the whole domain, since we are only requiring
-analyticity on the interior of the domain. -/
-def analyticGroupoid : StructureGroupoid H :=
-  (contDiffGroupoid ∞ I) ⊓ Pregroupoid.groupoid
-    { property := fun f s => AnalyticOn 𝕜 (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I)) ∧
-        (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ f ∘ I.symm) ⊆ interior (range I)
-      comp := fun {f g u v} hf hg _ _ _ => by
-        simp only [] at hf hg ⊢
-        have comp : I ∘ (g ∘ f) ∘ I.symm = (I ∘ g ∘ I.symm) ∘ I ∘ f ∘ I.symm := by ext x; simp
-        apply And.intro
-        · simp only [comp, preimage_inter]
-          refine hg.left.comp (hf.left.mono ?_) ?_
-          · simp only [subset_inter_iff, inter_subset_right]
-            rw [inter_assoc]
-            simp
-          · intro x hx
-            apply And.intro
-            · rw [mem_preimage, comp_apply, I.left_inv]
-              exact hx.left.right
-            · apply hf.right
-              rw [mem_image]
-              exact ⟨x, ⟨⟨hx.left.left, hx.right⟩, rfl⟩⟩
-        · simp only [comp]
-          rw [image_comp]
-          intro x hx
-          rw [mem_image] at hx
-          rcases hx with ⟨x', hx'⟩
-          refine hg.right ⟨x', And.intro ?_ hx'.right⟩
-          apply And.intro
-          · have hx'1 : x' ∈ ((v.preimage f).preimage (I.symm)).image (I ∘ f ∘ I.symm) := by
-              refine image_subset (I ∘ f ∘ I.symm) ?_ hx'.left
-              rw [preimage_inter]
-              refine Subset.trans ?_ (inter_subset_right (u.preimage I.symm)
-                ((v.preimage f).preimage I.symm))
-              apply inter_subset_left
-            rcases hx'1 with ⟨x'', hx''⟩
-            rw [hx''.right.symm]
-            simp only [comp_apply, mem_preimage, I.left_inv]
-            exact hx''.left
-          · rw [mem_image] at hx'
-            rcases hx'.left with ⟨x'', hx''⟩
-            exact hf.right ⟨x'', ⟨⟨hx''.left.left.left, hx''.left.right⟩, hx''.right⟩⟩
-      id_mem := by
-        apply And.intro
-        · simp only [preimage_univ, univ_inter]
-          exact AnalyticOn.congr isOpen_interior
-            (f := (1 : E →L[𝕜] E)) (fun x _ => (1 : E →L[𝕜] E).analyticAt x)
-            (fun z hz => (I.right_inv (interior_subset hz)).symm)
-        · intro x hx
-          simp only [id_comp, comp_apply, preimage_univ, univ_inter, mem_image] at hx
-          rcases hx with ⟨y, hy⟩
-          rw [← hy.right, I.right_inv (interior_subset hy.left)]
-          exact hy.left
-      locality := fun {f u} _ h => by
-        simp only [] at h
-        simp only [AnalyticOn]
-        apply And.intro
-        · intro x hx
-          rcases h (I.symm x) (mem_preimage.mp hx.left) with ⟨v, hv⟩
-          exact hv.right.right.left x ⟨mem_preimage.mpr ⟨hx.left, hv.right.left⟩, hx.right⟩
-        · apply mapsTo'.mp
-          simp only [MapsTo]
-          intro x hx
-          rcases h (I.symm x) hx.left with ⟨v, hv⟩
-          apply hv.right.right.right
-          rw [mem_image]
-          have hx' := And.intro hx (mem_preimage.mpr hv.right.left)
-          rw [← mem_inter_iff, inter_comm, ← inter_assoc, ← preimage_inter, inter_comm v u] at hx'
-          exact ⟨x, ⟨hx', rfl⟩⟩
-      congr := fun {f g u} hu fg hf => by
-        simp only [] at hf ⊢
-        apply And.intro
-        · refine AnalyticOn.congr (IsOpen.inter (hu.preimage I.continuous_symm) isOpen_interior)
-            hf.left ?_
-          intro z hz
-          simp only [comp_apply]
-          rw [fg (I.symm z) hz.left]
-        · intro x hx
-          apply hf.right
-          rw [mem_image] at hx ⊢
-          rcases hx with ⟨y, hy⟩
-          refine ⟨y, ⟨hy.left, ?_⟩⟩
-          rw [comp_apply, comp_apply, fg (I.symm y) hy.left.left] at hy
-          exact hy.right }
-
-/-- An identity partial homeomorphism belongs to the analytic groupoid. -/
-theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
-    PartialHomeomorph.ofSet s hs ∈ analyticGroupoid I := by
-  rw [analyticGroupoid]
-  refine And.intro (ofSet_mem_contDiffGroupoid ∞ I hs) ?_
-  apply mem_groupoid_of_pregroupoid.mpr
-  suffices h : AnalyticOn 𝕜 (I ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I)) ∧
-      (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ I.symm) ⊆ interior (range I) by
-    simp only [PartialHomeomorph.ofSet_apply, id_comp, PartialHomeomorph.ofSet_toPartialEquiv,
-      PartialEquiv.ofSet_source, h, comp_apply, mem_range, image_subset_iff, true_and,
-      PartialHomeomorph.ofSet_symm, PartialEquiv.ofSet_target, and_self]
-    intro x hx
-    refine mem_preimage.mpr ?_
-    rw [← I.right_inv (interior_subset hx.right)] at hx
-    exact hx.right
-  apply And.intro
-  · have : AnalyticOn 𝕜 (1 : E →L[𝕜] E) (univ : Set E) := (fun x _ => (1 : E →L[𝕜] E).analyticAt x)
-    exact (this.mono (subset_univ (s.preimage (I.symm) ∩ interior (range I)))).congr
-      ((hs.preimage I.continuous_symm).inter isOpen_interior)
-      fun z hz => (I.right_inv (interior_subset hz.right)).symm
-  · intro x hx
-    simp only [comp_apply, mem_image] at hx
-    rcases hx with ⟨y, hy⟩
-    rw [← hy.right, I.right_inv (interior_subset hy.left.right)]
-    exact hy.left.right
-
-/-- The composition of a partial homeomorphism from `H` to `M` and its inverse belongs to
-the analytic groupoid. -/
-theorem symm_trans_mem_analyticGroupoid (e : PartialHomeomorph M H) :
-    e.symm.trans e ∈ analyticGroupoid I :=
-  haveI : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
-    PartialHomeomorph.symm_trans_self _
-  StructureGroupoid.mem_of_eqOnSource _ (ofSet_mem_analyticGroupoid I e.open_target) this
-
-/-- The analytic groupoid is closed under restriction. -/
-instance : ClosedUnderRestriction (analyticGroupoid I) :=
-  (closedUnderRestriction_iff_id_le _).mpr
-    (by
-      apply StructureGroupoid.le_iff.mpr
-      rintro e ⟨s, hs, hes⟩
-      apply (analyticGroupoid I).mem_of_eqOnSource' _ _ _ hes
-      exact ofSet_mem_analyticGroupoid I hs)
-
-/-- The analytic groupoid on a boundaryless charted space modeled on a complete vector space
-consists of the partial homeomorphisms which are analytic and have analytic inverse. -/
-theorem mem_analyticGroupoid_of_boundaryless [CompleteSpace E] [I.Boundaryless]
-    (e : PartialHomeomorph H H) :
-    e ∈ analyticGroupoid I ↔ AnalyticOn 𝕜 (I ∘ e ∘ I.symm) (I '' e.source) ∧
-    AnalyticOn 𝕜 (I ∘ e.symm ∘ I.symm) (I '' e.target) := by
-  apply Iff.intro
-  · intro he
-    have := mem_groupoid_of_pregroupoid.mp he.right
-    simp only [I.image_eq, I.range_eq_univ, interior_univ, subset_univ, and_true] at this ⊢
-    exact this
-  · intro he
-    apply And.intro
-    all_goals apply mem_groupoid_of_pregroupoid.mpr; simp only [I.image_eq, I.range_eq_univ,
-      interior_univ, subset_univ, and_true, contDiffPregroupoid] at he ⊢
-    · exact ⟨he.left.contDiffOn, he.right.contDiffOn⟩
-    · exact he
-
-end analyticGroupoid
 
 section SmoothManifoldWithCorners
 
@@ -993,7 +836,7 @@ theorem mapsTo_extend (hs : s ⊆ f.source) :
     MapsTo (f.extend I) s ((f.extend I).symm ⁻¹' s ∩ range I) := by
   rw [mapsTo', extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
     f.image_eq_target_inter_inv_preimage hs]
-  exact image_subset _ (inter_subset_right _ _)
+  exact image_subset _ inter_subset_right
 #align local_homeomorph.maps_to_extend PartialHomeomorph.mapsTo_extend
 
 theorem extend_left_inv {x : M} (hxf : x ∈ f.source) : (f.extend I).symm (f.extend I x) = x :=
@@ -1001,7 +844,7 @@ theorem extend_left_inv {x : M} (hxf : x ∈ f.source) : (f.extend I).symm (f.ex
 #align local_homeomorph.extend_left_inv PartialHomeomorph.extend_left_inv
 
 /-- Variant of `f.extend_left_inv I`, stated in terms of images. -/
-lemma extend_left_inv' (ht: t ⊆ f.source) : ((f.extend I).symm ∘ (f.extend I)) '' t = t :=
+lemma extend_left_inv' (ht : t ⊆ f.source) : ((f.extend I).symm ∘ (f.extend I)) '' t = t :=
   EqOn.image_eq_self (fun _ hx ↦ f.extend_left_inv I (ht hx))
 
 theorem extend_source_mem_nhds {x : M} (h : x ∈ f.source) : (f.extend I).source ∈ 𝓝 x :=
@@ -1013,7 +856,7 @@ theorem extend_source_mem_nhdsWithin {x : M} (h : x ∈ f.source) : (f.extend I)
 #align local_homeomorph.extend_source_mem_nhds_within PartialHomeomorph.extend_source_mem_nhdsWithin
 
 theorem continuousOn_extend : ContinuousOn (f.extend I) (f.extend I).source := by
-  refine' I.continuous.comp_continuousOn _
+  refine I.continuous.comp_continuousOn ?_
   rw [extend_source]
   exact f.continuousOn
 #align local_homeomorph.continuous_on_extend PartialHomeomorph.continuousOn_extend
@@ -1048,7 +891,7 @@ theorem extend_target_subset_range : (f.extend I).target ⊆ range I := by simp 
 lemma interior_extend_target_subset_interior_range :
     interior (f.extend I).target ⊆ interior (range I) := by
   rw [f.extend_target, interior_inter, (f.open_target.preimage I.continuous_symm).interior_eq]
-  exact inter_subset_right _ _
+  exact inter_subset_right
 
 /-- If `y ∈ f.target` and `I y ∈ interior (range I)`,
   then `I y` is an interior point of `(I ∘ f).target`. -/
@@ -1090,8 +933,9 @@ theorem isOpen_extend_preimage' {s : Set E} (hs : IsOpen s) :
   (continuousOn_extend f I).isOpen_inter_preimage (isOpen_extend_source _ _) hs
 #align local_homeomorph.is_open_extend_preimage' PartialHomeomorph.isOpen_extend_preimage'
 
-theorem isOpen_extend_preimage {s : Set E} (hs : IsOpen s) : IsOpen (f.source ∩ f.extend I ⁻¹' s) :=
-  by rw [← extend_source f I]; exact isOpen_extend_preimage' f I hs
+theorem isOpen_extend_preimage {s : Set E} (hs : IsOpen s) :
+    IsOpen (f.source ∩ f.extend I ⁻¹' s) := by
+  rw [← extend_source f I]; exact isOpen_extend_preimage' f I hs
 #align local_homeomorph.is_open_extend_preimage PartialHomeomorph.isOpen_extend_preimage
 
 theorem map_extend_nhdsWithin_eq_image {y : M} (hy : y ∈ f.source) :
@@ -1101,7 +945,7 @@ theorem map_extend_nhdsWithin_eq_image {y : M} (hy : y ∈ f.source) :
     map e (𝓝[s] y) = map e (𝓝[e.source ∩ s] y) :=
       congr_arg (map e) (nhdsWithin_inter_of_mem (extend_source_mem_nhdsWithin f I hy)).symm
     _ = 𝓝[e '' (e.source ∩ s)] e y :=
-      ((f.extend I).leftInvOn.mono <| inter_subset_left _ _).map_nhdsWithin_eq
+      ((f.extend I).leftInvOn.mono inter_subset_left).map_nhdsWithin_eq
         ((f.extend I).left_inv <| by rwa [f.extend_source])
         (continuousAt_extend_symm f I hy).continuousWithinAt
         (continuousAt_extend f I hy).continuousWithinAt
@@ -1197,8 +1041,8 @@ theorem extend_symm_preimage_inter_range_eventuallyEq_aux {s : Set M} {x : M} (h
     congr
     · skip
     rw [← univ_inter (_ ∩ range I)]
-  refine' (eventuallyEq_univ.mpr _).symm.inter EventuallyEq.rfl
-  refine' I.continuousAt_symm.preimage_mem_nhds (f.open_target.mem_nhds _)
+  refine (eventuallyEq_univ.mpr ?_).symm.inter EventuallyEq.rfl
+  refine I.continuousAt_symm.preimage_mem_nhds (f.open_target.mem_nhds ?_)
   simp_rw [f.extend_coe, Function.comp_apply, I.left_inv, f.mapsTo hx]
 #align local_homeomorph.extend_symm_preimage_inter_range_eventually_eq_aux PartialHomeomorph.extend_symm_preimage_inter_range_eventuallyEq_aux
 
@@ -1229,7 +1073,7 @@ theorem extend_coord_change_source_mem_nhdsWithin {x : E}
     ((f.extend I).symm ≫ f'.extend I).source ∈ 𝓝[range I] x := by
   rw [f.extend_coord_change_source] at hx ⊢
   obtain ⟨x, hx, rfl⟩ := hx
-  refine' I.image_mem_nhdsWithin _
+  refine I.image_mem_nhdsWithin ?_
   exact (PartialHomeomorph.open_source _).mem_nhds hx
 #align local_homeomorph.extend_coord_change_source_mem_nhds_within PartialHomeomorph.extend_coord_change_source_mem_nhdsWithin
 
@@ -1264,7 +1108,7 @@ theorem contDiffWithinAt_extend_coord_change [ChartedSpace H M] (hf : f ∈ maxi
 theorem contDiffWithinAt_extend_coord_change' [ChartedSpace H M] (hf : f ∈ maximalAtlas I M)
     (hf' : f' ∈ maximalAtlas I M) {x : M} (hxf : x ∈ f.source) (hxf' : x ∈ f'.source) :
     ContDiffWithinAt 𝕜 ⊤ (f.extend I ∘ (f'.extend I).symm) (range I) (f'.extend I x) := by
-  refine' contDiffWithinAt_extend_coord_change I hf hf' _
+  refine contDiffWithinAt_extend_coord_change I hf hf' ?_
   rw [← extend_image_source_inter]
   exact mem_image_of_mem _ ⟨hxf', hxf⟩
 #align local_homeomorph.cont_diff_within_at_extend_coord_change' PartialHomeomorph.contDiffWithinAt_extend_coord_change'
@@ -1525,8 +1369,8 @@ theorem extChartAt_preimage_mem_nhds {x : M} (ht : t ∈ 𝓝 x) :
 bring it into a convenient form to apply derivative lemmas. -/
 theorem extChartAt_preimage_inter_eq (x : M) :
     (extChartAt I x).symm ⁻¹' (s ∩ t) ∩ range I =
-      (extChartAt I x).symm ⁻¹' s ∩ range I ∩ (extChartAt I x).symm ⁻¹' t :=
-  by mfld_set_tac
+      (extChartAt I x).symm ⁻¹' s ∩ range I ∩ (extChartAt I x).symm ⁻¹' t := by
+  mfld_set_tac
 #align ext_chart_at_preimage_inter_eq extChartAt_preimage_inter_eq
 
 theorem ContinuousWithinAt.nhdsWithin_extChartAt_symm_preimage_inter_range
@@ -1594,7 +1438,7 @@ theorem extChartAt_self_apply {x y : H} : extChartAt I x y = I y :=
 #align ext_chart_at_self_apply extChartAt_self_apply
 
 /-- In the case of the manifold structure on a vector space, the extended charts are just the
-identity.-/
+identity. -/
 theorem extChartAt_model_space_eq_id (x : E) : extChartAt 𝓘(𝕜, E) x = PartialEquiv.refl E := by
   simp only [mfld_simps]
 #align ext_chart_at_model_space_eq_id extChartAt_model_space_eq_id

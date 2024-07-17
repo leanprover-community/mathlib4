@@ -64,6 +64,21 @@ lemma compProd_congr [SFinite μ] [IsSFiniteKernel κ] [IsSFiniteKernel η]
     filter_upwards [h] with a ha using by rw [ha]
   rw [compProd_apply hs, lintegral_congr_ae this, compProd_apply hs]
 
+lemma ae_compProd_of_ae_ae [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
+    (hp : MeasurableSet {x | p x}) (h : ∀ᵐ a ∂μ, ∀ᵐ b ∂(κ a), p (a, b)) :
+    ∀ᵐ x ∂(μ ⊗ₘ κ), p x :=
+  kernel.ae_compProd_of_ae_ae hp h
+
+lemma ae_ae_of_ae_compProd [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
+    (h : ∀ᵐ x ∂(μ ⊗ₘ κ), p x) :
+    ∀ᵐ a ∂μ, ∀ᵐ b ∂κ a, p (a, b) := by
+  convert kernel.ae_ae_of_ae_compProd h -- Much faster with `convert`
+
+lemma ae_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
+    (hp : MeasurableSet {x | p x}) :
+    (∀ᵐ x ∂(μ ⊗ₘ κ), p x) ↔ ∀ᵐ a ∂μ, ∀ᵐ b ∂(κ a), p (a, b) :=
+  kernel.ae_compProd_iff hp
+
 lemma compProd_add_left (μ ν : Measure α) [SFinite μ] [SFinite ν] (κ : kernel α β)
     [IsSFiniteKernel κ] :
     (μ + ν) ⊗ₘ κ = μ ⊗ₘ κ + ν ⊗ₘ κ := by
@@ -82,12 +97,15 @@ lemma lintegral_compProd [SFinite μ] [IsSFiniteKernel κ]
   rw [compProd, kernel.lintegral_compProd _ _ _ hf]
   simp
 
-lemma set_lintegral_compProd [SFinite μ] [IsSFiniteKernel κ]
+lemma setLIntegral_compProd [SFinite μ] [IsSFiniteKernel κ]
     {f : α × β → ℝ≥0∞} (hf : Measurable f)
     {s : Set α} (hs : MeasurableSet s) {t : Set β} (ht : MeasurableSet t) :
     ∫⁻ x in s ×ˢ t, f x ∂(μ ⊗ₘ κ) = ∫⁻ a in s, ∫⁻ b in t, f (a, b) ∂(κ a) ∂μ := by
-  rw [compProd, kernel.set_lintegral_compProd _ _ _ hf hs ht]
+  rw [compProd, kernel.setLIntegral_compProd _ _ _ hf hs ht]
   simp
+
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_compProd := setLIntegral_compProd
 
 lemma integrable_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {E : Type*} [NormedAddCommGroup E]
     {f : α × β → E} (hf : AEStronglyMeasurable f (μ ⊗ₘ κ)) :
@@ -98,19 +116,22 @@ lemma integrable_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {E : Type*} [Nor
   rfl
 
 lemma integral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+    [NormedAddCommGroup E] [NormedSpace ℝ E]
     {f : α × β → E} (hf : Integrable f (μ ⊗ₘ κ)) :
     ∫ x, f x ∂(μ ⊗ₘ κ) = ∫ a, ∫ b, f (a, b) ∂(κ a) ∂μ := by
   rw [compProd, ProbabilityTheory.integral_compProd hf]
   simp
 
-lemma set_integral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+lemma setIntegral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E]
     {s : Set α} (hs : MeasurableSet s) {t : Set β} (ht : MeasurableSet t)
     {f : α × β → E} (hf : IntegrableOn f (s ×ˢ t) (μ ⊗ₘ κ))  :
     ∫ x in s ×ˢ t, f x ∂(μ ⊗ₘ κ) = ∫ a in s, ∫ b in t, f (a, b) ∂(κ a) ∂μ := by
-  rw [compProd, ProbabilityTheory.set_integral_compProd hs ht hf]
+  rw [compProd, ProbabilityTheory.setIntegral_compProd hs ht hf]
   simp
+
+@[deprecated (since := "2024-04-17")]
+alias set_integral_compProd := setIntegral_compProd
 
 end Integral
 

@@ -22,7 +22,7 @@ open scoped Real Topology
 namespace Complex
 
 theorem isOpenMap_exp : IsOpenMap exp :=
-  open_map_of_strict_deriv hasStrictDerivAt_exp exp_ne_zero
+  isOpenMap_of_hasStrictDerivAt hasStrictDerivAt_exp exp_ne_zero
 #align complex.is_open_map_exp Complex.isOpenMap_exp
 
 /-- `Complex.exp` as a `PartialHomeomorph` with `source = {z | -π < im z < π}` and
@@ -36,7 +36,7 @@ noncomputable def expPartialHomeomorph : PartialHomeomorph ℂ ℂ :=
       target := slitPlane
       map_source' := by
         rintro ⟨x, y⟩ ⟨h₁ : -π < y, h₂ : y < π⟩
-        refine' (not_or_of_imp fun hz => _).symm
+        refine (not_or_of_imp fun hz => ?_).symm
         obtain rfl : y = 0 := by
           rw [exp_im] at hz
           simpa [(Real.exp_pos _).ne', Real.sin_eq_zero_iff_of_lt_of_lt h₁ h₂] using hz

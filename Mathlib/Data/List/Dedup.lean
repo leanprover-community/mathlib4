@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Count
+import Mathlib.Data.List.Lattice
 
 #align_import data.list.dedup from "leanprover-community/mathlib"@"d9e96a3e3e0894e93e10aff5244f4c96655bac1c"
 
@@ -25,7 +25,7 @@ universe u
 
 namespace List
 
-variable {α : Type u} [DecidableEq α]
+variable {α β : Type*} [DecidableEq α]
 
 @[simp]
 theorem dedup_nil : dedup [] = ([] : List α) :=
@@ -44,9 +44,9 @@ theorem dedup_cons_of_not_mem' {a : α} {l : List α} (h : a ∉ dedup l) :
 @[simp]
 theorem mem_dedup {a : α} {l : List α} : a ∈ dedup l ↔ a ∈ l := by
   have := not_congr (@forall_mem_pwFilter α (· ≠ ·) _ ?_ a l)
-  simpa only [dedup, forall_mem_ne, not_not] using this
-  intros x y z xz
-  exact not_and_or.1 <| mt (fun h ↦ h.1.trans h.2) xz
+  · simpa only [dedup, forall_mem_ne, not_not] using this
+  · intros x y z xz
+    exact not_and_or.1 <| mt (fun h ↦ h.1.trans h.2) xz
 #align list.mem_dedup List.mem_dedup
 
 @[simp]
@@ -94,11 +94,12 @@ theorem dedup_eq_self {l : List α} : dedup l = l ↔ Nodup l :=
 
 theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
     l.dedup = a :: l' ↔ a ∈ l ∧ a ∉ l' ∧ l.dedup.tail = l' := by
-  refine' ⟨fun h => _, fun h => _⟩
-  · refine' ⟨mem_dedup.1 (h.symm ▸ mem_cons_self _ _), fun ha => _, by rw [h, tail_cons]⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · refine ⟨mem_dedup.1 (h.symm ▸ mem_cons_self _ _), fun ha => ?_, by rw [h, tail_cons]⟩
+    have := count_pos_iff_mem.2 ha
     have : count a l.dedup ≤ 1 := nodup_iff_count_le_one.1 (nodup_dedup l) a
-    rw [h, count_cons_self, add_le_iff_nonpos_left] at this
-    exact not_le_of_lt (count_pos_iff_mem.2 ha) this
+    rw [h, count_cons_self] at this
+    omega
   · have := @List.cons_head!_tail α ⟨a⟩ _ (ne_nil_of_mem (mem_dedup.2 h.1))
     have hal : a ∈ l.dedup := mem_dedup.2 h.1
     rw [← this, mem_cons, or_iff_not_imp_right] at hal
@@ -132,6 +133,42 @@ theorem dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ ded
   · rw [dedup_cons_of_not_mem' h, insert_of_not_mem h]
 #align list.dedup_append List.dedup_append
 
+theorem dedup_map_of_injective [DecidableEq β] {f : α → β} (hf : Function.Injective f)
+    (xs : List α) :
+    (xs.map f).dedup = xs.dedup.map f := by
+  induction xs with
+  | nil => simp
+  | cons x xs ih =>
+    rw [map_cons]
+    by_cases h : x ∈ xs
+    · rw [dedup_cons_of_mem h, dedup_cons_of_mem (mem_map_of_mem f h), ih]
+    · rw [dedup_cons_of_not_mem h, dedup_cons_of_not_mem <| (mem_map_of_injective hf).not.mpr h, ih,
+        map_cons]
+
+/-- Note that the weaker `List.Subset.dedup_append_left` is proved later. -/
+theorem Subset.dedup_append_right {xs ys : List α} (h : xs ⊆ ys) :
+    dedup (xs ++ ys) = dedup ys := by
+  rw [List.dedup_append, Subset.union_eq_right (h.trans <| subset_dedup _)]
+
+theorem Disjoint.union_eq {xs ys : List α} (h : Disjoint xs ys) :
+    xs ∪ ys = xs.dedup ++ ys := by
+  induction xs with
+  | nil => simp
+  | cons x xs ih =>
+    rw [cons_union]
+    rw [disjoint_cons_left] at h
+    by_cases hx : x ∈ xs
+    · rw [dedup_cons_of_mem hx, insert_of_mem (mem_union_left hx _), ih h.2]
+    · rw [dedup_cons_of_not_mem hx, insert_of_not_mem, ih h.2, cons_append]
+      rw [mem_union_iff, not_or]
+      exact ⟨hx, h.1⟩
+
+theorem Disjoint.dedup_append {xs ys : List α} (h : Disjoint xs ys) :
+    dedup (xs ++ ys) = dedup xs ++ dedup ys := by
+  rw [List.dedup_append, Disjoint.union_eq]
+  intro a hx hy
+  exact h hx (mem_dedup.mp hy)
+
 theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = [x]
   | 0, h => (h rfl).elim
   | 1, _ => rfl
@@ -143,35 +180,5 @@ theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = 
 theorem count_dedup (l : List α) (a : α) : l.dedup.count a = if a ∈ l then 1 else 0 := by
   simp_rw [count_eq_of_nodup <| nodup_dedup l, mem_dedup]
 #align list.count_dedup List.count_dedup
-
-/-- Summing the count of `x` over a list filtered by some `p` is just `countP` applied to `p` -/
-theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
-    ((l.dedup.filter p).map fun x => l.count x).sum = l.countP p := by
-  induction' l with a as h
-  · simp
-  · simp_rw [List.countP_cons, List.count_cons, List.sum_map_add]
-    congr 1
-    · refine' _root_.trans _ h
-      by_cases ha : a ∈ as
-      · simp [dedup_cons_of_mem ha]
-      · simp only [dedup_cons_of_not_mem ha, List.filter]
-        match p a with
-        | true => simp only [List.map_cons, List.sum_cons, List.count_eq_zero.2 ha, zero_add]
-        | false => simp only
-    · by_cases hp : p a
-      · refine' _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h]) _
-        simp [hp, count_dedup]
-      · refine' _root_.trans (List.sum_eq_zero fun n hn => _) (by simp [hp])
-        obtain ⟨a', ha'⟩ := List.mem_map.1 hn
-        split_ifs at ha' with ha
-        · simp only [ha, mem_filter, mem_dedup, find?, mem_cons, true_or, hp,
-            and_false, false_and] at ha'
-        · exact ha'.2.symm
-#align list.sum_map_count_dedup_filter_eq_countp List.sum_map_count_dedup_filter_eq_countP
-
-theorem sum_map_count_dedup_eq_length (l : List α) :
-    (l.dedup.map fun x => l.count x).sum = l.length := by
-  simpa using sum_map_count_dedup_filter_eq_countP (fun _ => True) l
-#align list.sum_map_count_dedup_eq_length List.sum_map_count_dedup_eq_length
 
 end List

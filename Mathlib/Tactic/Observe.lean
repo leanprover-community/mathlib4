@@ -36,9 +36,7 @@ elab_rules : tactic |
   withMainContext do
     let (type, _) ← elabTermWithHoles t none (← getMainTag) true
     let .mvar goal ← mkFreshExprMVar type | failure
-    -- FIXME: this won't be needed (it's a default argument) after nightly-2024-02-26
-    let tactic := fun initial g => solveByElim [] (maxDepth := 6) (exfalso := initial) g
-    if let some _ ← librarySearch goal tactic then
+    if let some _ ← librarySearch goal then
       reportOutOfHeartbeats `library_search tk
       throwError "observe did not find a solution"
     else

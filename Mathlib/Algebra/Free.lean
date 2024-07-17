@@ -8,6 +8,7 @@ import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.AdaptationNote
 
 #align_import algebra.free from "leanprover-community/mathlib"@"6d0adfa76594f304b4650d098273d4366edeb61b"
 
@@ -71,8 +72,8 @@ attribute [nolint simpNF] FreeAddMagma.add.injEq
 attribute [nolint simpNF] FreeMagma.mul.injEq
 
 /-- Recursor for `FreeMagma` using `x * y` instead of `FreeMagma.mul x y`. -/
-@[to_additive (attr := elab_as_elim) "Recursor for `FreeAddMagma` using `x + y` instead of
-`FreeAddMagma.add x y`."]
+@[to_additive (attr := elab_as_elim, induction_eliminator)
+  "Recursor for `FreeAddMagma` using `x + y` instead of `FreeAddMagma.add x y`."]
 def recOnMul {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (of x))
     (ih2 : ∀ x y, C x → C y → C (x * y)) : C x :=
   FreeMagma.recOn x ih1 ih2
@@ -85,11 +86,11 @@ theorem hom_ext {β : Type v} [Mul β] {f g : FreeMagma α →ₙ* β} (h : f �
 
 end FreeMagma
 
+#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
+instead of `x * y`. --/
 /-- Lifts a function `α → β` to a magma homomorphism `FreeMagma α → β` given a magma `β`. -/
 def FreeMagma.liftAux {α : Type u} {β : Type v} [Mul β] (f : α → β) : FreeMagma α → β
   | FreeMagma.of x => f x
-  -- Adaptation note: around nightly-2024-02-25, we need to write `mul x y` in the pattern here,
-  -- instead of `x * y`.
   | mul x y => liftAux f x * liftAux f y
 #align free_magma.lift_aux FreeMagma.liftAux
 
@@ -167,8 +168,7 @@ protected def recOnPure {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (pure 
   FreeMagma.recOnMul x ih1 ih2
 #align free_magma.rec_on_pure FreeMagma.recOnPure
 
--- Porting note (#10675): dsimp can not prove this
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeMagma β) = pure (f x) := rfl
 #align free_magma.map_pure FreeMagma.map_pure
 
@@ -176,8 +176,7 @@ theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeMagma β) = pure (f x
 theorem map_mul' (f : α → β) (x y : FreeMagma α) : f <$> (x * y) = f <$> x * f <$> y := rfl
 #align free_magma.map_mul' FreeMagma.map_mul'
 
--- Porting note (#10675): dsimp can not prove this
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem pure_bind (f : α → FreeMagma β) (x) : pure x >>= f = f x := rfl
 #align free_magma.pure_bind FreeMagma.pure_bind
 
@@ -207,12 +206,12 @@ end Category
 
 end FreeMagma
 
+#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
+  instead of `x * y`. -/
 /-- `FreeMagma` is traversable. -/
 protected def FreeMagma.traverse {m : Type u → Type u} [Applicative m] {α β : Type u}
     (F : α → m β) : FreeMagma α → m (FreeMagma β)
   | FreeMagma.of x => FreeMagma.of <$> F x
-  -- Adaptation note: around nightly-2024-02-25, we need to write `mul x y` in the pattern here,
-  -- instead of `x * y`.
   | mul x y => (· * ·) <$> x.traverse F <*> y.traverse F
 #align free_magma.traverse FreeMagma.traverse
 
@@ -277,7 +276,7 @@ instance : LawfulTraversable FreeMagma.{u} :=
       FreeMagma.recOnPure x
         (fun x ↦ by simp only [(· ∘ ·), traverse_pure, traverse_pure', functor_norm])
         (fun x y ih1 ih2 ↦ by
-          rw [traverse_mul, ih1, ih2, traverse_mul];
+          rw [traverse_mul, ih1, ih2, traverse_mul]
           simp [Functor.Comp.map_mk, Functor.map_map, (· ∘ ·), Comp.seq_mk, seq_map_assoc,
             map_seq, traverse_mul])
     naturality := fun η α β f x ↦
@@ -293,11 +292,11 @@ end Category
 end FreeMagma
 
 -- Porting note: changed String to Lean.Format
+#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
+instead of `x * y`. -/
 /-- Representation of an element of a free magma. -/
 protected def FreeMagma.repr {α : Type u} [Repr α] : FreeMagma α → Lean.Format
   | FreeMagma.of x => repr x
-  -- Adaptation note: around nightly-2024-02-25, we need to write `mul x y` in the pattern here,
-  -- instead of `x * y`.
   | mul x y => "( " ++ x.repr ++ " * " ++ y.repr ++ " )"
 #align free_magma.repr FreeMagma.repr
 
@@ -312,11 +311,11 @@ attribute [to_additive existing] FreeMagma.repr
 @[to_additive]
 instance {α : Type u} [Repr α] : Repr (FreeMagma α) := ⟨fun o _ => FreeMagma.repr o⟩
 
+#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
+instead of `x * y`. -/
 /-- Length of an element of a free magma. -/
 def FreeMagma.length {α : Type u} : FreeMagma α → ℕ
   | FreeMagma.of _x => 1
-  -- Adaptation note: around nightly-2024-02-25, we need to write `mul x y` in the pattern here,
-  -- instead of `x * y`.
   | mul x y => x.length + y.length
 #align free_magma.length FreeMagma.length
 
@@ -327,6 +326,13 @@ def FreeAddMagma.length {α : Type u} : FreeAddMagma α → ℕ
 #align free_add_magma.length FreeAddMagma.length
 
 attribute [to_additive existing (attr := simp)] FreeMagma.length
+
+/-- The length of an element of a free magma is positive. -/
+@[to_additive "The length of an element of a free additive magma is positive."]
+lemma FreeMagma.length_pos {α : Type u} (x : FreeMagma α) : 0 < x.length :=
+  match x with
+  | FreeMagma.of _ => Nat.succ_pos 0
+  | mul y z => Nat.add_pos_left (length_pos y) z.length
 
 /-- Associativity relations for an additive magma. -/
 inductive AddMagma.AssocRel (α : Type u) [Add α] : α → α → Prop
@@ -367,7 +373,7 @@ theorem quot_mk_assoc_left (x y z w : α) :
 @[to_additive]
 instance : Semigroup (AssocQuotient α) where
   mul x y := by
-    refine' Quot.liftOn₂ x y (fun x y ↦ Quot.mk _ (x * y)) _ _
+    refine Quot.liftOn₂ x y (fun x y ↦ Quot.mk _ (x * y)) ?_ ?_
     · rintro a b₁ b₂ (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only
       · exact quot_mk_assoc_left _ _ _ _
       · rw [← quot_mk_assoc, quot_mk_assoc_left, quot_mk_assoc]
@@ -386,7 +392,7 @@ def of : α →ₙ* AssocQuotient α where toFun := Quot.mk _; map_mul' _x _y :=
 @[to_additive]
 instance [Inhabited α] : Inhabited (AssocQuotient α) := ⟨of default⟩
 
-@[to_additive (attr := elab_as_elim)]
+@[to_additive (attr := elab_as_elim, induction_eliminator)]
 protected theorem induction_on {C : AssocQuotient α → Prop} (x : AssocQuotient α)
     (ih : ∀ x, C (of x)) : C x := Quot.induction_on x ih
 #align magma.assoc_quotient.induction_on Magma.AssocQuotient.induction_on
@@ -471,7 +477,6 @@ variable {α : Type u}
 @[to_additive]
 instance : Semigroup (FreeSemigroup α) where
   mul L1 L2 := ⟨L1.1, L1.2 ++ L2.1 :: L2.2⟩
-  -- Porting note: replaced ext by FreeSemigroup.ext
   mul_assoc _L1 _L2 _L3 := FreeSemigroup.ext _ _ rfl <| List.append_assoc _ _ _
 
 @[to_additive (attr := simp)]
@@ -498,7 +503,7 @@ def length (x : FreeSemigroup α) : ℕ := x.tail.length + 1
 
 @[to_additive (attr := simp)]
 theorem length_mul (x y : FreeSemigroup α) : (x * y).length = x.length + y.length := by
-  simp [length, ← add_assoc, add_right_comm, List.length, List.length_append]
+  simp [length, Nat.add_right_comm, List.length, List.length_append]
 #align free_semigroup.length_mul FreeSemigroup.length_mul
 
 @[to_additive (attr := simp)]
@@ -509,7 +514,8 @@ theorem length_of (x : α) : (of x).length = 1 := rfl
 instance [Inhabited α] : Inhabited (FreeSemigroup α) := ⟨of default⟩
 
 /-- Recursor for free semigroup using `of` and `*`. -/
-@[to_additive (attr := elab_as_elim) "Recursor for free additive semigroup using `of` and `+`."]
+@[to_additive (attr := elab_as_elim, induction_eliminator)
+  "Recursor for free additive semigroup using `of` and `+`."]
 protected def recOnMul {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (of x))
     (ih2 : ∀ x y, C (of x) → C y → C (of x * y)) : C x :=
       FreeSemigroup.recOn x fun f s ↦
@@ -596,8 +602,7 @@ def recOnPure {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (pure x))
   FreeSemigroup.recOnMul x ih1 ih2
 #align free_semigroup.rec_on_pure FreeSemigroup.recOnPure
 
--- Porting note (#10675): dsimp can not prove this
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeSemigroup β) = pure (f x) := rfl
 #align free_semigroup.map_pure FreeSemigroup.map_pure
 
@@ -606,8 +611,7 @@ theorem map_mul' (f : α → β) (x y : FreeSemigroup α) : f <$> (x * y) = f <$
   map_mul (map f) _ _
 #align free_semigroup.map_mul' FreeSemigroup.map_mul'
 
--- Porting note (#10675): dsimp can not prove this
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem pure_bind (f : α → FreeSemigroup β) (x) : pure x >>= f = f x := rfl
 #align free_semigroup.pure_bind FreeSemigroup.pure_bind
 

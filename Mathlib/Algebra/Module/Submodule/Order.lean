@@ -3,10 +3,8 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-
-import Mathlib.GroupTheory.Subgroup.Order
-import Mathlib.GroupTheory.Submonoid.Order
 import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Algebra.Order.Group.InjSurj
 
 /-!
 # Ordered instances on submodules
@@ -66,3 +64,5 @@ instance toLinearOrderedAddCommGroup [LinearOrderedAddCommGroup M] [Module R M]
 #align submodule.to_linear_ordered_add_comm_group Submodule.toLinearOrderedAddCommGroup
 
 end OrderedGroup
+
+end Submodule

@@ -3,8 +3,7 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Basic
-import Mathlib.Init.Data.List.Instances
+import Mathlib.Algebra.Group.Nat
 
 /-!
 # `lrat_proof` command
@@ -43,7 +42,7 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
 set_option autoImplicit true
 
 open Lean hiding Literal HashMap
-open Std
+open Batteries
 
 namespace Sat
 
@@ -485,7 +484,7 @@ where
   These are both lookups into the context
   `(a0 .. a(n-1) : Prop) (v) (h1 : v 0 ↔ a0) ... (hn : v (n-1) ↔ a(n-1))`. -/
   reifyVar v :=
-    let n := v.natLit?.get!
+    let n := v.rawNatLit?.get!
     (mkBVar (2 * nvars - n), mkBVar (nvars - n - 1))
 open Lean
 

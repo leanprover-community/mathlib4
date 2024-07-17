@@ -41,11 +41,8 @@ variable {𝕜 𝕜₂ E F G : Type*}
 section SeminormedAddCommGroup
 
 variable [Ring 𝕜] [Ring 𝕜₂]
-
 variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup G]
-
 variable [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜 G]
-
 variable {σ : 𝕜 →+* 𝕜₂} (f : E →ₛₗ[σ] F)
 
 /-- Construct a continuous linear map from a linear map and a bound on this linear map.

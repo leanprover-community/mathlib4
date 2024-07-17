@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
 import Mathlib.Algebra.Group.Equiv.TypeTags
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Contraction
@@ -30,7 +29,12 @@ representations.
 ## Implementation notes
 
 Representations of a monoid `G` on a `k`-module `V` are implemented as
-homomorphisms `G →* (V →ₗ[k] V)`.
+homomorphisms `G →* (V →ₗ[k] V)`. We use the abbreviation `Representation` for this hom space.
+
+The theorem `asAlgebraHom_def` constructs a module over the group `k`-algebra of `G` (implemented
+as `MonoidAlgebra k G`) corresponding to a representation. If `ρ : Representation k G V`, this
+module can be accessed via `ρ.asModule`. Conversely, given a `MonoidAlgebra k G-module `M`
+`M.ofModule` is the associociated representation seen as a homomorphism.
 -/
 
 
@@ -84,7 +88,6 @@ end trivial
 section MonoidAlgebra
 
 variable {k G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
-
 variable (ρ : Representation k G V)
 
 /-- A `k`-linear representation of `G` on `V` can be thought of as
@@ -226,8 +229,7 @@ theorem ofModule_asAlgebraHom_apply_apply (r : MonoidAlgebra k G)
   · intro f g fw gw
     simp only [fw, gw, map_add, add_smul, LinearMap.add_apply]
   · intro r f w
-    simp only [w, AlgHom.map_smul, LinearMap.smul_apply,
-      RestrictScalars.addEquiv_symm_map_smul_smul]
+    simp only [w, map_smul, LinearMap.smul_apply, RestrictScalars.addEquiv_symm_map_smul_smul]
 #align representation.of_module_as_algebra_hom_apply_apply Representation.ofModule_asAlgebraHom_apply_apply
 
 @[simp]
@@ -255,7 +257,6 @@ end MonoidAlgebra
 section AddCommGroup
 
 variable {k G V : Type*} [CommRing k] [Monoid G] [I : AddCommGroup V] [Module k V]
-
 variable (ρ : Representation k G V)
 
 instance : AddCommGroup ρ.asModule :=
@@ -327,7 +328,6 @@ end MulDistribMulAction
 section Group
 
 variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
-
 variable (ρ : Representation k G V)
 
 @[simp]
@@ -352,7 +352,7 @@ theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k
   -- Porting note: trouble figuring out the motive
   x.induction_on (p := fun z => z • y = z * y)
     (fun g => by
-      show asAlgebraHom (ofMulAction k G G) _ _ = _; ext;
+      show asAlgebraHom (ofMulAction k G G) _ _ = _; ext
       simp only [MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul,
         ofMulAction_apply, smul_eq_mul]
       -- Porting note: single_mul_apply not firing in simp
@@ -390,9 +390,7 @@ end Group
 section TensorProduct
 
 variable {k G V W : Type*} [CommSemiring k] [Monoid G]
-
 variable [AddCommMonoid V] [Module k V] [AddCommMonoid W] [Module k W]
-
 variable (ρV : Representation k G V) (ρW : Representation k G W)
 
 open TensorProduct
@@ -441,9 +439,7 @@ end TensorProduct
 section LinearHom
 
 variable {k G V W : Type*} [CommSemiring k] [Group G]
-
 variable [AddCommMonoid V] [Module k V] [AddCommMonoid W] [Module k W]
-
 variable (ρV : Representation k G V) (ρW : Representation k G W)
 
 /-- Given representations of `G` on `V` and `W`, there is a natural representation of `G` on the
@@ -502,8 +498,8 @@ This lemma says that $φ$ is $G$-linear.
 -/
 theorem dualTensorHom_comm (g : G) :
     dualTensorHom k V W ∘ₗ TensorProduct.map (ρV.dual g) (ρW g) =
-      (linHom ρV ρW) g ∘ₗ dualTensorHom k V W :=
-  by ext; simp [Module.Dual.transpose_apply]
+      (linHom ρV ρW) g ∘ₗ dualTensorHom k V W := by
+  ext; simp [Module.Dual.transpose_apply]
 #align representation.dual_tensor_hom_comm Representation.dualTensorHom_comm
 
 end LinearHom

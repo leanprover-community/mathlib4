@@ -68,9 +68,7 @@ set_option linter.uppercaseLean3 false
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
 variable (V : Type*) (Pt : Type*)
-
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace Pt]
-
 variable [NormedAddTorsor V Pt] [hd2 : Fact (finrank ℝ V = 2)]
 
 namespace Imo2019Q2
@@ -313,7 +311,7 @@ theorem A₁_ne_B : cfg.A₁ ≠ cfg.B := by
   have haQ : (2 : ℤ) • ∡ cfg.C cfg.B cfg.Q = (2 : ℤ) • ∡ cfg.C cfg.B cfg.A := by
     rw [Collinear.two_zsmul_oangle_eq_right _ cfg.A_ne_B cfg.Q_ne_B]
     rw [Set.pair_comm, Set.insert_comm]
-    refine' collinear_insert_of_mem_affineSpan_pair _
+    refine collinear_insert_of_mem_affineSpan_pair ?_
     rw [← hPQ]
     exact right_mem_affineSpan_pair _ _ _
   have ha : (2 : ℤ) • ∡ cfg.C cfg.B cfg.Q = (2 : ℤ) • ∡ cfg.C cfg.Q₁ cfg.Q := by
@@ -331,7 +329,7 @@ theorem A₁_ne_B : cfg.A₁ ≠ cfg.B := by
         (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton _))))
       hBQ₁ cfg.Q_ne_B.symm hQQ₁.symm
   rw [affineIndependent_iff_not_collinear_set] at hBQ₁Q
-  refine' hBQ₁Q _
+  refine hBQ₁Q ?_
   rw [← h, Set.pair_comm, Set.insert_comm]
   exact cfg.sbtw_Q_A₁_Q₁.wbtw.collinear
 #align imo2019_q2.imo2019q2_cfg.A₁_ne_B Imo2019Q2.Imo2019q2Cfg.A₁_ne_B
@@ -345,7 +343,7 @@ theorem sbtw_A_B₁_C : Sbtw ℝ cfg.A cfg.B₁ cfg.C :=
 #align imo2019_q2.imo2019q2_cfg.sbtw_A_B₁_C Imo2019Q2.Imo2019q2Cfg.sbtw_A_B₁_C
 
 theorem sbtw_A_A₁_A₂ : Sbtw ℝ cfg.A cfg.A₁ cfg.A₂ := by
-  refine' Sphere.sbtw_secondInter cfg.A_mem_circumsphere _
+  refine Sphere.sbtw_secondInter cfg.A_mem_circumsphere ?_
   convert cfg.sbtw_B_A₁_C.dist_lt_max_dist _
   change _ = max (dist (cfg.triangleABC.points 1) _) (dist (cfg.triangleABC.points 2) _)
   simp_rw [circumsphere_center, circumsphere_radius, dist_circumcenter_eq_circumradius, max_self]
@@ -367,11 +365,11 @@ theorem A₂_ne_B : cfg.A₂ ≠ cfg.B := by
   intro h
   have h₁ := cfg.sbtw_A_A₁_A₂
   rw [h] at h₁
-  refine' cfg.not_collinear_ABC _
+  refine cfg.not_collinear_ABC ?_
   have hc : Collinear ℝ ({cfg.A, cfg.C, cfg.B, cfg.A₁} : Set Pt) :=
     collinear_insert_insert_of_mem_affineSpan_pair h₁.left_mem_affineSpan
       cfg.sbtw_B_A₁_C.right_mem_affineSpan
-  refine' hc.subset _
+  refine hc.subset ?_
   rw [Set.pair_comm _ cfg.A₁, Set.insert_comm _ cfg.A₁, Set.insert_comm _ cfg.A₁, Set.pair_comm]
   exact Set.subset_insert _ _
 #align imo2019_q2.imo2019q2_cfg.A₂_ne_B Imo2019Q2.Imo2019q2Cfg.A₂_ne_B
@@ -380,11 +378,11 @@ theorem A₂_ne_C : cfg.A₂ ≠ cfg.C := by
   intro h
   have h₁ := cfg.sbtw_A_A₁_A₂
   rw [h] at h₁
-  refine' cfg.not_collinear_ABC _
+  refine cfg.not_collinear_ABC ?_
   have hc : Collinear ℝ ({cfg.A, cfg.B, cfg.C, cfg.A₁} : Set Pt) :=
     collinear_insert_insert_of_mem_affineSpan_pair h₁.left_mem_affineSpan
       cfg.sbtw_B_A₁_C.left_mem_affineSpan
-  refine' hc.subset (Set.insert_subset_insert (Set.insert_subset_insert _))
+  refine hc.subset (Set.insert_subset_insert (Set.insert_subset_insert ?_))
   rw [Set.singleton_subset_iff]
   exact Set.mem_insert _ _
 #align imo2019_q2.imo2019q2_cfg.A₂_ne_C Imo2019Q2.Imo2019q2Cfg.A₂_ne_C
@@ -420,7 +418,7 @@ variable [Module.Oriented ℝ V (Fin 2)]
 
 theorem two_zsmul_oangle_QPA₂_eq_two_zsmul_oangle_BAA₂ :
     (2 : ℤ) • ∡ cfg.Q cfg.P cfg.A₂ = (2 : ℤ) • ∡ cfg.B cfg.A cfg.A₂ := by
-  refine' two_zsmul_oangle_of_parallel cfg.QP_parallel_BA _
+  refine two_zsmul_oangle_of_parallel cfg.QP_parallel_BA ?_
   convert AffineSubspace.Parallel.refl (k := ℝ) (P := Pt) _ using 1
   rw [cfg.collinear_PAA₁A₂.affineSpan_eq_of_ne (Set.mem_insert_of_mem _
     (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton _))))
@@ -440,7 +438,7 @@ theorem not_collinear_QPA₂ : ¬Collinear ℝ ({cfg.Q, cfg.P, cfg.A₂} : Set P
   rw [collinear_iff_of_two_zsmul_oangle_eq cfg.two_zsmul_oangle_QPA₂_eq_two_zsmul_oangle_BAA₂, ←
     affineIndependent_iff_not_collinear_set]
   have h : Cospherical ({cfg.B, cfg.A, cfg.A₂} : Set Pt) := by
-    refine' cfg.triangleABC.circumsphere.cospherical.subset _
+    refine cfg.triangleABC.circumsphere.cospherical.subset ?_
     simp only [Set.insert_subset_iff, cfg.A_mem_circumsphere, cfg.B_mem_circumsphere,
       cfg.A₂_mem_circumsphere, Sphere.mem_coe, Set.singleton_subset_iff, and_true]
   exact h.affineIndependent_of_ne cfg.A_ne_B.symm cfg.A₂_ne_B.symm cfg.A₂_ne_A.symm
@@ -450,7 +448,7 @@ theorem Q₁_ne_A₂ : cfg.Q₁ ≠ cfg.A₂ := by
   intro h
   have h₁ := cfg.sbtw_Q_A₁_Q₁
   rw [h] at h₁
-  refine' cfg.not_collinear_QPA₂ _
+  refine cfg.not_collinear_QPA₂ ?_
   have hA₂ := cfg.sbtw_A_A₁_A₂.right_mem_affineSpan
   have hA₂A₁ : line[ℝ, cfg.A₂, cfg.A₁] ≤ line[ℝ, cfg.A, cfg.A₁] :=
     affineSpan_pair_le_of_left_mem hA₂
@@ -533,15 +531,15 @@ theorem symm_ω_eq_trianglePQB₂_circumsphere : cfg.symm.ω = cfg.trianglePQB�
 
 theorem symm_ω : cfg.symm.ω = cfg.ω := by
   rw [symm_ω_eq_trianglePQB₂_circumsphere, ω]
-  refine' circumsphere_eq_of_cospherical hd2.out cfg.cospherical_QPB₂A₂ _ _
+  refine circumsphere_eq_of_cospherical hd2.out cfg.cospherical_QPB₂A₂ ?_ ?_
   · simp only [trianglePQB₂, Matrix.range_cons, Matrix.range_empty, Set.singleton_union,
       insert_emptyc_eq]
     rw [Set.insert_comm]
-    refine' Set.insert_subset_insert (Set.insert_subset_insert _)
+    refine Set.insert_subset_insert (Set.insert_subset_insert ?_)
     simp
   · simp only [triangleQPA₂, Matrix.range_cons, Matrix.range_empty, Set.singleton_union,
       insert_emptyc_eq]
-    refine' Set.insert_subset_insert (Set.insert_subset_insert _)
+    refine Set.insert_subset_insert (Set.insert_subset_insert ?_)
     simp
 #align imo2019_q2.imo2019q2_cfg.symm_ω Imo2019Q2.Imo2019q2Cfg.symm_ω
 
@@ -630,9 +628,9 @@ theorem P₁_mem_ω : cfg.P₁ ∈ cfg.ω := by rw [← symm_ω]; exact cfg.symm
 #align imo2019_q2.imo2019q2_cfg.P₁_mem_ω Imo2019Q2.Imo2019q2Cfg.P₁_mem_ω
 
 theorem result : Concyclic ({cfg.P, cfg.Q, cfg.P₁, cfg.Q₁} : Set Pt) := by
-  refine' ⟨_, coplanar_of_fact_finrank_eq_two _⟩
+  refine ⟨?_, coplanar_of_fact_finrank_eq_two _⟩
   rw [cospherical_iff_exists_sphere]
-  refine' ⟨cfg.ω, _⟩
+  refine ⟨cfg.ω, ?_⟩
   simp only [Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨cfg.P_mem_ω, cfg.Q_mem_ω, cfg.P₁_mem_ω, cfg.Q₁_mem_ω⟩
 #align imo2019_q2.imo2019q2_cfg.result Imo2019Q2.Imo2019q2Cfg.result

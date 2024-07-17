@@ -3,11 +3,7 @@ Copyright (c) 2024 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import Std.Data.RBMap.Basic
-
 import Mathlib.Tactic.FunProp.FunctionData
-
-import Std.Lean.HashSet
 
 /-!
 ## `funProp`
@@ -76,7 +72,7 @@ def defaultNamesToUnfold : Array Name :=
 /-- `fun_prop` configuration -/
 structure Config where
   /-- Name to unfold -/
-  constToUnfold : Std.RBSet Name Name.quickCmp :=
+  constToUnfold : Batteries.RBSet Name Name.quickCmp :=
     .ofArray defaultNamesToUnfold _
   /-- Custom discharger to satisfy theorem hypotheses. -/
   disch : Expr → MetaM (Option Expr) := fun _ => pure .none
@@ -95,7 +91,7 @@ deriving Inhabited
 structure State where
   /-- Simp's cache is used as the `funProp` tactic is designed to be used inside of simp and utilize
   its cache -/
-  cache        : Simp.Cache := {}
+  cache : Simp.Cache := {}
   /-- Count the number of steps and stop when maxSteps is reached. -/
   numSteps := 0
   /-- Log progress and failures messages that should be displayed to the user at the end. -/

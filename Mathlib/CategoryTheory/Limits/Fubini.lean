@@ -44,9 +44,7 @@ open CategoryTheory
 namespace CategoryTheory.Limits
 
 variable {J K : Type v} [SmallCategory J] [SmallCategory K]
-
 variable {C : Type u} [Category.{v} C]
-
 variable (F : J ⥤ K ⥤ C)
 
 -- We could try introducing a "dependent functor type" to handle this?
@@ -148,7 +146,7 @@ def coconeOfCoconeUncurry {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj 
                   dsimp; simp only [Category.comp_id]
                   conv_lhs =>
                     arg 1; equals (F.map (𝟙 _)).app _ ≫  (F.obj j).map f =>
-                      simp;
+                      simp
                   conv_lhs => arg 1; rw [← uncurry_obj_map F ((𝟙 j,f) : (j,k) ⟶ (j,k'))]
                   rw [c.w] } }
       naturality := fun j j' f =>
@@ -196,9 +194,9 @@ def coneOfConeUncurryIsLimit {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j
     intro k
     simp
   uniq s m w := by
-    refine' P.uniq
+    refine P.uniq
       { pt := s.pt
-        π := _ } m _
+        π := _ } m ?_
     rintro ⟨j, k⟩
     dsimp
     rw [← w j]
@@ -235,9 +233,9 @@ def coconeOfCoconeUncurryIsColimit {D : DiagramOfCocones F} (Q : ∀ j, IsColimi
     intro k
     simp
   uniq s m w := by
-    refine' P.uniq
+    refine P.uniq
       { pt := s.pt
-        ι := _ } m _
+        ι := _ } m ?_
     rintro ⟨j, k⟩
     dsimp
     rw [← w j]
@@ -246,7 +244,6 @@ def coconeOfCoconeUncurryIsColimit {D : DiagramOfCocones F} (Q : ∀ j, IsColimi
 section
 
 variable (F)
-
 variable [HasLimitsOfShape K C]
 
 /-- Given a functor `F : J ⥤ K ⥤ C`, with all needed limits,
@@ -271,7 +268,6 @@ theorem DiagramOfCones.mkOfHasLimits_conePoints :
 #align category_theory.limits.diagram_of_cones.mk_of_has_limits_cone_points CategoryTheory.Limits.DiagramOfCones.mkOfHasLimits_conePoints
 
 variable [HasLimit (uncurry.obj F)]
-
 variable [HasLimit (F ⋙ lim)]
 
 /-- The Fubini theorem for a functor `F : J ⥤ K ⥤ C`,
@@ -309,7 +305,6 @@ end
 section
 
 variable (F)
-
 variable [HasColimitsOfShape K C]
 
 /-- Given a functor `F : J ⥤ K ⥤ C`, with all needed colimits,
@@ -331,7 +326,6 @@ theorem DiagramOfCocones.mkOfHasColimits_coconePoints :
   rfl
 
 variable [HasColimit (uncurry.obj F)]
-
 variable [HasColimit (F ⋙ colim)]
 
 /-- The Fubini theorem for a functor `F : J ⥤ K ⥤ C`,
@@ -405,7 +399,6 @@ end
 section
 
 variable (F) [HasColimitsOfShape J C] [HasColimitsOfShape K C]
-
 variable [HasColimitsOfShape (J × K) C] [HasColimitsOfShape (K × J) C]
 
 /-- The colimit of `F.flip ⋙ colim` is isomorphic to the colimit of `F ⋙ colim`. -/
@@ -442,9 +435,7 @@ variable (G : J × K ⥤ C)
 section
 
 variable [HasLimitsOfShape K C]
-
 variable [HasLimit G]
-
 variable [HasLimit (curry.obj G ⋙ lim)]
 
 /-- The Fubini theorem for a functor `G : J × K ⥤ C`,
@@ -480,9 +471,7 @@ end
 section
 
 variable [HasColimitsOfShape K C]
-
 variable [HasColimit G]
-
 variable [HasColimit (curry.obj G ⋙ colim)]
 
 /-- The Fubini theorem for a functor `G : J × K ⥤ C`,
@@ -493,8 +482,8 @@ noncomputable def colimitIsoColimitCurryCompColim : colimit G ≅ colimit (curry
   have i : G ≅ uncurry.obj ((@curry J _ K _ C _).obj G) := currying.symm.unitIso.app G
   haveI : Limits.HasColimit (uncurry.obj ((@curry J _ K _ C _).obj G)) := hasColimitOfIso i.symm
   trans colimit (uncurry.obj ((@curry J _ K _ C _).obj G))
-  apply HasColimit.isoOfNatIso i
-  exact colimitUncurryIsoColimitCompColim ((@curry J _ K _ C _).obj G)
+  · apply HasColimit.isoOfNatIso i
+  · exact colimitUncurryIsoColimitCompColim ((@curry J _ K _ C _).obj G)
 
 @[simp, reassoc]
 theorem colimitIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
@@ -528,7 +517,7 @@ noncomputable def limitCurrySwapCompLimIsoLimitCurryCompLim :
   calc
     limit (curry.obj (Prod.swap K J ⋙ G) ⋙ lim) ≅ limit (Prod.swap K J ⋙ G) :=
       (limitIsoLimitCurryCompLim _).symm
-    _ ≅ limit G := (HasLimit.isoOfEquivalence (Prod.braiding K J) (Iso.refl _))
+    _ ≅ limit G := HasLimit.isoOfEquivalence (Prod.braiding K J) (Iso.refl _)
     _ ≅ limit (curry.obj G ⋙ lim) := limitIsoLimitCurryCompLim _
 #align category_theory.limits.limit_curry_swap_comp_lim_iso_limit_curry_comp_lim CategoryTheory.Limits.limitCurrySwapCompLimIsoLimitCurryCompLim
 
@@ -579,7 +568,7 @@ noncomputable def colimitCurrySwapCompColimIsoColimitCurryCompColim :
   calc
     colimit (curry.obj (Prod.swap K J ⋙ G) ⋙ colim) ≅ colimit (Prod.swap K J ⋙ G) :=
       (colimitIsoColimitCurryCompColim _).symm
-    _ ≅ colimit G := (HasColimit.isoOfEquivalence (Prod.braiding K J) (Iso.refl _))
+    _ ≅ colimit G := HasColimit.isoOfEquivalence (Prod.braiding K J) (Iso.refl _)
     _ ≅ colimit (curry.obj G ⋙ colim) := colimitIsoColimitCurryCompColim _
 
 @[simp]

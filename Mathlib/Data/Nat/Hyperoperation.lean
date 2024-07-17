@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mark Andrew Gerads, Junyan Xu, Eric Wieser
 -/
 import Mathlib.Tactic.Ring
-import Mathlib.Data.Nat.Parity
 
 #align_import data.nat.hyperoperation from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -32,14 +31,12 @@ hyperoperation
 /-- Implementation of the hyperoperation sequence
 where `hyperoperation n m k` is the `n`th hyperoperation between `m` and `k`.
 -/
--- Porting note: termination_by was not required before port
 def hyperoperation : ℕ → ℕ → ℕ → ℕ
   | 0, _, k => k + 1
   | 1, m, 0 => m
   | 2, _, 0 => 0
   | _ + 3, _, 0 => 1
   | n + 1, m, k + 1 => hyperoperation n m (hyperoperation (n + 1) m k)
-  termination_by a b c => (a, b, c)
 #align hyperoperation hyperoperation
 
 -- Basic hyperoperation lemmas
@@ -77,7 +74,7 @@ theorem hyperoperation_two : hyperoperation 2 = (· * ·) := by
     -- Porting note: was `ring`
     dsimp only
     nth_rewrite 1 [← mul_one m]
-    rw [← mul_add, add_comm, Nat.succ_eq_add_one]
+    rw [← mul_add, add_comm]
 #align hyperoperation_two hyperoperation_two
 
 @[simp]
@@ -87,7 +84,7 @@ theorem hyperoperation_three : hyperoperation 3 = (· ^ ·) := by
   · rw [hyperoperation_ge_three_eq_one]
     exact (pow_zero m).symm
   · rw [hyperoperation_recursion, hyperoperation_two, bih]
-    exact (pow_succ m bn).symm
+    exact (pow_succ' m bn).symm
 #align hyperoperation_three hyperoperation_three
 
 theorem hyperoperation_ge_two_eq_self (n m : ℕ) : hyperoperation (n + 2) m 1 = m := by

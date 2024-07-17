@@ -18,7 +18,6 @@ suppress_compilation
 open scoped TensorProduct
 
 variable (R S A B : Type*)
-
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra R A] [Algebra R B] [Algebra S A]
 variable [IsScalarTower R S A]
@@ -37,9 +36,9 @@ def opAlgEquiv : Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ ≃ₐ[S] (A ⊗[R] B)ᵐᵒᵖ :=
     TensorProduct.AlgebraTensorModule.congr (opLinearEquiv S) (opLinearEquiv R) ≪≫ₗ opLinearEquiv S
   AlgEquiv.ofAlgHom
     (algHomOfLinearMapTensorProduct e₁.toLinearMap
-      (fun a₁ a₂ b₁ b₂ => unop_injective rfl) (unop_injective rfl))
+      (fun a₁ a₂ b₁ b₂ => unop_injective (by with_unfolding_all rfl)) (unop_injective rfl))
     (AlgHom.opComm <| algHomOfLinearMapTensorProduct e₂.toLinearMap
-      (fun a₁ a₂ b₁ b₂ => unop_injective rfl) (unop_injective rfl))
+      (fun a₁ a₂ b₁ b₂ => unop_injective (by with_unfolding_all rfl)) (unop_injective rfl))
     (AlgHom.op.symm.injective <| by ext <;> rfl) (by ext <;> rfl)
 
 theorem opAlgEquiv_apply (x : Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ) :

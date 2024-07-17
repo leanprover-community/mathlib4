@@ -39,9 +39,6 @@ any `b' < b` also belongs to the range). The type of these embeddings from `r` t
 `InitialSeg r s`, and denoted by `r ≼i s`.
 -/
 
-set_option autoImplicit true
-
-
 variable {α : Type*} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop}
 
@@ -89,7 +86,7 @@ theorem init (f : r ≼i s) {a : α} {b : β} : s b (f a) → ∃ a', f a' = b :
   f.init' _ _
 #align initial_seg.init InitialSeg.init
 
-theorem map_rel_iff (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
+theorem map_rel_iff {a b : α} (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align initial_seg.map_rel_iff InitialSeg.map_rel_iff
 
@@ -137,8 +134,8 @@ instance subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl 
     [IsWellFounded α r] : Subsingleton (r ≼i s) :=
   ⟨fun f g => by
     ext a
-    refine' IsWellFounded.induction r a fun b IH =>
-      extensional_of_trichotomous_of_irrefl s fun x => _
+    refine IsWellFounded.induction r a fun b IH =>
+      extensional_of_trichotomous_of_irrefl s fun x => ?_
     rw [f.init_iff, g.init_iff]
     exact exists_congr fun x => and_congr_left fun hx => IH _ hx ▸ Iff.rfl⟩
 #align initial_seg.subsingleton_of_trichotomous_of_irrefl InitialSeg.subsingleton_of_trichotomous_of_irrefl
@@ -181,9 +178,8 @@ theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
           ⟨x, fun y =>
             ⟨IH _, fun ⟨a, e⟩ => by
               rw [← e];
-                exact
-                  (trichotomous _ _).resolve_right
-                    (not_or_of_not (hn a) fun hl => not_exists.2 hn (f.init hl))⟩⟩
+              exact (trichotomous _ _).resolve_right
+                (not_or_of_not (hn a) fun hl => not_exists.2 hn (f.init hl))⟩⟩
 #align initial_seg.eq_or_principal InitialSeg.eq_or_principal
 
 /-- Restrict the codomain of an initial segment -/
@@ -216,7 +212,7 @@ theorem leAdd_apply (r : α → α → Prop) (s : β → β → Prop) (a) : leAd
 
 protected theorem acc (f : r ≼i s) (a : α) : Acc r a ↔ Acc s (f a) :=
   ⟨by
-    refine' fun h => Acc.recOn h fun a _ ha => Acc.intro _ fun b hb => _
+    refine fun h => Acc.recOn h fun a _ ha => Acc.intro _ fun b hb => ?_
     obtain ⟨a', rfl⟩ := f.init hb
     exact ha _ (f.map_rel_iff.mp hb), f.toRelEmbedding.acc a⟩
 #align initial_seg.acc InitialSeg.acc
@@ -363,7 +359,7 @@ instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
       show ((f : r ≼i s) : α → β) = (g : r ≼i s)
       rw [@Subsingleton.elim _ _ (f : r ≼i s) g]
     have et : f.top = g.top := by
-      refine' extensional_of_trichotomous_of_irrefl s fun x => _
+      refine extensional_of_trichotomous_of_irrefl s fun x => ?_
       simp only [PrincipalSeg.down, ef]
     cases f
     cases g
@@ -449,8 +445,7 @@ theorem ofIsEmpty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b'
 #align principal_seg.of_is_empty_top PrincipalSeg.ofIsEmpty_top
 
 /-- Principal segment from the empty relation on `PEmpty` to the empty relation on `PUnit`. -/
-@[reducible]
-def pemptyToPunit : @EmptyRelation PEmpty ≺i @EmptyRelation PUnit :=
+abbrev pemptyToPunit : @EmptyRelation PEmpty ≺i @EmptyRelation PUnit :=
   (@ofIsEmpty _ _ EmptyRelation _ _ PUnit.unit) fun _ => not_false
 #align principal_seg.pempty_to_punit PrincipalSeg.pemptyToPunit
 
@@ -467,9 +462,9 @@ convenient to use.
 -/
 theorem wellFounded_iff_wellFounded_subrel {β : Type*} {s : β → β → Prop} [IsTrans β s] :
     WellFounded s ↔ ∀ b, WellFounded (Subrel s { b' | s b' b }) := by
-  refine'
+  refine
     ⟨fun wf b => ⟨fun b' => ((PrincipalSeg.ofElement _ b).acc b').mpr (wf.apply b')⟩, fun wf =>
-      ⟨fun b => Acc.intro _ fun b' hb' => _⟩⟩
+      ⟨fun b => Acc.intro _ fun b' hb' => ?_⟩⟩
   let f := PrincipalSeg.ofElement s b
   obtain ⟨b', rfl⟩ := f.down.mp ((PrincipalSeg.ofElement_top s b).symm ▸ hb' : s b' f.top)
   exact (f.acc b').mp ((wf b).apply b')
@@ -563,8 +558,8 @@ noncomputable def collapse [IsWellOrder β s] (f : r ↪r s) : r ≼i s :=
       (fun b _ _ a h => by
         rcases (@IsWellFounded.wf _ r).has_min { a | ¬s (collapseF f a).1 b }
           ⟨_, asymm h⟩ with ⟨m, hm, hm'⟩
-        refine' ⟨m, ((@trichotomous _ s _ _ _).resolve_left hm).resolve_right
-          (collapseF.not_lt f _ fun a' h' => _)⟩
+        refine ⟨m, ((@trichotomous _ s _ _ _).resolve_left hm).resolve_right
+          (collapseF.not_lt f _ fun a' h' => ?_)⟩
         by_contra hn
         exact hm' _ hn h')
       a⟩

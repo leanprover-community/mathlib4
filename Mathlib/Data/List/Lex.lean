@@ -87,9 +87,6 @@ instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTr
       · exact Or.inr (rel ab)
 #align list.lex.is_order_connected List.Lex.isOrderConnected
 
--- This can be removed after https://github.com/leanprover/lean4/pull/1866
-attribute [nolint defLemma] isOrderConnected.aux
-
 instance isTrichotomous (r : α → α → Prop) [IsTrichotomous α r] :
     IsTrichotomous (List α) (Lex r) where
   trichotomous := aux where
@@ -104,9 +101,6 @@ instance isTrichotomous (r : α → α → Prop) [IsTrichotomous α r] :
       · exact Or.inr (Or.inr (rel ab))
 #align list.lex.is_trichotomous List.Lex.isTrichotomous
 
--- This can be removed after https://github.com/leanprover/lean4/pull/1866
-attribute [nolint defLemma] isTrichotomous.aux
-
 instance isAsymm (r : α → α → Prop) [IsAsymm α r] : IsAsymm (List α) (Lex r) where
   asymm := aux where
     aux
@@ -115,9 +109,6 @@ instance isAsymm (r : α → α → Prop) [IsAsymm α r] : IsAsymm (List α) (Le
     | _, _, Lex.cons _, Lex.rel h₂ => asymm h₂ h₂
     | _, _, Lex.cons h₁, Lex.cons h₂ => aux _ _ h₁ h₂
 #align list.lex.is_asymm List.Lex.isAsymm
-
--- This can be removed after https://github.com/leanprover/lean4/pull/1866
-attribute [nolint defLemma] isAsymm.aux
 
 instance isStrictTotalOrder (r : α → α → Prop) [IsStrictTotalOrder α r] :
     IsStrictTotalOrder (List α) (Lex r) :=
@@ -129,7 +120,7 @@ instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r]
   | [], b :: l₂ => isTrue Lex.nil
   | a :: l₁, b :: l₂ => by
     haveI := decidableRel r l₁ l₂
-    refine' decidable_of_iff (r a b ∨ a = b ∧ Lex r l₁ l₂) ⟨fun h => _, fun h => _⟩
+    refine decidable_of_iff (r a b ∨ a = b ∧ Lex r l₁ l₂) ⟨fun h => ?_, fun h => ?_⟩
     · rcases h with (h | ⟨rfl, h⟩)
       · exact Lex.rel h
       · exact Lex.cons h
@@ -212,13 +203,19 @@ theorem lt_iff_lex_lt [LinearOrder α] (l l' : List α) : lt l l' ↔ Lex (· < 
     | @cons a as bs _ ih => apply lt.tail <;> simp [ih]
     | @rel a as b bs h => apply lt.head; assumption
 
-theorem head_le_of_lt [LinearOrder α] {a a' : α} {l l' : List α} (h : (a' :: l') < (a :: l)) :
-    a' ≤ a := by
-  by_contra hh
-  simp only [not_le] at hh
-  exact List.Lex.isAsymm.aux _ _ _ (List.Lex.rel hh) h
+@[simp]
+theorem nil_le {α} [LinearOrder α] {l : List α} : [] ≤ l :=
+  match l with
+  | [] => le_rfl
+  | _ :: _ => le_of_lt <| nil_lt_cons _ _
 
-theorem head!_le_of_lt [LinearOrder α] [Inhabited α] (l l' : List α) (h : l' < l) (hl' : l' ≠ []) :
+theorem head_le_of_lt [Preorder α] {a a' : α} {l l' : List α} (h : (a' :: l') < (a :: l)) :
+    a' ≤ a :=
+  match h with
+  | .cons _ => le_rfl
+  | .rel h => h.le
+
+theorem head!_le_of_lt [Preorder α] [Inhabited α] (l l' : List α) (h : l' < l) (hl' : l' ≠ []) :
     l'.head! ≤ l.head! := by
   replace h : List.Lex (· < ·) l' l := h
   by_cases hl : l = []
@@ -229,10 +226,6 @@ theorem head!_le_of_lt [LinearOrder α] [Inhabited α] (l l' : List α) (h : l' 
 theorem cons_le_cons [LinearOrder α] (a : α) {l l' : List α} (h : l' ≤ l) :
     a :: l' ≤ a :: l := by
   rw [le_iff_lt_or_eq] at h ⊢
-  refine h.imp ?_ (congr_arg _)
-  intro h
-  have haa := lt_irrefl a
-  exact (List.lt_iff_lex_lt _ _).mp
-    (List.lt.tail haa haa ((List.lt_iff_lex_lt _ _).mpr h))
+  exact h.imp .cons (congr_arg _)
 
 end List

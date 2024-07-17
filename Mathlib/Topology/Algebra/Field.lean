@@ -3,11 +3,11 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison
 -/
-import Mathlib.Algebra.GroupPower.Ring
-import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.Algebra.Field.Subfield
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.LocalExtr
-import Mathlib.FieldTheory.Subfield
+import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.Topology.Order.LocalExtr
 
 #align_import topology.algebra.field from "leanprover-community/mathlib"@"c10e724be91096453ee3db13862b9fb9a992fef2"
 
@@ -96,9 +96,9 @@ def affineHomeomorph (a b : 𝕜) (h : a ≠ 0) : 𝕜 ≃ₜ 𝕜 where
   toFun x := a * x + b
   invFun y := (y - b) / a
   left_inv x := by
-    simp only [add_sub_cancel]
-    exact mul_div_cancel_left x h
-  right_inv y := by simp [mul_div_cancel' _ h]
+    simp only [add_sub_cancel_right]
+    exact mul_div_cancel_left₀ x h
+  right_inv y := by simp [mul_div_cancel₀ _ h]
 #align affine_homeomorph affineHomeomorph
 
 end affineHomeomorph
@@ -130,7 +130,7 @@ variable {α 𝕜 : Type*} {f g : α → 𝕜} {S : Set α} [TopologicalSpace α
 theorem IsPreconnected.eq_one_or_eq_neg_one_of_sq_eq [Ring 𝕜] [NoZeroDivisors 𝕜]
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hsq : EqOn (f ^ 2) 1 S) :
     EqOn f 1 S ∨ EqOn f (-1) S := by
-  have : DiscreteTopology ({1, -1} : Set 𝕜) := discrete_of_t1_of_finite
+  have : DiscreteTopology ({1, -1} : Set 𝕜) := Finite.instDiscreteTopology
   have hmaps : MapsTo f S {1, -1} := by
     simpa only [EqOn, Pi.one_apply, Pi.pow_apply, sq_eq_one_iff] using hsq
   simpa using hS.eqOn_const_of_mapsTo hf hmaps

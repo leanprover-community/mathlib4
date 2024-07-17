@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
 import Lean
-import Std.Tactic.Exact
+import Batteries.Tactic.Exact
 
 import Mathlib.Tactic.FunProp.Theorems
-import Mathlib.Tactic.FunProp.ToStd
+import Mathlib.Tactic.FunProp.ToBatteries
 import Mathlib.Tactic.FunProp.Types
 import Mathlib.Lean.Expr.Basic
 
@@ -391,7 +391,7 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
       let .some (decl,f) ← getFunProp? b | return none
       unless decl.funPropName = funPropDecl.funPropName do return none
 
-      let .data fData ← getFunctionData? f (← unfoldNamePred) {zeta:=false} | return none
+      let .data fData ← getFunctionData? f (← unfoldNamePred) {zeta := false} | return none
       unless (fData.getFnOrigin == funOrigin) do return none
 
       unless isOrderedSubsetOf mainArgs fData.mainArgs do return none
@@ -611,7 +611,7 @@ mutual
         let e' := e.setArg funPropDecl.funArgId b
         funProp (← mkLambdaFVars xs e')
 
-    match ← getFunctionData? f (← unfoldNamePred) {zeta:=false} with
+    match ← getFunctionData? f (← unfoldNamePred) {zeta := false} with
     | .letE f =>
       trace[Meta.Tactic.fun_prop.step] "let case on {← ppExpr f}"
       let e := e.setArg funPropDecl.funArgId f -- update e with reduced f

@@ -98,7 +98,7 @@ lemma measurableSet_isRatStieltjesPoint (hf : Measurable f) :
   · exact ⟨h.1.1.1, h.1.1.2, h.1.2, h.2⟩
 
 lemma IsRatStieltjesPoint.ite {f g : α → ℚ → ℝ} {a : α} (p : α → Prop) [DecidablePred p]
-    (hf : p a → IsRatStieltjesPoint f a) (hg : ¬ p a → IsRatStieltjesPoint g a):
+    (hf : p a → IsRatStieltjesPoint f a) (hg : ¬ p a → IsRatStieltjesPoint g a) :
     IsRatStieltjesPoint (fun a ↦ if p a then f a else g a) a where
   mono := by split_ifs with h; exacts [(hf h).mono, (hg h).mono]
   tendsto_atTop_one := by
@@ -503,3 +503,5 @@ lemma measurable_measure_stieltjesOfMeasurableRat (hf : Measurable f) :
 end Measure
 
 end stieltjesOfMeasurableRat
+
+end ProbabilityTheory

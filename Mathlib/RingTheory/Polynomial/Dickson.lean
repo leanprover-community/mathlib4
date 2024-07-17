@@ -94,7 +94,7 @@ variable {k a}
 
 theorem map_dickson (f : R →+* S) : ∀ n : ℕ, map f (dickson k a n) = dickson k (f a) n
   | 0 => by
-    simp_rw [dickson_zero, Polynomial.map_sub, Polynomial.map_nat_cast, Polynomial.map_ofNat]
+    simp_rw [dickson_zero, Polynomial.map_sub, Polynomial.map_natCast, Polynomial.map_ofNat]
   | 1 => by simp only [dickson_one, map_X]
   | n + 2 => by
     simp only [dickson_add_two, Polynomial.map_sub, Polynomial.map_mul, map_X, map_C]
@@ -125,19 +125,15 @@ There is exactly one other Lambda structure on `ℤ[X]` in terms of binomial pol
 
 -/
 
-
 theorem dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :
     ∀ n, (dickson 1 (1 : R) n).eval (x + y) = x ^ n + y ^ n
   | 0 => by
-    -- Porting note: Original proof was
-    -- `simp only [bit0, eval_one, eval_add, pow_zero, dickson_zero]; norm_num`
-    suffices eval (x + y) 2 = 2 by convert this <;> norm_num
-    exact eval_nat_cast
+    simp only [eval_one, eval_add, pow_zero, dickson_zero]; norm_num
   | 1 => by simp only [eval_X, dickson_one, pow_one]
   | n + 2 => by
     simp only [eval_sub, eval_mul, dickson_one_one_eval_add_inv x y h _, eval_X, dickson_add_two,
       C_1, eval_one]
-    conv_lhs => simp only [pow_succ, add_mul, mul_add, h, ← mul_assoc, mul_comm y x, one_mul]
+    conv_lhs => simp only [pow_succ', add_mul, mul_add, h, ← mul_assoc, mul_comm y x, one_mul]
     ring
 #align polynomial.dickson_one_one_eval_add_inv Polynomial.dickson_one_one_eval_add_inv
 
@@ -156,11 +152,13 @@ theorem dickson_one_one_eq_chebyshev_T [Invertible (2 : R)] :
     simp only [Chebyshev.T_zero, mul_one, one_comp, dickson_zero]
     norm_num
   | 1 => by
-    rw [dickson_one, Chebyshev.T_one, X_comp, ← mul_assoc, two_mul_C_half_eq_one, one_mul]
+    rw [dickson_one, Nat.cast_one, Chebyshev.T_one, X_comp, ← mul_assoc, two_mul_C_half_eq_one,
+      one_mul]
   | n + 2 => by
-    rw [dickson_add_two, C_1, Chebyshev.T_add_two, dickson_one_one_eq_chebyshev_T (n + 1),
-      dickson_one_one_eq_chebyshev_T n, sub_comp, mul_comp, mul_comp, X_comp, ofNat_comp]
-    simp_rw [← mul_assoc, Nat.cast_ofNat, two_mul_C_half_eq_one]
+    rw [dickson_add_two, C_1, Nat.cast_add, Nat.cast_two, Chebyshev.T_add_two,
+      dickson_one_one_eq_chebyshev_T (n + 1), dickson_one_one_eq_chebyshev_T n, sub_comp, mul_comp,
+      mul_comp, X_comp, ofNat_comp]
+    simp_rw [← mul_assoc, Nat.cast_ofNat, two_mul_C_half_eq_one, Nat.cast_add, Nat.cast_one]
     ring
 set_option linter.uppercaseLean3 false in
 #align polynomial.dickson_one_one_eq_chebyshev_T Polynomial.dickson_one_one_eq_chebyshev_T
@@ -182,7 +180,7 @@ theorem dickson_one_one_mul (m n : ℕ) :
   congr 1
   apply map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [map_dickson, map_comp, eq_intCast, Int.cast_one, dickson_one_one_eq_chebyshev_T,
-    Chebyshev.T_mul, two_mul, ← add_comp]
+    Nat.cast_mul, Chebyshev.T_mul, two_mul, ← add_comp]
   simp only [← two_mul, ← comp_assoc]
   apply eval₂_congr rfl rfl
   rw [comp_assoc]
@@ -210,7 +208,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
     haveI : Infinite K :=
       Infinite.of_injective (algebraMap (Polynomial (ZMod p)) (FractionRing (Polynomial (ZMod p))))
         (IsFractionRing.injective _ _)
-    refine' ⟨K, _, _, _⟩ <;> infer_instance
+    refine ⟨K, ?_, ?_, ?_⟩ <;> infer_instance
   apply map_injective (ZMod.castHom (dvd_refl p) K) (RingHom.injective _)
   rw [map_dickson, Polynomial.map_pow, map_X]
   apply eq_of_infinite_eval_eq
@@ -233,7 +231,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
         ⋃ x ∈ { x : K | ∃ y : K, x = y + y⁻¹ ∧ y ≠ 0 }, { y | x = y + y⁻¹ ∨ y = 0 }  by
       rw [this]
       clear this
-      refine' h.biUnion fun x _ => _
+      refine h.biUnion fun x _ => ?_
       -- The following quadratic polynomial has as solutions the `y` for which `x = y + y⁻¹`.
       let φ : K[X] := X ^ 2 - C x * X + 1
       have hφ : φ ≠ 0 := by
@@ -254,14 +252,14 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
         apply eq_iff_eq_cancel_right.mpr
         ring
     -- Finally, we prove the claim that our finite union of finite sets covers all of `K`.
-    · apply (Set.eq_univ_of_forall _).symm
-      intro x
-      simp only [exists_prop, Set.mem_iUnion, Set.bind_def, Ne.def, Set.mem_setOf_eq]
-      by_cases hx : x = 0
-      · simp only [hx, and_true_iff, eq_self_iff_true, inv_zero, or_true_iff]
-        exact ⟨_, 1, rfl, one_ne_zero⟩
-      · simp only [hx, or_false_iff, exists_eq_right]
-        exact ⟨_, rfl, hx⟩
+    apply (Set.eq_univ_of_forall _).symm
+    intro x
+    simp only [exists_prop, Set.mem_iUnion, Set.bind_def, Ne, Set.mem_setOf_eq]
+    by_cases hx : x = 0
+    · simp only [hx, and_true_iff, eq_self_iff_true, inv_zero, or_true_iff]
+      exact ⟨_, 1, rfl, one_ne_zero⟩
+    · simp only [hx, or_false_iff, exists_eq_right]
+      exact ⟨_, rfl, hx⟩
 #align polynomial.dickson_one_one_zmod_p Polynomial.dickson_one_one_zmod_p
 
 theorem dickson_one_one_charP (p : ℕ) [Fact p.Prime] [CharP R p] : dickson 1 (1 : R) p = X ^ p := by
