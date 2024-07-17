@@ -33,7 +33,7 @@ theorem evenOddRec_zero {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ i, P i → 
 theorem evenOddRec_even {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
     (h_odd : ∀ i, P i → P (2 * i + 1)) (H : h_even 0 h0 = h0) (n : ℕ) :
     (2 * n).evenOddRec h0 h_even h_odd = h_even n (evenOddRec h0 h_even h_odd n) := by
-  apply binaryRec_eq' false n
+  apply binaryRec_eq false n
   simp [H]
 #align nat.even_odd_rec_even Nat.evenOddRec_even
 
@@ -41,7 +41,7 @@ theorem evenOddRec_even {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ i, P i → 
 theorem evenOddRec_odd {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
     (h_odd : ∀ i, P i → P (2 * i + 1)) (H : h_even 0 h0 = h0) (n : ℕ) :
     (2 * n + 1).evenOddRec h0 h_even h_odd = h_odd n (evenOddRec h0 h_even h_odd n) := by
-  apply binaryRec_eq' true n
+  apply binaryRec_eq true n
   simp [H]
 #align nat.even_odd_rec_odd Nat.evenOddRec_odd
 
