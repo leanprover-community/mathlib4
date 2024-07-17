@@ -4330,6 +4330,7 @@ import Mathlib.Topology.Defs.Filter
 import Mathlib.Topology.Defs.Induced
 import Mathlib.Topology.Defs.Sequences
 import Mathlib.Topology.DenseEmbedding
+import Mathlib.Topology.DerivedSet
 import Mathlib.Topology.DiscreteQuotient
 import Mathlib.Topology.DiscreteSubset
 import Mathlib.Topology.EMetricSpace.Basic
