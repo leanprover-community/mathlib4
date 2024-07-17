@@ -656,17 +656,6 @@ theorem indexed_matching (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) (μ
        = (eigenspace (T i) μ ⊓ ⨅ j, eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by
   rw [← index_convert T hC i μ fun j ↦ γ j]
 
-theorem nonempty_of_nontrivial (i : n) [h : Nontrivial n] : Nonempty {x | i ≠ x} := by
-   simp only [ne_eq, Set.coe_setOf, nonempty_subtype]
-   simp only [nontrivial_iff, ne_eq] at h
-   obtain ⟨k, l , hkl⟩ := h
-   by_contra h1
-   push_neg at *
-   have A := h1 k
-   have B := h1 l
-   rw [A] at B
-   contradiction
-
 theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // i ≠ x} → 𝕜) :
     ⨆ μ, Submodule.map (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype
     (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) =
@@ -693,13 +682,8 @@ theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // i ≠ x} → 𝕜)
     simp only [Submodule.mem_iInf, Subtype.forall, Submodule.mem_mk, AddSubmonoid.mem_mk,
       AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe]
     intro h F hH
-    have hH1 : ∀ (a : 𝕜), Submodule.map (⨅ (j : {x // i ≠ x}) , eigenspace (T ↑j) (γ j)).subtype (eigenspace
-        ((T i).restrict ((invariance_iInf' T hC i γ))) a) ≤ F := by exact fun a ↦ hH a
-    have L : ∃ j : n, i ≠ j := by
-      have J := nonempty_of_nontrivial i
-      simp only [ne_eq, Set.coe_setOf, nonempty_subtype] at J
-      exact J
-    obtain ⟨_, _⟩ := L
+    have hH1 : ∀ (a : 𝕜), Submodule.map (⨅ (j : {x // i ≠ x}) , eigenspace (T ↑j) (γ j)).subtype
+        (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) a) ≤ F := by exact fun a ↦ hH a
     simp only [ne_eq, ultra_silly_lemma, Submodule.map_iSup, Submodule.map_top,
       Submodule.range_subtype] at B
     have RR : (⨆ μ : 𝕜, Submodule.map (⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype
