@@ -34,6 +34,7 @@ def sortEquiv [LinearOrder α] : Sym2 α ≃ { p : α × α // p.1 ≤ p.2 } whe
     cases le_total a b with
     | inl h => simp [h]
     | inr h => simp [h]
-  right_inv := Subtype.rec <| Prod.rec fun x y hxy => Subtype.ext <| Prod.ext (by simp [hxy]) (by simp [hxy])
+  right_inv := Subtype.rec <| Prod.rec fun x y hxy =>
+    Subtype.ext <| Prod.ext (by simp [hxy]) (by simp [hxy])
 
 end Sym2
