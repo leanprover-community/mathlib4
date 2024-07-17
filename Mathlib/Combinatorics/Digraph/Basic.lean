@@ -217,7 +217,7 @@ instance [IsEmpty V] : Unique (Digraph V) where
 
 instance [h : Nonempty V] : Nontrivial (Digraph V) := by
   use ⊥, ⊤
-  obtain v := h
+  obtain ⟨v⟩ := h
   apply_fun (·.Adj v v)
   simp
 
