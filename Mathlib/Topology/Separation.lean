@@ -1073,10 +1073,10 @@ lemma Set.Subsingleton.isClosed [T1Space X] {A : Set X} (h : A.Subsingleton) : I
   · exact isClosed_empty
   · exact isClosed_singleton
 
-lemma IsClosed.inter_singleton [T1Space X] {A : Set X} {a : X} : IsClosed (A ∩ {a}) :=
+lemma isClosed_inter_singleton [T1Space X] {A : Set X} {a : X} : IsClosed (A ∩ {a}) :=
   Subsingleton.inter_singleton.isClosed
 
-lemma IsClosed.singleton_inter [T1Space X] {A : Set X} {a : X} : IsClosed ({a} ∩ A) :=
+lemma isClosed_singleton_inter [T1Space X] {A : Set X} {a : X} : IsClosed ({a} ∩ A) :=
   Subsingleton.singleton_inter.isClosed
 
 theorem singleton_mem_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
