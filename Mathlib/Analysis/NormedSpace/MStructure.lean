@@ -465,7 +465,7 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
       _ = E₁ x + E₂ x - (E₁ * E₂) x := rfl
       _ = E₁ x + E₂ x - (E₂ * E₁) x := by rw [IsLprojection.commute P₁.prop P₂.prop]
       _ = E₁ x + E₂ x - E₂ (E₁ x) := rfl
-      _ = E₁ x + (E₂ x - E₂ (E₁ x)) := by exact add_sub_assoc (E₁ x) (E₂ x) (E₂ (E₁ x))
+      _ = E₁ x + (E₂ x - E₂ (E₁ x)) := add_sub_assoc (E₁ x) (E₂ x) (E₂ (E₁ x))
       _ = E₁ x + E₂ (x - E₁ x) := by rw [map_sub]
       _ = y + z := rfl
     have e4 :  ‖y‖ + ‖z‖ = ‖x‖ := by
@@ -480,7 +480,7 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
           apply contractive P₂.prop
           exact ContinuousLinearMap.opNorm_nonneg ((1 - E₁) x)
         _ ≤ ‖E₁ x‖ + ‖(1 - E₁) x‖ := by rw [one_mul]
-        _ ≤ ‖E₁ • x‖ + ‖(1 - E₁) • x‖ := by exact Preorder.le_refl (‖E₁ x‖ + ‖(1 - E₁) x‖)
+        _ ≤ ‖E₁ • x‖ + ‖(1 - E₁) • x‖ := Preorder.le_refl (‖E₁ x‖ + ‖(1 - E₁) x‖)
         _ = ‖x‖ := by rw [← P₁.prop.Lnorm]
       · rw [e3]
         exact ContinuousLinearMap.opNorm_add_le y z
@@ -547,7 +547,7 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
               --_ = |1 := by
               _ = ‖‖x‖/‖y‖‖ * ‖y‖ := norm_smul (‖x‖ / ‖y‖) y
               _ = ‖x‖/‖y‖ * ‖y‖ := by simp only [norm_div, norm_norm]
-              _ = ‖x‖ := by exact div_mul_cancel₀ ‖x‖ hynz
+              _ = ‖x‖ := div_mul_cancel₀ ‖x‖ hynz
               _ ≤ 1 := hx.2
           have t₂ : z₁ ∈ polar 𝕜 ↑m₁ ∩ closedBall 0 1 ∪ polar 𝕜 ↑m₂ ∩ closedBall 0 1 := by
             apply Set.mem_union_right
@@ -570,7 +570,7 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
               ‖z₁‖ = ‖(‖x‖/‖z‖) • z‖ := rfl
               _ = ‖‖x‖/‖z‖‖ * ‖z‖ := norm_smul (‖x‖ / ‖z‖) z
               _ = ‖x‖/‖z‖ * ‖z‖ := by simp only [norm_div, norm_norm]
-              _ = ‖x‖ := by exact div_mul_cancel₀ ‖x‖ hznz
+              _ = ‖x‖ := div_mul_cancel₀ ‖x‖ hznz
               _ ≤ 1 := hx.2
           apply segment_subset_convexHull t₁ t₂
           rw [segment]
@@ -586,7 +586,7 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
             · constructor
               · calc
                 ‖y‖ / ‖x‖ + ‖z‖ / ‖x‖ = (‖y‖ + ‖z‖) / ‖x‖ := div_add_div_same ‖y‖ ‖z‖ ‖x‖
-                _ = 1 := by exact (div_eq_one_iff_eq hxnz).mpr e4
+                _ = 1 := (div_eq_one_iff_eq hxnz).mpr e4
               · calc
                 (‖y‖ / ‖x‖) • y₁ + (‖z‖ / ‖x‖) • z₁ =
                   (‖y‖ / ‖x‖) • ((‖x‖/‖y‖) • y) + (‖z‖ / ‖x‖) • ((‖x‖/‖z‖) • z) := rfl
