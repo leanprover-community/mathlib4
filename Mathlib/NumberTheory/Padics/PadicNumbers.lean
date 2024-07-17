@@ -773,8 +773,6 @@ instance metricSpace : MetricSpace ℚ_[p] where
     apply eq_of_sub_eq_zero
     apply padicNormE.eq_zero.1
     exact mod_cast h
-  -- Porting note: added because autoparam was not ported
-  edist_dist := by intros; exact (ENNReal.ofReal_eq_coe_nnreal _).symm
 
 instance : Norm ℚ_[p] :=
   ⟨fun x ↦ padicNormE x⟩

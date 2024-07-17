@@ -19,19 +19,17 @@ The actual behavior is in `@[positivity]`-tagged definitions in `Tactic.Positivi
 and elsewhere.
 -/
 
-set_option autoImplicit true
-
 open Lean hiding Rat
 open Lean.Meta Qq Lean.Elab Term
 
 /-- Attribute for identifying `positivity` extensions. -/
 syntax (name := positivity) "positivity " term,+ : attr
 
-lemma ne_of_ne_of_eq' (hab : (a : α) ≠ c) (hbc : a = b) : b ≠ c := hbc ▸ hab
+lemma ne_of_ne_of_eq' {α : Sort*} {a c b : α} (hab : (a : α) ≠ c) (hbc : a = b) : b ≠ c := hbc ▸ hab
 
 namespace Mathlib.Meta.Positivity
 
-variable {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α))
+variable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α))
 
 /-- The result of `positivity` running on an expression `e` of type `α`. -/
 inductive Strictness (e : Q($α)) where
@@ -42,7 +40,7 @@ inductive Strictness (e : Q($α)) where
   deriving Repr
 
 /-- Gives a generic description of the `positivity` result. -/
-def Strictness.toString : Strictness zα pα e → String
+def Strictness.toString {e : Q($α)} : Strictness zα pα e → String
   | positive _ => "positive"
   | nonnegative _ => "nonnegative"
   | nonzero _ => "nonzero"
@@ -119,28 +117,30 @@ initialize registerBuiltinAttribute {
     | _ => throwUnsupportedSyntax
 }
 
-lemma lt_of_le_of_ne' [PartialOrder A] :
+variable {A : Type*} {e : A}
+
+lemma lt_of_le_of_ne' {a b : A} [PartialOrder A] :
     (a : A) ≤ b → b ≠ a → a < b := fun h₁ h₂ => lt_of_le_of_ne h₁ h₂.symm
 
-lemma pos_of_isNat [StrictOrderedSemiring A]
+lemma pos_of_isNat {n : ℕ} [StrictOrderedSemiring A]
     (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 0 < (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
   apply Nat.cast_pos.2
   simpa using w
 
-lemma nonneg_of_isNat [OrderedSemiring A]
+lemma nonneg_of_isNat {n : ℕ} [OrderedSemiring A]
     (h : NormNum.IsNat e n) : 0 ≤ (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
   exact Nat.cast_nonneg n
 
-lemma nz_of_isNegNat [StrictOrderedRing A]
+lemma nz_of_isNegNat {n : ℕ} [StrictOrderedRing A]
     (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.ble 1 n = true) : (e : A) ≠ 0 := by
   rw [NormNum.IsInt.neg_to_eq h rfl]
   simp only [ne_eq, neg_eq_zero]
   apply ne_of_gt
   simpa using w
 
-lemma pos_of_isRat [LinearOrderedRing A] :
+lemma pos_of_isRat {n : ℤ} {d : ℕ} [LinearOrderedRing A] :
     (NormNum.IsRat e n d) → (decide (0 < n)) → ((0 : A) < (e : A))
   | ⟨inv, eq⟩, h => by
     have pos_invOf_d : (0 < ⅟ (d : A)) := pos_invOf_of_invertible_cast d
@@ -148,11 +148,11 @@ lemma pos_of_isRat [LinearOrderedRing A] :
     rw [eq]
     exact mul_pos pos_n pos_invOf_d
 
-lemma nonneg_of_isRat [LinearOrderedRing A] :
+lemma nonneg_of_isRat {n : ℤ} {d : ℕ} [LinearOrderedRing A] :
     (NormNum.IsRat e n d) → (decide (n = 0)) → (0 ≤ (e : A))
   | ⟨inv, eq⟩, h => by rw [eq, of_decide_eq_true h]; simp
 
-lemma nz_of_isRat [LinearOrderedRing A] :
+lemma nz_of_isRat {n : ℤ} {d : ℕ} [LinearOrderedRing A] :
     (NormNum.IsRat e n d) → (decide (n < 0)) → ((e : A) ≠ 0)
   | ⟨inv, eq⟩, h => by
     have pos_invOf_d : (0 < ⅟ (d : A)) := pos_invOf_of_invertible_cast d
@@ -164,7 +164,7 @@ lemma nz_of_isRat [LinearOrderedRing A] :
 variable {zα pα} in
 /-- Converts a `MetaM Strictness` which can fail
 into one that never fails and returns `.none` instead. -/
-def catchNone (t : MetaM (Strictness zα pα e)) : MetaM (Strictness zα pα e) :=
+def catchNone {e : Q($α)} (t : MetaM (Strictness zα pα e)) : MetaM (Strictness zα pα e) :=
   try t catch e =>
     trace[Tactic.positivity.failure] "{e.toMessageData}"
     pure .none
@@ -172,7 +172,7 @@ def catchNone (t : MetaM (Strictness zα pα e)) : MetaM (Strictness zα pα e) 
 variable {zα pα} in
 /-- Converts a `MetaM Strictness` which can return `.none`
 into one which never returns `.none` but fails instead. -/
-def throwNone [Monad m] [Alternative m]
+def throwNone {m : Type → Type*} {e : Q($α)} [Monad m] [Alternative m]
     (t : m (Strictness zα pα e)) : m (Strictness zα pα e) := do
   match ← t with
   | .none => failure
@@ -296,7 +296,7 @@ variable {zα pα} in
 It assumes `t₁` has already been run for a result, and runs `t₂` and takes the best result.
 It will skip `t₂` if `t₁` is already a proof of `.positive`, and can also combine
 `.nonnegative` and `.nonzero` to produce a `.positive` result. -/
-def orElse (t₁ : Strictness zα pα e) (t₂ : MetaM (Strictness zα pα e)) :
+def orElse {e : Q($α)} (t₁ : Strictness zα pα e) (t₂ : MetaM (Strictness zα pα e)) :
     MetaM (Strictness zα pα e) := do
   match t₁ with
   | .none => catchNone t₂
@@ -411,3 +411,9 @@ example {b : ℤ} : 0 ≤ max (-3) (b ^ 2) := by positivity
 -/
 elab (name := positivity) "positivity" : tactic => do
   liftMetaTactic fun g => do Meta.Positivity.positivity g; pure []
+
+end Positivity
+
+end Tactic
+
+end Mathlib

@@ -193,7 +193,7 @@ theorem indep_bot_left (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
 theorem indepSet_empty_right {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} [IsMarkovKernel κ] (s : Set Ω) :
     IndepSet s ∅ κ μ := by
-  simp only [IndepSet, generateFrom_singleton_empty];
+  simp only [IndepSet, generateFrom_singleton_empty]
   exact indep_bot_right _
 
 theorem indepSet_empty_left {_mΩ : MeasurableSpace Ω} {κ : kernel α Ω}
@@ -916,17 +916,13 @@ theorem iIndepFun.indepFun_finset [IsMarkovKernel κ] (S T : Finset ι) (hST : D
     · rw [h_sets_s'_univ hi_mem, Set.univ_inter]
       exact h_meas_t' i hi_mem
   filter_upwards [hf_Indep S h_meas_s', hf_Indep T h_meas_t', hf_Indep (S ∪ T) h_meas_inter]
-    with a h_indepS h_indepT h_indepST -- todo: this unfolded sets_s', sets_t'?
+    with a h_indepS h_indepT h_indepST
   rw [h_eq_inter_S, h_eq_inter_T, h_indepS, h_indepT, h_Inter_inter, h_indepST,
     Finset.prod_union hST]
   congr 1
   · refine Finset.prod_congr rfl fun i hi => ?_
-    -- todo : show is necessary because of todo above
-    show κ a (f i ⁻¹' (sets_s' i ∩ sets_t' i)) = κ a (f i ⁻¹' (sets_s' i))
     rw [h_sets_t'_univ hi, Set.inter_univ]
   · refine Finset.prod_congr rfl fun i hi => ?_
-    -- todo : show is necessary because of todo above
-    show κ a (f i ⁻¹' (sets_s' i ∩ sets_t' i)) = κ a (f i ⁻¹' (sets_t' i))
     rw [h_sets_s'_univ hi, Set.univ_inter]
 
 theorem iIndepFun.indepFun_prod_mk [IsMarkovKernel κ] (hf_Indep : iIndepFun m f κ μ)
@@ -963,13 +959,7 @@ lemma iIndepFun.indepFun_prod_mk_prod_mk [IsMarkovKernel κ] (hf_indep : iIndepF
   classical
   let g (i j : ι) (v : Π x : ({i, j} : Finset ι), β x) : β i × β j :=
     ⟨v ⟨i, mem_insert_self _ _⟩, v ⟨j, mem_insert_of_mem <| mem_singleton_self _⟩⟩
-  have hg (i j : ι) : Measurable (g i j) := by
-    -- NB: `measurability proves this, but is slow
-    -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
-    simp only [ne_eq, g]
-    apply Measurable.prod
-    · exact measurable_pi_apply _
-    · exact measurable_pi_apply _
+  have hg (i j : ι) : Measurable (g i j) := by fun_prop
   exact (hf_indep.indepFun_finset {i, j} {k, l} (by aesop) hf_meas).comp (hg i j) (hg k l)
 
 end iIndepFun

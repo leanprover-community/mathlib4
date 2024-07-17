@@ -203,8 +203,8 @@ theorem Multiplicative.isNormalSubgroup [AddGroup A] {s : Set A} (hs : IsNormalA
 theorem Multiplicative.isNormalSubgroup_iff [AddGroup A] {s : Set A} :
     @IsNormalSubgroup (Multiplicative A) _ s ↔ IsNormalAddSubgroup s :=
   ⟨by
-    rintro ⟨h₁, h₂⟩;
-      exact @IsNormalAddSubgroup.mk A _ _ (Multiplicative.isSubgroup_iff.1 h₁) @h₂,
+    rintro ⟨h₁, h₂⟩
+    exact @IsNormalAddSubgroup.mk A _ _ (Multiplicative.isSubgroup_iff.1 h₁) @h₂,
     fun h => Multiplicative.isNormalSubgroup h⟩
 #align multiplicative.is_normal_subgroup_iff Multiplicative.isNormalSubgroup_iff
 
@@ -247,8 +247,8 @@ theorem trivial_normal : IsNormalSubgroup (trivial G) := by refine ⟨⟨⟨?_, 
 
 @[to_additive]
 theorem eq_trivial_iff {s : Set G} (hs : IsSubgroup s) : s = trivial G ↔ ∀ x ∈ s, x = (1 : G) := by
-  simp only [Set.ext_iff, IsSubgroup.mem_trivial];
-    exact ⟨fun h x => (h x).1, fun h x => ⟨h x, fun hx => hx.symm ▸ hs.toIsSubmonoid.one_mem⟩⟩
+  simp only [Set.ext_iff, IsSubgroup.mem_trivial]
+  exact ⟨fun h x => (h x).1, fun h x => ⟨h x, fun hx => hx.symm ▸ hs.toIsSubmonoid.one_mem⟩⟩
 #align is_subgroup.eq_trivial_iff IsSubgroup.eq_trivial_iff
 #align is_add_subgroup.eq_trivial_iff IsAddSubgroup.eq_trivial_iff
 
@@ -474,8 +474,8 @@ theorem injective_iff_trivial_ker {f : G → H} (hf : IsGroupHom f) :
 @[to_additive]
 theorem trivial_ker_iff_eq_one {f : G → H} (hf : IsGroupHom f) :
     ker f = trivial G ↔ ∀ x, f x = 1 → x = 1 := by
-  rw [Set.ext_iff]; simp [ker];
-    exact ⟨fun h x hx => (h x).1 hx, fun h x => ⟨h x, fun hx => by rw [hx, hf.map_one]⟩⟩
+  rw [Set.ext_iff]; simp [ker]
+  exact ⟨fun h x hx => (h x).1 hx, fun h x => ⟨h x, fun hx => by rw [hx, hf.map_one]⟩⟩
 #align is_group_hom.trivial_ker_iff_eq_one IsGroupHom.trivial_ker_iff_eq_one
 #align is_add_group_hom.trivial_ker_iff_eq_zero IsAddGroupHom.trivial_ker_iff_eq_zero
 
@@ -646,7 +646,7 @@ theorem closure_eq_mclosure {s : Set G} : closure s = Monoid.Closure (s ∪ Inv.
 @[to_additive]
 theorem mem_closure_union_iff {G : Type*} [CommGroup G] {s t : Set G} {x : G} :
     x ∈ closure (s ∪ t) ↔ ∃ y ∈ closure s, ∃ z ∈ closure t, y * z = x := by
-  simp only [closure_eq_mclosure, Monoid.mem_closure_union_iff, exists_prop, preimage_union];
+  simp only [closure_eq_mclosure, Monoid.mem_closure_union_iff, exists_prop, preimage_union]
   constructor
   · rintro ⟨_, ⟨ys, hys, yt, hyt, rfl⟩, _, ⟨zs, hzs, zt, hzt, rfl⟩, rfl⟩
     refine ⟨_, ⟨_, hys, _, hzs, rfl⟩, _, ⟨_, hyt, _, hzt, rfl⟩, ?_⟩
