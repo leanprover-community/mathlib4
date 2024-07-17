@@ -470,6 +470,7 @@ theorem rotate_length : rotate v n = v :=
 
 end VectorsProdEqOne
 
+-- TODO: Make make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
 `p` in `G`. This is known as Cauchy's theorem. -/
 theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (p : ℕ)
@@ -505,6 +506,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
     simp only [v₀, Vector.replicate]
 #align exists_prime_order_of_dvd_card exists_prime_orderOf_dvd_card
 
+-- TODO: Make make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite additive group `G` there exists an element of
 order `p` in `G`. This is the additive version of Cauchy's theorem. -/
 theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type*} [AddGroup G] [Fintype G] (p : ℕ)
@@ -514,6 +516,7 @@ theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type*} [AddGroup G] [Fintyp
 
 attribute [to_additive existing] exists_prime_orderOf_dvd_card
 
+-- TODO: Make make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
 `p` in `G`. This is known as Cauchy's theorem. -/
 @[to_additive]

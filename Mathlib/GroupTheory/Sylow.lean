@@ -43,7 +43,7 @@ The Sylow theorems are the following results for every finite group `G` and ever
 -/
 
 
-open Fintype MulAction Subgroup
+open MulAction Subgroup
 
 section InfiniteSylow
 
@@ -809,7 +809,7 @@ noncomputable def directProductOfNormal [Finite G]
     letI := unique_of_normal _ (hn (P p))
     apply MulEquiv.piUnique
   apply MulEquiv.ofBijective (Subgroup.noncommPiCoprod hcomm)
-  apply (bijective_iff_injective_and_card _).mpr
+  apply (Fintype.bijective_iff_injective_and_card _).mpr
   constructor
   · apply Subgroup.injective_noncommPiCoprod_of_independent
     apply independent_of_coprime_order hcomm
