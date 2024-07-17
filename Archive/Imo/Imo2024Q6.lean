@@ -174,7 +174,7 @@ def fExample (x : ℚ) : ℚ := ⌊x⌋ - Int.fract x
 
 lemma fExample_add (x y : ℚ) : fExample x + y = ⌊x⌋ + ⌊y⌋ + (Int.fract y - Int.fract x) := by
   rw [fExample]
-  nth_rw 1 [←Int.floor_add_fract y]
+  nth_rw 1 [← Int.floor_add_fract y]
   abel
 
 lemma add_fExample (x y : ℚ) : x + fExample y = ⌊x⌋ + ⌊y⌋ + (Int.fract x - Int.fract y) := by
