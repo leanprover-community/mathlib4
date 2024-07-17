@@ -50,10 +50,10 @@ def Digraph.mk' {V : Type u} :
   toFun x := ⟨fun v w ↦ x v w⟩
   inj' := by
     intro adj adj'
-    simp only [mk.injEq, Subtype.mk.injEq]
+    simp only [mk.injEq]
     intro h
     funext v w
-    simpa [Bool.coe_iff_coe] using congr_fun₂ h v w
+    simpa only [eq_iff_iff, Bool.coe_iff_coe] using congr_fun₂ h v w
 
 /-- Construct the digraph induced by the given relation. -/
 def Digraph.fromRel {V : Type u} (r : V → V → Prop) : Digraph V where
@@ -186,10 +186,7 @@ instance completeBooleanAlgebra : CompleteBooleanAlgebra (Digraph V) :=
       ext (v w)
       exact Iff.rfl
     inf_compl_le_bot := fun G v w h => False.elim <| h.2 h.1
-    top_le_sup_compl := fun G v w _ => by
-      by_cases h : G.Adj v w
-      · exact Or.inl h
-      · exact Or.inr h
+    top_le_sup_compl := fun G v w _ => by tauto
     sSup := sSup
     le_sSup := fun s G hG a b hab => ⟨G, hG, hab⟩
     sSup_le := fun s G hG a b => by
@@ -225,15 +222,11 @@ instance [IsEmpty V] : Unique (Digraph V) where
   default := ⊥
   uniq G := by ext1; congr!
 
-instance [Nontrivial V] : Nontrivial (Digraph V) := by
+instance [h : Nonempty V] : Nontrivial (Digraph V) := by
   use ⊥, ⊤
-  rw [← completeGraph_eq_top, ← emptyGraph_eq_bot, Digraph.completeGraph, Digraph.emptyGraph]
-  simp only [ne_eq, mk.injEq]
-  rw [← @Ne.eq_def, @ne_iff]
-  simp only [Pi.top_apply, ne_eq, exists_const]
-  rw [← @Ne.eq_def, @ne_iff]
-  simp only [Pi.top_apply, Prop.top_eq_true, ne_eq, eq_iff_iff, iff_true, not_false_eq_true,
-    exists_const]
+  obtain v := h
+  apply_fun (·.Adj v v)
+  simp
 
 section Decidable
 
