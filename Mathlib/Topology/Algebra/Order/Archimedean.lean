@@ -3,8 +3,8 @@ Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Topology.Order.Basic
 import Mathlib.GroupTheory.Archimedean
+import Mathlib.Topology.Order.Basic
 
 #align_import topology.algebra.order.archimedean from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
@@ -70,3 +70,5 @@ theorem dense_or_cyclic (S : AddSubgroup G) : Dense (S : Set G) ∨ ∃ a : G, S
   rcases h with ⟨ε, ε0, hε⟩
   exact cyclic_of_isolated_zero ε0 (disjoint_left.2 hε)
 #align real.subgroup_dense_or_cyclic AddSubgroup.dense_or_cyclicₓ
+
+end AddSubgroup

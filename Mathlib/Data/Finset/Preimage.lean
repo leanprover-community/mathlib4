@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Finite
-import Mathlib.Algebra.BigOperators.Basic
 
 #align_import data.finset.preimage from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 
@@ -12,10 +11,9 @@ import Mathlib.Algebra.BigOperators.Basic
 # Preimage of a `Finset` under an injective map.
 -/
 
+assert_not_exists Finset.sum
 
 open Set Function
-
-open BigOperators
 
 universe u v w x
 
@@ -72,17 +70,17 @@ theorem preimage_union [DecidableEq α] [DecidableEq β] {f : α → β} {s t : 
 @[simp, nolint simpNF] -- Porting note: linter complains that LHS doesn't simplify
 theorem preimage_compl [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] {f : α → β}
     (s : Finset β) (hf : Function.Injective f) :
-    preimage sᶜ f (hf.injOn _) = (preimage s f (hf.injOn _))ᶜ :=
+    preimage sᶜ f hf.injOn = (preimage s f hf.injOn)ᶜ :=
   Finset.coe_injective (by simp)
 #align finset.preimage_compl Finset.preimage_compl
 
 @[simp]
-lemma preimage_map (f : α ↪ β) (s : Finset α) : (s.map f).preimage f (f.injective.injOn _) = s :=
+lemma preimage_map (f : α ↪ β) (s : Finset α) : (s.map f).preimage f f.injective.injOn = s :=
   coe_injective <| by simp only [coe_preimage, coe_map, Set.preimage_image_eq _ f.injective]
 #align finset.preimage_map Finset.preimage_map
 
 theorem monotone_preimage {f : α → β} (h : Injective f) :
-    Monotone fun s => preimage s f (h.injOn _) := fun _ _ H _ hx =>
+    Monotone fun s => preimage s f h.injOn := fun _ _ H _ hx =>
   mem_preimage.2 (H <| mem_preimage.1 hx)
 #align finset.monotone_preimage Finset.monotone_preimage
 
@@ -92,7 +90,7 @@ theorem image_subset_iff_subset_preimage [DecidableEq β] {f : α → β} {s : F
 #align finset.image_subset_iff_subset_preimage Finset.image_subset_iff_subset_preimage
 
 theorem map_subset_iff_subset_preimage {f : α ↪ β} {s : Finset α} {t : Finset β} :
-    s.map f ⊆ t ↔ s ⊆ t.preimage f (f.injective.injOn _) := by
+    s.map f ⊆ t ↔ s ⊆ t.preimage f f.injective.injOn := by
   classical rw [map_eq_image, image_subset_iff_subset_preimage]
 #align finset.map_subset_iff_subset_preimage Finset.map_subset_iff_subset_preimage
 
@@ -109,7 +107,7 @@ theorem image_preimage_of_bij [DecidableEq β] (f : α → β) (s : Finset β)
 #align finset.image_preimage_of_bij Finset.image_preimage_of_bij
 
 theorem preimage_subset {f : α ↪ β} {s : Finset β} {t : Finset α} (hs : s ⊆ t.map f) :
-    s.preimage f (f.injective.injOn _) ⊆ t := fun _ h => (mem_map' f).1 (hs (mem_preimage.1 h))
+    s.preimage f f.injective.injOn ⊆ t := fun _ h => (mem_map' f).1 (hs (mem_preimage.1 h))
 #align finset.preimage_subset Finset.preimage_subset
 
 theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
@@ -119,7 +117,7 @@ theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
 #align finset.subset_map_iff Finset.subset_map_iff
 
 theorem sigma_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σa, β a)) (t : Finset α) :
-    (t.sigma fun a => s.preimage (Sigma.mk a) <| sigma_mk_injective.injOn _) =
+    (t.sigma fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) =
       s.filter fun a => a.1 ∈ t := by
   ext x
   simp [and_comm]
@@ -127,46 +125,15 @@ theorem sigma_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σa,
 
 theorem sigma_preimage_mk_of_subset {β : α → Type*} [DecidableEq α] (s : Finset (Σa, β a))
     {t : Finset α} (ht : s.image Sigma.fst ⊆ t) :
-    (t.sigma fun a => s.preimage (Sigma.mk a) <| sigma_mk_injective.injOn _) = s := by
+    (t.sigma fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) = s := by
   rw [sigma_preimage_mk, filter_true_of_mem <| image_subset_iff.1 ht]
 #align finset.sigma_preimage_mk_of_subset Finset.sigma_preimage_mk_of_subset
 
 theorem sigma_image_fst_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σa, β a)) :
-    ((s.image Sigma.fst).sigma fun a => s.preimage (Sigma.mk a) <| sigma_mk_injective.injOn _) =
+    ((s.image Sigma.fst).sigma fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) =
       s :=
   s.sigma_preimage_mk_of_subset (Subset.refl _)
 #align finset.sigma_image_fst_preimage_mk Finset.sigma_image_fst_preimage_mk
 
 end Preimage
-
-@[to_additive]
-theorem prod_preimage' [CommMonoid β] (f : α → γ) [DecidablePred fun x => x ∈ Set.range f]
-    (s : Finset γ) (hf : Set.InjOn f (f ⁻¹' ↑s)) (g : γ → β) :
-    (∏ x in s.preimage f hf, g (f x)) = ∏ x in s.filter fun x => x ∈ Set.range f, g x := by
-  haveI := Classical.decEq γ
-  calc
-    (∏ x in preimage s f hf, g (f x)) = ∏ x in image f (preimage s f hf), g x :=
-      Eq.symm <| prod_image <| by simpa only [mem_preimage, InjOn] using hf
-    _ = ∏ x in s.filter fun x => x ∈ Set.range f, g x := by rw [image_preimage]
-#align finset.prod_preimage' Finset.prod_preimage'
-#align finset.sum_preimage' Finset.sum_preimage'
-
-@[to_additive]
-theorem prod_preimage [CommMonoid β] (f : α → γ) (s : Finset γ) (hf : Set.InjOn f (f ⁻¹' ↑s))
-    (g : γ → β) (hg : ∀ x ∈ s, x ∉ Set.range f → g x = 1) :
-    (∏ x in s.preimage f hf, g (f x)) = ∏ x in s, g x := by
-  classical
-    rw [prod_preimage', prod_filter_of_ne]
-    exact fun x hx => Not.imp_symm (hg x hx)
-#align finset.prod_preimage Finset.prod_preimage
-#align finset.sum_preimage Finset.sum_preimage
-
-@[to_additive]
-theorem prod_preimage_of_bij [CommMonoid β] (f : α → γ) (s : Finset γ)
-    (hf : Set.BijOn f (f ⁻¹' ↑s) ↑s) (g : γ → β) :
-    (∏ x in s.preimage f hf.injOn, g (f x)) = ∏ x in s, g x :=
-  prod_preimage _ _ hf.injOn g fun _ hs h_f => (h_f <| hf.subset_range hs).elim
-#align finset.prod_preimage_of_bij Finset.prod_preimage_of_bij
-#align finset.sum_preimage_of_bij Finset.sum_preimage_of_bij
-
 end Finset

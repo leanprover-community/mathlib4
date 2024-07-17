@@ -3,8 +3,10 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Pi
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 #align_import algebra.order.pi from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
@@ -62,15 +64,6 @@ instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
   __ := Pi.commMonoid
   le_of_mul_le_mul_left _ _ _ h i := le_of_mul_le_mul_left' (h i)
   mul_le_mul_left _ _ c h i := mul_le_mul_left' (c i) (h i)
--- Porting note: Old proof was
-  -- refine_struct
-  --     { Pi.partialOrder, Pi.monoid with
-  --       mul := (· * ·)
-  --       one := (1 : ∀ i, f i)
-  --       le := (· ≤ ·)
-  --       lt := (· < ·)
-  --       npow := Monoid.npow } <;>
-  --   pi_instance_derive_field
 #align pi.ordered_cancel_comm_monoid Pi.orderedCancelCommMonoid
 #align pi.ordered_cancel_add_comm_monoid Pi.orderedAddCancelCommMonoid
 

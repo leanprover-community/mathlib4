@@ -40,9 +40,13 @@ variable {V : Type*}
 it is convex, compact, and nonempty.
 -/
 structure ConvexBody (V : Type*) [TopologicalSpace V] [AddCommMonoid V] [SMul ℝ V] where
+  /-- The **carrier set** underlying a convex body: the set of points contained in it -/
   carrier : Set V
+  /-- A convex body has convex carrier set -/
   convex' : Convex ℝ carrier
+  /-- A convex body has compact carrier set -/
   isCompact' : IsCompact carrier
+  /-- A convex body has non-empty carrier set -/
   nonempty' : carrier.Nonempty
 #align convex_body ConvexBody
 
@@ -67,7 +71,6 @@ protected theorem isCompact (K : ConvexBody V) : IsCompact (K : Set V) :=
   K.isCompact'
 #align convex_body.is_compact ConvexBody.isCompact
 
--- Porting note (#10756): new theorem
 protected theorem isClosed [T2Space V] (K : ConvexBody V) : IsClosed (K : Set V) :=
   K.isCompact.isClosed
 
@@ -110,7 +113,7 @@ instance : SMul ℕ (ConvexBody V) where
 -- Porting note: add @[simp, norm_cast]; we leave it out for now to reproduce mathlib3 behavior.
 theorem coe_nsmul : ∀ (n : ℕ) (K : ConvexBody V), ↑(n • K) = n • (K : Set V)
   | 0, _ => rfl
-  | (n + 1), K => congr_arg₂ (Set.image2 (· + ·)) rfl (coe_nsmul n K)
+  | (n + 1), K => congr_arg₂ (Set.image2 (· + ·)) (coe_nsmul n K) rfl
 
 instance : AddMonoid (ConvexBody V) :=
   SetLike.coe_injective.addMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
@@ -193,7 +196,6 @@ noncomputable instance : PseudoMetricSpace (ConvexBody V) where
   dist_self _ := Metric.hausdorffDist_self_zero
   dist_comm _ _ := Metric.hausdorffDist_comm
   dist_triangle K L M := Metric.hausdorffDist_triangle hausdorffEdist_ne_top
-  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
 
 @[simp, norm_cast]
 theorem hausdorffDist_coe : Metric.hausdorffDist (K : Set V) L = dist K L :=
@@ -230,7 +232,7 @@ theorem iInter_smul_eq_self [T2Space V] {u : ℕ → ℝ≥0} (K : ConvexBody V)
     refine lt_of_le_of_lt ?_ hn
     exact mul_le_mul_of_nonneg_left (hC_bdd _ hyK) (abs_nonneg _)
   · refine Set.mem_iInter.mpr (fun n => Convex.mem_smul_of_zero_mem K.convex h_zero h ?_)
-    exact (le_add_iff_nonneg_right _).mpr (by positivity)
+    exact le_add_of_nonneg_right (by positivity)
 
 end SeminormedAddCommGroup
 

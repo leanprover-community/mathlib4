@@ -237,7 +237,7 @@ instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
   nsmul_succ n := by
     rintro ⟨a⟩
     dsimp only [HSMul.hSMul, instSMul, Quot.map]
-    rw [map_add, map_one, add_comm, mk_mul, mk_mul, ← one_add_mul (_ : FreeAlgebra R X)]
+    rw [map_add, map_one, mk_mul, mk_mul, ← add_one_mul (_ : FreeAlgebra R X)]
     congr 1
     exact Quot.sound Rel.add_scalar
 
@@ -384,12 +384,12 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
         change liftAux R (F ∘ ι R) (fa + fb) = F (fa + fb)
-        rw [AlgHom.map_add, AlgHom.map_add, ha, hb]
+        rw [map_add, map_add, ha, hb]
       | mul a b ha hb =>
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
         change liftAux R (F ∘ ι R) (fa * fb) = F (fa * fb)
-        rw [AlgHom.map_mul, AlgHom.map_mul, ha, hb] }
+        rw [map_mul, map_mul, ha, hb] }
 #align free_algebra.lift FreeAlgebra.lift
 
 @[simp]
@@ -563,7 +563,7 @@ namespace FreeAlgebra
 If `C` holds for the `algebraMap` of `r : R` into `FreeAlgebra R X`, the `ι` of `x : X`, and is
 preserved under addition and muliplication, then it holds for all of `FreeAlgebra R X`.
 -/
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 theorem induction {C : FreeAlgebra R X → Prop}
     (h_grade0 : ∀ r, C (algebraMap R (FreeAlgebra R X) r)) (h_grade1 : ∀ x, C (ι R x))
     (h_mul : ∀ a b, C a → C b → C (a * b)) (h_add : ∀ a b, C a → C b → C (a + b))
@@ -591,7 +591,7 @@ theorem induction {C : FreeAlgebra R X → Prop}
 theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X)) = ⊤ := by
   set S := Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X))
   refine top_unique fun x hx => ?_; clear hx
-  induction x using FreeAlgebra.induction with
+  induction x with
   | h_grade0 => exact S.algebraMap_mem _
   | h_add x y hx hy => exact S.add_mem hx hy
   | h_mul x y hx hy => exact S.mul_mem hx hy

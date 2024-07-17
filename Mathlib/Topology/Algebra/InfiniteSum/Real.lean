@@ -6,63 +6,30 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Instances.ENNReal
 
 #align_import topology.algebra.infinite_sum.real from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
 /-!
 # Infinite sum in the reals
 
-This file provides lemmas about Cauchy sequences in terms of infinite sums.
+This file provides lemmas about Cauchy sequences in terms of infinite sums and infinite sums valued
+in the reals.
 -/
 
-open Filter Finset BigOperators NNReal Topology
+open Filter Finset NNReal Topology
 
-variable {α : Type*}
-
-/-- If the extended distance between consecutive points of a sequence is estimated
-by a summable series of `NNReal`s, then the original sequence is a Cauchy sequence. -/
-theorem cauchySeq_of_edist_le_of_summable [PseudoEMetricSpace α] {f : ℕ → α} (d : ℕ → ℝ≥0)
-    (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) (hd : Summable d) : CauchySeq f := by
-  refine EMetric.cauchySeq_iff_NNReal.2 fun ε εpos ↦ ?_
-  -- Actually we need partial sums of `d` to be a Cauchy sequence
-  replace hd : CauchySeq fun n : ℕ ↦ ∑ x in range n, d x :=
-    let ⟨_, H⟩ := hd
-    H.tendsto_sum_nat.cauchySeq
-  -- Now we take the same `N` as in one of the definitions of a Cauchy sequence
-  refine (Metric.cauchySeq_iff'.1 hd ε (NNReal.coe_pos.2 εpos)).imp fun N hN n hn ↦ ?_
-  specialize hN n hn
-  -- We simplify the known inequality
-  rw [dist_nndist, NNReal.nndist_eq, ← sum_range_add_sum_Ico _ hn, add_tsub_cancel_left,
-    NNReal.coe_lt_coe, max_lt_iff] at hN
-  rw [edist_comm]
-  -- Then use `hf` to simplify the goal to the same form
-  refine lt_of_le_of_lt (edist_le_Ico_sum_of_edist_le hn fun _ _ ↦ hf _) ?_
-  exact mod_cast hN.1
-#align cauchy_seq_of_edist_le_of_summable cauchySeq_of_edist_le_of_summable
-
-variable [PseudoMetricSpace α] {f : ℕ → α} {a : α}
+variable {α β : Type*} [PseudoMetricSpace α] {f : ℕ → α} {a : α}
 
 /-- If the distance between consecutive points of a sequence is estimated by a summable series,
 then the original sequence is a Cauchy sequence. -/
 theorem cauchySeq_of_dist_le_of_summable (d : ℕ → ℝ) (hf : ∀ n, dist (f n) (f n.succ) ≤ d n)
     (hd : Summable d) : CauchySeq f := by
-  -- Porting note (#11215): TODO: with `Topology/Instances/NNReal` we can use this:
-  -- lift d to ℕ → ℝ≥0 using fun n ↦ dist_nonneg.trans (hf n)
-  -- refine cauchySeq_of_edist_le_of_summable d ?_ ?_
-  -- · exact_mod_cast hf
-  -- · exact_mod_cast hd
-  refine' Metric.cauchySeq_iff'.2 fun ε εpos ↦ _
-  replace hd : CauchySeq fun n : ℕ ↦ ∑ x in range n, d x :=
-    let ⟨_, H⟩ := hd
-    H.tendsto_sum_nat.cauchySeq
-  refine' (Metric.cauchySeq_iff'.1 hd ε εpos).imp fun N hN n hn ↦ _
-  have hsum := hN n hn
-  rw [Real.dist_eq, ← sum_Ico_eq_sub _ hn] at hsum
-  calc
-    dist (f n) (f N) = dist (f N) (f n) := dist_comm _ _
-    _ ≤ ∑ x in Ico N n, d x := dist_le_Ico_sum_of_dist_le hn fun _ _ ↦ hf _
-    _ ≤ |∑ x in Ico N n, d x| := le_abs_self _
-    _ < ε := hsum
+  lift d to ℕ → ℝ≥0 using fun n ↦ dist_nonneg.trans (hf n)
+  apply cauchySeq_of_edist_le_of_summable d (α := α) (f := f)
+  · exact_mod_cast hf
+  · exact_mod_cast hd
+
 #align cauchy_seq_of_dist_le_of_summable cauchySeq_of_dist_le_of_summable
 
 theorem cauchySeq_of_summable_dist (h : Summable fun n ↦ dist (f n) (f n.succ)) : CauchySeq f :=
@@ -72,10 +39,10 @@ theorem cauchySeq_of_summable_dist (h : Summable fun n ↦ dist (f n) (f n.succ)
 theorem dist_le_tsum_of_dist_le_of_tendsto (d : ℕ → ℝ) (hf : ∀ n, dist (f n) (f n.succ) ≤ d n)
     (hd : Summable d) {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
     dist (f n) a ≤ ∑' m, d (n + m) := by
-  refine' le_of_tendsto (tendsto_const_nhds.dist ha) (eventually_atTop.2 ⟨n, fun m hnm ↦ _⟩)
-  refine' le_trans (dist_le_Ico_sum_of_dist_le hnm fun _ _ ↦ hf _) _
+  refine le_of_tendsto (tendsto_const_nhds.dist ha) (eventually_atTop.2 ⟨n, fun m hnm ↦ ?_⟩)
+  refine le_trans (dist_le_Ico_sum_of_dist_le hnm fun _ _ ↦ hf _) ?_
   rw [sum_Ico_eq_sum_range]
-  refine' sum_le_tsum (range _) (fun _ _ ↦ le_trans dist_nonneg (hf _)) _
+  refine sum_le_tsum (range _) (fun _ _ ↦ le_trans dist_nonneg (hf _)) ?_
   exact hd.comp_injective (add_right_injective n)
 #align dist_le_tsum_of_dist_le_of_tendsto dist_le_tsum_of_dist_le_of_tendsto
 
@@ -94,3 +61,59 @@ theorem dist_le_tsum_dist_of_tendsto₀ (h : Summable fun n ↦ dist (f n) (f n.
     (ha : Tendsto f atTop (𝓝 a)) : dist (f 0) a ≤ ∑' n, dist (f n) (f n.succ) := by
   simpa only [zero_add] using dist_le_tsum_dist_of_tendsto h ha 0
 #align dist_le_tsum_dist_of_tendsto₀ dist_le_tsum_dist_of_tendsto₀
+
+section summable
+
+theorem not_summable_iff_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) :
+    ¬Summable f ↔ Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop atTop := by
+  lift f to ℕ → ℝ≥0 using hf
+  exact mod_cast NNReal.not_summable_iff_tendsto_nat_atTop
+#align not_summable_iff_tendsto_nat_at_top_of_nonneg not_summable_iff_tendsto_nat_atTop_of_nonneg
+
+theorem summable_iff_not_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) :
+    Summable f ↔ ¬Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop atTop := by
+  rw [← not_iff_not, Classical.not_not, not_summable_iff_tendsto_nat_atTop_of_nonneg hf]
+#align summable_iff_not_tendsto_nat_at_top_of_nonneg summable_iff_not_tendsto_nat_atTop_of_nonneg
+
+theorem summable_sigma_of_nonneg {β : α → Type*} {f : (Σ x, β x) → ℝ} (hf : ∀ x, 0 ≤ f x) :
+    Summable f ↔ (∀ x, Summable fun y => f ⟨x, y⟩) ∧ Summable fun x => ∑' y, f ⟨x, y⟩ := by
+  lift f to (Σx, β x) → ℝ≥0 using hf
+  exact mod_cast NNReal.summable_sigma
+#align summable_sigma_of_nonneg summable_sigma_of_nonneg
+
+lemma summable_partition {α β : Type*} {f : β → ℝ} (hf : 0 ≤ f) {s : α  → Set β}
+    (hs : ∀ i, ∃! j, i ∈ s j) : Summable f ↔
+      (∀ j, Summable fun i : s j ↦ f i) ∧ Summable fun j ↦ ∑' i : s j, f i := by
+  simpa only [← (Set.sigmaEquiv s hs).summable_iff] using summable_sigma_of_nonneg (fun _ ↦ hf _)
+
+theorem summable_prod_of_nonneg {f : (α × β) → ℝ} (hf : 0 ≤ f) :
+    Summable f ↔ (∀ x, Summable fun y ↦ f (x, y)) ∧ Summable fun x ↦ ∑' y, f (x, y) :=
+  (Equiv.sigmaEquivProd _ _).summable_iff.symm.trans <| summable_sigma_of_nonneg fun _ ↦ hf _
+
+theorem summable_of_sum_le {ι : Type*} {f : ι → ℝ} {c : ℝ} (hf : 0 ≤ f)
+    (h : ∀ u : Finset ι, ∑ x ∈ u, f x ≤ c) : Summable f :=
+  ⟨⨆ u : Finset ι, ∑ x ∈ u, f x,
+    tendsto_atTop_ciSup (Finset.sum_mono_set_of_nonneg hf) ⟨c, fun _ ⟨u, hu⟩ => hu ▸ h u⟩⟩
+#align summable_of_sum_le summable_of_sum_le
+
+theorem summable_of_sum_range_le {f : ℕ → ℝ} {c : ℝ} (hf : ∀ n, 0 ≤ f n)
+    (h : ∀ n, ∑ i ∈ Finset.range n, f i ≤ c) : Summable f := by
+  refine (summable_iff_not_tendsto_nat_atTop_of_nonneg hf).2 fun H => ?_
+  rcases exists_lt_of_tendsto_atTop H 0 c with ⟨n, -, hn⟩
+  exact lt_irrefl _ (hn.trans_le (h n))
+#align summable_of_sum_range_le summable_of_sum_range_le
+
+theorem Real.tsum_le_of_sum_range_le {f : ℕ → ℝ} {c : ℝ} (hf : ∀ n, 0 ≤ f n)
+    (h : ∀ n, ∑ i ∈ Finset.range n, f i ≤ c) : ∑' n, f n ≤ c :=
+  _root_.tsum_le_of_sum_range_le (summable_of_sum_range_le hf h) h
+#align real.tsum_le_of_sum_range_le Real.tsum_le_of_sum_range_le
+
+/-- If a sequence `f` with non-negative terms is dominated by a sequence `g` with summable
+series and at least one term of `f` is strictly smaller than the corresponding term in `g`,
+then the series of `f` is strictly smaller than the series of `g`. -/
+theorem tsum_lt_tsum_of_nonneg {i : ℕ} {f g : ℕ → ℝ} (h0 : ∀ b : ℕ, 0 ≤ f b)
+    (h : ∀ b : ℕ, f b ≤ g b) (hi : f i < g i) (hg : Summable g) : ∑' n, f n < ∑' n, g n :=
+  tsum_lt_tsum h hi (.of_nonneg_of_le h0 h hg) hg
+#align tsum_lt_tsum_of_nonneg tsum_lt_tsum_of_nonneg
+
+end summable

@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.LinearAlgebra.TensorProduct.Basic
@@ -223,18 +223,18 @@ theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 := by
 @[simp]
 theorem mulLeft_one : mulLeft R (1 : A) = LinearMap.id := by
   ext
-  simp only [LinearMap.id_coe, one_mul, id.def, mulLeft_apply]
+  simp
 #align linear_map.mul_left_one LinearMap.mulLeft_one
 
 @[simp]
 theorem mulRight_one : mulRight R (1 : A) = LinearMap.id := by
   ext
-  simp only [LinearMap.id_coe, mul_one, id.def, mulRight_apply]
+  simp
 #align linear_map.mul_right_one LinearMap.mulRight_one
 
 @[simp]
 theorem pow_mulLeft (a : A) (n : ℕ) : mulLeft R a ^ n = mulLeft R (a ^ n) := by
-  simpa only [mulLeft, ← Algebra.coe_lmul_eq_mul] using ((Algebra.lmul R A).map_pow a n).symm
+  simpa only [mulLeft, ← Algebra.coe_lmul_eq_mul] using (map_pow (Algebra.lmul R A) a n).symm
 #align linear_map.pow_mul_left LinearMap.pow_mulLeft
 
 @[simp]

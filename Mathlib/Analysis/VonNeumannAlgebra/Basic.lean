@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Analysis.NormedSpace.Dual
-import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Algebra.Star.Subalgebra
 
 #align_import analysis.von_neumann_algebra.basic from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
@@ -127,7 +125,7 @@ theorem centralizer_centralizer (S : VonNeumannAlgebra H) :
   S.centralizer_centralizer'
 #align von_neumann_algebra.centralizer_centralizer VonNeumannAlgebra.centralizer_centralizer
 
-/-- The centralizer of a `VonNeumannAlgebra`, as a `VonNeumannAlgebra`.-/
+/-- The centralizer of a `VonNeumannAlgebra`, as a `VonNeumannAlgebra`. -/
 def commutant (S : VonNeumannAlgebra H) : VonNeumannAlgebra H where
   toStarSubalgebra := StarSubalgebra.centralizer ℂ (S : Set (H →L[ℂ] H))
   centralizer_centralizer' := by simp

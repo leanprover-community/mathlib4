@@ -3,7 +3,7 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 import Mathlib.Topology.Algebra.UniformRing
 
@@ -195,7 +195,7 @@ theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : 
   · intro V hV
     cases' h.right V hV with m hm
     use m
-    refine' Set.Subset.trans _ hm
+    refine Set.Subset.trans ?_ hm
     cases n
     · exfalso
       exact Nat.not_succ_le_zero 0 hn

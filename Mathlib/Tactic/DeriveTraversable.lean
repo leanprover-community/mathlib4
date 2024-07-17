@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Control.Traversable.Lemmas
+import Lean.Elab.Match
+import Lean.Elab.Deriving.Basic
+import Lean.Elab.PreDefinition.Main
 
 #align_import control.traversable.derive from "leanprover-community/mathlib"@"b01d6eb9d0a308807af54319b264d0994b91774b"
 
@@ -430,12 +433,12 @@ initialize registerDerivingHandler ``Traversable traversableDeriveHandler
 def simpFunctorGoal (m : MVarId) (s : Simp.Context) (simprocs : Simp.SimprocsArray := {})
     (discharge? : Option Simp.Discharge := none)
     (simplifyTarget : Bool := true) (fvarIdsToSimp : Array FVarId := #[])
-    (usedSimps : Simp.UsedSimps := {}) :
-    MetaM (Option (Array FVarId × MVarId) × Simp.UsedSimps) := do
+    (stats : Simp.Stats := {}) :
+    MetaM (Option (Array FVarId × MVarId) × Simp.Stats) := do
   let some e ← getSimpExtension? `functor_norm | failure
   let s' ← e.getTheorems
   simpGoal m { s with simpTheorems := s.simpTheorems.push s' } simprocs discharge? simplifyTarget
-    fvarIdsToSimp usedSimps
+    fvarIdsToSimp stats
 /--
 Run the following tactic:
 ```lean

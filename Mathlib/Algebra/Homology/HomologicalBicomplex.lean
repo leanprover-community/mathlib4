@@ -63,7 +63,7 @@ def toGradedObjectFunctor : HomologicalComplex₂ C c₁ c₂ ⥤ GradedObject (
   obj K := K.toGradedObject
   map φ := toGradedObjectMap φ
 
-instance : Faithful (toGradedObjectFunctor C c₁ c₂) where
+instance : (toGradedObjectFunctor C c₁ c₂).Faithful where
   map_injective {_ _ φ₁ φ₂} h := by
     ext i₁ i₂
     exact congr_fun h ⟨i₁, i₂⟩

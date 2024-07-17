@@ -5,7 +5,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Monad.Writer
-import Mathlib.Init.Control.Lawful
+import Mathlib.Control.Lawful
 
 #align_import control.monad.cont from "leanprover-community/mathlib"@"d6814c584384ddf2825ff038e868451a7c956f31"
 
@@ -48,8 +48,7 @@ def ContT (r : Type u) (m : Type u → Type v) (α : Type w) :=
   (α → m r) → m r
 #align cont_t ContT
 
-@[reducible]
-def Cont (r : Type u) (α : Type w) :=
+abbrev Cont (r : Type u) (α : Type w) :=
   ContT r id α
 #align cont Cont
 
@@ -102,7 +101,7 @@ instance [Monad m] : MonadLift m (ContT r m) where
 theorem monadLift_bind [Monad m] [LawfulMonad m] {α β} (x : m α) (f : α → m β) :
     (monadLift (x >>= f) : ContT r m β) = monadLift x >>= monadLift ∘ f := by
   ext
-  simp only [monadLift, MonadLift.monadLift, (· ∘ ·), (· >>= ·), bind_assoc, id.def, run,
+  simp only [monadLift, MonadLift.monadLift, (· ∘ ·), (· >>= ·), bind_assoc, id, run,
     ContT.monadLift]
 #align cont_t.monad_lift_bind ContT.monadLift_bind
 
@@ -174,7 +173,7 @@ instance [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
     dsimp
     congr with ⟨⟩ <;> simp [@callCC_dummy m _]
   callCC_bind_left := by
-    intros;
+    intros
     simp only [callCC, OptionT.callCC, OptionT.goto_mkLabel, OptionT.run_bind, OptionT.run_mk,
       bind_assoc, pure_bind, @callCC_bind_left m _]
     ext; rfl
@@ -235,11 +234,11 @@ instance {σ} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (StateT σ m) 
     intros
     simp only [callCC, StateT.callCC, StateT.run_bind, callCC_bind_right]; ext; rfl
   callCC_bind_left := by
-    intros;
+    intros
     simp only [callCC, StateT.callCC, StateT.goto_mkLabel, StateT.run_bind, StateT.run_mk,
       callCC_bind_left]; ext; rfl
   callCC_dummy := by
-    intros;
+    intros
     simp only [callCC, StateT.callCC, @callCC_dummy m _]
     ext; rfl
 

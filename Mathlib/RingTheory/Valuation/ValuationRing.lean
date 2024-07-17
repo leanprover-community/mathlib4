@@ -25,13 +25,15 @@ Namely, given the following instances:
 there is a natural valuation `Valuation A K` on `K` with values in `value_group A K` where
 the image of `A` under `algebraMap A K` agrees with `(Valuation A K).integer`.
 
-We also provide the equivalence of the following notions for a domain `R` in `ValuationRing.tFAE`.
+We also provide the equivalence of the following notions for a domain `R` in `ValuationRing.TFAE`.
 1. `R` is a valuation ring.
 2. For each `x : FractionRing K`, either `x` or `x⁻¹` is in `R`.
 3. "divides" is a total relation on the elements of `R`.
 4. "contains" is a total relation on the ideals of `R`.
 5. `R` is a local bezout domain.
 
+We also show that, given a valuation `v` on a field `K`, the ring of valuation integers is a
+valuation ring and `K` is the fraction field of this ring.
 -/
 
 
@@ -70,11 +72,9 @@ instance : LE (ValueGroup A K) :=
           apply_fun fun t => c⁻¹ • t at he
           simpa [mul_smul] using he
         · rintro ⟨e, he⟩; dsimp
-          use (d⁻¹ : Aˣ) * c * e
-          erw [← he, ← mul_smul, ← mul_smul]
-          congr 1
-          rw [mul_comm]
-          simp only [← mul_assoc, ← Units.val_mul, mul_inv_self, one_mul])
+          use c * e * (d⁻¹ : Aˣ)
+          simp_rw [Units.smul_def, ← he, mul_smul]
+          rw [← mul_smul _ _ b, Units.inv_mul, one_smul])
 
 instance : Zero (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
 
@@ -187,8 +187,8 @@ def valuation : Valuation K (ValueGroup A K) where
     have : (algebraMap A K) ya ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hya
     have : (algebraMap A K) yb ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hyb
     obtain ⟨c, h | h⟩ := ValuationRing.cond (xa * yb) (xb * ya)
-    dsimp
-    · apply le_trans _ (le_max_left _ _)
+    · dsimp
+      apply le_trans _ (le_max_left _ _)
       use c + 1
       rw [Algebra.smul_def]
       field_simp
@@ -290,7 +290,7 @@ theorem iff_dvd_total : ValuationRing R ↔ IsTotal R (· ∣ ·) := by
 
 theorem iff_ideal_total : ValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) := by
   classical
-  refine' ⟨fun _ => ⟨le_total⟩, fun H => iff_dvd_total.mpr ⟨fun a b => _⟩⟩
+  refine ⟨fun _ => ⟨le_total⟩, fun H => iff_dvd_total.mpr ⟨fun a b => ?_⟩⟩
   have := @IsTotal.total _ _ H (Ideal.span {a}) (Ideal.span {b})
   simp_rw [Ideal.span_singleton_le_span_singleton] at this
   exact this.symm
@@ -368,17 +368,14 @@ instance (priority := 100) [LocalRing R] [IsBezout R] : ValuationRing R := by
   · simp [h]
   have : x * a + y * b = 1 := by
     apply mul_left_injective₀ h; convert e' using 1 <;> ring
-  cases' LocalRing.isUnit_or_isUnit_of_add_one this with h' h'
-  left
-  swap
-  right
+  cases' LocalRing.isUnit_or_isUnit_of_add_one this with h' h' <;> [left; right]
   all_goals exact mul_dvd_mul_right (isUnit_iff_forall_dvd.mp (isUnit_of_mul_isUnit_right h') _) _
 
 theorem iff_local_bezout_domain : ValuationRing R ↔ LocalRing R ∧ IsBezout R :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ inferInstance⟩
 #align valuation_ring.iff_local_bezout_domain ValuationRing.iff_local_bezout_domain
 
-protected theorem tFAE (R : Type u) [CommRing R] [IsDomain R] :
+protected theorem TFAE (R : Type u) [CommRing R] [IsDomain R] :
     List.TFAE
       [ValuationRing R,
         ∀ x : FractionRing R, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹,
@@ -388,7 +385,7 @@ protected theorem tFAE (R : Type u) [CommRing R] [IsDomain R] :
   tfae_have 1 ↔ 4; · exact iff_ideal_total
   tfae_have 1 ↔ 5; · exact iff_local_bezout_domain
   tfae_finish
-#align valuation_ring.tfae ValuationRing.tFAE
+#align valuation_ring.tfae ValuationRing.TFAE
 
 end
 
@@ -418,6 +415,36 @@ theorem of_integers : ValuationRing 𝒪 := by
     use c; exact Or.inl hc.symm
 #align valuation_ring.of_integers ValuationRing.of_integers
 
+instance instValuationRingInteger : ValuationRing v.integer :=
+  of_integers (v := v) (Valuation.integer.integers v)
+
+theorem isFractionRing_iff [ValuationRing 𝒪] :
+    IsFractionRing 𝒪 K ↔
+      (∀ (x : K), ∃ a : 𝒪, x = algebraMap 𝒪 K a ∨ x⁻¹ = algebraMap 𝒪 K a) ∧
+        Function.Injective (algebraMap 𝒪 K) := by
+  refine ⟨fun h ↦ ⟨fun x ↦ ?_, IsFractionRing.injective _ _⟩, fun h ↦ ?_⟩
+  · obtain (⟨a, e⟩ | ⟨a, e⟩) := isInteger_or_isInteger 𝒪 x
+    exacts [⟨a, .inl e.symm⟩, ⟨a, .inr e.symm⟩]
+  · constructor
+    · intro a
+      simpa using h.2.ne_iff.mpr (nonZeroDivisors.ne_zero a.2)
+    · intro x
+      obtain ⟨a, ha⟩ := h.1 x
+      by_cases h0 : a = 0
+      · exact ⟨⟨0, 1⟩, by simpa [h0] using ha⟩
+      · have : algebraMap 𝒪 K a ≠ 0 := by simpa using h.2.ne_iff.mpr h0
+        rw [inv_eq_iff_eq_inv, ← one_div, eq_div_iff this] at ha
+        cases ha with
+        | inl ha => exact ⟨⟨a, 1⟩, by simpa⟩
+        | inr ha => exact ⟨⟨1, ⟨a, mem_nonZeroDivisors_of_ne_zero h0⟩⟩, by simpa using ha⟩
+    · intro _ _ hab
+      exact ⟨1, by simp only [OneMemClass.coe_one, h.2 hab, one_mul]⟩
+
+instance instIsFractionRingInteger : IsFractionRing v.integer K :=
+  ValuationRing.isFractionRing_iff.mpr
+    ⟨Valuation.Integers.eq_algebraMap_or_inv_eq_algebraMap (Valuation.integer.integers v),
+    Subtype.coe_injective⟩
+
 end
 
 section
@@ -430,7 +457,7 @@ instance (priority := 100) of_field : ValuationRing K := by
   intro a b
   by_cases h : b = 0
   · use 0; left; simp [h]
-  · use a * b⁻¹; right; field_simp; rw [mul_comm]
+  · use a * b⁻¹; right; field_simp
 #align valuation_ring.of_field ValuationRing.of_field
 
 end

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.QuasiIso
+import Mathlib.Algebra.Homology.SingleHomology
 
 #align_import category_theory.preadditive.projective_resolution from "leanprover-community/mathlib"@"324a7502510e835cdbd3de1519b6c66b51fb2467"
 
@@ -30,7 +31,7 @@ open Projective
 
 variable [HasZeroObject C] [HasZeroMorphisms C]
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /--
 A `ProjectiveResolution Z` consists of a bundled `ℕ`-indexed chain complex of projective objects,
 along with a quasi-isomorphism to the complex consisting of just `Z` supported in degree `0`.
@@ -78,9 +79,9 @@ variable {Z : C} (P : ProjectiveResolution Z)
 lemma complex_exactAt_succ (n : ℕ) :
     P.complex.ExactAt (n + 1) := by
   rw [← quasiIsoAt_iff_exactAt' P.π (n + 1) (exactAt_succ_single_obj _ _)]
-  · infer_instance
+  infer_instance
 
-lemma exact_succ (n : ℕ):
+lemma exact_succ (n : ℕ) :
     (ShortComplex.mk _ _ (P.complex.d_comp_d (n + 2) (n + 1) n)).Exact :=
   ((HomologicalComplex.exactAt_iff' _ (n + 2) (n + 1) n) (by simp only [prev]; rfl)
     (by simp)).1 (P.complex_exactAt_succ n)

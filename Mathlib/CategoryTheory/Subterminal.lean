@@ -45,11 +45,9 @@ def IsSubterminal (A : C) : Prop :=
   ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f = g
 #align category_theory.is_subterminal CategoryTheory.IsSubterminal
 
--- Adaptation note: 2024-03-15
--- Renamed to avoid the reserved name `IsSubterminal.def`.
-theorem IsSubterminal.def' : IsSubterminal A ↔ ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f = g :=
+theorem IsSubterminal.def : IsSubterminal A ↔ ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f = g :=
   Iff.rfl
-#align category_theory.is_subterminal.def CategoryTheory.IsSubterminal.def'
+#align category_theory.is_subterminal.def CategoryTheory.IsSubterminal.def
 
 /-- If `A` is subterminal, the unique morphism from it to a terminal object is a monomorphism.
 The converse of `isSubterminal_of_mono_isTerminal_from`.
@@ -82,15 +80,15 @@ The converse of `IsSubterminal.mono_terminal_from`.
 theorem isSubterminal_of_mono_terminal_from [HasTerminal C] [Mono (terminal.from A)] :
     IsSubterminal A := fun Z f g => by
   rw [← cancel_mono (terminal.from A)]
-  apply Subsingleton.elim
+  subsingleton
 #align category_theory.is_subterminal_of_mono_terminal_from CategoryTheory.isSubterminal_of_mono_terminal_from
 
 theorem isSubterminal_of_isTerminal {T : C} (hT : IsTerminal T) : IsSubterminal T := fun _ _ _ =>
   hT.hom_ext _ _
 #align category_theory.is_subterminal_of_is_terminal CategoryTheory.isSubterminal_of_isTerminal
 
-theorem isSubterminal_of_terminal [HasTerminal C] : IsSubterminal (⊤_ C) := fun _ _ _ =>
-  Subsingleton.elim _ _
+theorem isSubterminal_of_terminal [HasTerminal C] : IsSubterminal (⊤_ C) := fun _ _ _ => by
+  subsingleton
 #align category_theory.is_subterminal_of_terminal CategoryTheory.isSubterminal_of_terminal
 
 /-- If `A` is subterminal, its diagonal morphism is an isomorphism.
@@ -99,7 +97,7 @@ The converse of `isSubterminal_of_isIso_diag`.
 theorem IsSubterminal.isIso_diag (hA : IsSubterminal A) [HasBinaryProduct A A] : IsIso (diag A) :=
   ⟨⟨Limits.prod.fst,
       ⟨by simp, by
-        rw [IsSubterminal.def'] at hA
+        rw [IsSubterminal.def] at hA
         aesop_cat⟩⟩⟩
 #align category_theory.is_subterminal.is_iso_diag CategoryTheory.IsSubterminal.isIso_diag
 
@@ -142,10 +140,10 @@ def subterminalInclusion : Subterminals C ⥤ C :=
   fullSubcategoryInclusion _
 #align category_theory.subterminal_inclusion CategoryTheory.subterminalInclusion
 
-instance (C : Type u₁) [Category.{v₁} C] : Full (subterminalInclusion C) :=
+instance (C : Type u₁) [Category.{v₁} C] : (subterminalInclusion C).Full :=
   FullSubcategory.full _
 
-instance (C : Type u₁) [Category.{v₁} C] : Faithful (subterminalInclusion C) :=
+instance (C : Type u₁) [Category.{v₁} C] : (subterminalInclusion C).Faithful :=
   FullSubcategory.faithful _
 
 instance subterminals_thin (X Y : Subterminals C) : Subsingleton (X ⟶ Y) :=
@@ -167,16 +165,15 @@ def subterminalsEquivMonoOverTerminal [HasTerminal C] : Subterminals C ≌ MonoO
     { obj := fun X =>
         ⟨X.obj.left, fun Z f g => by
           rw [← cancel_mono X.arrow]
-          apply Subsingleton.elim⟩
+          subsingleton⟩
       map := fun f => f.1
       map_id := fun X => rfl
       map_comp := fun f g => rfl }
   -- Porting note: the original definition was triggering a timeout, using `NatIso.ofComponents`
   -- in the definition of the natural isomorphisms makes the situation slightly better
-  unitIso := NatIso.ofComponents (fun X => Iso.refl X) (fun _ => by apply Subsingleton.elim)
-  counitIso := NatIso.ofComponents (fun X => MonoOver.isoMk (Iso.refl _))
-    (fun _ => by apply Subsingleton.elim)
-  functor_unitIso_comp := fun _ => by apply Subsingleton.elim
+  unitIso := NatIso.ofComponents (fun X => Iso.refl X) (by subsingleton)
+  counitIso := NatIso.ofComponents (fun X => MonoOver.isoMk (Iso.refl _)) (by subsingleton)
+  functor_unitIso_comp := by subsingleton
   -- With `aesop` filling the auto-params this was taking 20s or so
 #align category_theory.subterminals_equiv_mono_over_terminal CategoryTheory.subterminalsEquivMonoOverTerminal
 

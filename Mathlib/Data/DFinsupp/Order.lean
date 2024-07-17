@@ -20,8 +20,6 @@ This file lifts order structures on the `α i` to `Π₀ i, α i`.
 
 -/
 
-open BigOperators
-
 open Finset
 
 variable {ι : Type*} {α : ι → Type*}
@@ -298,7 +296,7 @@ variable [∀ (i) (x : α i), Decidable (x ≠ 0)]
 
 theorem support_tsub : (f - g).support ⊆ f.support := by
   simp (config := { contextual := true }) only [subset_iff, tsub_eq_zero_iff_le, mem_support_iff,
-    Ne.def, coe_tsub, Pi.sub_apply, not_imp_not, zero_le, imp_true_iff]
+    Ne, coe_tsub, Pi.sub_apply, not_imp_not, zero_le, imp_true_iff]
 #align dfinsupp.support_tsub DFinsupp.support_tsub
 
 theorem subset_support_tsub : f.support \ g.support ⊆ (f - g).support := by
@@ -314,14 +312,14 @@ variable [∀ i, CanonicallyLinearOrderedAddCommMonoid (α i)] [DecidableEq ι] 
 @[simp]
 theorem support_inf : (f ⊓ g).support = f.support ∩ g.support := by
   ext
-  simp only [inf_apply, mem_support_iff, Ne.def, Finset.mem_inter]
+  simp only [inf_apply, mem_support_iff, Ne, Finset.mem_inter]
   simp only [inf_eq_min, ← nonpos_iff_eq_zero, min_le_iff, not_or]
 #align dfinsupp.support_inf DFinsupp.support_inf
 
 @[simp]
 theorem support_sup : (f ⊔ g).support = f.support ∪ g.support := by
   ext
-  simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne.def, ← bot_eq_zero]
+  simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne, ← bot_eq_zero]
   rw [_root_.sup_eq_bot_iff, not_and_or]
 #align dfinsupp.support_sup DFinsupp.support_sup
 

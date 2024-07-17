@@ -37,20 +37,22 @@ variable {F α β : Type*}
 
 /-- Notation typeclass for pointwise supremum `⊻`. -/
 class HasSups (α : Type*) where
+  /-- The point-wise supremum `a ⊔ b` of `a, b : α`. -/
   sups : α → α → α
 #align has_sups HasSups
 
 /-- Notation typeclass for pointwise infimum `⊼`. -/
 class HasInfs (α : Type*) where
+  /-- The point-wise infimum `a ⊓ b` of `a, b : α`. -/
   infs : α → α → α
 #align has_infs HasInfs
 
--- mathport name: «expr ⊻ »
+-- This notation is meant to have higher precedence than `⊔` and `⊓`, but still within the
+-- realm of other binary notation.
+@[inherit_doc]
 infixl:74 " ⊻ " => HasSups.sups
-  -- This notation is meant to have higher precedence than `⊔` and `⊓`, but still within the
-  -- realm of other binary notation
 
--- mathport name: «expr ⊼ »
+@[inherit_doc]
 infixl:75 " ⊼ " => HasInfs.infs
 
 namespace Set
@@ -357,7 +359,7 @@ theorem iUnion_image_inf_right : ⋃ b ∈ t, (· ⊓ b) '' s = s ⊼ t :=
 @[simp]
 theorem image_inf_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊓ x_1) s t = s ⊼ t := by
   have : (s ×ˢ t).image (uncurry (· ⊓ ·)) = Set.image2 (fun x x_1 => x ⊓ x_1) s t := by
-    simp only [@ge_iff_le, @Set.image_uncurry_prod]
+    simp only [@@Set.image_uncurry_prod]
   rw [← this]
   exact image_uncurry_prod _ _ _
 #align set.image_inf_prod Set.image_inf_prod

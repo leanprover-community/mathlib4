@@ -6,6 +6,8 @@ Authors: Mario Carneiro, Heather Macbeth
 import Mathlib.Init.Order.Defs
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.GCongr.ForwardAttr
+import Batteries.Lean.Except
+import Batteries.Tactic.Exact
 
 /-!
 # The `gcongr` ("generalized congruence") tactic

@@ -59,8 +59,7 @@ theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ LinearMap.range 
 
 -- Porting note: breaking up original definition of quotientInfToSupQuotient to avoid timing out
 /-- Linear map from `p` to `p+p'/p'` where `p p'` are submodules of `R` -/
-@[reducible]
-def subToSupQuotient (p p' : Submodule R M) :
+abbrev subToSupQuotient (p p' : Submodule R M) :
     { x // x ∈ p } →ₗ[R] { x // x ∈ p ⊔ p' } ⧸ comap (Submodule.subtype (p ⊔ p')) p' :=
   (comap (p ⊔ p').subtype p').mkQ.comp (Submodule.inclusion le_sup_left)
 
@@ -182,12 +181,17 @@ def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ 
     right_inv := fun x => Quotient.inductionOn' x fun x => by simp }
 #align submodule.quotient_quotient_equiv_quotient Submodule.quotientQuotientEquivQuotient
 
+/-- Essentially the same equivalence as in the third isomorphism theorem,
+except restated in terms of suprema/addition of submodules instead of `≤`. -/
+def quotientQuotientEquivQuotientSup : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ S ⊔ T :=
+  quotEquivOfEq _ _ (by rw [map_sup, mkQ_map_self, bot_sup_eq]) ≪≫ₗ
+    quotientQuotientEquivQuotient S (S ⊔ T) le_sup_left
+
 /-- Corollary of the third isomorphism theorem: `[S : T] [M : S] = [M : T]` -/
-theorem card_quotient_mul_card_quotient (S T : Submodule R M) (hST : T ≤ S)
-    [DecidablePred fun x => x ∈ S.map T.mkQ] [Fintype (M ⧸ S)] [Fintype (M ⧸ T)] :
-    Fintype.card (S.map T.mkQ) * Fintype.card (M ⧸ S) = Fintype.card (M ⧸ T) := by
+theorem card_quotient_mul_card_quotient (S T : Submodule R M) (hST : T ≤ S) :
+    Nat.card (S.map T.mkQ) * Nat.card (M ⧸ S) = Nat.card (M ⧸ T) := by
   rw [Submodule.card_eq_card_quotient_mul_card (map T.mkQ S),
-    Fintype.card_eq.mpr ⟨(quotientQuotientEquivQuotient T S hST).toEquiv⟩]
+    Nat.card_congr (quotientQuotientEquivQuotient T S hST).toEquiv]
 #align submodule.card_quotient_mul_card_quotient Submodule.card_quotient_mul_card_quotient
 
 end Submodule

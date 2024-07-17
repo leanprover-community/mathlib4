@@ -4,16 +4,24 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Mathport.Rename
-import Std.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Trans
 
 /-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+
 # Notation, basic datatypes and type classes
 
 This file contains alignments from lean 3 `init.core`.
 -/
-
-set_option autoImplicit true
 
 #align id id -- align this first so idDelta doesn't take priority
 #align id_delta id
@@ -56,7 +64,6 @@ set_option autoImplicit true
 -- TODO
 -- attribute [elab_as_elim, subst] Eq.subst
 
-attribute [refl] Eq.refl
 attribute [trans] Eq.trans
 attribute [symm] Eq.symm
 
@@ -64,6 +71,8 @@ attribute [symm] Eq.symm
 #align eq.refl Eq.refl
 #align eq.symm Eq.symm
 #align eq.trans Eq.trans
+
+universe u v w
 
 def Prod.mk.injArrow {α : Type u} {β : Type v} {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
     (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort w⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
@@ -129,10 +138,7 @@ def PProd.mk.injArrow {α : Type u} {β : Type v} {x₁ : α} {y₁ : β} {x₂ 
 #align has_lt.lt LT.lt
 #align has_append Append
 
-@[deprecated AndThen]
-class AndThen' (α : Type u) (β : Type v) (σ : outParam <| Type w) where
-  andthen : α → β → σ
-#align has_andthen AndThen'
+#align has_andthen AndThen
 
 #align has_union Union
 #align has_equiv HasEquivₓ -- universe levels don't match
@@ -154,18 +160,9 @@ class AndThen' (α : Type u) (β : Type v) (σ : outParam <| Type w) where
 #align gt GT.gt
 #align ge GE.ge
 
-#align is_lawful_singleton IsLawfulSingleton
+#align is_lawful_singleton LawfulSingleton
 
 attribute [simp] insert_emptyc_eq
-
-@[deprecated] def Std.Priority.default : Nat := 1000
-@[deprecated] def Std.Priority.max : Nat := 4294967295
-set_option linter.deprecated false in
-@[deprecated] protected def Nat.prio := Std.Priority.default + 100
-@[deprecated] def Std.Prec.max : Nat := 1024
-@[deprecated] def Std.Prec.arrow : Nat := 25
-set_option linter.deprecated false in
-@[deprecated] def Std.Prec.maxPlus : Nat := Std.Prec.max + 10
 
 #align has_sizeof SizeOf
 #align has_sizeof.sizeof SizeOf.sizeOf
@@ -176,18 +173,12 @@ set_option linter.deprecated false in
 -- Combinator calculus
 namespace Combinator
 
+variable {α : Sort u} {β : Sort v} {γ : Sort w}
 def I (a : α) := a
 def K (a : α) (_b : β) := a
 def S (x : α → β → γ) (y : α → β) (z : α) := x z (y z)
 
 end Combinator
-
-@[deprecated] inductive BinTree (α : Type u)
-  | Empty : BinTree α
-  | leaf (val : α) : BinTree α
-  | node (left right : BinTree α) : BinTree α
-
-attribute [elab_without_expected_type] BinTree.node BinTree.leaf
 
 #align function.const_apply Function.const_apply
 #align function.comp_apply Function.comp_apply

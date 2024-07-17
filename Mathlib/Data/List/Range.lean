@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Scott Morrison
 -/
 import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Enum
 import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Zip
 import Mathlib.Data.List.Pairwise
+import Mathlib.Data.List.Zip
 
 #align_import data.list.range from "leanprover-community/mathlib"@"7b78d1776212a91ecc94cf601f83bdcc46b04213"
 
@@ -21,9 +22,6 @@ tactics. `range' a b = [a, ..., a + b - 1]` is there to help prove properties ab
 Actual maths should use `List.Ico` instead.
 -/
 
-set_option autoImplicit true
-
-
 universe u
 
 open Nat
@@ -32,7 +30,7 @@ namespace List
 
 variable {α : Type u}
 
-@[simp] theorem range'_one {step} : range' s 1 step = [s] := rfl
+@[simp] theorem range'_one {s step : ℕ} : range' s 1 step = [s] := rfl
 
 #align list.length_range' List.length_range'
 #align list.range'_eq_nil List.range'_eq_nil
@@ -82,6 +80,11 @@ theorem pairwise_lt_range (n : ℕ) : Pairwise (· < ·) (range n) := by
 theorem pairwise_le_range (n : ℕ) : Pairwise (· ≤ ·) (range n) :=
   Pairwise.imp (@le_of_lt ℕ _) (pairwise_lt_range _)
 #align list.pairwise_le_range List.pairwise_le_range
+
+theorem take_range (m n : ℕ) : take m (range n) = range (min m n) := by
+  apply List.ext_getElem
+  · simp
+  · simp (config := { contextual := true }) [← getElem_take, Nat.lt_min]
 
 theorem nodup_range (n : ℕ) : Nodup (range n) := by
   simp (config := {decide := true}) only [range_eq_range', nodup_range']
@@ -165,24 +168,6 @@ theorem pairwise_lt_finRange (n : ℕ) : Pairwise (· < ·) (finRange n) :=
 theorem pairwise_le_finRange (n : ℕ) : Pairwise (· ≤ ·) (finRange n) :=
   (List.pairwise_le_range n).pmap (by simp) (by simp)
 
-@[to_additive]
-theorem prod_range_succ {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
-    ((range n.succ).map f).prod = ((range n).map f).prod * f n := by
-  rw [range_succ, map_append, map_singleton, prod_append, prod_cons, prod_nil, mul_one]
-#align list.prod_range_succ List.prod_range_succ
-#align list.sum_range_succ List.sum_range_succ
-
-/-- A variant of `prod_range_succ` which pulls off the first
-  term in the product rather than the last.-/
-@[to_additive
-  "A variant of `sum_range_succ` which pulls off the first term in the sum rather than the last."]
-theorem prod_range_succ' {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
-    ((range n.succ).map f).prod = f 0 * ((range n).map fun i => f (succ i)).prod :=
-  Nat.recOn n (show 1 * f 0 = f 0 * 1 by rw [one_mul, mul_one]) fun _ hd => by
-    rw [List.prod_range_succ, hd, mul_assoc, ← List.prod_range_succ]
-#align list.prod_range_succ' List.prod_range_succ'
-#align list.sum_range_succ' List.sum_range_succ'
-
 #align list.enum_from_map_fst List.enumFrom_map_fst
 #align list.enum_map_fst List.enum_map_fst
 
@@ -211,13 +196,16 @@ theorem nthLe_range {n} (i) (H : i < (range n).length) : nthLe (range n) i H = i
   get_range i H
 #align list.nth_le_range List.nthLe_range
 
--- Porting note (#10756): new theorem
 @[simp]
+theorem getElem_finRange {n : ℕ} {i : ℕ} (h) :
+    (finRange n)[i] = ⟨i, length_finRange n ▸ h⟩ := by
+  simp only [finRange, getElem_range, getElem_pmap]
+
+-- Porting note (#10756): new theorem
 theorem get_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
-  simp only [finRange, get_range, get_pmap]
+  simp
 
--- Porting note (#10756): new theorem, corresponding theorem used to be in Data.List.FinRange
 @[simp]
 theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
   List.ext_get (by simp) (by simp)
@@ -230,7 +218,7 @@ theorem nthLe_finRange {n : ℕ} {i : ℕ} (h) :
   get_finRange h
 #align list.nth_le_fin_range List.nthLe_finRange
 
-@[simp] theorem indexOf_finRange (i : Fin k) : (finRange k).indexOf i = i := by
+@[simp] theorem indexOf_finRange {k : ℕ} (i : Fin k) : (finRange k).indexOf i = i := by
   have : (finRange k).indexOf i < (finRange k).length := indexOf_lt_length.mpr (by simp)
   have h₁ : (finRange k).get ⟨(finRange k).indexOf i, this⟩ = i := indexOf_get this
   have h₂ : (finRange k).get ⟨i, by simp⟩ = i := get_finRange _
@@ -259,7 +247,7 @@ theorem ranges_disjoint (l : List ℕ) :
       rw [mem_map]
       rintro ⟨v, _, rfl⟩
       rw [mem_range] at hu
-      exact lt_iff_not_le.mp hu le_self_add
+      omega
     · rw [pairwise_map]
       apply Pairwise.imp _ hl
       intro u v
@@ -275,30 +263,24 @@ theorem ranges_length (l : List ℕ) :
   | cons a l hl => -- (a :: l)
     simp only [map, length_range, map_map, cons.injEq, true_and]
     conv_rhs => rw [← hl]
-    apply map_congr
+    apply map_congr_left
     intro s _
     simp only [Function.comp_apply, length_map]
 
-theorem ranges_join (l : List ℕ) :
-    l.ranges.join = range l.sum := by
-  induction l with
-  | nil => exact rfl
-  | cons a l hl =>
-    simp only [sum_cons, join]
-    rw [← map_join, hl]
-    rw [range_add]
+/-- See `List.ranges_join` for the version about `List.sum`. -/
+lemma ranges_join' : ∀ l : List ℕ, l.ranges.join = range (Nat.sum l)
+  | [] => rfl
+  | a :: l => by simp only [sum_cons, join, ← map_join, ranges_join', range_add]
 
-/-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum` -/
-theorem mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
-    (∃ s ∈ List.ranges l,  n ∈ s) ↔ n < l.sum := by
-  rw [← mem_range, ← ranges_join, mem_join]
+/-- Any entry of any member of `l.ranges` is strictly smaller than `Nat.sum l`.
+See `List.mem_mem_ranges_iff_lt_sum` for the version about `List.sum`. -/
+lemma mem_mem_ranges_iff_lt_natSum (l : List ℕ) {n : ℕ} :
+    (∃ s ∈ l.ranges, n ∈ s) ↔ n < Nat.sum l := by
+  rw [← mem_range, ← ranges_join', mem_join]
 
- /-- The members of `l.ranges` have no duplicate -/
-theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) :
-    s.Nodup := by
-  refine (List.pairwise_join.mp ?_).1 s hs
-  rw [ranges_join]
-  exact nodup_range (sum l)
+/-- The members of `l.ranges` have no duplicate -/
+theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
+  (List.pairwise_join.mp $ by rw [ranges_join']; exact nodup_range _).1 s hs
 
 end Ranges
 

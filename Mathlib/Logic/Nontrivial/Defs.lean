@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Init.Logic
-import Mathlib.Init.Function
+import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.TypeStar
 
 #align_import logic.nontrivial from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
@@ -44,7 +44,7 @@ theorem exists_pair_ne (α : Type*) [Nontrivial α] : ∃ x y : α, x ≠ y :=
 -- See Note [decidable namespace]
 protected theorem Decidable.exists_ne [Nontrivial α] [DecidableEq α] (x : α) : ∃ y, y ≠ x := by
   rcases exists_pair_ne α with ⟨y, y', h⟩
-  by_cases hx:x = y
+  by_cases hx : x = y
   · rw [← hx] at h
     exact ⟨y', h.symm⟩
   · exact ⟨y, Ne.symm hx⟩
@@ -81,7 +81,7 @@ theorem subsingleton_iff : Subsingleton α ↔ ∀ x y : α, x = y :=
 #align subsingleton_iff subsingleton_iff
 
 theorem not_nontrivial_iff_subsingleton : ¬Nontrivial α ↔ Subsingleton α := by
-  simp only [nontrivial_iff, subsingleton_iff, not_exists, Ne.def, Classical.not_not]
+  simp only [nontrivial_iff, subsingleton_iff, not_exists, Classical.not_not]
 #align not_nontrivial_iff_subsingleton not_nontrivial_iff_subsingleton
 
 theorem not_nontrivial (α) [Subsingleton α] : ¬Nontrivial α :=

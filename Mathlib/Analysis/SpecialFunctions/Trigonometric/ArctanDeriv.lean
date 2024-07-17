@@ -35,8 +35,8 @@ theorem tendsto_abs_tan_of_cos_eq_zero {x : ℝ} (hx : cos x = 0) :
     Tendsto (fun x => abs (tan x)) (𝓝[≠] x) atTop := by
   have hx : Complex.cos x = 0 := mod_cast hx
   simp only [← Complex.abs_ofReal, Complex.ofReal_tan]
-  refine' (Complex.tendsto_abs_tan_of_cos_eq_zero hx).comp _
-  refine' Tendsto.inf Complex.continuous_ofReal.continuousAt _
+  refine (Complex.tendsto_abs_tan_of_cos_eq_zero hx).comp ?_
+  refine Tendsto.inf Complex.continuous_ofReal.continuousAt ?_
   exact tendsto_principal_principal.2 fun y => mt Complex.ofReal_inj.1
 #align real.tendsto_abs_tan_of_cos_eq_zero Real.tendsto_abs_tan_of_cos_eq_zero
 
@@ -46,7 +46,7 @@ theorem tendsto_abs_tan_atTop (k : ℤ) :
 #align real.tendsto_abs_tan_at_top Real.tendsto_abs_tan_atTop
 
 theorem continuousAt_tan {x : ℝ} : ContinuousAt tan x ↔ cos x ≠ 0 := by
-  refine' ⟨fun hc h₀ => _, fun h => (hasDerivAt_tan h).continuousAt⟩
+  refine ⟨fun hc h₀ => ?_, fun h => (hasDerivAt_tan h).continuousAt⟩
   exact not_tendsto_nhds_of_tendsto_atTop (tendsto_abs_tan_of_cos_eq_zero h₀) _
     (hc.norm.tendsto.mono_left inf_le_left)
 #align real.continuous_at_tan Real.continuousAt_tan

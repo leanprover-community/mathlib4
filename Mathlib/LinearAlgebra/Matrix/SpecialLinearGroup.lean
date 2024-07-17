@@ -281,11 +281,11 @@ theorem scalar_eq_coe_self_center
   scalar_eq_self_of_mem_center A.property i
 
 /-- The center of a special linear group of degree `n` is the subgroup of scalar matrices, for which
-the scalars are the `n`-th roots of unity.-/
+the scalars are the `n`-th roots of unity. -/
 theorem mem_center_iff {A : SpecialLinearGroup n R} :
     A ∈ center (SpecialLinearGroup n R) ↔ ∃ (r : R), r ^ (Fintype.card n) = 1 ∧ scalar n r = A := by
   rcases isEmpty_or_nonempty n with hn | ⟨⟨i⟩⟩; · exact ⟨by aesop, by simp [Subsingleton.elim A 1]⟩
-  refine ⟨fun h ↦ ⟨A i i, ?_, ?_⟩, fun ⟨r, _, hr⟩ ↦ mem_center_iff.mpr fun B ↦ ?_⟩
+  refine ⟨fun h ↦ ⟨A i i, ?_, ?_⟩, fun ⟨r, _, hr⟩ ↦ Subgroup.mem_center_iff.mpr fun B ↦ ?_⟩
   · have : det ((scalar n) (A i i)) = 1 := (scalar_eq_self_of_mem_center h i).symm ▸ A.property
     simpa using this
   · exact scalar_eq_self_of_mem_center h i
@@ -407,18 +407,18 @@ theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g 
   induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h_det
   replace hg : c = 0 := by simpa using hg
   have had : a * d = 1 := by rwa [hg, mul_zero, sub_zero] at h_det
-  refine' ⟨a, b, left_ne_zero_of_mul_eq_one had, _⟩
+  refine ⟨a, b, left_ne_zero_of_mul_eq_one had, ?_⟩
   simp_rw [eq_inv_of_mul_eq_one_right had, hg]
 #align matrix.special_linear_group.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero Matrix.SpecialLinearGroup.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero
 
-lemma isCoprime_row (A : SL(2, R)) (i : Fin 2): IsCoprime (A i 0) (A i 1) := by
+lemma isCoprime_row (A : SL(2, R)) (i : Fin 2) : IsCoprime (A i 0) (A i 1) := by
   refine match i with
   | 0 => ⟨A 1 1, -(A 1 0), ?_⟩
   | 1 => ⟨-(A 0 1), A 0 0, ?_⟩ <;>
   · simp_rw [det_coe A ▸ det_fin_two A.1]
     ring
 
-lemma isCoprime_col (A : SL(2, R)) (j : Fin 2): IsCoprime (A 0 j) (A 1 j) := by
+lemma isCoprime_col (A : SL(2, R)) (j : Fin 2) : IsCoprime (A 0 j) (A 1 j) := by
   refine match j with
   | 0 => ⟨A 1 1, -(A 0 1), ?_⟩
   | 1 => ⟨-(A 1 0), A 0 0, ?_⟩ <;>
@@ -439,7 +439,7 @@ variable {R : Type*} [CommRing R]
 
 /-- Given any pair of coprime elements of `R`, there exists a matrix in `SL(2, R)` having those
 entries as its left or right column. -/
-lemma exists_SL2_col {a b : R} (hab : IsCoprime a b) (j : Fin 2):
+lemma exists_SL2_col {a b : R} (hab : IsCoprime a b) (j : Fin 2) :
     ∃ g : SL(2, R), g 0 j = a ∧ g 1 j = b := by
   obtain ⟨u, v, h⟩ := hab
   refine match j with
@@ -450,7 +450,7 @@ lemma exists_SL2_col {a b : R} (hab : IsCoprime a b) (j : Fin 2):
 
 /-- Given any pair of coprime elements of `R`, there exists a matrix in `SL(2, R)` having those
 entries as its top or bottom row. -/
-lemma exists_SL2_row {a b : R} (hab : IsCoprime a b) (i : Fin 2):
+lemma exists_SL2_row {a b : R} (hab : IsCoprime a b) (i : Fin 2) :
     ∃ g : SL(2, R), g i 0 = a ∧ g i 1 = b := by
   obtain ⟨u, v, h⟩ := hab
   refine match i with

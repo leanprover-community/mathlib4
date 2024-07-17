@@ -5,7 +5,6 @@ Authors: Scott Morrison, Justus Springer
 -/
 import Mathlib.Order.CompleteLattice
 import Mathlib.Data.Finset.Lattice
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
@@ -83,11 +82,11 @@ theorem finite_colimit_eq_finset_univ_sup [SemilatticeSup α] [OrderBot α] (F :
 A finite product in the category of a `SemilatticeInf` with `OrderTop` is the same as the infimum.
 -/
 theorem finite_product_eq_finset_inf [SemilatticeInf α] [OrderTop α] {ι : Type u} [Fintype ι]
-    (f : ι → α) : ∏ f = Fintype.elems.inf f := by
+    (f : ι → α) : ∏ᶜ f = Fintype.elems.inf f := by
   trans
-  exact
-    (IsLimit.conePointUniqueUpToIso (limit.isLimit _)
-        (finiteLimitCone (Discrete.functor f)).isLimit).to_eq
+  · exact
+      (IsLimit.conePointUniqueUpToIso (limit.isLimit _)
+          (finiteLimitCone (Discrete.functor f)).isLimit).to_eq
   change Finset.univ.inf (f ∘ discreteEquiv.toEmbedding) = Fintype.elems.inf f
   simp only [← Finset.inf_map, Finset.univ_map_equiv_to_embedding]
   rfl
@@ -99,9 +98,9 @@ supremum.
 theorem finite_coproduct_eq_finset_sup [SemilatticeSup α] [OrderBot α] {ι : Type u} [Fintype ι]
     (f : ι → α) : ∐ f = Fintype.elems.sup f := by
   trans
-  exact
-    (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
-        (finiteColimitCocone (Discrete.functor f)).isColimit).to_eq
+  · exact
+      (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
+          (finiteColimitCocone (Discrete.functor f)).isColimit).to_eq
   change Finset.univ.sup (f ∘ discreteEquiv.toEmbedding) = Fintype.elems.sup f
   simp only [← Finset.sup_map, Finset.univ_map_equiv_to_embedding]
   rfl

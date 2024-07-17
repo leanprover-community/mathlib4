@@ -109,7 +109,7 @@ instance (priority := 100) instMetrizableSpace (α : Type*) [TopologicalSpace α
   letI := upgradePolishSpace α
   infer_instance
 
-@[deprecated] -- 2024-02-23
+@[deprecated (since := "2024-02-23")]
 theorem t2Space (α : Type*) [TopologicalSpace α] [PolishSpace α] : T2Space α := inferInstance
 #align polish_space.t2_space PolishSpace.t2Space
 
@@ -229,6 +229,10 @@ theorem exists_polishSpace_forall_le {ι : Type*} [Countable ι] [t : Topologica
     .iInf ⟨none, Option.forall.2 ⟨le_rfl, hm⟩⟩ <| Option.forall.2 ⟨p, h'm⟩⟩
 #align polish_space.exists_polish_space_forall_le PolishSpace.exists_polishSpace_forall_le
 
+instance : PolishSpace ENNReal :=
+  ClosedEmbedding.polishSpace ⟨ENNReal.orderIsoUnitIntervalBirational.toHomeomorph.embedding,
+    ENNReal.orderIsoUnitIntervalBirational.range_eq ▸ isClosed_univ⟩
+
 end PolishSpace
 
 /-!
@@ -251,7 +255,7 @@ variable [MetricSpace α] {s : Opens α}
 
 /-- A type synonym for a subset `s` of a metric space, on which we will construct another metric
 for which it will be complete. -/
--- Porting note: was @[nolint has_nonempty_instance]
+-- Porting note(#5171): was @[nolint has_nonempty_instance]
 def CompleteCopy {α : Type*} [MetricSpace α] (s : Opens α) : Type _ := s
 #align polish_space.complete_copy TopologicalSpace.Opens.CompleteCopyₓ
 
@@ -271,7 +275,7 @@ theorem dist_eq (x y : CompleteCopy s) :
 #align polish_space.dist_complete_copy_eq TopologicalSpace.Opens.CompleteCopy.dist_eqₓ
 
 theorem dist_val_le_dist (x y : CompleteCopy s) : dist x.1 y.1 ≤ dist x y :=
-  (le_add_iff_nonneg_right _).2 (abs_nonneg _)
+  le_add_of_nonneg_right (abs_nonneg _)
 #align polish_space.dist_le_dist_complete_copy TopologicalSpace.Opens.CompleteCopy.dist_val_le_distₓ
 
 instance : TopologicalSpace (CompleteCopy s) := inferInstanceAs (TopologicalSpace s)

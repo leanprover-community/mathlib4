@@ -40,7 +40,7 @@ theorem nontrivial_iff_lt [LinearOrder α] : Nontrivial α ↔ ∃ x y : α, x <
 
 theorem Subtype.nontrivial_iff_exists_ne (p : α → Prop) (x : Subtype p) :
     Nontrivial (Subtype p) ↔ ∃ (y : α) (_ : p y), y ≠ x := by
-  simp only [_root_.nontrivial_iff_exists_ne x, Subtype.exists, Ne.def, Subtype.ext_iff]
+  simp only [_root_.nontrivial_iff_exists_ne x, Subtype.exists, Ne, Subtype.ext_iff]
 #align subtype.nontrivial_iff_exists_ne Subtype.nontrivial_iff_exists_ne
 
 /-- An inhabited type is either nontrivial, or has a unique element. -/
@@ -71,7 +71,7 @@ which it does not take a given value. -/
 protected theorem Function.Injective.exists_ne [Nontrivial α] {f : α → β}
     (hf : Function.Injective f) (y : β) : ∃ x, f x ≠ y := by
   rcases exists_pair_ne α with ⟨x₁, x₂, hx⟩
-  by_cases h:f x₂ = y
+  by_cases h : f x₂ = y
   · exact ⟨x₁, (hf.ne_iff' h).2 hx⟩
   · exact ⟨x₂, h⟩
 #align function.injective.exists_ne Function.Injective.exists_ne
