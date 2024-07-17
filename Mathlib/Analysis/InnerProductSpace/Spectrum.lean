@@ -395,10 +395,9 @@ theorem eigenspace_of_subsingleton_nonempty [Subsingleton n] (h : Nonempty n) :
     · exact hT i
     · exact fun i_1 ↦ H i i_1
   obtain ⟨S , hS⟩ := h0
-  have := hS.1
   use S
   constructor
-  · exact this
+  · exact hS.1
   · have h1 : (∀ (i : n), T i = S) → (∀ (γ : n → 𝕜), (∀ (i : n),
     (eigenspace (T i) (γ i) = eigenspace S (γ i)))) :=
      fun a γ i ↦ congrFun (congrArg eigenspace (a i)) (γ i)
