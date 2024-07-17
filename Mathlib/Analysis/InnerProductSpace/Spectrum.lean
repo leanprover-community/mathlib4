@@ -290,13 +290,16 @@ theorem restrict_exhaust: (⨆ γ , (eigenspace (LinearMap.restrict B
 theorem eigen_extend (γ : 𝕜) (x : E) : x ∈ Submodule.map (Submodule.subtype (eigenspace A α))
     (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ) → x ∈ eigenspace B γ := by
   simp only [mem_ker, sub_apply, Module.algebraMap_end_apply, Submodule.mem_map, mem_ker, sub_apply,
-  Module.algebraMap_end_apply, Submodule.coeSubtype, Subtype.exists, SetLike.mk_smul_mk, exists_and_right,
-  exists_eq_right] at *
+  Module.algebraMap_end_apply, Submodule.coeSubtype, Subtype.exists, SetLike.mk_smul_mk,
+  exists_and_right, exists_eq_right] at *
   intro ⟨y, hy⟩
-  exact (AddSubmonoid.mk_eq_zero (ker (A - (algebraMap 𝕜 (Module.End 𝕜 E)) α)).toAddSubgroup.toAddSubmonoid).mp hy
+  exact (AddSubmonoid.mk_eq_zero (ker (A -
+    (algebraMap 𝕜 (Module.End 𝕜 E)) α)).toAddSubgroup.toAddSubmonoid).mp hy
 
-theorem matching (γ : 𝕜) : Submodule.map (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ)
-       = (eigenspace B γ ⊓ eigenspace A α) := by
+theorem restrict_eq_inf : (fun (γ : 𝕜) ↦
+    Submodule.map (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict
+    (eigenspace_invariant hAB α)) γ)) = (fun (γ : 𝕜) ↦ (eigenspace B γ ⊓ eigenspace A α)) := by
+  funext γ
   ext x
   simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
       exists_eq_right] at *
@@ -308,28 +311,23 @@ theorem matching (γ : 𝕜) : Submodule.map (Submodule.subtype (eigenspace A α
       simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
         exists_eq_right]
       use x1
-    · apply x1
+    · exact x1
   · use x2
     refine mem_eigenspace_iff.mpr ?h.a
     refine SetCoe.ext ?h.a.a
     rw [restrict_coe_apply]
     exact mem_eigenspace_iff.mp x1
 
-theorem function_version : (fun (γ : 𝕜) ↦ Submodule.map (Submodule.subtype (eigenspace A α))
-    (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ)) = (fun (γ : 𝕜) ↦
-    (eigenspace B γ ⊓ eigenspace A α)) := by
-  funext
-  exact matching hAB _
-
 theorem semi_final_exhaust : (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) = eigenspace A α := by
-   rw [← function_version hAB, ← Submodule.map_iSup, restrict_exhaust hB hAB, Submodule.map_top,
-   Submodule.range_subtype]
+   rw [← restrict_eq_inf hAB, ← Submodule.map_iSup, restrict_exhaust hB hAB,
+   Submodule.map_top, Submodule.range_subtype]
 
 theorem pre_exhaust :  (⨆ (γ : 𝕜), eigenspace A γ) =  ⊤ := by
   exact Submodule.orthogonal_eq_bot_iff.mp (hA.orthogonalComplement_iSup_eigenspaces_eq_bot)
 
-theorem pre_exhaust': (fun (α : 𝕜 ) ↦  eigenspace A α)  = fun(α : 𝕜) ↦  (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) := by
-funext; exact (semi_final_exhaust hB hAB).symm
+theorem pre_exhaust': (fun (α : 𝕜) ↦  eigenspace A α)  = fun (α : 𝕜) ↦
+    (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) := by
+  funext; exact (semi_final_exhaust hB hAB).symm
 
 theorem exhaust : (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α))) = ⊤ := by
   rw [← pre_exhaust hA, pre_exhaust' hB hAB]
@@ -406,10 +404,7 @@ theorem eigenspace_of_subsingleton_nonempty [Subsingleton n] (h : Nonempty n) :
      fun a γ i ↦ congrFun (congrArg eigenspace (a i)) (γ i)
     exact h1 hS.2
 
-/-I find it hard to believe that the following doesn't appear in the library already. We should
-  track it down. If we can't find this, we need to state it in its most general form and locate
-  it appropriately in the library using a small, independent PR. #find_home! suggested
-  Mathlib.Analysis.InnerProductSpace.Projection-/
+/-This has been moved via PR #14833-/
 theorem eq_iff_orthogonalComplement_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ := by
    constructor
    · exact fun a ↦ congrArg Submodule.orthogonal a
@@ -661,7 +656,7 @@ theorem indexed_matching (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) (μ
        = (eigenspace (T i) μ ⊓ ⨅ j, eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by
   rw [← index_convert T hC i μ fun j ↦ γ j]
 
-theorem Damnit (i : n) [h : Nontrivial n] : Nonempty {x | i ≠ x} := by
+theorem nonempty_of_nontrivial (i : n) [h : Nontrivial n] : Nonempty {x | i ≠ x} := by
    simp only [ne_eq, Set.coe_setOf, nonempty_subtype]
    simp only [nontrivial_iff, ne_eq] at h
    obtain ⟨k, l , hkl⟩ := h
@@ -701,7 +696,7 @@ theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // i ≠ x} → 𝕜)
     have hH1 : ∀ (a : 𝕜), Submodule.map (⨅ (j : {x // i ≠ x}) , eigenspace (T ↑j) (γ j)).subtype (eigenspace
         ((T i).restrict ((invariance_iInf' T hC i γ))) a) ≤ F := by exact fun a ↦ hH a
     have L : ∃ j : n, i ≠ j := by
-      have J := Damnit i
+      have J := nonempty_of_nontrivial i
       simp only [ne_eq, Set.coe_setOf, nonempty_subtype] at J
       exact J
     obtain ⟨_, _⟩ := L
