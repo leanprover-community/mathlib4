@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
 
+import Mathlib.Algebra.Group.Units
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.Ideal.LocalRing
-
+import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
@@ -40,8 +41,6 @@ Instances are defined:
 
 noncomputable section
 
-open BigOperators
-
 open Finset (antidiagonal mem_antidiagonal)
 
 namespace MvPowerSeries
@@ -68,7 +67,7 @@ protected noncomputable def inv.aux (a : R) (φ : MvPowerSeries σ R) : MvPowerS
     if n = 0 then a
     else
       -a *
-        ∑ x in antidiagonal n, if _ : x.2 < n then coeff R x.1 φ * inv.aux a φ x.2 else 0
+        ∑ x ∈ antidiagonal n, if _ : x.2 < n then coeff R x.1 φ * inv.aux a φ x.2 else 0
 termination_by n => n
 #align mv_power_series.inv.aux MvPowerSeries.inv.aux
 
@@ -77,7 +76,7 @@ theorem coeff_inv_aux [DecidableEq σ] (n : σ →₀ ℕ) (a : R) (φ : MvPower
       if n = 0 then a
       else
         -a *
-          ∑ x in antidiagonal n, if x.2 < n then coeff R x.1 φ * coeff R x.2 (inv.aux a φ) else 0 :=
+          ∑ x ∈ antidiagonal n, if x.2 < n then coeff R x.1 φ * coeff R x.2 (inv.aux a φ) else 0 :=
   show inv.aux a φ n = _ by
     cases Subsingleton.elim ‹DecidableEq σ› (Classical.decEq σ)
     rw [inv.aux]
@@ -94,7 +93,7 @@ theorem coeff_invOfUnit [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries
       if n = 0 then ↑u⁻¹
       else
         -↑u⁻¹ *
-          ∑ x in antidiagonal n,
+          ∑ x ∈ antidiagonal n,
             if x.2 < n then coeff R x.1 φ * coeff R x.2 (invOfUnit φ u) else 0 := by
   convert coeff_inv_aux n (↑u⁻¹) φ
 #align mv_power_series.coeff_inv_of_unit MvPowerSeries.coeff_invOfUnit
@@ -106,6 +105,7 @@ theorem constantCoeff_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) :
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_invOfUnit, if_pos rfl]
 #align mv_power_series.constant_coeff_inv_of_unit MvPowerSeries.constantCoeff_invOfUnit
 
+@[simp]
 theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ R φ = u) :
     φ * invOfUnit φ u = 1 :=
   ext fun n =>
@@ -139,6 +139,22 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ 
         exact Nat.eq_zero_of_le_zero (H s)
 #align mv_power_series.mul_inv_of_unit MvPowerSeries.mul_invOfUnit
 
+-- TODO : can one prove equivalence?
+@[simp]
+theorem invOfUnit_mul (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ R φ = u) :
+    invOfUnit φ u * φ = 1 := by
+  rw [← mul_cancel_right_mem_nonZeroDivisors (r := φ.invOfUnit u), mul_assoc, one_mul,
+    mul_invOfUnit _ _ h, mul_one]
+  apply mem_nonZeroDivisors_of_constantCoeff
+  simp only [constantCoeff_invOfUnit, IsUnit.mem_nonZeroDivisors (Units.isUnit u⁻¹)]
+
+theorem isUnit_iff_constantCoeff {φ : MvPowerSeries σ R} :
+    IsUnit φ ↔ IsUnit (constantCoeff σ R φ) := by
+  constructor
+  · exact IsUnit.map _
+  · intro ⟨u, hu⟩
+    use ⟨_, φ.invOfUnit u, mul_invOfUnit φ u hu.symm,  invOfUnit_mul φ u hu.symm⟩
+
 end Ring
 
 section CommRing
@@ -151,7 +167,7 @@ instance [LocalRing R] : LocalRing (MvPowerSeries σ R) :=
     intro φ
     rcases LocalRing.isUnit_or_isUnit_one_sub_self (constantCoeff σ R φ) with (⟨u, h⟩ | ⟨u, h⟩) <;>
         [left; right] <;>
-      · refine' isUnit_of_mul_eq_one _ _ (mul_invOfUnit _ u _)
+      · refine isUnit_of_mul_eq_one _ _ (mul_invOfUnit _ u ?_)
         simpa using h.symm
 
 -- TODO(jmc): once adic topology lands, show that this is complete
@@ -180,6 +196,8 @@ end LocalRing
 
 section Field
 
+open MvPowerSeries
+
 variable {k : Type*} [Field k]
 
 /-- The inverse `1/f` of a multivariable power series `f` over a field -/
@@ -195,7 +213,7 @@ theorem coeff_inv [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries σ k)
       if n = 0 then (constantCoeff σ k φ)⁻¹
       else
         -(constantCoeff σ k φ)⁻¹ *
-          ∑ x in antidiagonal n, if x.2 < n then coeff k x.1 φ * coeff k x.2 φ⁻¹ else 0 :=
+          ∑ x ∈ antidiagonal n, if x.2 < n then coeff k x.1 φ * coeff k x.2 φ⁻¹ else 0 :=
   coeff_inv_aux n _ φ
 #align mv_power_series.coeff_inv MvPowerSeries.coeff_inv
 

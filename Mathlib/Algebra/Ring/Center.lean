@@ -22,7 +22,7 @@ variable (M)
 
 @[simp]
 theorem natCast_mem_center [NonAssocSemiring M] (n : ℕ) : (n : M) ∈ Set.center M where
-  comm _:= by rw [Nat.commute_cast]
+  comm _ := by rw [Nat.commute_cast]
   left_assoc _ _ := by
     induction n with
     | zero => rw [Nat.cast_zero, zero_mul, zero_mul, zero_mul]

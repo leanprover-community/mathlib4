@@ -86,7 +86,7 @@ noncomputable def sequentialFunctor_obj : ℕ → J := fun
   | .succ n => (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose n)
       (sequentialFunctor_obj n)).choose
 
-theorem sequentialFunctor_map  : Antitone (sequentialFunctor_obj J) :=
+theorem sequentialFunctor_map : Antitone (sequentialFunctor_obj J) :=
   antitone_nat_of_succ_le fun n ↦
     leOfHom (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose n)
       (sequentialFunctor_obj J n)).choose_spec.choose_spec.choose

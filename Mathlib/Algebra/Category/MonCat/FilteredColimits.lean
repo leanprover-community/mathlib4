@@ -94,7 +94,7 @@ object `j`.
       a custom chosen object `j`."]
 theorem colimit_one_eq (j : J) : (1 : M.{v, u} F) = M.mk F ⟨j, 1⟩ := by
   apply M.mk_eq
-  refine' ⟨max' _ j, IsFiltered.leftToMax _ j, IsFiltered.rightToMax _ j, _⟩
+  refine ⟨max' _ j, IsFiltered.leftToMax _ j, IsFiltered.rightToMax _ j, ?_⟩
   simp
 #align Mon.filtered_colimits.colimit_one_eq MonCat.FilteredColimits.colimit_one_eq
 #align AddMon.filtered_colimits.colimit_zero_eq AddMonCat.FilteredColimits.colimit_zero_eq
@@ -167,7 +167,7 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
 @[to_additive "Addition in the colimit. See also `colimitAddAux`."]
 noncomputable instance colimitMul : Mul (M.{v, u} F) :=
 { mul := fun x y => by
-    refine' Quot.lift₂ (colimitMulAux F) _ _ x y
+    refine Quot.lift₂ (colimitMulAux F) ?_ ?_ x y
     · intro x y y' h
       apply colimitMulAux_eq_of_rel_right
       apply Types.FilteredColimit.rel_of_quot_rel

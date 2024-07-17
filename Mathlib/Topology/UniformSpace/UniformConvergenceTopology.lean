@@ -6,6 +6,7 @@ Authors: Anatole Dedecker
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.Equiv
+import Mathlib.Topology.RestrictGenTopology
 
 #align_import topology.uniform_space.uniform_convergence_topology from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
@@ -263,8 +264,8 @@ protected theorem gc : GaloisConnection lowerAdjoint fun 𝓕 => UniformFun.filt
   intro 𝓐 𝓕
   symm
   calc
-    𝓐 ≤ UniformFun.filter α β 𝓕 ↔ (UniformFun.basis α β 𝓕).sets ⊆ 𝓐.sets :=
-      by rw [UniformFun.filter, ← FilterBasis.generate, le_generate_iff]
+    𝓐 ≤ UniformFun.filter α β 𝓕 ↔ (UniformFun.basis α β 𝓕).sets ⊆ 𝓐.sets := by
+      rw [UniformFun.filter, ← FilterBasis.generate, le_generate_iff]
     _ ↔ ∀ U ∈ 𝓕, UniformFun.gen α β U ∈ 𝓐 := image_subset_iff
     _ ↔ ∀ U ∈ 𝓕,
           { uv | ∀ x, (uv, x) ∈ { t : ((α →ᵤ β) × (α →ᵤ β)) × α | (t.1.1 t.2, t.1.2 t.2) ∈ U } } ∈
@@ -380,7 +381,7 @@ protected theorem inf_eq {u₁ u₂ : UniformSpace γ} :
   -- This follows directly from the fact that the upper adjoint in a Galois connection maps
   -- infimas to infimas.
   rw [inf_eq_iInf, inf_eq_iInf, UniformFun.iInf_eq]
-  refine' iInf_congr fun i => _
+  refine iInf_congr fun i => ?_
   cases i <;> rfl
 #align uniform_fun.inf_eq UniformFun.inf_eq
 
@@ -394,6 +395,16 @@ protected theorem postcomp_uniformInducing [UniformSpace γ] {f : γ → β} (hf
   ⟨((UniformFun.hasBasis_uniformity _ _).comap _).eq_of_same_basis <|
     UniformFun.hasBasis_uniformity_of_basis _ _ (hf.basis_uniformity (𝓤 β).basis_sets)⟩
 #align uniform_fun.postcomp_uniform_inducing UniformFun.postcomp_uniformInducing
+
+/-- Post-composition by a uniform embedding is
+a uniform embedding for the uniform structures of uniform convergence.
+
+More precisely, if `f : γ → β` is a uniform embedding,
+then `(f ∘ ·) : (α →ᵤ γ) → (α →ᵤ β)` is a uniform embedding. -/
+protected theorem postcomp_uniformEmbedding [UniformSpace γ] {f : γ → β} (hf : UniformEmbedding f) :
+    UniformEmbedding (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) where
+  toUniformInducing := UniformFun.postcomp_uniformInducing hf.toUniformInducing
+  inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
 
 -- Porting note: had to add a type annotation at `((f ∘ ·) : ((α → γ) → (α → β)))`
 /-- If `u` is a uniform structures on `β` and `f : γ → β`, then
@@ -437,11 +448,8 @@ continuous. -/
 protected theorem precomp_uniformContinuous {f : γ → α} :
     UniformContinuous fun g : α →ᵤ β => ofFun (toFun g ∘ f) := by
   -- Here we simply go back to filter bases.
-  rw [uniformContinuous_iff]
-  change
-    𝓤 (α →ᵤ β) ≤ (𝓤 (γ →ᵤ β)).comap (Prod.map (fun g : α →ᵤ β => g ∘ f) fun g : α →ᵤ β => g ∘ f)
-  rw [(UniformFun.hasBasis_uniformity α β).le_basis_iff
-      ((UniformFun.hasBasis_uniformity γ β).comap _)]
+  rw [UniformContinuous,
+      (UniformFun.hasBasis_uniformity α β).tendsto_iff (UniformFun.hasBasis_uniformity γ β)]
   exact fun U hU => ⟨U, hU, fun uv huv x => huv (f x)⟩
 #align uniform_fun.precomp_uniform_continuous UniformFun.precomp_uniformContinuous
 
@@ -520,7 +528,7 @@ protected def uniformEquivPiComm : UniformEquiv (α →ᵤ ∀ i, δ i) (∀ i, 
       unfold Pi.uniformSpace
       rw [UniformSpace.ofCoreEq_toCore, UniformSpace.ofCoreEq_toCore,
         UniformSpace.comap_iInf, UniformFun.iInf_eq]
-      refine' iInf_congr fun i => _
+      refine iInf_congr fun i => ?_
       rw [← UniformSpace.comap_comap, UniformFun.comap_eq]
       rfl
 #align uniform_fun.uniform_equiv_Pi_comm UniformFun.uniformEquivPiComm
@@ -534,6 +542,39 @@ theorem isClosed_setOf_continuous [TopologicalSpace α] :
   refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ ?_
   rw [← tendsto_id', UniformFun.tendsto_iff_tendstoUniformly] at huf
   exact huf.continuous (le_principal_iff.mp hu)
+
+variable {α} (β) in
+theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} (φ₁ : δ₁ → α) (φ₂ : δ₂ → α)
+    (h_cover : range φ₁ ∪ range φ₂ = univ) :
+    𝒰(α, β, _) =
+      .comap (ofFun ∘ (· ∘ φ₁) ∘ toFun) 𝒰(δ₁, β, _) ⊓
+      .comap (ofFun ∘ (· ∘ φ₂) ∘ toFun) 𝒰(δ₂, β, _) := by
+  ext : 1
+  refine le_antisymm (le_inf ?_ ?_) ?_
+  · exact tendsto_iff_comap.mp UniformFun.precomp_uniformContinuous
+  · exact tendsto_iff_comap.mp UniformFun.precomp_uniformContinuous
+  · refine
+      (UniformFun.hasBasis_uniformity δ₁ β |>.comap _).inf
+      (UniformFun.hasBasis_uniformity δ₂ β |>.comap _)
+        |>.le_basis_iff (UniformFun.hasBasis_uniformity α β) |>.mpr fun U hU ↦
+        ⟨⟨U, U⟩, ⟨hU, hU⟩, fun ⟨f, g⟩ hfg x ↦ ?_⟩
+    rcases h_cover.ge <| mem_univ x with (⟨y, rfl⟩|⟨y, rfl⟩)
+    · exact hfg.1 y
+    · exact hfg.2 y
+
+variable {α} (β) in
+theorem uniformSpace_eq_iInf_precomp_of_cover {δ : ι → Type*} (φ : Π i, δ i → α)
+    (h_cover : ∃ I : Set ι, I.Finite ∧ ⋃ i ∈ I, range (φ i) = univ) :
+    𝒰(α, β, _) = ⨅ i, .comap (ofFun ∘ (· ∘ φ i) ∘ toFun) 𝒰(δ i, β, _) := by
+  ext : 1
+  simp_rw [iInf_uniformity, uniformity_comap]
+  refine le_antisymm (le_iInf fun i ↦ tendsto_iff_comap.mp UniformFun.precomp_uniformContinuous) ?_
+  rcases h_cover with ⟨I, I_finite, I_cover⟩
+  refine Filter.hasBasis_iInf (fun i : ι ↦ UniformFun.hasBasis_uniformity (δ i) β |>.comap _)
+      |>.le_basis_iff (UniformFun.hasBasis_uniformity α β) |>.mpr fun U hU ↦
+    ⟨⟨I, fun _ ↦ U⟩, ⟨I_finite, fun _ ↦ hU⟩, fun ⟨f, g⟩ hfg x ↦ ?_⟩
+  rcases mem_iUnion₂.mp <| I_cover.ge <| mem_univ x with ⟨i, hi, y, rfl⟩
+  exact mem_iInter.mp hfg ⟨i, hi⟩ y
 
 end UniformFun
 
@@ -744,8 +785,8 @@ protected theorem uniformity_eq_of_basis {ι : Sort*} {p : ι → Prop} {V : ι 
     𝓤 (α →ᵤ[𝔖] β) = ⨅ s ∈ 𝔖, ⨅ (i) (_ : p i), 𝓟 (UniformOnFun.gen 𝔖 s (V i)) := by
   simp_rw [iInf_uniformity, uniformity_comap,
     (UniformFun.hasBasis_uniformity_of_basis _ _ h).eq_biInf, comap_iInf, comap_principal,
-    Function.comp_apply, UniformFun.gen, Subtype.forall]
-  rfl
+    Function.comp_apply, UniformFun.gen, Subtype.forall, UniformOnFun.gen, preimage_setOf_eq,
+    Prod.map_fst, Prod.map_snd, Function.comp_apply, UniformFun.toFun_ofFun, restrict_apply]
 
 protected theorem uniformity_eq : 𝓤 (α →ᵤ[𝔖] β) = ⨅ s ∈ 𝔖, ⨅ V ∈ 𝓤 β, 𝓟 (UniformOnFun.gen 𝔖 s V) :=
   UniformOnFun.uniformity_eq_of_basis _ _ (𝓤 β).basis_sets
@@ -764,7 +805,7 @@ protected theorem nhds_eq_of_basis {ι : Sort*} {p : ι → Prop} {V : ι → Se
     (h : (𝓤 β).HasBasis p V) (f : α →ᵤ[𝔖] β) :
     𝓝 f = ⨅ s ∈ 𝔖, ⨅ (i) (_ : p i), 𝓟 {g | ∀ x ∈ s, (toFun 𝔖 f x, toFun 𝔖 g x) ∈ V i} := by
   simp_rw [nhds_eq_comap_uniformity, UniformOnFun.uniformity_eq_of_basis _ _ h, comap_iInf,
-    comap_principal]; rfl
+    comap_principal, UniformOnFun.gen, preimage_setOf_eq]
 
 protected theorem nhds_eq (f : α →ᵤ[𝔖] β) :
     𝓝 f = ⨅ s ∈ 𝔖, ⨅ V ∈ 𝓤 β, 𝓟 {g | ∀ x ∈ s, (toFun 𝔖 f x, toFun 𝔖 g x) ∈ V} :=
@@ -820,6 +861,10 @@ theorem uniformContinuous_eval_of_mem_sUnion {x : α} (hx : x ∈ ⋃₀ 𝔖) :
 
 variable {β} {𝔖}
 
+theorem uniformContinuous_eval (h : ⋃₀ 𝔖 = univ) (x : α) :
+    UniformContinuous ((Function.eval x : (α → β) → β) ∘ toFun 𝔖) :=
+  uniformContinuous_eval_of_mem_sUnion _ _ <| h.symm ▸ mem_univ _
+
 /-- If `u` is a family of uniform structures on `γ`, then
 `𝒱(α, γ, 𝔖, (⨅ i, u i)) = ⨅ i, 𝒱(α, γ, 𝔖, u i)`. -/
 protected theorem iInf_eq {u : ι → UniformSpace γ} :
@@ -834,7 +879,7 @@ protected theorem iInf_eq {u : ι → UniformSpace γ} :
 protected theorem inf_eq {u₁ u₂ : UniformSpace γ} :
     𝒱(α, γ, 𝔖, u₁ ⊓ u₂) = 𝒱(α, γ, 𝔖, u₁) ⊓ 𝒱(α, γ, 𝔖, u₂) := by
   rw [inf_eq_iInf, inf_eq_iInf, UniformOnFun.iInf_eq]
-  refine' iInf_congr fun i => _
+  refine iInf_congr fun i => ?_
   cases i <;> rfl
 #align uniform_on_fun.inf_eq UniformOnFun.inf_eq
 
@@ -846,10 +891,10 @@ protected theorem comap_eq {f : γ → β} :
   -- on `iInf`.
   simp_rw [UniformOnFun.uniformSpace, UniformSpace.comap_iInf, UniformFun.comap_eq, ←
     UniformSpace.comap_comap]
+  -- By definition, `∀ S ∈ 𝔖, (f ∘ —) ∘ S.restrict = S.restrict ∘ (f ∘ —)`.
   rfl
 #align uniform_on_fun.comap_eq UniformOnFun.comap_eq
 
--- by definition, `∀ S ∈ 𝔖, (f ∘ —) ∘ S.restrict = S.restrict ∘ (f ∘ —)`.
 /-- Post-composition by a uniformly continuous function is uniformly continuous for the
 uniform structures of `𝔖`-convergence.
 
@@ -857,7 +902,7 @@ More precisely, if `f : γ → β` is uniformly continuous, then
 `(fun g ↦ f ∘ g) : (α →ᵤ[𝔖] γ) → (α →ᵤ[𝔖] β)` is uniformly continuous. -/
 protected theorem postcomp_uniformContinuous [UniformSpace γ] {f : γ → β}
     (hf : UniformContinuous f) : UniformContinuous (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) := by
-  -- This is a direct consequence of `UniformFun.comap_eq`
+  -- This is a direct consequence of `UniformOnFun.comap_eq`
   rw [uniformContinuous_iff]
   exact (UniformOnFun.mono (uniformContinuous_iff.mp hf) subset_rfl).trans_eq UniformOnFun.comap_eq
 #align uniform_on_fun.postcomp_uniform_continuous UniformOnFun.postcomp_uniformContinuous
@@ -869,7 +914,7 @@ More precisely, if `f : γ → β` is a uniform inducing, then
 `(fun g ↦ f ∘ g) : (α →ᵤ[𝔖] γ) → (α →ᵤ[𝔖] β)` is a uniform inducing. -/
 protected theorem postcomp_uniformInducing [UniformSpace γ] {f : γ → β} (hf : UniformInducing f) :
     UniformInducing (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) := by
-  -- This is a direct consequence of `UniformFun.comap_eq`
+  -- This is a direct consequence of `UniformOnFun.comap_eq`
   constructor
   replace hf : (𝓤 β).comap (Prod.map f f) = _ := hf.comap_uniformity
   change comap (Prod.map (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖)) _ = _
@@ -878,6 +923,16 @@ protected theorem postcomp_uniformInducing [UniformSpace γ] {f : γ → β} (hf
   rw [← UniformSpace.ext hf, UniformOnFun.comap_eq]
   rfl
 #align uniform_on_fun.postcomp_uniform_inducing UniformOnFun.postcomp_uniformInducing
+
+/-- Post-composition by a uniform embedding is a uniform embedding for the
+uniform structures of `𝔖`-convergence.
+
+More precisely, if `f : γ → β` is a uniform embedding, then
+`(fun g ↦ f ∘ g) : (α →ᵤ[𝔖] γ) → (α →ᵤ[𝔖] β)` is a uniform embedding. -/
+protected theorem postcomp_uniformEmbedding [UniformSpace γ] {f : γ → β} (hf : UniformEmbedding f) :
+    UniformEmbedding (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) where
+  toUniformInducing := UniformOnFun.postcomp_uniformInducing hf.toUniformInducing
+  inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
 
 /-- Turn a uniform isomorphism `γ ≃ᵤ β` into a uniform isomorphism `(α →ᵤ[𝔖] γ) ≃ᵤ (α →ᵤ[𝔖] β)`
 by post-composing. -/
@@ -939,17 +994,36 @@ that of pointwise convergence. -/
 protected theorem uniformContinuous_toFun (h : ⋃₀ 𝔖 = univ) :
     UniformContinuous (toFun 𝔖 : (α →ᵤ[𝔖] β) → α → β) := by
   rw [uniformContinuous_pi]
-  intro x
-  obtain ⟨s : Set α, hs : s ∈ 𝔖, hxs : x ∈ s⟩ := sUnion_eq_univ_iff.mp h x
-  exact uniformContinuous_eval_of_mem β 𝔖 hxs hs
+  exact uniformContinuous_eval h
 #align uniform_on_fun.uniform_continuous_to_fun UniformOnFun.uniformContinuous_toFun
+
+/-- If `f : α →ᵤ[𝔖] β` is continuous at `x` and `x` admits a neighbourhood `V ∈ 𝔖`,
+then evaluation of `g : α →ᵤ[𝔖] β` at `y : α` is continuous in `(g, y)` at `(f, x)`. -/
+protected theorem continuousAt_eval₂ [TopologicalSpace α] {f : α →ᵤ[𝔖] β} {x : α}
+    (h𝔖 : ∃ V ∈ 𝔖, V ∈ 𝓝 x) (hc : ContinuousAt (toFun 𝔖 f) x) :
+    ContinuousAt (fun fx : (α →ᵤ[𝔖] β) × α ↦ toFun 𝔖 fx.1 fx.2) (f, x) := by
+  rw [ContinuousAt, nhds_eq_comap_uniformity, tendsto_comap_iff, ← lift'_comp_uniformity,
+    tendsto_lift']
+  intro U hU
+  rcases h𝔖 with ⟨V, hV, hVx⟩
+  filter_upwards [prod_mem_nhds (UniformOnFun.gen_mem_nhds _ _ _ hV hU)
+    (inter_mem hVx <| hc <| UniformSpace.ball_mem_nhds _ hU)]
+    with ⟨g, y⟩ ⟨hg, hyV, hy⟩ using ⟨toFun 𝔖 f y, hy, hg y hyV⟩
+
+/-- If each point of `α` admits a neighbourhood `V ∈ 𝔖`,
+then the evaluation of `f : α →ᵤ[𝔖] β` at `x : α` is continuous in `(f, x)`
+on the set of `(f, x)` such that `f` is continuous at `x`. -/
+protected theorem continuousOn_eval₂ [TopologicalSpace α] (h𝔖 : ∀ x, ∃ V ∈ 𝔖, V ∈ 𝓝 x) :
+    ContinuousOn (fun fx : (α →ᵤ[𝔖] β) × α ↦ toFun 𝔖 fx.1 fx.2)
+      {fx | ContinuousAt (toFun 𝔖 fx.1) fx.2} := fun (_f, x) hc ↦
+  (UniformOnFun.continuousAt_eval₂ (h𝔖 x) hc).continuousWithinAt
 
 /-- Convergence in the topology of `𝔖`-convergence means uniform convergence on `S` (in the sense
 of `TendstoUniformlyOn`) for all `S ∈ 𝔖`. -/
 protected theorem tendsto_iff_tendstoUniformlyOn {F : ι → α →ᵤ[𝔖] β} {f : α →ᵤ[𝔖] β} :
     Tendsto F p (𝓝 f) ↔ ∀ s ∈ 𝔖, TendstoUniformlyOn (toFun 𝔖 ∘ F) (toFun 𝔖 f) p s := by
-  simp only [UniformOnFun.nhds_eq, tendsto_iInf, tendsto_principal]
-  rfl
+  simp only [UniformOnFun.nhds_eq, tendsto_iInf, tendsto_principal, TendstoUniformlyOn,
+    Function.comp_apply, mem_setOf]
 #align uniform_on_fun.tendsto_iff_tendsto_uniformly_on UniformOnFun.tendsto_iff_tendstoUniformlyOn
 
 protected lemma continuous_rng_iff {X : Type*} [TopologicalSpace X] {f : X → (α →ᵤ[𝔖] β)} :
@@ -957,8 +1031,8 @@ protected lemma continuous_rng_iff {X : Type*} [TopologicalSpace X] {f : X → (
       Continuous (UniformFun.ofFun ∘ s.restrict ∘ UniformOnFun.toFun 𝔖 ∘ f) := by
   simp only [continuous_iff_continuousAt, ContinuousAt,
     UniformOnFun.tendsto_iff_tendstoUniformlyOn, UniformFun.tendsto_iff_tendstoUniformly,
-    tendstoUniformlyOn_iff_tendstoUniformly_comp_coe, @forall_swap X]
-  rfl
+    tendstoUniformlyOn_iff_tendstoUniformly_comp_coe, @forall_swap X, Function.comp_apply,
+    Function.comp_def, restrict_eq, UniformFun.toFun_ofFun]
 
 instance [CompleteSpace β] : CompleteSpace (α →ᵤ[𝔖] β) := by
   rcases isEmpty_or_nonempty β
@@ -1002,14 +1076,13 @@ protected def uniformEquivProdArrow [UniformSpace γ] :
       erw [inf_uniformity]
       rw [uniformity_comap, uniformity_comap]
       rfl
+-- the relevant diagram commutes by definition
 #align uniform_on_fun.uniform_equiv_prod_arrow UniformOnFun.uniformEquivProdArrow
 
--- the relevant diagram commutes by definition
-variable (𝔖) (δ : ι → Type*) [∀ i, UniformSpace (δ i)]
-
+variable (𝔖) (δ : ι → Type*) [∀ i, UniformSpace (δ i)] in
 /-- The natural bijection between `α → Π i, δ i` and `Π i, α → δ i`, upgraded to a uniform
 isomorphism between `α →ᵤ[𝔖] (Π i, δ i)` and `Π i, α →ᵤ[𝔖] δ i`. -/
-protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((i:ι) → α →ᵤ[𝔖] δ i) :=
+protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i : ι) → δ i)) ≃ᵤ ((i : ι) → α →ᵤ[𝔖] δ i) :=
   -- Denote `φ` this bijection. We want to show that
   -- `comap φ (Π i, 𝒱(α, δ i, 𝔖, uδ i)) = 𝒱(α, (Π i, δ i), 𝔖, (Π i, uδ i))`.
   -- But `Π i, uδ i` is defined as `⨅ i, comap (eval i) (uδ i)`, so we just have to apply
@@ -1017,7 +1090,7 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((
   -- which leaves us to check that some square commutes.
   -- We could also deduce this from `UniformFun.uniformEquivPiComm`, but it turns out
   -- to be more annoying.
-  @Equiv.toUniformEquivOfUniformInducing (α →ᵤ[𝔖] ((i:ι) → δ i)) ((i:ι) → α →ᵤ[𝔖] δ i)
+  @Equiv.toUniformEquivOfUniformInducing (α →ᵤ[𝔖] ((i : ι) → δ i)) ((i : ι) → α →ᵤ[𝔖] δ i)
       _ _ (Equiv.piComm _) <| by
     constructor
     change comap (Prod.map Function.swap Function.swap) _ = _
@@ -1025,26 +1098,76 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((
     congr
     rw [Pi.uniformSpace, UniformSpace.ofCoreEq_toCore, Pi.uniformSpace,
       UniformSpace.ofCoreEq_toCore, UniformSpace.comap_iInf, UniformOnFun.iInf_eq]
-    refine' iInf_congr fun i => _
+    refine iInf_congr fun i => ?_
     rw [← UniformSpace.comap_comap, UniformOnFun.comap_eq]
     rfl
-#align uniform_on_fun.uniform_equiv_Pi_comm UniformOnFun.uniformEquivPiComm
-
 -- Like in the previous lemma, the diagram actually commutes by definition
+#align uniform_on_fun.uniform_equiv_Pi_comm UniformOnFun.uniformEquivPiComm
 
 /-- Suppose that the topology on `α` is defined by its restrictions to the sets of `𝔖`.
 
 Then the set of continuous functions is closed
 in the topology of uniform convergence on the sets of `𝔖`. -/
+theorem isClosed_setOf_continuous [TopologicalSpace α] (h : RestrictGenTopology 𝔖) :
+    IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} := by
+  refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ h.continuous_iff.2 fun s hs ↦ ?_
+  rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf
+  exact (huf s hs).continuousOn <| hu fun _ ↦ Continuous.continuousOn
+
+/-- Suppose that the topology on `α` is defined by its restrictions to the sets of `𝔖`.
+
+Then the set of continuous functions is closed
+in the topology of uniform convergence on the sets of `𝔖`. -/
+@[deprecated isClosed_setOf_continuous (since := "2024-06-29")]
 theorem isClosed_setOf_continuous_of_le [t : TopologicalSpace α]
     (h : t ≤ ⨆ s ∈ 𝔖, .coinduced (Subtype.val : s → α) inferInstance) :
-    IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} := by
-  refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ ?_
-  rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf
-  have hcont : ∀ s ∈ 𝔖, ContinuousOn f s := fun s hs ↦
-    (huf s hs).continuousOn <| hu fun _ ↦ Continuous.continuousOn
-  refine continuous_le_dom h ?_
-  simpa only [continuous_iSup_dom, continuous_coinduced_dom] using fun s hs ↦ (hcont s hs).restrict
+    IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} :=
+  isClosed_setOf_continuous ⟨fun u hu ↦ h _ <| by simpa only [isOpen_iSup_iff, isOpen_coinduced]⟩
+
+variable (𝔖) in
+theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} (φ₁ : δ₁ → α) (φ₂ : δ₂ → α)
+    (𝔗₁ : Set (Set δ₁)) (𝔗₂ : Set (Set δ₂))
+    (h_image₁ : MapsTo (φ₁ '' ·) 𝔗₁ 𝔖) (h_image₂ : MapsTo (φ₂ '' ·) 𝔗₂ 𝔖)
+    (h_preimage₁ : MapsTo (φ₁ ⁻¹' ·) 𝔖 𝔗₁) (h_preimage₂ : MapsTo (φ₂ ⁻¹' ·) 𝔖 𝔗₂)
+    (h_cover : ∀ S ∈ 𝔖, S ⊆ range φ₁ ∪ range φ₂) :
+    𝒱(α, β, 𝔖, _) =
+      .comap (ofFun 𝔗₁ ∘ (· ∘ φ₁) ∘ toFun 𝔖) 𝒱(δ₁, β, 𝔗₁, _) ⊓
+      .comap (ofFun 𝔗₂ ∘ (· ∘ φ₂) ∘ toFun 𝔖) 𝒱(δ₂, β, 𝔗₂, _) := by
+  set ψ₁ : Π S : Set α, φ₁ ⁻¹' S → S := fun S ↦ S.restrictPreimage φ₁
+  set ψ₂ : Π S : Set α, φ₂ ⁻¹' S → S := fun S ↦ S.restrictPreimage φ₂
+  have : ∀ S ∈ 𝔖, 𝒰(S, β, _) = .comap (· ∘ ψ₁ S) 𝒰(_, β, _) ⊓ .comap (· ∘ ψ₂ S) 𝒰(_, β, _) := by
+    refine fun S hS ↦ UniformFun.uniformSpace_eq_inf_precomp_of_cover β _ _ ?_
+    simpa only [← univ_subset_iff, ψ₁, ψ₂, range_restrictPreimage, ← preimage_union,
+      ← image_subset_iff, image_univ, Subtype.range_val] using h_cover S hS
+  refine le_antisymm (le_inf ?_ ?_) (le_iInf₂ fun S hS ↦ ?_)
+  · rw [← uniformContinuous_iff]
+    exact UniformOnFun.precomp_uniformContinuous h_image₁
+  · rw [← uniformContinuous_iff]
+    exact UniformOnFun.precomp_uniformContinuous h_image₂
+  · simp_rw [this S hS, UniformSpace.comap_iInf, UniformSpace.comap_inf, ← UniformSpace.comap_comap]
+    exact inf_le_inf
+      (iInf₂_le_of_le _ (h_preimage₁ hS) le_rfl)
+      (iInf₂_le_of_le _ (h_preimage₂ hS) le_rfl)
+
+variable (𝔖) in
+theorem uniformSpace_eq_iInf_precomp_of_cover {δ : ι → Type*} (φ : Π i, δ i → α)
+    (𝔗 : ∀ i, Set (Set (δ i))) (h_image : ∀ i, MapsTo (φ i '' ·) (𝔗 i) 𝔖)
+    (h_preimage : ∀ i, MapsTo (φ i ⁻¹' ·) 𝔖 (𝔗 i))
+    (h_cover : ∀ S ∈ 𝔖, ∃ I : Set ι, I.Finite ∧ S ⊆ ⋃ i ∈ I, range (φ i)) :
+    𝒱(α, β, 𝔖, _) = ⨅ i, .comap (ofFun (𝔗 i) ∘ (· ∘ φ i) ∘ toFun 𝔖) 𝒱(δ i, β, 𝔗 i, _) := by
+  set ψ : Π S : Set α, Π i : ι, (φ i) ⁻¹' S → S := fun S i ↦ S.restrictPreimage (φ i)
+  have : ∀ S ∈ 𝔖, 𝒰(S, β, _) = ⨅ i, .comap (· ∘ ψ S i) 𝒰(_, β, _) := fun S hS ↦ by
+    rcases h_cover S hS with ⟨I, I_finite, I_cover⟩
+    refine UniformFun.uniformSpace_eq_iInf_precomp_of_cover β _ ⟨I, I_finite, ?_⟩
+    simpa only [← univ_subset_iff, ψ, range_restrictPreimage, ← preimage_iUnion₂,
+      ← image_subset_iff, image_univ, Subtype.range_val] using I_cover
+  -- With a better theory of ideals we may be able to simplify the following by replacing `𝔗 i`
+  -- by `(φ i ⁻¹' ·) '' 𝔖`.
+  refine le_antisymm (le_iInf fun i ↦ ?_) (le_iInf₂ fun S hS ↦ ?_)
+  · rw [← uniformContinuous_iff]
+    exact UniformOnFun.precomp_uniformContinuous (h_image i)
+  · simp_rw [this S hS, UniformSpace.comap_iInf, ← UniformSpace.comap_comap]
+    exact iInf_mono fun i ↦ iInf₂_le_of_le _ (h_preimage i hS) le_rfl
 
 end UniformOnFun
 

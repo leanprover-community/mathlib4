@@ -108,7 +108,6 @@ theorem map_nhds_of_mem (hf : Inducing f) (x : X) (h : range f ∈ 𝓝 (f x)) :
   hf.induced.symm ▸ map_nhds_induced_of_mem h
 #align inducing.map_nhds_of_mem Inducing.map_nhds_of_mem
 
--- Porting note (#10756): new lemma
 theorem mapClusterPt_iff (hf : Inducing f) {x : X} {l : Filter X} :
     MapClusterPt (f x) l f ↔ ClusterPt x l := by
   delta MapClusterPt ClusterPt
@@ -486,7 +485,7 @@ theorem isClosed_range (hf : IsClosedMap f) : IsClosed (range f) :=
   @image_univ _ _ f ▸ hf _ isClosed_univ
 #align is_closed_map.closed_range IsClosedMap.isClosed_range
 
-@[deprecated] alias closed_range := isClosed_range -- 2024-03-17
+@[deprecated (since := "2024-03-17")] alias closed_range := isClosed_range
 
 theorem to_quotientMap (hcl : IsClosedMap f) (hcont : Continuous f)
     (hsurj : Surjective f) : QuotientMap f :=
@@ -591,7 +590,7 @@ theorem openEmbedding_of_embedding_open (h₁ : Embedding f) (h₂ : IsOpenMap f
 #align open_embedding_of_embedding_open openEmbedding_of_embedding_open
 
 /-- A surjective embedding is an `OpenEmbedding`. -/
-theorem _root_.Embedding.toOpenEmbedding_of_surjective (hf : Embedding f) (hsurj: f.Surjective) :
+theorem _root_.Embedding.toOpenEmbedding_of_surjective (hf : Embedding f) (hsurj : f.Surjective) :
     OpenEmbedding f :=
   ⟨hf, hsurj.range_eq ▸ isOpen_univ⟩
 

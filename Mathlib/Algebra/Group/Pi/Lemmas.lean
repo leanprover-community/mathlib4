@@ -18,8 +18,7 @@ imports.
 -/
 
 assert_not_exists AddMonoidWithOne
--- TODO (after #11855)
--- assert_not_exists MulZeroClass
+assert_not_exists MonoidWithZero
 
 universe u v w
 
@@ -31,6 +30,10 @@ variable {f : I → Type v}
 
 -- The family of types already equipped with instances
 variable (x y : ∀ i, f i) (i j : I)
+
+@[to_additive (attr := simp)]
+theorem Set.range_one {α β : Type*} [One β] [Nonempty α] : Set.range (1 : α → β) = {1} :=
+  range_const
 
 @[to_additive]
 theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : β) ∈ s)] :
@@ -95,7 +98,8 @@ theorem Pi.monoidHom_injective {γ : Type w} [Nonempty I] [∀ i, MulOneClass (f
 #align pi.monoid_hom_injective Pi.monoidHom_injective
 #align pi.add_monoid_hom_injective Pi.addMonoidHom_injective
 
-variable (f) [(i : I) → Mul (f i)]
+variable (f)
+variable [(i : I) → Mul (f i)]
 
 /-- Evaluation of functions into an indexed collection of semigroups at a point is a semigroup
 homomorphism.
@@ -154,7 +158,8 @@ end MulHom
 
 section MonoidHom
 
-variable (f) [(i : I) → MulOneClass (f i)]
+variable (f)
+variable [(i : I) → MulOneClass (f i)]
 
 /-- Evaluation of functions into an indexed collection of monoids at a point is a monoid
 homomorphism.
@@ -332,10 +337,10 @@ For injections of commuting elements at the same index, see `Commute.map` -/
 theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
     Pairwise fun i j => ∀ (x : f i) (y : f j), Commute (mulSingle i x) (mulSingle j y) := by
   intro i j hij x y; ext k
-  by_cases h1 : i = k;
+  by_cases h1 : i = k
   · subst h1
     simp [hij]
-  by_cases h2 : j = k;
+  by_cases h2 : j = k
   · subst h2
     simp [hij]
   simp [h1, h2]
@@ -367,14 +372,14 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
     {k l m n : I} {u v : M} (hu : u ≠ 1) (hv : v ≠ 1) :
     (mulSingle k u : I → M) * mulSingle l v = mulSingle m u * mulSingle n v ↔
       k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · have hk := congr_fun h k
     have hl := congr_fun h l
     have hm := (congr_fun h m).symm
     have hn := (congr_fun h n).symm
     simp only [mul_apply, mulSingle_apply, if_pos rfl] at hk hl hm hn
     rcases eq_or_ne k m with (rfl | hkm)
-    · refine' Or.inl ⟨rfl, not_ne_iff.mp fun hln => (hv _).elim⟩
+    · refine Or.inl ⟨rfl, not_ne_iff.mp fun hln => (hv ?_).elim⟩
       rcases eq_or_ne k l with (rfl | hkl)
       · rwa [if_neg hln.symm, if_neg hln.symm, one_mul, one_mul] at hn
       · rwa [if_neg hkl.symm, if_neg hln, one_mul, one_mul] at hl

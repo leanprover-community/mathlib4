@@ -1,10 +1,11 @@
 /-
-Copyright (c) 2022 Jireh Loreaux All rights reserved.
+Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Group.Subsemigroup.Membership
+import Mathlib.Algebra.GroupWithZero.Center
 import Mathlib.Algebra.Ring.Center
 import Mathlib.Algebra.Ring.Centralizer
 import Mathlib.Algebra.Ring.Equiv
@@ -23,8 +24,6 @@ We define bundled non-unital subsemirings and some standard constructions:
 `map`, `comap` and range (`srange`) of a `NonUnitalRingHom` etc.
 -/
 
-
-open BigOperators
 
 universe u v w
 
@@ -479,7 +478,7 @@ variable (R) [NonUnitalNonAssocSemiring R]
 in `R` -/
 def center : NonUnitalSubsemiring R :=
   { Subsemigroup.center R with
-    zero_mem' := Set.zero_mem_center R
+    zero_mem' := Set.zero_mem_center
     add_mem' := Set.add_mem_center }
 #align non_unital_subsemiring.center NonUnitalSubsemiring.center
 
@@ -517,8 +516,8 @@ section NonUnitalSemiring
 -- no instance diamond, unlike the unital version
 example {R} [NonUnitalSemiring R] :
     (center.instNonUnitalCommSemiring _).toNonUnitalSemiring =
-      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) :=
-  by with_reducible_and_instances rfl
+      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) := by
+  with_reducible_and_instances rfl
 
 theorem mem_center_iff {R} [NonUnitalSemiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := by
   rw [← Semigroup.mem_center_iff]
@@ -542,7 +541,7 @@ section Centralizer
 def centralizer {R} [NonUnitalSemiring R] (s : Set R) : NonUnitalSubsemiring R :=
   { Subsemigroup.centralizer s with
     carrier := s.centralizer
-    zero_mem' := Set.zero_mem_centralizer _
+    zero_mem' := Set.zero_mem_centralizer
     add_mem' := Set.add_mem_centralizer }
 #align non_unital_subsemiring.centralizer NonUnitalSubsemiring.centralizer
 
@@ -696,11 +695,11 @@ theorem mem_closure_iff {s : Set R} {x} :
 theorem closure_addSubmonoid_closure {s : Set R} :
     closure ↑(AddSubmonoid.closure s) = closure s := by
   ext x
-  refine' ⟨fun hx => _, fun hx => closure_mono AddSubmonoid.subset_closure hx⟩
+  refine ⟨fun hx => ?_, fun hx => closure_mono AddSubmonoid.subset_closure hx⟩
   rintro - ⟨H, rfl⟩
   rintro - ⟨J, rfl⟩
-  refine' (AddSubmonoid.mem_closure.mp (mem_closure_iff.mp hx)) H.toAddSubmonoid fun y hy => _
-  refine' (Subsemigroup.mem_closure.mp hy) H.toSubsemigroup fun z hz => _
+  refine (AddSubmonoid.mem_closure.mp (mem_closure_iff.mp hx)) H.toAddSubmonoid fun y hy => ?_
+  refine (Subsemigroup.mem_closure.mp hy) H.toSubsemigroup fun z hz => ?_
   exact (AddSubmonoid.mem_closure.mp hz) H.toAddSubmonoid fun w hw => J hw
 #align non_unital_subsemiring.closure_add_submonoid_closure NonUnitalSubsemiring.closure_addSubmonoid_closure
 

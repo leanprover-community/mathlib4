@@ -180,11 +180,7 @@ theorem two_mul (n : α) : 2 * n = n + n :=
   (congrArg₂ _ one_add_one_eq_two.symm rfl).trans <| (right_distrib 1 1 n).trans (by rw [one_mul])
 #align two_mul two_mul
 
--- Porting note: was [has_add α] [mul_one_class α] [right_distrib_class α]
-set_option linter.deprecated false in
-theorem bit0_eq_two_mul (n : α) : bit0 n = 2 * n :=
-  (two_mul _).symm
-#align bit0_eq_two_mul bit0_eq_two_mul
+#noalign bit0_eq_two_mul
 
 -- Porting note: was [has_add α] [mul_one_class α] [left_distrib_class α]
 theorem mul_two (n : α) : n * 2 = n + n :=
@@ -208,7 +204,7 @@ theorem ite_mul {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
 -- We make `mul_ite` and `ite_mul` simp lemmas,
 -- but not `add_ite` or `ite_add`.
 -- The problem we're trying to avoid is dealing with
--- summations of the form `∑ x in s, (f x + ite P 1 0)`,
+-- summations of the form `∑ x ∈ s, (f x + ite P 1 0)`,
 -- in which `add_ite` followed by `sum_ite` would needlessly slice up
 -- the `f x` terms according to whether `P` holds at `x`.
 -- There doesn't appear to be a corresponding difficulty so far with
@@ -283,6 +279,17 @@ variable [CommSemiring α] {a b c : α}
 theorem add_mul_self_eq (a b : α) : (a + b) * (a + b) = a * a + 2 * a * b + b * b := by
   simp only [two_mul, add_mul, mul_add, add_assoc, mul_comm b]
 #align add_mul_self_eq add_mul_self_eq
+
+lemma add_sq (a b : α) : (a + b) ^ 2 = a ^ 2 + 2 * a * b + b ^ 2 := by
+  simp only [sq, add_mul_self_eq]
+#align add_sq add_sq
+
+lemma add_sq' (a b : α) : (a + b) ^ 2 = a ^ 2 + b ^ 2 + 2 * a * b := by
+  rw [add_sq, add_assoc, add_comm _ (b ^ 2), add_assoc]
+#align add_sq' add_sq'
+
+alias add_pow_two := add_sq
+#align add_pow_two add_pow_two
 
 end CommSemiring
 

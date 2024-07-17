@@ -81,6 +81,13 @@ theorem IsInitial.subsingleton_to (hI : IsInitial I) {A : C} : Subsingleton (A �
   ⟨hI.strict_hom_ext⟩
 #align category_theory.limits.is_initial.subsingleton_to CategoryTheory.Limits.IsInitial.subsingleton_to
 
+/-- If `X ⟶ Y` with `Y` being a strict initial object, then `X` is also an initial object. -/
+noncomputable
+def IsInitial.ofStrict {X Y : C} (f : X ⟶ Y)
+    (hY : IsInitial Y) : IsInitial X :=
+  letI := hY.isIso_to f
+  hY.ofIso (asIso f).symm
+
 instance (priority := 100) initial_mono_of_strict_initial_objects : InitialMonoClass C where
   isInitial_mono_from := fun _ hI => { right_cancellation := fun _ _ _ => hI.strict_hom_ext _ _ }
 #align category_theory.limits.initial_mono_of_strict_initial_objects CategoryTheory.Limits.initial_mono_of_strict_initial_objects
@@ -118,7 +125,7 @@ instance initial_isIso_to {A : C} (f : A ⟶ ⊥_ C) : IsIso f :=
 #align category_theory.limits.initial_is_iso_to CategoryTheory.Limits.initial_isIso_to
 
 @[ext]
-theorem initial.hom_ext {A : C} (f g : A ⟶ ⊥_ C) : f = g :=
+theorem initial.strict_hom_ext {A : C} (f g : A ⟶ ⊥_ C) : f = g :=
   initialIsInitial.strict_hom_ext _ _
 #align category_theory.limits.initial.hom_ext CategoryTheory.Limits.initial.hom_ext
 
@@ -195,6 +202,13 @@ theorem IsTerminal.strict_hom_ext (hI : IsTerminal I) {A : C} (f g : I ⟶ A) : 
   exact eq_of_inv_eq_inv (hI.hom_ext (inv f) (inv g))
 #align category_theory.limits.is_terminal.strict_hom_ext CategoryTheory.Limits.IsTerminal.strict_hom_ext
 
+/-- If `X ⟶ Y` with `Y` being a strict terminal object, then `X` is also an terminal object. -/
+noncomputable
+def IsTerminal.ofStrict {X Y : C} (f : X ⟶ Y)
+    (hY : IsTerminal X) : IsTerminal Y :=
+  letI := hY.isIso_from f
+  hY.ofIso (asIso f)
+
 theorem IsTerminal.subsingleton_to (hI : IsTerminal I) {A : C} : Subsingleton (I ⟶ A) :=
   ⟨hI.strict_hom_ext⟩
 #align category_theory.limits.is_terminal.subsingleton_to CategoryTheory.Limits.IsTerminal.subsingleton_to
@@ -206,7 +220,7 @@ said object via `limit.π`. -/
 theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)
     (H : ∀ (j) (_ : j ≠ i), IsTerminal (F.obj j)) [Subsingleton (i ⟶ i)] : IsIso (limit.π F i) := by
   classical
-    refine' ⟨⟨limit.lift _ ⟨_, ⟨_, _⟩⟩, _, _⟩⟩
+    refine ⟨⟨limit.lift _ ⟨_, ⟨?_, ?_⟩⟩, ?_, ?_⟩⟩
     · exact fun j =>
         dite (j = i)
           (fun h => eqToHom (by cases h; rfl))
@@ -244,7 +258,7 @@ instance terminal_isIso_from {A : C} (f : ⊤_ C ⟶ A) : IsIso f :=
 #align category_theory.limits.terminal_is_iso_from CategoryTheory.Limits.terminal_isIso_from
 
 @[ext]
-theorem terminal.hom_ext {A : C} (f g : ⊤_ C ⟶ A) : f = g :=
+theorem terminal.strict_hom_ext {A : C} (f g : ⊤_ C ⟶ A) : f = g :=
   terminalIsTerminal.strict_hom_ext _ _
 #align category_theory.limits.terminal.hom_ext CategoryTheory.Limits.terminal.hom_ext
 

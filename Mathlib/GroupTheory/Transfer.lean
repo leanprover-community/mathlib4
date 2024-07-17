@@ -28,8 +28,6 @@ In this file we construct the transfer homomorphism.
 -/
 
 
-open scoped BigOperators
-
 variable {G : Type*} [Group G] {H : Subgroup G} {A : Type*} [CommGroup A] (ϕ : H →* A)
 
 namespace Subgroup
@@ -131,7 +129,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
       _ = _ := ((quotientEquivSigmaZMod H g).symm.prod_comp _).symm
       _ = _ := Finset.prod_sigma _ _ _
       _ = _ := by
-        refine' Fintype.prod_congr _ _ (fun q => _)
+        refine Fintype.prod_congr _ _ (fun q => ?_)
         simp only [quotientEquivSigmaZMod_symm_apply, transferTransversal_apply',
           transferTransversal_apply'']
         rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod (g • ·) q.out')) _]
@@ -161,7 +159,8 @@ theorem transfer_eq_pow_aux (g : G)
     replace key :=
       Subgroup.prod_mem (H.subgroupOf (zpowers g)) fun q (_ : q ∈ Finset.univ) => hf q
     simpa only [f, minimalPeriod_eq_card, Finset.prod_pow_eq_pow_sum, Fintype.card_sigma,
-      Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)), index_eq_card] using key
+      Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)), index_eq_card,
+      Nat.card_eq_fintype_card] using key
 #align monoid_hom.transfer_eq_pow_aux MonoidHom.transfer_eq_pow_aux
 
 theorem transfer_eq_pow [FiniteIndex H] (g : G)
@@ -171,11 +170,11 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
     letI := H.fintypeQuotientOfFiniteIndex
     change ∀ (k g₀) (hk : g₀⁻¹ * g ^ k * g₀ ∈ H), ↑(⟨g₀⁻¹ * g ^ k * g₀, hk⟩ : H) = g ^ k at key
     rw [transfer_eq_prod_quotient_orbitRel_zpowers_quot, ← Finset.prod_to_list]
-    refine' (List.prod_map_hom _ _ _).trans _ -- Porting note: this used to be in the `rw`
-    refine' congrArg ϕ (Subtype.coe_injective _)
+    refine (List.prod_map_hom _ _ _).trans ?_ -- Porting note: this used to be in the `rw`
+    refine congrArg ϕ (Subtype.coe_injective ?_)
     simp only -- Porting note: added `simp only`
-    rw [H.coe_mk, ← (zpowers g).coe_mk g (mem_zpowers g), ← (zpowers g).coe_pow,
-      index_eq_card, Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)),
+    rw [H.coe_mk, ← (zpowers g).coe_mk g (mem_zpowers g), ← (zpowers g).coe_pow, index_eq_card,
+      Nat.card_eq_fintype_card, Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)),
       Fintype.card_sigma, ← Finset.prod_pow_eq_pow_sum, ← Finset.prod_to_list]
     simp only [Subgroup.val_list_prod, List.map_map, ← minimalPeriod_eq_card]
     congr
@@ -272,7 +271,7 @@ theorem ker_transferSylow_disjoint (Q : Subgroup G) (hQ : IsPGroup p Q) :
   disjoint_iff.mpr <|
     card_eq_one.mp <|
       (hQ.to_le inf_le_right).card_eq_or_dvd.resolve_right fun h =>
-        not_dvd_card_ker_transferSylow P hP <| h.trans <| nat_card_dvd_of_le _ _ inf_le_left
+        not_dvd_card_ker_transferSylow P hP <| h.trans <| card_dvd_of_le inf_le_left
 #align monoid_hom.ker_transfer_sylow_disjoint MonoidHom.ker_transferSylow_disjoint
 
 end BurnsideTransfer

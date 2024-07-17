@@ -37,6 +37,9 @@ universe u
 open CategoryTheory
 open scoped Topology
 
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] ConcreteCategory.instFunLike
+
 /-- `Stonean` is the category of extremally disconnected compact Hausdorff spaces. -/
 structure Stonean where
   /-- The underlying compact Hausdorff space of a Stonean space. -/
@@ -54,8 +57,8 @@ instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
   have : T2Space (TopCat.of A) := by assumption
   have : CompactSpace (TopCat.of B) := by assumption
   have : T2Space (TopCat.of B) := by assumption
-  let A' : CompHaus := ⟨TopCat.of A⟩
-  let B' : CompHaus := ⟨TopCat.of B⟩
+  let A' : CompHaus := ⟨TopCat.of A, trivial⟩
+  let B' : CompHaus := ⟨TopCat.of B, trivial⟩
   let f' : X ⟶ B' := ⟨f, hf⟩
   let g' : A' ⟶ B' := ⟨g,hg⟩
   have : Epi g' := by
@@ -86,19 +89,22 @@ instance : LargeCategory Stonean.{u} :=
 def toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
   inducedFunctor _
 
+/-- The forgetful functor `Stonean ⥤ CompHaus` is fully faithful. -/
+def fullyFaithfulToCompHaus : toCompHaus.FullyFaithful  :=
+  fullyFaithfulInducedFunctor _
+
 /-- Construct a term of `Stonean` from a type endowed with the structure of a
 compact, Hausdorff and extremally disconnected topological space.
 -/
 def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [ExtremallyDisconnected X] : Stonean :=
-  ⟨⟨⟨X, inferInstance⟩⟩⟩
+  ⟨⟨X, inferInstance⟩, trivial⟩
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is full. -/
-instance : toCompHaus.Full where
-  map_surjective f := ⟨f, rfl⟩
+instance : toCompHaus.Full := fullyFaithfulToCompHaus.full
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is faithful. -/
-instance : toCompHaus.Faithful := {}
+instance : toCompHaus.Faithful := fullyFaithfulToCompHaus.faithful
 
 /-- Stonean spaces are a concrete category. -/
 instance : ConcreteCategory Stonean where
@@ -147,11 +153,11 @@ example : toProfinite ⋙ profiniteToCompHaus = toCompHaus :=
 noncomputable
 def isoOfHomeo {X Y : Stonean} (f : X ≃ₜ Y) : X ≅ Y :=
   @asIso _ _ _ _ ⟨f, f.continuous⟩
-  (@isIso_of_reflects_iso _ _ _ _ _ _ _ toCompHaus (IsIso.of_iso (CompHaus.isoOfHomeo f)) _)
+  (@isIso_of_reflects_iso _ _ _ _ _ _ _ toCompHaus (CompHausLike.isoOfHomeo f).isIso_hom _)
 
 /-- Construct a homeomorphism from an isomorphism. -/
 @[simps!]
-def homeoOfIso {X Y : Stonean} (f : X ≅ Y) : X ≃ₜ Y := CompHaus.homeoOfIso (toCompHaus.mapIso f)
+def homeoOfIso {X Y : Stonean} (f : X ≅ Y) : X ≃ₜ Y := CompHausLike.homeoOfIso (toCompHaus.mapIso f)
 
 /-- The equivalence between isomorphisms in `Stonean` and homeomorphisms
 of topological spaces. -/
@@ -176,9 +182,6 @@ def mkFinite (X : Type*) [Finite X] [TopologicalSpace X] [DiscreteTopology X] : 
 
 /--
 A morphism in `Stonean` is an epi iff it is surjective.
-
-TODO: prove that `forget Stonean` preserves pushouts (in fact it preserves all finite colimits)
-and deduce this from general lemmas about concrete categories.
 -/
 lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
@@ -262,12 +265,12 @@ noncomputable
 def presentation (X : CompHaus) : Stonean where
   compHaus := (projectivePresentation X).p
   extrDisc := by
-    refine' CompactT2.Projective.extremallyDisconnected
-      (@fun Y Z _ _ _ _ _ _ f g hfcont hgcont hgsurj => _)
+    refine CompactT2.Projective.extremallyDisconnected
+      (@fun Y Z _ _ _ _ _ _ f g hfcont hgcont hgsurj => ?_)
     let g₁ : (CompHaus.of Y) ⟶ (CompHaus.of Z) := ⟨g, hgcont⟩
     let f₁ : (projectivePresentation X).p ⟶ (CompHaus.of Z) := ⟨f, hfcont⟩
     have hg₁ : Epi g₁ := (epi_iff_surjective _).2 hgsurj
-    refine' ⟨Projective.factorThru f₁ g₁, (Projective.factorThru f₁ g₁).2, funext (fun _ => _)⟩
+    refine ⟨Projective.factorThru f₁ g₁, (Projective.factorThru f₁ g₁).2, funext (fun _ => ?_)⟩
     change (Projective.factorThru f₁ g₁ ≫ g₁) _ = f _
     rw [Projective.factorThru_comp]
     rfl

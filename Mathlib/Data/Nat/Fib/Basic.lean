@@ -3,11 +3,12 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 -/
-import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Logic.Function.Iterate
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Data.Nat.Bits
+import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
 
@@ -51,8 +52,6 @@ For efficiency purposes, the sequence is defined using `Stream.iterate`.
 fib, fibonacci
 -/
 
-open BigOperators
-
 namespace Nat
 
 
@@ -64,8 +63,7 @@ namespace Nat
 implementation.
 -/
 
--- Porting note: Lean cannot find pp_nodot at the time of this port.
--- @[pp_nodot]
+@[pp_nodot]
 def fib (n : ℕ) : ℕ :=
   ((fun p : ℕ × ℕ => (p.snd, p.fst + p.snd))^[n] (0, 1)).fst
 #align nat.fib Nat.fib
@@ -121,7 +119,7 @@ theorem fib_lt_fib_succ {n : ℕ} (hn : 2 ≤ n) : fib n < fib (n + 1) := by
 
 /-- `fib (n + 2)` is strictly monotone. -/
 theorem fib_add_two_strictMono : StrictMono fun n => fib (n + 2) := by
-  refine' strictMono_nat_of_lt_succ fun n => _
+  refine strictMono_nat_of_lt_succ fun n => ?_
   rw [add_right_comm]
   exact fib_lt_fib_succ (self_le_add_left _ _)
 #align nat.fib_add_two_strict_mono Nat.fib_add_two_strictMono
@@ -195,27 +193,10 @@ theorem fib_two_mul_add_two (n : ℕ) :
   zify [this]
   ring
 
-section deprecated
-
-set_option linter.deprecated false
-
-theorem fib_bit0 (n : ℕ) : fib (bit0 n) = fib n * (2 * fib (n + 1) - fib n) := by
-  rw [bit0_eq_two_mul, fib_two_mul]
-#align nat.fib_bit0 Nat.fib_bit0
-
-theorem fib_bit1 (n : ℕ) : fib (bit1 n) = fib (n + 1) ^ 2 + fib n ^ 2 := by
-  rw [Nat.bit1_eq_succ_bit0, bit0_eq_two_mul, fib_two_mul_add_one]
-#align nat.fib_bit1 Nat.fib_bit1
-
-theorem fib_bit0_succ (n : ℕ) : fib (bit0 n + 1) = fib (n + 1) ^ 2 + fib n ^ 2 :=
-  fib_bit1 n
-#align nat.fib_bit0_succ Nat.fib_bit0_succ
-
-theorem fib_bit1_succ (n : ℕ) : fib (bit1 n + 1) = fib (n + 1) * (2 * fib n + fib (n + 1)) := by
-  rw [Nat.bit1_eq_succ_bit0, bit0_eq_two_mul, fib_two_mul_add_two]
-#align nat.fib_bit1_succ Nat.fib_bit1_succ
-
-end deprecated
+#noalign nat.fib_bit0
+#noalign nat.fib_bit1
+#noalign nat.fib_bit0_succ
+#noalign nat.fib_bit1_succ
 
 /-- Computes `(Nat.fib n, Nat.fib (n + 1))` using the binary representation of `n`.
 Supports `Nat.fastFib`. -/
@@ -258,7 +239,7 @@ theorem fast_fib_aux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) := by
     cases b <;>
           simp only [fast_fib_aux_bit_ff, fast_fib_aux_bit_tt, congr_arg Prod.fst ih,
             congr_arg Prod.snd ih, Prod.mk.inj_iff] <;>
-          simp [bit, fib_bit0, fib_bit1, fib_bit0_succ, fib_bit1_succ]
+          simp [bit, fib_two_mul, fib_two_mul_add_one, fib_two_mul_add_two]
 #align nat.fast_fib_aux_eq Nat.fast_fib_aux_eq
 
 theorem fast_fib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fast_fib_aux_eq]
@@ -306,19 +287,19 @@ theorem fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
 #align nat.fib_dvd Nat.fib_dvd
 
 theorem fib_succ_eq_sum_choose :
-    ∀ n : ℕ, fib (n + 1) = ∑ p in Finset.antidiagonal n, choose p.1 p.2 :=
+    ∀ n : ℕ, fib (n + 1) = ∑ p ∈ Finset.antidiagonal n, choose p.1 p.2 :=
   twoStepInduction rfl rfl fun n h1 h2 => by
     rw [fib_add_two, h1, h2, Finset.Nat.antidiagonal_succ_succ', Finset.Nat.antidiagonal_succ']
     simp [choose_succ_succ, Finset.sum_add_distrib, add_left_comm]
 #align nat.fib_succ_eq_sum_choose Nat.fib_succ_eq_sum_choose
 
-theorem fib_succ_eq_succ_sum (n : ℕ) : fib (n + 1) = (∑ k in Finset.range n, fib k) + 1 := by
+theorem fib_succ_eq_succ_sum (n : ℕ) : fib (n + 1) = (∑ k ∈ Finset.range n, fib k) + 1 := by
   induction' n with n ih
   · simp
   · calc
       fib (n + 2) = fib n + fib (n + 1) := fib_add_two
-      _ = (fib n + ∑ k in Finset.range n, fib k) + 1 := by rw [ih, add_assoc]
-      _ = (∑ k in Finset.range (n + 1), fib k) + 1 := by simp [Finset.range_add_one]
+      _ = (fib n + ∑ k ∈ Finset.range n, fib k) + 1 := by rw [ih, add_assoc]
+      _ = (∑ k ∈ Finset.range (n + 1), fib k) + 1 := by simp [Finset.range_add_one]
 #align nat.fib_succ_eq_succ_sum Nat.fib_succ_eq_succ_sum
 
 end Nat

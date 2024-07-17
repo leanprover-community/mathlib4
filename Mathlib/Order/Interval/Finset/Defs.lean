@@ -19,7 +19,7 @@ sense of `Icc`/`Ico`/`Ioc`/`Ioo` as lists, multisets, or finsets.
 Further, if the order is bounded above (resp. below), then we can also make sense of the
 "unbounded" intervals `Ici`/`Ioi` (resp. `Iic`/`Iio`).
 
-Many theorems about these intervals can be found in `Order.Interval.Finset.Basic`.
+Many theorems about these intervals can be found in `Mathlib.Order.Interval.Finset.Basic`.
 
 ## Examples
 
@@ -54,10 +54,10 @@ A `LocallyFiniteOrder` instance can be built
   `OrderEmbedding.locallyFiniteOrder`.
 
 Instances for concrete types are proved in their respective files:
-* `ℕ` is in `Data.Nat.Interval`
+* `ℕ` is in `Order.Interval.Finset.Nat`
 * `ℤ` is in `Data.Int.Interval`
 * `ℕ+` is in `Data.PNat.Interval`
-* `Fin n` is in `Data.Fin.Interval`
+* `Fin n` is in `Order.Interval.Finset.Fin`
 * `Finset α` is in `Data.Finset.Interval`
 * `Σ i, α i` is in `Data.Sigma.Interval`
 Along, you will find lemmas about the cardinality of those finite intervals.
@@ -94,9 +94,6 @@ Note that the converse is not true. Consider `{-2^z | z : ℤ} ∪ {2^z | z : �
 successor (and actually a predecessor as well), so it is a `SuccOrder`, but it's not locally finite
 as `Icc (-1) 1` is infinite.
 -/
-
-set_option autoImplicit true
-
 
 open Finset Function
 
@@ -255,8 +252,8 @@ protected abbrev IsEmpty.toLocallyFiniteOrder [Preorder α] [IsEmpty α] : Local
 /-- An empty type is locally finite.
 
 This is not an instance as it would not be defeq to more specific instances. -/
-protected abbrev IsEmpty.toLocallyFiniteOrderTop [Preorder α] [IsEmpty α] : LocallyFiniteOrderTop α
-    where
+protected abbrev IsEmpty.toLocallyFiniteOrderTop [Preorder α] [IsEmpty α] :
+    LocallyFiniteOrderTop α where
   finsetIci := isEmptyElim
   finsetIoi := isEmptyElim
   finset_mem_Ici := isEmptyElim
@@ -267,8 +264,8 @@ protected abbrev IsEmpty.toLocallyFiniteOrderTop [Preorder α] [IsEmpty α] : Lo
 /-- An empty type is locally finite.
 
 This is not an instance as it would not be defeq to more specific instances. -/
-protected abbrev IsEmpty.toLocallyFiniteOrderBot [Preorder α] [IsEmpty α] : LocallyFiniteOrderBot α
-    where
+protected abbrev IsEmpty.toLocallyFiniteOrderBot [Preorder α] [IsEmpty α] :
+    LocallyFiniteOrderBot α where
   finsetIic := isEmptyElim
   finsetIio := isEmptyElim
   finset_mem_Iic := isEmptyElim
@@ -454,8 +451,8 @@ section OrderBot
 variable [OrderBot α] [LocallyFiniteOrder α] {b x : α}
 
 -- See note [lower priority instance]
-instance (priority := 100) LocallyFiniteOrder.toLocallyFiniteOrderBot : LocallyFiniteOrderBot α
-    where
+instance (priority := 100) LocallyFiniteOrder.toLocallyFiniteOrderBot :
+    LocallyFiniteOrderBot α where
   finsetIic := Icc ⊥
   finsetIio := Ico ⊥
   finset_mem_Iic a x := by rw [mem_Icc, and_iff_right bot_le]
@@ -677,10 +674,10 @@ instance : Subsingleton (LocallyFiniteOrderBot α) :=
 /-- Given an order embedding `α ↪o β`, pulls back the `LocallyFiniteOrder` on `β` to `α`. -/
 protected noncomputable def OrderEmbedding.locallyFiniteOrder [LocallyFiniteOrder β] (f : α ↪o β) :
     LocallyFiniteOrder α where
-  finsetIcc a b := (Icc (f a) (f b)).preimage f (f.toEmbedding.injective.injOn _)
-  finsetIco a b := (Ico (f a) (f b)).preimage f (f.toEmbedding.injective.injOn _)
-  finsetIoc a b := (Ioc (f a) (f b)).preimage f (f.toEmbedding.injective.injOn _)
-  finsetIoo a b := (Ioo (f a) (f b)).preimage f (f.toEmbedding.injective.injOn _)
+  finsetIcc a b := (Icc (f a) (f b)).preimage f f.toEmbedding.injective.injOn
+  finsetIco a b := (Ico (f a) (f b)).preimage f f.toEmbedding.injective.injOn
+  finsetIoc a b := (Ioc (f a) (f b)).preimage f f.toEmbedding.injective.injOn
+  finsetIoo a b := (Ioo (f a) (f b)).preimage f f.toEmbedding.injective.injOn
   finset_mem_Icc a b x := by rw [mem_preimage, mem_Icc, f.le_iff_le, f.le_iff_le]
   finset_mem_Ico a b x := by rw [mem_preimage, mem_Ico, f.le_iff_le, f.lt_iff_lt]
   finset_mem_Ioc a b x := by rw [mem_preimage, mem_Ioc, f.lt_iff_lt, f.le_iff_le]
@@ -890,13 +887,8 @@ variable (α) [PartialOrder α] [OrderTop α] [LocallyFiniteOrder α]
 attribute [local simp] Option.mem_iff
 
 private lemma aux (x : α) (p : α → Prop) :
-    (∃ a : α, p a ∧ Option.some a = Option.some x) ↔ p x := by
-  -- Porting note: `simp [Option.some_inj]` has no effect
-  constructor
-  · rintro ⟨x', hx, hx'⟩
-    obtain rfl := Option.some_inj.mp hx'
-    exact hx
-  · exact fun h => ⟨x, h, rfl⟩
+    (∃ a : α, p a ∧ WithTop.some a = WithTop.some x) ↔ p x := by
+  simp
 
 instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
   finsetIcc a b :=
@@ -928,14 +920,13 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
       iff_of_false (not_mem_empty _) fun h => (h.1.trans h.2).not_lt <| coe_lt_top _
     | (a : α), ⊤, ⊤ => by simp [WithTop.some, WithTop.top, insertNone]
     | (a : α), ⊤, (x : α) => by
-        simp only [some, le_eq_subset, some_le_some, le_top, and_true]
-        rw [some_mem_insertNone, mem_Ici]
+        simp only [le_eq_subset, coe_le_coe, le_top, and_true]
+        rw [← some_eq_coe, some_mem_insertNone, mem_Ici]
     | (a : α), (b : α), ⊤ => by
         simp only [Embedding.some, mem_map, mem_Icc, and_false, exists_const, some, le_top,
           top_le_iff]
     | (a : α), (b : α), (x : α) => by
-        simp only [some, le_eq_subset, Embedding.some, mem_map, mem_Icc, Embedding.coeFn_mk,
-          some_le_some]
+        simp only [le_eq_subset, Embedding.some, mem_map, mem_Icc, Embedding.coeFn_mk, coe_le_coe]
         -- This used to be in the above `simp` before leanprover/lean4#2644
         erw [aux]
   finset_mem_Ico a b x :=
@@ -943,8 +934,8 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_lt h.2
     | (a : α), ⊤, ⊤ => by simp [some, Embedding.some]
     | (a : α), ⊤, (x : α) => by
-        simp only [some, Embedding.some, mem_map, mem_Ici, Embedding.coeFn_mk, some_le_some, aux,
-          top, some_lt_none, and_true]
+        simp only [Embedding.some, mem_map, mem_Ici, Embedding.coeFn_mk, coe_le_coe, aux,
+          coe_lt_top, and_true]
         -- This used to be in the above `simp` before leanprover/lean4#2644
         erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some]
@@ -1157,28 +1148,28 @@ variable (hp : ∀ ⦃a b x⦄, a ≤ x → x ≤ b → p a → p b → p x)
 
 theorem map_subtype_embedding_Icc : (Icc a b).map (Embedding.subtype p) = (Icc a b : Finset α) := by
   rw [subtype_Icc_eq]
-  refine' Finset.subtype_map_of_mem fun x hx => _
+  refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Icc] at hx
   exact hp hx.1 hx.2 a.prop b.prop
 #align finset.map_subtype_embedding_Icc Finset.map_subtype_embedding_Icc
 
 theorem map_subtype_embedding_Ico : (Ico a b).map (Embedding.subtype p) = (Ico a b : Finset α) := by
   rw [subtype_Ico_eq]
-  refine' Finset.subtype_map_of_mem fun x hx => _
+  refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Ico] at hx
   exact hp hx.1 hx.2.le a.prop b.prop
 #align finset.map_subtype_embedding_Ico Finset.map_subtype_embedding_Ico
 
 theorem map_subtype_embedding_Ioc : (Ioc a b).map (Embedding.subtype p) = (Ioc a b : Finset α) := by
   rw [subtype_Ioc_eq]
-  refine' Finset.subtype_map_of_mem fun x hx => _
+  refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Ioc] at hx
   exact hp hx.1.le hx.2 a.prop b.prop
 #align finset.map_subtype_embedding_Ioc Finset.map_subtype_embedding_Ioc
 
 theorem map_subtype_embedding_Ioo : (Ioo a b).map (Embedding.subtype p) = (Ioo a b : Finset α) := by
   rw [subtype_Ioo_eq]
-  refine' Finset.subtype_map_of_mem fun x hx => _
+  refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Ioo] at hx
   exact hp hx.1.le hx.2.le a.prop b.prop
 #align finset.map_subtype_embedding_Ioo Finset.map_subtype_embedding_Ioo
@@ -1274,6 +1265,8 @@ end Finite
 
 /-! We make the instances below low priority
 so when alternative constructions are available they are preferred. -/
+
+variable {y : α}
 
 instance (priority := low) [Preorder α] [DecidableRel ((· : α) ≤ ·)] [LocallyFiniteOrder α] :
     LocallyFiniteOrderTop { x : α // x ≤ y } where

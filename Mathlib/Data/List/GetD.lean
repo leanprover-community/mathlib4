@@ -43,14 +43,7 @@ theorem getD_eq_get {n : ℕ} (hn : n < l.length) : l.getD n d = l.get ⟨n, hn�
     · exact getD_cons_zero
     · exact ih _
 
-@[simp]
-theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD n d) := by
-  induction l generalizing n with
-  | nil => rfl
-  | cons head tail ih =>
-    cases n
-    · rfl
-    · simp [ih]
+theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD n d) := by simp
 
 #align list.nthd_eq_nth_le List.getD_eq_get
 
@@ -65,21 +58,28 @@ theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
 
 /-- An empty list can always be decidably checked for the presence of an element.
 Not an instance because it would clash with `DecidableEq α`. -/
-def decidableGetDNilNe {α} (a : α) : DecidablePred fun i : ℕ => getD ([] : List α) i a ≠ a :=
+def decidableGetDNilNe (a : α) : DecidablePred fun i : ℕ => getD ([] : List α) i a ≠ a :=
   fun _ => isFalse fun H => H getD_nil
 #align list.decidable_nthd_nil_ne List.decidableGetDNilNeₓ -- argument order
 
 @[simp]
-theorem getD_singleton_default_eq (n : ℕ) : [d].getD n d = d := by cases n <;> simp
-#align list.nthd_singleton_default_eq List.getD_singleton_default_eqₓ -- argument order
+theorem getElem?_getD_singleton_default_eq (n : ℕ) : [d][n]?.getD d = d := by cases n <;> simp
+#align list.nthd_singleton_default_eq List.getElem?_getD_singleton_default_eqₓ -- argument order
+
+@[deprecated (since := "2024-06-12")]
+alias getD_singleton_default_eq := getElem?_getD_singleton_default_eq
 
 @[simp]
-theorem getD_replicate_default_eq (r n : ℕ) : (replicate r d).getD n d = d := by
+theorem getElem?_getD_replicate_default_eq (r n : ℕ) : (replicate r d)[n]?.getD d = d := by
   induction r generalizing n with
   | zero => simp
-  | succ n ih => cases n <;> simp [ih]
-#align list.nthd_replicate_default_eq List.getD_replicate_default_eqₓ -- argument order
+  | succ n ih => simp at ih; cases n <;> simp [ih, replicate_succ]
+#align list.nthd_replicate_default_eq List.getElem?_getD_replicate_default_eqₓ -- argument order
 
+@[deprecated (since := "2024-06-12")]
+alias getD_replicate_default_eq := getElem?_getD_replicate_default_eq
+
+set_option linter.deprecated false in
 theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length) :
     (l ++ l').getD n d = l.getD n d := by
   rw [getD_eq_get _ _ (Nat.lt_of_lt_of_le h (length_append _ _ ▸ Nat.le_add_right _ _)),
@@ -90,7 +90,8 @@ theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ 
     (l ++ l').getD n d = l'.getD (n - l.length) d := by
   cases Nat.lt_or_ge n (l ++ l').length with
   | inl h' =>
-    rw [getD_eq_get (l ++ l') d h', get_append_right, getD_eq_get]
+    rw [getD_eq_get (l ++ l') d h', get_eq_getElem, getElem_append_right, getD_eq_get,
+      get_eq_getElem]
     · rw [length_append] at h'
       exact Nat.sub_lt_left_of_lt_add h h'
     · exact Nat.not_lt_of_le h

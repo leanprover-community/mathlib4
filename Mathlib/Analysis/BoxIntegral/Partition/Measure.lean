@@ -30,7 +30,7 @@ open Set
 
 noncomputable section
 
-open scoped ENNReal BigOperators Classical BoxIntegral
+open scoped ENNReal Classical BoxIntegral
 
 variable {ι : Type*}
 
@@ -84,7 +84,7 @@ end Box
 
 theorem Prepartition.measure_iUnion_toReal [Finite ι] {I : Box ι} (π : Prepartition I)
     (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] :
-    (μ π.iUnion).toReal = ∑ J in π.boxes, (μ J).toReal := by
+    (μ π.iUnion).toReal = ∑ J ∈ π.boxes, (μ J).toReal := by
   erw [← ENNReal.toReal_sum, π.iUnion_def, measure_biUnion_finset π.pairwiseDisjoint]
   exacts [fun J _ => J.measurableSet_coe, fun J _ => (J.measure_coe_lt_top μ).ne]
 #align box_integral.prepartition.measure_Union_to_real BoxIntegral.Prepartition.measure_iUnion_toReal

@@ -46,7 +46,7 @@ def MeasCat : Type (u + 1) :=
 
 namespace MeasCat
 
-instance : CoeSort MeasCat (Type*) :=
+instance : CoeSort MeasCat Type* :=
   Bundled.coeSort
 
 instance (X : MeasCat) : MeasurableSpace X :=
@@ -76,6 +76,9 @@ instance : ConcreteCategory MeasCat := by
 
 instance : Inhabited MeasCat :=
   ⟨MeasCat.of Empty⟩
+
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] ConcreteCategory.instFunLike
 
 /-- `Measure X` is the measurable space of measures over the measurable space `X`. It is the
 weakest measurable space, s.t. `fun μ ↦ μ s` is measurable for all measurable sets `s` in `X`. An

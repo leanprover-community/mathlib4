@@ -31,9 +31,8 @@ This file defines square and even elements in a monoid.
 `Mathlib.Algebra.Ring.Parity` for the definition of odd elements.
 -/
 
--- TODO: After #11855
--- assert_not_exists MonoidWithZero
-assert_not_exists Ring
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 open MulOpposite
 
@@ -180,3 +179,6 @@ lemma Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare 
   rintro ⟨n, rfl⟩ a; exact ⟨a ^ n, zpow_add _ _ _⟩
 #align even.is_square_zpow Even.isSquare_zpow
 #align even.zsmul' Even.zsmul'
+
+#noalign even_iff_exists_bit0
+#noalign even.exists_bit0

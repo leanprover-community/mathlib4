@@ -86,8 +86,8 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     have A : MapsTo Complex.equivRealProd.symm ({q : ℝ × ℝ | 0 < q.1} ∪ {q : ℝ × ℝ | q.2 ≠ 0})
         Complex.slitPlane := by
       rintro ⟨x, y⟩ hxy; simpa only using hxy
-    refine' ContinuousOn.comp (f := Complex.equivRealProd.symm)
-      (g := Complex.arg) (fun z hz => _) _ A
+    refine ContinuousOn.comp (f := Complex.equivRealProd.symm)
+      (g := Complex.arg) (fun z hz => ?_) ?_ A
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
 #align polar_coord polarCoord
@@ -179,8 +179,10 @@ protected theorem polarCoord_symm_apply (p : ℝ × ℝ) :
     Complex.polarCoord.symm p = p.1 * (Real.cos p.2 + Real.sin p.2 * Complex.I) := by
   simp [Complex.polarCoord, equivRealProdCLM_symm_apply, mul_add, mul_assoc]
 
-theorem polardCoord_symm_abs (p : ℝ × ℝ) :
+theorem polarCoord_symm_abs (p : ℝ × ℝ) :
     Complex.abs (Complex.polarCoord.symm p) = |p.1| := by simp
+
+@[deprecated (since := "2024-07-15")] alias polardCoord_symm_abs := polarCoord_symm_abs
 
 protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : ℂ → E) :

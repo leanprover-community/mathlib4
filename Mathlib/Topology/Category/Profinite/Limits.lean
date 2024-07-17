@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.Topology.Category.CompHaus.Limits
 
 /-!
@@ -24,6 +23,12 @@ which may be useful due to their definitional properties.
 namespace Profinite
 
 universe u w
+
+/-
+Previously, this had accidentally been made a global instance,
+and we now turn it on locally when convenient.
+-/
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
 open CategoryTheory Limits
 
@@ -115,12 +120,12 @@ def pullbackHomeoPullback : (Profinite.pullback f g).toCompHaus ≃ₜ
 Profinite.homeoOfIso (pullbackIsoPullback f g)
 
 theorem pullback_fst_eq :
-    Profinite.pullback.fst f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.fst := by
+    Profinite.pullback.fst f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.fst f g := by
   dsimp [pullbackIsoPullback]
   simp only [Limits.limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt, pullback.cone_π]
 
 theorem pullback_snd_eq :
-    Profinite.pullback.snd f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.snd := by
+    Profinite.pullback.snd f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.snd f g := by
   dsimp [pullbackIsoPullback]
   simp only [Limits.limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt, pullback.cone_π]
 
@@ -218,7 +223,7 @@ instance : PreservesFiniteCoproducts profiniteToCompHaus := by
   exact CompHaus.finiteCoproduct.isColimit _
 
 noncomputable instance : PreservesFiniteCoproducts Profinite.toTopCat.{u} where
-  preserves _ _:= (inferInstance :
+  preserves _ _ := (inferInstance :
     PreservesColimitsOfShape _ (profiniteToCompHaus.{u} ⋙ compHausToTop.{u}))
 
 instance : FinitaryExtensive Profinite :=

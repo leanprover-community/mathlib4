@@ -344,6 +344,9 @@ theorem comp_mono ⦃g₁ g₂ : β →o γ⦄ (hg : g₁ ≤ g₂) ⦃f₁ f₂
     g₁.comp f₁ ≤ g₂.comp f₂ := fun _ => (hg _).trans (g₂.mono <| hf _)
 #align order_hom.comp_mono OrderHom.comp_mono
 
+@[simp] lemma mk_comp_mk (g : β → γ) (f : α → β) (hg hf) :
+    comp ⟨g, hg⟩ ⟨f, hf⟩ = ⟨g ∘ f, hg.comp hf⟩ := rfl
+
 /-- The composition of two bundled monotone functions, a fully bundled version. -/
 @[simps! (config := .asFn)]
 def compₘ : (β →o γ) →o (α →o β) →o α →o γ :=
@@ -989,7 +992,7 @@ def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder
   map_rel_iff' {p q} := by
     simp only [Equiv.coe_fn_mk, OrderHom.le_def, OrderHom.comp_coe,
                OrderHomClass.coe_coe, Function.comp_apply, map_le_map_iff]
-    exact Iff.symm f.forall_congr_left'
+    exact Iff.symm f.forall_congr_left
 
 /-- If `α` and `β` are order-isomorphic then the two orders of order-homomorphisms
 from `α` and `β` to themselves are order-isomorphic. -/
@@ -1234,7 +1237,7 @@ section LatticeIsos
 
 theorem OrderIso.map_bot' [LE α] [PartialOrder β] (f : α ≃o β) {x : α} {y : β} (hx : ∀ x', x ≤ x')
     (hy : ∀ y', y ≤ y') : f x = y := by
-  refine' le_antisymm _ (hy _)
+  refine le_antisymm ?_ (hy _)
   rw [← f.apply_symm_apply y, f.map_rel_iff]
   apply hx
 #align order_iso.map_bot' OrderIso.map_bot'
@@ -1264,7 +1267,7 @@ theorem OrderEmbedding.le_map_sup [SemilatticeSup α] [SemilatticeSup β] (f : �
 
 theorem OrderIso.map_inf [SemilatticeInf α] [SemilatticeInf β] (f : α ≃o β) (x y : α) :
     f (x ⊓ y) = f x ⊓ f y := by
-  refine' (f.toOrderEmbedding.map_inf_le x y).antisymm _
+  refine (f.toOrderEmbedding.map_inf_le x y).antisymm ?_
   apply f.symm.le_iff_le.1
   simpa using f.symm.toOrderEmbedding.map_inf_le (f x) (f y)
 #align order_iso.map_inf OrderIso.map_inf

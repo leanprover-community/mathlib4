@@ -29,8 +29,6 @@ of a matrix are homogeneous polynomials in the matrix entries.
   the `i`-th coefficient of `univ` is a homogeneous polynomial of degree `n - i`.
 -/
 
-open BigOperators
-
 namespace Matrix.charpoly
 
 variable {R S : Type*} (n : Type*) [CommRing R] [CommRing S] [Fintype n] [DecidableEq n]

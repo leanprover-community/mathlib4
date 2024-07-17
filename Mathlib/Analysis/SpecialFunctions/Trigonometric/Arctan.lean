@@ -66,22 +66,22 @@ theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
 #align real.continuous_tan Real.continuous_tan
 
 theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
-  refine' ContinuousOn.mono continuousOn_tan fun x => _
+  refine ContinuousOn.mono continuousOn_tan fun x => ?_
   simp only [and_imp, mem_Ioo, mem_setOf_eq, Ne]
   rw [cos_eq_zero_iff]
   rintro hx_gt hx_lt ⟨r, hxr_eq⟩
   rcases le_or_lt 0 r with h | h
   · rw [lt_iff_not_ge] at hx_lt
-    refine' hx_lt _
+    refine hx_lt ?_
     rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, ge_iff_le, mul_le_mul_right (half_pos pi_pos)]
     simp [h]
   · rw [lt_iff_not_ge] at hx_gt
-    refine' hx_gt _
+    refine hx_gt ?_
     rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, ge_iff_le, neg_mul_eq_neg_mul,
       mul_le_mul_right (half_pos pi_pos)]
     have hr_le : r ≤ -1 := by rwa [Int.lt_iff_add_one_le, ← le_neg_iff_add_nonpos_right] at h
     rw [← le_sub_iff_add_le, mul_comm, ← le_div_iff]
-    · set_option tactic.skipAssignedInstances false in norm_num
+    · norm_num
       rw [← Int.cast_one, ← Int.cast_neg]; norm_cast
     · exact zero_lt_two
 #align real.continuous_on_tan_Ioo Real.continuousOn_tan_Ioo
@@ -108,7 +108,7 @@ def tanOrderIso : Ioo (-(π / 2)) (π / 2) ≃o ℝ :=
 
 /-- Inverse of the `tan` function, returns values in the range `-π / 2 < arctan x` and
 `arctan x < π / 2` -/
--- @[pp_nodot] -- Porting note: removed
+@[pp_nodot]
 noncomputable def arctan (x : ℝ) : ℝ :=
   tanOrderIso.symm x
 #align real.arctan Real.arctan
@@ -209,7 +209,7 @@ theorem arctan_eq_arccos {x : ℝ} (h : 0 ≤ x) : arctan x = arccos (√(1 + x 
 -- The junk values for `arccos` and `sqrt` make this true even for `1 < x`.
 theorem arccos_eq_arctan {x : ℝ} (h : 0 < x) : arccos x = arctan (√(1 - x ^ 2) / x) := by
   rw [arccos, eq_comm]
-  refine' arctan_eq_of_tan_eq _ ⟨_, _⟩
+  refine arctan_eq_of_tan_eq ?_ ⟨?_, ?_⟩
   · rw_mod_cast [tan_pi_div_two_sub, tan_arcsin, inv_div]
   · linarith only [arcsin_le_pi_div_two x, pi_pos]
   · linarith only [arcsin_pos.2 h]

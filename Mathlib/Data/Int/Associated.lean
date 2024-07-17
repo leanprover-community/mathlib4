@@ -3,7 +3,7 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Associated
+import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Ring.Int
 
 #align_import data.int.associated from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
@@ -19,7 +19,7 @@ This file contains some results on equality up to units in the integers.
 
 
 theorem Int.natAbs_eq_iff_associated {a b : ℤ} : a.natAbs = b.natAbs ↔ Associated a b := by
-  refine' Int.natAbs_eq_natAbs_iff.trans _
+  refine Int.natAbs_eq_natAbs_iff.trans ?_
   constructor
   · rintro (rfl | rfl)
     · rfl

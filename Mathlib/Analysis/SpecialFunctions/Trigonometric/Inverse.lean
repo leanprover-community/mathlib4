@@ -32,7 +32,7 @@ variable {x y : ℝ}
 
 /-- Inverse of the `sin` function, returns values in the range `-π / 2 ≤ arcsin x ≤ π / 2`.
 It defaults to `-π / 2` on `(-∞, -1)` and to `π / 2` to `(1, ∞)`. -/
--- @[pp_nodot] Porting note: not implemented
+@[pp_nodot]
 noncomputable def arcsin : ℝ → ℝ :=
   Subtype.val ∘ IccExtend (neg_le_self zero_le_one) sinOrderIso.symm
 #align real.arcsin Real.arcsin
@@ -55,8 +55,9 @@ theorem neg_pi_div_two_le_arcsin (x : ℝ) : -(π / 2) ≤ arcsin x :=
   (arcsin_mem_Icc x).1
 #align real.neg_pi_div_two_le_arcsin Real.neg_pi_div_two_le_arcsin
 
-theorem arcsin_projIcc (x : ℝ) : arcsin (projIcc (-1) 1 (neg_le_self zero_le_one) x) = arcsin x :=
-  by rw [arcsin, Function.comp_apply, IccExtend_val, Function.comp_apply, IccExtend,
+theorem arcsin_projIcc (x : ℝ) :
+    arcsin (projIcc (-1) 1 (neg_le_self zero_le_one) x) = arcsin x := by
+  rw [arcsin, Function.comp_apply, IccExtend_val, Function.comp_apply, IccExtend,
         Function.comp_apply]
 #align real.arcsin_proj_Icc Real.arcsin_projIcc
 
@@ -139,7 +140,7 @@ theorem arcsin_neg (x : ℝ) : arcsin (-x) = -arcsin x := by
   · rw [arcsin_of_le_neg_one hx₁, neg_neg, arcsin_of_one_le (le_neg.2 hx₁)]
   rcases le_total 1 x with hx₂ | hx₂
   · rw [arcsin_of_one_le hx₂, arcsin_of_le_neg_one (neg_le_neg hx₂)]
-  refine' arcsin_eq_of_sin_eq _ _
+  refine arcsin_eq_of_sin_eq ?_ ?_
   · rw [sin_neg, sin_arcsin hx₁ hx₂]
   · exact ⟨neg_le_neg (arcsin_le_pi_div_two _), neg_le.2 (neg_pi_div_two_le_arcsin _)⟩
 #align real.arcsin_neg Real.arcsin_neg
@@ -333,7 +334,7 @@ theorem tan_arcsin (x : ℝ) : tan (arcsin x) = x / √(1 - x ^ 2) := by
 
 /-- Inverse of the `cos` function, returns values in the range `0 ≤ arccos x` and `arccos x ≤ π`.
   It defaults to `π` on `(-∞, -1)` and to `0` to `(1, ∞)`. -/
--- @[pp_nodot] Porting note: not implemented
+@[pp_nodot]
 noncomputable def arccos (x : ℝ) : ℝ :=
   π / 2 - arcsin x
 #align real.arccos Real.arccos
@@ -415,7 +416,7 @@ theorem arccos_of_one_le {x : ℝ} (hx : 1 ≤ x) : arccos x = 0 := by
 #align real.arccos_of_one_le Real.arccos_of_one_le
 
 theorem arccos_of_le_neg_one {x : ℝ} (hx : x ≤ -1) : arccos x = π := by
-  rw [arccos, arcsin_of_le_neg_one hx, sub_neg_eq_add, add_halves']
+  rw [arccos, arcsin_of_le_neg_one hx, sub_neg_eq_add, add_halves]
 #align real.arccos_of_le_neg_one Real.arccos_of_le_neg_one
 
 -- The junk values for `arccos` and `sqrt` make this true even outside `[-1, 1]`.
