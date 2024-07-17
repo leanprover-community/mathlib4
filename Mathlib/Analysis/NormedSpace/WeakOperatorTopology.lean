@@ -10,7 +10,7 @@ import Mathlib.Analysis.NormedSpace.Dual
 /-!
 # The weak operator topology
 
-This file defines a type copy of `E →L[𝕜] F` (where `F` is an normed space) which is
+This file defines a type copy of `E →L[𝕜] F` (where `F` is a normed space) which is
 endowed with the weak operator topology (WOT) rather than the topology induced by the operator norm.
 The WOT is defined as the coarsest topology such that the functional `fun A => y (A x)` is
 continuous for any `x : E` and `y : NormedSpace.Dual 𝕜 F`. Basic non-topological properties of
@@ -99,20 +99,30 @@ lemma _root_.ContinuousLinearMap.toWOT_apply {A : E →L[𝕜] F} {x : E} :
     ((ContinuousLinearMap.toWOT 𝕜 E F) A) x = A x := rfl
 
 unseal ContinuousLinearMapWOT in
+lemma ext {A B : E →WOT[𝕜] F} (h : ∀ x, A x = B x) : A = B := ContinuousLinearMap.ext h
+
+unseal ContinuousLinearMapWOT in
 lemma ext_iff {A B : E →WOT[𝕜] F} : A = B ↔ ∀ x, A x = B x := ContinuousLinearMap.ext_iff
 
-lemma ext_dual_iff {A B : E →WOT[𝕜] F} :
-    A = B ↔ ∀ x (y : F⋆), y (A x) = y (B x) := by
-  refine ⟨fun h _ _ => by simp [h], fun h => ?_⟩
+@[ext]
+lemma ext_dual {A B : E →WOT[𝕜] F} (h : ∀ x (y : F⋆), y (A x) = y (B x)) : A = B := by
   rw [ext_iff]
   intro x
   specialize h x
   rwa [← NormedSpace.eq_iff_forall_dual_eq 𝕜] at h
 
+lemma ext_dual_iff {A B : E →WOT[𝕜] F} :
+    A = B ↔ ∀ x (y : F⋆), y (A x) = y (B x) :=
+  ⟨fun h _ _ => by simp [h], ext_dual⟩
+
 @[simp] lemma zero_apply (x : E) : (0 : E →WOT[𝕜] F) x = 0 := by simp only [DFunLike.coe]; rfl
 
 unseal ContinuousLinearMapWOT in
 @[simp] lemma add_apply {f g : E →WOT[𝕜] F} (x : E) : (f + g) x = f x + g x := by
+  simp only [DFunLike.coe]; rfl
+
+unseal ContinuousLinearMapWOT in
+@[simp] lemma sub_apply {f g : E →WOT[𝕜] F} (x : E) : (f - g) x = f x - g x := by
   simp only [DFunLike.coe]; rfl
 
 unseal ContinuousLinearMapWOT in
