@@ -77,6 +77,8 @@ lemma three_le_girth (hG : ¬ G.IsAcyclic) : 3 ≤ G.girth :=
 lemma girth_eq_zero : G.girth = 0 ↔ G.IsAcyclic :=
   ⟨fun h ↦ not_not.mp <| three_le_girth.mt <| by omega, fun h ↦ by simp [girth, h]⟩
 
+protected alias ⟨_, IsAcyclic.girth_eq_zero⟩ := girth_eq_zero
+
 lemma girth_anti {G' : SimpleGraph α} (hab : G ≤ G') (h : ¬ G.IsAcyclic) : G'.girth ≤ G.girth :=
   ENat.toNat_le_toNat (egirth_anti hab) <| egirth_eq_top.not.mpr h
 
