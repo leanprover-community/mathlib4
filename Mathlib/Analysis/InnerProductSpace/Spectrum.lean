@@ -547,31 +547,22 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
   ext v
   constructor
   · intro h
-    simp only [ne_eq, ultra_silly_lemma]
+    rw [iSup] at h
+    simp only [ultra_silly_lemma]
     conv =>
      rhs
      rw [iSup]
     simp only [sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff, iSup_le_iff,
       Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
-      SetLike.mem_coe]
-    intro K
-    rw [iSup] at h
-    simp only [sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff, Submodule.mem_mk,
-      AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe] at h
-    intro H
+      SetLike.mem_coe] at *
+    intro K H
     apply h K
     intro a w hw
     rw [indexing_nonsense0 T (i := i) (γ := a)] at hw
-    simp only [ne_eq, Submodule.mem_inf] at hw
-    have : ∀ (a : n → 𝕜), ⨅ j, eigenspace (T j) (a j) ≤ K := by
-      intro f
-      rw [indexing_nonsense0 T i]
-      apply H
     exact H (fun j ↦ a ↑j) (a i) hw
   · intro h
-    simp only [ne_eq, ultra_silly_lemma] at h
     rw [iSup] at *
-    simp only [sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff, Submodule.mem_mk,
+    simp only [ultra_silly_lemma, sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff, Submodule.mem_mk,
       AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe] at *
     intro K hK
     have A : ∀ (a : {x // ¬i = x} → 𝕜), ⨆ μ, eigenspace (T i) μ ⊓
@@ -595,11 +586,9 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
         have C : eigenspace (T i) μ ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ' j)
             = eigenspace (T i) (γ i) ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ j) := by
           congr!; exact _root_.id (Eq.symm C1); congr!; simp only [ne_eq, C2]
-        rw [C]
-        rw [← indexing_nonsense0]
+        rw [C, ← indexing_nonsense0]
         exact hK fun j ↦ γ j
-      apply hgv
-      exact B
+      exact hgv K B
     exact h K A
 
 /-This is just index_convert, so we can probably remove later.-/
