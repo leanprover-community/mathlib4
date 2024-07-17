@@ -34,7 +34,7 @@ the underlying `RatFunc.coeAlgHom`.
 ### About the `X`-Adic valuation:
 * The (integral) valuation of a power series is the order of the first non-zero coefficient, see
 `intValuation_le_iff_coeff_lt_eq_zero`.
-* The valuation of a laurent series is the order of the first non-zero coefficient, see
+* The valuation of a Laurent series is the order of the first non-zero coefficient, see
 `valuation_le_iff_coeff_lt_eq_zero`.
 * Every Laurent series of valuation less than `(1 : ℤₘ₀)` comes from a power series, see
 `val_le_one_iff_eq_coe`.
