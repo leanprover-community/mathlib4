@@ -29,7 +29,7 @@ noncomputable def egirth (G : SimpleGraph α) : ℕ∞ :=
 @[simp] lemma le_egirth : n ≤ G.egirth ↔ ∀ a (w : G.Walk a a), w.IsCycle → n ≤ w.length := by
   simp [egirth]
 
-@[simp] 
+@[simp]
 lemma egirth_eq_top : G.egirth = ⊤ ↔ G.IsAcyclic := by simp [egirth, IsAcyclic]
 
 protected alias ⟨_, IsAcyclic.egirth_eq_top⟩ := egirth_eq_top
