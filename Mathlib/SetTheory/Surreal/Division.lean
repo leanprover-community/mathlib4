@@ -701,7 +701,7 @@ lemma inv_surreal (hx : ¬ x ≈ 0) : x * x⁻¹ ≈ 1 := by
       have := le_of_lf x_lf_0 x_num numeric_zero
       exact lt_of_le_of_lf this x_lf_0
     rw [inv_eq_of_lf_zero x_lf_0]
-    have := onag_1_10_iv (Numeric.neg x_num) this
+    have := onag_1_10_iv x_num.neg this
     rw [← Quotient.eq] at this ⊢
     simp only [quot_neg_mul, quot_mul_neg] at this ⊢
     exact this
@@ -715,7 +715,7 @@ lemma Numeric.inv (x_num : x.Numeric) : x⁻¹.Numeric := by
   rcases lf_or_equiv_or_gf x 0 with neg | zero | pos
   · have neg_x_pos : 0 < -x := zero_lt_neg_iff.mpr (lt_of_lf neg x_num numeric_zero)
     rw [inv_eq_of_lf_zero neg]
-    exact Numeric.neg (onag_1_10_ii (Numeric.neg x_num) neg_x_pos)
+    exact (onag_1_10_ii x_num.neg neg_x_pos).neg
   · rw [inv_eq_of_equiv_zero zero]
     exact numeric_zero
   · have := lt_of_lf pos numeric_zero x_num
