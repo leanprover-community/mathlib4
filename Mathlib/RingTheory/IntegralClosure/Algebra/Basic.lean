@@ -3,10 +3,8 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Polynomial.Expand
-import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
-import Mathlib.RingTheory.Polynomial.Tower
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
+import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 #align_import ring_theory.integral_closure from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
 
@@ -32,106 +30,18 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 open scoped Classical
 open Polynomial Submodule
 
-section Ring
-
-variable {R S A : Type*}
-variable [CommRing R] [Ring A] [Ring S] (f : R →+* S)
-
-/-- An element `x` of `A` is said to be integral over `R` with respect to `f`
-if it is a root of a monic polynomial `p : R[X]` evaluated under `f` -/
-def RingHom.IsIntegralElem (f : R →+* A) (x : A) :=
-  ∃ p : R[X], Monic p ∧ eval₂ f x p = 0
-#align ring_hom.is_integral_elem RingHom.IsIntegralElem
-
-/-- A ring homomorphism `f : R →+* A` is said to be integral
-if every element `A` is integral with respect to the map `f` -/
-def RingHom.IsIntegral (f : R →+* A) :=
-  ∀ x : A, f.IsIntegralElem x
-#align ring_hom.is_integral RingHom.IsIntegral
-
-variable [Algebra R A] (R)
-
-/-- An element `x` of an algebra `A` over a commutative ring `R` is said to be *integral*,
-if it is a root of some monic polynomial `p : R[X]`.
-Equivalently, the element is integral over `R` with respect to the induced `algebraMap` -/
-def IsIntegral (x : A) : Prop :=
-  (algebraMap R A).IsIntegralElem x
-#align is_integral IsIntegral
-
-variable (A)
-
-/-- An algebra is integral if every element of the extension is integral over the base ring -/
-protected class Algebra.IsIntegral : Prop :=
-  isIntegral : ∀ x : A, IsIntegral R x
-#align algebra.is_integral Algebra.IsIntegral
-
-variable {R A}
-
-lemma Algebra.isIntegral_def : Algebra.IsIntegral R A ↔ ∀ x : A, IsIntegral R x :=
-  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
-
-theorem RingHom.isIntegralElem_map {x : R} : f.IsIntegralElem (f x) :=
-  ⟨X - C x, monic_X_sub_C _, by simp⟩
-#align ring_hom.is_integral_map RingHom.isIntegralElem_map
-
-theorem isIntegral_algebraMap {x : R} : IsIntegral R (algebraMap R A x) :=
-  (algebraMap R A).isIntegralElem_map
-#align is_integral_algebra_map isIntegral_algebraMap
-
-end Ring
-
 section
 
 variable {R A B S : Type*}
 variable [CommRing R] [CommRing A] [Ring B] [CommRing S]
 variable [Algebra R A] [Algebra R B] (f : R →+* S)
 
-theorem IsIntegral.map {B C F : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra A B] [Algebra R C]
-    [IsScalarTower R A B] [Algebra A C] [IsScalarTower R A C] {b : B}
-    [FunLike F B C] [AlgHomClass F A B C] (f : F)
-    (hb : IsIntegral R b) : IsIntegral R (f b) := by
-  obtain ⟨P, hP⟩ := hb
-  refine ⟨P, hP.1, ?_⟩
-  rw [← aeval_def, ← aeval_map_algebraMap A,
-    aeval_algHom_apply, aeval_map_algebraMap, aeval_def, hP.2, _root_.map_zero]
-#align map_is_integral IsIntegral.map
-
 section
 
 variable {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 variable (f : A →ₐ[R] B) (hf : Function.Injective f)
 
-theorem isIntegral_algHom_iff {x : A} : IsIntegral R (f x) ↔ IsIntegral R x := by
-  refine ⟨fun ⟨p, hp, hx⟩ ↦ ⟨p, hp, ?_⟩, IsIntegral.map f⟩
-  rwa [← f.comp_algebraMap, ← AlgHom.coe_toRingHom, ← hom_eval₂, AlgHom.coe_toRingHom,
-    map_eq_zero_iff f hf] at hx
-#align is_integral_alg_hom_iff isIntegral_algHom_iff
-
 end
-
-theorem Submodule.span_range_natDegree_eq_adjoin {R A} [CommRing R] [Semiring A] [Algebra R A]
-    {x : A} {f : R[X]} (hf : f.Monic) (hfx : aeval x f = 0) :
-    span R (Finset.image (x ^ ·) (Finset.range (natDegree f))) =
-      Subalgebra.toSubmodule (Algebra.adjoin R {x}) := by
-  nontriviality A
-  have hf1 : f ≠ 1 := by rintro rfl; simp [one_ne_zero' A] at hfx
-  refine (span_le.mpr fun s hs ↦ ?_).antisymm fun r hr ↦ ?_
-  · rcases Finset.mem_image.1 hs with ⟨k, -, rfl⟩
-    exact (Algebra.adjoin R {x}).pow_mem (Algebra.subset_adjoin rfl) k
-  rw [Subalgebra.mem_toSubmodule, Algebra.adjoin_singleton_eq_range_aeval] at hr
-  rcases (aeval x).mem_range.mp hr with ⟨p, rfl⟩
-  rw [← modByMonic_add_div p hf, map_add, map_mul, hfx,
-      zero_mul, add_zero, ← sum_C_mul_X_pow_eq (p %ₘ f), aeval_def, eval₂_sum, sum_def]
-  refine sum_mem fun k hkq ↦ ?_
-  rw [C_mul_X_pow_eq_monomial, eval₂_monomial, ← Algebra.smul_def]
-  exact smul_mem _ _ (subset_span <| Finset.mem_image_of_mem _ <| Finset.mem_range.mpr <|
-    (le_natDegree_of_mem_supp _ hkq).trans_lt <| natDegree_modByMonic_lt p hf hf1)
-
-theorem IsIntegral.fg_adjoin_singleton {x : B} (hx : IsIntegral R x) :
-    (Algebra.adjoin R {x}).toSubmodule.FG := by
-  rcases hx with ⟨f, hfm, hfx⟩
-  use (Finset.range <| f.natDegree).image (x ^ ·)
-  exact span_range_natDegree_eq_adjoin hfm (by rwa [aeval_def])
 
 instance Module.End.isIntegral {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M] :
     Algebra.IsIntegral R (Module.End R M) :=
@@ -174,22 +84,6 @@ nonrec theorem IsIntegral.of_mem_closure {x y z : A} (hx : IsIntegral R x) (hy :
 #align is_integral_of_mem_closure IsIntegral.of_mem_closure
 
 variable (f : R →+* B)
-
-theorem RingHom.isIntegralElem_zero : f.IsIntegralElem 0 :=
-  f.map_zero ▸ f.isIntegralElem_map
-#align ring_hom.is_integral_zero RingHom.isIntegralElem_zero
-
-theorem isIntegral_zero : IsIntegral R (0 : B) :=
-  (algebraMap R B).isIntegralElem_zero
-#align is_integral_zero isIntegral_zero
-
-theorem RingHom.isIntegralElem_one : f.IsIntegralElem 1 :=
-  f.map_one ▸ f.isIntegralElem_map
-#align ring_hom.is_integral_one RingHom.isIntegralElem_one
-
-theorem isIntegral_one : IsIntegral R (1 : B) :=
-  (algebraMap R B).isIntegralElem_one
-#align is_integral_one isIntegral_one
 
 theorem RingHom.IsIntegralElem.add (f : R →+* S) {x y : S}
     (hx : f.IsIntegralElem x) (hy : f.IsIntegralElem y) :
@@ -241,12 +135,6 @@ theorem IsIntegral.smul {R} [CommSemiring R] [CommRing S] [Algebra R B] [Algebra
     rw [← algebraMap_smul S]; apply Subalgebra.smul_mem; exact Algebra.subset_adjoin rfl
 #align is_integral_smul IsIntegral.smul
 
-theorem IsIntegral.of_pow {x : B} {n : ℕ} (hn : 0 < n) (hx : IsIntegral R <| x ^ n) :
-    IsIntegral R x := by
-  rcases hx with ⟨p, hmonic, heval⟩
-  exact ⟨expand R n p, hmonic.expand hn, by rwa [← aeval_def, expand_aeval]⟩
-#align is_integral_of_pow IsIntegral.of_pow
-
 variable (R A)
 
 /-- The integral closure of R in an R-algebra A. -/
@@ -260,17 +148,3 @@ def integralClosure : Subalgebra R A where
 #align integral_closure integralClosure
 
 end
-
-section IsIntegralClosure
-
-/-- `IsIntegralClosure A R B` is the characteristic predicate stating `A` is
-the integral closure of `R` in `B`,
-i.e. that an element of `B` is integral over `R` iff it is an element of (the image of) `A`.
--/
-class IsIntegralClosure (A R B : Type*) [CommRing R] [CommSemiring A] [CommRing B] [Algebra R B]
-  [Algebra A B] : Prop where
-  algebraMap_injective' : Function.Injective (algebraMap A B)
-  isIntegral_iff : ∀ {x : B}, IsIntegral R x ↔ ∃ y, algebraMap A B y = x
-#align is_integral_closure IsIntegralClosure
-
-end IsIntegralClosure
