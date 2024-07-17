@@ -252,7 +252,7 @@ def model : ModelWithCorners ℝ E₀ H₀ := sorry
 
 instance manifold : SmoothManifoldWithCorners (H := H₀) (E := E₀) model/-(model I M)-/ (I.boundary M) := sorry
 
-namespace ScifiBoundary
+end ScifiBoundary
 
 /-- An **unoriented cobordism** between two singular `n`-manifolds (M,f) and (N,g) on `X`
 is a compact smooth `n`-manifold `W` with a continuous map `F: W→ X` whose boundary is diffeomorphic
