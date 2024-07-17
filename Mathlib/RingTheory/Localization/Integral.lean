@@ -8,7 +8,7 @@ import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.Ideal.LocalRing
-import Mathlib.RingTheory.IntegralClosure
+import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
 
