@@ -1,4 +1,4 @@
-import Mathlib.Tactic.MinImports
+import Mathlib.Tactic.Linter.MinImports
 import Mathlib.Tactic
 
 /--
