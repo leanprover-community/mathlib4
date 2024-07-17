@@ -57,8 +57,8 @@ instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
   have : T2Space (TopCat.of A) := by assumption
   have : CompactSpace (TopCat.of B) := by assumption
   have : T2Space (TopCat.of B) := by assumption
-  let A' : CompHaus := ⟨TopCat.of A⟩
-  let B' : CompHaus := ⟨TopCat.of B⟩
+  let A' : CompHaus := ⟨TopCat.of A, trivial⟩
+  let B' : CompHaus := ⟨TopCat.of B, trivial⟩
   let f' : X ⟶ B' := ⟨f, hf⟩
   let g' : A' ⟶ B' := ⟨g,hg⟩
   have : Epi g' := by
@@ -98,7 +98,7 @@ compact, Hausdorff and extremally disconnected topological space.
 -/
 def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [ExtremallyDisconnected X] : Stonean :=
-  ⟨⟨⟨X, inferInstance⟩⟩⟩
+  ⟨⟨X, inferInstance⟩, trivial⟩
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is full. -/
 instance : toCompHaus.Full := fullyFaithfulToCompHaus.full
@@ -153,11 +153,11 @@ example : toProfinite ⋙ profiniteToCompHaus = toCompHaus :=
 noncomputable
 def isoOfHomeo {X Y : Stonean} (f : X ≃ₜ Y) : X ≅ Y :=
   @asIso _ _ _ _ ⟨f, f.continuous⟩
-  (@isIso_of_reflects_iso _ _ _ _ _ _ _ toCompHaus (CompHaus.isoOfHomeo f).isIso_hom _)
+  (@isIso_of_reflects_iso _ _ _ _ _ _ _ toCompHaus (CompHausLike.isoOfHomeo f).isIso_hom _)
 
 /-- Construct a homeomorphism from an isomorphism. -/
 @[simps!]
-def homeoOfIso {X Y : Stonean} (f : X ≅ Y) : X ≃ₜ Y := CompHaus.homeoOfIso (toCompHaus.mapIso f)
+def homeoOfIso {X Y : Stonean} (f : X ≅ Y) : X ≃ₜ Y := CompHausLike.homeoOfIso (toCompHaus.mapIso f)
 
 /-- The equivalence between isomorphisms in `Stonean` and homeomorphisms
 of topological spaces. -/

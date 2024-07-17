@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Floor
-import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.Algebra.Order.Ring.Unbundled.Nonneg
 
 #align_import algebra.order.nonneg.floor from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
 
@@ -45,3 +45,5 @@ theorem nat_ceil_coe [OrderedSemiring α] [FloorSemiring α] (a : { r : α // 0 
     ⌈(a : α)⌉₊ = ⌈a⌉₊ :=
   rfl
 #align nonneg.nat_ceil_coe Nonneg.nat_ceil_coe
+
+end Nonneg

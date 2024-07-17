@@ -34,12 +34,10 @@ def bodd : ℤ → Bool
   | -[n +1] => not (n.bodd)
 #align int.bodd Int.bodd
 
--- Porting note: `bit0, bit1` deprecated, do we need to adapt `bit`?
-set_option linter.deprecated false in
 /-- `bit b` appends the digit `b` to the binary representation of
   its integer input. -/
 def bit (b : Bool) : ℤ → ℤ :=
-  cond b bit1 bit0
+  cond b (2 * · + 1) (2 * ·)
 #align int.bit Int.bit
 
 /-- `testBit m n` returns whether the `(n+1)ˢᵗ` least significant bit is `1` or `0`-/
@@ -211,24 +209,13 @@ theorem div2_val : ∀ n, div2 n = n / 2
   | -[n+1] => congr_arg negSucc n.div2_val
 #align int.div2_val Int.div2_val
 
-section deprecated
-
-set_option linter.deprecated false
-
-@[deprecated (since := "2023-01-02")]
-theorem bit0_val (n : ℤ) : bit0 n = 2 * n :=
-  (two_mul _).symm
-#align int.bit0_val Int.bit0_val
-
-@[deprecated (since := "2023-01-02")]
-theorem bit1_val (n : ℤ) : bit1 n = 2 * n + 1 :=
-  congr_arg (· + (1 : ℤ)) (bit0_val _)
-#align int.bit1_val Int.bit1_val
+#noalign int.bit0_val
+#noalign int.bit1_val
 
 theorem bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
   cases b
-  · apply (bit0_val n).trans (add_zero _).symm
-  · apply bit1_val
+  · apply (add_zero _).symm
+  · rfl
 #align int.bit_val Int.bit_val
 
 theorem bit_decomp (n : ℤ) : bit (bodd n) (div2 n) = n :=
@@ -265,38 +252,18 @@ theorem bodd_bit (b n) : bodd (bit b n) = b := by
   cases b <;> cases bodd n <;> simp [(show bodd 2 = false by rfl)]
 #align int.bodd_bit Int.bodd_bit
 
-@[simp, deprecated (since := "2023-01-02")]
-theorem bodd_bit0 (n : ℤ) : bodd (bit0 n) = false :=
-  bodd_bit false n
-#align int.bodd_bit0 Int.bodd_bit0
-
-@[simp, deprecated (since := "2023-01-02")]
-theorem bodd_bit1 (n : ℤ) : bodd (bit1 n) = true :=
-  bodd_bit true n
-#align int.bodd_bit1 Int.bodd_bit1
-
-@[deprecated (since := "2023-01-02")]
-theorem bit0_ne_bit1 (m n : ℤ) : bit0 m ≠ bit1 n :=
-  mt (congr_arg bodd) <| by simp
-#align int.bit0_ne_bit1 Int.bit0_ne_bit1
-
-@[deprecated (since := "2023-01-02")]
-theorem bit1_ne_bit0 (m n : ℤ) : bit1 m ≠ bit0 n :=
-  (bit0_ne_bit1 _ _).symm
-#align int.bit1_ne_bit0 Int.bit1_ne_bit0
-
-@[deprecated (since := "2023-01-02")]
-theorem bit1_ne_zero (m : ℤ) : bit1 m ≠ 0 := by simpa only [bit0_zero] using bit1_ne_bit0 m 0
-#align int.bit1_ne_zero Int.bit1_ne_zero
-
-end deprecated
+#noalign int.bodd_bit0
+#noalign int.bodd_bit1
+#noalign int.bit0_ne_bit1
+#noalign int.bit1_ne_bit0
+#noalign int.bit1_ne_zero
 
 @[simp]
 theorem testBit_bit_zero (b) : ∀ n, testBit (bit b n) 0 = b
   | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_zero
   | -[n+1] => by
-    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_bit_zero]; clear testBit_bit_zero;
-        cases b <;>
+    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_bit_zero]; clear testBit_bit_zero
+    cases b <;>
       rfl
 #align int.test_bit_zero Int.testBit_bit_zero
 
