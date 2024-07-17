@@ -131,6 +131,14 @@ def starCenterIsoCentroid : StarSubsemiring.center α ≃⋆+* CentroidHom α wh
   right_inv T := CentroidHom.ext <| fun _ => by
     simp [starCenterToCentroid_apply, ← map_mul_right]
 
+@[simp]
+lemma starCenterIsoCentroid_apply (a : ↥(NonUnitalStarSubsemiring.center α)) :
+    CentroidHom.starCenterIsoCentroid a = CentroidHom.starCenterToCentroid.toFun a := rfl
+
+@[simp]
+lemma starCenterIsoCentroid_symm_apply_coe (T : CentroidHom α) :
+    ↑(CentroidHom.starCenterIsoCentroid.symm T) = T 1 := rfl
+
 end NonAssocStarSemiring
 
 end CentroidHom
