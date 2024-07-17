@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Init.Control.Combinators
-import Mathlib.Init.Function
+import Mathlib.Control.Combinators
+import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Attr.Core
 
@@ -75,8 +75,6 @@ end Applicative
 section Monad
 
 variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
-
-open List
 
 #align list.mpartition List.partitionM
 
@@ -253,7 +251,7 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
   f <$> a <*> b = flip f <$> b <*> a :=
   calc
     f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) := by
-      simp only [map_seq, map_map]; rfl
+      simp only [map_seq, map_map, Function.comp_def]
     _ = (fun b a => f a b) <$> b <*> a := by
       rw [@CommApplicative.commutative_prod m h]
       simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]

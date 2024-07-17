@@ -232,6 +232,7 @@ theorem exp_nat_mul (x : ℂ) : ∀ n : ℕ, exp (n * x) = exp x ^ n
   | Nat.succ n => by rw [pow_succ, Nat.cast_add_one, add_mul, exp_add, ← exp_nat_mul _ n, one_mul]
 #align complex.exp_nat_mul Complex.exp_nat_mul
 
+@[simp]
 theorem exp_ne_zero : exp x ≠ 0 := fun h =>
   zero_ne_one <| by rw [← exp_zero, ← add_neg_self x, exp_add, h]; simp
 #align complex.exp_ne_zero Complex.exp_ne_zero
@@ -584,8 +585,8 @@ theorem cos_eq (z : ℂ) : cos z = cos z.re * cosh z.im - sin z.re * sinh z.im *
 theorem sin_sub_sin : sin x - sin y = 2 * sin ((x - y) / 2) * cos ((x + y) / 2) := by
   have s1 := sin_add ((x + y) / 2) ((x - y) / 2)
   have s2 := sin_sub ((x + y) / 2) ((x - y) / 2)
-  rw [div_add_div_same, add_sub, add_right_comm, add_sub_cancel_right, half_add_self] at s1
-  rw [div_sub_div_same, ← sub_add, add_sub_cancel_left, half_add_self] at s2
+  rw [div_add_div_same, add_sub, add_right_comm, add_sub_cancel_right, add_self_div_two] at s1
+  rw [div_sub_div_same, ← sub_add, add_sub_cancel_left, add_self_div_two] at s2
   rw [s1, s2]
   ring
 #align complex.sin_sub_sin Complex.sin_sub_sin
@@ -593,8 +594,8 @@ theorem sin_sub_sin : sin x - sin y = 2 * sin ((x - y) / 2) * cos ((x + y) / 2) 
 theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - y) / 2) := by
   have s1 := cos_add ((x + y) / 2) ((x - y) / 2)
   have s2 := cos_sub ((x + y) / 2) ((x - y) / 2)
-  rw [div_add_div_same, add_sub, add_right_comm, add_sub_cancel_right, half_add_self] at s1
-  rw [div_sub_div_same, ← sub_add, add_sub_cancel_left, half_add_self] at s2
+  rw [div_add_div_same, add_sub, add_right_comm, add_sub_cancel_right, add_self_div_two] at s1
+  rw [div_sub_div_same, ← sub_add, add_sub_cancel_left, add_self_div_two] at s2
   rw [s1, s2]
   ring
 #align complex.cos_sub_cos Complex.cos_sub_cos
@@ -855,6 +856,7 @@ nonrec theorem exp_nat_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n :=
   ofReal_injective (by simp [exp_nat_mul])
 #align real.exp_nat_mul Real.exp_nat_mul
 
+@[simp]
 nonrec theorem exp_ne_zero : exp x ≠ 0 := fun h =>
   exp_ne_zero x <| by rw [exp, ← ofReal_inj] at h; simp_all
 #align real.exp_ne_zero Real.exp_ne_zero
@@ -1725,9 +1727,6 @@ end Mathlib.Meta.Positivity
 
 namespace Complex
 
-#adaptation_note /-- nightly-2024-04-01
-The simpNF linter now times out on this lemma.
-See https://github.com/leanprover-community/mathlib4/issues/12230 -/
 @[simp]
 theorem abs_cos_add_sin_mul_I (x : ℝ) : abs (cos x + sin x * I) = 1 := by
   have := Real.sin_sq_add_cos_sq x
