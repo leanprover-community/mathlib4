@@ -1,5 +1,5 @@
 import Mathlib.Tactic.DeprecateMe
-import Mathlib.Tactic.ToAdditive.Frontend
+import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic
 
 /--

@@ -8,7 +8,7 @@ import Mathlib.Init.ZeroOne
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.ToAdditive.Frontend
+import Mathlib.Tactic.ToAdditive
 import Mathlib.Util.AssertExists
 
 #align_import algebra.group.defs from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"

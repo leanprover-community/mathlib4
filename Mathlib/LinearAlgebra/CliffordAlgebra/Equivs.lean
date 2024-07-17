@@ -259,8 +259,7 @@ variable {R : Type*} [CommRing R] (c₁ c₂ : R)
 /-- `Q c₁ c₂` is a quadratic form over `R × R` such that `CliffordAlgebra (Q c₁ c₂)` is isomorphic
 as an `R`-algebra to `ℍ[R,c₁,c₂]`. -/
 def Q : QuadraticForm R (R × R) :=
-   -- Porting note: Added `(R := R)`
-  QuadraticForm.prod (c₁ • QuadraticMap.sq (R := R)) (c₂ • QuadraticMap.sq)
+  (c₁ • QuadraticMap.sq).prod (c₂ • QuadraticMap.sq)
 set_option linter.uppercaseLean3 false in
 #align clifford_algebra_quaternion.Q CliffordAlgebraQuaternion.Q
 
