@@ -80,7 +80,7 @@ instance instModule : Module 𝕜 (E →WOT[𝕜] F) := inferInstanceAs <| Modul
 variable (𝕜) (E) (F)
 
 unseal ContinuousLinearMapWOT in
-/-- The equivalence that sends a continuous linear map to the type copy endowed with the
+/-- The linear equivalence that sends a continuous linear map to the type copy endowed with the
 weak operator topology.  -/
 def _root_.ContinuousLinearMap.toWOT : (E →L[𝕜] F) ≃ₗ[𝕜] (E →WOT[𝕜] F) := LinearEquiv.refl 𝕜 _
 
@@ -146,12 +146,14 @@ continuous for all `x, y`. -/
 instance instTopologicalSpace : TopologicalSpace (E →WOT[𝕜] F) :=
   .induced (inducingFn _ _ _) Pi.topologicalSpace
 
+@[fun_prop]
 lemma continuous_inducingFn : Continuous (inducingFn 𝕜 E F) :=
   continuous_induced_dom
 
 lemma continuous_dual_apply (x : E) (y : F⋆) : Continuous fun (A : E →WOT[𝕜] F) => y (A x) := by
   refine (continuous_pi_iff.mp continuous_inducingFn) ⟨x, y⟩
 
+@[fun_prop]
 lemma continuous_of_dual_apply_continuous {α : Type*} [TopologicalSpace α] {g : α → E →WOT[𝕜] F}
     (h : ∀ x (y : F⋆), Continuous fun a => y (g a x)) : Continuous g :=
   continuous_induced_rng.2 (continuous_pi_iff.mpr fun p => h p.1 p.2)
