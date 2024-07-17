@@ -210,7 +210,7 @@ theorem exists_most_significant_bit {n : ℕ} (h : n ≠ 0) :
     rw [show b = true by
         revert h
         cases b <;> simp]
-    refine ⟨0, ⟨by rw [testBit_bit_zero], fun j hj => ?_⟩⟩
+    refine ⟨0, ⟨by rw [bit_testBit_zero], fun j hj => ?_⟩⟩
     obtain ⟨j', rfl⟩ := exists_eq_succ_of_ne_zero (ne_of_gt hj)
     rw [testBit_bit_succ, zero_testBit]
   · obtain ⟨k, ⟨hk, hk'⟩⟩ := hn h'
@@ -229,7 +229,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
   · exact False.elim (Bool.false_ne_true ((zero_testBit i).symm.trans hm))
   by_cases hi : i = 0
   · subst hi
-    simp only [testBit_bit_zero] at hn hm
+    simp only [bit_testBit_zero] at hn hm
     have : n = m :=
       eq_of_testBit_eq fun i => by convert hnm (i + 1) (Nat.zero_lt_succ _) using 1
       <;> rw [testBit_bit_succ]
