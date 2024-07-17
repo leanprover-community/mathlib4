@@ -862,14 +862,8 @@ theorem eventually_nhds_iff {p : X → Prop} :
 #align eventually_nhds_iff eventually_nhds_iff
 
 theorem frequently_nhds_iff {p : X → Prop} :
-    (∃ᶠ x in 𝓝 x, p x) ↔ ∀ U : Set X, IsOpen U → x ∈ U → ∃ x ∈ U, p x := by
-  simp only [frequently_iff, mem_nhds_iff, forall_exists_index, and_imp]
-  constructor
-  · intro a b c d
-    exact a b subset_rfl c d
-  · intro a _ c d e f
-    obtain ⟨v, hv, hv2⟩ := a c e f
-    exact ⟨v, d hv, hv2⟩
+    (∃ᶠ y in 𝓝 x, p y) ↔ ∀ U : Set X, IsOpen U → x ∈ U → ∃ y ∈ U, p y :=
+  (nhds_basis_opens x).frequently_iff.trans <| by simp [and_comm]
 
 theorem mem_interior_iff_mem_nhds : x ∈ interior s ↔ s ∈ 𝓝 x :=
   mem_interior.trans mem_nhds_iff.symm
@@ -1049,20 +1043,6 @@ theorem Filter.EventuallyEq.tendsto {l : Filter α} {f : α → X} (hf : f =ᶠ[
     Tendsto f l (𝓝 x) :=
   tendsto_nhds_of_eventually_eq hf
 
-lemma map_nhds_le_nhds_apply {α : Type*} [TopologicalSpace α] {x : α}
-    {f : α → X} (hf1 : Continuous f) : map f (𝓝 x) ≤ 𝓝 (f x) := by
-  simp only [le_nhds_iff, mem_map, mem_nhds_iff]
-  intro s hs hs2
-  use f ⁻¹' s
-  simp [hs, hf1.isOpen_preimage, hs2, subset_rfl]
-
-lemma map_nhdsWithin_le_nhdsWithin_apply {α : Type*} [TopologicalSpace α]
-    {x : α} {S : Set X} {f : α → X} (hf1 : Continuous f) :
-    map f (𝓝[f ⁻¹' S] x) ≤ 𝓝[S] f x := by
-  rw [nhdsWithin, map_inf_principal_preimage]
-  apply inf_le_inf_right
-  apply map_nhds_le_nhds_apply hf1
-
 /-!
 ### Cluster points
 
@@ -1199,17 +1179,6 @@ theorem AccPt.mono {F G : Filter X} (h : AccPt x F) (hFG : F ≤ G) : AccPt x G 
 
 theorem AccPt.clusterPt (x : X) (F : Filter X) (h : AccPt x F) : ClusterPt x F :=
   ((acc_iff_cluster x F).mp h).mono inf_le_right
-
-theorem AccPt.map {Y : Type*} [TopologicalSpace Y] {F : Filter Y} {x : Y}
-    (h : AccPt x F) {f : Y → X} (hf1 : Continuous f) (hf2 : Function.Injective f) :
-    AccPt (f x) (map f F) := by
-  have : (Filter.map f (𝓝[≠] x ⊓ F)).NeBot := map_neBot (hf := h)
-  rw [Filter.map_inf hf2] at this
-  apply this.mono
-  apply inf_le_inf_right
-  convert map_nhdsWithin_le_nhdsWithin_apply hf1
-  ext y
-  simp [hf2.ne_iff]
 
 /-!
 ### Interior, closure and frontier in terms of neighborhoods
