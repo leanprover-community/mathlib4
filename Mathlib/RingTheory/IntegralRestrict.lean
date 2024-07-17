@@ -268,26 +268,6 @@ lemma Algebra.intTrace_eq_of_isLocalization
   rw [← IsScalarTower.algebraMap_apply, Algebra.algebraMap_intTrace_fractionRing,
     Algebra.algebraMap_intTrace (L := L), ← IsScalarTower.algebraMap_apply]
 
-variable {A} in
-lemma isIntegrallyClosed_of_isLocalization [IsIntegrallyClosed A] [IsDomain A] (M : Submonoid A)
-    (hM : M ≤ A⁰) [IsLocalization M B] : IsIntegrallyClosed B := by
-  let K := FractionRing A
-  let g : B →+* K := IsLocalization.map _ (T := A⁰) (RingHom.id A) hM
-  letI := g.toAlgebra
-  have : IsScalarTower A B K := IsScalarTower.of_algebraMap_eq'
-    (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, RingHomCompTriple.comp_eq])
-  have := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M B K
-  refine (isIntegrallyClosed_iff_isIntegralClosure (K := K)).mpr
-    ⟨IsFractionRing.injective _ _, fun {x} ↦ ⟨?_, fun e ↦ e.choose_spec ▸ isIntegral_algebraMap⟩⟩
-  intro hx
-  obtain ⟨⟨y, y_mem⟩, hy⟩ := hx.exists_multiple_integral_of_isLocalization M _
-  obtain ⟨z, hz⟩ := (isIntegrallyClosed_iff _).mp ‹_› hy
-  refine' ⟨IsLocalization.mk' B z ⟨y, y_mem⟩, (IsLocalization.lift_mk'_spec _ _ _ _).mpr _⟩
-  rw [RingHom.comp_id, hz, ← Algebra.smul_def]
-  rfl
-
-
-
 end trace
 
 section norm
