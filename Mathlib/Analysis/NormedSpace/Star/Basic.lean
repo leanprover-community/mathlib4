@@ -19,8 +19,8 @@ import Mathlib.Topology.Algebra.Module.Star
 A normed star group is a normed group with a compatible `star` which is isometric.
 
 A C⋆-ring is a normed star group that is also a ring and that verifies the stronger
-condition `‖x⋆ * x‖ = ‖x‖^2` for all `x`.  If a C⋆-ring is also a star algebra, then it is a
-C⋆-algebra.
+condition `‖x‖^2 ≤ ‖x⋆ * x‖` for all `x` (which actually implies equality). If a C⋆-ring is also
+a star algebra, then it is a C⋆-algebra.
 
 To get a C⋆-algebra `E` over field `𝕜`, use
 `[NormedField 𝕜] [StarRing 𝕜] [NormedRing E] [StarRing E] [CstarRing E]
@@ -79,13 +79,16 @@ instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedSta
   ⟨@norm_star _ _ _ _⟩
 #align ring_hom_isometric.star_ring_end RingHomIsometric.starRingEnd
 
-/-- A C*-ring is a normed star ring that satisfies the stronger condition `‖x⋆ * x‖ = ‖x‖^2`
-for every `x`. -/
+/-- A C*-ring is a normed star ring that satisfies the stronger condition `‖x‖ ^ 2 ≤ ‖x⋆ * x‖`
+for every `x`. Note that this condition actually implies equality, as is shown in
+`norm_star_mul_self` below. -/
 class CstarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
-  norm_star_mul_self : ∀ {x : E}, ‖x⋆ * x‖ = ‖x‖ * ‖x‖
+  norm_mul_self_le : ∀ x : E, ‖x‖ * ‖x‖ ≤ ‖x⋆ * x‖
 #align cstar_ring CstarRing
 
-instance : CstarRing ℝ where norm_star_mul_self {x} := by simp only [star, id, norm_mul]
+instance : CstarRing ℝ where
+  norm_mul_self_le x := by
+    simp only [Real.norm_eq_abs, abs_mul_abs_self, star, id, norm_mul, le_refl]
 
 namespace CstarRing
 
@@ -101,18 +104,18 @@ instance (priority := 100) to_normedStarGroup : NormedStarGroup E :=
     by_cases htriv : x = 0
     · simp only [htriv, star_zero]
     · have hnt : 0 < ‖x‖ := norm_pos_iff.mpr htriv
-      have hnt_star : 0 < ‖x⋆‖ :=
-        norm_pos_iff.mpr ((AddEquiv.map_ne_zero_iff starAddEquiv (M := E)).mpr htriv)
-      have h₁ :=
-        calc
-          ‖x‖ * ‖x‖ = ‖x⋆ * x‖ := norm_star_mul_self.symm
-          _ ≤ ‖x⋆‖ * ‖x‖ := norm_mul_le _ _
-      have h₂ :=
-        calc
-          ‖x⋆‖ * ‖x⋆‖ = ‖x * x⋆‖ := by rw [← norm_star_mul_self, star_star]
-          _ ≤ ‖x‖ * ‖x⋆‖ := norm_mul_le _ _
-      exact le_antisymm (le_of_mul_le_mul_right h₂ hnt_star) (le_of_mul_le_mul_right h₁ hnt)⟩
+      have h₁ : ∀ z : E, ‖z⋆ * z‖ ≤ ‖z⋆‖ * ‖z‖ := fun z => norm_mul_le z⋆ z
+      have h₂ : ∀ z : E, 0 < ‖z‖ → ‖z‖ ≤ ‖z⋆‖ := fun z hz => by
+        rw [← mul_le_mul_right hz]; exact (CstarRing.norm_mul_self_le z).trans (h₁ z)
+      have h₃ : ‖x⋆‖ ≤ ‖x‖ := by
+        conv_rhs => rw [← star_star x]
+        exact h₂ x⋆ (gt_of_ge_of_gt (h₂ x hnt) hnt)
+      exact le_antisymm h₃ (h₂ x hnt)⟩
 #align cstar_ring.to_normed_star_group CstarRing.to_normedStarGroup
+
+theorem norm_star_mul_self {x : E} : ‖x⋆ * x‖ = ‖x‖ * ‖x‖ :=
+  le_antisymm ((norm_mul_le _ _).trans (by rw [norm_star])) (CstarRing.norm_mul_self_le x)
+#align cstar_ring.norm_star_mul_self CstarRing.norm_star_mul_self
 
 theorem norm_self_mul_star {x : E} : ‖x * x⋆‖ = ‖x‖ * ‖x‖ := by
   nth_rw 1 [← star_star x]
@@ -167,19 +170,16 @@ instance _root_.Pi.starRing' : StarRing (∀ i, R i) :=
 variable [Fintype ι] [∀ i, CstarRing (R i)]
 
 instance _root_.Prod.cstarRing : CstarRing (R₁ × R₂) where
-  norm_star_mul_self {x} := by
+  norm_mul_self_le x := by
     dsimp only [norm]
     simp only [Prod.fst_mul, Prod.fst_star, Prod.snd_mul, Prod.snd_star, norm_star_mul_self, ← sq]
-    refine le_antisymm ?_ ?_
-    · refine max_le ?_ ?_ <;> rw [sq_le_sq, abs_of_nonneg (norm_nonneg _)]
-      · exact (le_max_left _ _).trans (le_abs_self _)
-      · exact (le_max_right _ _).trans (le_abs_self _)
-    · rw [le_sup_iff]
-      rcases le_total ‖x.fst‖ ‖x.snd‖ with (h | h) <;> simp [h]
+    rw [le_sup_iff]
+    rcases le_total ‖x.fst‖ ‖x.snd‖ with (h | h) <;> simp [h]
 #align prod.cstar_ring Prod.cstarRing
 
 instance _root_.Pi.cstarRing : CstarRing (∀ i, R i) where
-  norm_star_mul_self {x} := by
+  norm_mul_self_le x := by
+    refine le_of_eq (Eq.symm ?_)
     simp only [norm, Pi.mul_apply, Pi.star_apply, nnnorm_star_mul_self, ← sq]
     norm_cast
     exact
@@ -315,7 +315,7 @@ instance toNormedAlgebra {𝕜 A : Type*} [NormedField 𝕜] [StarRing 𝕜] [Se
 
 instance to_cstarRing {R A} [CommRing R] [StarRing R] [NormedRing A] [StarRing A] [CstarRing A]
     [Algebra R A] [StarModule R A] (S : StarSubalgebra R A) : CstarRing S where
-  norm_star_mul_self {x} := @CstarRing.norm_star_mul_self A _ _ _ x
+  norm_mul_self_le x := @CstarRing.norm_mul_self_le A _ _ _ x
 #align star_subalgebra.to_cstar_ring StarSubalgebra.to_cstarRing
 
 end StarSubalgebra

@@ -15,7 +15,9 @@ namespace TwoSidedIdeal
 variable (R : Type*) [NonUnitalNonAssocRing R]
 
 instance : Sup (TwoSidedIdeal R) where
-  sup := fun I J => { ringCon := I.ringCon ⊔ J.ringCon }
+  sup I J := { ringCon := I.ringCon ⊔ J.ringCon }
+
+lemma sup_ringCon (I J : TwoSidedIdeal R) : (I ⊔ J).ringCon = I.ringCon ⊔ J.ringCon := rfl
 
 instance : SemilatticeSup (TwoSidedIdeal R) where
   le_sup_left I J :=  by rw [ringCon_le_iff]; exact le_sup_left
@@ -26,13 +28,13 @@ section sup
 
 variable {R}
 
-lemma mem_sup_left {I J : TwoSidedIdeal R} {x : R} :
-    x ∈ I → x ∈ I ⊔ J :=
-  fun h => (show I ≤ I ⊔ J from le_sup_left) h
+lemma mem_sup_left {I J : TwoSidedIdeal R} {x : R} (h : x ∈ I) :
+    x ∈ I ⊔ J :=
+  (show I ≤ I ⊔ J from le_sup_left) h
 
-lemma mem_sup_right {I J : TwoSidedIdeal R} {x : R} :
-    x ∈ J → x ∈ I ⊔ J :=
-  fun h => (show J ≤ I ⊔ J from le_sup_right) h
+lemma mem_sup_right {I J : TwoSidedIdeal R} {x : R} (h : x ∈ J) :
+    x ∈ I ⊔ J :=
+  (show J ≤ I ⊔ J from le_sup_right) h
 
 lemma mem_sup {I J : TwoSidedIdeal R} {x : R} :
     x ∈ I ⊔ J ↔ ∃ y ∈ I, ∃ z ∈ J, y + z = x := by
@@ -48,19 +50,18 @@ lemma mem_sup {I J : TwoSidedIdeal R} {x : R} :
           exact ⟨_, ⟨mul_mem_left _ _ _ hx, ⟨_, ⟨mul_mem_left _ _ _ hy, mul_add _ _ _ |>.symm⟩⟩⟩⟩)
       (by rintro r _ ⟨x, ⟨hx, ⟨y, ⟨hy, rfl⟩⟩⟩⟩
           exact ⟨_, ⟨mul_mem_right _ _ _ hx, ⟨_, ⟨mul_mem_right _ _ _ hy, add_mul _ _ _ |>.symm⟩⟩⟩⟩)
-
     suffices (I.ringCon ⊔ J.ringCon) ≤ s.ringCon by
       intro h; convert this h; rw [rel_iff, sub_zero, mem_mk']; rfl
-
     refine sup_le (fun x y h => ?_) (fun x y h => ?_) <;> rw [rel_iff] at h ⊢ <;> rw [mem_mk']
     exacts [⟨_, ⟨h, ⟨0, ⟨zero_mem _, add_zero _⟩⟩⟩⟩, ⟨0, ⟨zero_mem _, ⟨_, ⟨h, zero_add _⟩⟩⟩⟩]
-
   · rintro ⟨y, ⟨hy, ⟨z, ⟨hz, rfl⟩⟩⟩⟩; exact add_mem _ (mem_sup_left hy) (mem_sup_right hz)
 
 end sup
 
 instance : Inf (TwoSidedIdeal R) where
   inf := fun I J => { ringCon := I.ringCon ⊓ J.ringCon }
+
+lemma inf_ringCon (I J : TwoSidedIdeal R) : (I ⊓ J).ringCon = I.ringCon ⊓ J.ringCon := rfl
 
 instance : SemilatticeInf (TwoSidedIdeal R) where
   inf_le_left I J := by rw [ringCon_le_iff]; exact inf_le_left
@@ -74,12 +75,26 @@ lemma mem_inf {I J : TwoSidedIdeal R} {x : R} :
 instance : SupSet (TwoSidedIdeal R) where
   sSup s := { ringCon := sSup $ TwoSidedIdeal.ringCon '' s }
 
+lemma sSup_ringCon (S : Set (TwoSidedIdeal R)) :
+    (sSup S).ringCon = sSup (TwoSidedIdeal.ringCon '' S) := rfl
+
+lemma iSup_ringCon {ι : Type*} (I : ι → TwoSidedIdeal R) :
+    (⨆ i, I i).ringCon = ⨆ i, (I i).ringCon := by
+  simp only [iSup, sSup_ringCon]; congr; ext; simp
+
 instance : CompleteSemilatticeSup (TwoSidedIdeal R) where
   sSup_le s I h := by simp_rw [ringCon_le_iff] at h ⊢; exact sSup_le $ by aesop
   le_sSup s I hI := by rw [ringCon_le_iff]; exact le_sSup $ by aesop
 
 instance : InfSet (TwoSidedIdeal R) where
   sInf s := { ringCon := sInf $ TwoSidedIdeal.ringCon '' s }
+
+lemma sInf_ringCon (S : Set (TwoSidedIdeal R)) :
+    (sInf S).ringCon = sInf (TwoSidedIdeal.ringCon '' S) := rfl
+
+lemma iInf_ringCon {ι : Type*} (I : ι → TwoSidedIdeal R) :
+    (⨅ i, I i).ringCon = ⨅ i, (I i).ringCon := by
+  simp only [iInf, sInf_ringCon]; congr!; ext; simp
 
 instance : CompleteSemilatticeInf (TwoSidedIdeal R) where
   le_sInf s I h := by simp_rw [ringCon_le_iff] at h ⊢; exact le_sInf $ by aesop
@@ -96,8 +111,12 @@ lemma mem_sInf {S : Set (TwoSidedIdeal R)} {x : R} :
 instance : Top (TwoSidedIdeal R) where
   top := { ringCon := ⊤ }
 
+lemma top_ringCon : (⊤ : TwoSidedIdeal R).ringCon = ⊤ := rfl
+
 instance : Bot (TwoSidedIdeal R) where
   bot := { ringCon := ⊥ }
+
+lemma bot_ringCon : (⊥ : TwoSidedIdeal R).ringCon = ⊥ := rfl
 
 lemma mem_bot {x : R} : x ∈ (⊥ : TwoSidedIdeal R) ↔ x = 0 :=
   Iff.rfl

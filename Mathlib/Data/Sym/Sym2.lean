@@ -46,6 +46,7 @@ symmetric square, unordered pairs, symmetric powers
 
 assert_not_exists MonoidWithZero
 
+open Mathlib (Vector)
 open Finset Function Sym
 
 universe u
@@ -286,6 +287,20 @@ theorem map.injective {f : α → β} (hinj : Injective f) : Injective (map f) :
   refine Sym2.inductionOn₂ z z' (fun x y x' y' => ?_)
   simp [hinj.eq_iff]
 #align sym2.map.injective Sym2.map.injective
+
+/-- `mk a` as an embedding. This is the symmetric version of `Function.Embedding.sectl`. -/
+@[simps]
+def mkEmbedding (a : α) : α ↪ Sym2 α where
+  toFun b := s(a, b)
+  inj' b₁ b₁ h := by
+    simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, true_and, Prod.swap_prod_mk] at h
+    obtain rfl | ⟨rfl, rfl⟩ := h <;> rfl
+
+/-- `Sym2.map` as an embedding. -/
+@[simps]
+def _root_.Function.Embedding.sym2Map (f : α ↪ β) : Sym2 α ↪ Sym2 β where
+  toFun := map f
+  inj' := map.injective f.injective
 
 section Membership
 
@@ -763,5 +778,9 @@ instance [IsEmpty α] : IsEmpty (Sym2 α) :=
 
 instance [Nontrivial α] : Nontrivial (Sym2 α) :=
   diag_injective.nontrivial
+
+-- TODO: use a sort order if available, https://github.com/leanprover-community/mathlib/issues/18166
+unsafe instance [Repr α] : Repr (Sym2 α) where
+  reprPrec s _ := f!"s({repr s.unquot.1}, {repr s.unquot.2})"
 
 end Sym2

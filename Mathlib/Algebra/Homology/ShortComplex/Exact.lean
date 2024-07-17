@@ -6,7 +6,8 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
-import Mathlib.CategoryTheory.Abelian.Exact
+import Mathlib.CategoryTheory.Abelian.Opposite
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Preadditive.Injective
 
 /-!
@@ -170,15 +171,6 @@ lemma exact_iff_kernel_ι_comp_cokernel_π_zero [S.HasHomology]
   haveI := HasRightHomology.hasKernel S
   exact S.exact_iff_i_p_zero (LeftHomologyData.ofHasKernelOfHasCokernel S)
     (RightHomologyData.ofHasCokernelOfHasKernel S)
-
-/-- The notion of exactness given by `ShortComplex.Exact` is equivalent to
-the one given by the previous API `CategoryTheory.Exact` in the case of
-abelian categories. -/
-lemma _root_.CategoryTheory.exact_iff_shortComplex_exact
-    {A : Type*} [Category A] [Abelian A] (S : ShortComplex A) :
-    CategoryTheory.Exact S.f S.g ↔ S.Exact := by
-  simp only [Abelian.exact_iff, S.zero,
-    S.exact_iff_kernel_ι_comp_cokernel_π_zero, true_and]
 
 variable {S}
 
@@ -916,6 +908,16 @@ lemma Exact.liftFromProjective_comp
   have := hS.epi_toCycles
   dsimp [liftFromProjective]
   rw [← toCycles_i, Projective.factorThru_comp_assoc, liftCycles_i]
+
+
+@[deprecated (since := "2024-07-09")] alias _root_.CategoryTheory.Exact.lift :=
+  Exact.liftFromProjective
+@[deprecated (since := "2024-07-09")] alias _root_.CategoryTheory.Exact.lift_comp :=
+  Exact.liftFromProjective_comp
+@[deprecated (since := "2024-07-09")] alias _root_.CategoryTheory.Injective.Exact.desc :=
+  Exact.descToInjective
+@[deprecated (since := "2024-07-09")] alias _root_.CategoryTheory.Injective.Exact.comp_desc :=
+  Exact.comp_descToInjective
 
 end Abelian
 
