@@ -346,59 +346,52 @@ namespace ShortExact
 variable {S}
 variable (hS : S.ShortExact)
 
+section
+
+local notation "W" => HomologicalComplex.quasiIso C (ComplexShape.up ℤ)
+local notation "S'" => S.map (CochainComplex.singleFunctor C 0)
+local notation "hS'" => hS.map_of_exact (HomologicalComplex.single _ _ _)
+local notation "K" => CochainComplex.mappingCone (ShortComplex.f S')
+local notation "qis" => CochainComplex.mappingCone.descShortComplex S'
+local notation "hqis" => CochainComplex.mappingCone.quasiIso_descShortComplex hS'
+local notation "δ" => Triangle.mor₃ (CochainComplex.mappingCone.triangle (ShortComplex.f S'))
+
+instance : HasSmallLocalizedShiftedHom.{w} W ℤ (S').X₃ (S').X₁ := by
+  dsimp
+  infer_instance
+
+private lemma hasSmallLocalizedHom_S'_X₃_K :
+    HasSmallLocalizedHom.{w} W (S').X₃ K := by
+  rw [Localization.hasSmallLocalizedHom_iff_target W (S').X₃ qis hqis]
+  dsimp
+  apply Localization.hasSmallLocalizedHom_of_hasSmallLocalizedShiftedHom₀ (M := ℤ)
+
+private lemma hasSmallLocalizedShiftedHom_K_S'_X₁ :
+    HasSmallLocalizedShiftedHom.{w} W ℤ K (S').X₁ := by
+  rw [Localization.hasSmallLocalizedShiftedHom_iff_source.{w} W ℤ qis hqis (S').X₁]
+  infer_instance
+
 /-- The class in `Ext S.X₃ S.X₁ 1` that is attached to a short exact
 short complex `S` in an abelian category. -/
 noncomputable def extClass : Ext.{w} S.X₃ S.X₁ 1 := by
-  let W := (HomologicalComplex.quasiIso C (ComplexShape.up ℤ))
-  let S' := S.map (CochainComplex.singleFunctor C 0)
-  have hS' : S'.ShortExact := hS.map_of_exact (HomologicalComplex.single _ _ _)
-  let K := CochainComplex.mappingCone S'.f
-  let w : K ⟶ S'.X₃ := CochainComplex.mappingCone.descShortComplex S'
-  have hw : W w := CochainComplex.mappingCone.quasiIso_descShortComplex hS'
-  let δ : K ⟶ S'.X₁⟦(1 : ℤ)⟧ := (CochainComplex.mappingCone.triangle S'.f).mor₃
-  have : HasSmallLocalizedShiftedHom.{w} W ℤ S'.X₃ S'.X₁ := by
-    dsimp [W, S']
-    infer_instance
-  have : HasSmallLocalizedHom.{w} W S'.X₃ K := by
-    rw [Localization.hasSmallLocalizedHom_iff_target W S'.X₃ w hw]
-    dsimp [W, S']
-    apply Localization.hasSmallLocalizedHom_of_hasSmallLocalizedShiftedHom₀ (M := ℤ)
-  have : HasSmallLocalizedShiftedHom.{w} W ℤ K S'.X₁ := by
-    rw [Localization.hasSmallLocalizedShiftedHom_iff_source.{w} W ℤ w hw S'.X₁]
-    dsimp [W, S']
-    infer_instance
-  change SmallHom W S'.X₃ (S'.X₁⟦(1 : ℤ)⟧)
-  exact (SmallHom.mkInv w hw).comp (SmallHom.mk W δ)
+  have := hS.hasSmallLocalizedHom_S'_X₃_K
+  have := hS.hasSmallLocalizedShiftedHom_K_S'_X₁
+  change SmallHom W (S').X₃ ((S').X₁⟦(1 : ℤ)⟧)
+  exact (SmallHom.mkInv qis hqis).comp (SmallHom.mk W δ)
 
 @[simp]
 lemma extClass_hom [HasDerivedCategory.{w'} C] : hS.extClass.hom = hS.singleδ := by
-  let W := (HomologicalComplex.quasiIso C (ComplexShape.up ℤ))
-  let S' := S.map (CochainComplex.singleFunctor C 0)
-  have hS' : S'.ShortExact := hS.map_of_exact (HomologicalComplex.single _ _ _)
-  let K := CochainComplex.mappingCone S'.f
-  let w : K ⟶ S'.X₃ := CochainComplex.mappingCone.descShortComplex S'
-  have hw : W w := CochainComplex.mappingCone.quasiIso_descShortComplex hS'
-  let δ : K ⟶ S'.X₁⟦(1 : ℤ)⟧ := (CochainComplex.mappingCone.triangle S'.f).mor₃
-  have : HasSmallLocalizedShiftedHom.{w} W ℤ S'.X₃ S'.X₁ := by
-    dsimp [W, S']
-    infer_instance
-  have : HasSmallLocalizedHom.{w} W S'.X₃ K := by
-    rw [Localization.hasSmallLocalizedHom_iff_target W S'.X₃ w hw]
-    dsimp [W, S']
-    apply Localization.hasSmallLocalizedHom_of_hasSmallLocalizedShiftedHom₀ (M := ℤ)
-  have : HasSmallLocalizedShiftedHom.{w} W ℤ K S'.X₁ := by
-    rw [Localization.hasSmallLocalizedShiftedHom_iff_source.{w} W ℤ w hw S'.X₁]
-    dsimp [W, S']
-    infer_instance
-  change SmallShiftedHom.equiv W Q ((SmallHom.mkInv w hw).comp (SmallHom.mk W δ)) = _
-  dsimp [SmallShiftedHom.equiv]
+  change SmallShiftedHom.equiv W Q hS.extClass = _
+  dsimp [extClass, SmallShiftedHom.equiv]
   erw [SmallHom.equiv_comp, Iso.homToEquiv_apply]
   rw [SmallHom.equiv_mkInv, SmallHom.equiv_mk]
-  dsimp [singleδ, triangleOfSESδ, δ, w, S']
+  dsimp [singleδ, triangleOfSESδ]
   rw [Category.assoc, Category.assoc, Category.assoc,
     singleFunctorsPostcompQIso_hom_hom, singleFunctorsPostcompQIso_inv_hom]
   erw [Category.id_comp, Functor.map_id, Category.comp_id]
   rfl
+
+end
 
 @[simp]
 lemma comp_extClass : (Ext.mk₀ S.g).comp hS.extClass (zero_add 1) = 0 := by
