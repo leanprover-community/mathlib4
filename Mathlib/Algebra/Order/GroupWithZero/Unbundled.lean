@@ -1092,6 +1092,8 @@ alias one_lt_mul_of_lt_of_le := Left.one_lt_mul_of_lt_of_le₀
 #align one_lt_mul_of_lt_of_le one_lt_mul_of_lt_of_le
 alias one_lt_mul_of_lt_of_lt := Left.one_lt_mul_of_lt_of_lt
 
+alias one_le_mul_of_one_le_of_one_le := one_le_mul_of_le_of_le
+#align one_le_mul_of_one_le_of_one_le one_le_mul_of_one_le_of_one_le
 alias one_lt_mul := one_lt_mul_of_le_of_lt
 #align one_lt_mul one_lt_mul
 

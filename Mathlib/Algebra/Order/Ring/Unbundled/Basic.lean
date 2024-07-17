@@ -177,9 +177,6 @@ theorem add_le_mul_two_add (a2 : 2 ≤ a) (b0 : 0 ≤ b) : a + (2 + b) ≤ a * (
     _ ≤ a * (2 + b) := by rw [mul_add, mul_two, add_assoc]
 #align add_le_mul_two_add add_le_mul_two_add
 
-alias one_le_mul_of_one_le_of_one_le := one_le_mul_of_le_of_le
-#align one_le_mul_of_one_le_of_one_le one_le_mul_of_one_le_of_one_le
-
 section Monotone
 
 variable [Preorder β] {f g : β → α}
