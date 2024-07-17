@@ -40,10 +40,6 @@ instance : Star (CentroidHom α) where
 
 @[simp] lemma star_apply (f : CentroidHom α) (a : α) : (star f) a = star (f (star a)) := rfl
 
-instance instInvolutiveStar : InvolutiveStar (CentroidHom α) where
-  star_involutive _ := ext (fun _ => by
-    rw [star_apply, star_apply, star_star, star_star])
-
 instance instStarAddMonoid : StarAddMonoid (CentroidHom α) where
   star_involutive f := ext (fun _ => by
     rw [star_apply, star_apply, star_star, star_star])
@@ -58,11 +54,9 @@ instance : Star (Subsemiring.center (CentroidHom α)) where
       _ = star (f (star g (star a))) := rfl
       _ = star (f (star (g a))) := by rw [star_apply, star_star]))⟩
 
-instance : InvolutiveStar (Subsemiring.center (CentroidHom α)) where
-  star_involutive f := SetCoe.ext (instInvolutiveStar.star_involutive f.val)
-
 instance instStarAddMonoidCenter : StarAddMonoid (Subsemiring.center (CentroidHom α)) where
-  star_add f g := SetCoe.ext (instStarAddMonoid.star_add f.val g.val)
+  star_involutive f := SetCoe.ext (star_involutive f.val)
+  star_add f g := SetCoe.ext (star_add f.val g.val)
 
 instance : StarRing (Subsemiring.center (CentroidHom α)) where
   __ := instStarAddMonoidCenter
@@ -84,8 +78,8 @@ def centerStarEmbedding : Subsemiring.center (CentroidHom α) →⋆ₙ+* Centro
     exact rfl
 
 theorem inr_star (z : NonUnitalStarSubsemiring.center α) :
-    (star (centerToCentroidCenter z))  =
-    (centerToCentroidCenter ((star z) : NonUnitalStarSubsemiring.center α)) := by
+    star (centerToCentroidCenter z) =
+      (centerToCentroidCenter (star z : NonUnitalStarSubsemiring.center α)) := by
   ext a
   calc
       (star (centerToCentroidCenter z)) a = star (z * star a) := rfl
