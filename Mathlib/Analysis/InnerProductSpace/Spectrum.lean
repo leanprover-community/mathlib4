@@ -580,12 +580,13 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
       simp only [iSup, sSup, ne_eq, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
         Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
         SetLike.mem_coe] at hgv
-      have B : ∀ (μ : 𝕜), eigenspace (T i) μ ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ' j) ≤ K := by
+      have B : ∀ (μ : 𝕜), eigenspace (T i) μ ⊓ ⨅ (j : {x // i ≠ x}),
+          eigenspace (T ↑j) (γ' j) ≤ K := by
         intro μ
         let γ : n → 𝕜 := Set.piecewise (fun x ↦ i ≠ x) (Function.extend Subtype.val γ' 1)
           (Function.const n μ)
-        have C1 : γ i = μ := Set.piecewise_eq_of_not_mem (fun x ↦ i ≠ x) (Function.extend Subtype.val γ' 1)
-            (Function.const n μ) fun a ↦ a rfl
+        have C1 : γ i = μ := Set.piecewise_eq_of_not_mem (fun x ↦ i ≠ x)
+            (Function.extend Subtype.val γ' 1) (Function.const n μ) fun a ↦ a rfl
         have C2 : ∀ (j : {x // i ≠ x}), γ j = γ' j:= by
           intro j
           have := j.2
