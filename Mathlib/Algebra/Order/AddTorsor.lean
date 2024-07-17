@@ -59,7 +59,9 @@ class IsOrderedVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] : Prop where
 
 @[deprecated (since := "2024-07-15")] alias OrderedVAdd := IsOrderedVAdd
 
-/-- An ordered scalar multiplication is a bi-monotone scalar multiplication. -/
+/-- An ordered scalar multiplication is a bi-monotone scalar multiplication. Note that this is
+different from `OrderedSMul`, which uses strict inequality, requires `G` to be a semiring, and the
+defining conditions are restricted to positive elements of `G`. -/
 @[to_additive]
 class IsOrderedSMul (G P : Type*) [LE G] [LE P] [SMul G P] : Prop where
   protected smul_le_smul_left : ∀ a b : P, a ≤ b → ∀ c : G, c • a ≤ c • b
