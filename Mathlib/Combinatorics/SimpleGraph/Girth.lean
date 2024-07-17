@@ -74,8 +74,18 @@ noncomputable def girth (G : SimpleGraph α) : ℕ :=
 lemma three_le_girth (hG : ¬ G.IsAcyclic) : 3 ≤ G.girth :=
   ENat.toNat_le_toNat three_le_egirth <| egirth_eq_top.not.mpr hG
 
-lemma girth_eq_zero_iff_isAcyclic : G.girth = 0 ↔ G.IsAcyclic := by
-  refine ⟨fun h ↦ not_not.mp <| three_le_girth.mt <| by omega, fun h ↦ by simp [girth, h]⟩
+lemma girth_eq_zero : G.girth = 0 ↔ G.IsAcyclic :=
+  ⟨fun h ↦ not_not.mp <| three_le_girth.mt <| by omega, fun h ↦ by simp [girth, h]⟩
+
+lemma girth_anti {G' : SimpleGraph α} (hab : G ≤ G') (h : ¬ G.IsAcyclic) : G'.girth ≤ G.girth :=
+  ENat.toNat_le_toNat (egirth_anti hab) <| egirth_eq_top.not.mpr h
+
+lemma exists_girth_eq_length :
+    (∃ (a : α) (w : G.Walk a a), w.IsCycle ∧ G.girth = w.length) ↔ ¬ G.IsAcyclic := by
+  refine ⟨by tauto, fun h ↦ ?_⟩
+  obtain ⟨_, _, _⟩ := exists_egirth_eq_length.mpr h
+  simp_all only [girth, ENat.toNat_coe]
+  tauto
 
 @[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = 0 := by
   simp [girth]
