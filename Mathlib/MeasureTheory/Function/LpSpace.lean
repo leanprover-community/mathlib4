@@ -892,13 +892,9 @@ theorem indicatorConstLp_empty :
 #align measure_theory.indicator_const_empty MeasureTheory.indicatorConstLp_empty
 
 theorem indicatorConstLp_inj {s t : Set α} (hs : MeasurableSet s) (hsμ : μ s ≠ ∞)
-    (ht : MeasurableSet t) (htμ : μ t ≠ ∞) {c : E} (hc : c ≠ 0)
-    (h : indicatorConstLp p hs hsμ c = indicatorConstLp p ht htμ c) : s =ᵐ[μ] t :=
-  .of_indicator_const hc <|
-    calc
-      s.indicator (fun _ ↦ c) =ᵐ[μ] indicatorConstLp p hs hsμ c := indicatorConstLp_coeFn.symm
-      _ = indicatorConstLp p ht htμ c := by rw [h]
-      _ =ᵐ[μ] t.indicator (fun _ ↦ c) := indicatorConstLp_coeFn
+    (ht : MeasurableSet t) (htμ : μ t ≠ ∞) {c : E} (hc : c ≠ 0) :
+    indicatorConstLp p hs hsμ c = indicatorConstLp p ht htμ c ↔ s =ᵐ[μ] t := by
+  simp_rw [← indicator_const_eventuallyEq hc, indicatorConstLp, Memℒp.toLp_eq_toLp_iff]
 
 theorem memℒp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
