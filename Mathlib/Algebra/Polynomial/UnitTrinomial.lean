@@ -150,7 +150,7 @@ theorem card_support_eq_three (hp : p.IsUnitTrinomial) : p.support.card = 3 := b
 
 theorem ne_zero (hp : p.IsUnitTrinomial) : p ≠ 0 := by
   rintro rfl
-  exact Nat.zero_ne_bit1 1 hp.card_support_eq_three
+  simpa using hp.card_support_eq_three
 #align polynomial.is_unit_trinomial.ne_zero Polynomial.IsUnitTrinomial.ne_zero
 
 theorem coeff_isUnit (hp : p.IsUnitTrinomial) {k : ℕ} (hk : k ∈ p.support) :

@@ -16,9 +16,10 @@ In this file, for any `Ring R`, we reinterpret `I : RingCon R` as a two-sided-id
 
 ## Main definitions and results
 
-* `TwoSidedIdeal`: For any `NonUnitalNonAssocRing R`, `TwoSidedIdeal R` is the exactly `RingCon R`.
+* `TwoSidedIdeal`: For any `NonUnitalNonAssocRing R`, `TwoSidedIdeal R` is a wrapper around
+  `RingCon R`.
 * `TwoSidedIdeal.setLike`: Every `I : TwoSidedIdeal R` can be interpreted as a set of `R` where
-  `x ∈ I` if and only if `I x 0`.
+  `x ∈ I` if and only if `I.ringCon x 0`.
 * `TwoSidedIdeal.addCommGroup`: Every `I : TwoSidedIdeal R` is an abelian group.
 
 
@@ -109,7 +110,12 @@ lemma add_mem {x y} (hx : x ∈ I) (hy : y ∈ I) : x + y ∈ I := by simpa usin
 
 lemma neg_mem {x} (hx : x ∈ I) : -x ∈ I := by simpa using I.ringCon.neg hx
 
-lemma sub_mem {x y} (hx : x ∈ I) (hy : y ∈ I) : x - y ∈ I := by simpa using I.ringCon.sub hx hy
+instance : AddSubgroupClass (TwoSidedIdeal R) R where
+  zero_mem := zero_mem
+  add_mem := @add_mem _ _
+  neg_mem := @neg_mem _ _
+
+lemma sub_mem {x y} (hx : x ∈ I) (hy : y ∈ I) : x - y ∈ I := _root_.sub_mem hx hy
 
 lemma mul_mem_left (x y) (hy : y ∈ I) : x * y ∈ I := by
   simpa using I.ringCon.mul (I.ringCon.refl x) hy
@@ -117,9 +123,9 @@ lemma mul_mem_left (x y) (hy : y ∈ I) : x * y ∈ I := by
 lemma mul_mem_right (x y) (hx : x ∈ I) : x * y ∈ I := by
   simpa using I.ringCon.mul hx (I.ringCon.refl y)
 
-lemma nsmul_mem {x} (n : ℕ) (hx : x ∈ I) : n • x ∈ I := by simpa using I.ringCon.nsmul _ hx
+lemma nsmul_mem {x} (n : ℕ) (hx : x ∈ I) : n • x ∈ I := _root_.nsmul_mem hx _
 
-lemma zsmul_mem {x} (n : ℤ) (hx : x ∈ I) : n • x ∈ I := by simpa using I.ringCon.zsmul _ hx
+lemma zsmul_mem {x} (n : ℤ) (hx : x ∈ I) : n • x ∈ I := _root_.zsmul_mem hx _
 
 /--
 The "set-theoretic-way" of constructing a two-sided ideal by providing:
@@ -160,11 +166,6 @@ lemma mem_mk' (carrier : Set R)
     x ∈ mk' carrier zero_mem add_mem neg_mem mul_mem_left mul_mem_right ↔ x ∈ carrier := by
   rw [mem_iff]
   simp [mk']
-
-instance : AddSubgroupClass (TwoSidedIdeal R) R where
-  zero_mem := zero_mem
-  add_mem := @add_mem _ _
-  neg_mem := @neg_mem _ _
 
 instance : SMulMemClass (TwoSidedIdeal R) R R where
   smul_mem _ _ h := TwoSidedIdeal.mul_mem_left _ _ _ h

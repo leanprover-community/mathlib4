@@ -29,11 +29,9 @@ jobs:
       - name: Update dependencies
         run: lake update
 
-      - name: Generate branch name
-        id: generate_branch_name
+      - name: Generate PR title
         run: |
-          timestamp=$(date -u +"%Y-%m-%d-%H-%M")
-          echo "branch_name=update-dependencies-$timestamp" >> "$GITHUB_ENV"
+          echo "timestamp=$(date -u +"%Y-%m-%d-%H-%M")" >> "$GITHUB_ENV"
           echo "pr_title=chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")" >> "$GITHUB_ENV"
 
       - name: Create Pull Request
@@ -41,7 +39,8 @@ jobs:
         with:
           token: "${{ secrets.NIGHTLY_TESTING }}"
           commit-message: "chore: update Mathlib dependencies ${{ env.timestamp }}"
-          branch: "${{ env.branch_name }}"
+          # this branch is referenced in update_dependencies_zulip.yml
+          branch: "update-dependencies-bot-use-only"
           base: master
           title: "${{ env.pr_title }}"
           body: "This PR updates the Mathlib dependencies."

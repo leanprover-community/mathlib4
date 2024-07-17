@@ -6,6 +6,7 @@ Authors: Nicolò Cavalleri, Andrew Yang
 import Mathlib.RingTheory.Derivation.ToSquareZero
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.IsTensorProduct
+import Mathlib.RingTheory.EssentialFiniteness
 import Mathlib.Algebra.Exact
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
@@ -259,7 +260,7 @@ theorem KaehlerDifferential.span_range_derivation :
     exact ⟨x, KaehlerDifferential.DLinearMap_apply R S x⟩
   · exact ⟨zero_mem _, Submodule.zero_mem _⟩
   · rintro x y ⟨hx₁, hx₂⟩ ⟨hy₁, hy₂⟩; exact ⟨add_mem hx₁ hy₁, Submodule.add_mem _ hx₂ hy₂⟩
-  · rintro r x ⟨hx₁, hx₂⟩;
+  · rintro r x ⟨hx₁, hx₂⟩
     exact ⟨((KaehlerDifferential.ideal R S).restrictScalars S).smul_mem r hx₁,
       Submodule.smul_mem _ r hx₂⟩
 #align kaehler_differential.span_range_derivation KaehlerDifferential.span_range_derivation
@@ -476,6 +477,58 @@ noncomputable def KaehlerDifferential.endEquiv :
         KaehlerDifferential.endEquivAuxEquiv R S
 #align kaehler_differential.End_equiv KaehlerDifferential.endEquiv
 
+section Finiteness
+
+theorem KaehlerDifferential.ideal_fg [EssFiniteType R S] :
+    (KaehlerDifferential.ideal R S).FG := by
+  classical
+  use (EssFiniteType.finset R S).image (fun s ↦ (1 : S) ⊗ₜ[R] s - s ⊗ₜ[R] (1 : S))
+  apply le_antisymm
+  · rw [Finset.coe_image, Ideal.span_le]
+    rintro _ ⟨x, _, rfl⟩
+    exact KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R x
+  · rw [← KaehlerDifferential.span_range_eq_ideal, Ideal.span_le]
+    rintro _ ⟨x, rfl⟩
+    let I : Ideal (S ⊗[R] S) := Ideal.span
+      ((EssFiniteType.finset R S).image (fun s ↦ (1 : S) ⊗ₜ[R] s - s ⊗ₜ[R] (1 : S)))
+    show _ - _ ∈ I
+    have : (IsScalarTower.toAlgHom R (S ⊗[R] S) (S ⊗[R] S ⧸ I)).comp TensorProduct.includeRight =
+        (IsScalarTower.toAlgHom R (S ⊗[R] S) (S ⊗[R] S ⧸ I)).comp TensorProduct.includeLeft := by
+      apply EssFiniteType.algHom_ext
+      intro a ha
+      simp only [AlgHom.coe_comp, IsScalarTower.coe_toAlgHom', Ideal.Quotient.algebraMap_eq,
+        Function.comp_apply, TensorProduct.includeLeft_apply, TensorProduct.includeRight_apply,
+        Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+      refine Ideal.subset_span ?_
+      simp only [Finset.coe_image, Set.mem_image, Finset.mem_coe]
+      exact ⟨a, ha, rfl⟩
+    simpa [Ideal.Quotient.mk_eq_mk_iff_sub_mem] using AlgHom.congr_fun this x
+
+instance KaehlerDifferential.finite [EssFiniteType R S] :
+    Module.Finite S (Ω[S⁄R]) := by
+  classical
+  let s := (EssFiniteType.finset R S).image (fun s ↦ D R S s)
+  refine ⟨⟨s, top_le_iff.mp ?_⟩⟩
+  rw [← span_range_derivation, Submodule.span_le]
+  rintro _ ⟨x, rfl⟩
+  have : ∀ x ∈ adjoin R (EssFiniteType.finset R S).toSet,
+      .D _ _ x ∈ Submodule.span S s.toSet := by
+    intro x hx
+    refine adjoin_induction hx ?_ ?_ ?_ ?_
+    · exact fun x hx ↦ Submodule.subset_span (Finset.mem_image_of_mem _ hx)
+    · simp
+    · exact fun x y hx hy ↦ (D R S).map_add x y ▸ add_mem hx hy
+    · intro x y hx hy
+      simp only [Derivation.leibniz]
+      exact add_mem (Submodule.smul_mem _ _ hy) (Submodule.smul_mem _ _ hx)
+  obtain ⟨t, ht, ht', hxt⟩ := (essFiniteType_cond_iff R S (EssFiniteType.finset R S)).mp
+    EssFiniteType.cond.choose_spec x
+  rw [show D R S x =
+    ht'.unit⁻¹ • (D R S (x * t) - x • D R S t) by simp [smul_smul, Units.smul_def]]
+  exact Submodule.smul_mem _ _ (sub_mem (this _ hxt) (Submodule.smul_mem _ _ (this _ ht)))
+
+end Finiteness
+
 section Presentation
 
 open KaehlerDifferential (D)
@@ -614,10 +667,13 @@ end Presentation
 section ExactSequence
 
 /- We have the commutative diagram
+```
 A --→ B
 ↑     ↑
 |     |
-R --→ S -/
+R --→ S
+```
+-/
 variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 variable [Algebra A B] [Algebra S B] [IsScalarTower R A B] [IsScalarTower R S B]
 variable [SMulCommClass S A B]
@@ -630,10 +686,12 @@ local macro "finsupp_map" : term =>
 
 /--
 Given the commutative diagram
+```
 A --→ B
 ↑     ↑
 |     |
 R --→ S
+```
 The kernel of the presentation `⊕ₓ B dx ↠ Ω_{B/S}` is spanned by the image of the
 kernel of `⊕ₓ A dx ↠ Ω_{A/R}` and all `ds` with `s : S`.
 See `kerTotal_map'` for the special case where `R = S`.
@@ -675,10 +733,13 @@ theorem KaehlerDifferential.kerTotal_map' (h : Function.Surjective (algebraMap A
   ext; simp [IsScalarTower.algebraMap_eq R A B]
 
 /-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄S]` given a square
+```
 A --→ B
 ↑     ↑
 |     |
-R --→ S -/
+R --→ S
+```
+-/
 def KaehlerDifferential.map : Ω[A⁄R] →ₗ[A] Ω[B⁄S] :=
   Derivation.liftKaehlerDifferential
     (((KaehlerDifferential.D S B).restrictScalars R).compAlgebraMap A)

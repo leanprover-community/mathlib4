@@ -47,7 +47,7 @@ instance : (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)).Reflects
     have h₃ := fun n =>
       Karoubi.HomologicalComplex.p_comm_f_assoc (inv (N₁.map f)) n (f.app (op [n]))
     simp only [N₁_map_f, Karoubi.comp_f, HomologicalComplex.comp_f,
-      AlternatingFaceMapComplex.map_f, N₁_obj_p, Karoubi.id_eq, assoc] at h₁ h₂ h₃
+      AlternatingFaceMapComplex.map_f, N₁_obj_p, Karoubi.id_f, assoc] at h₁ h₂ h₃
     -- we have to construct an inverse to f in degree n, by induction on n
     intro n
     induction' n with n hn

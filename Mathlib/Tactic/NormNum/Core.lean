@@ -17,9 +17,6 @@ The actual behavior is in `@[norm_num]`-tagged definitions in `Tactic.NormNum.Ba
 and elsewhere.
 -/
 
-
-set_option autoImplicit true
-
 open Lean hiding Rat mkRat
 open Lean.Meta Qq Lean.Elab Term
 
@@ -40,9 +37,11 @@ structure NormNumExt where
   /-- The extension should be run in the `post` phase when used as simp plugin. -/
   post := true
   /-- Attempts to prove an expression is equal to some explicit number of the relevant type. -/
-  eval {α : Q(Type u)} (e : Q($α)) : MetaM (Result e)
+  eval {u : Level} {α : Q(Type u)} (e : Q($α)) : MetaM (Result e)
   /-- The name of the `norm_num` extension. -/
   name : Name := by exact decl_name%
+
+variable {u : Level}
 
 /-- Read a `norm_num` extension from a declaration of the right type. -/
 def mkNormNumExt (n : Name) : ImportM NormNumExt := do
@@ -56,9 +55,9 @@ abbrev Entry := Array (Array DiscrTree.Key) × Name
 /-- The state of the `norm_num` extension environment -/
 structure NormNums where
   /-- The tree of `norm_num` extensions. -/
-  tree   : DiscrTree NormNumExt := {}
+  tree : DiscrTree NormNumExt := {}
   /-- Erased `norm_num`s. -/
-  erased  : PHashSet Name := {}
+  erased : PHashSet Name := {}
   deriving Inhabited
 
 /-- Configuration for `DiscrTree`. -/
@@ -157,7 +156,8 @@ def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums :=
   Check that it does in fact have the `norm_num` attribute by making sure it names a `NormNumExt`
   found somewhere in the state's tree, and is not erased.
 -/
-def NormNums.erase [Monad m] [MonadError m] (d : NormNums) (declName : Name) : m NormNums := do
+def NormNums.erase {m : Type → Type} [Monad m] [MonadError m] (d : NormNums) (declName : Name) :
+    m NormNums := do
   unless d.tree.values.any (·.name == declName) && ! d.erased.contains declName
   do
     throwError "'{declName}' does not have [norm_num] attribute"

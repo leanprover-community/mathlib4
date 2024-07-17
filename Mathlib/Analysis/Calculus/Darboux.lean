@@ -42,7 +42,7 @@ theorem exists_hasDerivWithinAt_eq_of_gt_of_lt (hab : a ≤ b)
     · refine absurd (sub_nonneg.1 <| nonneg_of_mul_nonneg_right ?_ (sub_pos.2 hab'))
         (not_le_of_lt hma)
       have : b - a ∈ posTangentConeAt (Icc a b) a :=
-        mem_posTangentConeAt_of_segment_subset (segment_eq_Icc hab ▸ Subset.refl _)
+        sub_mem_posTangentConeAt_of_segment_subset (segment_eq_Icc hab ▸ Subset.rfl)
       simpa only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply]
         using hc.localize.hasFDerivWithinAt_nonneg (hg a (left_mem_Icc.2 hab)) this
     rcases cmem.2.eq_or_gt with (rfl | hcb)
@@ -50,7 +50,7 @@ theorem exists_hasDerivWithinAt_eq_of_gt_of_lt (hab : a ≤ b)
     · refine absurd (sub_nonpos.1 <| nonpos_of_mul_nonneg_right ?_ (sub_lt_zero.2 hab'))
         (not_le_of_lt hmb)
       have : a - b ∈ posTangentConeAt (Icc a b) b :=
-        mem_posTangentConeAt_of_segment_subset (by rw [segment_symm, segment_eq_Icc hab])
+        sub_mem_posTangentConeAt_of_segment_subset (by rw [segment_symm, segment_eq_Icc hab])
       simpa only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply]
         using hc.localize.hasFDerivWithinAt_nonneg (hg b (right_mem_Icc.2 hab)) this
     exact ⟨hac, hcb⟩

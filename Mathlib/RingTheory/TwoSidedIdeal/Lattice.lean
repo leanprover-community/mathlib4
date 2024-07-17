@@ -28,13 +28,13 @@ section sup
 
 variable {R}
 
-lemma mem_sup_left {I J : TwoSidedIdeal R} {x : R} :
-    x ∈ I → x ∈ I ⊔ J :=
-  fun h => (show I ≤ I ⊔ J from le_sup_left) h
+lemma mem_sup_left {I J : TwoSidedIdeal R} {x : R} (h : x ∈ I) :
+    x ∈ I ⊔ J :=
+  (show I ≤ I ⊔ J from le_sup_left) h
 
-lemma mem_sup_right {I J : TwoSidedIdeal R} {x : R} :
-    x ∈ J → x ∈ I ⊔ J :=
-  fun h => (show J ≤ I ⊔ J from le_sup_right) h
+lemma mem_sup_right {I J : TwoSidedIdeal R} {x : R} (h : x ∈ J) :
+    x ∈ I ⊔ J :=
+  (show J ≤ I ⊔ J from le_sup_right) h
 
 lemma mem_sup {I J : TwoSidedIdeal R} {x : R} :
     x ∈ I ⊔ J ↔ ∃ y ∈ I, ∃ z ∈ J, y + z = x := by

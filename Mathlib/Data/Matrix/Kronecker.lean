@@ -357,7 +357,7 @@ theorem natCast_kronecker [NonAssocSemiring α] [DecidableEq l] (a : ℕ) (B : M
 
 theorem kronecker_ofNat [Semiring α] [DecidableEq n] (A : Matrix l m α) (b : ℕ) [b.AtLeastTwo] :
     A ⊗ₖ (no_index (OfNat.ofNat b) : Matrix n n α) =
-      blockDiagonal fun _ => A <• (OfNat.ofNat b : α):=
+      blockDiagonal fun _ => A <• (OfNat.ofNat b : α) :=
   kronecker_diagonal _ _
 
 theorem ofNat_kronecker [Semiring α] [DecidableEq l] (a : ℕ) [a.AtLeastTwo] (B : Matrix m n α) :
@@ -421,7 +421,7 @@ theorem det_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [C
 theorem inv_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [CommRing R]
     (A : Matrix m m R) (B : Matrix n n R) : (A ⊗ₖ B)⁻¹ = A⁻¹ ⊗ₖ B⁻¹ := by
   -- handle the special cases where either matrix is not invertible
-  by_cases hA : IsUnit A.det;
+  by_cases hA : IsUnit A.det
   swap
   · cases isEmpty_or_nonempty n
     · subsingleton

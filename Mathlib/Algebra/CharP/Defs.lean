@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Fin
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Cast.Prod
+import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.ULift
 

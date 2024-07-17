@@ -124,3 +124,5 @@ theorem intDegree_add_le {x y : RatFunc K} (hy : y ≠ 0) (hxy : x + y ≠ 0) :
 #align ratfunc.int_degree_add_le RatFunc.intDegree_add_le
 
 end IntDegree
+
+end RatFunc
