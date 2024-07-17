@@ -92,24 +92,6 @@ def compAlgEquiv : Matrix I I (Matrix J J R) ≃ₐ[K] Matrix (I × J) (I × J) 
       Algebra.algebraMap_eq_smul_one', ← diagonal_one, diagonal_apply, diagonal_apply]
     aesop
 
-open MulOpposite in
-/-- n-by-n matrices over an opposite ring Rᵒᵖ is isomorphic to the opposite ring of
-  n-by-n matrices over R -/
-@[simps]
-def transposeAlgEquiv':
-    Matrix I I Rᵐᵒᵖ ≃ₐ[K] (Matrix I I R)ᵐᵒᵖ where
-  toFun M := op (M.transpose.map (fun d => unop d))
-  invFun M := (unop M).transpose.map (fun d => op d)
-  left_inv a := by aesop
-  right_inv a := by aesop
-  map_mul' x y := unop_injective $ by ext; simp [transpose_map, transpose_apply, mul_apply]
-  map_add' x y := by aesop
-  commutes' k := by
-    simp only [algebraMap_apply, op_inj]
-    ext i j
-    simp only [map_apply, transpose_apply, algebraMap_matrix_apply]
-    aesop
-
 end Algebra
 
 end Matrix
