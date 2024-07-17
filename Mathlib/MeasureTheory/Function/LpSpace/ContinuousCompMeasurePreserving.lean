@@ -127,6 +127,8 @@ end Lp
 
 end MeasureTheory
 
+section Lp
+
 variable {E : Type*} [NormedAddCommGroup E] {p : ℝ≥0∞} [Fact (1 ≤ p)]
 
 theorem Filter.Tendsto.compMeasurePreservingLp {α : Type*} {l : Filter α}
@@ -163,3 +165,34 @@ theorem Continuous.compMeasurePreservingLp (hf : Continuous f) (hg : Continuous 
     Continuous (fun z ↦ Lp.compMeasurePreserving (g z) (hgm z) (f z)) :=
   continuous_iff_continuousAt.mpr fun _ ↦
     hf.continuousAt.compMeasurePreservingLp hg.continuousAt hgm hp
+
+end Lp
+
+/-- Let `f : Z → C(X, Y)` be a continuous (in the compact open topology) family
+of continuous measure preserving maps.
+Let `t : Set Y` be a null measurable set of finite measure.
+Then for any `s`, the set of parameters `z`
+such that the preimage of `t` under `f_z` is a.e. equal to `s`
+is a closed set.
+
+In particular, if `X = Y` and `s = t`, then we see that the a.e. stabilizer of a set
+is a closed set. -/
+theorem MeasureTheory.isClosed_setOf_preimage_ae_eq {Z : Type*} [TopologicalSpace Z]
+    {f : Z → C(X, Y)} (hf : Continuous f) (hfm : ∀ z, MeasurePreserving (f z) μ ν)
+    (s : Set X) (t : Set Y) (htm : NullMeasurableSet t ν) (ht : ν t ≠ ∞) :
+    IsClosed {z | f z ⁻¹' t =ᵐ[μ] s} := by
+  obtain h | ⟨z₀, hz₀⟩ := eq_empty_or_nonempty {z | f z ⁻¹' t =ᵐ[μ] s}
+  · simp [h]
+  rcases htm with ⟨t', ht'm, htt'⟩
+  rw [measure_congr htt'] at ht
+  set φ : Lp ℝ 1 μ :=
+    indicatorConstLp 1 ((hfm z₀).measurable ht'm) (by rwa [(hfm z₀).measure_preimage ht'm]) 1
+  set ψ : Lp ℝ 1 ν := indicatorConstLp 1 ht'm ht 1 
+  have : IsClosed {z | Lp.compMeasurePreserving (f z) (hfm z) ψ = φ} :=
+    isClosed_eq (continuous_const.compMeasurePreservingLp hf _ ENNReal.one_ne_top) continuous_const
+  convert this using 3 with z
+  simp only [φ, ψ, Lp.indicatorConstLp_compMeasurePreserving,
+    indicatorConstLp_inj (hc := one_ne_zero)]
+  rw [((hfm z).quasiMeasurePreserving.preimage_ae_eq htt').congr_left,
+    ← ((hfm z₀).quasiMeasurePreserving.preimage_ae_eq htt').congr_right,
+    hz₀.out.congr_right]
