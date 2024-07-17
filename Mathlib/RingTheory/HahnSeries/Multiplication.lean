@@ -93,18 +93,13 @@ def of (R : Type*) [SMul R V] :
 
 /-- Recursion principle to reduce a result about the synonym to the original type. -/
 @[elab_as_elim]
-def rec [PartialOrder Γ] [Zero V] [SMul R V] {motive : HahnModule Γ R V → Sort*}
-    (h : ∀ x : HahnSeries Γ V, motive (of R x)) : ∀ x, motive x :=
+def rec {motive : HahnModule Γ R V → Sort*} (h : ∀ x : HahnSeries Γ V, motive (of R x)) :
+    ∀ x, motive x :=
   fun x => h <| (of R).symm x
 
 @[ext]
-theorem ext [PartialOrder Γ] [Zero V] [SMul R V] (x y : HahnModule Γ R V)
-    (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
+theorem ext (x y : HahnModule Γ R V) (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
   (of R).symm.injective <| HahnSeries.coeff_inj.1 h
-
-theorem ext_iff [PartialOrder Γ] [Zero V] [SMul R V] (x y : HahnModule Γ R V) :
-    ((of R).symm x).coeff = ((of R).symm y).coeff ↔ x = y := by
-  simp_all only [HahnSeries.coeff_inj, EmbeddingLike.apply_eq_iff_eq]
 
 end
 
