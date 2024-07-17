@@ -77,6 +77,7 @@ roots that has nonpositive norm.
 -/
 
 /-- An invariant linear map from weight space to coweight space. -/
+@[simps]
 def Polarization (P : RootPairing ι R M N) [Finite ι] : M →ₗ[R] N where
   toFun m :=
     haveI := Fintype.ofFinite ι
@@ -90,21 +91,26 @@ theorem Polarization_self (P : RootPairing ι R M N) [Finite ι] (x : M) :
     haveI := Fintype.ofFinite ι
     P.toLin x (P.Polarization x) =
       ∑ (i : ι), P.toLin x (P.coroot i) * P.toLin x (P.coroot i) := by
-  simp [Polarization]
+  simp
 
 theorem Polarization_root_self (P : RootPairing ι R M N) [Finite ι] (j : ι) :
     haveI := Fintype.ofFinite ι
     P.toLin (P.root j) (P.Polarization (P.root j)) =
       ∑ (i : ι), (P.pairing j i) * (P.pairing j i) := by
-  simp [Polarization]
+  simp
 
 -- reflections taken to coreflections.  polarization_self = sum of squares
 
 /-- An invariant inner product on the weight space. -/
+@[simps]
 def PolInner (P : RootPairing ι R M N) [Finite ι] : M →ₗ[R] M →ₗ[R] R where
   toFun x := P.toLin x ∘ₗ P.Polarization
   map_add' x y := by simp only [map_add, LinearMap.add_comp]
   map_smul' r x := by simp only [LinearMapClass.map_smul, RingHom.id_apply, LinearMap.smul_comp]
+
+theorem PolInner_symmetric (P : RootPairing ι R M N) [Finite ι] (x y : M) :
+    P.PolInner x y = P.PolInner y x := by
+  simp [mul_comm]
 
 /-!
 theorem positive_norm [OrderedCommRing R] (P : RootPairing ι R M N) [Finite ι] (i : ι) :
@@ -123,6 +129,13 @@ section ordered
 variable [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 (P : RootPairing ι R M N)
 
+/-- A Prop-valued class for a bilinear form to be compatible with a root system. -/
+class IsRootPositive (P : RootPairing ι R M N) (B : M →ₗ[R] M →ₗ[R] R) : Prop where
+  root_pos : ∀ i : ι, B (P.root i) (P.root i) > 0
+  symm : ∀ x y : M, B x y = B y x
+  refl_inv : ∀ (i : ι) (x y : M), B (P.reflection i x) (P.reflection i y) = B x y
+
+-- should I just say positive semi-definite?
 theorem PolInner_self_non_neg [Finite ι] (x : M) : 0 ≤ P.PolInner x x := by
   simp only [PolInner, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, comp_apply,
     Polarization_self]
