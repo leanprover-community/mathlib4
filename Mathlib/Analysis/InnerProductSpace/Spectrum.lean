@@ -589,16 +589,12 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
             (Function.extend Subtype.val γ' 1) (Function.const n μ) fun a ↦ a rfl
         have C2 : ∀ (j : {x // i ≠ x}), γ j = γ' j:= by
           intro j
-          have := j.2
           simp only [ne_eq, Subtype.coe_prop, Set.piecewise_eq_of_mem, γ]
           refine Function.Injective.extend_apply ?hf γ' _ j
           exact Subtype.val_injective
         have C : eigenspace (T i) μ ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ' j)
             = eigenspace (T i) (γ i) ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ j) := by
-          congr!
-          exact _root_.id (Eq.symm C1)
-          congr!
-          simp only [ne_eq, C2]
+          congr!; exact _root_.id (Eq.symm C1); congr!; simp only [ne_eq, C2]
         rw [C]
         rw [← indexing_nonsense0]
         exact hK fun j ↦ γ j
