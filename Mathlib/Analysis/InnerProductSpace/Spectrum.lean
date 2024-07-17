@@ -412,11 +412,8 @@ theorem eigenspace_of_subsingleton_nonempty [Subsingleton n] (h : Nonempty n) :
   Mathlib.Analysis.InnerProductSpace.Projection-/
 theorem eq_iff_orthogonalComplement_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ := by
    constructor
+   · exact fun a ↦ congrArg Submodule.orthogonal a
    · intro H
-     exact congrArg Submodule.orthogonal H
-   · intro H
-     have := HasOrthogonalProjection.ofCompleteSpace K
-     have := HasOrthogonalProjection.ofCompleteSpace L
      rw [← (Submodule.orthogonal_orthogonal K), ← (Submodule.orthogonal_orthogonal) L]
      exact congrArg Submodule.orthogonal H
 
