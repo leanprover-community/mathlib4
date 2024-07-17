@@ -28,7 +28,7 @@ jobs:
           type: 'stream'
           topic: 'maintainer merge'
           content: |
-            ${{ format('{0} requested a maintainer merge from review (submitted: {3} or edited: {4}) on PR [#{1}]({2}):', github.event.review.user.login, github.event.pull_request.number, github.event.pull_request.html_url, pull_request_review.submitted, pull_request_review.edited ) }}
+            ${{ format('{0} requested a maintainer merge from review (action: {3}) on PR [#{1}]({2}):', github.event.review.user.login, github.event.pull_request.number, github.event.pull_request.html_url, github.event.action ) }}
 
             > ${{ github.event.pull_request.title }}
 
