@@ -1068,6 +1068,7 @@ theorem restrictScalars_smul (c : R₁) (f : M →ₗ[S] N) :
 variable (S M N R R₁)
 
 /-- `LinearMap.restrictScalars` as a `LinearMap`. -/
+@[simps apply]
 def restrictScalarsₗ : (M →ₗ[S] N) →ₗ[R₁] M →ₗ[R] N where
   toFun := restrictScalars R
   map_add' := restrictScalars_add
