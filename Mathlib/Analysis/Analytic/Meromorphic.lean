@@ -293,16 +293,10 @@ theorem eventually_codiscrete_analyticAt
   rw [eventually_iff, codiscrete, Filter.mem_mk, Set.mem_setOf_eq, ← isClosed_compl_iff,
     isClosed_and_discrete_iff]
   intro x
-  replace h := h x x.prop
-  simp only [disjoint_principal_right, compl_compl]
-  have := h.eventually_analyticAt
-  rw [eventually_iff] at this
-  have this2 : map Subtype.val (𝓝[≠] x) ≤ 𝓝[≠] ↑x :=
-    tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
+  simp only [disjoint_principal_right, compl_compl, ← eventually_iff]
+  exact tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       continuous_subtype_val.continuousWithinAt
-      (by simp [Subtype.coe_inj]; exact eventually_mem_nhdsWithin)
-  rw [Filter.le_def] at this2
-  replace this2 := this2 _ this
-  simpa
+      (by simpa [Subtype.coe_inj] using eventually_mem_nhdsWithin)
+    |>.eventually (h x x.prop).eventually_analyticAt
 
 end MeromorphicOn
