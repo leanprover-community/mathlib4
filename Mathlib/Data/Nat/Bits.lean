@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Nat
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Data.Nat.Defs
 import Mathlib.Init.Data.List.Basic
-import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Says
