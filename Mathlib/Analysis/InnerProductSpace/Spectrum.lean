@@ -281,7 +281,7 @@ theorem eigenspace_invariant  (α : 𝕜) : ∀ v ∈ (eigenspace A α), (B v �
   rw [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply, ← comp_apply A B v, hAB,
   comp_apply B A v, ← map_smul, ← map_sub, hv, map_zero] at *
 
-theorem restrict_exhaust: (⨆ γ , (eigenspace (LinearMap.restrict B
+theorem iSup_restrict_eq_top: (⨆ γ , (eigenspace (LinearMap.restrict B
     (eigenspace_invariant hAB α)) γ)) = ⊤ := by
     rw [← Submodule.orthogonal_eq_bot_iff]
     exact orthogonalComplement_iSup_eigenspaces_eq_bot (LinearMap.IsSymmetric.restrict_invariant hB
@@ -319,7 +319,7 @@ theorem restrict_eq_inf : (fun (γ : 𝕜) ↦
     exact mem_eigenspace_iff.mp x1
 
 theorem semi_final_exhaust : (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) = eigenspace A α := by
-   rw [← restrict_eq_inf hAB, ← Submodule.map_iSup, restrict_exhaust hB hAB,
+   rw [← restrict_eq_inf hAB, ← Submodule.map_iSup, iSup_restrict_eq_top hB hAB,
    Submodule.map_top, Submodule.range_subtype]
 
 theorem pre_exhaust :  (⨆ (γ : 𝕜), eigenspace A γ) =  ⊤ := by
