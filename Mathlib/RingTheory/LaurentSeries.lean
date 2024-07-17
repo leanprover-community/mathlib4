@@ -36,6 +36,8 @@ the underlying `RatFunc.coeAlgHom`.
 `intValuation_le_iff_coeff_lt_eq_zero`.
 * The valuation of a laurent series is the order of the first non-zero coefficient, see
 `valuation_le_iff_coeff_lt_eq_zero`.
+* Every Laurent series of valuation less than `(1 : ℤₘ₀)` comes from a power series, see
+`val_le_one_iff_eq_coe`.
 
 ## Implementation details
 * Since `LaurentSeries` is just an abbreviation of `HahnSeries ℤ _`, the definition of the
@@ -580,7 +582,7 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : LaurentSeries K}
       ofAdd_add, valuation_single_zpow, neg_neg, WithZero.coe_mul,
       mul_le_mul_left₀ (by simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff])]
 
-/- The valuation of a laurent series is the order of the first non-zero coefficient. -/
+/- The valuation of a Laurent series is the order of the first non-zero coefficient. -/
 theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : LaurentSeries K} :
     Valued.v f ≤ ↑(Multiplicative.ofAdd (-D : ℤ)) ↔ ∀ n : ℤ, n < D → f.coeff n = 0 := by
   refine' ⟨fun hnD n hn => coeff_zero_of_lt_valuation K hnD hn, fun h_val_f => _⟩
@@ -604,7 +606,6 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : LaurentSeries K} :
     simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff]
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat
       <| neg_nonpos_of_nonneg <| le_of_lt <| not_le.mp ord_nonpos
-    -- have h_F_mul := f.single_order_mul_powerSeriesPart
     rw [neg_inj] at hs
     rw [← f.single_order_mul_powerSeriesPart, hs, map_mul, valuation_single_zpow, mul_comm,
       ← le_mul_inv_iff₀, ofAdd_neg, WithZero.coe_inv, ← mul_inv, ← WithZero.coe_mul, ← ofAdd_add,
@@ -622,15 +623,8 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : LaurentSeries K} :
       linarith
     simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff]
 
-/- If the coefficients of two Laurent series coincide for sufficiently small values, the valuation of
-their difference is small.-/
-theorem valuation_le_of_coeff_eventually_eq {f g : LaurentSeries K} {D : ℤ}
-    (H : ∀ d, d < D → g.coeff d = f.coeff d) : Valued.v (f - g) ≤ ↑(Multiplicative.ofAdd (-D)) := by
-  apply (valuation_le_iff_coeff_lt_eq_zero K).mpr
-  intro n hn
-  rw [HahnSeries.sub_coeff, sub_eq_zero]
-  exact (H n hn).symm
-
+/-Two Laurent series whose difference has small valuation have the same coefficients for
+small enough indeces.-/
 theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : LaurentSeries K}
     (H : Valued.v (g - f) ≤ ↑(Multiplicative.ofAdd (-d))) : n < d → g.coeff n = f.coeff n := by
   by_cases triv : g = f
@@ -640,33 +634,20 @@ theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : LaurentSeries K}
     erw [← HahnSeries.sub_coeff]
     apply coeff_zero_of_lt_valuation K H hn
 
-theorem bounded_supp_of_valuation_le (f : LaurentSeries K) (d : ℤ) :
-    ∃ N : ℤ,
-      ∀ g : LaurentSeries K,
-        Valued.v (g - f) ≤ ↑(Multiplicative.ofAdd (-d)) → ∀ n < N, g.coeff n = 0 := by
-  by_cases hf : f = 0
-  · refine' ⟨d, fun _ hg _ hn => _⟩
-    simpa only [eq_coeff_of_valuation_sub_lt K hg hn, hf] using HahnSeries.zero_coeff
-  · refine' ⟨min (f.2.isWF.min (HahnSeries.support_nonempty_iff.mpr hf)) d - 1, fun _ hg n hn => _⟩
-    have hn' : f.coeff n = 0 := Function.nmem_support.mp fun h =>
-      Set.IsWF.not_lt_min f.2.isWF (HahnSeries.support_nonempty_iff.mpr hf) h
-        (lt_trans hn (Int.sub_one_lt_iff.mpr (Int.min_le_left _ _)))
-    rwa [eq_coeff_of_valuation_sub_lt K hg _]
-    · exact lt_trans hn (Int.lt_of_le_sub_one <| (sub_le_sub_iff_right _).mpr (min_le_right _ d))
-
-theorem val_le_one_iff_eq_coe (f : LaurentSeries K) :
-    Valued.v f ≤ (1 : ℤₘ₀) ↔ ∃ F : PowerSeries K, ↑F = f := by
+/- Every Laurent series of valuation less than `(1 : ℤₘ₀)` comes from a power series -/
+theorem val_le_one_iff_eq_coe (f : LaurentSeries K) : Valued.v f ≤ (1 : ℤₘ₀) ↔
+    ∃ F : PowerSeries K, F = f := by
   rw [← WithZero.coe_one, ← ofAdd_zero, ← neg_zero, valuation_le_iff_coeff_lt_eq_zero]
   refine' ⟨fun h => ⟨PowerSeries.mk fun n => f.coeff n, _⟩, _⟩
   ext (_ | n)
-  · simp only [Int.ofNat_eq_coe, LaurentSeries.coeff_coe_powerSeries, coeff_mk]
+  · simp only [Int.ofNat_eq_coe, coeff_coe_powerSeries, coeff_mk]
   simp only [h (Int.negSucc n) (Int.negSucc_lt_zero n)]
   swap
   rintro ⟨F, rfl⟩ _ _
   all_goals
     apply HahnSeries.embDomain_notin_range
     simp only [Nat.coe_castAddMonoidHom, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk,
-      Set.mem_range, not_exists, Int.negSucc_lt_zero]
+      Set.mem_range, not_exists, Int.negSucc_lt_zero,]
     intro
   linarith
   simp only [not_false_eq_true]
