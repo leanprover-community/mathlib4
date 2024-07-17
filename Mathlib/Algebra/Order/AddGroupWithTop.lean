@@ -288,7 +288,7 @@ instance addMonoid : AddMonoid (WithTop α) where
   nsmul_zero a := by cases a <;> simp [zero_nsmul]
   nsmul_succ n a := by cases a <;> cases n <;> simp [succ_nsmul, coe_add]
 
-@[simp, norm_cast] lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithTop α) := rfl
+@[norm_cast] lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithTop α) := rfl
 
 /-- Coercion from `α` to `WithTop α` as an `AddMonoidHom`. -/
 def addHom : α →+ WithTop α where

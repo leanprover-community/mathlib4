@@ -43,6 +43,7 @@ noncomputable section
   formal series over `Γ` with coefficients in `R`, whose supports are well-founded. -/
 @[ext]
 structure HahnSeries (Γ : Type*) (R : Type*) [PartialOrder Γ] [Zero R] where
+  /-- The coefficient function of a Hahn Series. -/
   coeff : Γ → R
   isPWO_support' : (Function.support coeff).IsPWO
 #align hahn_series HahnSeries
