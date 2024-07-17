@@ -347,6 +347,13 @@ theorem contractive {P : A →L[𝕜] A} (h : IsLprojection A P) : ‖P‖ ≤ 1
   simp only [ContinuousLinearMap.smul_def, ContinuousLinearMap.coe_sub', Pi.sub_apply,
     ContinuousLinearMap.one_apply, one_mul, le_add_iff_nonneg_right, norm_nonneg]
 
+instance : FunLike ({ P : A →L[𝕜] A // IsLprojection A P }) A A where
+  coe f := f.val
+  coe_injective' := by
+    intro f g h
+    simp only [DFunLike.coe_fn_eq] at h
+    exact Subtype.eq h
+
 lemma range_prod_of_commute {P Q : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)}
     (h : Commute P Q) : Set.range (P * Q) ⊆ Set.range P ∩ Set.range Q := by
   · simp only [Set.le_eq_subset, Set.subset_inter_iff]
@@ -442,11 +449,8 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
     let E := P₁ ⊔ P₂
     rw [ ← hE₁, ← hE₂, (IsLprojection.range_sum P₁ P₂)]
     intro x hx
-    rw [Set.mem_inter_iff, IsLprojection.coe_sup] at hx
-    have ex : E.val x = x := by
-      apply proj_apply _ _
-      exact Set.mem_of_mem_inter_left hx
-      exact E.prop.proj
+    --rw [Set.mem_inter_iff, IsLprojection.coe_sup] at hx
+    have ex : E x = x := proj_apply _ E.prop.proj _ (Set.mem_of_mem_inter_left hx)
     simp only [IsLprojection.coe_sup, Set.mem_inter_iff, SetLike.mem_coe, LinearMap.mem_range,
       ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_mul, Pi.sub_apply,
       ContinuousLinearMap.add_apply, Function.comp_apply, mem_closedBall, dist_zero_right] at hx
@@ -455,7 +459,7 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
     let y := E₁ x
     let z := E₂ ((1 - E₁) x)
     have e3 : x = y + z := calc
-      x = E.val x := by rw [ex]
+      x = E x := by rw [ex]
       _ = E₁ x + E₂ x - E₁ (E₂ x) := rfl
       _ = E₁ x + E₂ x - (E₁ ∘ E₂) x := rfl
       _ = E₁ x + E₂ x - (E₁ * E₂) x := rfl
@@ -573,14 +577,12 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
           simp only [exists_and_left, Set.mem_setOf_eq]
           use ‖y‖/‖x‖
           constructor
-          · apply div_nonneg
-            exact ContinuousLinearMap.opNorm_nonneg y
-            exact ContinuousLinearMap.opNorm_nonneg x
+          · exact div_nonneg (ContinuousLinearMap.opNorm_nonneg y)
+              (ContinuousLinearMap.opNorm_nonneg x)
           · use ‖z‖/‖x‖
             constructor
-            · apply div_nonneg
-              exact ContinuousLinearMap.opNorm_nonneg z
-              exact ContinuousLinearMap.opNorm_nonneg x
+            · exact div_nonneg (ContinuousLinearMap.opNorm_nonneg z)
+                (ContinuousLinearMap.opNorm_nonneg x)
             · constructor
               · calc
                 ‖y‖ / ‖x‖ + ‖z‖ / ‖x‖ = (‖y‖ + ‖z‖) / ‖x‖ := div_add_div_same ‖y‖ ‖z‖ ‖x‖
@@ -602,22 +604,15 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
                   exact div_ne_zero hznz hxnz
                 _ = x := by rw [e3]
   · simp only [Submodule.add_eq_sup, Set.le_eq_subset, Set.subset_inter_iff]
-    constructor
-    · apply convexHull_min _
-      exact fun _ hx _ hy _ _ _ _ _ => add_mem (smul_of_tower_mem _ _ hx) (smul_of_tower_mem _ _ hy)
-      simp only [Set.union_subset_iff]
-      exact ⟨subset_trans
+    exact ⟨convexHull_min (Set.union_subset_iff.mpr ⟨subset_trans
           (Set.inter_subset_left (s := SetLike.coe (polarSubmodule 𝕜 m₁)))
           (SetLike.coe_subset_coe.mpr le_sup_left),
         subset_trans
           (Set.inter_subset_left (s := SetLike.coe (polarSubmodule 𝕜 m₂)))
-          (SetLike.coe_subset_coe.mpr le_sup_right)⟩
-    · apply convexHull_min
-      rw [← Set.union_inter_distrib_right]
-      exact Set.inter_subset_right
-      exact convex_closedBall _ _
-
-lemma tezst (x : A) (α : 𝕜) : ‖α•x‖ = ‖α‖ * ‖x‖ := by exact norm_smul α x
+          (SetLike.coe_subset_coe.mpr le_sup_right)⟩)
+        (fun _ hx _ hy _ _ _ _ _ => add_mem (smul_of_tower_mem _ _ hx) (smul_of_tower_mem _ _ hy)),
+      convexHull_min (Set.union_subset_iff.mpr
+        ⟨Set.inter_subset_right, Set.inter_subset_right⟩) (convex_closedBall _ _)⟩
 
 /-
 lemma IsMideal.inter (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂ : IsMideal m₂) :
