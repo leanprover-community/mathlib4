@@ -109,6 +109,11 @@ protected theorem bijective_iff_injective_and_card [Fintype β] (f : α → β) 
     rw [Fintype.bijective_iff_injective_and_card]
     exact ⟨h, h'⟩
 
+theorem _root_.Function.Injective.bijective_of_nat_card_le [Fintype β] {f : α → β}
+    (inj : Injective f) (hc : Nat.card β ≤ Nat.card α) : Bijective f :=
+  (Nat.bijective_iff_injective_and_card f).mpr
+    ⟨inj, hc.antisymm (card_le_card_of_injective f inj) |>.symm⟩
+
 theorem card_eq_of_equiv_fin {α : Type*} {n : ℕ} (f : α ≃ Fin n) : Nat.card α = n := by
   simpa only [card_eq_fintype_card, Fintype.card_fin] using card_congr f
 #align nat.card_eq_of_equiv_fin Nat.card_eq_of_equiv_fin
