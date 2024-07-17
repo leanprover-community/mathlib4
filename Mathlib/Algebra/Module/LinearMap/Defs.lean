@@ -1032,4 +1032,42 @@ end Module
 
 end Actions
 
+section RestrictScalarsAsLinearMap
+
+variable {R S M N : Type*} [Semiring R] [Semiring S] [AddCommGroup M] [AddCommGroup N] [Module R M]
+   [Module R N] [Module S M] [Module S N]
+  [LinearMap.CompatibleSMul M N R S]
+
+variable (R S M N) in
+@[simp]
+lemma restrictScalars_zero : (0 : M →ₗ[S] N).restrictScalars R = 0 :=
+  rfl
+
+@[simp]
+theorem restrictScalars_add (f g : M →ₗ[S] N) :
+    (f + g).restrictScalars R = f.restrictScalars R + g.restrictScalars R :=
+  rfl
+
+@[simp]
+theorem restrictScalars_neg (f : M →ₗ[S] N) : (-f).restrictScalars R = -f.restrictScalars R :=
+  rfl
+
+variable {R₁ : Type*} [Semiring R₁] [Module R₁ N] [SMulCommClass S R₁ N] [SMulCommClass R R₁ N]
+
+@[simp]
+theorem restrictScalars_smul (c : R₁) (f : M →ₗ[S] N) :
+    (c • f).restrictScalars R = c • f.restrictScalars R :=
+  rfl
+
+variable (S M N R R₁)
+
+/-- `LinearMap.restrictScalars` as a `LinearMap`. -/
+@[simps apply]
+def restrictScalarsₗ : (M →ₗ[S] N) →ₗ[R₁] M →ₗ[R] N where
+  toFun := restrictScalars R
+  map_add' := restrictScalars_add
+  map_smul' := restrictScalars_smul
+
+end RestrictScalarsAsLinearMap
+
 end LinearMap

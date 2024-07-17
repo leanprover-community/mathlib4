@@ -555,11 +555,12 @@ theorem size_to_nat : ∀ n, (size n : ℕ) = Nat.size n
   | bit0 n => by
       rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul]
       erw [@Nat.size_bit false n]
-      exact Nat.bit0_ne_zero <| ne_of_gt <| to_nat_pos n
+      have := to_nat_pos n
+      dsimp [Nat.bit]; omega
   | bit1 n => by
       rw [size, succ_to_nat, size_to_nat n, cast_bit1, ← two_mul]
       erw [@Nat.size_bit true n]
-      exact Nat.bit1_ne_zero _
+      dsimp [Nat.bit]; omega
 #align pos_num.size_to_nat PosNum.size_to_nat
 
 theorem size_eq_natSize : ∀ n, (size n : ℕ) = natSize n
