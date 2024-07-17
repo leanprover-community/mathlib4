@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Kaehler.Basic
 ## Main results
 
 - `retractionEquivSectionKerToTensor`:
-  Given a surjective algebra hom `f : P →ₐ[R] S` with square-zero kernel `I`,
+  Given a surjective algebra homomorphism `f : P →ₐ[R] S` with square-zero kernel `I`,
   there is a one-to-one correspondence between algebra homomorphism sections of `f`,
   and `P`-linear retractions to `I →ₗ[P] S ⊗[P] Ω[P/R]`.
 
@@ -39,14 +39,15 @@ section ofSection
 variable (g : S →ₐ[R] P) (hg : (IsScalarTower.toAlgHom R P S).comp g = AlgHom.id R S)
 
 /--
-Given a surjective algebra hom `f : P →ₐ[R] S` with square-zero kernel `I`,
-and a section `g : S →ₐ[R] P` (as an algebra hom),
+Given a surjective algebra homomorphism `f : P →ₐ[R] S` with square-zero kernel `I`,
+and a section `g : S →ₐ[R] P` (as an algebra homomorphism),
 we get a `R`-derivation `P → I` via `x ↦ x - g (f x)`.
 -/
 @[simps]
-def derivationOfSectionOfKerSqZero : Derivation R P (RingHom.ker (algebraMap P S)) where
-  toFun x := ⟨x - g (algebraMap _ _ x), by
-    simpa [RingHom.mem_ker, sub_eq_zero] using AlgHom.congr_fun hg.symm (algebraMap _ _ x)⟩
+def derivationOfSectionOfKerSqZero (f : P →ₐ[R] S) (hf' : (RingHom.ker f) ^ 2 = ⊥) (g : S →ₐ[R] P)
+    (hg : f.comp g = AlgHom.id R S) : Derivation R P (RingHom.ker f) where
+  toFun x := ⟨x - g (f x), by
+    simpa [RingHom.mem_ker, sub_eq_zero] using AlgHom.congr_fun hg.symm (f x)⟩
   map_add' x y := by simp only [map_add, AddSubmonoid.mk_add_mk, Subtype.mk.injEq]; ring
   map_smul' x y := by
     ext
@@ -56,11 +57,11 @@ def derivationOfSectionOfKerSqZero : Derivation R P (RingHom.ker (algebraMap P S
   map_one_eq_zero' := by simp only [LinearMap.coe_mk, AddHom.coe_mk, _root_.map_one, sub_self,
     AddSubmonoid.mk_eq_zero]
   leibniz' a b := by
-    have : (a - g (algebraMap _ _ a)) * (b - g (algebraMap _ _ b)) = 0 := by
+    have : (a - g (f a)) * (b - g (f b)) = 0 := by
       rw [← Ideal.mem_bot, ← hf', pow_two]
       apply Ideal.mul_mem_mul
-      · simpa [RingHom.mem_ker, sub_eq_zero] using AlgHom.congr_fun hg.symm (algebraMap P S a)
-      · simpa [RingHom.mem_ker, sub_eq_zero] using AlgHom.congr_fun hg.symm (algebraMap P S b)
+      · simpa [RingHom.mem_ker, sub_eq_zero] using AlgHom.congr_fun hg.symm (f a)
+      · simpa [RingHom.mem_ker, sub_eq_zero] using AlgHom.congr_fun hg.symm (f b)
     ext
     rw [← sub_eq_zero]
     conv_rhs => rw [← neg_zero, ← this]
@@ -88,10 +89,11 @@ we get a retraction of the injection `I → S ⊗[P] Ω[P/R]`.
 -/
 noncomputable
 def retractionOfSectionOfKerSqZero : S ⊗[P] Ω[P⁄R] →ₗ[P] RingHom.ker (algebraMap P S) :=
-    letI := g.toRingHom.toAlgebra
-    haveI := isScalarTower_of_section_of_ker_sqZero hf' g hg
-    letI f := (derivationOfSectionOfKerSqZero hf' g hg).liftKaehlerDifferential
-    (AlgebraTensorModule.lift ((LinearMap.ringLmapEquivSelf S S _).symm f)).restrictScalars P
+  letI := g.toRingHom.toAlgebra
+  haveI := isScalarTower_of_section_of_ker_sqZero hf' g hg
+  letI f : _ →ₗ[P] RingHom.ker (algebraMap P S) := (derivationOfSectionOfKerSqZero
+    (IsScalarTower.toAlgHom R P S) hf' g hg).liftKaehlerDifferential
+  (f.liftBaseChange S).restrictScalars P
 
 @[simp]
 lemma retractionOfSectionOfKerSqZero_tmul_D (s : S) (t : P) :
@@ -99,7 +101,11 @@ lemma retractionOfSectionOfKerSqZero_tmul_D (s : S) (t : P) :
       g s * t - g s * g (algebraMap _ _ t) := by
   letI := g.toRingHom.toAlgebra
   haveI := isScalarTower_of_section_of_ker_sqZero hf' g hg
-  simpa [retractionOfSectionOfKerSqZero] using (mul_sub (g s) t (g (algebraMap P S t)))
+  simp only [retractionOfSectionOfKerSqZero, AlgHom.toRingHom_eq_coe, LinearMap.coe_restrictScalars,
+    LinearMap.liftBaseChange_tmul, SetLike.val_smul_of_tower]
+  erw [Derivation.liftKaehlerDifferential_comp_D]
+  exact mul_sub (g s) t (g (algebraMap P S t))
+
 
 lemma retractionOfSectionOfKerSqZero_comp_kerToTensor :
     (retractionOfSectionOfKerSqZero hf' g hg).comp (kerToTensor R P S) = LinearMap.id := by
@@ -122,10 +128,10 @@ lemma sectionOfRetractionKerToTensorAux_prop (x y) (h : algebraMap P S x = algeb
   exact congr_arg Subtype.val (LinearMap.congr_fun hl.symm ⟨x - y, by simp [RingHom.mem_ker, h]⟩)
 
 /--
-Given a surjective algebra hom `f : P →ₐ[R] S` with square-zero kernel `I`,
-and `σ` be an arbitrary (set-theoretic) section of `f`.
-Suppose we have a retraction `l` of the injection `l : I →ₗ[P] S ⊗[P] Ω[P/R]`, then
-`x ↦ σ x - l (1 ⊗ D x)` is an algebra homomorphism and a section to `f`.
+Given a surjective algebra homomorphism `f : P →ₐ[R] S` with square-zero kernel `I`.
+Let `σ` be an arbitrary (set-theoretic) section of `f`.
+Suppose we have a retraction `l` of the injection `I →ₗ[P] S ⊗[P] Ω[P/R]`, then
+`x ↦ σ x - l (1 ⊗ D (σ x))` is an algebra homomorphism and a section to `f`.
 -/
 noncomputable
 def sectionOfRetractionKerToTensorAux : S →ₐ[R] P where
@@ -150,10 +156,17 @@ lemma sectionOfRetractionKerToTensorAux_algebraMap (x : P) :
     sectionOfRetractionKerToTensorAux hf' l hl σ hσ (algebraMap P S x) = x - l (1 ⊗ₜ .D _ _ x) :=
   sectionOfRetractionKerToTensorAux_prop l hl _ x (by simp [hσ])
 
+lemma toAlgHom_comp_sectionOfRetractionKerToTensorAux :
+    (IsScalarTower.toAlgHom R P S).comp
+      (sectionOfRetractionKerToTensorAux hf' l hl σ hσ) = AlgHom.id _ _ := by
+  ext x
+  obtain ⟨x, rfl⟩ := hf x
+  simp [sectionOfRetractionKerToTensorAux_algebraMap, (RingHom.mem_ker _).mp]
+
 /--
-Given a surjective algebra hom `f : P →ₐ[R] S` with square-zero kernel `I`,
-Suppose we have a retraction `l` of the injection `l : I →ₗ[P] S ⊗[P] Ω[P/R]`,
-then `x ↦ σ x - l (1 ⊗ D x)` is an algebra homomorphism and a section to `f`,
+Given a surjective algebra homomorphism `f : P →ₐ[R] S` with square-zero kernel `I`.
+Suppose we have a retraction `l` of the injection `I →ₗ[P] S ⊗[P] Ω[P/R]`, then
+`x ↦ σ x - l (1 ⊗ D (σ x))` is an algebra homomorphism and a section to `f`,
 where `σ` is an arbitrary (set-theoretic) section of `f`
 -/
 noncomputable def sectionOfRetractionKerToTensor : S →ₐ[R] P :=
@@ -167,17 +180,15 @@ lemma sectionOfRetractionKerToTensor_algebraMap (x : P) :
 @[simp]
 lemma toAlgHom_comp_sectionOfRetractionKerToTensor :
     (IsScalarTower.toAlgHom R P S).comp
-      (sectionOfRetractionKerToTensor hf hf' l hl) = AlgHom.id _ _ := by
-  ext x
-  obtain ⟨x, rfl⟩ := hf x
-  simp [(RingHom.mem_ker _).mp]
+      (sectionOfRetractionKerToTensor hf hf' l hl) = AlgHom.id _ _ :=
+  toAlgHom_comp_sectionOfRetractionKerToTensorAux hf _ _ _ _ _
 
 end ofRetraction
 
 /--
-Given a surjective algebra hom `f : P →ₐ[R] S` with square-zero kernel `I`,
-there is a one-to-one correspondance between algebra homomorphism sections of `f`,
-and `P`-linear retractions to `I →ₗ[P] S ⊗[P] Ω[P/R]`.
+Given a surjective algebra homomorphism `f : P →ₐ[R] S` with square-zero kernel `I`,
+there is a one-to-one correspondance between `P`-linear retractions of `I →ₗ[P] S ⊗[P] Ω[P/R]`
+and algebra homomorphism sections of `f`.
 -/
 noncomputable
 def retractionEquivSectionKerToTensor :
