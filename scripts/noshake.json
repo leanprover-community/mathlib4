@@ -167,7 +167,7 @@
   "Mathlib.Tactic.TFAE",
   "Mathlib.Tactic.Tauto",
   "Mathlib.Tactic.TermCongr",
-  "Mathlib.Tactic.ToAdditive",
+  "Mathlib.Tactic.ToAdditive.Frontend",
   "Mathlib.Tactic.ToExpr",
   "Mathlib.Tactic.ToLevel",
   "Mathlib.Tactic.Trace",
