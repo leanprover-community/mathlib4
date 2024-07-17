@@ -151,7 +151,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx => do
       return
     let prevImports ← minImportsRef.get
     if stx.isOfKind ``Parser.Command.eoi then
-      let currImps := ((← getEnv).imports.map (·.module)).qsort Name.lt
+      let currImps := (((← getEnv).imports.map (·.module)).qsort Name.lt).erase `Init
       if prevImports.toArray.qsort Name.lt != currImps then
         logInfo m!"{currImps}"
     let newImports := getIrredundantImports (← getEnv) (← getAllImports stx)
