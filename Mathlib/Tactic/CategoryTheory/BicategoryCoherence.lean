@@ -101,15 +101,6 @@ instance liftHom₂WhiskerRight {f g : a ⟶ b} (η : f ⟶ g) [LiftHom f] [Lift
   lift := LiftHom₂.lift η ▷ LiftHom.lift h
 #align category_theory.bicategory.lift_hom₂_whisker_right Mathlib.Tactic.BicategoryCoherence.liftHom₂WhiskerRight
 
-/-- A typeclass carrying a choice of bicategorical structural isomorphism between two objects.
-Used by the `⊗≫` bicategorical composition operator, and the `coherence` tactic.
--/
-class BicategoricalCoherence (f g : a ⟶ b) [LiftHom f] [LiftHom g] where
-  /-- The chosen structural isomorphism between to 1-morphisms. -/
-  hom' : f ⟶ g
-  [isIso : IsIso hom']
-#align category_theory.bicategory.bicategorical_coherence Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence
-
 open Lean Elab Tactic Meta
 
 /-- Helper function for throwing exceptions. -/
