@@ -56,7 +56,7 @@ lemma ball_eq_of_mem {x y : X} {r : ℝ} (h : y ∈ ball x r) : ball x r = ball 
   constructor <;> intro h' <;>
   exact (dist_triangle_max _ _ _).trans_lt (max_lt h' (dist_comm x _ ▸ h))
 
-lemma mem_ball_iff_mem_ball {x y: X} {r : ℝ} : y ∈ ball x r ↔ x ∈ ball y r := by
+lemma mem_ball_iff {x y: X} {r : ℝ} : y ∈ ball x r ↔ x ∈ ball y r := by
   cases lt_or_le 0 r with
   | inl hr =>
     constructor <;> intro h <;>
@@ -71,7 +71,7 @@ lemma closedBall_eq_of_mem {x y: X} {r : ℝ} (h : y ∈ closedBall x r) :
   constructor <;> intro h' <;>
   exact (dist_triangle_max _ _ _).trans (max_le h' (dist_comm x _ ▸ h))
 
-lemma mem_closedBall_iff_mem_closedBall {x y: X} {r : ℝ} :
+lemma mem_closedBall_iff {x y: X} {r : ℝ} :
     y ∈ closedBall x r ↔ x ∈ closedBall y r := by
   cases le_or_lt 0 r with
   | inl hr =>
@@ -80,56 +80,16 @@ lemma mem_closedBall_iff_mem_closedBall {x y: X} {r : ℝ} :
     simp [hr]
   | inr hr => simp [closedBall_eq_empty.mpr hr]
 
-lemma ball_subset_trichotomy :
-    ball x r ⊆ ball y s ∨ ball y s ⊆ ball x r ∨ Disjoint (ball x r) (ball y s) := by
-  cases le_or_lt r s with
-  | inl h =>
-    cases le_or_lt s (dist x y) with
-    | inl h' =>
-      refine Or.inr (Or.inr ?_)
-      intro S hsx hsy z hz
-      suffices y ∈ ball x s by
-        refine h'.not_lt ?_
-        simpa [dist_comm] using this
-      have hx : x ∈ ball z s := by
-        rw [mem_ball_iff_mem_ball]
-        exact ball_subset_ball h (hsx hz)
-      rw [← ball_eq_of_mem hx, mem_ball_iff_mem_ball]
-      exact hsy hz
-    | inr h' =>
-      refine Or.inl ?_
-      rw [ball_eq_of_mem (mem_ball.mpr h')]
-      exact ball_subset_ball h
-  | inr h =>
-    cases le_or_lt r (dist x y) with
-    | inl h' =>
-      refine Or.inr (Or.inr ?_)
-      intro S hsx hsy z hz
-      suffices y ∈ ball x r by
-        refine h'.not_lt ?_
-        simpa [dist_comm] using this
-      have hx : x ∈ ball z r := by
-        rw [mem_ball_iff_mem_ball]
-        exact hsx hz
-      rw [← ball_eq_of_mem hx, mem_ball_iff_mem_ball]
-      exact ball_subset_ball h.le (hsy hz)
-    | inr h' =>
-      refine Or.inr (Or.inl ?_)
-      rw [← ball_eq_of_mem (mem_ball.mpr h')]
-      exact ball_subset_ball h.le
 
 lemma ball_eq_or_disjoint :
     ball x r = ball y r ∨ Disjoint (ball x r) (ball y r) := by
   cases le_or_lt r 0 with
-  | inl hr =>
-    simp [ball_eq_empty.mpr hr]
+  | inl hr => rw [← Metric.ball_eq_empty (x := x)] at hr; simp [hr]
   | inr hr =>
-    rcases ball_subset_trichotomy x y r r with h|h|h
-    · refine Or.inl ?_
-      rw [ball_eq_of_mem (h (mem_ball_self hr))]
-    · refine Or.inl ?_
-      rw [ball_eq_of_mem (h (mem_ball_self hr))]
-    · exact Or.inr h
+      refine Set.disjoint_or_nonempty_inter (ball x r) (ball y r) |>.symm.imp (fun h ↦ ?_) id
+      have h₁ := ball_eq_of_mem <| Set.inter_subset_left h.some_mem
+      have h₂ := ball_eq_of_mem <| Set.inter_subset_right h.some_mem
+      exact h₁.trans h₂.symm
 
 lemma isClosed_ball (x : X) (r : ℝ) : IsClosed (ball x r) := by
   cases le_or_lt r 0 with
@@ -152,57 +112,17 @@ lemma isClopen_ball : IsClopen (ball x r) := ⟨isClosed_ball x r, isOpen_ball�
 lemma frontier_ball_eq_empty : frontier (ball x r) = ∅ :=
   isClopen_iff_frontier_eq_empty.mp (isClopen_ball x r)
 
-lemma closedBall_subset_trichotomy :
-    closedBall x r ⊆ closedBall y s ∨ closedBall y s ⊆ closedBall x r ∨
-    Disjoint (closedBall x r) (closedBall y s) := by
-  cases le_or_lt r s with
-  | inl h =>
-    cases lt_or_le s (dist x y) with
-    | inl h' =>
-      refine Or.inr (Or.inr ?_)
-      intro S hsx hsy z hz
-      suffices y ∈ closedBall x s by
-        refine h'.not_le ?_
-        simpa [dist_comm] using this
-      have hx : x ∈ closedBall z s := by
-        rw [mem_closedBall_iff_mem_closedBall]
-        exact closedBall_subset_closedBall h (hsx hz)
-      rw [← closedBall_eq_of_mem hx, mem_closedBall_iff_mem_closedBall]
-      exact hsy hz
-    | inr h' =>
-      refine Or.inl ?_
-      rw [closedBall_eq_of_mem (mem_closedBall.mpr h')]
-      exact closedBall_subset_closedBall h
-  | inr h =>
-    cases lt_or_le r (dist x y) with
-    | inl h' =>
-      refine Or.inr (Or.inr ?_)
-      intro S hsx hsy z hz
-      suffices y ∈ closedBall x r by
-        refine h'.not_le ?_
-        simpa [dist_comm] using this
-      have hx : x ∈ closedBall z r := by
-        rw [mem_closedBall_iff_mem_closedBall]
-        exact hsx hz
-      rw [← closedBall_eq_of_mem hx, mem_closedBall_iff_mem_closedBall]
-      exact closedBall_subset_closedBall h.le (hsy hz)
-    | inr h' =>
-      refine Or.inr (Or.inl ?_)
-      rw [← closedBall_eq_of_mem (mem_closedBall.mpr h')]
-      exact closedBall_subset_closedBall h.le
 
 lemma closedBall_eq_or_disjoint :
     closedBall x r = closedBall y r ∨ Disjoint (closedBall x r) (closedBall y r) := by
   cases lt_or_le r 0 with
-  | inl hr =>
-    simp [closedBall_eq_empty.mpr hr]
+  | inl hr => rw [← Metric.closedBall_eq_empty (x := x)] at hr; simp [hr]
   | inr hr =>
-    rcases closedBall_subset_trichotomy x y r r with h|h|h
-    · refine Or.inl ?_
-      rw [closedBall_eq_of_mem (h (mem_closedBall_self hr))]
-    · refine Or.inl ?_
-      rw [closedBall_eq_of_mem (h (mem_closedBall_self hr))]
-    · exact Or.inr h
+      refine Set.disjoint_or_nonempty_inter (closedBall x r) (closedBall y r) |>.symm.imp
+        (fun h ↦ ?_) id
+      have h₁ := closedBall_eq_of_mem <| Set.inter_subset_left h.some_mem
+      have h₂ := closedBall_eq_of_mem <| Set.inter_subset_right h.some_mem
+      exact h₁.trans h₂.symm
 
 lemma isOpen_closedBall {r : ℝ} (hr : r ≠ 0) : IsOpen (closedBall x r) := by
   cases lt_or_gt_of_ne hr with
