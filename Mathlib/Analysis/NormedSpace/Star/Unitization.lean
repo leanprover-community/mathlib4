@@ -57,7 +57,7 @@ variable (E)
 
 /-- A C⋆-algebra over a densely normed field is a regular normed algebra. -/
 instance CstarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
-  isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 E) fun a => NNReal.eq_iff.mpr <|
+  isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 E) fun a => NNReal.eq_iff.mp <|
     show ‖mul 𝕜 E a‖₊ = ‖a‖₊ by
     rw [← sSup_closed_unit_ball_eq_nnnorm]
     refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ?_ ?_ fun r hr => ?_
