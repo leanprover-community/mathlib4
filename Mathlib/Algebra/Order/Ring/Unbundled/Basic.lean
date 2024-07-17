@@ -178,7 +178,7 @@ theorem add_le_mul_two_add (a2 : 2 ≤ a) (b0 : 0 ≤ b) : a + (2 + b) ≤ a * (
 #align add_le_mul_two_add add_le_mul_two_add
 
 theorem one_le_mul_of_one_le_of_one_le (ha : 1 ≤ a) (hb : 1 ≤ b) : (1 : α) ≤ a * b :=
-  Left.one_le_mul_of_le_of_le ha hb <| zero_le_one.trans ha
+  Left.one_le_mul_of_le_of_le ha hb
 #align one_le_mul_of_one_le_of_one_le one_le_mul_of_one_le_of_one_le
 
 section Monotone
@@ -217,29 +217,6 @@ end Monotone
 
 #noalign bit1_pos
 #noalign bit1_pos'
-
-theorem mul_le_one (ha : a ≤ 1) (hb' : 0 ≤ b) (hb : b ≤ 1) : a * b ≤ 1 :=
-  one_mul (1 : α) ▸ mul_le_mul ha hb hb' zero_le_one
-#align mul_le_one mul_le_one
-
-theorem one_lt_mul_of_le_of_lt (ha : 1 ≤ a) (hb : 1 < b) : 1 < a * b :=
-  hb.trans_le <| le_mul_of_one_le_left (zero_le_one.trans hb.le) ha
-#align one_lt_mul_of_le_of_lt one_lt_mul_of_le_of_lt
-
-theorem one_lt_mul_of_lt_of_le (ha : 1 < a) (hb : 1 ≤ b) : 1 < a * b :=
-  ha.trans_le <| le_mul_of_one_le_right (zero_le_one.trans ha.le) hb
-#align one_lt_mul_of_lt_of_le one_lt_mul_of_lt_of_le
-
-alias one_lt_mul := one_lt_mul_of_le_of_lt
-#align one_lt_mul one_lt_mul
-
-theorem mul_lt_one_of_nonneg_of_lt_one_left (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) : a * b < 1 :=
-  (mul_le_of_le_one_right ha₀ hb).trans_lt ha
-#align mul_lt_one_of_nonneg_of_lt_one_left mul_lt_one_of_nonneg_of_lt_one_left
-
-theorem mul_lt_one_of_nonneg_of_lt_one_right (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b < 1) : a * b < 1 :=
-  (mul_le_of_le_one_left hb₀ ha).trans_lt hb
-#align mul_lt_one_of_nonneg_of_lt_one_right mul_lt_one_of_nonneg_of_lt_one_right
 
 variable [ExistsAddOfLE α] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
 
@@ -994,4 +971,3 @@ end LinearOrderedRing
 @[deprecated (since := "2023-12-23")] alias zero_le_mul_right := mul_nonneg_iff_of_pos_right
 @[deprecated (since := "2023-12-23")] alias zero_lt_mul_left := mul_pos_iff_of_pos_left
 @[deprecated (since := "2023-12-23")] alias zero_lt_mul_right := mul_pos_iff_of_pos_right
-

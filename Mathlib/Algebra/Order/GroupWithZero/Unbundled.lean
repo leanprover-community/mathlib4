@@ -1028,18 +1028,15 @@ theorem mul_lt_one_of_lt_of_lt_right [MulPosStrictMono α]
     (ha : a < 1) (hb : b < 1) (b0 : 0 < b) : a * b < 1 :=
   (mul_lt_of_lt_one_left b0 ha).trans hb
 
--- this lemma was in `Algebra.Order.Ring.Defs`
 theorem mul_le_one [MulPosMono α] (ha : a ≤ 1) (hb' : 0 ≤ b) (hb : b ≤ 1) : a * b ≤ 1 :=
   mul_le_one_of_le_of_le_right ha hb hb'
 #align mul_le_one mul_le_one
 
--- this lemma was in `Algebra.Order.Ring.Defs`
 theorem mul_lt_one_of_nonneg_of_lt_one_left [PosMulMono α]
     (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) : a * b < 1 :=
   mul_lt_one_of_lt_of_le_left ha hb ha₀
 #align mul_lt_one_of_nonneg_of_lt_one_left mul_lt_one_of_nonneg_of_lt_one_left
 
--- this lemma was in `Algebra.Order.Ring.Defs`
 theorem mul_lt_one_of_nonneg_of_lt_one_right [MulPosMono α]
     (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b < 1) : a * b < 1 :=
   mul_lt_one_of_le_of_lt_right ha hb hb₀
@@ -1090,10 +1087,12 @@ theorem Right.one_lt_mul_of_lt_of_lt [MulPosStrictMono α] [ZeroLEOneClass α]
 
 alias one_le_mul_of_le_of_le := Left.one_le_mul_of_le_of_le
 alias one_lt_mul_of_le_of_lt := Right.one_lt_mul_of_le_of_lt₀
+#align one_lt_mul_of_le_of_lt one_lt_mul_of_le_of_lt
 alias one_lt_mul_of_lt_of_le := Left.one_lt_mul_of_lt_of_le₀
+#align one_lt_mul_of_lt_of_le one_lt_mul_of_lt_of_le
 alias one_lt_mul_of_lt_of_lt := Left.one_lt_mul_of_lt_of_lt
 
-alias one_lt_mul := one_lt_mul_of_le_of_lt -- this name was in `Algebra.Order.Ring.Defs`
+alias one_lt_mul := one_lt_mul_of_le_of_lt
 #align one_lt_mul one_lt_mul
 
 end Preorder
