@@ -39,11 +39,17 @@ def getVisited (env : Environment) (decl : Name) : NameSet :=
 
 /-- `getId stx` takes as input a `Syntax` `stx`.
 If `stx` contains a `declId`, then it returns the `ident`-syntax for the `declId`.
+If `stx` is a nameless instance, then it also tries to fetch the `ident` for the instance.
 Otherwise it returns `stx` itself. -/
-def getId (stx : Syntax) : Syntax :=
+def getId (stx : Syntax) : CommandElabM Syntax := do
   match stx.find? (·.isOfKind ``Lean.Parser.Command.declId) with
-    | some declId => declId[0]
-    | none => stx
+    | some declId => return declId[0]
+    | none =>
+      match stx.find? (·.isOfKind ``Lean.Parser.Command.instance) with
+                | none => return stx
+                | some stx => do
+                  let dv ← mkDefViewOfInstance {} stx
+                  return dv.declId[0]
 
 /-- extract all identifiers, as a `NameSet`. -/
 partial
@@ -75,13 +81,11 @@ module names that are implied by
 * the identifiers contained in `cmd`,
 * if `cmd` adds a declaration `d` to the environment, then also all the module names implied by `d`.
 -/
-def getAllImports {m : Type → Type} [Monad m] [MonadResolveName m] [MonadEnv m]
-    (cmd : Syntax) (dbg? : Bool := false) :
-    m NameSet := do
+def getAllImports (cmd : Syntax) (dbg? : Bool := false) : CommandElabM NameSet := do
   let env ← getEnv
   --let nm ← liftCoreM do realizeGlobalConstNoOverloadWithInfo (getId cmd)
   -- we put together the implied declaration names, the `SyntaxNodeKinds`, the attributes
-  let ts := getVisited env (getId cmd).getId
+  let ts := getVisited env (← getId cmd).getId
               |>.append (getSyntaxNodeKinds cmd)
               |>.append (getAttrs env cmd)
   if dbg? then dbg_trace "{ts.toArray.qsort Name.lt}"
