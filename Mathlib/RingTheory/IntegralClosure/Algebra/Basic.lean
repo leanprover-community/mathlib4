@@ -12,23 +12,16 @@ import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 /-!
 # Integral closure of a subring.
 
-If A is an R-algebra then `a : A` is integral over R if it is a root of a monic polynomial
-with coefficients in R. Enough theory is developed to prove that integral elements
-form a sub-R-algebra of A.
+Let `A` be an `R`-algebra. We prove that integral elements form a sub-`R`-algebra of `A`.
 
 ## Main definitions
 
 Let `R` be a `CommRing` and let `A` be an R-algebra.
 
-* `RingHom.IsIntegralElem (f : R →+* A) (x : A)` : `x` is integral with respect to the map `f`,
-
-* `IsIntegral (x : A)`  : `x` is integral over `R`, i.e., is a root of a monic polynomial with
-                          coefficients in `R`.
-* `integralClosure R A` : the integral closure of `R` in `A`, regarded as a sub-`R`-algebra of `A`.
+* `integralClosure R A` : the integral closure of `R` in an `R`-algebra `A`.
 -/
 
 
-open scoped Classical
 open Polynomial Submodule
 
 section
@@ -138,7 +131,7 @@ theorem IsIntegral.smul {R} [CommSemiring R] [CommRing S] [Algebra R B] [Algebra
 
 variable (R A)
 
-/-- The integral closure of R in an R-algebra A. -/
+/-- The integral closure of `R` in an `R`-algebra `A`. -/
 def integralClosure : Subalgebra R A where
   carrier := { r | IsIntegral R r }
   zero_mem' := isIntegral_zero

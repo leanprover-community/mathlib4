@@ -11,8 +11,7 @@ import Mathlib.Algebra.Polynomial.Eval
 # Integral closure of a subring.
 
 If A is an R-algebra then `a : A` is integral over R if it is a root of a monic polynomial
-with coefficients in R. Enough theory is developed to prove that integral elements
-form a sub-R-algebra of A.
+with coefficients in R.
 
 ## Main definitions
 

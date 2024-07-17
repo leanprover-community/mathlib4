@@ -11,23 +11,11 @@ import Mathlib.RingTheory.Polynomial.ScaleRoots
 #align_import ring_theory.integral_closure from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
 
 /-!
-# Integral closure of a subring.
+# # Integral closure as a characteristic predicate
 
-If A is an R-algebra then `a : A` is integral over R if it is a root of a monic polynomial
-with coefficients in R. Enough theory is developed to prove that integral elements
-form a sub-R-algebra of A.
+We prove basic properties of `IsIntegralClosure`.
 
-## Main definitions
-
-Let `R` be a `CommRing` and let `A` be an R-algebra.
-
-* `RingHom.IsIntegralElem (f : R →+* A) (x : A)` : `x` is integral with respect to the map `f`,
-
-* `IsIntegral (x : A)`  : `x` is integral over `R`, i.e., is a root of a monic polynomial with
-                          coefficients in `R`.
-* `integralClosure R A` : the integral closure of `R` in `A`, regarded as a sub-`R`-algebra of `A`.
 -/
-
 
 open scoped Classical
 open Polynomial Submodule
