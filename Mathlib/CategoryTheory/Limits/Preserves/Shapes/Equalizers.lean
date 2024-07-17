@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
+import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 #align_import category_theory.limits.preserves.shapes.equalizers from "leanprover-community/mathlib"@"4698e35ca56a0d4fa53aa5639c3364e0a77f4eba"
@@ -253,6 +254,15 @@ instance (priority := 1) preservesSplitCoequalizers (f g : X ⟶ Y) [HasSplitCoe
     (isColimitMapCoconeCoforkEquiv G _).symm
       ((HasSplitCoequalizer.isSplitCoequalizer f g).map G).isCoequalizer
 #align category_theory.limits.preserves_split_coequalizers CategoryTheory.Limits.preservesSplitCoequalizers
+
+instance (priority := 1) preservesSplitEqualizers (f g : X ⟶ Y) [HasSplitEqualizer f g] :
+    PreservesLimit (parallelPair f g) G := by
+  apply
+    preservesLimitOfPreservesLimitCone
+      (HasSplitEqualizer.isSplitEqualizer f g).isEqualizer
+  apply
+    (isLimitMapConeForkEquiv G _).symm
+      ((HasSplitEqualizer.isSplitEqualizer f g).map G).isEqualizer
 
 end Coequalizers
 

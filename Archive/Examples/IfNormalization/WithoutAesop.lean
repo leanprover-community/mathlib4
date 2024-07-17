@@ -124,3 +124,5 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
 example : IfNormalization :=
   ⟨fun e => (normalize' ∅ e).1,
    fun e => ⟨(normalize' ∅ e).2.2.1, by simp [(normalize' ∅ e).2.1]⟩⟩
+
+end IfExpr

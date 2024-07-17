@@ -30,7 +30,7 @@ This plugin is noticeably less powerful than the equivalent version in Mathlib 3
 In particular, we can't use the plugin on sums containing variables.
 (See also the TODO note "To support variables".)
 
-## TODOs
+## TODO
 
  * Support intervals: `Finset.Ico`, `Finset.Icc`, ...
  * To support variables, like in Mathlib 3, turn this into a standalone tactic that unfolds
@@ -38,13 +38,13 @@ In particular, we can't use the plugin on sums containing variables.
    normalization?)
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Meta
 
 open Lean hiding Rat mkRat
 open Meta
 open Qq
+
+variable {u v : Level}
 
 /-- This represents the result of trying to determine whether the given expression `n : Q(ℕ)`
 is either `zero` or `succ`. -/
@@ -109,7 +109,7 @@ set_option linter.unusedVariables false in
 
 Fails if we cannot determine which of the alternatives apply to the expression.
 -/
-partial def List.proveNilOrCons {α : Q(Type u)} (s : Q(List $α)) :
+partial def List.proveNilOrCons {u : Level} {α : Q(Type u)} (s : Q(List $α)) :
     MetaM (List.ProveNilOrConsResult s) :=
   s.withApp fun e a =>
   match (e, e.constName, a) with
@@ -402,3 +402,9 @@ partial def evalFinsetSum : NormNumExt where eval {u β} e := do
         q(Finset.sum_cons $h)
       pure <| res.eq_trans eq)
     s
+
+end NormNum
+
+end Meta
+
+end Mathlib

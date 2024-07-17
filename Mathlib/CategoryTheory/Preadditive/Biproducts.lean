@@ -147,12 +147,7 @@ def isBilimitOfIsLimit {f : J → C} (t : Bicone f) (ht : IsLimit t.toCone) : t.
 /-- We can turn any limit cone over a pair into a bilimit bicone. -/
 def biconeIsBilimitOfLimitConeOfIsLimit {f : J → C} {t : Cone (Discrete.functor f)}
     (ht : IsLimit t) : (Bicone.ofLimitCone ht).IsBilimit :=
-  isBilimitOfIsLimit _ <|
-    IsLimit.ofIsoLimit ht <|
-      Cones.ext (Iso.refl _)
-        (by
-          rintro ⟨j⟩
-          aesop_cat)
+  isBilimitOfIsLimit _ <| IsLimit.ofIsoLimit ht <| Cones.ext (Iso.refl _) (by aesop_cat)
 #align category_theory.limits.bicone_is_bilimit_of_limit_cone_of_is_limit CategoryTheory.Limits.biconeIsBilimitOfLimitConeOfIsLimit
 
 /-- In a preadditive category, any finite bicone which is a colimit cocone is in fact a bilimit

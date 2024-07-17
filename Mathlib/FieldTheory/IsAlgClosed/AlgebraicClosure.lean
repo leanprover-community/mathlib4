@@ -87,10 +87,10 @@ theorem spanEval_ne_top : spanEval k ≠ ⊤ := by
     Finsupp.mem_span_image_iff_total]
   rintro ⟨v, _, hv⟩
   replace hv := congr_arg (toSplittingField k v.support) hv
-  rw [AlgHom.map_one, Finsupp.total_apply, Finsupp.sum, AlgHom.map_sum, Finset.sum_eq_zero] at hv
+  rw [map_one, Finsupp.total_apply, Finsupp.sum, map_sum, Finset.sum_eq_zero] at hv
   · exact zero_ne_one hv
   intro j hj
-  rw [smul_eq_mul, AlgHom.map_mul, toSplittingField_evalXSelf (s := v.support) hj,
+  rw [smul_eq_mul, map_mul, toSplittingField_evalXSelf (s := v.support) hj,
     mul_zero]
 #align algebraic_closure.span_eval_ne_top AlgebraicClosure.spanEval_ne_top
 
@@ -211,8 +211,7 @@ private theorem toStepOfLE'.succ (m n : ℕ) (h : m ≤ n) :
     toStepOfLE' k m (Nat.succ n) (h.trans n.le_succ) =
     (toStepSucc k n) ∘ toStepOfLE' k m n h := by
   ext x
-  convert Nat.leRecOn_succ h x
-  exact h.trans n.le_succ
+  exact Nat.leRecOn_succ h x
 
 /-- The canonical ring homomorphism to a step with a greater index. -/
 def toStepOfLE (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n where

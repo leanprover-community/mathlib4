@@ -249,26 +249,26 @@ variable [StrictOrderedSemiring α]
 
 namespace Set.Ioc
 
-instance one [Nontrivial α] : One (Ioc (0 : α) 1) where one := ⟨1, ⟨zero_lt_one, le_refl 1⟩⟩
+instance one : One (Ioc (0 : α) 1) where one := ⟨1, ⟨zero_lt_one, le_refl 1⟩⟩
 #align set.Ioc.has_one Set.Ioc.one
 
 @[simp, norm_cast]
-theorem coe_one [Nontrivial α] : ↑(1 : Ioc (0 : α) 1) = (1 : α) :=
+theorem coe_one : ↑(1 : Ioc (0 : α) 1) = (1 : α) :=
   rfl
 #align set.Ioc.coe_one Set.Ioc.coe_one
 
 @[simp]
-theorem mk_one [Nontrivial α] (h : (1 : α) ∈ Ioc (0 : α) 1) : (⟨1, h⟩ : Ioc (0 : α) 1) = 1 :=
+theorem mk_one (h : (1 : α) ∈ Ioc (0 : α) 1) : (⟨1, h⟩ : Ioc (0 : α) 1) = 1 :=
   rfl
 #align set.Ioc.mk_one Set.Ioc.mk_one
 
 @[simp, norm_cast]
-theorem coe_eq_one [Nontrivial α] {x : Ioc (0 : α) 1} : (x : α) = 1 ↔ x = 1 := by
+theorem coe_eq_one {x : Ioc (0 : α) 1} : (x : α) = 1 ↔ x = 1 := by
   symm
   exact Subtype.ext_iff
 #align set.Ioc.coe_eq_one Set.Ioc.coe_eq_one
 
-theorem coe_ne_one [Nontrivial α] {x : Ioc (0 : α) 1} : (x : α) ≠ 1 ↔ x ≠ 1 :=
+theorem coe_ne_one {x : Ioc (0 : α) 1} : (x : α) ≠ 1 ↔ x ≠ 1 :=
   not_iff_not.mpr coe_eq_one
 #align set.Ioc.coe_ne_one Set.Ioc.coe_ne_one
 
@@ -281,7 +281,7 @@ theorem coe_le_one (x : Ioc (0 : α) 1) : (x : α) ≤ 1 :=
 #align set.Ioc.coe_le_one Set.Ioc.coe_le_one
 
 /-- like `coe_le_one`, but with the inequality in `Ioc (0:α) 1`. -/
-theorem le_one [Nontrivial α] {t : Ioc (0 : α) 1} : t ≤ 1 :=
+theorem le_one {t : Ioc (0 : α) 1} : t ≤ 1 :=
   t.2.2
 #align set.Ioc.le_one Set.Ioc.le_one
 
@@ -307,7 +307,7 @@ instance semigroup : Semigroup (Ioc (0 : α) 1) :=
   Subtype.coe_injective.semigroup _ coe_mul
 #align set.Ioc.semigroup Set.Ioc.semigroup
 
-instance monoid [Nontrivial α] : Monoid (Ioc (0 : α) 1) :=
+instance monoid : Monoid (Ioc (0 : α) 1) :=
   Subtype.coe_injective.monoid _ coe_one coe_mul coe_pow
 #align set.Ioc.monoid Set.Ioc.monoid
 
@@ -315,7 +315,7 @@ instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigro
   Subtype.coe_injective.commSemigroup _ coe_mul
 #align set.Ioc.comm_semigroup Set.Ioc.commSemigroup
 
-instance commMonoid {α : Type*} [StrictOrderedCommSemiring α] [Nontrivial α] :
+instance commMonoid {α : Type*} [StrictOrderedCommSemiring α] :
     CommMonoid (Ioc (0 : α) 1) :=
   Subtype.coe_injective.commMonoid _ coe_one coe_mul coe_pow
 #align set.Ioc.comm_monoid Set.Ioc.commMonoid

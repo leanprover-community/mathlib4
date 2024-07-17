@@ -35,7 +35,6 @@ Then, for `C := Sheaf X.etale AddCommGroupCat.{u}`, we will have
 sheaves over `X` shall be in `Type u`.
 
 ## TODO
-* construct the additive structure on `Ext`
 * compute `Ext X Y 0`
 * define the class in `Ext S.X₃ S.X₁ 1` of a short exact short complex `S`
 * construct the long exact sequences of `Ext`.
@@ -48,7 +47,7 @@ namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C] [Abelian C]
 
-open Localization
+open Localization Limits ZeroObject
 
 /-- The property that morphisms between single complexes in arbitrary degrees are `w`-small
 in the derived category. -/
@@ -129,6 +128,178 @@ lemma comp_hom {a b : ℕ} (α : Ext X Y a) (β : Ext Y Z b) {c : ℕ} (h : a + 
 @[ext]
 lemma ext {n : ℕ} {α β : Ext X Y n} (h : α.hom = β.hom) : α = β :=
   homEquiv.injective h
+
+lemma ext_iff {n : ℕ} {α β : Ext X Y n} : α = β ↔ α.hom = β.hom :=
+  ⟨fun h ↦ by rw [h], ext⟩
+
+end
+
+/-- The canonical map `(X ⟶ Y) → Ext X Y 0`. -/
+noncomputable def mk₀ (f : X ⟶ Y) : Ext X Y 0 := SmallShiftedHom.mk₀ _ _ (by simp)
+  ((CochainComplex.singleFunctor C 0).map f)
+
+@[simp]
+lemma mk₀_hom [HasDerivedCategory.{w'} C] (f : X ⟶ Y) :
+    (mk₀ f).hom = ShiftedHom.mk₀ _ (by simp) ((DerivedCategory.singleFunctor C 0).map f) := by
+  apply SmallShiftedHom.equiv_mk₀
+
+@[simp 1100]
+lemma mk₀_comp_mk₀ (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (mk₀ f).comp (mk₀ g) (zero_add 0) = mk₀ (f ≫ g) := by
+  letI := HasDerivedCategory.standard C; ext; simp
+
+@[simp 1100]
+lemma mk₀_comp_mk₀_assoc (f : X ⟶ Y) (g : Y ⟶ Z) {n : ℕ} (α : Ext Z T n) :
+    (mk₀ f).comp ((mk₀ g).comp α (zero_add n)) (zero_add n) =
+      (mk₀ (f ≫ g)).comp α (zero_add n) := by
+  rw [← mk₀_comp_mk₀, comp_assoc]
+  omega
+
+variable {n : ℕ}
+
+/-! The abelian group structure on `Ext X Y n` is defined by transporting the
+abelian group structure on the constructed derived category
+(given by `HasDerivedCategory.standard`). This constructed derived category
+is used in order to obtain most of the compatibilities satisfied by
+this abelian group structure. It is then shown that the bijection
+`homEquiv` between `Ext X Y n` and Hom-types in the derived category
+can be promoted to an additive equivalence for any `[HasDerivedCategory C]` instance. -/
+
+noncomputable instance : AddCommGroup (Ext X Y n) :=
+  letI := HasDerivedCategory.standard C
+  homEquiv.addCommGroup
+
+/-- The map from `Ext X Y n` to a `ShiftedHom` type in the *constructed* derived
+category given by `HasDerivedCategory.standard`: this definition is introduced
+only in order to prove properties of the abelian group structure on `Ext`-groups.
+Do not use this definition: use the more general `hom` instead. -/
+noncomputable abbrev hom' (α : Ext X Y n) :
+  letI := HasDerivedCategory.standard C
+  ShiftedHom ((DerivedCategory.singleFunctor C 0).obj X)
+      ((DerivedCategory.singleFunctor C 0).obj Y) (n : ℤ) :=
+  letI := HasDerivedCategory.standard C
+  α.hom
+
+private lemma add_hom' (α β : Ext X Y n) : (α + β).hom' = α.hom' + β.hom' :=
+  letI := HasDerivedCategory.standard C
+  homEquiv.symm.injective (Equiv.symm_apply_apply _ _)
+
+private lemma neg_hom' (α : Ext X Y n) : (-α).hom' = -α.hom' :=
+  letI := HasDerivedCategory.standard C
+  homEquiv.symm.injective (Equiv.symm_apply_apply _ _)
+
+variable (X Y n) in
+private lemma zero_hom' : (0 : Ext X Y n).hom' = 0 :=
+  letI := HasDerivedCategory.standard C
+  homEquiv.symm.injective (Equiv.symm_apply_apply _ _)
+
+@[simp]
+lemma add_comp (α₁ α₂ : Ext X Y n) {m : ℕ} (β : Ext Y Z m) {p : ℕ} (h : n + m = p) :
+    (α₁ + α₂).comp β h = α₁.comp β h + α₂.comp β h := by
+  letI := HasDerivedCategory.standard C; ext; simp [add_hom']
+
+@[simp]
+lemma comp_add (α : Ext X Y n) {m : ℕ} (β₁ β₂ : Ext Y Z m) {p : ℕ} (h : n + m = p) :
+    α.comp (β₁ + β₂) h = α.comp β₁ h + α.comp β₂ h := by
+  letI := HasDerivedCategory.standard C; ext; simp [add_hom']
+
+@[simp]
+lemma neg_comp (α : Ext X Y n) {m : ℕ} (β : Ext Y Z m) {p : ℕ} (h : n + m = p) :
+    (-α).comp β h = -α.comp β h := by
+  letI := HasDerivedCategory.standard C; ext; simp [neg_hom']
+
+@[simp]
+lemma comp_neg (α : Ext X Y n) {m : ℕ} (β : Ext Y Z m) {p : ℕ} (h : n + m = p) :
+    α.comp (-β) h = -α.comp β h := by
+  letI := HasDerivedCategory.standard C; ext; simp [neg_hom']
+
+variable (X n) in
+@[simp]
+lemma zero_comp {m : ℕ} (β : Ext Y Z m) (p : ℕ) (h : n + m = p) :
+    (0 : Ext X Y n).comp β h = 0 := by
+  letI := HasDerivedCategory.standard C; ext; simp [zero_hom']
+
+@[simp]
+lemma comp_zero (α : Ext X Y n) (Z : C) (m : ℕ) (p : ℕ) (h : n + m = p) :
+    α.comp (0 : Ext Y Z m) h = 0 := by
+  letI := HasDerivedCategory.standard C; ext; simp [zero_hom']
+
+@[simp]
+lemma mk₀_id_comp (α : Ext X Y n) :
+    (mk₀ (𝟙 X)).comp α (zero_add n) = α := by
+  letI := HasDerivedCategory.standard C; ext; simp
+
+@[simp]
+lemma comp_mk₀_id (α : Ext X Y n) :
+    α.comp (mk₀ (𝟙 Y)) (add_zero n) = α := by
+  letI := HasDerivedCategory.standard C; ext; simp
+
+variable (X Y) in
+@[simp]
+lemma mk₀_zero : mk₀ (0 : X ⟶ Y) = 0 := by
+  letI := HasDerivedCategory.standard C; ext; simp [zero_hom']
+
+section
+
+variable [HasDerivedCategory.{w'} C]
+
+variable (X Y n) in
+@[simp]
+lemma zero_hom : (0 : Ext X Y n).hom = 0 := by
+  let β : Ext 0 Y n := 0
+  have hβ : β.hom = 0 := by apply (Functor.map_isZero _ (isZero_zero C)).eq_of_src
+  have : (0 : Ext X Y n) = (0 : Ext X 0 0).comp β (zero_add n) := by simp [β]
+  rw [this, comp_hom, hβ, ShiftedHom.comp_zero]
+
+attribute [local instance] preservesBinaryBiproductsOfPreservesBiproducts
+
+lemma biprod_ext {X₁ X₂ : C} {α β : Ext (X₁ ⊞ X₂) Y n}
+    (h₁ : (mk₀ biprod.inl).comp α (zero_add n) = (mk₀ biprod.inl).comp β (zero_add n))
+    (h₂ : (mk₀ biprod.inr).comp α (zero_add n) = (mk₀ biprod.inr).comp β (zero_add n)) :
+    α = β := by
+  letI := HasDerivedCategory.standard C
+  rw [ext_iff] at h₁ h₂ ⊢
+  simp only [comp_hom, mk₀_hom, ShiftedHom.mk₀_comp] at h₁ h₂
+  apply BinaryCofan.IsColimit.hom_ext
+    (isBinaryBilimitOfPreserves (DerivedCategory.singleFunctor C 0)
+      (BinaryBiproduct.isBilimit X₁ X₂)).isColimit
+  all_goals assumption
+
+@[simp]
+lemma add_hom (α β : Ext X Y n) : (α + β).hom = α.hom + β.hom := by
+  let α' : Ext (X ⊞ X) Y n := (mk₀ biprod.fst).comp α (zero_add n)
+  let β' : Ext (X ⊞ X) Y n := (mk₀ biprod.snd).comp β (zero_add n)
+  have eq₁ : α + β = (mk₀ (biprod.lift (𝟙 X) (𝟙 X))).comp (α' + β') (zero_add n) := by
+    simp [α', β']
+  have eq₂ : α' + β' = homEquiv.symm (α'.hom + β'.hom) := by
+    apply biprod_ext
+    all_goals ext; simp [α', β', ← Functor.map_comp]
+  simp only [eq₁, eq₂, comp_hom, Equiv.apply_symm_apply, ShiftedHom.comp_add]
+  congr
+  · dsimp [α']
+    rw [comp_hom, mk₀_hom, mk₀_hom]
+    dsimp
+    rw [ShiftedHom.mk₀_comp_mk₀_assoc, ← Functor.map_comp,
+      biprod.lift_fst, Functor.map_id, ShiftedHom.mk₀_id_comp]
+  · dsimp [β']
+    rw [comp_hom, mk₀_hom, mk₀_hom]
+    dsimp
+    rw [ShiftedHom.mk₀_comp_mk₀_assoc, ← Functor.map_comp,
+      biprod.lift_snd, Functor.map_id, ShiftedHom.mk₀_id_comp]
+
+lemma neg_hom (α : Ext X Y n) : (-α).hom = -α.hom := by
+  rw [← add_right_inj α.hom, ← add_hom, add_right_neg, add_right_neg, zero_hom]
+
+/-- When an instance of `[HasDerivedCategory.{w'} C]` is available, this is the additive
+bijection between `Ext.{w} X Y n` and a type of morphisms in the derived category. -/
+noncomputable def homAddEquiv {n : ℕ} :
+    Ext.{w} X Y n ≃+ ShiftedHom ((DerivedCategory.singleFunctor C 0).obj X)
+      ((DerivedCategory.singleFunctor C 0).obj Y) (n : ℤ) where
+  toEquiv := homEquiv
+  map_add' := by simp
+
+@[simp]
+lemma homAddEquiv_apply (α : Ext X Y n) : homAddEquiv α = α.hom := rfl
 
 end
 
