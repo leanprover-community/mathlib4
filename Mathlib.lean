@@ -3723,6 +3723,8 @@ import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.IntegralClosure
+import Mathlib.RingTheory.IntegralClosure.Basic
+import Mathlib.RingTheory.IntegralClosure.Defs
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.IntegralRestrict
 import Mathlib.RingTheory.IntegrallyClosed
