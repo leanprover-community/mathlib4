@@ -133,7 +133,7 @@ def starCenterIsoCentroid : StarSubsemiring.center α ≃⋆+* CentroidHom α wh
 
 @[simp]
 lemma starCenterIsoCentroid_apply (a : ↥(NonUnitalStarSubsemiring.center α)) :
-    CentroidHom.starCenterIsoCentroid a = CentroidHom.starCenterToCentroid.toFun a := rfl
+    CentroidHom.starCenterIsoCentroid a = CentroidHom.starCenterToCentroid a := rfl
 
 @[simp]
 lemma starCenterIsoCentroid_symm_apply_coe (T : CentroidHom α) :
