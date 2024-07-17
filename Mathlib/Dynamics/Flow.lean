@@ -44,11 +44,17 @@ def IsInvariant (ϕ : τ → α → α) (s : Set α) : Prop :=
   ∀ t, MapsTo (ϕ t) s s
 #align is_invariant IsInvariant
 
-variable (ϕ : τ → α → α) (s : Set α)
-
-theorem isInvariant_iff_image : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s ⊆ s := by
+theorem isInvariant_iff_image {ϕ : τ → α → α} {s : Set α} :
+    IsInvariant ϕ s ↔ ∀ t, ϕ t '' s ⊆ s := by
   simp_rw [IsInvariant, mapsTo']
 #align is_invariant_iff_image isInvariant_iff_image
+
+theorem isInvariant_apply {ϕ : τ → α → α} {s : Set α} (h : IsInvariant ϕ s) (t : τ) {x : α}
+    (hx : x ∈ s) :
+    ϕ t x ∈ s := by
+  apply isInvariant_iff_image.1 h t
+  rw [mem_image]
+  use x, hx
 
 /-- A set `s ⊆ α` is forward-invariant under `ϕ : τ → α → α` if
     `ϕ t s ⊆ s` for all `t ≥ 0`. -/
@@ -73,6 +79,23 @@ theorem isFwInvariant_iff_isInvariant [CanonicallyOrderedAddCommMonoid τ] {ϕ :
     IsFwInvariant ϕ s ↔ IsInvariant ϕ s :=
   ⟨IsFwInvariant.isInvariant, IsInvariant.isFwInvariant⟩
 #align is_fw_invariant_iff_is_invariant isFwInvariant_iff_isInvariant
+
+/-- Actions of `ℕ` are defined by a single map. This definition is  -/
+def IsMapInvariant (T : α → α) (s : Set α) : Prop :=
+  MapsTo T s s
+
+/-- For actions of `ℕ`, it suffices to check the first iterate. -/
+theorem isMapInvariant_iff_isInvariant {T : α → α} {s : Set α} :
+    IsMapInvariant T s ↔ IsInvariant (fun n : ℕ ↦ T^[n]) s := by
+  refine Iff.intro (fun h n ↦ Set.MapsTo.iterate h n) (fun h ↦ ?_)
+  specialize h 1
+  simp only [iterate_one] at h
+  exact h
+
+theorem isMapInvariant_apply {T : α → α} {s : Set α} (h : IsMapInvariant T s) (n : ℕ) {x : α}
+    (hx : x ∈ s) :
+    T^[n] x ∈ s :=
+  isInvariant_apply (isMapInvariant_iff_isInvariant.1 h) n hx
 
 end Invariant
 
@@ -156,7 +179,7 @@ variable {τ : Type*} [AddCommGroup τ] [TopologicalSpace τ] [TopologicalAddGro
   {α : Type*} [TopologicalSpace α] (ϕ : Flow τ α)
 
 theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s = s :=
-  (isInvariant_iff_image _ _).trans
+  isInvariant_iff_image.trans
     (Iff.intro
       (fun h t => Subset.antisymm (h t) fun _ hx => ⟨_, h (-t) ⟨_, hx, rfl⟩, by simp [← map_add]⟩)
       fun h t => by rw [h t])
