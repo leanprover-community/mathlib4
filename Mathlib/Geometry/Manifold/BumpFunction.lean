@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
 import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 #align_import geometry.manifold.bump_function from "leanprover-community/mathlib"@"b018406ad2f2a73223a3a9e198ccae61e6f05318"
 
