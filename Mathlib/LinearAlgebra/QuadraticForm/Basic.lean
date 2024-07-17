@@ -3,6 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
+import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.LinearAlgebra.Matrix.Symmetric
@@ -97,6 +98,11 @@ Source of this name: https://en.wikipedia.org/wiki/Quadratic_form#Generalization
 def polar (f : M → N) (x y : M) :=
   f (x + y) - f x - f y
 #align quadratic_form.polar QuadraticMap.polar
+
+protected theorem map_add (f : M → N) (x y : M) :
+    f (x + y) = f x + f y + polar f x y := by
+  rw [polar]
+  abel
 
 theorem polar_add (f g : M → N) (x y : M) : polar (f + g) x y = polar f x y + polar g x y := by
   simp only [polar, Pi.add_apply]
@@ -1164,14 +1170,14 @@ variable [CommRing R] [AddCommMonoid M] [Module R M]
 
 /-- `M.toQuadraticMap'` is the map `fun x ↦ row x * M * col x` as a quadratic form. -/
 def Matrix.toQuadraticMap' (M : Matrix n n R) : QuadraticMap R (n → R) R :=
-  LinearMap.BilinMap.toQuadraticMap (Matrix.toLinearMap₂' M)
+  LinearMap.BilinMap.toQuadraticMap (Matrix.toLinearMap₂' R M)
 #align matrix.to_quadratic_form' Matrix.toQuadraticMap'
 
 variable [Invertible (2 : R)]
 
 /-- A matrix representation of the quadratic form. -/
 def QuadraticMap.toMatrix' (Q : QuadraticMap R (n → R) R) : Matrix n n R :=
-  LinearMap.toMatrix₂' (associated (R := R) Q)
+  LinearMap.toMatrix₂' R (associated Q)
 #align quadratic_form.to_matrix' QuadraticMap.toMatrix'
 
 open QuadraticMap

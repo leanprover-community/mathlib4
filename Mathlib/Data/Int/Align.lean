@@ -2,33 +2,14 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-The integers, with addition, multiplication, and subtraction.
 -/
 import Mathlib.Mathport.Rename
-import Mathlib.Init.Data.Nat.Notation
 
 /-!
-# Note about `Mathlib/Init/`
-The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
-(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
-
-We intend to move all the content of these files out into the main `Mathlib` directory structure.
-Contributions assisting with this are appreciated.
-
-`#align` statements without corresponding declarations
-(i.e. because the declaration is in Batteries or Lean) can be left here.
-These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+# Align statements for results about the integers
 -/
 
-open Nat
-
 #align int.neg_succ_of_nat Int.negSucc
-
--- @[inherit_doc]
-notation "ℤ" => Int
-
-namespace Int
 
 #align int.of_nat_zero Int.ofNat_zero
 #align int.of_nat_one Int.ofNat_one
@@ -49,15 +30,6 @@ namespace Int
 #align int.coe_nat_one Int.ofNat_one
 #align int.coe_nat_succ Int.ofNat_succ
 
-protected theorem ofNat_add_out (m n : ℕ) : ↑m + ↑n = (↑(m + n) : ℤ) := rfl
-#align int.coe_nat_add_out Int.ofNat_add_out
-
-protected theorem ofNat_mul_out (m n : ℕ) : ↑m * ↑n = (↑(m * n) : ℤ) := rfl
-#align int.coe_nat_mul_out Int.ofNat_mul_out
-
-protected theorem ofNat_add_one_out (n : ℕ) : ↑n + (1 : ℤ) = ↑(succ n) := rfl
-#align int.coe_nat_add_one_out Int.ofNat_add_one_out
-
 #align int.of_nat_add_of_nat Int.ofNat_add_ofNat
 
 #align int.of_nat_add_neg_succ_of_nat Int.ofNat_add_negSucc
@@ -73,9 +45,6 @@ protected theorem ofNat_add_one_out (n : ℕ) : ↑n + (1 : ℤ) = ↑(succ n) :
 #align int.coe_nat_eq_coe_nat_iff Int.ofNat_inj
 #align int.neg_succ_of_nat_inj_iff Int.negSucc_inj
 #align int.neg_succ_of_nat_eq Int.negSucc_eq
-
-protected theorem neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 h
-#align int.neg_inj Int.neg_eq_neg
 
 #align int.sub_nat_nat_elim Int.subNatNat_elim
 #align int.sub_nat_nat_add_left Int.subNatNat_add_left
@@ -125,10 +94,6 @@ protected theorem neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 
 #align int.coe_nat_sub Int.ofNat_sub
 #align int.sub_nat_nat_eq_coe Int.subNatNat_eq_coe
 #align int.to_nat_sub Int.toNat_sub
-
-/-- The modulus of an integer by another as a natural. Uses the E-rounding convention. -/
-def natMod (m n : ℤ) : ℕ := (m % n).toNat
-#align int.nat_mod Int.natMod
 
 #align int.sign_mul_nat_abs Int.sign_mul_natAbs
 

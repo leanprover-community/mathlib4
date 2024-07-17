@@ -6,7 +6,8 @@ Authors: Andrew Yang
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.Algebra.Ring.Idempotents
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Filtration
 import Mathlib.RingTheory.Nakayama

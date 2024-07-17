@@ -293,6 +293,12 @@ theorem map_sub_swap (x y : R) : v (x - y) = v (y - x) :=
   v.toMonoidWithZeroHom.toMonoidHom.map_sub_swap x y
 #align valuation.map_sub_swap Valuation.map_sub_swap
 
+theorem map_inv {R : Type*} [DivisionRing R] (v : Valuation R Γ₀) : ∀ x, v x⁻¹ = (v x)⁻¹ :=
+  map_inv₀ _
+
+theorem map_div {R : Type*} [DivisionRing R] (v : Valuation R Γ₀) : ∀ x y, v (x / y) = v x / v y :=
+  map_div₀ _
+
 theorem map_sub (x y : R) : v (x - y) ≤ max (v x) (v y) :=
   calc
     v (x - y) = v (x + -y) := by rw [sub_eq_add_neg]
@@ -327,6 +333,14 @@ theorem map_add_eq_of_lt_right (h : v x < v y) : v (x + y) = v y :=
 theorem map_add_eq_of_lt_left (h : v y < v x) : v (x + y) = v x := by
   rw [add_comm]; exact map_add_eq_of_lt_right _ h
 #align valuation.map_add_eq_of_lt_left Valuation.map_add_eq_of_lt_left
+
+theorem map_sub_eq_of_lt_right (h : v x < v y) : v (x - y) = v y := by
+  rw [sub_eq_add_neg, map_add_eq_of_lt_right, map_neg]
+  rwa [map_neg]
+
+theorem map_sub_eq_of_lt_left (h : v y < v x) : v (x - y) = v x := by
+  rw [sub_eq_add_neg, map_add_eq_of_lt_left]
+  rwa [map_neg]
 
 theorem map_eq_of_sub_lt (h : v (y - x) < v x) : v y = v x := by
   have := Valuation.map_add_of_distinct_val v (ne_of_gt h).symm
@@ -808,6 +822,10 @@ theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = - (v x) :=
 #align add_valuation.map_inv AddValuation.map_inv
 
 @[simp]
+theorem map_div (v : AddValuation K Γ₀) {x y : K} : v (x / y) = v x - v y :=
+  map_div₀ v.valuation x y
+
+@[simp]
 theorem map_neg (x : R) : v (-x) = v x :=
   Valuation.map_neg v x
 #align add_valuation.map_neg AddValuation.map_neg
@@ -827,6 +845,24 @@ theorem map_le_sub {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g �
 theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = @Min.min Γ₀ _ (v x) (v y) :=
   Valuation.map_add_of_distinct_val v h
 #align add_valuation.map_add_of_distinct_val AddValuation.map_add_of_distinct_val
+
+theorem map_add_eq_of_lt_left {x y : R} (h : v x < v y) :
+    v (x + y) = v x := by
+  rw [map_add_of_distinct_val]
+  simp [le_of_lt, h]
+  simp [ne_of_lt, h]
+
+theorem map_add_eq_of_lt_right {x y : R} (hx : v y < v x) :
+    v (x + y) = v y := add_comm y x ▸ map_add_eq_of_lt_left v hx
+
+theorem map_sub_eq_of_lt_left {x y : R} (hx : v x < v y) :
+    v (x - y) = v x := by
+  rw [sub_eq_add_neg]
+  apply map_add_eq_of_lt_left
+  rwa [map_neg]
+
+theorem map_sub_eq_of_lt_right {x y : R} (hx : v y < v x) :
+    v (x - y) = v y := map_sub_swap v x y ▸ map_sub_eq_of_lt_left v hx
 
 theorem map_eq_of_lt_sub (h : v x < v (y - x)) : v y = v x :=
   Valuation.map_eq_of_sub_lt v h

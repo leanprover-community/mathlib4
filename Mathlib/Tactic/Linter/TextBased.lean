@@ -5,7 +5,7 @@ Authors: Michael Rothgang
 -/
 
 import Batteries.Data.String.Matcher
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Notation
 
 /-!
 ## Text-based linters
@@ -386,5 +386,5 @@ def lintModules (moduleNames : Array String) (style : ErrorFormat) : IO UInt32 :
     if errors.size > 0 then
       allUnexpectedErrors := allUnexpectedErrors.append errors
       numberErrorFiles := numberErrorFiles + 1
-    formatErrors allUnexpectedErrors style
+  formatErrors allUnexpectedErrors style
   return numberErrorFiles
