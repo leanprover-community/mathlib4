@@ -115,11 +115,15 @@ theorem toCotangent_to_quotient_square (x : I) :
     I.cotangentToQuotientSquare (I.toCotangent x) = (I ^ 2).mkQ x := rfl
 #align ideal.to_cotangent_to_quotient_square Ideal.toCotangent_to_quotient_square
 
-lemma Cotangent.smul_eq_zero_of_mem {R} [CommRing R] {I : Ideal R}
+lemma Cotangent.smul_eq_zero_of_mem {I : Ideal R}
     {x} (hx : x ∈ I) (m : I.Cotangent) : x • m = 0 := by
   obtain ⟨m, rfl⟩ := Ideal.toCotangent_surjective _ m
   rw [← map_smul, Ideal.toCotangent_eq_zero, pow_two]
   exact Ideal.mul_mem_mul hx m.2
+
+lemma isTorsionBySet_cotangent :
+    Module.IsTorsionBySet R I.Cotangent I :=
+  fun m x ↦ m.smul_eq_zero_of_mem x.2
 
 /-- `I ⧸ I ^ 2` as an ideal of `R ⧸ I ^ 2`. -/
 def cotangentIdeal (I : Ideal R) : Ideal (R ⧸ I ^ 2) :=
