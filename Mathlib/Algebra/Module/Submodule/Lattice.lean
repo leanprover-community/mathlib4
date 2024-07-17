@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.Algebra.PUnitInstances
+import Mathlib.Algebra.PUnitInstances.Module
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 

@@ -9,9 +9,9 @@ import Mathlib.CategoryTheory.Monad.Algebra
 #align_import category_theory.monad.adjunction from "leanprover-community/mathlib"@"ea3009f6c1a37dc031f741382dbb3ed93c965620"
 
 /-!
-# Adjunctions and monads
+# Adjunctions and (co)monads
 
-We develop the basic relationship between adjunctions and monads.
+We develop the basic relationship between adjunctions and (co)monads.
 
 Given an adjunction `h : L ⊣ R`, we have `h.toMonad : Monad C` and `h.toComonad : Comonad D`.
 We then have
@@ -22,7 +22,8 @@ and dually `Comonad.comparison`.
 We say `R : D ⥤ C` is `MonadicRightAdjoint`, if it is a right adjoint and its `Monad.comparison`
 is an equivalence of categories. (Similarly for `ComonadicLeftAdjoint`.)
 
-Finally we prove that reflective functors are `MonadicRightAdjoint`.
+Finally we prove that reflective functors are `MonadicRightAdjoint` and coreflective functors are
+`ComonadicLeftAdjoint`.
 -/
 
 
@@ -92,7 +93,7 @@ def adjToComonadIso (G : Comonad C) : G.adj.toComonad ≅ G :=
 Given an adjunction `L ⊣ R`, if `L ⋙ R` is abstractly isomorphic to the identity functor, then the
 unit is an isomorphism.
 -/
-def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) :  𝟭 C ≅ L ⋙ R where
+def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : 𝟭 C ≅ L ⋙ R where
   hom := adj.unit
   inv :=  i.hom ≫ (adj.toMonad.transport i).μ
   hom_inv_id := by
@@ -312,6 +313,10 @@ instance μ_iso_of_reflective [Reflective R] : IsIso (reflectorAdjunction R).toM
   infer_instance
 #align category_theory.μ_iso_of_reflective CategoryTheory.μ_iso_of_reflective
 
+instance δ_iso_of_coreflective [Coreflective R] : IsIso (coreflectorAdjunction R).toComonad.δ := by
+  dsimp
+  infer_instance
+
 attribute [instance] MonadicRightAdjoint.eqv
 attribute [instance] ComonadicLeftAdjoint.eqv
 
@@ -343,12 +348,42 @@ instance comparison_essSurj [Reflective R] :
   apply (X.unit_assoc _).symm
 #align category_theory.reflective.comparison_ess_surj CategoryTheory.Reflective.comparison_essSurj
 
-lemma comparison_full [R.Full] {L : C ⥤ D} (adj : L ⊣ R):
+lemma comparison_full [R.Full] {L : C ⥤ D} (adj : L ⊣ R) :
     (Monad.comparison adj).Full where
   map_surjective f := ⟨R.preimage f.f, by aesop_cat⟩
 #align category_theory.reflective.comparison_full CategoryTheory.Reflective.comparison_full
 
 end Reflective
+
+namespace Coreflective
+
+instance [Coreflective R] (X : (coreflectorAdjunction R).toComonad.Coalgebra) :
+    IsIso ((coreflectorAdjunction R).counit.app X.A) :=
+  ⟨⟨X.a,
+      ⟨by
+        dsimp only [Functor.id_obj]
+        rw [← (coreflectorAdjunction R).counit_naturality]
+        dsimp only [Functor.comp_obj, Adjunction.toMonad_coe]
+        rw [counit_obj_eq_map_counit, ← Functor.map_comp, ← Functor.map_comp]
+        erw [X.counit]
+        simp, X.counit⟩⟩⟩
+
+instance comparison_essSurj [Coreflective R] :
+    (Comonad.comparison (coreflectorAdjunction R)).EssSurj := by
+  refine ⟨fun X => ⟨(coreflector R).obj X.A, ⟨?_⟩⟩⟩
+  refine Comonad.Coalgebra.isoMk ?_ ?_
+  · exact (asIso ((coreflectorAdjunction R).counit.app X.A))
+  rw [← cancel_mono ((coreflectorAdjunction R).counit.app X.A)]
+  simp only [Adjunction.counit_naturality, Functor.comp_obj, Functor.id_obj,
+    Adjunction.left_triangle_components_assoc, assoc]
+  erw [X.counit]
+  simp
+
+lemma comparison_full [R.Full] {L : C ⥤ D} (adj : R ⊣ L) :
+    (Comonad.comparison adj).Full where
+  map_surjective f := ⟨R.preimage f.f, by aesop_cat⟩
+
+end Coreflective
 
 -- It is possible to do this computably since the construction gives the data of the inverse, not
 -- just the existence of an inverse on each object.
@@ -360,5 +395,12 @@ instance (priority := 100) monadicOfReflective [Reflective R] :
   adj := reflectorAdjunction R
   eqv := { full := Reflective.comparison_full _ }
 #align category_theory.monadic_of_reflective CategoryTheory.monadicOfReflective
+
+/-- Any coreflective inclusion has a comonadic left adjoint.
+    cf Dual statement of Prop 5.3.3 of [Riehl][riehl2017] -/
+instance (priority := 100) comonadicOfCoreflective [Coreflective R] :
+    ComonadicLeftAdjoint R where
+  adj := coreflectorAdjunction R
+  eqv := { full := Coreflective.comparison_full _ }
 
 end CategoryTheory

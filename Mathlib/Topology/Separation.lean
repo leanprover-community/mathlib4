@@ -52,11 +52,14 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
   us to conclude that this is equivalent to all subspaces being normal. Such a space is not
   necessarily Hausdorff or regular, even if it is T₀.
 * `T5Space`: A T₅ space is a completely normal T₁ space. T₅ implies T₄.
+* `PerfectlyNormalSpace`: A perfectly normal space is a normal space such that
+  closed sets are Gδ.
+* `T6Space`: A T₆ space is a Perfectly normal T₁ space. T₆ implies T₅.
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
 occasionally the literature swaps definitions for e.g. T₃ and regular.
 
-### TODOs
+### TODO
 
 * Add perfectly normal and T6 spaces.
 * Use `hasSeparatingCovers_iff_separatedNhds` to prove that perfectly normal spaces
@@ -198,6 +201,24 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
         k_sub_V.trans (iUnion_const V).symm.subset,
         fun _ ↦
           ⟨V_open, disjoint_of_subset (fun ⦃a⦄ a ↦ a) h_sub_U (UV_dis.closure_right U_open).symm⟩⟩⟩
+
+theorem Set.hasSeparatingCover_empty_left (s : Set X) : HasSeparatingCover ∅ s :=
+  ⟨fun _ ↦ ∅, empty_subset (⋃ _, ∅),
+   fun _ ↦ ⟨isOpen_empty, by simp only [closure_empty, empty_disjoint]⟩⟩
+
+theorem Set.hasSeparatingCover_empty_right (s : Set X) : HasSeparatingCover s ∅ :=
+  ⟨fun _ ↦ univ, (subset_univ s).trans univ.iUnion_const.symm.subset,
+   fun _ ↦ ⟨isOpen_univ, by apply disjoint_empty⟩⟩
+
+theorem HasSeparatingCover.mono {s₁ s₂ t₁ t₂ : Set X} (sc_st : HasSeparatingCover s₂ t₂)
+    (s_sub : s₁ ⊆ s₂) (t_sub : t₁ ⊆ t₂) : HasSeparatingCover s₁ t₁ := by
+  obtain ⟨u, u_cov, u_props⟩ := sc_st
+  exact
+    ⟨u,
+     s_sub.trans u_cov,
+     fun n ↦
+       ⟨(u_props n).1,
+        disjoint_of_subset (fun ⦃_⦄ a ↦ a) t_sub (u_props n).2⟩⟩
 
 namespace SeparatedNhds
 
@@ -772,7 +793,7 @@ instance ULift.instT1Space [T1Space X] : T1Space (ULift X) :=
   embedding_uLift_down.t1Space
 
 -- see Note [lower instance priority]
-instance (priority := 100) TotallyDisconnectedSpace.t1Space [h: TotallyDisconnectedSpace X] :
+instance (priority := 100) TotallyDisconnectedSpace.t1Space [h : TotallyDisconnectedSpace X] :
     T1Space X := by
   rw [((t1Space_TFAE X).out 0 1 :)]
   intro x
@@ -1141,7 +1162,7 @@ theorem specializes_iff_not_disjoint : x ⤳ y ↔ ¬Disjoint (𝓝 x) (𝓝 y) 
 theorem disjoint_nhds_nhds_iff_not_inseparable : Disjoint (𝓝 x) (𝓝 y) ↔ ¬Inseparable x y := by
   rw [disjoint_nhds_nhds_iff_not_specializes, specializes_iff_inseparable]
 
-theorem r1Space_iff_inseparable_or_disjoint_nhds {X : Type*} [TopologicalSpace X]:
+theorem r1Space_iff_inseparable_or_disjoint_nhds {X : Type*} [TopologicalSpace X] :
     R1Space X ↔ ∀ x y : X, Inseparable x y ∨ Disjoint (𝓝 x) (𝓝 y) :=
   ⟨fun _h x y ↦ (specializes_or_disjoint_nhds x y).imp_left Specializes.inseparable, fun h ↦
     ⟨fun x y ↦ (h x y).imp_left Inseparable.specializes⟩⟩
@@ -1929,7 +1950,7 @@ theorem IsCompact.preimage_continuous [CompactSpace X] [T2Space Y] {f : X → Y}
 
 lemma Pi.isCompact_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
     [∀ i, T2Space (π i)] {s : Set (Π i, π i)} :
-    IsCompact s ↔ IsClosed s ∧ ∀ i, IsCompact (eval i '' s):= by
+    IsCompact s ↔ IsClosed s ∧ ∀ i, IsCompact (eval i '' s) := by
   constructor <;> intro H
   · exact ⟨H.isClosed, fun i ↦ H.image <| continuous_apply i⟩
   · exact IsCompact.of_isClosed_subset (isCompact_univ_pi H.2) H.1 (subset_pi_eval_image univ s)
@@ -2215,7 +2236,7 @@ alias separatedNhds_of_isCompact_isClosed := SeparatedNhds.of_isCompact_isClosed
 
 /-- This technique to witness `HasSeparatingCover` in regular Lindelöf topological spaces
 will be used to prove regular Lindelöf spaces are normal. -/
-lemma IsClosed.HasSeparatingCover {s t : Set X} [r: RegularSpace X] [LindelofSpace X]
+lemma IsClosed.HasSeparatingCover {s t : Set X} [r : RegularSpace X] [LindelofSpace X]
     (s_cl : IsClosed s) (t_cl : IsClosed t) (st_dis : Disjoint s t) : HasSeparatingCover s t := by
   -- `IsLindelof.indexed_countable_subcover` requires the space be Nonempty
   rcases isEmpty_or_nonempty X with empty_X | nonempty_X
@@ -2319,10 +2340,14 @@ theorem T25Space.of_injective_continuous [TopologicalSpace Y] [T25Space Y] {f : 
   t2_5 x y hne := (tendsto_lift'_closure_nhds hcont x).disjoint (t2_5 <| hinj.ne hne)
     (tendsto_lift'_closure_nhds hcont y)
 
-instance [T25Space X] {p : X → Prop} : T25Space {x // p x} :=
-  .of_injective_continuous Subtype.val_injective continuous_subtype_val
+theorem Embedding.t25Space [TopologicalSpace Y] [T25Space Y] {f : X → Y} (hf : Embedding f) :
+    T25Space X :=
+  .of_injective_continuous hf.inj hf.continuous
 
-section T25
+instance Subtype.instT25Space [T25Space X] {p : X → Prop} : T25Space {x // p x} :=
+  embedding_subtype_val.t25Space
+
+end T25
 
 section T3
 
@@ -2525,7 +2550,7 @@ instance ULift.instCompletelyNormalSpace [CompletelyNormalSpace X] :
     CompletelyNormalSpace (ULift X) :=
   embedding_uLift_down.completelyNormalSpace
 
-/-- A T₅ space is a normal T₁ space. -/
+/-- A T₅ space is a completely normal T₁ space. -/
 class T5Space (X : Type u) [TopologicalSpace X] extends T1Space X, CompletelyNormalSpace X : Prop
 #align t5_space T5Space
 
@@ -2562,6 +2587,62 @@ instance [CompletelyNormalSpace X] [R0Space X] : T5Space (SeparationQuotient X) 
     exacts [hd₁.preimage mk, hd₂.preimage mk]
 
 end CompletelyNormal
+
+section PerfectlyNormal
+
+/-- A topological space `X` is a *perfectly normal space* provided it is normal and
+closed sets are Gδ. -/
+class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] extends NormalSpace X : Prop where
+    closed_gdelta : ∀ ⦃h : Set X⦄, IsClosed h → IsGδ h
+
+/-- Lemma that allows the easy conclusion that perfectly normal spaces are completely normal. -/
+theorem Disjoint.hasSeparatingCover_closed_gdelta_right {s t : Set X} [NormalSpace X]
+    (st_dis : Disjoint s t) (t_cl : IsClosed t) (t_gd : IsGδ t) : HasSeparatingCover s t := by
+  obtain ⟨T, T_open, T_count, T_int⟩ := t_gd
+  rcases T.eq_empty_or_nonempty with rfl | T_nonempty
+  · rw [T_int, sInter_empty] at st_dis
+    rw [(s.disjoint_univ).mp st_dis]
+    exact t.hasSeparatingCover_empty_left
+  obtain ⟨g, g_surj⟩ := T_count.exists_surjective T_nonempty
+  choose g' g'_open clt_sub_g' clg'_sub_g using fun n ↦ by
+    apply normal_exists_closure_subset t_cl (T_open (g n).1 (g n).2)
+    rw [T_int]
+    exact sInter_subset_of_mem (g n).2
+  have clg'_int : t = ⋂ i, closure (g' i) := by
+    apply (subset_iInter fun n ↦ (clt_sub_g' n).trans subset_closure).antisymm
+    rw [T_int]
+    refine subset_sInter fun t tinT ↦ ?_
+    obtain ⟨n, gn⟩ := g_surj ⟨t, tinT⟩
+    refine iInter_subset_of_subset n <| (clg'_sub_g n).trans ?_
+    rw [gn]
+  use fun n ↦ (closure (g' n))ᶜ
+  constructor
+  · rw [← compl_iInter, subset_compl_comm, ← clg'_int]
+    exact st_dis.subset_compl_left
+  · refine fun n ↦ ⟨isOpen_compl_iff.mpr isClosed_closure, ?_⟩
+    simp only [closure_compl, disjoint_compl_left_iff_subset]
+    rw [← closure_eq_iff_isClosed.mpr t_cl] at clt_sub_g'
+    exact subset_closure.trans <| (clt_sub_g' n).trans <| (g'_open n).subset_interior_closure
+
+instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
+    [PerfectlyNormalSpace X] : CompletelyNormalSpace X where
+  completely_normal _ _ hd₁ hd₂ := separatedNhds_iff_disjoint.mp <|
+    hasSeparatingCovers_iff_separatedNhds.mp
+      ⟨(hd₂.hasSeparatingCover_closed_gdelta_right isClosed_closure <|
+         closed_gdelta isClosed_closure).mono (fun ⦃_⦄ a ↦ a) subset_closure,
+       ((Disjoint.symm hd₁).hasSeparatingCover_closed_gdelta_right isClosed_closure <|
+         closed_gdelta isClosed_closure).mono (fun ⦃_⦄ a ↦ a) subset_closure⟩
+
+/-- A T₆ space is a perfectly normal T₁ space. -/
+class T6Space (X : Type u) [TopologicalSpace X] extends T1Space X, PerfectlyNormalSpace X : Prop
+
+-- see Note [lower instance priority]
+/-- A `T₆` space is a `T₅` space. -/
+instance (priority := 100) T6Space.toT5Space [T6Space X] : T5Space X where
+  -- follows from type-class inference
+
+end PerfectlyNormal
+
 
 /-- In a compact T₂ space, the connected component of a point equals the intersection of all
 its clopen neighbourhoods. -/

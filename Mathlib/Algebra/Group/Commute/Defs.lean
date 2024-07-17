@@ -227,7 +227,7 @@ end Monoid
 
 section DivisionMonoid
 
-variable [DivisionMonoid G] {a b c d: G}
+variable [DivisionMonoid G] {a b c d : G}
 
 @[to_additive]
 protected theorem mul_inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by rw [hab.eq, mul_inv_rev]
@@ -268,30 +268,11 @@ end Group
 
 end Commute
 
-set_option linter.deprecated false
-
-section Monoid
-variable [Monoid M]
-
-@[to_additive bit0_nsmul]
-lemma pow_bit0 (a : M) (n : ℕ) : a ^ bit0 n = a ^ n * a ^ n := pow_add _ _ _
-#align pow_bit0 pow_bit0
-#align bit0_nsmul bit0_nsmul
-
-@[to_additive bit1_nsmul]
-lemma pow_bit1 (a : M) (n : ℕ) : a ^ bit1 n = a ^ n * a ^ n * a := by rw [bit1, pow_succ, pow_bit0]
-#align pow_bit1 pow_bit1
-#align bit1_nsmul bit1_nsmul
-
-@[to_additive bit0_nsmul']
-lemma pow_bit0' (a : M) (n : ℕ) : a ^ bit0 n = (a * a) ^ n := by
-  rw [pow_bit0, (Commute.refl a).mul_pow]
-#align pow_bit0' pow_bit0'
-#align bit0_nsmul' bit0_nsmul'
-
-@[to_additive bit1_nsmul']
-lemma pow_bit1' (a : M) (n : ℕ) : a ^ bit1 n = (a * a) ^ n * a := by rw [bit1, pow_succ, pow_bit0']
-#align pow_bit1' pow_bit1'
-#align bit1_nsmul' bit1_nsmul'
-
-end Monoid
+#noalign pow_bit0
+#noalign bit0_nsmul
+#noalign pow_bit1
+#noalign bit1_nsmul
+#noalign pow_bit0'
+#noalign bit0_nsmul'
+#noalign pow_bit1'
+#noalign bit1_nsmul'

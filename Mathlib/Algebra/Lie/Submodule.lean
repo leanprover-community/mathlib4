@@ -79,6 +79,10 @@ instance coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule R M) :=
   ⟨toSubmodule⟩
 #align lie_submodule.coe_submodule LieSubmodule.coeSubmodule
 
+instance instCanLiftSubmoduleLieSubmodule : CanLift (Submodule R M) (LieSubmodule R L M) (·)
+    (fun N ↦ ∀ {x : L} {m : M}, m ∈ N → ⁅x, m⁆ ∈ N) where
+  prf N hN := ⟨⟨N, hN⟩, rfl⟩
+
 -- Syntactic tautology
 #noalign lie_submodule.to_submodule_eq_coe
 
@@ -1336,6 +1340,9 @@ theorem incl_apply (x : I) : I.incl x = x :=
 theorem incl_coe : (I.incl.toLinearMap : I →ₗ[R] L) = (I : Submodule R L).subtype :=
   rfl
 #align lie_ideal.incl_coe LieIdeal.incl_coe
+
+lemma incl_injective (I : LieIdeal R L) : Function.Injective I.incl :=
+  Subtype.val_injective
 
 @[simp]
 theorem comap_incl_self : comap I.incl I = ⊤ := by ext; simp

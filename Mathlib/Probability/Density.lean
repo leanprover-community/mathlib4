@@ -44,7 +44,7 @@ random variables with this distribution.
   its pdf having support `s`, then `X` has expectation `(λ s)⁻¹ * ∫ x in s, x dx` where `λ`
   is the Lebesgue measure.
 
-## TODOs
+## TODO
 
 Ultimately, we would also like to define characteristic functions to describe distributions as
 it exists for all random variables. However, to define this, we will need Fourier transforms

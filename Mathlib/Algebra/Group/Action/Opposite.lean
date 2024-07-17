@@ -154,7 +154,7 @@ open MulOpposite
 See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
 @[to_additive "Like `Add.toVAdd`, but adds on the right.
 
-  See also `AddMonoid.to_OppositeAddAction`."]
+  See also `AddMonoid.toOppositeAddAction`."]
 instance Mul.toHasOppositeSMul [Mul α] : SMul αᵐᵒᵖ α where smul c x := x * c.unop
 #align has_mul.to_has_opposite_smul Mul.toHasOppositeSMul
 #align has_add.to_has_opposite_vadd Add.toHasOppositeVAdd
