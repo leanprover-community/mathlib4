@@ -3,9 +3,11 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
+import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
+import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 
 /-!
 # Projective objects in abelian categories
@@ -23,22 +25,27 @@ open Limits Projective Opposite
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
+/-- The preadditive Co-Yoneda functor on `P` preserves homology if `P` is projective. -/
+noncomputable instance preservesHomologyPreadditiveCoyonedaObjOfProjective
+    (P : C) [hP : Projective P] :
+    (preadditiveCoyonedaObj (op P)).PreservesHomology := by
+  haveI := (projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj' P).mp hP
+  haveI := @Functor.preservesEpimorphisms_of_preserves_of_reflects _ _ _ _ _ _ _ _ this _
+  apply Functor.preservesHomologyOfPreservesEpisAndKernels
+
 /-- The preadditive Co-Yoneda functor on `P` preserves finite colimits if `P` is projective. -/
-noncomputable def preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective
+noncomputable instance preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective
     (P : C) [hP : Projective P] :
     PreservesFiniteColimits (preadditiveCoyonedaObj (op P)) := by
-  haveI := (projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj' P).mp hP
-  -- Porting note: this next instance wasn't necessary in Lean 3
-  haveI := @Functor.preservesEpimorphisms_of_preserves_of_reflects _ _ _ _ _ _ _ _ this _
-  apply Functor.preservesFiniteColimitsOfPreservesEpisAndKernels
+  apply Functor.preservesFiniteColimitsOfPreservesHomology
 #align category_theory.preserves_finite_colimits_preadditive_coyoneda_obj_of_projective CategoryTheory.preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective
 
 /-- An object is projective if its preadditive Co-Yoneda functor preserves finite colimits. -/
 theorem projective_of_preservesFiniteColimits_preadditiveCoyonedaObj (P : C)
     [hP : PreservesFiniteColimits (preadditiveCoyonedaObj (op P))] : Projective P := by
   rw [projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj']
-  -- Porting note: this next line wasn't necessary in Lean 3
-  dsimp only [preadditiveCoyoneda]
+  dsimp
+  have := Functor.preservesHomologyOfExact (preadditiveCoyonedaObj (op P))
   infer_instance
 #align category_theory.projective_of_preserves_finite_colimits_preadditive_coyoneda_obj CategoryTheory.projective_of_preservesFiniteColimits_preadditiveCoyonedaObj
 

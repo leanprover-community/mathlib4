@@ -263,8 +263,7 @@ lemma rnDeriv_eq_top_iff (κ η : kernel α γ) (a : α) (x : γ) :
 
 lemma rnDeriv_eq_top_iff' (κ η : kernel α γ) (a : α) (x : γ) :
     rnDeriv κ η a x = ∞ ↔ x ∈ mutuallySingularSetSlice κ η a := by
-  rw [rnDeriv_eq_top_iff]
-  rfl
+  rw [rnDeriv_eq_top_iff, mutuallySingularSet, mutuallySingularSetSlice, mem_setOf, mem_setOf]
 
 /-- Singular part of the kernel `κ` with respect to the kernel `η`. -/
 noncomputable
@@ -300,18 +299,13 @@ lemma singularPart_compl_mutuallySingularSetSlice (κ η : kernel α γ) [IsSFin
   · exact measurable_singularPart_fun_right κ η a
   · exact measurable_singularPart_fun κ η
   refine ae_of_all _ (fun x hx ↦ ?_)
-  simp only [mem_compl_iff, mem_setOf_eq] at hx
+  simp only [mem_compl_iff, mutuallySingularSetSlice, mem_setOf, not_le] at hx
   simp_rw [rnDeriv]
   rw [← ENNReal.ofReal_div_of_pos, div_eq_inv_mul, ← ENNReal.ofReal_mul, ← mul_assoc,
-    mul_inv_cancel, one_mul, tsub_self]
-  · rfl
-  · rw [ne_eq, sub_eq_zero]
-    rw [not_mem_mutuallySingularSetSlice] at hx
-    exact hx.ne'
-  · rw [not_mem_mutuallySingularSetSlice] at hx
-    simp [hx.le]
-  · simp only [sub_pos]
-    exact not_le.mp hx
+    mul_inv_cancel, one_mul, tsub_self, Pi.zero_apply]
+  · simp only [ne_eq, sub_eq_zero, hx.ne', not_false_eq_true]
+  · simp only [sub_nonneg, hx.le]
+  · simp only [sub_pos, hx]
 
 lemma singularPart_of_subset_compl_mutuallySingularSetSlice [IsFiniteKernel κ]
     [IsFiniteKernel η] {a : α} {s : Set γ} (hs : s ⊆ (mutuallySingularSetSlice κ η a)ᶜ) :
