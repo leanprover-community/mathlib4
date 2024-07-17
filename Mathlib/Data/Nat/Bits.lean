@@ -348,24 +348,12 @@ theorem bit_add' : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit b n + bit fal
 #align nat.bit_add' Nat.bit_add'
 
 theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
-  cases b <;> [exact Nat.bit0_ne_zero h; exact Nat.bit1_ne_zero _]
+  cases b <;> dsimp [bit] <;> omega
 #align nat.bit_ne_zero Nat.bit_ne_zero
 
-theorem bit0_mod_two : 2 * n % 2 = 0 := by
-  rw [Nat.mod_two_of_bodd]
-  simp
-#align nat.bit0_mod_two Nat.bit0_mod_two
-
-theorem bit1_mod_two : (2 * n + 1) % 2 = 1 := by
-  rw [Nat.mod_two_of_bodd]
-  simp
-#align nat.bit1_mod_two Nat.bit1_mod_two
-
-theorem pos_of_bit0_pos {n : ℕ} (h : 0 < 2 * n) : 0 < n := by
-  cases n
-  · cases h
-  · apply succ_pos
-#align nat.pos_of_bit0_pos Nat.pos_of_bit0_pos
+#noalign nat.bit0_mod_two
+#noalign nat.bit1_mod_two
+#noalign nat.pos_of_bit0_pos
 
 @[simp]
 theorem bitCasesOn_bit {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (b : Bool) (n : ℕ) :
