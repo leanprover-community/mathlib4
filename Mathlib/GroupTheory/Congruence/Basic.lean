@@ -391,7 +391,7 @@ protected theorem liftOn_coe {β} (c : Con M) (f : M → β) (h : ∀ a b, c a b
 @[to_additive "Makes an additive isomorphism of quotients by two additive congruence relations,
 given that the relations are equal."]
 protected def congr {c d : Con M} (h : c = d) : c.Quotient ≃* d.Quotient :=
-  { Quotient.congr (Equiv.refl M) <| by apply Con.ext_iff.1 h with
+  { Quotient.congr (Equiv.refl M) <| by apply Con.ext_iff.mp h with
     map_mul' := fun x y => by rcases x with ⟨⟩; rcases y with ⟨⟩; rfl }
 #align con.congr Con.congr
 #align add_con.congr AddCon.congr
