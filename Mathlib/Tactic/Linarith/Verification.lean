@@ -19,11 +19,11 @@ This file implements the reconstruction.
 The public facing declaration in this file is `proveFalseByLinarith`.
 -/
 
-set_option autoImplicit true
-
 open Lean Elab Tactic Meta
 
 namespace Qq
+
+variable {u : Level}
 
 /-- Typesafe conversion of `n : ℕ` to `Q($α)`. -/
 def ofNatQ (α : Q(Type $u)) (_ : Q(Semiring $α)) (n : ℕ) : Q($α) :=
@@ -46,7 +46,7 @@ open Qq
 /-! ### Auxiliary functions for assembling proofs -/
 
 /-- A typesafe version of `mulExpr`. -/
-def mulExpr' (n : ℕ) {α : Q(Type $u)} (inst : Q(Semiring $α)) (e : Q($α)) : Q($α) :=
+def mulExpr' {u : Level} (n : ℕ) {α : Q(Type $u)} (inst : Q(Semiring $α)) (e : Q($α)) : Q($α) :=
   if n = 1 then e else
     let n := ofNatQ α inst n
     q($n * $e)
@@ -61,7 +61,7 @@ def mulExpr (n : ℕ) (e : Expr) : MetaM Expr := do
   return mulExpr' n inst e
 
 /-- A type-safe analogue of `addExprs`. -/
-def addExprs' {α : Q(Type $u)} (_inst : Q(AddMonoid $α)) : List Q($α) → Q($α)
+def addExprs' {u : Level} {α : Q(Type $u)} (_inst : Q(AddMonoid $α)) : List Q($α) → Q($α)
   | []   => q(0)
   | h::t => go h t
     where
