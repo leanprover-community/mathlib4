@@ -162,7 +162,7 @@ theorem bit_true : bit true = (2 * · + 1) :=
 
 @[simp]
 theorem bit_eq_zero {n : ℕ} {b : Bool} : n.bit b = 0 ↔ n = 0 ∧ b = false := by
-  cases b <;> simp [Nat.bit0_eq_zero, Nat.bit1_ne_zero]
+  cases b <;> simp [bit, Nat.mul_eq_zero]
 #align nat.bit_eq_zero Nat.bit_eq_zero
 
 theorem bit_ne_zero_iff {n : ℕ} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = true := by

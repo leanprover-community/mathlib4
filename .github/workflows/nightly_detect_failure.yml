@@ -199,10 +199,16 @@ jobs:
             response = client.get_messages(request)
             messages = response['messages']
             bump_branch_suffix = bump_branch.replace('bump/', '')
-            payload = f"🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing, and then PR that to {bump_branch}."
+            payload = f"🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing, and then PR that to {bump_branch}. "
             payload += "To do so semi-automatically, run the following script from mathlib root:\n\n"
             payload += f"```bash\n./scripts/create-adaptation-pr.sh {bump_branch_suffix} {current_version}\n```\n"
             if not messages or messages[0]['content'] != payload:
+                # Log messages, because the bot seems to repeat itself...
+                if messages:
+                    print("###### Last message:")
+                    print(messages[0]['content'])
+                    print("###### Current message:")
+                    print(payload)
                 # Post the reminder message
                 request = {
                     'type': 'stream',

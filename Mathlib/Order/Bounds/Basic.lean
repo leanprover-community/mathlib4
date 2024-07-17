@@ -624,19 +624,19 @@ end
 -/
 
 
-theorem isGreatest_singleton : IsGreatest {a} a :=
+@[simp] theorem isGreatest_singleton : IsGreatest {a} a :=
   ⟨mem_singleton a, fun _ hx => le_of_eq <| eq_of_mem_singleton hx⟩
 #align is_greatest_singleton isGreatest_singleton
 
-theorem isLeast_singleton : IsLeast {a} a :=
+@[simp] theorem isLeast_singleton : IsLeast {a} a :=
   @isGreatest_singleton αᵒᵈ _ a
 #align is_least_singleton isLeast_singleton
 
-theorem isLUB_singleton : IsLUB {a} a :=
+@[simp] theorem isLUB_singleton : IsLUB {a} a :=
   isGreatest_singleton.isLUB
 #align is_lub_singleton isLUB_singleton
 
-theorem isGLB_singleton : IsGLB {a} a :=
+@[simp] theorem isGLB_singleton : IsGLB {a} a :=
   isLeast_singleton.isGLB
 #align is_glb_singleton isGLB_singleton
 
