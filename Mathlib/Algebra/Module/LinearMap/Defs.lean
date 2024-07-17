@@ -1058,9 +1058,7 @@ theorem restrictScalars_add (f g : M →ₗ[S] N) :
 theorem restrictScalars_neg (f : M →ₗ[S] N) : (-f).restrictScalars R = -f.restrictScalars R :=
   rfl
 
-variable {R₁ : Type*}
-variable [Semiring R₁] [Module R₁ N] [SMulCommClass S R₁ N]
-  [SMulCommClass R R₁ N]
+variable {R₁ : Type*} [Semiring R₁] [Module R₁ N] [SMulCommClass S R₁ N] [SMulCommClass R R₁ N]
 
 @[simp]
 theorem restrictScalars_smul (c : R₁) (f : M →ₗ[S] N) :
