@@ -197,7 +197,6 @@ section add_mul
 variable [Add R] [Mul R] (c : RingCon R)
 
 instance instAdd : Add c.Quotient := AddCon.hasAdd c.toAddCon
--- inferInstanceAs (Add c.toAddCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_add (x y : R) : (↑(x + y) : c.Quotient) = ↑x + ↑y :=
@@ -216,7 +215,6 @@ section Zero
 variable [AddZeroClass R] [Mul R] (c : RingCon R)
 
 instance instZero : Zero c.Quotient := AddCon.zero c.toAddCon
--- inferInstanceAs (Zero c.toAddCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_zero : (↑(0 : R) : c.Quotient) = 0 :=
@@ -256,7 +254,6 @@ section NegSubZSMul
 variable [AddGroup R] [Mul R] (c : RingCon R)
 
 instance : Neg c.Quotient := AddCon.hasNeg c.toAddCon
--- inferInstanceAs (Neg c.toAddCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_neg (x : R) : (↑(-x) : c.Quotient) = -x :=
@@ -264,7 +261,6 @@ theorem coe_neg (x : R) : (↑(-x) : c.Quotient) = -x :=
 #align ring_con.coe_neg RingCon.coe_neg
 
 instance : Sub c.Quotient := AddCon.hasSub c.toAddCon
--- inferInstanceAs (Sub c.toAddCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_sub (x y : R) : (↑(x - y) : c.Quotient) = x - y :=
@@ -272,7 +268,6 @@ theorem coe_sub (x y : R) : (↑(x - y) : c.Quotient) = x - y :=
 #align ring_con.coe_sub RingCon.coe_sub
 
 instance hasZSMul : SMul ℤ c.Quotient := AddCon.Quotient.zsmul c.toAddCon
---inferInstanceAs (SMul ℤ c.toAddCon.Quotient)
 #align ring_con.has_zsmul RingCon.hasZSMul
 
 @[simp, norm_cast]
@@ -287,7 +282,6 @@ section NSMul
 variable [AddMonoid R] [Mul R] (c : RingCon R)
 
 instance hasNSMul : SMul ℕ c.Quotient := AddCon.Quotient.nsmul c.toAddCon
--- inferInstanceAs (SMul ℕ c.toAddCon.Quotient)
 #align ring_con.has_nsmul RingCon.hasNSMul
 
 @[simp, norm_cast]
