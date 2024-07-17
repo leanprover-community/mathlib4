@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
 -/
-import Mathlib.Algebra.Associated
+import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Data.List.Perm
 

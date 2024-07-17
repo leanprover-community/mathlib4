@@ -511,41 +511,7 @@ lemma toIntAlgHom_injective [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] :
     Function.Injective (RingHom.toIntAlgHom : (R →+* S) → _) :=
   fun _ _ e ↦ DFunLike.ext _ _ (fun x ↦ DFunLike.congr_fun e x)
 
-/-- Reinterpret a `RingHom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,
-see `RingHom.equivRatAlgHom`. -/
-def toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) : R →ₐ[ℚ] S :=
-  { f with commutes' := f.map_rat_algebraMap }
-#align ring_hom.to_rat_alg_hom RingHom.toRatAlgHom
-
-@[simp]
-theorem toRatAlgHom_toRingHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) :
-    ↑f.toRatAlgHom = f :=
-  RingHom.ext fun _x => rfl
-#align ring_hom.to_rat_alg_hom_to_ring_hom RingHom.toRatAlgHom_toRingHom
-
 end RingHom
-
-section
-
-variable {R S : Type*}
-
-@[simp]
-theorem AlgHom.toRingHom_toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S]
-    (f : R →ₐ[ℚ] S) : (f : R →+* S).toRatAlgHom = f :=
-  AlgHom.ext fun _x => rfl
-#align alg_hom.to_ring_hom_to_rat_alg_hom AlgHom.toRingHom_toRatAlgHom
-
-/-- The equivalence between `RingHom` and `ℚ`-algebra homomorphisms. -/
-@[simps]
-def RingHom.equivRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] :
-    (R →+* S) ≃ (R →ₐ[ℚ] S) where
-  toFun := RingHom.toRatAlgHom
-  invFun := AlgHom.toRingHom
-  left_inv f := RingHom.toRatAlgHom_toRingHom f
-  right_inv f := AlgHom.toRingHom_toRatAlgHom f
-#align ring_hom.equiv_rat_alg_hom RingHom.equivRatAlgHom
-
-end
 
 namespace Algebra
 
@@ -585,6 +551,27 @@ theorem smul_units_def (f : A →ₐ[R] A) (x : Aˣ) :
     f • x = Units.map (f : A →* A) x := rfl
 
 end MulDistribMulAction
+
+variable (M : Submonoid R) {B : Type w} [CommRing B] [Algebra R B] {A}
+
+lemma algebraMapSubmonoid_map_eq (f : A →ₐ[R] B) :
+    (algebraMapSubmonoid A M).map f = algebraMapSubmonoid B M := by
+  ext x
+  constructor
+  · rintro ⟨a, ⟨r, hr, rfl⟩, rfl⟩
+    simp only [AlgHom.commutes]
+    use r
+  · rintro ⟨r, hr, rfl⟩
+    simp only [Submonoid.mem_map]
+    use (algebraMap R A r)
+    simp only [AlgHom.commutes, and_true]
+    use r
+
+lemma algebraMapSubmonoid_le_comap (f : A →ₐ[R] B) :
+    algebraMapSubmonoid A M ≤ (algebraMapSubmonoid B M).comap f.toRingHom := by
+  rw [← algebraMapSubmonoid_map_eq M f]
+  exact Submonoid.le_comap_map (Algebra.algebraMapSubmonoid A M)
+
 end Algebra
 
 namespace MulSemiringAction

@@ -24,9 +24,6 @@ tactic is given in `Mathlib.Tactic.CategoryTheory.Coherence` at the same time as
 tactic for monoidal categories.
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 universe w v u
@@ -246,7 +243,7 @@ theorem bicategoricalComp_refl {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h) :
 open Lean Elab Tactic Meta
 
 /-- Helper function for throwing exceptions. -/
-def exception (g : MVarId) (msg : MessageData) : MetaM α :=
+def exception {α : Type} (g : MVarId) (msg : MessageData) : MetaM α :=
   throwTacticEx `bicategorical_coherence g msg
 
 /-- Helper function for throwing exceptions with respect to the main goal. -/

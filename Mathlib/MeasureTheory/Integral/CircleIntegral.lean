@@ -185,7 +185,7 @@ theorem continuous_circleMap (c : ℂ) (R : ℝ) : Continuous (circleMap c R) :=
   (differentiable_circleMap c R).continuous
 #align continuous_circle_map continuous_circleMap
 
-@[measurability]
+@[fun_prop, measurability]
 theorem measurable_circleMap (c : ℂ) (R : ℝ) : Measurable (circleMap c R) :=
   (continuous_circleMap c R).measurable
 #align measurable_circle_map measurable_circleMap
@@ -589,10 +589,9 @@ theorem hasSum_two_pi_I_cauchyPowerSeries_integral {f : ℂ → E} {c : ℂ} {R 
       (fun n θ => ‖f (circleMap c R θ)‖ * (abs w / R) ^ n) (fun n => ?_) (fun n => ?_) ?_ ?_ ?_
   · simp only [deriv_circleMap]
     apply_rules [AEStronglyMeasurable.smul, hf.def'.1] <;> apply Measurable.aestronglyMeasurable
-    -- Porting note: these were `measurability`
-    · exact (measurable_circleMap 0 R).mul_const I
-    · exact (((measurable_circleMap c R).sub measurable_const).const_div w).pow measurable_const
-    · exact ((measurable_circleMap c R).sub measurable_const).inv
+    · fun_prop
+    · fun_prop
+    · fun_prop
   · simp [norm_smul, abs_of_pos hR, mul_left_comm R, inv_mul_cancel_left₀ hR.ne', mul_comm ‖_‖]
   · exact eventually_of_forall fun _ _ => (summable_geometric_of_lt_one hwR.1 hwR.2).mul_left _
   · simpa only [tsum_mul_left, tsum_geometric_of_lt_one hwR.1 hwR.2] using

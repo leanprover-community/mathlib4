@@ -450,7 +450,7 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
     apply Iio_mem_nhds
     exact ENNReal.lt_add_right μF_finite.ne (ENNReal.coe_pos.mpr ε_pos).ne'
   specialize rs_lim (keyB nhd)
-  simp only [mem_map, mem_atTop_sets, ge_iff_le, mem_preimage, mem_Iio] at rs_lim
+  simp only [mem_map, mem_atTop_sets, mem_preimage, mem_Iio] at rs_lim
   obtain ⟨m, hm⟩ := rs_lim
   have aux' := fun i ↦ measure_mono (μ := μs i) (Metric.self_subset_thickening (rs_pos m) F)
   have aux : (fun i ↦ (μs i F)) ≤ᶠ[L] (fun i ↦ μs i (Metric.thickening (rs m) F)) :=
@@ -522,7 +522,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
                         f.continuous.measurable.aestronglyMeasurable]
     let g := BoundedContinuousFunction.comp _ Real.lipschitzWith_toNNReal f
     have bound : ∀ i, ∫⁻ x, ENNReal.ofReal (f x) ∂(μs i) ≤ nndist 0 g := fun i ↦ by
-      simpa only [coe_nnreal_ennreal_nndist, measure_univ, mul_one, ge_iff_le] using
+      simpa only [coe_nnreal_ennreal_nndist, measure_univ, mul_one] using
             BoundedContinuousFunction.lintegral_le_edist_mul (μ := μs i) g
     apply ENNReal.liminf_toReal_eq ENNReal.coe_ne_top (eventually_of_forall bound)
   · exact (f.lintegral_of_real_lt_top μ).ne
@@ -531,7 +531,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
     simp only [measure_univ, mul_one] at obs
     apply lt_of_le_of_lt _ (show (‖f‖₊ : ℝ≥0∞) < ∞ from ENNReal.coe_lt_top)
     apply liminf_le_of_le
-    · refine ⟨0, eventually_of_forall (by simp only [ge_iff_le, zero_le, forall_const])⟩
+    · refine ⟨0, eventually_of_forall (by simp only [zero_le, forall_const])⟩
     · intro x hx
       obtain ⟨i, hi⟩ := hx.exists
       apply le_trans hi
@@ -560,10 +560,10 @@ theorem tendsto_of_forall_isOpen_le_liminf {μ : ProbabilityMeasure Ω}
     refine Monotone.map_liminf_of_continuousAt (F := atTop) ENNReal.coe_mono (μs · G) ?_ ?_ ?_
     · apply ENNReal.continuous_coe.continuousAt
     · use 1
-      simp only [eventually_map, ProbabilityMeasure.apply_le_one, eventually_atTop, ge_iff_le,
-        implies_true, forall_const, exists_const]
+      simp only [eventually_map, ProbabilityMeasure.apply_le_one, eventually_atTop, implies_true,
+        forall_const, exists_const]
     · use 0
-      simp only [zero_le, eventually_map, eventually_atTop, ge_iff_le, implies_true, forall_const,
+      simp only [zero_le, eventually_map, eventually_atTop, implies_true, forall_const,
         exists_const]
   have obs := ENNReal.coe_mono h_opens
   simp only [ne_eq, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
