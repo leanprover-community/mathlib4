@@ -55,31 +55,25 @@ def UnifTight {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (
 theorem unifTight_iff_ennreal {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
     UnifTight f p μ ↔ ∀ ⦃ε : ℝ≥0∞⦄, 0 < ε → ∃ s : Set α,
       μ s ≠ ∞ ∧ ∀ i, snorm (sᶜ.indicator (f i)) p μ ≤ ε := by
-  constructor
-  · intro hut eε heε
-    by_cases heε_top : eε = ∞
-    · exact ⟨∅, (by measurability), fun _ => heε_top.symm ▸ le_top⟩
-    have hε := toNNReal_pos heε.ne.symm heε_top
-    have hεeε := coe_toNNReal heε_top
-    obtain ⟨s, hμs, hfε⟩ := hut hε
-    use s, hμs; intro i
-    exact (hfε i).trans_eq hεeε
-  · intro hut ε hε
-    have heε := ENNReal.coe_pos.mpr hε
-    exact hut heε
+  simp only [ENNReal.forall_ennreal, ENNReal.coe_pos]
+  refine (and_iff_left ?_).symm
+  simp [-ne_eq, zero_lt_top, le_top]
+  use ∅; simpa only [measure_empty] using zero_ne_top
 
 theorem unifTight_iff_real {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
     UnifTight f p μ ↔ ∀ ⦃ε : ℝ⦄, 0 < ε → ∃ s : Set α,
       μ s ≠ ∞ ∧ ∀ i, snorm (sᶜ.indicator (f i)) p μ ≤ .ofReal ε := by
-  constructor
-  · intro hut rε hrε
-    have hrε : 0 < rε.toNNReal := Real.toNNReal_pos.mpr hrε
-    exact hut hrε
-  · intro hut ε hε
-    obtain ⟨s, hμs, hfε⟩ := hut hε
-    have hrεeε := ofReal_coe_nnreal (p := ε)
+-- don't know which proof I like better
+apply and_self_iff.mp; constructor -- duplicate proof goals for demonstration
+· simp only [iff_eq_eq, UnifTight, ← NNReal.coe_pos, ← ofReal_coe_nnreal]
+  simp only [NNReal.forall, coe_mk]; apply forall_congr; intro ε
+  rw [Imp.swap (a := 0 ≤ _)]; apply forall_congr; intro hε
+  simpa only [iff_eq_eq] using imp_iff_right hε.le
+· refine ⟨fun hut rε hrε ↦ ?_, fun hut ε hε ↦ ?_⟩
+  · exact hut (Real.toNNReal_pos.mpr hrε)
+  · obtain ⟨s, hμs, hfε⟩ := hut hε
     use s, hμs; intro i
-    exact (hfε i).trans_eq hrεeε
+    exact (hfε i).trans_eq (ofReal_coe_nnreal (p := ε))
 
 namespace UnifTight
 
@@ -208,10 +202,7 @@ theorem unifTight_finite [Finite ι] (hp_top : p ≠ ∞) {f : ι → α → β}
   have hg : ∀ i, Memℒp (g i) p μ := fun _ => hf _
   obtain ⟨s, hμs, hfε⟩ := unifTight_fin hp_top hg hε
   refine ⟨s, hμs, fun i => ?_⟩
-  specialize hfε (hn.some i)
-  unfold_let g at hfε
-  simp_rw [Function.comp_apply, Equiv.symm_apply_apply] at hfε
-  assumption
+  simpa only [g, Function.comp_apply, Equiv.symm_apply_apply] using hfε (hn.some i)
 
 end UnifTight
 
