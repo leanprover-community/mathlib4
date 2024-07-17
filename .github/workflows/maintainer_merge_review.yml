@@ -2,7 +2,7 @@ name: Maintainer merge (review)
 
 on:
   pull_request_review:
-    types: [submitted, edited]
+    types: [submitted]
 
 jobs:
   ping_zulip:
