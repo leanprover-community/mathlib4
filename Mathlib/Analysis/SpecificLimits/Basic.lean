@@ -8,6 +8,7 @@ import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Iterate
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.InfiniteSum.Real
+import Mathlib.Topology.Instances.EReal
 
 #align_import analysis.specific_limits.basic from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 
@@ -26,7 +27,7 @@ open scoped Classical
 open Set Function Filter Finset Metric
 
 open scoped Classical
-open Topology Nat uniformity NNReal ENNReal
+open Topology Nat uniformity NNReal ENNReal EReal
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
@@ -62,6 +63,14 @@ theorem NNReal.tendsto_const_div_atTop_nhds_zero_nat (C : ℝ≥0) :
 #align nnreal.tendsto_const_div_at_top_nhds_0_nat NNReal.tendsto_const_div_atTop_nhds_zero_nat
 @[deprecated (since := "2024-01-31")]
 alias NNReal.tendsto_const_div_atTop_nhds_0_nat := NNReal.tendsto_const_div_atTop_nhds_zero_nat
+
+theorem EReal.tendsto_const_div_atTop_nhds_zero_nat {x : EReal} (h : x ≠ ⊥) (h' : x ≠ ⊤) :
+    Tendsto (fun n : ℕ ↦ x / n) atTop (nhds 0) := by
+  have : (fun n : ℕ ↦ x / n) = fun n : ℕ ↦ ((x.toReal / n : ℝ) : EReal) := by
+    ext n
+    nth_rw 1 [← coe_toReal h' h, ← natCast_eq_coe_coe n, ← coe_div x.toReal n]
+  rw [this, ← EReal.coe_zero, EReal.tendsto_coe]
+  exact _root_.tendsto_const_div_atTop_nhds_zero_nat x.toReal
 
 theorem tendsto_one_div_add_atTop_nhds_zero_nat :
     Tendsto (fun n : ℕ ↦ 1 / ((n : ℝ) + 1)) atTop (𝓝 0) :=
@@ -440,7 +449,7 @@ theorem edist_le_of_edist_le_geometric_two_of_tendsto (n : ℕ) : edist (f n) a 
   simp only [div_eq_mul_inv, ENNReal.inv_pow] at *
   rw [mul_assoc, mul_comm]
   convert edist_le_of_edist_le_geometric_of_tendsto 2⁻¹ C hu ha n using 1
-  rw [ENNReal.one_sub_inv_two, div_eq_mul_inv, inv_inv]
+  rw [ENNReal.one_sub_inv_two, div_eq_mul_inv, _root_.inv_inv]
 #align edist_le_of_edist_le_geometric_two_of_tendsto edist_le_of_edist_le_geometric_two_of_tendsto
 
 /-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then the distance from
@@ -510,7 +519,7 @@ theorem dist_le_of_le_geometric_two_of_tendsto₀ {a : α} (ha : Tendsto f atTop
 theorem dist_le_of_le_geometric_two_of_tendsto {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
     dist (f n) a ≤ C / 2 ^ n := by
   convert dist_le_tsum_of_dist_le_of_tendsto _ hu₂ (summable_geometric_two' C) ha n
-  simp only [add_comm n, pow_add, ← div_div]
+  simp only [add_comm n, pow_add, ← _root_.div_div]
   symm
   exact ((hasSum_geometric_two' C).div_const _).tsum_eq
 #align dist_le_of_le_geometric_two_of_tendsto dist_le_of_le_geometric_two_of_tendsto
