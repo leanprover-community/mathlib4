@@ -520,42 +520,16 @@ theorem valuation_X_pow (s : ℕ) :
 theorem valuation_single_zpow (s : ℤ) :
     Valued.v (HahnSeries.single s (1 : K) : LaurentSeries K) =
       Multiplicative.ofAdd (-(s : ℤ)) := by
-  induction' s with s s
-  · erw [← valuation_X_pow K s]
-    simp only [Int.ofNat_eq_coe, ofPowerSeries_X, single_pow, nsmul_eq_mul, mul_one, one_pow]
-  · have : (single (Int.negSucc s) (1 : K)) = (single ((s + 1 : ℤ) ) (1 : K))⁻¹ := by
-      rw [← mul_eq_one_iff_eq_inv₀, Int.negSucc_coe, Nat.cast_add, Nat.cast_one, neg_add_rev,
-        single_mul_single, mul_one, ← single_zero_one]
-      · ring_nf
-      · simp only [Valuation.ne_zero_iff, ne_eq, one_ne_zero, not_false_iff,
-          HahnSeries.single_ne_zero]
-    rw_mod_cast [this]
-    rw [← @HahnSeries.ofPowerSeries_X_pow ℤ _ K _ (s + 1)]
-    simp?
-    sorry
-    -- erw [← valuation_X_pow K (s+1)]
-    -- rw [PowerSeries.coe]
-  -- //rw_mod_cast [this]
-    --erw [← valuation_X_pow K (]
-      -- exact single_zero_one
-      -- simp only [single_mul_single, add_right_neg, mul_one, single_zero_one]
-      -- simp only [Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg]
-      -- norm_num
-      -- ring
-
-
-  -- have aux_mul :
-  --   HahnSeries.single s (1 : K) * HahnSeries.single (-s) (1 : K) = (1 : LaurentSeries K) := by
-  --   simp only [single_mul_single, add_right_neg, mul_one, single_zero_one]
-  -- have H : Valued.v (1 : LaurentSeries K) = (1 : ℤₘ₀) := Valued.v.map_one
-  -- rw [← aux_mul, map_mul, mul_eq_one_iff_eq_inv₀] at H
-  -- · rw [H]
-  --   induction' s with s s
-  --   · rw [Int.ofNat_eq_coe, ← HahnSeries.ofPowerSeries_X_pow] at H
-  --     rw [Int.ofNat_eq_coe, ← H, PowerSeries.coe_pow, valuation_X_pow]
-  --   · simp only [Int.negSucc_coe, neg_neg, ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow,
-  --       valuation_X_pow, ofAdd_neg, WithZero.coe_inv, inv_inv]
-  -- · simp only [Valuation.ne_zero_iff, ne_eq, one_ne_zero, not_false_iff, HahnSeries.single_ne_zero]
+  have : Valued.v (1 : LaurentSeries K) = (1 : ℤₘ₀) := Valued.v.map_one
+  rw [← single_zero_one, ← add_right_neg s, ← mul_one 1, ← single_mul_single, map_mul,
+    mul_eq_one_iff_eq_inv₀] at this
+  · rw [this]
+    induction' s with s s
+    · rw [Int.ofNat_eq_coe, ← HahnSeries.ofPowerSeries_X_pow] at this
+      rw [Int.ofNat_eq_coe, ← this, PowerSeries.coe_pow, valuation_X_pow]
+    · simp only [Int.negSucc_coe, neg_neg, ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow,
+        valuation_X_pow, ofAdd_neg, WithZero.coe_inv, inv_inv]
+  · simp only [Valuation.ne_zero_iff, ne_eq, one_ne_zero, not_false_iff, HahnSeries.single_ne_zero]
 
 /- The coefficients of a power series vanish in degree strictly less than its valuation-/
 theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
@@ -613,17 +587,14 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : LaurentSeries K} :
   set F := powerSeriesPart f with hF
   by_cases ord_nonpos : f.order ≤ 0
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat ord_nonpos
-    have h_F_mul := f.single_order_mul_powerSeriesPart
-    rw [hs, ← hF] at h_F_mul
-    rw [← h_F_mul, map_mul, valuation_single_zpow, neg_neg, mul_comm, ← le_mul_inv_iff₀,
-      ofAdd_neg, WithZero.coe_inv, ← mul_inv, ← WithZero.coe_mul, ← ofAdd_add, ← WithZero.coe_inv, ←
-      ofAdd_neg]
+    rw [← f.single_order_mul_powerSeriesPart, hs, map_mul, valuation_single_zpow, neg_neg, mul_comm,
+      ← le_mul_inv_iff₀, ofAdd_neg, WithZero.coe_inv, ← mul_inv, ← WithZero.coe_mul, ← ofAdd_add,
+      ← WithZero.coe_inv, ← ofAdd_neg]
     by_cases hDs : D + s ≤ 0
     · apply le_trans ((PowerSeries.idealX K).valuation_le_one F)
       rwa [← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, Multiplicative.ofAdd_le,
         Left.nonneg_neg_iff]
-    · rw [not_le] at hDs
-      obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (le_of_lt hDs)
+    · obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (le_of_lt <| not_le.mp hDs)
       rw [hd]
       apply (intValuation_le_iff_coeff_lt_eq_zero K F).mpr
       intro n hn
@@ -631,20 +602,18 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : LaurentSeries K} :
       apply h_val_f
       linarith
     simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff]
-  · rw [not_le] at ord_nonpos
-    obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg (le_of_lt ord_nonpos))
+  · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat
+      <| neg_nonpos_of_nonneg <| le_of_lt <| not_le.mp ord_nonpos
+    -- have h_F_mul := f.single_order_mul_powerSeriesPart
     rw [neg_inj] at hs
-    have h_F_mul := f.single_order_mul_powerSeriesPart
-    rw [hs, ← hF] at h_F_mul
-    rw [← h_F_mul, map_mul, valuation_single_zpow, mul_comm, ← le_mul_inv_iff₀, ofAdd_neg,
-      WithZero.coe_inv, ← mul_inv, ← WithZero.coe_mul, ← ofAdd_add, ← WithZero.coe_inv, ← ofAdd_neg,
-      neg_add, neg_neg]
+    rw [← f.single_order_mul_powerSeriesPart, hs, map_mul, valuation_single_zpow, mul_comm,
+      ← le_mul_inv_iff₀, ofAdd_neg, WithZero.coe_inv, ← mul_inv, ← WithZero.coe_mul, ← ofAdd_add,
+      ← WithZero.coe_inv, ← ofAdd_neg, neg_add, neg_neg]
     by_cases hDs : D - s ≤ 0
     · apply le_trans ((PowerSeries.idealX K).valuation_le_one F)
       rw [← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, Multiplicative.ofAdd_le]
       linarith
-    · rw [not_le] at hDs
-      obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (le_of_lt hDs)
+    · obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (le_of_lt <| not_le.mp hDs)
       rw [← neg_neg (-D + ↑s), ← sub_eq_neg_add, neg_sub, hd]
       apply (intValuation_le_iff_coeff_lt_eq_zero K F).mpr
       intro n hn
@@ -653,6 +622,8 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : LaurentSeries K} :
       linarith
     simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff]
 
+/- If the coefficients of two Laurent series coincide for sufficiently small values, the valuation of
+their difference is small.-/
 theorem valuation_le_of_coeff_eventually_eq {f g : LaurentSeries K} {D : ℤ}
     (H : ∀ d, d < D → g.coeff d = f.coeff d) : Valued.v (f - g) ≤ ↑(Multiplicative.ofAdd (-D)) := by
   apply (valuation_le_iff_coeff_lt_eq_zero K).mpr
