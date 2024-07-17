@@ -319,7 +319,7 @@ namespace ReflQuiv
 
 /-- ER: Universe error is why this is for u u.-/
 @[simps! toPrefunctor obj map]
-def adj.unit.app (V : ReflQuiv.{u, u}) : V ⥤rq forget.obj (Cat.freeRefl.obj V) where
+def adj.unit.app (V : ReflQuiv.{max u v, u}) : V ⥤rq forget.obj (Cat.freeRefl.obj V) where
   toPrefunctor := Quiv.adj.unit.app (V.toQuiv) ⋙q
     Quiv.forget.map (Cat.FreeReflObj.quotientFunctor V)
   map_id := fun X => by
@@ -328,7 +328,7 @@ def adj.unit.app (V : ReflQuiv.{u, u}) : V ⥤rq forget.obj (Cat.freeRefl.obj V)
     constructor
 
 /-- ER: This is used in the proof of both triangle equalities. Should we simp?-/
-theorem adj.unit.app_eq (V : ReflQuiv.{u, u}) :
+theorem adj.unit.app_eq (V : ReflQuiv.{max u v, u}) :
     forgetToQuiv.map (adj.unit.app V) =
     Quiv.adj.unit.app (V.toQuiv) ≫
     Quiv.forget.map (Y := Cat.of _) (Cat.FreeReflObj.quotientFunctor V)
@@ -361,7 +361,7 @@ theorem adj.counit.app_eq' (C) [Category C] :
 /--
 The adjunction between forming the free category on a quiver, and forgetting a category to a quiver.
 -/
-nonrec def adj : Cat.freeRefl ⊣ ReflQuiv.forget := by
+nonrec def adj : Cat.freeRefl.{max u v, u} ⊣ ReflQuiv.forget := by
   refine
     Adjunction.mkOfUnitCounit {
       unit := {
@@ -383,12 +383,10 @@ nonrec def adj : Cat.freeRefl ⊣ ReflQuiv.forget := by
     }
   · ext V
     apply Cat.FreeReflObj.lift_unique'
-    simp only [id_obj, Cat.free_obj, Cat.of_α, comp_obj, NatTrans.comp_app,
-      forget_obj, of_val, whiskerRight_app, adj.unit.app_toPrefunctor, associator_hom_app,
-      whiskerLeft_app, id_comp, NatTrans.id_app']
+    simp only [id_obj, Cat.free_obj, Cat.of_α, comp_obj, Cat.freeRefl_obj_α, NatTrans.comp_app,
+      forget_obj, whiskerRight_app, associator_hom_app, whiskerLeft_app, id_comp, NatTrans.id_app']
     rw [Functor.id_eq_id, Functor.comp_eq_comp]
     simp only [Cat.freeRefl_obj_α, Functor.comp_id]
-    conv => enter [1, 1]; simp only [Cat.freeRefl]
     rw [← Functor.assoc, ← Cat.freeRefl_naturality, Functor.assoc]
     dsimp [Cat.freeRefl]
     rw [adj.counit.app_eq' (Cat.FreeReflObj V)]
@@ -401,7 +399,7 @@ nonrec def adj : Cat.freeRefl ⊣ ReflQuiv.forget := by
     rw [Functor.assoc, ← Functor.comp_eq_comp]
     conv => enter [1, 2]; apply Quiv.adj.counit.naturality
     rw [Functor.comp_eq_comp, ← Functor.assoc, ← Functor.comp_eq_comp]
-    conv => enter [1, 1]; apply  Quiv.adj.left_triangle_components V.toQuiv
+    conv => enter [1, 1]; apply Quiv.adj.left_triangle_components V.toQuiv
     simp [Functor.id_eq_id]
     exact Functor.id_comp _
   · ext C
@@ -432,30 +430,30 @@ end SimplexCategory
 open SimplexCategory
 
 /-- ER: The category of k-truncated simplicial sets is the category of contravariant functors from `SimplexCategory` to `Type u`. -/
-def truncSSet (k : ℕ)  : Type (u + 1) := (Δ k)ᵒᵖ ⥤ Type u
+def TruncSSet (k : ℕ)  : Type (u + 1) := (Δ k)ᵒᵖ ⥤ Type u
 
-namespace truncSSet
+namespace TruncSSet
 
-instance largeCategory {k : ℕ} : LargeCategory (truncSSet k) := by
-  dsimp only [truncSSet]
+instance largeCategory {k : ℕ} : LargeCategory (TruncSSet k) := by
+  dsimp only [TruncSSet]
   infer_instance
 
-instance hasLimits {k : ℕ} : HasLimits (truncSSet k) := by
-  dsimp only [truncSSet]
+instance hasLimits {k : ℕ} : HasLimits (TruncSSet k) := by
+  dsimp only [TruncSSet]
   infer_instance
 
-instance hasColimits {k : ℕ} : HasColimits (truncSSet k) := by
-  dsimp only [truncSSet]
+instance hasColimits {k : ℕ} : HasColimits (TruncSSet k) := by
+  dsimp only [TruncSSet]
   infer_instance
 
 @[ext]
-lemma hom_ext {k : ℕ} {X Y : truncSSet k} {f g : X ⟶ Y} (hyp : ∀ (n : (Δ k)ᵒᵖ), f.app n = g.app n) : f = g := NatTrans.ext f g (funext hyp)
+lemma hom_ext {k : ℕ} {X Y : TruncSSet k} {f g : X ⟶ Y} (hyp : ∀ (n : (Δ k)ᵒᵖ), f.app n = g.app n) : f = g := NatTrans.ext f g (funext hyp)
 
-/-- The ulift functor `truncSSet.{u} ⥤ truncSSet.{max u v}` on truncated simplicial sets. -/
-def uliftFunctor (k : ℕ) : truncSSet.{u} k ⥤ truncSSet.{max u v} k :=
+/-- The ulift functor `TruncSSet.{u} ⥤ TruncSSet.{max u v}` on truncated simplicial sets. -/
+def uliftFunctor (k : ℕ) : TruncSSet.{u} k ⥤ TruncSSet.{max u v} k :=
   (whiskeringRight _ _ _).obj CategoryTheory.uliftFunctor.{v, u}
 
-end truncSSet
+end TruncSSet
 
 namespace SimplexCategory
 
@@ -463,7 +461,7 @@ def Δ.ι (k) : Δ k ⥤ SimplexCategory := fullSubcategoryInclusion _
 
 def Δ.ι_fullyFaithful (k) : (Δ.ι k).FullyFaithful := fullyFaithfulFullSubcategoryInclusion _
 
-def truncation (k) : SSet ⥤ truncSSet k := (whiskeringLeft _ _ _).obj (Δ.ι k).op
+def truncation (k) : SSet ⥤ TruncSSet k := (whiskeringLeft _ _ _).obj (Δ.ι k).op
 
 def skeletonAdj (k) : lan (Δ.ι k).op ⊣ truncation k := Lan.adjunction _ _
 def coskeletonAdj (k) : truncation k ⊣ ran (Δ.ι k).op := Ran.adjunction _ _
@@ -476,7 +474,7 @@ end SimplexCategory
 def cosk₂ : SSet ⥤ SSet :=
   SimplexCategory.truncation 2 ⋙ ran (SimplexCategory.Δ.ι 2).op
 
-def nerveFunctor₂ : Cat ⥤ truncSSet 2 := nerveFunctor ⋙ SimplexCategory.truncation 2
+def nerveFunctor₂ : Cat ⥤ TruncSSet 2 := nerveFunctor ⋙ SimplexCategory.truncation 2
 
 namespace Nerve
 
@@ -552,15 +550,18 @@ def nerve2coskIso : nerveFunctor ≅ nerveFunctor₂ ⋙ ran (SimplexCategory.Δ
 --   sorry
 end Nerve
 
-
-
+section
 
 def OneTruncation (S : SSet) := S _[0]
 
+def OneTruncation.src {S : SSet} (f : S _[1]) : OneTruncation S :=
+  S.map (op (SimplexCategory.δ (n := 0) 1)) f
+
+def OneTruncation.tgt {S : SSet} (f : S _[1]) : OneTruncation S :=
+  S.map (op (SimplexCategory.δ (n := 0) 0)) f
+
 def OneTruncation.Hom {S : SSet} (X Y : OneTruncation S) :=
-  {p : S _[1] //
-    S.map (op (SimplexCategory.δ (n := 0) 1)) p = X ∧
-    S.map (op (SimplexCategory.δ (n := 0) 0)) p = Y}
+  {p : S _[1] // src p = X ∧ tgt p = Y}
 
 instance (S : SSet) : ReflQuiver (OneTruncation S) where
   Hom X Y := OneTruncation.Hom X Y
@@ -596,7 +597,7 @@ def SSet.oneTruncation : SSet.{u} ⥤ ReflQuiv.{u,u} where
   map_comp f g := by simp; rfl
 
 section
-variable {C : Type u} [Category.{u} C]
+variable {C : Type u} [Category.{v} C]
 def OneTruncation.ofNerve.map {X Y : OneTruncation (nerve C)}
     (f : X ⟶ Y) : X.left ⟶ Y.left :=
   eqToHom (congrArg (·.left) f.2.1.symm) ≫ f.1.hom ≫ eqToHom (congrArg (·.left) f.2.2)
@@ -619,47 +620,54 @@ def OneTruncation.ofNerve.inv : C ⥤rq OneTruncation (nerve C) where
     · intro; split <;> rfl
 
 def OneTruncation.ofNerve (C : Type u) [Category.{u} C] :
-    ReflQuiv.of (OneTruncation (nerve C)) ≅ ReflQuiv.of C where
-  hom := ofNerve.hom
-  inv := ofNerve.inv (C := C)
-  hom_inv_id := by
+    ReflQuiv.of (OneTruncation (nerve C)) ≅ ReflQuiv.of C := by
+  refine {
+    hom := ofNerve.hom
+    inv := ofNerve.inv (C := C)
+    hom_inv_id := ?_
+    inv_hom_id := ?_
+  }
+  · have H1 {X X' Y : OneTruncation (nerve C)} (f : X ⟶ Y) (h : X = X') :
+        (Eq.rec f h : X' ⟶ Y).1 = f.1 := by cases h; rfl
+    have H2 {X Y Y' : OneTruncation (nerve C)} (f : X ⟶ Y) (h : Y = Y') :
+        (Eq.rec f h : X ⟶ Y').1 = f.1 := by cases h; rfl
     fapply ReflPrefunctor.ext <;> simp
     · intro X
       apply ComposableArrows.ext₀
-      simp [ReflQuiv.comp_eq_comp]; rfl
+      rfl
     · intro X Y f
       obtain ⟨f, rfl, rfl⟩ := f
       apply Subtype.ext
       simp [ReflQuiv.comp_eq_comp]
-      fapply ComposableArrows.ext₁ <;> simp [ReflQuiv.comp_eq_comp, ReflQuiv.id_eq_id]
-      · change f.left = _
-        congr!
-        sorry
-      · sorry
-      · sorry
-  inv_hom_id := sorry
+      refine ((H2 _ _).trans ?_).symm
+      refine (H1 _ _).trans ?_
+      fapply ComposableArrows.ext₁
+      · rfl
+      · rfl
+      · simp [ofNerve.inv, ofNerve.hom, ofNerve.map]; rfl
+  · fapply ReflPrefunctor.ext <;> simp
+    · intro X
+      rfl
+    · intro X Y f
+      simp [ReflQuiv.comp_eq_comp, ReflQuiv.id_eq_id, ofNerve.inv, ofNerve.hom, ofNerve.map]
 
 /-- ER: For use later. -/
-def OneTruncation.ofNerveNatIso : nerveFunctor ⋙ SSet.oneTruncation ≅ ReflQuiv.forget := by
+def OneTruncation.ofNerveNatIso : nerveFunctor.{u,u} ⋙ SSet.oneTruncation ≅ ReflQuiv.forget := by
   refine NatIso.ofComponents (fun C => OneTruncation.ofNerve C) ?nat
   · intro C D F
     fapply ReflPrefunctor.ext <;> simp
-    · intro X
-      unfold SSet.oneTruncation nerveFunctor mapComposableArrows toReflPrefunctor
-      exact rfl
+    · intro X; rfl
     · intro X Y f
       obtain ⟨f, rfl, rfl⟩ := f
       unfold SSet.oneTruncation nerveFunctor mapComposableArrows toReflPrefunctor
-      simp [ReflQuiv.comp_eq_comp]
-      sorry
+      simp [ReflQuiv.comp_eq_comp, ofNerve, ofNerve.hom, ofNerve.map]
 
-/-- ER: Commenting out because of universe failure but otherwise I think this should work.-/
--- def helperAdj : Cat.freeRefl.{u, u} ⊣ nerveFunctor.{u, u} ⋙ SSet.oneTruncation.{u} :=
---   (ReflQuiv.adj).ofNatIsoRight (OneTruncation.ofNerveNatIso.symm)
+def helperAdj : Cat.freeRefl.{u, u} ⊣ nerveFunctor.{u, u} ⋙ SSet.oneTruncation.{u} :=
+  (ReflQuiv.adj).ofNatIsoRight (OneTruncation.ofNerveNatIso.symm)
 
 local notation (priority := high) "[" n "]" => SimplexCategory.mk n
 
-theorem opstuff (V : SSet) {m n p} {α : [m] ⟶ [n]} {β : [n] ⟶ [p]} {γ : [m] ⟶ [p]} {φ} :
+theorem opstuff.{w} (V : Cᵒᵖ ⥤ Type w) {X Y Z : C} {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
       α ≫ β = γ → V.map (op α) (V.map (op β) φ) = V.map (op γ) φ := by
     rintro rfl
     change (V.map _ ≫ V.map _) _ = _
@@ -742,6 +750,183 @@ def SSet.hoFunctor : SSet.{u} ⥤ Cat.{u,u} where
     simp [hoFunctorMap]
     rw [Quotient.lift_spec, Cat.comp_eq, Cat.comp_eq, ← Functor.assoc, Functor.assoc,
       Quotient.lift_spec, Functor.assoc, Quotient.lift_spec]
+end
+
+section
+
+local macro:1000 (priority := high) X:term " _[" n:term "]₂" : term =>
+    `(($X : TruncSSet 2).obj (Opposite.op ⟨SimplexCategory.mk $n, by decide⟩))
+
+-- FIXME why doesn't this work?
+-- local notation3:1000 (priority := high) (prettyPrint := false) " _[" n "]₂" =>
+--     (X : TruncSSet 2).obj (Opposite.op ⟨SimplexCategory.mk n, by decide⟩)
+
+set_option quotPrecheck false in
+local macro:max (priority := high) "[" n:term "]₂" : term =>
+  `((⟨SimplexCategory.mk $n, by decide⟩ : Δ 2))
+
+def OneTruncation₂ (S : TruncSSet 2) := S _[0]₂
+
+def OneTruncation₂.src {S : TruncSSet 2} (f : S _[1]₂) : OneTruncation₂ S :=
+  S.map (op (SimplexCategory.δ (n := 0) 1 : [0]₂ ⟶ [1]₂)) f
+
+def OneTruncation₂.tgt {S : TruncSSet 2} (f : S _[1]₂) : OneTruncation₂ S :=
+  S.map (op (SimplexCategory.δ (n := 0) 0)) f
+
+def OneTruncation₂.Hom {S : TruncSSet 2} (X Y : OneTruncation₂ S) :=
+  {p : S _[1]₂ // src p = X ∧ tgt p = Y}
+
+instance (S : TruncSSet 2) : ReflQuiver (OneTruncation₂ S) where
+  Hom X Y := OneTruncation₂.Hom X Y
+  id X := by
+    refine ⟨S.map (op (SimplexCategory.σ (n := 0) 0)) X, ?_, ?_⟩ <;>
+    · change (S.map _ ≫ S.map _) X = X
+      rw [← map_comp]
+      rw [(_ : _ ≫ _ = 𝟙 _)]; simp
+      show ({..} : Opposite _) = _; congr; ext i
+      let 0 := i
+      rfl
+
+def SSet.oneTruncation₂ : TruncSSet.{u} 2 ⥤ ReflQuiv.{u,u} where
+  obj S := ReflQuiv.of (OneTruncation₂ S)
+  map {S T} F := {
+    obj := F.app (op [0]₂)
+    map := fun f => by
+      refine ⟨F.app (op [1]₂) f.1, ?_, ?_⟩
+      · change (F.app _ ≫ _) _ = _
+        rw [← F.naturality]
+        exact congrArg (F.app _) f.2.1
+      · change (F.app _ ≫ _) _ = _
+        rw [← F.naturality]
+        exact congrArg (F.app _) f.2.2
+    map_id := fun X => by
+      change ({..} : Subtype _) = {..}
+      congr
+      change _ = (F.app _ ≫ _) _
+      rw [← F.naturality]
+      rfl
+  }
+  map_id X := by simp; rfl
+  map_comp f g := by simp; rfl
+
+section
+variable {C : Type u} [Category.{v} C]
+def OneTruncation₂.ofNerve.map {X Y : OneTruncation₂ (nerve C)}
+    (f : X ⟶ Y) : X.left ⟶ Y.left :=
+  eqToHom (congrArg (·.left) f.2.1.symm) ≫ f.1.hom ≫ eqToHom (congrArg (·.left) f.2.2)
+
+def OneTruncation₂.ofNerve.hom : OneTruncation₂ (nerve C) ⥤rq C where
+  obj := (·.left)
+  map := OneTruncation₂.ofNerve.map
+  map_id := fun X : ComposableArrows _ 0 => by
+    simp [ofNerve.map]; exact ComposableArrows.map'_self _ 0
+
+def OneTruncation₂.ofNerve.inv : C ⥤rq OneTruncation₂ (nerve C) where
+  obj := (.mk₀ ·)
+  map := fun f => by
+    refine ⟨.mk₁ f, ?_⟩
+    constructor <;> apply ComposableArrows.ext <;>
+      simp [SimplexCategory.len] <;> (intro 0; rfl)
+  map_id := fun X : C => Subtype.ext <| by
+    simp; apply ComposableArrows.ext <;> simp
+    · rintro _ rfl; simp; rfl
+    · intro; split <;> rfl
+
+def OneTruncation₂.ofNerve (C : Type u) [Category.{u} C] :
+    ReflQuiv.of (OneTruncation₂ (nerve C)) ≅ ReflQuiv.of C := by
+  refine {
+    hom := ofNerve.hom
+    inv := ofNerve.inv (C := C)
+    hom_inv_id := ?_
+    inv_hom_id := ?_
+  }
+  · have H1 {X X' Y : OneTruncation₂ (nerve C)} (f : X ⟶ Y) (h : X = X') :
+        (Eq.rec f h : X' ⟶ Y).1 = f.1 := by cases h; rfl
+    have H2 {X Y Y' : OneTruncation₂ (nerve C)} (f : X ⟶ Y) (h : Y = Y') :
+        (Eq.rec f h : X ⟶ Y').1 = f.1 := by cases h; rfl
+    fapply ReflPrefunctor.ext <;> simp
+    · intro X
+      apply ComposableArrows.ext₀
+      rfl
+    · intro X Y f
+      obtain ⟨f, rfl, rfl⟩ := f
+      apply Subtype.ext
+      simp [ReflQuiv.comp_eq_comp]
+      refine ((H2 _ _).trans ?_).symm
+      refine (H1 _ _).trans ?_
+      fapply ComposableArrows.ext₁
+      · rfl
+      · rfl
+      · simp [ofNerve.inv, ofNerve.hom, ofNerve.map]; rfl
+  · fapply ReflPrefunctor.ext <;> simp
+    · intro X
+      rfl
+    · intro X Y f
+      simp [ReflQuiv.comp_eq_comp, ReflQuiv.id_eq_id, ofNerve.inv, ofNerve.hom, ofNerve.map]
+
+/-- ER: For use later. -/
+def OneTruncation₂.ofNerveNatIso : nerveFunctor.{u,u} ⋙ SSet.oneTruncation₂ ≅ ReflQuiv.forget := by
+  refine NatIso.ofComponents (fun C => OneTruncation₂.ofNerve C) ?nat
+  · intro C D F
+    fapply ReflPrefunctor.ext <;> simp
+    · intro X; rfl
+    · intro X Y f
+      obtain ⟨f, rfl, rfl⟩ := f
+      unfold SSet.oneTruncation₂ nerveFunctor mapComposableArrows toReflPrefunctor
+      simp [ReflQuiv.comp_eq_comp, ofNerve, ofNerve.hom, ofNerve.map]
+
+def helperAdj : Cat.freeRefl.{u, u} ⊣ nerveFunctor.{u, u} ⋙ SSet.oneTruncation₂.{u} :=
+  (ReflQuiv.adj).ofNatIsoRight (OneTruncation₂.ofNerveNatIso.symm)
+
+local notation (priority := high) "[" n "]" => SimplexCategory.mk n
+
+theorem opstuff (V : Cᵒᵖ ⥤ Type u) {X Y Z : C} {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
+      α ≫ β = γ → V.map (op α) (V.map (op β) φ) = V.map (op γ) φ := by
+    rintro rfl
+    change (V.map _ ≫ V.map _) _ = _
+    rw [← map_comp]; rfl
+
+def ι0 : [0]₂ ⟶ [2] := SimplexCategory.δ (n := 0) 1 ≫ SimplexCategory.δ (n := 1) 1
+def ι1 : [0]₂ ⟶ [2] := SimplexCategory.δ (n := 0) 0 ≫ SimplexCategory.δ (n := 1) 2
+def ι2 : [0]₂ ⟶ [2] := SimplexCategory.δ (n := 0) 0 ≫ SimplexCategory.δ (n := 1) 1
+
+def φ0 {V : SSet} (φ : V _[2]) : OneTruncation₂ V := V.map (op ι0) φ
+def φ1 {V : SSet} (φ : V _[2]) : OneTruncation₂ V := V.map (op ι1) φ
+def φ2 {V : SSet} (φ : V _[2]) : OneTruncation₂ V := V.map (op ι2) φ
+
+def δ1 : [1] ⟶ [2] := SimplexCategory.δ (n := 1) 1
+def δ2 : [1] ⟶ [2] := SimplexCategory.δ (n := 1) 2
+def δ0 : [1] ⟶ [2] := SimplexCategory.δ (n := 1) 0
+
+def φ02 {V : SSet} (φ : V _[2]) : φ0 φ ⟶ φ2 φ :=
+  ⟨V.map (op δ1) φ, opstuff V rfl, opstuff V rfl⟩
+def φ01 {V : SSet} (φ : V _[2]) : φ0 φ ⟶ φ1 φ :=
+  ⟨V.map (op δ2) φ, opstuff V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), opstuff V rfl⟩
+def φ12 {V : SSet} (φ : V _[2]) : φ1 φ ⟶ φ2 φ :=
+  ⟨V.map (op δ0) φ,
+    opstuff V (SimplexCategory.δ_comp_δ (i := 0) (j := 1) (by decide)).symm,
+    opstuff V rfl⟩
+
+inductive HoRel {V : SSet} :
+    (X Y : Cat.freeRefl.obj (ReflQuiv.of (OneTruncation₂ V))) → (f g : X ⟶ Y) → Prop
+  | mk (φ : V _[2]) :
+    HoRel _ _
+      (Quot.mk _ (.cons .nil (φ02 φ)))
+      (Quot.mk _ (.cons (.cons .nil (φ01 φ)) (φ12 φ)))
+
+theorem HoRel.ext_triangle {V} (X X' Y Y' Z Z' : OneTruncation₂ V)
+    (hX : X = X') (hY : Y = Y') (hZ : Z = Z')
+    (f : X ⟶ Z) (f' : X' ⟶ Z') (hf : f.1 = f'.1)
+    (g : X ⟶ Y) (g' : X' ⟶ Y') (hg : g.1 = g'.1)
+    (h : Y ⟶ Z) (h' : Y' ⟶ Z') (hh : h.1 = h'.1) :
+    HoRel _ _ ((Quotient.functor _).map (.cons .nil f)) ((Quotient.functor _).map (.cons (.cons .nil g) h)) ↔
+    HoRel _ _ ((Quotient.functor _).map (.cons .nil f')) ((Quotient.functor _).map (.cons (.cons .nil g') h')) := by
+  cases hX
+  cases hY
+  cases hZ
+  congr! <;> apply Subtype.ext <;> assumption
+
+end
 
 def reflectiveOfCounitIso {C D} [Category C] [Category D] (R : D ⥤ C) (L : C ⥤ D) (adj : L ⊣ R)
   (h : IsIso adj.counit) : Reflective R where
