@@ -50,7 +50,7 @@ class Accessible {α : Type*} (Sys : Finset (Finset α)) : Prop where
 
 end Greedoid
 
-/-- Greedoid is a nonempty (finite) set system satsifying both accessible and exchange property. -/
+/-- Greedoid is a nonempty (finite) set system satisfying both accessible and exchange property. -/
 structure Greedoid (α : Type*) where
   /-- The ground set which every element lies on. -/
   ground_set : Finset α
