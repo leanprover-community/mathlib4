@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
 import Mathlib.Data.Nat.Defs
 import Mathlib.Logic.IsEmpty
 import Mathlib.Order.Basic
+import Mathlib.Tactic.MkIffOfInductiveProp
 
 #align_import order.rel_classes from "leanprover-community/mathlib"@"7413128c3bcb3b0818e3e18720abc9ea3100fb49"
 
