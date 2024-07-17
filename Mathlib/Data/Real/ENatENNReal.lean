@@ -64,7 +64,7 @@ theorem toENNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
   rfl
 
 @[simp, norm_cast]
-theorem toENNReal_coe_eq_iff : (m : ℝ≥0∞) = n ↔ m = n :=
+theorem toENNReal_coe_eq_iff : (m : ℝ≥0∞) = (n : ℝ≥0∞) ↔ m = n :=
   OrderEmbedding.eq_iff_eq ENat.toENNRealOrderEmbedding
 
 @[simp, norm_cast]

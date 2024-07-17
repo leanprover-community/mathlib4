@@ -737,19 +737,19 @@ theorem natCast_ne_bot (n : ℕ) : (n : EReal) ≠ ⊥ := Ne.symm (ne_of_beq_fal
 theorem natCast_ne_top (n : ℕ) : (n : EReal) ≠ ⊤ := Ne.symm (ne_of_beq_false rfl)
 
 @[simp, norm_cast]
-theorem natCast_eq_natCast_iff {m n : ℕ} : (m : EReal) = (n : EReal) ↔ m = n := by
+theorem natCast_eq_iff {m n : ℕ} : (m : EReal) = (n : EReal) ↔ m = n := by
   rw [← coe_coe_eq_natCast n, ← coe_coe_eq_natCast m, EReal.coe_eq_coe_iff, Nat.cast_inj]
 
 @[simp, norm_cast]
-theorem natCast_ne_natCast_iff {m n : ℕ} : (m : EReal) ≠ (n : EReal) ↔ m ≠ n :=
-  not_iff_not.2 natCast_eq_natCast_iff
+theorem natCast_ne_iff {m n : ℕ} : (m : EReal) ≠ (n : EReal) ↔ m ≠ n :=
+  not_iff_not.2 natCast_eq_iff
 
 @[simp, norm_cast]
-theorem natCast_le_natCast_iff {m n : ℕ} : (m : EReal) ≤ (n : EReal) ↔ m ≤ n := by
+theorem natCast_le_iff {m n : ℕ} : (m : EReal) ≤ (n : EReal) ↔ m ≤ n := by
   rw [← coe_coe_eq_natCast n, ← coe_coe_eq_natCast m, EReal.coe_le_coe_iff, Nat.cast_le]
 
 @[simp, norm_cast]
-theorem natCast_lt_natCast_iff {m n : ℕ} : (m : EReal) < (n : EReal) ↔ m < n := by
+theorem natCast_lt_iff {m n : ℕ} : (m : EReal) < (n : EReal) ↔ m < n := by
   rw [← coe_coe_eq_natCast n, ← coe_coe_eq_natCast m, EReal.coe_lt_coe_iff, Nat.cast_lt]
 
 theorem natCast_mul (m n : ℕ) :
