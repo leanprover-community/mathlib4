@@ -395,10 +395,9 @@ theorem eigenspace_of_subsingleton_nonempty [Subsingleton n] (h : Nonempty n) :
     · exact hT i
     · exact fun i_1 ↦ H i i_1
   obtain ⟨S , hS⟩ := h0
-  have := hS.1
   use S
   constructor
-  · exact this
+  · exact hS.1
   · have h1 : (∀ (i : n), T i = S) → (∀ (γ : n → 𝕜), (∀ (i : n),
     (eigenspace (T i) (γ i) = eigenspace S (γ i)))) :=
      fun a γ i ↦ congrFun (congrArg eigenspace (a i)) (γ i)
@@ -425,17 +424,12 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base [Subsingleton n]:
         intro K
         constructor
         · intro H b
-          by_cases case : Nonempty n
-          · have := H (Function.const n b)
-            simpa only [ge_iff_le, Function.const_apply, ciInf_const]
-          · simp only [not_nonempty_iff, not_isEmpty_of_nonempty] at case
-        · intro h
-          by_cases case : Nonempty n
-          · intro f
-            have c := choice case
-            have A := eq_const_of_subsingleton f c; have := h (f c); rw [A]
-            simpa only [Function.const_apply, ciInf_const, ge_iff_le]
-          · simp only [not_nonempty_iff, not_isEmpty_of_nonempty] at case
+          have := H (Function.const n b)
+          simpa only [ge_iff_le, Function.const_apply, ciInf_const]
+        · intro h f
+          have c := choice case
+          have A := eq_const_of_subsingleton f c; have := h (f c); rw [A]
+          simpa only [Function.const_apply, ciInf_const, ge_iff_le]
       ext F
       simp only [iSup, sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
           Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
@@ -716,8 +710,8 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
   · intro m hm hmm H T hT hC
     obtain ⟨i, _ , _ ⟩ := exists_pair_ne m
     have C : Fintype.card { x // i ≠ x } < Fintype.card m := by
-      simp only [ne_eq, Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, tsub_lt_self_iff, zero_lt_one,
-      and_true]
+      simp only [ne_eq, Fintype.card_subtype_compl, Fintype.card_ofSubsingleton,
+      tsub_lt_self_iff, zero_lt_one, and_true]
       exact Fintype.card_pos
     have D := H {x // i ≠ x} C (Subtype.restrict (fun x ↦ i ≠ x) T)
       (fun (i_1 : {x // i ≠ x}) ↦ hT ↑i_1) (fun (i_1 j : { x // i ≠ x }) ↦ hC ↑i_1 ↑j)
