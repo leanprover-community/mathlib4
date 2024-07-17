@@ -173,8 +173,8 @@ variable {W}
 lemma Construction.wIso_eq_isoOfHom {X Y : C} (f : X ⟶ Y) (hf : W f) :
     Construction.wIso f hf = isoOfHom W.Q W f hf := by ext; rfl
 
-lemma Construction.winv_eq_isoOfHom_inv {X Y : C} (f : X ⟶ Y) (hf : W f) :
-    Construction.winv f hf = (isoOfHom W.Q W f hf).inv :=
+lemma Construction.wInv_eq_isoOfHom_inv {X Y : C} (f : X ⟶ Y) (hf : W f) :
+    Construction.wInv f hf = (isoOfHom W.Q W f hf).inv :=
   congr_arg Iso.inv (wIso_eq_isoOfHom f hf)
 
 instance : (Localization.Construction.lift L (inverts L W)).IsEquivalence :=

@@ -134,10 +134,10 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.localization.construction.Wiso CategoryTheory.Localization.Construction.wIso
 
 /-- The formal inverse in `W.Localization` of a morphism `w` in `W`. -/
-abbrev winv {X Y : C} (w : X ⟶ Y) (hw : W w) :=
+abbrev wInv {X Y : C} (w : X ⟶ Y) (hw : W w) :=
   (wIso w hw).inv
 set_option linter.uppercaseLean3 false in
-#align category_theory.localization.construction.Winv CategoryTheory.Localization.Construction.winv
+#align category_theory.localization.construction.Winv CategoryTheory.Localization.Construction.wInv
 
 variable (W)
 
@@ -231,7 +231,7 @@ morphisms in the original category, the inverses of the morphisms
 in `W` and if it is stable under composition -/
 theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
     [P.IsStableUnderComposition] (hP₁ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P (W.Q.map f))
-    (hP₂ : ∀ ⦃X Y : C⦄ (w : X ⟶ Y) (hw : W w), P (winv w hw)) :
+    (hP₂ : ∀ ⦃X Y : C⦄ (w : X ⟶ Y) (hw : W w), P (wInv w hw)) :
     P = ⊤ := by
   funext X Y f
   ext

@@ -77,7 +77,7 @@ private lemma induction_structuredArrow' (g : StructuredArrow (W.Q.obj X) W.Q) :
   | cons f g hf =>
       obtain (g|⟨w, hw⟩) := g
       · exact hP₁ g _ hf
-      · simpa only [← Construction.winv_eq_isoOfHom_inv w hw] using hP₂ w hw _ hf
+      · simpa only [← Construction.wInv_eq_isoOfHom_inv w hw] using hP₂ w hw _ hf
 
 end
 
