@@ -533,7 +533,7 @@ theorem valuation_single_zpow (s : ℤ) :
         valuation_X_pow, ofAdd_neg, WithZero.coe_inv, inv_inv]
   · simp only [Valuation.ne_zero_iff, ne_eq, one_ne_zero, not_false_iff, HahnSeries.single_ne_zero]
 
-/- The coefficients of a power series vanish in degree strictly less than its valuation-/
+/- The coefficients of a power series vanish in degree strictly less than its valuation. -/
 theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
     (H : Valued.v (f : LaurentSeries K) ≤ Multiplicative.ofAdd (-d : ℤ)) :
     n < d → coeff K n f = 0 := by
@@ -554,7 +554,7 @@ theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : K⟦X⟧) :
     span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow]
   apply intValuation_le_pow_iff_dvd
 
-/- The coefficients of a Laurent series vanish in degree strictly less than its valuation-/
+/- The coefficients of a Laurent series vanish in degree strictly less than its valuation. -/
 theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : LaurentSeries K}
     (H : Valued.v f ≤ Multiplicative.ofAdd (-D)) : n < D → f.coeff n = 0 := by
   intro hnd
@@ -623,8 +623,8 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : LaurentSeries K} :
       linarith
     simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff]
 
-/-Two Laurent series whose difference has small valuation have the same coefficients for
-small enough indeces.-/
+/- Two Laurent series whose difference has small valuation have the same coefficients for
+small enough indeces. -/
 theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : LaurentSeries K}
     (H : Valued.v (g - f) ≤ ↑(Multiplicative.ofAdd (-d))) : n < d → g.coeff n = f.coeff n := by
   by_cases triv : g = f
@@ -634,7 +634,7 @@ theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : LaurentSeries K}
     erw [← HahnSeries.sub_coeff]
     apply coeff_zero_of_lt_valuation K H hn
 
-/- Every Laurent series of valuation less than `(1 : ℤₘ₀)` comes from a power series -/
+/- Every Laurent series of valuation less than `(1 : ℤₘ₀)` comes from a power series. -/
 theorem val_le_one_iff_eq_coe (f : LaurentSeries K) : Valued.v f ≤ (1 : ℤₘ₀) ↔
     ∃ F : PowerSeries K, F = f := by
   rw [← WithZero.coe_one, ← ofAdd_zero, ← neg_zero, valuation_le_iff_coeff_lt_eq_zero]
