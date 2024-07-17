@@ -110,7 +110,7 @@ theorem sub_div_sub_smul_slope_add_sub_div_sub_smul_slope (f : k → PE) (a b c 
     by_cases hac : a = c
     · simp [hac]
     · rw [div_self (sub_ne_zero.2 <| Ne.symm hac), one_smul]
-  by_cases hbc : b = c;
+  by_cases hbc : b = c
   · subst hbc
     simp [sub_ne_zero.2 (Ne.symm hab)]
   rw [add_comm]
