@@ -3,12 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Logic.Equiv.Nat
-import Mathlib.Data.PNat.Basic
-import Mathlib.Order.Directed
 import Mathlib.Data.Countable.Defs
-import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Nat.Find
+import Mathlib.Data.PNat.Equiv
+import Mathlib.Logic.Equiv.Nat
+import Mathlib.Order.Directed
+import Mathlib.Order.RelIso.Basic
 
 #align_import logic.encodable.basic from "leanprover-community/mathlib"@"7c523cb78f4153682c2929e3006c863bfef463d0"
 
@@ -35,7 +36,6 @@ The difference with `Denumerable` is that finite types are encodable. For infini
 The point of asking for an explicit partial inverse `decode : ℕ → Option α` to `encode : α → ℕ` is
 to make the range of `encode` decidable even when the finiteness of `α` is not.
 -/
-
 
 open Option List Nat Function
 
@@ -191,7 +191,8 @@ def decode₂ (α) [Encodable α] (n : ℕ) : Option α :=
 
 theorem mem_decode₂' [Encodable α] {n : ℕ} {a : α} :
     a ∈ decode₂ α n ↔ a ∈ decode n ∧ encode a = n := by
-  simp [decode₂]; exact ⟨fun ⟨_, h₁, rfl, h₂⟩ => ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨_, h₁, rfl, h₂⟩⟩
+  simpa [decode₂, bind_eq_some] using
+    ⟨fun ⟨_, h₁, rfl, h₂⟩ => ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨_, h₁, rfl, h₂⟩⟩
 #align encodable.mem_decode₂' Encodable.mem_decode₂'
 
 theorem mem_decode₂ [Encodable α] {n : ℕ} {a : α} : a ∈ decode₂ α n ↔ encode a = n :=
@@ -210,7 +211,7 @@ theorem decode₂_encode [Encodable α] (a : α) : decode₂ α (encode a) = som
 
 theorem decode₂_ne_none_iff [Encodable α] {n : ℕ} :
     decode₂ α n ≠ none ↔ n ∈ Set.range (encode : α → ℕ) := by
-  simp_rw [Set.range, Set.mem_setOf_eq, Ne.def, Option.eq_none_iff_forall_not_mem,
+  simp_rw [Set.range, Set.mem_setOf_eq, Ne, Option.eq_none_iff_forall_not_mem,
     Encodable.mem_decode₂, not_forall, not_not]
 #align encodable.decode₂_ne_none_iff Encodable.decode₂_ne_none_iff
 
@@ -236,8 +237,7 @@ def decidableRangeEncode (α : Type*) [Encodable α] : DecidablePred (· ∈ Set
 #align encodable.decidable_range_encode Encodable.decidableRangeEncode
 
 /-- An encodable type is equivalent to the range of its encoding function. -/
-def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α _)
-    where
+def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α _) where
   toFun := fun a : α => ⟨encode a, Set.mem_range_self _⟩
   invFun n :=
     Option.get _
@@ -332,7 +332,7 @@ theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none := by
     rw [Nat.le_div_iff_mul_le]
     exacts [h, by decide]
   cases' exists_eq_succ_of_ne_zero (_root_.ne_of_gt this) with m e
-  simp [decodeSum, div2_val]; cases bodd n <;> simp [e]
+  simp only [decodeSum, boddDiv2_eq, div2_val]; cases bodd n <;> simp [e]
 #align encodable.decode_ge_two Encodable.decode_ge_two
 
 noncomputable instance _root_.Prop.encodable : Encodable Prop :=
@@ -481,11 +481,11 @@ def ULower (α : Type*) [Encodable α] : Type :=
   Set.range (Encodable.encode : α → ℕ)
 #align ulower ULower
 
-instance {α : Type*} [Encodable α] : DecidableEq (ULower α) :=
-  by delta ULower; exact Encodable.decidableEqOfEncodable _
+instance {α : Type*} [Encodable α] : DecidableEq (ULower α) := by
+  delta ULower; exact Encodable.decidableEqOfEncodable _
 
-instance {α : Type*} [Encodable α] : Encodable (ULower α) :=
-  by delta ULower; infer_instance
+instance {α : Type*} [Encodable α] : Encodable (ULower α) := by
+  delta ULower; infer_instance
 
 end ULower
 
@@ -607,9 +607,6 @@ def encode' (α) [Encodable α] : α ↪ ℕ :=
   ⟨Encodable.encode, Encodable.encode_injective⟩
 #align encodable.encode' Encodable.encode'
 
-instance {α} [Encodable α] : IsTrans _ (encode' α ⁻¹'o (· ≤ ·)) :=
-  (RelEmbedding.preimage _ _).isTrans
-
 instance {α} [Encodable α] : IsAntisymm _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
   (RelEmbedding.preimage _ _).isAntisymm
 
@@ -631,7 +628,7 @@ protected noncomputable def sequence {r : β → β → Prop} (f : α → β) (h
   | 0 => default
   | n + 1 =>
     let p := Directed.sequence f hf n
-    match (decode n: Option α) with
+    match (decode n : Option α) with
     | none => Classical.choose (hf p p)
     | some a => Classical.choose (hf p a)
 #align directed.sequence Directed.sequence

@@ -248,7 +248,7 @@ theorem Finset.measurable_sup' {ι : Type*} {s : Finset ι} (hs : s.Nonempty) {f
 theorem Finset.measurable_range_sup' {f : ℕ → δ → α} {n : ℕ} (hf : ∀ k ≤ n, Measurable (f k)) :
     Measurable ((range (n + 1)).sup' nonempty_range_succ f) := by
   simp_rw [← Nat.lt_succ_iff] at hf
-  refine' Finset.measurable_sup' _ _
+  refine Finset.measurable_sup' _ ?_
   simpa [Finset.mem_range]
 #align finset.measurable_range_sup' Finset.measurable_range_sup'
 

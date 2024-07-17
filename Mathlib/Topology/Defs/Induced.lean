@@ -42,6 +42,7 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
 -/
 
 open Set
+open scoped Topology
 
 namespace TopologicalSpace
 
@@ -59,10 +60,14 @@ def induced (f : X → Y) (t : TopologicalSpace Y) : TopologicalSpace X where
     exact ⟨s'₁ ∩ s'₂, hs₁.inter hs₂, preimage_inter⟩
   isOpen_sUnion S h := by
     choose! g hgo hfg using h
-    refine ⟨⋃₀ (g '' S), isOpen_sUnion <| ball_image_iff.2 hgo, ?_⟩
+    refine ⟨⋃₀ (g '' S), isOpen_sUnion <| forall_mem_image.2 hgo, ?_⟩
     rw [preimage_sUnion, biUnion_image, sUnion_eq_biUnion]
     exact iUnion₂_congr hfg
 #align topological_space.induced TopologicalSpace.induced
+
+instance _root_.instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpace X] :
+    TopologicalSpace (Subtype p) :=
+  induced (↑) t
 
 /-- Given `f : X → Y` and a topology on `X`,
   the coinduced topology on `Y` is defined such that
@@ -78,6 +83,18 @@ def coinduced (f : X → Y) (t : TopologicalSpace X) : TopologicalSpace Y where
 end TopologicalSpace
 
 variable {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+
+/-- We say that restrictions of the topology on `X` to sets from a family `S`
+generates the original topology,
+if either of the following equivalent conditions hold:
+
+- a set which is relatively open in each `s ∈ S` is open;
+- a set which is relatively closed in each `s ∈ S` is closed;
+- for any topological space `Y`, a function `f : X → Y` is continuous
+  provided that it is continuous on each `s ∈ S`.
+-/
+structure RestrictGenTopology (S : Set (Set X)) : Prop where
+  isOpen_of_forall_induced (u : Set X) : (∀ s ∈ S, IsOpen ((↑) ⁻¹' u : Set s)) → IsOpen u
 
 /-- A function `f : X → Y` between topological spaces is inducing if the topology on `X` is induced
 by the topology on `Y` through `f`, meaning that a set `s : Set X` is open iff it is the preimage
@@ -103,7 +120,7 @@ structure Embedding [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) exte
 @[mk_iff]
 structure OpenEmbedding (f : X → Y) extends Embedding f : Prop where
   /-- The range of an open embedding is an open set. -/
-  open_range : IsOpen <| range f
+  isOpen_range : IsOpen <| range f
 #align open_embedding OpenEmbedding
 #align open_embedding_iff openEmbedding_iff
 
@@ -111,7 +128,7 @@ structure OpenEmbedding (f : X → Y) extends Embedding f : Prop where
 @[mk_iff]
 structure ClosedEmbedding (f : X → Y) extends Embedding f : Prop where
   /-- The range of a closed embedding is a closed set. -/
-  closed_range : IsClosed <| range f
+  isClosed_range : IsClosed <| range f
 #align closed_embedding ClosedEmbedding
 #align closed_embedding_iff closedEmbedding_iff
 

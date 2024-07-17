@@ -23,10 +23,9 @@ complete category. It is also preadditive when `C` is preadditive.
 
 -/
 
-
 noncomputable section
 
-open CategoryTheory.Category CategoryTheory.Preadditive CategoryTheory.Limits BigOperators
+open CategoryTheory.Category CategoryTheory.Preadditive CategoryTheory.Limits
 
 namespace CategoryTheory
 
@@ -34,7 +33,7 @@ variable (C : Type*) [Category C]
 
 namespace Idempotents
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- In a preadditive category `C`, when an object `X` decomposes as `X ≅ P ⨿ Q`, one may
 consider `P` as a direct factor of `X` and up to unique isomorphism, it is determined by the
 obvious idempotent `X ⟶ P ⟶ X` which is the projection onto `P` with kernel `Q`. More generally,
@@ -122,6 +121,9 @@ theorem comp_f {P Q R : Karoubi C} (f : P ⟶ Q) (g : Q ⟶ R) : (f ≫ g).f = f
 #align category_theory.idempotents.karoubi.comp_f CategoryTheory.Idempotents.Karoubi.comp_f
 
 @[simp]
+theorem id_f {P : Karoubi C} : Hom.f (𝟙 P) = P.p := rfl
+
+@[deprecated (since := "2024-07-15")]
 theorem id_eq {P : Karoubi C} : 𝟙 P = ⟨P.p, by repeat' rw [P.idem]⟩ := rfl
 #align category_theory.idempotents.karoubi.id_eq CategoryTheory.Idempotents.Karoubi.id_eq
 
@@ -144,7 +146,7 @@ theorem coe_p (X : C) : (X : Karoubi C).p = 𝟙 X := rfl
 theorem eqToHom_f {P Q : Karoubi C} (h : P = Q) :
     Karoubi.Hom.f (eqToHom h) = P.p ≫ eqToHom (congr_arg Karoubi.X h) := by
   subst h
-  simp only [eqToHom_refl, Karoubi.id_eq, comp_id]
+  simp only [eqToHom_refl, Karoubi.id_f, comp_id]
 #align category_theory.idempotents.karoubi.eq_to_hom_f CategoryTheory.Idempotents.Karoubi.eqToHom_f
 
 end Karoubi
@@ -157,18 +159,30 @@ def toKaroubi : C ⥤ Karoubi C where
   map f := ⟨f, by simp only [comp_id, id_comp]⟩
 #align category_theory.idempotents.to_karoubi CategoryTheory.Idempotents.toKaroubi
 
-instance : Full (toKaroubi C) where preimage f := f.f
+instance : (toKaroubi C).Full where map_surjective f := ⟨f.f, rfl⟩
 
-instance : Faithful (toKaroubi C) where
+instance : (toKaroubi C).Faithful where
   map_injective := fun h => congr_arg Karoubi.Hom.f h
 
 variable {C}
 
-@[simps add zero neg]
-instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
-  add f g :=
-    ⟨f.f + g.f, by rw [add_comp, comp_add, ← f.comm, ← g.comm]⟩
+@[simps add]
+instance instAdd [Preadditive C] {P Q : Karoubi C} : Add (P ⟶ Q) where
+  add f g := ⟨f.f + g.f, by rw [add_comp, comp_add, ← f.comm, ← g.comm]⟩
+
+@[simps neg]
+instance instNeg [Preadditive C] {P Q : Karoubi C} : Neg (P ⟶ Q) where
+  neg f := ⟨-f.f, by simpa only [neg_comp, comp_neg, neg_inj] using f.comm⟩
+
+@[simps zero]
+instance instZero [Preadditive C] {P Q : Karoubi C} : Zero (P ⟶ Q) where
   zero := ⟨0, by simp only [comp_zero, zero_comp]⟩
+
+-- dsimp loops when applying this lemma to its LHS,
+-- probably https://github.com/leanprover/lean4/pull/2867
+attribute [nolint simpNF] CategoryTheory.Idempotents.instZero_zero
+
+instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
   zero_add f := by
     ext
     apply zero_add
@@ -181,10 +195,11 @@ instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P
   add_comm f g := by
     ext
     apply add_comm
-  neg f := ⟨-f.f, by simpa only [neg_comp, comp_neg, neg_inj] using f.comm⟩
   add_left_neg f := by
     ext
     apply add_left_neg
+  zsmul := zsmulRec
+  nsmul := nsmulRec
 
 namespace Karoubi
 
@@ -202,7 +217,7 @@ def inclusionHom [Preadditive C] (P Q : Karoubi C) : AddMonoidHom (P ⟶ Q) (P.X
 
 @[simp]
 theorem sum_hom [Preadditive C] {P Q : Karoubi C} {α : Type*} (s : Finset α) (f : α → (P ⟶ Q)) :
-    (∑ x in s, f x).f = ∑ x in s, (f x).f :=
+    (∑ x ∈ s, f x).f = ∑ x ∈ s, (f x).f :=
   map_sum (inclusionHom P Q) f s
 #align category_theory.idempotents.karoubi.sum_hom CategoryTheory.Idempotents.Karoubi.sum_hom
 
@@ -219,7 +234,7 @@ open Karoubi
 variable (C)
 
 instance : IsIdempotentComplete (Karoubi C) := by
-  refine' ⟨_⟩
+  refine ⟨?_⟩
   intro P p hp
   simp only [hom_ext_iff, comp_f] at hp
   use ⟨P.X, p.f, hp⟩
@@ -227,7 +242,7 @@ instance : IsIdempotentComplete (Karoubi C) := by
   use ⟨p.f, by rw [hp, p_comp p]⟩
   simp [hp]
 
-instance [IsIdempotentComplete C] : EssSurj (toKaroubi C) :=
+instance [IsIdempotentComplete C] : (toKaroubi C).EssSurj :=
   ⟨fun P => by
     rcases IsIdempotentComplete.idempotents_split P.X P.p P.idem with ⟨Y, i, e, ⟨h₁, h₂⟩⟩
     use Y
@@ -237,14 +252,12 @@ instance [IsIdempotentComplete C] : EssSurj (toKaroubi C) :=
           inv := ⟨e, by erw [comp_id, ← h₂, assoc, h₁, comp_id]⟩ }⟩
 
 /-- If `C` is idempotent complete, the functor `toKaroubi : C ⥤ Karoubi C` is an equivalence. -/
-def toKaroubiIsEquivalence [IsIdempotentComplete C] : IsEquivalence (toKaroubi C) :=
-  Equivalence.ofFullyFaithfullyEssSurj (toKaroubi C)
-#align category_theory.idempotents.to_karoubi_is_equivalence CategoryTheory.Idempotents.toKaroubiIsEquivalence
+instance toKaroubi_isEquivalence [IsIdempotentComplete C] : (toKaroubi C).IsEquivalence where
+#align category_theory.idempotents.to_karoubi_is_equivalence CategoryTheory.Idempotents.toKaroubi_isEquivalence
 
 /-- The equivalence `C ≅ Karoubi C` when `C` is idempotent complete. -/
 def toKaroubiEquivalence [IsIdempotentComplete C] : C ≌ Karoubi C :=
-  haveI := toKaroubiIsEquivalence C
-  Functor.asEquivalence (toKaroubi C)
+  (toKaroubi C).asEquivalence
 #align category_theory.idempotents.to_karoubi_equivalence CategoryTheory.Idempotents.toKaroubiEquivalence
 
 instance toKaroubiEquivalence_functor_additive [Preadditive C] [IsIdempotentComplete C] :
@@ -273,7 +286,7 @@ is actually a direct factor in the category `Karoubi C`. -/
 @[reassoc]
 theorem decompId (P : Karoubi C) : 𝟙 P = decompId_i P ≫ decompId_p P := by
   ext
-  simp only [comp_f, id_eq, P.idem, decompId_i, decompId_p]
+  simp only [comp_f, id_f, P.idem, decompId_i, decompId_p]
 #align category_theory.idempotents.karoubi.decomp_id CategoryTheory.Idempotents.Karoubi.decompId
 
 theorem decomp_p (P : Karoubi C) : (toKaroubi C).map P.p = decompId_p P ≫ decompId_i P := by

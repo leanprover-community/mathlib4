@@ -81,6 +81,33 @@ instance smul_nnreal [SMulInvariantMeasure M α μ] (c : ℝ≥0) : SMulInvarian
 
 end SMulInvariantMeasure
 
+section AE
+
+variable {m : MeasurableSpace α} [MeasurableSpace G] [Group G] [MulAction G α]
+  {μ : Measure α} [SMulInvariantMeasure G α μ]
+
+@[to_additive]
+theorem measure_smul_null {s} (h : μ s = 0) (c : G) : μ (c • s) = 0 := by
+  rcases exists_measurable_superset_of_null h with ⟨t, hst, htm, ht⟩
+  rw [← SMulInvariantMeasure.measure_preimage_smul c⁻¹ htm, preimage_smul_inv] at ht
+  exact measure_mono_null (image_mono hst) ht
+#align measure_theory.measure_smul_null MeasureTheory.measure_smul_null
+
+@[to_additive (attr := simp)]
+theorem measure_smul_eq_zero_iff {s} (c : G) : μ (c • s) = 0 ↔ μ s = 0 :=
+  ⟨fun h ↦ by simpa using measure_smul_null h c⁻¹, fun h ↦ measure_smul_null h c⟩
+
+@[to_additive (attr := simp)]
+theorem smul_mem_ae (c : G) {s : Set α} : c • s ∈ ae μ ↔ s ∈ ae μ := by
+  simp only [mem_ae_iff, ← smul_set_compl, measure_smul_eq_zero_iff]
+
+@[to_additive (attr := simp)]
+theorem smul_ae (c : G) : c • ae μ = ae μ := by
+  ext s
+  simp only [Filter.mem_smul_filter, preimage_smul, smul_mem_ae]
+
+end AE
+
 section MeasurableSMul
 
 variable {m : MeasurableSpace α} [MeasurableSpace M] [SMul M α] [MeasurableSMul M α] (c : M)
@@ -227,10 +254,6 @@ theorem NullMeasurableSet.smul {s} (hs : NullMeasurableSet s μ) (c : G) :
 #align measure_theory.null_measurable_set.smul MeasureTheory.NullMeasurableSet.smul
 #align measure_theory.null_measurable_set.vadd MeasureTheory.NullMeasurableSet.vadd
 
-@[to_additive]
-theorem measure_smul_null {s} (h : μ s = 0) (c : G) : μ (c • s) = 0 := by rwa [measure_smul]
-#align measure_theory.measure_smul_null MeasureTheory.measure_smul_null
-
 section IsMinimal
 
 variable (G)
@@ -286,7 +309,7 @@ theorem measure_pos_iff_nonempty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen 
 @[to_additive]
 theorem measure_eq_zero_iff_eq_empty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen U) :
     μ U = 0 ↔ U = ∅ := by
-  rw [← not_iff_not, ← Ne.def, ← pos_iff_ne_zero,
+  rw [← not_iff_not, ← Ne, ← pos_iff_ne_zero,
     measure_pos_iff_nonempty_of_smulInvariant G hμ hU, nonempty_iff_ne_empty]
 #align measure_theory.measure_eq_zero_iff_eq_empty_of_smul_invariant MeasureTheory.measure_eq_zero_iff_eq_empty_of_smulInvariant
 #align measure_theory.measure_eq_zero_iff_eq_empty_of_vadd_invariant MeasureTheory.measure_eq_zero_iff_eq_empty_of_vaddInvariant
@@ -310,7 +333,7 @@ theorem vadd_ae_eq_self_of_mem_zmultiples {G : Type u} {α : Type w} {s : Set α
     {μ : Measure α} [VAddInvariantMeasure G α μ] {x y : G}
     (hs : (x +ᵥ s : Set α) =ᵐ[μ] s) (hy : y ∈ AddSubgroup.zmultiples x) :
     (y +ᵥ s : Set α) =ᵐ[μ] s := by
-  letI : MeasurableSpace (Multiplicative G) := (inferInstanceAs (MeasurableSpace G))
+  letI : MeasurableSpace (Multiplicative G) := inferInstanceAs (MeasurableSpace G)
   letI : SMulInvariantMeasure (Multiplicative G) α μ :=
     ⟨fun g => VAddInvariantMeasure.measure_preimage_vadd (Multiplicative.toAdd g)⟩
   letI : MeasurableSMul (Multiplicative G) α :=

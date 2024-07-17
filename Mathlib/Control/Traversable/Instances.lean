@@ -25,9 +25,7 @@ section Option
 open Functor
 
 variable {F G : Type u → Type u}
-
 variable [Applicative F] [Applicative G]
-
 variable [LawfulApplicative F] [LawfulApplicative G]
 
 theorem Option.id_traverse {α} (x : Option α) : Option.traverse (pure : α → Id α) x = x := by
@@ -36,8 +34,8 @@ theorem Option.id_traverse {α} (x : Option α) : Option.traverse (pure : α →
 
 theorem Option.comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (x : Option α) :
     Option.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x =
-      Comp.mk (Option.traverse f <$> Option.traverse g x) :=
-  by cases x <;> simp! [functor_norm] <;> rfl
+      Comp.mk (Option.traverse f <$> Option.traverse g x) := by
+  cases x <;> simp! [functor_norm] <;> rfl
 #align option.comp_traverse Option.comp_traverse
 
 theorem Option.traverse_eq_map_id {α β} (f : α → β) (x : Option α) :
@@ -65,7 +63,6 @@ instance : LawfulTraversable Option :=
 namespace List
 
 variable {F G : Type u → Type u}
-
 variable [Applicative F] [Applicative G]
 
 section
@@ -79,8 +76,9 @@ protected theorem id_traverse {α} (xs : List α) : List.traverse (pure : α →
 #align list.id_traverse List.id_traverse
 
 protected theorem comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (x : List α) :
-    List.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x = Comp.mk (List.traverse f <$> List.traverse g x) :=
-  by induction x <;> simp! [*, functor_norm] <;> rfl
+    List.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x =
+    Comp.mk (List.traverse f <$> List.traverse g x) := by
+  induction x <;> simp! [*, functor_norm] <;> rfl
 #align list.comp_traverse List.comp_traverse
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) (x : List α) :
@@ -147,9 +145,7 @@ namespace Sum
 section Traverse
 
 variable {σ : Type u}
-
 variable {F G : Type u → Type u}
-
 variable [Applicative F] [Applicative G]
 
 open Applicative Functor

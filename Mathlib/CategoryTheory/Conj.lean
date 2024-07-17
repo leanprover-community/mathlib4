@@ -19,7 +19,8 @@ An isomorphism `α : X ≅ Y` defines
 
 For completeness, we also define
 `CategoryTheory.Iso.homCongr : (X ≅ X₁) → (Y ≅ Y₁) → (X ⟶ Y) ≃ (X₁ ⟶ Y₁)`,
-cf. `Equiv.arrowCongr`.
+cf. `Equiv.arrowCongr`,
+and `CategoryTheory.Iso.isoCongr : (f : X₁ ≅ X₂) → (g : Y₁ ≅ Y₂) → (X₁ ≅ Y₁) ≃ (X₂ ≅ Y₂)`.
 -/
 
 
@@ -71,6 +72,22 @@ theorem homCongr_symm {X₁ Y₁ X₂ Y₂ : C} (α : X₁ ≅ X₂) (β : Y₁ 
   rfl
 #align category_theory.iso.hom_congr_symm CategoryTheory.Iso.homCongr_symm
 
+/-- If `X` is isomorphic to `X₁` and `Y` is isomorphic to `Y₁`, then
+there is a bijection between `X ≅ Y` and `X₁ ≅ Y₁`. -/
+def isoCongr {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ≅ X₂) (g : Y₁ ≅ Y₂) : (X₁ ≅ Y₁) ≃ (X₂ ≅ Y₂) where
+  toFun h := f.symm.trans <| h.trans <| g
+  invFun h := f.trans <| h.trans <| g.symm
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
+
+/-- If `X₁` is isomorphic to `X₂`, then there is a bijection between `X₁ ≅ Y` and `X₂ ≅ Y`. -/
+def isoCongrLeft {X₁ X₂ Y : C} (f : X₁ ≅ X₂) : (X₁ ≅ Y) ≃ (X₂ ≅ Y) :=
+  isoCongr f (Iso.refl _)
+
+/-- If `Y₁` is isomorphic to `Y₂`, then there is a bijection between `X ≅ Y₁` and `X ≅ Y₂`. -/
+def isoCongrRight {X Y₁ Y₂ : C} (g : Y₁ ≅ Y₂) : (X ≅ Y₁) ≃ (X ≅ Y₂) :=
+  isoCongr (Iso.refl _) g
+
 variable {X Y : C} (α : X ≅ Y)
 
 /-- An isomorphism between two objects defines a monoid isomorphism between their
@@ -118,7 +135,7 @@ theorem conj_pow (f : End X) (n : ℕ) : α.conj (f ^ n) = α.conj f ^ n :=
   α.conj.toMonoidHom.map_pow f n
 #align category_theory.iso.conj_pow CategoryTheory.Iso.conj_pow
 
--- Porting note: todo: change definition so that `conjAut_apply` becomes a `rfl`?
+-- Porting note (#11215): TODO: change definition so that `conjAut_apply` becomes a `rfl`?
 /-- `conj` defines a group isomorphisms between groups of automorphisms -/
 def conjAut : Aut X ≃* Aut Y :=
   (Aut.unitsEndEquivAut X).symm.trans <| (Units.mapEquiv α.conj).trans <| Aut.unitsEndEquivAut Y

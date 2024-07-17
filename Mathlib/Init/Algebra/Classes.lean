@@ -8,6 +8,17 @@ import Mathlib.Init.Logic
 #align_import init.algebra.classes from "leanprover-community/lean"@"31f3a46d7c18d6b2255a72df4f9d62644145d83b"
 
 /-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+
 # Unbundled algebra classes
 
 These classes are part of an incomplete refactor described
@@ -62,8 +73,6 @@ Mario made the following analysis of uses in mathlib3:
 * `is_strict_total_order`: looks like the only usage is in `rbmap` again
 -/
 
-set_option autoImplicit true
-
 universe u v
 
 -- Porting note: removed `outParam`
@@ -72,7 +81,7 @@ class IsSymmOp (α : Sort u) (β : Sort v) (op : α → α → β) : Prop where
 #align is_symm_op IsSymmOp
 
 /-- A commutative binary operation. -/
-@[deprecated Std.Commutative] -- 2024-02-02
+@[deprecated Std.Commutative (since := "2024-02-02")]
 abbrev IsCommutative (α : Sort u) (op : α → α → α) := Std.Commutative op
 #align is_commutative Std.Commutative
 
@@ -81,17 +90,17 @@ instance (priority := 100) isSymmOp_of_isCommutative (α : Sort u) (op : α → 
 #align is_symm_op_of_is_commutative isSymmOp_of_isCommutative
 
 /-- An associative binary operation. -/
-@[deprecated Std.Associative] -- 2024-02-02
+@[deprecated Std.Associative (since := "2024-02-02")]
 abbrev IsAssociative (α : Sort u) (op : α → α → α) := Std.Associative op
 #align is_associative Std.Associative
 
 /-- A binary operation with a left identity. -/
-@[deprecated Std.LawfulLeftIdentity] -- 2024-02-02
+@[deprecated Std.LawfulLeftIdentity (since := "2024-02-02")]
 abbrev IsLeftId (α : Sort u) (op : α → α → α) (o : outParam α) := Std.LawfulLeftIdentity op o
 #align is_left_id Std.LawfulLeftIdentity
 
 /-- A binary operation with a right identity. -/
-@[deprecated Std.LawfulRightIdentity] -- 2024-02-02
+@[deprecated Std.LawfulRightIdentity (since := "2024-02-02")]
 abbrev IsRightId (α : Sort u) (op : α → α → α) (o : outParam α) := Std.LawfulRightIdentity op o
 #align is_right_id Std.LawfulRightIdentity
 
@@ -111,7 +120,7 @@ class IsRightCancel (α : Sort u) (op : α → α → α) : Prop where
   right_cancel : ∀ a b c, op a b = op c b → a = c
 #align is_right_cancel IsRightCancel
 
-@[deprecated Std.IdempotentOp] -- 2024-02-02
+@[deprecated Std.IdempotentOp (since := "2024-02-02")]
 abbrev IsIdempotent (α : Sort u) (op : α → α → α) := Std.IdempotentOp op
 #align is_idempotent Std.IdempotentOp
 
@@ -189,6 +198,10 @@ class IsAntisymm (α : Sort u) (r : α → α → Prop) : Prop where
   antisymm : ∀ a b, r a b → r b a → a = b
 #align is_antisymm IsAntisymm
 
+instance (priority := 100) IsAsymm.toIsAntisymm {α : Sort u} (r : α → α → Prop) [IsAsymm α r] :
+    IsAntisymm α r where
+  antisymm _ _ hx hy := (IsAsymm.asymm _ _ hx hy).elim
+
 /-- `IsTrans X r` means the binary relation `r` on `X` is transitive. -/
 class IsTrans (α : Sort u) (r : α → α → Prop) : Prop where
   trans : ∀ a b c, r a b → r b c → r a c
@@ -201,7 +214,7 @@ instance (priority := 100) {α : Sort u} {r : α → α → Prop} [Trans r r r] 
   ⟨fun _ _ _ => Trans.trans⟩
 
 /-- `IsTotal X r` means that the binary relation `r` on `X` is total, that is, that for any
-`x y : X` we have `r x y` or `r y x`.-/
+`x y : X` we have `r x y` or `r y x`. -/
 class IsTotal (α : Sort u) (r : α → α → Prop) : Prop where
   total : ∀ a b, r a b ∨ r b a
 #align is_total IsTotal
@@ -412,8 +425,8 @@ instance isEquiv : IsEquiv α (@Equiv _ r) where
 
 end
 
-notation:50 -- Notation for the equivalence relation induced by lt
-a " ≈[" lt "]" b:50 => @Equiv _ lt a b
+/-- The equivalence relation induced by `lt` -/
+notation:50 a " ≈[" lt "]" b:50 => @Equiv _ lt a b--Equiv (r := lt) a b
 
 end StrictWeakOrder
 

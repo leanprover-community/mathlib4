@@ -23,7 +23,7 @@ import Mathlib.Algebra.Module.Submodule.LinearMap
 submodule, subspace, linear map, pushforward, pullback
 -/
 
-open Function BigOperators Pointwise Set
+open Function Pointwise Set
 
 variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
 variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
@@ -281,7 +281,6 @@ theorem le_comap_map [RingHomSurjective σ₁₂] (f : F) (p : Submodule R M) : 
 section GaloisInsertion
 
 variable {f : F} (hf : Surjective f)
-
 variable [RingHomSurjective σ₁₂]
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
@@ -420,6 +419,7 @@ theorem map_inf_eq_map_inf_comap [RingHomSurjective σ₁₂] {f : F} {p : Submo
     (le_inf (map_mono inf_le_left) (map_le_iff_le_comap.2 inf_le_right))
 #align submodule.map_inf_eq_map_inf_comap Submodule.map_inf_eq_map_inf_comap
 
+@[simp]
 theorem map_comap_subtype : map p.subtype (comap p.subtype p') = p ⊓ p' :=
   ext fun x => ⟨by rintro ⟨⟨_, h₁⟩, h₂, rfl⟩; exact ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨⟨_, h₁⟩, h₂, rfl⟩⟩
 #align submodule.map_comap_subtype Submodule.map_comap_subtype
@@ -450,7 +450,6 @@ end AddCommMonoid
 section AddCommGroup
 
 variable [Ring R] [AddCommGroup M] [Module R M] (p : Submodule R M)
-
 variable [AddCommGroup M₂] [Module R M₂]
 
 @[simp]
@@ -534,13 +533,9 @@ end Submodule
 namespace Submodule
 
 variable [Semiring R] [Semiring R₂]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
-
 variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
-
 variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
-
 variable (p : Submodule R M) (q : Submodule R₂ M₂)
 
 -- Porting note: Was `@[simp]`.
@@ -601,19 +596,12 @@ end Submodule
 namespace Submodule
 
 variable {N N₂ : Type*}
-
 variable [CommSemiring R] [CommSemiring R₂]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
-
 variable [AddCommMonoid N] [AddCommMonoid N₂] [Module R N] [Module R N₂]
-
 variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
-
 variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
-
 variable (p : Submodule R M) (q : Submodule R₂ M₂)
-
 variable (pₗ : Submodule R N) (qₗ : Submodule R N₂)
 
 theorem comap_le_comap_smul (fₗ : N →ₗ[R] N₂) (c : R) : comap fₗ qₗ ≤ comap (c • fₗ) qₗ := by
@@ -650,7 +638,7 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₁] [Module R M] [Modul
 /-- A linear map between two modules restricts to a linear map from any submodule p of the
 domain onto the image of that submodule.
 
-This is the linear version of `AddMonoidHom.addSubmonoidMap` and `AddMonoidHom.addSubgroupMap`.-/
+This is the linear version of `AddMonoidHom.addSubmonoidMap` and `AddMonoidHom.addSubgroupMap`. -/
 def submoduleMap (f : M →ₗ[R] M₁) (p : Submodule R M) : p →ₗ[R] p.map f :=
   f.restrict fun x hx ↦ Submodule.mem_map.mpr ⟨x, hx, rfl⟩
 

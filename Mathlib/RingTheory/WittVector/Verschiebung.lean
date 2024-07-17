@@ -41,7 +41,7 @@ def verschiebungFun (x : 𝕎 R) : 𝕎 R :=
 
 theorem verschiebungFun_coeff (x : 𝕎 R) (n : ℕ) :
     (verschiebungFun x).coeff n = if n = 0 then 0 else x.coeff (n - 1) := by
-  simp only [verschiebungFun, ge_iff_le]
+  simp only [verschiebungFun]
 #align witt_vector.verschiebung_fun_coeff WittVector.verschiebungFun_coeff
 
 theorem verschiebungFun_coeff_zero (x : 𝕎 R) : (verschiebungFun x).coeff 0 = 0 := by
@@ -68,8 +68,7 @@ theorem ghostComponent_verschiebungFun (x : 𝕎 R) (n : ℕ) :
   rw [Finset.sum_range_succ', verschiebungFun_coeff, if_pos rfl,
     zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero, add_zero, Finset.mul_sum, Finset.sum_congr rfl]
   rintro i -
-  simp only [pow_succ, mul_assoc, verschiebungFun_coeff, if_neg (Nat.succ_ne_zero i),
-    Nat.succ_sub_succ, tsub_zero]
+  simp only [pow_succ', verschiebungFun_coeff_succ, Nat.succ_sub_succ_eq_sub, mul_assoc]
 #align witt_vector.ghost_component_verschiebung_fun WittVector.ghostComponent_verschiebungFun
 
 /-- The 0th Verschiebung polynomial is 0. For `n > 0`, the `n`th Verschiebung polynomial is the
@@ -87,10 +86,10 @@ theorem verschiebungPoly_zero : verschiebungPoly 0 = 0 :=
 theorem aeval_verschiebung_poly' (x : 𝕎 R) (n : ℕ) :
     aeval x.coeff (verschiebungPoly n) = (verschiebungFun x).coeff n := by
   cases' n with n
-  · simp only [verschiebungPoly, Nat.zero_eq, ge_iff_le, tsub_eq_zero_of_le, ite_true, map_zero,
+  · simp only [verschiebungPoly, Nat.zero_eq, tsub_eq_zero_of_le, ite_true, map_zero,
     verschiebungFun_coeff_zero]
   · rw [verschiebungPoly, verschiebungFun_coeff_succ, if_neg n.succ_ne_zero, aeval_X,
-      Nat.succ_eq_add_one, add_tsub_cancel_right]
+      add_tsub_cancel_right]
 #align witt_vector.aeval_verschiebung_poly' WittVector.aeval_verschiebung_poly'
 
 variable (p)
@@ -106,7 +105,7 @@ instance verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _R
 -- Porting note: we add this example as a verification that Lean 4's instance resolution
 -- can handle what in Lean 3 we needed the `@[is_poly]` attribute to help with.
 example (p : ℕ) (f : ⦃R : Type _⦄ → [CommRing R] → WittVector p R → WittVector p R) [IsPoly p f] :
-    IsPoly p (λ (R : Type*) (I : CommRing R) => verschiebungFun ∘ (@f R I)) :=
+    IsPoly p (fun (R : Type*) (I : CommRing R) ↦ verschiebungFun ∘ (@f R I)) :=
   inferInstance
 
 variable {p}
@@ -138,7 +137,10 @@ theorem verschiebung_isPoly : IsPoly p fun R _Rcr => @verschiebung p R hp _Rcr :
 /-- verschiebung is a natural transformation -/
 @[simp]
 theorem map_verschiebung (f : R →+* S) (x : 𝕎 R) :
-    map f (verschiebung x) = verschiebung (map f x) := by ext ⟨-, -⟩; exact f.map_zero; rfl
+    map f (verschiebung x) = verschiebung (map f x) := by
+  ext ⟨-, -⟩
+  · exact f.map_zero
+  · rfl
 #align witt_vector.map_verschiebung WittVector.map_verschiebung
 
 @[ghost_simps]
@@ -188,8 +190,8 @@ theorem bind₁_verschiebungPoly_wittPolynomial (n : ℕ) :
     calc
       _ = ghostComponent (n + 1) (verschiebung <| mk p x) := by
        apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
-       simp only [← aeval_verschiebungPoly, coeff_mk]
        funext k
+       simp only [← aeval_verschiebungPoly]
        exact eval₂Hom_congr (RingHom.ext_int _ _) rfl rfl
       _ = _ := by rw [ghostComponent_verschiebung]; rfl
 #align witt_vector.bind₁_verschiebung_poly_witt_polynomial WittVector.bind₁_verschiebungPoly_wittPolynomial

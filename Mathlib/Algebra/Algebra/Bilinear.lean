@@ -3,10 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 #align_import algebra.algebra.bilinear from "leanprover-community/mathlib"@"657df4339ae6ceada048c8a2980fb10e393143ec"
 
@@ -21,26 +21,6 @@ in order to avoid importing `LinearAlgebra.BilinearMap` and
 open TensorProduct Module
 
 namespace LinearMap
-
-section RestrictScalars
-
-variable
-  (R : Type*) {A M N P : Type*}
-  [CommSemiring R] [CommSemiring A]
-  [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-  [Algebra R A]
-  [Module R M] [Module R N] [Module R P]
-  [Module A M] [Module A N] [Module A P]
-  [IsScalarTower R A M] [IsScalarTower R A N] [IsScalarTower R A P]
-
-/-- A version of `LinearMap.restrictScalars` for bilinear maps.
-
-The double subscript in the name is to match `LinearMap.compl₁₂`. -/
-@[simps!]
-def restrictScalars₁₂ (f : M →ₗ[A] N →ₗ[A] P) : M →ₗ[R] N →ₗ[R] P :=
-  (f.flip.restrictScalars _).flip.restrictScalars _
-
-end RestrictScalars
 
 section NonUnitalNonAssoc
 
@@ -243,18 +223,18 @@ theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 := by
 @[simp]
 theorem mulLeft_one : mulLeft R (1 : A) = LinearMap.id := by
   ext
-  simp only [LinearMap.id_coe, one_mul, id.def, mulLeft_apply]
+  simp
 #align linear_map.mul_left_one LinearMap.mulLeft_one
 
 @[simp]
 theorem mulRight_one : mulRight R (1 : A) = LinearMap.id := by
   ext
-  simp only [LinearMap.id_coe, mul_one, id.def, mulRight_apply]
+  simp
 #align linear_map.mul_right_one LinearMap.mulRight_one
 
 @[simp]
 theorem pow_mulLeft (a : A) (n : ℕ) : mulLeft R a ^ n = mulLeft R (a ^ n) := by
-  simpa only [mulLeft, ← Algebra.coe_lmul_eq_mul] using ((Algebra.lmul R A).map_pow a n).symm
+  simpa only [mulLeft, ← Algebra.coe_lmul_eq_mul] using (map_pow (Algebra.lmul R A) a n).symm
 #align linear_map.pow_mul_left LinearMap.pow_mulLeft
 
 @[simp]

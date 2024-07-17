@@ -33,13 +33,13 @@ def cmpLE {α} [LE α] [@DecidableRel α (· ≤ ·)] (x y : α) : Ordering :=
 
 theorem cmpLE_swap {α} [LE α] [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] (x y : α) :
     (cmpLE x y).swap = cmpLE y x := by
-  by_cases xy:x ≤ y <;> by_cases yx:y ≤ x <;> simp [cmpLE, *, Ordering.swap]
+  by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, *, Ordering.swap]
   cases not_or_of_not xy yx (total_of _ _ _)
 #align cmp_le_swap cmpLE_swap
 
 theorem cmpLE_eq_cmp {α} [Preorder α] [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)]
     [@DecidableRel α (· < ·)] (x y : α) : cmpLE x y = cmp x y := by
-  by_cases xy:x ≤ y <;> by_cases yx:y ≤ x <;> simp [cmpLE, lt_iff_le_not_le, *, cmp, cmpUsing]
+  by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, lt_iff_le_not_le, *, cmp, cmpUsing]
   cases not_or_of_not xy yx (total_of _ _ _)
 #align cmp_le_eq_cmp cmpLE_eq_cmp
 
@@ -127,7 +127,7 @@ theorem Compares.inj [Preorder α] {o₁} :
 -- Porting note: mathlib3 proof uses `change ... at hab`
 theorem compares_iff_of_compares_impl [LinearOrder α] [Preorder β] {a b : α} {a' b' : β}
     (h : ∀ {o}, Compares o a b → Compares o a' b') (o) : Compares o a b ↔ Compares o a' b' := by
-  refine' ⟨h, fun ho => _⟩
+  refine ⟨h, fun ho => ?_⟩
   cases' lt_trichotomy a b with hab hab
   · have hab : Compares Ordering.lt a b := hab
     rwa [ho.inj (h hab)]
@@ -143,7 +143,7 @@ theorem swap_orElse (o₁ o₂) : (orElse o₁ o₂).swap = orElse o₁.swap o�
 #align ordering.swap_or_else Ordering.swap_orElse
 
 theorem orElse_eq_lt (o₁ o₂) : orElse o₁ o₂ = lt ↔ o₁ = lt ∨ o₁ = eq ∧ o₂ = lt := by
-  cases o₁ <;> cases o₂ <;> exact by decide
+  cases o₁ <;> cases o₂ <;> decide
 #align ordering.or_else_eq_lt Ordering.orElse_eq_lt
 
 end Ordering

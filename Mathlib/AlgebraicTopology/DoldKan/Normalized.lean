@@ -82,8 +82,8 @@ set_option linter.uppercaseLean3 false in
 @[reassoc (attr := simp)]
 theorem PInftyToNormalizedMooreComplex_naturality {X Y : SimplicialObject A} (f : X ⟶ Y) :
     AlternatingFaceMapComplex.map f ≫ PInftyToNormalizedMooreComplex Y =
-      PInftyToNormalizedMooreComplex X ≫ NormalizedMooreComplex.map f :=
-  by aesop_cat
+      PInftyToNormalizedMooreComplex X ≫ NormalizedMooreComplex.map f := by
+  aesop_cat
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_to_normalized_Moore_complex_naturality AlgebraicTopology.DoldKan.PInftyToNormalizedMooreComplex_naturality
 
@@ -149,11 +149,11 @@ def N₁_iso_normalizedMooreComplex_comp_toKaroubi : N₁ ≅ normalizedMooreCom
   hom_inv_id := by
     ext X : 3
     simp only [PInftyToNormalizedMooreComplex_comp_inclusionOfMooreComplexMap,
-      NatTrans.comp_app, Karoubi.comp_f, N₁_obj_p, NatTrans.id_app, Karoubi.id_eq]
+      NatTrans.comp_app, Karoubi.comp_f, N₁_obj_p, NatTrans.id_app, Karoubi.id_f]
   inv_hom_id := by
     ext X : 3
     rw [← cancel_mono (inclusionOfMooreComplexMap X)]
-    simp only [NatTrans.comp_app, Karoubi.comp_f, assoc, NatTrans.id_app, Karoubi.id_eq,
+    simp only [NatTrans.comp_app, Karoubi.comp_f, assoc, NatTrans.id_app, Karoubi.id_f,
       PInftyToNormalizedMooreComplex_comp_inclusionOfMooreComplexMap,
       inclusionOfMooreComplexMap_comp_PInfty]
     dsimp only [Functor.comp_obj, toKaroubi]

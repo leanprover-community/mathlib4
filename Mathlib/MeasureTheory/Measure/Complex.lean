@@ -96,7 +96,6 @@ def equivSignedMeasure : ComplexMeasure α ≃ SignedMeasure α × SignedMeasure
 section
 
 variable {R : Type*} [Semiring R] [Module R ℝ]
-
 variable [ContinuousConstSMul R ℝ] [ContinuousConstSMul R ℂ]
 
 /-- The complex measures form a linear isomorphism to the type of pairs of signed measures. -/

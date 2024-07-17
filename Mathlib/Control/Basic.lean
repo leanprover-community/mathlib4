@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Init.Control.Combinators
-import Mathlib.Init.Function
+import Mathlib.Control.Combinators
+import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Attr.Core
 
@@ -76,8 +76,6 @@ section Monad
 
 variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 
-open List
-
 #align list.mpartition List.partitionM
 
 theorem map_bind (x : m α) {g : α → m β} {f : β → γ} :
@@ -113,7 +111,6 @@ theorem fish_assoc {α β γ φ} (f : α → m β) (g : β → m γ) (h : γ →
 #align fish_assoc fish_assoc
 
 variable {β' γ' : Type v}
-
 variable {m' : Type v → Type w} [Monad m']
 
 /-- Takes a value `β` and `List α` and accumulates pairs according to a monadic function `f`.
@@ -144,16 +141,16 @@ variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
 theorem joinM_map_map {α β : Type u} (f : α → β) (a : m (m α)) :
     joinM (Functor.map f <$> a) = f <$> joinM a := by
-  simp only [joinM, (· ∘ ·), id.def, ← bind_pure_comp, bind_assoc, map_bind, pure_bind]
+  simp only [joinM, (· ∘ ·), id, ← bind_pure_comp, bind_assoc, map_bind, pure_bind]
 #align mjoin_map_map joinM_map_map
 
 theorem joinM_map_joinM {α : Type u} (a : m (m (m α))) : joinM (joinM <$> a) = joinM (joinM a) := by
-  simp only [joinM, (· ∘ ·), id.def, map_bind, ← bind_pure_comp, bind_assoc, pure_bind]
+  simp only [joinM, (· ∘ ·), id, map_bind, ← bind_pure_comp, bind_assoc, pure_bind]
 #align mjoin_map_mjoin joinM_map_joinM
 
 @[simp]
 theorem joinM_map_pure {α : Type u} (a : m α) : joinM (pure <$> a) = a := by
-  simp only [joinM, (· ∘ ·), id.def, map_bind, ← bind_pure_comp, bind_assoc, pure_bind, bind_pure]
+  simp only [joinM, (· ∘ ·), id, map_bind, ← bind_pure_comp, bind_assoc, pure_bind, bind_pure]
 #align mjoin_map_pure joinM_map_pure
 
 @[simp]
@@ -187,8 +184,8 @@ theorem guard_true {h : Decidable True} : @guard F _ True h = pure () := by simp
 #align guard_true guard_true
 
 @[simp]
-theorem guard_false {h : Decidable False} : @guard F _ False h = failure :=
-  by simp [guard, if_neg not_false]
+theorem guard_false {h : Decidable False} : @guard F _ False h = failure := by
+  simp [guard, if_neg not_false]
 #align guard_false guard_false
 
 end Alternative
@@ -209,7 +206,7 @@ instance : Monad (Sum.{v, u} e) where
   bind := @Sum.bind e
 
 instance : LawfulFunctor (Sum.{v, u} e) := by
-  refine' { .. } <;> intros <;> (try casesm Sum _ _) <;> rfl
+  constructor <;> intros <;> (try casesm Sum _ _) <;> rfl
 
 instance : LawfulMonad (Sum.{v, u} e) where
   seqRight_eq := by
@@ -254,7 +251,7 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
   f <$> a <*> b = flip f <$> b <*> a :=
   calc
     f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) := by
-      simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map]; rfl
+      simp only [map_seq, map_map, Function.comp_def]
     _ = (fun b a => f a b) <$> b <*> a := by
       rw [@CommApplicative.commutative_prod m h]
       simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]

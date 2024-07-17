@@ -83,7 +83,7 @@ theorem edist_le_of_fixedPoint (hf : ContractingWith K f) {x y} (h : edist x y �
 
 theorem eq_or_edist_eq_top_of_fixedPoints (hf : ContractingWith K f) {x y} (hx : IsFixedPt f x)
     (hy : IsFixedPt f y) : x = y ∨ edist x y = ∞ := by
-  refine' or_iff_not_imp_right.2 fun h ↦ edist_le_zero.1 _
+  refine or_iff_not_imp_right.2 fun h ↦ edist_le_zero.1 ?_
   simpa only [hx.eq, edist_self, add_zero, ENNReal.zero_div] using hf.edist_le_of_fixedPoint h hy
 #align contracting_with.eq_or_edist_eq_top_of_fixed_points ContractingWith.eq_or_edist_eq_top_of_fixedPoints
 
@@ -155,7 +155,7 @@ theorem edist_efixedPoint_lt_top (hf : ContractingWith K f) {x : α} (hx : edist
 theorem efixedPoint_eq_of_edist_lt_top (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞)
     {y : α} (hy : edist y (f y) ≠ ∞) (h : edist x y ≠ ∞) :
     efixedPoint f hf x hx = efixedPoint f hf y hy := by
-  refine' (hf.eq_or_edist_eq_top_of_fixedPoints _ _).elim id fun h' ↦ False.elim (ne_of_lt _ h')
+  refine (hf.eq_or_edist_eq_top_of_fixedPoints ?_ ?_).elim id fun h' ↦ False.elim (ne_of_lt ?_ h')
     <;> try apply efixedPoint_isFixedPt
   change edistLtTopSetoid.Rel _ _
   trans x
@@ -172,7 +172,7 @@ theorem exists_fixedPoint' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s
       ∀ n : ℕ, edist (f^[n] x) y ≤ edist x (f x) * (K : ℝ≥0∞) ^ n / (1 - K) := by
   haveI := hsc.completeSpace_coe
   rcases hf.exists_fixedPoint ⟨x, hxs⟩ hx with ⟨y, hfy, h_tendsto, hle⟩
-  refine' ⟨y, y.2, Subtype.ext_iff_val.1 hfy, _, fun n ↦ _⟩
+  refine ⟨y, y.2, Subtype.ext_iff_val.1 hfy, ?_, fun n ↦ ?_⟩
   · convert (continuous_subtype_val.tendsto _).comp h_tendsto
     simp only [(· ∘ ·), MapsTo.iterate_restrict, MapsTo.val_restrict_apply]
   · convert hle n
@@ -246,15 +246,15 @@ theorem efixedPoint_eq_of_edist_lt_top' (hf : ContractingWith K f) {s : Set α} 
     (hft : ContractingWith K <| htf.restrict f t t) {y : α} (hyt : y ∈ t) (hy : edist y (f y) ≠ ∞)
     (hxy : edist x y ≠ ∞) :
     efixedPoint' f hsc hsf hfs x hxs hx = efixedPoint' f htc htf hft y hyt hy := by
-  refine' (hf.eq_or_edist_eq_top_of_fixedPoints _ _).elim id fun h' ↦ False.elim (ne_of_lt _ h')
+  refine (hf.eq_or_edist_eq_top_of_fixedPoints ?_ ?_).elim id fun h' ↦ False.elim (ne_of_lt ?_ h')
     <;> try apply efixedPoint_isFixedPt'
   change edistLtTopSetoid.Rel _ _
   trans x
   · apply Setoid.symm' -- Porting note: Originally `symm`
     apply edist_efixedPoint_lt_top'
   trans y
-  exact lt_top_iff_ne_top.2 hxy
-  apply edist_efixedPoint_lt_top'
+  · exact lt_top_iff_ne_top.2 hxy
+  · apply edist_efixedPoint_lt_top'
 #align contracting_with.efixed_point_eq_of_edist_lt_top' ContractingWith.efixedPoint_eq_of_edist_lt_top'
 
 end ContractingWith
@@ -294,13 +294,12 @@ theorem dist_fixedPoint_fixedPoint_of_dist_le' (g : α → α) {x y} (hx : IsFix
     (hy : IsFixedPt g y) {C} (hfg : ∀ z, dist (f z) (g z) ≤ C) : dist x y ≤ C / (1 - K) :=
   calc
     dist x y = dist y x := dist_comm x y
-    _ ≤ dist y (f y) / (1 - K) := (hf.dist_le_of_fixedPoint y hx)
+    _ ≤ dist y (f y) / (1 - K) := hf.dist_le_of_fixedPoint y hx
     _ = dist (f y) (g y) / (1 - K) := by rw [hy.eq, dist_comm]
     _ ≤ C / (1 - K) := (div_le_div_right hf.one_sub_K_pos).2 (hfg y)
 #align contracting_with.dist_fixed_point_fixed_point_of_dist_le' ContractingWith.dist_fixedPoint_fixedPoint_of_dist_le'
 
 variable [Nonempty α] [CompleteSpace α]
-
 variable (f)
 
 /-- The unique fixed point of a contracting map in a nonempty complete metric space. -/
@@ -339,7 +338,7 @@ theorem apriori_dist_iterate_fixedPoint_le (x n) :
 theorem tendsto_iterate_fixedPoint (x) :
     Tendsto (fun n ↦ f^[n] x) atTop (𝓝 <| fixedPoint f hf) := by
   convert tendsto_iterate_efixedPoint hf (edist_ne_top x _)
-  refine' (fixedPoint_unique _ _).symm
+  refine (fixedPoint_unique _ ?_).symm
   apply efixedPoint_isFixedPt
 #align contracting_with.tendsto_iterate_fixed_point ContractingWith.tendsto_iterate_fixedPoint
 

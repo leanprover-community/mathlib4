@@ -11,13 +11,11 @@ import Lean.MetavarContext
 [TODO] Ideally we would find good homes for everything in this file, eventually removing it.
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Tactic
 
 open Lean Meta Tactic
 
-variable [Monad m]
+variable {m : Type → Type} [Monad m]
 
 /--
 `modifyMetavarDecl mvarId f` updates the `MetavarDecl` for `mvarId` with `f`.
@@ -33,7 +31,7 @@ If `mvarId` does not refer to a declared metavariable, nothing happens.
 -/
 def modifyMetavarDecl [MonadMCtx m] (mvarId : MVarId)
     (f : MetavarDecl → MetavarDecl) : m Unit := do
-  modifyMCtx λ mctx =>
+  modifyMCtx fun mctx ↦
     match mctx.decls.find? mvarId with
     | none => mctx
     | some mdecl => { mctx with decls := mctx.decls.insert mvarId (f mdecl) }
