@@ -64,6 +64,10 @@ theorem toENNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
   rfl
 
 @[simp, norm_cast]
+theorem toENNReal_coe_eq_iff : (m : ℝ≥0∞) = n ↔ m = n :=
+  OrderEmbedding.eq_iff_eq ENat.toENNRealOrderEmbedding
+
+@[simp, norm_cast]
 theorem toENNReal_le : (m : ℝ≥0∞) ≤ n ↔ m ≤ n :=
   toENNRealOrderEmbedding.le_iff_le
 #align enat.coe_ennreal_le ENat.toENNReal_le
@@ -105,6 +109,10 @@ theorem toENNReal_one : ((1 : ℕ∞) : ℝ≥0∞) = 1 :=
 theorem toENNReal_mul (m n : ℕ∞) : ↑(m * n) = (m * n : ℝ≥0∞) :=
   map_mul toENNRealRingHom m n
 #align enat.coe_ennreal_mul ENat.toENNReal_mul
+
+@[simp]
+theorem toENNReal_pow (x : ℕ∞) (n : ℕ) : (x ^ n : ℕ∞) = (x : ℝ≥0∞) ^ n :=
+  RingHom.map_pow toENNRealRingHom x n
 
 @[simp]
 theorem toENNReal_min (m n : ℕ∞) : ↑(min m n) = (min m n : ℝ≥0∞) :=
