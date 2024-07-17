@@ -856,6 +856,7 @@ nonrec theorem exp_nat_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n :=
   ofReal_injective (by simp [exp_nat_mul])
 #align real.exp_nat_mul Real.exp_nat_mul
 
+@[simp]
 nonrec theorem exp_ne_zero : exp x ≠ 0 := fun h =>
   exp_ne_zero x <| by rw [exp, ← ofReal_inj] at h; simp_all
 #align real.exp_ne_zero Real.exp_ne_zero
