@@ -191,7 +191,8 @@ proofs or statements do not apply directly.
 [Bogachev, Measure Theory, volume 2, Theorem 7.11.1][bogachev2007]
 -/
 
-open Set Filter ENNReal Topology NNReal TopologicalSpace
+open Set Filter ENNReal NNReal TopologicalSpace
+open scoped symmDiff Topology
 
 namespace MeasureTheory
 
@@ -720,8 +721,20 @@ theorem _root_.MeasurableSet.exists_isCompact_lt_add [InnerRegularCompactLTTop �
     ⦃A : Set α⦄ (hA : MeasurableSet A) (h'A : μ A ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ K, K ⊆ A ∧ IsCompact K ∧ μ A < μ K + ε :=
   InnerRegularCompactLTTop.innerRegular.exists_subset_lt_add isCompact_empty ⟨hA, h'A⟩ h'A hε
-
 #align measurable_set.exists_is_compact_lt_add MeasurableSet.exists_isCompact_lt_add
+
+/-- If `μ` is inner regular for finite measure sets with respect to compact sets,
+then any measurable set of finite measure can be approximated by a compact closed subset.
+Compared to `MeasurableSet.exists_isCompact_lt_add`,
+this version additionally assumes that `α` is an R₁ space with Borel σ-algebra.
+-/
+theorem _root_.MeasurableSet.exists_isCompact_isClosed_lt_add
+    [InnerRegularCompactLTTop μ] [R1Space α] [BorelSpace α]
+    ⦃A : Set α⦄ (hA : MeasurableSet A) (h'A : μ A ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ K, K ⊆ A ∧ IsCompact K ∧ IsClosed K ∧ μ A < μ K + ε :=
+  let ⟨K, hKA, hK, hμK⟩ := hA.exists_isCompact_lt_add h'A hε
+  ⟨closure K, hK.closure_subset_measurableSet hA hKA, hK.closure, isClosed_closure,
+    by rwa [hK.measure_closure]⟩
 
 /-- If `μ` is inner regular for finite measure sets with respect to compact sets,
 then any measurable set of finite measure can be approximated by a
@@ -735,6 +748,18 @@ theorem _root_.MeasurableSet.exists_isCompact_diff_lt [OpensMeasurableSpace α] 
   exact ⟨K, hKA, hKc, measure_diff_lt_of_lt_add hKc.measurableSet hKA
     (ne_top_of_le_ne_top h'A <| measure_mono hKA) hK⟩
 #align measurable_set.exists_is_compact_diff_lt MeasurableSet.exists_isCompact_diff_lt
+
+/-- If `μ` is inner regular for finite measure sets with respect to compact sets,
+then any measurable set of finite measure can be approximated by a compact closed subset.
+Compared to `MeasurableSet.exists_isCompact_diff_lt`,
+this lemma additionally assumes that `α` is an R₁ space with Borel σ-algebra. -/
+theorem _root_.MeasurableSet.exists_isCompact_isClosed_diff_lt [BorelSpace α] [R1Space α]
+    [InnerRegularCompactLTTop μ] ⦃A : Set α⦄ (hA : MeasurableSet A) (h'A : μ A ≠ ∞)
+    {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ K, K ⊆ A ∧ IsCompact K ∧ IsClosed K ∧ μ (A \ K) < ε := by
+  rcases hA.exists_isCompact_isClosed_lt_add h'A hε with ⟨K, hKA, hKco, hKcl, hK⟩
+  exact ⟨K, hKA, hKco, hKcl, measure_diff_lt_of_lt_add hKcl.measurableSet hKA
+    (ne_top_of_le_ne_top h'A <| measure_mono hKA) hK⟩
 
 /-- If `μ` is inner regular for finite measure sets with respect to compact sets,
 then any measurable set of finite measure can be approximated by a
@@ -805,6 +830,28 @@ protected theorem _root_.IsCompact.exists_isOpen_lt_add [InnerRegularCompactLTTo
     {K : Set α} (hK : IsCompact K) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ U, K ⊆ U ∧ IsOpen U ∧ μ U < μ K + ε :=
   hK.exists_isOpen_lt_of_lt _ (ENNReal.lt_add_right hK.measure_lt_top.ne hε)
+
+/-- Let `μ` be a locally finite measure on an R₁ topological space with Borel σ-algebra.
+If `μ` is inner regular for finite measure sets with respect to compact sets,
+then any finite measurable set can be approximated in measure by an open set.
+See also `Set.exists_isOpen_lt_of_lt` and `MeasurableSet.exists_isOpen_diff_lt`
+for the case of an outer regular measure. -/
+protected theorem _root_.MeasurableSet.exists_isOpen_symmDiff_lt [InnerRegularCompactLTTop μ]
+    [IsLocallyFiniteMeasure μ] [R1Space α] [BorelSpace α]
+    {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ U, IsOpen U ∧ μ U < ∞ ∧ μ (U ∆ s) < ε := by
+  have : ε / 2 ≠ 0 := (ENNReal.half_pos hε).ne'
+  rcases hs.exists_isCompact_isClosed_diff_lt hμs this with ⟨K, hKs, hKco, hKcl, hμK⟩
+  rcases hKco.exists_isOpen_lt_add (μ := μ) this with ⟨U, hKU, hUo, hμU⟩
+  refine ⟨U, hUo, hμU.trans_le le_top, ?_⟩
+  rw [← ENNReal.add_halves ε, measure_symmDiff_eq hUo.measurableSet hs]
+  gcongr
+  · calc
+      μ (U \ s) ≤ μ (U \ K) := by gcongr
+      _ < ε / 2 := by
+        apply measure_diff_lt_of_lt_add hKcl.measurableSet hKU _ hμU
+        exact ne_top_of_le_ne_top hμs (by gcongr)
+  · exact lt_of_le_of_lt (by gcongr) hμK
 
 instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularCompactLTTop (c • μ) := by
   by_cases hc : c = 0
