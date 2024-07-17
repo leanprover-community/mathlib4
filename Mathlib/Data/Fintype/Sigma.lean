@@ -43,13 +43,3 @@ instance PSigma.instFintype : Fintype (Σ' i, κ i) := .ofEquiv _ (Equiv.psigmaE
 
 @[simp] lemma Finset.univ_sigma_univ : univ.sigma (fun _ ↦ univ) = (univ : Finset (Σ i, κ i)) := rfl
 #align finset.univ_sigma_univ Finset.univ_sigma_univ
-
-instance {β : α → Type*} [Infinite α] [∀ a, Nonempty (β a)] : Infinite ((a : α) × β a) :=
-  Infinite.of_surjective Sigma.fst Sigma.fst_surjective
-
-theorem Infinite.sigma_of_right {β : α → Type*} {a : α} [Infinite (β a)] :
-    Infinite ((a : α) × β a) :=
-  Infinite.of_injective (f := fun x ↦ ⟨a,x⟩) fun _ _ ↦ by simp
-
-instance {β : α → Type*} [Nonempty α] [∀ a, Infinite (β a)] : Infinite ((a : α) × β a) :=
-  Infinite.sigma_of_right (a := Classical.arbitrary α)
