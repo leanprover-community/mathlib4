@@ -845,6 +845,14 @@ theorem Submodule.isCompl_orthogonal_of_completeSpace [HasOrthogonalProjection K
   ⟨K.orthogonal_disjoint, codisjoint_iff.2 Submodule.sup_orthogonal_of_completeSpace⟩
 #align submodule.is_compl_orthogonal_of_complete_space Submodule.isCompl_orthogonal_of_completeSpace
 
+theorem eq_iff_orthogonalComplement_eq {L : Submodule 𝕜 E}[HasOrthogonalProjection K]
+    [HasOrthogonalProjection L] : K = L ↔ Kᗮ = Lᗮ := by
+   constructor
+   · exact fun a ↦ congrArg Submodule.orthogonal a
+   · intro H
+     rw [← (Submodule.orthogonal_orthogonal K), ← (Submodule.orthogonal_orthogonal) L]
+     exact congrArg Submodule.orthogonal H
+
 @[simp]
 theorem Submodule.orthogonal_eq_bot_iff [HasOrthogonalProjection K] : Kᗮ = ⊥ ↔ K = ⊤ := by
   refine ⟨?_, fun h => by rw [h, Submodule.top_orthogonal_eq_bot]⟩
