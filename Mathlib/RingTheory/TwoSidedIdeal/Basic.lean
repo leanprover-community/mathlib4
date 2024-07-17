@@ -89,9 +89,6 @@ def orderIsoRingCon : TwoSidedIdeal R ≃o RingCon R where
   map_rel_iff' {I J} := Iff.symm $ le_iff.trans ⟨fun h x y r => by rw [rel_iff] at r ⊢; exact h r,
     fun h x hx => by rw [SetLike.mem_coe, mem_iff] at hx ⊢; exact h hx⟩
 
-lemma ringCon_injective : Function.Injective (TwoSidedIdeal.ringCon (R := R)) := by
-  rintro ⟨x⟩ ⟨y⟩ rfl; rfl
-
 lemma ringCon_le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ I.ringCon ≤ J.ringCon :=
   orderIsoRingCon.map_rel_iff.symm
 
