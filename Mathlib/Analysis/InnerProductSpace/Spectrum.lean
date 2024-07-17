@@ -665,18 +665,8 @@ theorem index_post_exhaust (i : n) [Nontrivial n] :
     eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))))) = ⨆ (γ : {x // i ≠ x} → 𝕜),
     (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by
   simp only [ne_eq, Submodule.orthogonal_eq_bot_iff]
-  conv =>
-   lhs
-   rhs
-   ext γ
-   rhs
-   ext μ
-   rw [index_convert T hC i]
-  conv =>
-   lhs
-   rhs
-   ext γ
-   rw [prelim_sub_exhaust T hT hC]
+  conv => lhs; rhs; ext γ; rhs; ext μ; rw [index_convert T hC i]
+  conv => lhs; rhs; ext γ; rw [prelim_sub_exhaust T hT hC]
 
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
