@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.RingTheory.IntegralClosure
 import Mathlib.RingTheory.Localization.Integral
+import Mathlib.RingTheory.Localization.LocalizationLocalization
 
 #align_import ring_theory.integrally_closed from "leanprover-community/mathlib"@"d35b4ff446f1421bd551fafa4b8efd98ac3ac408"
 
@@ -279,3 +280,26 @@ theorem isIntegrallyClosedOfFiniteExtension [IsDomain R] [FiniteDimensional K L]
 #align integral_closure.is_integrally_closed_of_finite_extension integralClosure.isIntegrallyClosedOfFiniteExtension
 
 end integralClosure
+
+section localization
+
+variable {R : Type*} (S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+
+lemma isIntegrallyClosed_of_isLocalization [IsIntegrallyClosed R] [IsDomain R] (M : Submonoid R)
+    (hM : M ≤ R⁰) [Algebra R S] [IsLocalization M S] : IsIntegrallyClosed S := by
+  let K := FractionRing R
+  let g : S →+* K := IsLocalization.map _ (T := R⁰) (RingHom.id R) hM
+  letI := g.toAlgebra
+  have : IsScalarTower R S K := IsScalarTower.of_algebraMap_eq'
+    (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, RingHomCompTriple.comp_eq])
+  have := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M S K
+  refine (isIntegrallyClosed_iff_isIntegralClosure (K := K)).mpr
+    ⟨IsFractionRing.injective _ _, fun {x} ↦ ⟨?_, fun e ↦ e.choose_spec ▸ isIntegral_algebraMap⟩⟩
+  intro hx
+  obtain ⟨⟨y, y_mem⟩, hy⟩ := hx.exists_multiple_integral_of_isLocalization M _
+  obtain ⟨z, hz⟩ := (isIntegrallyClosed_iff _).mp ‹_› hy
+  refine' ⟨IsLocalization.mk' S z ⟨y, y_mem⟩, (IsLocalization.lift_mk'_spec _ _ _ _).mpr _⟩
+  rw [RingHom.comp_id, hz, ← Algebra.smul_def]
+  rfl
+
+end localization
