@@ -15,10 +15,9 @@ invariant forms.
 
 ## Main definitions:
 
- * `Symmetrizable`: A prop-valued mixin class for root pairings that admit Weyl-invariant forms such
-  that all rootshave nonzero norm.
  * `Polarization`: A distinguished map from the weight space to the coweight space.
- * `
+ * `IsRootPositive`: A prop-valued mixin class for root pairings with Weyl-invariant forms
+  such that all roots have strictly positive norm.
 
 ## References:
 
@@ -28,10 +27,15 @@ invariant forms.
 ## Main results:
 
  * Faithfulness of Weyl group action, and finiteness of Weyl group, for finite root systems.
+ * `Polarization` is strictly positive on non-zero linear combinations of roots.  That is, it is
+  positive-definite when restricted to the linear span of roots.  This gives us a convenient way to
+  eliminate certain Dynkin diagrams from the classification, since it suffices to produce a nonzero
+  linear combination of simple roots with non-positive norm.
 
 ## Todo
 
- *
+ * Relation to Coxeter weight.  In particular, positivity constraints for finite root pairings mean
+  we restrict to weights between 0 and 4.
 
 -/
 
@@ -112,10 +116,28 @@ theorem PolInner_symmetric (P : RootPairing ι R M N) [Finite ι] (x y : M) :
     P.PolInner x y = P.PolInner y x := by
   simp [mul_comm]
 
+lemma reflection_coroot_perm (P : RootPairing ι R M N) {i j : ι} (y : M) :
+    (P.toLin ((P.reflection i) y)) (P.coroot j) = P.toLin y (P.coroot (P.reflection_perm i j)) := by
+  simp only [reflection_apply, map_sub, LinearMapClass.map_smul, LinearMap.sub_apply,
+    LinearMap.smul_apply, root_coroot_eq_pairing, smul_eq_mul, mul_comm, coroot_reflection_perm,
+    coreflection_apply_coroot]
+
+theorem PolInner_reflection_invariant (P : RootPairing ι R M N) [Finite ι] (i : ι) (x y : M) :
+    P.PolInner (P.reflection i x) (P.reflection i y) = P.PolInner x y := by
+  simp only [PolInner_apply, LinearMap.coe_comp, comp_apply, Polarization_apply, map_sum,
+    LinearMapClass.map_smul, smul_eq_mul, reflection_coroot_perm]
+  letI := Fintype.ofFinite ι
+  exact Fintype.sum_equiv (P.reflection_perm i)
+    (fun x_1 ↦ (P.toLin y) (P.coroot ((P.reflection_perm i) x_1)) *
+      (P.toLin x) (P.coroot ((P.reflection_perm i) x_1)))
+    (fun x_1 ↦ (P.toLin y) (P.coroot x_1) * (P.toLin x) (P.coroot x_1)) (congrFun rfl)
+
 /-!
-theorem positive_norm [OrderedCommRing R] (P : RootPairing ι R M N) [Finite ι] (i : ι) :
-    PolInner P (P.root i) (P.root i) > 0 := by
+
+theorem PolInner_self_coroot (P : RootPairing ι R M N) [Finite ι] (i : ι) :
+    (P.PolInner (P.root i) (P.root i)) • P.coroot i = 2 • P.Polarization (P.root i) := by
   sorry
+
 
 symmetric, positive definite on R-span of roots, Weyl-invariant.  If `P` is crystallographic,
 then this takes integer values. `(α,α)α^* = 2P.Polarization α` -/
