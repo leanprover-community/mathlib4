@@ -346,8 +346,7 @@ theorem add_eq_right_iff {x y : Tropical R} : x + y = y ↔ y ≤ x := by
 theorem add_self (x : Tropical R) : x + x = x :=
   untrop_injective (min_eq_right le_rfl)
 #align tropical.add_self Tropical.add_self
-
-#noalign tropical.bit0
+#align tropical.bit0 Tropical.add_self
 
 theorem add_eq_iff {x y z : Tropical R} : x + y = z ↔ x = z ∧ x ≤ y ∨ y = z ∧ y ≤ x := by
   rw [trop_add_def, trop_eq_iff_eq_untrop]
