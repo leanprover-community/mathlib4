@@ -3,7 +3,7 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Mario Carneiro
 -/
-import Mathlib.Tactic.ToAdditive
+import Mathlib.Tactic.ToAdditive.Frontend
 import Mathlib.Mathport.Rename
 
 /-!
@@ -52,4 +52,3 @@ attribute [to_additive Empty] Empty
 attribute [to_additive PEmpty] PEmpty
 attribute [to_additive PUnit] PUnit
 attribute [to_additive existing Unit] Unit
-
