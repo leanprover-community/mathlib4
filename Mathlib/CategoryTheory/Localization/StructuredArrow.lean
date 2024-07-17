@@ -117,6 +117,7 @@ variable (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] {Y : C}
   (hP₂ : ∀ ⦃X₁ X₂ : C⦄ (w : X₁ ⟶ X₂) (hw : W w) (φ : L.obj X₁ ⟶ L.obj Y),
     P (CostructuredArrow.mk φ) → P (CostructuredArrow.mk ((isoOfHom L W w hw).inv ≫ φ)))
 
+@[elab_as_elim]
 lemma induction_costructuredArrow (g : CostructuredArrow L (L.obj Y)) : P g := by
   let P' : StructuredArrow (op (L.obj Y)) L.op → Prop :=
     fun g ↦ P (CostructuredArrow.mk g.hom.unop)
