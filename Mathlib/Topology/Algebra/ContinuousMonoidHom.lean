@@ -424,6 +424,7 @@ theorem locallyCompactSpace_of_equicontinuousAt (U : Set X) (V : Set Y)
 
 variable [LocallyCompactSpace X]
 
+@[to_additive]
 theorem locallyCompactSpace_of_hasBasis (V : ℕ → Set Y)
     (hV : ∀ {n x}, x ∈ V n → x * x ∈ V n → x ∈ V (n + 1))
     (hVo : Filter.HasBasis (nhds 1) (fun _ ↦ True) V) :
