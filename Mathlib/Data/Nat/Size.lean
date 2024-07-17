@@ -105,7 +105,7 @@ theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   by_cases h : bit b n = 0
   · apply this h
   rw [size_bit h, shiftLeft_succ, shiftLeft_eq, one_mul]
-  exact bit_lt_bit0 _ (by simpa [shiftLeft_eq, shiftRight_eq_div_pow] using IH)
+  cases b <;> dsimp [bit] <;> omega
 #align nat.lt_size_self Nat.lt_size_self
 
 theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
@@ -123,7 +123,8 @@ theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
       · apply succ_le_succ (IH _)
         apply Nat.lt_of_mul_lt_mul_left (a := 2)
         simp only [shiftLeft_succ] at *
-        exact lt_of_le_of_lt (bit0_le_bit b rfl.le) h⟩
+        refine lt_of_le_of_lt ?_ h
+        cases b <;> dsimp [bit] <;> omega⟩
 #align nat.size_le Nat.size_le
 
 theorem lt_size {m n : ℕ} : m < size n ↔ 2 ^ m ≤ n := by

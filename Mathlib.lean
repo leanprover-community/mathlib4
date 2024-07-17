@@ -6,6 +6,7 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.Field
 import Mathlib.Algebra.Algebra.Hom
+import Mathlib.Algebra.Algebra.Hom.Rat
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Algebra.Operations
@@ -13,6 +14,7 @@ import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Quasispectrum
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
@@ -28,7 +30,8 @@ import Mathlib.Algebra.Algebra.Subalgebra.Unitization
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Algebra.AlgebraicCard
-import Mathlib.Algebra.Associated
+import Mathlib.Algebra.Associated.Basic
+import Mathlib.Algebra.Associated.OrderedCommMonoid
 import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.Finprod
@@ -207,6 +210,7 @@ import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.GradedMulAction
+import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Action.Option
@@ -614,6 +618,7 @@ import Mathlib.Algebra.Order.Ring.Prod
 import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Algebra.Order.Ring.Synonym
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 import Mathlib.Algebra.Order.Ring.Unbundled.Nonneg
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.Basic
@@ -1212,6 +1217,7 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Exponential
@@ -2182,6 +2188,7 @@ import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.CharP
 import Mathlib.Data.Matrix.ColumnRowPartitioned
+import Mathlib.Data.Matrix.Composition
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.Data.Matrix.DualNumber
 import Mathlib.Data.Matrix.Hadamard
@@ -2967,6 +2974,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Opposite
 import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.LinearAlgebra.TensorProduct.Prod
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
 import Mathlib.LinearAlgebra.TensorProduct.Submodule
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.LinearAlgebra.TensorProduct.Vanishing
@@ -3695,6 +3703,7 @@ import Mathlib.RingTheory.HahnSeries.Basic
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
+import Mathlib.RingTheory.HahnSeries.Valuation
 import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.HopfAlgebra
 import Mathlib.RingTheory.Ideal.AssociatedPrime
@@ -3716,10 +3725,15 @@ import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Int.Basic
-import Mathlib.RingTheory.IntegralClosure
+import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
+import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
+import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.IntegralDomain
-import Mathlib.RingTheory.IntegralRestrict
-import Mathlib.RingTheory.IntegrallyClosed
 import Mathlib.RingTheory.IsAdjoinRoot
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.Jacobson
@@ -3843,6 +3857,7 @@ import Mathlib.RingTheory.TensorProduct.MvPolynomial
 import Mathlib.RingTheory.Trace.Basic
 import Mathlib.RingTheory.Trace.Defs
 import Mathlib.RingTheory.TwoSidedIdeal.Basic
+import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Unramified.Basic
 import Mathlib.RingTheory.Unramified.Derivations
@@ -4121,6 +4136,7 @@ import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.TermCongr
 import Mathlib.Tactic.ToAdditive
+import Mathlib.Tactic.ToAdditive.Frontend
 import Mathlib.Tactic.ToExpr
 import Mathlib.Tactic.ToLevel
 import Mathlib.Tactic.Trace
@@ -4146,6 +4162,7 @@ import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Topology.AlexandrovDiscrete
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.Algebra.Algebra.Rat
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.Constructions.DomMulAct
