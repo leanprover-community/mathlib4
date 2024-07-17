@@ -39,7 +39,7 @@ theorem shiftLeft'_ne_zero_left (b) {m} (h : m ≠ 0) (n) : shiftLeft' b m n ≠
 
 theorem shiftLeft'_tt_ne_zero (m) : ∀ {n}, (n ≠ 0) → shiftLeft' true m n ≠ 0
   | 0, h => absurd rfl h
-  | succ _, _ => Nat.bit1_ne_zero _
+  | succ _, _ => by dsimp [shiftLeft', bit]; omega
 #align nat.shiftl'_tt_ne_zero Nat.shiftLeft'_tt_ne_zero
 
 /-! ### `size` -/

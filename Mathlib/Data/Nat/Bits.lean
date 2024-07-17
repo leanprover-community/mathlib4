@@ -279,21 +279,9 @@ theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 :=
   bit_eq_zero_iff.not.mpr (h ·.1)
 #align nat.bit_ne_zero Nat.bit_ne_zero
 
-theorem bit0_mod_two : 2 * n % 2 = 0 := by
-  rw [Nat.mod_two_of_bodd]
-  simp
-#align nat.bit0_mod_two Nat.bit0_mod_two
-
-theorem bit1_mod_two : (2 * n + 1) % 2 = 1 := by
-  rw [Nat.mod_two_of_bodd]
-  simp
-#align nat.bit1_mod_two Nat.bit1_mod_two
-
-theorem pos_of_bit0_pos {n : ℕ} (h : 0 < 2 * n) : 0 < n := by
-  cases n
-  · cases h
-  · apply succ_pos
-#align nat.pos_of_bit0_pos Nat.pos_of_bit0_pos
+#noalign nat.bit0_mod_two
+#noalign nat.bit1_mod_two
+#noalign nat.pos_of_bit0_pos
 
 #align nat.bit_cases_on_bit Nat.bitCasesOn_bit
 
