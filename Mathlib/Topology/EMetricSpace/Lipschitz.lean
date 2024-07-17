@@ -31,6 +31,7 @@ uniformly continuous, and that locally Lipschitz functions are continuous.
 * `LipschitzOnWith.uniformContinuousOn`: a function which is Lipschitz on a set `s` is uniformly
   continuous on `s`.
 * `LocallyLipschitz f`: states that `f` is locally Lipschitz
+* `LocallyLipschitzOn f s`: states that `f` is locally Lipschitz on `s`.
 * `LocallyLipschitz.continuous`: a locally Lipschitz function is continuous.
 
 
@@ -65,7 +66,7 @@ def LipschitzOnWith (K : ℝ≥0) (f : α → β) (s : Set α) :=
 has a neighourhood on which `f` is Lipschitz. -/
 def LocallyLipschitz (f : α → β) : Prop := ∀ x, ∃ K, ∃ t ∈ 𝓝 x, LipschitzOnWith K f t
 
-/-- `f : α → β` is called **locally Lipschitz continuous** on `s ` iff every point `x`
+/-- `f : α → β` is called **locally Lipschitz continuous** on `s` iff every point `x` of `s`
 has a neighourhood within `s` on which `f` is Lipschitz. -/
 def LocallyLipschitzOn (s : Set α) (f : α → β) : Prop :=
   ∀ ⦃x⦄, x ∈ s → ∃ K, ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t
@@ -99,7 +100,7 @@ theorem lipschitzOnWith_iff_restrict : LipschitzOnWith K f s ↔ LipschitzWith K
   simp only [LipschitzOnWith, LipschitzWith, SetCoe.forall', restrict, Subtype.edist_eq]
 #align lipschitz_on_with_iff_restrict lipschitzOnWith_iff_restrict
 
-@[simp] lemma lipschitzOnWith_restrict {t : Set s} :
+lemma lipschitzOnWith_restrict {t : Set s} :
     LipschitzOnWith K (s.restrict f) t ↔ LipschitzOnWith K f (s ∩ Subtype.val '' t) := by
   simp only [LipschitzOnWith, LipschitzWith, Subtype.forall, restrict, Subtype.edist_eq]; aesop
 
@@ -120,8 +121,7 @@ alias ⟨LipschitzOnWith.to_restrict, _⟩ := lipschitzOnWith_iff_restrict
 alias ⟨LocallyLipschitzOn.restrict, _⟩ := locallyLipschitzOn_iff_restrict
 #align lipschitz_on_with.to_restrict LipschitzOnWith.to_restrict
 
-lemma Set.MapsTo.lipschitzOnWith_iff_restrict [PseudoEMetricSpace α] [PseudoEMetricSpace β]
-    {K : ℝ≥0} {f : α → β} {s : Set α} {t : Set β} (h : MapsTo f s t) :
+lemma Set.MapsTo.lipschitzOnWith_iff_restrict {t : Set β} (h : MapsTo f s t) :
     LipschitzOnWith K f s ↔ LipschitzWith K (h.restrict f s t) :=
   _root_.lipschitzOnWith_iff_restrict
 #align maps_to.lipschitz_on_with_iff_restrict Set.MapsTo.lipschitzOnWith_iff_restrict
