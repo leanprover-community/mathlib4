@@ -525,11 +525,10 @@ theorem indexing_nonsense0 (i : n) [Nontrivial n] (γ : n → 𝕜) :
   ext v
   constructor
   · intro h
+    simp [iInf, sInf] at *
     constructor
-    · simp [iInf, sInf] at h
-      exact h i
-    · simp [iInf, sInf] at *
-      exact fun i_1 _ ↦ h i_1
+    · exact h i
+    · exact fun i_1 _ ↦ h i_1
   · intro h
     simp [iInf, sInf]
     intro k
