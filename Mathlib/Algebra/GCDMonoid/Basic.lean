@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Associated
+import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Ring.Regular
 
 #align_import algebra.gcd_monoid.basic from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"

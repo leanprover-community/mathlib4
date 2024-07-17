@@ -117,6 +117,45 @@ noncomputable def map (f : R →+* P) (r : R) [IsLocalization.Away r S]
       simp)
 #align is_localization.away.map IsLocalization.Away.map
 
+section Algebra
+
+variable {A : Type*} [CommRing A] [Algebra R A]
+variable {B : Type*} [CommRing B] [Algebra R B]
+variable (Aₚ : Type*) [CommRing Aₚ] [Algebra A Aₚ] [Algebra R Aₚ] [IsScalarTower R A Aₚ]
+variable (Bₚ : Type*) [CommRing Bₚ] [Algebra B Bₚ] [Algebra R Bₚ] [IsScalarTower R B Bₚ]
+
+instance {f : A →+* B} (a : A) [Away (f a) Bₚ] : IsLocalization (.map f (.powers a)) Bₚ := by
+  simpa
+
+/-- Given a algebra map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map
+`Aₐ →ₐ[R] Bₐ`. -/
+noncomputable def mapₐ (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] : Aₚ →ₐ[R] Bₚ :=
+  ⟨map Aₚ Bₚ f.toRingHom a, fun r ↦ by
+    dsimp only [AlgHom.toRingHom_eq_coe, map, RingHom.coe_coe, OneHom.toFun_eq_coe]
+    rw [IsScalarTower.algebraMap_apply R A Aₚ, IsScalarTower.algebraMap_eq R B Bₚ]
+    erw [IsLocalization.map_eq]
+    simp⟩
+
+@[simp]
+lemma mapₐ_apply (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] (x : Aₚ) :
+    mapₐ Aₚ Bₚ f a x = map Aₚ Bₚ f.toRingHom a x :=
+  rfl
+
+variable {Aₚ} {Bₚ}
+
+lemma mapₐ_injective_of_injective {f : A →ₐ[R] B} (a : A) [Away a Aₚ] [Away (f a) Bₚ]
+    (hf : Function.Injective f) : Function.Injective (mapₐ Aₚ Bₚ f a) :=
+  IsLocalization.map_injective_of_injective _ _ _ hf
+
+lemma mapₐ_surjective_of_surjective {f : A →ₐ[R] B} (a : A) [Away a Aₚ] [Away (f a) Bₚ]
+    (hf : Function.Surjective f) : Function.Surjective (mapₐ Aₚ Bₚ f a) :=
+  have : IsLocalization (Submonoid.map f.toRingHom (Submonoid.powers a)) Bₚ := by
+    simp only [AlgHom.toRingHom_eq_coe, Submonoid.map_powers, RingHom.coe_coe]
+    infer_instance
+  IsLocalization.map_surjective_of_surjective _ _ _ hf
+
+end Algebra
+
 end Away
 
 end Away
@@ -227,6 +266,14 @@ noncomputable abbrev awayMap (f : R →+* P) (r : R) :
     Localization.Away r →+* Localization.Away (f r) :=
   IsLocalization.Away.map _ _ f r
 #align localization.away_map Localization.awayMap
+
+variable {A : Type*} [CommRing A] [Algebra R A]
+variable {B : Type*} [CommRing B] [Algebra R B]
+
+/-- Given a map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map `Aₐ →ₐ[R] Bₐ`. -/
+noncomputable abbrev awayMapₐ (f : A →ₐ[R] B) (a : A) :
+    Localization.Away a →ₐ[R] Localization.Away (f a) :=
+  IsLocalization.Away.mapₐ _ _ f a
 
 end Localization
 
