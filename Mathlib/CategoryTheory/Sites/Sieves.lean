@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, E. W. Ayers
 -/
 import Mathlib.CategoryTheory.Comma.Over
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.CompleteLattice
@@ -119,11 +119,11 @@ This is not the same as the arrow set of `Sieve.pullback`, but there is a relati
 in `pullbackArrows_comm`.
 -/
 inductive pullbackArrows [HasPullbacks C] (R : Presieve X) : Presieve Y
-  | mk (Z : C) (h : Z ⟶ X) : R h → pullbackArrows _ (pullback.snd : pullback h f ⟶ Y)
+  | mk (Z : C) (h : Z ⟶ X) : R h → pullbackArrows _ (pullback.snd h f)
 #align category_theory.presieve.pullback_arrows CategoryTheory.Presieve.pullbackArrows
 
 theorem pullback_singleton [HasPullbacks C] (g : Z ⟶ X) :
-    pullbackArrows f (singleton g) = singleton (pullback.snd : pullback g f ⟶ _) := by
+    pullbackArrows f (singleton g) = singleton (pullback.snd g f) := by
   funext W
   ext h
   constructor
@@ -149,7 +149,7 @@ theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
 #align category_theory.presieve.of_arrows_punit CategoryTheory.Presieve.ofArrows_pUnit
 
 theorem ofArrows_pullback [HasPullbacks C] {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X) :
-    (ofArrows (fun i => pullback (g i) f) fun i => pullback.snd) =
+    (ofArrows (fun i => pullback (g i) f) fun i => pullback.snd _ _) =
       pullbackArrows f (ofArrows Z g) := by
   funext T
   ext h
@@ -417,15 +417,17 @@ def bind (S : Presieve X) (R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y) :
 
 open Order Lattice
 
-theorem sets_iff_generate (R : Presieve X) (S : Sieve X) : generate R ≤ S ↔ R ≤ S :=
+theorem generate_le_iff (R : Presieve X) (S : Sieve X) : generate R ≤ S ↔ R ≤ S :=
   ⟨fun H Y g hg => H _ ⟨_, 𝟙 _, _, hg, id_comp _⟩, fun ss Y f => by
     rintro ⟨Z, f, g, hg, rfl⟩
     exact S.downward_closed (ss Z hg) f⟩
-#align category_theory.sieve.sets_iff_generate CategoryTheory.Sieve.sets_iff_generate
+#align category_theory.sieve.sets_iff_generate CategoryTheory.Sieve.generate_le_iff
+
+@[deprecated (since := "2024-07-13")] alias sets_iff_generate := generate_le_iff
 
 /-- Show that there is a galois insertion (generate, set_over). -/
 def giGenerate : GaloisInsertion (generate : Presieve X → Sieve X) arrows where
-  gc := sets_iff_generate
+  gc := generate_le_iff
   choice 𝒢 _ := generate 𝒢
   choice_eq _ _ := rfl
   le_l_u _ _ _ hf := ⟨_, 𝟙 _, _, hf, id_comp _⟩
@@ -633,9 +635,9 @@ theorem pullbackArrows_comm [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (R : Presie
   constructor
   · rintro ⟨_, h, k, hk, rfl⟩
     cases' hk with W g hg
-    change (Sieve.generate R).pullback f (h ≫ pullback.snd)
+    change (Sieve.generate R).pullback f (h ≫ pullback.snd g f)
     rw [Sieve.pullback_apply, assoc, ← pullback.condition, ← assoc]
-    exact Sieve.downward_closed _ (by exact Sieve.le_generate R W hg) (h ≫ pullback.fst)
+    exact Sieve.downward_closed _ (by exact Sieve.le_generate R W hg) (h ≫ pullback.fst g f)
   · rintro ⟨W, h, k, hk, comm⟩
     exact ⟨_, _, _, Presieve.pullbackArrows.mk _ _ hk, pullback.lift_snd _ _ comm⟩
 #align category_theory.sieve.pullback_arrows_comm CategoryTheory.Sieve.pullbackArrows_comm

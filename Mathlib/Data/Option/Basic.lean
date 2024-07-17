@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init.Control.Combinators
+import Mathlib.Control.Combinators
 import Mathlib.Data.Option.Defs
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relator
@@ -451,6 +451,14 @@ theorem elim_apply {f : γ → α → β} {x : α → β} {i : Option γ} {y : �
     i.elim x f y = i.elim (x y) fun j => f j y := by rw [elim_comp fun f : α → β => f y]
 
 @[simp]
+theorem get!_some [Inhabited α] (a : α) : (some a).get! = a :=
+  rfl
+
+@[simp]
+theorem get!_none [Inhabited α] : (none : Option α).get! = default :=
+  rfl
+
+@[simp]
 lemma bnot_isSome (a : Option α) : (! a.isSome) = a.isNone := by
   funext
   cases a <;> simp
@@ -476,5 +484,9 @@ lemma isNone_eq_false_iff (a : Option α) : Option.isNone a = false ↔ Option.i
 
 lemma eq_none_or_eq_some (a : Option α) : a = none ∨ ∃ x, a = some x :=
   Option.exists.mp exists_eq'
+
+lemma forall_some_ne_iff_eq_none {o : Option α} : (∀ (x : α), some x ≠ o) ↔ o = none := by
+  apply not_iff_not.1
+  simpa only [not_forall, not_not] using Option.ne_none_iff_exists.symm
 
 end Option

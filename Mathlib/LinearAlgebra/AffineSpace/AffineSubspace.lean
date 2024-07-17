@@ -346,8 +346,8 @@ theorem ext {p q : AffineSubspace k P} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q 
 #align affine_subspace.ext AffineSubspace.ext
 
 -- Porting note: removed `simp`, proof is `simp only [SetLike.ext'_iff]`
-theorem ext_iff (s₁ s₂ : AffineSubspace k P) : (s₁ : Set P) = s₂ ↔ s₁ = s₂ :=
-  SetLike.ext'_iff.symm
+protected theorem ext_iff (s₁ s₂ : AffineSubspace k P) : s₁ = s₂ ↔ (s₁ : Set P) = s₂ :=
+  SetLike.ext'_iff
 #align affine_subspace.ext_iff AffineSubspace.ext_iff
 
 /-- Two affine subspaces with the same direction and nonempty intersection are equal. -/
@@ -773,7 +773,7 @@ theorem bot_coe : ((⊥ : AffineSubspace k P) : Set P) = ∅ :=
 
 theorem bot_ne_top : (⊥ : AffineSubspace k P) ≠ ⊤ := by
   intro contra
-  rw [← ext_iff, bot_coe, top_coe] at contra
+  rw [AffineSubspace.ext_iff, bot_coe, top_coe] at contra
   exact Set.empty_ne_univ contra
 #align affine_subspace.bot_ne_top AffineSubspace.bot_ne_top
 
@@ -870,7 +870,7 @@ theorem subsingleton_of_subsingleton_span_eq_top {s : Set P} (h₁ : s.Subsingle
     (h₂ : affineSpan k s = ⊤) : Subsingleton P := by
   obtain ⟨p, hp⟩ := AffineSubspace.nonempty_of_affineSpan_eq_top k V P h₂
   have : s = {p} := Subset.antisymm (fun q hq => h₁ hq hp) (by simp [hp])
-  rw [this, ← AffineSubspace.ext_iff, AffineSubspace.coe_affineSpan_singleton,
+  rw [this, AffineSubspace.ext_iff, AffineSubspace.coe_affineSpan_singleton,
     AffineSubspace.top_coe, eq_comm, ← subsingleton_iff_singleton (mem_univ _)] at h₂
   exact subsingleton_of_univ_subsingleton h₂
 #align affine_subspace.subsingleton_of_subsingleton_span_eq_top AffineSubspace.subsingleton_of_subsingleton_span_eq_top
@@ -1595,7 +1595,7 @@ theorem map_direction (s : AffineSubspace k P₁) :
 #align affine_subspace.map_direction AffineSubspace.map_direction
 
 theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s) := by
-  rcases s.eq_empty_or_nonempty with (rfl | ⟨p, hp⟩);
+  rcases s.eq_empty_or_nonempty with (rfl | ⟨p, hp⟩)
   · rw [image_empty, span_empty, span_empty, map_bot]
     -- Porting note: I don't know exactly why this `simp` was broken.
   apply ext_of_direction_eq
@@ -1634,7 +1634,7 @@ namespace AffineMap
 
 @[simp]
 theorem map_top_of_surjective (hf : Function.Surjective f) : AffineSubspace.map f ⊤ = ⊤ := by
-  rw [← AffineSubspace.ext_iff]
+  rw [AffineSubspace.ext_iff]
   exact image_univ_of_surjective hf
 #align affine_map.map_top_of_surjective AffineMap.map_top_of_surjective
 
@@ -1714,7 +1714,7 @@ theorem comap_mono {f : P₁ →ᵃ[k] P₂} {s t : AffineSubspace k P₂} : s �
 
 @[simp]
 theorem comap_top {f : P₁ →ᵃ[k] P₂} : (⊤ : AffineSubspace k P₂).comap f = ⊤ := by
-  rw [← ext_iff]
+  rw [AffineSubspace.ext_iff]
   exact preimage_univ (f := f)
 #align affine_subspace.comap_top AffineSubspace.comap_top
 

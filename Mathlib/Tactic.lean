@@ -21,6 +21,7 @@ import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 import Mathlib.Tactic.CategoryTheory.Coherence
 import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Tactic.CategoryTheory.Monoidal
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
 import Mathlib.Tactic.CategoryTheory.Reassoc
 import Mathlib.Tactic.CategoryTheory.Slice
@@ -34,8 +35,8 @@ import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.ComputeDegree
-import Mathlib.Tactic.Congr!
-import Mathlib.Tactic.Congrm
+import Mathlib.Tactic.CongrExclamation
+import Mathlib.Tactic.CongrM
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Continuity.Init
@@ -50,7 +51,7 @@ import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.DeriveTraversable
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.Eval
-import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.ExistsI
 import Mathlib.Tactic.Explode
 import Mathlib.Tactic.Explode.Datatypes
 import Mathlib.Tactic.Explode.Pretty
@@ -193,6 +194,7 @@ import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
+import Mathlib.Tactic.Subsingleton
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Tactic.SudoSetOption
@@ -202,6 +204,7 @@ import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.TermCongr
 import Mathlib.Tactic.ToAdditive
+import Mathlib.Tactic.ToAdditive.Frontend
 import Mathlib.Tactic.ToExpr
 import Mathlib.Tactic.ToLevel
 import Mathlib.Tactic.Trace
@@ -214,9 +217,9 @@ import Mathlib.Tactic.Variable
 import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.Widget.Calc
 import Mathlib.Tactic.Widget.CommDiag
-import Mathlib.Tactic.Widget.Congrm
+import Mathlib.Tactic.Widget.CongrM
 import Mathlib.Tactic.Widget.Conv
-import Mathlib.Tactic.Widget.Gcongr
+import Mathlib.Tactic.Widget.GCongr
 import Mathlib.Tactic.Widget.SelectInsertParamsClass
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.Zify

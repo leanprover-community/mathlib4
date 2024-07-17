@@ -3,8 +3,10 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Group.Support
-import Mathlib.Algebra.Order.Monoid.WithTop
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Data.Nat.Cast.Field
 
 #align_import algebra.char_zero.lemmas from "leanprover-community/mathlib"@"acee671f47b8e7972a1eb6f4eed74b4b3abce829"
@@ -89,26 +91,10 @@ theorem add_self_eq_zero {a : R} : a + a = 0 ↔ a = 0 := by
   simp only [(two_mul a).symm, mul_eq_zero, two_ne_zero, false_or_iff]
 #align add_self_eq_zero add_self_eq_zero
 
-set_option linter.deprecated false
-
-@[simp]
-theorem bit0_eq_zero {a : R} : bit0 a = 0 ↔ a = 0 :=
-  add_self_eq_zero
-#align bit0_eq_zero bit0_eq_zero
-
-@[simp]
-theorem zero_eq_bit0 {a : R} : 0 = bit0 a ↔ a = 0 := by
-  rw [eq_comm]
-  exact bit0_eq_zero
-#align zero_eq_bit0 zero_eq_bit0
-
-theorem bit0_ne_zero : bit0 a ≠ 0 ↔ a ≠ 0 :=
-  bit0_eq_zero.not
-#align bit0_ne_zero bit0_ne_zero
-
-theorem zero_ne_bit0 : 0 ≠ bit0 a ↔ a ≠ 0 :=
-  zero_eq_bit0.not
-#align zero_ne_bit0 zero_ne_bit0
+#noalign bit0_eq_zero
+#noalign zero_eq_bit0
+#noalign bit0_ne_zero
+#noalign zero_ne_bit0
 
 end
 
@@ -133,56 +119,38 @@ theorem nat_mul_inj' {n : ℕ} {a b : R} (h : (n : R) * a = (n : R) * b) (w : n 
   simpa [w] using nat_mul_inj h
 #align nat_mul_inj' nat_mul_inj'
 
-set_option linter.deprecated false
-
-theorem bit0_injective : Function.Injective (bit0 : R → R) := fun a b h => by
-  dsimp [bit0] at h
-  simp only [(two_mul a).symm, (two_mul b).symm] at h
-  refine nat_mul_inj' ?_ two_ne_zero
-  exact mod_cast h
-#align bit0_injective bit0_injective
-
-theorem bit1_injective : Function.Injective (bit1 : R → R) := fun a b h => by
-  simp only [bit1, add_left_inj] at h
-  exact bit0_injective h
-#align bit1_injective bit1_injective
-
-@[simp]
-theorem bit0_eq_bit0 {a b : R} : bit0 a = bit0 b ↔ a = b :=
-  bit0_injective.eq_iff
-#align bit0_eq_bit0 bit0_eq_bit0
-
-@[simp]
-theorem bit1_eq_bit1 {a b : R} : bit1 a = bit1 b ↔ a = b :=
-  bit1_injective.eq_iff
-#align bit1_eq_bit1 bit1_eq_bit1
-
-@[simp]
-theorem bit1_eq_one {a : R} : bit1 a = 1 ↔ a = 0 := by
-  rw [show (1 : R) = bit1 0 by simp, bit1_eq_bit1]
-#align bit1_eq_one bit1_eq_one
-
-@[simp]
-theorem one_eq_bit1 {a : R} : 1 = bit1 a ↔ a = 0 := by
-  rw [eq_comm]
-  exact bit1_eq_one
-#align one_eq_bit1 one_eq_bit1
+#noalign bit0_injective
+#noalign bit1_injective
+#noalign bit0_eq_bit0
+#noalign bit1_eq_bit1
+#noalign bit1_eq_one
+#noalign one_eq_bit1
 
 end
 
 section
 
-variable {R : Type*} [DivisionRing R] [CharZero R]
+variable {R : Type*} [DivisionSemiring R] [NeZero (2 : R)]
 
-@[simp] lemma half_add_self (a : R) : (a + a) / 2 = a := by
+@[simp] lemma add_self_div_two (a : R) : (a + a) / 2 = a := by
   rw [← mul_two, mul_div_cancel_right₀ a two_ne_zero]
-#align half_add_self half_add_self
+#align add_self_div_two add_self_div_two
+#align half_add_self add_self_div_two
+@[deprecated (since := "2024-07-16")] alias half_add_self := add_self_div_two
+
 
 @[simp]
-theorem add_halves' (a : R) : a / 2 + a / 2 = a := by rw [← add_div, half_add_self]
-#align add_halves' add_halves'
+theorem add_halves (a : R) : a / 2 + a / 2 = a := by rw [← add_div, add_self_div_two]
+#align add_halves add_halves
+#align add_halves' add_halves
+@[deprecated (since := "2024-07-16")] alias add_halves' := add_halves
 
-theorem sub_half (a : R) : a - a / 2 = a / 2 := by rw [sub_eq_iff_eq_add, add_halves']
+end
+section
+
+variable {R : Type*} [DivisionRing R] [CharZero R]
+
+theorem sub_half (a : R) : a - a / 2 = a / 2 := by rw [sub_eq_iff_eq_add, add_halves]
 #align sub_half sub_half
 
 theorem half_sub (a : R) : a / 2 - a = -(a / 2) := by rw [← neg_sub, sub_half]
