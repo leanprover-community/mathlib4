@@ -242,7 +242,7 @@ theorem kernel.indep_limsup_atTop_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIn
   let ns : ι → Set ι := Set.Iic
   have hnsp : ∀ i, BddAbove (ns i) := fun i => bddAbove_Iic
   refine indep_limsup_self h_le h_indep ?_ ?_ hnsp ?_
-  · simp only [mem_atTop_sets, ge_iff_le, Set.mem_compl_iff, BddAbove, upperBounds, Set.Nonempty]
+  · simp only [mem_atTop_sets, Set.mem_compl_iff, BddAbove, upperBounds, Set.Nonempty]
     rintro t ⟨a, ha⟩
     obtain ⟨b, hb⟩ : ∃ b, a < b := exists_gt a
     refine ⟨b, fun c hc hct => ?_⟩
@@ -296,7 +296,7 @@ theorem kernel.indep_limsup_atBot_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIn
   let ns : ι → Set ι := Set.Ici
   have hnsp : ∀ i, BddBelow (ns i) := fun i => bddBelow_Ici
   refine indep_limsup_self h_le h_indep ?_ ?_ hnsp ?_
-  · simp only [mem_atBot_sets, ge_iff_le, Set.mem_compl_iff, BddBelow, lowerBounds, Set.Nonempty]
+  · simp only [mem_atBot_sets, Set.mem_compl_iff, BddBelow, lowerBounds, Set.Nonempty]
     rintro t ⟨a, ha⟩
     obtain ⟨b, hb⟩ : ∃ b, b < a := exists_lt a
     refine ⟨b, fun c hc hct => ?_⟩

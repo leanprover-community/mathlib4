@@ -1140,7 +1140,7 @@ theorem integral_lt_integral_of_continuousOn_of_le_of_exists_lt {f g : ℝ → �
     (∫ x in a..b, f x) < ∫ x in a..b, g x := by
   apply integral_lt_integral_of_ae_le_of_measure_setOf_lt_ne_zero hab.le
     (hfc.intervalIntegrable_of_Icc hab.le) (hgc.intervalIntegrable_of_Icc hab.le)
-  · simpa only [gt_iff_lt, not_lt, ge_iff_le, measurableSet_Ioc, ae_restrict_eq, le_principal_iff]
+  · simpa only [gt_iff_lt, not_lt, measurableSet_Ioc, ae_restrict_eq, le_principal_iff]
       using (ae_restrict_mem measurableSet_Ioc).mono hle
   contrapose! hlt
   have h_eq : f =ᵐ[volume.restrict (Ioc a b)] g := by

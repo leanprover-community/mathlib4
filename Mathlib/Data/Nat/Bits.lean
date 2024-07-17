@@ -3,11 +3,12 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.Init.Data.List.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Data.Nat.Defs
+import Mathlib.Init.Data.List.Basic
+import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Says
@@ -29,10 +30,6 @@ and `Nat.digits`.
 -- Once we're in the `Nat` namespace, `xor` will inconveniently resolve to `Nat.xor`.
 /-- `bxor` denotes the `xor` function i.e. the exclusive-or function on type `Bool`. -/
 local notation "bxor" => _root_.xor
-
--- As this file is all about `bit0` and `bit1`,
--- we turn off the deprecated linter for the whole file.
-set_option linter.deprecated false
 
 namespace Nat
 universe u
@@ -326,101 +323,36 @@ theorem bit_cases_on_inj {C : ℕ → Sort u} (H₁ H₂ : ∀ b n, C (bit b n))
   bit_cases_on_injective.eq_iff
 #align nat.bit_cases_on_inj Nat.bit_cases_on_inj
 
-protected theorem bit0_eq_zero {n : ℕ} : 2 * n = 0 ↔ n = 0 := by
-  omega
-#align nat.bit0_eq_zero Nat.bit0_eq_zero
+#noalign nat.bit0_eq_zero
 
 #align nat.bit_eq_zero_iff Nat.bit_eq_zero_iff
 
-protected lemma bit0_le (h : n ≤ m) : 2 * n ≤ 2 * m := by
-  omega
-#align nat.bit0_le Nat.bit0_le
-
-protected lemma bit1_le {n m : ℕ} (h : n ≤ m) : 2 * n + 1 ≤ 2 * m + 1 := by
-  omega
-#align nat.bit1_le Nat.bit1_le
+#noalign nat.bit0_le
+#noalign nat.bit1_le
 
 lemma bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
-  | true, _, _, h => Nat.bit1_le h
-  | false, _, _, h => Nat.bit0_le h
+  | true, _, _, h => by dsimp [bit]; omega
+  | false, _, _, h => by dsimp [bit]; omega
 #align nat.bit_le Nat.bit_le
 
-lemma bit0_le_bit : ∀ (b) {m n : ℕ}, m ≤ n → 2 * m ≤ bit b n
-  | true, _, _, h => le_of_lt <| Nat.bit0_lt_bit1 h
-  | false, _, _, h => Nat.bit0_le h
-#align nat.bit0_le_bit Nat.bit0_le_bit
+#noalign nat.bit0_le_bit
+#noalign nat.bit_le_bit1
+#noalign nat.bit_lt_bit0
 
-lemma bit_le_bit1 : ∀ (b) {m n : ℕ}, m ≤ n → bit b m ≤ 2 * n + 1
-  | false, _, _, h => le_of_lt <| Nat.bit0_lt_bit1 h
-  | true, _, _, h => Nat.bit1_le h
-#align nat.bit_le_bit1 Nat.bit_le_bit1
-
-lemma bit_lt_bit0 : ∀ (b) {m n : ℕ}, m < n → bit b m < 2 * n
-  | true, _, _, h => Nat.bit1_lt_bit0 h
-  | false, _, _, h => Nat.bit0_lt h
-#align nat.bit_lt_bit0 Nat.bit_lt_bit0
-
-protected lemma bit0_lt_bit0 : 2 * m < 2 * n ↔ m < n := by omega
-
-lemma bit_lt_bit (a b) (h : m < n) : bit a m < bit b n :=
-  lt_of_lt_of_le (bit_lt_bit0 _ h) (bit0_le_bit _ (le_refl _))
+lemma bit_lt_bit (a b) (h : m < n) : bit a m < bit b n := calc
+  bit a m < 2 * n   := by cases a <;> dsimp [bit] <;> omega
+        _ ≤ bit b n := by cases b <;> dsimp [bit] <;> omega
 #align nat.bit_lt_bit Nat.bit_lt_bit
 
-@[simp]
-lemma bit0_le_bit1_iff : 2 * m ≤ 2 * n + 1 ↔ m ≤ n := by
-  refine ⟨fun h ↦ ?_, fun h ↦ le_of_lt (Nat.bit0_lt_bit1 h)⟩
-  rwa [← Nat.lt_succ_iff, n.bit1_eq_succ_bit0, ← n.bit0_succ_eq, Nat.bit0_lt_bit0, Nat.lt_succ_iff]
-    at h
-#align nat.bit0_le_bit1_iff Nat.bit0_le_bit1_iff
-
-@[simp]
-lemma bit0_lt_bit1_iff : 2 * m < 2 * n + 1 ↔ m ≤ n :=
-  ⟨fun h => bit0_le_bit1_iff.1 (le_of_lt h), Nat.bit0_lt_bit1⟩
-#align nat.bit0_lt_bit1_iff Nat.bit0_lt_bit1_iff
-
-@[simp]
-lemma bit1_le_bit0_iff : 2 * m + 1 ≤ 2 * n ↔ m < n :=
-  ⟨fun h ↦ by rwa [m.bit1_eq_succ_bit0, Nat.succ_le_iff, Nat.bit0_lt_bit0] at h,
-     fun h ↦ le_of_lt (Nat.bit1_lt_bit0 h)⟩
-#align nat.bit1_le_bit0_iff Nat.bit1_le_bit0_iff
-
-@[simp]
-lemma bit1_lt_bit0_iff : 2 * m + 1 < 2 * n ↔ m < n :=
-  ⟨fun h ↦ bit1_le_bit0_iff.1 (le_of_lt h), Nat.bit1_lt_bit0⟩
-#align nat.bit1_lt_bit0_iff Nat.bit1_lt_bit0_iff
-
--- Porting note: temporarily porting only needed portions
-/-
-@[simp]
-theorem one_le_bit0_iff : 1 ≤ bit0 n ↔ 0 < n := by
-  convert bit1_le_bit0_iff
-  rfl
-#align nat.one_le_bit0_iff Nat.one_le_bit0_iff
-
-@[simp]
-theorem one_lt_bit0_iff : 1 < bit0 n ↔ 1 ≤ n := by
-  convert bit1_lt_bit0_iff
-  rfl
-#align nat.one_lt_bit0_iff Nat.one_lt_bit0_iff
-
-@[simp]
-theorem bit_le_bit_iff : ∀ {b : Bool}, bit b m ≤ bit b n ↔ m ≤ n
-  | false => bit0_le_bit0
-  | true => bit1_le_bit1
-#align nat.bit_le_bit_iff Nat.bit_le_bit_iff
-
-@[simp]
-theorem bit_lt_bit_iff : ∀ {b : Bool}, bit b m < bit b n ↔ m < n
-  | false => bit0_lt_bit0
-  | true => bit1_lt_bit1
-#align nat.bit_lt_bit_iff Nat.bit_lt_bit_iff
-
-@[simp]
-theorem bit_le_bit1_iff : ∀ {b : Bool}, bit b m ≤ bit1 n ↔ m ≤ n
-  | false => bit0_le_bit1_iff
-  | true => bit1_le_bit1
-#align nat.bit_le_bit1_iff Nat.bit_le_bit1_iff
--/
+#noalign nat.bit0_le_bit1_iff
+#noalign nat.bit0_lt_bit1_iff
+#noalign nat.bit1_le_bit0_iff
+#noalign nat.bit1_lt_bit0_iff
+#noalign nat.one_le_bit0_iff
+#noalign nat.one_lt_bit0_iff
+#noalign nat.bit_le_bit_iff
+#noalign nat.bit_lt_bit_iff
+#noalign nat.bit_le_bit1_iff
 
 @[deprecated (since := "2024-06-09")] alias binaryRec_eq' := Nat.binaryRec_eq
 

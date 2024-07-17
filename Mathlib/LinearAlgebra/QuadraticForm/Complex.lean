@@ -34,7 +34,7 @@ noncomputable def isometryEquivSumSquares (w' : ι → ℂ) :
   have hw' : ∀ i : ι, (w i : ℂ) ^ (-(1 / 2 : ℂ)) ≠ 0 := by
     intro i hi
     exact (w i).ne_zero ((Complex.cpow_eq_zero_iff _ _).1 hi).1
-  convert QuadraticForm.isometryEquivBasisRepr (weightedSumSquares ℂ w')
+  convert QuadraticMap.isometryEquivBasisRepr (weightedSumSquares ℂ w')
     ((Pi.basisFun ℂ ι).unitsSMul fun i => (isUnit_iff_ne_zero.2 <| hw' i).unit)
   ext1 v
   erw [basisRepr_apply, weightedSumSquares_apply, weightedSumSquares_apply]

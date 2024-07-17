@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Lean.Linter.Deprecated
 import Mathlib.Mathport.Rename
+import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.ZeroOne

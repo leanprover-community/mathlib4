@@ -34,8 +34,6 @@ def bodd : ℤ → Bool
   | -[n +1] => not (n.bodd)
 #align int.bodd Int.bodd
 
--- Porting note: `bit0, bit1` deprecated, do we need to adapt `bit`?
-set_option linter.deprecated false in
 /-- `bit b` appends the digit `b` to the binary representation of
   its integer input. -/
 def bit (b : Bool) : ℤ → ℤ :=
@@ -211,12 +209,7 @@ theorem div2_val : ∀ n, div2 n = n / 2
   | -[n+1] => congr_arg negSucc n.div2_val
 #align int.div2_val Int.div2_val
 
-section deprecated
-
-set_option linter.deprecated false
-
 #noalign int.bit0_val
-
 #noalign int.bit1_val
 
 theorem bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
@@ -264,8 +257,6 @@ theorem bodd_bit (b n) : bodd (bit b n) = b := by
 #noalign int.bit0_ne_bit1
 #noalign int.bit1_ne_bit0
 #noalign int.bit1_ne_zero
-
-end deprecated
 
 @[simp]
 theorem bit_testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b

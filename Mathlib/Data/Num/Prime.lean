@@ -98,11 +98,12 @@ instance decidablePrime : DecidablePred PosNum.Prime
         rw [← minFac_to_nat, to_nat_inj]
         exact ⟨bit0.inj, congr_arg _⟩)
   | bit1 n =>
-    decidable_of_iff' (minFacAux (bit1 n) n 1 = bit1 n)
-      (by
+    decidable_of_iff' (minFacAux (bit1 n) n 1 = bit1 n) <| by
         refine Nat.prime_def_minFac.trans ((and_iff_right ?_).trans ?_)
-        · exact (Nat.bit0_le_bit1_iff.2 (to_nat_pos n)).trans <| by simp [two_mul]
-        rw [← minFac_to_nat, to_nat_inj]; rfl)
+        · simp only [cast_bit1]
+          have := to_nat_pos n
+          omega
+        rw [← minFac_to_nat, to_nat_inj]; rfl
 #align pos_num.decidable_prime PosNum.decidablePrime
 
 end PosNum

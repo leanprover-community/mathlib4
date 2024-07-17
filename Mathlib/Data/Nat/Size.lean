@@ -15,7 +15,6 @@ namespace Nat
 /-! ### `shiftLeft` and `shiftRight` -/
 
 section
-set_option linter.deprecated false
 
 theorem shiftLeft_eq_mul_pow (m) : ∀ n, m <<< n = m * 2 ^ n := shiftLeft_eq _
 #align nat.shiftl_eq_mul_pow Nat.shiftLeft_eq_mul_pow
@@ -60,21 +59,13 @@ theorem size_bit {b n} (h : bit b n ≠ 0) : size (bit b n) = succ (size n) := b
 #align nat.size_bit Nat.size_bit
 
 section
-set_option linter.deprecated false
 
-@[simp]
-theorem size_bit0 {n} (h : n ≠ 0) : size (2 * n) = succ (size n) :=
-  @size_bit false n (Nat.bit0_ne_zero h)
-#align nat.size_bit0 Nat.size_bit0
-
-@[simp]
-theorem size_bit1 (n) : size (2 * n + 1) = succ (size n) :=
-  @size_bit true n (Nat.bit1_ne_zero n)
-#align nat.size_bit1 Nat.size_bit1
+#noalign nat.size_bit0
+#noalign nat.size_bit1
 
 @[simp]
 theorem size_one : size 1 = 1 :=
-  show size (2 * 0 + 1) = 1 by rw [size_bit1, size_zero]
+  show size (bit true 0) = 1 by rw [size_bit, size_zero]; exact Nat.one_ne_zero
 #align nat.size_one Nat.size_one
 
 end
@@ -114,7 +105,7 @@ theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
     by_cases h : bit b n = 0
     · apply this h
     rw [size_bit h, shiftLeft_succ, shiftLeft_eq, one_mul]
-    exact bit_lt_bit0 _ (by simpa [shiftLeft_eq, shiftRight_eq_div_pow] using IH)
+    cases b <;> dsimp [bit] <;> omega
 #align nat.lt_size_self Nat.lt_size_self
 
 theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
@@ -132,7 +123,8 @@ theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
       · apply succ_le_succ (IH _)
         apply Nat.lt_of_mul_lt_mul_left (a := 2)
         simp only [shiftLeft_succ] at *
-        exact lt_of_le_of_lt (bit0_le_bit b rfl.le) h⟩
+        refine lt_of_le_of_lt ?_ h
+        cases b <;> dsimp [bit] <;> omega⟩
 #align nat.size_le Nat.size_le
 
 theorem lt_size {m n : ℕ} : m < size n ↔ 2 ^ m ≤ n := by

@@ -553,9 +553,13 @@ theorem dvd_to_nat {m n : PosNum} : (m : ℕ) ∣ n ↔ m ∣ n :=
 theorem size_to_nat : ∀ n, (size n : ℕ) = Nat.size n
   | 1 => Nat.size_one.symm
   | bit0 n => by
-      rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul,
-        Nat.size_bit0 <| ne_of_gt <| to_nat_pos n]
-  | bit1 n => by rw [size, succ_to_nat, size_to_nat n, cast_bit1, ← two_mul, Nat.size_bit1]
+      rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul]
+      erw [@Nat.size_bit false n]
+      exact Nat.bit0_ne_zero <| ne_of_gt <| to_nat_pos n
+  | bit1 n => by
+      rw [size, succ_to_nat, size_to_nat n, cast_bit1, ← two_mul]
+      erw [@Nat.size_bit true n]
+      exact Nat.bit1_ne_zero _
 #align pos_num.size_to_nat PosNum.size_to_nat
 
 theorem size_eq_natSize : ∀ n, (size n : ℕ) = natSize n
@@ -1594,10 +1598,9 @@ theorem divMod_to_nat (d n : PosNum) :
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
     revert IH; cases' divMod d n with q r; intro IH
     simp only [divMod] at IH ⊢
-    apply divMod_to_nat_aux <;> simp
-    · rw [← add_assoc, ← add_assoc, ← two_mul, ← two_mul, add_right_comm,
-        mul_left_comm, ← mul_add, IH.1]
-    · exact IH.2
+    apply divMod_to_nat_aux <;> simp only [Num.cast_bit1, cast_bit1]
+    · rw [← two_mul, ← two_mul, add_right_comm, mul_left_comm, ← mul_add, IH.1]
+    · omega
   · unfold divMod
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
     revert IH; cases' divMod d n with q r; intro IH

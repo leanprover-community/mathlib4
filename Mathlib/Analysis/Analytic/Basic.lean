@@ -617,6 +617,9 @@ theorem AnalyticOn.add {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn �
   fun z hz => (hf z hz).add (hg z hz)
 #align analytic_on.add AnalyticOn.add
 
+theorem AnalyticOn.neg {s : Set E} (hf : AnalyticOn 𝕜 f s) : AnalyticOn 𝕜 (-f) s :=
+  fun z hz ↦ (hf z hz).neg
+
 theorem AnalyticOn.sub {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (f - g) s :=
   fun z hz => (hf z hz).sub (hg z hz)
