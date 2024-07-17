@@ -80,7 +80,6 @@ lemma mem_closedBall_iff {x y: X} {r : ℝ} :
     simp [hr]
   | inr hr => simp [closedBall_eq_empty.mpr hr]
 
-
 lemma ball_eq_or_disjoint :
     ball x r = ball y r ∨ Disjoint (ball x r) (ball y r) := by
   cases le_or_lt r 0 with
@@ -111,7 +110,6 @@ lemma isClopen_ball : IsClopen (ball x r) := ⟨isClosed_ball x r, isOpen_ball�
 
 lemma frontier_ball_eq_empty : frontier (ball x r) = ∅ :=
   isClopen_iff_frontier_eq_empty.mp (isClopen_ball x r)
-
 
 lemma closedBall_eq_or_disjoint :
     closedBall x r = closedBall y r ∨ Disjoint (closedBall x r) (closedBall y r) := by
