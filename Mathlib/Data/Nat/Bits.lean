@@ -411,7 +411,7 @@ theorem bit_eq_zero_iff {n : ℕ} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = fal
 #noalign nat.bit1_le
 
 lemma bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
-  | true,  _, _, h => by dsimp [bit]; omega
+  | true, _, _, h => by dsimp [bit]; omega
   | false, _, _, h => by dsimp [bit]; omega
 #align nat.bit_le Nat.bit_le
 
