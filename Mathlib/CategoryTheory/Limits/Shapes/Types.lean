@@ -11,6 +11,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Logic.Relation
 
 #align_import category_theory.limits.shapes.types from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 
