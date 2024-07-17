@@ -24,7 +24,7 @@ mainly used in the definition of linearly disjointness (`Submodule.LinearDisjoin
 - `Submodule.mulMap'`: the natural map `M ⊗[R] N →ₗ[R] M * N`
   induced by multiplication in `S`, which is surjective (`Submodule.mulMap'_surjective`).
 
-- `Submodule.lTensorOne`, `Submodule.rTensorOne`: the natural isomorphism between
+- `Submodule.lTensorOne`, `Submodule.rTensorOne`: the natural isomorphism of `R`-modules between
   `i(R) ⊗[R] N` and `N`, resp. `M ⊗[R] i(R)` and `M`, induced by multiplication in `S`,
   here `i : R → S` is the structure map. They generalize `TensorProduct.lid`
   and `TensorProduct.rid`, as `i(R)` is not necessarily isomorphic to `R`.
@@ -55,7 +55,7 @@ variable (M N : Submodule R S)
 -- can't use `LinearMap.mul' R S ∘ₗ TensorProduct.mapIncl M N` since it is not defeq to
 -- `Subalgebra.mulMap` which is `(Algebra.TensorProduct.productMap A.val B.val).toLinearMap`
 
-/-- If `M` and `N` are submodules in an algebra `S` over `R`, there is the natural map
+/-- If `M` and `N` are submodules in an algebra `S` over `R`, there is the natural `R`-linear map
 `M ⊗[R] N →ₗ[R] S` induced by multiplication in `S`. -/
 def mulMap : M ⊗[R] N →ₗ[R] S := TensorProduct.lift ((LinearMap.mul R S).domRestrict₁₂ M N)
 
@@ -103,7 +103,7 @@ theorem mulMap_range : LinearMap.range (mulMap M N) = M * N := by
   | tmul a b => exact mul_mem_mul a.2 b.2
   | add a b ha hb => rw [_root_.map_add]; exact add_mem ha hb
 
-/-- If `M` and `N` are submodules in an algebra `S` over `R`, there is the natural map
+/-- If `M` and `N` are submodules in an algebra `S` over `R`, there is the natural `R`-linear map
 `M ⊗[R] N →ₗ[R] M * N` induced by multiplication in `S`,
 which is surjective (`Submodule.mulMap'_surjective`). -/
 def mulMap' : M ⊗[R] N →ₗ[R] ↥(M * N) :=
@@ -117,9 +117,9 @@ theorem mulMap'_surjective : Function.Surjective (mulMap' M N) := by
   simp_rw [mulMap', LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_surjective,
     LinearMap.surjective_rangeRestrict]
 
-/-- If `N` is a submodule in an algebra `S` over `R`, there is the natural map
+/-- If `N` is a submodule in an algebra `S` over `R`, there is the natural `R`-linear map
 `i(R) ⊗[R] N →ₗ[R] N` induced by multiplication in `S`, here `i : R → S` is the structure map.
-This is promoted to an isomorphism as `Submodule.lTensorOne`. Use that instead. -/
+This is promoted to an isomorphism of `R`-modules as `Submodule.lTensorOne`. Use that instead. -/
 def lTensorOne' : (⊥ : Subalgebra R S) ⊗[R] N →ₗ[R] N :=
   show (1 : Submodule R S) ⊗[R] N →ₗ[R] N from
     (LinearEquiv.ofEq _ _ (by rw [mulMap_range, one_mul])).toLinearMap ∘ₗ (mulMap _ N).rangeRestrict
@@ -137,7 +137,8 @@ variable {N} in
 theorem lTensorOne'_one_tmul (n : N) : N.lTensorOne' (1 ⊗ₜ[R] n) = n := by
   simpa using lTensorOne'_tmul 1 n
 
-/-- If `N` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
+/-- If `N` is a submodule in an algebra `S` over `R`,
+there is the natural isomorphism of `R`-modules between
 `i(R) ⊗[R] N` and `N` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `TensorProduct.lid` as `i(R)` is not necessarily isomorphic to `R`. -/
 def lTensorOne : (⊥ : Subalgebra R S) ⊗[R] N ≃ₗ[R] N :=
@@ -165,9 +166,9 @@ theorem lTensorOne_symm_apply (n : N) : N.lTensorOne.symm n = 1 ⊗ₜ[R] n := r
 theorem mulMap_one_left_eq : mulMap 1 N = N.subtype ∘ₗ N.lTensorOne.toLinearMap :=
   TensorProduct.ext' fun _ _ ↦ rfl
 
-/-- If `M` is a submodule in an algebra `S` over `R`, there is the natural map
+/-- If `M` is a submodule in an algebra `S` over `R`, there is the natural `R`-linear map
 `M ⊗[R] i(R) →ₗ[R] M` induced by multiplication in `S`, here `i : R → S` is the structure map.
-This is promoted to an isomorphism as `Submodule.rTensorOne`. Use that instead. -/
+This is promoted to an isomorphism of `R`-modules as `Submodule.rTensorOne`. Use that instead. -/
 def rTensorOne' : M ⊗[R] (⊥ : Subalgebra R S) →ₗ[R] M :=
   show M ⊗[R] (1 : Submodule R S) →ₗ[R] M from
     (LinearEquiv.ofEq _ _ (by rw [mulMap_range, mul_one])).toLinearMap ∘ₗ (mulMap M _).rangeRestrict
@@ -186,7 +187,8 @@ variable {M} in
 theorem rTensorOne'_tmul_one (m : M) : M.rTensorOne' (m ⊗ₜ[R] 1) = m := by
   simpa using rTensorOne'_tmul 1 m
 
-/-- If `M` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
+/-- If `M` is a submodule in an algebra `S` over `R`,
+there is the natural isomorphism of `R`-modules between
 `M ⊗[R] i(R)` and `M` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `TensorProduct.rid` as `i(R)` is not necessarily isomorphic to `R`. -/
 def rTensorOne : M ⊗[R] (⊥ : Subalgebra R S) ≃ₗ[R] M :=

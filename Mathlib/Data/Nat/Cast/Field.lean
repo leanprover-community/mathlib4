@@ -6,8 +6,8 @@ Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Group.Nat
-import Mathlib.Order.BoundedOrder
 import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Order.BoundedOrder
 
 #align_import data.nat.cast.field from "leanprover-community/mathlib"@"acee671f47b8e7972a1eb6f4eed74b4b3abce829"
 
@@ -42,3 +42,5 @@ theorem cast_div_div_div_cancel_right [DivisionSemiring α] [CharZero α] {m n d
   replace hd : (d : α) ≠ 0 := by norm_cast
   rw [cast_div hm, cast_div hn, div_div_div_cancel_right _ hd] <;> exact hd
 #align nat.cast_div_div_div_cancel_right Nat.cast_div_div_div_cancel_right
+
+end Nat

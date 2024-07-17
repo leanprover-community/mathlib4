@@ -149,8 +149,8 @@ theorem degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * 
   classical
   exact if hp : p = 0 then by simp only [hp, zero_mul, le_refl]
   else by
-    rw [degree_mul, degree_eq_natDegree hp, degree_eq_natDegree hq];
-      exact WithBot.coe_le_coe.2 (Nat.le_add_right _ _)
+    rw [degree_mul, degree_eq_natDegree hp, degree_eq_natDegree hq]
+    exact WithBot.coe_le_coe.2 (Nat.le_add_right _ _)
 #align polynomial.degree_le_mul_left Polynomial.degree_le_mul_left
 
 theorem natDegree_le_of_dvd {p q : R[X]} (h1 : p ∣ q) (h2 : q ≠ 0) : p.natDegree ≤ q.natDegree := by
@@ -298,8 +298,7 @@ theorem Monic.not_irreducible_iff_exists_add_mul_eq_coeff (hm : p.Monic) (hnd : 
   · push_neg
     constructor
     · rintro ⟨a, b, ha, hb, rfl, hdb⟩
-      simp only [zero_lt_two, Nat.div_self, ge_iff_le,
-        Nat.Ioc_succ_singleton, zero_add, mem_singleton] at hdb
+      simp only [zero_lt_two, Nat.div_self, Nat.Ioc_succ_singleton, zero_add, mem_singleton] at hdb
       have hda := hnd
       rw [ha.natDegree_mul hb, hdb] at hda
       use a.coeff 0, b.coeff 0, mul_coeff_zero a b
@@ -435,9 +434,9 @@ theorem le_rootMultiplicity_iff {p : R[X]} (p0 : p ≠ 0) {a : R} {n : ℕ} :
   rw [rootMultiplicity_eq_nat_find_of_nonzero p0, @Nat.le_find_iff _ (_)]
   simp_rw [Classical.not_not]
   refine ⟨fun h => ?_, fun h m hm => (pow_dvd_pow _ hm).trans h⟩
-  cases' n with n;
+  cases' n with n
   · rw [pow_zero]
-    apply one_dvd;
+    apply one_dvd
   · exact h n n.lt_succ_self
 #align polynomial.le_root_multiplicity_iff Polynomial.le_rootMultiplicity_iff
 
@@ -750,6 +749,13 @@ theorem comp_eq_zero_iff : p.comp q = 0 ↔ p = 0 ∨ p.eval (q.coeff 0) = 0 ∧
       Or.rec (fun h => by rw [h, zero_comp]) (fun h => by rw [h.2, comp_C, h.1, C_0]) h
 #align polynomial.comp_eq_zero_iff Polynomial.comp_eq_zero_iff
 
+lemma aeval_ne_zero_of_isCoprime [CommSemiring R] [Nontrivial S] [Semiring S] [Algebra R S]
+    {p q : R[X]} (h : IsCoprime p q) (s : S) : aeval s p ≠ 0 ∨ aeval s q ≠ 0 := by
+  by_contra! hpq
+  rcases h with ⟨_, _, h⟩
+  apply_fun aeval s at h
+  simp only [map_add, map_mul, map_one, hpq.left, hpq.right, mul_zero, add_zero, zero_ne_one] at h
+
 theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (a - b)) :
     IsCoprime (X - C a) (X - C b) :=
   ⟨-C h.unit⁻¹.val, C h.unit⁻¹.val, by
@@ -802,8 +808,8 @@ theorem exists_multiset_roots [DecidableEq R] :
             congr
             exact mod_cast Multiset.card_cons _ _
           _ ≤ degree p := by
-            rw [← degree_add_divByMonic (monic_X_sub_C x) hdeg, degree_X_sub_C, add_comm];
-              exact add_le_add (le_refl (1 : WithBot ℕ)) htd,
+            rw [← degree_add_divByMonic (monic_X_sub_C x) hdeg, degree_X_sub_C, add_comm]
+            exact add_le_add (le_refl (1 : WithBot ℕ)) htd,
         by
           change ∀ (a : R), count a (x ::ₘ t) = rootMultiplicity a p
           intro a
@@ -821,7 +827,7 @@ termination_by p => natDegree p
 decreasing_by {
   simp_wf
   apply (Nat.cast_lt (α := WithBot ℕ)).mp
-  simp only [degree_eq_natDegree hp, degree_eq_natDegree hd0] at wf;
+  simp only [degree_eq_natDegree hp, degree_eq_natDegree hd0] at wf
   assumption}
 #align polynomial.exists_multiset_roots Polynomial.exists_multiset_roots
 
@@ -871,7 +877,7 @@ theorem Monic.irreducible_of_irreducible_map (f : R[X]) (h_mon : Monic f)
     (congr_arg (Polynomial.map φ) h).trans (Polynomial.map_mul φ)).imp ?_ ?_ <;>
       apply isUnit_of_isUnit_leadingCoeff_of_isUnit_map <;>
     apply isUnit_of_mul_eq_one
-  · exact q;
+  · exact q
   · rw [mul_comm]
     exact q
 #align polynomial.monic.irreducible_of_irreducible_map Polynomial.Monic.irreducible_of_irreducible_map

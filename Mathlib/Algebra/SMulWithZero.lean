@@ -5,9 +5,9 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Action.Prod
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Algebra.Ring.Opposite
-import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import algebra.smul_with_zero from "leanprover-community/mathlib"@"966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2"
 
@@ -176,6 +176,10 @@ lemma ite_zero_smul (a : R) (b : M) : (if p then a else 0 : R) • b = if p then
   rw [ite_smul, zero_smul]
 
 lemma boole_smul (a : M) : (if p then 1 else 0 : R) • a = if p then a else 0 := by simp
+
+lemma Pi.single_apply_smul {ι : Type*} [DecidableEq ι] (x : M) (i j : ι) :
+    (Pi.single i 1 : ι → R) j • x = (Pi.single i x : ι → M) j := by
+  rw [single_apply, ite_smul, one_smul, zero_smul, single_apply]
 
 /-- Pullback a `MulActionWithZero` structure along an injective zero-preserving homomorphism.
 See note [reducible non-instances]. -/

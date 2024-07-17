@@ -262,6 +262,9 @@ theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
   one_le_iff_pos.trans pos_iff_ne_zero
 #align enat.one_le_iff_ne_zero ENat.one_le_iff_ne_zero
 
+lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
+  not_le.symm.trans one_le_iff_ne_zero.not_left
+
 theorem le_of_lt_add_one (h : m < n + 1) : m ≤ n :=
   Order.le_of_lt_succ <| n.succ_def.symm ▸ h
 #align enat.le_of_lt_add_one ENat.le_of_lt_add_one

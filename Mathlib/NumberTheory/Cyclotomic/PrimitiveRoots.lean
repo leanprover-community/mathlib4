@@ -8,7 +8,7 @@ import Mathlib.Algebra.IsPrimePow
 import Mathlib.NumberTheory.Cyclotomic.Basic
 import Mathlib.RingTheory.Adjoin.PowerBasis
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
-import Mathlib.RingTheory.Norm
+import Mathlib.RingTheory.Norm.Basic
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
 #align_import number_theory.cyclotomic.primitive_roots from "leanprover-community/mathlib"@"5bfbcca0a7ffdd21cf1682e59106d6c942434a32"
@@ -349,7 +349,7 @@ theorem sub_one_norm_eq_eval_cyclotomic [IsCyclotomicExtension {n} K L] (h : 2 <
     congr
     rfl
     ext
-    rw [← neg_sub, AlgHom.map_neg, AlgHom.map_sub, AlgHom.map_one, neg_eq_neg_one_mul]
+    rw [← neg_sub, map_neg, map_sub, map_one, neg_eq_neg_one_mul]
   rw [prod_mul_distrib, prod_const, card_univ, AlgHom.card, IsCyclotomicExtension.finrank L hirr,
     (totient_even h).neg_one_pow, one_mul]
   have Hprod : (Finset.univ.prod fun σ : L →ₐ[K] E => 1 - σ ζ) = eval 1 (cyclotomic' n E) := by
@@ -376,8 +376,8 @@ theorem sub_one_norm_isPrimePow (hn : IsPrimePow (n : ℕ)) [IsCyclotomicExtensi
   obtain ⟨k, hk⟩ : ∃ k, (n : ℕ).factorization (n : ℕ).minFac = k + 1 :=
     exists_eq_succ_of_ne_zero
       (((n : ℕ).factorization.mem_support_toFun (n : ℕ).minFac).1 <|
-        mem_primeFactors_iff_mem_factors.2 <|
-          (mem_factors (IsPrimePow.ne_zero hn)).2 ⟨hprime.out, minFac_dvd _⟩)
+        mem_primeFactors_iff_mem_primeFactorsList.2 <|
+          (mem_primeFactorsList (IsPrimePow.ne_zero hn)).2 ⟨hprime.out, minFac_dvd _⟩)
   simp [hk, sub_one_norm_eq_eval_cyclotomic hζ this hirr]
 #align is_primitive_root.sub_one_norm_is_prime_pow IsPrimitiveRoot.sub_one_norm_isPrimePow
 

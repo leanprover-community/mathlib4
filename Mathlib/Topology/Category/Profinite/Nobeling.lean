@@ -7,7 +7,7 @@ import Mathlib.Algebra.Category.ModuleCat.Free
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.Category.Profinite.Product
 import Mathlib.Topology.LocallyConstant.Algebra
-import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Data.Bool.Basic
 
 /-!
 
@@ -231,7 +231,7 @@ noncomputable
 def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] :
     CategoryTheory.Limits.IsLimit (spanCone hC) := by
   refine (IsLimit.postcomposeHomEquiv (NatIso.ofComponents
-    (fun s ↦ (Profinite.isoOfBijective _ (iso_map_bijective C (· ∈ unop s)))) ?_) (spanCone hC))
+    (fun s ↦ (CompHausLike.isoOfBijective _ (iso_map_bijective C (· ∈ unop s)))) ?_) (spanCone hC))
     (IsLimit.ofIsoLimit (indexCone_isLimit hC) (Cones.ext (Iso.refl _) ?_))
   · intro ⟨s⟩ ⟨t⟩ ⟨⟨⟨f⟩⟩⟩
     ext x
@@ -1583,7 +1583,7 @@ Removing the leading `o` from a term of `MaxProducts C` yields a list which `is
 `C'`.
 -/
 theorem maxTail_isGood (l : MaxProducts C ho)
-    (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
+    (h₁ : ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
     l.val.Tail.isGood (C' C ho) := by
   have : Inhabited I := ⟨term I ho⟩
   -- Write `l.Tail` as a linear combination of smaller products:
@@ -1654,12 +1654,12 @@ theorem maxTail_isGood (l : MaxProducts C ho)
 /-- Given `l : MaxProducts C ho`, its `Tail` is a `GoodProducts (C' C ho)`. -/
 noncomputable
 def MaxToGood
-    (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
+    (h₁ : ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
     MaxProducts C ho → GoodProducts (C' C ho) :=
   fun l ↦ ⟨l.val.Tail, maxTail_isGood C hC hsC ho l h₁⟩
 
 theorem maxToGood_injective
-    (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
+    (h₁ : ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
     (MaxToGood C hC hsC ho h₁).Injective := by
   intro m n h
   apply Subtype.ext ∘ Subtype.ext
@@ -1668,7 +1668,7 @@ theorem maxToGood_injective
   rw [max_eq_o_cons_tail C hsC ho m, max_eq_o_cons_tail C hsC ho n, h]
 
 theorem linearIndependent_comp_of_eval
-    (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
+    (h₁ : ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
     LinearIndependent ℤ (eval (C' C ho)) →
     LinearIndependent ℤ (ModuleCat.ofHom (Linear_CC' C hsC ho) ∘ SumEval C ho ∘ Sum.inr) := by
   dsimp [SumEval, ModuleCat.ofHom]
