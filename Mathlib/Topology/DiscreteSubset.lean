@@ -104,4 +104,41 @@ def Filter.codiscrete (X : Type*) [TopologicalSpace X] : Filter X where
     simp_rw [← isClosed_compl_iff, isClosed_and_discrete_iff] at hU hV ⊢
     exact fun x ↦ compl_inter U V ▸ sup_principal ▸ disjoint_sup_right.mpr ⟨hU x, hV x⟩
 
+lemma mem_codiscrete {S : Set X} :
+    S ∈ codiscrete X ↔ IsOpen S ∧ DiscreteTopology ↑Sᶜ := Iff.rfl
+
+lemma mem_codiscrete' {S : Set X} :
+    S ∈ codiscrete X ↔ ∀ x, Disjoint (𝓝[≠] x) (𝓟 Sᶜ) := by
+  rw [mem_codiscrete, ← isClosed_compl_iff, isClosed_and_discrete_iff]
+
+lemma mem_codiscrete_subtype {S : Set X} {U : Set S} :
+    U ∈ codiscrete S ↔ ∀ x ∈ S, ¬AccPt x (𝓟 (Subtype.val '' Uᶜ)) := by
+  simp only [mem_codiscrete', disjoint_principal_right, compl_compl, Subtype.forall, AccPt,
+    not_neBot, inf_principal_eq_bot]
+  congr! with x hx
+  constructor
+  · intro h
+    rw [nhdsWithin_subtype] at h
+    simp only [mem_comap] at h
+    obtain ⟨t, ht1, ht2⟩ := h
+    simp [mem_nhdsWithin] at ht1 ⊢
+    obtain ⟨u, hu1, hu2, hu3⟩ := ht1
+    use u, hu1, hu2
+    intro v hv
+    simp only [mem_compl_iff, mem_image, Subtype.exists, exists_and_right, exists_eq_right,
+      not_exists, not_not]
+    intro hv2
+    apply ht2
+    simp only [mem_preimage]
+    apply hu3
+    simpa [hv2]
+  · intro h
+    have : Tendsto Subtype.val (𝓝[≠] ⟨x, hx⟩) (𝓝[≠] x) :=
+      tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
+      continuous_subtype_val.continuousWithinAt <| eventually_mem_nhdsWithin.mono (by simp)
+    rw [tendsto_def] at this
+    convert this _ h
+    ext
+    simp
+
 end codiscrete_filter
