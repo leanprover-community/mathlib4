@@ -85,7 +85,6 @@ any given coefficient.  For the formal sum to be a Hahn series, we require that 
 supports of the constituent series is partially well-ordered. -/
 structure SummableFamily (α : Type*) where
   /-- A parametrized family of Hahn series. -/
-  /-- A parametrized family of Hahn series. -/
   toFun : α → HahnSeries Γ R
   isPWO_iUnion_support' : Set.IsPWO (⋃ a : α, (toFun a).support)
   finite_co_support' : ∀ g : Γ, { a | (toFun a).coeff g ≠ 0 }.Finite
@@ -580,7 +579,7 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
       SummableFamily.one_sub_self_mul_hsum_powers
         (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mpr x0)))
     rw [sub_sub_cancel] at h
-    rw [← mul_assoc, mul_comm x, ← leadingCoeff_eq, h]
+    rw [← mul_assoc, mul_comm x, h]
   nnqsmul := _
   qsmul := _
 
