@@ -26,13 +26,26 @@ integers is injective, and demand that the evaluation of the ascending Pochhamme
 because for `r` a natural number, it is the number of multisets of cardinality `k` taken from a type
 of cardinality `n`.
 
+## Definitions
+
+* `BinomialRing`: a mixin class specifying a suitable `multichoose` function.
+* `Ring.multichoose`: the quotient of an ascending Pochhammer evaluation by a factorial.
+* `Ring.choose`: the quotient of a descending Pochhammer evaluation by a factorial.
+
+## Results
+
+* Basic results with choose and multichoose, e.g., `choose_zero_right`
+* Relations between choose and multichoose, negated input.
+* Fundamental recursion: `choose_succ_succ`
+* Chu-Vandermonde identity: `add_choose_eq`
+* Pochhammer API
+
 ## References
 
 * [J. Elliott, *Binomial rings, integer-valued polynomials, and λ-rings*][elliott2006binomial]
 
 ## TODO
 
-* Generalized versions of basic identities of Nat.choose.
 Further results in Elliot's paper:
 * A CommRing is binomial if and only if it admits a λ-ring structure with trivial Adams operations.
 * The free commutative binomial ring on a set `X` is the ring of integer-valued polynomials in the
@@ -454,18 +467,19 @@ theorem choose_add_smul_choose [NatPowAssoc R] (r : R) (n k : ℕ) :
 
 end
 
+open Finset
+
 /-- Pochhammer version of Chu-Vandermonde identity -/
 theorem descPochhammer_smeval_add [Ring R] {r s : R} (k : ℕ) (h: Commute r s) :
-    (descPochhammer ℤ k).smeval (r + s) = ∑ ij ∈ Finset.HasAntidiagonal.antidiagonal k,
+    (descPochhammer ℤ k).smeval (r + s) = ∑ ij ∈ antidiagonal k,
     Nat.choose k ij.1 * ((descPochhammer ℤ ij.1).smeval r * (descPochhammer ℤ ij.2).smeval s) := by
   induction k with
-  | zero => simp [descPochhammer_zero, Finset.Nat.antidiagonal_zero, Finset.sum_singleton]
+  | zero => simp
   | succ k ih =>
-    rw [descPochhammer_succ_right, mul_comm, smeval_mul, Finset.sum_antidiagonal_choose_succ_mul
+    rw [descPochhammer_succ_right, mul_comm, smeval_mul, sum_antidiagonal_choose_succ_mul
       fun i j => ((descPochhammer ℤ i).smeval r * (descPochhammer ℤ j).smeval s),
-      ← Finset.sum_add_distrib, smeval_sub, smeval_X, smeval_natCast, pow_zero, pow_one, ih,
-      Finset.mul_sum]
-    refine Finset.sum_congr rfl ?_
+      ← sum_add_distrib, smeval_sub, smeval_X, smeval_natCast, pow_zero, pow_one, ih, mul_sum]
+    refine sum_congr rfl ?_
     intro ij hij -- try to move descPochhammers to right, gather multipliers.
     have hdx : (descPochhammer ℤ ij.1).smeval r * (X - (ij.2 : ℤ[X])).smeval s =
         (X - (ij.2 : ℤ[X])).smeval s * (descPochhammer ℤ ij.1).smeval r := by
@@ -487,13 +501,13 @@ theorem descPochhammer_smeval_add [Ring R] {r s : R} (k : ℕ) (h: Commute r s) 
 /-- The Chu-Vandermonde identity for binomial rings -/
 theorem add_choose_eq [Ring R] [BinomialRing R] {r s : R} (k : ℕ) (h : Commute r s) :
     choose (r + s) k =
-      ∑ ij ∈ Finset.HasAntidiagonal.antidiagonal k, choose r ij.1 * choose s ij.2 := by
+      ∑ ij ∈ antidiagonal k, choose r ij.1 * choose s ij.2 := by
   refine nsmul_right_injective (Nat.factorial k) (Nat.factorial_ne_zero k) ?_
   simp only
-  rw [← descPochhammer_eq_factorial_smul_choose, Finset.smul_sum, descPochhammer_smeval_add _ h]
-  refine Finset.sum_congr rfl ?_
+  rw [← descPochhammer_eq_factorial_smul_choose, smul_sum, descPochhammer_smeval_add _ h]
+  refine sum_congr rfl ?_
   intro x hx
-  rw [← Nat.choose_mul_factorial_mul_factorial (Finset.antidiagonal.fst_le hx),
+  rw [← Nat.choose_mul_factorial_mul_factorial (antidiagonal.fst_le hx),
     tsub_eq_of_eq_add_rev (List.Nat.mem_antidiagonal.mp hx).symm, mul_assoc, nsmul_eq_mul,
     Nat.cast_mul, Nat.cast_mul, ← mul_assoc _ (x.1.factorial : R), mul_assoc _ (x.2.factorial : R),
     ← mul_assoc (x.2.factorial : R), Nat.cast_commute x.2.factorial,
