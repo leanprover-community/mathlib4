@@ -1630,7 +1630,7 @@ def removeParents (e : Expr) (parentsToPropagate : Array Expr := #[]) : CCM (Arr
               { ccs with symmCongruences := ccs.symmCongruences.insert k' newLst }
           else
             modify fun ccs =>
-              { ccs with symmCongruences := ccs.symmCongruences.remove k' }
+              { ccs with symmCongruences := ccs.symmCongruences.erase k' }
       else
         let k' ← mkCongruencesKey p
         if let some es := (← get).congruences[k']? then
@@ -1640,7 +1640,7 @@ def removeParents (e : Expr) (parentsToPropagate : Array Expr := #[]) : CCM (Arr
               { ccs with congruences := ccs.congruences.insert k' newEs }
           else
             modify fun ccs =>
-              { ccs with congruences := ccs.congruences.remove k' }
+              { ccs with congruences := ccs.congruences.erase k' }
   return parentsToPropagate
 
 /--
