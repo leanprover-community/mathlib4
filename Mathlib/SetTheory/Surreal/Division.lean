@@ -687,17 +687,6 @@ lemma onag_1_10_iv : x * x.inv' ≈ 1 := (onag_1_10 x_num x_pos).2
 
 end Positive
 
-lemma inv_numeric (x_num : x.Numeric) : x⁻¹.Numeric := by
-  rcases lf_or_equiv_or_gf x 0 with neg | zero | pos
-  · have neg_x_pos : 0 < -x := zero_lt_neg_iff.mpr (lt_of_lf neg x_num numeric_zero)
-    rw [inv_eq_of_lf_zero neg]
-    exact Numeric.neg (onag_1_10_ii (Numeric.neg x_num) neg_x_pos)
-  · rw [inv_eq_of_equiv_zero zero]
-    exact numeric_zero
-  · have := lt_of_lf pos numeric_zero x_num
-    rw [inv_eq_of_pos this]
-    apply onag_1_10_ii x_num this
-
 lemma inv_surreal (hx : ¬ x ≈ 0) : x * x⁻¹ ≈ 1 := by
   by_cases h : 0 < x
   · rw [inv_eq_of_pos h]
@@ -717,7 +706,23 @@ lemma inv_surreal (hx : ¬ x ≈ 0) : x * x⁻¹ ≈ 1 := by
     simp only [quot_neg_mul, quot_mul_neg] at this ⊢
     exact this
 
-lemma inv_congr {x y : PGame} (hx : x.Numeric) (hy : y.Numeric) (eq : x ≈ y) : x⁻¹ ≈ y⁻¹ := by
+end Surreal.Division
+
+namespace SetTheory.PGame
+open Surreal.Division
+
+lemma Numeric.inv (x_num : x.Numeric) : x⁻¹.Numeric := by
+  rcases lf_or_equiv_or_gf x 0 with neg | zero | pos
+  · have neg_x_pos : 0 < -x := zero_lt_neg_iff.mpr (lt_of_lf neg x_num numeric_zero)
+    rw [inv_eq_of_lf_zero neg]
+    exact Numeric.neg (onag_1_10_ii (Numeric.neg x_num) neg_x_pos)
+  · rw [inv_eq_of_equiv_zero zero]
+    exact numeric_zero
+  · have := lt_of_lf pos numeric_zero x_num
+    rw [inv_eq_of_pos this]
+    apply onag_1_10_ii x_num this
+
+lemma Equiv.inv_congr {x y : PGame} (hx : x.Numeric) (hy : y.Numeric) (eq : x ≈ y) : x⁻¹ ≈ y⁻¹ := by
   by_cases h : x ≈ 0
   · rw [inv_eq_of_equiv_zero h]
     rw [inv_eq_of_equiv_zero (Trans.trans (symm eq) h)]
@@ -726,13 +731,13 @@ lemma inv_congr {x y : PGame} (hx : x.Numeric) (hy : y.Numeric) (eq : x ≈ y) :
       exact h (Trans.trans eq bad)
     have : x * y⁻¹ ≈ x * x⁻¹ := by
       calc
-        x * y⁻¹ ≈ y * y⁻¹ := mul_congr_left hx hy (inv_numeric hy) eq
+        x * y⁻¹ ≈ y * y⁻¹ := mul_congr_left hx hy hy.inv eq
         _        ≈ 1        := inv_surreal hy h'
         _        ≈ x * x⁻¹ := symm (inv_surreal hx h)
-    apply Surreal.mul_left_cancel hx (inv_numeric hy) (inv_numeric hx) h at this
+    apply Surreal.mul_left_cancel hx hy.inv hx.inv h at this
     exact symm this
 
-end Surreal.Division
+end SetTheory.PGame
 
 namespace Surreal
 
@@ -740,7 +745,7 @@ open Division
 
 noncomputable instance : LinearOrderedField Surreal where
   __ := Surreal.instLinearOrderedCommRing
-  inv := Surreal.lift (fun x ox ↦ ⟦⟨x⁻¹, inv_numeric ox⟩⟧)
+  inv := Surreal.lift (fun x ox ↦ ⟦⟨x⁻¹, ox.inv⟩⟧)
     (fun ox oy eq => Quotient.sound <| inv_congr ox oy eq)
   mul_inv_cancel := by
     rintro ⟨a, oa⟩
