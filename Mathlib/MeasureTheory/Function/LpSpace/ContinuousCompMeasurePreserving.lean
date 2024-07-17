@@ -185,14 +185,12 @@ theorem MeasureTheory.isClosed_setOf_preimage_ae_eq {Z : Type*} [TopologicalSpac
   · simp [h]
   rcases htm with ⟨t', ht'm, htt'⟩
   rw [measure_congr htt'] at ht
-  set φ : Lp ℝ 1 μ :=
-    indicatorConstLp 1 ((hfm z₀).measurable ht'm) (by rwa [(hfm z₀).measure_preimage ht'm]) 1
-  set ψ : Lp ℝ 1 ν := indicatorConstLp 1 ht'm ht 1 
-  have : IsClosed {z | Lp.compMeasurePreserving (f z) (hfm z) ψ = φ} :=
+  set φ : Z → Lp ℝ 1 μ := fun z ↦
+    Lp.compMeasurePreserving (f z) (hfm z) (indicatorConstLp 1 ht'm ht 1)
+  have : IsClosed {z | φ z = φ z₀} :=
     isClosed_eq (continuous_const.compMeasurePreservingLp hf _ ENNReal.one_ne_top) continuous_const
   convert this using 3 with z
-  simp only [φ, ψ, Lp.indicatorConstLp_compMeasurePreserving,
-    indicatorConstLp_inj (hc := one_ne_zero)]
+  simp_rw [φ, Lp.indicatorConstLp_compMeasurePreserving, indicatorConstLp_inj (hc := one_ne_zero)]
   rw [((hfm z).quasiMeasurePreserving.preimage_ae_eq htt').congr_left,
     ← ((hfm z₀).quasiMeasurePreserving.preimage_ae_eq htt').congr_right,
     hz₀.out.congr_right]
