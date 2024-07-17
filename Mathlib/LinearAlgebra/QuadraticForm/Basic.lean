@@ -410,39 +410,6 @@ protected theorem map_sum' {ι} (Q : QuadraticMap R M N) (s : Finset ι) (f : ι
       ← polarBilin_apply_apply, _root_.map_sum, polarBilin_apply_apply, polar_self]
     abel_nf
 
-protected theorem map_add (Q : QuadraticForm R M) (x y : M):
-    Q (x + y) = Q x + Q y + polar Q x y := by
-  simp [polar]
-
-protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticForm R M) (s : Finset ι) (f : ι → M) :
-    Q (∑ i ∈ s, f i) = ∑ i ∈ s, Q (f i) +
-      ∑ ij in s.sym2.filter (¬ ·.IsDiag),
-        Sym2.lift ⟨fun i j => polar Q (f i) (f j), fun _ _ => polar_comm _ _ _⟩ ij := by
-  induction s using Finset.cons_induction with
-  | empty => simp
-  | cons a s ha ih =>
-    simp_rw [Finset.sum_cons, QuadraticForm.map_add, ih, add_assoc, Finset.sym2_cons,
-      Finset.sum_filter, Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons,
-      Sym2.mkEmbedding_apply, Sym2.isDiag_iff_proj_eq, not_true, if_false, zero_add, Sym2.lift_mk,
-      ← polarBilin_apply_apply, _root_.map_sum, polarBilin_apply_apply]
-    congr 2
-    rw [add_comm]
-    congr! with i hi
-    rw [if_pos (ne_of_mem_of_not_mem hi ha).symm]
-
-protected theorem map_sum' {ι} (Q : QuadraticForm R M) (s : Finset ι) (f : ι → M) :
-    Q (∑ i ∈ s, f i) =
-      ∑ ij in s.sym2,
-        Sym2.lift ⟨fun i j => polar Q (f i) (f j), fun _ _ => polar_comm _ _ _⟩ ij
-      - ∑ i ∈ s, Q (f i) := by
-  induction s using Finset.cons_induction with
-  | empty => simp
-  | cons a s ha ih =>
-    simp_rw [Finset.sum_cons, QuadraticForm.map_add, ih, add_assoc, Finset.sym2_cons,
-      Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons, Sym2.mkEmbedding_apply, Sym2.lift_mk,
-      ← polarBilin_apply_apply, _root_.map_sum, polarBilin_apply_apply, polar_self]
-    ring_nf
-
 end CommRing
 
 section SemiringOperators
