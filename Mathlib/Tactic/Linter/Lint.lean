@@ -175,6 +175,7 @@ def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.endOf o
 def endOfLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- Only run this linter at the end of a module.
     unless stx.isOfKind ``Lean.Parser.Command.eoi do return
+    -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
     unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
       return
     if getLinterHash (← getOptions) && !(← MonadState.get).messages.hasErrors then
