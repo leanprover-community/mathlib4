@@ -42,6 +42,13 @@ if [ "$status" != "completed" ]; then
 fi
 
 echo "### Creating a PR for the nightly adaptation for $NIGHTLYDATE"
+
+echo
+echo "### [auto] save the current branch name"
+
+usr_branch=$(git branch --show-current)
+
+echo
 echo "### [auto] checkout master and pull the latest changes"
 
 git checkout master
@@ -56,7 +63,7 @@ git merge origin/master
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
-  echo ""
+  echo
   echo "### [auto] Conflict resolution"
   echo "### Automatically choosing 'lean-toolchain' and 'lake-manifest.json' from the newer branch"
   echo "### In this case, the newer branch is 'bump/$BUMPVERSION'"
@@ -65,7 +72,7 @@ fi
 
 # Check if there are more merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
-  echo ""
+  echo
   echo "### [user] Conflict resolution"
   echo "We are merging the latest changes from 'origin/master' into 'bump/$BUMPVERSION'"
   echo "There seem to be conflicts: please resolve them"
@@ -84,7 +91,7 @@ git merge --squash origin/nightly-testing
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
-  echo ""
+  echo
   echo "### [auto] Conflict resolution"
   echo "### Automatically choosing 'lean-toolchain' and 'lake-manifest.json' from the newer branch"
   echo "### In this case, the newer branch is 'origin/nightly-testing'"
@@ -93,7 +100,7 @@ fi
 
 # Check if there are more merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
-  echo ""
+  echo
   echo "### [user] Conflict resolution"
   echo "We are squash merging the latest changes from 'origin/nightly-testing' into 'bump/nightly-$NIGHTLYDATE'"
   echo "There seem to be conflicts: please resolve them"
@@ -144,7 +151,7 @@ git merge "bump/nightly-$NIGHTLYDATE"
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
-  echo ""
+  echo
   echo "### [auto] Conflict resolution"
   echo "### Automatically choosing lean-toolchain and lake-manifest.json from the newer branch"
   echo "### In this case, the newer branch is 'bump/nightly-$NIGHTLYDATE'"
@@ -153,7 +160,7 @@ fi
 
 # Check if there are more merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
-  echo ""
+  echo
   echo "### [user] Conflict resolution"
   echo "We are merging the new PR "bump/nightly-$NIGHTLYDATE" into 'nightly-testing'"
   echo "There seem to be conflicts: please resolve them"
@@ -163,6 +170,11 @@ if git diff --name-only --diff-filter=U | grep -q .; then
 fi
 
 git push
+
+echo
+echo "### [auto] finished: checkout the original branch"
+
+git checkout $usr_branch
 
 # These last two lines are needed to make the script robust against changes on disk
 # that might have happened during the script execution, e.g. from switching branches
