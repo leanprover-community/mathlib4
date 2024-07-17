@@ -77,7 +77,7 @@ def centerStarEmbedding : Subsemiring.center (CentroidHom α) →⋆ₙ+* Centro
       MonoidHom.coe_coe, SubsemiringClass.coe_subtype]
     exact rfl
 
-theorem inr_star (z : NonUnitalStarSubsemiring.center α) :
+theorem star_centerToCentroidCenter (z : NonUnitalStarSubsemiring.center α) :
     star (centerToCentroidCenter z) =
       (centerToCentroidCenter (star z : NonUnitalStarSubsemiring.center α)) := by
   ext a
@@ -95,7 +95,7 @@ def starCenterToCentroidCenter :
   toNonUnitalRingHom := centerToCentroidCenter
   map_star' _ := by
     simp only [MulHom.toFun_eq_coe, NonUnitalRingHom.coe_toMulHom]
-    exact (inr_star _).symm
+    exact (star_centerToCentroidCenter _).symm
 
 /-- The canonical homomorphism from the center into the centroid -/
 def starCenterToCentroid : NonUnitalStarSubsemiring.center α →⋆ₙ+* CentroidHom α :=
