@@ -132,7 +132,7 @@ It also works incrementally, providing information that it better suited, for in
 files.
  -/
 register_option linter.minImports : Bool := {
-  defValue := false
+  defValue := true
   descr := "enable the minImports linter"
 }
 
@@ -150,7 +150,10 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx => do
     if (← MonadState.get).messages.hasErrors then
       return
     let prevImports ← minImportsRef.get
-    --if stx.isOfKind ``Parser.Command.eoi then logInfo m!"{(← getEnv).imports.map (·.module)}"
+    if stx.isOfKind ``Parser.Command.eoi then
+      let currImps := ((← getEnv).imports.map (·.module)).qsort Name.lt
+      if prevImports.toArray.qsort Name.lt != currImps then
+        logInfo m!"{currImps}"
     let newImports := getIrredundantImports (← getEnv) (← getAllImports stx)
     let tot := (newImports.append prevImports) --.erase `Lean.Parser.Command
     let redundant := (← getEnv).findRedundantImports tot.toArray
