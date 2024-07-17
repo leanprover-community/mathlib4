@@ -113,7 +113,7 @@ lemma scaleRoots_one (p : R[X]) :
 lemma scaleRoots_zero (p : R[X]) :
     p.scaleRoots 0 = p.leadingCoeff • X ^ p.natDegree := by
   ext n
-  simp only [coeff_scaleRoots, ge_iff_le, ne_eq, tsub_eq_zero_iff_le, not_le, zero_pow_eq, mul_ite,
+  simp only [coeff_scaleRoots, ne_eq, tsub_eq_zero_iff_le, not_le, zero_pow_eq, mul_ite,
     mul_one, mul_zero, coeff_smul, coeff_X_pow, smul_eq_mul]
   split_ifs with h₁ h₂ h₂
   · subst h₂; rfl

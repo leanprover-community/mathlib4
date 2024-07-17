@@ -38,3 +38,5 @@ theorem eval_polynomial_eval_finSuccEquiv {n : ℕ} {x : Fin n → R}
   congr
   funext i
   refine Fin.cases (by simp) (by simp) i
+
+end MvPolynomial

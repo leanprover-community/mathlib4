@@ -151,10 +151,13 @@ theorem isCompact_basicOpen (X : Scheme) {U : Opens X} (hU : IsCompact (U : Set 
     exact Set.Subset.rfl
 #align algebraic_geometry.is_compact_basic_open AlgebraicGeometry.isCompact_basicOpen
 
+instance : QuasiCompact.affineProperty.toProperty.RespectsIso := by
+  apply AffineTargetMorphismProperty.respectsIso_mk <;> rintro X Y Z e _ _ H
+  exacts [@Homeomorph.compactSpace _ _ _ _ H (TopCat.homeoOfIso (asIso e.inv.1.base)), H]
+
 theorem QuasiCompact.affineProperty_isLocal : (QuasiCompact.affineProperty : _).IsLocal := by
   constructor
-  · apply AffineTargetMorphismProperty.respectsIso_mk <;> rintro X Y Z e _ _ H
-    exacts [@Homeomorph.compactSpace _ _ _ _ H (TopCat.homeoOfIso (asIso e.inv.1.base)), H]
+  · infer_instance
   · introv H
     dsimp [affineProperty] at H ⊢
     change CompactSpace ((Opens.map f.val.base).obj (Y.basicOpen r))
@@ -198,12 +201,12 @@ theorem QuasiCompact.openCover_tfae {X Y : Scheme.{u}} (f : X ⟶ Y) :
     List.TFAE
       [QuasiCompact f,
         ∃ 𝒰 : Scheme.OpenCover.{u} Y,
-          ∀ i : 𝒰.J, QuasiCompact (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
+          ∀ i : 𝒰.J, QuasiCompact (pullback.snd _ _ : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
         ∀ (𝒰 : Scheme.OpenCover.{u} Y) (i : 𝒰.J),
-          QuasiCompact (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
+          QuasiCompact (pullback.snd _ _ : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
         ∀ U : Opens Y, QuasiCompact (f ∣_ U),
         ∀ {U : Scheme} (g : U ⟶ Y) [IsOpenImmersion g],
-          QuasiCompact (pullback.snd : pullback f g ⟶ _),
+          QuasiCompact (pullback.snd f g),
         ∃ (ι : Type u) (U : ι → Opens Y) (_ : iSup U = ⊤), ∀ i, QuasiCompact (f ∣_ U i)] :=
   quasiCompact_eq_affineProperty.symm ▸
     QuasiCompact.affineProperty_isLocal.targetAffineLocally_isLocal.openCover_TFAE f
@@ -226,14 +229,14 @@ theorem QuasiCompact.affine_openCover_iff {X Y : Scheme.{u}} (𝒰 : Scheme.Open
 #align algebraic_geometry.quasi_compact.affine_open_cover_iff AlgebraicGeometry.QuasiCompact.affine_openCover_iff
 
 theorem QuasiCompact.openCover_iff {X Y : Scheme.{u}} (𝒰 : Scheme.OpenCover.{u} Y) (f : X ⟶ Y) :
-    QuasiCompact f ↔ ∀ i, QuasiCompact (pullback.snd : pullback f (𝒰.map i) ⟶ _) :=
+    QuasiCompact f ↔ ∀ i, QuasiCompact (pullback.snd f (𝒰.map i)) :=
   quasiCompact_eq_affineProperty.symm ▸
     QuasiCompact.affineProperty_isLocal.targetAffineLocally_isLocal.openCover_iff f 𝒰
 #align algebraic_geometry.quasi_compact.open_cover_iff AlgebraicGeometry.QuasiCompact.openCover_iff
 
-theorem quasiCompact_respectsIso : MorphismProperty.RespectsIso @QuasiCompact :=
-  quasiCompact_eq_affineProperty.symm ▸
-    targetAffineLocally_respectsIso QuasiCompact.affineProperty_isLocal.1
+instance quasiCompact_respectsIso : MorphismProperty.RespectsIso @QuasiCompact := by
+  rw [quasiCompact_eq_affineProperty]
+  infer_instance
 #align algebraic_geometry.quasi_compact_respects_iso AlgebraicGeometry.quasiCompact_respectsIso
 
 instance quasiCompact_isStableUnderComposition :
@@ -259,12 +262,10 @@ theorem quasiCompact_stableUnderBaseChange : MorphismProperty.StableUnderBaseCha
 
 variable {Z : Scheme.{u}}
 
-instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] :
-    QuasiCompact (pullback.fst : pullback f g ⟶ X) :=
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] : QuasiCompact (pullback.fst f g) :=
   quasiCompact_stableUnderBaseChange.fst f g inferInstance
 
-instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] :
-    QuasiCompact (pullback.snd : pullback f g ⟶ Y) :=
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] : QuasiCompact (pullback.snd f g) :=
   quasiCompact_stableUnderBaseChange.snd f g inferInstance
 
 @[elab_as_elim]
@@ -320,7 +321,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
       · simp only [← Functor.map_comp]
         rfl
     · rw [map_zero]
-    · simp only [Scheme.basicOpen_res, ge_iff_le, inf_le_right]
+    · simp only [Scheme.basicOpen_res, inf_le_right]
   choose n hn using H'
   haveI := hs.to_subtype
   cases nonempty_fintype s

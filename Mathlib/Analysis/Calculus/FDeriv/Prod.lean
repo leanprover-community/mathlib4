@@ -409,10 +409,10 @@ theorem hasStrictFDerivAt_pi'' (hφ : ∀ i, HasStrictFDerivAt (fun x => Φ x i)
 
 @[fun_prop]
 theorem hasStrictFDerivAt_apply (i : ι) (f : ∀ i, F' i) :
-    HasStrictFDerivAt (𝕜:=𝕜) (fun f : ∀ i, F' i => f i) (proj i) f := by
+    HasStrictFDerivAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) (proj i) f := by
   let id' := ContinuousLinearMap.id 𝕜 (∀ i, F' i)
   have h := ((hasStrictFDerivAt_pi'
-             (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (Φ':=id') (x:=f))).1
+             (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (Φ' := id') (x := f))).1
   have h' : comp (proj i) id' = proj i := by rfl
   rw [← h']; apply h; apply hasStrictFDerivAt_id
 
@@ -449,7 +449,7 @@ theorem hasFDerivAt_pi'' (hφ : ∀ i, HasFDerivAt (fun x => Φ x i) ((proj i).c
 
 @[fun_prop]
 theorem hasFDerivAt_apply (i : ι) (f : ∀ i, F' i) :
-    HasFDerivAt (𝕜:=𝕜) (fun f : ∀ i, F' i => f i) (proj i) f := by
+    HasFDerivAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) (proj i) f := by
   apply HasStrictFDerivAt.hasFDerivAt
   apply hasStrictFDerivAt_apply
 
@@ -472,10 +472,10 @@ theorem hasFDerivWithinAt_pi''
 
 @[fun_prop]
 theorem hasFDerivWithinAt_apply (i : ι) (f : ∀ i, F' i) (s' : Set (∀ i, F' i)) :
-    HasFDerivWithinAt (𝕜:=𝕜) (fun f : ∀ i, F' i => f i) (proj i) s' f := by
+    HasFDerivWithinAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) (proj i) s' f := by
   let id' := ContinuousLinearMap.id 𝕜 (∀ i, F' i)
   have h := ((hasFDerivWithinAt_pi'
-             (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (Φ':=id') (x:=f) (s:=s'))).1
+             (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (Φ' := id') (x := f) (s := s'))).1
   have h' : comp (proj i) id' = proj i := by rfl
   rw [← h']; apply h; apply hasFDerivWithinAt_id
 
@@ -498,7 +498,7 @@ theorem differentiableWithinAt_pi'' (hφ : ∀ i, DifferentiableWithinAt 𝕜 (f
 
 @[fun_prop]
 theorem differentiableWithinAt_apply (i : ι) (f : ∀ i, F' i) (s' : Set (∀ i, F' i)) :
-    DifferentiableWithinAt (𝕜:=𝕜) (fun f : ∀ i, F' i => f i) s' f := by
+    DifferentiableWithinAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) s' f := by
   apply HasFDerivWithinAt.differentiableWithinAt
   fun_prop
 
@@ -514,9 +514,9 @@ theorem differentiableAt_pi'' (hφ : ∀ i, DifferentiableAt 𝕜 (fun x => Φ x
 
 @[fun_prop]
 theorem differentiableAt_apply (i : ι) (f : ∀ i, F' i) :
-    DifferentiableAt (𝕜:=𝕜) (fun f : ∀ i, F' i => f i) f := by
-  have h := ((differentiableAt_pi (𝕜:=𝕜)
-             (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (x:=f))).1
+    DifferentiableAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) f := by
+  have h := ((differentiableAt_pi (𝕜 := 𝕜)
+             (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (x := f))).1
   apply h; apply differentiableAt_id
 
 theorem differentiableOn_pi : DifferentiableOn 𝕜 Φ s ↔ ∀ i, DifferentiableOn 𝕜 (fun x => Φ x i) s :=
@@ -530,9 +530,9 @@ theorem differentiableOn_pi'' (hφ : ∀ i, DifferentiableOn 𝕜 (fun x => Φ x
 
 @[fun_prop]
 theorem differentiableOn_apply (i : ι) (s' : Set (∀ i, F' i)) :
-    DifferentiableOn (𝕜:=𝕜) (fun f : ∀ i, F' i => f i) s' := by
-  have h := ((differentiableOn_pi (𝕜:=𝕜)
-             (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (s:=s'))).1
+    DifferentiableOn (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) s' := by
+  have h := ((differentiableOn_pi (𝕜 := 𝕜)
+             (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (s := s'))).1
   apply h; apply differentiableOn_id
 
 theorem differentiable_pi : Differentiable 𝕜 Φ ↔ ∀ i, Differentiable 𝕜 fun x => Φ x i :=
@@ -545,7 +545,7 @@ theorem differentiable_pi'' (hφ : ∀ i, Differentiable 𝕜 fun x => Φ x i) :
 
 @[fun_prop]
 theorem differentiable_apply (i : ι) :
-    Differentiable (𝕜:=𝕜) (fun f : ∀ i, F' i => f i) := by intro x; apply differentiableAt_apply
+    Differentiable (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) := by intro x; apply differentiableAt_apply
 
 -- TODO: find out which version (`φ` or `Φ`) works better with `rw`/`simp`
 theorem fderivWithin_pi (h : ∀ i, DifferentiableWithinAt 𝕜 (φ i) s x)

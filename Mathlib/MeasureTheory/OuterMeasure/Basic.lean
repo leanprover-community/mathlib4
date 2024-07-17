@@ -313,3 +313,7 @@ theorem ext_nonempty {μ₁ μ₂ : OuterMeasure α} (h : ∀ s : Set α, s.None
     μ₁ = μ₂ :=
   ext fun s => s.eq_empty_or_nonempty.elim (fun he => by simp [he]) (h s)
 #align measure_theory.outer_measure.ext_nonempty MeasureTheory.OuterMeasure.ext_nonempty
+
+end OuterMeasure
+
+end MeasureTheory

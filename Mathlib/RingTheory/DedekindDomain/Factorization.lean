@@ -73,7 +73,7 @@ theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
     Finite.of_injective (fun v => (⟨(v : HeightOneSpectrum R).asIdeal, v.2⟩ : { x // x ∣ I })) ?_
   intro v w hvw
   simp? at hvw says simp only [Subtype.mk.injEq] at hvw
-  exact Subtype.coe_injective ((HeightOneSpectrum.ext_iff (R := R) ↑v ↑w).mpr hvw)
+  exact Subtype.coe_injective (HeightOneSpectrum.ext _ _ hvw)
 #align ideal.finite_factors Ideal.finite_factors
 
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that the

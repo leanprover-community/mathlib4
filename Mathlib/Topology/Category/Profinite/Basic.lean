@@ -62,7 +62,7 @@ compact, Hausdorff and totally disconnected topological space.
 -/
 def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [TotallyDisconnectedSpace X] : Profinite :=
-  ⟨⟨⟨X, inferInstance⟩⟩⟩
+  ⟨⟨X, inferInstance⟩, trivial⟩
 #align Profinite.of Profinite.of
 
 instance : Inhabited Profinite :=
@@ -189,7 +189,8 @@ def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
   toCompHaus :=
     { toTop := TopCat.of (ConnectedComponents X)
       is_compact := Quotient.compactSpace
-      is_hausdorff := ConnectedComponents.t2 }
+      is_hausdorff := ConnectedComponents.t2
+      prop := trivial }
   isTotallyDisconnected := ConnectedComponents.totallyDisconnectedSpace
 #align CompHaus.to_Profinite_obj CompHaus.toProfiniteObj
 
@@ -316,12 +317,12 @@ variable {X Y : Profinite.{u}} (f : X ⟶ Y)
 
 /-- Any morphism of profinite spaces is a closed map. -/
 theorem isClosedMap : IsClosedMap f :=
-  CompHaus.isClosedMap _
+  CompHausLike.isClosedMap _
 #align Profinite.is_closed_map Profinite.isClosedMap
 
 /-- Any continuous bijection of profinite spaces induces an isomorphism. -/
 theorem isIso_of_bijective (bij : Function.Bijective f) : IsIso f :=
-  haveI := CompHaus.isIso_of_bijective (profiniteToCompHaus.map f) bij
+  haveI := CompHausLike.isIso_of_bijective (profiniteToCompHaus.map f) bij
   isIso_of_fully_faithful profiniteToCompHaus _
 #align Profinite.is_iso_of_bijective Profinite.isIso_of_bijective
 
@@ -342,12 +343,12 @@ instance forget_reflectsIsomorphisms : (forget Profinite).ReflectsIsomorphisms :
 noncomputable
 def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
   @asIso _ _ _ _ ⟨f, f.continuous⟩ (@isIso_of_reflects_iso _ _ _ _ _ _ _ profiniteToCompHaus
-    (CompHaus.isoOfHomeo f).isIso_hom _)
+    (CompHausLike.isoOfHomeo f).isIso_hom _)
 #align Profinite.iso_of_homeo Profinite.isoOfHomeo
 
 /-- Construct a homeomorphism from an isomorphism. -/
 @[simps!]
-def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y := CompHaus.homeoOfIso (profiniteToCompHaus.mapIso f)
+def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y := CompHausLike.homeoOfIso (profiniteToCompHaus.mapIso f)
 #align Profinite.homeo_of_iso Profinite.homeoOfIso
 
 /-- The equivalence between isomorphisms in `Profinite` and homeomorphisms
@@ -413,7 +414,7 @@ theorem mono_iff_injective {X Y : Profinite.{u}} (f : X ⟶ Y) : Mono f ↔ Func
     haveI : Limits.PreservesLimits profiniteToCompHaus := inferInstance
     haveI : Mono (profiniteToCompHaus.map f) := inferInstance
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [← CompHaus.mono_iff_injective]
+    erw [← CompHausLike.mono_iff_injective]
     assumption
   · rw [← CategoryTheory.mono_iff_injective]
     exact (forget Profinite).mono_of_mono_map (f := f)

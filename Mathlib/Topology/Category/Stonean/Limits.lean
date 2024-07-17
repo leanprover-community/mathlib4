@@ -153,7 +153,8 @@ def pullback : Stonean where
       exact IsCompact.image isCompact_univ i.continuous
     is_hausdorff := by
       dsimp [TopCat.of]
-      exact inferInstance }
+      exact inferInstance
+    prop := trivial }
   extrDisc := by
     constructor
     intro U hU
@@ -248,7 +249,7 @@ lemma pullback.hom_ext {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : Ope
   exact hfst
 
 /-- The explicit pullback cone is a limit cone. -/
-def pullback.isLimit  : IsLimit (pullback.cone f hi) :=
+def pullback.isLimit : IsLimit (pullback.cone f hi) :=
   Limits.PullbackCone.isLimitAux _
     (fun s => pullback.lift f hi s.fst s.snd s.condition)
     (fun _ => pullback.lift_fst _ _ _ _ _)
@@ -269,13 +270,14 @@ def pullbackIsoPullback : Stonean.pullback f hi ≅
   { hom :=
       Limits.pullback.lift (pullback.fst _ hi) (pullback.snd _ hi) (pullback.condition f hi)
     inv :=
-      pullback.lift f hi Limits.pullback.fst Limits.pullback.snd Limits.pullback.condition
+      pullback.lift f hi (Limits.pullback.fst _ _) (Limits.pullback.snd _ _)
+        Limits.pullback.condition
     hom_inv_id :=
       pullback.hom_ext f hi _ _ (by simp only [pullback.cone_pt, Category.assoc, pullback.lift_fst,
         limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.id_comp])
     inv_hom_id := by
-      refine Limits.pullback.hom_ext (k := (pullback.lift f hi Limits.pullback.fst
-        Limits.pullback.snd Limits.pullback.condition ≫ Limits.pullback.lift
+      refine Limits.pullback.hom_ext (k := (pullback.lift f hi (Limits.pullback.fst _ _)
+        (Limits.pullback.snd _ _) Limits.pullback.condition ≫ Limits.pullback.lift
         (pullback.fst _ hi) (pullback.snd _ hi) (pullback.condition f hi))) ?_ ?_
       · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
           pullback.lift_fst, Category.id_comp]

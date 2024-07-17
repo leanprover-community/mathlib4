@@ -3,6 +3,7 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
+import Mathlib.Algebra.ContinuedFractions.Determinant
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
 import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Basic
@@ -17,8 +18,8 @@ import Mathlib.Tactic.Monotonicity
 ## Summary
 
 This file contains useful approximations for the values involved in the continued fractions
-computation `GenContFract.of`. In particular, we derive the so-called *determinant formula* for
-`GenContFract.of`: `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)`.
+computation `GenContFract.of`. In particular, we show that the generalized continued fraction given
+by `GenContFract.of` in fact is a (regular) continued fraction.
 
 Moreover, we derive some upper bounds for the error term when computing a continued fraction up a
 given position, i.e. bounds for the term
@@ -33,6 +34,7 @@ in `Algebra.ContinuedFractions.Computation.ApproximationCorollaries`.
 - `GenContFract.exists_int_eq_of_partDen`: shows that all partial denominators
   `bᵢ` correspond to an integer.
 - `GenContFract.of_one_le_get?_partDen`: shows that `1 ≤ bᵢ`.
+- `ContFract.of` returns the regular continued fraction of a value.
 - `GenContFract.succ_nth_fib_le_of_nthDen`: shows that the `n`th denominator
   `Bₙ` is greater than or equal to the `n + 1`th fibonacci number `Nat.fib (n + 1)`.
 - `GenContFract.le_of_succ_get?_den`: shows that `bₙ * Bₙ ≤ Bₙ₊₁`, where `bₙ` is
@@ -43,18 +45,18 @@ in `Algebra.ContinuedFractions.Computation.ApproximationCorollaries`.
 ## References
 
 - [*Hardy, GH and Wright, EM and Heath-Brown, Roger and Silverman, Joseph*][hardy2008introduction]
-- https://en.wikipedia.org/wiki/Generalized_continued_fraction#The_determinant_formula
 
 -/
 
-
-namespace GenContFract
+open GenContFract
 
 open GenContFract (of)
 
 open Int
 
 variable {K : Type*} {v : K} {n : ℕ} [LinearOrderedField K] [FloorRing K]
+
+namespace GenContFract
 
 namespace IntFractPair
 
@@ -178,6 +180,34 @@ theorem exists_int_eq_of_partDen {b : K}
   have : ∃ z : ℤ, gp.b = (z : K) := (of_partNum_eq_one_and_exists_int_partDen_eq nth_s_eq).right
   rwa [gp_b_eq_b_n] at this
 #align generalized_continued_fraction.exists_int_eq_of_part_denom GenContFract.exists_int_eq_of_partDen
+
+end GenContFract
+
+variable (v)
+
+theorem GenContFract.of_isSimpContFract :
+    (of v).IsSimpContFract := fun _ _ nth_partNum_eq =>
+  of_partNum_eq_one nth_partNum_eq
+#align generalized_continued_fraction.of_is_simple_continued_fraction GenContFract.of_isSimpContFract
+
+/-- Creates the simple continued fraction of a value. -/
+nonrec def SimpContFract.of : SimpContFract K :=
+  ⟨of v, GenContFract.of_isSimpContFract v⟩
+#align simple_continued_fraction.of SimpContFract.of
+
+theorem SimpContFract.of_isContFract :
+    (SimpContFract.of v).IsContFract := fun _ _ nth_partDen_eq =>
+  lt_of_lt_of_le zero_lt_one (of_one_le_get?_partDen nth_partDen_eq)
+#align simple_continued_fraction.of_is_continued_fraction SimpContFract.of_isContFract
+
+/-- Creates the continued fraction of a value. -/
+def ContFract.of : ContFract K :=
+  ⟨SimpContFract.of v, SimpContFract.of_isContFract v⟩
+#align continued_fraction.of ContFract.of
+
+variable {v}
+
+namespace GenContFract
 
 /-!
 One of our next goals is to show that `bₙ * Bₙ ≤ Bₙ₊₁`. For this, we first show that the partial
@@ -306,62 +336,6 @@ theorem of_den_mono : (of v).dens n ≤ (of v).dens (n + 1) := by
       _ ≤ g.dens (n + 1) := le_of_succ_get?_den nth_partDen_eq
 #align generalized_continued_fraction.of_denom_mono GenContFract.of_den_mono
 
-section Determinant
-
-/-!
-### Determinant Formula
-
-Next we prove the so-called *determinant formula* for `GenContFract.of`:
-`Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)`.
--/
-
-
-theorem determinant_aux (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
-    ((of v).contsAux n).a * ((of v).contsAux (n + 1)).b -
-      ((of v).contsAux n).b * ((of v).contsAux (n + 1)).a = (-1) ^ n := by
-  induction n with
-  | zero => simp [contsAux]
-  | succ n IH =>
-    -- set up some shorthand notation
-    let g := of v
-    let conts := contsAux g (n + 2)
-    set pred_conts := contsAux g (n + 1) with pred_conts_eq
-    set ppred_conts := contsAux g n with ppred_conts_eq
-    let pA := pred_conts.a
-    let pB := pred_conts.b
-    let ppA := ppred_conts.a
-    let ppB := ppred_conts.b
-    -- let's change the goal to something more readable
-    change pA * conts.b - pB * conts.a = (-1) ^ (n + 1)
-    have not_terminated_at_n : ¬TerminatedAt g n := Or.resolve_left hyp n.succ_ne_zero
-    obtain ⟨gp, s_nth_eq⟩ : ∃ gp, g.s.get? n = some gp :=
-      Option.ne_none_iff_exists'.1 not_terminated_at_n
-    -- unfold the recurrence relation for `conts` once and simplify to derive the following
-    suffices pA * (ppB + gp.b * pB) - pB * (ppA + gp.b * pA) = (-1) ^ (n + 1) by
-      simp only [conts, contsAux_recurrence s_nth_eq ppred_conts_eq pred_conts_eq]
-      have gp_a_eq_one : gp.a = 1 := of_partNum_eq_one (partNum_eq_s_a s_nth_eq)
-      rw [gp_a_eq_one, this.symm]
-      ring
-    suffices pA * ppB - pB * ppA = (-1) ^ (n + 1) by calc
-      pA * (ppB + gp.b * pB) - pB * (ppA + gp.b * pA) =
-          pA * ppB + pA * gp.b * pB - pB * ppA - pB * gp.b * pA := by ring
-      _ = pA * ppB - pB * ppA := by ring
-      _ = (-1) ^ (n + 1) := by assumption
-    suffices ppA * pB - ppB * pA = (-1) ^ n by
-      have pow_succ_n : (-1 : K) ^ (n + 1) = -1 * (-1) ^ n := pow_succ' (-1) n
-      rw [pow_succ_n, ← this]
-      ring
-    exact IH <| Or.inr <| mt (terminated_stable <| n.sub_le 1) not_terminated_at_n
-#align generalized_continued_fraction.determinant_aux GenContFract.determinant_aux
-
-/-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)`. -/
-theorem determinant (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
-    (of v).nums n * (of v).dens (n + 1) - (of v).dens n * (of v).nums (n + 1) = (-1) ^ (n + 1) :=
-  determinant_aux <| Or.inr <| not_terminatedAt_n
-#align generalized_continued_fraction.determinant GenContFract.determinant
-
-end Determinant
-
 section ErrorTerm
 
 /-!
@@ -416,7 +390,7 @@ theorem sub_convs_eq {ifp : IntFractPair K}
           (not_congr of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none).2 this
         exact Or.inr this
     have determinant_eq : pA * B - pB * A = (-1) ^ n :=
-      determinant_aux n_eq_zero_or_not_terminatedAt_pred_n
+      (SimpContFract.of v).determinant_aux n_eq_zero_or_not_terminatedAt_pred_n
     -- now all we got to do is to rewrite this equality in our goal and re-arrange terms;
     -- however, for this, we first have to derive quite a few tedious inequalities.
     have pB_ineq : (fib n : K) ≤ pB :=

@@ -6,6 +6,7 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Functor.Hom
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.Data.ULift
+import Mathlib.Logic.Function.ULift
 
 #align_import category_theory.yoneda from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
@@ -346,6 +347,15 @@ lemma yonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {F : Cᵒᵖ ⥤ Type v
   obtain ⟨u, rfl⟩ := yonedaEquiv.surjective t
   rw [yonedaEquiv_naturality', Equiv.symm_apply_apply, Equiv.symm_apply_apply]
 
+/-- Two morphisms of presheaves of types `P ⟶ Q` coincide if the precompositions
+with morphisms `yoneda.obj X ⟶ P` agree. -/
+lemma hom_ext_yoneda {P Q : Cᵒᵖ ⥤ Type v₁} {f g : P ⟶ Q}
+    (h : ∀ (X : C) (p : yoneda.obj X ⟶ P), p ≫ f = p ≫ g) :
+    f = g := by
+  ext X x
+  simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
+    using congr_arg (yonedaEquiv) (h _ (yonedaEquiv.symm x))
+
 variable (C)
 
 /-- The "Yoneda evaluation" functor, which sends `X : Cᵒᵖ` and `F : Cᵒᵖ ⥤ Type`
@@ -637,5 +647,22 @@ lemma isIso_of_coyoneda_map_bijective {X Y : C} (f : X ⟶ Y)
   simp only [Category.comp_id, ← Category.assoc, hg, Category.id_comp]
 
 end CoyonedaLemma
+
+section
+
+variable {C}
+variable {D : Type*} [Category.{v₁} D] (F : C ⥤ D)
+
+/-- The natural transformation `yoneda.obj X ⟶ F.op ⋙ yoneda.obj (F.obj X)`
+when `F : C ⥤ D` and `X : C`. -/
+def yonedaMap (X : C) : yoneda.obj X ⟶ F.op ⋙ yoneda.obj (F.obj X) :=
+  yonedaEquiv.symm (𝟙 _)
+
+@[simp]
+lemma yonedaMap_app_apply {Y : C} {X : Cᵒᵖ} (f : X.unop ⟶ Y) :
+    (yonedaMap F Y).app X f = F.map f := by
+  simp [yonedaMap, yonedaEquiv]
+
+end
 
 end CategoryTheory
