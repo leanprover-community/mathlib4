@@ -31,8 +31,14 @@ fi
 # Check the CI status of the latest commit on the 'nightly-testing' branch
 status=$(gh run list --branch nightly-testing | grep -m1 . | awk '{print $1}')
 if [ "$status" != "completed" ]; then
-  echo "The latest commit on the 'nightly-testing' branch did not pass CI. Please fix the issues and try again."
-  exit 1
+  if [ "$status" != "in_progress" ]; then
+    echo "The latest commit on the 'nightly-testing' branch did not pass CI. Please fix the issues and try again."
+    gh run list --branch nightly-testing
+    exit 1
+  else
+    echo "The latest commit on 'nightly-testing' is still running CI."
+    read -p "Press enter to continue, or ctrl-C if you'd prefer to wait for CI."
+  fi
 fi
 
 echo "### Creating a PR for the nightly adaptation for $NIGHTLYDATE"
@@ -54,6 +60,7 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### Automatically choosing `lean-toolchain` and `lake-manifest.json` from the 'newer' branch"
   echo "### In this case, the 'newer' branch is 'bump/$BUMPVERSION'"
   git checkout bump/$BUMPVERSION -- lean-toolchain lake-manifest.json
+fi
 
 # Check if there are more merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -78,6 +85,7 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### Automatically choosing `lean-toolchain` and `lake-manifest.json` from the 'newer' branch"
   echo "### In this case, the 'newer' branch is 'origin/nightly-testing'"
   git checkout origin/nightly-testing -- lean-toolchain lake-manifest.json
+fi
 
 # Check if there are more merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -133,6 +141,7 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### Automatically choosing `lean-toolchain` and `lake-manifest.json` from the 'newer' branch"
   echo "### In this case, the 'newer' branch is 'bump/nightly-$NIGHTLYDATE'"
   git checkout bump/nightly-$NIGHTLYDATE -- lean-toolchain lake-manifest.json
+fi
 
 # Check if there are more merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
