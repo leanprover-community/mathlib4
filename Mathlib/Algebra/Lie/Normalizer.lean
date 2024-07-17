@@ -71,11 +71,11 @@ theorem normalizer_inf : (N₁ ⊓ N₂).normalizer = N₁.normalizer ⊓ N₂.n
   ext; simp [← forall_and]
 #align lie_submodule.normalizer_inf LieSubmodule.normalizer_inf
 
-@[mono]
+@[gcongr, mono]
 theorem normalizer_mono (h : N₁ ≤ N₂) : normalizer N₁ ≤ normalizer N₂ := by
   intro m hm
   rw [mem_normalizer] at hm ⊢
-  exact fun x => h (hm x)
+  exact fun x ↦ h (hm x)
 
 theorem monotone_normalizer : Monotone (normalizer : LieSubmodule R L M → LieSubmodule R L M) :=
   fun _ _ ↦ normalizer_mono

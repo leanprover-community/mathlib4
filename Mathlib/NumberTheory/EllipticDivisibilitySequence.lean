@@ -3,7 +3,6 @@ Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.EvenOddRec
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
@@ -65,7 +64,7 @@ elliptic, divisibility, sequence
 
 universe u v w
 
-variable {R : Type u} [CommRing R] (W : ℤ → R)
+variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] (W : ℤ → R) (f : R →+* S)
 
 /-- The proposition that a sequence indexed by integers is an elliptic sequence. -/
 def IsEllSequence : Prop :=
@@ -102,8 +101,8 @@ lemma IsDivSequence.smul (h : IsDivSequence W) (x : R) : IsDivSequence (x • W)
 lemma IsEllDivSequence.smul (h : IsEllDivSequence W) (x : R) : IsEllDivSequence (x • W) :=
   ⟨h.left.smul x, h.right.smul x⟩
 
-/-- The auxiliary sequence for a normalised EDS `W : ℕ → R`,
-with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = 1`, `W(3) = c`, and `W(4) = d`. -/
+/-- The auxiliary sequence for a normalised EDS `W : ℕ → R`, with initial values
+`W(0) = 0`, `W(1) = 1`, `W(2) = 1`, `W(3) = c`, and `W(4) = d` and extra parameter `b`. -/
 def preNormEDS' (b c d : R) : ℕ → R
   | 0 => 0
   | 1 => 1
@@ -159,8 +158,8 @@ lemma preNormEDS'_even (m : ℕ) : preNormEDS' b c d (2 * (m + 3)) =
   simp only [Nat.mul_add_div two_pos]
   rfl
 
-/-- The auxiliary sequence for a normalised EDS `W : ℤ → R`,
-with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = 1`, `W(3) = c`, and `W(4) = d`.
+/-- The auxiliary sequence for a normalised EDS `W : ℤ → R`, with initial values
+`W(0) = 0`, `W(1) = 1`, `W(2) = 1`, `W(3) = c`, and `W(4) = d` and extra parameter `b`.
 
 This extends `preNormEDS'` by defining its values at negative integers. -/
 def preNormEDS (n : ℤ) : R :=
@@ -208,17 +207,17 @@ lemma preNormEDS_even (m : ℕ) : preNormEDS b c d (2 * (m + 3)) =
 lemma preNormEDS_neg (n : ℤ) : preNormEDS b c d (-n) = -preNormEDS b c d n := by
   rw [preNormEDS, Int.sign_neg, Int.cast_neg, neg_mul, Int.natAbs_neg, preNormEDS]
 
-/-- The canonical example of a normalised EDS `W : ℤ → R`,
-with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = d * b`.
+/-- The canonical example of a normalised EDS `W : ℤ → R`, with initial values
+`W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = d * b`.
 
 This is defined in terms of `preNormEDS` whose even terms differ by a factor of `b`. -/
 def normEDS (n : ℤ) : R :=
-  preNormEDS (b ^ 4) c d n * if Even n.natAbs then b else 1
+  preNormEDS (b ^ 4) c d n * if Even n then b else 1
 
 @[simp]
 lemma normEDS_ofNat (n : ℕ) :
     normEDS b c d n = preNormEDS' (b ^ 4) c d n * if Even n then b else 1 := by
-  rw [normEDS, preNormEDS_ofNat, Int.natAbs_ofNat]
+  simp only [normEDS, preNormEDS_ofNat, Int.even_coe_nat]
 
 @[simp]
 lemma normEDS_zero : normEDS b c d 0 = 0 := by
@@ -256,7 +255,7 @@ lemma normEDS_even (m : ℕ) : normEDS b c d (2 * (m + 3)) * b =
 
 @[simp]
 lemma normEDS_neg (n : ℤ) : normEDS b c d (-n) = -normEDS b c d n := by
-  rw [normEDS, preNormEDS_neg, Int.natAbs_neg, neg_mul, normEDS]
+  simp only [normEDS, preNormEDS_neg, neg_mul, even_neg]
 
 /-- Strong recursion principle for a normalised EDS: if we have
  * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
@@ -287,3 +286,20 @@ noncomputable def normEDSRec {P : ℕ → Sort u}
   normEDSRec' zero one two three four
     (fun _ ih => by apply even <;> exact ih _ <| by linarith only)
     (fun _ ih => by apply odd <;> exact ih _ <| by linarith only) n
+
+lemma map_preNormEDS' (n : ℕ) : f (preNormEDS' b c d n) = preNormEDS' (f b) (f c) (f d) n := by
+  induction n using normEDSRec' with
+  | zero => rw [preNormEDS'_zero, map_zero, preNormEDS'_zero]
+  | one => rw [preNormEDS'_one, map_one, preNormEDS'_one]
+  | two => rw [preNormEDS'_two, map_one, preNormEDS'_two]
+  | three => rw [preNormEDS'_three, preNormEDS'_three]
+  | four => rw [preNormEDS'_four, preNormEDS'_four]
+  | _ _ ih =>
+    simp only [preNormEDS'_odd, preNormEDS'_even, map_one, map_sub, map_mul, map_pow, apply_ite f]
+    repeat rw [ih _ <| by linarith only]
+
+lemma map_preNormEDS (n : ℤ) : f (preNormEDS b c d n) = preNormEDS (f b) (f c) (f d) n := by
+  rw [preNormEDS, map_mul, map_intCast, map_preNormEDS', preNormEDS]
+
+lemma map_normEDS (n : ℤ) : f (normEDS b c d n) = normEDS (f b) (f c) (f d) n := by
+  rw [normEDS, map_mul, map_preNormEDS, map_pow, apply_ite f, map_one, normEDS]

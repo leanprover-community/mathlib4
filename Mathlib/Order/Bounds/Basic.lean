@@ -311,11 +311,9 @@ theorem IsGreatest.upperBounds_eq (h : IsGreatest s a) : upperBounds s = Ici a :
   h.isLUB.upperBounds_eq
 #align is_greatest.upper_bounds_eq IsGreatest.upperBounds_eq
 
--- Porting note (#10756): new lemma
 theorem IsGreatest.lt_iff (h : IsGreatest s a) : a < b ↔ ∀ x ∈ s, x < b :=
   ⟨fun hlt _x hx => (h.2 hx).trans_lt hlt, fun h' => h' _ h.1⟩
 
--- Porting note (#10756): new lemma
 theorem IsLeast.lt_iff (h : IsLeast s a) : b < a ↔ ∀ x ∈ s, b < x :=
   h.dual.lt_iff
 
@@ -626,19 +624,19 @@ end
 -/
 
 
-theorem isGreatest_singleton : IsGreatest {a} a :=
+@[simp] theorem isGreatest_singleton : IsGreatest {a} a :=
   ⟨mem_singleton a, fun _ hx => le_of_eq <| eq_of_mem_singleton hx⟩
 #align is_greatest_singleton isGreatest_singleton
 
-theorem isLeast_singleton : IsLeast {a} a :=
+@[simp] theorem isLeast_singleton : IsLeast {a} a :=
   @isGreatest_singleton αᵒᵈ _ a
 #align is_least_singleton isLeast_singleton
 
-theorem isLUB_singleton : IsLUB {a} a :=
+@[simp] theorem isLUB_singleton : IsLUB {a} a :=
   isGreatest_singleton.isLUB
 #align is_lub_singleton isLUB_singleton
 
-theorem isGLB_singleton : IsGLB {a} a :=
+@[simp] theorem isGLB_singleton : IsGLB {a} a :=
   isLeast_singleton.isGLB
 #align is_glb_singleton isGLB_singleton
 

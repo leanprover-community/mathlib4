@@ -59,12 +59,15 @@ namespace Gal
 
 instance instGroup : Group (Gal p) :=
   inferInstanceAs (Group (p.SplittingField ≃ₐ[F] p.SplittingField))
+
 instance instFintype : Fintype (Gal p) :=
   inferInstanceAs (Fintype (p.SplittingField ≃ₐ[F] p.SplittingField))
 
-instance : CoeFun p.Gal fun _ => p.SplittingField → p.SplittingField :=
-  -- Porting note: was AlgEquiv.hasCoeToFun
-  inferInstanceAs (CoeFun (p.SplittingField ≃ₐ[F] p.SplittingField) _)
+instance : EquivLike p.Gal p.SplittingField p.SplittingField :=
+  inferInstanceAs (EquivLike (p.SplittingField ≃ₐ[F] p.SplittingField) _ _)
+
+instance : AlgEquivClass p.Gal F p.SplittingField p.SplittingField :=
+  inferInstanceAs (AlgEquivClass (p.SplittingField ≃ₐ[F] p.SplittingField) F _ _)
 
 instance applyMulSemiringAction : MulSemiringAction p.Gal p.SplittingField :=
   AlgEquiv.applyMulSemiringAction
@@ -183,7 +186,6 @@ instance galActionAux : MulAction p.Gal (rootSet p p.SplittingField) where
 instance smul [Fact (p.Splits (algebraMap F E))] : SMul p.Gal (rootSet p E) where
   smul ϕ x := rootsEquivRoots p E (ϕ • (rootsEquivRoots p E).symm x)
 
--- Porting note (#10756): new theorem
 theorem smul_def [Fact (p.Splits (algebraMap F E))] (ϕ : p.Gal) (x : rootSet p E) :
     ϕ • x = rootsEquivRoots p E (ϕ • (rootsEquivRoots p E).symm x) :=
   rfl

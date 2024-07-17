@@ -181,7 +181,7 @@ unsafe def nextDnPos (e m) (v : ValidFinite e m) : Float :=
       Float.finite false e m' (by unfold ValidFinite at *; rw [ss]; exact v)
     else
       if h : e = emin then Float.finite false emin m' lcProof
-      else Float.finite false e.pred (bit1 m') lcProof
+      else Float.finite false e.pred (2 * m' + 1) lcProof
 #align fp.next_dn_pos FP.nextDnPos
 
 @[nolint docBlame]
