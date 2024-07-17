@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
+import Mathlib.Algebra.Polynomial.Expand
+import Mathlib.RingTheory.Polynomial.Tower
 
 #align_import ring_theory.integral_closure from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
 

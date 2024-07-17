@@ -5,6 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 
 #align_import ring_theory.integral_closure from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
 
