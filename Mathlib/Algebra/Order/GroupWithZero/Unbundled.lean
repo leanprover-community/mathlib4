@@ -334,15 +334,15 @@ theorem mul_lt_mul_of_lt_of_lt_of_pos_of_pos' [PosMulStrictMono α] [MulPosStric
 @[deprecated (since := "2024-07-13")]
 alias mul_lt_mul_of_lt_of_lt' := mul_lt_mul_of_lt_of_lt_of_pos_of_pos'
 
--- this name was in `Algebra.Order.Ring.Defs`
 alias mul_le_mul := mul_le_mul_of_le_of_le_of_nonneg_of_nonneg'
 attribute [gcongr] mul_le_mul
+#align mul_le_mul mul_le_mul
 
--- this name was in `Algebra.Order.Ring.Defs`
 alias mul_lt_mul := mul_lt_mul_of_lt_of_le_of_pos_of_nonneg
+#align mul_lt_mul mul_lt_mul
 
--- this name was in `Algebra.Order.Ring.Defs`
 alias mul_lt_mul' := mul_lt_mul_of_le_of_lt_of_nonneg_of_pos
+#align mul_lt_mul' mul_lt_mul'
 
 theorem mul_le_of_mul_le_of_nonneg_left [PosMulMono α] (h : a * b ≤ c) (hle : d ≤ b) (a0 : 0 ≤ a) :
     a * d ≤ c :=
@@ -529,8 +529,8 @@ theorem Right.mul_lt_mul_of_lt_of_lt_of_nonneg_of_nonneg [PosMulMono α] [MulPos
 
 alias mul_lt_mul_of_lt_of_lt_of_nonneg_of_nonneg := Left.mul_lt_mul_of_lt_of_lt_of_nonneg_of_nonneg
 
--- this name was in `Algebra.Order.Ring.Defs`
 alias mul_lt_mul'' := Left.mul_lt_mul_of_lt_of_lt_of_nonneg_of_nonneg
+#align mul_lt_mul'' mul_lt_mul''
 attribute [gcongr] mul_lt_mul''
 
 theorem mul_self_le_mul_self [PosMulMono α] [MulPosMono α] (ha : 0 ≤ a) (hab : a ≤ b) :
@@ -679,6 +679,7 @@ theorem Left.neg_of_mul_neg_right [PosMulMono α] (h : a * b < 0) (a0 : 0 ≤ a)
 #align left.neg_of_mul_neg_left Left.neg_of_mul_neg_right
 
 alias neg_of_mul_neg_right := Left.neg_of_mul_neg_right
+#align neg_of_mul_neg_right neg_of_mul_neg_right
 
 theorem Right.neg_of_mul_neg_right [MulPosMono α] (h : a * b < 0) (a0 : 0 ≤ a) : b < 0 :=
   lt_of_not_ge fun b0 : b ≥ 0 => (Right.mul_nonneg a0 b0).not_lt h
@@ -689,6 +690,7 @@ theorem Left.neg_of_mul_neg_left [PosMulMono α] (h : a * b < 0) (b0 : 0 ≤ b) 
 #align left.neg_of_mul_neg_right Left.neg_of_mul_neg_left
 
 alias neg_of_mul_neg_left := Left.neg_of_mul_neg_left
+#align neg_of_mul_neg_left neg_of_mul_neg_left
 
 theorem Right.neg_of_mul_neg_left [MulPosMono α] (h : a * b < 0) (b0 : 0 ≤ b) : a < 0 :=
   lt_of_not_ge fun a0 : a ≥ 0 => (Right.mul_nonneg a0 b0).not_lt h

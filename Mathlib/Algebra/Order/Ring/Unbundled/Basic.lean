@@ -378,14 +378,6 @@ section StrictOrderedSemiring
 variable [Semiring α] [PartialOrder α] [ZeroLEOneClass α] [PosMulStrictMono α] [MulPosStrictMono α]
   [CovariantClass α α (· + ·) (· < ·)] {a b c d : α}
 
-theorem mul_lt_mul (hac : a < c) (hbd : b ≤ d) (hb : 0 < b) (hc : 0 ≤ c) : a * b < c * d :=
-  (mul_lt_mul_of_pos_right hac hb).trans_le <| mul_le_mul_of_nonneg_left hbd hc
-#align mul_lt_mul mul_lt_mul
-
-theorem mul_lt_mul' (hac : a ≤ c) (hbd : b < d) (hb : 0 ≤ b) (hc : 0 < c) : a * b < c * d :=
-  (mul_le_mul_of_nonneg_right hac hb).trans_lt <| mul_lt_mul_of_pos_left hbd hc
-#align mul_lt_mul' mul_lt_mul'
-
 @[simp]
 theorem pow_pos (H : 0 < a) : ∀ n : ℕ, 0 < a ^ n
   | 0 => by
@@ -415,11 +407,6 @@ protected theorem Decidable.mul_lt_mul'' [@DecidableRel α (· ≤ ·)] (h1 : a 
   h4.lt_or_eq_dec.elim (fun b0 => mul_lt_mul h1 h2.le b0 <| h3.trans h1.le) fun b0 => by
     rw [← b0, mul_zero]; exact mul_pos (h3.trans_lt h1) (h4.trans_lt h2)
 #align decidable.mul_lt_mul'' Decidable.mul_lt_mul''
-
-@[gcongr]
-theorem mul_lt_mul'' : a < c → b < d → 0 ≤ a → 0 ≤ b → a * b < c * d := by classical
-  exact Decidable.mul_lt_mul''
-#align mul_lt_mul'' mul_lt_mul''
 
 theorem lt_mul_left (hn : 0 < a) (hm : 1 < b) : a < b * a := by
   convert mul_lt_mul_of_pos_right hm hn
@@ -616,14 +603,6 @@ theorem nonneg_of_mul_nonneg_left (h : 0 ≤ a * b) (hb : 0 < b) : 0 ≤ a :=
 theorem nonneg_of_mul_nonneg_right (h : 0 ≤ a * b) (ha : 0 < a) : 0 ≤ b :=
   le_of_not_gt fun hb => (mul_neg_of_pos_of_neg ha hb).not_le h
 #align nonneg_of_mul_nonneg_right nonneg_of_mul_nonneg_right
-
-theorem neg_of_mul_neg_left (h : a * b < 0) (hb : 0 ≤ b) : a < 0 :=
-  lt_of_not_ge fun ha => (mul_nonneg ha hb).not_lt h
-#align neg_of_mul_neg_left neg_of_mul_neg_left
-
-theorem neg_of_mul_neg_right (h : a * b < 0) (ha : 0 ≤ a) : b < 0 :=
-  lt_of_not_ge fun hb => (mul_nonneg ha hb).not_lt h
-#align neg_of_mul_neg_right neg_of_mul_neg_right
 
 theorem nonpos_of_mul_nonpos_left (h : a * b ≤ 0) (hb : 0 < b) : a ≤ 0 :=
   le_of_not_gt fun ha : a > 0 => (mul_pos ha hb).not_le h
@@ -994,4 +973,3 @@ end LinearOrderedRing
 @[deprecated (since := "2023-12-23")] alias zero_le_mul_right := mul_nonneg_iff_of_pos_right
 @[deprecated (since := "2023-12-23")] alias zero_lt_mul_left := mul_pos_iff_of_pos_left
 @[deprecated (since := "2023-12-23")] alias zero_lt_mul_right := mul_pos_iff_of_pos_right
-
