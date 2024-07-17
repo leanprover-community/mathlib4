@@ -5,11 +5,25 @@ Authors: Daniel Weber
 -/
 import Mathlib.Topology.Separation
 
+/-!
+# Derived set
+
+This file defines the derived set of a set, the set of all `AccPt`s of its principal filter,
+and proves some properties of it.
+
+-/
+
 open Filter Topology
 
 variable {X : Type*} [TopologicalSpace X]
 
+/--
+The derived set of a set is the set of all accumulation points of it.
+-/
 def derivedSet (A : Set X) : Set X := {x | AccPt x (𝓟 A)}
+
+@[simp]
+lemma mem_derivedSet {A : Set X} {x : X} : x ∈ derivedSet A ↔ AccPt x (𝓟 A) := Iff.rfl
 
 lemma derivedSet_union (A B : Set X) : derivedSet (A ∪ B) = derivedSet A ∪ derivedSet B := by
   ext x
