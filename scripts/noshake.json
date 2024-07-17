@@ -270,6 +270,8 @@
   ["Mathlib.CategoryTheory.Functor.Basic"],
   "Mathlib.Tactic.CategoryTheory.Coherence":
   ["Mathlib.Tactic.CategoryTheory.MonoidalComp"],
+  "Mathlib.Tactic.CategoryTheory.BicategoryCoherence":
+  ["Mathlib.Tactic.CategoryTheory.BicategoricalComp"],
   "Mathlib.Tactic.CC.Addition":
   ["Mathlib.Logic.Basic", "Mathlib.Tactic.CC.Lemmas"],
   "Mathlib.Tactic.Basic": ["Batteries", "Mathlib.Tactic.Linter.OldObtain"],
