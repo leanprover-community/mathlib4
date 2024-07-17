@@ -50,13 +50,16 @@ variable (R : Type*) {V : Type*} [CommRing R] [AddCommGroup V] [NonAssocNonUnita
 def Y : V →ₗ[R] VertexOperator R V := NonAssocNonUnitalVertexAlgebra.Y
 
 theorem Y_coeff_add_left_eq (a b : V) (n : ℤ) :
-    coeff (Y R a + Y R b) n = coeff (Y R a) n + coeff (Y R b) n := by exact rfl
+    HVertexOperator.coeff (Y R a + Y R b) n =
+      HVertexOperator.coeff (Y R a) n + HVertexOperator.coeff (Y R b) n := by
+  exact rfl
 
 theorem Y_ncoef_add_left_eq (a b : V) (n : ℤ) :
-    ncoef R (Y R a + Y R b) n = ncoef R (Y R a) n + ncoef R (Y R b) n := by exact rfl
+    ncoef R (Y R a + Y R b) n = ncoef R (Y R a) n + ncoef R (Y R b) n := by
+  exact rfl
 
 theorem Y_coeff_smul_left_eq (r : R) (a : V) (n : ℤ) :
-    coeff (Y R (r • a)) n = r • coeff (Y R a) n := by
+    HVertexOperator.coeff (Y R (r • a)) n = r • HVertexOperator.coeff (Y R a) n := by
   simp only [map_smul]
   exact rfl
 
@@ -66,7 +69,8 @@ theorem Y_ncoef_smul_left_eq (r : R) (a : V) (n : ℤ) :
   exact rfl
 
 theorem coeff_add_left_eq (a b c : V) (n : ℤ) :
-    coeff (Y R (a + b)) n c = coeff (Y R a) n c + coeff (Y R b) n c := by
+    HVertexOperator.coeff (Y R (a + b)) n c =
+      HVertexOperator.coeff (Y R a) n c + HVertexOperator.coeff (Y R b) n c := by
   rw [map_add, Y_coeff_add_left_eq, LinearMap.add_apply]
 
 theorem ncoef_add_left_eq (a b c : V) (n : ℤ) :
@@ -74,7 +78,7 @@ theorem ncoef_add_left_eq (a b c : V) (n : ℤ) :
   rw [map_add, Y_ncoef_add_left_eq, LinearMap.add_apply]
 
 theorem coeff_smul_left_eq (r : R) (a b : V) (n : ℤ) :
-    coeff (Y R (r • a)) n b = r • coeff (Y R a) n b := by
+    HVertexOperator.coeff (Y R (r • a)) n b = r • HVertexOperator.coeff (Y R a) n b := by
   rw [Y_coeff_smul_left_eq, LinearMap.smul_apply]
 
 theorem ncoef_smul_left_eq (r : R) (a b : V) (n : ℤ) :
@@ -89,14 +93,14 @@ noncomputable def order [CommRing R] [AddCommGroup V]
     [NonAssocNonUnitalVertexAlgebra R V] (a b : V) : ℤ := HahnSeries.order (Y R a b)
 
 theorem coeff_zero_if_lt_order (a b : V) (n : ℤ) (h: n < order R a b) :
-    coeff (Y R a) n b = 0 := by
+    HVertexOperator.coeff (Y R a) n b = 0 := by
   rw [order] at h
-  simp only [coeff, LinearMap.coe_mk, AddHom.coe_mk]
+  simp only [HVertexOperator.coeff, LinearMap.coe_mk, AddHom.coe_mk]
   exact HahnSeries.coeff_eq_zero_of_lt_order h
 
 theorem coeff_nonzero_at_order (a b : V) (h: Y R a b ≠ 0) :
-    coeff (Y R a) (order R a b) b ≠ 0 := by
-  rw [order, coeff]
+    HVertexOperator.coeff (Y R a) (order R a b) b ≠ 0 := by
+  rw [order, HVertexOperator.coeff]
   simp only [LinearMap.coe_mk, AddHom.coe_mk]
   exact HahnSeries.coeff_order_ne_zero h
 
@@ -193,12 +197,12 @@ def creative (A : VertexOperator R V) : Prop :=
 
 /-- The state attached to a creative field is its `z^0`-coefficient at `1`. -/
 def state (A : VertexOperator R V) : V :=
-  coeff A 0 1
+  HVertexOperator.coeff A 0 1
 
 /-- A divided-power system of translation operators.  `T 1` is often written `T`. -/
 def T (R: Type*) [CommRing R] [AddCommGroupWithOne V] [NonAssocNonUnitalVertexAlgebra R V]
     (n : ℕ) : Module.End R V where
-  toFun := fun (x : V) => coeff (Y R x) n 1
+  toFun := fun (x : V) => HVertexOperator.coeff (Y R x) n 1
   map_add' := by intros; simp only [coeff_add_left_eq]
   map_smul' := by intros; simp only [coeff_smul_left_eq, RingHom.id_apply]
 
@@ -212,8 +216,9 @@ def skew_symmetry (R : Type*) [CommRing R] [AddCommGroupWithOne V]
 stabilizes identity if left translation satisfies the Leibniz rule.  We omit conditions on `f`. -/
 def translation_covariance (R : Type*) [CommRing R] [AddCommGroupWithOne V]
     [NonAssocNonUnitalVertexAlgebra R V] (A : VertexOperator R V) (f : ℕ → Module.End R V) : Prop :=
-  ∀(i : ℕ) (n : ℤ), f i * coeff A n = Finset.sum (Finset.antidiagonal i)
-  fun m => (-1 : ℤˣ) ^ m.fst • Ring.choose n m.fst • (coeff A (n - m.fst) * T R m.snd)
+  ∀(i : ℕ) (n : ℤ), f i * HVertexOperator.coeff A n =
+    Finset.sum (Finset.antidiagonal i) fun m => (-1 : ℤˣ) ^ m.fst • Ring.choose n m.fst •
+      (HVertexOperator.coeff A (n - m.fst) * T R m.snd)
 
 end VertexAlg
 
@@ -244,7 +249,7 @@ theorem Borcherds_identity (a b c : V) (r s t : ℤ) : Borcherds_id R a b c r s 
 
 theorem unit_comm (a : V) : order R a 1 = 0 := VertexAlgebra.unit_comm a
 
-theorem unit_right (a : V) : coeff (Y R a) 0 1 = a := VertexAlgebra.unit_right a
+theorem unit_right (a : V) : HVertexOperator.coeff (Y R a) 0 1 = a := VertexAlgebra.unit_right a
 
 -- homs? cofiniteness?
 

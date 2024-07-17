@@ -147,7 +147,8 @@ theorem Borcherds_sum_1_eq_zero (a b c : V) (r s t : ℤ) (h : - order R a b ≤
 theorem locality_left_eq_Borcherds_sum_2 (a b c : V) (r s: ℤ) :
     (Finset.sum (Finset.antidiagonal (Int.toNat (-s - order R b c))) fun m ↦
     (-1) ^ m.2 • Nat.choose (Int.toNat (-s - order R b c)) m.2 •
-    (coeff (Y R a) (-r - 1 - m.1)) ((coeff (Y R b) (-s - 1 - m.2)) c)) =
+    (HVertexOperator.coeff (Y R a) (-r - 1 - m.1))
+    ((HVertexOperator.coeff (Y R b) (-s - 1 - m.2)) c)) =
     Borcherds_sum_2 R a b c r s (Int.toNat (-s - order R b c)) := by
   unfold Borcherds_sum_2 ncoef
   rw [Finset.Nat.antidiagonal_eq_map']
@@ -162,7 +163,7 @@ theorem locality_left_eq_Borcherds_sum_2 (a b c : V) (r s: ℤ) :
   rw [Int.neg_sub_one_sub_nat i r 1 (-s - order R b c) (le_of_lt (Int.lt_toNat.mp hi)),
     show -s - 1 - i = -i + -s - 1 by linarith]
   intro i hi
-  have h : (coeff ((Y R) b) (-s - 1 - ↑i)) c = 0 := by
+  have h : (HVertexOperator.coeff ((Y R) b) (-s - 1 - ↑i)) c = 0 := by
     refine coeff_zero_if_lt_order R b c ?_ ?_
     simp_all only [ge_iff_le, Int.toNat_le, tsub_le_iff_right]
     linarith
@@ -170,7 +171,8 @@ theorem locality_left_eq_Borcherds_sum_2 (a b c : V) (r s: ℤ) :
 
 theorem locality_right_eq_Borcherds_sum_3 (a b c : V) (r s: ℤ) : Finset.sum (Finset.antidiagonal
     (Int.toNat (-r - order R a c))) (fun m => -(-1)^(m.2) • (Nat.choose (Int.toNat
-    (-r - order R a c)) m.2) • coeff (Y R b) (-s - 1 - m.2) (coeff (Y R a) (-r - 1 - m.1) c)) =
+    (-r - order R a c)) m.2) • HVertexOperator.coeff (Y R b) (-s - 1 - m.2)
+    (HVertexOperator.coeff (Y R a) (-r - 1 - m.1) c)) =
     Borcherds_sum_3 R a b c r s (Int.toNat (-r - order R a c)) := by
   unfold Borcherds_sum_3 ncoef
   rw [Finset.Nat.antidiagonal_eq_map]
@@ -190,7 +192,7 @@ theorem locality_right_eq_Borcherds_sum_3 (a b c : V) (r s: ℤ) : Finset.sum (F
   rw [Int.neg_sub_one_sub_nat i s 1 (-r - order R a c) (le_of_lt (Int.lt_toNat.mp hi)),
     show -r - 1 - i = -i + -r - 1 by linarith]
   intro i hi
-  have h : (coeff ((Y R) a) (-r - 1 - ↑i)) c = 0 := by
+  have h : (HVertexOperator.coeff ((Y R) a) (-r - 1 - ↑i)) c = 0 := by
     refine coeff_zero_if_lt_order R a c ?_ ?_
     simp_all only [ge_iff_le, Int.toNat_le, tsub_le_iff_right]
     linarith

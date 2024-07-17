@@ -46,10 +46,10 @@ open HVertexOperator
 /-- We write `ncoef` instead of `coefficient of a vertex operator under normalized indexing`.
 Alternative suggestions welcome. -/
 def ncoef (R) [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
-    Module.End R V := coeff A (-n - 1)
+    Module.End R V := HVertexOperator.coeff A (-n - 1)
 
 theorem coeff_eq_ncoef (A : VertexOperator R V)
-    (n : ℤ) : coeff A n = ncoef R A (-n - 1) := by
+    (n : ℤ) : HVertexOperator.coeff A n = ncoef R A (-n - 1) := by
   rw [ncoef, neg_sub, sub_neg_eq_add, add_sub_cancel_left]
 
 /-- The normal convention for the normalized coefficient of a vertex operator is either `Aₙ` or
@@ -58,11 +58,11 @@ scoped[VertexAlg] notation A "_[" n "]" => ncoef A n
 
 theorem ncoef_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
     (h : -n - 1 < HahnSeries.order (A x)) : ncoef R A n x = 0 := by
-  simp only [ncoef, coeff, LinearMap.coe_mk, AddHom.coe_mk]
+  simp only [ncoef, HVertexOperator.coeff, LinearMap.coe_mk, AddHom.coe_mk]
   exact HahnSeries.coeff_eq_zero_of_lt_order h
 
 theorem coeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
-    (h : n < HahnSeries.order (A x)) : coeff A n x = 0 := by
+    (h : n < HahnSeries.order (A x)) : HVertexOperator.coeff A n x = 0 := by
   rw [coeff_eq_ncoef, ncoef_eq_zero_of_lt_order A (-n - 1) x]
   omega
 
@@ -92,12 +92,16 @@ theorem one : (1 : VertexOperator R V) =
   rfl
 
 @[simp]
-theorem one_coeff_zero : coeff (1 : VertexOperator R V) 0 = LinearMap.id := by
-  ext v
-  simp [one]
+theorem one_coeff_zero : HVertexOperator.coeff (1 : VertexOperator R V) 0 = LinearMap.id := by
+  simp only [HVertexOperator.coeff, one, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    Function.comp_apply, HahnSeries.single.linearMap_apply, ZeroHom.toFun_eq_coe,
+    AddMonoidHom.toZeroHom_coe, HahnModule.lof_apply, Equiv.symm_apply_apply,
+    HahnSeries.single.addMonoidHom_apply_coeff, Pi.single_eq_same]
+  exact rfl
 
 @[simp]
-theorem one_coeff_ne {n : ℤ} (hn : n ≠ 0) : coeff (1 : VertexOperator R V) n = 0 := by
+theorem one_coeff_ne {n : ℤ} (hn : n ≠ 0) :
+    HVertexOperator.coeff (1 : VertexOperator R V) n = 0 := by
   ext v
   simp_all [one]
 
@@ -167,7 +171,8 @@ def hasseDeriv.linearMap (R : Type*) [CommRing R] [Module R V] (k : ℕ) :
     simp
 
 theorem hasseDeriv_coeff (k : ℕ) (A : VertexOperator R V) (n : ℤ) :
-    coeff (hasseDeriv k A) n = (Ring.choose (n + k) k) • coeff A (n + k) := by
+    HVertexOperator.coeff (hasseDeriv k A) n =
+      (Ring.choose (n + k) k) • HVertexOperator.coeff A (n + k) := by
   exact rfl
 
 theorem hasseDeriv_ncoef (k : ℕ) (A : VertexOperator R V) (n : ℤ) :
@@ -184,7 +189,7 @@ theorem hasseDeriv_zero : hasseDeriv.linearMap R 0 = LinearMap.id (M := VertexOp
   exact LinearMap.ext <| hasseDeriv_zero'
 
 theorem hasseDeriv_one_coeff (A : VertexOperator R V) (n : ℤ) :
-    coeff (hasseDeriv 1 A) n = (n + 1) • coeff A (n + 1) := by
+    HVertexOperator.coeff (hasseDeriv 1 A) n = (n + 1) • HVertexOperator.coeff A (n + 1) := by
   rw [hasseDeriv_coeff 1, Nat.cast_one, Ring.choose_one_right]
 
 /-- The derivative of a vertex operator is the first Hasse derivative, taking `∑ A_n X^n` to
@@ -212,8 +217,8 @@ theorem hasseDeriv_apply_one (k : ℕ) (hk : 0 < k) : hasseDeriv k (1 : VertexOp
   · simp_all
 
 theorem hasseDeriv_comp_coeff (k l : ℕ) (A : VertexOperator R V) :
-    coeff (hasseDeriv k (hasseDeriv l A)) =
-      Nat.choose (k + l) k • coeff (hasseDeriv (k + l) A) := by
+    HVertexOperator.coeff (hasseDeriv k (hasseDeriv l A)) =
+      Nat.choose (k + l) k • HVertexOperator.coeff (hasseDeriv (k + l) A) := by
   ext n v
   rw [coeff_apply, hasseDeriv_apply, Equiv.symm_apply_apply, hasseDeriv_apply,
     Equiv.symm_apply_apply, LaurentSeries.hasseDeriv_comp_coeff, HahnSeries.nsmul_coeff]
@@ -459,7 +464,7 @@ noncomputable def res_prod (A B : VertexOperator R V) (m : ℤ) : VertexOperator
   res_prod_left A B m + res_prod_right A B m
 
 theorem subLeft_smul_HComp_one_left_eq (A : VertexOperator R V) {m : ℤ} {k n : ℕ} :
-    coeff ((subLeft R ^ k) • HComp (1 : VertexOperator R V) A)
+    HVertexOperator.coeff ((subLeft R ^ k) • HComp (1 : VertexOperator R V) A)
       (toLex (m, Int.negSucc n)) = 0 := by
   induction k generalizing m n with
   | zero => simp
