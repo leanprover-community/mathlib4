@@ -1068,6 +1068,17 @@ theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Sp
     erw [mk_eq_mk, inseparable_iff_specializes_and]
     exact ⟨xspecy, yspecx⟩
 
+lemma Set.Subsingleton.isClosed [T1Space X] {A : Set X} (h : A.Subsingleton) : IsClosed A := by
+  rcases h.eq_empty_or_singleton with rfl | ⟨x, rfl⟩
+  · exact isClosed_empty
+  · exact isClosed_singleton
+
+lemma IsClosed.inter_singleton [T1Space X] {A : Set X} {a : X} : IsClosed (A ∩ {a}) :=
+  Subsingleton.inter_singleton.isClosed
+
+lemma IsClosed.singleton_inter [T1Space X] {A : Set X} {a : X} : IsClosed ({a} ∩ A) :=
+  Subsingleton.singleton_inter.isClosed
+
 theorem singleton_mem_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
     (hx : x ∈ s) : {x} ∈ 𝓝[s] x := by
   have : ({⟨x, hx⟩} : Set s) ∈ 𝓝 (⟨x, hx⟩ : s) := by simp [nhds_discrete]
