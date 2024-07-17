@@ -293,7 +293,7 @@ theorem eventually_codiscrete_analyticAt
   rw [eventually_iff, codiscrete, Filter.mem_mk, Set.mem_setOf_eq, ← isClosed_compl_iff,
     isClosed_and_discrete_iff]
   intro x
-  simp only [disjoint_principal_right, compl_compl, ← eventually_iff]
+  rw [disjoint_principal_right, compl_compl, ← eventually_iff]
   exact tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       continuous_subtype_val.continuousWithinAt
       (by simpa [Subtype.coe_inj] using eventually_mem_nhdsWithin)
