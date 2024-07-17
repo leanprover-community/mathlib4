@@ -81,6 +81,7 @@
   "Mathlib.Tactic.CongrM",
   "Mathlib.Tactic.Constructor",
   "Mathlib.Tactic.Continuity",
+  "Mathlib.Tactic.ContinuousFunctionalCalculus",
   "Mathlib.Tactic.Contrapose",
   "Mathlib.Tactic.Conv",
   "Mathlib.Tactic.Convert",
