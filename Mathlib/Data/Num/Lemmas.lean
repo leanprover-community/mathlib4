@@ -1600,10 +1600,9 @@ theorem divMod_to_nat (d n : PosNum) :
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
     revert IH; cases' divMod d n with q r; intro IH
     simp only [divMod] at IH ⊢
-    apply divMod_to_nat_aux <;> simp
-    · rw [← add_assoc, ← add_assoc, ← two_mul, ← two_mul, add_right_comm,
-        mul_left_comm, ← mul_add, IH.1]
-    · exact IH.2
+    apply divMod_to_nat_aux <;> simp only [Num.cast_bit1, cast_bit1]
+    · rw [← two_mul, ← two_mul, add_right_comm, mul_left_comm, ← mul_add, IH.1]
+    · omega
   · unfold divMod
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
     revert IH; cases' divMod d n with q r; intro IH
