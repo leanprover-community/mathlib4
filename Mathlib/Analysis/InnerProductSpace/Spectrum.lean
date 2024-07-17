@@ -663,32 +663,27 @@ theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // i ≠ x} → 𝕜)
   simp only [iSup, sSup, ne_eq, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
   ext v
   constructor
-  · intro h
-    simp only [Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
-      SetLike.mem_coe] at h
-    simp only [iInf, sInf, Set.mem_range, Subtype.exists, Set.iInter_exists, Submodule.mem_mk,
-      AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe]
-    intro K j hj HH
+  · simp only [iInf, sInf, Set.mem_range, Subtype.exists, Set.iInter_exists, Submodule.mem_mk,
+      AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter]
+    intro h K j hj HH
     apply h
     rw [← HH]
     intro a w hw
-    simp only [iInf, sInf, Submodule.mem_map, Subtype.exists, Set.mem_range, Set.iInter_exists,
-      Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
-      SetLike.mem_coe] at hw
+    simp only [Submodule.mem_map, Subtype.exists, Set.mem_range, Set.iInter_exists,
+      Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter] at hw
     obtain ⟨a, ⟨ha, hb⟩⟩ := hw
     rw [← hb.2]
     exact ha (eigenspace (Subtype.restrict (fun x ↦ ¬i = x) T ⟨j, hj⟩) (γ ⟨j, hj⟩)) j hj rfl
   · have B := inf_restrict''' T hT hC i γ
     simp only [Submodule.mem_iInf, Subtype.forall, Submodule.mem_mk, AddSubmonoid.mem_mk,
-      AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe]
+      AddSubsemigroup.mem_mk, Set.mem_iInter, ultra_silly_lemma,
+      Submodule.map_iSup, Submodule.map_top, Submodule.range_subtype] at *
     intro h F hH
     have hH1 : ∀ (a : 𝕜), Submodule.map (⨅ (j : {x // i ≠ x}) , eigenspace (T ↑j) (γ j)).subtype
-        (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) a) ≤ F := by exact fun a ↦ hH a
-    simp only [ne_eq, ultra_silly_lemma, Submodule.map_iSup, Submodule.map_top,
-      Submodule.range_subtype] at B
+        (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) a) ≤ F := fun a ↦ hH a
     have RR : (⨆ μ : 𝕜, Submodule.map (⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype
         (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ)) ≤ F := by
-      simp only [ne_eq, ultra_silly_lemma, iSup_le_iff, hH1, implies_true]
+      simp only [iSup_le_iff, hH1, implies_true]
     rw [B] at RR
     have Final : v ∈ ⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j) := (Submodule.mem_iInf
       fun (i_1 : {x // i ≠ x}) ↦ eigenspace (T ↑i_1) (γ i_1)).mpr fun i_1 ↦ h (↑i_1) i_1.property
