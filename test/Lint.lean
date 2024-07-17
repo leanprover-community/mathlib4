@@ -1,5 +1,5 @@
 import Mathlib.Tactic.Linter.Lint
-import Mathlib.Tactic.ToAdditive.Frontend
+import Mathlib.Tactic.ToAdditive
 
 -- TODO: the linter also runs on the #guard_msg, so disable it once
 -- See https://leanprover.zulipchat.com/#narrow/stream/348111-std4/topic/.23guard_msgs.20doesn't.20silence.20warnings/near/423534679
