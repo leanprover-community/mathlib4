@@ -3,7 +3,7 @@ Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Category.GroupCat.Basic
+import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 import Mathlib.Algebra.Ring.Equiv
 
@@ -295,14 +295,14 @@ instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat :=
 set_option linter.uppercaseLean3 false in
 #align Ring.has_forget_to_SemiRing RingCat.hasForgetToSemiRingCat
 
-instance hasForgetToAddCommGroupCat : HasForget₂ RingCat AddCommGroupCat where
+instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrp where
   -- can't use BundledHom.mkHasForget₂, since AddCommGroup is an induced category
   forget₂ :=
-    { obj := fun R => AddCommGroupCat.of R
+    { obj := fun R => AddCommGrp.of R
       -- Porting note: use `(_ := _)` similar to above.
       map := fun {R₁ R₂} f => RingHom.toAddMonoidHom (α := R₁) (β := R₂) f }
 set_option linter.uppercaseLean3 false in
-#align Ring.has_forget_to_AddCommGroup RingCat.hasForgetToAddCommGroupCat
+#align Ring.has_forget_to_AddCommGroup RingCat.hasForgetToAddCommGrp
 
 end RingCat
 
@@ -722,7 +722,7 @@ set_option linter.uppercaseLean3 false in
 -- Porting note: This was the case in mathlib3, perhaps it is different now?
 attribute [local instance] reflectsIsomorphisms_forget₂
 
-example : (forget₂ RingCat AddCommGroupCat).ReflectsIsomorphisms := by infer_instance
+example : (forget₂ RingCat AddCommGrp).ReflectsIsomorphisms := by infer_instance
 
 /-!
 `@[simp]` lemmas for `RingHom.comp` and categorical identities.

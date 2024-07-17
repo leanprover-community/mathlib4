@@ -7,6 +7,7 @@ import Mathlib.Data.Nat.SuccPred
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Algebra.Order.Ring.WithTop
+import Mathlib.Data.Nat.Cast.Order.Basic
 
 #align_import data.enat.basic from "leanprover-community/mathlib"@"ceb887ddf3344dab425292e497fa2af91498437c"
 
@@ -82,12 +83,13 @@ theorem coe_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
   rfl
 #align enat.coe_sub ENat.coe_sub
 
--- Eligible for dsimp
-@[simp, nolint simpNF] lemma coe_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
+@[simp] lemma coe_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
 #align enat.coe_mul ENat.coe_mul
 
 @[simp] theorem mul_top (hm : m ≠ 0) : m * ⊤ = ⊤ := WithTop.mul_top hm
 @[simp] theorem top_mul (hm : m ≠ 0) : ⊤ * m = ⊤ := WithTop.top_mul hm
+
+theorem top_pow {n : ℕ} (n_pos : 0 < n) : (⊤ : ℕ∞) ^ n = ⊤ := WithTop.top_pow n_pos
 
 instance canLift : CanLift ℕ∞ ℕ (↑) (· ≠ ⊤) := WithTop.canLift
 #align enat.can_lift ENat.canLift
@@ -97,12 +99,19 @@ instance : WellFoundedRelation ℕ∞ where
   wf := IsWellFounded.wf
 
 /-- Conversion of `ℕ∞` to `ℕ` sending `∞` to `0`. -/
-def toNat : MonoidWithZeroHom ℕ∞ ℕ where
-  toFun := WithTop.untop' 0
+def toNat : ℕ∞ → ℕ := WithTop.untop' 0
+
+/-- Homomorphism from `ℕ∞` to `ℕ` sending `∞` to `0`. -/
+def toNatHom : MonoidWithZeroHom ℕ∞ ℕ where
+  toFun := toNat
   map_one' := rfl
   map_zero' := rfl
   map_mul' := WithTop.untop'_zero_mul
-#align enat.to_nat ENat.toNat
+#align enat.to_nat ENat.toNatHom
+
+@[simp, norm_cast] lemma coe_toNatHom : toNatHom = toNat := rfl
+
+lemma toNatHom_apply (n : ℕ) : toNatHom n = toNat n := rfl
 
 @[simp]
 theorem toNat_coe (n : ℕ) : toNat n = n :=
@@ -161,6 +170,9 @@ theorem top_ne_coe (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
 theorem top_ne_ofNat (a : ℕ) [a.AtLeastTwo] : ⊤ ≠ (no_index (OfNat.ofNat a : ℕ∞)) :=
   nofun
 
+@[simp] lemma top_ne_zero : (⊤ : ℕ∞) ≠ 0 := nofun
+@[simp] lemma top_ne_one : (⊤ : ℕ∞) ≠ 1 := nofun
+
 @[simp]
 theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
   nofun
@@ -169,6 +181,9 @@ theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
 @[simp]
 theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℕ∞)) ≠ ⊤ :=
   nofun
+
+@[simp] lemma zero_ne_top : 0 ≠ (⊤ : ℕ∞) := nofun
+@[simp] lemma one_ne_top : 1 ≠ (⊤ : ℕ∞) := nofun
 
 @[simp]
 theorem top_sub_coe (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
@@ -219,6 +234,14 @@ theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m =
   induction m <;> simp [hn.symm]
 #align enat.to_nat_eq_iff ENat.toNat_eq_iff
 
+lemma toNat_le_of_le_coe {m : ℕ∞} {n : ℕ} (h : m ≤ n) : toNat m ≤ n := by
+  lift m to ℕ using ne_top_of_le_ne_top (coe_ne_top n) h
+  simpa using h
+
+@[gcongr]
+lemma toNat_le_toNat {m n : ℕ∞} (h : m ≤ n) (hn : n ≠ ⊤) : toNat m ≤ toNat n :=
+  toNat_le_of_le_coe <| h.trans_eq (coe_toNat hn).symm
+
 @[simp]
 theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 := by cases m <;> rfl
 #align enat.succ_def ENat.succ_def
@@ -238,6 +261,9 @@ theorem one_le_iff_pos : 1 ≤ n ↔ 0 < n :=
 theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
   one_le_iff_pos.trans pos_iff_ne_zero
 #align enat.one_le_iff_ne_zero ENat.one_le_iff_ne_zero
+
+lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
+  not_le.symm.trans one_le_iff_ne_zero.not_left
 
 theorem le_of_lt_add_one (h : m < n + 1) : m ≤ n :=
   Order.le_of_lt_succ <| n.succ_def.symm ▸ h

@@ -15,7 +15,6 @@ import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.Data.Set.Semiring
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
-import Mathlib.LinearAlgebra.Basic
 
 #align_import algebra.algebra.operations from "leanprover-community/mathlib"@"27b54c47c3137250a521aa64e9f1db90be5f6a26"
 
@@ -28,7 +27,7 @@ An interface for multiplication and division of sub-R-modules of an R-algebra A 
 
 Let `R` be a commutative ring (or semiring) and let `A` be an `R`-algebra.
 
-* `1 : Submodule R A`       : the R-submodule R of the R-algebra A
+* `1 : Submodule R A`   : the R-submodule R of the R-algebra A
 * `Mul (Submodule R A)` : multiplication of two sub-R-modules M and N of A is defined to be
                               the smallest submodule containing all the products `m * n`.
 * `Div (Submodule R A)` : `I / J` is defined to be the submodule consisting of all `a : A` such
@@ -129,7 +128,7 @@ protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
 theorem map_op_one :
     map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R A) = 1 := by
   ext x
-  induction x using MulOpposite.rec'
+  induction x
   simp
 #align submodule.map_op_one Submodule.map_op_one
 
@@ -762,13 +761,13 @@ protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Subm
   simp only [mem_map, mem_div_iff_forall_mul_mem]
   constructor
   · rintro ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
-    exact ⟨x * y, hx _ hy, h.map_mul x y⟩
+    exact ⟨x * y, hx _ hy, map_mul h x y⟩
   · rintro hx
     refine ⟨h.symm x, fun z hz => ?_, h.apply_symm_apply x⟩
     obtain ⟨xz, xz_mem, hxz⟩ := hx (h z) ⟨z, hz, rfl⟩
     convert xz_mem
     apply h.injective
-    erw [h.map_mul, h.apply_symm_apply, hxz]
+    erw [map_mul, h.apply_symm_apply, hxz]
 #align submodule.map_div Submodule.map_div
 
 end Quotient

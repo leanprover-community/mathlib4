@@ -344,6 +344,9 @@ theorem comp_mono ⦃g₁ g₂ : β →o γ⦄ (hg : g₁ ≤ g₂) ⦃f₁ f₂
     g₁.comp f₁ ≤ g₂.comp f₂ := fun _ => (hg _).trans (g₂.mono <| hf _)
 #align order_hom.comp_mono OrderHom.comp_mono
 
+@[simp] lemma mk_comp_mk (g : β → γ) (f : α → β) (hg hf) :
+    comp ⟨g, hg⟩ ⟨f, hf⟩ = ⟨g ∘ f, hg.comp hf⟩ := rfl
+
 /-- The composition of two bundled monotone functions, a fully bundled version. -/
 @[simps! (config := .asFn)]
 def compₘ : (β →o γ) →o (α →o β) →o α →o γ :=
@@ -989,7 +992,7 @@ def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder
   map_rel_iff' {p q} := by
     simp only [Equiv.coe_fn_mk, OrderHom.le_def, OrderHom.comp_coe,
                OrderHomClass.coe_coe, Function.comp_apply, map_le_map_iff]
-    exact Iff.symm f.forall_congr_left'
+    exact Iff.symm f.forall_congr_left
 
 /-- If `α` and `β` are order-isomorphic then the two orders of order-homomorphisms
 from `α` and `β` to themselves are order-isomorphic. -/

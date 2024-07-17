@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.Algebra.PUnitInstances
+import Mathlib.Algebra.PUnitInstances.Algebra
 
 #align_import category_theory.monoidal.Mon_ from "leanprover-community/mathlib"@"a836c6dba9bd1ee2a0cdc9af0006a596f243031c"
 
@@ -606,7 +606,7 @@ Projects:
   available in mathlib3#3463)
 * More generally, check that `Mon_ (Mon_ C) ≌ CommMon_ C` when `C` is braided.
 * Check that `Mon_ TopCat ≌ [bundled topological monoids]`.
-* Check that `Mon_ AddCommGroupCat ≌ RingCat`.
+* Check that `Mon_ AddCommGrp ≌ RingCat`.
   (We've already got `Mon_ (ModuleCat R) ≌ AlgebraCat R`,
   in `Mathlib.CategoryTheory.Monoidal.Internal.Module`.)
 * Can you transport this monoidal structure to `RingCat` or `AlgebraCat R`?
