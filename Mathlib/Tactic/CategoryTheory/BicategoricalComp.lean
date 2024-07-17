@@ -151,3 +151,7 @@ example {f' : a ⟶ d} {f : a ⟶ b} {g : b ⟶ c} {h : c ⟶ d} {h' : a ⟶ d} 
 example {f' : a ⟶ d} {f : a ⟶ b} {g : b ⟶ c} {h : c ⟶ d} (η : f' ⟶ (f ≫ g) ≫ h) :
     f' ⟶ f ≫ g ≫ h :=
   η ⊗≫ 𝟙 _
+
+end
+
+end CategoryTheory
