@@ -22,11 +22,6 @@ namespace WithTop
 instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithTop α) where
   add_le_add_left _ _ := add_le_add_left
 
-instance linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid α] :
-    LinearOrderedAddCommMonoidWithTop (WithTop α) :=
-  { WithTop.orderTop, WithTop.linearOrder, WithTop.orderedAddCommMonoid with
-    top_add' := WithTop.top_add }
-
 instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
     CanonicallyOrderedAddCommMonoid (WithTop α) :=
   { WithTop.orderBot, WithTop.orderedAddCommMonoid, WithTop.existsAddOfLE with

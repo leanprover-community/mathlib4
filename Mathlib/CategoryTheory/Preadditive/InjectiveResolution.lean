@@ -3,9 +3,10 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Scott Morrison, Joël Riou
 -/
-import Mathlib.CategoryTheory.Preadditive.Injective
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Homology.QuasiIso
+import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+import Mathlib.Algebra.Homology.SingleHomology
+import Mathlib.CategoryTheory.Preadditive.Injective
 
 #align_import category_theory.preadditive.injective_resolution from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
@@ -88,7 +89,7 @@ lemma cocomplex_exactAt_succ (n : ℕ) :
   rw [← quasiIsoAt_iff_exactAt I.ι (n + 1) (exactAt_succ_single_obj _ _)]
   infer_instance
 
-lemma exact_succ (n : ℕ):
+lemma exact_succ (n : ℕ) :
     (ShortComplex.mk _ _ (I.cocomplex.d_comp_d n (n + 1) (n + 2))).Exact :=
   (HomologicalComplex.exactAt_iff' _ n (n + 1) (n + 2) (by simp)
     (by simp only [CochainComplex.next]; rfl)).1 (I.cocomplex_exactAt_succ n)

@@ -22,7 +22,7 @@ This file introduces the commuting probability of finite groups.
 ## Main definitions
 * `commProb`: The commuting probability of a finite type with a multiplication operation.
 
-## Todo
+## TODO
 * Neumann's theorem.
 -/
 
