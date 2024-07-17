@@ -743,25 +743,36 @@ theorem extendScalars_injective :
 
 end ExtendScalars
 
-section RestrictUniverse
+section Restrict
 
 variable {F E : IntermediateField K L} (h : F ≤ E)
 
 /--
 If `F ≤ E` are two intermediate fields of `L / K`, then `F` is also an intermediate field of
-`E / K`. It can be viewed as a dual to `IntermediateField.extendScalars`.
+`E / K`. It is an inverse of `IntermediateField.lift`, and can be viewed as a dual to
+`IntermediateField.extendScalars`.
 -/
-def restrictUniverse : IntermediateField K E :=
+protected def restrict : IntermediateField K E :=
   (IntermediateField.inclusion h).fieldRange
 
 /--
 `F` is equivalent to `F` as an intermediate field of `E / K`.
 -/
-noncomputable def restrictUniverse_algEquiv :
-    F ≃ₐ[K] ↥(IntermediateField.restrictUniverse h) :=
+noncomputable def restrict_algEquiv :
+    F ≃ₐ[K] ↥(IntermediateField.restrict h) :=
   AlgEquiv.ofInjectiveField _
 
-end RestrictUniverse
+@[simp]
+theorem lift_restrict : IntermediateField.lift (IntermediateField.restrict h) = F := by
+  ext
+  rw [← IntermediateField.mem_carrier]
+  simp only [lift, IntermediateField.restrict, toSubalgebra_map, AlgHom.fieldRange_toSubalgebra,
+    Subsemiring.coe_carrier_toSubmonoid, Subalgebra.coe_toSubsemiring, Subalgebra.coe_map, coe_val,
+    AlgHom.coe_range, Set.mem_image, Set.mem_range, Subtype.ext_iff, coe_inclusion, Subtype.exists,
+    exists_prop, exists_eq_right, exists_eq_right_right, and_iff_right_iff_imp]
+  exact fun x ↦ h x
+
+end Restrict
 
 end Tower
 
