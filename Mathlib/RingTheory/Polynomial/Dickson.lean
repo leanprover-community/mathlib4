@@ -7,7 +7,9 @@ import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Polynomial.Chebyshev
-import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.Polynomial.Roots
 
 #align_import ring_theory.polynomial.dickson from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
