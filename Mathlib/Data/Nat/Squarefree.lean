@@ -13,7 +13,7 @@ import Mathlib.Data.Nat.Factorization.PrimePow
 A number is squarefree when it is not divisible by any squares except the squares of units.
 
 ## Main Results
- - `Nat.squarefree_iff_nodup_factors`: A positive natural number `x` is squarefree iff
+ - `Nat.squarefree_iff_nodup_primeFactorsList`: A positive natural number `x` is squarefree iff
   the list `factors x` has no duplicate factors.
 
 ## Tags
@@ -25,15 +25,22 @@ open Finset
 
 namespace Nat
 
-theorem squarefree_iff_nodup_factors {n : ℕ} (h0 : n ≠ 0) : Squarefree n ↔ n.factors.Nodup := by
+theorem squarefree_iff_nodup_primeFactorsList {n : ℕ} (h0 : n ≠ 0) :
+    Squarefree n ↔ n.primeFactorsList.Nodup := by
   rw [UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors h0, Nat.factors_eq]
   simp
-#align nat.squarefree_iff_nodup_factors Nat.squarefree_iff_nodup_factors
+#align nat.squarefree_iff_nodup_factors Nat.squarefree_iff_nodup_primeFactorsList
+
+@[deprecated (since := "2024-07-17")]
+alias squarefree_iff_nodup_factors := squarefree_iff_nodup_primeFactorsList
 
 end Nat
 
-theorem Squarefree.nodup_factors {n : ℕ} (hn : Squarefree n) : n.factors.Nodup :=
-  (Nat.squarefree_iff_nodup_factors hn.ne_zero).mp hn
+theorem Squarefree.nodup_primeFactorsList {n : ℕ} (hn : Squarefree n) : n.primeFactorsList.Nodup :=
+  (Nat.squarefree_iff_nodup_primeFactorsList hn.ne_zero).mp hn
+
+@[deprecated (since := "2024-07-17")]
+alias Squarefree.nodup_factors := Squarefree.nodup_primeFactorsList
 
 namespace Nat
 variable {s : Finset ℕ} {m n p : ℕ}
@@ -62,9 +69,9 @@ lemma factorization_eq_one_of_squarefree (hn : Squarefree n) (hp : p.Prime) (hpn
 
 theorem squarefree_of_factorization_le_one {n : ℕ} (hn : n ≠ 0) (hn' : ∀ p, n.factorization p ≤ 1) :
     Squarefree n := by
-  rw [squarefree_iff_nodup_factors hn, List.nodup_iff_count_le_one]
+  rw [squarefree_iff_nodup_primeFactorsList hn, List.nodup_iff_count_le_one]
   intro a
-  rw [factors_count_eq]
+  rw [primeFactorsList_count_eq]
   apply hn'
 #align nat.squarefree_of_factorization_le_one Nat.squarefree_of_factorization_le_one
 
@@ -255,7 +262,7 @@ instance : DecidablePred (Squarefree : ℕ → Prop) := fun _ =>
   decidable_of_iff' _ squarefree_iff_minSqFac
 
 theorem squarefree_two : Squarefree 2 := by
-  rw [squarefree_iff_nodup_factors] <;> simp
+  rw [squarefree_iff_nodup_primeFactorsList] <;> simp
 #align nat.squarefree_two Nat.squarefree_two
 
 theorem divisors_filter_squarefree_of_squarefree {n : ℕ} (hn : Squarefree n) :
@@ -392,8 +399,8 @@ lemma coprime_div_gcd_of_squarefree (hm : Squarefree m) (hn : n ≠ 0) : Coprime
     (coprime_div_gcd_div_gcd (m := m) (gcd_ne_zero_right hn).bot_lt).mul_right this
 
 lemma prod_primeFactors_of_squarefree (hn : Squarefree n) : ∏ p ∈ n.primeFactors, p = n := by
-  rw [← toFinset_factors, List.prod_toFinset _ hn.nodup_factors, List.map_id',
-    Nat.prod_factors hn.ne_zero]
+  rw [← toFinset_factors, List.prod_toFinset _ hn.nodup_primeFactorsList,
+    List.map_id', Nat.prod_primeFactorsList hn.ne_zero]
 
 lemma primeFactors_prod (hs : ∀ p ∈ s, p.Prime) : primeFactors (∏ p ∈ s, p) = s := by
   have hn : ∏ p ∈ s, p ≠ 0 := prod_ne_zero_iff.2 fun p hp ↦ (hs _ hp).ne_zero
@@ -425,7 +432,7 @@ theorem prod_primeFactors_sdiff_of_squarefree {n : ℕ} (hn : Squarefree n) {t :
     (ht : t ⊆ n.primeFactors) :
     ∏ a ∈ (n.primeFactors \ t), a = n / ∏ a ∈ t, a := by
   refine symm <| Nat.div_eq_of_eq_mul_left (Finset.prod_pos
-    fun p hp => (prime_of_mem_factors (List.mem_toFinset.mp (ht hp))).pos) ?_
+    fun p hp => (prime_of_mem_primeFactorsList (List.mem_toFinset.mp (ht hp))).pos) ?_
   rw [Finset.prod_sdiff ht, prod_primeFactors_of_squarefree hn]
 
 end Nat
