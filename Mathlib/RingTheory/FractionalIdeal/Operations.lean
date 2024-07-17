@@ -3,8 +3,8 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.RingTheory.IntegralClosure.Basic
 import Mathlib.RingTheory.FractionalIdeal.Basic
+import Mathlib.RingTheory.IntegralClosure.Defs
 
 #align_import ring_theory.fractional_ideal from "leanprover-community/mathlib"@"ed90a7d327c3a5caf65a6faf7e8a0d63c4605df7"
 

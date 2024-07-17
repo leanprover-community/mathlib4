@@ -5,9 +5,6 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
-import Mathlib.RingTheory.Adjoin.FG
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Polynomial.Tower
 import Mathlib.RingTheory.TensorProduct.Basic
 
