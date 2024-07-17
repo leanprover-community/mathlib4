@@ -4,12 +4,14 @@ import Mathlib.Tactic
 /--
 info: ℤ : Type
 ---
-info: import Mathlib.Init.Data.Int.Basic
+info:
+import Lean.Parser.Command
+import Mathlib.Data.Int.Notation
 -/
 #guard_msgs in
 #min_imports in #check ℤ
 
-/-- info: import Mathlib.Init.Data.Int.Basic -/
+/-- info: import Mathlib.Data.Int.Notation -/
 #guard_msgs in
 #min_imports in ℤ
 
@@ -36,9 +38,11 @@ info: ℤ : Type
 ---
 info: Try this: change True
 ---
-info: import Mathlib.Tactic.Change
+info:
+import Lean.Parser.Command
+import Mathlib.Tactic.Change
 import Mathlib.Tactic.Lemma
-import Mathlib.Init.Data.Int.Basic
+import Mathlib.Data.Int.Notation
 -/
 #guard_msgs in
 #min_imports start
@@ -51,19 +55,17 @@ info: theorem extracted_1 (n : ℕ) : n = n := sorry
 ---
 info: import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.Lemma
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Notation
 -/
 #guard_msgs in
 #min_imports in
 lemma hi (n : ℕ) : n = n := by extract_goal; rfl
 
-set_option linter.minImports true
-
 /--
 info: ℕ : Type
 ---
 warning: Imports increased to
-[Lean.Parser.Command, Mathlib.Init.Data.Nat.Notation]
+[Lean.Parser.Command, Mathlib.Data.Nat.Notation]
 note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
@@ -72,7 +74,7 @@ set_option linter.minImports true in
 
 /--
 warning: Imports increased to
-[Init.Guard, Mathlib.Init.Data.Int.Basic]
+[Init.Guard, Lean.Parser.Command, Mathlib.Data.Int.Notation, Mathlib.Data.Nat.Notation]
 note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
@@ -90,7 +92,7 @@ set_option linter.minImports false in
 
 /--
 warning: Imports increased to
-[Init.Guard, Mathlib.Init.Data.Int.Basic]
+[Init.Guard, Lean.Parser.Term, Mathlib.Data.Int.Notation]
 note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in

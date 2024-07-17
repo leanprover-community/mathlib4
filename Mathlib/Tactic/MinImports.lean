@@ -67,7 +67,12 @@ def getAttrs (env : Environment) (stx : Syntax) : NameSet :=
   return new
 
 /--`getAllImports cmd` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
-module names that are implied by the `SyntaxNodeKinds` and the identifiers contained in `cmd`. -/
+module names that are implied by
+* the `SyntaxNodeKinds`,
+* the attributes of `cmd` (if there are any),
+* the identifiers contained in `cmd`,
+* if `cmd` adds a declaration `d` to the environment, then also all the module names implied by `d`.
+-/
 def getAllImports {m : Type → Type} [Monad m] [MonadResolveName m] [MonadEnv m]
     (cmd : Syntax) (dbg? : Bool := false) :
     m NameSet := do
@@ -85,22 +90,18 @@ def getAllImports {m : Type → Type} [Monad m] [MonadResolveName m] [MonadEnv m
   for t1 in ts do
     let tns := t1::(← resolveGlobalName t1).map Prod.fst
     for t in tns do
-      let new := ← match env.getModuleIdxFor? t with
-        | some t => return (hm.find? t).get!
-        | none   => return default --getMainModule
+      let new := match env.getModuleIdxFor? t with
+        | some t => (hm.find? t).get!
+        | none   => default --getMainModule
         if !fins.contains new then fins := fins.insert new
-  return fins
+  return fins.erase .anonymous
 
-/-- `getIrredundantImports cmd` takes a `Syntax` input `cmd`.
-It returns the `NameSet` consisting of a minimal collection of module names whose transitive
+/-- `getIrredundantImports env importNames` takes an `Environment` and a `NameSet` as inputs.
+Assuming that `importNames` are module names,
+it returns the `NameSet` consisting of a minimal collection of module names whose transitive
 closure is enough to parse (and elaborate) `cmd`. -/
-def getIrredundantImports {m : Type → Type} [Monad m] [MonadResolveName m] [MonadEnv m]
-    (stx : Syntax) : m NameSet := do
-  let env ← getEnv
-  let fins ← getAllImports stx --true
-  let mut tot := fins.erase default
-  let redundant := env.findRedundantImports tot.toArray
-  return tot.diff redundant
+def getIrredundantImports (env : Environment) (importNames : NameSet) : NameSet :=
+  importNames.diff (env.findRedundantImports importNames.toArray)
 
 /-- `minImportsCore stx` is the internal function to elaborate the `#min_imports in` command.
 It collects the irredundant imports to parse and elaborate `stx` and logs
@@ -112,7 +113,7 @@ import Z
 ```
  -/
 def minImportsCore (stx : Syntax) : CommandElabM Unit := do
-    let tot ← getIrredundantImports stx
+    let tot := getIrredundantImports (← getEnv) (← getAllImports stx)
     let fileNames := tot.toArray.qsort Name.lt
     --let fileNames := if tk.isSome then (fileNames).filter (`Mathlib).isPrefixOf else fileNames
     logInfoAt (← getRef) m!"{"\n".intercalate (fileNames.map (s!"import {·}")).toList}"
@@ -150,7 +151,7 @@ elab_rules : command
     let mut tot : NameSet := {}
     for cmd in cmds do
       Elab.Command.elabCommand cmd <|> pure ()
-      tot := tot.append (← getIrredundantImports cmd)
+      tot := tot.append (getIrredundantImports (← getEnv) (← getAllImports cmd))
     let fileNames := tot.toArray.qsort Name.lt
     logInfoAt (← getRef) m!"{"\n".intercalate (fileNames.map (s!"import {·}")).toList}"
 
@@ -184,20 +185,19 @@ open Mathlib.Command.MinImports
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.minImports o
 
 @[inherit_doc Mathlib.Linter.linter.minImports]
-def minImportsLinter : Linter where
-  run := withSetOptionIn fun stx => do
-    let prevImports ← minImportsRef.get
+def minImportsLinter : Linter where run := withSetOptionIn fun stx => do
     unless linter.minImports.get (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
+    let prevImports ← minImportsRef.get
     --if stx.isOfKind ``Parser.Command.eoi then logInfo m!"{(← getEnv).imports.map (·.module)}"
-    let newImports ← getIrredundantImports stx
-    let tot := newImports.append prevImports
-    let redundant := (← getEnv).findRedundantImports (prevImports.append tot).toArray
+    let newImports := getIrredundantImports (← getEnv) (← getAllImports stx)
+    let tot := (newImports.append prevImports) --.erase `Lean.Parser.Command
+    let redundant := (← getEnv).findRedundantImports tot.toArray
     let currImports := tot.diff redundant
     let currImpArray := currImports.toArray.qsort Name.lt
-    if (currImpArray != #[] && currImpArray != #[`Lean.Parser.Command]) &&
+    if currImpArray != #[] &&
        currImpArray ≠ prevImports.toArray.qsort Name.lt then
       minImportsRef.modify fun _ => currImports
       Linter.logLint linter.minImports stx
