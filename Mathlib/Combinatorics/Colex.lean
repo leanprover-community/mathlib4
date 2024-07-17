@@ -58,13 +58,6 @@ Related files are:
 colex, colexicographic, binary
 -/
 
-namespace Finset
-variable {α : Type*} {s t : Finset α} {p : α → Prop} [DecidablePred p]
-
-lemma filter_inj : s.filter p = t.filter p ↔ ∀ ⦃a⦄, p a → (a ∈ s ↔ a ∈ t) := by simp [ext_iff]
-
-end Finset
-
 open Finset Function
 
 #align nat.sum_two_pow_lt Nat.geomSum_lt
