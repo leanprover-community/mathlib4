@@ -489,8 +489,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
   simpa [sup_eq_left.mpr hx'.le] using h_eqOn hx
 
 lemma IsSelfAdjoint.coe_mem_spectrum_complex {A : Type*} [TopologicalSpace A] [Ring A]
-    [StarRing A] [PartialOrder A][Algebra ℂ A]
-    [ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop)]
+    [StarRing A] [Algebra ℂ A] [ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop)]
     {a : A} {x : ℝ} (ha : IsSelfAdjoint a := by cfc_tac) :
     (x : ℂ) ∈ spectrum ℂ a ↔ x ∈ spectrum ℝ a := by
   simp [← ha.spectrumRestricts.algebraMap_image]
