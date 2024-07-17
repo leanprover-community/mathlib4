@@ -386,22 +386,13 @@ open Classical
 theorem eigenspace_of_subsingleton_nonempty [Subsingleton n] (h : Nonempty n) :
     ∃ (S : E →ₗ[𝕜] E), S.IsSymmetric ∧ (∀ (γ : n → 𝕜), (∀ (i : n),
     (eigenspace (T i) (γ i) = eigenspace S (γ i)))) := by
-  have h0 : ∃ (S : E →ₗ[𝕜] E), S.IsSymmetric ∧ (∀ (i : n), T i = S) := by
-    have i := choice h
-    have H : (∀ (i j : n), T j  = T i) := by
-      intro i _ ; rw [Subsingleton.allEq i _]
-    use (T i)
-    constructor
-    · exact hT i
-    · exact fun i_1 ↦ H i i_1
-  obtain ⟨S , hS⟩ := h0
-  use S
+  have i := choice h
+  have : ∀ j : n, T i = T j := by
+    intro j; congr!
+  use T i
   constructor
-  · exact hS.1
-  · have h1 : (∀ (i : n), T i = S) → (∀ (γ : n → 𝕜), (∀ (i : n),
-    (eigenspace (T i) (γ i) = eigenspace S (γ i)))) :=
-     fun a γ i ↦ congrFun (congrArg eigenspace (a i)) (γ i)
-    exact h1 hS.2
+  · exact hT i
+  · intro γ j; congr!
 
 /-This has been moved via PR #14833-/
 theorem eq_iff_orthogonalComplement_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ := by
