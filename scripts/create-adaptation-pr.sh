@@ -56,15 +56,18 @@ git merge origin/master
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
+  echo ""
   echo "### [auto] Conflict resolution"
-  echo "### Automatically choosing `lean-toolchain` and `lake-manifest.json` from the 'newer' branch"
-  echo "### In this case, the 'newer' branch is 'bump/$BUMPVERSION'"
+  echo "### Automatically choosing 'lean-toolchain' and 'lake-manifest.json' from the newer branch"
+  echo "### In this case, the newer branch is 'bump/$BUMPVERSION'"
   git checkout bump/$BUMPVERSION -- lean-toolchain lake-manifest.json
 fi
 
 # Check if there are more merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
+  echo ""
   echo "### [user] Conflict resolution"
+  echo "We are merging the latest changes from 'origin/master' into 'bump/$BUMPVERSION'"
   echo "There seem to be conflicts: please resolve them"
   echo "Open `pwd` in a new terminal and run 'git status'"
   echo "Make sure to commit the resolved conflicts, but do not push them"
@@ -74,22 +77,25 @@ fi
 git push
 
 echo
-echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from 'origin/nightly-testing'"
+echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and squash merge the latest changes from 'origin/nightly-testing'"
 
 git checkout -b "bump/nightly-$NIGHTLYDATE"
 git merge --squash origin/nightly-testing
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
+  echo ""
   echo "### [auto] Conflict resolution"
-  echo "### Automatically choosing `lean-toolchain` and `lake-manifest.json` from the 'newer' branch"
-  echo "### In this case, the 'newer' branch is 'origin/nightly-testing'"
+  echo "### Automatically choosing 'lean-toolchain' and 'lake-manifest.json' from the newer branch"
+  echo "### In this case, the newer branch is 'origin/nightly-testing'"
   git checkout origin/nightly-testing -- lean-toolchain lake-manifest.json
 fi
 
 # Check if there are more merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
+  echo ""
   echo "### [user] Conflict resolution"
+  echo "We are squash merging the latest changes from 'origin/nightly-testing' into 'bump/nightly-$NIGHTLYDATE'"
   echo "There seem to be conflicts: please resolve them"
   echo "Open `pwd` in a new terminal and run 'git status'"
   echo "Run 'git add' on the resolved files, but do not commit"
@@ -113,7 +119,8 @@ echo "Shall I run this command for you? (y/n)"
 read answer
 if [ "$answer" != "${answer#[Yy]}" ]; then
     gh_output=$(eval $gh_command)
-    pr_number=$(echo $gh_output | grep -oP 'github.com/[^/]+/[^/]+/pull/\K\d+')
+    # Extract the PR number from the output
+    pr_number=$(echo $gh_output | sed 's/.*\/pull\/\([0-9]*\).*/\1/')
 fi
 
 echo
@@ -137,15 +144,18 @@ git merge "bump/nightly-$NIGHTLYDATE"
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
+  echo ""
   echo "### [auto] Conflict resolution"
-  echo "### Automatically choosing `lean-toolchain` and `lake-manifest.json` from the 'newer' branch"
-  echo "### In this case, the 'newer' branch is 'bump/nightly-$NIGHTLYDATE'"
+  echo "### Automatically choosing lean-toolchain and lake-manifest.json from the newer branch"
+  echo "### In this case, the newer branch is 'bump/nightly-$NIGHTLYDATE'"
   git checkout bump/nightly-$NIGHTLYDATE -- lean-toolchain lake-manifest.json
 fi
 
 # Check if there are more merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
+  echo ""
   echo "### [user] Conflict resolution"
+  echo "We are merging the new PR "bump/nightly-$NIGHTLYDATE" into 'nightly-testing'"
   echo "There seem to be conflicts: please resolve them"
   echo "Open `pwd` in a new terminal and run 'git status'"
   echo "Make sure to commit the resolved conflicts, but do not push them"
