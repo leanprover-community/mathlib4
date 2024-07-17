@@ -72,7 +72,14 @@ noncomputable def cechSimplicial {I : Type w} (U : I → C) [HasFiniteProducts C
   map {Δ Δ'} f :=
     { f := fun a x ↦ a (f.unop.toOrderHom x)
       φ := fun a ↦ Pi.map' (fun x ↦ f.unop.toOrderHom x) (fun x ↦ 𝟙 _) }
-  map_id _ := by ext <;> simp
+  map_id _ := by
+    -- This works:
+    -- ext <;> aesop
+    -- As does this:
+    -- aesop (add safe apply hom_ext)
+    -- But this fails, apparently because `aesop` doesn't work on the second goal coming out of `ext`:
+    -- aesop (add safe tactic Std.Tactic.Ext.extCore')
+    sorry
   map_comp _ _ := by ext <;> simp
 
 end FormalCoproduct
