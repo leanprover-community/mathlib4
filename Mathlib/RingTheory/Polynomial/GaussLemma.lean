@@ -6,7 +6,7 @@ Authors: Aaron Anderson
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Localization.Integral
-import Mathlib.RingTheory.IntegrallyClosed
+import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 
 #align_import ring_theory.polynomial.gauss_lemma from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 

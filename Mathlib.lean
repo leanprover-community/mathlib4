@@ -6,6 +6,7 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.Field
 import Mathlib.Algebra.Algebra.Hom
+import Mathlib.Algebra.Algebra.Hom.Rat
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Algebra.Operations
@@ -13,6 +14,7 @@ import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Quasispectrum
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
@@ -2186,6 +2188,7 @@ import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.CharP
 import Mathlib.Data.Matrix.ColumnRowPartitioned
+import Mathlib.Data.Matrix.Composition
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.Data.Matrix.DualNumber
 import Mathlib.Data.Matrix.Hadamard
@@ -3721,10 +3724,15 @@ import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Int.Basic
-import Mathlib.RingTheory.IntegralClosure
+import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
+import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
+import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.IntegralDomain
-import Mathlib.RingTheory.IntegralRestrict
-import Mathlib.RingTheory.IntegrallyClosed
 import Mathlib.RingTheory.IsAdjoinRoot
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.Jacobson
@@ -4153,6 +4161,7 @@ import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Topology.AlexandrovDiscrete
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.Algebra.Algebra.Rat
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.Constructions.DomMulAct
