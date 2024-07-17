@@ -5,6 +5,7 @@ Authors: Kyle Miller, Jack Cheverton
 -/
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Data.Fintype.Pi
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Digraphs
@@ -216,13 +217,9 @@ instance [IsEmpty V] : Unique (Digraph V) where
 
 instance [h : Nonempty V] : Nontrivial (Digraph V) := by
   use ⊥, ⊤
-  rw [← completeGraph_eq_top, ← emptyGraph_eq_bot, Digraph.completeGraph, Digraph.emptyGraph]
-  simp only [ne_eq, mk.injEq]
-  rw [← @Ne.eq_def, @ne_iff]
-  simp only [Pi.top_apply, ne_eq, exists_const]
-  rw [← @Ne.eq_def, @ne_iff]
-  simp only [Pi.top_apply, Prop.top_eq_true, ne_eq, eq_iff_iff, iff_true, not_false_eq_true,
-    exists_const]
+  obtain v := h
+  apply_fun (·.Adj v v)
+  simp
 
 
 section Decidable
