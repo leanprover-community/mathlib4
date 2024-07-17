@@ -6,6 +6,12 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
+import Mathlib.Algebra.Ring.Defs
+import Mathlib.Tactic.Tauto
+import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 
 #align_import algebra.order.ring.char_zero from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 #align_import algebra.order.ring.defs from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"

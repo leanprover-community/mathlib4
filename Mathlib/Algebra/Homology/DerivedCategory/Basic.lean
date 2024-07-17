@@ -207,8 +207,7 @@ instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (Qh (C := C))).F
   inferInstanceAs
     (Localization.whiskeringLeftFunctor' _ (HomotopyCategory.quasiIso _ _) D).Faithful
 
-variable {C}
-
+variable {C} in
 lemma mem_distTriang_iff (T : Triangle (DerivedCategory C)) :
     (T ∈ distTriang (DerivedCategory C)) ↔ ∃ (X Y : CochainComplex C ℤ) (f : X ⟶ Y),
       Nonempty (T ≅ Q.mapTriangle.obj (CochainComplex.mappingCone.triangle f)) := by
@@ -223,8 +222,6 @@ lemma mem_distTriang_iff (T : Triangle (DerivedCategory C)) :
       (e ≪≫ (Functor.mapTriangleIso (quotientCompQhIso C)).symm.app _ ≪≫
       (Functor.mapTriangleCompIso (HomotopyCategory.quotient C _) Qh).app _)
     exact ⟨_, _, f, ⟨Iso.refl _⟩⟩
-
-variable (C)
 
 /-- The single functors `C ⥤ DerivedCategory C` for all `n : ℤ` along with
 their compatibilities with shifts. -/

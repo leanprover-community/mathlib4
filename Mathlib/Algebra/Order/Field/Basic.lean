@@ -3,8 +3,7 @@ Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Equiv
+import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Order.Bounds.OrderIso
@@ -433,18 +432,6 @@ theorem one_le_one_div (h1 : 0 < a) (h2 : a ≤ 1) : 1 ≤ 1 / a := by
 The equalities also hold in semifields of characteristic `0`.
 -/
 
-
-/- TODO: Unify `add_halves` and `add_halves'` into a single lemma about
-`DivisionSemiring` + `CharZero` -/
-theorem add_halves (a : α) : a / 2 + a / 2 = a := by
-  rw [div_add_div_same, ← two_mul, mul_div_cancel_left₀ a two_ne_zero]
-#align add_halves add_halves
-
--- TODO: Generalize to `DivisionSemiring`
-theorem add_self_div_two (a : α) : (a + a) / 2 = a := by
-  rw [← mul_two, mul_div_cancel_right₀ a two_ne_zero]
-#align add_self_div_two add_self_div_two
-
 theorem half_pos (h : 0 < a) : 0 < a / 2 :=
   div_pos h zero_lt_two
 #align half_pos half_pos
@@ -760,22 +747,22 @@ theorem sub_inv_antitoneOn_Icc_left (ha : b < c) :
   · simp [hab, Set.Subsingleton.antitoneOn]
 
 theorem inv_antitoneOn_Ioi :
-    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Ioi 0) := by
+    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Ioi 0) := by
   convert sub_inv_antitoneOn_Ioi
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Iio :
-    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Iio 0) := by
+    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Iio 0) := by
   convert sub_inv_antitoneOn_Iio
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Icc_right (ha : 0 < a) :
-    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Icc a b) := by
+    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Icc a b) := by
   convert sub_inv_antitoneOn_Icc_right ha
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Icc_left (hb : b < 0) :
-    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Icc a b) := by
+    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Icc a b) := by
   convert sub_inv_antitoneOn_Icc_left hb
   exact (sub_zero _).symm
 
@@ -1068,7 +1055,7 @@ def evalInv : PositivityExt where eval {u α} zα pα e := do
   | .none => pure .none
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℤ)`. -/
-@[positivity _ ^ (0:ℤ), Pow.pow _ (0:ℤ)]
+@[positivity _ ^ (0 : ℤ), Pow.pow _ (0 : ℤ)]
 def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
   _ ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
