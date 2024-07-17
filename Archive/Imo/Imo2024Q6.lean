@@ -236,7 +236,7 @@ lemma card_range_fExample : #(Set.range (fun x ↦ fExample x + fExample (-x))) 
         simp only [fract_fExample, floor_fExample, h, if_false, sub_add_sub_cancel,
                    Int.fract_neg_eq_zero]
         rw [Int.fract_neg h, Int.floor_neg, Int.cast_neg, Int.ceil_eq_add_one_sub_fract h,
-            ←Int.self_sub_fract]
+            ← Int.self_sub_fract]
         abel_nf
         simp
     · rcases h with rfl | rfl
