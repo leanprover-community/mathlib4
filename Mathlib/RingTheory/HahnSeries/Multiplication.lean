@@ -679,6 +679,16 @@ instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R] :
     IsDomain (HahnSeries Γ R) :=
   NoZeroDivisors.to_isDomain _
 
+theorem orderTop_add_orderTop_le_orderTop_mul {Γ} [LinearOrderedCancelAddCommMonoid Γ]
+    [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} :
+    x.orderTop + y.orderTop ≤ (x * y).orderTop := by
+  by_cases hx : x = 0; · simp [hx]
+  by_cases hy : y = 0; · simp [hy]
+  by_cases hxy : x * y = 0; simp [hxy]
+  rw [orderTop_of_ne hx, orderTop_of_ne hy, orderTop_of_ne hxy, ← WithTop.coe_add,
+    WithTop.coe_le_coe, ← Set.IsWF.min_add]
+  exact Set.IsWF.min_le_min_of_subset support_mul_subset_add_support
+
 @[simp]
 theorem order_mul {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R]
     [NoZeroDivisors R] {x y : HahnSeries Γ R} (hx : x ≠ 0) (hy : y ≠ 0) :

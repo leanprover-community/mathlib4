@@ -3,28 +3,35 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Scott Carnahan
 -/
-import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.RingTheory.HahnSeries.Multiplication
 
 #align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
 
 /-!
-# Hahn Series
-If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of formal series over `Γ` with
-coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
-`Γ`, we can add further structure on `HahnSeries Γ R`.  We introduce a notion of
-summability for possibly infinite families of series, and prove that a Hahn Series with invertible
-leading coefficient is invertible.  We also show that when the coefficient ring is a domain, then
-the converse holds.
+# Summable families of Hahn Series
+We introduce a notion of formal summability for families of Hahn series, and define a formal sum
+function. This theory is applied to characterize invertible Hahn series whose coefficients are in a
+commutative domain.
 
 ## Main Definitions
-  * A `HahnSeries.SummableFamily` is a family of Hahn series such that the union of their supports
-  is well-founded and only finitely many are nonzero at any given coefficient. They have a formal
-  sum, `HahnSeries.SummableFamily.hsum`, which can be bundled as a `LinearMap` as
-  `HahnSeries.SummableFamily.lsum`. Note that this is different from `Summable` in the valuation
-  topology, because there are topologically summable families that do not satisfy the axioms of
-  `HahnSeries.SummableFamily`, and formally summable families whose sums do not converge
-  topologically.
+  * A `HahnSeries.SummableFamily` is a family of Hahn series such that the union of the supports
+  is partially well-ordered and only finitely many are nonzero at any given coefficient. Note that
+  this is different from `Summable` in the valuation topology, because there are topologically
+  summable families that do not satisfy the axioms of `HahnSeries.SummableFamily`, and formally
+  summable families whose sums do not converge topologically.
+  * The formal sum, `HahnSeries.SummableFamily.hsum` can be bundled as a `LinearMap` via
+  `HahnSeries.SummableFamily.lsum`.
+
+## Main results
+  * If `R` is a commutative domain, and `Γ` is a linearly ordered additive commutative group, then
+  a Hahn series is a unit if and only if its leading term is a unit in `R`.
+
+## TODO
+  * Remove unnecessary domain hypotheses.
+  * More general summable families, e.g., define the evaluation homomorphism from a power series
+  ring taking `X` to a positive order element.
+  * Generalize `SMul` to Hahn modules.
 
 ## Main results
 
@@ -72,10 +79,12 @@ section
 
 variable (Γ) (R) [PartialOrder Γ] [AddCommMonoid R]
 
-/-- An infinite family of Hahn series which has a formal coefficient-wise sum.
-  The requirements for this are that the union of the supports of the series is well-founded,
-  and that only finitely many series are nonzero at any given coefficient. -/
+/-- A family of Hahn series whose formal coefficient-wise sum is a Hahn series.  For each
+coefficient of the sum to be well-defined, we require that only finitely many series are nonzero at
+any given coefficient.  For the formal sum to be a Hahn series, we require that the union of the
+supports of the constituent series is partially well-ordered. -/
 structure SummableFamily (α : Type*) where
+  /-- A parametrized family of Hahn series. -/
   /-- A parametrized family of Hahn series. -/
   toFun : α → HahnSeries Γ R
   isPWO_iUnion_support' : Set.IsPWO (⋃ a : α, (toFun a).support)
@@ -571,7 +580,7 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
       SummableFamily.one_sub_self_mul_hsum_powers
         (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mpr x0)))
     rw [sub_sub_cancel] at h
-    rw [← mul_assoc, mul_comm x, h]
+    rw [← mul_assoc, mul_comm x, ← leadingCoeff_eq, h]
   nnqsmul := _
   qsmul := _
 
