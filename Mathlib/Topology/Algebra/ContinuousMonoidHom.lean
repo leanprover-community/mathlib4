@@ -384,6 +384,7 @@ section LocallyCompact
 variable {X Y : Type*} [TopologicalSpace X] [Group X] [TopologicalGroup X]
   [UniformSpace Y] [CommGroup Y] [UniformGroup Y] [T0Space Y] [CompactSpace Y]
 
+@[to_additive]
 theorem locallyCompactSpace_of_equicontinuousAt (U : Set X) (V : Set Y)
     (hU : IsCompact U) (hV : V ∈ nhds (1 : Y))
     (h : EquicontinuousAt (fun f : {f : X →* Y | Set.MapsTo f U V} ↦ (f : X → Y)) 1) :
