@@ -494,7 +494,7 @@ section IsDomain
 variable [CommRing R] [IsDomain R]
 
 theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1) :
-    0 < (1 - C r * single (-x.order) 1 * x).orderTop := by
+    0 < (1 - single (-x.order) r * x).orderTop := by
   by_cases hx : x = 0; · simp_all [hx]
   have hrz : r ≠ 0 := by
     intro h
@@ -504,28 +504,28 @@ theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1) :
   · refine le_min (by rw [orderTop_one]) ?_
     refine LE.le.trans ?_ orderTop_add_orderTop_le_orderTop_mul
     by_cases h : x = 0; · simp [h]
-    rw [← order_eq_orderTop_of_ne h, C_apply, single_mul_single, zero_add, mul_one,
-      orderTop_single (fun _ => by simp_all only [zero_mul, zero_ne_one]), ← @WithTop.coe_add,
+    rw [← order_eq_orderTop_of_ne h, orderTop_single
+      (fun _ => by simp_all only [zero_mul, zero_ne_one]), ← @WithTop.coe_add,
       WithTop.coe_nonneg, add_left_neg]
   · apply coeff_orderTop_ne h.symm
     simp only [C_apply, single_mul_single, zero_add, mul_one, sub_coeff', Pi.sub_apply, one_coeff,
       ↓reduceIte]
     have hrc := mul_coeff_order_add_order ((single (-x.order)) r) x
-    rw [order_single hrz, single_coeff_same, neg_add_self, ← leadingCoeff_eq, hr] at hrc
+    rw [order_single hrz, leadingCoeff_of_single, neg_add_self, hr] at hrc
     rw [hrc, sub_self]
 #align hahn_series.unit_aux HahnSeries.unit_aux
 
 theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.leadingCoeff) := by
   constructor
   · rintro ⟨⟨u, i, ui, iu⟩, rfl⟩
-    refine'
+    refine
       isUnit_of_mul_eq_one (u.leadingCoeff) (i.leadingCoeff)
-        ((mul_coeff_order_add_order u i).symm.trans _)
+        ((mul_coeff_order_add_order u i).symm.trans ?_)
     rw [ui, one_coeff, if_pos]
     rw [← order_mul (left_ne_zero_of_mul_eq_one ui) (right_ne_zero_of_mul_eq_one ui), ui, order_one]
   · rintro ⟨⟨u, i, ui, iu⟩, h⟩
     rw [Units.val_mk] at h
-    rw [h, ← leadingCoeff_eq] at iu
+    rw [h] at iu
     have h := SummableFamily.one_sub_self_mul_hsum_powers (unit_aux x iu)
     rw [sub_sub_cancel] at h
     exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h)
@@ -546,7 +546,8 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
       SummableFamily.one_sub_self_mul_hsum_powers
         (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mpr x0)))
     rw [sub_sub_cancel] at h
-    rw [← mul_assoc, mul_comm x, ← leadingCoeff_eq, h]
+    rw [← mul_assoc, mul_comm x, h]
+
   nnqsmul := _
   qsmul := _
 

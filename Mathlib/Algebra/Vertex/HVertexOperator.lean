@@ -18,7 +18,7 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 ## TODO
 * Composition of heterogeneous vertex operators - values are Hahn series on lex order product
   (needs PR#10781).
-* `HahnSeries Γ R`-module structure on `HVertexOperator Γ R V W` (needs PR#10846).  This means we
+* `HahnSeries Γ R`-module structure on `HVertexOperator Γ' R V W` (needs PR#10846).  This means we
   can consider products of the form `(X-Y)^n A(X)B(Y)` for all integers `n`, where `(X-Y)^n` is
   expanded as `X^n(1-Y/X)^n` in `R((X))((Y))`.
 * more API to make ext comparisons easier.
