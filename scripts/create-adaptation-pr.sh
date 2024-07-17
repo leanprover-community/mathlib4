@@ -116,34 +116,46 @@ pr_title="chore: adaptations for nightly-$NIGHTLYDATE"
 git commit -m "$pr_title"
 git push --set-upstream origin "bump/nightly-$NIGHTLYDATE"
 
-echo
-echo "### [auto/user] create a PR for the new branch"
-echo "Create a pull request. Set the base of the PR to 'bump/$BUMPVERSION'"
-echo "Here is a suggested 'gh' command to do this:"
-gh_command="gh pr create -t \"$pr_title\" -b '' -B bump/$BUMPVERSION"
-echo "> $gh_command"
-echo "Shall I run this command for you? (y/n)"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ]; then
-    gh_output=$(eval $gh_command)
-    # Extract the PR number from the output
-    pr_number=$(echo $gh_output | sed 's/.*\/pull\/\([0-9]*\).*/\1/')
+# Check if there is a diff between bump/nightly-$NIGHTLYDATE and bump/$BUMPVERSION
+if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .; then
+
+  echo
+  echo "### [auto/user] create a PR for the new branch"
+  echo "Create a pull request. Set the base of the PR to 'bump/$BUMPVERSION'"
+  echo "Here is a suggested 'gh' command to do this:"
+  gh_command="gh pr create -t \"$pr_title\" -b '' -B bump/$BUMPVERSION"
+  echo "> $gh_command"
+  echo "Shall I run this command for you? (y/n)"
+  read answer
+  if [ "$answer" != "${answer#[Yy]}" ]; then
+  	gh_output=$(eval $gh_command)
+  	# Extract the PR number from the output
+  	pr_number=$(echo $gh_output | sed 's/.*\/pull\/\([0-9]*\).*/\1/')
+  fi
+  
+  echo
+  echo "### [user] post a link to the PR on Zulip"
+  
+  zulip_title="#$pr_number adaptations for nightly-$NIGHTLYDATE"
+  zulip_body="> $pr_title #$pr_number"
+  
+  echo "Post the link to the PR in a new thread on the #nightly-testing channel on Zulip"
+  echo "Here is a suggested message:"
+  echo "Title: $zulip_title"
+  echo " Body: $zulip_body"
+  read -p "Press enter to continue"
+
+# else, let the user know that no PR is needed
+else
+  echo
+  echo "### [auto] No PR needed"
+  echo "The changes in 'bump/nightly-$NIGHTLYDATE' are the same as in 'bump/$BUMPVERSION'"
+  echo "No PR is needed"
+
 fi
 
 echo
-echo "### [user] post a link to the PR on Zulip"
-
-zulip_title="#$pr_number adaptations for nightly-$NIGHTLYDATE"
-zulip_body="> $pr_title #$pr_number"
-
-echo "Post the link to the PR in a new thread on the #nightly-testing channel on Zulip"
-echo "Here is a suggested message:"
-echo "Title: $zulip_title"
-echo " Body: $zulip_body"
-read -p "Press enter to continue"
-
-echo
-echo "### [auto] checkout the 'nightly-testing' branch and merge the new PR into it"
+echo "### [auto] checkout the 'nightly-testing' branch and merge the new branch into it"
 
 git checkout nightly-testing
 git pull
