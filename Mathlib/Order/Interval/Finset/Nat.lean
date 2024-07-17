@@ -193,6 +193,16 @@ theorem Ico_insert_succ_left (h : a < b) : insert a (Ico a.succ b) = Ico a b := 
   rw [Ico_succ_left, ← Ioo_insert_left h]
 #align nat.Ico_insert_succ_left Nat.Ico_insert_succ_left
 
+lemma Icc_insert_succ_left (h : a ≤ b) : insert a (Icc (a + 1) b) = Icc a b := by
+  ext x
+  simp
+  omega
+
+lemma Icc_insert_succ_right (h : a ≤ b + 1) : insert (b + 1) (Icc a b) = Icc a (b + 1) := by
+  ext x
+  simp
+  omega
+
 theorem image_sub_const_Ico (h : c ≤ a) :
     ((Ico a b).image fun x => x - c) = Ico (a - c) (b - c) := by
   ext x
