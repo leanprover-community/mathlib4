@@ -194,3 +194,5 @@ variable {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗
 #guard_expr normalize% (f ⊗ h) ▷ U = _ ≫ (f ⊗ (h ▷ U)) ≫ _
 
 end Tactic.Widget.StringDiagram
+
+end Mathlib
