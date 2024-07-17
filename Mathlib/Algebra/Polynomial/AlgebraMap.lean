@@ -195,14 +195,35 @@ theorem mapAlgHom_comp (C : Type z) [Semiring C] [Algebra R C] (f : B →ₐ[R] 
   simp [AlgHom.comp_algebraMap, map_map]
   congr
 
-/-- If `A` and `B` are isomorphic as `R`-algebras, then so are their polynomial rings -/
-def mapAlgEquiv (f : A ≃ₐ[R] B) : Polynomial A ≃ₐ[R] Polynomial B :=
-  AlgEquiv.ofAlgHom (mapAlgHom f.toAlgHom) (mapAlgHom f.symm.toAlgHom) (by simp) (by simp)
-
 theorem mapAlgHom_eq_eval₂AlgHom'_CAlgHom (f : A →ₐ[R] B) : mapAlgHom f = eval₂AlgHom'
     (CAlgHom.comp f) X (fun a => (commute_X (C (f a))).symm) := by
   apply AlgHom.ext
   intro x
+  congr
+
+/-- If `A` and `B` are isomorphic as `R`-algebras, then so are their polynomial rings -/
+def mapAlgEquiv (f : A ≃ₐ[R] B) : Polynomial A ≃ₐ[R] Polynomial B :=
+  AlgEquiv.ofAlgHom (mapAlgHom f.toAlgHom) (mapAlgHom f.symm.toAlgHom) (by simp) (by simp)
+
+@[simp]
+theorem coe_mapAlgEquiv (f : A ≃ₐ[R] B) : ⇑(mapAlgEquiv f) = map f :=
+  rfl
+
+@[simp]
+theorem mapAlgEquiv_id : mapAlgEquiv (@AlgEquiv.refl R A _ _ _) = AlgEquiv.refl :=
+  AlgEquiv.ext fun _x => map_id
+
+@[simp]
+theorem mapAlgEquiv_coe_ringHom (f : A ≃ₐ[R] B) :
+    ↑(mapAlgEquiv f : _ ≃ₐ[R] Polynomial B) = (mapRingHom ↑f : Polynomial A →+* Polynomial B) :=
+  rfl
+
+@[simp]
+theorem mapAlgEquiv_comp (C : Type z) [Semiring C] [Algebra R C] (f : A ≃ₐ[R] B) (g : B ≃ₐ[R] C) :
+    (mapAlgEquiv f).trans (mapAlgEquiv g) = mapAlgEquiv (f.trans g) := by
+  apply AlgEquiv.ext
+  intro x
+  simp [AlgEquiv.trans_apply, map_map]
   congr
 
 end Map
