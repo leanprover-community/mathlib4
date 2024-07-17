@@ -3,10 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Scott Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Over
-import Mathlib.CategoryTheory.Limits.Shapes.Images
+import Mathlib.CategoryTheory.Adjunction.Over
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
+import Mathlib.CategoryTheory.Limits.Shapes.Images
 
 #align_import category_theory.subobject.mono_over from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -239,7 +239,7 @@ theorem pullback_obj_left (f : X ⟶ Y) (g : MonoOver Y) :
 
 @[simp]
 theorem pullback_obj_arrow (f : X ⟶ Y) (g : MonoOver Y) :
-    ((pullback f).obj g).arrow = pullback.snd :=
+    ((pullback f).obj g).arrow = pullback.snd _ _ :=
   rfl
 #align category_theory.mono_over.pullback_obj_arrow CategoryTheory.MonoOver.pullback_obj_arrow
 

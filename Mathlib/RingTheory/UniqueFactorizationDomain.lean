@@ -22,7 +22,7 @@ import Mathlib.RingTheory.Multiplicity
 * `UniqueFactorizationMonoid` holds for `WfDvdMonoid`s where
   `Irreducible` is equivalent to `Prime`
 
-## To do
+## TODO
 * set up the complete lattice structure on `FactorSet`.
 
 -/
@@ -689,7 +689,7 @@ theorem normalizedFactors_zero : normalizedFactors (0 : α) = 0 := by
 theorem normalizedFactors_one : normalizedFactors (1 : α) = 0 := by
   cases' subsingleton_or_nontrivial α with h h
   · dsimp [normalizedFactors, factors]
-    simp [Subsingleton.elim (1:α) 0]
+    simp [Subsingleton.elim (1 : α) 0]
   · rw [← Multiset.rel_zero_right]
     apply factors_unique irreducible_of_normalized_factor
     · intro x hx
@@ -1191,8 +1191,8 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
     congr
     rw [← (normalizedFactors a).map_id, ← (normalizedFactors b).map_id,
       Finset.prod_multiset_map_count, Finset.prod_multiset_map_count,
-      Finset.prod_subset (Finset.subset_union_left (s₂:=(normalizedFactors b).toFinset)),
-      Finset.prod_subset (Finset.subset_union_right (s₂:=(normalizedFactors b).toFinset)), ←
+      Finset.prod_subset (Finset.subset_union_left (s₂ := (normalizedFactors b).toFinset)),
+      Finset.prod_subset (Finset.subset_union_right (s₂ := (normalizedFactors b).toFinset)), ←
       Finset.prod_mul_distrib]
     · simp_rw [id, ← pow_add, this]
     all_goals simp only [Multiset.mem_toFinset]
@@ -2119,16 +2119,16 @@ instance instUniqueFactorizationMonoid : UniqueFactorizationMonoid ℕ where
 
 open UniqueFactorizationMonoid
 
-lemma factors_eq : ∀ n : ℕ, normalizedFactors n = n.factors
+lemma factors_eq : ∀ n : ℕ, normalizedFactors n = n.primeFactorsList
   | 0 => by simp
   | n + 1 => by
     rw [← Multiset.rel_eq, ← associated_eq_eq]
     apply UniqueFactorizationMonoid.factors_unique irreducible_of_normalized_factor _
-    · rw [Multiset.prod_coe, Nat.prod_factors n.succ_ne_zero]
+    · rw [Multiset.prod_coe, Nat.prod_primeFactorsList n.succ_ne_zero]
       exact normalizedFactors_prod n.succ_ne_zero
     · intro x hx
       rw [Nat.irreducible_iff_prime, ← Nat.prime_iff]
-      exact Nat.prime_of_mem_factors hx
+      exact Nat.prime_of_mem_primeFactorsList hx
 #align nat.factors_eq Nat.factors_eq
 
 lemma factors_multiset_prod_of_irreducible {s : Multiset ℕ} (h : ∀ x : ℕ, x ∈ s → Irreducible x) :
