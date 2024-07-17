@@ -55,17 +55,9 @@ def Digraph.mk' {V : Type u} :
     funext v w
     simpa only [eq_iff_iff, Bool.coe_iff_coe] using congr_fun₂ h v w
 
-/-- Construct the digraph induced by the given relation. -/
-def Digraph.fromRel {V : Type u} (r : V → V → Prop) : Digraph V where
-  Adj a b := a ≠ b ∧ (r a b ∨ r b a)
-
-@[simp]
-theorem Digraph.fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
-    (Digraph.fromRel r).Adj v w ↔ v ≠ w ∧ (r v w ∨ r w v) :=
-  Iff.rfl
-
 /-- The complete graph on a type `V` is the digraph with all pairs of vertices
-adjacent. In `Mathlib`, this is usually referred to as `⊤`. Note that all vertices are adjacent to themselves. -/
+adjacent. In `Mathlib`, this is usually referred to as `⊤`. Note that all vertices are adjacent to
+themselves. -/
 def Digraph.completeGraph (V : Type u) : Digraph V where Adj := ⊤
 
 /-- The graph with no edges on a given vertex type `V`. `Mathlib` prefers the notation `⊥`. -/
