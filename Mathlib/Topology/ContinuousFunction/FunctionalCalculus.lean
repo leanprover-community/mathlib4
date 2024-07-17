@@ -8,6 +8,7 @@ import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Star.Order
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # The continuous functional calculus
@@ -259,21 +260,6 @@ theorem cfcHom_comp [UniqueContinuousFunctionalCalculus R A] (f : C(spectrum R a
 end cfcHom
 
 section CFC
-
--- right now these tactics are just wrappers, but potentially they could be more sophisticated.
-
-/-- A tactic used to automatically discharge goals relating to the continuous functional calculus,
-specifically whether the element satisfies the predicate. -/
-syntax (name := cfcTac) "cfc_tac" : tactic
-macro_rules
-  | `(tactic| cfc_tac) => `(tactic| (try (first | assumption | infer_instance | aesop)))
-
--- we may want to try using `fun_prop` directly in the future.
-/-- A tactic used to automatically discharge goals relating to the continuous functional calculus,
-specifically concerning continuity of the functions involved. -/
-syntax (name := cfcContTac) "cfc_cont_tac" : tactic
-macro_rules
-  | `(tactic| cfc_cont_tac) => `(tactic| try (first | fun_prop (disch := aesop) | assumption))
 
 open scoped Classical in
 /-- This is the *continuous functional calculus* of an element `a : A` applied to bare functions.

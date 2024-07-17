@@ -187,12 +187,6 @@ noncomputable irreducible_def cfcₙ (f : R → R) (a : A) : A :=
     then cfcₙHom h.1 ⟨⟨_, h.2.1.restrict⟩, h.2.2⟩
     else 0
 
-/-- A tactic used to automatically discharge goals relating to the continuous functional calculus,
-specifically concerning whether `f 0 = 0`. -/
-syntax (name := cfcZeroTac) "cfc_zero_tac" : tactic
-macro_rules
-  | `(tactic| cfc_zero_tac) => `(tactic| try (first | aesop | assumption))
-
 variable (f g : R → R) (a : A)
 variable (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
 variable (hg : ContinuousOn g (σₙ R a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac)

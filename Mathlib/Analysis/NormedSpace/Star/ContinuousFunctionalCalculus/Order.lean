@@ -64,24 +64,6 @@ lemma inr_nonneg_iff {a : A} : 0 ≤ (a : Unitization ℂ A) ↔ 0 ≤ a := by
 
 end Unitization
 
-section generic
-
-variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
-
-lemma coe_mem_spectrum_real_of_nonneg [Algebra ℝ A] [NonnegSpectrumClass ℝ A] {a : A} {x : ℝ≥0}
-    (ha : 0 ≤ a := by cfc_tac) :
-    (x : ℝ) ∈ spectrum ℝ a ↔ x ∈ spectrum ℝ≥0 a := by
-  simp [← (SpectrumRestricts.nnreal_of_nonneg ha).algebraMap_image, Set.mem_image,
-    NNReal.algebraMap_eq_coe]
-
-lemma IsSelfAdjoint.coe_mem_spectrum_complex [Algebra ℂ A]
-    [ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop)]
-    {a : A} {x : ℝ} (ha : IsSelfAdjoint a := by cfc_tac) :
-    (x : ℂ) ∈ spectrum ℂ a ↔ x ∈ spectrum ℝ a := by
-  simp [← ha.spectrumRestricts.algebraMap_image]
-
-end generic
-
 section Cstar_unital
 
 variable {A : Type*} [NormedRing A] [StarRing A] [CstarRing A] [CompleteSpace A]
