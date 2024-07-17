@@ -41,7 +41,11 @@ def argAux (a : Option α) (b : α) : Option α :=
 theorem foldl_argAux_eq_none : l.foldl (argAux r) o = none ↔ l = [] ∧ o = none :=
   List.reverseRecOn l (by simp) fun tl hd => by
     simp only [foldl_append, foldl_cons, argAux, foldl_nil, append_eq_nil, and_false, false_and,
-      iff_false]; cases foldl (argAux r) o tl <;> simp; try split_ifs <;> simp
+      iff_false]
+    cases foldl (argAux r) o tl
+    · simp
+    · simp only [false_iff, not_and]
+      split_ifs <;> simp
 #align list.foldl_arg_aux_eq_none List.foldl_argAux_eq_none
 
 private theorem foldl_argAux_mem (l) : ∀ a m : α, m ∈ foldl (argAux r) (some a) l → m ∈ a :: l :=
@@ -390,7 +394,7 @@ theorem maximum_le_of_forall_le {b : WithBot α} (h : ∀ a ∈ l, a ≤ b) : l.
   induction l with
   | nil => simp
   | cons a l ih =>
-    simp only [maximum_cons, ge_iff_le, max_le_iff, WithBot.coe_le_coe]
+    simp only [maximum_cons, max_le_iff, WithBot.coe_le_coe]
     exact ⟨h a (by simp), ih fun a w => h a (mem_cons.mpr (Or.inr w))⟩
 
 theorem le_minimum_of_forall_le {b : WithTop α} (h : ∀ a ∈ l, b ≤ a) : b ≤ l.minimum :=
