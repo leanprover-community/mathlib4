@@ -74,18 +74,20 @@ lemma aestabilizer_of_aeconst (hs : EventuallyConst s (ae μ)) : aestabilizer G 
 
 end MulAction
 
+variable {G μ}
+variable {x y : G} {s : Set α}
+
 namespace MeasureTheory
 
 @[to_additive]
-theorem smul_ae_eq_self_of_mem_zpowers {x y : G} {s : Set α} (hs : (x • s : Set α) =ᵐ[μ] s)
+theorem smul_ae_eq_self_of_mem_zpowers (hs : (x • s : Set α) =ᵐ[μ] s)
     (hy : y ∈ Subgroup.zpowers x) : (y • s : Set α) =ᵐ[μ] s := by
   rw [← MulAction.mem_aestabilizer, ← Subgroup.zpowers_le] at hs
   exact hs hy
 #align measure_theory.smul_ae_eq_self_of_mem_zpowers MeasureTheory.smul_ae_eq_self_of_mem_zpowers
 
 @[to_additive]
-theorem inv_smul_ae_eq_self {x : G} {s : Set α} (hs : (x • s : Set α) =ᵐ[μ] s) :
-    (x⁻¹ • s : Set α) =ᵐ[μ] s :=
+theorem inv_smul_ae_eq_self (hs : (x • s : Set α) =ᵐ[μ] s) : (x⁻¹ • s : Set α) =ᵐ[μ] s :=
   inv_mem (s := MulAction.aestabilizer G μ s) hs
 
 end MeasureTheory
