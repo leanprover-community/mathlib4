@@ -847,8 +847,8 @@ theorem Submodule.isCompl_orthogonal_of_completeSpace [HasOrthogonalProjection K
 
 @[simp]
 theorem orthogonalComplement_eq_orthogonalComplement {L : Submodule 𝕜 E} [HasOrthogonalProjection K]
-    [HasOrthogonalProjection L] : Kᗮ = Lᗮ ↔ K = L := by
-    exact ⟨fun h ↦ by simpa using congr(Submodule.orthogonal $(h)),
+    [HasOrthogonalProjection L] : Kᗮ = Lᗮ ↔ K = L :=
+  ⟨fun h ↦ by simpa using congr(Submodule.orthogonal $(h)),
     fun h ↦ congr(Submodule.orthogonal $(h))⟩
 
 @[simp]
