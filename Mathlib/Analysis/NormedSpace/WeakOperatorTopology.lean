@@ -13,8 +13,11 @@ import Mathlib.Analysis.NormedSpace.Dual
 This file defines a type copy of `E →L[𝕜] F` (where `F` is a normed space) which is
 endowed with the weak operator topology (WOT) rather than the topology induced by the operator norm.
 The WOT is defined as the coarsest topology such that the functional `fun A => y (A x)` is
-continuous for any `x : E` and `y : NormedSpace.Dual 𝕜 F`. Basic non-topological properties of
-`E →L[𝕜] F` (such as the module structure) are copied over to the type copy.
+continuous for any `x : E` and `y : NormedSpace.Dual 𝕜 F`. Equivalently, a function `f` tends to
+`A : E →WOT[𝕜] F` along filter `l` iff `y (f a x)` tends to `y (A x)` along the same filter.
+
+Basic non-topological properties of `E →L[𝕜] F` (such as the module structure) are copied over to
+the type copy.
 
 We also prove that the WOT is induced by the family of seminorms `‖y (A x)‖` for `x : E` and
 `y : NormedSpace.Dual 𝕜 F`.
@@ -145,7 +148,8 @@ section Topology
 
 variable (𝕜) (E) (F) in
 /-- The function that induces the topology on `E →WOT[𝕜] F`, namely the function that takes
-an `A` and maps it to `fun ⟨x, y⟩ => y (A x)` in `E × F⋆ → 𝕜`. -/
+an `A` and maps it to `fun ⟨x, y⟩ => y (A x)` in `E × F⋆ → 𝕜`, bundled as a linear map to make
+it easier to prove that it is a TVS. -/
 def inducingFn : (E →WOT[𝕜] F) →ₗ[𝕜] (E × F⋆ → 𝕜) where
   toFun := fun A ⟨x, y⟩ => y (A x)
   map_add' := fun x y => by ext; simp
@@ -189,7 +193,7 @@ lemma le_nhds_iff_forall_dual_apply_le_nhds {l : Filter (E →WOT[𝕜] F)} {A :
     l ≤ 𝓝 A ↔ ∀ x (y : F⋆), l.map (fun T => y (T x)) ≤ 𝓝 (y (A x)) :=
   tendsto_iff_forall_dual_apply_tendsto (f := id)
 
-instance instT3Space : T3Space (E →WOT[𝕜] F) := Embedding.t3Space embedding_inducingFn
+instance instT3Space : T3Space (E →WOT[𝕜] F) := embedding_inducingFn.t3Space
 
 instance instContinuousAdd : ContinuousAdd (E →WOT[𝕜] F) := .induced (inducingFn 𝕜 E F)
 instance instContinuousNeg : ContinuousNeg (E →WOT[𝕜] F) := .induced (inducingFn 𝕜 E F)
