@@ -28,8 +28,7 @@ noncomputable def egirth (G : SimpleGraph α) : ℕ∞ :=
   ⨅ a, ⨅ w : G.Walk a a, ⨅ _ : w.IsCycle, w.length
 
 @[simp] lemma le_egirth : n ≤ G.egirth ↔ ∀ a (w : G.Walk a a), w.IsCycle → n ≤ w.length := by
-  rw [egirth, le_iInf_iff]
-  refine forall_congr' fun a ↦ le_iInf₂_iff
+  simp [egirth]
 
 @[simp] lemma egirth_eq_top : G.egirth = ⊤ ↔ G.IsAcyclic := by simp [egirth, IsAcyclic]
 
