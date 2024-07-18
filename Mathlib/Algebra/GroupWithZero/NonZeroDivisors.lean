@@ -6,7 +6,7 @@ Authors: Kenny Lau, Devon Tuma, Oliver Nash
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Ring.Opposite
+import Mathlib.Algebra.GroupWithZero.Opposite
 
 #align_import ring_theory.non_zero_divisors from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
