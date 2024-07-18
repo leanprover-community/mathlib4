@@ -110,7 +110,7 @@ def ofSym {n : ℕ} {σ : Type*} (s : Sym σ n) [DecidableEq σ] : n.Partition w
 
 variable {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ]
 
-lemma ofSym_map (e : σ ≃ τ) (s : Sym σ n) :
+@[simp] lemma ofSym_map (e : σ ≃ τ) (s : Sym σ n) :
     ofSym (s.map e) = ofSym s := by
   simp only [ofSym, Sym.val_eq_coe, Sym.coe_map, toFinset_val, mk.injEq]
   rw [Multiset.dedup_map_of_injective e.injective]
