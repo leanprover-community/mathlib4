@@ -288,8 +288,7 @@ elab_rules : tactic
 | `(tactic| coherence) => do
   evalTactic (← `(tactic|
     (simp (config := {failIfUnchanged := false}) only [bicategoricalComp,
-      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
-      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom',
+      BicategoricalCoherence.hom,
       monoidalComp]);
     whisker_simps (config := {failIfUnchanged := false});
     monoidal_simps (config := {failIfUnchanged := false})))

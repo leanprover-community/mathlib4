@@ -81,6 +81,7 @@
   "Mathlib.Tactic.CongrM",
   "Mathlib.Tactic.Constructor",
   "Mathlib.Tactic.Continuity",
+  "Mathlib.Tactic.ContinuousFunctionalCalculus",
   "Mathlib.Tactic.Contrapose",
   "Mathlib.Tactic.Conv",
   "Mathlib.Tactic.Convert",
@@ -270,6 +271,8 @@
   ["Mathlib.CategoryTheory.Functor.Basic"],
   "Mathlib.Tactic.CategoryTheory.Coherence":
   ["Mathlib.Tactic.CategoryTheory.MonoidalComp"],
+  "Mathlib.Tactic.CategoryTheory.BicategoryCoherence":
+  ["Mathlib.Tactic.CategoryTheory.BicategoricalComp"],
   "Mathlib.Tactic.CC.Addition":
   ["Mathlib.Logic.Basic", "Mathlib.Tactic.CC.Lemmas"],
   "Mathlib.Tactic.Basic": ["Batteries", "Mathlib.Tactic.Linter.OldObtain"],
@@ -316,7 +319,7 @@
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Data.Ordmap.Ordnode": ["Mathlib.Data.Option.Basic"],
-  "Mathlib.Data.Multiset.Bind": ["Mathlib.GroupTheory.GroupAction.Defs"],
+  "Mathlib.Data.Multiset.Bind": ["Mathlib.Algebra.GroupWithZero.Action.Defs"],
   "Mathlib.Data.List.TFAE": ["Batteries.Tactic.Classical"],
   "Mathlib.Data.List.ProdSigma": ["Mathlib.Data.List.Basic"],
   "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertNth"],
@@ -374,4 +377,5 @@
   ["Lean.Elab.BuiltinNotation", "Lean.Elab.BuiltinTerm"],
   "Batteries.CodeAction.Basic":
   ["Lean.Elab.BuiltinNotation", "Lean.Elab.BuiltinTerm"],
+  "Mathlib.Tactic.ContinuousFunctionalCalculus": ["Mathlib.Tactic.FunProp"],
   "Batteries.Classes.SetNotation": ["Batteries.Util.ExtendedBinder"]}}
