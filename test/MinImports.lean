@@ -1,17 +1,20 @@
 import Mathlib.Tactic.MinImports
-import Mathlib.Tactic
-
-set_option linter.hashCommand true
+import Mathlib.Tactic.ExtractGoal
+import Mathlib.Tactic.Lemma
+import Mathlib.Data.Nat.Notation
+import Mathlib.Data.Int.Notation
+import Mathlib.Tactic.NormNum.Basic
 
 /--
 info: ℤ : Type
 ---
-info: import Mathlib.Init.Data.Int.Basic
+info: import Lean.Parser.Command
+import Mathlib.Data.Int.Notation
 -/
 #guard_msgs in
 #min_imports in #check ℤ
 
-/-- info: import Mathlib.Init.Data.Int.Basic -/
+/-- info: import Mathlib.Data.Int.Notation -/
 #guard_msgs in
 #min_imports in ℤ
 
@@ -38,7 +41,7 @@ info: theorem extracted_1 (n : ℕ) : n = n := sorry
 ---
 info: import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.Lemma
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Notation
 -/
 #guard_msgs in
 #min_imports in
