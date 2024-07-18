@@ -47,8 +47,8 @@ lemma degree_eq_zero_iff (d : σ →₀ ℕ) : degree d = 0 ↔ d = 0 := by
     DFunLike.ext_iff, Finsupp.coe_zero, Pi.zero_apply]
 
 theorem weightedDegree_one (d : σ →₀ ℕ) :
-    weightedDegree 1 d = degree d := by
-  simp [weightedDegree, degree, Finsupp.total, Finsupp.sum]
+    weight 1 d = degree d := by
+  simp [weight, degree, Finsupp.total, Finsupp.sum]
 
 /-- A multivariate polynomial `φ` is homogeneous of degree `n`
 if all monomials occurring in `φ` have degree `n`. -/
@@ -60,7 +60,7 @@ variable [CommSemiring R]
 
 theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
     weightedTotalDegree (1 : σ → ℕ) φ = φ.totalDegree := by
-  simp only [totalDegree, weightedTotalDegree, weightedDegree, LinearMap.toAddMonoidHom_coe,
+  simp only [totalDegree, weightedTotalDegree, weight, LinearMap.toAddMonoidHom_coe,
     Finsupp.total, Pi.one_apply, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
     id, Algebra.id.smul_eq_mul, mul_one]
 
@@ -304,7 +304,7 @@ lemma finSuccEquiv_coeff_isHomogeneous {N : ℕ} {φ : MvPolynomial (Fin (N+1)) 
     ((finSuccEquiv _ _ φ).coeff i).IsHomogeneous j := by
   intro d hd
   rw [finSuccEquiv_coeff_coeff] at hd
-  have h' : (weightedDegree 1) (Finsupp.cons i d) = i + j := by
+  have h' : (weight 1) (Finsupp.cons i d) = i + j := by
     simpa [Finset.sum_subset_zero_on_sdiff (g := d.cons i)
      (d.cons_support (y := i)) (by simp) (fun _ _ ↦ rfl), ← h] using hφ hd
   simp only [weightedDegree_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum_cons,
