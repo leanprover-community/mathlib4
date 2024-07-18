@@ -371,7 +371,6 @@ theorem Function.Surjective.comm
 theorem Subgroup.Normal.quotient_commutative_iff_commutator_le
     {N : Subgroup G} (nN : N.Normal) :
     Std.Commutative (· * · : G ⧸ N → _ → _) ↔ _root_.commutator G ≤ N := by
-  skip
   constructor
   · intro hcomm
     rw [commutator_eq_normalClosure]
