@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 
 import Mathlib.Data.Nat.Defs
-import Batteries.WF
 
 /-!
 # `Nat.find` and `Nat.findGreatest`
