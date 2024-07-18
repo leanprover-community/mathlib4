@@ -12,6 +12,8 @@ import Mathlib.Algebra.Polynomial.Module.Basic
 In this file we prove properties about `R`-derivations of `Polynomial A`.
 -/
 
+open Polynomial Module
+
 namespace Derivation
 
 variable {R A M : Type*} [CommRing R] [CommRing A] [Algebra R A] [AddCommGroup M]
