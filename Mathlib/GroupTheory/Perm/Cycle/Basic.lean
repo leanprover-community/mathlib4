@@ -1178,7 +1178,7 @@ lemma subtypePerm_of_support_le_zpow {c : Perm α} {s : Finset α} (hcs : c.supp
 /-- Support of a cycle is nonempty -/
 theorem IsCycle.nonempty_support {g : Perm α} (hg : g.IsCycle) :
     g.support.Nonempty := by
-  rw [Finset.nonempty_iff_ne_empty, Ne.def, support_eq_empty_iff]
+  rw [Finset.nonempty_iff_ne_empty, ne_eq, support_eq_empty_iff]
   exact IsCycle.ne_one hg
 
 /-- Centralizer of a cycle is a power of that cycle on the cycle -/
@@ -1297,3 +1297,7 @@ theorem cycle_zpow_mem_support_iff {g : Perm α}
   · simp only [hm0, pow_zero, Nat.cast_zero]
   · simp only [Nat.cast_eq_zero, hm0, iff_false]
     exact pow_ne_one_of_lt_orderOf' hm0 div_euc.2
+
+end Perm
+
+end Equiv
