@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Sym.Sym2.Order
 
 #align_import algebra.big_operators.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
@@ -2634,3 +2635,16 @@ end AddCommMonoid
 
 @[deprecated (since := "2023-12-23")] alias Equiv.prod_comp' := Fintype.prod_equiv
 @[deprecated (since := "2023-12-23")] alias Equiv.sum_comp' := Fintype.sum_equiv
+
+-- TODO: move
+theorem Finset.sum_sym2_filter_not_isDiag {ι α} [LinearOrder ι] [AddCommMonoid α]
+    (s : Finset ι) (p : Sym2 ι → α) :
+    ∑ i in s.sym2.filter (¬ ·.IsDiag), p i =
+      ∑ i in s.offDiag.filter (fun i => i.1 < i.2), p s(i.1, i.2) := by
+  rw [Finset.offDiag_filter_lt_eq_filter_le]
+  conv_rhs => rw [← Finset.sum_subtype_eq_sum_filter]
+  refine (Finset.sum_equiv Sym2.sortEquiv.symm ?_ ?_).symm
+  · rintro ⟨⟨i₁, j₁⟩, hij₁⟩
+    simp [and_assoc]
+  · rintro ⟨⟨i₁, j₁⟩, hij₁⟩
+    simp

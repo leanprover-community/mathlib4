@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Sym.Sym2.Order
 
 /-!
 # Constructing a bilinear map from a quadratic map, given a basis
