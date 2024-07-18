@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Zhouhang Zhou
 -/
 import Mathlib.MeasureTheory.Integral.Lebesgue
-import Mathlib.Order.Filter.Germ
+import Mathlib.Order.Filter.Germ.Basic
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 

@@ -44,7 +44,6 @@ For each of the following structures we prove that if `β` has this structure, t
 * `MulZeroClass`, `Distrib`, `Semiring`, `CommSemiring`, `Ring`, `CommRing`;
 * `MulAction`, `DistribMulAction`, `Module`;
 * `Preorder`, `PartialOrder`, and `Lattice` structures, as well as `BoundedOrder`;
-* `OrderedCancelCommMonoid` and `OrderedCancelAddCommMonoid`.
 
 ## Tags
 
@@ -833,17 +832,6 @@ instance instDistribLattice [DistribLattice β] : DistribLattice (Germ l β) whe
   le_sup_inf f g h := inductionOn₃ f g h fun _f _g _h ↦ eventually_of_forall fun _ ↦ le_sup_inf
 
 @[to_additive]
-instance instOrderedCommMonoid [OrderedCommMonoid β] : OrderedCommMonoid (Germ l β) where
-  mul_le_mul_left f g := inductionOn₂ f g fun _f _g H h ↦ inductionOn h fun _h ↦ H.mono
-    fun _x H ↦ mul_le_mul_left' H _
-
-@[to_additive]
-instance instOrderedCancelCommMonoid [OrderedCancelCommMonoid β] :
-    OrderedCancelCommMonoid (Germ l β) where
-  le_of_mul_le_mul_left f g h := inductionOn₃ f g h fun _f _g _h H ↦ H.mono
-    fun _x ↦ le_of_mul_le_mul_left'
-
-@[to_additive]
 instance instExistsMulOfLE [Mul β] [LE β] [ExistsMulOfLE β] : ExistsMulOfLE (Germ l β) where
   exists_mul_of_le {x y} := inductionOn₂ x y fun f g (h : f ≤ᶠ[l] g) ↦ by
     classical
@@ -851,12 +839,6 @@ instance instExistsMulOfLE [Mul β] [LE β] [ExistsMulOfLE β] : ExistsMulOfLE (
     refine ⟨ofFun fun x ↦ if hx : f x ≤ g x then c x hx else f x, coe_eq.2 ?_⟩
     filter_upwards [h] with x hx
     rw [dif_pos hx, hc]
-
-@[to_additive]
-instance instCanonicallyOrderedCommMonoid [CanonicallyOrderedCommMonoid β] :
-    CanonicallyOrderedCommMonoid (Germ l β) where
-  __ := instExistsMulOfLE
-  le_self_mul x y := inductionOn₂ x y fun _ _ ↦ eventually_of_forall fun _ ↦ le_self_mul
 
 end Germ
 
