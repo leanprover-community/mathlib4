@@ -345,6 +345,14 @@ theorem T_mul (n : ℤ) (f : R[T;T⁻¹]) : T n * f = f * T n :=
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.T_mul LaurentPolynomial.T_mul
 
+@[simp]
+theorem C_mul (r : R) (f : R[T;T⁻¹]) : r • f = C r * f := by
+  induction f using LaurentPolynomial.induction_on' with
+  | h_add _ _ hp hq =>
+    rw [smul_add, mul_add, hp, hq]
+  | h_C_mul_T n s =>
+    rw [← mul_assoc, ← smul_mul_assoc, smul_C, RingHom.map_mul]
+
 /-- `trunc : R[T;T⁻¹] →+ R[X]` maps a Laurent polynomial `f` to the polynomial whose terms of
 nonnegative degree coincide with the ones of `f`.  The terms of negative degree of `f` "vanish".
 `trunc` is a left-inverse to `Polynomial.toLaurent`. -/
@@ -653,15 +661,16 @@ end Inversion
 
 section Eval
 
+variable {S : Type*}
+
 section SMulWithZero
 
-variable {S : Type*} [Semiring R] [AddCommMonoid S] [SMulWithZero R S] [Monoid S] (f g : R[T;T⁻¹])
-  (x y : Sˣ)
+variable [Semiring R] [AddCommMonoid S] [SMulWithZero R S] [Monoid S] (f g : R[T;T⁻¹]) (x y : Sˣ)
 
 /-- Evaluate a Laurent polynomial at a unit. -/
 def eval : S := Finsupp.sum f fun n r => r • (x ^ n).val
 
-theorem eval_eq_sum : f.eval x =  Finsupp.sum f fun n r => r • (x ^ n).val := rfl
+theorem eval_eq_sum : f.eval x = Finsupp.sum f fun n r => r • (x ^ n).val := rfl
 
 theorem eval_congr : f = g → x = y → f.eval x = g.eval y := by rintro rfl rfl; rfl
 
@@ -683,8 +692,10 @@ theorem eval_C (r : R) : (C r).eval x = r • 1 := by
 
 end SMulWithZero
 
-variable {S : Type*} [Semiring R] [AddCommMonoid S] [MulActionWithZero R S] [Monoid S]
-  (f g : R[T;T⁻¹]) (x y : Sˣ)
+section MulActionWithZero
+
+variable [Semiring R] [AddCommMonoid S] [MulActionWithZero R S] [Monoid S] (f g : R[T;T⁻¹])
+(x y : Sˣ)
 
 @[simp]
 theorem eval_T_pow (n : ℤ) (x : Sˣ) : (T n : R[T;T⁻¹]).eval x = (x ^ n).val := by
@@ -694,8 +705,11 @@ theorem eval_T_pow (n : ℤ) (x : Sˣ) : (T n : R[T;T⁻¹]).eval x = (x ^ n).va
 theorem eval_one : (1 : R[T;T⁻¹]).eval x = 1 := by
   rw [← T_zero, eval_T_pow 0 x, zpow_zero, Units.val_eq_one]
 
-variable {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S] [Monoid S] (f g : R[T;T⁻¹])
-  (x y : Sˣ)
+end MulActionWithZero
+
+section Module
+
+variable [Semiring R] [AddCommMonoid S] [Module R S] [Monoid S] (f g : R[T;T⁻¹]) (x y : Sˣ)
 
 @[simp]
 theorem eval_add : (f + g).eval x = f.eval x + g.eval x := by
@@ -714,14 +728,42 @@ theorem eval_smul (r : R) : (r • f).eval x = r • (f.eval x) := by
   | h_C_mul_T_Z n s _ =>
     rw [eval_C_mul_T_n, ← single_eq_C_mul_T, smul_single', eval_single, mul_smul]
 
+theorem eval_C_mul (r : R) : (C r * f).eval x = r • (f.eval x) := by
+  rw [← eval_smul, C_mul]
+
 /-- Evaluation as an `R`-linear map. -/
-def eval.linearMap : R[T;T⁻¹] →ₗ[R] S where -- make R explicit?
+@[simps]
+def leval (R) [Semiring R] [Module R S] (x : Sˣ) : R[T;T⁻¹] →ₗ[R] S where -- make R explicit?
     toFun f := f.eval x
     map_add' f g := eval_add f g x
     map_smul' r f := eval_smul f x r
 
 -- TODO: linear map from R[T;T⁻¹] ⊗[R] M to M via unit in R.
 -- TODO: R-algebra maps from R[T;T⁻¹] to S are in bijection with units in S.
+end Module
+
+section Algebra
+
+variable [Semiring R] [Semiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S]
+(f g : R[T;T⁻¹]) (x y : Sˣ)
+
+theorem eval_T_pow_mul (n : ℤ) : (T n * f).eval x = (x ^ n).val * f.eval x := by
+  induction f using LaurentPolynomial.induction_on' with
+  | h_add p q hp hq =>
+    rw [mul_add, eval_add, hp, hq, ← mul_add, eval_add]
+  | h_C_mul_T m r =>
+    rw [T_mul, mul_T_assoc, eval_C_mul_T_n, eval_C_mul_T_n, add_comm, zpow_add, Units.val_mul,
+      ← smul_eq_mul, smul_comm, smul_eq_mul]
+
+@[simp]
+theorem eval_mul : (f * g).eval x = f.eval x * g.eval x := by
+  induction f using LaurentPolynomial.induction_on' with
+  | h_add _ _ hp hq=>
+    rw [add_mul, eval_add, eval_add, hp, hq, add_mul]
+  | h_C_mul_T n r =>
+    rw [eval_C_mul, mul_assoc, eval_C_mul, eval_T_pow, eval_T_pow_mul, smul_mul_assoc]
+
+end Algebra
 
 end Eval
 
