@@ -401,10 +401,9 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
   · rintro t ⟨n, ht⟩ -
     exact this n _ ht
   · rintro t htmeas ht -
-    have hgeq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas (hg.trim hle hgmeas)
-    have hheq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas
+    have hgeq := @setIntegral_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas (hg.trim hle hgmeas)
+    have hheq := @setIntegral_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas
       (hlimint.trim hle stronglyMeasurable_limitProcess)
-    rw [add_comm, ← eq_sub_iff_add_eq] at hgeq hheq
     rw [setIntegral_trim hle hgmeas htmeas.compl,
       setIntegral_trim hle stronglyMeasurable_limitProcess htmeas.compl, hgeq, hheq, ←
       setIntegral_trim hle hgmeas htmeas, ←

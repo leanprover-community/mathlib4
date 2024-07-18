@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Measure.Regular
 # Continuity of `MeasureTheory.Lp.compMeasurePreserving`
 
 In this file we prove that the composition of an `L^p` function `g`
-with a continuous measure-preservingg map `f` is continuous in both arguments.
+with a continuous measure-preserving map `f` is continuous in both arguments.
 
 First, we prove it for indicator functions,
 in terms of convergence of `μ ((f a ⁻¹' s) ∆ (g ⁻¹' s))` to zero.

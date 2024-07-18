@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Data.Nat.Defs
 import Mathlib.Init.Data.List.Basic
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Says
@@ -348,24 +347,12 @@ theorem bit_add' : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit b n + bit fal
 #align nat.bit_add' Nat.bit_add'
 
 theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
-  cases b <;> [exact Nat.bit0_ne_zero h; exact Nat.bit1_ne_zero _]
+  cases b <;> dsimp [bit] <;> omega
 #align nat.bit_ne_zero Nat.bit_ne_zero
 
-theorem bit0_mod_two : 2 * n % 2 = 0 := by
-  rw [Nat.mod_two_of_bodd]
-  simp
-#align nat.bit0_mod_two Nat.bit0_mod_two
-
-theorem bit1_mod_two : (2 * n + 1) % 2 = 1 := by
-  rw [Nat.mod_two_of_bodd]
-  simp
-#align nat.bit1_mod_two Nat.bit1_mod_two
-
-theorem pos_of_bit0_pos {n : ℕ} (h : 0 < 2 * n) : 0 < n := by
-  cases n
-  · cases h
-  · apply succ_pos
-#align nat.pos_of_bit0_pos Nat.pos_of_bit0_pos
+#noalign nat.bit0_mod_two
+#noalign nat.bit1_mod_two
+#noalign nat.pos_of_bit0_pos
 
 @[simp]
 theorem bitCasesOn_bit {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (b : Bool) (n : ℕ) :
@@ -398,74 +385,36 @@ theorem bit_cases_on_inj {C : ℕ → Sort u} (H₁ H₂ : ∀ b n, C (bit b n))
   bit_cases_on_injective.eq_iff
 #align nat.bit_cases_on_inj Nat.bit_cases_on_inj
 
-protected theorem bit0_eq_zero {n : ℕ} : 2 * n = 0 ↔ n = 0 := by
-  omega
-#align nat.bit0_eq_zero Nat.bit0_eq_zero
+#noalign nat.bit0_eq_zero
 
 theorem bit_eq_zero_iff {n : ℕ} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = false := by
   constructor
-  · cases b <;> simp [Nat.bit, Nat.bit0_eq_zero, Nat.bit1_ne_zero]; omega
+  · cases b <;> simp [Nat.bit]; omega
   · rintro ⟨rfl, rfl⟩
     rfl
 #align nat.bit_eq_zero_iff Nat.bit_eq_zero_iff
 
-protected lemma bit0_le (h : n ≤ m) : 2 * n ≤ 2 * m := by
-  omega
-#align nat.bit0_le Nat.bit0_le
-
-protected lemma bit1_le {n m : ℕ} (h : n ≤ m) : 2 * n + 1 ≤ 2 * m + 1 := by
-  omega
-#align nat.bit1_le Nat.bit1_le
+#noalign nat.bit0_le
+#noalign nat.bit1_le
 
 lemma bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
-  | true, _, _, h => Nat.bit1_le h
-  | false, _, _, h => Nat.bit0_le h
+  | true, _, _, h => by dsimp [bit]; omega
+  | false, _, _, h => by dsimp [bit]; omega
 #align nat.bit_le Nat.bit_le
 
-lemma bit0_le_bit : ∀ (b) {m n : ℕ}, m ≤ n → 2 * m ≤ bit b n
-  | true, _, _, h => le_of_lt <| Nat.bit0_lt_bit1 h
-  | false, _, _, h => Nat.bit0_le h
-#align nat.bit0_le_bit Nat.bit0_le_bit
+#noalign nat.bit0_le_bit
+#noalign nat.bit_le_bit1
+#noalign nat.bit_lt_bit0
 
-lemma bit_le_bit1 : ∀ (b) {m n : ℕ}, m ≤ n → bit b m ≤ 2 * n + 1
-  | false, _, _, h => le_of_lt <| Nat.bit0_lt_bit1 h
-  | true, _, _, h => Nat.bit1_le h
-#align nat.bit_le_bit1 Nat.bit_le_bit1
-
-lemma bit_lt_bit0 : ∀ (b) {m n : ℕ}, m < n → bit b m < 2 * n
-  | true, _, _, h => Nat.bit1_lt_bit0 h
-  | false, _, _, h => Nat.bit0_lt h
-#align nat.bit_lt_bit0 Nat.bit_lt_bit0
-
-protected lemma bit0_lt_bit0 : 2 * m < 2 * n ↔ m < n := by omega
-
-lemma bit_lt_bit (a b) (h : m < n) : bit a m < bit b n :=
-  lt_of_lt_of_le (bit_lt_bit0 _ h) (bit0_le_bit _ (le_refl _))
+lemma bit_lt_bit (a b) (h : m < n) : bit a m < bit b n := calc
+  bit a m < 2 * n   := by cases a <;> dsimp [bit] <;> omega
+        _ ≤ bit b n := by cases b <;> dsimp [bit] <;> omega
 #align nat.bit_lt_bit Nat.bit_lt_bit
 
-@[simp]
-lemma bit0_le_bit1_iff : 2 * m ≤ 2 * n + 1 ↔ m ≤ n := by
-  refine ⟨fun h ↦ ?_, fun h ↦ le_of_lt (Nat.bit0_lt_bit1 h)⟩
-  rwa [← Nat.lt_succ_iff, n.bit1_eq_succ_bit0, ← n.bit0_succ_eq, Nat.bit0_lt_bit0, Nat.lt_succ_iff]
-    at h
-#align nat.bit0_le_bit1_iff Nat.bit0_le_bit1_iff
-
-@[simp]
-lemma bit0_lt_bit1_iff : 2 * m < 2 * n + 1 ↔ m ≤ n :=
-  ⟨fun h => bit0_le_bit1_iff.1 (le_of_lt h), Nat.bit0_lt_bit1⟩
-#align nat.bit0_lt_bit1_iff Nat.bit0_lt_bit1_iff
-
-@[simp]
-lemma bit1_le_bit0_iff : 2 * m + 1 ≤ 2 * n ↔ m < n :=
-  ⟨fun h ↦ by rwa [m.bit1_eq_succ_bit0, Nat.succ_le_iff, Nat.bit0_lt_bit0] at h,
-     fun h ↦ le_of_lt (Nat.bit1_lt_bit0 h)⟩
-#align nat.bit1_le_bit0_iff Nat.bit1_le_bit0_iff
-
-@[simp]
-lemma bit1_lt_bit0_iff : 2 * m + 1 < 2 * n ↔ m < n :=
-  ⟨fun h ↦ bit1_le_bit0_iff.1 (le_of_lt h), Nat.bit1_lt_bit0⟩
-#align nat.bit1_lt_bit0_iff Nat.bit1_lt_bit0_iff
-
+#noalign nat.bit0_le_bit1_iff
+#noalign nat.bit0_lt_bit1_iff
+#noalign nat.bit1_le_bit0_iff
+#noalign nat.bit1_lt_bit0_iff
 #noalign nat.one_le_bit0_iff
 #noalign nat.one_lt_bit0_iff
 #noalign nat.bit_le_bit_iff

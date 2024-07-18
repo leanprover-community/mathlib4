@@ -1442,6 +1442,17 @@ theorem lintegral_add_compl (f : α → ℝ≥0∞) {A : Set α} (hA : Measurabl
   rw [← lintegral_add_measure, Measure.restrict_add_restrict_compl hA]
 #align measure_theory.lintegral_add_compl MeasureTheory.lintegral_add_compl
 
+theorem setLintegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : MeasurableSet s)
+    (hfs : ∫⁻ x in s, f x ∂μ ≠ ∞) :
+    ∫⁻ x in sᶜ, f x ∂μ = ∫⁻ x, f x ∂μ - ∫⁻ x in s, f x ∂μ := by
+  rw [← lintegral_add_compl (μ := μ) f hsm, ENNReal.add_sub_cancel_left hfs]
+
+theorem setLIntegral_iUnion_of_directed {ι : Type*} [Countable ι]
+    (f : α → ℝ≥0∞) {s : ι → Set α} (hd : Directed (· ⊆ ·) s) :
+    ∫⁻ x in ⋃ i, s i, f x ∂μ = ⨆ i, ∫⁻ x in s i, f x ∂μ := by
+  simp only [lintegral_def, iSup_comm (ι := ι),
+    SimpleFunc.lintegral_restrict_iUnion_of_directed _ hd]
+
 theorem lintegral_max {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g) :
     ∫⁻ x, max (f x) (g x) ∂μ =
       ∫⁻ x in { x | f x ≤ g x }, g x ∂μ + ∫⁻ x in { x | g x < f x }, f x ∂μ := by
@@ -2026,68 +2037,29 @@ theorem univ_le_of_forall_fin_meas_le {μ : Measure α} (hm : m ≤ m0) [SigmaFi
 
 /-- If the Lebesgue integral of a function is bounded by some constant on all sets with finite
 measure in a sub-σ-algebra and the measure is σ-finite on that sub-σ-algebra, then the integral
-over the whole space is bounded by that same constant. Version for a measurable function.
-See `lintegral_le_of_forall_fin_meas_le'` for the more general `AEMeasurable` version. -/
-theorem lintegral_le_of_forall_fin_meas_le_of_measurable {μ : Measure α} (hm : m ≤ m0)
-    [SigmaFinite (μ.trim hm)] (C : ℝ≥0∞) {f : α → ℝ≥0∞} (hf_meas : Measurable f)
+over the whole space is bounded by that same constant. -/
+theorem lintegral_le_of_forall_fin_meas_trim_le {μ : Measure α} (hm : m ≤ m0)
+    [SigmaFinite (μ.trim hm)] (C : ℝ≥0∞) {f : α → ℝ≥0∞}
     (hf : ∀ s, MeasurableSet[m] s → μ s ≠ ∞ → ∫⁻ x in s, f x ∂μ ≤ C) : ∫⁻ x, f x ∂μ ≤ C := by
   have : ∫⁻ x in univ, f x ∂μ = ∫⁻ x, f x ∂μ := by simp only [Measure.restrict_univ]
   rw [← this]
-  refine univ_le_of_forall_fin_meas_le hm C hf fun S hS_meas hS_mono => ?_
-  rw [← lintegral_indicator]
-  swap
-  · exact hm (⋃ n, S n) (@MeasurableSet.iUnion _ _ m _ _ hS_meas)
-  have h_integral_indicator : ⨆ n, ∫⁻ x in S n, f x ∂μ = ⨆ n, ∫⁻ x, (S n).indicator f x ∂μ := by
-    congr
-    ext1 n
-    rw [lintegral_indicator _ (hm _ (hS_meas n))]
-  rw [h_integral_indicator, ← lintegral_iSup]
-  · refine le_of_eq (lintegral_congr fun x => ?_)
-    simp_rw [indicator_apply]
-    by_cases hx_mem : x ∈ iUnion S
-    · simp only [hx_mem, if_true]
-      obtain ⟨n, hxn⟩ := mem_iUnion.mp hx_mem
-      refine le_antisymm (_root_.trans ?_ (le_iSup _ n)) (iSup_le fun i => ?_)
-      · simp only [hxn, le_refl, if_true]
-      · by_cases hxi : x ∈ S i <;> simp [hxi]
-    · simp only [hx_mem, if_false]
-      rw [mem_iUnion] at hx_mem
-      push_neg at hx_mem
-      refine le_antisymm (zero_le _) (iSup_le fun n => ?_)
-      simp only [hx_mem n, if_false, nonpos_iff_eq_zero]
-  · exact fun n => hf_meas.indicator (hm _ (hS_meas n))
-  · intro n₁ n₂ hn₁₂ a
-    simp_rw [indicator_apply]
-    split_ifs with h h_1
-    · exact le_rfl
-    · exact absurd (mem_of_mem_of_subset h (hS_mono hn₁₂)) h_1
-    · exact zero_le _
-    · exact le_rfl
-#align measure_theory.lintegral_le_of_forall_fin_meas_le_of_measurable MeasureTheory.lintegral_le_of_forall_fin_meas_le_of_measurable
+  refine univ_le_of_forall_fin_meas_le hm C hf fun S _ hS_mono => ?_
+  rw [setLIntegral_iUnion_of_directed]
+  exact directed_of_isDirected_le hS_mono
+#align measure_theory.lintegral_le_of_forall_fin_meas_le_of_measurable MeasureTheory.lintegral_le_of_forall_fin_meas_trim_le
 
-/-- If the Lebesgue integral of a function is bounded by some constant on all sets with finite
-measure in a sub-σ-algebra and the measure is σ-finite on that sub-σ-algebra, then the integral
-over the whole space is bounded by that same constant. -/
-theorem lintegral_le_of_forall_fin_meas_le' {μ : Measure α} (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
-    (C : ℝ≥0∞) {f : _ → ℝ≥0∞} (hf_meas : AEMeasurable f μ)
-    (hf : ∀ s, MeasurableSet[m] s → μ s ≠ ∞ → ∫⁻ x in s, f x ∂μ ≤ C) : ∫⁻ x, f x ∂μ ≤ C := by
-  let f' := hf_meas.mk f
-  have hf' : ∀ s, MeasurableSet[m] s → μ s ≠ ∞ → ∫⁻ x in s, f' x ∂μ ≤ C := by
-    refine fun s hs hμs => (le_of_eq ?_).trans (hf s hs hμs)
-    refine lintegral_congr_ae (ae_restrict_of_ae (hf_meas.ae_eq_mk.mono fun x hx => ?_))
-    dsimp only
-    rw [hx]
-  rw [lintegral_congr_ae hf_meas.ae_eq_mk]
-  exact lintegral_le_of_forall_fin_meas_le_of_measurable hm C hf_meas.measurable_mk hf'
-#align measure_theory.lintegral_le_of_forall_fin_meas_le' MeasureTheory.lintegral_le_of_forall_fin_meas_le'
+@[deprecated lintegral_le_of_forall_fin_meas_trim_le (since := "2024-07-14")]
+alias lintegral_le_of_forall_fin_meas_le' := lintegral_le_of_forall_fin_meas_trim_le
+alias lintegral_le_of_forall_fin_meas_le_of_measurable := lintegral_le_of_forall_fin_meas_trim_le
+#align measure_theory.lintegral_le_of_forall_fin_meas_le' MeasureTheory.lintegral_le_of_forall_fin_meas_trim_le
 
 /-- If the Lebesgue integral of a function is bounded by some constant on all sets with finite
 measure and the measure is σ-finite, then the integral over the whole space is bounded by that same
 constant. -/
 theorem lintegral_le_of_forall_fin_meas_le [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
-    (C : ℝ≥0∞) {f : α → ℝ≥0∞} (hf_meas : AEMeasurable f μ)
+    (C : ℝ≥0∞) {f : α → ℝ≥0∞}
     (hf : ∀ s, MeasurableSet s → μ s ≠ ∞ → ∫⁻ x in s, f x ∂μ ≤ C) : ∫⁻ x, f x ∂μ ≤ C :=
-  @lintegral_le_of_forall_fin_meas_le' _ _ _ _ _ (by rwa [trim_eq_self]) C _ hf_meas hf
+  @lintegral_le_of_forall_fin_meas_trim_le _ _ _ _ _ (by rwa [trim_eq_self]) C _ hf
 #align measure_theory.lintegral_le_of_forall_fin_meas_le MeasureTheory.lintegral_le_of_forall_fin_meas_le
 
 theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α}

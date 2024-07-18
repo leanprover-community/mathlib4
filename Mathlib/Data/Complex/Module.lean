@@ -3,7 +3,6 @@ Copyright (c) 2020 Alexander Bentkamp, Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 -/
-
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.Complex.Basic
@@ -55,8 +54,6 @@ variable {R : Type*} {S : Type*}
 
 attribute [local ext] Complex.ext
 
--- Test that the `SMul ℚ ℂ` instance is correct.
-example : (Complex.SMul.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
 
 /- The priority of the following instances has been manually lowered, as when they don't apply
 they lead Lean to a very costly path, and most often they don't apply (most actions on `ℂ` don't

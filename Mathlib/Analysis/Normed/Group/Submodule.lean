@@ -13,7 +13,6 @@ variable {𝕜 E : Type*}
 
 namespace Submodule
 
--- See note [implicit instance arguments]
 /-- A submodule of a seminormed group is also a seminormed group, with the restriction of the norm.
 -/
 instance seminormedAddCommGroup [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E]
@@ -21,7 +20,6 @@ instance seminormedAddCommGroup [Ring 𝕜] [SeminormedAddCommGroup E] [Module �
   SeminormedAddCommGroup.induced _ _ s.subtype.toAddMonoidHom
 #align submodule.seminormed_add_comm_group Submodule.seminormedAddCommGroup
 
--- See note [implicit instance arguments].
 /-- If `x` is an element of a submodule `s` of a normed group `E`, its norm in `s` is equal to its
 norm in `E`. -/
 @[simp]
@@ -30,7 +28,6 @@ theorem coe_norm [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] {s : Sub
   rfl
 #align submodule.coe_norm Submodule.coe_norm
 
--- See note [implicit instance arguments].
 /-- If `x` is an element of a submodule `s` of a normed group `E`, its norm in `E` is equal to its
 norm in `s`.
 
@@ -41,7 +38,6 @@ theorem norm_coe [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] {s : Sub
   rfl
 #align submodule.norm_coe Submodule.norm_coe
 
--- See note [implicit instance arguments].
 /-- A submodule of a normed group is also a normed group, with the restriction of the norm. -/
 instance normedAddCommGroup [Ring 𝕜] [NormedAddCommGroup E] [Module 𝕜 E]
     (s : Submodule 𝕜 E) : NormedAddCommGroup s :=
