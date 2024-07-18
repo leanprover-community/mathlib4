@@ -26,31 +26,6 @@ defined by `I`), we may define the (naive) cotangent complex `I/I² → ⨁ᵢ S
 
 open KaehlerDifferential TensorProduct MvPolynomial
 
-lemma Exact.inr_fst {R M N} [Semiring R] [AddCommMonoid M] [AddCommMonoid N]
-    [Module R M] [Module R N] :
-    Function.Exact (LinearMap.inr R M N) (LinearMap.fst R M N) := by
-  rintro ⟨x, y⟩
-  simp only [LinearMap.fst_apply, @eq_comm _ x, LinearMap.coe_inr, Set.mem_range, Prod.mk.injEq,
-    exists_eq_right]
-
-/-- The lift of an `R`-basis of `M` to an `S`-basis of the base change `S ⊗[R] M`. -/
-noncomputable
-def _root_.Basis.baseChange {R M} (S) [CommSemiring R] [Semiring S] [AddCommMonoid M] [Algebra R S]
-    [Module R M] {ι} (b : Basis ι R M) : Basis ι S (S ⊗[R] M) :=
-  ((Basis.singleton Unit S).tensorProduct b).reindex (Equiv.punitProd ι)
-
-@[simp]
-lemma _root_.Basis.baseChange_repr_tmul {R M} (S) [CommSemiring R] [Semiring S] [AddCommMonoid M] [Algebra R S]
-    [Module R M] {ι} (b : Basis ι R M) (x y i) :
-    (b.baseChange S).repr (x ⊗ₜ y) i = b.repr y i • x := by
-  simp [Basis.baseChange, Basis.tensorProduct]
-
-@[simp]
-lemma _root_.Basis.baseChange_apply {R M} (S) [CommSemiring R] [Semiring S] [AddCommMonoid M] [Algebra R S]
-    [Module R M] {ι} (b : Basis ι R M) (i) :
-    b.baseChange S i = 1 ⊗ₜ b i := by
-  simp [Basis.baseChange, Basis.tensorProduct]
-
 namespace Algebra
 
 universe w u v
@@ -149,36 +124,6 @@ variable [Algebra R' R''] [Algebra S' S''] [Algebra R' S'']
 variable [IsScalarTower R R' R''] [IsScalarTower S S' S'']
 
 @[simp]
-lemma Hom.toAlgHom_id :
-    Hom.toAlgHom (.id P) = AlgHom.id _ _ := by
-  ext1 x
-  simp
-
-@[simp]
-lemma Hom.toAlgHom_comp_apply (f : Hom P P') (g : Hom P' P'') (x) :
-    (g.comp f).toAlgHom x = g.toAlgHom (f.toAlgHom x) := by
-  let a : IsScalarTower R R' P''.Ring := inferInstance
-  induction x using MvPolynomial.induction_on with
-  | h_C r => simp only [← MvPolynomial.algebraMap_eq, AlgHom.map_algebraMap]
-  | h_add x y hx hy => simp only [map_add, hx, hy]
-  | h_X p i hp => simp only [_root_.map_mul, hp, toAlgHom_X, comp_val]; rfl
-
-@[simp]
-lemma Cotangent.map_id :
-    Cotangent.map (.id P) = LinearMap.id := by
-  ext x
-  obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
-  simp only [map_mk, Hom.toAlgHom_id, AlgHom.coe_id, id_eq, Subtype.coe_eta, val_mk,
-    LinearMap.id_coe]
-
-lemma Cotangent.map_comp (f : Hom P P') (g : Hom P' P'') :
-    Cotangent.map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by
-  ext x
-  obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
-  simp only [map_mk, val_mk, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
-    Function.comp_apply, Hom.toAlgHom_comp_apply]
-
-@[simp]
 lemma CotangentSpace.map_id :
     CotangentSpace.map (.id P) = LinearMap.id := by
   apply P.cotangentSpaceBasis.ext
@@ -207,10 +152,6 @@ lemma CotangentSpace.map_comp_cotangentComplex (f : Hom P P') :
 universe uT
 
 variable {T : Type uT} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-
-lemma Hom.toAlgHom_monomial (f : Generators.Hom P P') (v r) :
-    f.toAlgHom (monomial v r) = r • v.prod (f.val · ^ ·) := by
-  rw [toAlgHom, aeval_monomial, Algebra.smul_def]
 
 lemma Hom.sub_aux (f g : Hom P P') (x y) :
     letI := ((algebraMap S S').comp (algebraMap P.Ring S)).toAlgebra
@@ -284,10 +225,9 @@ def Hom.sub (f g : Hom P P') : P.CotangentSpace →ₗ[S] P'.Cotangent := by
 
 lemma Hom.sub_one_tmul (f g : Hom P P') (x) :
     f.sub g (1 ⊗ₜ .D _ _ x) = Cotangent.mk (f.subToKer g x) := by
-  simp only [sub, AlgebraTensorModule.lift_apply, lift.tmul, LinearMap.coe_restrictScalars,
-    LinearMap.flip_apply, LinearMap.lsmul_apply, one_smul,
-    Derivation.liftKaehlerDifferential_comp_D, Derivation.mk_coe, LinearMap.coe_comp,
-    Function.comp_apply]
+  simp only [sub, LinearMap.liftBaseChange_tmul, Derivation.liftKaehlerDifferential_comp_D,
+    Derivation.mk_coe, LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
+    one_smul]
 
 @[simp]
 lemma Hom.sub_tmul (f g : Hom P P') (r x) :
@@ -303,8 +243,6 @@ lemma CotangentSpace.map_sub_map (f g : Hom P P') :
     Hom.toAlgHom_X, LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
     Hom.sub_one_tmul, cotangentComplex_mk, Hom.subToKer_apply_coe, map_sub, tmul_sub]
 
-@[simp] lemma Cotangent.val_sub (x y : P.Cotangent) : (x - y).val = x.val - y.val := rfl
-
 lemma Cotangent.map_sub_map (f g : Hom P P') :
     map f - map g = (f.sub g) ∘ₗ P.cotangentComplex := by
   ext x
@@ -317,8 +255,8 @@ lemma Cotangent.map_sub_map (f g : Hom P P') :
     Ideal.toCotangent_to_quotient_square, Submodule.mkQ_apply, Ideal.Quotient.mk_eq_mk,
     Hom.subToKer_apply_coe]
 
-/-- The projection map from the relative cotangent space to the module of differentials. -/
 variable (P) in
+/-- The projection map from the relative cotangent space to the module of differentials. -/
 noncomputable
 abbrev toKaehler : P.CotangentSpace →ₗ[S] Ω[S⁄R] := mapBaseChange _ _ _
 

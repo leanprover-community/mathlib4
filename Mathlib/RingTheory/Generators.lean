@@ -389,6 +389,7 @@ variable (x y : P.Cotangent) (w z : P.ker.Cotangent)
 @[simp] lemma of_zero : (of 0 : P.Cotangent) = 0 := rfl
 @[simp] lemma of_val : of x.val = x := rfl
 @[simp] lemma val_of : (of w).val = w := rfl
+@[simp] lemma val_sub : (x - y).val = x.val - y.val := rfl
 
 end Cotangent
 
