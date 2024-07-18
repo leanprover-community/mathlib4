@@ -464,10 +464,8 @@ lemma leibniz_zpow {K : Type*} [Field K] [Module K M] [Algebra R K]
     rw [← zpow_natCast]
     congr
     omega
-  · rw [h]
-    rw [zpow_neg, zpow_natCast]
-    rw [leibniz_inv, leibniz_pow, inv_pow, ← pow_mul, ← zpow_natCast, ← zpow_natCast]
-    simp only [nsmul_eq_smul_cast K, zsmul_eq_smul_cast K, smul_smul]
+  · rw [h, zpow_neg, zpow_natCast, leibniz_inv, leibniz_pow, inv_pow, ← pow_mul, ← zpow_natCast,
+      ← zpow_natCast, nsmul_eq_smul_cast K, zsmul_eq_smul_cast K, smul_smul, smul_smul, smul_smul]
     trans (-n.natAbs * (a ^ ((n.natAbs - 1 : ℕ) : ℤ) / (a ^ ((n.natAbs * 2 : ℕ) : ℤ)))) • D a
     · ring_nf
     rw [← zpow_sub₀ ha]
