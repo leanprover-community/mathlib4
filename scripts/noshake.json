@@ -81,6 +81,7 @@
   "Mathlib.Tactic.CongrM",
   "Mathlib.Tactic.Constructor",
   "Mathlib.Tactic.Continuity",
+  "Mathlib.Tactic.ContinuousFunctionalCalculus",
   "Mathlib.Tactic.Contrapose",
   "Mathlib.Tactic.Conv",
   "Mathlib.Tactic.Convert",
@@ -376,4 +377,5 @@
   ["Lean.Elab.BuiltinNotation", "Lean.Elab.BuiltinTerm"],
   "Batteries.CodeAction.Basic":
   ["Lean.Elab.BuiltinNotation", "Lean.Elab.BuiltinTerm"],
+  "Mathlib.Tactic.ContinuousFunctionalCalculus": ["Mathlib.Tactic.FunProp"],
   "Batteries.Classes.SetNotation": ["Batteries.Util.ExtendedBinder"]}}
