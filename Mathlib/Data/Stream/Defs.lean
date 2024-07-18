@@ -46,7 +46,7 @@ def tail (s : Stream' α) : Stream' α := fun i => s.get (i + 1)
 #align stream.tail Stream'.tail
 
 /-- Drop first `n` elements of a stream. -/
-def drop (n : Nat) (s : Stream' α) : Stream' α := fun i => s.get (i + n)
+def drop (n : ℕ) (s : Stream' α) : Stream' α := fun i => s.get (i + n)
 #align stream.drop Stream'.drop
 
 /-- Proposition saying that all elements of a stream satisfy a predicate. -/
@@ -188,7 +188,7 @@ infixl:75 " ⊛ " => apply
 -- Porting note: "input as \o*" was here but doesn't work for the above notation
 
 /-- The stream of natural numbers: `Stream'.get n Stream'.nats = n`. -/
-def nats : Stream' Nat := fun n => n
+def nats : Stream' ℕ := fun n => n
 #align stream.nats Stream'.nats
 
 end Stream'

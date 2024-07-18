@@ -237,9 +237,11 @@ private theorem step4 : (Fintype.card N).minFac.Prime := by
   exact Nat.minFac_prime (N.one_lt_card_iff_ne_bot.mpr (step0 h1 h3)).ne'
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
-private theorem step5 {P : Sylow (Fintype.card N).minFac N} : P.1 ≠ ⊥ :=
+private theorem step5 {P : Sylow (Fintype.card N).minFac N} : P.1 ≠ ⊥ := by
   haveI : Fact (Fintype.card N).minFac.Prime := ⟨step4 h1 h3⟩
-  P.ne_bot_of_dvd_card (Fintype.card N).minFac_dvd
+  apply P.ne_bot_of_dvd_card
+  rw [← Nat.card_eq_fintype_card]
+  exact (Nat.card N).minFac_dvd
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step6 : IsPGroup (Fintype.card N).minFac N := by

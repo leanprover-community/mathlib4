@@ -3,11 +3,11 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Order.AddGroupWithTop
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Data.Nat.Cast.Field
-import Mathlib.Algebra.Field.Basic
 
 #align_import algebra.char_zero.lemmas from "leanprover-community/mathlib"@"acee671f47b8e7972a1eb6f4eed74b4b3abce829"
 
@@ -130,17 +130,27 @@ end
 
 section
 
-variable {R : Type*} [DivisionRing R] [CharZero R]
+variable {R : Type*} [DivisionSemiring R] [NeZero (2 : R)]
 
-@[simp] lemma half_add_self (a : R) : (a + a) / 2 = a := by
+@[simp] lemma add_self_div_two (a : R) : (a + a) / 2 = a := by
   rw [← mul_two, mul_div_cancel_right₀ a two_ne_zero]
-#align half_add_self half_add_self
+#align add_self_div_two add_self_div_two
+#align half_add_self add_self_div_two
+@[deprecated (since := "2024-07-16")] alias half_add_self := add_self_div_two
+
 
 @[simp]
-theorem add_halves' (a : R) : a / 2 + a / 2 = a := by rw [← add_div, half_add_self]
-#align add_halves' add_halves'
+theorem add_halves (a : R) : a / 2 + a / 2 = a := by rw [← add_div, add_self_div_two]
+#align add_halves add_halves
+#align add_halves' add_halves
+@[deprecated (since := "2024-07-16")] alias add_halves' := add_halves
 
-theorem sub_half (a : R) : a - a / 2 = a / 2 := by rw [sub_eq_iff_eq_add, add_halves']
+end
+section
+
+variable {R : Type*} [DivisionRing R] [CharZero R]
+
+theorem sub_half (a : R) : a - a / 2 = a / 2 := by rw [sub_eq_iff_eq_add, add_halves]
 #align sub_half sub_half
 
 theorem half_sub (a : R) : a / 2 - a = -(a / 2) := by rw [← neg_sub, sub_half]

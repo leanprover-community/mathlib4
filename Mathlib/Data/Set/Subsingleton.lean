@@ -84,6 +84,12 @@ theorem subsingleton_univ_iff : (univ : Set α).Subsingleton ↔ Subsingleton α
   ⟨subsingleton_of_univ_subsingleton, fun h => @subsingleton_univ _ h⟩
 #align set.subsingleton_univ_iff Set.subsingleton_univ_iff
 
+lemma Subsingleton.inter_singleton : (s ∩ {a}).Subsingleton :=
+  Set.subsingleton_of_subset_singleton Set.inter_subset_right
+
+lemma Subsingleton.singleton_inter : ({a} ∩ s).Subsingleton :=
+  Set.subsingleton_of_subset_singleton Set.inter_subset_left
+
 theorem subsingleton_of_subsingleton [Subsingleton α] {s : Set α} : Set.Subsingleton s :=
   subsingleton_univ.anti (subset_univ s)
 #align set.subsingleton_of_subsingleton Set.subsingleton_of_subsingleton
