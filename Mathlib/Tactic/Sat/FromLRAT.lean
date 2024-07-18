@@ -190,7 +190,8 @@ structure Clause.reify (v : Valuation) (c : Clause) (p : Prop) : Prop where
   prop : ¬ v.satisfies c → p
 
 /-- Reification of a single clause formula. -/
-theorem Fmla.reify_one {c : Clause} {a : Prop} (h : Clause.reify v c a) : Fmla.reify v (Fmla.one c) a :=
+theorem Fmla.reify_one {c : Clause} {a : Prop} (h : Clause.reify v c a) :
+    Fmla.reify v (Fmla.one c) a :=
   ⟨fun H ↦ h.1 fun h ↦ H ⟨fun | _, List.Mem.head .. => h⟩⟩
 
 /-- Asserts that `¬⟦l⟧_v` implies `p`. -/
