@@ -857,13 +857,13 @@ theorem mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ t ⊆ s, IsOpen t ∧ x ∈ t :=
 /-- A predicate is true in a neighborhood of `x` iff it is true for all the points in an open set
 containing `x`. -/
 theorem eventually_nhds_iff {p : X → Prop} :
-    (∀ᶠ x in 𝓝 x, p x) ↔ ∃ t : Set X, (∀ x ∈ t, p x) ∧ IsOpen t ∧ x ∈ t :=
+    (∀ᶠ y in 𝓝 x, p y) ↔ ∃ t : Set X, (∀ y ∈ t, p y) ∧ IsOpen t ∧ x ∈ t :=
   mem_nhds_iff.trans <| by simp only [subset_def, exists_prop, mem_setOf_eq]
 #align eventually_nhds_iff eventually_nhds_iff
 
 theorem frequently_nhds_iff {p : X → Prop} :
-    (∃ᶠ y in 𝓝 x, p y) ↔ ∀ U : Set X, IsOpen U → x ∈ U → ∃ y ∈ U, p y :=
-  (nhds_basis_opens x).frequently_iff.trans <| by simp [and_comm]
+    (∃ᶠ y in 𝓝 x, p y) ↔ ∀ U : Set X, x ∈ U → IsOpen U → ∃ y ∈ U, p y :=
+  (nhds_basis_opens x).frequently_iff.trans <| by simp
 
 theorem mem_interior_iff_mem_nhds : x ∈ interior s ↔ s ∈ 𝓝 x :=
   mem_interior.trans mem_nhds_iff.symm
