@@ -303,17 +303,21 @@ lemma homAddEquiv_apply (α : Ext X Y n) : homAddEquiv α = α.hom := rfl
 
 end
 
-/-- The postcomposition `Ext X Y a →+ Ext X Z b` with `β : Ext Y Z n` when `a + n = b`. -/
+variable (X Y Z) in
 @[simps!]
-noncomputable def postcomp (β : Ext Y Z n) (X : C) {a b : ℕ} (h : a + n = b) :
+noncomputable def bilinearComp (a b c : ℕ) (h : a + b = c) :
+    Ext X Y a →+ Ext Y Z b →+ Ext X Z c :=
+  AddMonoidHom.mk' (fun α ↦ AddMonoidHom.mk' (fun β ↦ α.comp β h) (by simp)) (by aesop)
+
+/-- The postcomposition `Ext X Y a →+ Ext X Z b` with `β : Ext Y Z n` when `a + n = b`. -/
+noncomputable abbrev postcomp (β : Ext Y Z n) (X : C) {a b : ℕ} (h : a + n = b) :
     Ext X Y a →+ Ext X Z b :=
-  AddMonoidHom.mk' (fun α => α.comp β h) (by simp)
+  (bilinearComp X Y Z a n b h).flip β
 
 /-- The precomposition `Ext Y Z a →+ Ext X Z b` with `α : Ext X Y n` when `n + a = b`. -/
-@[simps!]
-noncomputable def precomp (α : Ext X Y n) (Z : C) {a b : ℕ} (h : n + a = b) :
+noncomputable abbrev precomp (α : Ext X Y n) (Z : C) {a b : ℕ} (h : n + a = b) :
     Ext Y Z a →+ Ext X Z b :=
-  AddMonoidHom.mk' (fun β => α.comp β h) (by simp)
+  bilinearComp X Y Z n a b h α
 
 end Ext
 
