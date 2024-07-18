@@ -88,12 +88,6 @@ open Functor
 open Traversable LawfulTraversable
 
 @[simp]
-theorem lift_coe {α β : Type*} (x : List α) (f : List α → β)
-    (h : ∀ a b : List α, a ≈ b → f a = f b) : Quotient.lift f h (x : Multiset α) = f x :=
-  Quotient.lift_mk _ _ _
-#align multiset.lift_coe Multiset.lift_coe
-
-@[simp]
 theorem map_comp_coe {α β} (h : α → β) :
     Functor.map h ∘ Coe.coe = (Coe.coe ∘ Functor.map h : List α → Multiset β) := by
   funext; simp only [Function.comp_apply, Coe.coe, fmap_def, map_coe, List.map_eq_map]

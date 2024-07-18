@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Notation
 
 #align_import data.stream.defs from "leanprover-community/mathlib"@"39af7d3bf61a98e928812dbc3e16f4ea8b795ca3"
 
@@ -16,7 +16,8 @@ infinite list. In this file we define `Stream'` and some functions that take and
 Note that we already have `Stream` to represent a similar object, hence the awkward naming.
 -/
 
-set_option autoImplicit true
+universe u v w
+variable {α : Type u} {β : Type v} {δ : Type w}
 
 /-- A stream `Stream' α` is an infinite sequence of elements of `α`. -/
 def Stream' (α : Type u) := ℕ → α
@@ -45,7 +46,7 @@ def tail (s : Stream' α) : Stream' α := fun i => s.get (i + 1)
 #align stream.tail Stream'.tail
 
 /-- Drop first `n` elements of a stream. -/
-def drop (n : Nat) (s : Stream' α) : Stream' α := fun i => s.get (i + n)
+def drop (n : ℕ) (s : Stream' α) : Stream' α := fun i => s.get (i + n)
 #align stream.drop Stream'.drop
 
 /-- Proposition saying that all elements of a stream satisfy a predicate. -/
@@ -187,7 +188,7 @@ infixl:75 " ⊛ " => apply
 -- Porting note: "input as \o*" was here but doesn't work for the above notation
 
 /-- The stream of natural numbers: `Stream'.get n Stream'.nats = n`. -/
-def nats : Stream' Nat := fun n => n
+def nats : Stream' ℕ := fun n => n
 #align stream.nats Stream'.nats
 
 end Stream'

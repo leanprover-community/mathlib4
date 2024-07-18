@@ -49,6 +49,9 @@ Then we get the general result using that a torsion free module is free (which h
 Finitely generated module, principal ideal domain, classification, structure theorem
 -/
 
+-- We shouldn't need to know about topology to prove
+-- the structure theorem for finitely generated modules over a PID.
+assert_not_exists TopologicalSpace
 
 universe u v
 
@@ -207,7 +210,7 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
           (quotEquivOfEq (torsionOf R N (s j)) _
           (Ideal.torsionOf_eq_span_pow_pOrder hp hN (s j)))).prod
           (ULift.moduleEquiv))).trans
-          (@DirectSum.lequivProdDirectSum R _ _ _
+          (@DirectSum.lequivProdDirectSum R _ _
           (fun i => R ⧸ R ∙ p ^ @Option.rec _ (fun _ => ℕ) (pOrder hN <| s j) k i) _ _).symm).trans
           (DirectSum.lequivCongrLeft R (finSuccEquiv d).symm)
         · rw [range_subtype, LinearEquiv.ker_comp, ker_mkQ]

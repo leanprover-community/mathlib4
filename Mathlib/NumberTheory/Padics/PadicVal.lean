@@ -141,7 +141,7 @@ theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
       interval_cases p
       · simp [Classical.em]
       · dsimp [padicValNat, maxPowDiv]
-        rw [go, if_neg, dif_neg] <;> simp
+        rw [go, if_neg]; simp
     · intro h
       simp [h]
 
@@ -304,16 +304,25 @@ theorem dvd_iff_padicValNat_ne_zero {p n : ℕ} [Fact p.Prime] (hn0 : n ≠ 0) :
 
 open List
 
-theorem le_multiplicity_iff_replicate_subperm_factors {a b : ℕ} {n : ℕ} (ha : a.Prime)
+theorem le_multiplicity_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : ℕ} (ha : a.Prime)
     (hb : b ≠ 0) :
-    ↑n ≤ multiplicity a b ↔ replicate n a <+~ b.factors :=
-  (replicate_subperm_factors_iff ha hb).trans multiplicity.pow_dvd_iff_le_multiplicity |>.symm
+    ↑n ≤ multiplicity a b ↔ replicate n a <+~ b.primeFactorsList :=
+  (replicate_subperm_primeFactorsList_iff ha hb).trans
+    multiplicity.pow_dvd_iff_le_multiplicity |>.symm
 
-theorem le_padicValNat_iff_replicate_subperm_factors {a b : ℕ} {n : ℕ} (ha : a.Prime)
+@[deprecated (since := "2024-07-17")]
+alias le_multiplicity_iff_replicate_subperm_factors :=
+  le_multiplicity_iff_replicate_subperm_primeFactorsList
+
+theorem le_padicValNat_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : ℕ} (ha : a.Prime)
     (hb : b ≠ 0) :
-    n ≤ padicValNat a b ↔ replicate n a <+~ b.factors := by
-  rw [← le_multiplicity_iff_replicate_subperm_factors ha hb,
+    n ≤ padicValNat a b ↔ replicate n a <+~ b.primeFactorsList := by
+  rw [← le_multiplicity_iff_replicate_subperm_primeFactorsList ha hb,
     ← padicValNat_def' ha.ne_one (Nat.pos_of_ne_zero hb), Nat.cast_le]
+
+@[deprecated (since := "2024-07-17")]
+alias le_padicValNat_iff_replicate_subperm_factors :=
+  le_padicValNat_iff_replicate_subperm_primeFactorsList
 
 end padicValNat
 
@@ -630,7 +639,7 @@ lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : 0 < n
 lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicValNat 2 (n + 1) := by
   rw [Ne, log_eq_iff (by simp [hn])]
   rintro ⟨h1, h2⟩
-  rw [← lt_add_one_iff, ← mul_one (2 ^ _)] at h1
+  rw [← Nat.lt_add_one_iff, ← mul_one (2 ^ _)] at h1
   rw [← add_one_le_iff, Nat.pow_succ] at h2
   refine not_dvd_of_between_consec_multiples h1 (lt_of_le_of_ne' h2 ?_) pow_padicValNat_dvd
   -- TODO(kmill): Why is this `p := 2` necessary?
@@ -712,7 +721,7 @@ theorem padicValNat_factorial {n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < b
 
 Taking (`p - 1`) times the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits
 of `n`. -/
-theorem sub_one_mul_padicValNat_factorial [hp : Fact p.Prime] (n : ℕ):
+theorem sub_one_mul_padicValNat_factorial [hp : Fact p.Prime] (n : ℕ) :
     (p - 1) * padicValNat p (n !) = n - (p.digits n).sum := by
   rw [padicValNat_factorial <| lt_succ_of_lt <| lt.base (log p n)]
   nth_rw 2 [← zero_add 1]

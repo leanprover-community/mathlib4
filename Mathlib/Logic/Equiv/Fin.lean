@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Data.Int.Defs
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Logic.Embedding.Set
+import Mathlib.Logic.Equiv.Option
 
 #align_import logic.equiv.fin from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 
@@ -83,19 +85,6 @@ def finTwoArrowEquiv (α : Type*) : (Fin 2 → α) ≃ α × α :=
 #align fin_two_arrow_equiv finTwoArrowEquiv
 #align fin_two_arrow_equiv_symm_apply finTwoArrowEquiv_symm_apply
 #align fin_two_arrow_equiv_apply finTwoArrowEquiv_apply
-
-/-- `Π i : Fin 2, α i` is order equivalent to `α 0 × α 1`. See also `OrderIso.finTwoArrowEquiv`
-for a non-dependent version. -/
-def OrderIso.piFinTwoIso (α : Fin 2 → Type u) [∀ i, Preorder (α i)] : (∀ i, α i) ≃o α 0 × α 1 where
-  toEquiv := piFinTwoEquiv α
-  map_rel_iff' := Iff.symm Fin.forall_fin_two
-#align order_iso.pi_fin_two_iso OrderIso.piFinTwoIso
-
-/-- The space of functions `Fin 2 → α` is order equivalent to `α × α`. See also
-`OrderIso.piFinTwoIso`. -/
-def OrderIso.finTwoArrowIso (α : Type*) [Preorder α] : (Fin 2 → α) ≃o α × α :=
-  { OrderIso.piFinTwoIso fun _ => α with toEquiv := finTwoArrowEquiv α }
-#align order_iso.fin_two_arrow_iso OrderIso.finTwoArrowIso
 
 /-- An equivalence that removes `i` and maps it to `none`.
 This is a version of `Fin.predAbove` that produces `Option (Fin n)` instead of
@@ -211,28 +200,23 @@ theorem finSuccEquiv'_ne_last_apply {i j : Fin (n + 1)} (hi : i ≠ Fin.last n) 
 #align fin_succ_equiv'_ne_last_apply finSuccEquiv'_ne_last_apply
 
 /-- `Fin.succAbove` as an order isomorphism between `Fin n` and `{x : Fin (n + 1) // x ≠ p}`. -/
-def finSuccAboveEquiv (p : Fin (n + 1)) : Fin n ≃o { x : Fin (n + 1) // x ≠ p } :=
-  { Equiv.optionSubtype p ⟨(finSuccEquiv' p).symm, rfl⟩ with
-    map_rel_iff' := p.succAboveOrderEmb.map_rel_iff' }
-#align fin_succ_above_equiv finSuccAboveEquiv
+def finSuccAboveEquiv (p : Fin (n + 1)) : Fin n ≃ { x : Fin (n + 1) // x ≠ p } :=
+  .optionSubtype p ⟨(finSuccEquiv' p).symm, rfl⟩
 
 theorem finSuccAboveEquiv_apply (p : Fin (n + 1)) (i : Fin n) :
     finSuccAboveEquiv p i = ⟨p.succAbove i, p.succAbove_ne i⟩ :=
   rfl
-#align fin_succ_above_equiv_apply finSuccAboveEquiv_apply
 
 theorem finSuccAboveEquiv_symm_apply_last (x : { x : Fin (n + 1) // x ≠ Fin.last n }) :
     (finSuccAboveEquiv (Fin.last n)).symm x = Fin.castLT x.1 (Fin.val_lt_last x.2) := by
   rw [← Option.some_inj]
-  simpa [finSuccAboveEquiv, OrderIso.symm] using finSuccEquiv'_last_apply x.property
-#align fin_succ_above_equiv_symm_apply_last finSuccAboveEquiv_symm_apply_last
+  simpa [finSuccAboveEquiv] using finSuccEquiv'_last_apply x.property
 
 theorem finSuccAboveEquiv_symm_apply_ne_last {p : Fin (n + 1)} (h : p ≠ Fin.last n)
     (x : { x : Fin (n + 1) // x ≠ p }) :
     (finSuccAboveEquiv p).symm x = (p.castLT (Fin.val_lt_last h)).predAbove x := by
   rw [← Option.some_inj]
-  simpa [finSuccAboveEquiv, OrderIso.symm] using finSuccEquiv'_ne_last_apply h x.property
-#align fin_succ_above_equiv_symm_apply_ne_last finSuccAboveEquiv_symm_apply_ne_last
+  simpa [finSuccAboveEquiv] using finSuccEquiv'_ne_last_apply h x.property
 
 /-- `Equiv` between `Fin (n + 1)` and `Option (Fin n)` sending `Fin.last n` to `none` -/
 def finSuccEquivLast : Fin (n + 1) ≃ Option (Fin n) :=
@@ -264,21 +248,13 @@ theorem finSuccEquivLast_symm_some (i : Fin n) :
 @[simps (config := .asFn)]
 def Equiv.piFinSuccAbove (α : Fin (n + 1) → Type u) (i : Fin (n + 1)) :
     (∀ j, α j) ≃ α i × ∀ j, α (i.succAbove j) where
-  toFun f := i.extractNth f
+  toFun f := (f i, i.removeNth f)
   invFun f := i.insertNth f.1 f.2
   left_inv f := by simp
   right_inv f := by simp
 #align equiv.pi_fin_succ_above_equiv Equiv.piFinSuccAbove
 #align equiv.pi_fin_succ_above_equiv_apply Equiv.piFinSuccAbove_apply
 #align equiv.pi_fin_succ_above_equiv_symm_apply Equiv.piFinSuccAbove_symm_apply
-
-/-- Order isomorphism between `Π j : Fin (n + 1), α j` and
-`α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
-def OrderIso.piFinSuccAboveIso (α : Fin (n + 1) → Type u) [∀ i, LE (α i)]
-    (i : Fin (n + 1)) : (∀ j, α j) ≃o α i × ∀ j, α (i.succAbove j) where
-  toEquiv := Equiv.piFinSuccAbove α i
-  map_rel_iff' := Iff.symm i.forall_iff_succAbove
-#align order_iso.pi_fin_succ_above_iso OrderIso.piFinSuccAboveIso
 
 /-- Equivalence between `Fin (n + 1) → β` and `β × (Fin n → β)`. -/
 @[simps! (config := .asFn)]
@@ -430,7 +406,7 @@ theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
 @[simp] theorem finRotate_succ_apply (i : Fin (n + 1)) : finRotate (n + 1) i = i + 1 := by
   cases n
   · exact @Subsingleton.elim (Fin 1) _ _ _
-  rcases i.le_last.eq_or_lt with (rfl | h)
+  obtain rfl | h := Fin.eq_or_lt_of_le i.le_last
   · simp [finRotate_last]
   · cases i
     simp only [Fin.lt_iff_val_lt_val, Fin.val_last, Fin.val_mk] at h
@@ -522,17 +498,15 @@ def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
 #align int.div_mod_equiv Int.divModEquiv
 
 /-- Promote a `Fin n` into a larger `Fin m`, as a subtype where the underlying
-values are retained. This is the `OrderIso` version of `Fin.castLE`. -/
+values are retained.
+
+This is the `Equiv` version of `Fin.castLE`. -/
 @[simps apply symm_apply]
-def Fin.castLEOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i : ℕ) < n } where
+def Fin.castLEquiv {n m : ℕ} (h : n ≤ m) : Fin n ≃ { i : Fin m // (i : ℕ) < n } where
   toFun i := ⟨Fin.castLE h i, by simp⟩
   invFun i := ⟨i, i.prop⟩
   left_inv _ := by simp
   right_inv _ := by simp
-  map_rel_iff' := by simp [(strictMono_castLE h).le_iff_le]
-#align fin.cast_le_order_iso Fin.castLEOrderIso
-#align fin.cast_le_order_iso_apply Fin.castLEOrderIso_apply
-#align fin.cast_le_order_iso_symm_apply Fin.castLEOrderIso_symm_apply
 
 /-- `Fin 0` is a subsingleton. -/
 instance subsingleton_fin_zero : Subsingleton (Fin 0) :=

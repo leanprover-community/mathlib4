@@ -90,24 +90,24 @@ example (P : True → False) : 3 = 7 := by
   solve_by_elim
 
 -- Verifying that `solve_by_elim` acts only on the main goal.
-example (n : ℕ) : ℕ × ℕ := by
+example (n : Nat) : Nat × Nat := by
   constructor
   solve_by_elim
   solve_by_elim
 
 -- Verifying that `solve_by_elim*` acts on all remaining goals.
-example (n : ℕ) : ℕ × ℕ := by
+example (n : Nat) : Nat × Nat := by
   constructor
   solve_by_elim*
 
 -- Verifying that `solve_by_elim*` backtracks when given multiple goals.
-example (n m : ℕ) (f : ℕ → ℕ → Prop) (h : f n m) : ∃ p : ℕ × ℕ, f p.1 p.2 := by
+example (n m : Nat) (f : Nat → Nat → Prop) (h : f n m) : ∃ p : Nat × Nat, f p.1 p.2 := by
   fconstructor
   fconstructor
   solve_by_elim*
 
 -- test that metavariables created for implicit arguments don't get stuck
-example (P : ℕ → Type) (f : {n : ℕ} → P n) : P 2 × P 3 := by
+example (P : Nat → Type) (f : {n : Nat} → P n) : P 2 × P 3 := by
   fconstructor
   solve_by_elim* only [f]
 
@@ -117,7 +117,7 @@ example : 6 = 6 ∧ [7] = [7] := by
 
 -- Test that `solve_by_elim*`, which works on multiple goals,
 -- successfully uses the relevant local hypotheses for each goal.
-example (f g : ℕ → Prop) : (∃ k : ℕ, f k) ∨ (∃ k : ℕ, g k) ↔ ∃ k : ℕ, f k ∨ g k := by
+example (f g : Nat → Prop) : (∃ k : Nat, f k) ∨ (∃ k : Nat, g k) ↔ ∃ k : Nat, f k ∨ g k := by
   fconstructor
   rintro (⟨n, fn⟩ | ⟨n, gn⟩)
   pick_goal 3
@@ -147,7 +147,7 @@ example (a b : α) (h : b = a) : a = b := by
   apply_assumption
 
 -- Check that `apply_assumption` uses `exfalso`.
-example {P Q : Prop} (p : P) (q : Q) (h : P → ¬ Q) : ℕ := by
+example {P Q : Prop} (p : P) (q : Q) (h : P → ¬ Q) : Nat := by
   fail_if_success apply_assumption (config := {exfalso := false})
   apply_assumption <;> assumption
 

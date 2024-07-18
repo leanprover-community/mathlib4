@@ -391,7 +391,7 @@ theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Modu
     (li : LinearIndependent K v) : LinearIndependent R v := by
   refine linearIndependent_iff'.mpr fun s g hg i hi => hinj ?_
   dsimp only; rw [zero_smul]
-  refine (linearIndependent_iff'.mp li : _) _ (g · • (1:K)) ?_ i hi
+  refine (linearIndependent_iff'.mp li : _) _ (g · • (1 : K)) ?_ i hi
   simp_rw [smul_assoc, one_smul]
   exact hg
 #align linear_independent.restrict_scalars LinearIndependent.restrict_scalars
@@ -532,8 +532,8 @@ theorem linearIndependent_iUnion_of_directed {η : Type*} {s : η → Set M} (hs
 theorem linearIndependent_sUnion_of_directed {s : Set (Set M)} (hs : DirectedOn (· ⊆ ·) s)
     (h : ∀ a ∈ s, LinearIndependent R ((↑) : ((a : Set M) : Type _) → M)) :
     LinearIndependent R (fun x => x : ⋃₀ s → M) := by
-  rw [sUnion_eq_iUnion];
-    exact linearIndependent_iUnion_of_directed hs.directed_val (by simpa using h)
+  rw [sUnion_eq_iUnion]
+  exact linearIndependent_iUnion_of_directed hs.directed_val (by simpa using h)
 #align linear_independent_sUnion_of_directed linearIndependent_sUnion_of_directed
 
 theorem linearIndependent_biUnion_of_directed {η} {s : Set η} {t : η → Set M}
@@ -1123,8 +1123,8 @@ theorem linearIndependent_inl_union_inr' {v : ι → M} {v' : ι' → M'} (hv : 
 theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing L]
     [NoZeroDivisors L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
   -- Porting note: Some casts are required.
-  letI := Classical.decEq (G →* L);
-  letI : MulAction L L := DistribMulAction.toMulAction;
+  letI := Classical.decEq (G →* L)
+  letI : MulAction L L := DistribMulAction.toMulAction
   -- We prove linear independence by showing that only the trivial linear combination vanishes.
   exact linearIndependent_iff'.2
     -- To do this, we use `Finset` induction,
@@ -1412,6 +1412,21 @@ theorem linearIndependent_fin_succ' {n} {v : Fin (n + 1) → V} : LinearIndepend
     LinearIndependent K (Fin.init v) ∧ v (Fin.last _) ∉ Submodule.span K (range <| Fin.init v) := by
   rw [← linearIndependent_fin_snoc, Fin.snoc_init_self]
 #align linear_independent_fin_succ' linearIndependent_fin_succ'
+
+/-- Equivalence between `k + 1` vectors of length `n` and `k` vectors of length `n` along with a
+vector in the complement of their span.
+-/
+def equiv_linearIndependent (n : ℕ) :
+    { s : Fin (n + 1) → V // LinearIndependent K s } ≃
+      Σ s : { s : Fin n → V // LinearIndependent K s },
+        ((Submodule.span K (Set.range (s : Fin n → V)))ᶜ : Set V) where
+  toFun s := ⟨⟨Fin.tail s.val, (linearIndependent_fin_succ.mp s.property).left⟩,
+    ⟨s.val 0, (linearIndependent_fin_succ.mp s.property).right⟩⟩
+  invFun s := ⟨Fin.cons s.2.val s.1.val,
+    linearIndependent_fin_cons.mpr ⟨s.1.property, s.2.property⟩⟩
+  left_inv _ := by simp only [Fin.cons_self_tail, Subtype.coe_eta]
+  right_inv := fun ⟨_, _⟩ => by simp only [Fin.cons_zero, Subtype.coe_eta, Sigma.mk.inj_iff,
+    Fin.tail_cons, heq_eq_eq, and_self]
 
 theorem linearIndependent_fin2 {f : Fin 2 → V} :
     LinearIndependent K f ↔ f 1 ≠ 0 ∧ ∀ a : K, a • f 1 ≠ f 0 := by
