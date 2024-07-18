@@ -10,6 +10,7 @@ import Mathlib.Tactic.PushNeg
 
 The `by_contra!` tactic is a variant of the `by_contra` tactic, for proofs of contradiction.
 -/
+
 open Lean Lean.Parser Parser.Tactic Elab Command Elab.Tactic Meta
 
 /--

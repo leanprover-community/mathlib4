@@ -8,9 +8,9 @@ import Lean
 /-!
 # The `substs` macro
 
-This file defines a `substs` macro, which applies the `subst` tactic to a list of hypothesis,
-in left to right order.
+The `substs` macro applies the `subst` tactic to a list of hypothesis, in left to right order.
 -/
+
 namespace Mathlib.Tactic.Substs
 
 

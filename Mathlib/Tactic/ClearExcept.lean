@@ -8,7 +8,7 @@ import Lean.Elab.Tactic.ElabTerm
 /-!
 # The `clear*` tactic
 
-This file provides a variant of the `clear` tactic, which clears all hypothesis it can
+This file provides a variant of the `clear` tactic, which clears all hypotheses it can
 besides a provided list.
 -/
 

@@ -13,8 +13,8 @@ The `fconstructor` and `econstructor` tactics are variants of the `constructor` 
 except that
 - `fconstructor` does not reorder goals
 - `econstructor` adds only non-dependent premises as new goals.
-
 -/
+
 open Lean Elab Tactic
 
 /--

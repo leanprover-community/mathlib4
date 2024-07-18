@@ -16,6 +16,7 @@ Defines notation for coercions.
 3. `↥ t` is a coercion to a type.
 6. `(↥)` is equivalent to the eta-reduction of `(↥ ·)`
 -/
+
 open Lean Meta
 
 namespace Lean.Elab.Term.CoeImpl
