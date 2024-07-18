@@ -406,7 +406,6 @@ theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
 
 #align list.replicate_zero List.replicate_zero
 
-attribute [simp] replicate_succ
 #align list.replicate_succ List.replicate_succ
 
 #align list.replicate_one List.replicate_one
@@ -417,7 +416,7 @@ attribute [simp] replicate_succ
 
 theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length a ↔ ∀ b ∈ l, b = a
   | [] => by simp
-  | (b :: l) => by simp [eq_replicate_length]
+  | (b :: l) => by simp [eq_replicate_length, replicate_succ]
 #align list.eq_replicate_length List.eq_replicate_length
 
 #align list.eq_replicate_of_mem List.eq_replicate_of_mem
@@ -472,7 +471,7 @@ theorem replicate_left_inj {a : α} {n m : ℕ} : replicate n a = replicate m a 
 #align list.replicate_left_inj List.replicate_left_inj
 
 @[simp] theorem head_replicate (n : ℕ) (a : α) (h) : head (replicate n a) h = a := by
-  cases n <;> simp at h ⊢
+  cases n <;> simp [replicate_succ] at h ⊢
 
 /-! ### pure -/
 
@@ -1801,7 +1800,7 @@ theorem takeD_length : ∀ n l a, length (@takeD α n l a) = n
   | 0, _, _ => rfl
   | _ + 1, _, _ => congr_arg succ (takeD_length _ _ _)
 
--- Porting note: `takeD_nil` is already in std
+-- `takeD_nil` is already in batteries
 
 theorem takeD_eq_take : ∀ {n} {l : List α} a, n ≤ length l → takeD n l a = take n l
   | 0, _, _, _ => rfl
@@ -2201,13 +2200,9 @@ section FoldlMFoldrM
 variable {m : Type v → Type w} [Monad m]
 
 #align list.mfoldl_nil List.foldlM_nil
--- Porting note: now in std
 #align list.mfoldr_nil List.foldrM_nil
 #align list.mfoldl_cons List.foldlM_cons
 
-/- Porting note: now in std; now assumes an instance of `LawfulMonad m`, so we make everything
-  `foldrM_eq_foldr` depend on one as well. (An instance of `LawfulMonad m` was already present for
-  everything following; this just moves it a few lines up.) -/
 #align list.mfoldr_cons List.foldrM_cons
 
 variable [LawfulMonad m]
@@ -2228,10 +2223,7 @@ theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
   | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ← l_ih, functor_norm]
 #align list.mfoldl_eq_foldl List.foldlM_eq_foldl
 
--- Porting note: now in std
 #align list.mfoldl_append List.foldlM_append
-
--- Porting note: now in std
 #align list.mfoldr_append List.foldrM_append
 
 end FoldlMFoldrM

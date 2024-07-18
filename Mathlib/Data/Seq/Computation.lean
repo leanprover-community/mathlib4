@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 
 Coinductive formalization of unbounded computations.
 -/
+import Mathlib.Data.Nat.Find
 import Mathlib.Data.Stream.Init
 import Mathlib.Tactic.Common
 
@@ -700,7 +701,7 @@ theorem map_id : ∀ s : Computation α, map id s = s
   | ⟨f, al⟩ => by
     apply Subtype.eq; simp only [map, comp_apply, id_eq]
     have e : @Option.rec α (fun _ => Option α) none some = id := by ext ⟨⟩ <;> rfl
-    have h : ((fun x: Option α => x) = id) := rfl
+    have h : ((fun x : Option α => x) = id) := rfl
     simp [e, h, Stream'.map_id]
 #align computation.map_id Computation.map_id
 

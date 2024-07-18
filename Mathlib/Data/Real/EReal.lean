@@ -1570,7 +1570,7 @@ lemma sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ :=
         coe_ennreal_ofReal, max_eq_left (abs_nonneg a), ← coe_neg |a|, abs_of_neg a_neg, neg_neg]
     · rw [coe_zero, sign_zero, SignType.coe_zero, abs_zero, coe_ennreal_zero, inv_zero, mul_zero]
     · rw [sign_coe, _root_.sign_pos a_pos, SignType.coe_one, one_mul]
-      simp only [abs_def a, coe_ennreal_ofReal, ge_iff_le, abs_nonneg, max_eq_left]
+      simp only [abs_def a, coe_ennreal_ofReal, abs_nonneg, max_eq_left]
       congr
       exact abs_of_pos a_pos
 

@@ -182,11 +182,7 @@ theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
   cases' abs_choice a with h h <;> simp only [h, hp.neg_zpow _]
 #align even.zpow_abs Even.zpow_abs
 
-set_option linter.deprecated false in
-@[simp]
-theorem zpow_bit0_abs (a : α) (p : ℤ) : |a| ^ bit0 p = a ^ bit0 p :=
-  (even_bit0 _).zpow_abs _
-#align zpow_bit0_abs zpow_bit0_abs
+#noalign zpow_bit0_abs
 
 /-! ### Bernoulli's inequality -/
 

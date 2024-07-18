@@ -365,9 +365,9 @@ section
 https://stacks.math.columbia.edu/tag/04E7
 -/
 def colimitIso' [HasColimit (F ⋙ G)] :
-    haveI : HasColimit G := hasColimit_of_comp F;
+    haveI : HasColimit G := hasColimit_of_comp F
     colimit (F ⋙ G) ≅ colimit G :=
-  haveI : HasColimit G := hasColimit_of_comp F;
+  haveI : HasColimit G := hasColimit_of_comp F
   asIso (colimit.pre G F)
 #align category_theory.functor.final.colimit_iso' CategoryTheory.Functor.Final.colimitIso'
 
@@ -654,9 +654,9 @@ section
 https://stacks.math.columbia.edu/tag/04E7
 -/
 def limitIso' [HasLimit (F ⋙ G)] :
-    haveI : HasLimit G := hasLimit_of_comp F;
+    haveI : HasLimit G := hasLimit_of_comp F
     limit (F ⋙ G) ≅ limit G :=
-  haveI : HasLimit G := hasLimit_of_comp F;
+  haveI : HasLimit G := hasLimit_of_comp F
   (asIso (limit.pre G F)).symm
 #align category_theory.functor.initial.limit_iso' CategoryTheory.Functor.Initial.limitIso'
 

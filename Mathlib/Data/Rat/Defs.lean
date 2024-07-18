@@ -372,7 +372,7 @@ attribute [simp] mkRat_eq_zero
 
 protected theorem mul_inv_cancel : a ≠ 0 → a * a⁻¹ = 1 :=
   numDenCasesOn' a fun n d hd hn ↦ by
-    simp [hd] at hn;
+    simp [hd] at hn
     simp [-divInt_ofNat, mkRat_eq_divInt, Int.mul_comm, Int.mul_ne_zero hn (Int.ofNat_ne_zero.2 hd)]
 #align rat.mul_inv_cancel Rat.mul_inv_cancel
 

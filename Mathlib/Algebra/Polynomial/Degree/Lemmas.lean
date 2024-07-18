@@ -53,8 +53,8 @@ theorem natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :
               _ ≤ natDegree (C (coeff p n)) + n • ↑(natDegree q) :=
                 (add_le_add_left (nsmul_le_nsmul_right (@degree_le_natDegree _ _ q) n) _)
               _ = (n * natDegree q : ℕ) := by
-                rw [natDegree_C, Nat.cast_zero, zero_add, nsmul_eq_mul];
-                  simp
+                rw [natDegree_C, Nat.cast_zero, zero_add, nsmul_eq_mul]
+                simp
               _ ≤ (natDegree p * natDegree q : ℕ) :=
                 WithBot.coe_le_coe.2 <|
                   mul_le_mul_of_nonneg_right (le_natDegree_of_ne_zero (mem_support_iff.1 hn))
@@ -255,15 +255,8 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     simp [H x hx]
 #align polynomial.nat_degree_sum_eq_of_disjoint Polynomial.natDegree_sum_eq_of_disjoint
 
-set_option linter.deprecated false in
-theorem natDegree_bit0 (a : R[X]) : (bit0 a).natDegree ≤ a.natDegree :=
-  (natDegree_add_le _ _).trans (max_self _).le
-#align polynomial.nat_degree_bit0 Polynomial.natDegree_bit0
-
-set_option linter.deprecated false in
-theorem natDegree_bit1 (a : R[X]) : (bit1 a).natDegree ≤ a.natDegree :=
-  (natDegree_add_le _ _).trans (by simp [natDegree_bit0])
-#align polynomial.nat_degree_bit1 Polynomial.natDegree_bit1
+#noalign polynomial.nat_degree_bit0
+#noalign polynomial.nat_degree_bit1
 
 variable [Semiring S]
 
