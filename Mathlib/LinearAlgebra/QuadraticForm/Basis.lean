@@ -66,9 +66,9 @@ theorem toQuadraticMap_toBilin (Q : QuadraticMap R M N) (bm : Basis ι R M) :
 
 /-- From a free module, every quadratic map can be built from a bilinear form.
 
-See `QuadraticMap.not_forall_toQuadraticMap_surjective` for a counterexample when the module is
+See `BilinMap.not_forall_toQuadraticMap_surjective` for a counterexample when the module is
 not free. -/
-theorem toQuadraticMap_surjective [Module.Free R M] :
+theorem _root_.LinearMap.BilinMap.toQuadraticMap_surjective [Module.Free R M] :
     Function.Surjective (LinearMap.BilinMap.toQuadraticMap : LinearMap.BilinMap R M N → _) := by
   intro Q
   obtain ⟨ι, b⟩ := Module.Free.exists_basis (R := R) (M := M)
