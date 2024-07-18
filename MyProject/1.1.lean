@@ -131,11 +131,7 @@ def refine_partition {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [Is
       simp [Nat.pairEquiv.left_inv (a,b)]
       exact ⟨ha,hb⟩
     have h₁: μ ((⋃ n, p1.f n) ∩ (⋃ n, p2.f n))ᶜ = 0 := by
-      rw[Set.compl_inter]
-      have h₁ := measure_union_le (μ := μ) ((⋃ n, p1.f n)ᶜ) ((⋃ n, p2.f n)ᶜ)
-      have h₂ :  μ (⋃ n, p1.f n)ᶜ + μ (⋃ n, p2.f n)ᶜ = 0 := by
-        simp only [p1.cover,p2.cover]; rw [add_zero]
-      apply measure_union_null p1.cover p2.cover
+      rw[Set.compl_inter]; exact measure_union_null p1.cover p2.cover
     exact measure_mono_null (compl_subset_compl_of_subset h) h₁
 }
 
@@ -166,11 +162,6 @@ def conmet_entropy {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsPr
   ∑' (n : ℕ),
     let mb := (μ (g.f n)).toReal
     if mb = 0 then 0 else ∑' (n' : ℕ), (μ ((g.f n)∩(p.f n'))).toReal * Real.log ((μ ((g.f n)∩(p.f n'))).toReal/mb)
-
-def conmet_entropy' {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
-  (p : partition m μ) (g : partition m μ): ℝ :=
-  ∑' (n : ℕ),
-  ∑' (n' : ℕ), (μ ((g.f n)∩(p.f n'))).toReal * Real.log ((μ ((g.f n)∩(p.f n'))).toReal/(μ (g.f n)).toReal)
 
 
 end section
@@ -234,6 +225,14 @@ lemma max_ent {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabi
       simp [met_entropy']
       obtain (rfl | hn) := eq_zero_or_pos n
       · simp
+        have h:= fp.cover
+        have h₁: ⋃ i ∈ Finset.univ, fp.f i = ∅ := by
+          exact iUnion_of_empty fun i => ⋃ (_ : i ∈ Finset.univ), fp.f i
+        rw[h₁] at h
+        have : μ ∅ᶜ=1 := by
+          refine (prob_compl_eq_one_iff MeasurableSet.empty).mpr (OuterMeasureClass.measure_empty μ)
+        rw [this] at h
+        exact (one_ne_zero) h
       · have h0: n ≠ 0 := by linarith[hn]
         have h: -1/(n:ℝ) *Real.log (n:ℝ) = 1/(n:ℝ) * Real.log (1/(n:ℝ)) := by
           field_simp
@@ -339,7 +338,17 @@ by
       have :  ¬∀ (i : Fin n), μ (fp.f i) = 1 / ↑n := by
         push_neg at *; rcases h₁ with ⟨a,ha⟩
         use a
-        sorry
+        intro h'; rw[h'] at ha
+        have: 0 ≤ ((1/n):ℝ) := by
+          refine one_div_nonneg.mpr ?_
+          · exact Nat.cast_nonneg' n
+        have : ((1 / n):ENNReal).toReal = ((1 / n):ℝ) := by
+          exact ENNReal.coe_toReal (1/n)
+
+          have h₁: ((1/n):ENNReal) ≠ ⊤ := by
+            sorry
+          apply?
+        exact ha this
       have:= max_ent n fp this
       simp[met_entropy'] at h
       rw[h] at this
@@ -370,6 +379,8 @@ lemma partition.partOf_spec {α : Type*} {m : MeasurableSpace α} {μ : Measure 
     rw[mem_iUnion] at hx
     exact Classical.epsilon_spec hx
 
+#eval ⊥ * (0:EReal)
+
 lemma partition.partOf_spec' {α : Type*} {m : MeasurableSpace α} {μ : Measure α}[IsProbabilityMeasure μ]
     (p : partition m μ) (x : α): p.partOf x ≠ 0 → x ∈ p.f (p.partOf x):= by
     intro h
@@ -391,14 +402,13 @@ def info {α : Type*} {m : MeasurableSpace α} {μ : Measure α}  [IsProbability
 -- in practice these functions don't matter whether they are undefined on a set of measure zero
 -- so does it even matter if the definition would allow division by zero.
 
-
 def cond_info {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
   (p : partition m μ) (s : partition m μ) (x : α) :ℝ :=
   (-Real.log ((μ ((p.f (p.partOf x)) ∩ s.f (s.partOf x))).toReal/(μ (s.f (s.partOf x))).toReal))
 
 end section
 
-#eval (5:ℝ)/(0:ℝ )
+
 --this partition is a place holder for the Universal set
 -- created to use connection between information and conditional information
 
@@ -581,9 +591,7 @@ lemma eqset₁  {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProba
 
 lemma eqset₂  {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
     (p : partition m μ) : μ (⋃ (n : ℕ),( ⋃ (i : ℕ)(h: i ≠ n), (p.f n ∩ p.f i))) = 0 := by
-    apply measure_iUnion_null_iff.mpr
-    intro i
-    exact (e2 p i)
+    apply measure_iUnion_null_iff.mpr;intro i;exact (e2 p i)
 
 
 lemma eqset₃ {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
@@ -648,26 +656,26 @@ lemma eqset₀_partOf {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [I
 
 
 
-lemma pre_info_ae_eq {α : Type*} {m : MeasurableSpace α} (μ : Measure α) [IsProbabilityMeasure μ]
-    (p : partition m μ) : eqset p ⊆  {x | info p x = ∑' n, (p.partOf ⁻¹' {n}).indicator (λ _ ↦ -Real.log (μ (p.f n)).toReal) x} := by
-    intro x' _
-    show info p x' = ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun _ => -(μ (p.f n)).toReal.log) x'
-    let N := p.partOf x'
-    have h₁: ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun _ => -(μ (p.f n)).toReal.log) x' = (p.partOf ⁻¹' {N}).indicator (fun _ => -(μ (p.f N)).toReal.log) x' := by
+lemma info_eq {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+    (p : partition m μ) :
+    info (μ := μ) p = fun x ↦ ∑' n, (p.partOf ⁻¹' {n}).indicator (fun _ ↦ (-Real.log (μ (p.f n)).toReal)) x := by
+    ext x;  let N := p.partOf x
+    have h₁: ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun _ => -(μ (p.f n)).toReal.log) x = (p.partOf ⁻¹' {N}).indicator (fun _ => -(μ (p.f N)).toReal.log) x := by
       apply tsum_eq_single
       intro b hbn
       exact indicator_of_not_mem (id (Ne.symm hbn)) fun _ => -(μ (p.f b)).toReal.log
     rw[h₁]
     exact Eq.symm (indicator_of_mem rfl fun _ => -(μ (p.f N)).toReal.log)
 
+lemma info_measurable {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+    (p : partition m μ): MeasureTheory.StronglyMeasurable (info p)  := by
+    rw[info_eq]
+    refine Continuous.comp_stronglyMeasurable ?hg ?hf
+    ·
 
-lemma info_ae_eq {α : Type*} {m : MeasurableSpace α} (μ : Measure α) [IsProbabilityMeasure μ]
-    (p : partition m μ) :
-    info (μ := μ) p =ᵐ[μ] fun x ↦ ∑' n, (p.partOf ⁻¹' {n}).indicator (fun _ ↦ (-Real.log (μ (p.f n)).toReal)) x := by
-    have h:= (pre_info_ae_eq μ p)
-    have h': {x | info p x = ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun x => -(μ (p.f n)).toReal.log) x}ᶜ⊆ (eqset p)ᶜ := by
-      exact compl_subset_compl_of_subset h
-    exact measure_mono_null h' (eqset₃ p)
+
+
+
 
 #check setIntegral_const
 
@@ -720,14 +728,15 @@ theorem setIntegral_eq_zero_of_measure_eq_zero {α : Type*} {m : MeasurableSpace
 
 
 #check Measure.restrict_apply_eq_zero'
+#check integrable_congr
 
 theorem ent_inf {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ](p : partition m μ) :
     met_entropy p = ∫ x, info p x ∂μ := by
   by_cases junk : ¬ Integrable (info (μ := μ) p) μ
   · simp [integral_undef junk]
     sorry -- You should prove that your `tsum` defining `info` has the same junk value as `integral`
-  simp only [not_not, integrable_congr (info_ae_eq μ p)] at junk
-  rw [integral_congr_ae (info_ae_eq μ p)]
+  rw[info_eq]
+  simp only [not_not, (info_eq p)] at junk
   unfold met_entropy
   have h := p.cover
   have : ∫ (a : α), ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun x => -(μ (p.f n)).toReal.log) a ∂μ =
@@ -787,6 +796,11 @@ theorem ent_inf {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProba
       exact measure_mono_null h' this
   rw[h₂]; rw[← tsum_neg]; apply tsum_congr
   intro r; simp [c]
+
+
+
+
+
 
 theorem condent_inf {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ](p : partition m μ)(s : partition m μ) :
     conmet_entropy p s = ∫ x, cond_info p s x ∂μ := by

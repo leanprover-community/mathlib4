@@ -272,8 +272,8 @@ by
           rfl
         have h5: φ ((∑ i in Finset.univ, 1/(n:ℝ)*(μ (fp.f i)).toReal)) = φ ((1/(n:ℝ)) * (∑ i in Finset.univ, (μ (fp.f i)).toReal)) := by
           rw[mul_sum]
-        have h6: sconvex_on' (Ici (0:ℝ)) φ := by
-          sorry
+        --have h6: sconvex_on' (Ici (0:ℝ)) φ := by
+          --sorry
         let t : Fin n → ℝ := λ i ↦ 1 / n
         have h7: φ ((∑ i in Finset.univ, (t i)*(μ (fp.f i)).toReal)) = φ ((∑ i in Finset.univ, 1/(n:ℝ)*(μ (fp.f i)).toReal)) := by
           exact rfl
@@ -487,6 +487,7 @@ lemma pre_info_ae_eq {α : Type*} {m : MeasurableSpace α} (μ : Measure α) [Is
     have h₁: ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun x => -(μ (p.f n)).toReal.log) x' = (p.partOf ⁻¹' {N}).indicator (fun x => -(μ (p.f N)).toReal.log) x' := by
       apply tsum_eq_single
       intro b hbn
+
       exact indicator_of_not_mem (id (Ne.symm hbn)) fun x => -(μ (p.f b)).toReal.log
     rw[h₁]
     exact Eq.symm (indicator_of_mem rfl fun x => -(μ (p.f N)).toReal.log)
@@ -562,15 +563,20 @@ theorem ent_inf {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProba
     rw[h]
     exact Eq.symm integral_univ
   rw[this]
-  let c: ℕ → ℝ := λ n ↦ if μ (eqset₀ p n) = 0 then 0 else -(μ (p.f n)).toReal.log
+  let c: ℕ → ℝ := λ n ↦ if μ (eqset₀ p n) = 0 then 0 else -(μ (p.f n)).toReal.log --not info function,can simplify
   have h₁:= info_ae_eq μ p
   have h₂: ∫ (a : α) in ⋃ n, p.f n, ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun x => -(μ (p.f n)).toReal.log) a ∂μ =
   ∑' (i : ℕ), (μ (p.f i)).toReal • c i := by
     refine' (should_this_be_in_the_library _ _ _ _ _)
     · exact fun i => MeasurableSet.nullMeasurableSet (p.measurable i)
     · exact p.disjoint
-    · simp only [p.cover, integrableOn_univ,integrable_congr (info_ae_eq μ p),junk]
-    · sorry
+    · simp only [p.cover, integrableOn_univ,junk]
+    · intro s
+      show (μ.restrict (p.f s)) {a : p.f s|  ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun x => -Real.log (μ (p.f n)).toReal) a =  c s }ᶜ=0
+      --show μ {a | a ∈ p.f s ∧ ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun x => -Real.log (μ (p.f n)).toReal) a = c s }ᶜ  = 0
+      dsimp
+      apply?
+      show (μ.restrict (p.f s)) {a : p.f s|  ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun x => -Real.log (μ (p.f n)).toReal) a =  c s }ᶜ=0
   rw[h₂]; rw[← tsum_neg]; apply tsum_congr
   intro r; simp [c]
   by_cases h₀ : μ (eqset₀ p r) = 0
@@ -581,6 +587,10 @@ theorem ent_inf {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProba
     rw[h,zero_mul]
     exact neg_zero
   · simp only [if_neg h₀]
+
+
+lemma preinfo_add {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (p : partition m μ) (s : partition m μ) : info (refine_partition p s)=ᵐ[μ] info s + cond_info p s:= by
 
 
 theorem info_add {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]

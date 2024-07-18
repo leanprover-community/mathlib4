@@ -87,11 +87,8 @@ lemma measure_compl_eq_of_measure_eq {α : Type*} [m : MeasurableSpace α] {μ :
   have hB₂ : μ (B ∪ Bᶜ) = μ B + μ Bᶜ := by
     exact measure_union₀_aux (MeasurableSet.nullMeasurableSet hB) (NullMeasurableSet.compl_iff.mpr (MeasurableSet.nullMeasurableSet hB)) aedisjoint_compl_right
   rw[← hA₁,hA₂,hB₂,h] at hB₁--; apply add_left_cancel at hB₁;
-  apply add_left_cancel at hB₁
-  symm
-  exact hB₁
-  · apply?
-
+  have h₁:= measure_ne_top μ B
+  exact (ENNReal.add_right_inj h₁).mp (id (Eq.symm hB₁))
 
 def partition.pre {α : Type*} [m : MeasurableSpace α] {μ : Measure α} [IsProbabilityMeasure μ] (p : partition m μ)
 (T: α → α) (h₁ : MeasureTheory.MeasurePreserving T μ μ ): partition m μ
@@ -186,31 +183,6 @@ lemma eqset₃ {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbab
     exact measure_mono_null (eqset₁ p) (measure_union_null (eqset₂ p) (p.cover))
 
 
-
-
-lemma pre_info_ae_eq {α : Type*} {m : MeasurableSpace α} (μ : Measure α) [IsProbabilityMeasure μ]
-    (p : partition m μ) : eqset p ⊆  {x | info p x = ∑' n, (p.partOf ⁻¹' {n}).indicator (λ _ ↦ -Real.log (μ (p.f n)).toReal) x} := by
-    intro x' _
-    show info p x' = ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun _ => -(μ (p.f n)).toReal.log) x'
-    let N := p.partOf x'
-    have h₁: ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun _ => -(μ (p.f n)).toReal.log) x' = (p.partOf ⁻¹' {N}).indicator (fun _ => -(μ (p.f N)).toReal.log) x' := by
-      apply tsum_eq_single
-      intro b hbn
-      exact indicator_of_not_mem (id (Ne.symm hbn)) fun _ => -(μ (p.f b)).toReal.log
-    rw[h₁]
-    exact Eq.symm (indicator_of_mem rfl fun _ => -(μ (p.f N)).toReal.log)
-
-
-lemma info_ae_eq {α : Type*} {m : MeasurableSpace α} (μ : Measure α) [IsProbabilityMeasure μ]
-    (p : partition m μ) :
-    info (μ := μ) p =ᵐ[μ] fun x ↦ ∑' n, (p.partOf ⁻¹' {n}).indicator (fun _ ↦ (-Real.log (μ (p.f n)).toReal)) x := by
-    have h:= (pre_info_ae_eq μ p)
-    have h': {x | info p x = ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun x => -(μ (p.f n)).toReal.log) x}ᶜ⊆ (eqset p)ᶜ := by
-      exact compl_subset_compl_of_subset h
-    exact measure_mono_null h' (eqset₃ p)
-
-
-
 lemma eqsetpartition {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ] (p : partition m μ) (x:α)(n:ℕ):
 x ∈ eqset₀ p n → p.partOf x = n := by
   intro hx; unfold eqset₀ at hx; cases' hx with hx₁ hx₂
@@ -285,10 +257,9 @@ lemma pre_invariance {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [Is
   refine measure_mono_null h' ?_
   · have h₁ : μ (T⁻¹'eqset p)ᶜ=0 := by
       rw[← Set.preimage_compl]
-      have h₁':= eqset₃ p
       have: μ (T⁻¹'(eqset p)ᶜ)= μ (eqset p)ᶜ  := by
         exact MeasurePreserving.measure_preimage self (MeasurableSet.compl_iff.mpr (eqset_measurable p))
-      rw[this];exact h₁'
+      rw[this];exact eqset₃ p
     have h₂ := eqset₃ (p.pre T self)
     rw[Set.compl_inter]
     exact measure_union_null h₁ h₂
@@ -316,22 +287,25 @@ theorem invariance {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsPr
     have h2: g.partOf (T x) = (g.pre T self).partOf x := by
       exact (invariance₀ g (self:= self)) hx₂
     rw[h1,h2]
-    have h3: μ (p.f ((p.pre T self).partOf x)) = μ ((p.pre T self).f ((p.pre T self).partOf x)) := by
-      have : (p.pre T self).f ((p.pre T self).partOf x)=T⁻¹' (p.f ((p.pre T self).partOf x)) := by
-        exact rfl
-      rw[this]
-      symm
-      exact MeasurePreserving.measure_preimage self (p.measurable ((p.pre T self).partOf x))
-    have h4: μ (g.f ((g.pre T self).partOf x)) = μ ((g.pre T self).f ((g.pre T self).partOf x)) := by
+    have h3: μ (g.f ((g.pre T self).partOf x)) = μ ((g.pre T self).f ((g.pre T self).partOf x)) := by
       have : (g.pre T self).f ((g.pre T self).partOf x)=T⁻¹' (g.f ((g.pre T self).partOf x)) := by
         exact rfl
       rw[this]
       symm
       exact MeasurePreserving.measure_preimage self (g.measurable ((g.pre T self).partOf x))
-    rw[h4]
-    have h5: (μ (p.f ((p.pre T self).partOf x) ∩ g.f ((g.pre T self).partOf x))) =  μ ((p.pre T self).f ((p.pre T self).partOf x) ∩ (g.pre T self).f ((g.pre T self).partOf x)) := by
-      sorry
-    rw[h5]
+    rw[h3]
+    have h4: (p.pre T self).f ((p.pre T self).partOf x) = T⁻¹' p.f ((p.pre T self).partOf x) := by
+      exact rfl
+    have h5: (g.pre T self).f ((g.pre T self).partOf x) = T⁻¹' g.f ((g.pre T self).partOf x) := by
+      exact rfl
+    rw[h4,h5]
+    rw[← Set.preimage_inter]
+    have h6: μ (p.f ((p.pre T self).partOf x) ∩ g.f ((g.pre T self).partOf x))=μ (T ⁻¹' (p.f ((p.pre T self).partOf x) ∩ g.f ((g.pre T self).partOf x))) := by
+      refine Eq.symm (MeasurePreserving.measure_preimage self ?hs)
+      · refine MeasurableSet.inter ?hs.h₁ ?hs.h₂
+        · exact p.measurable ((p.pre T self).partOf x)
+        · exact g.measurable ((g.pre T self).partOf x)
+    rw[h6]
   have h₂: {x | -Real.log (μ (p.f (p.partOf (T x)) ∩ g.f (g.partOf (T x)))).toReal / (μ (g.f (g.partOf (T x)))).toReal = -Real.log (μ ((p.pre T self).f ((p.pre T self).partOf x) ∩ (g.pre T self).f ((g.pre T self).partOf x))).toReal /
     (μ ((g.pre T self).f ((g.pre T self).partOf x))).toReal}ᶜ⊆ ((T ⁻¹' eqset p ∩ eqset (p.pre T self)) ∩  (T ⁻¹' eqset g ∩ eqset (g.pre T self)))ᶜ := by
       exact compl_subset_compl_of_subset h₁
@@ -361,8 +335,10 @@ theorem invariance {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsPr
 
 
 lemma  molly {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ](T: α → α)
- (self : MeasureTheory.MeasurePreserving T μ μ) (p : partition m μ)(x: α)[dec : Decidable (x ∈ (⋃ n, p.f n))][dec : Decidable (x ∈ (⋃ n, p.f n))]:
- ∫ x, info p ∘ T x ∂μ = ∫ x, info p x ∂μ
+ (self : MeasureTheory.MeasurePreserving T μ μ) (p : partition m μ):
+ ∫ x, info p (T x) ∂μ = ∫ x, info p x ∂μ := by
+ sorry
+
 
 theorem invariance₁ {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ](T: α → α)
  (self : MeasureTheory.MeasurePreserving T μ μ) (p : partition m μ) (g : partition m μ):

@@ -90,3 +90,33 @@ lemma partition.partOf_spec {α : Type*} {m : MeasurableSpace α} {μ : Measure 
 noncomputable def info'' {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
     (p : partition m μ)(x : α) [dec : Decidable (x ∈ (⋃ n, p.f n))]: ℝ :=
   (-Real.log (μ (p.f (p.partOf'' x))).toReal)
+
+
+structure partition'' {α : Type*} (m : MeasurableSpace α) (μ : Measure α) [IsProbabilityMeasure μ] :=
+  P : Set (Set α)        -- A function from natural numbers to sets of terms in α
+  measurable : ∀ a ∈ P, MeasurableSet a  -- Each set is measurable
+  disjoint : ∀ a b : P, a≠b → μ (a ∩ b)=0  -- The sets are pairwise disjoint
+  cover : μ (⋃₀ P)ᶜ  = 0  -- The union of all sets covers the entire space
+  countable : P.Countable -- at most countable or finite
+
+
+lemma pre_info_ae_eq {α : Type*} {m : MeasurableSpace α} (μ : Measure α) [IsProbabilityMeasure μ]
+    (p : partition m μ) : eqset p ⊆  {x | info p x = ∑' n, (p.partOf ⁻¹' {n}).indicator (λ _ ↦ -Real.log (μ (p.f n)).toReal) x} := by
+    intro x' _
+    show info p x' = ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun _ => -(μ (p.f n)).toReal.log) x'
+    let N := p.partOf x'
+    have h₁: ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun _ => -(μ (p.f n)).toReal.log) x' = (p.partOf ⁻¹' {N}).indicator (fun _ => -(μ (p.f N)).toReal.log) x' := by
+      apply tsum_eq_single
+      intro b hbn
+      exact indicator_of_not_mem (id (Ne.symm hbn)) fun _ => -(μ (p.f b)).toReal.log
+    rw[h₁]
+    exact Eq.symm (indicator_of_mem rfl fun _ => -(μ (p.f N)).toReal.log)
+
+
+lemma info_ae_eq {α : Type*} {m : MeasurableSpace α} (μ : Measure α) [IsProbabilityMeasure μ]
+    (p : partition m μ) :
+    info (μ := μ) p =ᵐ[μ] fun x ↦ ∑' n, (p.partOf ⁻¹' {n}).indicator (fun _ ↦ (-Real.log (μ (p.f n)).toReal)) x := by
+    have h:= (pre_info_ae_eq μ p)
+    have h': {x | info p x = ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun x => -(μ (p.f n)).toReal.log) x}ᶜ⊆ (eqset p)ᶜ := by
+      exact compl_subset_compl_of_subset h
+    exact measure_mono_null h' (eqset₃ p)
