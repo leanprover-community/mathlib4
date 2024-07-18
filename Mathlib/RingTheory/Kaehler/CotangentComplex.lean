@@ -1,5 +1,28 @@
+/-
+Copyright (c) 2024 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
 import Mathlib.RingTheory.Kaehler.Polynomial
 import Mathlib.RingTheory.Generators
+
+/-!
+
+# Naive cotangent complex associated to a presentation.
+
+Given a presentation `0 → I → R[x₁,...,xₙ] → S → 0` (or equivalently a closed embedding `S ↪ Aⁿ`
+defined by `I`), we may define the (naive) cotangent complex `I/I² → ⨁ᵢ S dxᵢ → Ω[S/R] → 0`.
+
+## Main results
+- `Algebra.Generators.Cotangent`: The conormal space `I/I²`. (Defined in `Generators/Basic`)
+- `Algebra.Generators.CotangentSpace`: The cotangent space `⨁ᵢ S dxᵢ`.
+- `Algebra.Generators.CotangentComplex`: The map `I/I² → ⨁ᵢ S dxᵢ`.
+- `Algebra.Generators.toKaehler`: The projection `⨁ᵢ S dxᵢ → Ω[S/R]`.
+- `Algebra.Generators.toKaehler_surjective`: The map `⨁ᵢ S dxᵢ → Ω[S/R]` is surjective.
+- `Algebra.Generators.exact_cotangentComplex_toKaehler`: `I/I² → ⨁ᵢ S dxᵢ → Ω[S/R]` is exact.
+- `Algebra.Generators.Hom.Sub`: If `f` and `g` are two maps between presentations, `f - g` induces
+  a map `⨁ᵢ S dxᵢ → I/I²` that makes `f` and `g` homotopic.
+-/
 
 open KaehlerDifferential TensorProduct MvPolynomial
 
@@ -65,9 +88,7 @@ lemma cotangentSpaceBasis_apply i :
     P.cotangentSpaceBasis i = 1 ⊗ₜ .D _ _ (.X i) := by
   simp [cotangentSpaceBasis]
 
-/--
-The cotangent complex given by a presentation `R[X] → S` (i.e. a closed embedding `S ↪ Aⁿ`),
-. -/
+/-- The cotangent complex given by a presentation `R[X] → S` (i.e. a closed embedding `S ↪ Aⁿ`). -/
 noncomputable
 def cotangentComplex : P.Cotangent →ₗ[S] P.CotangentSpace :=
   letI f : P.Cotangent ≃ₗ[P.Ring] P.ker.Cotangent :=
@@ -229,7 +250,7 @@ def Hom.subToKer (f g : Hom P P') : P.Ring →ₗ[R] P'.ker := by
 /--
 If `f` and `g` are two maps `P → P'` between presentations,
 their difference induces a map `P.CotangentSpace →ₗ[S] P'.Cotangent` that makes two maps
-between the cotangent complexes null-homotopic.
+between the cotangent complexes homotopic.
 -/
 noncomputable
 def Hom.sub (f g : Hom P P') : P.CotangentSpace →ₗ[S] P'.Cotangent := by
@@ -296,6 +317,7 @@ lemma Cotangent.map_sub_map (f g : Hom P P') :
     Ideal.toCotangent_to_quotient_square, Submodule.mkQ_apply, Ideal.Quotient.mk_eq_mk,
     Hom.subToKer_apply_coe]
 
+/-- The projection map from the relative cotangent space to the module of differentials. -/
 variable (P) in
 noncomputable
 abbrev toKaehler : P.CotangentSpace →ₗ[S] Ω[S⁄R] := mapBaseChange _ _ _
