@@ -554,12 +554,11 @@ example (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
 
 theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j : n, eigenspace (T j) (γ j)
     = (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
-    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))))) := by
+    (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j))))) := by
   ext v
   constructor
   · intro h
     rw [iSup] at h
-    simp only [ultra_silly_lemma]
     conv =>
      rhs
      rw [iSup]
@@ -573,7 +572,7 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
     exact H (fun j ↦ a ↑j) (a i) hw
   · intro h
     rw [iSup] at *
-    simp only [ultra_silly_lemma, sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
+    simp only [sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
       Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
       SetLike.mem_coe] at *
     intro K hK
