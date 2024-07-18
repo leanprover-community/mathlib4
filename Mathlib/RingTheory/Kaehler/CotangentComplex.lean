@@ -174,7 +174,7 @@ lemma Hom.sub_aux (f g : Hom P P') (x y) :
   simp only [_root_.map_mul]
   ring
 
-/-
+/--
 If `f` and `g` are two maps `P → P'` between presentations,
 then the image of `f - g` is in the kernel of `P' → S`.
 -/
