@@ -394,8 +394,6 @@ theorem eigenspace_of_subsingleton_nonempty [Subsingleton n] (h : Nonempty n) :
   · exact hT i
   · intro γ j; congr!
 
---orthogonalComplement_eq_orthogonalComplement
-
 /--The following result is auxiliary, and not meant to be used outside this file. It forms
 the base case of the induction proof of `orthogonalComplement_iSup_iInf_eigenspaces_eq_bot`-/
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base [Subsingleton n]:
@@ -613,7 +611,7 @@ theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // i ≠ x} → 𝕜)
     (fun x ↦ i ≠ x) T j) (γ j))) (⨆ (μ : 𝕜) , eigenspace ((T i).restrict
     ((invariance_iInf T hC i γ))) μ) = Submodule.map (Submodule.subtype (⨅ j, eigenspace
     (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))) ⊤ := by
-      congr!; congr!; exact inf_restrict T hT hC i fun j ↦ γ j
+      congr!; exact inf_restrict T hT hC i fun j ↦ γ j
     simp only [Submodule.mem_iInf, Subtype.forall, Submodule.mem_mk, AddSubmonoid.mem_mk,
       AddSubsemigroup.mem_mk, Set.mem_iInter, ultra_silly_lemma,
       Submodule.map_iSup, Submodule.map_top, Submodule.range_subtype] at *
