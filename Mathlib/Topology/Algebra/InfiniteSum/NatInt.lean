@@ -111,7 +111,7 @@ end Multipliable
 
 section tprod
 
-variable [T2Space M] {α β γ  : Type*}
+variable [T2Space M] {α β γ : Type*}
 
 section Encodable
 

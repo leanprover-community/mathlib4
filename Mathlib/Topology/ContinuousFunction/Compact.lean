@@ -530,20 +530,12 @@ variable {α : Type*} {β : Type*}
 variable [TopologicalSpace α] [NormedRing β] [StarRing β]
 
 instance [CompactSpace α] [CstarRing β] : CstarRing C(α, β) where
-  norm_star_mul_self {f} := by
-    refine le_antisymm ?_ ?_
-    · rw [← sq, ContinuousMap.norm_le _ (sq_nonneg _)]
-      intro x
-      simp only [ContinuousMap.coe_mul, coe_star, Pi.mul_apply, Pi.star_apply,
-        CstarRing.norm_star_mul_self, ← sq]
-      refine sq_le_sq' ?_ ?_
-      · linarith [norm_nonneg (f x), norm_nonneg f]
-      · exact ContinuousMap.norm_coe_le_norm f x
-    · rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _),
-        ContinuousMap.norm_le _ (Real.sqrt_nonneg _)]
-      intro x
-      rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CstarRing.norm_star_mul_self]
-      exact ContinuousMap.norm_coe_le_norm (star f * f) x
+  norm_mul_self_le f := by
+    rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _),
+      ContinuousMap.norm_le _ (Real.sqrt_nonneg _)]
+    intro x
+    rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CstarRing.norm_star_mul_self]
+    exact ContinuousMap.norm_coe_le_norm (star f * f) x
 
 end CstarRing
 

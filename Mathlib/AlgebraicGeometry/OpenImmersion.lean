@@ -186,6 +186,24 @@ instance basic_open_isOpenImmersion {R : CommRingCat.{u}} (f : R) :
     exact Spec_map_localization_isIso R (Submonoid.powers f) x
 #align algebraic_geometry.Scheme.basic_open_IsOpenImmersion AlgebraicGeometry.Scheme.basic_open_isOpenImmersion
 
+instance {R} [CommRing R] (f : R) :
+    IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f)))) :=
+  basic_open_isOpenImmersion (R := .of R) f
+
+lemma IsOpenImmersion.of_isLocalization {R S} [CommRing R] [CommRing S]
+    [Algebra R S] (f : R) [IsLocalization.Away f S] :
+    IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R S))) := by
+  have e := (IsLocalization.algEquiv (.powers f) S
+    (Localization.Away f)).symm.toAlgHom.comp_algebraMap
+  rw [← e, CommRingCat.ringHom_comp_eq_comp]
+  erw [Spec.map_comp]
+  have H : IsIso (CommRingCat.ofHom (IsLocalization.algEquiv
+    (Submonoid.powers f) S (Localization.Away f)).symm.toAlgHom.toRingHom) := by
+    exact inferInstanceAs (IsIso <| (IsLocalization.algEquiv
+      (Submonoid.powers f) S (Localization.Away f)).toRingEquiv.toCommRingCatIso.inv)
+  simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom] at H ⊢
+  infer_instance
+
 theorem exists_affine_mem_range_and_range_subset
     {X : Scheme.{u}} {x : X} {U : Opens X} (hxU : x ∈ U) :
     ∃ (R : CommRingCat) (f : Spec R ⟶ X),
@@ -607,6 +625,13 @@ lemma ΓIso_hom_map {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Op
     f.app U ≫ (ΓIso f U).hom = Y.presheaf.map (homOfLE inf_le_right).op := by
   rw [← map_ΓIso_inv]
   simp [-ΓIso_inv]
+
+/-- Given an open immersion `f : U ⟶ X`, the isomorphism between global sections
+  of `U` and the sections of `X` at the image of `f`. -/
+noncomputable
+def ΓIsoTop {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    Γ(X, ⊤) ≅ Γ(Y, f.opensRange) :=
+  IsOpenImmersion.ΓIso f ⊤ ≪≫ (Y.presheaf.mapIso (eqToIso (inf_top_eq f.opensRange)).op).symm
 
 end IsOpenImmersion
 

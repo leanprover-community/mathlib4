@@ -157,14 +157,6 @@ set_option linter.uppercaseLean3 false in
 @[deprecated (since := "2024-04-17")]
 alias eval₂_int_castRingHom_X := eval₂_intCastRingHom_X
 
-end CommSemiring
-
-section aeval
-
-variable [CommSemiring R] [Semiring A] [CommSemiring A'] [Semiring B]
-variable [Algebra R A] [Algebra R A'] [Algebra R B]
-variable {p q : R[X]} (x : A)
-
 /-- `Polynomial.eval₂` as an `AlgHom` for noncommutative algebras.
 
 This is `Polynomial.eval₂RingHom'` for `AlgHom`s. -/
@@ -172,6 +164,77 @@ This is `Polynomial.eval₂RingHom'` for `AlgHom`s. -/
 def eval₂AlgHom' (f : A →ₐ[R] B) (b : B) (hf : ∀ a, Commute (f a) b) : A[X] →ₐ[R] B where
   toRingHom := eval₂RingHom' f b hf
   commutes' _ := (eval₂_C _ _).trans (f.commutes _)
+
+section Map
+
+/-- `Polynomial.map` as an `AlgHom` for noncommutative algebras.
+
+  This is the algebra version of `Polynomial.mapRingHom`. -/
+def mapAlgHom (f : A →ₐ[R] B) : Polynomial A →ₐ[R] Polynomial B where
+  toRingHom := mapRingHom f.toRingHom
+  commutes' := by simp
+
+@[simp]
+theorem coe_mapAlgHom (f : A →ₐ[R] B) : ⇑(mapAlgHom f) = map f :=
+  rfl
+
+@[simp]
+theorem mapAlgHom_id : mapAlgHom (AlgHom.id R A) = AlgHom.id R (Polynomial A) :=
+  AlgHom.ext fun _x => map_id
+
+@[simp]
+theorem mapAlgHom_coe_ringHom (f : A →ₐ[R] B) :
+    ↑(mapAlgHom f : _ →ₐ[R] Polynomial B) = (mapRingHom ↑f : Polynomial A →+* Polynomial B) :=
+  rfl
+
+@[simp]
+theorem mapAlgHom_comp (C : Type z) [Semiring C] [Algebra R C] (f : B →ₐ[R] C) (g : A →ₐ[R] B) :
+    (mapAlgHom f).comp (mapAlgHom g) = mapAlgHom (f.comp g) := by
+  apply AlgHom.ext
+  intro x
+  simp [AlgHom.comp_algebraMap, map_map]
+  congr
+
+theorem mapAlgHom_eq_eval₂AlgHom'_CAlgHom (f : A →ₐ[R] B) : mapAlgHom f = eval₂AlgHom'
+    (CAlgHom.comp f) X (fun a => (commute_X (C (f a))).symm) := by
+  apply AlgHom.ext
+  intro x
+  congr
+
+/-- If `A` and `B` are isomorphic as `R`-algebras, then so are their polynomial rings -/
+def mapAlgEquiv (f : A ≃ₐ[R] B) : Polynomial A ≃ₐ[R] Polynomial B :=
+  AlgEquiv.ofAlgHom (mapAlgHom f.toAlgHom) (mapAlgHom f.symm.toAlgHom) (by simp) (by simp)
+
+@[simp]
+theorem coe_mapAlgEquiv (f : A ≃ₐ[R] B) : ⇑(mapAlgEquiv f) = map f :=
+  rfl
+
+@[simp]
+theorem mapAlgEquiv_id : mapAlgEquiv (@AlgEquiv.refl R A _ _ _) = AlgEquiv.refl :=
+  AlgEquiv.ext fun _x => map_id
+
+@[simp]
+theorem mapAlgEquiv_coe_ringHom (f : A ≃ₐ[R] B) :
+    ↑(mapAlgEquiv f : _ ≃ₐ[R] Polynomial B) = (mapRingHom ↑f : Polynomial A →+* Polynomial B) :=
+  rfl
+
+@[simp]
+theorem mapAlgEquiv_comp (C : Type z) [Semiring C] [Algebra R C] (f : A ≃ₐ[R] B) (g : B ≃ₐ[R] C) :
+    (mapAlgEquiv f).trans (mapAlgEquiv g) = mapAlgEquiv (f.trans g) := by
+  apply AlgEquiv.ext
+  intro x
+  simp [AlgEquiv.trans_apply, map_map]
+  congr
+
+end Map
+
+end CommSemiring
+
+section aeval
+
+variable [CommSemiring R] [Semiring A] [CommSemiring A'] [Semiring B]
+variable [Algebra R A] [Algebra R A'] [Algebra R B]
+variable {p q : R[X]} (x : A)
 
 /-- Given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
 the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.
@@ -345,7 +408,7 @@ theorem coeff_zero_eq_aeval_zero' (p : R[X]) : algebraMap R A (p.coeff 0) = aeva
   simp [aeval_def]
 #align polynomial.coeff_zero_eq_aeval_zero' Polynomial.coeff_zero_eq_aeval_zero'
 
-theorem map_aeval_eq_aeval_map {S T U : Type*} [CommSemiring S] [CommSemiring T] [Semiring U]
+theorem map_aeval_eq_aeval_map {S T U : Type*} [Semiring S] [CommSemiring T] [Semiring U]
     [Algebra R S] [Algebra T U] {φ : R →+* T} {ψ : S →+* U}
     (h : (algebraMap T U).comp φ = ψ.comp (algebraMap R S)) (p : R[X]) (a : S) :
     ψ (aeval a p) = aeval (ψ a) (p.map φ) := by

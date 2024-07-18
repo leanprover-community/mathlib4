@@ -647,7 +647,7 @@ theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
     · rintro m hm
       simp_rw [List.mem_map, List.mem_range] at hm
       obtain ⟨i, hi, rfl⟩ := hm
-      rw [tsub_add_cancel_of_le (Nat.lt_succ_iff.mp hi)]
+      rw [Nat.sub_add_cancel (Nat.lt_succ_iff.mp hi)]
     · rw [List.length_map, List.length_range]
 where
   aux : ∀ n : ℕ, x.snd <• x.fst ^ n = x.fst ^ n •> x.snd := by
@@ -692,7 +692,7 @@ instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
           cases n
           · simp [List.range_succ]
           rw [List.sum_range_succ']
-          simp only [pow_zero, op_one, tsub_zero, one_smul, Nat.succ_sub_succ_eq_sub, fst_pow,
+          simp only [pow_zero, op_one, Nat.sub_zero, one_smul, Nat.succ_sub_succ_eq_sub, fst_pow,
             Nat.pred_succ, List.smul_sum, List.map_map, Function.comp]
           simp_rw [← smul_comm (_ : R) (_ : Rᵐᵒᵖ), smul_smul, pow_succ]
           rfl) }
