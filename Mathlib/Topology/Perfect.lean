@@ -181,7 +181,7 @@ lemma IsPreconnected.preperfect_of_nontrivial [T1Space α] {U : Set α} (hu : U.
     (h : IsPreconnected U) : Preperfect U := by
   intro x hx
   rw [isPreconnected_closed_iff] at h
-  replace h := h {x} (closure (U \ {x})) isClosed_singleton isClosed_closure (by
+  specialize h {x} (closure (U \ {x})) isClosed_singleton isClosed_closure (by
     trans {x} ∪ (U \ {x})
     · simp
     apply Set.union_subset_union_right
