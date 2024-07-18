@@ -18,7 +18,7 @@ We also prove that the projection and transition maps in this limit are surjecti
 
 noncomputable section
 
-open CategoryTheory Limits
+open CategoryTheory Limits CompHausLike
 
 attribute [local instance] ConcreteCategory.instFunLike
 
@@ -87,8 +87,8 @@ lemma map_liftedLimit {C D J : Type*} [Category C] [Category D] [Category J] {K 
 
 lemma lightToProfinite_map_proj_eq (n : ℕ) : lightToProfinite.map (S.proj n) =
     (lightToProfinite.obj S).asLimitCone.π.app _ := by
-  simp only [lightToProfinite_obj, Functor.comp_obj,
-    FintypeCat.toLightProfinite_obj_toCompHaus_toTop_α, lightToProfinite_map]
+  simp? says simp only [toCompHausLike_obj, Functor.comp_obj,
+      FintypeCat.toLightProfinite_obj_toTop_α, toCompHausLike_map, coe_of]
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
   exact map_liftedLimit hc _
