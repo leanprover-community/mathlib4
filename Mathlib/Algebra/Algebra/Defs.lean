@@ -137,7 +137,7 @@ theorem coe_one : (↑(1 : R) : A) = 1 :=
   map_one (algebraMap R A)
 #align algebra_map.coe_one algebraMap.coe_one
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_natCast (a : ℕ) : (↑(a : R) : A) = a :=
   map_natCast (algebraMap R A) a
 
