@@ -1,14 +1,14 @@
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.Nat.Factorization.Basic
 
-open Nat
-
 /-!
 
 # Primality of `a ^ n + 1`
 
 Euler proved around 1738 that some Fermat numbers are prime, but not `F₅`.
 -/
+
+open Nat
 
 /-- `a ^ n + 1` is prime only if `n` is a power of two. -/
 theorem pow_of_pow_add_prime (a n : ℕ) (ha : 1 < a) (hn : 1 < n) (hP : Nat.Prime (a ^ n + 1)) :
@@ -34,7 +34,7 @@ theorem pow_of_pow_add_prime (a n : ℕ) (ha : 1 < a) (hn : 1 < n) (hP : Nat.Pri
         · simp only [ne_eq, pow_eq_zero_iff', OfNat.ofNat_ne_zero, false_and,
             not_false_eq_true, Nat.one_lt_pow_iff, ha]
       exact ⟨nat_add_one_dvd_pow_add_one (a ^ 2 ^ k) hm, h₁, h₂⟩
-    . simp only [reduceLeDiff]
+    · simp only [reduceLeDiff]
       apply_rules [one_le_pow, pos_pow_of_pos, zero_lt_of_lt ha]
   contradiction
 
