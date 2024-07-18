@@ -94,20 +94,15 @@ theorem card_eq_of_bijective (f : α → β) (hf : Function.Bijective f) : Nat.c
   card_congr (Equiv.ofBijective f hf)
 #align nat.card_eq_of_bijective Nat.card_eq_of_bijective
 
-protected theorem bijective_iff_injective_and_card [Fintype β] (f : α → β) :
+protected theorem bijective_iff_injective_and_card [Finite β] (f : α → β) :
     Bijective f ↔ Injective f ∧ Nat.card α = Nat.card β := by
-  -- Note this proof is a bit convoluted because we don’t assume `Fintype α` but derive it
-  -- in both branches
-  constructor
-  · intro h
-    have : Fintype α := Fintype.ofInjective f h.1
-    rw [Fintype.bijective_iff_injective_and_card] at h
-    rwa [card_eq_fintype_card, card_eq_fintype_card]
-  · intro ⟨h, h'⟩
-    have : Fintype α := Fintype.ofInjective f h
-    rw [card_eq_fintype_card, card_eq_fintype_card] at h'
-    rw [Fintype.bijective_iff_injective_and_card]
-    exact ⟨h, h'⟩
+  rw [Bijective, and_congr_right_iff]
+  intro h
+  have := Fintype.ofFinite β
+  have := Fintype.ofInjective f h
+  revert h
+  rw [← and_congr_right_iff, ← Bijective,
+    card_eq_fintype_card, card_eq_fintype_card, Fintype.bijective_iff_injective_and_card]
 
 theorem _root_.Function.Injective.bijective_of_nat_card_le [Fintype β] {f : α → β}
     (inj : Injective f) (hc : Nat.card β ≤ Nat.card α) : Bijective f :=

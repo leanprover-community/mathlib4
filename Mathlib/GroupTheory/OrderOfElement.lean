@@ -1140,13 +1140,10 @@ lemma Nat.Coprime.pow_left_bijective (hn : (Nat.card G).Coprime n) : Bijective (
   (powCoprime hn).bijective
 
 @[to_additive add_inf_eq_bot_of_coprime]
-theorem inf_eq_bot_of_coprime {G : Type*} [Group G] {H K : Subgroup G} [Fintype H] [Fintype K]
-    (h : Nat.Coprime (Fintype.card H) (Fintype.card K)) : H ⊓ K = ⊥ := by
-  refine (H ⊓ K).eq_bot_iff_forall.mpr fun x hx => ?_
-  rw [← orderOf_eq_one_iff, ← Nat.dvd_one, ← h.gcd_eq_one, Nat.dvd_gcd_iff]
-  exact
-    ⟨(congr_arg (· ∣ Fintype.card H) (orderOf_coe ⟨x, hx.1⟩)).mpr orderOf_dvd_card,
-      (congr_arg (· ∣ Fintype.card K) (orderOf_coe ⟨x, hx.2⟩)).mpr orderOf_dvd_card⟩
+theorem inf_eq_bot_of_coprime {G : Type*} [Group G] {H K : Subgroup G}
+    (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
+  card_eq_one.mp (Nat.eq_one_of_dvd_coprimes h
+    (card_dvd_of_le inf_le_left) (card_dvd_of_le inf_le_right))
 #align inf_eq_bot_of_coprime inf_eq_bot_of_coprime
 #align add_inf_eq_bot_of_coprime add_inf_eq_bot_of_coprime
 
