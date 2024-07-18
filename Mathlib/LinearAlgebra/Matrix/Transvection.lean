@@ -367,6 +367,24 @@ def listTransvecRow : List (Matrix (Sum (Fin r) Unit) (Sum (Fin r) Unit) 𝕜) :
     transvection (inr unit) (inl i) <| -M (inr unit) (inl i) / M (inr unit) (inr unit)
 #align matrix.pivot.list_transvec_row Matrix.Pivot.listTransvecRow
 
+@[simp]
+theorem length_listTransvecCol : (listTransvecCol M).length = r := by simp [listTransvecCol]
+
+theorem listTransvecCol_get (i : Fin (listTransvecCol M).length) :
+    (listTransvecCol M).get i =
+      letI i' := Fin.cast (length_listTransvecCol M) i
+      transvection (inl i') (inr unit) <| -M (inl i') (inr unit) / M (inr unit) (inr unit) := by
+  simp [listTransvecCol, Fin.cast]
+
+@[simp]
+theorem length_listTransvecRow : (listTransvecRow M).length = r := by simp [listTransvecRow]
+
+theorem listTransvecRow_get (i : Fin (listTransvecRow M).length) :
+    (listTransvecRow M).get i =
+      letI i' := Fin.cast (length_listTransvecRow M) i
+      transvection (inr unit) (inl i') <| -M (inr unit) (inl i') / M (inr unit) (inr unit) := by
+  simp [listTransvecRow, Fin.cast]
+
 /-- Multiplying by some of the matrices in `listTransvecCol M` does not change the last row. -/
 theorem listTransvecCol_mul_last_row_drop (i : Sum (Fin r) Unit) {k : ℕ} (hk : k ≤ r) :
     (((listTransvecCol M).drop k).prod * M) (inr unit) i = M (inr unit) i := by
@@ -376,7 +394,7 @@ theorem listTransvecCol_mul_last_row_drop (i : Sum (Fin r) Unit) {k : ℕ} (hk :
     rw [List.drop_eq_getElem_cons hn']
     simpa [listTransvecCol, Matrix.mul_assoc]
   | self =>
-    simp only [listTransvecCol, List.length_ofFn, le_refl, List.drop_eq_nil_of_le, List.prod_nil,
+    simp only [length_listTransvecCol, le_refl, List.drop_eq_nil_of_le, List.prod_nil,
       Matrix.one_mul]
 #align matrix.pivot.list_transvec_col_mul_last_row_drop Matrix.Pivot.listTransvecCol_mul_last_row_drop
 
@@ -427,7 +445,7 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
         · simpa only [hni.symm, not_le, or_false_iff] using Nat.lt_succ_iff_lt_or_eq.1 hi
         · simpa only [not_le] using hi
   | self =>
-    simp only [listTransvecCol, List.length_ofFn, le_refl, List.drop_eq_nil_of_le, List.prod_nil,
+    simp only [length_listTransvecCol, le_refl, List.drop_eq_nil_of_le, List.prod_nil,
       Matrix.one_mul]
     rw [if_neg]
     simpa only [not_le] using i.2
