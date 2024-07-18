@@ -220,7 +220,7 @@ theorem variables_tendsto_zero :
   intro d s hs
   rw [Filter.mem_map, Filter.mem_cofinite, ← Set.preimage_compl]
   by_cases h : ∃ i, d = Finsupp.single i 1
-  . obtain ⟨i, rfl⟩ := h
+  · obtain ⟨i, rfl⟩ := h
     apply Set.Finite.subset (Set.finite_singleton i)
     intro x
     simp only [OfNat.ofNat, Zero.zero] at hs
@@ -231,14 +231,14 @@ theorem variables_tendsto_zero :
     rfl
     · simp only [Finsupp.single_eq_single_iff, Ne.symm hx, and_true, one_ne_zero, and_self,
       or_self, not_false_eq_true]
-  . convert Set.finite_empty
+  · convert Set.finite_empty
     rw [Set.eq_empty_iff_forall_not_mem]
     intro x
     rw [Set.mem_preimage, Set.not_mem_compl_iff]
     convert mem_of_mem_nhds hs using 1
     rw [← coeff_eq_apply (X x) d, coeff_X, if_neg]
     rfl
-    . intro h'
+    · intro h'
       apply h
       exact ⟨x, h'⟩
 
