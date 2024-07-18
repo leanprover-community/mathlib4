@@ -207,4 +207,6 @@ theorem coe_basisMonomials : (basisMonomials R : ℕ → R[X]) = fun s => monomi
   funext fun _ => ofFinsupp_single _ _
 #align polynomial.coe_basis_monomials Polynomial.coe_basisMonomials
 
+instance : Module.Free R R[X] := .of_basis (basisMonomials R)
+
 end Polynomial

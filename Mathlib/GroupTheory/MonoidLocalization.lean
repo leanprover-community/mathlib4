@@ -387,6 +387,12 @@ theorem mk_self (a : S) : mk (a : M) a = 1 := by
 #align localization.mk_self Localization.mk_self
 #align add_localization.mk_self AddLocalization.mk_self
 
+@[to_additive] lemma isUnit_mk_one (a : S) : IsUnit (mk 1 a) :=
+  isUnit_of_mul_eq_one _ (mk ↑a 1) (by rw [mk_mul, one_mul, mul_one, mk_self])
+
+@[to_additive] lemma isUnit_mk (a b : S) : IsUnit (mk ↑a b) :=
+  isUnit_of_mul_eq_one _ (mk ↑b a) (by rw [mk_mul, mul_comm, ← S.coe_mul, mk_self])
+
 section Scalar
 
 variable {R R₁ R₂ : Type*}

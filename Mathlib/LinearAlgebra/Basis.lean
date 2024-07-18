@@ -770,15 +770,23 @@ end Prod
 
 section NoZeroSMulDivisors
 
+protected theorem smul_left_injective (b : Basis ι R M) (i : ι) : Injective fun r : R ↦ r • b i :=
+  fun r r' h ↦ by
+    apply_fun (b.repr · i) at h
+    simp_rw [map_smul, b.repr_self, Finsupp.smul_apply, Finsupp.single_eq_same,
+      smul_eq_mul, mul_one] at h
+    exact h
+
+theorem smul_eq_zero_iff_of_mem_nonZeroDivisorsRight (b : Basis ι R M) {c : R} {x : M}
+    (mem : c ∈ nonZeroDivisorsRight R) : c • x = 0 ↔ x = 0 := by
+  rw [← map_eq_zero_iff _ b.repr.injective, map_smul,
+    Finsupp.smul_eq_zero_iff_of_mem_nonZeroSMulDivisors mem, map_eq_zero_iff _ b.repr.injective]
+
 -- Can't be an instance because the basis can't be inferred.
 protected theorem noZeroSMulDivisors [NoZeroDivisors R] (b : Basis ι R M) :
     NoZeroSMulDivisors R M :=
-  ⟨fun {c x} hcx => by
-    exact or_iff_not_imp_right.mpr fun hx => by
-      rw [← b.total_repr x, ← LinearMap.map_smul] at hcx
-      have := linearIndependent_iff.mp b.linearIndependent (c • b.repr x) hcx
-      rw [smul_eq_zero] at this
-      exact this.resolve_right fun hr => hx (b.repr.map_eq_zero_iff.mp hr)⟩
+  ⟨fun {_c _x} hcx ↦ or_iff_not_imp_left.mpr fun hc ↦ (smul_eq_zero_iff_of_mem_nonZeroDivisorsRight
+    b <| mem_nonZeroDivisorsRight_of_ne_zero hc).mp hcx⟩
 #align basis.no_zero_smul_divisors Basis.noZeroSMulDivisors
 
 protected theorem smul_eq_zero [NoZeroDivisors R] (b : Basis ι R M) {c : R} {x : M} :

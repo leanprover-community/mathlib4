@@ -6,6 +6,7 @@ Authors: Kenny Lau, Devon Tuma, Oliver Nash
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Ring.Opposite
 
 #align_import ring_theory.non_zero_divisors from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
@@ -219,6 +220,9 @@ theorem mem_nonZeroDivisors_iff_ne_zero [NoZeroDivisors M] [Nontrivial M] {x : M
     x ∈ M⁰ ↔ x ≠ 0 := ⟨nonZeroDivisors.ne_zero, mem_nonZeroDivisors_of_ne_zero⟩
 #align mem_non_zero_divisors_iff_ne_zero mem_nonZeroDivisors_iff_ne_zero
 
+theorem mem_nonZeroDivisorsRight_of_ne_zero [NoZeroDivisors M] {x : M} (hx : x ≠ 0) :
+    x ∈ nonZeroDivisorsRight M := fun _ ↦ eq_zero_of_ne_zero_of_mul_left_eq_zero hx
+
 variable [FunLike F M M']
 
 theorem map_ne_zero_of_mem_nonZeroDivisors [Nontrivial M] [ZeroHomClass F M M'] (g : F)
@@ -242,6 +246,10 @@ theorem powers_le_nonZeroDivisors_of_noZeroDivisors [NoZeroDivisors M] {a : M} (
   le_nonZeroDivisors_of_noZeroDivisors fun h ↦ absurd (h.recOn fun _ hn ↦ pow_eq_zero hn) ha
 #align powers_le_non_zero_divisors_of_no_zero_divisors powers_le_nonZeroDivisors_of_noZeroDivisors
 
+theorem comap_nonZeroDivisors_le_nonZeroDivisors_of_injective
+    [MonoidWithZeroHomClass F M M'] (f : F) (hf : Function.Injective f) : M'⁰.comap f ≤ M⁰ :=
+  fun x mem y eq0 ↦ (map_eq_zero_iff f hf).mp (mem _ <| by rw [← map_mul, eq0, map_zero])
+
 theorem map_le_nonZeroDivisors_of_injective [NoZeroDivisors M'] [MonoidWithZeroHomClass F M M']
     (f : F) (hf : Function.Injective f) {S : Submonoid M} (hS : S ≤ M⁰) : S.map f ≤ M'⁰ := by
   cases subsingleton_or_nontrivial M
@@ -255,6 +263,11 @@ theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M'
     [MonoidWithZeroHomClass F M M'] (f : F) (hf : Function.Injective f) : M⁰ ≤ M'⁰.comap f :=
   Submonoid.le_comap_of_map_le _ (map_le_nonZeroDivisors_of_injective _ hf le_rfl)
 #align non_zero_divisors_le_comap_non_zero_divisors_of_injective nonZeroDivisors_le_comap_nonZeroDivisors_of_injective
+
+theorem comap_nonZeroDivisors_eq_nonZeroDivisors_of_injective [NoZeroDivisors M']
+    [MonoidWithZeroHomClass F M M'] (f : F) (hf : Function.Injective f) : M'⁰.comap f = M⁰ :=
+  (comap_nonZeroDivisors_le_nonZeroDivisors_of_injective f hf).antisymm
+    (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective f hf)
 
 /-- In a finite ring, an element is a unit iff it is a non-zero-divisor. -/
 lemma isUnit_iff_mem_nonZeroDivisors_of_finite [Finite R] {a : R} :
@@ -274,6 +287,11 @@ open nonZeroSMulDivisors nonZeroDivisors
 variable {R M : Type*} [MonoidWithZero R] [Zero M] [MulAction R M]
 
 lemma mem_nonZeroSMulDivisors_iff {x : R} : x ∈ R⁰[M] ↔ ∀ (m : M), x • m = 0 → m = 0 := Iff.rfl
+
+theorem mem_nonZeroSMulDivisors_of_ne_zero [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) :
+    c ∈ R⁰[M] := fun _ ne ↦ (eq_zero_or_eq_zero_of_smul_eq_zero ne).resolve_left hc
+
+theorem nonZeroSMulDivisors_self : R⁰[R] = nonZeroDivisorsRight R := rfl
 
 variable (R)
 

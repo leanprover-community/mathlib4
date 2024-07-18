@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Data.Finset.Preimage
@@ -1629,11 +1630,15 @@ theorem sum_smul_index_addMonoidHom [AddMonoid M] [AddCommMonoid N] [DistribSMul
   sum_mapRange_index fun i => (h i).map_zero
 #align finsupp.sum_smul_index_add_monoid_hom Finsupp.sum_smul_index_addMonoidHom
 
+lemma smul_eq_zero_iff_of_mem_nonZeroSMulDivisors [Semiring R] [AddCommMonoid M] [Module R M]
+    {b : R} {g : α →₀ M} (mem : b ∈ nonZeroSMulDivisors R M) :
+    b • g = 0 ↔ g = 0 :=
+  ⟨fun h ↦ Finsupp.ext (mem _ <| DFunLike.congr_fun h ·), fun h ↦ by rw [h, smul_zero]⟩
+
 instance noZeroSMulDivisors [Semiring R] [AddCommMonoid M] [Module R M] {ι : Type*}
     [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R (ι →₀ M) :=
-  ⟨fun h =>
-    or_iff_not_imp_left.mpr fun hc =>
-      Finsupp.ext fun i => (smul_eq_zero.mp (DFunLike.ext_iff.mp h i)).resolve_left hc⟩
+  ⟨fun h ↦ or_iff_not_imp_left.mpr fun hc ↦
+    (smul_eq_zero_iff_of_mem_nonZeroSMulDivisors <| mem_nonZeroSMulDivisors_of_ne_zero hc).mp h⟩
 #align finsupp.no_zero_smul_divisors Finsupp.noZeroSMulDivisors
 
 section DistribMulActionSemiHom
