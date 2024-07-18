@@ -53,21 +53,21 @@ export DifferentialAlgebra (deriv_algebraMap)
 A differential ring `A` and an algebra over it `B` share constants if all
 constants in B are in the range of `algberaMap A B`.
 -/
-class SharedConstants (A B : Type*) [CommDifferentialRing A] [CommDifferentialRing B]
-    [DifferentialAlgebra A B] : Prop where
+class CommDifferentialRing.ContainConstants (A B : Type*) [CommRing A] [CommDifferentialRing B]
+    [Algebra A B] : Prop where
   /-- If the derivative of x is 0, then it's in the range of `algberaMap A B`. -/
-  protected mem_of_constant {x : B} (h : x′ = 0) : x ∈ (algebraMap A B).range
+  protected mem_range_of_deriv_eq_zero {x : B} (h : x′ = 0) : x ∈ (algebraMap A B).range
 
 lemma mem_of_constant (A : Type*) {B : Type*} [CommDifferentialRing A] [CommDifferentialRing B]
-    [DifferentialAlgebra A B] [SharedConstants A B] {x : B} (h : x′ = 0) :
+    [DifferentialAlgebra A B] [CommDifferentialRing.ContainConstants A B] {x : B} (h : x′ = 0) :
     x ∈ (algebraMap A B).range :=
-  SharedConstants.mem_of_constant h
+  CommDifferentialRing.ContainConstants.mem_range_of_deriv_eq_zero h
 
 instance (A : Type*) [CommDifferentialRing A] : DifferentialAlgebra A A where
   deriv_algebraMap _ := rfl
 
-instance (A : Type*) [CommDifferentialRing A] : SharedConstants A A where
-  mem_of_constant {x} _ := ⟨x, rfl⟩
+instance (A : Type*) [CommDifferentialRing A] : CommDifferentialRing.ContainConstants A A where
+  mem_range_of_deriv_eq_zero {x} _ := ⟨x, rfl⟩
 
 /--
 Transfer a `CommDifferentialRing` instance accross a `RingEquiv`.
