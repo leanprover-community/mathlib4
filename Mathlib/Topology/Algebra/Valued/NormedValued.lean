@@ -198,7 +198,8 @@ def toNormedField : NormedField L :=
           have : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
             ⟨RankOne.unit val.v, RankOne.unit_ne_one val.v⟩
 
-          have bar : ∃ w : Γ₀ˣ, RankOne.hom (R := L) v (w : Γ₀) < r := Real.exists_lt_of_strictMono hv.strictMono hr_pos
+          have bar : ∃ w : Γ₀ˣ, RankOne.hom (R := L) v (w : Γ₀) < r :=
+            Real.exists_lt_of_strictMono hv.strictMono hr_pos
 
           have foo : ∃ u : rangeGroup (R := L) v, RankOne.hom (R := L) v u.1 < r := by sorry
 
