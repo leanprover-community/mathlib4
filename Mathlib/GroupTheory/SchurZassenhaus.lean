@@ -229,8 +229,8 @@ private theorem step3 (K : Subgroup N) [(K.map N.subtype).Normal] : K = ⊥ ∨ 
   rwa [inj.eq_iff, inj.eq_iff] at key
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
-private theorem step4 : (Nat.card N).minFac.Prime := by
-  exact Nat.minFac_prime (N.one_lt_card_iff_ne_bot.mpr (step0 h1 h3)).ne'
+private theorem step4 : (Nat.card N).minFac.Prime :=
+  Nat.minFac_prime (N.one_lt_card_iff_ne_bot.mpr (step0 h1 h3)).ne'
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step5 {P : Sylow (Nat.card N).minFac N} : P.1 ≠ ⊥ := by
