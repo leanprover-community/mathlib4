@@ -173,8 +173,8 @@ def map (α : F ⟶ G) : Grothendieck F ⥤ Grothendieck G where
   obj X :=
   { base := X.base
     fiber := (α.app X.base).obj X.fiber }
-  map {X Y} f := {
-    base := f.base
+  map {X Y} f :=
+  { base := f.base
     fiber := (eqToHom (α.naturality f.base).symm).app X.fiber ≫ (α.app Y.base).map f.fiber }
   map_id X := by
     simp only [Cat.comp_obj, id_fiber', eqToHom_map]
