@@ -340,10 +340,14 @@ theorem coe_injective : Function.Injective ((↑) : AffineSubspace k P → Set P
   SetLike.coe_injective
 #align affine_subspace.coe_injective AffineSubspace.coe_injective
 
-@[ext]
+@[ext (iff := false)]
 theorem ext {p q : AffineSubspace k P} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 #align affine_subspace.ext AffineSubspace.ext
+
+protected theorem ext_iff (s₁ s₂ : AffineSubspace k P) : s₁ = s₂ ↔ (s₁ : Set P) = s₂ :=
+  SetLike.ext'_iff
+#align affine_subspace.ext_iff AffineSubspace.ext_iff
 
 /-- Two affine subspaces with the same direction and nonempty intersection are equal. -/
 theorem ext_of_direction_eq {s1 s2 : AffineSubspace k P} (hd : s1.direction = s2.direction)
