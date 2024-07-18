@@ -68,10 +68,9 @@ section
 
 variable {σ R : Type*} [Semiring R] [NoZeroDivisors R]
 
--- This belongs to `NoZeroDivisors.lean` once this is merged from #14454
 instance : NoZeroDivisors (MvPowerSeries σ R) where
   eq_zero_or_eq_zero_of_mul_eq_zero {φ ψ} h := by
-    letI : LinearOrder σ := LinearOrder.swap WellOrderingRel.isWellOrder.linearOrder
+    letI : LinearOrder σ := LinearOrder.swap σ WellOrderingRel.isWellOrder.linearOrder
     letI : WellFoundedGT σ := by
       unfold WellFoundedGT
       suffices IsWellFounded σ fun x y ↦ WellOrderingRel x y by
