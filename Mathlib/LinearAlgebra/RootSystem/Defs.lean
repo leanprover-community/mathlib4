@@ -296,6 +296,11 @@ lemma coreflection_eq_imp_scalar (j : ι) (h: P.coreflection i = P.coreflection 
 lemma reflection_mul (x : M) :
     (P.reflection i * P.reflection j) x = P.reflection i (P.reflection j x) := rfl
 
+lemma root_coreflection (P : RootPairing ι R M N) (y : N) (i : ι) :
+    (P.toLin (P.root i) (P.coreflection i y)) = - P.toLin (P.root i) y := by
+  rw [coreflection_apply, map_sub, map_smul, root_coroot_two, smul_eq_mul, mul_comm, two_mul]
+  abel
+
 /-- A root pairing is said to be crystallographic if the pairing between a root and coroot is
 always an integer. -/
 def IsCrystallographic : Prop :=

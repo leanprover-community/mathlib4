@@ -10,8 +10,8 @@ import Mathlib.LinearAlgebra.RootSystem.Defs
 
 This file contains basic results on Weyl-invariant inner products for root systems and root data.
 We introduce a Prop-valued mixin for classes that admit Weyl-invariant forms such that all roots
-have nonzero norm.  We show that finite root data over ordered rings always admit positive-definite
-invariant forms.
+have strictly positive norm.  We show that finite root data over ordered rings always admit
+positive-definite invariant forms.
 
 ## Main definitions:
 
@@ -132,17 +132,23 @@ theorem PolInner_reflection_invariant (P : RootPairing ι R M N) [Finite ι] (i 
       (P.toLin x) (P.coroot ((P.reflection_perm i) x_1)))
     (fun x_1 ↦ (P.toLin y) (P.coroot x_1) * (P.toLin x) (P.coroot x_1)) (congrFun rfl)
 
-/-!
+lemma root_covector_coroot (P : RootPairing ι R M N) (x : N) (i : ι) :
+    (P.toLin (P.root i) x) • P.coroot i = (x - P.coreflection i x) := by
+  rw [coreflection_apply, sub_sub_cancel]
 
+/-!
 theorem PolInner_self_coroot (P : RootPairing ι R M N) [Finite ι] (i : ι) :
     (P.PolInner (P.root i) (P.root i)) • P.coroot i = 2 • P.Polarization (P.root i) := by
+  rw [PolInner_apply, LinearMap.comp_apply, Polarization_apply, two_nsmul]
+
   sorry
 
-
 symmetric, positive definite on R-span of roots, Weyl-invariant.  If `P` is crystallographic,
-then this takes integer values. `(α,α)α^* = 2P.Polarization α` -/
+then this takes integer values. -/
 
--- faithful Weyl action, finiteness of Weyl
+-- faithful Weyl action on roots: for all x, w(x)-x lies in R-span of roots.
+--If all roots are fixed by w, then (w(x)-x, r) = (x, w^-1r -r)=0. w(x) - w by nondeg on R-span.
+-- finiteness of Weyl follows from finiteness of permutations of roots.
 end
 
 
