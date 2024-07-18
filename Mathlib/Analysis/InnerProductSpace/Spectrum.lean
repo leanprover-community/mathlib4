@@ -471,7 +471,8 @@ theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // i ≠ x} → 
     · simp only [ne_eq, Submodule.mem_map, Subtype.exists, Submodule.mem_iInf, Subtype.forall] at h
       obtain ⟨w, hw, A, B⟩ := h
       simp only [SetLike.mem_coe, eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply]
-      simp only [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply, SetLike.mk_smul_mk] at A
+      simp only [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply, SetLike.mk_smul_mk]
+        at A
       rw [← B]
       exact
         (AddSubmonoid.mk_eq_zero
@@ -553,8 +554,9 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
     exact H (fun j ↦ a ↑j) (a i) hw
   · intro h
     rw [iSup] at *
-    simp only [ultra_silly_lemma, sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff, Submodule.mem_mk,
-      AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe] at *
+    simp only [ultra_silly_lemma, sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
+      Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
+      SetLike.mem_coe] at *
     intro K hK
     have A : ∀ (a : {x // ¬i = x} → 𝕜), ⨆ μ, eigenspace (T i) μ ⊓
         ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (a j) ≤ K := by
@@ -581,13 +583,6 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
         exact hK fun j ↦ γ j
       exact hgv K B
     exact h K A
-
-/-This is just index_convert, so we can probably remove later.-/
-theorem indexed_matching (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) (μ : 𝕜) :
-   Submodule.map (Submodule.subtype (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)))
-      (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ)
-       = (eigenspace (T i) μ ⊓ ⨅ j, eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by
-  rw [← index_convert T hC i μ fun j ↦ γ j]
 
 theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // i ≠ x} → 𝕜) :
     ⨆ μ, Submodule.map (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype
