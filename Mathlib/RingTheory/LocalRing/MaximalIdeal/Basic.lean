@@ -112,20 +112,6 @@ end
 
 end LocalRing
 
-namespace Field
-
-variable (K) [Field K]
-
-open scoped Classical
-
--- see Note [lower instance priority]
-instance (priority := 100) : LocalRing K :=
-  LocalRing.of_isUnit_or_isUnit_one_sub_self fun a =>
-    if h : a = 0 then Or.inr (by rw [h, sub_zero]; exact isUnit_one)
-    else Or.inl <| IsUnit.mk0 a h
-
-end Field
-
 theorem LocalRing.maximalIdeal_eq_bot {R : Type*} [Field R] : LocalRing.maximalIdeal R = ⊥ :=
   LocalRing.isField_iff_maximalIdeal_eq.mp (Field.toIsField R)
 #align local_ring.maximal_ideal_eq_bot LocalRing.maximalIdeal_eq_bot
