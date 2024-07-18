@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
 import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 import Mathlib.RingTheory.AdicCompletion.Basic
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 #align_import ring_theory.discrete_valuation_ring.basic from "leanprover-community/mathlib"@"c163ec99dfc664628ca15d215fce0a5b9c265b68"
 

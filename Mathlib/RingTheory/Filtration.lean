@@ -5,12 +5,12 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Algebra.Ring.Idempotents
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Finiteness
 import Mathlib.Order.Basic
 import Mathlib.Order.Hom.Lattice
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 #align_import ring_theory.filtration from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
