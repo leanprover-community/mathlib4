@@ -105,7 +105,7 @@ theorem tendsto_iff_coeff_tendsto [Semiring α] {ι : Type _}
 variable (σ α)
 
 /-- The semiring topology on MvPowerSeries of a topological semiring -/
-scoped instance topologicalSemiring [Semiring α] [TopologicalSemiring α] :
+@[scoped instance] theorem topologicalSemiring [Semiring α] [TopologicalSemiring α] :
     TopologicalSemiring (MvPowerSeries σ α) where
     continuous_add := continuous_pi fun d => Continuous.comp continuous_add
       (Continuous.prod_mk (Continuous.fst' (continuous_component σ α d))
@@ -115,14 +115,14 @@ scoped instance topologicalSemiring [Semiring α] [TopologicalSemiring α] :
         (Continuous.snd' (continuous_component σ α i.snd))))
 
 /-- The ring topology on MvPowerSeries of a topological ring -/
-scoped instance topologicalRing [Ring α] [TopologicalRing α] :
+@[scoped instance] theorem topologicalRing [Ring α] [TopologicalRing α] :
     TopologicalRing (MvPowerSeries σ α) :=
   { topologicalSemiring σ α with
     continuous_neg := continuous_pi fun d ↦ Continuous.comp continuous_neg
       (continuous_component σ α d) }
 
 /-- MvPowerSeries on a T2Space form a T2Space -/
-scoped instance t2Space [T2Space α] : T2Space (MvPowerSeries σ α) where
+@[scoped instance] theorem t2Space [T2Space α] : T2Space (MvPowerSeries σ α) where
   t2 x y h := by
     obtain ⟨d, h⟩ := Function.ne_iff.mp h
     obtain ⟨u, v, ⟨hu, hv, hx, hy, huv⟩⟩ := t2_separation h
@@ -153,7 +153,7 @@ theorem uniformContinuous_component :
   uniformContinuous_pi.mp uniformContinuous_id
 
 /-- The uniform_add_group structure on MvPowerSeries of a uniform_add_group -/
-scoped instance uniformAddGroup [AddGroup α] [UniformAddGroup α] :
+@[scoped instance] theorem uniformAddGroup [AddGroup α] [UniformAddGroup α] :
     UniformAddGroup (MvPowerSeries σ α) where
   uniformContinuous_sub := uniformContinuous_pi.mpr fun _ => UniformContinuous.comp
     uniformContinuous_sub
@@ -162,7 +162,7 @@ scoped instance uniformAddGroup [AddGroup α] [UniformAddGroup α] :
       (UniformContinuous.comp (uniformContinuous_component _ _ _) uniformContinuous_snd))
 
 /-- Completeness of the uniform structure on MvPowerSeries -/
-scoped instance completeSpace [AddGroup α] [CompleteSpace α] :
+@[scoped instance] theorem completeSpace [AddGroup α] [CompleteSpace α] :
     CompleteSpace (MvPowerSeries σ α) where
   complete := by
     intro f hf
@@ -175,12 +175,12 @@ scoped instance completeSpace [AddGroup α] [CompleteSpace α] :
     exact (Cauchy.map hf (uniformContinuous_component σ α d)).le_nhds_lim
 
 /-- Separation of the uniform structure on MvPowerSeries -/
-scoped instance t0Space [T0Space α] : T0Space (MvPowerSeries σ α) := by
+@[scoped instance] theorem t0Space [T0Space α] : T0Space (MvPowerSeries σ α) := by
   suffices T2Space (MvPowerSeries σ α) by infer_instance
   exact WithPiTopology.t2Space σ α
 
 /-- The ring of multivariate power series is a uniform topological ring -/
-scoped instance uniform_topologicalRing [Ring α] [UniformAddGroup α] [TopologicalRing α] :
+@[scoped instance] theorem uniform_topologicalRing [Ring α] [UniformAddGroup α] [TopologicalRing α] :
     TopologicalRing (MvPowerSeries σ α) :=
   { uniformAddGroup σ α with
     continuous_add :=  (@uniformContinuous_add _ _ _ (uniformAddGroup σ α)).continuous
