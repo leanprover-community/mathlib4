@@ -121,4 +121,9 @@ theorem degree_eq_weight_one (d : σ →₀ ℕ) :
     degree d = weight 1 d := by
   simp only [degree, weight_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum]
 
+theorem le_degree (s : σ) (f : σ →₀ ℕ) : f s ≤ degree f  := by
+  rw [degree_eq_weight_one]
+  apply Nat.le_weight
+  simp only [Pi.one_apply, ne_eq, one_ne_zero, not_false_eq_true]
+
 end Finsupp
