@@ -3,9 +3,9 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
+import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.Defs
-import Mathlib.Init.Data.Int.Basic
-import Mathlib.Init.ZeroOne
+import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Lift
@@ -81,6 +81,9 @@ protected lemma one_nonneg : 0 ≤ (1 : ℤ) := Int.le_of_lt Int.zero_lt_one
 lemma zero_le_ofNat (n : ℕ) : 0 ≤ ofNat n := @le.intro _ _ n (by rw [Int.zero_add]; rfl)
 #align int.zero_le_of_nat Int.zero_le_ofNat
 
+protected theorem neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 h
+#align int.neg_inj Int.neg_eq_neg
+
 -- We want to use these lemmas earlier than the lemmas simp can prove them with
 @[simp, nolint simpNF]
 protected lemma neg_pos : 0 < -a ↔ a < 0 := ⟨Int.neg_of_neg_pos, Int.neg_pos_of_neg⟩
@@ -102,6 +105,15 @@ protected lemma sub_pos : 0 < a - b ↔ b < a := ⟨Int.lt_of_sub_pos, Int.sub_p
 protected lemma sub_nonneg : 0 ≤ a - b ↔ b ≤ a := ⟨Int.le_of_sub_nonneg, Int.sub_nonneg_of_le⟩
 
 instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
+
+protected theorem ofNat_add_out (m n : ℕ) : ↑m + ↑n = (↑(m + n) : ℤ) := rfl
+#align int.coe_nat_add_out Int.ofNat_add_out
+
+protected theorem ofNat_mul_out (m n : ℕ) : ↑m * ↑n = (↑(m * n) : ℤ) := rfl
+#align int.coe_nat_mul_out Int.ofNat_mul_out
+
+protected theorem ofNat_add_one_out (n : ℕ) : ↑n + (1 : ℤ) = ↑(succ n) := rfl
+#align int.coe_nat_add_one_out Int.ofNat_add_one_out
 
 @[simp] lemma ofNat_injective : Function.Injective ofNat := @Int.ofNat.inj
 
@@ -169,18 +181,8 @@ protected lemma two_mul : ∀ n : ℤ, 2 * n = n + n
     rw [Int.ofNat_mul_negSucc, Nat.two_mul, ofNat_add, Int.neg_add]
     rfl
 
-section deprecated
-set_option linter.deprecated false
-
-@[norm_cast, deprecated (since := "2022-11-23")]
-lemma ofNat_bit0 (n : ℕ) : (↑(bit0 n) : ℤ) = bit0 ↑n := rfl
-#align int.coe_nat_bit0 Int.ofNat_bit0
-
-@[norm_cast, deprecated (since := "2022-11-23")]
-lemma ofNat_bit1 (n : ℕ) : (↑(bit1 n) : ℤ) = bit1 ↑n := rfl
-#align int.coe_nat_bit1 Int.ofNat_bit1
-
-end deprecated
+#noalign int.coe_nat_bit0
+#noalign int.coe_nat_bit1
 
 protected lemma mul_le_mul_iff_of_pos_right (ha : 0 < a) : b * a ≤ c * a ↔ b ≤ c :=
   ⟨(le_of_mul_le_mul_right · ha), (Int.mul_le_mul_of_nonneg_right · (Int.le_of_lt ha))⟩
@@ -435,6 +437,12 @@ lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := 
   · rw [Int.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
 #align int.nat_abs_pow Int.natAbs_pow
 
+lemma pow_right_injective (h : 1 < a.natAbs) : ((a ^ ·) : ℕ → ℤ).Injective := by
+  refine (?_ : (natAbs ∘ (a ^ · : ℕ → ℤ)).Injective).of_comp
+  convert Nat.pow_right_injective h using 2
+  rw [Function.comp_apply, natAbs_pow]
+#align int.pow_right_injective Int.pow_right_injective
+
 lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by
   simp [Int.pow_succ, Int.pow_zero, Int.natAbs_mul_self']
 #align int.nat_abs_sq Int.natAbs_sq
@@ -628,8 +636,8 @@ lemma ediv_dvd_ediv : ∀ {a b c : ℤ}, a ∣ b → b ∣ c → b / a ∣ c / a
   | a, _, _, ⟨b, rfl⟩, ⟨c, rfl⟩ =>
     if az : a = 0 then by simp [az]
     else by
-      rw [Int.mul_ediv_cancel_left _ az, Int.mul_assoc, Int.mul_ediv_cancel_left _ az];
-        apply Int.dvd_mul_right
+      rw [Int.mul_ediv_cancel_left _ az, Int.mul_assoc, Int.mul_ediv_cancel_left _ az]
+      apply Int.dvd_mul_right
 #align int.div_dvd_div Int.ediv_dvd_ediv
 
 /-- If `n > 0` then `m` is not divisible by `n` iff it is between `n * k` and `n * (k + 1)`
@@ -836,6 +844,10 @@ theorem toNat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - 
 lemma toNat_lt' {n : ℕ} (hn : n ≠ 0) : m.toNat < n ↔ m < n := by
   rw [← toNat_lt_toNat, toNat_natCast]; omega
 #align int.to_nat_lt Int.toNat_lt'
+
+/-- The modulus of an integer by another as a natural. Uses the E-rounding convention. -/
+def natMod (m n : ℤ) : ℕ := (m % n).toNat
+#align int.nat_mod Int.natMod
 
 lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
   (toNat_lt' hn).2 <| emod_lt_of_pos _ <| by omega

@@ -231,7 +231,12 @@ theorem shiftFunctor_map_apply {β : Type*} [AddCommGroup β] (s : β)
 instance [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) :
   Zero (X ⟶ Y) := ⟨fun _ => 0⟩
 
-@[simp]
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/4481
+the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
+-/
+@[simp, nolint simpNF]
 theorem zero_apply [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) (b : β) :
     (0 : X ⟶ Y) b = 0 :=
   rfl
@@ -287,7 +292,7 @@ instance : (total β C).Faithful where
     ext i
     replace w := Sigma.ι (fun i : β => X i) i ≫= w
     erw [colimit.ι_map, colimit.ι_map] at w
-    simp? at * says simp only [Discrete.functor_obj, Discrete.natTrans_app] at *
+    simp? at * says simp only [Discrete.functor_obj_eq_as, Discrete.natTrans_app] at *
     exact Mono.right_cancellation _ _ w
 
 end GradedObject
@@ -387,7 +392,7 @@ lemma hasMap (c : ∀ j, CofanMapObjFun X p j) (hc : ∀ j, IsColimit (c j)) :
     X.HasMap p := fun j => ⟨_, hc j⟩
 
 variable {j X p}
-  {c : CofanMapObjFun X p j} (hc : IsColimit c) [X.HasMap p]
+variable {c : CofanMapObjFun X p j} (hc : IsColimit c) [X.HasMap p]
 
 /-- If `c : CofanMapObjFun X p j` is a colimit cofan, this is the induced
 isomorphism `c.pt ≅ X.mapObj p j`. -/

@@ -1,4 +1,4 @@
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Data.List.InsertNth
 import Mathlib.Algebra.Group.Basic

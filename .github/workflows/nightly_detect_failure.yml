@@ -181,19 +181,42 @@ jobs:
       run: |
         import os
         import zulip
-        client = zulip.Client(email='github-mathlib4-bot@leanprover.zulipchat.com', api_key=os.getenv('ZULIP_API_KEY'), site='https://leanprover.zulipchat.com')
+        client = zulip.Client(email='github-mathlib4-bot@leanprover.zulipchat.com', api_key='${{ secrets.ZULIP_API_KEY }}', site='https://leanprover.zulipchat.com')
         current_version = os.getenv('NIGHTLY')
         bump_version = os.getenv('BUMP_VERSION')
         bump_branch = os.getenv('BUMP_BRANCH')
         print(f'Current version: {current_version}, Bump version: {bump_version}')
         if current_version > bump_version:
             print('Lean toolchain in `nightly-testing` is ahead of the bump branch.')
+            # Get the last message in the 'Mathlib bump branch reminders' topic
             request = {
-                'type': 'stream',
-                'to': 'nightly-testing',
-                'topic': 'Mathlib bump branch reminders',
-                'content': f"🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing, and then PR that to {bump_branch}."
+              'anchor': 'newest',
+              'num_before': 1,
+              'num_after': 0,
+              'narrow': [{'operator': 'stream', 'operand': 'nightly-testing'}, {'operator': 'topic', 'operand': 'Mathlib bump branch reminders'}],
+              'apply_markdown': False    # Otherwise the content test below fails.
             }
-            result = client.send_message(request)
+            response = client.get_messages(request)
+            messages = response['messages']
+            bump_branch_suffix = bump_branch.replace('bump/', '')
+            payload = f"🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing, and then PR that to {bump_branch}. "
+            payload += "To do so semi-automatically, run the following script from mathlib root:\n\n"
+            payload += f"```bash\n./scripts/create-adaptation-pr.sh {bump_branch_suffix} {current_version}\n```\n"
+            if not messages or messages[0]['content'] != payload:
+                # Log messages, because the bot seems to repeat itself...
+                if messages:
+                    print("###### Last message:")
+                    print(messages[0]['content'])
+                    print("###### Current message:")
+                    print(payload)
+                # Post the reminder message
+                request = {
+                    'type': 'stream',
+                    'to': 'nightly-testing',
+                    'topic': 'Mathlib bump branch reminders',
+                    'content': payload
+                }
+                result = client.send_message(request)
+                print(result)
         else:
             print('No action needed.')

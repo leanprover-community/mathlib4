@@ -81,6 +81,12 @@ theorem affineIndependent_iff_of_fintype [Fintype ι] (p : ι → P) :
     simpa [hi] using h
 #align affine_independent_iff_of_fintype affineIndependent_iff_of_fintype
 
+@[simp] lemma affineIndependent_vadd {p : ι → P} {v : V} :
+    AffineIndependent k (v +ᵥ p) ↔ AffineIndependent k p := by
+  simp (config := { contextual := true }) [AffineIndependent, weightedVSub_vadd]
+
+protected alias ⟨AffineIndependent.of_vadd, AffineIndependent.vadd⟩ := affineIndependent_vadd
+
 /-- A family is affinely independent if and only if the differences
 from a base point in that family are linearly independent. -/
 theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
@@ -189,11 +195,11 @@ theorem affineIndependent_iff_indicator_eq_of_affineCombination_eq (p : ι → P
       ext i
       by_cases hi : i ∈ s1 ∪ s2
       · rw [← sub_eq_zero]
-        rw [← Finset.sum_indicator_subset w1 (s1.subset_union_left (s₂:=s2))] at hw1
+        rw [← Finset.sum_indicator_subset w1 (s1.subset_union_left (s₂ := s2))] at hw1
         rw [← Finset.sum_indicator_subset w2 (s1.subset_union_right)] at hw2
         have hws : (∑ i ∈ s1 ∪ s2, (Set.indicator (↑s1) w1 - Set.indicator (↑s2) w2) i) = 0 := by
           simp [hw1, hw2]
-        rw [Finset.affineCombination_indicator_subset w1 p (s1.subset_union_left (s₂:=s2)),
+        rw [Finset.affineCombination_indicator_subset w1 p (s1.subset_union_left (s₂ := s2)),
           Finset.affineCombination_indicator_subset w2 p s1.subset_union_right,
           ← @vsub_eq_zero_iff_eq V, Finset.affineCombination_vsub] at heq
         exact ha (s1 ∪ s2) (Set.indicator (↑s1) w1 - Set.indicator (↑s2) w2) hws heq i hi
@@ -359,7 +365,7 @@ variable {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V�
 independent, then the original family of points is also affine-independent. -/
 theorem AffineIndependent.of_comp {p : ι → P} (f : P →ᵃ[k] P₂) (hai : AffineIndependent k (f ∘ p)) :
     AffineIndependent k p := by
-  cases' isEmpty_or_nonempty ι with h h;
+  cases' isEmpty_or_nonempty ι with h h
   · haveI := h
     apply affineIndependent_of_subsingleton
   obtain ⟨i⟩ := h
@@ -701,7 +707,7 @@ theorem affineIndependent_of_ne_of_mem_of_mem_of_not_mem {s : AffineSubspace k P
     (hp₁p₂ : p₁ ≠ p₂) (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∉ s) :
     AffineIndependent k ![p₁, p₂, p₃] := by
   have ha : AffineIndependent k fun x : { x : Fin 3 // x ≠ 2 } => ![p₁, p₂, p₃] x := by
-    rw [← affineIndependent_equiv (finSuccAboveEquiv (2 : Fin 3)).toEquiv]
+    rw [← affineIndependent_equiv (finSuccAboveEquiv (2 : Fin 3))]
     convert affineIndependent_of_ne k hp₁p₂
     ext x
     fin_cases x <;> rfl
