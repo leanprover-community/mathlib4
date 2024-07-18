@@ -8,7 +8,7 @@ import Mathlib.Algebra.Module.Torsion
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Filtration
 import Mathlib.RingTheory.Nakayama
 

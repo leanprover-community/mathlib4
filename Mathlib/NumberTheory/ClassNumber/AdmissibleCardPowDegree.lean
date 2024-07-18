@@ -6,7 +6,7 @@ Authors: Anne Baanen
 import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 #align_import number_theory.class_number.admissible_card_pow_degree from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
 
