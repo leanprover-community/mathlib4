@@ -291,7 +291,7 @@ section WellFoundedLT
 
 variable [Preorder α] [Preorder β] {f : α → β}
 
-theorem WellFoundedLT.of_strictMono [WellFoundedLT β] (hf : StrictMono f) : WellFoundedLT α where
+theorem StrictMono.wellFoundedLT [WellFoundedLT β] (hf : StrictMono f) : WellFoundedLT α where
   wf := WellFounded.wellFounded_iff_has_min.2 fun s hne ↦ by
     have hs' : (f '' s).Nonempty := ⟨f hne.some, _, hne.some_mem, rfl⟩
     obtain ⟨x, hx, hex⟩ := WellFounded.min_mem wellFounded_lt (f '' s) hs'
@@ -300,13 +300,13 @@ theorem WellFoundedLT.of_strictMono [WellFoundedLT β] (hf : StrictMono f) : Wel
     rw [← hex]
     exact hf hlt
 
-theorem WellFoundedLT.of_strictAnti [WellFoundedGT β] (hf : StrictAnti f) : WellFoundedLT α :=
+theorem StrictAnti.wellFoundedLT [WellFoundedGT β] (hf : StrictAnti f) : WellFoundedLT α :=
   WellFoundedLT.of_strictMono (β := βᵒᵈ) hf
 
-theorem WellFoundedGT.of_strictMono [WellFoundedGT β] (hf : StrictMono f) : WellFoundedGT α :=
+theorem StrictMono.wellFoundedGT [WellFoundedGT β] (hf : StrictMono f) : WellFoundedGT α :=
   WellFoundedLT.of_strictMono (α := αᵒᵈ) (β := βᵒᵈ) (fun _ _ h ↦ hf h)
 
-theorem WellFoundedGT.of_strictAnti [WellFoundedLT β] (hf : StrictAnti f) : WellFoundedGT α :=
+theorem StrictAnti.wellFoundedGT [WellFoundedLT β] (hf : StrictAnti f) : WellFoundedGT α :=
   WellFoundedLT.of_strictMono (α := αᵒᵈ) (fun _ _ h ↦ hf h)
 
 end WellFoundedLT
