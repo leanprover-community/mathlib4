@@ -5,7 +5,6 @@ Authors: Robert Maxton
 -/
 import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
-import Mathlib.Algebra.GradedMonoid
 
 /-!
 # The free product of $R$-algebras
@@ -108,7 +107,7 @@ variable {I : Type u} [DecidableEq I] {i : I} -- The type of the indexing set
 variable (R : Type v) [CommSemiring R] -- The commutative semiring `R`
 variable (A : I → Type w) [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)] -- The collection of `R`-algebras
 variable {B : Type w'} [Semiring B] [Algebra R B] -- Another `R`-algebra
-variable (maps : (i : I) → A i →ₐ[R] B) -- A family of `R`algebra homomorphisms
+variable (maps : {i : I} → A i →ₐ[R] B) -- A family of `R`algebra homomorphisms
 
 namespace LinearAlgebra.FreeProduct
 
@@ -134,7 +133,6 @@ inductive rel : FreeTensorAlgebra R A → FreeTensorAlgebra R A → Prop
   | prod : ∀ {i : I} {a₁ a₂ : A i},
       rel
         (tprod R (⨁ i, A i) 2 (fun | 0 => lof R I A i a₁ | 1 => lof R I A i a₂))
-        -- (toTensorAlgebra <| two.symm <| ((· ⊗ₜ[R] ·) on (lof R I A i)) a₁ a₂)
         (ι R <| lof R I A i (a₁ * a₂))
 
 /--The generating equivalence relation for elements of the power algebra
@@ -143,13 +141,13 @@ that are identified in the free product. -/
 
 theorem rel_id (i : I) : rel R A (ι R <| lof R I A i 1) 1 := rel.id
 
-end FreeProduct
 
-/--The free product of the collection of `R`-algebras `A i`, as a quotient of `FreeTensorAlgebra R A`.-/
-@[reducible] def FreeProduct := RingQuot <| FreeProduct.rel R A
+/--The free product of the collection of `R`-algebras `A i`, as a quotient of
+`FreeTensorAlgebra R A`.-/
+@[reducible] def _root_.LinearAlgebra.FreeProduct := RingQuot <| FreeProduct.rel R A
 
 /--The free product of the collection of `R`-algebras `A i`, as a quotient of `PowerAlgebra R A`-/
-@[reducible] def FreeProduct_ofPowers := RingQuot <| FreeProduct.rel' R A
+@[reducible] def _root_.LinearAlgebra.FreeProduct_ofPowers := RingQuot <| FreeProduct.rel' R A
 
 /--The `R`-algebra equivalence relating `FreeProduct` and `FreeProduct_ofPowers`-/
 noncomputable def equivPowerAlgebra : FreeProduct_ofPowers R A ≃ₐ[R] FreeProduct R A :=
@@ -157,8 +155,7 @@ noncomputable def equivPowerAlgebra : FreeProduct_ofPowers R A ≃ₐ[R] FreePro
     (FreeProduct.powerAlgebra_equiv_freeAlgebra R A |>.symm) (FreeProduct.rel R A)
   |>.symm
 
-namespace FreeProduct
-open RingQuot Function TensorPower
+open RingQuot Function
 
 local infixr:60 " ∘ₐ " => AlgHom.comp
 
@@ -183,8 +180,8 @@ theorem identify_one (i : I) : ι' R A (DirectSum.lof R I A i 1) = 1 := by
   suffices ι' R A (DirectSum.lof R I A i 1) = mkAlgHom R A 1 by simpa
   exact RingQuot.mkAlgHom_rel R <| rel_id R A (i := i)
 
-/--Multiplication in the free product of the injections of any two `a₁ a₂: A i` for
-the same `i` is just the injection of multiplication `aᵢ * aⱼ` in `A i`.-/
+/--Multiplication in the free product of the injections of any two `aᵢ aᵢ': A i` for
+the same `i` is just the injection of multiplication `aᵢ * aᵢ'` in `A i`.-/
 theorem mul_injections (a₁ a₂ : A i) :
     ι' R A (DirectSum.lof R I A i a₁) * ι' R A (DirectSum.lof R I A i a₂)
       = ι' R A (DirectSum.lof R I A i (a₁ * a₂)) := by
@@ -212,12 +209,12 @@ irreducible_def of {i : I} : A i →ₐ[R] FreeProduct R A := ι R A i
 /--Universal property of the free product of algebras:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts
 to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.-/
-@[simps] def lift : ((i : I) → A i →ₐ[R] B) ≃ (FreeProduct R A →ₐ[R] B) where
+@[simps] def lift : ({i : I} → A i →ₐ[R] B) ≃ (FreeProduct R A →ₐ[R] B) where
   toFun maps :=
     RingQuot.liftAlgHom R ⟨
         TensorAlgebra.lift R <|
           DirectSum.toModule R I B <|
-            (maps · |>.toLinearMap),
+            (@maps · |>.toLinearMap),
         fun x y r ↦ by
           cases r with
           | id => simp
@@ -233,11 +230,11 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
 /--Universal property of the free product of algebras, property:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts
 to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.-/
-@[simp] theorem lift_comp_ι : (lift R A maps) ∘ₐ (ι R A i) = maps i := by
+@[simp] theorem lift_comp_ι : (lift R A maps) ∘ₐ (ι R A i) = maps := by
   ext a
   simp [lift_apply, ι]
 
-@[simp] theorem lift_unique (f : FreeProduct R A →ₐ[R] B) (h : ∀ i, f ∘ₐ ι R A i = maps i) :
+@[simp] theorem lift_unique (f : FreeProduct R A →ₐ[R] B) (h : ∀ i, f ∘ₐ ι R A i = maps) :
     f = lift R A maps := by
   ext i a; simp_rw [AlgHom.ext_iff] at h; specialize h i a
   simp [h.symm, ι]
