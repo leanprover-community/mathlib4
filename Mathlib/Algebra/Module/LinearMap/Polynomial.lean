@@ -93,7 +93,7 @@ lemma toMvPolynomial_isHomogeneous (M : Matrix m n R) (i : m) :
   apply MvPolynomial.IsHomogeneous.sum
   rintro j -
   apply MvPolynomial.isHomogeneous_monomial _ _
-  rw [degree, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton,
+  simp [Finsupp.degree, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton,
     Finsupp.single_eq_same]
 
 lemma toMvPolynomial_totalDegree_le (M : Matrix m n R) (i : m) :
