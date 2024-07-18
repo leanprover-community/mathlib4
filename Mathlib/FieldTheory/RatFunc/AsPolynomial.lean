@@ -240,6 +240,11 @@ theorem valuation_X_eq_neg_one :
   · exact Polynomial.X_ne_zero
   · exact idealX_span K
 
+theorem valuation_of_mk (f : Polynomial K) {g : Polynomial K} (hg : g ≠ 0) :
+    (Polynomial.idealX K).valuation (RatFunc.mk f g) =
+      (Polynomial.idealX K).intValuation f / (Polynomial.idealX K).intValuation g := by
+  simp only [RatFunc.mk_eq_mk' _ hg, valuation_of_mk']
+
 end Polynomial
 
 namespace RatFunc

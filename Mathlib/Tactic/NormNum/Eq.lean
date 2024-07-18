@@ -9,7 +9,7 @@ import Mathlib.Tactic.NormNum.Inv
 # `norm_num` extension for equalities
 -/
 
-set_option autoImplicit true
+variable {α : Type*}
 
 open Lean Meta Qq
 

@@ -150,31 +150,34 @@ initialize addLinter oneLineAlign
 end OneLineAlignLinter
 
 /-!
-# The "EndOf" linter
+# The "missing end" linter
 
-The "EndOf" linter emits a warning on non-closed `section`s and `namespace`s.
+The "missing end" linter emits a warning on non-closed `section`s and `namespace`s.
 It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
 -/
 
 open Lean Elab Command
 
-/-- The "EndOf" linter emits a warning on non-closed `section`s and `namespace`s.
+/-- The "missing end" linter emits a warning on non-closed `section`s and `namespace`s.
 It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
 -/
-register_option linter.endOf : Bool := {
+register_option linter.missingEnd : Bool := {
   defValue := true
-  descr := "enable the EndOf linter"
+  descr := "enable the missing end linter"
 }
 
-namespace EndOf
+namespace MissingEnd
 
-/-- Gets the value of the `linter.endOf` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.endOf o
+/-- Gets the value of the `linter.missingEnd` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.missingEnd o
 
-@[inherit_doc Mathlib.Linter.linter.endOf]
-def endOfLinter : Linter where run := withSetOptionIn fun stx ↦ do
+@[inherit_doc Mathlib.Linter.linter.missingEnd]
+def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- Only run this linter at the end of a module.
     unless stx.isOfKind ``Lean.Parser.Command.eoi do return
+    -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
+    unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
+      return
     if getLinterHash (← getOptions) && !(← MonadState.get).messages.hasErrors then
       let sc ← getScopes
       -- The last scope is always the "base scope", corresponding to no active `section`s or
@@ -187,11 +190,11 @@ def endOfLinter : Linter where run := withSetOptionIn fun stx ↦ do
       if !ends.isEmpty then
         let ending := (ends.map Prod.fst).foldl (init := "") fun a b ↦
           a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
-        Linter.logLint linter.endOf stx
+        Linter.logLint linter.missingEnd stx
          m!"unclosed sections or namespaces; expected: '{ending}'"
 
-initialize addLinter endOfLinter
+initialize addLinter missingEndLinter
 
-end EndOf
+end MissingEnd
 
 end Mathlib.Linter

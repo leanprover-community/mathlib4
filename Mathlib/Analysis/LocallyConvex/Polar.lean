@@ -150,6 +150,22 @@ theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
     _ = ε := mul_one _
 #align linear_map.polar_univ LinearMap.polar_univ
 
+theorem polar_subMulAction {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) :
+    B.polar m = { y | ∀ x ∈ m, B x y = 0 } := by
+  ext y
+  constructor
+  · intro hy x hx
+    obtain ⟨r, hr⟩ := NormedField.exists_lt_norm 𝕜 ‖B x y‖⁻¹
+    contrapose! hr
+    rw [← one_div, le_div_iff (norm_pos_iff.2 hr)]
+    simpa using  hy _ (SMulMemClass.smul_mem r hx)
+  · intro h x hx
+    simp [h x hx]
+
+/-- The polar of a set closed under scalar multiplication as a submodule -/
+def polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) : Submodule 𝕜 F :=
+  .copy (⨅ x ∈ m, LinearMap.ker (B x)) (B.polar m) <| by ext; simp [polar_subMulAction]
+
 end NontriviallyNormedField
 
 end LinearMap

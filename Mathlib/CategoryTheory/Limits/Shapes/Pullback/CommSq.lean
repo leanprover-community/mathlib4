@@ -660,6 +660,10 @@ theorem of_vert_isIso [IsIso snd] [IsIso f] (sq : CommSq fst snd f g) : IsPullba
   IsPullback.flip (of_horiz_isIso sq.flip)
 #align category_theory.is_pullback.of_vert_is_iso CategoryTheory.IsPullback.of_vert_isIso
 
+lemma of_id_fst : IsPullback (𝟙 _) f f (𝟙 _) := IsPullback.of_horiz_isIso ⟨by simp⟩
+
+lemma of_id_snd : IsPullback f (𝟙 _) (𝟙 _) f := IsPullback.of_vert_isIso ⟨by simp⟩
+
 end IsPullback
 
 namespace IsPushout
@@ -880,6 +884,10 @@ theorem of_horiz_isIso [IsIso f] [IsIso inr] (sq : CommSq f g inl inr) : IsPusho
 theorem of_vert_isIso [IsIso g] [IsIso inl] (sq : CommSq f g inl inr) : IsPushout f g inl inr :=
   (of_horiz_isIso sq.flip).flip
 #align category_theory.is_pushout.of_vert_is_iso CategoryTheory.IsPushout.of_vert_isIso
+
+lemma of_id_fst : IsPushout (𝟙 _) f f (𝟙 _) := IsPushout.of_horiz_isIso ⟨by simp⟩
+
+lemma of_id_snd : IsPushout f (𝟙 _) (𝟙 _) f := IsPushout.of_vert_isIso ⟨by simp⟩
 
 end IsPushout
 

@@ -55,8 +55,8 @@ lemma surjective_stalkMap {X Y : Scheme} (f : X ⟶ Y)
     [IsClosedImmersion f] (x : X) : Function.Surjective (PresheafedSpace.stalkMap f.1 x) :=
   IsClosedImmersion.surj_on_stalks x
 
-lemma eq_inf : @IsClosedImmersion = (MorphismProperty.topologically ClosedEmbedding) ⊓
-    MorphismProperty.stalkwise (fun f ↦ Function.Surjective f) := by
+lemma eq_inf : @IsClosedImmersion = (topologically ClosedEmbedding) ⊓
+    stalkwise (fun f ↦ Function.Surjective f) := by
   ext X Y f
   rw [isClosedImmersion_iff]
   rfl
@@ -133,25 +133,23 @@ instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f whe
 
 end IsClosedImmersion
 
-instance : (MorphismProperty.topologically ClosedEmbedding).RespectsIso :=
-  MorphismProperty.topologically_respectsIso _ (fun e ↦ Homeomorph.closedEmbedding e)
+instance : (topologically ClosedEmbedding).RespectsIso :=
+  topologically_respectsIso _ (fun e ↦ Homeomorph.closedEmbedding e)
     (fun _ _ hf hg ↦ ClosedEmbedding.comp hg hf)
 
 /-- Being topologically a closed embedding is local at the target. -/
-lemma closedEmbedding_propertyIsLocalAtTarget : PropertyIsLocalAtTarget
-    (MorphismProperty.topologically ClosedEmbedding) :=
-  MorphismProperty.topologically_propertyIsLocalAtTarget _
+instance closedEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically ClosedEmbedding) :=
+  topologically_isLocalAtTarget _
     (fun _ s hf ↦ ClosedEmbedding.restrictPreimage s hf)
     (fun _ _ _ hU hfcont hf ↦ (closedEmbedding_iff_closedEmbedding_of_iSup_eq_top hU hfcont).mpr hf)
 
 /-- Being surjective on stalks is local at the target. -/
-lemma isSurjectiveOnStalks_propertyIsLocalAtTarget : PropertyIsLocalAtTarget
-    (MorphismProperty.stalkwise (fun f ↦ Function.Surjective f)) :=
-  MorphismProperty.stalkwiseIsLocalAtTarget_of_respectsIso surjective_respectsIso
+instance isSurjectiveOnStalks_isLocalAtTarget : IsLocalAtTarget
+    (stalkwise (fun f ↦ Function.Surjective f)) :=
+  stalkwiseIsLocalAtTarget_of_respectsIso surjective_respectsIso
 
 /-- Being a closed immersion is local at the target. -/
-lemma IsClosedImmersion.localAtTarget : PropertyIsLocalAtTarget @IsClosedImmersion :=
-  eq_inf ▸ propertyIsLocalAtTarget_inf _ _ closedEmbedding_propertyIsLocalAtTarget
-    isSurjectiveOnStalks_propertyIsLocalAtTarget
+instance IsClosedImmersion.isLocalAtTarget : IsLocalAtTarget @IsClosedImmersion :=
+  eq_inf ▸ inferInstance
 
 end AlgebraicGeometry
