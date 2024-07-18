@@ -39,6 +39,8 @@ TODO
 * show that `MvPolynomial σ R ≃ₐ[R] ⨁ i, homogeneousSubmodule σ R i`
 -/
 
+open Finsupp
+
 /-- The degree of a monomial. -/
 def degree (d : σ →₀ ℕ) := ∑ i ∈ d.support, d i
 
@@ -235,7 +237,7 @@ lemma eval₂ (hφ : φ.IsHomogeneous m) (f : R →+* MvPolynomial τ S) (g : σ
   apply IsHomogeneous.mul (hf _) _
   convert IsHomogeneous.prod _ _ (fun k ↦ n * i k) _
   · rw [Finsupp.mem_support_iff] at hi
-    rw [← Finset.mul_sum, ← hφ hi, weightedDegree_apply]
+    rw [← Finset.mul_sum, ← hφ hi, weight_apply]
     simp_rw [smul_eq_mul, Finsupp.sum, Pi.one_apply, mul_one]
   · rintro k -
     apply (hg k).pow
@@ -268,7 +270,7 @@ lemma totalDegree_le (hφ : IsHomogeneous φ n) : φ.totalDegree ≤ n := by
   apply Finset.sup_le
   intro d hd
   rw [mem_support_iff] at hd
-  rw [Finsupp.sum, ← hφ hd, weightedDegree_apply]
+  rw [Finsupp.sum, ← hφ hd, weight_apply]
   simp only [Pi.one_apply, smul_eq_mul, mul_one]
   exact Nat.le.refl
 
@@ -277,7 +279,7 @@ theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ =
   obtain ⟨d, hd⟩ : ∃ d, coeff d φ ≠ 0 := exists_coeff_ne_zero h
   simp only [← hφ hd, MvPolynomial.totalDegree, Finsupp.sum]
   replace hd := Finsupp.mem_support_iff.mpr hd
-  simp only [weightedDegree_apply,Pi.one_apply, smul_eq_mul, mul_one]
+  simp only [weight_apply,Pi.one_apply, smul_eq_mul, mul_one]
   -- Porting note: Original proof did not define `f`
   exact Finset.le_sup (f := fun s ↦ ∑ x ∈ s.support, s x) hd
 #align mv_polynomial.is_homogeneous.total_degree MvPolynomial.IsHomogeneous.totalDegree
@@ -289,13 +291,13 @@ theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n) :
   intro d hd
   apply (Finsupp.sum_mapDomain_index_addMonoidHom fun _ ↦ .id ℕ).trans
   convert h (mem_support_iff.mp hd)
-  simp only [weightedDegree_apply, AddMonoidHom.id_apply, Pi.one_apply, smul_eq_mul, mul_one]
+  simp only [weight_apply, AddMonoidHom.id_apply, Pi.one_apply, smul_eq_mul, mul_one]
 
 theorem rename_isHomogeneous_iff {f : σ → τ} (hf : f.Injective) :
     (rename f φ).IsHomogeneous n ↔ φ.IsHomogeneous n := by
   refine ⟨fun h d hd ↦ ?_, rename_isHomogeneous⟩
   convert ← @h (d.mapDomain f) _
-  · simp only [weightedDegree_apply, Pi.one_apply, smul_eq_mul, mul_one]
+  · simp only [weight_apply, Pi.one_apply, smul_eq_mul, mul_one]
     exact Finsupp.sum_mapDomain_index_inj (h := fun _ ↦ id) hf
   · rwa [coeff_rename_mapDomain f hf]
 
@@ -307,7 +309,7 @@ lemma finSuccEquiv_coeff_isHomogeneous {N : ℕ} {φ : MvPolynomial (Fin (N+1)) 
   have h' : (weight 1) (Finsupp.cons i d) = i + j := by
     simpa [Finset.sum_subset_zero_on_sdiff (g := d.cons i)
      (d.cons_support (y := i)) (by simp) (fun _ _ ↦ rfl), ← h] using hφ hd
-  simp only [weightedDegree_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum_cons,
+  simp only [weight_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum_cons,
     add_right_inj] at h' ⊢
   exact h'
 
@@ -357,7 +359,7 @@ lemma exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux
     rw [Finsupp.coe_zero, Pi.zero_apply]
     by_cases hi : i ∈ d.support
     · have := hF.finSuccEquiv_coeff_isHomogeneous n 0 (add_zero _) hd
-      simp only [weightedDegree_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum] at this
+      simp only [weight_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum] at this
       rw [Finset.sum_eq_zero_iff_of_nonneg (fun _ _ ↦ zero_le')] at this
       exact this i hi
     · simpa using hi
