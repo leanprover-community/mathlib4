@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Algebra.Module.LinearMap.Defs
 
 #align_import algebra.algebra.basic from "leanprover-community/mathlib"@"36b8aa61ea7c05727161f96a0532897bd72aedab"
 
@@ -84,6 +83,8 @@ the second approach only when you need to weaken a condition on either `R` or `A
 
 -/
 
+assert_not_exists Field
+
 universe u v w u₁ v₁
 
 section Prio
@@ -112,7 +113,8 @@ def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra 
 #align algebra_map algebraMap
 
 /-- Coercion from a commutative semiring to an algebra over this semiring. -/
-@[coe] def Algebra.cast {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] : R → A :=
+@[coe, reducible]
+def Algebra.cast {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] : R → A :=
   algebraMap R A
 
 namespace algebraMap
@@ -126,15 +128,19 @@ section CommSemiringSemiring
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_zero : (↑(0 : R) : A) = 0 :=
   map_zero (algebraMap R A)
 #align algebra_map.coe_zero algebraMap.coe_zero
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_one : (↑(1 : R) : A) = 1 :=
   map_one (algebraMap R A)
 #align algebra_map.coe_one algebraMap.coe_one
+
+@[norm_cast]
+theorem coe_natCast (a : ℕ) : (↑(a : R) : A) = a :=
+  map_natCast (algebraMap R A) a
 
 @[norm_cast]
 theorem coe_add (a b : R) : (↑(a + b : R) : A) = ↑a + ↑b :=
@@ -162,6 +168,11 @@ theorem coe_neg (x : R) : (↑(-x : R) : A) = -↑x :=
   map_neg (algebraMap R A) x
 #align algebra_map.coe_neg algebraMap.coe_neg
 
+@[norm_cast]
+theorem coe_sub (a b : R) :
+    (↑(a - b : R) : A) = ↑a - ↑b :=
+  map_sub (algebraMap R A) a b
+
 end CommRingRing
 
 section CommSemiringCommSemiring
@@ -185,53 +196,6 @@ theorem coe_sum {ι : Type*} {s : Finset ι} (a : ι → R) :
 -- Porting note: removed attribute [to_additive] coe_prod; why should this be a `to_additive`?
 
 end CommSemiringCommSemiring
-
-section FieldNontrivial
-
-variable {R A : Type*} [Field R] [CommSemiring A] [Nontrivial A] [Algebra R A]
-
-@[norm_cast, simp]
-theorem coe_inj {a b : R} : (↑a : A) = ↑b ↔ a = b :=
-  (algebraMap R A).injective.eq_iff
-#align algebra_map.coe_inj algebraMap.coe_inj
-
-@[norm_cast, simp]
-theorem lift_map_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
-  map_eq_zero_iff _ (algebraMap R A).injective
-#align algebra_map.lift_map_eq_zero_iff algebraMap.lift_map_eq_zero_iff
-
-end FieldNontrivial
-
-section SemifieldSemidivisionRing
-
-variable {R : Type*} (A : Type*) [Semifield R] [DivisionSemiring A] [Algebra R A]
-
-@[norm_cast]
-theorem coe_inv (r : R) : ↑r⁻¹ = ((↑r)⁻¹ : A) :=
-  map_inv₀ (algebraMap R A) r
-#align algebra_map.coe_inv algebraMap.coe_inv
-
-@[norm_cast]
-theorem coe_div (r s : R) : ↑(r / s) = (↑r / ↑s : A) :=
-  map_div₀ (algebraMap R A) r s
-#align algebra_map.coe_div algebraMap.coe_div
-
-@[norm_cast]
-theorem coe_zpow (r : R) (z : ℤ) : ↑(r ^ z) = (r : A) ^ z :=
-  map_zpow₀ (algebraMap R A) r z
-#align algebra_map.coe_zpow algebraMap.coe_zpow
-
-end SemifieldSemidivisionRing
-
-section FieldDivisionRing
-
-variable (R A : Type*) [Field R] [DivisionRing A] [Algebra R A]
-
-@[norm_cast]
-theorem coe_ratCast (q : ℚ) : ↑(q : R) = (q : A) := map_ratCast (algebraMap R A) q
-#align algebra_map.coe_rat_cast algebraMap.coe_ratCast
-
-end FieldDivisionRing
 
 end algebraMap
 
@@ -455,5 +419,12 @@ end id
 end Semiring
 
 end Algebra
+
+@[norm_cast]
+theorem algebraMap.coe_smul (A B C : Type*) [SMul A B] [CommSemiring B] [Semiring C] [Algebra B C]
+    [SMul A C] [IsScalarTower A B C] (a : A) (b : B) : (a • b : B) = a • (b : C) := calc
+  ((a • b : B) : C) = (a • b) • 1 := Algebra.algebraMap_eq_smul_one _
+  _ = a • (b • 1) := smul_assoc ..
+  _ = a • (b : C) := congrArg _ (Algebra.algebraMap_eq_smul_one b).symm
 
 assert_not_exists Module.End

@@ -177,88 +177,12 @@ noncomputable def homologyFunctorSingleIso [CategoryWithHomology C] :
 
 end HomologicalComplex
 
-variable (C)
-
-namespace ChainComplex
-
-variable [HasEqualizers C] [HasCokernels C] [HasImages C] [HasImageMaps C]
-
-/-- Sending objects to chain complexes supported at `0` then taking `0`-th homology
-is the same as doing nothing.
--/
-noncomputable def homology'Functor0Single₀ : single₀ C ⋙ homology'Functor C _ 0 ≅ 𝟭 C :=
-  NatIso.ofComponents (fun X => homology'.congr _ _ (by simp) (by simp) ≪≫ homology'ZeroZero)
-    fun f => by
-      -- Porting note: why can't `aesop_cat` do this?
-      dsimp
-      ext
-      simp
-#align chain_complex.homology_functor_0_single₀ ChainComplex.homology'Functor0Single₀
-
-/-- Sending objects to chain complexes supported at `0` then taking `(n+1)`-st homology
-is the same as the zero functor.
--/
-noncomputable def homology'FunctorSuccSingle₀ (n : ℕ) :
-    single₀ C ⋙ homology'Functor C _ (n + 1) ≅ 0 :=
-  NatIso.ofComponents
-    (fun X =>
-      homology'.congr _ _ (by simp) (by simp) ≪≫
-        homology'ZeroZero ≪≫ (Functor.zero_obj _).isoZero.symm)
-    fun f => (Functor.zero_obj _).eq_of_tgt _ _
-#align chain_complex.homology_functor_succ_single₀ ChainComplex.homology'FunctorSuccSingle₀
-
-end ChainComplex
-
-namespace CochainComplex
-
-variable [HasEqualizers C] [HasCokernels C] [HasImages C] [HasImageMaps C]
-
-/-- Sending objects to cochain complexes supported at `0` then taking `0`-th homology
-is the same as doing nothing.
--/
-noncomputable def homologyFunctor0Single₀ : single₀ C ⋙ homology'Functor C _ 0 ≅ 𝟭 C :=
-  NatIso.ofComponents (fun X => homology'.congr _ _ (by simp) (by simp) ≪≫ homology'ZeroZero)
-    fun f => by
-      -- Porting note: why can't `aesop_cat` do this?
-      dsimp
-      ext
-      simp
-#align cochain_complex.homology_functor_0_single₀ CochainComplex.homologyFunctor0Single₀
-
-/-- Sending objects to cochain complexes supported at `0` then taking `(n+1)`-st homology
-is the same as the zero functor.
--/
-noncomputable def homology'FunctorSuccSingle₀ (n : ℕ) :
-    single₀ C ⋙ homology'Functor C _ (n + 1) ≅ 0 :=
-  NatIso.ofComponents
-    (fun X =>
-      homology'.congr _ _ (by simp) (by simp) ≪≫
-        homology'ZeroZero ≪≫ (Functor.zero_obj _).isoZero.symm)
-    fun f => (Functor.zero_obj _).eq_of_tgt _ _
-#align cochain_complex.homology_functor_succ_single₀ CochainComplex.homology'FunctorSuccSingle₀
-
-end CochainComplex
-
-namespace ChainComplex
-
 open HomologicalComplex
 
-variable {C}
-
-lemma exactAt_succ_single_obj (A : C) (n : ℕ) :
+lemma ChainComplex.exactAt_succ_single_obj (A : C) (n : ℕ) :
     ExactAt ((single₀ C).obj A) (n + 1) :=
   exactAt_single_obj _ _ _ _ (by simp)
 
-end ChainComplex
-
-namespace CochainComplex
-
-open HomologicalComplex
-
-variable {C}
-
-lemma exactAt_succ_single_obj (A : C) (n : ℕ) :
+lemma CochainComplex.exactAt_succ_single_obj (A : C) (n : ℕ) :
     ExactAt ((single₀ C).obj A) (n + 1) :=
   exactAt_single_obj _ _ _ _ (by simp)
-
-end CochainComplex

@@ -647,7 +647,7 @@ theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
     · rintro m hm
       simp_rw [List.mem_map, List.mem_range] at hm
       obtain ⟨i, hi, rfl⟩ := hm
-      rw [tsub_add_cancel_of_le (Nat.lt_succ_iff.mp hi)]
+      rw [Nat.sub_add_cancel (Nat.lt_succ_iff.mp hi)]
     · rw [List.length_map, List.length_range]
 where
   aux : ∀ n : ℕ, x.snd <• x.fst ^ n = x.fst ^ n •> x.snd := by
@@ -671,7 +671,7 @@ theorem snd_pow [CommMonoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulA
 @[simp]
 theorem inl_pow [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] (r : R)
     (n : ℕ) : (inl r ^ n : tsze R M) = inl (r ^ n) :=
-  ext rfl <| by simp [snd_pow_eq_sum]
+  ext rfl <| by simp [snd_pow_eq_sum, List.map_const']
 #align triv_sq_zero_ext.inl_pow TrivSqZeroExt.inl_pow
 
 instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
@@ -692,7 +692,7 @@ instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
           cases n
           · simp [List.range_succ]
           rw [List.sum_range_succ']
-          simp only [pow_zero, op_one, tsub_zero, one_smul, Nat.succ_sub_succ_eq_sub, fst_pow,
+          simp only [pow_zero, op_one, Nat.sub_zero, one_smul, Nat.succ_sub_succ_eq_sub, fst_pow,
             Nat.pred_succ, List.smul_sum, List.map_map, Function.comp]
           simp_rw [← smul_comm (_ : R) (_ : Rᵐᵒᵖ), smul_smul, pow_succ]
           rfl) }
@@ -951,7 +951,7 @@ def lift (f : R →ₐ[S] A) (g : M →ₗ[S] A)
         dsimp
         simp only [add_zero, zero_add, add_mul, mul_add, smul_mul_smul, hg, smul_zero,
           op_smul_eq_smul]
-        rw [← AlgHom.map_mul, LinearMap.map_add, add_comm (g _), add_assoc, hfg, hgf])
+        rw [← map_mul, LinearMap.map_add, add_comm (g _), add_assoc, hfg, hgf])
 #align triv_sq_zero_ext.lift_aux TrivSqZeroExt.lift
 
 theorem lift_def (f : R →ₐ[S] A) (g : M →ₗ[S] A)
@@ -1022,9 +1022,9 @@ def liftEquiv :
   invFun F :=
     ⟨(F.comp (inlAlgHom _ _ _), F.toLinearMap ∘ₗ (inrHom _ _ |>.restrictScalars _)),
       (fun _x _y =>
-        (F.map_mul _ _).symm.trans <| (F.congr_arg <| inr_mul_inr _ _ _).trans F.map_zero),
-      (fun _r _x => (F.congr_arg (inl_mul_inr _ _).symm).trans (F.map_mul _ _)),
-      (fun _r _x => (F.congr_arg (inr_mul_inl _ _).symm).trans (F.map_mul _ _))⟩
+        (map_mul F _ _).symm.trans <| (F.congr_arg <| inr_mul_inr _ _ _).trans (map_zero F)),
+      (fun _r _x => (F.congr_arg (inl_mul_inr _ _).symm).trans (map_mul F _ _)),
+      (fun _r _x => (F.congr_arg (inr_mul_inl _ _).symm).trans (map_mul F _ _))⟩
   left_inv _f := Subtype.ext <| Prod.ext (lift_comp_inlHom _ _ _ _ _) (lift_comp_inrHom _ _ _ _ _)
   right_inv _F := algHom_ext' (lift_comp_inlHom _ _ _ _ _) (lift_comp_inrHom _ _ _ _ _)
 

@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
 import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Group.Fin
+import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Cast.Prod
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Find
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.ULift
 
 #align_import algebra.char_p.basic from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
