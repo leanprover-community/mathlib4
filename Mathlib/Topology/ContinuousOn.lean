@@ -1317,14 +1317,11 @@ theorem Continuous.piecewise {s : Set α} {f g : α → β} [∀ a, Decidable (a
 theorem AccPt.map {β : Type*} [TopologicalSpace β] {F : Filter α} {x : α}
     (h : AccPt x F) {f : α → β} (hf1 : ContinuousAt f x) (hf2 : Function.Injective f) :
     AccPt (f x) (map f F) := by
-  have : (Filter.map f (𝓝[≠] x ⊓ F)).NeBot := map_neBot (hf := h)
-  rw [Filter.map_inf hf2] at this
-  apply this.mono
-  apply inf_le_inf_right
-  apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
-  exact hf1.continuousWithinAt
-  simp [hf2.eq_iff]
-  exact eventually_mem_nhdsWithin
+  apply map_neBot (m := f) (hf := h) |>.mono
+  rw [Filter.map_inf hf2]
+  gcongr
+  apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hf1.continuousWithinAt
+  simpa [hf2.eq_iff] using eventually_mem_nhdsWithin
 
 section Indicator
 variable [One β] {f : α → β} {s : Set α}
