@@ -41,7 +41,7 @@ sub-relation of the adjacency relation of the simple graph.
 * Recall that subgraphs are not determined by their vertex sets, so `SetLike` does not apply to
   this kind of subobject.
 
-## Todo
+## TODO
 
 * Images of graph homomorphisms as subgraphs.
 
@@ -158,6 +158,8 @@ theorem isSpanning_iff {G' : Subgraph G} : G'.IsSpanning ↔ G'.verts = Set.univ
   Set.eq_univ_iff_forall.symm
 #align simple_graph.subgraph.is_spanning_iff SimpleGraph.Subgraph.isSpanning_iff
 
+protected alias ⟨IsSpanning.verts_eq_univ, _⟩ := isSpanning_iff
+
 /-- Coercion from `Subgraph G` to `SimpleGraph V`.  If `G'` is a spanning
 subgraph, then `G'.spanningCoe` yields an isomorphic graph.
 In general, this adds in all vertices from `V` as isolated vertices. -/
@@ -245,9 +247,7 @@ theorem mem_edgeSet {G' : Subgraph G} {v w : V} : s(v, w) ∈ G'.edgeSet ↔ G'.
 
 theorem mem_verts_if_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈ G'.edgeSet)
     (hv : v ∈ e) : v ∈ G'.verts := by
-  revert hv
-  refine Sym2.ind (fun v w he ↦ ?_) e he
-  intro hv
+  induction e
   rcases Sym2.mem_iff.mp hv with (rfl | rfl)
   · exact G'.edge_vert he
   · exact G'.edge_vert (G'.symm he)
@@ -549,7 +549,7 @@ theorem edgeSet_sup {H₁ H₂ : Subgraph G} : (H₁ ⊔ H₂).edgeSet = H₁.ed
 @[simp]
 theorem edgeSet_sSup (s : Set G.Subgraph) : (sSup s).edgeSet = ⋃ G' ∈ s, edgeSet G' := by
   ext e
-  induction e using Sym2.ind
+  induction e
   simp
 #align simple_graph.subgraph.edge_set_Sup SimpleGraph.Subgraph.edgeSet_sSup
 
@@ -557,7 +557,7 @@ theorem edgeSet_sSup (s : Set G.Subgraph) : (sSup s).edgeSet = ⋃ G' ∈ s, edg
 theorem edgeSet_sInf (s : Set G.Subgraph) :
     (sInf s).edgeSet = (⋂ G' ∈ s, edgeSet G') ∩ G.edgeSet := by
   ext e
-  induction e using Sym2.ind
+  induction e
   simp
 #align simple_graph.subgraph.edge_set_Inf SimpleGraph.Subgraph.edgeSet_sInf
 
@@ -1032,7 +1032,7 @@ lemma coeSubgraph_restrict_eq {H : G.Subgraph} (H' : G.Subgraph) :
   ext
   · simp [and_comm]
   · simp_rw [coeSubgraph_adj, restrict_adj]
-    simp only [exists_and_left, exists_prop, ge_iff_le, inf_adj, and_congr_right_iff]
+    simp only [exists_and_left, exists_prop, inf_adj, and_congr_right_iff]
     intro h
     simp [H.edge_vert h, H.edge_vert h.symm]
 

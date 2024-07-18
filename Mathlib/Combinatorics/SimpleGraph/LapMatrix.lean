@@ -78,7 +78,7 @@ theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
   simp_rw [toLinearMap₂'_apply', lapMatrix, sub_mulVec, dotProduct_sub, dotProduct_mulVec_degMatrix,
     dotProduct_mulVec_adjMatrix, ← sum_sub_distrib, degree_eq_sum_if_adj, sum_mul, ite_mul, one_mul,
     zero_mul, ← sum_sub_distrib, ite_sub_ite, sub_zero]
-  rw [← half_add_self (∑ x_1 : V, ∑ x_2 : V, _)]
+  rw [← add_self_div_two (∑ x_1 : V, ∑ x_2 : V, _)]
   conv_lhs => enter [1,2,2,i,2,j]; rw [if_congr (adj_comm G i j) rfl rfl]
   conv_lhs => enter [1,2]; rw [Finset.sum_comm]
   simp_rw [← sum_add_distrib, ite_add_ite]
@@ -87,7 +87,7 @@ theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
   ring_nf
 
 /-- The Laplacian matrix is positive semidefinite -/
-theorem posSemidef_lapMatrix [LinearOrderedField R] [StarRing R] [StarOrderedRing R]
+theorem posSemidef_lapMatrix [LinearOrderedField R] [StarRing R]
     [TrivialStar R] : PosSemidef (G.lapMatrix R) := by
   constructor
   · rw [IsHermitian, conjTranspose_eq_transpose_of_trivial, isSymm_lapMatrix]

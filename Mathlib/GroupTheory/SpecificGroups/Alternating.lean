@@ -82,13 +82,13 @@ theorem prod_list_swap_mem_alternatingGroup_iff_even_length {l : List (Perm α)}
 
 theorem IsThreeCycle.mem_alternatingGroup {f : Perm α} (h : IsThreeCycle f) :
     f ∈ alternatingGroup α :=
-  mem_alternatingGroup.mpr h.sign
+  Perm.mem_alternatingGroup.mpr h.sign
 #align equiv.perm.is_three_cycle.mem_alternating_group Equiv.Perm.IsThreeCycle.mem_alternatingGroup
 
 set_option linter.deprecated false in
 theorem finRotate_bit1_mem_alternatingGroup {n : ℕ} :
-    finRotate (bit1 n) ∈ alternatingGroup (Fin (bit1 n)) := by
-  rw [mem_alternatingGroup, bit1, sign_finRotate, pow_bit0', Int.units_mul_self, one_pow]
+    finRotate (2 * n + 1) ∈ alternatingGroup (Fin (2 * n + 1)) := by
+  rw [mem_alternatingGroup, sign_finRotate, pow_mul, pow_two, Int.units_mul_self, one_pow]
 #align equiv.perm.fin_rotate_bit1_mem_alternating_group Equiv.Perm.finRotate_bit1_mem_alternatingGroup
 
 end Equiv.Perm

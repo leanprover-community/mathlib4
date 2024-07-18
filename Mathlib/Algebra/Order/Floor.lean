@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Algebra.Group.Int
 import Mathlib.Data.Int.Lemmas
+import Mathlib.Data.Nat.Cast.Order.Field
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.GaloisConnection
@@ -271,7 +272,7 @@ theorem preimage_floor_zero : (floor : α → ℕ) ⁻¹' {0} = Iio 1 :=
 
 -- Porting note: in mathlib3 there was no need for the type annotation in `(n:α)`
 theorem preimage_floor_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
-    (floor : α → ℕ) ⁻¹' {n} = Ico (n:α) (n + 1) :=
+    (floor : α → ℕ) ⁻¹' {n} = Ico (n : α) (n + 1) :=
   ext fun _ => floor_eq_iff' hn
 #align nat.preimage_floor_of_ne_zero Nat.preimage_floor_of_ne_zero
 
@@ -1096,7 +1097,7 @@ theorem fract_mul_nat (a : α) (b : ℕ) : ∃ z : ℤ, fract a * b - fract (a *
 
 -- Porting note: in mathlib3 there was no need for the type annotation in `(m:α)`
 theorem preimage_fract (s : Set α) :
-    fract ⁻¹' s = ⋃ m : ℤ, (fun x => x - (m:α)) ⁻¹' (s ∩ Ico (0 : α) 1) := by
+    fract ⁻¹' s = ⋃ m : ℤ, (fun x => x - (m : α)) ⁻¹' (s ∩ Ico (0 : α) 1) := by
   ext x
   simp only [mem_preimage, mem_iUnion, mem_inter_iff]
   refine ⟨fun h => ⟨⌊x⌋, h, fract_nonneg x, fract_lt_one x⟩, ?_⟩
@@ -1586,7 +1587,7 @@ theorem round_eq (x : α) : round x = ⌊x + 1 / 2⌋ := by
 
 @[simp]
 theorem round_two_inv : round (2⁻¹ : α) = 1 := by
-  simp only [round_eq, ← one_div, add_halves', floor_one]
+  simp only [round_eq, ← one_div, add_halves, floor_one]
 #align round_two_inv round_two_inv
 
 @[simp]

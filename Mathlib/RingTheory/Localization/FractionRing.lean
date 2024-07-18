@@ -292,17 +292,14 @@ abbrev FractionRing :=
 
 namespace FractionRing
 
-instance unique [Subsingleton R] : Unique (FractionRing R) :=
-  Localization.instUniqueLocalization
+instance unique [Subsingleton R] : Unique (FractionRing R) := inferInstance
 #align fraction_ring.unique FractionRing.unique
 
-instance [Nontrivial R] : Nontrivial (FractionRing R) :=
-  ⟨⟨(algebraMap R _) 0, (algebraMap _ _) 1, fun H =>
-      zero_ne_one (IsLocalization.injective _ le_rfl H)⟩⟩
+instance [Nontrivial R] : Nontrivial (FractionRing R) := inferInstance
 
 /-- Porting note: if the fields of this instance are explicitly defined as they were
 in mathlib3, the last instance in this file suffers a TC timeout -/
-noncomputable instance field : Field (FractionRing A) := IsFractionRing.toField A
+noncomputable instance field : Field (FractionRing A) := inferInstance
 
 @[simp]
 theorem mk_eq_div {r s} :

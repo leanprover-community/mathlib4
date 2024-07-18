@@ -394,6 +394,10 @@ theorem isOpen_coinduced {t : TopologicalSpace α} {s : Set β} {f : α → β} 
   Iff.rfl
 #align is_open_coinduced isOpen_coinduced
 
+theorem isClosed_coinduced {t : TopologicalSpace α} {s : Set β} {f : α → β} :
+    IsClosed[t.coinduced f] s ↔ IsClosed (f ⁻¹' s) := by
+  simp only [← isOpen_compl_iff, isOpen_coinduced (f := f), preimage_compl]
+
 theorem preimage_nhds_coinduced [TopologicalSpace α] {π : α → β} {s : Set β} {a : α}
     (hs : s ∈ @nhds β (TopologicalSpace.coinduced π ‹_›) (π a)) : π ⁻¹' s ∈ 𝓝 a := by
   letI := TopologicalSpace.coinduced π ‹_›
@@ -574,6 +578,18 @@ theorem le_induced_generateFrom {α β} [t : TopologicalSpace α] {b : Set (Set 
   simp only [mem_image, and_imp, forall_apply_eq_imp_iff₂, exists_imp]
   exact h
 #align le_induced_generate_from le_induced_generateFrom
+
+lemma generateFrom_insert_of_generateOpen {α : Type*} {s : Set (Set α)} {t : Set α}
+    (ht : GenerateOpen s t) : generateFrom (insert t s) = generateFrom s := by
+  refine le_antisymm (generateFrom_anti <| subset_insert t s) (le_generateFrom ?_)
+  rintro t (rfl | h)
+  · exact ht
+  · exact isOpen_generateFrom_of_mem h
+
+@[simp]
+lemma generateFrom_insert_univ {α : Type*} {s : Set (Set α)} :
+    generateFrom (insert univ s) = generateFrom s :=
+  generateFrom_insert_of_generateOpen .univ
 
 /-- This construction is left adjoint to the operation sending a topology on `α`
   to its neighborhood filter at a fixed point `a : α`. -/
