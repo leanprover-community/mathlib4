@@ -61,10 +61,10 @@ lemma Minimal.le_of_le (h : Minimal P x) (hy : P y) (hle : y ≤ x) : x ≤ y :=
 lemma Maximal.le_of_ge (h : Maximal P x) (hy : P y) (hge : x ≤ y) : y ≤ x :=
   h.2 hy hge
 
-@[simp] theorem minimal_toDual_iff : Minimal (fun x ↦ P (ofDual x)) (toDual x) ↔ Maximal P x :=
+@[simp] theorem minimal_toDual : Minimal (fun x ↦ P (ofDual x)) (toDual x) ↔ Maximal P x :=
   Iff.rfl
 
-@[simp] theorem maximal_toDual_iff : Maximal (fun x ↦ P (ofDual x)) (toDual x) ↔ Minimal P x :=
+@[simp] theorem maximal_toDual : Maximal (fun x ↦ P (ofDual x)) (toDual x) ↔ Minimal P x :=
   Iff.rfl
 
 theorem minimal_congr (hPQ : ∀ x, P x ↔ Q x) : Minimal P = Minimal Q := by
