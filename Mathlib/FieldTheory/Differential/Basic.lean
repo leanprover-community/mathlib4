@@ -1,12 +1,31 @@
+/-
+Copyright (c) 2024 Daniel Weber. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Daniel Weber
+-/
 import Mathlib.RingTheory.Derivation.DifferentialRing
 import Mathlib.FieldTheory.IntermediateField
 import Mathlib.Data.Countable.Small
 import Mathlib.Algebra.Algebra.Field
 
+/-!
+# Differential Fields
+
+This file defines differential fields, which are fields which are also `CommDifferentialRing`s,
+the logarithmic derivative `logd`, and Liouville field extensions, as a preparation for
+Liouville's theorem.
+-/
+
 open DifferentialRing algebraMap
 
+/--
+A differential field is a `Field` which is also a `CommDifferentialRing`
+-/
 class DifferentialField (R : Type*) extends Field R, CommDifferentialRing R
 
+/--
+Transfer a `DifferentialField` instance across a ring homomorphism.
+-/
 def DifferentialField.equiv {R R2 : Type*} [Field R] [CommDifferentialRing R2] (h : R ≃+* R2) :
     DifferentialField R :=
   letI := CommDifferentialRing.equiv h
@@ -14,6 +33,9 @@ def DifferentialField.equiv {R R2 : Type*} [Field R] [CommDifferentialRing R2] (
 
 variable {R : Type*} [DifferentialField R] (a b : R)
 
+/--
+The logarithmic derivative of a is a′ / a.
+-/
 def logd : R := a′ / a
 
 @[simp]
@@ -82,6 +104,11 @@ lemma algebraMap.coe_logd {F K : Type*} [DifferentialField F] [DifferentialField
 
 universe u v
 
+/--
+A field extension `K / F` is Liouville if, whenever an element a ∈ F can be written as
+`a = v + ∑ cᵢ * logd uᵢ` for `v, cᵢ, uᵢ ∈ K` and `cᵢ` constant, it can also be written in that
+way with `v, cᵢ, uᵢ ∈ F`.
+-/
 class IsLiouville (F : Type u) (K : Type*) [DifferentialField F]
     [DifferentialField K] [DifferentialAlgebra F K] : Prop where
   is_liouville (a : F) (ι : Type u) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
