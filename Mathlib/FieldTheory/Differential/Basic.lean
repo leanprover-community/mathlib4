@@ -124,8 +124,7 @@ instance IsLiouville.rfl (F : Type u) [DifferentialField F] : IsLiouville F F wh
 lemma IsLiouville.trans {F : Type u} {K : Type v} {A : Type*} [DifferentialField F]
     [DifferentialField K] [DifferentialField A] [DifferentialAlgebra F K] [DifferentialAlgebra K A]
     [DifferentialAlgebra F A] [IsScalarTower F K A] [SharedConstants F K]
-    (inst1 : IsLiouville F K) (inst2 : IsLiouville K A)
-    : IsLiouville F A where
+    (inst1 : IsLiouville F K) (inst2 : IsLiouville K A) : IsLiouville F A where
   is_liouville (a : F) (ι : Type u) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
       (u : ι → A) (v : A) (h : a = ∑ x, c x * logd (u x) + v′) := by
     have : Fintype (Shrink.{v} ι) := Fintype.ofEquiv ι (equivShrink.{v} ι)
