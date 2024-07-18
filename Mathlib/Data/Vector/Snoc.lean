@@ -16,19 +16,18 @@ import Mathlib.Data.Vector.Basic
   `snoc xs x` for its inductive case. Effectively doing induction from right-to-left
 -/
 
-set_option autoImplicit true
-
 namespace Vector
 
 /-- Append a single element to the end of a vector -/
-def snoc : Vector α n → α → Vector α (n+1) :=
+def snoc {α : Type*} {n : ℕ} : Vector α n → α → Vector α (n+1) :=
   fun xs x => append xs (x ::ᵥ Vector.nil)
 
 /-!
 ## Simplification lemmas
 -/
 section Simp
-  variable (xs : Vector α n)
+
+variable {α : Type*} {n : ℕ} {x y : α} (xs : Vector α n)
 
 @[simp]
 theorem snoc_cons : (x ::ᵥ xs).snoc y = x ::ᵥ (xs.snoc y) :=
@@ -67,6 +66,8 @@ end Simp
 ## Reverse induction principle
 -/
 section Induction
+
+variable {α β : Type*}
 
 /-- Define `C v` by *reverse* induction on `v : Vector α n`.
     That is, break the vector down starting from the right-most element, using `snoc`
@@ -120,7 +121,9 @@ end Induction
 
 section Simp
 
-variable (xs : Vector α n)
+set_option autoImplicit true
+
+variable {n : ℕ} (xs : Vector α n)
 
 @[simp]
 theorem map_snoc : map f (xs.snoc x) = (map f xs).snoc (f x) := by
