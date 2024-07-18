@@ -25,39 +25,6 @@ def readJsonFile (α) [FromJson α] (path : System.FilePath) : IO α := do
 def writeJsonFile [ToJson α] (path : System.FilePath) (a : α) : IO Unit :=
   IO.FS.writeFile path <| toJson a |>.pretty
 
--- TODO: replace by the code from Batteries.Tactic.Lint.Frontend;
--- once PR batteries#881 has been merged
-/-- `getChecks slow runOnly runAlways` produces a list of linters.
-`runOnly` is an optional list of names that should resolve to declarations with type `NamedLinter`.
-If populated, only these linters are run (regardless of the default configuration).
-`runAlways` is an optional list of names that should resolve to declarations with type `NamedLinter`.
-If populated, these linters are always run (regardless of their configuration).
-Specifying a linter in `runAlways` but not `runOnly` is an error.
-Otherwise, it uses all enabled linters in the environment tagged with `@[env_linter]`.
-If `slow` is false, it only uses the fast default tests. -/
-def getChecksNew (slow : Bool) (runOnly : Option (List Name)) (runAlways : Option (List Name)) :
-    CoreM (Array NamedLinter) := do
-  if let some always := runAlways then
-    if let some only := runOnly then
-      let contradictory := always.filter fun s ↦ !only.contains s
-      if contradictory.length > 0 then
-        IO.println s!"invalid arguments: the linter(s) {contradictory} are supposed to be \
-          both run and not run"
-        return #[]
-  let mut result := #[]
-  for (name, declName, default) in batteriesLinterExt.getState (← getEnv) do
-    let shouldRun := match (runOnly, runAlways) with
-      | (some only, some always) => only.contains name && (always.contains name || default)
-      | (some only, none) => only.contains name
-      | (none, some always) => default || always.contains name
-      | _ => default
-    if shouldRun then
-      let linter ← getLinter name declName
-      if slow || linter.isFast then
-        let _ := Inhabited.mk linter
-        result := result.binInsert (·.name.lt ·.name) linter
-  pure result
-
 open Cli
 
 unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
@@ -118,7 +85,7 @@ unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
     Prod.fst <$> (CoreM.toIO · ctx state) do
       let decls ← getDeclsInPackage module.getRoot
       -- Configure the list of linters to run, as needed.
-      let defaultLinters ← getChecksNew (slow := true)
+      let defaultLinters ← getChecks (slow := true)
         (runOnly := only.map fun names ↦ names.map (·.toName))
         (runAlways := add.map fun names ↦ names.map (·.toName))
       let linters := if updateOnlyRemove then
