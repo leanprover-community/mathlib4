@@ -37,9 +37,6 @@ variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 instance : MorphismProperty.RespectsIso (topologically Function.Injective) :=
   topologically_respectsIso _ (fun e ↦ e.injective) (fun _ _ hf hg ↦ hg.comp hf)
 
-@[simp]
-lemma Opens.mem_top {X} [TopologicalSpace X] (x : X) : x ∈ (⊤ : TopologicalSpace.Opens X) := trivial
-
 instance injective_isLocalAtTarget : IsLocalAtTarget (topologically Function.Injective) := by
   refine topologically_isLocalAtTarget _ (fun _ s h ↦ h.restrictPreimage s)
     fun f ι U H _ hf x₁ x₂ e ↦ ?_
