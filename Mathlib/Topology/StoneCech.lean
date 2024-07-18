@@ -382,6 +382,11 @@ theorem continuous_stoneCechExtend : Continuous (stoneCechExtend hg) :=
   continuous_coinduced_dom.mpr (continuous_preStoneCechExtend hg)
 #align continuous_stone_cech_extend continuous_stoneCechExtend
 
+lemma eq_if_stoneCechUnit_eq {a b : α} {f : α → β} (hcf : Continuous f)
+    (h : stoneCechUnit a = stoneCechUnit b) : f a = f b := by
+  rw [← congrFun (stoneCechExtend_extends hcf), ← congrFun (stoneCechExtend_extends hcf)]
+  exact congrArg (stoneCechExtend hcf) h
+
 theorem stoneCech_hom_ext {g₁ g₂ : StoneCech α → β} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
     (h : g₁ ∘ stoneCechUnit = g₂ ∘ stoneCechUnit) : g₁ = g₂ := by
   apply h₁.ext_on denseRange_stoneCechUnit h₂
