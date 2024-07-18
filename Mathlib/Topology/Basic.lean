@@ -668,6 +668,12 @@ theorem dense_compl_singleton_iff_not_open :
     exact ho hU
 #align dense_compl_singleton_iff_not_open dense_compl_singleton_iff_not_open
 
+theorem IsOpen.subset_interior_closure {s : Set X} (s_open : IsOpen s) :
+    s ⊆ interior (closure s) := s_open.subset_interior_iff.mpr subset_closure
+
+theorem IsClosed.closure_interior_subset {s : Set X} (s_closed : IsClosed s) :
+    closure (interior s) ⊆ s := s_closed.closure_subset_iff.mpr interior_subset
+
 /-!
 ### Frontier of a set
 -/
@@ -991,7 +997,7 @@ theorem tendsto_nhds {f : α → X} {l : Filter α} :
 theorem tendsto_atTop_nhds [Nonempty α] [SemilatticeSup α] {f : α → X} :
     Tendsto f atTop (𝓝 x) ↔ ∀ U : Set X, x ∈ U → IsOpen U → ∃ N, ∀ n, N ≤ n → f n ∈ U :=
   (atTop_basis.tendsto_iff (nhds_basis_opens x)).trans <| by
-    simp only [and_imp, exists_prop, true_and_iff, mem_Ici, ge_iff_le]
+    simp only [and_imp, exists_prop, true_and_iff, mem_Ici]
 #align tendsto_at_top_nhds tendsto_atTop_nhds
 
 theorem tendsto_const_nhds {f : Filter α} : Tendsto (fun _ : α => x) f (𝓝 x) :=

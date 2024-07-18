@@ -6,6 +6,14 @@ Authors: Daniel Selsam
 import Lean.Elab.Command
 import Lean.Linter.Util
 
+/-!
+# Mathport infrastructure for tracking renaming Lean 3 to Lean 4 names
+
+This file defines mathport infrastructure for tracking renaming of Lean 3 declarations to
+their Lean 4 counterparts. This correspondence is declared in the ported file using the
+`#align` command (and its variants with `ₓ` and `#noalign`).
+-/
+
 namespace Mathlib.Prelude.Rename
 
 open Lean

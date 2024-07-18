@@ -322,7 +322,7 @@ theorem totient_eq_mul_prod_factors (n : ℕ) :
   simp only [totient_eq_div_primeFactors_mul n, prod_primeFactors_dvd n, cast_mul, cast_prod,
     cast_div_charZero, mul_comm_div, mul_right_inj' hn', div_eq_iff hpQ, ← prod_mul_distrib]
   refine prod_congr rfl fun p hp => ?_
-  have hp := pos_of_mem_factors (List.mem_toFinset.mp hp)
+  have hp := pos_of_mem_primeFactorsList (List.mem_toFinset.mp hp)
   have hp' : (p : ℚ) ≠ 0 := cast_ne_zero.mpr hp.ne.symm
   rw [sub_mul, one_mul, mul_comm, mul_inv_cancel hp', cast_pred hp]
 #align nat.totient_eq_mul_prod_factors Nat.totient_eq_mul_prod_factors

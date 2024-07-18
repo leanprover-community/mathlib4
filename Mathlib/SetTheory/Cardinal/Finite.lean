@@ -94,6 +94,26 @@ theorem card_eq_of_bijective (f : α → β) (hf : Function.Bijective f) : Nat.c
   card_congr (Equiv.ofBijective f hf)
 #align nat.card_eq_of_bijective Nat.card_eq_of_bijective
 
+protected theorem bijective_iff_injective_and_card [Fintype β] (f : α → β) :
+    Bijective f ↔ Injective f ∧ Nat.card α = Nat.card β := by
+  -- Note this proof is a bit convoluted because we don’t assume `Fintype α` but derive it
+  -- in both branches
+  constructor
+  · intro h
+    have : Fintype α := Fintype.ofInjective f h.1
+    rw [Fintype.bijective_iff_injective_and_card] at h
+    rwa [card_eq_fintype_card, card_eq_fintype_card]
+  · intro ⟨h, h'⟩
+    have : Fintype α := Fintype.ofInjective f h
+    rw [card_eq_fintype_card, card_eq_fintype_card] at h'
+    rw [Fintype.bijective_iff_injective_and_card]
+    exact ⟨h, h'⟩
+
+theorem _root_.Function.Injective.bijective_of_nat_card_le [Fintype β] {f : α → β}
+    (inj : Injective f) (hc : Nat.card β ≤ Nat.card α) : Bijective f :=
+  (Nat.bijective_iff_injective_and_card f).mpr
+    ⟨inj, hc.antisymm (card_le_card_of_injective f inj) |>.symm⟩
+
 theorem card_eq_of_equiv_fin {α : Type*} {n : ℕ} (f : α ≃ Fin n) : Nat.card α = n := by
   simpa only [card_eq_fintype_card, Fintype.card_fin] using card_congr f
 #align nat.card_eq_of_equiv_fin Nat.card_eq_of_equiv_fin
@@ -154,6 +174,10 @@ theorem card_unique [Unique α] : Nat.card α = 1 :=
 theorem card_eq_one_iff_unique : Nat.card α = 1 ↔ Subsingleton α ∧ Nonempty α :=
   Cardinal.toNat_eq_one_iff_unique
 #align nat.card_eq_one_iff_unique Nat.card_eq_one_iff_unique
+
+theorem card_eq_one_iff_exists : Nat.card α = 1 ↔ ∃ x : α, ∀ y : α, y = x := by
+  rw [card_eq_one_iff_unique]
+  exact ⟨fun  ⟨s, ⟨a⟩⟩ ↦ ⟨a, fun x ↦ s.elim x a⟩, fun ⟨x, h⟩ ↦ ⟨subsingleton_of_forall_eq x h, ⟨x⟩⟩⟩
 
 theorem card_eq_two_iff : Nat.card α = 2 ↔ ∃ x y : α, x ≠ y ∧ {x, y} = @Set.univ α :=
   toNat_eq_ofNat.trans mk_eq_two_iff

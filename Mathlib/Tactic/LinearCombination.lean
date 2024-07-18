@@ -30,11 +30,11 @@ Lastly, calls a normalization tactic on this target.
 
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Tactic.LinearCombination
 open Lean hiding Rat
 open Elab Meta Term
+
+variable {α : Type*} {a a' a₁ a₂ b b' b₁ b₂ c : α}
 
 theorem pf_add_c [Add α] (p : a = b) (c : α) : a + c = b + c := p ▸ rfl
 theorem c_add_pf [Add α] (p : b = c) (a : α) : a + b = a + c := p ▸ rfl
