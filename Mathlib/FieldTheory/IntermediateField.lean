@@ -648,6 +648,14 @@ instance hasLift {F : IntermediateField K L} :
 theorem lift_injective (F : IntermediateField K L) : Function.Injective F.lift :=
   map_injective F.val
 
+theorem lift_le {F : IntermediateField K L} (E : IntermediateField K F) : lift E ≤ F := by
+  intro _ h
+  obtain ⟨_, _, rfl⟩ := h
+  simp
+
+theorem mem_lift {F : IntermediateField K L} {E : IntermediateField K F} (x : F) :
+    x.1 ∈ lift E ↔ x ∈ E := Subtype.val_injective.mem_set_image
+
 section RestrictScalars
 
 variable (K)
@@ -752,8 +760,23 @@ If `F ≤ E` are two intermediate fields of `L / K`, then `F` is also an interme
 `E / K`. It is an inverse of `IntermediateField.lift`, and can be viewed as a dual to
 `IntermediateField.extendScalars`.
 -/
-protected def restrict : IntermediateField K E :=
+def restrict : IntermediateField K E :=
   (IntermediateField.inclusion h).fieldRange
+
+theorem mem_restrict (x : E) : x ∈ restrict h ↔ x.1 ∈ F := by
+  rw [restrict, AlgHom.mem_fieldRange]
+  refine ⟨?_, fun hx ↦ ⟨⟨x.1, hx⟩, rfl⟩⟩
+  rintro ⟨y, rfl⟩
+  exact y.2
+
+@[simp]
+theorem lift_restrict : lift (restrict h) = F := by
+  ext x
+  refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+  · let y : E := ⟨x, lift_le (restrict h) hx⟩
+    exact (mem_restrict h y).1 ((mem_lift y).1 hx)
+  let y : E := ⟨x, h hx⟩
+  exact (mem_lift y).2 ((mem_restrict h y).2 hx)
 
 /--
 `F` is equivalent to `F` as an intermediate field of `E / K`.
@@ -761,16 +784,6 @@ protected def restrict : IntermediateField K E :=
 noncomputable def restrict_algEquiv :
     F ≃ₐ[K] ↥(IntermediateField.restrict h) :=
   AlgEquiv.ofInjectiveField _
-
-@[simp]
-theorem lift_restrict : IntermediateField.lift (IntermediateField.restrict h) = F := by
-  ext
-  rw [← IntermediateField.mem_carrier]
-  simp only [lift, IntermediateField.restrict, toSubalgebra_map, AlgHom.fieldRange_toSubalgebra,
-    Subsemiring.coe_carrier_toSubmonoid, Subalgebra.coe_toSubsemiring, Subalgebra.coe_map, coe_val,
-    AlgHom.coe_range, Set.mem_image, Set.mem_range, Subtype.ext_iff, coe_inclusion, Subtype.exists,
-    exists_prop, exists_eq_right, exists_eq_right_right, and_iff_right_iff_imp]
-  exact fun x ↦ h x
 
 end Restrict
 
