@@ -12,6 +12,8 @@ import Mathlib.Algebra.Polynomial.Module.Basic
 In this file we prove properties about `R`-derivations of `Polynomial A`.
 -/
 
+noncomputable section
+
 open Polynomial Module
 
 namespace Derivation
