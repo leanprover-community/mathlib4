@@ -730,7 +730,7 @@ theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ �
     rw [this, coeff_prod]
   rw [Finset.prod_const, card_range]
 
-/-- degree of a monomial -/
+/-- The degree of a monomial. -/
 def degree (d : σ →₀ ℕ) : ℕ := d.sum fun _ ↦ id
 
 theorem degree_zero : degree (0 : σ →₀ ℕ) = 0 := by
