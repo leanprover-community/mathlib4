@@ -225,6 +225,13 @@ instance Scheme.isAffine_affineBasisCover (X : Scheme) (i : X.affineBasisCover.J
   isAffine_Spec _
 #align algebraic_geometry.Scheme.affine_basis_cover_is_affine AlgebraicGeometry.Scheme.isAffine_affineBasisCover
 
+instance Scheme.isAffine_affineOpenCover (X : Scheme) (𝒰 : X.AffineOpenCover) (i : 𝒰.J) :
+    IsAffine (𝒰.openCover.obj i) :=
+  inferInstanceAs (IsAffine (Spec (𝒰.obj i)))
+
+instance {X} [IsAffine X] (i) : IsAffine ((Scheme.openCoverOfIsIso (𝟙 X)).obj i) := by
+  dsimp; infer_instance
+
 theorem isBasis_affine_open (X : Scheme) : Opens.IsBasis X.affineOpens := by
   rw [Opens.isBasis_iff_nbhd]
   rintro U x (hU : x ∈ (U : Set X))
@@ -233,6 +240,13 @@ theorem isBasis_affine_open (X : Scheme) : Opens.IsBasis X.affineOpens := by
   rcases hS with ⟨i, rfl⟩
   exact isAffineOpen_opensRange _
 #align algebraic_geometry.is_basis_affine_open AlgebraicGeometry.isBasis_affine_open
+
+theorem iSup_affineOpens_eq_top (X : Scheme) : ⨆ i : X.affineOpens, (i : Opens X) = ⊤ := by
+  apply Opens.ext
+  rw [Opens.coe_iSup]
+  apply IsTopologicalBasis.sUnion_eq
+  rw [← Set.image_eq_range]
+  exact isBasis_affine_open X
 
 theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
     (X : Scheme) [IsAffine X] (f : Scheme.Γ.obj (op X)) :
@@ -313,6 +327,12 @@ theorem image_of_isOpenImmersion (f : X ⟶ Y) [H : IsOpenImmersion f] :
   ext1
   exact Set.image_eq_range _ _
 #align algebraic_geometry.is_affine_open.image_is_open_immersion AlgebraicGeometry.IsAffineOpen.image_of_isOpenImmersion
+
+theorem preimage_of_isIso {U : Opens Y.carrier} (hU : IsAffineOpen U) (f : X ⟶ Y) [IsIso f] :
+    IsAffineOpen (f ⁻¹ᵁ U) :=
+  haveI : IsAffine _ := hU
+  isAffine_of_isIso (f ∣_ U)
+#align algebraic_geometry.is_affine_open.map_is_iso AlgebraicGeometry.IsAffineOpen.preimage_of_isIso
 
 theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
     (f : AlgebraicGeometry.Scheme.Hom X Y) [H : IsOpenImmersion f] {U : Opens X} :
@@ -423,6 +443,9 @@ theorem basicOpen :
     (Spec.map (CommRingCat.ofHom <| algebraMap Γ(X, U) (Localization.Away f)))
   exact Opens.ext (PrimeSpectrum.localization_away_comap_range (Localization.Away f) f).symm
 #align algebraic_geometry.is_affine_open.basic_open_is_affine AlgebraicGeometry.IsAffineOpen.basicOpen
+
+instance [IsAffine X] (r : Γ(X, ⊤)) : IsAffine (X ∣_ᵤ X.basicOpen r) :=
+  (isAffineOpen_top X).basicOpen _
 
 theorem ιOpens_basicOpen_preimage (r : Γ(X, ⊤)) :
     IsAffineOpen (Scheme.ιOpens (X.basicOpen r) ⁻¹ᵁ U) := by

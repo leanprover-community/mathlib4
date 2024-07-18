@@ -304,16 +304,25 @@ theorem dvd_iff_padicValNat_ne_zero {p n : ℕ} [Fact p.Prime] (hn0 : n ≠ 0) :
 
 open List
 
-theorem le_multiplicity_iff_replicate_subperm_factors {a b : ℕ} {n : ℕ} (ha : a.Prime)
+theorem le_multiplicity_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : ℕ} (ha : a.Prime)
     (hb : b ≠ 0) :
-    ↑n ≤ multiplicity a b ↔ replicate n a <+~ b.factors :=
-  (replicate_subperm_factors_iff ha hb).trans multiplicity.pow_dvd_iff_le_multiplicity |>.symm
+    ↑n ≤ multiplicity a b ↔ replicate n a <+~ b.primeFactorsList :=
+  (replicate_subperm_primeFactorsList_iff ha hb).trans
+    multiplicity.pow_dvd_iff_le_multiplicity |>.symm
 
-theorem le_padicValNat_iff_replicate_subperm_factors {a b : ℕ} {n : ℕ} (ha : a.Prime)
+@[deprecated (since := "2024-07-17")]
+alias le_multiplicity_iff_replicate_subperm_factors :=
+  le_multiplicity_iff_replicate_subperm_primeFactorsList
+
+theorem le_padicValNat_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : ℕ} (ha : a.Prime)
     (hb : b ≠ 0) :
-    n ≤ padicValNat a b ↔ replicate n a <+~ b.factors := by
-  rw [← le_multiplicity_iff_replicate_subperm_factors ha hb,
+    n ≤ padicValNat a b ↔ replicate n a <+~ b.primeFactorsList := by
+  rw [← le_multiplicity_iff_replicate_subperm_primeFactorsList ha hb,
     ← padicValNat_def' ha.ne_one (Nat.pos_of_ne_zero hb), Nat.cast_le]
+
+@[deprecated (since := "2024-07-17")]
+alias le_padicValNat_iff_replicate_subperm_factors :=
+  le_padicValNat_iff_replicate_subperm_primeFactorsList
 
 end padicValNat
 

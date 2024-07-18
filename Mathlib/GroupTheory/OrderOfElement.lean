@@ -243,7 +243,7 @@ theorem orderOf_le_of_pow_eq_one (hn : 0 < n) (h : x ^ n = 1) : orderOf x ≤ n 
 
 @[to_additive (attr := simp)]
 theorem orderOf_one : orderOf (1 : G) = 1 := by
-  rw [orderOf, ← minimalPeriod_id (x := (1:G)), ← one_mul_eq_id]
+  rw [orderOf, ← minimalPeriod_id (x := (1 : G)), ← one_mul_eq_id]
 #align order_of_one orderOf_one
 #align order_of_zero addOrderOf_zero
 
@@ -1344,3 +1344,13 @@ lemma charP_of_prime_pow_injective (R) [Ring R] [Fintype R] (p n : ℕ) [hp : Fa
   obtain rfl : i = n := hR i hi $ by rw [← Nat.cast_pow, CharP.cast_eq_zero]
   assumption
 #align char_p_of_prime_pow_injective charP_of_prime_pow_injective
+
+namespace SemiconjBy
+
+@[to_additive]
+lemma orderOf_eq [Group G] (a : G) {x y : G} (h : SemiconjBy a x y) : orderOf x = orderOf y := by
+  rw [orderOf_eq_orderOf_iff]
+  intro n
+  exact (h.pow_right n).eq_one_iff
+
+end SemiconjBy
