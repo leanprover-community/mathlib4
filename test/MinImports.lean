@@ -5,6 +5,12 @@ import Mathlib.Data.Nat.Notation
 import Mathlib.Data.Int.Notation
 import Mathlib.Tactic.NormNum.Basic
 
+/-- info: import Mathlib.Algebra.Ring.Nat -/
+#guard_msgs in
+#min_imports in
+-- if `#min_imports` were parsing just the syntax, the imports would be `Mathlib.Algebra.Ring.Defs`
+instance : Semiring Nat := inferInstance
+
 /--
 info: ℤ : Type
 ---
