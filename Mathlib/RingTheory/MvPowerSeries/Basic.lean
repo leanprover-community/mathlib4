@@ -720,8 +720,8 @@ theorem coeff_prod [DecidableEq σ]
       simp only [add_right_inj] at huv
       exact h rfl huv.symm
 
-/-- The `d`th coefficient of a finite product over `s` of power series
-is the sum of products of coefficients indexed by `cut s d` -/
+/-- The `d`th coefficient of a power of a multivariate power series
+is the sum, indexed by `finsuppAntidiag (Finset.range n) d`, of products of coefficients  -/
 theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ →₀ ℕ) :
     coeff R d (f ^ n) =
       ∑ l in finsuppAntidiag (Finset.range n) d,
@@ -733,6 +733,7 @@ theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ �
 /-- The degree of a monomial. -/
 def degree (d : σ →₀ ℕ) : ℕ := d.sum fun _ ↦ id
 
+@[simp]
 theorem degree_zero : degree (0 : σ →₀ ℕ) = 0 := by
   simp only [degree, sum_zero_index]
 
@@ -753,11 +754,12 @@ theorem degree_eq_zero_iff (d : σ →₀ ℕ) : degree d = 0 ↔ d = 0 := by
       <| single_le_sum (fun _ _ ↦ zero_le _) (mem_support_iff.mpr <| Nat.not_eq_zero_of_lt hx)
   · simp only [hd, degree_zero]
 
-/-- Coefficients of powers of multivariate power series
-[N. Bourbaki, *Algebra. {II}. {C}hapters 4--7*, Chap. 4, §4, n°2, proposition 3][bourbaki1981] -/
+/-- Vanishing of coefficients of powers of multivariate power series
+when the constant coefficient is nilpotent
+[N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2, proposition 3][bourbaki1981] -/
 theorem coeff_eq_zero_of_constantCoeff_nilpotent [DecidableEq σ]
-    (f : MvPowerSeries σ R) (m : ℕ) (hf : constantCoeff σ R f ^ m = 0)
-    (d : σ →₀ ℕ) (n : ℕ) (hn : m + degree d ≤ n) :
+    {f : MvPowerSeries σ R} {m : ℕ} (hf : constantCoeff σ R f ^ m = 0)
+    {d : σ →₀ ℕ} {n : ℕ} (hn : m + degree d ≤ n) :
     coeff R d (f ^ n) = 0 := by
   rw [coeff_pow]
   apply sum_eq_zero
