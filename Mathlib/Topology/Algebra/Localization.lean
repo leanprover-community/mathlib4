@@ -3,7 +3,7 @@ Copyright (c) 2021 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.GroupTheory.MonoidLocalization
+import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.Ring
 import Mathlib.Topology.Algebra.Ring.Basic
 
