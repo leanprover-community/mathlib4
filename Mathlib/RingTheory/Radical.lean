@@ -52,8 +52,7 @@ theorem radical_zero_eq_one : radical (0 : α) = 1 := by
 theorem radical_one_eq_one : radical (1 : α) = 1 := by
   rw [radical, primeFactors, normalizedFactors_one, Multiset.toFinset_zero, Finset.prod_empty]
 
-theorem radical_associated_eq {a b : α} (h : Associated a b) : radical a = radical b :=
-  by
+theorem radical_associated_eq {a b : α} (h : Associated a b) : radical a = radical b := by
   rcases iff_iff_and_or_not_and_not.mp h.eq_zero_iff with (⟨rfl, rfl⟩ | ⟨ha, hb⟩)
   · rfl
   · simp_rw [radical, primeFactors]
@@ -65,8 +64,7 @@ theorem radical_unit_eq_one {a : α} (h : IsUnit a) : radical a = 1 :=
 theorem radical_unit_hMul {u : αˣ} {a : α} : radical ((↑u : α) * a) = radical a :=
   radical_associated_eq (associated_unit_mul_left _ _ u.isUnit)
 
-theorem primeFactors_pow (a : α) {n : ℕ} (hn : 0 < n) : primeFactors (a ^ n) = primeFactors a :=
-  by
+theorem primeFactors_pow (a : α) {n : ℕ} (hn : 0 < n) : primeFactors (a ^ n) = primeFactors a := by
   simp_rw [primeFactors]
   simp only [normalizedFactors_pow]
   rw [Multiset.toFinset_nsmul]
@@ -75,8 +73,7 @@ theorem primeFactors_pow (a : α) {n : ℕ} (hn : 0 < n) : primeFactors (a ^ n) 
 theorem radical_pow (a : α) {n : Nat} (hn : 0 < n) : radical (a ^ n) = radical a := by
   simp_rw [radical, primeFactors_pow a hn]
 
-theorem radical_dvd_self (a : α) : radical a ∣ a :=
-  by
+theorem radical_dvd_self (a : α) : radical a ∣ a := by
   by_cases ha : a = 0
   · rw [ha]
     apply dvd_zero
@@ -85,8 +82,7 @@ theorem radical_dvd_self (a : α) : radical a ∣ a :=
     rw [primeFactors, Multiset.toFinset_val]
     apply Multiset.dedup_le
 
-theorem radical_prime {a : α} (ha : Prime a) : radical a = normalize a :=
-  by
+theorem radical_prime {a : α} (ha : Prime a) : radical a = normalize a := by
   rw [radical, primeFactors]
   rw [normalizedFactors_irreducible ha.irreducible]
   simp only [Multiset.toFinset_singleton, id, Finset.prod_singleton]
