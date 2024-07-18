@@ -1278,7 +1278,7 @@ theorem cycle_zpow_mem_support_iff {g : Perm α}
   have div_euc : r + g.support.card * q = n ∧ 0 ≤ r ∧ r < g.support.card := by
     rw [← Int.ediv_emod_unique _]
     · exact ⟨rfl, rfl⟩
-    simp only [Int.coe_nat_pos]
+    simp only [Int.natCast_pos]
     apply lt_of_lt_of_le _ (IsCycle.two_le_card_support hg); norm_num
   simp only [← hg.orderOf] at div_euc
   obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le div_euc.2.1
@@ -1291,7 +1291,8 @@ theorem cycle_zpow_mem_support_iff {g : Perm α}
     · intro hgm
       simp only [IsCycle.pow_eq_one_iff hg]
       use x
-    · intro hgm; rw [hgm]; simp only [coe_one, id.def]
+    · intro hgm
+      simp only [hgm, coe_one, id_eq]
   rw [this]
   by_cases hm0 : m = 0
   · simp only [hm0, pow_zero, Nat.cast_zero]
