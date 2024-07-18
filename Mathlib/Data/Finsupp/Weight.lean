@@ -30,7 +30,7 @@ class NonTorsionWeight (w : σ → M) : Prop where
   eq_zero_of_smul_eq_zero {n : ℕ} {s : σ} (h : n • w s = 0)  : n = 0
 
 /-- Without zero divisors, nonzero weight is a NonTorsionWeight -/
-def nonTorsionWeight_of [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
+theorem nonTorsionWeight_of [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
     NonTorsionWeight w where
   eq_zero_of_smul_eq_zero {n s} h := by
     rw [smul_eq_zero, or_iff_not_imp_right] at h
