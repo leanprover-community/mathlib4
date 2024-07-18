@@ -52,24 +52,27 @@ def getId (stx : Syntax) : CommandElabM Syntax := do
                   let dv ← mkDefViewOfInstance {} stx
                   return dv.declId[0]
 
-/-- extract all identifiers, as a `NameSet`. -/
+/-- `getIds stx` extracts all identifiers, collecting them in a `NameSet`. -/
 partial
 def getIds : Syntax → NameSet
   | .node _ _ args => (args.map getIds).foldl (·.append ·) {}
   | .ident _ _ nm _ => NameSet.empty.insert nm
   | _ => {}
 
-/-- misses `simp`, `ext`, `to_additive`.  Catches `fun_prop`... -/
+/-- `getAttrNames stx` extracts `attribute`s from `stx`.
+It does not collect `simp`, `ext`, `to_additive`.
+It should collect almost all other attributes, e.g., `fun_prop`. -/
 def getAttrNames (stx : Syntax) : NameSet :=
   match stx.find? (·.isOfKind ``Lean.Parser.Term.attributes) with
     | none => {}
     | some stx => getIds stx
 
-/-- returns all attribute declaration names -/
+/-- `getAttrs env stx` returns all attribute declaration names contained in `stx` and registered
+in the `Environment `env`. -/
 def getAttrs (env : Environment) (stx : Syntax) : NameSet :=
   Id.run do
   let mut new : NameSet := {}
-  for attr in (getAttrNames stx) do --.filterMap fun attr =>
+  for attr in (getAttrNames stx) do
     match getAttributeImpl env attr with
       | .ok attr => new := new.insert attr.ref
       | .error .. => pure ()
