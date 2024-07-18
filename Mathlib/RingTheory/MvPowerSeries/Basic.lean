@@ -749,7 +749,7 @@ theorem degree_eq_zero_iff (d : σ →₀ ℕ) : degree d = 0 ↔ d = 0 := by
     intro hx
     apply Nat.not_add_one_le_zero 0
     rw [zero_add, ← hd]
-    exact hx.trans 
+    exact hx.trans
       <| single_le_sum (fun _ _ ↦ zero_le _) (mem_support_iff.mpr <| Nat.not_eq_zero_of_lt hx)
   · simp only [hd, degree_zero]
 
