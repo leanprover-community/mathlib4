@@ -295,13 +295,9 @@ theorem hasSum_of_monomials_self (f : MvPowerSeries σ α) :
     HasSum (fun d : σ →₀ ℕ => monomial α d (coeff α d f)) f := by
   rw [Pi.hasSum]
   intro d
-  have hd : ∀ (d' : σ →₀ ℕ), d' ≠ d → (monomial α d') ((coeff α d') f) d = 0 := by
-    intro d' h
-    change coeff α d ((monomial α d') ((coeff α d') f)) = 0
-    rw [coeff_monomial_ne (Ne.symm h)]
-  convert hasSum_single d hd using 1
-  · rw [← coeff_apply f d, ← coeff_apply (monomial α d (coeff α d f)) d, coeff_apply,
-      coeff_monomial_same]
+  convert hasSum_single d ?_ using 1
+  exact (coeff_monomial_same d _).symm
+  exact fun d' h ↦ coeff_monomial_ne (Ne.symm h) _
 
 /-- If the coefficient space is T2, then the power series is `tsum` of its monomials -/
 theorem as_tsum [T2Space α] (f : MvPowerSeries σ α) :
