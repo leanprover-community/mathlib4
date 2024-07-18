@@ -17,6 +17,15 @@ open Filter Topology
 
 variable {X : Type*} [TopologicalSpace X]
 
+theorem AccPt.map {β : Type*} [TopologicalSpace β] {F : Filter X} {x : X}
+    (h : AccPt x F) {f : X → β} (hf1 : ContinuousAt f x) (hf2 : Function.Injective f) :
+    AccPt (f x) (map f F) := by
+  apply map_neBot (m := f) (hf := h) |>.mono
+  rw [Filter.map_inf hf2]
+  gcongr
+  apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hf1.continuousWithinAt
+  simpa [hf2.eq_iff] using eventually_mem_nhdsWithin
+
 /--
 The derived set of a set is the set of all accumulation points of it.
 -/
@@ -31,6 +40,15 @@ lemma derivedSet_union (A B : Set X) : derivedSet (A ∪ B) = derivedSet A ∪ d
 
 lemma derivedSet_mono (A B : Set X) (h : A ⊆ B) : derivedSet A ⊆ derivedSet B :=
   fun _ hx ↦ hx.mono <| le_principal_iff.mpr <| mem_principal.mpr h
+
+theorem image_derivedSet_subset {β : Type*} [TopologicalSpace β] {A : Set X} {f : X → β}
+    (hf1 : Continuous f) (hf2 : Function.Injective f) :
+    f '' derivedSet A ⊆ derivedSet (f '' A) := by
+  intro x hx
+  simp [Set.mem_image, mem_derivedSet] at hx
+  obtain ⟨y, hy1, rfl⟩ := hx
+  convert hy1.map hf1.continuousAt hf2
+  simp
 
 lemma isClosed_iff_derivedSet_subset (A : Set X) : IsClosed A ↔ derivedSet A ⊆ A where
   mp h := by
