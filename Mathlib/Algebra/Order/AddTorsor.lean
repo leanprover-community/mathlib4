@@ -16,7 +16,6 @@ series.  In the multiplicative case, a standard example is the action of non-neg
 an ordered field.
 
 ## Implementation notes
-
 * Beause these classes mix the algebra and order hierarchies, we write them as `Prop`-valued mixins.
 * Despite the file name, Ordered AddTorsors are not defined as a separate class.  To implement them,
   combine `[AddTorsor G P]` with `[IsOrderedCancelVAdd G P]`
@@ -46,6 +45,7 @@ an ordered field.
 ## TODO
 * (lex) prod instances
 * Pi instances
+* WithTop
 
 -/
 
@@ -58,89 +58,29 @@ class IsOrderedVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] : Prop where
   protected vadd_le_vadd_left : ∀ a b : P, a ≤ b → ∀ c : G, c +ᵥ a ≤ c +ᵥ b
   protected vadd_le_vadd_right : ∀ c d : G, c ≤ d → ∀ a : P, c +ᵥ a ≤ d +ᵥ a
 
-instance OrderedAddCommMonoid.toOrderedVAdd [OrderedAddCommMonoid G] : OrderedVAdd G G where
-  vadd_le_vadd_left _ _ := add_le_add_left
-  vadd_le_vadd_right _ _ h a := add_le_add_right h a
+@[deprecated (since := "2024-07-15")] alias OrderedVAdd := IsOrderedVAdd
 
-instance OrderedVAdd.toCovariantClassLeft [LE G] [LE P] [VAdd G P] [OrderedVAdd G P] :
-    CovariantClass G P (· +ᵥ ·) (· ≤ ·) where
-  elim := fun a _ _ bc ↦ OrderedVAdd.vadd_le_vadd_left _ _ bc a
+/-- An ordered scalar multiplication is a bi-monotone scalar multiplication. Note that this is
+different from `OrderedSMul`, which uses strict inequality, requires `G` to be a semiring, and the
+defining conditions are restricted to positive elements of `G`. -/
+@[to_additive]
+class IsOrderedSMul (G P : Type*) [LE G] [LE P] [SMul G P] : Prop where
+  protected smul_le_smul_left : ∀ a b : P, a ≤ b → ∀ c : G, c • a ≤ c • b
+  protected smul_le_smul_right : ∀ c d : G, c ≤ d → ∀ a : P, c • a ≤ d • a
 
-theorem vadd_le_vadd' [Preorder G] [Preorder P] [VAdd G P] [OrderedVAdd G P] {a b : G} {c d : P}
-    (hab : a ≤ b) (hcd : c ≤ d) : a +ᵥ c ≤ b +ᵥ d :=
-  (OrderedVAdd.vadd_le_vadd_left _ _ hcd _).trans (OrderedVAdd.vadd_le_vadd_right _ _ hab _)
+@[to_additive]
+instance [LE G] [LE P] [SMul G P] [IsOrderedSMul G P] : CovariantClass G P (· • ·) (· ≤ ·) where
+  elim := fun a _ _ bc ↦ IsOrderedSMul.smul_le_smul_left _ _ bc a
 
+@[to_additive]
+instance [OrderedCommMonoid G] : IsOrderedSMul G G where
+  smul_le_smul_left _ _ := mul_le_mul_left'
+  smul_le_smul_right _ _ := mul_le_mul_right'
 
-section WithTop
-
-namespace WithTop
-
-variable [LE G] [LE P] [_root_.VAdd G P] [OrderedVAdd G P] {g : WithTop G} {p : WithTop P}
-
-instance VAdd : VAdd (WithTop G) (WithTop P) :=
-  ⟨Option.map₂ (· +ᵥ ·)⟩
-
-@[simp]
-theorem coe_vAdd (g : G) (p : P) :
-    ↑(g +ᵥ p) = ((g : WithTop G) +ᵥ (p : WithTop P)) :=
-  rfl
-
-@[simp]
-theorem top_vAdd : (⊤ : WithTop G) +ᵥ p = ⊤ :=
-  rfl
-
-@[simp]
-theorem vAdd_top : g +ᵥ (⊤ : WithTop P) = ⊤ := by cases g <;> rfl
-
-@[simp]
-theorem vAdd_eq_top : g +ᵥ p = ⊤ ↔ g = ⊤ ∨ p = ⊤ := by
-  match g, p with
-  | ⊤, _ => simp
-  | _, ⊤ => simp
-  | (g : G), (p : P) =>
-    simp only [← coe_vAdd, coe_ne_top, or_self, iff_false, ne_eq]
-
-theorem vAdd_ne_top : g +ᵥ p ≠ ⊤ ↔ g ≠ ⊤ ∧ p ≠ ⊤ :=
-  vAdd_eq_top.not.trans not_or
-
-theorem vAdd_lt_top [LT G] [LT P] : g +ᵥ p < ⊤ ↔ g < ⊤ ∧ p < ⊤ := by
-  simp_rw [WithTop.lt_top_iff_ne_top, vAdd_ne_top]
-
-/-!
-theorem vAdd_eq_coe : ∀ {g : WithTop G} {p : WithTop P} {q : P},
-    g +ᵥ p = q ↔ ∃ (g' : G) (p' : P), ↑g' = g ∧ ↑p' = p ∧ g' +ᵥ p' = q
-  | ⊤, p, q => by simp
-  | some g, ⊤, q => by simp
-  | some g, some p, q => by
-      simp only [exists_and_left]
--/
-
-theorem vAdd_coe_eq_top_iff {p : P} : g +ᵥ (p : WithTop P) = ⊤ ↔ g = ⊤ := by simp
-
-theorem coe_vAdd_eq_top_iff {g : G} : (g : WithTop G) +ᵥ p = ⊤ ↔ p = ⊤ := by simp
-
-instance instOrderedVAdd [LE G] [LE P] [OrderedVAdd G P] :
-    OrderedVAdd (WithTop G) (WithTop P) where
-  vadd_le_vadd_left := fun p p' hpp' g => by
-    match g, p, p' with
-    | ⊤, _, _ => simp
-    | (g : G), _, ⊤ => simp
-    | (g : G), ⊤, (p' : P) => exact (not_top_le_coe p' hpp').elim
-    | (g : G), (p : P), (p' : P) =>
-      simp_rw [← WithTop.coe_vAdd, WithTop.coe_le_coe] at *
-      exact OrderedVAdd.vadd_le_vadd_left p p' hpp' g
-  vadd_le_vadd_right := fun g g' hgg' p => by
-    match g, g', p with
-    | _, _, ⊤ => simp
-    | _, ⊤, (p : P) => simp
-    | ⊤, (g' : G), _ => exact (not_top_le_coe g' hgg').elim
-    | (g : G), (g' : G), (p : P) =>
-      simp_rw [← WithTop.coe_vAdd, WithTop.coe_le_coe] at *
-      exact OrderedVAdd.vadd_le_vadd_right g g' hgg' p
-
-end WithTop
-
-end WithTop
+@[to_additive]
+theorem IsOrderedSMul.smul_le_smul [Preorder G] [Preorder P] [SMul G P] [IsOrderedSMul G P]
+    {a b : G} {c d : P} (hab : a ≤ b) (hcd : c ≤ d) : a • c ≤ b • d :=
+  (IsOrderedSMul.smul_le_smul_left _ _ hcd _).trans (IsOrderedSMul.smul_le_smul_right _ _ hab _)
 
 /-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
 class IsCancelVAdd (G P : Type*) [VAdd G P] : Prop where
@@ -184,6 +124,11 @@ instance [OrderedCancelCommMonoid G] : IsOrderedCancelSMul G G where
   le_of_smul_le_smul_left _ _ _ := le_of_mul_le_mul_left'
   le_of_smul_le_smul_right _ _ _ := le_of_mul_le_mul_right'
 
+@[to_additive]
+instance (priority := 200) [LE G] [LE P] [SMul G P] [IsOrderedCancelSMul G P] :
+    ContravariantClass G P (· • ·) (· ≤ ·) :=
+  ⟨IsOrderedCancelSMul.le_of_smul_le_smul_left⟩
+
 namespace SMul
 
 @[to_additive]
@@ -207,81 +152,94 @@ theorem smul_lt_smul_of_lt_of_le [Preorder G] [Preorder P] [SMul G P] [IsOrdered
   rw [@lt_iff_le_not_le] at h₁
   simp_all only [not_true_eq_false, and_false]
 
-end VAdd
+end SMul
 
-/-- Vector addition for subsets. -/
-protected def Set.vAdd [VAdd G P] : VAdd (Set G) (Set P) :=
-  ⟨image2 (· +ᵥ ·)⟩
+/-- Scalar multiplication for subsets. -/
+@[to_additive "Vector addition for subsets."]
+protected def Set.SMul [SMul G P] : SMul (Set G) (Set P) :=
+  ⟨image2 (· • ·)⟩
 
-scoped[Pointwise] attribute [instance] Set.vAdd
+scoped[Pointwise] attribute [instance] Set.SMul
+scoped[Pointwise] attribute [instance] Set.VAdd
 
 open Pointwise
 
-theorem Set.mem_vAdd [VAdd G P] {s : Set G} {t : Set P} {b : P} :
-    b ∈ s +ᵥ t ↔ ∃ x ∈ s, ∃ y ∈ t, x +ᵥ y = b :=
+@[to_additive]
+theorem Set.mem_SMul [SMul G P] {s : Set G} {t : Set P} {b : P} :
+    b ∈ s • t ↔ ∃ x ∈ s, ∃ y ∈ t, x • y = b :=
   Iff.rfl
 
-theorem Set.vAdd_mem_vAdd [VAdd G P] {s : Set G} {t : Set P} {a : G} {b : P} :
-    a ∈ s → b ∈ t → a +ᵥ b ∈ s +ᵥ t :=
+@[to_additive]
+theorem Set.sMul_mem_SMul [SMul G P] {s : Set G} {t : Set P} {a : G} {b : P} :
+    a ∈ s → b ∈ t → a • b ∈ s • t :=
   Set.mem_image2_of_mem
 
-namespace VAdd
+namespace SMul
 
-variable [VAdd G P] {s s₁ s₂ : Set G} {t t₁ t₂ : Set P} {a : P} {x : G × P}
+variable [SMul G P] {s s₁ s₂ : Set G} {t t₁ t₂ : Set P} {a : P} {x : G × P}
 
-/-- `VAdd.antidiagonal s t a` is the set of all pairs of an element in `s` and an
-      element in `t` that add to `a`.-/
+/-- `SMul.antidiagonal s t a` is the set of all pairs of an element in `s` and an
+      element in `t` that scalar multiply to `a`.-/
+@[to_additive "`VAdd.antidiagonal s t a` is the set of all pairs of an element in `s` and an
+      element in `t` that vector-add to `a`."]
 def antidiagonal (s : Set G) (t : Set P) (a : P) : Set (G × P) :=
-  { x | x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 +ᵥ x.2 = a }
+  { x | x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 • x.2 = a }
 
-@[simp]
-theorem mem_Antidiagonal : x ∈ antidiagonal s t a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 +ᵥ x.2 = a :=
+@[to_additive (attr := simp)]
+theorem mem_Antidiagonal : x ∈ antidiagonal s t a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 • x.2 = a :=
   Iff.rfl
 
+@[to_additive]
 theorem antidiagonal_mono_left (h : s₁ ⊆ s₂) :
     antidiagonal s₁ t a ⊆ antidiagonal s₂ t a :=
   fun _ hx => ⟨h hx.1, hx.2.1, hx.2.2⟩
 
+@[to_additive]
 theorem antidiagonal_mono_right (h : t₁ ⊆ t₂) :
     antidiagonal s t₁ a ⊆ antidiagonal s t₂ a := fun _ hx => ⟨hx.1, h hx.2.1, hx.2.2⟩
 
-end VAdd
+end SMul
 
-namespace vAddAntidiagonal
+namespace SMulAntidiagonal
 
-open VAdd
+open SMul
 
 variable {s : Set G} {t : Set P} {a : P}
 
-theorem  fst_eq_fst_iff_snd_eq_snd [VAdd G P] [CancelVAdd G P] {x y : antidiagonal s t a} :
+@[to_additive VAddAntidiagonal.fst_eq_fst_iff_snd_eq_snd]
+theorem fst_eq_fst_iff_snd_eq_snd [SMul G P] [IsCancelSMul G P] {x y : antidiagonal s t a} :
     (x : G × P).1 = (y : G × P).1 ↔ (x : G × P).2 = (y : G × P).2 :=
   ⟨fun h =>
-    CancelVAdd.left_cancel _ _ _
+    IsCancelSMul.left_cancel _ _ _
       (y.2.2.2.trans <| by
           rw [← h]
           exact x.2.2.2.symm).symm,
     fun h =>
-    CancelVAdd.right_cancel _ _ _
+    IsCancelSMul.right_cancel _ _ _
       (y.2.2.2.trans <| by
           rw [← h]
           exact x.2.2.2.symm).symm⟩
 
-variable [PartialOrder G] [PartialOrder P] [VAdd G P] [OrderedCancelVAdd G P]
+variable [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P]
   {x y : antidiagonal s t a}
 
+@[to_additive VAddAntidiagonal.eq_of_fst_eq_fst]
 theorem eq_of_fst_eq_fst (h : (x : G × P).fst = (y : G × P).fst) : x = y :=
   Subtype.ext <| Prod.ext h <| fst_eq_fst_iff_snd_eq_snd.1 h
 
+@[to_additive VAddAntidiagonal.eq_of_snd_eq_snd]
 theorem eq_of_snd_eq_snd (h : (x : G × P).snd = (y : G × P).snd) : x = y :=
   Subtype.ext <| Prod.ext (fst_eq_fst_iff_snd_eq_snd.2 h) h
 
+@[to_additive VAddAntidiagonal.eq_of_fst_le_fst_of_snd_le_snd]
 theorem eq_of_fst_le_fst_of_snd_le_snd (h₁ : (x : G × P).1 ≤ (y : G × P).1)
     (h₂ : (x : G × P).2 ≤ (y : G × P).2) : x = y :=
   eq_of_fst_eq_fst <|
     h₁.eq_of_not_lt fun hlt =>
-      (vadd_lt_vadd_of_lt_of_le hlt h₂).ne <|
+      (smul_lt_smul_of_lt_of_le hlt h₂).ne <|
         (mem_Antidiagonal.1 x.2).2.2.trans (mem_Antidiagonal.1 y.2).2.2.symm
 
+@[to_additive VAddAntidiagonal.finite_of_isPWO]
 theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (antidiagonal s t a).Finite := by
   refine' Set.not_infinite.1 fun h => _
   have h1 : (antidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) := fun f hf =>
@@ -301,37 +259,43 @@ theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (antidiagonal s t a)
   refine' mn.ne (g.injective <| (h.natEmbedding _).injective _)
   exact eq_of_fst_le_fst_of_snd_le_snd (hg _ _ mn.le) h2'
 
-end vAddAntidiagonal
+end SMulAntidiagonal
 
 /-- The vector sum of two monotone functions is monotone. -/
-theorem Monotone.vAdd {γ : Type*} [Preorder G] [Preorder P] [Preorder γ] [VAdd G P]
-    [OrderedVAdd G P] {f : γ → G} {g : γ → P} (hf : Monotone f) (hg : Monotone g) :
-    Monotone fun x => f x +ᵥ g x :=
-  fun _ _ hab => (OrderedVAdd.vadd_le_vadd_left _ _ (hg hab) _).trans
-    (OrderedVAdd.vadd_le_vadd_right _ _ (hf hab) _)
+@[to_additive]
+theorem Monotone.SMul {γ : Type*} [Preorder G] [Preorder P] [Preorder γ] [SMul G P]
+    [IsOrderedSMul G P] {f : γ → G} {g : γ → P} (hf : Monotone f) (hg : Monotone g) :
+    Monotone fun x => f x • g x :=
+  fun _ _ hab => (IsOrderedSMul.smul_le_smul_left _ _ (hg hab) _).trans
+    (IsOrderedSMul.smul_le_smul_right _ _ (hf hab) _)
 
 namespace Set
 
-theorem Nonempty.vAdd [VAdd G P] {s : Set G} {t : Set P} :
-    s.Nonempty → t.Nonempty → (s +ᵥ t).Nonempty :=
+@[to_additive]
+theorem Nonempty.SMul [SMul G P] {s : Set G} {t : Set P} :
+    s.Nonempty → t.Nonempty → (s • t).Nonempty :=
   Nonempty.image2
 
-theorem IsPWO.vAdd [PartialOrder G] [PartialOrder P] [VAdd G P] [OrderedCancelVAdd G P] {s : Set G}
-    {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s +ᵥ t) := by
-  rw [← @vadd_image_prod]
-  exact (hs.prod ht).image_of_monotone (monotone_fst.vAdd monotone_snd)
+@[to_additive]
+theorem IsPWO.SMul [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P] {s : Set G}
+    {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s • t) := by
+  rw [← @image_smul_prod]
+  exact (hs.prod ht).image_of_monotone (monotone_fst.SMul monotone_snd)
 
-theorem IsWF.vAdd [LinearOrder G] [LinearOrder P] [VAdd G P] [OrderedCancelVAdd G P] {s : Set G}
-    {t : Set P} (hs : s.IsWF) (ht : t.IsWF) : IsWF (s +ᵥ t) :=
-  (hs.isPWO.vAdd ht.isPWO).isWF
+@[to_additive]
+theorem IsWF.SMul [LinearOrder G] [LinearOrder P] [SMul G P] [IsOrderedCancelSMul G P] {s : Set G}
+    {t : Set P} (hs : s.IsWF) (ht : t.IsWF) : IsWF (s • t) :=
+  (hs.isPWO.SMul ht.isPWO).isWF
 
-theorem IsWF.min_vAdd [LinearOrder G] [LinearOrder P] [VAdd G P] [OrderedCancelVAdd G P] {s : Set G}
-    {t : Set P} (hs : s.IsWF) (ht : t.IsWF) (hsn : s.Nonempty) (htn : t.Nonempty) :
-    (hs.vAdd ht).min (hsn.vAdd htn) = hs.min hsn +ᵥ ht.min htn := by
-  refine' le_antisymm (IsWF.min_le _ _ (mem_vAdd.2 ⟨_, hs.min_mem _, _, ht.min_mem _, rfl⟩)) _
+-- _root_ seems to be needed here, and I have no idea why.
+@[to_additive]
+theorem IsWF.min_SMul [LinearOrder G] [LinearOrder P] [_root_.SMul G P] [IsOrderedCancelSMul G P]
+    {s : Set G} {t : Set P} (hs : s.IsWF) (ht : t.IsWF) (hsn : s.Nonempty) (htn : t.Nonempty) :
+    (hs.SMul ht).min (hsn.SMul htn) = hs.min hsn • ht.min htn := by
+  refine' le_antisymm (IsWF.min_le _ _ (mem_SMul.2 ⟨_, hs.min_mem _, _, ht.min_mem _, rfl⟩)) _
   rw [IsWF.le_min_iff]
   rintro _ ⟨x, hx, y, hy, rfl⟩
-  exact vadd_le_vadd' (hs.min_le _ hx) (ht.min_le _ hy)
+  exact IsOrderedSMul.smul_le_smul (hs.min_le _ hx) (ht.min_le _ hy)
 
 end Set
 
@@ -339,59 +303,67 @@ namespace Finset
 
 section
 
-variable [PartialOrder G] [PartialOrder P] [VAdd G P] [OrderedCancelVAdd G P] {s : Set G}
+variable [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P] {s : Set G}
     {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) (a : P) {u : Set G} {hu : u.IsPWO} {v : Set P}
     {hv : v.IsPWO} {x : G × P}
 
-/-- `Finset.vAddAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
+/-- `Finset.SMulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
+element in `t` whose scalar multiplicatoin yields `a`, but its construction requires proofs that `s`
+and `t` are well-ordered. -/
+@[to_additive "`Finset.VAddAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
 element in `t` whose vector addition yields `a`, but its construction requires proofs that `s` and
-`t` are well-ordered. -/
-noncomputable def vAddAntidiagonal [PartialOrder G] [PartialOrder P] [OrderedCancelVAdd G P]
+`t` are well-ordered."]
+noncomputable def SMulAntidiagonal [PartialOrder G] [PartialOrder P] [IsOrderedCancelSMul G P]
     {s : Set G} {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) (a : P) : Finset (G × P) :=
-  (vAddAntidiagonal.finite_of_isPWO hs ht a).toFinset
+  (SMulAntidiagonal.finite_of_isPWO hs ht a).toFinset
 
-@[simp]
-theorem mem_vAddAntidiagonal :
-    x ∈ vAddAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 +ᵥ x.2 = a := by
-  simp only [vAddAntidiagonal, Set.Finite.mem_toFinset, VAdd.antidiagonal]
+@[to_additive (attr := simp)]
+theorem mem_SMulAntidiagonal :
+    x ∈ SMulAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 • x.2 = a := by
+  simp only [SMulAntidiagonal, Set.Finite.mem_toFinset]
   exact Set.mem_sep_iff
 
-theorem vAddAntidiagonal_mono_left {a : P} {hs : s.IsPWO} {ht : t.IsPWO} (h : u ⊆ s) :
-    vAddAntidiagonal hu ht a ⊆ vAddAntidiagonal hs ht a :=
-  Set.Finite.toFinset_mono <| VAdd.antidiagonal_mono_left h
+@[to_additive]
+theorem SMulAntidiagonal_mono_left {a : P} {hs : s.IsPWO} {ht : t.IsPWO} (h : u ⊆ s) :
+    SMulAntidiagonal hu ht a ⊆ SMulAntidiagonal hs ht a :=
+  Set.Finite.toFinset_mono <| SMul.antidiagonal_mono_left h
 
-theorem vAddAntidiagonal_mono_right {a : P} {hs : s.IsPWO} {ht : t.IsPWO} (h : v ⊆ t) :
-    vAddAntidiagonal hs hv a ⊆ vAddAntidiagonal hs ht a :=
-  Set.Finite.toFinset_mono <| VAdd.antidiagonal_mono_right h
+@[to_additive]
+theorem SMulAntidiagonal_mono_right {a : P} {hs : s.IsPWO} {ht : t.IsPWO} (h : v ⊆ t) :
+    SMulAntidiagonal hs hv a ⊆ SMulAntidiagonal hs ht a :=
+  Set.Finite.toFinset_mono <| SMul.antidiagonal_mono_right h
 
-theorem support_vAddAntidiagonal_subset_vAdd {hs : s.IsPWO} {ht : t.IsPWO} :
-    { a | (vAddAntidiagonal hs ht a).Nonempty } ⊆ (s +ᵥ t) :=
+@[to_additive]
+theorem support_SMulAntidiagonal_subset_SMul {hs : s.IsPWO} {ht : t.IsPWO} :
+    { a | (SMulAntidiagonal hs ht a).Nonempty } ⊆ (s • t) :=
   fun a ⟨b, hb⟩ => by
-  rw [mem_vAddAntidiagonal] at hb
-  rw [Set.mem_vAdd]
+  rw [mem_SMulAntidiagonal] at hb
+  rw [Set.mem_SMul]
   use b.1
   refine { left := hb.1, right := ?_ }
   use b.2
   exact { left := hb.2.1, right := hb.2.2 }
 
-theorem isPWO_support_vAddAntidiagonal {hs : s.IsPWO} {ht : t.IsPWO} :
-    { a | (vAddAntidiagonal hs ht a).Nonempty }.IsPWO :=
-  (hs.vAdd ht).mono (support_vAddAntidiagonal_subset_vAdd)
+@[to_additive]
+theorem isPWO_support_SMulAntidiagonal {hs : s.IsPWO} {ht : t.IsPWO} :
+    { a | (SMulAntidiagonal hs ht a).Nonempty }.IsPWO :=
+  (hs.SMul ht).mono (support_SMulAntidiagonal_subset_SMul)
 
 end
 
-theorem vAddAntidiagonal_min_vAdd_min [LinearOrder G] [LinearOrder P] [VAdd G P]
-    [OrderedCancelVAdd G P] {s : Set G} {t : Set P} (hs : s.IsWF) (ht : t.IsWF) (hns : s.Nonempty)
+@[to_additive]
+theorem SMulAntidiagonal_min_SMul_min [LinearOrder G] [LinearOrder P] [SMul G P]
+    [IsOrderedCancelSMul G P] {s : Set G} {t : Set P} (hs : s.IsWF) (ht : t.IsWF) (hns : s.Nonempty)
     (hnt : t.Nonempty) :
-    vAddAntidiagonal hs.isPWO ht.isPWO (hs.min hns +ᵥ ht.min hnt) = {(hs.min hns, ht.min hnt)} := by
+    SMulAntidiagonal hs.isPWO ht.isPWO (hs.min hns • ht.min hnt) = {(hs.min hns, ht.min hnt)} := by
   ext ⟨a, b⟩
-  simp only [mem_vAddAntidiagonal, mem_singleton, Prod.ext_iff]
+  simp only [mem_SMulAntidiagonal, mem_singleton, Prod.ext_iff]
   constructor
   · rintro ⟨has, hat, hst⟩
     obtain rfl :=
       (hs.min_le hns has).eq_of_not_lt fun hlt =>
-        (VAdd.vadd_lt_vadd_of_lt_of_le hlt <| ht.min_le hnt hat).ne' hst
-    exact ⟨rfl, CancelVAdd.left_cancel _ _ _ hst⟩
+        (SMul.smul_lt_smul_of_lt_of_le hlt <| ht.min_le hnt hat).ne' hst
+    exact ⟨rfl, IsCancelSMul.left_cancel _ _ _ hst⟩
   · rintro ⟨rfl, rfl⟩
     exact ⟨hs.min_mem _, ht.min_mem _, rfl⟩
 
