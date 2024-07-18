@@ -49,12 +49,8 @@ theorem isInvariant_iff_image {ϕ : τ → α → α} {s : Set α} :
   simp_rw [IsInvariant, mapsTo']
 #align is_invariant_iff_image isInvariant_iff_image
 
-theorem isInvariant_apply {ϕ : τ → α → α} {s : Set α} (h : IsInvariant ϕ s) (t : τ) {x : α}
-    (hx : x ∈ s) :
-    ϕ t x ∈ s := by
-  apply isInvariant_iff_image.1 h t
-  rw [mem_image]
-  use x, hx
+theorem isInvariant_mem {ϕ : τ → α → α} {s : Set α} (h : IsInvariant ϕ s) (t : τ) {x : α}
+    (hx : x ∈ s) : ϕ t x ∈ s := isInvariant_iff_image.1 h t (mem_image_of_mem (ϕ t) hx)
 
 /-- A set `s ⊆ α` is forward-invariant under `ϕ : τ → α → α` if
     `ϕ t s ⊆ s` for all `t ≥ 0`. -/
@@ -80,22 +76,13 @@ theorem isFwInvariant_iff_isInvariant [CanonicallyOrderedAddCommMonoid τ] {ϕ :
   ⟨IsFwInvariant.isInvariant, IsInvariant.isFwInvariant⟩
 #align is_fw_invariant_iff_is_invariant isFwInvariant_iff_isInvariant
 
-/-- Actions of `ℕ` are defined by a single map. This definition is  -/
-def IsMapInvariant (T : α → α) (s : Set α) : Prop :=
-  MapsTo T s s
-
 /-- For actions of `ℕ`, it suffices to check the first iterate. -/
-theorem isMapInvariant_iff_isInvariant {T : α → α} {s : Set α} :
-    IsMapInvariant T s ↔ IsInvariant (fun n : ℕ ↦ T^[n]) s := by
-  refine Iff.intro (fun h n ↦ Set.MapsTo.iterate h n) (fun h ↦ ?_)
+theorem mapsTo_self_iff_isInvariant_nat {T : α → α} {s : Set α} :
+    MapsTo T s s ↔ IsInvariant (fun n : ℕ ↦ T^[n]) s := by
+  refine Iff.intro (fun h n ↦ MapsTo.iterate h n) (fun h ↦ ?_)
   specialize h 1
   simp only [iterate_one] at h
   exact h
-
-theorem isMapInvariant_apply {T : α → α} {s : Set α} (h : IsMapInvariant T s) (n : ℕ) {x : α}
-    (hx : x ∈ s) :
-    T^[n] x ∈ s :=
-  isInvariant_apply (isMapInvariant_iff_isInvariant.1 h) n hx
 
 end Invariant
 
