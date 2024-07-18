@@ -192,6 +192,15 @@ def OpenCover.pullbackCover {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ X
     · rw [← TopCat.epi_iff_surjective]; infer_instance
 #align algebraic_geometry.Scheme.open_cover.pullback_cover AlgebraicGeometry.Scheme.OpenCover.pullbackCover
 
+/-- The family of morphisms from the pullback cover to the original cover. -/
+def OpenCover.pullbackHom {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ X) (i) :
+    (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i :=
+  pullback.snd f (𝒰.map i)
+
+@[reassoc (attr := simp)]
+lemma OpenCover.pullbackHom_map {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ X) (i) :
+    𝒰.pullbackHom f i ≫ 𝒰.map i = (𝒰.pullbackCover f).map i ≫ f := pullback.condition.symm
+
 /-- Given an open cover on `X`, we may pull them back along a morphism `f : W ⟶ X` to obtain
 an open cover of `W`. This is similar to `Scheme.OpenCover.pullbackCover`, but here we
 take `pullback (𝒰.map x) f` instead of `pullback f (𝒰.map x)`. -/
@@ -336,6 +345,41 @@ def OpenCover.affineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) : X.AffineO
   map := (𝓤.bind fun j => (𝓤.obj j).affineCover).map
   f := (𝓤.bind fun j => (𝓤.obj j).affineCover).f
   covers := (𝓤.bind fun j => (𝓤.obj j).affineCover).covers
+
+/-- The pullback of the affine refinement is the pullback of the affine cover. -/
+def OpenCover.pullbackCoverAffineRefinementObjIso (f : X ⟶ Y) (𝒰 : Y.OpenCover) (i) :
+    (𝒰.affineRefinement.openCover.pullbackCover f).obj i ≅
+      ((𝒰.obj i.1).affineCover.pullbackCover (𝒰.pullbackHom f i.1)).obj i.2 :=
+  pullbackSymmetry _ _ ≪≫ (pullbackRightPullbackFstIso _ _ _).symm ≪≫
+    pullbackSymmetry _ _ ≪≫ asIso (pullback.map _ _ _ _ (pullbackSymmetry _ _).hom (𝟙 _) (𝟙 _)
+      (by simp [pullbackHom]) (by simp))
+
+@[reassoc]
+lemma OpenCover.pullbackCoverAffineRefinementObjIso_inv_map (f : X ⟶ Y) (𝒰 : Y.OpenCover) (i) :
+    (𝒰.pullbackCoverAffineRefinementObjIso f i).inv ≫
+      (𝒰.affineRefinement.openCover.pullbackCover f).map i =
+      ((𝒰.obj i.1).affineCover.pullbackCover (𝒰.pullbackHom f i.1)).map i.2 ≫
+        (𝒰.pullbackCover f).map i.1 := by
+  simp only [pullbackCover_obj, AffineOpenCover.openCover_obj, AffineOpenCover.openCover_map,
+    pullbackCoverAffineRefinementObjIso, Iso.trans_inv, asIso_inv, Iso.symm_inv, Category.assoc,
+    pullbackCover_map, pullbackSymmetry_inv_comp_fst, IsIso.inv_comp_eq, limit.lift_π_assoc, id_eq,
+    PullbackCone.mk_pt, cospan_left, PullbackCone.mk_π_app, pullbackSymmetry_hom_comp_fst]
+  convert pullbackSymmetry_inv_comp_snd_assoc
+    ((𝒰.obj i.1).affineCover.map i.2) (pullback.fst _ _) _ using 2
+  exact pullbackRightPullbackFstIso_hom_snd _ _ _
+
+@[reassoc]
+lemma OpenCover.pullbackCoverAffineRefinementObjIso_inv_pullbackHom
+    (f : X ⟶ Y) (𝒰 : Y.OpenCover) (i) :
+    (𝒰.pullbackCoverAffineRefinementObjIso f i).inv ≫
+      𝒰.affineRefinement.openCover.pullbackHom f i =
+      (𝒰.obj i.1).affineCover.pullbackHom (𝒰.pullbackHom f i.1) i.2 := by
+  simp only [pullbackCover_obj, pullbackHom, AffineOpenCover.openCover_obj,
+    AffineOpenCover.openCover_map, pullbackCoverAffineRefinementObjIso, Iso.trans_inv, asIso_inv,
+    Iso.symm_inv, Category.assoc, pullbackSymmetry_inv_comp_snd, IsIso.inv_comp_eq, limit.lift_π,
+    id_eq, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.comp_id]
+  convert pullbackSymmetry_inv_comp_fst ((𝒰.obj i.1).affineCover.map i.2) (pullback.fst _ _)
+  exact pullbackRightPullbackFstIso_hom_fst _ _ _
 
 section category
 
