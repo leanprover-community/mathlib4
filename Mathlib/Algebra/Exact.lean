@@ -339,6 +339,22 @@ theorem Exact.split_tfae
 
 end split
 
+section Prod
+
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+
+lemma Exact.inr_fst : Function.Exact (LinearMap.inr R M N) (LinearMap.fst R M N) := by
+  rintro ⟨x, y⟩
+  simp only [LinearMap.fst_apply, @eq_comm _ x, LinearMap.coe_inr, Set.mem_range, Prod.mk.injEq,
+    exists_eq_right]
+
+lemma Exact.inl_snd : Function.Exact (LinearMap.inl R M N) (LinearMap.snd R M N) := by
+  rintro ⟨x, y⟩
+  simp only [LinearMap.snd_apply, @eq_comm _ y, LinearMap.coe_inl, Set.mem_range, Prod.mk.injEq,
+    exists_eq_left]
+
+end Prod
+
 section Ring
 
 open LinearMap Submodule
