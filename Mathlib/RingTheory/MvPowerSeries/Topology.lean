@@ -179,6 +179,7 @@ scoped instance t0Space [T0Space α] : T0Space (MvPowerSeries σ α) := by
   suffices T2Space (MvPowerSeries σ α) by infer_instance
   exact WithPiTopology.t2Space σ α
 
+/-- The ring of multivariate power series is a uniform topological ring -/
 scoped instance uniform_topologicalRing [Ring α] [UniformAddGroup α] [TopologicalRing α] :
     TopologicalRing (MvPowerSeries σ α) :=
   { uniformAddGroup σ α with
