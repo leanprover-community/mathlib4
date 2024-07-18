@@ -532,6 +532,13 @@ theorem indexing_nonsense0 (i : n) [Nontrivial n] (γ : n → 𝕜) :
       simp only [ne_eq, Submodule.iInf_coe, Set.mem_iInter, SetLike.mem_coe, Subtype.forall] at F
       exact F k fun a ↦ H (_root_.id (Eq.symm a))
 
+variable {α β γ : Type*} [DecidableEq α] [CompleteLattice γ] (g : β → γ) (i : α)
+
+local notation "α'" => {y // y ≠ i}
+
+example : (⨆ f : α → β, ⨅ x, g (f x)) =
+    ⨆ f' : α' → β, ⨆ y : β, ⨅ x, g (Equiv.funSplitAt i β |>.symm (y, f') x) := by
+  rw [← (Equiv.funSplitAt i β).symm.iSup_comp, iSup_prod, iSup_comm]
 
 theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j : n, eigenspace (T j) (γ j)
     = (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
