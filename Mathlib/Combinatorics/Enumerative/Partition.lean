@@ -151,7 +151,7 @@ instance UniquePartitionZero : Unique (Partition 0) where
 instance UniquePartitionOne : Unique (Partition 1) where
   uniq _ := Partition.ext _ _ <| by simp
 
-lemma ofSym_one (s : Sym σ 1) : ofSym s = indiscrete 1 := by
+@[simp] lemma ofSym_one (s : Sym σ 1) : ofSym s = indiscrete 1 := by
   ext; simp
 
 /-- The number of times a positive integer `i` appears in the partition `ofSums n l hl` is the same
