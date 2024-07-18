@@ -1048,6 +1048,10 @@ theorem norm_compMeasurePreserving (g : Lp E p μb) (hf : MeasurePreserving f μ
     ‖compMeasurePreserving f hf g‖ = ‖g‖ :=
   congr_arg ENNReal.toReal <| g.1.snorm_compMeasurePreserving hf
 
+theorem isometry_compMeasurePreserving [Fact (1 ≤ p)] (hf : MeasurePreserving f μ μb) :
+    Isometry (compMeasurePreserving f hf : Lp E p μb → Lp E p μ) :=
+  AddMonoidHomClass.isometry_of_norm _ (norm_compMeasurePreserving · hf)
+
 theorem toLp_compMeasurePreserving {g : β → E} (hg : Memℒp g p μb) (hf : MeasurePreserving f μ μb) :
     compMeasurePreserving f hf (hg.toLp g) = (hg.comp_measurePreserving hf).toLp _ := rfl
 
