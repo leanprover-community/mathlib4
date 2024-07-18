@@ -19,7 +19,8 @@ In `C`, this cofork diagram is a split coequalizer (in particular, it is still a
 This split coequalizer is known as the Beck coequalizer (as it features heavily in Beck's
 monadicity theorem).
 
-This file has been adapted to `CategoryTheory.Monad.Equalizer`. Please try to keep them in sync.
+This file has been adapted to `Mathlib.CategoryTheory.Monad.Equalizer`.
+Please try to keep them in sync.
 
 -/
 

@@ -82,7 +82,8 @@ open Nat ZMod
 -- Since we need the fact that the factors are prime, we use `List.pmap`.
 /-- The Jacobi symbol of `a` and `b` -/
 def jacobiSym (a : ℤ) (b : ℕ) : ℤ :=
-  (b.factors.pmap (fun p pp => @legendreSym p ⟨pp⟩ a) fun _ pf => prime_of_mem_factors pf).prod
+  (b.primeFactorsList.pmap (fun p pp => @legendreSym p ⟨pp⟩ a) fun _ pf =>
+    prime_of_mem_primeFactorsList pf).prod
 #align jacobi_sym jacobiSym
 
 -- Notation for the Jacobi symbol.
@@ -102,27 +103,30 @@ namespace jacobiSym
 /-- The symbol `J(a | 0)` has the value `1`. -/
 @[simp]
 theorem zero_right (a : ℤ) : J(a | 0) = 1 := by
-  simp only [jacobiSym, factors_zero, List.prod_nil, List.pmap]
+  simp only [jacobiSym, primeFactorsList_zero, List.prod_nil, List.pmap]
 #align jacobi_sym.zero_right jacobiSym.zero_right
 
 /-- The symbol `J(a | 1)` has the value `1`. -/
 @[simp]
 theorem one_right (a : ℤ) : J(a | 1) = 1 := by
-  simp only [jacobiSym, factors_one, List.prod_nil, List.pmap]
+  simp only [jacobiSym, primeFactorsList_one, List.prod_nil, List.pmap]
 #align jacobi_sym.one_right jacobiSym.one_right
 
 /-- The Legendre symbol `legendreSym p a` with an integer `a` and a prime number `p`
 is the same as the Jacobi symbol `J(a | p)`. -/
 theorem legendreSym.to_jacobiSym (p : ℕ) [fp : Fact p.Prime] (a : ℤ) :
     legendreSym p a = J(a | p) := by
-  simp only [jacobiSym, factors_prime fp.1, List.prod_cons, List.prod_nil, mul_one, List.pmap]
+  simp only [jacobiSym, primeFactorsList_prime fp.1, List.prod_cons, List.prod_nil, mul_one,
+    List.pmap]
 #align legendre_sym.to_jacobi_sym jacobiSym.legendreSym.to_jacobiSym
 
 /-- The Jacobi symbol is multiplicative in its second argument. -/
 theorem mul_right' (a : ℤ) {b₁ b₂ : ℕ} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
     J(a | b₁ * b₂) = J(a | b₁) * J(a | b₂) := by
-  rw [jacobiSym, ((perm_factors_mul hb₁ hb₂).pmap _).prod_eq, List.pmap_append, List.prod_append]
-  case h => exact fun p hp => (List.mem_append.mp hp).elim prime_of_mem_factors prime_of_mem_factors
+  rw [jacobiSym, ((perm_primeFactorsList_mul hb₁ hb₂).pmap _).prod_eq, List.pmap_append,
+    List.prod_append]
+  case h => exact fun p hp =>
+    (List.mem_append.mp hp).elim prime_of_mem_primeFactorsList prime_of_mem_primeFactorsList
   case _ => rfl
 #align jacobi_sym.mul_right' jacobiSym.mul_right'
 
@@ -135,12 +139,12 @@ theorem mul_right (a : ℤ) (b₁ b₂ : ℕ) [NeZero b₁] [NeZero b₂] :
 /-- The Jacobi symbol takes only the values `0`, `1` and `-1`. -/
 theorem trichotomy (a : ℤ) (b : ℕ) : J(a | b) = 0 ∨ J(a | b) = 1 ∨ J(a | b) = -1 :=
   ((@SignType.castHom ℤ _ _).toMonoidHom.mrange.copy {0, 1, -1} <| by
-    rw [Set.pair_comm];
+    rw [Set.pair_comm]
     exact (SignType.range_eq SignType.castHom).symm).list_prod_mem
       (by
         intro _ ha'
         rcases List.mem_pmap.mp ha' with ⟨p, hp, rfl⟩
-        haveI : Fact p.Prime := ⟨prime_of_mem_factors hp⟩
+        haveI : Fact p.Prime := ⟨prime_of_mem_primeFactorsList hp⟩
         exact quadraticChar_isQuadratic (ZMod p) a)
 #align jacobi_sym.trichotomy jacobiSym.trichotomy
 
@@ -151,17 +155,16 @@ theorem one_left (b : ℕ) : J(1 | b) = 1 :=
     let ⟨p, hp, he⟩ := List.mem_pmap.1 hz
     -- Porting note: The line 150 was added because Lean does not synthesize the instance
     -- `[Fact (Nat.Prime p)]` automatically (it is needed for `legendreSym.at_one`)
-    letI : Fact p.Prime := ⟨prime_of_mem_factors hp⟩
+    letI : Fact p.Prime := ⟨prime_of_mem_primeFactorsList hp⟩
     rw [← he, legendreSym.at_one]
 #align jacobi_sym.one_left jacobiSym.one_left
 
 /-- The Jacobi symbol is multiplicative in its first argument. -/
 theorem mul_left (a₁ a₂ : ℤ) (b : ℕ) : J(a₁ * a₂ | b) = J(a₁ | b) * J(a₂ | b) := by
-  simp_rw [jacobiSym, List.pmap_eq_map_attach, legendreSym.mul _ _ _];
-  exact List.prod_map_mul (α := ℤ) (l := (factors b).attach)
-    (f := fun x ↦ @legendreSym x {out := prime_of_mem_factors x.2} a₁)
-    (g := fun x ↦ @legendreSym x {out := prime_of_mem_factors x.2} a₂)
-#align jacobi_sym.mul_left jacobiSym.mul_left
+  simp_rw [jacobiSym, List.pmap_eq_map_attach, legendreSym.mul _ _ _]
+  exact List.prod_map_mul (α := ℤ) (l := (primeFactorsList b).attach)
+    (f := fun x ↦ @legendreSym x {out := prime_of_mem_primeFactorsList x.2} a₁)
+    (g := fun x ↦ @legendreSym x {out := prime_of_mem_primeFactorsList x.2} a₂)
 
 /-- The symbol `J(a | b)` vanishes iff `a` and `b` are not coprime (assuming `b ≠ 0`). -/
 theorem eq_zero_iff_not_coprime {a : ℤ} {b : ℕ} [NeZero b] : J(a | b) = 0 ↔ a.gcd b ≠ 1 :=
@@ -171,7 +174,7 @@ theorem eq_zero_iff_not_coprime {a : ℤ} {b : ℕ} [NeZero b] : J(a | b) = 0 �
       -- Porting note: Initially, `and_assoc'` and `and_comm'` were used on line 164 but they have
       -- been deprecated so we replace them with `and_assoc` and `and_comm`
       simp_rw [legendreSym.eq_zero_iff _ _, intCast_zmod_eq_zero_iff_dvd,
-        mem_factors (NeZero.ne b), ← Int.natCast_dvd, Int.natCast_dvd_natCast, exists_prop,
+        mem_primeFactorsList (NeZero.ne b), ← Int.natCast_dvd, Int.natCast_dvd_natCast, exists_prop,
         and_assoc, and_comm])
 #align jacobi_sym.eq_zero_iff_not_coprime jacobiSym.eq_zero_iff_not_coprime
 
@@ -239,7 +242,7 @@ theorem mod_left (a : ℤ) (b : ℕ) : J(a | b) = J(a % b | b) :=
         letI : Fact p.Prime := ⟨h₂⟩
         conv_rhs =>
           rw [legendreSym.mod, Int.emod_emod_of_dvd _ (Int.natCast_dvd_natCast.2 <|
-            dvd_of_mem_factors hp), ← legendreSym.mod])
+            dvd_of_mem_primeFactorsList hp), ← legendreSym.mod])
 #align jacobi_sym.mod_left jacobiSym.mod_left
 
 /-- The symbol `J(a | b)` depends only on `a` mod `b`. -/
@@ -283,10 +286,10 @@ theorem eq_neg_one_at_prime_divisor_of_eq_neg_one {a : ℤ} {n : ℕ} (h : J(a |
     rintro rfl
     rw [zero_right, eq_neg_self_iff] at h
     exact one_ne_zero h
-  have hf₀ : ∀ p ∈ n.factors, p ≠ 0 := fun p hp => (Nat.pos_of_mem_factors hp).ne.symm
-  rw [← Nat.prod_factors hn₀, list_prod_right hf₀] at h
+  have hf₀ (p) (hp : p ∈ n.primeFactorsList) : p ≠ 0 := (Nat.pos_of_mem_primeFactorsList hp).ne.symm
+  rw [← Nat.prod_primeFactorsList hn₀, list_prod_right hf₀] at h
   obtain ⟨p, hmem, hj⟩ := List.mem_map.mp (List.neg_one_mem_of_prod_eq_neg_one h)
-  exact ⟨p, Nat.prime_of_mem_factors hmem, Nat.dvd_of_mem_factors hmem, hj⟩
+  exact ⟨p, Nat.prime_of_mem_primeFactorsList hmem, Nat.dvd_of_mem_primeFactorsList hmem, hj⟩
 #align jacobi_sym.eq_neg_one_at_prime_divisor_of_eq_neg_one jacobiSym.eq_neg_one_at_prime_divisor_of_eq_neg_one
 
 end jacobiSym
@@ -307,7 +310,7 @@ theorem nonsquare_of_jacobiSym_eq_neg_one {a : ℤ} {b : ℕ} (h : J(a | b) = -1
 /-- If `p` is prime, then `J(a | p)` is `-1` iff `a` is not a square modulo `p`. -/
 theorem nonsquare_iff_jacobiSym_eq_neg_one {a : ℤ} {p : ℕ} [Fact p.Prime] :
     J(a | p) = -1 ↔ ¬IsSquare (a : ZMod p) := by
-  rw [← legendreSym.to_jacobiSym];
+  rw [← legendreSym.to_jacobiSym]
   exact legendreSym.eq_neg_one_iff p
 #align zmod.nonsquare_iff_jacobi_sym_eq_neg_one ZMod.nonsquare_iff_jacobiSym_eq_neg_one
 
@@ -331,10 +334,11 @@ then `J(a | b)` equals `χ b` for all odd natural numbers `b`. -/
 theorem value_at (a : ℤ) {R : Type*} [CommSemiring R] (χ : R →* ℤ)
     (hp : ∀ (p : ℕ) (pp : p.Prime), p ≠ 2 → @legendreSym p ⟨pp⟩ a = χ p) {b : ℕ} (hb : Odd b) :
     J(a | b) = χ b := by
-  conv_rhs => rw [← prod_factors hb.pos.ne', cast_list_prod, map_list_prod χ]
-  rw [jacobiSym, List.map_map, ← List.pmap_eq_map Nat.Prime _ _ fun _ => prime_of_mem_factors]
+  conv_rhs => rw [← prod_primeFactorsList hb.pos.ne', cast_list_prod, map_list_prod χ]
+  rw [jacobiSym, List.map_map, ← List.pmap_eq_map Nat.Prime _ _
+    fun _ => prime_of_mem_primeFactorsList]
   congr 1; apply List.pmap_congr
-  exact fun p h pp _ => hp p pp (hb.ne_two_of_dvd_nat <| dvd_of_mem_factors h)
+  exact fun p h pp _ => hp p pp (hb.ne_two_of_dvd_nat <| dvd_of_mem_primeFactorsList h)
 #align jacobi_sym.value_at jacobiSym.value_at
 
 /-- If `b` is odd, then `J(-1 | b)` is given by `χ₄ b`. -/
@@ -509,7 +513,7 @@ theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * 
   rw [Nat.cast_mul, mul_left, mul_left, quadratic_reciprocity' ha₁ hb,
     quadratic_reciprocity' ha₁ hb', Nat.cast_pow, pow_left, pow_left, Nat.cast_two, at_two hb,
     at_two hb']
-  congr 1; swap;
+  congr 1; swap
   · congr 1
     · simp_rw [qrSign]
       rw [χ₄_nat_mod_four, χ₄_nat_mod_four (b % (4 * a)), mod_mod_of_dvd b (dvd_mul_right 4 a)]

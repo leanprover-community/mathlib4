@@ -229,7 +229,7 @@ theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
   -- Porting note: the original one liner `dsimp [stalkMap]; simp [stalkMap]` doesn't work,
   -- I had to uglify this
   dsimp [stalkSpecializes, stalkMap, stalkFunctor, stalkPushforward]
-  -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
+  -- We can't use `ext` here due to https://github.com/leanprover-community/batteries/pull/159
   refine colimit.hom_ext fun j => ?_
   induction j with | h j => ?_
   dsimp

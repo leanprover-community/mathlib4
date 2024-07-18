@@ -4,6 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Gabriel Ebner, Moritz Doll
 -/
 
+/-!
+# The `existsi` tactic
+This file defines the `existsi` tactic: its purpose is to instantiate existential quantifiers.
+Internally, it applies the `refine` tactic.
+-/
+
 namespace Mathlib.Tactic
 
 /--
@@ -22,6 +28,5 @@ example : ∃ x : Nat, ∃ y : Nat, x = y := by
   rfl
 ```
 -/
-
 macro "existsi " es:term,+ : tactic =>
   `(tactic| refine ⟨$es,*, ?_⟩)
