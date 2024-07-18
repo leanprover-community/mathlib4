@@ -290,6 +290,7 @@ theorem IsWF.SMul [LinearOrder G] [LinearOrder P] [SMul G P] [IsOrderedCancelSMu
     {t : Set P} (hs : s.IsWF) (ht : t.IsWF) : IsWF (s • t) :=
   (hs.isPWO.SMul ht.isPWO).isWF
 
+-- _root_ seems to be needed here, and I have no idea why.
 @[to_additive]
 theorem IsWF.min_SMul [LinearOrder G] [LinearOrder P] [_root_.SMul G P] [IsOrderedCancelSMul G P]
     {s : Set G} {t : Set P} (hs : s.IsWF) (ht : t.IsWF) (hsn : s.Nonempty) (htn : t.Nonempty) :
@@ -300,7 +301,6 @@ theorem IsWF.min_SMul [LinearOrder G] [LinearOrder P] [_root_.SMul G P] [IsOrder
   exact IsOrderedSMul.smul_le_smul (hs.min_le _ hx) (ht.min_le _ hy)
 
 end Set
-
 
 namespace Finset
 
