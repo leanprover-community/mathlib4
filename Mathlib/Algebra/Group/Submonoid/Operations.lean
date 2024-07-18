@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Algebra.Group.Subsemigroup.Operations
-import Mathlib.Algebra.Group.Nat
-import Mathlib.Algebra.GroupWithZero.Action.Defs
 
 /-!
 # Operations on `Submonoid`s
@@ -1143,16 +1143,6 @@ variable [Monoid M']
       "The additive action by an `AddSubmonoid` is the action by the underlying `AddMonoid`. "]
 instance mulAction [MulAction M' α] (S : Submonoid M') : MulAction S α :=
   MulAction.compHom _ S.subtype
-
-/-- The action by a submonoid is the action by the underlying monoid. -/
-instance distribMulAction [AddMonoid α] [DistribMulAction M' α] (S : Submonoid M') :
-    DistribMulAction S α :=
-  DistribMulAction.compHom _ S.subtype
-
-/-- The action by a submonoid is the action by the underlying monoid. -/
-instance mulDistribMulAction [Monoid α] [MulDistribMulAction M' α] (S : Submonoid M') :
-    MulDistribMulAction S α :=
-  MulDistribMulAction.compHom _ S.subtype
 
 example {S : Submonoid M'} : IsScalarTower S M' M' := by infer_instance
 
