@@ -301,12 +301,12 @@ theorem StrictMono.wellFoundedLT [WellFoundedLT β] (hf : StrictMono f) : WellFo
     exact hf hlt
 
 theorem StrictAnti.wellFoundedLT [WellFoundedGT β] (hf : StrictAnti f) : WellFoundedLT α :=
-  WellFoundedLT.of_strictMono (β := βᵒᵈ) hf
+  StrictMono.wellFoundedLT (β := βᵒᵈ) hf
 
 theorem StrictMono.wellFoundedGT [WellFoundedGT β] (hf : StrictMono f) : WellFoundedGT α :=
-  WellFoundedLT.of_strictMono (α := αᵒᵈ) (β := βᵒᵈ) (fun _ _ h ↦ hf h)
+  StrictMono.wellFoundedLT (α := αᵒᵈ) (β := βᵒᵈ) (fun _ _ h ↦ hf h)
 
 theorem StrictAnti.wellFoundedGT [WellFoundedLT β] (hf : StrictAnti f) : WellFoundedGT α :=
-  WellFoundedLT.of_strictMono (α := αᵒᵈ) (fun _ _ h ↦ hf h)
+  StrictMono.wellFoundedLT (α := αᵒᵈ) (fun _ _ h ↦ hf h)
 
 end WellFoundedLT
