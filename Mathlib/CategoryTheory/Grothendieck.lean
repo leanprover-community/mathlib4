@@ -170,8 +170,8 @@ a functor `Grothendieck.map : Grothendieck F ⥤ Grothendieck G`.
 -/
 @[simps!]
 def map (α : F ⟶ G) : Grothendieck F ⥤ Grothendieck G where
-  obj X := {
-    base := X.base
+  obj X :=
+  { base := X.base
     fiber := (α.app X.base).obj X.fiber }
   map {X Y} f := {
     base := f.base
