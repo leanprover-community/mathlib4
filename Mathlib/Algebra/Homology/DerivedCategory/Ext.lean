@@ -304,6 +304,7 @@ lemma homAddEquiv_apply (α : Ext X Y n) : homAddEquiv α = α.hom := rfl
 end
 
 variable (X Y Z) in
+/-- The composition of `Ext`, as a bilinear map. /
 @[simps!]
 noncomputable def bilinearComp (a b c : ℕ) (h : a + b = c) :
     Ext X Y a →+ Ext Y Z b →+ Ext X Z c :=
