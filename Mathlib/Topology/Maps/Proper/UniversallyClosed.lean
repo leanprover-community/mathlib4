@@ -10,6 +10,8 @@ import Mathlib.Topology.StoneCech
 # A map is proper iff it is continuous and universally closed
 -/
 
+open Filter
+
 universe u v
 
 /-- A map `f : X → Y` is proper if and only if it is continuous and the map
