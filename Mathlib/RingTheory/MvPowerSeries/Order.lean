@@ -226,5 +226,6 @@ def natOrder (φ : MvPowerSeries σ R) : Nat := by
   classical
   exact if h : φ = 0 then 0 else Nat.find (φ.exists_coeff_ne_zero_iff_ne_zero.mpr h)
 
-
 end natOrder
+
+end MvPowerSeries
