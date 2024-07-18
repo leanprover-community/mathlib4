@@ -394,13 +394,7 @@ theorem eigenspace_of_subsingleton_nonempty [Subsingleton n] (h : Nonempty n) :
   · exact hT i
   · intro γ j; congr!
 
-/-This has been moved via PR #14833-/
-theorem eq_iff_orthogonalComplement_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ := by
-   constructor
-   · exact fun a ↦ congrArg Submodule.orthogonal a
-   · intro H
-     rw [← (Submodule.orthogonal_orthogonal K), ← (Submodule.orthogonal_orthogonal) L]
-     exact congrArg Submodule.orthogonal H
+--orthogonalComplement_eq_orthogonalComplement
 
 /--The following result is auxiliary, and not meant to be used outside this file. It forms
 the base case of the induction proof of `orthogonalComplement_iSup_iInf_eigenspaces_eq_bot`-/
@@ -434,7 +428,7 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base [Subsingleton n]:
         rw [h2] at I; apply hF; exact I
     simp only [hS]
     rw [← orthogonalComplement_iSup_eigenspaces_eq_bot hS.1]
-    apply eq_iff_orthogonalComplement_eq.mpr
+    apply orthogonalComplement_eq_orthogonalComplement.mp
     simp only [Submodule.orthogonal_orthogonal, Submodule.mk.injEq, AddSubmonoid.mk.injEq,
       AddSubsemigroup.mk.injEq]; exact h1
   · simp only [not_nonempty_iff] at case
@@ -584,7 +578,7 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
           exact Subtype.val_injective
         have C : eigenspace (T i) μ ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ' j)
             = eigenspace (T i) (γ i) ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ j) := by
-          congr!; exact _root_.id (Eq.symm C1); congr!; simp only [ne_eq, C2]
+          congr!; exact _root_.id (Eq.symm C1); simp only [ne_eq, C2]
         rw [C, ← indexing_nonsense0]
         exact hK fun j ↦ γ j
       exact hgv K B
