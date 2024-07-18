@@ -64,16 +64,12 @@ lemma Maximal.le_of_ge (h : Maximal P x) (hy : P y) (hge : x ≤ y) : y ≤ x :=
 @[simp] theorem minimal_toDual : Minimal (fun x ↦ P (ofDual x)) (toDual x) ↔ Maximal P x :=
   Iff.rfl
 
+alias ⟨Minimal.of_dual, Minimal.dual⟩ := minimal_toDual
+
 @[simp] theorem maximal_toDual : Maximal (fun x ↦ P (ofDual x)) (toDual x) ↔ Minimal P x :=
   Iff.rfl
 
-theorem minimal_congr (hPQ : ∀ x, P x ↔ Q x) : Minimal P = Minimal Q := by
-  ext
-  simp_rw [Minimal, hPQ]
-
-theorem maximal_congr (hPQ : ∀ x, P x ↔ Q x) : Maximal P = Maximal Q := by
-  ext
-  simp_rw [Maximal, hPQ]
+alias ⟨Maximal.of_dual, Maximal.dual⟩ := maximal_toDual
 
 @[simp] theorem minimal_false : ¬ Minimal (fun _ ↦ False) x := by
   simp [Minimal]
@@ -86,6 +82,16 @@ theorem maximal_congr (hPQ : ∀ x, P x ↔ Q x) : Maximal P = Maximal Q := by
 
 @[simp] theorem maximal_true : Maximal (fun _ ↦ True) x ↔ IsMax x :=
   minimal_true (α := αᵒᵈ)
+
+@[simp] theorem minimal_subtype {x : Subtype Q} :
+    Minimal (fun x ↦ P x.1) x ↔ Minimal (P ⊓ Q) x := by
+  obtain ⟨x, hx⟩ := x
+  simp only [Minimal, Subtype.forall, Subtype.mk_le_mk, Pi.inf_apply, inf_Prop_eq]
+  tauto
+
+@[simp] theorem maximal_subtype {x : Subtype Q} :
+    Maximal (fun x ↦ P x.1) x ↔ Maximal (P ⊓ Q) x :=
+  minimal_subtype (α := αᵒᵈ)
 
 theorem maximal_true_subtype {x : Subtype P} : Maximal (fun _ ↦ True) x ↔ Maximal P x := by
   obtain ⟨x, hx⟩ := x
@@ -111,17 +117,23 @@ elements satisfying `P`. -/
 theorem maximal_iff_isMax (hP : ∀ ⦃x y⦄, P y → y ≤ x → P x) : Maximal P x ↔ P x ∧ IsMax x :=
   ⟨fun h ↦ ⟨h.prop, fun _ h' ↦ h.le_of_ge (hP h.prop h') h'⟩, fun h ↦ ⟨h.1, fun _ _  h' ↦ h.2 h'⟩⟩
 
-theorem Minimal.and_right (h : Minimal P x) (hQ : Q x) : Minimal (fun x ↦ (P x ∧ Q x)) x :=
-  ⟨⟨h.prop, hQ⟩, fun _ hy ↦ h.le_of_le hy.1⟩
+theorem Minimal.mono (h : Minimal P x) (hle : Q ≤ P) (hQ : Q x) : Minimal Q x :=
+  ⟨hQ, fun y hQy ↦ h.le_of_le (hle y hQy)⟩
+
+theorem Maximal.mono (h : Maximal P x) (hle : Q ≤ P) (hQ : Q x) : Maximal Q x :=
+  ⟨hQ, fun y hQy ↦ h.le_of_ge (hle y hQy)⟩
+
+theorem Minimal.and_right (h : Minimal P x) (hQ : Q x) : Minimal (fun x ↦ P x ∧ Q x) x :=
+  h.mono (fun _ ↦ And.left) ⟨h.prop, hQ⟩
 
 theorem Minimal.and_left (h : Minimal P x) (hQ : Q x) : Minimal (fun x ↦ (Q x ∧ P x)) x :=
-  ⟨⟨hQ, h.prop⟩, fun _ hy ↦ h.le_of_le hy.2⟩
+  h.mono (fun _ ↦ And.right) ⟨hQ, h.prop⟩
 
 theorem Maximal.and_right (h : Maximal P x) (hQ : Q x) : Maximal (fun x ↦ (P x ∧ Q x)) x :=
-  ⟨⟨h.prop, hQ⟩, fun _ hy ↦ h.le_of_ge hy.1⟩
+  h.mono (fun _ ↦ And.left) ⟨h.prop, hQ⟩
 
 theorem Maximal.and_left (h : Maximal P x) (hQ : Q x) : Maximal (fun x ↦ (Q x ∧ P x)) x :=
-  ⟨⟨hQ, h.prop⟩, fun _ hy ↦ h.le_of_ge hy.2⟩
+  h.mono (fun _ ↦ And.right) ⟨hQ, h.prop⟩
 
 @[simp] theorem minimal_eq_iff : Minimal (· = y) x ↔ x = y := by
   simp (config := {contextual := true}) [Minimal]
@@ -129,8 +141,14 @@ theorem Maximal.and_left (h : Maximal P x) (hQ : Q x) : Maximal (fun x ↦ (Q x 
 @[simp] theorem maximal_eq_iff : Maximal (· = y) x ↔ x = y := by
   simp (config := {contextual := true}) [Maximal]
 
+theorem not_minimal_iff (hx : P x) : ¬ Minimal P x ↔ ∃ y, P y ∧ y ≤ x ∧ ¬ (x ≤ y) := by
+  simp [Minimal, hx]
+
+theorem not_maximal_iff (hx : P x) : ¬ Maximal P x ↔ ∃ y, P y ∧ x ≤ y ∧ ¬ (y ≤ x) :=
+  not_minimal_iff (α := αᵒᵈ) hx
+
 theorem Minimal.or (h : Minimal (fun x ↦ P x ∨ Q x) x) : Minimal P x ∨ Minimal Q x := by
-  obtain ⟨(h | h), hmin⟩ := h
+  obtain ⟨h | h, hmin⟩ := h
   · exact .inl ⟨h, fun y hy hyx ↦ hmin (Or.inl hy) hyx⟩
   exact .inr ⟨h, fun y hy hyx ↦ hmin (Or.inr hy) hyx⟩
 
@@ -190,19 +208,15 @@ theorem Maximal.not_lt (h : Maximal P x) (hy : P y) : ¬ (x < y) :=
 @[simp] theorem maximal_gt_iff : Maximal (y < ·) x ↔ y < x ∧ IsMax x :=
   minimal_lt_iff (α := αᵒᵈ)
 
-theorem not_minimal_iff (hx : P x) : ¬ Minimal P x ↔ ∃ y, y < x ∧ P y := by
-  rw [← not_iff_not, not_not, not_exists]
-  simp only [Minimal, hx, true_and, lt_iff_le_not_le, not_and, and_imp, not_imp_not]
-  tauto
+theorem not_minimal_iff_exists_lt (hx : P x) : ¬ Minimal P x ↔ ∃ y, y < x ∧ P y := by
+  simp_rw [not_minimal_iff hx, lt_iff_le_not_le, and_comm]
 
-theorem not_maximal_iff (hx : P x) : ¬ Maximal P x ↔ ∃ y, x < y ∧ P y :=
-  not_minimal_iff (α := αᵒᵈ) hx
+alias ⟨exists_lt_of_not_minimal, _⟩ := not_minimal_iff_exists_lt
 
-theorem exists_of_not_minimal (hx : P x) (h : ¬ Minimal P x) : ∃ y, y < x ∧ P y :=
-  (not_minimal_iff hx).1 h
+theorem not_maximal_iff_exists_gt (hx : P x) : ¬ Maximal P x ↔ ∃ y, x < y ∧ P y :=
+  not_minimal_iff_exists_lt (α := αᵒᵈ) hx
 
-theorem exists_of_not_maximal (hx : P x) (h : ¬ Maximal P x) : ∃ y, x < y ∧ P y :=
-  (not_maximal_iff hx).1 h
+alias ⟨exists_gt_of_not_maximal, _⟩ := not_maximal_iff_exists_gt
 
 end Preorder
 
@@ -294,10 +308,10 @@ theorem maximal_subset_iff' : Maximal P s ↔ P s ∧ ∀ ⦃t⦄, P t → s ⊆
   Iff.rfl
 
 theorem not_minimal_subset_iff (hs : P s) : ¬ Minimal P s ↔ ∃ t, t ⊂ s ∧ P t :=
-  not_minimal_iff hs
+  not_minimal_iff_exists_lt hs
 
 theorem not_maximal_subset_iff (hs : P s) : ¬ Maximal P s ↔ ∃ t, s ⊂ t ∧ P t :=
-  not_maximal_iff hs
+  not_maximal_iff_exists_gt hs
 
 theorem Set.minimal_iff_forall_ssubset : Minimal P s ↔ P s ∧ ∀ ⦃t⦄, t ⊂ s → ¬ P t :=
   minimal_iff_forall_lt
