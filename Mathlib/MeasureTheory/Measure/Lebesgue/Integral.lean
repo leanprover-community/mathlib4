@@ -100,7 +100,7 @@ theorem integral_comp_neg_Ioi {E : Type*} [NormedAddCommGroup E] [NormedSpace �
 #align integral_comp_neg_Ioi integral_comp_neg_Ioi
 
 theorem integral_comp_abs {f : ℝ → ℝ} :
-    ∫ x, f |x| = 2 * ∫ x in Ioi (0:ℝ), f x := by
+    ∫ x, f |x| = 2 * ∫ x in Ioi (0 : ℝ), f x := by
   have eq : ∫ (x : ℝ) in Ioi 0, f |x| = ∫ (x : ℝ) in Ioi 0, f x := by
     refine setIntegral_congr measurableSet_Ioi (fun _ hx => ?_)
     rw [abs_eq_self.mpr (le_of_lt (by exact hx))]

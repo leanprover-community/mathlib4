@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Order.Interval.Finset.Basic
 
 #align_import data.int.interval from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
@@ -208,7 +210,7 @@ theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a
     · exact hn.symm.le.trans (add_le_add_right hi _)
     · rw [add_comm n a]
       refine add_lt_add_of_lt_of_le hia.right (le_trans ?_ hn.le)
-      simp only [zero_le, le_add_iff_nonneg_left]
+      simp only [Nat.zero_le, le_add_iff_nonneg_left]
       exact Int.emod_nonneg n (ne_of_gt ha)
     · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hia.left hia.right]
 #align int.image_Ico_mod Int.image_Ico_emod

@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Init.Function
+import Mathlib.Logic.Function.Defs
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Inhabit
 
@@ -135,10 +135,10 @@ theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
   rfl
 #align prod.id_prod Prod.id_prod
 
-@[simp]
-theorem map_id : Prod.map (@id α) (@id β) = id :=
-  id_prod
+@[simp] lemma map_id : Prod.map (@id α) (@id β) = id := rfl
 #align prod.map_id Prod.map_id
+
+@[simp] lemma map_id' : Prod.map (fun a : α ↦ a) (fun b : β ↦ b) = fun x ↦ x := rfl
 
 @[simp]
 theorem map_iterate (f : α → α) (g : β → β) (n : ℕ) :

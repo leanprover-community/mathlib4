@@ -1537,6 +1537,14 @@ theorem EventuallyEq.trans {l : Filter α} {f g h : α → β} (H₁ : f =ᶠ[l]
   H₂.rw (fun x y => f x = y) H₁
 #align filter.eventually_eq.trans Filter.EventuallyEq.trans
 
+theorem EventuallyEq.congr_left {l : Filter α} {f g h : α → β} (H : f =ᶠ[l] g) :
+    f =ᶠ[l] h ↔ g =ᶠ[l] h :=
+  ⟨H.symm.trans, H.trans⟩
+
+theorem EventuallyEq.congr_right {l : Filter α} {f g h : α → β} (H : g =ᶠ[l] h) :
+    f =ᶠ[l] g ↔ f =ᶠ[l] h :=
+  ⟨(·.trans H), (·.trans H.symm)⟩
+
 instance {l : Filter α} :
     Trans ((· =ᶠ[l] ·) : (α → β) → (α → β) → Prop) (· =ᶠ[l] ·) (· =ᶠ[l] ·) where
   trans := EventuallyEq.trans
@@ -1569,7 +1577,7 @@ theorem EventuallyEq.mul [Mul β] {f f' g g' : α → β} {l : Filter α} (h : f
 #align filter.eventually_eq.add Filter.EventuallyEq.add
 
 @[to_additive const_smul]
-theorem EventuallyEq.pow_const {γ} [Pow β γ] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) (c : γ):
+theorem EventuallyEq.pow_const {γ} [Pow β γ] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) (c : γ) :
     (fun x => f x ^ c) =ᶠ[l] fun x => g x ^ c :=
   h.fun_comp (· ^ c)
 #align filter.eventually_eq.const_smul Filter.EventuallyEq.const_smul

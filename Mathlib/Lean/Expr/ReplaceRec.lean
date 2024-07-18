@@ -7,12 +7,14 @@ Floris van Doorn, E.W.Ayers
 import Lean.Expr
 import Mathlib.Util.MemoFix
 
-namespace Lean.Expr
 /-!
 # ReplaceRec
 
 We define a more flexible version of `Expr.replace` where we can use recursive calls even when
-replacing a subexpression. We completely mimic the implementation of `Expr.replace`. -/
+replacing a subexpression. We completely mimic the implementation of `Expr.replace`.
+-/
+
+namespace Lean.Expr
 
 /-- A version of `Expr.replace` where the replacement function is available to the function `f?`.
 

@@ -3,7 +3,7 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Init.ZeroOne
+import Mathlib.Algebra.Group.ZeroOne
 import Qq
 
 #align_import algebra.expr from "leanprover-community/mathlib"@"6b711d2ba5d470c040677ddda0c26b0d72283886"

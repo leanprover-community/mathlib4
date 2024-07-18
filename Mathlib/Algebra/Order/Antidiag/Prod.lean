@@ -77,7 +77,7 @@ lemma hasAntidiagonal_congr (A : Type*) [AddMonoid A]
     [H1 : HasAntidiagonal A] [H2 : HasAntidiagonal A] :
     H1.antidiagonal = H2.antidiagonal := by congr!; subsingleton
 
-theorem swap_mem_antidiagonal [AddCommMonoid A] [HasAntidiagonal A] {n : A} {xy : A × A}:
+theorem swap_mem_antidiagonal [AddCommMonoid A] [HasAntidiagonal A] {n : A} {xy : A × A} :
     xy.swap ∈ antidiagonal n ↔ xy ∈ antidiagonal n := by
   simp [add_comm]
 

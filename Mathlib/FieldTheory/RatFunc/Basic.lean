@@ -805,6 +805,10 @@ theorem ofFractionRing_mk' (x : K[X]) (y : K[X]⁰) :
   rw [IsFractionRing.mk'_eq_div, IsFractionRing.mk'_eq_div, ← mk_eq_div', ← mk_eq_div]
 #align ratfunc.of_fraction_ring_mk' RatFunc.ofFractionRing_mk'
 
+theorem mk_eq_mk' (f : Polynomial K) {g : Polynomial K} (hg : g ≠ 0) :
+    RatFunc.mk f g = IsLocalization.mk' (RatFunc K) f ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 hg⟩ :=
+  by simp only [mk_eq_div, IsFractionRing.mk'_eq_div]
+
 @[simp]
 theorem ofFractionRing_eq :
     (ofFractionRing : FractionRing K[X] → RatFunc K) = IsLocalization.algEquiv K[X]⁰ _ _ :=
@@ -1147,3 +1151,5 @@ theorem num_mul_denom_add_denom_mul_num_ne_zero {x y : RatFunc K} (hxy : x + y �
 #align ratfunc.num_mul_denom_add_denom_mul_num_ne_zero RatFunc.num_mul_denom_add_denom_mul_num_ne_zero
 
 end NumDenom
+
+end RatFunc

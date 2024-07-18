@@ -43,3 +43,4 @@ instance instCanonicallyOrderedCommMonoid [CanonicallyOrderedCommMonoid β] :
   __ := instExistsMulOfLE
   le_self_mul x y := inductionOn₂ x y fun _ _ ↦ eventually_of_forall fun _ ↦ le_self_mul
 
+end Filter.Germ

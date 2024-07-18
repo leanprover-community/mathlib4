@@ -128,8 +128,8 @@ theorem mapIdxGo_length : ∀ (f : ℕ → α → β) (l : List α) (arr : Array
   intro f l
   induction' l with head tail ih
   · intro; simp only [mapIdx.go, Array.toList_eq, length_nil, Nat.zero_add]
-  · intro; simp only [mapIdx.go]; rw [ih]; simp only [Array.size_push, length_cons];
-    simp only [Nat.add_succ, add_zero, Nat.add_comm]
+  · intro; simp only [mapIdx.go]; rw [ih]; simp only [Array.size_push, length_cons]
+    simp only [Nat.add_succ, Fin.add_zero, Nat.add_comm]
 
 theorem mapIdx_append_one : ∀ (f : ℕ → α → β) (l : List α) (e : α),
     mapIdx f (l ++ [e]) = mapIdx f l ++ [f l.length e] := by

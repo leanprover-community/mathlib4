@@ -441,7 +441,7 @@ theorem rank_span_le (s : Set M) : Module.rank R (span R s) ≤ #s := by
   rw [Finsupp.span_eq_range_total, ← lift_strictMono.le_iff_le]
   refine (lift_rank_range_le _).trans ?_
   rw [rank_finsupp_self]
-  simp only [lift_lift, ge_iff_le, le_refl]
+  simp only [lift_lift, le_refl]
 #align rank_span_le rank_span_le
 
 theorem rank_span_finset_le (s : Finset M) : Module.rank R (span R (s : Set M)) ≤ s.card := by
