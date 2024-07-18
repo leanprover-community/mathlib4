@@ -1339,4 +1339,3 @@ end SubringClass
 
 -- Guard against import creep.
 assert_not_exists RestrictScalars
-#lint
