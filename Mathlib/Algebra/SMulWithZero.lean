@@ -5,9 +5,9 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Action.Prod
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Algebra.Ring.Opposite
-import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import algebra.smul_with_zero from "leanprover-community/mathlib"@"966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2"
 

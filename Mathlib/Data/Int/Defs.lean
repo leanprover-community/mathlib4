@@ -5,7 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.Defs
-import Mathlib.Init.ZeroOne
+import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Lift
