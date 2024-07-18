@@ -13,10 +13,12 @@ import Lean.Environment
 Throws an error if the given identifier uses sorryAx.
 -/
 
+open Lean.Elab.Command
+
 /-- Throws an error if the given identifier uses sorryAx. -/
 elab "assert_no_sorry " n:ident : command => do
   let env ← Lean.getEnv
   let (_, s) := ((Lean.Elab.Command.CollectAxioms.collect
-    (← Lean.Elab.resolveGlobalConstNoOverloadWithInfo n)).run env).run {}
+    (← liftCoreM <| Lean.Elab.realizeGlobalConstNoOverloadWithInfo n)).run env).run {}
   if s.axioms.contains ``sorryAx
   then throwError "{n} contains sorry"

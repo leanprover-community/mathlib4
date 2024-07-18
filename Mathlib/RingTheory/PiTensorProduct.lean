@@ -53,8 +53,7 @@ def mul : (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) :=
 
 @[simp] lemma mul_tprod_tprod (x y : (i : ι) → A i) :
     mul (tprod R x) (tprod R y) = tprod R (x * y) := by
-  simp only [mul, piTensorHomMap₂_tprod_tprod_tprod, LinearMap.mul_apply']
-  rfl
+  simp only [mul, piTensorHomMap₂_tprod_tprod_tprod, LinearMap.mul_apply', Pi.mul_def]
 
 instance instMul : Mul (⨂[R] i, A i) where
   mul x y := mul x y
@@ -76,9 +75,7 @@ nonrec theorem _root_.Commute.tprod {a₁ a₂ : Π i, A i} (ha : Commute a₁ a
 
 lemma smul_tprod_mul_smul_tprod (r s : R) (x y : Π i, A i) :
     (r • tprod R x) * (s • tprod R y) = (r * s) • tprod R (x * y) := by
-  change mul _ _ = _
-  rw [map_smul, map_smul, mul_comm r s, mul_smul]
-  simp only [LinearMap.smul_apply, mul_tprod_tprod]
+  simp only [mul_def, map_smul, LinearMap.smul_apply, mul_tprod_tprod, mul_comm r s, mul_smul]
 
 instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (⨂[R] i, A i) where
   __ := instMul
@@ -180,15 +177,15 @@ lemma algebraMap_apply (r : R') (i : ι) [DecidableEq ι] :
   change r • tprod R 1 = _
   have : Pi.mulSingle i (algebraMap R' (A i) r) = update (fun i ↦ 1) i (r • 1) := by
     rw [Algebra.algebraMap_eq_smul_one]; rfl
-  rw [this, ← smul_one_smul R r (1 : A i), MultilinearMap.map_smul, update_eq_self, smul_one_smul]
-  congr
+  rw [this, ← smul_one_smul R r (1 : A i), MultilinearMap.map_smul, update_eq_self, smul_one_smul,
+    Pi.one_def]
 
 /--
 The map `Aᵢ ⟶ ⨂ᵢ Aᵢ` given by `a ↦ 1 ⊗ ... ⊗ a ⊗ 1 ⊗ ...`
 -/
 @[simps]
 def singleAlgHom [DecidableEq ι] (i : ι) : A i →ₐ[R] ⨂[R] i, A i where
-  toFun a := tprod R (MonoidHom.single _ i a)
+  toFun a := tprod R (MonoidHom.mulSingle _ i a)
   map_one' := by simp only [_root_.map_one]; rfl
   map_mul' a a' := by simp
   map_zero' := MultilinearMap.map_update_zero _ _ _
@@ -252,14 +249,13 @@ instance instCommSemiring : CommSemiring (⨂[R] i, A i) where
   __ := inferInstanceAs <| AddCommMonoid (⨂[R] i, A i)
   mul_comm := PiTensorProduct.mul_comm
 
-open scoped BigOperators in
 @[simp] lemma tprod_prod {κ : Type*} (s : Finset κ) (x : κ → Π i, A i) :
-    tprod R (∏ k in s, x k) = ∏ k in s, tprod R (x k) :=
+    tprod R (∏ k ∈ s, x k) = ∏ k ∈ s, tprod R (x k) :=
   map_prod (tprodMonoidHom R) x s
 
 section
 
-open BigOperators Function
+open Function
 
 variable [Fintype ι]
 

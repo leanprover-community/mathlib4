@@ -197,7 +197,7 @@ noncomputable def toENat : Cardinal.{u} →+*o ℕ∞ where
       · simp
       · simp only [toENatAux_eq_top hy]
         rw [toENatAux_eq_top, ENat.mul_top]
-        · rwa [Ne.def, toENatAux_eq_zero]
+        · rwa [Ne, toENatAux_eq_zero]
         · exact le_mul_of_one_le_of_le (one_le_iff_ne_zero.2 hx) hy
   map_add' x y := by
     wlog hle : x ≤ y; · rw [add_comm, this y x (le_of_not_le hle), add_comm]
@@ -268,7 +268,7 @@ lemma ofENat_add (m n : ℕ∞) : ofENat (m + n) = m + n := by apply toENat_injO
 @[simp] lemma ofENat_add_aleph0 (m : ℕ∞) : m + ℵ₀ = ℵ₀ := by rw [add_comm, aleph0_add_ofENat]
 
 @[simp] lemma ofENat_mul_aleph0 {m : ℕ∞} (hm : m ≠ 0) : ↑m * ℵ₀ = ℵ₀ := by
-  induction m using ENat.recTopCoe with
+  induction m with
   | top => exact aleph0_mul_aleph0
   | coe m => rw [ofENat_nat, nat_mul_aleph0 (mod_cast hm)]
 

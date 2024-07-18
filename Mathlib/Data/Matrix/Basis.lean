@@ -23,8 +23,6 @@ namespace Matrix
 
 open Matrix
 
-open BigOperators
-
 variable [DecidableEq l] [DecidableEq m] [DecidableEq n]
 variable [Semiring α]
 
@@ -56,6 +54,14 @@ theorem stdBasisMatrix_add (i : m) (j : n) (a b : α) :
   split_ifs with h <;> simp [h]
 #align matrix.std_basis_matrix_add Matrix.stdBasisMatrix_add
 
+theorem mulVec_stdBasisMatrix [Fintype m] (i : n) (j : m) (c : α) (x : m → α) :
+    mulVec (stdBasisMatrix i j c) x = Function.update (0 : n → α) i (c * x j) := by
+  ext i'
+  simp [stdBasisMatrix, mulVec, dotProduct]
+  rcases eq_or_ne i i' with rfl|h
+  · simp
+  simp [h, h.symm]
+
 theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
     x = ∑ i : m, ∑ j : n, stdBasisMatrix i j (x i j) := by
   ext i j; symm
@@ -77,7 +83,8 @@ theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
 -- this is not completely trivial because we are indexing by two types, instead of one
 -- TODO: add `std_basis_vec`
 theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
-    stdBasisMatrix i j 1 = vecMulVec (fun i' => ite (i = i') 1 0) fun j' => ite (j = j') 1 0 := by
+    stdBasisMatrix i j (1 : α) =
+      vecMulVec (fun i' => ite (i = i') 1 0) fun j' => ite (j = j') 1 0 := by
   ext i' j'
   -- Porting note: was `norm_num [std_basis_matrix, vec_mul_vec]` though there are no numerals
   -- involved.
@@ -236,7 +243,7 @@ theorem diag_eq_of_commute_stdBasisMatrix {i j : n} {M : Matrix n n α}
   have := ext_iff.mpr hM i j
   aesop
 
-/-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`. ​-/
+/-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`. -/
 theorem mem_range_scalar_of_commute_stdBasisMatrix {M : Matrix n n α}
     (hM : Pairwise fun i j => Commute (stdBasisMatrix i j 1) M) :
     M ∈ Set.range (Matrix.scalar n) := by
@@ -261,7 +268,7 @@ theorem mem_range_scalar_iff_commute_stdBasisMatrix {M : Matrix n n α} :
   rw [scalar_commute_iff]
   simp
 
-/-- `M` is a scalar matrix if and only if it commutes with every `stdBasisMatrix`.​ -/
+/-- `M` is a scalar matrix if and only if it commutes with every `stdBasisMatrix`. -/
 theorem mem_range_scalar_iff_commute_stdBasisMatrix' {M : Matrix n n α} :
     M ∈ Set.range (Matrix.scalar n) ↔ ∀ (i j : n), Commute (stdBasisMatrix i j 1) M := by
   refine ⟨fun ⟨r, hr⟩ i j => hr ▸ Commute.symm ?_,

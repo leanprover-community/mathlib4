@@ -59,12 +59,15 @@ namespace Gal
 
 instance instGroup : Group (Gal p) :=
   inferInstanceAs (Group (p.SplittingField ≃ₐ[F] p.SplittingField))
+
 instance instFintype : Fintype (Gal p) :=
   inferInstanceAs (Fintype (p.SplittingField ≃ₐ[F] p.SplittingField))
 
-instance : CoeFun p.Gal fun _ => p.SplittingField → p.SplittingField :=
-  -- Porting note: was AlgEquiv.hasCoeToFun
-  inferInstanceAs (CoeFun (p.SplittingField ≃ₐ[F] p.SplittingField) _)
+instance : EquivLike p.Gal p.SplittingField p.SplittingField :=
+  inferInstanceAs (EquivLike (p.SplittingField ≃ₐ[F] p.SplittingField) _ _)
+
+instance : AlgEquivClass p.Gal F p.SplittingField p.SplittingField :=
+  inferInstanceAs (AlgEquivClass (p.SplittingField ≃ₐ[F] p.SplittingField) F _ _)
 
 instance applyMulSemiringAction : MulSemiringAction p.Gal p.SplittingField :=
   AlgEquiv.applyMulSemiringAction
@@ -72,10 +75,10 @@ instance applyMulSemiringAction : MulSemiringAction p.Gal p.SplittingField :=
 
 @[ext]
 theorem ext {σ τ : p.Gal} (h : ∀ x ∈ p.rootSet p.SplittingField, σ x = τ x) : σ = τ := by
-  refine'
+  refine
     AlgEquiv.ext fun x =>
       (AlgHom.mem_equalizer σ.toAlgHom τ.toAlgHom x).mp
-        ((SetLike.ext_iff.mp _ x).mpr Algebra.mem_top)
+        ((SetLike.ext_iff.mp ?_ x).mpr Algebra.mem_top)
   rwa [eq_top_iff, ← SplittingField.adjoin_rootSet, Algebra.adjoin_le_iff]
 #align polynomial.gal.ext Polynomial.Gal.ext
 
@@ -163,7 +166,7 @@ theorem mapRoots_bijective [h : Fact (p.Splits (algebraMap F E))] :
         ((splits_id_iff_splits _).mpr (IsSplittingField.splits p.SplittingField p))
     rw [map_map, AlgHom.comp_algebraMap] at key
     have hy := Subtype.mem y
-    simp only [rootSet, Finset.mem_coe, (Multiset.mem_toFinset), key, Multiset.mem_map] at hy
+    simp only [rootSet, Finset.mem_coe, Multiset.mem_toFinset, key, Multiset.mem_map] at hy
     rcases hy with ⟨x, hx1, hx2⟩
     exact ⟨⟨x, (@Multiset.mem_toFinset _ (Classical.decEq _) _ _).mpr hx1⟩, Subtype.ext hx2⟩
 #align polynomial.gal.map_roots_bijective Polynomial.Gal.mapRoots_bijective
@@ -183,7 +186,6 @@ instance galActionAux : MulAction p.Gal (rootSet p p.SplittingField) where
 instance smul [Fact (p.Splits (algebraMap F E))] : SMul p.Gal (rootSet p E) where
   smul ϕ x := rootsEquivRoots p E (ϕ • (rootsEquivRoots p E).symm x)
 
--- Porting note (#10756): new theorem
 theorem smul_def [Fact (p.Splits (algebraMap F E))] (ϕ : p.Gal) (x : rootSet p E) :
     ϕ • x = rootsEquivRoots p E (ϕ • (rootsEquivRoots p E).symm x) :=
   rfl
@@ -197,7 +199,7 @@ instance galAction [Fact (p.Splits (algebraMap F E))] : MulAction p.Gal (rootSet
 
 lemma galAction_isPretransitive [Fact (p.Splits (algebraMap F E))] (hp : Irreducible p) :
     MulAction.IsPretransitive p.Gal (p.rootSet E) := by
-  refine' ⟨fun x y ↦ _⟩
+  refine ⟨fun x y ↦ ?_⟩
   have hx := minpoly.eq_of_irreducible hp (mem_rootSet.mp ((rootsEquivRoots p E).symm x).2).2
   have hy := minpoly.eq_of_irreducible hp (mem_rootSet.mp ((rootsEquivRoots p E).symm y).2).2
   obtain ⟨g, hg⟩ := (Normal.minpoly_eq_iff_mem_orbit p.SplittingField).mp (hy.symm.trans hx)
@@ -268,8 +270,9 @@ theorem restrictDvd_def [Decidable (q = 0)] (hpq : p ∣ q) :
   convert rfl
 #align polynomial.gal.restrict_dvd_def Polynomial.Gal.restrictDvd_def
 
-theorem restrictDvd_surjective (hpq : p ∣ q) (hq : q ≠ 0) : Function.Surjective (restrictDvd hpq) :=
-  by classical
+theorem restrictDvd_surjective (hpq : p ∣ q) (hq : q ≠ 0) :
+    Function.Surjective (restrictDvd hpq) := by
+  classical
     -- Porting note: was `simp only [restrictDvd_def, dif_neg hq, restrict_surjective]`
     haveI := Fact.mk <|
       splits_of_splits_of_dvd (algebraMap F q.SplittingField) hq (SplittingField.splits q) hpq

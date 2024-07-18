@@ -6,7 +6,13 @@ Authors: Daniel Selsam
 import Lean.Elab.Command
 import Lean.Linter.Util
 
-set_option autoImplicit true
+/-!
+# Mathport infrastructure for tracking renaming Lean 3 to Lean 4 names
+
+This file defines mathport infrastructure for tracking renaming of Lean 3 declarations to
+their Lean 4 counterparts. This correspondence is declared in the ported file using the
+`#align` command (and its variants with `ₓ` and `#noalign`).
+-/
 
 namespace Mathlib.Prelude.Rename
 
@@ -55,8 +61,9 @@ def RenameMap.insert (m : RenameMap) (e : NameEntry) : RenameMap :=
 /-- Look up a lean 4 name from the lean 3 name. Also return the `dubious` error message. -/
 def RenameMap.find? (m : RenameMap) : Name → Option (String × Name) := m.toLean4.find?
 
+universe u in
 -- TODO: upstream into core/std
-instance [Inhabited α] : Inhabited (Thunk α) where
+instance {α : Type u} [Inhabited α] : Inhabited (Thunk α) where
   default := .pure default
 
 /-- This extension stores the lookup data generated from `#align` commands. -/
@@ -127,7 +134,7 @@ these reasons, you should use `#align` on any theorem that needs to be renamed f
 syntax (name := align) "#align " ident ppSpace ident : command
 
 /-- Checks that `id` has not already been `#align`ed or `#noalign`ed. -/
-def ensureUnused [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := do
+def ensureUnused {m : Type → Type} [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := do
   if let some (_, n) := (renameExtension.getState (← getEnv)).get.toLean4.find? id then
     if n.isAnonymous then
       throwError "{id} has already been no-aligned"
@@ -159,7 +166,9 @@ def suspiciousLean3Name (s : String) : Bool := Id.run do
         addConstInfo id4 c none
       else if align.precheck.get (← getOptions) then
         let note := "(add `set_option align.precheck false` to suppress this message)"
-        let inner := match ← try some <$> resolveGlobalConstWithInfos id4 catch _ => pure none with
+        let inner := match ←
+          try some <$> (liftCoreM <| realizeGlobalConstWithInfos id4)
+          catch _ => pure none with
         | none => m!""
         | some cs => m!" Did you mean:\n\n\
               {("\n":MessageData).joinSep (cs.map fun c' => m!"  #align {id3} {c'}")}\n\n\

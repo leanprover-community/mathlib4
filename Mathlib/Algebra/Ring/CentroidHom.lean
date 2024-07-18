@@ -3,11 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Module.Hom
+import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.RingTheory.Subsemiring.Basic
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -43,6 +44,8 @@ be satisfied by itself and all stricter types.
 
 centroid
 -/
+
+assert_not_exists Field
 
 open Function
 
@@ -379,15 +382,20 @@ instance : AddCommMonoid (CentroidHom α) :=
 
 instance : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α)
 
--- Porting note: `nolint simpNF` added because simplify fails on left-hand side
-@[simp, norm_cast, nolint simpNF]
-theorem coe_nat_cast (n : ℕ) : ⇑(n : CentroidHom α) = n • (CentroidHom.id α) :=
+@[simp, norm_cast]
+theorem coe_natCast (n : ℕ) : ⇑(n : CentroidHom α) = n • (CentroidHom.id α) :=
   rfl
-#align centroid_hom.coe_nat_cast CentroidHom.coe_nat_cast
+#align centroid_hom.coe_nat_cast CentroidHom.coe_natCast
 
-theorem nat_cast_apply (n : ℕ) (m : α) : (n : CentroidHom α) m = n • m :=
+@[deprecated (since := "2024-04-17")]
+alias coe_nat_cast := coe_natCast
+
+theorem natCast_apply (n : ℕ) (m : α) : (n : CentroidHom α) m = n • m :=
   rfl
-#align centroid_hom.nat_cast_apply CentroidHom.nat_cast_apply
+#align centroid_hom.nat_cast_apply CentroidHom.natCast_apply
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_apply := natCast_apply
 
 @[simp]
 theorem toEnd_one : (1 : CentroidHom α).toEnd = 1 :=
@@ -405,14 +413,17 @@ theorem toEnd_pow (x : CentroidHom α) (n : ℕ) : (x ^ n).toEnd = x.toEnd ^ n :
 #align centroid_hom.to_End_pow CentroidHom.toEnd_pow
 
 @[simp, norm_cast]
-theorem toEnd_nat_cast (n : ℕ) : (n : CentroidHom α).toEnd = ↑n :=
+theorem toEnd_natCast (n : ℕ) : (n : CentroidHom α).toEnd = ↑n :=
   rfl
-#align centroid_hom.to_End_nat_cast CentroidHom.toEnd_nat_cast
+#align centroid_hom.to_End_nat_cast CentroidHom.toEnd_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias toEnd_nat_cast := toEnd_natCast
 
 -- cf `add_monoid.End.semiring`
 instance : Semiring (CentroidHom α) :=
-  toEnd_injective.semiring _ toEnd_zero toEnd_one toEnd_add toEnd_mul (swap toEnd_smul) toEnd_pow
-    toEnd_nat_cast
+  toEnd_injective.semiring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_smul toEnd_pow
+    toEnd_natCast
 
 variable (α) in
 /-- `CentroidHom.toEnd` as a `RingHom`. -/
@@ -448,7 +459,7 @@ instance applyModule : Module (CentroidHom α) α where
   add_smul _ _ _ := rfl
   zero_smul _ := rfl
   one_smul _ := rfl
-  mul_smul _ _ _:= rfl
+  mul_smul _ _ _ := rfl
   smul_zero := map_zero
   smul_add := map_add
 
@@ -502,17 +513,15 @@ lemma centroid_eq_centralizer_mulLeftRight :
 def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α where
   toFun z :=
     { L (z : α) with
-      map_mul_left' := ((Set.mem_center_iff _).mp z.prop).left_comm
-      map_mul_right' := ((Set.mem_center_iff _).mp z.prop).left_assoc }
+      map_mul_left' := z.prop.left_comm
+      map_mul_right' := z.prop.left_assoc }
   map_zero' := by
     simp only [ZeroMemClass.coe_zero, map_zero]
     exact rfl
   map_add' := fun _ _ => by
     simp only [AddSubmonoid.coe_add, NonUnitalSubsemiring.coe_toAddSubmonoid, map_add]
     exact rfl
-  map_mul' := fun z₁ z₂ => by
-    ext a
-    exact (((Set.mem_center_iff _).mp z₁.prop).left_assoc z₂ a).symm
+  map_mul' z₁ z₂ := by ext a; exact (z₁.prop.left_assoc z₂ a).symm
 
 lemma centerToCentroid_apply (z : NonUnitalSubsemiring.center α) (a : α) :
     (centerToCentroid z) a = z * a := rfl
@@ -594,15 +603,20 @@ instance : Sub (CentroidHom α) :=
 
 instance : IntCast (CentroidHom α) where intCast z := z • (1 : CentroidHom α)
 
--- Porting note: `nolint simpNF` added because simplify fails on left-hand side
-@[simp, norm_cast, nolint simpNF]
-theorem coe_int_cast (z : ℤ) : ⇑(z : CentroidHom α) = z • (CentroidHom.id α) :=
+@[simp, norm_cast]
+theorem coe_intCast (z : ℤ) : ⇑(z : CentroidHom α) = z • (CentroidHom.id α) :=
   rfl
-#align centroid_hom.coe_int_cast CentroidHom.coe_int_cast
+#align centroid_hom.coe_int_cast CentroidHom.coe_intCast
 
-theorem int_cast_apply (z : ℤ) (m : α) : (z : CentroidHom α) m = z • m :=
+@[deprecated (since := "2024-04-17")]
+alias coe_int_cast := coe_intCast
+
+theorem intCast_apply (z : ℤ) (m : α) : (z : CentroidHom α) m = z • m :=
   rfl
-#align centroid_hom.int_cast_apply CentroidHom.int_cast_apply
+#align centroid_hom.int_cast_apply CentroidHom.intCast_apply
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_apply := intCast_apply
 
 @[simp]
 theorem toEnd_neg (x : CentroidHom α) : (-x).toEnd = -x.toEnd :=
@@ -641,13 +655,16 @@ theorem sub_apply (f g : CentroidHom α) (a : α) : (f - g) a = f a - g a :=
 #align centroid_hom.sub_apply CentroidHom.sub_apply
 
 @[simp, norm_cast]
-theorem toEnd_int_cast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
+theorem toEnd_intCast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
   rfl
-#align centroid_hom.to_End_int_cast CentroidHom.toEnd_int_cast
+#align centroid_hom.to_End_int_cast CentroidHom.toEnd_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias toEnd_int_cast := toEnd_intCast
 
 instance instRing : Ring (CentroidHom α) :=
   toEnd_injective.ring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_neg toEnd_sub
-    (swap toEnd_smul) (swap toEnd_smul) toEnd_pow toEnd_nat_cast toEnd_int_cast
+    toEnd_smul toEnd_smul toEnd_pow toEnd_natCast toEnd_intCast
 
 end NonUnitalNonAssocRing
 
@@ -658,12 +675,12 @@ variable [NonUnitalRing α]
 -- Porting note: Not sure why Lean didn't like `CentroidHom.Ring`
 -- See note [reducible non instances]
 /-- A prime associative ring has commutative centroid. -/
-@[reducible]
-def commRing (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : CommRing (CentroidHom α) :=
+abbrev commRing
+    (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : CommRing (CentroidHom α) :=
   { CentroidHom.instRing with
     mul_comm := fun f g ↦ by
       ext
-      refine' sub_eq_zero.1 (or_self_iff.1 <| (h _ _) fun r ↦ _)
+      refine sub_eq_zero.1 (or_self_iff.1 <| (h _ _) fun r ↦ ?_)
       rw [mul_assoc, sub_mul, sub_eq_zero, ← map_mul_right, ← map_mul_right, coe_mul, coe_mul,
         comp_mul_comm] }
 #align centroid_hom.comm_ring CentroidHom.commRing

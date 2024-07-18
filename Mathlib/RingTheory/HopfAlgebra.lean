@@ -3,7 +3,7 @@ Copyright (c) 2024 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey
 -/
-import Mathlib.RingTheory.Bialgebra
+import Mathlib.RingTheory.Bialgebra.Basic
 
 /-!
 # Hopf algebras
@@ -72,13 +72,11 @@ theorem mul_antipode_lTensor_comul_apply (a : A) :
 
 end HopfAlgebra
 
-section CommSemiring
+namespace CommSemiring
 
 variable (R : Type u) [CommSemiring R]
 
 open HopfAlgebra
-
-namespace CommSemiring
 
 /-- Every commutative (semi)ring is a Hopf algebra over itself -/
 instance toHopfAlgebra : HopfAlgebra R R where

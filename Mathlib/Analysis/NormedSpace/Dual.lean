@@ -120,7 +120,7 @@ theorem norm_le_dual_bound (x : E) {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ f : Dual 
       calc
         ‖x‖ = ‖(‖x‖ : 𝕜)‖ := RCLike.norm_coe_norm.symm
         _ = ‖f x‖ := by rw [hfx]
-        _ ≤ M * ‖f‖ := (hM f)
+        _ ≤ M * ‖f‖ := hM f
         _ = M := by rw [hf₁, mul_one]
 #align normed_space.norm_le_dual_bound NormedSpace.norm_le_dual_bound
 
@@ -138,7 +138,7 @@ theorem eq_iff_forall_dual_eq {x y : E} : x = y ↔ ∀ g : Dual 𝕜 E, g x = g
   simp [sub_eq_zero]
 #align normed_space.eq_iff_forall_dual_eq NormedSpace.eq_iff_forall_dual_eq
 
-/-- The inclusion of a normed space in its double dual is an isometry onto its image.-/
+/-- The inclusion of a normed space in its double dual is an isometry onto its image. -/
 def inclusionInDoubleDualLi : E →ₗᵢ[𝕜] Dual 𝕜 (Dual 𝕜 E) :=
   { inclusionInDoubleDual 𝕜 E with
     norm_map' := by
@@ -146,7 +146,7 @@ def inclusionInDoubleDualLi : E →ₗᵢ[𝕜] Dual 𝕜 (Dual 𝕜 E) :=
       apply le_antisymm
       · exact double_dual_bound 𝕜 E x
       rw [ContinuousLinearMap.norm_def]
-      refine' le_csInf ContinuousLinearMap.bounds_nonempty _
+      refine le_csInf ContinuousLinearMap.bounds_nonempty ?_
       rintro c ⟨hc1, hc2⟩
       exact norm_le_dual_bound 𝕜 x hc1 hc2 }
 #align normed_space.inclusion_in_double_dual_li NormedSpace.inclusionInDoubleDualLi
@@ -181,7 +181,7 @@ theorem polar_univ : polar 𝕜 (univ : Set E) = {(0 : Dual 𝕜 E)} :=
 theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
   dsimp only [NormedSpace.polar]
   simp only [LinearMap.polar_eq_iInter, LinearMap.flip_apply]
-  refine' isClosed_biInter fun z _ => _
+  refine isClosed_biInter fun z _ => ?_
   exact isClosed_Iic.preimage (ContinuousLinearMap.apply 𝕜 𝕜 z).continuous.norm
 #align normed_space.is_closed_polar NormedSpace.isClosed_polar
 
@@ -219,7 +219,7 @@ theorem polar_ball_subset_closedBall_div {c : 𝕜} (hc : 1 < ‖c‖) {r : ℝ}
   rw [mem_polar_iff] at hx'
   simp only [polar, mem_setOf, mem_closedBall_zero_iff, mem_ball_zero_iff] at *
   have hcr : 0 < ‖c‖ / r := div_pos (zero_lt_one.trans hc) hr
-  refine' ContinuousLinearMap.opNorm_le_of_shell hr hcr.le hc fun x h₁ h₂ => _
+  refine ContinuousLinearMap.opNorm_le_of_shell hr hcr.le hc fun x h₁ h₂ => ?_
   calc
     ‖x' x‖ ≤ 1 := hx' _ h₂
     _ ≤ ‖c‖ / r * ‖x‖ := (inv_pos_le_iff_one_le_mul' hcr).1 (by rwa [inv_div])
@@ -234,7 +234,7 @@ theorem closedBall_inv_subset_polar_closedBall {r : ℝ} :
     _ ≤ r⁻¹ * r :=
       (mul_le_mul (mem_closedBall_zero_iff.1 hx') (mem_closedBall_zero_iff.1 hx) (norm_nonneg _)
         (dist_nonneg.trans hx'))
-    _ = r / r := (inv_mul_eq_div _ _)
+    _ = r / r := inv_mul_eq_div _ _
     _ ≤ 1 := div_self_le_one r
 #align normed_space.closed_ball_inv_subset_polar_closed_ball NormedSpace.closedBall_inv_subset_polar_closedBall
 
@@ -242,10 +242,10 @@ theorem closedBall_inv_subset_polar_closedBall {r : ℝ} :
 inverse radius. -/
 theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
     (hr : 0 < r) : polar 𝕜 (closedBall (0 : E) r) = closedBall (0 : Dual 𝕜 E) r⁻¹ := by
-  refine' Subset.antisymm _ (closedBall_inv_subset_polar_closedBall 𝕜)
+  refine Subset.antisymm ?_ (closedBall_inv_subset_polar_closedBall 𝕜)
   intro x' h
   simp only [mem_closedBall_zero_iff]
-  refine' ContinuousLinearMap.opNorm_le_of_ball hr (inv_nonneg.mpr hr.le) fun z _ => _
+  refine ContinuousLinearMap.opNorm_le_of_ball hr (inv_nonneg.mpr hr.le) fun z _ => ?_
   simpa only [one_div] using LinearMap.bound_of_ball_bound' hr 1 x'.toLinearMap h z
 #align normed_space.polar_closed_ball NormedSpace.polar_closedBall
 

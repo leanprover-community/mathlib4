@@ -53,8 +53,8 @@ The equivalent formulations of the sheaf condition on `presheaf C X` are as foll
   `A : X`, there exists a unique gluing `A ⟶ F(U)` compatible with the restriction.
 
 2. `TopCat.Presheaf.IsSheafEqualizerProducts`: (requires `C` to have all products)
-  For each open cover `{ Uᵢ }` of `U`, `F(U) ⟶ ∏ F(Uᵢ)` is the equalizer of the two morphisms
-  `∏ F(Uᵢ) ⟶ ∏ F(Uᵢ ∩ Uⱼ)`.
+  For each open cover `{ Uᵢ }` of `U`, `F(U) ⟶ ∏ᶜ F(Uᵢ)` is the equalizer of the two morphisms
+  `∏ᶜ F(Uᵢ) ⟶ ∏ᶜ F(Uᵢ ∩ Uⱼ)`.
   See `TopCat.Presheaf.isSheaf_iff_isSheafEqualizerProducts`.
 
 3. `TopCat.Presheaf.IsSheafOpensLeCover`:
@@ -146,11 +146,11 @@ set_option linter.uppercaseLean3 false in
 #align Top.sheaf.forget TopCat.Sheaf.forget
 
 -- Porting note: `deriving Full` failed
-instance forgetFull : Full (forget C X) where
-  preimage := Sheaf.Hom.mk
+instance forget_full : (forget C X).Full where
+  map_surjective f := ⟨Sheaf.Hom.mk f, rfl⟩
 
 -- Porting note: `deriving Faithful` failed
-instance forgetFaithful : Faithful (forget C X) where
+instance forgetFaithful : (forget C X).Faithful where
   map_injective := Sheaf.Hom.ext _ _
 
 -- Note: These can be proved by simp.

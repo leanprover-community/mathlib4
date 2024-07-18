@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Data.Part
+import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Upto
 import Mathlib.Data.Stream.Defs
 import Mathlib.Tactic.Common
@@ -33,7 +34,7 @@ variable {α : Type*} {β : α → Type*}
 /-- `Fix α` provides a `fix` operator to define recursive computation
 via the fixed point of function of type `α → α`. -/
 class Fix (α : Type*) where
-  /-- `fix f` represents the computation of a fixed point for `f`.-/
+  /-- `fix f` represents the computation of a fixed point for `f`. -/
   fix : (α → α) → α
 #align has_fix Fix
 
@@ -89,11 +90,11 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     intro x'
     rw [Fix.approx, WellFounded.fix_eq, fixAux]
     congr
-    ext x: 1
+    ext x : 1
     rw [assert_neg]
-    rfl
-    rw [Nat.zero_add] at _this
-    simpa only [not_not, Coe]
+    · rfl
+    · rw [Nat.zero_add] at _this
+      simpa only [not_not, Coe]
   | succ n n_ih =>
     intro x'
     rw [Fix.approx, WellFounded.fix_eq, fixAux]

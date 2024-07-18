@@ -63,7 +63,7 @@ theorem continuous_thickenedIndicatorAux {δ : ℝ} (δ_pos : 0 < δ) (E : Set �
   rw [show (fun x : α => (1 : ℝ≥0∞) - infEdist x E / ENNReal.ofReal δ) = sub ∘ f by rfl]
   apply (@ENNReal.continuous_nnreal_sub 1).comp
   apply (ENNReal.continuous_div_const (ENNReal.ofReal δ) _).comp continuous_infEdist
-  set_option tactic.skipAssignedInstances false in norm_num [δ_pos]
+  norm_num [δ_pos]
 #align continuous_thickened_indicator_aux continuous_thickenedIndicatorAux
 
 theorem thickenedIndicatorAux_le_one (δ : ℝ) (E : Set α) (x : α) :
@@ -143,12 +143,12 @@ theorem thickenedIndicatorAux_tendsto_indicator_closure {δseq : ℕ → ℝ}
     rcases exists_real_pos_lt_infEdist_of_not_mem_closure x_mem_closure with ⟨ε, ⟨ε_pos, ε_lt⟩⟩
     rw [Metric.tendsto_nhds] at δseq_lim
     specialize δseq_lim ε ε_pos
-    simp only [dist_zero_right, Real.norm_eq_abs, eventually_atTop, ge_iff_le] at δseq_lim
+    simp only [dist_zero_right, Real.norm_eq_abs, eventually_atTop] at δseq_lim
     rcases δseq_lim with ⟨N, hN⟩
     apply @tendsto_atTop_of_eventually_const _ _ _ _ _ _ _ N
     intro n n_large
     have key : x ∉ thickening ε E := by simpa only [thickening, mem_setOf_eq, not_lt] using ε_lt.le
-    refine' le_antisymm _ bot_le
+    refine le_antisymm ?_ bot_le
     apply (thickenedIndicatorAux_mono (lt_of_abs_lt (hN n n_large)).le E x).trans
     exact (thickenedIndicatorAux_zero ε_pos E key).le
 #align thickened_indicator_aux_tendsto_indicator_closure thickenedIndicatorAux_tendsto_indicator_closure
@@ -252,8 +252,8 @@ theorem thickenedIndicator_tendsto_indicator_closure {δseq : ℕ → ℝ} (δse
   intro x
   rw [show indicator (closure E) (fun _ => (1 : ℝ≥0)) x =
         (indicator (closure E) (fun _ => (1 : ℝ≥0∞)) x).toNNReal
-      by refine' (congr_fun (comp_indicator_const 1 ENNReal.toNNReal zero_toNNReal) x).symm]
-  refine' Tendsto.comp (tendsto_toNNReal _) (key x)
+      by refine (congr_fun (comp_indicator_const 1 ENNReal.toNNReal zero_toNNReal) x).symm]
+  refine Tendsto.comp (tendsto_toNNReal ?_) (key x)
   by_cases x_mem : x ∈ closure E <;> simp [x_mem]
 #align thickened_indicator_tendsto_indicator_closure thickenedIndicator_tendsto_indicator_closure
 

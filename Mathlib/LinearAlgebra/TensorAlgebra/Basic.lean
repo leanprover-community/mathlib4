@@ -108,10 +108,10 @@ variable {M}
 irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
   { toFun := fun m => RingQuot.mkAlgHom R _ (FreeAlgebra.ι R m)
     map_add' := fun x y => by
-      rw [← (RingQuot.mkAlgHom R (Rel R M)).map_add]
+      rw [← map_add (RingQuot.mkAlgHom R (Rel R M))]
       exact RingQuot.mkAlgHom_rel R Rel.add
     map_smul' := fun r x => by
-      rw [← (RingQuot.mkAlgHom R (Rel R M)).map_smul]
+      rw [← map_smul (RingQuot.mkAlgHom R (Rel R M))]
       exact RingQuot.mkAlgHom_rel R Rel.smul }
 #align tensor_algebra.ι TensorAlgebra.ι
 
@@ -159,6 +159,7 @@ theorem ι_comp_lift {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A) 
 theorem lift_ι_apply {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A) (x) :
     lift R f (ι R x) = f x := by
   conv_rhs => rw [← ι_comp_lift f]
+  rfl
 #align tensor_algebra.lift_ι_apply TensorAlgebra.lift_ι_apply
 
 @[simp]
@@ -292,7 +293,7 @@ variable {R}
 
 @[simp]
 theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
     haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
     have hf0 : toTrivSqZeroExt (ι R x) = (0, x) := lift_ι_apply _ _

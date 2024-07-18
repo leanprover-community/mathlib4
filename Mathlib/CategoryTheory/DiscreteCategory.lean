@@ -54,11 +54,10 @@ structure Discrete (α : Type u₁) where
 
 @[simp]
 theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X := by
-  ext
   rfl
 #align category_theory.discrete.mk_as CategoryTheory.Discrete.mk_as
 
-/-- `Discrete α` is equivalent to the original type `α`.-/
+/-- `Discrete α` is equivalent to the original type `α`. -/
 @[simps]
 def discreteEquiv {α : Type u₁} : Discrete α ≃ α where
   toFun := Discrete.as
@@ -169,7 +168,7 @@ instance {I : Type u₁} {i j : Discrete I} (f : i ⟶ j) : IsIso f :=
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 
-/-- Any function `I → C` gives a functor `Discrete I ⥤ C`.-/
+/-- Any function `I → C` gives a functor `Discrete I ⥤ C`. -/
 def functor {I : Type u₁} (F : I → C) : Discrete I ⥤ C where
   obj := F ∘ Discrete.as
   map {X Y} f := by
@@ -184,9 +183,21 @@ theorem functor_obj {I : Type u₁} (F : I → C) (i : I) :
   rfl
 #align category_theory.discrete.functor_obj CategoryTheory.Discrete.functor_obj
 
+@[simp]
 theorem functor_map {I : Type u₁} (F : I → C) {i : Discrete I} (f : i ⟶ i) :
     (Discrete.functor F).map f = 𝟙 (F i.as) := by aesop_cat
 #align category_theory.discrete.functor_map CategoryTheory.Discrete.functor_map
+#align category_theory.free_monoidal_category.discrete_functor_map_eq_id CategoryTheory.Discrete.functor_map
+@[deprecated (since := "2024-07-16")]
+alias CategoryTheory.FreeMonoidalCategory.discrete_functor_map_eq_id := functor_map
+
+@[simp]
+theorem functor_obj_eq_as {I : Type u₁} (F : I → C) (X : Discrete I) :
+    (Discrete.functor F).obj X = F X.as :=
+  rfl
+#align category_theory.free_monoidal_category.discrete_functor_obj_eq_as CategoryTheory.Discrete.functor_obj_eq_as
+@[deprecated (since := "2024-07-16")]
+alias CategoryTheory.FreeMonoidalCategory.discrete_functor_obj_eq_as := functor_obj_eq_as
 
 /-- The discrete functor induced by a composition of maps can be written as a
 composition of two discrete functors.
@@ -225,6 +236,11 @@ def natIso {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.o
     change F.map (𝟙 _) ≫ _ = _ ≫ G.map (𝟙 _)
     simp
 #align category_theory.discrete.nat_iso CategoryTheory.Discrete.natIso
+
+instance {I : Type*} {F G : Discrete I ⥤ C} (f : ∀ i, F.obj i ⟶ G.obj i) [∀ i, IsIso (f i)] :
+    IsIso (Discrete.natTrans f) := by
+  change IsIso (Discrete.natIso (fun i => asIso (f i))).hom
+  infer_instance
 
 @[simp]
 theorem natIso_app {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ≅ G.obj i)

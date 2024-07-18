@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Topology.Separation
+import Mathlib.Topology.Sets.Closeds
 
 #align_import topology.sober from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
@@ -39,12 +40,10 @@ theorem isGenericPoint_def {x : α} {S : Set α} : IsGenericPoint x S ↔ closur
   Iff.rfl
 #align is_generic_point_def isGenericPoint_def
 
--- Adaptation note: 2024-03-15
--- Renamed to avoid the reserved name `IsGenericPoint.def`.
-theorem IsGenericPoint.def' {x : α} {S : Set α} (h : IsGenericPoint x S) :
+theorem IsGenericPoint.def {x : α} {S : Set α} (h : IsGenericPoint x S) :
     closure ({x} : Set α) = S :=
   h
-#align is_generic_point.def IsGenericPoint.def'
+#align is_generic_point.def IsGenericPoint.def
 
 theorem isGenericPoint_closure {x : α} : IsGenericPoint x (closure ({x} : Set α)) :=
   refl _
@@ -71,11 +70,11 @@ protected theorem mem (h : IsGenericPoint x S) : x ∈ S :=
 #align is_generic_point.mem IsGenericPoint.mem
 
 protected theorem isClosed (h : IsGenericPoint x S) : IsClosed S :=
-  h.def' ▸ isClosed_closure
+  h.def ▸ isClosed_closure
 #align is_generic_point.is_closed IsGenericPoint.isClosed
 
 protected theorem isIrreducible (h : IsGenericPoint x S) : IsIrreducible S :=
-  h.def' ▸ isIrreducible_singleton.closure
+  h.def ▸ isIrreducible_singleton.closure
 #align is_generic_point.is_irreducible IsGenericPoint.isIrreducible
 
 protected theorem inseparable (h : IsGenericPoint x S) (h' : IsGenericPoint y S) :
@@ -96,12 +95,12 @@ theorem disjoint_iff (h : IsGenericPoint x S) (hU : IsOpen U) : Disjoint S U ↔
 #align is_generic_point.disjoint_iff IsGenericPoint.disjoint_iff
 
 theorem mem_closed_set_iff (h : IsGenericPoint x S) (hZ : IsClosed Z) : x ∈ Z ↔ S ⊆ Z := by
-  rw [← h.def', hZ.closure_subset_iff, singleton_subset_iff]
+  rw [← h.def, hZ.closure_subset_iff, singleton_subset_iff]
 #align is_generic_point.mem_closed_set_iff IsGenericPoint.mem_closed_set_iff
 
 protected theorem image (h : IsGenericPoint x S) {f : α → β} (hf : Continuous f) :
     IsGenericPoint (f x) (closure (f '' S)) := by
-  rw [isGenericPoint_def, ← h.def', ← image_singleton, closure_image_closure hf]
+  rw [isGenericPoint_def, ← h.def, ← image_singleton, closure_image_closure hf]
 #align is_generic_point.image IsGenericPoint.image
 
 end IsGenericPoint
@@ -168,17 +167,21 @@ attribute [local instance] specializationOrder
 
 /-- The closed irreducible subsets of a sober space bijects with the points of the space. -/
 noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
-    { s : Set α | IsIrreducible s ∧ IsClosed s } ≃o α where
-  toFun s := s.prop.1.genericPoint
+    TopologicalSpace.IrreducibleCloseds α ≃o α where
+  toFun s := s.2.genericPoint
   invFun x := ⟨closure ({x} : Set α), isIrreducible_singleton.closure, isClosed_closure⟩
-  left_inv s := Subtype.eq <| Eq.trans s.prop.1.genericPoint_spec <|
-    closure_eq_iff_isClosed.mpr s.2.2
+  left_inv s := by
+    refine TopologicalSpace.IrreducibleCloseds.ext ?_
+    simp only [IsIrreducible.genericPoint_closure_eq, TopologicalSpace.IrreducibleCloseds.coe_mk,
+      closure_eq_iff_isClosed.mpr s.3]
+    rfl
   right_inv x := isIrreducible_singleton.closure.genericPoint_spec.eq
       (by rw [closure_closure]; exact isGenericPoint_closure)
   map_rel_iff' := by
-    rintro ⟨s, hs⟩ ⟨t, ht⟩
+    rintro ⟨s, hs, hs'⟩ ⟨t, ht, ht'⟩
     refine specializes_iff_closure_subset.trans ?_
-    simp [hs.2.closure_eq, ht.2.closure_eq]
+    simp [hs'.closure_eq, ht'.closure_eq]
+    rfl
 #align irreducible_set_equiv_points irreducibleSetEquivPoints
 
 theorem ClosedEmbedding.quasiSober {f : α → β} (hf : ClosedEmbedding f) [QuasiSober β] :
@@ -189,7 +192,7 @@ theorem ClosedEmbedding.quasiSober {f : α → β} (hf : ClosedEmbedding f) [Qua
     obtain ⟨y, -, rfl⟩ := hx.mem
     use y
     apply image_injective.mpr hf.inj
-    rw [← hx.def', ← hf.closure_image_eq, image_singleton]
+    rw [← hx.def, ← hf.closure_image_eq, image_singleton]
 #align closed_embedding.quasi_sober ClosedEmbedding.quasiSober
 
 theorem OpenEmbedding.quasiSober {f : α → β} (hf : OpenEmbedding f) [QuasiSober β] :
@@ -201,10 +204,10 @@ theorem OpenEmbedding.quasiSober {f : α → β} (hf : OpenEmbedding f) [QuasiSo
     rw [image_preimage_eq_inter_range] at hx hS''
     have hxT : x ∈ T := by
       rw [← hT.closure_eq]
-      exact closure_mono (inter_subset_left _ _) hx.mem
+      exact closure_mono inter_subset_left hx.mem
     obtain ⟨y, rfl⟩ : x ∈ range f := by
       rw [hx.mem_open_set_iff hf.isOpen_range]
-      refine' Nonempty.mono _ hS''.1
+      refine Nonempty.mono ?_ hS''.1
       simpa using subset_closure
     use y
     change _ = _
@@ -212,7 +215,7 @@ theorem OpenEmbedding.quasiSober {f : α → β} (hf : OpenEmbedding f) [QuasiSo
     apply image_injective.mpr hf.inj
     ext z
     simp only [image_preimage_eq_inter_range, mem_inter_iff, and_congr_left_iff]
-    exact fun hy => ⟨fun h => hT.closure_eq ▸ closure_mono (inter_subset_left _ _) h,
+    exact fun hy => ⟨fun h => hT.closure_eq ▸ closure_mono inter_subset_left h,
       fun h => subset_closure ⟨h, hy⟩⟩
 #align open_embedding.quasi_sober OpenEmbedding.quasiSober
 
@@ -235,9 +238,9 @@ theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s :
   apply le_antisymm
   · apply h'.closure_subset_iff.mpr
     simpa using this
-  rw [← image_singleton, ← closure_image_closure continuous_subtype_val, H.genericPoint_spec.def']
-  refine' (subset_closure_inter_of_isPreirreducible_of_isOpen h.2 (hS ⟨U, hU⟩) ⟨x, hx, hU'⟩).trans
-    (closure_mono _)
+  rw [← image_singleton, ← closure_image_closure continuous_subtype_val, H.genericPoint_spec.def]
+  refine (subset_closure_inter_of_isPreirreducible_of_isOpen h.2 (hS ⟨U, hU⟩) ⟨x, hx, hU'⟩).trans
+    (closure_mono ?_)
   rw [inter_comm t, ← Subtype.image_preimage_coe]
   exact Set.image_subset _ subset_closure
 #align quasi_sober_of_open_cover quasiSober_of_open_cover

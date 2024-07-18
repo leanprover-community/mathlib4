@@ -3,11 +3,11 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.GroupPower.CovariantClass
-import Mathlib.Algebra.Order.Monoid.WithTop
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Order.Hom.Basic
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 #align_import algebra.tropical.basic from "leanprover-community/mathlib"@"9116dd6709f303dcf781632e15fdef382b0fc579"
 
@@ -62,14 +62,13 @@ namespace Tropical
 /-- Reinterpret `x : R` as an element of `Tropical R`.
 See `Tropical.tropEquiv` for the equivalence.
 -/
---@[pp_nodot] Porting note: not implemented in Lean4
 def trop : R → Tropical R :=
   id
 #align tropical.trop Tropical.trop
 
 /-- Reinterpret `x : Tropical R` as an element of `R`.
 See `Tropical.tropEquiv` for the equivalence. -/
---@[pp_nodot] Porting note: not implemented in Lean4
+@[pp_nodot]
 def untrop : Tropical R → R :=
   id
 #align tropical.untrop Tropical.untrop
@@ -347,12 +346,7 @@ theorem add_eq_right_iff {x y : Tropical R} : x + y = y ↔ y ≤ x := by
 theorem add_self (x : Tropical R) : x + x = x :=
   untrop_injective (min_eq_right le_rfl)
 #align tropical.add_self Tropical.add_self
-
-set_option linter.deprecated false in
-@[simp]
-theorem bit0 (x : Tropical R) : bit0 x = x :=
-  add_self x
-#align tropical.bit0 Tropical.bit0
+#align tropical.bit0 Tropical.add_self
 
 theorem add_eq_iff {x y z : Tropical R} : x + y = z ↔ x = z ∧ x ≤ y ∨ y = z ∧ y ≤ x := by
   rw [trop_add_def, trop_eq_iff_eq_untrop]

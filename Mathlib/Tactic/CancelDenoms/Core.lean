@@ -5,11 +5,12 @@ Authors: Robert Y. Lewis
 -/
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Order.Field.Defs
-import Mathlib.Data.Tree
+import Mathlib.Data.Tree.Basic
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Qq
+import Mathlib.Algebra.Order.Field.Unbundled.Basic
 
 /-!
 # A tactic for canceling numeric denominators
@@ -75,7 +76,7 @@ theorem cancel_factors_lt {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α
     (a < b) = (1 / gcd * (bd * a') < 1 / gcd * (ad * b')) := by
   rw [mul_lt_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_lt_mul_left]
   · exact mul_pos had hbd
-  · exact one_div_pos.2 hgcd
+  · exact one_div_pos (α := α) |>.2 hgcd
 #align cancel_factors.cancel_factors_lt CancelDenoms.cancel_factors_lt
 
 theorem cancel_factors_le {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
@@ -83,7 +84,7 @@ theorem cancel_factors_le {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α
     (a ≤ b) = (1 / gcd * (bd * a') ≤ 1 / gcd * (ad * b')) := by
   rw [mul_le_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_le_mul_left]
   · exact mul_pos had hbd
-  · exact one_div_pos.2 hgcd
+  · exact one_div_pos (α := α) |>.2 hgcd
 #align cancel_factors.cancel_factors_le CancelDenoms.cancel_factors_le
 
 theorem cancel_factors_eq {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
@@ -95,10 +96,10 @@ theorem cancel_factors_eq {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * 
     rfl
   · intro h
     simp only [← mul_assoc] at h
-    refine' mul_left_cancel₀ (mul_ne_zero _ _) h
-    apply mul_ne_zero
-    apply div_ne_zero
-    exact one_ne_zero
+    refine mul_left_cancel₀ (mul_ne_zero ?_ ?_) h
+    on_goal 1 => apply mul_ne_zero
+    on_goal 1 => apply div_ne_zero
+    · exact one_ne_zero
     all_goals assumption
 #align cancel_factors.cancel_factors_eq CancelDenoms.cancel_factors_eq
 
@@ -259,15 +260,18 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
 In the case of `LT`, `LE`, `GE`, and `GT` an order on the type is needed, in the last case
 it is not, the final component of the return value tracks this.
 -/
-def findCompLemma (e : Expr) : Option (Expr × Expr × Name × Bool) :=
-  match e.getAppFnArgs with
-  | (``LT.lt, #[_, _, a, b]) => (a, b, ``cancel_factors_lt, true)
-  | (``LE.le, #[_, _, a, b]) => (a, b, ``cancel_factors_le, true)
-  | (``Eq, #[_, a, b]) => (a, b, ``cancel_factors_eq, false)
-  | (``Ne, #[_, a, b]) => (a, b, ``cancel_factors_ne, false)
-  | (``GE.ge, #[_, _, a, b]) => (b, a, ``cancel_factors_le, true)
-  | (``GT.gt, #[_, _, a, b]) => (b, a, ``cancel_factors_lt, true)
-  | _ => none
+def findCompLemma (e : Expr) : MetaM (Option (Expr × Expr × Name × Bool)) := do
+  match (← whnfR e).getAppFnArgs with
+  | (``LT.lt, #[_, _, a, b]) => return (a, b, ``cancel_factors_lt, true)
+  | (``LE.le, #[_, _, a, b]) => return (a, b, ``cancel_factors_le, true)
+  | (``Eq, #[_, a, b]) => return (a, b, ``cancel_factors_eq, false)
+  -- `a ≠ b` reduces to `¬ a = b` under `whnf`
+  | (``Not, #[p]) => match (← whnfR p).getAppFnArgs with
+    | (``Eq, #[_, a, b]) => return (a, b, ``cancel_factors_ne, false)
+    | _ => return none
+  | (``GE.ge, #[_, _, a, b]) => return (b, a, ``cancel_factors_le, true)
+  | (``GT.gt, #[_, _, a, b]) => return (b, a, ``cancel_factors_lt, true)
+  | _ => return none
 
 /--
 `cancelDenominatorsInType h` assumes that `h` is of the form `lhs R rhs`,
@@ -276,7 +280,7 @@ It produces an Expression `h'` of the form `lhs' R rhs'` and a proof that `h = h
 Numeric denominators have been canceled in `lhs'` and `rhs'`.
 -/
 def cancelDenominatorsInType (h : Expr) : MetaM (Expr × Expr) := do
-  let some (lhs, rhs, lem, ord) := findCompLemma h | throwError "cannot kill factors"
+  let some (lhs, rhs, lem, ord) ← findCompLemma h | throwError m!"cannot kill factors"
   let (al, lhs_p) ← derive lhs
   let ⟨u, α, _⟩ ← inferTypeQ' lhs
   let amwo ← synthInstanceQ q(AddMonoidWithOne $α)
@@ -302,7 +306,7 @@ def cancelDenominatorsInType (h : Expr) : MetaM (Expr × Expr) := do
   let gcd_cond ← synthesizeUsingNormNum gcd_cond
   let pf ← mkAppM lem #[lhs_p, rhs_p, al_cond, ar_cond, gcd_cond]
   let pf_tp ← inferType pf
-  return ((findCompLemma pf_tp).elim default (Prod.fst ∘ Prod.snd), pf)
+  return ((← findCompLemma pf_tp).elim default (Prod.fst ∘ Prod.snd), pf)
 
 end CancelDenoms
 

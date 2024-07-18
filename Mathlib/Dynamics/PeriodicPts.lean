@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.List.Cycle
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.PNat.Basic
 import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.GroupTheory.GroupAction.Group
 
 #align_import dynamics.periodic_pts from "leanprover-community/mathlib"@"d07245fd37786daa997af4f1a73a49fa3b748408"
 
@@ -117,7 +117,7 @@ theorem right_of_add (hn : IsPeriodicPt f (n + m) x) (hm : IsPeriodicPt f n x) :
 protected theorem sub (hm : IsPeriodicPt f m x) (hn : IsPeriodicPt f n x) :
     IsPeriodicPt f (m - n) x := by
   rcases le_total n m with h | h
-  · refine' left_of_add _ hn
+  · refine left_of_add ?_ hn
     rwa [tsub_add_cancel_of_le h]
   · rw [tsub_eq_zero_iff_le.mpr h]
     apply isPeriodicPt_zero
@@ -170,7 +170,7 @@ protected theorem mod (hm : IsPeriodicPt f m x) (hn : IsPeriodicPt f n x) :
 protected theorem gcd (hm : IsPeriodicPt f m x) (hn : IsPeriodicPt f n x) :
     IsPeriodicPt f (m.gcd n) x := by
   revert hm hn
-  refine' Nat.gcd.induction m n (fun n _ hn => _) fun m n _ ih hm hn => _
+  refine Nat.gcd.induction m n (fun n _ hn => ?_) fun m n _ ih hm hn => ?_
   · rwa [Nat.gcd_zero_left]
   · rw [Nat.gcd_rec]
     exact ih (hn.mod hm) hm
@@ -371,9 +371,9 @@ theorem iterate_eq_iterate_iff_of_lt_minimalPeriod {m n : ℕ} (hm : m < minimal
 #align function.minimal_period_id Function.minimalPeriod_id
 
 theorem minimalPeriod_eq_one_iff_isFixedPt : minimalPeriod f x = 1 ↔ IsFixedPt f x := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [← iterate_one f]
-    refine' Function.IsPeriodicPt.isFixedPt _
+    refine Function.IsPeriodicPt.isFixedPt ?_
     rw [← h]
     exact isPeriodicPt_minimalPeriod f x
   · exact
@@ -446,7 +446,7 @@ theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Com
           minimalPeriod f x ∣ minimalPeriod (f ∘ g) x from
     hco.mul_dvd_of_dvd_of_dvd (this h hco) (h.comp_eq.symm ▸ this h.symm hco.symm)
   intro f g h hco
-  refine' hco.dvd_of_dvd_mul_left (IsPeriodicPt.left_of_comp h _ _).minimalPeriod_dvd
+  refine hco.dvd_of_dvd_mul_left (IsPeriodicPt.left_of_comp h ?_ ?_).minimalPeriod_dvd
   · exact (isPeriodicPt_minimalPeriod _ _).const_mul _
   · exact (isPeriodicPt_minimalPeriod _ _).mul_const _
 #align function.commute.minimal_period_of_comp_eq_mul_of_coprime Function.Commute.minimalPeriod_of_comp_eq_mul_of_coprime
@@ -505,7 +505,7 @@ theorem periodicOrbit_length : (periodicOrbit f x).length = minimalPeriod f x :=
 @[simp]
 theorem periodicOrbit_eq_nil_iff_not_periodic_pt :
     periodicOrbit f x = Cycle.nil ↔ x ∉ periodicPts f := by
-  simp only [periodicOrbit._eq_1, Cycle.coe_eq_nil, List.map_eq_nil, List.range_eq_nil]
+  simp only [periodicOrbit.eq_1, Cycle.coe_eq_nil, List.map_eq_nil, List.range_eq_nil]
   exact minimalPeriod_eq_zero_iff_nmem_periodicPts
 #align function.periodic_orbit_eq_nil_iff_not_periodic_pt Function.periodicOrbit_eq_nil_iff_not_periodic_pt
 
@@ -542,15 +542,11 @@ theorem nodup_periodicOrbit : (periodicOrbit f x).Nodup := by
   rwa [iterate_eq_iterate_iff_of_lt_minimalPeriod hm hn] at hmn
 #align function.nodup_periodic_orbit Function.nodup_periodicOrbit
 
-set_option linter.deprecated false in
 theorem periodicOrbit_apply_iterate_eq (hx : x ∈ periodicPts f) (n : ℕ) :
     periodicOrbit f (f^[n] x) = periodicOrbit f x :=
-  Eq.symm <|
-    Cycle.coe_eq_coe.2 <|
-      ⟨n, by
-        apply List.ext_nthLe _ fun m _ _ => _
-        · simp [minimalPeriod_apply_iterate hx]
-        · simp [List.nthLe_rotate, iterate_add_apply]⟩
+  Eq.symm <| Cycle.coe_eq_coe.2 <| .intro n <|
+    List.ext_get (by simp [minimalPeriod_apply_iterate hx]) fun m _ _ ↦ by
+      simp [List.getElem_rotate, iterate_add_apply]
 #align function.periodic_orbit_apply_iterate_eq Function.periodicOrbit_apply_iterate_eq
 
 theorem periodicOrbit_apply_eq (hx : x ∈ periodicPts f) :
@@ -564,7 +560,7 @@ theorem periodicOrbit_chain (r : α → α → Prop) {f : α → α} {x : α} :
   · have hx' := minimalPeriod_pos_of_mem_periodicPts hx
     have hM := Nat.sub_add_cancel (succ_le_iff.2 hx')
     rw [periodicOrbit, ← Cycle.map_coe, Cycle.chain_map, ← hM, Cycle.chain_range_succ]
-    refine' ⟨_, fun H => ⟨_, fun m hm => H _ (hm.trans (Nat.lt_succ_self _))⟩⟩
+    refine ⟨?_, fun H => ⟨?_, fun m hm => H _ (hm.trans (Nat.lt_succ_self _))⟩⟩
     · rintro ⟨hr, H⟩ n hn
       cases' eq_or_lt_of_le (Nat.lt_succ_iff.1 hn) with hM' hM'
       · rwa [hM', hM, iterate_minimalPeriod]
@@ -580,7 +576,7 @@ theorem periodicOrbit_chain (r : α → α → Prop) {f : α → α} {x : α} :
 theorem periodicOrbit_chain' (r : α → α → Prop) {f : α → α} {x : α} (hx : x ∈ periodicPts f) :
     (periodicOrbit f x).Chain r ↔ ∀ n, r (f^[n] x) (f^[n + 1] x) := by
   rw [periodicOrbit_chain r]
-  refine' ⟨fun H n => _, fun H n _ => H n⟩
+  refine ⟨fun H n => ?_, fun H n _ => H n⟩
   rw [iterate_succ_apply, ← iterate_mod_minimalPeriod_eq, ← iterate_mod_minimalPeriod_eq (n := n),
     ← iterate_succ_apply, minimalPeriod_apply hx]
   exact H _ (mod_lt _ (minimalPeriod_pos_of_mem_periodicPts hx))
@@ -593,11 +589,6 @@ end Function
 namespace Function
 
 variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
-
-@[simp]
-theorem iterate_prod_map (f : α → α) (g : β → β) (n : ℕ) :
-    (Prod.map f g)^[n] = Prod.map (f^[n]) (g^[n]) := by induction n <;> simp [*, Prod.map_comp_map]
-#align function.iterate_prod_map Function.iterate_prod_map
 
 @[simp]
 theorem isFixedPt_prod_map (x : α × β) :
@@ -676,9 +667,9 @@ theorem pow_smul_eq_iff_period_dvd {n : ℕ} {m : M} {a : α} :
 theorem zpow_smul_eq_iff_period_dvd {j : ℤ} {g : G} {a : α} :
     g ^ j • a = a ↔ (period g a : ℤ) ∣ j := by
   rcases j with n | n
-  · rw [Int.ofNat_eq_coe, zpow_natCast, Int.coe_nat_dvd, pow_smul_eq_iff_period_dvd]
-  · rw [Int.negSucc_coe, zpow_neg, zpow_natCast, inv_smul_eq_iff, eq_comm, dvd_neg, Int.coe_nat_dvd,
-      pow_smul_eq_iff_period_dvd]
+  · rw [Int.ofNat_eq_coe, zpow_natCast, Int.natCast_dvd_natCast, pow_smul_eq_iff_period_dvd]
+  · rw [Int.negSucc_coe, zpow_neg, zpow_natCast, inv_smul_eq_iff, eq_comm, dvd_neg,
+      Int.natCast_dvd_natCast, pow_smul_eq_iff_period_dvd]
 
 @[to_additive (attr := simp)]
 theorem pow_mod_period_smul (n : ℕ) {m : M} {a : α} :

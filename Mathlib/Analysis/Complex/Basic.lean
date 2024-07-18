@@ -1,5 +1,5 @@
 /-
-Copyright (c) Sébastien Gouëzel. All rights reserved.
+Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
@@ -13,26 +13,29 @@ import Mathlib.Topology.Instances.RealVectorSpace
 #align_import analysis.complex.basic from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
 /-!
+
 # Normed space structure on `ℂ`.
 
-This file gathers basic facts on complex numbers of an analytic nature.
+This file gathers basic facts of analytic nature on the complex numbers.
 
 ## Main results
 
-This file registers `ℂ` as a normed field, expresses basic properties of the norm, and gives
-tools on the real vector space structure of `ℂ`. Notably, in the namespace `Complex`,
-it defines functions:
+This file registers `ℂ` as a normed field, expresses basic properties of the norm, and gives tools
+on the real vector space structure of `ℂ`. Notably, it defines the following functions in the
+namespace `Complex`.
 
-* `reCLM`
-* `imCLM`
-* `ofRealCLM`
-* `conjCLE`
-
-They are bundled versions of the real part, the imaginary part, the embedding of `ℝ` in `ℂ`, and
-the complex conjugate as continuous `ℝ`-linear maps. The last two are also bundled as linear
-isometries in `ofRealLI` and `conjLIE`.
+|Name              |Type         |Description                                             |
+|------------------|-------------|--------------------------------------------------------|
+|`equivRealProdCLM`|ℂ ≃L[ℝ] ℝ × ℝ|The natural `ContinuousLinearEquiv` from `ℂ` to `ℝ × ℝ` |
+|`reCLM`           |ℂ →L[ℝ] ℝ    |Real part function as a `ContinuousLinearMap`           |
+|`imCLM`           |ℂ →L[ℝ] ℝ    |Imaginary part function as a `ContinuousLinearMap`      |
+|`ofRealCLM`       |ℝ →L[ℝ] ℂ    |Embedding of the reals as a `ContinuousLinearMap`       |
+|`ofRealLI`        |ℝ →ₗᵢ[ℝ] ℂ   |Complex conjugation as a `LinearIsometry`               |
+|`conjCLE`         |ℂ ≃L[ℝ] ℂ    |Complex conjugation as a `ContinuousLinearEquiv`        |
+|`conjLIE`         |ℂ ≃ₗᵢ[ℝ] ℂ   |Complex conjugation as a `LinearIsometryEquiv`          |
 
 We also register the fact that `ℂ` is an `RCLike` field.
+
 -/
 
 
@@ -60,7 +63,7 @@ theorem norm_exp_ofReal_mul_I (t : ℝ) : ‖exp (t * I)‖ = 1 := by
 set_option linter.uppercaseLean3 false in
 #align complex.norm_exp_of_real_mul_I Complex.norm_exp_ofReal_mul_I
 
-instance : NormedAddCommGroup ℂ :=
+instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
   AddGroupNorm.toNormedAddCommGroup
     { abs with
       map_zero' := map_zero abs
@@ -99,14 +102,14 @@ theorem dist_eq (z w : ℂ) : dist z w = abs (z - w) :=
   rfl
 #align complex.dist_eq Complex.dist_eq
 
-theorem dist_eq_re_im (z w : ℂ) : dist z w = Real.sqrt ((z.re - w.re) ^ 2 + (z.im - w.im) ^ 2) := by
+theorem dist_eq_re_im (z w : ℂ) : dist z w = √((z.re - w.re) ^ 2 + (z.im - w.im) ^ 2) := by
   rw [sq, sq]
   rfl
 #align complex.dist_eq_re_im Complex.dist_eq_re_im
 
 @[simp]
 theorem dist_mk (x₁ y₁ x₂ y₂ : ℝ) :
-    dist (mk x₁ y₁) (mk x₂ y₂) = Real.sqrt ((x₁ - x₂) ^ 2 + (y₁ - y₂) ^ 2) :=
+    dist (mk x₁ y₁) (mk x₂ y₂) = √((x₁ - x₂) ^ 2 + (y₁ - y₂) ^ 2) :=
   dist_eq_re_im _ _
 #align complex.dist_mk Complex.dist_mk
 
@@ -161,7 +164,7 @@ theorem norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ :=
 
 @[simp 1100]
 theorem norm_rat (r : ℚ) : ‖(r : ℂ)‖ = |(r : ℝ)| := by
-  rw [← ofReal_rat_cast]
+  rw [← ofReal_ratCast]
   exact norm_real _
 #align complex.norm_rat Complex.norm_rat
 
@@ -243,7 +246,7 @@ instance instT2Space : T2Space ℂ := TopologicalSpace.t2Space_of_metrizableSpac
 /-- The natural `ContinuousLinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
 def equivRealProdCLM : ℂ ≃L[ℝ] ℝ × ℝ :=
-  equivRealProdLm.toContinuousLinearEquivOfBounds 1 (Real.sqrt 2) equivRealProd_apply_le' fun p =>
+  equivRealProdLm.toContinuousLinearEquivOfBounds 1 (√2) equivRealProd_apply_le' fun p =>
     abs_le_sqrt_two_mul_max (equivRealProd.symm p)
 #align complex.equiv_real_prod_clm Complex.equivRealProdCLM
 
@@ -259,8 +262,8 @@ theorem tendsto_abs_cocompact_atTop : Tendsto abs (cocompact ℂ) atTop :=
 #align complex.tendsto_abs_cocompact_at_top Complex.tendsto_abs_cocompact_atTop
 
 /-- The `normSq` function on `ℂ` is proper. -/
-theorem tendsto_normSq_cocompact_atTop : Tendsto normSq (cocompact ℂ) atTop :=
-  by simpa [mul_self_abs]
+theorem tendsto_normSq_cocompact_atTop : Tendsto normSq (cocompact ℂ) atTop := by
+  simpa [mul_self_abs]
     using tendsto_abs_cocompact_atTop.atTop_mul_atTop tendsto_abs_cocompact_atTop
 #align complex.tendsto_norm_sq_cocompact_at_top Complex.tendsto_normSq_cocompact_atTop
 
@@ -612,7 +615,7 @@ variable {𝕜}
 
 theorem hasSum_iff (f : α → 𝕜) (c : 𝕜) :
     HasSum f c ↔ HasSum (fun x => re (f x)) (re c) ∧ HasSum (fun x => im (f x)) (im c) := by
-  refine' ⟨fun h => ⟨hasSum_re _ h, hasSum_im _ h⟩, _⟩
+  refine ⟨fun h => ⟨hasSum_re _ h, hasSum_im _ h⟩, ?_⟩
   rintro ⟨h₁, h₂⟩
   simpa only [re_add_im] using
     ((hasSum_ofReal 𝕜).mpr h₁).add (((hasSum_ofReal 𝕜).mpr h₂).mul_right I)
@@ -726,12 +729,15 @@ lemma neg_ofReal_mem_slitPlane {x : ℝ} : -↑x ∈ slitPlane ↔ x < 0 := by
 lemma zero_not_mem_slitPlane : 0 ∉ slitPlane := mt ofReal_mem_slitPlane.1 (lt_irrefl _)
 
 @[simp]
-lemma nat_cast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by
+lemma natCast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by
   simpa [pos_iff_ne_zero] using @ofReal_mem_slitPlane n
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_mem_slitPlane := natCast_mem_slitPlane
 
 @[simp]
 lemma ofNat_mem_slitPlane (n : ℕ) [n.AtLeastTwo] : no_index (OfNat.ofNat n) ∈ slitPlane :=
-  nat_cast_mem_slitPlane.2 (NeZero.ne n)
+  natCast_mem_slitPlane.2 (NeZero.ne n)
 
 lemma mem_slitPlane_iff_not_le_zero {z : ℂ} : z ∈ slitPlane ↔ ¬z ≤ 0 :=
   mem_slitPlane_iff.trans not_le_zero_iff.symm

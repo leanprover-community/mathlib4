@@ -23,7 +23,7 @@ This condition comes up in the rearrangement inequality. See `Algebra.Order.Rear
 * `Monovary f g`: `f` monovaries with `g`. If `g i < g j`, then `f i ≤ f j`.
 * `Antivary f g`: `f` antivaries with `g`. If `g i < g j`, then `f j ≤ f i`.
 * `MonovaryOn f g s`: `f` monovaries with `g` on `s`.
-* `MonovaryOn f g s`: `f` antivaries with `g` on `s`.
+* `AntivaryOn f g s`: `f` antivaries with `g` on `s`.
 -/
 
 
@@ -312,7 +312,7 @@ end PartialOrder
 
 variable [LinearOrder ι]
 
-/-Porting note: Due to a bug in `alias`, many of the below lemmas have dot notation removed in the
+/- Porting note: Due to a bug in `alias`, many of the below lemmas have dot notation removed in the
 proof-/
 
 protected theorem Monotone.monovary (hf : Monotone f) (hg : Monotone g) : Monovary f g :=

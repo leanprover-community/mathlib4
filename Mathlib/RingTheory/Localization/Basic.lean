@@ -6,8 +6,8 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.GroupTheory.MonoidLocalization
+import Mathlib.RingTheory.OreLocalization.Ring
 import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.GroupTheory.GroupAction.Ring
 
 #align_import ring_theory.localization.basic from "leanprover-community/mathlib"@"b69c9a770ecf37eb21f7b8cf4fa00de3b62694ec"
 
@@ -85,8 +85,6 @@ commutative ring, field of fractions
 
 
 open Function
-
-open BigOperators
 
 section CommSemiring
 
@@ -231,8 +229,8 @@ variable (M S)
 
 theorem map_eq_zero_iff (r : R) : algebraMap R S r = 0 ↔ ∃ m : M, ↑m * r = 0 := by
   constructor
-  intro h
-  · obtain ⟨m, hm⟩ := (IsLocalization.eq_iff_exists M S).mp ((algebraMap R S).map_zero.trans h.symm)
+  · intro h
+    obtain ⟨m, hm⟩ := (IsLocalization.eq_iff_exists M S).mp ((algebraMap R S).map_zero.trans h.symm)
     exact ⟨m, by simpa using hm.symm⟩
   · rintro ⟨m, hm⟩
     rw [← (IsLocalization.map_units S m).mul_right_inj, mul_zero, ← RingHom.map_mul, hm,
@@ -298,6 +296,10 @@ theorem mk'_add_eq_iff_add_mul_eq_mul {x} {y : M} {z₁ z₂} :
     mk' S x y + z₁ = z₂ ↔ algebraMap R S x + z₁ * algebraMap R S y = z₂ * algebraMap R S y := by
   rw [← mk'_spec S x y, ← IsUnit.mul_left_inj (IsLocalization.map_units S y), right_distrib]
 #align is_localization.mk'_add_eq_iff_add_mul_eq_mul IsLocalization.mk'_add_eq_iff_add_mul_eq_mul
+
+theorem mk'_pow (x : R) (y : M) (n : ℕ) : mk' S (x ^ n) (y ^ n) = mk' S x y ^ n := by
+  simp_rw [IsLocalization.mk'_eq_iff_eq_mul, SubmonoidClass.coe_pow, map_pow, ← mul_pow]
+  simp
 
 variable (M)
 
@@ -646,7 +648,6 @@ theorem map_mk' (x) (y : M) : map Q g hy (mk' S x y) = mk' Q (g x) ⟨g y, hy y.
     (fun y => hy y.2) (k := toLocalizationMap T Q) ..
 #align is_localization.map_mk' IsLocalization.map_mk'
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem map_id_mk' {Q : Type*} [CommSemiring Q] [Algebra R Q] [IsLocalization M Q] (x) (y : M) :
     map Q (RingHom.id R) (le_refl M) (mk' S x y) = mk' Q x y :=
@@ -751,8 +752,8 @@ noncomputable def algEquiv : S ≃ₐ[R] Q :=
 end
 
 -- Porting note (#10618): removed `simp`, `simp` can prove it
-theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y :=
-  by simp
+theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y := by
+  simp
 #align is_localization.alg_equiv_mk' IsLocalization.algEquiv_mk'
 
 -- Porting note (#10618): removed `simp`, `simp` can prove it
@@ -773,7 +774,7 @@ variable (R M)
 
 /-- The localization at a module of units is isomorphic to the ring. -/
 noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
-  refine' AlgEquiv.ofBijective (Algebra.ofId R S) ⟨_, _⟩
+  refine AlgEquiv.ofBijective (Algebra.ofId R S) ⟨?_, ?_⟩
   · intro x y hxy
     obtain ⟨c, eq⟩ := (IsLocalization.eq_iff_exists M S).mp hxy
     obtain ⟨u, hu⟩ := H c.prop
@@ -798,6 +799,11 @@ theorem map_injective_of_injective (h : Function.Injective g) [IsLocalization (M
     Function.Injective (map Q g M.le_comap_map : S → Q) :=
   (toLocalizationMap M S).map_injective_of_injective h (toLocalizationMap (M.map g) Q)
 
+/-- Surjectivity of a map descends to the map induced on localizations. -/
+theorem map_surjective_of_surjective (h : Function.Surjective g) [IsLocalization (M.map g) Q] :
+    Function.Surjective (map Q g M.le_comap_map : S → Q) :=
+  (toLocalizationMap M S).map_surjective_of_surjective h (toLocalizationMap (M.map g) Q)
+
 end
 
 end IsLocalization
@@ -815,7 +821,7 @@ theorem isLocalization_of_algEquiv [Algebra R P] [IsLocalization M S] (h : S ≃
   · intro y
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj M (h.symm y)
     apply_fun (show S → P from h) at e
-    simp only [h.map_mul, h.apply_symm_apply, h.commutes] at e
+    simp only [map_mul, h.apply_symm_apply, h.commutes] at e
     exact ⟨⟨x, s⟩, e⟩
   · intro x y
     rw [← h.symm.toEquiv.injective.eq_iff, ← IsLocalization.eq_iff_exists M S, ← h.symm.commutes, ←
@@ -848,7 +854,7 @@ theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
     exact congr_arg _ (h.symm_apply_apply _)
   · intro y
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj M y
-    refine' ⟨⟨h x, _, _, s.prop, rfl⟩, _⟩
+    refine ⟨⟨h x, _, _, s.prop, rfl⟩, ?_⟩
     dsimp only [RingHom.algebraMap_toAlgebra, RingHom.comp_apply] at e ⊢
     convert e <;> exact h.symm_apply_apply _
   · intro x y
@@ -865,7 +871,7 @@ theorem isLocalization_iff_of_base_ringEquiv (h : R ≃+* P) :
       haveI := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
       IsLocalization (M.map h.toMonoidHom) S := by
   letI : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
-  refine' ⟨fun _ => isLocalization_of_base_ringEquiv M S h, _⟩
+  refine ⟨fun _ => isLocalization_of_base_ringEquiv M S h, ?_⟩
   intro H
   convert isLocalization_of_base_ringEquiv (Submonoid.map (RingEquiv.toMonoidHom h) M) S h.symm
   · erw [Submonoid.map_equiv_eq_comap_symm, Submonoid.comap_map_eq_of_injective]
@@ -909,83 +915,24 @@ open IsLocalization
 section
 
 instance instUniqueLocalization [Subsingleton R] : Unique (Localization M) where
-  uniq a := show a = mk 1 1 from
-    Localization.induction_on a fun _ => by
+  uniq a := by
+    with_unfolding_all show a = mk 1 1
+    exact Localization.induction_on a fun _ => by
       congr <;> apply Subsingleton.elim
-
-/-- Addition in a ring localization is defined as `⟨a, b⟩ + ⟨c, d⟩ = ⟨b * c + d * a, b * d⟩`.
-
-Should not be confused with `AddLocalization.add`, which is defined as
-`⟨a, b⟩ + ⟨c, d⟩ = ⟨a + c, b + d⟩`.
--/
-protected irreducible_def add (z w : Localization M) : Localization M :=
-  Localization.liftOn₂ z w (fun a b c d => mk ((b : R) * c + d * a) (b * d))
-    fun {a a' b b' c c' d d'} h1 h2 =>
-    mk_eq_mk_iff.2
-      (by
-        rw [r_eq_r'] at h1 h2 ⊢
-        cases' h1 with t₅ ht₅
-        cases' h2 with t₆ ht₆
-        use t₅ * t₆
-        dsimp only
-        calc
-          ↑t₅ * ↑t₆ * (↑b' * ↑d' * ((b : R) * c + d * a)) =
-              t₆ * (d' * c) * (t₅ * (b' * b)) + t₅ * (b' * a) * (t₆ * (d' * d)) :=
-            by ring
-          _ = t₅ * t₆ * (b * d * (b' * c' + d' * a')) := by rw [ht₆, ht₅]; ring
-          )
-#align localization.add Localization.add
-
-instance : Add (Localization M) :=
-  ⟨Localization.add⟩
 
 theorem add_mk (a b c d) : (mk a b : Localization M) + mk c d =
     mk ((b : R) * c + (d : R) * a) (b * d) := by
-  show Localization.add (mk a b) (mk c d) = mk _ _
-  simp [Localization.add_def]
+  rw [add_comm (b * c) (d * a), mul_comm b d]
+  exact OreLocalization.oreDiv_add_oreDiv
+
 #align localization.add_mk Localization.add_mk
 
 theorem add_mk_self (a b c) : (mk a b : Localization M) + mk c b = mk (a + c) b := by
   rw [add_mk, mk_eq_mk_iff, r_eq_r']
-  refine' (r' M).symm ⟨1, _⟩
+  refine (r' M).symm ⟨1, ?_⟩
   simp only [Submonoid.coe_one, Submonoid.coe_mul]
   ring
 #align localization.add_mk_self Localization.add_mk_self
-
-local macro "localization_tac" : tactic =>
-  `(tactic|
-   { intros
-     simp only [add_mk, Localization.mk_mul, ← Localization.mk_zero 1]
-     refine mk_eq_mk_iff.mpr (r_of_eq ?_)
-     simp only [Submonoid.coe_mul]
-     ring })
-
-instance : CommSemiring (Localization M) :=
-  { (show CommMonoidWithZero (Localization M) by infer_instance) with
-    add := (· + ·)
-    nsmul := (· • ·)
-    nsmul_zero := fun x =>
-      Localization.induction_on x fun x => by simp only [smul_mk, zero_nsmul, mk_zero]
-    nsmul_succ := fun n x =>
-      Localization.induction_on x fun x => by simp only [smul_mk, succ_nsmul, add_mk_self]
-    add_assoc := fun m n k =>
-      Localization.induction_on₃ m n k
-        (by localization_tac)
-    zero_add := fun y =>
-      Localization.induction_on y
-        (by localization_tac)
-    add_zero := fun y =>
-      Localization.induction_on y
-        (by localization_tac)
-    add_comm := fun y z =>
-      Localization.induction_on₂ z y
-        (by localization_tac)
-    left_distrib := fun m n k =>
-      Localization.induction_on₃ m n k
-        (by localization_tac)
-    right_distrib := fun m n k =>
-      Localization.induction_on₃ m n k
-        (by localization_tac) }
 
 /-- For any given denominator `b : M`, the map `a ↦ a / b` is an `AddMonoidHom` from `R` to
   `Localization M`-/
@@ -997,69 +944,17 @@ def mkAddMonoidHom (b : M) : R →+ Localization M where
 #align localization.mk_add_monoid_hom Localization.mkAddMonoidHom
 
 theorem mk_sum {ι : Type*} (f : ι → R) (s : Finset ι) (b : M) :
-    mk (∑ i in s, f i) b = ∑ i in s, mk (f i) b :=
+    mk (∑ i ∈ s, f i) b = ∑ i ∈ s, mk (f i) b :=
   map_sum (mkAddMonoidHom b) f s
 #align localization.mk_sum Localization.mk_sum
 
 theorem mk_list_sum (l : List R) (b : M) : mk l.sum b = (l.map fun a => mk a b).sum :=
-  (mkAddMonoidHom b).map_list_sum l
+  map_list_sum (mkAddMonoidHom b) l
 #align localization.mk_list_sum Localization.mk_list_sum
 
 theorem mk_multiset_sum (l : Multiset R) (b : M) : mk l.sum b = (l.map fun a => mk a b).sum :=
   (mkAddMonoidHom b).map_multiset_sum l
 #align localization.mk_multiset_sum Localization.mk_multiset_sum
-
-instance {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] :
-    DistribMulAction S (Localization M) where
-  smul_zero s := by simp only [← Localization.mk_zero 1, Localization.smul_mk, smul_zero]
-  smul_add s x y :=
-    Localization.induction_on₂ x y <|
-      Prod.rec fun r₁ x₁ =>
-        Prod.rec fun r₂ x₂ => by
-          simp only [Localization.smul_mk, Localization.add_mk, smul_add, mul_comm _ (s • _),
-            mul_comm _ r₁, mul_comm _ r₂, smul_mul_assoc]
-
-instance {S : Type*} [Semiring S] [MulSemiringAction S R] [IsScalarTower S R R] :
-    MulSemiringAction S (Localization M) :=
-  { inferInstanceAs (MulDistribMulAction S (Localization M)),
-    inferInstanceAs (DistribMulAction S (Localization M)) with }
-
-instance {S : Type*} [Semiring S] [Module S R] [IsScalarTower S R R] : Module S (Localization M) :=
-  { inferInstanceAs (DistribMulAction S (Localization M)) with
-    zero_smul :=
-      Localization.ind <|
-        Prod.rec <| by
-          intros
-          simp only [Localization.smul_mk, zero_smul, mk_zero]
-    add_smul := fun s₁ s₂ =>
-      Localization.ind <|
-        Prod.rec <| by
-          intros
-          simp only [Localization.smul_mk, add_smul, add_mk_self] }
-
-instance algebra {S : Type*} [CommSemiring S] [Algebra S R] : Algebra S (Localization M) where
-  toRingHom :=
-    RingHom.comp
-      { Localization.monoidOf M with
-        toFun := (monoidOf M).toMap
-        map_zero' := by rw [← mk_zero (1 : M), mk_one_eq_monoidOf_mk]
-        map_add' := fun x y => by
-          simp only [← mk_one_eq_monoidOf_mk, add_mk, Submonoid.coe_one, one_mul, add_comm] }
-      (algebraMap S R)
-  smul_def' s :=
-    Localization.ind <|
-      Prod.rec <| by
-        intro r x
-        dsimp
-        simp only [← mk_one_eq_monoidOf_mk, mk_mul, Localization.smul_mk, one_mul,
-          Algebra.smul_def]
-  commutes' s :=
-    Localization.ind <|
-      Prod.rec <| by
-        intro r x
-        dsimp
-        simp only [← mk_one_eq_monoidOf_mk, mk_mul, Localization.smul_mk, one_mul, mul_one,
-          Algebra.commutes]
 
 instance isLocalization : IsLocalization M (Localization M) where
   map_units' := (Localization.monoidOf M).map_units
@@ -1096,9 +991,12 @@ theorem mk_algebraMap {A : Type*} [CommSemiring A] [Algebra A R] (m : A) :
   rw [mk_eq_mk', mk'_eq_iff_eq_mul, Submonoid.coe_one, map_one, mul_one]; rfl
 #align localization.mk_algebra_map Localization.mk_algebraMap
 
-theorem mk_nat_cast (m : ℕ) : (mk m 1 : Localization M) = m := by
+theorem mk_natCast (m : ℕ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℕ) _
-#align localization.mk_nat_cast Localization.mk_nat_cast
+#align localization.mk_nat_cast Localization.mk_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias mk_nat_cast := mk_natCast
 
 variable [IsLocalization M S]
 
@@ -1158,64 +1056,20 @@ variable [Algebra R S] {P : Type*} [CommRing P]
 
 namespace Localization
 
-/-- Negation in a ring localization is defined as `-⟨a, b⟩ = ⟨-a, b⟩`. -/
-protected irreducible_def neg (z : Localization M) : Localization M :=
-  Localization.liftOn z (fun a b => mk (-a) b) fun {a b c d} h =>
-    mk_eq_mk_iff.2
-      (by
-        rw [r_eq_r'] at h ⊢
-        cases' h with t ht
-        use t
-        rw [mul_neg, mul_neg, ht]
-        ring_nf)
-#align localization.neg Localization.neg
-
-instance : Neg (Localization M) :=
-  ⟨Localization.neg⟩
-
-theorem neg_mk (a b) : -(mk a b : Localization M) = mk (-a) b := by
-  show Localization.neg (mk a b) = mk (-a) b
-  rw [Localization.neg_def]
-  apply liftOn_mk
+theorem neg_mk (a b) : -(mk a b : Localization M) = mk (-a) b := OreLocalization.neg_def _ _
 #align localization.neg_mk Localization.neg_mk
 
-instance : CommRing (Localization M) :=
-  { inferInstanceAs (CommSemiring (Localization M)) with
-    zsmul := (· • ·)
-    zsmul_zero' := fun x =>
-      Localization.induction_on x fun x => by simp only [smul_mk, zero_zsmul, mk_zero]
-    zsmul_succ' := fun n x =>
-      Localization.induction_on x fun x => by
-        simp [smul_mk, add_mk_self, -mk_eq_monoidOf_mk', add_smul]
-    zsmul_neg' := fun n x =>
-      Localization.induction_on x fun x => by
-        dsimp only
-        rw [smul_mk, smul_mk, neg_mk, ← neg_smul]
-        rfl
-    neg := Neg.neg
-    sub := fun x y => x + -y
-    sub_eq_add_neg := fun x y => rfl
-    add_left_neg := fun y =>
-      Localization.induction_on y
-        (by
-          intros
-          simp only [add_mk, Localization.mk_mul, neg_mk, ← mk_zero 1]
-          refine' mk_eq_mk_iff.mpr (r_of_eq _)
-          simp only [Submonoid.coe_mul]
-          ring) }
-
 theorem sub_mk (a c) (b d) : (mk a b : Localization M) - mk c d =
-    mk ((d : R) * a - b * c) (b * d) :=
-  calc
-    mk a b - mk c d = mk a b + -mk c d := sub_eq_add_neg _ _
-    _ = mk a b + mk (-c) d := by rw [neg_mk]
-    _ = mk (b * -c + d * a) (b * d) := (add_mk _ _ _ _)
-    _ = mk (d * a - b * c) (b * d) := by congr; ring
+    mk ((d : R) * a - b * c) (b * d) := by
+  rw [sub_eq_add_neg, neg_mk, add_mk, add_comm, mul_neg, ← sub_eq_add_neg]
 #align localization.sub_mk Localization.sub_mk
 
-theorem mk_int_cast (m : ℤ) : (mk m 1 : Localization M) = m := by
+theorem mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℤ) _
-#align localization.mk_int_cast Localization.mk_int_cast
+#align localization.mk_int_cast Localization.mk_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias mk_int_cast := mk_intCast
 
 end Localization
 
@@ -1264,9 +1118,7 @@ variable {Q : Type*} [CommRing Q] {g : R →+* P} [Algebra P Q]
 variable (A : Type*) [CommRing A] [IsDomain A]
 
 /-- A `CommRing` `S` which is the localization of a ring `R` without zero divisors at a subset of
-non-zero elements does not have zero divisors.
-See note [reducible non-instances]. -/
-@[reducible]
+non-zero elements does not have zero divisors. -/
 theorem noZeroDivisors_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [IsLocalization M S]
     (hM : M ≤ nonZeroDivisors A) : NoZeroDivisors S :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := by
@@ -1283,9 +1135,7 @@ theorem noZeroDivisors_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [Is
 #align is_localization.no_zero_divisors_of_le_non_zero_divisors IsLocalization.noZeroDivisors_of_le_nonZeroDivisors
 
 /-- A `CommRing` `S` which is the localization of an integral domain `R` at a subset of
-non-zero elements is an integral domain.
-See note [reducible non-instances]. -/
-@[reducible]
+non-zero elements is an integral domain. -/
 theorem isDomain_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [IsLocalization M S]
     (hM : M ≤ nonZeroDivisors A) : IsDomain S := by
   apply @NoZeroDivisors.to_isDomain _ _ (id _) (id _)
@@ -1297,9 +1147,7 @@ theorem isDomain_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [IsLocali
 
 variable {A}
 
-/-- The localization of an integral domain to a set of non-zero elements is an integral domain.
-See note [reducible non-instances]. -/
-@[reducible]
+/-- The localization of an integral domain to a set of non-zero elements is an integral domain. -/
 theorem isDomain_localization {M : Submonoid A} (hM : M ≤ nonZeroDivisors A) :
     IsDomain (Localization M) :=
   isDomain_of_le_nonZeroDivisors _ hM
@@ -1315,7 +1163,7 @@ theorem IsField.localization_map_bijective {R Rₘ : Type*} [CommRing R] [CommRi
     Function.Bijective (algebraMap R Rₘ) := by
   letI := hR.toField
   replace hM := le_nonZeroDivisors_of_noZeroDivisors hM
-  refine' ⟨IsLocalization.injective _ hM, fun x => _⟩
+  refine ⟨IsLocalization.injective _ hM, fun x => ?_⟩
   obtain ⟨r, ⟨m, hm⟩, rfl⟩ := mk'_surjective M x
   obtain ⟨n, hn⟩ := hR.mul_inv_cancel (nonZeroDivisors.ne_zero <| hM hm)
   exact ⟨r * n, by erw [eq_mk'_iff_mul_eq, ← map_mul, mul_assoc, _root_.mul_comm n, hn, mul_one]⟩

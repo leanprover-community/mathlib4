@@ -63,11 +63,11 @@ lemma disjoint_memPartition (f : ℕ → Set α) (n : ℕ) {u v : Set α}
     obtain ⟨u', hu', hu'_eq⟩ := hu
     obtain ⟨v', hv', hv'_eq⟩ := hv
     rcases hu'_eq with rfl | rfl <;> rcases hv'_eq with rfl | rfl
-    · refine Disjoint.mono (inter_subset_left _ _) (inter_subset_left _ _) (ih hu' hv' ?_)
+    · refine Disjoint.mono inter_subset_left inter_subset_left (ih hu' hv' ?_)
       exact fun huv' ↦ huv (huv' ▸ rfl)
-    · exact Disjoint.mono_left (inter_subset_right _ _) Set.disjoint_sdiff_right
-    · exact Disjoint.mono_right (inter_subset_right _ _) Set.disjoint_sdiff_left
-    · refine Disjoint.mono (diff_subset _ _) (diff_subset _ _) (ih hu' hv' ?_)
+    · exact Disjoint.mono_left inter_subset_right Set.disjoint_sdiff_right
+    · exact Disjoint.mono_right inter_subset_right Set.disjoint_sdiff_left
+    · refine Disjoint.mono diff_subset diff_subset (ih hu' hv' ?_)
       exact fun huv' ↦ huv (huv' ▸ rfl)
 
 @[simp]
@@ -118,6 +118,7 @@ lemma memPartitionSet_succ (f : ℕ → Set α) (n : ℕ) (a : α) [Decidable (a
     memPartitionSet f (n + 1) a
       = if a ∈ f n then memPartitionSet f n a ∩ f n else memPartitionSet f n a \ f n := by
   simp [memPartitionSet]
+  congr
 
 lemma memPartitionSet_mem (f : ℕ → Set α) (n : ℕ) (a : α) :
     memPartitionSet f n a ∈ memPartition f n := by

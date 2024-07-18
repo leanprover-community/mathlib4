@@ -3,7 +3,6 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.Algebra.Function.Indicator
 import Mathlib.Order.Filter.AtTopBot
 
 #align_import order.filter.indicator_function from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
@@ -133,3 +132,8 @@ theorem Filter.EventuallyEq.of_mulIndicator [One β] {l : Filter α} {f : α →
 theorem Filter.EventuallyEq.of_mulIndicator_const [One β] {l : Filter α} {c : β} (hc : c ≠ 1)
     {s t : Set α} (h : s.mulIndicator (fun _ ↦ c) =ᶠ[l] t.mulIndicator fun _ ↦ c) : s =ᶠ[l] t :=
   .of_mulIndicator (eventually_of_forall fun _ ↦ hc) h
+
+@[to_additive]
+theorem Filter.mulIndicator_const_eventuallyEq [One β] {l : Filter α} {c : β} (hc : c ≠ 1)
+    {s t : Set α} : s.mulIndicator (fun _ ↦ c) =ᶠ[l] t.mulIndicator (fun _ ↦ c) ↔ s =ᶠ[l] t :=
+  ⟨.of_mulIndicator_const hc, mulIndicator_eventuallyEq .rfl⟩

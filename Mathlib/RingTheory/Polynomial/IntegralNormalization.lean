@@ -3,9 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
-import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.Degree.Lemmas
-import Mathlib.Data.Polynomial.Monic
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Monic
 
 #align_import data.polynomial.integral_normalization from "leanprover-community/mathlib"@"6f401acf4faec3ab9ab13a42789c4f68064a61cd"
 
@@ -16,7 +16,7 @@ We define `integralNormalization`, which relate arbitrary polynomials to monic o
 -/
 
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Polynomial
 
@@ -36,7 +36,7 @@ a monic polynomial with root `leadingCoeff f * z`.
 Moreover, `integralNormalization 0 = 0`.
 -/
 noncomputable def integralNormalization (f : R[X]) : R[X] :=
-  ∑ i in f.support,
+  ∑ i ∈ f.support,
     monomial i (if f.degree = i then 1 else coeff f i * f.leadingCoeff ^ (f.natDegree - 1 - i))
 #align polynomial.integral_normalization Polynomial.integralNormalization
 
@@ -96,7 +96,7 @@ theorem support_integralNormalization {f : R[X]} :
     (integralNormalization f).support = f.support := by
   by_cases hf : f = 0; · simp [hf]
   ext i
-  refine' ⟨fun h => integralNormalization_support h, _⟩
+  refine ⟨fun h => integralNormalization_support h, ?_⟩
   simp only [integralNormalization_coeff, mem_support_iff]
   intro hfi
   split_ifs with hi <;> simp [hf, hfi, hi]

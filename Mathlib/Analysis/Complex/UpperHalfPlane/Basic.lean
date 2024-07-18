@@ -3,11 +3,12 @@ Copyright (c) 2021 Alex Kontorovich and Heather Macbeth and Marc Masdeu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
-import Mathlib.Data.Fintype.Parity
-import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
+import Mathlib.Data.Fintype.Parity
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.LinearCombination
 
 #align_import analysis.complex.upper_half_plane.basic from "leanprover-community/mathlib"@"34d3797325d202bd7250431275bb871133cdb611"
@@ -30,7 +31,7 @@ noncomputable section
 
 open Matrix Matrix.SpecialLinearGroup
 
-open scoped Classical BigOperators MatrixGroups
+open scoped Classical MatrixGroups
 
 /- Disable these instances as they are not the simp-normal form, and having them disabled ensures
 we state lemmas in this file without spurious `coe_fn` terms. -/
@@ -65,7 +66,8 @@ instance : Inhabited ℍ :=
 
 @[ext] theorem ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.eq h
 
-@[simp, norm_cast] theorem ext_iff {a b : ℍ} : (a : ℂ) = b ↔ a = b := Subtype.coe_inj
+protected theorem ext_iff {a b : ℍ} : a = b ↔ (a : ℂ) = b := Subtype.coe_inj.symm
+@[simp, norm_cast] theorem ext_iff' {a b : ℍ} : (a : ℂ) = b ↔ a = b := UpperHalfPlane.ext_iff.symm
 
 instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im :=
   Subtype.canLift fun (z : ℂ) => 0 < z.im
@@ -136,6 +138,18 @@ theorem im_ne_zero (z : ℍ) : z.im ≠ 0 :=
 theorem ne_zero (z : ℍ) : (z : ℂ) ≠ 0 :=
   mt (congr_arg Complex.im) z.im_ne_zero
 #align upper_half_plane.ne_zero UpperHalfPlane.ne_zero
+
+/-- Define I := √-1 as an element on the upper half plane. -/
+def I : ℍ := ⟨Complex.I, by simp⟩
+
+@[simp]
+lemma I_im : I.im = 1 := rfl
+
+@[simp]
+lemma I_re : I.re = 0 := rfl
+
+@[simp, norm_cast]
+lemma coe_I : I = Complex.I := rfl
 
 end UpperHalfPlane
 
@@ -230,10 +244,6 @@ def smulAux' (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ :=
   num g z / denom g z
 #align upper_half_plane.smul_aux' UpperHalfPlane.smulAux'
 
--- Adaptation note: after v4.7.0-rc1, there is a performance problem in `field_simp`.
--- (Part of the code was ignoring the `maxDischargeDepth` setting: now that we have to increase it,
--- other paths becomes slow.)
-set_option maxHeartbeats 400000 in
 theorem smulAux'_im (g : GL(2, ℝ)⁺) (z : ℍ) :
     (smulAux' g z).im = det ↑ₘg * z.im / Complex.normSq (denom g z) := by
   rw [smulAux', Complex.div_im]
@@ -301,14 +311,13 @@ def coe' : SL(2, ℤ) → GL(2, ℝ)⁺ := fun g => ((g : SL(2, ℝ)) : GL(2, �
 instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨coe'⟩
 
-set_option autoImplicit true in
 @[simp]
-theorem coe'_apply_complex : (Units.val <| Subtype.val <| coe' g) i j = (Subtype.val g i j : ℂ) :=
+theorem coe'_apply_complex {g : SL(2, ℤ)} {i j : Fin 2} :
+    (Units.val <| Subtype.val <| coe' g) i j = (Subtype.val g i j : ℂ) :=
   rfl
 
-set_option autoImplicit true in
 @[simp]
-theorem det_coe' : det (Units.val <| Subtype.val <| coe' g) = 1 := by
+theorem det_coe' {g : SL(2, ℤ)} : det (Units.val <| Subtype.val <| coe' g) = 1 := by
   simp only [SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, SpecialLinearGroup.det_coe, coe']
 
 instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
@@ -321,8 +330,7 @@ theorem SLOnGLPos_smul_apply (s : SL(2, ℤ)) (g : GL(2, ℝ)⁺) (z : ℍ) :
 #align upper_half_plane.SL_on_GL_pos_smul_apply UpperHalfPlane.ModularGroup.SLOnGLPos_smul_apply
 
 instance SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
-  smul_assoc := by
-    intro s g z
+  smul_assoc s g z := by
     simp only [SLOnGLPos_smul_apply]
     apply mul_smul'
 #align upper_half_plane.SL_to_GL_tower UpperHalfPlane.ModularGroup.SL_to_GL_tower
@@ -337,8 +345,7 @@ theorem subgroup_on_glpos_smul_apply (s : Γ) (g : GL(2, ℝ)⁺) (z : ℍ) :
 #align upper_half_plane.subgroup_on_GL_pos_smul_apply UpperHalfPlane.ModularGroup.subgroup_on_glpos_smul_apply
 
 instance subgroup_on_glpos : IsScalarTower Γ GL(2, ℝ)⁺ ℍ where
-  smul_assoc := by
-    intro s g z
+  smul_assoc s g z := by
     simp only [subgroup_on_glpos_smul_apply]
     apply mul_smul'
 #align upper_half_plane.subgroup_on_GL_pos UpperHalfPlane.ModularGroup.subgroup_on_glpos
@@ -511,7 +518,7 @@ theorem modular_S_smul (z : ℍ) : ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.i
 #align upper_half_plane.modular_S_smul UpperHalfPlane.modular_S_smul
 
 theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n : ℝ) +ᵥ z := by
-  rw [← ext_iff, coe_vadd, add_comm, specialLinearGroup_apply, coe_mk]
+  rw [UpperHalfPlane.ext_iff, coe_vadd, add_comm, specialLinearGroup_apply, coe_mk]
   -- Porting note: added `coeToGL` and merged `rw` and `simp`
   simp [coeToGL, ModularGroup.coe_T_zpow,
     of_apply, cons_val_zero, algebraMap.coe_one, Complex.ofReal_one, one_mul, cons_val_one,
@@ -525,7 +532,7 @@ theorem modular_T_smul (z : ℍ) : ModularGroup.T • z = (1 : ℝ) +ᵥ z := by
 theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : ↑ₘ[ℝ] g 1 0 = 0) :
     ∃ (u : { x : ℝ // 0 < x }) (v : ℝ), (g • · : ℍ → ℍ) = (v +ᵥ ·) ∘ (u • ·) := by
   obtain ⟨a, b, ha, rfl⟩ := g.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero hc
-  refine' ⟨⟨_, mul_self_pos.mpr ha⟩, b * a, _⟩
+  refine ⟨⟨_, mul_self_pos.mpr ha⟩, b * a, ?_⟩
   ext1 ⟨z, hz⟩; ext1
   suffices ↑a * z * a + b * a = b * a + a * a * z by
     -- Porting note: added `coeToGL` and merged `rw` and `simpa`
@@ -540,7 +547,7 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : ↑�
   have h_denom := denom_ne_zero g
   induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h
   replace hc : c ≠ 0 := by simpa using hc
-  refine' ⟨⟨_, mul_self_pos.mpr hc⟩, c * d, a / c, _⟩
+  refine ⟨⟨_, mul_self_pos.mpr hc⟩, c * d, a / c, ?_⟩
   ext1 ⟨z, hz⟩; ext1
   suffices (↑a * z + b) / (↑c * z + d) = a / c - (c * d + ↑c * ↑c * z)⁻¹ by
     -- Porting note: golfed broken proof
@@ -553,7 +560,7 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : ↑�
     exact mul_ne_zero hc h_denom
   replace h : (a * d - b * c : ℂ) = (1 : ℂ) := by norm_cast
   field_simp
-  linear_combination (-(z * (c:ℂ) ^ 2) - c * d) * h
+  linear_combination (-(z * (c : ℂ) ^ 2) - c * d) * h
 #align upper_half_plane.exists_SL2_smul_eq_of_apply_zero_one_ne_zero UpperHalfPlane.exists_SL2_smul_eq_of_apply_zero_one_ne_zero
 
 end UpperHalfPlane

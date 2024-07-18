@@ -3,8 +3,6 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-
-import Std.Data.RBMap.Basic
 import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
@@ -29,9 +27,7 @@ This is ultimately converted into a `Linexp` in the obvious way.
 `linearFormsAndMaxVar` is the main entry point into this file. Everything else is contained.
 -/
 
-set_option autoImplicit true
-
-open Linarith.Ineq Std
+open Linarith.Ineq Batteries
 
 section
 open Lean Elab Tactic Meta
@@ -41,7 +37,8 @@ open Lean Elab Tactic Meta
 and returns the value associated with this key if it exists.
 Otherwise, it fails.
 -/
-def List.findDefeq (red : TransparencyMode) (m : List (Expr × v)) (e : Expr) : MetaM v := do
+def List.findDefeq {v : Type} (red : TransparencyMode) (m : List (Expr × v)) (e : Expr) :
+    MetaM v := do
   if let some (_, n) ← m.findM? fun ⟨e', _⟩ => withTransparency red (isDefEq e e') then
     return n
   else
@@ -53,7 +50,8 @@ We introduce a local instance allowing addition of `RBMap`s,
 removing any keys with value zero.
 We don't need to prove anything about this addition, as it is only used in meta code.
 -/
-local instance [Add β] [Zero β] [DecidableEq β] : Add (RBMap α β c) where
+local instance {α β : Type*} {c : α → α → Ordering} [Add β] [Zero β] [DecidableEq β] :
+    Add (RBMap α β c) where
   add := fun f g => (f.mergeWith (fun _ b b' => b + b') g).filter (fun _ b => b ≠ 0)
 
 namespace Linarith
@@ -64,7 +62,7 @@ abbrev Map (α β) [Ord α] := RBMap α β Ord.compare
 /-! ### Parsing datatypes -/
 
 /-- Variables (represented by natural numbers) map to their power. -/
-@[reducible] def Monom : Type := Map ℕ ℕ
+abbrev Monom : Type := Map ℕ ℕ
 
 /-- `1` is represented by the empty monomial, the product of no variables. -/
 def Monom.one : Monom := RBMap.empty
@@ -79,7 +77,7 @@ instance : Ord Monom where
   compare x y := if x.lt y then .lt else if x == y then .eq else .gt
 
 /-- Linear combinations of monomials are represented by mapping monomials to coefficients. -/
-@[reducible] def Sum : Type := Map Monom ℤ
+abbrev Sum : Type := Map Monom ℤ
 
 /-- `1` is represented as the singleton sum of the monomial `Monom.one` with coefficient 1. -/
 def Sum.one : Sum := RBMap.empty.insert Monom.one 1
