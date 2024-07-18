@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.Grp.Adjunctions
 import Mathlib.CategoryTheory.Sites.Adjunction
+import Mathlib.CategoryTheory.Sites.OneHypercover
 import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
@@ -38,9 +39,11 @@ and `W` is the fibre product of `i` and `j`.).
 * https://stacks.math.columbia.edu/tag/08GL
 
 -/
-universe v u
+universe w v u
 
 namespace CategoryTheory
+
+attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
 
 open Limits Opposite
 
@@ -55,6 +58,37 @@ lemma IsPushout.of_iso {X₁ X₂ X₃ X₄ Y₁ Y₂ Y₃ Y₄ : C}
     (commf : f ≫ e₂.hom = e₁.hom ≫ f') (commg : g ≫ e₃.hom = e₁.hom ≫ g')
     (commh : h ≫ e₄.hom = e₂.hom ≫ h') (commi : i ≫ e₄.hom = e₃.hom ≫ i') :
    IsPushout f' g' h' i' := sorry
+
+abbrev Sieve.ofTwoArrows {U V X : C} (i : U ⟶ X) (j : V ⟶ X) : Sieve X :=
+  Sieve.ofArrows (Y := pairFunction U V) (fun k ↦ WalkingPair.casesOn k i j)
+
+variable {X Y S : Type v} {f : X ⟶ S} {g : Y ⟶ S} {c : PullbackCone f g}
+  (hc : IsLimit c)
+
+open Concrete
+
+namespace Limits.PullbackCone.IsLimit
+
+noncomputable def equiv : c.pt ≃ { p : X × Y // f p.1 = g p.2 } :=
+  have : HasPullback f g := ⟨_, hc⟩
+  Equiv.trans (IsLimit.conePointUniqueUpToIso hc
+    (pullbackIsPullback f g)).toEquiv (pullbackEquiv f g)
+
+@[simp]
+lemma equiv_apply_fst (x : c.pt) : (equiv hc x).1.1 = c.fst x := by
+  sorry
+
+@[simp]
+lemma equiv_apply_snd (x : c.pt) : (equiv hc x).1.2 = c.snd x := by
+  sorry
+
+lemma concrete_ext {z₁ z₂ : c.pt}
+    (h₁ : c.fst z₁ = c.fst z₂)
+    (h₂ : c.snd z₁ = c.snd z₂): z₁ = z₂ := by
+  apply (equiv hc).injective
+  ext <;> simpa
+
+end Limits.PullbackCone.IsLimit
 
 end
 
@@ -94,9 +128,68 @@ structure MayerVietorisSquare where
       (f := F.map p) (g := F.map q) (F.map i) (F.map j) (by
         simp only [← Functor.map_comp, fac]))
 
-variable {J}
+initialize_simps_projections MayerVietorisSquare (-isColimit)
 
 namespace MayerVietorisSquare
+
+variable {J}
+section
+
+variable {X U V W : C} (i : U ⟶ X) (j : V ⟶ X) (p : W ⟶ U) (q : W ⟶ V) [Mono i]
+
+@[simps]
+def mk' (fac : p ≫ i = q ≫ j) (H : ∀ (F : Sheaf J (Type v)),
+  IsPullback (F.val.map i.op) (F.val.map j.op) (F.val.map p.op) (F.val.map q.op)) :
+    J.MayerVietorisSquare where
+  fac := fac
+  isColimit := PushoutCocone.IsColimit.mk _
+    (fun s ↦ ((sheafificationAdjunction _ _).homEquiv _ _).symm (yonedaEquiv.symm
+      ((PullbackCone.IsLimit.equiv (H s.pt).isLimit).symm
+        ⟨⟨yonedaEquiv ((sheafificationAdjunction _ _).homEquiv _ _ s.inl),
+          yonedaEquiv ((sheafificationAdjunction _ _).homEquiv _ _ s.inr)⟩, by
+            simpa only [yonedaEquiv_naturality, ← Adjunction.homEquiv_naturality_left]
+              using congr_arg yonedaEquiv (congr_arg ((sheafificationAdjunction _ _).homEquiv _ _) s.condition)⟩)))
+    (fun s ↦ by
+      dsimp only
+      sorry)
+    (fun s ↦ by
+      dsimp only
+      sorry)
+    (fun s m hm₁ hm₂ ↦ by
+      dsimp only
+      sorry)
+
+variable {i j p q}
+
+@[simps!]
+noncomputable def mk_of_isPullback
+    [Mono j] (h₁ : IsPullback p q i j) (h₂ : Sieve.ofTwoArrows i j ∈ J X) :
+    J.MayerVietorisSquare :=
+  mk' _ _ _ _ h₁.w (fun F ↦
+    { w := by simp only [← Functor.map_comp, ← op_comp, h₁.w]
+      isLimit' :=
+        ⟨PullbackCone.IsLimit.mk _
+          (fun s ↦ F.2.amalgamateOfArrows _ h₂
+            (fun j ↦ WalkingPair.casesOn j s.fst s.snd) (fun W ↦ by
+              rintro (_|_) (_|_) a b fac
+              · obtain rfl : a = b := by simpa only [← cancel_mono i] using fac
+                rfl
+              · dsimp at a b fac ⊢
+                obtain ⟨φ, rfl, rfl⟩ := PullbackCone.IsLimit.lift' h₁.isLimit _ _ fac
+                simpa using s.condition =≫ F.val.map φ.op
+              · dsimp at a b fac ⊢
+                obtain ⟨φ, rfl, rfl⟩ := PullbackCone.IsLimit.lift' h₁.isLimit _ _ fac.symm
+                simpa using s.condition.symm =≫ F.val.map φ.op
+              · obtain rfl : a = b := by simpa only [← cancel_mono j] using fac
+                rfl))
+          (fun _ ↦ F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.left)
+          (fun _ ↦ F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.right)
+          (fun s m hm₁ hm₂ ↦ F.2.hom_ext_ofArrows _ h₂ (by
+            rintro (_|_)
+            · rw [F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.left, hm₁]
+            · rw [F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.right, hm₂]))⟩ } )
+
+end
 
 variable (S : J.MayerVietorisSquare)
 
