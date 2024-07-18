@@ -46,25 +46,22 @@ instance {M : Type*} [Monoid M] [LT M]
   simp only [Subtype.mk_lt_mk, Submonoid.mk_mul_mk]
   exact fun a ↦ mul_lt_mul_left' a m
   ⟩
-  -- simpa only [Submonoid.mk_mul_mk] using CovariantClass.elim m ⟩
-
-
 
 /-- The basis of open subgroups for the topology on a ring determined by a valuation. -/
 theorem subgroups_basis :
     RingSubgroupsBasis fun γ : v.rangeGroup => (v.ltAddSubgroup γ : AddSubgroup R) :=
   { inter := by
-      rintro γ₀ γ₁
+      intro γ₀ γ₁
       use min γ₀ γ₁
-      simp only [le_inf_iff]
-      constructor <;>
-      · intro a ha
-        apply lt_of_lt_of_le ha
-        simp only [Units.val_le_val, Subtype.coe_le_coe, SetLike.coe_sort_coe,
-          min_le_left, min_le_right]
+      simp only [LinearOrderedCommGroup.min_def, Subtype.mk_le_mk, le_inf_iff]
+      refine ⟨fun a ha ↦ ?_ , fun a ha ↦ ?_⟩ <;>
+      split_ifs at ha with ha1 <;>
+      try exact ha
+      try apply lt_of_lt_of_le ha
+      · exact le_of_lt <| lt_of_not_ge ha1
+      · exact lt_of_lt_of_le ha ha1
     mul := by
       rintro γ
-      -- letI := @foo Γ₀ˣ _ _ _ v.rangeGroup.toSubmonoid
       cases' exists_square_le γ with γ₀ h
       use γ₀
       rintro - ⟨r, r_in, s, s_in, rfl⟩

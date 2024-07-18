@@ -45,7 +45,8 @@ theorem valuation_apply (x : K) : valuation h x = ‖x‖₊ := rfl
 
 
 /- NB. Si (valuation h).rangeGroup était `LinearOrderedCommGroupWith Zero`,
-on peurrait plutôt appliquer `NNReal.exists_lt_of_strictMono` -/
+on peurrait plutôt appliquer `NNReal.exists_lt_of_strictMono`
+*FAE* Je l'ai rajouté, reste à voir si ça marche...-/
 
 theorem isTriviallyValued_or_exists' {ε : ℝ} (hε : 0 < ε):
     (valuation h).rangeGroup = ⊥ ∨ (∃ (x : K), ‖x‖₊ ≠ 0 ∧ ‖x‖₊ < ε) := by
@@ -53,7 +54,7 @@ theorem isTriviallyValued_or_exists' {ε : ℝ} (hε : 0 < ε):
   intro H
   have _ : Nontrivial ((valuation h).rangeGroup) :=
     (Subgroup.nontrivial_iff_ne_bot (valuation h).rangeGroup).mpr H
-  -- have := NNReal.exists_lt_of_strictMono
+  -- have := @NNReal.exists_lt_of_strictMono (valuation h).rangeGroupWithZero _
   sorry
 
 theorem isTriviallyValued_or_exists {ε : ℝ} (hε : 0 < ε):
