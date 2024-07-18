@@ -347,7 +347,11 @@ theorem contractive {P : A →L[𝕜] A} (h : IsLprojection A P) : ‖P‖ ≤ 1
   simp only [ContinuousLinearMap.smul_def, ContinuousLinearMap.coe_sub', Pi.sub_apply,
     ContinuousLinearMap.one_apply, one_mul, le_add_iff_nonneg_right, norm_nonneg]
 
-instance : FunLike ({ P : A →L[𝕜] A // IsLprojection A P }) A A where
+notation "Pₗ[" 𝕜 "](" A ")" => { P : A →L[𝕜] A // IsLprojection A P }
+
+variable (P : Pₗ[𝕜](A))
+
+instance : FunLike Pₗ[𝕜](A) A A where
   coe f := f.val
   coe_injective' := by
     intro f g h
@@ -386,15 +390,13 @@ lemma IsIdempotentElem.range_prod__of_commute
     apply ha.1
     apply ha.2
 
-lemma IsLprojection.range_inter (P Q : { P : (NormedSpace.Dual 𝕜 A) →L[𝕜]
-    (NormedSpace.Dual 𝕜 A) // IsLprojection (NormedSpace.Dual 𝕜 A) P }) :
+lemma IsLprojection.range_inter (P Q : Pₗ[𝕜](NormedSpace.Dual 𝕜 A)) :
     Set.range P.val ∩ Set.range Q.val = Set.range (P ⊓ Q).val := by
   rw [← IsIdempotentElem.range_prod__of_commute (IsLprojection.commute P.prop Q.prop)
     P.prop.1 Q.prop.1]
   rfl
 
-lemma IsLprojection.range_sum (P Q : { P : (NormedSpace.Dual 𝕜 A) →L[𝕜]
-    (NormedSpace.Dual 𝕜 A) // IsLprojection (NormedSpace.Dual 𝕜 A) P }) :
+lemma IsLprojection.range_sum (P Q : Pₗ[𝕜](NormedSpace.Dual 𝕜 A)) :
     LinearMap.range P.val + LinearMap.range Q.val = LinearMap.range (P ⊔ Q).val := by
   apply le_antisymm
   · intro z hz
@@ -431,8 +433,7 @@ range of an L-projection.
 -/
 structure IsMideal (m : Submodule 𝕜 A) : Prop where
   Closed: IsClosed (m : Set A)
-  Lproj:  ∃ (P : { P : (NormedSpace.Dual 𝕜 A) →L[𝕜]
-    (NormedSpace.Dual 𝕜 A) // IsLprojection (NormedSpace.Dual 𝕜 A) P }),
+  Lproj:  ∃ (P : Pₗ[𝕜](NormedSpace.Dual 𝕜 A)),
     (LinearMap.range P.val) = NormedSpace.polarSubmodule (E := A) 𝕜 m
 
 set_option maxHeartbeats 400000
