@@ -349,8 +349,8 @@ instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransiti
 variable {α}
 
 @[to_additive]
-lemma finite_quotient_of_pretransitive_of_finite_quotient [IsPretransitive α β] {H : Subgroup α}
-    (h : Finite (α ⧸ H)) : Finite <| orbitRel.Quotient H β := by
+instance finite_quotient_of_pretransitive_of_finite_quotient [IsPretransitive α β] {H : Subgroup α}
+    [Finite (α ⧸ H)] : Finite <| orbitRel.Quotient H β := by
   rcases isEmpty_or_nonempty β with he | ⟨⟨b⟩⟩
   · exact Quotient.finite _
   · have h' : Finite (Quotient (rightRel H)) :=
@@ -410,25 +410,17 @@ under the action of `H` on each orbit under the action of `G`. -/
 @[to_additive "A bijection between the orbits under the action of an additive subgroup `H` on `β`,
 and the orbits under the action of `H` on each orbit under the action of `G`."]
 noncomputable def equivSubgroupOrbits (H : Subgroup α) :
-    orbitRel.Quotient H β ≃ Σω : Ω, orbitRel.Quotient H (orbitRel.Quotient.orbit ω) := by
-  calc
-    orbitRel.Quotient H β ≃ Σω : Ω, Quotient ((orbitRel H β).comap
-      (Subtype.val : Quotient.mk (orbitRel α β) ⁻¹' {ω} → β)) :=
-        (Setoid.sigmaQuotientEquivOfLe (orbitRel_subgroup_le H)).symm
-    _ ≃ Σω : Ω, orbitRel.Quotient H (orbitRel.Quotient.orbit ω) :=
-      Equiv.sigmaCongrRight fun ω ↦ (equivSubgroupOrbitsSetoidComap H ω).symm
+    orbitRel.Quotient H β ≃ Σω : Ω, orbitRel.Quotient H (orbitRel.Quotient.orbit ω) :=
+  (Setoid.sigmaQuotientEquivOfLe (orbitRel_subgroup_le H)).symm.trans
+    (Equiv.sigmaCongrRight fun ω ↦ (equivSubgroupOrbitsSetoidComap H ω).symm)
 
 variable {β}
 
 @[to_additive]
-lemma finite_quotient_of_finite_quotient_of_finite_quotient {H : Subgroup α}
-    (hb : Finite (orbitRel.Quotient α β)) (h : Finite (α ⧸ H)) :
+instance finite_quotient_of_finite_quotient_of_finite_quotient {H : Subgroup α}
+    [Finite (orbitRel.Quotient α β)] [Finite (α ⧸ H)] :
     Finite <| orbitRel.Quotient H β := by
   rw [(equivSubgroupOrbits β H).finite_iff]
-  have h' : ∀ ω : orbitRel.Quotient α β,
-      Finite (orbitRel.Quotient H (orbitRel.Quotient.orbit ω)) := by
-    intro ω
-    exact finite_quotient_of_pretransitive_of_finite_quotient _ h
   infer_instance
 
 end MulAction
