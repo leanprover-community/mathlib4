@@ -5,6 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Ring.Invertible
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.GroupTheory.GroupAction.Units
