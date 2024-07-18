@@ -123,7 +123,7 @@ abbrev PowerAlgebra := ⨁ (n : ℕ), TensorPower R n (⨁ i, A i)
 
 /--The free tensor algebra and its representation as an infinite direct sum
 of tensor powers are (noncomputably) equivalent as `R`-algebras.-/
-@[reducible] noncomputable def powerAlgebra_equiv_freeAlgebra : 
+@[reducible] noncomputable def powerAlgebra_equiv_freeAlgebra :
     PowerAlgebra R A ≃ₐ[R] FreeTensorAlgebra R A :=
   TensorAlgebra.equivDirectSum.symm
 
