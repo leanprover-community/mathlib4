@@ -7,7 +7,7 @@ import Lean
 
 /-!
 # The `rename'` tactic
-The `rename'` tactic renames one or several hypotheses. This file contains its definition.
+The `rename'` tactic renames one or several hypotheses.
 -/
 
 namespace Mathlib.Tactic

@@ -11,7 +11,7 @@ import Lean
 
 This file defines the `simp_rw` tactic: it functions as a mix of `simp` and `rw`.
 Like `rw`, it applies each rewrite rule in the given order, but like `simp` it repeatedly applies
-these rules and also under binders like `∀ x, ...`, `∃ x, ...` and `fun x ↦...`.
+these rules and also under binders like `∀ x, ...`, `∃ x, ...` and `fun x ↦ ...`.
 -/
 namespace Mathlib.Tactic
 
