@@ -756,7 +756,8 @@ theorem degree_eq_zero_iff (d : σ →₀ ℕ) : degree d = 0 ↔ d = 0 := by
     rw [hd]
     simp only [degree_zero]
 
-/-- [bourbaki-algebraII], chap. 4, §4, n°2, proposition 3 -/
+/-- Coefficients of powers of multivariate power series
+[bourbaki1981], chap. 4, §4, n°2, proposition 3 -/
 theorem coeff_eq_zero_of_constantCoeff_nilpotent [DecidableEq σ]
     (f : MvPowerSeries σ R) (m : ℕ) (hf : constantCoeff σ R f ^ m = 0)
     (d : σ →₀ ℕ) (n : ℕ) (hn : m + degree d ≤ n) :
