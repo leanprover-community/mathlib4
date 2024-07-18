@@ -742,19 +742,16 @@ theorem degree_add (d d' : σ →₀ ℕ) :
   simp only [degree, mem_union, mem_support_iff, ne_eq, id_eq, implies_true, sum_add_index]
 
 theorem degree_eq_zero_iff (d : σ →₀ ℕ) : degree d = 0 ↔ d = 0 := by
-  constructor
-  · intro hd
-    ext x
-    simp only [Finsupp.coe_zero, Pi.zero_apply]
-    rw [← Nat.lt_one_iff, ← not_le]
+  constructor <;>
+  intro hd
+  · ext x
+    simp only [Finsupp.coe_zero, Pi.zero_apply, ← Nat.lt_one_iff, ← not_le]
     intro hx
     apply Nat.not_add_one_le_zero 0
     rw [zero_add, ← hd]
-    apply le_trans hx
-    exact Finset.single_le_sum (fun _ _ ↦ zero_le _) (mem_support_iff.mpr (Nat.not_eq_zero_of_lt hx))
-  · intro hd
-    rw [hd]
-    simp only [degree_zero]
+    exact hx.trans 
+      <| single_le_sum (fun _ _ ↦ zero_le _) (mem_support_iff.mpr <| Nat.not_eq_zero_of_lt hx)
+  · simp only [hd, degree_zero]
 
 /-- Coefficients of powers of multivariate power series
 [N. Bourbaki, *Algebra. {II}. {C}hapters 4--7*, Chap. 4, §4, n°2, proposition 3][bourbaki1981] -/
