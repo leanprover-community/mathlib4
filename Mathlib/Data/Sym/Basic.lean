@@ -534,7 +534,7 @@ theorem mem_append_iff {s' : Sym α m} : a ∈ s.append s' ↔ a ∈ s ∨ a ∈
   Multiset.mem_add
 #align sym.mem_append_iff Sym.mem_append_iff
 
-/-- Defines an equivalence between `α` and `Sym α 1`. -/
+/-- `a ↦ {a}` as an equivalence between `α` and `Sym α 1`. -/
 @[simps apply]
 def oneEquiv : α ≃ Sym α 1 where
   toFun a := ⟨{a}, by simp⟩
