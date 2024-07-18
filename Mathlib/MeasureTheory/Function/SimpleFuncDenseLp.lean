@@ -699,7 +699,6 @@ theorem toSimpleFunc_indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : 
 /-- To prove something for an arbitrary `Lp` simple function, with `0 < p < ∞`, it suffices to show
 that the property holds for (multiples of) characteristic functions of finite-measure measurable
 sets and is closed under addition (of functions with disjoint support). -/
-@[elab_as_elim]
 protected theorem induction (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) {P : Lp.simpleFunc E p μ → Prop}
     (h_ind :
       ∀ (c : E) {s : Set α} (hs : MeasurableSet s) (hμs : μ s < ∞),
