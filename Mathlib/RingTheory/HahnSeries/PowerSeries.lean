@@ -191,7 +191,35 @@ variable {σ : Type*} [Finite σ]
 
 /- NOTE : The following do not work:
   * MulEquiv.noZeroDivisors (MvPowerSeries σ R) toMvPowerSeries
+```
+type mismatch
+  MulEquiv.noZeroDivisors (MvPowerSeries σ R) ?m.77016
+has type
+  @NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) MulZeroClass.toMul MulZeroClass.toZero : Prop
+but is expected to have type
+  @NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) instMul instZero : Prop
+```
+  * MulEquiv.noZeroDivisors (MvPowerSeries σ R) (toMvPowerSeries : HahnSeries (σ →₀ ℕ) R ≃+* MvPowerSeries σ R)
+```
+type mismatch
+  MulEquiv.noZeroDivisors (MvPowerSeries σ R) ?m.77396
+has type
+  @NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) MulZeroClass.toMul MulZeroClass.toZero : Prop
+but is expected to have type
+  @NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) instMul instZero : Prop
+```
   * @MulEquiv.noZeroDivisors (HahnSeries (σ →₀ ℕ) R) (MvPowerSeries σ R) _ _ _ (toMvPowerSeries)
+```
+application type mismatch
+  MulEquiv.noZeroDivisors (MvPowerSeries σ R) toMvPowerSeries
+argument
+  toMvPowerSeries
+has type
+  HahnSeries (?m.76203 →₀ ℕ) ?m.76201 ≃+* MvPowerSeries ?m.76203 ?m.76201 : Type (max ?u.76200 ?u.76199)
+but is expected to have type
+  HahnSeries (σ →₀ ℕ) R ≃* MvPowerSeries σ R : Type (max u_2 u_3)
+```
+
 On the other hand, the following example works perfectly:
 
 example (A B : Type*) [Ring A] [Ring B] [NoZeroDivisors A]
