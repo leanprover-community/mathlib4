@@ -29,32 +29,20 @@ variable {R S P : Type*} (Q : Type*) [CommSemiring R] [CommSemiring S] [CommSemi
   [Algebra R S] [Algebra P Q] [IsLocalization M S] [IsLocalization T Q]
   (g : R →+* P)
 
+open IsLocalization in
 variable (M S) in
 /-- The span of `I` in a localization of `R` at `M` is the localization of `I` at `M`. -/
 instance Algebra.idealMap_isLocalizedModule (I : Ideal R) :
     IsLocalizedModule M (Algebra.idealMap I (S := S)) where
-  map_units x := by
-    rw [isUnit_iff_exists]
-    have hu : IsUnit (algebraMap R S x) := IsLocalization.map_units S x
-    let φ : Module.End R
-        (I.map (algebraMap R S)) := {
-      toFun := fun y ↦ ⟨hu.unit⁻¹ * y, by simp⟩
-      map_add' := fun x y ↦ by simp [mul_add]
-      map_smul' := fun a x ↦ by simp
-    }
-    refine ⟨φ, ?_, ?_⟩
-    · ext y
-      simp [φ, Algebra.smul_def, ← mul_assoc]
-    · ext y
-      simp [φ, Algebra.smul_def, ← mul_assoc]
-  surj' y := by
-    obtain ⟨x, hx⟩ := (IsLocalization.mem_map_algebraMap_iff M S).mp y.property
-    use x
-    apply Subtype.ext
-    simp [Submonoid.smul_def, Algebra.smul_def, mul_comm, hx]
-  exists_of_eq h := by
-    obtain ⟨c, hc⟩ := IsLocalization.exists_of_eq (M := M) (congrArg Subtype.val h)
-    exact ⟨c, Subtype.ext hc⟩
+  map_units x :=
+    (Module.End_isUnit_iff _).mpr ⟨fun a b e ↦ Subtype.ext ((map_units S x).mul_right_injective
+      (by simpa [Algebra.smul_def] using congr(($e).1))),
+      fun a ↦ ⟨⟨_, Ideal.mul_mem_left _ (map_units S x).unit⁻¹.1 a.2⟩,
+        Subtype.ext (by simp [Algebra.smul_def, ← mul_assoc])⟩⟩
+  surj' y :=
+    have ⟨x, hx⟩ := (mem_map_algebraMap_iff M S).mp y.property
+    ⟨x, Subtype.ext (by simp [Submonoid.smul_def, Algebra.smul_def, mul_comm, hx])⟩
+  exists_of_eq h := ⟨_, Subtype.ext (exists_of_eq congr(($h).1)).choose_spec⟩
 
 lemma IsLocalization.ker_map (hT : Submonoid.map g M = T) :
     RingHom.ker (IsLocalization.map Q g (hT.symm ▸ M.le_comap_map) : S →+* Q) =
