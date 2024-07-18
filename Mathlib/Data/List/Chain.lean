@@ -453,9 +453,7 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
         apply hmas
         apply le_of_lt
         exact (List.lt_iff_lex_lt _ _).mp (List.lt.head _ _ hh)
-      · simp only [List.cons.injEq] at hmas
-        rw [ge_iff_le, le_iff_lt_or_eq]
-        exact Or.inr hmas.1
+      · simp_all only [List.cons.injEq, le_refl]
 
 end List
 

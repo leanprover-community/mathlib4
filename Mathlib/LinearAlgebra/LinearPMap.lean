@@ -554,7 +554,7 @@ instance instSubtractionCommMonoid : SubtractionCommMonoid (E →ₗ.[R] F) wher
   neg_eq_of_add f g h' := by
     ext x y h
     · have : (0 : E →ₗ.[R] F).domain = ⊤ := zero_domain
-      simp only [← h', add_domain, ge_iff_le, inf_eq_top_iff] at this
+      simp only [← h', add_domain, inf_eq_top_iff] at this
       rw [neg_domain, this.1, this.2]
     simp only [inf_coe, neg_domain, Eq.ndrec, Int.ofNat_eq_coe, neg_apply]
     rw [ext_iff] at h'
