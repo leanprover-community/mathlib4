@@ -24,6 +24,8 @@ When `α` has `UniformSpace α`, we define the corresponding uniform structure.
 When the type of coefficients has the discrete topology,
 it corresponds to the topology defined by [bourbaki1981], chapter 4, §4, n°2
 
+It is *not* the adic topology in general.
+
 - `tendsto_pow_zero_of_constantCoeff_zero` : if the constant coefficient of `f`
 is nilpotent, then the powers of `f` converge to zero
 
