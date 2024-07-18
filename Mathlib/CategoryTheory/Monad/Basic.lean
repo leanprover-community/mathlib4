@@ -145,6 +145,12 @@ theorem Monad.assoc (T : Monad C) (X : C) :
   T.assoc' X
 #align category_theory.monad.assoc CategoryTheory.Monad.assoc
 
+theorem Monad.assoc'' (T : Monad C) :
+    whiskerRight T.μ (T : C ⥤ C) ≫ T.μ =
+      (Functor.associator _ _ _).hom ≫ whiskerLeft (T : C ⥤ C) T.μ ≫ T.μ := by
+  ext X
+  simp [T.assoc]
+
 @[reassoc (attr := simp)]
 theorem Monad.left_unit (T : Monad C) (X : C) :
     T.η.app ((T : C ⥤ C).obj X) ≫ T.μ.app X = 𝟙 ((T : C ⥤ C).obj X) :=
@@ -156,6 +162,17 @@ theorem Monad.right_unit (T : Monad C) (X : C) :
     (T : C ⥤ C).map (T.η.app X) ≫ T.μ.app X = 𝟙 ((T : C ⥤ C).obj X) :=
   T.right_unit' X
 #align category_theory.monad.right_unit CategoryTheory.Monad.right_unit
+
+theorem Monad.left_unit'' (T : Monad C) :
+    whiskerRight T.η (T : C ⥤ C) ≫ T.μ = (Functor.leftUnitor _).hom := by
+  ext X
+  simp
+
+theorem Monad.right_unit'' (T : Monad C) :
+    whiskerLeft (T : C ⥤ C) T.η ≫ T.μ = (Functor.rightUnitor _).hom := by
+  ext X
+  simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, whiskerLeft_app, left_unit,
+    Functor.rightUnitor_hom_app]
 
 @[reassoc (attr := simp)]
 theorem Comonad.coassoc (G : Comonad C) (X : C) :
