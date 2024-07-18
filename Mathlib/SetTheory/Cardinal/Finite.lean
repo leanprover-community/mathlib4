@@ -94,25 +94,36 @@ theorem card_eq_of_bijective (f : α → β) (hf : Function.Bijective f) : Nat.c
   card_congr (Equiv.ofBijective f hf)
 #align nat.card_eq_of_bijective Nat.card_eq_of_bijective
 
-protected theorem bijective_iff_injective_and_card [Fintype β] (f : α → β) :
+protected theorem bijective_iff_injective_and_card [Finite β] (f : α → β) :
     Bijective f ↔ Injective f ∧ Nat.card α = Nat.card β := by
-  -- Note this proof is a bit convoluted because we don’t assume `Fintype α` but derive it
-  -- in both branches
-  constructor
-  · intro h
-    have : Fintype α := Fintype.ofInjective f h.1
-    rw [Fintype.bijective_iff_injective_and_card] at h
-    rwa [card_eq_fintype_card, card_eq_fintype_card]
-  · intro ⟨h, h'⟩
-    have : Fintype α := Fintype.ofInjective f h
-    rw [card_eq_fintype_card, card_eq_fintype_card] at h'
-    rw [Fintype.bijective_iff_injective_and_card]
-    exact ⟨h, h'⟩
+  rw [Bijective, and_congr_right_iff]
+  intro h
+  have := Fintype.ofFinite β
+  have := Fintype.ofInjective f h
+  revert h
+  rw [← and_congr_right_iff, ← Bijective,
+    card_eq_fintype_card, card_eq_fintype_card, Fintype.bijective_iff_injective_and_card]
 
-theorem _root_.Function.Injective.bijective_of_nat_card_le [Fintype β] {f : α → β}
+protected theorem bijective_iff_surjective_and_card [Finite α] (f : α → β) :
+    Bijective f ↔ Surjective f ∧ Nat.card α = Nat.card β := by
+  classical
+  rw [and_comm, Bijective, and_congr_left_iff]
+  intro h
+  have := Fintype.ofFinite α
+  have := Fintype.ofSurjective f h
+  revert h
+  rw [← and_congr_left_iff, ← Bijective, ← and_comm,
+    card_eq_fintype_card, card_eq_fintype_card, Fintype.bijective_iff_surjective_and_card]
+
+theorem _root_.Function.Injective.bijective_of_nat_card_le [Finite β] {f : α → β}
     (inj : Injective f) (hc : Nat.card β ≤ Nat.card α) : Bijective f :=
   (Nat.bijective_iff_injective_and_card f).mpr
     ⟨inj, hc.antisymm (card_le_card_of_injective f inj) |>.symm⟩
+
+theorem _root_.Function.Surjective.bijective_of_nat_card_le [Finite α] {f : α → β}
+    (surj : Surjective f) (hc : Nat.card α ≤ Nat.card β) : Bijective f :=
+  (Nat.bijective_iff_surjective_and_card f).mpr
+    ⟨surj, hc.antisymm (card_le_card_of_surjective f surj)⟩
 
 theorem card_eq_of_equiv_fin {α : Type*} {n : ℕ} (f : α ≃ Fin n) : Nat.card α = n := by
   simpa only [card_eq_fintype_card, Fintype.card_fin] using card_congr f
