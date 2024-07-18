@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Sym.Sym2.Order
 
 #align_import algebra.big_operators.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
