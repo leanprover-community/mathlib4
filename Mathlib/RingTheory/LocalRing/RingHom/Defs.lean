@@ -10,9 +10,9 @@ import Mathlib.Algebra.Ring.Hom.Defs
 
 /-!
 
-# Local rings
+# Local rings homomorphisms
 
-Define local ring homomorhpisms.
+We Define local ring homomorhpisms.
 
 ## Main definitions
 
@@ -22,12 +22,10 @@ Define local ring homomorhpisms.
 
 -/
 
-variable {R S : Type*}
-
 /-- A local ring homomorphism is a homomorphism `f` between local rings such that `a` in the domain
   is a unit if `f a` is a unit for any `a`. See `LocalRing.local_hom_TFAE` for other equivalent
   definitions. -/
-class IsLocalRingHom [Semiring R] [Semiring S] (f : R →+* S) : Prop where
+class IsLocalRingHom {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S) : Prop where
   /-- A local ring homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
   map_nonunit : ∀ a, IsUnit (f a) → IsUnit a
 #align is_local_ring_hom IsLocalRingHom

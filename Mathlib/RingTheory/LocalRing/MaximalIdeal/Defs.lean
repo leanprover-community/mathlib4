@@ -9,33 +9,20 @@ import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 
-# Local rings
+# Maximal ideal of local rings
 
-Define local rings as commutative rings having a unique maximal ideal.
+We define the maximal ideal of a local ring as the ideal of all non units.
 
 ## Main definitions
 
-* `LocalRing`: A predicate on commutative semirings, stating that for any pair of elements that
-  adds up to `1`, one of them is a unit. This is shown to be equivalent to the condition that there
-  exists a unique maximal ideal.
 * `LocalRing.maximalIdeal`: The unique maximal ideal for a local rings. Its carrier set is the
   set of non units.
 
 -/
 
-universe u v
-
-variable {R : Type u} {S : Type v}
-
-section CommSemiring
-
-variable [CommSemiring R]
-
 namespace LocalRing
 
-variable [LocalRing R]
-
-variable (R)
+variable (R : Type*) [CommSemiring R] [LocalRing R]
 
 /-- The ideal of elements that are not units. -/
 def maximalIdeal : Ideal R where
@@ -46,5 +33,3 @@ def maximalIdeal : Ideal R where
 #align local_ring.maximal_ideal LocalRing.maximalIdeal
 
 end LocalRing
-
-end CommSemiring

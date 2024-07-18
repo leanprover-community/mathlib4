@@ -10,19 +10,13 @@ import Mathlib.RingTheory.JacobsonIdeal
 
 /-!
 
-# Local rings
+# Maximal ideal of local rings
 
-## Main definitions
-
-* `LocalRing.ResidueField`: The quotient of a local ring by its maximal ideal.
+We prove basic properties of the maximal ideal of a local ring.
 
 -/
 
-
-universe u v w u'
-
-variable {R : Type u} {S : Type v} {T : Type w} {K : Type u'}
-
+variable {R S K : Type*}
 section CommSemiring
 
 variable [CommSemiring R]
@@ -102,7 +96,7 @@ namespace LocalRing
 
 section
 
-variable [CommRing R] [LocalRing R] [CommRing S] [LocalRing S] [CommRing T] [LocalRing T]
+variable [CommRing R] [LocalRing R] [CommRing S] [LocalRing S]
 
 theorem ker_eq_maximalIdeal [Field K] (φ : R →+* K) (hφ : Function.Surjective φ) :
     RingHom.ker φ = maximalIdeal R :=

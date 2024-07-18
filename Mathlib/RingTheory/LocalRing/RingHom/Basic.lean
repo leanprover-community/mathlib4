@@ -12,19 +12,13 @@ import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
 
-# Local rings
+# Local rings homomorphisms
 
-## Main definitions
-
-* `LocalRing.ResidueField`: The quotient of a local ring by its maximal ideal.
+We prove basic properties of local rings homomorphisms.
 
 -/
 
-
-universe u v w u'
-
-variable {R : Type u} {S : Type v} {T : Type w} {K : Type u'}
-
+variable {R S T : Type*}
 section
 
 variable [Semiring R] [Semiring S] [Semiring T]

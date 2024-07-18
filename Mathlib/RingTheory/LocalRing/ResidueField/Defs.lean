@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Ideal.Quotient
 
 /-!
 
-# Local rings
+# Residue Field of local rings
 
 ## Main definitions
 
@@ -18,21 +18,13 @@ import Mathlib.RingTheory.Ideal.Quotient
 
 -/
 
-universe u v w u'
-
-variable {R : Type u} {S : Type v} {T : Type w} {K : Type u'}
-
 namespace LocalRing
 
-section
-
-variable (R) [CommRing R] [LocalRing R] [CommRing S] [LocalRing S] [CommRing T] [LocalRing T]
+variable (R : Type*) [CommRing R] [LocalRing R]
 
 /-- The residue field of a local ring is the quotient of the ring by its maximal ideal. -/
 def ResidueField :=
   R ⧸ maximalIdeal R
 #align local_ring.residue_field LocalRing.ResidueField
-
-end
 
 end LocalRing

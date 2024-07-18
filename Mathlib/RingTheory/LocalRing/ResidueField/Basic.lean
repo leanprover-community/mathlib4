@@ -11,24 +11,14 @@ import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
 
-# Local rings
+# Residue Field of local rings
 
-## Main definitions
-
-* `LocalRing.ResidueField`: The quotient of a local ring by its maximal ideal.
+We prove basic properties of the residue field of a local ring.
 
 -/
 
 
-universe u v w u'
-
-variable {R : Type u} {S : Type v} {T : Type w} {K : Type u'}
-
-section
-
-variable [Semiring R] [Semiring S] [Semiring T]
-
-end
+variable {R S T : Type*}
 
 namespace LocalRing
 

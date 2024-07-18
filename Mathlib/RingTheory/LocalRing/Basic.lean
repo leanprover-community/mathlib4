@@ -12,16 +12,11 @@ import Mathlib.RingTheory.Ideal.Basic
 
 # Local rings
 
-## Main definitions
-
-* `LocalRing.ResidueField`: The quotient of a local ring by its maximal ideal.
+We prove basic properties of local rings.
 
 -/
 
-
-universe u v w u'
-
-variable {R : Type u} {S : Type v} {T : Type w} {K : Type u'}
+variable {R S : Type*}
 
 section CommSemiring
 
@@ -82,11 +77,9 @@ end LocalRing
 
 end CommSemiring
 
-section CommRing
+namespace LocalRing
 
 variable [CommRing R]
-
-namespace LocalRing
 
 theorem of_isUnit_or_isUnit_one_sub_self [Nontrivial R] (h : ∀ a : R, IsUnit a ∨ IsUnit (1 - a)) :
     LocalRing R :=
@@ -119,11 +112,9 @@ theorem of_surjective' [CommRing S] [Nontrivial S] (f : R →+* S) (hf : Functio
 
 end LocalRing
 
-end CommRing
-
 namespace Field
 
-variable (K) [Field K]
+variable (K : Type*) [Field K]
 
 open scoped Classical
 
