@@ -739,10 +739,10 @@ theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) (n : ℕ) (d : σ �
 /-- degree of a monomial -/
 def degree (d : σ →₀ ℕ) : ℕ := d.sum fun _ ↦ id
 
-def degree_zero : degree (0 : σ →₀ ℕ) = 0 := by
+theorem degree_zero : degree (0 : σ →₀ ℕ) = 0 := by
   simp only [degree, sum_zero_index]
 
-def degree_add (d d' : σ →₀ ℕ) :
+theorem degree_add (d d' : σ →₀ ℕ) :
     degree (d + d') = degree d + degree d' := by
   classical
   simp only [degree, mem_union, mem_support_iff, ne_eq, id_eq, implies_true, sum_add_index]
