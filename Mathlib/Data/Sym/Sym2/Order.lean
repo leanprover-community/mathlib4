@@ -22,13 +22,13 @@ def inf [SemilatticeInf α] (x : Sym2 α) : α := Sym2.lift ⟨(· ⊓ ·), inf_
 
 @[simp] theorem inf_mk [SemilatticeInf α] (a b : α) : s(a, b).inf = a ⊓ b := rfl
 
-theorem inf_le_sup [Lattice α] (s : Sym2 α) : s.inf ≤ s.sup := by
+protected theorem inf_le_sup [Lattice α] (s : Sym2 α) : s.inf ≤ s.sup := by
   cases s using Sym2.ind; simp [_root_.inf_le_sup]
 
 /-- In a linear order, symmetric squares are canonically ordered pairs. -/
 @[simps!]
 def sortEquiv [LinearOrder α] : Sym2 α ≃ { p : α × α // p.1 ≤ p.2 } where
-  toFun s := ⟨(s.inf, s.sup), inf_le_sup _⟩
+  toFun s := ⟨(s.inf, s.sup), Sym2.inf_le_sup _⟩
   invFun p := Sym2.mk p
   left_inv := Sym2.ind fun a b => mk_eq_mk_iff.mpr <| by
     cases le_total a b with
