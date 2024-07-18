@@ -45,15 +45,15 @@ open scoped DirectSum
 
 /--A variant of `DirectSum.induction_on` that uses `DirectSum.lof` instead of `.of`-/
 theorem induction_lon {R : Type*} [Semiring R] {ι: Type*} [DecidableEq ι]
-  {M : ι → Type*} [(i: ι) → AddCommMonoid <| M i] [(i : ι) → Module R (M i)]
-  {C: (⨁ i, M i) → Prop} (x : ⨁ i, M i)
-  (H_zero : C 0)
-  (H_basic : ∀ i (x : M i), C (lof R ι M i x))
-  (H_plus : ∀ (x y : ⨁ i, M i), C x → C y → C (x + y)) : C x := by
+    {M : ι → Type*} [(i: ι) → AddCommMonoid <| M i] [(i : ι) → Module R (M i)]
+    {C: (⨁ i, M i) → Prop} (x : ⨁ i, M i)
+    (H_zero : C 0)
+    (H_basic : ∀ i (x : M i), C (lof R ι M i x))
+    (H_plus : ∀ (x y : ⨁ i, M i), C x → C y → C (x + y)) : C x := by
   induction x using DirectSum.induction_on with
-    | H_zero => exact H_zero
-    | H_basic => exact H_basic _ _
-    | H_plus x y hx hy => exact H_plus x y hx hy
+  | H_zero => exact H_zero
+  | H_basic => exact H_basic _ _
+  | H_plus x y hx hy => exact H_plus x y hx hy
 
 end DirectSum
 
@@ -85,10 +85,10 @@ then their quotients are also equivalent.
 (Special case of `algEquiv_quot_algEquiv` when `R = ℕ`, which in turn is a special
 case of the third isomorphism theorem.)-/
 def equiv_quot_equiv {A B : Type v} [Semiring A] [Semiring B] (f : A ≃+* B) (rel : A → A → Prop)  :
-  RingQuot rel ≃+* RingQuot (rel on f.symm) :=
-    let f_alg : A ≃ₐ[ℕ] B :=
-      AlgEquiv.ofRingEquiv (f := f) (λ n ↦ by simp)
-    algEquiv_quot_algEquiv f_alg rel |>.toRingEquiv
+    RingQuot rel ≃+* RingQuot (rel on f.symm) :=
+  let f_alg : A ≃ₐ[ℕ] B :=
+    AlgEquiv.ofRingEquiv (f := f) (λ n ↦ by simp)
+  algEquiv_quot_algEquiv f_alg rel |>.toRingEquiv
 
 
 /--Even through a linear map, `liftAlgHom` and `mkAlgHom` are adjoint.-/
@@ -200,10 +200,10 @@ theorem identify_one (i : I) : ι' R A (DirectSum.lof R I A i 1) = 1 := by
 /--Multiplication in the free product of the injections of any two `a₁ a₂: A i` for
 the same `i` is just the injection of multiplication `aᵢ * aⱼ` in `A i`.-/
 theorem mul_injections (a₁ a₂ : A i) :
-  ι' R A (DirectSum.lof R I A i a₁) * ι' R A (DirectSum.lof R I A i a₂)
-    = ι' R A (DirectSum.lof R I A i (a₁ * a₂)) := by
-    convert RingQuot.mkAlgHom_rel R <| rel.prod
-    aesop
+    ι' R A (DirectSum.lof R I A i a₁) * ι' R A (DirectSum.lof R I A i a₂)
+      = ι' R A (DirectSum.lof R I A i (a₁ * a₂)) := by
+  convert RingQuot.mkAlgHom_rel R <| rel.prod
+  aesop
 
 /--The `i`th canonical injection, from `A i` to the free product, as
 a linear map.-/
@@ -251,8 +251,8 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
   ext a
   simp [lift_apply, ι]
 
-@[simp] theorem lift_unique (f : FreeProduct R A →ₐ[R] B) (h : ∀ i, f ∘ₐ ι R A i = maps i)
-  : f = lift R A maps := by
+@[simp] theorem lift_unique (f : FreeProduct R A →ₐ[R] B) (h : ∀ i, f ∘ₐ ι R A i = maps i) :
+    f = lift R A maps := by
   ext i a; simp_rw [AlgHom.ext_iff] at h; specialize h i a
   simp [h.symm, ι]
 
