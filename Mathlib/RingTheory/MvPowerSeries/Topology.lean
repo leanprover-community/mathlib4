@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
 
 import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.UniformGroup
