@@ -20,14 +20,13 @@ The main result is `ExteriorAlgebra.gradedAlgebra`, which says that the exterior
 namespace ExteriorAlgebra
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-
 variable (R M)
 
 open scoped DirectSum
 
 /-- A version of `ExteriorAlgebra.ι` that maps directly into the graded structure. This is
 primarily an auxiliary construction used to provide `ExteriorAlgebra.gradedAlgebra`. -/
--- porting note: protected
+-- Porting note: protected
 protected def GradedAlgebra.ι :
     M →ₗ[R] ⨁ i : ℕ, ⋀[R]^i M :=
   DirectSum.lof R ℕ (fun i => ⋀[R]^i M) 1 ∘ₗ
@@ -49,7 +48,7 @@ instance : SetLike.GradedMonoid fun i : ℕ ↦ ⋀[R]^i M :=
 
 -- Porting note: Lean needs to be reminded of this instance otherwise it cannot
 -- synthesize 0 in the next theorem
-attribute [instance 1100] MulZeroClass.toZero in
+attribute [local instance 1100] MulZeroClass.toZero in
 theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebra.ι R M m = 0 := by
   rw [GradedAlgebra.ι_apply, DirectSum.of_mul_of]
   exact DFinsupp.single_eq_zero.mpr (Subtype.ext <| ExteriorAlgebra.ι_sq_zero _)
@@ -62,6 +61,7 @@ def GradedAlgebra.liftι :
   lift R ⟨by apply GradedAlgebra.ι R M, GradedAlgebra.ι_sq_zero R M⟩
 #align exterior_algebra.graded_algebra.lift_ι ExteriorAlgebra.GradedAlgebra.liftι
 
+set_option linter.deprecated false in
 theorem GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
     GradedAlgebra.liftι R M x = DirectSum.of (fun i => ⋀[R]^i M) i x := by
   cases' x with x hx
@@ -71,10 +71,10 @@ theorem GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
   --    (fun m hm i x hx ih => ?_) hx
   -- but it created invalid goals
   induction hx using Submodule.pow_induction_on_left' with
-  | hr => simp_rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
+  | algebraMap => simp_rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
   -- FIXME: specialized `map_add` to avoid a (whole-declaration) timeout
-  | hadd _ _ _ _ _ ihx ihy => simp_rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]; rfl
-  | hmul _ hm _ _ _ ih =>
+  | add _ _ _ _ _ ihx ihy => simp_rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]; rfl
+  | mem_mul _ hm _ _ _ ih =>
       obtain ⟨_, rfl⟩ := hm
       simp_rw [AlgHom.map_mul, ih, GradedAlgebra.liftι, lift_ι_apply, GradedAlgebra.ι_apply R M,
         DirectSum.of_mul_of]
@@ -96,7 +96,7 @@ instance gradedAlgebra : GradedAlgebra (fun i : ℕ ↦ ⋀[R]^i M) :=
 #align exterior_algebra.graded_algebra ExteriorAlgebra.gradedAlgebra
 
 /-- The union of the images of the maps `ExteriorAlgebra.ιMulti R n` for `n` running through
-all natural numbers spans the exterior algebra.-/
+all natural numbers spans the exterior algebra. -/
 lemma ιMulti_span :
     Submodule.span R (Set.range fun x : Σ n, (Fin n → M) => ιMulti R x.1 x.2) = ⊤ := by
   rw [Submodule.eq_top_iff']

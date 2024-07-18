@@ -57,21 +57,16 @@ noncomputable section
 
 variable (R : Type u) (X : Type v) [CommRing R]
 
--- mathport name: exprlib
 /- We save characters by using Bourbaki's name `lib` (as in «libre») for
 `FreeNonUnitalNonAssocAlgebra` in this file. -/
 local notation "lib" => FreeNonUnitalNonAssocAlgebra
 
--- mathport name: «exprlib.lift»
 local notation "lib.lift" => FreeNonUnitalNonAssocAlgebra.lift
 
--- mathport name: «exprlib.of»
 local notation "lib.of" => FreeNonUnitalNonAssocAlgebra.of
 
--- mathport name: «exprlib.lift_of_apply»
 local notation "lib.lift_of_apply" => FreeNonUnitalNonAssocAlgebra.lift_of_apply
 
--- mathport name: «exprlib.lift_comp_of»
 local notation "lib.lift_comp_of" => FreeNonUnitalNonAssocAlgebra.lift_comp_of
 
 namespace FreeLieAlgebra
@@ -230,7 +225,7 @@ def lift : (X → L) ≃ (FreeLieAlgebra R X →ₗ⁅R⁆ L) where
       map_lie' := by rintro ⟨a⟩ ⟨b⟩; rw [← liftAux_map_mul]; rfl }
   invFun F := F ∘ of R
   left_inv f := by
-    ext x;
+    ext x
     simp only [liftAux, of, Quot.liftOn_mk, LieHom.coe_mk, Function.comp_apply, lib.lift_of_apply]
   right_inv F := by
     ext ⟨a⟩

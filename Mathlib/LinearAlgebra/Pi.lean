@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
 -/
+import Mathlib.Algebra.Group.Fin.Tuple
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Module.Prod
+import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.Logic.Equiv.Fin
-import Mathlib.LinearAlgebra.Basic
-import Mathlib.Algebra.BigOperators.Pi
 
 #align_import linear_algebra.pi from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -32,12 +34,9 @@ It contains theorems relating these to each other, as well as to `LinearMap.ker`
 universe u v w x y z u' v' w' x' y'
 
 variable {R : Type u} {K : Type u'} {M : Type v} {V : Type v'} {M₂ : Type w} {V₂ : Type w'}
-
 variable {M₃ : Type y} {V₃ : Type y'} {M₄ : Type z} {ι : Type x} {ι' : Type x'}
 
 open Function Submodule
-
-open BigOperators
 
 namespace LinearMap
 
@@ -64,8 +63,8 @@ theorem ker_pi (f : (i : ι) → M₂ →ₗ[R] φ i) : ker (pi f) = ⨅ i : ι,
 #align linear_map.ker_pi LinearMap.ker_pi
 
 theorem pi_eq_zero (f : (i : ι) → M₂ →ₗ[R] φ i) : pi f = 0 ↔ ∀ i, f i = 0 := by
-  simp only [LinearMap.ext_iff, pi_apply, funext_iff];
-    exact ⟨fun h a b => h b a, fun h a b => h b a⟩
+  simp only [LinearMap.ext_iff, pi_apply, funext_iff]
+  exact ⟨fun h a b => h b a, fun h a b => h b a⟩
 #align linear_map.pi_eq_zero LinearMap.pi_eq_zero
 
 theorem pi_zero : pi (fun i => 0 : (i : ι) → M₂ →ₗ[R] φ i) = 0 := by ext; rfl
@@ -192,7 +191,7 @@ theorem pi_ext_iff : f = g ↔ ∀ i x, f (Pi.single i x) = g (Pi.single i x) :=
 note [partially-applied ext lemmas]. -/
 @[ext]
 theorem pi_ext' (h : ∀ i, f.comp (single i) = g.comp (single i)) : f = g := by
-  refine' pi_ext fun i x => _
+  refine pi_ext fun i x => ?_
   convert LinearMap.congr_fun (h i) x
 #align linear_map.pi_ext' LinearMap.pi_ext'
 
@@ -212,9 +211,9 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
     (hu : Set.univ ⊆ I ∪ J) :
     (⨅ i ∈ J, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :
     Submodule R ((i : ι) → φ i)) ≃ₗ[R] (i : I) → φ i := by
-  refine'
+  refine
     LinearEquiv.ofLinear (pi fun i => (proj (i : ι)).comp (Submodule.subtype _))
-      (codRestrict _ (pi fun i => if h : i ∈ I then proj (⟨i, h⟩ : I) else 0) _) _ _
+      (codRestrict _ (pi fun i => if h : i ∈ I then proj (⟨i, h⟩ : I) else 0) ?_) ?_ ?_
   · intro b
     simp only [mem_iInf, mem_ker, funext_iff, proj_apply, pi_apply]
     intro j hjJ
@@ -325,7 +324,7 @@ theorem iInf_comap_proj :
 theorem iSup_map_single [DecidableEq ι] [Finite ι] :
     ⨆ i, map (LinearMap.single i : φ i →ₗ[R] (i : ι) → φ i) (p i) = pi Set.univ p := by
   cases nonempty_fintype ι
-  refine' (iSup_le fun i => _).antisymm _
+  refine (iSup_le fun i => ?_).antisymm ?_
   · rintro _ ⟨x, hx : x ∈ p i, rfl⟩ j -
     rcases em (j = i) with (rfl | hj) <;> simp [*]
   · intro x hx
@@ -349,11 +348,8 @@ end Submodule
 namespace LinearEquiv
 
 variable [Semiring R] {φ ψ χ : ι → Type*}
-
 variable [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
-
 variable [(i : ι) → AddCommMonoid (ψ i)] [(i : ι) → Module R (ψ i)]
-
 variable [(i : ι) → AddCommMonoid (χ i)] [(i : ι) → Module R (χ i)]
 
 /-- Combine a family of linear equivalences into a linear equivalence of `pi`-types.
@@ -407,6 +403,26 @@ This is `Equiv.piCongrLeft` as a `LinearEquiv` -/
 def piCongrLeft (e : ι' ≃ ι) : ((i' : ι') → φ (e i')) ≃ₗ[R] (i : ι) → φ i :=
   (piCongrLeft' R φ e.symm).symm
 #align linear_equiv.Pi_congr_left LinearEquiv.piCongrLeft
+
+/-- `Equiv.piCurry` as a `LinearEquiv`. -/
+def piCurry {ι : Type*} {κ : ι → Type*} (α : ∀ i, κ i → Type*)
+    [∀ i k, AddCommMonoid (α i k)] [∀ i k, Module R (α i k)] :
+    (Π i : Sigma κ, α i.1 i.2) ≃ₗ[R] Π i j, α i j where
+  __ := Equiv.piCurry α
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+@[simp] theorem piCurry_apply {ι : Type*} {κ : ι → Type*} (α : ∀ i, κ i → Type*)
+    [∀ i k, AddCommMonoid (α i k)] [∀ i k, Module R (α i k)]
+    (f : ∀ x : Σ i, κ i, α x.1 x.2) :
+    piCurry R α f = Sigma.curry f :=
+  rfl
+
+@[simp] theorem piCurry_symm_apply {ι : Type*} {κ : ι → Type*} (α : ∀ i, κ i → Type*)
+    [∀ i k, AddCommMonoid (α i k)] [∀ i k, Module R (α i k)]
+    (f : ∀ a b, α a b) :
+    (piCurry R α).symm f = Sigma.uncurry f :=
+  rfl
 
 /-- This is `Equiv.piOptionEquivProd` as a `LinearEquiv` -/
 def piOptionEquivProd {ι : Type*} {M : Option ι → Type*} [(i : Option ι) → AddCommGroup (M i)]
@@ -558,7 +574,6 @@ section Fin
 section Semiring
 
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-
 variable [Module R M] [Module R M₂] [Module R M₃]
 
 /-- The linear map defeq to `Matrix.vecEmpty` -/
@@ -596,7 +611,6 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-
 variable [Module R M] [Module R M₂] [Module R M₃]
 
 /-- The empty bilinear map defeq to `Matrix.vecEmpty` -/

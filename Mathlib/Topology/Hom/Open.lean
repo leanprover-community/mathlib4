@@ -42,7 +42,7 @@ section
 /-- `ContinuousOpenMapClass F α β` states that `F` is a type of continuous open maps.
 
 You should extend this class when you extend `ContinuousOpenMap`. -/
-class ContinuousOpenMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
+class ContinuousOpenMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
   [TopologicalSpace β] [FunLike F α β] extends ContinuousMapClass F α β : Prop where
   map_open (f : F) : IsOpenMap f
 #align continuous_open_map_class ContinuousOpenMapClass
@@ -78,7 +78,7 @@ theorem toFun_eq_coe {f : α →CO β} : f.toFun = (f : α → β) :=
   rfl
 #align continuous_open_map.to_fun_eq_coe ContinuousOpenMap.toFun_eq_coe
 
-@[simp] -- porting note: new, simpNF of `toFun_eq_coe`
+@[simp] -- Porting note: new, simpNF of `toFun_eq_coe`
 theorem coe_toContinuousMap (f : α →CO β) : (f.toContinuousMap : α → β) = f := rfl
 
 @[ext]

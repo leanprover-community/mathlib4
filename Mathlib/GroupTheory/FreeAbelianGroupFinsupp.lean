@@ -27,8 +27,6 @@ We use this to transport the notion of `support` from `Finsupp` to `FreeAbelianG
 
 noncomputable section
 
-open BigOperators
-
 variable {X : Type*}
 
 /-- The group homomorphism `FreeAbelianGroup X →+ (X →₀ ℤ)`. -/
@@ -178,7 +176,7 @@ theorem support_zsmul (k : ℤ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
     support (k • a) = support a := by
   ext x
   simp only [mem_support_iff, AddMonoidHom.map_zsmul]
-  simp only [h, zsmul_int_int, false_or_iff, Ne.def, mul_eq_zero]
+  simp only [h, zsmul_int_int, false_or_iff, Ne, mul_eq_zero]
 #align free_abelian_group.support_zsmul FreeAbelianGroup.support_zsmul
 
 @[simp]
@@ -188,7 +186,7 @@ theorem support_nsmul (k : ℕ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
   exact mod_cast h
 #align free_abelian_group.support_nsmul FreeAbelianGroup.support_nsmul
 
-open Classical
+open scoped Classical
 
 theorem support_add (a b : FreeAbelianGroup X) : support (a + b) ⊆ a.support ∪ b.support := by
   simp only [support, AddMonoidHom.map_add]

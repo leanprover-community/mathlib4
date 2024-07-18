@@ -3,9 +3,12 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Positivity.Core
+import Mathlib.Algebra.Order.Field.Unbundled.Basic
 
 /-!
 # Monotonicity of scalar multiplication by positive elements
@@ -57,22 +60,33 @@ used implications are:
   * `SMulPosStrictMono → SMulPosMono`
   * `PosSMulReflectLE → PosSMulReflectLT`
   * `SMulPosReflectLE → SMulPosReflectLT`
-* When `β` is a linear order: `PosSMulStrictMono → PosSMulReflectLE`
-* When `α` is a linear order: `SMulPosStrictMono → SMulPosReflectLE`
+* When `β` is a linear order:
+  * `PosSMulStrictMono → PosSMulReflectLE`
+  * `PosSMulReflectLT → PosSMulMono` (not registered as instance)
+  * `SMulPosReflectLT → SMulPosMono` (not registered as instance)
+  * `PosSMulReflectLE → PosSMulStrictMono` (not registered as instance)
+  * `SMulPosReflectLE → SMulPosStrictMono` (not registered as instance)
+* When `α` is a linear order:
+  * `SMulPosStrictMono → SMulPosReflectLE`
 * When `α` is an ordered ring, `β` an ordered group and also an `α`-module:
   * `PosSMulMono → SMulPosMono`
   * `PosSMulStrictMono → SMulPosStrictMono`
-* When `α` is an ordered semifield, `β` is an `α`-module:
+* When `α` is an linear ordered semifield, `β` is an `α`-module:
   * `PosSMulStrictMono → PosSMulReflectLT`
   * `PosSMulMono → PosSMulReflectLE`
+* When `α` is a semiring, `β` is an `α`-module with `NoZeroSMulDivisors`:
+  * `PosSMulMono → PosSMulStrictMono` (not registered as instance)
+* When `α` is a ring, `β` is an `α`-module with `NoZeroSMulDivisors`:
+  * `SMulPosMono → SMulPosStrictMono` (not registered as instance)
 
 Further, the bundled non-granular typeclasses imply the granular ones like so:
 * `OrderedSMul → PosSMulStrictMono`
 * `OrderedSMul → PosSMulReflectLT`
 
-All these are registered as instances, which means that in practice you should not worry about these
-implications. However, if you encounter a case where you think a statement is true but not covered
-by the current implications, please bring it up on Zulip!
+Unless otherwise stated, all these implications are registered as instances,
+which means that in practice you should not worry about these implications.
+However, if you encounter a case where you think a statement is true but
+not covered by the current implications, please bring it up on Zulip!
 
 ## Implementation notes
 
@@ -94,7 +108,7 @@ because:
   anyway. It is easily copied over.
 
 In the future, it would be good to make the corresponding typeclasses in
-`Mathlib.Algebra.Order.Ring.Lemmas` custom typeclasses too.
+`Mathlib.Algebra.Order.GroupWithZero.Unbundled` custom typeclasses too.
 
 ## TODO
 
@@ -620,11 +634,11 @@ variable [LinearOrder α] [LinearOrder β]
 lemma pos_and_pos_or_neg_and_neg_of_smul_pos [PosSMulMono α β] [SMulPosMono α β] (hab : 0 < a • b) :
     0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 := by
   obtain ha | rfl | ha := lt_trichotomy a 0
-  · refine' Or.inr ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ _) hab⟩
+  · refine Or.inr ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ ?_) hab⟩
     exact smul_nonpos_of_nonpos_of_nonneg ha.le hb
   · rw [zero_smul] at hab
     exact hab.false.elim
-  · refine' Or.inl ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ _) hab⟩
+  · refine Or.inl ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ ?_) hab⟩
     exact smul_nonpos_of_nonneg_of_nonpos ha.le hb
 
 lemma neg_of_smul_pos_right [PosSMulMono α β] [SMulPosMono α β] (h : 0 < a • b) (ha : a ≤ 0) :
@@ -891,7 +905,7 @@ lemma smul_neg_iff_of_neg_left (ha : a < 0) : a • b < 0 ↔ 0 < b := by
 end PosSMulStrictMono
 
 /-- Binary **rearrangement inequality**. -/
-lemma smul_add_smul_le_smul_add_smul [PosSMulMono α β] [ContravariantClass β β (· + ·) (· ≤ ·)]
+lemma smul_add_smul_le_smul_add_smul [PosSMulMono α β]
     {b₁ b₂ : α} {a d : β} (hab : b₁ ≤ b₂) (hcd : a ≤ d) : b₁ • d + b₂ • a ≤ b₁ • a + b₂ • d := by
   obtain ⟨b₂, rfl⟩ := exists_add_of_le hab
   obtain ⟨d, rfl⟩ := exists_add_of_le hcd
@@ -901,15 +915,15 @@ lemma smul_add_smul_le_smul_add_smul [PosSMulMono α β] [ContravariantClass β 
 #align smul_add_smul_le_smul_add_smul smul_add_smul_le_smul_add_smul
 
 /-- Binary **rearrangement inequality**. -/
-lemma smul_add_smul_le_smul_add_smul' [PosSMulMono α β] [ContravariantClass β β (· + ·) (· ≤ ·)]
+lemma smul_add_smul_le_smul_add_smul' [PosSMulMono α β]
     {b₁ b₂ : α} {a d : β} (hba : b₂ ≤ b₁) (hdc : d ≤ a) : b₁ • d + b₂ • a ≤ b₁ • a + b₂ • d := by
   rw [add_comm (b₁ • d), add_comm (b₁ • a)]
   exact smul_add_smul_le_smul_add_smul hba hdc
 #align smul_add_smul_le_smul_add_smul' smul_add_smul_le_smul_add_smul'
 
 /-- Binary strict **rearrangement inequality**. -/
-lemma smul_add_smul_lt_smul_add_smul [PosSMulStrictMono α β] [CovariantClass β β (· + ·) (· < ·)]
-    [ContravariantClass β β (· + ·) (· < ·)] {b₁ b₂ : α} {a d : β} (hab : b₁ < b₂) (hcd : a < d) :
+lemma smul_add_smul_lt_smul_add_smul [PosSMulStrictMono α β]
+    {b₁ b₂ : α} {a d : β} (hab : b₁ < b₂) (hcd : a < d) :
     b₁ • d + b₂ • a < b₁ • a + b₂ • d := by
   obtain ⟨b₂, rfl⟩ := exists_add_of_le hab.le
   obtain ⟨d, rfl⟩ := exists_add_of_le hcd.le
@@ -919,8 +933,8 @@ lemma smul_add_smul_lt_smul_add_smul [PosSMulStrictMono α β] [CovariantClass �
 #align smul_add_smul_lt_smul_add_smul smul_add_smul_lt_smul_add_smul
 
 /-- Binary strict **rearrangement inequality**. -/
-lemma smul_add_smul_lt_smul_add_smul' [PosSMulStrictMono α β] [CovariantClass β β (· + ·) (· < ·)]
-    [ContravariantClass β β (· + ·) (· < ·)] {b₁ b₂ : α} {a d : β} (hba : b₂ < b₁) (hdc : d < a) :
+lemma smul_add_smul_lt_smul_add_smul' [PosSMulStrictMono α β]
+    {b₁ b₂ : α} {a d : β} (hba : b₂ < b₁) (hdc : d < a) :
     b₁ • d + b₂ • a < b₁ • a + b₂ • d := by
   rw [add_comm (b₁ • d), add_comm (b₁ • a)]
   exact smul_add_smul_lt_smul_add_smul hba hdc
@@ -982,13 +996,14 @@ variable [LinearOrderedSemifield α] [AddCommGroup β] [PartialOrder β]
 -- See note [lower instance priority]
 instance (priority := 100) PosSMulMono.toPosSMulReflectLE [MulAction α β] [PosSMulMono α β] :
     PosSMulReflectLE α β where
-  elim _a ha b₁ b₂ h := by simpa [ha.ne'] using smul_le_smul_of_nonneg_left h <| inv_nonneg.2 ha.le
+  elim _a ha b₁ b₂ h := by
+    simpa [ha.ne'] using smul_le_smul_of_nonneg_left h <| inv_nonneg (α := α) |>.2 ha.le
 
 -- See note [lower instance priority]
 instance (priority := 100) PosSMulStrictMono.toPosSMulReflectLT [MulActionWithZero α β]
     [PosSMulStrictMono α β] : PosSMulReflectLT α β :=
   PosSMulReflectLT.of_pos fun a ha b₁ b₂ h ↦ by
-    simpa [ha.ne'] using smul_lt_smul_of_pos_left h <| inv_pos.2 ha
+    simpa [ha.ne'] using smul_lt_smul_of_pos_left h <| inv_pos (α := α) |>.2 ha
 
 end LinearOrderedSemifield
 
@@ -1204,33 +1219,39 @@ end Mathlib.Meta.Positivity
 Those lemmas have been deprecated on 2023-12-23.
 -/
 
-@[deprecated] alias monotone_smul_left := monotone_smul_left_of_nonneg
-@[deprecated] alias strict_mono_smul_left := strictMono_smul_left_of_pos
-@[deprecated] alias smul_le_smul_of_nonneg := smul_le_smul_of_nonneg_left
-@[deprecated] alias smul_lt_smul_of_pos := smul_lt_smul_of_pos_left
-@[deprecated] alias lt_of_smul_lt_smul_of_nonneg := lt_of_smul_lt_smul_of_nonneg_left
-@[deprecated] alias smul_le_smul_iff_of_pos := smul_le_smul_iff_of_pos_left
-@[deprecated] alias smul_lt_smul_iff_of_pos := smul_lt_smul_iff_of_pos_left
-@[deprecated] alias smul_max := smul_max_of_nonneg
-@[deprecated] alias smul_min := smul_min_of_nonneg
-@[deprecated] alias smul_pos_iff_of_pos := smul_pos_iff_of_pos_left
-@[deprecated] alias inv_smul_le_iff := inv_smul_le_iff_of_pos
-@[deprecated] alias le_inv_smul_iff := le_inv_smul_iff_of_pos
-@[deprecated] alias inv_smul_lt_iff := inv_smul_lt_iff_of_pos
-@[deprecated] alias lt_inv_smul_iff := lt_inv_smul_iff_of_pos
-@[deprecated] alias OrderIso.smulLeft := OrderIso.smulRight
-@[deprecated] alias OrderIso.smulLeft_symm_apply := OrderIso.smulRight_symm_apply
-@[deprecated] alias OrderIso.smulLeft_apply := OrderIso.smulRight_apply
-@[deprecated] alias smul_neg_iff_of_pos := smul_neg_iff_of_pos_left
+@[deprecated (since := "2023-12-23")] alias monotone_smul_left := monotone_smul_left_of_nonneg
+@[deprecated (since := "2023-12-23")] alias strict_mono_smul_left := strictMono_smul_left_of_pos
+@[deprecated (since := "2023-12-23")] alias smul_le_smul_of_nonneg := smul_le_smul_of_nonneg_left
+@[deprecated (since := "2023-12-23")] alias smul_lt_smul_of_pos := smul_lt_smul_of_pos_left
+
+@[deprecated (since := "2023-12-23")]
+alias lt_of_smul_lt_smul_of_nonneg := lt_of_smul_lt_smul_of_nonneg_left
+
+@[deprecated (since := "2023-12-23")] alias smul_le_smul_iff_of_pos := smul_le_smul_iff_of_pos_left
+@[deprecated (since := "2023-12-23")] alias smul_lt_smul_iff_of_pos := smul_lt_smul_iff_of_pos_left
+@[deprecated (since := "2023-12-23")] alias smul_max := smul_max_of_nonneg
+@[deprecated (since := "2023-12-23")] alias smul_min := smul_min_of_nonneg
+@[deprecated (since := "2023-12-23")] alias smul_pos_iff_of_pos := smul_pos_iff_of_pos_left
+@[deprecated (since := "2023-12-23")] alias inv_smul_le_iff := inv_smul_le_iff_of_pos
+@[deprecated (since := "2023-12-23")] alias le_inv_smul_iff := le_inv_smul_iff_of_pos
+@[deprecated (since := "2023-12-23")] alias inv_smul_lt_iff := inv_smul_lt_iff_of_pos
+@[deprecated (since := "2023-12-23")] alias lt_inv_smul_iff := lt_inv_smul_iff_of_pos
+@[deprecated (since := "2023-12-23")] alias OrderIso.smulLeft := OrderIso.smulRight
+
+@[deprecated (since := "2023-12-23")]
+alias OrderIso.smulLeft_symm_apply := OrderIso.smulRight_symm_apply
+
+@[deprecated (since := "2023-12-23")] alias OrderIso.smulLeft_apply := OrderIso.smulRight_apply
+@[deprecated (since := "2023-12-23")] alias smul_neg_iff_of_pos := smul_neg_iff_of_pos_left
 
 /-!
 Those lemmas have been deprecated on 2023-12-27.
 -/
 
-@[deprecated] alias strict_anti_smul_left := strictAnti_smul_left
-@[deprecated] alias smul_le_smul_of_nonpos := smul_le_smul_of_nonpos_left
-@[deprecated] alias smul_lt_smul_of_neg := smul_lt_smul_of_neg_left
-@[deprecated] alias smul_pos_iff_of_neg := smul_pos_iff_of_neg_left
-@[deprecated] alias smul_neg_iff_of_neg := smul_neg_iff_of_neg_left
-@[deprecated] alias smul_le_smul_iff_of_neg := smul_le_smul_iff_of_neg_left
-@[deprecated] alias smul_lt_smul_iff_of_neg := smul_lt_smul_iff_of_neg_left
+@[deprecated (since := "2023-12-27")] alias strict_anti_smul_left := strictAnti_smul_left
+@[deprecated (since := "2023-12-27")] alias smul_le_smul_of_nonpos := smul_le_smul_of_nonpos_left
+@[deprecated (since := "2023-12-27")] alias smul_lt_smul_of_neg := smul_lt_smul_of_neg_left
+@[deprecated (since := "2023-12-27")] alias smul_pos_iff_of_neg := smul_pos_iff_of_neg_left
+@[deprecated (since := "2023-12-27")] alias smul_neg_iff_of_neg := smul_neg_iff_of_neg_left
+@[deprecated (since := "2023-12-27")] alias smul_le_smul_iff_of_neg := smul_le_smul_iff_of_neg_left
+@[deprecated (since := "2023-12-27")] alias smul_lt_smul_iff_of_neg := smul_lt_smul_iff_of_neg_left

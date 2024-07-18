@@ -3,7 +3,7 @@ Copyright (c) 2023 Mohanad Ahmed. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mohanad Ahmed
 -/
-import Mathlib.Data.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 #align_import linear_algebra.matrix.charpoly.eigs from "leanprover-community/mathlib"@"48dc6abe71248bd6f4bffc9703dc87bdd4e37d0b"
@@ -48,14 +48,12 @@ dependencies are not general enough to unify them. We should refactor
 
 
 variable {n : Type*} [Fintype n] [DecidableEq n]
-
 variable {R : Type*} [Field R]
-
 variable {A : Matrix n n R}
 
 open Matrix Polynomial
 
-open scoped Matrix BigOperators
+open scoped Matrix
 
 namespace Matrix
 

@@ -24,7 +24,7 @@ when `C` is a preadditive category with finite coproducts, and get an isomorphis
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Category CategoryTheory.Preadditive
   CategoryTheory.Idempotents Opposite AlgebraicTopology AlgebraicTopology.DoldKan
-  BigOperators Simplicial DoldKan
+  Simplicial DoldKan
 
 namespace SimplicialObject
 
@@ -82,7 +82,7 @@ theorem σ_comp_πSummand_id_eq_zero {n : ℕ} (i : Fin (n + 1)) :
   rw [IndexSet.eqId_iff_len_eq]
   have h := SimplexCategory.len_le_of_epi (inferInstance : Epi A.e)
   dsimp at h ⊢
-  linarith
+  omega
 #align simplicial_object.splitting.σ_comp_π_summand_id_eq_zero SimplicialObject.Splitting.σ_comp_πSummand_id_eq_zero
 
 /-- If a simplicial object `X` in an additive category is split,
@@ -223,7 +223,7 @@ noncomputable def toKaroubiNondegComplexIsoN₁ :
   inv_hom_id := by
     ext n
     simp only [πSummand_comp_cofan_inj_id_comp_PInfty_eq_PInfty, Karoubi.comp_f,
-      HomologicalComplex.comp_f, N₁_obj_p, Karoubi.id_eq]
+      HomologicalComplex.comp_f, N₁_obj_p, Karoubi.id_f]
 set_option linter.uppercaseLean3 false in
 #align simplicial_object.splitting.to_karoubi_nondeg_complex_iso_N₁ SimplicialObject.Splitting.toKaroubiNondegComplexIsoN₁
 

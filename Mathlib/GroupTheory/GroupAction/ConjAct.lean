@@ -3,9 +3,10 @@ Copyright (c) 2021 . All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Group.Subgroup.ZPowers
+import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.GroupTheory.Subgroup.ZPowers
-import Mathlib.Algebra.GroupRingAction.Basic
 
 #align_import group_theory.group_action.conj_act from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
@@ -81,7 +82,8 @@ def toConjAct : G ≃* ConjAct G :=
   ofConjAct.symm
 #align conj_act.to_conj_act ConjAct.toConjAct
 
-/-- A recursor for `ConjAct`, for use as `induction x using ConjAct.rec` when `x : ConjAct G`. -/
+/-- A recursor for `ConjAct`, for use as `induction x` when `x : ConjAct G`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {C : ConjAct G → Sort*} (h : ∀ g, C (toConjAct g)) : ∀ g, C g :=
   h
 #align conj_act.rec ConjAct.rec
@@ -111,12 +113,12 @@ theorem ofConjAct_toConjAct (x : G) : ofConjAct (toConjAct x) = x :=
   rfl
 #align conj_act.of_conj_act_to_conj_act ConjAct.ofConjAct_toConjAct
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem ofConjAct_one : ofConjAct (1 : ConjAct G) = 1 :=
   rfl
 #align conj_act.of_conj_act_one ConjAct.ofConjAct_one
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem toConjAct_one : toConjAct (1 : G) = 1 :=
   rfl
 #align conj_act.to_conj_act_one ConjAct.toConjAct_one
@@ -131,12 +133,12 @@ theorem toConjAct_inv (x : G) : toConjAct x⁻¹ = (toConjAct x)⁻¹ :=
   rfl
 #align conj_act.to_conj_act_inv ConjAct.toConjAct_inv
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem ofConjAct_mul (x y : ConjAct G) : ofConjAct (x * y) = ofConjAct x * ofConjAct y :=
   rfl
 #align conj_act.of_conj_act_mul ConjAct.ofConjAct_mul
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem toConjAct_mul (x y : G) : toConjAct (x * y) = toConjAct x * toConjAct y :=
   rfl
 #align conj_act.to_conj_act_mul ConjAct.toConjAct_mul
@@ -146,6 +148,9 @@ instance : SMul (ConjAct G) G where smul g h := ofConjAct g * h * (ofConjAct g)�
 theorem smul_def (g : ConjAct G) (h : G) : g • h = ofConjAct g * h * (ofConjAct g)⁻¹ :=
   rfl
 #align conj_act.smul_def ConjAct.smul_def
+
+theorem toConjAct_smul (g h : G) : toConjAct g • h = g * h * g⁻¹ :=
+  rfl
 
 end DivInvMonoid
 
@@ -213,12 +218,12 @@ section GroupWithZero
 
 variable [GroupWithZero G₀]
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem ofConjAct_zero : ofConjAct (0 : ConjAct G₀) = 0 :=
   rfl
 #align conj_act.of_conj_act_zero ConjAct.ofConjAct_zero
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem toConjAct_zero : toConjAct (0 : G₀) = 0 :=
   rfl
 #align conj_act.to_conj_act_zero ConjAct.toConjAct_zero
@@ -311,7 +316,7 @@ theorem orbitRel_conjAct : (orbitRel (ConjAct G) G).Rel = IsConj :=
   funext₂ fun g h => by rw [orbitRel_apply, mem_orbit_conjAct]
 #align conj_act.orbit_rel_conj_act ConjAct.orbitRel_conjAct
 
-theorem orbit_eq_carrier_conjClasses [Group G] (g : G) :
+theorem orbit_eq_carrier_conjClasses (g : G) :
     orbit (ConjAct G) g = (ConjClasses.mk g).carrier := by
   ext h
   rw [ConjClasses.mem_carrier_iff_mk_eq, ConjClasses.mk_eq_mk_iff_isConj, mem_orbit_conjAct]

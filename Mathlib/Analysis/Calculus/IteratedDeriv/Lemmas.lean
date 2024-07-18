@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, Ruben Van de Velde
 -/
 import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Calculus.Deriv.Add
-import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Shift
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!
@@ -66,20 +65,22 @@ theorem iteratedDerivWithin_const_mul (c : 𝕜) {f : 𝕜 → 𝕜} (hf : ContD
     iteratedDerivWithin n (fun z => c * f z) s x = c * iteratedDerivWithin n f s x := by
   simpa using iteratedDerivWithin_const_smul (F := 𝕜) hx h c hf
 
-theorem iteratedDerivWithin_neg (hf : ContDiffOn 𝕜 n f s) :
+variable (f) in
+theorem iteratedDerivWithin_neg :
     iteratedDerivWithin n (-f) s x = -iteratedDerivWithin n f s x := by
-  have := iteratedDerivWithin_const_smul hx h (-1) hf
-  simpa only [neg_smul, one_smul]
+  rw [iteratedDerivWithin, iteratedDerivWithin, iteratedFDerivWithin_neg_apply h hx,
+    ContinuousMultilinearMap.neg_apply]
 
-theorem iteratedDerivWithin_neg' (hf : ContDiffOn 𝕜 n f s) :
+variable (f) in
+theorem iteratedDerivWithin_neg' :
     iteratedDerivWithin n (fun z => -f z) s x = -iteratedDerivWithin n f s x :=
-  iteratedDerivWithin_neg hx h hf
+  iteratedDerivWithin_neg hx h f
 
 theorem iteratedDerivWithin_sub (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g s) :
     iteratedDerivWithin n (f - g) s x =
       iteratedDerivWithin n f s x - iteratedDerivWithin n g s x := by
   rw [sub_eq_add_neg, sub_eq_add_neg, Pi.neg_def, iteratedDerivWithin_add hx h hf hg.neg,
-    iteratedDerivWithin_neg' hx h hg]
+    iteratedDerivWithin_neg' hx h]
 
 theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n f) (c : 𝕜) :
     iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n • iteratedDeriv n f (c * x) := by
@@ -96,8 +97,22 @@ theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n
       · exact differentiableAt_id'.const_mul _
     rw [iteratedDeriv_succ, ih h.of_succ, deriv_const_smul _ h₁, iteratedDeriv_succ,
       ← Function.comp_def, deriv.scomp x h₀ (differentiableAt_id'.const_mul _),
-      deriv_const_mul _ differentiableAt_id', deriv_id'', smul_smul, mul_one, pow_succ']
+      deriv_const_mul _ differentiableAt_id', deriv_id'', smul_smul, mul_one, pow_succ]
 
 theorem iteratedDeriv_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiff 𝕜 n f) (c : 𝕜) :
     iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n * iteratedDeriv n f (c * x) := by
   simpa only [smul_eq_mul] using iteratedDeriv_const_smul h c
+
+lemma iteratedDeriv_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
+    iteratedDeriv n (fun x ↦ -(f x)) a = -(iteratedDeriv n f a) := by
+  simp_rw [← iteratedDerivWithin_univ, iteratedDerivWithin_neg' (Set.mem_univ a) uniqueDiffOn_univ]
+
+lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
+    iteratedDeriv n (fun x ↦ f (-x)) a = (-1 : 𝕜) ^ n • iteratedDeriv n f (-a) := by
+  induction' n with n ih generalizing a
+  · simp only [Nat.zero_eq, iteratedDeriv_zero, pow_zero, one_smul]
+  · have ih' : iteratedDeriv n (fun x ↦ f (-x)) = fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f (-x) :=
+      funext ih
+    rw [iteratedDeriv_succ, iteratedDeriv_succ, ih', pow_succ', neg_mul, one_mul,
+      deriv_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f x), deriv_const_smul',
+      neg_smul]

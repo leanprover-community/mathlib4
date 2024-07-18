@@ -8,6 +8,7 @@ import Mathlib.Init.Data.Int.Order
 import Mathlib.Order.Compare
 import Mathlib.Order.Max
 import Mathlib.Order.RelClasses
+import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Choose
 
 #align_import order.monotone.basic from "leanprover-community/mathlib"@"554bb38de8ded0dafe93b7f18f0bfee6ef77dc5d"
@@ -140,6 +141,18 @@ instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a < b → f b < f a)] :
     Decidable (StrictAntiOn f s) := i
 
 end Decidable
+
+lemma monotone_inclusion_le_le_of_le [Preorder α] {k j : α} (hkj : k ≤ j) :
+    Monotone (fun ⟨i, hi⟩ => ⟨i, hi.trans hkj⟩ : { i // i ≤ k } → { i // i ≤ j}) :=
+  fun _ _ h => h
+
+lemma monotone_inclusion_lt_le_of_le [Preorder α] {k j : α} (hkj : k ≤ j) :
+    Monotone (fun ⟨i, hi⟩ => ⟨i, hi.le.trans hkj⟩ : { i // i < k } → { i // i ≤ j}) :=
+  fun _ _ h => h
+
+lemma monotone_inclusion_lt_lt_of_le [Preorder α] {k j : α} (hkj : k ≤ j) :
+    Monotone (fun ⟨i, hi⟩ => ⟨i, lt_of_lt_of_le hi hkj⟩ : { i // i < k } → { i // i < j}) :=
+  fun _ _ h => h
 
 /-! ### Monotonicity on the dual order
 
@@ -626,15 +639,22 @@ theorem StrictAnti.isMin_of_apply (hf : StrictAnti f) (ha : IsMax (f a)) : IsMin
     (hf hb).not_isMax ha
 #align strict_anti.is_min_of_apply StrictAnti.isMin_of_apply
 
+lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : m + f n ≤ f (m + n)  := by
+  rw [Nat.add_comm m, Nat.add_comm m]
+  induction' m with m ih
+  · rw [Nat.add_zero, Nat.add_zero]
+  · rw [← Nat.add_assoc, ← Nat.add_assoc, Nat.succ_le]
+    exact ih.trans_lt (hf (n + m).lt_succ_self)
+
 protected theorem StrictMono.ite' (hf : StrictMono f) (hg : StrictMono g) {p : α → Prop}
     [DecidablePred p]
     (hp : ∀ ⦃x y⦄, x < y → p y → p x) (hfg : ∀ ⦃x y⦄, p x → ¬p y → x < y → f x < g y) :
     StrictMono fun x ↦ if p x then f x else g x := by
   intro x y h
-  by_cases hy:p y
+  by_cases hy : p y
   · have hx : p x := hp h hy
     simpa [hx, hy] using hf h
-  by_cases hx:p x
+  by_cases hx : p x
   · simpa [hx, hy] using hfg hx hy h
   · simpa [hx, hy] using hg h
 #align strict_mono.ite' StrictMono.ite'
@@ -919,6 +939,20 @@ theorem Antitone.strictAnti_iff_injective (hf : Antitone f) : StrictAnti f ↔ I
   ⟨fun h ↦ h.injective, hf.strictAnti_of_injective⟩
 #align antitone.strict_anti_iff_injective Antitone.strictAnti_iff_injective
 
+/-- If a monotone function is equal at two points, it is equal between all of them -/
+theorem Monotone.eq_of_le_of_le {a₁ a₂ : α} (h_mon : Monotone f) (h_fa : f a₁ = f a₂) {i : α}
+    (h₁ : a₁ ≤ i) (h₂ : i ≤ a₂) : f i = f a₁ := by
+  apply le_antisymm
+  · rw [h_fa]; exact h_mon h₂
+  · exact h_mon h₁
+
+/-- If an antitone function is equal at two points, it is equal between all of them -/
+theorem Antitone.eq_of_le_of_le {a₁ a₂ : α} (h_anti : Antitone f) (h_fa : f a₁ = f a₂) {i : α}
+    (h₁ : a₁ ≤ i) (h₂ : i ≤ a₂) : f i = f a₁ := by
+  apply le_antisymm
+  · exact h_anti h₁
+  · rw [h_fa]; exact h_anti h₂
+
 end PartialOrder
 
 variable [LinearOrder β] {f : α → β} {s : Set α} {x y : α}
@@ -926,32 +960,32 @@ variable [LinearOrder β] {f : α → β} {s : Set α} {x y : α}
 /-- A function between linear orders which is neither monotone nor antitone makes a dent upright or
 downright. -/
 lemma not_monotone_not_antitone_iff_exists_le_le :
-    ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a ≤ b ∧ b ≤ c ∧
-    (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
+    ¬ Monotone f ∧ ¬ Antitone f ↔
+      ∃ a b c, a ≤ b ∧ b ≤ c ∧ ((f a < f b ∧ f c < f b) ∨ (f b < f a ∧ f b < f c)) := by
   simp_rw [Monotone, Antitone, not_forall, not_le]
-  refine' Iff.symm ⟨_, _⟩
-  { rintro ⟨a, b, c, hab, hbc, ⟨hfab, hfcb⟩ | ⟨hfba, hfbc⟩⟩
-    exacts [⟨⟨_, _, hbc, hfcb⟩, _, _, hab, hfab⟩, ⟨⟨_, _, hab, hfba⟩, _, _, hbc, hfbc⟩] }
+  refine Iff.symm ⟨?_, ?_⟩
+  · rintro ⟨a, b, c, hab, hbc, ⟨hfab, hfcb⟩ | ⟨hfba, hfbc⟩⟩
+    exacts [⟨⟨_, _, hbc, hfcb⟩, _, _, hab, hfab⟩, ⟨⟨_, _, hab, hfba⟩, _, _, hbc, hfbc⟩]
   rintro ⟨⟨a, b, hab, hfba⟩, c, d, hcd, hfcd⟩
   obtain hda | had := le_total d a
-  { obtain hfad | hfda := le_total (f a) (f d)
-    { exact ⟨c, d, b, hcd, hda.trans hab, Or.inl ⟨hfcd, hfba.trans_le hfad⟩⟩ }
-    { exact ⟨c, a, b, hcd.trans hda, hab, Or.inl ⟨hfcd.trans_le hfda, hfba⟩⟩ } }
+  · obtain hfad | hfda := le_total (f a) (f d)
+    · exact ⟨c, d, b, hcd, hda.trans hab, Or.inl ⟨hfcd, hfba.trans_le hfad⟩⟩
+    · exact ⟨c, a, b, hcd.trans hda, hab, Or.inl ⟨hfcd.trans_le hfda, hfba⟩⟩
   obtain hac | hca := le_total a c
-  { obtain hfdb | hfbd := le_or_lt (f d) (f b)
-    { exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfcd.trans <| hfdb.trans_lt hfba, hfcd⟩⟩ }
+  · obtain hfdb | hfbd := le_or_lt (f d) (f b)
+    · exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfcd.trans <| hfdb.trans_lt hfba, hfcd⟩⟩
     obtain hfca | hfac := lt_or_le (f c) (f a)
-    { exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfca, hfcd⟩⟩ }
+    · exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfca, hfcd⟩⟩
     obtain hbd | hdb := le_total b d
-    { exact ⟨a, b, d, hab, hbd, Or.inr ⟨hfba, hfbd⟩⟩ }
-    { exact ⟨a, d, b, had, hdb, Or.inl ⟨hfac.trans_lt hfcd, hfbd⟩⟩ } }
-  { obtain hfdb | hfbd := le_or_lt (f d) (f b)
-    { exact ⟨c, a, b, hca, hab, Or.inl ⟨hfcd.trans <| hfdb.trans_lt hfba, hfba⟩⟩ }
+    · exact ⟨a, b, d, hab, hbd, Or.inr ⟨hfba, hfbd⟩⟩
+    · exact ⟨a, d, b, had, hdb, Or.inl ⟨hfac.trans_lt hfcd, hfbd⟩⟩
+  · obtain hfdb | hfbd := le_or_lt (f d) (f b)
+    · exact ⟨c, a, b, hca, hab, Or.inl ⟨hfcd.trans <| hfdb.trans_lt hfba, hfba⟩⟩
     obtain hfca | hfac := lt_or_le (f c) (f a)
-    { exact ⟨c, a, b, hca, hab, Or.inl ⟨hfca, hfba⟩⟩ }
+    · exact ⟨c, a, b, hca, hab, Or.inl ⟨hfca, hfba⟩⟩
     obtain hbd | hdb := le_total b d
-    { exact ⟨a, b, d, hab, hbd, Or.inr ⟨hfba, hfbd⟩⟩ }
-    { exact ⟨a, d, b, had, hdb, Or.inl ⟨hfac.trans_lt hfcd, hfbd⟩⟩ } }
+    · exact ⟨a, b, d, hab, hbd, Or.inr ⟨hfba, hfbd⟩⟩
+    · exact ⟨a, d, b, had, hdb, Or.inl ⟨hfac.trans_lt hfcd, hfbd⟩⟩
 #align not_monotone_not_antitone_iff_exists_le_le not_monotone_not_antitone_iff_exists_le_le
 
 /-- A function between linear orders which is neither monotone nor antitone makes a dent upright or
@@ -960,8 +994,8 @@ lemma not_monotone_not_antitone_iff_exists_lt_lt :
     ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a < b ∧ b < c ∧
     (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
   simp_rw [not_monotone_not_antitone_iff_exists_le_le, ← and_assoc]
-  refine' exists₃_congr (fun a b c ↦ and_congr_left <|
-    fun h ↦ (Ne.le_iff_lt _).and <| Ne.le_iff_lt _) <;>
+  refine exists₃_congr (fun a b c ↦ and_congr_left <|
+    fun h ↦ (Ne.le_iff_lt ?_).and <| Ne.le_iff_lt ?_) <;>
   (rintro rfl; simp at h)
 #align not_monotone_not_antitone_iff_exists_lt_lt not_monotone_not_antitone_iff_exists_lt_lt
 
@@ -969,8 +1003,6 @@ lemma not_monotone_not_antitone_iff_exists_lt_lt :
 ### Strictly monotone functions and `cmp`
 -/
 
-
-variable [LinearOrder β] {f : α → β} {s : Set α} {x y : α}
 
 theorem StrictMonoOn.cmp_map_eq (hf : StrictMonoOn f s) (hx : x ∈ s) (hy : y ∈ s) :
     cmp (f x) (f y) = cmp x y :=
@@ -1113,7 +1145,7 @@ theorem exists_strictMono : ∃ f : ℤ → α, StrictMono f := by
   inhabit α
   rcases Nat.exists_strictMono' (default : α) with ⟨f, hf, hf₀⟩
   rcases Nat.exists_strictAnti' (default : α) with ⟨g, hg, hg₀⟩
-  refine' ⟨fun n ↦ Int.casesOn n f fun n ↦ g (n + 1), strictMono_int_of_lt_succ _⟩
+  refine ⟨fun n ↦ Int.casesOn n f fun n ↦ g (n + 1), strictMono_int_of_lt_succ ?_⟩
   rintro (n | _ | n)
   · exact hf n.lt_succ_self
   · show g 1 < f 0
@@ -1222,7 +1254,7 @@ namespace Function
 
 variable [Preorder α] [DecidableEq ι] [∀ i, Preorder (π i)] {f : ∀ i, π i} {i : ι}
 
--- porting note: Dot notation breaks in `f.update i`
+-- Porting note: Dot notation breaks in `f.update i`
 theorem update_mono : Monotone (update f i) := fun _ _ => update_le_update_iff'.2
 #align function.update_mono Function.update_mono
 
@@ -1237,3 +1269,17 @@ theorem const_strictMono [Nonempty β] : StrictMono (const β : α → β → α
 #align function.const_strict_mono Function.const_strictMono
 
 end Function
+
+section apply
+variable {ι α : Type*} {β : ι → Type*} [∀ i, Preorder (β i)] [Preorder α] {f : α → ∀ i, β i}
+
+lemma monotone_iff_apply₂ : Monotone f ↔ ∀ i, Monotone (f · i) := by
+  simp [Monotone, Pi.le_def, @forall_swap ι]
+
+lemma antitone_iff_apply₂ : Antitone f ↔ ∀ i, Antitone (f · i) := by
+  simp [Antitone, Pi.le_def, @forall_swap ι]
+
+alias ⟨Monotone.apply₂, Monotone.of_apply₂⟩ := monotone_iff_apply₂
+alias ⟨Antitone.apply₂, Antitone.of_apply₂⟩ := antitone_iff_apply₂
+
+end apply

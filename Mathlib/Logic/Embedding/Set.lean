@@ -85,13 +85,13 @@ end Function
 namespace Set
 
 /-- The injection map is an embedding between subsets. -/
-@[simps apply]
+@[simps apply_coe]
 def embeddingOfSubset {α} (s t : Set α) (h : s ⊆ t) : s ↪ t :=
   ⟨fun x ↦ ⟨x.1, h x.2⟩, fun ⟨x, hx⟩ ⟨y, hy⟩ h ↦ by
     congr
     injection h⟩
 #align set.embedding_of_subset Set.embeddingOfSubset
-#align set.embedding_of_subset_apply Set.embeddingOfSubset_apply
+#align set.embedding_of_subset_apply Set.embeddingOfSubset_apply_coeₓ
 
 end Set
 

@@ -119,20 +119,20 @@ theorem min_lt_of_right_lt (h : b < c) : min a b < c :=
   (min_le_right a b).trans_lt h
 #align min_lt_of_right_lt min_lt_of_right_lt
 
-theorem max_min_distrib_left : max a (min b c) = min (max a b) (max a c) :=
-  sup_inf_left
+lemma max_min_distrib_left (a b c : α) : max a (min b c) = min (max a b) (max a c) :=
+  sup_inf_left _ _ _
 #align max_min_distrib_left max_min_distrib_left
 
-theorem max_min_distrib_right : max (min a b) c = min (max a c) (max b c) :=
-  sup_inf_right
+lemma max_min_distrib_right (a b c : α) : max (min a b) c = min (max a c) (max b c) :=
+  sup_inf_right _ _ _
 #align max_min_distrib_right max_min_distrib_right
 
-theorem min_max_distrib_left : min a (max b c) = max (min a b) (min a c) :=
-  inf_sup_left
+lemma min_max_distrib_left (a b c : α) : min a (max b c) = max (min a b) (min a c) :=
+  inf_sup_left _ _ _
 #align min_max_distrib_left min_max_distrib_left
 
-theorem min_max_distrib_right : min (max a b) c = max (min a c) (min b c) :=
-  inf_sup_right
+lemma min_max_distrib_right (a b c : α) : min (max a b) c = max (min a c) (min b c) :=
+  inf_sup_right _ _ _
 #align min_max_distrib_right min_max_distrib_right
 
 theorem min_le_max : min a b ≤ max a b :=
@@ -180,7 +180,7 @@ theorem max_cases (a b : α) : max a b = a ∧ b ≤ a ∨ max a b = b ∧ a < b
 theorem min_eq_iff : min a b = c ↔ a = c ∧ a ≤ b ∨ b = c ∧ b ≤ a := by
   constructor
   · intro h
-    refine' Or.imp (fun h' => _) (fun h' => _) (le_total a b) <;> exact ⟨by simpa [h'] using h, h'⟩
+    refine Or.imp (fun h' => ?_) (fun h' => ?_) (le_total a b) <;> exact ⟨by simpa [h'] using h, h'⟩
   · rintro (⟨rfl, h⟩ | ⟨rfl, h⟩) <;> simp [h]
 #align min_eq_iff min_eq_iff
 

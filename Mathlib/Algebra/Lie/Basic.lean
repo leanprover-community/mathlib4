@@ -3,8 +3,9 @@ Copyright (c) 2019 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Data.Bracket
-import Mathlib.LinearAlgebra.Basic
+import Mathlib.Tactic.Abel
 
 #align_import algebra.lie.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -41,7 +42,7 @@ are partially unbundled.
 ## References
 * [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975)
 
-## Tagsc
+## Tags
 
 lie bracket, jacobi identity, lie ring, lie algebra, lie module
 -/
@@ -99,13 +100,9 @@ class LieModule (R : Type u) (L : Type v) (M : Type w) [CommRing R] [LieRing L] 
 section BasicProperties
 
 variable {R : Type u} {L : Type v} {M : Type w} {N : Type w₁}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
-
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-
 variable [AddCommGroup N] [Module R N] [LieRingModule L N] [LieModule R L N]
-
 variable (t : R) (x y z : L) (m n : M)
 
 @[simp]
@@ -158,8 +155,7 @@ theorem lie_skew : -⁅y, x⁆ = ⁅x, y⁆ := by
 #align lie_skew lie_skew
 
 /-- Every Lie algebra is a module over itself. -/
-instance lieAlgebraSelfModule : LieModule R L L
-    where
+instance lieAlgebraSelfModule : LieModule R L L where
   smul_lie t x m := by rw [← lie_skew, ← lie_skew x m, LieAlgebra.lie_smul, smul_neg]
   lie_smul := by apply LieAlgebra.lie_smul
 #align lie_algebra_self_module lieAlgebraSelfModule
@@ -213,7 +209,7 @@ theorem lie_zsmul (a : ℤ) : ⁅x, a • m⁆ = a • ⁅x, m⁆ :=
 #align lie_zsmul lie_zsmul
 
 @[simp]
-theorem lie_lie : ⁅⁅x, y⁆, m⁆ = ⁅x, ⁅y, m⁆⁆ - ⁅y, ⁅x, m⁆⁆ := by rw [leibniz_lie, add_sub_cancel]
+lemma lie_lie : ⁅⁅x, y⁆, m⁆ = ⁅x, ⁅y, m⁆⁆ - ⁅y, ⁅x, m⁆⁆ := by rw [leibniz_lie, add_sub_cancel_right]
 #align lie_lie lie_lie
 
 theorem lie_jacobi : ⁅x, ⁅y, z⁆⁆ + ⁅y, ⁅z, x⁆⁆ + ⁅z, ⁅x, y⁆⁆ = 0 := by
@@ -251,8 +247,7 @@ theorem LieHom.lie_apply (f : M →ₗ[R] N) (x : L) (m : M) : ⁅x, f⁆ m = �
   rfl
 #align lie_hom.lie_apply LieHom.lie_apply
 
-instance LinearMap.instLieModule : LieModule R L (M →ₗ[R] N)
-    where
+instance LinearMap.instLieModule : LieModule R L (M →ₗ[R] N) where
   smul_lie t x f := by
     ext n
     simp only [smul_sub, smul_lie, LinearMap.smul_apply, LieHom.lie_apply, LinearMap.map_smul]
@@ -281,7 +276,7 @@ instance Module.Dual.instLieModule : LieModule R L (M →ₗ[R] R) where
 end BasicProperties
 
 /-- A morphism of Lie algebras is a linear map respecting the bracket operations. -/
-structure LieHom (R L L': Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+structure LieHom (R L L' : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [LieRing L'] [LieAlgebra R L'] extends L →ₗ[R] L' where
   /-- A morphism of Lie algebras is compatible with brackets. -/
   map_lie' : ∀ {x y : L}, toFun ⁅x, y⁆ = ⁅toFun x, toFun y⁆
@@ -293,13 +288,9 @@ notation:25 L " →ₗ⁅" R:25 "⁆ " L':0 => LieHom R L L'
 namespace LieHom
 
 variable {R : Type u} {L₁ : Type v} {L₂ : Type w} {L₃ : Type w₁}
-
 variable [CommRing R]
-
 variable [LieRing L₁] [LieAlgebra R L₁]
-
 variable [LieRing L₂] [LieAlgebra R L₂]
-
 variable [LieRing L₃] [LieAlgebra R L₃]
 
 attribute [coe] LieHom.toLinearMap
@@ -482,11 +473,8 @@ end LieHom
 section ModulePullBack
 
 variable {R : Type u} {L₁ : Type v} {L₂ : Type w} (M : Type w₁)
-
 variable [CommRing R] [LieRing L₁] [LieAlgebra R L₁] [LieRing L₂] [LieAlgebra R L₂]
-
 variable [AddCommGroup M] [LieRingModule L₂ M]
-
 variable (f : L₁ →ₗ⁅R⁆ L₂)
 
 /-- A Lie ring module may be pulled back along a morphism of Lie algebras.
@@ -508,7 +496,7 @@ theorem LieRingModule.compLieHom_apply (x : L₁) (m : M) :
 /-- A Lie module may be pulled back along a morphism of Lie algebras. -/
 theorem LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
     @LieModule R L₁ M _ _ _ _ _ (LieRingModule.compLieHom M f) :=
-  { LieRingModule.compLieHom M f with
+  { __ := LieRingModule.compLieHom M f
     smul_lie := fun t x m => by
       simp only [LieRingModule.compLieHom_apply, smul_lie, LieHom.map_smul]
     lie_smul := fun t x m => by
@@ -538,9 +526,7 @@ notation:50 L " ≃ₗ⁅" R "⁆ " L' => LieEquiv R L L'
 namespace LieEquiv
 
 variable {R : Type u} {L₁ : Type v} {L₂ : Type w} {L₃ : Type w₁}
-
 variable [CommRing R] [LieRing L₁] [LieRing L₂] [LieRing L₃]
-
 variable [LieAlgebra R L₁] [LieAlgebra R L₂] [LieAlgebra R L₃]
 
 /-- Consider an equivalence of Lie algebras as a linear equivalence. -/
@@ -610,6 +596,9 @@ theorem one_apply (x : L₁) : (1 : L₁ ≃ₗ⁅R⁆ L₁) x = x :=
 
 instance : Inhabited (L₁ ≃ₗ⁅R⁆ L₁) :=
   ⟨1⟩
+
+lemma map_lie (e : L₁ ≃ₗ⁅R⁆ L₂) (x y : L₁) : e ⁅x, y⁆ = ⁅e x, e y⁆ :=
+  LieHom.map_lie e.toLieHom x y
 
 /-- Lie algebra equivalences are reflexive. -/
 def refl : L₁ ≃ₗ⁅R⁆ L₁ :=
@@ -705,15 +694,10 @@ end LieEquiv
 section LieModuleMorphisms
 
 variable (R : Type u) (L : Type v) (M : Type w) (N : Type w₁) (P : Type w₂)
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
-
 variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
-
 variable [Module R M] [Module R N] [Module R P]
-
 variable [LieRingModule L M] [LieRingModule L N] [LieRingModule L P]
-
 variable [LieModule R L M] [LieModule R L N] [LieModule R L P]
 
 /-- A morphism of Lie algebra modules is a linear map which commutes with the action of the Lie

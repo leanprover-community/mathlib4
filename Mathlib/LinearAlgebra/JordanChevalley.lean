@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Dynamics.Newton
-import Mathlib.FieldTheory.Perfect
 import Mathlib.LinearAlgebra.Semisimple
 
 /-!
@@ -48,7 +47,7 @@ theorem exists_isNilpotent_isSemisimple_of_separable_of_dvd_pow {P : K[X]} {k : 
   have nil' : IsNilpotent (aeval ff P) := by
     use k
     obtain ⟨q, hq⟩ := nil
-    rw [← AlgHom.map_pow, Subtype.ext_iff]
+    rw [← map_pow, Subtype.ext_iff]
     simp [ff, hq]
   have sep' : IsUnit (aeval ff P') := by
     obtain ⟨a, b, h⟩ : IsCoprime (P ^ k) P' := sep.pow_left

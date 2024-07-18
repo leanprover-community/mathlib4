@@ -36,7 +36,7 @@ theorem coe_ndinsert (a : α) (l : List α) : ndinsert a l = (insert a l : List 
   rfl
 #align multiset.coe_ndinsert Multiset.coe_ndinsert
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
+@[simp]
 theorem ndinsert_zero (a : α) : ndinsert a 0 = {a} :=
   rfl
 #align multiset.ndinsert_zero Multiset.ndinsert_zero
@@ -61,7 +61,7 @@ theorem le_ndinsert_self (a : α) (s : Multiset α) : s ≤ ndinsert a s :=
   Quot.inductionOn s fun _ => (sublist_insert _ _).subperm
 #align multiset.le_ndinsert_self Multiset.le_ndinsert_self
 
---Porting note: removing @[simp], simp can prove it
+-- Porting note: removing @[simp], simp can prove it
 theorem mem_ndinsert_self (a : α) (s : Multiset α) : a ∈ ndinsert a s :=
   mem_ndinsert.2 (Or.inl rfl)
 #align multiset.mem_ndinsert_self Multiset.mem_ndinsert_self
@@ -93,8 +93,8 @@ theorem ndinsert_le {a : α} {s t : Multiset α} : ndinsert a s ≤ t ↔ s ≤ 
     if h : a ∈ s then by simp [h, l]
     else by
       rw [ndinsert_of_not_mem h, ← cons_erase m, cons_le_cons_iff, ← le_cons_of_not_mem h,
-          cons_erase m];
-        exact l⟩
+          cons_erase m]
+      exact l⟩
 #align multiset.ndinsert_le Multiset.ndinsert_le
 
 theorem attach_ndinsert (a : α) (s : Multiset α) :
@@ -146,7 +146,7 @@ theorem coe_ndunion (l₁ l₂ : List α) : @ndunion α _ l₁ l₂ = (l₁ ∪ 
   rfl
 #align multiset.coe_ndunion Multiset.coe_ndunion
 
---Porting note: removing @[simp], simp can prove it
+-- Porting note: removing @[simp], simp can prove it
 theorem zero_ndunion (s : Multiset α) : ndunion 0 s = s :=
   Quot.inductionOn s fun _ => rfl
 #align multiset.zero_ndunion Multiset.zero_ndunion
@@ -205,6 +205,15 @@ theorem dedup_add (s t : Multiset α) : dedup (s + t) = ndunion s (dedup t) :=
   Quot.induction_on₂ s t fun _ _ => congr_arg ((↑) : List α → Multiset α) <| dedup_append _ _
 #align multiset.dedup_add Multiset.dedup_add
 
+theorem Disjoint.ndunion_eq {s t : Multiset α} (h : Disjoint s t) :
+    s.ndunion t = s.dedup + t := by
+  induction s, t using Quot.induction_on₂
+  exact congr_arg ((↑) : List α → Multiset α) <| List.Disjoint.union_eq h
+
+theorem Subset.ndunion_eq_right {s t : Multiset α} (h : s ⊆ t) : s.ndunion t = t := by
+  induction s, t using Quot.induction_on₂
+  exact congr_arg ((↑) : List α → Multiset α) <| List.Subset.union_eq_right h
+
 /-! ### finset inter -/
 
 
@@ -217,11 +226,12 @@ def ndinter (s t : Multiset α) : Multiset α :=
 #align multiset.ndinter Multiset.ndinter
 
 @[simp]
-theorem coe_ndinter (l₁ l₂ : List α) : @ndinter α _ l₁ l₂ = (l₁ ∩ l₂ : List α) :=
-  rfl
+theorem coe_ndinter (l₁ l₂ : List α) : @ndinter α _ l₁ l₂ = (l₁ ∩ l₂ : List α) := by
+  simp only [ndinter, mem_coe, filter_coe, coe_eq_coe, ← elem_eq_mem]
+  apply Perm.refl
 #align multiset.coe_ndinter Multiset.coe_ndinter
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
+@[simp]
 theorem zero_ndinter (s : Multiset α) : ndinter 0 s = 0 :=
   rfl
 #align multiset.zero_ndinter Multiset.zero_ndinter
@@ -278,6 +288,12 @@ theorem ndinter_eq_inter {s t : Multiset α} (d : Nodup s) : ndinter s t = s ∩
 theorem ndinter_eq_zero_iff_disjoint {s t : Multiset α} : ndinter s t = 0 ↔ Disjoint s t := by
   rw [← subset_zero]; simp [subset_iff, Disjoint]
 #align multiset.ndinter_eq_zero_iff_disjoint Multiset.ndinter_eq_zero_iff_disjoint
+
+alias ⟨_, Disjoint.ndinter_eq_zero⟩ := ndinter_eq_zero_iff_disjoint
+
+theorem Subset.ndinter_eq_left {s t : Multiset α} (h : s ⊆ t) : s.ndinter t = s := by
+  induction s, t using Quot.induction_on₂
+  rw [quot_mk_to_coe'', quot_mk_to_coe'', coe_ndinter, List.Subset.inter_eq_left h]
 
 end Multiset
 

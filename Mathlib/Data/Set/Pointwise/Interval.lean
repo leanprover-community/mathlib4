@@ -3,8 +3,8 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Patrick Massot
 -/
-import Mathlib.Data.Set.Intervals.UnorderedInterval
-import Mathlib.Data.Set.Intervals.Monoid
+import Mathlib.Order.Interval.Set.UnorderedInterval
+import Mathlib.Algebra.Order.Interval.Set.Monoid
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Group.MinMax
@@ -496,11 +496,11 @@ theorem image_sub_const_Ioo : (fun x => x - a) '' Ioo b c = Ioo (b - a) (c - a) 
 
 
 theorem Iic_add_bij : BijOn (· + a) (Iic b) (Iic (b + a)) :=
-  image_add_const_Iic a b ▸ ((add_left_injective _).injOn _).bijOn_image
+  image_add_const_Iic a b ▸ (add_left_injective _).injOn.bijOn_image
 #align set.Iic_add_bij Set.Iic_add_bij
 
 theorem Iio_add_bij : BijOn (· + a) (Iio b) (Iio (b + a)) :=
-  image_add_const_Iio a b ▸ ((add_left_injective _).injOn _).bijOn_image
+  image_add_const_Iio a b ▸ (add_left_injective _).injOn.bijOn_image
 #align set.Iio_add_bij Set.Iio_add_bij
 
 end OrderedAddCommGroup
@@ -848,18 +848,19 @@ theorem inv_Ioo_0_left {a : α} (ha : 0 < a) : (Ioo 0 a)⁻¹ = Ioi a⁻¹ := by
   ext x
   exact
     ⟨fun h => inv_inv x ▸ (inv_lt_inv ha h.1).2 h.2, fun h =>
-      ⟨inv_pos.2 <| (inv_pos.2 ha).trans h,
-        inv_inv a ▸ (inv_lt_inv ((inv_pos.2 ha).trans h) (inv_pos.2 ha)).2 h⟩⟩
+      ⟨inv_pos (α := α) |>.2 <| (inv_pos (α := α) |>.2 ha).trans h,
+        inv_inv a ▸ (inv_lt_inv ((inv_pos (α := α) |>.2 ha).trans h)
+          (inv_pos (α := α) |>.2 ha)).2 h⟩⟩
 #align set.inv_Ioo_0_left Set.inv_Ioo_0_left
 
 theorem inv_Ioi {a : α} (ha : 0 < a) : (Ioi a)⁻¹ = Ioo 0 a⁻¹ := by
-  rw [inv_eq_iff_eq_inv, inv_Ioo_0_left (inv_pos.2 ha), inv_inv]
+  rw [inv_eq_iff_eq_inv, inv_Ioo_0_left (inv_pos (α := α) |>.2 ha), inv_inv]
 #align set.inv_Ioi Set.inv_Ioi
 
 theorem image_const_mul_Ioi_zero {k : Type*} [LinearOrderedField k] {x : k} (hx : 0 < x) :
     (fun y => x * y) '' Ioi (0 : k) = Ioi 0 := by
-  erw [(Units.mk0 x hx.ne').mulLeft.image_eq_preimage, preimage_const_mul_Ioi 0 (inv_pos.mpr hx),
-    zero_div]
+  erw [(Units.mk0 x hx.ne').mulLeft.image_eq_preimage,
+    preimage_const_mul_Ioi 0 (inv_pos (α := k) |>.mpr hx), zero_div]
 #align set.image_const_mul_Ioi_zero Set.image_const_mul_Ioi_zero
 
 /-!

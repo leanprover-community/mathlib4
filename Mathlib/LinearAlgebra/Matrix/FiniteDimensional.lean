@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 import Mathlib.Data.Matrix.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Algebra.Module.Algebra
@@ -48,9 +48,7 @@ end Matrix
 namespace LinearMap
 
 variable {K : Type*} [Field K]
-
 variable {V : Type*} [AddCommGroup V] [Module K V] [FiniteDimensional K V]
-
 variable {W : Type*} [AddCommGroup W] [Module K W] [FiniteDimensional K W]
 
 instance finiteDimensional : FiniteDimensional K (V →ₗ[K] W) :=

@@ -3,8 +3,8 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Prime
 import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Data.Nat.Prime.Defs
 
 #align_import data.nat.prime_norm_num from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
 
@@ -52,7 +52,7 @@ theorem MinFacHelper.one_lt {n k : ℕ} (h : MinFacHelper n k) : 1 < n := by
   obtain rfl | h := n.eq_zero_or_pos
   · contradiction
   rcases (succ_le_of_lt h).eq_or_lt with rfl|h
-  · contradiction
+  · simp_all
   exact h
 
 theorem minFacHelper_0 (n : ℕ)
@@ -76,7 +76,6 @@ theorem minFacHelper_1 {n k k' : ℕ} (e : k + 2 = k') (h : MinFacHelper n k)
   · refine ((h.1.trans_le h.2.2).ne ?_).elim
     have h3 : 2 ∣ minFac n := by
       rw [Nat.dvd_iff_mod_eq_zero, ← h2, succ_eq_add_one, add_mod, h.2.1]
-      norm_num
     rw [dvd_prime <| minFac_prime h.one_lt.ne'] at h3
     norm_num at h3
     exact h3
@@ -235,3 +234,9 @@ theorem factorsHelper_end (n : ℕ) (l : List ℕ) (H : FactorsHelper n 2 l) : N
   have := List.chain'_iff_pairwise.1 (@List.Chain'.tail _ _ (_ :: _) h₁)
   (List.eq_of_perm_of_sorted (Nat.factors_unique h₃ h₂) this (Nat.factors_sorted _)).symm
 -/
+
+end NormNum
+
+end Meta
+
+end Mathlib

@@ -53,7 +53,7 @@ namespace Augmented
 
 variable {C : Type*} [Category C]
 
--- porting note: in the formulation of the axioms `s_comp_δ₀`, etc, `drop.obj X` has been
+-- Porting note: in the formulation of the axioms `s_comp_δ₀`, etc, `drop.obj X` has been
 -- replaced by `X.left` in order to have lemmas with LHS/RHS in normal form
 /-- The datum of an extra degeneracy is a technical condition on
 augmented simplicial objects. The morphisms `s'` and `s n` of the
@@ -198,7 +198,7 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     (shift (objEquiv _ _ f))
   s'_comp_ε := by
     dsimp
-    apply Subsingleton.elim
+    subsingleton
   s₀_comp_δ₁ := by
     dsimp
     ext1 x
@@ -226,7 +226,7 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
       simp only [Fin.succ_succAbove_zero, shiftFun_0]
     · obtain ⟨_, rfl⟩ := Fin.eq_succ_of_ne_zero <| h
       simp only [Fin.succ_succAbove_succ, shiftFun_succ, Function.comp_apply,
-        Fin.succAboveEmb_apply]
+        Fin.succAboveOrderEmb_apply]
   s_comp_σ n i := by
     ext1 φ
     apply (objEquiv _ _).injective
@@ -284,7 +284,7 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
       · simp only [WidePullback.π_arrow]
 #align category_theory.arrow.augmented_cech_nerve.extra_degeneracy.s CategoryTheory.Arrow.AugmentedCechNerve.ExtraDegeneracy.s
 
--- porting note: @[simp] removed as the linter complains the LHS is not in normal form
+-- Porting note (#11119): @[simp] removed as the linter complains the LHS is not in normal form
 theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
     ExtraDegeneracy.s f S n ≫ WidePullback.π _ 0 =
       @WidePullback.base _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ ≫
@@ -293,7 +293,7 @@ theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
   simp only [WidePullback.lift_π]
   rfl
 
--- porting note: @[simp] removed as the linter complains the LHS is not in normal form
+-- Porting note (#11119): @[simp] removed as the linter complains the LHS is not in normal form
 theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
     ExtraDegeneracy.s f S n ≫ WidePullback.π _ i.succ =
       @WidePullback.π _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ i := by
@@ -304,15 +304,15 @@ theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
   · simp only [Fin.pred_succ]
 #align category_theory.arrow.augmented_cech_nerve.extra_degeneracy.s_comp_π_succ CategoryTheory.Arrow.AugmentedCechNerve.ExtraDegeneracy.s_comp_π_succ
 
--- porting note: @[simp] removed as the linter complains the LHS is not in normal form
+-- Porting note (#11119): @[simp] removed as the linter complains the LHS is not in normal form
 theorem ExtraDegeneracy.s_comp_base (n : ℕ) :
     ExtraDegeneracy.s f S n ≫ WidePullback.base _ = WidePullback.base _ := by
   apply WidePullback.lift_base
 #align category_theory.arrow.augmented_cech_nerve.extra_degeneracy.s_comp_base CategoryTheory.Arrow.AugmentedCechNerve.ExtraDegeneracy.s_comp_base
 
 /-- The augmented Čech nerve associated to a split epimorphism has an extra degeneracy. -/
-noncomputable def extraDegeneracy : SimplicialObject.Augmented.ExtraDegeneracy f.augmentedCechNerve
-    where
+noncomputable def extraDegeneracy :
+    SimplicialObject.Augmented.ExtraDegeneracy f.augmentedCechNerve where
   s' := S.section_ ≫ WidePullback.lift f.hom (fun _ => 𝟙 _) fun i => by rw [id_comp]
   s n := ExtraDegeneracy.s f S n
   s'_comp_ε := by

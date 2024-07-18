@@ -119,22 +119,22 @@ instance : Semigroup { x : R // 0 < x } :=
 instance : Distrib { x : R // 0 < x } :=
   Subtype.coe_injective.distrib _ coe_add val_mul
 
-instance [Nontrivial R] : One { x : R // 0 < x } :=
+instance : One { x : R // 0 < x } :=
   ⟨⟨1, one_pos⟩⟩
 
 @[simp]
-theorem val_one [Nontrivial R] : ((1 : { x : R // 0 < x }) : R) = 1 :=
+theorem val_one : ((1 : { x : R // 0 < x }) : R) = 1 :=
   rfl
 #align positive.coe_one Positive.val_one
 
-instance [Nontrivial R] : Monoid { x : R // 0 < x } :=
+instance : Monoid { x : R // 0 < x } :=
   Subtype.coe_injective.monoid _ val_one val_mul val_pow
 
 end Mul
 
 section mul_comm
 
-instance orderedCommMonoid [StrictOrderedCommSemiring R] [Nontrivial R] :
+instance orderedCommMonoid [StrictOrderedCommSemiring R] :
     OrderedCommMonoid { x : R // 0 < x } :=
   { Subtype.partialOrder _,
     Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow with
@@ -146,7 +146,7 @@ instance orderedCommMonoid [StrictOrderedCommSemiring R] [Nontrivial R] :
 ordered cancellative commutative monoid. -/
 instance linearOrderedCancelCommMonoid [LinearOrderedCommSemiring R] :
     LinearOrderedCancelCommMonoid { x : R // 0 < x } :=
-  { Subtype.linearOrder _, Positive.orderedCommMonoid with
+  { Subtype.instLinearOrder _, Positive.orderedCommMonoid with
     le_of_mul_le_mul_left := fun a _ _ h => Subtype.coe_le_coe.1 <| (mul_le_mul_left a.2).1 h }
 #align positive.subtype.linear_ordered_cancel_comm_monoid Positive.linearOrderedCancelCommMonoid
 

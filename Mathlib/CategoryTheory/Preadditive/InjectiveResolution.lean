@@ -3,9 +3,10 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Scott Morrison, Joël Riou
 -/
-import Mathlib.CategoryTheory.Preadditive.Injective
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Homology.QuasiIso
+import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+import Mathlib.Algebra.Homology.SingleHomology
+import Mathlib.CategoryTheory.Preadditive.Injective
 
 #align_import category_theory.preadditive.injective_resolution from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
@@ -39,6 +40,7 @@ variable {C : Type u} [Category.{v} C] [HasZeroObject C] [HasZeroMorphisms C]
 An `InjectiveResolution Z` consists of a bundled `ℕ`-indexed cochain complex of injective objects,
 along with a quasi-isomorphism from the complex consisting of just `Z` supported in degree `0`.
 -/
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure InjectiveResolution (Z : C) where
   /-- the cochain complex involved in the resolution -/
@@ -85,9 +87,9 @@ variable {Z : C} (I : InjectiveResolution Z)
 lemma cocomplex_exactAt_succ (n : ℕ) :
     I.cocomplex.ExactAt (n + 1) := by
   rw [← quasiIsoAt_iff_exactAt I.ι (n + 1) (exactAt_succ_single_obj _ _)]
-  · infer_instance
+  infer_instance
 
-lemma exact_succ (n : ℕ):
+lemma exact_succ (n : ℕ) :
     (ShortComplex.mk _ _ (I.cocomplex.d_comp_d n (n + 1) (n + 2))).Exact :=
   (HomologicalComplex.exactAt_iff' _ n (n + 1) (n + 2) (by simp)
     (by simp only [CochainComplex.next]; rfl)).1 (I.cocomplex_exactAt_succ n)

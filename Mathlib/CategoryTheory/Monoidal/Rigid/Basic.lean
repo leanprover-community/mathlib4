@@ -96,7 +96,6 @@ namespace ExactPairing
 -- arguments for class fields explicit,
 -- we now repeat all the fields without primes.
 -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Making.20variable.20in.20class.20field.20explicit
-
 variable (X Y : C)
 variable [ExactPairing X Y]
 
@@ -119,11 +118,11 @@ lemma evaluation_coevaluation :
 
 lemma coevaluation_evaluation'' :
     Y ◁ η_ X Y ⊗≫ ε_ X Y ▷ Y = ⊗𝟙 := by
-  convert coevaluation_evaluation X Y <;> simp [Mathlib.Tactic.Coherence.monoidalComp]
+  convert coevaluation_evaluation X Y <;> simp [monoidalComp]
 
 lemma evaluation_coevaluation'' :
     η_ X Y ▷ X ⊗≫ X ◁ ε_ X Y = ⊗𝟙 := by
-  convert evaluation_coevaluation X Y <;> simp [Mathlib.Tactic.Coherence.monoidalComp]
+  convert evaluation_coevaluation X Y <;> simp [monoidalComp]
 
 end ExactPairing
 
@@ -331,8 +330,6 @@ def tensorRightHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (X ⊗ Y ⟶ Z) ≃
         rw [coevaluation_evaluation'']; coherence
 #align category_theory.tensor_right_hom_equiv CategoryTheory.tensorRightHomEquiv
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 theorem tensorLeftHomEquiv_naturality {X Y Y' Z Z' : C} [ExactPairing Y Y'] (f : Y' ⊗ X ⟶ Z)
     (g : Z ⟶ Z') :
     (tensorLeftHomEquiv X Y Y' Z') (f ≫ g) = (tensorLeftHomEquiv X Y Y' Z) f ≫ Y ◁ g := by
@@ -384,14 +381,14 @@ If `Y` has a left dual `ᘁY`, then it is a closed object, with the internal hom
 given by left tensoring by `ᘁY`.
 This has to be a definition rather than an instance to avoid diamonds, for example between
 `category_theory.monoidal_closed.functor_closed` and
-`category_theory.monoidal.functor_has_left_dual`. Moreover, in concrete applications there is often
+`CategoryTheory.Monoidal.functorHasLeftDual`. Moreover, in concrete applications there is often
 a more useful definition of the internal hom object than `ᘁY ⊗ X`, in which case the closed
 structure shouldn't come from `has_left_dual` (e.g. in the category `FinVect k`, it is more
 convenient to define the internal hom as `Y →ₗ[k] X` rather than `ᘁY ⊗ X` even though these are
 naturally isomorphic).
 -/
 def closedOfHasLeftDual (Y : C) [HasLeftDual Y] : Closed Y where
-  isAdj := ⟨_, tensorLeftAdjunction (ᘁY) Y⟩
+  adj := tensorLeftAdjunction (ᘁY) Y
 #align category_theory.closed_of_has_left_dual CategoryTheory.closedOfHasLeftDual
 
 /-- `tensorLeftHomEquiv` commutes with tensoring on the right -/
@@ -401,8 +398,6 @@ theorem tensorLeftHomEquiv_tensor {X X' Y Y' Z Z' : C} [ExactPairing Y Y'] (f : 
       (α_ _ _ _).inv ≫ ((tensorLeftHomEquiv X Y Y' Z).symm f ⊗ g) := by
   simp [tensorLeftHomEquiv, tensorHom_def']
 #align category_theory.tensor_left_hom_equiv_tensor CategoryTheory.tensorLeftHomEquiv_tensor
-
-attribute [local simp] id_tensorHom tensorHom_id
 
 /-- `tensorRightHomEquiv` commutes with tensoring on the left -/
 theorem tensorRightHomEquiv_tensor {X X' Y Y' Z Z' : C} [ExactPairing Y Y'] (f : X ⟶ Z ⊗ Y')
@@ -536,7 +531,7 @@ def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : Exac
       _ = (λ_ X).hom ≫ (ρ_ X).inv := by
         rw [Iso.hom_inv_id]
         -- coherence failed
-        simp [Mathlib.Tactic.Coherence.monoidalComp]
+        simp [monoidalComp]
   coevaluation_evaluation' := by
     calc
       _ = Y ◁ η_ X' Y ≫ Y ◁ (i.inv ≫ i.hom) ▷ Y ⊗≫ ε_ X' Y ▷ Y := by
@@ -546,7 +541,7 @@ def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : Exac
       _ = _ := by
         rw [coevaluation_evaluation'']
         -- coherence failed
-        simp [Mathlib.Tactic.Coherence.monoidalComp]
+        simp [monoidalComp]
 #align category_theory.exact_pairing_congr_left CategoryTheory.exactPairingCongrLeft
 
 /-- Transport an exact pairing across an isomorphism in the second argument. -/
@@ -562,7 +557,7 @@ def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : Exa
       _ = _ := by
         rw [evaluation_coevaluation'']
         -- coherence failed
-        simp [Mathlib.Tactic.Coherence.monoidalComp]
+        simp [monoidalComp]
   coevaluation_evaluation' :=
     calc
       _ = Y ◁ η_ X Y' ⊗≫ (Y ◁ (X ◁ i.inv) ≫ i.hom ▷ (X ⊗ Y)) ⊗≫ ε_ X Y' ▷ Y := by
@@ -577,7 +572,7 @@ def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : Exa
       _ = (ρ_ Y).hom ≫ (λ_ Y).inv := by
         rw [Iso.hom_inv_id]
         -- coherence failed
-        simp [Mathlib.Tactic.Coherence.monoidalComp]
+        simp [monoidalComp]
 #align category_theory.exact_pairing_congr_right CategoryTheory.exactPairingCongrRight
 
 /-- Transport an exact pairing across isomorphisms. -/
@@ -645,7 +640,7 @@ attribute [instance 100] LeftRigidCategory.leftDual
 /-- Any left rigid category is monoidal closed, with the internal hom `X ⟶[C] Y = ᘁX ⊗ Y`.
 This has to be a definition rather than an instance to avoid diamonds, for example between
 `category_theory.monoidal_closed.functor_category` and
-`category_theory.monoidal.left_rigid_functor_category`. Moreover, in concrete applications there is
+`CategoryTheory.Monoidal.leftRigidFunctorCategory`. Moreover, in concrete applications there is
 often a more useful definition of the internal hom object than `ᘁY ⊗ X`, in which case the monoidal
 closed structure shouldn't come the rigid structure (e.g. in the category `FinVect k`, it is more
 convenient to define the internal hom as `Y →ₗ[k] X` rather than `ᘁY ⊗ X` even though these are

@@ -58,15 +58,15 @@ protected theorem dist_eq (x y : α) : dist (x : Completion α) y = dist x y :=
 /- Let us check that the new distance satisfies the axioms of a distance, by starting from the
 properties on α and extending them to `Completion α` by continuity. -/
 protected theorem dist_self (x : Completion α) : dist x x = 0 := by
-  refine' induction_on x _ _
-  · refine' isClosed_eq _ continuous_const
+  refine induction_on x ?_ ?_
+  · refine isClosed_eq ?_ continuous_const
     exact Completion.continuous_dist continuous_id continuous_id
   · intro a
     rw [Completion.dist_eq, dist_self]
 #align uniform_space.completion.dist_self UniformSpace.Completion.dist_self
 
 protected theorem dist_comm (x y : Completion α) : dist x y = dist y x := by
-  refine' induction_on₂ x y _ _
+  refine induction_on₂ x y ?_ ?_
   · exact isClosed_eq (Completion.continuous_dist continuous_fst continuous_snd)
         (Completion.continuous_dist continuous_snd continuous_fst)
   · intro a b
@@ -74,8 +74,8 @@ protected theorem dist_comm (x y : Completion α) : dist x y = dist y x := by
 #align uniform_space.completion.dist_comm UniformSpace.Completion.dist_comm
 
 protected theorem dist_triangle (x y z : Completion α) : dist x z ≤ dist x y + dist y z := by
-  refine' induction_on₃ x y z _ _
-  · refine' isClosed_le _ (Continuous.add _ _) <;>
+  refine induction_on₃ x y z ?_ ?_
+  · refine isClosed_le ?_ (Continuous.add ?_ ?_) <;>
       apply_rules [Completion.continuous_dist, Continuous.fst, Continuous.snd, continuous_id]
   · intro a b c
     rw [Completion.dist_eq, Completion.dist_eq, Completion.dist_eq]
@@ -96,9 +96,9 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
     have A : { x : α × α | (↑x.1, ↑x.2) ∈ t } ∈ uniformity α :=
       uniformContinuous_def.1 (uniformContinuous_coe α) t ht
     rcases mem_uniformity_dist.1 A with ⟨ε, εpos, hε⟩
-    refine' ⟨ε, εpos, @fun x y hxy ↦ _⟩
+    refine ⟨ε, εpos, @fun x y hxy ↦ ?_⟩
     have : ε ≤ dist x y ∨ (x, y) ∈ t := by
-      refine' induction_on₂ x y _ _
+      refine induction_on₂ x y ?_ ?_
       · have : { x : Completion α × Completion α | ε ≤ dist x.fst x.snd ∨ (x.fst, x.snd) ∈ t } =
                { p : Completion α × Completion α | ε ≤ dist p.1 p.2 } ∪ t := by ext; simp
         rw [this]
@@ -127,31 +127,20 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
     simp only [uniformity_prod_eq_prod, mem_prod_iff, exists_prop, Filter.mem_map,
       Set.mem_setOf_eq] at T
     rcases T with ⟨t1, ht1, t2, ht2, ht⟩
-    refine' mem_of_superset ht1 _
+    refine mem_of_superset ht1 ?_
     have A : ∀ a b : Completion α, (a, b) ∈ t1 → dist a b < ε := by
       intro a b hab
       have : ((a, b), (a, a)) ∈ t1 ×ˢ t2 := ⟨hab, refl_mem_uniformity ht2⟩
       have I := ht this
-      simp? [Completion.dist_self, Real.dist_eq, Completion.dist_comm] at I says
-        simp only [Real.dist_eq, preimage_setOf_eq, mem_setOf_eq, Completion.dist_self,
-          Completion.dist_comm, zero_sub, abs_neg] at I
+      simp? [r, Completion.dist_self, Real.dist_eq, Completion.dist_comm] at I says
+        simp only [Real.dist_eq, mem_setOf_eq, preimage_setOf_eq, Completion.dist_self,
+          Completion.dist_comm, zero_sub, abs_neg, r] at I
       exact lt_of_le_of_lt (le_abs_self _) I
     show t1 ⊆ s
-    · rintro ⟨a, b⟩ hp
-      have : dist a b < ε := A a b hp
-      exact hε this
+    rintro ⟨a, b⟩ hp
+    have : dist a b < ε := A a b hp
+    exact hε this
 #align uniform_space.completion.mem_uniformity_dist UniformSpace.Completion.mem_uniformity_dist
-
-/-- If two points are at distance 0, then they coincide. -/
-protected theorem eq_of_dist_eq_zero (x y : Completion α) (h : dist x y = 0) : x = y := by
-  /- This follows from the separation of `Completion α` and from the description of
-    entourages in terms of the distance. -/
-  have : SeparatedSpace (Completion α) := by infer_instance
-  refine' separated_def.1 this x y fun s hs ↦ _
-  rcases (Completion.mem_uniformity_dist s).1 hs with ⟨ε, εpos, hε⟩
-  rw [← h] at εpos
-  exact hε εpos
-#align uniform_space.completion.eq_of_dist_eq_zero UniformSpace.Completion.eq_of_dist_eq_zero
 
 /-- Reformulate `Completion.mem_uniformity_dist` in terms that are suitable for the definition
 of the metric space structure. -/
@@ -169,16 +158,20 @@ protected theorem uniformity_dist : 𝓤 (Completion α) = ⨅ ε > 0, 𝓟 { p 
 #align uniform_space.completion.uniformity_dist UniformSpace.Completion.uniformity_dist
 
 /-- Metric space structure on the completion of a pseudo_metric space. -/
-instance instMetricSpace : MetricSpace (Completion α) where
-  dist_self := Completion.dist_self
-  eq_of_dist_eq_zero := Completion.eq_of_dist_eq_zero _ _
-  dist_comm := Completion.dist_comm
-  dist_triangle := Completion.dist_triangle
-  dist := dist
-  toUniformSpace := by infer_instance
-  uniformity_dist := Completion.uniformity_dist
-  edist_dist := fun x y ↦ rfl
+instance instMetricSpace : MetricSpace (Completion α) :=
+  @MetricSpace.ofT0PseudoMetricSpace _
+    { dist_self := Completion.dist_self
+      dist_comm := Completion.dist_comm
+      dist_triangle := Completion.dist_triangle
+      dist := dist
+      toUniformSpace := inferInstance
+      uniformity_dist := Completion.uniformity_dist } _
 #align uniform_space.completion.metric_space UniformSpace.Completion.instMetricSpace
+
+@[deprecated eq_of_dist_eq_zero (since := "2024-03-10")]
+protected theorem eq_of_dist_eq_zero (x y : Completion α) (h : dist x y = 0) : x = y :=
+  eq_of_dist_eq_zero h
+#align uniform_space.completion.eq_of_dist_eq_zero UniformSpace.Completion.eq_of_dist_eq_zero
 
 /-- The embedding of a metric space in its completion is an isometry. -/
 theorem coe_isometry : Isometry ((↑) : α → Completion α) :=
@@ -197,7 +190,7 @@ open UniformSpace Completion NNReal
 theorem LipschitzWith.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
     {K : ℝ≥0} (h : LipschitzWith K f) : LipschitzWith K (Completion.extension f) :=
   LipschitzWith.of_dist_le_mul fun x y => induction_on₂ x y
-    (isClosed_le (by continuity) (by continuity)) <| by
+    (isClosed_le (by fun_prop) (by fun_prop)) <| by
       simpa only [extension_coe h.uniformContinuous, Completion.dist_eq] using h.dist_le_mul
 
 theorem LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K : ℝ≥0}
@@ -207,7 +200,7 @@ theorem LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K :
 theorem Isometry.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
     (h : Isometry f) : Isometry (Completion.extension f) :=
   Isometry.of_dist_eq fun x y => induction_on₂ x y
-    (isClosed_eq (by continuity) (by continuity)) fun _ _ ↦ by
+    (isClosed_eq (by fun_prop) (by fun_prop)) fun _ _ ↦ by
       simp only [extension_coe h.uniformContinuous, Completion.dist_eq, h.dist_eq]
 
 theorem Isometry.completion_map [PseudoMetricSpace β] {f : α → β}

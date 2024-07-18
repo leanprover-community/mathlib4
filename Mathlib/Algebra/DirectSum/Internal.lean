@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang
+Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang, Fangming Li
 -/
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
@@ -35,13 +35,23 @@ When `CompleteLattice.Independent (Set.range A)` (a weaker condition than
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
 `DirectSum.toAddMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
 
-## tags
+This file also provides some extra structure on `A 0`, namely:
+* `SetLike.GradeZero.subsemiring`, which leads to
+  * `SetLike.GradeZero.instSemiring`
+  * `SetLike.GradeZero.instCommSemiring`
+* `SetLike.GradeZero.subring`, which leads to
+  * `SetLike.GradeZero.instRing`
+  * `SetLike.GradeZero.instCommRing`
+* `SetLike.GradeZero.subalgebra`, which leads to
+  * `SetLike.GradeZero.instAlgebra`
+
+## Tags
 
 internally graded ring
 -/
 
 
-open DirectSum BigOperators
+open DirectSum
 
 variable {ι : Type*} {σ S R : Type*}
 
@@ -59,23 +69,29 @@ theorem SetLike.algebraMap_mem_graded [Zero ι] [CommSemiring S] [Semiring R] [A
   exact (A 0).smul_mem s <| SetLike.one_mem_graded _
 #align set_like.algebra_map_mem_graded SetLike.algebraMap_mem_graded
 
-theorem SetLike.nat_cast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R]
+theorem SetLike.natCast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R]
     [AddSubmonoidClass σ R] (A : ι → σ) [SetLike.GradedOne A] (n : ℕ) : (n : R) ∈ A 0 := by
   induction' n with _ n_ih
   · rw [Nat.cast_zero]
     exact zero_mem (A 0)
   · rw [Nat.cast_succ]
     exact add_mem n_ih (SetLike.one_mem_graded _)
-#align set_like.nat_cast_mem_graded SetLike.nat_cast_mem_graded
+#align set_like.nat_cast_mem_graded SetLike.natCast_mem_graded
 
-theorem SetLike.int_cast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
+@[deprecated (since := "2024-04-17")]
+alias SetLike.nat_cast_mem_graded := SetLike.natCast_mem_graded
+
+theorem SetLike.intCast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
     [AddSubgroupClass σ R] (A : ι → σ) [SetLike.GradedOne A] (z : ℤ) : (z : R) ∈ A 0 := by
   induction z
-  · rw [Int.ofNat_eq_coe, Int.cast_ofNat]
-    exact SetLike.nat_cast_mem_graded _ _
+  · rw [Int.ofNat_eq_coe, Int.cast_natCast]
+    exact SetLike.natCast_mem_graded _ _
   · rw [Int.cast_negSucc]
-    exact neg_mem (SetLike.nat_cast_mem_graded _ _)
-#align set_like.int_cast_mem_graded SetLike.int_cast_mem_graded
+    exact neg_mem (SetLike.natCast_mem_graded _ _)
+#align set_like.int_cast_mem_graded SetLike.intCast_mem_graded
+
+@[deprecated (since := "2024-04-17")]
+alias SetLike.int_cast_mem_graded := SetLike.intCast_mem_graded
 
 section DirectSum
 
@@ -106,7 +122,7 @@ instance gsemiring [AddMonoid ι] [Semiring R] [SetLike σ R] [AddSubmonoidClass
     zero_mul := fun _ => Subtype.ext (zero_mul _)
     mul_add := fun _ _ _ => Subtype.ext (mul_add _ _ _)
     add_mul := fun _ _ _ => Subtype.ext (add_mul _ _ _)
-    natCast := fun n => ⟨n, SetLike.nat_cast_mem_graded _ _⟩
+    natCast := fun n => ⟨n, SetLike.natCast_mem_graded _ _⟩
     natCast_zero := Subtype.ext Nat.cast_zero
     natCast_succ := fun n => Subtype.ext (Nat.cast_succ n) }
 #align set_like.gsemiring SetLike.gsemiring
@@ -121,8 +137,8 @@ instance gcommSemiring [AddCommMonoid ι] [CommSemiring R] [SetLike σ R] [AddSu
 instance gring [AddMonoid ι] [Ring R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ)
     [SetLike.GradedMonoid A] : DirectSum.GRing fun i => A i :=
   { SetLike.gsemiring A with
-    intCast := fun z => ⟨z, SetLike.int_cast_mem_graded _ _⟩
-    intCast_ofNat := fun _n => Subtype.ext <| Int.cast_ofNat _
+    intCast := fun z => ⟨z, SetLike.intCast_mem_graded _ _⟩
+    intCast_ofNat := fun _n => Subtype.ext <| Int.cast_natCast _
     intCast_negSucc_ofNat := fun n => Subtype.ext <| Int.cast_negSucc n }
 #align set_like.gring SetLike.gring
 
@@ -155,7 +171,7 @@ theorem coeRingHom_of [AddMonoid ι] [SetLike.GradedMonoid A] (i : ι) (x : A i)
 theorem coe_mul_apply [AddMonoid ι] [SetLike.GradedMonoid A]
     [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (r r' : ⨁ i, A i) (n : ι) :
     ((r * r') n : R) =
-      ∑ ij in (r.support ×ˢ r'.support).filter (fun ij : ι × ι => ij.1 + ij.2 = n),
+      ∑ ij ∈ (r.support ×ˢ r'.support).filter (fun ij : ι × ι => ij.1 + ij.2 = n),
         (r ij.1 * r' ij.2 : R) := by
   rw [mul_eq_sum_support_ghas_mul, DFinsupp.finset_sum_apply, AddSubmonoidClass.coe_finset_sum]
   simp_rw [coe_of_apply, apply_ite, ZeroMemClass.coe_zero, ← Finset.sum_filter, SetLike.coe_gMul]
@@ -187,7 +203,7 @@ theorem coe_of_mul_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] {i : ι} (r
       exact DFinsupp.sum_zero
     simp_rw [DFinsupp.sum, H, Finset.sum_ite_eq']
     split_ifs with h
-    rfl
+    · rfl
     rw [DFinsupp.not_mem_support_iff.mp h, ZeroMemClass.coe_zero, mul_zero]
 #align direct_sum.coe_of_mul_apply_aux DirectSum.coe_of_mul_apply_aux
 
@@ -202,7 +218,7 @@ theorem coe_mul_of_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] (r : ⨁ i,
       exact DFinsupp.sum_zero
     simp_rw [DFinsupp.sum, H, Finset.sum_ite_eq']
     split_ifs with h
-    rfl
+    · rfl
     rw [DFinsupp.not_mem_support_iff.mp h, ZeroMemClass.coe_zero, zero_mul]
 #align direct_sum.coe_mul_of_apply_aux DirectSum.coe_mul_of_apply_aux
 
@@ -221,7 +237,6 @@ end coe
 section CanonicallyOrderedAddCommMonoid
 
 variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
-
 variable [CanonicallyOrderedAddCommMonoid ι] [SetLike.GradedMonoid A]
 
 theorem coe_of_mul_apply_of_not_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) (h : ¬i ≤ n) :
@@ -232,7 +247,7 @@ theorem coe_of_mul_apply_of_not_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι)
     swap
     · simp_rw [ZeroMemClass.coe_zero, zero_mul, ite_self]
       exact DFinsupp.sum_zero
-    · rw [DFinsupp.sum, Finset.sum_ite_of_false _ _ fun x _ H => _, Finset.sum_const_zero]
+    · rw [DFinsupp.sum, Finset.sum_ite_of_false, Finset.sum_const_zero]
       exact fun x _ H => h ((self_le_add_right i x).trans_eq H)
 #align direct_sum.coe_of_mul_apply_of_not_le DirectSum.coe_of_mul_apply_of_not_le
 
@@ -244,7 +259,7 @@ theorem coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι)
     swap
     · simp_rw [ZeroMemClass.coe_zero, mul_zero, ite_self]
       exact DFinsupp.sum_zero
-    · rw [DFinsupp.sum, Finset.sum_ite_of_false _ _ fun x _ H => _, Finset.sum_const_zero]
+    · rw [DFinsupp.sum, Finset.sum_ite_of_false, Finset.sum_const_zero]
       exact fun x _ H => h ((self_le_add_left i x).trans_eq H)
 #align direct_sum.coe_mul_of_apply_of_not_le DirectSum.coe_mul_of_apply_of_not_le
 
@@ -279,7 +294,6 @@ end CanonicallyOrderedAddCommMonoid
 end DirectSum
 
 /-! #### From `Submodule`s -/
-
 
 namespace Submodule
 
@@ -336,6 +350,97 @@ theorem DirectSum.coeAlgHom_of [AddMonoid ι] [CommSemiring S] [Semiring R] [Alg
 #align direct_sum.coe_alg_hom_of DirectSum.coeAlgHom_of
 
 end DirectSum
+
+/-! ### Facts about grade zero -/
+
+namespace SetLike.GradeZero
+
+section Semiring
+variable [Semiring R] [AddMonoid ι] [SetLike σ R] [AddSubmonoidClass σ R]
+variable (A : ι → σ) [SetLike.GradedMonoid A]
+
+/-- The subsemiring `A 0` of `R`. -/
+def subsemiring : Subsemiring R where
+  carrier := A 0
+  __ := submonoid A
+  add_mem' := add_mem
+  zero_mem' := zero_mem (A 0)
+
+-- TODO: it might be expensive to unify `A` in this instance in practice
+/-- The semiring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
+instance instSemiring : Semiring (A 0) := (subsemiring A).toSemiring
+
+/- The linter message "error: SetLike.GradeZero.coe_natCast.{u_4, u_2, u_1} Left-hand side
+  does not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
+@[nolint simpNF, simp, norm_cast] theorem coe_natCast (n : ℕ) : (n : A 0) = (n : R) := rfl
+
+/- The linter message "error: SetLike.GradeZero.coe_ofNat.{u_4, u_2, u_1} Left-hand side does
+  not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
+@[nolint simpNF, simp, norm_cast] theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n) : A 0) = (OfNat.ofNat n : R) := rfl
+
+end Semiring
+
+section CommSemiring
+variable [CommSemiring R] [AddCommMonoid ι] [SetLike σ R] [AddSubmonoidClass σ R]
+variable (A : ι → σ) [SetLike.GradedMonoid A]
+
+-- TODO: it might be expensive to unify `A` in this instance in practice
+/--The commutative semiring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`.-/
+instance instCommSemiring : CommSemiring (A 0) := (subsemiring A).toCommSemiring
+
+end CommSemiring
+
+section Ring
+variable [Ring R] [AddMonoid ι] [SetLike σ R] [AddSubgroupClass σ R]
+variable (A : ι → σ) [SetLike.GradedMonoid A]
+
+/-- The subring `A 0` of `R`. -/
+def subring : Subring R where
+  carrier := A 0
+  __ := subsemiring A
+  neg_mem' := neg_mem
+
+-- TODO: it might be expensive to unify `A` in this instances in practice
+/-- The ring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
+instance instRing : Ring (A 0) := (subring A).toRing
+
+theorem coe_intCast (z : ℤ) : (z : A 0) = (z : R) := rfl
+
+end Ring
+
+section CommRing
+variable [CommRing R] [AddCommMonoid ι] [SetLike σ R] [AddSubgroupClass σ R]
+variable (A : ι → σ) [SetLike.GradedMonoid A]
+
+-- TODO: it might be expensive to unify `A` in this instances in practice
+/-- The commutative ring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
+instance instCommRing : CommRing (A 0) := (subring A).toCommRing
+
+end CommRing
+
+section Algebra
+variable [CommSemiring S] [Semiring R] [Algebra S R] [AddMonoid ι]
+variable (A : ι → Submodule S R) [SetLike.GradedMonoid A]
+
+/-- The subalgebra `A 0` of `R`. -/
+def subalgebra : Subalgebra S R where
+  carrier := A 0
+  __ := subsemiring A
+  algebraMap_mem' := algebraMap_mem_graded A
+
+-- TODO: it might be expensive to unify `A` in this instances in practice
+/-- The `S`-algebra `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
+instance instAlgebra : Algebra S (A 0) := inferInstanceAs <| Algebra S (subalgebra A)
+
+/- The linter message "error: SetLike.GradeZero.coe_algebraMap.{u_4, u_3, u_1} Left-hand side
+  does not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
+@[nolint simpNF, simp, norm_cast] theorem coe_algebraMap (s : S) :
+    ↑(algebraMap _ (A 0) s) = algebraMap _ R s := rfl
+
+end Algebra
+
+end SetLike.GradeZero
 
 section HomogeneousElement
 

@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
-import Mathlib.RingTheory.Norm
+import Mathlib.RingTheory.Norm.Defs
+import Mathlib.RingTheory.AdjoinRoot
 
 #align_import linear_algebra.free_module.norm from "leanprover-community/mathlib"@"90b0d53ee6ffa910e5c2a977ce7e2fc704647974"
 
@@ -15,7 +16,7 @@ import Mathlib.RingTheory.Norm
 
 open Ideal Polynomial
 
-open scoped BigOperators Polynomial
+open scoped Polynomial
 
 variable {R S ι : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [CommRing S]
   [IsDomain S] [Algebra R S]
@@ -37,7 +38,7 @@ theorem associated_norm_prod_smith [Fintype ι] (b : Basis ι R S) {f : S} (hf :
     (b'.equiv ((span {f}).selfBasis b hI) <| Equiv.refl _).trans
       ((LinearEquiv.coord S S f hf).restrictScalars R)
   refine (LinearMap.associated_det_of_eq_comp e _ _ ?_).symm
-  dsimp only [LinearEquiv.trans_apply]
+  dsimp only [e, LinearEquiv.trans_apply]
   simp_rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.comp_apply, ← LinearMap.ext_iff]
   refine b'.ext fun i => ?_
   simp_rw [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap, Matrix.toLin_apply, Basis.repr_self,
@@ -65,7 +66,7 @@ instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
   -- operations to the `Quotient.lift` level and then end up comparing huge
   -- terms.  We should probably make most of the quotient operations
   -- irreducible so that they don't expose `Quotient.lift` accidentally.
-  refine PowerBasis.finiteDimensional ?_
+  refine PowerBasis.finite ?_
   refine AdjoinRoot.powerBasis ?_
   exact I.smithCoeffs_ne_zero b hI i
 

@@ -42,12 +42,10 @@ def shiftRight : ℤ × ℤ ≃ ℤ × ℤ :=
 #align pgame.domineering.shift_right SetTheory.PGame.Domineering.shiftRight
 
 /-- A Domineering board is an arbitrary finite subset of `ℤ × ℤ`. -/
--- Porting note: `reducible` cannot be `local`. For now there are no dependents of this file so
+-- Porting note: reducibility cannot be `local`. For now there are no dependents of this file so
 -- being globally reducible is fine.
-@[reducible]
-def Board :=
+abbrev Board :=
   Finset (ℤ × ℤ)
-deriving Inhabited
 #align pgame.domineering.board SetTheory.PGame.Domineering.Board
 
 /-- Left can play anywhere that a square and the square below it are open. -/
@@ -206,3 +204,5 @@ set_option linter.uppercaseLean3 false in
 --   (4,0), (4,1), (4,2), (4,3), (4,4)
 --   ].toFinset) ≈ 0)
 end PGame
+
+end SetTheory

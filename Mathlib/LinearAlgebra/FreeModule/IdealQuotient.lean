@@ -7,6 +7,8 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.QuotientPi
+import Mathlib.RingTheory.Ideal.Basis
+import Mathlib.LinearAlgebra.Dimension.Constructions
 
 #align_import linear_algebra.free_module.ideal_quotient from "leanprover-community/mathlib"@"90b0d53ee6ffa910e5c2a977ce7e2fc704647974"
 
@@ -21,10 +23,9 @@ import Mathlib.LinearAlgebra.QuotientPi
 
 namespace Ideal
 
-open scoped BigOperators DirectSum
+open scoped DirectSum
 
 variable {ι R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-
 variable [IsDomain R] [IsPrincipalIdealRing R] [IsDomain S] [Finite ι]
 
 /-- We can write the quotient of an ideal over a PID as a product of quotients by principal ideals.
@@ -65,16 +66,12 @@ noncomputable def quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I �
     · rintro ⟨y, hy, rfl⟩ i
       exact hy i
     · rintro hdvd
-      refine' ⟨∑ i, x i • b' i, fun i => _, _⟩ <;> rw [b'.repr_sum_self]
+      refine ⟨∑ i, x i • b' i, fun i => ?_, ?_⟩ <;> rw [b'.repr_sum_self]
       · exact hdvd i
-  refine' ((Submodule.Quotient.restrictScalarsEquiv R I).restrictScalars R).symm.trans
-    (σ₁₂ := RingHom.id R) (σ₃₂ := RingHom.id R) _
-  · infer_instance
-  · infer_instance
-  refine' (Submodule.Quotient.equiv (I.restrictScalars R) I' b'.equivFun this).trans
-    (σ₁₂ := RingHom.id R) (σ₃₂ := RingHom.id R) _
-  · infer_instance
-  · infer_instance
+  refine ((Submodule.Quotient.restrictScalarsEquiv R I).restrictScalars R).symm.trans
+    (σ₁₂ := RingHom.id R) (σ₃₂ := RingHom.id R) (re₂₃ := inferInstance) (re₃₂ := inferInstance) ?_
+  refine (Submodule.Quotient.equiv (I.restrictScalars R) I' b'.equivFun this).trans
+    (σ₁₂ := RingHom.id R) (σ₃₂ := RingHom.id R) (re₂₃ := inferInstance) (re₃₂ := inferInstance) ?_
   classical
     let this :=
       Submodule.quotientPi (show _ → Submodule R R from fun i => span ({a i} : Set R))
@@ -115,7 +112,7 @@ variable (F : Type*) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R
 noncomputable def quotientEquivDirectSum :
     (S ⧸ I) ≃ₗ[F] ⨁ i, R ⧸ span ({I.smithCoeffs b hI i} : Set R) := by
   haveI := Fintype.ofFinite ι
-  -- porting note: manual construction of `CompatibleSMul` typeclass no longer needed
+  -- Porting note: manual construction of `CompatibleSMul` typeclass no longer needed
   exact ((I.quotientEquivPiSpan b _).restrictScalars F).trans
     (DirectSum.linearEquivFunOnFintype _ _ _).symm
 #align ideal.quotient_equiv_direct_sum Ideal.quotientEquivDirectSum

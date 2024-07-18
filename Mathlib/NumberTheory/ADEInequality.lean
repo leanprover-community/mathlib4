@@ -3,10 +3,11 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Multiset.Sort
-import Mathlib.Data.PNat.Interval
-import Mathlib.Data.Rat.Order
 import Mathlib.Data.PNat.Basic
+import Mathlib.Data.PNat.Interval
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.IntervalCases
 
@@ -41,7 +42,7 @@ in the classification of Dynkin diagrams, root systems, and semisimple Lie algeb
 namespace ADEInequality
 
 open Multiset
--- porting note: ADE is a special name, exceptionally in upper case in Lean3
+
 set_option linter.uppercaseLean3 false
 
 /-- `A' q r := {1,q,r}` is a `Multiset ℕ+`
@@ -168,6 +169,7 @@ theorem Admissible.one_lt_sumInv {pqr : Multiset ℕ+} : Admissible pqr → 1 < 
   all_goals
     rw [← H, E', sumInv_pqr]
     conv_rhs => simp only [OfNat.ofNat, PNat.mk_coe]
+    rfl
 #align ADE_inequality.admissible.one_lt_sum_inv ADEInequality.Admissible.one_lt_sumInv
 
 theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv {p, q, r}) : p < 3 := by
@@ -176,18 +178,18 @@ theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv 
   rw [sumInv_pqr]
   have h3q := H.trans hpq
   have h3r := h3q.trans hqr
-  have hp: (p : ℚ)⁻¹ ≤ 3⁻¹ := by
+  have hp : (p : ℚ)⁻¹ ≤ 3⁻¹ := by
     rw [inv_le_inv _ h3]
-    assumption_mod_cast
-    norm_num
-  have hq: (q : ℚ)⁻¹ ≤ 3⁻¹ := by
+    · assumption_mod_cast
+    · norm_num
+  have hq : (q : ℚ)⁻¹ ≤ 3⁻¹ := by
     rw [inv_le_inv _ h3]
-    assumption_mod_cast
-    norm_num
-  have hr: (r : ℚ)⁻¹ ≤ 3⁻¹ := by
+    · assumption_mod_cast
+    · norm_num
+  have hr : (r : ℚ)⁻¹ ≤ 3⁻¹ := by
     rw [inv_le_inv _ h3]
-    assumption_mod_cast
-    norm_num
+    · assumption_mod_cast
+    · norm_num
   calc
     (p : ℚ)⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹ ≤ 3⁻¹ + 3⁻¹ + 3⁻¹ := add_le_add (add_le_add hp hq) hr
     _ = 1 := by norm_num
@@ -198,14 +200,14 @@ theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 
   contrapose! H
   rw [sumInv_pqr]
   have h4r := H.trans hqr
-  have hq: (q : ℚ)⁻¹ ≤ 4⁻¹ := by
+  have hq : (q : ℚ)⁻¹ ≤ 4⁻¹ := by
     rw [inv_le_inv _ h4]
-    assumption_mod_cast
-    norm_num
-  have hr: (r : ℚ)⁻¹ ≤ 4⁻¹ := by
+    · assumption_mod_cast
+    · norm_num
+  have hr : (r : ℚ)⁻¹ ≤ 4⁻¹ := by
     rw [inv_le_inv _ h4]
-    assumption_mod_cast
-    norm_num
+    · assumption_mod_cast
+    · norm_num
   calc
     (2⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹) ≤ 2⁻¹ + 4⁻¹ + 4⁻¹ := add_le_add (add_le_add le_rfl hq) hr
     _ = 1 := by norm_num
@@ -215,10 +217,10 @@ theorem lt_six {r : ℕ+} (H : 1 < sumInv {2, 3, r}) : r < 6 := by
   have h6 : (0 : ℚ) < 6 := by norm_num
   contrapose! H
   rw [sumInv_pqr]
-  have hr: (r : ℚ)⁻¹ ≤ 6⁻¹ := by
+  have hr : (r : ℚ)⁻¹ ≤ 6⁻¹ := by
     rw [inv_le_inv _ h6]
-    assumption_mod_cast
-    norm_num
+    · assumption_mod_cast
+    · norm_num
   calc
     (2⁻¹ + 3⁻¹ + (r : ℚ)⁻¹ : ℚ) ≤ 2⁻¹ + 3⁻¹ + 6⁻¹ := add_le_add (add_le_add le_rfl le_rfl) hr
     _ = 1 := by norm_num
@@ -263,7 +265,7 @@ theorem admissible_of_one_lt_sumInv {p q r : ℕ+} (H : 1 < sumInv {p, q, r}) :
   rw [hpqr]
   rw [hpqr] at H
   apply admissible_of_one_lt_sumInv_aux hS _ H
-  simp only [S, ge_iff_le, insert_eq_cons, length_sort, card_cons, card_singleton]
+  simp only [S, insert_eq_cons, length_sort, card_cons, card_singleton]
 #align ADE_inequality.admissible_of_one_lt_sum_inv ADEInequality.admissible_of_one_lt_sumInv
 
 /-- A multiset `{p,q,r}` of positive natural numbers

@@ -3,8 +3,8 @@ Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Field.Defs
 
 #align_import algebra.order.field.defs from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 
@@ -20,14 +20,10 @@ A linear ordered (semi)field is a (semi)field equipped with a linear order such 
 
 * `LinearOrderedSemifield`: Typeclass for linear order semifields.
 * `LinearOrderedField`: Typeclass for linear ordered fields.
-
-## Implementation details
-
-For olean caching reasons, this file is separate to the main file,
-`Mathlib.Algebra.Order.Field.Basic`. The lemmata are instead located there.
-
 -/
 
+-- Guard against import creep.
+assert_not_exists MonoidHom
 
 variable {α : Type*}
 
@@ -45,5 +41,3 @@ instance (priority := 100) LinearOrderedField.toLinearOrderedSemifield [LinearOr
   { LinearOrderedRing.toLinearOrderedSemiring, ‹LinearOrderedField α› with }
 #align linear_ordered_field.to_linear_ordered_semifield LinearOrderedField.toLinearOrderedSemifield
 
--- Guard against import creep.
-assert_not_exists MonoidHom

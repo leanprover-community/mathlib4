@@ -3,10 +3,10 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Order.BoundedOrder
-import Mathlib.Order.MinMax
-import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+import Mathlib.Algebra.NeZero
+import Mathlib.Order.BoundedOrder
 
 #align_import algebra.order.monoid.canonical.defs from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -14,83 +14,9 @@ import Mathlib.Algebra.Order.Monoid.Defs
 # Canonically ordered monoids
 -/
 
-set_option autoImplicit true
-
-
 universe u
 
 variable {α : Type u}
-
-/-- An `OrderedCommMonoid` with one-sided 'division' in the sense that
-if `a ≤ b`, there is some `c` for which `a * c = b`. This is a weaker version
-of the condition on canonical orderings defined by `CanonicallyOrderedCommMonoid`. -/
-class ExistsMulOfLE (α : Type u) [Mul α] [LE α] : Prop where
-  /-- For `a ≤ b`, `a` left divides `b` -/
-  exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c : α, b = a * c
-#align has_exists_mul_of_le ExistsMulOfLE
-
-/-- An `OrderedAddCommMonoid` with one-sided 'subtraction' in the sense that
-if `a ≤ b`, then there is some `c` for which `a + c = b`. This is a weaker version
-of the condition on canonical orderings defined by `CanonicallyOrderedAddCommMonoid`. -/
-class ExistsAddOfLE (α : Type u) [Add α] [LE α] : Prop where
-  /-- For `a ≤ b`, there is a `c` so `b = a + c`. -/
-  exists_add_of_le : ∀ {a b : α}, a ≤ b → ∃ c : α, b = a + c
-#align has_exists_add_of_le ExistsAddOfLE
-
-attribute [to_additive] ExistsMulOfLE
-
-export ExistsMulOfLE (exists_mul_of_le)
-
-export ExistsAddOfLE (exists_add_of_le)
-
--- See note [lower instance priority]
-@[to_additive]
-instance (priority := 100) Group.existsMulOfLE (α : Type u) [Group α] [LE α] : ExistsMulOfLE α :=
-  ⟨fun {a b} _ => ⟨a⁻¹ * b, (mul_inv_cancel_left _ _).symm⟩⟩
-#align group.has_exists_mul_of_le Group.existsMulOfLE
-#align add_group.has_exists_add_of_le AddGroup.existsAddOfLE
-
-section MulOneClass
-
-variable [MulOneClass α] [Preorder α] [ContravariantClass α α (· * ·) (· < ·)] [ExistsMulOfLE α]
-  {a b : α}
-
-@[to_additive]
-theorem exists_one_lt_mul_of_lt' (h : a < b) : ∃ c, 1 < c ∧ a * c = b := by
-  obtain ⟨c, rfl⟩ := exists_mul_of_le h.le
-  exact ⟨c, one_lt_of_lt_mul_right h, rfl⟩
-#align exists_one_lt_mul_of_lt' exists_one_lt_mul_of_lt'
-#align exists_pos_add_of_lt' exists_pos_add_of_lt'
-
-end MulOneClass
-
-section ExistsMulOfLE
-
-variable [LinearOrder α] [DenselyOrdered α] [Monoid α] [ExistsMulOfLE α]
-  [CovariantClass α α (· * ·) (· < ·)] [ContravariantClass α α (· * ·) (· < ·)] {a b : α}
-
-@[to_additive]
-theorem le_of_forall_one_lt_le_mul (h : ∀ ε : α, 1 < ε → a ≤ b * ε) : a ≤ b :=
-  le_of_forall_le_of_dense fun x hxb => by
-    obtain ⟨ε, rfl⟩ := exists_mul_of_le hxb.le
-    exact h _ ((lt_mul_iff_one_lt_right' b).1 hxb)
-#align le_of_forall_one_lt_le_mul le_of_forall_one_lt_le_mul
-#align le_of_forall_pos_le_add le_of_forall_pos_le_add
-
-@[to_additive]
-theorem le_of_forall_one_lt_lt_mul' (h : ∀ ε : α, 1 < ε → a < b * ε) : a ≤ b :=
-  le_of_forall_one_lt_le_mul fun ε hε => (h ε hε).le
-#align le_of_forall_one_lt_lt_mul' le_of_forall_one_lt_lt_mul'
-#align le_of_forall_pos_lt_add' le_of_forall_pos_lt_add'
-
-@[to_additive]
-theorem le_iff_forall_one_lt_lt_mul' : a ≤ b ↔ ∀ ε, 1 < ε → a < b * ε :=
-  ⟨fun h _ => lt_mul_of_le_of_one_lt h, le_of_forall_one_lt_lt_mul'⟩
-#align le_iff_forall_one_lt_lt_mul' le_iff_forall_one_lt_lt_mul'
-#align le_iff_forall_pos_lt_add' le_iff_forall_pos_lt_add'
-
-end ExistsMulOfLE
-
 
 /-- A canonically ordered additive monoid is an ordered commutative additive monoid
   in which the ordering coincides with the subtractibility relation,
@@ -243,14 +169,14 @@ theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_l
 
 @[to_additive (attr := simp) add_pos_iff]
 theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by
-  simp only [one_lt_iff_ne_one, Ne.def, mul_eq_one_iff, not_and_or]
+  simp only [one_lt_iff_ne_one, Ne, mul_eq_one_iff, not_and_or]
 #align one_lt_mul_iff one_lt_mul_iff
 #align add_pos_iff add_pos_iff
 
 @[to_additive]
 theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b := by
   obtain ⟨c, hc⟩ := le_iff_exists_mul.1 h.le
-  refine' ⟨c, one_lt_iff_ne_one.2 _, hc.symm⟩
+  refine ⟨c, one_lt_iff_ne_one.2 ?_, hc.symm⟩
   rintro rfl
   simp [hc, lt_irrefl] at h
 #align exists_one_lt_mul_of_lt exists_one_lt_mul_of_lt
@@ -308,15 +234,12 @@ theorem of_gt {M} [CanonicallyOrderedAddCommMonoid M] {x y : M} (h : x < y) : Ne
 -- 1 < p is still an often-used `Fact`, due to `Nat.Prime` implying it, and it implying `Nontrivial`
 -- on `ZMod`'s ring structure. We cannot just set this to be any `x < y`, else that becomes a
 -- metavariable and it will hugely slow down typeclass inference.
-instance (priority := 10) of_gt' [CanonicallyOrderedAddCommMonoid M] [One M] {y : M}
+instance (priority := 10) of_gt' {M : Type*} [CanonicallyOrderedAddCommMonoid M] [One M] {y : M}
   -- Porting note: Fact.out has different type signature from mathlib3
   [Fact (1 < y)] : NeZero y := of_gt <| @Fact.out (1 < y) _
 #align ne_zero.of_gt' NeZero.of_gt'
 
-set_option linter.deprecated false in
-instance bit0 {M} [CanonicallyOrderedAddCommMonoid M] {x : M} [NeZero x] : NeZero (bit0 x) :=
-  of_pos <| bit0_pos <| NeZero.pos x
-#align ne_zero.bit0 NeZero.bit0
+#noalign ne_zero.bit0
 
 end NeZero
 

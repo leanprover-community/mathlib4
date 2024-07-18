@@ -17,6 +17,7 @@ function on `ℕ`.
 -/
 
 
+open Mathlib (Vector)
 open Nat List
 
 namespace Encodable
@@ -299,14 +300,14 @@ def raise : List ℕ → ℕ → List ℕ
 
 theorem lower_raise : ∀ l n, lower (raise l n) n = l
   | [], n => rfl
-  | m :: l, n => by rw [raise, lower, add_tsub_cancel_right, lower_raise l]
+  | m :: l, n => by rw [raise, lower, Nat.add_sub_cancel_right, lower_raise l]
 #align denumerable.lower_raise Denumerable.lower_raise
 
 theorem raise_lower : ∀ {l n}, List.Sorted (· ≤ ·) (n :: l) → raise (lower l n) n = l
   | [], n, _ => rfl
   | m :: l, n, h => by
     have : n ≤ m := List.rel_of_sorted_cons h _ (l.mem_cons_self _)
-    simp [raise, lower, tsub_add_cancel_of_le this, raise_lower h.of_cons]
+    simp [raise, lower, Nat.sub_add_cancel this, raise_lower h.of_cons]
 #align denumerable.raise_lower Denumerable.raise_lower
 
 theorem raise_chain : ∀ l n, List.Chain (· ≤ ·) n (raise l n)
@@ -330,9 +331,9 @@ instance multiset : Denumerable (Multiset α) :=
      fun s => by
       have :=
         raise_lower (List.sorted_cons.2 ⟨fun n _ => Nat.zero_le n, (s.map encode).sort_sorted _⟩)
-      simp [-Multiset.coe_map, this],
+      simp [-Multiset.map_coe, this],
      fun n => by
-      simp [-Multiset.coe_map, List.mergeSort_eq_self _ (raise_sorted _ _), lower_raise]⟩
+      simp [-Multiset.map_coe, List.mergeSort_eq_self _ (raise_sorted _ _), lower_raise]⟩
 #align denumerable.multiset Denumerable.multiset
 
 end Multiset
@@ -363,7 +364,7 @@ theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < �
   | [], n, _, _ => rfl
   | m :: l, n, h₁, h₂ => by
     have : n ≤ m := h₁ _ (l.mem_cons_self _)
-    simp [raise', lower', tsub_add_cancel_of_le this,
+    simp [raise', lower', Nat.sub_add_cancel this,
       raise_lower' (List.rel_of_sorted_cons h₂ : ∀ a ∈ l, m < a) h₂.of_cons]
 #align denumerable.raise_lower' Denumerable.raise_lower'
 
@@ -391,10 +392,10 @@ instance finset : Denumerable (Finset α) :=
     ⟨fun s : Finset α => encode <| lower' ((s.map (eqv α).toEmbedding).sort (· ≤ ·)) 0, fun n =>
       Finset.map (eqv α).symm.toEmbedding (raise'Finset (ofNat (List ℕ) n) 0), fun s =>
       Finset.eq_of_veq <| by
-        simp [-Multiset.coe_map, raise'Finset,
+        simp [-Multiset.map_coe, raise'Finset,
           raise_lower' (fun n _ => Nat.zero_le n) (Finset.sort_sorted_lt _)],
       fun n => by
-      simp [-Multiset.coe_map, Finset.map, raise'Finset, Finset.sort,
+      simp [-Multiset.map_coe, Finset.map, raise'Finset, Finset.sort,
         List.mergeSort_eq_self (· ≤ ·) ((raise'_sorted _ _).imp (@le_of_lt _ _)), lower_raise']⟩
 #align denumerable.finset Denumerable.finset
 

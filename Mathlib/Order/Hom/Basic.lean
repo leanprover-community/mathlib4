@@ -237,7 +237,7 @@ protected theorem mono (f : α →o β) : Monotone f :=
 projection directly instead. -/
 def Simps.coe (f : α →o β) : α → β := f
 
-/- Porting note: TODO: all other DFunLike classes use `apply` instead of `coe`
+/- Porting note (#11215): TODO: all other DFunLike classes use `apply` instead of `coe`
 for the projection names. Maybe we should change this. -/
 initialize_simps_projections OrderHom (toFun → coe)
 
@@ -343,6 +343,9 @@ def comp (g : β →o γ) (f : α →o β) : α →o γ :=
 theorem comp_mono ⦃g₁ g₂ : β →o γ⦄ (hg : g₁ ≤ g₂) ⦃f₁ f₂ : α →o β⦄ (hf : f₁ ≤ f₂) :
     g₁.comp f₁ ≤ g₂.comp f₂ := fun _ => (hg _).trans (g₂.mono <| hf _)
 #align order_hom.comp_mono OrderHom.comp_mono
+
+@[simp] lemma mk_comp_mk (g : β → γ) (f : α → β) (hg hf) :
+    comp ⟨g, hg⟩ ⟨f, hf⟩ = ⟨g ∘ f, hg.comp hf⟩ := rfl
 
 /-- The composition of two bundled monotone functions, a fully bundled version. -/
 @[simps! (config := .asFn)]
@@ -747,6 +750,34 @@ lemma coe_ofIsEmpty [IsEmpty α] : (ofIsEmpty : α ↪o β) = (isEmptyElim : α 
 
 end OrderEmbedding
 
+section Disjoint
+
+variable [PartialOrder α] [PartialOrder β] (f : OrderEmbedding α β)
+
+/-- If the images by an order embedding of two elements are disjoint,
+then they are themselves disjoint. -/
+lemma Disjoint.of_orderEmbedding [OrderBot α] [OrderBot β] {a₁ a₂ : α} :
+    Disjoint (f a₁) (f a₂) → Disjoint a₁ a₂ := by
+  intro h x h₁ h₂
+  rw [← f.le_iff_le] at h₁ h₂ ⊢
+  calc
+    f x ≤ ⊥ := h h₁ h₂
+    _ ≤ f ⊥ := bot_le
+
+/-- If the images by an order embedding of two elements are codisjoint,
+then they are themselves codisjoint. -/
+lemma Codisjoint.of_orderEmbedding [OrderTop α] [OrderTop β] {a₁ a₂ : α} :
+    Codisjoint (f a₁) (f a₂) → Codisjoint a₁ a₂ :=
+  Disjoint.of_orderEmbedding (α := αᵒᵈ) (β := βᵒᵈ) f.dual
+
+/-- If the images by an order embedding of two elements are complements,
+then they are themselves complements. -/
+lemma IsCompl.of_orderEmbedding [BoundedOrder α] [BoundedOrder β] {a₁ a₂ : α} :
+    IsCompl (f a₁) (f a₂) → IsCompl a₁ a₂ := fun ⟨hd, hcd⟩ ↦
+  ⟨Disjoint.of_orderEmbedding f hd, Codisjoint.of_orderEmbedding f hcd⟩
+
+end Disjoint
+
 section RelHom
 
 variable [PartialOrder α] [Preorder β]
@@ -934,6 +965,40 @@ theorem symm_trans_apply (e₁ : α ≃o β) (e₂ : β ≃o γ) (c : γ) :
 theorem symm_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) : (e₁.trans e₂).symm = e₂.symm.trans e₁.symm :=
   rfl
 #align order_iso.symm_trans OrderIso.symm_trans
+
+@[simp]
+theorem self_trans_symm (e : α ≃o β) : e.trans e.symm = OrderIso.refl α :=
+  RelIso.self_trans_symm e
+
+@[simp]
+theorem symm_trans_self (e : α ≃o β) : e.symm.trans e = OrderIso.refl β :=
+  RelIso.symm_trans_self e
+
+/-- An order isomorphism between the domains and codomains of two prosets of
+order homomorphisms gives an order isomorphism between the two function prosets. -/
+@[simps apply symm_apply]
+def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
+    (f : α ≃o γ) (g : β ≃o δ) : (α →o β) ≃o (γ →o δ) where
+  toFun  p := .comp g <| .comp p f.symm
+  invFun p := .comp g.symm <| .comp p f
+  left_inv p := DFunLike.coe_injective <| by
+    change (g.symm ∘ g) ∘ p ∘ (f.symm ∘ f) = p
+    simp only [← DFunLike.coe_eq_coe_fn, ← OrderIso.coe_trans, Function.id_comp,
+               OrderIso.self_trans_symm, OrderIso.coe_refl, Function.comp_id]
+  right_inv p := DFunLike.coe_injective <| by
+    change (g ∘ g.symm) ∘ p ∘ (f ∘ f.symm) = p
+    simp only [← DFunLike.coe_eq_coe_fn, ← OrderIso.coe_trans, Function.id_comp,
+               OrderIso.symm_trans_self, OrderIso.coe_refl, Function.comp_id]
+  map_rel_iff' {p q} := by
+    simp only [Equiv.coe_fn_mk, OrderHom.le_def, OrderHom.comp_coe,
+               OrderHomClass.coe_coe, Function.comp_apply, map_le_map_iff]
+    exact Iff.symm f.forall_congr_left
+
+/-- If `α` and `β` are order-isomorphic then the two orders of order-homomorphisms
+from `α` and `β` to themselves are order-isomorphic. -/
+@[simps! apply symm_apply]
+def conj {α β} [Preorder α] [Preorder β] (f : α ≃o β) : (α →o α) ≃ (β →o β) :=
+  arrowCongr f f
 
 /-- `Prod.swap` as an `OrderIso`. -/
 def prodComm : α × β ≃o β × α where
@@ -1147,7 +1212,6 @@ end Equiv
 namespace StrictMono
 
 variable [LinearOrder α] [Preorder β]
-
 variable (f : α → β) (h_mono : StrictMono f) (h_surj : Function.Surjective f)
 
 /-- A strictly monotone function with a right inverse is an order isomorphism. -/
@@ -1173,7 +1237,7 @@ section LatticeIsos
 
 theorem OrderIso.map_bot' [LE α] [PartialOrder β] (f : α ≃o β) {x : α} {y : β} (hx : ∀ x', x ≤ x')
     (hy : ∀ y', y ≤ y') : f x = y := by
-  refine' le_antisymm _ (hy _)
+  refine le_antisymm ?_ (hy _)
   rw [← f.apply_symm_apply y, f.map_rel_iff]
   apply hx
 #align order_iso.map_bot' OrderIso.map_bot'
@@ -1203,7 +1267,7 @@ theorem OrderEmbedding.le_map_sup [SemilatticeSup α] [SemilatticeSup β] (f : �
 
 theorem OrderIso.map_inf [SemilatticeInf α] [SemilatticeInf β] (f : α ≃o β) (x y : α) :
     f (x ⊓ y) = f x ⊓ f y := by
-  refine' (f.toOrderEmbedding.map_inf_le x y).antisymm _
+  refine (f.toOrderEmbedding.map_inf_le x y).antisymm ?_
   apply f.symm.le_iff_le.1
   simpa using f.symm.toOrderEmbedding.map_inf_le (f x) (f y)
 #align order_iso.map_inf OrderIso.map_inf

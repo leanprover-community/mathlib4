@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Scott Morrison
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.SetTheory.Game.Ordinal
 
-#align_import set_theory.surreal.basic from "leanprover-community/mathlib"@"ee02a30e209a2a77b93eac1254e8c66e76192f54"
+#align_import set_theory.surreal.basic from "leanprover-community/mathlib"@"8900d545017cd21961daa2a1734bb658ef52c618"
 
 /-!
 # Surreal numbers
@@ -30,27 +30,22 @@ Surreal numbers inherit the relations `≤` and `<` from games (`Surreal.instLE`
 
 ## Algebraic operations
 
-We show that the surreals form a linear ordered commutative group.
+In this file, we show that the surreals form a linear ordered commutative group.
+
+In `Mathlib.SetTheory.Surreal.Multiplication`, we define multiplication and show that the
+surreals form a linear ordered commutative ring.
 
 One can also map all the ordinals into the surreals!
 
-### Multiplication of surreal numbers
-
-The proof that multiplication lifts to surreal numbers is surprisingly difficult and is currently
-missing in the library. A sample proof can be found in Theorem 3.8 in the second reference below.
-The difficulty lies in the length of the proof and the number of theorems that need to proven
-simultaneously. This will make for a fun and challenging project.
-
-The branch `surreal_mul` contains some progress on this proof.
-
-### Todo
+## TODO
 
 - Define the field structure on the surreals.
 
 ## References
 
-* [Conway, *On numbers and games*][conway2001]
-* [Schleicher, Stoll, *An introduction to Conway's games and numbers*][schleicher_stoll]
+* [Conway, *On numbers and games*][Conway2001]
+* [Schleicher, Stoll, *An introduction to Conway's games and numbers*][SchleicherStoll]
+
 -/
 
 
@@ -94,6 +89,11 @@ theorem moveRight {x : PGame} (o : Numeric x) (j : x.RightMoves) : Numeric (x.mo
   cases x; exact o.2.2 j
 #align pgame.numeric.move_right SetTheory.PGame.Numeric.moveRight
 
+lemma isOption {x' x} (h : IsOption x' x) (hx : Numeric x) : Numeric x' := by
+  cases h
+  · apply hx.moveLeft
+  · apply hx.moveRight
+
 end Numeric
 
 @[elab_as_elim]
@@ -121,9 +121,9 @@ theorem Relabelling.numeric_congr {x y : PGame} (r : x ≡r y) : Numeric x ↔ N
 #align pgame.relabelling.numeric_congr SetTheory.PGame.Relabelling.numeric_congr
 
 theorem lf_asymm {x y : PGame} (ox : Numeric x) (oy : Numeric y) : x ⧏ y → ¬y ⧏ x := by
-  refine' numeric_rec (C := fun x => ∀ z (_oz : Numeric z), x ⧏ z → ¬z ⧏ x)
-    (fun xl xr xL xR hx _oxl _oxr IHxl IHxr => _) x ox y oy
-  refine' numeric_rec fun yl yr yL yR hy oyl oyr _IHyl _IHyr => _
+  refine numeric_rec (C := fun x => ∀ z (_oz : Numeric z), x ⧏ z → ¬z ⧏ x)
+    (fun xl xr xL xR hx _oxl _oxr IHxl IHxr => ?_) x ox y oy
+  refine numeric_rec fun yl yr yL yR hy oyl oyr _IHyl _IHyr => ?_
   rw [mk_lf_mk, mk_lf_mk]; rintro (⟨i, h₁⟩ | ⟨j, h₁⟩) (⟨i, h₂⟩ | ⟨j, h₂⟩)
   · exact IHxl _ _ (oyl _) (h₁.moveLeft_lf _) (h₂.moveLeft_lf _)
   · exact (le_trans h₂ h₁).not_gf (lf_of_lt (hy _ _))
@@ -152,8 +152,8 @@ theorem lf_iff_lt {x y : PGame} (ox : Numeric x) (oy : Numeric y) : x ⧏ y ↔ 
 /-- Definition of `x ≤ y` on numeric pre-games, in terms of `<` -/
 theorem le_iff_forall_lt {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
     x ≤ y ↔ (∀ i, x.moveLeft i < y) ∧ ∀ j, x < y.moveRight j := by
-  refine' le_iff_forall_lf.trans (and_congr _ _) <;>
-      refine' forall_congr' fun i => lf_iff_lt _ _ <;>
+  refine le_iff_forall_lf.trans (and_congr ?_ ?_) <;>
+      refine forall_congr' fun i => lf_iff_lt ?_ ?_ <;>
     apply_rules [Numeric.moveLeft, Numeric.moveRight]
 #align pgame.le_iff_forall_lt SetTheory.PGame.le_iff_forall_lt
 
@@ -174,8 +174,8 @@ theorem lt_def {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
       (∃ i, (∀ i', x.moveLeft i' < y.moveLeft i) ∧ ∀ j, x < (y.moveLeft i).moveRight j) ∨
         ∃ j, (∀ i, (x.moveRight j).moveLeft i < y) ∧ ∀ j', x.moveRight j < y.moveRight j' := by
   rw [← lf_iff_lt ox oy, lf_def]
-  refine' or_congr _ _ <;> refine' exists_congr fun x_1 => _ <;> refine' and_congr _ _ <;>
-      refine' forall_congr' fun i => lf_iff_lt _ _ <;>
+  refine or_congr ?_ ?_ <;> refine exists_congr fun x_1 => ?_ <;> refine and_congr ?_ ?_ <;>
+      refine forall_congr' fun i => lf_iff_lt ?_ ?_ <;>
     apply_rules [Numeric.moveLeft, Numeric.moveRight]
 #align pgame.lt_def SetTheory.PGame.lt_def
 
@@ -215,6 +215,26 @@ theorem Numeric.neg : ∀ {x : PGame} (_ : Numeric x), Numeric (-x)
     ⟨fun j i => neg_lt_neg_iff.2 (o.1 i j), fun j => (o.2.2 j).neg, fun i => (o.2.1 i).neg⟩
 #align pgame.numeric.neg SetTheory.PGame.Numeric.neg
 
+/-- Inserting a smaller numeric left option into a numeric game results in a numeric game. -/
+theorem insertLeft_numeric {x x' : PGame} (x_num : x.Numeric) (x'_num : x'.Numeric)
+    (h : x' ≤ x) : (insertLeft x x').Numeric := by
+  rw [le_iff_forall_lt x'_num x_num] at h
+  unfold Numeric at x_num ⊢
+  rcases x with ⟨xl, xr, xL, xR⟩
+  simp only [insertLeft, Sum.forall, forall_const, Sum.elim_inl, Sum.elim_inr] at x_num ⊢
+  constructor
+  · simp only [x_num.1, implies_true, true_and]
+    simp only [rightMoves_mk, moveRight_mk] at h
+    exact h.2
+  · simp only [x_num, implies_true, x'_num, and_self]
+
+/-- Inserting a larger numeric right option into a numeric game results in a numeric game. -/
+theorem insertRight_numeric {x x' : PGame} (x_num : x.Numeric) (x'_num : x'.Numeric)
+    (h : x ≤ x') : (insertRight x x').Numeric := by
+  rw [← neg_neg (x.insertRight x'), ← neg_insertLeft_neg]
+  apply Numeric.neg
+  exact insertLeft_numeric (Numeric.neg x_num) (Numeric.neg x'_num) (neg_le_neg_iff.mpr h)
+
 namespace Numeric
 
 theorem moveLeft_lt {x : PGame} (o : Numeric x) (i) : x.moveLeft i < x :=
@@ -251,7 +271,6 @@ theorem add : ∀ {x y : PGame} (_ : Numeric x) (_ : Numeric y), Numeric (x + y)
         · apply (ox.moveRight jx).add oy
         · apply ox.add (oy.moveRight jy)⟩
 termination_by x y => (x, y) -- Porting note: Added `termination_by`
-decreasing_by all_goals pgame_wf_tac
 #align pgame.numeric.add SetTheory.PGame.Numeric.add
 
 theorem sub {x y : PGame} (ox : Numeric x) (oy : Numeric y) : Numeric (x - y) :=
@@ -302,6 +321,10 @@ instance : One Surreal :=
 instance : Inhabited Surreal :=
   ⟨0⟩
 
+lemma mk_eq_mk {x y : PGame.{u}} {hx hy} : mk x hx = mk y hy ↔ x ≈ y := Quotient.eq
+
+lemma mk_eq_zero {x : PGame.{u}} {hx} : mk x hx = 0 ↔ x ≈ 0 := Quotient.eq
+
 /-- Lift an equivalence-respecting function on pre-games to surreals. -/
 def lift {α} (f : ∀ x, Numeric x → α)
     (H : ∀ {x y} (hx : Numeric x) (hy : Numeric y), x.Equiv y → f x hx = f y hy) : Surreal → α :=
@@ -322,9 +345,26 @@ instance instLE : LE Surreal :=
   ⟨lift₂ (fun x y _ _ => x ≤ y) fun _ _ _ _ hx hy => propext (le_congr hx hy)⟩
 #align surreal.has_le Surreal.instLE
 
+@[simp]
+lemma mk_le_mk {x y : PGame.{u}} {hx hy} : mk x hx ≤ mk y hy ↔ x ≤ y := Iff.rfl
+
+lemma zero_le_mk {x : PGame.{u}} {hx} : 0 ≤ mk x hx ↔ 0 ≤ x := Iff.rfl
+
 instance instLT : LT Surreal :=
   ⟨lift₂ (fun x y _ _ => x < y) fun _ _ _ _ hx hy => propext (lt_congr hx hy)⟩
 #align surreal.has_lt Surreal.instLT
+
+lemma mk_lt_mk {x y : PGame.{u}} {hx hy} : mk x hx < mk y hy ↔ x < y := Iff.rfl
+
+lemma zero_lt_mk {x : PGame.{u}} {hx} : 0 < mk x hx ↔ 0 < x := Iff.rfl
+
+/-- Same as `moveLeft_lt`, but for `Surreal` instead of `PGame` -/
+theorem mk_moveLeft_lt_mk {x : PGame} (o : Numeric x) (i) :
+    Surreal.mk (x.moveLeft i) (Numeric.moveLeft o i) < Surreal.mk x o := Numeric.moveLeft_lt o i
+
+/-- Same as `lt_moveRight`, but for `Surreal` instead of `PGame` -/
+theorem mk_lt_mk_moveRight {x : PGame} (o : Numeric x) (j) :
+    Surreal.mk x o < Surreal.mk (x.moveRight j) (Numeric.moveRight o j) := Numeric.lt_moveRight o j
 
 /-- Addition on surreals is inherited from pre-game addition:
 the sum of `x = {xL | xR}` and `y = {yL | yR}` is `{xL + y, x + yL | xR + y, x + yR}`. -/
@@ -353,6 +393,16 @@ instance orderedAddCommGroup : OrderedAddCommGroup Surreal where
   lt_iff_le_not_le := by rintro ⟨_, ox⟩ ⟨_, oy⟩; apply @lt_iff_le_not_le PGame
   le_antisymm := by rintro ⟨_⟩ ⟨_⟩ h₁ h₂; exact Quotient.sound ⟨h₁, h₂⟩
   add_le_add_left := by rintro ⟨_⟩ ⟨_⟩ hx ⟨_⟩; exact @add_le_add_left PGame _ _ _ _ _ hx _
+  nsmul := nsmulRec
+  zsmul := zsmulRec
+
+lemma mk_add {x y : PGame} (hx : x.Numeric) (hy : y.Numeric) :
+    Surreal.mk (x + y) (hx.add hy) = Surreal.mk x hx + Surreal.mk y hy := by rfl
+
+lemma mk_sub {x y : PGame} (hx : x.Numeric) (hy : y.Numeric) :
+    Surreal.mk (x - y) (hx.sub hy) = Surreal.mk x hx - Surreal.mk y hy := by rfl
+
+lemma zero_def : 0 = mk 0 numeric_zero := by rfl
 
 noncomputable instance : LinearOrderedAddCommGroup Surreal :=
   { Surreal.orderedAddCommGroup with
@@ -385,6 +435,53 @@ theorem one_toGame : toGame 1 = 1 :=
 theorem nat_toGame : ∀ n : ℕ, toGame n = n :=
   map_natCast' _ one_toGame
 #align surreal.nat_to_game Surreal.nat_toGame
+
+#noalign upper_bound_numeric
+#noalign lower_bound_numeric
+
+/-- A small family of surreals is bounded above. -/
+lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u}) :
+    BddAbove (Set.range f) := by
+  induction' f using Quotient.induction_on_pi with f
+  let g : ι → PGame.{u} := Subtype.val ∘ f
+  have hg (i) : (g i).Numeric := Subtype.prop _
+  conv in (⟦f _⟧) =>
+    change mk (g i) (hg i)
+  clear_value g
+  clear f
+  let x : PGame.{u} := ⟨Σ i, (g <| (equivShrink.{u} ι).symm i).LeftMoves, PEmpty,
+    fun x ↦ moveLeft _ x.2, PEmpty.elim⟩
+  refine ⟨mk x (.mk (by simp [x]) (fun _ ↦ (hg _).moveLeft _) (by simp [x])),
+    Set.forall_mem_range.2 fun i ↦ ?_⟩
+  rw [mk_le_mk, ← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
+  simpa [x] using fun j ↦ @moveLeft_lf x ⟨equivShrink ι i, j⟩
+
+/-- A small set of surreals is bounded above. -/
+lemma bddAbove_of_small (s : Set Surreal.{u}) [Small.{u} s] : BddAbove s := by
+  simpa using bddAbove_range_of_small (Subtype.val : s → Surreal.{u})
+#align surreal.bdd_above_of_small Surreal.bddAbove_of_small
+
+/-- A small family of surreals is bounded below. -/
+lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u}) :
+    BddBelow (Set.range f) := by
+  induction' f using Quotient.induction_on_pi with f
+  let g : ι → PGame.{u} := Subtype.val ∘ f
+  have hg (i) : (g i).Numeric := Subtype.prop _
+  conv in (⟦f _⟧) =>
+    change mk (g i) (hg i)
+  clear_value g
+  clear f
+  let x : PGame.{u} := ⟨PEmpty, Σ i, (g <| (equivShrink.{u} ι).symm i).RightMoves,
+    PEmpty.elim, fun x ↦ moveRight _ x.2⟩
+  refine ⟨mk x (.mk (by simp [x]) (by simp [x]) (fun _ ↦ (hg _).moveRight _) ),
+    Set.forall_mem_range.2 fun i ↦ ?_⟩
+  rw [mk_le_mk, ← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
+  simpa [x] using fun j ↦ @lf_moveRight x ⟨equivShrink ι i, j⟩
+
+/-- A small set of surreals is bounded below. -/
+lemma bddBelow_of_small (s : Set Surreal.{u}) [Small.{u} s] : BddBelow s := by
+  simpa using bddBelow_range_of_small (Subtype.val : s → Surreal.{u})
+#align surreal.bdd_below_of_small Surreal.bddBelow_of_small
 
 end Surreal
 

@@ -10,9 +10,9 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 #align_import analysis.normed_space.quaternion_exponential from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
-# Lemmas about `exp` on `Quaternion`s
+# Lemmas about `NormedSpace.exp` on `Quaternion`s
 
-This file contains results about `exp` on `Quaternion ℝ`.
+This file contains results about `NormedSpace.exp` on `Quaternion ℝ`.
 
 ## Main results
 
@@ -66,7 +66,7 @@ theorem expSeries_odd_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ
   have hqn := norm_ne_zero_iff.mpr hq0
   let k : ℝ := ↑(2 * n + 1)!
   calc
-    k⁻¹ • q ^ (2 * n + 1) = k⁻¹ • ((-normSq q) ^ n * q) := by rw [pow_succ', pow_mul, hq2]
+    k⁻¹ • q ^ (2 * n + 1) = k⁻¹ • ((-normSq q) ^ n * q) := by rw [pow_succ, pow_mul, hq2]
     _ = k⁻¹ • ((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n)) • q := ?_
     _ = ((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n + 1) / k / ‖q‖) • q := ?_
   · congr 1
@@ -74,7 +74,7 @@ theorem expSeries_odd_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ
     norm_cast
   · rw [smul_smul]
     congr 1
-    simp_rw [pow_succ', mul_div_assoc, div_div_cancel_left' hqn]
+    simp_rw [pow_succ, mul_div_assoc, div_div_cancel_left' hqn]
     ring
 
 /-- Auxiliary result; if the power series corresponding to `Real.cos` and `Real.sin` evaluated
@@ -98,7 +98,7 @@ theorem hasSum_expSeries_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) {c s 
 theorem exp_of_re_eq_zero (q : Quaternion ℝ) (hq : q.re = 0) :
     exp ℝ q = ↑(Real.cos ‖q‖) + (Real.sin ‖q‖ / ‖q‖) • q := by
   rw [exp_eq_tsum]
-  refine' HasSum.tsum_eq _
+  refine HasSum.tsum_eq ?_
   simp_rw [← expSeries_apply_eq]
   exact hasSum_expSeries_of_imaginary hq (Real.hasSum_cos _) (Real.hasSum_sin _)
 #align quaternion.exp_of_re_eq_zero Quaternion.exp_of_re_eq_zero
@@ -121,8 +121,8 @@ theorem im_exp (q : ℍ[ℝ]) : (exp ℝ q).im = (exp ℝ q.re * (Real.sin ‖q.
 theorem normSq_exp (q : ℍ[ℝ]) : normSq (exp ℝ q) = exp ℝ q.re ^ 2 :=
   calc
     normSq (exp ℝ q) =
-        normSq (exp ℝ q.re • (↑(Real.cos ‖q.im‖) + (Real.sin ‖q.im‖ / ‖q.im‖) • q.im)) :=
-      by rw [exp_eq]
+        normSq (exp ℝ q.re • (↑(Real.cos ‖q.im‖) + (Real.sin ‖q.im‖ / ‖q.im‖) • q.im)) := by
+      rw [exp_eq]
     _ = exp ℝ q.re ^ 2 * normSq (↑(Real.cos ‖q.im‖) + (Real.sin ‖q.im‖ / ‖q.im‖) • q.im) := by
       rw [normSq_smul]
     _ = exp ℝ q.re ^ 2 * (Real.cos ‖q.im‖ ^ 2 + Real.sin ‖q.im‖ ^ 2) := by
@@ -131,13 +131,13 @@ theorem normSq_exp (q : ℍ[ℝ]) : normSq (exp ℝ q) = exp ℝ q.re ^ 2 :=
       · simp [hv]
       rw [normSq_add, normSq_smul, star_smul, coe_mul_eq_smul, smul_re, smul_re, star_re, im_re,
         smul_zero, smul_zero, mul_zero, add_zero, div_pow, normSq_coe,
-        normSq_eq_norm_mul_self, ← sq, div_mul_cancel _ (pow_ne_zero _ hv)]
+        normSq_eq_norm_mul_self, ← sq, div_mul_cancel₀ _ (pow_ne_zero _ hv)]
     _ = exp ℝ q.re ^ 2 := by rw [Real.cos_sq_add_sin_sq, mul_one]
 
 #align quaternion.norm_sq_exp Quaternion.normSq_exp
 
 /-- Note that this implies that exponentials of pure imaginary quaternions are unit quaternions
-since in that case the RHS is `1` via `exp_zero` and `norm_one`. -/
+since in that case the RHS is `1` via `NormedSpace.exp_zero` and `norm_one`. -/
 @[simp]
 theorem norm_exp (q : ℍ[ℝ]) : ‖exp ℝ q‖ = ‖exp ℝ q.re‖ := by
   rw [norm_eq_sqrt_real_inner (exp ℝ q), inner_self, normSq_exp, Real.sqrt_sq_eq_abs,

@@ -41,7 +41,7 @@ Note that there is no need for `SetLike.graded_mul_action` or similar, as all th
 would contain is already supplied by `GradedSMul` when the objects within `A` and `M` have
 a `MulAction` instance.
 
-## tags
+## Tags
 
 graded action
 -/
@@ -94,8 +94,7 @@ instance GMonoid.toGMulAction [AddMonoid ιA] [GMonoid A] : GMulAction A A :=
 #align graded_monoid.gmonoid.to_gmul_action GradedMonoid.GMonoid.toGMulAction
 
 instance GMulAction.toMulAction [AddMonoid ιA] [GMonoid A] [VAdd ιA ιM] [GMulAction A M] :
-    MulAction (GradedMonoid A) (GradedMonoid M)
-    where
+    MulAction (GradedMonoid A) (GradedMonoid M) where
   one_smul := GMulAction.one_smul
   mul_smul := GMulAction.mul_smul
 #align graded_monoid.gmul_action.to_mul_action GradedMonoid.GMulAction.toMulAction

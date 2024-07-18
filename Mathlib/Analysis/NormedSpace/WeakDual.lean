@@ -47,7 +47,7 @@ weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
   Closed balls in the dual of a normed space `E` over `ℝ` or `ℂ` are compact in the weak-star
   topology.
 
-TODOs:
+## TODO
 * Add that in finite dimensions, the weak-* topology and the dual norm topology coincide.
 * Add that in infinite dimensions, the weak-* topology is strictly coarser than the dual norm
   topology.
@@ -104,7 +104,6 @@ by the dual-norm (i.e. the operator-norm).
 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 namespace NormedSpace

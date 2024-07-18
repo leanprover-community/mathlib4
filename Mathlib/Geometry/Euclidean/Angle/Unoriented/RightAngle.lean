@@ -29,8 +29,6 @@ triangle unnecessarily.
 
 noncomputable section
 
-open scoped BigOperators
-
 open scoped EuclideanGeometry
 
 open scoped Real
@@ -80,7 +78,7 @@ theorem angle_add_eq_arcsin_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 
     angle x (x + y) = Real.arcsin (‖y‖ / ‖x + y‖) := by
   have hxy : ‖x + y‖ ^ 2 ≠ 0 := by
     rw [pow_two, norm_add_sq_eq_norm_sq_add_norm_sq_real h, ne_comm]
-    refine' ne_of_lt _
+    refine ne_of_lt ?_
     rcases h0 with (h0 | h0)
     · exact
         Left.add_pos_of_pos_of_nonneg (mul_self_pos.2 (norm_ne_zero_iff.2 h0)) (mul_self_nonneg _)
@@ -89,7 +87,7 @@ theorem angle_add_eq_arcsin_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 
   rw [angle_add_eq_arccos_of_inner_eq_zero h,
     Real.arccos_eq_arcsin (div_nonneg (norm_nonneg _) (norm_nonneg _)), div_pow, one_sub_div hxy]
   nth_rw 1 [pow_two]
-  rw [norm_add_sq_eq_norm_sq_add_norm_sq_real h, pow_two, add_sub_cancel', ← pow_two, ← div_pow,
+  rw [norm_add_sq_eq_norm_sq_add_norm_sq_real h, pow_two, add_sub_cancel_left, ← pow_two, ← div_pow,
     Real.sqrt_sq (div_nonneg (norm_nonneg _) (norm_nonneg _))]
 #align inner_product_geometry.angle_add_eq_arcsin_of_inner_eq_zero InnerProductGeometry.angle_add_eq_arcsin_of_inner_eq_zero
 
@@ -169,7 +167,7 @@ theorem cos_angle_add_mul_norm_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
     rw [hxy, zero_mul, eq_comm,
       add_eq_zero_iff' (mul_self_nonneg ‖x‖) (mul_self_nonneg ‖y‖), mul_self_eq_zero] at h'
     simp [h'.1]
-  · exact div_mul_cancel _ hxy
+  · exact div_mul_cancel₀ _ hxy
 #align inner_product_geometry.cos_angle_add_mul_norm_of_inner_eq_zero InnerProductGeometry.cos_angle_add_mul_norm_of_inner_eq_zero
 
 /-- The sine of an angle in a right-angled triangle multiplied by the hypotenuse equals the
@@ -178,9 +176,9 @@ theorem sin_angle_add_mul_norm_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
     Real.sin (angle x (x + y)) * ‖x + y‖ = ‖y‖ := by
   by_cases h0 : x = 0 ∧ y = 0; · simp [h0]
   rw [not_and_or] at h0
-  rw [sin_angle_add_of_inner_eq_zero h h0, div_mul_cancel]
+  rw [sin_angle_add_of_inner_eq_zero h h0, div_mul_cancel₀]
   rw [← mul_self_ne_zero, norm_add_sq_eq_norm_sq_add_norm_sq_real h]
-  refine' (ne_of_lt _).symm
+  refine (ne_of_lt ?_).symm
   rcases h0 with (h0 | h0)
   · exact Left.add_pos_of_pos_of_nonneg (mul_self_pos.2 (norm_ne_zero_iff.2 h0)) (mul_self_nonneg _)
   · exact Left.add_pos_of_nonneg_of_pos (mul_self_nonneg _) (mul_self_pos.2 (norm_ne_zero_iff.2 h0))

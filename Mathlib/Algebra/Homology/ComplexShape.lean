@@ -43,7 +43,7 @@ so `d : X i ⟶ X j` is nonzero only when `i = j + 1`.
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 /-- A `c : ComplexShape ι` describes the shape of a chain complex,
 with chain groups indexed by `ι`.
@@ -163,6 +163,22 @@ theorem prev_eq' (c : ComplexShape ι) {i j : ι} (h : c.Rel i j) : c.prev j = i
   rw [prev, dif_pos]
   exact Exists.choose_spec (⟨i, h⟩ : ∃ k, c.Rel k j)
 #align complex_shape.prev_eq' ComplexShape.prev_eq'
+
+lemma next_eq_self' (c : ComplexShape ι) (j : ι) (hj : ∀ k, ¬ c.Rel j k) :
+    c.next j = j :=
+  dif_neg (by simpa using hj)
+
+lemma prev_eq_self' (c : ComplexShape ι) (j : ι) (hj : ∀ i, ¬ c.Rel i j) :
+    c.prev j = j :=
+  dif_neg (by simpa using hj)
+
+lemma next_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬ c.Rel j (c.next j)) :
+    c.next j = j :=
+  c.next_eq_self' j (fun k hk' => hj (by simpa only [c.next_eq' hk'] using hk'))
+
+lemma prev_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬ c.Rel (c.prev j) j) :
+    c.prev j = j :=
+  c.prev_eq_self' j (fun k hk' => hj (by simpa only [c.prev_eq' hk'] using hk'))
 
 /-- The `ComplexShape` allowing differentials from `X i` to `X (i+a)`.
 (For example when `a = 1`, a cohomology theory indexed by `ℕ` or `ℤ`)

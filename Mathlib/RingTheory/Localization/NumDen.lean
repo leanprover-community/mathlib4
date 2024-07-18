@@ -23,7 +23,6 @@ commutative ring, field of fractions
 
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
-
 variable [Algebra R S] {P : Type*} [CommRing P]
 
 namespace IsFractionRing
@@ -33,7 +32,6 @@ open IsLocalization
 section NumDen
 
 variable (A : Type*) [CommRing A] [IsDomain A] [UniqueFactorizationMonoid A]
-
 variable {K : Type*} [Field K] [Algebra A K] [IsFractionRing A K]
 
 theorem exists_reduced_fraction (x : K) :
@@ -43,8 +41,8 @@ theorem exists_reduced_fraction (x : K) :
     UniqueFactorizationMonoid.exists_reduced_factors' a b
       (mem_nonZeroDivisors_iff_ne_zero.mp b_nonzero)
   obtain ⟨_, b'_nonzero⟩ := mul_mem_nonZeroDivisors.mp b_nonzero
-  refine' ⟨a', ⟨b', b'_nonzero⟩, no_factor, _⟩
-  refine' mul_left_cancel₀ (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors b_nonzero) _
+  refine ⟨a', ⟨b', b'_nonzero⟩, no_factor, ?_⟩
+  refine mul_left_cancel₀ (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors b_nonzero) ?_
   simp only [Subtype.coe_mk, RingHom.map_mul, Algebra.smul_def] at *
   erw [← hab, mul_assoc, mk'_spec' _ a' ⟨b', b'_nonzero⟩]
 #align is_fraction_ring.exists_reduced_fraction IsFractionRing.exists_reduced_fraction
@@ -101,7 +99,7 @@ theorem isInteger_of_isUnit_den {x : K} (h : IsUnit (den A x : A)) : IsInteger A
   have d_ne_zero : algebraMap A K (den A x) ≠ 0 :=
     IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (den A x).2
   use ↑d⁻¹ * num A x
-  refine' _root_.trans _ (mk'_num_den A x)
+  refine _root_.trans ?_ (mk'_num_den A x)
   rw [map_mul, map_units_inv, hd]
   apply mul_left_cancel₀ d_ne_zero
   rw [← mul_assoc, mul_inv_cancel d_ne_zero, one_mul, mk'_spec']

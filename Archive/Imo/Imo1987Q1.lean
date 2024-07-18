@@ -24,12 +24,9 @@ The original problem assumes `n ≥ 1`. It turns out that a version with `n * (n
 holds true for `n = 0` as well, so we first prove it, then deduce the original version in the case
 `n ≥ 1`. -/
 
-
-set_option autoImplicit true
-
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
-open scoped BigOperators Nat
+open scoped Nat
 
 open Equiv Fintype Function
 
@@ -62,7 +59,7 @@ def fiber (k : ℕ) : Set (Perm α) :=
   {σ : Perm α | card (fixedPoints σ) = k}
 #align imo1987_q1.fiber Imo1987Q1.fiber
 
-instance : Fintype (fiber α k) := by unfold fiber; infer_instance
+instance {k : ℕ} : Fintype (fiber α k) := by unfold fiber; infer_instance
 
 @[simp]
 theorem mem_fiber {σ : Perm α} {k : ℕ} : σ ∈ fiber α k ↔ card (fixedPoints σ) = k :=
@@ -94,19 +91,19 @@ def fixedPointsEquiv' :
 #align imo1987_q1.fixed_points_equiv' Imo1987Q1.fixedPointsEquiv'
 
 /-- Main statement for any `(α : Type*) [Fintype α]`. -/
-theorem main_fintype : ∑ k in range (card α + 1), k * p α k = card α * (card α - 1)! := by
+theorem main_fintype : ∑ k ∈ range (card α + 1), k * p α k = card α * (card α - 1)! := by
   have A : ∀ (k) (σ : fiber α k), card (fixedPoints (↑σ : Perm α)) = k := fun k σ => σ.2
   simpa [A, ← Fin.sum_univ_eq_sum_range, -card_ofFinset, Finset.card_univ, card_fixed_points,
     mul_comm] using card_congr (fixedPointsEquiv' α)
 #align imo1987_q1.main_fintype Imo1987Q1.main_fintype
 
 /-- Main statement for permutations of `Fin n`, a version that works for `n = 0`. -/
-theorem main₀ (n : ℕ) : ∑ k in range (n + 1), k * p (Fin n) k = n * (n - 1)! := by
+theorem main₀ (n : ℕ) : ∑ k ∈ range (n + 1), k * p (Fin n) k = n * (n - 1)! := by
   simpa using main_fintype (Fin n)
 #align imo1987_q1.main₀ Imo1987Q1.main₀
 
 /-- Main statement for permutations of `Fin n`. -/
-theorem main {n : ℕ} (hn : 1 ≤ n) : ∑ k in range (n + 1), k * p (Fin n) k = n ! := by
+theorem main {n : ℕ} (hn : 1 ≤ n) : ∑ k ∈ range (n + 1), k * p (Fin n) k = n ! := by
   rw [main₀, Nat.mul_factorial_pred (zero_lt_one.trans_le hn)]
 #align imo1987_q1.main Imo1987Q1.main
 

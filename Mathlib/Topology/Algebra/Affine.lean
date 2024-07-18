@@ -24,9 +24,7 @@ we do have some results in this direction under the assumption that the topologi
 namespace AffineMap
 
 variable {R E F : Type*}
-
 variable [AddCommGroup E] [TopologicalSpace E]
-
 variable [AddCommGroup F] [TopologicalSpace F] [TopologicalAddGroup F]
 
 section Ring
