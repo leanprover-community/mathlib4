@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Action.Units
-import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Tactic.Common
 
 #align_import group_theory.group_action.units from "leanprover-community/mathlib"@"f1a2caaf51ef593799107fe9a8d5e411599f3996"

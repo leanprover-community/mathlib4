@@ -3,7 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Init.ZeroOne
+import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Data.Set.Defs
 import Mathlib.Order.Basic
 import Mathlib.Order.SymmDiff
@@ -1230,6 +1230,9 @@ theorem singleton_def (a : α) : ({a} : Set α) = insert a ∅ :=
 theorem mem_singleton_iff {a b : α} : a ∈ ({b} : Set α) ↔ a = b :=
   Iff.rfl
 #align set.mem_singleton_iff Set.mem_singleton_iff
+
+theorem not_mem_singleton_iff {a b : α} : a ∉ ({b} : Set α) ↔ a ≠ b :=
+  Iff.rfl
 
 @[simp]
 theorem setOf_eq_eq_singleton {a : α} : { n | n = a } = {a} :=

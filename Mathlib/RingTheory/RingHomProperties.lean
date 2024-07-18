@@ -168,13 +168,11 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra
 theorem StableUnderBaseChange.pushout_inl (hP : RingHom.StableUnderBaseChange @P)
     (hP' : RingHom.RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S) (g : R ⟶ T) (H : P g) :
     P (pushout.inl _ _ : S ⟶ pushout f g) := by
-  rw [←
-    show _ = pushout.inl _ _ from
-      colimit.isoColimitCocone_ι_inv ⟨_, CommRingCat.pushoutCoconeIsColimit f g⟩
-        WalkingSpan.left,
-    hP'.cancel_right_isIso]
   letI := f.toAlgebra
   letI := g.toAlgebra
+  rw [← show _ = pushout.inl f g from
+      colimit.isoColimitCocone_ι_inv ⟨_, CommRingCat.pushoutCoconeIsColimit R S T⟩ WalkingSpan.left,
+    hP'.cancel_right_isIso]
   dsimp only [CommRingCat.pushoutCocone_inl, PushoutCocone.ι_app_left]
   apply hP R T S (TensorProduct R S T)
   exact H

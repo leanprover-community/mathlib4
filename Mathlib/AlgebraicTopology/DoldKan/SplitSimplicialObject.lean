@@ -223,7 +223,7 @@ noncomputable def toKaroubiNondegComplexIsoN₁ :
   inv_hom_id := by
     ext n
     simp only [πSummand_comp_cofan_inj_id_comp_PInfty_eq_PInfty, Karoubi.comp_f,
-      HomologicalComplex.comp_f, N₁_obj_p, Karoubi.id_eq]
+      HomologicalComplex.comp_f, N₁_obj_p, Karoubi.id_f]
 set_option linter.uppercaseLean3 false in
 #align simplicial_object.splitting.to_karoubi_nondeg_complex_iso_N₁ SimplicialObject.Splitting.toKaroubiNondegComplexIsoN₁
 

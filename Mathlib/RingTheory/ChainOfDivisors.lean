@@ -254,7 +254,7 @@ theorem pow_image_of_prime_by_factor_orderIso_dvd
     (d : Set.Iic m ≃o Set.Iic n) {s : ℕ} (hs' : p ^ s ≤ m) :
     (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) ^ s ≤ n := by
   by_cases hs : s = 0
-  · simp [hs]
+  · simp [← Associates.bot_eq_one, hs]
   suffices (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) ^ s =
       (d ⟨p ^ s, hs'⟩) by
     rw [this]

@@ -38,7 +38,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
   - `ConditionallyCompleteLinearOrderBot ℝ≥0`.
 
   These instances are derived from corresponding instances about the type `{x : α // 0 ≤ x}` in an
-  appropriate ordered field/ring/group/monoid `α`, see `Mathlib.Algebra.Order.Nonneg.Ring`.
+  appropriate ordered field/ring/group/monoid `α`, see `Mathlib.Algebra.Order.Nonneg.OrderedRing`.
 
 * `Real.toNNReal x` is defined as `⟨max x 0, _⟩`, i.e. `↑(Real.toNNReal x) = x` when `0 ≤ x` and
   `↑(Real.toNNReal x) = 0` otherwise.
@@ -98,12 +98,12 @@ instance canLift : CanLift ℝ ℝ≥0 toReal fun r => 0 ≤ r :=
   Subtype.eq
 #align nnreal.eq NNReal.eq
 
-protected theorem eq_iff {n m : ℝ≥0} : (n : ℝ) = (m : ℝ) ↔ n = m :=
-  Subtype.ext_iff.symm
+protected theorem eq_iff {n m : ℝ≥0} : n = m ↔ (n : ℝ) = (m : ℝ) :=
+  Subtype.ext_iff
 #align nnreal.eq_iff NNReal.eq_iff
 
 theorem ne_iff {x y : ℝ≥0} : (x : ℝ) ≠ (y : ℝ) ↔ x ≠ y :=
-  not_congr <| NNReal.eq_iff
+  NNReal.eq_iff.symm.not
 #align nnreal.ne_iff NNReal.ne_iff
 
 protected theorem «forall» {p : ℝ≥0 → Prop} :

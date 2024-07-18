@@ -81,6 +81,12 @@ theorem affineIndependent_iff_of_fintype [Fintype ι] (p : ι → P) :
     simpa [hi] using h
 #align affine_independent_iff_of_fintype affineIndependent_iff_of_fintype
 
+@[simp] lemma affineIndependent_vadd {p : ι → P} {v : V} :
+    AffineIndependent k (v +ᵥ p) ↔ AffineIndependent k p := by
+  simp (config := { contextual := true }) [AffineIndependent, weightedVSub_vadd]
+
+protected alias ⟨AffineIndependent.of_vadd, AffineIndependent.vadd⟩ := affineIndependent_vadd
+
 /-- A family is affinely independent if and only if the differences
 from a base point in that family are linearly independent. -/
 theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
@@ -701,7 +707,7 @@ theorem affineIndependent_of_ne_of_mem_of_mem_of_not_mem {s : AffineSubspace k P
     (hp₁p₂ : p₁ ≠ p₂) (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∉ s) :
     AffineIndependent k ![p₁, p₂, p₃] := by
   have ha : AffineIndependent k fun x : { x : Fin 3 // x ≠ 2 } => ![p₁, p₂, p₃] x := by
-    rw [← affineIndependent_equiv (finSuccAboveEquiv (2 : Fin 3)).toEquiv]
+    rw [← affineIndependent_equiv (finSuccAboveEquiv (2 : Fin 3))]
     convert affineIndependent_of_ne k hp₁p₂
     ext x
     fin_cases x <;> rfl
