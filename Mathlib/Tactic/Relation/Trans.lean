@@ -57,8 +57,8 @@ def _root_.Trans.simple {α : Sort u} {r : α → α → Sort v} {a b c : α} [T
 universe u v w in
 /-- Composition using the `Trans` class in the general case. -/
 def _root_.Trans.het {α β γ : Sort*} {a : α} {b : β} {c : γ}
-    {r : α → β → Sort u} {s : β → γ → Sort v} {t : outParam (α → γ → Sort w)}
-    [Trans r s t] : r a b → s b c → t a c := trans
+    {r : α → β → Sort u} {s : β → γ → Sort v} {t : outParam (α → γ → Sort w)} [Trans r s t] :
+    r a b → s b c → t a c := trans
 
 open Lean.Elab.Tactic
 
