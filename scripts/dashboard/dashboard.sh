@@ -16,6 +16,7 @@ query(\$endCursor: String) {
         number
 	url
 	author { ... on User { login url } }
+	title
         state
 	updatedAt
         labels(first: 10, orderBy: {direction: DESC, field: CREATED_AT}) {
@@ -52,12 +53,17 @@ QUERY_MAINTAINERMERGE=$(prepare_query "sort:updated-asc is:pr state:open label:m
 gh api graphql --paginate --slurp -f query="$QUERY_MAINTAINERMERGE" |\
 	jq '{"output": ., "title": "Stale maintainer-merge"}' > maintainer-merge.json
 
+# Query Github API for all pull requests that are labeled `delegated` and have not been updated in 24 hours.
+QUERY_READYTOMERGE=$(prepare_query "sort:updated-asc is:pr state:open label:delegated updated:<$yesterday")
+gh api graphql --paginate --slurp -f query="$QUERY_READYTOMERGE" |\
+	jq '{"output": ., "title": "Stale delegated"}' > delegated.json
+
 # Query Github API for all pull requests that are labeled `new-contributor` and have not been updated in 24 hours.
 QUERY_NEWCONTRIBUTOR=$(prepare_query "sort:updated-asc is:pr state:open label:new-contributor updated:<$yesterday")
 gh api graphql --paginate --slurp -f query="$QUERY_NEWCONTRIBUTOR" |\
 	jq '{"output": ., "title": "Stale new-contributor"}' > new-contributor.json
 
-python3 ./scripts/dashboard/dashboard.py queue.json ready-to-merge.json maintainer-merge.json new-contributor.json > ./scripts/dashboard/dashboard.html
+python3 ./scripts/dashboard/dashboard.py queue.json ready-to-merge.json maintainer-merge.json delegated.json new-contributor.json > ./scripts/dashboard/dashboard.html
 
-rm queue.json ready-to-merge.json maintainer-merge.json new-contributor.json
+rm queue.json ready-to-merge.json maintainer-merge.json delegated.json new-contributor.json
 

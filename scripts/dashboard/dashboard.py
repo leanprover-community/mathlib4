@@ -45,7 +45,7 @@ def print_html5_footer():
     <script>
     $(document).ready( function () {
         $('table').DataTable({
-                pageLength: 25,
+                pageLength: 10,
 				"searching": false,
         });
     });
@@ -118,6 +118,7 @@ def print_dashboard(data):
     print("<tr>")
     print("<th>Number</th>")
     print("<th>Author</th>")
+    print("<th>Title</th>")
     print("<th>Labels</th>")
     print("<th>Updated</th>")
     print("</tr>")
@@ -129,6 +130,7 @@ def print_dashboard(data):
             print("<tr>")
             print("<td>{}</td>".format(pr_link(entry["number"], entry["url"])))
             print("<td>{}</td>".format(user_link(entry["author"])))
+            print("<td>{}</td>".format(entry["title"]))
             print("<td>")
             for label in entry["labels"]["nodes"]:
                 print(label_link(label), end=' ')
