@@ -8,16 +8,21 @@ import Mathlib.Order.Lattice
 
 /-!
 # Sorting the elements of `Sym2`
+
+This files provides `Sym2.sortEquiv`, the forward direction of which is somewhat analogous to
+`Multiset.sort`.
 -/
 
 namespace Sym2
 
 variable {α}
 
+/-- The supremum of the two elements. -/
 def sup [SemilatticeSup α] (x : Sym2 α) : α := Sym2.lift ⟨(· ⊔ ·), sup_comm⟩ x
 
 @[simp] theorem sup_mk [SemilatticeSup α] (a b : α) : s(a, b).sup = a ⊔ b := rfl
 
+/-- The infimum of the two elements. -/
 def inf [SemilatticeInf α] (x : Sym2 α) : α := Sym2.lift ⟨(· ⊓ ·), inf_comm⟩ x
 
 @[simp] theorem inf_mk [SemilatticeInf α] (a b : α) : s(a, b).inf = a ⊓ b := rfl
@@ -25,7 +30,7 @@ def inf [SemilatticeInf α] (x : Sym2 α) : α := Sym2.lift ⟨(· ⊓ ·), inf_
 protected theorem inf_le_sup [Lattice α] (s : Sym2 α) : s.inf ≤ s.sup := by
   cases s using Sym2.ind; simp [_root_.inf_le_sup]
 
-/-- In a linear order, symmetric squares are canonically ordered pairs. -/
+/-- In a linear order, symmetric squares are canonically identified with ordered pairs. -/
 @[simps!]
 def sortEquiv [LinearOrder α] : Sym2 α ≃ { p : α × α // p.1 ≤ p.2 } where
   toFun s := ⟨(s.inf, s.sup), Sym2.inf_le_sup _⟩
