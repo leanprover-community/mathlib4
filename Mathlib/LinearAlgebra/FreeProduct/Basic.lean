@@ -30,6 +30,7 @@ $R$-algebras.
   of the tensor algebra on the direct sum of the `A i`.
 * `FreeProduct_ofPowers R A` is the free product of the `R`-algebras `A i`, defined as a quotient
   of the (infinite) direct sum of tensor powers of the `A i`.
+* `lift` is the universal property of the free product.
 
 ## Main results
 
@@ -101,22 +102,7 @@ def equiv_quot_equiv {A B : Type v} [Semiring A] [Semiring B] (f : A ≃+* B) (r
 
 end RingQuot
 
-namespace LinearAlgebra.TensorPower
-open scoped TensorProduct TensorPower
-
-variable {R : Type u} [CommSemiring R] {M : Type v} [AddCommMonoid M] [Module R M]
-
-
--- /--Convenience lemma identifying `⊗[R]^2 M` with `M ⊗ M`-/
--- lemma two: (⨂[R]^2 M) ≃ₗ[R] (M ⊗[R] M) := by
---   rw [←one_add_one_eq_two]
---   have M_eq_M1 : (⨂[R]^1 M) ≃ₗ[R] M := by
---     exact PiTensorProduct.subsingletonEquiv (ι := Fin 1) 0
---   exact TensorPower.mulEquiv.symm ≪≫ₗ TensorProduct.congr M_eq_M1 M_eq_M1
-
-end LinearAlgebra.TensorPower
-
-open TensorAlgebra DirectSum TensorPower LinearAlgebra.TensorPower
+open TensorAlgebra DirectSum TensorPower
 
 variable {I : Type u} [DecidableEq I] {i : I} -- The type of the indexing set
 variable (R : Type v) [CommSemiring R] -- The commutative semiring `R`
@@ -153,7 +139,7 @@ inductive rel : FreeTensorAlgebra R A → FreeTensorAlgebra R A → Prop
 
 /--The generating equivalence relation for elements of the power algebra
 that are identified in the free product. -/
-@[reducible, simp] def rel' := rel R A on ofDirectSum -- freeAlgebra_equiv_powerAlgebra R A |>.symm
+@[reducible, simp] def rel' := rel R A on ofDirectSum
 
 theorem rel_id (i : I) : rel R A (ι R <| lof R I A i 1) 1 := rel.id
 
