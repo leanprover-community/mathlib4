@@ -139,7 +139,7 @@ variable {X U V W : C} (i : U ⟶ X) (j : V ⟶ X) (p : W ⟶ U) (q : W ⟶ V) [
 
 @[simps]
 def mk' (fac : p ≫ i = q ≫ j) (H : ∀ (F : Sheaf J (Type v)),
-  IsPullback (F.val.map i.op) (F.val.map j.op) (F.val.map p.op) (F.val.map q.op)) :
+    IsPullback (F.val.map i.op) (F.val.map j.op) (F.val.map p.op) (F.val.map q.op)) :
     J.MayerVietorisSquare where
   fac := fac
   isColimit := PushoutCocone.IsColimit.mk _
