@@ -540,6 +540,18 @@ example : (⨆ f : α → β, ⨅ x, g (f x)) =
     ⨆ f' : α' → β, ⨆ y : β, ⨅ x, g (Equiv.funSplitAt i β |>.symm (y, f') x) := by
   rw [← (Equiv.funSplitAt i β).symm.iSup_comp, iSup_prod, iSup_comm]
 
+example (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
+    ⨆ f' : α' → β, ⨆ y : β, s i y ⊓ ⨅ x' : α', (s x' (f' x')) := by
+  -- not a super clean proof, but it works.
+  rw [← (Equiv.funSplitAt i β).symm.iSup_comp, iSup_prod, iSup_comm]
+  congr!  with f' y
+  rw [iInf_split_single _ i]
+  simp only [ne_eq, Equiv.funSplitAt_symm_apply, ↓reduceDIte]
+  rw [iInf_subtype]
+  congr! with x hx
+  split_ifs
+  rfl
+
 theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j : n, eigenspace (T j) (γ j)
     = (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
     (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))))) := by
