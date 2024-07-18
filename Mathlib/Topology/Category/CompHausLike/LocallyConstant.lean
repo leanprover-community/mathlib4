@@ -409,3 +409,5 @@ theorem hom_apply_counitAppApp (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w)
   exact (b.preimage).prop
 
 end Adjunction
+
+end CompHausLike.LocallyConstant

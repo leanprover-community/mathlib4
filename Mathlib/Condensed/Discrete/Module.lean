@@ -83,7 +83,7 @@ noncomputable def functorIsoDiscreteAux (M : ModuleCat R) :
 instance (M : ModuleCat R) : IsIso ((Condensed.forget R).map
     ((Condensed.discreteUnderlyingAdj (ModuleCat R)).counit.app
       ((functor R).obj M))) := by
-  erw [Sheaf.constantCommuteComposeApp_counit_comp]
+  erw [← Sheaf.constantCommuteComposeApp_comp_counit]
   refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
   change Sheaf.IsDiscrete _ _ _
   have : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Faithful :=
@@ -201,7 +201,7 @@ instance : HasSheafify (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R) :
 instance (M : ModuleCat R) : IsIso ((LightCondensed.forget R).map
     ((LightCondensed.discreteUnderlyingAdj (ModuleCat R)).counit.app
       ((functor R).obj M))) := by
-  erw [Sheaf.constantCommuteComposeApp_counit_comp]
+  erw [← Sheaf.constantCommuteComposeApp_comp_counit]
   refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
   change Sheaf.IsDiscrete _ _ _
   have : (constantSheaf (coherentTopology LightProfinite) (Type u)).Faithful :=
