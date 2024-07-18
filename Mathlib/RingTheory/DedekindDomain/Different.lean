@@ -41,7 +41,7 @@ variable [FiniteDimensional K L] [Algebra.IsSeparable K L]
 
 open nonZeroDivisors IsLocalization Matrix Algebra
 
-section B_is_just_a_domain
+section BIsDomain
 
 variable [IsDomain B]
 
@@ -216,7 +216,7 @@ def dual (I : FractionalIdeal B⁰ L) :
 
 end FractionalIdeal
 
-end B_is_just_a_domain
+end BIsDomain
 
 namespace FractionalIdeal
 
