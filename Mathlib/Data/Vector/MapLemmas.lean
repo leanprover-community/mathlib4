@@ -228,9 +228,8 @@ accumulation state
 -/
 section RedundantState
 
-set_option autoImplicit true
-variable {xs : Vector α n} {ys : Vector β n}
-
+set_option autoImplicit true in
+variable {xs : Vector α n} {ys : Vector β n} in
 protected theorem map_eq_mapAccumr :
     map f xs = (mapAccumr (fun x (_ : Unit) ↦ ((), f x)) xs ()).snd := by
   clear ys
@@ -241,7 +240,8 @@ protected theorem map_eq_mapAccumr :
   for all states in this set, then the state is not actually needed.
   Hence, then we can rewrite `mapAccumr` into just `map`
 -/
-theorem mapAccumr_eq_map {f : α → σ → σ × β} {s₀ : σ} (S : Set σ) (h₀ : s₀ ∈ S)
+theorem mapAccumr_eq_map {α : Type*} {n : ℕ} {xs : Vector α n} {β : Type*} {σ : Type}
+    {f : α → σ → σ × β} {s₀ : σ} (S : Set σ) (h₀ : s₀ ∈ S)
     (closure : ∀ a s, s ∈ S → (f a s).1 ∈ S)
     (out : ∀ a s s', s ∈ S → s' ∈ S → (f a s).2 = (f a s').2) :
     (mapAccumr f xs s₀).snd = map (f · s₀ |>.snd) xs := by
@@ -250,10 +250,16 @@ theorem mapAccumr_eq_map {f : α → σ → σ × β} {s₀ : σ} (S : Set σ) (
   use fun s _ => s ∈ S, h₀
   exact @fun s _q a h => ⟨closure a s h, out a s s₀ h h₀⟩
 
+set_option autoImplicit true in
+variable {xs : Vector α n} {ys : Vector β n} in
 protected theorem map₂_eq_mapAccumr₂ :
     map₂ f xs ys = (mapAccumr₂ (fun x y (_ : Unit) ↦ ((), f x y)) xs ys ()).snd := by
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
+variable {γ σ : Type}
+
+set_option autoImplicit true in
+variable {xs : Vector α n} {ys : Vector β n} in
 /--
   If there is a set of states that is closed under `f`, and such that `f` produces that same output
   for all states in this set, then the state is not actually needed.
@@ -273,11 +279,13 @@ theorem mapAccumr₂_eq_map₂ {f : α → β → σ → σ × γ} {s₀ : σ} (
   for all possible input bits, then the state is redundant and can be optimized out
 -/
 @[simp]
-theorem mapAccumr_eq_map_of_constant_state (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
+theorem mapAccumr_eq_map_of_constant_state {α β : Type*} {n : ℕ}
+  {xs : Vector α n} (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
     mapAccumr f xs s = (s, (map (fun x => (f x s).snd) xs)) := by
-  clear ys
   induction xs using revInductionOn <;> simp_all
 
+set_option autoImplicit true in
+variable {xs : Vector α n} {ys : Vector β n} in
 /--
   If an accumulation function `f`, given an initial state `s`, produces `s` as its output state
   for all possible input bits, then the state is redundant and can be optimized out
@@ -288,6 +296,8 @@ theorem mapAccumr₂_eq_map₂_of_constant_state (f : α → β → σ → σ ×
     mapAccumr₂ f xs ys s = (s, (map₂ (fun x y => (f x y s).snd) xs ys)) := by
   induction xs, ys using revInductionOn₂ <;> simp_all
 
+set_option autoImplicit true in
+variable {xs : Vector α n} {ys : Vector β n} in
 /--
   If an accumulation function `f`, produces the same output bits regardless of accumulation state,
   then the state is redundant and can be optimized out
@@ -298,7 +308,8 @@ theorem mapAccumr_eq_map_of_unused_state (f : α → σ → σ × β) (s : σ)
     (mapAccumr f xs s).snd = (map (fun x => (f x s).snd) xs) :=
   mapAccumr_eq_map (fun _ => true) rfl (fun _ _ _ => rfl) (fun a s s' _ _ => h a s s')
 
-
+set_option autoImplicit true in
+variable {xs : Vector α n} {ys : Vector β n} in
 /--
   If an accumulation function `f`, produces the same output bits regardless of accumulation state,
   then the state is redundant and can be optimized out
@@ -309,7 +320,8 @@ theorem mapAccumr₂_eq_map₂_of_unused_state (f : α → β → σ → σ × �
     (mapAccumr₂ f xs ys s).snd = (map₂ (fun x y => (f x y s).snd) xs ys) :=
   mapAccumr₂_eq_map₂ (fun _ => true) rfl (fun _ _ _ _ => rfl) (fun a b s s' _ _ => h a b s s')
 
-
+set_option autoImplicit true in
+variable {xs : Vector α n} {ys : Vector β n} in
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
     pair, then we can simplify to just a single element of state
   -/
@@ -323,6 +335,8 @@ theorem mapAccumr_redundant_pair (f : α → (σ × σ) → (σ × σ) × β)
     use fun (s₁, s₂) s => s₂ = s ∧ s₁ = s
     simp_all
 
+set_option autoImplicit true in
+variable {xs : Vector α n} {ys : Vector β n} in
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
     pair, then we can simplify to just a single element of state
   -/
