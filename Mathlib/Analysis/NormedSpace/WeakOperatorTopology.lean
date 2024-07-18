@@ -107,7 +107,10 @@ lemma ext {A B : E →WOT[𝕜] F} (h : ∀ x, A x = B x) : A = B := ContinuousL
 unseal ContinuousLinearMapWOT in
 lemma ext_iff {A B : E →WOT[𝕜] F} : A = B ↔ ∀ x, A x = B x := ContinuousLinearMap.ext_iff
 
-@[ext]
+-- This `ext` lemma is set at a lower priority than the default of 1000, so that the
+-- version with an inner product (`ContinuousLinearMapWOT.ext_inner`) takes precedence
+-- in the case of Hilbert spaces.
+@[ext 900]
 lemma ext_dual {A B : E →WOT[𝕜] F} (h : ∀ x (y : F⋆), y (A x) = y (B x)) : A = B := by
   rw [ext_iff]
   intro x
