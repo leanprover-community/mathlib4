@@ -187,12 +187,6 @@ noncomputable irreducible_def cfcₙ (f : R → R) (a : A) : A :=
     then cfcₙHom h.1 ⟨⟨_, h.2.1.restrict⟩, h.2.2⟩
     else 0
 
-/-- A tactic used to automatically discharge goals relating to the continuous functional calculus,
-specifically concerning whether `f 0 = 0`. -/
-syntax (name := cfcZeroTac) "cfc_zero_tac" : tactic
-macro_rules
-  | `(tactic| cfc_zero_tac) => `(tactic| try (first | aesop | assumption))
-
 variable (f g : R → R) (a : A)
 variable (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
 variable (hg : ContinuousOn g (σₙ R a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac)
@@ -536,6 +530,11 @@ lemma cfcₙ_nonneg_iff (f : R → R) (a : A) (hf : ContinuousOn f (σₙ R a) :
   rw [cfcₙ_apply .., cfcₙHom_nonneg_iff, ContinuousMapZero.le_def]
   simp only [ContinuousMapZero.coe_mk, ContinuousMap.coe_mk, Set.restrict_apply, Subtype.forall]
   congr!
+
+lemma StarOrderedRing.nonneg_iff_quasispectrum_nonneg (a : A) (ha : p a := by cfc_tac) :
+    0 ≤ a ↔ ∀ x ∈ quasispectrum R a, 0 ≤ x := by
+  have := cfcₙ_nonneg_iff (id : R → R) a (by fun_prop)
+  simpa [cfcₙ_id _ a ha] using this
 
 lemma cfcₙ_nonneg {f : R → R} {a : A} (h : ∀ x ∈ σₙ R a, 0 ≤ f x) :
     0 ≤ cfcₙ f a := by
