@@ -632,45 +632,55 @@ instance SigmaFinite.withDensity_ofReal [SigmaFinite μ] (f : α → ℝ) :
 
 section SFinite
 
-/-- Auxiliary lemma for `sFinite_withDensity_of_measurable`. -/
-lemma sFinite_withDensity_of_sigmaFinite_of_measurable (μ : Measure α) [SigmaFinite μ]
-    {f : α → ℝ≥0∞} (hf : Measurable f) :
+variable (μ) in
+theorem exists_measurable_le_withDensity_eq [SFinite μ] (f : α → ℝ≥0∞) :
+    ∃ g, Measurable g ∧ g ≤ f ∧ μ.withDensity g = μ.withDensity f := by
+  obtain ⟨g, hgm, hgf, hint⟩ := exists_measurable_le_forall_setLIntegral_eq μ f
+  use g, hgm, hgf
+  ext s hs
+  simp only [hint, withDensity_apply _ hs]
+
+/-- If `μ` is an `s`-finite measure, then so is `μ.withDensity f`. -/
+instance Measure.withDensity.instSFinite [SFinite μ] {f : α → ℝ≥0∞} :
     SFinite (μ.withDensity f) := by
-  let s := {x | f x = ∞}
-  have hs : MeasurableSet s := hf (measurableSet_singleton _)
-  rw [← restrict_add_restrict_compl (μ := μ.withDensity f) hs, restrict_withDensity hs,
-    restrict_withDensity hs.compl, ← withDensity_indicator hs, ← withDensity_indicator hs.compl]
-  have h1 : SFinite (μ.withDensity (s.indicator f)) := by
-    have h_eq_sum : s.indicator f = ∑' n : ℕ, s.indicator 1 := by
-      ext x
-      rw [tsum_apply]
-      swap; · rw [Pi.summable]; exact fun _ ↦ ENNReal.summable
-      simp_rw [Set.indicator_apply]
-      split_ifs with hx
-      · simp only [Set.mem_setOf_eq, s] at hx
-        simp [hx, ENNReal.tsum_const_eq_top_of_ne_zero]
-      · simp
-    rw [h_eq_sum, withDensity_tsum (fun _ ↦ measurable_one.indicator hs)]
-    have : SigmaFinite (μ.withDensity (s.indicator 1)) := by
-      refine SigmaFinite.withDensity_of_ne_top' (fun x ↦ ?_)
-      simp only [Set.indicator_apply, Pi.one_apply, ne_eq]
-      split_ifs with h <;> simp [h]
+  wlog hfm : Measurable f generalizing f
+  · rcases exists_measurable_le_withDensity_eq μ f with ⟨g, hgm, -, h⟩
+    exact h ▸ this hgm
+  wlog hμ : IsFiniteMeasure μ generalizing μ
+  · rw [← sum_sFiniteSeq μ, withDensity_sum]
+    have (n : ℕ) : SFinite ((sFiniteSeq μ n).withDensity f) := this inferInstance
     infer_instance
-  have h2 : SigmaFinite (μ.withDensity (sᶜ.indicator f)) := by
-    refine SigmaFinite.withDensity_of_ne_top' (fun x ↦ ?_)
-    simp only [Set.indicator_apply, Set.mem_compl_iff, Set.mem_setOf_eq, ite_not, ne_eq, s]
-    split_ifs with h <;> simp [h]
+  set s := {x | f x = ∞}
+  have hs : MeasurableSet s := hfm (measurableSet_singleton _)
+  have key := calc
+    μ.withDensity f = μ.withDensity (sᶜ.indicator f) + μ.withDensity (s.indicator f) := by
+      simp (disch := measurability) [withDensity_indicator, ← restrict_withDensity]
+    _ = μ.withDensity (sᶜ.indicator f) + .sum fun _ : ℕ ↦ μ.withDensity (s.indicator 1) := by
+      rw [← withDensity_tsum (by measurability)]
+      congr 2 with x
+      rw [ENNReal.tsum_apply]
+      if hx : x ∈ s then simpa [hx, ENNReal.tsum_const_eq_top_of_ne_zero]
+      else simp [hx]
+  have : SigmaFinite (μ.withDensity (sᶜ.indicator f)) := by
+    refine SigmaFinite.withDensity_of_ne_top <| ae_of_all _ fun x hx ↦ ?_
+    simp [indicator_apply, ite_eq_iff, s] at hx
+  have : SigmaFinite (μ.withDensity (s.indicator 1)) := by
+    rw [withDensity_indicator hs]
+    exact SigmaFinite.withDensity 1
+  rw [key]
   infer_instance
 
-/-- If `μ` is s-finite and `f` is measurable, then `μ.withDensity f` is s-finite.
-TODO: extend this to all functions and make it an instance. -/
+@[deprecated Measure.withDensity.instSFinite (since := "2024-07-14"), nolint unusedArguments]
+lemma sFinite_withDensity_of_sigmaFinite_of_measurable (μ : Measure α) [SigmaFinite μ]
+    {f : α → ℝ≥0∞} (_hf : Measurable f) :
+    SFinite (μ.withDensity f) :=
+  inferInstance
+
+@[deprecated Measure.withDensity.instSFinite (since := "2024-07-14"), nolint unusedArguments]
 lemma sFinite_withDensity_of_measurable (μ : Measure α) [SFinite μ]
-    {f : α → ℝ≥0∞} (hf : Measurable f) :
-    SFinite (μ.withDensity f) := by
-  rw [← sum_sFiniteSeq μ, withDensity_sum]
-  have : ∀ n, SFinite ((sFiniteSeq μ n).withDensity f) :=
-    fun n ↦ sFinite_withDensity_of_sigmaFinite_of_measurable _ hf
-  infer_instance
+    {f : α → ℝ≥0∞} (_hf : Measurable f) :
+    SFinite (μ.withDensity f) :=
+  inferInstance
 
 end SFinite
 

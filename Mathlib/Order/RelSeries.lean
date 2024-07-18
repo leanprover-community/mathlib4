@@ -7,6 +7,7 @@ import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.Rel
+import Mathlib.Order.Fin.Basic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
 
@@ -71,7 +72,7 @@ lemma rel_of_lt [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h :
 
 lemma rel_or_eq_of_le [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i ≤ j) :
     r (x i) (x j) ∨ x i = x j :=
-  h.lt_or_eq.imp (x.rel_of_lt ·) (by rw [·])
+  (Fin.lt_or_eq_of_le h).imp (x.rel_of_lt ·) (by rw [·])
 
 /--
 Given two relations `r, s` on `α` such that `r ≤ s`, any relation series of `r` induces a relation
@@ -348,8 +349,7 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
           rw [Fin.insertNth_apply_above]
           swap
           · exact hm.trans (lt_add_one _)
-          simp only [Fin.val_succ, Nat.zero_eq, Fin.pred_succ, eq_rec_constant, ge_iff_le,
-            Fin.succ_mk]
+          simp only [Fin.val_succ, Nat.zero_eq, Fin.pred_succ, eq_rec_constant, Fin.succ_mk]
           congr
           exact Fin.ext <| Eq.symm <| Nat.succ_pred_eq_of_pos (lt_trans (Nat.zero_lt_succ _) hm)
       · convert connect_next
@@ -553,7 +553,7 @@ lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.len
 @[simp] lemma head_smash {p q : RelSeries r} (h : p.last = q.head) :
     (smash p q h).head = p.head := by
   delta head smash
-  simp only [Fin.val_zero, Fin.zero_eta, ge_iff_le, zero_le, tsub_eq_zero_of_le, dite_eq_ite,
+  simp only [Fin.val_zero, Fin.zero_eta, zero_le, tsub_eq_zero_of_le, dite_eq_ite,
     ite_eq_left_iff, not_lt, nonpos_iff_eq_zero]
   intro H; convert h.symm; congr; aesop
 

@@ -151,12 +151,8 @@ def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') :
     WidePullbackShape J ≌ WidePullbackShape J' where
   functor := wideCospan none (fun j => some (h j)) fun j => Hom.term (h j)
   inverse := wideCospan none (fun j => some (h.invFun j)) fun j => Hom.term (h.invFun j)
-  unitIso :=
-    NatIso.ofComponents (fun j => by aesop_cat) fun f =>
-      by simp only [eq_iff_true_of_subsingleton]
-  counitIso :=
-    NatIso.ofComponents (fun j => by aesop_cat)
-      fun f => by simp only [eq_iff_true_of_subsingleton]
+  unitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
+  counitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
 #align category_theory.limits.wide_pullback_shape.equivalence_of_equiv CategoryTheory.Limits.WidePullbackShape.equivalenceOfEquiv
 
 /-- Lifting universe and morphism levels preserves wide pullback diagrams. -/
@@ -270,12 +266,8 @@ def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι :
 def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ WidePushoutShape J' where
   functor := wideSpan none (fun j => some (h j)) fun j => Hom.init (h j)
   inverse := wideSpan none (fun j => some (h.invFun j)) fun j => Hom.init (h.invFun j)
-  unitIso :=
-    NatIso.ofComponents (fun j => by aesop_cat) fun f => by
-      simp only [eq_iff_true_of_subsingleton]
-  counitIso :=
-    NatIso.ofComponents (fun j => by aesop_cat) fun f => by
-      simp only [eq_iff_true_of_subsingleton]
+  unitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
+  counitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
 
 /-- Lifting universe and morphism levels preserves wide pushout diagrams. -/
 def uliftEquivalence :

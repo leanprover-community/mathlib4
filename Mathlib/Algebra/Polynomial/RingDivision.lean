@@ -298,8 +298,7 @@ theorem Monic.not_irreducible_iff_exists_add_mul_eq_coeff (hm : p.Monic) (hnd : 
   · push_neg
     constructor
     · rintro ⟨a, b, ha, hb, rfl, hdb⟩
-      simp only [zero_lt_two, Nat.div_self, ge_iff_le,
-        Nat.Ioc_succ_singleton, zero_add, mem_singleton] at hdb
+      simp only [zero_lt_two, Nat.div_self, Nat.Ioc_succ_singleton, zero_add, mem_singleton] at hdb
       have hda := hnd
       rw [ha.natDegree_mul hb, hdb] at hda
       use a.coeff 0, b.coeff 0, mul_coeff_zero a b
@@ -749,6 +748,13 @@ theorem comp_eq_zero_iff : p.comp q = 0 ↔ p = 0 ∨ p.eval (q.coeff 0) = 0 ∧
   · exact fun h =>
       Or.rec (fun h => by rw [h, zero_comp]) (fun h => by rw [h.2, comp_C, h.1, C_0]) h
 #align polynomial.comp_eq_zero_iff Polynomial.comp_eq_zero_iff
+
+lemma aeval_ne_zero_of_isCoprime [CommSemiring R] [Nontrivial S] [Semiring S] [Algebra R S]
+    {p q : R[X]} (h : IsCoprime p q) (s : S) : aeval s p ≠ 0 ∨ aeval s q ≠ 0 := by
+  by_contra! hpq
+  rcases h with ⟨_, _, h⟩
+  apply_fun aeval s at h
+  simp only [map_add, map_mul, map_one, hpq.left, hpq.right, mul_zero, add_zero, zero_ne_one] at h
 
 theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (a - b)) :
     IsCoprime (X - C a) (X - C b) :=

@@ -11,8 +11,8 @@ import Mathlib.Order.Heyting.Basic
 
 /-!
 # Instances on PUnit
+
 This file collects facts about ordered algebraic structures on the one-element type.
-This file collects facts about ordered algebraic structures on the one-element type
 -/
 
 namespace PUnit

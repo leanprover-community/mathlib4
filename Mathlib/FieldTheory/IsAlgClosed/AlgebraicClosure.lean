@@ -211,8 +211,7 @@ private theorem toStepOfLE'.succ (m n : ℕ) (h : m ≤ n) :
     toStepOfLE' k m (Nat.succ n) (h.trans n.le_succ) =
     (toStepSucc k n) ∘ toStepOfLE' k m n h := by
   ext x
-  convert Nat.leRecOn_succ h x
-  exact h.trans n.le_succ
+  exact Nat.leRecOn_succ h x
 
 /-- The canonical ring homomorphism to a step with a greater index. -/
 def toStepOfLE (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n where
@@ -462,19 +461,5 @@ instance [CharZero k] : CharZero (AlgebraicClosure k) :=
 
 instance {p : ℕ} [CharP k p] : CharP (AlgebraicClosure k) p :=
   charP_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k))) p
-
-example : (AddCommMonoid.natModule : Module ℕ (AlgebraicClosure k)) =
-      @Algebra.toModule _ _ _ _ (AlgebraicClosure.instAlgebra k) :=
-  rfl
-
-example : (AddCommGroup.intModule _ : Module ℤ (AlgebraicClosure k)) =
-      @Algebra.toModule _ _ _ _ (AlgebraicClosure.instAlgebra k) :=
-  rfl
-
-example [CharZero k] : AlgebraicClosure.instAlgebra k = algebraRat :=
-  rfl
-
-example : algebraInt (AlgebraicClosure ℚ) = AlgebraicClosure.instAlgebra ℚ :=
-  rfl
 
 end AlgebraicClosure
