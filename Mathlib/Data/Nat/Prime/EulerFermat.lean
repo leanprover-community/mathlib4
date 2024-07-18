@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Ralf Stephan. All rights reserved.
-Released under CC0 license as described in the file LICENSE.
-Authors: Ralf Stephan
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Ralf Stephan, Thomas Browning
 -/
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.Nat.Factorization.Basic
