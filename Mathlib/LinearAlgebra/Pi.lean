@@ -3,12 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.GroupTheory.GroupAction.BigOperators
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Algebra.Group.Fin.Tuple
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Equiv.Basic
+import Mathlib.GroupTheory.GroupAction.BigOperators
+import Mathlib.Logic.Equiv.Fin
 
 #align_import linear_algebra.pi from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 

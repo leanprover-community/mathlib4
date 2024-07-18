@@ -83,16 +83,9 @@ theorem LocallyOfFiniteType.source_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y
   locallyOfFiniteType_eq.symm ▸ RingHom.finiteType_is_local.source_openCover_iff f 𝒰
 #align algebraic_geometry.locally_of_finite_type.source_open_cover_iff AlgebraicGeometry.LocallyOfFiniteType.source_openCover_iff
 
-theorem LocallyOfFiniteType.openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y)
-    (𝒰 : Scheme.OpenCover.{u} Y) :
-    LocallyOfFiniteType f ↔ ∀ i, LocallyOfFiniteType (pullback.snd f (𝒰.map i)) :=
-  locallyOfFiniteType_eq.symm ▸ RingHom.finiteType_is_local.is_local_affineLocally.openCover_iff f 𝒰
-#align algebraic_geometry.locally_of_finite_type.open_cover_iff AlgebraicGeometry.LocallyOfFiniteType.openCover_iff
-
-instance locallyOfFiniteType_respectsIso : MorphismProperty.RespectsIso @LocallyOfFiniteType := by
-  have := sourceAffineLocally_respectsIso RingHom.finiteType_respectsIso
-  rw [locallyOfFiniteType_eq]
-  apply targetAffineLocally_respectsIso
-#align algebraic_geometry.locally_of_finite_type_respects_iso AlgebraicGeometry.locallyOfFiniteType_respectsIso
+instance locallyOfFiniteType_isLocalAtTarget : IsLocalAtTarget @LocallyOfFiniteType := by
+  have := RingHom.finiteType_is_local.hasAffinePropertyAffineLocally
+  rw [← locallyOfFiniteType_eq] at this
+  infer_instance
 
 end AlgebraicGeometry

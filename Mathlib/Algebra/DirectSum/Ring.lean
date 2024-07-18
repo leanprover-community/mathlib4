@@ -183,6 +183,8 @@ def gMulHom {i j} : A i →+ A j →+ A (i + j) where
 #align direct_sum.gmul_hom DirectSum.gMulHom
 
 /-- The multiplication from the `Mul` instance, as a bundled homomorphism. -/
+-- See note [non-reducible instance]
+@[reducible]
 def mulHom : (⨁ i, A i) →+ (⨁ i, A i) →+ ⨁ i, A i :=
   DirectSum.toAddMonoid fun _ =>
     AddMonoidHom.flip <|
@@ -190,17 +192,16 @@ def mulHom : (⨁ i, A i) →+ (⨁ i, A i) →+ ⨁ i, A i :=
         AddMonoidHom.flip <| (DirectSum.of A _).compHom.comp <| gMulHom A
 #align direct_sum.mul_hom DirectSum.mulHom
 
+instance instMul : Mul (⨁ i, A i) where
+  mul := fun a b => mulHom A a b
+
 instance : NonUnitalNonAssocSemiring (⨁ i, A i) :=
   { (inferInstance : AddCommMonoid _) with
-    mul := fun a b => mulHom A a b
-    -- Porting note: these are no longer needed
-    -- zero := 0
-    -- add := (· + ·)
-    zero_mul := fun _ => by simp only [HMul.hMul, map_zero, AddMonoidHom.zero_apply]
-    mul_zero := fun _ => by simp only [HMul.hMul, AddMonoidHom.map_zero]
-    left_distrib := fun _ _ _ => by simp only [HMul.hMul, AddMonoidHom.map_add]
+    zero_mul := fun _ => by simp only [Mul.mul, HMul.hMul, map_zero, AddMonoidHom.zero_apply]
+    mul_zero := fun _ => by simp only [Mul.mul, HMul.hMul, AddMonoidHom.map_zero]
+    left_distrib := fun _ _ _ => by simp only [Mul.mul, HMul.hMul, AddMonoidHom.map_add]
     right_distrib := fun _ _ _ => by
-      simp only [HMul.hMul, AddMonoidHom.map_add, AddMonoidHom.add_apply] }
+      simp only [Mul.mul, HMul.hMul, AddMonoidHom.map_add, AddMonoidHom.add_apply] }
 
 variable {A}
 
@@ -261,21 +262,19 @@ private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
   exact of_eq_of_gradedMonoid_eq (_root_.mul_assoc (GradedMonoid.mk ai ax) ⟨bi, bx⟩ ⟨ci, cx⟩)
 #noalign direct_sum.mul_assoc
 
+instance instNatCast : NatCast (⨁ i, A i) where
+  natCast := fun n => of _ _ (GSemiring.natCast n)
+
 /-- The `Semiring` structure derived from `GSemiring A`. -/
 instance semiring : Semiring (⨁ i, A i) :=
   { (inferInstance : NonUnitalNonAssocSemiring _) with
-    one := 1
-    -- Porting note: not required in now
-    -- mul := (· * ·)
-    -- zero := 0
-    -- add := (· + ·)
     one_mul := one_mul A
     mul_one := mul_one A
     mul_assoc := mul_assoc A
-    natCast := fun n => of _ _ (GSemiring.natCast n)
-    natCast_zero := by simp only [GSemiring.natCast_zero, map_zero]
+    toNatCast := instNatCast _
+    natCast_zero := by simp only [NatCast.natCast, GSemiring.natCast_zero, map_zero]
     natCast_succ := fun n => by
-      simp_rw [GSemiring.natCast_succ]
+      simp_rw [NatCast.natCast, GSemiring.natCast_succ]
       rw [map_add]
       rfl }
 #align direct_sum.semiring DirectSum.semiring
