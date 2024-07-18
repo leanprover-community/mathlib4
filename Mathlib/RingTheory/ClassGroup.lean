@@ -166,7 +166,6 @@ variable (K)
 /-- Induction principle for the class group: to show something holds for all `x : ClassGroup R`,
 we can choose a fraction field `K` and show it holds for the equivalence class of each
 `I : FractionalIdeal R⁰ K`. -/
-@[elab_as_elim]
 theorem ClassGroup.induction {P : ClassGroup R → Prop}
     (h : ∀ I : (FractionalIdeal R⁰ K)ˣ, P (ClassGroup.mk I)) (x : ClassGroup R) : P x :=
   QuotientGroup.induction_on x fun I => by
