@@ -1,7 +1,9 @@
 import Mathlib.RingTheory.Derivation.DifferentialRing
 import Mathlib.FieldTheory.IntermediateField
+import Mathlib.Data.Countable.Small
+import Mathlib.Algebra.Algebra.Field
 
-open scoped DifferentialRing algebraMap
+open DifferentialRing algebraMap
 
 class DifferentialField (R : Type*) extends Field R, CommDifferentialRing R
 
@@ -92,8 +94,8 @@ instance IsLiouville.rfl (F : Type u) [DifferentialField F] : IsLiouville F F wh
       (u : ι → F) (v : F) (h : a = ∑ x, c x * logd (u x) + v′) :=
     ⟨ι, _, c, hc, u, v, h⟩
 
-lemma IsLiouville.trans {F : Type u} {K : Type v} {A : Type*} [DifferentialField F] [DifferentialField K]
-    [DifferentialField A] [DifferentialAlgebra F K] [DifferentialAlgebra K A]
+lemma IsLiouville.trans {F : Type u} {K : Type v} {A : Type*} [DifferentialField F]
+    [DifferentialField K] [DifferentialField A] [DifferentialAlgebra F K] [DifferentialAlgebra K A]
     [DifferentialAlgebra F A] [IsScalarTower F K A] [SharedConstants F K]
     (inst1 : IsLiouville F K) (inst2 : IsLiouville K A)
     : IsLiouville F A where
@@ -103,12 +105,12 @@ lemma IsLiouville.trans {F : Type u} {K : Type v} {A : Type*} [DifferentialField
     obtain ⟨ι'', _, c'', hc', u'', v', h'⟩ := inst2.is_liouville (a : K) (Shrink.{v} ι)
         (fun (x : Shrink.{v} ι) ↦ c ((equivShrink.{v} ι).symm x)) (by
         intro
-        simp only [← deriv_cast, lift_map_eq_zero_iff]
+        simp only [← coe_deriv, lift_map_eq_zero_iff]
         apply hc
       ) (fun (x : Shrink.{v} ι) ↦ u ((equivShrink.{v} ι).symm x)) v (by
         convert h
-        · simp
-        · simp only [IsScalarTower.coe_apply]
+        · simp only [← IsScalarTower.algebraMap_apply]
+        · simp only [← IsScalarTower.algebraMap_apply]
           apply Equiv.sum_comp (g := fun x ↦ c x * logd (u x))
       )
     obtain ⟨ι' : Type u, ⟨eqv : ι'' ≃ ι'⟩⟩ := Small.equiv_small.{u, v} (α := ι'')
@@ -122,6 +124,6 @@ lemma IsLiouville.trans {F : Type u} {K : Type v} {A : Type*} [DifferentialField
       simp_rw [hc]
     · intro
       apply_fun ((↑) : F → K)
-      simp only [Function.comp_apply, deriv_cast, hc, algebraMap.coe_zero]
+      simp only [Function.comp_apply, coe_deriv, hc, algebraMap.coe_zero]
       apply hc'
       apply NoZeroSMulDivisors.algebraMap_injective
