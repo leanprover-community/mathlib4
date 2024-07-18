@@ -5,9 +5,10 @@ Authors: Antoine Chambert-Loir
 
 -/
 
-import Mathlib.GroupTheory.MaximalSubgroups
 import Mathlib.GroupTheory.GroupAction.Blocks
 import Mathlib.GroupTheory.GroupAction.Transitive
+import Mathlib.GroupTheory.MaximalSubgroups
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Setoid.Partition
 
 /-!
@@ -163,8 +164,7 @@ theorem mk_mem' [htGX : IsPretransitive G X] (a : X)
     obtain ⟨b, hb⟩ := h
     obtain ⟨g, hg⟩ := exists_smul_eq G b a
     rw [← IsTrivialBlock.smul_iff g]
-    apply H (g • B) _ (hB.translate g)
-    rw [← hg]
+    refine' H (g • B) _ (hB.translate g)
     use b
 
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
@@ -490,7 +490,6 @@ theorem IsPreprimitive.image_of_card
   conv_rhs => rw [Set.ncard_coe]
   apply le_of_eq
   rw [← Set.ncard_eq_toFinset_card]
-  congr
   -- we prove (Set.range f ∩ g • B).ncard ≤ 1
   rintro ⟨t, ⟨g, rfl⟩⟩
   simp only [Set.Finite.mem_toFinset, Set.mem_univ, forall_true_left]
@@ -502,7 +501,7 @@ theorem IsPreprimitive.image_of_card
   apply Set.Subsingleton.image
   -- Since the action of M on α is primitive, it suffices to prove that
   -- the preimage is a block which is not ⊤
-  apply Or.resolve_right (hM.has_trivial_blocks ((hB.smul g).preimage f))
+  apply Or.resolve_right (hM.has_trivial_blocks ((hB.translate g).preimage f))
   intro h
   simp only [Set.top_eq_univ, Set.preimage_eq_univ_iff] at h
   -- We will prove that B is large, which will contradict the assumption that it is not ⊤
@@ -525,7 +524,7 @@ theorem IsPreprimitive.rudio (hpGX : IsPreprimitive M α)
     simpa only [Set.mem_iInter, not_forall, exists_prop] using this
   suffices B = {a} by rw [this]; rw [Set.mem_singleton_iff]; exact Ne.symm h
   -- B is a block hence is a trivial block
-  cases' hpGX.has_trivial_blocks (IsBlock.of_subset a A hfA) with hyp hyp
+  cases' hpGX.has_trivial_blocks (IsBlock.of_subset a hfA) with hyp hyp
   · -- B.subsingleton
     apply Set.Subsingleton.eq_singleton_of_mem hyp
     rw [Set.mem_iInter]; intro g; simp only [Set.mem_iInter, imp_self]
@@ -543,3 +542,5 @@ theorem IsPreprimitive.rudio (hpGX : IsPreprimitive M α)
     use g; use x
 
 end Finite
+
+end Primitive

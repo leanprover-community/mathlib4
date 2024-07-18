@@ -259,7 +259,7 @@ theorem gfpApprox_ord_eq_gfp : gfpApprox f ⊤ (ord <| succ #α) = gfp f :=
   lfpApprox_ord_eq_lfp (OrderHom.dual f)
 
 /-- Some ordinal approximation of the greatest fixed point is the greatest fixed point. -/
-theorem gfp_mem_range_gfpApprox  : gfp f ∈ Set.range (gfpApprox f ⊤) :=
+theorem gfp_mem_range_gfpApprox : gfp f ∈ Set.range (gfpApprox f ⊤) :=
   lfp_mem_range_lfpApprox (OrderHom.dual f)
 
 end OrdinalApprox

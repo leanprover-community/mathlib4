@@ -142,12 +142,10 @@ variable {R A}
 
 end Bialgebra
 
-section CommSemiring
+namespace CommSemiring
 variable (R : Type u) [CommSemiring R]
 
 open Bialgebra
-
-namespace CommSemiring
 
 /-- Every commutative (semi)ring is a bialgebra over itself -/
 noncomputable
@@ -156,7 +154,5 @@ instance toBialgebra : Bialgebra R R where
   counit_one := rfl
   mul_compr₂_comul := by ext; simp
   comul_one := rfl
-
-end CommSemiring
 
 end CommSemiring

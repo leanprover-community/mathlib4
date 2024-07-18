@@ -1,5 +1,17 @@
 #!/usr/bin/env bash
 
+# We need to make the script robust against changes on disk
+# that might have happened during the script execution, e.g. from switching branches.
+# We do that by making sure the entire script is parsed before execution starts
+# using the following pattern
+# {
+# # script content
+# exit
+# }
+# (see https://stackoverflow.com/a/2358432).
+# So please do not delete the following line, or the final two lines of this script.
+{
+
 if [ $# -ne 2 ]; then
   echo "Usage: $0 <BUMPVERSION> <NIGHTLYDATE>"
   echo "BUMPVERSION: The upcoming release that we are targetting, e.g., 'v4.10.0'"
@@ -16,12 +28,12 @@ if ! command -v gh &> /dev/null; then
     exit 1
 fi
 
-# # Check the CI status of the latest commit on the 'nightly-testing' branch
-# status=$(gh api repos/leanprover-community/mathlib4/commits/nightly-testing/status | jq -r '.state')
-# if [ "$status" != "success" ]; then
-#   echo "The latest commit on the 'nightly-testing' branch did not pass CI. Please fix the issues and try again."
-#   exit 1
-# fi
+# Check the CI status of the latest commit on the 'nightly-testing' branch
+status=$(gh run list --branch nightly-testing | grep -m1 . | awk '{print $1}')
+if [ "$status" != "completed" ]; then
+  echo "The latest commit on the 'nightly-testing' branch did not pass CI. Please fix the issues and try again."
+  exit 1
+fi
 
 echo "### Creating a PR for the nightly adaptation for $NIGHTLYDATE"
 echo "### [auto] checkout master and pull the latest changes"
@@ -111,3 +123,9 @@ if git diff --name-only --diff-filter=U | grep -q .; then
 fi
 
 git push
+
+# These last two lines are needed to make the script robust against changes on disk
+# that might have happened during the script execution, e.g. from switching branches
+# See the top of the file for more details.
+exit
+}

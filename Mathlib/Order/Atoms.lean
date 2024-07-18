@@ -1179,14 +1179,14 @@ theorem isAtom_iff {f : ∀ i, π i} [∀ i, PartialOrder (π i)] [∀ i, OrderB
     case c =>
       intro b hb
       have := h (Function.update ⊥ i b)
-      simp only [lt_def, le_def, ge_iff_le, Pi.eq_bot_iff, and_imp, forall_exists_index] at this
+      simp only [lt_def, le_def, Pi.eq_bot_iff, and_imp, forall_exists_index] at this
       simpa using this
         (fun j => by by_cases h : j = i; { subst h; simpa using le_of_lt hb }; simp [h])
         i (by simpa using hb) i
     case d =>
       intro j hj
       have := h (Function.update ⊥ j (f j))
-      simp only [lt_def, le_def, ge_iff_le, Pi.eq_bot_iff, and_imp, forall_exists_index] at this
+      simp only [lt_def, le_def, Pi.eq_bot_iff, and_imp, forall_exists_index] at this
       simpa using this (fun k => by by_cases h : k = j; { subst h; simp }; simp [h]) i
         (by rwa [Function.update_noteq (Ne.symm hj), bot_apply, bot_lt_iff_ne_bot]) j
 

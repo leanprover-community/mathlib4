@@ -8,7 +8,7 @@ import Mathlib.Control.Monad.Cont
 import Mathlib.Control.Monad.Writer
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Logic.Equiv.Functor
-import Mathlib.Init.Control.Lawful
+import Mathlib.Control.Lawful
 
 #align_import control.uliftable from "leanprover-community/mathlib"@"cc8c90d4ac61725a8f6c92691d8abcd2dec88115"
 

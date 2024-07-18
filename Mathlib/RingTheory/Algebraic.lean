@@ -3,7 +3,6 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.IntegralClosure
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
 
@@ -58,10 +57,21 @@ protected class Algebra.IsAlgebraic : Prop :=
   isAlgebraic : ∀ x : A, IsAlgebraic R x
 #align algebra.is_algebraic Algebra.IsAlgebraic
 
+/-- An algebra is transcendental if some element is transcendental. -/
+protected class Algebra.Transcendental : Prop :=
+  transcendental : ∃ x : A, Transcendental R x
+
 variable {R A}
 
 lemma Algebra.isAlgebraic_def : Algebra.IsAlgebraic R A ↔ ∀ x : A, IsAlgebraic R x :=
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
+lemma Algebra.transcendental_def : Algebra.Transcendental R A ↔ ∃ x : A, Transcendental R x :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
+theorem Algebra.transcendental_iff_not_isAlgebraic :
+    Algebra.Transcendental R A ↔ ¬ Algebra.IsAlgebraic R A := by
+  simp [isAlgebraic_def, transcendental_def, Transcendental]
 
 /-- A subalgebra is algebraic if and only if it is algebraic as an algebra. -/
 theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
@@ -84,6 +94,10 @@ theorem isAlgebraic_iff_not_injective {x : A} :
     IsAlgebraic R x ↔ ¬Function.Injective (Polynomial.aeval x : R[X] →ₐ[R] A) := by
   simp only [IsAlgebraic, injective_iff_map_eq_zero, not_forall, and_comm, exists_prop]
 #align is_algebraic_iff_not_injective isAlgebraic_iff_not_injective
+
+theorem transcendental_iff_injective {x : A} :
+    Transcendental R x ↔ Function.Injective (Polynomial.aeval x : R[X] →ₐ[R] A) :=
+  isAlgebraic_iff_not_injective.not_left
 
 end
 
