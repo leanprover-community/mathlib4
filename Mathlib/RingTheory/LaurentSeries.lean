@@ -517,7 +517,7 @@ instance : Valued (LaurentSeries K) ℤₘ₀ := Valued.mk' (PowerSeries.idealX 
 
 theorem valuation_X_pow (s : ℕ) :
     Valued.v (((X : K⟦X⟧) : LaurentSeries K) ^ s) = Multiplicative.ofAdd (-(s : ℤ)) := by
-  erw [map_pow,/-  this, -/ ← one_mul (s : ℤ), ← neg_mul (1 : ℤ) s, Int.ofAdd_mul,
+  erw [map_pow, ← one_mul (s : ℤ), ← neg_mul (1 : ℤ) s, Int.ofAdd_mul,
     WithZero.coe_zpow, ofAdd_neg, WithZero.coe_inv, zpow_natCast, valuation_of_algebraMap,
     intValuation_toFun, intValuation_X, ofAdd_neg, WithZero.coe_inv, inv_pow]
 
@@ -626,7 +626,7 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : LaurentSeries K} :
     simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff]
 
 /- Two Laurent series whose difference has small valuation have the same coefficients for
-small enough indeces. -/
+small enough indices. -/
 theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : LaurentSeries K}
     (H : Valued.v (g - f) ≤ ↑(Multiplicative.ofAdd (-d))) : n < d → g.coeff n = f.coeff n := by
   by_cases triv : g = f
