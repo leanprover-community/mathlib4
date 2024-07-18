@@ -32,8 +32,6 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 open CategoryTheory.MorphismProperty
 
-open AlgebraicGeometry.MorphismProperty (topologically)
-
 /-- A morphism of schemes `f : X ⟶ Y` is universally closed if the base change `X ×[Y] Y' ⟶ Y'`
 along any morphism `Y' ⟶ Y` is (topologically) a closed map.
 -/
@@ -75,28 +73,22 @@ instance topologically_isClosedMap_respectsIso : RespectsIso (topologically @IsC
   have : IsIso f := hf
   exact (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso (asIso f))).isClosedMap
 
-instance universallyClosedFst {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hg : UniversallyClosed g] :
+instance universallyClosed_fst {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hg : UniversallyClosed g] :
     UniversallyClosed (pullback.fst f g) :=
   universallyClosed_stableUnderBaseChange.fst f g hg
-#align algebraic_geometry.universally_closed_fst AlgebraicGeometry.universallyClosedFst
+#align algebraic_geometry.universally_closed_fst AlgebraicGeometry.universallyClosed_fst
 
-instance universallyClosedSnd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf : UniversallyClosed f] :
+instance universallyClosed_snd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf : UniversallyClosed f] :
     UniversallyClosed (pullback.snd f g) :=
   universallyClosed_stableUnderBaseChange.snd f g hf
-#align algebraic_geometry.universally_closed_snd AlgebraicGeometry.universallyClosedSnd
+#align algebraic_geometry.universally_closed_snd AlgebraicGeometry.universallyClosed_snd
 
-theorem universallyClosed_isLocalAtTarget : PropertyIsLocalAtTarget @UniversallyClosed := by
+instance universallyClosed_isLocalAtTarget : IsLocalAtTarget @UniversallyClosed := by
   rw [universallyClosed_eq]
-  apply universally_isLocalAtTarget_of_morphismRestrict
+  apply universally_isLocalAtTarget
   intro X Y f ι U hU H
   simp_rw [topologically, morphismRestrict_val_base] at H
   exact (isClosedMap_iff_isClosedMap_of_iSup_eq_top hU).mpr H
 #align algebraic_geometry.universally_closed_is_local_at_target AlgebraicGeometry.universallyClosed_isLocalAtTarget
-
-theorem UniversallyClosed.openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y)
-    (𝒰 : Scheme.OpenCover.{u} Y) :
-    UniversallyClosed f ↔ ∀ i, UniversallyClosed (pullback.snd f (𝒰.map i)) :=
-  universallyClosed_isLocalAtTarget.openCover_iff f 𝒰
-#align algebraic_geometry.universally_closed.open_cover_iff AlgebraicGeometry.UniversallyClosed.openCover_iff
 
 end AlgebraicGeometry

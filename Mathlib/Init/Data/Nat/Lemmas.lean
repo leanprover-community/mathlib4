@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Batteries.Data.Nat.Lemmas
-import Batteries.Logic
 import Batteries.WF
-import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Util.AssertExists
+import Mathlib.Mathport.Rename
+import Mathlib.Data.Nat.Notation
 
 #align_import init.data.nat.lemmas from "leanprover-community/lean"@"38b59111b2b4e6c572582b27e8937e92fc70ac02"
 
@@ -227,107 +227,32 @@ protected def ltByCases {a b : ℕ} {C : Sort u} (h₁ : a < b → C) (h₂ : a 
 
 /-! bit0/bit1 properties -/
 section bit
-set_option linter.deprecated false
 
-protected theorem bit1_eq_succ_bit0 (n : ℕ) : 2 * n + 1 = succ (2 * n) :=
-  rfl
-#align nat.bit1_eq_succ_bit0 Nat.bit1_eq_succ_bit0
-
-protected theorem bit1_succ_eq (n : ℕ) : 2 * (succ n) + 1 = succ (succ (2 * n + 1)) :=
-  Eq.trans (Nat.bit1_eq_succ_bit0 (succ n)) (congr_arg succ (Nat.bit0_succ_eq n))
-#align nat.bit1_succ_eq Nat.bit1_succ_eq
-
-protected theorem bit1_ne_one : ∀ {n : ℕ}, n ≠ 0 → 2 * n + 1 ≠ 1
-  | 0, h, _h1 => absurd rfl h
-  | _n + 1, _h, h1 => Nat.noConfusion h1 fun h2 => absurd h2 (succ_ne_zero _)
-#align nat.bit1_ne_one Nat.bit1_ne_one
-
-protected theorem bit0_ne_one : ∀ n : ℕ, 2 * n ≠ 1 := by
-  omega
-#align nat.bit0_ne_one Nat.bit0_ne_one
+#noalign nat.bit1_eq_succ_bit0
+#noalign nat.bit1_succ_eq
+#noalign nat.bit1_ne_one
+#noalign nat.bit0_ne_one
 
 #align nat.add_self_ne_one Nat.add_self_ne_one
 
-protected theorem bit1_ne_bit0 : ∀ n m : ℕ, 2 * n + 1 ≠ 2 * m := by
-  omega
-#align nat.bit1_ne_bit0 Nat.bit1_ne_bit0
-
-protected theorem bit0_ne_bit1 : ∀ n m : ℕ, 2 * n ≠ 2 * m + 1 := by
-  omega
-#align nat.bit0_ne_bit1 Nat.bit0_ne_bit1
-
-protected theorem bit0_inj : ∀ {n m : ℕ}, 2 * n = 2 * m → n = m := by
-  omega
-#align nat.bit0_inj Nat.bit0_inj
-
-protected theorem bit1_inj : ∀ {n m : ℕ}, 2 * n + 1 = 2 * m + 1 → n = m := @fun n m h => by
-  omega
-#align nat.bit1_inj Nat.bit1_inj
-
-protected theorem bit0_ne {n m : ℕ} : n ≠ m → 2 * n ≠ 2 * m := fun h₁ h₂ =>
-  absurd (Nat.bit0_inj h₂) h₁
-#align nat.bit0_ne Nat.bit0_ne
-
-protected theorem bit1_ne {n m : ℕ} : n ≠ m → 2 * n + 1 ≠ 2 * m + 1 := fun h₁ h₂ =>
-  absurd (Nat.bit1_inj h₂) h₁
-#align nat.bit1_ne Nat.bit1_ne
-
-protected theorem zero_ne_bit0 {n : ℕ} : n ≠ 0 → 0 ≠ 2 * n := fun h => Ne.symm (Nat.bit0_ne_zero h)
-#align nat.zero_ne_bit0 Nat.zero_ne_bit0
-
-protected theorem zero_ne_bit1 (n : ℕ) : 0 ≠ 2 * n + 1 :=
-  Ne.symm (Nat.bit1_ne_zero n)
-#align nat.zero_ne_bit1 Nat.zero_ne_bit1
-
-protected theorem one_ne_bit0 (n : ℕ) : 1 ≠ 2 * n :=
-  Ne.symm (Nat.bit0_ne_one n)
-#align nat.one_ne_bit0 Nat.one_ne_bit0
-
-protected theorem one_ne_bit1 {n : ℕ} : n ≠ 0 → 1 ≠ 2 * n + 1 := fun h => Ne.symm (Nat.bit1_ne_one h)
-#align nat.one_ne_bit1 Nat.one_ne_bit1
-
-protected theorem one_lt_bit1 : ∀ {n : Nat}, n ≠ 0 → 1 < 2 * n + 1
-  | 0, h => by contradiction
-  | succ n, _h => by
-    rw [Nat.bit1_succ_eq]
-    apply succ_lt_succ
-    apply zero_lt_succ
-#align nat.one_lt_bit1 Nat.one_lt_bit1
-
-protected theorem one_lt_bit0 : ∀ {n : Nat}, n ≠ 0 → 1 < 2 * n
-  | 0, h => by contradiction
-  | succ n, _h => by
-    rw [Nat.bit0_succ_eq]
-    apply succ_lt_succ
-    apply zero_lt_succ
-#align nat.one_lt_bit0 Nat.one_lt_bit0
-
-protected theorem bit0_lt {n m : Nat} (h : n < m) : 2 * n < 2 * m := by
-  omega
-#align nat.bit0_lt Nat.bit0_lt
-
-protected theorem bit1_lt {n m : Nat} (h : n < m) : 2 * n + 1 < 2 * m + 1 := by
-  omega
-#align nat.bit1_lt Nat.bit1_lt
-
-protected theorem bit0_lt_bit1 {n m : Nat} (h : n ≤ m) : 2 * n < 2 * m + 1 := by
-  omega
-#align nat.bit0_lt_bit1 Nat.bit0_lt_bit1
-
-protected theorem bit1_lt_bit0 : ∀ {n m : Nat}, n < m → 2 * n + 1 < 2 * m := by
-  omega
-#align nat.bit1_lt_bit0 Nat.bit1_lt_bit0
-
-protected theorem one_le_bit1 (n : ℕ) : 1 ≤ 2 * n + 1 :=
-  show 1 ≤ succ (2 * n) from succ_le_succ (2 * n).zero_le
-#align nat.one_le_bit1 Nat.one_le_bit1
-
-protected theorem one_le_bit0 : ∀ n : ℕ, n ≠ 0 → 1 ≤ 2 * n
-  | 0, h => absurd rfl h
-  | n + 1, _h =>
-    suffices 1 ≤ succ (succ (2 * n)) from Eq.symm (Nat.bit0_succ_eq n) ▸ this
-    succ_le_succ (2 * n).succ.zero_le
-#align nat.one_le_bit0 Nat.one_le_bit0
+#noalign nat.bit1_ne_bit0
+#noalign nat.bit0_ne_bit1
+#noalign nat.bit0_inj
+#noalign nat.bit1_inj
+#noalign nat.bit0_ne
+#noalign nat.bit1_ne
+#noalign nat.zero_ne_bit0
+#noalign nat.zero_ne_bit1
+#noalign nat.one_ne_bit0
+#noalign nat.one_ne_bit1
+#noalign nat.one_lt_bit1
+#noalign nat.one_lt_bit0
+#noalign nat.bit0_lt
+#noalign nat.bit1_lt
+#noalign nat.bit0_lt_bit1
+#noalign nat.bit1_lt_bit0
+#noalign nat.one_le_bit1
+#noalign nat.one_le_bit0
 
 end bit
 

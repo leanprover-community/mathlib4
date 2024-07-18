@@ -5,6 +5,7 @@ Authors: Ashvni Narayanan, Anne Baanen
 -/
 import Mathlib.Algebra.Ring.Int
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+import Mathlib.Algebra.Algebra.Rat
 
 #align_import number_theory.number_field.basic from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
