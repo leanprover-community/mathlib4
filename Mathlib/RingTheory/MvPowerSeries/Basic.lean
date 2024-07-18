@@ -8,6 +8,7 @@ import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Algebra.Order.Antidiag.Finsupp
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.Tactic.Linarith
+import Mathlib.Data.Finsupp.Antidiagonal
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
@@ -718,6 +719,82 @@ theorem coeff_prod [DecidableEq σ]
         simpa only [Finsupp.coe_update, Function.update_same] using DFunLike.congr_fun hkl a
       simp only [add_right_inj] at huv
       exact h rfl huv.symm
+
+/-- The `d`th coefficient of a finite product over `s` of power series
+is the sum of products of coefficients indexed by `cut s d` -/
+theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) (n : ℕ) (d : σ →₀ ℕ) :
+    coeff R d (f ^ n) =
+      ∑ l in finsuppAntidiag (Finset.range n) d,
+        ∏ i in Finset.range n, coeff R (l i) f := by
+  suffices f ^ n = (Finset.range n).prod fun _ => f by
+    rw [this, coeff_prod]
+  rw [Finset.prod_const, card_range]
+
+/-- degree of a monomial -/
+def degree (d : σ →₀ ℕ) : ℕ := d.sum fun _ ↦ id
+
+def degree_zero : degree (0 : σ →₀ ℕ) = 0 := by
+  simp only [degree, sum_zero_index]
+
+def degree_add (d d' : σ →₀ ℕ) :
+    degree (d + d') = degree d + degree d' := by
+  classical
+  simp only [degree, mem_union, mem_support_iff, ne_eq, id_eq, implies_true, sum_add_index]
+
+theorem degree_eq_zero_iff (d : σ →₀ ℕ) : degree d = 0 ↔ d = 0 := by
+  constructor
+  · intro hd
+    ext x
+    simp only [Finsupp.coe_zero, Pi.zero_apply]
+    rw [← Nat.lt_one_iff, ← not_le]
+    intro hx
+    apply Nat.not_add_one_le_zero 0
+    rw [zero_add, ← hd]
+    apply le_trans hx
+    exact Finset.single_le_sum (fun _ _ ↦ zero_le _) (mem_support_iff.mpr (Nat.not_eq_zero_of_lt hx))
+  · intro hd
+    rw [hd]
+    simp only [degree_zero]
+
+/-- Coefficients of powers of multivariate power series
+[bourbaki1981], chap. 4, §4, n°2, proposition 3 -/
+theorem coeff_eq_zero_of_constantCoeff_nilpotent [DecidableEq σ]
+    (f : MvPowerSeries σ R) (m : ℕ) (hf : constantCoeff σ R f ^ m = 0)
+    (d : σ →₀ ℕ) (n : ℕ) (hn : m + degree d ≤ n) :
+    coeff R d (f ^ n) = 0 := by
+  rw [coeff_pow]
+  apply sum_eq_zero
+  intro k hk
+  rw [mem_finsuppAntidiag] at hk
+  set s := (range n).filter fun i => k i = 0 with hs_def
+  have hs : s ⊆ range n := filter_subset _ _
+  have hs' : ∀ i ∈ s, coeff R (k i) f = constantCoeff σ R f := by
+    intro i hi
+    simp only [hs_def, mem_filter] at hi
+    rw [hi.2, coeff_zero_eq_constantCoeff]
+  have hs'' : ∀ i ∈ s, k i = 0 := by
+    intro i hi
+    simp only [hs_def, mem_filter] at hi
+    rw [hi.2]
+  rw [← prod_sdiff hs]
+  refine' mul_eq_zero_of_right _ _
+  rw [prod_congr rfl hs', prod_const]
+  suffices m ≤ s.card by
+    obtain ⟨m', hm'⟩ := Nat.exists_eq_add_of_le this
+    rw [hm', pow_add, hf, MulZeroClass.zero_mul]
+  rw [← Nat.add_le_add_iff_right, add_comm s.card, Finset.card_sdiff_add_card_eq_card hs]
+  simp only [card_range]
+  apply le_trans _ hn
+  simp only [add_comm m, Nat.add_le_add_iff_right]
+  rw [← hk.1, ← sum_sdiff hs]
+  rw [sum_eq_zero (s := s) hs'', add_zero]
+  convert Finset.card_nsmul_le_sum (range n \ s) (fun x ↦ degree (k x)) 1 _
+  · simp only [Algebra.id.smul_eq_mul, mul_one]
+  · exact sum_sum_index' (congrFun rfl) fun _ x ↦ congrFun rfl
+  · simp only [hs_def, mem_filter, mem_sdiff, mem_range, not_and, and_imp]
+    intro i hi hi'
+    rw [← not_lt, Nat.lt_one_iff, degree_eq_zero_iff]
+    exact hi' hi
 
 end CommSemiring
 
