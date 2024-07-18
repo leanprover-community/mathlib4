@@ -19,9 +19,6 @@ import Mathlib.Control.Traversable.Basic
 This file introduces the infix notation `::ᵥ` for `Vector.cons`.
 -/
 
-set_option autoImplicit true
-
-
 universe u
 
 variable {n : ℕ}
@@ -132,11 +129,11 @@ theorem get_map {β : Type*} (v : Vector α n) (f : α → β) (i : Fin n) :
 #align vector.nth_map Vector.get_map
 
 @[simp]
-theorem map₂_nil (f : α → β → γ) : Vector.map₂ f nil nil = nil :=
+theorem map₂_nil {α β γ : Type*} (f : α → β → γ) : Vector.map₂ f nil nil = nil :=
   rfl
 
 @[simp]
-theorem map₂_cons (hd₁ : α) (tl₁ : Vector α n) (hd₂ : β) (tl₂ : Vector β n) (f : α → β → γ) :
+theorem map₂_cons {α β γ : Type*} (hd₁ : α) (tl₁ : Vector α n) (hd₂ : β) (tl₂ : Vector β n) (f : α → β → γ) :
     Vector.map₂ f (hd₁ ::ᵥ tl₁) (hd₂ ::ᵥ tl₂) = f hd₁ hd₂ ::ᵥ (Vector.map₂ f tl₁ tl₂) :=
   rfl
 
@@ -518,15 +515,15 @@ def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n →
 #align vector.induction_on₃ Vector.inductionOn₃
 
 /-- Define `motive v` by case-analysis on `v : Vector α n`. -/
-def casesOn {motive : ∀ {n}, Vector α n → Sort*} (v : Vector α m)
+def casesOn {m : ℕ} {motive : ∀ {n}, Vector α n → Sort*} (v : Vector α m)
     (nil : motive nil)
     (cons : ∀ {n}, (hd : α) → (tl : Vector α n) → motive (Vector.cons hd tl)) :
     motive v :=
   inductionOn (C := motive) v nil @fun _ hd tl _ => cons hd tl
 
 /-- Define `motive v₁ v₂` by case-analysis on `v₁ : Vector α n` and `v₂ : Vector β n`. -/
-def casesOn₂  {motive : ∀{n}, Vector α n → Vector β n → Sort*} (v₁ : Vector α m) (v₂ : Vector β m)
-    (nil : motive nil nil)
+def casesOn₂ {m : ℕ} {motive : ∀{n}, Vector α n → Vector β n → Sort*}
+    (v₁ : Vector α m) (v₂ : Vector β m) (nil : motive nil nil)
     (cons : ∀{n}, (x : α) → (y : β) → (xs : Vector α n) → (ys : Vector β n)
       → motive (x ::ᵥ xs) (y ::ᵥ ys)) :
     motive v₁ v₂ :=
@@ -534,7 +531,7 @@ def casesOn₂  {motive : ∀{n}, Vector α n → Vector β n → Sort*} (v₁ :
 
 /-- Define `motive v₁ v₂ v₃` by case-analysis on `v₁ : Vector α n`, `v₂ : Vector β n`, and
     `v₃ : Vector γ n`. -/
-def casesOn₃  {motive : ∀{n}, Vector α n → Vector β n → Vector γ n → Sort*} (v₁ : Vector α m)
+def casesOn₃ {m : ℕ} {motive : ∀{n}, Vector α n → Vector β n → Vector γ n → Sort*} (v₁ : Vector α m)
     (v₂ : Vector β m) (v₃ : Vector γ m) (nil : motive nil nil nil)
     (cons : ∀{n}, (x : α) → (y : β) → (z : γ) → (xs : Vector α n) → (ys : Vector β n)
       → (zs : Vector γ n) → motive (x ::ᵥ xs) (y ::ᵥ ys) (z ::ᵥ zs)) :
@@ -775,34 +772,33 @@ instance : LawfulTraversable.{u} (flip Vector n) where
 
 section Simp
 
-variable (xs : Vector α n)
-
 @[simp]
-theorem replicate_succ (val : α) :
+theorem replicate_succ {α : Type*} {n : ℕ} (val : α) :
     replicate (n+1) val = val ::ᵥ (replicate n val) :=
   rfl
 
 section Append
-variable (ys : Vector α m)
 
-@[simp] lemma get_append_cons_zero {x : α} : get (append (x ::ᵥ xs) ys) ⟨0, by omega⟩ = x := rfl
+variable {α : Type*} {m n : ℕ} {x : α}
+
+@[simp] lemma get_append_cons_zero (xs : Vector α n) (ys : Vector α m) :
+    get (append (x ::ᵥ xs) ys) ⟨0, by omega⟩ = x :=
+  rfl
 
 @[simp]
-theorem get_append_cons_succ {x : α} {i : Fin (n + m)} {h} :
+theorem get_append_cons_succ (xs : Vector α n) (ys : Vector α m) {i : Fin (n + m)} {h} :
     get (append (x ::ᵥ xs) ys) ⟨i+1, h⟩ = get (append xs ys) i :=
   rfl
 
 @[simp]
-theorem append_nil : append xs nil = xs := by
+theorem append_nil (xs : Vector α n) : append xs nil = xs := by
   cases xs; simp [append]
 
 end Append
 
-set_option autoImplicit false
-variable {α β γ : Type*}
-
+variable {α β γ : Type*} in
 @[simp]
-theorem get_map₂ (ys : Vector β n) (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
+theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
     get (map₂ f v₁ v₂) i = f (get v₁ i) (get v₂ i) := by
   clear * - v₁ v₂
   induction v₁, v₂ using inductionOn₂ with
@@ -816,7 +812,7 @@ theorem get_map₂ (ys : Vector β n) (v₁ : Vector α n) (v₂ : Vector β n) 
 
 set_option autoImplicit true in
 @[simp]
-theorem mapAccumr_cons {n : ℕ} (xs : Vector α n) :
+theorem mapAccumr_cons  {n : ℕ} (xs : Vector α n) :
     mapAccumr f (x ::ᵥ xs) s
     = let r := mapAccumr f xs s
       let q := f x r.1
@@ -825,7 +821,7 @@ theorem mapAccumr_cons {n : ℕ} (xs : Vector α n) :
 
 set_option autoImplicit true in
 @[simp]
-theorem mapAccumr₂_cons (ys) :
+theorem mapAccumr₂_cons (xs : Vector α n) (ys) :
     mapAccumr₂ f (x ::ᵥ xs) (y ::ᵥ ys) s
     = let r := mapAccumr₂ f xs ys s
       let q := f x y r.1
