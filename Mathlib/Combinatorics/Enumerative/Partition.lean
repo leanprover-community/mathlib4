@@ -120,7 +120,7 @@ variable {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ]
 
 /-- An equivalence between `σ` and `τ` induces an equivalence between the subtypes of `Sym σ n` and
 `Sym τ n` corresponding to a given partition. -/
-def ofSym_shape_equiv (μ : Partition n) (e : σ ≃ τ) :
+def ofSymShapeEquiv (μ : Partition n) (e : σ ≃ τ) :
     {x : Sym σ n // ofSym x = μ} ≃ {x : Sym τ n // ofSym x = μ} where
   toFun := fun x => ⟨Sym.equivCongr e x, by simp [ofSym_map, x.2]⟩
   invFun := fun x => ⟨Sym.equivCongr e.symm x, by simp [ofSym_map, x.2]⟩
