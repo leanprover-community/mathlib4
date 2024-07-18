@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
-import Mathlib.Data.Finset.Sym
 
 /-!
 # Constructing a bilinear map from a quadratic map, given a basis
