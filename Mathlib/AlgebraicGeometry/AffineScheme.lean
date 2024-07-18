@@ -451,14 +451,12 @@ theorem exists_basicOpen_le {V : Opens X} (x : V) (h : ↑x ∈ U) :
     (isBasis_basicOpen (X ∣_ᵤ U)).exists_subset_of_mem_open (x.2 : ⟨x, h⟩ ∈ _)
       ((Opens.map U.inclusion).obj V).isOpen
   have :
-    U.openEmbedding.isOpenMap.functor.obj ((X ∣_ᵤ U).basicOpen r) =
+    Scheme.ιOpens U ''ᵁ ((X ∣_ᵤ U).basicOpen r) =
       X.basicOpen (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r) := by
-    refine (Scheme.image_basicOpen (X.ofRestrict U.openEmbedding) r).trans ?_
-    rw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.openEmbedding_obj_top).op,
-      ← comp_apply, ← CategoryTheory.Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
-      op_id, CategoryTheory.Functor.map_id, Scheme.Hom.invApp]
-    erw [LocallyRingedSpace.IsOpenImmersion.ofRestrict_invApp]
-    congr
+    refine (Scheme.image_basicOpen (Scheme.ιOpens U) r).trans ?_
+    rw [Scheme.basicOpen_res_eq]
+    simp only [Scheme.restrict_presheaf_obj, Scheme.ofRestrict_appIso, Iso.refl_inv,
+      CommRingCat.id_apply]
   use X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r
   rw [← this]
   exact ⟨Set.image_subset_iff.mpr h₂, ⟨_, h⟩, h₁, rfl⟩
