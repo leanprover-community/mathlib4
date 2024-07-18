@@ -58,7 +58,7 @@ class Surjective : Prop where
   surj : Function.Surjective f.1.base
 
 lemma surjective_eq_topologically :
-  @Surjective = topologically Function.Surjective := by ext; exact surjective_iff _
+    @Surjective = topologically Function.Surjective := by ext; exact surjective_iff _
 
 lemma Scheme.Hom.surjective (f : X.Hom Y) [Surjective f] : Function.Surjective f.1.base :=
   Surjective.surj
