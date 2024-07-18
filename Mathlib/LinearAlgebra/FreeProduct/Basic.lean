@@ -104,10 +104,10 @@ end RingQuot
 open TensorAlgebra DirectSum TensorPower
 
 variable {I : Type u} [DecidableEq I] {i : I} -- The type of the indexing set
-variable (R : Type v) [CommSemiring R] -- The commutative semiring `R`
-variable (A : I → Type w) [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)] -- The collection of `R`-algebras
-variable {B : Type w'} [Semiring B] [Algebra R B] -- Another `R`-algebra
-variable (maps : {i : I} → A i →ₐ[R] B) -- A family of `R`algebra homomorphisms
+  (R : Type v) [CommSemiring R] -- The commutative semiring `R`
+  (A : I → Type w) [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)] -- The collection of `R`-algebras
+  {B : Type w'} [Semiring B] [Algebra R B] -- Another `R`-algebra
+  (maps : {i : I} → A i →ₐ[R] B) -- A family of `R`algebra homomorphisms
 
 namespace LinearAlgebra.FreeProduct
 
@@ -123,7 +123,8 @@ abbrev PowerAlgebra := ⨁ (n : ℕ), TensorPower R n (⨁ i, A i)
 
 /--The free tensor algebra and its representation as an infinite direct sum
 of tensor powers are (noncomputably) equivalent as `R`-algebras.-/
-@[reducible] noncomputable def powerAlgebra_equiv_freeAlgebra : PowerAlgebra R A ≃ₐ[R] FreeTensorAlgebra R A :=
+@[reducible] noncomputable def powerAlgebra_equiv_freeAlgebra : 
+    PowerAlgebra R A ≃ₐ[R] FreeTensorAlgebra R A :=
   TensorAlgebra.equivDirectSum.symm
 
 /--The generating equivalence relation for elements of the free tensor algebra
