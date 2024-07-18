@@ -582,9 +582,10 @@ theorem is_subsingleton
     exact fun hb ↦ hB' (Nat.mul_le_mul_right _ hb)
 
 -- TODO : Is the assumption B.finite necessary ?
+-- Note : add {B} because otherwise Lean includes `hB : IsBlock B`
 /-- The intersection of the translates of a *finite* subset which contain a given point
 is a block (Wielandt, th. 7.3 )-/
-theorem of_subset (a : X) (hfB : B.Finite) :
+theorem of_subset {B : Set X} (a : X) (hfB : B.Finite) :
     IsBlock G (⋂ (k : G) (_ : a ∈ k • B), k • B) := by
   let B' := ⋂ (k : G) (_ : a ∈ k • B), k • B
   cases' Set.eq_empty_or_nonempty B with hfB_e hfB_ne
