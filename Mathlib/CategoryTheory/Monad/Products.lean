@@ -43,8 +43,8 @@ variable [HasBinaryProducts C]
 @[simps!]
 def prodComonad : Comonad C where
   toFunctor := prod.functor.obj X
-  ε' := { app := fun Y => Limits.prod.snd }
-  δ' := { app := fun Y => prod.lift Limits.prod.fst (𝟙 _) }
+  ε := { app := fun Y => Limits.prod.snd }
+  δ := { app := fun Y => prod.lift Limits.prod.fst (𝟙 _) }
 #align category_theory.prod_comonad CategoryTheory.prodComonad
 
 /-- The forward direction of the equivalence from coalgebras for the product comonad to the over
@@ -94,8 +94,8 @@ variable [HasBinaryCoproducts C]
 @[simps!]
 def coprodMonad : Monad C where
   toFunctor := coprod.functor.obj X
-  η' := { app := fun Y => coprod.inr }
-  μ' := { app := fun Y => coprod.desc coprod.inl (𝟙 _) }
+  η := { app := fun Y => coprod.inr }
+  μ := { app := fun Y => coprod.desc coprod.inl (𝟙 _) }
 #align category_theory.coprod_monad CategoryTheory.coprodMonad
 
 /-- The forward direction of the equivalence from algebras for the coproduct monad to the under

@@ -38,11 +38,13 @@ variable (C : Type u₁) [Category.{v₁} C]
 - Tη_X ≫ μ_X = 1_X (right unit)
 -/
 structure Monad extends C ⥤ C where
-  η' : 𝟭 _ ⟶ toFunctor
-  μ' : toFunctor ⋙ toFunctor ⟶ toFunctor
-  assoc' : ∀ X, toFunctor.map (NatTrans.app μ' X) ≫ μ'.app _ = μ'.app _ ≫ μ'.app _ := by aesop_cat
-  left_unit' : ∀ X : C, η'.app (toFunctor.obj X) ≫ μ'.app _ = 𝟙 _ := by aesop_cat
-  right_unit' : ∀ X : C, toFunctor.map (η'.app X) ≫ μ'.app _ = 𝟙 _ := by aesop_cat
+  /-- The unit for the monad. -/
+  η : 𝟭 _ ⟶ toFunctor
+  /-- The multiplication for the monad. -/
+  μ : toFunctor ⋙ toFunctor ⟶ toFunctor
+  assoc : ∀ X, toFunctor.map (NatTrans.app μ X) ≫ μ.app _ = μ.app _ ≫ μ.app _ := by aesop_cat
+  left_unit : ∀ X : C, η.app (toFunctor.obj X) ≫ μ.app _ = 𝟙 _ := by aesop_cat
+  right_unit : ∀ X : C, toFunctor.map (η.app X) ≫ μ.app _ = 𝟙 _ := by aesop_cat
 #align category_theory.monad CategoryTheory.Monad
 
 /-- The data of a comonad on C consists of an endofunctor G together with natural transformations
@@ -52,12 +54,14 @@ structure Monad extends C ⥤ C where
 - δ_X ≫ G ε_X = 1_X (right counit)
 -/
 structure Comonad extends C ⥤ C where
-  ε' : toFunctor ⟶ 𝟭 _
-  δ' : toFunctor ⟶ toFunctor ⋙ toFunctor
-  coassoc' : ∀ X, NatTrans.app δ' _ ≫ toFunctor.map (δ'.app X) = δ'.app _ ≫ δ'.app _ := by
+  /-- The counit for the comonad. -/
+  ε : toFunctor ⟶ 𝟭 _
+  /-- The comultiplication for the comonad. -/
+  δ : toFunctor ⟶ toFunctor ⋙ toFunctor
+  coassoc : ∀ X, NatTrans.app δ _ ≫ toFunctor.map (δ.app X) = δ.app _ ≫ δ.app _ := by
     aesop_cat
-  left_counit' : ∀ X : C, δ'.app X ≫ ε'.app (toFunctor.obj X) = 𝟙 _ := by aesop_cat
-  right_counit' : ∀ X : C, δ'.app X ≫ toFunctor.map (ε'.app X) = 𝟙 _ := by aesop_cat
+  left_counit : ∀ X : C, δ.app X ≫ ε.app (toFunctor.obj X) = 𝟙 _ := by aesop_cat
+  right_counit : ∀ X : C, δ.app X ≫ toFunctor.map (ε.app X) = 𝟙 _ := by aesop_cat
 #align category_theory.comonad CategoryTheory.Comonad
 
 variable {C}
@@ -82,24 +86,9 @@ instance coeComonad : Coe (Comonad C) (C ⥤ C) :=
 --  rfl
 --#align category_theory.comonad_to_functor_eq_coe CategoryTheory.comonad_toFunctor_eq_coe
 
-/-- The unit for the monad `T`. -/
-def Monad.η : 𝟭 _ ⟶ (T : C ⥤ C) :=
-  T.η'
 #align category_theory.monad.η CategoryTheory.Monad.η
-
-/-- The multiplication for the monad `T`. -/
-def Monad.μ : (T : C ⥤ C) ⋙ (T : C ⥤ C) ⟶ T :=
-  T.μ'
 #align category_theory.monad.μ CategoryTheory.Monad.μ
-
-/-- The counit for the comonad `G`. -/
-def Comonad.ε : (G : C ⥤ C) ⟶ 𝟭 _ :=
-  G.ε'
 #align category_theory.comonad.ε CategoryTheory.Comonad.ε
-
-/-- The comultiplication for the comonad `G`. -/
-def Comonad.δ : (G : C ⥤ C) ⟶ (G : C ⥤ C) ⋙ G :=
-  G.δ'
 #align category_theory.comonad.δ CategoryTheory.Comonad.δ
 
 /-- A custom simps projection for the functor part of a monad, as a coercion. -/
@@ -132,48 +121,20 @@ def Comonad.Simps.δ : (G : C ⥤ C) ⟶ (G : C ⥤ C) ⋙ (G : C ⥤ C) :=
   G.δ
 #align category_theory.comonad.simps.δ CategoryTheory.Comonad.Simps.δ
 
-initialize_simps_projections CategoryTheory.Monad
-  (obj → obj, map → map, toFunctor → coe, η' → η, μ' → μ)
+initialize_simps_projections CategoryTheory.Monad (toFunctor → coe)
 
-initialize_simps_projections CategoryTheory.Comonad
-  (obj → obj, map → map, toFunctor → coe, ε' → ε, δ' → δ)
+initialize_simps_projections CategoryTheory.Comonad (toFunctor → coe)
 
--- Porting note: investigate whether this can be a `simp` lemma?
-@[reassoc]
-theorem Monad.assoc (T : Monad C) (X : C) :
-    (T : C ⥤ C).map (T.μ.app X) ≫ T.μ.app _ = T.μ.app _ ≫ T.μ.app _ :=
-  T.assoc' X
 #align category_theory.monad.assoc CategoryTheory.Monad.assoc
-
-@[reassoc (attr := simp)]
-theorem Monad.left_unit (T : Monad C) (X : C) :
-    T.η.app ((T : C ⥤ C).obj X) ≫ T.μ.app X = 𝟙 ((T : C ⥤ C).obj X) :=
-  T.left_unit' X
 #align category_theory.monad.left_unit CategoryTheory.Monad.left_unit
-
-@[reassoc (attr := simp)]
-theorem Monad.right_unit (T : Monad C) (X : C) :
-    (T : C ⥤ C).map (T.η.app X) ≫ T.μ.app X = 𝟙 ((T : C ⥤ C).obj X) :=
-  T.right_unit' X
 #align category_theory.monad.right_unit CategoryTheory.Monad.right_unit
-
-@[reassoc (attr := simp)]
-theorem Comonad.coassoc (G : Comonad C) (X : C) :
-    G.δ.app _ ≫ (G : C ⥤ C).map (G.δ.app X) = G.δ.app _ ≫ G.δ.app _ :=
-  G.coassoc' X
 #align category_theory.comonad.coassoc CategoryTheory.Comonad.coassoc
-
-@[reassoc (attr := simp)]
-theorem Comonad.left_counit (G : Comonad C) (X : C) :
-    G.δ.app X ≫ G.ε.app ((G : C ⥤ C).obj X) = 𝟙 ((G : C ⥤ C).obj X) :=
-  G.left_counit' X
 #align category_theory.comonad.left_counit CategoryTheory.Comonad.left_counit
-
-@[reassoc (attr := simp)]
-theorem Comonad.right_counit (G : Comonad C) (X : C) :
-    G.δ.app X ≫ (G : C ⥤ C).map (G.ε.app X) = 𝟙 ((G : C ⥤ C).obj X) :=
-  G.right_counit' X
 #align category_theory.comonad.right_counit CategoryTheory.Comonad.right_counit
+
+-- Porting note: investigate whether `Monad.assoc` can be a `simp` lemma?
+attribute [reassoc (attr := simp)] Monad.left_unit Monad.right_unit
+attribute [reassoc (attr := simp)] Comonad.coassoc Comonad.left_counit Comonad.right_counit
 
 /-- A morphism of monads is a natural transformation compatible with η and μ. -/
 @[ext]
@@ -372,8 +333,8 @@ namespace Monad
 @[simps!]
 def id : Monad C where
   toFunctor := 𝟭 C
-  η' := 𝟙 (𝟭 C)
-  μ' := 𝟙 (𝟭 C)
+  η := 𝟙 (𝟭 C)
+  μ := 𝟙 (𝟭 C)
 #align category_theory.monad.id CategoryTheory.Monad.id
 
 instance : Inhabited (Monad C) :=
@@ -387,8 +348,8 @@ namespace Comonad
 @[simps!]
 def id : Comonad C where
   toFunctor := 𝟭 _
-  ε' := 𝟙 (𝟭 C)
-  δ' := 𝟙 (𝟭 C)
+  ε := 𝟙 (𝟭 C)
+  δ := 𝟙 (𝟭 C)
 #align category_theory.comonad.id CategoryTheory.Comonad.id
 
 instance : Inhabited (Comonad C) :=
@@ -405,20 +366,20 @@ namespace Monad
 /-- Transport a monad structure on a functor along an isomorphism of functors. -/
 def transport {F : C ⥤ C} (T : Monad C) (i : (T : C ⥤ C) ≅ F) : Monad C where
   toFunctor := F
-  η' := T.η ≫ i.hom
-  μ' := (i.inv ◫ i.inv) ≫ T.μ ≫ i.hom
-  left_unit' X := by
+  η := T.η ≫ i.hom
+  μ := (i.inv ◫ i.inv) ≫ T.μ ≫ i.hom
+  left_unit X := by
     simp only [Functor.id_obj, NatTrans.comp_app, comp_obj, NatTrans.hcomp_app, Category.assoc,
       hom_inv_id_app_assoc]
     slice_lhs 1 2 => rw [← T.η.naturality (i.inv.app X), ]
     simp
-  right_unit' X := by
+  right_unit X := by
     simp only [id_obj, NatTrans.comp_app, Functor.map_comp, comp_obj, NatTrans.hcomp_app,
       Category.assoc, NatTrans.naturality_assoc]
     slice_lhs 2 4 =>
       simp only [← T.map_comp]
     simp
-  assoc' X := by
+  assoc X := by
     simp only [comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Category.assoc, Functor.map_comp,
       NatTrans.naturality_assoc, hom_inv_id_app_assoc, NatIso.cancel_natIso_inv_left]
     slice_lhs 4 5 => rw [← T.map_comp]
@@ -437,15 +398,15 @@ namespace Comonad
 /-- Transport a comonad structure on a functor along an isomorphism of functors. -/
 def transport {F : C ⥤ C} (T : Comonad C) (i : (T : C ⥤ C) ≅ F) : Comonad C where
   toFunctor := F
-  ε' := i.inv ≫ T.ε
-  δ' := i.inv ≫ T.δ ≫ (i.hom ◫ i.hom)
-  right_counit' X := by
+  ε := i.inv ≫ T.ε
+  δ := i.inv ≫ T.δ ≫ (i.hom ◫ i.hom)
+  right_counit X := by
     simp only [id_obj, comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Functor.map_comp, assoc]
     slice_lhs 4 5 => rw [← F.map_comp]
     simp only [hom_inv_id_app, Functor.map_id, id_comp, ← i.hom.naturality]
     slice_lhs 2 3 => rw [T.right_counit]
     simp
-  coassoc' X := by
+  coassoc X := by
     simp only [comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Functor.map_comp, assoc,
       NatTrans.naturality_assoc, Functor.comp_map, hom_inv_id_app_assoc,
       NatIso.cancel_natIso_inv_left]
