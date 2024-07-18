@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Antoine Chambert-Loir and María Inés de Frutos Fernández. All rights reserved.
+Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir and María Inés de Frutos Fernández
+Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
 
 import Mathlib.RingTheory.MvPowerSeries.Basic
@@ -242,8 +242,7 @@ theorem variables_tendsto_zero :
       apply h
       exact ⟨x, h'⟩
 
-theorem tendsto_pow_zero_of_constantCoeff_nilpotent {f : MvPowerSeries σ α}
-    (hf : IsNilpotent (constantCoeff σ α f)) :
+theorem tendsto_pow_zero_of_constantCoeff_nilpotent {f} (hf : IsNilpotent (constantCoeff σ α f)) :
     Filter.Tendsto (fun n : ℕ => f ^ n) Filter.atTop (nhds 0) := by
   classical
   obtain ⟨m, hm⟩ := hf
@@ -251,14 +250,14 @@ theorem tendsto_pow_zero_of_constantCoeff_nilpotent {f : MvPowerSeries σ α}
   exact fun d =>  tendsto_atTop_of_eventually_const fun n hn =>
     coeff_eq_zero_of_constantCoeff_nilpotent f m hm d n hn
 
-theorem tendsto_pow_zero_of_constantCoeff_zero {f : MvPowerSeries σ α} (hf : constantCoeff σ α f = 0) :
+theorem tendsto_pow_zero_of_constantCoeff_zero {f} (hf : constantCoeff σ α f = 0) :
     Filter.Tendsto (fun n : ℕ => f ^ n) Filter.atTop (nhds 0) := by
   apply tendsto_pow_zero_of_constantCoeff_nilpotent
   rw [hf]
   exact IsNilpotent.zero
 
 /-- [bourbaki1981], chap. 4, §4, n°2, corollaire de la prop. 3 -/
-theorem tendsto_pow_of_constantCoeff_nilpotent_iff [DiscreteTopology α] (f : MvPowerSeries σ α) :
+theorem tendsto_pow_of_constantCoeff_nilpotent_iff [DiscreteTopology α] (f) :
     Filter.Tendsto (fun n : ℕ => f ^ n) Filter.atTop (nhds 0) ↔
       IsNilpotent (constantCoeff σ α f) := by
   refine' ⟨_, tendsto_pow_zero_of_constantCoeff_nilpotent ⟩
