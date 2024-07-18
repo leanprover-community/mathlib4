@@ -170,7 +170,7 @@ theorem Set.mem_SMul [SMul G P] {s : Set G} {t : Set P} {b : P} :
   Iff.rfl
 
 @[to_additive]
-theorem Set.sMul_mem_SMul [SMul G P] {s : Set G} {t : Set P} {a : G} {b : P} :
+theorem Set.SMul_mem_SMul [SMul G P] {s : Set G} {t : Set P} {a : G} {b : P} :
     a ∈ s → b ∈ t → a • b ∈ s • t :=
   Set.mem_image2_of_mem
 
