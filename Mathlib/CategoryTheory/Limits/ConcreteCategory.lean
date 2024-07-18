@@ -69,11 +69,11 @@ section Surjective
 Given surjections `⋯ ⟶ Xₙ₊₁ ⟶ Xₙ ⟶ ⋯ ⟶ X₀` in a concrete category whose forgetful functor
 preserves sequential limits, the projection map `lim Xₙ ⟶ X₀` is surjective.
 -/
-lemma limit_of_surjections_surjective {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
+lemma surjective_π_app_zero_of_surjective_map {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
     [PreservesLimitsOfShape ℕᵒᵖ (forget C)] {F : ℕᵒᵖ ⥤ C} {c : Cone F}
     (hc : IsLimit c) (hF : ∀ n, Function.Surjective (F.map (homOfLE (Nat.le_succ n)).op)) :
     Function.Surjective (c.π.app ⟨0⟩) :=
-  Types.limit_of_surjections_surjective (isLimitOfPreserves _ hc) hF
+  Types.surjective_π_app_zero_of_surjective_map (isLimitOfPreserves _ hc) hF
 
 end Surjective
 

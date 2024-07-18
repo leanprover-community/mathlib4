@@ -697,7 +697,7 @@ private noncomputable def limitOfSurjectionsSurjective.preimage
 
 open limitOfSurjectionsSurjective in
 /-- Auxiliary lemma. Use `limit_of_surjections_surjective` instead. -/
-lemma limit_of_surjections_surjective_aux :
+lemma surjective_π_app_zero_of_surjective_map_aux :
     Function.Surjective ((limitCone F).π.app ⟨0⟩) := by
   intro a
   refine ⟨⟨fun ⟨n⟩ ↦ preimage hF a n, ?_⟩, rfl⟩
@@ -715,12 +715,12 @@ lemma limit_of_surjections_surjective_aux :
 /--
 Given surjections `⋯ ⟶ Xₙ₊₁ ⟶ Xₙ ⟶ ⋯ ⟶ X₀`, the projection map `lim Xₙ ⟶ X₀` is surjective.
 -/
-lemma limit_of_surjections_surjective : Function.Surjective (c.π.app ⟨0⟩) := by
+lemma surjective_π_app_zero_of_surjective_map : Function.Surjective (c.π.app ⟨0⟩) := by
   let i := hc.conePointUniqueUpToIso (limitConeIsLimit F)
   have : c.π.app ⟨0⟩ = i.hom ≫ (limitCone F).π.app ⟨0⟩ := by simp [i]
   rw [this]
   apply Function.Surjective.comp
-  · exact limit_of_surjections_surjective_aux hF
+  · exact surjective_π_app_zero_of_surjective_map_aux hF
   · rw [← epi_iff_surjective]
     infer_instance
 
