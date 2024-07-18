@@ -649,12 +649,12 @@ theorem lift_injective (F : IntermediateField K L) : Function.Injective F.lift :
   map_injective F.val
 
 theorem lift_le {F : IntermediateField K L} (E : IntermediateField K F) : lift E ≤ F := by
-  intro _ h
-  obtain ⟨_, _, rfl⟩ := h
-  simp
+  rintro _ ⟨x, _, rfl⟩
+  exact x.2
 
 theorem mem_lift {F : IntermediateField K L} {E : IntermediateField K F} (x : F) :
-    x.1 ∈ lift E ↔ x ∈ E := Subtype.val_injective.mem_set_image
+    x.1 ∈ lift E ↔ x ∈ E :=
+  Subtype.val_injective.mem_set_image
 
 section RestrictScalars
 
@@ -763,11 +763,8 @@ If `F ≤ E` are two intermediate fields of `L / K`, then `F` is also an interme
 def restrict : IntermediateField K E :=
   (IntermediateField.inclusion h).fieldRange
 
-theorem mem_restrict (x : E) : x ∈ restrict h ↔ x.1 ∈ F := by
-  rw [restrict, AlgHom.mem_fieldRange]
-  refine ⟨?_, fun hx ↦ ⟨⟨x.1, hx⟩, rfl⟩⟩
-  rintro ⟨y, rfl⟩
-  exact y.2
+theorem mem_restrict (x : E) : x ∈ restrict h ↔ x.1 ∈ F :=
+  Set.ext_iff.mp (Set.range_inclusion h) x
 
 @[simp]
 theorem lift_restrict : lift (restrict h) = F := by
@@ -775,8 +772,8 @@ theorem lift_restrict : lift (restrict h) = F := by
   refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
   · let y : E := ⟨x, lift_le (restrict h) hx⟩
     exact (mem_restrict h y).1 ((mem_lift y).1 hx)
-  let y : E := ⟨x, h hx⟩
-  exact (mem_lift y).2 ((mem_restrict h y).2 hx)
+  · let y : E := ⟨x, h hx⟩
+    exact (mem_lift y).2 ((mem_restrict h y).2 hx)
 
 /--
 `F` is equivalent to `F` as an intermediate field of `E / K`.
