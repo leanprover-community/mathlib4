@@ -280,7 +280,7 @@ theorem mapAccumr₂_eq_map₂ {f : α → β → σ → σ × γ} {s₀ : σ} (
 -/
 @[simp]
 theorem mapAccumr_eq_map_of_constant_state {α β : Type*} {n : ℕ}
-  {xs : Vector α n} (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
+    {xs : Vector α n} (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
     mapAccumr f xs s = (s, (map (fun x => (f x s).snd) xs)) := by
   induction xs using revInductionOn <;> simp_all
 
