@@ -43,11 +43,25 @@ def delabDeriv : Delab := do
 /--
 A differential algebra is an `Algebra` where the derivation commutes with `algebraMap`.
 -/
-class DifferentialAlgebra (A : Type*) (B : Type*) [CommDifferentialRing A] [CommDifferentialRing B]
+class DifferentialAlgebra (A B : Type*) [CommDifferentialRing A] [CommDifferentialRing B]
     extends Algebra A B where
   deriv_algebraMap : ∀ a : A, (algebraMap A B a)′ = algebraMap A B a′
 
 export DifferentialAlgebra (deriv_algebraMap)
+
+/--
+A differential ring `A` and an algebra over it `B` share constants is all
+constants in B are in the range of `algberaMap A B`.
+-/
+class SharedConstants (A B : Type*) [CommDifferentialRing A] [CommDifferentialRing B]
+    [DifferentialAlgebra A B] : Prop where
+  /-- If the derivative of x is 0, then it's in the range of `algberaMap A B`. -/
+  protected mem_of_constant {x : B} (h : x′ = 0) : x ∈ (algebraMap A B).range
+
+lemma mem_of_constant (A : Type*) {B : Type*} [CommDifferentialRing A] [CommDifferentialRing B]
+    [DifferentialAlgebra A B] [SharedConstants A B] {x : B} (h : x′ = 0) :
+    x ∈ (algebraMap A B).range :=
+  SharedConstants.mem_of_constant h
 
 instance (A : Type*) [CommDifferentialRing A] : DifferentialAlgebra A A where
   deriv_algebraMap _ := rfl
