@@ -14,10 +14,39 @@ import Mathlib.Topology.UniformSpace.Pi
 
 /-! # Topology on power series
 
-In this file we define the possible topologies on power series.
+Let `α` be with Semiring α` and `TopologicalSpace α`
+In this file we the topology on `MvPowerSeries σ α`
+that corresponds to the simple convergence on its coefficients.
+It is the coarsest topology for which all coefficients maps are continuous.
 
+When `α` has `UniformSpace α`, we define the corresponding uniform structure.
+
+When the type of coefficients has the discrete topology,
+it corresponds to the topology defined by [bourbaki1981], chapter 4, §4, n°2
+
+- `tendsto_pow_zero_of_constantCoeff_zero` : if the constant coefficient of `f`
+is nilpotent, then the powers of `f` converge to zero
+
+- `tendsto_pow_of_constantCoeff_nilpotent_iff` : the powers of `f` converge to zero iff
+the constant coefficient of `f` is nilpotent
+
+- `hasSum_of_monomials_self` : viewed as an infinite sum, a power series coverges to itself
+
+TODO: add the similar result for the series of homogeneous components
+
+## Instances
+
+- If `α` is a topological (semi)ring, then so is `MvPowerSeries σ α`
+
+- If the topology of `α` is T2, then so is that of `MvPowerSeries σ α``
+
+- If `α` is a `uniformAddGroup`, then so is `MvPowerSeries σ α``
+
+- If `α` is complete, then so is `MvPowerSeries σ α`
 
 -/
+
+
 theorem Finset.prod_one_add {ι α : Type _} [DecidableEq ι] [CommRing α] {f : ι → α} (s : Finset ι) :
     (s.prod fun i => 1 + f i) = s.powerset.sum fun t => t.prod f := by
   simp_rw [add_comm, Finset.prod_add]
@@ -162,12 +191,6 @@ end WithPiUniformity
 
 end Uniform
 
-example [σ_ne : Nonempty σ] : NoMaxOrder (σ →₀ ℕ) where
-  exists_gt := fun a => by
-    use a + Finsupp.single σ_ne.some 1
-    simp only [lt_iff_le_and_ne, zero_le, le_add_iff_nonneg_right, ne_eq, self_eq_add_right,
-      Finsupp.single_eq_zero, Nat.one_ne_zero, not_false_iff, and_self_iff]
-
 section
 
 variable {σ α} [DecidableEq σ]
@@ -232,7 +255,7 @@ theorem tendsto_pow_zero_of_constantCoeff_zero {f : MvPowerSeries σ α} (hf : c
   rw [hf]
   exact IsNilpotent.zero
 
-/-- [bourbaki-algebraII],, chap. 4, §4, n°2, corollaire de la prop. 3 -/
+/-- [bourbaki1981], chap. 4, §4, n°2, corollaire de la prop. 3 -/
 theorem tendsto_pow_of_constantCoeff_nilpotent_iff [DiscreteTopology α] (f : MvPowerSeries σ α) :
     Filter.Tendsto (fun n : ℕ => f ^ n) Filter.atTop (nhds 0) ↔
       IsNilpotent (constantCoeff σ α f) := by
@@ -283,30 +306,6 @@ theorem hasSum_of_monomials_self (f : MvPowerSeries σ α) :
 theorem as_tsum [T2Space α] (f : MvPowerSeries σ α) :
     f = tsum fun d : σ →₀ ℕ => monomial α d (coeff α d f) :=
   (HasSum.tsum_eq (hasSum_of_monomials_self _)).symm
-
-/-- A power series is the sum (in the sense of summable families) of its monomials -/
-theorem hasSum_of_homogeneous_components_self (w : σ → ℕ) (f : MvPowerSeries σ α) :
-    HasSum (fun p => homogeneousComponent w p f) f := by
-  rw [Pi.hasSum]
-  intro d
-  have hd : ∀ (b' : ℕ), b' ≠ (weight w) d → (homogeneousComponent w b') f d = 0 := by
-    intro p h
-    rw [← coeff_apply (homogeneousComponent w p f) d, coeff_homogeneousComponent,
-      if_neg (Ne.symm h)]
-  convert hasSum_single (weight w d) hd using 1
-  · rw [← coeff_apply f d, ← coeff_apply (homogeneousComponent w (weight w d) f) d,
-      coeff_homogeneousComponent]
-    simp only [eq_self_iff_true, if_true]
-
-theorem homogeneous_components_self_summable (w : σ → ℕ) (f : MvPowerSeries σ α) :
-    Summable fun p => homogeneousComponent w p f :=
-  (hasSum_of_homogeneous_components_self w f).summable
-
-theorem as_tsum_of_homogeneous_components_self [T2Space α] (w : σ → ℕ) (f : MvPowerSeries σ α) :
-    f = tsum fun p => homogeneousComponent w p f := by
-  haveI := t2Space σ α
-  exact HasSum.unique (hasSum_of_homogeneous_components_self w f)
-   (homogeneous_components_self_summable w f).hasSum
 
 end Summable
 
