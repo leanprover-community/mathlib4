@@ -7,7 +7,7 @@ import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.RingTheory.AlgebraTower
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 #align_import field_theory.tower from "leanprover-community/mathlib"@"c7bce2818663f456335892ddbdd1809f111a5b72"
 

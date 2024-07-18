@@ -9,7 +9,7 @@ import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.Flat.Basic
-import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
 # Finite modules over local rings

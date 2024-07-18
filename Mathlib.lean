@@ -3748,7 +3748,7 @@ import Mathlib.RingTheory.Kaehler.Polynomial
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.LittleWedderburn
 import Mathlib.RingTheory.LocalProperties
-import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.LocalRing.Defs
 import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
