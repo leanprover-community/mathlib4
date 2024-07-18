@@ -314,7 +314,7 @@ instance : FunLike (G →+c[a, b] H) G H where
   coe := AddConstMap.toFun
   coe_injective' | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
-@[simp, norm_cast] theorem coe_mk (f : G → H) (hf) : ⇑(mk f hf : G →+c[a, b] H) = f := rfl
+@[simp, push_cast] theorem coe_mk (f : G → H) (hf) : ⇑(mk f hf : G →+c[a, b] H) = f := rfl
 @[simp] theorem mk_coe (f : G →+c[a, b] H) : mk f f.2 = f := rfl
 @[simp] theorem toFun_eq_coe (f : G →+c[a, b] H) : f.toFun = f := rfl
 
@@ -383,12 +383,12 @@ instance : Monoid (G →+c[a, a] G) :=
   DFunLike.coe_injective.monoid (M₂ := Function.End G) _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 theorem mul_def (f g : G →+c[a, a] G) : f * g = f.comp g := rfl
-@[simp] theorem coe_mul (f g : G →+c[a, a] G) : ⇑(f * g) = f ∘ g := rfl
+@[simp, push_cast] theorem coe_mul (f g : G →+c[a, a] G) : ⇑(f * g) = f ∘ g := rfl
 
 theorem one_def : (1 : G →+c[a, a] G) = .id := rfl
-@[simp] theorem coe_one : ⇑(1 : G →+c[a, a] G) = id := rfl
+@[simp, push_cast] theorem coe_one : ⇑(1 : G →+c[a, a] G) = id := rfl
 
-@[simp] theorem coe_pow (f : G →+c[a, a] G) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
+@[simp, push_cast] theorem coe_pow (f : G →+c[a, a] G) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
 
 theorem pow_apply (f : G →+c[a, a] G) (n : ℕ) (x : G) : (f ^ n) x = f^[n] x := rfl
 
