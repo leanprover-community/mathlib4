@@ -189,49 +189,10 @@ def toMvPowerSeries {σ : Type*} [Finite σ] : HahnSeries (σ →₀ ℕ) R ≃+
 
 variable {σ : Type*} [Finite σ]
 
-/- NOTE : The following do not work:
-  * MulEquiv.noZeroDivisors (MvPowerSeries σ R) toMvPowerSeries
-```
-type mismatch
-  MulEquiv.noZeroDivisors (MvPowerSeries σ R) ?m.77016
-has type
-  @NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) MulZeroClass.toMul MulZeroClass.toZero : Prop
-but is expected to have type
-  @NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) instMul instZero : Prop
-```
-  * MulEquiv.noZeroDivisors (MvPowerSeries σ R) (toMvPowerSeries : HahnSeries (σ →₀ ℕ) R ≃+* MvPowerSeries σ R)
-```
-type mismatch
-  MulEquiv.noZeroDivisors (MvPowerSeries σ R) ?m.77396
-has type
-  @NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) MulZeroClass.toMul MulZeroClass.toZero : Prop
-but is expected to have type
-  @NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) instMul instZero : Prop
-```
-  * @MulEquiv.noZeroDivisors (HahnSeries (σ →₀ ℕ) R) (MvPowerSeries σ R) _ _ _ (toMvPowerSeries)
-```
-application type mismatch
-  MulEquiv.noZeroDivisors (MvPowerSeries σ R) toMvPowerSeries
-argument
-  toMvPowerSeries
-has type
-  HahnSeries (?m.76203 →₀ ℕ) ?m.76201 ≃+* MvPowerSeries ?m.76203 ?m.76201 : Type (max ?u.76200 ?u.76199)
-but is expected to have type
-  HahnSeries (σ →₀ ℕ) R ≃* MvPowerSeries σ R : Type (max u_2 u_3)
-```
-
-On the other hand, the following example works perfectly:
-
-example (A B : Type*) [Ring A] [Ring B] [NoZeroDivisors A]
-  (e : A ≃+* B) : NoZeroDivisors B := MulEquiv.noZeroDivisors A e.symm
-  -/
-
 -- TODO : generalize to all (?) rings of Hahn Series
 /-- If R has no zero divisors, then `HahnSeries (σ →₀ ℕ) R` has no zero divisors, for finite `σ` -/
-instance [NoZeroDivisors R] :
-    NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) :=
-  @MulEquiv.noZeroDivisors (HahnSeries (σ →₀ ℕ) R) (MvPowerSeries σ R) _ _ _
-    (toMvPowerSeries : HahnSeries (σ →₀ ℕ) R ≃+* MvPowerSeries σ R )
+instance [NoZeroDivisors R] : NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) :=
+  MulEquiv.noZeroDivisors (A := HahnSeries (σ →₀ ℕ) R) (MvPowerSeries σ R) toMvPowerSeries.toMulEquiv
 
 theorem coeff_toMvPowerSeries {f : HahnSeries (σ →₀ ℕ) R} {n : σ →₀ ℕ} :
     MvPowerSeries.coeff R n (toMvPowerSeries f) = f.coeff n :=
