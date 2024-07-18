@@ -50,7 +50,7 @@ class DifferentialAlgebra (A B : Type*) [CommDifferentialRing A] [CommDifferenti
 export DifferentialAlgebra (deriv_algebraMap)
 
 /--
-A differential ring `A` and an algebra over it `B` share constants is all
+A differential ring `A` and an algebra over it `B` share constants if all
 constants in B are in the range of `algberaMap A B`.
 -/
 class SharedConstants (A B : Type*) [CommDifferentialRing A] [CommDifferentialRing B]
