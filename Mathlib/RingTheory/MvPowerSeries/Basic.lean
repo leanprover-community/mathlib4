@@ -722,7 +722,7 @@ theorem coeff_prod [DecidableEq σ]
 
 /-- The `d`th coefficient of a finite product over `s` of power series
 is the sum of products of coefficients indexed by `cut s d` -/
-theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) (n : ℕ) (d : σ →₀ ℕ) :
+theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ →₀ ℕ) :
     coeff R d (f ^ n) =
       ∑ l in finsuppAntidiag (Finset.range n) d,
         ∏ i in Finset.range n, coeff R (l i) f := by
