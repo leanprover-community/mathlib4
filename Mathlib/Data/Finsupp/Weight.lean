@@ -26,7 +26,7 @@ theorem weight_apply (f : σ →₀ ℕ) :
     weight w f = Finsupp.sum f (fun i c => c • w i) := rfl
 
 /-- A weight function is nontorsion if its values are not torsion. -/
-class NonTorsionWeight (w : σ → M) where
+class NonTorsionWeight (w : σ → M) : Prop where
   eq_zero_of_smul_eq_zero {n : ℕ} {s : σ} (h : n • w s = 0)  : n = 0
 
 /-- Without zero divisors, nonzero weight is a NonTorsionWeight -/
@@ -55,7 +55,7 @@ theorem Nat.le_weight (w : σ → ℕ) (s : σ) (hs : w s ≠ 0) (f : σ →₀ 
     refine' le_trans _ (Nat.le_add_right _ _)
     apply Nat.le_mul_of_pos_right
     exact Nat.zero_lt_of_ne_zero hs
-  · simp only [Finsupp.not_mem_support_iff] at h
+  · simp only [not_mem_support_iff] at h
     rw [h]
     apply zero_le
 
