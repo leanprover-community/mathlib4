@@ -435,7 +435,7 @@ theorem offDiag_filter_lt_eq_filter_le {ι}
     s.offDiag.filter (fun i => i.1 < i.2) = s.offDiag.filter (fun i => i.1 ≤ i.2) := by
   rw [Finset.filter_inj']
   rintro ⟨i, j⟩
-  simp_rw [mem_offDiag, and_imp,]
+  simp_rw [mem_offDiag, and_imp]
   rintro _ _ h
   rw [Ne.le_iff_lt h]
 

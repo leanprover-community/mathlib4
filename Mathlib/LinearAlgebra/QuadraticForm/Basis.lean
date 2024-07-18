@@ -13,19 +13,6 @@ does not require `Invertible (2 : R)`. Unlike that definition, this only works i
 a basis.
 -/
 
--- TODO: move
-theorem Finset.sum_sym2_filter_not_isDiag {ι α} [LinearOrder ι] [AddCommMonoid α]
-    (s : Finset ι) (p : Sym2 ι → α) :
-    ∑ i in s.sym2.filter (¬ ·.IsDiag), p i =
-      ∑ i in s.offDiag.filter (fun i => i.1 < i.2), p s(i.1, i.2) := by
-  rw [Finset.offDiag_filter_lt_eq_filter_le]
-  conv_rhs => rw [← Finset.sum_subtype_eq_sum_filter]
-  refine (Finset.sum_equiv Sym2.sortEquiv.symm ?_ ?_).symm
-  · rintro ⟨⟨i₁, j₁⟩, hij₁⟩
-    simp [and_assoc]
-  · rintro ⟨⟨i₁, j₁⟩, hij₁⟩
-    simp
-
 namespace QuadraticMap
 
 variable {ι R M N} [LinearOrder ι]
