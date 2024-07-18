@@ -3,8 +3,8 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.Algebra.CharP.Algebra
+import Mathlib.FieldTheory.SplittingField.IsSplittingField
 
 #align_import field_theory.splitting_field.construction from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 
@@ -79,6 +79,17 @@ theorem factor_dvd_of_degree_ne_zero {f : K[X]} (hf : f.degree ≠ 0) : factor f
 theorem factor_dvd_of_natDegree_ne_zero {f : K[X]} (hf : f.natDegree ≠ 0) : factor f ∣ f :=
   factor_dvd_of_degree_ne_zero (mt natDegree_eq_of_degree_eq_some hf)
 #align polynomial.factor_dvd_of_nat_degree_ne_zero Polynomial.factor_dvd_of_natDegree_ne_zero
+
+lemma isCoprime_iff_aeval_ne_zero (f g : K[X]) : IsCoprime f g ↔ ∀ {A : Type v} [CommRing A]
+    [IsDomain A] [Algebra K A] (a : A), aeval a f ≠ 0 ∨ aeval a g ≠ 0 := by
+  refine ⟨fun h => aeval_ne_zero_of_isCoprime h, fun h => isCoprime_of_dvd _ _ ?_ fun x hx _ => ?_⟩
+  · replace h := @h K _ _ _ 0
+    contrapose! h
+    rw [h.left, h.right, map_zero, and_self]
+  · rintro ⟨_, rfl⟩ ⟨_, rfl⟩
+    replace h := not_and_or.mpr <| h <| AdjoinRoot.root x.factor
+    simp only [AdjoinRoot.aeval_eq, AdjoinRoot.mk_eq_zero,
+      dvd_mul_of_dvd_left <| factor_dvd_of_not_isUnit hx, true_and, not_true] at h
 
 /-- Divide a polynomial f by `X - C r` where `r` is a root of `f` in a bigger field extension. -/
 def removeFactor (f : K[X]) : Polynomial (AdjoinRoot <| factor f) :=
@@ -297,24 +308,6 @@ instance instCharP (p : ℕ) [CharP K p] : CharP (SplittingField f) p :=
 
 instance instExpChar (p : ℕ) [ExpChar K p] : ExpChar (SplittingField f) p :=
   expChar_of_injective_algebraMap (algebraMap K _).injective p
-
--- The algebra instance deriving from `K` should be definitionally equal to that
--- deriving from the field structure on `SplittingField f`.
-example :
-    (AddCommMonoid.natModule : Module ℕ (SplittingField f)) =
-      @Algebra.toModule _ _ _ _ (SplittingField.algebra' f) :=
-  rfl
-
-example :
-    (AddCommGroup.intModule _ : Module ℤ (SplittingField f)) =
-      @Algebra.toModule _ _ _ _ (SplittingField.algebra' f) :=
-  rfl
-
-example [CharZero K] : SplittingField.algebra' f = algebraRat :=
-  rfl
-
-example {q : ℚ[X]} : algebraInt (SplittingField q) = SplittingField.algebra' q :=
-  rfl
 
 instance _root_.Polynomial.IsSplittingField.splittingField (f : K[X]) :
     IsSplittingField K (SplittingField f) f :=

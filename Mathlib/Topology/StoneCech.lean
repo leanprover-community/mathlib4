@@ -203,7 +203,7 @@ theorem ultrafilter_extend_extends (f : α → γ) : Ultrafilter.extend f ∘ pu
 variable [CompactSpace γ]
 
 theorem continuous_ultrafilter_extend (f : α → γ) : Continuous (Ultrafilter.extend f) := by
-  have h  (b : Ultrafilter α) : ∃ c, Tendsto f (comap pure (𝓝 b)) (𝓝 c) :=
+  have h (b : Ultrafilter α) : ∃ c, Tendsto f (comap pure (𝓝 b)) (𝓝 c) :=
     -- b.map f is an ultrafilter on γ, which is compact, so it converges to some c in γ.
     let ⟨c, _, h'⟩ :=
       isCompact_univ.ultrafilter_le_nhds (b.map f) (by rw [le_principal_iff]; exact univ_mem)
@@ -381,6 +381,11 @@ theorem stoneCechExtend_extends : stoneCechExtend hg ∘ stoneCechUnit = g := by
 theorem continuous_stoneCechExtend : Continuous (stoneCechExtend hg) :=
   continuous_coinduced_dom.mpr (continuous_preStoneCechExtend hg)
 #align continuous_stone_cech_extend continuous_stoneCechExtend
+
+lemma eq_if_stoneCechUnit_eq {a b : α} {f : α → β} (hcf : Continuous f)
+    (h : stoneCechUnit a = stoneCechUnit b) : f a = f b := by
+  rw [← congrFun (stoneCechExtend_extends hcf), ← congrFun (stoneCechExtend_extends hcf)]
+  exact congrArg (stoneCechExtend hcf) h
 
 theorem stoneCech_hom_ext {g₁ g₂ : StoneCech α → β} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
     (h : g₁ ∘ stoneCechUnit = g₂ ∘ stoneCechUnit) : g₁ = g₂ := by

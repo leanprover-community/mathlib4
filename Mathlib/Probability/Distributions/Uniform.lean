@@ -35,7 +35,7 @@ This file defines a number of uniform `PMF` distributions from various inputs,
 `PMF.ofMultiset` draws randomly from the given `Multiset`, treating duplicate values as distinct.
   Each probability is given by the count of the element divided by the size of the `Multiset`
 
-# To Do:
+## TODO
 * Refactor the `PMF` definitions to come from a `uniformMeasure` on a `Finset`/`Fintype`/`Multiset`.
 -/
 
@@ -210,8 +210,6 @@ lemma uniformPDF_ite {s : Set E} {x : E} :
 end pdf
 
 end MeasureTheory
-
-noncomputable section
 
 namespace PMF
 

@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Geometry.RingedSpace.OpenImmersion
 import Mathlib.AlgebraicGeometry.Scheme
-import Mathlib.CategoryTheory.Limits.Shapes.CommSq
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 #align_import algebraic_geometry.open_immersion.Scheme from "leanprover-community/mathlib"@"533f62f4dd62a5aad24a04326e6e787c8f7e98b1"
 
@@ -94,6 +94,29 @@ abbrev opensFunctor : Opens X ⥤ Opens Y :=
 /-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`. -/
 scoped[AlgebraicGeometry] notation3:90 f:91 " ''ᵁ " U:90 => (Scheme.Hom.opensFunctor f).obj U
 
+lemma image_le_image_of_le {U V : Opens X} (e : U ≤ V) : f ''ᵁ U ≤ f ''ᵁ V := by
+  rintro a ⟨u, hu, rfl⟩
+  exact Set.mem_image_of_mem (⇑f.val.base) (e hu)
+
+@[simp]
+lemma opensFunctor_map_homOfLE {U V : Opens X} (e : U ≤ V) :
+    (Scheme.Hom.opensFunctor f).map (homOfLE e) = homOfLE (f.image_le_image_of_le e) :=
+  rfl
+
+@[simp]
+lemma image_top_eq_opensRange : f ''ᵁ ⊤ = f.opensRange := by
+  apply Opens.ext
+  simp
+
+@[simp]
+lemma preimage_image_eq (U : Opens X) : f ⁻¹ᵁ f ''ᵁ U = U := by
+  apply Opens.ext
+  simp [Set.preimage_image_eq _ f.openEmbedding.inj]
+
+lemma image_preimage_eq_opensRange_inter (U : Opens Y) : f ''ᵁ f ⁻¹ᵁ U = f.opensRange ⊓ U := by
+  apply Opens.ext
+  simp [Set.image_preimage_eq_range_inter]
+
 /-- The isomorphism `Γ(X, U) ⟶ Γ(Y, f(U))` induced by an open immersion `f : X ⟶ Y`. -/
 def invApp (U) : Γ(X, U) ⟶ Γ(Y, f ''ᵁ U) :=
   LocallyRingedSpace.IsOpenImmersion.invApp f U
@@ -131,6 +154,17 @@ theorem invApp_app (U) :
       (eqToHom (Opens.ext <| by exact Set.preimage_image_eq U.1 H.base_open.inj)).op :=
   (PresheafedSpace.IsOpenImmersion.invApp_app _ _).trans (by rw [eqToHom_op])
 
+@[reassoc (attr := simp), elementwise]
+lemma appLE_invApp {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] {U : Opens Y}
+    {V : Opens X} (e : V ≤ f ⁻¹ᵁ U) :
+    Scheme.Hom.appLE f U V e ≫ Scheme.Hom.invApp f V =
+        Y.presheaf.map (homOfLE <| (f.image_le_image_of_le e).trans
+          (f.image_preimage_eq_opensRange_inter U ▸ inf_le_right)).op := by
+  simp only [Scheme.Hom.appLE, Category.assoc, Scheme.Hom.invApp_naturality, Functor.op_obj,
+    Functor.op_map, Quiver.Hom.unop_op, Scheme.Hom.opensFunctor_map_homOfLE,
+    Scheme.Hom.app_invApp_assoc, Opens.carrier_eq_coe]
+  erw [← Functor.map_comp, ← op_comp, homOfLE_comp]
+
 end Scheme.Hom
 
 /-- The open sets of an open subscheme corresponds to the open sets containing in the image. -/
@@ -151,6 +185,24 @@ instance basic_open_isOpenImmersion {R : CommRingCat.{u}} (f : R) :
   · intro x
     exact Spec_map_localization_isIso R (Submonoid.powers f) x
 #align algebraic_geometry.Scheme.basic_open_IsOpenImmersion AlgebraicGeometry.Scheme.basic_open_isOpenImmersion
+
+instance {R} [CommRing R] (f : R) :
+    IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f)))) :=
+  basic_open_isOpenImmersion (R := .of R) f
+
+lemma IsOpenImmersion.of_isLocalization {R S} [CommRing R] [CommRing S]
+    [Algebra R S] (f : R) [IsLocalization.Away f S] :
+    IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R S))) := by
+  have e := (IsLocalization.algEquiv (.powers f) S
+    (Localization.Away f)).symm.toAlgHom.comp_algebraMap
+  rw [← e, CommRingCat.ringHom_comp_eq_comp]
+  erw [Spec.map_comp]
+  have H : IsIso (CommRingCat.ofHom (IsLocalization.algEquiv
+    (Submonoid.powers f) S (Localization.Away f)).symm.toAlgHom.toRingHom) := by
+    exact inferInstanceAs (IsIso <| (IsLocalization.algEquiv
+      (Submonoid.powers f) S (Localization.Away f)).toRingEquiv.toCommRingCatIso.inv)
+  simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom] at H ⊢
+  infer_instance
 
 theorem exists_affine_mem_range_and_range_subset
     {X : Scheme.{u}} {x : X} {U : Opens X} (hxU : x ∈ U) :
@@ -384,7 +436,7 @@ instance hasPullback_of_right : HasPullback g f :=
   hasLimit_of_created (cospan g f) forget
 #align algebraic_geometry.IsOpenImmersion.has_pullback_of_right AlgebraicGeometry.IsOpenImmersion.hasPullback_of_right
 
-instance pullback_snd_of_left : IsOpenImmersion (pullback.snd : pullback f g ⟶ _) := by
+instance pullback_snd_of_left : IsOpenImmersion (pullback.snd f g) := by
   have := PreservesPullback.iso_hom_snd forget f g
   dsimp only [Scheme.forgetToLocallyRingedSpace, inducedFunctor_map] at this
   rw [← this]
@@ -392,7 +444,7 @@ instance pullback_snd_of_left : IsOpenImmersion (pullback.snd : pullback f g ⟶
   infer_instance
 #align algebraic_geometry.IsOpenImmersion.pullback_snd_of_left AlgebraicGeometry.IsOpenImmersion.pullback_snd_of_left
 
-instance pullback_fst_of_right : IsOpenImmersion (pullback.fst : pullback g f ⟶ _) := by
+instance pullback_fst_of_right : IsOpenImmersion (pullback.fst g f) := by
   rw [← pullbackSymmetry_hom_comp_snd]
   -- Porting note: was just `infer_instance`, it is a bit weird that no explicit class instance is
   -- provided but still class inference fail to find this
@@ -423,13 +475,13 @@ instance forgetToTopPreservesOfRight : PreservesLimit (cospan g f) Scheme.forget
 #align algebraic_geometry.IsOpenImmersion.forget_to_Top_preserves_of_right AlgebraicGeometry.IsOpenImmersion.forgetToTopPreservesOfRight
 
 theorem range_pullback_snd_of_left :
-    Set.range (pullback.snd : pullback f g ⟶ Y).1.base = (g ⁻¹ᵁ f.opensRange).1 := by
-  rw [← show _ = (pullback.snd : pullback f g ⟶ _).1.base from
+    Set.range (pullback.snd f g).1.base = (g ⁻¹ᵁ f.opensRange).1 := by
+  rw [← show _ = (pullback.snd f g).1.base from
       PreservesPullback.iso_hom_snd Scheme.forgetToTop f g]
   -- Porting note (#10691): was `rw`
   erw [coe_comp]
   rw [Set.range_comp, Set.range_iff_surjective.mpr, ←
-    @Set.preimage_univ _ _ (pullback.fst : pullback f.1.base g.1.base ⟶ _)]
+    @Set.preimage_univ _ _ (pullback.fst f.1.base g.1.base)]
   -- Porting note (#10691): was `rw`
   · erw [TopCat.pullback_snd_image_fst_preimage]
     rw [Set.image_univ]
@@ -439,18 +491,18 @@ theorem range_pullback_snd_of_left :
 #align algebraic_geometry.IsOpenImmersion.range_pullback_snd_of_left AlgebraicGeometry.IsOpenImmersion.range_pullback_snd_of_left
 
 theorem opensRange_pullback_snd_of_left :
-    (pullback.snd : pullback f g ⟶ Y).opensRange = g ⁻¹ᵁ f.opensRange :=
+    (pullback.snd f g).opensRange = g ⁻¹ᵁ f.opensRange :=
   Opens.ext (range_pullback_snd_of_left f g)
 
 theorem range_pullback_fst_of_right :
-    Set.range (pullback.fst : pullback g f ⟶ Y).1.base =
+    Set.range (pullback.fst g f).1.base =
       ((Opens.map g.1.base).obj ⟨Set.range f.1.base, H.base_open.isOpen_range⟩).1 := by
-  rw [← show _ = (pullback.fst : pullback g f ⟶ _).1.base from
+  rw [← show _ = (pullback.fst g f).1.base from
       PreservesPullback.iso_hom_fst Scheme.forgetToTop g f]
   -- Porting note (#10691): was `rw`
   erw [coe_comp]
   rw [Set.range_comp, Set.range_iff_surjective.mpr, ←
-    @Set.preimage_univ _ _ (pullback.snd : pullback g.1.base f.1.base ⟶ _)]
+    @Set.preimage_univ _ _ (pullback.snd g.1.base f.1.base)]
   -- Porting note (#10691): was `rw`
   · erw [TopCat.pullback_fst_image_snd_preimage]
     rw [Set.image_univ]
@@ -460,11 +512,11 @@ theorem range_pullback_fst_of_right :
 #align algebraic_geometry.IsOpenImmersion.range_pullback_fst_of_right AlgebraicGeometry.IsOpenImmersion.range_pullback_fst_of_right
 
 theorem opensRange_pullback_fst_of_right :
-    (pullback.fst : pullback g f ⟶ Y).opensRange = g ⁻¹ᵁ f.opensRange :=
+    (pullback.fst g f).opensRange = g ⁻¹ᵁ f.opensRange :=
   Opens.ext (range_pullback_fst_of_right f g)
 
 theorem range_pullback_to_base_of_left :
-    Set.range (pullback.fst ≫ f : pullback f g ⟶ Z).1.base =
+    Set.range (pullback.fst f g ≫ f).1.base =
       Set.range f.1.base ∩ Set.range g.1.base := by
   rw [pullback.condition, Scheme.comp_val_base, TopCat.coe_comp, Set.range_comp,
     range_pullback_snd_of_left, Opens.carrier_eq_coe, Opens.map_obj, Opens.coe_mk,
@@ -472,7 +524,7 @@ theorem range_pullback_to_base_of_left :
 #align algebraic_geometry.IsOpenImmersion.range_pullback_to_base_of_left AlgebraicGeometry.IsOpenImmersion.range_pullback_to_base_of_left
 
 theorem range_pullback_to_base_of_right :
-    Set.range (pullback.fst ≫ g : pullback g f ⟶ Z).1.base =
+    Set.range (pullback.fst g f ≫ g).1.base =
       Set.range g.1.base ∩ Set.range f.1.base := by
   rw [Scheme.comp_val_base, TopCat.coe_comp, Set.range_comp, range_pullback_fst_of_right,
     Opens.map_obj, Opens.carrier_eq_coe, Opens.coe_mk, Set.image_preimage_eq_inter_range,
@@ -546,6 +598,40 @@ theorem lift_app {X Y U : Scheme.{u}} (f : U ⟶ Y) (g : X ⟶ Y) [IsOpenImmersi
         (IsOpenImmersion.lift_fac f g H).symm V).op :=
   IsOpenImmersion.app_eq_invApp_app_of_comp_eq _ _ _ (lift_fac _ _ _).symm _
 #align algebraic_geometry.IsOpenImmersion.lift_app AlgebraicGeometry.IsOpenImmersion.lift_app
+
+/-- If `f` is an open immersion `X ⟶ Y`, the global sections of `X`
+are naturally isomorphic to the sections of `Y` over the image of `f`. -/
+noncomputable
+def ΓIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Opens Y) :
+    Γ(X, f⁻¹ᵁ U) ≅ Γ(Y, f.opensRange ⊓ U) :=
+  asIso (Scheme.Hom.invApp f <| f⁻¹ᵁ U) ≪≫
+    Y.presheaf.mapIso (eqToIso <| (f.image_preimage_eq_opensRange_inter U).symm).op
+
+@[simp]
+lemma ΓIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Opens Y) :
+    (ΓIso f U).inv = f.appLE (f.opensRange ⊓ U) (f⁻¹ᵁ U)
+      (by rw [← f.image_preimage_eq_opensRange_inter, f.preimage_image_eq]) := by
+  simp only [ΓIso, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, eqToIso.inv, eqToHom_op,
+    asIso_inv, IsIso.comp_inv_eq, Scheme.Hom.appLE_invApp]
+  rfl
+
+@[reassoc, elementwise]
+lemma map_ΓIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Opens Y) :
+    Y.presheaf.map (homOfLE inf_le_right).op ≫ (ΓIso f U).inv = f.app U := by
+  simp [Scheme.Hom.appLE_eq_app]
+
+@[reassoc, elementwise]
+lemma ΓIso_hom_map {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Opens Y) :
+    f.app U ≫ (ΓIso f U).hom = Y.presheaf.map (homOfLE inf_le_right).op := by
+  rw [← map_ΓIso_inv]
+  simp [-ΓIso_inv]
+
+/-- Given an open immersion `f : U ⟶ X`, the isomorphism between global sections
+  of `U` and the sections of `X` at the image of `f`. -/
+noncomputable
+def ΓIsoTop {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    Γ(X, ⊤) ≅ Γ(Y, f.opensRange) :=
+  IsOpenImmersion.ΓIso f ⊤ ≪≫ (Y.presheaf.mapIso (eqToIso (inf_top_eq f.opensRange)).op).symm
 
 end IsOpenImmersion
 

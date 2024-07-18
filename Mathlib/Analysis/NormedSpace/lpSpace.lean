@@ -829,18 +829,11 @@ instance inftyStarRing : StarRing (lp B ∞) :=
 #align lp.infty_star_ring lp.inftyStarRing
 
 instance inftyCstarRing [∀ i, CstarRing (B i)] : CstarRing (lp B ∞) where
-  norm_star_mul_self := by
-    intro f
-    apply le_antisymm
-    · rw [← sq]
-      refine lp.norm_le_of_forall_le (sq_nonneg ‖f‖) fun i => ?_
-      simp only [lp.star_apply, CstarRing.norm_star_mul_self, ← sq, infty_coeFn_mul, Pi.mul_apply]
-      refine sq_le_sq' ?_ (lp.norm_apply_le_norm ENNReal.top_ne_zero _ _)
-      linarith [norm_nonneg (f i), norm_nonneg f]
-    · rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _)]
-      refine lp.norm_le_of_forall_le ‖star f * f‖.sqrt_nonneg fun i => ?_
-      rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CstarRing.norm_star_mul_self]
-      exact lp.norm_apply_le_norm ENNReal.top_ne_zero (star f * f) i
+  norm_mul_self_le f := by
+    rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _)]
+    refine lp.norm_le_of_forall_le ‖star f * f‖.sqrt_nonneg fun i => ?_
+    rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CstarRing.norm_star_mul_self]
+    exact lp.norm_apply_le_norm ENNReal.top_ne_zero (star f * f) i
 #align lp.infty_cstar_ring lp.inftyCstarRing
 
 end StarRing
@@ -1255,7 +1248,7 @@ theorem LipschitzOnWith.coordinate [PseudoMetricSpace α] (f : α → ℓ^∞(ι
 
 theorem LipschitzWith.coordinate [PseudoMetricSpace α] {f : α → ℓ^∞(ι)} (K : ℝ≥0) :
     LipschitzWith K f ↔ ∀ i : ι, LipschitzWith K (fun a : α ↦ f a i) := by
-  simp_rw [← lipschitzOn_univ]
+  simp_rw [← lipschitzOnWith_univ]
   apply LipschitzOnWith.coordinate
 
 end Lipschitz

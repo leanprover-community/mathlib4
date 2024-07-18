@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.CommSq
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
 #align_import category_theory.limits.shapes.kernel_pair from "leanprover-community/mathlib"@"f6bab67886fb92c3e2f539cc90a83815f69a189d"
@@ -171,13 +171,13 @@ def toCoequalizer (k : IsKernelPair f a b) [r : RegularEpi f] : IsColimit (Cofor
 (`A ×[Z] X ⟶ Y ×[Z] X`) is a kernel pair for `Y ×[Z] X ⟶ X`. -/
 protected theorem pullback {X Y Z A : C} {g : Y ⟶ Z} {a₁ a₂ : A ⟶ Y} (h : IsKernelPair g a₁ a₂)
     (f : X ⟶ Z) [HasPullback f g] [HasPullback f (a₁ ≫ g)] :
-    IsKernelPair (pullback.fst : pullback f g ⟶ X)
+    IsKernelPair (pullback.fst f g)
       (pullback.map f _ f _ (𝟙 X) a₁ (𝟙 Z) (by simp) <| Category.comp_id _)
       (pullback.map _ _ _ _ (𝟙 X) a₂ (𝟙 Z) (by simp) <| (Category.comp_id _).trans h.1.1) := by
   refine ⟨⟨by rw [pullback.lift_fst, pullback.lift_fst]⟩, ⟨PullbackCone.isLimitAux _
-    (fun s => pullback.lift (s.fst ≫ pullback.fst)
-      (h.lift (s.fst ≫ pullback.snd) (s.snd ≫ pullback.snd) ?_ ) ?_) (fun s => ?_) (fun s => ?_)
-        (fun s m hm => ?_)⟩⟩
+    (fun s => pullback.lift (s.fst ≫ pullback.fst _ _)
+      (h.lift (s.fst ≫ pullback.snd _ _) (s.snd ≫ pullback.snd _ _) ?_ ) ?_) (fun s => ?_)
+        (fun s => ?_) (fun s m hm => ?_)⟩⟩
   · simp_rw [Category.assoc, ← pullback.condition, ← Category.assoc, s.condition]
   · simp only [assoc, lift_fst_assoc, pullback.condition]
   · ext <;> simp
@@ -189,11 +189,11 @@ protected theorem pullback {X Y Z A : C} {g : Y ⟶ Z} {a₁ a₂ : A ⟶ Y} (h 
     symm
     apply pullback.hom_ext
     · symm
-      simpa using hm WalkingCospan.left =≫ pullback.fst
+      simpa using hm WalkingCospan.left =≫ pullback.fst f g
     · symm
       apply PullbackCone.IsLimit.hom_ext h.isLimit
-      · simpa using hm WalkingCospan.left =≫ pullback.snd
-      · simpa using hm WalkingCospan.right =≫ pullback.snd
+      · simpa using hm WalkingCospan.left =≫ pullback.snd f g
+      · simpa using hm WalkingCospan.right =≫ pullback.snd f g
 #align category_theory.is_kernel_pair.pullback CategoryTheory.IsKernelPair.pullback
 
 theorem mono_of_isIso_fst (h : IsKernelPair f a b) [IsIso a] : Mono f := by

@@ -94,7 +94,6 @@ instance (i : I) : Functor.Full (incl i : C i ⥤ Σi, C i) where
   map_surjective := fun ⟨f⟩ => ⟨f, rfl⟩
 
 instance (i : I) : Functor.Faithful (incl i : C i ⥤ Σi, C i) where
-  -- Porting note (#10936): was `tidy`
   map_injective {_ _ _ _} h := by injection h
 
 section
@@ -236,11 +235,11 @@ def mapId : map C (id : I → I) ≅ 𝟭 (Σi, C i) :=
 
 variable {I} {K : Type w₃}
 
--- Porting note: Had to expand (G ∘ g) to (fun i => C (g i)) in lemma statement
+-- Porting note: Had to expand (C ∘ g) to (fun x => C (g x)) in lemma statement
 -- so that the suitable category instances could be found
 /-- The functor `Sigma.map` applied to a composition is a composition of functors. -/
 @[simps!]
-def mapComp (f : K → J) (g : J → I) : map (fun x => C (g x)) f ⋙ (map C g : _) ≅ map C (g ∘ f) :=
+def mapComp (f : K → J) (g : J → I) : map (fun x ↦ C (g x)) f ⋙ (map C g : _) ≅ map C (g ∘ f) :=
   (descUniq _ _) fun k =>
     (isoWhiskerRight (inclCompMap (fun i => C (g i)) f k) (map C g : _) : _) ≪≫ inclCompMap _ _ _
 #align category_theory.sigma.map_comp CategoryTheory.Sigma.mapComp
