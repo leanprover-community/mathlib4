@@ -234,7 +234,10 @@ jobs:
         uses: liskin/gh-problem-matcher-wrap@v3
         with:
           linters: gcc
-          run: lake test
+          run:
+            # make sure everything is available for import_all.lean
+            lake build Batteries Qq Aesop ProofWidgets
+            lake test
 
       - name: check for unused imports
         id: shake
