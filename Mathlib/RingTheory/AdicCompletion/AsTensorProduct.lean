@@ -206,13 +206,8 @@ private def lTensorf :
     AdicCompletion I R ⊗[R] (ι → R) →ₗ[AdicCompletion I R] AdicCompletion I R ⊗[R] M :=
   AlgebraTensorModule.map LinearMap.id f
 
-private lemma if_exact : Function.Exact (LinearMap.ker f).subtype f := by
-  intro x
-  constructor
-  · intro hx
-    exact ⟨⟨x, hx⟩, rfl⟩
-  · rintro ⟨x, rfl⟩
-    exact x.property
+private lemma if_exact : Function.Exact (LinearMap.ker f).subtype f := fun x ↦
+  ⟨fun hx ↦ ⟨⟨x, hx⟩, rfl⟩, by rintro ⟨x, rfl⟩; exact x.property⟩
 
 private lemma tens_exact : Function.Exact (lTensorKerIncl I M f) (lTensorf I M f) :=
   lTensor_exact (AdicCompletion I R) (if_exact M f) hf
@@ -345,6 +340,8 @@ lemma tensor_map_id_left_eq_map :
   ext x
   simp
 
+variable {f}
+
 lemma tensor_map_id_left_injective_of_injective (hf : Function.Injective f) :
     Function.Injective (AlgebraTensorModule.map LinearMap.id f :
         AdicCompletion I R ⊗[R] M →ₗ[AdicCompletion I R] AdicCompletion I R ⊗[R] N) := by
@@ -357,11 +354,8 @@ end
 
 /-- Adic completion of a Noetherian ring `R` is flat over `R`. -/
 instance flat_of_isNoetherian [IsNoetherianRing R] : Algebra.Flat R (AdicCompletion I R) where
-  out := by
-    apply (Module.Flat.iff_lTensor_injective' R (AdicCompletion I R)).mpr
-    intro J
-    apply tensor_map_id_left_injective_of_injective I (Submodule.subtype J)
-    exact Submodule.injective_subtype J
+  out := (Module.Flat.iff_lTensor_injective' R (AdicCompletion I R)).mpr <| fun J ↦
+    tensor_map_id_left_injective_of_injective I (Submodule.injective_subtype J)
 
 end Noetherian
 
