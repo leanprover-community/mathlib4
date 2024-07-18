@@ -322,8 +322,9 @@ theorem SameCycle.exists_pow_eq [DecidableEq α] [Fintype α] (f : Perm α) (h :
     rw [pow_apply_eq_self_of_apply_eq_self hx, zpow_apply_eq_self_of_apply_eq_self hx]
 #align equiv.perm.same_cycle.exists_pow_eq Equiv.Perm.SameCycle.exists_pow_eq
 
-theorem zpow_eq_zpow_on_iff (g : Perm α)
-    {m n : ℤ} {x : α} (hx : g x ≠ x) :
+variable [DecidableEq α] [Fintype α]
+
+theorem zpow_eq_zpow_on_iff [DecidableEq α] [Fintype α] (g : Perm α) {m n : ℤ} {x : α} (hx : g x ≠ x) :
     (g ^ m) x = (g ^ n) x ↔
       m % (g.cycleOf x).support.card = n % (g.cycleOf x).support.card := by
   rw [Int.emod_eq_emod_iff_emod_sub_eq_zero]
@@ -652,7 +653,7 @@ theorem eq_cycleOf_of_mem_cycleFactorsFinset_iff
     c = g.cycleOf x ↔ x ∈ c.support := by
   refine ⟨?_, (cycle_is_cycleOf · hc)⟩
   rintro rfl
-  rw [mem_support, cycleOf_apply_self, Ne.def, ← cycleOf_eq_one_iff]
+  rw [mem_support, cycleOf_apply_self, ne_eq, ← cycleOf_eq_one_iff]
   exact (mem_cycleFactorsFinset_iff.mp hc).left.ne_one
 
 /-- A permutation `c` is a cycle of `g` iff `k * c * k⁻¹` is a cycle of `k * g * k⁻¹` -/
@@ -685,7 +686,7 @@ theorem commute_of_mem_cycleFactorsFinset_commute (k g : Perm α)
     Commute k g := by
   rw [← cycleFactorsFinset_noncommProd g (cycleFactorsFinset_mem_commute g)]
   apply Finset.noncommProd_commute
-  simpa only [id.def] using hk
+  simpa only [id_eq] using hk
 
 /-- The cycles of a permutation commute with it -/
 theorem self_mem_cycle_factors_commute {g c : Perm α}
