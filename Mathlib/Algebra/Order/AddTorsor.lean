@@ -7,33 +7,43 @@ import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.WellFoundedSet
 
 /-!
-# Ordered vector addition
-This file defines ordered vector addition and proves some properties.  A motivating example is given
-by the additive action of `ℤ` on subsets of reals that are closed under integer translation.  The
-order compatibility allows for a treatment of the `R((z))`-module structure on `(z ^ s) V((z))` for
-an `R`-module `V`, using the formalism of Hahn series.
+# Ordered scalar multiplication and vector addition
+This file defines ordered scalar multiplication and vector addition, and proves some properties.
+In the additive case, a motivating example is given by the additive action of `ℤ` on subsets of
+reals that are closed under integer translation.  The order compatibility allows for a treatment of
+the `R((z))`-module structure on `(z ^ s) V((z))` for an `R`-module `V`, using the formalism of Hahn
+series.  In the multiplicative case, a standard example is the action of non-negative rationals on
+an ordered field.
 
 ## Implementation notes
+
 * Beause these classes mix the algebra and order hierarchies, we write them as `Prop`-valued mixins.
 * Despite the file name, Ordered AddTorsors are not defined as a separate class.  To implement them,
-  combine `[AddTorsor G P]` with `[OrderedCancelVAdd G P]`
+  combine `[AddTorsor G P]` with `[IsOrderedCancelVAdd G P]`
 
 ## Definitions
-* OrderedVAdd : inequalities are preserved by translation.
-* CancelVAdd : the vector addition version of cancellative addition
-* OrderedCancelVAdd : inequalities are preserved and reflected by translation.
+* IsOrderedSMul : inequalities are preserved by scalar multiplication.
+* IsOrderedVAdd : inequalities are preserved by translation.
+* IsCancelSMul : the scalar multiplication version of cancellative multiplication
+* IsCancelVAdd : the vector addition version of cancellative addition
+* IsOrderedCancelSMul : inequalities are preserved and reflected by scalar multiplication.
+* IsOrderedCancelVAdd : inequalities are preserved and reflected by translation.
 * VAdd.antidiagonal : Set-valued antidiagonal for VAdd.
 * Finset.vAddAntidiagonal : Finset antidiagonal for PWO inputs.
 
 ## Instances
-* OrderedAddCommMonoid.toOrderedVAdd
-* OrderedVAdd.toCovariantClassLeft
-* OrderedCancelVAdd.toCancelVAdd
-* OrderedCancelAddCommMonoid.toOrderedCancelVAdd
-* OrderedCancelVAdd.toContravariantClassLeft
+* OrderedCommMonoid.toIsOrderedSMul
+* OrderedAddCommMonoid.toIsOrderedVAdd
+* IsOrderedSMul.toCovariantClassLeft
+* IsOrderedVAdd.toCovariantClassLeft
+* IsOrderedCancelSMul.toCancelSMul
+* IsOrderedCancelVAdd.toCancelVAdd
+* OrderedCancelCommMonoid.toIsOrderedCancelSMul
+* OrderedCancelAddCommMonoid.toIsOrderedCancelVAdd
+* IsOrderedCancelSMul.toContravariantClassLeft
+* IsOrderedCancelVAdd.toContravariantClassLeft
 
 ## TODO
-* Multiplicativize
 * (lex) prod instances
 * Pi instances
 
@@ -44,7 +54,7 @@ open Function
 variable {G P : Type*}
 
 /-- An ordered vector addition is a bi-monotone vector addition. -/
-class OrderedVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] : Prop where
+class IsOrderedVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] : Prop where
   protected vadd_le_vadd_left : ∀ a b : P, a ≤ b → ∀ c : G, c +ᵥ a ≤ c +ᵥ b
   protected vadd_le_vadd_right : ∀ c d : G, c ≤ d → ∀ a : P, c +ᵥ a ≤ d +ᵥ a
 
@@ -133,51 +143,67 @@ end WithTop
 end WithTop
 
 /-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
-class CancelVAdd (G P : Type*) [VAdd G P] : Prop where
+class IsCancelVAdd (G P : Type*) [VAdd G P] : Prop where
   protected left_cancel : ∀ (a : G) (b c : P), a +ᵥ b = a +ᵥ c → b = c
   protected right_cancel : ∀ (a b : G) (c : P), a +ᵥ c = b +ᵥ c → a = b
 
+@[deprecated (since := "2024-07-15")] alias CancelVAdd := IsCancelVAdd
+
+/-- A scalar multiplication is cancellative if it is pointwise injective on the left and right. -/
+@[to_additive]
+class IsCancelSMul (G P : Type*) [SMul G P] : Prop where
+  protected left_cancel : ∀ (a : G) (b c : P), a • b = a • c → b = c
+  protected right_cancel : ∀ (a b : G) (c : P), a • c = b • c → a = b
+
 /-- An ordered cancellative vector addition is an ordered vector addition that is cancellative. -/
-class OrderedCancelVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] extends OrderedVAdd G P : Prop where
+class IsOrderedCancelVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] extends
+    IsOrderedVAdd G P : Prop where
   protected le_of_vadd_le_vadd_left : ∀ (a : G) (b c : P), a +ᵥ b ≤ a +ᵥ c → b ≤ c
   protected le_of_vadd_le_vadd_right : ∀ (a b : G) (c : P), a +ᵥ c ≤ b +ᵥ c → a ≤ b
 
-instance OrderedCancelVAdd.toCancelVAdd [PartialOrder G] [PartialOrder P] [VAdd G P]
-    [OrderedCancelVAdd G P] : CancelVAdd G P where
-  left_cancel a b c h := (OrderedCancelVAdd.le_of_vadd_le_vadd_left a b c h.le).antisymm
-    (OrderedCancelVAdd.le_of_vadd_le_vadd_left a c b h.ge)
-  right_cancel a b c h := by
-    refine (OrderedCancelVAdd.le_of_vadd_le_vadd_right a b c h.le).antisymm ?_
-    exact (OrderedCancelVAdd.le_of_vadd_le_vadd_right b a c h.ge)
+@[deprecated (since := "2024-07-15")] alias OrderedCancelVAdd := IsOrderedCancelVAdd
 
-instance OrderedCancelAddCommMonoid.toOrderedCancelVAdd [OrderedCancelAddCommMonoid G] :
-    OrderedCancelVAdd G G where
-  le_of_vadd_le_vadd_left _ _ _ := le_of_add_le_add_left
-  le_of_vadd_le_vadd_right _ _ _ := le_of_add_le_add_right
+/-- An ordered cancellative scalar multiplication is an ordered scalar multiplication that is
+  cancellative. -/
+@[to_additive]
+class IsOrderedCancelSMul (G P : Type*) [LE G] [LE P] [SMul G P] extends
+    IsOrderedSMul G P : Prop where
+  protected le_of_smul_le_smul_left : ∀ (a : G) (b c : P), a • b ≤ a • c → b ≤ c
+  protected le_of_smul_le_smul_right : ∀ (a b : G) (c : P), a • c ≤ b • c → a ≤ b
 
-instance (priority := 200) OrderedCancelVAdd.toContravariantClassLeLeft [LE G]
-    [LE P] [VAdd G P] [OrderedCancelVAdd G P] : ContravariantClass G P (· +ᵥ ·) (· ≤ ·) :=
-  ⟨OrderedCancelVAdd.le_of_vadd_le_vadd_left⟩
+@[to_additive]
+instance [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P] :
+    IsCancelSMul G P where
+  left_cancel a b c h := (IsOrderedCancelSMul.le_of_smul_le_smul_left a b c h.le).antisymm
+    (IsOrderedCancelSMul.le_of_smul_le_smul_left a c b h.ge)
+  right_cancel a b c h := (IsOrderedCancelSMul.le_of_smul_le_smul_right a b c h.le).antisymm
+    (IsOrderedCancelSMul.le_of_smul_le_smul_right b a c h.ge)
 
-namespace VAdd
+@[to_additive]
+instance [OrderedCancelCommMonoid G] : IsOrderedCancelSMul G G where
+  le_of_smul_le_smul_left _ _ _ := le_of_mul_le_mul_left'
+  le_of_smul_le_smul_right _ _ _ := le_of_mul_le_mul_right'
 
-theorem vadd_lt_vadd_of_le_of_lt [LE G] [Preorder P] [VAdd G P] [OrderedCancelVAdd G P]
+namespace SMul
+
+@[to_additive]
+theorem smul_lt_smul_of_le_of_lt [LE G] [Preorder P] [SMul G P] [IsOrderedCancelSMul G P]
     {a b : G} {c d : P} (h₁ : a ≤ b) (h₂ : c < d) :
-    a +ᵥ c < b +ᵥ d := by
-  refine lt_of_le_of_lt (OrderedVAdd.vadd_le_vadd_right a b h₁ c) ?_
-  refine lt_of_le_not_le (OrderedVAdd.vadd_le_vadd_left c d (le_of_lt h₂) b) ?_
+  a • c < b • d := by
+  refine lt_of_le_of_lt (IsOrderedSMul.smul_le_smul_right a b h₁ c) ?_
+  refine lt_of_le_not_le (IsOrderedSMul.smul_le_smul_left c d (le_of_lt h₂) b) ?_
   by_contra hbdc
-  have h : d ≤ c := OrderedCancelVAdd.le_of_vadd_le_vadd_left b d c hbdc
+  have h : d ≤ c := IsOrderedCancelSMul.le_of_smul_le_smul_left b d c hbdc
   rw [@lt_iff_le_not_le] at h₂
   simp_all only [not_true_eq_false, and_false]
 
-theorem vadd_lt_vadd_of_lt_of_le [Preorder G] [Preorder P] [VAdd G P] [OrderedCancelVAdd G P]
-    {a b : G} {c d : P} (h₁ : a < b) (h₂ : c ≤ d) :
-    a +ᵥ c < b +ᵥ d := by
-  refine lt_of_le_of_lt (OrderedVAdd.vadd_le_vadd_left c d h₂ a) ?_
-  refine lt_of_le_not_le (OrderedVAdd.vadd_le_vadd_right a b (le_of_lt h₁) d) ?_
+@[to_additive]
+theorem smul_lt_smul_of_lt_of_le [Preorder G] [Preorder P] [SMul G P] [IsOrderedCancelSMul G P]
+    {a b : G} {c d : P} (h₁ : a < b) (h₂ : c ≤ d) : a • c < b • d := by
+  refine lt_of_le_of_lt (IsOrderedSMul.smul_le_smul_left c d h₂ a) ?_
+  refine lt_of_le_not_le (IsOrderedSMul.smul_le_smul_right a b (le_of_lt h₁) d) ?_
   by_contra hbad
-  have h : b ≤ a := OrderedCancelVAdd.le_of_vadd_le_vadd_right b a d hbad
+  have h : b ≤ a := IsOrderedCancelSMul.le_of_smul_le_smul_right b a d hbad
   rw [@lt_iff_le_not_le] at h₁
   simp_all only [not_true_eq_false, and_false]
 
