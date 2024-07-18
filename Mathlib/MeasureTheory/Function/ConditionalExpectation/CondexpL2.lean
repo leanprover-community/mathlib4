@@ -357,9 +357,7 @@ alias set_lintegral_nnnorm_condexpL2_indicator_le := setLIntegral_nnnorm_condexp
 theorem lintegral_nnnorm_condexpL2_indicator_le (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : E') [SigmaFinite (μ.trim hm)] :
     ∫⁻ a, ‖(condexpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x) : α → E') a‖₊ ∂μ ≤ μ s * ‖x‖₊ := by
-  refine lintegral_le_of_forall_fin_meas_le' hm (μ s * ‖x‖₊) ?_ fun t ht hμt => ?_
-  · rw [lpMeas_coe]
-    exact (Lp.aestronglyMeasurable _).ennnorm
+  refine lintegral_le_of_forall_fin_meas_trim_le hm (μ s * ‖x‖₊) fun t ht hμt => ?_
   refine (setLIntegral_nnnorm_condexpL2_indicator_le hm hs hμs x ht hμt).trans ?_
   gcongr
   apply Set.inter_subset_left
@@ -448,8 +446,7 @@ alias set_lintegral_nnnorm_condexpIndSMul_le := setLIntegral_nnnorm_condexpIndSM
 
 theorem lintegral_nnnorm_condexpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : G) [SigmaFinite (μ.trim hm)] : ∫⁻ a, ‖condexpIndSMul hm hs hμs x a‖₊ ∂μ ≤ μ s * ‖x‖₊ := by
-  refine lintegral_le_of_forall_fin_meas_le' hm (μ s * ‖x‖₊) ?_ fun t ht hμt => ?_
-  · exact (Lp.aestronglyMeasurable _).ennnorm
+  refine lintegral_le_of_forall_fin_meas_trim_le hm (μ s * ‖x‖₊) fun t ht hμt => ?_
   refine (setLIntegral_nnnorm_condexpIndSMul_le hm hs hμs x ht hμt).trans ?_
   gcongr
   apply Set.inter_subset_left
@@ -459,9 +456,8 @@ theorem lintegral_nnnorm_condexpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSet s
 with finite measure is integrable. -/
 theorem integrable_condexpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hs : MeasurableSet s)
     (hμs : μ s ≠ ∞) (x : G) : Integrable (condexpIndSMul hm hs hμs x) μ := by
-  refine
-    integrable_of_forall_fin_meas_le' hm (μ s * ‖x‖₊) (ENNReal.mul_lt_top hμs ENNReal.coe_ne_top) ?_
-      ?_
+  refine integrable_of_forall_fin_meas_le' hm (μ s * ‖x‖₊)
+    (ENNReal.mul_lt_top hμs ENNReal.coe_ne_top) ?_ ?_
   · exact Lp.aestronglyMeasurable _
   · refine fun t ht hμt => (setLIntegral_nnnorm_condexpIndSMul_le hm hs hμs x ht hμt).trans ?_
     gcongr

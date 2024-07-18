@@ -7,6 +7,7 @@ import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.Rel
+import Mathlib.Order.Fin.Basic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
 
@@ -71,7 +72,7 @@ lemma rel_of_lt [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h :
 
 lemma rel_or_eq_of_le [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i ≤ j) :
     r (x i) (x j) ∨ x i = x j :=
-  h.lt_or_eq.imp (x.rel_of_lt ·) (by rw [·])
+  (Fin.lt_or_eq_of_le h).imp (x.rel_of_lt ·) (by rw [·])
 
 /--
 Given two relations `r, s` on `α` such that `r ≤ s`, any relation series of `r` induces a relation
