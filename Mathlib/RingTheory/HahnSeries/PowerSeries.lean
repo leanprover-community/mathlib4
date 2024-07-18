@@ -202,7 +202,8 @@ example (A B : Type*) [Ring A] [Ring B] [NoZeroDivisors A]
 /-- If R has no zero divisors, then `HahnSeries (σ →₀ ℕ) R` has no zero divisors, for finite `σ` -/
 instance [NoZeroDivisors R] :
     NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) :=
-  @MulEquiv.noZeroDivisors (HahnSeries (σ →₀ ℕ) R) (MvPowerSeries σ R) _ _ _ (toMvPowerSeries : HahnSeries (σ →₀ ℕ) R ≃+* MvPowerSeries σ R )
+  @MulEquiv.noZeroDivisors (HahnSeries (σ →₀ ℕ) R) (MvPowerSeries σ R) _ _ _
+    (toMvPowerSeries : HahnSeries (σ →₀ ℕ) R ≃+* MvPowerSeries σ R )
 
 theorem coeff_toMvPowerSeries {f : HahnSeries (σ →₀ ℕ) R} {n : σ →₀ ℕ} :
     MvPowerSeries.coeff R n (toMvPowerSeries f) = f.coeff n :=
