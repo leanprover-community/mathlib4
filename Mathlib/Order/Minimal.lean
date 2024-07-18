@@ -33,6 +33,8 @@ sets rather than predicates, and with an unbundled order relation rather than a 
 * `Set.maximal_iff_forall_insert` and `Set.minimal_iff_forall_diff_singleton` will generalize to
   lemmas about covering in the case of an `IsStronglyAtomic`/`IsStronglyCoatomic` order.
 
+* `Finset` versions of the lemmas about sets.
+
 -/
 
 open Set OrderDual
