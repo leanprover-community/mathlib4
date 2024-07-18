@@ -166,52 +166,7 @@ namespace LocalRing
 
 section
 
-variable (R) [CommRing R] [LocalRing R] [CommRing S] [LocalRing S] [CommRing T] [LocalRing T]
-
-/-- The residue field of a local ring is the quotient of the ring by its maximal ideal. -/
-def ResidueField :=
-  R ⧸ maximalIdeal R
-#align local_ring.residue_field LocalRing.ResidueField
-
--- Porting note: failed at `deriving` instances automatically
-instance ResidueFieldCommRing : CommRing (ResidueField R) :=
-  show CommRing (R ⧸ maximalIdeal R) from inferInstance
-
-instance ResidueFieldInhabited : Inhabited (ResidueField R) :=
-  show Inhabited (R ⧸ maximalIdeal R) from inferInstance
-
-noncomputable instance ResidueField.field : Field (ResidueField R) :=
-  Ideal.Quotient.field (maximalIdeal R)
-#align local_ring.residue_field.field LocalRing.ResidueField.field
-
-/-- The quotient map from a local ring to its residue field. -/
-def residue : R →+* ResidueField R :=
-  Ideal.Quotient.mk _
-#align local_ring.residue LocalRing.residue
-
-variable {R}
-
-lemma ker_residue : RingHom.ker (residue R) = maximalIdeal R :=
-  Ideal.mk_ker
-
-@[simp]
-lemma residue_eq_zero_iff (x : R) : residue R x = 0 ↔ x ∈ maximalIdeal R := by
-  rw [← RingHom.mem_ker, ker_residue]
-
-lemma residue_ne_zero_iff_isUnit (x : R) : residue R x ≠ 0 ↔ IsUnit x := by
-  simp
-
-variable (R)
-
-instance ResidueField.algebra : Algebra R (ResidueField R) :=
-  Ideal.Quotient.algebra _
-#align local_ring.residue_field.algebra LocalRing.ResidueField.algebra
-
-theorem ResidueField.algebraMap_eq : algebraMap R (ResidueField R) = residue R :=
-  rfl
-#align local_ring.residue_field.algebra_map_eq LocalRing.ResidueField.algebraMap_eq
-
-variable {R}
+variable [CommRing R] [LocalRing R] [CommRing S] [LocalRing S] [CommRing T] [LocalRing T]
 
 theorem ker_eq_maximalIdeal [Field K] (φ : R →+* K) (hφ : Function.Surjective φ) :
     RingHom.ker φ = maximalIdeal R :=
