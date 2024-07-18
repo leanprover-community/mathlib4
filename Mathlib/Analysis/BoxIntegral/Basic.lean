@@ -7,7 +7,7 @@ import Mathlib.Analysis.BoxIntegral.Partition.Filter
 import Mathlib.Analysis.BoxIntegral.Partition.Measure
 import Mathlib.Analysis.Oscillation
 import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Data.Bool.Basic
 
 #align_import analysis.box_integral.basic from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
