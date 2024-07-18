@@ -5,7 +5,6 @@ Authors: Kevin Buzzard, Richard Hill
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Algebra.Polynomial.Module.AEval
 import Mathlib.RingTheory.Derivation.Basic
 /-!
@@ -97,12 +96,10 @@ end Polynomial
 
 namespace Derivation
 
-open Polynomial Module
-
-section compAEval
-
 variable {R A M : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M]
   [Module A M] [Module R M] [IsScalarTower R A M] (d : Derivation R A M) (a : A)
+
+open Polynomial Module
 
 /--
 For a derivation `d : A → M` and an element `a : A`, `d.compAEval a` is the
@@ -150,88 +147,5 @@ theorem comp_aeval_eq (d : Derivation R A M) (f : R[X]) :
   calc
     _ = (AEval.of R M a).symm (d.compAEval a f) := rfl
     _ = _ := by simp [-compAEval_apply, compAEval_eq]
-
-end compAEval
-
-section coeffwise
-
-variable {R A M : Type*} [CommRing R] [CommRing A] [Algebra R A] [AddCommGroup M]
-  [Module A M] [Module R M] [IsScalarTower R A M] (d : Derivation R A M) (a : A)
-
-/--
-The `R`-derivation from `A[X]` to `M[X]` which applies the derivative to each
-of the coefficients.
--/
-def coeffwise : Derivation R A[X] (PolynomialModule A M) where
-  __ := (PolynomialModule.map A d.toLinearMap).comp
-    PolynomialModule.equivPolynomial.symm.toLinearMap
-  map_one_eq_zero' := show (Finsupp.single 0 1).mapRange (d : A → M) d.map_zero = 0 by simp
-  leibniz' p q := by
-    dsimp
-    induction p using Polynomial.induction_on' with
-    | h_add => simp only [add_mul, map_add, add_smul, smul_add, add_add_add_comm, *]
-    | h_monomial n a =>
-      induction q using Polynomial.induction_on' with
-      | h_add => simp only [mul_add, map_add, add_smul, smul_add, add_add_add_comm, *]
-      | h_monomial m b =>
-        refine Finsupp.ext fun i ↦ ?_
-        dsimp [PolynomialModule.equivPolynomial, PolynomialModule.map]
-        simp only [toFinsupp_mul, toFinsupp_monomial, AddMonoidAlgebra.single_mul_single]
-        show d _ = _ + _
-        erw [Finsupp.mapRange.linearMap_apply, Finsupp.mapRange.linearMap_apply]
-        rw [Finsupp.mapRange_single, Finsupp.mapRange_single]
-        erw [PolynomialModule.monomial_smul_single, PolynomialModule.monomial_smul_single]
-        simp only [AddMonoidAlgebra.single_apply, apply_ite d, leibniz, map_zero, coeFn_coe,
-          PolynomialModule.single_apply, ite_add_zero, add_comm m n]
-
-@[simp]
-lemma coeffwise_apply (p : A[X]) (i) :
-    d.coeffwise p i = d (coeff p i) := rfl
-
-@[simp]
-lemma coeffwise_monomial (n : ℕ) (x : A) :
-    d.coeffwise (monomial n x) = .single A n (d x) := Finsupp.ext fun _ ↦ by
-  simp [coeff_monomial, apply_ite d, PolynomialModule.single_apply]
-
-@[simp]
-lemma coeffwise_X :
-    d.coeffwise (X : A[X]) = 0 := by simp [← monomial_one_one_eq_X]
-
-@[simp]
-lemma coeffwise_C (x : A) :
-    d.coeffwise (C x) = .single A 0 (d x) := by simp [← monomial_zero_left]
-
-variable {K M' : Type*} [CommRing K] [Algebra R K] [Algebra A K]
-    [AddCommGroup M'] [Module K M'] [Module R M'] [Module A M']
-
-theorem apply_aeval_eq' (d2 : Derivation R K M') (f : M →ₗ[A] M')
-    (h : ∀ a, f (d a) = d2 (algebraMap A K a)) (x : K) (p : A[X]) :
-    d2 (aeval x p) = PolynomialModule.eval x (PolynomialModule.map K f (d.coeffwise p)) +
-      aeval x (derivative p) • d2 x := by
-  induction p using Polynomial.induction_on' with
-  | h_add => simp_all only [eval_add, map_add, add_smul]; abel
-  | h_monomial =>
-    simp only [aeval_monomial, leibniz, leibniz_pow, coeffwise_monomial,
-      PolynomialModule.map_single, PolynomialModule.eval_single, derivative_monomial, map_mul,
-      _root_.map_natCast, h]
-    rw [add_comm, ← smul_smul, ← smul_smul, ← nsmul_eq_smul_cast]
-
-
-theorem apply_aeval_eq [IsScalarTower R A K] [IsScalarTower A K M'] (d : Derivation R K M')
-    (x : K) (p : A[X]) :
-    d (aeval x p) = PolynomialModule.eval x ((d.compAlgebraMap A).coeffwise p) +
-      aeval x (derivative p) • d x := by
-  convert apply_aeval_eq' (d.compAlgebraMap A) d LinearMap.id _ x p
-  · apply Finsupp.ext
-    intro x
-    rfl
-  · intro a
-    rfl
-
-theorem apply_eval_eq (x : A) (p : A[X]) :
-    d (eval x p) = PolynomialModule.eval x (d.coeffwise p) + eval x (derivative p) • d x :=
-  apply_aeval_eq d x p
-
-end coeffwise
 
 end Derivation
