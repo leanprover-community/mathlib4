@@ -317,18 +317,6 @@ lemma homAddEquiv_apply (α : Ext X Y n) : homAddEquiv α = α.hom := rfl
 
 end
 
-/-- The postcomposition `Ext X Y a →+ Ext X Z b` with `β : Ext Y Z n` when `a + n = b`. -/
-@[simps!]
-noncomputable def postcomp (β : Ext Y Z n) (X : C) {a b : ℕ} (h : a + n = b) :
-    Ext X Y a →+ Ext X Z b :=
-  AddMonoidHom.mk' (fun α => α.comp β h) (by simp)
-
-/-- The precomposition `Ext Y Z a →+ Ext X Z b` with `α : Ext X Y n` when `n + a = b`. -/
-@[simps!]
-noncomputable def precomp (α : Ext X Y n) (Z : C) {a b : ℕ} (h : n + a = b) :
-    Ext Y Z a →+ Ext X Z b :=
-  AddMonoidHom.mk' (fun β => α.comp β h) (by simp)
-
 end Ext
 
 end Abelian
