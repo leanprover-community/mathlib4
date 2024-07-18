@@ -83,7 +83,7 @@ structure MayerVietorisSquare where
   j : V ⟶ X
   /-- the morphism from `W` to `U` -/
   p : W ⟶ U
-  /-- the inclusion from `W` to `V` -/
+  /-- the morphism from `W` to `V` -/
   q : W ⟶ V
   fac : p ≫ i = q ≫ j
   hi : Mono i := by infer_instance
