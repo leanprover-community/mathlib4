@@ -58,8 +58,9 @@ class CommDifferentialRing.ContainConstants (A B : Type*) [CommRing A] [CommDiff
   /-- If the derivative of x is 0, then it's in the range of `algberaMap A B`. -/
   protected mem_range_of_deriv_eq_zero {x : B} (h : x′ = 0) : x ∈ (algebraMap A B).range
 
-lemma mem_of_constant (A : Type*) {B : Type*} [CommDifferentialRing A] [CommDifferentialRing B]
-    [DifferentialAlgebra A B] [CommDifferentialRing.ContainConstants A B] {x : B} (h : x′ = 0) :
+lemma mem_range_of_deriv_eq_zero (A : Type*) {B : Type*} [CommDifferentialRing A]
+    [CommDifferentialRing B] [DifferentialAlgebra A B] [CommDifferentialRing.ContainConstants A B]
+    {x : B} (h : x′ = 0) :
     x ∈ (algebraMap A B).range :=
   CommDifferentialRing.ContainConstants.mem_range_of_deriv_eq_zero h
 
