@@ -91,10 +91,6 @@ ring subexpressions of type `ℕ`.
 -/
 def sℕ : Q(CommSemiring ℕ) := q(instCommSemiringNat)
 
--- In this file, we would like to use multi-character auto-implicits.
-set_option relaxedAutoImplicit true
-set_option autoImplicit true
-
 mutual
 
 /-- The base `e` of a normalized exponent expression. -/
@@ -111,32 +107,37 @@ inductive ExBase : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(CommSemiring $α) �
   while `value : expr` contains a representative of this class.
   The function `resolve_atom` determines the appropriate atom for a given expression.
   -/
-  | atom (id : ℕ) : ExBase sα e
-  /-- A sum of monomials.  -/
-  | sum (_ : ExSum sα e) : ExBase sα e
+  | atom {sα} {e} (id : ℕ) : ExBase sα e
+  /-- A sum of monomials. -/
+  | sum {sα} {e} (_ : ExSum sα e) : ExBase sα e
 
 /--
 A monomial, which is a product of powers of `ExBase` expressions,
 terminated by a (nonzero) constant coefficient.
 -/
-inductive ExProd : ∀ {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) → Type
+inductive ExProd : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) → Type
   /-- A coefficient `value`, which must not be `0`. `e` is a raw rat cast.
   If `value` is not an integer, then `hyp` should be a proof of `(value.den : α) ≠ 0`. -/
-  | const (value : ℚ) (hyp : Option Expr := none) : ExProd sα e
+  | const {sα} {e} (value : ℚ) (hyp : Option Expr := none) : ExProd sα e
   /-- A product `x ^ e * b` is a monomial if `b` is a monomial. Here `x` is an `ExBase`
   and `e` is an `ExProd` representing a monomial expression in `ℕ` (it is a monomial instead of
   a polynomial because we eagerly normalize `x ^ (a + b) = x ^ a * x ^ b`.) -/
-  | mul {α : Q(Type u)} {sα : Q(CommSemiring $α)} {x : Q($α)} {e : Q(ℕ)} {b : Q($α)} :
+  | mul {u : Lean.Level} {α : Q(Type u)} {sα} {x : Q($α)} {e : Q(ℕ)} {b : Q($α)} :
     ExBase sα x → ExProd sℕ e → ExProd sα b → ExProd sα q($x ^ $e * $b)
 
 /-- A polynomial expression, which is a sum of monomials. -/
-inductive ExSum : ∀ {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) → Type
+inductive ExSum : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) → Type
   /-- Zero is a polynomial. `e` is the expression `0`. -/
-  | zero {α : Q(Type u)} {sα : Q(CommSemiring $α)} : ExSum sα q(0 : $α)
+  | zero {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} : ExSum sα q(0 : $α)
   /-- A sum `a + b` is a polynomial if `a` is a monomial and `b` is another polynomial. -/
-  | add {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q($α)} :
+  | add {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q($α)} :
     ExProd sα a → ExSum sα b → ExSum sα q($a + $b)
 end
+
+
+-- In this file, we would like to use multi-character auto-implicits.
+set_option relaxedAutoImplicit true
+set_option autoImplicit true
 
 mutual -- partial only to speed up compilation
 
@@ -185,6 +186,8 @@ partial def ExSum.cmp : ExSum sα a → ExSum sα b → Ordering
   | .add .., .zero => .gt
 end
 
+variable {u : Lean.Level} {arg : Q(Type u)} {sα : Q(CommSemiring $arg)}
+
 instance : Inhabited (Σ e, (ExBase sα) e) := ⟨default, .atom 0⟩
 instance : Inhabited (Σ e, (ExSum sα) e) := ⟨_, .zero⟩
 instance : Inhabited (Σ e, (ExProd sα) e) := ⟨default, .const 0 none⟩
@@ -192,24 +195,24 @@ instance : Inhabited (Σ e, (ExProd sα) e) := ⟨default, .const 0 none⟩
 mutual
 
 /-- Converts `ExBase sα` to `ExBase sβ`, assuming `sα` and `sβ` are defeq. -/
-partial def ExBase.cast : ExBase sα a → Σ a, ExBase sβ a
+partial def ExBase.cast {a : Q($arg)} : ExBase sα a → Σ a, ExBase sβ a
   | .atom i => ⟨a, .atom i⟩
   | .sum a => let ⟨_, vb⟩ := a.cast; ⟨_, .sum vb⟩
 
 /-- Converts `ExProd sα` to `ExProd sβ`, assuming `sα` and `sβ` are defeq. -/
-partial def ExProd.cast : ExProd sα a → Σ a, ExProd sβ a
+partial def ExProd.cast {a : Q($arg)} : ExProd sα a → Σ a, ExProd sβ a
   | .const i h => ⟨a, .const i h⟩
   | .mul a₁ a₂ a₃ => ⟨_, .mul a₁.cast.2 a₂ a₃.cast.2⟩
 
 /-- Converts `ExSum sα` to `ExSum sβ`, assuming `sα` and `sβ` are defeq. -/
-partial def ExSum.cast : ExSum sα a → Σ a, ExSum sβ a
+partial def ExSum.cast {a : Q($arg)} : ExSum sα a → Σ a, ExSum sβ a
   | .zero => ⟨_, .zero⟩
   | .add a₁ a₂ => ⟨_, .add a₁.cast.2 a₂.cast.2⟩
 
 end
 
 set_option autoImplicit false
---set_option relaxedAutoImplicit false
+set_option relaxedAutoImplicit false
 
 variable {u : Lean.Level}
 
@@ -257,7 +260,6 @@ def ExProd.mkRat (_ : Q(DivisionRing $α)) (q : ℚ) (n : Q(ℤ)) (d : Q(ℕ)) (
   ⟨q(Rat.rawCast $n $d : $α), .const q h⟩
 
 section
-variable {sα}
 
 /-- Embed an exponent (an `ExBase, ExProd` pair) as an `ExProd` by multiplying by 1. -/
 def ExBase.toProd {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a : Q($α)} {b : Q(ℕ)}
@@ -347,7 +349,7 @@ theorem add_pf_add_gt {a b₂ c : R} (b₁ : R) (_ : a + b₂ = c) : a + (b₁ +
 * `(a₁ + a₂) + (b₁ + b₂) = a₁ + (a₂ + (b₁ + b₂))` (if `a₁.lt b₁`)
 * `(a₁ + a₂) + (b₁ + b₂) = b₁ + ((a₁ + a₂) + b₂)` (if not `a₁.lt b₁`)
 -/
-partial def evalAdd  {a b : Q($α)} (va : ExSum sα a) (vb : ExSum sα b) :
+partial def evalAdd {a b : Q($α)} (va : ExSum sα a) (vb : ExSum sα b) :
     Result (ExSum sα) q($a + $b) :=
   match va, vb with
   | .zero, vb => ⟨b, vb, q(add_pf_zero_add $b)⟩
@@ -838,7 +840,7 @@ partial def evalPow₁ {a : Q($α)} {b : Q(ℕ)} (va : ExSum sα a) (vb : ExProd
 
 theorem pow_zero (a : R) : a ^ 0 = (nat_lit 1).rawCast + 0 := by simp
 
-theorem pow_add  {a : R} {b₁ : ℕ} {c₁ : R} {b₂ : ℕ} {c₂ d : R}
+theorem pow_add {a : R} {b₁ : ℕ} {c₁ : R} {b₂ : ℕ} {c₂ d : R}
     (_ : a ^ b₁ = c₁) (_ : a ^ b₂ = c₂) (_ : c₁ * c₂ = d) : (a : R) ^ (b₁ + b₂) = d := by
   subst_vars; simp [_root_.pow_add]
 
@@ -937,7 +939,7 @@ nonrec theorem inv_zero {R} [DivisionRing R] : (0 : R)⁻¹ = 0 := inv_zero
 
 theorem inv_single {R} [DivisionRing R] {a b : R}
     (_ : (a : R)⁻¹ = b) : (a + 0)⁻¹ = b + 0 := by simp [*]
-theorem inv_add  {a₁ : ℕ} {b₁ : R} {a₂ : ℕ} {b₂ : R}
+theorem inv_add {a₁ : ℕ} {b₁ : R} {a₂ : ℕ} {b₂ : R}
     (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b₂) : ((a₁ + a₂ : ℕ) : R) = b₁ + b₂ := by
   subst_vars; simp
 
