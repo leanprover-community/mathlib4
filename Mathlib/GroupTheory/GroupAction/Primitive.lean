@@ -5,10 +5,10 @@ Authors: Antoine Chambert-Loir
 
 -/
 
-import Mathlib.GroupTheory.MaximalSubgroups
 import Mathlib.GroupTheory.GroupAction.Blocks
 import Mathlib.GroupTheory.GroupAction.Transitive
-import Mathlib.Data.Nat.Prime
+import Mathlib.GroupTheory.MaximalSubgroups
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Setoid.Partition
 
 /-!
@@ -181,7 +181,7 @@ theorem mk_mem' [htGX : IsPretransitive G X] (a : X)
     obtain ⟨b, hb⟩ := h
     obtain ⟨g, hg⟩ := exists_smul_eq G b a
     rw [← IsTrivialBlock.smul_iff g]
-    refine' H (g • B) _ (hB.smul g)
+    refine' H (g • B) _ (hB.translate g)
     use b
 
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
@@ -191,7 +191,7 @@ theorem mk_mem {a : X} (ha : a ∉ fixedPoints G X)
     IsPreprimitive G X := by
   have : IsPretransitive G X := by
     rw [IsPretransitive.mk_base_iff a]
-    cases' H (orbit G a) (mem_orbit_self a) (IsBlock_of_orbit a) with H H
+    cases' H (orbit G a) (mem_orbit_self a) (isBlock_orbit a) with H H
     · exfalso; apply ha
       rw [Set.subsingleton_iff_singleton (mem_orbit_self a)] at H
       simp only [mem_fixedPoints]
@@ -207,7 +207,7 @@ theorem mk_mem {a : X} (ha : a ∉ fixedPoints G X)
     obtain ⟨b, hb⟩ := h
     obtain ⟨g, hg⟩ := exists_smul_eq G b a
     rw [← IsTrivialBlock.smul_iff g]
-    exact H (g • B) ⟨b, hb, hg⟩ (IsBlock.smul g hB)
+    exact H (g • B) ⟨b, hb, hg⟩ (hB.translate g)
 
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic) -/
@@ -224,7 +224,7 @@ section EquivariantMap
 
 variable {M : Type*} [Group M] {α : Type*} [MulAction M α]
 variable {N β : Type*} [Group N] [MulAction N β]
-variable {φ : M → N} {f : α →ₑ[φ] β}
+variable {φ : M →* N} {f : α →ₑ[φ] β}
 
 theorem IsPreprimitive.of_surjective
     (hf : Function.Surjective f) (h : IsPreprimitive M α) :
@@ -260,7 +260,7 @@ open scoped BigOperators Pointwise
 
 instance Block.boundedOrderOfMem (a : X) :
     BoundedOrder { B : Set X // a ∈ B ∧ IsBlock G B } where
-  top := ⟨⊤, by rw [Set.top_eq_univ]; apply Set.mem_univ, top_IsBlock X⟩
+  top := ⟨⊤, by rw [Set.top_eq_univ]; apply Set.mem_univ, isBlock_top X⟩
   le_top := by
     rintro ⟨B, ha, hB⟩
     simp only [Set.top_eq_univ, Subtype.mk_le_mk, Set.le_eq_subset, Set.subset_univ]
@@ -367,7 +367,7 @@ theorem IsPreprimitive.isQuasipreprimitive (hGX : IsPreprimitive M α) :
   rw [Set.top_eq_univ, Set.ne_univ_iff_exists_not_mem] at hNX
   obtain ⟨a, ha⟩ := hNX
   rw [IsPretransitive.iff_orbit_eq_top a]
-  apply Or.resolve_left (hGX.has_trivial_blocks (orbit.isBlock_of_normal hN a))
+  apply Or.resolve_left (hGX.has_trivial_blocks (orbit.isBlock_of_normal a))
   intro h
   apply ha; simp only [mem_fixedPoints]; intro n
   rw [← Set.mem_singleton_iff]
@@ -472,7 +472,7 @@ theorem _root_.Setoid.IsPartition.ncard_eq_finsum
     simp only [Set.singleton_subset_iff, Set.mem_empty_iff_false, not_false_eq_true, and_true]
     exact ⟨hx.2, hy.2⟩
   · rintro ⟨x, hx⟩
-    obtain ⟨t, ⟨ht, hx', _⟩, _⟩ := hP.2 x
+    obtain ⟨t, ⟨ht, hx'⟩, _⟩ := hP.2 x
     use ⟨⟨t, ht⟩, ⟨x, ⟨hx, hx'⟩⟩⟩
 
 /-- The target of an equivariant map of large image is preprimitive if the source is -/
@@ -507,7 +507,6 @@ theorem IsPreprimitive.image_of_card
   conv_rhs => rw [Set.ncard_coe]
   apply le_of_eq
   rw [← Set.ncard_eq_toFinset_card]
-  congr
   -- we prove (Set.range f ∩ g • B).ncard ≤ 1
   rintro ⟨t, ⟨g, rfl⟩⟩
   simp only [Set.Finite.mem_toFinset, Set.mem_univ, forall_true_left]
@@ -519,7 +518,7 @@ theorem IsPreprimitive.image_of_card
   apply Set.Subsingleton.image
   -- Since the action of M on α is primitive, it suffices to prove that
   -- the preimage is a block which is not ⊤
-  apply Or.resolve_right (hM.has_trivial_blocks ((hB.smul g).preimage f))
+  apply Or.resolve_right (hM.has_trivial_blocks ((hB.translate g).preimage f))
   intro h
   simp only [Set.top_eq_univ, Set.preimage_eq_univ_iff] at h
   -- We will prove that B is large, which will contradict the assumption that it is not ⊤
@@ -542,7 +541,7 @@ theorem IsPreprimitive.rudio (hpGX : IsPreprimitive M α)
     simpa only [Set.mem_iInter, not_forall, exists_prop] using this
   suffices B = {a} by rw [this]; rw [Set.mem_singleton_iff]; exact Ne.symm h
   -- B is a block hence is a trivial block
-  cases' hpGX.has_trivial_blocks (IsBlock.of_subset a A hfA) with hyp hyp
+  cases' hpGX.has_trivial_blocks (IsBlock.of_subset a hfA) with hyp hyp
   · -- B.subsingleton
     apply Set.Subsingleton.eq_singleton_of_mem hyp
     rw [Set.mem_iInter]; intro g; simp only [Set.mem_iInter, imp_self]
@@ -560,3 +559,5 @@ theorem IsPreprimitive.rudio (hpGX : IsPreprimitive M α)
     use g; use x
 
 end Finite
+
+end Primitive
