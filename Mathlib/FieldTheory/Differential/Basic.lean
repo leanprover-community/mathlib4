@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
 import Mathlib.RingTheory.Derivation.DifferentialRing
-import Mathlib.FieldTheory.IntermediateField
+import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.Data.Countable.Small
 import Mathlib.Algebra.Algebra.Field
 
@@ -123,7 +123,7 @@ instance IsLiouville.rfl (F : Type u) [DifferentialField F] : IsLiouville F F wh
 
 lemma IsLiouville.trans {F : Type u} {K : Type v} {A : Type*} [DifferentialField F]
     [DifferentialField K] [DifferentialField A] [DifferentialAlgebra F K] [DifferentialAlgebra K A]
-    [DifferentialAlgebra F A] [IsScalarTower F K A] [SharedConstants F K]
+    [DifferentialAlgebra F A] [IsScalarTower F K A] [CommDifferentialRing.ContainConstants F K]
     (inst1 : IsLiouville F K) (inst2 : IsLiouville K A) : IsLiouville F A where
   is_liouville (a : F) (ι : Type u) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
       (u : ι → A) (v : A) (h : a = ∑ x, c x * logd (u x) + v′) := by
@@ -141,7 +141,7 @@ lemma IsLiouville.trans {F : Type u} {K : Type v} {A : Type*} [DifferentialField
       )
     obtain ⟨ι' : Type u, ⟨eqv : ι'' ≃ ι'⟩⟩ := Small.equiv_small.{u, v} (α := ι'')
     have := Fintype.ofEquiv ι'' eqv
-    have hc (x : ι'') := mem_of_constant F (hc' x)
+    have hc (x : ι'') := mem_range_of_deriv_eq_zero F (hc' x)
     choose c' hc using hc
     apply inst1.is_liouville a ι' (c' ∘ eqv.symm) _ (u'' ∘ eqv.symm) v'
     rw [h']
