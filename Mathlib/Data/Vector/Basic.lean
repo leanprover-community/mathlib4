@@ -812,7 +812,7 @@ theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → 
 
 set_option autoImplicit true in
 @[simp]
-theorem mapAccumr_cons  {n : ℕ} (xs : Vector α n) :
+theorem mapAccumr_cons {n : ℕ} (xs : Vector α n) :
     mapAccumr f (x ::ᵥ xs) s
     = let r := mapAccumr f xs s
       let q := f x r.1
@@ -821,7 +821,7 @@ theorem mapAccumr_cons  {n : ℕ} (xs : Vector α n) :
 
 set_option autoImplicit true in
 @[simp]
-theorem mapAccumr₂_cons (xs : Vector α n) (ys) :
+theorem mapAccumr₂_cons {n: ℕ} (xs : Vector α n) (ys) :
     mapAccumr₂ f (x ::ᵥ xs) (y ::ᵥ ys) s
     = let r := mapAccumr₂ f xs ys s
       let q := f x y r.1
