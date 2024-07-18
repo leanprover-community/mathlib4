@@ -75,18 +75,22 @@ def getAttrs (env : Environment) (stx : Syntax) : NameSet :=
       | .error .. => pure ()
   return new
 
-/--`getAllImports cmd` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
+/--`getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 module names that are implied by
 * the `SyntaxNodeKinds`,
 * the attributes of `cmd` (if there are any),
 * the identifiers contained in `cmd`,
 * if `cmd` adds a declaration `d` to the environment, then also all the module names implied by `d`.
+The argument `id` is optional and is expected to be the internally generated name of a "nameless"
+`instance`.
 -/
-def getAllImports (cmd : Syntax) (dbg? : Bool := false) : CommandElabM NameSet := do
+def getAllImports (cmd : Syntax) (id : Syntax := default) (dbg? : Bool := false) :
+    CommandElabM NameSet := do
   let env ← getEnv
   --let nm ← liftCoreM do realizeGlobalConstNoOverloadWithInfo (getId cmd)
   -- we put together the implied declaration names, the `SyntaxNodeKinds`, the attributes
   let ts := getVisited env (← getId cmd).getId
+              |>.append (getVisited env id.getId)
               |>.append (getSyntaxNodeKinds cmd)
               |>.append (getAttrs env cmd)
   if dbg? then dbg_trace "{ts.toArray.qsort Name.lt}"
@@ -110,7 +114,7 @@ closure is enough to parse (and elaborate) `cmd`. -/
 def getIrredundantImports (env : Environment) (importNames : NameSet) : NameSet :=
   importNames.diff (env.findRedundantImports importNames.toArray)
 
-/-- `minImpsCore stx` is the internal function to elaborate the `#min_imports in` command.
+/-- `minImpsCore stx id` is the internal function to elaborate the `#min_imports in` command.
 It collects the irredundant imports to parse and elaborate `stx` and logs
 ```lean
 import A
@@ -118,9 +122,12 @@ import B
 ...
 import Z
 ```
- -/
-def minImpsCore (stx : Syntax) : CommandElabM Unit := do
-    let tot := getIrredundantImports (← getEnv) (← getAllImports stx)
+The `id` input is optional and, if provided, it is expected to be the name of the declaration
+that is currently processed.  It is used to provide the internally generated name for "nameless"
+`instance`s.
+-/
+def minImpsCore (stx : Syntax) (id : Syntax := default) : CommandElabM Unit := do
+    let tot := getIrredundantImports (← getEnv) (← getAllImports stx id)
     let fileNames := tot.toArray.qsort Name.lt
     --let fileNames := if tk.isSome then (fileNames).filter (`Mathlib).isPrefixOf else fileNames
     logInfoAt (← getRef) m!"{"\n".intercalate (fileNames.map (s!"import {·}")).toList}"
@@ -134,8 +141,11 @@ syntax "#min_imports in" term : command
 
 elab_rules : command
   | `(#min_imports in $cmd:command)=> do
+    -- in case `cmd` is a "nameless" `instance`, we produce its name
+    -- it is important that this is collected *before* adding the declaration to the environment
+    let id ← getId cmd
     Elab.Command.elabCommand cmd <|> pure ()
-    minImpsCore cmd
+    minImpsCore cmd id
   | `(#min_imports in $cmd:term)=> minImpsCore cmd
 
 end Mathlib.Command.MinImports

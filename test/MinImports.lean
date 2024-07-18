@@ -5,6 +5,11 @@ import Mathlib.Data.Nat.Notation
 import Mathlib.Data.Int.Notation
 import Mathlib.Tactic.NormNum.Basic
 
+/-- info: import Mathlib.Algebra.Ring.Nat -/
+#guard_msgs in
+#min_imports in
+instance : Semiring Nat := inferInstance
+
 /--
 info: ℤ : Type
 ---
