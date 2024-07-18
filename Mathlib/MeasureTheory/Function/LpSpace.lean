@@ -892,13 +892,9 @@ theorem indicatorConstLp_empty :
 #align measure_theory.indicator_const_empty MeasureTheory.indicatorConstLp_empty
 
 theorem indicatorConstLp_inj {s t : Set α} (hs : MeasurableSet s) (hsμ : μ s ≠ ∞)
-    (ht : MeasurableSet t) (htμ : μ t ≠ ∞) {c : E} (hc : c ≠ 0)
-    (h : indicatorConstLp p hs hsμ c = indicatorConstLp p ht htμ c) : s =ᵐ[μ] t :=
-  .of_indicator_const hc <|
-    calc
-      s.indicator (fun _ ↦ c) =ᵐ[μ] indicatorConstLp p hs hsμ c := indicatorConstLp_coeFn.symm
-      _ = indicatorConstLp p ht htμ c := by rw [h]
-      _ =ᵐ[μ] t.indicator (fun _ ↦ c) := indicatorConstLp_coeFn
+    (ht : MeasurableSet t) (htμ : μ t ≠ ∞) {c : E} (hc : c ≠ 0) :
+    indicatorConstLp p hs hsμ c = indicatorConstLp p ht htμ c ↔ s =ᵐ[μ] t := by
+  simp_rw [← indicator_const_eventuallyEq hc, indicatorConstLp, Memℒp.toLp_eq_toLp_iff]
 
 theorem memℒp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
@@ -1054,6 +1050,10 @@ theorem coeFn_compMeasurePreserving (g : Lp E p μb) (hf : MeasurePreserving f �
 theorem norm_compMeasurePreserving (g : Lp E p μb) (hf : MeasurePreserving f μ μb) :
     ‖compMeasurePreserving f hf g‖ = ‖g‖ :=
   congr_arg ENNReal.toReal <| g.1.snorm_compMeasurePreserving hf
+
+theorem isometry_compMeasurePreserving [Fact (1 ≤ p)] (hf : MeasurePreserving f μ μb) :
+    Isometry (compMeasurePreserving f hf : Lp E p μb → Lp E p μ) :=
+  AddMonoidHomClass.isometry_of_norm _ (norm_compMeasurePreserving · hf)
 
 theorem toLp_compMeasurePreserving {g : β → E} (hg : Memℒp g p μb) (hf : MeasurePreserving f μ μb) :
     compMeasurePreserving f hf (hg.toLp g) = (hg.comp_measurePreserving hf).toLp _ := rfl
