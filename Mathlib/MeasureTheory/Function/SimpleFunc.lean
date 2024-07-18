@@ -1083,6 +1083,15 @@ theorem restrict_lintegral_eq_lintegral_restrict (f : α →ₛ ℝ≥0∞) {s :
   rw [f.restrict_lintegral hs, lintegral_restrict]
 #align measure_theory.simple_func.restrict_lintegral_eq_lintegral_restrict MeasureTheory.SimpleFunc.restrict_lintegral_eq_lintegral_restrict
 
+theorem lintegral_restrict_iUnion_of_directed {ι : Type*} [Countable ι]
+    (f : α →ₛ ℝ≥0∞) {s : ι → Set α} (hd : Directed (· ⊆ ·) s) (μ : Measure α) :
+    f.lintegral (μ.restrict (⋃ i, s i)) = ⨆ i, f.lintegral (μ.restrict (s i)) := by
+  simp only [lintegral, Measure.restrict_iUnion_apply_eq_iSup hd (measurableSet_preimage ..),
+    ENNReal.mul_iSup]
+  refine finsetSum_iSup fun i j ↦ (hd i j).imp fun k ⟨hik, hjk⟩ ↦ fun a ↦ ?_
+  -- TODO https://github.com/leanprover-community/mathlib4/pull/14739 make `gcongr` close this goal
+  constructor <;> · gcongr; refine Measure.restrict_mono ?_ le_rfl _; assumption
+
 theorem const_lintegral (c : ℝ≥0∞) : (const α c).lintegral μ = c * μ univ := by
   rw [lintegral]
   cases isEmpty_or_nonempty α

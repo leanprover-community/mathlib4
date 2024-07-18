@@ -3,7 +3,7 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Notation
 import Mathlib.Control.Functor
 import Mathlib.Data.SProd
 import Mathlib.Util.CompileInductive
@@ -210,7 +210,7 @@ defined) is the list of lists of the form `insert_nth n t (ys ++ ts)` for `0 ≤
 def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List α → β) → List α × List β
   | [], _ => (ts, r)
   | y :: ys, f =>
-    let (us, zs) := permutationsAux2 t ts r ys (fun x: List α => f (y :: x))
+    let (us, zs) := permutationsAux2 t ts r ys (fun x : List α => f (y :: x))
     (y :: us, f (t :: y :: us) :: zs)
 #align list.permutations_aux2 List.permutationsAux2
 

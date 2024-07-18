@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Sites.PreservesSheafification
 
 # Discrete objects in sheaf categories.
 
-This file defines the notion of a discrete object in a sheaf category. A discrete sheaf in this is a
+This file defines the notion of a discrete object in a sheaf category. A discrete sheaf in this
 context is a sheaf `F` such that the counit `(F(*))^cst ⟶ F` is an isomorphism. Here `*` denotes
 a particular chosen terminal object of the defining site, and `cst` denotes the constant sheaf.
 
@@ -27,6 +27,11 @@ of the constant sheaf functor.
 equivalence of sheaf categories.
 * `isDiscrete_iff_forget` : Given a "forgetful" functor `U : A ⥤ B` a sheaf `F : Sheaf J A` is
 discrete if and only if the sheaf given by postcomposition with `U` is discrete.
+
+## Future work
+
+* Use `isDiscrete_iff_forget` to prove that a condensed module is discrete if and only if its
+underlying condensed set is discrete.
 -/
 
 open CategoryTheory Limits Functor Adjunction Opposite Category Functor
@@ -165,12 +170,6 @@ noncomputable def constantCommuteCompose :
     (sheafComposeNatIso J U (sheafificationAdjunction J A) (sheafificationAdjunction J B)).symm) ≪≫
       isoWhiskerRight (compConstIso _ _).symm _
 
-/-- The components of the isomorphism `constantCommuteCompose`. -/
-@[simps!]
-noncomputable def constantCommuteComposeApp (M : A) :
-    (sheafCompose J U).obj ((constantSheaf J A).obj M) ≅ (constantSheaf J B).obj (U.obj M) :=
-  (constantCommuteCompose J U).app M
-
 lemma sheafComposeNatIso_app_counit (P : Sheaf J A) :
     (sheafComposeNatIso J U (sheafificationAdjunction J A)
       (sheafificationAdjunction J B)).hom.app _ ≫ (sheafCompose J U).map
@@ -184,26 +183,12 @@ lemma sheafComposeNatIso_app_counit (P : Sheaf J A) :
   apply sheafify_hom_ext _ _ _ ((sheafCompose J U).obj P).cond
   simp [← whiskerRight_comp]
 
-lemma _root_.CategoryTheory.constantSheafAdj_counit_app (F : Sheaf J A) :
-    (constantSheafAdj J A ht).counit.app F =
-      (presheafToSheaf J A).map ((constantPresheafAdj A ht).counit.app F.val) ≫
-        (sheafificationAdjunction J A).counit.app F := by
-  apply Sheaf.hom_ext
-  apply sheafify_hom_ext _ _ _ F.cond
-  simp only [flip_obj_obj, sheafToPresheaf_obj, comp_obj, id_obj, constantSheafAdj, Adjunction.comp,
-    evaluation_obj_obj, constantPresheafAdj, Opposite.op_unop, Adjunction.mkOfUnitCounit_unit,
-    Adjunction.mkOfUnitCounit_counit, NatTrans.comp_app, associator_hom_app, whiskerLeft_app,
-    whiskerRight_app, instCategorySheaf_comp_val, instCategorySheaf_id_val,
-    sheafificationAdjunction_counit_app_val, sheafifyMap_sheafifyLift, comp_id,
-    toSheafify_sheafifyLift]
-  erw [id_comp, toSheafify_sheafifyLift]
-
-lemma constantCommuteComposeApp_counit_comp' (F : Sheaf J A) :
-    (constantCommuteComposeApp J U _).inv ≫
-      (sheafCompose J U).map ((constantSheafAdj J A ht).counit.app F) =
-        (constantSheafAdj J B ht).counit.app ((sheafCompose J U).obj F) := by
-  simp only [constantSheafAdj_counit_app, constantCommuteComposeApp, constantCommuteCompose,
-    flip_obj_obj, sheafToPresheaf_obj, id_obj, NatIso.trans_app, comp_obj,
+lemma constantCommuteComposeApp_comp_counit (F : Sheaf J A) :
+    ((constantCommuteCompose J U).app _).hom ≫
+      (constantSheafAdj J B ht).counit.app ((sheafCompose J U).obj F) =
+        (sheafCompose J U).map ((constantSheafAdj J A ht).counit.app F) := by
+  simp only [← Iso.eq_inv_comp, constantSheafAdj_counit_app,
+    constantCommuteCompose, flip_obj_obj, sheafToPresheaf_obj, id_obj, NatIso.trans_app, comp_obj,
     whiskeringRight_obj_obj, Iso.trans_inv, Iso.app_inv, isoWhiskerRight_inv, Iso.symm_inv,
     whiskerRight_app, isoWhiskerLeft_inv, whiskerLeft_app, evaluation_obj_obj, Functor.map_comp,
     assoc, sheafCompose_obj_val, ← sheafComposeNatIso_app_counit]
@@ -228,14 +213,8 @@ lemma constantCommuteComposeApp_counit_comp' (F : Sheaf J A) :
   erw [← NatTrans.comp_app, ← toSheafify_naturality]
   simp only [NatTrans.comp_app, const_obj_obj, NatTrans.naturality]
 
-lemma constantCommuteComposeApp_counit_comp (F : Sheaf J A) :
-    (sheafCompose J U).map ((constantSheafAdj J A ht).counit.app F) =
-      (constantCommuteComposeApp J U _).hom ≫
-        (constantSheafAdj J B ht).counit.app ((sheafCompose J U).obj F) := by
-  simp [← constantCommuteComposeApp_counit_comp']
-
 /-- Auxiliary lemma for `sheafCompose_reflects_discrete`. -/
-private lemma sheafifyComposeIso_comp_constantSheafAdj_counit :
+private lemma sheafifyComposeIso_comp_sheafCompose_map_constantSheafAdj_counit :
   (sheafifyComposeIso J U ((const Cᵒᵖ).obj (F.val.obj { unop := t }))).hom ≫
     ((sheafCompose J U).map ((constantSheafAdj J A ht).counit.app F)).val =
       ((presheafToSheaf J B ⋙ sheafToPresheaf J B).mapIso (constComp Cᵒᵖ _ U)).hom ≫
@@ -260,7 +239,7 @@ private lemma sheafifyComposeIso_comp_constantSheafAdj_counit :
     mkOfUnitCounit_counit, Functor.comp_map]
 
 /-- Auxiliary lemma for `sheafCompose_reflects_discrete`. -/
-private lemma constantCommuteCompose_hom_counit' :
+private lemma constantSheafAdj_counit_w :
     ((sheafifyComposeIso J U ((const Cᵒᵖ).obj (F.val.obj ⟨t⟩))).symm ≪≫
       (presheafToSheaf J B ⋙ sheafToPresheaf J B).mapIso (constComp Cᵒᵖ (F.val.obj ⟨t⟩) U)).hom ≫
         ((constantSheafAdj J B ht).counit.app ((sheafCompose J U).obj F)).val =
@@ -268,8 +247,8 @@ private lemma constantCommuteCompose_hom_counit' :
   rw [← Iso.eq_inv_comp]
   simp only [comp_obj, flip_obj_obj, sheafToPresheaf_obj, sheafCompose_obj_val, id_obj,
     Iso.trans_inv, mapIso_inv, Functor.comp_map, sheafToPresheaf_map,
-    Iso.symm_inv, Category.assoc, sheafifyComposeIso_comp_constantSheafAdj_counit, mapIso_hom,
-    ← instCategorySheaf_comp_val, Iso.map_inv_hom_id_assoc]
+    Iso.symm_inv, Category.assoc, sheafifyComposeIso_comp_sheafCompose_map_constantSheafAdj_counit,
+    mapIso_hom, ← instCategorySheaf_comp_val, Iso.map_inv_hom_id_assoc]
 
 lemma sheafCompose_reflects_discrete [(sheafCompose J U).ReflectsIsomorphisms]
     [((sheafCompose J U).obj F).IsDiscrete J ht] :
@@ -277,7 +256,7 @@ lemma sheafCompose_reflects_discrete [(sheafCompose J U).ReflectsIsomorphisms]
   let f := (sheafCompose J U).map ((constantSheafAdj J A ht).counit.app F)
   have : IsIso ((sheafToPresheaf J B).map f) := by
     simp only [comp_obj, flip_obj_obj, sheafToPresheaf_obj, sheafCompose_obj_val, id_obj,
-      sheafToPresheaf_map, f, ← constantCommuteCompose_hom_counit']
+      sheafToPresheaf_map, f, ← constantSheafAdj_counit_w]
     exact inferInstanceAs (IsIso (_ ≫ ((sheafToPresheaf J B).map
       ((constantSheafAdj J B ht).counit.app ((sheafCompose J U).obj F)))))
   have : IsIso f := by

@@ -18,7 +18,7 @@ We also prove that the projection and transition maps in this limit are surjecti
 
 noncomputable section
 
-open CategoryTheory Limits
+open CategoryTheory Limits CompHausLike
 
 attribute [local instance] ConcreteCategory.instFunLike
 
@@ -63,13 +63,13 @@ def asLimitCone : Cone S.diagram where
   pt := S
   π := {
     app := fun n ↦ (lightToProfiniteFullyFaithful.preimageIso <|
-      Cones.ptIsoOfIso S.isoMapCone).inv ≫ S.asLimitConeAux.π.app n
+      (Cones.forget _).mapIso S.isoMapCone).inv ≫ S.asLimitConeAux.π.app n
     naturality := fun _ _ _ ↦ by simp only [Category.assoc, S.asLimitConeAux.w]; rfl }
 
 /-- `S.asLimitCone` is indeed a limit cone. -/
 def asLimit : IsLimit S.asLimitCone := S.asLimitAux.ofIsoLimit <|
   Cones.ext (lightToProfiniteFullyFaithful.preimageIso <|
-    Cones.ptIsoOfIso S.isoMapCone) (fun _ ↦ by rw [← @Iso.inv_comp_eq]; rfl)
+    (Cones.forget _).mapIso S.isoMapCone) (fun _ ↦ by rw [← @Iso.inv_comp_eq]; rfl)
 
 /-- A bundled version of `S.asLimitCone` and `S.asLimit`. -/
 def lim : Limits.LimitCone S.diagram := ⟨S.asLimitCone, S.asLimit⟩
@@ -87,9 +87,8 @@ lemma map_liftedLimit {C D J : Type*} [Category C] [Category D] [Category J] {K 
 
 lemma lightToProfinite_map_proj_eq (n : ℕ) : lightToProfinite.map (S.proj n) =
     (lightToProfinite.obj S).asLimitCone.π.app _ := by
-  simp only [Functor.comp_obj, proj, asLimitCone, Functor.const_obj_obj, asLimitConeAux, isoMapCone,
-    Functor.FullyFaithful.preimageIso_inv, Cones.ptIsoOfIso_inv, Functor.map_comp,
-    Functor.FullyFaithful.map_preimage]
+  simp? says simp only [toCompHausLike_obj, Functor.comp_obj,
+      FintypeCat.toLightProfinite_obj_toTop_α, toCompHausLike_map, coe_of]
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
   exact map_liftedLimit hc _

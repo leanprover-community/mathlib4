@@ -165,7 +165,7 @@ variable {X Y : LightProfinite.{u}} (f : X ⟶ Y)
 
 /-- Any morphism of light profinite spaces is a closed map. -/
 theorem isClosedMap : IsClosedMap f :=
-  fun _ hC => (hC.isCompact.image f.continuous).isClosed
+  CompHausLike.isClosedMap _
 
 /-- Any continuous bijection of light profinite spaces induces an isomorphism. -/
 theorem isIso_of_bijective (bij : Function.Bijective f) : IsIso f :=
