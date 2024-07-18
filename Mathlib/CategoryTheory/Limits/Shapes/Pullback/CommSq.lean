@@ -283,26 +283,26 @@ noncomputable def isoPullback (h : IsPullback fst snd f g) [HasPullback f g] : P
   (limit.isoLimitCone ⟨_, h.isLimit⟩).symm
 #align category_theory.is_pullback.iso_pullback CategoryTheory.IsPullback.isoPullback
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem isoPullback_hom_fst (h : IsPullback fst snd f g) [HasPullback f g] :
     h.isoPullback.hom ≫ pullback.fst _ _ = fst := by
   dsimp [isoPullback, cone, CommSq.cone]
   simp
 #align category_theory.is_pullback.iso_pullback_hom_fst CategoryTheory.IsPullback.isoPullback_hom_fst
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem isoPullback_hom_snd (h : IsPullback fst snd f g) [HasPullback f g] :
     h.isoPullback.hom ≫ pullback.snd _ _ = snd := by
   dsimp [isoPullback, cone, CommSq.cone]
   simp
 #align category_theory.is_pullback.iso_pullback_hom_snd CategoryTheory.IsPullback.isoPullback_hom_snd
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem isoPullback_inv_fst (h : IsPullback fst snd f g) [HasPullback f g] :
     h.isoPullback.inv ≫ fst = pullback.fst _ _ := by simp [Iso.inv_comp_eq]
 #align category_theory.is_pullback.iso_pullback_inv_fst CategoryTheory.IsPullback.isoPullback_inv_fst
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem isoPullback_inv_snd (h : IsPullback fst snd f g) [HasPullback f g] :
     h.isoPullback.inv ≫ snd = pullback.snd _ _ := by simp [Iso.inv_comp_eq]
 #align category_theory.is_pullback.iso_pullback_inv_snd CategoryTheory.IsPullback.isoPullback_inv_snd
@@ -417,26 +417,26 @@ noncomputable def isoPushout (h : IsPushout f g inl inr) [HasPushout f g] : P �
   (colimit.isoColimitCocone ⟨_, h.isColimit⟩).symm
 #align category_theory.is_pushout.iso_pushout CategoryTheory.IsPushout.isoPushout
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem inl_isoPushout_inv (h : IsPushout f g inl inr) [HasPushout f g] :
     pushout.inl _ _ ≫ h.isoPushout.inv = inl := by
   dsimp [isoPushout, cocone, CommSq.cocone]
   simp
 #align category_theory.is_pushout.inl_iso_pushout_inv CategoryTheory.IsPushout.inl_isoPushout_inv
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem inr_isoPushout_inv (h : IsPushout f g inl inr) [HasPushout f g] :
     pushout.inr _ _ ≫ h.isoPushout.inv = inr := by
   dsimp [isoPushout, cocone, CommSq.cocone]
   simp
 #align category_theory.is_pushout.inr_iso_pushout_inv CategoryTheory.IsPushout.inr_isoPushout_inv
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem inl_isoPushout_hom (h : IsPushout f g inl inr) [HasPushout f g] :
     inl ≫ h.isoPushout.hom = pushout.inl _ _ := by simp [← Iso.eq_comp_inv]
 #align category_theory.is_pushout.inl_iso_pushout_hom CategoryTheory.IsPushout.inl_isoPushout_hom
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem inr_isoPushout_hom (h : IsPushout f g inl inr) [HasPushout f g] :
     inr ≫ h.isoPushout.hom = pushout.inr _ _ := by simp [← Iso.eq_comp_inv]
 #align category_theory.is_pushout.inr_iso_pushout_hom CategoryTheory.IsPushout.inr_isoPushout_hom

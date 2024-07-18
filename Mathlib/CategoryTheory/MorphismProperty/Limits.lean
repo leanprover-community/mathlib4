@@ -47,12 +47,18 @@ def StableUnderCobaseChange (P : MorphismProperty C) : Prop :=
     (_ : P f), P f'
 #align category_theory.morphism_property.stable_under_cobase_change CategoryTheory.MorphismProperty.StableUnderCobaseChange
 
+theorem StableUnderBaseChange.mk' {P : MorphismProperty C} [HasPullbacks C] [RespectsIso P]
+    (hP₂ : ∀ {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S) (_ : P g), ∃ (Z : C) (f' : Z ⟶ Y) (g' : Z ⟶ X),
+      IsPullback f' g' g f ∧ P g') :
+    StableUnderBaseChange P := fun X Y Y' S f g f' g' sq hg => by
+  obtain ⟨Z, f'', g'', H, hg''⟩ := hP₂ f g hg
+  rw [← P.cancel_left_of_respectsIso (sq.isoPullback ≪≫ H.isoPullback.symm).inv]
+  simpa using hg''
+
 theorem StableUnderBaseChange.mk {P : MorphismProperty C} [HasPullbacks C] [RespectsIso P]
     (hP₂ : ∀ (X Y S : C) (f : X ⟶ S) (g : Y ⟶ S) (_ : P g), P (pullback.fst f g)) :
-    StableUnderBaseChange P := fun X Y Y' S f g f' g' sq hg => by
-  let e := sq.flip.isoPullback
-  rw [← P.cancel_left_of_respectsIso e.inv, sq.flip.isoPullback_inv_fst]
-  exact hP₂ _ _ _ f g hg
+    StableUnderBaseChange P :=
+  mk' fun f g hg ↦ ⟨_, _, _, .flip (.of_hasPullback f g), hP₂ _ _ _  f g hg⟩
 #align category_theory.morphism_property.stable_under_base_change.mk CategoryTheory.MorphismProperty.StableUnderBaseChange.mk
 
 theorem StableUnderBaseChange.respectsIso {P : MorphismProperty C} (hP : StableUnderBaseChange P) :
@@ -113,6 +119,14 @@ theorem StableUnderBaseChange.pullback_map [HasPullbacks C] {P : MorphismPropert
   exacts [hP.baseChange_map _ (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g') h₂,
     hP.baseChange_map _ (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f') h₁]
 #align category_theory.morphism_property.stable_under_base_change.pullback_map CategoryTheory.MorphismProperty.StableUnderBaseChange.pullback_map
+
+theorem StableUnderCobaseChange.mk' {P : MorphismProperty C} [HasPushouts C] [RespectsIso P]
+    (hP₂ : ∀ {X Y S : C} (f : S ⟶ X) (g : S ⟶ Y) (_ : P f), ∃ (Z : C) (f' : Y ⟶ Z) (g' : X ⟶ Z),
+      IsPushout g f f' g' ∧ P f') :
+    StableUnderCobaseChange P := fun X Y Y' S f g f' g' sq hg => by
+  obtain ⟨Z, f'', g'', H, hg''⟩ := hP₂ f g hg
+  rw [← P.cancel_right_of_respectsIso _ (sq.isoPushout ≪≫ H.isoPushout.symm).hom]
+  simpa using hg''
 
 theorem StableUnderCobaseChange.mk {P : MorphismProperty C} [HasPushouts C] [RespectsIso P]
     (hP₂ : ∀ (A B A' : C) (f : A ⟶ A') (g : A ⟶ B) (_ : P f), P (pushout.inr f g)) :
