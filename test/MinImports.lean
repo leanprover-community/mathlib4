@@ -1,5 +1,9 @@
 import Mathlib.Tactic.MinImports
-import Mathlib.Tactic
+import Mathlib.Tactic.ExtractGoal
+import Mathlib.Tactic.Lemma
+import Mathlib.Data.Nat.Notation
+import Mathlib.Data.Int.Notation
+import Mathlib.Tactic.NormNum.Basic
 
 /--
 info: ℤ : Type

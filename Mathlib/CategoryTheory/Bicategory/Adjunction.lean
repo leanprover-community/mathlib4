@@ -46,8 +46,6 @@ open Category
 
 open scoped Bicategory
 
-open Mathlib.Tactic.BicategoryCoherence (bicategoricalComp bicategoricalIsoComp)
-
 universe w v u
 
 variable {B : Type u} [Bicategory.{w, v} B] {a b c : B} {f : a ⟶ b} {g : b ⟶ a}
