@@ -66,6 +66,9 @@ lemma mem_of_constant (A : Type*) {B : Type*} [CommDifferentialRing A] [CommDiff
 instance (A : Type*) [CommDifferentialRing A] : DifferentialAlgebra A A where
   deriv_algebraMap _ := rfl
 
+instance (A : Type*) [CommDifferentialRing A] : SharedConstants A A where
+  mem_of_constant {x} _ := ⟨x, rfl⟩
+
 /--
 Transfer a `CommDifferentialRing` instance accross a `RingEquiv`.
 -/
