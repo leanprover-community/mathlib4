@@ -50,7 +50,7 @@ The actual definition assumes only two implications
 structure ReflectsGrowth (f : ι → α → E) (g : ι → β) (l : Filter α) : Prop where
   isLittleO_of_lt {i j} : g i < g j → f i =o[l] f j
   isBigO_of_eq {i j} : g i = g j → f i =O[l] f j
-  frequently_ne {i} : ∃ᶠ x in l, f i x ≠ 0
+  frequently_ne_zero {i} : ∃ᶠ x in l, f i x ≠ 0
 
 namespace ReflectsGrowth
 
