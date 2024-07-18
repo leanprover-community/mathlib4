@@ -8,7 +8,7 @@ import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Order.BoundedOrder
 import Mathlib.Algebra.Ring.Units
 
 #align_import algebra.associated from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
@@ -29,6 +29,7 @@ saying that two elements of a monoid differ by a multiplication by a unit.
 Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
+
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
@@ -1183,9 +1184,6 @@ instance instPartialOrder : PartialOrder (Associates α) where
   le_antisymm := mk_surjective.forall₂.2 fun _a _b hab hba => mk_eq_mk_iff_associated.2 <|
     associated_of_dvd_dvd (dvd_of_mk_le_mk hab) (dvd_of_mk_le_mk hba)
 
-instance instOrderedCommMonoid : OrderedCommMonoid (Associates α) where
-  mul_le_mul_left := fun a _ ⟨d, hd⟩ c => hd.symm ▸ mul_assoc c a d ▸ le_mul_right
-
 instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero (Associates α) :=
   { (by infer_instance : CommMonoidWithZero (Associates α)) with
     mul_left_cancel_of_ne_zero := by
@@ -1210,11 +1208,6 @@ theorem one_or_eq_of_le_of_prime {p m : Associates α} (hp : Prime p) (hle : m �
   simpa [mk_eq_mk_iff_associated, Associated.comm, -Quotient.eq]
     using (prime_mk.1 hp).irreducible.dvd_iff.mp (mk_le_mk_iff_dvd.1 hle)
 #align associates.one_or_eq_of_le_of_prime Associates.one_or_eq_of_le_of_prime
-
-instance : CanonicallyOrderedCommMonoid (Associates α) where
-  exists_mul_of_le h := h
-  le_self_mul _ b := ⟨b, rfl⟩
-  bot_le _ := one_le
 
 theorem dvdNotUnit_iff_lt {a b : Associates α} : DvdNotUnit a b ↔ a < b :=
   dvd_and_not_dvd_iff.symm
@@ -1304,4 +1297,5 @@ theorem dvd_prime_pow [CancelCommMonoidWithZero α] {p q : α} (hp : Prime p) (n
 
 end CancelCommMonoidWithZero
 
+assert_not_exists OrderedCommMonoid
 assert_not_exists Multiset

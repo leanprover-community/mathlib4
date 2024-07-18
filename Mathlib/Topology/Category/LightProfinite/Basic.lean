@@ -51,7 +51,7 @@ Hausdorff, totally disconnected and second countable topological space.
 -/
 def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [TotallyDisconnectedSpace X] [SecondCountableTopology X] : LightProfinite :=
-  ⟨⟨⟨X, inferInstance⟩⟩⟩
+  ⟨⟨X, inferInstance⟩, trivial⟩
 
 instance : Inhabited LightProfinite :=
   ⟨LightProfinite.of PEmpty⟩
@@ -236,11 +236,11 @@ variable {X Y : LightProfinite.{u}} (f : X ⟶ Y)
 
 /-- Any morphism of light profinite spaces is a closed map. -/
 theorem isClosedMap : IsClosedMap f :=
-  CompHaus.isClosedMap _
+  CompHausLike.isClosedMap _
 
 /-- Any continuous bijection of light profinite spaces induces an isomorphism. -/
 theorem isIso_of_bijective (bij : Function.Bijective f) : IsIso f :=
-  haveI := CompHaus.isIso_of_bijective (lightProfiniteToCompHaus.map f) bij
+  haveI := CompHausLike.isIso_of_bijective (lightProfiniteToCompHaus.map f) bij
   isIso_of_fully_faithful lightProfiniteToCompHaus _
 
 /-- Any continuous bijection of light profinite spaces induces an isomorphism. -/
@@ -257,11 +257,11 @@ instance forget_reflectsIsomorphisms : (forget LightProfinite).ReflectsIsomorphi
 @[simps! hom inv]
 noncomputable
 def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
-  lightProfiniteToCompHausFullyFaithful.preimageIso (CompHaus.isoOfHomeo f)
+  lightProfiniteToCompHausFullyFaithful.preimageIso (CompHausLike.isoOfHomeo f)
 
 /-- Construct a homeomorphism from an isomorphism. -/
 @[simps!]
-def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y := CompHaus.homeoOfIso (lightProfiniteToCompHaus.mapIso f)
+def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y := CompHausLike.homeoOfIso (lightProfiniteToCompHaus.mapIso f)
 
 /-- The equivalence between isomorphisms in `LightProfinite` and homeomorphisms
 of topological spaces. -/
@@ -414,7 +414,7 @@ instance (S : LightDiagram.{u}) : SecondCountableTopology S.cone.pt := by
     refine @Finite.of_injective _ ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩ → (Fin 2)) ?_ _
       LocallyConstant.coe_injective
     refine @Pi.finite _ _ ?_ _
-    simp only [Functor.comp_obj, toProfinite_obj_toCompHaus_toTop_α]
+    simp only [Functor.comp_obj, toProfinite_obj, CompHausLike.coe_of]
     infer_instance
   · exact fun a ↦ a.snd.comap (S.cone.π.app ⟨a.fst⟩)
   · intro a
