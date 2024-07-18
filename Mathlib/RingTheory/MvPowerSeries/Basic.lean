@@ -761,7 +761,6 @@ instance [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries 
 
 end Algebra
 
-
 end MvPowerSeries
 
 namespace MvPolynomial
