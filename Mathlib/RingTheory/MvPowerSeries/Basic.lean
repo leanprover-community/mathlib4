@@ -113,8 +113,6 @@ def coeff (n : σ →₀ ℕ) : MvPowerSeries σ R →ₗ[R] R :=
 
 variable {R}
 
-theorem coeff_apply (φ) (d : σ →₀ ℕ) : coeff R d φ = φ d := rfl
-
 /-- Two multivariate formal power series are equal if all their coefficients are equal. -/
 @[ext]
 theorem ext {φ ψ} (h : ∀ n : σ →₀ ℕ, coeff R n φ = coeff R n ψ) : φ = ψ :=
@@ -170,10 +168,6 @@ theorem coeff_comp_monomial (n : σ →₀ ℕ) : (coeff R n).comp (monomial R n
 theorem coeff_zero (n : σ →₀ ℕ) : coeff R n (0 : MvPowerSeries σ R) = 0 :=
   rfl
 #align mv_power_series.coeff_zero MvPowerSeries.coeff_zero
-
-theorem ne_zero_iff_exists_coeff_ne_zero (φ) :
-    φ ≠ 0 ↔ (∃ d : σ →₀ ℕ, coeff R d φ ≠ 0) := by
-  simp only [ext_iff, ne_eq, coeff_zero, not_forall]
 
 variable (m n : σ →₀ ℕ) (φ ψ : MvPowerSeries σ R)
 
@@ -843,6 +837,7 @@ instance [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries 
       simp [algebraMap_apply, coeff_C]⟩⟩
 
 end Algebra
+
 
 end MvPowerSeries
 
