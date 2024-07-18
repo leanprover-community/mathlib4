@@ -39,10 +39,8 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 -/
 
-
-open Affine
-
-open Set
+open Affine Set
+open scoped Pointwise
 
 universe u₁ u₂ u₃ u₄
 
@@ -276,6 +274,24 @@ instance instAddAction : AddAction V (AffineBasis ι k P) :=
   rw [vadd_vsub_assoc, neg_add_eq_sub, vsub_vadd_eq_vsub_sub]
 
 end Ring
+
+section CommRing
+variable [CommRing k] [Module k V] (b : AffineBasis ι k P) {s : Finset ι} {i j : ι} (e : ι ≃ ι')
+
+instance instSMul : SMul kˣ (AffineBasis ι k V) where
+  smul a b :=
+    { toFun := a • ⇑b,
+      ind' := b.ind'.smul,
+      tot' := by
+        rw [Pi.smul_def, ← smul_set_range, Units.smul_def, ← AffineSubspace.smul_span, b.tot,
+          AffineSubspace.smul_top a.isUnit] }
+
+@[simp, norm_cast] lemma coe_smul (a : kˣ) (b : AffineBasis ι k V) : ⇑(a • b) = a • ⇑b := rfl
+
+instance instMulAction : MulAction kˣ (AffineBasis ι k V) :=
+  DFunLike.coe_injective.mulAction _ coe_smul
+
+end CommRing
 
 section DivisionRing
 

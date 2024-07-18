@@ -17,34 +17,36 @@ open Affine Pointwise
 
 open Set
 
-variable {k : Type*} [Ring k]
-variable {V P V₁ P₁ V₂ P₂ : Type*}
+variable {k V P V₁ P₁ V₂ P₂ : Type*}
+
+namespace AffineSubspace
+section Ring
+variable [Ring k]
 variable [AddCommGroup V] [Module k V] [AffineSpace V P]
 variable [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁]
 variable [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
 
-namespace AffineSubspace
+/-- The additive action on an affine subspace corresponding to applying the action to every element.
+
+This is available as an instance in the `Pointwise` locale. -/
+protected def pointwiseVAdd : VAdd V (AffineSubspace k P) where
+  vadd x s := s.map (AffineEquiv.constVAdd k P x)
+
+scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseVAdd
+
+@[simp, norm_cast] lemma coe_pointwise_vadd (v : V) (s : AffineSubspace k P) :
+    ((v +ᵥ s : AffineSubspace k P) : Set P) = v +ᵥ (s : Set P) := rfl
 
 /-- The additive action on an affine subspace corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
-protected def pointwiseAddAction : AddAction V (AffineSubspace k P) where
-  vadd x S := S.map (AffineEquiv.constVAdd k P x)
-  zero_vadd p := ((congr_arg fun f => p.map f) <| AffineMap.ext <| zero_vadd _).trans p.map_id
-  add_vadd _ _ p :=
-    ((congr_arg fun f => p.map f) <| AffineMap.ext <| add_vadd _ _).trans (p.map_map _ _).symm
+protected def pointwiseAddAction : AddAction V (AffineSubspace k P) :=
+  SetLike.coe_injective.addAction _ coe_pointwise_vadd
 
 scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseAddAction
 
-open Pointwise
-
 theorem pointwise_vadd_eq_map (v : V) (s : AffineSubspace k P) :
     v +ᵥ s = s.map (AffineEquiv.constVAdd k P v) :=
-  rfl
-
-@[simp]
-theorem coe_pointwise_vadd (v : V) (s : AffineSubspace k P) :
-    ((v +ᵥ s : AffineSubspace k P) : Set P) = v +ᵥ (s : Set P) :=
   rfl
 
 theorem vadd_mem_pointwise_vadd_iff {v : V} {s : AffineSubspace k P} {p : P} :
@@ -72,4 +74,55 @@ theorem map_pointwise_vadd (f : P₁ →ᵃ[k] P₂) (v : V₁) (s : AffineSubsp
   ext
   exact f.map_vadd _ _
 
+end Ring
+
+section CommRing
+variable [CommRing k] [AddCommGroup V] [Module k V] {a : k}
+
+/-- The multiplicative action on an affine subspace corresponding to applying the action to every
+element.
+
+This is available as an instance in the `Pointwise` locale. -/
+protected def pointwiseSMul : SMul k (AffineSubspace k V) where
+  smul a s := s.map (LinearMap.lsmul _ _ a).toAffineMap
+
+scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseSMul
+
+@[simp, norm_cast]
+lemma coe_smul (a : k) (s : AffineSubspace k V) : ↑(a • s) = a • (s : Set V) := rfl
+
+/-- The multiplicative action on an affine subspace corresponding to applying the action to every
+element.
+
+This is available as an instance in the `Pointwise` locale. -/
+protected def mulAction : MulAction k (AffineSubspace k V) :=
+  SetLike.coe_injective.mulAction _ coe_smul
+
+scoped[Pointwise] attribute [instance] AffineSubspace.mulAction
+
+lemma smul_eq_map (a : k) (s : AffineSubspace k V) :
+    a • s = s.map (LinearMap.lsmul _ _ a).toAffineMap := rfl
+
+lemma smul_mem_smul_iff (ha : IsUnit a) {s : AffineSubspace k V} {p : V} :
+    a • p ∈ a • s ↔ p ∈ s := smul_mem_smul_set_iff (a := ha.unit)
+
+@[simp] lemma smul_bot (a : k) : a • (⊥ : AffineSubspace k V) = ⊥ := by
+  ext; simp [smul_eq_map, map_bot]
+
+@[simp] lemma smul_top (ha : IsUnit a) : a • (⊤ : AffineSubspace k V) = ⊤ := by
+  ext x; simpa [smul_eq_map, map_top] using ⟨ha.unit⁻¹ • x, smul_inv_smul ha.unit _⟩
+
+lemma smul_span (a : k) (s : Set V) : a • affineSpan k s = affineSpan k (a • s) := map_span _ s
+
+end CommRing
+
+section Field
+variable [Field k] [AddCommGroup V] [Module k V] {a : k}
+
+lemma smul_direction (ha : a ≠ 0) (s : AffineSubspace k V) : (a • s).direction = s.direction := by
+  rw [smul_eq_map, map_direction]
+  change Submodule.map (a • LinearMap.id) _ = _
+  simp [Submodule.map_smul, ha]
+
+  end Field
 end AffineSubspace
