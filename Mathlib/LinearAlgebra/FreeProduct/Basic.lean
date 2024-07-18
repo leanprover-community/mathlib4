@@ -90,15 +90,6 @@ def equiv_quot_equiv {A B : Type v} [Semiring A] [Semiring B] (f : A ≃+* B) (r
     AlgEquiv.ofRingEquiv (f := f) (λ n ↦ by simp)
   algEquiv_quot_algEquiv f_alg rel |>.toRingEquiv
 
-
-/--Even through a linear map, `liftAlgHom` and `mkAlgHom` are adjoint.-/
-@[simp] lemma liftAlgHom_toLinearMap_mkAlgHom (S : Type uS)
-    [CommSemiring S] {A : Type uA} {B : Type uB} [Semiring A] [Semiring B]
-    [Algebra S A] [Algebra S B] {s : A → A → Prop}
-    (f : A →ₐ[S] B) (w : ∀ ⦃x y : A⦄, s x y → f x = f y) (x : A):
-    (liftAlgHom S ⟨f, w⟩) ((mkAlgHom S s |>.toLinearMap) x) = f x := by
-  aesop
-
 end RingQuot
 
 open TensorAlgebra DirectSum TensorPower
@@ -231,11 +222,12 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
 /--Universal property of the free product of algebras, property:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts
 to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.-/
-@[simp] theorem lift_comp_ι : (lift R A maps) ∘ₐ (ι R A i) = maps := by
+theorem lift_comp_ι : (lift R A maps) ∘ₐ (ι R A i) = maps := by
   ext a
   simp [lift_apply, ι]
 
-@[simp] theorem lift_unique (f : FreeProduct R A →ₐ[R] B) (h : ∀ i, f ∘ₐ ι R A i = maps) :
+@[aesop safe destruct] theorem lift_unique
+    (f : FreeProduct R A →ₐ[R] B) (h : ∀ i, f ∘ₐ ι R A i = maps) :
     f = lift R A maps := by
   ext i a; simp_rw [AlgHom.ext_iff] at h; specialize h i a
   simp [h.symm, ι]
