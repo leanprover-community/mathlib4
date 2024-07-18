@@ -104,10 +104,26 @@ protected theorem bijective_iff_injective_and_card [Finite β] (f : α → β) :
   rw [← and_congr_right_iff, ← Bijective,
     card_eq_fintype_card, card_eq_fintype_card, Fintype.bijective_iff_injective_and_card]
 
-theorem _root_.Function.Injective.bijective_of_nat_card_le [Fintype β] {f : α → β}
+protected theorem bijective_iff_surjective_and_card [Finite α] (f : α → β) :
+    Bijective f ↔ Surjective f ∧ Nat.card α = Nat.card β := by
+  classical
+  rw [and_comm, Bijective, and_congr_left_iff]
+  intro h
+  have := Fintype.ofFinite α
+  have := Fintype.ofSurjective f h
+  revert h
+  rw [← and_congr_left_iff, ← Bijective, ← and_comm,
+    card_eq_fintype_card, card_eq_fintype_card, Fintype.bijective_iff_surjective_and_card]
+
+theorem _root_.Function.Injective.bijective_of_nat_card_le [Finite β] {f : α → β}
     (inj : Injective f) (hc : Nat.card β ≤ Nat.card α) : Bijective f :=
   (Nat.bijective_iff_injective_and_card f).mpr
     ⟨inj, hc.antisymm (card_le_card_of_injective f inj) |>.symm⟩
+
+theorem _root_.Function.Surjective.bijective_of_nat_card_le [Finite α] {f : α → β}
+    (surj : Surjective f) (hc : Nat.card α ≤ Nat.card β) : Bijective f :=
+  (Nat.bijective_iff_surjective_and_card f).mpr
+    ⟨surj, hc.antisymm (card_le_card_of_surjective f surj)⟩
 
 theorem card_eq_of_equiv_fin {α : Type*} {n : ℕ} (f : α ≃ Fin n) : Nat.card α = n := by
   simpa only [card_eq_fintype_card, Fintype.card_fin] using card_congr f
