@@ -228,12 +228,13 @@ theorem map_comp_eq (α : F ⟶ G) (β : G ⟶ H) :
   · intro X
     rfl
   · intro X Y f
-    simp [map_map]
+    simp only [map_map, map_obj_base, NatTrans.comp_app, Cat.comp_obj, Cat.comp_map,
+      eqToHom_refl, Functor.comp_map, Functor.map_comp, Category.comp_id, Category.id_comp]
     fapply Grothendieck.ext
     · rfl
-    · simp
+    · simp only [eqToHom_refl, Category.id_comp]
       erw [eqToHom_app, eqToHom_app, eqToHom_app, eqToHom_map]
-      simp [eqToHom_trans]
+      simp only [Cat.comp_obj, eqToHom_trans_assoc]
 
 /-- Making the equality of functors into an isomorphism. Note: we should avoid equality of functors
 if possible, and we should prefer `map_comp_iso` to `map_comp_eq` whenever we can. -/
