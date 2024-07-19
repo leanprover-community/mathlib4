@@ -599,30 +599,21 @@ private def g₂g : LiftedContextFreeGrammar T :=
 
 variable {w : List T}
 
+private lemma deri_start : (ContextFreeGrammar.union g₁ g₂).Derives [Symbol.nonterminal none]
+    [Symbol.nonterminal (some (Sum.inl g₁.initial))] := by
+  refine ContextFreeGrammar.Produces.single
+    ⟨⟨none, [Symbol.nonterminal (some (Sum.inl g₁.initial))]⟩, List.mem_cons_self .., ?_⟩
+  rw [ContextFreeRule.rewrites_iff]
+  use [], []
+  simp
+
 private lemma in_union_of_in_left (hw : w ∈ g₁.language) :
-    w ∈ (ContextFreeGrammar.union g₁ g₂).language := by
-  have deri_start :
-    (ContextFreeGrammar.union g₁ g₂).Derives [Symbol.nonterminal none]
-      [Symbol.nonterminal (some (Sum.inl g₁.initial))] := by
-    refine ContextFreeGrammar.Produces.single
-      ⟨⟨none, [Symbol.nonterminal (some (Sum.inl g₁.initial))]⟩, List.mem_cons_self .., ?_⟩
-    rw [ContextFreeRule.rewrites_iff]
-    use [], []
-    simp
-  exact deri_start.trans (Symbol.liftString_all_terminals g₁g.liftNT w ▸ g₁g.lift_derives hw)
+    w ∈ (ContextFreeGrammar.union g₁ g₂).language :=
+  deri_start.trans (Symbol.liftString_all_terminals g₁g.liftNT w ▸ g₁g.lift_derives hw)
 
 private lemma in_union_of_in_right (hw : w ∈ g₂.language) :
-    w ∈ (ContextFreeGrammar.union g₁ g₂).language := by
-  have deri_start :
-    (ContextFreeGrammar.union g₁ g₂).Derives [Symbol.nonterminal none]
-      [Symbol.nonterminal (some (Sum.inr g₂.initial))] := by
-    refine ContextFreeGrammar.Produces.single
-      ⟨⟨none, [Symbol.nonterminal (some (Sum.inr g₂.initial))]⟩,
-        List.mem_cons_of_mem _ (List.mem_cons_self ..), ?_⟩
-    rw [ContextFreeRule.rewrites_iff]
-    use [], []
-    simp
-  exact deri_start.trans (Symbol.liftString_all_terminals g₂g.liftNT w ▸ g₂g.lift_derives hw)
+    w ∈ (ContextFreeGrammar.union g₁ g₂).language :=
+  deri_start.trans (Symbol.liftString_all_terminals g₂g.liftNT w ▸ g₂g.lift_derives hw)
 
 private lemma in_left_of_in_union (hw :
     (ContextFreeGrammar.union g₁ g₂).Derives
