@@ -86,7 +86,7 @@ lemma zero_iff_lTensor_zero' :
       exact Module.FaithfullyFlat.zero_if_lTensor_zero f
 
 lemma lTensor_zero_iff_rTensor_zero : ∀ ⦃N N': Type v⦄ [AddCommGroup N][Module R N][AddCommGroup N']
-[Module R N'] (f : N →ₗ[R] N'), LinearMap.lTensor M f = 0 ↔ LinearMap.rTensor M f = 0 := by
+    [Module R N'] (f : N →ₗ[R] N'), LinearMap.lTensor M f = 0 ↔ LinearMap.rTensor M f = 0 := by
     introv
     constructor
     intro lTensor_zero
