@@ -49,8 +49,8 @@ lean_lib docs where
 lean_exe cache where
   root := `Cache.Main
 
-/-- `lake exe checkYaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
-lean_exe checkYaml where
+/-- `lake exe check-yaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
+lean_exe «check-yaml» where
   srcDir := "scripts"
   supportInterpreter := true
 
