@@ -7,6 +7,7 @@ import Mathlib.Algebra.Category.Grp.Adjunctions
 import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.CategoryTheory.Sites.OneHypercover
 import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.Spaces
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
@@ -349,3 +350,48 @@ end MayerVietorisSquare
 end GrothendieckTopology
 
 end CategoryTheory
+
+namespace Opens
+
+open CategoryTheory Limits
+
+variable {T : Type u} [TopologicalSpace T]
+  (U V X W : TopologicalSpace.Opens T)
+  (hX : X = U ⊔ V)
+  (hW : W = U ⊓ V)
+
+instance (f : U ⟶ V) : Mono f where
+  right_cancellation := by
+    intros
+    apply Subsingleton.elim
+
+@[simps! X U V W i j p q]
+noncomputable def mayerVietorisSquare' :
+    (Opens.grothendieckTopology T).MayerVietorisSquare :=
+  GrothendieckTopology.MayerVietorisSquare.mk_of_isPullback
+    (J := (Opens.grothendieckTopology T))
+    (X := X) (U := U) (V := V) (W := W)
+    (i := homOfLE (by simp only [hX, le_sup_left]))
+    (j := homOfLE (by simp only [hX, le_sup_right]))
+    (p := homOfLE (by simp only [hW, inf_le_left]))
+    (q := homOfLE (by simp only [hW, inf_le_right]))
+    { w := by simp
+      isLimit' := ⟨by
+        refine PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_
+        · intro s
+          apply homOfLE
+          rw [hW, le_inf_iff]
+          exact ⟨leOfHom s.fst, leOfHom s.snd⟩
+        all_goals intros; apply Subsingleton.elim⟩ }
+    (fun x hx ↦ by
+      rw [hX] at hx
+      obtain (hx|hx) := hx
+      · exact ⟨U, _, ⟨Sieve.ofArrows_mk _ _ WalkingPair.left, hx⟩⟩
+      · exact ⟨V, _, ⟨Sieve.ofArrows_mk _ _ WalkingPair.right, hx⟩⟩)
+
+@[simps! X U V W i j p q]
+noncomputable def mayerVietorisSquare :
+    (Opens.grothendieckTopology T).MayerVietorisSquare :=
+  mayerVietorisSquare' U V _ _ rfl rfl
+
+end Opens
