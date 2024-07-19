@@ -23,7 +23,7 @@ variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [Norme
 def erase {n : ℕ} (s : Affine.Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
     Affine.Simplex ℝ P n where
   points := s.points ∘ Fin.succAbove i
-  independent := s.independent.comp_embedding <| (Fin.succAboveEmb i).toEmbedding
+  independent := s.independent.comp_embedding <| Fin.succAboveEmb i
 
 
 theorem erase_zero_erase_succ {n : ℕ} (s : Affine.Simplex ℝ P (n + 2)) (i : Fin (n + 2)) :
