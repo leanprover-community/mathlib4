@@ -377,27 +377,45 @@ end
 
 /-! ### Composition -/
 
-
 section
 
 variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
 variable {δ : Type*} [LinearOrder δ] [TopologicalSpace δ] [OrderTopology δ]
+
+theorem LowerSemicontinuousWithinAt.eventually_le {f : α → γ}
+    (hf : LowerSemicontinuousWithinAt f s x) {a : γ} (hle : ∀ᶠ y in 𝓝[≤] (f x), a ≤ y) :
+    ∀ᶠ x' in 𝓝[s] x, a ≤ f x' := by
+  rcases em (∃ y, y < f x) with ⟨y', hy'⟩ | h
+  · rcases (mem_nhdsWithin_Iic_iff_exists_Ioc_subset' hy').1 hle with ⟨y, ylt, hy⟩
+    refine (hf _ ylt).mono fun z hz ↦ ?_
+    calc
+      a ≤ min (f z) (f x) := hy ⟨lt_min hz ylt, min_le_right _ _⟩
+      _ ≤ f z := min_le_left _ _
+  · push_neg at h
+    exact eventually_of_forall fun _ => (hle.self_of_nhdsWithin le_rfl).trans (h _)
+
+theorem LowerSemicontinuousWithinAt.comp {g : γ → δ} {f : α → γ}
+    (hg : LowerSemicontinuousWithinAt g (Iic (f x)) (f x))
+    (hf : LowerSemicontinuousWithinAt f s x) (gmon : Monotone g) :
+    LowerSemicontinuousWithinAt (g ∘ f) s x := by
+  intro y hy
+  obtain ⟨a, h₁, h₂, h₃⟩ := exists_Icc_mem_subset_of_mem_nhdsWithin_Iic (hg _ hy)
+  refine (hf.eventually_le (mem_of_superset h₂ Icc_subset_Ici_self)).mono fun x hx ↦ ?_
+  calc y < g a := h₃ ⟨le_rfl, h₁⟩
+    _ ≤ g (f x) := gmon hx
+
+theorem ContinuousWithinAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α → γ}
+    (hg : ContinuousWithinAt g (Iic (f x)) (f x)) (hf : LowerSemicontinuousWithinAt f s x)
+    (gmon : Monotone g) :
+    LowerSemicontinuousWithinAt (g ∘ f) s x :=
+  hg.lowerSemicontinuousWithinAt.comp hf gmon
+
 variable {ι : Type*} [TopologicalSpace ι]
 
 theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α → γ}
     (hg : ContinuousAt g (f x)) (hf : LowerSemicontinuousWithinAt f s x) (gmon : Monotone g) :
-    LowerSemicontinuousWithinAt (g ∘ f) s x := by
-  intro y hy
-  by_cases h : ∃ l, l < f x
-  · obtain ⟨z, zlt, hz⟩ : ∃ z < f x, Ioc z (f x) ⊆ g ⁻¹' Ioi y :=
-      exists_Ioc_subset_of_mem_nhds (hg (Ioi_mem_nhds hy)) h
-    filter_upwards [hf z zlt] with a ha
-    calc
-      y < g (min (f x) (f a)) := hz (by simp [zlt, ha, le_refl])
-      _ ≤ g (f a) := gmon (min_le_right _ _)
-
-  · simp only [not_exists, not_lt] at h
-    exact Filter.eventually_of_forall fun a => hy.trans_le (gmon (h (f a)))
+    LowerSemicontinuousWithinAt (g ∘ f) s x :=
+  hg.continuousWithinAt.comp_lowerSemicontinuousWithinAt hf gmon
 #align continuous_at.comp_lower_semicontinuous_within_at ContinuousAt.comp_lowerSemicontinuousWithinAt
 
 theorem ContinuousAt.comp_lowerSemicontinuousAt {g : γ → δ} {f : α → γ} (hg : ContinuousAt g (f x))
