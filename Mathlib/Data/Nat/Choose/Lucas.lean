@@ -29,7 +29,7 @@ namespace Choose
 variable {n k p : ℕ} [Fact p.Prime]
 
 /-- For primes `p`, `choose n k` is congruent to `choose (n % p) (k % p) * choose (n / p) (k / p)`
-modulo `p`. -/
+modulo `p`. Also see `choose_modEq_choose_mod_mul_choose_div_nat` for the version with `MOD`. -/
 theorem choose_modEq_choose_mod_mul_choose_div :
     choose n k ≡ choose (n % p) (k % p) * choose (n / p) (k / p) [ZMOD p] := by
   have decompose : ((X : (ZMod p)[X]) + 1) ^ n = (X + 1) ^ (n % p) * (X ^ p + 1) ^ (n / p) := by
@@ -58,6 +58,13 @@ theorem choose_modEq_choose_mod_mul_choose_div :
   · rw [mem_product, mem_range, mem_range, not_and_or, lt_succ, not_le, not_lt] at h
     cases h <;> simp [choose_eq_zero_of_lt (by tauto)]
 
+/-- For primes `p`, `choose n k` is congruent to `choose (n % p) (k % p) * choose (n / p) (k / p)`
+modulo `p`. Also see `choose_modEq_choose_mod_mul_choose_div` for the version with `ZMOD`. -/
+theorem choose_modEq_choose_mod_mul_choose_div_nat :
+    choose n k ≡ choose (n % p) (k % p) * choose (n / p) (k / p) [MOD p] := by
+  rw [← Int.natCast_modEq_iff]
+  exact_mod_cast choose_modEq_choose_mod_mul_choose_div
+
 /-- For primes `p`, `choose n k` is congruent to the product of `choose (⌊n / p ^ i⌋ % p)
 (⌊k / p ^ i⌋ % p)` over i < a, multiplied by `choose (⌊n / p ^ a⌋) (⌊k / p ^ a⌋)`, modulo `p`. -/
 theorem choose_modEq_choose_mul_prod_range_choose (a : ℕ) :
@@ -80,4 +87,12 @@ theorem choose_modEq_prod_range_choose {a : ℕ} (ha₁ : n < p ^ a) (ha₂ : k 
   simp_rw [Nat.div_eq_of_lt ha₁, Nat.div_eq_of_lt ha₂, choose, cast_one, one_mul, cast_prod,
     Int.ModEq.refl]
 
+/-- **Lucas's Theorem**: For primes `p`, `choose n k` is congruent to the product of
+`choose (⌊n / p ^ i⌋ % p) (⌊k / p ^ i⌋ % p)` over `i` modulo `p`. -/
+theorem choose_modEq_prod_range_choose_nat {a : ℕ} (ha₁ : n < p ^ a) (ha₂ : k < p ^ a) :
+    choose n k ≡ ∏ i in range a, choose (n / p ^ i % p) (k / p ^ i % p) [MOD p] := by
+  rw [← Int.natCast_modEq_iff]
+  exact_mod_cast choose_modEq_prod_range_choose ha₁ ha₂
+
 alias lucas_theorem := choose_modEq_prod_range_choose
+alias lucas_theorem_nat := choose_modEq_prod_range_choose_nat
