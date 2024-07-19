@@ -25,6 +25,9 @@ it is used in the definition of `Matroid.closure`.
 
 * For `M : Matroid α` and `F : Set α`, `M.Flat F` means that `F` is a flat of `M`.
 * For `M : Matroid α` and `X : Set α`, `M.closure X` is the closure of `X` in `M`.
+* For `M : Matroid α` and `X : ↑(Iic M.E)` (i.e. a bundled subset of `M.E`),
+  `M.subtypeClosure X` is the closure of `X`, viewed as a term in `↑(Iic M.E)`.
+  This is a `ClosureOperator` on `↑(Iic M.E)`.
 
 ## Implementation details
 
@@ -37,29 +40,29 @@ for `X ⊆ M.E`, the two best candidates for extending it to all `X` seem to be:
 (1) The function for which `M.closure X = M.closure (X ∩ M.E)` for all `X : Set α`
 (2) The function for which `M.closure X = M.closure (X ∩ M.E) ∪ X` for all `X : Set α`
 
-For both options, the function `closure` is monotone and idempotent with no assumptions on its
-argument.
+For both options, the function `closure` is monotone and idempotent with no assumptions on `X`.
 
 Choice (1) has the advantage that `M.closure X ⊆ M.E` holds for all `X` without the assumption
 that `X ⊆ M.E`, which is very nice for `aesop_mat`. It is also fairly convenient to rewrite
 `M.closure X` to `M.closure (X ∩ M.E)` when one needs to work with a subset of the ground set.
 Its disadvantage is that the statement `X ⊆ M.closure X` is only true provided that `X ⊆ M.E`.
 
-Choice (2) has the reverse property: we would have `X ⊆ M.closure X` for all `X`, but the condition
-`M.closure X ⊆ M.E` requires `X ⊆ M.E` to hold. It has a couple of other advantages too:
-is is actually the closure function of a matroid on `α` with ground set `univ`
-(specifically, the direct sum of `M` and a free matroid on `M.Eᶜ`),
+Choice (2) has the reverse property: we would have `X ⊆ M.closure X` for all `X`,
+but the condition `M.closure X ⊆ M.E` requires `X ⊆ M.E` to hold.
+It has a couple of other advantages too: is is actually the closure function of a matroid on `α`
+with ground set `univ` (specifically, the direct sum of `M` and a free matroid on `M.Eᶜ`),
 and because of this, it is an example of a `ClosureOperator` on `α`, which in turn gives access
 to nice existing API for both `ClosureOperator` and `GaloisInsertion`.
 This also relates to flats; `F ⊆ M.E ∧ ClosureOperator.IsClosed F` is equivalent to `M.Flat F`.
-(This all fails for choice (1), since `X ⊆ M.closure X` is required for
+(All of this fails for choice (1), since `X ⊆ M.closure X` is required for
 a `ClosureOperator`, but isn't true for non-subsets of `M.E`)
 
 The API that choice (2) would offer is very beguiling, but after extensive experimentation in
 an external repo, it seems that (1) is far less rough around the edges in practice,
-so we go with (1).
-The `ClosureOperator`/`GaloisInsertion` API is still available on a subtype via
-`Matroid.SubtypeClosure`, albeit less elegantly.
+so we go with (1). It may be helpful at some point to define a primed version
+`Matroid.closure' : ClosureOperator (Set α)` corresponding to choice (2).
+Failing that, the `ClosureOperator`/`GaloisInsertion` API is still available on
+the subtype `↑(Iic M.E)` via `Matroid.SubtypeClosure`, albeit less elegantly.
 -/
 
 open Set
