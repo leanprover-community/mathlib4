@@ -49,7 +49,7 @@ noncomputable section
 open Finset (antidiagonal mem_antidiagonal)
 
 /-- Formal power series over a coefficient type `R` -/
-def PowerSeries (R : Type*) :=
+abbrev PowerSeries (R : Type*) :=
   MvPowerSeries Unit R
 
 namespace PowerSeries
@@ -310,13 +310,13 @@ theorem smul_eq_C_mul (f : R⟦X⟧) (a : R) : a • f = C R a * f := by
 theorem coeff_succ_mul_X (n : ℕ) (φ : R⟦X⟧) : coeff R (n + 1) (φ * X) = coeff R n φ := by
   simp only [coeff, Finsupp.single_add]
   convert φ.coeff_add_mul_monomial (single () n) (single () 1) _
-  rw [mul_one]; rfl
+  rw [mul_one]
 
 @[simp]
 theorem coeff_succ_X_mul (n : ℕ) (φ : R⟦X⟧) : coeff R (n + 1) (X * φ) = coeff R n φ := by
   simp only [coeff, Finsupp.single_add, add_comm n 1]
   convert φ.coeff_add_monomial_mul (single () 1) (single () n) _
-  rw [one_mul]; rfl
+  rw [one_mul]
 
 @[simp]
 theorem constantCoeff_C (a : R) : constantCoeff R (C R a) = a :=
@@ -554,7 +554,7 @@ variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
     coeff R d (∏ j ∈ s, f j) = ∑ l ∈ finsuppAntidiag s d, ∏ i ∈ s, coeff R (l i) (f i) := by
   simp only [coeff]
-  convert MvPowerSeries.coeff_prod _ _ _
+  rw [MvPowerSeries.coeff_prod]
   rw [← AddEquiv.finsuppUnique_symm d, ← mapRange_finsuppAntidiag_eq, sum_map, sum_congr rfl]
   intro x _
   apply prod_congr rfl
