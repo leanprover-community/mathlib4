@@ -98,9 +98,9 @@ theorem toPGame_moveLeft {o : Ordinal} (i) :
 #align ordinal.to_pgame_move_left Ordinal.toPGame_moveLeft
 
 /-- `0.toPGame` has the same moves as `0`. -/
-noncomputable def zeroToPGameRelabelling : toPGame 0 ≡r 0 :=
-  Relabelling.isEmpty _
-#align ordinal.zero_to_pgame_relabelling Ordinal.zeroToPGameRelabelling
+lemma zero_toPGame : toPGame 0 ≡ 0 :=
+  identical_zero _
+#align ordinal.zero_to_pgame_relabelling Ordinal.zero_toPGame
 
 noncomputable instance uniqueOneToPGameLeftMoves : Unique (toPGame 1).LeftMoves :=
   (Equiv.cast <| toPGame_leftMoves 1).unique
@@ -122,10 +122,14 @@ theorem one_toPGame_moveLeft (x) : (toPGame 1).moveLeft x = toPGame 0 := by simp
 #align ordinal.one_to_pgame_move_left Ordinal.one_toPGame_moveLeft
 
 /-- `1.toPGame` has the same moves as `1`. -/
-noncomputable def oneToPGameRelabelling : toPGame 1 ≡r 1 :=
-  ⟨Equiv.equivOfUnique _ _, Equiv.equivOfIsEmpty _ _, fun i => by
-    simpa using zeroToPGameRelabelling, isEmptyElim⟩
-#align ordinal.one_to_pgame_relabelling Ordinal.oneToPGameRelabelling
+lemma one_toPGame : toPGame.{u} 1 ≡ (1 : PGame.{u}) := by
+  refine Identical.ext (fun z ↦ ?_) (fun z ↦ ?_)
+  · dsimp [· ∈ₗ ·]
+    simp_rw [one_toPGame_moveLeft, Unique.exists_iff]
+    exact Identical.congr_right zero_toPGame
+  · dsimp [· ∈ᵣ ·]
+    simp
+#align ordinal.one_to_pgame_relabelling Ordinal.one_toPGame
 
 theorem toPGame_lf {a b : Ordinal} (h : a < b) : a.toPGame ⧏ b.toPGame := by
   convert moveLeft_lf (toLeftMovesToPGame ⟨a, h⟩); rw [toPGame_moveLeft]
@@ -142,7 +146,7 @@ theorem toPGame_lt {a b : Ordinal} (h : a < b) : a.toPGame < b.toPGame :=
 #align ordinal.to_pgame_lt Ordinal.toPGame_lt
 
 theorem toPGame_nonneg (a : Ordinal) : 0 ≤ a.toPGame :=
-  zeroToPGameRelabelling.ge.trans <| toPGame_le <| Ordinal.zero_le a
+  zero_toPGame.ge.trans <| toPGame_le <| Ordinal.zero_le a
 #align ordinal.to_pgame_nonneg Ordinal.toPGame_nonneg
 
 @[simp]
