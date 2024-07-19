@@ -246,17 +246,24 @@ def compPreservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColi
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J`
 for `Fintype J` -/
 class PreservesFiniteCoproducts (F : C ⥤ D) where
+  /-- preservation of colimits indexed by `Discrete J` when `[Fintype J]` -/
   preserves : ∀ (J : Type) [Fintype J], PreservesColimitsOfShape (Discrete J) F
 
-attribute [instance] PreservesFiniteCoproducts.preserves
+noncomputable instance (F : C ⥤ D) (J : Type*) [Finite J] [PreservesFiniteCoproducts F] :
+    PreservesColimitsOfShape (Discrete J) F := by
+  apply Nonempty.some
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
+  have : PreservesColimitsOfShape (Discrete (Fin n)) F := PreservesFiniteCoproducts.preserves _
+  exact ⟨preservesColimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F⟩
 
-instance compPreservesFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E)
+noncomputable instance compPreservesFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteCoproducts F] [PreservesFiniteCoproducts G] :
     PreservesFiniteCoproducts (F ⋙ G) where
   preserves _ _ := inferInstance
 
 noncomputable instance (F : C ⥤ D) [PreservesFiniteColimits F] : PreservesFiniteCoproducts F where
   preserves _ _ := inferInstance
+
 
 /--
 A functor is said to reflect finite colimits, if it reflects all colimits of shape `J`,
@@ -308,7 +315,7 @@ def preservesFiniteColimitsOfReflectsOfPreserves (F : C ⥤ D) (G : D ⥤ E)
 If `F ⋙ G` preserves finite coproducts and `G` reflects finite coproducts, then `F` preserves
 finite coproducts.
 -/
-def preservesFiniteCoproductsOfReflectsOfPreserves (F : C ⥤ D) (G : D ⥤ E)
+noncomputable def preservesFiniteCoproductsOfReflectsOfPreserves (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteCoproducts (F ⋙ G)] [ReflectsFiniteCoproducts G] :
     PreservesFiniteCoproducts F where
   preserves _ _ := preservesColimitsOfShapeOfReflectsOfPreserves F G

@@ -34,6 +34,10 @@ reason about them using the existing `Setoid` and its infrastructure.
 setoid, equivalence, iseqv, relation, equivalence relation
 -/
 
+attribute [refl] Setoid.refl
+attribute [symm] Setoid.symm
+attribute [trans] Setoid.trans
+
 variable {α : Type*} {β : Type*}
 
 /-- A version of `Setoid.r` that takes the equivalence relation as an explicit argument. -/
@@ -202,8 +206,7 @@ lemma sInf_equiv {S : Set (Setoid α)} {x y : α} :
 
 lemma quotient_mk_sInf_eq {S : Set (Setoid α)} {x y : α} :
     Quotient.mk (sInf S) x = Quotient.mk (sInf S) y ↔ ∀ s ∈ S, s.Rel x y := by
-  simp
-  rfl
+  simp [sInf_equiv]
 
 /-- The map induced between quotients by a setoid inequality. -/
 def map_of_le {s t : Setoid α} (h : s ≤ t) : Quotient s → Quotient t :=

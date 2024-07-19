@@ -8,7 +8,6 @@ import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Module
@@ -254,7 +253,12 @@ instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix
 
 section
 
-@[simp]
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/4481
+the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
+-/
+@[simp, nolint simpNF]
 theorem zero_apply [Zero α] (i : m) (j : n) : (0 : Matrix m n α) i j = 0 := rfl
 
 @[simp]
@@ -580,7 +584,10 @@ theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (f := fun _
 
 lemma zero_le_one_elem [Preorder α] [ZeroLEOneClass α] (i j : n) :
     0 ≤ (1 : Matrix n n α) i j := by
-  by_cases hi : i = j <;> simp [hi]
+  by_cases hi : i = j
+  · subst hi
+    simp
+  · simp [hi]
 
 lemma zero_le_one_row [Preorder α] [ZeroLEOneClass α] (i : n) :
     0 ≤ (1 : Matrix n n α) i :=
@@ -612,36 +619,10 @@ instance instAddCommGroupWithOne [AddCommGroupWithOne α] :
   __ := addCommGroup
   __ := instAddGroupWithOne
 
-section Numeral
-
-set_option linter.deprecated false
-
-@[deprecated (since := "2023-04-02"), simp]
-theorem bit0_apply [Add α] (M : Matrix m m α) (i : m) (j : m) : (bit0 M) i j = bit0 (M i j) :=
-  rfl
-#align matrix.bit0_apply Matrix.bit0_apply
-
-variable [AddZeroClass α] [One α]
-
-@[deprecated (since := "2023-04-02")]
-theorem bit1_apply (M : Matrix n n α) (i : n) (j : n) :
-    (bit1 M) i j = if i = j then bit1 (M i j) else bit0 (M i j) := by
-  dsimp [bit1]
-  by_cases h : i = j <;>
-  simp [h]
-#align matrix.bit1_apply Matrix.bit1_apply
-
-@[deprecated (since := "2023-04-02"), simp]
-theorem bit1_apply_eq (M : Matrix n n α) (i : n) : (bit1 M) i i = bit1 (M i i) := by
-  simp [bit1_apply]
-#align matrix.bit1_apply_eq Matrix.bit1_apply_eq
-
-@[deprecated (since := "2023-04-02"), simp]
-theorem bit1_apply_ne (M : Matrix n n α) {i j : n} (h : i ≠ j) : (bit1 M) i j = bit0 (M i j) := by
-  simp [bit1_apply, h]
-#align matrix.bit1_apply_ne Matrix.bit1_apply_ne
-
-end Numeral
+#noalign matrix.bit0_apply
+#noalign matrix.bit1_apply
+#noalign matrix.bit1_apply_eq
+#noalign matrix.bit1_apply_ne
 
 end Diagonal
 
@@ -1605,7 +1586,7 @@ coefficients. This is `Matrix.map` as an `AlgHom`. -/
 def mapMatrix (f : α →ₐ[R] β) : Matrix m m α →ₐ[R] Matrix m m β :=
   { f.toRingHom.mapMatrix with
     toFun := fun M => M.map f
-    commutes' := fun r => Matrix.map_algebraMap r f f.map_zero (f.commutes r) }
+    commutes' := fun r => Matrix.map_algebraMap r f (map_zero _) (f.commutes r) }
 #align alg_hom.map_matrix AlgHom.mapMatrix
 
 @[simp]
@@ -2438,9 +2419,6 @@ theorem conjTranspose_ratCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMo
   Matrix.ext <| by simp
 #align matrix.conj_transpose_rat_cast_smul Matrix.conjTranspose_ratCast_smul
 
-#adaptation_note /-- nightly-2024-04-01
-The simpNF linter now times out on this lemma.
-See https://github.com/leanprover-community/mathlib4/issues/12231 -/
 @[simp]
 theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ α] (c : ℚ)
     (M : Matrix m n α) : (c • M)ᴴ = c • Mᴴ :=

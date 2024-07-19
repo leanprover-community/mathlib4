@@ -76,21 +76,21 @@ variable {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ']
 `φ' : a' ⟶ b` which also lifts `f`, then `IsCartesian.map f φ φ'` is the morphism `a' ⟶ a` lifting
 `𝟙 R` obtained from the universal property of `φ`. -/
 protected noncomputable def map : a' ⟶ a :=
-  Classical.choose <| IsCartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ'
+  Classical.choose <| IsCartesian.universal_property (p := p) (f := f) (φ := φ) φ'
 
 instance map_isHomLift : IsHomLift p (𝟙 R) (IsCartesian.map p f φ φ') :=
-  (Classical.choose_spec <| IsCartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').1.1
+  (Classical.choose_spec <| IsCartesian.universal_property (p := p) (f := f) (φ := φ) φ').1.1
 
 @[reassoc (attr := simp)]
 lemma fac : IsCartesian.map p f φ φ' ≫ φ = φ' :=
-  (Classical.choose_spec <| IsCartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').1.2
+  (Classical.choose_spec <| IsCartesian.universal_property (p := p) (f := f) (φ := φ) φ').1.2
 
 /-- Given a cartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and another morphism
 `φ' : a' ⟶ b` which also lifts `f`. Then any morphism `ψ : a' ⟶ a` lifting `𝟙 R` such that
 `g ≫ ψ = φ'` must equal the map induced from the universal property of `φ`. -/
 lemma map_uniq (ψ : a' ⟶ a) [IsHomLift p (𝟙 R) ψ] (hψ : ψ ≫ φ = φ') :
     ψ = IsCartesian.map p f φ φ' :=
-  (Classical.choose_spec <| IsCartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').2
+  (Classical.choose_spec <| IsCartesian.universal_property (p := p) (f := f) (φ := φ) φ').2
     ψ ⟨inferInstance, hψ⟩
 
 end
@@ -109,7 +109,6 @@ lemma map_self : IsCartesian.map p f φ φ = 𝟙 a := by
 
 /-- The canonical isomorphism between the domains of two cartesian morphisms
 lying over the same object. -/
-@[simps]
 noncomputable def domainUniqueUpToIso {a' : 𝒳} (φ' : a' ⟶ b) [IsCartesian p f φ'] : a' ≅ a where
   hom := IsCartesian.map p f φ φ'
   inv := IsCartesian.map p f φ' φ
@@ -333,8 +332,9 @@ noncomputable def domainIsoOfBaseIso {R R' S : 𝒮} {a a' b : 𝒳} {f : R ⟶ 
   {g : R' ≅ R} (h : f' = g.hom ≫ f) (φ : a ⟶ b) (φ' : a' ⟶ b) [IsStronglyCartesian p f φ]
     [IsStronglyCartesian p f' φ'] : a' ≅ a where
   hom := map p f φ h φ'
-  inv := @map _ _ _ _ p _ _ _ _ f' φ' _ _ _ _ _ (congrArg (g.inv ≫ ·) h.symm) φ
-    (by simp; infer_instance)
+  inv := by
+    convert map p f' φ' (congrArg (g.inv ≫ ·) h.symm) φ
+    simpa using IsCartesian.toIsHomLift
 
 end IsStronglyCartesian
 

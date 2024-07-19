@@ -35,6 +35,7 @@ Note that, rather than using the derived algebraic structures on these subobject
 one should use `C(α, β)` with the appropriate instance of the structure.
 -/
 
+assert_not_exists StoneCech
 
 --attribute [elab_without_expected_type] Continuous.comp
 
@@ -852,8 +853,8 @@ instance ContinuousMap.subsingleton_subalgebra (α : Type*) [TopologicalSpace α
     Subsingleton (Subalgebra R C(α, R)) :=
   ⟨fun s₁ s₂ => by
     cases isEmpty_or_nonempty α
-    · haveI : Subsingleton C(α, R) := DFunLike.coe_injective.subsingleton
-      exact Subsingleton.elim _ _
+    · have : Subsingleton C(α, R) := DFunLike.coe_injective.subsingleton
+      subsingleton
     · inhabit α
       ext f
       have h : f = algebraMap R C(α, R) (f default) := by

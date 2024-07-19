@@ -280,11 +280,31 @@ instance NonUnitalSubalgebra.nonUnitalSeminormedRing {𝕜 : Type*} [CommRing �
   { s.toSubmodule.seminormedAddCommGroup, s.toNonUnitalRing with
     norm_mul := fun a b => norm_mul_le a.1 b.1 }
 
+/-- A non-unital subalgebra of a non-unital seminormed ring is also a non-unital seminormed ring,
+with the restriction of the norm.  -/
+-- necessary to require `SMulMemClass S 𝕜 E` so that `𝕜` can be determined as an `outParam`
+@[nolint unusedArguments]
+instance (priority := 75) NonUnitalSubalgebraClass.nonUnitalSeminormedRing {S 𝕜 E : Type*}
+    [CommRing 𝕜] [NonUnitalSeminormedRing E] [Module 𝕜 E] [SetLike S E] [NonUnitalSubringClass S E]
+    [SMulMemClass S 𝕜 E] (s : S) :
+    NonUnitalSeminormedRing s :=
+  { AddSubgroupClass.seminormedAddCommGroup s, NonUnitalSubringClass.toNonUnitalRing s with
+    norm_mul := fun a b => norm_mul_le a.1 b.1 }
+
 /-- A non-unital subalgebra of a non-unital normed ring is also a non-unital normed ring, with the
 restriction of the norm.  -/
 instance NonUnitalSubalgebra.nonUnitalNormedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*}
     [NonUnitalNormedRing E] [Module 𝕜 E] (s : NonUnitalSubalgebra 𝕜 E) : NonUnitalNormedRing s :=
   { s.nonUnitalSeminormedRing with
+    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+
+/-- A non-unital subalgebra of a non-unital normed ring is also a non-unital normed ring,
+with the restriction of the norm.  -/
+instance (priority := 75) NonUnitalSubalgebraClass.nonUnitalNormedRing {S 𝕜 E : Type*}
+    [CommRing 𝕜] [NonUnitalNormedRing E] [Module 𝕜 E] [SetLike S E] [NonUnitalSubringClass S E]
+    [SMulMemClass S 𝕜 E] (s : S) :
+    NonUnitalNormedRing s :=
+  { nonUnitalSeminormedRing s with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 instance ULift.nonUnitalSeminormedRing : NonUnitalSeminormedRing (ULift α) :=
@@ -347,12 +367,30 @@ instance Subalgebra.seminormedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*} [S
     norm_mul := fun a b => norm_mul_le a.1 b.1 }
 #align subalgebra.semi_normed_ring Subalgebra.seminormedRing
 
+/-- A subalgebra of a seminormed ring is also a seminormed ring, with the restriction of the
+norm. -/
+-- necessary to require `SMulMemClass S 𝕜 E` so that `𝕜` can be determined as an `outParam`
+@[nolint unusedArguments]
+instance (priority := 75) SubalgebraClass.seminormedRing {S 𝕜 E : Type*} [CommRing 𝕜]
+    [SeminormedRing E] [Algebra 𝕜 E] [SetLike S E] [SubringClass S E] [SMulMemClass S 𝕜 E]
+    (s : S) : SeminormedRing s :=
+  { AddSubgroupClass.seminormedAddCommGroup s, SubringClass.toRing s with
+    norm_mul := fun a b => norm_mul_le a.1 b.1 }
+
 /-- A subalgebra of a normed ring is also a normed ring, with the restriction of the norm. -/
 instance Subalgebra.normedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*} [NormedRing E]
     [Algebra 𝕜 E] (s : Subalgebra 𝕜 E) : NormedRing s :=
   { s.seminormedRing with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 #align subalgebra.normed_ring Subalgebra.normedRing
+
+/-- A subalgebra of a normed ring is also a normed ring, with the restriction of the
+norm. -/
+instance (priority := 75) SubalgebraClass.normedRing {S 𝕜 E : Type*} [CommRing 𝕜]
+    [NormedRing E] [Algebra 𝕜 E] [SetLike S E] [SubringClass S E] [SMulMemClass S 𝕜 E]
+    (s : S) : NormedRing s :=
+  { seminormedRing s with
+    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 theorem Nat.norm_cast_le : ∀ n : ℕ, ‖(n : α)‖ ≤ n * ‖(1 : α)‖
   | 0 => by simp

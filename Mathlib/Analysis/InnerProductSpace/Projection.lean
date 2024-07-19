@@ -634,7 +634,7 @@ theorem orthogonalProjection_singleton {v : E} (w : E) :
   have key :
     (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • ((orthogonalProjection (𝕜 ∙ v) w) : E) =
       (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v := by
-    simp [mul_smul, smul_orthogonalProjection_singleton 𝕜 w, -ofReal_pow]
+    simp [mul_smul, smul_orthogonalProjection_singleton 𝕜 w, -map_pow]
   convert key using 1 <;> field_simp [hv']
 #align orthogonal_projection_singleton orthogonalProjection_singleton
 
@@ -844,6 +844,12 @@ variable {K}
 theorem Submodule.isCompl_orthogonal_of_completeSpace [HasOrthogonalProjection K] : IsCompl K Kᗮ :=
   ⟨K.orthogonal_disjoint, codisjoint_iff.2 Submodule.sup_orthogonal_of_completeSpace⟩
 #align submodule.is_compl_orthogonal_of_complete_space Submodule.isCompl_orthogonal_of_completeSpace
+
+@[simp]
+theorem orthogonalComplement_eq_orthogonalComplement {L : Submodule 𝕜 E} [HasOrthogonalProjection K]
+    [HasOrthogonalProjection L] : Kᗮ = Lᗮ ↔ K = L :=
+  ⟨fun h ↦ by simpa using congr(Submodule.orthogonal $(h)),
+    fun h ↦ congr(Submodule.orthogonal $(h))⟩
 
 @[simp]
 theorem Submodule.orthogonal_eq_bot_iff [HasOrthogonalProjection K] : Kᗮ = ⊥ ↔ K = ⊤ := by

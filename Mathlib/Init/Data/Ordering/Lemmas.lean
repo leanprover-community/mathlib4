@@ -9,6 +9,17 @@ import Mathlib.Init.Data.Ordering.Basic
 #align_import init.data.ordering.lemmas from "leanprover-community/lean"@"4bd314f7bd5e0c9e813fc201f1279a23f13f9f1d"
 
 /-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+
 # Some `Ordering` lemmas
 -/
 

@@ -98,11 +98,11 @@ theorem updateRow_eq_transvection [Finite n] (c : R) :
   ext a b
   by_cases ha : i = a
   · by_cases hb : j = b
-    · simp only [updateRow_self, transvection, ha, hb, Pi.add_apply, StdBasisMatrix.apply_same,
-        one_apply_eq, Pi.smul_apply, mul_one, Algebra.id.smul_eq_mul, add_apply]
-    · simp only [updateRow_self, transvection, ha, hb, StdBasisMatrix.apply_of_ne, Pi.add_apply,
-        Ne, not_false_iff, Pi.smul_apply, and_false_iff, one_apply_ne, Algebra.id.smul_eq_mul,
-        mul_zero, add_apply]
+    · simp only [ha, updateRow_self, Pi.add_apply, one_apply, Pi.smul_apply, hb, ↓reduceIte,
+        smul_eq_mul, mul_one, transvection, add_apply, StdBasisMatrix.apply_same]
+    · simp only [ha, updateRow_self, Pi.add_apply, one_apply, Pi.smul_apply, hb, ↓reduceIte,
+        smul_eq_mul, mul_zero, add_zero, transvection, add_apply, and_false, not_false_eq_true,
+        StdBasisMatrix.apply_of_ne]
   · simp only [updateRow_ne, transvection, ha, Ne.symm ha, StdBasisMatrix.apply_of_ne, add_zero,
       Algebra.id.smul_eq_mul, Ne, not_false_iff, DMatrix.add_apply, Pi.smul_apply,
       mul_zero, false_and_iff, add_apply]
@@ -367,16 +367,34 @@ def listTransvecRow : List (Matrix (Sum (Fin r) Unit) (Sum (Fin r) Unit) 𝕜) :
     transvection (inr unit) (inl i) <| -M (inr unit) (inl i) / M (inr unit) (inr unit)
 #align matrix.pivot.list_transvec_row Matrix.Pivot.listTransvecRow
 
+@[simp]
+theorem length_listTransvecCol : (listTransvecCol M).length = r := by simp [listTransvecCol]
+
+theorem listTransvecCol_get (i : Fin (listTransvecCol M).length) :
+    (listTransvecCol M).get i =
+      letI i' := Fin.cast (length_listTransvecCol M) i
+      transvection (inl i') (inr unit) <| -M (inl i') (inr unit) / M (inr unit) (inr unit) := by
+  simp [listTransvecCol, Fin.cast]
+
+@[simp]
+theorem length_listTransvecRow : (listTransvecRow M).length = r := by simp [listTransvecRow]
+
+theorem listTransvecRow_get (i : Fin (listTransvecRow M).length) :
+    (listTransvecRow M).get i =
+      letI i' := Fin.cast (length_listTransvecRow M) i
+      transvection (inr unit) (inl i') <| -M (inr unit) (inl i') / M (inr unit) (inr unit) := by
+  simp [listTransvecRow, Fin.cast]
+
 /-- Multiplying by some of the matrices in `listTransvecCol M` does not change the last row. -/
 theorem listTransvecCol_mul_last_row_drop (i : Sum (Fin r) Unit) {k : ℕ} (hk : k ≤ r) :
     (((listTransvecCol M).drop k).prod * M) (inr unit) i = M (inr unit) i := by
-  -- Porting note: `apply` didn't work anymore, because of the implicit arguments
-  refine Nat.decreasingInduction' ?_ hk ?_
-  · intro n hn _ IH
+  induction hk using Nat.decreasingInduction with
+  | of_succ n hn IH =>
     have hn' : n < (listTransvecCol M).length := by simpa [listTransvecCol] using hn
-    rw [List.drop_eq_get_cons hn']
+    rw [List.drop_eq_getElem_cons hn']
     simpa [listTransvecCol, Matrix.mul_assoc]
-  · simp only [listTransvecCol, List.length_ofFn, le_refl, List.drop_eq_nil_of_le, List.prod_nil,
+  | self =>
+    simp only [length_listTransvecCol, le_refl, List.drop_eq_nil_of_le, List.prod_nil,
       Matrix.one_mul]
 #align matrix.pivot.list_transvec_col_mul_last_row_drop Matrix.Pivot.listTransvecCol_mul_last_row_drop
 
@@ -397,14 +415,13 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
           if k ≤ i then 0 else M (inl i) (inr unit) by
     simpa only [List.drop, _root_.zero_le, ite_true] using H 0 (zero_le _)
   intro k hk
-  -- Porting note: `apply` didn't work anymore, because of the implicit arguments
-  refine Nat.decreasingInduction' ?_ hk ?_
-  · intro n hn hk IH
+  induction hk using Nat.decreasingInduction with
+  | of_succ n hn IH =>
     have hn' : n < (listTransvecCol M).length := by simpa [listTransvecCol] using hn
     let n' : Fin r := ⟨n, hn⟩
-    rw [List.drop_eq_get_cons hn']
+    rw [List.drop_eq_getElem_cons hn']
     have A :
-      (listTransvecCol M).get ⟨n, hn'⟩ =
+      (listTransvecCol M)[n] =
         transvection (inl n') (inr unit) (-M (inl n') (inr unit) / M (inr unit) (inr unit)) := by
       simp [listTransvecCol]
     simp only [Matrix.mul_assoc, A, List.prod_cons]
@@ -427,7 +444,8 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
       · rw [if_neg, if_neg]
         · simpa only [hni.symm, not_le, or_false_iff] using Nat.lt_succ_iff_lt_or_eq.1 hi
         · simpa only [not_le] using hi
-  · simp only [listTransvecCol, List.length_ofFn, le_refl, List.drop_eq_nil_of_le, List.prod_nil,
+  | self =>
+    simp only [length_listTransvecCol, le_refl, List.drop_eq_nil_of_le, List.prod_nil,
       Matrix.one_mul]
     rw [if_neg]
     simpa only [not_le] using i.2
@@ -441,10 +459,10 @@ theorem mul_listTransvecRow_last_col_take (i : Sum (Fin r) Unit) {k : ℕ} (hk :
   · have hkr : k < r := hk
     let k' : Fin r := ⟨k, hkr⟩
     have :
-      (listTransvecRow M).get? k =
+      (listTransvecRow M)[k]? =
         ↑(transvection (inr Unit.unit) (inl k')
             (-M (inr Unit.unit) (inl k') / M (inr Unit.unit) (inr Unit.unit))) := by
-      simp only [listTransvecRow, List.ofFnNthVal, hkr, dif_pos, List.get?_ofFn]
+      simp only [listTransvecRow, List.ofFnNthVal, hkr, dif_pos, List.getElem?_ofFn]
     simp only [List.take_succ, ← Matrix.mul_assoc, this, List.prod_append, Matrix.mul_one,
       List.prod_cons, List.prod_nil, Option.toList_some]
     rw [mul_transvection_apply_of_ne, IH hkr.le]
@@ -478,10 +496,10 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
   · have hnr : n < r := hk
     let n' : Fin r := ⟨n, hnr⟩
     have A :
-      (listTransvecRow M).get? n =
+      (listTransvecRow M)[n]? =
         ↑(transvection (inr unit) (inl n')
         (-M (inr unit) (inl n') / M (inr unit) (inr unit))) := by
-      simp only [listTransvecRow, List.ofFnNthVal, hnr, dif_pos, List.get?_ofFn]
+      simp only [listTransvecRow, List.ofFnNthVal, hnr, dif_pos, List.getElem?_ofFn]
     simp only [List.take_succ, A, ← Matrix.mul_assoc, List.prod_append, Matrix.mul_one,
       List.prod_cons, List.prod_nil, Option.toList_some]
     by_cases h : n' = i

@@ -46,3 +46,5 @@ theorem FormallyUnramified.iff_subsingleton_kaehlerDifferential :
             (derivationToSquareZeroEquivLift I hI)).surjective.subsingleton
     exact Subtype.ext_iff.mp (@Subsingleton.elim _ this ⟨f₁, rfl⟩ ⟨f₂, e.symm⟩)
 #align algebra.formally_unramified.iff_subsingleton_kaehler_differential Algebra.FormallyUnramified.iff_subsingleton_kaehlerDifferential
+
+end Algebra

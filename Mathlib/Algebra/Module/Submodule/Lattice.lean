@@ -3,10 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Equiv
+import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.Algebra.PUnitInstances
+import Mathlib.Algebra.PUnitInstances.Module
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 #align_import algebra.module.submodule.lattice from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
