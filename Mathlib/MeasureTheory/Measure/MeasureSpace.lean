@@ -1737,13 +1737,6 @@ instance cofinite.instIsMeasurablyGenerated : IsMeasurablyGenerated μ.cofinite 
     · rw [compl_subset_comm]
       apply subset_toMeasurable
 
-instance cofinite.instIsMeasurablyGenerated : IsMeasurablyGenerated μ.cofinite where
-  exists_measurable_subset s hs := by
-    refine ⟨(toMeasurable μ sᶜ)ᶜ, ?_, (measurableSet_toMeasurable _ _).compl, ?_⟩
-    · rwa [compl_mem_cofinite, measure_toMeasurable]
-    · rw [compl_subset_comm]
-      apply subset_toMeasurable
-
 end Measure
 
 open Measure

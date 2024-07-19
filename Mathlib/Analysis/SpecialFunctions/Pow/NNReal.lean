@@ -219,12 +219,6 @@ theorem lt_rpow_inv_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x < y ^ z⁻¹ 
 theorem rpow_inv_lt_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ < y ↔ x < y ^ z := by
   simp only [← not_le, le_rpow_inv_iff hz]
 
-theorem lt_rpow_inv_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x < y ^ z⁻¹ ↔ x ^z < y := by
-  simp only [← not_le, rpow_inv_le_iff hz]
-
-theorem rpow_inv_lt_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ < y ↔ x < y ^ z := by
-  simp only [← not_le, le_rpow_inv_iff hz]
-
 @[gcongr] theorem rpow_lt_rpow_of_exponent_lt {x : ℝ≥0} {y z : ℝ} (hx : 1 < x) (hyz : y < z) :
     x ^ y < x ^ z :=
   Real.rpow_lt_rpow_of_exponent_lt hx hyz

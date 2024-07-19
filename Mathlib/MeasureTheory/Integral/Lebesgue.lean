@@ -1335,11 +1335,6 @@ theorem setLIntegral_iUnion_of_directed {ι : Type*} [Countable ι]
   simp only [lintegral_def, iSup_comm (ι := ι),
     SimpleFunc.lintegral_restrict_iUnion_of_directed _ hd]
 
-theorem setLintegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : MeasurableSet s)
-    (hfs : ∫⁻ x in s, f x ∂μ ≠ ∞) :
-    ∫⁻ x in sᶜ, f x ∂μ = ∫⁻ x, f x ∂μ - ∫⁻ x in s, f x ∂μ := by
-  rw [← lintegral_add_compl (μ := μ) f hsm, ENNReal.add_sub_cancel_left hfs]
-
 theorem lintegral_max {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g) :
     ∫⁻ x, max (f x) (g x) ∂μ =
       ∫⁻ x in { x | f x ≤ g x }, g x ∂μ + ∫⁻ x in { x | g x < f x }, f x ∂μ := by
