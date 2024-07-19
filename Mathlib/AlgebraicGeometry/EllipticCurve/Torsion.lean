@@ -160,76 +160,31 @@ lemma nonsingular_Y_surjective [IsAlgClosed F] (hΔ : W.Δ ≠ 0) (y : F) :
 
 namespace Point
 
-@[simps]
-def equivNonsingularSubtype {p : W'.Point → Prop} (p0 : p 0) : {P : W'.Point // p P} ≃
-    WithZero {xy : R × R // ∃ h : W'.Nonsingular xy.1 xy.2, p <| some h} where
-  toFun P := match P with
-    | ⟨zero, _⟩ => none
-    | ⟨@some _ _ _ x y h, ph⟩ => .some ⟨⟨x, y⟩, h, ph⟩
-  invFun P := P.casesOn ⟨0, p0⟩ fun xy => ⟨some xy.property.choose, xy.property.choose_spec⟩
-  left_inv := by rintro (_ | _) <;> rfl
-  right_inv := by rintro (_ | _) <;> rfl
-
-lemma equivNonsingularSubtype_zero {p : W'.Point → Prop} (p0 : p 0) :
-    equivNonsingularSubtype W' p0 ⟨0, p0⟩ = none :=
-  rfl
-
-variable {W'} in
-lemma equivNonsingularSubtype_some {x y : R} (h : W'.Nonsingular x y) {p : W'.Point → Prop}
-    (p0 : p 0) (ph : p <| some h) :
-    equivNonsingularSubtype W' p0 ⟨some h, ph⟩ = .some ⟨⟨x, y⟩, h, ph⟩ :=
-  rfl
-
-lemma equivNonsingularSubtype_symm_none {p : W'.Point → Prop} (p0 : p 0) :
-    (equivNonsingularSubtype W' p0).symm none = ⟨0, p0⟩ :=
-  rfl
-
-variable {W'} in
-lemma equivNonsingularSubtype_symm_some {x y : R} (h : W'.Nonsingular x y) {p : W'.Point → Prop}
-    (p0 : p 0) (ph : p <| some h) :
-    (equivNonsingularSubtype W' p0).symm (.some ⟨⟨x, y⟩, h, ph⟩) = ⟨some h, ph⟩ :=
-  rfl
-
-@[simps!]
-def equivNonsingular : W'.Point ≃ WithZero {xy : R × R // W'.Nonsingular xy.1 xy.2} :=
-  (Equiv.Set.univ W'.Point).symm.trans <| (equivNonsingularSubtype W' trivial).trans
-    (Equiv.setCongr <| Set.ext fun _ => exists_iff_of_forall fun _ => trivial).optionCongr
-
-lemma equivNonsingular_zero : equivNonsingular W' 0 = none :=
-  rfl
-
-variable {W'} in
-lemma equivNonsingular_some {x y : R} (h : W'.Nonsingular x y) :
-    equivNonsingular W' (some h) = .some ⟨⟨x, y⟩, h⟩ := by
-  rfl
-
-lemma equivNonsingular_symm_none : (equivNonsingular W').symm none = 0 :=
-  rfl
-
-variable {W'} in
-lemma equivNonsingular_symm_some {x y : R} (h : W'.Nonsingular x y) :
-    (equivNonsingular W').symm (.some ⟨⟨x, y⟩, h⟩) = some h :=
-  rfl
-
-def zsmulKerEquivNonsingular (n : ℤ) : (zsmulAddGroupHom n : W.Point →+ W.Point).ker ≃
+def pointZSMulKerEquivNonsingular (n : ℤ) : (zsmulAddGroupHom n : W.Point →+ W.Point).ker ≃
     WithZero {xy : F × F // ∃ h : W.Nonsingular xy.1 xy.2, n • some h = 0} :=
-  equivNonsingularSubtype W <| smul_zero n
+  pointEquivNonsingularSubtype <| smul_zero n
 
-lemma zsmulKerEquivNonsingular_zero (n : ℤ) : zsmulKerEquivNonsingular W n ⟨0, zero_mem _⟩ = none :=
+@[simp]
+lemma pointZSMulKerEquivNonsingular_zero (n : ℤ) :
+    pointZSMulKerEquivNonsingular W n ⟨0, zero_mem _⟩ = none :=
   rfl
 
 variable {W} in
-lemma zsmulKerEquivNonsingular_some {n : ℤ} {x y : F} (h : W.Nonsingular x y)
-    (hn : n • some h = 0) : zsmulKerEquivNonsingular W n ⟨some h, hn⟩ = .some ⟨⟨x, y⟩, h, hn⟩ :=
+@[simp]
+lemma pointZSMulKerEquivNonsingular_some {n : ℤ} {x y : F} (h : W.Nonsingular x y)
+    (hn : n • some h = 0) : pointZSMulKerEquivNonsingular W n ⟨some h, hn⟩ = .some ⟨⟨x, y⟩, h, hn⟩ :=
   rfl
 
-lemma zsmulKerEquivNonsingular_symm_none (n : ℤ) : (zsmulKerEquivNonsingular W n).symm none = 0 :=
+@[simp]
+lemma pointZSMulKerEquivNonsingular_symm_none (n : ℤ) :
+    (pointZSMulKerEquivNonsingular W n).symm none = 0 :=
   rfl
 
 variable {W} in
-lemma zsmulKerEquivNonsingular_symm_some {n : ℤ} {x y : F} (h : W.Nonsingular x y)
+@[simp]
+lemma pointZSMulKerEquivNonsingular_symm_some {n : ℤ} {x y : F} (h : W.Nonsingular x y)
     (hn : n • some h = 0) :
-    (zsmulKerEquivNonsingular W n).symm (.some ⟨⟨x, y⟩, h, hn⟩) = ⟨some h, hn⟩ :=
+    (pointZSMulKerEquivNonsingular W n).symm (.some ⟨⟨x, y⟩, h, hn⟩) = ⟨some h, hn⟩ :=
   rfl
 
 end Point
@@ -302,7 +257,7 @@ variable (W) in
 @[simps!]
 noncomputable def equivNonsingularSubtype {p : W.Point → Prop} (p0 : p 0) : {P : W.Point // p P} ≃
     WithZero {xy : F × F // ∃ h : W.NonsingularLift ⟦![xy.1, xy.2, 1]⟧, p <| mk h} :=
-  ((toAffineEquivSubtype p).trans <| Affine.Point.equivNonsingularSubtype W p0).trans
+  ((toAffineEquivSubtype p).trans <| Affine.pointEquivNonsingularSubtype p0).trans
     (Equiv.setCongr <| Set.ext fun _ => by simpa only [← nonsingular_some] using by rfl).optionCongr
 
 lemma equivNonsingularSubtype_zero {p : W.Point → Prop} (p0 : p 0) :
