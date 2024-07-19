@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.Group.Fin.Tuple
 import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Order.Fin.Tuple
 
 #align_import data.fin.tuple.nat_antidiagonal from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
@@ -128,7 +128,7 @@ theorem antidiagonalTuple_zero_right : ∀ k, antidiagonalTuple k 0 = [0]
 @[simp]
 theorem antidiagonalTuple_one (n : ℕ) : antidiagonalTuple 1 n = [![n]] := by
   simp_rw [antidiagonalTuple, antidiagonal, List.range_succ, List.map_append, List.map_singleton,
-    tsub_self, List.append_bind, List.bind_singleton, List.map_bind]
+    tsub_self, List.append_bind, List.bind_singleton, List.bind_map]
   conv_rhs => rw [← List.nil_append [![n]]]
   congr 1
   simp_rw [List.bind_eq_nil, List.mem_range, List.map_eq_nil]

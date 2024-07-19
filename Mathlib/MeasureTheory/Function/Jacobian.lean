@@ -479,7 +479,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
     have :
       Tendsto (fun ε : ℝ => ((δ : ℝ) + ε) * (‖z‖ + ε) + ‖f' x - A‖ * ε) (𝓝[>] 0)
         (𝓝 ((δ + 0) * (‖z‖ + 0) + ‖f' x - A‖ * 0)) :=
-      Tendsto.mono_left (Continuous.tendsto (by continuity) 0) nhdsWithin_le_nhds
+      Tendsto.mono_left (Continuous.tendsto (by fun_prop) 0) nhdsWithin_le_nhds
     simp only [add_zero, mul_zero] at this
     apply le_of_tendsto_of_tendsto tendsto_const_nhds this
     filter_upwards [self_mem_nhdsWithin]
@@ -868,7 +868,7 @@ theorem addHaar_image_le_lintegral_abs_det_fderiv_aux1 (hs : MeasurableSet s)
     _ = ∫⁻ x in s, ENNReal.ofReal |(f' x).det| + 2 * ε ∂μ := by
       rw [← inter_iUnion, inter_eq_self_of_subset_left t_cover]
     _ = (∫⁻ x in s, ENNReal.ofReal |(f' x).det| ∂μ) + 2 * ε * μ s := by
-      simp only [lintegral_add_right' _ aemeasurable_const, set_lintegral_const]
+      simp only [lintegral_add_right' _ aemeasurable_const, setLIntegral_const]
 #align measure_theory.add_haar_image_le_lintegral_abs_det_fderiv_aux1 MeasureTheory.addHaar_image_le_lintegral_abs_det_fderiv_aux1
 
 theorem addHaar_image_le_lintegral_abs_det_fderiv_aux2 (hs : MeasurableSet s) (h's : μ s ≠ ∞)
@@ -1002,7 +1002,7 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
         _ = ENNReal.ofReal |(A n).det| + ε := by
           simp only [ENNReal.ofReal_add, abs_nonneg, NNReal.zero_le_coe, ENNReal.ofReal_coe_nnreal]
     _ = ∑' n, (ENNReal.ofReal |(A n).det| * μ (s ∩ t n) + ε * μ (s ∩ t n)) := by
-      simp only [set_lintegral_const, lintegral_add_right _ measurable_const]
+      simp only [setLIntegral_const, lintegral_add_right _ measurable_const]
     _ ≤ ∑' n, (μ (f '' (s ∩ t n)) + ε * μ (s ∩ t n) + ε * μ (s ∩ t n)) := by
       gcongr
       exact (hδ (A _)).2.2 _ _ (ht _)
@@ -1165,7 +1165,7 @@ theorem lintegral_image_eq_lintegral_abs_det_fderiv_mul (hs : MeasurableSet s)
     (measurableEmbedding_of_fderivWithin hs hf' hf).lintegral_map]
   simp only [Set.restrict_apply, ← Function.comp_apply (f := g)]
   rw [← (MeasurableEmbedding.subtype_coe hs).lintegral_map, map_comap_subtype_coe hs,
-    set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable₀ _ _ _ hs]
+    setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀ _ _ _ hs]
   · simp only [Pi.mul_apply]
   · simp only [eventually_true, ENNReal.ofReal_lt_top]
   · exact aemeasurable_ofReal_abs_det_fderivWithin μ hs hf'

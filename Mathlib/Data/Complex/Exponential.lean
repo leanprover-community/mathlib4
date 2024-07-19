@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
 import Mathlib.Algebra.Order.CauSeq.BigOperators
+import Mathlib.Algebra.Star.Order
 import Mathlib.Data.Complex.Abs
 import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Nat.Choose.Sum
@@ -43,32 +44,32 @@ theorem isCauSeq_exp (z : ℂ) : IsCauSeq abs fun n => ∑ m ∈ range n, z ^ m 
 
 /-- The Cauchy sequence consisting of partial sums of the Taylor series of
 the complex exponential function -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 def exp' (z : ℂ) : CauSeq ℂ Complex.abs :=
   ⟨fun n => ∑ m ∈ range n, z ^ m / m.factorial, isCauSeq_exp z⟩
 #align complex.exp' Complex.exp'
 
 /-- The complex exponential function, defined via its Taylor series -/
--- Porting note (#11180): removed `@[pp_nodot]`
 -- Porting note: removed `irreducible` attribute, so I can prove things
+@[pp_nodot]
 def exp (z : ℂ) : ℂ :=
   CauSeq.lim (exp' z)
 #align complex.exp Complex.exp
 
 /-- The complex sine function, defined via `exp` -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 def sin (z : ℂ) : ℂ :=
   (exp (-z * I) - exp (z * I)) * I / 2
 #align complex.sin Complex.sin
 
 /-- The complex cosine function, defined via `exp` -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 def cos (z : ℂ) : ℂ :=
   (exp (z * I) + exp (-z * I)) / 2
 #align complex.cos Complex.cos
 
 /-- The complex tangent function, defined as `sin z / cos z` -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 def tan (z : ℂ) : ℂ :=
   sin z / cos z
 #align complex.tan Complex.tan
@@ -78,19 +79,19 @@ def cot (z : ℂ) : ℂ :=
   cos z / sin z
 
 /-- The complex hyperbolic sine function, defined via `exp` -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 def sinh (z : ℂ) : ℂ :=
   (exp z - exp (-z)) / 2
 #align complex.sinh Complex.sinh
 
 /-- The complex hyperbolic cosine function, defined via `exp` -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 def cosh (z : ℂ) : ℂ :=
   (exp z + exp (-z)) / 2
 #align complex.cosh Complex.cosh
 
 /-- The complex hyperbolic tangent function, defined as `sinh z / cosh z` -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 def tanh (z : ℂ) : ℂ :=
   sinh z / cosh z
 #align complex.tanh Complex.tanh
@@ -109,25 +110,25 @@ open Complex
 noncomputable section
 
 /-- The real exponential function, defined as the real part of the complex exponential -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 nonrec def exp (x : ℝ) : ℝ :=
   (exp x).re
 #align real.exp Real.exp
 
 /-- The real sine function, defined as the real part of the complex sine -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 nonrec def sin (x : ℝ) : ℝ :=
   (sin x).re
 #align real.sin Real.sin
 
 /-- The real cosine function, defined as the real part of the complex cosine -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 nonrec def cos (x : ℝ) : ℝ :=
   (cos x).re
 #align real.cos Real.cos
 
 /-- The real tangent function, defined as the real part of the complex tangent -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 nonrec def tan (x : ℝ) : ℝ :=
   (tan x).re
 #align real.tan Real.tan
@@ -137,20 +138,20 @@ nonrec def cot (x : ℝ) : ℝ :=
   (cot x).re
 
 /-- The real hypebolic sine function, defined as the real part of the complex hyperbolic sine -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 nonrec def sinh (x : ℝ) : ℝ :=
   (sinh x).re
 #align real.sinh Real.sinh
 
 /-- The real hypebolic cosine function, defined as the real part of the complex hyperbolic cosine -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 nonrec def cosh (x : ℝ) : ℝ :=
   (cosh x).re
 #align real.cosh Real.cosh
 
 /-- The real hypebolic tangent function, defined as the real part of
 the complex hyperbolic tangent -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 nonrec def tanh (x : ℝ) : ℝ :=
   (tanh x).re
 #align real.tanh Real.tanh
@@ -231,6 +232,7 @@ theorem exp_nat_mul (x : ℂ) : ∀ n : ℕ, exp (n * x) = exp x ^ n
   | Nat.succ n => by rw [pow_succ, Nat.cast_add_one, add_mul, exp_add, ← exp_nat_mul _ n, one_mul]
 #align complex.exp_nat_mul Complex.exp_nat_mul
 
+@[simp]
 theorem exp_ne_zero : exp x ≠ 0 := fun h =>
   zero_ne_one <| by rw [← exp_zero, ← add_neg_self x, exp_add, h]; simp
 #align complex.exp_ne_zero Complex.exp_ne_zero
@@ -583,8 +585,8 @@ theorem cos_eq (z : ℂ) : cos z = cos z.re * cosh z.im - sin z.re * sinh z.im *
 theorem sin_sub_sin : sin x - sin y = 2 * sin ((x - y) / 2) * cos ((x + y) / 2) := by
   have s1 := sin_add ((x + y) / 2) ((x - y) / 2)
   have s2 := sin_sub ((x + y) / 2) ((x - y) / 2)
-  rw [div_add_div_same, add_sub, add_right_comm, add_sub_cancel_right, half_add_self] at s1
-  rw [div_sub_div_same, ← sub_add, add_sub_cancel_left, half_add_self] at s2
+  rw [div_add_div_same, add_sub, add_right_comm, add_sub_cancel_right, add_self_div_two] at s1
+  rw [div_sub_div_same, ← sub_add, add_sub_cancel_left, add_self_div_two] at s2
   rw [s1, s2]
   ring
 #align complex.sin_sub_sin Complex.sin_sub_sin
@@ -592,8 +594,8 @@ theorem sin_sub_sin : sin x - sin y = 2 * sin ((x - y) / 2) * cos ((x + y) / 2) 
 theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - y) / 2) := by
   have s1 := cos_add ((x + y) / 2) ((x - y) / 2)
   have s2 := cos_sub ((x + y) / 2) ((x - y) / 2)
-  rw [div_add_div_same, add_sub, add_right_comm, add_sub_cancel_right, half_add_self] at s1
-  rw [div_sub_div_same, ← sub_add, add_sub_cancel_left, half_add_self] at s2
+  rw [div_add_div_same, add_sub, add_right_comm, add_sub_cancel_right, add_self_div_two] at s1
+  rw [div_sub_div_same, ← sub_add, add_sub_cancel_left, add_self_div_two] at s2
   rw [s1, s2]
   ring
 #align complex.cos_sub_cos Complex.cos_sub_cos
@@ -854,6 +856,7 @@ nonrec theorem exp_nat_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n :=
   ofReal_injective (by simp [exp_nat_mul])
 #align real.exp_nat_mul Real.exp_nat_mul
 
+@[simp]
 nonrec theorem exp_ne_zero : exp x ≠ 0 := fun h =>
   exp_ne_zero x <| by rw [exp, ← ofReal_inj] at h; simp_all
 #align real.exp_ne_zero Real.exp_ne_zero
@@ -1724,9 +1727,6 @@ end Mathlib.Meta.Positivity
 
 namespace Complex
 
-#adaptation_note /-- nightly-2024-04-01
-The simpNF linter now times out on this lemma.
-See https://github.com/leanprover-community/mathlib4/issues/12230 -/
 @[simp]
 theorem abs_cos_add_sin_mul_I (x : ℝ) : abs (cos x + sin x * I) = 1 := by
   have := Real.sin_sq_add_cos_sq x

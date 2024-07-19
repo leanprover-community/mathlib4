@@ -8,6 +8,7 @@ import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Spread
+import Batteries.Tactic.Classical
 
 #align_import data.pi.algebra from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
@@ -54,7 +55,12 @@ instance instOne [∀ i, One <| f i] : One (∀ i : I, f i) :=
 #align pi.has_one Pi.instOne
 #align pi.has_zero Pi.instZero
 
-@[to_additive (attr := simp)]
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/4481
+the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
+-/
+@[to_additive (attr := simp, nolint simpNF)]
 theorem one_apply [∀ i, One <| f i] : (1 : ∀ i, f i) i = 1 :=
   rfl
 #align pi.one_apply Pi.one_apply

@@ -20,13 +20,13 @@ import Mathlib.SetTheory.Cardinal.PartENat
   (using `Part ℕ`). If `α` is infinite, `PartENat.card α = ⊤`.
 -/
 
-set_option autoImplicit true
-
 open Cardinal Function
 
 noncomputable section
 
 variable {α β : Type*}
+
+universe u v
 
 namespace Nat
 
@@ -94,6 +94,37 @@ theorem card_eq_of_bijective (f : α → β) (hf : Function.Bijective f) : Nat.c
   card_congr (Equiv.ofBijective f hf)
 #align nat.card_eq_of_bijective Nat.card_eq_of_bijective
 
+protected theorem bijective_iff_injective_and_card [Finite β] (f : α → β) :
+    Bijective f ↔ Injective f ∧ Nat.card α = Nat.card β := by
+  rw [Bijective, and_congr_right_iff]
+  intro h
+  have := Fintype.ofFinite β
+  have := Fintype.ofInjective f h
+  revert h
+  rw [← and_congr_right_iff, ← Bijective,
+    card_eq_fintype_card, card_eq_fintype_card, Fintype.bijective_iff_injective_and_card]
+
+protected theorem bijective_iff_surjective_and_card [Finite α] (f : α → β) :
+    Bijective f ↔ Surjective f ∧ Nat.card α = Nat.card β := by
+  classical
+  rw [and_comm, Bijective, and_congr_left_iff]
+  intro h
+  have := Fintype.ofFinite α
+  have := Fintype.ofSurjective f h
+  revert h
+  rw [← and_congr_left_iff, ← Bijective, ← and_comm,
+    card_eq_fintype_card, card_eq_fintype_card, Fintype.bijective_iff_surjective_and_card]
+
+theorem _root_.Function.Injective.bijective_of_nat_card_le [Finite β] {f : α → β}
+    (inj : Injective f) (hc : Nat.card β ≤ Nat.card α) : Bijective f :=
+  (Nat.bijective_iff_injective_and_card f).mpr
+    ⟨inj, hc.antisymm (card_le_card_of_injective f inj) |>.symm⟩
+
+theorem _root_.Function.Surjective.bijective_of_nat_card_le [Finite α] {f : α → β}
+    (surj : Surjective f) (hc : Nat.card α ≤ Nat.card β) : Bijective f :=
+  (Nat.bijective_iff_surjective_and_card f).mpr
+    ⟨surj, hc.antisymm (card_le_card_of_surjective f surj)⟩
+
 theorem card_eq_of_equiv_fin {α : Type*} {n : ℕ} (f : α ≃ Fin n) : Nat.card α = n := by
   simpa only [card_eq_fintype_card, Fintype.card_fin] using card_congr f
 #align nat.card_eq_of_equiv_fin Nat.card_eq_of_equiv_fin
@@ -105,10 +136,10 @@ variable {s t : Set α}
 lemma card_mono (ht : t.Finite) (h : s ⊆ t) : Nat.card s ≤ Nat.card t :=
   toNat_le_toNat (mk_le_mk_of_subset h) ht.lt_aleph0
 
-lemma card_image_le (hs : s.Finite) : Nat.card (f '' s) ≤ Nat.card s :=
+lemma card_image_le {f : α → β} (hs : s.Finite) : Nat.card (f '' s) ≤ Nat.card s :=
   have := hs.to_subtype; card_le_card_of_surjective (imageFactorization f s) surjective_onto_image
 
-lemma card_image_of_injOn (hf : s.InjOn f) : Nat.card (f '' s) = Nat.card s := by
+lemma card_image_of_injOn {f : α → β} (hf : s.InjOn f) : Nat.card (f '' s) = Nat.card s := by
   classical
   obtain hs | hs := s.finite_or_infinite
   · have := hs.fintype
@@ -118,17 +149,17 @@ lemma card_image_of_injOn (hf : s.InjOn f) : Nat.card (f '' s) = Nat.card s := b
     have := (hs.image hf).to_subtype
     simp [Nat.card_eq_zero_of_infinite]
 
-lemma card_image_of_injective (hf : Injective f) (s : Set α) :
+lemma card_image_of_injective {f : α → β} (hf : Injective f) (s : Set α) :
     Nat.card (f '' s) = Nat.card s := card_image_of_injOn hf.injOn
 
 lemma card_image_equiv (e : α ≃ β) : Nat.card (e '' s) = Nat.card s :=
     Nat.card_congr (e.image s).symm
 
-lemma card_preimage_of_injOn {s : Set β} (hf : (f ⁻¹' s).InjOn f) (hsf : s ⊆ range f) :
+lemma card_preimage_of_injOn {f : α → β} {s : Set β} (hf : (f ⁻¹' s).InjOn f) (hsf : s ⊆ range f) :
     Nat.card (f ⁻¹' s) = Nat.card s := by
   rw [← Nat.card_image_of_injOn hf, image_preimage_eq_iff.2 hsf]
 
-lemma card_preimage_of_injective {s : Set β} (hf : Injective f) (hsf : s ⊆ range f) :
+lemma card_preimage_of_injective {f : α → β} {s : Set β} (hf : Injective f) (hsf : s ⊆ range f) :
     Nat.card (f ⁻¹' s) = Nat.card s := card_preimage_of_injOn hf.injOn hsf
 
 end Set
@@ -154,6 +185,10 @@ theorem card_unique [Unique α] : Nat.card α = 1 :=
 theorem card_eq_one_iff_unique : Nat.card α = 1 ↔ Subsingleton α ∧ Nonempty α :=
   Cardinal.toNat_eq_one_iff_unique
 #align nat.card_eq_one_iff_unique Nat.card_eq_one_iff_unique
+
+theorem card_eq_one_iff_exists : Nat.card α = 1 ↔ ∃ x : α, ∀ y : α, y = x := by
+  rw [card_eq_one_iff_unique]
+  exact ⟨fun  ⟨s, ⟨a⟩⟩ ↦ ⟨a, fun x ↦ s.elim x a⟩, fun ⟨x, h⟩ ↦ ⟨subsingleton_of_forall_eq x h, ⟨x⟩⟩⟩
 
 theorem card_eq_two_iff : Nat.card α = 2 ↔ ∃ x y : α, x ≠ y ∧ {x, y} = @Set.univ α :=
   toNat_eq_ofNat.trans mk_eq_two_iff

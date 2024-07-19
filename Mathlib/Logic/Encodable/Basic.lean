@@ -3,12 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Logic.Equiv.Nat
-import Mathlib.Data.PNat.Basic
-import Mathlib.Order.Directed
 import Mathlib.Data.Countable.Defs
-import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Nat.Find
+import Mathlib.Data.PNat.Equiv
+import Mathlib.Logic.Equiv.Nat
+import Mathlib.Order.Directed
+import Mathlib.Order.RelIso.Basic
 
 #align_import logic.encodable.basic from "leanprover-community/mathlib"@"7c523cb78f4153682c2929e3006c863bfef463d0"
 
@@ -35,7 +36,6 @@ The difference with `Denumerable` is that finite types are encodable. For infini
 The point of asking for an explicit partial inverse `decode : ℕ → Option α` to `encode : α → ℕ` is
 to make the range of `encode` decidable even when the finiteness of `α` is not.
 -/
-
 
 open Option List Nat Function
 
@@ -628,7 +628,7 @@ protected noncomputable def sequence {r : β → β → Prop} (f : α → β) (h
   | 0 => default
   | n + 1 =>
     let p := Directed.sequence f hf n
-    match (decode n: Option α) with
+    match (decode n : Option α) with
     | none => Classical.choose (hf p p)
     | some a => Classical.choose (hf p a)
 #align directed.sequence Directed.sequence

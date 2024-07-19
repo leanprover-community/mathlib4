@@ -235,36 +235,44 @@ theorem comp_algebraMap : (φ : A →+* B).comp (algebraMap R A) = algebraMap R 
   RingHom.ext <| φ.commutes
 #align alg_hom.comp_algebra_map AlgHom.comp_algebraMap
 
+@[deprecated map_add (since := "2024-06-26")]
 protected theorem map_add (r s : A) : φ (r + s) = φ r + φ s :=
   map_add _ _ _
 #align alg_hom.map_add AlgHom.map_add
 
+@[deprecated map_zero (since := "2024-06-26")]
 protected theorem map_zero : φ 0 = 0 :=
   map_zero _
 #align alg_hom.map_zero AlgHom.map_zero
 
+@[deprecated map_mul (since := "2024-06-26")]
 protected theorem map_mul (x y) : φ (x * y) = φ x * φ y :=
   map_mul _ _ _
 #align alg_hom.map_mul AlgHom.map_mul
 
+@[deprecated map_one (since := "2024-06-26")]
 protected theorem map_one : φ 1 = 1 :=
   map_one _
 #align alg_hom.map_one AlgHom.map_one
 
+@[deprecated map_pow (since := "2024-06-26")]
 protected theorem map_pow (x : A) (n : ℕ) : φ (x ^ n) = φ x ^ n :=
   map_pow _ _ _
 #align alg_hom.map_pow AlgHom.map_pow
 
 -- @[simp] -- Porting note (#10618): simp can prove this
+@[deprecated map_smul (since := "2024-06-26")]
 protected theorem map_smul (r : R) (x : A) : φ (r • x) = r • φ x :=
   map_smul _ _ _
 #align alg_hom.map_smul AlgHom.map_smul
 
+@[deprecated map_sum (since := "2024-06-26")]
 protected theorem map_sum {ι : Type*} (f : ι → A) (s : Finset ι) :
     φ (∑ x ∈ s, f x) = ∑ x ∈ s, φ (f x) :=
   map_sum _ _ _
 #align alg_hom.map_sum AlgHom.map_sum
 
+@[deprecated map_finsupp_sum (since := "2024-06-26")]
 protected theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A) :
     φ (f.sum g) = f.sum fun i a => φ (g i a) :=
   map_finsupp_sum _ _ _
@@ -409,7 +417,8 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
   φ.toLinearMap.map_smul_of_tower r x
 #align alg_hom.map_smul_of_tower AlgHom.map_smul_of_tower
 
-nonrec theorem map_list_prod (s : List A) : φ s.prod = (s.map φ).prod :=
+@[deprecated map_list_prod (since := "2024-06-26")]
+protected theorem map_list_prod (s : List A) : φ s.prod = (s.map φ).prod :=
   map_list_prod φ s
 #align alg_hom.map_list_prod AlgHom.map_list_prod
 
@@ -444,15 +453,18 @@ section CommSemiring
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
 variable [Algebra R A] [Algebra R B] (φ : A →ₐ[R] B)
 
+@[deprecated map_multiset_prod (since := "2024-06-26")]
 protected theorem map_multiset_prod (s : Multiset A) : φ s.prod = (s.map φ).prod :=
   map_multiset_prod _ _
 #align alg_hom.map_multiset_prod AlgHom.map_multiset_prod
 
+@[deprecated map_prod (since := "2024-06-26")]
 protected theorem map_prod {ι : Type*} (f : ι → A) (s : Finset ι) :
     φ (∏ x ∈ s, f x) = ∏ x ∈ s, φ (f x) :=
   map_prod _ _ _
 #align alg_hom.map_prod AlgHom.map_prod
 
+@[deprecated map_finsupp_prod (since := "2024-06-26")]
 protected theorem map_finsupp_prod {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A) :
     φ (f.prod g) = f.prod fun i a => φ (g i a) :=
   map_finsupp_prod _ _ _
@@ -465,10 +477,12 @@ section Ring
 variable [CommSemiring R] [Ring A] [Ring B]
 variable [Algebra R A] [Algebra R B] (φ : A →ₐ[R] B)
 
+@[deprecated map_neg (since := "2024-06-26")]
 protected theorem map_neg (x) : φ (-x) = -φ x :=
   map_neg _ _
 #align alg_hom.map_neg AlgHom.map_neg
 
+@[deprecated map_sub (since := "2024-06-26")]
 protected theorem map_sub (x y) : φ (x - y) = φ x - φ y :=
   map_sub _ _ _
 #align alg_hom.map_sub AlgHom.map_sub
@@ -497,41 +511,7 @@ lemma toIntAlgHom_injective [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] :
     Function.Injective (RingHom.toIntAlgHom : (R →+* S) → _) :=
   fun _ _ e ↦ DFunLike.ext _ _ (fun x ↦ DFunLike.congr_fun e x)
 
-/-- Reinterpret a `RingHom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,
-see `RingHom.equivRatAlgHom`. -/
-def toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) : R →ₐ[ℚ] S :=
-  { f with commutes' := f.map_rat_algebraMap }
-#align ring_hom.to_rat_alg_hom RingHom.toRatAlgHom
-
-@[simp]
-theorem toRatAlgHom_toRingHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) :
-    ↑f.toRatAlgHom = f :=
-  RingHom.ext fun _x => rfl
-#align ring_hom.to_rat_alg_hom_to_ring_hom RingHom.toRatAlgHom_toRingHom
-
 end RingHom
-
-section
-
-variable {R S : Type*}
-
-@[simp]
-theorem AlgHom.toRingHom_toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S]
-    (f : R →ₐ[ℚ] S) : (f : R →+* S).toRatAlgHom = f :=
-  AlgHom.ext fun _x => rfl
-#align alg_hom.to_ring_hom_to_rat_alg_hom AlgHom.toRingHom_toRatAlgHom
-
-/-- The equivalence between `RingHom` and `ℚ`-algebra homomorphisms. -/
-@[simps]
-def RingHom.equivRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] :
-    (R →+* S) ≃ (R →ₐ[ℚ] S) where
-  toFun := RingHom.toRatAlgHom
-  invFun := AlgHom.toRingHom
-  left_inv f := RingHom.toRatAlgHom_toRingHom f
-  right_inv f := AlgHom.toRingHom_toRatAlgHom f
-#align ring_hom.equiv_rat_alg_hom RingHom.equivRatAlgHom
-
-end
 
 namespace Algebra
 
@@ -563,14 +543,35 @@ instance : MulDistribMulAction (A →ₐ[R] A) Aˣ where
   smul := fun f => Units.map f
   one_smul := fun x => by ext; rfl
   mul_smul := fun x y z => by ext; rfl
-  smul_mul := fun x y z => by ext; exact x.map_mul _ _
-  smul_one := fun x => by ext; exact x.map_one
+  smul_mul := fun x y z => by ext; exact map_mul _ _ _
+  smul_one := fun x => by ext; exact map_one _
 
 @[simp]
 theorem smul_units_def (f : A →ₐ[R] A) (x : Aˣ) :
     f • x = Units.map (f : A →* A) x := rfl
 
 end MulDistribMulAction
+
+variable (M : Submonoid R) {B : Type w} [CommRing B] [Algebra R B] {A}
+
+lemma algebraMapSubmonoid_map_eq (f : A →ₐ[R] B) :
+    (algebraMapSubmonoid A M).map f = algebraMapSubmonoid B M := by
+  ext x
+  constructor
+  · rintro ⟨a, ⟨r, hr, rfl⟩, rfl⟩
+    simp only [AlgHom.commutes]
+    use r
+  · rintro ⟨r, hr, rfl⟩
+    simp only [Submonoid.mem_map]
+    use (algebraMap R A r)
+    simp only [AlgHom.commutes, and_true]
+    use r
+
+lemma algebraMapSubmonoid_le_comap (f : A →ₐ[R] B) :
+    algebraMapSubmonoid A M ≤ (algebraMapSubmonoid B M).comap f.toRingHom := by
+  rw [← algebraMapSubmonoid_map_eq M f]
+  exact Submonoid.le_comap_map (Algebra.algebraMapSubmonoid A M)
+
 end Algebra
 
 namespace MulSemiringAction

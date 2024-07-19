@@ -14,6 +14,7 @@ import Mathlib.Data.List.Range
 This file develops some results on `finRange n`.
 -/
 
+assert_not_exists Monoid
 
 universe u
 
@@ -44,7 +45,7 @@ theorem finRange_succ (n : ℕ) :
 theorem ofFn_eq_pmap {n} {f : Fin n → α} :
     ofFn f = pmap (fun i hi => f ⟨i, hi⟩) (range n) fun _ => mem_range.1 := by
   rw [pmap_eq_map_attach]
-  exact ext_get (by simp) fun i hi1 hi2 => by simp [get_ofFn f ⟨i, hi1⟩]
+  exact ext_getElem (by simp) fun i hi1 hi2 => by simp [getElem_ofFn f i hi1]
 #align list.of_fn_eq_pmap List.ofFn_eq_pmap
 
 theorem ofFn_id (n) : ofFn id = finRange n :=

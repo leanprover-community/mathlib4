@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Sigma.Basic
+import Batteries.Data.Nat.Lemmas
 
 #align_import data.list.prod_sigma from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 

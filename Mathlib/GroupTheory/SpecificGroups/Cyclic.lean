@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Totient
+import Mathlib.Data.ZMod.Quotient
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.Tactic.Group
@@ -173,6 +174,17 @@ theorem isCyclic_of_prime_card {α : Type u} [Group α] [Fintype α] {p : ℕ} [
   exact ⟨g, fun g' ↦ mem_zpowers_of_prime_card h hg⟩
 #align is_cyclic_of_prime_card isCyclic_of_prime_card
 #align is_add_cyclic_of_prime_card isAddCyclic_of_prime_card
+
+/-- A finite group of order dividing a prime is cyclic. -/
+@[to_additive "A finite group of order dividing a prime is cyclic."]
+theorem isCyclic_of_card_dvd_prime {α : Type u} [Group α] {p : ℕ} [hp : Fact p.Prime]
+    (h : Nat.card α ∣ p) : IsCyclic α := by
+  have : Finite α := Nat.finite_of_card_ne_zero (ne_zero_of_dvd_ne_zero hp.1.ne_zero h)
+  rcases (Nat.dvd_prime hp.out).mp h with h | h
+  · exact @isCyclic_of_subsingleton α _ (Nat.card_eq_one_iff_unique.mp h).1
+  · have : Fintype α := Fintype.ofFinite α
+    rw [Nat.card_eq_fintype_card] at h
+    exact isCyclic_of_prime_card h
 
 @[to_additive]
 theorem isCyclic_of_surjective {H G F : Type*} [Group H] [Group G] [hH : IsCyclic H]
