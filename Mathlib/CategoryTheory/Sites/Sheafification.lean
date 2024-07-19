@@ -73,8 +73,6 @@ instance [HasWeakSheafify J A] : (presheafToSheaf J A).IsLeftAdjoint :=
   ⟨_, ⟨sheafificationAdjunction J A⟩⟩
 
 instance [HasWeakSheafify J A] : Reflective (sheafToPresheaf J A) where
-  map_surjective := (fullyFaithfulSheafToPresheaf _ _).map_surjective
-  map_injective := (fullyFaithfulSheafToPresheaf _ _).map_injective
   adj := sheafificationAdjunction _ _
 
 instance [HasSheafify J A] :  PreservesLimitsOfShape (Discrete (WalkingPair))
