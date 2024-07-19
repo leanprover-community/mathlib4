@@ -433,24 +433,24 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base [Subsingleton n]:
     simp only [iInf_of_empty, ciSup_unique, Submodule.top_orthogonal_eq_bot]
 
 theorem invariance_iInf [Nonempty n] (i : n) :
-    ∀ γ : {x // i ≠ x} → 𝕜, ∀ v ∈ (⨅ (j : {x // i ≠ x}),
-    eigenspace ((Subtype.restrict (fun x ↦ i ≠ x) T) j) (γ j)), (T i) v ∈ (⨅ (j : {x // i ≠ x}),
-    eigenspace ((Subtype.restrict (fun x ↦ i ≠ x) T) j) (γ j)) := by
+    ∀ γ : {x // x ≠ i} → 𝕜, ∀ v ∈ (⨅ (j : {x // x ≠ i}),
+    eigenspace ((Subtype.restrict (fun x ↦ x ≠ i) T) j) (γ j)), (T i) v ∈ (⨅ (j : {x // x ≠ i}),
+    eigenspace ((Subtype.restrict (fun x ↦ x ≠ i) T) j) (γ j)) := by
   intro γ v hv
   simp only [Submodule.mem_iInf] at *
   exact fun i_1 ↦ eigenspace_invariant (hC (↑i_1) i) (γ i_1) v (hv i_1)
 
 @[simp]
-theorem inf_restrict [Nonempty n] (i : n) (γ : {x // i ≠ x} → 𝕜) :
+theorem inf_restrict [Nonempty n] (i : n) (γ : {x // x ≠ i} → 𝕜) :
     (⨆ (μ : 𝕜) , eigenspace ((T i).restrict
     ((invariance_iInf T hC i γ))) μ) = ⊤ := by
   exact
     pre_exhaust fun x y ↦
-      hT i ((⨅ j, eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)).subtype x) ↑y
+      hT i ((⨅ j, eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)).subtype x) ↑y
 
-theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // i ≠ x} → 𝕜) : (eigenspace (T i) μ ⊓
-    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))) =
-    Submodule.map (Submodule.subtype ((⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j))))
+theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} → 𝕜) : (eigenspace (T i) μ ⊓
+    (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) =
+    Submodule.map (Submodule.subtype ((⨅ (j : {x // x ≠ i}), eigenspace (T j) (γ j))))
     (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) := by
   ext v
   constructor
@@ -478,7 +478,7 @@ theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // i ≠ x} → 
         (AddSubmonoid.mk_eq_zero
               (⨅ j,
                     ker
-                      (Subtype.restrict (fun x ↦ ¬i = x) T j -
+                      (Subtype.restrict (fun x ↦ ¬x = i) T j -
                         (algebraMap 𝕜 (Module.End 𝕜 E)) (γ j))).toAddSubgroup.toAddSubmonoid).mp
           A
     · simp only [ne_eq, Submodule.iInf_coe, Set.mem_iInter, SetLike.mem_coe, Subtype.forall]
@@ -490,10 +490,10 @@ theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // i ≠ x} → 
       rw [← B]
       exact hw j hj
 
-theorem index_eigen_extend (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) (μ : 𝕜) (x : E) :
-    x ∈ Submodule.map (Submodule.subtype (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)))
+theorem index_eigen_extend (i : n) [Nonempty n] (γ : {x // x ≠ i} → 𝕜) (μ : 𝕜) (x : E) :
+    x ∈ Submodule.map (Submodule.subtype (⨅ (j: {x // x ≠ i}), eigenspace (T ↑j) (γ j)))
     (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) →
-    x ∈ (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by
+    x ∈ (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) := by
   intro h
   simp only [ne_eq, Submodule.mem_map, Subtype.exists, Submodule.mem_iInf, Subtype.forall] at *
   intro a b
@@ -501,20 +501,20 @@ theorem index_eigen_extend (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) (
   rw [← h2]
   exact ha a b
 
-theorem ext_experiment (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) : ∀ x,
+theorem ext_experiment (i : n) [Nonempty n] (γ : {x // x ≠ i} → 𝕜) : ∀ x,
     x ∈ (⨆ (μ : 𝕜) , eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) ↔
-    x ∈ (⊤ : Submodule 𝕜 ↥(⨅ j, eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))) := by
+    x ∈ (⊤ : Submodule 𝕜 ↥(⨅ j, eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) := by
   have H := inf_restrict T hT hC i γ
   simp only [ne_eq, H, Submodule.mem_top, implies_true]
 
 @[simp]
-theorem ultra_silly_lemma (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
-    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) =
-    (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j)) := rfl
+theorem ultra_silly_lemma (i : n) [Nonempty n] (γ : {x // x ≠ i} → 𝕜) :
+    (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) =
+    (⨅ (j : {x // x ≠ i}), eigenspace (T j) (γ j)) := rfl
 
 theorem indexing_nonsense0 (i : n) [Nontrivial n] (γ : n → 𝕜) :
      ⨅ (j : n), eigenspace (T j) (γ j) = (eigenspace (T i) (γ i)) ⊓
-     ⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j) := by
+     ⨅ (j : {x // x ≠ i}), eigenspace (T j) (γ j) := by
   ext v
   constructor
   · intro h
@@ -530,7 +530,7 @@ theorem indexing_nonsense0 (i : n) [Nontrivial n] (γ : n → 𝕜) :
       exact h.1
     · have F := h.2
       simp only [ne_eq, Submodule.iInf_coe, Set.mem_iInter, SetLike.mem_coe, Subtype.forall] at F
-      exact F k fun a ↦ H (_root_.id (Eq.symm a))
+      exact F k fun a ↦ H (_root_.id a)
 
 variable {α β γ : Type*} [DecidableEq α] [CompleteLattice γ] (g : β → γ) (i : α)
 
@@ -540,7 +540,7 @@ example : (⨆ f : α → β, ⨅ x, g (f x)) =
     ⨆ f' : α' → β, ⨆ y : β, ⨅ x, g (Equiv.funSplitAt i β |>.symm (y, f') x) := by
   rw [← (Equiv.funSplitAt i β).symm.iSup_comp, iSup_prod, iSup_comm]
 
-example (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
+theorem basic (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
     ⨆ f' : α' → β, ⨆ y : β, s i y ⊓ ⨅ x' : α', (s x' (f' x')) := by
   -- not a super clean proof, but it works.
   rw [← (Equiv.funSplitAt i β).symm.iSup_comp, iSup_prod, iSup_comm]
@@ -553,59 +553,23 @@ example (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
   rfl
 
 theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j : n, eigenspace (T j) (γ j)
-    = (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
-    (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j))))) := by
-  ext v
-  constructor
-  · intro h
-    rw [iSup] at h
-    conv =>
-     rhs
-     rw [iSup]
-    simp only [sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff, iSup_le_iff,
-      Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
-      SetLike.mem_coe] at *
-    intro K H
-    apply h K
-    intro a w hw
-    rw [indexing_nonsense0 T (i := i) (γ := a)] at hw
-    exact H (fun j ↦ a ↑j) (a i) hw
-  · intro h
-    rw [iSup] at *
-    simp only [sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
-      Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
-      SetLike.mem_coe] at *
-    intro K hK
-    have A : ∀ (a : {x // ¬i = x} → 𝕜), ⨆ μ, eigenspace (T i) μ ⊓
-        ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (a j) ≤ K := by
-      intro γ' v hgv
-      simp only [iSup, sSup, ne_eq, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
-        Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
-        SetLike.mem_coe] at hgv
-      have B : ∀ (μ : 𝕜), eigenspace (T i) μ ⊓ ⨅ (j : {x // i ≠ x}),
-          eigenspace (T ↑j) (γ' j) ≤ K := by
-        intro μ
-        let γ : n → 𝕜 := Set.piecewise (fun x ↦ i ≠ x) (Function.extend Subtype.val γ' 1)
-          (Function.const n μ)
-        have C1 : γ i = μ := Set.piecewise_eq_of_not_mem (fun x ↦ i ≠ x)
-            (Function.extend Subtype.val γ' 1) (Function.const n μ) fun a ↦ a rfl
-        have C2 : ∀ (j : {x // i ≠ x}), γ j = γ' j:= by
-          intro j
-          simp only [ne_eq, Subtype.coe_prop, Set.piecewise_eq_of_mem, γ]
-          refine Function.Injective.extend_apply ?hf γ' _ j
-          exact Subtype.val_injective
-        have C : eigenspace (T i) μ ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ' j)
-            = eigenspace (T i) (γ i) ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ j) := by
-          congr!; exact _root_.id (Eq.symm C1); simp only [ne_eq, C2]
-        rw [C, ← indexing_nonsense0]
-        exact hK fun j ↦ γ j
-      exact hgv K B
-    exact h K A
+    = (⨆ (γ : {x // x ≠ i} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
+    (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))))) := by
+  apply basic
 
-theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // i ≠ x} → 𝕜) :
-    ⨆ μ, Submodule.map (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype
+  --rw [← (Equiv.funSplitAt i 𝕜).symm.iSup_comp, iSup_prod, iSup_comm]
+  --congr! with γ μ
+  --rw[iInf_split_single _ i]
+  --simp only [ne_eq, Equiv.funSplitAt_symm_apply, ↓reduceDIte]
+  --rw [iInf_subtype]
+  --congr! with x hx
+  --split_ifs
+  --rfl
+
+theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // x ≠ i} → 𝕜) :
+    ⨆ μ, Submodule.map (⨅ (j: {x // x ≠ i}), eigenspace (T ↑j) (γ j)).subtype
     (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) =
-    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by
+    (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) := by
   simp only [iSup, sSup, ne_eq, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
   ext v
   constructor
@@ -619,30 +583,30 @@ theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // i ≠ x} → 𝕜)
       Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter] at hw
     obtain ⟨a, ⟨ha, hb⟩⟩ := hw
     rw [← hb.2]
-    exact ha (eigenspace (Subtype.restrict (fun x ↦ ¬i = x) T ⟨j, hj⟩) (γ ⟨j, hj⟩)) j hj rfl
+    exact ha (eigenspace (Subtype.restrict (fun x ↦ ¬x = i) T ⟨j, hj⟩) (γ ⟨j, hj⟩)) j hj rfl
   · have B : Submodule.map (Submodule.subtype (⨅ j, eigenspace (Subtype.restrict
-    (fun x ↦ i ≠ x) T j) (γ j))) (⨆ (μ : 𝕜) , eigenspace ((T i).restrict
+    (fun x ↦ x ≠ i) T j) (γ j))) (⨆ (μ : 𝕜) , eigenspace ((T i).restrict
     ((invariance_iInf T hC i γ))) μ) = Submodule.map (Submodule.subtype (⨅ j, eigenspace
-    (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))) ⊤ := by
+    (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) ⊤ := by
       congr!; exact inf_restrict T hT hC i fun j ↦ γ j
     simp only [Submodule.mem_iInf, Subtype.forall, Submodule.mem_mk, AddSubmonoid.mem_mk,
       AddSubsemigroup.mem_mk, Set.mem_iInter, ultra_silly_lemma,
       Submodule.map_iSup, Submodule.map_top, Submodule.range_subtype] at *
     intro h F hH
-    have hH1 : ∀ (a : 𝕜), Submodule.map (⨅ (j : {x // i ≠ x}) , eigenspace (T ↑j) (γ j)).subtype
+    have hH1 : ∀ (a : 𝕜), Submodule.map (⨅ (j : {x // x ≠ i}) , eigenspace (T ↑j) (γ j)).subtype
         (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) a) ≤ F := fun a ↦ hH a
-    have RR : (⨆ μ : 𝕜, Submodule.map (⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype
+    have RR : (⨆ μ : 𝕜, Submodule.map (⨅ (j : {x // x ≠ i}), eigenspace (T ↑j) (γ j)).subtype
         (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ)) ≤ F := by
       simp only [iSup_le_iff, hH1, implies_true]
     rw [B] at RR
-    have Final : v ∈ ⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j) := (Submodule.mem_iInf
-      fun (i_1 : {x // i ≠ x}) ↦ eigenspace (T ↑i_1) (γ i_1)).mpr fun i_1 ↦ h (↑i_1) i_1.property
+    have Final : v ∈ ⨅ (j: {x // x ≠ i}), eigenspace (T ↑j) (γ j) := (Submodule.mem_iInf
+      fun (i_1 : {x // x ≠ i}) ↦ eigenspace (T ↑i_1) (γ i_1)).mpr fun i_1 ↦ h (↑i_1) i_1.property
     exact RR Final
 
 theorem index_post_exhaust (i : n) [Nontrivial n] :
-    (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓ (⨅ (j : {x // i ≠ x}),
-    eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))))) = ⨆ (γ : {x // i ≠ x} → 𝕜),
-    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by
+    (⨆ (γ : {x // x ≠ i} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓ (⨅ (j : {x // x ≠ i}),
+    eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))))) = ⨆ (γ : {x // x ≠ i} → 𝕜),
+    (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) := by
   simp only [ne_eq, Submodule.orthogonal_eq_bot_iff]
   conv => lhs; rhs; ext γ; rhs; ext μ; rw [index_convert T hC i]
   conv => lhs; rhs; ext γ; rw [prelim_sub_exhaust T hT hC]
@@ -655,12 +619,12 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base T hT
   · intro m hm hmm H T hT hC
     obtain ⟨i, _ , _ ⟩ := exists_pair_ne m
-    have C : Fintype.card { x // i ≠ x } < Fintype.card m := by
+    have C : Fintype.card { x // x ≠ i } < Fintype.card m := by
       simp only [ne_eq, Fintype.card_subtype_compl, Fintype.card_ofSubsingleton,
       tsub_lt_self_iff, zero_lt_one, and_true]
       exact Fintype.card_pos
-    have D := H {x // i ≠ x} C (Subtype.restrict (fun x ↦ i ≠ x) T)
-      (fun (i_1 : {x // i ≠ x}) ↦ hT ↑i_1) (fun (i_1 j : { x // i ≠ x }) ↦ hC ↑i_1 ↑j)
+    have D := H {x // x ≠ i} C (Subtype.restrict (fun x ↦ x ≠ i) T) --maybe we can get rid of restrict here
+      (fun (i_1 : {x // x ≠ i}) ↦ hT ↑i_1) (fun (i_1 j : { x // x ≠ i }) ↦ hC ↑i_1 ↑j)
     simp only [Submodule.orthogonal_eq_bot_iff] at *
     rw [← index_post_exhaust] at D
     · rw [indexing_nonsense]
