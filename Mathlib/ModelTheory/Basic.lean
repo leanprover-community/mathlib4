@@ -251,9 +251,6 @@ class Structure where
   funMap : ∀ {n}, L.Functions n → (Fin n → M) → M
   /-- Interpretation of the relation symbols -/
   RelMap : ∀ {n}, L.Relations n → (Fin n → M) → Prop
-set_option linter.uppercaseLean3 false in
-set_option linter.uppercaseLean3 false in
-set_option linter.uppercaseLean3 false in
 
 variable (N : Type w') [L.Structure M] [L.Structure N]
 
@@ -355,7 +352,6 @@ protected def Structure.mk₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} (c' : 
     (f₂' : f₂ → M → M → M) (r₁' : r₁ → Set M) (r₂' : r₂ → M → M → Prop) :
     (Language.mk₂ c f₁ f₂ r₁ r₂).Structure M :=
   ⟨funMap₂ c' f₁' f₂', RelMap₂ r₁' r₂'⟩
-set_option linter.uppercaseLean3 false in
 
 namespace Structure
 
@@ -367,31 +363,26 @@ variable {r₁' : r₁ → Set M} {r₂' : r₂ → M → M → Prop}
 theorem funMap_apply₀ (c₀ : c) {x : Fin 0 → M} :
     @Structure.funMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 0 c₀ x = c' c₀ :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem funMap_apply₁ (f : f₁) (x : M) :
     @Structure.funMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 1 f ![x] = f₁' f x :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem funMap_apply₂ (f : f₂) (x y : M) :
     @Structure.funMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 2 f ![x, y] = f₂' f x y :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem relMap_apply₁ (r : r₁) (x : M) :
     @Structure.RelMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 1 r ![x] = (x ∈ r₁' r) :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem relMap_apply₂ (r : r₂) (x y : M) :
     @Structure.RelMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 2 r ![x, y] = r₂' r x y :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 end Structure
 
@@ -899,7 +890,6 @@ variable (L₁ L₂ : Language) (S : Type*) [L₁.Structure S] [L₂.Structure S
 instance sumStructure : (L₁.sum L₂).Structure S where
   funMap := Sum.elim funMap funMap
   RelMap := Sum.elim RelMap RelMap
-set_option linter.uppercaseLean3 false in
 
 variable {L₁ L₂ S}
 
@@ -947,7 +937,6 @@ end
 
 instance emptyStructure : Language.empty.Structure M :=
   ⟨Empty.elim, Empty.elim⟩
-set_option linter.uppercaseLean3 false in
 
 instance : Unique (Language.empty.Structure M) :=
   ⟨⟨Language.emptyStructure⟩, fun a => by
@@ -1003,7 +992,6 @@ variable {L : Language} {M : Type*} {N : Type*} [L.Structure M]
 @[simps!]
 def inducedStructure (e : M ≃ N) : L.Structure N :=
   ⟨fun f x => e (funMap f (e.symm ∘ x)), fun r x => RelMap r (e.symm ∘ x)⟩
-set_option linter.uppercaseLean3 false in
 
 /-- A bijection as a first-order isomorphism with the induced structure on the codomain. -/
 --@[simps!] Porting note: commented out and lemmas added manually
@@ -1013,7 +1001,6 @@ def inducedStructureEquiv (e : M ≃ N) : @Language.Equiv L M N _ (inducedStruct
   { e with
     map_fun' := @fun n f x => by simp [← Function.comp.assoc e.symm e x]
     map_rel' := @fun n r x => by simp [← Function.comp.assoc e.symm e x] }
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem toEquiv_inducedStructureEquiv (e : M ≃ N) :
