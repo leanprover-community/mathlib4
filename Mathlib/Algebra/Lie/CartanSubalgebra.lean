@@ -6,8 +6,6 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.Normalizer
 
-#align_import algebra.lie.cartan_subalgebra from "leanprover-community/mathlib"@"938fead7abdc0cbbca8eba7a1052865a169dc102"
-
 /-!
 # Cartan subalgebras
 
@@ -39,7 +37,6 @@ This is a characteristic property of Cartan subalgebras with the roles of `L`, `
 def LieSubmodule.IsUcsLimit {M : Type*} [AddCommGroup M] [Module R M] [LieRingModule L M]
     [LieModule R L M] (N : LieSubmodule R L M) : Prop :=
   ∃ k, ∀ l, k ≤ l → (⊥ : LieSubmodule R L M).ucs l = N
-#align lie_submodule.is_ucs_limit LieSubmodule.IsUcsLimit
 
 namespace LieSubalgebra
 
@@ -49,7 +46,6 @@ A _splitting_ Cartan subalgebra can be defined by mixing in `LieModule.IsTriangu
 class IsCartanSubalgebra : Prop where
   nilpotent : LieAlgebra.IsNilpotent R H
   self_normalizing : H.normalizer = H
-#align lie_subalgebra.is_cartan_subalgebra LieSubalgebra.IsCartanSubalgebra
 
 instance [H.IsCartanSubalgebra] : LieAlgebra.IsNilpotent R H :=
   IsCartanSubalgebra.nilpotent
@@ -59,7 +55,6 @@ theorem normalizer_eq_self_of_isCartanSubalgebra (H : LieSubalgebra R L) [H.IsCa
     H.toLieSubmodule.normalizer = H.toLieSubmodule := by
   rw [← LieSubmodule.coe_toSubmodule_eq_iff, coe_normalizer_eq_normalizer,
     IsCartanSubalgebra.self_normalizing, coe_toLieSubmodule]
-#align lie_subalgebra.normalizer_eq_self_of_is_cartan_subalgebra LieSubalgebra.normalizer_eq_self_of_isCartanSubalgebra
 
 @[simp]
 theorem ucs_eq_self_of_isCartanSubalgebra (H : LieSubalgebra R L) [H.IsCartanSubalgebra] (k : ℕ) :
@@ -67,7 +62,6 @@ theorem ucs_eq_self_of_isCartanSubalgebra (H : LieSubalgebra R L) [H.IsCartanSub
   induction' k with k ih
   · simp
   · simp [ih]
-#align lie_subalgebra.ucs_eq_self_of_is_cartan_subalgebra LieSubalgebra.ucs_eq_self_of_isCartanSubalgebra
 
 theorem isCartanSubalgebra_iff_isUcsLimit : H.IsCartanSubalgebra ↔ H.toLieSubmodule.IsUcsLimit := by
   constructor
@@ -92,7 +86,6 @@ theorem isCartanSubalgebra_iff_isUcsLimit : H.IsCartanSubalgebra ↔ H.toLieSubm
           rw [LieSubmodule.ucs_succ, hk k (le_refl k)] at hk'
           rw [← LieSubalgebra.coe_to_submodule_eq_iff, ← LieSubalgebra.coe_normalizer_eq_normalizer,
             hk', LieSubalgebra.coe_toLieSubmodule] }
-#align lie_subalgebra.is_cartan_subalgebra_iff_is_ucs_limit LieSubalgebra.isCartanSubalgebra_iff_isUcsLimit
 
 lemma ne_bot_of_isCartanSubalgebra [Nontrivial L] (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
     H ≠ ⊥ := by
@@ -116,7 +109,6 @@ theorem LieIdeal.normalizer_eq_top {R : Type u} {L : Type v} [CommRing R] [LieRi
   ext x
   simpa only [LieSubalgebra.mem_normalizer_iff, LieSubalgebra.mem_top, iff_true_iff] using
     fun y hy => I.lie_mem hy
-#align lie_ideal.normalizer_eq_top LieIdeal.normalizer_eq_top
 
 open LieIdeal
 
@@ -125,4 +117,3 @@ instance LieAlgebra.top_isCartanSubalgebra_of_nilpotent [LieAlgebra.IsNilpotent 
     LieSubalgebra.IsCartanSubalgebra (⊤ : LieSubalgebra R L) where
   nilpotent := inferInstance
   self_normalizing := by rw [← top_coe_lieSubalgebra, normalizer_eq_top, top_coe_lieSubalgebra]
-#align lie_algebra.top_is_cartan_subalgebra_of_nilpotent LieAlgebra.top_isCartanSubalgebra_of_nilpotent

@@ -6,8 +6,6 @@ Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 import Mathlib.Data.List.Basic
 import Batteries.Data.Nat.Lemmas
 
-#align_import data.list.join from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
-
 /-!
 # Join of a list of lists
 
@@ -25,23 +23,19 @@ namespace List
 -- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem join_singleton (l : List α) : [l].join = l := by rw [join, join, append_nil]
-#align list.join_singleton List.join_singleton
 
 @[simp]
 theorem join_eq_nil : ∀ {L : List (List α)}, join L = [] ↔ ∀ l ∈ L, l = []
   | [] => iff_of_true rfl (forall_mem_nil _)
   | l :: L => by simp only [join, append_eq_nil, join_eq_nil, forall_mem_cons]
-#align list.join_eq_nil List.join_eq_nil
 
 @[simp]
 theorem join_append (L₁ L₂ : List (List α)) : join (L₁ ++ L₂) = join L₁ ++ join L₂ := by
   induction L₁
   · rfl
   · simp [*]
-#align list.join_append List.join_append
 
 theorem join_concat (L : List (List α)) (l : List α) : join (L.concat l) = join L ++ l := by simp
-#align list.join_concat List.join_concat
 
 @[simp]
 theorem join_filter_not_isEmpty  :
@@ -51,7 +45,6 @@ theorem join_filter_not_isEmpty  :
       simp [join_filter_not_isEmpty (L := L), isEmpty_iff_eq_nil]
   | (a :: l) :: L => by
       simp [join_filter_not_isEmpty (L := L)]
-#align list.join_filter_empty_eq_ff List.join_filter_not_isEmpty
 
 @[deprecated (since := "2024-02-25")] alias join_filter_isEmpty_eq_false := join_filter_not_isEmpty
 
@@ -59,11 +52,9 @@ theorem join_filter_not_isEmpty  :
 theorem join_filter_ne_nil [DecidablePred fun l : List α => l ≠ []] {L : List (List α)} :
     join (L.filter fun l => l ≠ []) = L.join := by
   simp [join_filter_not_isEmpty, ← isEmpty_iff_eq_nil]
-#align list.join_filter_ne_nil List.join_filter_ne_nil
 
 theorem join_join (l : List (List (List α))) : l.join.join = (l.map join).join := by
   induction l <;> simp [*]
-#align list.join_join List.join_join
 
 /-- See `List.length_join` for the corresponding statement using `List.sum`. -/
 lemma length_join' (L : List (List α)) : length (join L) = Nat.sum (map length L) := by
@@ -95,7 +86,6 @@ lemma count_bind' [BEq β] (l : List α) (f : α → List β) (x : β) :
 theorem bind_eq_nil {l : List α} {f : α → List β} : List.bind l f = [] ↔ ∀ x ∈ l, f x = [] :=
   join_eq_nil.trans <| by
     simp only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-#align list.bind_eq_nil List.bind_eq_nil
 
 /-- In a join, taking the first elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the join of the first `i` sublists.
@@ -147,7 +137,6 @@ theorem drop_take_succ_eq_cons_nthLe (L : List α) {i : ℕ} (hi : i < L.length)
   have : i < tail.length := by simpa using hi
   simp [*]
   rfl
-#align list.drop_take_succ_eq_cons_nth_le List.drop_take_succ_eq_cons_nthLe
 
 /-- In a join of sublists, taking the slice between the indices `A` and `B - 1` gives back the
 original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
@@ -168,11 +157,6 @@ theorem drop_take_succ_join_eq_get' (L : List (List α)) (i : Fin L.length) :
       get L i := by
    simp [drop_take_succ_join_eq_getElem']
 
-#noalign list.drop_take_succ_join_eq_nth_le
-#noalign list.sum_take_map_length_lt1
-#noalign list.sum_take_map_length_lt2
-#noalign list.nth_le_join
-
 /-- Two lists of sublists are equal iff their joins coincide, as well as the lengths of the
 sublists. -/
 theorem eq_iff_join_eq (L L' : List (List α)) :
@@ -184,14 +168,12 @@ theorem eq_iff_join_eq (L L' : List (List α)) :
     simpa using this
   · intro n h₁ h₂
     rw [← drop_take_succ_join_eq_getElem', ← drop_take_succ_join_eq_getElem', join_eq, length_eq]
-#align list.eq_iff_join_eq List.eq_iff_join_eq
 
 theorem join_drop_length_sub_one {L : List (List α)} (h : L ≠ []) :
     (L.drop (L.length - 1)).join = L.getLast h := by
   induction L using List.reverseRecOn
   · cases h rfl
   · simp
-#align list.join_drop_length_sub_one List.join_drop_length_sub_one
 
 /-- We can rebracket `x ++ (l₁ ++ x) ++ (l₂ ++ x) ++ ... ++ (lₙ ++ x)` to
 `(x ++ l₁) ++ (x ++ l₂) ++ ... ++ (x ++ lₙ) ++ x` where `L = [l₁, l₂, ..., lₙ]`. -/
@@ -200,7 +182,6 @@ theorem append_join_map_append (L : List (List α)) (x : List α) :
   induction' L with _ _ ih
   · rw [map_nil, join, append_nil, map_nil, join, nil_append]
   · rw [map_cons, join, map_cons, join, append_assoc, ih, append_assoc, append_assoc]
-#align list.append_join_map_append List.append_join_map_append
 
 /-- Reversing a join is the same as reversing the order of parts and reversing all parts. -/
 theorem reverse_join (L : List (List α)) :
@@ -208,13 +189,11 @@ theorem reverse_join (L : List (List α)) :
   induction' L with _ _ ih
   · rfl
   · rw [join, reverse_append, ih, map_cons, reverse_cons', join_concat]
-#align list.reverse_join List.reverse_join
 
 /-- Joining a reverse is the same as reversing all parts and reversing the joined result. -/
 theorem join_reverse (L : List (List α)) :
     L.reverse.join = (L.map reverse).join.reverse := by
   simpa [reverse_reverse, map_reverse] using congr_arg List.reverse (reverse_join L.reverse)
-#align list.join_reverse List.join_reverse
 
 /-- Any member of `L : List (List α))` is a sublist of `L.join` -/
 lemma sublist_join (L : List (List α)) {s : List α} (hs : s ∈ L) :

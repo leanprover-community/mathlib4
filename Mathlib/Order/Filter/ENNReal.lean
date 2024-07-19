@@ -5,8 +5,6 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Topology.Instances.ENNReal
 
-#align_import order.filter.ennreal from "leanprover-community/mathlib"@"52932b3a083d4142e78a15dc928084a22fea9ba0"
-
 /-!
 # Order properties of extended non-negative reals
 
@@ -23,12 +21,10 @@ variable {α : Type*} {f : Filter α}
 theorem eventually_le_limsup [CountableInterFilter f] (u : α → ℝ≥0∞) :
     ∀ᶠ y in f, u y ≤ f.limsup u :=
   _root_.eventually_le_limsup
-#align ennreal.eventually_le_limsup ENNReal.eventually_le_limsup
 
 theorem limsup_eq_zero_iff [CountableInterFilter f] {u : α → ℝ≥0∞} :
     f.limsup u = 0 ↔ u =ᶠ[f] 0 :=
   limsup_eq_bot
-#align ennreal.limsup_eq_zero_iff ENNReal.limsup_eq_zero_iff
 
 theorem limsup_const_mul_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_top : a ≠ ⊤) :
     (f.limsup fun x : α => a * u x) = a * f.limsup u := by
@@ -45,7 +41,6 @@ theorem limsup_const_mul_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_
     Monotone.strictMono_of_injective (fun _ _ _ => by rwa [mul_le_mul_left ha_zero ha_top]) hg_bij.1
   let g_iso := StrictMono.orderIsoOfSurjective g hg_mono hg_bij.2
   exact (OrderIso.limsup_apply g_iso).symm
-#align ennreal.limsup_const_mul_of_ne_top ENNReal.limsup_const_mul_of_ne_top
 
 theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : ℝ≥0∞} :
     f.limsup (a * u ·) = a * f.limsup u := by
@@ -66,7 +61,6 @@ theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : �
       eq_top_iff.mpr (le_limsup_of_frequently_le hu_mul)
     have hfu : f.limsup u ≠ 0 := mt limsup_eq_zero_iff.1 hu
     simp only [ha_top, top_mul', h_top_le, hfu, ite_false]
-#align ennreal.limsup_const_mul ENNReal.limsup_const_mul
 
 theorem limsup_mul_le [CountableInterFilter f] (u v : α → ℝ≥0∞) :
     f.limsup (u * v) ≤ f.limsup u * f.limsup v :=
@@ -75,13 +69,11 @@ theorem limsup_mul_le [CountableInterFilter f] (u v : α → ℝ≥0∞) :
       refine limsup_le_limsup ?_
       filter_upwards [@eventually_le_limsup _ f _ u] with x hx using mul_le_mul' hx le_rfl
     _ = f.limsup u * f.limsup v := limsup_const_mul
-#align ennreal.limsup_mul_le ENNReal.limsup_mul_le
 
 theorem limsup_add_le [CountableInterFilter f] (u v : α → ℝ≥0∞) :
     f.limsup (u + v) ≤ f.limsup u + f.limsup v :=
   sInf_le ((eventually_le_limsup u).mp
     ((eventually_le_limsup v).mono fun _ hxg hxf => add_le_add hxf hxg))
-#align ennreal.limsup_add_le ENNReal.limsup_add_le
 
 theorem limsup_liminf_le_liminf_limsup {β} [Countable β] {f : Filter α} [CountableInterFilter f]
     {g : Filter β} (u : α → β → ℝ≥0∞) :
@@ -91,6 +83,5 @@ theorem limsup_liminf_le_liminf_limsup {β} [Countable β] {f : Filter α} [Coun
     rw [eventually_countable_forall]
     exact fun b => ENNReal.eventually_le_limsup fun a => u a b
   sInf_le <| h1.mono fun x hx => Filter.liminf_le_liminf (Filter.eventually_of_forall hx)
-#align ennreal.limsup_liminf_le_liminf_limsup ENNReal.limsup_liminf_le_liminf_limsup
 
 end ENNReal

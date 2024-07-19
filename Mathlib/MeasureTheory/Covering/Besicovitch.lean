@@ -11,8 +11,6 @@ import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Data.Set.Pairwise.Lattice
 
-#align_import measure_theory.covering.besicovitch from "leanprover-community/mathlib"@"5f6e827d81dfbeb6151d7016586ceeb0099b9655"
-
 /-!
 # Besicovitch covering theorems
 
@@ -133,13 +131,6 @@ structure Besicovitch.SatelliteConfig (α : Type*) [MetricSpace α] (N : ℕ) (�
     r i ≤ dist (c i) (c j) ∧ r j ≤ τ * r i ∨ r j ≤ dist (c j) (c i) ∧ r i ≤ τ * r j
   hlast : ∀ i < last N, r i ≤ dist (c i) (c (last N)) ∧ r (last N) ≤ τ * r i
   inter : ∀ i < last N, dist (c i) (c (last N)) ≤ r i + r (last N)
-#align besicovitch.satellite_config Besicovitch.SatelliteConfig
-#align besicovitch.satellite_config.c Besicovitch.SatelliteConfig.c
-#align besicovitch.satellite_config.r Besicovitch.SatelliteConfig.r
-#align besicovitch.satellite_config.rpos Besicovitch.SatelliteConfig.rpos
-#align besicovitch.satellite_config.h Besicovitch.SatelliteConfig.h
-#align besicovitch.satellite_config.hlast Besicovitch.SatelliteConfig.hlast
-#align besicovitch.satellite_config.inter Besicovitch.SatelliteConfig.inter
 
 namespace Mathlib.Meta.Positivity
 
@@ -162,8 +153,6 @@ guarantees that the measurable Besicovitch covering theorem holds. It is satisfi
 finite-dimensional real vector spaces. -/
 class HasBesicovitchCovering (α : Type*) [MetricSpace α] : Prop where
   no_satelliteConfig : ∃ (N : ℕ) (τ : ℝ), 1 < τ ∧ IsEmpty (Besicovitch.SatelliteConfig α N τ)
-#align has_besicovitch_covering HasBesicovitchCovering
-#align has_besicovitch_covering.no_satellite_config HasBesicovitchCovering.no_satelliteConfig
 
 /-- There is always a satellite configuration with a single point. -/
 instance Besicovitch.SatelliteConfig.instInhabited {α : Type*} {τ : ℝ}
@@ -176,7 +165,6 @@ instance Besicovitch.SatelliteConfig.instInhabited {α : Type*} {τ : ℝ}
         rw [Subsingleton.elim (α := Fin 1) i (last 0)] at hi; exact (lt_irrefl _ hi).elim
       inter := fun i hi => by
         rw [Subsingleton.elim (α := Fin 1) i (last 0)] at hi; exact (lt_irrefl _ hi).elim }⟩
-#align besicovitch.satellite_config.inhabited Besicovitch.SatelliteConfig.instInhabited
 
 namespace Besicovitch
 
@@ -190,7 +178,6 @@ theorem inter' (i : Fin N.succ) : dist (a.c i) (a.c (last N)) ≤ a.r i + a.r (l
   · have I : i = last N := top_le_iff.1 H
     have := (a.rpos (last N)).le
     simp only [I, add_nonneg this this, dist_self]
-#align besicovitch.satellite_config.inter' Besicovitch.SatelliteConfig.inter'
 
 theorem hlast' (i : Fin N.succ) (h : 1 ≤ τ) : a.r (last N) ≤ τ * a.r i := by
   rcases lt_or_le i (last N) with (H | H)
@@ -198,7 +185,6 @@ theorem hlast' (i : Fin N.succ) (h : 1 ≤ τ) : a.r (last N) ≤ τ * a.r i := 
   · have : i = last N := top_le_iff.1 H
     rw [this]
     exact le_mul_of_one_le_left (a.rpos _).le h
-#align besicovitch.satellite_config.hlast' Besicovitch.SatelliteConfig.hlast'
 
 end SatelliteConfig
 
@@ -212,12 +198,6 @@ structure BallPackage (β : Type*) (α : Type*) where
   rpos : ∀ b, 0 < r b
   r_bound : ℝ
   r_le : ∀ b, r b ≤ r_bound
-#align besicovitch.ball_package Besicovitch.BallPackage
-#align besicovitch.ball_package.c Besicovitch.BallPackage.c
-#align besicovitch.ball_package.r Besicovitch.BallPackage.r
-#align besicovitch.ball_package.rpos Besicovitch.BallPackage.rpos
-#align besicovitch.ball_package.r_bound Besicovitch.BallPackage.r_bound
-#align besicovitch.ball_package.r_le Besicovitch.BallPackage.r_le
 
 /-- The ball package made of unit balls. -/
 def unitBallPackage (α : Type*) : BallPackage α α where
@@ -226,11 +206,9 @@ def unitBallPackage (α : Type*) : BallPackage α α where
   rpos _ := zero_lt_one
   r_bound := 1
   r_le _ := le_rfl
-#align besicovitch.unit_ball_package Besicovitch.unitBallPackage
 
 instance BallPackage.instInhabited (α : Type*) : Inhabited (BallPackage α α) :=
   ⟨unitBallPackage α⟩
-#align besicovitch.ball_package.inhabited Besicovitch.BallPackage.instInhabited
 
 /-- A Besicovitch tau-package is a family of balls in a metric space with positive bounded radii,
 together with enough data to proceed with the Besicovitch greedy algorithm. We register this in
@@ -239,15 +217,11 @@ one variable. -/
 structure TauPackage (β : Type*) (α : Type*) extends BallPackage β α where
   τ : ℝ
   one_lt_tau : 1 < τ
-#align besicovitch.tau_package Besicovitch.TauPackage
-#align besicovitch.tau_package.τ Besicovitch.TauPackage.τ
-#align besicovitch.tau_package.one_lt_tau Besicovitch.TauPackage.one_lt_tau
 
 instance TauPackage.instInhabited (α : Type*) : Inhabited (TauPackage α α) :=
   ⟨{ unitBallPackage α with
       τ := 2
       one_lt_tau := one_lt_two }⟩
-#align besicovitch.tau_package.inhabited Besicovitch.TauPackage.instInhabited
 
 variable {α : Type*} [MetricSpace α] {β : Type u}
 
@@ -268,24 +242,19 @@ noncomputable def index : Ordinal.{u} → β
       Classical.epsilon fun b : β => p.c b ∉ Z ∧ R ≤ p.τ * p.r b
   termination_by i => i
   decreasing_by exact j.2
-#align besicovitch.tau_package.index Besicovitch.TauPackage.index
 
 /-- The set of points that are covered by the union of balls selected at steps `< i`. -/
 def iUnionUpTo (i : Ordinal.{u}) : Set α :=
   ⋃ j : { j // j < i }, ball (p.c (p.index j)) (p.r (p.index j))
-#align besicovitch.tau_package.Union_up_to Besicovitch.TauPackage.iUnionUpTo
 
 theorem monotone_iUnionUpTo : Monotone p.iUnionUpTo := by
   intro i j hij
   simp only [iUnionUpTo]
   exact iUnion_mono' fun r => ⟨⟨r, r.2.trans_le hij⟩, Subset.rfl⟩
-#align besicovitch.tau_package.monotone_Union_up_to Besicovitch.TauPackage.monotone_iUnionUpTo
 
 /-- Supremum of the radii of balls whose centers are not yet covered at step `i`. -/
 def R (i : Ordinal.{u}) : ℝ :=
   iSup fun b : { b : β // p.c b ∉ p.iUnionUpTo i } => p.r b
-set_option linter.uppercaseLean3 false in
-#align besicovitch.tau_package.R Besicovitch.TauPackage.R
 
 /-- Group the balls into disjoint families, by assigning to a ball the smallest color for which
 it does not intersect any already chosen ball of this color. -/
@@ -298,13 +267,11 @@ noncomputable def color : Ordinal.{u} → ℕ
     sInf (univ \ A)
   termination_by i => i
   decreasing_by exact j.2
-#align besicovitch.tau_package.color Besicovitch.TauPackage.color
 
 /-- `p.lastStep` is the first ordinal where the construction stops making sense, i.e., `f` returns
 garbage since there is no point left to be chosen. We will only use ordinals before this step. -/
 def lastStep : Ordinal.{u} :=
   sInf {i | ¬∃ b : β, p.c b ∉ p.iUnionUpTo i ∧ p.R i ≤ p.τ * p.r b}
-#align besicovitch.tau_package.last_step Besicovitch.TauPackage.lastStep
 
 theorem lastStep_nonempty :
     {i | ¬∃ b : β, p.c b ∉ p.iUnionUpTo i ∧ p.R i ≤ p.τ * p.r b}.Nonempty := by
@@ -329,7 +296,6 @@ theorem lastStep_nonempty :
   specialize A x H
   simp? [hxy] at A says simp only [hxy, mem_ball, dist_self, not_lt] at A
   exact (lt_irrefl _ ((p.rpos (p.index y)).trans_le A)).elim
-#align besicovitch.tau_package.last_step_nonempty Besicovitch.TauPackage.lastStep_nonempty
 
 /-- Every point is covered by chosen balls, before `p.lastStep`. -/
 theorem mem_iUnionUpTo_lastStep (x : β) : p.c x ∈ p.iUnionUpTo p.lastStep := by
@@ -355,7 +321,6 @@ theorem mem_iUnionUpTo_lastStep (x : β) : p.c x ∈ p.iUnionUpTo p.lastStep := 
   · rw [← div_eq_inv_mul] at hy2
     have := (div_le_iff' (_root_.zero_lt_one.trans p.one_lt_tau)).1 hy2.le
     exact lt_irrefl _ (Hy.trans_le this)
-#align besicovitch.tau_package.mem_Union_up_to_last_step Besicovitch.TauPackage.mem_iUnionUpTo_lastStep
 
 /-- If there are no configurations of satellites with `N+1` points, one never uses more than `N`
 distinct families in the Besicovitch inductive construction. -/
@@ -476,7 +441,6 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
         convert dist_le_add_of_nonempty_closedBall_inter_closedBall (hg _ I).2.1 }
   -- this is a contradiction
   exact hN.false sc
-#align besicovitch.tau_package.color_lt Besicovitch.TauPackage.color_lt
 
 end TauPackage
 
@@ -545,7 +509,6 @@ theorem exist_disjoint_covering_families {N : ℕ} {τ : ℝ} (hτ : 1 < τ)
     simp only [s, exists_prop, mem_iUnion, mem_ball, mem_singleton_iff, biUnion_and',
       exists_eq_left, iUnion_exists, exists_and_left]
     exact ⟨⟨p.color a, p.color_lt ha.1 hN⟩, a, rfl, ha⟩
-#align besicovitch.exist_disjoint_covering_families Besicovitch.exist_disjoint_covering_families
 
 /-!
 ### The measurable Besicovitch covering theorem
@@ -684,7 +647,6 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
       simpa only [mem_image, Finset.mem_coe, Finset.coe_image] using hl
     have k'nel' : (k' : s) ≠ l' := by intro h; rw [h] at hkl; exact hkl rfl
     exact hu i k'.2 l'.2 k'nel'
-#align besicovitch.exist_finset_disjoint_balls_large_measure Besicovitch.exist_finset_disjoint_balls_large_measure
 
 variable [HasBesicovitchCovering α]
 
@@ -828,7 +790,6 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
     apply (monotone_nat_of_le_succ fun n => ?_).directed_le
     rw [← Nat.succ_eq_add_one, u_succ]
     exact (hF (u n) (Pu n)).1
-#align besicovitch.exists_disjoint_closed_ball_covering_ae_of_finite_measure_aux Besicovitch.exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux
 
 /-- The measurable Besicovitch covering theorem. Assume that, for any `x` in a set `s`,
 one is given a set of admissible closed balls centered at `x`, with arbitrarily small radii.
@@ -851,7 +812,6 @@ theorem exists_disjoint_closedBall_covering_ae_aux (μ : Measure α) [SFinite μ
   rcases exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux ν f s hf with
     ⟨t, t_count, ts, tr, tν, tdisj⟩
   exact ⟨t, t_count, ts, tr, hμν tν, tdisj⟩
-#align besicovitch.exists_disjoint_closed_ball_covering_ae_aux Besicovitch.exists_disjoint_closedBall_covering_ae_aux
 
 /-- The measurable Besicovitch covering theorem. Assume that, for any `x` in a set `s`,
 one is given a set of admissible closed balls centered at `x`, with arbitrarily small radii.
@@ -881,7 +841,6 @@ theorem exists_disjoint_closedBall_covering_ae (μ : Measure α) [SFinite μ] (f
   have hinj : InjOn (fun x ↦ (x, r x)) t := LeftInvOn.injOn (f₁' := Prod.fst) fun _ _ ↦ rfl
   simp only [graphOn, forall_mem_image, biUnion_image, hinj.pairwiseDisjoint_image] at *
   exact ⟨t, r, countable_of_injective_of_countable_image hinj v_count, vs, vg, μv, v_disj⟩
-#align besicovitch.exists_disjoint_closed_ball_covering_ae Besicovitch.exists_disjoint_closedBall_covering_ae
 
 /-- In a space with the Besicovitch property, any set `s` can be covered with balls whose measures
 add up to at most `μ s + ε`, for any positive `ε`. This works even if one restricts the set of
@@ -1049,7 +1008,6 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
         gcongr
         simp only [Finset.card_fin, Finset.sum_const, nsmul_eq_mul, ENNReal.mul_div_le]
       _ = μ s + ε := by rw [add_assoc, ENNReal.add_halves]
-#align besicovitch.exists_closed_ball_covering_tsum_measure_le Besicovitch.exists_closedBall_covering_tsum_measure_le
 
 /-! ### Consequences on differentiation of measures -/
 
@@ -1090,7 +1048,6 @@ protected def vitaliFamily (μ : Measure α) [SFinite μ] : VitaliFamily μ wher
       exact tdisj hx hy (ne_of_apply_ne F hxy)
     · rintro - ⟨x, hx, rfl⟩; exact (tg x hx).1.2
     · rwa [biUnion_image]
-#align besicovitch.vitali_family Besicovitch.vitaliFamily
 
 /-- The main feature of the Besicovitch Vitali family is that its filter at a point `x` corresponds
 to convergence along closed balls. We record one of the two implications here, which will enable us
@@ -1109,7 +1066,6 @@ theorem tendsto_filterAt (μ : Measure α) [SFinite μ] (x : α) :
   apply hε
   · exact mem_image_of_mem _ hr.1
   · exact closedBall_subset_closedBall hr.2
-#align besicovitch.tendsto_filter_at Besicovitch.tendsto_filterAt
 
 variable [MetricSpace β] [MeasurableSpace β] [BorelSpace β] [SecondCountableTopology β]
   [HasBesicovitchCovering β]
@@ -1121,7 +1077,6 @@ theorem ae_tendsto_rnDeriv (ρ μ : Measure β) [IsLocallyFiniteMeasure μ] [IsL
       Tendsto (fun r => ρ (closedBall x r) / μ (closedBall x r)) (𝓝[>] 0) (𝓝 (ρ.rnDeriv μ x)) := by
   filter_upwards [VitaliFamily.ae_tendsto_rnDeriv (Besicovitch.vitaliFamily μ) ρ] with x hx
   exact hx.comp (tendsto_filterAt μ x)
-#align besicovitch.ae_tendsto_rn_deriv Besicovitch.ae_tendsto_rnDeriv
 
 /-- Given a measurable set `s`, then `μ (s ∩ closedBall x r) / μ (closedBall x r)` converges when
 `r` tends to `0`, for almost every `x`. The limit is `1` for `x ∈ s` and `0` for `x ∉ s`.
@@ -1137,7 +1092,6 @@ theorem ae_tendsto_measure_inter_div_of_measurableSet (μ : Measure β) [IsLocal
       (Besicovitch.vitaliFamily μ) hs]
   intro x hx
   exact hx.comp (tendsto_filterAt μ x)
-#align besicovitch.ae_tendsto_measure_inter_div_of_measurable_set Besicovitch.ae_tendsto_measure_inter_div_of_measurableSet
 
 /-- Given an arbitrary set `s`, then `μ (s ∩ closedBall x r) / μ (closedBall x r)` converges
 to `1` when `r` tends to `0`, for almost every `x` in `s`.
@@ -1150,6 +1104,5 @@ theorem ae_tendsto_measure_inter_div (μ : Measure β) [IsLocallyFiniteMeasure �
       Tendsto (fun r => μ (s ∩ closedBall x r) / μ (closedBall x r)) (𝓝[>] 0) (𝓝 1) := by
   filter_upwards [VitaliFamily.ae_tendsto_measure_inter_div (Besicovitch.vitaliFamily μ) s] with x
     hx using hx.comp (tendsto_filterAt μ x)
-#align besicovitch.ae_tendsto_measure_inter_div Besicovitch.ae_tendsto_measure_inter_div
 
 end Besicovitch

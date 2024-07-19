@@ -8,8 +8,6 @@ import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.CategoryTheory.Limits.TypesFiltered
 
-#align_import algebra.category.Mon.filtered_colimits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # The forgetful functor from (commutative) (additive) monoids preserves filtered colimits.
 
@@ -23,7 +21,6 @@ showing that the forgetful functor `forget MonCat` preserves filtered colimits. 
 
 -/
 
-set_option linter.uppercaseLean3 false
 
 universe v u
 
@@ -53,23 +50,17 @@ In the following, we will construct a monoid structure on `M`.
       In the following, we will construct an additive monoid structure on `M`."]
 abbrev M :=
   Types.Quot (F ⋙ forget MonCat)
-#align Mon.filtered_colimits.M MonCat.FilteredColimits.M
-#align AddMon.filtered_colimits.M AddMonCat.FilteredColimits.M
 
 /-- The canonical projection into the colimit, as a quotient type. -/
 @[to_additive "The canonical projection into the colimit, as a quotient type."]
 noncomputable abbrev M.mk : (Σ j, F.obj j) → M.{v, u} F :=
   Quot.mk _
-#align Mon.filtered_colimits.M.mk MonCat.FilteredColimits.M.mk
-#align AddMon.filtered_colimits.M.mk AddMonCat.FilteredColimits.M.mk
 
 @[to_additive]
 theorem M.mk_eq (x y : Σ j, F.obj j)
     (h : ∃ (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2) :
     M.mk.{v, u} F x = M.mk F y :=
   Quot.EqvGen_sound (Types.FilteredColimit.eqvGen_quot_rel_of_rel (F ⋙ forget MonCat) x y h)
-#align Mon.filtered_colimits.M.mk_eq MonCat.FilteredColimits.M.mk_eq
-#align AddMon.filtered_colimits.M.mk_eq AddMonCat.FilteredColimits.M.mk_eq
 
 variable [IsFiltered J]
 
@@ -81,8 +72,6 @@ variable [IsFiltered J]
   define the \"zero\" in the colimit as the equivalence class of `⟨j₀, 0 : F.obj j₀⟩`."]
 noncomputable instance colimitOne :
   One (M.{v, u} F) where one := M.mk F ⟨IsFiltered.nonempty.some,1⟩
-#align Mon.filtered_colimits.colimit_has_one MonCat.FilteredColimits.colimitOne
-#align AddMon.filtered_colimits.colimit_has_zero AddMonCat.FilteredColimits.colimitZero
 
 /-- The definition of the "one" in the colimit is independent of the chosen object of `J`.
 In particular, this lemma allows us to "unfold" the definition of `colimit_one` at a custom chosen
@@ -96,8 +85,6 @@ theorem colimit_one_eq (j : J) : (1 : M.{v, u} F) = M.mk F ⟨j, 1⟩ := by
   apply M.mk_eq
   refine ⟨max' _ j, IsFiltered.leftToMax _ j, IsFiltered.rightToMax _ j, ?_⟩
   simp
-#align Mon.filtered_colimits.colimit_one_eq MonCat.FilteredColimits.colimit_one_eq
-#align AddMon.filtered_colimits.colimit_zero_eq AddMonCat.FilteredColimits.colimit_zero_eq
 
 /-- The "unlifted" version of multiplication in the colimit. To multiply two dependent pairs
 `⟨j₁, x⟩` and `⟨j₂, y⟩`, we pass to a common successor of `j₁` and `j₂` (given by `IsFiltered.max`)
@@ -110,8 +97,6 @@ and multiply them there.
 noncomputable def colimitMulAux (x y : Σ j, F.obj j) : M.{v, u} F :=
   M.mk F ⟨IsFiltered.max x.fst y.fst, F.map (IsFiltered.leftToMax x.1 y.1) x.2 *
     F.map (IsFiltered.rightToMax x.1 y.1) y.2⟩
-#align Mon.filtered_colimits.colimit_mul_aux MonCat.FilteredColimits.colimitMulAux
-#align AddMon.filtered_colimits.colimit_add_aux AddMonCat.FilteredColimits.colimitAddAux
 
 /-- Multiplication in the colimit is well-defined in the left argument. -/
 @[to_additive "Addition in the colimit is well-defined in the left argument."]
@@ -135,8 +120,6 @@ theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
   congr 1
   change F.map _ (F.map _ _) = F.map _ (F.map _ _)
   rw [hfg]
-#align Mon.filtered_colimits.colimit_mul_aux_eq_of_rel_left MonCat.FilteredColimits.colimitMulAux_eq_of_rel_left
-#align AddMon.filtered_colimits.colimit_add_aux_eq_of_rel_left AddMonCat.FilteredColimits.colimitAddAux_eq_of_rel_left
 
 /-- Multiplication in the colimit is well-defined in the right argument. -/
 @[to_additive "Addition in the colimit is well-defined in the right argument."]
@@ -160,8 +143,6 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
   congr 1
   change F.map _ (F.map _ _) = F.map _ (F.map _ _)
   rw [hfg]
-#align Mon.filtered_colimits.colimit_mul_aux_eq_of_rel_right MonCat.FilteredColimits.colimitMulAux_eq_of_rel_right
-#align AddMon.filtered_colimits.colimit_add_aux_eq_of_rel_right AddMonCat.FilteredColimits.colimitAddAux_eq_of_rel_right
 
 /-- Multiplication in the colimit. See also `colimitMulAux`. -/
 @[to_additive "Addition in the colimit. See also `colimitAddAux`."]
@@ -176,8 +157,6 @@ noncomputable instance colimitMul : Mul (M.{v, u} F) :=
       apply colimitMulAux_eq_of_rel_left
       apply Types.FilteredColimit.rel_of_quot_rel
       exact h }
-#align Mon.filtered_colimits.colimit_has_mul MonCat.FilteredColimits.colimitMul
-#align AddMon.filtered_colimits.colimit_has_add AddMonCat.FilteredColimits.colimitAdd
 
 /-- Multiplication in the colimit is independent of the chosen "maximum" in the filtered category.
 In particular, this lemma allows us to "unfold" the definition of the multiplication of `x` and `y`,
@@ -200,8 +179,6 @@ theorem colimit_mul_mk_eq (x y : Σ j, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1
   change (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _ =
     (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _
   simp_rw [← F.map_comp, h₁, h₂]
-#align Mon.filtered_colimits.colimit_mul_mk_eq MonCat.FilteredColimits.colimit_mul_mk_eq
-#align AddMon.filtered_colimits.colimit_add_mk_eq AddMonCat.FilteredColimits.colimit_add_mk_eq
 
 @[to_additive]
 noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
@@ -249,16 +226,12 @@ noncomputable instance colimitMonoid : Monoid (M.{v, u} F) :=
       rw [F.map_id, show ∀ x, (𝟙 (F.obj (IsFiltered.max j₁ (IsFiltered.max j₂ j₃)))) x = x
         from fun _ => rfl, mul_assoc, MonoidHom.map_mul, F.map_comp, F.map_comp]
       rfl }
-#align Mon.filtered_colimits.colimit_monoid MonCat.FilteredColimits.colimitMonoid
-#align AddMon.filtered_colimits.colimit_add_monoid AddMonCat.FilteredColimits.colimitAddMonoid
 
 /-- The bundled monoid giving the filtered colimit of a diagram. -/
 @[to_additive
   "The bundled additive monoid giving the filtered colimit of a diagram."]
 noncomputable def colimit : MonCat.{max v u} :=
   MonCat.of (M.{v, u} F)
-#align Mon.filtered_colimits.colimit MonCat.FilteredColimits.colimit
-#align AddMon.filtered_colimits.colimit AddMonCat.FilteredColimits.colimit
 
 /-- The monoid homomorphism from a given monoid in the diagram to the colimit monoid. -/
 @[to_additive
@@ -271,24 +244,18 @@ def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
     convert (colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, y⟩ j (𝟙 j) (𝟙 j)).symm
     rw [F.map_id]
     rfl
-#align Mon.filtered_colimits.cocone_morphism MonCat.FilteredColimits.coconeMorphism
-#align AddMon.filtered_colimits.cocone_morphism AddMonCat.FilteredColimits.coconeMorphism
 
 @[to_additive (attr := simp)]
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism.{v, u} F j' = coconeMorphism F j :=
   MonoidHom.ext fun x =>
     congr_fun ((Types.TypeMax.colimitCocone (F ⋙ forget MonCat)).ι.naturality f) x
-#align Mon.filtered_colimits.cocone_naturality MonCat.FilteredColimits.cocone_naturality
-#align AddMon.filtered_colimits.cocone_naturality AddMonCat.FilteredColimits.cocone_naturality
 
 /-- The cocone over the proposed colimit monoid. -/
 @[to_additive "The cocone over the proposed colimit additive monoid."]
 noncomputable def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι := { app := coconeMorphism F }
-#align Mon.filtered_colimits.colimit_cocone MonCat.FilteredColimits.colimitCocone
-#align AddMon.filtered_colimits.colimit_cocone AddMonCat.FilteredColimits.colimitCocone
 
 /-- Given a cocone `t` of `F`, the induced monoid homomorphism from the colimit to the cocone point.
 As a function, this is simply given by the induced map of the corresponding cocone in `Type`.
@@ -320,8 +287,6 @@ def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
     -- so can't rewrite `t.w_apply`
     congr 1 <;>
     exact t.w_apply _ _
-#align Mon.filtered_colimits.colimit_desc MonCat.FilteredColimits.colimitDesc
-#align AddMon.filtered_colimits.colimit_desc AddMonCat.FilteredColimits.colimitDesc
 
 /-- The proposed colimit cocone is a colimit in `MonCat`. -/
 @[to_additive "The proposed colimit cocone is a colimit in `AddMonCat`."]
@@ -333,8 +298,6 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
       ((Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget MonCat)).uniq ((forget MonCat).mapCocone t)
         ((forget MonCat).map m)
         fun j => funext fun x => DFunLike.congr_fun (i := MonCat.instFunLike _ _) (h j) x) y
-#align Mon.filtered_colimits.colimit_cocone_is_colimit MonCat.FilteredColimits.colimitCoconeIsColimit
-#align AddMon.filtered_colimits.colimit_cocone_is_colimit AddMonCat.FilteredColimits.colimitCoconeIsColimit
 
 @[to_additive]
 noncomputable instance forgetPreservesFilteredColimits :
@@ -364,8 +327,6 @@ In the following, we will show that this has the structure of a _commutative_ mo
       following, we will show that this has the structure of a _commutative_ additive monoid."]
 noncomputable abbrev M : MonCat.{max v u} :=
   MonCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ CommMonCat MonCat.{max v u})
-#align CommMon.filtered_colimits.M CommMonCat.FilteredColimits.M
-#align AddCommMon.filtered_colimits.M AddCommMonCat.FilteredColimits.M
 
 @[to_additive]
 noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=
@@ -381,15 +342,11 @@ noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=
         colimit_mul_mk_eq.{v, u} (F ⋙ forget₂ CommMonCat MonCat) y x k g f]
       dsimp
       rw [mul_comm] }
-#align CommMon.filtered_colimits.colimit_comm_monoid CommMonCat.FilteredColimits.colimitCommMonoid
-#align AddCommMon.filtered_colimits.colimit_add_comm_monoid AddCommMonCat.FilteredColimits.colimitAddCommMonoid
 
 /-- The bundled commutative monoid giving the filtered colimit of a diagram. -/
 @[to_additive "The bundled additive commutative monoid giving the filtered colimit of a diagram."]
 noncomputable def colimit : CommMonCat.{max v u} :=
   CommMonCat.of (M.{v, u} F)
-#align CommMon.filtered_colimits.colimit CommMonCat.FilteredColimits.colimit
-#align AddCommMon.filtered_colimits.colimit AddCommMonCat.FilteredColimits.colimit
 
 /-- The cocone over the proposed colimit commutative monoid. -/
 @[to_additive "The cocone over the proposed colimit additive commutative monoid."]
@@ -397,8 +354,6 @@ noncomputable def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι := { (MonCat.FilteredColimits.colimitCocone.{v, u}
     (F ⋙ forget₂ CommMonCat MonCat.{max v u})).ι with }
-#align CommMon.filtered_colimits.colimit_cocone CommMonCat.FilteredColimits.colimitCocone
-#align AddCommMon.filtered_colimits.colimit_cocone AddCommMonCat.FilteredColimits.colimitCocone
 
 /-- The proposed colimit cocone is a colimit in `CommMonCat`. -/
 @[to_additive "The proposed colimit cocone is a colimit in `AddCommMonCat`."]
@@ -416,8 +371,6 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
         ((forget CommMonCat.{max v u}).mapCocone t)
         ((forget CommMonCat.{max v u}).map m) fun j => funext fun x =>
           DFunLike.congr_fun (i := CommMonCat.instFunLike _ _) (h j) x
-#align CommMon.filtered_colimits.colimit_cocone_is_colimit CommMonCat.FilteredColimits.colimitCoconeIsColimit
-#align AddCommMon.filtered_colimits.colimit_cocone_is_colimit AddCommMonCat.FilteredColimits.colimitCoconeIsColimit
 
 @[to_additive forget₂AddMonPreservesFilteredColimits]
 noncomputable instance forget₂MonPreservesFilteredColimits :
@@ -425,15 +378,11 @@ noncomputable instance forget₂MonPreservesFilteredColimits :
 ⟨fun J hJ1 _ => letI hJ3 : Category J := hJ1
   ⟨fun {F} => preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
     (MonCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ CommMonCat MonCat.{u}))⟩⟩
-#align CommMon.filtered_colimits.forget₂_Mon_preserves_filtered_colimits CommMonCat.FilteredColimits.forget₂MonPreservesFilteredColimits
-#align AddCommMon.filtered_colimits.forget₂_AddMon_preserves_filtered_colimits AddCommMonCat.FilteredColimits.forget₂AddMonPreservesFilteredColimits
 
 @[to_additive]
 noncomputable instance forgetPreservesFilteredColimits :
     PreservesFilteredColimits (forget CommMonCat.{u}) :=
   Limits.compPreservesFilteredColimits (forget₂ CommMonCat MonCat) (forget MonCat)
-#align CommMon.filtered_colimits.forget_preserves_filtered_colimits CommMonCat.FilteredColimits.forgetPreservesFilteredColimits
-#align AddCommMon.filtered_colimits.forget_preserves_filtered_colimits AddCommMonCat.FilteredColimits.forgetPreservesFilteredColimits
 
 end
 

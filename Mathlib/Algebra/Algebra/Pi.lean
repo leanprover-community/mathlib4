@@ -5,8 +5,6 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Equiv
 
-#align_import algebra.algebra.pi from "leanprover-community/mathlib"@"b16045e4bf61c6fd619a1a68854ab3d605dcd017"
-
 /-!
 # The R-algebra structure on families of R-algebras
 
@@ -40,18 +38,15 @@ instance algebra {r : CommSemiring R} [s : ∀ i, Semiring (f i)] [∀ i, Algebr
   { (Pi.ringHom fun i => algebraMap R (f i) : R →+* ∀ i : I, f i) with
     commutes' := fun a f => by ext; simp [Algebra.commutes]
     smul_def' := fun a f => by ext; simp [Algebra.smul_def] }
-#align pi.algebra Pi.algebra
 
 theorem algebraMap_def {_ : CommSemiring R} [_s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)]
     (a : R) : algebraMap R (∀ i, f i) a = fun i => algebraMap R (f i) a :=
   rfl
-#align pi.algebra_map_def Pi.algebraMap_def
 
 @[simp]
 theorem algebraMap_apply {_ : CommSemiring R} [_s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)]
     (a : R) (i : I) : algebraMap R (∀ i, f i) a i = algebraMap R (f i) a :=
   rfl
-#align pi.algebra_map_apply Pi.algebraMap_apply
 
 -- One could also build a `∀ i, R i`-algebra structure on `∀ i, A i`,
 -- when each `A i` is an `R i`-algebra, although I'm not sure that it's useful.
@@ -65,7 +60,6 @@ def evalAlgHom {_ : CommSemiring R} [∀ i, Semiring (f i)] [∀ i, Algebra R (f
   { Pi.evalRingHom f i with
     toFun := fun f => f i
     commutes' := fun _ => rfl }
-#align pi.eval_alg_hom Pi.evalAlgHom
 
 variable (A B : Type*) [CommSemiring R] [Semiring B] [Algebra R B]
 
@@ -76,19 +70,16 @@ def constAlgHom : B →ₐ[R] A → B :=
   { Pi.constRingHom A B with
     toFun := Function.const _
     commutes' := fun _ => rfl }
-#align pi.const_alg_hom Pi.constAlgHom
 
 /-- When `R` is commutative and permits an `algebraMap`, `Pi.constRingHom` is equal to that
 map. -/
 @[simp]
 theorem constRingHom_eq_algebraMap : constRingHom A R = algebraMap R (A → R) :=
   rfl
-#align pi.const_ring_hom_eq_algebra_map Pi.constRingHom_eq_algebraMap
 
 @[simp]
 theorem constAlgHom_eq_algebra_ofId : constAlgHom R A R = Algebra.ofId R (A → R) :=
   rfl
-#align pi.const_alg_hom_eq_algebra_of_id Pi.constAlgHom_eq_algebra_ofId
 
 end Pi
 
@@ -97,7 +88,6 @@ definitions elsewhere in the library without this, -/
 instance Function.algebra {R : Type*} (I : Type*) (A : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] : Algebra R (I → A) :=
   Pi.algebra _ _
-#align function.algebra Function.algebra
 
 namespace AlgHom
 
@@ -114,7 +104,6 @@ protected def compLeft (f : A →ₐ[R] B) (I : Type*) : (I → A) →ₐ[R] I �
     commutes' := fun c => by
       ext
       exact f.commutes' c }
-#align alg_hom.comp_left AlgHom.compLeft
 
 end AlgHom
 
@@ -136,21 +125,18 @@ def piCongrRight {R ι : Type*} {A₁ A₂ : ι → Type*} [CommSemiring R] [∀
     commutes' := fun r => by
       ext i
       simp }
-#align alg_equiv.Pi_congr_right AlgEquiv.piCongrRight
 
 @[simp]
 theorem piCongrRight_refl {R ι : Type*} {A : ι → Type*} [CommSemiring R] [∀ i, Semiring (A i)]
     [∀ i, Algebra R (A i)] :
     (piCongrRight fun i => (AlgEquiv.refl : A i ≃ₐ[R] A i)) = AlgEquiv.refl :=
   rfl
-#align alg_equiv.Pi_congr_right_refl AlgEquiv.piCongrRight_refl
 
 @[simp]
 theorem piCongrRight_symm {R ι : Type*} {A₁ A₂ : ι → Type*} [CommSemiring R]
     [∀ i, Semiring (A₁ i)] [∀ i, Semiring (A₂ i)] [∀ i, Algebra R (A₁ i)] [∀ i, Algebra R (A₂ i)]
     (e : ∀ i, A₁ i ≃ₐ[R] A₂ i) : (piCongrRight e).symm = piCongrRight fun i => (e i).symm :=
   rfl
-#align alg_equiv.Pi_congr_right_symm AlgEquiv.piCongrRight_symm
 
 @[simp]
 theorem piCongrRight_trans {R ι : Type*} {A₁ A₂ A₃ : ι → Type*} [CommSemiring R]
@@ -159,6 +145,5 @@ theorem piCongrRight_trans {R ι : Type*} {A₁ A₂ A₃ : ι → Type*} [CommS
     (e₂ : ∀ i, A₂ i ≃ₐ[R] A₃ i) :
     (piCongrRight e₁).trans (piCongrRight e₂) = piCongrRight fun i => (e₁ i).trans (e₂ i) :=
   rfl
-#align alg_equiv.Pi_congr_right_trans AlgEquiv.piCongrRight_trans
 
 end AlgEquiv

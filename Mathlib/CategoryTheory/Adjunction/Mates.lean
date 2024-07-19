@@ -12,8 +12,6 @@ import Mathlib.CategoryTheory.Whiskering
 
 import Mathlib.Tactic.ApplyFun
 
-#align_import category_theory.adjunction.mates from "leanprover-community/mathlib"@"cea27692b3fdeb328a2ddba6aabf181754543184"
-
 /-!
 # Mate of natural transformations
 
@@ -263,7 +261,6 @@ def leftAdjointSquare.comp
     (γ : G₂ ⋙ L₅ ⟶ L₃ ⋙ H₂) (δ : H₂ ⋙ L₆ ⟶ L₄ ⋙ K₂) :
     ((G₁ ⋙ G₂) ⋙ (L₅ ⋙ L₆)) ⟶ ((L₁ ⋙ L₂) ⋙ (K₁ ⋙ K₂)) :=
   leftAdjointSquare.vcomp (leftAdjointSquare.hcomp α β) (leftAdjointSquare.hcomp γ δ)
-#align category_theory.leftadjointsquare_comp CategoryTheory.leftAdjointSquare.comp
 
 theorem leftAdjointSquare.comp_vhcomp
     (α : G₁ ⋙ L₃ ⟶ L₁ ⋙ H₁) (β : H₁ ⋙ L₄ ⟶ L₂ ⋙ K₁)
@@ -295,7 +292,6 @@ def rightAdjointSquare.comp
     (γ : R₃ ⋙ G₂ ⟶ H₂ ⋙ R₅) (δ : R₄ ⋙ H₂ ⟶ K₂ ⋙ R₆) :
     ((R₂ ⋙ R₁) ⋙ (G₁ ⋙ G₂) ⟶ (K₁ ⋙ K₂) ⋙ (R₆ ⋙ R₅)) :=
   rightAdjointSquare.vcomp (rightAdjointSquare.hcomp α β) (rightAdjointSquare.hcomp γ δ)
-#align category_theory.rightadjointsquare_comp CategoryTheory.rightAdjointSquare.comp
 
 theorem rightAdjointSquare.comp_vhcomp
     (α : R₁ ⋙ G₁ ⟶ H₁ ⋙ R₃) (β : R₂ ⋙ H₁ ⟶ K₁ ⋙ R₄)
@@ -411,7 +407,6 @@ theorem conjugateEquiv_id : conjugateEquiv adj₁ adj₁ (𝟙 _) = 𝟙 _ := by
 theorem conjugateEquiv_symm_id : (conjugateEquiv adj₁ adj₁).symm (𝟙 _) = 𝟙 _ := by
   rw [Equiv.symm_apply_eq]
   simp only [conjugateEquiv_id]
-#align category_theory.conjugates_symm_id CategoryTheory.conjugateEquiv_symm_id
 
 theorem conjugateEquiv_adjunction_id {L R : C ⥤ C} (adj : L ⊣ R) (α : 𝟭 C ⟶ L) (c : C) :
     (conjugateEquiv adj Adjunction.id α).app c = α.app (R.obj c) ≫ adj.counit.app c := by

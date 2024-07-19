@@ -7,8 +7,6 @@ import Mathlib.Data.Option.Defs
 import Mathlib.Control.Functor
 import Batteries.Data.List.Basic
 
-#align_import control.traversable.basic from "leanprover-community/mathlib"@"1fc36cc9c8264e6e81253f88be7fb2cb6c92d76a"
-
 /-!
 # Traversable type class
 
@@ -76,7 +74,6 @@ structure ApplicativeTransformation : Type max (u + 1) v w where
   preserves_pure' : ∀ {α : Type u} (x : α), app _ (pure x) = pure x
   /-- An `ApplicativeTransformation` intertwines `seq`. -/
   preserves_seq' : ∀ {α β : Type u} (x : F (α → β)) (y : F α), app _ (x <*> y) = app _ x <*> app _ y
-#align applicative_transformation ApplicativeTransformation
 
 end ApplicativeTransformation
 
@@ -93,30 +90,25 @@ variable {F G}
 -- This cannot be a `simp` lemma, as the RHS is a coercion which contains `η.app`.
 theorem app_eq_coe (η : ApplicativeTransformation F G) : η.app = η :=
   rfl
-#align applicative_transformation.app_eq_coe ApplicativeTransformation.app_eq_coe
 
 @[simp]
 theorem coe_mk (f : ∀ α : Type u, F α → G α) (pp ps) :
     (ApplicativeTransformation.mk f @pp @ps) = f :=
   rfl
-#align applicative_transformation.coe_mk ApplicativeTransformation.coe_mk
 
 protected theorem congr_fun (η η' : ApplicativeTransformation F G) (h : η = η') {α : Type u}
     (x : F α) : η x = η' x :=
   congrArg (fun η'' : ApplicativeTransformation F G => η'' x) h
-#align applicative_transformation.congr_fun ApplicativeTransformation.congr_fun
 
 protected theorem congr_arg (η : ApplicativeTransformation F G) {α : Type u} {x y : F α}
     (h : x = y) : η x = η y :=
   congrArg (fun z : F α => η z) h
-#align applicative_transformation.congr_arg ApplicativeTransformation.congr_arg
 
 theorem coe_inj ⦃η η' : ApplicativeTransformation F G⦄ (h : (η : ∀ α, F α → G α) = η') :
     η = η' := by
   cases η
   cases η'
   congr
-#align applicative_transformation.coe_inj ApplicativeTransformation.coe_inj
 
 @[ext]
 theorem ext ⦃η η' : ApplicativeTransformation F G⦄ (h : ∀ (α : Type u) (x : F α), η x = η' x) :
@@ -124,12 +116,10 @@ theorem ext ⦃η η' : ApplicativeTransformation F G⦄ (h : ∀ (α : Type u) 
   apply coe_inj
   ext1 α
   exact funext (h α)
-#align applicative_transformation.ext ApplicativeTransformation.ext
 
 theorem ext_iff {η η' : ApplicativeTransformation F G} :
     η = η' ↔ ∀ (α : Type u) (x : F α), η x = η' x :=
   ⟨fun h _ _ => h ▸ rfl, fun h => ext h⟩
-#align applicative_transformation.ext_iff ApplicativeTransformation.ext_iff
 
 section Preserves
 
@@ -138,22 +128,18 @@ variable (η : ApplicativeTransformation F G)
 @[functor_norm]
 theorem preserves_pure {α} : ∀ x : α, η (pure x) = pure x :=
   η.preserves_pure'
-#align applicative_transformation.preserves_pure ApplicativeTransformation.preserves_pure
 
 @[functor_norm]
 theorem preserves_seq {α β : Type u} : ∀ (x : F (α → β)) (y : F α), η (x <*> y) = η x <*> η y :=
   η.preserves_seq'
-#align applicative_transformation.preserves_seq ApplicativeTransformation.preserves_seq
 
 @[functor_norm]
 theorem preserves_map {α β} (x : α → β) (y : F α) : η (x <$> y) = x <$> η y := by
   rw [← pure_seq, η.preserves_seq, preserves_pure, pure_seq]
-#align applicative_transformation.preserves_map ApplicativeTransformation.preserves_map
 
 theorem preserves_map' {α β} (x : α → β) : @η _ ∘ Functor.map x = Functor.map x ∘ @η _ := by
   ext y
   exact preserves_map η x y
-#align applicative_transformation.preserves_map' ApplicativeTransformation.preserves_map'
 
 end Preserves
 
@@ -162,7 +148,6 @@ def idTransformation : ApplicativeTransformation F F where
   app α := id
   preserves_pure' := by simp
   preserves_seq' x y := by simp
-#align applicative_transformation.id_transformation ApplicativeTransformation.idTransformation
 
 instance : Inhabited (ApplicativeTransformation F F) :=
   ⟨idTransformation⟩
@@ -179,13 +164,11 @@ def comp (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F
   -- which should suffice for the next two.
   preserves_pure' x := by simp only [preserves_pure]
   preserves_seq' x y := by simp only [preserves_seq]
-#align applicative_transformation.comp ApplicativeTransformation.comp
 
 @[simp]
 theorem comp_apply (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G)
     {α : Type u} (x : F α) : η'.comp η x = η' (η x) :=
   rfl
-#align applicative_transformation.comp_apply ApplicativeTransformation.comp_apply
 
 -- Porting note: in mathlib3 we also had the assumption `[LawfulApplicative I]` because
 -- this was assumed
@@ -193,17 +176,14 @@ theorem comp_assoc {I : Type u → Type t} [Applicative I]
     (η'' : ApplicativeTransformation H I) (η' : ApplicativeTransformation G H)
     (η : ApplicativeTransformation F G) : (η''.comp η').comp η = η''.comp (η'.comp η) :=
   rfl
-#align applicative_transformation.comp_assoc ApplicativeTransformation.comp_assoc
 
 @[simp]
 theorem comp_id (η : ApplicativeTransformation F G) : η.comp idTransformation = η :=
   ext fun _ _ => rfl
-#align applicative_transformation.comp_id ApplicativeTransformation.comp_id
 
 @[simp]
 theorem id_comp (η : ApplicativeTransformation F G) : idTransformation.comp η = η :=
   ext fun _ _ => rfl
-#align applicative_transformation.id_comp ApplicativeTransformation.id_comp
 
 end ApplicativeTransformation
 
@@ -217,7 +197,6 @@ is the traversable functor `List` and `m` is the applicative functor
 class Traversable (t : Type u → Type u) extends Functor t where
   /-- The function commuting a traversable functor `t` with an arbitrary applicative functor `m`. -/
   traverse : ∀ {m : Type u → Type u} [Applicative m] {α β}, (α → m β) → t α → m (t β)
-#align traversable Traversable
 
 open Functor
 
@@ -233,7 +212,6 @@ variable {f : Type u → Type u} [Applicative f]
 /-- A traversable functor commutes with all applicative functors. -/
 def sequence [Traversable t] : t (f α) → f (t α) :=
   traverse id
-#align sequence sequence
 
 end Functions
 
@@ -261,7 +239,6 @@ class LawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFu
     ∀ {F G} [Applicative F] [Applicative G] [LawfulApplicative F] [LawfulApplicative G]
       (η : ApplicativeTransformation F G) {α β} (f : α → F β) (x : t α),
       η (traverse f x) = traverse (@η _ ∘ f) x
-#align is_lawful_traversable LawfulTraversable
 
 instance : Traversable Id :=
   ⟨id⟩
@@ -311,7 +288,6 @@ This is used to give a `Traversable` instance for the functor `σ ⊕ -`. -/
 protected def traverse {α β} (f : α → F β) : Sum σ α → F (Sum σ β)
   | Sum.inl x => pure (Sum.inl x)
   | Sum.inr x => Sum.inr <$> f x
-#align sum.traverse Sum.traverse
 
 end Sum
 

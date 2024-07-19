@@ -10,8 +10,6 @@ import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Ring
 
-#align_import imo.imo1998_q2 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
-
 /-!
 # IMO 1998 Q2
 In a competition, there are `a` contestants and `b` judges, where `b ≥ 3` is an odd integer. Each
@@ -40,7 +38,6 @@ the lower bound: `a(b-1)^2/2 ≤ |A|`.
 Rearranging gives the result.
 -/
 
-set_option linter.uppercaseLean3 false
 
 open scoped Classical
 
@@ -53,54 +50,44 @@ noncomputable section
 /-- An ordered pair of judges. -/
 abbrev JudgePair (J : Type*) :=
   J × J
-#align imo1998_q2.judge_pair Imo1998Q2.JudgePair
 
 /-- A triple consisting of contestant together with an ordered pair of judges. -/
 abbrev AgreedTriple (C J : Type*) :=
   C × JudgePair J
-#align imo1998_q2.agreed_triple Imo1998Q2.AgreedTriple
 
 /-- The first judge from an ordered pair of judges. -/
 abbrev JudgePair.judge₁ : JudgePair J → J :=
   Prod.fst
-#align imo1998_q2.judge_pair.judge₁ Imo1998Q2.JudgePair.judge₁
 
 /-- The second judge from an ordered pair of judges. -/
 abbrev JudgePair.judge₂ : JudgePair J → J :=
   Prod.snd
-#align imo1998_q2.judge_pair.judge₂ Imo1998Q2.JudgePair.judge₂
 
 /-- The proposition that the judges in an ordered pair are distinct. -/
 abbrev JudgePair.Distinct (p : JudgePair J) :=
   p.judge₁ ≠ p.judge₂
-#align imo1998_q2.judge_pair.distinct Imo1998Q2.JudgePair.Distinct
 
 /-- The proposition that the judges in an ordered pair agree about a contestant's rating. -/
 abbrev JudgePair.Agree (p : JudgePair J) (c : C) :=
   r c p.judge₁ ↔ r c p.judge₂
-#align imo1998_q2.judge_pair.agree Imo1998Q2.JudgePair.Agree
 
 /-- The contestant from the triple consisting of a contestant and an ordered pair of judges. -/
 abbrev AgreedTriple.contestant : AgreedTriple C J → C :=
   Prod.fst
-#align imo1998_q2.agreed_triple.contestant Imo1998Q2.AgreedTriple.contestant
 
 /-- The ordered pair of judges from the triple consisting of a contestant and an ordered pair of
 judges. -/
 abbrev AgreedTriple.judgePair : AgreedTriple C J → JudgePair J :=
   Prod.snd
-#align imo1998_q2.agreed_triple.judge_pair Imo1998Q2.AgreedTriple.judgePair
 
 @[simp]
 theorem JudgePair.agree_iff_same_rating (p : JudgePair J) (c : C) :
     p.Agree r c ↔ (r c p.judge₁ ↔ r c p.judge₂) :=
   Iff.rfl
-#align imo1998_q2.judge_pair.agree_iff_same_rating Imo1998Q2.JudgePair.agree_iff_same_rating
 
 /-- The set of contestants on which two judges agree. -/
 def agreedContestants [Fintype C] (p : JudgePair J) : Finset C :=
   Finset.univ.filter fun c => p.Agree r c
-#align imo1998_q2.agreed_contestants Imo1998Q2.agreedContestants
 section
 
 variable [Fintype J] [Fintype C]
@@ -109,11 +96,9 @@ variable [Fintype J] [Fintype C]
 def A : Finset (AgreedTriple C J) :=
   Finset.univ.filter @fun (a : AgreedTriple C J) =>
     (a.judgePair.Agree r a.contestant ∧ a.judgePair.Distinct)
-#align imo1998_q2.A Imo1998Q2.A
 
 theorem A_maps_to_offDiag_judgePair (a : AgreedTriple C J) :
     a ∈ A r → a.judgePair ∈ Finset.offDiag (@Finset.univ J _) := by simp [A, Finset.mem_offDiag]
-#align imo1998_q2.A_maps_to_off_diag_judge_pair Imo1998Q2.A_maps_to_offDiag_judgePair
 
 theorem A_fibre_over_contestant (c : C) :
     (Finset.univ.filter fun p : JudgePair J => p.Agree r c ∧ p.Distinct) =
@@ -123,7 +108,6 @@ theorem A_fibre_over_contestant (c : C) :
   constructor
   · rintro ⟨h₁, h₂⟩; refine ⟨(c, p), ?_⟩; tauto
   · intro h; aesop
-#align imo1998_q2.A_fibre_over_contestant Imo1998Q2.A_fibre_over_contestant
 
 theorem A_fibre_over_contestant_card (c : C) :
     (Finset.univ.filter fun p : JudgePair J => p.Agree r c ∧ p.Distinct).card =
@@ -133,7 +117,6 @@ theorem A_fibre_over_contestant_card (c : C) :
   unfold Set.InjOn
   rintro ⟨a, p⟩ h ⟨a', p'⟩ h' rfl
   aesop
-#align imo1998_q2.A_fibre_over_contestant_card Imo1998Q2.A_fibre_over_contestant_card
 
 theorem A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
     agreedContestants r p = ((A r).filter fun a : AgreedTriple C J => a.judgePair = p).image
@@ -141,7 +124,6 @@ theorem A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
   dsimp only [A, agreedContestants]; ext c; constructor <;> intro h
   · rw [Finset.mem_image]; refine ⟨⟨c, p⟩, ?_⟩; aesop
   · aesop
-#align imo1998_q2.A_fibre_over_judge_pair Imo1998Q2.A_fibre_over_judgePair
 
 theorem A_fibre_over_judgePair_card {p : JudgePair J} (h : p.Distinct) :
     (agreedContestants r p).card =
@@ -150,7 +132,6 @@ theorem A_fibre_over_judgePair_card {p : JudgePair J} (h : p.Distinct) :
   apply Finset.card_image_of_injOn
   -- Porting note (#10936): used to be `tidy`
   unfold Set.InjOn; intros; ext; all_goals aesop
-#align imo1998_q2.A_fibre_over_judge_pair_card Imo1998Q2.A_fibre_over_judgePair_card
 
 theorem A_card_upper_bound {k : ℕ}
     (hk : ∀ p : JudgePair J, p.Distinct → (agreedContestants r p).card ≤ k) :
@@ -161,13 +142,11 @@ theorem A_card_upper_bound {k : ℕ}
   intro p hp
   have hp' : p.Distinct := by simp [Finset.mem_offDiag] at hp; exact hp
   rw [← A_fibre_over_judgePair_card r hp']; apply hk; exact hp'
-#align imo1998_q2.A_card_upper_bound Imo1998Q2.A_card_upper_bound
 
 end
 
 theorem add_sq_add_sq_sub {α : Type*} [Ring α] (x y : α) :
     (x + y) * (x + y) + (x - y) * (x - y) = 2 * x * x + 2 * y * y := by noncomm_ring
-#align imo1998_q2.add_sq_add_sq_sub Imo1998Q2.add_sq_add_sq_sub
 
 theorem norm_bound_of_odd_sum {x y z : ℤ} (h : x + y = 2 * z + 1) :
     2 * z * z + 2 * z + 1 ≤ x * x + y * y := by
@@ -177,7 +156,6 @@ theorem norm_bound_of_odd_sum {x y z : ℤ} (h : x + y = 2 * z + 1) :
   rw [← add_sq_add_sq_sub, h', add_le_add_iff_left]
   suffices 0 < (x - y) * (x - y) by apply Int.add_one_le_of_lt this
   rw [mul_self_pos, sub_ne_zero]; apply Int.ne_of_odd_add ⟨z, h⟩
-#align imo1998_q2.norm_bound_of_odd_sum Imo1998Q2.norm_bound_of_odd_sum
 
 section
 
@@ -193,7 +171,6 @@ theorem judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1)
   apply norm_bound_of_odd_sum
   suffices x + y = 2 * z + 1 by simp [← Int.ofNat_add, this]
   rw [Finset.filter_card_add_filter_neg_card_eq_card, ← hJ]; rfl
-#align imo1998_q2.judge_pairs_card_lower_bound Imo1998Q2.judge_pairs_card_lower_bound
 
 theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1) (c : C) :
     2 * z * z ≤ (Finset.univ.filter fun p : JudgePair J => p.Agree r c ∧ p.Distinct).card := by
@@ -211,7 +188,6 @@ theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2
   rw [Finset.filter_and, ← Finset.sdiff_sdiff_self_left s t, Finset.card_sdiff]
   · rw [hst']; rw [add_assoc] at hs; apply le_tsub_of_add_le_right hs
   · apply Finset.sdiff_subset
-#align imo1998_q2.distinct_judge_pairs_card_lower_bound Imo1998Q2.distinct_judge_pairs_card_lower_bound
 
 theorem A_card_lower_bound [Fintype C] {z : ℕ} (hJ : Fintype.card J = 2 * z + 1) :
     2 * z * z * Fintype.card C ≤ (A r).card := by
@@ -220,7 +196,6 @@ theorem A_card_lower_bound [Fintype C] {z : ℕ} (hJ : Fintype.card J = 2 * z + 
   intro c _
   rw [← A_fibre_over_contestant_card]
   apply distinct_judge_pairs_card_lower_bound r hJ
-#align imo1998_q2.A_card_lower_bound Imo1998Q2.A_card_lower_bound
 
 end
 
@@ -232,7 +207,6 @@ theorem clear_denominators {a b k : ℕ} (ha : 0 < a) (hb : 0 < b) :
     · aesop
     · norm_cast
   all_goals simp [ha, hb]
-#align imo1998_q2.clear_denominators Imo1998Q2.clear_denominators
 
 end
 
@@ -257,4 +231,3 @@ theorem imo1998_q2 [Fintype J] [Fintype C] (a b k : ℕ) (hC : Fintype.card C = 
   cases' z with z
   · simp
   · exact le_of_mul_le_mul_right h z.succ_pos
-#align imo1998_q2 imo1998_q2
