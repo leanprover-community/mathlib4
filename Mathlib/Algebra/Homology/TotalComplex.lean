@@ -38,6 +38,12 @@ variable {C : Type*} [Category C] [Preadditive C]
 of the objects `(K.X i₁).X i₂` such that `ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = i₁₂` exists. -/
 abbrev HasTotal := K.toGradedObject.HasMap (ComplexShape.π c₁ c₂ c₁₂)
 
+variable {K L} in
+lemma hasTotal_of_iso [K.HasTotal c₁₂] : L.HasTotal c₁₂ :=
+  GradedObject.hasMap_of_iso (GradedObject.isoMk K.toGradedObject L.toGradedObject
+    (fun ⟨i₁, i₂⟩ =>
+      (HomologicalComplex.eval _ _ i₁ ⋙ HomologicalComplex.eval _ _ i₂).mapIso e)) _
+
 variable [K.HasTotal c₁₂]
 
 section
@@ -223,12 +229,12 @@ lemma D₂_D₁ (i₁₂ i₁₂' i₁₂'' : I₁₂) :
             ComplexShape.ε₂_ε₁ c₁₂ h₃ h₄, neg_mul, Units.neg_smul]
         · simp only [K.d₂_eq_zero c₁₂ _ _ _ h₄, zero_comp, comp_zero, smul_zero, neg_zero]
       · rw [K.d₁_eq_zero c₁₂ _ _ _ h₃, zero_comp, neg_zero]
-        · by_cases h₄ : c₂.Rel i₂ (c₂.next i₂)
-          · rw [totalAux.d₂_eq K c₁₂ i₁ h₄ i₁₂']; swap
-            · rw [← ComplexShape.next_π₂ c₁ c₁₂ i₁ h₄, ← c₁₂.next_eq' h₁, h]
-            simp only [Linear.units_smul_comp, assoc, totalAux.ιMapObj_D₁]
-            rw [K.d₁_eq_zero c₁₂ _ _ _ h₃, comp_zero, smul_zero]
-          · rw [K.d₂_eq_zero c₁₂ _ _ _ h₄, zero_comp]
+        by_cases h₄ : c₂.Rel i₂ (c₂.next i₂)
+        · rw [totalAux.d₂_eq K c₁₂ i₁ h₄ i₁₂']; swap
+          · rw [← ComplexShape.next_π₂ c₁ c₁₂ i₁ h₄, ← c₁₂.next_eq' h₁, h]
+          simp only [Linear.units_smul_comp, assoc, totalAux.ιMapObj_D₁]
+          rw [K.d₁_eq_zero c₁₂ _ _ _ h₃, comp_zero, smul_zero]
+        · rw [K.d₂_eq_zero c₁₂ _ _ _ h₄, zero_comp]
     · rw [K.D₁_shape c₁₂ _ _ h₂, K.D₂_shape c₁₂ _ _ h₂, comp_zero, comp_zero, neg_zero]
   · rw [K.D₁_shape c₁₂ _ _ h₁, K.D₂_shape c₁₂ _ _ h₁, zero_comp, zero_comp, neg_zero]
 

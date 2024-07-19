@@ -3,9 +3,8 @@ Copyright (c) 2023 Junyan Xu, Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Antoine Chambert-Loir
 -/
-
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
-import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.Perm
@@ -93,12 +92,12 @@ section Fintype
 
 variable [Fintype α] [DecidableEq α] [DecidableEq ι]
 
-open BigOperators Nat
+open Nat
 
 variable (f)
 
 /-- The cardinality of the type of permutations preserving a function -/
-theorem stabilizer_card [Fintype ι] :
+theorem stabilizer_card : -- TODO : need Fintype ? Finite ?
     Fintype.card {g : Perm α // f ∘ g = f} = ∏ i, (Fintype.card {a // f a = i})! := by
   -- rewriting via Nat.card because Fintype instance is not found
   rw [← Nat.card_eq_fintype_card,

@@ -114,3 +114,5 @@ theorem isMaxChain_range_flag (b : Basis (Fin n) K V) : IsMaxChain (· ≤ ·) (
   b.toFlag.maxChain
 
 end DivisionRing
+
+end Basis
