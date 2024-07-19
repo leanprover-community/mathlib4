@@ -38,8 +38,9 @@ is just `PiTensorProduct`.)
   `FreeProduct_ofPowers R A`.
 * `FreeProduct` is the coproduct in the category of `R`-algebras.
 
-(TODO: Induction principle for `FreeProduct`; show equivalence of `FreeProduct` with
-`PiTensorProduct` in the commutative case and with `FreeAlgebra R ⨁ (i : ι), A i`.)
+## TODO
+- Induction principle for `FreeProduct`
+- Equivalence of `FreeProduct` with `PiTensorProduct` in the commutative case and with `FreeAlgebra R ⨁ (i : ι), A i`
 
 -/
 universe u v w w'
