@@ -15,11 +15,13 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 * `HVertexOperator` : An `R`-linear map from an `R`-module `V` to `HahnModule Γ W`.
 * The coefficient function as an `R`-linear map.
 * Composition of heterogeneous vertex operators - values are Hahn series on lex order product.
+* Composition of heterogeneous vertex operators - values are Hahn series on lex order product.
 ## Main results
 * `HahnSeries Γ R`-module structure on `HVertexOperator Γ R V W`.  This means we can consider
   products of the form `(X-Y)^n A(X)B(Y)` for all integers `n`, where `(X-Y)^n` is expanded as
   `X^n(1-Y/X)^n` in `R((X))((Y))`
 ## TODO
+* curry for tensor product inputs
 * more API to make ext comparisons easier.
 * formal variable API, e.g., like the `T` function for Laurent polynomials.
 ## References
@@ -37,7 +39,7 @@ variable {Γ : Type*} [PartialOrder Γ] {R : Type*} {V W : Type*} [CommRing R]
   [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
 
 /-- A heterogeneous `Γ`-vertex operator over a commutator ring `R` is an `R`-linear map from an
-`R`-module `V` to `Γ`-Hahn series with coefficients in an `R`-module `W`.-/
+`R`-module `V` to `Γ`-Hahn series with coefficients in an `R`-module `W`. -/
 abbrev HVertexOperator (Γ : Type*) [PartialOrder Γ] (R : Type*) [CommRing R]
     (V : Type*) (W : Type*) [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W] :=
   V →ₗ[R] (HahnModule Γ R W)
@@ -96,6 +98,8 @@ def of_coeff (f : Γ → V →ₗ[R] W)
   map_smul' _ _ := by
     ext
     simp
+
+@[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.HetVertexOperator.of_coeff := of_coeff
 
 @[simp]
 theorem coeff_of_coeff (f : Γ → V →ₗ[R] W)

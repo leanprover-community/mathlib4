@@ -24,7 +24,6 @@ coefficients in `R`, whose supports are partially well-ordered. With further str
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 
-set_option linter.uppercaseLean3 false
 
 open Finset Function
 
@@ -66,11 +65,27 @@ instance : AddMonoid (HahnSeries Γ R) where
 @[simp]
 theorem add_coeff' {x y : HahnSeries Γ R} : (x + y).coeff = x.coeff + y.coeff :=
   rfl
-#align hahn_series.add_coeff' HahnSeries.add_coeff'
 
 theorem add_coeff {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a + y.coeff a :=
   rfl
-#align hahn_series.add_coeff HahnSeries.add_coeff
+
+@[simp]
+theorem nsmul_coeff {x : HahnSeries Γ R} {n : ℕ} : (n • x).coeff = n • x.coeff := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp [add_nsmul, ih]
+
+theorem add_coeffTop {x y : HahnSeries Γ R} {a : WithTop Γ} :
+    (x + y).coeffTop a = x.coeffTop a + y.coeffTop a := by
+  match a with
+  | ⊤ => simp
+  | (a : Γ) => simp
+
+@[simp]
+theorem add_coeffTop' {x y : HahnSeries Γ R} :
+    (x + y).coeffTop = x.coeffTop + y.coeffTop := by
+  ext
+  exact add_coeffTop
 
 @[simp]
 theorem nsmul_coeff {x : HahnSeries Γ R} {n : ℕ} : (n • x).coeff = n • x.coeff := by
@@ -156,7 +171,6 @@ theorem support_add_subset {x y : HahnSeries Γ R} : support (x + y) ⊆ support
   rw [Set.mem_union, mem_support, mem_support]
   contrapose! ha
   rw [ha.1, ha.2, add_zero]
-#align hahn_series.support_add_subset HahnSeries.support_add_subset
 
 protected theorem min_le_min_add {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} (hx : x ≠ 0)
     (hy : y ≠ 0) (hxy : x + y ≠ 0) :
@@ -181,7 +195,6 @@ theorem min_order_le_order_add {Γ} [Zero Γ] [LinearOrder Γ] {x y : HahnSeries
   by_cases hy : y = 0; · simp [hy]
   rw [order_of_ne hx, order_of_ne hy, order_of_ne hxy]
   exact HahnSeries.min_le_min_add hx hy hxy
-#align hahn_series.min_order_le_order_add HahnSeries.min_order_le_order_add
 
 theorem orderTop_add_eq_left {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
     (hxy : x.orderTop < y.orderTop) : (x + y).orderTop = x.orderTop := by
@@ -234,7 +247,6 @@ def coeff.addMonoidHom (g : Γ) : HahnSeries Γ R →+ R where
   toFun f := f.coeff g
   map_zero' := zero_coeff
   map_add' _ _ := add_coeff
-#align hahn_series.coeff.add_monoid_hom HahnSeries.coeff.addMonoidHom
 
 section Domain
 
@@ -247,7 +259,6 @@ theorem embDomain_add (f : Γ ↪o Γ') (x y : HahnSeries Γ R) :
   · obtain ⟨a, rfl⟩ := hg
     simp
   · simp [embDomain_notin_range hg]
-#align hahn_series.emb_domain_add HahnSeries.embDomain_add
 
 end Domain
 
@@ -299,27 +310,28 @@ instance : AddGroup (HahnSeries Γ R) :=
 @[simp]
 theorem neg_coeff' {x : HahnSeries Γ R} : (-x).coeff = -x.coeff :=
   rfl
-#align hahn_series.neg_coeff' HahnSeries.neg_coeff'
 
 theorem neg_coeff {x : HahnSeries Γ R} {a : Γ} : (-x).coeff a = -x.coeff a :=
   rfl
-#align hahn_series.neg_coeff HahnSeries.neg_coeff
 
 @[simp]
 theorem support_neg {x : HahnSeries Γ R} : (-x).support = x.support := by
   ext
   simp
-#align hahn_series.support_neg HahnSeries.support_neg
 
 @[simp]
 theorem sub_coeff' {x y : HahnSeries Γ R} : (x - y).coeff = x.coeff - y.coeff := by
   ext
   simp [sub_eq_add_neg]
-#align hahn_series.sub_coeff' HahnSeries.sub_coeff'
 
 theorem sub_coeff {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a - y.coeff a := by
   simp
-#align hahn_series.sub_coeff HahnSeries.sub_coeff
+
+@[simp]
+theorem zsmul_coeff {x : HahnSeries Γ R} {n : ℤ} : (n • x).coeff = n • x.coeff := by
+  cases n with
+  | ofNat n => simp_all only [Int.ofNat_eq_coe, natCast_zsmul, nsmul_coeff]
+  | negSucc _ => simp_all only [negSucc_zsmul, neg_coeff', nsmul_coeff]
 
 @[simp]
 theorem zsmul_coeff {x : HahnSeries Γ R} {n : ℤ} : (n • x).coeff = n • x.coeff := by
@@ -335,7 +347,6 @@ theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
   by_cases hf : f = 0
   · simp only [hf, neg_zero]
   simp only [order, support_neg, neg_eq_zero]
-#align hahn_series.order_neg HahnSeries.order_neg
 
 theorem min_orderTop_le_orderTop_sub {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} :
     min x.orderTop y.orderTop ≤ (x - y).orderTop := by
@@ -374,7 +385,6 @@ instance : SMul R (HahnSeries Γ V) :=
 @[simp]
 theorem smul_coeff {r : R} {x : HahnSeries Γ V} {a : Γ} : (r • x).coeff a = r • x.coeff a :=
   rfl
-#align hahn_series.smul_coeff HahnSeries.smul_coeff
 
 instance : SMulZeroClass R (HahnSeries Γ V) :=
   { inferInstanceAs (SMul R (HahnSeries Γ V)) with
@@ -456,13 +466,39 @@ def single.linearMap (a : Γ) : V →ₗ[R] HahnSeries Γ V :=
     map_smul' := fun r s => by
       ext b
       by_cases h : b = a <;> simp [h] }
-#align hahn_series.single.linear_map HahnSeries.single.linearMap
 
 /-- `coeff g` as a linear map -/
 @[simps]
 def coeff.linearMap (g : Γ) : HahnSeries Γ V →ₗ[R] V :=
   { coeff.addMonoidHom g with map_smul' := fun _ _ => rfl }
-#align hahn_series.coeff.linear_map HahnSeries.coeff.linearMap
+
+/-- `ofIterate` as a linear map. -/
+@[simps]
+def ofIterate.linearMap {Γ' : Type*} [PartialOrder Γ'] :
+    HahnSeries Γ (HahnSeries Γ' V) →ₗ[R] HahnSeries (Γ ×ₗ Γ') V where
+  toFun := ofIterate
+  map_add' := by
+    intro _ _
+    ext _
+    simp only [ofIterate, add_coeff', Pi.add_apply]
+  map_smul' := by
+    intro _ _
+    ext _
+    simp only [ofIterate, RingHom.id_apply, smul_coeff]
+
+/-- `toIterate` as a linear map. -/
+@[simps]
+def toIterate.linearMap {Γ' : Type*} [PartialOrder Γ'] :
+    HahnSeries (Γ ×ₗ Γ') V →ₗ[R] HahnSeries Γ (HahnSeries Γ' V) where
+  toFun := toIterate
+  map_add' := by
+    intro _ _
+    ext _
+    simp only [toIterate, add_coeff', Pi.add_apply]
+  map_smul' := by
+    intro _ _
+    ext _
+    simp only [toIterate, RingHom.id_apply, smul_coeff]
 
 /-- `ofIterate` as a linear map. -/
 @[simps]
@@ -503,7 +539,6 @@ theorem embDomain_smul (f : Γ ↪o Γ') (r : R) (x : HahnSeries Γ R) :
   · obtain ⟨a, rfl⟩ := hg
     simp
   · simp [embDomain_notin_range hg]
-#align hahn_series.emb_domain_smul HahnSeries.embDomain_smul
 
 /-- Extending the domain of Hahn series is a linear map. -/
 @[simps]
@@ -511,7 +546,6 @@ def embDomainLinearMap (f : Γ ↪o Γ') : HahnSeries Γ R →ₗ[R] HahnSeries 
   toFun := embDomain f
   map_add' := embDomain_add f
   map_smul' := embDomain_smul f
-#align hahn_series.emb_domain_linear_map HahnSeries.embDomainLinearMap
 
 end Domain
 

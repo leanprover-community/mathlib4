@@ -8,8 +8,6 @@ import Mathlib.Algebra.Category.Semigrp.Basic
 import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.FreeMonoid.Basic
 
-#align_import algebra.category.Mon.adjunctions from "leanprover-community/mathlib"@"4bcba0da3d97399ce99260794213e69ccdf886ee"
-
 /-!
 # Adjunctions regarding the category of monoids
 
@@ -37,18 +35,12 @@ def adjoinOne : Semigrp.{u} ⥤ MonCat.{u} where
   map := WithOne.map
   map_id _ := WithOne.map_id
   map_comp := WithOne.map_comp
-#align adjoin_one MonCat.adjoinOne
-#align adjoin_zero AddMonCat.adjoinZero
 
 @[to_additive]
 instance hasForgetToSemigroup : HasForget₂ MonCat Semigrp where
   forget₂ :=
     { obj := fun M => Semigrp.of M
       map := MonoidHom.toMulHom }
-set_option linter.uppercaseLean3 false in
-#align has_forget_to_Semigroup MonCat.hasForgetToSemigroup
-set_option linter.uppercaseLean3 false in
-#align has_forget_to_AddSemigroup AddMonCat.hasForgetToAddSemigroup
 
 /-- The `adjoinOne`-forgetful adjunction from `Semigrp` to `MonCat`. -/
 @[to_additive "The `adjoinZero`-forgetful adjunction from `AddSemigrp` to `AddMonCat`"]
@@ -64,8 +56,6 @@ def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} Semigrp.{u} :=
         · rfl
         · simp
           rfl }
-#align adjoin_one_adj MonCat.adjoinOneAdj
-#align adjoin_zero_adj AddMonCat.adjoinZeroAdj
 
 /-- The free functor `Type u ⥤ MonCat` sending a type `X` to the free monoid on `X`. -/
 def free : Type u ⥤ MonCat.{u} where
@@ -73,14 +63,12 @@ def free : Type u ⥤ MonCat.{u} where
   map := FreeMonoid.map
   map_id _ := FreeMonoid.hom_eq (fun _ => rfl)
   map_comp _ _ := FreeMonoid.hom_eq (fun _ => rfl)
-#align free MonCat.free
 
 /-- The free-forgetful adjunction for monoids. -/
 def adj : free ⊣ forget MonCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X G => FreeMonoid.lift.symm
       homEquiv_naturality_left_symm := fun _ _ => FreeMonoid.hom_eq (fun _ => rfl) }
-#align adj MonCat.adj
 
 instance : (forget MonCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩

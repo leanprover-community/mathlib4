@@ -6,8 +6,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.TypeTags
 
-#align_import algebra.order.group.type_tags from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
-
 /-! # Ordered group structures on `Multiplicative α` and `Additive α`. -/
 
 

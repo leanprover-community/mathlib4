@@ -36,7 +36,6 @@ commutative domain.
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 
-set_option linter.uppercaseLean3 false
 
 open Finset Function
 
@@ -148,7 +147,6 @@ structure SummableFamily (α : Type*) where
   toFun : α → HahnSeries Γ R
   isPWO_iUnion_support' : Set.IsPWO (⋃ a : α, (toFun a).support)
   finite_co_support' : ∀ g : Γ, { a | (toFun a).coeff g ≠ 0 }.Finite
-#align hahn_series.summable_family HahnSeries.SummableFamily
 
 end
 
@@ -164,21 +162,17 @@ instance : FunLike (SummableFamily Γ R α) α (HahnSeries Γ R) where
 
 theorem isPWO_iUnion_support (s : SummableFamily Γ R α) : Set.IsPWO (⋃ a : α, (s a).support) :=
   s.isPWO_iUnion_support'
-#align hahn_series.summable_family.is_pwo_Union_support HahnSeries.SummableFamily.isPWO_iUnion_support
 
 theorem finite_co_support (s : SummableFamily Γ R α) (g : Γ) :
     (Function.support fun a => (s a).coeff g).Finite :=
   s.finite_co_support' g
-#align hahn_series.summable_family.finite_co_support HahnSeries.SummableFamily.finite_co_support
 
 theorem coe_injective : @Function.Injective (SummableFamily Γ R α) (α → HahnSeries Γ R) (⇑) :=
   DFunLike.coe_injective
-#align hahn_series.summable_family.coe_injective HahnSeries.SummableFamily.coe_injective
 
 @[ext]
 theorem ext {s t : SummableFamily Γ R α} (h : ∀ a : α, s a = t a) : s = t :=
   DFunLike.ext s t h
-#align hahn_series.summable_family.ext HahnSeries.SummableFamily.ext
 
 instance : Add (SummableFamily Γ R α) :=
   ⟨fun x y =>
@@ -206,20 +200,16 @@ instance : Inhabited (SummableFamily Γ R α) :=
 @[simp]
 theorem coe_add {s t : SummableFamily Γ R α} : ⇑(s + t) = s + t :=
   rfl
-#align hahn_series.summable_family.coe_add HahnSeries.SummableFamily.coe_add
 
 theorem add_apply {s t : SummableFamily Γ R α} {a : α} : (s + t) a = s a + t a :=
   rfl
-#align hahn_series.summable_family.add_apply HahnSeries.SummableFamily.add_apply
 
 @[simp]
 theorem coe_zero : ((0 : SummableFamily Γ R α) : α → HahnSeries Γ R) = 0 :=
   rfl
-#align hahn_series.summable_family.coe_zero HahnSeries.SummableFamily.coe_zero
 
 theorem zero_apply {a : α} : (0 : SummableFamily Γ R α) a = 0 :=
   rfl
-#align hahn_series.summable_family.zero_apply HahnSeries.SummableFamily.zero_apply
 
 instance : AddCommMonoid (SummableFamily Γ R α) where
   zero := 0
@@ -258,12 +248,10 @@ def hsum (s : SummableFamily Γ R α) : HahnSeries Γ R where
       simp_rw [mem_support, Classical.not_not]
       intro h
       rw [finsum_congr h, finsum_zero]
-#align hahn_series.summable_family.hsum HahnSeries.SummableFamily.hsum
 
 @[simp]
 theorem hsum_coeff {s : SummableFamily Γ R α} {g : Γ} : s.hsum.coeff g = ∑ᶠ i, (s i).coeff g :=
   rfl
-#align hahn_series.summable_family.hsum_coeff HahnSeries.SummableFamily.hsum_coeff
 
 theorem support_hsum_subset {s : SummableFamily Γ R α} : s.hsum.support ⊆ ⋃ a : α, (s a).support :=
   fun g hg => by
@@ -271,14 +259,52 @@ theorem support_hsum_subset {s : SummableFamily Γ R α} : s.hsum.support ⊆ �
   obtain ⟨a, _, h2⟩ := exists_ne_zero_of_sum_ne_zero hg
   rw [Set.mem_iUnion]
   exact ⟨a, h2⟩
-#align hahn_series.summable_family.support_hsum_subset HahnSeries.SummableFamily.support_hsum_subset
 
 @[simp]
 theorem hsum_add {s t : SummableFamily Γ R α} : (s + t).hsum = s.hsum + t.hsum := by
   ext g
   simp only [hsum_coeff, add_coeff, add_apply]
   exact finsum_add_distrib (s.finite_co_support _) (t.finite_co_support _)
-#align hahn_series.summable_family.hsum_add HahnSeries.SummableFamily.hsum_add
+
+theorem hsum_coeff_sum {s : SummableFamily Γ R α} {g : Γ} :
+    s.hsum.coeff g = ∑ i ∈ (s.coeff g).support, (s i).coeff g := by
+  simp [finsum_eq_sum _ (s.finite_co_support _)]
+
+theorem hsum_coeff_subset_sum {s : SummableFamily Γ R α} {g : Γ} {t : Finset α}
+    (h : { a | (s a).coeff g ≠ 0 } ⊆ t) : s.hsum.coeff g = ∑ i ∈ t, (s i).coeff g := by
+  rw [hsum_coeff_sum]
+  refine sum_subset (Set.Finite.toFinset_subset.mpr h) ?_
+  simp_all
+
+/-- The summable family made of a single Hahn series. -/
+@[simps]
+def single (x : HahnSeries Γ R) : SummableFamily Γ R Unit where
+  toFun _ := x
+  isPWO_iUnion_support' :=
+    Eq.mpr (congrArg (fun s ↦ s.IsPWO) (Set.iUnion_const x.support)) x.isPWO_support
+  finite_co_support' g := Set.toFinite {a | ((fun _ ↦ x) a).coeff g ≠ 0}
+
+@[simp]
+theorem hsum_single (x : HahnSeries Γ R) : (single x).hsum = x := by
+  ext g
+  simp only [hsum_coeff, single_toFun, finsum_unique]
+
+/-- A summable family induced by an equivalence of the parametrizing type. -/
+@[simps]
+def Equiv (e : α ≃ β) (s : SummableFamily Γ R α) : SummableFamily Γ R β where
+  toFun b := s (e.symm b)
+  isPWO_iUnion_support' := by
+    refine Set.IsPWO.mono s.isPWO_iUnion_support fun g => ?_
+    simp only [Set.mem_iUnion, mem_support, ne_eq, forall_exists_index]
+    exact fun b hg => Exists.intro (e.symm b) hg
+  finite_co_support' g :=
+    (Equiv.set_finite_iff e.subtypeEquivOfSubtype').mp <| s.finite_co_support' g
+
+@[simp]
+theorem hsum_equiv (e : α ≃ β) (s : SummableFamily Γ R α) : (Equiv e s).hsum = s.hsum := by
+  ext g
+  simp only [hsum_coeff, Equiv_toFun]
+  exact finsum_eq_of_bijective e.symm (Equiv.bijective e.symm) fun x => rfl
 
 theorem hsum_coeff_sum {s : SummableFamily Γ R α} {g : Γ} :
     s.hsum.coeff g = ∑ i ∈ (s.coeff g).support, (s i).coeff g := by
@@ -346,20 +372,16 @@ instance : AddCommGroup (SummableFamily Γ R α) :=
 @[simp]
 theorem coe_neg : ⇑(-s) = -s :=
   rfl
-#align hahn_series.summable_family.coe_neg HahnSeries.SummableFamily.coe_neg
 
 theorem neg_apply : (-s) a = -s a :=
   rfl
-#align hahn_series.summable_family.neg_apply HahnSeries.SummableFamily.neg_apply
 
 @[simp]
 theorem coe_sub : ⇑(s - t) = s - t :=
   rfl
-#align hahn_series.summable_family.coe_sub HahnSeries.SummableFamily.coe_sub
 
 theorem sub_apply : (s - t) a = s a - t a :=
   rfl
-#align hahn_series.summable_family.sub_apply HahnSeries.SummableFamily.sub_apply
 
 end AddCommGroup
 
@@ -497,7 +519,6 @@ theorem smul_apply [AddCommMonoid R] [SMulWithZero R V] {x : HahnSeries Γ R}
     {s : SummableFamily Γ' V α} {a : α} :
     (x • s) a = (HahnModule.of R).symm (x • HahnModule.of R (s a)) :=
   rfl
-#align hahn_series.summable_family.smul_apply HahnSeries.SummableFamily.smul_apply
 
 @[simp]
 theorem hsum_smul' [Semiring R] [Module R V] {x : HahnSeries Γ R} {s : SummableFamily Γ' V α} :
@@ -523,7 +544,6 @@ instance : Module (HahnSeries Γ R) (SummableFamily Γ' V α) where
 theorem hsum_smul {x : HahnSeries Γ R} {s : SummableFamily Γ R α} :
     (x • s).hsum = x * s.hsum := by
   rw [hsum_smul', of_symm_smul_of_eq_mul]
-#align hahn_series.summable_family.hsum_smul HahnSeries.SummableFamily.hsum_smul
 
 /-- The summation of a `summable_family` as a `LinearMap`. -/
 @[simps]
@@ -531,7 +551,6 @@ def lsum : SummableFamily Γ R α →ₗ[HahnSeries Γ R] HahnSeries Γ R where
   toFun := hsum
   map_add' _ _ := hsum_add
   map_smul' _ _ := hsum_smul
-#align hahn_series.summable_family.lsum HahnSeries.SummableFamily.lsum
 
 @[simp]
 theorem hsum_sub {R : Type*} [Ring R] {s t : SummableFamily Γ R α} :
@@ -637,12 +656,10 @@ def ofFinsupp (f : α →₀ HahnSeries Γ R) : SummableFamily Γ R α where
       Function.mem_support]
     contrapose! ha
     simp [ha]
-#align hahn_series.summable_family.of_finsupp HahnSeries.SummableFamily.ofFinsupp
 
 @[simp]
 theorem coe_ofFinsupp {f : α →₀ HahnSeries Γ R} : ⇑(SummableFamily.ofFinsupp f) = f :=
   rfl
-#align hahn_series.summable_family.coe_of_finsupp HahnSeries.SummableFamily.coe_ofFinsupp
 
 @[simp]
 theorem hsum_ofFinsupp {f : α →₀ HahnSeries Γ R} : (ofFinsupp f).hsum = f.sum fun _ => id := by
@@ -654,7 +671,6 @@ theorem hsum_ofFinsupp {f : α →₀ HahnSeries Γ R} : (ofFinsupp f).hsum = f.
   simp only [coeff.addMonoidHom_apply, mem_coe, Finsupp.mem_support_iff, Ne]
   contrapose! h
   simp [h]
-#align hahn_series.summable_family.hsum_of_finsupp HahnSeries.SummableFamily.hsum_ofFinsupp
 
 end OfFinsupp
 
@@ -680,32 +696,27 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
         · simp only [Ne, Set.mem_setOf_eq, dif_pos hb] at h
           exact ⟨Classical.choose hb, h, Classical.choose_spec hb⟩
         · simp only [Ne, Set.mem_setOf_eq, dif_neg hb, zero_coeff, not_true_eq_false] at h)
-#align hahn_series.summable_family.emb_domain HahnSeries.SummableFamily.embDomain
 
 variable (s : SummableFamily Γ R α) (f : α ↪ β) {a : α} {b : β}
 
 theorem embDomain_apply :
     s.embDomain f b = if h : b ∈ Set.range f then s (Classical.choose h) else 0 :=
   rfl
-#align hahn_series.summable_family.emb_domain_apply HahnSeries.SummableFamily.embDomain_apply
 
 @[simp]
 theorem embDomain_image : s.embDomain f (f a) = s a := by
   rw [embDomain_apply, dif_pos (Set.mem_range_self a)]
   exact congr rfl (f.injective (Classical.choose_spec (Set.mem_range_self a)))
-#align hahn_series.summable_family.emb_domain_image HahnSeries.SummableFamily.embDomain_image
 
 @[simp]
 theorem embDomain_notin_range (h : b ∉ Set.range f) : s.embDomain f b = 0 := by
   rw [embDomain_apply, dif_neg h]
-#align hahn_series.summable_family.emb_domain_notin_range HahnSeries.SummableFamily.embDomain_notin_range
 
 @[simp]
 theorem hsum_embDomain : (s.embDomain f).hsum = s.hsum := by
   ext g
   simp only [hsum_coeff, embDomain_apply, apply_dite HahnSeries.coeff, dite_apply, zero_coeff]
   exact finsum_emb_domain f fun a => (s a).coeff g
-#align hahn_series.summable_family.hsum_emb_domain HahnSeries.SummableFamily.hsum_embDomain
 
 end EmbDomain
 
