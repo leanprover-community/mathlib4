@@ -9,8 +9,6 @@ import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Types
 import Mathlib.Control.Basic -- Porting note: Needed for `joinM_map_map`, etc.
 
-#align_import category_theory.monad.types from "leanprover-community/mathlib"@"7c77279eec0b350e1e15ebda7cc4f74ee3fd58fb"
-
 /-!
 
 # Convert from `Monad` (i.e. Lean's `Type`-based monads) to `CategoryTheory.Monad`
@@ -41,7 +39,6 @@ def ofTypeMonad : Monad (Type u) where
   assoc' α := funext fun a => by apply joinM_map_joinM
   left_unit' α := funext fun a => by apply joinM_pure
   right_unit' α := funext fun a => by apply joinM_map_pure
-#align category_theory.of_type_monad CategoryTheory.ofTypeMonad
 
 /-- The `Kleisli` category of a `Control.Monad` is equivalent to the `Kleisli` category of its
 category-theoretic version, provided the monad is lawful.
@@ -82,7 +79,6 @@ def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
     change f >=> pure = pure >=> f
     simp [functor_norm]
   counitIso := NatIso.ofComponents fun X => Iso.refl X
-#align category_theory.eq CategoryTheory.eq
 
 end
 

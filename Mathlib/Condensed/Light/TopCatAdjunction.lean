@@ -24,15 +24,17 @@ open LightCondensed LightCondSet CategoryTheory LightProfinite
 
 attribute [local instance] ConcreteCategory.instFunLike
 
+namespace LightCondSet
+
 variable (X : LightCondSet.{u})
 
-/-- Auxiliary defiinition to define the topology on `X(*)` for a light condensed set `X`. -/
+/-- Auxiliary definition to define the topology on `X(*)` for a light condensed set `X`. -/
 private def _root_.LightProfinite.const (S : LightProfinite.{u}) (s : S) :
     LightProfinite.of PUnit.{u+1} ⟶ S :=
   ContinuousMap.const _ s
 
-/-- Auxiliary defiinition to define the topology on `X(*)` for a light condensed set `X`. -/
-private def LightCondSet.coinducingCoprod :
+/-- Auxiliary definition to define the topology on `X(*)` for a light condensed set `X`. -/
+private def coinducingCoprod :
     (Σ (i : (S : LightProfinite.{u}) × X.val.obj ⟨S⟩), i.fst) →
       X.val.obj ⟨LightProfinite.of PUnit⟩ :=
   fun ⟨⟨S, i⟩, s⟩ ↦ X.val.map (S.const s).op i
@@ -40,13 +42,12 @@ private def LightCondSet.coinducingCoprod :
 /-- Let `X` be a light condensed set. We define a topology on `X(*)` as the quotient topology of
 all the maps from light profinite sets `S` to `X(*)`, corresponding to elements of `X(S)`.
 In other words, the topology coinduced by the map `LightCondSet.coinducingCoprod` above. -/
-local instance : TopologicalSpace (X.val.obj ⟨LightProfinite.of PUnit⟩) :=
+local instance underlyingTopologicalSpace :
+    TopologicalSpace (X.val.obj ⟨LightProfinite.of PUnit⟩) :=
   TopologicalSpace.coinduced (coinducingCoprod X) inferInstance
 
 /-- The object part of the functor `LightCondSet ⥤ TopCat`  -/
-def LightCondSet.toTopCat : TopCat.{u} := TopCat.of (X.val.obj ⟨LightProfinite.of PUnit⟩)
-
-namespace LightCondSet
+def toTopCat : TopCat.{u} := TopCat.of (X.val.obj ⟨LightProfinite.of PUnit⟩)
 
 lemma continuous_coinducingCoprod {S : LightProfinite.{u}} (x : X.val.obj ⟨S⟩) :
     Continuous fun a ↦ (X.coinducingCoprod ⟨⟨S, x⟩, a⟩) := by
@@ -72,15 +73,11 @@ def toTopCatMap : X.toTopCat ⟶ Y.toTopCat where
     rw [this]
     exact continuous_coinducingCoprod _ _
 
-end LightCondSet
-
 /-- The functor `LightCondSet ⥤ TopCat`  -/
 @[simps]
-def lightCondSetToTopCat : LightCondSet.{u} ⥤ TopCat.{u} where
+def _root_.lightCondSetToTopCat : LightCondSet.{u} ⥤ TopCat.{u} where
   obj X := X.toTopCat
   map f := toTopCatMap f
-
-namespace LightCondSet
 
 /-- The counit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/
 def topCatAdjunctionCounit (X : TopCat.{u}) : X.toLightCondSet.toTopCat ⟶ X where
