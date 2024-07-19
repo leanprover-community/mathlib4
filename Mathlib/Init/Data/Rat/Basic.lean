@@ -21,8 +21,3 @@ These will be deleted soon so will not significantly delay deleting otherwise em
 
 # Align statements for declarations from Batteries
 -/
-
-#align rat.ext Rat.ext
-#align rat Rat
-#noalign rat.ext_iff
-#align rat.floor Rat.floor

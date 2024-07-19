@@ -7,8 +7,6 @@ import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.MulAction
 
-#align_import topology.algebra.affine from "leanprover-community/mathlib"@"717c073262cd9d59b1a1dcda7e8ab570c5b63370"
-
 /-!
 # Topological properties of affine spaces and maps
 
@@ -41,7 +39,6 @@ theorem continuous_iff {f : E →ᵃ[R] F} : Continuous f ↔ Continuous f.linea
   · intro hc
     rw [decomp f]
     exact hc.add continuous_const
-#align affine_map.continuous_iff AffineMap.continuous_iff
 
 /-- The line map is continuous. -/
 @[continuity]
@@ -49,7 +46,6 @@ theorem lineMap_continuous [TopologicalSpace R] [ContinuousSMul R F] {p v : F} :
     Continuous (lineMap p v : R →ᵃ[R] F) :=
   continuous_iff.mpr <|
     (continuous_id.smul continuous_const).add <| @continuous_const _ _ _ _ (0 : F)
-#align affine_map.line_map_continuous AffineMap.lineMap_continuous
 
 end Ring
 
@@ -65,7 +61,6 @@ theorem homothety_continuous (x : F) (t : R) : Continuous <| homothety x t := by
     -- Porting note: proof was `by continuity`
   ext y
   simp [homothety_apply]
-#align affine_map.homothety_continuous AffineMap.homothety_continuous
 
 end CommRing
 
@@ -76,7 +71,6 @@ variable [Field R] [Module R F] [ContinuousConstSMul R F]
 theorem homothety_isOpenMap (x : F) (t : R) (ht : t ≠ 0) : IsOpenMap <| homothety x t := by
   apply IsOpenMap.of_inverse (homothety_continuous x t⁻¹) <;> intro e <;>
     simp [← AffineMap.comp_apply, ← homothety_mul, ht]
-#align affine_map.homothety_is_open_map AffineMap.homothety_isOpenMap
 
 end Field
 

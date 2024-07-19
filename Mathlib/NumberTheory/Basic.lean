@@ -6,8 +6,6 @@ Authors: Johan Commelin, Kenny Lau
 import Mathlib.Algebra.GeomSum
 import Mathlib.RingTheory.Ideal.Quotient
 
-#align_import number_theory.basic from "leanprover-community/mathlib"@"168ad7fc5d8173ad38be9767a22d50b8ecf1cd00"
-
 /-!
 # Basic results in number theory
 
@@ -37,6 +35,5 @@ theorem dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} (h :
   rw [hf, map_sub, sub_eq_zero] at h
   rw [hf, RingHom.map_geom_sum₂, map_pow, map_pow, h, geom_sum₂_self, mul_eq_zero_of_left]
   rw [← map_natCast f, eq_zero_iff_mem, mem_span_singleton]
-#align dvd_sub_pow_of_dvd_sub dvd_sub_pow_of_dvd_sub
 
 end

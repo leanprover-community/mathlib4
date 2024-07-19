@@ -41,7 +41,6 @@ lemma LSeriesSummable.add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f 
 lemma LSeries_add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) (hg : LSeriesSummable g s) :
     LSeries (f + g) s = LSeries f s + LSeries g s := by
   simpa only [LSeries, term_add, Pi.add_apply] using tsum_add hf hg
-#align nat.arithmetic_function.l_series_add LSeries_add
 
 /-!
 ### Negation

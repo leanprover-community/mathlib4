@@ -5,8 +5,6 @@ Authors: Scott Morrison, Minchao Wu
 -/
 import Mathlib.Order.BoundedOrder
 
-#align_import data.prod.lex from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
-
 /-!
 # Lexicographic order
 
@@ -39,28 +37,22 @@ namespace Prod.Lex
 
 instance decidableEq (α β : Type*) [DecidableEq α] [DecidableEq β] : DecidableEq (α ×ₗ β) :=
   instDecidableEqProd
-#align prod.lex.decidable_eq Prod.Lex.decidableEq
 
 instance inhabited (α β : Type*) [Inhabited α] [Inhabited β] : Inhabited (α ×ₗ β) :=
   instInhabitedProd
-#align prod.lex.inhabited Prod.Lex.inhabited
 
 /-- Dictionary / lexicographic ordering on pairs.  -/
 instance instLE (α β : Type*) [LT α] [LE β] : LE (α ×ₗ β) where le := Prod.Lex (· < ·) (· ≤ ·)
-#align prod.lex.has_le Prod.Lex.instLE
 
 instance instLT (α β : Type*) [LT α] [LT β] : LT (α ×ₗ β) where lt := Prod.Lex (· < ·) (· < ·)
-#align prod.lex.has_lt Prod.Lex.instLT
 
 theorem le_iff [LT α] [LE β] (a b : α × β) :
     toLex a ≤ toLex b ↔ a.1 < b.1 ∨ a.1 = b.1 ∧ a.2 ≤ b.2 :=
   Prod.lex_def (· < ·) (· ≤ ·)
-#align prod.lex.le_iff Prod.Lex.le_iff
 
 theorem lt_iff [LT α] [LT β] (a b : α × β) :
     toLex a < toLex b ↔ a.1 < b.1 ∨ a.1 = b.1 ∧ a.2 < b.2 :=
   Prod.lex_def (· < ·) (· < ·)
-#align prod.lex.lt_iff Prod.Lex.lt_iff
 
 example (x : α) (y : β) : toLex (x, y) = toLex (x, y) := rfl
 
@@ -100,7 +92,6 @@ instance preorder (α β : Type*) [Preorder α] [Preorder β] : Preorder (α ×�
               apply h₂r
               right
               exact h }
-#align prod.lex.preorder Prod.Lex.preorder
 
 theorem monotone_fst [Preorder α] [LE β] (t c : α ×ₗ β) (h : t ≤ c) :
     (ofLex t).1 ≤ (ofLex c).1 := by
@@ -117,14 +108,12 @@ theorem toLex_mono : Monotone (toLex : α × β → α ×ₗ β) := by
   obtain rfl | ha : a₁ = a₂ ∨ _ := ha.eq_or_lt
   · exact right _ hb
   · exact left _ _ ha
-#align prod.lex.to_lex_mono Prod.Lex.toLex_mono
 
 theorem toLex_strictMono : StrictMono (toLex : α × β → α ×ₗ β) := by
   rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ h
   obtain rfl | ha : a₁ = a₂ ∨ _ := h.le.1.eq_or_lt
   · exact right _ (Prod.mk_lt_mk_iff_right.1 h)
   · exact left _ _ ha
-#align prod.lex.to_lex_strict_mono Prod.Lex.toLex_strictMono
 
 end Preorder
 
@@ -135,7 +124,6 @@ instance partialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] : Part
       haveI : IsStrictOrder α (· < ·) := { irrefl := lt_irrefl, trans := fun _ _ _ => lt_trans }
       haveI : IsAntisymm β (· ≤ ·) := ⟨fun _ _ => le_antisymm⟩
       exact @antisymm _ (Prod.Lex _ _) _ }
-#align prod.lex.partial_order Prod.Lex.partialOrder
 
 /-- Dictionary / lexicographic linear order for pairs. -/
 instance linearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearOrder (α ×ₗ β) :=
@@ -144,7 +132,6 @@ instance linearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearO
     decidableLE := Prod.Lex.decidable _ _,
     decidableLT := Prod.Lex.decidable _ _,
     decidableEq := Lex.decidableEq _ _, }
-#align prod.lex.linear_order Prod.Lex.linearOrder
 
 instance [Ord α] [Ord β] : Ord (α ×ₗ β) where
   compare := compareLex (compareOn (·.1)) (compareOn (·.2))
@@ -152,17 +139,14 @@ instance [Ord α] [Ord β] : Ord (α ×ₗ β) where
 instance orderBot [PartialOrder α] [Preorder β] [OrderBot α] [OrderBot β] : OrderBot (α ×ₗ β) where
   bot := toLex ⊥
   bot_le _ := toLex_mono bot_le
-#align prod.lex.order_bot Prod.Lex.orderBot
 
 instance orderTop [PartialOrder α] [Preorder β] [OrderTop α] [OrderTop β] : OrderTop (α ×ₗ β) where
   top := toLex ⊤
   le_top _ := toLex_mono le_top
-#align prod.lex.order_top Prod.Lex.orderTop
 
 instance boundedOrder [PartialOrder α] [Preorder β] [BoundedOrder α] [BoundedOrder β] :
     BoundedOrder (α ×ₗ β) :=
   { Lex.orderBot, Lex.orderTop with }
-#align prod.lex.bounded_order Prod.Lex.boundedOrder
 
 instance [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] :
     DenselyOrdered (α ×ₗ β) where
@@ -178,27 +162,23 @@ instance noMaxOrder_of_left [Preorder α] [Preorder β] [NoMaxOrder α] : NoMaxO
     rintro ⟨a, b⟩
     obtain ⟨c, h⟩ := exists_gt a
     exact ⟨⟨c, b⟩, left _ _ h⟩
-#align prod.lex.no_max_order_of_left Prod.Lex.noMaxOrder_of_left
 
 instance noMinOrder_of_left [Preorder α] [Preorder β] [NoMinOrder α] : NoMinOrder (α ×ₗ β) where
   exists_lt := by
     rintro ⟨a, b⟩
     obtain ⟨c, h⟩ := exists_lt a
     exact ⟨⟨c, b⟩, left _ _ h⟩
-#align prod.lex.no_min_order_of_left Prod.Lex.noMinOrder_of_left
 
 instance noMaxOrder_of_right [Preorder α] [Preorder β] [NoMaxOrder β] : NoMaxOrder (α ×ₗ β) where
   exists_gt := by
     rintro ⟨a, b⟩
     obtain ⟨c, h⟩ := exists_gt b
     exact ⟨⟨a, c⟩, right _ h⟩
-#align prod.lex.no_max_order_of_right Prod.Lex.noMaxOrder_of_right
 
 instance noMinOrder_of_right [Preorder α] [Preorder β] [NoMinOrder β] : NoMinOrder (α ×ₗ β) where
   exists_lt := by
     rintro ⟨a, b⟩
     obtain ⟨c, h⟩ := exists_lt b
     exact ⟨⟨a, c⟩, right _ h⟩
-#align prod.lex.no_min_order_of_right Prod.Lex.noMinOrder_of_right
 
 end Prod.Lex

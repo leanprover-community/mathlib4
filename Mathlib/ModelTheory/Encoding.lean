@@ -8,8 +8,6 @@ import Mathlib.Logic.Small.List
 import Mathlib.ModelTheory.Syntax
 import Mathlib.SetTheory.Cardinal.Ordinal
 
-#align_import model_theory.encoding from "leanprover-community/mathlib"@"91288e351d51b3f0748f0a38faa7613fb0ae2ada"
-
 /-! # Encodings and Cardinality of First-Order Syntax
 
 ## Main Definitions
@@ -52,7 +50,6 @@ def listEncode : L.Term α → List (Sum α (Σi, L.Functions i))
   | var i => [Sum.inl i]
   | func f ts =>
     Sum.inr (⟨_, f⟩ : Σi, L.Functions i)::(List.finRange _).bind fun i => (ts i).listEncode
-#align first_order.language.term.list_encode FirstOrder.Language.Term.listEncode
 
 /-- Decodes a list of variables and function symbols as a list of terms. -/
 def listDecode : List (Sum α (Σi, L.Functions i)) → List (Option (L.Term α))
@@ -62,7 +59,6 @@ def listDecode : List (Sum α (Σi, L.Functions i)) → List (Option (L.Term α)
     if h : ∀ i : Fin n, ((listDecode l).get? i).join.isSome then
       (func f fun i => Option.get _ (h i))::(listDecode l).drop n
     else [none]
-#align first_order.language.term.list_decode FirstOrder.Language.Term.listDecode
 
 theorem listDecode_encode_list (l : List (L.Term α)) :
     listDecode (l.bind listEncode) = l.map Option.some := by
@@ -96,7 +92,6 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
     · simp [h']
     · rw [h, drop_left']
       rw [length_map, length_finRange]
-#align first_order.language.term.list_decode_encode_list FirstOrder.Language.Term.listDecode_encode_list
 
 /-- An encoding of terms as lists. -/
 @[simps]
@@ -108,16 +103,13 @@ protected def encoding : Encoding (L.Term α) where
     have h := listDecode_encode_list [t]
     rw [bind_singleton] at h
     simp only [h, Option.join, head?, List.map, Option.some_bind, id]
-#align first_order.language.term.encoding FirstOrder.Language.Term.encoding
 
 theorem listEncode_injective :
     Function.Injective (listEncode : L.Term α → List (Sum α (Σi, L.Functions i))) :=
   Term.encoding.encode_injective
-#align first_order.language.term.list_encode_injective FirstOrder.Language.Term.listEncode_injective
 
 theorem card_le : #(L.Term α) ≤ max ℵ₀ #(Sum α (Σi, L.Functions i)) :=
   lift_le.1 (_root_.trans Term.encoding.card_le_card_list (lift_le.2 (mk_list_le_max _)))
-#align first_order.language.term.card_le FirstOrder.Language.Term.card_le
 
 theorem card_sigma : #(Σn, L.Term (Sum α (Fin n))) = max ℵ₀ #(Sum α (Σi, L.Functions i)) := by
   refine le_antisymm ?_ ?_
@@ -149,7 +141,6 @@ theorem card_sigma : #(Σn, L.Term (Sum α (Fin n))) = max ℵ₀ #(Sum α (Σi,
       · simp only [Sum.elim_inr, Sum.elim_inl, Sigma.mk.inj_iff, false_and] at h
       · simp only [Sum.elim_inr, Sigma.mk.inj_iff, heq_eq_eq, func.injEq, true_and] at h
         rw [Sigma.ext_iff.2 ⟨h.1, h.2.1⟩]
-#align first_order.language.term.card_sigma FirstOrder.Language.Term.card_sigma
 
 instance [Encodable α] [Encodable (Σi, L.Functions i)] : Encodable (L.Term α) :=
   Encodable.ofLeftInjection listEncode (fun l => (listDecode l).head?.join) fun t => by
@@ -164,7 +155,6 @@ instance [h1 : Countable α] [h2 : Countable (Σl, L.Functions l)] : Countable (
 
 instance small [Small.{u} α] : Small.{u} (L.Term α) :=
   small_of_injective listEncode_injective
-#align first_order.language.term.small FirstOrder.Language.Term.small
 
 end Term
 
@@ -179,20 +169,17 @@ def listEncode : ∀ {n : ℕ},
       (List.finRange _).map fun i => Sum.inl ⟨n, ts i⟩
   | _, imp φ₁ φ₂ => (Sum.inr (Sum.inr 0)::φ₁.listEncode) ++ φ₂.listEncode
   | _, all φ => Sum.inr (Sum.inr 1)::φ.listEncode
-#align first_order.language.bounded_formula.list_encode FirstOrder.Language.BoundedFormula.listEncode
 
 /-- Applies the `forall` quantifier to an element of `(Σ n, L.BoundedFormula α n)`,
 or returns `default` if not possible. -/
 def sigmaAll : (Σn, L.BoundedFormula α n) → Σn, L.BoundedFormula α n
   | ⟨n + 1, φ⟩ => ⟨n, φ.all⟩
   | _ => default
-#align first_order.language.bounded_formula.sigma_all FirstOrder.Language.BoundedFormula.sigmaAll
 
 /-- Applies `imp` to two elements of `(Σ n, L.BoundedFormula α n)`,
 or returns `default` if not possible. -/
 def sigmaImp : (Σn, L.BoundedFormula α n) → (Σn, L.BoundedFormula α n) → Σn, L.BoundedFormula α n
   | ⟨m, φ⟩, ⟨n, ψ⟩ => if h : m = n then ⟨m, φ.imp (Eq.mp (by rw [h]) ψ)⟩ else default
-#align first_order.language.bounded_formula.sigma_imp FirstOrder.Language.BoundedFormula.sigmaImp
 
 /-- Decodes a list of symbols as a list of formulas. -/
 @[simp]
@@ -229,7 +216,6 @@ def listDecode : ∀ l : List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.R
     ⟨sigmaAll (listDecode l).1, (listDecode l).2,
       (listDecode l).2.2.trans (max_le_max le_rfl le_add_self)⟩
   | _ => ⟨default, [], le_max_left _ _⟩
-#align first_order.language.bounded_formula.list_decode FirstOrder.Language.BoundedFormula.listDecode
 
 set_option linter.deprecated false in
 @[simp]
@@ -286,7 +272,6 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
     simp only [] at *
     rw [(ih _).1, (ih _).2, sigmaAll]
     exact ⟨rfl, rfl⟩
-#align first_order.language.bounded_formula.list_decode_encode_list FirstOrder.Language.BoundedFormula.listDecode_encode_list
 
 /-- An encoding of bounded formulas as lists. -/
 @[simps]
@@ -300,12 +285,10 @@ protected def encoding : Encoding (Σn, L.BoundedFormula α n) where
     simp only
     rw [h]
     rfl
-#align first_order.language.bounded_formula.encoding FirstOrder.Language.BoundedFormula.encoding
 
 theorem listEncode_sigma_injective :
     Function.Injective fun φ : Σn, L.BoundedFormula α n => φ.2.listEncode :=
   BoundedFormula.encoding.encode_injective
-#align first_order.language.bounded_formula.list_encode_sigma_injective FirstOrder.Language.BoundedFormula.listEncode_sigma_injective
 
 theorem card_le : #(Σn, L.BoundedFormula α n) ≤
     max ℵ₀ (Cardinal.lift.{max u v} #α + Cardinal.lift.{u'} L.card) := by
@@ -317,7 +300,6 @@ theorem card_le : #(Σn, L.BoundedFormula α n) ≤
   simp only [lift_add, lift_lift, lift_aleph0]
   rw [← add_assoc, add_comm, ← add_assoc, ← add_assoc, aleph0_add_aleph0, add_assoc,
     add_eq_max le_rfl, add_assoc, card, Symbols, mk_sum, lift_add, lift_lift, lift_lift]
-#align first_order.language.bounded_formula.card_le FirstOrder.Language.BoundedFormula.card_le
 
 end BoundedFormula
 

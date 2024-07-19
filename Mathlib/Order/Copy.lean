@@ -5,8 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
-#align_import order.copy from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
-
 /-!
 # Tooling to make copies of lattice structures
 
@@ -30,7 +28,6 @@ def BoundedOrder.copy {h : LE α} {h' : LE α} (c : @BoundedOrder α h')
     (le_eq : ∀ x y : α, (@LE.le α h) x y ↔ x ≤ y) : @BoundedOrder α h :=
   @BoundedOrder.mk α h (@OrderTop.mk α h { top := top } (fun _ ↦ by simp [eq_top, le_eq]))
     (@OrderBot.mk α h { bot := bot } (fun _ ↦ by simp [eq_bot, le_eq]))
-#align bounded_order.copy BoundedOrder.copy
 
 /-- A function to create a provable equal copy of a lattice
 with possibly different definitional equalities. -/
@@ -51,7 +48,6 @@ def Lattice.copy (c : Lattice α)
   inf_le_left := by intros; simp [eq_le, eq_inf]
   inf_le_right := by intros; simp [eq_le, eq_inf]
   le_inf := by intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_inf, hac, hbc]
-#align lattice.copy Lattice.copy
 
 /-- A function to create a provable equal copy of a distributive lattice
 with possibly different definitional equalities. -/
@@ -61,7 +57,6 @@ def DistribLattice.copy (c : DistribLattice α)
     (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf) : DistribLattice α where
   toLattice := Lattice.copy (@DistribLattice.toLattice α c) le eq_le sup eq_sup inf eq_inf
   le_sup_inf := by intros; simp [eq_le, eq_sup, eq_inf, le_sup_inf]
-#align distrib_lattice.copy DistribLattice.copy
 
 /-- A function to create a provable equal copy of a complete lattice
 with possibly different definitional equalities. -/
@@ -85,7 +80,6 @@ def CompleteLattice.copy (c : CompleteLattice α)
   le_sInf := by intro _ _ h; simpa [eq_le, eq_sInf] using h
   le_top := by intros; simp [eq_le, eq_top]
   bot_le := by intros; simp [eq_le, eq_bot]
-#align complete_lattice.copy CompleteLattice.copy
 
 /-- A function to create a provable equal copy of a frame with possibly different definitional
 equalities. -/
@@ -100,7 +94,6 @@ def Frame.copy (c : Frame α) (le : α → α → Prop) (eq_le : le = (by infer_
     le eq_le top eq_top bot eq_bot sup eq_sup inf eq_inf sSup eq_sSup sInf eq_sInf
   inf_sSup_le_iSup_inf := fun a s => by
     simp [eq_le, eq_sup, eq_inf, eq_sSup, @Order.Frame.inf_sSup_le_iSup_inf α _ a s]
-#align frame.copy Frame.copy
 
 -- Porting note: original proof uses
 -- `all_goals { abstract { subst_vars, casesI c, simp_rw le_eq, assumption } }`
@@ -117,7 +110,6 @@ def Coframe.copy (c : Coframe α) (le : α → α → Prop) (eq_le : le = (by in
     le eq_le top eq_top bot eq_bot sup eq_sup inf eq_inf sSup eq_sSup sInf eq_sInf
   iInf_sup_le_sup_sInf := fun a s => by
     simp [eq_le, eq_sup, eq_inf, eq_sInf, @Order.Coframe.iInf_sup_le_sup_sInf α _ a s]
-#align coframe.copy Coframe.copy
 
 /-- A function to create a provable equal copy of a complete distributive lattice
 with possibly different definitional equalities. -/
@@ -134,7 +126,6 @@ def CompleteDistribLattice.copy (c : CompleteDistribLattice α)
     le eq_le top eq_top bot eq_bot sup eq_sup inf eq_inf sSup eq_sSup sInf eq_sInf
   __ := Coframe.copy (@CompleteDistribLattice.toCoframe α c)
     le eq_le top eq_top bot eq_bot sup eq_sup inf eq_inf sSup eq_sSup sInf eq_sInf
-#align complete_distrib_lattice.copy CompleteDistribLattice.copy
 
 -- Porting note: original proof uses
 -- `all_goals { abstract { subst_vars, casesI c, simp_rw le_eq, assumption } }`
@@ -155,4 +146,3 @@ def ConditionallyCompleteLattice.copy (c : ConditionallyCompleteLattice α)
   csSup_le := by intro _ _ hb h; subst_vars; exact csSup_le _ _ hb h
   csInf_le := by intro _ _ hb h; subst_vars; exact csInf_le _ _ hb h
   le_csInf := by intro _ _ hb h; subst_vars; exact le_csInf _ _ hb h
-#align conditionally_complete_lattice.copy ConditionallyCompleteLattice.copy

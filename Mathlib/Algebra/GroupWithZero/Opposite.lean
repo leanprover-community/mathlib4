@@ -6,8 +6,6 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.GroupWithZero.Defs
 
-#align_import algebra.ring.opposite from "leanprover-community/mathlib"@"76de8ae01554c3b37d66544866659ff174e66e1f"
-
 /-!
 # Opposites of groups with zero
 -/

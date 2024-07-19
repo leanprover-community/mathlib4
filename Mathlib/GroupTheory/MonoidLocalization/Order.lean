@@ -49,14 +49,10 @@ instance lt : LT (Localization s) :=
 @[to_additive]
 theorem mk_le_mk : mk a₁ a₂ ≤ mk b₁ b₂ ↔ ↑b₂ * a₁ ≤ a₂ * b₁ :=
   Iff.rfl
-#align localization.mk_le_mk Localization.mk_le_mk
-#align add_localization.mk_le_mk AddLocalization.mk_le_mk
 
 @[to_additive]
 theorem mk_lt_mk : mk a₁ a₂ < mk b₁ b₂ ↔ ↑b₂ * a₁ < a₂ * b₁ :=
   Iff.rfl
-#align localization.mk_lt_mk Localization.mk_lt_mk
-#align add_localization.mk_lt_mk AddLocalization.mk_lt_mk
 
 -- declaring this separately to the instance below makes things faster
 @[to_additive]
@@ -97,15 +93,11 @@ instance orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) wher
 instance decidableLE [DecidableRel ((· ≤ ·) : α → α → Prop)] :
     DecidableRel ((· ≤ ·) : Localization s → Localization s → Prop) := fun a b =>
   Localization.recOnSubsingleton₂ a b fun _ _ _ _ => decidable_of_iff' _ mk_le_mk
-#align localization.decidable_le Localization.decidableLE
-#align add_localization.decidable_le AddLocalization.decidableLE
 
 @[to_additive]
 instance decidableLT [DecidableRel ((· < ·) : α → α → Prop)] :
     DecidableRel ((· < ·) : Localization s → Localization s → Prop) := fun a b =>
   Localization.recOnSubsingleton₂ a b fun _ _ _ _ => decidable_of_iff' _ mk_lt_mk
-#align localization.decidable_lt Localization.decidableLT
-#align add_localization.decidable_lt AddLocalization.decidableLT
 
 /-- An ordered cancellative monoid injects into its localization by sending `a` to `a / b`. -/
 @[to_additive (attr := simps!) "An ordered cancellative monoid injects into its localization by
@@ -114,8 +106,6 @@ def mkOrderEmbedding (b : s) : α ↪o Localization s where
   toFun a := mk a b
   inj' := mk_left_injective _
   map_rel_iff' {a b} := by simp [-mk_eq_monoidOf_mk', mk_le_mk]
-#align localization.mk_order_embedding Localization.mkOrderEmbedding
-#align add_localization.mk_order_embedding AddLocalization.mkOrderEmbedding
 
 end OrderedCancelCommMonoid
 

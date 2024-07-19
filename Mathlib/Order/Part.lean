@@ -62,8 +62,6 @@ namespace OrderHom
 def partBind (f : α →o Part β) (g : α →o β → Part γ) : α →o Part γ where
   toFun x := (f x).bind (g x)
   monotone' := f.2.partBind g.2
-#align order_hom.bind OrderHom.partBind
-#align order_hom.bind_coe OrderHom.partBind
 
 @[deprecated (since := "2024-07-04")] alias bind := partBind
 

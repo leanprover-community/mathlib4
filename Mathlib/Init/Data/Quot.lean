@@ -35,7 +35,6 @@ inductive EqvGen : α → α → Prop
   | refl : ∀ x, EqvGen x x
   | symm : ∀ x y, EqvGen x y → EqvGen y x
   | trans : ∀ x y z, EqvGen x y → EqvGen y z → EqvGen x z
-#align eqv_gen EqvGen
 
 theorem EqvGen.is_equivalence : Equivalence (@EqvGen α r) :=
   Equivalence.mk EqvGen.refl (EqvGen.symm _ _) (EqvGen.trans _ _ _)
@@ -47,12 +46,10 @@ see for example `Quot.exact` and `Quot.EqvGen_sound`.
 -/
 def EqvGen.Setoid : Setoid α :=
   Setoid.mk _ (EqvGen.is_equivalence r)
-#align eqv_gen.setoid EqvGen.Setoid
 
 theorem Quot.exact {a b : α} (H : Quot.mk r a = Quot.mk r b) : EqvGen r a b :=
   @Quotient.exact _ (EqvGen.Setoid r) a b (congrArg
     (Quot.lift (Quotient.mk (EqvGen.Setoid r)) (fun x y h ↦ Quot.sound (EqvGen.rel x y h))) H)
-#align quot.exact Quot.exact
 
 theorem Quot.EqvGen_sound {r : α → α → Prop} {a b : α} (H : EqvGen r a b) :
     Quot.mk r a = Quot.mk r b :=
@@ -62,7 +59,6 @@ theorem Quot.EqvGen_sound {r : α → α → Prop} {a b : α} (H : EqvGen r a b)
     (fun _ _ _ IH ↦ Eq.symm IH)
     (fun _ _ _ _ _ IH₁ IH₂ ↦ Eq.trans IH₁ IH₂)
     H
-#align quot.eqv_gen_sound Quot.EqvGen_sound
 
 end
 
