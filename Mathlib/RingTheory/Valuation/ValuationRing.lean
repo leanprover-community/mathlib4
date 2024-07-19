@@ -11,8 +11,6 @@ import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.Bezout
 import Mathlib.Tactic.FieldSimp
 
-#align_import ring_theory.valuation.valuation_ring from "leanprover-community/mathlib"@"c163ec99dfc664628ca15d215fce0a5b9c265b68"
-
 /-!
 # Valuation Rings
 
@@ -43,7 +41,6 @@ universe u v w
 of elements `a b : A`, either `a` divides `b` or vice versa. -/
 class ValuationRing (A : Type u) [CommRing A] [IsDomain A] : Prop where
   cond' : ∀ a b : A, ∃ c : A, a * c = b ∨ b * c = a
-#align valuation_ring ValuationRing
 
 -- Porting note: this lemma is needed since infer kinds are unsupported in Lean 4
 lemma ValuationRing.cond {A : Type u} [CommRing A] [IsDomain A] [ValuationRing A] (a b : A) :
@@ -58,7 +55,6 @@ variable (K : Type v) [Field K] [Algebra A K]
 
 /-- The value group of the valuation ring `A`. Note: this is actually a group with zero. -/
 def ValueGroup : Type v := Quotient (MulAction.orbitRel Aˣ K)
-#align valuation_ring.value_group ValuationRing.ValueGroup
 
 instance : Inhabited (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
 
@@ -121,7 +117,6 @@ protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
     rw [Algebra.smul_def]
     field_simp
     simp only [← RingHom.map_mul, ← h]; congr 1; ring
-#align valuation_ring.le_total ValuationRing.le_total
 
 -- Porting note: it is much faster to split the instance `LinearOrderedCommGroupWithZero`
 -- into two parts
@@ -200,7 +195,6 @@ def valuation : Valuation K (ValueGroup A K) where
       field_simp
       simp only [← RingHom.map_mul, ← RingHom.map_add, ← (algebraMap A K).map_one, ← h]
       congr 1; ring
-#align valuation_ring.valuation ValuationRing.valuation
 
 theorem mem_integer_iff (x : K) : x ∈ (valuation A K).integer ↔ ∃ a : A, algebraMap A K a = x := by
   constructor
@@ -210,7 +204,6 @@ theorem mem_integer_iff (x : K) : x ∈ (valuation A K).integer ↔ ∃ a : A, a
   · rintro ⟨c, rfl⟩
     use c
     rw [Algebra.smul_def, mul_one]
-#align valuation_ring.mem_integer_iff ValuationRing.mem_integer_iff
 
 /-- The valuation ring `A` is isomorphic to the ring of integers of its associated valuation. -/
 noncomputable def equivInteger : A ≃+* (valuation A K).integer :=
@@ -229,15 +222,12 @@ noncomputable def equivInteger : A ≃+* (valuation A K).integer :=
         rw [mem_integer_iff] at ha
         obtain ⟨a, rfl⟩ := ha
         exact ⟨a, rfl⟩)
-#align valuation_ring.equiv_integer ValuationRing.equivInteger
 
 @[simp]
 theorem coe_equivInteger_apply (a : A) : (equivInteger A K a : K) = algebraMap A K a := rfl
-#align valuation_ring.coe_equiv_integer_apply ValuationRing.coe_equivInteger_apply
 
 theorem range_algebraMap_eq : (valuation A K).integer = (algebraMap A K).range := by
   ext; exact mem_integer_iff _ _ _
-#align valuation_ring.range_algebra_map_eq ValuationRing.range_algebraMap_eq
 
 end
 
@@ -286,7 +276,6 @@ theorem iff_dvd_total : ValuationRing R ↔ IsTotal R (· ∣ ·) := by
   refine ⟨fun H => ⟨fun a b => ?_⟩, fun H => ⟨fun a b => ?_⟩⟩
   · obtain ⟨c, rfl | rfl⟩ := ValuationRing.cond a b <;> simp
   · obtain ⟨c, rfl⟩ | ⟨c, rfl⟩ := @IsTotal.total _ _ H a b <;> use c <;> simp
-#align valuation_ring.iff_dvd_total ValuationRing.iff_dvd_total
 
 theorem iff_ideal_total : ValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) := by
   classical
@@ -294,20 +283,17 @@ theorem iff_ideal_total : ValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) := b
   have := @IsTotal.total _ _ H (Ideal.span {a}) (Ideal.span {b})
   simp_rw [Ideal.span_singleton_le_span_singleton] at this
   exact this.symm
-#align valuation_ring.iff_ideal_total ValuationRing.iff_ideal_total
 
 variable (K)
 
 theorem dvd_total [h : ValuationRing R] (x y : R) : x ∣ y ∨ y ∣ x :=
   @IsTotal.total _ _ (iff_dvd_total.mp h) x y
-#align valuation_ring.dvd_total ValuationRing.dvd_total
 
 theorem unique_irreducible [ValuationRing R] ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible q) :
     Associated p q := by
   have := dvd_total p q
   rw [Irreducible.dvd_comm hp hq, or_self_iff] at this
   exact associated_of_dvd_dvd (Irreducible.dvd_symm hq hp this) this
-#align valuation_ring.unique_irreducible ValuationRing.unique_irreducible
 
 variable (R)
 
@@ -333,14 +319,12 @@ theorem iff_isInteger_or_isInteger :
       exact ⟨c, Or.inr e⟩
     · rw [inv_div, eq_div_iff ha, ← map_mul, (IsFractionRing.injective R K).eq_iff, mul_comm c] at e
       exact ⟨c, Or.inl e⟩
-#align valuation_ring.iff_is_integer_or_is_integer ValuationRing.iff_isInteger_or_isInteger
 
 variable {K}
 
 theorem isInteger_or_isInteger [h : ValuationRing R] (x : K) :
     IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹ :=
   (iff_isInteger_or_isInteger R K).mp h x
-#align valuation_ring.is_integer_or_is_integer ValuationRing.isInteger_or_isInteger
 
 variable {R}
 
@@ -373,7 +357,6 @@ instance (priority := 100) [LocalRing R] [IsBezout R] : ValuationRing R := by
 
 theorem iff_local_bezout_domain : ValuationRing R ↔ LocalRing R ∧ IsBezout R :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ inferInstance⟩
-#align valuation_ring.iff_local_bezout_domain ValuationRing.iff_local_bezout_domain
 
 protected theorem TFAE (R : Type u) [CommRing R] [IsDomain R] :
     List.TFAE
@@ -385,7 +368,6 @@ protected theorem TFAE (R : Type u) [CommRing R] [IsDomain R] :
   tfae_have 1 ↔ 4; · exact iff_ideal_total
   tfae_have 1 ↔ 5; · exact iff_local_bezout_domain
   tfae_finish
-#align valuation_ring.tfae ValuationRing.TFAE
 
 end
 
@@ -396,7 +378,6 @@ theorem _root_.Function.Surjective.valuationRing {R S : Type*} [CommRing R] [IsD
     obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩⟩ := hf a, hf b
     obtain ⟨c, rfl | rfl⟩ := ValuationRing.cond a b
     exacts [⟨f c, Or.inl <| (map_mul _ _ _).symm⟩, ⟨f c, Or.inr <| (map_mul _ _ _).symm⟩]⟩
-#align function.surjective.valuation_ring Function.Surjective.valuationRing
 
 section
 
@@ -413,7 +394,6 @@ theorem of_integers : ValuationRing 𝒪 := by
     use c; exact Or.inr hc.symm
   · obtain ⟨c, hc⟩ := Valuation.Integers.dvd_of_le hh h
     use c; exact Or.inl hc.symm
-#align valuation_ring.of_integers ValuationRing.of_integers
 
 instance instValuationRingInteger : ValuationRing v.integer :=
   of_integers (v := v) (Valuation.integer.integers v)
@@ -458,7 +438,6 @@ instance (priority := 100) of_field : ValuationRing K := by
   by_cases h : b = 0
   · use 0; left; simp [h]
   · use a * b⁻¹; right; field_simp
-#align valuation_ring.of_field ValuationRing.of_field
 
 end
 
@@ -486,7 +465,6 @@ instance (priority := 100) of_discreteValuationRing : ValuationRing A := by
     simp only [Units.mul_inv, mul_one, mul_comm _ (u : A), mul_assoc, ← pow_add]
     congr 2
     exact Nat.add_sub_of_le h
-#align valuation_ring.of_discrete_valuation_ring ValuationRing.of_discreteValuationRing
 
 end
 

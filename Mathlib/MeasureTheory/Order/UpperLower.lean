@@ -7,8 +7,6 @@ import Mathlib.Analysis.Normed.Order.UpperLower
 import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
 import Mathlib.Topology.Order.DenselyOrdered
 
-#align_import measure_theory.order.upper_lower from "leanprover-community/mathlib"@"b1abe23ae96fef89ad30d9f4362c307f72a55010"
-
 /-!
 # Order-connected sets are null-measurable
 
@@ -130,7 +128,6 @@ theorem IsUpperSet.null_frontier (hs : IsUpperSet s) : volume (frontier s) = 0 :
   · refine aux₁ fun _ ↦ hs.compl.exists_subset_ball $ frontier_subset_closure ?_
     rwa [frontier_compl]
   · exact aux₀ fun _ ↦ hs.exists_subset_ball $ frontier_subset_closure hx
-#align is_upper_set.null_frontier IsUpperSet.null_frontier
 
 theorem IsLowerSet.null_frontier (hs : IsLowerSet s) : volume (frontier s) = 0 := by
   refine measure_mono_null (fun x hx ↦ ?_)
@@ -142,21 +139,17 @@ theorem IsLowerSet.null_frontier (hs : IsLowerSet s) : volume (frontier s) = 0 :
   · refine aux₁ fun _ ↦ hs.compl.exists_subset_ball $ frontier_subset_closure ?_
     rwa [frontier_compl]
   · exact aux₀ fun _ ↦ hs.exists_subset_ball $ frontier_subset_closure hx
-#align is_lower_set.null_frontier IsLowerSet.null_frontier
 
 theorem Set.OrdConnected.null_frontier (hs : s.OrdConnected) : volume (frontier s) = 0 := by
   rw [← hs.upperClosure_inter_lowerClosure]
   exact measure_mono_null (frontier_inter_subset _ _) $ measure_union_null
     (measure_inter_null_of_null_left _ (UpperSet.upper _).null_frontier)
     (measure_inter_null_of_null_right _ (LowerSet.lower _).null_frontier)
-#align set.ord_connected.null_frontier Set.OrdConnected.null_frontier
 
 protected theorem Set.OrdConnected.nullMeasurableSet (hs : s.OrdConnected) : NullMeasurableSet s :=
   nullMeasurableSet_of_null_frontier hs.null_frontier
-#align set.ord_connected.null_measurable_set Set.OrdConnected.nullMeasurableSet
 
 theorem IsAntichain.volume_eq_zero [Nonempty ι] (hs : IsAntichain (· ≤ ·) s) : volume s = 0 := by
   refine measure_mono_null ?_ hs.ordConnected.null_frontier
   rw [← closure_diff_interior, hs.interior_eq_empty, diff_empty]
   exact subset_closure
-#align is_antichain.volume_eq_zero IsAntichain.volume_eq_zero
