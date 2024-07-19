@@ -3,14 +3,12 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Rat.Defs
 import Mathlib.Order.WellFounded
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.WLOG
-
-#align_import imo.imo1988_q6 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 1988 Q6 and constant descent Vieta jumping
@@ -189,7 +187,6 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
     subst c
     simp [hV₁]
     -- Hence p' = (c, m_x) lies on the upper branch, and we are done.
-#align imo1988_q6.constant_descent_vieta_jumping Imo1988Q6.constant_descent_vieta_jumping
 
 end Imo1988Q6
 
@@ -250,7 +247,6 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
         _ ≥ x * x - k := sub_le_self _ (Int.ofNat_zero_le k)
   · -- There is no base case in this application of Vieta jumping.
     simp
-#align imo1988_q6 imo1988_q6
 
 /-
 The following example illustrates the use of constant descent Vieta jumping
@@ -269,7 +265,7 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
     apply eq_iff_eq_cancel_right.2
     simp; ring
   · -- Show that the solution set is symmetric in a and b.
-    intro x y; ring_nf -- Porting note: Originally, `cc` solved the entire goal
+    intro x y; ring_nf
   · -- Show that the claim is true if b = 0.
     simp
   · -- Show that the claim is true if a = b.

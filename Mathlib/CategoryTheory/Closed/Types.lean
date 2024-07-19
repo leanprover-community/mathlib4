@@ -8,8 +8,6 @@ import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Closed.Cartesian
 
-#align_import category_theory.closed.types from "leanprover-community/mathlib"@"024a4231815538ac739f52d08dd20a55da0d6b23"
-
 /-!
 # Cartesian closure of Type
 
@@ -59,7 +57,7 @@ instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁) :
   CartesianClosed.mk _
     (fun F => by
       letI := FunctorCategory.prodPreservesColimits F
-      have := isLeftAdjointOfPreservesColimits (prod.functor.obj F)
+      have := Presheaf.isLeftAdjoint_of_preservesColimits (prod.functor.obj F)
       exact Exponentiable.mk _ _ (Adjunction.ofIsLeftAdjoint (prod.functor.obj F)))
 
 end CartesianClosed

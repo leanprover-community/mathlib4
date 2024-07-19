@@ -5,8 +5,6 @@ Authors: Yuma Mizuno
 -/
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
-#align_import category_theory.bicategory.free from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
-
 /-!
 # Free bicategories
 
@@ -34,7 +32,6 @@ open Bicategory
 /-- Free bicategory over a quiver. Its objects are the same as those in the underlying quiver. -/
 def FreeBicategory (B : Type u) :=
   B
-#align category_theory.free_bicategory CategoryTheory.FreeBicategory
 
 instance (B : Type u) : ∀ [Inhabited B], Inhabited (FreeBicategory B) := by
   intro h
@@ -51,7 +48,6 @@ inductive Hom : B → B → Type max u v
   | of {a b : B} (f : a ⟶ b) : Hom a b
   | id (a : B) : Hom a a
   | comp {a b c : B} (f : Hom a b) (g : Hom b c) : Hom a c
-#align category_theory.free_bicategory.hom CategoryTheory.FreeBicategory.Hom
 
 instance (a b : B) [Inhabited (a ⟶ b)] : Inhabited (Hom a b) :=
   ⟨Hom.of default⟩
@@ -80,7 +76,6 @@ inductive Hom₂ : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (a ⟶ b) → Typ
   | right_unitor_inv {a b} (f : a ⟶ b) : Hom₂ f (f ≫ (𝟙 b))
   | left_unitor {a b} (f : a ⟶ b) : Hom₂ ((𝟙 a) ≫ f) f
   | left_unitor_inv {a b} (f : a ⟶ b) : Hom₂ f ((𝟙 a) ≫ f)
-#align category_theory.free_bicategory.hom₂ CategoryTheory.FreeBicategory.Hom₂
 
 section
 
@@ -147,7 +142,6 @@ inductive Rel : ∀ {a b : FreeBicategory B} {f g : a ⟶ b}, Hom₂ f g → Hom
       Rel ((α_ f g h ▷ i) ≫ α_ f (g.comp h) i ≫ f ◁ α_ g h i)
         (α_ (f.comp g) h i ≫ α_ f g (h.comp i))
   | triangle {a b c} (f : Hom a b) (g : Hom b c) : Rel (α_ f (Hom.id b) g ≫ f ◁ λ_ g) (ρ_ f ▷ g)
-#align category_theory.free_bicategory.rel CategoryTheory.FreeBicategory.Rel
 
 end
 
@@ -164,7 +158,6 @@ instance homCategory (a b : FreeBicategory B) : Category (a ⟶ b) where
   assoc := by
     rintro f g h i ⟨η⟩ ⟨θ⟩ ⟨ι⟩
     exact Quot.sound (Rel.assoc η θ ι)
-#align category_theory.free_bicategory.hom_category CategoryTheory.FreeBicategory.homCategory
 
 /-- Bicategory structure on the free bicategory. -/
 instance bicategory : Bicategory (FreeBicategory B) where
@@ -214,7 +207,6 @@ instance bicategory : Bicategory (FreeBicategory B) where
     exact Quot.sound (Rel.whisker_exchange η θ)
   pentagon := @fun a b c d e f g h i => Quot.sound (Rel.pentagon f g h i)
   triangle := @fun a b c f g => Quot.sound (Rel.triangle f g)
-#align category_theory.free_bicategory.bicategory CategoryTheory.FreeBicategory.bicategory
 
 variable {a b c d : FreeBicategory B}
 
@@ -225,19 +217,16 @@ abbrev Hom₂.mk {f g : a ⟶ b} (η : Hom₂ f g) : f ⟶ g :=
 theorem mk_vcomp {f g h : a ⟶ b} (η : Hom₂ f g) (θ : Hom₂ g h) :
     (η.vcomp θ).mk = (η.mk ≫ θ.mk : f ⟶ h) :=
   rfl
-#align category_theory.free_bicategory.mk_vcomp CategoryTheory.FreeBicategory.mk_vcomp
 
 @[simp]
 theorem mk_whisker_left (f : a ⟶ b) {g h : b ⟶ c} (η : Hom₂ g h) :
     (Hom₂.whisker_left f η).mk = (f ◁ η.mk : f ≫ g ⟶ f ≫ h) :=
   rfl
-#align category_theory.free_bicategory.mk_whisker_left CategoryTheory.FreeBicategory.mk_whisker_left
 
 @[simp]
 theorem mk_whisker_right {f g : a ⟶ b} (η : Hom₂ f g) (h : b ⟶ c) :
     (Hom₂.whisker_right h η).mk = (η.mk ▷ h : f ≫ h ⟶ g ≫ h) :=
   rfl
-#align category_theory.free_bicategory.mk_whisker_right CategoryTheory.FreeBicategory.mk_whisker_right
 
 variable (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d)
 
@@ -245,53 +234,43 @@ variable (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d)
 -- theorem id_def : Hom.id a = 𝟙 a :=
 --   rfl
 -- #align category_theory.free_bicategory.id_def CategoryTheory.FreeBicategory.id_def
-#noalign category_theory.free_bicategory.id_def
 
 theorem comp_def : Hom.comp f g = f ≫ g :=
   rfl
-#align category_theory.free_bicategory.comp_def CategoryTheory.FreeBicategory.comp_def
 
 @[simp]
 theorem mk_id : Quot.mk _ (Hom₂.id f) = 𝟙 f :=
   rfl
-#align category_theory.free_bicategory.mk_id CategoryTheory.FreeBicategory.mk_id
 
 @[simp]
 theorem mk_associator_hom : Quot.mk _ (Hom₂.associator f g h) = (α_ f g h).hom :=
   rfl
-#align category_theory.free_bicategory.mk_associator_hom CategoryTheory.FreeBicategory.mk_associator_hom
 
 @[simp]
 theorem mk_associator_inv : Quot.mk _ (Hom₂.associator_inv f g h) = (α_ f g h).inv :=
   rfl
-#align category_theory.free_bicategory.mk_associator_inv CategoryTheory.FreeBicategory.mk_associator_inv
 
 @[simp]
 theorem mk_left_unitor_hom : Quot.mk _ (Hom₂.left_unitor f) = (λ_ f).hom :=
   rfl
-#align category_theory.free_bicategory.mk_left_unitor_hom CategoryTheory.FreeBicategory.mk_left_unitor_hom
 
 @[simp]
 theorem mk_left_unitor_inv : Quot.mk _ (Hom₂.left_unitor_inv f) = (λ_ f).inv :=
   rfl
-#align category_theory.free_bicategory.mk_left_unitor_inv CategoryTheory.FreeBicategory.mk_left_unitor_inv
 
 @[simp]
 theorem mk_right_unitor_hom : Quot.mk _ (Hom₂.right_unitor f) = (ρ_ f).hom :=
   rfl
-#align category_theory.free_bicategory.mk_right_unitor_hom CategoryTheory.FreeBicategory.mk_right_unitor_hom
 
 @[simp]
 theorem mk_right_unitor_inv : Quot.mk _ (Hom₂.right_unitor_inv f) = (ρ_ f).inv :=
   rfl
-#align category_theory.free_bicategory.mk_right_unitor_inv CategoryTheory.FreeBicategory.mk_right_unitor_inv
 
 /-- Canonical prefunctor from `B` to `free_bicategory B`. -/
 @[simps]
 def of : Prefunctor B (FreeBicategory B) where
   obj := id
   map := @fun _ _ => Hom.of
-#align category_theory.free_bicategory.of CategoryTheory.FreeBicategory.of
 
 end
 
@@ -306,18 +285,15 @@ def liftHom : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (F.obj a ⟶ F.obj b)
   | _, _, Hom.of f => F.map f
   | _, _, Hom.id a => 𝟙 (F.obj a)
   | _, _, Hom.comp f g => liftHom f ≫ liftHom g
-#align category_theory.free_bicategory.lift_hom CategoryTheory.FreeBicategory.liftHom
 
 @[simp]
 theorem liftHom_id (a : FreeBicategory B) : liftHom F (𝟙 a) = 𝟙 (F.obj a) :=
   rfl
-#align category_theory.free_bicategory.lift_hom_id CategoryTheory.FreeBicategory.liftHom_id
 
 @[simp]
 theorem liftHom_comp {a b c : FreeBicategory B} (f : a ⟶ b) (g : b ⟶ c) :
     liftHom F (f ≫ g) = liftHom F f ≫ liftHom F g :=
   rfl
-#align category_theory.free_bicategory.lift_hom_comp CategoryTheory.FreeBicategory.liftHom_comp
 
 end
 
@@ -339,13 +315,11 @@ def liftHom₂ : ∀ {a b : FreeBicategory B} {f g : a ⟶ b}, Hom₂ f g → (l
   | _, _, _, _, Hom₂.vcomp η θ => liftHom₂ η ≫ liftHom₂ θ
   | _, _, _, _, Hom₂.whisker_left f η => liftHom F f ◁ liftHom₂ η
   | _, _, _, _, Hom₂.whisker_right h η => liftHom₂ η ▷ liftHom F h
-#align category_theory.free_bicategory.lift_hom₂ CategoryTheory.FreeBicategory.liftHom₂
 
 attribute [local simp] whisker_exchange
 
 theorem liftHom₂_congr {a b : FreeBicategory B} {f g : a ⟶ b} {η θ : Hom₂ f g} (H : Rel η θ) :
     liftHom₂ F η = liftHom₂ F θ := by induction H <;> (dsimp [liftHom₂]; aesop_cat)
-#align category_theory.free_bicategory.lift_hom₂_congr CategoryTheory.FreeBicategory.liftHom₂_congr
 
 /-- A prefunctor from a quiver `B` to a bicategory `C` can be lifted to a pseudofunctor from
 `free_bicategory B` to `C`.
@@ -374,7 +348,6 @@ def lift : Pseudofunctor (FreeBicategory B) C where
     · intros; aesop_cat
     · intros; rfl
   map₂_whisker_right := by intro _ _ _ _ _ η h; dsimp; apply Quot.rec _ _ η <;> aesop_cat
-#align category_theory.free_bicategory.lift CategoryTheory.FreeBicategory.lift
 
 end
 

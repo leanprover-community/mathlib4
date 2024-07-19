@@ -39,10 +39,10 @@ products and satisfies the equalizer condition.
 @[simps]
 noncomputable def ofSheafLightProfinite (F : LightProfinite.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts F]
     (hF : EqualizerCondition F) : LightCondensed A where
-    val := F
-    cond := by
-      rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition F]
-      exact ⟨⟨⟨fun _ _ ↦ inferInstance⟩⟩, hF⟩
+  val := F
+  cond := by
+    rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition F]
+    exact ⟨⟨⟨fun _ _ ↦ inferInstance⟩⟩, hF⟩
 
 /--
 The light condensed object associated to a presheaf on `LightProfinite` whose postcomposition with
