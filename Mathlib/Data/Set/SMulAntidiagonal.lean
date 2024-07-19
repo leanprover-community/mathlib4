@@ -7,7 +7,17 @@ import Mathlib.Algebra.Order.AddTorsor
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.WellFoundedSet
 
-/-! # Antidiagonal for scalar multiplication -/
+/-!
+# Antidiagonal for scalar multiplication
+
+Given partially ordered sets `G` and `P`, with an action of `G` on `P`, we construct, for any
+element `a` in `P` and subsets `s` in `G` and `t` in `P`, the set of all pairs of an element in `s`
+and an element in `t` that scalar-multiply to `a`.
+
+## Definitions
+* SMul.antidiagonal : Set-valued antidiagonal for SMul.
+* VAdd.antidiagonal : Set-valued antidiagonal for VAdd.
+-/
 
 variable {G P : Type*}
 
@@ -74,8 +84,12 @@ open SMul
 
 variable {s : Set G} {t : Set P} {a : P}
 
+section CancelSMul
+
+variable [SMul G P] [IsCancelSMul G P] {x y : smulAntidiagonal s t a}
+
 @[to_additive VAddAntidiagonal.fst_eq_fst_iff_snd_eq_snd]
-theorem fst_eq_fst_iff_snd_eq_snd [SMul G P] [IsCancelSMul G P] {x y : smulAntidiagonal s t a} :
+theorem fst_eq_fst_iff_snd_eq_snd :
     (x : G × P).1 = (y : G × P).1 ↔ (x : G × P).2 = (y : G × P).2 :=
   ⟨fun h =>
     IsCancelSMul.left_cancel _ _ _
@@ -88,9 +102,6 @@ theorem fst_eq_fst_iff_snd_eq_snd [SMul G P] [IsCancelSMul G P] {x y : smulAntid
           rw [← h]
           exact x.2.2.2.symm).symm⟩
 
-variable [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P]
-  {x y : smulAntidiagonal s t a}
-
 @[to_additive VAddAntidiagonal.eq_of_fst_eq_fst]
 theorem eq_of_fst_eq_fst (h : (x : G × P).fst = (y : G × P).fst) : x = y :=
   Subtype.ext <| Prod.ext h <| fst_eq_fst_iff_snd_eq_snd.1 h
@@ -98,6 +109,11 @@ theorem eq_of_fst_eq_fst (h : (x : G × P).fst = (y : G × P).fst) : x = y :=
 @[to_additive VAddAntidiagonal.eq_of_snd_eq_snd]
 theorem eq_of_snd_eq_snd (h : (x : G × P).snd = (y : G × P).snd) : x = y :=
   Subtype.ext <| Prod.ext (fst_eq_fst_iff_snd_eq_snd.2 h) h
+
+end CancelSMul
+
+variable [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P]
+  {x y : smulAntidiagonal s t a}
 
 @[to_additive VAddAntidiagonal.eq_of_fst_le_fst_of_snd_le_snd]
 theorem eq_of_fst_le_fst_of_snd_le_snd (h₁ : (x : G × P).1 ≤ (y : G × P).1)

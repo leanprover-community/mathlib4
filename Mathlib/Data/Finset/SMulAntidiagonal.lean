@@ -1,17 +1,23 @@
 /-
-Copyright (c) 2020 Floris van Doorn. All rights reserved.
+Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn, Yaël Dillies
+Authors: Scott Carnahan
 -/
 import Mathlib.Data.Set.SMulAntidiagonal
 
-#align_import data.finset.mul_antidiagonal from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
+/-!
+# Antidiagonal for scalar multiplication as a `Finset`.
 
-/-! # Multiplication antidiagonal as a `Finset`.
+Given partially ordered sets `G` and `P`, with an action of `G` on `P` that preserves and reflects
+the order relation, we construct, for any element `a` in `P` and partially well-ordered subsets `s`
+in `G` and `t` in `P`, the `Finset` of all pairs of an element in `s` and an element in `t` that
+scalar-multiply to `a`.
 
-We construct the `Finset` of all pairs
-of an element in `s` and an element in `t` that multiply to `a`,
-given that `s` and `t` are well-ordered. -/
+## Definitions
+* Finset.SMulAntidiagonal : Finset antidiagonal for PWO inputs.
+* Finset.VAddAntidiagonal : Finset antidiagonal for PWO inputs.
+
+-/
 
 variable {G P : Type*}
 
@@ -28,7 +34,7 @@ variable [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P] 
     {hv : v.IsPWO} {x : G × P}
 
 /-- `Finset.SMulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
-element in `t` whose scalar multiplicatoin yields `a`, but its construction requires proofs that `s`
+element in `t` whose scalar multiplication yields `a`, but its construction requires proofs that `s`
 and `t` are well-ordered. -/
 @[to_additive "`Finset.VAddAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
 element in `t` whose vector addition yields `a`, but its construction requires proofs that `s` and

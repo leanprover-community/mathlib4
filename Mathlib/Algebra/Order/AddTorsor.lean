@@ -28,10 +28,6 @@ an ordered field.
 * IsCancelVAdd : the vector addition version of cancellative addition
 * IsOrderedCancelSMul : inequalities are preserved and reflected by scalar multiplication.
 * IsOrderedCancelVAdd : inequalities are preserved and reflected by translation.
-* SMul.antidiagonal : Set-valued antidiagonal for SMul.
-* VAdd.antidiagonal : Set-valued antidiagonal for VAdd.
-* Finset.SMulAntidiagonal : Finset antidiagonal for PWO inputs.
-* Finset.VAddAntidiagonal : Finset antidiagonal for PWO inputs.
 
 ## Instances
 * OrderedCommMonoid.toIsOrderedSMul
@@ -49,7 +45,6 @@ an ordered field.
 * (lex) prod instances
 * Pi instances
 * WithTop
-
 -/
 
 open Function
