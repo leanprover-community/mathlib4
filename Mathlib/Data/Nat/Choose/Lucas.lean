@@ -9,7 +9,7 @@ import Mathlib.RingTheory.Polynomial.Basic
 /-!
 # Lucas's theorem
 
-This file contains a proof of [Lucas's theorem](https://www.wikiwand.com/en/Lucas%27s_theorem) about
+This file contains a proof of [Lucas's theorem](https://en.wikipedia.org/wiki/Lucas's_theorem) about
 binomial coefficients, which says that for primes `p`, `n` choose `k` is congruent to product of
 `n_i` choose `k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`,
 respectively.
@@ -77,8 +77,7 @@ theorem choose_modEq_choose_mul_prod_range_choose (a : ℕ) :
 theorem choose_modEq_prod_range_choose {a : ℕ} (ha₁ : n < p ^ a) (ha₂ : k < p ^ a) :
     choose n k ≡ ∏ i in range a, choose (n / p ^ i % p) (k / p ^ i % p) [ZMOD p] := by
   apply (choose_modEq_choose_mul_prod_range_choose a).trans
-  simp_rw [(Nat.div_eq_zero_iff $ by omega).mpr ha₁, (Nat.div_eq_zero_iff $ by omega).mpr ha₂,
-    choose, cast_one, one_mul, cast_prod]
-  rfl
+  simp_rw [Nat.div_eq_of_lt ha₁, Nat.div_eq_of_lt ha₂, choose, cast_one, one_mul, cast_prod,
+    Int.ModEq.refl]
 
 alias lucas_theorem := choose_modEq_prod_range_choose
