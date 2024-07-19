@@ -6,8 +6,6 @@ Authors: Luke Kershaw
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Triangulated.Basic
 
-#align_import category_theory.triangulated.rotate from "leanprover-community/mathlib"@"94d4e70e97c36c896cb70fb42821acfed040de60"
-
 /-!
 # Rotate
 
@@ -50,7 +48,6 @@ applying `rotate` gives a triangle of the form:
 @[simps!]
 def Triangle.rotate (T : Triangle C) : Triangle C :=
   Triangle.mk T.mor₂ T.mor₃ (-T.mor₁⟦1⟧')
-#align category_theory.pretriangulated.triangle.rotate CategoryTheory.Pretriangulated.Triangle.rotate
 
 section
 
@@ -71,7 +68,6 @@ not necessarily equal to `Z`, but it is isomorphic, by the `counitIso` of `shift
 def Triangle.invRotate (T : Triangle C) : Triangle C :=
   Triangle.mk (-T.mor₃⟦(-1 : ℤ)⟧' ≫ (shiftEquiv C (1 : ℤ)).unitIso.inv.app _) (T.mor₁)
     (T.mor₂ ≫ (shiftEquiv C (1 : ℤ)).counitIso.inv.app _ )
-#align category_theory.pretriangulated.triangle.inv_rotate CategoryTheory.Pretriangulated.Triangle.invRotate
 
 end
 
@@ -93,7 +89,6 @@ def rotate : Triangle C ⥤ Triangle C where
     comm₃ := by
       dsimp
       simp only [comp_neg, neg_comp, ← Functor.map_comp, f.comm₁] }
-#align category_theory.pretriangulated.rotate CategoryTheory.Pretriangulated.rotate
 
 /-- The inverse rotation of triangles gives an endofunctor on the category of triangles in `C`.
 -/
@@ -113,7 +108,6 @@ def invRotate : Triangle C ⥤ Triangle C where
     comm₃ := by
       erw [← reassoc_of% f.comm₂, Category.assoc, ← NatTrans.naturality]
       rfl }
-#align category_theory.pretriangulated.inv_rotate CategoryTheory.Pretriangulated.invRotate
 
 variable {C}
 variable [∀ n : ℤ, Functor.Additive (shiftFunctor C n)]
@@ -124,7 +118,6 @@ variable [∀ n : ℤ, Functor.Additive (shiftFunctor C n)]
 def rotCompInvRot : 𝟭 (Triangle C) ≅ rotate C ⋙ invRotate C :=
   NatIso.ofComponents fun T => Triangle.isoMk _ _
     ((shiftEquiv C (1 : ℤ)).unitIso.app T.obj₁) (Iso.refl _) (Iso.refl _)
-#align category_theory.pretriangulated.rot_comp_inv_rot CategoryTheory.Pretriangulated.rotCompInvRot
 
 /-- The counit isomorphism of the auto-equivalence of categories `triangleRotation C` of
 `Triangle C` given by the rotation of triangles. -/
@@ -132,7 +125,6 @@ def rotCompInvRot : 𝟭 (Triangle C) ≅ rotate C ⋙ invRotate C :=
 def invRotCompRot : invRotate C ⋙ rotate C ≅ 𝟭 (Triangle C) :=
   NatIso.ofComponents fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
     ((shiftEquiv C (1 : ℤ)).counitIso.app T.obj₃)
-#align category_theory.pretriangulated.inv_rot_comp_rot CategoryTheory.Pretriangulated.invRotCompRot
 
 variable (C)
 
@@ -144,7 +136,6 @@ def triangleRotation : Equivalence (Triangle C) (Triangle C) where
   inverse := invRotate C
   unitIso := rotCompInvRot
   counitIso := invRotCompRot
-#align category_theory.pretriangulated.triangle_rotation CategoryTheory.Pretriangulated.triangleRotation
 
 variable {C}
 

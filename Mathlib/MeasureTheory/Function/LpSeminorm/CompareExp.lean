@@ -6,8 +6,6 @@ Authors: Rémy Degenne, Eric Wieser
 import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 import Mathlib.MeasureTheory.Integral.MeanInequalities
 
-#align_import measure_theory.function.lp_seminorm from "leanprover-community/mathlib"@"c4015acc0a223449d44061e27ddac1835a3852b9"
-
 /-!
 # Compare Lp seminorms for different values of `p`
 
@@ -43,7 +41,6 @@ theorem snorm'_le_snorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) (hpq
       ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hp0_lt hpq hpqr μ hf.ennnorm aemeasurable_const
     _ = (∫⁻ a : α, ↑‖f a‖₊ ^ q ∂μ) ^ (1 / q) * μ Set.univ ^ (1 / p - 1 / q) := by
       rw [hpqr]; simp [r, g]
-#align measure_theory.snorm'_le_snorm'_mul_rpow_measure_univ MeasureTheory.snorm'_le_snorm'_mul_rpow_measure_univ
 
 theorem snorm'_le_snormEssSup_mul_rpow_measure_univ {q : ℝ} (hq_pos : 0 < q) :
     snorm' f q μ ≤ snormEssSup f μ * μ Set.univ ^ (1 / q) := by
@@ -56,7 +53,6 @@ theorem snorm'_le_snormEssSup_mul_rpow_measure_univ {q : ℝ} (hq_pos : 0 < q) :
   rw [ENNReal.rpow_mul, one_div, ← ENNReal.mul_rpow_of_nonneg _ _ (by simp [hq_pos.le] : 0 ≤ q⁻¹)]
   gcongr
   rwa [lintegral_const] at h_le
-#align measure_theory.snorm'_le_snorm_ess_sup_mul_rpow_measure_univ MeasureTheory.snorm'_le_snormEssSup_mul_rpow_measure_univ
 
 theorem snorm_le_snorm_mul_rpow_measure_univ {p q : ℝ≥0∞} (hpq : p ≤ q)
     (hf : AEStronglyMeasurable f μ) :
@@ -83,24 +79,20 @@ theorem snorm_le_snorm_mul_rpow_measure_univ {p q : ℝ≥0∞} (hpq : p ≤ q)
   rw [snorm_eq_snorm' hp0_lt.ne.symm hp_lt_top.ne, snorm_eq_snorm' hq0_lt.ne.symm hq_top]
   have hpq_real : p.toReal ≤ q.toReal := by rwa [ENNReal.toReal_le_toReal hp_lt_top.ne hq_top]
   exact snorm'_le_snorm'_mul_rpow_measure_univ hp_pos hpq_real hf
-#align measure_theory.snorm_le_snorm_mul_rpow_measure_univ MeasureTheory.snorm_le_snorm_mul_rpow_measure_univ
 
 theorem snorm'_le_snorm'_of_exponent_le {p q : ℝ} (hp0_lt : 0 < p)
     (hpq : p ≤ q) (μ : Measure α) [IsProbabilityMeasure μ] (hf : AEStronglyMeasurable f μ) :
     snorm' f p μ ≤ snorm' f q μ := by
   have h_le_μ := snorm'_le_snorm'_mul_rpow_measure_univ hp0_lt hpq hf
   rwa [measure_univ, ENNReal.one_rpow, mul_one] at h_le_μ
-#align measure_theory.snorm'_le_snorm'_of_exponent_le MeasureTheory.snorm'_le_snorm'_of_exponent_le
 
 theorem snorm'_le_snormEssSup {q : ℝ} (hq_pos : 0 < q) [IsProbabilityMeasure μ] :
     snorm' f q μ ≤ snormEssSup f μ :=
   le_trans (snorm'_le_snormEssSup_mul_rpow_measure_univ hq_pos) (le_of_eq (by simp [measure_univ]))
-#align measure_theory.snorm'_le_snorm_ess_sup MeasureTheory.snorm'_le_snormEssSup
 
 theorem snorm_le_snorm_of_exponent_le {p q : ℝ≥0∞} (hpq : p ≤ q) [IsProbabilityMeasure μ]
     (hf : AEStronglyMeasurable f μ) : snorm f p μ ≤ snorm f q μ :=
   (snorm_le_snorm_mul_rpow_measure_univ hpq hf).trans (le_of_eq (by simp [measure_univ]))
-#align measure_theory.snorm_le_snorm_of_exponent_le MeasureTheory.snorm_le_snorm_of_exponent_le
 
 theorem snorm'_lt_top_of_snorm'_lt_top_of_exponent_le {p q : ℝ} [IsFiniteMeasure μ]
     (hf : AEStronglyMeasurable f μ) (hfq_lt_top : snorm' f q μ < ∞) (hp_nonneg : 0 ≤ p)
@@ -116,7 +108,6 @@ theorem snorm'_lt_top_of_snorm'_lt_top_of_exponent_le {p q : ℝ} [IsFiniteMeasu
       rw [ENNReal.mul_lt_top_iff]
       refine Or.inl ⟨hfq_lt_top, ENNReal.rpow_lt_top_of_nonneg ?_ (measure_ne_top μ Set.univ)⟩
       rwa [le_sub_comm, sub_zero, one_div, one_div, inv_le_inv hq_pos hp_pos]
-#align measure_theory.snorm'_lt_top_of_snorm'_lt_top_of_exponent_le MeasureTheory.snorm'_lt_top_of_snorm'_lt_top_of_exponent_le
 
 theorem Memℒp.memℒp_of_exponent_le {p q : ℝ≥0∞} [IsFiniteMeasure μ] {f : α → E} (hfq : Memℒp f q μ)
     (hpq : p ≤ q) : Memℒp f p μ := by
@@ -145,7 +136,6 @@ theorem Memℒp.memℒp_of_exponent_le {p q : ℝ≥0∞} [IsFiniteMeasure μ] {
   rw [snorm_eq_snorm' hp0 hp_top]
   rw [snorm_eq_snorm' hq0 hq_top] at hfq_lt_top
   exact snorm'_lt_top_of_snorm'_lt_top_of_exponent_le hfq_m hfq_lt_top (le_of_lt hp_pos) hpq_real
-#align measure_theory.mem_ℒp.mem_ℒp_of_exponent_le MeasureTheory.Memℒp.memℒp_of_exponent_le
 
 end SameSpace
 
@@ -194,7 +184,6 @@ theorem snorm_le_snorm_top_mul_snorm (p : ℝ≥0∞) (f : α → E) {g : α →
       rw [← ENNReal.rpow_mul, one_div, mul_inv_cancel, ENNReal.rpow_one]
       rw [Ne, ENNReal.toReal_eq_zero_iff, not_or]
       exact ⟨hp_zero, hp_top⟩
-#align measure_theory.snorm_le_snorm_top_mul_snorm MeasureTheory.snorm_le_snorm_top_mul_snorm
 
 theorem snorm_le_snorm_mul_snorm_top (p : ℝ≥0∞) {f : α → E} (hf : AEStronglyMeasurable f μ)
     (g : α → F) (b : E → F → G) (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖₊ ≤ ‖f x‖₊ * ‖g x‖₊) :
@@ -203,7 +192,6 @@ theorem snorm_le_snorm_mul_snorm_top (p : ℝ≥0∞) {f : α → E} (hf : AEStr
     snorm (fun x ↦ b (f x) (g x)) p μ ≤ snorm g ∞ μ * snorm f p μ :=
       snorm_le_snorm_top_mul_snorm p g hf (flip b) <| by simpa only [mul_comm] using h
     _ = snorm f p μ * snorm g ∞ μ := mul_comm _ _
-#align measure_theory.snorm_le_snorm_mul_snorm_top MeasureTheory.snorm_le_snorm_mul_snorm_top
 
 theorem snorm'_le_snorm'_mul_snorm' {p q r : ℝ} (hf : AEStronglyMeasurable f μ)
     (hg : AEStronglyMeasurable g μ) (b : E → F → G)
@@ -220,7 +208,6 @@ theorem snorm'_le_snorm'_mul_snorm' {p q r : ℝ} (hf : AEStronglyMeasurable f �
     _ ≤ _ := ?_
   simp_rw [snorm', ENNReal.coe_mul]
   exact ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hp0_lt hpq hpqr μ hf.ennnorm hg.ennnorm
-#align measure_theory.snorm'_le_snorm'_mul_snorm' MeasureTheory.snorm'_le_snorm'_mul_snorm'
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of an elementwise operation
 `fun x => b (f x) (g x)`. -/
@@ -261,7 +248,6 @@ theorem snorm_le_snorm_mul_snorm_of_nnnorm {p q r : ℝ≥0∞}
     ENNReal.toReal_add]
   · simp only [hq_ne_zero, one_div, Ne, ENNReal.inv_eq_top, not_false_iff]
   · simp only [hr_ne_zero, one_div, Ne, ENNReal.inv_eq_top, not_false_iff]
-#align measure_theory.snorm_le_snorm_mul_snorm_of_nnnorm MeasureTheory.snorm_le_snorm_mul_snorm_of_nnnorm
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of an elementwise operation
 `fun x => b (f x) (g x)`. -/
@@ -270,7 +256,6 @@ theorem snorm_le_snorm_mul_snorm'_of_norm {p q r : ℝ≥0∞} (hf : AEStronglyM
     (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖ ≤ ‖f x‖ * ‖g x‖) (hpqr : 1 / p = 1 / q + 1 / r) :
     snorm (fun x => b (f x) (g x)) p μ ≤ snorm f q μ * snorm g r μ :=
   snorm_le_snorm_mul_snorm_of_nnnorm hf hg b h hpqr
-#align measure_theory.snorm_le_snorm_mul_snorm'_of_norm MeasureTheory.snorm_le_snorm_mul_snorm'_of_norm
 
 end Bilinear
 
@@ -284,20 +269,17 @@ theorem snorm_smul_le_snorm_top_mul_snorm (p : ℝ≥0∞) {f : α → E} (hf : 
     (φ : α → 𝕜) : snorm (φ • f) p μ ≤ snorm φ ∞ μ * snorm f p μ :=
   (snorm_le_snorm_top_mul_snorm p φ hf (· • ·) (eventually_of_forall fun _ => nnnorm_smul_le _ _) :
     _)
-#align measure_theory.snorm_smul_le_snorm_top_mul_snorm MeasureTheory.snorm_smul_le_snorm_top_mul_snorm
 
 theorem snorm_smul_le_snorm_mul_snorm_top (p : ℝ≥0∞) (f : α → E) {φ : α → 𝕜}
     (hφ : AEStronglyMeasurable φ μ) : snorm (φ • f) p μ ≤ snorm φ p μ * snorm f ∞ μ :=
   (snorm_le_snorm_mul_snorm_top p hφ f (· • ·) (eventually_of_forall fun _ => nnnorm_smul_le _ _) :
     _)
-#align measure_theory.snorm_smul_le_snorm_mul_snorm_top MeasureTheory.snorm_smul_le_snorm_mul_snorm_top
 
 theorem snorm'_smul_le_mul_snorm' {p q r : ℝ} {f : α → E} (hf : AEStronglyMeasurable f μ)
     {φ : α → 𝕜} (hφ : AEStronglyMeasurable φ μ) (hp0_lt : 0 < p) (hpq : p < q)
     (hpqr : 1 / p = 1 / q + 1 / r) : snorm' (φ • f) p μ ≤ snorm' φ q μ * snorm' f r μ :=
   snorm'_le_snorm'_mul_snorm' hφ hf (· • ·) (eventually_of_forall fun _ => nnnorm_smul_le _ _)
     hp0_lt hpq hpqr
-#align measure_theory.snorm'_smul_le_mul_snorm' MeasureTheory.snorm'_smul_le_mul_snorm'
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of a scalar product `φ • f`. -/
 theorem snorm_smul_le_mul_snorm {p q r : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeasurable f μ)
@@ -306,26 +288,22 @@ theorem snorm_smul_le_mul_snorm {p q r : ℝ≥0∞} {f : α → E} (hf : AEStro
   (snorm_le_snorm_mul_snorm_of_nnnorm hφ hf (· • ·)
       (eventually_of_forall fun _ => nnnorm_smul_le _ _) hpqr :
     _)
-#align measure_theory.snorm_smul_le_mul_snorm MeasureTheory.snorm_smul_le_mul_snorm
 
 theorem Memℒp.smul {p q r : ℝ≥0∞} {f : α → E} {φ : α → 𝕜} (hf : Memℒp f r μ) (hφ : Memℒp φ q μ)
     (hpqr : 1 / p = 1 / q + 1 / r) : Memℒp (φ • f) p μ :=
   ⟨hφ.1.smul hf.1,
     (snorm_smul_le_mul_snorm hf.1 hφ.1 hpqr).trans_lt
       (ENNReal.mul_lt_top hφ.snorm_ne_top hf.snorm_ne_top)⟩
-#align measure_theory.mem_ℒp.smul MeasureTheory.Memℒp.smul
 
 theorem Memℒp.smul_of_top_right {p : ℝ≥0∞} {f : α → E} {φ : α → 𝕜} (hf : Memℒp f p μ)
     (hφ : Memℒp φ ∞ μ) : Memℒp (φ • f) p μ := by
   apply hf.smul hφ
   simp only [ENNReal.div_top, zero_add]
-#align measure_theory.mem_ℒp.smul_of_top_right MeasureTheory.Memℒp.smul_of_top_right
 
 theorem Memℒp.smul_of_top_left {p : ℝ≥0∞} {f : α → E} {φ : α → 𝕜} (hf : Memℒp f ∞ μ)
     (hφ : Memℒp φ p μ) : Memℒp (φ • f) p μ := by
   apply hf.smul hφ
   simp only [ENNReal.div_top, add_zero]
-#align measure_theory.mem_ℒp.smul_of_top_left MeasureTheory.Memℒp.smul_of_top_left
 
 end BoundedSMul
 

@@ -7,8 +7,6 @@ import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.RingTheory.Finiteness
 import Mathlib.Order.Basic
 
-#align_import ring_theory.ideal.idempotent_fg from "leanprover-community/mathlib"@"25cf7631da8ddc2d5f957c388bf5e4b25a77d8dc"
-
 /-!
 ## Lemmas on idempotent finitely generated ideals
 -/
@@ -33,7 +31,6 @@ theorem isIdempotentElem_iff_of_fg {R : Type*} [CommRing R] (I : Ideal R) (h : I
     exact Ideal.mem_span_singleton'.mpr ⟨_, mul_comm _ _⟩
   · rintro ⟨e, he, rfl⟩
     simp [IsIdempotentElem, Ideal.span_singleton_mul_span_singleton, he.eq]
-#align ideal.is_idempotent_elem_iff_of_fg Ideal.isIdempotentElem_iff_of_fg
 
 theorem isIdempotentElem_iff_eq_bot_or_top {R : Type*} [CommRing R] [IsDomain R] (I : Ideal R)
     (h : I.FG) : IsIdempotentElem I ↔ I = ⊥ ∨ I = ⊤ := by
@@ -45,6 +42,5 @@ theorem isIdempotentElem_iff_eq_bot_or_top {R : Type*} [CommRing R] [IsDomain R]
     rintro rfl
     simp
   · rintro (rfl | rfl) <;> simp [IsIdempotentElem]
-#align ideal.is_idempotent_elem_iff_eq_bot_or_top Ideal.isIdempotentElem_iff_eq_bot_or_top
 
 end Ideal

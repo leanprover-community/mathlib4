@@ -92,7 +92,6 @@ lemma SupClosed.finsetSup'_mem (hs : SupClosed s) (ht : t.Nonempty) :
 lemma SupClosed.finsetSup_mem [OrderBot α] (hs : SupClosed s) (ht : t.Nonempty) :
     (∀ i ∈ t, f i ∈ s) → t.sup f ∈ s :=
   sup'_eq_sup ht f ▸ hs.finsetSup'_mem ht
-#align finset.sup_closed_of_sup_closed SupClosed.finsetSup_mem
 
 end Finset
 end SemilatticeSup
@@ -158,7 +157,6 @@ lemma InfClosed.finsetInf'_mem (hs : InfClosed s) (ht : t.Nonempty) :
 lemma InfClosed.finsetInf_mem [OrderTop α] (hs : InfClosed s) (ht : t.Nonempty) :
     (∀ i ∈ t, f i ∈ s) → t.inf f ∈ s :=
   inf'_eq_inf ht f ▸ hs.finsetInf'_mem ht
-#align finset.inf_closed_of_inf_closed InfClosed.finsetInf_mem
 
 end Finset
 end SemilatticeInf

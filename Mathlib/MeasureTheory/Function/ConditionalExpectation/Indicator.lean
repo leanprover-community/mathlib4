@@ -5,8 +5,6 @@ Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
-#align_import measure_theory.function.conditional_expectation.indicator from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 
 # Conditional expectation of indicator functions
@@ -57,7 +55,6 @@ theorem condexp_ae_eq_restrict_zero (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.re
     filter_upwards [hf] with x hx _ using hx
   · exact stronglyMeasurable_condexp.aeStronglyMeasurable'
   · exact stronglyMeasurable_zero.aeStronglyMeasurable'
-#align measure_theory.condexp_ae_eq_restrict_zero MeasureTheory.condexp_ae_eq_restrict_zero
 
 /-- Auxiliary lemma for `condexp_indicator`. -/
 theorem condexp_indicator_aux (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.restrict sᶜ] 0) :
@@ -68,7 +65,6 @@ theorem condexp_indicator_aux (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.restrict
     indicator_ae_eq_of_restrict_compl_ae_eq_zero (hm _ hs)
   refine ((hsf_zero (μ[f|m]) (condexp_ae_eq_restrict_zero hs.compl hf)).trans ?_).symm
   exact condexp_congr_ae (hsf_zero f hf).symm
-#align measure_theory.condexp_indicator_aux MeasureTheory.condexp_indicator_aux
 
 /-- The conditional expectation of the indicator of a function over an `m`-measurable set with
 respect to the σ-algebra `m` is a.e. equal to the indicator of the conditional expectation. -/
@@ -110,7 +106,6 @@ theorem condexp_indicator (hf_int : Integrable f μ) (hs : MeasurableSet[m] s) :
       refine (condexp_indicator_aux hs ?_).symm.trans ?_
       · exact indicator_ae_eq_restrict_compl (hm _ hs)
       · rw [Set.indicator_indicator, Set.inter_self]
-#align measure_theory.condexp_indicator MeasureTheory.condexp_indicator
 
 theorem condexp_restrict_ae_eq_restrict (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (hs_m : MeasurableSet[m] s) (hf_int : Integrable f μ) :
@@ -138,7 +133,6 @@ theorem condexp_restrict_ae_eq_restrict (hm : m ≤ m0) [SigmaFinite (μ.trim hm
         rw [integral_indicator (hm _ hs_m), Measure.restrict_restrict (hm _ hs_m),
           Measure.restrict_restrict (hm _ ht), Set.inter_comm]
   · exact (stronglyMeasurable_condexp.indicator hs_m).aeStronglyMeasurable'
-#align measure_theory.condexp_restrict_ae_eq_restrict MeasureTheory.condexp_restrict_ae_eq_restrict
 
 /-- If the restriction to an `m`-measurable set `s` of a σ-algebra `m` is equal to the restriction
 to `s` of another σ-algebra `m₂` (hypothesis `hs`), then `μ[f | m] =ᵐ[μ.restrict s] μ[f | m₂]`. -/
@@ -181,6 +175,5 @@ theorem condexp_ae_eq_restrict_of_measurableSpace_eq_on {m m₂ m0 : MeasurableS
   simp_rw [this, setIntegral_condexp hm₂ (hf_int.indicator (hm _ hs_m)) ht,
     setIntegral_condexp hm (hf_int.indicator (hm _ hs_m)) hst_m, integral_indicator (hm _ hs_m),
     Measure.restrict_restrict (hm _ hs_m), ← Set.inter_assoc, Set.inter_self]
-#align measure_theory.condexp_ae_eq_restrict_of_measurable_space_eq_on MeasureTheory.condexp_ae_eq_restrict_of_measurableSpace_eq_on
 
 end MeasureTheory

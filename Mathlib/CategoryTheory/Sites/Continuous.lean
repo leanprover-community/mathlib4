@@ -185,7 +185,6 @@ if `F` is a continuous functor.
 def sheafPushforwardContinuous : Sheaf K A ⥤ Sheaf J A where
   obj ℱ := ⟨F.op ⋙ ℱ.val, F.op_comp_isSheaf J K ℱ⟩
   map f := ⟨((whiskeringLeft _ _ _).obj F.op).map f.val⟩
-#align category_theory.sites.pullback CategoryTheory.Functor.sheafPushforwardContinuous
 
 /-- The functor `F.sheafPushforwardContinuous A J K : Sheaf K A ⥤ Sheaf J A`
 is induced by the precomposition with `F.op`. -/

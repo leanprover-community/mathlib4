@@ -7,8 +7,6 @@ import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
-#align_import linear_algebra.dimension from "leanprover-community/mathlib"@"47a5f8186becdbc826190ced4312f8199f9db6a5"
-
 /-!
 # Rank of free modules
 
@@ -46,7 +44,6 @@ theorem lift_rank_mul_lift_rank :
   rw [← (Module.rank F K).lift_id, ← b.mk_eq_rank, ← (Module.rank K A).lift_id, ← c.mk_eq_rank,
     ← lift_umax.{w, v}, ← (b.smul c).mk_eq_rank, mk_prod, lift_mul, lift_lift, lift_lift, lift_lift,
     lift_lift, lift_umax.{v, w}]
-#align lift_rank_mul_lift_rank lift_rank_mul_lift_rank
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
@@ -56,7 +53,6 @@ theorem rank_mul_rank (A : Type v) [AddCommGroup A]
     [Module K A] [Module F A] [IsScalarTower F K A] [Module.Free K A] :
     Module.rank F K * Module.rank K A = Module.rank F A := by
   convert lift_rank_mul_lift_rank F K A <;> rw [lift_id]
-#align rank_mul_rank rank_mul_rank
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
@@ -64,8 +60,6 @@ theorem FiniteDimensional.finrank_mul_finrank : finrank F K * finrank K A = finr
   simp_rw [finrank]
   rw [← toNat_lift.{w} (Module.rank F K), ← toNat_lift.{v} (Module.rank K A), ← toNat_mul,
     lift_rank_mul_lift_rank, toNat_lift]
-#align finite_dimensional.finrank_mul_finrank FiniteDimensional.finrank_mul_finrank
-#align finite_dimensional.finrank_mul_finrank' FiniteDimensional.finrank_mul_finrank
 
 end Tower
 
@@ -82,13 +76,11 @@ variable (R M)
 /-- The rank of a free module `M` over `R` is the cardinality of `ChooseBasisIndex R M`. -/
 theorem rank_eq_card_chooseBasisIndex : Module.rank R M = #(ChooseBasisIndex R M) :=
   (chooseBasis R M).mk_eq_rank''.symm
-#align module.free.rank_eq_card_choose_basis_index Module.Free.rank_eq_card_chooseBasisIndex
 
 /-- The finrank of a free module `M` over `R` is the cardinality of `ChooseBasisIndex R M`. -/
 theorem _root_.FiniteDimensional.finrank_eq_card_chooseBasisIndex [Module.Finite R M] :
     finrank R M = Fintype.card (ChooseBasisIndex R M) := by
   simp [finrank, rank_eq_card_chooseBasisIndex]
-#align finite_dimensional.finrank_eq_card_choose_basis_index FiniteDimensional.finrank_eq_card_chooseBasisIndex
 
 /-- The rank of a free module `M` over an infinite scalar ring `R` is the cardinality of `M`
 whenever `#R < #M`. -/
@@ -116,13 +108,11 @@ theorem nonempty_linearEquiv_of_lift_rank_eq
   have : Cardinal.lift.{v', v} #α = Cardinal.lift.{v, v'} #β := by
     rw [B.mk_eq_rank'', cnd, B'.mk_eq_rank'']
   exact (Cardinal.lift_mk_eq.{v, v', 0}.1 this).map (B.equiv B')
-#align nonempty_linear_equiv_of_lift_rank_eq nonempty_linearEquiv_of_lift_rank_eq
 
 /-- Two vector spaces are isomorphic if they have the same dimension. -/
 theorem nonempty_linearEquiv_of_rank_eq (cond : Module.rank R M = Module.rank R M₁) :
     Nonempty (M ≃ₗ[R] M₁) :=
   nonempty_linearEquiv_of_lift_rank_eq <| congr_arg _ cond
-#align nonempty_linear_equiv_of_rank_eq nonempty_linearEquiv_of_rank_eq
 
 section
 
@@ -133,12 +123,10 @@ def LinearEquiv.ofLiftRankEq
     (cond : Cardinal.lift.{v'} (Module.rank R M) = Cardinal.lift.{v} (Module.rank R M')) :
     M ≃ₗ[R] M' :=
   Classical.choice (nonempty_linearEquiv_of_lift_rank_eq cond)
-#align linear_equiv.of_lift_rank_eq LinearEquiv.ofLiftRankEq
 
 /-- Two vector spaces are isomorphic if they have the same dimension. -/
 def LinearEquiv.ofRankEq (cond : Module.rank R M = Module.rank R M₁) : M ≃ₗ[R] M₁ :=
   Classical.choice (nonempty_linearEquiv_of_rank_eq cond)
-#align linear_equiv.of_rank_eq LinearEquiv.ofRankEq
 
 end
 
@@ -146,26 +134,22 @@ end
 theorem LinearEquiv.nonempty_equiv_iff_lift_rank_eq : Nonempty (M ≃ₗ[R] M') ↔
     Cardinal.lift.{v'} (Module.rank R M) = Cardinal.lift.{v} (Module.rank R M') :=
   ⟨fun ⟨h⟩ => LinearEquiv.lift_rank_eq h, fun h => nonempty_linearEquiv_of_lift_rank_eq h⟩
-#align linear_equiv.nonempty_equiv_iff_lift_rank_eq LinearEquiv.nonempty_equiv_iff_lift_rank_eq
 
 /-- Two vector spaces are isomorphic if and only if they have the same dimension. -/
 theorem LinearEquiv.nonempty_equiv_iff_rank_eq :
     Nonempty (M ≃ₗ[R] M₁) ↔ Module.rank R M = Module.rank R M₁ :=
   ⟨fun ⟨h⟩ => LinearEquiv.rank_eq h, fun h => nonempty_linearEquiv_of_rank_eq h⟩
-#align linear_equiv.nonempty_equiv_iff_rank_eq LinearEquiv.nonempty_equiv_iff_rank_eq
 
 /-- Two finite and free modules are isomorphic if they have the same (finite) rank. -/
 theorem FiniteDimensional.nonempty_linearEquiv_of_finrank_eq
     [Module.Finite R M] [Module.Finite R M'] (cond : finrank R M = finrank R M') :
     Nonempty (M ≃ₗ[R] M') :=
   nonempty_linearEquiv_of_lift_rank_eq <| by simp only [← finrank_eq_rank, cond, lift_natCast]
-#align finite_dimensional.nonempty_linear_equiv_of_finrank_eq FiniteDimensional.nonempty_linearEquiv_of_finrank_eq
 
 /-- Two finite and free modules are isomorphic if and only if they have the same (finite) rank. -/
 theorem FiniteDimensional.nonempty_linearEquiv_iff_finrank_eq [Module.Finite R M]
     [Module.Finite R M'] : Nonempty (M ≃ₗ[R] M') ↔ finrank R M = finrank R M' :=
   ⟨fun ⟨h⟩ => h.finrank_eq, fun h => nonempty_linearEquiv_of_finrank_eq h⟩
-#align finite_dimensional.nonempty_linear_equiv_iff_finrank_eq FiniteDimensional.nonempty_linearEquiv_iff_finrank_eq
 
 variable (M M')
 
@@ -173,7 +157,6 @@ variable (M M')
 noncomputable def LinearEquiv.ofFinrankEq [Module.Finite R M] [Module.Finite R M']
     (cond : finrank R M = finrank R M') : M ≃ₗ[R] M' :=
   Classical.choice <| FiniteDimensional.nonempty_linearEquiv_of_finrank_eq cond
-#align linear_equiv.of_finrank_eq LinearEquiv.ofFinrankEq
 
 variable {M M'}
 
@@ -213,12 +196,10 @@ noncomputable def finBasis [Module.Finite R M] :
     Basis (Fin (finrank R M)) R M :=
   (Module.Free.chooseBasis R M).reindex (Fintype.equivFinOfCardEq
     (finrank_eq_card_chooseBasisIndex R M).symm)
-#align finite_dimensional.fin_basis FiniteDimensional.finBasis
 
 /-- A rank `n` free module has a basis indexed by `Fin n`. -/
 noncomputable def finBasisOfFinrankEq [Module.Finite R M] {n : ℕ} (hn : finrank R M = n) :
     Basis (Fin n) R M := (finBasis R M).reindex (finCongr hn)
-#align finite_dimensional.fin_basis_of_finrank_eq FiniteDimensional.finBasisOfFinrankEq
 
 variable {R M}
 
@@ -229,7 +210,6 @@ noncomputable def basisUnique (ι : Type*) [Unique ι]
   haveI : Module.Finite R M :=
     Module.finite_of_finrank_pos (_root_.zero_lt_one.trans_le h.symm.le)
   (finBasisOfFinrankEq R M h).reindex (Equiv.equivOfUnique _ _)
-#align finite_dimensional.basis_unique FiniteDimensional.basisUnique
 
 @[simp]
 theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
@@ -238,6 +218,5 @@ theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
   ⟨fun hv =>
     (basisUnique ι h).repr.map_eq_zero_iff.mp (Finsupp.ext fun j => Subsingleton.elim i j ▸ hv),
     fun hv => by rw [hv, LinearEquiv.map_zero, Finsupp.zero_apply]⟩
-#align finite_dimensional.basis_unique.repr_eq_zero_iff FiniteDimensional.basisUnique_repr_eq_zero_iff
 
 end FiniteDimensional
