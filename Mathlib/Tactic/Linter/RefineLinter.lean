@@ -36,16 +36,23 @@ def getRefine' : Syntax → Array Syntax
     if kind == ``Lean.Parser.Tactic.refine' then rargs.push stx else rargs
   | _ => default
 
-/-- Gets the value of the `linter.refine` option. -/
+/-- The "refine" linter flags usages of the `refine'` tactic.
+
+The tactics `refine` and `refine'` are similar, but they handle meta-variables slightly differently.
+This means that they are not completely interchangeable, nor can one completely replace the other.
+However, `refine` is more readable and (heuristically) tends to be more efficient on average.
+-/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.refine o
 
-/-- The main implementation of the refine linter. -/
+@[inherit_doc getLinterHash]
 def refineLinter : Linter where run := withSetOptionIn fun _stx => do
   unless getLinterHash (← getOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
   for stx in (getRefine' _stx) do
-    Linter.logLint linter.refine stx "Please, use `refine` or `apply` instead of `refine'`!"
+    Linter.logLint linter.refine stx
+      "The `refine'` tactic is discouraged: \
+      please strongly consider using `refine` or `apply` instead."
 
 initialize addLinter refineLinter
