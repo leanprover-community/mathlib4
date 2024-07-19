@@ -41,12 +41,14 @@ class VAddInvariantMeasure (M α : Type*) [VAdd M α] {_ : MeasurableSpace α} (
 /-- A measure `μ : Measure α` is invariant under a multiplicative action of `M` on `α` if for any
 measurable set `s : Set α` and `c : M`, the measure of its preimage under `fun x => c • x` is equal
 to the measure of `s`. -/
-@[to_additive]
+@[to_additive, mk_iff smulInvariantMeasure_iff]
 class SMulInvariantMeasure (M α : Type*) [SMul M α] {_ : MeasurableSpace α} (μ : Measure α) :
   Prop where
   measure_preimage_smul : ∀ (c : M) ⦃s : Set α⦄, MeasurableSet s → μ ((fun x => c • x) ⁻¹' s) = μ s
 #align measure_theory.smul_invariant_measure MeasureTheory.SMulInvariantMeasure
 #align measure_theory.smul_invariant_measure.measure_preimage_smul MeasureTheory.SMulInvariantMeasure.measure_preimage_smul
+
+attribute [to_additive] smulInvariantMeasure_iff
 
 namespace SMulInvariantMeasure
 
@@ -81,6 +83,37 @@ instance smul_nnreal [SMulInvariantMeasure M α μ] (c : ℝ≥0) : SMulInvarian
 
 end SMulInvariantMeasure
 
+section AE_smul
+
+variable {m : MeasurableSpace α} [MeasurableSpace G] [SMul G α]
+  (μ : Measure α) [SMulInvariantMeasure G α μ] {s : Set α}
+
+/-- See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`. -/
+@[to_additive "See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`."]
+theorem measure_preimage_smul_le (c : G) (s : Set α) : μ ((c • ·) ⁻¹' s) ≤ μ s :=
+  (outerMeasure_le_iff (m := .map (c • ·) μ.1)).2
+    (fun _s hs ↦ (SMulInvariantMeasure.measure_preimage_smul _ hs).le) _
+
+/-- See also `smul_ae`. -/
+@[to_additive "See also `vadd_ae`."]
+theorem tendsto_smul_ae (c : G) : Filter.Tendsto (c • ·) (ae μ) (ae μ) := fun _s hs ↦
+  eq_bot_mono (measure_preimage_smul_le μ c _) hs
+
+variable {μ}
+
+@[to_additive]
+theorem measure_preimage_smul_null (h : μ s = 0) (c : G) : μ ((c • ·) ⁻¹' s) = 0 :=
+  eq_bot_mono (measure_preimage_smul_le μ c _) h
+
+@[to_additive]
+theorem measure_preimage_smul_of_nullMeasurableSet (hs : NullMeasurableSet s μ) (c : G) :
+    μ ((c • ·) ⁻¹' s) = μ s := by
+  rw [← measure_toMeasurable s,
+    ← SMulInvariantMeasure.measure_preimage_smul c (measurableSet_toMeasurable μ s)]
+  exact measure_congr (tendsto_smul_ae μ c hs.toMeasurable_ae_eq) |>.symm
+  
+end AE_smul
+
 section AE
 
 variable {m : MeasurableSpace α} [MeasurableSpace G] [Group G] [MulAction G α]
@@ -88,9 +121,7 @@ variable {m : MeasurableSpace α} [MeasurableSpace G] [Group G] [MulAction G α]
 
 @[to_additive]
 theorem measure_smul_null {s} (h : μ s = 0) (c : G) : μ (c • s) = 0 := by
-  rcases exists_measurable_superset_of_null h with ⟨t, hst, htm, ht⟩
-  rw [← SMulInvariantMeasure.measure_preimage_smul c⁻¹ htm, preimage_smul_inv] at ht
-  exact measure_mono_null (image_mono hst) ht
+  simpa only [preimage_smul_inv] using measure_preimage_smul_null h c⁻¹
 #align measure_theory.measure_smul_null MeasureTheory.measure_smul_null
 
 @[to_additive (attr := simp)]
@@ -113,6 +144,21 @@ theorem smul_set_ae_le (c : G) {s t : Set α} : c • s ≤ᵐ[μ] c • t ↔ s
 @[to_additive (attr := simp)]
 theorem smul_set_ae_eq (c : G) {s t : Set α} : c • s =ᵐ[μ] c • t ↔ s =ᵐ[μ] t := by
   simp only [Filter.eventuallyLE_antisymm_iff, smul_set_ae_le]
+
+variable (μ)
+
+@[to_additive (attr := simp)]
+theorem measure_preimage_smul (c : G) (s : Set α) : μ ((c • ·) ⁻¹' s) = μ s :=
+  (measure_preimage_smul_le μ c s).antisymm <| by
+    simpa [preimage_preimage] using measure_preimage_smul_le μ c⁻¹ ((c • ·) ⁻¹' s)
+#align measure_theory.measure_preimage_smul MeasureTheory.measure_preimage_smul
+#align measure_theory.measure_preimage_vadd MeasureTheory.measure_preimage_vadd
+
+@[to_additive (attr := simp)]
+theorem measure_smul (c : G) (s : Set α) : μ (c • s) = μ s := by
+  simpa only [preimage_smul_inv] using measure_preimage_smul μ c⁻¹ s
+#align measure_theory.measure_smul MeasureTheory.measure_smul
+#align measure_theory.measure_vadd MeasureTheory.measure_vadd
 
 end AE
 
@@ -138,6 +184,23 @@ theorem map_smul : map (c • ·) μ = μ :=
 #align measure_theory.map_vadd MeasureTheory.map_vadd
 
 end MeasurableSMul
+
+theorem MeasurePreserving.smulInvariantMeasure_ofEndHom_powersHom
+    {f : α → α} {_ : MeasurableSpace α} {μ : Measure α} (hf : MeasurePreserving f μ μ) :
+    letI : MulAction (Multiplicative ℕ) α := .ofEndHom <| powersHom (Function.End α) f
+    SMulInvariantMeasure (Multiplicative ℕ) α μ :=
+  letI : MulAction (Multiplicative ℕ) α := .ofEndHom <| powersHom (Function.End α) f
+  ⟨fun n _s hs ↦ (hf.iterate n).measure_preimage hs⟩
+
+theorem smulInvariantMeasure_ofEndHom_powersHom_iff
+    {f : α → α} {_ : MeasurableSpace α} {μ : Measure α} (hf : Measurable f) :
+    letI : MulAction (Multiplicative ℕ) α := .ofEndHom <| powersHom (Function.End α) f
+    SMulInvariantMeasure (Multiplicative ℕ) α μ ↔ MeasurePreserving f μ μ := by
+  refine ⟨fun h ↦ ?_, MeasurePreserving.smulInvariantMeasure_ofEndHom_powersHom⟩
+  letI : MulAction (Multiplicative ℕ) α := .ofEndHom <| powersHom (Function.End α) f
+  letI : MeasurableSpace (Multiplicative ℕ) := ⊤
+  have : MeasurableSMul (Multiplicative ℕ) α := ⟨hf.iterate, fun _ ↦ measurable_discrete _⟩
+  exact measurePreserving_smul (Multiplicative.ofAdd 1) μ
 
 section SMulHomClass
 
@@ -239,18 +302,6 @@ add_decl_doc vaddInvariantMeasure_tfae
 
 variable {G}
 variable [SMulInvariantMeasure G α μ]
-
-@[to_additive (attr := simp)]
-theorem measure_preimage_smul (s : Set α) : μ ((c • ·) ⁻¹' s) = μ s :=
-  ((smulInvariantMeasure_tfae G μ).out 0 3 rfl rfl).mp ‹_› c s
-#align measure_theory.measure_preimage_smul MeasureTheory.measure_preimage_smul
-#align measure_theory.measure_preimage_vadd MeasureTheory.measure_preimage_vadd
-
-@[to_additive (attr := simp)]
-theorem measure_smul (s : Set α) : μ (c • s) = μ s :=
-  ((smulInvariantMeasure_tfae G μ).out 0 4 rfl rfl).mp ‹_› c s
-#align measure_theory.measure_smul MeasureTheory.measure_smul
-#align measure_theory.measure_vadd MeasureTheory.measure_vadd
 
 variable {μ}
 
