@@ -7,7 +7,7 @@ Authors: Andrew Yang, Riccardo Brasca
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.RingTheory.Trace.Basic
-import Mathlib.RingTheory.IntegralRestrict
+import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 /-!
 
