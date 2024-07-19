@@ -6,8 +6,6 @@ Authors: Eric Wieser, Jireh Loreaux
 import Mathlib.Algebra.Group.Center
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 
-#align_import group_theory.subsemigroup.center from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
-
 /-!
 # Center of a group with zero
 -/
@@ -27,10 +25,8 @@ variable [MulZeroClass M₀] {s : Set M₀}
   left_assoc _ _ := by rw [zero_mul, zero_mul, zero_mul]
   mid_assoc _ _ := by rw [mul_zero, zero_mul, mul_zero]
   right_assoc _ _ := by rw [mul_zero, mul_zero, mul_zero]
-#align set.zero_mem_center Set.zero_mem_center
 
 @[simp] lemma zero_mem_centralizer : (0 : M₀) ∈ centralizer s := by simp [mem_centralizer_iff]
-#align set.zero_mem_centralizer Set.zero_mem_centralizer
 
 end MulZeroClass
 
@@ -43,12 +39,10 @@ lemma center_units_subset : center G₀ˣ ⊆ ((↑) : G₀ˣ → G₀) ⁻¹' c
   obtain rfl | ha := eq_or_ne a 0
   · rw [zero_mul, mul_zero]
   · exact congr_arg Units.val $ hu $ Units.mk0 a ha
-#align set.center_units_subset Set.center_units_subset
 
 /-- In a group with zero, the center of the units is the preimage of the center. -/
 lemma center_units_eq : center G₀ˣ = ((↑) : G₀ˣ → G₀) ⁻¹' center G₀ :=
   center_units_subset.antisymm subset_center_units
-#align set.center_units_eq Set.center_units_eq
 
 @[simp] lemma inv_mem_centralizer₀ (ha : a ∈ centralizer s) : a⁻¹ ∈ centralizer s := by
   obtain rfl | ha₀ := eq_or_ne a 0
@@ -56,22 +50,18 @@ lemma center_units_eq : center G₀ˣ = ((↑) : G₀ˣ → G₀) ⁻¹' center 
     exact zero_mem_centralizer
   · rintro c hc
     rw [mul_inv_eq_iff_eq_mul₀ ha₀, mul_assoc, eq_inv_mul_iff_mul_eq₀ ha₀, ha c hc]
-#align set.inv_mem_centralizer₀ Set.inv_mem_centralizer₀
 
 @[simp] lemma div_mem_centralizer₀ (ha : a ∈ centralizer s) (hb : b ∈ centralizer s) :
     a / b ∈ centralizer s := by
   simpa only [div_eq_mul_inv] using mul_mem_centralizer ha (inv_mem_centralizer₀ hb)
-#align set.div_mem_centralizer₀ Set.div_mem_centralizer₀
 
 @[deprecated inv_mem_center (since := "2024-06-17")]
 theorem inv_mem_center₀ (ha : a ∈ Set.center G₀) : a⁻¹ ∈ Set.center G₀ :=
   inv_mem_center ha
-#align set.inv_mem_center₀ Set.inv_mem_centerₓ
 
 @[deprecated div_mem_center (since := "2024-06-17")]
 theorem div_mem_center₀ (ha : a ∈ Set.center G₀) (hb : b ∈ Set.center G₀) : a / b ∈ Set.center G₀ :=
   div_mem_center ha hb
-#align set.div_mem_center₀ Set.div_mem_centerₓ
 
 end GroupWithZero
 end Set

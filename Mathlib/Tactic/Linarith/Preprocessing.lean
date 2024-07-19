@@ -25,8 +25,6 @@ preprocessing steps by adding them to the `LinarithConfig` object. `Linarith.def
 is the main list, and generally none of these should be skipped unless you know what you're doing.
 -/
 
-set_option autoImplicit true
-
 namespace Linarith
 
 /-! ### Preprocessing -/
@@ -269,7 +267,8 @@ end compWithZero
 
 section cancelDenoms
 
-theorem without_one_mul [MulOneClass M] {a b : M} (h : 1 * a = b) : a = b := by rwa [one_mul] at h
+theorem without_one_mul {M : Type*} [MulOneClass M] {a b : M} (h : 1 * a = b) : a = b := by
+  rwa [one_mul] at h
 
 /--
 `normalizeDenominatorsLHS h lhs` assumes that `h` is a proof of `lhs R 0`.

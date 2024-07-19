@@ -7,8 +7,6 @@ import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Algebra.Ring.Int
 
-#align_import algebra.euclidean_domain.instances from "leanprover-community/mathlib"@"e1bccd6e40ae78370f01659715d3c948716e3b7e"
-
 /-!
 # Instances for Euclidean domains
 * `Int.euclideanDomain`: shows that `ℤ` is a Euclidean domain.

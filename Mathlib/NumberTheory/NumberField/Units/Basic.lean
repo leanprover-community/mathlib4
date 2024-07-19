@@ -5,8 +5,6 @@ Authors: Xavier Roblot
 -/
 import Mathlib.NumberTheory.NumberField.Embeddings
 
-#align_import number_theory.number_field.units from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
-
 /-!
 # Units of a number field
 
@@ -41,7 +39,6 @@ theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 
   simp_rw [(isUnit_map_iff (Rat.ringOfIntegersEquiv : 𝓞 ℚ →+* ℤ) x).symm, Int.isUnit_iff,
     RingEquiv.coe_toRingHom, RingEquiv.map_eq_one_iff, RingEquiv.map_eq_neg_one_iff, ←
     Subtype.coe_injective.eq_iff]; rfl
-#align rat.ring_of_integers.is_unit_iff Rat.RingOfIntegers.isUnit_iff
 
 end Rat
 
@@ -55,7 +52,6 @@ theorem NumberField.isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
     IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 := by
   convert (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
   rw [← abs_one, abs_eq_abs, ← Rat.RingOfIntegers.isUnit_iff]
-#align is_unit_iff_norm NumberField.isUnit_iff_norm
 
 end IsUnit
 

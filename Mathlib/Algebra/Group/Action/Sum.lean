@@ -5,8 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Action.Defs
 
-#align_import group_theory.group_action.sum from "leanprover-community/mathlib"@"f1a2caaf51ef593799107fe9a8d5e411599f3996"
-
 /-!
 # Sum instances for additive and multiplicative actions
 
@@ -38,25 +36,17 @@ instance : SMul M (Sum α β) :=
 @[to_additive]
 theorem smul_def : a • x = x.map (a • ·) (a • ·) :=
   rfl
-#align sum.smul_def Sum.smul_def
-#align sum.vadd_def Sum.vadd_def
 
 @[to_additive (attr := simp)]
 theorem smul_inl : a • (inl b : Sum α β) = inl (a • b) :=
   rfl
-#align sum.smul_inl Sum.smul_inl
-#align sum.vadd_inl Sum.vadd_inl
 
 @[to_additive (attr := simp)]
 theorem smul_inr : a • (inr c : Sum α β) = inr (a • c) :=
   rfl
-#align sum.smul_inr Sum.smul_inr
-#align sum.vadd_inr Sum.vadd_inr
 
 @[to_additive (attr := simp)]
 theorem smul_swap : (a • x).swap = a • x.swap := by cases x <;> rfl
-#align sum.smul_swap Sum.smul_swap
-#align sum.vadd_swap Sum.vadd_swap
 
 instance [SMul M N] [IsScalarTower M N α] [IsScalarTower M N β] : IsScalarTower M N (Sum α β) :=
   ⟨fun a b x => by
@@ -79,14 +69,10 @@ instance [SMul Mᵐᵒᵖ α] [SMul Mᵐᵒᵖ β] [IsCentralScalar M α] [IsCen
 @[to_additive]
 instance FaithfulSMulLeft [FaithfulSMul M α] : FaithfulSMul M (Sum α β) :=
   ⟨fun h => eq_of_smul_eq_smul fun a : α => by injection h (inl a)⟩
-#align sum.has_faithful_smul_left Sum.FaithfulSMulLeft
-#align sum.has_faithful_vadd_left Sum.FaithfulVAddLeft
 
 @[to_additive]
 instance FaithfulSMulRight [FaithfulSMul M β] : FaithfulSMul M (Sum α β) :=
   ⟨fun h => eq_of_smul_eq_smul fun b : β => by injection h (inr b)⟩
-#align sum.has_faithful_smul_right Sum.FaithfulSMulRight
-#align sum.has_faithful_vadd_right Sum.FaithfulVAddRight
 
 end SMul
 
