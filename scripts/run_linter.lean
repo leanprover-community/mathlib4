@@ -28,26 +28,26 @@ def writeJsonFile [ToJson α] (path : System.FilePath) (a : α) : IO Unit :=
 open Cli
 
 unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
-  let only := (args.flag? "only_run").map fun val ↦ (val.value.splitOn " ")
-  let exclude := (args.flag? "never_run").map fun val ↦ (val.value.splitOn " ")
-  let add := (args.flag? "always_run").map fun val ↦ (val.value.splitOn " ")
-  let print := args.hasFlag "print_linters"
+  let only := (args.flag? "only").map fun val ↦ (val.value.splitOn " ")
+  let ignore := (args.flag? "ignore").map fun val ↦ (val.value.splitOn " ")
+  let select := (args.flag? "select").map fun val ↦ (val.value.splitOn " ")
+  let print := args.hasFlag "list"
   let update := args.hasFlag "update"
   let updateOnlyRemove := args.hasFlag "update_only_remove"
-  -- "only" and "exclude" are contradictory: error if both are provided
-  -- also error if "add" and "exclude" overlap.
-  if only.isSome && exclude.isSome then
-    IO.println "invalid arguments: the options '--only_run' and '--never_run' \
-      are incompatible: please do not specify both"
+  -- "only" and "ignore" are contradictory: error if both are provided
+  -- also error if "select" and "ignore" overlap.
+  if only.isSome && ignore.isSome then
+    IO.println "invalid arguments: the options '--only' and '--ignore' are incompatible: \
+      please do not specify both"
     IO.Process.exit 2
-  else if let some add := add then
-    if let some exclude := exclude then
-      let overlap := add.filter fun s ↦ exclude.contains s
+  else if let some select := select then
+    if let some ignore := ignore then
+      let overlap := select.filter fun s ↦ ignore.contains s
       if overlap.length > 0 then
         IO.println s!"invalid arguments: the linter(s) {overlap} cannot be both added and excluded"
         IO.Process.exit 2
     else if let some only := only then
-      let contradictory := add.filter fun s ↦ !only.contains s
+      let contradictory := select.filter fun s ↦ !only.contains s
       if contradictory.length > 0 then
         IO.println s!"invalid arguments: the linter(s) {contradictory} are supposed to be \
           both always and not run"
@@ -87,15 +87,15 @@ unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
       -- Configure the list of linters to run, as needed.
       let defaultLinters ← getChecks (slow := true)
         (runOnly := only.map fun names ↦ names.map (·.toName))
-        (runAlways := add.map fun names ↦ names.map (·.toName))
+        (runAlways := select.map fun names ↦ names.map (·.toName))
       let linters := if updateOnlyRemove then
         -- Determine all unique linters which are mentioned in the `nolints` file.
         let all := (nolints.map fun nol ↦ nol.1).qsort (·.toString < ·.toString)
         let uniqueLinters := (all.toList).pwFilter (·.toString ≠ ·.toString)
         defaultLinters.filter fun lint ↦ uniqueLinters.contains lint.name
       else
-        match exclude with
-        | some exclude => defaultLinters.filter (!exclude.contains ·.name.toString)
+        match ignore with
+        | some ignore => defaultLinters.filter (ignore.contains ·.name.toString)
         | none => defaultLinters
       if print then
         IO.println s!"The following {linters.size} linter(s) were configured to run: \
@@ -122,23 +122,22 @@ unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
         IO.println "-- Linting passed."
   return 0
 
-/-- Setting up command line options and help text for `lake exe myRunLinter`. -/
+/-- Setting up command line options and help text for `lake exe run_linter`. -/
 unsafe def runLinter : Cmd := `[Cli|
   lint_style VIA runLinterCli; ["0.0.1"]
   "Runs the linters on all declarations in the given module (or `Mathlib` by default)."
 
   FLAGS:
-    only_run : Array String;  "Only run these named linters"
-    never_run : Array String; "Do not run these named linters"
-    always_run : Array String;
+    only : Array String;  "Only run these named linters"
+    ignore : Array String; "Do not run these named linters"
+    select : Array String;
       "Always run these named linters, regardless of whether they are enabled by default"
-    print_linters; "Print the list of all discovered/configured linters and exit"
+    list; "Print the list of all discovered/configured linters and exit"
 
     update;     "Update the `nolints` file to remove any declarations \
                 that no longer need to be nolinted.
-                If the 'only_linters', 'exclude_linters' or 'add_linters' flags are passed,
-                this will only add entries for these linters: the nolints file could be missing
-                further entries. Use with care!"
+                If the only, 'ignore or 'select' flags are passed, this will only add entries for \
+                these linters: the nolints file could be missing further entries. Use with care!"
     update_only_remove; "Like --update, but only run linters which have entries in the nolints file\
       This can be much faster, but will by design only *remove* entries, never add any."
 
