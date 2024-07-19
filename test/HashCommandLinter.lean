@@ -4,8 +4,6 @@ import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Linter.HashCommandLinter
 
 section ignored_commands
-theorem fo₁ : True := .intro
--- `#align` is allowed by the linter
 
 -- `#guard_msgs in` without a doc-string triggers the linter, but with the `doc-string does not
 /--
