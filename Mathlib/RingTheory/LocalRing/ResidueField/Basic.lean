@@ -17,32 +17,13 @@ We prove basic properties of the residue field of a local ring.
 
 -/
 
-
 variable {R S T : Type*}
 
 namespace LocalRing
 
 section
 
-variable (R) [CommRing R] [LocalRing R] [CommRing S] [LocalRing S] [CommRing T] [LocalRing T]
-
--- Porting note: failed at `deriving` instances automatically
-instance ResidueFieldCommRing : CommRing (ResidueField R) :=
-  show CommRing (R ⧸ maximalIdeal R) from inferInstance
-
-instance ResidueFieldInhabited : Inhabited (ResidueField R) :=
-  show Inhabited (R ⧸ maximalIdeal R) from inferInstance
-
-noncomputable instance ResidueField.field : Field (ResidueField R) :=
-  Ideal.Quotient.field (maximalIdeal R)
-#align local_ring.residue_field.field LocalRing.ResidueField.field
-
-/-- The quotient map from a local ring to its residue field. -/
-def residue : R →+* ResidueField R :=
-  Ideal.Quotient.mk _
-#align local_ring.residue LocalRing.residue
-
-variable {R}
+variable [CommRing R] [LocalRing R] [CommRing S] [LocalRing S] [CommRing T] [LocalRing T]
 
 lemma ker_residue : RingHom.ker (residue R) = maximalIdeal R :=
   Ideal.mk_ker
