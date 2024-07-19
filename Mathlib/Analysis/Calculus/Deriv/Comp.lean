@@ -7,8 +7,6 @@ import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.FDeriv.Comp
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 
-#align_import analysis.calculus.deriv.comp from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
-
 /-!
 # One-dimensional derivatives of compositions of functions
 
@@ -75,7 +73,6 @@ theorem HasDerivAtFilter.scomp (hg : HasDerivAtFilter g₁ g₁' (h x) L')
     (hh : HasDerivAtFilter h h' x L) (hL : Tendsto h L L') :
     HasDerivAtFilter (g₁ ∘ h) (h' • g₁') x L := by
   simpa using ((hg.restrictScalars 𝕜).comp x hh hL).hasDerivAtFilter
-#align has_deriv_at_filter.scomp HasDerivAtFilter.scomp
 
 theorem HasDerivAtFilter.scomp_of_eq (hg : HasDerivAtFilter g₁ g₁' y L')
     (hh : HasDerivAtFilter h h' x L) (hy : y = h x) (hL : Tendsto h L L') :
@@ -85,7 +82,6 @@ theorem HasDerivAtFilter.scomp_of_eq (hg : HasDerivAtFilter g₁ g₁' y L')
 theorem HasDerivWithinAt.scomp_hasDerivAt (hg : HasDerivWithinAt g₁ g₁' s' (h x))
     (hh : HasDerivAt h h' x) (hs : ∀ x, h x ∈ s') : HasDerivAt (g₁ ∘ h) (h' • g₁') x :=
   hg.scomp x hh <| tendsto_inf.2 ⟨hh.continuousAt, tendsto_principal.2 <| eventually_of_forall hs⟩
-#align has_deriv_within_at.scomp_has_deriv_at HasDerivWithinAt.scomp_hasDerivAt
 
 theorem HasDerivWithinAt.scomp_hasDerivAt_of_eq (hg : HasDerivWithinAt g₁ g₁' s' y)
     (hh : HasDerivAt h h' x) (hs : ∀ x, h x ∈ s') (hy : y = h x) :
@@ -96,7 +92,6 @@ nonrec theorem HasDerivWithinAt.scomp (hg : HasDerivWithinAt g₁ g₁' t' (h x)
     (hh : HasDerivWithinAt h h' s x) (hst : MapsTo h s t') :
     HasDerivWithinAt (g₁ ∘ h) (h' • g₁') s x :=
   hg.scomp x hh <| hh.continuousWithinAt.tendsto_nhdsWithin hst
-#align has_deriv_within_at.scomp HasDerivWithinAt.scomp
 
 theorem HasDerivWithinAt.scomp_of_eq (hg : HasDerivWithinAt g₁ g₁' t' y)
     (hh : HasDerivWithinAt h h' s x) (hst : MapsTo h s t') (hy : y = h x) :
@@ -107,7 +102,6 @@ theorem HasDerivWithinAt.scomp_of_eq (hg : HasDerivWithinAt g₁ g₁' t' y)
 nonrec theorem HasDerivAt.scomp (hg : HasDerivAt g₁ g₁' (h x)) (hh : HasDerivAt h h' x) :
     HasDerivAt (g₁ ∘ h) (h' • g₁') x :=
   hg.scomp x hh hh.continuousAt
-#align has_deriv_at.scomp HasDerivAt.scomp
 
 /-- The chain rule. -/
 theorem HasDerivAt.scomp_of_eq
@@ -118,7 +112,6 @@ theorem HasDerivAt.scomp_of_eq
 theorem HasStrictDerivAt.scomp (hg : HasStrictDerivAt g₁ g₁' (h x)) (hh : HasStrictDerivAt h h' x) :
     HasStrictDerivAt (g₁ ∘ h) (h' • g₁') x := by
   simpa using ((hg.restrictScalars 𝕜).comp x hh).hasStrictDerivAt
-#align has_strict_deriv_at.scomp HasStrictDerivAt.scomp
 
 theorem HasStrictDerivAt.scomp_of_eq
     (hg : HasStrictDerivAt g₁ g₁' y) (hh : HasStrictDerivAt h h' x) (hy : y = h x) :
@@ -128,7 +121,6 @@ theorem HasStrictDerivAt.scomp_of_eq
 theorem HasDerivAt.scomp_hasDerivWithinAt (hg : HasDerivAt g₁ g₁' (h x))
     (hh : HasDerivWithinAt h h' s x) : HasDerivWithinAt (g₁ ∘ h) (h' • g₁') s x :=
   HasDerivWithinAt.scomp x hg.hasDerivWithinAt hh (mapsTo_univ _ _)
-#align has_deriv_at.scomp_has_deriv_within_at HasDerivAt.scomp_hasDerivWithinAt
 
 theorem HasDerivAt.scomp_hasDerivWithinAt_of_eq (hg : HasDerivAt g₁ g₁' y)
     (hh : HasDerivWithinAt h h' s x) (hy : y = h x) :
@@ -139,7 +131,6 @@ theorem derivWithin.scomp (hg : DifferentiableWithinAt 𝕜' g₁ t' (h x))
     (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s t') (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin (g₁ ∘ h) s x = derivWithin h s x • derivWithin g₁ t' (h x) :=
   (HasDerivWithinAt.scomp x hg.hasDerivWithinAt hh.hasDerivWithinAt hs).derivWithin hxs
-#align deriv_within.scomp derivWithin.scomp
 
 theorem derivWithin.scomp_of_eq (hg : DifferentiableWithinAt 𝕜' g₁ t' y)
     (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s t') (hxs : UniqueDiffWithinAt 𝕜 s x)
@@ -150,7 +141,6 @@ theorem derivWithin.scomp_of_eq (hg : DifferentiableWithinAt 𝕜' g₁ t' y)
 theorem deriv.scomp (hg : DifferentiableAt 𝕜' g₁ (h x)) (hh : DifferentiableAt 𝕜 h x) :
     deriv (g₁ ∘ h) x = deriv h x • deriv g₁ (h x) :=
   (HasDerivAt.scomp x hg.hasDerivAt hh.hasDerivAt).deriv
-#align deriv.scomp deriv.scomp
 
 theorem deriv.scomp_of_eq
     (hg : DifferentiableAt 𝕜' g₁ y) (hh : DifferentiableAt 𝕜 h x) (hy : y = h x) :
@@ -165,7 +155,6 @@ theorem HasDerivAtFilter.comp_hasFDerivAtFilter {f : E → 𝕜'} {f' : E →L[�
   convert (hh₂.restrictScalars 𝕜).comp x hf hL
   ext x
   simp [mul_comm]
-#align has_deriv_at_filter.comp_has_fderiv_at_filter HasDerivAtFilter.comp_hasFDerivAtFilter
 
 theorem HasDerivAtFilter.comp_hasFDerivAtFilter_of_eq
     {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x) {L'' : Filter E}
@@ -180,7 +169,6 @@ theorem HasStrictDerivAt.comp_hasStrictFDerivAt {f : E → 𝕜'} {f' : E →L[�
   convert (hh.restrictScalars 𝕜).comp x hf
   ext x
   simp [mul_comm]
-#align has_strict_deriv_at.comp_has_strict_fderiv_at HasStrictDerivAt.comp_hasStrictFDerivAt
 
 theorem HasStrictDerivAt.comp_hasStrictFDerivAt_of_eq {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x)
     (hh : HasStrictDerivAt h₂ h₂' y) (hf : HasStrictFDerivAt f f' x) (hy : y = f x) :
@@ -190,7 +178,6 @@ theorem HasStrictDerivAt.comp_hasStrictFDerivAt_of_eq {f : E → 𝕜'} {f' : E 
 theorem HasDerivAt.comp_hasFDerivAt {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x)
     (hh : HasDerivAt h₂ h₂' (f x)) (hf : HasFDerivAt f f' x) : HasFDerivAt (h₂ ∘ f) (h₂' • f') x :=
   hh.comp_hasFDerivAtFilter x hf hf.continuousAt
-#align has_deriv_at.comp_has_fderiv_at HasDerivAt.comp_hasFDerivAt
 
 theorem HasDerivAt.comp_hasFDerivAt_of_eq {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x)
     (hh : HasDerivAt h₂ h₂' y) (hf : HasFDerivAt f f' x) (hy : y = f x) :
@@ -201,7 +188,6 @@ theorem HasDerivAt.comp_hasFDerivWithinAt {f : E → 𝕜'} {f' : E →L[𝕜] �
     (hh : HasDerivAt h₂ h₂' (f x)) (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (h₂ ∘ f) (h₂' • f') s x :=
   hh.comp_hasFDerivAtFilter x hf hf.continuousWithinAt
-#align has_deriv_at.comp_has_fderiv_within_at HasDerivAt.comp_hasFDerivWithinAt
 
 theorem HasDerivAt.comp_hasFDerivWithinAt_of_eq {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} {s} (x)
     (hh : HasDerivAt h₂ h₂' y) (hf : HasFDerivWithinAt f f' s x) (hy : y = f x) :
@@ -212,7 +198,6 @@ theorem HasDerivWithinAt.comp_hasFDerivWithinAt {f : E → 𝕜'} {f' : E →L[�
     (hh : HasDerivWithinAt h₂ h₂' t (f x)) (hf : HasFDerivWithinAt f f' s x) (hst : MapsTo f s t) :
     HasFDerivWithinAt (h₂ ∘ f) (h₂' • f') s x :=
   hh.comp_hasFDerivAtFilter x hf <| hf.continuousWithinAt.tendsto_nhdsWithin hst
-#align has_deriv_within_at.comp_has_fderiv_within_at HasDerivWithinAt.comp_hasFDerivWithinAt
 
 theorem HasDerivWithinAt.comp_hasFDerivWithinAt_of_eq {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} {s t} (x)
     (hh : HasDerivWithinAt h₂ h₂' t y) (hf : HasFDerivWithinAt f f' s x) (hst : MapsTo f s t)
@@ -227,7 +212,6 @@ theorem HasDerivAtFilter.comp (hh₂ : HasDerivAtFilter h₂ h₂' (h x) L')
     HasDerivAtFilter (h₂ ∘ h) (h₂' * h') x L := by
   rw [mul_comm]
   exact hh₂.scomp x hh hL
-#align has_deriv_at_filter.comp HasDerivAtFilter.comp
 
 theorem HasDerivAtFilter.comp_of_eq (hh₂ : HasDerivAtFilter h₂ h₂' y L')
     (hh : HasDerivAtFilter h h' x L) (hL : Tendsto h L L') (hy : y = h x) :
@@ -239,7 +223,6 @@ theorem HasDerivWithinAt.comp (hh₂ : HasDerivWithinAt h₂ h₂' s' (h x))
     HasDerivWithinAt (h₂ ∘ h) (h₂' * h') s x := by
   rw [mul_comm]
   exact hh₂.scomp x hh hst
-#align has_deriv_within_at.comp HasDerivWithinAt.comp
 
 theorem HasDerivWithinAt.comp_of_eq (hh₂ : HasDerivWithinAt h₂ h₂' s' y)
     (hh : HasDerivWithinAt h h' s x) (hst : MapsTo h s s') (hy : y = h x) :
@@ -253,7 +236,6 @@ with `h₂` taking values in a vector space, use `HasDerivAt.scomp`. -/
 nonrec theorem HasDerivAt.comp (hh₂ : HasDerivAt h₂ h₂' (h x)) (hh : HasDerivAt h h' x) :
     HasDerivAt (h₂ ∘ h) (h₂' * h') x :=
   hh₂.comp x hh hh.continuousAt
-#align has_deriv_at.comp HasDerivAt.comp
 
 /-- The chain rule.
 
@@ -268,7 +250,6 @@ theorem HasStrictDerivAt.comp (hh₂ : HasStrictDerivAt h₂ h₂' (h x)) (hh : 
     HasStrictDerivAt (h₂ ∘ h) (h₂' * h') x := by
   rw [mul_comm]
   exact hh₂.scomp x hh
-#align has_strict_deriv_at.comp HasStrictDerivAt.comp
 
 theorem HasStrictDerivAt.comp_of_eq
     (hh₂ : HasStrictDerivAt h₂ h₂' y) (hh : HasStrictDerivAt h h' x) (hy : y = h x) :
@@ -278,7 +259,6 @@ theorem HasStrictDerivAt.comp_of_eq
 theorem HasDerivAt.comp_hasDerivWithinAt (hh₂ : HasDerivAt h₂ h₂' (h x))
     (hh : HasDerivWithinAt h h' s x) : HasDerivWithinAt (h₂ ∘ h) (h₂' * h') s x :=
   hh₂.hasDerivWithinAt.comp x hh (mapsTo_univ _ _)
-#align has_deriv_at.comp_has_deriv_within_at HasDerivAt.comp_hasDerivWithinAt
 
 theorem HasDerivAt.comp_hasDerivWithinAt_of_eq (hh₂ : HasDerivAt h₂ h₂' y)
     (hh : HasDerivWithinAt h h' s x) (hy : y = h x) :
@@ -289,7 +269,6 @@ theorem derivWithin.comp (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' (h x))
     (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s s') (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin (h₂ ∘ h) s x = derivWithin h₂ s' (h x) * derivWithin h s x :=
   (hh₂.hasDerivWithinAt.comp x hh.hasDerivWithinAt hs).derivWithin hxs
-#align deriv_within.comp derivWithin.comp
 
 theorem derivWithin.comp_of_eq (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' y)
     (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s s') (hxs : UniqueDiffWithinAt 𝕜 s x)
@@ -300,7 +279,6 @@ theorem derivWithin.comp_of_eq (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' y)
 theorem deriv.comp (hh₂ : DifferentiableAt 𝕜' h₂ (h x)) (hh : DifferentiableAt 𝕜 h x) :
     deriv (h₂ ∘ h) x = deriv h₂ (h x) * deriv h x :=
   (hh₂.hasDerivAt.comp x hh.hasDerivAt).deriv
-#align deriv.comp deriv.comp
 
 theorem deriv.comp_of_eq (hh₂ : DifferentiableAt 𝕜' h₂ y) (hh : DifferentiableAt 𝕜 h x)
     (hy : y = h x) :
@@ -312,25 +290,21 @@ protected nonrec theorem HasDerivAtFilter.iterate {f : 𝕜 → 𝕜} {f' : 𝕜
     HasDerivAtFilter f^[n] (f' ^ n) x L := by
   have := hf.iterate hL hx n
   rwa [ContinuousLinearMap.smulRight_one_pow] at this
-#align has_deriv_at_filter.iterate HasDerivAtFilter.iterate
 
 protected nonrec theorem HasDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivAt f f' x)
     (hx : f x = x) (n : ℕ) : HasDerivAt f^[n] (f' ^ n) x :=
   hf.iterate _ (have := hf.tendsto_nhds le_rfl; by rwa [hx] at this) hx n
-#align has_deriv_at.iterate HasDerivAt.iterate
 
 protected theorem HasDerivWithinAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivWithinAt f f' s x)
     (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) : HasDerivWithinAt f^[n] (f' ^ n) s x := by
   have := HasFDerivWithinAt.iterate hf hx hs n
   rwa [ContinuousLinearMap.smulRight_one_pow] at this
-#align has_deriv_within_at.iterate HasDerivWithinAt.iterate
 
 protected nonrec theorem HasStrictDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜}
     (hf : HasStrictDerivAt f f' x) (hx : f x = x) (n : ℕ) :
     HasStrictDerivAt f^[n] (f' ^ n) x := by
   have := hf.iterate hx n
   rwa [ContinuousLinearMap.smulRight_one_pow] at this
-#align has_strict_deriv_at.iterate HasStrictDerivAt.iterate
 
 end Composition
 
@@ -350,7 +324,6 @@ theorem HasFDerivWithinAt.comp_hasDerivWithinAt {t : Set F} (hl : HasFDerivWithi
     HasDerivWithinAt (l ∘ f) (l' f') s x := by
   simpa only [one_apply, one_smul, smulRight_apply, coe_comp', (· ∘ ·)] using
     (hl.comp x hf.hasFDerivWithinAt hst).hasDerivWithinAt
-#align has_fderiv_within_at.comp_has_deriv_within_at HasFDerivWithinAt.comp_hasDerivWithinAt
 
 /-- The composition `l ∘ f` where `l : F → E` and `f : 𝕜 → F`, has a derivative within a set
 equal to the Fréchet derivative of `l` applied to the derivative of `f`. -/
@@ -363,7 +336,6 @@ theorem HasFDerivWithinAt.comp_hasDerivWithinAt_of_eq {t : Set F}
 theorem HasFDerivAt.comp_hasDerivWithinAt (hl : HasFDerivAt l l' (f x))
     (hf : HasDerivWithinAt f f' s x) : HasDerivWithinAt (l ∘ f) (l' f') s x :=
   hl.hasFDerivWithinAt.comp_hasDerivWithinAt x hf (mapsTo_univ _ _)
-#align has_fderiv_at.comp_has_deriv_within_at HasFDerivAt.comp_hasDerivWithinAt
 
 theorem HasFDerivAt.comp_hasDerivWithinAt_of_eq (hl : HasFDerivAt l l' y)
     (hf : HasDerivWithinAt f f' s x) (hy : y = f x) :
@@ -375,7 +347,6 @@ Fréchet derivative of `l` applied to the derivative of `f`. -/
 theorem HasFDerivAt.comp_hasDerivAt (hl : HasFDerivAt l l' (f x)) (hf : HasDerivAt f f' x) :
     HasDerivAt (l ∘ f) (l' f') x :=
   hasDerivWithinAt_univ.mp <| hl.comp_hasDerivWithinAt x hf.hasDerivWithinAt
-#align has_fderiv_at.comp_has_deriv_at HasFDerivAt.comp_hasDerivAt
 
 /-- The composition `l ∘ f` where `l : F → E` and `f : 𝕜 → F`, has a derivative equal to the
 Fréchet derivative of `l` applied to the derivative of `f`. -/
@@ -388,7 +359,6 @@ theorem HasStrictFDerivAt.comp_hasStrictDerivAt (hl : HasStrictFDerivAt l l' (f 
     (hf : HasStrictDerivAt f f' x) : HasStrictDerivAt (l ∘ f) (l' f') x := by
   simpa only [one_apply, one_smul, smulRight_apply, coe_comp', (· ∘ ·)] using
     (hl.comp x hf.hasStrictFDerivAt).hasStrictDerivAt
-#align has_strict_fderiv_at.comp_has_strict_deriv_at HasStrictFDerivAt.comp_hasStrictDerivAt
 
 theorem HasStrictFDerivAt.comp_hasStrictDerivAt_of_eq (hl : HasStrictFDerivAt l l' y)
     (hf : HasStrictDerivAt f f' x) (hy : y = f x) :
@@ -399,7 +369,6 @@ theorem fderivWithin.comp_derivWithin {t : Set F} (hl : DifferentiableWithinAt �
     (hf : DifferentiableWithinAt 𝕜 f s x) (hs : MapsTo f s t) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin (l ∘ f) s x = (fderivWithin 𝕜 l t (f x) : F → E) (derivWithin f s x) :=
   (hl.hasFDerivWithinAt.comp_hasDerivWithinAt x hf.hasDerivWithinAt hs).derivWithin hxs
-#align fderiv_within.comp_deriv_within fderivWithin.comp_derivWithin
 
 theorem fderivWithin.comp_derivWithin_of_eq {t : Set F} (hl : DifferentiableWithinAt 𝕜 l t y)
     (hf : DifferentiableWithinAt 𝕜 f s x) (hs : MapsTo f s t) (hxs : UniqueDiffWithinAt 𝕜 s x)
@@ -410,7 +379,6 @@ theorem fderivWithin.comp_derivWithin_of_eq {t : Set F} (hl : DifferentiableWith
 theorem fderiv.comp_deriv (hl : DifferentiableAt 𝕜 l (f x)) (hf : DifferentiableAt 𝕜 f x) :
     deriv (l ∘ f) x = (fderiv 𝕜 l (f x) : F → E) (deriv f x) :=
   (hl.hasFDerivAt.comp_hasDerivAt x hf.hasDerivAt).deriv
-#align fderiv.comp_deriv fderiv.comp_deriv
 
 theorem fderiv.comp_deriv_of_eq (hl : DifferentiableAt 𝕜 l y) (hf : DifferentiableAt 𝕜 f x)
     (hy : y = f x) :
