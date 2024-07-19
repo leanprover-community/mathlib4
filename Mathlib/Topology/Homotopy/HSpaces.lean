@@ -7,8 +7,6 @@ import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Homotopy.Basic
 
-#align_import topology.homotopy.H_spaces from "leanprover-community/mathlib"@"729d23f9e1640e1687141be89b106d3c8f9d10c0"
-
 /-!
 # H-spaces
 
@@ -49,7 +47,6 @@ particular, only has an instance of `MulOneClass`).
   Ann. of Math (2) 1951, 54, 425–505][serre1951]
 -/
 
-set_option linter.uppercaseLean3 false
 universe u v
 
 noncomputable section
@@ -69,7 +66,6 @@ class HSpace (X : Type u) [TopologicalSpace X] where
     (hmul.comp <| (const X e).prodMk <| ContinuousMap.id X).HomotopyRel (ContinuousMap.id X) {e}
   hmulE :
     (hmul.comp <| (ContinuousMap.id X).prodMk <| const X e).HomotopyRel (ContinuousMap.id X) {e}
-#align H_space HSpace
 
 /-- The binary operation `hmul` on an `H`-space -/
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
@@ -119,7 +115,6 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
     · rintro t ⟨x, y⟩ h
       replace h := Prod.mk.inj_iff.mp h
       exact Prod.ext (HSpace.hmulE.2 t x h.1) (HSpace.hmulE.2 t y h.2)
-#align H_space.prod HSpace.prod
 
 
 namespace TopologicalGroup
@@ -139,20 +134,15 @@ def toHSpace (M : Type u) [MulOneClass M] [TopologicalSpace M] [ContinuousMul M]
   hmul_e_e := one_mul 1
   eHmul := (HomotopyRel.refl _ _).cast rfl (by ext1; apply one_mul)
   hmulE := (HomotopyRel.refl _ _).cast rfl (by ext1; apply mul_one)
-#align topological_group.to_H_space TopologicalGroup.toHSpace
-#align topological_add_group.to_H_space TopologicalAddGroup.toHSpace
 
 @[to_additive]
 instance (priority := 600) hSpace (G : Type u) [TopologicalSpace G] [Group G] [TopologicalGroup G] :
     HSpace G :=
   toHSpace G
-#align topological_group.H_space TopologicalGroup.hSpace
-#align topological_add_group.H_space TopologicalAddGroup.hSpace
 
 theorem one_eq_hSpace_e {G : Type u} [TopologicalSpace G] [Group G] [TopologicalGroup G] :
     (1 : G) = HSpace.e :=
   rfl
-#align topological_group.one_eq_H_space_e TopologicalGroup.one_eq_hSpace_e
 
 /- In the following example we see that the H-space structure on the product of two topological
 groups is definitionally equally to the product H-space-structure of the two groups. -/
@@ -170,16 +160,13 @@ namespace unitInterval
 continuity of `delayReflRight`. -/
 def qRight (p : I × I) : I :=
   Set.projIcc 0 1 zero_le_one (2 * p.1 / (1 + p.2))
-#align unit_interval.Q_right unitInterval.qRight
 
 theorem continuous_qRight : Continuous qRight :=
   continuous_projIcc.comp <|
     Continuous.div (by fun_prop) (by fun_prop) fun x ↦ (add_pos zero_lt_one).ne'
-#align unit_interval.continuous_Q_right unitInterval.continuous_qRight
 
 theorem qRight_zero_left (θ : I) : qRight (0, θ) = 0 :=
   Set.projIcc_of_le_left _ <| by simp only [coe_zero, mul_zero, zero_div, le_refl]
-#align unit_interval.Q_right_zero_left unitInterval.qRight_zero_left
 
 theorem qRight_one_left (θ : I) : qRight (1, θ) = 1 :=
   Set.projIcc_of_right_le _ <|
@@ -188,7 +175,6 @@ theorem qRight_one_left (θ : I) : qRight (1, θ) = 1 :=
       rw [coe_one, one_mul, mul_one, add_comm, ← one_add_one_eq_two]
       simp only [add_le_add_iff_right]
       exact le_one _
-#align unit_interval.Q_right_one_left unitInterval.qRight_one_left
 
 theorem qRight_zero_right (t : I) :
     (qRight (t, 0) : ℝ) = if (t : ℝ) ≤ 1 / 2 then (2 : ℝ) * t else 1 := by
@@ -200,11 +186,9 @@ theorem qRight_zero_right (t : I) :
   · rw [(Set.projIcc_eq_right _).2]
     · linarith
     · exact zero_lt_one
-#align unit_interval.Q_right_zero_right unitInterval.qRight_zero_right
 
 theorem qRight_one_right (t : I) : qRight (t, 1) = t :=
   Eq.trans (by rw [qRight]; norm_num) <| Set.projIcc_val zero_le_one _
-#align unit_interval.Q_right_one_right unitInterval.qRight_one_right
 
 end unitInterval
 
@@ -225,13 +209,11 @@ def delayReflRight (θ : I) (γ : Path x y) : Path x y where
   target' := by
     dsimp only
     rw [qRight_one_left, γ.target]
-#align path.delay_refl_right Path.delayReflRight
 
 theorem continuous_delayReflRight : Continuous fun p : I × Path x y => delayReflRight p.1 p.2 :=
   continuous_uncurry_iff.mp <|
     (continuous_snd.comp continuous_fst).path_eval <|
       continuous_qRight.comp <| continuous_snd.prod_mk <| continuous_fst.comp continuous_fst
-#align path.continuous_delay_refl_right Path.continuous_delayReflRight
 
 theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Path.refl y) := by
   ext t
@@ -241,32 +223,26 @@ theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Pa
   on_goal 1 => conv_rhs => rw [← γ.target]
   all_goals apply congr_arg γ; ext1; rw [qRight_zero_right]
   exacts [if_neg h, if_pos h]
-#align path.delay_refl_right_zero Path.delayReflRight_zero
 
 theorem delayReflRight_one (γ : Path x y) : delayReflRight 1 γ = γ := by
   ext t
   exact congr_arg γ (qRight_one_right t)
-#align path.delay_refl_right_one Path.delayReflRight_one
 
 /-- This is the function on p. 475 of [serre1951], defining a homotopy from a path `γ` to the
 product path `e ∧ γ`. -/
 def delayReflLeft (θ : I) (γ : Path x y) : Path x y :=
   (delayReflRight θ γ.symm).symm
-#align path.delay_refl_left Path.delayReflLeft
 
 theorem continuous_delayReflLeft : Continuous fun p : I × Path x y => delayReflLeft p.1 p.2 :=
   Path.continuous_symm.comp <|
     continuous_delayReflRight.comp <|
       continuous_fst.prod_mk <| Path.continuous_symm.comp continuous_snd
-#align path.continuous_delay_refl_left Path.continuous_delayReflLeft
 
 theorem delayReflLeft_zero (γ : Path x y) : delayReflLeft 0 γ = (Path.refl x).trans γ := by
   simp only [delayReflLeft, delayReflRight_zero, trans_symm, refl_symm, Path.symm_symm]
-#align path.delay_refl_left_zero Path.delayReflLeft_zero
 
 theorem delayReflLeft_one (γ : Path x y) : delayReflLeft 1 γ = γ := by
   simp only [delayReflLeft, delayReflRight_one, Path.symm_symm]
-#align path.delay_refl_left_one Path.delayReflLeft_one
 
 /-- The loop space at x carries a structure of an H-space. Note that the field `eHmul`
 (resp. `hmulE`) neither implies nor is implied by `Path.Homotopy.reflTrans`

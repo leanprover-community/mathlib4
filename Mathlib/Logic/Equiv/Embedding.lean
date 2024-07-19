@@ -5,8 +5,6 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Logic.Embedding.Set
 
-#align_import logic.equiv.embedding from "leanprover-community/mathlib"@"ee0c179cd3c8a45aa5bffbf1b41d8dbede452865"
-
 /-!
 # Equivalences on embeddings
 
@@ -49,7 +47,6 @@ def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type*} :
   right_inv := fun ⟨⟨f, g⟩, _⟩ => by
     simp only [Prod.mk.inj_iff]
     constructor
-#align equiv.sum_embedding_equiv_prod_embedding_disjoint Equiv.sumEmbeddingEquivProdEmbeddingDisjoint
 
 /-- Embeddings whose range lies within a set are equivalent to embeddings to that set.
 This is `Function.Embedding.codRestrict` as an equiv. -/
@@ -60,7 +57,6 @@ def codRestrict (α : Type*) {β : Type*} (bs : Set β) :
   invFun f := ⟨f.trans (Function.Embedding.subtype _), fun a => (f a).prop⟩
   left_inv x := by ext; rfl
   right_inv x := by ext; rfl
-#align equiv.cod_restrict Equiv.codRestrict
 
 /-- Pairs of embeddings with disjoint ranges are equivalent to a dependent sum of embeddings,
 in which the second embedding cannot take values in the range of the first. -/
@@ -74,7 +70,6 @@ def prodEmbeddingDisjointEquivSigmaEmbeddingRestricted {α β γ : Type*} :
             ext f
             rw [← Set.range_subset_iff, Set.subset_compl_iff_disjoint_right, disjoint_comm]).trans
         (codRestrict _ _)
-#align equiv.prod_embedding_disjoint_equiv_sigma_embedding_restricted Equiv.prodEmbeddingDisjointEquivSigmaEmbeddingRestricted
 
 /-- A combination of the above results, allowing us to turn one embedding over a sum type
 into two dependent embeddings, the second of which avoids any members of the range
@@ -83,7 +78,6 @@ def sumEmbeddingEquivSigmaEmbeddingRestricted {α β γ : Type*} :
     (Sum α β ↪ γ) ≃ Σf : α ↪ γ, β ↪ ↥(Set.range f)ᶜ :=
   Equiv.trans sumEmbeddingEquivProdEmbeddingDisjoint
     prodEmbeddingDisjointEquivSigmaEmbeddingRestricted
-#align equiv.sum_embedding_equiv_sigma_embedding_restricted Equiv.sumEmbeddingEquivSigmaEmbeddingRestricted
 
 /-- Embeddings from a single-member type are equivalent to members of the target type. -/
 def uniqueEmbeddingEquivResult {α β : Type*} [Unique α] :
@@ -96,6 +90,5 @@ def uniqueEmbeddingEquivResult {α β : Type*} [Unique α] :
     congr 1
     exact Subsingleton.elim _ x
   right_inv _ := by simp
-#align equiv.unique_embedding_equiv_result Equiv.uniqueEmbeddingEquivResult
 
 end Equiv

@@ -6,8 +6,6 @@ Authors: Patrick Massot, Scott Morrison, Mario Carneiro
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.Topology.ContinuousFunction.Basic
 
-#align_import topology.category.Top.basic from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
-
 /-!
 # Category instance for topological spaces
 
@@ -28,8 +26,6 @@ universe u
 @[to_additive existing TopCat]
 def TopCat : Type (u + 1) :=
   Bundled TopologicalSpace
-set_option linter.uppercaseLean3 false in
-#align Top TopCat
 
 namespace TopCat
 
@@ -37,8 +33,6 @@ instance bundledHom : BundledHom @ContinuousMap where
   toFun := @ContinuousMap.toFun
   id := @ContinuousMap.id
   comp := @ContinuousMap.comp
-set_option linter.uppercaseLean3 false in
-#align Top.bundled_hom TopCat.bundledHom
 
 deriving instance LargeCategory for TopCat
 
@@ -52,8 +46,6 @@ instance : CoeSort TopCat Type* where
 
 instance topologicalSpaceUnbundled (X : TopCat) : TopologicalSpace X :=
   X.str
-set_option linter.uppercaseLean3 false in
-#align Top.topological_space_unbundled TopCat.topologicalSpaceUnbundled
 
 -- We leave this temporarily as a reminder of the downstream instances #13170
 -- -- Porting note: cannot find a coercion to function otherwise
@@ -69,14 +61,10 @@ instance instMonoidHomClass (X Y : TopCat) : ContinuousMapClass (X ⟶ Y) X Y :=
 
 -- Porting note (#10618): simp can prove this; removed simp
 theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
-set_option linter.uppercaseLean3 false in
-#align Top.id_app TopCat.id_app
 
 -- Porting note (#10618): simp can prove this; removed simp
 theorem comp_app {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g : X → Z) x = g (f x) := rfl
-set_option linter.uppercaseLean3 false in
-#align Top.comp_app TopCat.comp_app
 
 @[simp] theorem coe_id (X : TopCat.{u}) : (𝟙 X : X → X) = id := rfl
 
@@ -95,8 +83,6 @@ lemma inv_hom_id_apply {X Y : TopCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = 
 def of (X : Type u) [TopologicalSpace X] : TopCat :=
   -- Porting note: needed to call inferInstance
   ⟨X, inferInstance⟩
-set_option linter.uppercaseLean3 false in
-#align Top.of TopCat.of
 
 instance topologicalSpace_coe (X : TopCat) : TopologicalSpace X :=
   X.str
@@ -108,8 +94,6 @@ instance topologicalSpace_coe (X : TopCat) : TopologicalSpace X :=
 
 @[simp]
 theorem coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X := rfl
-set_option linter.uppercaseLean3 false in
-#align Top.coe_of TopCat.coe_of
 
 /--
 Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally
@@ -135,8 +119,6 @@ lemma hom_apply {X Y : TopCat} (f : X ⟶ Y) (x : X) : f x = ContinuousMap.toFun
 def discrete : Type u ⥤ TopCat.{u} where
   obj X := ⟨X , ⊥⟩
   map f := @ContinuousMap.mk _ _ ⊥ ⊥ f continuous_bot
-set_option linter.uppercaseLean3 false in
-#align Top.discrete TopCat.discrete
 
 instance {X : Type u} : DiscreteTopology (discrete.obj X) :=
   ⟨rfl⟩
@@ -145,8 +127,6 @@ instance {X : Type u} : DiscreteTopology (discrete.obj X) :=
 def trivial : Type u ⥤ TopCat.{u} where
   obj X := ⟨X, ⊤⟩
   map f := @ContinuousMap.mk _ _ ⊤ ⊤ f continuous_top
-set_option linter.uppercaseLean3 false in
-#align Top.trivial TopCat.trivial
 
 /-- Any homeomorphisms induces an isomorphism in `Top`. -/
 @[simps]
@@ -156,8 +136,6 @@ def isoOfHomeo {X Y : TopCat.{u}} (f : X ≃ₜ Y) : X ≅ Y where
   inv := f.symm.toContinuousMap
   hom_inv_id := by ext; exact f.symm_apply_apply _
   inv_hom_id := by ext; exact f.apply_symm_apply _
-set_option linter.uppercaseLean3 false in
-#align Top.iso_of_homeo TopCat.isoOfHomeo
 
 /-- Any isomorphism in `Top` induces a homeomorphism. -/
 @[simps]
@@ -168,8 +146,6 @@ def homeoOfIso {X Y : TopCat.{u}} (f : X ≅ Y) : X ≃ₜ Y where
   right_inv x := by simp
   continuous_toFun := f.hom.continuous
   continuous_invFun := f.inv.continuous
-set_option linter.uppercaseLean3 false in
-#align Top.homeo_of_iso TopCat.homeoOfIso
 
 @[simp]
 theorem of_isoOfHomeo {X Y : TopCat.{u}} (f : X ≃ₜ Y) : homeoOfIso (isoOfHomeo f) = f := by
@@ -177,8 +153,6 @@ theorem of_isoOfHomeo {X Y : TopCat.{u}} (f : X ≃ₜ Y) : homeoOfIso (isoOfHom
   dsimp [homeoOfIso, isoOfHomeo]
   ext
   rfl
-set_option linter.uppercaseLean3 false in
-#align Top.of_iso_of_homeo TopCat.of_isoOfHomeo
 
 @[simp]
 theorem of_homeoOfIso {X Y : TopCat.{u}} (f : X ≅ Y) : isoOfHomeo (homeoOfIso f) = f := by
@@ -186,15 +160,11 @@ theorem of_homeoOfIso {X Y : TopCat.{u}} (f : X ≅ Y) : isoOfHomeo (homeoOfIso 
   dsimp [homeoOfIso, isoOfHomeo]
   ext
   rfl
-set_option linter.uppercaseLean3 false in
-#align Top.of_homeo_of_iso TopCat.of_homeoOfIso
 
 -- Porting note: simpNF requested partially simped version below
 theorem openEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     OpenEmbedding (f ≫ g) ↔ OpenEmbedding f :=
   (TopCat.homeoOfIso (asIso g)).openEmbedding.of_comp_iff f
-set_option linter.uppercaseLean3 false in
-#align Top.open_embedding_iff_comp_is_iso TopCat.openEmbedding_iff_comp_isIso
 
 @[simp]
 theorem openEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
@@ -210,8 +180,6 @@ theorem openEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z
     convert h.comp (TopCat.homeoOfIso (asIso f).symm).openEmbedding
     exact congrArg _ (IsIso.inv_hom_id_assoc f g).symm
   · exact fun h => h.comp (TopCat.homeoOfIso (asIso f)).openEmbedding
-set_option linter.uppercaseLean3 false in
-#align Top.open_embedding_iff_is_iso_comp TopCat.openEmbedding_iff_isIso_comp
 
 @[simp]
 theorem openEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :

@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.RingTheory.Localization.Module
-import Mathlib.RingTheory.Norm
+import Mathlib.RingTheory.Norm.Basic
 import Mathlib.RingTheory.Discriminant
-
-#align_import ring_theory.localization.norm from "leanprover-community/mathlib"@"2e59a6de168f95d16b16d217b808a36290398c0a"
 
 /-!
 
@@ -67,7 +65,6 @@ theorem Algebra.norm_localization [Module.Free R S] [Module.Finite R S] (a : S) 
   letI := Classical.decEq (Module.Free.ChooseBasisIndex R S)
   rw [Algebra.norm_eq_matrix_det (b.localizationLocalization Rₘ M Sₘ),
     Algebra.norm_eq_matrix_det b, RingHom.map_det, ← Algebra.map_leftMulMatrix_localization]
-#align algebra.norm_localization Algebra.norm_localization
 
 variable {M} in
 /-- The norm of `a : S` in `R` can be computed in `Sₘ`. -/
