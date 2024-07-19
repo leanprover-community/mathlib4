@@ -21,7 +21,7 @@ attribute [local instance] ConcreteCategory.instFunLike
 
 variable (X : LightCondSet.{u})
 
-/-- Auxiliary defiinition to define the topology on `X(*)` for a light condensed set `X`. -/
+/-- Auxiliary definition to define the topology on `X(*)` for a light condensed set `X`. -/
 private def _root_.LightProfinite.const (S : LightProfinite.{u}) (s : S) :
     LightProfinite.of PUnit.{u+1} ⟶ S :=
   ContinuousMap.const _ s
