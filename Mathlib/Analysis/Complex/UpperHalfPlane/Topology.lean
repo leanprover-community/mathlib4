@@ -11,8 +11,6 @@ import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Topology.Homotopy.Contractible
 import Mathlib.Topology.PartialHomeomorph
 
-#align_import analysis.complex.upper_half_plane.topology from "leanprover-community/mathlib"@"57f9349f2fe19d2de7207e99b0341808d977cdcf"
-
 /-!
 # Topology on the upper half plane
 
@@ -34,23 +32,18 @@ instance : TopologicalSpace ℍ :=
 
 theorem openEmbedding_coe : OpenEmbedding ((↑) : ℍ → ℂ) :=
   IsOpen.openEmbedding_subtype_val <| isOpen_lt continuous_const Complex.continuous_im
-#align upper_half_plane.open_embedding_coe UpperHalfPlane.openEmbedding_coe
 
 theorem embedding_coe : Embedding ((↑) : ℍ → ℂ) :=
   embedding_subtype_val
-#align upper_half_plane.embedding_coe UpperHalfPlane.embedding_coe
 
 theorem continuous_coe : Continuous ((↑) : ℍ → ℂ) :=
   embedding_coe.continuous
-#align upper_half_plane.continuous_coe UpperHalfPlane.continuous_coe
 
 theorem continuous_re : Continuous re :=
   Complex.continuous_re.comp continuous_coe
-#align upper_half_plane.continuous_re UpperHalfPlane.continuous_re
 
 theorem continuous_im : Continuous im :=
   Complex.continuous_im.comp continuous_coe
-#align upper_half_plane.continuous_im UpperHalfPlane.continuous_im
 
 instance : SecondCountableTopology ℍ :=
   TopologicalSpace.Subtype.secondCountableTopology _

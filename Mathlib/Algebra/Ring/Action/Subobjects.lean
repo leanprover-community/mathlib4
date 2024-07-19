@@ -6,8 +6,6 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Ring.Action.Basic
 
-#align_import algebra.group_ring_action.subobjects from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
-
 /-!
 # Instances of `MulSemiringAction` for subobjects
 
@@ -27,10 +25,8 @@ variable [Monoid M] [Group G] [Semiring R]
 instance Submonoid.mulSemiringAction [MulSemiringAction M R] (H : Submonoid M) :
     MulSemiringAction H R :=
   { inferInstanceAs (DistribMulAction H R), inferInstanceAs (MulDistribMulAction H R) with }
-#align submonoid.mul_semiring_action Submonoid.mulSemiringAction
 
 /-- A stronger version of `Subgroup.distribMulAction`. -/
 instance Subgroup.mulSemiringAction [MulSemiringAction G R] (H : Subgroup G) :
     MulSemiringAction H R :=
   H.toSubmonoid.mulSemiringAction
-#align subgroup.mul_semiring_action Subgroup.mulSemiringAction
