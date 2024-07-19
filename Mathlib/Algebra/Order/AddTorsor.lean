@@ -3,8 +3,8 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Data.Set.Pointwise.SMul
-import Mathlib.Order.WellFoundedSet
+import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
 
 /-!
 # Ordered scalar multiplication and vector addition
@@ -76,9 +76,18 @@ instance [OrderedCommMonoid G] : IsOrderedSMul G G where
   smul_le_smul_left _ _ := mul_le_mul_left'
   smul_le_smul_right _ _ := mul_le_mul_right'
 
-theorem vadd_le_vadd' [Preorder G] [Preorder P] [VAdd G P] [IsOrderedVAdd G P] {a b : G} {c d : P}
-    (hab : a ≤ b) (hcd : c ≤ d) : a +ᵥ c ≤ b +ᵥ d :=
-  (IsOrderedVAdd.vadd_le_vadd_left _ _ hcd _).trans (IsOrderedVAdd.vadd_le_vadd_right _ _ hab _)
+@[to_additive]
+theorem IsOrderedSMul.smul_le_smul [Preorder G] [Preorder P] [SMul G P] [IsOrderedSMul G P]
+    {a b : G} {c d : P} (hab : a ≤ b) (hcd : c ≤ d) : a • c ≤ b • d :=
+  (IsOrderedSMul.smul_le_smul_left _ _ hcd _).trans (IsOrderedSMul.smul_le_smul_right _ _ hab _)
+
+/-- The vector sum of two monotone functions is monotone. -/
+@[to_additive]
+theorem Monotone.SMul {γ : Type*} [Preorder G] [Preorder P] [Preorder γ] [SMul G P]
+    [IsOrderedSMul G P] {f : γ → G} {g : γ → P} (hf : Monotone f) (hg : Monotone g) :
+    Monotone fun x => f x • g x :=
+  fun _ _ hab => (IsOrderedSMul.smul_le_smul_left _ _ (hg hab) _).trans
+    (IsOrderedSMul.smul_le_smul_right _ _ (hf hab) _)
 
 /-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
 class IsCancelVAdd (G P : Type*) [VAdd G P] : Prop where
@@ -122,6 +131,11 @@ instance [OrderedCancelCommMonoid G] : IsOrderedCancelSMul G G where
   le_of_smul_le_smul_left _ _ _ := le_of_mul_le_mul_left'
   le_of_smul_le_smul_right _ _ _ := le_of_mul_le_mul_right'
 
+@[to_additive]
+instance (priority := 200) [LE G] [LE P] [SMul G P] [IsOrderedCancelSMul G P] :
+    ContravariantClass G P (· • ·) (· ≤ ·) :=
+  ⟨IsOrderedCancelSMul.le_of_smul_le_smul_left⟩
+
 namespace SMul
 
 @[to_additive]
@@ -146,8 +160,3 @@ theorem smul_lt_smul_of_lt_of_le [Preorder G] [Preorder P] [SMul G P] [IsOrdered
   simp_all only [not_true_eq_false, and_false]
 
 end SMul
-
-@[to_additive]
-instance (priority := 200) [LE G] [LE P] [SMul G P] [IsOrderedCancelSMul G P] :
-    ContravariantClass G P (· • ·) (· ≤ ·) :=
-  ⟨IsOrderedCancelSMul.le_of_smul_le_smul_left⟩
