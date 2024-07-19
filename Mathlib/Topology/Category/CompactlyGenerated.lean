@@ -110,12 +110,12 @@ def compactlyGeneratedToTop : CompactlyGenerated.{u, w} ⥤ TopCat.{w} :=
   inducedFunctor _
 
 /-- `compactlyGeneratedToTop` is fully faithful. -/
-def fullyFaithulCompactlyGeneratedToTop : compactlyGeneratedToTop.{u, w}.FullyFaithful :=
+def fullyFaithfulCompactlyGeneratedToTop : compactlyGeneratedToTop.{u, w}.FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
-instance : compactlyGeneratedToTop.{u, w}.Full := fullyFaithulCompactlyGeneratedToTop.full
+instance : compactlyGeneratedToTop.{u, w}.Full := fullyFaithfulCompactlyGeneratedToTop.full
 
-instance : compactlyGeneratedToTop.{u, w}.Faithful := fullyFaithulCompactlyGeneratedToTop.faithful
+instance : compactlyGeneratedToTop.{u, w}.Faithful := fullyFaithfulCompactlyGeneratedToTop.faithful
 
 /-- Construct an isomorphism from a homeomorphism. -/
 @[simps hom inv]
