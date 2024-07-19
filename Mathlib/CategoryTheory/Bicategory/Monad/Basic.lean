@@ -6,7 +6,6 @@ Authors: Yuma Mizuno
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.FunctorBicategory
 import Mathlib.Tactic.Widget.StringDiagram
-import ProofWidgets.Component.Panel.SelectionPanel
 import ProofWidgets.Component.Panel.GoalTypePanel
 
 /-!
