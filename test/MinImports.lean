@@ -16,6 +16,11 @@ import Mathlib.Tactic.FunProp
 -- If `#min_imports` were parsing just the syntax, the imports would be `Mathlib.Algebra.Ring.Defs`.
 instance : Semiring Nat := inferInstance
 
+/-- info: import Mathlib.Algebra.Ring.Nat -/
+#guard_msgs in
+#min_imports in
+instance withName : Semiring Nat := inferInstance
+
 /--
 info: ℤ : Type
 ---
