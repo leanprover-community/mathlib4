@@ -96,7 +96,7 @@ theorem canonicalEmbedding_eq_basisMatrix_mulVec :
 theorem inverse_basisMatrix_mulVec_eq_repr :
   (basisMatrix K)⁻¹.mulVec (fun j => canonicalEmbedding K (algebraMap (𝓞 K) K α) j) i =
     ((integralBasis K).reindex (equivReindex K).symm).repr α i := by
-    rw [inv_mulVec_eq_vec (canonicalEmbedding_eq_basisMatrix_mulVec K)]
+  rw [inv_mulVec_eq_vec (canonicalEmbedding_eq_basisMatrix_mulVec K)]
 
 /-- `basisMatrixInvNormMulRank` is defined as the product of the maximum absolute
   value of the entries of the inverse of the matrix `basisMatrix` and  `finrank ℚ K`. -/
@@ -272,7 +272,7 @@ theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
 def c₁ := finrank ℚ K * c₂ K
 
 theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
-  ((c₁ K * q * A)^((p : ℝ) / (q - p))) := by
+    ((c₁ K * q * A)^((p : ℝ) / (q - p))) := by
   let h := finrank ℚ K
   intros l
 
@@ -325,10 +325,10 @@ theorem exists_ne_zero_int_vec_house_le :
 
   have h0ph : 0 < p * h := by rw [mul_pos_iff]; constructor; exact ⟨h0p, finrank_pos⟩
 
-  have hfinp : Fintype.card (α × (K →+* ℂ)) = p * h :=
-    by rw [Fintype.card_prod, cardα, Embeddings.card]
-  have hfinq : Fintype.card (β × (K →+* ℂ)) = q * h :=
-    by rw [Fintype.card_prod, cardβ, Embeddings.card]
+  have hfinp : Fintype.card (α × (K →+* ℂ)) = p * h := by
+    rw [Fintype.card_prod, cardα, Embeddings.card]
+  have hfinq : Fintype.card (β × (K →+* ℂ)) = q * h := by
+    rw [Fintype.card_prod, cardβ, Embeddings.card]
 
   have ⟨x, hxl, hmulvec0, hxbound⟩ :=
     Int.Matrix.exists_ne_zero_int_vec_norm_le (asiegel K a)
