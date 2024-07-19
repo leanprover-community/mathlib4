@@ -32,6 +32,7 @@ noncomputable abbrev ringKrullDim (R : Type*) [CommRing R] : WithBot (WithTop ‚Ñ
 
 namespace ringKrullDim
 
+@[nontriviality]
 lemma eq_bot_of_subsingleton (R : Type*) [CommRing R] [Subsingleton R] :
     ringKrullDim R = ‚ä• :=
   krullDim_eq_bot_of_isEmpty
@@ -95,6 +96,7 @@ end DimensionZero
 
 section Field
 
+@[simp]
 theorem eq_zero_of_field (F : Type*) [Field F] : ringKrullDim F = 0 :=
   krullDim_eq_zero_of_unique
 
