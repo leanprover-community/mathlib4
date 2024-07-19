@@ -23,9 +23,6 @@ These will be deleted soon so will not significantly delay deleting otherwise em
 
 namespace Classical
 
-#align classical.inhabited_of_nonempty Classical.inhabited_of_nonempty
-#align classical.inhabited_of_exists Classical.inhabited_of_exists
-
 attribute [local instance] propDecidable
 attribute [local instance] decidableInhabited
 
@@ -40,7 +37,6 @@ theorem cases_on (a : Prop) {p : Prop → Prop} (h1 : p True) (h2 : p False) : p
   @cases_true_false p h1 h2 a
 
 theorem cases {p : Prop → Prop} (h1 : p True) (h2 : p False) (a) : p a := cases_on a h1 h2
-#align classical.cases Classical.cases
 
 alias by_cases := byCases
 alias by_contradiction := byContradiction

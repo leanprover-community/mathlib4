@@ -83,8 +83,6 @@ variable [HasWeakSheafify J B]
 of `X.val ⋙ F`. -/
 noncomputable abbrev Sheaf.composeAndSheafify : Sheaf J A ⥤ Sheaf J B :=
   sheafToPresheaf J A ⋙ (whiskeringRight _ _ _).obj F ⋙ presheafToSheaf J B
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.compose_and_sheafify CategoryTheory.Sheaf.composeAndSheafify
 
 variable [HasWeakSheafify J A]
 
@@ -158,7 +156,7 @@ left adjoints to the forget functors `sheafToPresheaf`. -/
 def sheafComposeNatTrans :
     (whiskeringRight Cᵒᵖ A B).obj F ⋙ G₂ ⟶ G₁ ⋙ sheafCompose J F where
   app P := (adj₂.homEquiv _ _).symm (whiskerRight (adj₁.unit.app P) F)
-  naturality {P Q} f:= by
+  naturality {P Q} f := by
     dsimp
     erw [← adj₂.homEquiv_naturality_left_symm,
       ← adj₂.homEquiv_naturality_right_symm]
