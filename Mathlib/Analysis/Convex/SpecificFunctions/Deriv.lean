@@ -9,8 +9,6 @@ import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 import Mathlib.Analysis.Convex.Deriv
 
-#align_import analysis.convex.specific_functions.deriv from "leanprover-community/mathlib"@"a16665637b378379689c566204817ae792ac8b39"
-
 /-!
 # Collection of convex functions
 
@@ -42,7 +40,6 @@ theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0)
   rw [deriv_pow', interior_Ici]
   exact fun x (hx : 0 < x) y _ hxy => mul_lt_mul_of_pos_left
     (pow_lt_pow_left hxy hx.le <| Nat.sub_ne_zero_of_lt hn) (by positivity)
-#align strict_convex_on_pow strictConvexOn_pow
 
 /-- `x^n`, `n : ℕ` is strictly convex on the whole real line whenever `n ≠ 0` is even. -/
 theorem Even.strictConvexOn_pow {n : ℕ} (hn : Even n) (h : n ≠ 0) :
@@ -52,7 +49,6 @@ theorem Even.strictConvexOn_pow {n : ℕ} (hn : Even n) (h : n ≠ 0) :
   replace h := Nat.pos_of_ne_zero h
   exact StrictMono.const_mul (Odd.strictMono_pow <| Nat.Even.sub_odd h hn <| Nat.odd_iff.2 rfl)
     (Nat.cast_pos.2 h)
-#align even.strict_convex_on_pow Even.strictConvexOn_pow
 
 theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*} [LinearOrderedCommRing β] {f : α → β}
     [DecidablePred fun x => f x ≤ 0] {s : Finset α} (h0 : Even (s.filter fun x => f x ≤ 0).card) :
@@ -67,7 +63,6 @@ theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*} [LinearOrderedCom
     _ = _ := by
       rw [Finset.prod_mul_distrib, Finset.prod_ite, Finset.prod_const_one, mul_one,
         Finset.prod_const, neg_one_pow_eq_pow_mod_two, Nat.even_iff.1 h0, pow_zero, one_mul]
-#align finset.prod_nonneg_of_card_nonpos_even Finset.prod_nonneg_of_card_nonpos_even
 
 theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) :
     0 ≤ ∏ k ∈ Finset.range n, (m - k) := by
@@ -83,7 +78,6 @@ theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) :
     convert mul_nonneg_of_nonpos_of_nonpos (sub_nonpos_of_le hmk) _
     convert sub_nonpos_of_le this
   · exact mul_nonneg (sub_nonneg_of_le hmk.le) (sub_nonneg_of_le hmk)
-#align int_prod_range_nonneg int_prod_range_nonneg
 
 theorem int_prod_range_pos {m : ℤ} {n : ℕ} (hn : Even n) (hm : m ∉ Ico (0 : ℤ) n) :
     0 < ∏ k ∈ Finset.range n, (m - k) := by
@@ -92,7 +86,6 @@ theorem int_prod_range_pos {m : ℤ} {n : ℕ} (hn : Even n) (hm : m ∉ Ico (0 
   obtain ⟨a, ha, h⟩ := h
   rw [sub_eq_zero.1 h]
   exact ⟨Int.ofNat_zero_le _, Int.ofNat_lt.2 <| Finset.mem_range.1 ha⟩
-#align int_prod_range_pos int_prod_range_pos
 
 /-- `x^m`, `m : ℤ` is convex on `(0, +∞)` for all `m` except `0` and `1`. -/
 theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
@@ -108,7 +101,6 @@ theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
   rw [← Finset.coe_Ico] at hm
   norm_cast at hm
   fin_cases hm <;> simp_all
-#align strict_convex_on_zpow strictConvexOn_zpow
 
 section SqrtMulLog
 
@@ -117,7 +109,6 @@ theorem hasDerivAt_sqrt_mul_log {x : ℝ} (hx : x ≠ 0) :
   convert (hasDerivAt_sqrt hx).mul (hasDerivAt_log hx) using 1
   rw [add_div, div_mul_cancel_left₀ two_ne_zero, ← div_eq_mul_inv, sqrt_div_self', add_comm,
     one_div, one_div, ← div_eq_inv_mul]
-#align has_deriv_at_sqrt_mul_log hasDerivAt_sqrt_mul_log
 
 theorem deriv_sqrt_mul_log (x : ℝ) :
     deriv (fun x => √x * log x) x = (2 + log x) / (2 * √x) := by
@@ -127,12 +118,10 @@ theorem deriv_sqrt_mul_log (x : ℝ) :
     refine HasDerivWithinAt.deriv_eq_zero ?_ (uniqueDiffOn_Iic 0 x hx)
     refine (hasDerivWithinAt_const x _ 0).congr_of_mem (fun x hx => ?_) hx
     rw [sqrt_eq_zero_of_nonpos hx, zero_mul]
-#align deriv_sqrt_mul_log deriv_sqrt_mul_log
 
 theorem deriv_sqrt_mul_log' :
     (deriv fun x => √x * log x) = fun x => (2 + log x) / (2 * √x) :=
   funext deriv_sqrt_mul_log
-#align deriv_sqrt_mul_log' deriv_sqrt_mul_log'
 
 theorem deriv2_sqrt_mul_log (x : ℝ) :
     deriv^[2] (fun x => √x * log x) x = -log x / (4 * √x ^ 3) := by
@@ -149,7 +138,6 @@ theorem deriv2_sqrt_mul_log (x : ℝ) :
     generalize √x = sqx at h₀ -- else field_simp rewrites sqrt x * sqrt x back to x
     field_simp
     ring
-#align deriv2_sqrt_mul_log deriv2_sqrt_mul_log
 
 theorem strictConcaveOn_sqrt_mul_log_Ioi :
     StrictConcaveOn ℝ (Set.Ioi 1) fun x => √x * log x := by
@@ -159,7 +147,6 @@ theorem strictConcaveOn_sqrt_mul_log_Ioi :
   · rw [deriv2_sqrt_mul_log x]
     exact div_neg_of_neg_of_pos (neg_neg_of_pos (log_pos hx))
       (mul_pos four_pos (pow_pos (sqrt_pos.mpr (zero_lt_one.trans hx)) 3))
-#align strict_concave_on_sqrt_mul_log_Ioi strictConcaveOn_sqrt_mul_log_Ioi
 
 end SqrtMulLog
 
@@ -169,10 +156,8 @@ theorem strictConcaveOn_sin_Icc : StrictConcaveOn ℝ (Icc 0 π) sin := by
   apply strictConcaveOn_of_deriv2_neg (convex_Icc _ _) continuousOn_sin fun x hx => ?_
   rw [interior_Icc] at hx
   simp [sin_pos_of_mem_Ioo hx]
-#align strict_concave_on_sin_Icc strictConcaveOn_sin_Icc
 
 theorem strictConcaveOn_cos_Icc : StrictConcaveOn ℝ (Icc (-(π / 2)) (π / 2)) cos := by
   apply strictConcaveOn_of_deriv2_neg (convex_Icc _ _) continuousOn_cos fun x hx => ?_
   rw [interior_Icc] at hx
   simp [cos_pos_of_mem_Ioo hx]
-#align strict_concave_on_cos_Icc strictConcaveOn_cos_Icc

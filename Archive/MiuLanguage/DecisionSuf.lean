@@ -6,8 +6,6 @@ Authors: Gihan Marasingha
 import Archive.MiuLanguage.DecisionNec
 import Mathlib.Tactic.Linarith
 
-#align_import miu_language.decision_suf from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
-
 /-!
 # Decision procedure - sufficient condition and decidability
 
@@ -94,8 +92,6 @@ theorem der_of_der_append_replicate_U_even {z : Miustr} {m : ℕ}
     rw [← append_nil ↑(z ++ ↑(replicate (k * 2) U))]
     apply Derivable.r4
     rwa [append_nil, append_assoc]
-set_option linter.uppercaseLean3 false in
-#align miu.der_of_der_append_replicate_U_even Miu.der_of_der_append_replicate_U_even
 
 /-!
 In fine-tuning my application of `simp`, I issued the following commend to determine which lemmas
@@ -125,8 +121,6 @@ theorem der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (
     apply Derivable.r3
     change Derivable (↑(M :: replicate (c + 3 * a) I) ++ ↑(replicate 3 I) ++ xs)
     rwa [cons_append, ← replicate_add, add_assoc]
-set_option linter.uppercaseLean3 false in
-#align miu.der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append Miu.der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append
 
 /-!
 ### Arithmetic
@@ -144,7 +138,6 @@ theorem add_mod2 (a : ℕ) : ∃ t, a + a % 2 = t * 2 := by
   simp only [mul_comm _ 2] -- write `t*2` as `2*t`
   apply dvd_of_mod_eq_zero -- it suffices to prove `(a + a % 2) % 2 = 0`
   rw [add_mod, mod_mod, ← two_mul, mul_mod_right]
-#align miu.add_mod2 Miu.add_mod2
 
 private theorem le_pow2_and_pow2_eq_mod3' (c : ℕ) (x : ℕ) (h : c = 1 ∨ c = 2) :
     ∃ m : ℕ, c + 3 * x ≤ 2 ^ m ∧ 2 ^ m % 3 = c % 3 := by
@@ -170,7 +163,6 @@ theorem le_pow2_and_pow2_eq_mod3 (a : ℕ) (h : a % 3 = 1 ∨ a % 3 = 2) :
   constructor
   · convert hm.1; exact (mod_add_div a 3).symm
   · rw [hm.2, mod_mod _ 3]
-#align miu.le_pow2_and_pow2_eq_mod3 Miu.le_pow2_and_pow2_eq_mod3
 
 end Arithmetic
 
@@ -178,7 +170,6 @@ theorem replicate_pow_minus_append {m : ℕ} :
     M :: replicate (2 ^ m - 1) I ++ [I] = M :: replicate (2 ^ m) I := by
   change M :: replicate (2 ^ m - 1) I ++ replicate 1 I = M :: replicate (2 ^ m) I
   rw [cons_append, ← replicate_add, tsub_add_cancel_of_le (one_le_pow' m 1)]
-#align miu.replicate_pow_minus_append Miu.replicate_pow_minus_append
 
 /--
 `der_replicate_I_of_mod3` states that `M::y` is `Derivable` if `y` is any `Miustr` consisiting just
@@ -210,8 +201,6 @@ theorem der_replicate_I_of_mod3 (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) :
   cases' add_mod2 ((2 ^ m - c) / 3) with t ht
   rw [ht] at hw₃
   exact der_of_der_append_replicate_U_even hw₃
-set_option linter.uppercaseLean3 false in
-#align miu.der_replicate_I_of_mod3 Miu.der_replicate_I_of_mod3
 
 example (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) : Derivable (M :: replicate c I) := by
   -- From `der_cons_replicate`, we can derive the `Miustr` `M::w` described in the introduction.
@@ -268,8 +257,6 @@ theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count 
       · rw [mem_cons, not_or] at hm; exact hm.2
     · -- case `x = U` gives a contradiction.
       exfalso; simp only [count, countP_cons_of_pos (· == U) _ (rfl : U == U)] at hu
-set_option linter.uppercaseLean3 false in
-#align miu.count_I_eq_length_of_count_U_zero_and_neg_mem Miu.count_I_eq_length_of_count_U_zero_and_neg_mem
 
 /-- `base_case_suf` is the base case of the sufficiency result.
 -/
@@ -286,7 +273,6 @@ theorem base_case_suf (en : Miustr) (h : Decstr en) (hu : count U en = 0) : Deri
     refine And.intro ?_ hi
     apply replicate_count_eq_of_count_eq_length
     exact count_I_eq_length_of_count_U_zero_and_neg_mem hu nmtail
-#align miu.base_case_suf Miu.base_case_suf
 
 /-!
 Before continuing to the proof of the induction step, we need other auxiliary results that
@@ -300,14 +286,10 @@ theorem mem_of_count_U_eq_succ {xs : Miustr} {k : ℕ} (h : count U xs = succ k)
   · rw [mem_cons]
     cases z <;> try exact Or.inl rfl
     all_goals right; simp only [count_cons, if_false] at h; exact hzs h
-set_option linter.uppercaseLean3 false in
-#align miu.mem_of_count_U_eq_succ Miu.mem_of_count_U_eq_succ
 
 theorem eq_append_cons_U_of_count_U_pos {k : ℕ} {zs : Miustr} (h : count U zs = succ k) :
     ∃ as bs : Miustr, zs = as ++ ↑(U :: bs) :=
   append_of_mem (mem_of_count_U_eq_succ h)
-set_option linter.uppercaseLean3 false in
-#align miu.eq_append_cons_U_of_count_U_pos Miu.eq_append_cons_U_of_count_U_pos
 
 /-- `ind_hyp_suf` is the inductive step of the sufficiency result.
 -/
@@ -335,7 +317,6 @@ theorem ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : D
   · rw [count_append, count_append]; rw [← cons_append, count_append] at hic
     simp only [count_cons_self, count_nil, count_cons, if_false] at hic ⊢
     rw [add_right_comm, add_mod_right]; exact hic
-#align miu.ind_hyp_suf Miu.ind_hyp_suf
 
 /-- `der_of_decstr` states that `Derivable en` follows from `Decstr en`.
 -/
@@ -352,7 +333,6 @@ theorem der_of_decstr {en : Miustr} (h : Decstr en) : Derivable en := by
     have h₂ : Derivable (↑(M :: as) ++ ↑[I, I, I] ++ bs) := hk hdecab habuc
     rw [hyab]
     exact Derivable.r3 h₂
-#align miu.der_of_decstr Miu.der_of_decstr
 
 /-!
 ### Decidability of `Derivable`

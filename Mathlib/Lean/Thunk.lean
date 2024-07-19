@@ -12,8 +12,6 @@ import Batteries.Data.Thunk
 
 namespace Thunk
 
-#align thunk.mk Thunk.mk
-
 @[simp] theorem get_pure {α} (x : α) : (Thunk.pure x).get = x := rfl
 @[simp] theorem get_mk {α} (f : Unit → α) : (Thunk.mk f).get = f () := rfl
 

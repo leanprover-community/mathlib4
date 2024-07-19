@@ -7,8 +7,6 @@ import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 import Mathlib.Tactic.IntervalCases
 
-#align_import geometry.euclidean.triangle from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
-
 /-!
 # Triangles
 
@@ -65,7 +63,6 @@ theorem norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_ang
     cos_angle_mul_norm_mul_norm, ← real_inner_self_eq_norm_mul_norm, ←
     real_inner_self_eq_norm_mul_norm, ← real_inner_self_eq_norm_mul_norm, real_inner_sub_sub_self,
     sub_add_eq_add_sub]
-#align inner_product_geometry.norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_angle InnerProductGeometry.norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_angle
 
 /-- **Pons asinorum**, vector angle form. -/
 theorem angle_sub_eq_angle_sub_rev_of_norm_eq {x y : V} (h : ‖x‖ = ‖y‖) :
@@ -73,7 +70,6 @@ theorem angle_sub_eq_angle_sub_rev_of_norm_eq {x y : V} (h : ‖x‖ = ‖y‖) 
   refine Real.injOn_cos ⟨angle_nonneg _ _, angle_le_pi _ _⟩ ⟨angle_nonneg _ _, angle_le_pi _ _⟩ ?_
   rw [cos_angle, cos_angle, h, ← neg_sub, norm_neg, neg_sub, inner_sub_right, inner_sub_right,
     real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm, h, real_inner_comm x y]
-#align inner_product_geometry.angle_sub_eq_angle_sub_rev_of_norm_eq InnerProductGeometry.angle_sub_eq_angle_sub_rev_of_norm_eq
 
 /-- **Converse of pons asinorum**, vector angle form. -/
 theorem norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi {x y : V}
@@ -102,7 +98,6 @@ theorem norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi {x y : V}
         replace h := (mul_left_cancel₀ (sub_ne_zero_of_ne hyx) h).symm
         rw [real_inner_div_norm_mul_norm_eq_neg_one_iff, ← angle_eq_pi_iff] at h
         exact hpi h
-#align inner_product_geometry.norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi InnerProductGeometry.norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi
 
 /-- The cosine of the sum of two angles in a possibly degenerate
 triangle (where two given sides are nonzero), vector angle form. -/
@@ -141,7 +136,6 @@ theorem cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle {x y : V} (hx : x ≠ 0
       real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two]
     field_simp [hxn, hyn, hxyn]
     ring
-#align inner_product_geometry.cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle InnerProductGeometry.cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle
 
 /-- The sine of the sum of two angles in a possibly degenerate
 triangle (where two given sides are nonzero), vector angle form. -/
@@ -182,7 +176,6 @@ theorem sin_angle_sub_add_angle_sub_rev_eq_sin_angle {x y : V} (hx : x ≠ 0) (h
       real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two]
     field_simp [hxn, hyn, hxyn]
     ring
-#align inner_product_geometry.sin_angle_sub_add_angle_sub_rev_eq_sin_angle InnerProductGeometry.sin_angle_sub_add_angle_sub_rev_eq_sin_angle
 
 /-- The cosine of the sum of the angles of a possibly degenerate
 triangle (where two given sides are nonzero), vector angle form. -/
@@ -191,7 +184,6 @@ theorem cos_angle_add_angle_sub_add_angle_sub_eq_neg_one {x y : V} (hx : x ≠ 0
   rw [add_assoc, Real.cos_add, cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle hx hy,
     sin_angle_sub_add_angle_sub_rev_eq_sin_angle hx hy, mul_neg, ← neg_add', add_comm, ← sq, ← sq,
     Real.sin_sq_add_cos_sq]
-#align inner_product_geometry.cos_angle_add_angle_sub_add_angle_sub_eq_neg_one InnerProductGeometry.cos_angle_add_angle_sub_add_angle_sub_eq_neg_one
 
 /-- The sine of the sum of the angles of a possibly degenerate
 triangle (where two given sides are nonzero), vector angle form. -/
@@ -200,7 +192,6 @@ theorem sin_angle_add_angle_sub_add_angle_sub_eq_zero {x y : V} (hx : x ≠ 0) (
   rw [add_assoc, Real.sin_add, cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle hx hy,
     sin_angle_sub_add_angle_sub_rev_eq_sin_angle hx hy]
   ring
-#align inner_product_geometry.sin_angle_add_angle_sub_add_angle_sub_eq_zero InnerProductGeometry.sin_angle_add_angle_sub_add_angle_sub_eq_zero
 
 /-- The sum of the angles of a possibly degenerate triangle (where the
 two given sides are nonzero), vector angle form. -/
@@ -239,7 +230,6 @@ theorem angle_add_angle_sub_add_angle_sub_eq_pi {x y : V} (hx : x ≠ 0) (hy : y
   · simp [hn] at hcos
   · norm_num [hn]
   · simp [hn] at hcos
-#align inner_product_geometry.angle_add_angle_sub_add_angle_sub_eq_pi InnerProductGeometry.angle_add_angle_sub_add_angle_sub_eq_pi
 
 end InnerProductGeometry
 
@@ -270,10 +260,8 @@ theorem dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle (
     (p1 -ᵥ p2 : V) (p3 -ᵥ p2 : V)
   · exact (vsub_sub_vsub_cancel_right p1 p3 p2).symm
   · exact (vsub_sub_vsub_cancel_right p1 p3 p2).symm
-#align euclidean_geometry.dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle EuclideanGeometry.dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle
 
 alias law_cos := dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle
-#align euclidean_geometry.law_cos EuclideanGeometry.law_cos
 
 /-- **Isosceles Triangle Theorem**: Pons asinorum, angle-at-point form. -/
 theorem angle_eq_angle_of_dist_eq {p1 p2 p3 : P} (h : dist p1 p2 = dist p1 p3) :
@@ -283,7 +271,6 @@ theorem angle_eq_angle_of_dist_eq {p1 p2 p3 : P} (h : dist p1 p2 = dist p1 p3) :
   convert angle_sub_eq_angle_sub_rev_of_norm_eq h
   · exact (vsub_sub_vsub_cancel_left p3 p2 p1).symm
   · exact (vsub_sub_vsub_cancel_left p2 p3 p1).symm
-#align euclidean_geometry.angle_eq_angle_of_dist_eq EuclideanGeometry.angle_eq_angle_of_dist_eq
 
 /-- Converse of pons asinorum, angle-at-point form. -/
 theorem dist_eq_of_angle_eq_angle_of_angle_ne_pi {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = ∠ p1 p3 p2)
@@ -293,7 +280,6 @@ theorem dist_eq_of_angle_eq_angle_of_angle_ne_pi {p1 p2 p3 : P} (h : ∠ p1 p2 p
   rw [← angle_neg_neg, neg_vsub_eq_vsub_rev, neg_vsub_eq_vsub_rev] at hpi
   rw [← vsub_sub_vsub_cancel_left p3 p2 p1, ← vsub_sub_vsub_cancel_left p2 p3 p1] at h
   exact norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi h hpi
-#align euclidean_geometry.dist_eq_of_angle_eq_angle_of_angle_ne_pi EuclideanGeometry.dist_eq_of_angle_eq_angle_of_angle_ne_pi
 
 /-- The **sum of the angles of a triangle** (possibly degenerate, where the
 given vertex is distinct from the others), angle-at-point. -/
@@ -306,7 +292,6 @@ theorem angle_add_angle_add_angle_eq_pi {p1 p2 p3 : P} (h2 : p2 ≠ p1) (h3 : p3
     vsub_sub_vsub_cancel_right p3 p2 p1, ← vsub_sub_vsub_cancel_right p2 p3 p1]
   exact angle_add_angle_sub_add_angle_sub_eq_pi (fun he => h3 (vsub_eq_zero_iff_eq.1 he)) fun he =>
     h2 (vsub_eq_zero_iff_eq.1 he)
-#align euclidean_geometry.angle_add_angle_add_angle_eq_pi EuclideanGeometry.angle_add_angle_add_angle_eq_pi
 
 /-- The **sum of the angles of a triangle** (possibly degenerate, where the triangle is a line),
 oriented angles at point. -/
@@ -316,7 +301,6 @@ theorem oangle_add_oangle_add_oangle_eq_pi [Module.Oriented ℝ V (Fin 2)]
   simpa only [neg_vsub_eq_vsub_rev] using
     positiveOrientation.oangle_add_cyc3_neg_left (vsub_ne_zero.mpr h21) (vsub_ne_zero.mpr h32)
       (vsub_ne_zero.mpr h13)
-#align euclidean_geometry.oangle_add_oangle_add_oangle_eq_pi EuclideanGeometry.oangle_add_oangle_add_oangle_eq_pi
 
 /-- **Stewart's Theorem**. -/
 theorem dist_sq_mul_dist_add_dist_sq_mul_dist (a b c p : P) (h : ∠ b p c = π) :
@@ -326,7 +310,6 @@ theorem dist_sq_mul_dist_add_dist_sq_mul_dist (a b c p : P) (h : ∠ b p c = π)
     eq_sub_of_add_eq (angle_add_angle_eq_pi_of_angle_eq_pi a h), Real.cos_pi_sub,
     dist_eq_add_dist_of_angle_eq_pi h]
   ring
-#align euclidean_geometry.dist_sq_mul_dist_add_dist_sq_mul_dist EuclideanGeometry.dist_sq_mul_dist_add_dist_sq_mul_dist
 
 /-- **Apollonius's Theorem**. -/
 theorem dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq (a b c : P) :
@@ -341,7 +324,6 @@ theorem dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq (a b c 
       dist a b ^ 2 + dist a c ^ 2 = 2 / dist b c * (dist a b ^ 2 *
         ((2 : ℝ)⁻¹ * dist b c) + dist a c ^ 2 * (2⁻¹ * dist b c)) := by field_simp; ring
       _ = 2 * (dist a (midpoint ℝ b c) ^ 2 + (dist b c / 2) ^ 2) := by rw [hm]; field_simp; ring
-#align euclidean_geometry.dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq EuclideanGeometry.dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq
 
 theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠ a' b' c' = ∠ a b c)
     (hab : dist a' b' = r * dist a b) (hcb : dist c' b' = r * dist c b) :
@@ -360,6 +342,5 @@ theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠
   · have h1 : 0 ≤ r * dist a b := by rw [← hab]; exact dist_nonneg
     have h2 : 0 ≤ r := nonneg_of_mul_nonneg_left h1 (dist_pos.mpr hab₁)
     exact (sq_eq_sq dist_nonneg (mul_nonneg h2 dist_nonneg)).mp h'
-#align euclidean_geometry.dist_mul_of_eq_angle_of_dist_mul EuclideanGeometry.dist_mul_of_eq_angle_of_dist_mul
 
 end EuclideanGeometry

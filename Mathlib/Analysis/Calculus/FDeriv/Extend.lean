@@ -5,8 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.MeanValue
 
-#align_import analysis.calculus.extend_deriv from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # Extending differentiability to the boundary
 
@@ -101,7 +99,6 @@ theorem hasFDerivWithinAt_closure_of_tendsto_fderiv {f : E → F} {s : Set E} {x
       exact
         tendsto_const_nhds.mul
           (Tendsto.comp continuous_norm.continuousAt <| tendsto_snd.sub tendsto_fst)
-#align has_fderiv_at_boundary_of_tendsto_fderiv hasFDerivWithinAt_closure_of_tendsto_fderiv
 
 @[deprecated (since := "2024-07-10")] alias has_fderiv_at_boundary_of_tendsto_fderiv :=
   hasFDerivWithinAt_closure_of_tendsto_fderiv
@@ -139,7 +136,6 @@ theorem hasDerivWithinAt_Ici_of_tendsto_deriv {s : Set ℝ} {e : E} {a : ℝ} {f
     rw [hasDerivWithinAt_iff_hasFDerivWithinAt, ← t_closure]
     exact hasFDerivWithinAt_closure_of_tendsto_fderiv t_diff t_conv t_open t_cont t_diff'
   exact this.mono_of_mem (Icc_mem_nhdsWithin_Ici <| left_mem_Ico.2 ab)
-#align has_deriv_at_interval_left_endpoint_of_tendsto_deriv hasDerivWithinAt_Ici_of_tendsto_deriv
 
 @[deprecated (since := "2024-07-10")] alias has_deriv_at_interval_left_endpoint_of_tendsto_deriv :=
   hasDerivWithinAt_Ici_of_tendsto_deriv
@@ -178,7 +174,6 @@ theorem hasDerivWithinAt_Iic_of_tendsto_deriv {s : Set ℝ} {e : E} {a : ℝ}
     rw [hasDerivWithinAt_iff_hasFDerivWithinAt, ← t_closure]
     exact hasFDerivWithinAt_closure_of_tendsto_fderiv t_diff t_conv t_open t_cont t_diff'
   exact this.mono_of_mem (Icc_mem_nhdsWithin_Iic <| right_mem_Ioc.2 ba)
-#align has_deriv_at_interval_right_endpoint_of_tendsto_deriv hasDerivWithinAt_Iic_of_tendsto_deriv
 
 @[deprecated (since := "2024-07-10")] alias has_deriv_at_interval_right_endpoint_of_tendsto_deriv :=
   hasDerivWithinAt_Iic_of_tendsto_deriv
@@ -215,7 +210,6 @@ theorem hasDerivAt_of_hasDerivAt_of_ne {f g : ℝ → E} {x : ℝ}
     intros y hy
     exact (f_diff y (ne_of_lt hy)).deriv.symm
   simpa using B.union A
-#align has_deriv_at_of_has_deriv_at_of_ne hasDerivAt_of_hasDerivAt_of_ne
 
 /-- If a real function `f` has a derivative `g` everywhere but at a point, and `f` and `g` are
 continuous at this point, then `g` is the derivative of `f` everywhere. -/
@@ -225,4 +219,3 @@ theorem hasDerivAt_of_hasDerivAt_of_ne' {f g : ℝ → E} {x : ℝ}
   rcases eq_or_ne y x with (rfl | hne)
   · exact hasDerivAt_of_hasDerivAt_of_ne f_diff hf hg
   · exact f_diff y hne
-#align has_deriv_at_of_has_deriv_at_of_ne' hasDerivAt_of_hasDerivAt_of_ne'

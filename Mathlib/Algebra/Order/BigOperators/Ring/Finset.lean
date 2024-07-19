@@ -28,7 +28,6 @@ variable [PosMulMono R] {f g : ι → R} {s t : Finset ι}
 
 lemma prod_nonneg (h0 : ∀ i ∈ s, 0 ≤ f i) : 0 ≤ ∏ i ∈ s, f i :=
   prod_induction f (fun i ↦ 0 ≤ i) (fun _ _ ha hb ↦ mul_nonneg ha hb) zero_le_one h0
-#align finset.prod_nonneg Finset.prod_nonneg
 
 /-- If all `f i`, `i ∈ s`, are nonnegative and each `f i` is less than or equal to `g i`, then the
 product of `f i` is less than or equal to the product of `g i`. See also `Finset.prod_le_prod'` for
@@ -44,7 +43,6 @@ lemma prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i)
     · refine ih (fun x H ↦ h0 _ ?_) (fun x H ↦ h1 _ ?_) <;> exact subset_cons _ H
     · apply prod_nonneg fun x H ↦ h0 x (subset_cons _ H)
     · apply le_trans (h0 a (mem_cons_self a s)) (h1 a (mem_cons_self a s))
-#align finset.prod_le_prod Finset.prod_le_prod
 
 /-- If all `f i`, `i ∈ s`, are nonnegative and each `f i` is less than or equal to `g i`, then the
 product of `f i` is less than or equal to the product of `g i`.
@@ -61,7 +59,6 @@ See also `Finset.prod_le_one'` for the case of an ordered commutative multiplica
 lemma prod_le_one (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1) : ∏ i ∈ s, f i ≤ 1 := by
   convert ← prod_le_prod h0 h1
   exact Finset.prod_const_one
-#align finset.prod_le_one Finset.prod_le_one
 
 end PosMulMono
 
@@ -70,7 +67,6 @@ variable [PosMulStrictMono R] [Nontrivial R] {f g : ι → R} {s t : Finset ι}
 
 lemma prod_pos (h0 : ∀ i ∈ s, 0 < f i) : 0 < ∏ i ∈ s, f i :=
   prod_induction f (fun x ↦ 0 < x) (fun _ _ ha hb ↦ mul_pos ha hb) zero_lt_one h0
-#align finset.prod_pos Finset.prod_pos
 
 lemma prod_lt_prod (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f i ≤ g i)
     (hlt : ∃ i ∈ s, f i < g i) :
@@ -115,7 +111,6 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
   · apply prod_nonneg
     simp only [and_imp, mem_sdiff, mem_singleton]
     exact fun j hj hji ↦ le_trans (hg j hj) (hgf j hj hji)
-#align finset.prod_add_prod_le Finset.prod_add_prod_le
 
 end OrderedCommSemiring
 
@@ -145,7 +140,6 @@ end LinearOrderedCommSemiring
 lemma abs_prod [LinearOrderedCommRing R] (s : Finset ι) (f : ι → R) :
     |∏ x ∈ s, f x| = ∏ x ∈ s, |f x| :=
   map_prod absHom _ _
-#align finset.abs_prod Finset.abs_prod
 
 section CanonicallyOrderedCommSemiring
 variable [CanonicallyOrderedCommSemiring R] {f g h : ι → R} {s : Finset ι} {i : ι}
@@ -154,7 +148,6 @@ variable [CanonicallyOrderedCommSemiring R] {f g h : ι → R} {s : Finset ι} {
 @[simp] lemma _root_.CanonicallyOrderedCommSemiring.prod_pos [Nontrivial R] :
     0 < ∏ i ∈ s, f i ↔ (∀ i ∈ s, (0 : R) < f i) :=
   CanonicallyOrderedCommSemiring.multiset_prod_pos.trans Multiset.forall_mem_map_iff
-#align canonically_ordered_comm_semiring.prod_pos CanonicallyOrderedCommSemiring.prod_pos
 
 /-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
   sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedCommSemiring`.
@@ -170,7 +163,6 @@ lemma prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j �
           intros <;>
         apply_assumption <;>
       assumption
-#align finset.prod_add_prod_le' Finset.prod_add_prod_le'
 
 end CanonicallyOrderedCommSemiring
 end Finset
@@ -182,12 +174,10 @@ variable {S : Type*}
 lemma AbsoluteValue.sum_le [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
     (s : Finset ι) (f : ι → R) : abv (∑ i ∈ s, f i) ≤ ∑ i ∈ s, abv (f i) :=
   Finset.le_sum_of_subadditive abv (map_zero _) abv.add_le _ _
-#align absolute_value.sum_le AbsoluteValue.sum_le
 
 lemma IsAbsoluteValue.abv_sum [Semiring R] [OrderedSemiring S] (abv : R → S) [IsAbsoluteValue abv]
     (f : ι → R) (s : Finset ι) : abv (∑ i ∈ s, f i) ≤ ∑ i ∈ s, abv (f i) :=
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
-#align is_absolute_value.abv_sum IsAbsoluteValue.abv_sum
 
 @[deprecated (since := "2024-02-14")] alias abv_sum_le_sum_abv := IsAbsoluteValue.abv_sum
 
@@ -195,13 +185,11 @@ nonrec lemma AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrder
     (abv : AbsoluteValue R S) (f : ι → R) (s : Finset ι) :
     abv (∏ i ∈ s, f i) = ∏ i ∈ s, abv (f i) :=
   map_prod abv f s
-#align absolute_value.map_prod AbsoluteValue.map_prod
 
 lemma IsAbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
     (abv : R → S) [IsAbsoluteValue abv] (f : ι → R) (s : Finset ι) :
     abv (∏ i ∈ s, f i) = ∏ i ∈ s, abv (f i) :=
   (IsAbsoluteValue.toAbsoluteValue abv).map_prod _ _
-#align is_absolute_value.map_prod IsAbsoluteValue.map_prod
 
 end AbsoluteValue
 

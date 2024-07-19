@@ -20,7 +20,3 @@ These will be deleted soon so will not significantly delay deleting otherwise em
 
 # Align statements for declarations from Batteries
 -/
-
-#align int.zero_div Int.zero_div
-#align int.div_zero Int.div_zero
-#align int.mul_sign Int.mul_sign

@@ -8,8 +8,6 @@ import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Sum
 
-#align_import combinatorics.hales_jewett from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
-
 /-!
 # The Hales-Jewett theorem
 
@@ -83,7 +81,6 @@ structure Line (α ι : Type*) where
   /-- We require combinatorial lines to be nontrivial in the sense that `fun x ↦ l x i` is `id` for
   at least one coordinate `i`. -/
   proper : ∃ i, idxFun i = none
-#align combinatorics.line Combinatorics.Line
 
 namespace Line
 
@@ -94,13 +91,11 @@ instance (α ι) : CoeFun (Line α ι) fun _ => α → ι → α :=
 /-- A line is monochromatic if all its points are the same color. -/
 def IsMono {α ι κ} (C : (ι → α) → κ) (l : Line α ι) : Prop :=
   ∃ c, ∀ x, C (l x) = c
-#align combinatorics.line.is_mono Combinatorics.Line.IsMono
 
 /-- The diagonal line. It is the identity at every coordinate. -/
 def diagonal (α ι) [Nonempty ι] : Line α ι where
   idxFun _ := none
   proper := ⟨Classical.arbitrary ι, rfl⟩
-#align combinatorics.line.diagonal Combinatorics.Line.diagonal
 
 instance (α ι) [Nonempty ι] : Inhabited (Line α ι) :=
   ⟨diagonal α ι⟩
@@ -115,7 +110,6 @@ structure AlmostMono {α ι κ : Type*} (C : (ι → Option α) → κ) where
   /-- The proposition that the underlying line of an almost monochromatic line assumes its main
   color except possibly at the endpoints. -/
   has_color : ∀ x : α, C (line (some x)) = color
-#align combinatorics.line.almost_mono Combinatorics.Line.AlmostMono
 
 instance {α ι κ : Type*} [Nonempty ι] [Inhabited κ] :
     Inhabited (AlmostMono fun _ : ι → Option α => (default : κ)) :=
@@ -137,7 +131,6 @@ structure ColorFocused {α ι κ : Type*} (C : (ι → Option α) → κ) where
   is_focused : ∀ p ∈ lines, p.line none = focus
   /-- The proposition that all lines in a color-focused collection of lines have distinct colors. -/
   distinct_colors : (lines.map AlmostMono.color).Nodup
-#align combinatorics.line.color_focused Combinatorics.Line.ColorFocused
 
 instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C) := by
   refine ⟨⟨0, fun _ => none, fun h => ?_, Multiset.nodup_zero⟩⟩
@@ -148,69 +141,57 @@ instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C)
 def map {α α' ι} (f : α → α') (l : Line α ι) : Line α' ι where
   idxFun i := (l.idxFun i).map f
   proper := ⟨l.proper.choose, by simp only [l.proper.choose_spec, Option.map_none']⟩
-#align combinatorics.line.map Combinatorics.Line.map
 
 /-- A point in `ι → α` and a line in `ι' → α` determine a line in `ι ⊕ ι' → α`. -/
 def vertical {α ι ι'} (v : ι → α) (l : Line α ι') : Line α (Sum ι ι') where
   idxFun := Sum.elim (some ∘ v) l.idxFun
   proper := ⟨Sum.inr l.proper.choose, l.proper.choose_spec⟩
-#align combinatorics.line.vertical Combinatorics.Line.vertical
 
 /-- A line in `ι → α` and a point in `ι' → α` determine a line in `ι ⊕ ι' → α`. -/
 def horizontal {α ι ι'} (l : Line α ι) (v : ι' → α) : Line α (Sum ι ι') where
   idxFun := Sum.elim l.idxFun (some ∘ v)
   proper := ⟨Sum.inl l.proper.choose, l.proper.choose_spec⟩
-#align combinatorics.line.horizontal Combinatorics.Line.horizontal
 
 /-- One line in `ι → α` and one in `ι' → α` together determine a line in `ι ⊕ ι' → α`. -/
 def prod {α ι ι'} (l : Line α ι) (l' : Line α ι') : Line α (Sum ι ι') where
   idxFun := Sum.elim l.idxFun l'.idxFun
   proper := ⟨Sum.inl l.proper.choose, l.proper.choose_spec⟩
-#align combinatorics.line.prod Combinatorics.Line.prod
 
 theorem apply {α ι} (l : Line α ι) (x : α) : l x = fun i => (l.idxFun i).getD x :=
   rfl
-#align combinatorics.line.apply Combinatorics.Line.apply
 
 theorem apply_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFun i = none) : l x i = x := by
   simp only [Option.getD_none, h, l.apply]
-#align combinatorics.line.apply_none Combinatorics.Line.apply_none
 
 theorem apply_of_ne_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFun i ≠ none) :
     some (l x i) = l.idxFun i := by rw [l.apply, Option.getD_of_ne_none h]
-#align combinatorics.line.apply_of_ne_none Combinatorics.Line.apply_of_ne_none
 
 @[simp]
 theorem map_apply {α α' ι} (f : α → α') (l : Line α ι) (x : α) : l.map f (f x) = f ∘ l x := by
   simp only [Line.apply, Line.map, Option.getD_map]
   rfl
-#align combinatorics.line.map_apply Combinatorics.Line.map_apply
 
 @[simp]
 theorem vertical_apply {α ι ι'} (v : ι → α) (l : Line α ι') (x : α) :
     l.vertical v x = Sum.elim v (l x) := by
   funext i
   cases i <;> rfl
-#align combinatorics.line.vertical_apply Combinatorics.Line.vertical_apply
 
 @[simp]
 theorem horizontal_apply {α ι ι'} (l : Line α ι) (v : ι' → α) (x : α) :
     l.horizontal v x = Sum.elim (l x) v := by
   funext i
   cases i <;> rfl
-#align combinatorics.line.horizontal_apply Combinatorics.Line.horizontal_apply
 
 @[simp]
 theorem prod_apply {α ι ι'} (l : Line α ι) (l' : Line α ι') (x : α) :
     l.prod l' x = Sum.elim (l x) (l' x) := by
   funext i
   cases i <;> rfl
-#align combinatorics.line.prod_apply Combinatorics.Line.prod_apply
 
 @[simp]
 theorem diagonal_apply {α ι} [Nonempty ι] (x : α) : Line.diagonal α ι x = fun _ => x := by
   simp_rw [Line.diagonal, Option.getD_none]
-#align combinatorics.line.diagonal_apply Combinatorics.Line.diagonal_apply
 
 /-- The **Hales-Jewett theorem**. This version has a restriction on universe levels which is
 necessary for the proof. See `exists_mono_in_high_dimension` for a fully universe-polymorphic
@@ -321,7 +302,6 @@ private theorem exists_mono_in_high_dimension' :
     -- Finally, we really do have `r+1` lines!
     · rw [Multiset.card_cons, Multiset.card_map, sr])
 -- Porting note: Remove align on private declas
-#noalign combinatorics.line.exists_mono_in_high_dimension'
 
 /-- The Hales-Jewett theorem: for any finite types `α` and `κ`, there exists a finite type `ι` such
 that whenever the hypercube `ι → α` is `κ`-colored, there is a monochromatic combinatorial line. -/
@@ -331,7 +311,6 @@ theorem exists_mono_in_high_dimension (α : Type u) [Finite α] (κ : Type v) [F
   ⟨ι, ιfin, fun C =>
     let ⟨l, c, hc⟩ := hι (ULift.up ∘ C)
     ⟨l, c.down, fun x => by rw [← hc x, Function.comp_apply]⟩⟩
-#align combinatorics.line.exists_mono_in_high_dimension Combinatorics.Line.exists_mono_in_high_dimension
 
 end Line
 
@@ -364,6 +343,5 @@ theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset
     rw [hs, Finset.compl_filter, Finset.mem_filter] at hi
     obtain ⟨y, hy⟩ := Option.ne_none_iff_exists.mp hi.right
     simp_rw [← hy, Option.map_some', Option.getD]
-#align combinatorics.exists_mono_homothetic_copy Combinatorics.exists_mono_homothetic_copy
 
 end Combinatorics

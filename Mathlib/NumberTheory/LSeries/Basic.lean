@@ -7,8 +7,6 @@ import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.Data.Complex.FiniteDimensional
 
-#align_import number_theory.l_series from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
-
 /-!
 # L-series
 
@@ -121,7 +119,6 @@ if it converges absolutely there, and `0` otherwise. -/
 noncomputable
 def LSeries (f : ℕ → ℂ) (s : ℂ) : ℂ :=
   ∑' n, term f s n
-#align nat.arithmetic_function.l_series LSeries
 
 lemma LSeries_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ {n}, n ≠ 0 → f n = g n) :
     LSeries f s = LSeries g s :=
@@ -130,7 +127,6 @@ lemma LSeries_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ {n}, n ≠ 0 → f n 
 /-- `LSeriesSummable f s` indicates that the L-series of `f` converges absolutely at `s`. -/
 def LSeriesSummable (f : ℕ → ℂ) (s : ℂ) : Prop :=
   Summable (term f s)
-#align nat.arithmetic_function.l_series_summable LSeriesSummable
 
 lemma LSeriesSummable_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ {n}, n ≠ 0 → f n = g n) :
     LSeriesSummable f s ↔ LSeriesSummable g s :=
@@ -161,13 +157,11 @@ lemma LSeriesSummable_congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g)
 theorem LSeries.eq_zero_of_not_LSeriesSummable (f : ℕ → ℂ) (s : ℂ) :
     ¬ LSeriesSummable f s → LSeries f s = 0 :=
   tsum_eq_zero_of_not_summable
-#align nat.arithmetic_function.l_series_eq_zero_of_not_l_series_summable LSeries.eq_zero_of_not_LSeriesSummable
 
 @[simp]
 theorem LSeriesSummable_zero {s : ℂ} : LSeriesSummable 0 s := by
   simp only [LSeriesSummable, funext (term_def 0 s), Pi.zero_apply, zero_div, ite_self,
     summable_zero]
-#align nat.arithmetic_function.l_series_summable_zero LSeriesSummable_zero
 
 /-- This states that the L-series of the sequence `f` converges absolutely at `s` and that
 the value there is `a`. -/
@@ -202,7 +196,6 @@ lemma LSeriesSummable.of_re_le_re {f : ℕ → ℂ} {s s' : ℂ} (h : s.re ≤ s
 theorem LSeriesSummable_iff_of_re_eq_re {f : ℕ → ℂ} {s s' : ℂ} (h : s.re = s'.re) :
     LSeriesSummable f s ↔ LSeriesSummable f s' :=
   ⟨fun H ↦ H.of_re_le_re h.le, fun H ↦ H.of_re_le_re h.symm.le⟩
-#align nat.arithmetic_function.l_series_summable_iff_of_re_eq_re LSeriesSummable_iff_of_re_eq_re
 
 /-- The indicator function of `{1} ⊆ ℕ` with values in `ℂ`. -/
 def LSeries.delta (n : ℕ) : ℂ :=
@@ -361,11 +354,9 @@ theorem LSeriesSummable_of_bounded_of_one_lt_re {f : ℕ → ℂ} {m : ℝ}
     LSeriesSummable f s := by
   refine LSeriesSummable_of_le_const_mul_rpow hs ⟨m, fun n hn ↦ ?_⟩
   simp only [norm_eq_abs, sub_self, Real.rpow_zero, mul_one, h n hn]
-#align nat.arithmetic_function.l_series_summable_of_bounded_of_one_lt_re LSeriesSummable_of_bounded_of_one_lt_re
 
 /-- If `f` is bounded, then its `LSeries` is summable at `s : ℝ` when `s > 1`. -/
 theorem LSeriesSummable_of_bounded_of_one_lt_real {f : ℕ → ℂ} {m : ℝ}
     (h : ∀ n ≠ 0, Complex.abs (f n) ≤ m) {s : ℝ} (hs : 1 < s) :
     LSeriesSummable f s :=
   LSeriesSummable_of_bounded_of_one_lt_re h <| by simp only [ofReal_re, hs]
-#align nat.arithmetic_function.l_series_summable_of_bounded_of_one_lt_real LSeriesSummable_of_bounded_of_one_lt_real

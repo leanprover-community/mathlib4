@@ -7,8 +7,6 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Rat.Defs
 
-#align_import data.rat.defs from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
-
 /-!
 # The rational numbers are a commutative ring
 
@@ -71,16 +69,13 @@ lemma mkRat_eq_div (n : ℤ) (d : ℕ) : mkRat n d = n / d := by
 lemma divInt_div_divInt_cancel_left {x : ℤ} (hx : x ≠ 0) (n d : ℤ) :
     n /. x / (d /. x) = n /. d := by
   rw [div_eq_mul_inv, inv_divInt', divInt_mul_divInt_cancel hx]
-#align rat.mk_div_mk_cancel_left Rat.divInt_div_divInt_cancel_left
 
 lemma divInt_div_divInt_cancel_right {x : ℤ} (hx : x ≠ 0) (n d : ℤ) :
     x /. n / (x /. d) = d /. n := by
   rw [div_eq_mul_inv, inv_divInt', mul_comm, divInt_mul_divInt_cancel hx]
-#align rat.mk_div_mk_cancel_right Rat.divInt_div_divInt_cancel_right
 
 lemma num_div_den (r : ℚ) : (r.num : ℚ) / (r.den : ℚ) = r := by
   rw [← Int.cast_natCast, ← divInt_eq_div, num_divInt_den]
-#align rat.num_div_denom Rat.num_div_den
 
 @[simp] lemma divInt_pow (num : ℕ) (den : ℤ) (n : ℕ) : (num /. den) ^ n = num ^ n /. den ^ n := by
   simp [divInt_eq_div, div_pow, Int.natCast_pow]
@@ -89,7 +84,6 @@ lemma num_div_den (r : ℚ) : (r.num : ℚ) / (r.den : ℚ) = r := by
   rw [mkRat_eq_divInt, mkRat_eq_divInt, divInt_pow, Int.natCast_pow]
 
 lemma natCast_eq_divInt (n : ℕ) : ↑n = n /. 1 := by rw [← Int.cast_natCast, intCast_eq_divInt]
-#align rat.coe_nat_eq_mk Rat.natCast_eq_divInt
 
 @[simp] lemma mul_den_eq_num (q : ℚ) : q * q.den = q.num := by
   suffices (q.num /. ↑q.den) * (↑q.den /. 1) = q.num /. 1 by
@@ -97,7 +91,6 @@ lemma natCast_eq_divInt (n : ℕ) : ↑n = n /. 1 := by rw [← Int.cast_natCast
     simp only [intCast_eq_divInt, natCast_eq_divInt, num_divInt_den] at this ⊢; assumption
   have : (q.den : ℤ) ≠ 0 := mod_cast q.den_ne_zero
   rw [divInt_mul_divInt _ _ this Int.one_ne_zero, mul_comm (q.den : ℤ) 1, divInt_mul_right this]
-#align rat.mul_denom_eq_num Rat.mul_den_eq_num
 
 @[simp] lemma den_mul_eq_num (q : ℚ) : q.den * q = q.num := by rw [mul_comm, mul_den_eq_num]
 

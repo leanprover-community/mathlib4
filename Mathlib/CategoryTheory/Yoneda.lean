@@ -8,8 +8,6 @@ import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.Data.ULift
 import Mathlib.Logic.Function.ULift
 
-#align_import category_theory.yoneda from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
-
 /-!
 # The Yoneda embedding
 
@@ -42,7 +40,6 @@ def yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁ where
       map := fun f g => f.unop ≫ g }
   map f :=
     { app := fun Y g => g ≫ f }
-#align category_theory.yoneda CategoryTheory.yoneda
 
 /-- The co-Yoneda embedding, as a functor from `Cᵒᵖ` into co-presheaves on `C`.
 -/
@@ -53,7 +50,6 @@ def coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁ where
       map := fun f g => g ≫ f }
   map f :=
     { app := fun Y g => f.unop ≫ g }
-#align category_theory.coyoneda CategoryTheory.coyoneda
 
 namespace Yoneda
 
@@ -61,13 +57,11 @@ theorem obj_map_id {X Y : C} (f : op X ⟶ op Y) :
     (yoneda.obj X).map f (𝟙 X) = (yoneda.map f.unop).app (op Y) (𝟙 Y) := by
   dsimp
   simp
-#align category_theory.yoneda.obj_map_id CategoryTheory.Yoneda.obj_map_id
 
 @[simp]
 theorem naturality {X Y : C} (α : yoneda.obj X ⟶ yoneda.obj Y) {Z Z' : C} (f : Z ⟶ Z')
     (h : Z' ⟶ X) : f ≫ α.app (op Z') h = α.app (op Z) (f ≫ h) :=
   (FunctorToTypes.naturality _ _ α f.op h).symm
-#align category_theory.yoneda.naturality CategoryTheory.Yoneda.naturality
 
 /-- The Yoneda embedding is fully faithful. -/
 def fullyFaithful : (yoneda (C := C)).FullyFaithful where
@@ -82,7 +76,6 @@ See <https://stacks.math.columbia.edu/tag/001P>.
 -/
 instance yoneda_full : (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁).Full :=
   fullyFaithful.full
-#align category_theory.yoneda.yoneda_full CategoryTheory.Yoneda.yoneda_full
 
 /-- The Yoneda embedding is faithful.
 
@@ -90,7 +83,6 @@ See <https://stacks.math.columbia.edu/tag/001P>.
 -/
 instance yoneda_faithful : (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁).Faithful :=
   fullyFaithful.faithful
-#align category_theory.yoneda.yoneda_faithful CategoryTheory.Yoneda.yoneda_faithful
 
 /-- Extensionality via Yoneda. The typical usage would be
 ```
@@ -108,13 +100,11 @@ def ext (X Y : C) (p : ∀ {Z : C}, (Z ⟶ X) → (Z ⟶ Y))
     (NatIso.ofComponents fun Z =>
       { hom := p
         inv := q })
-#align category_theory.yoneda.ext CategoryTheory.Yoneda.ext
 
 /-- If `yoneda.map f` is an isomorphism, so was `f`.
 -/
 theorem isIso {X Y : C} (f : X ⟶ Y) [IsIso (yoneda.map f)] : IsIso f :=
   isIso_of_fully_faithful yoneda f
-#align category_theory.yoneda.is_iso CategoryTheory.Yoneda.isIso
 
 end Yoneda
 
@@ -124,7 +114,6 @@ namespace Coyoneda
 theorem naturality {X Y : Cᵒᵖ} (α : coyoneda.obj X ⟶ coyoneda.obj Y) {Z Z' : C} (f : Z' ⟶ Z)
     (h : unop X ⟶ Z') : α.app Z' h ≫ f = α.app Z (h ≫ f) :=
   (FunctorToTypes.naturality _ _ α f h).symm
-#align category_theory.coyoneda.naturality CategoryTheory.Coyoneda.naturality
 
 /-- The co-Yoneda embedding is fully faithful. -/
 def fullyFaithful : (coyoneda (C := C)).FullyFaithful where
@@ -140,30 +129,25 @@ def preimage {X Y : Cᵒᵖ} (f : coyoneda.obj X ⟶ coyoneda.obj Y) : X ⟶ Y :
 
 instance coyoneda_full : (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁).Full :=
   fullyFaithful.full
-#align category_theory.coyoneda.coyoneda_full CategoryTheory.Coyoneda.coyoneda_full
 
 instance coyoneda_faithful : (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁).Faithful :=
   fullyFaithful.faithful
-#align category_theory.coyoneda.coyoneda_faithful CategoryTheory.Coyoneda.coyoneda_faithful
 
 /-- If `coyoneda.map f` is an isomorphism, so was `f`.
 -/
 theorem isIso {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso (coyoneda.map f)] : IsIso f :=
   isIso_of_fully_faithful coyoneda f
-#align category_theory.coyoneda.is_iso CategoryTheory.Coyoneda.isIso
 
 /-- The identity functor on `Type` is isomorphic to the coyoneda functor coming from `PUnit`. -/
 def punitIso : coyoneda.obj (Opposite.op PUnit) ≅ 𝟭 (Type v₁) :=
   NatIso.ofComponents fun X =>
     { hom := fun f => f ⟨⟩
       inv := fun x _ => x }
-#align category_theory.coyoneda.punit_iso CategoryTheory.Coyoneda.punitIso
 
 /-- Taking the `unop` of morphisms is a natural isomorphism. -/
 @[simps!]
 def objOpOp (X : C) : coyoneda.obj (op (op X)) ≅ yoneda.obj X :=
   NatIso.ofComponents fun _ => (opEquiv _ _).toIso
-#align category_theory.coyoneda.obj_op_op CategoryTheory.Coyoneda.objOpOp
 
 end Coyoneda
 
@@ -176,7 +160,6 @@ See <https://stacks.math.columbia.edu/tag/001Q>.
 class Representable (F : Cᵒᵖ ⥤ Type v₁) : Prop where
   /-- `Hom(-,X) ≅ F` via `f` -/
   has_representation : ∃ (X : _), Nonempty (yoneda.obj X ≅ F)
-#align category_theory.functor.representable CategoryTheory.Functor.Representable
 
 instance {X : C} : Representable (yoneda.obj X) where has_representation := ⟨X, ⟨Iso.refl _⟩⟩
 
@@ -187,7 +170,6 @@ See <https://stacks.math.columbia.edu/tag/001Q>.
 class Corepresentable (F : C ⥤ Type v₁) : Prop where
   /-- `Hom(X,-) ≅ F` via `f` -/
   has_corepresentation : ∃ (X : _), Nonempty (coyoneda.obj X ≅ F)
-#align category_theory.functor.corepresentable CategoryTheory.Functor.Corepresentable
 
 instance {X : Cᵒᵖ} : Corepresentable (coyoneda.obj X) where
   has_corepresentation := ⟨X, ⟨Iso.refl _⟩⟩
@@ -201,8 +183,6 @@ variable [hF : F.Representable]
 
 /-- The representing object for the representable functor `F`. -/
 noncomputable def reprX : C := hF.has_representation.choose
-set_option linter.uppercaseLean3 false
-#align category_theory.functor.repr_X CategoryTheory.Functor.reprX
 
 /-- An isomorphism between a representable `F` and a functor of the
 form `C(-, F.reprX)`.  Note the components `F.reprW.app X`
@@ -210,20 +190,17 @@ definitionally have type `(X.unop ⟶ F.repr_X) ≅ F.obj X`.
 -/
 noncomputable def reprW : yoneda.obj F.reprX ≅ F :=
   Representable.has_representation.choose_spec.some
-#align category_theory.functor.repr_f CategoryTheory.Functor.reprW
 
 /-- The representing element for the representable functor `F`, sometimes called the universal
 element of the functor.
 -/
 noncomputable def reprx : F.obj (op F.reprX) :=
   F.reprW.hom.app (op F.reprX) (𝟙 F.reprX)
-#align category_theory.functor.repr_x CategoryTheory.Functor.reprx
 
 theorem reprW_app_hom (X : Cᵒᵖ) (f : unop X ⟶ F.reprX) :
     (F.reprW.app X).hom f = F.map f.op F.reprx := by
   simp only [yoneda_obj_obj, Iso.app_hom, op_unop, reprx, ← FunctorToTypes.naturality,
     yoneda_obj_map, unop_op, Quiver.Hom.unop_op, Category.comp_id]
-#align category_theory.functor.repr_w_app_hom CategoryTheory.Functor.reprW_app_hom
 
 end Representable
 
@@ -235,8 +212,6 @@ variable [hF : F.Corepresentable]
 /-- The representing object for the corepresentable functor `F`. -/
 noncomputable def coreprX : C :=
   hF.has_corepresentation.choose.unop
-set_option linter.uppercaseLean3 false
-#align category_theory.functor.corepr_X CategoryTheory.Functor.coreprX
 
 /-- An isomorphism between a corepresnetable `F` and a functor of the form
 `C(F.corepr X, -)`. Note the components `F.coreprW.app X`
@@ -244,20 +219,17 @@ definitionally have type `F.corepr_X ⟶ X ≅ F.obj X`.
 -/
 noncomputable def coreprW : coyoneda.obj (op F.coreprX) ≅ F :=
   hF.has_corepresentation.choose_spec.some
-#align category_theory.functor.corepr_f CategoryTheory.Functor.coreprW
 
 /-- The representing element for the corepresentable functor `F`, sometimes called the universal
 element of the functor.
 -/
 noncomputable def coreprx : F.obj F.coreprX :=
   F.coreprW.hom.app F.coreprX (𝟙 F.coreprX)
-#align category_theory.functor.corepr_x CategoryTheory.Functor.coreprx
 
 theorem coreprW_app_hom (X : C) (f : F.coreprX ⟶ X) :
     (F.coreprW.app X).hom f = F.map f F.coreprx := by
   simp only [coyoneda_obj_obj, unop_op, Iso.app_hom, coreprx, ← FunctorToTypes.naturality,
     coyoneda_obj_map, Category.id_comp]
-#align category_theory.functor.corepr_w_app_hom CategoryTheory.Functor.coreprW_app_hom
 
 end Corepresentable
 
@@ -266,12 +238,10 @@ end Functor
 theorem representable_of_natIso (F : Cᵒᵖ ⥤ Type v₁) {G} (i : F ≅ G) [F.Representable] :
     G.Representable :=
   { has_representation := ⟨F.reprX, ⟨F.reprW ≪≫ i⟩⟩ }
-#align category_theory.representable_of_nat_iso CategoryTheory.representable_of_natIso
 
 theorem corepresentable_of_natIso (F : C ⥤ Type v₁) {G} (i : F ≅ G) [F.Corepresentable] :
     G.Corepresentable :=
   { has_corepresentation := ⟨op F.coreprX, ⟨F.coreprW ≪≫ i⟩⟩ }
-#align category_theory.corepresentable_of_nat_iso CategoryTheory.corepresentable_of_natIso
 
 instance : Functor.Corepresentable (𝟭 (Type v₁)) :=
   corepresentable_of_natIso (coyoneda.obj (op PUnit)) Coyoneda.punitIso
@@ -283,11 +253,9 @@ variable (C)
 -- We need to help typeclass inference with some awkward universe levels here.
 instance prodCategoryInstance1 : Category ((Cᵒᵖ ⥤ Type v₁) × Cᵒᵖ) :=
   CategoryTheory.prod.{max u₁ v₁, v₁} (Cᵒᵖ ⥤ Type v₁) Cᵒᵖ
-#align category_theory.prod_category_instance_1 CategoryTheory.prodCategoryInstance1
 
 instance prodCategoryInstance2 : Category (Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) :=
   CategoryTheory.prod.{v₁, max u₁ v₁} Cᵒᵖ (Cᵒᵖ ⥤ Type v₁)
-#align category_theory.prod_category_instance_2 CategoryTheory.prodCategoryInstance2
 
 open Yoneda
 
@@ -308,18 +276,15 @@ def yonedaEquiv {X : C} {F : Cᵒᵖ ⥤ Type v₁} : (yoneda.obj X ⟶ F) ≃ F
     rw [← FunctorToTypes.naturality]
     simp
   right_inv := by intro ξ; simp
-#align category_theory.yoneda_equiv CategoryTheory.yonedaEquiv
 
 theorem yonedaEquiv_apply {X : C} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj X ⟶ F) :
     yonedaEquiv f = f.app (op X) (𝟙 X) :=
   rfl
-#align category_theory.yoneda_equiv_apply CategoryTheory.yonedaEquiv_apply
 
 @[simp]
 theorem yonedaEquiv_symm_app_apply {X : C} {F : Cᵒᵖ ⥤ Type v₁} (x : F.obj (op X)) (Y : Cᵒᵖ)
     (f : Y.unop ⟶ X) : (yonedaEquiv.symm x).app Y f = F.map f.op x :=
   rfl
-#align category_theory.yoneda_equiv_symm_app_apply CategoryTheory.yonedaEquiv_symm_app_apply
 
 lemma yonedaEquiv_naturality {X Y : C} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj X ⟶ F)
     (g : Y ⟶ X) : F.map g.op (yonedaEquiv f) = yonedaEquiv (yoneda.map g ≫ f) := by
@@ -327,12 +292,10 @@ lemma yonedaEquiv_naturality {X Y : C} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.o
   rw [← f.naturality]
   dsimp
   simp
-#align category_theory.yoneda_equiv_naturality CategoryTheory.yonedaEquiv_naturality
 
 lemma yonedaEquiv_naturality' {X Y : Cᵒᵖ} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj (unop X) ⟶ F)
     (g : X ⟶ Y) : F.map g (yonedaEquiv f) = yonedaEquiv (yoneda.map g.unop ≫ f) :=
   yonedaEquiv_naturality _ _
-#align category_theory.yoneda_equiv_naturality' CategoryTheory.yonedaEquiv_naturality'
 
 lemma yonedaEquiv_comp {X : C} {F G : Cᵒᵖ ⥤ Type v₁} (α : yoneda.obj X ⟶ F) (β : F ⟶ G) :
     yonedaEquiv (α ≫ β) = β.app _ (yonedaEquiv α) :=
@@ -363,21 +326,18 @@ to `F.obj X`, functorially in both `X` and `F`.
 -/
 def yonedaEvaluation : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁) ⥤ Type max u₁ v₁ :=
   evaluationUncurried Cᵒᵖ (Type v₁) ⋙ uliftFunctor
-#align category_theory.yoneda_evaluation CategoryTheory.yonedaEvaluation
 
 @[simp]
 theorem yonedaEvaluation_map_down (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶ Q)
     (x : (yonedaEvaluation C).obj P) :
     ((yonedaEvaluation C).map α x).down = α.2.app Q.1 (P.2.map α.1 x.down) :=
   rfl
-#align category_theory.yoneda_evaluation_map_down CategoryTheory.yonedaEvaluation_map_down
 
 /-- The "Yoneda pairing" functor, which sends `X : Cᵒᵖ` and `F : Cᵒᵖ ⥤ Type`
 to `yoneda.op.obj X ⟶ F`, functorially in both `X` and `F`.
 -/
 def yonedaPairing : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁) ⥤ Type max u₁ v₁ :=
   Functor.prod yoneda.op (𝟭 (Cᵒᵖ ⥤ Type v₁)) ⋙ Functor.hom (Cᵒᵖ ⥤ Type v₁)
-#align category_theory.yoneda_pairing CategoryTheory.yonedaPairing
 
 -- Porting note (#5229): we need to provide this `@[ext]` lemma separately,
 -- as `ext` will not look through the definition.
@@ -390,7 +350,6 @@ lemma yonedaPairingExt {X : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)} {x y : (yonedaPa
 theorem yonedaPairing_map (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶ Q) (β : (yonedaPairing C).obj P) :
     (yonedaPairing C).map α β = yoneda.map α.1.unop ≫ β ≫ α.2 :=
   rfl
-#align category_theory.yoneda_pairing_map CategoryTheory.yonedaPairing_map
 
 universe w in
 variable {C} in
@@ -426,7 +385,6 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C :=
         erw [Equiv.ulift_symm_down, Equiv.ulift_symm_down]
         dsimp [yonedaEquiv]
         simp [← FunctorToTypes.naturality])
-#align category_theory.yoneda_lemma CategoryTheory.yonedaLemma
 
 variable {C}
 
@@ -439,7 +397,6 @@ def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
     ext a b
     dsimp [yonedaEquiv]
     simp [← FunctorToTypes.naturality])
-#align category_theory.curried_yoneda_lemma CategoryTheory.curriedYonedaLemma
 
 /-- The curried version of the Yoneda lemma. -/
 def largeCurriedYonedaLemma {C : Type u₁} [Category.{v₁} C] :
@@ -473,7 +430,6 @@ def curriedYonedaLemma' {C : Type u₁} [SmallCategory C] :
     ext a
     dsimp [yonedaEquiv]
     simp [← FunctorToTypes.naturality]))
-#align category_theory.curried_yoneda_lemma' CategoryTheory.curriedYonedaLemma'
 
 lemma isIso_of_yoneda_map_bijective {X Y : C} (f : X ⟶ Y)
     (hf : ∀ (T : C), Function.Bijective (fun (x : T ⟶ X) => x ≫ f)) :
