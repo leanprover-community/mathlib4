@@ -181,6 +181,7 @@ variable {p q : ℕ}
   (hmulvec0 : asiegel K a *ᵥ x = 0)
   (hxbound : ‖x‖ ≤ (q * finrank ℚ K * ‖asiegel K a‖) ^ ((p : ℝ) / (q - p)))
 
+/-- `ξ` is the the product of `x (l, r)` and the `r`-th basis element of the new basis of `K`. -/
 def ξ : β → 𝓞 K := fun l => ∑ r : K →+* ℂ, x (l, r) * (newBasis K r)
 
 theorem ξ_ne_0 : ξ K x ≠ 0 := by
