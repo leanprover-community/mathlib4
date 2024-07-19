@@ -276,7 +276,7 @@ theorem continuousSMul_iInf {ts' : ι → TopologicalSpace X}
 theorem continuousSMul_inf {t₁ t₂ : TopologicalSpace X} [@ContinuousSMul M X _ _ t₁]
     [@ContinuousSMul M X _ _ t₂] : @ContinuousSMul M X _ _ (t₁ ⊓ t₂) := by
   rw [inf_eq_iInf]
-  refine' continuousSMul_iInf fun b => _
+  refine continuousSMul_iInf fun b => ?_
   cases b <;> assumption
 #align has_continuous_smul_inf continuousSMul_inf
 #align has_continuous_vadd_inf continuousVAdd_inf

@@ -3,8 +3,10 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.Algebra.GroupWithZero.ULift
 import Mathlib.Algebra.Ring.ULift
-import Mathlib.Algebra.Module.Equiv
+import Mathlib.Algebra.Module.Equiv.Defs
+import Mathlib.Data.ULift
 
 #align_import algebra.module.ulift from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -123,8 +125,7 @@ instance smulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero (ULift
     zero_smul := zero_smul _ }
 #align ulift.smul_with_zero ULift.smulWithZero
 
-instance smulWithZero' [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (ULift M)
-    where
+instance smulWithZero' [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (ULift M) where
   smul_zero _ := ULift.ext _ _ <| smul_zero _
   zero_smul _ := ULift.ext _ _ <| zero_smul _ _
 #align ulift.smul_with_zero' ULift.smulWithZero'

@@ -3,7 +3,6 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Homology.Homology
 import Mathlib.Algebra.Homology.Single
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
@@ -107,32 +106,8 @@ def Hom.fAddMonoidHom {C₁ C₂ : HomologicalComplex V c} (i : ι) : (C₁ ⟶ 
   AddMonoidHom.mk' (fun f => Hom.f f i) fun _ _ => rfl
 #align homological_complex.hom.f_add_monoid_hom HomologicalComplex.Hom.fAddMonoidHom
 
-end HomologicalComplex
-
-namespace HomologicalComplex
-
 instance eval_additive (i : ι) : (eval V c i).Additive where
 #align homological_complex.eval_additive HomologicalComplex.eval_additive
-
-instance cycles'_additive [HasEqualizers V] : (cycles'Functor V c i).Additive where
-#align homological_complex.cycles_additive HomologicalComplex.cycles'_additive
-
-variable [HasImages V] [HasImageMaps V]
-
-instance boundaries_additive : (boundariesFunctor V c i).Additive where
-#align homological_complex.boundaries_additive HomologicalComplex.boundaries_additive
-
-variable [HasEqualizers V] [HasCokernels V]
-
-instance homology_additive : (homology'Functor V c i).Additive where
-  map_add {_ _ f g} := by
-    dsimp [homology'Functor]
-    ext
-    simp only [homology'.π_map, Preadditive.comp_add, ← Preadditive.add_comp]
-    congr
-    ext
-    simp
-#align homological_complex.homology_additive HomologicalComplex.homology_additive
 
 end HomologicalComplex
 
@@ -181,8 +156,8 @@ instance Functor.mapHomologicalComplex_reflects_iso (F : W₁ ⥤ W₂) [F.Prese
   ⟨fun f => by
     intro
     haveI : ∀ n : ι, IsIso (F.map (f.f n)) := fun n =>
-      IsIso.of_iso
-        ((HomologicalComplex.eval W₂ c n).mapIso (asIso ((F.mapHomologicalComplex c).map f)))
+        ((HomologicalComplex.eval W₂ c n).mapIso
+          (asIso ((F.mapHomologicalComplex c).map f))).isIso_hom
     haveI := fun n => isIso_of_reflects_iso (f.f n) F
     exact HomologicalComplex.Hom.isIso_of_components f⟩
 #align category_theory.functor.map_homological_complex_reflects_iso CategoryTheory.Functor.mapHomologicalComplex_reflects_iso
@@ -210,8 +185,8 @@ theorem NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : W₁ 
     [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] [H.PreservesZeroMorphisms]
     (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.mapHomologicalComplex (α ≫ β) c =
-      NatTrans.mapHomologicalComplex α c ≫ NatTrans.mapHomologicalComplex β c :=
-  by aesop_cat
+      NatTrans.mapHomologicalComplex α c ≫ NatTrans.mapHomologicalComplex β c := by
+  aesop_cat
 #align category_theory.nat_trans.map_homological_complex_comp CategoryTheory.NatTrans.mapHomologicalComplex_comp
 
 @[reassoc (attr := simp 1100)]
@@ -219,8 +194,8 @@ theorem NatTrans.mapHomologicalComplex_naturality {c : ComplexShape ι} {F G : W
     [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms]
     (α : F ⟶ G) {C D : HomologicalComplex W₁ c} (f : C ⟶ D) :
     (F.mapHomologicalComplex c).map f ≫ (NatTrans.mapHomologicalComplex α c).app D =
-      (NatTrans.mapHomologicalComplex α c).app C ≫ (G.mapHomologicalComplex c).map f :=
-  by aesop_cat
+      (NatTrans.mapHomologicalComplex α c).app C ≫ (G.mapHomologicalComplex c).map f := by
+  aesop_cat
 #align category_theory.nat_trans.map_homological_complex_naturality CategoryTheory.NatTrans.mapHomologicalComplex_naturality
 
 /-- A natural isomorphism between functors induces a natural isomorphism
@@ -264,7 +239,7 @@ theorem map_chain_complex_of (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] (X :
     (F.mapHomologicalComplex _).obj (ChainComplex.of X d sq) =
       ChainComplex.of (fun n => F.obj (X n)) (fun n => F.map (d n)) fun n => by
         rw [← F.map_comp, sq n, Functor.map_zero] := by
-  refine' HomologicalComplex.ext rfl _
+  refine HomologicalComplex.ext rfl ?_
   rintro i j (rfl : j + 1 = i)
   simp only [CategoryTheory.Functor.mapHomologicalComplex_obj_d, of_d, eqToHom_refl, comp_id,
     id_comp]
@@ -275,6 +250,10 @@ end ChainComplex
 variable [HasZeroObject W₁] [HasZeroObject W₂]
 
 namespace HomologicalComplex
+
+instance (W : Type*) [Category W] [Preadditive W] [HasZeroObject W] [DecidableEq ι] (j : ι) :
+    (single W c j).Additive where
+  map_add {_ _ f g} := by ext; simp [single]
 
 variable (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms]
     (c : ComplexShape ι) [DecidableEq ι]

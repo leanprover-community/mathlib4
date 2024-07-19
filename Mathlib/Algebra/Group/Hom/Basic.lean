@@ -275,3 +275,5 @@ lemma comp_div (f : G →* H) (g h : M →* G) : f.comp (g / h) = f.comp g / f.c
   ext; simp only [Function.comp_apply, div_apply, map_div, coe_comp]
 
 end InvDiv
+
+end MonoidHom

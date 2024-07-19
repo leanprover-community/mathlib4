@@ -114,7 +114,7 @@ theorem disjoint_pi_univ_Ioc_update_left_right {x y : ∀ i, α i} {i₀ : ι} {
     (pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) := by
   rw [disjoint_left]
   rintro z h₁ h₂
-  refine' (h₁ i₀ (mem_univ _)).2.not_lt _
+  refine (h₁ i₀ (mem_univ _)).2.not_lt ?_
   simpa only [Function.update_same] using (h₂ i₀ (mem_univ _)).1
 #align set.disjoint_pi_univ_Ioc_update_left_right Set.disjoint_pi_univ_Ioc_update_left_right
 
@@ -129,7 +129,7 @@ theorem image_update_Icc (f : ∀ i, α i) (i : ι) (a b : α i) :
     update f i '' Icc a b = Icc (update f i a) (update f i b) := by
   ext x
   rw [← Set.pi_univ_Icc]
-  refine' ⟨_, fun h => ⟨x i, _, _⟩⟩
+  refine ⟨?_, fun h => ⟨x i, ?_, ?_⟩⟩
   · rintro ⟨c, hc, rfl⟩
     simpa [update_le_update_iff]
   · simpa only [Function.update_same] using h i (mem_univ i)
@@ -353,7 +353,7 @@ theorem Icc_diff_pi_univ_Ioo_subset (x y x' y' : ∀ i, α i) :
     (⋃ i : ι, Icc x (update y i (x' i))) ∪ ⋃ i : ι, Icc (update x i (y' i)) y := by
   rintro a ⟨⟨hxa, hay⟩, ha'⟩
   simp at ha'
-  simp only [ge_iff_le, le_update_iff, ne_eq, not_and, not_forall, not_le, exists_prop, gt_iff_lt,
+  simp only [le_update_iff, ne_eq, not_and, not_forall, not_le, exists_prop, gt_iff_lt,
     update_le_iff, mem_union, mem_iUnion, mem_Icc, hxa, hay _, implies_true, and_true, true_and,
     hxa _, hay, ← exists_or]
   rcases ha' with ⟨w, hw⟩

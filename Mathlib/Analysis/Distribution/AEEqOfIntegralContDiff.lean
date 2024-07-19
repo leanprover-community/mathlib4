@@ -106,7 +106,7 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
     exact tendsto_integral_of_dominated_convergence bound A B C D
   -- deduce that `∫ x in s, f = 0` as each integral `∫ gₙ f` vanishes by assumption
   have : ∀ n, ∫ x, g n x • f x ∂μ = 0 := by
-    refine' fun n ↦ h _ (g_diff n) _
+    refine fun n ↦ h _ (g_diff n) ?_
     apply HasCompactSupport.of_support_subset_isCompact K_compact
     simpa [g_supp] using vK n
   simpa [this] using L

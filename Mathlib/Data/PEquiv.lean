@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Set.Basic
+import Batteries.Tactic.Congr
 
 #align_import data.pequiv from "leanprover-community/mathlib"@"7c3269ca3fa4c0c19e4d127cd7151edbdbf99ed4"
 
@@ -119,7 +120,7 @@ protected def trans (f : α ≃. β) (g : β ≃. γ) :
     α ≃. γ where
   toFun a := (f a).bind g
   invFun a := (g.symm a).bind f.symm
-  inv a b := by simp_all [and_comm, eq_some_iff f, eq_some_iff g]
+  inv a b := by simp_all [and_comm, eq_some_iff f, eq_some_iff g, bind_eq_some]
 #align pequiv.trans PEquiv.trans
 
 @[simp]
@@ -175,8 +176,8 @@ theorem trans_refl (f : α ≃. β) : f.trans (PEquiv.refl β) = f := by
   ext; dsimp [PEquiv.trans]; simp
 #align pequiv.trans_refl PEquiv.trans_refl
 
-protected theorem inj (f : α ≃. β) {a₁ a₂ : α} {b : β} (h₁ : b ∈ f a₁) (h₂ : b ∈ f a₂) : a₁ = a₂ :=
-  by rw [← mem_iff_mem] at *; cases h : f.symm b <;> simp_all
+protected theorem inj (f : α ≃. β) {a₁ a₂ : α} {b : β} (h₁ : b ∈ f a₁) (h₂ : b ∈ f a₂) :
+    a₁ = a₂ := by rw [← mem_iff_mem] at *; cases h : f.symm b <;> simp_all
 #align pequiv.inj PEquiv.inj
 
 /-- If the domain of a `PEquiv` is `α` except a point, its forward direction is injective. -/
@@ -218,8 +219,8 @@ def ofSet (s : Set α) [DecidablePred (· ∈ s)] :
     · simp
 #align pequiv.of_set PEquiv.ofSet
 
-theorem mem_ofSet_self_iff {s : Set α} [DecidablePred (· ∈ s)] {a : α} : a ∈ ofSet s a ↔ a ∈ s :=
-  by dsimp [ofSet]; split_ifs <;> simp [*]
+theorem mem_ofSet_self_iff {s : Set α} [DecidablePred (· ∈ s)] {a : α} : a ∈ ofSet s a ↔ a ∈ s := by
+  dsimp [ofSet]; split_ifs <;> simp [*]
 #align pequiv.mem_of_set_self_iff PEquiv.mem_ofSet_self_iff
 
 theorem mem_ofSet_iff {s : Set α} [DecidablePred (· ∈ s)] {a b : α} :

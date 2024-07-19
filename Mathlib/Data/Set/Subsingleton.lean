@@ -84,6 +84,12 @@ theorem subsingleton_univ_iff : (univ : Set α).Subsingleton ↔ Subsingleton α
   ⟨subsingleton_of_univ_subsingleton, fun h => @subsingleton_univ _ h⟩
 #align set.subsingleton_univ_iff Set.subsingleton_univ_iff
 
+lemma Subsingleton.inter_singleton : (s ∩ {a}).Subsingleton :=
+  Set.subsingleton_of_subset_singleton Set.inter_subset_right
+
+lemma Subsingleton.singleton_inter : ({a} ∩ s).Subsingleton :=
+  Set.subsingleton_of_subset_singleton Set.inter_subset_left
+
 theorem subsingleton_of_subsingleton [Subsingleton α] {s : Set α} : Set.Subsingleton s :=
   subsingleton_univ.anti (subset_univ s)
 #align set.subsingleton_of_subsingleton Set.subsingleton_of_subsingleton
@@ -98,7 +104,7 @@ theorem subsingleton_isBot (α : Type*) [PartialOrder α] : Set.Subsingleton { x
 
 theorem exists_eq_singleton_iff_nonempty_subsingleton :
     (∃ a : α, s = {a}) ↔ s.Nonempty ∧ s.Subsingleton := by
-  refine' ⟨_, fun h => _⟩
+  refine ⟨?_, fun h => ?_⟩
   · rintro ⟨a, rfl⟩
     exact ⟨singleton_nonempty a, subsingleton_singleton⟩
   · exact h.2.eq_empty_or_singleton.resolve_left h.1.ne_empty
@@ -108,7 +114,7 @@ theorem exists_eq_singleton_iff_nonempty_subsingleton :
 @[simp, norm_cast]
 theorem subsingleton_coe (s : Set α) : Subsingleton s ↔ s.Subsingleton := by
   constructor
-  · refine' fun h => fun a ha b hb => _
+  · refine fun h => fun a ha b hb => ?_
     exact SetCoe.ext_iff.2 (@Subsingleton.elim s h ⟨a, ha⟩ ⟨b, hb⟩)
   · exact fun h => Subsingleton.intro fun a b => SetCoe.ext (h a.property b.property)
 #align set.subsingleton_coe Set.subsingleton_coe
@@ -276,19 +282,10 @@ theorem nontrivial_of_nontrivial (hs : s.Nontrivial) : Nontrivial α :=
   ⟨⟨x, y, hxy⟩⟩
 #align set.nontrivial_of_nontrivial Set.nontrivial_of_nontrivial
 
--- Porting note: simp_rw broken here
--- Perhaps review after https://github.com/leanprover/lean4/issues/1937?
 /-- `s`, coerced to a type, is a nontrivial type if and only if `s` is a nontrivial set. -/
 @[simp, norm_cast]
 theorem nontrivial_coe_sort {s : Set α} : Nontrivial s ↔ s.Nontrivial := by
-  -- simp_rw [← nontrivial_univ_iff, Set.Nontrivial, mem_univ, exists_true_left, SetCoe.exists,
-  --   Subtype.mk_eq_mk]
-  rw [← nontrivial_univ_iff, Set.Nontrivial, Set.Nontrivial]
-  apply Iff.intro
-  · rintro ⟨x, _, y, _, hxy⟩
-    exact ⟨x, Subtype.prop x, y, Subtype.prop y, fun h => hxy (Subtype.coe_injective h)⟩
-  · rintro ⟨x, hx, y, hy, hxy⟩
-    exact ⟨⟨x, hx⟩, mem_univ _, ⟨y, hy⟩, mem_univ _, Subtype.mk_eq_mk.not.mpr hxy⟩
+  simp [← nontrivial_univ_iff, Set.Nontrivial]
 #align set.nontrivial_coe_sort Set.nontrivial_coe_sort
 
 alias ⟨_, Nontrivial.coe_sort⟩ := nontrivial_coe_sort

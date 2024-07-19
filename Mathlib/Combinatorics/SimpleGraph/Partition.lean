@@ -79,7 +79,8 @@ def Partitionable (n : ℕ) : Prop := ∃ P : G.Partition, P.PartsCardLe n
 
 namespace Partition
 
-variable {G} (P : G.Partition)
+variable {G}
+variable (P : G.Partition)
 
 /-- The part in the partition that `v` belongs to -/
 def partOfVertex (v : V) : Set V := Classical.choose (P.isPartition.2 v)
@@ -125,8 +126,7 @@ variable {G}
 
 /-- Creates a partition from a coloring. -/
 @[simps]
-def Coloring.toPartition {α : Type v} (C : G.Coloring α) : G.Partition
-    where
+def Coloring.toPartition {α : Type v} (C : G.Coloring α) : G.Partition where
   parts := C.colorClasses
   isPartition := C.colorClasses_isPartition
   independent := by
@@ -145,7 +145,7 @@ theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorabl
     rw [Set.Finite.card_toFinset hf] at hc
     apply P.colorable.mono hc
   · rintro ⟨C⟩
-    refine' ⟨C.toPartition, C.colorClasses_finite, le_trans _ (Fintype.card_fin n).le⟩
+    refine ⟨C.toPartition, C.colorClasses_finite, le_trans ?_ (Fintype.card_fin n).le⟩
     generalize_proofs h
     change Set.Finite (Coloring.colorClasses C) at h
     have : Fintype C.colorClasses := C.colorClasses_finite.fintype

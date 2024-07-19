@@ -6,6 +6,7 @@ Authors: Simon Hudon, Scott Morrison
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.Products.Basic
+import Batteries.Data.Sum.Basic
 
 #align_import category_theory.pi.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -315,7 +316,7 @@ lemma isIso_pi_iff {X Y : ∀ i, C i} (f : X ⟶ Y) :
     IsIso f ↔ ∀ i, IsIso (f i) := by
   constructor
   · intro _ i
-    exact IsIso.of_iso (Pi.isoApp (asIso f) i)
+    exact (Pi.isoApp (asIso f) i).isIso_hom
   · intro
     exact ⟨fun i => inv (f i), by aesop_cat, by aesop_cat⟩
 

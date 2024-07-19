@@ -51,7 +51,7 @@ noncomputable section
 
 open scoped Classical
 
-open BigOperators Polynomial
+open Polynomial
 
 universe u v w
 
@@ -227,9 +227,8 @@ theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
     (fun x => by
       rw [aeval_C]
       rfl)
-    (fun p q ihp ihq => by rw [AlgHom.map_add, RingHom.map_add, ihp, ihq]) fun n x _ => by
-    rw [AlgHom.map_mul, aeval_C, AlgHom.map_pow, aeval_X, RingHom.map_mul, mk_C, RingHom.map_pow,
-      mk_X]
+    (fun p q ihp ihq => by rw [map_add, RingHom.map_add, ihp, ihq]) fun n x _ => by
+    rw [_root_.map_mul, aeval_C, map_pow, aeval_X, RingHom.map_mul, mk_C, RingHom.map_pow, mk_X]
     rfl
 #align adjoin_root.aeval_eq AdjoinRoot.aeval_eq
 
@@ -357,8 +356,8 @@ theorem algHom_subsingleton {S : Type*} [CommRing S] [Algebra R S] {r : R} :
   ⟨fun f g =>
     algHom_ext
       (@inv_unique _ _ (algebraMap R S r) _ _
-        (by rw [← f.commutes, ← f.map_mul, algebraMap_eq, root_isInv, map_one])
-        (by rw [← g.commutes, ← g.map_mul, algebraMap_eq, root_isInv, map_one]))⟩
+        (by rw [← f.commutes, ← _root_.map_mul, algebraMap_eq, root_isInv, map_one])
+        (by rw [← g.commutes, ← _root_.map_mul, algebraMap_eq, root_isInv, map_one]))⟩
 #align adjoin_root.alg_hom_subsingleton AdjoinRoot.algHom_subsingleton
 
 end AdjoinInv
@@ -545,8 +544,8 @@ theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
 
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
   have f'_monic : Monic _ := monic_mul_leadingCoeff_inv hf
-  refine' (minpoly.unique K _ f'_monic _ _).symm
-  · rw [AlgHom.map_mul, aeval_eq, mk_self, zero_mul]
+  refine (minpoly.unique K _ f'_monic ?_ ?_).symm
+  · rw [_root_.map_mul, aeval_eq, mk_self, zero_mul]
   intro q q_monic q_aeval
   have commutes : (lift (algebraMap K (AdjoinRoot f)) (root f) q_aeval).comp (mk q) = mk f := by
     ext
@@ -854,8 +853,8 @@ noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
 theorem quotEquivQuotMap_apply_mk (f g : R[X]) (I : Ideal R) :
     AdjoinRoot.quotEquivQuotMap f I (Ideal.Quotient.mk (Ideal.map (of f) I) (AdjoinRoot.mk f g)) =
       Ideal.Quotient.mk (Ideal.span ({Polynomial.map (Ideal.Quotient.mk I) f} : Set (R ⧸ I)[X]))
-      (g.map (Ideal.Quotient.mk I)) :=
-  by rw [AdjoinRoot.quotEquivQuotMap_apply, AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_mk_of]
+      (g.map (Ideal.Quotient.mk I)) := by
+  rw [AdjoinRoot.quotEquivQuotMap_apply, AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_mk_of]
 #align adjoin_root.quot_equiv_quot_map_apply_mk AdjoinRoot.quotEquivQuotMap_apply_mk
 
 theorem quotEquivQuotMap_symm_apply_mk (f g : R[X]) (I : Ideal R) :

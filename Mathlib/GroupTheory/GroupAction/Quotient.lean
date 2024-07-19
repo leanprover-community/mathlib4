@@ -29,8 +29,6 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 open Function
 
-open BigOperators
-
 namespace MulAction
 
 variable [Group α]
@@ -258,7 +256,6 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
 #align mul_action.self_equiv_sigma_orbits_quotient_stabilizer' MulAction.selfEquivSigmaOrbitsQuotientStabilizer'
 #align add_action.self_equiv_sigma_orbits_quotient_stabilizer' AddAction.selfEquivSigmaOrbitsQuotientStabilizer'
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- **Class formula** for a finite group acting on a finite type. See
 `MulAction.card_eq_sum_card_group_div_card_stabilizer` for a specialized version using
 `Quotient.out'`. -/
@@ -344,14 +341,90 @@ theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a : α,
 instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransitive G (G ⧸ H) where
   exists_smul_eq := by
     { rintro ⟨x⟩ ⟨y⟩
-      refine' ⟨y * x⁻¹, QuotientGroup.eq.mpr _⟩
+      refine ⟨y * x⁻¹, QuotientGroup.eq.mpr ?_⟩
       simp only [smul_eq_mul, H.one_mem, mul_left_inv, inv_mul_cancel_right]}
 #align mul_action.is_pretransitive_quotient MulAction.isPretransitive_quotient
 #align add_action.is_pretransitive_quotient AddAction.isPretransitive_quotient
 
+variable {α}
+
+@[to_additive]
+instance finite_quotient_of_pretransitive_of_finite_quotient [IsPretransitive α β] {H : Subgroup α}
+    [Finite (α ⧸ H)] : Finite <| orbitRel.Quotient H β := by
+  rcases isEmpty_or_nonempty β with he | ⟨⟨b⟩⟩
+  · exact Quotient.finite _
+  · have h' : Finite (Quotient (rightRel H)) :=
+      Finite.of_equiv _ (quotientRightRelEquivQuotientLeftRel _).symm
+    let f : Quotient (rightRel H) → orbitRel.Quotient H β :=
+      fun a ↦ Quotient.liftOn' a (fun g ↦ ⟦g • b⟧) fun g₁ g₂ r ↦ by
+        replace r := Setoid.symm' _ r
+        change (rightRel H).r _ _ at r
+        rw [rightRel_eq] at r
+        simp only [Quotient.eq]
+        change g₁ • b ∈ orbit H (g₂ • b)
+        rw [mem_orbit_iff]
+        exact ⟨⟨g₁ * g₂⁻¹, r⟩, by simp [mul_smul]⟩
+    exact Finite.of_surjective f ((Quotient.surjective_liftOn' _).2
+      (Quotient.surjective_Quotient_mk''.comp (MulAction.surjective_smul _ _)))
+
+variable {β}
+
+/-- A bijection between the quotient of the action of a subgroup `H` on an orbit, and a
+corresponding quotient expressed in terms of `Setoid.comap Subtype.val`. -/
+@[to_additive "A bijection between the quotient of the action of an additive subgroup `H` on an
+orbit, and a corresponding quotient expressed in terms of `Setoid.comap Subtype.val`."]
+noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
+    orbitRel.Quotient H (orbitRel.Quotient.orbit ω) ≃
+      Quotient ((orbitRel H β).comap (Subtype.val : Quotient.mk (orbitRel α β) ⁻¹' {ω} → β)) where
+  toFun := fun q ↦ q.liftOn' (fun x ↦ ⟦⟨↑x, by
+    simp only [Set.mem_preimage, Set.mem_singleton_iff]
+    have hx := x.property
+    rwa [orbitRel.Quotient.mem_orbit, @Quotient.mk''_eq_mk] at hx⟩⟧) fun a b h ↦ by
+      simp only [← Quotient.eq'', Quotient.mk''_eq_mk,
+                 orbitRel.Quotient.subgroup_quotient_eq_iff] at h
+      simp only [← Quotient.mk''_eq_mk, Quotient.eq''] at h ⊢
+      exact h
+  invFun := fun q ↦ q.liftOn' (fun x ↦ ⟦⟨↑x, by
+    have hx := x.property
+    simp only [Set.mem_preimage, Set.mem_singleton_iff] at hx
+    rwa [orbitRel.Quotient.mem_orbit, @Quotient.mk''_eq_mk]⟩⟧) fun a b h ↦ by
+      change Setoid.Rel _ _ _ at h
+      rw [Setoid.comap_rel, Setoid.Rel, ← Quotient.eq'', @Quotient.mk''_eq_mk] at h
+      simp only [orbitRel.Quotient.subgroup_quotient_eq_iff]
+      exact h
+  left_inv := by
+    simp only [LeftInverse]
+    intro q
+    induction q using Quotient.inductionOn'
+    rfl
+  right_inv := by
+    simp only [Function.RightInverse, LeftInverse]
+    intro q
+    induction q using Quotient.inductionOn'
+    rfl
+
+variable (β)
+
+/-- A bijection between the orbits under the action of a subgroup `H` on `β`, and the orbits
+under the action of `H` on each orbit under the action of `G`. -/
+@[to_additive "A bijection between the orbits under the action of an additive subgroup `H` on `β`,
+and the orbits under the action of `H` on each orbit under the action of `G`."]
+noncomputable def equivSubgroupOrbits (H : Subgroup α) :
+    orbitRel.Quotient H β ≃ Σω : Ω, orbitRel.Quotient H (orbitRel.Quotient.orbit ω) :=
+  (Setoid.sigmaQuotientEquivOfLe (orbitRel_subgroup_le H)).symm.trans
+    (Equiv.sigmaCongrRight fun ω ↦ (equivSubgroupOrbitsSetoidComap H ω).symm)
+
+variable {β}
+
+@[to_additive]
+instance finite_quotient_of_finite_quotient_of_finite_quotient {H : Subgroup α}
+    [Finite (orbitRel.Quotient α β)] [Finite (α ⧸ H)] :
+    Finite <| orbitRel.Quotient H β := by
+  rw [(equivSubgroupOrbits β H).finite_iff]
+  infer_instance
+
 end MulAction
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem ConjClasses.card_carrier {G : Type*} [Group G] [Fintype G] (g : G)
     [Fintype (ConjClasses.mk g).carrier] [Fintype <| MulAction.stabilizer (ConjAct G) g] :
     Fintype.card (ConjClasses.mk g).carrier =
@@ -370,11 +443,11 @@ theorem normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker
   apply le_antisymm
   · intro g hg
     apply Equiv.Perm.ext
-    refine' fun q ↦ QuotientGroup.induction_on q _
-    refine' fun g' => (MulAction.Quotient.smul_mk H g g').trans (QuotientGroup.eq.mpr _)
+    refine fun q ↦ QuotientGroup.induction_on q ?_
+    refine fun g' => (MulAction.Quotient.smul_mk H g g').trans (QuotientGroup.eq.mpr ?_)
     rw [smul_eq_mul, mul_inv_rev, ← inv_inv g', inv_inv]
     exact H.normalCore.inv_mem hg g'⁻¹
-  · refine' (Subgroup.normal_le_normalCore.mpr fun g hg => _)
+  · refine (Subgroup.normal_le_normalCore.mpr fun g hg => ?_)
     rw [← H.inv_mem_iff, ← mul_one g⁻¹, ← QuotientGroup.eq, ← mul_one g]
     exact (MulAction.Quotient.smul_mk H g 1).symm.trans (Equiv.Perm.ext_iff.mp hg (1 : G))
 #align subgroup.normal_core_eq_ker Subgroup.normalCore_eq_ker
@@ -430,7 +503,7 @@ theorem card_comm_eq_card_conjClasses_mul_card (G : Type*) [Group G] :
       (fun g ↦ card (MulAction.fixedBy G g))
       fun g ↦ card_congr' <| congr_arg _ <| funext fun h ↦ mul_inv_eq_iff_eq_mul.symm.eq,
     MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group]
-  congr 1; apply card_congr'; congr; ext;
+  congr 1; apply card_congr'; congr; ext
   exact (Setoid.comm' _).trans isConj_iff.symm
 #align card_comm_eq_card_conj_classes_mul_card card_comm_eq_card_conjClasses_mul_card
 

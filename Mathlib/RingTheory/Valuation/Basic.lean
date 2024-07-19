@@ -3,7 +3,8 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
-import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.TFAE
 
@@ -61,7 +62,7 @@ boilerplate lemmas to `ValuationClass`.
 
 
 open scoped Classical
-open BigOperators Function Ideal
+open Function Ideal
 
 noncomputable section
 
@@ -83,7 +84,7 @@ structure Valuation extends R →*₀ Γ₀ where
 /-- `ValuationClass F α β` states that `F` is a type of valuations.
 
 You should also extend this typeclass when you extend `Valuation`. -/
-class ValuationClass (F) (R Γ₀ : outParam (Type*)) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
+class ValuationClass (F) (R Γ₀ : outParam Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
   [FunLike F R Γ₀]
   extends MonoidWithZeroHomClass F R Γ₀ : Prop where
   /-- The valuation of a a sum is less that the sum of the valuations -/
@@ -127,6 +128,9 @@ instance : ValuationClass (Valuation R Γ₀) R Γ₀ where
   map_one f := f.map_one'
   map_zero f := f.map_zero'
   map_add_le_max f := f.map_add_le_max'
+
+@[simp]
+theorem coe_mk (f : R →*₀ Γ₀) (h) : ⇑(Valuation.mk f h) = f := rfl
 
 theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := rfl
 #align valuation.to_fun_eq_coe Valuation.toFun_eq_coe
@@ -181,25 +185,25 @@ theorem map_add_lt {x y g} (hx : v x < g) (hy : v y < g) : v (x + y) < g :=
 #align valuation.map_add_lt Valuation.map_add_lt
 
 theorem map_sum_le {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf : ∀ i ∈ s, v (f i) ≤ g) :
-    v (∑ i in s, f i) ≤ g := by
-  refine'
+    v (∑ i ∈ s, f i) ≤ g := by
+  refine
     Finset.induction_on s (fun _ => v.map_zero ▸ zero_le')
-      (fun a s has ih hf => _) hf
+      (fun a s has ih hf => ?_) hf
   rw [Finset.forall_mem_insert] at hf; rw [Finset.sum_insert has]
   exact v.map_add_le hf.1 (ih hf.2)
 #align valuation.map_sum_le Valuation.map_sum_le
 
 theorem map_sum_lt {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g ≠ 0)
-    (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i in s, f i) < g := by
-  refine'
+    (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i ∈ s, f i) < g := by
+  refine
     Finset.induction_on s (fun _ => v.map_zero ▸ (zero_lt_iff.2 hg))
-      (fun a s has ih hf => _) hf
+      (fun a s has ih hf => ?_) hf
   rw [Finset.forall_mem_insert] at hf; rw [Finset.sum_insert has]
   exact v.map_add_lt hf.1 (ih hf.2)
 #align valuation.map_sum_lt Valuation.map_sum_lt
 
 theorem map_sum_lt' {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : 0 < g)
-    (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i in s, f i) < g :=
+    (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i ∈ s, f i) < g :=
   v.map_sum_lt (ne_of_gt hg) hf
 #align valuation.map_sum_lt' Valuation.map_sum_lt'
 
@@ -289,6 +293,12 @@ theorem map_sub_swap (x y : R) : v (x - y) = v (y - x) :=
   v.toMonoidWithZeroHom.toMonoidHom.map_sub_swap x y
 #align valuation.map_sub_swap Valuation.map_sub_swap
 
+theorem map_inv {R : Type*} [DivisionRing R] (v : Valuation R Γ₀) : ∀ x, v x⁻¹ = (v x)⁻¹ :=
+  map_inv₀ _
+
+theorem map_div {R : Type*} [DivisionRing R] (v : Valuation R Γ₀) : ∀ x y, v (x / y) = v x / v y :=
+  map_div₀ _
+
 theorem map_sub (x y : R) : v (x - y) ≤ max (v x) (v y) :=
   calc
     v (x - y) = v (x + -y) := by rw [sub_eq_add_neg]
@@ -306,7 +316,7 @@ theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = max (v x) (v y) 
     or_iff_not_imp_right.1 (le_iff_eq_or_lt.1 (v.map_add x y)) this
   intro h'
   wlog vyx : v y < v x generalizing x y
-  · refine' this h.symm _ (h.lt_or_lt.resolve_right vyx)
+  · refine this h.symm ?_ (h.lt_or_lt.resolve_right vyx)
     rwa [add_comm, max_comm]
   rw [max_eq_left_of_lt vyx] at h'
   apply lt_irrefl (v x)
@@ -323,6 +333,14 @@ theorem map_add_eq_of_lt_right (h : v x < v y) : v (x + y) = v y :=
 theorem map_add_eq_of_lt_left (h : v y < v x) : v (x + y) = v x := by
   rw [add_comm]; exact map_add_eq_of_lt_right _ h
 #align valuation.map_add_eq_of_lt_left Valuation.map_add_eq_of_lt_left
+
+theorem map_sub_eq_of_lt_right (h : v x < v y) : v (x - y) = v y := by
+  rw [sub_eq_add_neg, map_add_eq_of_lt_right, map_neg]
+  rwa [map_neg]
+
+theorem map_sub_eq_of_lt_left (h : v y < v x) : v (x - y) = v x := by
+  rw [sub_eq_add_neg, map_add_eq_of_lt_left]
+  rwa [map_neg]
 
 theorem map_eq_of_sub_lt (h : v (y - x) < v x) : v y = v x := by
   have := Valuation.map_add_of_distinct_val v (ne_of_gt h).symm
@@ -344,6 +362,35 @@ theorem map_one_sub_of_lt (h : v x < 1) : v (1 - x) = 1 := by
 theorem one_lt_val_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : 1 < v x ↔ v x⁻¹ < 1 := by
   simpa using (inv_lt_inv₀ (v.ne_zero_iff.2 h) one_ne_zero).symm
 #align valuation.one_lt_val_iff Valuation.one_lt_val_iff
+
+theorem one_le_val_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : 1 ≤ v x ↔ v x⁻¹ ≤ 1 := by
+  convert (one_lt_val_iff v (inv_ne_zero h)).symm.not <;>
+  push_neg <;> simp only [inv_inv]
+
+theorem val_lt_one_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : v x < 1 ↔ 1 < v x⁻¹ := by
+  simpa only [inv_inv] using (one_lt_val_iff v (inv_ne_zero h)).symm
+
+theorem val_le_one_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : v x ≤ 1 ↔ 1 ≤ v x⁻¹ := by
+  simpa [inv_inv] using (one_le_val_iff v (inv_ne_zero h)).symm
+
+theorem val_eq_one_iff (v : Valuation K Γ₀) {x : K} : v x = 1 ↔ v x⁻¹ = 1 := by
+  by_cases h : x = 0
+  · simp only [map_inv₀, inv_eq_one]
+  · simpa only [le_antisymm_iff, And.comm] using and_congr (one_le_val_iff v h) (val_le_one_iff v h)
+
+theorem val_le_one_or_val_inv_lt_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1 ∨ v x⁻¹ < 1 := by
+  by_cases h : x = 0
+  · simp only [h, _root_.map_zero, zero_le', inv_zero, zero_lt_one, or_self]
+  · simp only [← one_lt_val_iff v h, le_or_lt]
+
+/--
+This theorem is a weaker version of `Valuation.val_le_one_or_val_inv_lt_one`, but more symmetric
+in `x` and `x⁻¹`.
+-/
+theorem val_le_one_or_val_inv_le_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1 ∨ v x⁻¹ ≤ 1 := by
+  by_cases h : x = 0
+  · simp only [h, _root_.map_zero, zero_le', inv_zero, or_self]
+  · simp only [← one_le_val_iff v h, le_total]
 
 /-- The subgroup of elements whose valuation is less than a certain unit. -/
 def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
@@ -458,7 +505,7 @@ theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
           simpa
         rw [h] at this
         rw [show x = -1 + (1 + x) by simp]
-        refine' le_trans (v'.map_add _ _) _
+        refine le_trans (v'.map_add _ _) ?_
         simp [this]
       · rw [h] at hx'
         exact le_of_eq hx'
@@ -470,7 +517,7 @@ theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
           simpa
         rw [← h] at this
         rw [show x = -1 + (1 + x) by simp]
-        refine' le_trans (v.map_add _ _) _
+        refine le_trans (v.map_add _ _) ?_
         simp [this]
       · rw [← h] at hx'
         exact le_of_eq hx'
@@ -565,7 +612,7 @@ instance [Nontrivial Γ₀] [NoZeroDivisors Γ₀] : Ideal.IsPrime (supp v) :=
 theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a := by
   have aux : ∀ a s, v s = 0 → v (a + s) ≤ v a := by
     intro a' s' h'
-    refine' le_trans (v.map_add a' s') (max_le le_rfl _)
+    refine le_trans (v.map_add a' s') (max_le le_rfl ?_)
     simp [h']
   apply le_antisymm (aux a s h)
   calc
@@ -685,17 +732,17 @@ theorem map_lt_add {x y : R} {g : Γ₀} (hx : g < v x) (hy : g < v y) : g < v (
 #align add_valuation.map_lt_add AddValuation.map_lt_add
 
 theorem map_le_sum {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf : ∀ i ∈ s, g ≤ v (f i)) :
-    g ≤ v (∑ i in s, f i) :=
+    g ≤ v (∑ i ∈ s, f i) :=
   v.map_sum_le hf
 #align add_valuation.map_le_sum AddValuation.map_le_sum
 
 theorem map_lt_sum {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g ≠ ⊤)
-    (hf : ∀ i ∈ s, g < v (f i)) : g < v (∑ i in s, f i) :=
+    (hf : ∀ i ∈ s, g < v (f i)) : g < v (∑ i ∈ s, f i) :=
   v.map_sum_lt hg hf
 #align add_valuation.map_lt_sum AddValuation.map_lt_sum
 
 theorem map_lt_sum' {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g < ⊤)
-    (hf : ∀ i ∈ s, g < v (f i)) : g < v (∑ i in s, f i) :=
+    (hf : ∀ i ∈ s, g < v (f i)) : g < v (∑ i ∈ s, f i) :=
   v.map_sum_lt' hg hf
 #align add_valuation.map_lt_sum' AddValuation.map_lt_sum'
 
@@ -775,6 +822,10 @@ theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = - (v x) :=
 #align add_valuation.map_inv AddValuation.map_inv
 
 @[simp]
+theorem map_div (v : AddValuation K Γ₀) {x y : K} : v (x / y) = v x - v y :=
+  map_div₀ v.valuation x y
+
+@[simp]
 theorem map_neg (x : R) : v (-x) = v x :=
   Valuation.map_neg v x
 #align add_valuation.map_neg AddValuation.map_neg
@@ -794,6 +845,24 @@ theorem map_le_sub {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g �
 theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = @Min.min Γ₀ _ (v x) (v y) :=
   Valuation.map_add_of_distinct_val v h
 #align add_valuation.map_add_of_distinct_val AddValuation.map_add_of_distinct_val
+
+theorem map_add_eq_of_lt_left {x y : R} (h : v x < v y) :
+    v (x + y) = v x := by
+  rw [map_add_of_distinct_val]
+  simp [le_of_lt, h]
+  simp [ne_of_lt, h]
+
+theorem map_add_eq_of_lt_right {x y : R} (hx : v y < v x) :
+    v (x + y) = v y := add_comm y x ▸ map_add_eq_of_lt_left v hx
+
+theorem map_sub_eq_of_lt_left {x y : R} (hx : v x < v y) :
+    v (x - y) = v x := by
+  rw [sub_eq_add_neg]
+  apply map_add_eq_of_lt_left
+  rwa [map_neg]
+
+theorem map_sub_eq_of_lt_right {x y : R} (hx : v y < v x) :
+    v (x - y) = v y := map_sub_swap v x y ▸ map_sub_eq_of_lt_left v hx
 
 theorem map_eq_of_lt_sub (h : v x < v (y - x)) : v y = v x :=
   Valuation.map_eq_of_sub_lt v h

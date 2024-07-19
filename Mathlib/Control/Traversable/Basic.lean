@@ -5,6 +5,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Data.Option.Defs
 import Mathlib.Control.Functor
+import Batteries.Data.List.Basic
 
 #align_import control.traversable.basic from "leanprover-community/mathlib"@"1fc36cc9c8264e6e81253f88be7fb2cb6c92d76a"
 
@@ -265,7 +266,11 @@ class LawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFu
 instance : Traversable Id :=
   ⟨id⟩
 
-instance : LawfulTraversable Id := by refine' { .. } <;> intros <;> rfl
+instance : LawfulTraversable Id where
+  id_traverse _ := rfl
+  comp_traverse _ _ _ := rfl
+  traverse_eq_map_id _ _ := rfl
+  naturality _ _ _ _ _ := rfl
 
 section
 

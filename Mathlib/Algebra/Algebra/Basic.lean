@@ -5,10 +5,13 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Module.ULift
 import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Data.Int.CharZero
 
 #align_import algebra.algebra.basic from "leanprover-community/mathlib"@"36b8aa61ea7c05727161f96a0532897bd72aedab"
 
@@ -261,46 +264,6 @@ instance nat_algebra_subsingleton : Subsingleton (Algebra ℕ R) :=
 
 end Nat
 
-namespace RingHom
-
-variable {R S : Type*}
-
--- Porting note: changed `[Ring R] [Ring S]` to `[Semiring R] [Semiring S]`
--- otherwise, Lean failed to find a `Subsingleton (ℚ →+* S)` instance
-@[simp]
-theorem map_rat_algebraMap [Semiring R] [Semiring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S)
-    (r : ℚ) : f (algebraMap ℚ R r) = algebraMap ℚ S r :=
-  RingHom.ext_iff.1 (Subsingleton.elim (f.comp (algebraMap ℚ R)) (algebraMap ℚ S)) r
-#align ring_hom.map_rat_algebra_map RingHom.map_rat_algebraMap
-
-end RingHom
-
-section Rat
-
-instance algebraRat {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
-  smul := (· • ·)
-  smul_def' := Rat.smul_def
-  toRingHom := Rat.castHom α
-  commutes' := Rat.cast_commute
-#align algebra_rat algebraRat
-
-/-- The rational numbers are an algebra over the non-negative rationals. -/
-instance : Algebra NNRat ℚ :=
-  NNRat.coeHom.toAlgebra
-
-/-- The two `Algebra ℚ ℚ` instances should coincide. -/
-example : algebraRat = Algebra.id ℚ :=
-  rfl
-
-@[simp] theorem algebraMap_rat_rat : algebraMap ℚ ℚ = RingHom.id ℚ := rfl
-#align algebra_map_rat_rat algebraMap_rat_rat
-
-instance algebra_rat_subsingleton {α} [Semiring α] : Subsingleton (Algebra ℚ α) :=
-  ⟨fun x y => Algebra.algebra_ext x y <| RingHom.congr_fun <| Subsingleton.elim _ _⟩
-#align algebra_rat_subsingleton algebra_rat_subsingleton
-
-end Rat
-
 section Int
 
 variable (R : Type*) [Ring R]
@@ -415,7 +378,7 @@ theorem intCast_smul {k V : Type*} [CommRing k] [AddCommGroup V] [Module k V] (r
 theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
     [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M] [NoZeroSMulDivisors R A]
     [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M := by
-  refine' ⟨fun {r m} h => _⟩
+  refine ⟨fun {r m} h => ?_⟩
   rw [algebra_compatible_smul A r m] at h
   cases' smul_eq_zero.1 h with H H
   · have : Function.Injective (algebraMap R A) :=
@@ -518,3 +481,84 @@ lemma IsUnit.algebraMap_of_algebraMap (f : A →ₗ[R] B) (hf : f 1 = 1) {r : R}
   isUnit_of_invertible _
 
 end invertibility
+
+section algebraMap
+
+variable {F E : Type*} [CommSemiring F] [Semiring E] [Algebra F E] (b : F →ₗ[F] E)
+
+/-- If `E` is an `F`-algebra, and there exists an injective `F`-linear map from `F` to `E`,
+then the algebra map from `F` to `E` is also injective. -/
+theorem injective_algebraMap_of_linearMap (hb : Function.Injective b) :
+    Function.Injective (algebraMap F E) := fun x y e ↦ hb <| by
+  rw [← mul_one x, ← mul_one y, ← smul_eq_mul, ← smul_eq_mul,
+    map_smul, map_smul, Algebra.smul_def, Algebra.smul_def, e]
+
+/-- If `E` is an `F`-algebra, and there exists a surjective `F`-linear map from `F` to `E`,
+then the algebra map from `F` to `E` is also surjective. -/
+theorem surjective_algebraMap_of_linearMap (hb : Function.Surjective b) :
+    Function.Surjective (algebraMap F E) := fun x ↦ by
+  obtain ⟨x, rfl⟩ := hb x
+  obtain ⟨y, hy⟩ := hb (b 1 * b 1)
+  refine ⟨x * y, ?_⟩
+  obtain ⟨z, hz⟩ := hb 1
+  apply_fun (x • z • ·) at hy
+  rwa [← map_smul, smul_eq_mul, mul_comm, ← smul_mul_assoc, ← map_smul _ z, smul_eq_mul, mul_one,
+    ← smul_eq_mul, map_smul, hz, one_mul, ← map_smul, smul_eq_mul, mul_one, smul_smul,
+    ← Algebra.algebraMap_eq_smul_one] at hy
+
+/-- If `E` is an `F`-algebra, and there exists a bijective `F`-linear map from `F` to `E`,
+then the algebra map from `F` to `E` is also bijective.
+
+NOTE: The same result can also be obtained if there are two `F`-linear maps from `F` to `E`,
+one is injective, the other one is surjective. In this case, use
+`injective_algebraMap_of_linearMap` and `surjective_algebraMap_of_linearMap` separately. -/
+theorem bijective_algebraMap_of_linearMap (hb : Function.Bijective b) :
+    Function.Bijective (algebraMap F E) :=
+  ⟨injective_algebraMap_of_linearMap b hb.1, surjective_algebraMap_of_linearMap b hb.2⟩
+
+/-- If `E` is an `F`-algebra, there exists an `F`-linear isomorphism from `F` to `E` (namely,
+`E` is a free `F`-module of rank one), then the algebra map from `F` to `E` is bijective. -/
+theorem bijective_algebraMap_of_linearEquiv (b : F ≃ₗ[F] E) :
+    Function.Bijective (algebraMap F E) :=
+  bijective_algebraMap_of_linearMap _ b.bijective
+
+end algebraMap
+
+section surjective
+
+variable {R S} [CommSemiring R] [Semiring S] [Algebra R S]
+variable (h : Function.Surjective (algebraMap R S))
+variable {M N} [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S M] [IsScalarTower R S M]
+variable [Module R N] [Module S N] [IsScalarTower R S N]
+
+/-- If `R →+* S` is surjective, then `S`-linear maps between modules are exactly `R`-linear maps. -/
+def LinearMap.extendScalarsOfSurjectiveEquiv : (M →ₗ[R] N) ≃ₗ[R] (M →ₗ[S] N) where
+  toFun f := { __ := f, map_smul' := fun r x ↦ by obtain ⟨r, rfl⟩ := h r; simp }
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  invFun f := f.restrictScalars S
+  left_inv f := rfl
+  right_inv f := rfl
+
+/-- If `R →+* S` is surjective, then `R`-linear maps are also `S`-linear. -/
+abbrev LinearMap.extendScalarsOfSurjective (l : M →ₗ[R] N) : M →ₗ[S] N :=
+  extendScalarsOfSurjectiveEquiv h l
+
+@[simp]
+lemma LinearMap.extendScalarsOfSurjective_apply (l : M →ₗ[R] N) (x) :
+    l.extendScalarsOfSurjective h x = l x := rfl
+
+/-- If `R →+* S` is surjective, then `R`-linear isomorphisms are also `S`-linear. -/
+def LinearEquiv.extendScalarsOfSurjective (f : M ≃ₗ[R] N) : M ≃ₗ[S] N where
+  __ := f
+  map_smul' r x := by obtain ⟨r, rfl⟩ := h r; simp
+
+@[simp]
+lemma LinearEquiv.extendScalarsOfSurjective_apply (f : M ≃ₗ[R] N) (x) :
+    f.extendScalarsOfSurjective h x = f x := rfl
+
+@[simp]
+lemma LinearEquiv.extendScalarsOfSurjective_symm (f : M ≃ₗ[R] N) :
+    (f.extendScalarsOfSurjective h).symm = f.symm.extendScalarsOfSurjective h := rfl
+
+end surjective

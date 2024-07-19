@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Positivity.Finset
@@ -64,7 +64,7 @@ nonrec lemma EdgeDisjointTriangles.mono (h : G ≤ H) (hH : H.EdgeDisjointTriang
 lemma EdgeDisjointTriangles.map (f : α ↪ β) (hG : G.EdgeDisjointTriangles) :
     (G.map f).EdgeDisjointTriangles := by
   rw [EdgeDisjointTriangles, cliqueSet_map (by norm_num : 3 ≠ 1),
-    ((Finset.map_injective f).injOn _).pairwise_image]
+    (Finset.map_injective f).injOn.pairwise_image]
   classical
   rintro s hs t ht hst
   dsimp [Function.onFun]
@@ -267,7 +267,7 @@ lemma FarFromTriangleFree.lt_half (hG : G.FarFromTriangleFree ε) : ε < 2⁻¹ 
     _ < card α ^ 2 := ?_
   rw [edgeFinset_top, filter_not, card_sdiff (subset_univ _), card_univ, Sym2.card,]
   simp_rw [choose_two_right, Nat.add_sub_cancel, Nat.mul_comm _ (card α),
-    Sym2.isDiag_iff_mem_range_diag, univ_filter_mem_range, mul_tsub,
+    funext (propext <| Sym2.isDiag_iff_mem_range_diag ·), univ_filter_mem_range, mul_tsub,
     Nat.mul_div_cancel' (card α).even_mul_succ_self.two_dvd]
   rw [card_image_of_injective _ Sym2.diag_injective, card_univ, mul_add_one (α := ℕ), two_mul, sq,
     add_tsub_add_eq_tsub_right]
@@ -279,7 +279,7 @@ lemma FarFromTriangleFree.lt_one (hG : G.FarFromTriangleFree ε) : ε < 1 :=
 theorem FarFromTriangleFree.nonpos (h₀ : G.FarFromTriangleFree ε) (h₁ : G.CliqueFree 3) :
     ε ≤ 0 := by
   have := h₀ (empty_subset _)
-  rw [coe_empty, Finset.card_empty, cast_zero, deleteEdges_empty_eq] at this
+  rw [coe_empty, Finset.card_empty, cast_zero, deleteEdges_empty] at this
   exact nonpos_of_mul_nonpos_left (this h₁) (cast_pos.2 <| sq_pos_of_pos Fintype.card_pos)
 #align simple_graph.far_from_triangle_free.nonpos SimpleGraph.FarFromTriangleFree.nonpos
 

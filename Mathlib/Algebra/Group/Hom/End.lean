@@ -59,9 +59,9 @@ end AddMonoid.End
 /-!
 ### Miscellaneous definitions
 
-Due to the fact this file imports `Algebra.GroupPower.Basic`, it is not possible to import it in
-some of the lower-level files like `Algebra.Ring.Basic`. The following lemmas should be rehomed
-if the import structure permits them to be.
+This file used to import `Algebra.GroupPower.Basic`, hence it was not possible to import it in
+some of the lower-level files like `Algebra.Ring.Basic`. The following lemmas should be rehomed now
+that `Algebra.GroupPower.Basic` was deleted.
 -/
 
 

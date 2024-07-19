@@ -5,7 +5,12 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Algebra.Order.Ring.Finset
+import Mathlib.Analysis.Normed.Group.Bounded
+import Mathlib.Analysis.Normed.Group.Constructions
+import Mathlib.Analysis.Normed.Group.Rat
+import Mathlib.Analysis.Normed.Group.Submodule
+import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.MetricSpace.DilationEquiv
@@ -22,7 +27,7 @@ definitions.
 variable {α : Type*} {β : Type*} {γ : Type*} {ι : Type*}
 
 open Filter Metric Bornology
-open scoped Topology BigOperators NNReal ENNReal uniformity Pointwise
+open scoped Topology NNReal ENNReal uniformity Pointwise
 
 /-- A non-unital seminormed ring is a not-necessarily-unital ring
 endowed with a seminorm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
@@ -275,11 +280,31 @@ instance NonUnitalSubalgebra.nonUnitalSeminormedRing {𝕜 : Type*} [CommRing �
   { s.toSubmodule.seminormedAddCommGroup, s.toNonUnitalRing with
     norm_mul := fun a b => norm_mul_le a.1 b.1 }
 
+/-- A non-unital subalgebra of a non-unital seminormed ring is also a non-unital seminormed ring,
+with the restriction of the norm.  -/
+-- necessary to require `SMulMemClass S 𝕜 E` so that `𝕜` can be determined as an `outParam`
+@[nolint unusedArguments]
+instance (priority := 75) NonUnitalSubalgebraClass.nonUnitalSeminormedRing {S 𝕜 E : Type*}
+    [CommRing 𝕜] [NonUnitalSeminormedRing E] [Module 𝕜 E] [SetLike S E] [NonUnitalSubringClass S E]
+    [SMulMemClass S 𝕜 E] (s : S) :
+    NonUnitalSeminormedRing s :=
+  { AddSubgroupClass.seminormedAddCommGroup s, NonUnitalSubringClass.toNonUnitalRing s with
+    norm_mul := fun a b => norm_mul_le a.1 b.1 }
+
 /-- A non-unital subalgebra of a non-unital normed ring is also a non-unital normed ring, with the
 restriction of the norm.  -/
 instance NonUnitalSubalgebra.nonUnitalNormedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*}
     [NonUnitalNormedRing E] [Module 𝕜 E] (s : NonUnitalSubalgebra 𝕜 E) : NonUnitalNormedRing s :=
   { s.nonUnitalSeminormedRing with
+    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+
+/-- A non-unital subalgebra of a non-unital normed ring is also a non-unital normed ring,
+with the restriction of the norm.  -/
+instance (priority := 75) NonUnitalSubalgebraClass.nonUnitalNormedRing {S 𝕜 E : Type*}
+    [CommRing 𝕜] [NonUnitalNormedRing E] [Module 𝕜 E] [SetLike S E] [NonUnitalSubringClass S E]
+    [SMulMemClass S 𝕜 E] (s : S) :
+    NonUnitalNormedRing s :=
+  { nonUnitalSeminormedRing s with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 instance ULift.nonUnitalSeminormedRing : NonUnitalSeminormedRing (ULift α) :=
@@ -342,12 +367,30 @@ instance Subalgebra.seminormedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*} [S
     norm_mul := fun a b => norm_mul_le a.1 b.1 }
 #align subalgebra.semi_normed_ring Subalgebra.seminormedRing
 
+/-- A subalgebra of a seminormed ring is also a seminormed ring, with the restriction of the
+norm. -/
+-- necessary to require `SMulMemClass S 𝕜 E` so that `𝕜` can be determined as an `outParam`
+@[nolint unusedArguments]
+instance (priority := 75) SubalgebraClass.seminormedRing {S 𝕜 E : Type*} [CommRing 𝕜]
+    [SeminormedRing E] [Algebra 𝕜 E] [SetLike S E] [SubringClass S E] [SMulMemClass S 𝕜 E]
+    (s : S) : SeminormedRing s :=
+  { AddSubgroupClass.seminormedAddCommGroup s, SubringClass.toRing s with
+    norm_mul := fun a b => norm_mul_le a.1 b.1 }
+
 /-- A subalgebra of a normed ring is also a normed ring, with the restriction of the norm. -/
 instance Subalgebra.normedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*} [NormedRing E]
     [Algebra 𝕜 E] (s : Subalgebra 𝕜 E) : NormedRing s :=
   { s.seminormedRing with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 #align subalgebra.normed_ring Subalgebra.normedRing
+
+/-- A subalgebra of a normed ring is also a normed ring, with the restriction of the
+norm. -/
+instance (priority := 75) SubalgebraClass.normedRing {S 𝕜 E : Type*} [CommRing 𝕜]
+    [NormedRing E] [Algebra 𝕜 E] [SetLike S E] [SubringClass S E] [SMulMemClass S 𝕜 E]
+    (s : S) : NormedRing s :=
+  { seminormedRing s with
+    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 theorem Nat.norm_cast_le : ∀ n : ℕ, ‖(n : α)‖ ≤ n * ‖(1 : α)‖
   | 0 => by simp
@@ -361,7 +404,7 @@ theorem List.norm_prod_le' : ∀ {l : List α}, l ≠ [] → ‖l.prod‖ ≤ (l
   | [a], _ => by simp
   | a::b::l, _ => by
     rw [List.map_cons, List.prod_cons, @List.prod_cons _ _ _ ‖a‖]
-    refine' le_trans (norm_mul_le _ _) (mul_le_mul_of_nonneg_left _ (norm_nonneg _))
+    refine le_trans (norm_mul_le _ _) (mul_le_mul_of_nonneg_left ?_ (norm_nonneg _))
     exact List.norm_prod_le' (List.cons_ne_nil b l)
 #align list.norm_prod_le' List.norm_prod_le'
 
@@ -379,25 +422,25 @@ theorem List.nnnorm_prod_le [NormOneClass α] (l : List α) : ‖l.prod‖₊ �
 #align list.nnnorm_prod_le List.nnnorm_prod_le
 
 theorem Finset.norm_prod_le' {α : Type*} [NormedCommRing α] (s : Finset ι) (hs : s.Nonempty)
-    (f : ι → α) : ‖∏ i in s, f i‖ ≤ ∏ i in s, ‖f i‖ := by
+    (f : ι → α) : ‖∏ i ∈ s, f i‖ ≤ ∏ i ∈ s, ‖f i‖ := by
   rcases s with ⟨⟨l⟩, hl⟩
   have : l.map f ≠ [] := by simpa using hs
   simpa using List.norm_prod_le' this
 #align finset.norm_prod_le' Finset.norm_prod_le'
 
 theorem Finset.nnnorm_prod_le' {α : Type*} [NormedCommRing α] (s : Finset ι) (hs : s.Nonempty)
-    (f : ι → α) : ‖∏ i in s, f i‖₊ ≤ ∏ i in s, ‖f i‖₊ :=
+    (f : ι → α) : ‖∏ i ∈ s, f i‖₊ ≤ ∏ i ∈ s, ‖f i‖₊ :=
   (s.norm_prod_le' hs f).trans_eq <| by simp [NNReal.coe_prod]
 #align finset.nnnorm_prod_le' Finset.nnnorm_prod_le'
 
 theorem Finset.norm_prod_le {α : Type*} [NormedCommRing α] [NormOneClass α] (s : Finset ι)
-    (f : ι → α) : ‖∏ i in s, f i‖ ≤ ∏ i in s, ‖f i‖ := by
+    (f : ι → α) : ‖∏ i ∈ s, f i‖ ≤ ∏ i ∈ s, ‖f i‖ := by
   rcases s with ⟨⟨l⟩, hl⟩
   simpa using (l.map f).norm_prod_le
 #align finset.norm_prod_le Finset.norm_prod_le
 
 theorem Finset.nnnorm_prod_le {α : Type*} [NormedCommRing α] [NormOneClass α] (s : Finset ι)
-    (f : ι → α) : ‖∏ i in s, f i‖₊ ≤ ∏ i in s, ‖f i‖₊ :=
+    (f : ι → α) : ‖∏ i ∈ s, f i‖₊ ≤ ∏ i ∈ s, ‖f i‖₊ :=
   (s.norm_prod_le f).trans_eq <| by simp [NNReal.coe_prod]
 #align finset.nnnorm_prod_le Finset.nnnorm_prod_le
 
@@ -670,8 +713,8 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
 
 -- see Note [lower instance priority]
 /-- A seminormed ring is a topological ring. -/
-instance (priority := 100) semi_normed_top_ring [NonUnitalSeminormedRing α] : TopologicalRing α
-    where
+instance (priority := 100) semi_normed_top_ring [NonUnitalSeminormedRing α] :
+    TopologicalRing α where
 #align semi_normed_top_ring semi_normed_top_ring
 
 section NormedDivisionRing
@@ -687,8 +730,7 @@ instance (priority := 900) NormedDivisionRing.to_normOneClass : NormOneClass α 
   ⟨mul_left_cancel₀ (mt norm_eq_zero.1 (one_ne_zero' α)) <| by rw [← norm_mul, mul_one, mul_one]⟩
 #align normed_division_ring.to_norm_one_class NormedDivisionRing.to_normOneClass
 
-instance isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ)
-    where
+instance isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ) where
   abv_nonneg' := norm_nonneg
   abv_eq_zero' := norm_eq_zero
   abv_add' := norm_add_le
@@ -729,11 +771,11 @@ theorem nnnorm_pow (a : α) (n : ℕ) : ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
 #align nnnorm_pow nnnorm_pow
 
 protected theorem List.norm_prod (l : List α) : ‖l.prod‖ = (l.map norm).prod :=
-  (normHom.toMonoidHom : α →* ℝ).map_list_prod _
+  map_list_prod (normHom.toMonoidHom : α →* ℝ) _
 #align list.norm_prod List.norm_prod
 
 protected theorem List.nnnorm_prod (l : List α) : ‖l.prod‖₊ = (l.map nnnorm).prod :=
-  (nnnormHom.toMonoidHom : α →* ℝ≥0).map_list_prod _
+  map_list_prod (nnnormHom.toMonoidHom : α →* ℝ≥0) _
 #align list.nnnorm_prod List.nnnorm_prod
 
 @[simp]
@@ -859,7 +901,7 @@ end Filter
 
 -- see Note [lower instance priority]
 instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContinuousInv₀ α := by
-  refine' ⟨fun r r0 => tendsto_iff_norm_sub_tendsto_zero.2 _⟩
+  refine ⟨fun r r0 => tendsto_iff_norm_sub_tendsto_zero.2 ?_⟩
   have r0' : 0 < ‖r‖ := norm_pos_iff.2 r0
   rcases exists_between r0' with ⟨ε, ε0, εr⟩
   have : ∀ᶠ e in 𝓝 r, ‖e⁻¹ - r⁻¹‖ ≤ ‖r - e‖ / ‖r‖ / ε := by
@@ -872,15 +914,15 @@ instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContin
       -- Porting note: `ENNReal.{mul_sub, sub_mul}` should be `protected`
       _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by field_simp [mul_comm]
       _ ≤ ‖r - e‖ / ‖r‖ / ε := by gcongr
-  refine' squeeze_zero' (eventually_of_forall fun _ => norm_nonneg _) this _
-  refine' (((continuous_const.sub continuous_id).norm.div_const _).div_const _).tendsto' _ _ _
+  refine squeeze_zero' (eventually_of_forall fun _ => norm_nonneg _) this ?_
+  refine (((continuous_const.sub continuous_id).norm.div_const _).div_const _).tendsto' _ _ ?_
   simp
 #align normed_division_ring.to_has_continuous_inv₀ NormedDivisionRing.to_hasContinuousInv₀
 
 -- see Note [lower instance priority]
 /-- A normed division ring is a topological division ring. -/
-instance (priority := 100) NormedDivisionRing.to_topologicalDivisionRing : TopologicalDivisionRing α
-    where
+instance (priority := 100) NormedDivisionRing.to_topologicalDivisionRing :
+    TopologicalDivisionRing α where
 #align normed_division_ring.to_topological_division_ring NormedDivisionRing.to_topologicalDivisionRing
 
 protected lemma IsOfFinOrder.norm_eq_one (ha : IsOfFinOrder a) : ‖a‖ = 1 :=
@@ -941,12 +983,12 @@ instance (priority := 100) NormedField.toNormedCommRing : NormedCommRing α :=
 #align normed_field.to_normed_comm_ring NormedField.toNormedCommRing
 
 @[simp]
-theorem norm_prod (s : Finset β) (f : β → α) : ‖∏ b in s, f b‖ = ∏ b in s, ‖f b‖ :=
+theorem norm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖ = ∏ b ∈ s, ‖f b‖ :=
   map_prod normHom.toMonoidHom f s
 #align norm_prod norm_prod
 
 @[simp]
-theorem nnnorm_prod (s : Finset β) (f : β → α) : ‖∏ b in s, f b‖₊ = ∏ b in s, ‖f b‖₊ :=
+theorem nnnorm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖₊ = ∏ b ∈ s, ‖f b‖₊ :=
   map_prod nnnormHom.toMonoidHom f s
 #align nnnorm_prod nnnorm_prod
 
@@ -984,7 +1026,7 @@ theorem punctured_nhds_neBot (x : α) : NeBot (𝓝[≠] x) := by
   rw [← mem_closure_iff_nhdsWithin_neBot, Metric.mem_closure_iff]
   rintro ε ε0
   rcases exists_norm_lt α ε0 with ⟨b, hb0, hbε⟩
-  refine' ⟨x + b, mt (Set.mem_singleton_iff.trans add_right_eq_self).1 <| norm_pos_iff.1 hb0, _⟩
+  refine ⟨x + b, mt (Set.mem_singleton_iff.trans add_right_eq_self).1 <| norm_pos_iff.1 hb0, ?_⟩
   rwa [dist_comm, dist_eq_norm, add_sub_cancel_left]
 #align normed_field.punctured_nhds_ne_bot NormedField.punctured_nhds_neBot
 
@@ -1082,6 +1124,14 @@ theorem norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, 
 theorem nnnorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x :=
   NNReal.eq <| Real.norm_of_nonneg x.2
 #align nnreal.nnnorm_eq NNReal.nnnorm_eq
+
+lemma lipschitzWith_sub : LipschitzWith 2 (fun (p : ℝ≥0 × ℝ≥0) ↦ p.1 - p.2) := by
+  rw [← isometry_subtype_coe.lipschitzWith_iff]
+  have : Isometry (Prod.map ((↑) : ℝ≥0 → ℝ) ((↑) : ℝ≥0 → ℝ)) :=
+    isometry_subtype_coe.prod_map isometry_subtype_coe
+  convert (((LipschitzWith.prod_fst.comp this.lipschitz).sub
+    (LipschitzWith.prod_snd.comp this.lipschitz)).max_const 0)
+  norm_num
 
 end NNReal
 

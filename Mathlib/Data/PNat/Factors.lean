@@ -3,7 +3,7 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.BigOperators.Multiset.Basic
+import Mathlib.Algebra.BigOperators.Group.Multiset
 import Mathlib.Data.PNat.Prime
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Multiset.Sort
@@ -163,8 +163,8 @@ theorem to_ofNatMultiset (v : Multiset ℕ) (h) : (ofNatMultiset v h : Multiset 
   rw [Multiset.map_pmap, this, Multiset.pmap_eq_map, Multiset.map_id]
 #align prime_multiset.to_of_nat_multiset PrimeMultiset.to_ofNatMultiset
 
-theorem prod_ofNatMultiset (v : Multiset ℕ) (h) : ((ofNatMultiset v h).prod : ℕ) = (v.prod : ℕ) :=
-  by rw [coe_prod, to_ofNatMultiset]
+theorem prod_ofNatMultiset (v : Multiset ℕ) (h) :
+    ((ofNatMultiset v h).prod : ℕ) = (v.prod : ℕ) := by rw [coe_prod, to_ofNatMultiset]
 #align prime_multiset.prod_of_nat_multiset PrimeMultiset.prod_ofNatMultiset
 
 /-- If a `Multiset ℕ+` consists only of primes, it can be recast as a `PrimeMultiset`. -/
@@ -234,7 +234,7 @@ namespace PNat
 
 /-- The prime factors of n, regarded as a multiset -/
 def factorMultiset (n : ℕ+) : PrimeMultiset :=
-  PrimeMultiset.ofNatList (Nat.factors n) (@Nat.prime_of_mem_factors n)
+  PrimeMultiset.ofNatList (Nat.primeFactorsList n) (@Nat.prime_of_mem_primeFactorsList n)
 #align pnat.factor_multiset PNat.factorMultiset
 
 /-- The product of the factors is the original number -/
@@ -242,12 +242,12 @@ theorem prod_factorMultiset (n : ℕ+) : (factorMultiset n).prod = n :=
   eq <| by
     dsimp [factorMultiset]
     rw [PrimeMultiset.prod_ofNatList]
-    exact Nat.prod_factors n.ne_zero
+    exact Nat.prod_primeFactorsList n.ne_zero
 #align pnat.prod_factor_multiset PNat.prod_factorMultiset
 
 theorem coeNat_factorMultiset (n : ℕ+) :
-    (factorMultiset n : Multiset ℕ) = (Nat.factors n : Multiset ℕ) :=
-  PrimeMultiset.to_ofNatMultiset (Nat.factors n) (@Nat.prime_of_mem_factors n)
+    (factorMultiset n : Multiset ℕ) = (Nat.primeFactorsList n : Multiset ℕ) :=
+  PrimeMultiset.to_ofNatMultiset (Nat.primeFactorsList n) (@Nat.prime_of_mem_primeFactorsList n)
 #align pnat.coe_nat_factor_multiset PNat.coeNat_factorMultiset
 
 end PNat
@@ -268,7 +268,7 @@ theorem factorMultiset_prod (v : PrimeMultiset) : v.prod.factorMultiset = v := b
   have : ∀ p : ℕ, p ∈ l' → p.Prime := fun p hp => by
     rcases List.mem_map.mp hp with ⟨⟨_, hp'⟩, ⟨_, h_eq⟩⟩
     exact h_eq ▸ hp'
-  exact Multiset.coe_eq_coe.mpr (@Nat.factors_unique _ l' rfl this).symm
+  exact Multiset.coe_eq_coe.mpr (@Nat.primeFactorsList_unique _ l' rfl this).symm
 #align prime_multiset.factor_multiset_prod PrimeMultiset.factorMultiset_prod
 
 end PrimeMultiset
@@ -276,8 +276,7 @@ end PrimeMultiset
 namespace PNat
 
 /-- Positive integers biject with multisets of primes. -/
-def factorMultisetEquiv : ℕ+ ≃ PrimeMultiset
-    where
+def factorMultisetEquiv : ℕ+ ≃ PrimeMultiset where
   toFun := factorMultiset
   invFun := PrimeMultiset.prod
   left_inv := prod_factorMultiset

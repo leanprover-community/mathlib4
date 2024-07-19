@@ -172,7 +172,7 @@ theorem homOfPair.val (t : X) (g : G) : (homOfPair t g).val = g :=
 /-- Any morphism in the action groupoid is given by some pair. -/
 protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort*}
     (hyp : ∀ t g, P (homOfPair t g)) ⦃a b⦄ (f : a ⟶ b) : P f := by
-  refine' cast _ (hyp b.back f.val)
+  refine cast ?_ (hyp b.back f.val)
   rcases a with ⟨⟨⟩, a : X⟩
   rcases b with ⟨⟨⟩, b : X⟩
   rcases f with ⟨g : G, h : g • a = b⟩

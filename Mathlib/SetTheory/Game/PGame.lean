@@ -3,7 +3,7 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison
 -/
-import Mathlib.Algebra.Group.Fin
+import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.List.InsertNth
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Small.Defs
@@ -97,17 +97,13 @@ An interested reader may like to formalise some of the material from
 * [André Joyal, *Remarques sur la théorie des jeux à deux personnes*][joyal1997]
 -/
 
-set_option autoImplicit true
-
 namespace SetTheory
 
 open Function Relation
 
--- We'd like to be able to use multi-character auto-implicits in this file.
-set_option relaxedAutoImplicit true
-
 /-! ### Pre-game moves -/
 
+universe u
 
 /-- The type of pre-games, before we have quotiented
   by equivalence (`PGame.Setoid`). In ZFC, a combinatorial game is constructed from
@@ -167,7 +163,7 @@ theorem moveRight_mk {xl xr xL xR} : (⟨xl, xr, xL, xR⟩ : PGame).moveRight = 
 /-- Construct a pre-game from list of pre-games describing the available moves for Left and Right.
 -/
 def ofLists (L R : List PGame.{u}) : PGame.{u} :=
-  mk (ULift (Fin L.length)) (ULift (Fin R.length)) (fun i => L.get i.down) fun j ↦ R.get j.down
+  mk (ULift (Fin L.length)) (ULift (Fin R.length)) (fun i => L[i.down.1]) fun j ↦ R[j.down.1]
 #align pgame.of_lists SetTheory.PGame.ofLists
 
 theorem leftMoves_ofLists (L R : List PGame) : (ofLists L R).LeftMoves = ULift (Fin L.length) :=
@@ -301,6 +297,8 @@ macro "pgame_wf_tac" : tactic =>
 -- Register some consequences of pgame_wf_tac as simp-lemmas for convenience
 -- (which are applied by default for WF goals)
 
+variable {xl xr : Type u}
+
 -- This is different from mk_right from the POV of the simplifier,
 -- because the unifier can't solve `xr =?= RightMoves (mk xl xr xL xR)` at reducible transparency.
 @[simp]
@@ -308,19 +306,19 @@ theorem Subsequent.mk_right' (xL : xl → PGame) (xR : xr → PGame) (j : RightM
     Subsequent (xR j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
-@[simp] theorem Subsequent.moveRight_mk_left (xL : xl → PGame) (j) :
+@[simp] theorem Subsequent.moveRight_mk_left {xR : xr → PGame} {i : xl} (xL : xl → PGame) (j) :
     Subsequent ((xL i).moveRight j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
-@[simp] theorem Subsequent.moveRight_mk_right (xR : xr → PGame) (j) :
+@[simp] theorem Subsequent.moveRight_mk_right {xL : xl → PGame} {i : xr} (xR : xr → PGame) (j) :
     Subsequent ((xR i).moveRight j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
-@[simp] theorem Subsequent.moveLeft_mk_left (xL : xl → PGame) (j) :
+@[simp] theorem Subsequent.moveLeft_mk_left {xR : xr → PGame} {i : xl} (xL : xl → PGame) (j) :
     Subsequent ((xL i).moveLeft j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
-@[simp] theorem Subsequent.moveLeft_mk_right (xR : xr → PGame) (j) :
+@[simp] theorem Subsequent.moveLeft_mk_right {xL : xl → PGame} {i : xr} (xR : xr → PGame) (j) :
     Subsequent ((xR i).moveLeft j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
@@ -735,7 +733,8 @@ theorem leftResponse_spec {x : PGame} (h : 0 ≤ x) (j : x.RightMoves) :
 #noalign pgame.upper_bound_mem_upper_bounds
 
 /-- A small family of pre-games is bounded above. -/
-lemma bddAbove_range_of_small [Small.{u} ι] (f : ι → PGame.{u}) : BddAbove (Set.range f) := by
+lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → PGame.{u}) :
+    BddAbove (Set.range f) := by
   let x : PGame.{u} := ⟨Σ i, (f $ (equivShrink.{u} ι).symm i).LeftMoves, PEmpty,
     fun x ↦ moveLeft _ x.2, PEmpty.elim⟩
   refine ⟨x, Set.forall_mem_range.2 fun i ↦ ?_⟩
@@ -753,7 +752,8 @@ lemma bddAbove_of_small (s : Set PGame.{u}) [Small.{u} s] : BddAbove s := by
 #noalign pgame.lower_bound_mem_lower_bounds
 
 /-- A small family of pre-games is bounded below. -/
-lemma bddBelow_range_of_small [Small.{u} ι] (f : ι → PGame.{u}) : BddBelow (Set.range f) := by
+lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → PGame.{u}) :
+    BddBelow (Set.range f) := by
   let x : PGame.{u} := ⟨PEmpty, Σ i, (f $ (equivShrink.{u} ι).symm i).RightMoves, PEmpty.elim,
     fun x ↦ moveRight _ x.2⟩
   refine ⟨x, Set.forall_mem_range.2 fun i ↦ ?_⟩
@@ -786,6 +786,8 @@ instance : IsEquiv _ PGame.Equiv where
 instance setoid : Setoid PGame :=
   ⟨Equiv, refl, symm, Trans.trans⟩
 #align pgame.setoid SetTheory.PGame.setoid
+
+theorem equiv_def {x y : PGame} : x ≈ y ↔ x ≤ y ∧ y ≤ x := Iff.rfl
 
 theorem Equiv.le {x y : PGame} (h : x ≈ y) : x ≤ y :=
   h.1
@@ -889,15 +891,25 @@ theorem lf_of_lf_of_equiv {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y ≈ z) : x 
   lf_congr_imp equiv_rfl h₂ h₁
 #align pgame.lf_of_lf_of_equiv SetTheory.PGame.lf_of_lf_of_equiv
 
+instance : Trans (· ⧏ ·) (· ≈ ·) (· ⧏ ·) := ⟨lf_of_lf_of_equiv⟩
+
 @[trans]
 theorem lf_of_equiv_of_lf {x y z : PGame} (h₁ : x ≈ y) : y ⧏ z → x ⧏ z :=
   lf_congr_imp (Equiv.symm h₁) equiv_rfl
 #align pgame.lf_of_equiv_of_lf SetTheory.PGame.lf_of_equiv_of_lf
 
+instance : Trans (· ≈ ·) (· ⧏ ·) (· ⧏ ·) := ⟨lf_of_equiv_of_lf⟩
+
 @[trans]
 theorem lt_of_lt_of_equiv {x y z : PGame} (h₁ : x < y) (h₂ : y ≈ z) : x < z :=
   h₁.trans_le h₂.1
 #align pgame.lt_of_lt_of_equiv SetTheory.PGame.lt_of_lt_of_equiv
+
+instance : Trans
+    ((· < ·) : PGame → PGame → Prop)
+    ((· ≈ ·) : PGame → PGame → Prop)
+    ((· < ·) : PGame → PGame → Prop) where
+  trans := lt_of_lt_of_equiv
 
 @[trans]
 theorem lt_of_equiv_of_lt {x y z : PGame} (h₁ : x ≈ y) : y < z → x < z :=
@@ -1270,7 +1282,7 @@ instance : NegZeroClass PGame :=
 @[simp]
 theorem neg_ofLists (L R : List PGame) :
     -ofLists L R = ofLists (R.map fun x => -x) (L.map fun x => -x) := by
-  simp only [ofLists, neg_def, List.get_map, mk.injEq, List.length_map, true_and]
+  simp only [ofLists, neg_def, List.getElem_map, mk.injEq, List.length_map, true_and]
   constructor
   all_goals
     apply hfunext
@@ -1283,13 +1295,14 @@ theorem neg_ofLists (L R : List PGame) :
         simp only [heq_eq_eq]
         rintro rfl
         rfl
+      simp only [heq_eq_eq]
       congr 5
       exact this (List.length_map _ _).symm h
 #align pgame.neg_of_lists SetTheory.PGame.neg_ofLists
 
 theorem isOption_neg {x y : PGame} : IsOption x (-y) ↔ IsOption (-x) y := by
   rw [isOption_iff, isOption_iff, or_comm]
-  cases y;
+  cases y
   apply or_congr <;>
     · apply exists_congr
       intro
@@ -1353,16 +1366,16 @@ theorem moveLeft_neg_symm {x : PGame} (i) :
     x.moveLeft (toRightMovesNeg.symm i) = -(-x).moveRight i := by simp
 #align pgame.move_left_neg_symm SetTheory.PGame.moveLeft_neg_symm
 
-theorem moveLeft_neg_symm' {x : PGame} (i) : x.moveLeft i = -(-x).moveRight (toRightMovesNeg i) :=
-  by simp
+theorem moveLeft_neg_symm' {x : PGame} (i) :
+    x.moveLeft i = -(-x).moveRight (toRightMovesNeg i) := by simp
 #align pgame.move_left_neg_symm' SetTheory.PGame.moveLeft_neg_symm'
 
 theorem moveRight_neg_symm {x : PGame} (i) :
     x.moveRight (toLeftMovesNeg.symm i) = -(-x).moveLeft i := by simp
 #align pgame.move_right_neg_symm SetTheory.PGame.moveRight_neg_symm
 
-theorem moveRight_neg_symm' {x : PGame} (i) : x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) :=
-  by simp
+theorem moveRight_neg_symm' {x : PGame} (i) :
+    x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) := by simp
 #align pgame.move_right_neg_symm' SetTheory.PGame.moveRight_neg_symm'
 
 /-- If `x` has the same moves as `y`, then `-x` has the same moves as `-y`. -/
@@ -1481,7 +1494,7 @@ instance : Add PGame.{u} :=
     induction' x with xl xr _ _ IHxl IHxr generalizing y
     induction' y with yl yr yL yR IHyl IHyr
     have y := mk yl yr yL yR
-    refine' ⟨Sum xl yl, Sum xr yr, Sum.rec _ _, Sum.rec _ _⟩
+    refine ⟨Sum xl yl, Sum xr yr, Sum.rec ?_ ?_, Sum.rec ?_ ?_⟩
     · exact fun i => IHxl i y
     · exact IHyl
     · exact fun i => IHxr i y
@@ -1515,7 +1528,7 @@ instance isEmpty_rightMoves_add (x y : PGame.{u}) [IsEmpty x.RightMoves] [IsEmpt
 /-- `x + 0` has exactly the same moves as `x`. -/
 def addZeroRelabelling : ∀ x : PGame.{u}, x + 0 ≡r x
   | ⟨xl, xr, xL, xR⟩ => by
-    refine' ⟨Equiv.sumEmpty xl PEmpty, Equiv.sumEmpty xr PEmpty, _, _⟩ <;> rintro (⟨i⟩ | ⟨⟨⟩⟩) <;>
+    refine ⟨Equiv.sumEmpty xl PEmpty, Equiv.sumEmpty xr PEmpty, ?_, ?_⟩ <;> rintro (⟨i⟩ | ⟨⟨⟩⟩) <;>
       apply addZeroRelabelling
 termination_by x => x
 #align pgame.add_zero_relabelling SetTheory.PGame.addZeroRelabelling
@@ -1528,7 +1541,7 @@ theorem add_zero_equiv (x : PGame.{u}) : x + 0 ≈ x :=
 /-- `0 + x` has exactly the same moves as `x`. -/
 def zeroAddRelabelling : ∀ x : PGame.{u}, 0 + x ≡r x
   | ⟨xl, xr, xL, xR⟩ => by
-    refine' ⟨Equiv.emptySum PEmpty xl, Equiv.emptySum PEmpty xr, _, _⟩ <;> rintro (⟨⟨⟩⟩ | ⟨i⟩) <;>
+    refine ⟨Equiv.emptySum PEmpty xl, Equiv.emptySum PEmpty xr, ?_, ?_⟩ <;> rintro (⟨⟨⟩⟩ | ⟨i⟩) <;>
       apply zeroAddRelabelling
 #align pgame.zero_add_relabelling SetTheory.PGame.zeroAddRelabelling
 
@@ -1654,7 +1667,7 @@ def Relabelling.addCongr : ∀ {w x y z : PGame.{u}}, w ≡r x → y ≡r z → 
     ⟨L₂, R₂, hL₂, hR₂⟩ => by
     let Hwx : ⟨wl, wr, wL, wR⟩ ≡r ⟨xl, xr, xL, xR⟩ := ⟨L₁, R₁, hL₁, hR₁⟩
     let Hyz : ⟨yl, yr, yL, yR⟩ ≡r ⟨zl, zr, zL, zR⟩ := ⟨L₂, R₂, hL₂, hR₂⟩
-    refine' ⟨Equiv.sumCongr L₁ L₂, Equiv.sumCongr R₁ R₂, _, _⟩ <;> rintro (i | j)
+    refine ⟨Equiv.sumCongr L₁ L₂, Equiv.sumCongr R₁ R₂, ?_, ?_⟩ <;> rintro (i | j)
     · exact (hL₁ i).addCongr Hyz
     · exact Hwx.addCongr (hL₂ j)
     · exact (hR₁ i).addCongr Hyz
@@ -1679,7 +1692,7 @@ def Relabelling.subCongr {w x y z : PGame} (h₁ : w ≡r x) (h₂ : y ≡r z) :
 /-- `-(x + y)` has exactly the same moves as `-x + -y`. -/
 def negAddRelabelling : ∀ x y : PGame, -(x + y) ≡r -x + -y
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
-    refine' ⟨Equiv.refl _, Equiv.refl _, _, _⟩
+    refine ⟨Equiv.refl _, Equiv.refl _, ?_, ?_⟩
     all_goals
       exact fun j =>
         Sum.casesOn j (fun j => negAddRelabelling _ _) fun j =>
@@ -1694,7 +1707,7 @@ theorem neg_add_le {x y : PGame} : -(x + y) ≤ -x + -y :=
 /-- `x + y` has exactly the same moves as `y + x`. -/
 def addCommRelabelling : ∀ x y : PGame.{u}, x + y ≡r y + x
   | mk xl xr xL xR, mk yl yr yL yR => by
-    refine' ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, _, _⟩ <;> rintro (_ | _) <;>
+    refine ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, ?_, ?_⟩ <;> rintro (_ | _) <;>
       · dsimp
         apply addCommRelabelling
 termination_by x y => (x, y)
@@ -1711,7 +1724,7 @@ theorem add_comm_equiv {x y : PGame} : x + y ≈ y + x :=
 /-- `(x + y) + z` has exactly the same moves as `x + (y + z)`. -/
 def addAssocRelabelling : ∀ x y z : PGame.{u}, x + y + z ≡r x + (y + z)
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩, ⟨zl, zr, zL, zR⟩ => by
-    refine' ⟨Equiv.sumAssoc _ _ _, Equiv.sumAssoc _ _ _, _, _⟩
+    refine ⟨Equiv.sumAssoc _ _ _, Equiv.sumAssoc _ _ _, ?_, ?_⟩
     · rintro (⟨i | i⟩ | i)
       · apply addAssocRelabelling
       · apply addAssocRelabelling ⟨xl, xr, xL, xR⟩ (yL i)
@@ -1732,12 +1745,12 @@ theorem add_left_neg_le_zero : ∀ x : PGame, -x + x ≤ 0
     le_zero.2 fun i => by
       cases' i with i i
       · -- If Left played in -x, Right responds with the same move in x.
-        refine' ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), _⟩
+        refine ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), ?_⟩
         convert @add_left_neg_le_zero (xR i)
         apply add_moveRight_inr
       · -- If Left in x, Right responds with the same move in -x.
         dsimp
-        refine' ⟨@toRightMovesAdd ⟨_, _, _, _⟩ _ (Sum.inl i), _⟩
+        refine ⟨@toRightMovesAdd ⟨_, _, _, _⟩ _ (Sum.inl i), ?_⟩
         convert @add_left_neg_le_zero (xL i)
         apply add_moveRight_inl
 #align pgame.add_left_neg_le_zero SetTheory.PGame.add_left_neg_le_zero
@@ -1769,18 +1782,18 @@ theorem sub_self_equiv : ∀ (x : PGame), x - x ≈ 0 :=
 
 private theorem add_le_add_right' : ∀ {x y z : PGame}, x ≤ y → x + z ≤ y + z
   | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => fun h => by
-    refine' le_def.2 ⟨fun i => _, fun i => _⟩ <;> cases' i with i i
+    refine le_def.2 ⟨fun i => ?_, fun i => ?_⟩ <;> cases' i with i i
     · rw [le_def] at h
       cases' h with h_left h_right
       rcases h_left i with (⟨i', ih⟩ | ⟨j, jh⟩)
       · exact Or.inl ⟨toLeftMovesAdd (Sum.inl i'), add_le_add_right' ih⟩
-      · refine' Or.inr ⟨toRightMovesAdd (Sum.inl j), _⟩
+      · refine Or.inr ⟨toRightMovesAdd (Sum.inl j), ?_⟩
         convert add_le_add_right' jh
         apply add_moveRight_inl
     · exact Or.inl ⟨@toLeftMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), add_le_add_right' h⟩
     · rw [le_def] at h
       rcases h.right i with (⟨i, ih⟩ | ⟨j', jh⟩)
-      · refine' Or.inl ⟨toLeftMovesAdd (Sum.inl i), _⟩
+      · refine Or.inl ⟨toLeftMovesAdd (Sum.inl i), ?_⟩
         convert add_le_add_right' ih
         apply add_moveLeft_inl
       · exact Or.inr ⟨toRightMovesAdd (Sum.inl j'), add_le_add_right' jh⟩
@@ -1891,6 +1904,87 @@ theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x :=
       ⟩
 #align pgame.lt_iff_sub_pos SetTheory.PGame.lt_iff_sub_pos
 
+/-! ### Inserting an option -/
+
+/-- The pregame constructed by inserting `x'` as a new left option into x. -/
+def insertLeft (x x' : PGame.{u}) : PGame :=
+  match x with
+  | mk xl xr xL xR => mk (xl ⊕ PUnit) xr (Sum.elim xL fun _ => x') xR
+
+/-- A new left option cannot hurt Left. -/
+lemma le_insertLeft (x x' : PGame) : x ≤ insertLeft x x' := by
+  rw [le_def]
+  constructor
+  · intro i
+    left
+    rcases x with ⟨xl, xr, xL, xR⟩
+    simp only [insertLeft, leftMoves_mk, moveLeft_mk, Sum.exists, Sum.elim_inl]
+    left
+    use i
+  · intro j
+    right
+    rcases x with ⟨xl, xr, xL, xR⟩
+    simp only [rightMoves_mk, moveRight_mk, insertLeft]
+    use j
+
+/-- Adding a gift horse left option does not change the value of `x`. A gift horse left option is
+ a game `x'` with `x' ⧏ x`. It is called "gift horse" because it seems like Left has gotten the
+ "gift" of a new option, but actually the value of the game did not change. -/
+lemma insertLeft_equiv_of_lf {x x' : PGame} (h : x' ⧏ x) : insertLeft x x' ≈ x := by
+  rw [equiv_def]
+  constructor
+  · rw [le_def]
+    constructor
+    · intro i
+      rcases x with ⟨xl, xr, xL, xR⟩
+      simp only [insertLeft, leftMoves_mk, moveLeft_mk] at i ⊢
+      rcases i with i | _
+      · simp only [Sum.elim_inl]
+        left
+        use i
+      · simp only [Sum.elim_inr]
+        rw [lf_iff_exists_le] at h
+        simp only [leftMoves_mk, moveLeft_mk] at h
+        exact h
+    · intro j
+      right
+      rcases x with ⟨xl, xr, xL, xR⟩
+      simp only [insertLeft, rightMoves_mk, moveRight_mk]
+      use j
+  · apply le_insertLeft
+
+/-- The pregame constructed by inserting `x'` as a new right option into x. -/
+def insertRight (x x' : PGame.{u}) : PGame :=
+  match x with
+  | mk xl xr xL xR => mk xl (xr ⊕ PUnit) xL (Sum.elim xR fun _ => x')
+
+theorem neg_insertRight_neg (x x' : PGame.{u}) : (-x).insertRight (-x') = -x.insertLeft x' := by
+  cases x
+  cases x'
+  dsimp [insertRight, insertLeft]
+  congr! with (i | j)
+
+theorem neg_insertLeft_neg (x x' : PGame.{u}) : (-x).insertLeft (-x') = -x.insertRight x' := by
+  rw [← neg_eq_iff_eq_neg, ← neg_insertRight_neg, neg_neg, neg_neg]
+
+/-- A new right option cannot hurt Right. -/
+lemma insertRight_le (x x' : PGame) : insertRight x x' ≤ x := by
+  rw [← neg_le_neg_iff, ← neg_insertLeft_neg]
+  exact le_insertLeft _ _
+
+/-- Adding a gift horse right option does not change the value of `x`. A gift horse right option is
+ a game `x'` with `x ⧏ x'`. It is called "gift horse" because it seems like Right has gotten the
+ "gift" of a new option, but actually the value of the game did not change. -/
+lemma insertRight_equiv_of_lf {x x' : PGame} (h : x ⧏ x') : insertRight x x' ≈ x := by
+  rw [← neg_equiv_neg_iff, ← neg_insertLeft_neg]
+  exact insertLeft_equiv_of_lf (neg_lf_neg_iff.mpr h)
+
+/-- Inserting on the left and right commutes. -/
+theorem insertRight_insertLeft {x x' x'' : PGame} :
+    insertRight (insertLeft x x') x'' = insertLeft (insertRight x x'') x' := by
+  cases x; cases x'; cases x''
+  dsimp [insertLeft, insertRight]
+
 /-! ### Special pre-games -/
 
 
@@ -1956,3 +2050,5 @@ theorem zero_lf_one : (0 : PGame) ⧏ 1 :=
 #align pgame.zero_lf_one SetTheory.PGame.zero_lf_one
 
 end PGame
+
+end SetTheory

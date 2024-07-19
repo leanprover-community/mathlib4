@@ -102,7 +102,7 @@ theorem disjSum_strictMono_right (s : Multiset α) :
 #align multiset.disj_sum_strict_mono_right Multiset.disjSum_strictMono_right
 
 protected theorem Nodup.disjSum (hs : s.Nodup) (ht : t.Nodup) : (s.disjSum t).Nodup := by
-  refine' ((hs.map inl_injective).add_iff <| ht.map inr_injective).2 fun x hs ht => _
+  refine ((hs.map inl_injective).add_iff <| ht.map inr_injective).2 fun x hs ht => ?_
   rw [Multiset.mem_map] at hs ht
   obtain ⟨a, _, rfl⟩ := hs
   obtain ⟨b, _, h⟩ := ht

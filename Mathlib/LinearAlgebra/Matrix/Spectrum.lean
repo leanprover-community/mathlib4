@@ -7,6 +7,8 @@ import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Data.Matrix.Rank
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Hermitian
+import Mathlib.Analysis.NormedSpace.Star.Matrix
+import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 #align_import linear_algebra.matrix.spectrum from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
@@ -23,8 +25,6 @@ namespace Matrix
 
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
 variable {A : Matrix n n 𝕜}
-
-open scoped BigOperators
 
 namespace IsHermitian
 
@@ -57,6 +57,21 @@ lemma mulVec_eigenvectorBasis (j : n) :
       congr(⇑$((isHermitian_iff_isSymmetric.1 hA).apply_eigenvectorBasis
         finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
 
+/-- The spectrum of a Hermitian matrix `A` coincides with the spectrum of `toEuclideanLin A`. -/
+theorem spectrum_toEuclideanLin : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
+  AlgEquiv.spectrum_eq
+    (AlgEquiv.trans
+      ((toEuclideanCLM : Matrix n n 𝕜 ≃⋆ₐ[𝕜] EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) :
+          Matrix n n 𝕜 ≃ₐ[𝕜] EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n)
+      (Module.End.toContinuousLinearMap (EuclideanSpace 𝕜 n)).symm)
+    _
+
+/-- Eigenvalues of a hermitian matrix A are in the ℝ spectrum of A. -/
+theorem eigenvalues_mem_spectrum_real (i : n) : hA.eigenvalues i ∈ spectrum ℝ A := by
+  apply spectrum.of_algebraMap_mem 𝕜
+  rw [← spectrum_toEuclideanLin]
+  exact LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
+
 /-- Unitary matrix whose columns are `Matrix.IsHermitian.eigenvectorBasis`. -/
 noncomputable def eigenvectorUnitary {𝕜 : Type*} [RCLike 𝕜] {n : Type*}
     [Fintype n]{A : Matrix n n 𝕜} [DecidableEq n] (hA : Matrix.IsHermitian A) :
@@ -85,7 +100,7 @@ theorem star_eigenvectorUnitary_mulVec (j : n) :
     (star (eigenvectorUnitary hA : Matrix n n 𝕜)) *ᵥ ⇑(hA.eigenvectorBasis j) = Pi.single j 1 := by
   rw [← eigenvectorUnitary_mulVec, mulVec_mulVec, unitary.coe_star_mul_self, one_mulVec]
 
-/--Unitary diagonalization of a Hermitian matrix.-/
+/-- Unitary diagonalization of a Hermitian matrix. -/
 theorem star_mul_self_mul_eq_diagonal :
     (star (eigenvectorUnitary hA : Matrix n n 𝕜)) * A * (eigenvectorUnitary hA : Matrix n n 𝕜)
       = diagonal (RCLike.ofReal ∘ hA.eigenvalues) := by
@@ -115,7 +130,7 @@ theorem spectral_theorem :
 
 theorem eigenvalues_eq (i : n) :
     (hA.eigenvalues i) = RCLike.re (Matrix.dotProduct (star ⇑(hA.eigenvectorBasis i))
-    (A *ᵥ ⇑(hA.eigenvectorBasis i))):= by
+    (A *ᵥ ⇑(hA.eigenvectorBasis i))) := by
   simp only [mulVec_eigenvectorBasis, dotProduct_smul,← EuclideanSpace.inner_eq_star_dotProduct,
     inner_self_eq_norm_sq_to_K, RCLike.smul_re, hA.eigenvectorBasis.orthonormal.1 i,
     mul_one, algebraMap.coe_one, one_pow, RCLike.one_re]

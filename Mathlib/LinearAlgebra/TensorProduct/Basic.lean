@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
 import Mathlib.Algebra.Module.Submodule.Bilinear
-import Mathlib.GroupTheory.Congruence
-import Mathlib.LinearAlgebra.Basic
+import Mathlib.Algebra.Module.Equiv.Basic
+import Mathlib.GroupTheory.Congruence.Basic
+import Mathlib.Tactic.Abel
 import Mathlib.Tactic.SuppressCompilation
 
 #align_import linear_algebra.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
@@ -13,22 +14,26 @@ import Mathlib.Tactic.SuppressCompilation
 /-!
 # Tensor product of modules over commutative semirings.
 
-This file constructs the tensor product of modules over commutative semirings. Given a semiring
-`R` and modules over it `M` and `N`, the standard construction of the tensor product is
+This file constructs the tensor product of modules over commutative semirings. Given a semiring `R`
+and modules over it `M` and `N`, the standard construction of the tensor product is
 `TensorProduct R M N`. It is also a module over `R`.
 
-It comes with a canonical bilinear map `M → N → TensorProduct R M N`.
+It comes with a canonical bilinear map
+`TensorProduct.mk R M N : M →ₗ[R] N →ₗ[R] TensorProduct R M N`.
 
-Given any bilinear map `M → N → P`, there is a unique linear map `TensorProduct R M N → P` whose
-composition with the canonical bilinear map `M → N → TensorProduct R M N` is the given bilinear
-map `M → N → P`.
+Given any bilinear map `f : M →ₗ[R] N →ₗ[R] P`, there is a unique linear map
+`TensorProduct.lift f : TensorProduct R M N →ₗ[R] P` whose composition with the canonical bilinear
+map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is shown in the theorem
+`TensorProduct.lift.unique`.
 
-We start by proving basic lemmas about bilinear maps.
 
-## Notations
+## Notation
 
-This file uses the localized notation `M ⊗ N` and `M ⊗[R] N` for `TensorProduct R M N`, as well
-as `m ⊗ₜ n` and `m ⊗ₜ[R] n` for `TensorProduct.tmul R m n`.
+* This file introduces the notation `M ⊗ N` and `M ⊗[R] N` for the tensor product space
+  `TensorProduct R M N`.
+* It introduces the notation `m ⊗ₜ n` and `m ⊗ₜ[R] n` for the tensor product of two elements,
+  otherwise written as `TensorProduct.tmul R m n`.
+
 
 ## Tags
 
@@ -131,7 +136,7 @@ infixl:100 " ⊗ₜ " => tmul _
 notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
 
 -- Porting note: make the arguments of induction_on explicit
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
     (zero : motive 0)
     (tmul : ∀ x y, motive <| x ⊗ₜ[R] y)
@@ -234,7 +239,7 @@ class CompatibleSMul [DistribMulAction R' N] : Prop where
 
 end
 
-/-- Note that this provides the default `compatible_smul R R M N` instance through
+/-- Note that this provides the default `CompatibleSMul R R M N` instance through
 `IsScalarTower.left`. -/
 instance (priority := 100) CompatibleSMul.isScalarTower [SMul R' R] [IsScalarTower R' R M]
     [DistribMulAction R' N] [IsScalarTower R' R N] : CompatibleSMul R R' M N :=
@@ -458,10 +463,8 @@ theorem tmul_ite (x₁ : M) (x₂ : N) (P : Prop) [Decidable P] :
 
 section
 
-open BigOperators
-
 theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
-    (∑ a in s, m a) ⊗ₜ[R] n = ∑ a in s, m a ⊗ₜ[R] n := by
+    (∑ a ∈ s, m a) ⊗ₜ[R] n = ∑ a ∈ s, m a ⊗ₜ[R] n := by
   classical
     induction' s using Finset.induction with a s has ih h
     · simp
@@ -469,7 +472,7 @@ theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
 #align tensor_product.sum_tmul TensorProduct.sum_tmul
 
 theorem tmul_sum (m : M) {α : Type*} (s : Finset α) (n : α → N) :
-    (m ⊗ₜ[R] ∑ a in s, n a) = ∑ a in s, m ⊗ₜ[R] n a := by
+    (m ⊗ₜ[R] ∑ a ∈ s, n a) = ∑ a ∈ s, m ⊗ₜ[R] n a := by
   classical
     induction' s using Finset.induction with a s has ih h
     · simp
@@ -501,7 +504,7 @@ theorem map₂_mk_top_top_eq_top : Submodule.map₂ (mk R M N) ⊤ ⊤ = ⊤ := 
 theorem exists_eq_tmul_of_forall (x : TensorProduct R M N)
     (h : ∀ (m₁ m₂ : M) (n₁ n₂ : N), ∃ m n, m₁ ⊗ₜ n₁ + m₂ ⊗ₜ n₂ = m ⊗ₜ[R] n) :
     ∃ m n, x = m ⊗ₜ n := by
-  induction x using TensorProduct.induction_on with
+  induction x with
   | zero =>
     use 0, 0
     rw [TensorProduct.zero_tmul]
@@ -813,7 +816,7 @@ lemma map_comp_comm_eq (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     map f g ∘ₗ TensorProduct.comm R N M = TensorProduct.comm R Q P ∘ₗ map g f :=
   ext rfl
 
-lemma map_comm (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (x : N ⊗[R] M):
+lemma map_comm (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (x : N ⊗[R] M) :
     map f g (TensorProduct.comm R N M x) = TensorProduct.comm R Q P (map g f x) :=
   DFunLike.congr_fun (map_comp_comm_eq _ _) _
 
@@ -867,6 +870,12 @@ lemma range_mapIncl (p : Submodule R P) (q : Submodule R Q) :
     LinearMap.range (mapIncl p q) = Submodule.span R (Set.image2 (· ⊗ₜ ·) p q) := by
   rw [mapIncl, map_range_eq_span_tmul]
   congr; ext; simp
+
+theorem map₂_eq_range_lift_comp_mapIncl (f : P →ₗ[R] Q →ₗ[R] M)
+    (p : Submodule R P) (q : Submodule R Q) :
+    Submodule.map₂ f p q = LinearMap.range (lift f ∘ₗ mapIncl p q) := by
+  simp_rw [LinearMap.range_comp, range_mapIncl, Submodule.map_span,
+    Set.image_image2, Submodule.map₂_eq_span_image2, lift.tmul]
 
 section
 
@@ -1109,8 +1118,8 @@ theorem tensorTensorTensorComm_tmul (m : M) (n : N) (p : P) (q : Q) :
 -- Porting note: the proof here was `rfl` but that caused a timeout.
 @[simp]
 theorem tensorTensorTensorComm_symm :
-    (tensorTensorTensorComm R M N P Q).symm = tensorTensorTensorComm R M P N Q :=
-  by ext; rfl
+    (tensorTensorTensorComm R M N P Q).symm = tensorTensorTensorComm R M P N Q := by
+  ext; rfl
 #align tensor_product.tensor_tensor_tensor_comm_symm TensorProduct.tensorTensorTensorComm_symm
 
 variable (M N P Q)
@@ -1324,6 +1333,18 @@ theorem rTensor_id : (id : N →ₗ[R] N).rTensor M = id :=
 theorem rTensor_id_apply (x : N ⊗[R] M) : (LinearMap.id : N →ₗ[R] N).rTensor M x = x := by
   rw [rTensor_id, id_coe, _root_.id]
 #align linear_map.rtensor_id_apply LinearMap.rTensor_id_apply
+
+@[simp]
+theorem lTensor_smul_action (r : R) :
+    (DistribMulAction.toLinearMap R N r).lTensor M =
+      DistribMulAction.toLinearMap R (M ⊗[R] N) r :=
+  (lTensor_smul M r LinearMap.id).trans (congrArg _ (lTensor_id M N))
+
+@[simp]
+theorem rTensor_smul_action (r : R) :
+    (DistribMulAction.toLinearMap R N r).rTensor M =
+      DistribMulAction.toLinearMap R (N ⊗[R] M) r :=
+  (rTensor_smul M r LinearMap.id).trans (congrArg _ (rTensor_id M N))
 
 variable {N}
 

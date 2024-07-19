@@ -5,6 +5,7 @@ Authors: David Wärn, Antoine Labelle, Rémi Bottinelli
 -/
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Push
+import Batteries.Data.Sum.Lemmas
 
 #align_import combinatorics.quiver.symmetric from "leanprover-community/mathlib"@"706d88f2b8fdfeb0b22796433d7a6c1a010af9f2"
 
@@ -221,8 +222,7 @@ theorem lift_unique [HasReverse V'] (φ : V ⥤q V') (Φ : Symmetrify V ⥤q V')
 
 /-- A prefunctor canonically defines a prefunctor of the symmetrifications. -/
 @[simps]
-def _root_.Prefunctor.symmetrify (φ : U ⥤q V) : Symmetrify U ⥤q Symmetrify V
-    where
+def _root_.Prefunctor.symmetrify (φ : U ⥤q V) : Symmetrify U ⥤q Symmetrify V where
   obj := φ.obj
   map := Sum.map φ.map φ.map
 #align prefunctor.symmetrify Prefunctor.symmetrify

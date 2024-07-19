@@ -27,7 +27,7 @@ We provide the definition and related lemmas about associated primes of modules.
 - `associatedPrimes.eq_singleton_of_isPrimary`: In a noetherian ring, `I.radical` is the only
   associated prime of `R ⧸ I` when `I` is primary.
 
-## Todo
+## TODO
 
 Generalize this to a non-commutative setting once there are annihilator for non-commutative rings.
 
@@ -59,7 +59,7 @@ theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
 theorem IsAssociatedPrime.map_of_injective (h : IsAssociatedPrime I M) (hf : Function.Injective f) :
     IsAssociatedPrime I M' := by
   obtain ⟨x, rfl⟩ := h.2
-  refine' ⟨h.1, ⟨f x, _⟩⟩
+  refine ⟨h.1, ⟨f x, ?_⟩⟩
   ext r
   rw [Submodule.mem_annihilator_span_singleton, Submodule.mem_annihilator_span_singleton, ←
     map_smul, ← f.map_zero, hf.eq_iff]
@@ -88,7 +88,7 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
     set_has_maximal_iff_noetherian.mpr H
       { P | (R ∙ x).annihilator ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = (R ∙ y).annihilator }
       ⟨(R ∙ x).annihilator, rfl.le, this, x, rfl⟩
-  refine' ⟨_, ⟨⟨h₁, _⟩, y, rfl⟩, l⟩
+  refine ⟨_, ⟨⟨h₁, ?_⟩, y, rfl⟩, l⟩
   intro a b hab
   rw [or_iff_not_imp_left]
   intro ha
@@ -116,7 +116,7 @@ theorem LinearEquiv.AssociatedPrimes.eq (l : M ≃ₗ[R] M') :
 #align linear_equiv.associated_primes.eq LinearEquiv.AssociatedPrimes.eq
 
 theorem associatedPrimes.eq_empty_of_subsingleton [Subsingleton M] : associatedPrimes R M = ∅ := by
-  ext; simp only [Set.mem_empty_iff_false, iff_false_iff];
+  ext; simp only [Set.mem_empty_iff_false, iff_false_iff]
   apply not_isAssociatedPrime_of_subsingleton
 #align associated_primes.eq_empty_of_subsingleton associatedPrimes.eq_empty_of_subsingleton
 
@@ -128,6 +128,18 @@ theorem associatedPrimes.nonempty [IsNoetherianRing R] [Nontrivial M] :
   obtain ⟨P, hP, _⟩ := exists_le_isAssociatedPrime_of_isNoetherianRing R x hx
   exact ⟨P, hP⟩
 #align associated_primes.nonempty associatedPrimes.nonempty
+
+theorem biUnion_associatedPrimes_eq_zero_divisors [IsNoetherianRing R] :
+    ⋃ p ∈ associatedPrimes R M, p = { r : R | ∃ x : M, x ≠ 0 ∧ r • x = 0 } := by
+  simp_rw [← Submodule.mem_annihilator_span_singleton]
+  refine subset_antisymm (Set.iUnion₂_subset ?_) ?_
+  · rintro _ ⟨h, x, ⟨⟩⟩ r h'
+    refine ⟨x, ne_of_eq_of_ne (one_smul R x).symm ?_, h'⟩
+    refine mt (Submodule.mem_annihilator_span_singleton _ _).mpr ?_
+    exact (Ideal.ne_top_iff_one _).mp h.ne_top
+  · intro r ⟨x, h, h'⟩
+    obtain ⟨P, hP, hx⟩ := exists_le_isAssociatedPrime_of_isNoetherianRing R x h
+    exact Set.mem_biUnion hP (hx h')
 
 variable {R M}
 
@@ -161,7 +173,7 @@ theorem associatedPrimes.eq_singleton_of_isPrimary [IsNoetherianRing R] (hI : I.
     associatedPrimes R (R ⧸ I) = {I.radical} := by
   ext J
   rw [Set.mem_singleton_iff]
-  refine' ⟨IsAssociatedPrime.eq_radical hI, _⟩
+  refine ⟨IsAssociatedPrime.eq_radical hI, ?_⟩
   rintro rfl
   haveI : Nontrivial (R ⧸ I) := by
     refine ⟨(Ideal.Quotient.mk I : _) 1, (Ideal.Quotient.mk I : _) 0, ?_⟩

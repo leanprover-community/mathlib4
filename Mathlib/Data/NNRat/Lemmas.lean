@@ -3,8 +3,9 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Function.Indicator
-import Mathlib.Data.Rat.Field
+import Mathlib.Algebra.Field.Rat
+import Mathlib.Algebra.Group.Indicator
+import Mathlib.Algebra.Order.Field.Rat
 
 #align_import data.rat.nnrat from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
 
@@ -45,7 +46,7 @@ variable {p q : ℚ}
 
 lemma toNNRat_inv (q : ℚ) : toNNRat q⁻¹ = (toNNRat q)⁻¹ := by
   obtain hq | hq := le_total q 0
-  · rw [toNNRat_eq_zero.mpr hq, inv_zero, toNNRat_eq_zero.mpr (inv_nonpos.mpr hq)]
+  · rw [toNNRat_eq_zero.mpr hq, inv_zero, toNNRat_eq_zero.mpr (inv_nonpos (α := ℚ) |>.mpr hq)]
   · nth_rw 1 [← Rat.coe_toNNRat q hq]
     rw [← coe_inv, toNNRat_coe]
 #align rat.to_nnrat_inv Rat.toNNRat_inv
@@ -55,7 +56,7 @@ lemma toNNRat_div (hp : 0 ≤ p) : toNNRat (p / q) = toNNRat p / toNNRat q := by
 #align rat.to_nnrat_div Rat.toNNRat_div
 
 lemma toNNRat_div' (hq : 0 ≤ q) : toNNRat (p / q) = toNNRat p / toNNRat q := by
-  rw [div_eq_inv_mul, div_eq_inv_mul, toNNRat_mul (inv_nonneg.2 hq), toNNRat_inv]
+  rw [div_eq_inv_mul, div_eq_inv_mul, toNNRat_mul (inv_nonneg (α := ℚ) |>.2 hq), toNNRat_inv]
 #align rat.to_nnrat_div' Rat.toNNRat_div'
 
 end Rat

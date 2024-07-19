@@ -95,7 +95,8 @@ lemma tendsto_nhds_generateFrom_iff {β : Type*} {m : α → β} {f : Filter α}
   simp only [nhds_generateFrom, @forall_swap (b ∈ _), tendsto_iInf, mem_setOf_eq, and_imp,
     tendsto_principal]; rfl
 
-@[deprecated] alias ⟨_, tendsto_nhds_generateFrom⟩ := tendsto_nhds_generateFrom_iff
+@[deprecated (since := "2023-12-24")]
+alias ⟨_, tendsto_nhds_generateFrom⟩ := tendsto_nhds_generateFrom_iff
 #align topological_space.tendsto_nhds_generate_from TopologicalSpace.tendsto_nhds_generateFrom
 
 /-- Construct a topology on α given the filter of neighborhoods of each point of α. -/
@@ -129,7 +130,7 @@ theorem nhds_mkOfNhds (n : α → Filter α) (a : α) (h₀ : pure ≤ n)
 theorem nhds_mkOfNhds_single [DecidableEq α] {a₀ : α} {l : Filter α} (h : pure a₀ ≤ l) (b : α) :
     @nhds α (TopologicalSpace.mkOfNhds (update pure a₀ l)) b =
       (update pure a₀ l : α → Filter α) b := by
-  refine' nhds_mkOfNhds _ _ (le_update_iff.mpr ⟨h, fun _ _ => le_rfl⟩) fun a s hs => _
+  refine nhds_mkOfNhds _ _ (le_update_iff.mpr ⟨h, fun _ _ => le_rfl⟩) fun a s hs => ?_
   rcases eq_or_ne a a₀ with (rfl | ha)
   · filter_upwards [hs] with b hb
     rcases eq_or_ne b a with (rfl | hb)
@@ -292,7 +293,7 @@ theorem isOpen_discrete (s : Set α) : IsOpen s := (@DiscreteTopology.eq_bot α 
 theorem denseRange_discrete {ι : Type*} {f : ι → α} : DenseRange f ↔ Surjective f := by
   rw [DenseRange, dense_discrete, range_iff_surjective]
 
-@[nontriviality, continuity]
+@[nontriviality, continuity, fun_prop]
 theorem continuous_of_discreteTopology [TopologicalSpace β] {f : α → β} : Continuous f :=
   continuous_def.2 fun _ _ => isOpen_discrete _
 #align continuous_of_discrete_topology continuous_of_discreteTopology
@@ -321,7 +322,7 @@ theorem le_of_nhds_le_nhds (h : ∀ x, @nhds α t₁ x ≤ @nhds α t₂ x) : t�
   exact fun hs a ha => h _ (hs _ ha)
 #align le_of_nhds_le_nhds le_of_nhds_le_nhds
 
-@[deprecated] -- Since 2024-03-01
+@[deprecated (since := "2024-03-01")]
 alias eq_of_nhds_eq_nhds := TopologicalSpace.ext_nhds
 #align eq_of_nhds_eq_nhds TopologicalSpace.ext_nhds
 
@@ -392,6 +393,10 @@ theorem isOpen_coinduced {t : TopologicalSpace α} {s : Set β} {f : α → β} 
     IsOpen[t.coinduced f] s ↔ IsOpen (f ⁻¹' s) :=
   Iff.rfl
 #align is_open_coinduced isOpen_coinduced
+
+theorem isClosed_coinduced {t : TopologicalSpace α} {s : Set β} {f : α → β} :
+    IsClosed[t.coinduced f] s ↔ IsClosed (f ⁻¹' s) := by
+  simp only [← isOpen_compl_iff, isOpen_coinduced (f := f), preimage_compl]
 
 theorem preimage_nhds_coinduced [TopologicalSpace α] {π : α → β} {s : Set β} {a : α}
     (hs : s ∈ @nhds β (TopologicalSpace.coinduced π ‹_›) (π a)) : π ⁻¹' s ∈ 𝓝 a := by
@@ -574,6 +579,18 @@ theorem le_induced_generateFrom {α β} [t : TopologicalSpace α] {b : Set (Set 
   exact h
 #align le_induced_generate_from le_induced_generateFrom
 
+lemma generateFrom_insert_of_generateOpen {α : Type*} {s : Set (Set α)} {t : Set α}
+    (ht : GenerateOpen s t) : generateFrom (insert t s) = generateFrom s := by
+  refine le_antisymm (generateFrom_anti <| subset_insert t s) (le_generateFrom ?_)
+  rintro t (rfl | h)
+  · exact ht
+  · exact isOpen_generateFrom_of_mem h
+
+@[simp]
+lemma generateFrom_insert_univ {α : Type*} {s : Set (Set α)} :
+    generateFrom (insert univ s) = generateFrom s :=
+  generateFrom_insert_of_generateOpen .univ
+
 /-- This construction is left adjoint to the operation sending a topology on `α`
   to its neighborhood filter at a fixed point `a : α`. -/
 def nhdsAdjoint (a : α) (f : Filter α) : TopologicalSpace α where
@@ -611,7 +628,7 @@ theorem nhds_nhdsAdjoint_same (a : α) (f : Filter α) :
     exact IsOpen.mem_nhds (fun _ ↦ htf) hat
   · exact sup_le (pure_le_nhds _) ((gc_nhds a).le_u_l f)
 
-@[deprecated] -- Since 2024-02-10
+@[deprecated (since := "2024-02-10")]
 alias nhdsAdjoint_nhds := nhds_nhdsAdjoint_same
 #align nhds_adjoint_nhds nhdsAdjoint_nhds
 
@@ -620,7 +637,7 @@ theorem nhds_nhdsAdjoint_of_ne {a b : α} (f : Filter α) (h : b ≠ a) :
   let _ := nhdsAdjoint a f
   (isOpen_singleton_iff_nhds_eq_pure _).1 <| isOpen_singleton_nhdsAdjoint f h
 
-@[deprecated nhds_nhdsAdjoint_of_ne] -- Since 2024-02-10
+@[deprecated nhds_nhdsAdjoint_of_ne (since := "2024-02-10")]
 theorem nhdsAdjoint_nhds_of_ne (a : α) (f : Filter α) {b : α} (h : b ≠ a) :
     @nhds α (nhdsAdjoint a f) b = pure b :=
   nhds_nhdsAdjoint_of_ne f h
@@ -685,10 +702,11 @@ lemma continuous_generateFrom_iff {t : TopologicalSpace α} {b : Set (Set β)} :
   rw [continuous_iff_coinduced_le, le_generateFrom_iff_subset_isOpen]
   simp only [isOpen_coinduced, preimage_id', subset_def, mem_setOf]
 
-@[deprecated] alias ⟨_, continuous_generateFrom⟩ := continuous_generateFrom_iff
+@[deprecated (since := "2023-12-24")]
+alias ⟨_, continuous_generateFrom⟩ := continuous_generateFrom_iff
 #align continuous_generated_from continuous_generateFrom
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_induced_dom {t : TopologicalSpace β} : Continuous[induced f t, t] f :=
   continuous_iff_le_induced.2 le_rfl
 #align continuous_induced_dom continuous_induced_dom
@@ -792,12 +810,12 @@ theorem continuous_iInf_rng {t₁ : TopologicalSpace α} {t₂ : ι → Topologi
   simp only [continuous_iff_coinduced_le, le_iInf_iff]
 #align continuous_infi_rng continuous_iInf_rng
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_bot {t : TopologicalSpace β} : Continuous[⊥, t] f :=
   continuous_iff_le_induced.2 bot_le
 #align continuous_bot continuous_bot
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_top {t : TopologicalSpace α} : Continuous[t, ⊤] f :=
   continuous_iff_coinduced_le.2 le_top
 #align continuous_top continuous_top

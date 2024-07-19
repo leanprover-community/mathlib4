@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.Combinatorics.Enumerative.Composition
-import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.ApplyFun
 
 #align_import combinatorics.partition from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
@@ -45,8 +44,6 @@ Partition
 -/
 
 open Multiset
-
-open BigOperators
 
 namespace Nat
 

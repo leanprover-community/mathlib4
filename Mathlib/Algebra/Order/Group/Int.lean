@@ -34,6 +34,11 @@ open Function Nat
 
 namespace Int
 
+theorem natCast_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.ofNat_lt.2
+#align int.coe_nat_strict_mono Int.natCast_strictMono
+
+@[deprecated (since := "2024-05-25")] alias coe_nat_strictMono := natCast_strictMono
+
 instance linearOrderedAddCommGroup : LinearOrderedAddCommGroup ℤ where
   __ := instLinearOrder
   __ := instAddCommGroup
@@ -120,8 +125,7 @@ theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
     | _, ⟨n, Or.inr rfl⟩ => by rw [Int.ediv_neg, abs_neg]; apply this
   fun a n => by
   rw [abs_eq_natAbs, abs_eq_natAbs];
-    exact
-      ofNat_le_ofNat_of_le
+    exact ofNat_le_ofNat_of_le
         (match a, n with
         | (m : ℕ), n => Nat.div_le_self _ _
         | -[m+1], 0 => Nat.zero_le _

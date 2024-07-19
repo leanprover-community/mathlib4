@@ -130,7 +130,7 @@ structure CCConfig where
   /-- If `true`, then use excluded middle -/
   em : Bool := true
   /-- If `true`, we treat values as atomic symbols -/
-  values : Bool := true
+  values : Bool := false
   deriving Inhabited
 #align cc_config Mathlib.Tactic.CC.CCConfig
 

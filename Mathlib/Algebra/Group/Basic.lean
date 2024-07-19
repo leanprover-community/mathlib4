@@ -22,6 +22,8 @@ one-liners from the corresponding axioms. For the definitions of semigroups, mon
 `Algebra/Group/Defs.lean`.
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 open Function
 
@@ -143,14 +145,14 @@ variable {M : Type u} [MulOneClass M]
 @[to_additive]
 theorem ite_mul_one {P : Prop} [Decidable P] {a b : M} :
     ite P (a * b) 1 = ite P a 1 * ite P b 1 := by
-  by_cases h:P <;> simp [h]
+  by_cases h : P <;> simp [h]
 #align ite_mul_one ite_mul_one
 #align ite_add_zero ite_add_zero
 
 @[to_additive]
 theorem ite_one_mul {P : Prop} [Decidable P] {a b : M} :
     ite P 1 (a * b) = ite P 1 a * ite P 1 b := by
-  by_cases h:P <;> simp [h]
+  by_cases h : P <;> simp [h]
 #align ite_one_mul ite_one_mul
 #align ite_zero_add ite_zero_add
 
@@ -191,59 +193,30 @@ theorem mul_right_comm : ∀ a b c : G, a * b * c = a * c * b :=
 #align add_right_comm add_right_comm
 
 @[to_additive]
-theorem mul_mul_mul_comm (a b c d : G) : a * b * (c * d) = a * c * (b * d) :=
-  by simp only [mul_left_comm, mul_assoc]
+theorem mul_mul_mul_comm (a b c d : G) : a * b * (c * d) = a * c * (b * d) := by
+  simp only [mul_left_comm, mul_assoc]
 #align mul_mul_mul_comm mul_mul_mul_comm
 #align add_add_add_comm add_add_add_comm
 
 @[to_additive]
-theorem mul_rotate (a b c : G) : a * b * c = b * c * a :=
-  by simp only [mul_left_comm, mul_comm]
+theorem mul_rotate (a b c : G) : a * b * c = b * c * a := by
+  simp only [mul_left_comm, mul_comm]
 #align mul_rotate mul_rotate
 #align add_rotate add_rotate
 
 @[to_additive]
-theorem mul_rotate' (a b c : G) : a * (b * c) = b * (c * a) :=
-  by simp only [mul_left_comm, mul_comm]
+theorem mul_rotate' (a b c : G) : a * (b * c) = b * (c * a) := by
+  simp only [mul_left_comm, mul_comm]
 #align mul_rotate' mul_rotate'
 #align add_rotate' add_rotate'
 
 end CommSemigroup
 
-section AddCommSemigroup
-set_option linter.deprecated false
-
-variable {M : Type u} [AddCommSemigroup M]
-
-theorem bit0_add (a b : M) : bit0 (a + b) = bit0 a + bit0 b :=
-  add_add_add_comm _ _ _ _
-#align bit0_add bit0_add
-
-theorem bit1_add [One M] (a b : M) : bit1 (a + b) = bit0 a + bit1 b :=
-  (congr_arg (· + (1 : M)) <| bit0_add a b : _).trans (add_assoc _ _ _)
-#align bit1_add bit1_add
-
-theorem bit1_add' [One M] (a b : M) : bit1 (a + b) = bit1 a + bit0 b := by
-  rw [add_comm, bit1_add, add_comm]
-#align bit1_add' bit1_add'
-
-end AddCommSemigroup
-
-section AddMonoid
-set_option linter.deprecated false
-
-variable {M : Type u} [AddMonoid M] {a b c : M}
-
-@[simp]
-theorem bit0_zero : bit0 (0 : M) = 0 :=
-  add_zero _
-#align bit0_zero bit0_zero
-
-@[simp]
-theorem bit1_zero [One M] : bit1 (0 : M) = 1 := by rw [bit1, bit0_zero, zero_add]
-#align bit1_zero bit1_zero
-
-end AddMonoid
+#noalign bit0_add
+#noalign bit1_add
+#noalign bit1_add'
+#noalign bit0_zero
+#noalign bit1_zero
 
 attribute [local simp] mul_assoc sub_eq_add_neg
 
@@ -445,14 +418,14 @@ theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mu
 #align neg_eq_zero_sub neg_eq_zero_sub
 
 @[to_additive]
-theorem mul_one_div (x y : G) : x * (1 / y) = x / y :=
-  by rw [div_eq_mul_inv, one_mul, div_eq_mul_inv]
+theorem mul_one_div (x y : G) : x * (1 / y) = x / y := by
+  rw [div_eq_mul_inv, one_mul, div_eq_mul_inv]
 #align mul_one_div mul_one_div
 #align add_zero_sub add_zero_sub
 
 @[to_additive]
-theorem mul_div_assoc (a b c : G) : a * b / c = a * (b / c) :=
-  by rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc _ _ _]
+theorem mul_div_assoc (a b c : G) : a * b / c = a * (b / c) := by
+  rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc _ _ _]
 #align mul_div_assoc mul_div_assoc
 #align add_sub_assoc add_sub_assoc
 
@@ -510,14 +483,14 @@ theorem eq_inv_of_mul_eq_one_right (h : a * b = 1) : b = a⁻¹ :=
 #align eq_neg_of_add_eq_zero_right eq_neg_of_add_eq_zero_right
 
 @[to_additive]
-theorem eq_one_div_of_mul_eq_one_left (h : b * a = 1) : b = 1 / a :=
-  by rw [eq_inv_of_mul_eq_one_left h, one_div]
+theorem eq_one_div_of_mul_eq_one_left (h : b * a = 1) : b = 1 / a := by
+  rw [eq_inv_of_mul_eq_one_left h, one_div]
 #align eq_one_div_of_mul_eq_one_left eq_one_div_of_mul_eq_one_left
 #align eq_zero_sub_of_add_eq_zero_left eq_zero_sub_of_add_eq_zero_left
 
 @[to_additive]
-theorem eq_one_div_of_mul_eq_one_right (h : a * b = 1) : b = 1 / a :=
-  by rw [eq_inv_of_mul_eq_one_right h, one_div]
+theorem eq_one_div_of_mul_eq_one_right (h : a * b = 1) : b = 1 / a := by
+  rw [eq_inv_of_mul_eq_one_right h, one_div]
 #align eq_one_div_of_mul_eq_one_right eq_one_div_of_mul_eq_one_right
 #align eq_zero_sub_of_add_eq_zero_right eq_zero_sub_of_add_eq_zero_right
 
@@ -648,8 +621,8 @@ theorem inv_ne_one : a⁻¹ ≠ 1 ↔ a ≠ 1 :=
 #align neg_ne_zero neg_ne_zero
 
 @[to_additive]
-theorem eq_of_one_div_eq_one_div (h : 1 / a = 1 / b) : a = b :=
-  by rw [← one_div_one_div a, h, one_div_one_div]
+theorem eq_of_one_div_eq_one_div (h : 1 / a = 1 / b) : a = b := by
+  rw [← one_div_one_div a, h, one_div_one_div]
 #align eq_of_one_div_eq_one_div eq_of_one_div_eq_one_div
 #align eq_of_zero_sub_eq_zero_sub eq_of_zero_sub_eq_zero_sub
 
@@ -678,6 +651,13 @@ lemma zpow_mul' (a : α) (m n : ℤ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Int.m
 #align zpow_mul' zpow_mul'
 #align mul_zsmul mul_zsmul
 
+#noalign zpow_bit0
+#noalign bit0_zsmul
+#noalign zpow_bit0'
+#noalign bit0_zsmul'
+#noalign zpow_bit1
+#noalign bit1_zsmul
+
 variable (a b c)
 
 @[to_additive, field_simps] -- The attributes are out of order on purpose
@@ -691,21 +671,14 @@ theorem div_inv_eq_mul : a / b⁻¹ = a * b := by simp
 #align sub_neg_eq_add sub_neg_eq_add
 
 @[to_additive]
-theorem div_mul_eq_div_div_swap : a / (b * c) = a / c / b :=
-  by simp only [mul_assoc, mul_inv_rev, div_eq_mul_inv]
+theorem div_mul_eq_div_div_swap : a / (b * c) = a / c / b := by
+  simp only [mul_assoc, mul_inv_rev, div_eq_mul_inv]
 #align div_mul_eq_div_div_swap div_mul_eq_div_div_swap
 #align sub_add_eq_sub_sub_swap sub_add_eq_sub_sub_swap
 
 end DivisionMonoid
 
-section SubtractionMonoid
-
-set_option linter.deprecated false
-
-lemma bit0_neg [SubtractionMonoid α] (a : α) : bit0 (-a) = -bit0 a := (neg_add_rev _ _).symm
-#align bit0_neg bit0_neg
-
-end SubtractionMonoid
+#noalign bit0_neg
 
 section DivisionCommMonoid
 
@@ -914,8 +887,8 @@ theorem mul_eq_one_iff_eq_inv : a * b = 1 ↔ a = b⁻¹ :=
 #align add_eq_zero_iff_eq_neg add_eq_zero_iff_eq_neg
 
 @[to_additive]
-theorem mul_eq_one_iff_inv_eq : a * b = 1 ↔ a⁻¹ = b :=
-  by rw [mul_eq_one_iff_eq_inv, inv_eq_iff_eq_inv]
+theorem mul_eq_one_iff_inv_eq : a * b = 1 ↔ a⁻¹ = b := by
+  rw [mul_eq_one_iff_eq_inv, inv_eq_iff_eq_inv]
 #align mul_eq_one_iff_inv_eq mul_eq_one_iff_inv_eq
 #align add_eq_zero_iff_neg_eq add_eq_zero_iff_neg_eq
 
@@ -986,8 +959,8 @@ theorem div_right_injective : Function.Injective fun a ↦ b / a := by
 #align sub_right_injective sub_right_injective
 
 @[to_additive (attr := simp)]
-theorem div_mul_cancel (a b : G) : a / b * b = a :=
-  by rw [div_eq_mul_inv, inv_mul_cancel_right a b]
+theorem div_mul_cancel (a b : G) : a / b * b = a := by
+  rw [div_eq_mul_inv, inv_mul_cancel_right a b]
 #align div_mul_cancel' div_mul_cancel
 #align sub_add_cancel sub_add_cancel
 
@@ -997,8 +970,8 @@ theorem div_self' (a : G) : a / a = 1 := by rw [div_eq_mul_inv, mul_right_inv a]
 #align sub_self sub_self
 
 @[to_additive (attr := simp)]
-theorem mul_div_cancel_right (a b : G) : a * b / b = a :=
-  by rw [div_eq_mul_inv, mul_inv_cancel_right a b]
+theorem mul_div_cancel_right (a b : G) : a * b / b = a := by
+  rw [div_eq_mul_inv, mul_inv_cancel_right a b]
 #align mul_div_cancel'' mul_div_cancel_right
 #align add_sub_cancel add_sub_cancel_right
 
@@ -1047,8 +1020,8 @@ theorem div_left_inj : b / a = c / a ↔ b = c := by
 #align sub_left_inj sub_left_inj
 
 @[to_additive (attr := simp) sub_add_sub_cancel]
-theorem div_mul_div_cancel' (a b c : G) : a / b * (b / c) = a / c :=
-  by rw [← mul_div_assoc, div_mul_cancel]
+theorem div_mul_div_cancel' (a b c : G) : a / b * (b / c) = a / c := by
+  rw [← mul_div_assoc, div_mul_cancel]
 #align div_mul_div_cancel' div_mul_div_cancel'
 #align sub_add_sub_cancel sub_add_sub_cancel
 
@@ -1092,8 +1065,8 @@ theorem div_eq_iff_eq_mul : a / b = c ↔ a = c * b := by rw [div_eq_mul_inv, mu
 #align sub_eq_iff_eq_add sub_eq_iff_eq_add
 
 @[to_additive]
-theorem eq_iff_eq_of_div_eq_div (H : a / b = c / d) : a = b ↔ c = d :=
-  by rw [← div_eq_one, H, div_eq_one]
+theorem eq_iff_eq_of_div_eq_div (H : a / b = c / d) : a = b ↔ c = d := by
+  rw [← div_eq_one, H, div_eq_one]
 #align eq_iff_eq_of_div_eq_div eq_iff_eq_of_div_eq_div
 #align eq_iff_eq_of_sub_eq_sub eq_iff_eq_of_sub_eq_sub
 
@@ -1127,14 +1100,14 @@ theorem leftInverse_inv_mul_mul_right (c : G) :
 lemma pow_natAbs_eq_one : a ^ n.natAbs = 1 ↔ a ^ n = 1 := by cases n <;> simp
 
 set_option linter.existingAttributeWarning false in
-@[to_additive, deprecated pow_natAbs_eq_one]
+@[to_additive, deprecated pow_natAbs_eq_one (since := "2024-02-14")]
 lemma exists_pow_eq_one_of_zpow_eq_one (hn : n ≠ 0) (h : a ^ n = 1) :
     ∃ n : ℕ, 0 < n ∧ a ^ n = 1 := ⟨_, Int.natAbs_pos.2 hn, pow_natAbs_eq_one.2 h⟩
 #align exists_npow_eq_one_of_zpow_eq_one exists_pow_eq_one_of_zpow_eq_one
 #align exists_nsmul_eq_zero_of_zsmul_eq_zero exists_nsmul_eq_zero_of_zsmul_eq_zero
 
--- 2024-02-14
-attribute [deprecated natAbs_nsmul_eq_zero] exists_nsmul_eq_zero_of_zsmul_eq_zero
+attribute [deprecated natAbs_nsmul_eq_zero (since := "2024-02-14")]
+exists_nsmul_eq_zero_of_zsmul_eq_zero
 
 @[to_additive sub_nsmul]
 lemma pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ :=

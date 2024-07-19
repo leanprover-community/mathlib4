@@ -54,7 +54,7 @@ variable {S}
 theorem finiteInter_mem (cond : FiniteInter S) (F : Finset (Set α)) :
     ↑F ⊆ S → ⋂₀ (↑F : Set (Set α)) ∈ S := by
   classical
-    refine' Finset.induction_on F (fun _ => _) _
+    refine Finset.induction_on F (fun _ => ?_) ?_
     · simp [cond.univ_mem]
     · intro a s _ h1 h2
       suffices a ∩ ⋂₀ ↑s ∈ S by simpa
@@ -81,5 +81,14 @@ theorem finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
             ext x
             constructor <;> simp (config := { contextual := true })⟩
 #align has_finite_inter.finite_inter_closure_insert FiniteInter.finiteInterClosure_insert
+
+open Set
+
+theorem mk₂ (h: ∀ ⦃s⦄, s ∈ S → ∀ ⦃t⦄, t ∈ S → s ∩ t ∈ S) :
+    FiniteInter (insert (univ : Set α) S) where
+  univ_mem := Set.mem_insert Set.univ S
+  inter_mem s hs t ht:= by
+    obtain ⟨(rfl | hs), (rfl | ht)⟩ := And.intro hs ht
+    all_goals aesop
 
 end FiniteInter

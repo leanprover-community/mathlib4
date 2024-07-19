@@ -96,6 +96,14 @@ def IsTerminal.ofIso {Y Z : C} (hY : IsTerminal Y) (i : Y ≅ Z) : IsTerminal Z 
       inv := { hom := i.inv } }
 #align category_theory.limits.is_terminal.of_iso CategoryTheory.Limits.IsTerminal.ofIso
 
+/-- If `X` and `Y` are isomorphic, then `X` is terminal iff `Y` is. -/
+def IsTerminal.equivOfIso {X Y : C} (e : X ≅ Y) :
+    IsTerminal X ≃ IsTerminal Y where
+  toFun h := IsTerminal.ofIso h e
+  invFun h := IsTerminal.ofIso h e.symm
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := Subsingleton.elim _ _
+
 /-- An object `X` is initial iff for every `Y` there is a unique morphism `X ⟶ Y`. -/
 def isInitialEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (X : C) :
     IsColimit (⟨X, ⟨by aesop_cat, by aesop_cat⟩⟩ : Cocone F) ≃ ∀ Y : C, Unique (X ⟶ Y) where
@@ -136,6 +144,14 @@ def IsInitial.ofIso {X Y : C} (hX : IsInitial X) (i : X ≅ Y) : IsInitial Y :=
     { hom := { hom := i.hom }
       inv := { hom := i.inv } }
 #align category_theory.limits.is_initial.of_iso CategoryTheory.Limits.IsInitial.ofIso
+
+/-- If `X` and `Y` are isomorphic, then `X` is initial iff `Y` is. -/
+def IsInitial.equivOfIso {X Y : C} (e : X ≅ Y) :
+    IsInitial X ≃ IsInitial Y where
+  toFun h := IsInitial.ofIso h e
+  invFun h := IsInitial.ofIso h e.symm
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := Subsingleton.elim _ _
 
 /-- Give the morphism to a terminal object from any other. -/
 def IsTerminal.from {X : C} (t : IsTerminal X) (Y : C) : Y ⟶ X :=
@@ -377,6 +393,10 @@ instance uniqueToTerminal [HasTerminal C] (P : C) : Unique (P ⟶ ⊤_ C) :=
 instance uniqueFromInitial [HasInitial C] (P : C) : Unique (⊥_ C ⟶ P) :=
   isInitialEquivUnique _ (⊥_ C) initialIsInitial P
 #align category_theory.limits.unique_from_initial CategoryTheory.Limits.uniqueFromInitial
+
+@[ext] theorem terminal.hom_ext [HasTerminal C] {P : C} (f g : P ⟶ ⊤_ C) : f = g := by ext ⟨⟨⟩⟩
+
+@[ext] theorem initial.hom_ext [HasInitial C] {P : C} (f g : ⊥_ C ⟶ P) : f = g := by ext ⟨⟨⟩⟩
 
 @[simp]
 theorem terminal.comp_from [HasTerminal C] {P Q : C} (f : P ⟶ Q) :
@@ -782,6 +802,20 @@ instance isIso_ι_initial [HasInitial J] (F : J ⥤ C) [∀ (i j : J) (f : i ⟶
     IsIso (colimit.ι F (⊥_ J)) :=
   isIso_ι_of_isInitial initialIsInitial F
 #align category_theory.limits.is_iso_ι_initial CategoryTheory.Limits.isIso_ι_initial
+
+/-- Any morphism between terminal objects is an isomorphism. -/
+lemma isIso_of_isTerminal {X Y : C} (hX : IsTerminal X) (hY : IsTerminal Y) (f : X ⟶ Y) :
+    IsIso f := by
+  refine ⟨⟨IsTerminal.from hX Y, ?_⟩⟩
+  simp only [IsTerminal.comp_from, IsTerminal.from_self, true_and]
+  apply IsTerminal.hom_ext hY
+
+/-- Any morphism between initial objects is an isomorphism. -/
+lemma isIso_of_isInitial {X Y : C} (hX : IsInitial X) (hY : IsInitial Y) (f : X ⟶ Y) :
+    IsIso f := by
+  refine ⟨⟨IsInitial.to hY X, ?_⟩⟩
+  simp only [IsInitial.to_comp, IsInitial.to_self, and_true]
+  apply IsInitial.hom_ext hX
 
 end
 

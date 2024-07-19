@@ -24,7 +24,6 @@ This notation is in the `DirectSum` locale, accessible after `open DirectSum`.
 -/
 
 open Function
-open scoped BigOperators
 
 universe u v w u₁
 
@@ -109,8 +108,7 @@ variable (β)
 
 /-- `mk β s x` is the element of `⨁ i, β i` that is zero outside `s`
 and has coefficient `x i` for `i` in `s`. -/
-def mk (s : Finset ι) : (∀ i : (↑s : Set ι), β i.1) →+ ⨁ i, β i
-    where
+def mk (s : Finset ι) : (∀ i : (↑s : Set ι), β i.1) →+ ⨁ i, β i where
   toFun := DFinsupp.mk s
   map_add' _ _ := DFinsupp.mk_add
   map_zero' := DFinsupp.mk_zero
@@ -130,6 +128,9 @@ theorem of_eq_of_ne (i j : ι) (x : β i) (h : i ≠ j) : (of _ i x) j = 0 :=
   DFinsupp.single_eq_of_ne h
 #align direct_sum.of_eq_of_ne DirectSum.of_eq_of_ne
 
+lemma of_apply {i : ι} (j : ι) (x : β i) : of β i x j = if h : i = j then Eq.recOn h x else 0 :=
+  DFinsupp.single_apply
+
 @[simp]
 theorem support_zero [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] : (0 : ⨁ i, β i).support = ∅ :=
   DFinsupp.support_zero
@@ -147,9 +148,15 @@ theorem support_of_subset [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] {i : ι
 #align direct_sum.support_of_subset DirectSum.support_of_subset
 
 theorem sum_support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (x : ⨁ i, β i) :
-    (∑ i in x.support, of β i (x i)) = x :=
+    (∑ i ∈ x.support, of β i (x i)) = x :=
   DFinsupp.sum_single
 #align direct_sum.sum_support_of DirectSum.sum_support_of
+
+theorem sum_univ_of [Fintype ι] (x : ⨁ i, β i) :
+    ∑ i ∈ Finset.univ, of β i (x i) = x := by
+  apply DFinsupp.ext (fun i ↦ ?_)
+  rw [DFinsupp.finset_sum_apply]
+  simp [of_apply]
 
 variable {β}
 
@@ -209,7 +216,7 @@ theorem toAddMonoid_of (i) (x : β i) : toAddMonoid φ (of β i x) = φ i x :=
 
 theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.comp (of β i)) f := by
   congr
-  -- Porting note: ext applies addHom_ext' here, which isn't what we want.
+  -- Porting note (#11041): `ext` applies addHom_ext' here, which isn't what we want.
   apply DFinsupp.addHom_ext'
   simp [toAddMonoid, of]
 #align direct_sum.to_add_monoid.unique DirectSum.toAddMonoid.unique
@@ -315,8 +322,7 @@ section Sigma
 variable {α : ι → Type u} {δ : ∀ i, α i → Type w} [∀ i j, AddCommMonoid (δ i j)]
 
 /-- The natural map between `⨁ (i : Σ i, α i), δ i.1 i.2` and `⨁ i (j : α i), δ i j`. -/
-def sigmaCurry : (⨁ i : Σ _i, _, δ i.1 i.2) →+ ⨁ (i) (j), δ i j
-    where
+def sigmaCurry : (⨁ i : Σ _i, _, δ i.1 i.2) →+ ⨁ (i) (j), δ i j where
   toFun := DFinsupp.sigmaCurry (δ := δ)
   map_zero' := DFinsupp.sigmaCurry_zero
   map_add' f g := DFinsupp.sigmaCurry_add f g
@@ -330,23 +336,20 @@ theorem sigmaCurry_apply (f : ⨁ i : Σ _i, _, δ i.1 i.2) (i : ι) (j : α i) 
 
 /-- The natural map between `⨁ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`. -/
-def sigmaUncurry [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
-    (⨁ (i) (j), δ i j) →+ ⨁ i : Σ _i, _, δ i.1 i.2
-    where
+def sigmaUncurry : (⨁ (i) (j), δ i j) →+ ⨁ i : Σ _i, _, δ i.1 i.2 where
   toFun := DFinsupp.sigmaUncurry
   map_zero' := DFinsupp.sigmaUncurry_zero
   map_add' := DFinsupp.sigmaUncurry_add
 #align direct_sum.sigma_uncurry DirectSum.sigmaUncurry
 
 @[simp]
-theorem sigmaUncurry_apply [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)]
-    (f : ⨁ (i) (j), δ i j) (i : ι) (j : α i) : sigmaUncurry f ⟨i, j⟩ = f i j :=
+theorem sigmaUncurry_apply (f : ⨁ (i) (j), δ i j) (i : ι) (j : α i) :
+    sigmaUncurry f ⟨i, j⟩ = f i j :=
   DFinsupp.sigmaUncurry_apply f i j
 #align direct_sum.sigma_uncurry_apply DirectSum.sigmaUncurry_apply
 
 /-- The natural map between `⨁ (i : Σ i, α i), δ i.1 i.2` and `⨁ i (j : α i), δ i j`. -/
-def sigmaCurryEquiv [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
-    (⨁ i : Σ _i, _, δ i.1 i.2) ≃+ ⨁ (i) (j), δ i j :=
+def sigmaCurryEquiv : (⨁ i : Σ _i, _, δ i.1 i.2) ≃+ ⨁ (i) (j), δ i j :=
   { sigmaCurry, DFinsupp.sigmaCurryEquiv with }
 #align direct_sum.sigma_curry_equiv DirectSum.sigmaCurryEquiv
 

@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2022 Bhavik Mehta All rights reserved.
+Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Yaël Dillies
 -/
@@ -56,10 +56,10 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [Topologi
         LinearPMap.mkSpanSingleton'_apply_self]
     have hφ₄ : ∀ x ∈ s, φ x < 1 := fun x hx =>
       (hφ₂ x).trans_lt (gauge_lt_one_of_mem_of_isOpen hs₂ hx)
-    refine' ⟨⟨φ, _⟩, hφ₃, hφ₄⟩
-    refine'
+    refine ⟨⟨φ, ?_⟩, hφ₃, hφ₄⟩
+    refine
       φ.continuous_of_nonzero_on_open _ (hs₂.vadd (-x₀)) (Nonempty.vadd_set ⟨0, hs₀⟩)
-        (vadd_set_subset_iff.mpr fun x hx => _)
+        (vadd_set_subset_iff.mpr fun x hx => ?_)
     change φ (-x₀ + x) ≠ 0
     rw [map_add, map_neg]
     specialize hφ₄ x hx
@@ -103,9 +103,9 @@ theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht
     have := hf₂ (x₀ + (a - b)) (vadd_mem_vadd_set <| sub_mem_sub ha hb)
     simp only [f.map_add, f.map_sub, hf₁] at this
     linarith
-  refine' ⟨f, sInf (f '' t), image_subset_iff.1 (_ : f '' s ⊆ Iio (sInf (f '' t))), fun b hb => _⟩
+  refine ⟨f, sInf (f '' t), image_subset_iff.1 (?_ : f '' s ⊆ Iio (sInf (f '' t))), fun b hb => ?_⟩
   · rw [← interior_Iic]
-    refine' interior_maximal (image_subset_iff.2 fun a ha => _) (f.isOpenMap_of_ne_zero _ _ hs₂)
+    refine interior_maximal (image_subset_iff.2 fun a ha => ?_) (f.isOpenMap_of_ne_zero ?_ _ hs₂)
     · exact le_csInf (Nonempty.image _ ⟨_, hb₀⟩) (forall_mem_image.2 <| forall_le _ ha)
     · rintro rfl
       simp at hf₁
@@ -134,13 +134,13 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
   · exact ⟨0, 1, fun a _ha => by norm_num, by simp⟩
   obtain ⟨f, s, hf₁, hf₂⟩ := geometric_hahn_banach_open hs₁ hs₂ ht₁ disj
   have hf : IsOpenMap f := by
-    refine' f.isOpenMap_of_ne_zero _
+    refine f.isOpenMap_of_ne_zero ?_
     rintro rfl
     simp_rw [ContinuousLinearMap.zero_apply] at hf₁ hf₂
     exact (hf₁ _ ha₀).not_le (hf₂ _ hb₀)
-  refine' ⟨f, s, hf₁, image_subset_iff.1 (_ : f '' t ⊆ Ioi s)⟩
+  refine ⟨f, s, hf₁, image_subset_iff.1 (?_ : f '' t ⊆ Ioi s)⟩
   rw [← interior_Ici]
-  refine' interior_maximal (image_subset_iff.2 hf₂) (f.isOpenMap_of_ne_zero _ _ ht₃)
+  refine interior_maximal (image_subset_iff.2 hf₂) (f.isOpenMap_of_ne_zero ?_ _ ht₃)
   rintro rfl
   simp_rw [ContinuousLinearMap.zero_apply] at hf₁ hf₂
   exact (hf₁ _ ha₀).not_le (hf₂ _ hb₀)
@@ -207,7 +207,7 @@ theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
 theorem iInter_halfspaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
     ⋂ l : E →L[ℝ] ℝ, { x | ∃ y ∈ s, l x ≤ l y } = s := by
   rw [Set.iInter_setOf]
-  refine' Set.Subset.antisymm (fun x hx => _) fun x hx l => ⟨x, hx, le_rfl⟩
+  refine Set.Subset.antisymm (fun x hx => ?_) fun x hx l => ⟨x, hx, le_rfl⟩
   by_contra h
   obtain ⟨l, s, hlA, hl⟩ := geometric_hahn_banach_closed_point hs₁ hs₂ h
   obtain ⟨y, hy, hxy⟩ := hx l

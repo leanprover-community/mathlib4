@@ -87,7 +87,7 @@ instance (priority := 100) NormalMono.regularMono (f : X ⟶ Y) [I : NormalMono 
 
 /-- If `f` is a normal mono, then any map `k : W ⟶ Y` such that `k ≫ normal_mono.g = 0` induces
     a morphism `l : W ⟶ X` such that `l ≫ f = k`. -/
-def NormalMono.lift' {W : C} (f : X ⟶ Y) [hf :NormalMono f] (k : W ⟶ Y) (h : k ≫ hf.g = 0) :
+def NormalMono.lift' {W : C} (f : X ⟶ Y) [hf : NormalMono f] (k : W ⟶ Y) (h : k ≫ hf.g = 0) :
     { l : W ⟶ X // l ≫ f = k } :=
   KernelFork.IsLimit.lift' NormalMono.isLimit _ h
 #align category_theory.normal_mono.lift' CategoryTheory.NormalMono.lift'
@@ -240,8 +240,7 @@ open Opposite
 variable [HasZeroMorphisms C]
 
 /-- A normal mono becomes a normal epi in the opposite category. -/
-def normalEpiOfNormalMonoUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalMono f.unop) : NormalEpi f
-    where
+def normalEpiOfNormalMonoUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalMono f.unop) : NormalEpi f where
   W := op m.Z
   g := m.g.op
   w := congrArg Quiver.Hom.op m.w
@@ -260,8 +259,7 @@ def normalEpiOfNormalMonoUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalMono f.un
 #align category_theory.normal_epi_of_normal_mono_unop CategoryTheory.normalEpiOfNormalMonoUnop
 
 /-- A normal epi becomes a normal mono in the opposite category. -/
-def normalMonoOfNormalEpiUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalEpi f.unop) : NormalMono f
-    where
+def normalMonoOfNormalEpiUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalEpi f.unop) : NormalMono f where
   Z := op m.W
   g := m.g.op
   w := congrArg Quiver.Hom.op m.w

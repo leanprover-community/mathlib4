@@ -36,7 +36,7 @@ theorem Basis.ext_multilinear_fin {f g : MultilinearMap R M M₂} {ι₁ : Fin n
   · ext x
     convert h finZeroElim
   · apply Function.LeftInverse.injective uncurry_curryLeft
-    refine' Basis.ext (e 0) _
+    refine Basis.ext (e 0) ?_
     intro i
     apply hm (Fin.tail e)
     intro j
@@ -44,7 +44,7 @@ theorem Basis.ext_multilinear_fin {f g : MultilinearMap R M M₂} {ι₁ : Fin n
     iterate 2
       rw [curryLeft_apply]
       congr 1 with x
-      refine' Fin.cases rfl (fun x => _) x
+      refine Fin.cases rfl (fun x => ?_) x
       dsimp [Fin.tail]
       rw [Fin.cons_succ, Fin.cons_succ]
 #align basis.ext_multilinear_fin Basis.ext_multilinear_fin

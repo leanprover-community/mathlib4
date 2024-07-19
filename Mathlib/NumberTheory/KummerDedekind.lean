@@ -169,7 +169,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
           (show z ∈ I.map (algebraMap R S) by rwa [Ideal.mem_comap] at hy))
       use a + algebraMap R R<x> q * ⟨z, hz⟩
       refine ⟨Ideal.add_mem (I.map (algebraMap R R<x>)) ha.left ?_, by
-          simp only [ha.right, map_add, AlgHom.map_mul, add_right_inj]; rfl⟩
+          simp only [ha.right, map_add, _root_.map_mul, add_right_inj]; rfl⟩
       rw [mul_comm]
       exact Ideal.mul_mem_left (I.map (algebraMap R R<x>)) _ (Ideal.mem_map_of_mem _ hq)
     refine ⟨fun h => ?_,
@@ -177,8 +177,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
     obtain ⟨x₁, hx₁, hx₂⟩ := (Set.mem_image _ _ _).mp h
     have : x₁ = ⟨z, hz⟩ := by
       apply h_alg
-      simp [hx₂]
-      rfl
+      simp [hx₂, algebraMap_eq_smul_one]
     rwa [← this]
   · -- The converse inclusion is trivial
     have : algebraMap R S = (algebraMap _ S).comp (algebraMap R R<x>) := by ext; rfl
@@ -224,9 +223,7 @@ noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap
     · exact Ideal.Quotient.mk_surjective
 #align quot_adjoin_equiv_quot_map quotAdjoinEquivQuotMap
 
--- Porting note: on-line linter fails with `failed to synthesize` instance
--- but #lint does not report any problem
-@[simp, nolint simpNF]
+@[simp]
 theorem quotAdjoinEquivQuotMap_apply_mk (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (h_alg : Function.Injective (algebraMap R<x> S)) (a : R<x>) :
     quotAdjoinEquivQuotMap hx h_alg (Ideal.Quotient.mk (I.map (algebraMap R R<x>)) a) =
@@ -235,7 +232,7 @@ theorem quotAdjoinEquivQuotMap_apply_mk (hx : (conductor R x).comap (algebraMap 
 
 namespace KummerDedekind
 
-open scoped BigOperators Polynomial Classical
+open scoped Polynomial Classical
 
 variable [IsDomain R] [IsIntegrallyClosed R]
 variable [IsDedekindDomain S]
@@ -292,7 +289,7 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
         (normalizedFactors (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x))).attach := by
   ext J
   -- WLOG, assume J is a normalized factor
-  by_cases hJ : J ∈ normalizedFactors (I.map (algebraMap R S));
+  by_cases hJ : J ∈ normalizedFactors (I.map (algebraMap R S))
   swap
   · rw [Multiset.count_eq_zero.mpr hJ, eq_comm, Multiset.count_eq_zero, Multiset.mem_map]
     simp only [Multiset.mem_attach, true_and_iff, not_exists]
@@ -304,13 +301,13 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
   rw [multiplicity_eq_count_normalizedFactors, multiplicity_eq_count_normalizedFactors,
     UniqueFactorizationMonoid.normalize_normalized_factor _ hJ,
     UniqueFactorizationMonoid.normalize_normalized_factor, PartENat.natCast_inj] at this
-  · refine' this.trans _
+  · refine this.trans ?_
     -- Get rid of the `map` by applying the equiv to both sides.
     generalize hJ' :
       (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx') ⟨J, hJ⟩ = J'
     have : ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm J' : Ideal S) =
-        J :=
-      by rw [← hJ', Equiv.symm_apply_apply _ _, Subtype.coe_mk]
+        J := by
+      rw [← hJ', Equiv.symm_apply_apply _ _, Subtype.coe_mk]
     subst this
     -- Get rid of the `attach` by applying the subtype `coe` to both sides.
     rw [Multiset.count_map_eq_count' fun f =>
@@ -332,8 +329,8 @@ theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I
     (hf : Irreducible (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x))) :
     Irreducible (I.map (algebraMap R S)) := by
   have mem_norm_factors : normalize (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)) ∈
-      normalizedFactors (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)) :=
-    by simp [normalizedFactors_irreducible hf]
+      normalizedFactors (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)) := by
+    simp [normalizedFactors_irreducible hf]
   suffices ∃ y, normalizedFactors (I.map (algebraMap R S)) = {y} by
     obtain ⟨y, hy⟩ := this
     have h := normalizedFactors_prod (show I.map (algebraMap R S) ≠ 0 by

@@ -147,8 +147,8 @@ theorem zero_of_epi_comp {X Y Z : C} (f : X ⟶ Y) {g : Y ⟶ Z} [Epi f] (h : f 
   exact h
 #align category_theory.limits.zero_of_epi_comp CategoryTheory.Limits.zero_of_epi_comp
 
-theorem eq_zero_of_image_eq_zero {X Y : C} {f : X ⟶ Y} [HasImage f] (w : image.ι f = 0) : f = 0 :=
-  by rw [← image.fac f, w, HasZeroMorphisms.comp_zero]
+theorem eq_zero_of_image_eq_zero {X Y : C} {f : X ⟶ Y} [HasImage f] (w : image.ι f = 0) :
+    f = 0 := by rw [← image.fac f, w, HasZeroMorphisms.comp_zero]
 #align category_theory.limits.eq_zero_of_image_eq_zero CategoryTheory.Limits.eq_zero_of_image_eq_zero
 
 theorem nonzero_image_of_nonzero {X Y : C} {f : X ⟶ Y} [HasImage f] (w : f ≠ 0) : image.ι f ≠ 0 :=
@@ -189,7 +189,7 @@ theorem eq_zero_of_tgt {X Y : C} (o : IsZero Y) (f : X ⟶ Y) : f = 0 :=
 theorem iff_id_eq_zero (X : C) : IsZero X ↔ 𝟙 X = 0 :=
   ⟨fun h => h.eq_of_src _ _, fun h =>
     ⟨fun Y => ⟨⟨⟨0⟩, fun f => by
-        rw [← id_comp f, ← id_comp (0: X ⟶ Y), h, zero_comp, zero_comp]; simp only⟩⟩,
+        rw [← id_comp f, ← id_comp (0 : X ⟶ Y), h, zero_comp, zero_comp]; simp only⟩⟩,
     fun Y => ⟨⟨⟨0⟩, fun f => by
         rw [← comp_id f, ← comp_id (0 : Y ⟶ X), h, comp_zero, comp_zero]; simp only ⟩⟩⟩⟩
 #align category_theory.limits.is_zero.iff_id_eq_zero CategoryTheory.Limits.IsZero.iff_id_eq_zero
@@ -512,7 +512,7 @@ open ZeroObject
 -/
 def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y ≅ 0) := by
   -- This is lame, because `Prod` can't cope with `Prop`, so we can't use `Equiv.prodCongr`.
-  refine' (isIsoZeroEquiv X Y).trans _
+  refine (isIsoZeroEquiv X Y).trans ?_
   symm
   fconstructor
   · rintro ⟨eX, eY⟩
@@ -545,20 +545,20 @@ end IsIso
 /-- If there are zero morphisms, any initial object is a zero object. -/
 theorem hasZeroObject_of_hasInitial_object [HasZeroMorphisms C] [HasInitial C] :
     HasZeroObject C := by
-  refine' ⟨⟨⊥_ C, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩⟩
+  refine ⟨⟨⊥_ C, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩⟩
   calc
     f = f ≫ 𝟙 _ := (Category.comp_id _).symm
-    _ = f ≫ 0 := by congr!; apply Subsingleton.elim
+    _ = f ≫ 0 := by congr!; subsingleton
     _ = 0 := HasZeroMorphisms.comp_zero _ _
 #align category_theory.limits.has_zero_object_of_has_initial_object CategoryTheory.Limits.hasZeroObject_of_hasInitial_object
 
 /-- If there are zero morphisms, any terminal object is a zero object. -/
 theorem hasZeroObject_of_hasTerminal_object [HasZeroMorphisms C] [HasTerminal C] :
     HasZeroObject C := by
-  refine' ⟨⟨⊤_ C, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩⟩⟩
+  refine ⟨⟨⊤_ C, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩⟩⟩
   calc
     f = 𝟙 _ ≫ f := (Category.id_comp _).symm
-    _ = 0 ≫ f := by congr!; apply Subsingleton.elim
+    _ = 0 ≫ f := by congr!; subsingleton
     _ = 0 := zero_comp
 #align category_theory.limits.has_zero_object_of_has_terminal_object CategoryTheory.Limits.hasZeroObject_of_hasTerminal_object
 
@@ -664,5 +664,32 @@ instance isSplitEpi_prod_snd [HasZeroMorphisms C] {X Y : C} [HasLimit (pair X Y)
     IsSplitEpi (prod.snd : X ⨯ Y ⟶ Y) :=
   IsSplitEpi.mk' { section_ := prod.lift 0 (𝟙 Y) }
 #align category_theory.limits.is_split_epi_prod_snd CategoryTheory.Limits.isSplitEpi_prod_snd
+
+
+section
+
+variable [HasZeroMorphisms C] [HasZeroObject C] {F : D ⥤ C}
+
+/-- If a functor `F` is zero, then any cone for `F` with a zero point is limit. -/
+def IsLimit.ofIsZero (c : Cone F) (hF : IsZero F) (hc : IsZero c.pt) : IsLimit c where
+  lift _ := 0
+  fac _ j := (F.isZero_iff.1 hF j).eq_of_tgt _ _
+  uniq _ _ _ := hc.eq_of_tgt _ _
+
+/-- If a functor `F` is zero, then any cocone for `F` with a zero point is colimit. -/
+def IsColimit.ofIsZero (c : Cocone F) (hF : IsZero F) (hc : IsZero c.pt) : IsColimit c where
+  desc _ := 0
+  fac _ j := (F.isZero_iff.1 hF j).eq_of_src _ _
+  uniq _ _ _ := hc.eq_of_src _ _
+
+lemma IsLimit.isZero_pt {c : Cone F} (hc : IsLimit c) (hF : IsZero F) : IsZero c.pt :=
+  (isZero_zero C).of_iso (IsLimit.conePointUniqueUpToIso hc
+    (IsLimit.ofIsZero (Cone.mk 0 0) hF (isZero_zero C)))
+
+lemma IsColimit.isZero_pt {c : Cocone F} (hc : IsColimit c) (hF : IsZero F) : IsZero c.pt :=
+  (isZero_zero C).of_iso (IsColimit.coconePointUniqueUpToIso hc
+    (IsColimit.ofIsZero (Cocone.mk 0 0) hF (isZero_zero C)))
+
+end
 
 end CategoryTheory.Limits

@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 
 Coinductive formalization of unbounded computations.
 -/
+import Mathlib.Data.Nat.Find
 import Mathlib.Data.Stream.Init
 import Mathlib.Tactic.Common
 
@@ -47,7 +48,6 @@ def pure (a : α) : Computation α :=
 instance : CoeTC α (Computation α) :=
   ⟨pure⟩
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 -- note [use has_coe_t]
 /-- `think c` is the computation that delays for one "tick" and then performs
   computation `c`. -/
@@ -214,7 +214,7 @@ set_option linter.uppercaseLean3 false in
   If `f b = inl a` then `corec f b = pure a`, and if `f b = inl b'` then
   `corec f b = think (corec f b')`. -/
 def corec (f : β → Sum α β) (b : β) : Computation α := by
-  refine' ⟨Stream'.corec' (Corec.f f) (Sum.inr b), fun n a' h => _⟩
+  refine ⟨Stream'.corec' (Corec.f f) (Sum.inr b), fun n a' h => ?_⟩
   rw [Stream'.corec'_eq]
   change Stream'.corec' (Corec.f f) (Corec.f f (Sum.inr b)).2 n = some a'
   revert h; generalize Sum.inr b = o; revert o
@@ -401,7 +401,7 @@ theorem not_terminates_empty : ¬Terminates (empty α) := fun ⟨⟨a, h⟩⟩ =
 theorem eq_empty_of_not_terminates {s} (H : ¬Terminates s) : s = empty α := by
   apply Subtype.eq; funext n
   induction' h : s.val n with _; · rfl
-  refine' absurd _ H; exact ⟨⟨_, _, h.symm⟩⟩
+  refine absurd ?_ H; exact ⟨⟨_, _, h.symm⟩⟩
 #align computation.eq_empty_of_not_terminates Computation.eq_empty_of_not_terminates
 
 theorem thinkN_mem {s : Computation α} {a} : ∀ n, a ∈ thinkN s n ↔ a ∈ s
@@ -701,7 +701,7 @@ theorem map_id : ∀ s : Computation α, map id s = s
   | ⟨f, al⟩ => by
     apply Subtype.eq; simp only [map, comp_apply, id_eq]
     have e : @Option.rec α (fun _ => Option α) none some = id := by ext ⟨⟩ <;> rfl
-    have h : ((fun x: Option α => x) = id) := rfl
+    have h : ((fun x : Option α => x) = id) := rfl
     simp [e, h, Stream'.map_id]
 #align computation.map_id Computation.map_id
 

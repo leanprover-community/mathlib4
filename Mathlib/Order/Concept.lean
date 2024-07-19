@@ -172,7 +172,8 @@ initialize_simps_projections Concept (+toProd, -fst, -snd)
 
 namespace Concept
 
-variable {r α β} {c d : Concept α β r}
+variable {r α β}
+variable {c d : Concept α β r}
 
 attribute [simp] closure_fst closure_snd
 
@@ -232,7 +233,7 @@ theorem fst_ssubset_fst_iff : c.fst ⊂ d.fst ↔ c < d :=
 
 @[simp]
 theorem snd_subset_snd_iff : c.snd ⊆ d.snd ↔ d ≤ c := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [← fst_subset_fst_iff, ← c.closure_snd, ← d.closure_snd]
     exact extentClosure_anti _ h
   · rw [← c.closure_fst, ← d.closure_fst]
@@ -255,8 +256,8 @@ theorem strictAnti_snd : StrictAnti (Prod.snd ∘ toProd : Concept α β r → S
 instance instLatticeConcept : Lattice (Concept α β r) :=
   { Concept.instSemilatticeInfConcept with
     sup := (· ⊔ ·)
-    le_sup_left := fun c d => snd_subset_snd_iff.1 <| inter_subset_left _ _
-    le_sup_right := fun c d => snd_subset_snd_iff.1 <| inter_subset_right _ _
+    le_sup_left := fun c d => snd_subset_snd_iff.1 inter_subset_left
+    le_sup_right := fun c d => snd_subset_snd_iff.1 inter_subset_right
     sup_le := fun c d e => by
       simp_rw [← snd_subset_snd_iff]
       exact subset_inter }

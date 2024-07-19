@@ -52,11 +52,7 @@ alias Dvd.dvd.add := dvd_add
 
 end DistribSemigroup
 
-set_option linter.deprecated false in
-@[simp]
-theorem two_dvd_bit0 [Semiring α] {a : α} : 2 ∣ bit0 a :=
-  ⟨a, bit0_eq_two_mul _⟩
-#align two_dvd_bit0 two_dvd_bit0
+#noalign two_dvd_bit0
 
 section Semiring
 variable [Semiring α] {a b c : α} {m n : ℕ}
@@ -85,18 +81,16 @@ variable [Semigroup α] [HasDistribNeg α] {a b c : α}
 `b` iff `a` divides `b`. -/
 @[simp]
 theorem dvd_neg : a ∣ -b ↔ a ∣ b :=
-  -- Porting note: `simpa` doesn't close the goal with `rfl` anymore
-  (Equiv.neg _).exists_congr_left.trans <| by simp only [Equiv.neg_symm, Equiv.neg_apply, mul_neg,
-                                                neg_inj]; rfl
+  (Equiv.neg _).exists_congr_left.trans <| by
+    simp only [Equiv.neg_symm, Equiv.neg_apply, mul_neg, neg_inj, Dvd.dvd]
 #align dvd_neg dvd_neg
 
 /-- The negation of an element `a` of a semigroup with a distributive negation divides another
 element `b` iff `a` divides `b`. -/
 @[simp]
 theorem neg_dvd : -a ∣ b ↔ a ∣ b :=
-  -- Porting note: `simpa` doesn't close the goal with `rfl` anymore
-  (Equiv.neg _).exists_congr_left.trans <| by simp only [Equiv.neg_symm, Equiv.neg_apply, mul_neg,
-                                                neg_mul, neg_neg]; rfl
+  (Equiv.neg _).exists_congr_left.trans <| by
+    simp only [Equiv.neg_symm, Equiv.neg_apply, mul_neg, neg_mul, neg_neg, Dvd.dvd]
 #align neg_dvd neg_dvd
 
 alias ⟨Dvd.dvd.of_neg_left, Dvd.dvd.neg_left⟩ := neg_dvd
@@ -159,10 +153,7 @@ section Ring
 
 variable [Ring α] {a b c : α}
 
-set_option linter.deprecated false in
-theorem two_dvd_bit1 : 2 ∣ bit1 a ↔ (2 : α) ∣ 1 :=
-  dvd_add_right two_dvd_bit0
-#align two_dvd_bit1 two_dvd_bit1
+#noalign two_dvd_bit1
 
 /-- An element a divides the sum a + b if and only if a divides b. -/
 @[simp]

@@ -149,10 +149,16 @@ theorem intCast_mul_mem_zmultiples : ↑(k : ℤ) * r ∈ zmultiples r := by
   simpa only [← zsmul_eq_mul] using zsmul_mem_zmultiples r k
 #align add_subgroup.int_cast_mul_mem_zmultiples AddSubgroup.intCast_mul_mem_zmultiples
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_mul_mem_zmultiples := intCast_mul_mem_zmultiples
+
 @[simp]
 theorem intCast_mem_zmultiples_one : ↑(k : ℤ) ∈ zmultiples (1 : R) :=
   mem_zmultiples_iff.mp ⟨k, by simp⟩
 #align add_subgroup.int_cast_mem_zmultiples_one AddSubgroup.intCast_mem_zmultiples_one
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_mem_zmultiples_one := intCast_mem_zmultiples_one
 
 end Ring
 
@@ -188,7 +194,7 @@ theorem ofMul_image_zpowers_eq_zmultiples_ofMul {x : G} :
     simp only at *
     rwa [← ofMul_zpow, hm]
   · rintro ⟨n, hn⟩
-    refine' ⟨x ^ n, ⟨n, rfl⟩, _⟩
+    refine ⟨x ^ n, ⟨n, rfl⟩, ?_⟩
     rwa [ofMul_zpow]
 #align of_mul_image_zpowers_eq_zmultiples_of_mul ofMul_image_zpowers_eq_zmultiples_ofMul
 
@@ -263,8 +269,8 @@ theorem center_eq_iInf (S : Set G) (hS : closure S = ⊤) :
 
 @[to_additive]
 theorem center_eq_infi' (S : Set G) (hS : closure S = ⊤) :
-    center G = ⨅ g : S, centralizer (zpowers (g : G)) :=
-  by rw [center_eq_iInf S hS, ← iInf_subtype'']
+    center G = ⨅ g : S, centralizer (zpowers (g : G)) := by
+  rw [center_eq_iInf S hS, ← iInf_subtype'']
 #align subgroup.center_eq_infi' Subgroup.center_eq_infi'
 #align add_subgroup.center_eq_infi' AddSubgroup.center_eq_infi'
 

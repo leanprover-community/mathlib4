@@ -114,7 +114,7 @@ theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
   · simpa [leftLim, h'] using hf h
   haveI A : NeBot (𝓝[<] x) := neBot_iff.2 h'
   rw [leftLim_eq_sSup hf h']
-  refine' csSup_le _ _
+  refine csSup_le ?_ ?_
   · simp only [image_nonempty]
     exact (forall_mem_nonempty_iff_neBot.2 A) _ self_mem_nhdsWithin
   · simp only [mem_image, mem_Iio, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
@@ -129,7 +129,7 @@ theorem le_leftLim (h : x < y) : f x ≤ leftLim f y := by
   · rw [leftLim_eq_of_eq_bot _ h']
     exact hf h.le
   rw [leftLim_eq_sSup hf h']
-  refine' le_csSup ⟨f y, _⟩ (mem_image_of_mem _ h)
+  refine le_csSup ⟨f y, ?_⟩ (mem_image_of_mem _ h)
   simp only [upperBounds, mem_image, mem_Iio, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, mem_setOf_eq]
   intro z hz
@@ -203,7 +203,7 @@ theorem continuousWithinAt_Iio_iff_leftLim_eq :
   rcases eq_or_ne (𝓝[<] x) ⊥ with (h' | h')
   · simp [leftLim_eq_of_eq_bot f h', ContinuousWithinAt, h']
   haveI : (𝓝[Iio x] x).NeBot := neBot_iff.2 h'
-  refine' ⟨fun h => tendsto_nhds_unique (hf.tendsto_leftLim x) h.tendsto, fun h => _⟩
+  refine ⟨fun h => tendsto_nhds_unique (hf.tendsto_leftLim x) h.tendsto, fun h => ?_⟩
   have := hf.tendsto_leftLim x
   rwa [h] at this
 #align monotone.continuous_within_at_Iio_iff_left_lim_eq Monotone.continuousWithinAt_Iio_iff_leftLim_eq
@@ -218,7 +218,7 @@ theorem continuousWithinAt_Ioi_iff_rightLim_eq :
 /-- A monotone function is continuous at a point if and only if its left and right limits
 coincide. -/
 theorem continuousAt_iff_leftLim_eq_rightLim : ContinuousAt f x ↔ leftLim f x = rightLim f x := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · have A : leftLim f x = f x :=
       hf.continuousWithinAt_Iio_iff_leftLim_eq.1 h.continuousWithinAt
     have B : rightLim f x = f x :=
@@ -228,7 +228,7 @@ theorem continuousAt_iff_leftLim_eq_rightLim : ContinuousAt f x ↔ leftLim f x 
       apply le_antisymm (leftLim_le hf (le_refl _))
       rw [h]
       exact le_rightLim hf (le_refl _)
-    refine' continuousAt_iff_continuous_left'_right'.2 ⟨_, _⟩
+    refine continuousAt_iff_continuous_left'_right'.2 ⟨?_, ?_⟩
     · exact hf.continuousWithinAt_Iio_iff_leftLim_eq.2 h'
     · rw [h] at h'
       exact hf.continuousWithinAt_Ioi_iff_rightLim_eq.2 h'
@@ -243,7 +243,7 @@ theorem countable_not_continuousWithinAt_Ioi [SecondCountableTopology β] :
   rintro x (hx : ¬ContinuousWithinAt f (Ioi x) x)
   dsimp
   contrapose! hx
-  refine' tendsto_order.2 ⟨fun m hm => _, fun u hu => _⟩
+  refine tendsto_order.2 ⟨fun m hm => ?_, fun u hu => ?_⟩
   · filter_upwards [@self_mem_nhdsWithin _ _ x (Ioi x)] with y hy using hm.trans_le
       (hf (le_of_lt hy))
   rcases hx u hu with ⟨v, xv, fvu⟩
@@ -267,7 +267,7 @@ theorem countable_not_continuousAt [SecondCountableTopology β] :
   apply
     (hf.countable_not_continuousWithinAt_Ioi.union hf.countable_not_continuousWithinAt_Iio).mono
       _
-  refine' compl_subset_compl.1 _
+  refine compl_subset_compl.1 ?_
   simp only [compl_union]
   rintro x ⟨hx, h'x⟩
   simp only [mem_setOf_eq, Classical.not_not, mem_compl_iff] at hx h'x ⊢

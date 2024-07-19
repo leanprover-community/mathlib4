@@ -102,7 +102,7 @@ an open neighborhood in the group."]
 theorem prod_self_subset {U} (hU : U ∈ 𝓝 (1 : G × G)) :
     ∃ V : OpenSubgroup G, (V : Set G) ×ˢ (V : Set G) ⊆ U :=
   let ⟨V, W, h⟩ := prod_subset hU
-  ⟨V ⊓ W, by refine' Set.Subset.trans (Set.prod_mono _ _) ‹_› <;> simp⟩
+  ⟨V ⊓ W, by refine Set.Subset.trans (Set.prod_mono ?_ ?_) ‹_› <;> simp⟩
 #align nonarchimedean_group.prod_self_subset NonarchimedeanGroup.prod_self_subset
 #align nonarchimedean_add_group.prod_self_subset NonarchimedeanAddGroup.prod_self_subset
 

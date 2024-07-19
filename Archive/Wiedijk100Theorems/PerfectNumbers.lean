@@ -41,7 +41,7 @@ open ArithmeticFunction Finset
 
 theorem sigma_two_pow_eq_mersenne_succ (k : ℕ) : σ 1 (2 ^ k) = mersenne (k + 1) := by
   simp_rw [sigma_one_apply, mersenne, show 2 = 1 + 1 from rfl, ← geom_sum_mul_add 1 (k + 1)]
-  set_option tactic.skipAssignedInstances false in norm_num
+  norm_num
 #align theorems_100.nat.sigma_two_pow_eq_mersenne_succ Theorems100.Nat.sigma_two_pow_eq_mersenne_succ
 
 /-- Euclid's theorem that Mersenne primes induce perfect numbers -/
@@ -69,7 +69,7 @@ theorem eq_two_pow_mul_odd {n : ℕ} (hpos : 0 < n) : ∃ k m : ℕ, n = 2 ^ k *
   have h := multiplicity.finite_nat_iff.2 ⟨Nat.prime_two.ne_one, hpos⟩
   cases' multiplicity.pow_multiplicity_dvd h with m hm
   use (multiplicity 2 n).get h, m
-  refine' ⟨hm, _⟩
+  refine ⟨hm, ?_⟩
   rw [even_iff_two_dvd]
   have hg := multiplicity.is_greatest' h (Nat.lt_succ_self _)
   contrapose! hg

@@ -164,7 +164,7 @@ theorem map_gfp_comp : f (gfp (g.comp f)) = gfp (f.comp g) :=
 -- Diagonal rule
 theorem lfp_lfp (h : α →o α →o α) : lfp (lfp.comp h) = lfp h.onDiag := by
   let a := lfp (lfp.comp h)
-  refine' (lfp_le _ _).antisymm (lfp_le _ (Eq.le _))
+  refine (lfp_le _ ?_).antisymm (lfp_le _ (Eq.le ?_))
   · exact lfp_le _ h.onDiag.map_lfp.le
   have ha : (lfp ∘ h) a = a := (lfp.comp h).map_lfp
   calc
@@ -314,3 +314,5 @@ instance completeLattice : CompleteLattice (fixedPoints f) where
   bot := ⟨lfp f, f.isFixedPt_lfp⟩
   le_top x := f.le_gfp x.2.ge
   bot_le x := f.lfp_le x.2.le
+
+end fixedPoints
