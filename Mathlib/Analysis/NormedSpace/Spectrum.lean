@@ -572,9 +572,9 @@ section BoundarySpectrum
 
 local notation "σ" => spectrum
 
-variable {𝕜 A SubalgClass : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
-variable [SetLike SubalgClass A] [SubringClass SubalgClass A] [SMulMemClass SubalgClass 𝕜 A]
-variable (S : SubalgClass) [hS : IsClosed (S : Set A)] (x : S)
+variable {𝕜 A SA : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [SetLike SA A] [SubringClass SA A] [SMulMemClass SA 𝕜 A]
+variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
 
 open Topology Filter
 
