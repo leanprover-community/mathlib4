@@ -6,6 +6,7 @@ Authors: David Kurniadi Angdinata
 import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Degree
 import Mathlib.AlgebraicGeometry.EllipticCurve.Group
 import Mathlib.Data.Fin.Tuple.Reflection
+import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Torsion points on Weierstrass curves
@@ -42,53 +43,7 @@ lemma evalEval_pow {R : Type u} [CommSemiring R] (x y : R) (p : R[X][Y]) (n : �
     (p ^ n).evalEval x y = p.evalEval x y ^ n := by
   simp only [evalEval, eval_pow]
 
-lemma aeval_ne_zero_of_isCoprime {R : Type u} [CommSemiring R] {A : Type v}
-    [Nontrivial A] [Semiring A] [Algebra R A] {f g : R[X]} (h : IsCoprime f g) (a : A) :
-    ¬(aeval a f = 0 ∧ aeval a g = 0) := by
-  rintro ⟨hf, hg⟩
-  rcases h with ⟨_, _, h⟩
-  apply_fun aeval a at h
-  simp only [map_add, map_mul, map_one, hf, hg, mul_zero, add_zero, zero_ne_one] at h
-
-lemma isCoprime_iff_aeval_ne_zero {F : Type u} [Field F] (K : Type v) [Field K]
-    [IsAlgClosed K] [Algebra F K] (f g : F[X]) :
-    IsCoprime f g ↔ ∀ a : K, ¬(aeval a f = 0 ∧ aeval a g = 0) := by
-  refine ⟨fun h => aeval_ne_zero_of_isCoprime h,
-    fun h => isCoprime_of_dvd _ _ ?_ fun x hx hx' => ?_⟩
-  · replace h := h 0
-    contrapose! h
-    rw [h.left, h.right, map_zero, and_self]
-  · rintro ⟨_, rfl⟩ ⟨_, rfl⟩
-    obtain ⟨a, ha : _ = _⟩ := IsAlgClosed.exists_root (x.map <| algebraMap F K) <| by
-      simpa only [degree_map] using (ne_of_lt <| degree_pos_of_ne_zero_of_nonunit hx' hx).symm
-    exact h a <| by rw [eval_map_algebraMap] at ha; simp only [map_mul, ha, zero_mul, true_and]
-
 end Polynomial
-
-namespace MonoidHom
-
-variable {G : Type u} [Group G] {H : Type v} [Group H] (f : G →* H)
-
-@[to_additive]
-lemma fiber_equiv_smul_ker (g : G) : f ⁻¹' {f g} = g • f.ker := Set.ext fun _ => by
-  erw [Set.mem_singleton_iff, eq_comm, Set.mem_smul_set_iff_inv_smul_mem, mem_ker, map_mul, map_inv,
-    inv_mul_eq_one]
-
-@[to_additive (attr := simps!)]
-def fiberEquivKer (g : G) : f ⁻¹' {f g} ≃ f.ker :=
-  (Equiv.setCongr <| f.fiber_equiv_smul_ker g).trans <| Subgroup.leftCosetEquivSubgroup g
-
-variable {f} (hf : Function.Surjective f)
-
-@[to_additive]
-noncomputable def fiberEquivKerOfSurjective (h : H) : f ⁻¹' {h} ≃ f.ker :=
-  (hf h).choose_spec ▸ f.fiberEquivKer (hf h).choose
-
-@[to_additive]
-noncomputable def fiberEquivOfSurjective (h h' : H) : f ⁻¹' {h} ≃ f ⁻¹' {h'} :=
-  (fiberEquivKerOfSurjective hf h).trans (fiberEquivKerOfSurjective hf h').symm
-
-end MonoidHom
 
 namespace WeierstrassCurve
 
@@ -158,7 +113,7 @@ lemma nonsingular_X_surjective_of_splits (hΔ : W.Δ ≠ 0) {x : F}
     (hx : (W.toAffine.polynomialEvalX x).Splits <| RingHom.id F) :
     ∃ y : F, W.toAffine.Nonsingular x y := by
   rcases equation_X_surjective_of_splits hx with ⟨x, hx⟩
-  exact ⟨x, W.toAffine.nonsingular_of_Δ_ne_zero hx hΔ⟩
+  exact ⟨x, (equation_iff_nonsingular hΔ).mp hx⟩
 
 variable {W} in
 lemma nonsingular_X_surjective [IsAlgClosed F] (hΔ : W.Δ ≠ 0) (x : F) :
@@ -196,7 +151,7 @@ lemma nonsingular_Y_surjective_of_splits (hΔ : W.Δ ≠ 0) {y : F}
     (hx : (W.toAffine.polynomialEvalY y).Splits <| RingHom.id F) :
     ∃ x : F, W.toAffine.Nonsingular x y := by
   rcases equation_Y_surjective_of_splits hx with ⟨x, hx⟩
-  exact ⟨x, W.toAffine.nonsingular_of_Δ_ne_zero hx hΔ⟩
+  exact ⟨x, (equation_iff_nonsingular hΔ).mp hx⟩
 
 variable {W} in
 lemma nonsingular_Y_surjective [IsAlgClosed F] (hΔ : W.Δ ≠ 0) (y : F) :
@@ -435,7 +390,8 @@ end Jacobian
 
 lemma isCoprime_Φ_ΨSq [IsAlgClosed F] {W : WeierstrassCurve F} (hΔ : W.Δ ≠ 0) (n : ℤ) :
     IsCoprime (W.Φ n) (W.ΨSq n) := by
-  refine (Polynomial.isCoprime_iff_aeval_ne_zero F ..).mpr fun x ⟨hΦ, hΨ⟩ => ?_
+  refine (isCoprime_iff_aeval_ne_zero_of_isAlgClosed _ F ..).mpr fun x => not_and_or.mp
+    fun ⟨hΦ, hΨ⟩ => ?_
   rcases W.toAffine.nonsingular_X_surjective hΔ x with ⟨y, h⟩
   have hn {n : ℤ} := Jacobian.Point.zsmul_eq_zero_iff n <| (Jacobian.nonsingularLift_some ..).mpr h
   rw [coe_aeval_eq_eval, ← evalEval_Ψ_sq n h.left, ← evalEval_ψ n h.left,
