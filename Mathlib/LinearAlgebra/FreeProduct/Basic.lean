@@ -40,7 +40,8 @@ is just `PiTensorProduct`.)
 
 ## TODO
 - Induction principle for `FreeProduct`
-- Equivalence of `FreeProduct` with `PiTensorProduct` in the commutative case and with `FreeAlgebra R ⨁ (i : ι), A i`
+- Equivalence of `FreeProduct` with `PiTensorProduct` in the commutative case and with 
+  `FreeAlgebra R ⨁ (i : ι), A i`
 
 -/
 universe u v w w'
