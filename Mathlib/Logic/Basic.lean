@@ -7,6 +7,7 @@ import Mathlib.Init.Logic
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Basic
+import Batteries.Logic
 import Batteries.Util.LibraryNote
 import Batteries.Tactic.Lint.Basic
 import Mathlib.Data.Nat.Notation
