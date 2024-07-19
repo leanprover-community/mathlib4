@@ -442,7 +442,9 @@ theorem pi_of_empty {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
   haveI : ∀ a, SigmaFinite (μ a) := isEmptyElim
   refine pi_eq fun s _ => ?_
   rw [Fintype.prod_empty, dirac_apply_of_mem]
-  exact isEmptyElim (α := α)
+  #adaptation_note
+  /-- 2024-07-18 need to disable elab_as_elim with `(p := _)` due to type-incorrect motive -/
+  exact isEmptyElim (p := _) (α := α)
 #align measure_theory.measure.pi_of_empty MeasureTheory.Measure.pi_of_empty
 
 lemma volume_pi_eq_dirac {ι : Type*} [Fintype ι] [IsEmpty ι]
