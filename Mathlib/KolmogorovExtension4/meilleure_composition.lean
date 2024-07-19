@@ -615,7 +615,6 @@ theorem partialKernel_comp' (a : ℕ) {b c : ℕ} (h : c ≤ b) :
   by_cases hab : a < b <;> by_cases hbc : b < c <;> by_cases hac : a < c <;>
     try rw [partialKernel_le κ (not_lt.1 hbc), kernel.deterministic_comp_eq_map,
       partialKernel_proj κ a (not_lt.1 hbc)]
-  · omega
-  · omega
-  · omega
-  · omega
+  all_goals omega
+
+end partialKernel
