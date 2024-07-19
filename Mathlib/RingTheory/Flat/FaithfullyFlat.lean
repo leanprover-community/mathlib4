@@ -72,7 +72,7 @@ lemma zero_iff_lTensor_zero {N' : Type v} [AddCommGroup N'] [Module R N']
 A faithfully flat `R`-module `M` is flat and for all linear maps `f`, the map `f ⊗ id = 0`, if and
 only if  `f = 0`. -/
 lemma zero_iff_lTensor_zero' :
-  FaithfullyFlat R M → (Module.Flat R M ∧
+    FaithfullyFlat R M → (Module.Flat R M ∧
   (∀ ⦃N N': Type v⦄ [AddCommGroup N][Module R N][AddCommGroup N'] [Module R N'] (f : N →ₗ[R] N'),
   (f = 0) ↔ LinearMap.lTensor M f = 0)):= by
       intro h
