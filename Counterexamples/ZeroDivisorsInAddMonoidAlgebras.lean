@@ -9,8 +9,6 @@ import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.ZMod.Basic
 
-#align_import zero_divisors_in_add_monoid_algebras from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
-
 /-!
 # Examples of zero-divisors in `AddMonoidAlgebra`s
 
@@ -43,7 +41,6 @@ finitely supported function is lexicographic, matching the list notation.  The i
 -/
 
 
-set_option linter.uppercaseLean3 false
 
 open Finsupp hiding single
 open AddMonoidAlgebra
@@ -65,12 +62,10 @@ theorem zero_divisors_of_periodic {R A} [Nontrivial R] [Ring R] [AddMonoid A] {n
   · exact sub_ne_zero.mpr (by simpa [single, AddMonoidAlgebra, single_eq_single_iff])
   · rw [mul_sub, AddMonoidAlgebra.single_mul_single, AddMonoidAlgebra.single_mul_single,
       sub_eq_zero, add_zero, ← succ_nsmul', Nat.sub_add_cancel (one_le_two.trans n2), na]
-#align counterexample.zero_divisors_of_periodic Counterexample.zero_divisors_of_periodic
 
 theorem single_zero_one {R A} [Semiring R] [Zero A] :
     single (0 : A) (1 : R) = (1 : R[A]) :=
   rfl
-#align counterexample.single_zero_one Counterexample.single_zero_one
 
 /-- This is a simple example showing that if `R` is a non-trivial ring and `A` is an additive
 monoid with a non-zero element `a` of finite order `oa`, then `R[A]` contains
@@ -106,7 +101,6 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
     · rw [single_zero_one, one_pow, mul_one]
     · rw [single_pow, one_pow, addOrderOf_nsmul_eq_zero, single_zero_one, one_pow, sub_self]
     · simp only [single_zero_one, Commute.one_right]
-#align counterexample.zero_divisors_of_torsion Counterexample.zero_divisors_of_torsion
 
 example {R} [Ring R] [Nontrivial R] (n : ℕ) (n0 : 2 ≤ n) :
     ∃ f g : AddMonoidAlgebra R (ZMod n), f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 :=
@@ -118,7 +112,6 @@ inductive F
   | zero
   | one
   deriving DecidableEq, Inhabited
-#align counterexample.F Counterexample.F
 
 /-- The same as `List.getRest`, except that we take the "rest" from the first match, rather than
 from the beginning, returning `[]` if there is no match.  For instance,
@@ -129,7 +122,6 @@ from the beginning, returning `[]` if there is no match.  For instance,
 def List.dropUntil {α} [DecidableEq α] : List α → List α → List α
   | _, [] => []
   | l, a :: as => ((a::as).getRest l).getD (dropUntil l as)
-#align counterexample.list.drop_until Counterexample.List.dropUntil
 
 open Lean Elab Command in
 /-- `guard_decl na mod` makes sure that the declaration with name `na` is in the module `mod`.
@@ -171,14 +163,12 @@ We use it to lift the linear order on `ℕ`. -/
 def val : F → ℕ
   | 0 => 0
   | 1 => 1
-#align counterexample.F.val Counterexample.F.val
 
 instance : LinearOrder F :=
   LinearOrder.lift' val (by boom)
 
 @[simp]
 theorem z01 : (0 : F) < 1 := by decide
-#align counterexample.F.z01 Counterexample.F.z01
 
 instance : Add F where
   add := max
@@ -195,7 +185,6 @@ instance : AddCommMonoid F where
 /-- The `CovariantClass`es asserting monotonicity of addition hold for `F`. -/
 instance covariantClass_add_le : CovariantClass F F (· + ·) (· ≤ ·) :=
   ⟨by boom⟩
-#align counterexample.F.covariant_class_add_le Counterexample.F.covariantClass_add_le
 
 example : CovariantClass F F (Function.swap (· + ·)) (· ≤ ·) := by infer_instance
 
@@ -212,27 +201,22 @@ example : ¬CovariantClass F F (· + ·) (· < ·) := fun h =>
 /-- A few `simp`-lemmas to take care of trivialities in the proof of the example below. -/
 @[simp]
 theorem f1 : ∀ a : F, 1 + a = 1 := by boom
-#align counterexample.F.f1 Counterexample.F.f1
 
 @[simp]
 theorem f011 : ofLex (Finsupp.single (0 : F) (1 : F)) 1 = 0 :=
   single_apply_eq_zero.mpr fun h => h
-#align counterexample.F.f011 Counterexample.F.f011
 
 @[simp]
 theorem f010 : ofLex (Finsupp.single (0 : F) (1 : F)) 0 = 1 :=
   single_eq_same
-#align counterexample.F.f010 Counterexample.F.f010
 
 @[simp]
 theorem f111 : ofLex (Finsupp.single (1 : F) (1 : F)) 1 = 1 :=
   single_eq_same
-#align counterexample.F.f111 Counterexample.F.f111
 
 @[simp]
 theorem f110 : ofLex (Finsupp.single (1 : F) (1 : F)) 0 = 0 :=
   single_apply_eq_zero.mpr fun h => h.symm
-#align counterexample.F.f110 Counterexample.F.f110
 
 /-- Here we see that (not-necessarily strict) monotonicity of addition on `Lex (F →₀ F)` is not
 a consequence of monotonicity of addition on `F`.  Strict monotonicity of addition on `F` is

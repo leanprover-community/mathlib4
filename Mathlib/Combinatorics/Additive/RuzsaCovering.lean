@@ -6,8 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.SetTheory.Cardinal.Finite
 
-#align_import combinatorics.additive.ruzsa_covering from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
-
 /-!
 # Ruzsa's covering lemma
 
@@ -51,8 +49,6 @@ theorem exists_subset_mul_div (ht : t.Nonempty) :
   obtain ⟨b, hb, c, hc₁, hc₂⟩ := H
   refine mem_mul.2 ⟨b, hb, a / b, ?_, by simp⟩
   exact mem_div.2 ⟨_, hc₂, _, hc₁, by simp [inv_mul_eq_div]⟩
-#align finset.exists_subset_mul_div Finset.exists_subset_mul_div
-#align finset.exists_subset_add_sub Finset.exists_subset_add_sub
 
 end Finset
 

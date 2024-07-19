@@ -10,8 +10,6 @@ import Mathlib.Data.Nat.Cast.NeZero
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Order.Hom.Basic
 
-#align_import data.nat.cast.basic from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
-
 /-!
 # Cast of natural numbers: lemmas about order
 
@@ -35,7 +33,6 @@ variable [CovariantClass α α (· + ·) (· ≤ ·)] [ZeroLEOneClass α]
 theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
   monotone_nat_of_le_succ fun n ↦ by
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
-#align nat.mono_cast Nat.mono_cast
 
 @[deprecated mono_cast (since := "2024-02-10")]
 theorem cast_le_cast {a b : ℕ} (h : a ≤ b) : (a : α) ≤ b := mono_cast h
@@ -61,7 +58,6 @@ theorem cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 := by
   apply zero_lt_one.trans_le
   convert (@mono_cast α _).imp (?_ : 1 ≤ n + 1)
   <;> simp
-#align nat.cast_add_one_pos Nat.cast_add_one_pos
 
 /-- See also `Nat.cast_pos`, specialised for an `OrderedSemiring`. -/
 @[simp low]
@@ -73,41 +69,32 @@ variable [CharZero α] {m n : ℕ}
 
 theorem strictMono_cast : StrictMono (Nat.cast : ℕ → α) :=
   mono_cast.strictMono_of_injective cast_injective
-#align nat.strict_mono_cast Nat.strictMono_cast
 
 /-- `Nat.cast : ℕ → α` as an `OrderEmbedding` -/
 @[simps! (config := .asFn)]
 def castOrderEmbedding : ℕ ↪o α :=
   OrderEmbedding.ofStrictMono Nat.cast Nat.strictMono_cast
-#align nat.cast_order_embedding Nat.castOrderEmbedding
-#align nat.cast_order_embedding_apply Nat.castOrderEmbedding_apply
 
 @[simp, norm_cast]
 theorem cast_le : (m : α) ≤ n ↔ m ≤ n :=
   strictMono_cast.le_iff_le
-#align nat.cast_le Nat.cast_le
 
 @[simp, norm_cast, mono]
 theorem cast_lt : (m : α) < n ↔ m < n :=
   strictMono_cast.lt_iff_lt
-#align nat.cast_lt Nat.cast_lt
 
 @[simp, norm_cast]
 theorem one_lt_cast : 1 < (n : α) ↔ 1 < n := by rw [← cast_one, cast_lt]
-#align nat.one_lt_cast Nat.one_lt_cast
 
 @[simp, norm_cast]
 theorem one_le_cast : 1 ≤ (n : α) ↔ 1 ≤ n := by rw [← cast_one, cast_le]
-#align nat.one_le_cast Nat.one_le_cast
 
 @[simp, norm_cast]
 theorem cast_lt_one : (n : α) < 1 ↔ n = 0 := by
   rw [← cast_one, cast_lt, Nat.lt_succ_iff, le_zero]
-#align nat.cast_lt_one Nat.cast_lt_one
 
 @[simp, norm_cast]
 theorem cast_le_one : (n : α) ≤ 1 ↔ n ≤ 1 := by rw [← cast_one, cast_le]
-#align nat.cast_le_one Nat.cast_le_one
 
 variable [m.AtLeastTwo] [n.AtLeastTwo]
 
@@ -183,6 +170,5 @@ variable {R S F : Type*} [NonAssocSemiring R] [NonAssocSemiring S] [FunLike F R 
 theorem NeZero.nat_of_injective {n : ℕ} [h : NeZero (n : R)] [RingHomClass F R S] {f : F}
     (hf : Function.Injective f) : NeZero (n : S) :=
   ⟨fun h ↦ NeZero.natCast_ne n R <| hf <| by simpa only [map_natCast, map_zero f]⟩
-#align ne_zero.nat_of_injective NeZero.nat_of_injective
 
 end RingHomClass
