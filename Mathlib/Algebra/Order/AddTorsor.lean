@@ -80,6 +80,14 @@ theorem IsOrderedSMul.smul_le_smul [Preorder G] [Preorder P] [SMul G P] [IsOrder
     {a b : G} {c d : P} (hab : a ≤ b) (hcd : c ≤ d) : a • c ≤ b • d :=
   (IsOrderedSMul.smul_le_smul_left _ _ hcd _).trans (IsOrderedSMul.smul_le_smul_right _ _ hab _)
 
+/-- The vector sum of two monotone functions is monotone. -/
+@[to_additive]
+theorem Monotone.SMul {γ : Type*} [Preorder G] [Preorder P] [Preorder γ] [SMul G P]
+    [IsOrderedSMul G P] {f : γ → G} {g : γ → P} (hf : Monotone f) (hg : Monotone g) :
+    Monotone fun x => f x • g x :=
+  fun _ _ hab => (IsOrderedSMul.smul_le_smul_left _ _ (hg hab) _).trans
+    (IsOrderedSMul.smul_le_smul_right _ _ (hf hab) _)
+
 /-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
 class IsCancelVAdd (G P : Type*) [VAdd G P] : Prop where
   protected left_cancel : ∀ (a : G) (b c : P), a +ᵥ b = a +ᵥ c → b = c
@@ -127,10 +135,27 @@ instance (priority := 200) [LE G] [LE P] [SMul G P] [IsOrderedCancelSMul G P] :
     ContravariantClass G P (· • ·) (· ≤ ·) :=
   ⟨IsOrderedCancelSMul.le_of_smul_le_smul_left⟩
 
-/-- The vector sum of two monotone functions is monotone. -/
+namespace SMul
+
 @[to_additive]
-theorem Monotone.SMul {γ : Type*} [Preorder G] [Preorder P] [Preorder γ] [SMul G P]
-    [IsOrderedSMul G P] {f : γ → G} {g : γ → P} (hf : Monotone f) (hg : Monotone g) :
-    Monotone fun x => f x • g x :=
-  fun _ _ hab => (IsOrderedSMul.smul_le_smul_left _ _ (hg hab) _).trans
-    (IsOrderedSMul.smul_le_smul_right _ _ (hf hab) _)
+theorem smul_lt_smul_of_le_of_lt [LE G] [Preorder P] [SMul G P] [IsOrderedCancelSMul G P]
+    {a b : G} {c d : P} (h₁ : a ≤ b) (h₂ : c < d) :
+  a • c < b • d := by
+  refine lt_of_le_of_lt (IsOrderedSMul.smul_le_smul_right a b h₁ c) ?_
+  refine lt_of_le_not_le (IsOrderedSMul.smul_le_smul_left c d (le_of_lt h₂) b) ?_
+  by_contra hbdc
+  have h : d ≤ c := IsOrderedCancelSMul.le_of_smul_le_smul_left b d c hbdc
+  rw [@lt_iff_le_not_le] at h₂
+  simp_all only [not_true_eq_false, and_false]
+
+@[to_additive]
+theorem smul_lt_smul_of_lt_of_le [Preorder G] [Preorder P] [SMul G P] [IsOrderedCancelSMul G P]
+    {a b : G} {c d : P} (h₁ : a < b) (h₂ : c ≤ d) : a • c < b • d := by
+  refine lt_of_le_of_lt (IsOrderedSMul.smul_le_smul_left c d h₂ a) ?_
+  refine lt_of_le_not_le (IsOrderedSMul.smul_le_smul_right a b (le_of_lt h₁) d) ?_
+  by_contra hbad
+  have h : b ≤ a := IsOrderedCancelSMul.le_of_smul_le_smul_right b a d hbad
+  rw [@lt_iff_le_not_le] at h₁
+  simp_all only [not_true_eq_false, and_false]
+
+end SMul
