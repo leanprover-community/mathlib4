@@ -55,7 +55,6 @@ many lemmas.
 rounding, floor, ceil
 -/
 
-
 open Set
 
 variable {F α β : Type*}
