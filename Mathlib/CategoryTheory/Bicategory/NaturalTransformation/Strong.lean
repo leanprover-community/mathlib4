@@ -192,6 +192,7 @@ end StrongOplaxNatTrans
 
 variable (B C)
 
+@[simps id comp]
 instance Pseudofunctor.categoryStruct : CategoryStruct (Pseudofunctor B C) where
   Hom F G := StrongOplaxNatTrans F.toOplax G.toOplax
   id F := StrongOplaxNatTrans.id F.toOplax
