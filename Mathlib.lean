@@ -2667,6 +2667,7 @@ import Mathlib.GroupTheory.GroupAction.FixedPoints
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.GroupTheory.GroupAction.Hom
+import Mathlib.GroupTheory.GroupAction.IterateAct
 import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.GroupTheory.GroupAction.Period
 import Mathlib.GroupTheory.GroupAction.Pi
