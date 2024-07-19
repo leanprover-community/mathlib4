@@ -6,8 +6,6 @@ Authors: Johannes Hölzl, Jens Wagemaker
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
-#align_import algebra.associated from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
-
 /-!
 # Associated, prime, and irreducible elements.
 
