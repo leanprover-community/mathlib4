@@ -8,8 +8,6 @@ import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Fintype.Prod
 
-#align_import data.sym.card from "leanprover-community/mathlib"@"0bd2ea37bcba5769e14866170f251c9bc64e35d7"
-
 /-!
 # Stars and bars
 
@@ -71,8 +69,6 @@ protected def e1 {n k : ℕ} : { s : Sym (Fin (n + 1)) (k + 1) // ↑0 ∈ s } �
   invFun s := ⟨cons 0 s, mem_cons_self 0 s⟩
   left_inv s := by simp
   right_inv s := by simp
-set_option linter.uppercaseLean3 false in
-#align sym.E1 Sym.e1
 
 /-- The multisets of size `k` over `Fin n+2` not containing `0`
 are equivalent to those of size `k` over `Fin n+1`,
@@ -90,8 +86,6 @@ protected def e2 {n k : ℕ} : { s : Sym (Fin n.succ.succ) k // ↑0 ∉ s } ≃
     exact Fin.succAbove_predAbove (ne_of_mem_of_not_mem hv s.2)
   right_inv s := by
     simp only [map_map, comp_apply, ← Fin.castSucc_zero, Fin.predAbove_succAbove, map_id']
-set_option linter.uppercaseLean3 false in
-#align sym.E2 Sym.e2
 
 -- Porting note: use eqn compiler instead of `pincerRecursion` to make cases more readable
 theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = multichoose n k
@@ -104,7 +98,6 @@ theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = mult
     refine Fintype.card_congr (Equiv.symm ?_)
     apply (Sym.e1.symm.sumCongr Sym.e2.symm).trans
     apply Equiv.sumCompl
-#align sym.card_sym_fin_eq_multichoose Sym.card_sym_fin_eq_multichoose
 
 /-- For any fintype `α` of cardinality `n`, `card (Sym α k) = multichoose (card α) k`. -/
 theorem card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sym α k)] :
@@ -113,14 +106,12 @@ theorem card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sy
   -- FIXME: Without the `Fintype` namespace, why does it complain about `Finset.card_congr` being
   -- deprecated?
   exact Fintype.card_congr (equivCongr (equivFin α))
-#align sym.card_sym_eq_multichoose Sym.card_sym_eq_multichoose
 
 /-- The *stars and bars* lemma: the cardinality of `Sym α k` is equal to
 `Nat.choose (card α + k - 1) k`. -/
 theorem card_sym_eq_choose {α : Type*} [Fintype α] (k : ℕ) [Fintype (Sym α k)] :
     card (Sym α k) = (card α + k - 1).choose k := by
   rw [card_sym_eq_multichoose, Nat.multichoose_eq]
-#align sym.card_sym_eq_choose Sym.card_sym_eq_choose
 
 end Sym
 
@@ -138,7 +129,6 @@ theorem card_image_diag (s : Finset α) : (s.diag.image Sym2.mk).card = s.card :
   · rfl
   · simp only [mem_coe, mem_diag] at hx
     rw [hx.2]
-#align sym2.card_image_diag Sym2.card_image_diag
 
 theorem two_mul_card_image_offDiag (s : Finset α) :
     2 * (s.offDiag.image Sym2.mk).card = s.offDiag.card := by
@@ -159,7 +149,6 @@ theorem two_mul_card_image_offDiag (s : Finset α) :
   rw [this, card_insert_of_not_mem, card_singleton]
   simp only [not_and, Prod.mk.inj_iff, mem_singleton]
   exact fun _ => hxy'
-#align sym2.two_mul_card_image_off_diag Sym2.two_mul_card_image_offDiag
 
 /-- The `offDiag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `s.offDiag.card / 2`.
 This is because every element `s(x, y)` of `Sym2 α` not on the diagonal comes from exactly two
@@ -168,7 +157,6 @@ theorem card_image_offDiag (s : Finset α) :
     (s.offDiag.image Sym2.mk).card = s.card.choose 2 := by
   rw [Nat.choose_two_right, Nat.mul_sub_left_distrib, mul_one, ← offDiag_card,
     Nat.div_eq_of_eq_mul_right Nat.zero_lt_two (two_mul_card_image_offDiag s).symm]
-#align sym2.card_image_off_diag Sym2.card_image_offDiag
 
 theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α := by
   convert card_image_diag (univ : Finset α)
@@ -177,7 +165,6 @@ theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card
   rw [mem_filter, univ_product_univ, mem_image]
   obtain ⟨a, ha⟩ := Quot.exists_rep x
   exact and_iff_right ⟨a, mem_univ _, ha⟩
-#align sym2.card_subtype_diag Sym2.card_subtype_diag
 
 theorem card_subtype_not_diag [Fintype α] :
     card { a : Sym2 α // ¬a.IsDiag } = (card α).choose 2 := by
@@ -187,11 +174,9 @@ theorem card_subtype_not_diag [Fintype α] :
   rw [mem_filter, univ_product_univ, mem_image]
   obtain ⟨a, ha⟩ := Quot.exists_rep x
   exact and_iff_right ⟨a, mem_univ _, ha⟩
-#align sym2.card_subtype_not_diag Sym2.card_subtype_not_diag
 
 /-- Type **stars and bars** for the case `n = 2`. -/
 protected theorem card [Fintype α] : card (Sym2 α) = Nat.choose (card α + 1) 2 :=
   Finset.card_sym2 _
-#align sym2.card Sym2.card
 
 end Sym2

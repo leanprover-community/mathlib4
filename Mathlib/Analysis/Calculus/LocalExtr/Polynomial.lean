@@ -8,8 +8,6 @@ import Mathlib.Analysis.Calculus.LocalExtr.Rolle
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Topology.Algebra.Polynomial
 
-#align_import analysis.calculus.local_extr from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
-
 /-!
 # Rolle's Theorem for polynomials
 
@@ -45,7 +43,6 @@ theorem card_roots_toFinset_le_card_roots_derivative_diff_roots_succ (p : ℝ[X]
   obtain ⟨z, hz1, hz2⟩ := exists_deriv_eq_zero hxy p.continuousOn (hx.trans hy.symm)
   refine ⟨z, ?_, hz1⟩
   rwa [Multiset.mem_toFinset, mem_roots hp', IsRoot, ← p.deriv]
-#align polynomial.card_roots_to_finset_le_card_roots_derivative_diff_roots_succ Polynomial.card_roots_toFinset_le_card_roots_derivative_diff_roots_succ
 
 /-- The number of roots of a real polynomial is at most the number of roots of its derivative plus
 one. -/
@@ -53,7 +50,6 @@ theorem card_roots_toFinset_le_derivative (p : ℝ[X]) :
     p.roots.toFinset.card ≤ p.derivative.roots.toFinset.card + 1 :=
   p.card_roots_toFinset_le_card_roots_derivative_diff_roots_succ.trans <|
     add_le_add_right (Finset.card_mono Finset.sdiff_subset) _
-#align polynomial.card_roots_to_finset_le_derivative Polynomial.card_roots_toFinset_le_derivative
 
 /-- The number of roots of a real polynomial (counted with multiplicities) is at most the number of
 roots of its derivative (counted with multiplicities) plus one. -/
@@ -85,7 +81,6 @@ theorem card_roots_le_derivative (p : ℝ[X]) :
         Multiset.toFinset_sum_count_eq, ← Finset.sum_subset Finset.subset_union_right]
       intro x _ hx₂
       simpa only [Multiset.mem_toFinset, Multiset.count_eq_zero] using hx₂
-#align polynomial.card_roots_le_derivative Polynomial.card_roots_le_derivative
 
 /-- The number of real roots of a polynomial is at most the number of roots of its derivative plus
 one. -/
@@ -93,6 +88,5 @@ theorem card_rootSet_le_derivative {F : Type*} [CommRing F] [Algebra F ℝ] (p :
     Fintype.card (p.rootSet ℝ) ≤ Fintype.card (p.derivative.rootSet ℝ) + 1 := by
   simpa only [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe, derivative_map] using
     card_roots_toFinset_le_derivative (p.map (algebraMap F ℝ))
-#align polynomial.card_root_set_le_derivative Polynomial.card_rootSet_le_derivative
 
 end Polynomial

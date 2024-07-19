@@ -9,8 +9,6 @@ import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.Quotient
 
-#align_import algebra.polynomial.group_ring_action from "leanprover-community/mathlib"@"afad8e438d03f9d89da2914aa06cb4964ba87a18"
-
 /-!
 # Group action on rings applied to polynomials
 
@@ -37,7 +35,6 @@ theorem smul_eq_map [MulSemiringAction M R] (m : M) :
   ext n r : 2
   change m • monomial n r = map (MulSemiringAction.toRingHom M R m) (monomial n r)
   rw [Polynomial.map_monomial, Polynomial.smul_monomial, MulSemiringAction.toRingHom_apply]
-#align polynomial.smul_eq_map Polynomial.smul_eq_map
 
 variable (M)
 
@@ -54,8 +51,6 @@ variable [MulSemiringAction M R]
 @[simp]
 theorem smul_X (m : M) : (m • X : R[X]) = X :=
   (smul_eq_map R m).symm ▸ map_X _
-set_option linter.uppercaseLean3 false in
-#align polynomial.smul_X Polynomial.smul_X
 
 variable (S : Type*) [CommSemiring S] [MulSemiringAction M S]
 
@@ -64,24 +59,20 @@ theorem smul_eval_smul (m : M) (f : S[X]) (x : S) : (m • f).eval (m • x) = m
     (fun f g ihf ihg ↦ by rw [smul_add, eval_add, ihf, ihg, eval_add, smul_add]) fun n r _ ↦ by
     rw [smul_mul', smul_pow', smul_C, smul_X, eval_mul, eval_C, eval_pow, eval_X, eval_mul, eval_C,
       eval_pow, eval_X, smul_mul', smul_pow']
-#align polynomial.smul_eval_smul Polynomial.smul_eval_smul
 
 variable (G : Type*) [Group G]
 
 theorem eval_smul' [MulSemiringAction G S] (g : G) (f : S[X]) (x : S) :
     f.eval (g • x) = g • (g⁻¹ • f).eval x := by
   rw [← smul_eval_smul, smul_inv_smul]
-#align polynomial.eval_smul' Polynomial.eval_smul'
 
 theorem smul_eval [MulSemiringAction G S] (g : G) (f : S[X]) (x : S) :
     (g • f).eval x = g • f.eval (g⁻¹ • x) := by
   rw [← smul_eval_smul, smul_inv_smul]
-#align polynomial.smul_eval Polynomial.smul_eval
 
 end Polynomial
 
 section CommRing
-set_option linter.uppercaseLean3 false
 
 variable (G : Type*) [Group G] [Fintype G]
 variable (R : Type*) [CommRing R] [MulSemiringAction G R]
@@ -93,29 +84,24 @@ noncomputable def prodXSubSMul (x : R) : R[X] :=
   letI := Classical.decEq R
   (Finset.univ : Finset (G ⧸ MulAction.stabilizer G x)).prod fun g ↦
     Polynomial.X - Polynomial.C (ofQuotientStabilizer G x g)
-#align prod_X_sub_smul prodXSubSMul
 
 theorem prodXSubSMul.monic (x : R) : (prodXSubSMul G R x).Monic :=
   Polynomial.monic_prod_of_monic _ _ fun _ _ ↦ Polynomial.monic_X_sub_C _
-#align prod_X_sub_smul.monic prodXSubSMul.monic
 
 theorem prodXSubSMul.eval (x : R) : (prodXSubSMul G R x).eval x = 0 :=
   letI := Classical.decEq R
   (map_prod ((Polynomial.aeval x).toRingHom.toMonoidHom : R[X] →* R) _ _).trans <|
     Finset.prod_eq_zero (Finset.mem_univ <| QuotientGroup.mk 1) <| by simp
-#align prod_X_sub_smul.eval prodXSubSMul.eval
 
 theorem prodXSubSMul.smul (x : R) (g : G) : g • prodXSubSMul G R x = prodXSubSMul G R x :=
   letI := Classical.decEq R
   Finset.smul_prod.trans <|
     Fintype.prod_bijective _ (MulAction.bijective g) _ _ fun g' ↦ by
       rw [ofQuotientStabilizer_smul, smul_sub, Polynomial.smul_X, Polynomial.smul_C]
-#align prod_X_sub_smul.smul prodXSubSMul.smul
 
 theorem prodXSubSMul.coeff (x : R) (g : G) (n : ℕ) :
     g • (prodXSubSMul G R x).coeff n = (prodXSubSMul G R x).coeff n := by
   rw [← Polynomial.coeff_smul, prodXSubSMul.smul]
-#align prod_X_sub_smul.coeff prodXSubSMul.coeff
 
 end CommRing
 
@@ -145,10 +131,8 @@ protected noncomputable def polynomial (g : P →+*[M] Q) : P[X] →+*[M] Q[X] w
   map_add' p q := Polynomial.map_add g.toRingHom
   map_one' := Polynomial.map_one g.toRingHom
   map_mul' p q := Polynomial.map_mul g.toRingHom
-#align mul_semiring_action_hom.polynomial MulSemiringActionHom.polynomial
 
 @[simp]
 theorem coe_polynomial (g : P →+*[M] Q) : (g.polynomial : P[X] → Q[X]) = map g := rfl
-#align mul_semiring_action_hom.coe_polynomial MulSemiringActionHom.coe_polynomial
 
 end MulSemiringActionHom

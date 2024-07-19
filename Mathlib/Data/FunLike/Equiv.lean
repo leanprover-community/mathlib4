@@ -5,8 +5,6 @@ Authors: Anne Baanen
 -/
 import Mathlib.Data.FunLike.Embedding
 
-#align_import data.fun_like.equiv from "leanprover-community/mathlib"@"f340f229b1f461aa1c8ee11e0a172d0a3b301a4a"
-
 /-!
 # Typeclass for a type `F` with an injective map to `A ≃ B`
 
@@ -148,7 +146,6 @@ class EquivLike (E : Sort*) (α β : outParam (Sort*)) where
   coe_injective' : ∀ e g, coe e = coe g → inv e = inv g → e = g
   -- This is mathematically equivalent to either of the coercions to functions being injective, but
   -- the `inv` hypothesis makes this easier to prove with `congr'`
-#align equiv_like EquivLike
 
 namespace EquivLike
 
@@ -156,7 +153,6 @@ variable {E F α β γ : Sort*} [iE : EquivLike E α β] [iF : EquivLike F β γ
 
 theorem inv_injective : Function.Injective (EquivLike.inv : E → β → α) := fun e g h ↦
   coe_injective' e g ((right_inv e).eq_rightInverse (h.symm ▸ left_inv g)) h
-#align equiv_like.inv_injective EquivLike.inv_injective
 
 instance (priority := 100) toFunLike : FunLike E α β where
   coe := (coe : E → α → β)
@@ -168,34 +164,27 @@ instance (priority := 100) toEmbeddingLike : EmbeddingLike E α β where
 
 protected theorem injective (e : E) : Function.Injective e :=
   EmbeddingLike.injective e
-#align equiv_like.injective EquivLike.injective
 
 protected theorem surjective (e : E) : Function.Surjective e :=
   (right_inv e).surjective
-#align equiv_like.surjective EquivLike.surjective
 
 protected theorem bijective (e : E) : Function.Bijective (e : α → β) :=
   ⟨EquivLike.injective e, EquivLike.surjective e⟩
-#align equiv_like.bijective EquivLike.bijective
 
 theorem apply_eq_iff_eq (f : E) {x y : α} : f x = f y ↔ x = y :=
   EmbeddingLike.apply_eq_iff_eq f
-#align equiv_like.apply_eq_iff_eq EquivLike.apply_eq_iff_eq
 
 @[simp]
 theorem injective_comp (e : E) (f : β → γ) : Function.Injective (f ∘ e) ↔ Function.Injective f :=
   Function.Injective.of_comp_iff' f (EquivLike.bijective e)
-#align equiv_like.injective_comp EquivLike.injective_comp
 
 @[simp]
 theorem surjective_comp (e : E) (f : β → γ) : Function.Surjective (f ∘ e) ↔ Function.Surjective f :=
   (EquivLike.surjective e).of_comp_iff f
-#align equiv_like.surjective_comp EquivLike.surjective_comp
 
 @[simp]
 theorem bijective_comp (e : E) (f : β → γ) : Function.Bijective (f ∘ e) ↔ Function.Bijective f :=
   (EquivLike.bijective e).of_comp_iff f
-#align equiv_like.bijective_comp EquivLike.bijective_comp
 
 /-- This lemma is only supposed to be used in the generic context, when working with instances
 of classes extending `EquivLike`.
@@ -206,7 +195,6 @@ TODO: define a generic form of `Equiv.symm`. -/
 @[simp]
 theorem inv_apply_apply (e : E) (a : α) : EquivLike.inv e (e a) = a :=
   left_inv _ _
-#align equiv_like.inv_apply_apply EquivLike.inv_apply_apply
 
 /-- This lemma is only supposed to be used in the generic context, when working with instances
 of classes extending `EquivLike`.
@@ -217,25 +205,20 @@ TODO: define a generic form of `Equiv.symm`. -/
 @[simp]
 theorem apply_inv_apply (e : E) (b : β) : e (EquivLike.inv e b) = b :=
   right_inv _ _
-#align equiv_like.apply_inv_apply EquivLike.apply_inv_apply
 
 theorem comp_injective (f : α → β) (e : F) : Function.Injective (e ∘ f) ↔ Function.Injective f :=
   EmbeddingLike.comp_injective f e
-#align equiv_like.comp_injective EquivLike.comp_injective
 
 @[simp]
 theorem comp_surjective (f : α → β) (e : F) : Function.Surjective (e ∘ f) ↔ Function.Surjective f :=
   Function.Surjective.of_comp_iff' (EquivLike.bijective e) f
-#align equiv_like.comp_surjective EquivLike.comp_surjective
 
 @[simp]
 theorem comp_bijective (f : α → β) (e : F) : Function.Bijective (e ∘ f) ↔ Function.Bijective f :=
   (EquivLike.bijective e).of_comp_iff' f
-#align equiv_like.comp_bijective EquivLike.comp_bijective
 
 /-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search. -/
 lemma subsingleton_dom [Subsingleton β] : Subsingleton F :=
   ⟨fun f g ↦ DFunLike.ext f g fun _ ↦ (right_inv f).injective <| Subsingleton.elim _ _⟩
-#align equiv_like.subsingleton_dom EquivLike.subsingleton_dom
 
 end EquivLike
