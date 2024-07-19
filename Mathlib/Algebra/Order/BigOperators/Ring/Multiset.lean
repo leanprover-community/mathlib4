@@ -25,7 +25,6 @@ lemma prod_nonneg (h : ∀ a ∈ s, 0 ≤ a) : 0 ≤ s.prod := by
   · simp
   · rw [prod_cons]
     exact mul_nonneg (ih _ <| mem_cons_self _ _) (hs fun a ha ↦ ih _ <| mem_cons_of_mem ha)
-#align multiset.prod_nonneg Multiset.prod_nonneg
 
 end OrderedCommSemiring
 

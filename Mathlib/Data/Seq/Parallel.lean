@@ -6,8 +6,6 @@ Authors: Mario Carneiro
 import Mathlib.Init.Data.Prod
 import Mathlib.Data.Seq.WSeq
 
-#align_import data.seq.parallel from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
-
 /-!
 # Parallel computation
 
@@ -33,7 +31,6 @@ def parallel.aux2 : List (Computation α) → Sum α (List (Computation α)) :=
       | Sum.inl a => Sum.inl a
       | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c))
     (Sum.inr [])
-#align computation.parallel.aux2 Computation.parallel.aux2
 
 def parallel.aux1 :
     List (Computation α) × WSeq (Computation α) →
@@ -46,13 +43,11 @@ def parallel.aux1 :
         | some (none, S') => (l', S')
         | some (some c, S') => (c :: l', S'))
       (parallel.aux2 l)
-#align computation.parallel.aux1 Computation.parallel.aux1
 
 /-- Parallel computation of an infinite stream of computations,
   taking the first result -/
 def parallel (S : WSeq (Computation α)) : Computation α :=
   corec parallel.aux1 ([], S)
-#align computation.parallel Computation.parallel
 
 theorem terminates_parallel.aux :
     ∀ {l : List (Computation α)} {S c},
@@ -117,7 +112,6 @@ theorem terminates_parallel.aux :
       have := H1 _ h
       rcases Seq.destruct S with (_ | ⟨_ | c, S'⟩) <;> simp [parallel.aux1] <;> apply IH <;>
         simp [this]
-#align computation.terminates_parallel.aux Computation.terminates_parallel.aux
 
 theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : Terminates c] :
     Terminates (parallel S) := by
@@ -184,7 +178,6 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
           rfl
         rw [D]
         cases' o with c <;> simp [parallel.aux1, TT]
-#align computation.terminates_parallel Computation.terminates_parallel
 
 theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parallel S) :
     ∃ c ∈ S, a ∈ c := by
@@ -264,7 +257,6 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
       · refine ⟨d, Or.inr ?_, ad⟩
         rw [Seq.destruct_eq_cons e]
         exact Seq.mem_cons_of_mem _ dS'
-#align computation.exists_of_mem_parallel Computation.exists_of_mem_parallel
 
 theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map (map f)) := by
   refine
@@ -291,7 +283,6 @@ theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map 
       cases' parallel.aux2 l with a l' <;> simp
       induction' S using WSeq.recOn with c S S <;> simp <;>
         exact ⟨_, _, rfl, rfl⟩
-#align computation.map_parallel Computation.map_parallel
 
 theorem parallel_empty (S : WSeq (Computation α)) (h : S.head ~> none) : parallel S = empty _ :=
   eq_empty_of_not_terminates fun ⟨⟨a, m⟩⟩ => by
@@ -299,7 +290,6 @@ theorem parallel_empty (S : WSeq (Computation α)) (h : S.head ~> none) : parall
     let ⟨n, nm⟩ := WSeq.exists_get?_of_mem cs
     let ⟨c', h'⟩ := WSeq.head_some_of_get?_some nm
     injection h h'
-#align computation.parallel_empty Computation.parallel_empty
 
 -- The reason this isn't trivial from exists_of_mem_parallel is because it eliminates to Sort
 def parallelRec {S : WSeq (Computation α)} (C : α → Sort v) (H : ∀ s ∈ S, ∀ a ∈ s, C a) {a}
@@ -334,20 +324,17 @@ def parallelRec {S : WSeq (Computation α)} (C : α → Sort v) (H : ∀ s ∈ S
     · rwa [i2] at cs'
   cases' this with ac cs
   apply H _ cs _ ac
-#align computation.parallel_rec Computation.parallelRec
 
 theorem parallel_promises {S : WSeq (Computation α)} {a} (H : ∀ s ∈ S, s ~> a) : parallel S ~> a :=
   fun _ ma' =>
   let ⟨_, cs, ac⟩ := exists_of_mem_parallel ma'
   H _ cs ac
-#align computation.parallel_promises Computation.parallel_promises
 
 theorem mem_parallel {S : WSeq (Computation α)} {a} (H : ∀ s ∈ S, s ~> a) {c} (cs : c ∈ S)
     (ac : a ∈ c) : a ∈ parallel S := by
   haveI := terminates_of_mem ac
   haveI := terminates_parallel cs
   exact mem_of_promises _ (parallel_promises H)
-#align computation.mem_parallel Computation.mem_parallel
 
 theorem parallel_congr_lem {S T : WSeq (Computation α)} {a} (H : S.LiftRel Equiv T) :
     (∀ s ∈ S, s ~> a) ↔ ∀ t ∈ T, t ~> a :=
@@ -357,7 +344,6 @@ theorem parallel_congr_lem {S T : WSeq (Computation α)} {a} (H : S.LiftRel Equi
     fun h2 _ sS =>
     let ⟨_, tT, se⟩ := WSeq.exists_of_liftRel_left H sS
     (promises_congr se _).2 (h2 _ tT)⟩
-#align computation.parallel_congr_lem Computation.parallel_congr_lem
 
 -- The parallel operation is only deterministic when all computation paths lead to the same value
 theorem parallel_congr_left {S T : WSeq (Computation α)} {a} (h1 : ∀ s ∈ S, s ~> a)
@@ -382,11 +368,9 @@ theorem parallel_congr_left {S T : WSeq (Computation α)} {a} (h1 : ∀ s ∈ S,
       let ⟨t, tT, st⟩ := WSeq.exists_of_liftRel_right H sS
       let aT := (st _).2 as
       mem_parallel h1 tT aT⟩
-#align computation.parallel_congr_left Computation.parallel_congr_left
 
 theorem parallel_congr_right {S T : WSeq (Computation α)} {a} (h2 : ∀ t ∈ T, t ~> a)
     (H : S.LiftRel Equiv T) : parallel S ~ parallel T :=
   parallel_congr_left ((parallel_congr_lem H).2 h2) H
-#align computation.parallel_congr_right Computation.parallel_congr_right
 
 end Computation

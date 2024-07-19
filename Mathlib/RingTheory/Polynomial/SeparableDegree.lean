@@ -7,8 +7,6 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.FieldTheory.Separable
 
-#align_import field_theory.separable_degree from "leanprover-community/mathlib"@"d11893b411025250c8e61ff2f12ccbd7ee35ab15"
-
 /-!
 
 # Separable degree
@@ -51,24 +49,20 @@ variable {F : Type*} [CommSemiring F] (q : ℕ)
 `g(x^(q^m)) = f(x)` for some `m : ℕ`. -/
 def IsSeparableContraction (f : F[X]) (g : F[X]) : Prop :=
   g.Separable ∧ ∃ m : ℕ, expand F (q ^ m) g = f
-#align polynomial.is_separable_contraction Polynomial.IsSeparableContraction
 
 /-- The condition of having a separable contraction. -/
 def HasSeparableContraction (f : F[X]) : Prop :=
   ∃ g : F[X], IsSeparableContraction q f g
-#align polynomial.has_separable_contraction Polynomial.HasSeparableContraction
 
 variable {q} {f : F[X]} (hf : HasSeparableContraction q f)
 
 /-- A choice of a separable contraction. -/
 def HasSeparableContraction.contraction : F[X] :=
   Classical.choose hf
-#align polynomial.has_separable_contraction.contraction Polynomial.HasSeparableContraction.contraction
 
 /-- The separable degree of a polynomial is the degree of a given separable contraction. -/
 def HasSeparableContraction.degree : ℕ :=
   hf.contraction.natDegree
-#align polynomial.has_separable_contraction.degree Polynomial.HasSeparableContraction.degree
 
 /-- The `HasSeparableContraction.contraction` is indeed a separable contraction. -/
 theorem HasSeparableContraction.isSeparableContraction :
@@ -80,24 +74,20 @@ theorem IsSeparableContraction.dvd_degree' {g} (hf : IsSeparableContraction q f 
   obtain ⟨m, rfl⟩ := hf.2
   use m
   rw [natDegree_expand]
-#align polynomial.is_separable_contraction.dvd_degree' Polynomial.IsSeparableContraction.dvd_degree'
 
 theorem HasSeparableContraction.dvd_degree' : ∃ m : ℕ, hf.degree * q ^ m = f.natDegree :=
   (Classical.choose_spec hf).dvd_degree' hf
-#align polynomial.has_separable_contraction.dvd_degree' Polynomial.HasSeparableContraction.dvd_degree'
 
 /-- The separable degree divides the degree. -/
 theorem HasSeparableContraction.dvd_degree : hf.degree ∣ f.natDegree :=
   let ⟨a, ha⟩ := hf.dvd_degree'
   Dvd.intro (q ^ a) ha
-#align polynomial.has_separable_contraction.dvd_degree Polynomial.HasSeparableContraction.dvd_degree
 
 /-- In exponential characteristic one, the separable degree equals the degree. -/
 theorem HasSeparableContraction.eq_degree {f : F[X]} (hf : HasSeparableContraction 1 f) :
     hf.degree = f.natDegree := by
   let ⟨a, ha⟩ := hf.dvd_degree'
   rw [← ha, one_pow a, mul_one]
-#align polynomial.has_separable_contraction.eq_degree Polynomial.HasSeparableContraction.eq_degree
 
 end CommSemiring
 
@@ -114,7 +104,6 @@ theorem _root_.Irreducible.hasSeparableContraction (q : ℕ) [hF : ExpChar F q] 
   · exact ⟨f, irred.separable, ⟨0, by rw [pow_zero, expand_one]⟩⟩
   · rcases exists_separable_of_irreducible q irred ‹q.Prime›.ne_zero with ⟨n, g, hgs, hge⟩
     exact ⟨g, hgs, n, hge⟩
-#align irreducible.has_separable_contraction Irreducible.hasSeparableContraction
 
 /-- If two expansions (along the positive characteristic) of two separable polynomials `g` and `g'`
 agree, then they have the same degree. -/
@@ -129,7 +118,6 @@ theorem contraction_degree_eq_or_insep [hq : NeZero q] [CharP F q] (g g' : F[X])
   rcases isUnit_or_eq_zero_of_separable_expand q s (NeZero.pos q) hg with (h | rfl)
   · rw [natDegree_expand, natDegree_eq_zero_of_isUnit h, zero_mul]
   · rw [natDegree_expand, pow_zero, mul_one]
-#align polynomial.contraction_degree_eq_or_insep Polynomial.contraction_degree_eq_or_insep
 
 /-- The separable degree equals the degree of any separable contraction, i.e., it is unique. -/
 theorem IsSeparableContraction.degree_eq [hF : ExpChar F q] (g : F[X])
@@ -144,7 +132,6 @@ theorem IsSeparableContraction.degree_eq [hF : ExpChar F q] (g : F[X])
     haveI : Fact q.Prime := ⟨by assumption⟩
     refine contraction_degree_eq_or_insep q g g' m m' ?_ hg hg'
     rw [hm, hm']
-#align polynomial.is_separable_contraction.degree_eq Polynomial.IsSeparableContraction.degree_eq
 
 end Field
 

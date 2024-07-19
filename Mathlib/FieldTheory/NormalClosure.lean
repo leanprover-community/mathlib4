@@ -6,8 +6,6 @@ Authors: Thomas Browning
 
 import Mathlib.FieldTheory.Normal
 import Mathlib.Order.Closure
-
-#align_import field_theory.normal from "leanprover-community/mathlib"@"9fb8964792b4237dac6200193a0d533f1b3f7423"
 /-!
 # Normal closures
 
@@ -148,7 +146,6 @@ theorem normalClosure_eq_iSup_adjoin' [ne : Nonempty (K →ₐ[F] L)] [h : Norma
 theorem normalClosure_eq_iSup_adjoin [Algebra K L] [IsScalarTower F K L] [Normal F L] :
     normalClosure F K L = ⨆ x : K, adjoin F ((minpoly F x).rootSet L) :=
   normalClosure_eq_iSup_adjoin' (ne := ⟨IsScalarTower.toAlgHom F K L⟩)
-#align normal_closure.restrict_scalars_eq_supr_adjoin normalClosure_eq_iSup_adjoin
 
 namespace normalClosure
 
@@ -163,7 +160,6 @@ instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
   obtain _ | φ := isEmpty_or_nonempty (K →ₐ[F] L)
   · rw [normalClosure, iSup_of_empty]; exact Normal.of_algEquiv (botEquiv F L).symm
   · exact (isNormalClosure_normalClosure F K L).normal
-#align normal_closure.normal normalClosure.normal
 
 instance is_finiteDimensional [FiniteDimensional F K] :
     FiniteDimensional F (normalClosure F K L) := by
