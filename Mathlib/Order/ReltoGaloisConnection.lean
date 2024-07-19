@@ -53,7 +53,7 @@ of elements `a` of type `α` such that `R a b` for every element `b` of `I`. -/
 def rightDual (I : (Set β)ᵒᵈ) : Set α := {a : α | ∀ b ∈ ofDual I, R a b}
 
 /-- The pair of functions `leftDual` and `rightDual` forms a Galois connection. -/
-theorem to_galoisConnection : GaloisConnection (leftDual R) (rightDual R) := by
+theorem galoisConnection : GaloisConnection (leftDual R) (rightDual R) := by
     intros J I; apply Iff.trans (b := ∀ b ∈ ofDual I, ∀ a ∈ J, R a b)
     · constructor
       · intro h; apply h
@@ -77,15 +77,15 @@ open GaloisConnection
 @[simp]
 theorem is_rFixedPoint (J : Set α) : leftDual R J ∈ rFixedPoints R := by
     unfold rFixedPoints; simp; apply le_antisymm
-    · exact (to_galoisConnection R).l_u_le (leftDual R J)
-    · apply (to_galoisConnection R).monotone_l; exact (to_galoisConnection R).le_u_l J
+    · exact (galoisConnection R).l_u_le (leftDual R J)
+    · apply (galoisConnection R).monotone_l; exact (galoisConnection R).le_u_l J
 
 /-- `rightDual` maps every element `I` to `lFixedPoints`. -/
 @[simp]
 theorem is_lFixedPoint (I : (Set β)ᵒᵈ) : rightDual R I ∈ lFixedPoints R := by
     unfold lFixedPoints; simp; apply le_antisymm
-    · apply (to_galoisConnection R).monotone_u; exact (to_galoisConnection R).l_u_le I
-    · exact (to_galoisConnection R).le_u_l (rightDual R I)
+    · apply (galoisConnection R).monotone_u; exact (galoisConnection R).l_u_le I
+    · exact (galoisConnection R).le_u_l (rightDual R I)
 
 /-- The maps `leftDual` and `rightDual` induce inverse bijections between the sets of fixed points.
 -/
@@ -99,13 +99,13 @@ def instEquivFixedPoints : lFixedPoints R ≃ rFixedPoints R :=
 
 theorem le_imp_u_l_le {J J' : Set α} (h : J' ∈ lFixedPoints R) :
     J ≤ J' → rightDual R (leftDual R J) ≤ J' := by
-    intro h₁; rw[← h]; apply (to_galoisConnection R).monotone_u;
-    apply (to_galoisConnection R).monotone_l; exact h₁
+    intro h₁; rw[← h]; apply (galoisConnection R).monotone_u;
+    apply (galoisConnection R).monotone_l; exact h₁
 
 theorem ge_imp_ge_l_u {I I' : (Set β)ᵒᵈ} (h : I' ∈ rFixedPoints R) :
     I' ≥ I → I' ≥ leftDual R (rightDual R I) := by
-    intro h₁; rw [← h]; apply (to_galoisConnection R).monotone_l;
-    apply (to_galoisConnection R).monotone_u; exact h₁
+    intro h₁; rw [← h]; apply (galoisConnection R).monotone_l;
+    apply (galoisConnection R).monotone_u; exact h₁
 
 end Rel
 
