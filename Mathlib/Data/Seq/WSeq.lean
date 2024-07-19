@@ -1362,8 +1362,7 @@ theorem destruct_ofSeq (s : Seq α) :
 
 @[simp]
 theorem head_ofSeq (s : Seq α) : head (ofSeq s) = Computation.pure s.head := by
-  simp only [head, Option.map_eq_map, destruct_ofSeq, Computation.map_pure, Option.map_map]
-  cases Seq.head s <;> rfl
+  simp [head]; cases Seq.head s <;> rfl
 #align stream.wseq.head_of_seq Stream'.WSeq.head_ofSeq
 
 @[simp]
