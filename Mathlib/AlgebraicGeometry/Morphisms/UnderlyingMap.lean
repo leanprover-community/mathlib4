@@ -21,7 +21,6 @@ of the underlying map of topological spaces, including
 - `OpenEmbedding`
 - `ClosedEmbedding`
 
-
 -/
 
 open CategoryTheory
