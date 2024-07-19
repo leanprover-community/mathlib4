@@ -176,11 +176,11 @@ variable {f : X → Y} (sep : IsSeparatedMap f) (inj : IsLocallyInjective f)
 
 theorem IsSeparatedMap.isClosed_eqLocus (he : f ∘ g₁ = f ∘ g₂) : IsClosed {a | g₁ a = g₂ a} :=
   let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr_fun he a⟩
-  (isSeparatedMap_iff_isClosed_diagonal.mp sep).preimage (by continuity : Continuous g)
+  (isSeparatedMap_iff_isClosed_diagonal.mp sep).preimage (by fun_prop : Continuous g)
 
 theorem IsLocallyInjective.isOpen_eqLocus (he : f ∘ g₁ = f ∘ g₂) : IsOpen {a | g₁ a = g₂ a} :=
   let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr_fun he a⟩
-  (isLocallyInjective_iff_isOpen_diagonal.mp inj).preimage (by continuity : Continuous g)
+  (isLocallyInjective_iff_isOpen_diagonal.mp inj).preimage (by fun_prop : Continuous g)
 
 end eqLocus
 

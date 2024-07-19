@@ -19,11 +19,11 @@ homomorphism.
 
 ## Notations
 
-* `A →ₗc[R] B` : `R`-algebra homomorphism from `A` to `B`.
+* `A →ₗc[R] B` : `R`-coalgebra homomorphism from `A` to `B`.
 
 -/
 
-open TensorProduct Coalgebra BigOperators
+open TensorProduct Coalgebra
 
 universe u v w
 
@@ -177,6 +177,21 @@ theorem ext_of_ring {f g : R →ₗc[R] A} (h : f 1 = g 1) : f = g :=
 @[simp]
 theorem mk_coe {f : A →ₗc[R] B} (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : A →ₗc[R] B) = f :=
   ext fun _ => rfl
+
+/-- Copy of a `CoalgHom` with a new `toFun` equal to the old one. Useful to fix definitional
+equalities. -/
+protected def copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : A →ₗc[R] B :=
+  { toLinearMap := (f : A →ₗ[R] B).copy f' h
+    counit_comp := by ext; simp_all
+    map_comp_comul := by simp only [(f : A →ₗ[R] B).copy_eq f' h,
+      CoalgHomClass.map_comp_comul] }
+
+@[simp]
+theorem coe_copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : ⇑(f.copy f' h) = f' :=
+  rfl
+
+theorem copy_eq (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : f.copy f' h = f :=
+  DFunLike.ext' h
 
 variable (R A)
 

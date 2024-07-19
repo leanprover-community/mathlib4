@@ -1,9 +1,11 @@
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Vector
+import Mathlib.Data.Vector.Defs
 import Mathlib.Algebra.Ring.Nat
 
 set_option autoImplicit true
+
+open Mathlib
 
 example [AddZeroClass G] {a : G} (h : a = a): a = (a + 0) := by
   nth_rewrite 2 [← add_zero a] at h

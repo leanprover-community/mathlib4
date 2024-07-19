@@ -5,7 +5,6 @@ Authors: Yury Kudryashov, Floris van Doorn
 -/
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Order.Filter.Subsingleton
-import Mathlib.Algebra.Function.Indicator
 /-!
 # Functions that are eventually constant along a filter
 
@@ -162,3 +161,5 @@ lemma eventuallyConst_atTop_nat {f : ℕ → α} :
   · induction m, hm using Nat.le_induction with
     | base => rfl
     | succ m hm ihm => exact (h m hm).trans ihm
+
+end Filter

@@ -6,9 +6,9 @@ Authors: Mario Carneiro, Kyle Miller
 import Mathlib.Lean.Elab.Term
 import Mathlib.Lean.PrettyPrinter.Delaborator
 import Mathlib.Tactic.ScopedNS
-import Std.Linter.UnreachableTactic
-import Std.Util.ExtendedBinder
-import Std.Lean.Syntax
+import Batteries.Linter.UnreachableTactic
+import Batteries.Util.ExtendedBinder
+import Batteries.Lean.Syntax
 
 /-!
 # The notation3 macro, simulating Lean 3's notation.
@@ -19,7 +19,7 @@ import Std.Lean.Syntax
 
 namespace Mathlib.Notation3
 open Lean Parser Meta Elab Command PrettyPrinter.Delaborator SubExpr
-open Std.ExtendedBinder
+open Batteries.ExtendedBinder
 
 initialize registerTraceClass `notation3
 
@@ -612,7 +612,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
         pretty printing relies on deriving an expression matcher from the expansion. \
         (Use `set_option trace.notation3 true` to get some debug information.)"
 
-initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind ``«notation3»
+initialize Batteries.Linter.UnreachableTactic.addIgnoreTacticKind ``«notation3»
 
 /-! `scoped[ns]` support -/
 

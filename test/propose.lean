@@ -1,7 +1,6 @@
-import Std.Data.List.Basic
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.GuardHypNums
-import Mathlib.Algebra.Associated
+import Mathlib.Algebra.Associated.Basic
 import Mathlib.Data.Set.Subsingleton
 
 -- For debugging, you may find these options useful:
