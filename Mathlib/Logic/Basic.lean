@@ -718,8 +718,6 @@ lemma eq_false_intro {a : Prop} (h : ¬a) : a = False := propext (iff_false_intr
 lemma iff_eq_eq {a b : Prop} : (a ↔ b) = (a = b) := propext ⟨propext, Eq.to_iff⟩
 
 -- They were not used in Lean 3 and there are already lemmas with those names in Lean 4
-#noalign eq_false
-#noalign eq_true
 
 /-- See `IsEmpty.forall_iff` for the `False` version. -/
 @[simp] theorem forall_true_left (p : True → Prop) : (∀ x, p x) ↔ p True.intro :=

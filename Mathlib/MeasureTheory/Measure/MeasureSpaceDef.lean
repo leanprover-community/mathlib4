@@ -86,8 +86,6 @@ instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α
   coe μ := μ.toOuterMeasure
   coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, h => toOuterMeasure_injective <| DFunLike.coe_injective h
 
-#noalign measure_theory.measure.has_coe_to_fun
-
 set_option linter.deprecated false in -- Not immediately obvious how to use `measure_empty` here.
 instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass (Measure α) α where
   measure_empty m := m.empty'

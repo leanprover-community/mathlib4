@@ -368,8 +368,6 @@ attribute [coe] ContinuousLinearMap.toLinearMap
 /-- Coerce continuous linear maps to linear maps. -/
 instance LinearMap.coe : Coe (M₁ →SL[σ₁₂] M₂) (M₁ →ₛₗ[σ₁₂] M₂) := ⟨toLinearMap⟩
 
-#noalign continuous_linear_map.to_linear_map_eq_coe
-
 theorem coe_injective : Function.Injective ((↑) : (M₁ →SL[σ₁₂] M₂) → M₁ →ₛₗ[σ₁₂] M₂) := by
   intro f g H
   cases f
@@ -1643,7 +1641,6 @@ instance continuousSemilinearEquivClass :
 -- ⟨fun f => f⟩
 
 -- Porting note: Syntactic tautology.
-#noalign continuous_linear_equiv.coe_def_rev
 
 theorem coe_apply (e : M₁ ≃SL[σ₁₂] M₂) (b : M₁) : (e : M₁ →SL[σ₁₂] M₂) b = e b :=
   rfl

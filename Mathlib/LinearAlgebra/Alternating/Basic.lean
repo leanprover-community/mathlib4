@@ -139,8 +139,6 @@ theorem coe_multilinearMap_injective :
     Function.Injective ((↑) : M [⋀^ι]→ₗ[R] N → MultilinearMap R (fun _ : ι => M) N) :=
   fun _ _ h => ext <| MultilinearMap.congr_fun h
 
-#noalign alternating_map.to_multilinear_map_eq_coe
-
 -- Porting note: changed statement to reflect new `mk` signature.
 -- Porting note: removed `simp`
 -- @[simp]

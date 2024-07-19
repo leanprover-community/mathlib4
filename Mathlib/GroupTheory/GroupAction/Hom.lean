@@ -114,7 +114,6 @@ theorem map_smul {F M X Y : Type*} [SMul M X] [SMul M Y]
 -- attribute [simp] map_smulₛₗ
 
 -- Porting note: removed has_coe_to_fun instance, coercions handled differently now
-#noalign mul_action_hom.has_coe_to_fun
 
 instance : MulActionSemiHomClass (X →ₑ[φ] Y) φ X Y where
   map_smulₛₗ := MulActionHom.map_smul'
@@ -372,10 +371,6 @@ Coercion is already handled by all the HomClass constructions I believe -/
 -- instance coe' : Coe (A →+[M] B) (A →[M] B) :=
 --   ⟨toMulActionHom⟩
 
-#noalign distrib_mul_action_hom.has_coe
-#noalign distrib_mul_action_hom.has_coe'
-#noalign distrib_mul_action_hom.has_coe_to_fun
-
 instance : FunLike (A →ₑ+[φ] B) A B where
   coe m := m.toFun
   coe_injective' f g h := by
@@ -627,10 +622,6 @@ Coercion is already handled by all the HomClass constructions I believe -/
 --   ⟨toDistribMulActionHom⟩
 
 -- Porting note: removed has_coe_to_fun instance, coercions handled differently now
-
-#noalign mul_semiring_action_hom.has_coe
-#noalign mul_semiring_action_hom.has_coe'
-#noalign mul_semiring_action_hom.has_coe_to_fun
 
 instance : FunLike (R →ₑ+*[φ] S) R S where
   coe m := m.toFun

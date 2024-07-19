@@ -1639,8 +1639,6 @@ end Scanl
 theorem scanr_nil (f : α → β → β) (b : β) : scanr f b [] = [b] :=
   rfl
 
-#noalign list.scanr_aux_cons
-
 @[simp]
 theorem scanr_cons (f : α → β → β) (b : β) (a : α) (l : List α) :
     scanr f b (a :: l) = foldr f b (a :: l) :: scanr f b l := by
@@ -1824,12 +1822,6 @@ theorem splitOnP_nil : [].splitOnP p = [[]] :=
 /- Porting note: `split_on_p_aux` and `split_on_p_aux'` were used to prove facts about
   `split_on_p`. `splitOnP` has a different structure, and we need different facts about
   `splitOnP.go`. Theorems involving `split_on_p_aux` have been omitted where possible. -/
-
-#noalign list.split_on_p_aux_ne_nil
-#noalign list.split_on_p_aux_spec
-#noalign list.split_on_p_aux'
-#noalign list.split_on_p_aux_eq
-#noalign list.split_on_p_aux_nil
 
 theorem splitOnP.go_ne_nil (xs acc : List α) : splitOnP.go p xs acc ≠ [] := by
   induction xs generalizing acc <;> simp [go]; split <;> simp [*]
@@ -2804,14 +2796,6 @@ end ZipRight
 -- The theorems about `toChunks` are not used anywhere in mathlib, anyways.
 -- TODO: Prove these theorems for the new definitions.
 
-#noalign list.to_chunks_nil
-#noalign list.to_chunks_aux_eq
-#noalign list.to_chunks_eq_cons'
-#noalign list.to_chunks_eq_cons
-#noalign list.to_chunks_aux_join
-#noalign list.to_chunks_join
-#noalign list.to_chunks_length_le
-
 /-! ### Forall -/
 
 section Forall
@@ -2846,7 +2830,6 @@ end Forall
 /-! ### Miscellaneous lemmas -/
 
 
-#noalign list.ilast'_mem --List.ilast'_mem
 
 @[simp]
 theorem getElem_attach (L : List α) (i : Nat) (h : i < L.attach.length) :

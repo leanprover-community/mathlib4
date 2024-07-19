@@ -219,7 +219,6 @@ lemma coe_coe {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] {f
   rfl
 
 -- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
-#noalign LinearMap.has_coe_to_fun
 
 /-- The `DistribMulActionHom` underlying a `LinearMap`. -/
 def toDistribMulActionHom (f : M →ₛₗ[σ] M₃) : DistribMulActionHom σ.toMonoidHom M M₃ :=
@@ -626,7 +625,6 @@ instance instCoeTCLinearMap : CoeTC (M →+[R] M₃) (M →ₗ[R] M₃) :=
 instance : LinearMapClass (M →+[R] M₃) R M M₃ where
 
 -- Porting note: because coercions get unfolded, there is no need for this rewrite
-#noalign distrib_mul_action_hom.to_linear_map_eq_coe
 
 -- Porting note: removed @[norm_cast] attribute due to error:
 -- norm_cast: badly shaped lemma, rhs can't start with coe

@@ -171,19 +171,13 @@ theorem add_im (z w : ℂ) : (z + w).im = z.im + w.im :=
   rfl
 
 -- replaced by `re_ofNat`
-#noalign complex.bit0_re
-#noalign complex.bit1_re
 -- replaced by `im_ofNat`
-#noalign complex.bit0_im
-#noalign complex.bit1_im
 
 @[simp, norm_cast]
 theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
   Complex.ext_iff.2 <| by simp [ofReal']
 
 -- replaced by `Complex.ofReal_ofNat`
-#noalign complex.of_real_bit0
-#noalign complex.of_real_bit1
 
 instance : Neg ℂ :=
   ⟨fun z => ⟨-z.re, -z.im⟩⟩
@@ -415,8 +409,6 @@ theorem coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
   rfl
 
 section
-#noalign complex.I_pow_bit0
-#noalign complex.I_pow_bit1
 end
 
 /-! ### Cast lemmas -/
@@ -481,9 +473,6 @@ theorem conj_ofReal (r : ℝ) : conj (r : ℂ) = r :=
 @[simp]
 theorem conj_I : conj I = -I :=
   Complex.ext_iff.2 <| by simp
-
-#noalign complex.conj_bit0
-#noalign complex.conj_bit1
 
 theorem conj_natCast (n : ℕ) : conj (n : ℂ) = n := map_natCast _ _
 

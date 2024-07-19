@@ -162,14 +162,6 @@ theorem image2_congr (h : ∀ a ∈ s, ∀ b ∈ t, f a b = f' a b) : image2 f s
 theorem image2_congr' (h : ∀ a b, f a b = f' a b) : image2 f s t = image2 f' s t :=
   image2_congr fun a _ b _ => h a b
 
-#noalign set.image3
-#noalign set.mem_image3
-#noalign set.image3_mono
-#noalign set.image3_congr
-#noalign set.image3_congr'
-#noalign set.image2_image2_left
-#noalign set.image2_image2_right
-
 theorem image_image2 (f : α → β → γ) (g : γ → δ) :
     g '' image2 f s t = image2 (fun a b => g (f a b)) s t := by
   simp only [← image_prod, image_image]

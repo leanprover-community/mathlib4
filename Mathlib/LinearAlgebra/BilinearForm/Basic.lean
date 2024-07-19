@@ -59,8 +59,6 @@ namespace LinearMap
 
 namespace BilinForm
 
-#noalign bilin_form.coe_fn_mk
-
 @[deprecated (since := "2024-04-14")]
 theorem coeFn_congr : ∀ {x x' y y' : M}, x = x' → y = y' → B x y = B x' y'
   | _, _, _, _, rfl, rfl => rfl
@@ -121,9 +119,6 @@ theorem coe_add : ⇑(B + D) = B + D :=
 @[simp]
 theorem add_apply (x y : M) : (B + D) x y = B x y + D x y :=
   rfl
-
-#noalign bilin_form.coe_smul
-#noalign bilin_form.smul_apply
 
 @[deprecated (since := "2024-04-14")]
 theorem coe_neg : ⇑(-B₁) = -B₁ :=

@@ -166,8 +166,6 @@ theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
 
 
 -- syntactic tautologies now
-#noalign fin.coe_eq_val
-#noalign fin.val_eq_coe
 
 /-- Assume `k = l`. If two functions defined on `Fin k` and `Fin l` are equal on each element,
 then they coincide (in the heq sense). -/
@@ -415,11 +413,6 @@ theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
     (↑(a + b) : ℕ) = if n ≤ a + b then a + b - n else a + b := by
   rw [Fin.val_add, Nat.add_mod_eq_ite, Nat.mod_eq_of_lt (show ↑a < n from a.2),
     Nat.mod_eq_of_lt (show ↑b < n from b.2)]
-
-#noalign fin.coe_bit0
-#noalign fin.coe_bit1
-#noalign fin.mk_bit0
-#noalign fin.mk_bit1
 --- Porting note: syntactically the same as the above
 
 section OfNatCoe

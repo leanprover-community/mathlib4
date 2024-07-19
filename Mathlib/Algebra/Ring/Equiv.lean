@@ -143,7 +143,6 @@ theorem toEquiv_eq_coe (f : R ≃+* S) : f.toEquiv = f :=
   rfl
 
 -- Porting note: `toFun_eq_coe` no longer needed in Lean4
-#noalign ring_equiv.to_fun_eq_coe
 
 @[simp]
 theorem coe_toEquiv (f : R ≃+* S) : ⇑(f : R ≃ S) = f :=
@@ -168,7 +167,6 @@ theorem coe_mk (e h₃ h₄) : ⇑(⟨e, h₃, h₄⟩ : R ≃+* S) = e :=
   rfl
 
 -- Porting note: `toEquiv_mk` no longer needed in Lean4
-#noalign ring_equiv.to_equiv_mk
 
 @[simp]
 theorem mk_coe (e : R ≃+* S) (e' h₁ h₂ h₃ h₄) : (⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩ : R ≃+* S) = e :=
@@ -765,7 +763,6 @@ then so does the first. -/
 protected theorem noZeroDivisors {A : Type*} (B : Type*) [MulZeroClass A] [MulZeroClass B]
     [NoZeroDivisors B] (e : A ≃* B) : NoZeroDivisors A :=
   e.injective.noZeroDivisors e (map_zero e) (map_mul e)
-#noalign ring_equiv.no_zero_divisors
 
 /-- If two rings are isomorphic, and the second is a domain, then so is the first. -/
 protected theorem isDomain {A : Type*} (B : Type*) [Semiring A] [Semiring B] [IsDomain B]
@@ -773,7 +770,6 @@ protected theorem isDomain {A : Type*} (B : Type*) [Semiring A] [Semiring B] [Is
   { e.injective.isLeftCancelMulZero e (map_zero e) (map_mul e),
     e.injective.isRightCancelMulZero e (map_zero e) (map_mul e) with
     exists_pair_ne := ⟨e.symm 0, e.symm 1, e.symm.injective.ne zero_ne_one⟩ }
-#noalign ring_equiv.is_domain
 
 end MulEquiv
 

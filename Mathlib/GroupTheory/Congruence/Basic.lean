@@ -729,8 +729,6 @@ theorem mrange_mk' : MonoidHom.mrange c.mk' = ⊤ :=
 -- Porting note: used to abuse defeq between sets and predicates
 @[to_additive]
 theorem ker_apply {f : M →* P} {x y} : ker f x y ↔ f x = f y := Iff.rfl
-#noalign con.ker_apply_eq_preimage
-#noalign add_con.ker_apply_eq_preimage
 
 /-- Given a monoid homomorphism `f : N → M` and a congruence relation `c` on `M`, the congruence
     relation induced on `N` by `f` equals the kernel of `c`'s quotient homomorphism composed with

@@ -33,8 +33,6 @@ open Nat
 
 namespace List
 
-#noalign list.length_of_fn_aux
-
 @[simp]
 theorem length_ofFn_go {n} (f : Fin n → α) (i j h) : length (ofFn.go f i j h) = i := by
   induction i generalizing j <;> simp_all [ofFn.go]
@@ -43,8 +41,6 @@ theorem length_ofFn_go {n} (f : Fin n → α) (i j h) : length (ofFn.go f i j h)
 @[simp]
 theorem length_ofFn {n} (f : Fin n → α) : length (ofFn f) = n := by
   simp [ofFn, length_ofFn_go]
-
-#noalign list.nth_of_fn_aux
 
 theorem getElem_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
     (ofFn.go f i j h)[k] = f ⟨j + k, by simp at hk; omega⟩ := by

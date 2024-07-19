@@ -263,7 +263,6 @@ protected theorem continuous : Continuous f :=
 instance : Coe (LocallyConstant X Y) C(X, Y) := ⟨toContinuousMap⟩
 
 -- Porting note: became a syntactic `rfl`
-#noalign locally_constant.to_continuous_map_eq_coe
 
 @[simp] theorem coe_continuousMap : ((f : C(X, Y)) : X → Y) = (f : X → Y) := rfl
 

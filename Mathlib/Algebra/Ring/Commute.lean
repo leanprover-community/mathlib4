@@ -40,11 +40,6 @@ theorem add_left [Distrib R] {a b c : R} : Commute a c → Commute b c → Commu
   SemiconjBy.add_left
 -- for some reason mathport expected `Semiring` instead of `Distrib`?
 
-#noalign commute.bit0_right
-#noalign commute.bit0_left
-#noalign commute.bit1_right
-#noalign commute.bit1_left
-
 /-- Representation of a difference of two squares of commuting elements as a product. -/
 theorem mul_self_sub_mul_self_eq [NonUnitalNonAssocRing R] {a b : R} (h : Commute a b) :
     a * a - b * b = (a + b) * (a - b) := by
@@ -140,9 +135,6 @@ lemma neg_pow (a : R) (n : ℕ) : (-a) ^ n = (-1) ^ n * a ^ n :=
 
 lemma neg_pow' (a : R) (n : ℕ) : (-a) ^ n = a ^ n * (-1) ^ n :=
   mul_neg_one a ▸ (Commute.neg_one_right a).mul_pow n
-
-#noalign neg_pow_bit0
-#noalign neg_pow_bit1
 
 lemma neg_sq (a : R) : (-a) ^ 2 = a ^ 2 := by simp [sq]
 

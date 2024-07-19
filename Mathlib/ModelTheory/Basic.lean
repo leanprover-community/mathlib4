@@ -529,8 +529,6 @@ instance strongHomClass : StrongHomClass L (M ↪[L] N) M N where
   map_fun := map_fun'
   map_rel := map_rel'
 
-#noalign first_order.language.embedding.has_coe_to_fun -- Porting note: replaced by funLike instance
-
 @[simp]
 theorem map_fun (φ : M ↪[L] N) {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
     φ (funMap f x) = funMap f (φ ∘ x) :=

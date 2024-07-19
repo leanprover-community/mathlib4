@@ -105,8 +105,6 @@ theorem coe_mul (p q : ℚ≥0) : ((p * q : ℚ≥0) : ℚ) = p * q :=
 @[simp] lemma den_pow (q : ℚ≥0) (n : ℕ) : (q ^ n).den = q.den ^ n := rfl
 
 -- Porting note: `bit0` `bit1` are deprecated, so remove these theorems.
-#noalign nnrat.coe_bit0
-#noalign nnrat.coe_bit1
 
 @[simp, norm_cast]
 theorem coe_sub (h : q ≤ p) : ((p - q : ℚ≥0) : ℚ) = p - q :=
@@ -261,8 +259,6 @@ theorem lt_toNNRat_iff_coe_lt {q : ℚ≥0} : q < toNNRat p ↔ ↑q < p :=
   NNRat.gi.gc.lt_iff_lt
 
 -- Porting note: `bit0` `bit1` are deprecated, so remove these theorems.
-#noalign rat.to_nnrat_bit0
-#noalign rat.to_nnrat_bit1
 
 theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := by
   rcases le_total 0 q with hq | hq

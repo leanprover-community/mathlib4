@@ -67,7 +67,6 @@ instance : CoeOut (Sylow p G) (Subgroup G) :=
 -- @[simp]
 -- theorem toSubgroup_eq_coe {P : Sylow p G} : P.toSubgroup = ↑P :=
 --   rfl
-#noalign sylow.to_subgroup_eq_coe
 
 @[ext]
 theorem ext {P Q : Sylow p G} (h : (P : Subgroup G) = Q) : P = Q := by cases P; cases Q; congr

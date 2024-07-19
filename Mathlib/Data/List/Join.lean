@@ -149,11 +149,6 @@ theorem drop_take_succ_join_eq_get' (L : List (List α)) (i : Fin L.length) :
       get L i := by
    simp [drop_take_succ_join_eq_getElem']
 
-#noalign list.drop_take_succ_join_eq_nth_le
-#noalign list.sum_take_map_length_lt1
-#noalign list.sum_take_map_length_lt2
-#noalign list.nth_le_join
-
 /-- Two lists of sublists are equal iff their joins coincide, as well as the lengths of the
 sublists. -/
 theorem eq_iff_join_eq (L L' : List (List α)) :

@@ -158,8 +158,6 @@ theorem map_add_one : ∀ x, f (x + 1) = f x + 1 :=
 @[simp]
 theorem map_one_add (x : ℝ) : f (1 + x) = 1 + f x := by rw [add_comm, map_add_one, add_comm 1]
 
-#noalign circle_deg1_lift.coe_inj -- Use `DFunLike.coe_inj`
-
 @[ext]
 theorem ext ⦃f g : CircleDeg1Lift⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
@@ -188,8 +186,6 @@ theorem coe_one : ⇑(1 : CircleDeg1Lift) = id :=
 
 instance unitsHasCoeToFun : CoeFun CircleDeg1Liftˣ fun _ => ℝ → ℝ :=
   ⟨fun f => ⇑(f : CircleDeg1Lift)⟩
-
-#noalign circle_deg1_lift.units_coe -- now LHS = RHS
 
 @[simp]
 theorem units_inv_apply_apply (f : CircleDeg1Liftˣ) (x : ℝ) :

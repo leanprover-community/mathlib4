@@ -337,8 +337,6 @@ def rcons {i} (p : Pair M i) : Word M :=
   if h : p.head = 1 then p.tail
   else cons p.head p.tail p.fstIdx_ne h
 
-#noalign free_product.word.cons_eq_rcons
-
 @[simp]
 theorem prod_rcons {i} (p : Pair M i) : prod (rcons p) = of p.head * prod p.tail :=
   if hm : p.head = 1 then by rw [rcons, dif_pos hm, hm, MonoidHom.map_one, one_mul]

@@ -114,9 +114,6 @@ instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
   map_mul f := f.map_mul'
 
 -- Porting note: removed due to new `coe` in Lean4
-#noalign non_unital_ring_hom.to_fun_eq_coe
-#noalign non_unital_ring_hom.coe_mk
-#noalign non_unital_ring_hom.coe_coe
 
 initialize_simps_projections NonUnitalRingHom (toFun → apply)
 
@@ -331,8 +328,6 @@ class RingHomClass (F : Type*) (α β : outParam Type*)
 
 variable [FunLike F α β]
 
-#noalign map_bit1
-
 -- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
 
@@ -402,7 +397,6 @@ instance coeToMonoidHom : Coe (α →+* β) (α →* β) :=
   ⟨RingHom.toMonoidHom⟩
 
 -- Porting note: `dsimp only` can prove this
-#noalign ring_hom.coe_monoid_hom
 
 @[simp]
 theorem toMonoidHom_eq_coe (f : α →+* β) : f.toMonoidHom = f :=
@@ -418,7 +412,6 @@ theorem coe_monoidHom_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : 
   rfl
 
 -- Porting note: `dsimp only` can prove this
-#noalign ring_hom.coe_add_monoid_hom
 
 @[simp]
 theorem toAddMonoidHom_eq_coe (f : α →+* β) : f.toAddMonoidHom = f :=
