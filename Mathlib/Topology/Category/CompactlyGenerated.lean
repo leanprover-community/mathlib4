@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Topology.Category.CompHaus.Basic
+import Mathlib.CategoryTheory.Elementwise
 /-!
 
 # Compactly generated topological spaces
@@ -107,11 +108,13 @@ def of : CompactlyGenerated.{u, w} where
 def compactlyGeneratedToTop : CompactlyGenerated.{u, w} ⥤ TopCat.{w} :=
   inducedFunctor _
 
-instance : compactlyGeneratedToTop.{u, w}.Full  :=
-  inferInstanceAs (inducedFunctor _).Full
+/-- `compactlyGeneratedToTop` is fully faithful. -/
+def fullyFaithulCompactlyGeneratedToTop : compactlyGeneratedToTop.{u, w}.FullyFaithful :=
+  fullyFaithfulInducedFunctor _
 
-instance : compactlyGeneratedToTop.{u, w}.Faithful :=
-  inferInstanceAs (inducedFunctor _).Faithful
+instance : compactlyGeneratedToTop.{u, w}.Full := fullyFaithulCompactlyGeneratedToTop.full
+
+instance : compactlyGeneratedToTop.{u, w}.Faithful := fullyFaithulCompactlyGeneratedToTop.faithful
 
 /-- Construct an isomorphism from a homeomorphism. -/
 @[simps hom inv]
