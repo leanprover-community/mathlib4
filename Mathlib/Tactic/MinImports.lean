@@ -92,7 +92,8 @@ def getAllImports (cmd id : Syntax) (dbg? : Bool := false) :
     CommandElabM NameSet := do
   let env ← getEnv
   let id1 ← getId cmd
-  let nm ← (liftCoreM do realizeGlobalConstNoOverload id1 <|> return default)
+  let ns ← getCurrNamespace
+  let nm ← liftCoreM do (realizeGlobalConstNoOverload id1 <|> return ns ++ id1.getId)
   -- We collect the implied declaration names, the `SyntaxNodeKinds` and the attributes.
   let ts := getVisited env nm
               |>.append (getVisited env id.getId)
