@@ -992,6 +992,7 @@ def toAddMonoidHom' : (M →ₛₗ[σ₁₂] M₂) →+ M →+ M₂ where
 #align linear_map.to_add_monoid_hom' LinearMap.toAddMonoidHom'
 
 /-- If `M` is the zero module, then  the identity map of `M` is the zero map. -/
+@[simp]
 theorem identityMapOfZeroModuleIsZero [Subsingleton M] : id (R := R₁) (M := M) = 0 :=
   Subsingleton.eq_zero id
 
