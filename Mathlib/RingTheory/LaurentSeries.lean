@@ -282,6 +282,7 @@ instance coeToLaurentSeries : Coe (RatFunc F) (LaurentSeries F) :=
 theorem coe_def : (f : LaurentSeries F) = coeAlgHom F f :=
   rfl
 
+attribute [-instance] RatFunc.instCoePolynomial in
 theorem coe_num_denom : (f : LaurentSeries F) = f.num / f.denom :=
   liftAlgHom_apply _ _ f
 
@@ -294,7 +295,7 @@ theorem coe_injective : Function.Injective ((↑) : RatFunc F → LaurentSeries 
 theorem coe_apply : coeAlgHom F f = f :=
   rfl
 
-theorem coe_coe (P : Polynomial F) : (P : LaurentSeries F) = (P : RatFunc F) := by
+theorem coe_coe (P : Polynomial F) : ((P : PowerSeries F) : LaurentSeries F) = (P : RatFunc F) := by
   simp only [coePolynomial, coe_def, AlgHom.commutes, algebraMap_hahnSeries_apply]
 
 @[simp, norm_cast]
