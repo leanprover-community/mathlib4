@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Topology.ProperMap
+import Mathlib.Topology.Maps.Proper.Basic
 /-!
 # Actions by proper maps
 

@@ -14,17 +14,10 @@ The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
 We intend to move all the content of these files out into the main `Mathlib` directory structure.
 Contributions assisting with this are appreciated.
 
-`#align` statements without corresponding declarations
-(i.e. because the declaration is in Batteries or Lean) can be left here.
-These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
-
 ### alignments from lean 3 `init.classical`
 -/
 
 namespace Classical
-
-#align classical.inhabited_of_nonempty Classical.inhabited_of_nonempty
-#align classical.inhabited_of_exists Classical.inhabited_of_exists
 
 attribute [local instance] propDecidable
 attribute [local instance] decidableInhabited
@@ -40,7 +33,6 @@ theorem cases_on (a : Prop) {p : Prop → Prop} (h1 : p True) (h2 : p False) : p
   @cases_true_false p h1 h2 a
 
 theorem cases {p : Prop → Prop} (h1 : p True) (h2 : p False) (a) : p a := cases_on a h1 h2
-#align classical.cases Classical.cases
 
 alias by_cases := byCases
 alias by_contradiction := byContradiction
