@@ -111,7 +111,7 @@ theorem measure_preimage_smul_of_nullMeasurableSet (hs : NullMeasurableSet s μ)
   rw [← measure_toMeasurable s,
     ← SMulInvariantMeasure.measure_preimage_smul c (measurableSet_toMeasurable μ s)]
   exact measure_congr (tendsto_smul_ae μ c hs.toMeasurable_ae_eq) |>.symm
-  
+
 end AE_smul
 
 section AE
@@ -185,22 +185,18 @@ theorem map_smul : map (c • ·) μ = μ :=
 
 end MeasurableSMul
 
-theorem MeasurePreserving.smulInvariantMeasure_ofEndHom_powersHom
+theorem MeasurePreserving.smulInvariantMeasure_iterateMulAct
     {f : α → α} {_ : MeasurableSpace α} {μ : Measure α} (hf : MeasurePreserving f μ μ) :
-    letI : MulAction (Multiplicative ℕ) α := .ofEndHom <| powersHom (Function.End α) f
-    SMulInvariantMeasure (Multiplicative ℕ) α μ :=
-  letI : MulAction (Multiplicative ℕ) α := .ofEndHom <| powersHom (Function.End α) f
-  ⟨fun n _s hs ↦ (hf.iterate n).measure_preimage hs⟩
+    SMulInvariantMeasure (IterateMulAct f) α μ :=
+  ⟨fun n _s hs ↦ (hf.iterate n.val).measure_preimage hs⟩
 
-theorem smulInvariantMeasure_ofEndHom_powersHom_iff
+theorem smulInvariantMeasure_iterateMulAct
     {f : α → α} {_ : MeasurableSpace α} {μ : Measure α} (hf : Measurable f) :
-    letI : MulAction (Multiplicative ℕ) α := .ofEndHom <| powersHom (Function.End α) f
-    SMulInvariantMeasure (Multiplicative ℕ) α μ ↔ MeasurePreserving f μ μ := by
-  refine ⟨fun h ↦ ?_, MeasurePreserving.smulInvariantMeasure_ofEndHom_powersHom⟩
-  letI : MulAction (Multiplicative ℕ) α := .ofEndHom <| powersHom (Function.End α) f
-  letI : MeasurableSpace (Multiplicative ℕ) := ⊤
-  have : MeasurableSMul (Multiplicative ℕ) α := ⟨hf.iterate, fun _ ↦ measurable_discrete _⟩
-  exact measurePreserving_smul (Multiplicative.ofAdd 1) μ
+    SMulInvariantMeasure (IterateMulAct f) α μ ↔ MeasurePreserving f μ μ :=
+  ⟨fun _ ↦
+    have := hf.measurableSMul₂_iterateMulAct
+    measurePreserving_smul (IterateMulAct.mk (f := f) 1) μ,
+    MeasurePreserving.smulInvariantMeasure_iterateMulAct⟩
 
 section SMulHomClass
 

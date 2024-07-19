@@ -71,7 +71,7 @@ theorem aeconst_of_forall_smul_ae_eq (hm : NullMeasurableSet s μ) (h : ∀ g : 
 theorem _root_.MulAction.aeconst_of_aestabilizer_eq_top
     (hm : NullMeasurableSet s μ) (h : aestabilizer G μ s = ⊤) : EventuallyConst s (ae μ) :=
   aeconst_of_forall_smul_ae_eq G hm <| (Subgroup.eq_top_iff' _).1 h
-  
+
 end Group
 
 theorem _root_.ErgodicSMul.of_aestabilizer [Group G] [MulAction G α] [SMulInvariantMeasure G α μ]
@@ -80,18 +80,17 @@ theorem _root_.ErgodicSMul.of_aestabilizer [Group G] [MulAction G α] [SMulInvar
   ⟨fun hm hs ↦ h _ hm <| (Subgroup.eq_top_iff' _).2 fun g ↦ by
     simpa only [preimage_smul_inv] using hs g⁻¹⟩
 
-theorem ergodicSMul_ofEndHom_powersHom_iff {f : α → α} (hf : Measurable f) :
-    letI : MulAction (Multiplicative ℕ) α := .ofEndHom <| powersHom (Function.End α) f
-    ErgodicSMul (Multiplicative ℕ) α μ ↔ Ergodic f μ := by
-  simp only [ergodicSMul_iff, smulInvariantMeasure_ofEndHom_powersHom_iff, hf]
+theorem ergodicSMul_iterateMulAct {f : α → α} (hf : Measurable f) :
+    ErgodicSMul (IterateMulAct f) α μ ↔ Ergodic f μ := by
+  simp only [ergodicSMul_iff, smulInvariantMeasure_iterateMulAct, hf]
   refine ⟨fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ⟨?_⟩⟩, fun h ↦ ⟨h.1, ?_⟩⟩
   · intro s hm hs
     rw [← eventuallyConst_set']
-    refine h₂ hm <| Multiplicative.forall.2 fun n ↦ ?_
-    nth_rewrite 2 [← Function.IsFixedPt.preimage_iterate hs n]
+    refine h₂ hm fun n ↦ ?_
+    nth_rewrite 2 [← Function.IsFixedPt.preimage_iterate hs n.val]
     rfl
   · intro s hm hs
     rw [eventuallyConst_set']
-    exact h.quasiErgodic.ae_empty_or_univ' hm <| hs (.ofAdd 1)
+    exact h.quasiErgodic.ae_empty_or_univ' hm <| hs (.mk 1)
 
 end MeasureTheory
