@@ -115,6 +115,12 @@ instance RespectsIso.unop (P : MorphismProperty Cᵒᵖ) [h : RespectsIso P] : R
   ⟨fun e f hf => h.2 e.op f.op hf, fun e f hf => h.1 e.op f.op hf⟩
 #align category_theory.morphism_property.respects_iso.unop CategoryTheory.MorphismProperty.RespectsIso.unop
 
+/-- The intersection of two isomorphism respecting morphism properties respects isomorphisms. -/
+instance RespectsIso.inf (P Q : MorphismProperty C) [RespectsIso P] [RespectsIso Q] :
+    RespectsIso (P ⊓ Q) where
+  precomp e f hf := ⟨RespectsIso.precomp e f hf.left, RespectsIso.precomp e f hf.right⟩
+  postcomp e f hf := ⟨RespectsIso.postcomp e f hf.left, RespectsIso.postcomp e f hf.right⟩
+
 /-- The closure by isomorphisms of a `MorphismProperty` -/
 def isoClosure (P : MorphismProperty C) : MorphismProperty C :=
   fun _ _ f => ∃ (Y₁ Y₂ : C) (f' : Y₁ ⟶ Y₂) (_ : P f'), Nonempty (Arrow.mk f' ≅ Arrow.mk f)

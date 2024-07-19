@@ -121,6 +121,13 @@ theorem isAffine_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] [h : IsAffine Y
   rw [← mem_Spec_essImage] at h ⊢; exact Functor.essImage.ofIso (asIso f).symm h
 #align algebraic_geometry.is_affine_of_iso AlgebraicGeometry.isAffine_of_isIso
 
+/-- If `f : X ⟶ Y` is a morphism between affine schemes, the corresponding arrow is isomorphic
+to the arrow of the morphism on prime spectra induced by the map on global sections. -/
+noncomputable
+def arrowIsoSpecΓOfIsAffine {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
+    Arrow.mk f ≅ Arrow.mk (Spec.map (Scheme.Γ.map f.op)) :=
+  Arrow.isoMk X.isoSpec Y.isoSpec (ΓSpec.adjunction.unit_naturality _)
+
 namespace AffineScheme
 
 /-- The `Spec` functor into the category of affine schemes. -/

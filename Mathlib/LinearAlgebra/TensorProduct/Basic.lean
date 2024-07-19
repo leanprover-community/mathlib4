@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
 import Mathlib.Algebra.Module.Submodule.Bilinear
+import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.SuppressCompilation
@@ -238,7 +239,7 @@ class CompatibleSMul [DistribMulAction R' N] : Prop where
 
 end
 
-/-- Note that this provides the default `compatible_smul R R M N` instance through
+/-- Note that this provides the default `CompatibleSMul R R M N` instance through
 `IsScalarTower.left`. -/
 instance (priority := 100) CompatibleSMul.isScalarTower [SMul R' R] [IsScalarTower R' R M]
     [DistribMulAction R' N] [IsScalarTower R' R N] : CompatibleSMul R R' M N :=

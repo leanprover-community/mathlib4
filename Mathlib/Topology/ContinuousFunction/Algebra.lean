@@ -35,6 +35,7 @@ Note that, rather than using the derived algebraic structures on these subobject
 one should use `C(α, β)` with the appropriate instance of the structure.
 -/
 
+assert_not_exists StoneCech
 
 --attribute [elab_without_expected_type] Continuous.comp
 

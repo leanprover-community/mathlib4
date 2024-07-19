@@ -119,6 +119,15 @@ protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
   · exact fun H i ↦ (P.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mp (restrict _ _ H)
   · exact fun i ↦ (P.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mpr (H i)
 
+/-- The intersection of two morphism properties that are local at the target is again local at
+the target. -/
+instance inf (P Q : MorphismProperty Scheme) [IsLocalAtTarget P] [IsLocalAtTarget Q] :
+    IsLocalAtTarget (P ⊓ Q) where
+  iff_of_openCover' {X Y} f 𝒰 :=
+    ⟨fun h i ↦ ⟨(iff_of_openCover' f 𝒰).mp h.left i, (iff_of_openCover' f 𝒰).mp h.right i⟩,
+     fun h ↦ ⟨(iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).left),
+      (iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).right)⟩⟩
+
 variable {P} [hP : IsLocalAtTarget P]
 variable {X Y U V : Scheme.{u}} {f : X ⟶ Y} {g : U ⟶ Y} [IsOpenImmersion g] (𝒰 : Y.OpenCover)
 
