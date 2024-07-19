@@ -324,6 +324,27 @@ theorem of_horiz_isIso [IsIso fst] [IsIso g] (sq : CommSq fst snd f g) : IsPullb
       simp only [← cancel_mono g, Category.assoc, ← sq.w, IsIso.inv_hom_id_assoc, s.condition])
 #align category_theory.is_pullback.of_horiz_is_iso CategoryTheory.IsPullback.of_horiz_isIso
 
+lemma of_iso (h : IsPullback fst snd f g)
+    {P' X' Y' Z' : C} {fst' : P' ⟶ X'} {snd' : P' ⟶ Y'} {f' : X' ⟶ Z'} {g' : Y' ⟶ Z'}
+    (e₁ : P ≅ P') (e₂ : X ≅ X') (e₃ : Y ≅ Y') (e₄ : Z ≅ Z')
+    (commfst : fst ≫ e₂.hom = e₁.hom ≫ fst')
+    (commsnd : snd ≫ e₃.hom = e₁.hom ≫ snd')
+    (commf : f ≫ e₄.hom = e₂.hom ≫ f')
+    (commg : g ≫ e₄.hom = e₃.hom ≫ g') :
+    IsPullback fst' snd' f' g' where
+  w := by
+    rw [← cancel_epi e₁.hom, ← reassoc_of% commfst, ← commf,
+      ← reassoc_of% commsnd, ← commg, h.w_assoc]
+  isLimit' :=
+    ⟨(IsLimit.postcomposeInvEquiv
+        (cospanExt e₂ e₃ e₄ commf.symm commg.symm) _).1
+          (IsLimit.ofIsoLimit h.isLimit (by
+            refine PullbackCone.ext e₁ ?_ ?_
+            · change fst = e₁.hom ≫ fst' ≫ e₂.inv
+              rw [← reassoc_of% commfst, e₂.hom_inv_id, Category.comp_id]
+            · change snd = e₁.hom ≫ snd' ≫ e₃.inv
+              rw [← reassoc_of% commsnd, e₃.hom_inv_id, Category.comp_id]))⟩
+
 end IsPullback
 
 namespace IsPushout
@@ -448,6 +469,23 @@ theorem of_iso_pushout (h : CommSq f g inl inr) [HasPushout f g] (i : P ≅ push
     (Limits.IsColimit.ofIsoColimit (colimit.isColimit _)
       (PushoutCocone.ext (s := PushoutCocone.mk ..) i w₁ w₂).symm)
 #align category_theory.is_pushout.of_iso_pushout CategoryTheory.IsPushout.of_iso_pushout
+
+lemma of_iso (h : IsPushout f g inl inr)
+    {Z' X' Y' P' : C} {f' : Z' ⟶ X'} {g' : Z' ⟶ Y'} {inl' : X' ⟶ P'} {inr' : Y' ⟶ P'}
+    (e₁ : Z ≅ Z') (e₂ : X ≅ X') (e₃ : Y ≅ Y') (e₄ : P ≅ P')
+    (commf : f ≫ e₂.hom = e₁.hom ≫ f')
+    (commg : g ≫ e₃.hom = e₁.hom ≫ g')
+    (comminl : inl ≫ e₄.hom = e₂.hom ≫ inl')
+    (comminr : inr ≫ e₄.hom = e₃.hom ≫ inr') :
+    IsPushout f' g' inl' inr' where
+  w := by
+    rw [← cancel_epi e₁.hom, ← reassoc_of% commf, ← comminl,
+      ← reassoc_of% commg, ← comminr, h.w_assoc]
+  isColimit' :=
+    ⟨(IsColimit.precomposeHomEquiv
+        (spanExt e₁ e₂ e₃ commf.symm commg.symm) _).1
+          (IsColimit.ofIsoColimit h.isColimit
+            (PushoutCocone.ext e₄ comminl comminr))⟩
 
 end IsPushout
 
