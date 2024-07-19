@@ -38,7 +38,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
   - `ConditionallyCompleteLinearOrderBot ℝ≥0`.
 
   These instances are derived from corresponding instances about the type `{x : α // 0 ≤ x}` in an
-  appropriate ordered field/ring/group/monoid `α`, see `Mathlib.Algebra.Order.Nonneg.Ring`.
+  appropriate ordered field/ring/group/monoid `α`, see `Mathlib.Algebra.Order.Nonneg.OrderedRing`.
 
 * `Real.toNNReal x` is defined as `⟨max x 0, _⟩`, i.e. `↑(Real.toNNReal x) = x` when `0 ≤ x` and
   `↑(Real.toNNReal x) = 0` otherwise.
@@ -98,12 +98,12 @@ instance canLift : CanLift ℝ ℝ≥0 toReal fun r => 0 ≤ r :=
   Subtype.eq
 #align nnreal.eq NNReal.eq
 
-protected theorem eq_iff {n m : ℝ≥0} : (n : ℝ) = (m : ℝ) ↔ n = m :=
-  Subtype.ext_iff.symm
+protected theorem eq_iff {n m : ℝ≥0} : n = m ↔ (n : ℝ) = (m : ℝ) :=
+  Subtype.ext_iff
 #align nnreal.eq_iff NNReal.eq_iff
 
 theorem ne_iff {x y : ℝ≥0} : (x : ℝ) ≠ (y : ℝ) ↔ x ≠ y :=
-  not_congr <| NNReal.eq_iff
+  NNReal.eq_iff.symm.not
 #align nnreal.ne_iff NNReal.ne_iff
 
 protected theorem «forall» {p : ℝ≥0 → Prop} :
@@ -367,6 +367,9 @@ protected theorem coe_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
     ↑(OfScientific.ofScientific m s e : ℝ≥0) = (OfScientific.ofScientific m s e : ℝ) :=
   rfl
 
+@[simp, norm_cast]
+lemma algebraMap_eq_coe : (algebraMap ℝ≥0 ℝ : ℝ≥0 → ℝ) = (↑) := rfl
+
 noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
 @[simp, norm_cast] lemma coe_le_coe : (r₁ : ℝ) ≤ r₂ ↔ r₁ ≤ r₂ := Iff.rfl
@@ -461,7 +464,7 @@ instance instPosSMulStrictMono {α} [Preorder α] [MulAction ℝ α] [PosSMulStr
 
 instance instSMulPosStrictMono {α} [Zero α] [Preorder α] [MulAction ℝ α] [SMulPosStrictMono ℝ α] :
     SMulPosStrictMono ℝ≥0 α where
-  elim _a ha _r₁ _r₂ hr := (smul_lt_smul_of_pos_right (coe_lt_coe.2 hr) ha:)
+  elim _a ha _r₁ _r₂ hr := (smul_lt_smul_of_pos_right (coe_lt_coe.2 hr) ha :)
 
 /-- If `a` is a nonnegative real number, then the closed interval `[0, a]` in `ℝ` is order
 isomorphic to the interval `Set.Iic a`. -/

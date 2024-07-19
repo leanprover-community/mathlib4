@@ -286,6 +286,11 @@ theorem inl_neg [Neg R] [AddGroup A] (r : R) : (inl (-r) : Unitization R A) = -i
 #align unitization.inl_neg Unitization.inl_neg
 
 @[simp]
+theorem inl_sub [AddGroup R] [AddGroup A] (r₁ r₂ : R) :
+    (inl (r₁ - r₂) : Unitization R A) = inl r₁ - inl r₂ :=
+  ext rfl (sub_zero 0).symm
+
+@[simp]
 theorem inl_smul [Monoid S] [AddMonoid A] [SMul S R] [DistribMulAction S A] (s : S) (r : R) :
     (inl (s • r) : Unitization R A) = s • inl r :=
   ext rfl (smul_zero s).symm
@@ -311,6 +316,10 @@ theorem inr_add [AddZeroClass R] [Add A] (m₁ m₂ : A) : (↑(m₁ + m₂) : U
 theorem inr_neg [AddGroup R] [Neg A] (m : A) : (↑(-m) : Unitization R A) = -m :=
   ext neg_zero.symm rfl
 #align unitization.coe_neg Unitization.inr_neg
+
+@[simp]
+theorem inr_sub [AddGroup R] [AddGroup A] (m₁ m₂ : A) : (↑(m₁ - m₂) : Unitization R A) = m₁ - m₂ :=
+  ext (sub_zero 0).symm rfl
 
 @[simp]
 theorem inr_smul [Zero R] [Zero S] [SMulWithZero S R] [SMul S A] (r : S) (m : A) :
@@ -715,7 +724,7 @@ algebra homomorphism from the unitization into `C`. This is extended to an `Equi
 `Unitization.lift` and that should be used instead. This declaration only exists for performance
 reasons. -/
 @[simps]
-def _root_.NonUnitalAlgHom.toAlgHom (φ :A →ₙₐ[R] C) : Unitization R A →ₐ[R] C where
+def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A →ₐ[R] C where
   toFun := fun x => algebraMap R C x.fst + φ x.snd
   map_one' := by simp only [fst_one, map_one, snd_one, φ.map_zero, add_zero]
   map_mul' := fun x y => by

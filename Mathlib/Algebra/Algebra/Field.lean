@@ -22,9 +22,8 @@ theorem coe_inj {a b : R} : (↑a : A) = ↑b ↔ a = b :=
   (algebraMap R A).injective.eq_iff
 #align algebra_map.coe_inj algebraMap.coe_inj
 
-@[norm_cast, simp]
-theorem lift_map_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
-  map_eq_zero_iff _ (algebraMap R A).injective
+@[norm_cast]
+theorem lift_map_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 := map_eq_zero _
 #align algebra_map.lift_map_eq_zero_iff algebraMap.lift_map_eq_zero_iff
 
 end FieldNontrivial

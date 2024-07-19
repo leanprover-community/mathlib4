@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Multiset.Basic
-import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import group_theory.group_action.big_operators from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 

@@ -6,7 +6,7 @@ Authors: Anne Baanen, Ashvni Narayanan
 import Mathlib.Algebra.Order.Group.TypeTags
 import Mathlib.FieldTheory.RatFunc.Degree
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-import Mathlib.RingTheory.IntegrallyClosed
+import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 import Mathlib.Topology.Algebra.Valued.ValuedField
 
 #align_import number_theory.function_field from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
