@@ -6,8 +6,6 @@ Authors: Oliver Nash
 import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
 import Mathlib.Analysis.NormedSpace.AddTorsorBases
 
-#align_import analysis.normed_space.add_torsor_bases from "leanprover-community/mathlib"@"2f4cdce0c2f2f3b8cd58f05d556d03b468e1eb2e"
-
 /-!
 # Barycentric coordinates are smooth
 -/
@@ -19,4 +17,3 @@ variable [FiniteDimensional 𝕜 E]
 
 theorem smooth_barycentric_coord (b : AffineBasis ι 𝕜 E) (i : ι) : ContDiff 𝕜 ⊤ (b.coord i) :=
   (⟨b.coord i, continuous_barycentric_coord b i⟩ : E →ᴬ[𝕜] 𝕜).contDiff
-#align smooth_barycentric_coord smooth_barycentric_coord

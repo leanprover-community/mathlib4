@@ -9,8 +9,6 @@ import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Data.Complex.Abs
 
-#align_import linear_algebra.quadratic_form.real from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
-
 /-!
 # Real quadratic forms
 
@@ -50,7 +48,6 @@ noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :
   suffices ∑ i, (w i / |(u i : ℝ)|) * v i ^ 2 = ∑ i, w i * (v i ^ 2 * |(u i : ℝ)|⁻¹) by
     simpa [basisRepr_apply, Basis.unitsSMul_apply, ← _root_.sq, mul_pow, ← hwu]
   exact sum_congr rfl fun j _ ↦ by ring
-#align quadratic_form.isometry_sign_weighted_sum_squares QuadraticForm.isometryEquivSignWeightedSumSquares
 
 /-- **Sylvester's law of inertia**: A nondegenerate real quadratic form is equivalent to a weighted
 sum of squares with the weights being ±1, `SignType` version. -/
@@ -70,7 +67,6 @@ theorem equivalent_one_neg_one_weighted_sum_squared {M : Type*} [AddCommGroup M]
       (∀ i, w i = -1 ∨ w i = 1) ∧ Equivalent Q (weightedSumSquares ℝ w) :=
   let ⟨w, hw₀, hw⟩ := Q.equivalent_sign_ne_zero_weighted_sum_squared hQ
   ⟨(w ·), fun i ↦ by cases hi : w i <;> simp_all, hw⟩
-#align quadratic_form.equivalent_one_neg_one_weighted_sum_squared QuadraticForm.equivalent_one_neg_one_weighted_sum_squared
 
 /-- **Sylvester's law of inertia**: A real quadratic form is equivalent to a weighted
 sum of squares with the weights being ±1 or 0, `SignType` version. -/
@@ -89,6 +85,5 @@ theorem equivalent_one_zero_neg_one_weighted_sum_squared {M : Type*} [AddCommGro
       (∀ i, w i = -1 ∨ w i = 0 ∨ w i = 1) ∧ Equivalent Q (weightedSumSquares ℝ w) :=
   let ⟨w, hw⟩ := Q.equivalent_signType_weighted_sum_squared
   ⟨(w ·), fun i ↦ by cases h : w i <;> simp [h], hw⟩
-#align quadratic_form.equivalent_one_zero_neg_one_weighted_sum_squared QuadraticForm.equivalent_one_zero_neg_one_weighted_sum_squared
 
 end QuadraticForm

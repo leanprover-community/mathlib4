@@ -9,8 +9,6 @@ import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
-#align_import analysis.fourier.poisson_summation from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
-
 /-!
 # Poisson's summation formula
 
@@ -101,7 +99,6 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       congr 2
       push_cast
       ring
-#align real.fourier_coeff_tsum_comp_add Real.fourierCoeff_tsum_comp_add
 
 /-- **Poisson's summation formula**, most general form. -/
 theorem Real.tsum_eq_tsum_fourierIntegral {f : C(ℝ, ℂ)}
@@ -119,8 +116,6 @@ theorem Real.tsum_eq_tsum_fourierIntegral {f : C(ℝ, ℂ)}
       coe_addRight, zero_add]
        using (hasSum_apply (summable_of_locally_summable_norm h_norm).hasSum x).tsum_eq
   · simp_rw [← Real.fourierCoeff_tsum_comp_add h_norm, smul_eq_mul, F, coe_mk]
-
-#align real.tsum_eq_tsum_fourier_integral Real.tsum_eq_tsum_fourierIntegral
 
 section RpowDecay
 
@@ -155,8 +150,6 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   convert claim x (by linarith only [hx.1]) y.1 y.2.1
   · apply abs_of_nonneg; linarith [y.2.1]
   · exact abs_of_pos hx'.1
-set_option linter.uppercaseLean3 false in
-#align is_O_norm_Icc_restrict_at_top isBigO_norm_Icc_restrict_atTop
 
 theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
     (hf : f =O[atBot] fun x : ℝ => |x| ^ (-b)) (R S : ℝ) :
@@ -177,8 +170,6 @@ theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   · rw [ContinuousMap.restrict_apply_mk, ContinuousMap.comp_apply, ContinuousMap.coe_mk,
       ContinuousMap.coe_mk, neg_neg]
   · exact ⟨by linarith [hx.2], by linarith [hx.1]⟩
-set_option linter.uppercaseLean3 false in
-#align is_O_norm_Icc_restrict_at_bot isBigO_norm_Icc_restrict_atBot
 
 theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
     (hf : f =O[cocompact ℝ] fun x : ℝ => |x| ^ (-b)) (K : Compacts ℝ) :
@@ -199,8 +190,6 @@ theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
     simp_rw [norm_norm]; exact this
   · refine (isBigO_of_le atTop ?_).trans (isBigO_norm_Icc_restrict_atTop hb hf.2 (-r) r)
     simp_rw [norm_norm]; exact this
-set_option linter.uppercaseLean3 false in
-#align is_O_norm_restrict_cocompact isBigO_norm_restrict_cocompact
 
 /-- **Poisson's summation formula**, assuming that `f` decays as
 `|x| ^ (-b)` for some `1 < b` and its Fourier transform is summable. -/
@@ -211,7 +200,6 @@ theorem Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable {f : ℝ →
   Real.tsum_eq_tsum_fourierIntegral (fun K => summable_of_isBigO (Real.summable_abs_int_rpow hb)
     ((isBigO_norm_restrict_cocompact ⟨_, hc⟩ (zero_lt_one.trans hb) hf K).comp_tendsto
     Int.tendsto_coe_cofinite)) hFf x
-#align real.tsum_eq_tsum_fourier_integral_of_rpow_decay_of_summable Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable
 
 /-- **Poisson's summation formula**, assuming that both `f` and its Fourier transform decay as
 `|x| ^ (-b)` for some `1 < b`. (This is the one-dimensional case of Corollary VII.2.6 of Stein and
@@ -222,7 +210,6 @@ theorem Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay {f : ℝ → ℂ} (hc : 
     ∑' n : ℤ, f (x + n) = ∑' n : ℤ, 𝓕 f n * fourier n (x : UnitAddCircle) :=
   Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable hc hb hf (summable_of_isBigO
     (Real.summable_abs_int_rpow hb) (hFf.comp_tendsto Int.tendsto_coe_cofinite)) x
-#align real.tsum_eq_tsum_fourier_integral_of_rpow_decay Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay
 
 end RpowDecay
 
@@ -235,7 +222,5 @@ theorem SchwartzMap.tsum_eq_tsum_fourierIntegral (f g : SchwartzMap ℝ ℂ) (hf
   -- `b = 2` and work with that.
   simp only [← hfg, Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay f.continuous one_lt_two
     (f.isBigO_cocompact_rpow (-2)) (hfg ▸ g.isBigO_cocompact_rpow (-2))]
-
-#align schwartz_map.tsum_eq_tsum_fourier_integral SchwartzMap.tsum_eq_tsum_fourierIntegral
 
 end Schwartz
