@@ -51,7 +51,8 @@ is is actually the closure function of a matroid on `α` with ground set `univ`
 (specifically, the direct sum of `M` and a free matroid on `M.Eᶜ`),
 and because of this, it is an example of a `ClosureOperator` on `α`, which in turn gives access
 to nice existing API for both `ClosureOperator` and `GaloisInsertion`.
-(This fails for choice (1), since `X ⊆ M.closure X` is required for
+This also relates to flats; `F ⊆ M.E ∧ ClosureOperator.IsClosed F` is equivalent to `M.Flat F`.
+(This all fails for choice (1), since `X ⊆ M.closure X` is required for
 a `ClosureOperator`, but isn't true for non-subsets of `M.E`)
 
 The API that choice (2) would offer is very beguiling, but after extensive experimentation in
