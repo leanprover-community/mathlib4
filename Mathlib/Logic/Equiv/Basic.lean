@@ -239,7 +239,7 @@ section
 open Sum
 
 /-- `PSum` is equivalent to `Sum`. -/
-def psumEquivSum (α β) : Pα ⊕ β ≃ α ⊕ β where
+def psumEquivSum (α β) : α ⊕' β ≃ α ⊕ β where
   toFun s := PSum.casesOn s inl inr
   invFun := Sum.elim PSum.inl PSum.inr
   left_inv s := by cases s <;> rfl
@@ -250,8 +250,8 @@ def psumEquivSum (α β) : Pα ⊕ β ≃ α ⊕ β where
 def sumCongr (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) : α₁ ⊕ β₁ ≃ α₂ ⊕ β₂ :=
   ⟨Sum.map ea eb, Sum.map ea.symm eb.symm, fun x => by simp, fun x => by simp⟩
 
-/-- If `α ≃ α'` and `β ≃ β'`, then `PSum α β ≃ PSum α' β'`. -/
-def psumCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PSum α γ ≃ PSum β δ where
+/-- If `α ≃ α'` and `β ≃ β'`, then `α ⊕' β ≃ α' ⊕' β'`. -/
+def psumCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : α ⊕' γ ≃ β ⊕' δ where
   toFun x := PSum.casesOn x (PSum.inl ∘ e₁) (PSum.inr ∘ e₂)
   invFun x := PSum.casesOn x (PSum.inl ∘ e₁.symm) (PSum.inr ∘ e₂.symm)
   left_inv := by rintro (x | x) <;> simp
@@ -259,12 +259,12 @@ def psumCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PSum α γ ≃ PSum β δ 
 
 /-- Combine two `Equiv`s using `PSum` in the domain and `Sum` in the codomain. -/
 def psumSum (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
-    Pα₁ ⊕ β₁ ≃ α₂ ⊕ β₂ :=
+    α₁ ⊕' β₁ ≃ α₂ ⊕ β₂ :=
   (ea.psumCongr eb).trans (psumEquivSum _ _)
 
 /-- Combine two `Equiv`s using `Sum` in the domain and `PSum` in the codomain. -/
 def sumPSum (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
-    α₁ ⊕ β₁ ≃ PSum α₂ β₂ :=
+    α₁ ⊕ β₁ ≃ α₂ ⊕' β₂ :=
   (ea.symm.psumSum eb.symm).symm
 
 @[simp]
@@ -843,7 +843,7 @@ theorem sumArrowEquivProdArrow_symm_apply_inr (f : α → γ) (g : β → γ) (b
   rfl
 
 /-- Type product is right distributive with respect to type sum up to an equivalence. -/
-def sumProdDistrib (α β γ) : α ⊕ β × γ ≃ (α × γ) ⊕ (β × γ) :=
+def sumProdDistrib (α β γ) : (α ⊕ β) × γ ≃ α × γ ⊕ β × γ :=
   ⟨fun p => p.1.map (fun x => (x, p.2)) fun x => (x, p.2),
     fun s => s.elim (Prod.map inl id) (Prod.map inr id), by
       rintro ⟨_ | _, _⟩ <;> rfl, by rintro (⟨_, _⟩ | ⟨_, _⟩) <;> rfl⟩
@@ -869,9 +869,9 @@ theorem sumProdDistrib_symm_apply_right (b : β × γ) :
   rfl
 
 /-- Type product is left distributive with respect to type sum up to an equivalence. -/
-def prodSumDistrib (α β γ) : α × β ⊕ γ ≃ (α × β) ⊕ (α × γ) :=
+def prodSumDistrib (α β γ : Type*) : α × (β ⊕ γ) ≃ (α × β) ⊕ (α × γ) :=
   calc
-    α × β ⊕ γ ≃ β ⊕ γ × α := prodComm _ _
+    α × (β ⊕ γ) ≃ (β ⊕ γ) × α := prodComm _ _
     _ ≃ (β × α) ⊕ (γ × α) := sumProdDistrib _ _ _
     _ ≃ (α × β) ⊕ (α × γ) := sumCongr (prodComm _ _) (prodComm _ _)
 

@@ -174,7 +174,7 @@ def recOn {C : Computation α → Sort v} (s : Computation α) (h1 : ∀ a, C (p
       apply h2
 
 /-- Corecursor constructor for `corec`-/
-def Corec.f (f : β → α ⊕ β) : α ⊕ β → Option α × α ⊕ β
+def Corec.f (f : β → α ⊕ β) : α ⊕ β → Option α × (α ⊕ β)
   | Sum.inl a => (some a, Sum.inl a)
   | Sum.inr b =>
     (match f b with
