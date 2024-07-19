@@ -657,7 +657,7 @@ theorem frobenius_nnnorm_one [DecidableEq n] [SeminormedAddCommGroup α] [One α
     ‖(1 : Matrix n n α)‖₊ = NNReal.sqrt (Fintype.card n) * ‖(1 : α)‖₊ := by
   refine (frobenius_nnnorm_diagonal _).trans ?_
   -- Porting note: change to erw, since `fun x => 1` no longer matches `Function.const`
-  erw [PiLp.nnnorm_equiv_symm_const ENNReal.two_ne_top]
+  erw [PiLp.nnnorm_equiv_symm_const ENNReal.ofNat_ne_top]
   simp_rw [NNReal.sqrt_eq_rpow]
   -- Porting note: added `ENNReal.toReal_ofNat`
   simp only [ENNReal.toReal_div, ENNReal.one_toReal, ENNReal.toReal_ofNat]
