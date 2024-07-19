@@ -6,8 +6,6 @@ Authors: Kenny Lau
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Ring.Hom.Defs
 
-#align_import algebra.group_ring_action.basic from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
-
 /-!
 # Group action on rings
 
@@ -41,7 +39,6 @@ class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extend
   smul_one : ∀ g : M, (g • (1 : R) : R) = 1
   /-- Scalar multiplication distributes across multiplication -/
   smul_mul : ∀ (g : M) (x y : R), g • (x * y) = g • x * g • y
-#align mul_semiring_action MulSemiringAction
 
 section Semiring
 
@@ -52,19 +49,15 @@ variable (A R S F : Type v) [AddMonoid A] [Semiring R] [CommSemiring S]
 instance (priority := 100) MulSemiringAction.toMulDistribMulAction [h : MulSemiringAction M R] :
     MulDistribMulAction M R :=
   { h with }
-#align mul_semiring_action.to_mul_distrib_mul_action MulSemiringAction.toMulDistribMulAction
 
 /-- Each element of the monoid defines a semiring homomorphism. -/
 @[simps!]
 def MulSemiringAction.toRingHom [MulSemiringAction M R] (x : M) : R →+* R :=
   { MulDistribMulAction.toMonoidHom R x, DistribMulAction.toAddMonoidHom R x with }
-#align mul_semiring_action.to_ring_hom MulSemiringAction.toRingHom
-#align mul_semiring_action.to_ring_hom_apply MulSemiringAction.toRingHom_apply
 
 theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
     Function.Injective (MulSemiringAction.toRingHom M R) := fun _ _ h =>
   eq_of_smul_eq_smul fun r => RingHom.ext_iff.1 h r
-#align to_ring_hom_injective toRingHom_injective
 
 /-- The tautological action by `R →+* R` on `R`.
 
@@ -77,17 +70,14 @@ instance RingHom.applyMulSemiringAction : MulSemiringAction (R →+* R) R where
   smul_add := RingHom.map_add
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
-#align ring_hom.apply_distrib_mul_action RingHom.applyMulSemiringActionₓ
 
 @[simp]
 protected theorem RingHom.smul_def (f : R →+* R) (a : R) : f • a = f a :=
   rfl
-#align ring_hom.smul_def RingHom.smul_def
 
 /-- `RingHom.applyMulSemiringAction` is faithful. -/
 instance RingHom.applyFaithfulSMul : FaithfulSMul (R →+* R) R :=
   ⟨fun {_ _} h => RingHom.ext h⟩
-#align ring_hom.apply_has_faithful_smul RingHom.applyFaithfulSMul
 
 section
 
@@ -97,7 +87,6 @@ variable {M N}
 See note [reducible non-instances]. -/
 abbrev MulSemiringAction.compHom (f : N →* M) [MulSemiringAction M R] : MulSemiringAction N R :=
   { DistribMulAction.compHom R f, MulDistribMulAction.compHom R f with }
-#align mul_semiring_action.comp_hom MulSemiringAction.compHom
 
 end
 

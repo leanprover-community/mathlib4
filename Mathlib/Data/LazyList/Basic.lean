@@ -8,8 +8,6 @@ import Mathlib.Control.Traversable.Instances
 import Batteries.Data.LazyList
 import Mathlib.Lean.Thunk
 
-#align_import data.lazy_list.basic from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
-
 /-!
 ## Definitions on lazy lists
 
@@ -39,9 +37,6 @@ def listEquivLazyList (α : Type*) : List α ≃ LazyList α where
     induction xs
     · simp [toList, ofList]
     · simpa [ofList, toList]
-#align lazy_list.list_equiv_lazy_list LazyList.listEquivLazyList
-
-#align lazy_list.traverse LazyList.traverse
 
 instance : Traversable LazyList where
   map := @LazyList.traverse Id _
@@ -68,16 +63,6 @@ instance : LawfulTraversable LazyList := by
       simp [traverse.eq_2, ih, Functor.map_map, seq_map_assoc, toList, List.traverse, map_seq,
         Function.comp, Thunk.pure, ofList]
     · apply ih
-
-#align lazy_list.init LazyList.init
-#align lazy_list.find LazyList.find
-#align lazy_list.interleave LazyList.interleave
-#align lazy_list.interleave_all LazyList.interleaveAll
-#align lazy_list.bind LazyList.bind
-#align lazy_list.reverse LazyList.reverse
-#align lazy_list.append_nil LazyList.append_nil
-#align lazy_list.append_assoc LazyList.append_assoc
-#align lazy_list.append_bind LazyList.append_bind
 
 @[simp] theorem bind_singleton {α} (x : LazyList α) : x.bind singleton = x := by
   induction x using LazyList.rec (motive_2 := fun xs => xs.get.bind singleton = xs.get) with
@@ -115,14 +100,5 @@ instance : LawfulMonad LazyList := LawfulMonad.mk'
       simp [LazyList.bind, LazyList.traverse, Seq.seq, Id.map_eq, append, Thunk.pure]
       rw [← ih]
       simp only [Thunk.get, append, singleton, Thunk.pure])
-
-#align lazy_list.mfirst LazyList.mfirstₓ
-#align lazy_list.mem LazyList.Mem
-#align lazy_list.mem.decidable LazyList.Mem.decidable
-#align lazy_list.mem_nil LazyList.mem_nil
-#align lazy_list.mem_cons LazyList.mem_cons
-#align lazy_list.forall_mem_cons LazyList.forall_mem_cons
-#align lazy_list.pmap LazyList.pmap
-#align lazy_list.attach LazyList.attach
 
 end LazyList

@@ -7,8 +7,6 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Order.CauSeq.Basic
 
-#align_import data.real.cau_seq from "leanprover-community/mathlib"@"9116dd6709f303dcf781632e15fdef382b0fc579"
-
 /-!
 # Cauchy sequences and big operators
 
@@ -47,12 +45,10 @@ lemma of_abv_le (n : ℕ) (hm : ∀ m, n ≤ m → abv (f m) ≤ a m) :
   refine le_trans (abv_add _ _ _) ?_
   simp only [sub_eq_add_neg] at hi
   exact add_le_add (hm _ (le_add_of_nonneg_of_le (Nat.zero_le _) (le_max_left _ _))) hi
-#align is_cau_series_of_abv_le_cau IsCauSeq.of_abv_le
 
 lemma of_abv (hf : IsCauSeq abs fun m ↦ ∑ n ∈ range m, abv (f n)) :
     IsCauSeq abv fun m ↦ ∑ n ∈ range m, f n :=
   hf.of_abv_le 0 fun _ _ ↦ le_rfl
-#align is_cau_series_of_abv_cau IsCauSeq.of_abv
 
 theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, abv (f n))
     (hb : IsCauSeq abv fun m ↦ ∑ n ∈ range m, g n) (ε : α) (ε0 : 0 < ε) :
@@ -139,7 +135,6 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, ab
         gcongr
         exact (le_abs_self _).trans_lt $ hM _ ((Nat.le_succ_of_le (le_max_right _ _)).trans hNMK.le)
           _  $ Nat.le_succ_of_le $ le_max_right _ _
-#align cauchy_product cauchy_product
 
 variable [Archimedean α]
 
@@ -174,12 +169,10 @@ lemma of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥
         rw [← Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero hl0), succ_nsmul, sub_add,
           add_sub_cancel_right]
     _ < f j + ε := add_lt_add_right (hl j (le_trans hi.1 hj)) _
-#align is_cau_of_decreasing_bounded IsCauSeq.of_decreasing_bounded
 
 lemma of_mono_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥ m, |f n| ≤ a)
     (hnm : ∀ n ≥ m, f n ≤ f n.succ) : IsCauSeq abs f :=
   (of_decreasing_bounded _ (by simpa using ham) $ by simpa using hnm).of_neg
-#align is_cau_of_mono_bounded IsCauSeq.of_mono_bounded
 
 lemma geo_series [Nontrivial β] (x : β) (hx1 : abv x < 1) :
     IsCauSeq abv fun n ↦ ∑ m ∈ range n, x ^ m := by
@@ -198,12 +191,10 @@ lemma geo_series [Nontrivial β] (x : β) (hx1 : abv x < 1) :
   · intro n _
     rw [← one_mul (abv x ^ n), pow_succ']
     gcongr
-#align is_cau_geo_series IsCauSeq.geo_series
 
 lemma geo_series_const (a : α) {x : α} (hx1 : |x| < 1) :
     IsCauSeq abs fun m ↦ ∑ n ∈ range m, (a * x ^ n) := by
   simpa [mul_sum, Pi.mul_def] using (const a).mul (geo_series x hx1)
-#align is_cau_geo_series_const IsCauSeq.geo_series_const
 
 lemma series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (hr1 : r < 1)
     (h : ∀ m, n ≤ m → abv (f m.succ) ≤ r * abv (f m)) :
@@ -226,6 +217,5 @@ lemma series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (hr1
       le_trans (by rw [mul_comm] <;> exact h _ (Nat.le_of_succ_le kn))
         (mul_le_mul_of_nonneg_right ?_ hr0)
     exact ih _ h _ (by simp) rfl
-#align series_ratio_test IsCauSeq.series_ratio_test
 
 end IsCauSeq

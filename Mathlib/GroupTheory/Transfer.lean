@@ -7,8 +7,6 @@ import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Sylow
 import Mathlib.GroupTheory.Subgroup.Center
 
-#align_import group_theory.transfer from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
-
 /-!
 # The Transfer Homomorphism
 
@@ -50,8 +48,6 @@ noncomputable def diff : A :=
       ⟨(α q : G)⁻¹ * β q,
         QuotientGroup.leftRel_apply.mp <|
           Quotient.exact' ((α.symm_apply_apply q).trans (β.symm_apply_apply q).symm)⟩
-#align subgroup.left_transversals.diff Subgroup.leftTransversals.diff
-#align add_subgroup.left_transversals.diff AddSubgroup.leftTransversals.diff
 
 @[to_additive]
 theorem diff_mul_diff : diff ϕ R S * diff ϕ S T = diff ϕ R T :=
@@ -60,20 +56,14 @@ theorem diff_mul_diff : diff ϕ R S * diff ϕ S T = diff ϕ R T :=
       (ϕ.map_mul _ _).symm.trans
         (congr_arg ϕ
           (by simp_rw [Subtype.ext_iff, coe_mul, mul_assoc, mul_inv_cancel_left])))
-#align subgroup.left_transversals.diff_mul_diff Subgroup.leftTransversals.diff_mul_diff
-#align add_subgroup.left_transversals.diff_add_diff AddSubgroup.leftTransversals.diff_add_diff
 
 @[to_additive]
 theorem diff_self : diff ϕ T T = 1 :=
   mul_right_eq_self.mp (diff_mul_diff ϕ T T T)
-#align subgroup.left_transversals.diff_self Subgroup.leftTransversals.diff_self
-#align add_subgroup.left_transversals.diff_self AddSubgroup.leftTransversals.diff_self
 
 @[to_additive]
 theorem diff_inv : (diff ϕ S T)⁻¹ = diff ϕ T S :=
   inv_eq_of_mul_eq_one_right <| (diff_mul_diff ϕ S T S).trans <| diff_self ϕ S
-#align subgroup.left_transversals.diff_inv Subgroup.leftTransversals.diff_inv
-#align add_subgroup.left_transversals.diff_neg AddSubgroup.leftTransversals.diff_neg
 
 @[to_additive]
 theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
@@ -81,8 +71,6 @@ theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
   Fintype.prod_equiv (MulAction.toPerm g).symm _ _ fun _ ↦ by
     simp only [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul, mul_inv_rev, mul_assoc,
       inv_mul_cancel_left, toPerm_symm_apply]
-#align subgroup.left_transversals.smul_diff_smul Subgroup.leftTransversals.smul_diff_smul
-#align add_subgroup.left_transversals.vadd_diff_vadd AddSubgroup.leftTransversals.vadd_diff_vadd
 
 end leftTransversals
 
@@ -103,16 +91,12 @@ noncomputable def transfer [FiniteIndex H] : G →* A :=
     map_one' := by beta_reduce; rw [one_smul, diff_self]
     -- Porting note: added `simp only` (not just beta reduction)
     map_mul' := fun g h => by simp only; rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
-#align monoid_hom.transfer MonoidHom.transfer
-#align add_monoid_hom.transfer AddMonoidHom.transfer
 
 variable (T : leftTransversals (H : Set G))
 
 @[to_additive]
 theorem transfer_def [FiniteIndex H] (g : G) : transfer ϕ g = diff ϕ T (g • T) := by
   rw [transfer, ← diff_mul_diff, ← smul_diff_smul, mul_comm, diff_mul_diff] <;> rfl
-#align monoid_hom.transfer_def MonoidHom.transfer_def
-#align add_monoid_hom.transfer_def AddMonoidHom.transfer_def
 
 /-- Explicit computation of the transfer homomorphism. -/
 theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
@@ -137,7 +121,6 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
         · intro k hk
           simp only [if_neg hk, inv_mul_self]
           exact map_one ϕ
-#align monoid_hom.transfer_eq_prod_quotient_orbit_rel_zpowers_quot MonoidHom.transfer_eq_prod_quotient_orbitRel_zpowers_quot
 
 /-- Auxiliary lemma in order to state `transfer_eq_pow`. -/
 theorem transfer_eq_pow_aux (g : G)
@@ -161,7 +144,6 @@ theorem transfer_eq_pow_aux (g : G)
     simpa only [f, minimalPeriod_eq_card, Finset.prod_pow_eq_pow_sum, Fintype.card_sigma,
       Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)), index_eq_card,
       Nat.card_eq_fintype_card] using key
-#align monoid_hom.transfer_eq_pow_aux MonoidHom.transfer_eq_pow_aux
 
 theorem transfer_eq_pow [FiniteIndex H] (g : G)
     (key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g₀⁻¹ * g ^ k * g₀ = g ^ k) :
@@ -180,13 +162,11 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
     congr
     funext
     apply key
-#align monoid_hom.transfer_eq_pow MonoidHom.transfer_eq_pow
 
 theorem transfer_center_eq_pow [FiniteIndex (center G)] (g : G) :
     transfer (MonoidHom.id (center G)) g = ⟨g ^ (center G).index, (center G).pow_index_mem g⟩ :=
   transfer_eq_pow (id (center G)) g fun k _ hk => by rw [← mul_right_inj, ← hk.comm,
     mul_inv_cancel_right]
-#align monoid_hom.transfer_center_eq_pow MonoidHom.transfer_center_eq_pow
 
 variable (G)
 
@@ -195,7 +175,6 @@ noncomputable def transferCenterPow [FiniteIndex (center G)] : G →* center G w
   toFun g := ⟨g ^ (center G).index, (center G).pow_index_mem g⟩
   map_one' := Subtype.ext (one_pow (center G).index)
   map_mul' a b := by simp_rw [← show ∀ _, (_ : center G) = _ from transfer_center_eq_pow, map_mul]
-#align monoid_hom.transfer_center_pow MonoidHom.transferCenterPow
 
 variable {G}
 
@@ -203,7 +182,6 @@ variable {G}
 theorem transferCenterPow_apply [FiniteIndex (center G)] (g : G) :
     ↑(transferCenterPow G g) = g ^ (center G).index :=
   rfl
-#align monoid_hom.transfer_center_pow_apply MonoidHom.transferCenterPow_apply
 
 section BurnsideTransfer
 
@@ -215,7 +193,6 @@ noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Sub
     (@Subgroup.IsCommutative.commGroup G _ P
       ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩)
     (MonoidHom.id P) _
-#align monoid_hom.transfer_sylow MonoidHom.transferSylow
 
 variable [Fact p.Prime] [Finite (Sylow p G)]
 
@@ -227,7 +204,6 @@ theorem transferSylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
   replace hg := (P : Subgroup G).pow_mem hg k
   obtain ⟨n, hn, h⟩ := P.conj_eq_normalizer_conj_of_mem (g ^ k) g₀ hg h
   exact h.trans (Commute.inv_mul_cancel (hP hn (g ^ k) hg).symm)
-#align monoid_hom.transfer_sylow_eq_pow_aux MonoidHom.transferSylow_eq_pow_aux
 
 variable [FiniteIndex (P : Subgroup G)]
 
@@ -237,12 +213,10 @@ theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
   @transfer_eq_pow G _ P P (@Subgroup.IsCommutative.commGroup G _ P
     ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩) _ _ g
       (transferSylow_eq_pow_aux P hP g hg) -- Porting note: apply used to do this automatically
-#align monoid_hom.transfer_sylow_eq_pow MonoidHom.transferSylow_eq_pow
 
 theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : Subgroup G)) =
     (fun x : P => x ^ (P : Subgroup G).index) :=
   funext fun g => transferSylow_eq_pow P hP g g.2
-#align monoid_hom.transfer_sylow_restrict_eq_pow MonoidHom.transferSylow_restrict_eq_pow
 
 /-- **Burnside's normal p-complement theorem**: If `N(P) ≤ C(P)`, then `P` has a normal
 complement. -/
@@ -259,12 +233,10 @@ theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker
     normal_mul, ← ker_eq_bot_iff, ← (map_injective (P : Subgroup G).subtype_injective).eq_iff,
     ker_restrict, subgroupOf_map_subtype, Subgroup.map_bot, coe_top] at hf
   exact isComplement'_of_disjoint_and_mul_eq_univ (disjoint_iff.2 hf.1) hf.2
-#align monoid_hom.ker_transfer_sylow_is_complement' MonoidHom.ker_transferSylow_isComplement'
 
 theorem not_dvd_card_ker_transferSylow : ¬p ∣ Nat.card (transferSylow P hP).ker :=
   (ker_transferSylow_isComplement' P hP).index_eq_card ▸ not_dvd_index_sylow P <|
     mt index_eq_zero_of_relindex_eq_zero index_ne_zero_of_finite
-#align monoid_hom.not_dvd_card_ker_transfer_sylow MonoidHom.not_dvd_card_ker_transferSylow
 
 theorem ker_transferSylow_disjoint (Q : Subgroup G) (hQ : IsPGroup p Q) :
     Disjoint (transferSylow P hP).ker Q :=
@@ -272,7 +244,6 @@ theorem ker_transferSylow_disjoint (Q : Subgroup G) (hQ : IsPGroup p Q) :
     card_eq_one.mp <|
       (hQ.to_le inf_le_right).card_eq_or_dvd.resolve_right fun h =>
         not_dvd_card_ker_transferSylow P hP <| h.trans <| card_dvd_of_le inf_le_left
-#align monoid_hom.ker_transfer_sylow_disjoint MonoidHom.ker_transferSylow_disjoint
 
 end BurnsideTransfer
 

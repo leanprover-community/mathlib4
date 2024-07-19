@@ -8,8 +8,6 @@ import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Data.Nat.Factorization.Basic
 
-#align_import algebra.char_p.local_ring from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # Characteristics of local rings
 
@@ -65,4 +63,3 @@ theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [LocalRing R] (q : â„
     -- Finally, `r = 0` would lead to a contradiction:
     have q_zero := CharP.eq R char_R_q (CharP.ofCharZero R)
     exact absurd q_zero q_pos
-#align char_p_zero_or_prime_power charP_zero_or_prime_power

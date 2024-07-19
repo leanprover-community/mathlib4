@@ -9,8 +9,6 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Algebra.Module.Algebra
 
-#align_import linear_algebra.matrix.finite_dimensional from "leanprover-community/mathlib"@"b1c23399f01266afe392a0d8f71f599a0dad4f7b"
-
 /-!
 # The finite-dimensional space of matrices
 
@@ -53,7 +51,6 @@ variable {W : Type*} [AddCommGroup W] [Module K W] [FiniteDimensional K W]
 
 instance finiteDimensional : FiniteDimensional K (V →ₗ[K] W) :=
   Module.Finite.linearMap _ _ _ _
-#align linear_map.finite_dimensional LinearMap.finiteDimensional
 
 variable {A : Type*} [Ring A] [Algebra K A] [Module A V] [IsScalarTower K A V] [Module A W]
   [IsScalarTower K A W]
@@ -62,6 +59,5 @@ variable {A : Type*} [Ring A] [Algebra K A] [Module A V] [IsScalarTower K A V] [
 target are, as they form a subspace of all `k`-linear maps. -/
 instance finiteDimensional' : FiniteDimensional K (V →ₗ[A] W) :=
   FiniteDimensional.of_injective (restrictScalarsLinearMap K A V W) (restrictScalars_injective _)
-#align linear_map.finite_dimensional' LinearMap.finiteDimensional'
 
 end LinearMap
