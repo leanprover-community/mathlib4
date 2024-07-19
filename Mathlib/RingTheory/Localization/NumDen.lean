@@ -151,9 +151,7 @@ theorem isUnit_den_of_num_eq_zero {x : K} (h : num A x = 0) : IsUnit (den A x : 
   eq_zero_of_num_eq_zero h ▸ isUnit_den_zero
 #align is_fraction_ring.is_unit_denom_of_num_eq_zero IsFractionRing.isUnit_den_of_num_eq_zero
 
-lemma associated_den_num_inv
-    (x : K) (hx : x ≠ 0) :
-    Associated (den A x : A) (num A x⁻¹) :=
+lemma associated_den_num_inv (x : K) (hx : x ≠ 0) : Associated (den A x : A) (num A x⁻¹) :=
   associated_of_dvd_dvd
     (IsRelPrime.dvd_of_dvd_mul_right (IsFractionRing.num_den_reduced A x).symm <|
       dvd_of_mul_left_dvd (a := (den A x⁻¹ : A)) <| dvd_of_eq <|
@@ -164,9 +162,7 @@ lemma associated_den_num_inv
       NoZeroSMulDivisors.algebraMap_injective A K <| eq_of_div_eq_one
       (by simp [mul_div_mul_comm, hx]))
 
-lemma associated_num_den_inv
-    (x : K) (hx : x ≠ 0) :
-    Associated (num A x : A) (den A x⁻¹) := by
+lemma associated_num_den_inv (x : K) (hx : x ≠ 0) : Associated (num A x : A) (den A x⁻¹) := by
   have : Associated (num A x⁻¹⁻¹ : A) (den A x⁻¹) :=
     (associated_den_num_inv x⁻¹ (inv_ne_zero hx)).symm
   rw [inv_inv] at this
