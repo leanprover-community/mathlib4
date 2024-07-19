@@ -158,10 +158,6 @@ def pullbackDiagonalMapIso :
       pullback i₁ i₂ where
   hom := pullbackDiagonalMapIso_hom f i i₁ i₂
   inv := pullbackDiagonalMapIso_inv f i i₁ i₂
-  hom_inv_id := by
-    dsimp only [pullbackDiagonalMapIso_hom, pullbackDiagonalMapIso_inv]; aesop_cat
-  inv_hom_id := by
-    dsimp only [pullbackDiagonalMapIso_inv, pullbackDiagonalMapIso_hom]; aesop_cat
 #align category_theory.limits.pullback_diagonal_map_iso CategoryTheory.Limits.pullbackDiagonalMapIso
 
 @[reassoc (attr := simp)]
