@@ -148,7 +148,8 @@ theorem mapAccumr_snoc (xs : Vector α n) :
 
 @[simp]
 theorem map₂_snoc {x : α} {y : β} (xs : Vector α n) (ys : Vector β n) :
-    ∀ {α' : Type*} {f : α → β → α'}, map₂ f (xs.snoc x) (ys.snoc y) = (map₂ f xs ys).snoc (f x y) := by
+    ∀ {α' : Type*} {f : α → β → α'},
+    map₂ f (xs.snoc x) (ys.snoc y) = (map₂ f xs ys).snoc (f x y) := by
   induction xs, ys using Vector.inductionOn₂ <;> simp_all
 
 @[simp]

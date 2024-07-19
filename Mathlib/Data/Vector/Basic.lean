@@ -525,8 +525,8 @@ def casesOn {m : ℕ} {motive : ∀ {n}, Vector α n → Sort*} (v : Vector α m
   inductionOn (C := motive) v nil @fun _ hd tl _ => cons hd tl
 
 /-- Define `motive v₁ v₂` by case-analysis on `v₁ : Vector α n` and `v₂ : Vector β n`. -/
-def casesOn₂ {m : ℕ} {motive : ∀{n}, Vector α n → Vector β n → Sort*} (v₁ : Vector α m) (v₂ : Vector β m)
-    (nil : motive nil nil)
+def casesOn₂ {m : ℕ} {motive : ∀{n}, Vector α n → Vector β n → Sort*}
+    (v₁ : Vector α m) (v₂ : Vector β m) (nil : motive nil nil)
     (cons : ∀{n}, (x : α) → (y : β) → (xs : Vector α n) → (ys : Vector β n)
       → motive (x ::ᵥ xs) (y ::ᵥ ys)) :
     motive v₁ v₂ :=
