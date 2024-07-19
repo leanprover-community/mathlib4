@@ -39,7 +39,6 @@ such that the morphisms induced on stalks are local ring homomorphisms. -/
 structure LocallyRingedSpace extends SheafedSpace CommRingCat.{u} where
   /-- Stalks of a locally ringed space are local rings. -/
   localRing : ∀ x, LocalRing (presheaf.stalk x)
-set_option linter.uppercaseLean3 false in
 
 attribute [instance] LocallyRingedSpace.localRing
 
@@ -52,12 +51,10 @@ This allows us to use dot-notation for the `RingedSpace` namespace.
  -/
 def toRingedSpace : RingedSpace :=
   X.toSheafedSpace
-set_option linter.uppercaseLean3 false in
 
 /-- The underlying topological space of a locally ringed space. -/
 def toTopCat : TopCat :=
   X.1.carrier
-set_option linter.uppercaseLean3 false in
 
 instance : CoeSort LocallyRingedSpace (Type u) :=
   ⟨fun X : LocallyRingedSpace => (X.toTopCat : Type _)⟩
@@ -70,7 +67,6 @@ instance (x : X) : LocalRing (X.stalk x) :=
 /-- The structure sheaf of a locally ringed space. -/
 def 𝒪 : Sheaf CommRingCat X.toTopCat :=
   X.sheaf
-set_option linter.uppercaseLean3 false in
 
 /-- A morphism of locally ringed spaces is a morphism of ringed spaces
  such that the morphisms induced on stalks are local ring homomorphisms. -/
@@ -80,7 +76,6 @@ structure Hom (X Y : LocallyRingedSpace.{u}) : Type _ where
   val : X.toSheafedSpace ⟶ Y.toSheafedSpace
   /-- the underlying morphism induces a local ring homomorphism on stalks -/
   prop : ∀ x, IsLocalRingHom (PresheafedSpace.stalkMap val x)
-set_option linter.uppercaseLean3 false in
 
 instance : Quiver LocallyRingedSpace :=
   ⟨Hom⟩
@@ -94,7 +89,6 @@ instance : Quiver LocallyRingedSpace :=
 -/
 noncomputable def stalk (X : LocallyRingedSpace.{u}) (x : X) : CommRingCat :=
   X.presheaf.stalk x
-set_option linter.uppercaseLean3 false in
 
 -- Porting note (#10754): added this instance to help Lean realize stalks are local
 -- (so that `0 ≠ 1` works below)
@@ -106,7 +100,6 @@ a local ring homomorphism from `Y.stalk (f x)` to `X.stalk x` for any `x : X`.
 noncomputable def stalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
     Y.stalk (f.1.1 x) ⟶ X.stalk x :=
   PresheafedSpace.stalkMap f.1 x
-set_option linter.uppercaseLean3 false in
 
 instance {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) : IsLocalRingHom (stalkMap f x) :=
   f.2 x
@@ -119,7 +112,6 @@ instance {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
 @[simps]
 def id (X : LocallyRingedSpace.{u}) : Hom X X :=
   ⟨𝟙 _, fun x => by erw [PresheafedSpace.stalkMap.id]; apply isLocalRingHom_id⟩
-set_option linter.uppercaseLean3 false in
 
 instance (X : LocallyRingedSpace.{u}) : Inhabited (Hom X X) :=
   ⟨id X⟩
@@ -129,7 +121,6 @@ def comp {X Y Z : LocallyRingedSpace.{u}} (f : Hom X Y) (g : Hom Y Z) : Hom X Z 
   ⟨f.val ≫ g.val, fun x => by
     erw [PresheafedSpace.stalkMap.comp]
     exact @isLocalRingHom_comp _ _ _ _ _ _ _ _ (f.2 _) (g.2 _)⟩
-set_option linter.uppercaseLean3 false in
 
 /-- The category of locally ringed spaces. -/
 instance : Category LocallyRingedSpace.{u} where
@@ -145,7 +136,6 @@ instance : Category LocallyRingedSpace.{u} where
 def forgetToSheafedSpace : LocallyRingedSpace.{u} ⥤ SheafedSpace CommRingCat.{u} where
   obj X := X.toSheafedSpace
   map {X Y} f := f.1
-set_option linter.uppercaseLean3 false in
 
 instance : forgetToSheafedSpace.Faithful where
   map_injective {_ _} _ _ h := Hom.ext h
@@ -154,13 +144,11 @@ instance : forgetToSheafedSpace.Faithful where
 @[simps!]
 def forgetToTop : LocallyRingedSpace.{u} ⥤ TopCat.{u} :=
   forgetToSheafedSpace ⋙ SheafedSpace.forget _
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem comp_val {X Y Z : LocallyRingedSpace.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).val = f.val ≫ g.val :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp] theorem id_val' (X : LocallyRingedSpace.{u}) : Hom.val (𝟙 X) = 𝟙 X.toSheafedSpace :=
   rfl
@@ -171,12 +159,10 @@ set_option linter.uppercaseLean3 false in
 theorem comp_val_c {X Y Z : LocallyRingedSpace.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f.1 ≫ g.1).c = g.val.c ≫ (Presheaf.pushforward _ g.val.base).map f.val.c :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 theorem comp_val_c_app {X Y Z : LocallyRingedSpace.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (U : (Opens Z)ᵒᵖ) :
     (f ≫ g).val.c.app U = g.val.c.app U ≫ f.val.c.app (op <| (Opens.map g.val.base).obj U.unop) :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 /-- Given two locally ringed spaces `X` and `Y`, an isomorphism between `X` and `Y` as _sheafed_
 spaces can be lifted to a morphism `X ⟶ Y` as locally ringed spaces.
@@ -192,7 +178,6 @@ def homOfSheafedSpaceHomOfIsIso {X Y : LocallyRingedSpace.{u}}
     -- are isomorphisms and isomorphisms are local ring homomorphisms.
     show IsLocalRingHom (PresheafedSpace.stalkMap (SheafedSpace.forgetToPresheafedSpace.map f) x) by
       infer_instance
-set_option linter.uppercaseLean3 false in
 
 /-- Given two locally ringed spaces `X` and `Y`, an isomorphism between `X` and `Y` as _sheafed_
 spaces can be lifted to an isomorphism `X ⟶ Y` as locally ringed spaces.
@@ -207,7 +192,6 @@ def isoOfSheafedSpaceIso {X Y : LocallyRingedSpace.{u}} (f : X.toSheafedSpace �
   inv := homOfSheafedSpaceHomOfIsIso f.inv
   hom_inv_id := Hom.ext f.hom_inv_id
   inv_hom_id := Hom.ext f.inv_hom_id
-set_option linter.uppercaseLean3 false in
 
 instance : forgetToSheafedSpace.ReflectsIsomorphisms where reflects {_ _} f i :=
   { out :=
@@ -216,7 +200,6 @@ instance : forgetToSheafedSpace.ReflectsIsomorphisms where reflects {_ _} f i :=
 
 instance is_sheafedSpace_iso {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.1 :=
   LocallyRingedSpace.forgetToSheafedSpace.map_isIso f
-set_option linter.uppercaseLean3 false in
 
 /-- The restriction of a locally ringed space along an open embedding.
 -/
@@ -229,48 +212,39 @@ def restrict {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat} (h
     apply @RingEquiv.localRing _ _ _ (X.localRing (f x))
     exact (X.restrictStalkIso h x).symm.commRingCatIsoToRingEquiv
   toSheafedSpace := X.toSheafedSpace.restrict h
-set_option linter.uppercaseLean3 false in
 
 /-- The canonical map from the restriction to the subspace. -/
 def ofRestrict {U : TopCat} (X : LocallyRingedSpace.{u})
     {f : U ⟶ X.toTopCat} (h : OpenEmbedding f) : X.restrict h ⟶ X :=
   ⟨X.toPresheafedSpace.ofRestrict h, fun _ => inferInstance⟩
-set_option linter.uppercaseLean3 false in
 
 /-- The restriction of a locally ringed space `X` to the top subspace is isomorphic to `X` itself.
 -/
 def restrictTopIso (X : LocallyRingedSpace.{u}) :
     X.restrict (Opens.openEmbedding ⊤) ≅ X :=
   isoOfSheafedSpaceIso X.toSheafedSpace.restrictTopIso
-set_option linter.uppercaseLean3 false in
 
 /-- The global sections, notated Gamma.
 -/
 def Γ : LocallyRingedSpace.{u}ᵒᵖ ⥤ CommRingCat.{u} :=
   forgetToSheafedSpace.op ⋙ SheafedSpace.Γ
-set_option linter.uppercaseLean3 false in
 
 theorem Γ_def : Γ = forgetToSheafedSpace.op ⋙ SheafedSpace.Γ :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem Γ_obj (X : LocallyRingedSpace.{u}ᵒᵖ) : Γ.obj X = X.unop.presheaf.obj (op ⊤) :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 theorem Γ_obj_op (X : LocallyRingedSpace.{u}) : Γ.obj (op X) = X.presheaf.obj (op ⊤) :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem Γ_map {X Y : LocallyRingedSpace.{u}ᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.1.c.app (op ⊤) :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 theorem Γ_map_op {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) : Γ.map f.op = f.1.c.app (op ⊤) :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 /-- The empty locally ringed space. -/
 def empty : LocallyRingedSpace.{u} where
@@ -310,7 +284,6 @@ theorem preimage_basicOpen {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) {U : Ope
     erw [RingedSpace.mem_basicOpen _ _ ⟨f.1.base y.1, y.2⟩]
     erw [← PresheafedSpace.stalkMap_germ_apply] at hy
     exact (isUnit_map_iff (PresheafedSpace.stalkMap f.1 _) _).mp hy
-set_option linter.uppercaseLean3 false in
 
 -- This actually holds for all ringed spaces with nontrivial stalks.
 theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
@@ -323,7 +296,6 @@ theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
   rw [map_zero, isUnit_zero_iff]
   change (0 : X.stalk x) ≠ (1 : X.stalk x)
   exact zero_ne_one
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 lemma basicOpen_eq_bot_of_isNilpotent (X : LocallyRingedSpace.{u}) (U : Opens X.carrier)
@@ -341,7 +313,6 @@ lemma basicOpen_eq_bot_of_isNilpotent (X : LocallyRingedSpace.{u}) (U : Opens X.
 instance component_nontrivial (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) [hU : Nonempty U] :
     Nontrivial (X.presheaf.obj <| op U) :=
   (X.presheaf.germ hU.some).domain_nontrivial
-set_option linter.uppercaseLean3 false in
 
 end LocallyRingedSpace
 

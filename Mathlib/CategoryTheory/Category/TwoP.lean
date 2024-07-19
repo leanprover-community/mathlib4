@@ -25,7 +25,6 @@ universe u
 
 variable {α β : Type*}
 
-set_option linter.uppercaseLean3 false
 
 /-- The category of two-pointed types. -/
 structure TwoP : Type (u + 1) where

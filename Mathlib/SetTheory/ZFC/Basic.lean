@@ -58,7 +58,6 @@ respectively as "`Set`" and "ZFC set".
 Prove `ZFSet.mapDefinableAux` computably.
 -/
 
-set_option linter.uppercaseLean3 false
 
 universe u v
 

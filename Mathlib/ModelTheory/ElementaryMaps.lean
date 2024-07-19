@@ -98,7 +98,6 @@ theorem map_sentence (f : M ↪ₑ[L] N) (φ : L.Sentence) : M ⊨ φ ↔ N ⊨ 
 
 theorem theory_model_iff (f : M ↪ₑ[L] N) (T : L.Theory) : M ⊨ T ↔ N ⊨ T := by
   simp only [Theory.model_iff, f.map_sentence]
-set_option linter.uppercaseLean3 false in
 
 theorem elementarilyEquivalent (f : M ↪ₑ[L] N) : M ≅[L] N :=
   elementarilyEquivalent_iff.2 f.map_sentence

@@ -69,7 +69,6 @@ function coercion from the coercion to almost everywhere defined functions.
 
 noncomputable section
 
-set_option linter.uppercaseLean3 false
 
 open TopologicalSpace MeasureTheory Filter
 open scoped NNReal ENNReal Topology MeasureTheory Uniformity symmDiff

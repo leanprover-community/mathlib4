@@ -625,7 +625,6 @@ def prodL :
   left_inv f := by ext <;> rfl
   right_inv f := by ext <;> rfl
   norm_map' f := opNorm_prod f.1 f.2
-set_option linter.uppercaseLean3 false in
 
 /-- `ContinuousMultilinearMap.pi` as a `LinearIsometryEquiv`. -/
 def piₗᵢ {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'} [∀ i', NormedAddCommGroup (E' i')]
@@ -873,7 +872,6 @@ theorem norm_compContinuousMultilinearMap_le (g : G →L[𝕜] G') (f : Continuo
 
 variable (𝕜 E G G')
 
-set_option linter.uppercaseLean3 false
 
 /-- `ContinuousLinearMap.compContinuousMultilinearMap` as a bundled continuous bilinear map. -/
 def compContinuousMultilinearMapL :
@@ -1034,7 +1032,6 @@ end MultilinearMap
 
 namespace ContinuousMultilinearMap
 
-set_option linter.uppercaseLean3 false
 
 theorem norm_compContinuousLinearMap_le (g : ContinuousMultilinearMap 𝕜 E₁ G)
     (f : ∀ i, E i →L[𝕜] E₁ i) : ‖g.compContinuousLinearMap f‖ ≤ ‖g‖ * ∏ i, ‖f i‖ :=

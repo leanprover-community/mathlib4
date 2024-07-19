@@ -927,33 +927,27 @@ theorem coe_rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂]
 def _root_.Submodule.subtypeL (p : Submodule R₁ M₁) : p →L[R₁] M₁ where
   cont := continuous_subtype_val
   toLinearMap := p.subtype
-set_option linter.uppercaseLean3 false in
 
 @[simp, norm_cast]
 theorem _root_.Submodule.coe_subtypeL (p : Submodule R₁ M₁) :
     (p.subtypeL : p →ₗ[R₁] M₁) = p.subtype :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem _root_.Submodule.coe_subtypeL' (p : Submodule R₁ M₁) : ⇑p.subtypeL = p.subtype :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp] -- @[norm_cast] -- Porting note: A theorem with this can't have a rhs starting with `↑`.
 theorem _root_.Submodule.subtypeL_apply (p : Submodule R₁ M₁) (x : p) : p.subtypeL x = x :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem _root_.Submodule.range_subtypeL (p : Submodule R₁ M₁) : range p.subtypeL = p :=
   Submodule.range_subtype _
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem _root_.Submodule.ker_subtypeL (p : Submodule R₁ M₁) : ker p.subtypeL = ⊥ :=
   Submodule.ker_subtype _
-set_option linter.uppercaseLean3 false in
 
 variable (R₁ M₁ M₂)
 

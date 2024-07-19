@@ -18,7 +18,6 @@ It then follows that `LocallyRingedSpace` has all colimits, and
 
 -/
 
-set_option linter.uppercaseLean3 false
 
 namespace AlgebraicGeometry
 

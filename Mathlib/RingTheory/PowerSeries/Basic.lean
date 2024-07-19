@@ -194,18 +194,15 @@ def constantCoeff : R⟦X⟧ →+* R :=
 /-- The constant formal power series. -/
 def C : R →+* R⟦X⟧ :=
   MvPowerSeries.C Unit R
-set_option linter.uppercaseLean3 false in
 
 variable {R}
 
 /-- The variable of the formal power series ring. -/
 def X : R⟦X⟧ :=
   MvPowerSeries.X ()
-set_option linter.uppercaseLean3 false in
 
 theorem commute_X (φ : R⟦X⟧) : Commute φ X :=
   MvPowerSeries.commute_X _ _
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_zero_eq_constantCoeff : ⇑(coeff R 0) = constantCoeff R := by
@@ -219,19 +216,15 @@ theorem coeff_zero_eq_constantCoeff_apply (φ : R⟦X⟧) : coeff R 0 φ = const
 theorem monomial_zero_eq_C : ⇑(monomial R 0) = C R := by
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [monomial, Finsupp.single_zero, MvPowerSeries.monomial_zero_eq_C]
-set_option linter.uppercaseLean3 false in
 
 theorem monomial_zero_eq_C_apply (a : R) : monomial R 0 a = C R a := by simp
-set_option linter.uppercaseLean3 false in
 
 theorem coeff_C (n : ℕ) (a : R) : coeff R n (C R a : R⟦X⟧) = if n = 0 then a else 0 := by
   rw [← monomial_zero_eq_C_apply, coeff_monomial]
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_zero_C (a : R) : coeff R 0 (C R a) = a := by
   rw [coeff_C, if_pos rfl]
-set_option linter.uppercaseLean3 false in
 
 theorem coeff_ne_zero_C {a : R} {n : ℕ} (h : n ≠ 0) : coeff R n (C R a) = 0 := by
   rw [coeff_C, if_neg h]
@@ -252,39 +245,31 @@ protected theorem subsingleton_iff : Subsingleton R⟦X⟧ ↔ Subsingleton R :=
 
 theorem X_eq : (X : R⟦X⟧) = monomial R 1 1 :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 theorem coeff_X (n : ℕ) : coeff R n (X : R⟦X⟧) = if n = 1 then 1 else 0 := by
   rw [X_eq, coeff_monomial]
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_zero_X : coeff R 0 (X : R⟦X⟧) = 0 := by
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [coeff, Finsupp.single_zero, X, MvPowerSeries.coeff_zero_X]
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_one_X : coeff R 1 (X : R⟦X⟧) = 1 := by rw [coeff_X, if_pos rfl]
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem X_ne_zero [Nontrivial R] : (X : R⟦X⟧) ≠ 0 := fun H => by
   simpa only [coeff_one_X, one_ne_zero, map_zero] using congr_arg (coeff R 1) H
-set_option linter.uppercaseLean3 false in
 
 theorem X_pow_eq (n : ℕ) : (X : R⟦X⟧) ^ n = monomial R n 1 :=
   MvPowerSeries.X_pow_eq _ n
-set_option linter.uppercaseLean3 false in
 
 theorem coeff_X_pow (m n : ℕ) : coeff R m ((X : R⟦X⟧) ^ n) = if m = n then 1 else 0 := by
   rw [X_pow_eq, coeff_monomial]
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_X_pow_self (n : ℕ) : coeff R n ((X : R⟦X⟧) ^ n) = 1 := by
   rw [coeff_X_pow, if_pos rfl]
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_one (n : ℕ) : coeff R n (1 : R⟦X⟧) = if n = 0 then 1 else 0 :=
@@ -303,12 +288,10 @@ theorem coeff_mul (n : ℕ) (φ ψ : R⟦X⟧) :
 @[simp]
 theorem coeff_mul_C (n : ℕ) (φ : R⟦X⟧) (a : R) : coeff R n (φ * C R a) = coeff R n φ * a :=
   MvPowerSeries.coeff_mul_C _ φ a
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_C_mul (n : ℕ) (φ : R⟦X⟧) (a : R) : coeff R n (C R a * φ) = a * coeff R n φ :=
   MvPowerSeries.coeff_C_mul _ φ a
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_smul {S : Type*} [Semiring S] [Module R S] (n : ℕ) (φ : PowerSeries S) (a : R) :
@@ -323,31 +306,26 @@ theorem constantCoeff_smul {S : Type*} [Semiring S] [Module R S] (φ : PowerSeri
 theorem smul_eq_C_mul (f : R⟦X⟧) (a : R) : a • f = C R a * f := by
   ext
   simp
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_succ_mul_X (n : ℕ) (φ : R⟦X⟧) : coeff R (n + 1) (φ * X) = coeff R n φ := by
   simp only [coeff, Finsupp.single_add]
   convert φ.coeff_add_mul_monomial (single () n) (single () 1) _
   rw [mul_one]; rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_succ_X_mul (n : ℕ) (φ : R⟦X⟧) : coeff R (n + 1) (X * φ) = coeff R n φ := by
   simp only [coeff, Finsupp.single_add, add_comm n 1]
   convert φ.coeff_add_monomial_mul (single () 1) (single () n) _
   rw [one_mul]; rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem constantCoeff_C (a : R) : constantCoeff R (C R a) = a :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem constantCoeff_comp_C : (constantCoeff R).comp (C R) = RingHom.id R :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 -- Porting note (#10618): simp can prove this.
 -- @[simp]
@@ -362,16 +340,13 @@ theorem constantCoeff_one : constantCoeff R 1 = 1 :=
 @[simp]
 theorem constantCoeff_X : constantCoeff R X = 0 :=
   MvPowerSeries.coeff_zero_X _
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem constantCoeff_mk {f : ℕ → R} : constantCoeff R (mk f) = f 0 := rfl
 
 theorem coeff_zero_mul_X (φ : R⟦X⟧) : coeff R 0 (φ * X) = 0 := by simp
-set_option linter.uppercaseLean3 false in
 
 theorem coeff_zero_X_mul (φ : R⟦X⟧) : coeff R 0 (X * φ) = 0 := by simp
-set_option linter.uppercaseLean3 false in
 
 theorem constantCoeff_surj : Function.Surjective (constantCoeff R) :=
   fun r => ⟨(C R) r, constantCoeff_C r⟩
@@ -383,7 +358,6 @@ section
 theorem coeff_C_mul_X_pow (x : R) (k n : ℕ) :
     coeff R n (C R x * X ^ k : R⟦X⟧) = if n = k then x else 0 := by
   simp [X_pow_eq, coeff_monomial]
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_mul_X_pow (p : R⟦X⟧) (n d : ℕ) :
@@ -397,7 +371,6 @@ theorem coeff_mul_X_pow (p : R⟦X⟧) (n d : ℕ) :
     subst h1
     rfl
   · exact fun h1 => (h1 (mem_antidiagonal.2 rfl)).elim
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_X_pow_mul (p : R⟦X⟧) (n d : ℕ) :
@@ -412,7 +385,6 @@ theorem coeff_X_pow_mul (p : R⟦X⟧) (n d : ℕ) :
     rfl
   · rw [add_comm]
     exact fun h1 => (h1 (mem_antidiagonal.2 rfl)).elim
-set_option linter.uppercaseLean3 false in
 
 theorem coeff_mul_X_pow' (p : R⟦X⟧) (n d : ℕ) :
     coeff R d (p * X ^ n) = ite (n ≤ d) (coeff R (d - n) p) 0 := by
@@ -421,7 +393,6 @@ theorem coeff_mul_X_pow' (p : R⟦X⟧) (n d : ℕ) :
   · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
     rw [coeff_X_pow, if_neg, mul_zero]
     exact ((le_of_add_le_right (mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
-set_option linter.uppercaseLean3 false in
 
 theorem coeff_X_pow_mul' (p : R⟦X⟧) (n d : ℕ) :
     coeff R d (X ^ n * p) = ite (n ≤ d) (coeff R (d - n) p) 0 := by
@@ -433,7 +404,6 @@ theorem coeff_X_pow_mul' (p : R⟦X⟧) (n d : ℕ) :
     have := mem_antidiagonal.mp hx
     rw [add_comm] at this
     exact ((le_of_add_le_right this.le).trans_lt <| not_le.mp h).ne
-set_option linter.uppercaseLean3 false in
 
 end
 
@@ -449,7 +419,6 @@ theorem eq_shift_mul_X_add_const (φ : R⟦X⟧) :
       mul_zero, coeff_zero_C, zero_add]
   · simp only [coeff_succ_mul_X, coeff_mk, LinearMap.map_add, coeff_C, n.succ_ne_zero, sub_zero,
       if_false, add_zero]
-set_option linter.uppercaseLean3 false in
 
 /-- Split off the constant coefficient. -/
 theorem eq_X_mul_shift_add_const (φ : R⟦X⟧) :
@@ -459,7 +428,6 @@ theorem eq_X_mul_shift_add_const (φ : R⟦X⟧) :
       zero_mul, coeff_zero_C, zero_add]
   · simp only [coeff_succ_X_mul, coeff_mk, LinearMap.map_add, coeff_C, n.succ_ne_zero, sub_zero,
       if_false, add_zero]
-set_option linter.uppercaseLean3 false in
 
 section Map
 
@@ -485,13 +453,11 @@ theorem coeff_map (n : ℕ) (φ : R⟦X⟧) : coeff S n (map f φ) = f (coeff R 
 theorem map_C (r : R) : map f (C _ r) = C _ (f r) := by
   ext
   simp [coeff_C, apply_ite f]
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem map_X : map f X = X := by
   ext
   simp [coeff_X, apply_ite f]
-set_option linter.uppercaseLean3 false in
 
 end Map
 
@@ -503,7 +469,6 @@ theorem X_pow_dvd_iff {n : ℕ} {φ : R⟦X⟧} :
     convert h _ hm
   · apply h
     simpa only [Finsupp.single_eq_same] using hm
-set_option linter.uppercaseLean3 false in
 
 theorem X_dvd_iff {φ : R⟦X⟧} : (X : R⟦X⟧) ∣ φ ↔ constantCoeff R φ = 0 := by
   rw [← pow_one (X : R⟦X⟧), X_pow_dvd_iff, ← coeff_zero_eq_constantCoeff_apply]
@@ -511,7 +476,6 @@ theorem X_dvd_iff {φ : R⟦X⟧} : (X : R⟦X⟧) ∣ φ ↔ constantCoeff R φ
   · exact h 0 zero_lt_one
   · intro m hm
     rwa [Nat.eq_zero_of_le_zero (Nat.le_of_succ_le_succ hm)]
-set_option linter.uppercaseLean3 false in
 
 end Semiring
 
@@ -655,11 +619,9 @@ theorem rescale_X (a : A) : rescale a X = C A a * X := by
   ext
   simp only [coeff_rescale, coeff_C_mul, coeff_X]
   split_ifs with h <;> simp [h]
-set_option linter.uppercaseLean3 false in
 
 theorem rescale_neg_one_X : rescale (-1 : A) X = -X := by
   rw [rescale_X, map_neg, map_one, neg_one_mul]
-set_option linter.uppercaseLean3 false in
 
 /-- The ring homomorphism taking a power series `f(X)` to `f(-X)`. -/
 noncomputable def evalNegHom : A⟦X⟧ →+* A⟦X⟧ :=
@@ -668,7 +630,6 @@ noncomputable def evalNegHom : A⟦X⟧ →+* A⟦X⟧ :=
 @[simp]
 theorem evalNegHom_X : evalNegHom (X : A⟦X⟧) = -X :=
   rescale_neg_one_X
-set_option linter.uppercaseLean3 false in
 
 end CommRing
 
@@ -736,7 +697,6 @@ theorem span_X_isPrime : (Ideal.span ({X} : Set R⟦X⟧)).IsPrime := by
   apply Ideal.ext
   intro φ
   rw [RingHom.mem_ker, Ideal.mem_span_singleton, X_dvd_iff]
-set_option linter.uppercaseLean3 false in
 
 /-- The variable of the power series ring over an integral domain is prime. -/
 theorem X_prime : Prime (X : R⟦X⟧) := by
@@ -744,7 +704,6 @@ theorem X_prime : Prime (X : R⟦X⟧) := by
   · exact span_X_isPrime
   · intro h
     simpa [map_zero (coeff R 1)] using congr_arg (coeff R 1) h
-set_option linter.uppercaseLean3 false in
 
 /-- The variable of the power series ring over an integral domain is irreducible. -/
 theorem X_irreducible : Irreducible (X : R⟦X⟧) := X_prime.irreducible
@@ -767,7 +726,6 @@ variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 theorem C_eq_algebraMap {r : R} : C R r = (algebraMap R R⟦X⟧) r :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 theorem algebraMap_apply {r : R} : algebraMap R A⟦X⟧ r = C A (algebraMap R A r) :=
   MvPowerSeries.algebraMap_apply
@@ -830,7 +788,6 @@ theorem coe_mul : ((φ * ψ : R[X]) : PowerSeries R) = φ * ψ :=
 theorem coe_C (a : R) : ((C a : R[X]) : PowerSeries R) = PowerSeries.C R a := by
   have := coe_monomial 0 a
   rwa [PowerSeries.monomial_zero_eq_C_apply] at this
-set_option linter.uppercaseLean3 false in
 
 #noalign polynomial.coe_bit0
 #noalign polynomial.coe_bit1
@@ -838,7 +795,6 @@ set_option linter.uppercaseLean3 false in
 @[simp, norm_cast]
 theorem coe_X : ((X : R[X]) : PowerSeries R) = PowerSeries.X :=
   coe_monomial _ _
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem constantCoeff_coe : PowerSeries.constantCoeff R φ = φ.coeff 0 :=

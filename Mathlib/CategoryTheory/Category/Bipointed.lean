@@ -23,7 +23,6 @@ universe u
 
 variable {α β : Type*}
 
-set_option linter.uppercaseLean3 false
 
 /-- The category of bipointed types. -/
 structure Bipointed : Type (u + 1) where

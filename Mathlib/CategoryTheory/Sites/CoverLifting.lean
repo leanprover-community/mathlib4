@@ -224,7 +224,6 @@ theorem ran_isSheaf_of_isCocontinuous (ℱ : Sheaf J A) :
   intros X S
   exact ⟨RanIsSheafOfIsCocontinuous.isLimitMultifork ℱ.2
     (G.op.isPointwiseRightKanExtensionRanCounit ℱ.val) S⟩
-set_option linter.uppercaseLean3 false in
 
 variable (A J)
 

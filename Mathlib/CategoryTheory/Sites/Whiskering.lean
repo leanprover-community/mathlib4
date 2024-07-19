@@ -49,7 +49,6 @@ def sheafCompose : Sheaf J A ⥤ Sheaf J B where
   map η := ⟨whiskerRight η.val _⟩
   map_id _ := Sheaf.Hom.ext <| whiskerRight_id _
   map_comp _ _ := Sheaf.Hom.ext <| whiskerRight_comp _ _ _
-set_option linter.uppercaseLean3 false in
 
 instance [F.Faithful] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Faithful :=
   show (sheafToPresheaf _ _ ⋙ (whiskeringRight Cᵒᵖ A B).obj F).Faithful from inferInstance

@@ -519,7 +519,6 @@ it induces an equivalence of category of sheaves valued in a complete category.
 @[simps! functor inverse]
 noncomputable def sheafEquivOfCoverPreservingCoverLifting : Sheaf J A ≌ Sheaf K A :=
   (G.sheafAdjunctionCocontinuous A J K).toEquivalence.symm
-set_option linter.uppercaseLean3 false in
 
 variable [HasWeakSheafify J A] [HasWeakSheafify K A]
 

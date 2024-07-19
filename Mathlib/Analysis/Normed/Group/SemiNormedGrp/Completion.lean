@@ -37,7 +37,6 @@ universe u
 
 open UniformSpace MulOpposite CategoryTheory NormedAddGroupHom
 
-set_option linter.uppercaseLean3 false
 
 namespace SemiNormedGrp
 

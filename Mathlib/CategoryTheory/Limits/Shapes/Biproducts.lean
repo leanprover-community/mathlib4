@@ -76,7 +76,6 @@ structure Bicone (F : J → C) where
   ι : ∀ j, F j ⟶ pt
   ι_π : ∀ j j', ι j ≫ π j' =
     if h : j = j' then eqToHom (congrArg F h) else 0 := by aesop
-set_option linter.uppercaseLean3 false in
 
 attribute [inherit_doc Bicone] Bicone.pt Bicone.π Bicone.ι Bicone.ι_π
 
@@ -187,7 +186,6 @@ abbrev toCone (B : Bicone F) : Cone (Discrete.functor F) := toConeFunctor.obj B
 
 @[simp]
 theorem toCone_pt (B : Bicone F) : B.toCone.pt = B.pt := rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem toCone_π_app (B : Bicone F) (j : Discrete J) : B.toCone.π.app j = B.π j.as := rfl
@@ -207,7 +205,6 @@ abbrev toCocone (B : Bicone F) : Cocone (Discrete.functor F) := toCoconeFunctor.
 
 @[simp]
 theorem toCocone_pt (B : Bicone F) : B.toCocone.pt = B.pt := rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem toCocone_ι_app (B : Bicone F) (j : Discrete J) : B.toCocone.ι.app j = B.ι j.as := rfl
@@ -1164,7 +1161,6 @@ def toCone (c : BinaryBicone P Q) : Cone (pair P Q) :=
 
 @[simp]
 theorem toCone_pt (c : BinaryBicone P Q) : c.toCone.pt = c.pt := rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem toCone_π_app_left (c : BinaryBicone P Q) : c.toCone.π.app ⟨WalkingPair.left⟩ = c.fst :=
@@ -1185,7 +1181,6 @@ def toCocone (c : BinaryBicone P Q) : Cocone (pair P Q) := BinaryCofan.mk c.inl 
 
 @[simp]
 theorem toCocone_pt (c : BinaryBicone P Q) : c.toCocone.pt = c.pt := rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem toCocone_ι_app_left (c : BinaryBicone P Q) : c.toCocone.ι.app ⟨WalkingPair.left⟩ = c.inl :=

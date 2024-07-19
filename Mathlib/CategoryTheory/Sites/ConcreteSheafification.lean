@@ -557,7 +557,6 @@ noncomputable def plusPlusSheaf : (Cᵒᵖ ⥤ D) ⥤ Sheaf J D where
   map η := ⟨J.sheafifyMap η⟩
   map_id _ := Sheaf.Hom.ext <| J.sheafifyMap_id _
   map_comp _ _ := Sheaf.Hom.ext <| J.sheafifyMap_comp _ _
-set_option linter.uppercaseLean3 false in
 
 instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
     (plusPlusSheaf J D).PreservesZeroMorphisms where
@@ -565,7 +564,6 @@ instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
     ext : 3
     refine colimit.hom_ext (fun j => ?_)
     erw [colimit.ι_map, comp_zero, J.plusMap_zero, J.diagramNatTrans_zero, zero_comp]
-set_option linter.uppercaseLean3 false in
 
 /-- The sheafification functor is left adjoint to the forgetful functor. -/
 @[simps! unit_app counit_app_val]
@@ -585,14 +583,12 @@ noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D
 
 instance sheafToPresheaf_isRightAdjoint : (sheafToPresheaf J D).IsRightAdjoint  :=
   (plusPlusAdjunction J D).isRightAdjoint
-set_option linter.uppercaseLean3 false in
 
 instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f.1 :=
   (sheafToPresheaf J D).map_mono _
 
 theorem Sheaf.Hom.mono_iff_presheaf_mono {F G : Sheaf J D} (f : F ⟶ G) : Mono f ↔ Mono f.1 :=
   ⟨fun m => by infer_instance, fun m => by exact Sheaf.Hom.mono_of_presheaf_mono J D f⟩
-set_option linter.uppercaseLean3 false in
 
 -- Porting note: added to ease the port of CategoryTheory.Sites.LeftExact
 -- in mathlib, this was `by refl`, but here it would timeout

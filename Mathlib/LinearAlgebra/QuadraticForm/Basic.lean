@@ -1291,6 +1291,5 @@ theorem basisRepr_eq_of_iIsOrtho {R M} [CommRing R] [AddCommGroup M] [Module R M
     rw [LinearMap.map_smul, LinearMap.map_smul₂,
       show associatedHom R Q (v i) (v j) = 0 from hv₂ hij, smul_eq_mul, smul_eq_mul,
       mul_zero, mul_zero]
-set_option linter.uppercaseLean3 false in
 
 end QuadraticMap

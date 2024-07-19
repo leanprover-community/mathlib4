@@ -309,92 +309,74 @@ def C : R →+* MvPowerSeries σ R :=
     map_one' := rfl
     map_mul' := fun a b => (monomial_mul_monomial 0 0 a b).symm
     map_zero' := (monomial R (0 : _)).map_zero }
-set_option linter.uppercaseLean3 false in
 
 variable {σ} {R}
 
 @[simp]
 theorem monomial_zero_eq_C : ⇑(monomial R (0 : σ →₀ ℕ)) = C σ R :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 theorem monomial_zero_eq_C_apply (a : R) : monomial R (0 : σ →₀ ℕ) a = C σ R a :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 theorem coeff_C [DecidableEq σ] (n : σ →₀ ℕ) (a : R) :
     coeff R n (C σ R a) = if n = 0 then a else 0 :=
   coeff_monomial _ _ _
-set_option linter.uppercaseLean3 false in
 
 theorem coeff_zero_C (a : R) : coeff R (0 : σ →₀ ℕ) (C σ R a) = a :=
   coeff_monomial_same 0 a
-set_option linter.uppercaseLean3 false in
 
 /-- The variables of the multivariate formal power series ring. -/
 def X (s : σ) : MvPowerSeries σ R :=
   monomial R (single s 1) 1
-set_option linter.uppercaseLean3 false in
 
 theorem coeff_X [DecidableEq σ] (n : σ →₀ ℕ) (s : σ) :
     coeff R n (X s : MvPowerSeries σ R) = if n = single s 1 then 1 else 0 :=
   coeff_monomial _ _ _
-set_option linter.uppercaseLean3 false in
 
 theorem coeff_index_single_X [DecidableEq σ] (s t : σ) :
     coeff R (single t 1) (X s : MvPowerSeries σ R) = if t = s then 1 else 0 := by
   simp only [coeff_X, single_left_inj (one_ne_zero : (1 : ℕ) ≠ 0)]
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_index_single_self_X (s : σ) : coeff R (single s 1) (X s : MvPowerSeries σ R) = 1 :=
   coeff_monomial_same _ _
-set_option linter.uppercaseLean3 false in
 
 theorem coeff_zero_X (s : σ) : coeff R (0 : σ →₀ ℕ) (X s : MvPowerSeries σ R) = 0 := by
   classical
   rw [coeff_X, if_neg]
   intro h
   exact one_ne_zero (single_eq_zero.mp h.symm)
-set_option linter.uppercaseLean3 false in
 
 theorem commute_X (φ : MvPowerSeries σ R) (s : σ) : Commute φ (X s) :=
   φ.commute_monomial.mpr fun _m => Commute.one_right _
-set_option linter.uppercaseLean3 false in
 
 theorem X_def (s : σ) : X s = monomial R (single s 1) 1 :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 theorem X_pow_eq (s : σ) (n : ℕ) : (X s : MvPowerSeries σ R) ^ n = monomial R (single s n) 1 := by
   induction' n with n ih
   · simp
   · rw [pow_succ, ih, Finsupp.single_add, X, monomial_mul_monomial, one_mul]
-set_option linter.uppercaseLean3 false in
 
 theorem coeff_X_pow [DecidableEq σ] (m : σ →₀ ℕ) (s : σ) (n : ℕ) :
     coeff R m ((X s : MvPowerSeries σ R) ^ n) = if m = single s n then 1 else 0 := by
   rw [X_pow_eq s n, coeff_monomial]
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_mul_C (n : σ →₀ ℕ) (φ : MvPowerSeries σ R) (a : R) :
     coeff R n (φ * C σ R a) = coeff R n φ * a := by simpa using coeff_add_mul_monomial n 0 φ a
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_C_mul (n : σ →₀ ℕ) (φ : MvPowerSeries σ R) (a : R) :
     coeff R n (C σ R a * φ) = a * coeff R n φ := by simpa using coeff_add_monomial_mul 0 n φ a
-set_option linter.uppercaseLean3 false in
 
 theorem coeff_zero_mul_X (φ : MvPowerSeries σ R) (s : σ) : coeff R (0 : σ →₀ ℕ) (φ * X s) = 0 := by
   have : ¬single s 1 ≤ 0 := fun h => by simpa using h s
   simp only [X, coeff_mul_monomial, if_neg this]
-set_option linter.uppercaseLean3 false in
 
 theorem coeff_zero_X_mul (φ : MvPowerSeries σ R) (s : σ) : coeff R (0 : σ →₀ ℕ) (X s * φ) = 0 := by
   rw [← (φ.commute_X s).eq, coeff_zero_mul_X]
-set_option linter.uppercaseLean3 false in
 
 variable (σ) (R)
 
@@ -419,12 +401,10 @@ theorem coeff_zero_eq_constantCoeff_apply (φ : MvPowerSeries σ R) :
 @[simp]
 theorem constantCoeff_C (a : R) : constantCoeff σ R (C σ R a) = a :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem constantCoeff_comp_C : (constantCoeff σ R).comp (C σ R) = RingHom.id R :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 -- Porting note (#10618): simp can prove this.
 -- @[simp]
@@ -439,7 +419,6 @@ theorem constantCoeff_one : constantCoeff σ R 1 = 1 :=
 @[simp]
 theorem constantCoeff_X (s : σ) : constantCoeff σ R (X s) = 0 :=
   coeff_zero_X s
-set_option linter.uppercaseLean3 false in
 
 /-- If a multivariate formal power series is invertible,
  then so is its constant coefficient. -/
@@ -455,7 +434,6 @@ theorem coeff_smul (f : MvPowerSeries σ R) (n) (a : R) : coeff _ n (a • f) = 
 theorem smul_eq_C_mul (f : MvPowerSeries σ R) (a : R) : a • f = C σ R a * f := by
   ext
   simp
-set_option linter.uppercaseLean3 false in
 
 theorem X_inj [Nontrivial R] {s t : σ} : (X s : MvPowerSeries σ R) = X t ↔ s = t :=
   ⟨by
@@ -471,7 +449,6 @@ theorem X_inj [Nontrivial R] {s t : σ} : (X s : MvPowerSeries σ R) = X t ↔ s
         exact one_ne_zero H.1
     · exfalso
       exact one_ne_zero h, congr_arg X⟩
-set_option linter.uppercaseLean3 false in
 
 end Semiring
 
@@ -530,11 +507,9 @@ theorem map_monomial (n : σ →₀ ℕ) (a : R) : map σ f (monomial R n a) = m
 @[simp]
 theorem map_C (a : R) : map σ f (C σ R a) = C σ S (f a) :=
   map_monomial _ _ _
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem map_X (s : σ) : map σ f (X s) = X s := by simp [MvPowerSeries.X]
-set_option linter.uppercaseLean3 false in
 
 end Map
 
@@ -595,7 +570,6 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
         · subst t
           simpa using tsub_add_cancel_of_le H
         · simp [Finsupp.single_apply, hst]
-set_option linter.uppercaseLean3 false in
 
 theorem X_dvd_iff {s : σ} {φ : MvPowerSeries σ R} :
     (X s : MvPowerSeries σ R) ∣ φ ↔ ∀ m : σ →₀ ℕ, m s = 0 → coeff R m φ = 0 := by
@@ -603,7 +577,6 @@ theorem X_dvd_iff {s : σ} {φ : MvPowerSeries σ R} :
   constructor <;> intro h m hm
   · exact h m (hm.symm ▸ zero_lt_one)
   · exact h m (Nat.eq_zero_of_le_zero <| Nat.le_of_succ_le_succ hm)
-set_option linter.uppercaseLean3 false in
 
 end Semiring
 
@@ -668,7 +641,6 @@ instance : Algebra R (MvPowerSeries σ A) :=
 
 theorem c_eq_algebraMap : C σ R = algebraMap R (MvPowerSeries σ R) :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 theorem algebraMap_apply {r : R} :
     algebraMap R (MvPowerSeries σ A) r = C σ A (algebraMap R A r) := by
@@ -744,7 +716,6 @@ theorem coe_mul : ((φ * ψ : MvPolynomial σ R) : MvPowerSeries σ R) = φ * ψ
 @[simp, norm_cast]
 theorem coe_C (a : R) : ((C a : MvPolynomial σ R) : MvPowerSeries σ R) = MvPowerSeries.C σ R a :=
   coe_monomial _ _
-set_option linter.uppercaseLean3 false in
 
 #noalign mv_polynomial.coe_bit0
 #noalign mv_polynomial.coe_bit1
@@ -752,7 +723,6 @@ set_option linter.uppercaseLean3 false in
 @[simp, norm_cast]
 theorem coe_X (s : σ) : ((X s : MvPolynomial σ R) : MvPowerSeries σ R) = MvPowerSeries.X s :=
   coe_monomial _ _
-set_option linter.uppercaseLean3 false in
 
 variable (σ R)
 

@@ -234,49 +234,38 @@ theorem ofReal_mul' (r : ℝ) (z : ℂ) : ↑r * z = ⟨r * z.re, r * z.im⟩ :=
 /-- The imaginary unit. -/
 def I : ℂ :=
   ⟨0, 1⟩
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem I_re : I.re = 0 :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem I_im : I.im = 1 :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem I_mul_I : I * I = -1 :=
   Complex.ext_iff.2 <| by simp
-set_option linter.uppercaseLean3 false in
 
 theorem I_mul (z : ℂ) : I * z = ⟨-z.im, z.re⟩ :=
   Complex.ext_iff.2 <| by simp
-set_option linter.uppercaseLean3 false in
 
 @[simp] lemma I_ne_zero : (I : ℂ) ≠ 0 := mt (congr_arg im) zero_ne_one.symm
-set_option linter.uppercaseLean3 false in
 
 theorem mk_eq_add_mul_I (a b : ℝ) : Complex.mk a b = a + b * I :=
   Complex.ext_iff.2 <| by simp [ofReal']
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem re_add_im (z : ℂ) : (z.re : ℂ) + z.im * I = z :=
   Complex.ext_iff.2 <| by simp [ofReal']
 
 theorem mul_I_re (z : ℂ) : (z * I).re = -z.im := by simp
-set_option linter.uppercaseLean3 false in
 
 theorem mul_I_im (z : ℂ) : (z * I).im = z.re := by simp
-set_option linter.uppercaseLean3 false in
 
 theorem I_mul_re (z : ℂ) : (I * z).re = -z.im := by simp
-set_option linter.uppercaseLean3 false in
 
 theorem I_mul_im (z : ℂ) : (I * z).im = z.re := by simp
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 + p.2 * I := by
@@ -492,7 +481,6 @@ theorem conj_ofReal (r : ℝ) : conj (r : ℂ) = r :=
 @[simp]
 theorem conj_I : conj I = -I :=
   Complex.ext_iff.2 <| by simp
-set_option linter.uppercaseLean3 false in
 
 #noalign complex.conj_bit0
 #noalign complex.conj_bit1
@@ -512,7 +500,6 @@ by `simp only [@map_neg, Complex.conj_i, @neg_neg]`
 -/
 theorem conj_neg_I : conj (-I) = I :=
   Complex.ext_iff.2 <| by simp
-set_option linter.uppercaseLean3 false in
 
 theorem conj_eq_iff_real {z : ℂ} : conj z = z ↔ ∃ r : ℝ, z = r :=
   ⟨fun h => ⟨z.re, ext rfl <| eq_zero_of_neg_eq (congr_arg im h)⟩, fun ⟨h, e⟩ => by
@@ -582,7 +569,6 @@ theorem normSq_mk (x y : ℝ) : normSq ⟨x, y⟩ = x * x + y * y :=
 
 theorem normSq_add_mul_I (x y : ℝ) : normSq (x + y * I) = x ^ 2 + y ^ 2 := by
   rw [← mk_eq_add_mul_I, normSq_mk, sq, sq]
-set_option linter.uppercaseLean3 false in
 
 theorem normSq_eq_conj_mul_self {z : ℂ} : (normSq z : ℂ) = conj z * z := by
   ext <;> simp [normSq, mul_comm, ofReal']
@@ -601,7 +587,6 @@ theorem normSq_one : normSq 1 = 1 :=
 
 @[simp]
 theorem normSq_I : normSq I = 1 := by simp [normSq]
-set_option linter.uppercaseLean3 false in
 
 theorem normSq_nonneg (z : ℂ) : 0 ≤ normSq z :=
   add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)
@@ -654,7 +639,6 @@ theorem ofReal_eq_coe (r : ℝ) : ofReal r = r :=
 
 @[simp]
 theorem I_sq : I ^ 2 = -1 := by rw [sq, I_mul_I]
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem I_pow_four : I ^ 4 = 1 := by rw [(by norm_num : 4 = 2 * 2), pow_mul, I_sq, neg_one_sq]
@@ -749,12 +733,10 @@ theorem ofReal_zpow (r : ℝ) (n : ℤ) : ((r ^ n : ℝ) : ℂ) = (r : ℂ) ^ n 
 @[simp]
 theorem div_I (z : ℂ) : z / I = -(z * I) :=
   (div_eq_iff_mul_eq I_ne_zero).2 <| by simp [mul_assoc]
-set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem inv_I : I⁻¹ = -I := by
   rw [inv_eq_one_div, div_I, one_mul]
-set_option linter.uppercaseLean3 false in
 
 -- @[simp]
 /- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
