@@ -105,7 +105,7 @@ lemma IsMatching.sup (hM : M.IsMatching) (hM' : M'.IsMatching)
     exact aux hM' (Disjoint.symm hd) hmM'
 
 lemma IsMatching.iSup {ι : Sort _} {f : ι → Subgraph G} (hM : (i : ι) → (f i).IsMatching)
-    (hd : (i j : ι) → (i ≠ j) →  Disjoint ((f i).support) ((f j).support)) :
+    (hd : Pairwise fun i j ↦ Disjoint (f i).support (f j).support) :
     (⨆ i , f i).IsMatching := by
   intro v hv
   obtain ⟨i , hi⟩ := Set.mem_iUnion.mp (verts_iSup ▸ hv)

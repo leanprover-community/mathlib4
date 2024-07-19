@@ -979,6 +979,7 @@ theorem singletonSubgraph_snd_le_subgraphOfAdj {u v : V} {h : G.Adj u v} :
   simp
 #align simple_graph.singleton_subgraph_snd_le_subgraph_of_adj SimpleGraph.singletonSubgraph_snd_le_subgraphOfAdj
 
+@[simp]
 lemma support_subgraphOfAdj {u v : V} (h : G.Adj u v) :
     (G.subgraphOfAdj h).support = {u , v} := by
   ext
