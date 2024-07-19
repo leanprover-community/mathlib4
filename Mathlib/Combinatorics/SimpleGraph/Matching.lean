@@ -116,8 +116,8 @@ lemma IsMatching.iSup {ι : Sort _} {f : ι → Subgraph G} (hM : (i : ι) → (
   obtain ⟨i' , hi'⟩ := iSup_adj.mp hy
   by_cases heq : i = i'
   · exact hw.2 y (heq.symm ▸ hi')
-  · have := hd _ _ heq
-    rw [Set.disjoint_left] at this
+  · have := hd heq
+    simp only [Set.disjoint_left] at this
     simpa [(mem_support _).mpr ⟨w, hw.1⟩, (mem_support _).mpr ⟨y, hi'⟩] using @this v
 
 lemma IsMatching.subgraphOfAdj (h : G.Adj v w) : (G.subgraphOfAdj h).IsMatching := by
