@@ -91,6 +91,7 @@ variable (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] {X : C}
   (hP₂ : ∀ ⦃Y₁ Y₂ : C⦄ (w : Y₁ ⟶ Y₂) (hw : W w) (φ : L.obj X ⟶ L.obj Y₂),
     P (StructuredArrow.mk φ) → P (StructuredArrow.mk (φ ≫ (isoOfHom L W w hw).inv)))
 
+@[elab_as_elim]
 lemma induction_structuredArrow (g : StructuredArrow (L.obj X) L) : P g := by
   let P' : StructuredArrow (W.Q.obj X) W.Q → Prop :=
     fun g ↦ P (structuredArrowEquiv W W.Q L g)
@@ -117,16 +118,14 @@ variable (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] {Y : C}
   (hP₂ : ∀ ⦃X₁ X₂ : C⦄ (w : X₁ ⟶ X₂) (hw : W w) (φ : L.obj X₁ ⟶ L.obj Y),
     P (CostructuredArrow.mk φ) → P (CostructuredArrow.mk ((isoOfHom L W w hw).inv ≫ φ)))
 
+@[elab_as_elim]
 lemma induction_costructuredArrow (g : CostructuredArrow L (L.obj Y)) : P g := by
-  let P' : StructuredArrow (op (L.obj Y)) L.op → Prop :=
-    fun g ↦ P (CostructuredArrow.mk g.hom.unop)
-  obtain ⟨X, g, rfl⟩ := g.mk_surjective
-  refine induction_structuredArrow L.op W.op P' ?_ ?_ ?_ (StructuredArrow.mk g.op)
-  · exact hP₀
-  · intros Y₁ Y₂ f φ hφ
-    exact hP₁ f.unop φ.unop hφ
-  · intros Y₁ Y₂ w hw φ hφ
-    simpa only [isoOfHom_op_inv L W w hw] using hP₂ w.unop hw φ.unop hφ
+  let g' := StructuredArrow.mk (T := L.op) (Y := op g.left) g.hom.op
+  show P (CostructuredArrow.mk g'.hom.unop)
+  induction g' using induction_structuredArrow L.op W.op with
+  | hP₀ => exact hP₀
+  | hP₁ f φ hφ => exact hP₁ f.unop φ.unop hφ
+  | hP₂ w hw φ hφ => simpa [isoOfHom_op_inv L W w hw] using hP₂ w.unop hw φ.unop hφ
 
 end
 
