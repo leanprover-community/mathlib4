@@ -55,3 +55,5 @@ note: this linter can be disabled with `set_option linter.dupNamespace false`
 #guard_msgs in
 set_option linter.dupNamespace true in
 export Nat (add)
+
+end add

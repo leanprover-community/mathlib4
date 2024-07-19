@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adrian Wüthrich
 -/
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
-import Mathlib.Data.Real.StarOrdered
 import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
@@ -74,12 +73,12 @@ theorem degree_eq_sum_if_adj [AddCommMonoidWithOne R] (i : V) :
 $$x^{\top} L x = \sum_{i \sim j} (x_{i}-x_{j})^{2}$$,
 where $\sim$ denotes the adjacency relation -/
 theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
-    toLinearMap₂' (G.lapMatrix R) x x =
+    toLinearMap₂' R (G.lapMatrix R) x x =
     (∑ i : V, ∑ j : V, if G.Adj i j then (x i - x j)^2 else 0) / 2 := by
   simp_rw [toLinearMap₂'_apply', lapMatrix, sub_mulVec, dotProduct_sub, dotProduct_mulVec_degMatrix,
     dotProduct_mulVec_adjMatrix, ← sum_sub_distrib, degree_eq_sum_if_adj, sum_mul, ite_mul, one_mul,
     zero_mul, ← sum_sub_distrib, ite_sub_ite, sub_zero]
-  rw [← half_add_self (∑ x_1 : V, ∑ x_2 : V, _)]
+  rw [← add_self_div_two (∑ x_1 : V, ∑ x_2 : V, _)]
   conv_lhs => enter [1,2,2,i,2,j]; rw [if_congr (adj_comm G i j) rfl rfl]
   conv_lhs => enter [1,2]; rw [Finset.sum_comm]
   simp_rw [← sum_add_distrib, ite_add_ite]
@@ -88,7 +87,7 @@ theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
   ring_nf
 
 /-- The Laplacian matrix is positive semidefinite -/
-theorem posSemidef_lapMatrix [LinearOrderedField R] [StarRing R] [StarOrderedRing R]
+theorem posSemidef_lapMatrix [LinearOrderedField R] [StarRing R]
     [TrivialStar R] : PosSemidef (G.lapMatrix R) := by
   constructor
   · rw [IsHermitian, conjTranspose_eq_transpose_of_trivial, isSymm_lapMatrix]
@@ -97,7 +96,7 @@ theorem posSemidef_lapMatrix [LinearOrderedField R] [StarRing R] [StarOrderedRin
     positivity
 
 theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [LinearOrderedField R] (x : V → R) :
-    Matrix.toLinearMap₂' (G.lapMatrix R) x x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
+    Matrix.toLinearMap₂' R (G.lapMatrix R) x x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
   simp (disch := intros; positivity)
     [lapMatrix_toLinearMap₂', sum_eq_zero_iff_of_nonneg, sub_eq_zero]
 
@@ -107,7 +106,8 @@ theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_adj (x : V → ℝ) :
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
 
 theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V → ℝ) :
-    Matrix.toLinearMap₂' (G.lapMatrix ℝ) x x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
+    Matrix.toLinearMap₂' ℝ (G.lapMatrix ℝ) x x = 0 ↔
+      ∀ i j : V, G.Reachable i j → x i = x j := by
   rw [lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
   refine ⟨?_, fun h i j hA ↦ h i j hA.reachable⟩
   intro h i j ⟨w⟩

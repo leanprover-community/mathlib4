@@ -15,7 +15,7 @@ This actions is available in the `Pointwise` locale.
 
 ## Implementation notes
 
-This file is similar (but not identical) to `Algebra/Ring/Subsemiring/Pointwise.lean`.
+This file is similar (but not identical) to `Mathlib/Algebra/Ring/Subsemiring/Pointwise.lean`.
 Where possible, try to keep them in sync.
 
 -/

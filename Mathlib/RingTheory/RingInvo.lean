@@ -6,8 +6,6 @@ Authors: Andreas Swerdlow, Kenny Lau
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Opposite
 
-#align_import ring_theory.ring_invo from "leanprover-community/mathlib"@"ec2dfcae3677bcdc0d8e906831b1d251dfcbc0f1"
-
 /-!
 # Ring involutions
 
@@ -33,11 +31,9 @@ variable {F : Type*} (R : Type*)
 structure RingInvo [Semiring R] extends R ≃+* Rᵐᵒᵖ where
   /-- The requirement that the ring homomorphism is its own inverse -/
   involution' : ∀ x, (toFun (toFun x).unop).unop = x
-#align ring_invo RingInvo
 
 /-- The equivalence of rings underlying a ring involution. -/
 add_decl_doc RingInvo.toRingEquiv
-#align ring_invo.to_ring_equiv RingInvo.toRingEquiv
 
 /-- `RingInvoClass F R` states that `F` is a type of ring involutions.
 You should extend this class when you extend `RingInvo`. -/
@@ -45,7 +41,6 @@ class RingInvoClass (F R : Type*) [Semiring R] [EquivLike F R Rᵐᵒᵖ]
   extends RingEquivClass F R Rᵐᵒᵖ : Prop where
   /-- Every ring involution must be its own inverse -/
   involution : ∀ (f : F) (x), (f (f x).unop).unop = x
-#align ring_invo_class RingInvoClass
 
 
 /-- Turn an element of a type `F` satisfying `RingInvoClass F R` into an actual
@@ -87,17 +82,14 @@ def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) :
     left_inv := fun r => involution r
     right_inv := fun _ => MulOpposite.unop_injective <| involution _
     involution' := involution }
-#align ring_invo.mk' RingInvo.mk'
 
 -- Porting note: removed CoeFun instance, undesired in lean4
 -- instance : CoeFun (RingInvo R) fun _ => R → Rᵐᵒᵖ :=
 --   ⟨fun f => f.toRingEquiv.toFun⟩
-#noalign ring_invo.to_fun_eq_coe
 
 @[simp]
 theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
   f.involution' x
-#align ring_invo.involution RingInvo.involution
 
 -- Porting note: remove Coe instance, not needed
 -- instance hasCoeToRingEquiv : Coe (RingInvo R) (R ≃+* Rᵐᵒᵖ) :=
@@ -107,13 +99,11 @@ theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
 @[norm_cast]
 theorem coe_ringEquiv (f : RingInvo R) (a : R) : (f : R ≃+* Rᵐᵒᵖ) a = f a :=
   rfl
-#align ring_invo.coe_ring_equiv RingInvo.coe_ringEquiv
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
 theorem map_eq_zero_iff (f : RingInvo R) {x : R} : f x = 0 ↔ x = 0 :=
   f.toRingEquiv.map_eq_zero_iff
-#align ring_invo.map_eq_zero_iff RingInvo.map_eq_zero_iff
 
 end RingInvo
 
@@ -126,7 +116,6 @@ variable [CommRing R]
 /-- The identity function of a `CommRing` is a ring involution. -/
 protected def RingInvo.id : RingInvo R :=
   { RingEquiv.toOpposite R with involution' := fun _ => rfl }
-#align ring_invo.id RingInvo.id
 
 instance : Inhabited (RingInvo R) :=
   ⟨RingInvo.id _⟩
