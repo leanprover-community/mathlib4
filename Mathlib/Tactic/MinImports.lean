@@ -91,9 +91,10 @@ an identifier representing the name of a declaration.
 def getAllImports (cmd id : Syntax) (dbg? : Bool := false) :
     CommandElabM NameSet := do
   let env ← getEnv
-  --let nm ← liftCoreM do realizeGlobalConstNoOverloadWithInfo (getId cmd)
+  let id1 ← getId cmd
+  let nm ← (liftCoreM do realizeGlobalConstNoOverload id1 <|> return default)
   -- We collect the implied declaration names, the `SyntaxNodeKinds` and the attributes.
-  let ts := getVisited env (← getId cmd).getId
+  let ts := getVisited env nm
               |>.append (getVisited env id.getId)
               |>.append (getSyntaxNodeKinds cmd)
               |>.append (getAttrs env cmd)
