@@ -6,8 +6,6 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Ring.Defs
 
-#align_import ring_theory.ideal.local_ring from "leanprover-community/mathlib"@"ec1c7d810034d4202b0dd239112d1792be9f6fdc"
-
 /-!
 
 # Local rings
@@ -29,4 +27,3 @@ class LocalRing (R : Type*) [Semiring R] extends Nontrivial R : Prop where
   /-- in a local ring `R`, if `a + b = 1`, then either `a` is a unit or `b` is a unit. In another
     word, for every `a : R`, either `a` is a unit or `1 - a` is a unit. -/
   isUnit_or_isUnit_of_add_one {a b : R} (h : a + b = 1) : IsUnit a ∨ IsUnit b
-#align local_ring LocalRing

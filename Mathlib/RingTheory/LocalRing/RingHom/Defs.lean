@@ -6,8 +6,6 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Ring.Hom.Defs
 
-#align_import ring_theory.ideal.local_ring from "leanprover-community/mathlib"@"ec1c7d810034d4202b0dd239112d1792be9f6fdc"
-
 /-!
 
 # Local rings homomorphisms
@@ -28,4 +26,3 @@ We Define local ring homomorhpisms.
 class IsLocalRingHom {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S) : Prop where
   /-- A local ring homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
   map_nonunit : ∀ a, IsUnit (f a) → IsUnit a
-#align is_local_ring_hom IsLocalRingHom
