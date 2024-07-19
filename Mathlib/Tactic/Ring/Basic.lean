@@ -288,12 +288,12 @@ inductive Overlap (e : Q($α)) where
   (with nonzero leading coefficient). -/
   | nonzero (_ : Result (ExProd sα) e)
 
--- TODO future! variable {a a₁ a₂ b b₁ b₂ c : R}
+variable {a a' a₁ a₂ a₃ b b' b₁ b₂ b₃ c c₁ c₂ : R}
 
-theorem add_overlap_pf {a b c : R} (x : R) (e) (pq_pf : a + b = c) :
+theorem add_overlap_pf (x : R) (e) (pq_pf : a + b = c) :
     x ^ e * a + x ^ e * b = x ^ e * c := by subst_vars; simp [mul_add]
 
-theorem add_overlap_pf_zero {a b : R} (x : R) (e) :
+theorem add_overlap_pf_zero (x : R) (e) :
     IsNat (a + b) (nat_lit 0) → IsNat (x ^ e * a + x ^ e * b) (nat_lit 0)
   | ⟨h⟩ => ⟨by simp [h, ← mul_add]⟩
 
@@ -327,18 +327,17 @@ theorem add_pf_zero_add (b : R) : 0 + b = b := by simp
 
 theorem add_pf_add_zero (a : R) : a + 0 = a := by simp
 
-theorem add_pf_add_overlap {a₁ b₁ c₁ a₂ b₂ c₂ : R}
+theorem add_pf_add_overlap
     (_ : a₁ + b₁ = c₁) (_ : a₂ + b₂ = c₂) : (a₁ + a₂ : R) + (b₁ + b₂) = c₁ + c₂ := by
   subst_vars; simp [add_assoc, add_left_comm]
 
-theorem add_pf_add_overlap_zero {a₁ b₁ a₂ b₂ c : R}
+theorem add_pf_add_overlap_zero
     (h : IsNat (a₁ + b₁) (nat_lit 0)) (h₄ : a₂ + b₂ = c) : (a₁ + a₂ : R) + (b₁ + b₂) = c := by
   subst_vars; rw [add_add_add_comm, h.1, Nat.cast_zero, add_pf_zero_add]
 
-theorem add_pf_add_lt {a₂ b c : R} (a₁ : R) (_ : a₂ + b = c) : (a₁ + a₂) + b = a₁ + c := by
-  simp [*, add_assoc]
+theorem add_pf_add_lt (a₁ : R) (_ : a₂ + b = c) : (a₁ + a₂) + b = a₁ + c := by simp [*, add_assoc]
 
-theorem add_pf_add_gt {a b₂ c : R} (b₁ : R) (_ : a + b₂ = c) : a + (b₁ + b₂) = b₁ + c := by
+theorem add_pf_add_gt (b₁ : R) (_ : a + b₂ = c) : a + (b₁ + b₂) = b₁ + c := by
   subst_vars; simp [add_left_comm]
 
 /-- Adds two polynomials `va, vb` together to get a normalized result polynomial.
@@ -374,15 +373,15 @@ theorem one_mul (a : R) : (nat_lit 1).rawCast * a = a := by simp [Nat.rawCast]
 
 theorem mul_one (a : R) : a * (nat_lit 1).rawCast = a := by simp [Nat.rawCast]
 
-theorem mul_pf_left {a₃ b c : R} (a₁ : R) (a₂) (_ : a₃ * b = c) :
+theorem mul_pf_left (a₁ : R) (a₂) (_ : a₃ * b = c) :
     (a₁ ^ a₂ * a₃ : R) * b = a₁ ^ a₂ * c := by
   subst_vars; rw [mul_assoc]
 
-theorem mul_pf_right {a b₃ c : R} (b₁ : R) (b₂) (_ : a * b₃ = c) :
+theorem mul_pf_right (b₁ : R) (b₂) (_ : a * b₃ = c) :
     a * (b₁ ^ b₂ * b₃) = b₁ ^ b₂ * c := by
   subst_vars; rw [mul_left_comm]
 
-theorem mul_pp_pf_overlap {ea eb e : ℕ} {a₂ b₂ c : R} (x : R) (_ : ea + eb = e) (_ : a₂ * b₂ = c) :
+theorem mul_pp_pf_overlap {ea eb e : ℕ} (x : R) (_ : ea + eb = e) (_ : a₂ * b₂ = c) :
     (x ^ ea * a₂ : R) * (x ^ eb * b₂) = x ^ e * c := by
   subst_vars; simp [pow_add, mul_mul_mul_comm]
 
@@ -431,8 +430,8 @@ partial def evalMulProd {a b : Q($α)} (va : ExProd sα a) (vb : ExProd sα b) :
 
 theorem mul_zero (a : R) : a * 0 = 0 := by simp
 
-theorem mul_add {a b₁ c₁ b₂ c₂ d : R}
-    (_ : (a : R) * b₁ = c₁) (_ : a * b₂ = c₂) (_ : c₁ + 0 + c₂ = d) : a * (b₁ + b₂) = d := by
+theorem mul_add {d : R} (_ : (a : R) * b₁ = c₁) (_ : a * b₂ = c₂) (_ : c₁ + 0 + c₂ = d) :
+    a * (b₁ + b₂) = d := by
   subst_vars; simp [_root_.mul_add]
 
 /-- Multiplies a monomial `va` to a polynomial `vb` to get a normalized result polynomial.
@@ -451,7 +450,7 @@ def evalMul₁ {a b : Q($α)} (va : ExProd sα a) (vb : ExSum sα b) : Result (E
 
 theorem zero_mul (b : R) : 0 * b = 0 := by simp
 
-theorem add_mul {a₁ b c₁ a₂ c₂ d : R} (_ : (a₁ : R) * b = c₁) (_ : a₂ * b = c₂) (_ : c₁ + c₂ = d) :
+theorem add_mul {d : R} (_ : (a₁ : R) * b = c₁) (_ : a₂ * b = c₂) (_ : c₁ + c₂ = d) :
     (a₁ + a₂) * b = d := by subst_vars; simp [_root_.add_mul]
 
 /-- Multiplies two polynomials `va, vb` together to get a normalized result polynomial.
@@ -470,13 +469,13 @@ def evalMul {a b : Q($α)} (va : ExSum sα a) (vb : ExSum sα b) : Result (ExSum
 
 theorem natCast_nat (n) : ((Nat.rawCast n : ℕ) : R) = Nat.rawCast n := by simp
 
-theorem natCast_mul {a₁ a₃ : ℕ} {b₁ b₃ : R} (a₂) (_ : ((a₁ : ℕ) : R) = b₁)
+theorem natCast_mul {a₁ a₃ : ℕ} (a₂) (_ : ((a₁ : ℕ) : R) = b₁)
     (_ : ((a₃ : ℕ) : R) = b₃) : ((a₁ ^ a₂ * a₃ : ℕ) : R) = b₁ ^ a₂ * b₃ := by
   subst_vars; simp
 
 theorem natCast_zero : ((0 : ℕ) : R) = 0 := Nat.cast_zero
 
-theorem natCast_add {a₁ a₂ : ℕ} {b₁ b₂ : R}
+theorem natCast_add {a₁ a₂ : ℕ}
     (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b₂) : ((a₁ + a₂ : ℕ) : R) = b₁ + b₂ := by
   subst_vars; simp
 
@@ -529,8 +528,7 @@ end
 
 theorem smul_nat {a b c : ℕ} (_ : (a * b : ℕ) = c) : a • b = c := by subst_vars; simp
 
-theorem smul_eq_cast {a : ℕ} {a' b c : R}
-    (_ : ((a : ℕ) : R) = a') (_ : a' * b = c) : a • b = c := by
+theorem smul_eq_cast {a : ℕ} (_ : ((a : ℕ) : R) = a') (_ : a' * b = c) : a • b = c := by
   subst_vars; simp
 
 /-- Constructs the scalar multiplication `n • a`, where both `n : ℕ` and `a : α` are normalized
@@ -693,11 +691,11 @@ end
 
 theorem pow_one (a : R) : a ^ nat_lit 1 = a := by simp
 
-theorem pow_bit0 {a : R} {k : ℕ} {b c : R} (_ : (a : R) ^ k = b) (_ : b * b = c) :
+theorem pow_bit0 {k : ℕ} (_ : (a : R) ^ k = b) (_ : b * b = c) :
     a ^ (Nat.mul (nat_lit 2) k) = c := by
   subst_vars; simp [Nat.succ_mul, pow_add]
 
-theorem pow_bit1 {a : R} {k : ℕ} {b c d : R} (_ : (a : R) ^ k = b) (_ : b * b = c) (_ : c * a = d) :
+theorem pow_bit1 {k : ℕ} {d : R} (_ : (a : R) ^ k = b) (_ : b * b = c) (_ : c * a = d) :
     a ^ (Nat.add (Nat.mul (nat_lit 2) k) (nat_lit 1)) = d := by
   subst_vars; simp [Nat.succ_mul, pow_add]
 
@@ -729,7 +727,7 @@ partial def evalPowNat {a : Q($α)} (va : ExSum sα a) (n : Q(ℕ)) : Result (Ex
 
 theorem one_pow (b : ℕ) : ((nat_lit 1).rawCast : R) ^ b = (nat_lit 1).rawCast := by simp
 
-theorem mul_pow {ea₁ b c₁ : ℕ} {a₂ c₂ xa₁ : R}
+theorem mul_pow {ea₁ b c₁ : ℕ} {xa₁ : R}
     (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂) : (xa₁ ^ ea₁ * a₂ : R) ^ b = xa₁ ^ c₁ * c₂ := by
   subst_vars; simp [_root_.mul_pow, pow_mul]
 
@@ -802,10 +800,10 @@ theorem pow_one_cast (a : R) : a ^ (nat_lit 1).rawCast = a := by simp
 
 theorem zero_pow {b : ℕ} (_ : 0 < b) : (0 : R) ^ b = 0 := match b with | b+1 => by simp [pow_succ]
 
-theorem single_pow {a : R} {b : ℕ} {c : R} (_ : (a : R) ^ b = c) : (a + 0) ^ b = c + 0 := by
+theorem single_pow {b : ℕ} (_ : (a : R) ^ b = c) : (a + 0) ^ b = c + 0 := by
   simp [*]
 
-theorem pow_nat {b c k : ℕ} {a d e : R} (_ : b = c * k) (_ : a ^ c = d) (_ : d ^ k = e) :
+theorem pow_nat {b c k : ℕ} {d e : R} (_ : b = c * k) (_ : a ^ c = d) (_ : d ^ k = e) :
     (a : R) ^ b = e := by
   subst_vars; simp [pow_mul]
 
@@ -840,7 +838,7 @@ partial def evalPow₁ {a : Q($α)} {b : Q(ℕ)} (va : ExSum sα a) (vb : ExProd
 
 theorem pow_zero (a : R) : a ^ 0 = (nat_lit 1).rawCast + 0 := by simp
 
-theorem pow_add {a : R} {b₁ : ℕ} {c₁ : R} {b₂ : ℕ} {c₂ d : R}
+theorem pow_add {b₁ b₂ : ℕ} {d : R}
     (_ : a ^ b₁ = c₁) (_ : a ^ b₂ = c₂) (_ : c₁ * c₂ = d) : (a : R) ^ (b₁ + b₂) = d := by
   subst_vars; simp [_root_.pow_add]
 
@@ -875,10 +873,10 @@ def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) : MetaM (Cache sα) :=
     dα := (← trySynthInstanceQ q(DivisionRing $α)).toOption
     czα := (← trySynthInstanceQ q(CharZero $α)).toOption }
 
-theorem cast_pos {a : R} {n : ℕ} : IsNat (a : R) n → a = n.rawCast + 0
+theorem cast_pos {n : ℕ} : IsNat (a : R) n → a = n.rawCast + 0
   | ⟨e⟩ => by simp [e]
 
-theorem cast_zero {a : R} : IsNat (a : R) (nat_lit 0) → a = 0
+theorem cast_zero : IsNat (a : R) (nat_lit 0) → a = 0
   | ⟨e⟩ => by simp [e]
 
 theorem cast_neg {n : ℕ} {R} [Ring R] {a : R} :
@@ -910,10 +908,10 @@ def evalCast {α : Q(Type u)} (sα : Q(CommSemiring $α)) {e : Q($α)} :
     pure ⟨_, (ExProd.mkRat sα dα q n d q(IsRat.den_nz $p)).2.toSum, (q(cast_rat $p) : Expr)⟩
   | _ => none
 
-theorem toProd_pf {a a' : R} (p : (a : R) = a') :
+theorem toProd_pf (p : (a : R) = a') :
     a = a' ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast := by simp [*]
 theorem atom_pf (a : R) : a = a ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast + 0 := by simp
-theorem atom_pf' {a a' : R} (p : (a : R) = a') :
+theorem atom_pf' (p : (a : R) = a') :
     a = a' ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast + 0 := by simp [*]
 
 /--
@@ -939,8 +937,8 @@ nonrec theorem inv_zero {R} [DivisionRing R] : (0 : R)⁻¹ = 0 := inv_zero
 
 theorem inv_single {R} [DivisionRing R] {a b : R}
     (_ : (a : R)⁻¹ = b) : (a + 0)⁻¹ = b + 0 := by simp [*]
-theorem inv_add {a₁ : ℕ} {b₁ : R} {a₂ : ℕ} {b₂ : R}
-    (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b₂) : ((a₁ + a₂ : ℕ) : R) = b₁ + b₂ := by
+theorem inv_add {a₁ a₂ : ℕ} (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b₂) :
+    ((a₁ + a₂ : ℕ) : R) = b₁ + b₂ := by
   subst_vars; simp
 
 section
@@ -1009,19 +1007,19 @@ def evalDiv {a b : Q($α)} (rα : Q(DivisionRing $α)) (czα : Option Q(CharZero
   let ⟨d, vd, (pd : Q($a * $_c = $d))⟩ := evalMul sα va vc
   pure ⟨d, vd, (q(div_pf $pc $pd) : Expr)⟩
 
-theorem add_congr {a a' b b' c : R}
+theorem add_congr
     (_ : a = a') (_ : b = b') (_ : a' + b' = c) : (a + b : R) = c := by
   subst_vars; rfl
 
-theorem mul_congr {a a' b b' c : R}
+theorem mul_congr
     (_ : a = a') (_ : b = b') (_ : a' * b' = c) : (a * b : R) = c := by
   subst_vars; rfl
 
-theorem nsmul_congr {a a' : ℕ} {b b' c : R} (_ : (a : ℕ) = a') (_ : b = b') (_ : a' • b' = c) :
+theorem nsmul_congr {a a' : ℕ} (_ : (a : ℕ) = a') (_ : b = b') (_ : a' • b' = c) :
     (a • (b : R)) = c := by
   subst_vars; rfl
 
-theorem pow_congr {a a' c : R} {b b' : ℕ} (_ : a = a') (_ : b = b')
+theorem pow_congr {b b' : ℕ} (_ : a = a') (_ : b = b')
     (_ : a' ^ b' = c) : (a ^ b : R) = c := by subst_vars; rfl
 
 theorem neg_congr {R} [Ring R] {a a' b : R} (_ : a = a')
@@ -1160,7 +1158,7 @@ theorem of_lift {α β} [inst : CSLift α β] {a b : α} {a' b' : β}
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
 
-theorem of_eq {a c b : R} (_ : (a : R) = c) (_ : b = c) : a = b := by subst_vars; rfl
+theorem of_eq (_ : (a : R) = c) (_ : b = c) : a = b := by subst_vars; rfl
 
 /--
 This is a routine which is used to clean up the unsolved subgoal
