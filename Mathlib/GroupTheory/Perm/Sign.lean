@@ -80,7 +80,7 @@ def swapFactorsAux :
 
 /-- `swapFactors` represents a permutation as a product of a list of transpositions.
 The representation is non unique and depends on the linear order structure.
-For types without linear order `truncSwapFactors` can be used. -/
+For types without linear order `squashSwapFactors` can be used. -/
 def swapFactors [Fintype α] [LinearOrder α] (f : Perm α) :
     { l : List (Perm α) // l.prod = f ∧ ∀ g ∈ l, IsSwap g } :=
   swapFactorsAux ((@univ α _).sort (· ≤ ·)) f fun {_ _} => (mem_sort _).2 (mem_univ _)
@@ -88,11 +88,11 @@ def swapFactors [Fintype α] [LinearOrder α] (f : Perm α) :
 
 /-- This computably represents the fact that any permutation can be represented as the product of
   a list of transpositions. -/
-def truncSwapFactors [Fintype α] (f : Perm α) :
-    Trunc { l : List (Perm α) // l.prod = f ∧ ∀ g ∈ l, IsSwap g } :=
-  Quotient.recOnSubsingleton (@univ α _).1 (fun l h => Trunc.mk (swapFactorsAux l f (h _)))
+def squashSwapFactors [Fintype α] (f : Perm α) :
+    Squash { l : List (Perm α) // l.prod = f ∧ ∀ g ∈ l, IsSwap g } :=
+  Quotient.recOnSubsingleton (@univ α _).1 (fun l h => Squash.mk (swapFactorsAux l f (h _)))
     (show ∀ x, f x ≠ x → x ∈ (@univ α _).1 from fun _ _ => mem_univ _)
-#align equiv.perm.trunc_swap_factors Equiv.Perm.truncSwapFactors
+#align equiv.perm.trunc_swap_factors Equiv.Perm.squashSwapFactors
 
 /-- An induction principle for permutations. If `P` holds for the identity permutation, and
 is preserved under composition with a non-trivial swap, then `P` holds for all permutations. -/
@@ -100,7 +100,7 @@ is preserved under composition with a non-trivial swap, then `P` holds for all p
 theorem swap_induction_on [Finite α] {P : Perm α → Prop} (f : Perm α) :
     P 1 → (∀ f x y, x ≠ y → P f → P (swap x y * f)) → P f := by
   cases nonempty_fintype α
-  cases' (truncSwapFactors f).out with l hl
+  cases' (squashSwapFactors f).out with l hl
   induction' l with g l ih generalizing f
   · simp (config := { contextual := true }) only [hl.left.symm, List.prod_nil, forall_true_iff]
   · intro h1 hmul_swap
@@ -114,7 +114,7 @@ theorem swap_induction_on [Finite α] {P : Perm α → Prop} (f : Perm α) :
 theorem mclosure_isSwap [Finite α] : Submonoid.closure { σ : Perm α | IsSwap σ } = ⊤ := by
   cases nonempty_fintype α
   refine top_unique fun x _ ↦ ?_
-  obtain ⟨h1, h2⟩ := Subtype.mem (truncSwapFactors x).out
+  obtain ⟨h1, h2⟩ := Subtype.mem (squashSwapFactors x).out
   rw [← h1]
   exact Submonoid.list_prod_mem _ fun y hy ↦ Submonoid.subset_closure (h2 y hy)
 
@@ -485,7 +485,7 @@ theorem eq_sign_of_surjective_hom {s : Perm α →* ℤˣ} (hs : Surjective s) :
           rw [← isConj_iff_eq, ← Or.resolve_right (Int.units_eq_one_or _) h, hab']
           exact s.map_isConj (isConj_swap hab hxy)
         let ⟨g, hg⟩ := hs (-1)
-        let ⟨l, hl⟩ := (truncSwapFactors g).out
+        let ⟨l, hl⟩ := (squashSwapFactors g).out
         have : ∀ a ∈ l.map s, a = (1 : ℤˣ) := fun a ha =>
           let ⟨g, hg⟩ := List.mem_map.1 ha
           hg.2 ▸ this _ (hl.2 _ hg.1)
@@ -494,7 +494,7 @@ theorem eq_sign_of_surjective_hom {s : Perm α →* ℤˣ} (hs : Surjective s) :
         rw [hl.1, hg] at this
         exact absurd this (by simp_all)
   MonoidHom.ext fun f => by
-    let ⟨l, hl₁, hl₂⟩ := (truncSwapFactors f).out
+    let ⟨l, hl₁, hl₂⟩ := (squashSwapFactors f).out
     have hsl : ∀ a ∈ l.map s, a = (-1 : ℤˣ) := fun a ha =>
       let ⟨g, hg⟩ := List.mem_map.1 ha
       hg.2 ▸ this (hl₂ _ hg.1)
@@ -504,7 +504,7 @@ theorem eq_sign_of_surjective_hom {s : Perm α →* ℤˣ} (hs : Surjective s) :
 
 theorem sign_subtypePerm (f : Perm α) {p : α → Prop} [DecidablePred p] (h₁ : ∀ x, p x ↔ p (f x))
     (h₂ : ∀ x, f x ≠ x → p x) : sign (subtypePerm f h₁) = sign f := by
-  let l := (truncSwapFactors (subtypePerm f h₁)).out
+  let l := (squashSwapFactors (subtypePerm f h₁)).out
   have hl' : ∀ g' ∈ l.1.map ofSubtype, IsSwap g' := fun g' hg' =>
     let ⟨g, hg⟩ := List.mem_map.1 hg'
     hg.2 ▸ (l.2.2 _ hg.1).of_subtype_isSwap

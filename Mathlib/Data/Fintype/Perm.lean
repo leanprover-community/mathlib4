@@ -153,8 +153,8 @@ def fintypePerm [Fintype α] : Fintype (Perm α) :=
 
 instance equivFintype [Fintype α] [Fintype β] : Fintype (α ≃ β) :=
   if h : Fintype.card β = Fintype.card α then
-    Trunc.recOnSubsingleton (Fintype.truncEquivFin α) fun eα =>
-      Trunc.recOnSubsingleton (Fintype.truncEquivFin β) fun eβ =>
+    Squash.recOnSubsingleton (Fintype.squashEquivFin α) fun eα =>
+      Squash.recOnSubsingleton (Fintype.squashEquivFin β) fun eβ =>
         @Fintype.ofEquiv _ (Perm α) fintypePerm
           (equivCongr (Equiv.refl α) (eα.trans (Eq.recOn h eβ.symm)) : α ≃ α ≃ (α ≃ β))
   else ⟨∅, fun x => False.elim (h (Fintype.card_eq.2 ⟨x.symm⟩))⟩

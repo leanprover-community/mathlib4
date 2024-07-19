@@ -133,9 +133,9 @@ def encodableOfList [DecidableEq α] (l : List α) (H : ∀ x, x ∈ l) : Encoda
 
 /-- A finite type is encodable. Because the encoding is not unique, we wrap it in `Trunc` to
 preserve computability. -/
-def _root_.Fintype.truncEncodable (α : Type*) [DecidableEq α] [Fintype α] : Trunc (Encodable α) :=
-  @Quot.recOnSubsingleton' _ _ (fun s : Multiset α => (∀ x : α, x ∈ s) → Trunc (Encodable α)) _
-    Finset.univ.1 (fun l H => Trunc.mk <| encodableOfList l H) Finset.mem_univ
+def _root_.Fintype.truncEncodable (α : Type*) [DecidableEq α] [Fintype α] : Squash (Encodable α) :=
+  @Quot.recOnSubsingleton' _ _ (fun s : Multiset α => (∀ x : α, x ∈ s) → Squash (Encodable α)) _
+    Finset.univ.1 (fun l H => Squash.mk <| encodableOfList l H) Finset.mem_univ
 #align fintype.trunc_encodable Fintype.truncEncodable
 
 /-- A noncomputable way to arbitrarily choose an ordering on a finite type.
@@ -180,18 +180,18 @@ instance _root_.Finset.countable [Countable α] : Countable (Finset α) :=
 /-- When `α` is finite and `β` is encodable, `α → β` is encodable too. Because the encoding is not
 unique, we wrap it in `Trunc` to preserve computability. -/
 def fintypeArrow (α : Type*) (β : Type*) [DecidableEq α] [Fintype α] [Encodable β] :
-    Trunc (Encodable (α → β)) :=
-  (Fintype.truncEquivFin α).map fun f =>
+    Squash (Encodable (α → β)) :=
+  (Fintype.squashEquivFin α).map fun f =>
     Encodable.ofEquiv (Fin (Fintype.card α) → β) <| Equiv.arrowCongr f (Equiv.refl _)
 #align encodable.fintype_arrow Encodable.fintypeArrow
 
 /-- When `α` is finite and all `π a` are encodable, `Π a, π a` is encodable too. Because the
 encoding is not unique, we wrap it in `Trunc` to preserve computability. -/
 def fintypePi (α : Type*) (π : α → Type*) [DecidableEq α] [Fintype α] [∀ a, Encodable (π a)] :
-    Trunc (Encodable (∀ a, π a)) :=
+    Squash (Encodable (∀ a, π a)) :=
   (Fintype.truncEncodable α).bind fun a =>
     (@fintypeArrow α (Σa, π a) _ _ (@Sigma.encodable _ _ a _)).bind fun f =>
-      Trunc.mk <|
+      Squash.mk <|
         @Encodable.ofEquiv _ _ (@Subtype.encodable _ _ f _)
           (Equiv.piEquivSubtypeSigma α π)
 #align encodable.fintype_pi Encodable.fintypePi

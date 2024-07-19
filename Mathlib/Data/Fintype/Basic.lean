@@ -1186,32 +1186,32 @@ end BijectionInverse
 
 end Fintype
 
-section Trunc
+section Squash
 
-/-- For `s : Multiset α`, we can lift the existential statement that `∃ x, x ∈ s` to a `Trunc α`.
+/-- For `s : Multiset α`, we can lift the existential statement that `∃ x, x ∈ s` to a `Squash α`.
 -/
-def truncOfMultisetExistsMem {α} (s : Multiset α) : (∃ x, x ∈ s) → Trunc α :=
+def squashOfMultisetExistsMem {α} (s : Multiset α) : (∃ x, x ∈ s) → Squash α :=
   Quotient.recOnSubsingleton s fun l h =>
     match l, h with
     | [], _ => False.elim (by tauto)
-    | a :: _, _ => Trunc.mk a
-#align trunc_of_multiset_exists_mem truncOfMultisetExistsMem
+    | a :: _, _ => Squash.mk a
+#align trunc_of_multiset_exists_mem squashOfMultisetExistsMem
 
 /-- A `Nonempty` `Fintype` constructively contains an element.
 -/
-def truncOfNonemptyFintype (α) [Nonempty α] [Fintype α] : Trunc α :=
-  truncOfMultisetExistsMem Finset.univ.val (by simp)
-#align trunc_of_nonempty_fintype truncOfNonemptyFintype
+def squashOfNonemptyFintype (α) [Nonempty α] [Fintype α] : Squash α :=
+  squashOfMultisetExistsMem Finset.univ.val (by simp)
+#align trunc_of_nonempty_fintype squashOfNonemptyFintype
 
 /-- By iterating over the elements of a fintype, we can lift an existential statement `∃ a, P a`
-to `Trunc (Σ' a, P a)`, containing data.
+to `Squash (Σ' a, P a)`, containing data.
 -/
-def truncSigmaOfExists {α} [Fintype α] {P : α → Prop} [DecidablePred P] (h : ∃ a, P a) :
-    Trunc (Σ'a, P a) :=
-  @truncOfNonemptyFintype (Σ'a, P a) ((Exists.elim h) fun a ha => ⟨⟨a, ha⟩⟩) _
-#align trunc_sigma_of_exists truncSigmaOfExists
+def squashSigmaOfExists {α} [Fintype α] {P : α → Prop} [DecidablePred P] (h : ∃ a, P a) :
+    Squash (Σ'a, P a) :=
+  @squashOfNonemptyFintype (Σ'a, P a) ((Exists.elim h) fun a ha => ⟨⟨a, ha⟩⟩) _
+#align trunc_sigma_of_exists squashSigmaOfExists
 
-end Trunc
+end Squash
 
 namespace Multiset
 

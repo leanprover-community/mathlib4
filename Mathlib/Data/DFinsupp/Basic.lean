@@ -63,7 +63,7 @@ structure DFinsupp [∀ i, Zero (β i)] : Type max u v where mk' ::
   /-- The underlying function of a dependent function with finite support (aka `DFinsupp`). -/
   toFun : ∀ i, β i
   /-- The support of a dependent function with finite support (aka `DFinsupp`). -/
-  support' : Trunc { s : Multiset ι // ∀ i, i ∈ s ∨ toFun i = 0 }
+  support' : Squash { s : Multiset ι // ∀ i, i ∈ s ∨ toFun i = 0 }
 #align dfinsupp DFinsupp
 
 variable {β}
@@ -105,7 +105,7 @@ theorem ext {f g : Π₀ i, β i} (h : ∀ i, f i = g i) : f = g :=
 lemma ne_iff {f g : Π₀ i, β i} : f ≠ g ↔ ∃ i, f i ≠ g i := DFunLike.ne_iff
 
 instance : Zero (Π₀ i, β i) :=
-  ⟨⟨0, Trunc.mk <| ⟨∅, fun _ => Or.inr rfl⟩⟩⟩
+  ⟨⟨0, Squash.mk <| ⟨∅, fun _ => Or.inr rfl⟩⟩⟩
 
 instance : Inhabited (Π₀ i, β i) :=
   ⟨0⟩
@@ -552,7 +552,7 @@ section Basic
 variable [∀ i, Zero (β i)]
 
 theorem finite_support (f : Π₀ i, β i) : Set.Finite { i | f i ≠ 0 } :=
-  Trunc.induction_on f.support' fun xs ↦
+  Squash.induction_on f.support' fun xs ↦
     xs.1.finite_toSet.subset fun i H ↦ ((xs.prop i).resolve_right H)
 #align dfinsupp.finite_support DFinsupp.finite_support
 
@@ -560,7 +560,7 @@ theorem finite_support (f : Π₀ i, β i) : Set.Finite { i | f i ≠ 0 } :=
 defined on this `Finset`. -/
 def mk (s : Finset ι) (x : ∀ i : (↑s : Set ι), β (i : ι)) : Π₀ i, β i :=
   ⟨fun i => if H : i ∈ s then x ⟨i, H⟩ else 0,
-    Trunc.mk ⟨s.1, fun i => if H : i ∈ s then Or.inl H else Or.inr <| dif_neg H⟩⟩
+    Squash.mk ⟨s.1, fun i => if H : i ∈ s then Or.inl H else Or.inr <| dif_neg H⟩⟩
 #align dfinsupp.mk DFinsupp.mk
 
 variable {s : Finset ι} {x : ∀ i : (↑s : Set ι), β i} {i : ι}
@@ -600,7 +600,7 @@ instance uniqueOfIsEmpty [IsEmpty ι] : Unique (Π₀ i, β i) :=
 @[simps apply]
 def equivFunOnFintype [Fintype ι] : (Π₀ i, β i) ≃ ∀ i, β i where
   toFun := (⇑)
-  invFun f := ⟨f, Trunc.mk ⟨Finset.univ.1, fun _ => Or.inl <| Finset.mem_univ_val _⟩⟩
+  invFun f := ⟨f, Squash.mk ⟨Finset.univ.1, fun _ => Or.inl <| Finset.mem_univ_val _⟩⟩
   left_inv _ := DFunLike.coe_injective rfl
   right_inv _ := rfl
 #align dfinsupp.equiv_fun_on_fintype DFinsupp.equivFunOnFintype
@@ -615,7 +615,7 @@ theorem equivFunOnFintype_symm_coe [Fintype ι] (f : Π₀ i, β i) : equivFunOn
 and all other points to `0`. -/
 def single (i : ι) (b : β i) : Π₀ i, β i :=
   ⟨Pi.single i b,
-    Trunc.mk ⟨{i}, fun j => (Decidable.eq_or_ne j i).imp (by simp) fun h => Pi.single_eq_of_ne h _⟩⟩
+    Squash.mk ⟨{i}, fun j => (Decidable.eq_or_ne j i).imp (by simp) fun h => Pi.single_eq_of_ne h _⟩⟩
 #align dfinsupp.single DFinsupp.single
 
 theorem single_eq_pi_single {i b} : ⇑(single i b : Π₀ i, β i) = Pi.single i b :=
@@ -948,14 +948,14 @@ theorem erase_add_single (i : ι) (f : Π₀ i, β i) : f.erase i + single i (f 
 protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (h0 : p 0)
     (ha : ∀ (i b) (f : Π₀ i, β i), f i = 0 → b ≠ 0 → p f → p (single i b + f)) : p f := by
   cases' f with f s
-  induction' s using Trunc.induction_on with s
+  induction' s using Squash.induction_on with s
   cases' s with s H
   induction' s using Multiset.induction_on with i s ih generalizing f
   · have : f = 0 := funext fun i => (H i).resolve_left (Multiset.not_mem_zero _)
     subst this
     exact h0
-  have H2 : p (erase i ⟨f, Trunc.mk ⟨i ::ₘ s, H⟩⟩) := by
-    dsimp only [erase, Trunc.map, Trunc.bind, Trunc.liftOn, Trunc.lift_mk,
+  have H2 : p (erase i ⟨f, Squash.mk ⟨i ::ₘ s, H⟩⟩) := by
+    dsimp only [erase, Squash.map, Squash.bind, Squash.lift'On, Squash.lift'_mk,
       Function.comp, Subtype.coe_mk]
     have H2 : ∀ j, j ∈ s ∨ ite (j = i) 0 (f j) = 0 := by
       intro j
@@ -965,12 +965,12 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
         · left; exact H3
       right
       split_ifs <;> [rfl; exact H2]
-    have H3 : ∀ aux, (⟨fun j : ι => ite (j = i) 0 (f j), Trunc.mk ⟨i ::ₘ s, aux⟩⟩ : Π₀ i, β i) =
-        ⟨fun j : ι => ite (j = i) 0 (f j), Trunc.mk ⟨s, H2⟩⟩ :=
+    have H3 : ∀ aux, (⟨fun j : ι => ite (j = i) 0 (f j), Squash.mk ⟨i ::ₘ s, aux⟩⟩ : Π₀ i, β i) =
+        ⟨fun j : ι => ite (j = i) 0 (f j), Squash.mk ⟨s, H2⟩⟩ :=
       fun _ ↦ ext fun _ => rfl
     rw [H3]
     apply ih
-  have H3 : single i _ + _ = (⟨f, Trunc.mk ⟨i ::ₘ s, H⟩⟩ : Π₀ i, β i) := single_add_erase _ _
+  have H3 : single i _ + _ = (⟨f, Squash.mk ⟨i ::ₘ s, H⟩⟩ : Π₀ i, β i) := single_add_erase _ _
   rw [← H3]
   change p (single i (f i) + _)
   cases' Classical.em (f i = 0) with h h
@@ -1083,7 +1083,7 @@ variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 
 /-- Set `{i | f x ≠ 0}` as a `Finset`. -/
 def support (f : Π₀ i, β i) : Finset ι :=
-  (f.support'.lift fun xs => (Multiset.toFinset xs.1).filter fun i => f i ≠ 0) <| by
+  (f.support'.lift' fun xs => (Multiset.toFinset xs.1).filter fun i => f i ≠ 0) <| by
     rintro ⟨sx, hx⟩ ⟨sy, hy⟩
     dsimp only [Subtype.coe_mk, toFun_eq_coe] at *
     ext i; constructor
@@ -1102,15 +1102,15 @@ theorem support_mk_subset {s : Finset ι} {x : ∀ i : (↑s : Set ι), β i.1} 
 
 @[simp]
 theorem support_mk'_subset {f : ∀ i, β i} {s : Multiset ι} {h} :
-    (mk' f <| Trunc.mk ⟨s, h⟩).support ⊆ s.toFinset := fun i H =>
+    (mk' f <| Squash.mk ⟨s, h⟩).support ⊆ s.toFinset := fun i H =>
   Multiset.mem_toFinset.1 <| by simpa using (Finset.mem_filter.1 H).1
 #align dfinsupp.support_mk'_subset DFinsupp.support_mk'_subset
 
 @[simp]
 theorem mem_support_toFun (f : Π₀ i, β i) (i) : i ∈ f.support ↔ f i ≠ 0 := by
   cases' f with f s
-  induction' s using Trunc.induction_on with s
-  dsimp only [support, Trunc.lift_mk]
+  induction' s using Squash.induction_on with s
+  dsimp only [support, Squash.lift'_mk]
   rw [Finset.mem_filter, Multiset.mem_toFinset, coe_mk']
   exact and_iff_right_of_imp (s.prop i).resolve_right
 #align dfinsupp.mem_support_to_fun DFinsupp.mem_support_toFun
@@ -1883,7 +1883,7 @@ also an `AddMonoidHom`.
 def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) :
     (Π₀ i, β i) →+ γ where
   toFun f :=
-    (f.support'.lift fun s => ∑ i ∈ Multiset.toFinset s.1, φ i (f i)) <| by
+    (f.support'.lift' fun s => ∑ i ∈ Multiset.toFinset s.1, φ i (f i)) <| by
       rintro ⟨sx, hx⟩ ⟨sy, hy⟩
       dsimp only [Subtype.coe_mk, toFun_eq_coe] at *
       have H1 : sx.toFinset ∩ sy.toFinset ⊆ sx.toFinset := Finset.inter_subset_left
@@ -1929,7 +1929,7 @@ def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i 
 @[simp]
 theorem sumAddHom_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) (i)
     (x : β i) : sumAddHom φ (single i x) = φ i x := by
-  dsimp [sumAddHom, single, Trunc.lift_mk]
+  dsimp [sumAddHom, single, Squash.lift'_mk]
   rw [Multiset.toFinset_singleton, Finset.sum_singleton, Pi.single_eq_same]
 #align dfinsupp.sum_add_hom_single DFinsupp.sumAddHom_single
 
@@ -2022,7 +2022,7 @@ theorem sumAddHom_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type*} {β₂ :
       sumAddHom (fun i₁ => sumAddHom (fun i₂ => (h i₁ i₂).flip) f₂) f₁ := by
   obtain ⟨⟨f₁, s₁, h₁⟩, ⟨f₂, s₂, h₂⟩⟩ := f₁, f₂
   simp only [sumAddHom, AddMonoidHom.finset_sum_apply, Quotient.liftOn_mk, AddMonoidHom.coe_mk,
-    AddMonoidHom.flip_apply, Trunc.lift, toFun_eq_coe, ZeroHom.coe_mk, coe_mk']
+    AddMonoidHom.flip_apply, Squash.lift', toFun_eq_coe, ZeroHom.coe_mk, coe_mk']
   exact Finset.sum_comm
 #align dfinsupp.sum_add_hom_comm DFinsupp.sumAddHom_comm
 
