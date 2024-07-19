@@ -6,6 +6,7 @@ Authors: Floris van Doorn
 import Lean.Linter.Util
 import Batteries.Data.Array.Basic
 import Batteries.Tactic.Lint
+import Mathlib.Tactic.Lemma
 
 /-!
 # Linters for Mathlib
@@ -109,6 +110,76 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx => do
 initialize addLinter dupNamespace
 
 end DupNamespaceLinter
+
+/-!
+#  The "noRepeatedVariable" linter
+
+The "noRepeatedVariable" linter emits a warning somewhere.
+-/
+
+open Lean Elab
+
+/-- The "noRepeatedVariable" linter emits a warning when a variable in scope is repeated in a
+command. -/
+register_option linter.noRepeatedVariable : Bool := {
+  defValue := true
+  descr := "enable the noRepeatedVariable linter"
+}
+
+/-- `getBinders stx` returns the array of all the im/ex-plicit binders contained in `stx`. -/
+partial
+def getBinders : Syntax → Array Syntax
+  | stx@(.node _ kind args) =>
+    let fargs := (args.map getBinders).flatten
+    if kind == ``Lean.Parser.Term.implicitBinder || kind == ``Lean.Parser.Term.explicitBinder then
+      fargs.push stx else fargs
+  | _ => #[]
+
+/-- `getDeclBinders stx` returns the array of all the binders contained in `stx`, assuming that
+`stx` is a `theorem`, `lemma`, `example` and the binders are the ones appearing "before the `:`". -/
+def getDeclBinders : Syntax → (Array Syntax)
+  | `($_dm:declModifiers theorem $_did:declId $ds* : $_t $_dv:declVal) => ds
+  | `($_dm:declModifiers lemma   $_did:declId $ds* : $_t $_dv:declVal) => ds
+  | `($_dm:declModifiers example              $ds* : $_t $_dv:declVal) => ds
+  | `($_dm:declModifiers example              $ds*       $_dv:declVal) => ds
+  | _ => #[]
+
+namespace NoRepeatedVariable
+
+/-- Gets the value of the `linter.noRepeatedVariable` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.noRepeatedVariable o
+
+variable {α} [BEq α] in
+/--
+`largestSublist a b` extracts the largest initial segment of `a` that is an ordered sublist of `b`.
+-/
+def largestSublist : List α → List α → List α
+  | [], _ => []
+  | a::as, l =>
+    let l_until_a := l.dropWhile (· != a)
+    if ! l_until_a.isEmpty then
+      a :: largestSublist as (l_until_a.drop 1)
+    else []
+
+open Command in
+@[inherit_doc Mathlib.Linter.linter.noRepeatedVariable]
+def noRepeatedVariableLinter : Linter where
+  run := withSetOptionIn fun stx => do
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    if stx.isOfKind ``Lean.Parser.Command.variable then return
+    let binders := getDeclBinders stx
+    let sc ← getScope
+    let vars := sc.varDecls.map (·.raw)
+    let repeatedBinders := largestSublist binders.toList vars.toList --binders.filter vars.contains
+    for d in repeatedBinders do
+      Linter.logLint linter.noRepeatedVariable d m!"repeated: {← `(command| variable $(⟨d⟩))}"
+
+initialize addLinter noRepeatedVariableLinter
+
+end NoRepeatedVariable
 
 /-!
 #  `oneLineAlign` linter
