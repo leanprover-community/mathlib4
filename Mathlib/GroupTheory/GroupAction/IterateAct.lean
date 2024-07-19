@@ -3,7 +3,8 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.Group.Action.Defs
 
 /-!
 # Monoid action by iterates of a map
