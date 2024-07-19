@@ -8,8 +8,6 @@ import Mathlib.Topology.Algebra.Constructions
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.Topology.Algebra.ConstMulAction
 
-#align_import topology.algebra.mul_action from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
-
 /-!
 # Continuous monoid action
 
@@ -48,7 +46,6 @@ class ContinuousSMul (M X : Type*) [SMul M X] [TopologicalSpace M] [TopologicalS
     Prop where
   /-- The scalar multiplication `(•)` is continuous. -/
   continuous_smul : Continuous fun p : M × X => p.1 • p.2
-#align has_continuous_smul ContinuousSMul
 
 export ContinuousSMul (continuous_smul)
 
@@ -59,7 +56,6 @@ class ContinuousVAdd (M X : Type*) [VAdd M X] [TopologicalSpace M] [TopologicalS
     Prop where
   /-- The additive action `(+ᵥ)` is continuous. -/
   continuous_vadd : Continuous fun p : M × X => p.1 +ᵥ p.2
-#align has_continuous_vadd ContinuousVAdd
 
 export ContinuousVAdd (continuous_vadd)
 
@@ -80,23 +76,17 @@ instance : ContinuousSMul (ULift M) X :=
 @[to_additive]
 instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstSMul M X where
   continuous_const_smul _ := continuous_smul.comp (continuous_const.prod_mk continuous_id)
-#align has_continuous_smul.has_continuous_const_smul ContinuousSMul.continuousConstSMul
-#align has_continuous_vadd.has_continuous_const_vadd ContinuousVAdd.continuousConstVAdd
 
 @[to_additive]
 theorem Filter.Tendsto.smul {f : α → M} {g : α → X} {l : Filter α} {c : M} {a : X}
     (hf : Tendsto f l (𝓝 c)) (hg : Tendsto g l (𝓝 a)) :
     Tendsto (fun x => f x • g x) l (𝓝 <| c • a) :=
   (continuous_smul.tendsto _).comp (hf.prod_mk_nhds hg)
-#align filter.tendsto.smul Filter.Tendsto.smul
-#align filter.tendsto.vadd Filter.Tendsto.vadd
 
 @[to_additive]
 theorem Filter.Tendsto.smul_const {f : α → M} {l : Filter α} {c : M} (hf : Tendsto f l (𝓝 c))
     (a : X) : Tendsto (fun x => f x • a) l (𝓝 (c • a)) :=
   hf.smul tendsto_const_nhds
-#align filter.tendsto.smul_const Filter.Tendsto.smul_const
-#align filter.tendsto.vadd_const Filter.Tendsto.vadd_const
 
 variable {f : Y → M} {g : Y → X} {b : Y} {s : Set Y}
 
@@ -104,27 +94,19 @@ variable {f : Y → M} {g : Y → X} {b : Y} {s : Set Y}
 theorem ContinuousWithinAt.smul (hf : ContinuousWithinAt f s b) (hg : ContinuousWithinAt g s b) :
     ContinuousWithinAt (fun x => f x • g x) s b :=
   Filter.Tendsto.smul hf hg
-#align continuous_within_at.smul ContinuousWithinAt.smul
-#align continuous_within_at.vadd ContinuousWithinAt.vadd
 
 @[to_additive (attr := fun_prop)]
 theorem ContinuousAt.smul (hf : ContinuousAt f b) (hg : ContinuousAt g b) :
     ContinuousAt (fun x => f x • g x) b :=
   Filter.Tendsto.smul hf hg
-#align continuous_at.smul ContinuousAt.smul
-#align continuous_at.vadd ContinuousAt.vadd
 
 @[to_additive (attr := fun_prop)]
 theorem ContinuousOn.smul (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x => f x • g x) s := fun x hx => (hf x hx).smul (hg x hx)
-#align continuous_on.smul ContinuousOn.smul
-#align continuous_on.vadd ContinuousOn.vadd
 
 @[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x • g x :=
   continuous_smul.comp (hf.prod_mk hg)
-#align continuous.smul Continuous.smul
-#align continuous.vadd Continuous.vadd
 
 /-- If a scalar action is central, then its right action is continuous when its left action is. -/
 @[to_additive "If an additive action is central, then its right action is continuous when its left
@@ -134,15 +116,11 @@ instance ContinuousSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : Continuou
     suffices Continuous fun p : M × X => MulOpposite.op p.fst • p.snd from
       this.comp (MulOpposite.continuous_unop.prod_map continuous_id)
     simpa only [op_smul_eq_smul] using (continuous_smul : Continuous fun p : M × X => _)⟩
-#align has_continuous_smul.op ContinuousSMul.op
-#align has_continuous_vadd.op ContinuousVAdd.op
 
 @[to_additive]
 instance MulOpposite.continuousSMul : ContinuousSMul M Xᵐᵒᵖ :=
   ⟨MulOpposite.continuous_op.comp <|
       continuous_smul.comp <| continuous_id.prod_map MulOpposite.continuous_unop⟩
-#align mul_opposite.has_continuous_smul MulOpposite.continuousSMul
-#align add_opposite.has_continuous_vadd AddOpposite.continuousVAdd
 
 @[to_additive]
 protected theorem Specializes.smul {a b : M} {x y : X} (h₁ : a ⤳ b) (h₂ : x ⤳ y) :
@@ -202,8 +180,6 @@ variable [Monoid M] [MulAction M X] [ContinuousSMul M X]
 @[to_additive]
 instance Units.continuousSMul : ContinuousSMul Mˣ X :=
   inducing_id.continuousSMul Units.continuous_val rfl
-#align units.has_continuous_smul Units.continuousSMul
-#align add_units.has_continuous_vadd AddUnits.continuousVAdd
 
 /-- If an action is continuous, then composing this action with a continuous homomorphism gives
 again a continuous action. -/
@@ -262,15 +238,11 @@ theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
         continuous_sInf_rng.2 fun t ht =>
           continuous_sInf_dom₂ (Eq.refl _) ht
             (@ContinuousSMul.continuous_smul _ _ _ _ t (h t ht))
-#align has_continuous_smul_Inf continuousSMul_sInf
-#align has_continuous_vadd_Inf continuousVAdd_sInf
 
 @[to_additive]
 theorem continuousSMul_iInf {ts' : ι → TopologicalSpace X}
     (h : ∀ i, @ContinuousSMul M X _ _ (ts' i)) : @ContinuousSMul M X _ _ (⨅ i, ts' i) :=
   continuousSMul_sInf <| Set.forall_mem_range.mpr h
-#align has_continuous_smul_infi continuousSMul_iInf
-#align has_continuous_vadd_infi continuousVAdd_iInf
 
 @[to_additive]
 theorem continuousSMul_inf {t₁ t₂ : TopologicalSpace X} [@ContinuousSMul M X _ _ t₁]
@@ -278,8 +250,6 @@ theorem continuousSMul_inf {t₁ t₂ : TopologicalSpace X} [@ContinuousSMul M X
   rw [inf_eq_iInf]
   refine continuousSMul_iInf fun b => ?_
   cases b <;> assumption
-#align has_continuous_smul_inf continuousSMul_inf
-#align has_continuous_vadd_inf continuousVAdd_inf
 
 end LatticeOps
 
@@ -297,6 +267,5 @@ protected theorem AddTorsor.connectedSpace : ConnectedSpace P :=
           (continuous_id.vadd continuous_const).continuousOn
       rw [Set.image_univ, Equiv.range_eq_univ]
     toNonempty := inferInstance }
-#align add_torsor.connected_space AddTorsor.connectedSpace
 
 end AddTorsor

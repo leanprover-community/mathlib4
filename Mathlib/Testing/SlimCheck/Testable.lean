@@ -6,8 +6,6 @@ Authors: Henrik Böving, Simon Hudon
 import Mathlib.Testing.SlimCheck.Sampleable
 import Lean
 
-#align_import testing.slim_check.testable from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
-
 /-!
 # `Testable` Class
 

@@ -12,7 +12,6 @@ import Mathlib.Mathport.Rename
 
 class Zero.{u} (α : Type u) where
   zero : α
-#align has_zero Zero
 
 instance (priority := 300) Zero.toOfNat0 {α} [Zero α] : OfNat α (nat_lit 0) where
   ofNat := ‹Zero α›.1
@@ -25,7 +24,6 @@ universe u
 @[to_additive]
 class One (α : Type u) where
   one : α
-#align has_one One
 
 @[to_additive existing Zero.toOfNat0]
 instance (priority := 300) One.toOfNat1 {α} [One α] : OfNat α (nat_lit 1) where
