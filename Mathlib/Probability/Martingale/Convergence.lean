@@ -144,8 +144,7 @@ theorem tendsto_of_uncrossing_lt_top (hf₁ : liminf (fun n => (‖f n ω‖₊ 
   by_cases h : IsBoundedUnder (· ≤ ·) atTop fun n => |f n ω|
   · rw [isBoundedUnder_le_abs] at h
     refine tendsto_of_no_upcrossings Rat.denseRange_cast ?_ h.1 h.2
-    intro a ha b hb hab
-    obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩⟩ := ha, hb
+    rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ hab
     exact not_frequently_of_upcrossings_lt_top hab (hf₂ a b (Rat.cast_lt.1 hab)).ne
   · obtain ⟨a, b, hab, h₁, h₂⟩ := ENNReal.exists_upcrossings_of_not_bounded_under hf₁.ne h
     exact
@@ -402,10 +401,9 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
   · rintro t ⟨n, ht⟩ -
     exact this n _ ht
   · rintro t htmeas ht -
-    have hgeq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas (hg.trim hle hgmeas)
-    have hheq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas
+    have hgeq := @setIntegral_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas (hg.trim hle hgmeas)
+    have hheq := @setIntegral_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas
       (hlimint.trim hle stronglyMeasurable_limitProcess)
-    rw [add_comm, ← eq_sub_iff_add_eq] at hgeq hheq
     rw [setIntegral_trim hle hgmeas htmeas.compl,
       setIntegral_trim hle stronglyMeasurable_limitProcess htmeas.compl, hgeq, hheq, ←
       setIntegral_trim hle hgmeas htmeas, ←

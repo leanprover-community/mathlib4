@@ -163,7 +163,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
     -- third goal : `Tendsto (fun (n : ℕ) => √(b n)) atTop (𝓝 0)`
     suffices Tendsto (fun x ↦ √(8 * δ * x + 4 * x * x) : ℝ → ℝ) (𝓝 0) (𝓝 0)
       from this.comp tendsto_one_div_add_atTop_nhds_zero_nat
-    exact Continuous.tendsto' (by continuity) _ _ (by simp)
+    exact Continuous.tendsto' (by fun_prop) _ _ (by simp)
   -- Step 3: By completeness of `K`, let `w : ℕ → K` converge to some `v : K`.
   -- Prove that it satisfies all requirements.
   rcases cauchySeq_tendsto_of_isComplete h₁ (fun n => Subtype.mem _) seq_is_cauchy with
@@ -238,7 +238,6 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
       have : 2 * p ≤ p :=
         calc
           2 * p ≤ θ * q := by
-            set_option tactic.skipAssignedInstances false in
             exact this θ (lt_min (by norm_num) (div_pos hp q_pos)) (by norm_num [θ])
           _ ≤ p := eq₁
       linarith
@@ -635,7 +634,7 @@ theorem orthogonalProjection_singleton {v : E} (w : E) :
   have key :
     (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • ((orthogonalProjection (𝕜 ∙ v) w) : E) =
       (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v := by
-    simp [mul_smul, smul_orthogonalProjection_singleton 𝕜 w, -ofReal_pow]
+    simp [mul_smul, smul_orthogonalProjection_singleton 𝕜 w, -map_pow]
   convert key using 1 <;> field_simp [hv']
 #align orthogonal_projection_singleton orthogonalProjection_singleton
 
@@ -845,6 +844,12 @@ variable {K}
 theorem Submodule.isCompl_orthogonal_of_completeSpace [HasOrthogonalProjection K] : IsCompl K Kᗮ :=
   ⟨K.orthogonal_disjoint, codisjoint_iff.2 Submodule.sup_orthogonal_of_completeSpace⟩
 #align submodule.is_compl_orthogonal_of_complete_space Submodule.isCompl_orthogonal_of_completeSpace
+
+@[simp]
+theorem orthogonalComplement_eq_orthogonalComplement {L : Submodule 𝕜 E} [HasOrthogonalProjection K]
+    [HasOrthogonalProjection L] : Kᗮ = Lᗮ ↔ K = L :=
+  ⟨fun h ↦ by simpa using congr(Submodule.orthogonal $(h)),
+    fun h ↦ congr(Submodule.orthogonal $(h))⟩
 
 @[simp]
 theorem Submodule.orthogonal_eq_bot_iff [HasOrthogonalProjection K] : Kᗮ = ⊥ ↔ K = ⊤ := by

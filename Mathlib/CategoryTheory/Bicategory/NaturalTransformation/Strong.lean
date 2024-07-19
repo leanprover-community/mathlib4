@@ -15,12 +15,21 @@ is an isomorphism.
 
 ## Main definitions
 
+<<<<<<< HEAD
 * `StrongNatTrans F G` : strong natural transformations between oplax functors `F` and `G`.
 * `mkOfOplax η η'` : given an oplax natural transformation `η` such that each component 2-cell
   is an isomorphism, `mkOfOplax` gives the corresponding strong natural transformation.
 * `StrongNatTrans.vcomp η θ` : the vertical composition of strong natural transformations `η`
   and `θ`.
 * `StrongNatTrans.category F G` : a category structure on pseudofunctors between `F` and `G`,
+=======
+* `StrongOplaxNatTrans F G` : strong natural transformations between oplax functors `F` and `G`.
+* `mkOfOplax η η'` : given an oplax natural transformation `η` such that each component 2-cell
+  is an isomorphism, `mkOfOplax` gives the corresponding strong natural transformation.
+* `StrongOplaxNatTrans.vcomp η θ` : the vertical composition of strong natural transformations `η`
+  and `θ`.
+* `StrongOplaxNatTrans.category F G` : a category structure on pseudofunctors between `F` and `G`,
+>>>>>>> 23c87df3dc33f21c40279c894022a37b71ffa918
   where the morphisms are strong natural transformations.
 
 ## TODO
@@ -58,7 +67,11 @@ More precisely, it consists of the following:
 * These 2-isomorphisms satisfy the naturality condition, and preserve the identities and the
 compositions modulo some adjustments of domains and codomains of 2-morphisms.
 -/
+<<<<<<< HEAD
 structure StrongNatTrans (F G : OplaxFunctor B C) where
+=======
+structure StrongOplaxNatTrans (F G : OplaxFunctor B C) where
+>>>>>>> 23c87df3dc33f21c40279c894022a37b71ffa918
   app (a : B) : F.obj a ⟶ G.obj a
   naturality {a b : B} (f : a ⟶ b) : F.map f ≫ app b ≅ app a ≫ G.map f
   naturality_naturality :
@@ -77,6 +90,7 @@ structure StrongNatTrans (F G : OplaxFunctor B C) where
         (α_ _ _ _).inv ≫ (naturality f).hom ▷ G.map g ≫ (α_ _ _ _).hom := by
     aesop_cat
 
+<<<<<<< HEAD
 attribute [nolint docBlame] CategoryTheory.StrongNatTrans.app
   CategoryTheory.StrongNatTrans.naturality
   CategoryTheory.StrongNatTrans.naturality_naturality
@@ -87,26 +101,50 @@ attribute [reassoc (attr := simp)] StrongNatTrans.naturality_naturality StrongNa
   StrongNatTrans.naturality_comp
 
 namespace StrongNatTrans
+=======
+attribute [nolint docBlame] CategoryTheory.StrongOplaxNatTrans.app
+  CategoryTheory.StrongOplaxNatTrans.naturality
+  CategoryTheory.StrongOplaxNatTrans.naturality_naturality
+  CategoryTheory.StrongOplaxNatTrans.naturality_id
+  CategoryTheory.StrongOplaxNatTrans.naturality_comp
+
+attribute [reassoc (attr := simp)] StrongOplaxNatTrans.naturality_naturality
+  StrongOplaxNatTrans.naturality_id StrongOplaxNatTrans.naturality_comp
+
+namespace StrongOplaxNatTrans
+>>>>>>> 23c87df3dc33f21c40279c894022a37b71ffa918
 
 section
 
 /-- The underlying oplax natural transformation of a strong natural transformation. -/
 @[simps]
+<<<<<<< HEAD
 def toOplax {F G : OplaxFunctor B C} (η : StrongNatTrans F G) : OplaxNatTrans F G where
+=======
+def toOplax {F G : OplaxFunctor B C} (η : StrongOplaxNatTrans F G) : OplaxNatTrans F G where
+>>>>>>> 23c87df3dc33f21c40279c894022a37b71ffa918
   app := η.app
   naturality f := (η.naturality f).hom
 
 /-- Construct a strong natural transformation from an oplax natural transformation whose
 naturality 2-cell is an isomorphism. -/
 def mkOfOplax {F G : OplaxFunctor B C} (η : OplaxNatTrans F G) (η' : OplaxNatTrans.StrongCore η) :
+<<<<<<< HEAD
     StrongNatTrans F G where
+=======
+    StrongOplaxNatTrans F G where
+>>>>>>> 23c87df3dc33f21c40279c894022a37b71ffa918
   app := η.app
   naturality := η'.naturality
 
 /-- Construct a strong natural transformation from an oplax natural transformation whose
 naturality 2-cell is an isomorphism. -/
 noncomputable def mkOfOplax' {F G : OplaxFunctor B C} (η : OplaxNatTrans F G)
+<<<<<<< HEAD
     [∀ a b (f : a ⟶ b), IsIso (η.naturality f)] : StrongNatTrans F G where
+=======
+    [∀ a b (f : a ⟶ b), IsIso (η.naturality f)] : StrongOplaxNatTrans F G where
+>>>>>>> 23c87df3dc33f21c40279c894022a37b71ffa918
   app := η.app
   naturality := fun f => asIso (η.naturality _)
 
@@ -115,17 +153,28 @@ variable (F : OplaxFunctor B C)
 
 /-- The identity strong natural transformation. -/
 @[simps!]
+<<<<<<< HEAD
 def id : StrongNatTrans F F :=
+=======
+def id : StrongOplaxNatTrans F F :=
+>>>>>>> 23c87df3dc33f21c40279c894022a37b71ffa918
   mkOfOplax (OplaxNatTrans.id F) { naturality := λ f ↦ (ρ_ (F.map f)) ≪≫ (λ_ (F.map f)).symm }
 
 @[simp]
 lemma id.toOplax : (id F).toOplax = OplaxNatTrans.id F :=
   rfl
 
+<<<<<<< HEAD
 instance : Inhabited (StrongNatTrans F F) :=
   ⟨id F⟩
 
 variable {F} {G H : OplaxFunctor B C} (η : StrongNatTrans F G) (θ : StrongNatTrans G H)
+=======
+instance : Inhabited (StrongOplaxNatTrans F F) :=
+  ⟨id F⟩
+
+variable {F} {G H : OplaxFunctor B C} (η : StrongOplaxNatTrans F G) (θ : StrongOplaxNatTrans G H)
+>>>>>>> 23c87df3dc33f21c40279c894022a37b71ffa918
 
 section
 
@@ -181,15 +230,26 @@ end
 
 /-- Vertical composition of strong natural transformations. -/
 @[simps!]
+<<<<<<< HEAD
 def vcomp (η : StrongNatTrans F G) (θ : StrongNatTrans G H) : StrongNatTrans F H :=
+=======
+def vcomp (η : StrongOplaxNatTrans F G) (θ : StrongOplaxNatTrans G H) : StrongOplaxNatTrans F H :=
+>>>>>>> 23c87df3dc33f21c40279c894022a37b71ffa918
   mkOfOplax (OplaxNatTrans.vcomp η.toOplax θ.toOplax)
     { naturality := λ {a b} f ↦
         (α_ _ _ _).symm ≪≫ whiskerRightIso (η.naturality f) (θ.app b) ≪≫
         (α_ _ _ _) ≪≫ whiskerLeftIso (η.app a) (θ.naturality f) ≪≫ (α_ _ _ _).symm }
+<<<<<<< HEAD
+=======
+end
+
+end StrongOplaxNatTrans
+>>>>>>> 23c87df3dc33f21c40279c894022a37b71ffa918
 
 variable (B C)
 
 @[simps id comp]
+<<<<<<< HEAD
 instance : CategoryStruct (Pseudofunctor B C) where
   Hom F G := StrongNatTrans F.toOplax G.toOplax
   id F := StrongNatTrans.id F.toOplax
@@ -216,5 +276,12 @@ lemma ext {F G : Pseudofunctor B C} {α β : F ⟶ G} {m n : α ⟶ β} (w : ∀
 end
 
 end StrongNatTrans
+=======
+instance Pseudofunctor.categoryStruct : CategoryStruct (Pseudofunctor B C) where
+  Hom F G := StrongOplaxNatTrans F.toOplax G.toOplax
+  id F := StrongOplaxNatTrans.id F.toOplax
+  comp := StrongOplaxNatTrans.vcomp
+
+>>>>>>> 23c87df3dc33f21c40279c894022a37b71ffa918
 
 end CategoryTheory

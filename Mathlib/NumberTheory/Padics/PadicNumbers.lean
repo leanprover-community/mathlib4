@@ -773,8 +773,6 @@ instance metricSpace : MetricSpace ℚ_[p] where
     apply eq_of_sub_eq_zero
     apply padicNormE.eq_zero.1
     exact mod_cast h
-  -- Porting note: added because autoparam was not ported
-  edist_dist := by intros; exact (ENNReal.ofReal_eq_coe_nnreal _).symm
 
 instance : Norm ℚ_[p] :=
   ⟨fun x ↦ padicNormE x⟩
@@ -895,7 +893,7 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
   | ⟨n, d, hn, hd⟩ => fun hq : ¬p ∣ d ↦
     if hnz : n = 0 then by
       have : (⟨n, d, hn, hd⟩ : ℚ) = 0 := Rat.zero_iff_num_zero.mpr hnz
-      set_option tactic.skipAssignedInstances false in norm_num [this]
+      norm_num [this]
     else by
       have hnz' : (⟨n, d, hn, hd⟩ : ℚ) ≠ 0 := mt Rat.zero_iff_num_zero.1 hnz
       rw [padicNormE.eq_padicNorm]

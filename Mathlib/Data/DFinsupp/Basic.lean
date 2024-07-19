@@ -5,10 +5,13 @@ Authors: Johannes Hölzl, Kenny Lau
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Fintype.Quotient
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.GroupAction.BigOperators
+import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Algebra.Module.LinearMap.Defs
 
 #align_import data.dfinsupp.basic from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
@@ -78,7 +81,7 @@ instance instDFunLike : DFunLike (Π₀ i, β i) ι β :=
   ⟨fun f => f.toFun, fun ⟨f₁, s₁⟩ ⟨f₂, s₁⟩ ↦ fun (h : f₁ = f₂) ↦ by
     subst h
     congr
-    apply Subsingleton.elim ⟩
+    subsingleton ⟩
 #align dfinsupp.fun_like DFinsupp.instDFunLike
 
 /-- Helper instance for when there are too many metavariables to apply `DFunLike.coeFunForall`
@@ -1159,8 +1162,18 @@ theorem support_eq_empty {f : Π₀ i, β i} : f.support = ∅ ↔ f = 0 :=
   ⟨fun H => ext <| by simpa [Finset.ext_iff] using H, by simp (config := { contextual := true })⟩
 #align dfinsupp.support_eq_empty DFinsupp.support_eq_empty
 
-instance decidableZero : DecidablePred (Eq (0 : Π₀ i, β i)) := fun _ =>
-  decidable_of_iff _ <| support_eq_empty.trans eq_comm
+instance decidableZero [∀ (i) (x : β i), Decidable (x = 0)] (f : Π₀ i, β i) : Decidable (f = 0) :=
+  f.support'.recOnSubsingleton <| fun s =>
+    decidable_of_iff (∀ i ∈ s.val, f i = 0) <| by
+      constructor
+      case mpr => rintro rfl _ _; rfl
+      case mp =>
+        intro hs₁; ext i
+        -- This instance prevent consuming `DecidableEq ι` in the next `by_cases`.
+        letI := Classical.propDecidable
+        by_cases hs₂ : i ∈ s.val
+        case pos => exact hs₁ _ hs₂
+        case neg => exact (s.prop i).resolve_left hs₂
 #align dfinsupp.decidable_zero DFinsupp.decidableZero
 
 theorem support_subset_iff {s : Set ι} {f : Π₀ i, β i} : ↑f.support ⊆ s ↔ ∀ i ∉ s, f i = 0 := by
@@ -1318,8 +1331,8 @@ noncomputable def comapDomain [∀ i, Zero (β i)] (h : κ → ι) (hh : Functio
   toFun x := f (h x)
   support' :=
     f.support'.map fun s =>
-      ⟨((Multiset.toFinset s.1).preimage h hh.injOn).val, fun x =>
-        (s.prop (h x)).imp_left fun hx => mem_preimage.mpr <| Multiset.mem_toFinset.mpr hx⟩
+      ⟨(s.1.finite_toSet.preimage hh.injOn).toFinset.val, fun x =>
+        (s.prop (h x)).imp_left fun hx => (Set.Finite.mem_toFinset _).mpr <| hx⟩
 #align dfinsupp.comap_domain DFinsupp.comapDomain
 
 @[simp]
@@ -1516,27 +1529,30 @@ theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- The natural map between `Π₀ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`. -/
-def sigmaUncurry [∀ i j, Zero (δ i j)]
-    [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
-    (f : Π₀ (i) (j), δ i j) :
+def sigmaUncurry [∀ i j, Zero (δ i j)] [DecidableEq ι] (f : Π₀ (i) (j), δ i j) :
     Π₀ i : Σi, _, δ i.1 i.2 where
   toFun i := f i.1 i.2
-  support' := f.support'.map fun s => ⟨Multiset.bind s.1 fun i =>
-    ((f i).support.map ⟨Sigma.mk i, sigma_mk_injective⟩).val, fun i => by
-      simp_rw [Multiset.mem_bind, map_val, Multiset.mem_map, Function.Embedding.coeFn_mk, ←
-        Finset.mem_def, mem_support_toFun]
-      obtain hi | (hi : f i.1 = 0) := s.prop i.1
-      · by_cases hi' : f i.1 i.2 = 0
-        · exact Or.inr hi'
-        · exact Or.inl ⟨_, hi, i.2, hi', Sigma.eta _⟩
-      · right
-        rw [hi, zero_apply]⟩
+  support' :=
+    f.support'.bind fun s =>
+      (Trunc.finChoice (fun i : ↥s.val.toFinset => (f i).support')).map fun fs =>
+        ⟨s.val.toFinset.attach.val.bind fun i => (fs i).val.map (Sigma.mk i.val), by
+          rintro ⟨i, a⟩
+          cases s.prop i with
+          | inl hi =>
+            cases (fs ⟨i, Multiset.mem_toFinset.mpr hi⟩).prop a with
+            | inl ha =>
+              left; rw [Multiset.mem_bind]
+              use ⟨i, Multiset.mem_toFinset.mpr hi⟩
+              constructor
+              case right => simp [ha]
+              case left => apply Multiset.mem_attach
+            | inr ha => right; simp [toFun_eq_coe (f i) ▸ ha]
+          | inr hi => right; simp [toFun_eq_coe f ▸ hi]⟩
 #align dfinsupp.sigma_uncurry DFinsupp.sigmaUncurry
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
-theorem sigmaUncurry_apply [∀ i j, Zero (δ i j)]
-    [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
+theorem sigmaUncurry_apply [∀ i j, Zero (δ i j)] [DecidableEq ι]
     (f : Π₀ (i) (j), δ i j) (i : ι) (j : α i) :
     sigmaUncurry f ⟨i, j⟩ = f i j :=
   rfl
@@ -1544,16 +1560,14 @@ theorem sigmaUncurry_apply [∀ i j, Zero (δ i j)]
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
-theorem sigmaUncurry_zero [∀ i j, Zero (δ i j)]
-    [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)] :
+theorem sigmaUncurry_zero [∀ i j, Zero (δ i j)] [DecidableEq ι] :
     sigmaUncurry (0 : Π₀ (i) (j), δ i j) = 0 :=
   rfl
 #align dfinsupp.sigma_uncurry_zero DFinsupp.sigmaUncurry_zero
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
-theorem sigmaUncurry_add [∀ i j, AddZeroClass (δ i j)]
-    [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
+theorem sigmaUncurry_add [∀ i j, AddZeroClass (δ i j)] [DecidableEq ι]
     (f g : Π₀ (i) (j), δ i j) :
     sigmaUncurry (f + g) = sigmaUncurry f + sigmaUncurry g :=
   DFunLike.coe_injective rfl
@@ -1561,16 +1575,14 @@ theorem sigmaUncurry_add [∀ i j, AddZeroClass (δ i j)]
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
-theorem sigmaUncurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)]
-    [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
+theorem sigmaUncurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)] [DecidableEq ι]
     [∀ i j, DistribMulAction γ (δ i j)]
     (r : γ) (f : Π₀ (i) (j), δ i j) : sigmaUncurry (r • f) = r • sigmaUncurry f :=
   DFunLike.coe_injective rfl
 #align dfinsupp.sigma_uncurry_smul DFinsupp.sigmaUncurry_smul
 
 @[simp]
-theorem sigmaUncurry_single [∀ i j, Zero (δ i j)]
-    [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
+theorem sigmaUncurry_single [∀ i j, Zero (δ i j)] [DecidableEq ι] [∀ i, DecidableEq (α i)]
     (i) (j : α i) (x : δ i j) :
     sigmaUncurry (single i (single j x : Π₀ j : α i, δ i j)) = single ⟨i, j⟩ (by exact x) := by
   ext ⟨i', j'⟩
@@ -1590,8 +1602,7 @@ theorem sigmaUncurry_single [∀ i j, Zero (δ i j)]
 /-- The natural bijection between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`.
 
 This is the dfinsupp version of `Equiv.piCurry`. -/
-def sigmaCurryEquiv [∀ i j, Zero (δ i j)]
-    [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)] :
+def sigmaCurryEquiv [∀ i j, Zero (δ i j)] [DecidableEq ι] :
     (Π₀ i : Σi, _, δ i.1 i.2) ≃ Π₀ (i) (j), δ i j where
   toFun := sigmaCurry
   invFun := sigmaUncurry
@@ -2343,8 +2354,8 @@ instance DFinsupp.fintype {ι : Sort _} {π : ι → Sort _} [DecidableEq ι] [�
 
 instance DFinsupp.infinite_of_left {ι : Sort _} {π : ι → Sort _} [∀ i, Nontrivial (π i)]
     [∀ i, Zero (π i)] [Infinite ι] : Infinite (Π₀ i, π i) := by
-  letI := Classical.decEq ι; choose m hm using fun i => exists_ne (0 : π i);
-    exact Infinite.of_injective _ (DFinsupp.single_left_injective hm)
+  letI := Classical.decEq ι; choose m hm using fun i => exists_ne (0 : π i)
+  exact Infinite.of_injective _ (DFinsupp.single_left_injective hm)
 #align dfinsupp.infinite_of_left DFinsupp.infinite_of_left
 
 /-- See `DFinsupp.infinite_of_right` for this in instance form, with the drawback that

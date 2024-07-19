@@ -12,7 +12,8 @@ import Mathlib.CategoryTheory.Limits.Preserves.Basic
 /-!
 # Limits of monoid objects.
 
-If `C` has limits, so does `Mon_ C`, and the forgetful functor preserves these limits.
+If `C` has limits (of a given shape), so does `Mon_ C`,
+and the forgetful functor preserves these limits.
 
 (This could potentially replace many individual constructions for concrete categories,
 in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgebraCat R`.)
@@ -21,14 +22,14 @@ in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgebraCat R`.)
 
 open CategoryTheory Limits Monoidal
 
-universe v u
+universe v u w
 
 noncomputable section
 
 namespace Mon_
 
-variable {J : Type v} [SmallCategory J]
-variable {C : Type u} [Category.{v} C] [HasLimits C] [MonoidalCategory.{v} C]
+variable {J : Type w} [SmallCategory J]
+variable {C : Type u} [Category.{v} C] [HasLimitsOfShape J C] [MonoidalCategory.{v} C]
 
 /-- We construct the (candidate) limit of a functor `F : J ⥤ Mon_ C`
 by interpreting it as a functor `Mon_ (J ⥤ C)`,
@@ -37,7 +38,7 @@ and hence sends monoid objects to monoid objects.
 -/
 @[simps!]
 def limit (F : J ⥤ Mon_ C) : Mon_ C :=
-  limLax.mapMon.obj (MonFunctorCategoryEquivalence.inverse.obj F)
+  limLax.mapMon.obj ((monFunctorCategoryEquivalence J C).inverse.obj F)
 set_option linter.uppercaseLean3 false in
 #align Mon_.limit Mon_.limit
 
@@ -73,8 +74,7 @@ def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
         ext
         simp only [Functor.comp_obj, forget_obj, Category.assoc, limit.lift_π, Functor.mapCone_pt,
           Functor.mapCone_π_app, forget_map, Hom.mul_hom, limit_mul, Cones.postcompose_obj_pt,
-          Cones.postcompose_obj_π, NatTrans.comp_app, Functor.const_obj_obj, tensorObj_obj,
-          MonFunctorCategoryEquivalence.Inverse.obj_mul_app]
+          Cones.postcompose_obj_π, NatTrans.comp_app, Functor.const_obj_obj, tensorObj_obj]
         slice_rhs 1 2 => rw [← MonoidalCategory.tensor_comp, limit.lift_π]
         rfl }
   fac s h := by ext; simp
@@ -86,22 +86,18 @@ def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
 set_option linter.uppercaseLean3 false in
 #align Mon_.limit_cone_is_limit Mon_.limitConeIsLimit
 
-instance hasLimits : HasLimits (Mon_ C) where
-  has_limits_of_shape _ _ :=
-    { has_limit := fun F =>
-        HasLimit.mk
-          { cone := limitCone F
-            isLimit := limitConeIsLimit F } }
+instance hasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfShape J (Mon_ C) where
+  has_limit := fun F => HasLimit.mk
+    { cone := limitCone F
+      isLimit := limitConeIsLimit F }
 set_option linter.uppercaseLean3 false in
-#align Mon_.has_limits Mon_.hasLimits
+#align Mon_.has_limits Mon_.hasLimitsOfShape
 
-instance forgetPreservesLimits : PreservesLimits (Mon_.forget C) where
-  preservesLimitsOfShape :=
-    { preservesLimit := fun {F} =>
-        preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
-          (IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Mon_.forget C))
-            (forgetMapConeLimitConeIso F).symm) }
+instance forgetPreservesLimitsOfShape : PreservesLimitsOfShape J (Mon_.forget C) where
+  preservesLimit := fun {F} =>
+    preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
+      (IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Mon_.forget C)) (forgetMapConeLimitConeIso F).symm)
 set_option linter.uppercaseLean3 false in
-#align Mon_.forget_preserves_limits Mon_.forgetPreservesLimits
+#align Mon_.forget_preserves_limits Mon_.forgetPreservesLimitsOfShape
 
 end Mon_

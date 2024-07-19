@@ -47,7 +47,7 @@ namespace EquivEven
 
 /-- The quadratic form on the augmented vector space `M × R` sending `v + r•e0` to `Q v - r^2`. -/
 abbrev Q' : QuadraticForm R (M × R) :=
-  Q.prod <| -@QuadraticForm.sq R _
+  Q.prod <| -QuadraticMap.sq (R := R)
 set_option linter.uppercaseLean3 false in
 #align clifford_algebra.equiv_even.Q' CliffordAlgebra.EquivEven.Q'
 
@@ -81,8 +81,8 @@ theorem v_sq_scalar (m : M) : v Q m * v Q m = algebraMap _ _ (Q m) :=
 
 theorem neg_e0_mul_v (m : M) : -(e0 Q * v Q m) = v Q m * e0 Q := by
   refine neg_eq_of_add_eq_zero_right ((ι_mul_ι_add_swap _ _).trans ?_)
-  dsimp [QuadraticForm.polar]
-  simp only [add_zero, mul_zero, mul_one, zero_add, neg_zero, QuadraticForm.map_zero,
+  dsimp [QuadraticMap.polar]
+  simp only [add_zero, mul_zero, mul_one, zero_add, neg_zero, QuadraticMap.map_zero,
     add_sub_cancel_right, sub_self, map_zero, zero_sub]
 #align clifford_algebra.equiv_even.neg_e0_mul_v CliffordAlgebra.EquivEven.neg_e0_mul_v
 
@@ -193,7 +193,7 @@ theorem toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=
             calc
               ↑(toEven Q (ofEven Q ((even.ι (Q' Q)).bilin (m₁, r₁) (m₂, r₂)))) =
                   (e0 Q * v Q m₁ + algebraMap R _ r₁) * (e0 Q * v Q m₂ - algebraMap R _ r₂) := by
-                rw [ofEven_ι, AlgHom.map_mul, AlgHom.map_add, AlgHom.map_sub, AlgHom.commutes,
+                rw [ofEven_ι, map_mul, map_add, map_sub, AlgHom.commutes,
                   AlgHom.commutes, Subalgebra.coe_mul, Subalgebra.coe_add, Subalgebra.coe_sub,
                   toEven_ι, toEven_ι, Subalgebra.coe_algebraMap, Subalgebra.coe_algebraMap]
               _ =
@@ -257,15 +257,14 @@ def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     CliffordAlgebra.even Q →ₐ[R] CliffordAlgebra.even Q' :=
   even.lift Q <|
     -- Porting note: added `letI`s
-    letI : AddCommGroup (even Q') := AddSubgroupClass.toAddCommGroup _;
-    letI : HasDistribNeg (even Q') := NonUnitalNonAssocRing.toHasDistribNeg;
+    letI : AddCommGroup (even Q') := AddSubgroupClass.toAddCommGroup _
+    letI : HasDistribNeg (even Q') := NonUnitalNonAssocRing.toHasDistribNeg
     { bilin := -(even.ι Q' : _).bilin
       contract := fun m => by
-        simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticForm.neg_apply, map_neg,
-          neg_neg]
+        simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticMap.neg_apply, map_neg, neg_neg]
       contract_mid := fun m₁ m₂ m₃ => by
         simp_rw [LinearMap.neg_apply, neg_mul_neg, EvenHom.contract_mid, h,
-          QuadraticForm.neg_apply, smul_neg, neg_smul] }
+          QuadraticMap.neg_apply, smul_neg, neg_smul] }
 #align clifford_algebra.even_to_neg CliffordAlgebra.evenToNeg
 
 -- Porting note: `simpNF` times out, but only in CI where all of `Mathlib` is imported

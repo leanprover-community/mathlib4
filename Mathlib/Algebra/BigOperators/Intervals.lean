@@ -193,7 +193,6 @@ theorem sum_Ico_Ico_comm {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → 
     (fun _ _ ↦ rfl) <;>
   simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
   rintro a b ⟨⟨h₁, h₂⟩, ⟨h₃, h₄⟩⟩ <;>
-  refine ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;>
   omega
 #align finset.sum_Ico_Ico_comm Finset.sum_Ico_Ico_comm
 
@@ -206,7 +205,6 @@ theorem sum_Ico_Ico_comm' {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ →
     (fun _ _ ↦ rfl) <;>
   simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
   rintro a b ⟨⟨h₁, h₂⟩, ⟨h₃, h₄⟩⟩ <;>
-  refine ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;>
   omega
 
 @[to_additive]
@@ -233,7 +231,7 @@ theorem prod_Ico_reflect (f : ℕ → M) (k : ℕ) {m n : ℕ} (h : m ≤ n + 1)
   · have : n + 1 - k ≤ n + 1 - m := by
       rw [tsub_le_tsub_iff_left h]
       exact hkm
-    simp only [ge_iff_le, hkm, Ico_eq_empty_of_le, prod_empty, tsub_le_iff_right, Ico_eq_empty_of_le
+    simp only [hkm, Ico_eq_empty_of_le, prod_empty, tsub_le_iff_right, Ico_eq_empty_of_le
       this]
 #align finset.prod_Ico_reflect Finset.prod_Ico_reflect
 

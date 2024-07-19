@@ -7,7 +7,7 @@ Amelia Livingston, Yury Kudryashov
 import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.Group.Nat
-import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 
 #align_import group_theory.submonoid.operations from "leanprover-community/mathlib"@"cf8e77c636317b059a8ce20807a29cf3772a0640"
 
@@ -220,7 +220,7 @@ def map (f : F) (S : Submonoid M) :
   carrier := f '' S
   one_mem' := ⟨1, S.one_mem, map_one f⟩
   mul_mem' := by
-    rintro _ _ ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩;
+    rintro _ _ ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩
     exact ⟨x * y, S.mul_mem hx hy, by rw [map_mul]⟩
 #align submonoid.map Submonoid.map
 #align add_submonoid.map AddSubmonoid.map
