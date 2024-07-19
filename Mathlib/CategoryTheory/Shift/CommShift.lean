@@ -369,7 +369,7 @@ lemma ofIso_compatibility :
     letI := ofIso e A
     NatTrans.CommShift e.hom A := by
   letI := ofIso e A
-  refine' ⟨fun a => _⟩
+  refine ⟨fun a => ?_⟩
   dsimp [commShiftIso, ofIso]
   rw [← whiskerLeft_comp_assoc, e.hom_inv_id, whiskerLeft_id', id_comp]
 

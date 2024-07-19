@@ -2017,11 +2017,18 @@ end ULift
 
 namespace PUnit
 
-instance instCompleteLinearOrder : CompleteLinearOrder PUnit := by
-  refine'
-    { instBooleanAlgebra, instLinearOrder with
-      sSup := fun _ => unit
-      sInf := fun _ => unit
-      .. } <;> intros <;> trivial
+instance instCompleteLinearOrder : CompleteLinearOrder PUnit where
+  __ := instBooleanAlgebra
+  __ := instLinearOrder
+  sSup := fun _ => unit
+  sInf := fun _ => unit
+  le_sSup := by intros; trivial
+  sSup_le := by intros; trivial
+  sInf_le := by intros; trivial
+  le_sInf := by intros; trivial
+  le_himp_iff := by intros; trivial
+  himp_bot := by intros; trivial
+  sdiff_le_iff := by intros; trivial
+  top_sdiff := by intros; trivial
 
 end PUnit

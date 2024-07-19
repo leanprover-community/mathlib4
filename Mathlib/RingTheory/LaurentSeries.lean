@@ -496,7 +496,7 @@ open IsDedekindDomain.HeightOneSpectrum PowerSeries
 
 theorem valuation_eq_LaurentSeries_valuation (P : RatFunc K) :
     (Polynomial.idealX K).valuation P = (PowerSeries.idealX K).valuation (P : LaurentSeries K) := by
-  refine' RatFunc.induction_on' P _
+  refine RatFunc.induction_on' P ?_
   intro f g h
   rw [Polynomial.valuation_of_mk K f h, RatFunc.mk_eq_mk' f h, Eq.comm]
   convert @valuation_of_mk' (PowerSeries K) _ _ (LaurentSeries K) _ _ _ (PowerSeries.idealX K) f

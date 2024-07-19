@@ -113,7 +113,7 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
   induction' n with n hn
   · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
   · refine Prod.ext rfl (funext fun x => ?_)
-/- Porting note (#11039): broken proof was
+    /- Porting note (#11039): broken proof was
     · dsimp only [actionDiagonalSucc]
       simp only [Iso.trans_hom, comp_hom, types_comp_apply, diagonalSucc_hom_hom,
         leftRegularTensorIso_hom_hom, tensorIso_hom, mkIso_hom_hom, Equiv.toIso_hom,
@@ -137,7 +137,7 @@ theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f
     simp only [Subsingleton.elim x 0, Pi.smul_apply, Fin.partialProd_zero, smul_eq_mul, mul_one]
     rfl
   · intro g
-/- Porting note (#11039): broken proof was
+    /- Porting note (#11039): broken proof was
     ext
     dsimp only [actionDiagonalSucc]
     simp only [Iso.trans_inv, comp_hom, hn, diagonalSucc_inv_hom, types_comp_apply, tensorIso_inv,
@@ -282,7 +282,7 @@ def ofMulActionBasisAux :
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul]
       congr 1
-/- Porting note (#11039): broken proof was
+      /- Porting note (#11039): broken proof was
       refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
       · simp only [smul_zero]
       · simp only [TensorProduct.smul_tmul']
