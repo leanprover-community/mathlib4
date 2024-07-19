@@ -84,14 +84,19 @@ open Algebra
 variable {R : Type u} [CommRing R] (M : Submonoid R)
 variable {A : Type v} [CommRing A] [Algebra R A]
 variable {B : Type w} [CommRing B] [Algebra R B]
-variable {Rₚ : Type u'} [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization M Rₚ]
-variable {Aₚ : Type v'} [CommRing Aₚ] [Algebra R Aₚ] [Algebra A Aₚ] [IsScalarTower R A Aₚ]
+variable (Rₚ : Type u') [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization M Rₚ]
+variable (Aₚ : Type v') [CommRing Aₚ] [Algebra R Aₚ] [Algebra A Aₚ] [IsScalarTower R A Aₚ]
   [IsLocalization (Algebra.algebraMapSubmonoid A M) Aₚ]
-variable {Bₚ : Type v'} [CommRing Bₚ] [Algebra R Bₚ] [Algebra B Bₚ] [IsScalarTower R B Bₚ]
+variable (Bₚ : Type v') [CommRing Bₚ] [Algebra R Bₚ] [Algebra B Bₚ] [IsScalarTower R B Bₚ]
   [IsLocalization (Algebra.algebraMapSubmonoid B M) Bₚ]
 variable [Algebra Rₚ Aₚ] [Algebra Rₚ Bₚ] [IsScalarTower R Rₚ Aₚ] [IsScalarTower R Rₚ Bₚ]
 
 namespace IsLocalization
+
+instance isLocalization_algebraMapSubmonoid_map_algHom (f : A →ₐ[R] B) :
+    IsLocalization ((algebraMapSubmonoid A M).map f.toRingHom) Bₚ := by
+  erw [algebraMapSubmonoid_map_eq M f]
+  infer_instance
 
 /-- An algebra map `A →ₐ[R] B` induces an algebra map on localizations `Aₚ →ₐ[Rₚ] Bₚ`. -/
 noncomputable def mapₐ (f : A →ₐ[R] B) : Aₚ →ₐ[Rₚ] Bₚ :=
@@ -100,36 +105,25 @@ noncomputable def mapₐ (f : A →ₐ[R] B) : Aₚ →ₐ[Rₚ] Bₚ :=
     simp [algebraMap_mk' (S := A), algebraMap_mk' (S := B), map_mk']⟩
 
 @[simp]
-lemma mapₐ_apply (f : A →ₐ[R] B) (x : Aₚ) :
-    (mapₐ M f : Aₚ →ₐ[Rₚ] Bₚ) x = map Bₚ f.toRingHom (algebraMapSubmonoid_le_comap M f) x :=
+lemma mapₐ_coe (f : A →ₐ[R] B) :
+    (mapₐ M Rₚ Aₚ Bₚ f : Aₚ → Bₚ) = map Bₚ f.toRingHom (algebraMapSubmonoid_le_comap M f)  :=
   rfl
 
-lemma isLocalization_algebraMapSubmonoid_map_algHom (f : A →ₐ[R] B) :
-    IsLocalization ((algebraMapSubmonoid A M).map f.toRingHom) Bₚ := by
-  erw [algebraMapSubmonoid_map_eq M f]
-  infer_instance
-
 lemma mapₐ_injective_of_injective (f : A →ₐ[R] B) (hf : Function.Injective f) :
-    Function.Injective (mapₐ M f : Aₚ →ₐ[Rₚ] Bₚ) :=
-  haveI : IsLocalization ((algebraMapSubmonoid A M).map f.toRingHom) Bₚ :=
-    isLocalization_algebraMapSubmonoid_map_algHom M f
+    Function.Injective (mapₐ M Rₚ Aₚ Bₚ f) :=
   IsLocalization.map_injective_of_injective _ _ _ hf
 
 lemma mapₐ_surjective_of_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f) :
-    Function.Surjective (mapₐ M f : Aₚ →ₐ[Rₚ] Bₚ) :=
-  haveI : IsLocalization ((algebraMapSubmonoid A M).map f.toRingHom) Bₚ :=
-    isLocalization_algebraMapSubmonoid_map_algHom M f
+    Function.Surjective (mapₐ M Rₚ Aₚ Bₚ f) :=
   IsLocalization.map_surjective_of_surjective _ _ _ hf
 
 end IsLocalization
 
 open IsLocalization
 
-variable (Rₚ) (Aₚ) (Bₚ)
-
 /-- The canonical linear map from the kernel of an algebra homomorphism to its localization. -/
 def AlgHom.toKerIsLocalization (f : A →ₐ[R] B) :
-    RingHom.ker f →ₗ[A] RingHom.ker (mapₐ M f : Aₚ →ₐ[Rₚ] Bₚ) :=
+    RingHom.ker f →ₗ[A] RingHom.ker (mapₐ M Rₚ Aₚ Bₚ f) :=
   RingHom.toKerIsLocalization Aₚ Bₚ f.toRingHom (algebraMapSubmonoid_le_comap M f)
 
 @[simp]
