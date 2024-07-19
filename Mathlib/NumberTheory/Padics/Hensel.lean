@@ -9,8 +9,6 @@ import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.MetricSpace.CauSeqFilter
 
-#align_import number_theory.padics.hensel from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # Hensel's lemma on ℤ_p
 
@@ -48,8 +46,6 @@ theorem padic_polynomial_dist {p : ℕ} [Fact p.Prime] (F : Polynomial ℤ_[p]) 
     _ ≤ 1 * ‖x - y‖ := by gcongr; apply PadicInt.norm_le_one
     _ = ‖x - y‖ := by simp
 
-#align padic_polynomial_dist padic_polynomial_dist
-
 open Filter Metric
 
 private theorem comp_tendsto_lim {p : ℕ} [Fact p.Prime] {F : Polynomial ℤ_[p]}
@@ -86,7 +82,6 @@ private theorem tendsto_zero_of_norm_tendsto_zero : Tendsto (fun i => F.eval (nc
 
 theorem limit_zero_of_norm_tendsto_zero : F.eval ncs.lim = 0 :=
   tendsto_nhds_unique (comp_tendsto_lim _) (tendsto_zero_of_norm_tendsto_zero hnorm)
-#align limit_zero_of_norm_tendsto_zero limit_zero_of_norm_tendsto_zero
 
 end
 
@@ -484,4 +479,3 @@ theorem hensels_lemma :
   else by
     exact ⟨soln_gen hnorm, eval_soln hnorm,
       soln_dist_to_a_lt_deriv hnorm ha, soln_deriv_norm hnorm, fun z => soln_unique hnorm ha z⟩
-#align hensels_lemma hensels_lemma

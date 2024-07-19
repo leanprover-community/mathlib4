@@ -10,8 +10,6 @@ import Mathlib.Util.AtomM
 import Mathlib.Init.Logic
 import Qq
 
-#align_import tactic.itauto from "leanprover-community/mathlib"@"dff8393cf1d1fc152d148e13fe57452fc37d4852"
-
 /-!
 
 # Intuitionistic tautology (`itauto`) decision procedure
@@ -89,7 +87,6 @@ namespace Mathlib.Tactic.ITauto
 theorem prover. -/
 inductive AndKind | and | iff | eq
   deriving Lean.ToExpr, DecidableEq
-#align tactic.itauto.and_kind Mathlib.Tactic.ITauto.AndKind
 
 instance : Inhabited AndKind := ⟨AndKind.and⟩
 
@@ -102,27 +99,21 @@ inductive IProp : Type
   | or : IProp → IProp → IProp   -- p ∨ q
   | imp : IProp → IProp → IProp  -- p → q
   deriving Lean.ToExpr, DecidableEq
-#align tactic.itauto.prop Mathlib.Tactic.ITauto.IProp
 
 /-- Constructor for `p ∧ q`. -/
 @[match_pattern] def IProp.and : IProp → IProp → IProp := .and' .and
-#align tactic.itauto.prop.and Mathlib.Tactic.ITauto.IProp.and
 
 /-- Constructor for `p ↔ q`. -/
 @[match_pattern] def IProp.iff : IProp → IProp → IProp := .and' .iff
-#align tactic.itauto.prop.iff Mathlib.Tactic.ITauto.IProp.iff
 
 /-- Constructor for `p = q`. -/
 @[match_pattern] def IProp.eq : IProp → IProp → IProp := .and' .eq
-#align tactic.itauto.prop.eq Mathlib.Tactic.ITauto.IProp.eq
 
 /-- Constructor for `¬ p`. -/
 @[match_pattern] def IProp.not (a : IProp) : IProp := a.imp .false
-#align tactic.itauto.prop.not Mathlib.Tactic.ITauto.IProp.not
 
 /-- Constructor for `xor p q`. -/
 @[match_pattern] def IProp.xor (a b : IProp) : IProp := (a.and b.not).or (b.and a.not)
-#align tactic.itauto.prop.xor Mathlib.Tactic.ITauto.IProp.xor
 
 instance : Inhabited IProp := ⟨IProp.true⟩
 
@@ -130,7 +121,6 @@ instance : Inhabited IProp := ⟨IProp.true⟩
 def AndKind.sides : AndKind → IProp → IProp → IProp × IProp
   | .and, A, B => (A, B)
   | _, A, B => (A.imp B, B.imp A)
-#align tactic.itauto.and_kind.sides Mathlib.Tactic.ITauto.AndKind.sides
 
 /-- Debugging printer for propositions. -/
 def IProp.format : IProp → Std.Format
@@ -142,7 +132,6 @@ def IProp.format : IProp → Std.Format
   | .eq p q => f!"({p.format} = {q.format})"
   | .or p q => f!"({p.format} ∨ {q.format})"
   | .imp p q => f!"({p.format} → {q.format})"
-#align tactic.itauto.prop.to_format Mathlib.Tactic.ITauto.IProp.format
 
 instance : Std.ToFormat IProp := ⟨IProp.format⟩
 
@@ -150,7 +139,6 @@ instance : Std.ToFormat IProp := ⟨IProp.format⟩
 def AndKind.cmp (p q : AndKind) : Ordering := by
   cases p <;> cases q
   exacts [.eq, .lt, .lt, .gt, .eq, .lt, .gt, .gt, .eq]
-#align tactic.itauto.and_kind.cmp Mathlib.Tactic.ITauto.AndKind.cmp
 
 /-- A comparator for propositions. (There should really be a derive handler for this.) -/
 def IProp.cmp (p q : IProp) : Ordering := by
@@ -167,7 +155,6 @@ def IProp.cmp (p q : IProp) : Ordering := by
           .gt, .gt, .gt, .lt, .lt,
           .gt, .gt, .gt, .gt, .lt,
           .gt, .gt, .gt, .gt, .gt]
-#align tactic.itauto.prop.cmp Mathlib.Tactic.ITauto.IProp.cmp
 
 instance : LT IProp := ⟨fun p q => p.cmp q = .lt⟩
 
@@ -241,7 +228,6 @@ inductive Proof
   -/
   | impImpSimp (x : Name) (p : Proof) : Proof
   deriving Lean.ToExpr
-#align tactic.itauto.proof Mathlib.Tactic.ITauto.Proof
 
 instance : Inhabited Proof := ⟨Proof.triv⟩
 
@@ -267,7 +253,6 @@ def Proof.format : Proof → Std.Format
   | .em true p => f!"(Classical.em {p})"
   | .decidableElim _ p x q r => f!"({p}.elim (fun {x} ↦ {q.format}) (fun {x} ↦ {r.format})"
   | .impImpSimp _ p => f!"(impImpSimp {p.format})"
-#align tactic.itauto.proof.to_format Mathlib.Tactic.ITauto.Proof.format
 
 instance : Std.ToFormat Proof := ⟨Proof.format⟩
 
@@ -275,13 +260,11 @@ instance : Std.ToFormat Proof := ⟨Proof.format⟩
 def Proof.exfalso : IProp → Proof → Proof
   | .false, p => p
   | _, p => .exfalso' p
-#align tactic.itauto.proof.exfalso Mathlib.Tactic.ITauto.Proof.exfalso
 
 /-- A variant on `Proof.orElim'` that performs opportunistic simplification. -/
 def Proof.orElim : Proof → Name → Proof → Proof → Proof
   | .em cl p, x, q, r => .decidableElim cl p x q r
   | p, x, q, r => .orElim' p x q r
-#align tactic.itauto.proof.or_elim Mathlib.Tactic.ITauto.Proof.orElim
 
 /-- A variant on `Proof.app'` that performs opportunistic simplification.
 (This doesn't do full normalization because we don't want the proof size to blow up.) -/
@@ -292,7 +275,6 @@ def Proof.app : Proof → Proof → Proof
   | .orImpR p, q => p.app q.orInR
   | .impImpSimp x p, q => p.app (.intro x q)
   | p, q => p.app' q
-#align tactic.itauto.proof.app Mathlib.Tactic.ITauto.Proof.app
 
 -- Note(Mario): the typechecker is disabled because it requires proofs to carry around additional
 -- props. These can be retrieved from the git history (rev 6c96d2ff7) if you want to re-enable this.
@@ -355,16 +337,13 @@ def Proof.check : Lean.NameMap IProp → Proof → Option IProp
 
 /-- Get a new name in the pattern `h0, h1, h2, ...` -/
 @[inline] def freshName : StateM Nat Name := fun n => (Name.mkSimple s!"h{n}", n + 1)
-#align tactic.itauto.fresh_name Mathlib.Tactic.ITauto.freshName
 
 /-- The context during proof search is a map from propositions to proof values. -/
 def Context := Lean.RBMap IProp Proof IProp.cmp
-#align tactic.itauto.context Mathlib.Tactic.ITauto.Context
 
 /-- Debug printer for the context. -/
 def Context.format (Γ : Context) : Std.Format :=
   Γ.fold (init := "") fun f P p => P.format ++ " := " ++ p.format ++ ",\n" ++ f
-#align tactic.itauto.context.to_format Mathlib.Tactic.ITauto.Context.format
 
 instance : Std.ToFormat Context := ⟨Context.format⟩
 
@@ -390,7 +369,6 @@ partial def Context.add : IProp → Proof → Context → Except (IProp → Proo
     Γ.add (B.imp C) p.orImpR
   | .imp _ .true, _, Γ => pure Γ
   | A, p, Γ => pure (Γ.insert A p)
-#align tactic.itauto.context.add Mathlib.Tactic.ITauto.Context.add
 
 /-- Add `A` to the context `Γ` with proof `p`. This version of `Context.add` takes a continuation
 and a target proposition `B`, so that in the case that `⊥` is found we can skip the continuation
@@ -400,24 +378,20 @@ and just prove `B` outright. -/
   match Γ.add A p with
   | .ok Γ_A => f Γ_A B
   | .error p => pure (true, p B)
-#align tactic.itauto.context.with_add Mathlib.Tactic.ITauto.Context.withAdd
 
 /-- Map a function over the proof (regardless of whether the proof is successful or not). -/
 def mapProof (f : Proof → Proof) : Bool × Proof → Bool × Proof
   | (b, p) => (b, f p)
-#align tactic.itauto.map_proof Mathlib.Tactic.ITauto.mapProof
 
 /-- Convert a value-with-success to an optional value. -/
 def isOk : (Bool × Proof) × Nat → Option (Proof × Nat)
   | ((false, _), _) => none
   | ((true, p), n) => some (p, n)
-#align tactic.itauto.is_ok Mathlib.Tactic.ITauto.isOk
 
 /-- Skip the continuation and return a failed proof if the boolean is false. -/
 def whenOk : Bool → IProp → StateM Nat (Bool × Proof) → StateM Nat (Bool × Proof)
   | false, _, _ => pure (false, .sorry)
   | true, _, f => f
-#align tactic.itauto.when_ok Mathlib.Tactic.ITauto.whenOk
 
 mutual
 
@@ -495,9 +469,6 @@ partial def prove (Γ : Context) (B : IProp) : StateM Nat (Bool × Proof) :=
 
 end
 
-#align tactic.itauto.search Mathlib.Tactic.ITauto.search
-#align tactic.itauto.prove Mathlib.Tactic.ITauto.prove
-
 open Lean Qq Meta
 
 /-- Reify an `Expr` into a `IProp`, allocating anything non-propositional as an atom in the
@@ -516,7 +487,6 @@ partial def reify (e : Q(Prop)) : AtomM IProp :=
   | e =>
     if e.isArrow then return .imp (← reify e.bindingDomain!) (← reify e.bindingBody!)
     else return .var (← AtomM.addAtom e)
-#align tactic.itauto.reify Mathlib.Tactic.ITauto.reify
 
 /-- Once we have a proof object, we have to apply it to the goal. -/
 partial def applyProof (g : MVarId) (Γ : NameMap Expr) (p : Proof) : MetaM Unit :=
@@ -658,7 +628,6 @@ partial def applyProof (g : MVarId) (Γ : NameMap Expr) (p : Proof) : MetaM Unit
   | .curry .. | .curry₂ .. | .orImpL .. | .orImpR .. | .impImpSimp .. => do
     let (e, g) ← g.intro1; g.withContext do
       applyProof g (Γ.insert e.name (.fvar e)) (p.app (.hyp e.name))
-#align tactic.itauto.apply_proof Mathlib.Tactic.ITauto.applyProof
 
 /-- A decision procedure for intuitionistic propositional logic.
 
@@ -721,7 +690,6 @@ def itautoCore (g : MVarId)
       | .ok Γ => (prove Γ t 0).1.2
       | .error p => p t
     applyProof g hs p
-#align tactic.itauto Mathlib.Tactic.ITauto.itautoCore
 
 open Elab Tactic
 
