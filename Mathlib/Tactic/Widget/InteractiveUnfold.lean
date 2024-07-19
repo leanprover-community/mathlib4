@@ -16,6 +16,9 @@ This file defines the interactive tactic `unfold?`.
 It allows you to shift-click on an expression in the goal, and then it suggests rewrites to replace
 the expression with an unfolded version.
 
+It can be used on its own, but it can also be used as part of the library rewrite tactic `rw??`,
+where these unfoldings are a subset of the suggestions.
+
 For example, if the goal contains `1+1`, then it will suggest rewriting this into one of
 - `Nat.add 1 1`
 - `2`
@@ -30,7 +33,7 @@ The rewrite string is created using `mkRewrite`.
 ## Reduction rules
 
 The basic idea is to repeatedly apply `unfoldDefinition?` followed by `whnfCore`, which gives
-the list of all suggested unfoldings.
+the list of all suggested unfoldings. Each suggested unfolding is in `whnfCore` normal form.
 
 Additionally, eta-reduction is tried, and basic natural number reduction is tried.
 
