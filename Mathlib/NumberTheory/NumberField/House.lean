@@ -51,8 +51,8 @@ theorem house_mul_le (α β : K) : house (α * β) ≤ house α * house β := by
 
 variable (K)
 
-/-- An equivalence between the set of embeddings of `K` into `ℂ` and the index set of the chosen
-  basis of the ring of integers of `K`. -/
+/-- An equivalence between the set of embeddings of `K` into `ℂ` and the
+  index set of the chosen basis of the ring of integers of `K`. -/
 abbrev equivReindex : (K →+* ℂ) ≃ (ChooseBasisIndex ℤ (𝓞 K)) := Fintype.equivOfCardEq <|
   by rw [Embeddings.card, ← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank]
 
@@ -119,7 +119,8 @@ theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) :
     apply le_trans
     · apply le_trans (AbsoluteValue.sum_le Complex.abs _ _)
       · exact sum_le_sum (fun _ _ => (AbsoluteValue.map_mul Complex.abs _ _).le)
-    · apply sum_le_sum (fun _ _ => mul_le_mul_of_nonneg_right ?_ (AbsoluteValue.nonneg Complex.abs _))
+    · apply sum_le_sum (fun _ _ => mul_le_mul_of_nonneg_right ?_
+        (AbsoluteValue.nonneg Complex.abs _))
       · exact norm_entry_le_entrywise_sup_norm (basisMatrix K)⁻¹
   · apply sum_le_sum; intros j _
     apply mul_le_mul_of_nonneg_left _ (norm_nonneg fun i j ↦ (basisMatrix K)⁻¹ i j)
@@ -130,8 +131,10 @@ theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) :
   adjusted by the inverse of the equivalence `equivReindex`. -/
 def newBasis := (RingOfIntegers.basis K).reindex (equivReindex K).symm
 
-/-- `supOfBasis K` calculates the supremum of the absolute values of the elements in `newBasis K`. -/
-def supOfBasis : ℝ := univ.sup' univ_nonempty fun r ↦ house (algebraMap (𝓞 K) K (newBasis K r))
+/-- `supOfBasis K` calculates the supremum of the absolute
+  values of the elements in `newBasis K`. -/
+def supOfBasis : ℝ := univ.sup' univ_nonempty
+  fun r ↦ house (algebraMap (𝓞 K) K (newBasis K r))
 
 theorem supOfBasis_nonneg : 0 ≤ supOfBasis K := by
   simp only [supOfBasis, le_sup'_iff, mem_univ, and_self,
@@ -143,7 +146,8 @@ variable (a : Matrix α β (𝓞 K))
 
 /-- `a' K a` returns the integer coefficients of the basis vector in the
   expansion of the product of an algebraic integer and a basis vectors. -/
-def a' : α → β → (K →+* ℂ) → (K →+* ℂ) → ℤ := fun k l r => (newBasis K).repr (a k l * (newBasis K) r)
+def a' : α → β → (K →+* ℂ) → (K →+* ℂ) → ℤ := fun k l r =>
+  (newBasis K).repr (a k l * (newBasis K) r)
 
 /--`asiegel K a` the integer matrix of the coefficients of the
   product of matrix elements and basis vectors -/
@@ -247,14 +251,16 @@ theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
     · simp only [Int.cast_abs, ← Real.norm_eq_abs (asiegel K a kr lu)]; rfl
     · have remark := basis_repr_abs_le_const_mul_house K
       simp only [Basis.repr_reindex, Finsupp.mapDomain_equiv_apply,
-        integralBasis_repr_apply, eq_intCast, Rat.cast_intCast, Complex.abs_intCast] at remark
+        integralBasis_repr_apply, eq_intCast, Rat.cast_intCast,
+          Complex.abs_intCast] at remark
       exact mod_cast remark ((a kr.1 lu.1 * ((newBasis K) lu.2))) kr.2
     · simp only [house, _root_.map_mul, mul_assoc]
       exact mul_le_mul_of_nonneg_left (norm_mul_le _ _) (c_nonneg K)
     · rw [mul_assoc, mul_assoc]
       apply mul_le_mul_of_nonneg_left ?_ (c_nonneg K)
       · apply mul_le_mul_of_nonneg_right (habs kr.1 lu.1) ?_
-        · exact norm_nonneg ((canonicalEmbedding K) ((algebraMap (𝓞 K) K) ((newBasis K) lu.2)))
+        · exact norm_nonneg ((canonicalEmbedding K) ((algebraMap (𝓞 K) K)
+            ((newBasis K) lu.2)))
     ·  apply mul_le_mul_of_nonneg_left ?_ (mul_nonneg (c_nonneg K) Apos)
        · simp only [supOfBasis, le_sup'_iff, mem_univ]; use lu.2
     · rw [mul_right_comm]
@@ -265,13 +271,15 @@ theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
 /-- `c₁ K` is the product of `finrank ℚ K` and  `c₂ K` and depends on `K`. -/
 def c₁ := finrank ℚ K * c₂ K
 
-theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) * ((c₁ K * q * A)^((p : ℝ) / (q - p))) := by
+theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
+  ((c₁ K * q * A)^((p : ℝ) / (q - p))) := by
   let h := finrank ℚ K
   intros l
 
   calc
     _ = house (algebraMap (𝓞 K) K (∑ r, (x (l, r)) * ((newBasis K) r))) := rfl
-    _ ≤ ∑ r, house (((algebraMap (𝓞 K) K) (x (l, r))) * ((algebraMap (𝓞 K) K) ((newBasis K) r))) := ?_
+    _ ≤ ∑ r, house (((algebraMap (𝓞 K) K) (x (l, r))) *
+      ((algebraMap (𝓞 K) K) ((newBasis K) r))) := ?_
     _ ≤ ∑ r, ‖x (l,r)‖ * house ((algebraMap (𝓞 K) K) ((newBasis K) r)) := ?_
     _ ≤ ∑ r, ‖x (l, r)‖ * (supOfBasis K) := ?_
     _ ≤ ∑ _r : K →+* ℂ, ((↑q * h * ‖asiegel K a‖) ^ ((p : ℝ) / (q - p))) * supOfBasis K := ?_
@@ -285,21 +293,26 @@ theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) * ((c₁ K * q *
     apply mul_le_mul_of_nonneg_left ?_ (norm_nonneg (x (l,r)))
     · simp only [le_sup'_iff, mem_univ, true_and]; use r
   · apply sum_le_sum; intros r _
+
     apply mul_le_mul_of_nonneg_right ?_ (supOfBasis_nonneg K)
     exact le_trans (norm_le_pi_norm x ⟨l, r⟩) hxbound
   · simp only [Nat.cast_mul, sum_const, card_univ, nsmul_eq_mul]
-    rw [Embeddings.card, mul_comm _ (supOfBasis K), c₂, c₁, ← mul_assoc]
+    rw [Embeddings.card, mul_comm _
+      (supOfBasis K), c₂, c₁, ← mul_assoc]
     apply mul_le_mul
     · apply mul_le_mul_of_nonneg_left ?_ (Nat.cast_nonneg' _)
       · exact le_mul_of_one_le_left (supOfBasis_nonneg K) (le_max_left ..)
     · apply Real.rpow_le_rpow
-      · exact mul_nonneg (mul_nonneg (Nat.cast_nonneg' _) (Nat.cast_nonneg' _)) (norm_nonneg _)
+      · exact mul_nonneg (mul_nonneg (Nat.cast_nonneg' _)
+          (Nat.cast_nonneg' _)) (norm_nonneg _)
       · rw [← mul_assoc, mul_assoc (_*_)]
-        apply mul_le_mul_of_nonneg_left ?_ (mul_nonneg (Nat.cast_nonneg' _) (Nat.cast_nonneg _))
+        apply mul_le_mul_of_nonneg_left ?_
+          (mul_nonneg (Nat.cast_nonneg' _) (Nat.cast_nonneg _))
         · exact asiegel_remark K a habs Apos
       · refine div_nonneg (Nat.cast_nonneg' _) (sub_nonneg.2 (mod_cast hpq.le))
     · apply Real.rpow_nonneg
-      exact mul_nonneg (mul_nonneg (Nat.cast_nonneg' _) (Nat.cast_nonneg' _)) (norm_nonneg _)
+      exact mul_nonneg (mul_nonneg (Nat.cast_nonneg' _)
+        (Nat.cast_nonneg' _)) (norm_nonneg _)
     · exact mul_nonneg (Nat.cast_nonneg' _)
         (mul_nonneg (le_trans zero_le_one (le_max_left ..)) (supOfBasis_nonneg _))
   · rw [mul_comm (q : ℝ) (c₁ K)]; rfl
@@ -312,8 +325,10 @@ theorem exists_ne_zero_int_vec_house_le :
 
   have h0ph : 0 < p * h := by rw [mul_pos_iff]; constructor; exact ⟨h0p, finrank_pos⟩
 
-  have hfinp : Fintype.card (α × (K →+* ℂ)) = p * h := by rw [Fintype.card_prod, cardα, Embeddings.card]
-  have hfinq : Fintype.card (β × (K →+* ℂ)) = q * h := by rw [Fintype.card_prod, cardβ, Embeddings.card]
+  have hfinp : Fintype.card (α × (K →+* ℂ)) = p * h :=
+    by rw [Fintype.card_prod, cardα, Embeddings.card]
+  have hfinq : Fintype.card (β × (K →+* ℂ)) = q * h :=
+    by rw [Fintype.card_prod, cardβ, Embeddings.card]
 
   have ⟨x, hxl, hmulvec0, hxbound⟩ :=
     Int.Matrix.exists_ne_zero_int_vec_norm_le (asiegel K a)
@@ -325,7 +340,8 @@ theorem exists_ne_zero_int_vec_house_le :
     have ⟨k⟩ := Fintype.card_pos_iff.1 (cardα ▸ h0p)
     have ⟨l⟩ := Fintype.card_pos_iff.1 (cardβ ▸ h0p.trans hpq)
     exact le_trans (house_nonneg _) (habs k l)
-  use ξ K x, ξ_ne_0 K x hxl, ξ_mulVec_eq_0 K a x hxl hmulvec0, house_le_bound K a hpq x hxbound habs Apos
+  use ξ K x, ξ_ne_0 K x hxl, ξ_mulVec_eq_0 K a x hxl hmulvec0,
+    house_le_bound K a hpq x hxbound habs Apos
 
 end
 
