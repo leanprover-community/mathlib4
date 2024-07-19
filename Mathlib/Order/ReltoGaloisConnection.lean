@@ -94,13 +94,11 @@ instance instEquivFixedPoints : lFixedPoints R ≃ uFixedPoints R :=
       right_inv := by
           intro I; simp; cases' I with I hI; simp; rw[hI] }
 
-theorem le_imp_u_l_le {J J' : Set α} (h : J' ∈ lFixedPoints R) :
-        J ≤ J' → u R (l R J) ≤ J' := by
+theorem le_imp_u_l_le {J J' : Set α} (h : J' ∈ lFixedPoints R) : J ≤ J' → u R (l R J) ≤ J' := by
     intro h₁; rw[← h]; apply (to_galoisConnection R).monotone_u;
     apply (to_galoisConnection R).monotone_l; exact h₁
 
-theorem ge_imp_ge_l_u {I I' : (Set β)ᵒᵈ} (h : I' ∈ uFixedPoints R) :
-        I' ≥ I → I' ≥ l R (u R I) := by
+theorem ge_imp_ge_l_u {I I' : (Set β)ᵒᵈ} (h : I' ∈ uFixedPoints R) : I' ≥ I → I' ≥ l R (u R I) := by
     intro h₁; rw [← h]; apply (to_galoisConnection R).monotone_l;
     apply (to_galoisConnection R).monotone_u; exact h₁
 
