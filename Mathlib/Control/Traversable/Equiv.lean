@@ -46,7 +46,6 @@ protected def map {α β : Type u} (f : α → β) (x : t' α) : t' β :=
 `t'` using the equivalences `eqv`.  -/
 protected def functor : Functor t' where map := Equiv.map eqv
 
--- Porting note: `LawfulFunctor` is missing an `#align`.
 variable [LawfulFunctor t]
 
 protected theorem id_map {α : Type u} (x : t' α) : Equiv.map eqv id x = x := by
@@ -113,8 +112,6 @@ variable (η : ApplicativeTransformation F G)
 variable {α β γ : Type u}
 
 open LawfulTraversable Functor
-
--- Porting note: Id.bind_eq is missing an `#align`.
 
 protected theorem id_traverse (x : t' α) : Equiv.traverse eqv (pure : α → Id α) x = x := by
   rw [Equiv.traverse, id_traverse, Id.map_eq, apply_symm_apply]

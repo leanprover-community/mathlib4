@@ -10,6 +10,7 @@ import Mathlib.Topology.Sober
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
 /-!
 # The Zariski topology on the prime spectrum of a commutative (semi)ring

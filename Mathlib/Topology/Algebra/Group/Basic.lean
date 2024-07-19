@@ -406,7 +406,6 @@ you should also provide an instance of `UniformSpace` and `UniformGroup` using
 @[to_additive]
 class TopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] extends ContinuousMul G,
   ContinuousInv G : Prop
---#align topological_add_group TopologicalAddGroup
 
 section Conj
 
