@@ -496,7 +496,7 @@ open IsDedekindDomain.HeightOneSpectrum PowerSeries
 
 theorem valuation_eq_LaurentSeries_valuation (P : RatFunc K) :
     (Polynomial.idealX K).valuation P = (PowerSeries.idealX K).valuation (P : LaurentSeries K) := by
-  refine' RatFunc.induction_on' P _
+  refine RatFunc.induction_on' P ?_
   intro f g h
   rw [Polynomial.valuation_of_mk K f h, RatFunc.mk_eq_mk' f h, Eq.comm]
   convert @valuation_of_mk' (PowerSeries K) _ _ (LaurentSeries K) _ _ _ (PowerSeries.idealX K) f
@@ -585,7 +585,7 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : LaurentSeries K}
 /- The valuation of a Laurent series is the order of the first non-zero coefficient. -/
 theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : LaurentSeries K} :
     Valued.v f ≤ ↑(Multiplicative.ofAdd (-D : ℤ)) ↔ ∀ n : ℤ, n < D → f.coeff n = 0 := by
-  refine' ⟨fun hnD n hn => coeff_zero_of_lt_valuation K hnD hn, fun h_val_f => _⟩
+  refine ⟨fun hnD n hn => coeff_zero_of_lt_valuation K hnD hn, fun h_val_f => ?_⟩
   let F := powerSeriesPart f
   by_cases ord_nonpos : f.order ≤ 0
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat ord_nonpos
@@ -638,7 +638,7 @@ theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : LaurentSeries K}
 theorem val_le_one_iff_eq_coe (f : LaurentSeries K) : Valued.v f ≤ (1 : ℤₘ₀) ↔
     ∃ F : PowerSeries K, F = f := by
   rw [← WithZero.coe_one, ← ofAdd_zero, ← neg_zero, valuation_le_iff_coeff_lt_eq_zero]
-  refine' ⟨fun h => ⟨PowerSeries.mk fun n => f.coeff n, _⟩, _⟩
+  refine ⟨fun h => ⟨PowerSeries.mk fun n => f.coeff n, ?_⟩, ?_⟩
   ext (_ | n)
   · simp only [Int.ofNat_eq_coe, coeff_coe_powerSeries, coeff_mk]
   simp only [h (Int.negSucc n) (Int.negSucc_lt_zero n)]
