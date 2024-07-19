@@ -319,49 +319,52 @@ theorem restrict_eq_inf : (fun (γ : 𝕜) ↦
     exact mem_eigenspace_iff.mp x1
 
 theorem semi_final_exhaust : (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) = eigenspace A α := by
-   rw [← restrict_eq_inf hAB, ← Submodule.map_iSup, iSup_restrict_eq_top hB hAB,
+   rw [← restrict_eq_inf hAB , ← Submodule.map_iSup, iSup_restrict_eq_top hB hAB,
    Submodule.map_top, Submodule.range_subtype]
 
 theorem pre_exhaust :  (⨆ (γ : 𝕜), eigenspace A γ) =  ⊤ := by
   exact Submodule.orthogonal_eq_bot_iff.mp (hA.orthogonalComplement_iSup_eigenspaces_eq_bot)
 
-theorem pre_exhaust': (fun (α : 𝕜) ↦  eigenspace A α)  = fun (α : 𝕜) ↦
+theorem semi_final_exhaust': (fun (α : 𝕜) ↦  eigenspace A α)  = fun (α : 𝕜) ↦
     (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) := by
   funext; exact (semi_final_exhaust hB hAB).symm
 
+
 theorem exhaust : (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α))) = ⊤ := by
-  rw [← pre_exhaust hA, pre_exhaust' hB hAB]
+  rw [← pre_exhaust hA ]
+  rw[semi_final_exhaust' hB hAB]
 
 theorem post_exhaust: (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)))ᗮ = ⊥ := by
   rw [Submodule.orthogonal_eq_bot_iff]
   apply exhaust hA hB hAB
 
-theorem Orthogonality : OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) =>
+/- theorem iSup_iSup_eigenspace_inf_top: (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α))) = ⊤  := by
+  rw[iSup_comm]
+  conv =>
+    rhs
+    exact (Submodule.orthogonal_eq_bot_iff.mp (hA.orthogonalComplement_iSup_eigenspaces_eq_bot)).symm
+  conv =>
+   lhs
+   rhs
+   simp only[← restrict_eq_inf hAB , ← Submodule.map_iSup, iSup_restrict_eq_top hB hAB,
+   Submodule.map_top, Submodule.range_subtype] -/
+
+theorem Orthogonality: OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) =>
     (eigenspace B i.1 ⊓ eigenspace A i.2 : Submodule 𝕜 E))
     (fun i => (eigenspace B i.1 ⊓ eigenspace A i.2).subtypeₗᵢ) := by
-  apply orthogonalFamily_iff_pairwise.mpr ?_
-  intro i j hij v hv
-  have e:= (Iff.not (Iff.symm Prod.ext_iff)).mpr hij
-  push_neg at e
-  by_cases case : i.1 = j.1
-  · have J := e case
-    have Al := orthogonalFamily_iff_pairwise.mp hA.orthogonalFamily_eigenspaces J
-    rw[@Submodule.mem_orthogonal']
-    intro w hw
-    simp only [Submodule.mem_inf] at hw
-    have L := hv.2
-    have M := hw.2
-    exact inner_eq_zero_symm.mp (Al L w M)
-  · push_neg at case
-    rw[@Submodule.mem_orthogonal']
-    intro w hw
-    simp only [Submodule.mem_inf] at hw
-    have L := hv.1
-    have M := hw.1
-    have Bl := orthogonalFamily_iff_pairwise.mp hB.orthogonalFamily_eigenspaces case
-    exact inner_eq_zero_symm.mp (Bl L w M)
+  refine orthogonalFamily_iff_pairwise.mpr ?_
+  intro i j hij v ⟨hv1 , hv2⟩
+  have H:=  (Iff.not (Iff.symm Prod.ext_iff)).mpr hij
+  push_neg at H
+  by_cases C: i.1 = j.1
+  <;> intro w ⟨hw1, hw2⟩
+  have HC := H C
+  have A := orthogonalFamily_iff_pairwise.mp hA.orthogonalFamily_eigenspaces HC
+  exact A hv2 w hw2
+  have B := orthogonalFamily_iff_pairwise.mp hB.orthogonalFamily_eigenspaces C
+  exact B hv1 w hw1
 
-theorem post_post_exhaust: DirectSum.IsInternal
+theorem eigenspace_directsum_internal: DirectSum.IsInternal
     (fun (i : 𝕜 × 𝕜) ↦ (eigenspace B i.1 ⊓ eigenspace A i.2)):= by
   have One := Orthogonality hA hB
   have Two : ⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) =
@@ -443,8 +446,7 @@ theorem invariance_iInf [Nonempty n] (i : n) :
 @[simp]
 theorem inf_restrict [Nonempty n] (i : n) (γ : {x // i ≠ x} → 𝕜) :
     (⨆ (μ : 𝕜) , eigenspace ((T i).restrict
-    ((invariance_iInf T hC i γ))) μ) = ⊤ := by
-  exact
+    ((invariance_iInf T hC i γ))) μ) = ⊤ :=
     pre_exhaust fun x y ↦
       hT i ((⨅ j, eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)).subtype x) ↑y
 
@@ -496,10 +498,10 @@ theorem index_eigen_extend (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) (
     x ∈ (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by
   intro h
   simp only [ne_eq, Submodule.mem_map, Subtype.exists, Submodule.mem_iInf, Subtype.forall] at *
-  intro a b
-  obtain ⟨a', ⟨ha, ⟨_, h2⟩⟩⟩ := h
-  rw [← h2]
-  exact ha a b
+  intro a ha
+  obtain ⟨b, ⟨hb, ⟨_, hb'⟩⟩⟩ := h
+  rw [← hb']
+  exact hb a ha
 
 theorem ext_experiment (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) : ∀ x,
     x ∈ (⨆ (μ : 𝕜) , eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) ↔
@@ -670,6 +672,47 @@ theorem direct_sum_isInternal_simultaneous : DirectSum.IsInternal (fun (α : n �
     · exact orthogonalFamily_iInf_eigenspaces T hT
 
 end Simultaneous
+
+section ultra_generalized_PR
+
+universe u
+
+variable (n : Type u)(β : Type*)[Fintype n](γ : n → β )(α : Type*)[ConditionallyCompleteLattice α](P : β → α)
+
+theorem indexing_nonsense0_general (i : n) (β : Type*) (α : Type*) [CompleteLattice α]
+    (P : β → α) [Nontrivial n] (γ : n → β) : ⨅ (j : n), P (γ j) = P (γ i) ⊓ ⨅ (k : {x // i ≠ x}),
+    P (γ k) := by sorry
+
+theorem nonempty_iSup_eq_ssup_element_iSup_subtype(i: n)(P : β → α): (⨆ (γ : n → β), (⨅ (j : n), P (γ j)))
+    = (⨆ (ζ : { x // i ≠ x} → β ), (⨆ (μ : β), P (μ) ⊓ (⨅ (k : {x // i ≠ x}), P (ζ k)))) := by sorry
+
+end ultra_generalized_PR
+
+section specialized_proof
+universe u1
+variable {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable (n : Type u1)(i : n)[Fintype n](P : 𝕜  → Submodule 𝕜 E)
+
+theorem indexing_nonsense0_general' (i : n) [Nontrivial n] (P : 𝕜 → Submodule 𝕜 E) (γ : n → 𝕜) :
+    ⨅ (j : n), P (γ j) = P (γ i) ⊓ ⨅ (k : {x // i ≠ x}), P (γ k) := by
+  ext v
+  simp [iInf, sInf] at *
+  constructor
+  · intro h
+    constructor
+    · exact h i
+    · exact fun i_1 _ ↦ h i_1
+  · intro h
+    intro k
+    by_cases H : k = i
+    · rw [H]
+      exact h.1
+    · have F := h.2
+      simp only [ne_eq, Submodule.iInf_coe, Set.mem_iInter, SetLike.mem_coe, Subtype.forall] at F
+      exact F k fun a ↦ H (_root_.id (Eq.symm a))
+
+
+end specialized_proof
 
 end IsSymmetric
 
