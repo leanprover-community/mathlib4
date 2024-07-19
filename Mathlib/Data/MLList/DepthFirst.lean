@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Batteries.Data.MLList.Basic
 import Mathlib.Control.Combinators
+import Lean.Data.HashSet
 
 /-!
 # Depth first search
