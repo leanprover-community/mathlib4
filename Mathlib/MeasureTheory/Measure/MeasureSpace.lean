@@ -1730,6 +1730,13 @@ theorem compl_mem_cofinite : sᶜ ∈ μ.cofinite ↔ μ s < ∞ := by rw [mem_c
 theorem eventually_cofinite {p : α → Prop} : (∀ᶠ x in μ.cofinite, p x) ↔ μ { x | ¬p x } < ∞ :=
   Iff.rfl
 
+instance cofinite.instIsMeasurablyGenerated : IsMeasurablyGenerated μ.cofinite where
+  exists_measurable_subset s hs := by
+    refine ⟨(toMeasurable μ sᶜ)ᶜ, ?_, (measurableSet_toMeasurable _ _).compl, ?_⟩
+    · rwa [compl_mem_cofinite, measure_toMeasurable]
+    · rw [compl_subset_comm]
+      apply subset_toMeasurable
+
 end Measure
 
 open Measure
