@@ -33,8 +33,8 @@ attribute [local instance] Matrix.seminormedAddCommGroup
 def house (α : K) : ℝ := ‖canonicalEmbedding K α‖
 
 theorem house_eq_sup' (α : K) :
-  house α = univ.sup' univ_nonempty (fun φ : K →+* ℂ ↦ ‖φ α‖₊) := by
-    rw [house, ← coe_nnnorm, nnnorm_eq, ← sup'_eq_sup univ_nonempty]
+    house α = univ.sup' univ_nonempty (fun φ : K →+* ℂ ↦ ‖φ α‖₊) := by
+  rw [house, ← coe_nnnorm, nnnorm_eq, ← sup'_eq_sup univ_nonempty]
 
 theorem house_sum_le_sum_house (s : Finset ι) (α : ι → K) :
     house (∑ i in s, α i) ≤ ∑ i in s, house (α i) := by
@@ -63,7 +63,7 @@ abbrev basisMatrix : Matrix (K →+* ℂ) (K →+* ℂ) ℂ :=
   (of fun i ↦ latticeBasis K (equivReindex K i)).transpose
 
 lemma inv_mulVec_eq_vec [Fintype n] [DecidableEq n] [CommRing α] {A : Matrix n n α}
-   [Invertible A] {u v : n → α} (hM : u = A.mulVec v) : A⁻¹.mulVec u = v := by
+    [Invertible A] {u v : n → α} (hM : u = A.mulVec v) : A⁻¹.mulVec u = v := by
   rw [hM, mulVec_mulVec, inv_mul_of_invertible, one_mulVec]
 
 variable [DecidableEq (K →+* ℂ)]
