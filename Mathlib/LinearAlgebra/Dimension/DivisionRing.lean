@@ -9,8 +9,6 @@ import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.SetTheory.Cardinal.Subfield
 import Mathlib.LinearAlgebra.Dimension.RankNullity
 
-#align_import linear_algebra.dimension from "leanprover-community/mathlib"@"47a5f8186becdbc826190ced4312f8199f9db6a5"
-
 /-!
 # Dimension of vector spaces
 
@@ -53,7 +51,6 @@ variable [AddCommGroup V₁] [Module K V₁]
 theorem Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0 (h : Module.rank K V < ℵ₀) :
     (Basis.ofVectorSpaceIndex K V).Finite :=
   finite_def.2 <| (Basis.ofVectorSpace K V).nonempty_fintype_index_of_rank_lt_aleph0 h
-#align basis.finite_of_vector_space_index_of_rank_lt_aleph_0 Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0
 
 /-- Also see `rank_quotient_add_rank`. -/
 theorem rank_quotient_add_rank_of_divisionRing (p : Submodule K V) :
@@ -106,7 +103,6 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
     rcases h hde with ⟨c, h₁, h₂⟩
     refine ⟨c, h₁, ?_⟩
     rw [h₂, _root_.neg_neg]
-#align rank_add_rank_split rank_add_rank_split
 
 end
 
@@ -164,7 +160,6 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
       _ = 0 := smul_zero _
     -- And then it's just a bit of manipulation with finite sums.
     rwa [← Finset.insert_erase i_mem_s, Finset.sum_insert (Finset.not_mem_erase _ _)] at dependent
-#align linear_independent_of_top_le_span_of_card_eq_finrank linearIndependent_of_top_le_span_of_card_eq_finrank
 
 /-- A finite family of vectors is linearly independent if and only if
 its cardinality equals the dimension of its span. -/
@@ -191,25 +186,21 @@ theorem linearIndependent_iff_card_eq_finrank_span {ι : Type*} [Fintype ι] {b 
       simpa [f, mem_map] using hx
     have hi : LinearMap.ker f = ⊥ := ker_subtype _
     convert (linearIndependent_of_top_le_span_of_card_eq_finrank hs hc).map' _ hi
-#align linear_independent_iff_card_eq_finrank_span linearIndependent_iff_card_eq_finrank_span
 
 theorem linearIndependent_iff_card_le_finrank_span {ι : Type*} [Fintype ι] {b : ι → V} :
     LinearIndependent K b ↔ Fintype.card ι ≤ (Set.range b).finrank K := by
   rw [linearIndependent_iff_card_eq_finrank_span, (finrank_range_le_card _).le_iff_eq]
-#align linear_independent_iff_card_le_finrank_span linearIndependent_iff_card_le_finrank_span
 
 /-- A family of `finrank K V` vectors forms a basis if they span the whole space. -/
 noncomputable def basisOfTopLeSpanOfCardEqFinrank {ι : Type*} [Fintype ι] (b : ι → V)
     (le_span : ⊤ ≤ span K (Set.range b)) (card_eq : Fintype.card ι = finrank K V) : Basis ι K V :=
   Basis.mk (linearIndependent_of_top_le_span_of_card_eq_finrank le_span card_eq) le_span
-#align basis_of_top_le_span_of_card_eq_finrank basisOfTopLeSpanOfCardEqFinrank
 
 @[simp]
 theorem coe_basisOfTopLeSpanOfCardEqFinrank {ι : Type*} [Fintype ι] (b : ι → V)
     (le_span : ⊤ ≤ span K (Set.range b)) (card_eq : Fintype.card ι = finrank K V) :
     ⇑(basisOfTopLeSpanOfCardEqFinrank b le_span card_eq) = b :=
   Basis.coe_mk _ _
-#align coe_basis_of_top_le_span_of_card_eq_finrank coe_basisOfTopLeSpanOfCardEqFinrank
 
 /-- A finset of `finrank K V` vectors forms a basis if they span the whole space. -/
 @[simps! repr_apply]
@@ -218,7 +209,6 @@ noncomputable def finsetBasisOfTopLeSpanOfCardEqFinrank {s : Finset V}
   basisOfTopLeSpanOfCardEqFinrank ((↑) : ↥(s : Set V) → V)
     ((@Subtype.range_coe_subtype _ fun x => x ∈ s).symm ▸ le_span)
     (_root_.trans (Fintype.card_coe _) card_eq)
-#align finset_basis_of_top_le_span_of_card_eq_finrank finsetBasisOfTopLeSpanOfCardEqFinrank
 
 /-- A set of `finrank K V` vectors forms a basis if they span the whole space. -/
 @[simps! repr_apply]
@@ -226,7 +216,6 @@ noncomputable def setBasisOfTopLeSpanOfCardEqFinrank {s : Set V} [Fintype s]
     (le_span : ⊤ ≤ span K s) (card_eq : s.toFinset.card = finrank K V) : Basis s K V :=
   basisOfTopLeSpanOfCardEqFinrank ((↑) : s → V) ((@Subtype.range_coe_subtype _ s).symm ▸ le_span)
     (_root_.trans s.toFinset_card.symm card_eq)
-#align set_basis_of_top_le_span_of_card_eq_finrank setBasisOfTopLeSpanOfCardEqFinrank
 
 end Basis
 
