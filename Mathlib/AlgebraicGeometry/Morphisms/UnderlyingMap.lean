@@ -74,7 +74,7 @@ instance : MorphismProperty.RespectsIso @Surjective :=
     (fun _ _ hf hg ↦ hg.comp hf)
 
 instance surjective_isLocalAtTarget : IsLocalAtTarget @Surjective := by
-  have := AlgebraicGeometry.instRespectsIsoSchemeSurjective
+  have : MorphismProperty.RespectsIso @Surjective := inferInstance
   rw [surjective_eq_topologically] at this ⊢
   refine topologically_isLocalAtTarget _ (fun _ s h ↦ h.restrictPreimage s) fun f ι U H _ hf x ↦ ?_
   obtain ⟨i, hxi⟩ : ∃ i, x ∈ U i := by simpa using congr(x ∈ $H)
