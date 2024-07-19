@@ -765,7 +765,6 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent [DecidableEq σ]
   intro k hk
   rw [mem_finsuppAntidiag] at hk
   set s := (range n).filter fun i ↦ k i = 0 with hs_def
-  have hs : s ⊆ range n := filter_subset _ _
   have hs' (i : ℕ) (hi : i ∈ s) : coeff R (k i) f = constantCoeff σ R f := by
     simp only [hs_def, mem_filter] at hi
     rw [hi.2, coeff_zero_eq_constantCoeff]
