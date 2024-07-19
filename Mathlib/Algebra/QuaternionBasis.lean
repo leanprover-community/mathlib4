@@ -106,6 +106,31 @@ theorem k_mul_k : q.k * q.k = -((c₁ * c₂) • (1 : A)) := by
     mul_assoc, i_mul_i, smul_mul_assoc, one_mul, neg_mul, smul_mul_assoc, j_mul_j, smul_smul]
 #align quaternion_algebra.basis.k_mul_k QuaternionAlgebra.Basis.k_mul_k
 
+theorem i_mul_j_mul_k : q.i * q.j * q.k = -((c₁ * c₂) • (1 : A)) := by
+  rw [i_mul_j, k_mul_k]
+
+/-- Make a copy of `q`, changing the defintional equality of the basis elements.
+
+`hk` is stated with an `∨`, even though both sides are equivalent, so that it can be easily proved
+with `rfl` -/
+@[simps]
+def copy (q : Basis A c₁ c₂)
+    (i j : A) (k : A := i * j)
+    (hi : i = q.i) (hj : j = q.j) (hk : k = i*j ∨ k = q.k) : Basis A c₁ c₂ where
+  i := i
+  j := j
+  k := k
+  i_mul_i := by simp [*]
+  j_mul_j := by simp [*]
+  i_mul_j := by cases hk <;> simp [*]
+  j_mul_i := by cases hk <;> simp [*]
+
+lemma copy_eq (q : Basis A c₁ c₂)
+    (i j : A) (k : A := i * j)
+    (hi : i = q.i) (hj : j = q.j) (hk : k = i*j ∨ k = q.k) :
+    q.copy i j k hi hj hk = q := by
+  ext <;> assumption
+
 /-- Intermediate result used to define `QuaternionAlgebra.Basis.liftHom`. -/
 def lift (x : ℍ[R,c₁,c₂]) : A :=
   algebraMap R _ x.re + x.imI • q.i + x.imJ • q.j + x.imK • q.k
@@ -161,6 +186,11 @@ def compHom (F : A →ₐ[R] B) : Basis B c₁ c₂ where
   i_mul_j := by rw [← map_mul, q.i_mul_j]
   j_mul_i := by rw [← map_mul, q.j_mul_i, map_neg]
 #align quaternion_algebra.basis.comp_hom QuaternionAlgebra.Basis.compHom
+
+@[simp]
+theorem liftHom_compHom (F : A →ₐ[R] B) : (q.compHom F).liftHom = F.comp q.liftHom := by
+  ext q
+  simp [liftHom, compHom, lift]
 
 end Basis
 

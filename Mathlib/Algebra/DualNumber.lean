@@ -99,6 +99,15 @@ theorem commute_eps_left [Semiring R] (x : DualNumber R) : Commute ε x := by
 /-- `ε` commutes with every element of the algebra. -/
 theorem commute_eps_right [Semiring R] (x : DualNumber R) : Commute x ε := (commute_eps_left x).symm
 
+@[simp]
+theorem inl_mul_eps [Semiring R] (r : R) : inl r * ε = (r • ε : R[ε]) :=
+  (inl_mul_inr _ _).trans (inr_smul _ _ _)
+
+@[simp]
+theorem eps_mul_inl [Semiring R] (r : R) : ε * inl r = (r • ε : R[ε]) :=
+  (commute_eps_left _).trans (inl_mul_eps _)
+
+
 variable {A : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 /-- For two `R`-algebra morphisms out of `A[ε]` to agree, it suffices for them to agree on the
