@@ -7,8 +7,6 @@ import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
 
-#align_import category_theory.triangulated.pretriangulated from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
-
 /-!
 # Pretriangulated Categories
 
@@ -81,7 +79,6 @@ class Pretriangulated [∀ n : ℤ, Functor.Additive (shiftFunctor C n)] where
     ∀ (T₁ T₂ : Triangle C) (_ : T₁ ∈ distinguishedTriangles) (_ : T₂ ∈ distinguishedTriangles)
       (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (_ : T₁.mor₁ ≫ b = a ≫ T₂.mor₁),
       ∃ c : T₁.obj₃ ⟶ T₂.obj₃, T₁.mor₂ ≫ c = b ≫ T₂.mor₂ ∧ T₁.mor₃ ≫ a⟦1⟧' = c ≫ T₂.mor₃
-#align category_theory.pretriangulated CategoryTheory.Pretriangulated
 
 
 namespace Pretriangulated
@@ -104,7 +101,6 @@ lemma distinguished_iff_of_iso {T₁ T₂ : Triangle C} (e : T₁ ≅ T₂) :
 -/
 theorem rot_of_distTriang (T : Triangle C) (H : T ∈ distTriang C) : T.rotate ∈ distTriang C :=
   (rotate_distinguished_triangle T).mp H
-#align category_theory.pretriangulated.rot_of_dist_triangle CategoryTheory.Pretriangulated.rot_of_distTriang
 
 /-- Given any distinguished triangle `T`, then we know `T.inv_rotate` is also distinguished.
 -/
@@ -112,7 +108,6 @@ theorem inv_rot_of_distTriang (T : Triangle C) (H : T ∈ distTriang C) :
     T.invRotate ∈ distTriang C :=
   (rotate_distinguished_triangle T.invRotate).mpr
     (isomorphic_distinguished T H T.invRotate.rotate (invRotCompRot.app T))
-#align category_theory.pretriangulated.inv_rot_of_dist_triangle CategoryTheory.Pretriangulated.inv_rot_of_distTriang
 
 /-- Given any distinguished triangle
 ```
@@ -128,7 +123,6 @@ theorem comp_distTriang_mor_zero₁₂ (T) (H : T ∈ (distTriang C)) : T.mor₁
     complete_distinguished_triangle_morphism _ _ (contractible_distinguished T.obj₁) H (𝟙 T.obj₁)
       T.mor₁ rfl
   simpa only [contractibleTriangle_mor₂, zero_comp] using hc.left.symm
-#align category_theory.pretriangulated.comp_dist_triangle_mor_zero₁₂ CategoryTheory.Pretriangulated.comp_distTriang_mor_zero₁₂
 
 /-- Given any distinguished triangle
 ```
@@ -142,7 +136,6 @@ See <https://stacks.math.columbia.edu/tag/0146>
 theorem comp_distTriang_mor_zero₂₃ (T : Triangle C) (H : T ∈ distTriang C) :
     T.mor₂ ≫ T.mor₃ = 0 :=
   comp_distTriang_mor_zero₁₂ T.rotate (rot_of_distTriang T H)
-#align category_theory.pretriangulated.comp_dist_triangle_mor_zero₂₃ CategoryTheory.Pretriangulated.comp_distTriang_mor_zero₂₃
 
 /-- Given any distinguished triangle
 ```
@@ -157,7 +150,6 @@ theorem comp_distTriang_mor_zero₃₁ (T : Triangle C) (H : T ∈ distTriang C)
     T.mor₃ ≫ T.mor₁⟦1⟧' = 0 := by
   have H₂ := rot_of_distTriang T.rotate (rot_of_distTriang T H)
   simpa using comp_distTriang_mor_zero₁₂ T.rotate.rotate H₂
-#align category_theory.pretriangulated.comp_dist_triangle_mor_zero₃₁ CategoryTheory.Pretriangulated.comp_distTriang_mor_zero₃₁
 
 /-- The short complex `T.obj₁ ⟶ T.obj₂ ⟶ T.obj₃` attached to a distinguished triangle. -/
 @[simps]
@@ -509,7 +501,7 @@ instance : HasBinaryBiproducts C := ⟨fun X₁ X₃ => by
     Triangle.coyoneda_exact₂ _ mem (𝟙 X₂ - snd ≫ inr) (by
       dsimp
       simp only [sub_comp, assoc, id_comp, ← inr_snd, comp_id, sub_self])
-  refine' ⟨⟨binaryBiproductData _ mem rfl inr inr_snd.symm fst _⟩⟩
+  refine ⟨⟨binaryBiproductData _ mem rfl inr inr_snd.symm fst ?_⟩⟩
   dsimp
   simp only [← hfst, sub_add_cancel]⟩
 
@@ -537,7 +529,7 @@ lemma binaryBiproductTriangle_distinguished (X₁ X₂ : C) :
   obtain ⟨e, ⟨he₁, he₂⟩⟩ := exists_iso_binaryBiproduct_of_distTriang _ mem rfl
   dsimp at he₁ he₂
   refine isomorphic_distinguished _ mem _ (Iso.symm ?_)
-  refine' Triangle.isoMk _ _ (Iso.refl _) e (Iso.refl _)
+  refine Triangle.isoMk _ _ (Iso.refl _) e (Iso.refl _)
     (by aesop_cat) (by aesop_cat) (by aesop_cat)
 
 lemma binaryProductTriangle_distinguished (X₁ X₂ : C) :
@@ -597,8 +589,8 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
       rw [← cancel_mono (φ'.hom₁⟦1⟧'), zero_comp, assoc, φ'.comm₃, reassoc_of% hf, zero_comp]
     obtain ⟨g, hg⟩ := T'.coyoneda_exact₃ hT' f hf'
     have hg' : ∀ j, (g ≫ Pi.π _ j) ≫ (T j).mor₂ = 0 := fun j => by
-      have : g ≫ T'.mor₂ ≫ φ'.hom₃ ≫ Pi.π _ j = 0 :=
-        by rw [← reassoc_of% hg, reassoc_of% hf, zero_comp]
+      have : g ≫ T'.mor₂ ≫ φ'.hom₃ ≫ Pi.π _ j = 0 := by
+        rw [← reassoc_of% hg, reassoc_of% hf, zero_comp]
       rw [φ'.comm₂_assoc, h₂, id_comp] at this
       simpa using this
     have hg'' := fun j => (T j).coyoneda_exact₂ (hT j) _ (hg' j)

@@ -9,8 +9,6 @@ import Mathlib.MeasureTheory.Group.FundamentalDomain
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.MeasureTheory.Constructions.Polish
 
-#align_import measure_theory.measure.haar.quotient from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
-
 /-!
 # Haar quotient measure
 
@@ -60,8 +58,6 @@ instance QuotientGroup.measurableSMul {G : Type*} [Group G] {Γ : Subgroup G} [M
     MeasurableSMul G (G ⧸ Γ) where
   measurable_const_smul g := (continuous_const_smul g).measurable
   measurable_smul_const x := (QuotientGroup.continuous_smul₁ x).measurable
-#align quotient_group.has_measurable_smul QuotientGroup.measurableSMul
-#align quotient_add_group.has_measurable_vadd QuotientAddGroup.measurableVAdd
 
 end
 
@@ -99,8 +95,6 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotie
         simp [Set.preimage]
       rw [measure_preimage_mul]
     rw [this, ← preimage_smul_inv]; rfl
-#align measure_theory.is_fundamental_domain.smul_invariant_measure_map MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotient
-#align measure_theory.is_add_fundamental_domain.vadd_invariant_measure_map MeasureTheory.AddQuotientMeasureEqMeasurePreimage.vaddInvariantMeasure_quotient
 
 /-- Given a subgroup `Γ` of a topological group `G` with measure `ν`, and a measure 'μ' on the
   quotient `G ⧸ Γ` satisfying `QuotientMeasureEqMeasurePreimage`, the restriction
@@ -174,7 +168,7 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimag
     rw [this]
     rfl
   have : SigmaFinite μ' := i.sigmaFiniteQuotient
-  rw [measure_eq_div_smul μ' μ meas_V neZeroV neTopV, hV]
+  rw [measure_eq_div_smul μ' μ neZeroV neTopV, hV]
   symm
   suffices (μ' V / ν (QuotientGroup.mk ⁻¹' V ∩ s)) = 1 by rw [this, one_smul]
   rw [Measure.map_apply meas_π meas_V, Measure.restrict_apply]
@@ -254,7 +248,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     apply ne_of_lt
     refine lt_of_le_of_lt ?_ finiteCovol.lt_top
     apply measure_mono
-    exact inter_subset_right _ s
+    exact inter_subset_right
 
 /-- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
   right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
@@ -299,7 +293,7 @@ theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_smulHaarMeasure {�
   set c := ν ((π ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕)
   have c_ne_top : c ≠ ∞ := by
     contrapose! h𝓕_finite
-    have : c ≤ ν 𝓕 := measure_mono (Set.inter_subset_right _ _)
+    have : c ≤ ν 𝓕 := measure_mono (Set.inter_subset_right)
     rw [h𝓕_finite] at this
     exact top_unique this
   set μ := c • haarMeasure K

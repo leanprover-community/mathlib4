@@ -5,8 +5,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.MeasureTheory.Measure.Typeclasses
 
-#align_import measure_theory.decomposition.unsigned_hahn from "leanprover-community/mathlib"@"0f1becb755b3d008b242c622e248a70556ad19e6"
-
 /-!
 # Unsigned Hahn decomposition theorem
 
@@ -57,7 +55,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     ∀ s : ℕ → Set α, Monotone s → Tendsto (fun n => d (s n)) atTop (𝓝 (d (⋃ n, s n))) := by
     intro s hm
     refine Tendsto.sub ?_ ?_ <;>
-      refine' NNReal.tendsto_coe.2 <| (ENNReal.tendsto_toNNReal _).comp <| tendsto_measure_iUnion hm
+      refine NNReal.tendsto_coe.2 <| (ENNReal.tendsto_toNNReal ?_).comp <| tendsto_measure_iUnion hm
     · exact hμ _
     · exact hν _
   have d_Inter :
@@ -66,9 +64,9 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
         (∀ n m, n ≤ m → s m ⊆ s n) → Tendsto (fun n => d (s n)) atTop (𝓝 (d (⋂ n, s n))) := by
     intro s hs hm
     refine Tendsto.sub ?_ ?_ <;>
-      refine'
+      refine
         NNReal.tendsto_coe.2 <|
-          (ENNReal.tendsto_toNNReal <| _).comp <| tendsto_measure_iInter hs hm _
+          (ENNReal.tendsto_toNNReal <| ?_).comp <| tendsto_measure_iInter hs hm ?_
     exacts [hμ _, ⟨0, hμ _⟩, hν _, ⟨0, hν _⟩]
   have bdd_c : BddAbove c := by
     use (μ univ).toNNReal
@@ -174,6 +172,5 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
 
     rw [← to_nnreal_μ, ← to_nnreal_ν, ENNReal.coe_le_coe, ← NNReal.coe_le_coe]
     simpa only [d, sub_le_iff_le_add, zero_add] using this
-#align measure_theory.hahn_decomposition MeasureTheory.hahn_decomposition
 
 end MeasureTheory

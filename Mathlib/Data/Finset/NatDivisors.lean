@@ -15,7 +15,7 @@ exhibiting `Nat.divisors` as a multiplicative homomorphism from `ℕ` to `Finset
 -/
 
 open Nat Finset
-open scoped Pointwise BigOperators
+open scoped Pointwise
 
 /-- The divisors of a product of natural numbers are the pointwise product of the divisors of the
 factors. -/

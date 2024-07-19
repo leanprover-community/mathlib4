@@ -7,8 +7,6 @@ import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Fintype.Card
 
-#align_import algebra.order.field.pi from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
-
 /-!
 # Lemmas about (finite domain) functions into fields.
 
@@ -29,4 +27,3 @@ theorem Pi.exists_forall_pos_add_lt [ExistsAddOfLE α] [Finite ι] {x y : ι →
   exact
     ⟨_, half_pos hε, fun i =>
       add_lt_add_left ((half_lt_self hε).trans_le <| Finset.inf'_le _ <| Finset.mem_univ _) _⟩
-#align pi.exists_forall_pos_add_lt Pi.exists_forall_pos_add_lt

@@ -5,6 +5,7 @@ Authors: Jeremy Tan
 -/
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.SpecificLimits.Normed
+import Mathlib.Tactic.Peel
 
 /-!
 # Abel's limit theorem
@@ -29,7 +30,7 @@ left with angle less than `π`.
 
 open Filter Finset
 
-open scoped BigOperators Topology
+open scoped Topology
 
 namespace Complex
 

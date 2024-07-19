@@ -26,7 +26,7 @@ proving theorems without a `[Finite ι]` assumption saves us some typeclass sear
 -/
 
 open Bornology Filter Set Function
-open scoped Topology BigOperators
+open scoped Topology
 
 namespace Bornology.IsVonNBounded
 
@@ -94,3 +94,7 @@ theorem image_multilinear [ContinuousSMul 𝕜 F] {s : Set (∀ i, E i)} (hs : I
     exact (isBounded_iff_isVonNBounded _).1 <|
       @Set.Finite.isBounded _ (vonNBornology 𝕜 F) _ (s.toFinite.image _)
   | inr h => exact hs.image_multilinear' f
+
+end IsVonNBounded
+
+end Bornology

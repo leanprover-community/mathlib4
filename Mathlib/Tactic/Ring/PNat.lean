@@ -39,3 +39,9 @@ instance {n n' k k'} [h1 : CSLiftVal (n : ℕ+) n'] [h2 : CSLiftVal (k : ℕ+) k
 
 instance {n n' k} [h1 : CSLiftVal (n : ℕ+) n'] :
     CSLiftVal (n ^ k) (n' ^ k) := ⟨by simp [h1.1, CSLift.lift]⟩
+
+end Ring
+
+end Tactic
+
+end Mathlib

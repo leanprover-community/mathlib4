@@ -6,8 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
-#align_import analysis.specific_limits.floor_pow from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
-
 /-!
 # Results on discretized exponentials
 
@@ -21,7 +19,7 @@ We state several auxiliary results pertaining to sequences of the form `⌊c^n�
 
 open Filter Finset
 
-open Topology BigOperators
+open Topology
 
 /-- If a monotone sequence `u` is such that `u n / n` tends to a limit `l` along subsequences with
 exponential growth rate arbitrarily close to `1`, then `u n / n` tends to `l`. -/
@@ -180,7 +178,6 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       u n / n ≤ (n * l + ε * (1 + ε + l) * n) / n := by gcongr; linarith only [hn]
       _ = (l + ε * (1 + ε + l)) := by field_simp; ring
       _ < d := hε
-#align tendsto_div_of_monotone_of_exists_subseq_tendsto_div tendsto_div_of_monotone_of_exists_subseq_tendsto_div
 
 /-- If a monotone sequence `u` is such that `u ⌊c^n⌋₊ / ⌊c^n⌋₊` converges to a limit `l` for all
 `c > 1`, then `u n / n` tends to `l`. It is even enough to have the assumption for a sequence of
@@ -216,7 +213,6 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
     ring
   filter_upwards [(tendsto_order.1 B).2 a hk] with n hn
   exact (div_le_iff (H n)).1 hn.le
-#align tendsto_div_of_monotone_of_tendsto_div_floor_pow tendsto_div_of_monotone_of_tendsto_div_floor_pow
 
 /-- The sum of `1/(c^i)^2` above a threshold `j` is comparable to `1/j^2`, up to a multiplicative
 constant. -/
@@ -266,7 +262,6 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
       field_simp [hj.ne', (zero_lt_one.trans hc).ne']
       ring
     _ ≤ c ^ 3 * (c - 1)⁻¹ / j ^ 2 := by gcongr
-#align sum_div_pow_sq_le_div_sq sum_div_pow_sq_le_div_sq
 
 theorem mul_pow_le_nat_floor_pow {c : ℝ} (hc : 1 < c) (i : ℕ) : (1 - c⁻¹) * c ^ i ≤ ⌊c ^ i⌋₊ := by
   have cpos : 0 < c := zero_lt_one.trans hc
@@ -278,7 +273,6 @@ theorem mul_pow_le_nat_floor_pow {c : ℝ} (hc : 1 < c) (i : ℕ) : (1 - c⁻¹)
       gcongr
       simpa only [← div_eq_mul_inv, one_le_div cpos, pow_one] using le_self_pow hc.le hi
     _ ≤ ⌊c ^ i⌋₊ := (Nat.sub_one_lt_floor _).le
-#align mul_pow_le_nat_floor_pow mul_pow_le_nat_floor_pow
 
 /-- The sum of `1/⌊c^i⌋₊^2` above a threshold `j` is comparable to `1/j^2`, up to a multiplicative
 constant. -/
@@ -312,4 +306,3 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
       congr 1
       field_simp [(sub_pos.2 hc).ne']
       ring!
-#align sum_div_nat_floor_pow_sq_le_div_sq sum_div_nat_floor_pow_sq_le_div_sq

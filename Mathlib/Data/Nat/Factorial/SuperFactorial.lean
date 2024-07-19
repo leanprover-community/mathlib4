@@ -50,7 +50,7 @@ theorem superFactorial_one : sf 1 = 1 :=
 theorem superFactorial_two : sf 2 = 2 :=
   rfl
 
-open BigOperators Finset
+open Finset
 
 @[simp]
 theorem prod_Icc_factorial : ∀ n : ℕ, ∏ x ∈ Icc 1 n, x ! = sf n
@@ -105,7 +105,7 @@ private theorem matrixOf_eval_descPochhammer_eq_mul_matrixOf_choose {n : ℕ} (v
     (Matrix.of (fun (i j : Fin n) => (descPochhammer ℤ j).eval (v i : ℤ))).det =
     (∏ i : Fin n, Nat.factorial i) *
       (Matrix.of (fun (i j : Fin n) => (Nat.choose (v i) (j : ℕ) : ℤ))).det := by
-  convert Matrix.det_mul_row (fun (i : Fin n) => ((Nat.factorial (i : ℕ)):ℤ)) _
+  convert Matrix.det_mul_row (fun (i : Fin n) => ((Nat.factorial (i : ℕ)) : ℤ)) _
   · rw [Matrix.of_apply, descPochhammer_eval_eq_descFactorial ℤ _ _]
     congr
     exact Nat.descFactorial_eq_factorial_mul_choose _ _
