@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.List.Range
+import Mathlib.Util.Qq
 
 #align_import data.fin.vec_notation from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 
@@ -148,6 +149,61 @@ theorem cons_val_succ' {i : ℕ} (h : i.succ < m.succ) (x : α) (u : Fin m → �
   simp only [vecCons, Fin.cons, Fin.cases_succ']
 #align matrix.cons_val_succ' Matrix.cons_val_succ'
 
+section simprocs
+open Lean Qq
+
+/-- Parses a chain of `Matrix.vecCons` calls into elements and a tail. -/
+partial def matchVecConsPrefix (e : Expr) : MetaM <| List Expr × Expr := do
+  match_expr ← Meta.whnfR e with
+  | Matrix.vecCons _ _ x xs => do
+    let (elems, tail) ← matchVecConsPrefix xs
+    return (x :: elems, tail)
+  | _ => return ([], e)
+
+/-- A simproc that handles terms of the form `Matrix.vecCons a f i` where `i` is a numeric literal.
+
+In practice, this is most effective at handling `![a, b, c] i`-style terms. -/
+dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
+  let_expr Matrix.vecCons α _ x xs' i := ← Meta.whnfR e | return .continue
+  let some i' := i.int? | return .continue -- The docstring claims only nat or int, but works fine for Fin
+  let (length, variadic) ← do
+    let_expr Fin length := (← instantiateMVars (← Meta.inferType i)) | return .continue
+    let length ← Meta.whnfD length
+    if let Expr.lit (.natVal length) := length then
+      pure (length, false)
+    else
+      let .some (_, offset) ← (Meta.isOffset? length).run | pure (0, true)
+      pure (offset, true)
+  let (xs, tail) ← matchVecConsPrefix xs'
+  let xs := x :: xs
+  if variadic then
+    -- can't wrap if we don't know the length
+    unless 0 ≤ i' do return .continue
+    let i' := i'.toNat
+    if i' < xs.length then
+      -- prefix of `vecCons a (vecCons ... f)` where `f` is of unknown length
+      return .continue xs[i']!
+    else if i' < length then
+      let i'' := mkRawNatLit (i' - xs.length)
+      -- TODO: could build this without going through the elaborator
+      let (newn, _) ← Elab.Term.TermElabM.run <| do
+        Elab.Term.elabTerm (← `($(← tail.toSyntax) <| OfNat.ofNat $(← i''.toSyntax))) (some α)
+      return .continue (.some newn)
+    else
+      return .continue
+  else
+    -- wrap around the index
+    let i' := (i' % length).toNat
+    if i' < xs.length then
+      return .continue (xs.get! i')
+    else if 0 < xs.length then
+      let newn := unsafe toExpr (⟨i' - xs.length, lcProof⟩ : Fin (length - xs.length))
+      return .continue (.some <| .app tail <| newn)
+    else
+      return .continue
+
+end simprocs
+
 @[simp]
 theorem head_cons (x : α) (u : Fin m → α) : vecHead (vecCons x u) = x :=
   rfl
@@ -205,21 +261,15 @@ theorem vec_single_eq_const (a : α) : ![a] = fun _ => a :=
   The simplifier needs a special lemma for length `≥ 2`, in addition to
   `cons_val_succ`, because `1 : Fin 1 = 0 : Fin 1`.
 -/
-@[simp]
-theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = vecHead u :=
-  rfl
+theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = u 0 := rfl
 #align matrix.cons_val_one Matrix.cons_val_one
 
-@[simp]
-theorem cons_val_two (x : α) (u : Fin m.succ.succ → α) : vecCons x u 2 = vecHead (vecTail u) :=
-  rfl
+theorem cons_val_two (x : α) (u : Fin m.succ.succ → α) : vecCons x u 2 = vecHead (vecTail u) := rfl
 
-@[simp]
 lemma cons_val_three (x : α) (u : Fin m.succ.succ.succ → α) :
     vecCons x u 3 = vecHead (vecTail (vecTail u)) :=
   rfl
 
-@[simp]
 lemma cons_val_four (x : α) (u : Fin m.succ.succ.succ.succ → α) :
     vecCons x u 4 = vecHead (vecTail (vecTail (vecTail u))) :=
   rfl
@@ -375,13 +425,13 @@ theorem vecHead_vecAlt1 (hm : m + 2 = n + 1 + (n + 1)) (v : Fin (m + 2) → α) 
     vecHead (vecAlt1 hm v) = v 1 := by simp [vecHead, vecAlt1]
 #align matrix.vec_head_vec_alt1 Matrix.vecHead_vecAlt1
 
-@[simp]
+@[simp, deprecated]
 theorem cons_vec_bit0_eq_alt0 (x : α) (u : Fin n → α) (i : Fin (n + 1)) :
     vecCons x u (i + i) = vecAlt0 rfl (vecAppend rfl (vecCons x u) (vecCons x u)) i := by
   rw [vecAlt0_vecAppend]; rfl
 #align matrix.cons_vec_bit0_eq_alt0 Matrix.cons_vec_bit0_eq_alt0
 
-@[simp]
+@[simp, deprecated]
 theorem cons_vec_bit1_eq_alt1 (x : α) (u : Fin n → α) (i : Fin (n + 1)) :
     vecCons x u ((i + i) + 1) = vecAlt1 rfl (vecAppend rfl (vecCons x u) (vecCons x u)) i := by
   rw [vecAlt1_vecAppend]; rfl
@@ -400,8 +450,6 @@ theorem cons_vecAlt0 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
       cons_vecAppend, Nat.add_eq, vecAlt0]
 #align matrix.cons_vec_alt0 Matrix.cons_vecAlt0
 
--- Although proved by simp, extracting element 8 of a five-element
--- vector does not work by simp unless this lemma is present.
 @[simp]
 theorem empty_vecAlt0 (α) {h} : vecAlt0 h (![] : Fin 0 → α) = ![] := by
   simp [eq_iff_true_of_subsingleton]
@@ -417,8 +465,6 @@ theorem cons_vecAlt1 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
   · simp [vecAlt1, Nat.add_right_comm, ← Nat.add_assoc]
 #align matrix.cons_vec_alt1 Matrix.cons_vecAlt1
 
--- Although proved by simp, extracting element 9 of a five-element
--- vector does not work by simp unless this lemma is present.
 @[simp]
 theorem empty_vecAlt1 (α) {h} : vecAlt1 h (![] : Fin 0 → α) = ![] := by
   simp [eq_iff_true_of_subsingleton]
