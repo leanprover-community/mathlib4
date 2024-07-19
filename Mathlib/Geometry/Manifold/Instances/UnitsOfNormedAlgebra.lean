@@ -5,8 +5,6 @@ Authors: Nicolò Cavalleri, Heather Macbeth, Winston Yin
 -/
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 
-#align_import geometry.manifold.instances.units_of_normed_algebra from "leanprover-community/mathlib"@"ef901ea68d3bb1dd08f8bc3034ab6b32b2e6ecdf"
-
 /-!
 # Units of a normed algebra
 
@@ -39,11 +37,9 @@ instance : ChartedSpace R Rˣ :=
 
 theorem chartAt_apply {a : Rˣ} {b : Rˣ} : chartAt R a b = b :=
   rfl
-#align units.chart_at_apply Units.chartAt_apply
 
 theorem chartAt_source {a : Rˣ} : (chartAt R a).source = Set.univ :=
   rfl
-#align units.chart_at_source Units.chartAt_source
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 R]
 

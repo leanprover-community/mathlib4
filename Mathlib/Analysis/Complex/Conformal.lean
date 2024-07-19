@@ -8,8 +8,6 @@ import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.Data.Complex.FiniteDimensional
 
-#align_import analysis.complex.conformal from "leanprover-community/mathlib"@"468b141b14016d54b479eb7a0fff1e360b7e3cf6"
-
 /-!
 # Conformal maps between complex vector spaces
 
@@ -40,7 +38,6 @@ open Complex ContinuousLinearMap ComplexConjugate
 
 theorem isConformalMap_conj : IsConformalMap (conjLIE : ℂ →L[ℝ] ℂ) :=
   conjLIE.toLinearIsometry.isConformalMap
-#align is_conformal_map_conj isConformalMap_conj
 
 section ConformalIntoComplexNormed
 
@@ -61,12 +58,10 @@ theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠
   · ext1
     -- porting note (#10745): was `simp`; explicitly supplied simp lemma
     simp [smul_inv_smul₀ minor₁]
-#align is_conformal_map_complex_linear isConformalMap_complex_linear
 
 theorem isConformalMap_complex_linear_conj {map : ℂ →L[ℂ] E} (nonzero : map ≠ 0) :
     IsConformalMap ((map.restrictScalars ℝ).comp (conjCLE : ℂ →L[ℝ] ℂ)) :=
   (isConformalMap_complex_linear nonzero).comp isConformalMap_conj
-#align is_conformal_map_complex_linear_conj isConformalMap_complex_linear_conj
 
 end ConformalIntoComplexNormed
 
@@ -90,7 +85,6 @@ theorem IsConformalMap.is_complex_or_conj_linear (h : IsConformalMap g) :
   · refine Or.inr ⟨c • (a : ℂ) • ContinuousLinearMap.id ℂ ℂ, ?_⟩
     ext1
     simp
-#align is_conformal_map.is_complex_or_conj_linear IsConformalMap.is_complex_or_conj_linear
 
 /-- A real continuous linear map on the complex plane is conformal if and only if the map or its
     conjugate is complex linear, and the map is nonvanishing. -/
@@ -113,6 +107,5 @@ theorem isConformalMap_iff_is_complex_or_conj_linear :
       refine isConformalMap_complex_linear_conj ?_
       contrapose! h₂ with w
       simp only [w, restrictScalars_zero, zero_comp]
-#align is_conformal_map_iff_is_complex_or_conj_linear isConformalMap_iff_is_complex_or_conj_linear
 
 end ConformalIntoComplexPlane

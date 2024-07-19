@@ -7,8 +7,6 @@ import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.RingTheory.Valuation.ValuationSubring
 
-#align_import topology.algebra.valuation from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # The topology on a valued ring
 
@@ -93,7 +91,6 @@ theorem subgroups_basis :
         simp only [mem_preimage, SetLike.mem_coe, mem_ltAddSubgroup_iff, _root_.map_mul, Hx]
         rw [Units.val_mul, mul_comm] at vy_lt
         simpa using mul_inv_lt_of_lt_mul₀ vy_lt }
-#align valuation.subgroups_basis Valuation.subgroups_basis
 
 end Valuation
 
@@ -109,7 +106,6 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
   v : Valuation R Γ₀
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔
     ∃ γ ∈ v.rangeGroup, { x : R | v x < γ } ⊆ s
-#align valued Valued
 
 -- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
 --attribute [nolint dangerous_instance] Valued.toUniformSpace
@@ -128,7 +124,6 @@ def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
       simp only [true_and, Subtype.exists, exists_prop]
       exact rfl.to_iff
       }
-#align valued.mk' Valued.mk'
 
 variable (R Γ₀)
 variable [_i : Valued R Γ₀]
@@ -137,20 +132,16 @@ theorem hasBasis_nhds_zero :
     (𝓝 (0 : R)).HasBasis (fun _ => True) fun γ : _i.v.rangeGroup => { x | v x < (γ : Γ₀ˣ) } := by
   simp [Filter.hasBasis_iff, is_topological_valuation]
 
-#align valued.has_basis_nhds_zero Valued.hasBasis_nhds_zero
-
 -- Porting note: Replaced `𝓤 R` with `uniformity R`
 theorem hasBasis_uniformity : (uniformity R).HasBasis (fun _ => True)
     fun γ : _i.v.rangeGroup => { p : R × R | v (p.2 - p.1) < (γ : Γ₀ˣ) } := by
   rw [uniformity_eq_comap_nhds_zero]
   exact (hasBasis_nhds_zero R Γ₀).comap _
-#align valued.has_basis_uniformity Valued.hasBasis_uniformity
 
 theorem toUniformSpace_eq :
     toUniformSpace = @TopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _ :=
   UniformSpace.ext
     ((hasBasis_uniformity R Γ₀).eq_of_same_basis <| v.subgroups_basis.hasBasis_nhds_zero.comap _)
-#align valued.to_uniform_space_eq Valued.toUniformSpace_eq
 
 variable {R Γ₀}
 
@@ -158,19 +149,16 @@ theorem mem_nhds {s : Set R} {x : R} : s ∈ 𝓝 x ↔ ∃ γ : _i.v.rangeGroup
     { y | v (y - x) < (γ : Γ₀ˣ) } ⊆ s := by
   simp only [← nhds_translation_add_neg x, ← sub_eq_add_neg, preimage_setOf_eq, true_and,
     ((hasBasis_nhds_zero R Γ₀).comap fun y => y - x).mem_iff]
-#align valued.mem_nhds Valued.mem_nhds
 
 theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔
     ∃ γ : _i.v.rangeGroup, { x | _i.v x < (γ : Γ₀ˣ) } ⊆ s := by
   simp only [mem_nhds, sub_zero]
-#align valued.mem_nhds_zero Valued.mem_nhds_zero
 
 theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
   rw [mem_nhds]
   use ⟨_, (mem_rangeGroup v rfl : Units.mk0 _ h ∈ _i.v.rangeGroup)⟩
   intro y
   exact Valuation.map_eq_of_sub_lt _
-#align valued.loc_const Valued.loc_const
 
 instance (priority := 100) : TopologicalRing R :=
   (toUniformSpace_eq R Γ₀).symm ▸ v.subgroups_basis.toRingFilterBasis.isTopologicalRing
@@ -185,7 +173,6 @@ theorem cauchy_iff {F : Filter R} : Cauchy F ↔
     exact h _ (Valued.v.subgroups_basis.mem_addGroupFilterBasis _)
   · rintro h - ⟨γ, rfl⟩
     exact h γ
-#align valued.cauchy_iff Valued.cauchy_iff
 
 variable (R)
 

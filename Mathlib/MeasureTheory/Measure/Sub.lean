@@ -5,8 +5,6 @@ Authors: Martin Zinkevich
 -/
 import Mathlib.MeasureTheory.Measure.Typeclasses
 
-#align_import measure_theory.measure.sub from "leanprover-community/mathlib"@"562bbf524c595c153470e53d36c57b6f891cc480"
-
 /-!
 # Subtraction of measures
 
@@ -32,39 +30,31 @@ Specifically, note that if you have `α = {1,2}`, and `μ {1} = 2`, `μ {2} = 0`
 `ν univ ≠ ∞`, then `(μ - ν) + ν = μ`. -/
 noncomputable instance instSub {α : Type*} [MeasurableSpace α] : Sub (Measure α) :=
   ⟨fun μ ν => sInf { τ | μ ≤ τ + ν }⟩
-#align measure_theory.measure.has_sub MeasureTheory.Measure.instSub
 
 variable {α : Type*} {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
 
 theorem sub_def : μ - ν = sInf { d | μ ≤ d + ν } := rfl
-#align measure_theory.measure.sub_def MeasureTheory.Measure.sub_def
 
 theorem sub_le_of_le_add {d} (h : μ ≤ d + ν) : μ - ν ≤ d :=
   sInf_le h
-#align measure_theory.measure.sub_le_of_le_add MeasureTheory.Measure.sub_le_of_le_add
 
 theorem sub_eq_zero_of_le (h : μ ≤ ν) : μ - ν = 0 :=
   nonpos_iff_eq_zero'.1 <| sub_le_of_le_add <| by rwa [zero_add]
-#align measure_theory.measure.sub_eq_zero_of_le MeasureTheory.Measure.sub_eq_zero_of_le
 
 theorem sub_le : μ - ν ≤ μ :=
   sub_le_of_le_add <| Measure.le_add_right le_rfl
-#align measure_theory.measure.sub_le MeasureTheory.Measure.sub_le
 
 @[simp]
 theorem sub_top : μ - ⊤ = 0 :=
   sub_eq_zero_of_le le_top
-#align measure_theory.measure.sub_top MeasureTheory.Measure.sub_top
 
 @[simp]
 theorem zero_sub : 0 - μ = 0 :=
   sub_eq_zero_of_le μ.zero_le
-#align measure_theory.measure.zero_sub MeasureTheory.Measure.zero_sub
 
 @[simp]
 theorem sub_self : μ - μ = 0 :=
   sub_eq_zero_of_le le_rfl
-#align measure_theory.measure.sub_self MeasureTheory.Measure.sub_self
 
 /-- This application lemma only works in special circumstances. Given knowledge of
 when `μ ≤ ν` and `ν ≤ μ`, a more general application lemma can be written. -/
@@ -95,12 +85,10 @@ theorem sub_apply [IsFiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ �
     apply Measure.le_of_add_le_add_left h_d
   rw [h_measure_sub_eq]
   apply Measure.ofMeasurable_apply _ h₁
-#align measure_theory.measure.sub_apply MeasureTheory.Measure.sub_apply
 
 theorem sub_add_cancel_of_le [IsFiniteMeasure ν] (h₁ : ν ≤ μ) : μ - ν + ν = μ := by
   ext1 s h_s_meas
   rw [add_apply, sub_apply h_s_meas h₁, tsub_add_cancel_of_le (h₁ s)]
-#align measure_theory.measure.sub_add_cancel_of_le MeasureTheory.Measure.sub_add_cancel_of_le
 
 theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     (μ - ν).restrict s = μ.restrict s - ν.restrict s := by
@@ -132,16 +120,13 @@ theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     refine forall_mem_image.2 fun t h_t_in => ⟨t.restrict s, ?_, le_rfl⟩
     rw [Set.mem_setOf_eq, ← restrict_add]
     exact restrict_mono Subset.rfl h_t_in
-#align measure_theory.measure.restrict_sub_eq_restrict_sub_restrict MeasureTheory.Measure.restrict_sub_eq_restrict_sub_restrict
 
 theorem sub_apply_eq_zero_of_restrict_le_restrict (h_le : μ.restrict s ≤ ν.restrict s)
     (h_meas_s : MeasurableSet s) : (μ - ν) s = 0 := by
   rw [← restrict_apply_self, restrict_sub_eq_restrict_sub_restrict, sub_eq_zero_of_le] <;> simp [*]
-#align measure_theory.measure.sub_apply_eq_zero_of_restrict_le_restrict MeasureTheory.Measure.sub_apply_eq_zero_of_restrict_le_restrict
 
 instance isFiniteMeasure_sub [IsFiniteMeasure μ] : IsFiniteMeasure (μ - ν) :=
   isFiniteMeasure_of_le μ sub_le
-#align measure_theory.measure.is_finite_measure_sub MeasureTheory.Measure.isFiniteMeasure_sub
 
 end Measure
 

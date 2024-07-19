@@ -6,8 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.Positivity.Basic
 
-#align_import algebra.order.hom.basic from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
-
 /-!
 # Algebraic order homomorphism classes
 
@@ -78,33 +76,28 @@ variable {ι F α β γ δ : Type*}
 class NonnegHomClass (F α β : Type*) [Zero β] [LE β] [FunLike F α β] : Prop where
   /-- the image of any element is non negative. -/
   apply_nonneg (f : F) : ∀ a, 0 ≤ f a
-#align nonneg_hom_class NonnegHomClass
 
 /-- `SubadditiveHomClass F α β` states that `F` is a type of subadditive morphisms. -/
 class SubadditiveHomClass (F α β : Type*) [Add α] [Add β] [LE β] [FunLike F α β] : Prop where
   /-- the image of a sum is less or equal than the sum of the images. -/
   map_add_le_add (f : F) : ∀ a b, f (a + b) ≤ f a + f b
-#align subadditive_hom_class SubadditiveHomClass
 
 /-- `SubmultiplicativeHomClass F α β` states that `F` is a type of submultiplicative morphisms. -/
 @[to_additive SubadditiveHomClass]
 class SubmultiplicativeHomClass (F α β : Type*) [Mul α] [Mul β] [LE β] [FunLike F α β] : Prop where
   /-- the image of a product is less or equal than the product of the images. -/
   map_mul_le_mul (f : F) : ∀ a b, f (a * b) ≤ f a * f b
-#align submultiplicative_hom_class SubmultiplicativeHomClass
 
 /-- `MulLEAddHomClass F α β` states that `F` is a type of subadditive morphisms. -/
 @[to_additive SubadditiveHomClass]
 class MulLEAddHomClass (F α β : Type*) [Mul α] [Add β] [LE β] [FunLike F α β] : Prop where
   /-- the image of a product is less or equal than the sum of the images. -/
   map_mul_le_add (f : F) : ∀ a b, f (a * b) ≤ f a + f b
-#align mul_le_add_hom_class MulLEAddHomClass
 
 /-- `NonarchimedeanHomClass F α β` states that `F` is a type of non-archimedean morphisms. -/
 class NonarchimedeanHomClass (F α β : Type*) [Add α] [LinearOrder β] [FunLike F α β] : Prop where
   /-- the image of a sum is less or equal than the maximum of the images. -/
   map_add_le_max (f : F) : ∀ a b, f (a + b) ≤ max (f a) (f b)
-#align nonarchimedean_hom_class NonarchimedeanHomClass
 
 export NonnegHomClass (apply_nonneg)
 
@@ -124,14 +117,11 @@ variable [FunLike F α β]
 theorem le_map_mul_map_div [Group α] [CommSemigroup β] [LE β] [SubmultiplicativeHomClass F α β]
     (f : F) (a b : α) : f a ≤ f b * f (a / b) := by
   simpa only [mul_comm, div_mul_cancel] using map_mul_le_mul f (a / b) b
-#align le_map_mul_map_div le_map_mul_map_div
-#align le_map_add_map_sub le_map_add_map_sub
 
 @[to_additive existing]
 theorem le_map_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAddHomClass F α β] (f : F)
     (a b : α) : f a ≤ f b + f (a / b) := by
   simpa only [add_comm, div_mul_cancel] using map_mul_le_add f (a / b) b
-#align le_map_add_map_div le_map_add_map_div
 -- #align le_map_add_map_sub le_map_add_map_sub
 -- Porting note (#11215): TODO: `to_additive` clashes
 
@@ -139,14 +129,11 @@ theorem le_map_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAddHom
 theorem le_map_div_mul_map_div [Group α] [CommSemigroup β] [LE β] [SubmultiplicativeHomClass F α β]
     (f : F) (a b c : α) : f (a / c) ≤ f (a / b) * f (b / c) := by
   simpa only [div_mul_div_cancel'] using map_mul_le_mul f (a / b) (b / c)
-#align le_map_div_mul_map_div le_map_div_mul_map_div
-#align le_map_sub_add_map_sub le_map_sub_add_map_sub
 
 @[to_additive existing]
 theorem le_map_div_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAddHomClass F α β]
     (f : F) (a b c : α) : f (a / c) ≤ f (a / b) + f (b / c) := by
     simpa only [div_mul_div_cancel'] using map_mul_le_add f (a / b) (b / c)
-#align le_map_div_add_map_div le_map_div_add_map_div
 -- #align le_map_sub_add_map_sub le_map_sub_add_map_sub
 -- Porting note (#11215): TODO: `to_additive` clashes
 
@@ -177,7 +164,6 @@ class AddGroupSeminormClass (F α β : Type*) [AddGroup α] [OrderedAddCommMonoi
   map_zero (f : F) : f 0 = 0
   /-- The map is invariant under negation of its argument. -/
   map_neg_eq_map (f : F) (a : α) : f (-a) = f a
-#align add_group_seminorm_class AddGroupSeminormClass
 
 /-- `GroupSeminormClass F α` states that `F` is a type of `β`-valued seminorms on the group `α`.
 
@@ -189,7 +175,6 @@ class GroupSeminormClass (F α β : Type*) [Group α] [OrderedAddCommMonoid β] 
   map_one_eq_zero (f : F) : f 1 = 0
   /-- The map is invariant under inversion of its argument. -/
   map_inv_eq_map (f : F) (a : α) : f a⁻¹ = f a
-#align group_seminorm_class GroupSeminormClass
 
 /-- `AddGroupNormClass F α` states that `F` is a type of `β`-valued norms on the additive group
 `α`.
@@ -199,7 +184,6 @@ class AddGroupNormClass (F α β : Type*) [AddGroup α] [OrderedAddCommMonoid β
   extends AddGroupSeminormClass F α β : Prop where
   /-- The argument is zero if its image under the map is zero. -/
   eq_zero_of_map_eq_zero (f : F) {a : α} : f a = 0 → a = 0
-#align add_group_norm_class AddGroupNormClass
 
 /-- `GroupNormClass F α` states that `F` is a type of `β`-valued norms on the group `α`.
 
@@ -209,7 +193,6 @@ class GroupNormClass (F α β : Type*) [Group α] [OrderedAddCommMonoid β] [Fun
   extends GroupSeminormClass F α β : Prop where
   /-- The argument is one if its image under the map is zero. -/
   eq_one_of_map_eq_zero (f : F) {a : α} : f a = 0 → a = 1
-#align group_norm_class GroupNormClass
 
 export AddGroupSeminormClass (map_neg_eq_map)
 
@@ -231,7 +214,6 @@ attribute [to_additive] GroupSeminormClass.toMulLEAddHomClass
 instance (priority := 100) AddGroupSeminormClass.toZeroHomClass [AddGroup α]
     [OrderedAddCommMonoid β] [AddGroupSeminormClass F α β] : ZeroHomClass F α β :=
   { ‹AddGroupSeminormClass F α β› with }
-#align add_group_seminorm_class.to_zero_hom_class AddGroupSeminormClass.toZeroHomClass
 
 section GroupSeminormClass
 
@@ -241,19 +223,13 @@ variable [Group α] [OrderedAddCommMonoid β] [GroupSeminormClass F α β] (f : 
 theorem map_div_le_add : f (x / y) ≤ f x + f y := by
   rw [div_eq_mul_inv, ← map_inv_eq_map f y]
   exact map_mul_le_add _ _ _
-#align map_div_le_add map_div_le_add
-#align map_sub_le_add map_sub_le_add
 
 @[to_additive]
 theorem map_div_rev : f (x / y) = f (y / x) := by rw [← inv_div, map_inv_eq_map]
-#align map_div_rev map_div_rev
-#align map_sub_rev map_sub_rev
 
 @[to_additive]
 theorem le_map_add_map_div' : f x ≤ f y + f (y / x) := by
   simpa only [add_comm, map_div_rev, div_mul_cancel] using map_mul_le_add f (x / y) y
-#align le_map_add_map_div' le_map_add_map_div'
-#align le_map_add_map_sub' le_map_add_map_sub'
 
 end GroupSeminormClass
 
@@ -265,8 +241,6 @@ theorem abs_sub_map_le_div [Group α] [LinearOrderedAddCommGroup β] [GroupSemin
     (f : F) (x y : α) : |f x - f y| ≤ f (x / y) := by
   rw [abs_sub_le_iff, sub_le_iff_le_add', sub_le_iff_le_add']
   exact ⟨le_map_add_map_div _ _ _, le_map_add_map_div' _ _ _⟩
-#align abs_sub_map_le_div abs_sub_map_le_div
-#align abs_sub_map_le_sub abs_sub_map_le_sub
 
 -- See note [lower instance priority]
 @[to_additive]
@@ -277,8 +251,6 @@ instance (priority := 100) GroupSeminormClass.toNonnegHomClass [Group α]
       (nsmul_nonneg_iff two_ne_zero).1 <| by
         rw [two_nsmul, ← map_one_eq_zero f, ← div_self' a]
         exact map_div_le_add _ _ _ }
-#align group_seminorm_class.to_nonneg_hom_class GroupSeminormClass.toNonnegHomClass
-#align add_group_seminorm_class.to_nonneg_hom_class AddGroupSeminormClass.toNonnegHomClass
 
 section GroupNormClass
 
@@ -289,14 +261,10 @@ theorem map_eq_zero_iff_eq_one : f x = 0 ↔ x = 1 :=
   ⟨eq_one_of_map_eq_zero _, by
     rintro rfl
     exact map_one_eq_zero _⟩
-#align map_eq_zero_iff_eq_one map_eq_zero_iff_eq_one
-#align map_eq_zero_iff_eq_zero map_eq_zero_iff_eq_zero
 
 @[to_additive]
 theorem map_ne_zero_iff_ne_one : f x ≠ 0 ↔ x ≠ 1 :=
   (map_eq_zero_iff_eq_one _).not
-#align map_ne_zero_iff_ne_one map_ne_zero_iff_ne_one
-#align map_ne_zero_iff_ne_zero map_ne_zero_iff_ne_zero
 
 end GroupNormClass
 
@@ -304,8 +272,6 @@ end GroupNormClass
 theorem map_pos_of_ne_one [Group α] [LinearOrderedAddCommMonoid β] [GroupNormClass F α β] (f : F)
     {x : α} (hx : x ≠ 1) : 0 < f x :=
   (apply_nonneg _ _).lt_of_ne <| ((map_ne_zero_iff_ne_one _).2 hx).symm
-#align map_pos_of_ne_one map_pos_of_ne_one
-#align map_pos_of_ne_zero map_pos_of_ne_zero
 
 /-! ### Ring (semi)norms -/
 
@@ -315,14 +281,12 @@ theorem map_pos_of_ne_one [Group α] [LinearOrderedAddCommMonoid β] [GroupNormC
 You should extend this class when you extend `RingSeminorm`. -/
 class RingSeminormClass (F α β : Type*) [NonUnitalNonAssocRing α] [OrderedSemiring β]
   [FunLike F α β] extends AddGroupSeminormClass F α β, SubmultiplicativeHomClass F α β : Prop
-#align ring_seminorm_class RingSeminormClass
 
 /-- `RingNormClass F α` states that `F` is a type of `β`-valued norms on the ring `α`.
 
 You should extend this class when you extend `RingNorm`. -/
 class RingNormClass (F α β : Type*) [NonUnitalNonAssocRing α] [OrderedSemiring β] [FunLike F α β]
   extends RingSeminormClass F α β, AddGroupNormClass F α β : Prop
-#align ring_norm_class RingNormClass
 
 /-- `MulRingSeminormClass F α` states that `F` is a type of `β`-valued multiplicative seminorms
 on the ring `α`.
@@ -330,7 +294,6 @@ on the ring `α`.
 You should extend this class when you extend `MulRingSeminorm`. -/
 class MulRingSeminormClass (F α β : Type*) [NonAssocRing α] [OrderedSemiring β] [FunLike F α β]
   extends AddGroupSeminormClass F α β, MonoidWithZeroHomClass F α β : Prop
-#align mul_ring_seminorm_class MulRingSeminormClass
 
 -- Lower the priority of these instances since they require synthesizing an order structure.
 attribute [instance 50]
@@ -342,23 +305,19 @@ ring `α`.
 You should extend this class when you extend `MulRingNorm`. -/
 class MulRingNormClass (F α β : Type*) [NonAssocRing α] [OrderedSemiring β] [FunLike F α β]
   extends MulRingSeminormClass F α β, AddGroupNormClass F α β : Prop
-#align mul_ring_norm_class MulRingNormClass
 
 -- See note [out-param inheritance]
 -- See note [lower instance priority]
 instance (priority := 100) RingSeminormClass.toNonnegHomClass [NonUnitalNonAssocRing α]
     [LinearOrderedSemiring β] [RingSeminormClass F α β] : NonnegHomClass F α β :=
   AddGroupSeminormClass.toNonnegHomClass
-#align ring_seminorm_class.to_nonneg_hom_class RingSeminormClass.toNonnegHomClass
 
 -- See note [lower instance priority]
 instance (priority := 100) MulRingSeminormClass.toRingSeminormClass [NonAssocRing α]
     [OrderedSemiring β] [MulRingSeminormClass F α β] : RingSeminormClass F α β :=
   { ‹MulRingSeminormClass F α β› with map_mul_le_mul := fun f a b => (map_mul _ _ _).le }
-#align mul_ring_seminorm_class.to_ring_seminorm_class MulRingSeminormClass.toRingSeminormClass
 
 -- See note [lower instance priority]
 instance (priority := 100) MulRingNormClass.toRingNormClass [NonAssocRing α]
     [OrderedSemiring β] [MulRingNormClass F α β] : RingNormClass F α β :=
   { ‹MulRingNormClass F α β›, MulRingSeminormClass.toRingSeminormClass with }
-#align mul_ring_norm_class.to_ring_norm_class MulRingNormClass.toRingNormClass

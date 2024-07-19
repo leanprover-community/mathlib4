@@ -10,8 +10,6 @@ import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SetFamily.Shadow
 
-#align_import combinatorics.set_family.lym from "leanprover-community/mathlib"@"861a26926586cd46ff80264d121cdb6fa0e35cc1"
-
 /-!
 # Lubell-Yamamoto-Meshalkin inequality and Sperner's theorem
 
@@ -85,7 +83,6 @@ theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     rw [(sized_shadow_iff this).1 (Set.Sized.shadow h𝒜) ht.1, (Set.Sized.shadow h𝒜) hs]⟩
   rcases h with ⟨a, ha, rfl⟩
   exact mem_image_of_mem _ (mem_compl.2 ha)
-#align finset.card_mul_le_card_shadow_mul Finset.card_mul_le_card_shadow_mul
 
 /-- The downward **local LYM inequality**. `𝒜` takes up less of `α^(r)` (the finsets of card `r`)
 than `∂𝒜` takes up of `α^(r - 1)`. -/
@@ -108,7 +105,6 @@ theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0)
       exact Or.inl (mul_comm _ _)
   · exact Nat.choose_pos hr'
   · exact Nat.choose_pos (r.pred_le.trans hr')
-#align finset.card_div_choose_le_card_shadow_div_choose Finset.card_div_choose_le_card_shadow_div_choose
 
 end LocalLYM
 
@@ -124,27 +120,22 @@ variable [DecidableEq α] (k : ℕ) (𝒜 : Finset (Finset α))
 /-- `falling k 𝒜` is all the finsets of cardinality `k` which are a subset of something in `𝒜`. -/
 def falling : Finset (Finset α) :=
   𝒜.sup <| powersetCard k
-#align finset.falling Finset.falling
 
 variable {𝒜 k} {s : Finset α}
 
 theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ s.card = k := by
   simp_rw [falling, mem_sup, mem_powersetCard]
   aesop
-#align finset.mem_falling Finset.mem_falling
 
 variable (𝒜 k)
 
 theorem sized_falling : (falling k 𝒜 : Set (Finset α)).Sized k := fun _ hs => (mem_falling.1 hs).2
-#align finset.sized_falling Finset.sized_falling
 
 theorem slice_subset_falling : 𝒜 # k ⊆ falling k 𝒜 := fun s hs =>
   mem_falling.2 <| (mem_slice.1 hs).imp_left fun h => ⟨s, h, Subset.refl _⟩
-#align finset.slice_subset_falling Finset.slice_subset_falling
 
 theorem falling_zero_subset : falling 0 𝒜 ⊆ {∅} :=
   subset_singleton_iff'.2 fun _ ht => card_eq_zero.1 <| sized_falling _ _ ht
-#align finset.falling_zero_subset Finset.falling_zero_subset
 
 theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ ∂ (falling (k + 1) 𝒜) = falling k 𝒜 := by
   ext s
@@ -161,7 +152,6 @@ theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ ∂ (falling (k + 1) 𝒜
     obtain ⟨a, ha, hst⟩ := ssubset_iff.1 (ssubset_of_subset_of_ne hst (ht.ne_of_not_mem h).symm)
     refine Or.inr ⟨insert a s, ⟨⟨t, ht, hst⟩, ?_⟩, a, mem_insert_self _ _, erase_insert ha⟩
     rw [card_insert_of_not_mem ha, hs]
-#align finset.slice_union_shadow_falling_succ Finset.slice_union_shadow_falling_succ
 
 variable {𝒜 k}
 
@@ -175,7 +165,6 @@ theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
     refine h𝒜 (slice_subset h₂) ht ?_ ((erase_subset _ _).trans hst)
     rintro rfl
     exact not_mem_erase _ _ (hst ha)
-#align finset.is_antichain.disjoint_slice_shadow_falling Finset.IsAntichain.disjoint_slice_shadow_falling
 
 /-- A bound on any top part of the sum in LYM in terms of the size of `falling k 𝒜`. -/
 theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
@@ -197,7 +186,6 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
       ((ih <| le_of_succ_le hk).trans <|
         card_div_choose_le_card_shadow_div_choose (tsub_pos_iff_lt.2 <| Nat.succ_le_iff.1 hk).ne' <|
           sized_falling _ _) _
-#align finset.le_card_falling_div_choose Finset.le_card_falling_div_choose
 
 end Falling
 
@@ -216,7 +204,6 @@ theorem sum_card_slice_div_choose_le_one [Fintype α]
         Set.Sized.card_le (sized_falling 0 𝒜)
     · rw [tsub_self, choose_zero_right]
       exact zero_lt_one
-#align finset.sum_card_slice_div_choose_le_one Finset.sum_card_slice_div_choose_le_one
 
 end LYM
 
@@ -243,6 +230,5 @@ theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
     · exact Nat.zero_le _
     · exact choose_pos (Nat.lt_succ_iff.1 hr)
     · exact choose_le_middle _ _
-#align finset.is_antichain.sperner Finset.IsAntichain.sperner
 
 end Finset
