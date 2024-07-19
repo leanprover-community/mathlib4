@@ -438,7 +438,6 @@ end TopologicalSpace
 -- unsafe def opens_find_tac : expr → Option auto_cases_tac
 --   | q(TopologicalSpace.Opens _) => tac_cases
 --   | _ => none
--- #align tactic.auto_cases.opens_find_tac tactic.auto_cases.opens_find_tac
 
 -- end AutoCases
 
@@ -446,6 +445,5 @@ end TopologicalSpace
 -- @[hint_tactic]
 -- unsafe def auto_cases_opens : tactic String :=
 --   auto_cases tactic.auto_cases.opens_find_tac
--- #align tactic.auto_cases_opens tactic.auto_cases_opens
 
 -- end Tactic

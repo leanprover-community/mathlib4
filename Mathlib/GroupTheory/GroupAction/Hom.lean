@@ -370,11 +370,9 @@ namespace DistribMulActionHom
 Coercion is already handled by all the HomClass constructions I believe -/
 -- instance coe : Coe (A →+[M] B) (A →+ B) :=
 --   ⟨toAddMonoidHom⟩
--- #align distrib_mul_action_hom.has_coe DistribMulActionHom.coe
 
 -- instance coe' : Coe (A →+[M] B) (A →[M] B) :=
 --   ⟨toMulActionHom⟩
--- #align distrib_mul_action_hom.has_coe' DistribMulActionHom.coe'
 
 instance : FunLike (A →ₑ+[φ] B) A B where
   coe m := m.toFun
@@ -626,12 +624,10 @@ Coercion is already handled by all the HomClass constructions I believe -/
 -- @[coe]
 -- instance coe : Coe (R →+*[M] S) (R →+* S) :=
 --   ⟨toRingHom⟩
--- #align mul_semiring_action_hom.has_coe MulSemiringActionHom.coe
 
 -- @[coe]
 -- instance coe' : Coe (R →+*[M] S) (R →+[M] S) :=
 --   ⟨toDistribMulActionHom⟩
--- #align mul_semiring_action_hom.has_coe' MulSemiringActionHom.coe'
 
 -- Porting note: removed has_coe_to_fun instance, coercions handled differently now
 

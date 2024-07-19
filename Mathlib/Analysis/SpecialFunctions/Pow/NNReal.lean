@@ -913,7 +913,6 @@ end ENNReal
 
 -- private theorem nnrpow_pos {a : ℝ≥0} (ha : 0 < a) (b : ℝ) : 0 < a ^ b :=
 --   NNReal.rpow_pos ha
--- #align tactic.positivity.nnrpow_pos tactic.positivity.nnrpow_pos
 
 -- /-- Auxiliary definition for the `positivity` tactic to handle real powers of nonnegative reals.
 -- -/
@@ -922,12 +921,10 @@ end ENNReal
 --   match strictness_a with
 --     | positive p => positive <$> mk_app `` nnrpow_pos [p, b]
 --     | _ => failed
--- #align tactic.positivity.prove_nnrpow tactic.positivity.prove_nnrpow
 
 -- -- We already know `0 ≤ x` for all `x : ℝ≥0`
 -- private theorem ennrpow_pos {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 < b) : 0 < a ^ b :=
 --   ENNReal.rpow_pos_of_nonneg ha hb.le
--- #align tactic.positivity.ennrpow_pos tactic.positivity.ennrpow_pos
 
 -- /-- Auxiliary definition for the `positivity` tactic to handle real powers of extended
 -- nonnegative reals. -/
@@ -938,7 +935,6 @@ end ENNReal
 --     | positive pa, positive pb => positive <$> mk_app `` ennrpow_pos [pa, pb]
 --     | positive pa, nonnegative pb => positive <$> mk_app `` ENNReal.rpow_pos_of_nonneg [pa, pb]
 --     | _, _ => failed
--- #align tactic.positivity.prove_ennrpow tactic.positivity.prove_ennrpow
 
 -- -- We already know `0 ≤ x` for all `x : ℝ≥0∞`
 -- end Positivity
@@ -954,7 +950,6 @@ end ENNReal
 --   | q(@Pow.pow _ _ ENNReal.Real.hasPow $(a) $(b)) => prove_ennrpow a b
 --   | q(ENNReal.rpow $(a) $(b)) => prove_ennrpow a b
 --   | _ => failed
--- #align tactic.positivity_nnrpow_ennrpow tactic.positivity_nnrpow_ennrpow
 
 -- end Tactic
 

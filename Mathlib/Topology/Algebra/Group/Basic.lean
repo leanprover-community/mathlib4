@@ -148,7 +148,7 @@ is obtained by requiring the instances `Group M` and `ContinuousMul M` and
 @[to_additive (attr := continuity)]
 class ContinuousInv (G : Type u) [TopologicalSpace G] [Inv G] : Prop where
   continuous_inv : Continuous fun a : G => a⁻¹
---#align has_continuous_neg ContinuousNeg
+
 -- Porting note: added
 attribute [continuity] ContinuousInv.continuous_inv
 
@@ -398,7 +398,6 @@ you should also provide an instance of `UniformSpace` and `UniformGroup` using
 @[to_additive]
 class TopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] extends ContinuousMul G,
   ContinuousInv G : Prop
---#align topological_add_group TopologicalAddGroup
 
 section Conj
 

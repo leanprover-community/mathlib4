@@ -1283,27 +1283,22 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 -- theorem one_le_bit0 (a : Cardinal) : 1 ≤ bit0 a ↔ 0 < a :=
 --   ⟨fun h => (zero_lt_bit0 a).mp (zero_lt_one.trans_le h), fun h =>
 --     (one_le_iff_pos.mpr h).trans (self_le_add_left a a)⟩
--- #align cardinal.one_le_bit0 Cardinal.one_le_bit0
 
 -- @[simp]
 -- theorem one_le_bit1 (a : Cardinal) : 1 ≤ bit1 a :=
 --   self_le_add_left _ _
--- #align cardinal.one_le_bit1 Cardinal.one_le_bit1
 
 -- theorem bit0_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : bit0 c = c :=
 --   add_eq_self h
--- #align cardinal.bit0_eq_self Cardinal.bit0_eq_self
 
 -- @[simp]
 -- theorem bit0_lt_aleph0 {c : Cardinal} : bit0 c < ℵ₀ ↔ c < ℵ₀ :=
 --   by simp [bit0, add_lt_aleph_0_iff]
--- #align cardinal.bit0_lt_aleph_0 Cardinal.bit0_lt_aleph0
 
 -- @[simp]
 -- theorem aleph0_le_bit0 {c : Cardinal} : ℵ₀ ≤ bit0 c ↔ ℵ₀ ≤ c := by
 --   rw [← not_iff_not]
 --   simp
--- #align cardinal.aleph_0_le_bit0 Cardinal.aleph0_le_bit0
 
 -- @[simp]
 -- theorem bit1_eq_self_iff {c : Cardinal} : bit1 c = c ↔ ℵ₀ ≤ c := by
@@ -1314,18 +1309,15 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 --     norm_cast
 --     dsimp [bit1, bit0]
 --     linarith
--- #align cardinal.bit1_eq_self_iff Cardinal.bit1_eq_self_iff
 
 -- @[simp]
 -- theorem bit1_lt_aleph0 {c : Cardinal} : bit1 c < ℵ₀ ↔ c < ℵ₀ := by
 --   simp [bit1, bit0, add_lt_aleph_0_iff, one_lt_aleph_0]
--- #align cardinal.bit1_lt_aleph_0 Cardinal.bit1_lt_aleph0
 
 -- @[simp]
 -- theorem aleph0_le_bit1 {c : Cardinal} : ℵ₀ ≤ bit1 c ↔ ℵ₀ ≤ c := by
 --   rw [← not_iff_not]
 --   simp
--- #align cardinal.aleph_0_le_bit1 Cardinal.aleph0_le_bit1
 
 -- @[simp]
 -- theorem bit0_le_bit0 {a b : Cardinal} : bit0 a ≤ bit0 b ↔ a ≤ b := by
@@ -1341,7 +1333,6 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 --     rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
 --     norm_cast
 --     exact bit0_le_bit0
--- #align cardinal.bit0_le_bit0 Cardinal.bit0_le_bit0
 
 -- @[simp]
 -- theorem bit0_le_bit1 {a b : Cardinal} : bit0 a ≤ bit1 b ↔ a ≤ b := by
@@ -1357,13 +1348,11 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 --     rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
 --     norm_cast
 --     exact Nat.bit0_le_bit1_iff
--- #align cardinal.bit0_le_bit1 Cardinal.bit0_le_bit1
 
 -- @[simp]
 -- theorem bit1_le_bit1 {a b : Cardinal} : bit1 a ≤ bit1 b ↔ a ≤ b :=
 --   ⟨fun h => bit0_le_bit1.1 ((self_le_add_right (bit0 a) 1).trans h), fun h =>
 --     (add_le_add_right (add_le_add_left h a) 1).trans (add_le_add_right (add_le_add_right h b) 1)⟩
--- #align cardinal.bit1_le_bit1 Cardinal.bit1_le_bit1
 
 -- @[simp]
 -- theorem bit1_le_bit0 {a b : Cardinal} : bit1 a ≤ bit0 b ↔ a < b ∨ a ≤ b ∧ ℵ₀ ≤ a := by
@@ -1384,7 +1373,6 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 --     rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
 --     norm_cast
 --     simp [not_le.mpr ha]
--- #align cardinal.bit1_le_bit0 Cardinal.bit1_le_bit0
 
 -- @[simp]
 -- theorem bit0_lt_bit0 {a b : Cardinal} : bit0 a < bit0 b ↔ a < b := by
@@ -1400,7 +1388,6 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 --     rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
 --     norm_cast
 --     exact bit0_lt_bit0
--- #align cardinal.bit0_lt_bit0 Cardinal.bit0_lt_bit0
 
 -- @[simp]
 -- theorem bit1_lt_bit0 {a b : Cardinal} : bit1 a < bit0 b ↔ a < b := by
@@ -1416,7 +1403,6 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 --     rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
 --     norm_cast
 --     exact Nat.bit1_lt_bit0_iff
--- #align cardinal.bit1_lt_bit0 Cardinal.bit1_lt_bit0
 
 -- @[simp]
 -- theorem bit1_lt_bit1 {a b : Cardinal} : bit1 a < bit1 b ↔ a < b := by
@@ -1432,7 +1418,6 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 --     rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
 --     norm_cast
 --     exact bit1_lt_bit1
--- #align cardinal.bit1_lt_bit1 Cardinal.bit1_lt_bit1
 
 -- @[simp]
 -- theorem bit0_lt_bit1 {a b : Cardinal} : bit0 a < bit1 b ↔ a < b ∨ a ≤ b ∧ a < ℵ₀ := by
@@ -1449,21 +1434,17 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 --     rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
 --     norm_cast
 --     simp only [ha, and_true_iff, Nat.bit0_lt_bit1_iff, or_iff_right_of_imp le_of_lt]
--- #align cardinal.bit0_lt_bit1 Cardinal.bit0_lt_bit1
 
 -- theorem one_lt_two : (1 : Cardinal) < 2 := by
 --   -- This strategy works generally to prove inequalities between numerals in `cardinality`.
 --   norm_cast
 --   norm_num
--- #align cardinal.one_lt_two Cardinal.one_lt_two
 
 -- @[simp]
 -- theorem one_lt_bit0 {a : Cardinal} : 1 < bit0 a ↔ 0 < a := by simp [← bit1_zero]
--- #align cardinal.one_lt_bit0 Cardinal.one_lt_bit0
 
 -- @[simp]
 -- theorem one_lt_bit1 (a : Cardinal) : 1 < bit1 a ↔ 0 < a := by simp [← bit1_zero]
--- #align cardinal.one_lt_bit1 Cardinal.one_lt_bit1
 
 -- end Bit
 

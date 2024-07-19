@@ -174,7 +174,6 @@ instance : CoeOut (Subobject X) C where coe Y := underlying.obj Y
 -- @[simp]
 -- theorem underlying_as_coe {X : C} (P : Subobject X) : underlying.obj P = P :=
 --   rfl
--- #align category_theory.subobject.underlying_as_coe CategoryTheory.Subobject.underlying_as_coe
 
 /-- If we construct a `Subobject Y` from an explicit `f : X ⟶ Y` with `[Mono f]`,
 then pick an arbitrary choice of underlying object `(Subobject.mk f : C)` back in `C`,
