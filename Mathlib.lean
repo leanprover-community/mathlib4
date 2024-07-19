@@ -3888,7 +3888,6 @@ import Mathlib.Tactic.Hint
 import Mathlib.Tactic.ITauto
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
-import Mathlib.Tactic.InteractiveUnfold
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.Lemma
@@ -4011,6 +4010,7 @@ import Mathlib.Tactic.Widget.CommDiag
 import Mathlib.Tactic.Widget.Congrm
 import Mathlib.Tactic.Widget.Conv
 import Mathlib.Tactic.Widget.Gcongr
+import Mathlib.Tactic.Widget.InteractiveUnfold
 import Mathlib.Tactic.Widget.SelectInsertParamsClass
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.Zify
