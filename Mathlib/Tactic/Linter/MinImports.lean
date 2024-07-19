@@ -64,7 +64,9 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx => do
       return
     let prevImports ← minImportsRef.get
     --if stx.isOfKind ``Parser.Command.eoi then logInfo m!"{(← getEnv).imports.map (·.module)}"
-    let newImports := getIrredundantImports (← getEnv) (← getAllImports stx)
+    let id ← getId stx
+    --if id != default then dbg_trace "using {id}"
+    let newImports := getIrredundantImports (← getEnv) (← getAllImports stx id)
     let tot := (newImports.append prevImports) --.erase `Lean.Parser.Command
     let redundant := (← getEnv).findRedundantImports tot.toArray
     let currImports := tot.diff redundant

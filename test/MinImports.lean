@@ -19,7 +19,7 @@ instance : Semiring Nat := inferInstance
 /-- info: import Mathlib.Algebra.Ring.Nat -/
 #guard_msgs in
 #min_imports in
-instance : Semiring Nat := inferInstance
+instance withName : Semiring Nat := inferInstance
 
 /--
 info: ℤ : Type
