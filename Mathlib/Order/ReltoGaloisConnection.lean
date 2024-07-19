@@ -10,14 +10,15 @@ import Mathlib.Order.GaloisConnection
 # The Galois Connection Induced by a Relation
 
 In this file, we show that an arbitrary relation `R` between a pair of types `α` and `β` defines
-a pair `l` and `u` of adjoint order-preserving maps between the corresponding posets
+a pair `leftDual` and `rightDual` of adjoint order-preserving maps between the corresponding posets
 `Set α` and `(Set β)ᵒᵈ`.
-We define `lFixedPoints` (resp. `uFixedPoints`) as the set of fixed points `J` (resp. `I`) of
-`Set α` (resp. `(Set β)ᵒᵈ`) such that `u (l J) = J` (resp. `l (u I) = I`).
+We define `lFixedPoints` (resp. `rFixedPoints`) as the set of fixed points `J` (resp. `I`) of
+`Set α` (resp. `(Set β)ᵒᵈ`) such that `rightDual (leftDual J) = J` (resp.
+`leftDual (rightDual I) = I`).
 
 ## Main Results
 
-⋆ `to_galoisConnection`: we prove that the maps `l` and `u` form a Galois connection.
+⋆ `to_galoisConnection`: we prove that the maps `leftDual` and `rightDual` form a Galois connection.
 ⋆ `instEquivFixedPoints`: we prove that the said maps induce inverse bijections between the sets
 of fixed points.
 
@@ -66,15 +67,16 @@ theorem to_galoisConnection : GaloisConnection (leftDual R) (rightDual R) := by
 /-- `lFixedPoints` is the set of elements `J : Set α` satisfying `rightDual (leftDual J) = J`. -/
 def lFixedPoints := {J : Set α | rightDual R (leftDual R J) = J}
 
-/-- `uFixedPoints` is the set of elements `I : (Set β)ᵒᵈ` satisfying `leftDual (rightDual I) = I`. -/
-def uFixedPoints := {I : (Set β)ᵒᵈ | leftDual R (rightDual R I) = I}
+/-- `rFixedPoints` is the set of elements `I : (Set β)ᵒᵈ` satisfying `leftDual (rightDual I) = I`.
+-/
+def rFixedPoints := {I : (Set β)ᵒᵈ | leftDual R (rightDual R I) = I}
 
 open GaloisConnection
 
 /-- `leftDual` maps every element `J` to `uFixedPoints`. -/
 @[simp]
-theorem is_uFixedPoint (J : Set α) : leftDual R J ∈ uFixedPoints R := by
-    unfold uFixedPoints; simp; apply le_antisymm
+theorem is_rFixedPoint (J : Set α) : leftDual R J ∈ rFixedPoints R := by
+    unfold rFixedPoints; simp; apply le_antisymm
     · exact (to_galoisConnection R).l_u_le (leftDual R J)
     · apply (to_galoisConnection R).monotone_l; exact (to_galoisConnection R).le_u_l J
 
@@ -87,8 +89,8 @@ theorem is_lFixedPoint (I : (Set β)ᵒᵈ) : rightDual R I ∈ lFixedPoints R :
 
 /-- The maps `leftDual` and `rightDual` induce inverse bijections between the sets of fixed points.
 -/
-def instEquivFixedPoints : lFixedPoints R ≃ uFixedPoints R :=
-    { toFun := fun ⟨J, _⟩ => ⟨leftDual R J, is_uFixedPoint R J⟩
+def instEquivFixedPoints : lFixedPoints R ≃ rFixedPoints R :=
+    { toFun := fun ⟨J, _⟩ => ⟨leftDual R J, is_rFixedPoint R J⟩
       invFun := fun ⟨I, _⟩ => ⟨rightDual R I, is_lFixedPoint R I⟩
       left_inv := by
           intro J; simp; cases' J with J hJ; simp; rw[hJ]
@@ -100,7 +102,7 @@ theorem le_imp_u_l_le {J J' : Set α} (h : J' ∈ lFixedPoints R) :
     intro h₁; rw[← h]; apply (to_galoisConnection R).monotone_u;
     apply (to_galoisConnection R).monotone_l; exact h₁
 
-theorem ge_imp_ge_l_u {I I' : (Set β)ᵒᵈ} (h : I' ∈ uFixedPoints R) :
+theorem ge_imp_ge_l_u {I I' : (Set β)ᵒᵈ} (h : I' ∈ rFixedPoints R) :
     I' ≥ I → I' ≥ leftDual R (rightDual R I) := by
     intro h₁; rw [← h]; apply (to_galoisConnection R).monotone_l;
     apply (to_galoisConnection R).monotone_u; exact h₁

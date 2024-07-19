@@ -1740,7 +1740,6 @@ import Mathlib.CategoryTheory.Sites.Continuous
 import Mathlib.CategoryTheory.Sites.CoverLifting
 import Mathlib.CategoryTheory.Sites.CoverPreserving
 import Mathlib.CategoryTheory.Sites.Coverage
-import Mathlib.CategoryTheory.Sites.CoveringFamilies
 import Mathlib.CategoryTheory.Sites.CoversTop
 import Mathlib.CategoryTheory.Sites.DenseSubsite
 import Mathlib.CategoryTheory.Sites.Discrete
