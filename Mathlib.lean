@@ -2682,7 +2682,9 @@ import Mathlib.GroupTheory.GroupAction.Support
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.GroupTheory.HNNExtension
 import Mathlib.GroupTheory.Index
-import Mathlib.GroupTheory.MonoidLocalization
+import Mathlib.GroupTheory.MonoidLocalization.Basic
+import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
+import Mathlib.GroupTheory.MonoidLocalization.Order
 import Mathlib.GroupTheory.Nilpotent
 import Mathlib.GroupTheory.NoncommCoprod
 import Mathlib.GroupTheory.NoncommPiCoprod

@@ -5,7 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Polynomial.Lifts
-import Mathlib.GroupTheory.MonoidLocalization
+import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
