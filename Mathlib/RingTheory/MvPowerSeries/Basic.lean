@@ -769,8 +769,7 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent [DecidableEq σ]
   have hs' (i : ℕ) (hi : i ∈ s) : coeff R (k i) f = constantCoeff σ R f := by
     simp only [hs_def, mem_filter] at hi
     rw [hi.2, coeff_zero_eq_constantCoeff]
-  have hs'' : ∀ i ∈ s, k i = 0 := by
-    intro i hi
+  have hs'' (i : ℕ) (hi : i ∈ s) : k i = 0 := by
     simp only [hs_def, mem_filter] at hi
     rw [hi.2]
   rw [← prod_sdiff hs]
