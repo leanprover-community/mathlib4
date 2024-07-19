@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Yury G. Kudryashov
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.MkIffOfInductiveProp
+import Batteries.Data.Sum.Lemmas
 
 #align_import data.sum.basic from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
 
