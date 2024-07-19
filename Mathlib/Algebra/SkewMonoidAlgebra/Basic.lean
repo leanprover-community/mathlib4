@@ -162,9 +162,6 @@ theorem support_eq_empty {p} : p.support = ∅ ↔ (p : SkewMonoidAlgebra k G) =
   rcases p with ⟨⟩
   simp only [support, Finsupp.support_eq_empty, ofFinsupp_eq_zero]
 
-theorem card_support_eq_zero {p} : p.support.card = 0 ↔ (p : SkewMonoidAlgebra k G) = 0 := by
-  simp only [Finset.card_eq_zero, support_eq_empty]
-
 @[simp]
 theorem mem_support_iff {f : SkewMonoidAlgebra k G} {a : G} : a ∈ f.support ↔ f a ≠ 0 := by
   rcases f with ⟨⟩
@@ -175,7 +172,7 @@ end Support
 section Single
 
 /-- `single a b` is the finitely supported function with value `b` at `a` and zero otherwise. -/
-abbrev single (a : G) (b : k) : SkewMonoidAlgebra k G := ⟨Finsupp.single a b⟩
+def single (a : G) (b : k) : SkewMonoidAlgebra k G := ⟨Finsupp.single a b⟩
 
 @[simp]
 theorem toFinsupp_single (a : G) (b : k) : (single a b).toFinsupp = Finsupp.single a b := rfl
@@ -184,21 +181,21 @@ theorem toFinsupp_single (a : G) (b : k) : (single a b).toFinsupp = Finsupp.sing
 theorem ofFinsupp_single (a : G) (b : k) : ⟨Finsupp.single a b⟩ = single a b := rfl
 
 theorem single_zero_right (a : G) : single a (0 : k) = 0 := by
-  ext; simp only [Finsupp.single_zero, Finsupp.coe_zero, Pi.zero_apply, toFinsupp_zero]
+  ext; simp only [Finsupp.single_zero, single, Finsupp.coe_zero, Pi.zero_apply, toFinsupp_zero]
 
 @[simp]
 theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b₁ + single a b₂ := by
-  ext; simp only [Finsupp.single_add, Finsupp.coe_add, Pi.add_apply, toFinsupp_add]
+  ext; simp only [Finsupp.single_add, single, Finsupp.coe_add, Pi.add_apply, toFinsupp_add]
 
 theorem single_zero (a : G) : (single a 0 : SkewMonoidAlgebra k G) = 0 := by
-  rw [ofFinsupp_eq_zero, Finsupp.single_zero]
+  rw [ofFinsupp_eq_zero, single, Finsupp.single_zero]
 
 theorem single_apply {a a' : G} {b : k} [Decidable (a = a')] :
     single a b a' = if a = a' then b else 0 :=
   Finsupp.single_apply
 
 theorem single_eq_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := by
-  simp only [ofFinsupp_eq_zero, Finsupp.single_eq_zero]
+  simp only [ofFinsupp_eq_zero, single, Finsupp.single_eq_zero]
 
 theorem toFinsupp_single' : single = (fun (a : G) (b : k) ↦ ofFinsupp (Finsupp.single a b)) := rfl
 
@@ -380,7 +377,7 @@ abbrev mapDomain {G' : Type*} (f : G → G') (v : SkewMonoidAlgebra k G) : SkewM
 
 lemma toFinsupp_mapDomain {G' : Type*} (f : G → G') (v : SkewMonoidAlgebra k G) :
     (mapDomain f v).toFinsupp = Finsupp.mapDomain f v.toFinsupp := by
-  rw [mapDomain, Finsupp.mapDomain, toFinsupp_sum']
+  rw [mapDomain, Finsupp.mapDomain, toFinsupp_sum']; simp_rw [single]
 
 @[simp]
 theorem mapDomain_id {v : SkewMonoidAlgebra k G} : mapDomain id v = v := sum_single _
@@ -762,7 +759,7 @@ theorem mapDomain_one {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [M
     {F : Type*} [FunLike F α α₂] [MonoidHomClass F α α₂] (f : F) :
     (mapDomain f (1 : SkewMonoidAlgebra β α) : SkewMonoidAlgebra β α₂) =
       (1 : SkewMonoidAlgebra β α₂) := by
-  simp_rw [one_def, single, mapDomain_single, map_one]
+  simp_rw [one_def, mapDomain_single, map_one]
 
 /- Like `mapDomain_add`, but for the skewed convolutive multiplication we define in this
   file. This theorem holds assuming that `(hf : ∀ (a : α) (x : β), a • x = (f a) • x)`. -/
@@ -784,7 +781,8 @@ theorem mapDomain_mul {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [M
       · congr
         ext a₂ b₂ a₃
         rw [hf]
-      · simp only [smul_zero, mul_zero, ofFinsupp_eq_zero, Finsupp.single_zero, forall_const]
+      · simp only [smul_zero, mul_zero, single,
+          ofFinsupp_eq_zero, Finsupp.single_zero, forall_const]
       · intros a₂ b₁ b₂
         simp only [smul_add, mul_add]
         rw [single_add]
@@ -835,7 +833,7 @@ theorem mul_single_apply_of_not_exists_mul [Monoid G] [MulSemiringAction G k] (r
     (x : SkewMonoidAlgebra k G) (h : ¬∃ d, g' = d * g) : (x * single g r) g' = 0 := by
   classical
   simp_rw [mul_apply, sum]
-  rw [Finsupp.sum_comm, Finsupp.sum_single_index]
+  rw [Finsupp.sum_comm, single, Finsupp.sum_single_index]
   · apply Finset.sum_eq_zero
     simp_rw [ite_eq_right_iff]
     rintro g'' _ rfl
@@ -894,9 +892,6 @@ def singleAddHom (a : G) : k →+ SkewMonoidAlgebra k G where
   map_zero' := single_zero a
   map_add' _ := single_add a _
 
-lemma singleAddHom_apply (a : G) (b : k) : ((singleAddHom a) b) = single a b := by
-  simp only [singleAddHom, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
-
 @[ext high]
 theorem addHom_ext' {N : Type*} [AddZeroClass N] ⦃f g : SkewMonoidAlgebra k G →+ N⦄
     (H : ∀ x, f.comp (singleAddHom x) = g.comp (singleAddHom x)) : f = g :=
@@ -905,6 +900,7 @@ theorem addHom_ext' {N : Type*} [AddZeroClass N] ⦃f g : SkewMonoidAlgebra k G 
 end AddHom
 
 /-! #### Non-unital, non-associative algebra structure -/
+
 section NonUnitalNonAssocAlgebra
 
 variable [Semiring k] [Monoid G] [MulSemiringAction G k]
@@ -1259,7 +1255,7 @@ theorem equivMapDomain_single (f : G ≃ H) (a : G) (b : k) :
     equivMapDomain f (single a b) = single (f a) b := by
   classical
   ext x
-  simp only [Finsupp.single_apply, Equiv.apply_eq_iff_eq_symm_apply, equivMapDomain_apply]
+  simp only [single, Finsupp.single_apply, Equiv.apply_eq_iff_eq_symm_apply, equivMapDomain_apply]
 
 end equivMapDomain
 
@@ -1372,7 +1368,7 @@ theorem support_erase [AddCommMonoid M] [DecidableEq α] {a : α} {f : SkewMonoi
 theorem single_add_erase [AddCommMonoid M] (a : α) (f : SkewMonoidAlgebra M α) :
     single a (f a) + f.erase a = f := by
   ext
-  simp only [toFinsupp_add, toFinsupp_erase, Finsupp.single_add_erase]
+  simp only [single, toFinsupp_add, toFinsupp_erase, Finsupp.single_add_erase]
 
 @[elab_as_elim]
 theorem induction [AddCommMonoid M] {p : SkewMonoidAlgebra M α → Prop}
