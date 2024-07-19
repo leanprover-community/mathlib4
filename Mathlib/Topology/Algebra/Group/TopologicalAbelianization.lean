@@ -14,7 +14,7 @@ This file defines the topological abelianization of a topological group.
 ## Main definitions
 
 * `TopologicalAbelianization`: defines the topological abelianization of a group `G` as the quotient
-  of `G` by the topological closure of its commutator subgroup..
+  of `G` by the topological closure of its commutator subgroup.
 
 ## Main results
 - `instNormalCommutatorClosure` : the topological closure of the commutator of a topological group
@@ -28,7 +28,7 @@ group, topological abelianization
 variable (G : Type*) [Group G] [TopologicalSpace G] [TopologicalGroup G]
 
 instance instNormalCommutatorClosure : (commutator G).topologicalClosure.Normal :=
-  Subgroup.is_normal_topologicalClosure (commutator G)
+  Subgroup.normal_topologicalClosure (commutator G)
 
 /-- The topological abelianization of `absoluteGaloisGroup`, that is, the quotient of
   `absoluteGaloisGroup` by the topological closure of its commutator subgroup. -/
