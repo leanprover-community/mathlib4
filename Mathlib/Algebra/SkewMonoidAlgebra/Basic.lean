@@ -225,10 +225,8 @@ variable [One G] [One k]
 
 /-- The unit of the multiplication is `single 1 1`, i.e. the function that is `1` at `1` and
   zero elsewhere. -/
-instance one : One (SkewMonoidAlgebra k G) :=
-   ⟨⟨Finsupp.single 1 1⟩⟩
+instance one : One (SkewMonoidAlgebra k G) := ⟨single 1 1⟩
 
-@[simp]
 theorem ofFinsupp_one : (⟨Finsupp.single 1 1⟩ : SkewMonoidAlgebra k G) = 1 :=
   rfl
 
