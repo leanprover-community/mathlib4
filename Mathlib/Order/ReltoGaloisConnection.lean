@@ -103,3 +103,5 @@ theorem ge_imp_ge_l_u {I I' : (Set β)ᵒᵈ} (h : I' ∈ uFixedPoints R) : I' �
     apply (to_galoisConnection R).monotone_u; exact h₁
 
 end Rel
+
+end
