@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Scott Carnahan
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Order.AddTorsor
-import Mathlib.RingTheory.HahnSeries.Addition
 import Mathlib.Data.Finset.MulAntidiagonal
+import Mathlib.Data.Finset.SMulAntidiagonal
+import Mathlib.RingTheory.HahnSeries.Addition
 
 /-!
 # Multiplicative properties of Hahn series
@@ -518,7 +518,7 @@ private theorem mul_smul' [Semiring R] [Module R V] (x y : HahnSeries Γ R)
   simp only [HahnSeries.mul_coeff, smul_coeff, HahnSeries.add_coeff, sum_smul, smul_sum, sum_sigma']
   apply Finset.sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l +ᵥ j), (l, j)⟩)
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>
-    aesop (add safe [Set.VAdd_mem_VAdd, Set.add_mem_add]) (add simp [add_vadd, mul_smul])
+    aesop (add safe [Set.vadd_mem_vadd, Set.add_mem_add]) (add simp [add_vadd, mul_smul])
 
 instance instBaseModule [Semiring R] [Module R V] : Module R (HahnModule Γ' R V) :=
   inferInstanceAs <| Module R (HahnSeries Γ' V)
