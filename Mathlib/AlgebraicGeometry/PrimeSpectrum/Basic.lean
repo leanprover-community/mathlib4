@@ -10,7 +10,7 @@ import Mathlib.Topology.Sober
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
 #align_import algebraic_geometry.prime_spectrum.basic from "leanprover-community/mathlib"@"a7c017d750512a352b623b1824d75da5998457d0"
 

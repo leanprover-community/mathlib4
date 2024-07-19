@@ -8,6 +8,7 @@ import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.Algebra.Ring.Action.Field
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 #align_import ring_theory.valuation.valuation_subring from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 

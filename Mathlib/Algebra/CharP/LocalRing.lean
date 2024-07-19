@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster
 -/
 import Mathlib.Algebra.CharP.Basic
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
 #align_import algebra.char_p.local_ring from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
