@@ -148,6 +148,18 @@ noncomputable section
   -∑' (n : ℕ),
     (μ (p.f n)).toReal* Real.log ((μ (p.f n)).toReal)
 
+ def met_entropy_ennreal {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (p : partition m μ) : ENNReal :=
+  (∑' (n : ℕ),
+    (μ (p.f n)) * ENNReal.ofReal (-Real.log ((μ (p.f n)).toReal)))
+
+ def met_entropy_ereal {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (p : partition m μ) : EReal :=
+  -∑' (n : ℕ),
+    (μ (p.f n))* ENNReal.log ((μ (p.f n)))
+
+
+
 -- entropy of a finite partition
 
  def met_entropy' {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
@@ -379,7 +391,6 @@ lemma partition.partOf_spec {α : Type*} {m : MeasurableSpace α} {μ : Measure 
     rw[mem_iUnion] at hx
     exact Classical.epsilon_spec hx
 
-#eval ⊥ * (0:EReal)
 
 lemma partition.partOf_spec' {α : Type*} {m : MeasurableSpace α} {μ : Measure α}[IsProbabilityMeasure μ]
     (p : partition m μ) (x : α): p.partOf x ≠ 0 → x ∈ p.f (p.partOf x):= by
@@ -398,6 +409,14 @@ lemma partition.partOf_spec' {α : Type*} {m : MeasurableSpace α} {μ : Measure
 def info {α : Type*} {m : MeasurableSpace α} {μ : Measure α}  [IsProbabilityMeasure μ]
   (p : partition m μ ) (x : α): ℝ :=
   (-Real.log (μ (p.f (p.partOf x))).toReal)
+
+def info_ennreal {α : Type*} {m : MeasurableSpace α} {μ : Measure α}  [IsProbabilityMeasure μ]
+  (p : partition m μ ) (x : α): ENNReal :=
+  ENNReal.ofReal (-Real.log (μ (p.f (p.partOf x))).toReal)
+
+def info_ereal {α : Type*} {m : MeasurableSpace α} {μ : Measure α}  [IsProbabilityMeasure μ]
+  (p : partition m μ ) (x : α): EReal :=
+  (-ENNReal.log (μ (p.f (p.partOf x))))
 
 -- in practice these functions don't matter whether they are undefined on a set of measure zero
 -- so does it even matter if the definition would allow division by zero.
@@ -640,7 +659,7 @@ lemma eqset₀_partOf {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [I
     · rw[mem_iUnion];use n; exact h.1
   exact h.2 this
 
-  lemma eqset₀_measure  {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+lemma eqset₀_measure  {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
  (p : partition m μ)(n:ℕ ) : μ (p.f n \ eqset₀ p n) = 0 := by
     have: (p.f n \ eqset₀ p n) ⊆ (⋃ (n : ℕ), ⋃ (i : ℕ)(h: i ≠ n), (p.f n ∩ p.f i)) := by
       intro x ⟨hx₁,hx₂⟩
@@ -654,6 +673,18 @@ lemma eqset₀_partOf {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [I
       exact Set.mem_inter hj₂ hx₁
     exact measure_mono_null this (eqset₂ p)
 
+lemma eqset₀_disjoint {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+ (p : partition m μ)(a b:ℕ)(h:a ≠ b): eqset₀ p a ∩ eqset₀ p b = ∅ := by
+ refine Eq.symm (Set.ext ?h)
+ intro X
+ constructor
+ · intro h;exfalso; exact h
+ · intro ⟨hx₁,hx₂⟩;simp
+   have: X ∈ ⋃ i, ⋃ (_ : i ≠ a), p.f i := by
+    rw[mem_iUnion]
+    use b;rw[mem_iUnion]; use h
+    exact mem_of_mem_diff hx₂
+   exact hx₁.2 this
 
 
 lemma info_eq {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
@@ -667,13 +698,124 @@ lemma info_eq {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabi
     rw[h₁]
     exact Eq.symm (indicator_of_mem rfl fun _ => -(μ (p.f N)).toReal.log)
 
+
+noncomputable section
+
+
+def piece_function {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+    (p : partition m μ) (n: ℕ) : MeasureTheory.SimpleFunc α ℝ :=
+  let const_func := MeasureTheory.SimpleFunc.const α (-Real.log (μ (p.f n)).toReal)
+  let default_func := MeasureTheory.SimpleFunc.const α 0 -- specify the default value outside the set
+  const_func.piecewise (eqset₀ p n) (eqset₀_measurable p n) default_func
+
+
+noncomputable def limiting_function {α : Type*}  {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (p : partition m μ) : ℕ → MeasureTheory.SimpleFunc α ℝ
+| 0  => piece_function p 0
+| (n + 1) => (MeasureTheory.SimpleFunc.const α (-Real.log (μ (p.f (n+1))).toReal)).piecewise (eqset₀ p (n+1)) (eqset₀_measurable p (n+1)) (limiting_function p n)
+
+
+def limit_function {α : Type*}  {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (p : partition m μ): α → ℝ :=
+  λ x ↦ ∑' n, (eqset₀ p n).indicator (fun _ ↦ (-Real.log (μ (p.f n)).toReal)) x
+
+
+lemma eqset₀_limiting_function {α : Type*}  {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (p : partition m μ)(x:α)(n:ℕ)(hx:x ∈ eqset₀ p n)(N:ℕ)(hN:N≥n): limiting_function p N x = -Real.log (μ (p.f (n))).toReal := by
+  induction' N with N hn
+  · have: n=0:= by
+      exact Nat.eq_zero_of_le_zero hN
+    unfold limiting_function; unfold piece_function;rw[this] at hx; simp[hx];rw[this]
+  · by_cases h:N+1=n
+    · have: limiting_function p (N+1) x = (MeasureTheory.SimpleFunc.const α (-Real.log (μ (p.f (N+1))).toReal)).piecewise (eqset₀ p (N+1)) (eqset₀_measurable p (N+1)) (limiting_function p (N)) x:= by
+        exact rfl
+      rw[this,h]; simp[hx]
+    · have: N + 1 > n:= by
+        exact Nat.lt_of_le_of_ne hN fun a => h (id (Eq.symm a))
+      have hN: N≥n:= by
+        exact Nat.le_of_lt_succ this
+      have: (limiting_function p (N + 1)) x = (limiting_function p (N)) x := by
+        have: limiting_function p (N+1) x = (MeasureTheory.SimpleFunc.const α (-Real.log (μ (p.f (N+1))).toReal)).piecewise (eqset₀ p (N+1)) (eqset₀_measurable p (N+1)) (limiting_function p (N)) x:= by
+          exact rfl
+        rw[this]
+        have : x ∉ (eqset₀ p (N+1)) :=by
+          by_contra h₁
+          have h₂:=  Set.mem_inter h₁ hx
+          rw[eqset₀_disjoint p (N+1) n h] at h₂
+          exact h₂
+        simp[this]
+      rw[this]; exact hn hN
+
+
+
+lemma eqset₀_limit_function {α : Type*}  {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (p : partition m μ)(x:α)(n:ℕ)(h:x ∈ eqset₀ p n): limit_function p x = -Real.log (μ (p.f n)).toReal := by
+  have:-Real.log (μ (p.f n)).toReal =(eqset₀ p n).indicator (fun _ ↦ (-Real.log (μ (p.f n)).toReal)) x:= by
+    exact Eq.symm (indicator_of_mem h fun x => -Real.log (μ (p.f n)).toReal)
+  rw[this]
+  unfold limit_function
+  apply tsum_eq_single
+  intro b;intro hbn
+  have: x ∉ eqset₀ p b := by
+    by_contra h₁
+    have h₂:=  Set.mem_inter h₁ h
+    rw[eqset₀_disjoint p b n hbn] at h₂
+    assumption
+  exact indicator_of_not_mem this fun x => -Real.log (μ (p.f b)).toReal
+
+lemma limiting_eq_zero  {α : Type*}  {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (p : partition m μ)(n:ℕ)(x:α)(hx:x ∉ eqset p): limiting_function p n x = 0 := by
+  unfold eqset at hx
+  have rule: ∀ N, x ∉ eqset₀ p N := by
+    rw[mem_iUnion] at hx;push_neg at hx
+    exact fun N => hx N
+  have: (limiting_function p n) x=(limiting_function p 0) x := by
+    induction' n with n hn
+    · simp
+    · have: (limiting_function p (n + 1)) x = (MeasureTheory.SimpleFunc.const α (-Real.log (μ (p.f (n+1))).toReal)).piecewise (eqset₀ p (n+1)) (eqset₀_measurable p (n+1)) (limiting_function p (n)) x:= by
+        exact rfl
+      rw[this]; simp[rule (n+1)];rw[hn]
+  rw[this]; unfold limiting_function; unfold piece_function;simp [rule 0]
+
+lemma limit_eq_zero  {α : Type*}  {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (p : partition m μ)(x:α)(hx:x ∉ eqset p): limit_function p x = 0 := by
+  unfold limit_function; unfold eqset at hx
+  have rule: ∀ N, x ∉ eqset₀ p N := by
+    rw[mem_iUnion] at hx;push_neg at hx
+    exact fun N => hx N
+  have: ∀ n, (eqset₀ p n).indicator (fun x => -Real.log (μ (p.f n)).toReal) x=0 := by
+    intro n;exact indicator_of_not_mem (rule n) fun x => -Real.log (μ (p.f n)).toReal
+  rw[tsum_congr this];exact tsum_zero
+
+
+lemma limit_function_strongly_measurable {α : Type*}  {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (p : partition m μ): MeasureTheory.StronglyMeasurable (limit_function p) := by
+  use (limiting_function p);intro x'
+  by_cases h : x' ∈ eqset p
+  · unfold eqset at h; rw[mem_iUnion]at h
+    rcases h with ⟨n,hn⟩
+    rw[Metric.tendsto_atTop];intro ε hε; use n; intro N hN
+    have: (limiting_function p N) x'=(limit_function p x') := by
+      rw[eqset₀_limiting_function p x' n hn N hN,eqset₀_limit_function p x' n hn]
+    rw[this];simp;linarith
+  · rw[Metric.tendsto_atTop];intro ε hε; use 0; intro N _
+    rw[limiting_eq_zero p N x' h,limit_eq_zero p x' h];simp;linarith
+
+
+
 lemma info_measurable {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
-    (p : partition m μ): MeasureTheory.StronglyMeasurable (info p)  := by
-    rw[info_eq]
-    refine Continuous.comp_stronglyMeasurable ?hg ?hf
-    ·
-
-
+    (p : partition m μ): MeasureTheory.AEStronglyMeasurable (μ:=μ)  (info p)  := by
+    unfold MeasureTheory.AEStronglyMeasurable;use limit_function p
+    constructor
+    · exact limit_function_strongly_measurable p
+    · show μ {x | info p x= limit_function p x}ᶜ=0
+      have: eqset p ⊆ {x | info p x= limit_function p x} := by
+        intro x hx
+        simp
+        unfold eqset at hx;rw[mem_iUnion] at hx;rcases hx with ⟨n,hn⟩;rw[eqset₀_limit_function p x n hn]
+        unfold info; rw[eqset₀_partOf p x n hn]
+      have := compl_subset_compl_of_subset this
+      exact measure_mono_null this (eqset₃ p)
 
 
 
@@ -880,7 +1022,7 @@ lemma condeqset_measurable {α : Type*} {m : MeasurableSpace α} {μ : Measure �
       · rw[if_pos h];exact p.measurable B
       · rw[if_neg h]; exact MeasurableSet.empty
 
-  lemma condeqset_measure_zero {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+lemma condeqset_measure_zero {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
   (p : partition m μ): μ (condeqset p)ᶜ=0 := by
   unfold condeqset
   show μ ((⋃ n, p.f n) ∩ (⋃ n, if (μ (p.f n)).toReal = 0 then p.f n else ∅)ᶜ)ᶜ = 0
@@ -894,7 +1036,7 @@ lemma condeqset_measurable {α : Type*} {m : MeasurableSpace α} {μ : Measure �
       ·exact measure_ne_top μ (p.f i)
     · rw[if_neg h]; exact OuterMeasureClass.measure_empty μ
 
-  lemma condeqset_members {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+lemma condeqset_members {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
   (p : partition m μ)(x:α): x ∈ (condeqset p) → (μ (p.f (p.partOf x))).toReal ≠ 0 := by
   intro h
   by_contra h₁
