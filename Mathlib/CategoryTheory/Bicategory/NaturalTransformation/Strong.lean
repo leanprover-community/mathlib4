@@ -190,6 +190,8 @@ end
 
 end StrongOplaxNatTrans
 
+open OplaxNatTrans
+
 variable (B C)
 
 @[simps id comp]
@@ -206,7 +208,7 @@ instance Pseudofunctor.homcategory (F G : Pseudofunctor B C) : Category (F ⟶ G
   comp := Modification.vcomp
 
 @[ext]
-lemma Pseudofunctor.StrongNatTrans.ext {F G : Pseudofunctor B C} {α β : F ⟶ G} {m n : α ⟶ β}
+lemma Pseudofunctor.homcategory.ext {F G : Pseudofunctor B C} {α β : F ⟶ G} {m n : α ⟶ β}
     (w : ∀ b, m.app b = n.app b) : m = n :=
   OplaxNatTrans.ext w
 
