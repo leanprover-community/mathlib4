@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.FieldTheory.Minpoly.Field
+import Mathlib.LinearAlgebra.SModEq
 
 #align_import ring_theory.power_basis from "leanprover-community/mathlib"@"d1d69e99ed34c95266668af4e288fc1c598b9a7f"
 
@@ -142,6 +143,29 @@ theorem algHom_ext {S' : Type*} [Semiring S'] [Algebra R S'] (pb : PowerBasis R 
   obtain ⟨f, rfl⟩ := pb.exists_eq_aeval' x
   rw [← Polynomial.aeval_algHom_apply, ← Polynomial.aeval_algHom_apply, h]
 #align power_basis.alg_hom_ext PowerBasis.algHom_ext
+
+open Ideal Finset Submodule in
+theorem exists_smodEq (pb : PowerBasis A B) (b : B) :
+    ∃ a, SModEq (Ideal.span ({pb.gen})) b (algebraMap A B a) := by
+  rcases subsingleton_or_nontrivial B
+  · exact ⟨0, by rw [SModEq, Subsingleton.eq_zero b, _root_.map_zero]⟩
+  refine ⟨pb.basis.repr b ⟨0, pb.dim_pos⟩, ?_⟩
+  have H := pb.basis.sum_repr b
+  rw [← insert_erase (mem_univ ⟨0, pb.dim_pos⟩), sum_insert (not_mem_erase _ _)] at H
+  rw [SModEq, ← add_zero (algebraMap _ _ _), Quotient.mk_add]
+  nth_rewrite 1 [← H]
+  rw [Quotient.mk_add]
+  congr 1
+  · simp [Algebra.algebraMap_eq_smul_one ((pb.basis.repr b) _)]
+  · rw [Quotient.mk_zero, Quotient.mk_eq_zero, coe_basis]
+    refine sum_mem _ (fun i hi ↦ ?_)
+    rw [Algebra.smul_def']
+    refine Ideal.mul_mem_left _ _ <| Ideal.pow_mem_of_mem _ (Ideal.subset_span (by simp)) _ <|
+      Nat.pos_of_ne_zero <| fun h ↦ not_mem_erase i univ <| Fin.eq_mk_iff_val_eq.2 h ▸ hi
+
+open Submodule.Quotient in
+theorem exists_gen_dvd_sub (pb : PowerBasis A B) (b : B) : ∃ a, pb.gen ∣ b - algebraMap A B a := by
+  simpa [← Ideal.mem_span_singleton, ← mk_eq_zero, mk_sub, sub_eq_zero] using pb.exists_smodEq b
 
 section minpoly
 
