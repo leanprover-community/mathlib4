@@ -1110,7 +1110,6 @@ instance finArrow {n} : Primcodable (Fin n → α) :=
 -- Porting note: Equiv.arrayEquivFin is not ported yet
 -- instance array {n} : Primcodable (Array' n α) :=
 --   ofEquiv _ (Equiv.arrayEquivFin _ _)
--- #align primcodable.array Primcodable.array
 
 section ULower
 

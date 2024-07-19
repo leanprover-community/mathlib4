@@ -5,12 +5,12 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Algebra.Ring.Idempotents
-import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Finiteness
 import Mathlib.Order.Basic
 import Mathlib.Order.Hom.Lattice
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
 

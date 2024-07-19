@@ -69,12 +69,10 @@ instance coeComonad : Coe (Comonad C) (C ⥤ C) :=
 --@[simp]
 --theorem monad_toFunctor_eq_coe : T.toFunctor = T :=
 --  rfl
---#align category_theory.monad_to_functor_eq_coe CategoryTheory.monad_toFunctor_eq_coe
 --
 --@[simp]
 --theorem comonad_toFunctor_eq_coe : G.toFunctor = G :=
 --  rfl
---#align category_theory.comonad_to_functor_eq_coe CategoryTheory.comonad_toFunctor_eq_coe
 
 /-- The unit for the monad `T`. -/
 def Monad.η : 𝟭 _ ⟶ (T : C ⥤ C) :=

@@ -56,7 +56,6 @@ def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat) :=
 -- @[simp]
 -- theorem as_coe (X : SheafedSpace C) : X.carrier = (X : TopCat) :=
 --   rfl
--- set_option linter.uppercaseLean3 false in
 
 -- Porting note: this gives a `simpVarHead` error (`LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`).
 -- so removed @[simp]

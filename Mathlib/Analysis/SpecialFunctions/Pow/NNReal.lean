@@ -875,31 +875,25 @@ end ENNReal
 
 -- theorem nnrpow_pos (a : ℝ≥0) (b : ℝ) (b' : ℕ) (c : ℝ≥0) (hb : b = b') (h : a ^ b' = c) :
 --     a ^ b = c := by rw [← h, hb, NNReal.rpow_natCast]
--- #align norm_num.nnrpow_pos NormNum.nnrpow_pos
 
 -- theorem nnrpow_neg (a : ℝ≥0) (b : ℝ) (b' : ℕ) (c c' : ℝ≥0) (hb : b = b') (h : a ^ b' = c)
 --     (hc : c⁻¹ = c') : a ^ (-b) = c' := by
 --   rw [← hc, ← h, hb, NNReal.rpow_neg, NNReal.rpow_natCast]
--- #align norm_num.nnrpow_neg NormNum.nnrpow_neg
 
 -- theorem ennrpow_pos (a : ℝ≥0∞) (b : ℝ) (b' : ℕ) (c : ℝ≥0∞) (hb : b = b') (h : a ^ b' = c) :
 --     a ^ b = c := by rw [← h, hb, ENNReal.rpow_natCast]
--- #align norm_num.ennrpow_pos NormNum.ennrpow_pos
 
 -- theorem ennrpow_neg (a : ℝ≥0∞) (b : ℝ) (b' : ℕ) (c c' : ℝ≥0∞) (hb : b = b') (h : a ^ b' = c)
 --     (hc : c⁻¹ = c') : a ^ (-b) = c' := by
 --   rw [← hc, ← h, hb, ENNReal.rpow_neg, ENNReal.rpow_natCast]
--- #align norm_num.ennrpow_neg NormNum.ennrpow_neg
 
 -- /-- Evaluate `NNReal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
 -- unsafe def prove_nnrpow : expr → expr → tactic (expr × expr) :=
 --   prove_rpow' `` nnrpow_pos `` nnrpow_neg `` NNReal.rpow_zero q(ℝ≥0) q(ℝ) q((1 : ℝ≥0))
--- #align norm_num.prove_nnrpow norm_num.prove_nnrpow
 
 -- /-- Evaluate `ENNReal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
 -- unsafe def prove_ennrpow : expr → expr → tactic (expr × expr) :=
 --   prove_rpow' `` ennrpow_pos `` ennrpow_neg `` ENNReal.rpow_zero q(ℝ≥0∞) q(ℝ) q((1 : ℝ≥0∞))
--- #align norm_num.prove_ennrpow norm_num.prove_ennrpow
 
 -- /-- Evaluates expressions of the form `rpow a b` and `a ^ b` in the special case where
 -- `b` is an integer and `a` is a positive rational (so it's really just a rational power). -/
@@ -910,7 +904,6 @@ end ENNReal
 --   | q(@Pow.pow _ _ ENNReal.Real.hasPow $(a) $(b)) => b.to_int >> prove_ennrpow a b
 --   | q(ENNReal.rpow $(a) $(b)) => b.to_int >> prove_ennrpow a b
 --   | _ => tactic.failed
--- #align norm_num.eval_nnrpow_ennrpow norm_num.eval_nnrpow_ennrpow
 
 -- end NormNum
 
@@ -920,7 +913,6 @@ end ENNReal
 
 -- private theorem nnrpow_pos {a : ℝ≥0} (ha : 0 < a) (b : ℝ) : 0 < a ^ b :=
 --   NNReal.rpow_pos ha
--- #align tactic.positivity.nnrpow_pos tactic.positivity.nnrpow_pos
 
 -- /-- Auxiliary definition for the `positivity` tactic to handle real powers of nonnegative reals.
 -- -/
@@ -929,12 +921,10 @@ end ENNReal
 --   match strictness_a with
 --     | positive p => positive <$> mk_app `` nnrpow_pos [p, b]
 --     | _ => failed
--- #align tactic.positivity.prove_nnrpow tactic.positivity.prove_nnrpow
 
 -- -- We already know `0 ≤ x` for all `x : ℝ≥0`
 -- private theorem ennrpow_pos {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 < b) : 0 < a ^ b :=
 --   ENNReal.rpow_pos_of_nonneg ha hb.le
--- #align tactic.positivity.ennrpow_pos tactic.positivity.ennrpow_pos
 
 -- /-- Auxiliary definition for the `positivity` tactic to handle real powers of extended
 -- nonnegative reals. -/
@@ -945,7 +935,6 @@ end ENNReal
 --     | positive pa, positive pb => positive <$> mk_app `` ennrpow_pos [pa, pb]
 --     | positive pa, nonnegative pb => positive <$> mk_app `` ENNReal.rpow_pos_of_nonneg [pa, pb]
 --     | _, _ => failed
--- #align tactic.positivity.prove_ennrpow tactic.positivity.prove_ennrpow
 
 -- -- We already know `0 ≤ x` for all `x : ℝ≥0∞`
 -- end Positivity
@@ -961,7 +950,6 @@ end ENNReal
 --   | q(@Pow.pow _ _ ENNReal.Real.hasPow $(a) $(b)) => prove_ennrpow a b
 --   | q(ENNReal.rpow $(a) $(b)) => prove_ennrpow a b
 --   | _ => failed
--- #align tactic.positivity_nnrpow_ennrpow tactic.positivity_nnrpow_ennrpow
 
 -- end Tactic
 
