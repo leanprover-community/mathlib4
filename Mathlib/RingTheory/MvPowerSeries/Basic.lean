@@ -777,10 +777,10 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent [DecidableEq σ]
   suffices m ≤ s.card by
     obtain ⟨m', hm'⟩ := Nat.exists_eq_add_of_le this
     rw [hm', pow_add, hf, MulZeroClass.zero_mul]
-  rw [← Nat.add_le_add_iff_right, add_comm s.card, Finset.card_sdiff_add_card_eq_card hs, card_range]
+  rw [← Nat.add_le_add_iff_right, add_comm s.card, Finset.card_sdiff_add_card_eq_card (filter_subset _ _), card_range]
   apply le_trans _ hn
-  simp only [add_comm m, Nat.add_le_add_iff_right, ← hk.1, ← sum_sdiff hs, 
-    sum_eq_zero (s := s) hs'', add_zero]
+  simp only [add_comm m, Nat.add_le_add_iff_right, ← hk.1,
+    ← sum_sdiff (filter_subset _ _ : s ⊆ range n), sum_eq_zero (s := s) hs'', add_zero]
   convert Finset.card_nsmul_le_sum (range n \ s) (fun x ↦ degree (k x)) 1 _
   · simp only [Algebra.id.smul_eq_mul, mul_one]
   · exact sum_sum_index' (congrFun rfl) fun _ x ↦ congrFun rfl
