@@ -333,6 +333,43 @@ lemma isLeftAdjoint_of_preservesColimits (L : (C ⥤ Type v₁) ⥤ ℰ)
 
 section
 
+universe w
+
+variable {ℰ : Type u₂} [Category.{v₂} ℰ] (A : C ⥤ ℰ)
+
+/--
+The functor taking `(E : ℰ) (c : Cᵒᵖ)` to the homset `(A.obj C ⟶ E)`. It is shown in `L_adjunction`
+that this functor has a left adjoint (provided `E` has colimits) given by taking colimits over
+categories of elements.
+In the case where `ℰ = Cᵒᵖ ⥤ Type u` and `A = yoneda`, this functor is isomorphic to the identity.
+
+Defined as in [MM92], Chapter I, Section 5, Theorem 2.
+-/
+@[simps!]
+def restrictedYoneda' : ℰ ⥤ Cᵒᵖ ⥤ Type (max v₁ v₂) :=
+  yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor ⋙
+    (whiskeringLeft _ _ (Type (max v₁ v₂))).obj (Functor.op A)
+
+noncomputable def yonedaAdjunction' (L : (Cᵒᵖ ⥤ Type max v₁ v₂) ⥤ ℰ) (α : A ⟶ yoneda ⋙
+  ((whiskeringRight _ _ _).obj uliftFunctor.{v₂}) ⋙ L) :
+    L ⊣ restrictedYoneda' A := sorry
+
+/-- If `L` preserves colimits and `ℰ` has them, then it is a left adjoint. Note this is a (partial)
+converse to `leftAdjointPreservesColimits`.
+-/
+lemma isLeftAdjoint_of_preservesColimits' (L : (C ⥤ Type max v₁ v₂) ⥤ ℰ)
+    [PreservesColimitsOfSize.{v₂, max v₂ v₁} L]
+    [yoneda.HasPointwiseLeftKanExtension
+      (yoneda ⋙ (opOpEquivalence C).congrLeft.functor ⋙
+        ((whiskeringRight _ _ _).obj uliftFunctor.{v₂}) ⋙ L)] :
+    L.IsLeftAdjoint :=
+  ⟨_, ⟨((opOpEquivalence C).congrLeft.symm.toAdjunction.comp
+    (yonedaAdjunction' _ _ (𝟙 _))).ofNatIsoLeft ((opOpEquivalence C).congrLeft.invFunIdAssoc L)⟩⟩
+
+end
+
+section
+
 variable {D : Type u₂} [Category.{v₁} D] (F : C ⥤ D)
 
 section
