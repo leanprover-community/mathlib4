@@ -84,8 +84,7 @@ theorem det_of_basisMatrix_non_zero : (basisMatrix K).transpose.det ≠ 0 := by
 instance : Invertible (basisMatrix K) := invertibleOfIsUnitDet _
     (det_transpose (basisMatrix K) ▸ (Ne.isUnit (det_of_basisMatrix_non_zero K)))
 
-theorem canonicalEmbedding_eq_basisMatrix_mulVec :
-  canonicalEmbedding K α = (basisMatrix K).mulVec
+theorem canonicalEmbedding_eq_basisMatrix_mulVec : canonicalEmbedding K α = (basisMatrix K).mulVec
     (fun i ↦ (((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)) := by
   ext i
   rw [← (latticeBasis K).sum_repr (canonicalEmbedding K α), ← Equiv.sum_comp (equivReindex K)]
@@ -95,7 +94,7 @@ theorem canonicalEmbedding_eq_basisMatrix_mulVec :
 
 theorem inverse_basisMatrix_mulVec_eq_repr :
   (basisMatrix K)⁻¹.mulVec (fun j => canonicalEmbedding K (algebraMap (𝓞 K) K α) j) i =
-    ((integralBasis K).reindex (equivReindex K).symm).repr α i := by
+      ((integralBasis K).reindex (equivReindex K).symm).repr α i := by
   rw [inv_mulVec_eq_vec (canonicalEmbedding_eq_basisMatrix_mulVec K)]
 
 /-- `basisMatrixInvNormMulRank` is defined as the product of the maximum absolute
@@ -108,7 +107,7 @@ theorem c_nonneg : 0 ≤ c K := by
 
 theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) :
   ∀ i, Complex.abs (((integralBasis K).reindex (equivReindex K).symm).repr α i) ≤
-  (c K) * house (algebraMap (𝓞 K) K α) := fun i => by
+      (c K) * house (algebraMap (𝓞 K) K α) := fun i => by
   let σ := canonicalEmbedding K
   calc
     _ ≤ ∑ j, ‖(basisMatrix K)⁻¹‖ * Complex.abs (σ (algebraMap (𝓞 K) K α) j) := ?_
