@@ -634,8 +634,8 @@ lemma pointEquivNonsingularSubtype_symm_some {x y : R} {h : W.Nonsingular x y} {
   rfl
 
 variable (W) in
-/-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` and the set of
-pairs `⟨x, y⟩` satisfying `W.Nonsingular x y` with zero. -/
+/-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` and the set
+of pairs `⟨x, y⟩` satisfying `W.Nonsingular x y` with zero. -/
 def pointEquivNonsingular : W.Point ≃ WithZero {xy : R × R // W.Nonsingular xy.fst xy.snd} :=
   (Equiv.Set.univ W.Point).symm.trans <| (pointEquivNonsingularSubtype trivial).trans
     (Equiv.setCongr <| Set.ext fun _ => exists_iff_of_forall fun _ => trivial).optionCongr

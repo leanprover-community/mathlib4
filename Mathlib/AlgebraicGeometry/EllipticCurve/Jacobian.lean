@@ -1378,6 +1378,11 @@ lemma fromAffine_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X
   obtain ⟨u, eq⟩ := Quotient.eq.mp <| (Point.ext_iff ..).mp h0
   simpa [Units.smul_def, smul_fin3] using congr_fun eq z
 
+/-- An abbreviation for `WeierstrassCurve.Jacobian.Point.fromAffine` for dot notation. -/
+abbrev _root_.WeierstrassCurve.Affine.Point.toJacobian [Nontrivial R] {W : Affine R} (P : W.Point) :
+    W.toJacobian.Point :=
+  fromAffine P
+
 /-- The negation of a nonsingular rational point on `W`.
 Given a nonsingular rational point `P` on `W`, use `-P` instead of `neg P`. -/
 def neg (P : W.Point) : W.Point :=
@@ -1540,9 +1545,8 @@ lemma toAffineLift_add (P Q : W.Point) :
   exact toAffine_add hP hQ
 
 variable (W) in
-/-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` in Jacobian
-coordinates with the nonsingular rational points on `W` in affine coordinates. -/
-@[simps]
+/-- The equivalence between the nonsingular rational points on a Weierstrass curve in Jacobian
+coordinates with those in affine coordinates. -/
 noncomputable def toAffineAddEquiv : W.Point ≃+ W.toAffine.Point where
   toFun := toAffineLift
   invFun := fromAffine
@@ -1559,7 +1563,98 @@ noncomputable def toAffineAddEquiv : W.Point ≃+ W.toAffine.Point where
     · rw [fromAffine_some, toAffineLift_some]
   map_add' := toAffineLift_add
 
+lemma toAffineAddEquiv_zero : toAffineAddEquiv W 0 = 0 :=
+  toAffineLift_zero
+
+lemma toAffineAddEquiv_some {X Y : F} (h : W.NonsingularLift ⟦![X, Y, 1]⟧) :
+    toAffineAddEquiv W ⟨h⟩ = .some ((nonsingular_some ..).mp h) :=
+  toAffineLift_some h
+
+lemma toAffineAddEquiv_symm_zero : (toAffineAddEquiv W).symm 0 = 0 :=
+  rfl
+
+lemma toAffineAddEquiv_symm_some {X Y : F} (h : W.NonsingularLift ⟦![X, Y, 1]⟧) :
+    (toAffineAddEquiv W).symm (.some <| (nonsingular_some ..).mp h) = ⟨h⟩ :=
+  rfl
+
+/-- The equivalence between the nonsingular rational points on a Weierstrass curve in Jacobian
+coordinates satisfying a predicate `p` with those in affine coordinates. -/
+noncomputable def toAffineEquivSubtype (p : W.Point → Prop) :
+    {P : W.Point // p P} ≃ {P : W.toAffine.Point // p P.toJacobian} :=
+  (toAffineAddEquiv W).subtypeEquiv fun P => by nth_rw 1 [← (toAffineAddEquiv W).left_inv P]; rfl
+
+lemma toAffineEquivSubtype_zero {p : W.Point → Prop} (p0 : p 0) :
+    toAffineEquivSubtype p ⟨0, p0⟩ = ⟨0, p0⟩ :=
+  Subtype.ext toAffineLift_zero
+
+lemma toAffineEquivSubtype_some {X Y : F} {h : W.NonsingularLift ⟦![X, Y, 1]⟧} {p : W.Point → Prop}
+    (ph : p ⟨h⟩) : toAffineEquivSubtype p ⟨⟨h⟩, ph⟩ = ⟨.some <| (nonsingular_some ..).mp h, ph⟩ :=
+  Subtype.ext <| toAffineLift_some h
+
+lemma toAffineEquivSubtype_symm_zero {p : W.Point → Prop} (p0 : p 0) :
+    (toAffineEquivSubtype p).symm ⟨0, p0⟩ = ⟨0, p0⟩ :=
+  rfl
+
+lemma toAffineEquivSubtype_symm_some {X Y : F} {h : W.NonsingularLift ⟦![X, Y, 1]⟧}
+    {p : W.Point → Prop} (ph : p ⟨h⟩) :
+    (toAffineEquivSubtype p).symm ⟨.some <| (nonsingular_some ..).mp h, ph⟩ = ⟨⟨h⟩, ph⟩ :=
+  rfl
+
 end Point
+
+/-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` satisfying a
+predicate `p` and the set of pairs `⟨x, y⟩` satisfying `W.Nonsingular x y` with zero. -/
+noncomputable def pointEquivNonsingularSubtype {p : W.Point → Prop} (p0 : p 0) :
+    {P : W.Point // p P} ≃
+      WithZero {xy : F × F // ∃ h : W.NonsingularLift ⟦![xy.fst, xy.snd, 1]⟧, p ⟨h⟩} :=
+  (Point.toAffineEquivSubtype p).trans <| (Affine.pointEquivNonsingularSubtype p0).trans
+    (Equiv.setCongr <| Set.ext fun _ => by simpa only [← nonsingular_some] using by rfl).optionCongr
+
+lemma pointEquivNonsingularSubtype_zero {p : W.Point → Prop} (p0 : p 0) :
+    pointEquivNonsingularSubtype p0 ⟨0, p0⟩ = none := by
+  erw [Equiv.trans_apply, Point.toAffineEquivSubtype_zero]
+  rfl
+
+lemma pointEquivNonsingularSubtype_some {X Y : F} {h : W.NonsingularLift ⟦![X, Y, 1]⟧}
+    {p : W.Point → Prop} (p0 : p 0) (ph : p ⟨h⟩) :
+    pointEquivNonsingularSubtype p0 ⟨⟨h⟩, ph⟩ = .some ⟨⟨X, Y⟩, h, ph⟩ := by
+  erw [Equiv.trans_apply, Point.toAffineEquivSubtype_some]
+  rfl
+
+lemma pointEquivNonsingularSubtype_symm_none {p : W.Point → Prop} (p0 : p 0) :
+    (pointEquivNonsingularSubtype p0).symm none = ⟨0, p0⟩ :=
+  rfl
+
+lemma pointEquivNonsingularSubtype_symm_some {X Y : F} {h : W.NonsingularLift ⟦![X, Y, 1]⟧}
+    {p : W.Point → Prop} (p0 : p 0) (ph : p ⟨h⟩) :
+    (pointEquivNonsingularSubtype p0).symm (.some ⟨⟨X, Y⟩, h, ph⟩) = ⟨⟨h⟩, ph⟩ :=
+  rfl
+
+variable (W) in
+/-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` and the set
+of pairs `⟨x, y⟩` satisfying `W.Nonsingular x y` with zero. -/
+noncomputable def pointEquivNonsingular :
+    W.Point ≃ WithZero {xy : F × F // W.Nonsingular ![xy.fst, xy.snd, 1]} :=
+  (Equiv.Set.univ W.Point).symm.trans <| (pointEquivNonsingularSubtype trivial).trans
+    (Equiv.setCongr <| Set.ext fun _ => exists_iff_of_forall fun _ => trivial).optionCongr
+
+variable (W) in
+lemma pointEquivNonsingular_zero : W.pointEquivNonsingular 0 = none := by
+  erw [Equiv.trans_apply, Equiv.trans_apply, pointEquivNonsingularSubtype_zero]
+  rfl
+
+lemma pointEquivNonsingular_some {X Y : F} (h : W.NonsingularLift ⟦![X, Y, 1]⟧) :
+    W.pointEquivNonsingular ⟨h⟩ = .some ⟨⟨X, Y⟩, h⟩ := by
+  erw [Equiv.trans_apply, Equiv.trans_apply, pointEquivNonsingularSubtype_some]
+  rfl
+
+variable (W) in
+lemma pointEquivNonsingular_symm_none : W.pointEquivNonsingular.symm none = 0 :=
+  rfl
+
+lemma pointEquivNonsingular_symm_some {X Y : F} (h : W.NonsingularLift ⟦![X, Y, 1]⟧) :
+    W.pointEquivNonsingular.symm (.some ⟨⟨X, Y⟩, h⟩) = ⟨h⟩ :=
+  rfl
 
 end Affine
 
@@ -1611,8 +1706,3 @@ lemma map_polynomialZ : (W'.map f).toJacobian.polynomialZ = MvPolynomial.map f W
 end Map
 
 end WeierstrassCurve.Jacobian
-
-/-- An abbreviation for `WeierstrassCurve.Jacobian.Point.fromAffine` for dot notation. -/
-abbrev WeierstrassCurve.Affine.Point.toJacobian {R : Type u} [CommRing R]
-    [Nontrivial R] {W : Affine R} (P : W.Point) : W.toJacobian.Point :=
-  Jacobian.Point.fromAffine P
