@@ -8,7 +8,6 @@ import Lean.Meta.Tactic.Rfl
 import Batteries.Data.HashMap.Basic
 import Batteries.Data.RBMap.Basic
 import Mathlib.Lean.Meta.Basic
-import Mathlib.Mathport.Rename
 
 /-!
 # Datatypes for `cc`

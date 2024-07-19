@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
 import Mathlib.Tactic.Lemma
 import Mathlib.Mathport.Attributes
-import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.ProjectionNotation
 import Batteries.Tactic.Alias

@@ -6,7 +6,6 @@ Authors: Johan Commelin, Simon Hudon
 import Batteries.Data.List.Lemmas
 import Batteries.Tactic.Classical
 import Mathlib.Tactic.TypeStar
-import Mathlib.Mathport.Rename
 
 /-!
 # The Following Are Equivalent

@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 
 import Batteries.Classes.Order
-import Mathlib.Mathport.Rename
 
 /-!
 # Note about `Mathlib/Init/`
