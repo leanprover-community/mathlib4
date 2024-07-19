@@ -5,7 +5,6 @@ Authors: Leonardo de Moura
 -/
 import Lean.Parser.Term
 import Batteries.Util.ExtendedBinder
-import Mathlib.Mathport.Rename
 
 /-!
 # Note about `Mathlib/Init/`

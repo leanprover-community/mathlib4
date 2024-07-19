@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 
 import Init.Data.Nat.Div
-import Mathlib.Mathport.Rename
 
 /-!
 # Note about `Mathlib/Init/`

@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 
 import Batteries.Data.Rat.Lemmas
-import Mathlib.Mathport.Rename
 
 /-!
 # Note about `Mathlib/Init/`

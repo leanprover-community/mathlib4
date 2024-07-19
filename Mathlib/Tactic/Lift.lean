@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Tactic.Basic
-import Mathlib.Mathport.Rename
 import Batteries.Lean.Expr
 import Batteries.Lean.Meta.UnusedNames
 

@@ -7,7 +7,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 
 import Batteries.Data.Nat.Gcd
 import Mathlib.Data.Nat.Notation
-import Mathlib.Mathport.Rename
 
 /-!
 # Note about `Mathlib/Init/`
