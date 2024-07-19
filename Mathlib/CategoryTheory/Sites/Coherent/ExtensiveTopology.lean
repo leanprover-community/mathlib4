@@ -55,3 +55,5 @@ lemma extensiveTopology.mem_sieves_iff_contains_colimit_cofan {X : C} (S : Sieve
     · refine ⟨α, inferInstance, Y, π, rfl, ?_⟩
       erw [Limits.Cofan.isColimit_iff_isIso_sigmaDesc (c := Cofan.mk X π)]
       exact h
+
+end CategoryTheory

@@ -3,11 +3,11 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Order.Group.Instances
-import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.Logic.Function.Iterate
 
 /-!
@@ -314,7 +314,7 @@ instance : FunLike (G →+c[a, b] H) G H where
   coe := AddConstMap.toFun
   coe_injective' | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
-@[simp] theorem coe_mk (f : G → H) (hf) : ⇑(mk f hf : G →+c[a, b] H) = f := rfl
+@[simp, push_cast] theorem coe_mk (f : G → H) (hf) : ⇑(mk f hf : G →+c[a, b] H) = f := rfl
 @[simp] theorem mk_coe (f : G →+c[a, b] H) : mk f f.2 = f := rfl
 @[simp] theorem toFun_eq_coe (f : G →+c[a, b] H) : f.toFun = f := rfl
 
@@ -360,7 +360,7 @@ def replaceConsts (f : G →+c[a, b] H) (a' b') (ha : a = a') (hb : b = b') :
 instance {K : Type*} [VAdd K H] [VAddAssocClass K H H] : VAdd K (G →+c[a, b] H) :=
   ⟨fun c f ↦ ⟨c +ᵥ ⇑f, fun x ↦ by simp [vadd_add_assoc]⟩⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_vadd {K : Type*} [VAdd K H] [VAddAssocClass K H H] (c : K) (f : G →+c[a, b] H) :
     ⇑(c +ᵥ f) = c +ᵥ ⇑f :=
   rfl
@@ -383,12 +383,12 @@ instance : Monoid (G →+c[a, a] G) :=
   DFunLike.coe_injective.monoid (M₂ := Function.End G) _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 theorem mul_def (f g : G →+c[a, a] G) : f * g = f.comp g := rfl
-@[simp] theorem coe_mul (f g : G →+c[a, a] G) : ⇑(f * g) = f ∘ g := rfl
+@[simp, push_cast] theorem coe_mul (f g : G →+c[a, a] G) : ⇑(f * g) = f ∘ g := rfl
 
 theorem one_def : (1 : G →+c[a, a] G) = .id := rfl
-@[simp] theorem coe_one : ⇑(1 : G →+c[a, a] G) = id := rfl
+@[simp, push_cast] theorem coe_one : ⇑(1 : G →+c[a, a] G) = id := rfl
 
-@[simp] theorem coe_pow (f : G →+c[a, a] G) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
+@[simp, push_cast] theorem coe_pow (f : G →+c[a, a] G) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
 
 theorem pow_apply (f : G →+c[a, a] G) (n : ℕ) (x : G) : (f ^ n) x = f^[n] x := rfl
 
@@ -464,3 +464,5 @@ def mkFract : (Ico (0 : R) 1 → G) ≃ (R →+c[1, a] G) where
   right_inv f := by ext x; simp [map_fract]
 
 end FloorRing
+
+end AddConstMap

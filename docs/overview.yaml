@@ -19,7 +19,7 @@ General algebra:
     natural number: 'Nat'
     integer: 'Int'
     rational number: 'Rat'
-    continued fraction: 'ContinuedFraction'
+    continued fraction: 'ContFract'
     real number: 'Real'
     extended real number: 'EReal'
     complex number: 'Complex'
@@ -145,9 +145,9 @@ General algebra:
 
   Representation theory:
     representation : 'Representation'
-    category of finite dimensional representations : 'FdRep'
-    character : 'FdRep.character'
-    orthogonality of characters : 'FdRep.char_orthonormal'
+    category of finite dimensional representations : 'FDRep'
+    character : 'FDRep.character'
+    orthogonality of characters : 'FDRep.char_orthonormal'
 
 Linear algebra:
   Fundamentals:
@@ -190,7 +190,7 @@ Linear algebra:
     symmetric bilinear form: 'LinearMap.BilinForm.IsSymm'
     matrix representation: 'BilinForm.toMatrix'
     quadratic form: 'QuadraticForm'
-    polar form of a quadratic: 'QuadraticForm.polar'
+    polar form of a quadratic: 'QuadraticMap.polar'
   Finite-dimensional inner product spaces (see also Hilbert spaces, below):
     existence of orthonormal basis: 'OrthonormalBasis'
     diagonalization of self-adjoint endomorphisms: 'LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply'

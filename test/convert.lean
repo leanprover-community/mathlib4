@@ -120,3 +120,8 @@ example {α β : Type u} [Fintype α] [Fintype β] : Fintype.card α = Fintype.c
     guard_target = HEq inst1 inst2
     have : Subsingleton (Fintype α) := test_sorry
     congr!
+
+example (x y z : Nat) (h : x + y = z) : y + x = z := by
+  convert_to y + x = _ at h
+  · rw [Nat.add_comm]
+  exact h
