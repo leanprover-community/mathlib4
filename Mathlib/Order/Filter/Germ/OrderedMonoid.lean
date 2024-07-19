@@ -8,7 +8,7 @@ import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Order.Filter.Germ.Basic
 
 /-!
-# Ordered monoid instances on germ of a function at a filter
+# Ordered monoid instances on the space of germs of a function at a filter
 
 For each of the following structures we prove that if `β` has this structure, then so does
 `Germ l β`:
