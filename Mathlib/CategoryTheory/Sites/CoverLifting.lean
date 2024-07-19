@@ -8,8 +8,6 @@ import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Sites.Continuous
 import Mathlib.CategoryTheory.Sites.Sheafification
 
-#align_import category_theory.sites.cover_lifting from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
-
 /-!
 # Cocontinuous functors between sites.
 
@@ -73,7 +71,6 @@ if for all covering sieves `R` in `D`, `R.pullback G` is a covering sieve in `C`
 -- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
 class Functor.IsCocontinuous : Prop where
   cover_lift : ∀ {U : C} {S : Sieve (G.obj U)} (_ : S ∈ K (G.obj U)), S.functorPullback G ∈ J U
-#align category_theory.cover_lifting CategoryTheory.Functor.IsCocontinuous
 
 lemma Functor.cover_lift [G.IsCocontinuous J K] {U : C} {S : Sieve (G.obj U)}
     (hS : S ∈ K (G.obj U)) : S.functorPullback G ∈ J U :=
@@ -82,13 +79,11 @@ lemma Functor.cover_lift [G.IsCocontinuous J K] {U : C} {S : Sieve (G.obj U)}
 /-- The identity functor on a site is cocontinuous. -/
 instance isCocontinuous_id : Functor.IsCocontinuous (𝟭 C) J J :=
   ⟨fun h => by simpa using h⟩
-#align category_theory.id_cover_lifting CategoryTheory.isCocontinuous_id
 
 /-- The composition of two cocontinuous functors is cocontinuous. -/
 theorem isCocontinuous_comp [G.IsCocontinuous J K] [G'.IsCocontinuous K L] :
     (G ⋙ G').IsCocontinuous J L where
   cover_lift h := G.cover_lift J K (G'.cover_lift K L h)
-#align category_theory.comp_cover_lifting CategoryTheory.isCocontinuous_comp
 
 end IsCocontinuous
 
@@ -228,8 +223,6 @@ theorem ran_isSheaf_of_isCocontinuous (ℱ : Sheaf J A) :
   intros X S
   exact ⟨RanIsSheafOfIsCocontinuous.isLimitMultifork ℱ.2
     (G.op.isPointwiseRightKanExtensionRanCounit ℱ.val) S⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.Ran_is_sheaf_of_cover_lifting CategoryTheory.ran_isSheaf_of_isCocontinuous
 
 variable (A J)
 
@@ -239,7 +232,6 @@ def Functor.sheafPushforwardCocontinuous : Sheaf J A ⥤ Sheaf K A where
   map f := ⟨G.op.ran.map f.val⟩
   map_id ℱ := Sheaf.Hom.ext _ _ <| (ran G.op).map_id ℱ.val
   map_comp f g := Sheaf.Hom.ext _ _ <| (ran G.op).map_comp f.val g.val
-#align category_theory.sites.copullback CategoryTheory.Functor.sheafPushforwardCocontinuous
 
 /-- `G.sheafPushforwardCocontinuous A J K : Sheaf J A ⥤ Sheaf K A` is induced
 by the right Kan extension functor `G.op.ran` on presheaves. -/
@@ -275,7 +267,6 @@ noncomputable def sheafAdjunctionCocontinuous :
     (fullyFaithfulSheafToPresheaf K A) (fullyFaithfulSheafToPresheaf J A)
     (G.sheafPushforwardContinuousCompSheafToPresheafIso A J K).symm
     (G.sheafPushforwardCocontinuousCompSheafToPresheafIso A J K).symm
-#align category_theory.sites.pullback_copullback_adjunction CategoryTheory.Functor.sheafAdjunctionCocontinuous
 
 lemma sheafAdjunctionCocontinuous_unit_app_val (F : Sheaf K A) :
     ((G.sheafAdjunctionCocontinuous A J K).unit.app F).val =

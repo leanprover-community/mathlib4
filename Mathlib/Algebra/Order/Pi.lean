@@ -8,8 +8,6 @@ import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
-#align_import algebra.order.pi from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
-
 /-!
 # Pi instances for ordered groups and monoids
 
@@ -35,8 +33,6 @@ instance orderedCommMonoid {ι : Type*} {Z : ι → Type*} [∀ i, OrderedCommMo
   __ := Pi.partialOrder
   __ := Pi.commMonoid
   mul_le_mul_left _ _ w _ := fun i => mul_le_mul_left' (w i) _
-#align pi.ordered_comm_monoid Pi.orderedCommMonoid
-#align pi.ordered_add_comm_monoid Pi.orderedAddCommMonoid
 
 @[to_additive]
 instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ i, Mul (α i)]
@@ -44,8 +40,6 @@ instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ 
   ⟨fun h =>
     ⟨fun i => (exists_mul_of_le <| h i).choose,
       funext fun i => (exists_mul_of_le <| h i).choose_spec⟩⟩
-#align pi.has_exists_mul_of_le Pi.existsMulOfLe
-#align pi.has_exists_add_of_le Pi.existsAddOfLe
 
 /-- The product of a family of canonically ordered monoids is a canonically ordered monoid. -/
 @[to_additive
@@ -64,16 +58,12 @@ instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
   __ := Pi.commMonoid
   le_of_mul_le_mul_left _ _ _ h i := le_of_mul_le_mul_left' (h i)
   mul_le_mul_left _ _ c h i := mul_le_mul_left' (c i) (h i)
-#align pi.ordered_cancel_comm_monoid Pi.orderedCancelCommMonoid
-#align pi.ordered_cancel_add_comm_monoid Pi.orderedAddCancelCommMonoid
 
 @[to_additive]
 instance orderedCommGroup [∀ i, OrderedCommGroup <| f i] : OrderedCommGroup (∀ i : I, f i) where
   __ := Pi.commGroup
   __ := Pi.orderedCommMonoid
   npow := Monoid.npow
-#align pi.ordered_comm_group Pi.orderedCommGroup
-#align pi.ordered_add_comm_group Pi.orderedAddCommGroup
 
 instance orderedSemiring [∀ i, OrderedSemiring (f i)] : OrderedSemiring (∀ i, f i) where
   __ := Pi.semiring
@@ -82,23 +72,19 @@ instance orderedSemiring [∀ i, OrderedSemiring (f i)] : OrderedSemiring (∀ i
   zero_le_one := fun i => zero_le_one (α := f i)
   mul_le_mul_of_nonneg_left _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_left (hab _) <| hc _
   mul_le_mul_of_nonneg_right _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_right (hab _) <| hc _
-#align pi.ordered_semiring Pi.orderedSemiring
 
 instance orderedCommSemiring [∀ i, OrderedCommSemiring (f i)] : OrderedCommSemiring (∀ i, f i) where
   __ := Pi.commSemiring
   __ := Pi.orderedSemiring
-#align pi.ordered_comm_semiring Pi.orderedCommSemiring
 
 instance orderedRing [∀ i, OrderedRing (f i)] : OrderedRing (∀ i, f i) where
   __ := Pi.ring
   __ := Pi.orderedSemiring
   mul_nonneg _ _ ha hb := fun _ => mul_nonneg (ha _) (hb _)
-#align pi.ordered_ring Pi.orderedRing
 
 instance orderedCommRing [∀ i, OrderedCommRing (f i)] : OrderedCommRing (∀ i, f i) where
   __ := Pi.commRing
   __ := Pi.orderedRing
-#align pi.ordered_comm_ring Pi.orderedCommRing
 
 end Pi
 
@@ -108,39 +94,27 @@ variable (β) [One α] [Preorder α] {a : α}
 
 @[to_additive const_nonneg_of_nonneg]
 theorem one_le_const_of_one_le (ha : 1 ≤ a) : 1 ≤ const β a := fun _ => ha
-#align function.one_le_const_of_one_le Function.one_le_const_of_one_le
-#align function.const_nonneg_of_nonneg Function.const_nonneg_of_nonneg
 
 @[to_additive]
 theorem const_le_one_of_le_one (ha : a ≤ 1) : const β a ≤ 1 := fun _ => ha
-#align function.const_le_one_of_le_one Function.const_le_one_of_le_one
-#align function.const_nonpos_of_nonpos Function.const_nonpos_of_nonpos
 
 variable {β} [Nonempty β]
 
 @[to_additive (attr := simp) const_nonneg]
 theorem one_le_const : 1 ≤ const β a ↔ 1 ≤ a :=
   @const_le_const _ _ _ _ 1 _
-#align function.one_le_const Function.one_le_const
-#align function.const_nonneg Function.const_nonneg
 
 @[to_additive (attr := simp) const_pos]
 theorem one_lt_const : 1 < const β a ↔ 1 < a :=
   @const_lt_const _ _ _ _ 1 a
-#align function.one_lt_const Function.one_lt_const
-#align function.const_pos Function.const_pos
 
 @[to_additive (attr := simp)]
 theorem const_le_one : const β a ≤ 1 ↔ a ≤ 1 :=
   @const_le_const _ _ _ _ _ 1
-#align function.const_le_one Function.const_le_one
-#align function.const_nonpos Function.const_nonpos
 
 @[to_additive (attr := simp) const_neg']
 theorem const_lt_one : const β a < 1 ↔ a < 1 :=
   @const_lt_const _ _ _ _ _ 1
-#align function.const_lt_one Function.const_lt_one
-#align function.const_neg Function.const_neg'
 
 end const
 

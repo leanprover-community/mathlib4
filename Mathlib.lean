@@ -792,11 +792,13 @@ import Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
+import Mathlib.AlgebraicGeometry.Morphisms.IsIso
 import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.AlgebraicGeometry.Morphisms.Separated
+import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 import Mathlib.AlgebraicGeometry.Noetherian
 import Mathlib.AlgebraicGeometry.OpenImmersion
@@ -1335,7 +1337,8 @@ import Mathlib.CategoryTheory.Bicategory.Kan.Adjunction
 import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
-import Mathlib.CategoryTheory.Bicategory.NaturalTransformation
+import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
+import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
 import Mathlib.CategoryTheory.Bicategory.SingleObj
 import Mathlib.CategoryTheory.Bicategory.Strict
 import Mathlib.CategoryTheory.CatCommSq
@@ -1928,6 +1931,7 @@ import Mathlib.Condensed.Light.Discrete
 import Mathlib.Condensed.Light.Explicit
 import Mathlib.Condensed.Light.Functors
 import Mathlib.Condensed.Light.Module
+import Mathlib.Condensed.Light.TopCatAdjunction
 import Mathlib.Condensed.Light.TopComparison
 import Mathlib.Condensed.Limits
 import Mathlib.Condensed.Module
@@ -2683,7 +2687,9 @@ import Mathlib.GroupTheory.GroupAction.Support
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.GroupTheory.HNNExtension
 import Mathlib.GroupTheory.Index
-import Mathlib.GroupTheory.MonoidLocalization
+import Mathlib.GroupTheory.MonoidLocalization.Basic
+import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
+import Mathlib.GroupTheory.MonoidLocalization.Order
 import Mathlib.GroupTheory.Nilpotent
 import Mathlib.GroupTheory.NoncommCoprod
 import Mathlib.GroupTheory.NoncommPiCoprod
@@ -2733,7 +2739,6 @@ import Mathlib.GroupTheory.Torsion
 import Mathlib.GroupTheory.Transfer
 import Mathlib.InformationTheory.Hamming
 import Mathlib.Init.Algebra.Classes
-import Mathlib.Init.Align
 import Mathlib.Init.Classes.Order
 import Mathlib.Init.Classical
 import Mathlib.Init.Core
@@ -2872,6 +2877,7 @@ import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 import Mathlib.LinearAlgebra.FreeModule.Norm
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.LinearAlgebra.FreeProduct.Basic
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 import Mathlib.LinearAlgebra.Isomorphisms
@@ -3112,6 +3118,7 @@ import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
+import Mathlib.MeasureTheory.Function.UnifTight
 import Mathlib.MeasureTheory.Function.UniformIntegrable
 import Mathlib.MeasureTheory.Group.AEStabilizer
 import Mathlib.MeasureTheory.Group.Action
@@ -4404,7 +4411,9 @@ import Mathlib.Topology.LocallyClosed
 import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.LocallyFinite
-import Mathlib.Topology.Maps
+import Mathlib.Topology.Maps.Basic
+import Mathlib.Topology.Maps.Proper.Basic
+import Mathlib.Topology.Maps.Proper.UniversallyClosed
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.MetricSpace.Antilipschitz
 import Mathlib.Topology.MetricSpace.Basic
@@ -4487,7 +4496,6 @@ import Mathlib.Topology.Partial
 import Mathlib.Topology.PartialHomeomorph
 import Mathlib.Topology.PartitionOfUnity
 import Mathlib.Topology.Perfect
-import Mathlib.Topology.ProperMap
 import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.RestrictGenTopology
 import Mathlib.Topology.Semicontinuous

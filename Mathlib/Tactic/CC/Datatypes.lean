@@ -132,7 +132,6 @@ structure CCConfig where
   /-- If `true`, we treat values as atomic symbols -/
   values : Bool := false
   deriving Inhabited
-#align cc_config Mathlib.Tactic.CC.CCConfig
 
 /-- An `ACApps` represents either just an `Expr` or applications of an associative and commutative
   binary operator. -/
@@ -477,9 +476,6 @@ structure CCState extends CCConfig where
       it is compared with the modification time of a cc_entry in e-matching. See `CCState.mt`. -/
   gmt : Nat := 0
   deriving Inhabited
-#align cc_state Mathlib.Tactic.CC.CCState
-#align cc_state.inconsistent Mathlib.Tactic.CC.CCState.inconsistent
-#align cc_state.gmt Mathlib.Tactic.CC.CCState.gmt
 
 attribute [inherit_doc SubsingletonReprs] CCState.subsingletonReprs
 
@@ -508,7 +504,6 @@ def root (ccs : CCState) (e : Expr) : Expr :=
   match ccs.entries.find? e with
   | some n => n.root
   | none => e
-#align cc_state.root Mathlib.Tactic.CC.CCState.root
 
 /-- Get the next element in the equivalence class.
 Note that if the given `Expr` `e` is not in the graph then it will just return `e`. -/
@@ -516,14 +511,12 @@ def next (ccs : CCState) (e : Expr) : Expr :=
   match ccs.entries.find? e with
   | some n => n.next
   | none => e
-#align cc_state.next Mathlib.Tactic.CC.CCState.next
 
 /-- Check if `e` is the root of the congruence class. -/
 def isCgRoot (ccs : CCState) (e : Expr) : Bool :=
   match ccs.entries.find? e with
   | some n => e == n.cgRoot
   | none => true
-#align cc_state.is_cg_root Mathlib.Tactic.CC.CCState.isCgRoot
 
 /--
 "Modification Time". The field `mt` is used to implement the mod-time optimization introduced by the
@@ -535,14 +528,12 @@ def mt (ccs : CCState) (e : Expr) : Nat :=
   match ccs.entries.find? e with
   | some n => n.mt
   | none => ccs.gmt
-#align cc_state.mt Mathlib.Tactic.CC.CCState.mt
 
 /-- Is the expression in an equivalence class with only one element (namely, itself)? -/
 def inSingletonEqc (ccs : CCState) (e : Expr) : Bool :=
   match ccs.entries.find? e with
   | some it => it.next == e
   | none => true
-#align cc_state.in_singlenton_eqc Mathlib.Tactic.CC.CCState.inSingletonEqc
 
 /-- Append to `roots` all the roots of equivalence classes in `ccs`.
 
@@ -622,7 +613,6 @@ def ppEqc (ccs : CCState) (e : Expr) : MessageData := Id.run do
   until it == e
   let l := lr.reverse
   return bracket "{" (group <| joinSep l (ofFormat ("," ++ .line))) "}"
-#align cc_state.pp_eqc Mathlib.Tactic.CC.CCState.ppEqc
 
 /-- Pretty print the entire cc graph.
 If the `nonSingleton` argument is set to `true` then singleton equivalence classes will be
@@ -632,7 +622,6 @@ def ppEqcs (ccs : CCState) (nonSingleton : Bool := true) : MessageData :=
   let a := roots.map (fun root => ccs.ppEqc root)
   let l := a.toList
   bracket "{" (group <| joinSep l (ofFormat ("," ++ .line))) "}"
-#align cc_state.pp_core Mathlib.Tactic.CC.CCState.ppEqcs
 
 def ppParentOccsAux (ccs : CCState) (e : Expr) : MessageData :=
   match ccs.parents.find? e with

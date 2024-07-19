@@ -5,8 +5,6 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
 
-#align_import data.rbmap.basic from "leanprover-community/mathlib"@"d13b3a4a392ea7273dfa4727dbd1892e26cfd518"
-
 /-!
 # Porting note: essentially already ported to std4
 

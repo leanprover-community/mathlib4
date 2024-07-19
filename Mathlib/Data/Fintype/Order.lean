@@ -7,8 +7,6 @@ import Mathlib.Data.Finset.Order
 import Mathlib.Order.Atoms
 import Mathlib.Data.Set.Finite
 
-#align_import data.fintype.order from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
-
 /-!
 # Order structures on finite types
 
@@ -60,7 +58,6 @@ variable (α) [Nonempty α]
 abbrev toOrderBot [SemilatticeInf α] : OrderBot α where
   bot := univ.inf' univ_nonempty id
   bot_le a := inf'_le _ <| mem_univ a
-#align fintype.to_order_bot Fintype.toOrderBot
 
 -- See note [reducible non-instances]
 /-- Constructs the `⊤` of a finite nonempty `SemilatticeSup` -/
@@ -68,13 +65,11 @@ abbrev toOrderTop [SemilatticeSup α] : OrderTop α where
   top := univ.sup' univ_nonempty id
   -- Porting note: needed to make `id` explicit
   le_top a := le_sup' id <| mem_univ a
-#align fintype.to_order_top Fintype.toOrderTop
 
 -- See note [reducible non-instances]
 /-- Constructs the `⊤` and `⊥` of a finite nonempty `Lattice`. -/
 abbrev toBoundedOrder [Lattice α] : BoundedOrder α :=
   { toOrderBot α, toOrderTop α with }
-#align fintype.to_bounded_order Fintype.toBoundedOrder
 
 end Nonempty
 
@@ -95,7 +90,6 @@ noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : Complete
   sSup_le := fun s _ ha => Finset.sup_le fun b hb => ha _ <| Set.mem_toFinset.mp hb
   sInf_le := fun _ _ ha => Finset.inf_le (Set.mem_toFinset.mpr ha)
   le_sInf := fun s _ ha => Finset.le_inf fun b hb => ha _ <| Set.mem_toFinset.mp hb
-#align fintype.to_complete_lattice Fintype.toCompleteLattice
 
 -- Porting note: `convert` doesn't work as well as it used to.
 -- See note [reducible non-instances]
@@ -113,21 +107,18 @@ noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder 
     rw [Finset.sup_eq_iSup]
     simp_rw [Set.mem_toFinset]
     rfl
-#align fintype.to_complete_distrib_lattice Fintype.toCompleteDistribLattice
 
 -- See note [reducible non-instances]
 /-- A finite bounded linear order is complete. -/
 noncomputable abbrev toCompleteLinearOrder
     [LinearOrder α] [BoundedOrder α] : CompleteLinearOrder α :=
   { toCompleteLattice α, ‹LinearOrder α›, LinearOrder.toBiheytingAlgebra with }
-#align fintype.to_complete_linear_order Fintype.toCompleteLinearOrder
 
 -- See note [reducible non-instances]
 /-- A finite boolean algebra is complete. -/
 noncomputable abbrev toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBooleanAlgebra α where
   __ := ‹BooleanAlgebra α›
   __ := Fintype.toCompleteDistribLattice α
-#align fintype.to_complete_boolean_algebra Fintype.toCompleteBooleanAlgebra
 
 -- See note [reducible non-instances]
 /-- A finite boolean algebra is complete and atomic. -/
@@ -146,7 +137,6 @@ variable (α) [Nonempty α]
 `Fintype.toCompleteLattice` instead, as this gives definitional equality for `⊥` and `⊤`. -/
 noncomputable abbrev toCompleteLatticeOfNonempty [Lattice α] : CompleteLattice α :=
   @toCompleteLattice _ _ _ <| @toBoundedOrder α _ ⟨Classical.arbitrary α⟩ _
-#align fintype.to_complete_lattice_of_nonempty Fintype.toCompleteLatticeOfNonempty
 
 -- See note [reducible non-instances]
 /-- A nonempty finite linear order is complete. If the linear order is already a `BoundedOrder`,
@@ -155,7 +145,6 @@ then use `Fintype.toCompleteLinearOrder` instead, as this gives definitional equ
 noncomputable abbrev toCompleteLinearOrderOfNonempty [LinearOrder α] : CompleteLinearOrder α := by
   let _ := toBoundedOrder α
   exact { toCompleteLatticeOfNonempty α, ‹LinearOrder α›, LinearOrder.toBiheytingAlgebra with }
-#align fintype.to_complete_linear_order_of_nonempty Fintype.toCompleteLinearOrderOfNonempty
 
 end Nonempty
 
@@ -188,13 +177,11 @@ theorem Directed.finite_le (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := 
   classical
     obtain ⟨z, hz⟩ := D.finite_set_le (Set.finite_range g)
     exact ⟨z, fun i => hz (g i) ⟨i, rfl⟩⟩
-#align directed.fintype_le Directed.finite_le
 
 variable [Nonempty α] [Preorder α]
 
 theorem Finite.exists_le [IsDirected α (· ≤ ·)] (f : β → α) : ∃ M, ∀ i, f i ≤ M :=
   directed_id.finite_le _
-#align fintype.exists_le Finite.exists_le
 
 theorem Finite.exists_ge [IsDirected α (· ≥ ·)] (f : β → α) : ∃ M, ∀ i, M ≤ f i :=
   directed_id.finite_le (r := (· ≥ ·)) _
@@ -212,7 +199,6 @@ theorem Finite.bddAbove_range [IsDirected α (· ≤ ·)] (f : β → α) : BddA
   refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
-#align fintype.bdd_above_range Finite.bddAbove_range
 
 theorem Finite.bddBelow_range [IsDirected α (· ≥ ·)] (f : β → α) : BddBelow (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_ge f
