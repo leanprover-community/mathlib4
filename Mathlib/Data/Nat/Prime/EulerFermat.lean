@@ -27,13 +27,7 @@ theorem pow_of_pow_add_prime (a n : ℕ) (ha : 1 < a) (hn : 1 < n) (hP : Nat.Pri
   rw [h, mul_one]
 
 theorem not_all_pow_pow_add_prime : ¬ ∀ n : ℕ, Nat.Prime (2 ^ (2 ^ n) + 1) := by
-  intro h
-  specialize h 5
-  norm_num at h
-  have : 4294967297 = 641 * 6700417 := by norm_num
-  rw [this] at h
-  have h' : ¬ Nat.Prime (641 * 6700417) := by
-    apply Nat.not_prime_mul
-    norm_num
-    norm_num
-  exact h' h
+  rw [not_forall]
+  use 5
+  have : 641 * 6700417 = 2 ^ 2 ^ 5 + 1 := by norm_num
+  apply Nat.not_prime_mul' this <;> norm_num
