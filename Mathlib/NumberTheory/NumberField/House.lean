@@ -93,7 +93,7 @@ theorem canonicalEmbedding_eq_basisMatrix_mulVec : canonicalEmbedding K α = (ba
     Finsupp.mapDomain_equiv_apply, Equiv.symm_symm, Pi.smul_apply, smul_eq_mul]
 
 theorem inverse_basisMatrix_mulVec_eq_repr :
-  (basisMatrix K)⁻¹.mulVec (fun j => canonicalEmbedding K (algebraMap (𝓞 K) K α) j) i =
+    (basisMatrix K)⁻¹.mulVec (fun j => canonicalEmbedding K (algebraMap (𝓞 K) K α) j) i =
       ((integralBasis K).reindex (equivReindex K).symm).repr α i := by
   rw [inv_mulVec_eq_vec (canonicalEmbedding_eq_basisMatrix_mulVec K)]
 
@@ -106,7 +106,7 @@ theorem c_nonneg : 0 ≤ c K := by
   exact ⟨by simp only [Nat.cast_nonneg], norm_nonneg (basisMatrix K)⁻¹⟩
 
 theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) :
-  ∀ i, Complex.abs (((integralBasis K).reindex (equivReindex K).symm).repr α i) ≤
+    ∀ i, Complex.abs (((integralBasis K).reindex (equivReindex K).symm).repr α i) ≤
       (c K) * house (algebraMap (𝓞 K) K α) := fun i => by
   let σ := canonicalEmbedding K
   calc
