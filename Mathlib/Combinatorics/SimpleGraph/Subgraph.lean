@@ -12,7 +12,7 @@ import Mathlib.Combinatorics.SimpleGraph.Maps
 # Subgraphs of a simple graph
 
 A subgraph of a simple graph consists of subsets of the graph's vertices and edges such that the
-endpoints of each edge are present in th677fe932f39338d7f51ac66dfb1aa73682e95860se vertex subset. The edge subset is formalized as a
+endpoints of each edge are present in the vertex subset. The edge subset is formalized as a
 sub-relation of the adjacency relation of the simple graph.
 
 ## Main definitions
