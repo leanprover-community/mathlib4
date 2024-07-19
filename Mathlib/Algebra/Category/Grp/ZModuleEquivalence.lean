@@ -5,8 +5,6 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 
-#align_import algebra.category.Group.Z_Module_equivalence from "leanprover-community/mathlib"@"bf1b813e20e108e8868341ca94bb3404a2506ae5"
-
 /-!
 The forgetful functor from ℤ-modules to additive commutative groups is
 an equivalence of categories.
@@ -37,8 +35,6 @@ instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) AddCommGrp.{u}
         (fun n x => by
           convert AddMonoidHom.map_zsmul (show A.carrier →+ B.carrier from f) x n <;>
             ext <;> apply int_smul_eq_zsmul), rfl⟩
-set_option linter.uppercaseLean3 false in
-#align Module.forget₂_AddCommGroup_full ModuleCat.forget₂_addCommGroup_full
 
 /-- The forgetful functor from `ℤ` modules to `AddCommGrp` is essentially surjective. -/
 instance forget₂_addCommGrp_essSurj : (forget₂ (ModuleCat ℤ) AddCommGrp.{u}).EssSurj where
@@ -46,12 +42,8 @@ instance forget₂_addCommGrp_essSurj : (forget₂ (ModuleCat ℤ) AddCommGrp.{u
     ⟨ModuleCat.of ℤ A,
       ⟨{  hom := 𝟙 A
           inv := 𝟙 A }⟩⟩
-set_option linter.uppercaseLean3 false in
-#align Module.forget₂_AddCommGroup_ess_surj ModuleCat.forget₂_addCommGrp_essSurj
 
 noncomputable instance forget₂AddCommGroupIsEquivalence :
     (forget₂ (ModuleCat ℤ) AddCommGrp.{u}).IsEquivalence where
-set_option linter.uppercaseLean3 false in
-#align Module.forget₂_AddCommGroup_is_equivalence ModuleCat.forget₂AddCommGroupIsEquivalence
 
 end ModuleCat

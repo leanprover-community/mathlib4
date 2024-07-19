@@ -6,8 +6,6 @@ Authors: Aaron Anderson
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.Valuation.Basic
 
-#align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
-
 /-!
 # Valuations on Hahn Series rings
 If `Γ` is a `LinearOrderedCancelAddCommMonoid` and `R` is a domain, then the domain `HahnSeries Γ R`
@@ -25,7 +23,6 @@ admits an additive valuation given by `orderTop`.
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 
-set_option linter.uppercaseLean3 false
 
 noncomputable section
 
@@ -47,24 +44,20 @@ def addVal : AddValuation (HahnSeries Γ R) (WithTop Γ) :=
     rw [← order_eq_orderTop_of_ne hx, ← order_eq_orderTop_of_ne hy,
       ← order_eq_orderTop_of_ne (mul_ne_zero hx hy), ← WithTop.coe_add, WithTop.coe_eq_coe,
       order_mul hx hy]
-#align hahn_series.add_val HahnSeries.addVal
 
 variable {Γ} {R}
 
 theorem addVal_apply {x : HahnSeries Γ R} :
     addVal Γ R x = x.orderTop :=
   AddValuation.of_apply _
-#align hahn_series.add_val_apply HahnSeries.addVal_apply
 
 @[simp]
 theorem addVal_apply_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) : addVal Γ R x = x.order :=
   addVal_apply.trans (order_eq_orderTop_of_ne hx).symm
-#align hahn_series.add_val_apply_of_ne HahnSeries.addVal_apply_of_ne
 
 theorem addVal_le_of_coeff_ne_zero {x : HahnSeries Γ R} {g : Γ} (h : x.coeff g ≠ 0) :
     addVal Γ R x ≤ g :=
   orderTop_le_of_coeff_ne_zero h
-#align hahn_series.add_val_le_of_coeff_ne_zero HahnSeries.addVal_le_of_coeff_ne_zero
 
 end Valuation
 

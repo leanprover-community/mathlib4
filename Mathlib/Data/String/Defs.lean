@@ -7,8 +7,6 @@ import Batteries.Data.List.Basic
 import Batteries.Data.String.Basic
 import Mathlib.Mathport.Rename
 
-#align_import data.string.defs from "leanprover-community/mathlib"@"e7131068d9696deec51e6cd7668b6d9ac69af6a4"
-
 /-!
 # Definitions for `String`
 
@@ -16,12 +14,6 @@ This file defines a bunch of functions for the `String` datatype.
 -/
 
 namespace String
-
-#align string.split_on String.splitOn
-#align string.is_prefix_of String.isPrefixOf
-#align string.starts_with String.startsWith
-#align string.ends_with String.endsWith
-#align string.is_nat String.isNat
 
 /-- Pad `s : String` with repeated occurrences of `c : Char` until it's of length `n`.
   If `s` is initially larger than `n`, just return `s`. -/
@@ -52,16 +44,11 @@ def IsSuffix : String → String → Prop
 then reassembles the string by intercalating the separator token `c` over the mapped tokens. -/
 def mapTokens (c : Char) (f : String → String) : String → String :=
   intercalate (singleton c) ∘ List.map f ∘ (·.split (· = c))
-#align string.map_tokens String.mapTokens
 
 @[deprecated (since := "2024-06-04")] alias getRest := dropPrefix?
-#align string.get_rest String.dropPrefix?
-
-#align string.popn String.drop
 
 /-- Produce the head character from the string `s`, if `s` is not empty, otherwise `'A'`. -/
 def head (s : String) : Char :=
   s.iter.curr
-#align string.head String.head
 
 end String
