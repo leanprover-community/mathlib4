@@ -193,8 +193,7 @@ def map (α : F ⟶ G) : Grothendieck F ⥤ Grothendieck G where
     simp
 
 theorem map_obj {α : F ⟶ G} (X : Grothendieck F) :
-    (Grothendieck.map α).obj X = ⟨X.base, (α.app X.base).obj X.fiber⟩ := by
-  rfl
+    (Grothendieck.map α).obj X = ⟨X.base, (α.app X.base).obj X.fiber⟩ := rfl
 
 theorem map_map {α : F ⟶ G} {X Y : Grothendieck F} {f : X ⟶ Y} :
     (Grothendieck.map α).map f =
