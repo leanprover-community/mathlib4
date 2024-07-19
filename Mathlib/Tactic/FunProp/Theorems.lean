@@ -7,6 +7,7 @@ import Mathlib.Tactic.FunProp.Decl
 import Mathlib.Tactic.FunProp.Types
 import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Tactic.FunProp.RefinedDiscrTree
+import Batteries.Data.RBMap.Alter
 
 /-!
 ## `fun_prop` environment extensions storing theorems for `fun_prop`

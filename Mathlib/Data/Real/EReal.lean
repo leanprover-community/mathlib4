@@ -728,6 +728,34 @@ theorem coe_ennreal_nsmul (n : ℕ) (x : ℝ≥0∞) : (↑(n • x) : EReal) = 
 #noalign ereal.coe_ennreal_bit0
 #noalign ereal.coe_ennreal_bit1
 
+/-! ### nat coercion -/
+
+theorem coe_coe_eq_natCast (n : ℕ) : (n : ℝ) = (n : EReal) := rfl
+
+theorem natCast_ne_bot (n : ℕ) : (n : EReal) ≠ ⊥ := Ne.symm (ne_of_beq_false rfl)
+
+theorem natCast_ne_top (n : ℕ) : (n : EReal) ≠ ⊤ := Ne.symm (ne_of_beq_false rfl)
+
+@[simp, norm_cast]
+theorem natCast_eq_iff {m n : ℕ} : (m : EReal) = (n : EReal) ↔ m = n := by
+  rw [← coe_coe_eq_natCast n, ← coe_coe_eq_natCast m, EReal.coe_eq_coe_iff, Nat.cast_inj]
+
+theorem natCast_ne_iff {m n : ℕ} : (m : EReal) ≠ (n : EReal) ↔ m ≠ n :=
+  not_iff_not.2 natCast_eq_iff
+
+@[simp, norm_cast]
+theorem natCast_le_iff {m n : ℕ} : (m : EReal) ≤ (n : EReal) ↔ m ≤ n := by
+  rw [← coe_coe_eq_natCast n, ← coe_coe_eq_natCast m, EReal.coe_le_coe_iff, Nat.cast_le]
+
+@[simp, norm_cast]
+theorem natCast_lt_iff {m n : ℕ} : (m : EReal) < (n : EReal) ↔ m < n := by
+  rw [← coe_coe_eq_natCast n, ← coe_coe_eq_natCast m, EReal.coe_lt_coe_iff, Nat.cast_lt]
+
+@[simp, norm_cast]
+theorem natCast_mul (m n : ℕ) :
+    (m * n : ℕ) = (m : EReal) * (n : EReal) := by
+  rw [← coe_coe_eq_natCast, ← coe_coe_eq_natCast, ← coe_coe_eq_natCast, Nat.cast_mul, EReal.coe_mul]
+
 /-! ### Order -/
 
 theorem exists_rat_btwn_of_lt :
@@ -1619,6 +1647,12 @@ lemma inv_neg_of_neg_ne_bot {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : a⁻¹ < 
 lemma div_eq_inv_mul (a b : EReal) : a / b = b⁻¹ * a := EReal.mul_comm a b⁻¹
 
 lemma coe_div (a b : ℝ) : (a / b : ℝ) = (a : EReal) / (b : EReal) := rfl
+
+theorem natCast_div_le (m n : ℕ) :
+    (m / n : ℕ) ≤ (m : EReal) / (n : EReal) := by
+  rw [← coe_coe_eq_natCast, ← coe_coe_eq_natCast, ← coe_coe_eq_natCast, ← coe_div,
+    EReal.coe_le_coe_iff]
+  exact Nat.cast_div_le
 
 @[simp]
 lemma div_bot {a : EReal} : a / ⊥ = 0 := inv_bot ▸ mul_zero a

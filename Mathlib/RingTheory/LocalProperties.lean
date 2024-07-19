@@ -377,6 +377,14 @@ theorem surjective_localRingHom_of_surjective (h : Function.Surjective f) (P : I
     (Submonoid.map_comap_eq_of_surjective h P.primeCompl).symm ▸ Localization.isLocalization
   localizationPreserves_surjective _ _ _ _ h
 
+lemma surjective_respectsIso : RingHom.RespectsIso (fun f ↦ Function.Surjective f) := by
+  apply RingHom.StableUnderComposition.respectsIso
+  · intro R S T _ _ _ f g hf hg
+    simp only [RingHom.coe_comp]
+    exact Function.Surjective.comp hg hf
+  · intro R S _ _ e
+    exact EquivLike.surjective e
+
 end Surjective
 
 section Finite
