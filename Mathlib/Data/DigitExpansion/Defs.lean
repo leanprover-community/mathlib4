@@ -78,7 +78,7 @@ variable {Z : Type*} [LT Z] {b : ℕ}
   [∀ (f g : DigitExpansion Z b) z, Decidable (∃ x > z, f x < g x ∧ ∀ y < x, z < y → f y ≤ g y)]
   (f g : DigitExpansion Z b)
 
-/-- Difference carry as an auxialiary function for defining subtraction. -/
+/-- Difference carry as an auxiliary function for defining subtraction. -/
 def difcar : Z → Fin (b + 1) := fun z =>
   if ∃ x > z, f x < g x ∧ ∀ y < x, z < y → f y ≤ g y then 1 else 0
 
