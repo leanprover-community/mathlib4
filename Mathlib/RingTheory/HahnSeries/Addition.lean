@@ -8,8 +8,6 @@ import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.RingTheory.HahnSeries.Basic
 
-#align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
-
 /-!
 # Additive properties of Hahn series
 If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of formal series over `Γ` with
@@ -68,24 +66,6 @@ theorem add_coeff' {x y : HahnSeries Γ R} : (x + y).coeff = x.coeff + y.coeff :
 
 theorem add_coeff {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a + y.coeff a :=
   rfl
-
-@[simp]
-theorem nsmul_coeff {x : HahnSeries Γ R} {n : ℕ} : (n • x).coeff = n • x.coeff := by
-  induction n with
-  | zero => simp
-  | succ n ih => simp [add_nsmul, ih]
-
-theorem add_coeffTop {x y : HahnSeries Γ R} {a : WithTop Γ} :
-    (x + y).coeffTop a = x.coeffTop a + y.coeffTop a := by
-  match a with
-  | ⊤ => simp
-  | (a : Γ) => simp
-
-@[simp]
-theorem add_coeffTop' {x y : HahnSeries Γ R} :
-    (x + y).coeffTop = x.coeffTop + y.coeffTop := by
-  ext
-  exact add_coeffTop
 
 @[simp]
 theorem nsmul_coeff {x : HahnSeries Γ R} {n : ℕ} : (n • x).coeff = n • x.coeff := by
@@ -239,7 +219,6 @@ theorem single_add {g : Γ} {a b : R} : single g (a + b) = single g a + single g
 def single.addMonoidHom (a : Γ) : R →+ HahnSeries Γ R :=
   { single a with
     map_add' := fun _ _ => single_add }
-#align hahn_series.single.add_monoid_hom HahnSeries.single.addMonoidHom
 
 /-- `coeff g` as an additive monoid/group homomorphism -/
 @[simps]
@@ -326,12 +305,6 @@ theorem sub_coeff' {x y : HahnSeries Γ R} : (x - y).coeff = x.coeff - y.coeff :
 
 theorem sub_coeff {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a - y.coeff a := by
   simp
-
-@[simp]
-theorem zsmul_coeff {x : HahnSeries Γ R} {n : ℤ} : (n • x).coeff = n • x.coeff := by
-  cases n with
-  | ofNat n => simp_all only [Int.ofNat_eq_coe, natCast_zsmul, nsmul_coeff]
-  | negSucc _ => simp_all only [negSucc_zsmul, neg_coeff', nsmul_coeff]
 
 @[simp]
 theorem zsmul_coeff {x : HahnSeries Γ R} {n : ℤ} : (n • x).coeff = n • x.coeff := by
@@ -471,34 +444,6 @@ def single.linearMap (a : Γ) : V →ₗ[R] HahnSeries Γ V :=
 @[simps]
 def coeff.linearMap (g : Γ) : HahnSeries Γ V →ₗ[R] V :=
   { coeff.addMonoidHom g with map_smul' := fun _ _ => rfl }
-
-/-- `ofIterate` as a linear map. -/
-@[simps]
-def ofIterate.linearMap {Γ' : Type*} [PartialOrder Γ'] :
-    HahnSeries Γ (HahnSeries Γ' V) →ₗ[R] HahnSeries (Γ ×ₗ Γ') V where
-  toFun := ofIterate
-  map_add' := by
-    intro _ _
-    ext _
-    simp only [ofIterate, add_coeff', Pi.add_apply]
-  map_smul' := by
-    intro _ _
-    ext _
-    simp only [ofIterate, RingHom.id_apply, smul_coeff]
-
-/-- `toIterate` as a linear map. -/
-@[simps]
-def toIterate.linearMap {Γ' : Type*} [PartialOrder Γ'] :
-    HahnSeries (Γ ×ₗ Γ') V →ₗ[R] HahnSeries Γ (HahnSeries Γ' V) where
-  toFun := toIterate
-  map_add' := by
-    intro _ _
-    ext _
-    simp only [toIterate, add_coeff', Pi.add_apply]
-  map_smul' := by
-    intro _ _
-    ext _
-    simp only [toIterate, RingHom.id_apply, smul_coeff]
 
 /-- `ofIterate` as a linear map. -/
 @[simps]

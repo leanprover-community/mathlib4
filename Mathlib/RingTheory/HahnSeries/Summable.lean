@@ -6,9 +6,6 @@ Authors: Aaron Anderson, Scott Carnahan
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.PowerSeries.Basic
 
-
-#align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
-
 /-!
 # Summable families of Hahn Series
 We introduce a notion of formal summability for families of Hahn series, and define a formal sum
@@ -306,46 +303,6 @@ theorem hsum_equiv (e : α ≃ β) (s : SummableFamily Γ R α) : (Equiv e s).hs
   simp only [hsum_coeff, Equiv_toFun]
   exact finsum_eq_of_bijective e.symm (Equiv.bijective e.symm) fun x => rfl
 
-theorem hsum_coeff_sum {s : SummableFamily Γ R α} {g : Γ} :
-    s.hsum.coeff g = ∑ i ∈ (s.coeff g).support, (s i).coeff g := by
-  simp [finsum_eq_sum _ (s.finite_co_support _)]
-
-theorem hsum_coeff_subset_sum {s : SummableFamily Γ R α} {g : Γ} {t : Finset α}
-    (h : { a | (s a).coeff g ≠ 0 } ⊆ t) : s.hsum.coeff g = ∑ i ∈ t, (s i).coeff g := by
-  rw [hsum_coeff_sum]
-  refine sum_subset (Set.Finite.toFinset_subset.mpr h) ?_
-  simp_all
-
-/-- The summable family made of a single Hahn series. -/
-@[simps]
-def single (x : HahnSeries Γ R) : SummableFamily Γ R Unit where
-  toFun _ := x
-  isPWO_iUnion_support' :=
-    Eq.mpr (congrArg (fun s ↦ s.IsPWO) (Set.iUnion_const x.support)) x.isPWO_support
-  finite_co_support' g := Set.toFinite {a | ((fun _ ↦ x) a).coeff g ≠ 0}
-
-@[simp]
-theorem hsum_single (x : HahnSeries Γ R) : (single x).hsum = x := by
-  ext g
-  simp only [hsum_coeff, single_toFun, finsum_unique]
-
-/-- A summable family induced by an equivalence of the parametrizing type. -/
-@[simps]
-def Equiv (e : α ≃ β) (s : SummableFamily Γ R α) : SummableFamily Γ R β where
-  toFun b := s (e.symm b)
-  isPWO_iUnion_support' := by
-    refine Set.IsPWO.mono s.isPWO_iUnion_support fun g => ?_
-    simp only [Set.mem_iUnion, mem_support, ne_eq, forall_exists_index]
-    exact fun b hg => Exists.intro (e.symm b) hg
-  finite_co_support' g :=
-    (Equiv.set_finite_iff e.subtypeEquivOfSubtype').mp <| s.finite_co_support' g
-
-@[simp]
-theorem hsum_equiv (e : α ≃ β) (s : SummableFamily Γ R α) : (Equiv e s).hsum = s.hsum := by
-  ext g
-  simp only [hsum_coeff, Equiv_toFun]
-  exact finsum_eq_of_bijective e.symm (Equiv.bijective e.symm) fun x => rfl
-
 end AddCommMonoid
 
 section AddCommGroup
@@ -387,7 +344,7 @@ end AddCommGroup
 
 section SMul
 
-variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [MonoVAddReflectLE Γ Γ'] [AddCommMonoid V]
+variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [AddCommMonoid V]
 
 theorem smul_support_subset_prod [AddCommMonoid R] [SMulWithZero R V] (s : SummableFamily Γ R α)
     (t : SummableFamily Γ' V β) (gh : Γ × Γ') :
@@ -530,7 +487,7 @@ end SMul
 section Semiring
 
 variable {Γ' : Type*} [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ'] [AddAction Γ Γ']
-  [MonoVAddReflectLE Γ Γ'] [Semiring R] [AddCommMonoid V] [Module R V] {α : Type*}
+  [IsOrderedCancelVAdd Γ Γ'] [Semiring R] [AddCommMonoid V] [Module R V] {α : Type*}
 
 instance : Module (HahnSeries Γ R) (SummableFamily Γ' V α) where
   smul := (· • ·)

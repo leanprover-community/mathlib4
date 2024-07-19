@@ -144,7 +144,7 @@ end Coeff
 section Module
 
 variable {Γ Γ' : Type*} [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ'] [AddAction Γ Γ']
-  [MonoVAddReflectLE Γ Γ'] {R : Type*} [CommRing R] {V W : Type*} [AddCommGroup V]
+  [IsOrderedCancelVAdd Γ Γ'] {R : Type*} [CommRing R] {V W : Type*} [AddCommGroup V]
   [Module R V] [AddCommGroup W] [Module R W]
 
 /-- The scalar multiplication of Hahn series on heterogeneous vertex operators. -/

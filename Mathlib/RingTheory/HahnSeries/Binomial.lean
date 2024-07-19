@@ -8,8 +8,6 @@ import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.RingTheory.Binomial
 
-#align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
-
 /-!
 # Hahn Series
 We introduce binomial expansions using `embDomain`.
