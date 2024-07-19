@@ -488,6 +488,12 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
   have h_eqOn := eqOn_of_cfc_eq_cfc (ha := IsSelfAdjoint.star_mul_self b) h_eq_a_neg
   simpa [sup_eq_left.mpr hx'.le] using h_eqOn hx
 
+lemma IsSelfAdjoint.coe_mem_spectrum_complex {A : Type*} [TopologicalSpace A] [Ring A]
+    [StarRing A] [Algebra ℂ A] [ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop)]
+    {a : A} {x : ℝ} (ha : IsSelfAdjoint a := by cfc_tac) :
+    (x : ℂ) ∈ spectrum ℂ a ↔ x ∈ spectrum ℝ a := by
+  simp [← ha.spectrumRestricts.algebraMap_image]
+
 end SpectrumRestricts
 
 section NonnegSpectrumClass
@@ -510,6 +516,14 @@ instance CstarRing.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A :=
       rw [← SpectrumRestricts.nnreal_iff] at hx hy ⊢
       rw [← StarOrderedRing.nonneg_iff] at x_mem y_mem
       exact hx.nnreal_add (.of_nonneg x_mem) (.of_nonneg y_mem) hy
+
+open ComplexOrder in
+instance CstarRing.instNonnegSpectrumClassComplexUnital : NonnegSpectrumClass ℂ A where
+  quasispectrum_nonneg_of_nonneg a ha x := by
+    rw [mem_quasispectrum_iff]
+    refine (Or.elim · ge_of_eq fun hx ↦ ?_)
+    obtain ⟨y, hy, rfl⟩ := (IsSelfAdjoint.of_nonneg ha).spectrumRestricts.algebraMap_image ▸ hx
+    simpa using spectrum_nonneg_of_nonneg ha hy
 
 end NonnegSpectrumClass
 
