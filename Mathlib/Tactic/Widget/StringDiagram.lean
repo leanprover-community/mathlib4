@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
 import ProofWidgets.Component.PenroseDiagram
-import ProofWidgets.Presentation.Expr
 import Mathlib.Tactic.CategoryTheory.Monoidal
 
 /-!
@@ -190,158 +189,98 @@ def Strand.toPenroseVar (s : Strand) : PenroseVar :=
 
 /-! ## Widget for general string diagrams -/
 
-open ProofWidgets Penrose
-
--- TODO: Make a PR on ProofWidget4 about the contents of this section.
-section DiagramBuilderM
-
-/-! # `DiagramBuilderM` -/
-
-/-- A monad to easily build Penrose diagrams in. -/
-abbrev DiagramBuilderM (m : Type → Type) := StateT DiagramState m
-
-namespace DiagramBuilderM
-
-variable {m : Type → Type}
-
-open scoped Jsx in
-/-- Assemble the diagram using the provided domain and style programs.
-
-`none` is returned iff nothing was added to the diagram. -/
-def buildDiagram [Monad m] (dsl sty : String) (maxOptSteps : Nat := 500) :
-    DiagramBuilderM m (Option Html) := do
-  let st ← get
-  if st.sub == "" && st.embeds.isEmpty then
-    return none
-  let mut sub := "AutoLabel All\n"
-  let mut embedHtmls := #[]
-  for (n, (tp, h)) in st.embeds.toArray do
-    sub := sub ++ s!"{tp} {n}\n"
-    embedHtmls := embedHtmls.push (n, h)
-  -- Note: order matters here, embed variables are declared first.
-  sub := sub ++ st.sub
-  return <Diagram
-    embeds={embedHtmls}
-    dsl={dsl} sty={sty} sub={sub}
-    maxOptSteps={maxOptSteps} />
-
-/-- Add an object `nm` of Penrose type `tp`,
-labelled by `h`, to the substance program. -/
-def addEmbed [Monad m] (nm : String) (tp : String) (h : Html) : DiagramBuilderM m Unit := do
-  modify fun st => { st with embeds := st.embeds.insert nm (tp, h) }
-
-open scoped Jsx in
-/-- Add an object of Penrose type `tp`,
-corresponding to (and labelled by) the expression `e`,
-to the substance program.
-Return its Penrose name. -/
-def addExpr [Monad m] [MonadLiftT MetaM m] (tp : String) (e : Expr) : DiagramBuilderM m String := do
-  let nm ← toString <$> Lean.Meta.ppExpr e
-  let h := <InteractiveCode fmt={← Widget.ppExprTagged e} />
-  addEmbed nm tp h
-  return nm
-
-/-- Add an instruction `i` to the substance program. -/
-def addInstruction [Monad m] (i : String) : DiagramBuilderM m Unit := do
-  modify fun st => { st with sub := st.sub ++ s!"{i}\n" }
-
-/-- Run a computation in the `DiagramBuilderM` monad. -/
-def run {α : Type} [Monad m] (x : DiagramBuilderM m α) : m α :=
-  x.run' {}
+open ProofWidgets Penrose DiagramBuilderM Lean.Server
 
 open scoped Jsx in
 /-- Add the variable `v` with the type `tp` to the substance program. -/
-def addPenroseVar [Monad m] [MonadLiftT MetaM m] (tp : String) (v : PenroseVar) :
-    DiagramBuilderM m Unit := do
+def addPenroseVar (tp : String) (v : PenroseVar) :
+    DiagramBuilderM Unit := do
   let h := <InteractiveCode fmt={← Widget.ppExprTagged v.e} />
   addEmbed (toString v) tp h
 
 /-- Add constructor `tp v := nm (vs)` to the substance program. -/
-def addConstructor [Monad m] (tp : String) (v : PenroseVar) (nm : String) (vs : List PenroseVar) :
-    DiagramBuilderM m Unit := do
+def addConstructor (tp : String) (v : PenroseVar) (nm : String) (vs : List PenroseVar) :
+    DiagramBuilderM Unit := do
   let vs' := ", ".intercalate (vs.map (fun v => toString v))
   addInstruction s!"{tp} {v} := {nm} ({vs'})"
-
-end DiagramBuilderM
-
-end DiagramBuilderM
-
-open DiagramBuilderM
 
 open scoped Jsx in
 /-- Construct a string diagram from a Penrose `sub`stance program and expressions `embeds` to
 display as labels in the diagram. -/
-def mkStringDiag (e : Expr) : MonoidalM Html := do
-  DiagramBuilderM.run do
-    let e' := (← eval e).expr
-    let nodes ← e'.nodes
-    let strands ← e'.strands
-    /- Add 2-morphisms. -/
-    for x in nodes.join do
-      match x with
-      | .atom _ => do addPenroseVar "Atom" x.toPenroseVar
-      | .id _ => do addPenroseVar "Id" x.toPenroseVar
-    /- Add constraints. -/
-    for l in nodes do
-      for (x₁, x₂) in pairs l do
-        addInstruction s!"Left({x₁.toPenroseVar}, {x₂.toPenroseVar})"
-    /- Add constraints. -/
-    for (l₁, l₂) in pairs nodes do
-      if let .some x₁ := l₁.head? then
-        if let .some x₂ := l₂.head? then
-          addInstruction s!"Above({x₁.toPenroseVar}, {x₂.toPenroseVar})"
-    /- Add 1-morphisms as strings. -/
-    for l in strands do
-      for s in l do
-        addConstructor "Mor1" s.toPenroseVar
-          "MakeString" [s.startPoint.toPenroseVar, s.endPoint.toPenroseVar]
-    let dsl := include_str ".."/".."/".."/"widget"/"src"/"penrose"/"monoidal.dsl"
-    let sty := include_str ".."/".."/".."/"widget"/"src"/"penrose"/"monoidal.sty"
-    match ← buildDiagram dsl sty with
-    | some html => return html
-    | none => return <span>No 2-morphisms.</span>
+def mkStringDiagram (nodes : List (List Node)) (strands : List (List Strand)) :
+    DiagramBuilderM PUnit := do
+  /- Add 2-morphisms. -/
+  for x in nodes.join do
+    match x with
+    | .atom _ => do addPenroseVar "Atom" x.toPenroseVar
+    | .id _ => do addPenroseVar "Id" x.toPenroseVar
+  /- Add constraints. -/
+  for l in nodes do
+    for (x₁, x₂) in pairs l do
+      addInstruction s!"Left({x₁.toPenroseVar}, {x₂.toPenroseVar})"
+  /- Add constraints. -/
+  for (l₁, l₂) in pairs nodes do
+    if let .some x₁ := l₁.head? then
+      if let .some x₂ := l₂.head? then
+        addInstruction s!"Above({x₁.toPenroseVar}, {x₂.toPenroseVar})"
+  /- Add 1-morphisms as strings. -/
+  for l in strands do
+    for s in l do
+      addConstructor "Mor1" s.toPenroseVar
+        "MakeString" [s.startPoint.toPenroseVar, s.endPoint.toPenroseVar]
 
-/-- Given a 2-morphism, return a string diagram. Otherwise `none`. -/
-def stringM? (e : Expr) : MetaM (Option Html) := do
-  let e ← instantiateMVars e
-  return some <| ← MonoidalM.run (← mkContext e) <| mkStringDiag e
+/-- Penrose dsl file for string diagrams. -/
+def dsl :=
+  include_str ".."/".."/".."/"widget"/"src"/"penrose"/"monoidal.dsl"
 
-/-- Given an equality between 2-morphisms, return a string diagram of the LHS. Otherwise `none`. -/
-def stringLeftM? (e : Expr) : MetaM (Option Html) := do
-  let e ← instantiateMVars e
-  let some (_, lhs, _) := e.eq? | return none
-    return some <| ← MonoidalM.run (← mkContext lhs) <| mkStringDiag lhs
-
-/-- Given an equality between 2-morphisms, return a string diagram of the RHS. Otherwise `none`. -/
-def stringRightM? (e : Expr) : MetaM (Option Html) := do
-  let e ← instantiateMVars e
-  let some (_, _, rhs) := e.eq? | return none
-    return some <| ← MonoidalM.run (← mkContext rhs) <| mkStringDiag rhs
-
-/-- The string diagram widget. -/
-@[expr_presenter]
-def stringPresenter : ExprPresenter where
-  userName := "String diagram"
-  layoutKind := .block
-  present type := do
-    if let some d ← stringM? type then
-      return d
-    throwError "Couldn't find a string diagram."
+/-- Penrose sty file for string diagrams. -/
+def sty :=
+  include_str ".."/".."/".."/"widget"/"src"/"penrose"/"monoidal.sty"
 
 open scoped Jsx in
-/-- The string diagram widget. -/
-@[expr_presenter]
-def stringEqPresenter : ExprPresenter where
-  userName := "Equality of string diagrams"
-  layoutKind := .block
-  present type := do
-    let some d ← stringLeftM? type
-      | throwError "Couldn't find a string diagram."
-    let some e ← stringRightM? type
-      | throwError "Couldn't find a string diagram."
-    return <div className="flex">
-      <div className="w-50">{d}</div>
-      <div className="w-50">{e}</div>
-    </div>
+/-- Construct a string diagram from the expression of a 2-morphism. -/
+def fromExpr (e : Expr) : MonoidalM Html := do
+  let e' := (← eval e).expr
+  DiagramBuilderM.run do
+    mkStringDiagram (← e'.nodes) (← e'.strands)
+    match ← DiagramBuilderM.buildDiagram dsl sty with
+    | some html => return html
+    | none => return <span>No String Diagram.</span>
 
-end Mathlib.Tactic.Widget.StringDiagram
+open scoped Jsx in
+/-- The RPC method for displaying string diagrams. -/
+@[server_rpc_method]
+def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
+  RequestM.asTask do
+    let inner : Option (Html × Html) ← (do
+      if props.goals.isEmpty then
+        return none
+      let some g := props.goals[0]? | unreachable!
+
+      g.ctx.val.runMetaM {} do
+        let md ← g.mvarId.getDecl
+        let lctx := md.lctx
+        Meta.withLCtx lctx md.localInstances do
+          let e : Expr ← g.mvarId.getType
+          let some (_, lhs, rhs) := e.eq? | return none
+          let some ctx ← mkContext lhs | return none
+          MonoidalM.run ctx do
+            return some ⟨← fromExpr lhs, ← fromExpr rhs⟩)
+    match inner with
+    | none => return <span>No String Diagram.</span>
+    | some (lhs, rhs) =>
+      return <div className="flex">
+        <div className="w-50">{lhs}</div>
+        <div className="w-50">{rhs}</div>
+      </div>
+
+end StringDiagram
+
+open ProofWidgets
+
+/-- Display the string diagrams if the goal is an equality of morphisms in a monoidal category. -/
+@[widget_module]
+def StringDiagram : Component PanelWidgetProps :=
+  mk_rpc_widget% StringDiagram.rpc
+
+end Mathlib.Tactic.Widget
