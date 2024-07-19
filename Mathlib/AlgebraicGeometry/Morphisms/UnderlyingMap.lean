@@ -6,8 +6,6 @@ Authors: Andrew Yang
 import Mathlib.Topology.LocalAtTarget
 import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 
-open CategoryTheory
-
 /-!
 
 ## Properties on the underlying functions of morphisms of schemes.
@@ -25,6 +23,8 @@ of the underlying map, including
 
 
 -/
+
+open CategoryTheory
 
 namespace AlgebraicGeometry
 
