@@ -28,7 +28,7 @@ random testing
 * https://hackage.haskell.org/package/QuickCheck
 -/
 
-set_option autoImplicit true
+universe u v
 
 namespace SlimCheck
 
@@ -67,7 +67,7 @@ def getSize : Gen Nat :=
   return (← read).down
 
 /-- Apply a function to the size parameter. -/
-def resize (f : Nat → Nat) (x : Gen α) : Gen α :=
+def resize {α : Type*} (f : Nat → Nat) (x : Gen α) : Gen α :=
   withReader (ULift.up ∘ f ∘ ULift.down) x
 
 variable {α : Type u}
@@ -114,7 +114,7 @@ def prodOf {α : Type u} {β : Type v} (x : Gen α) (y : Gen β) : Gen (α × β
 end Gen
 
 /-- Execute a `Gen` inside the `IO` monad using `size` as the example size-/
-def Gen.run (x : Gen α) (size : Nat) : BaseIO α :=
+def Gen.run {α : Type} (x : Gen α) (size : Nat) : BaseIO α :=
   letI : MonadLift Id BaseIO := ⟨fun f => pure <| Id.run f⟩
   IO.runRand (ReaderT.run x ⟨size⟩:)
 
