@@ -520,15 +520,12 @@ local notation "α'" => {y // y ≠ i}
 
 theorem basic (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
     ⨆ f' : α' → β, ⨆ y : β, s i y ⊓ ⨅ x' : α', (s x' (f' x')) := by
-  -- not a super clean proof, but it works.
   rw [← (Equiv.funSplitAt i β).symm.iSup_comp, iSup_prod, iSup_comm]
   congr!  with f' y
-  rw [iInf_split_single _ i]
-  simp only [ne_eq, Equiv.funSplitAt_symm_apply, ↓reduceDIte]
-  rw [iInf_subtype]
+  rw [iInf_split_single _ i, iInf_subtype]
   congr! with x hx
-  split_ifs
-  rfl
+  · simp
+  · simp [dif_neg hx]
 
 theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // x ≠ i} → 𝕜) :
     ⨆ μ, Submodule.map (⨅ (j: {x // x ≠ i}), eigenspace (T ↑j) (γ j)).subtype
@@ -587,7 +584,7 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
       simp only [ne_eq, Fintype.card_subtype_compl, Fintype.card_ofSubsingleton,
       tsub_lt_self_iff, zero_lt_one, and_true]
       exact Fintype.card_pos
-    have D := H {x // x ≠ i} C (Subtype.restrict (fun x ↦ x ≠ i) T) --maybe we can get rid of restrict here
+    have D := H {x // x ≠ i} C (Subtype.restrict (fun x ↦ x ≠ i) T)
       (fun (i_1 : {x // x ≠ i}) ↦ hT ↑i_1) (fun (i_1 j : { x // x ≠ i }) ↦ hC ↑i_1 ↑j)
     simp only [Submodule.orthogonal_eq_bot_iff] at *
     rw [← index_post_exhaust] at D
