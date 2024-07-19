@@ -6,8 +6,6 @@ Authors: Mario Carneiro, Gabriel Ebner
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Tactic.SplitIfs
 
-#align_import data.nat.cast.defs from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
-
 /-!
 # Cast of natural numbers
 
@@ -30,12 +28,6 @@ variable {R : Type*}
 protected def Nat.unaryCast [One R] [Zero R] [Add R] : ℕ → R
   | 0 => 0
   | n + 1 => Nat.unaryCast n + 1
-#align nat.unary_cast Nat.unaryCast
-
-#align has_nat_cast NatCast
-#align has_nat_cast.nat_cast NatCast.natCast
-
-#align nat.cast Nat.cast
 
 -- the following four declarations are not in mathlib3 and are relevant to the way numeric
 -- literals are handled in Lean 4.
@@ -90,18 +82,9 @@ class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
   natCast_zero : natCast 0 = 0 := by intros; rfl
   /-- The canonical map `ℕ → R` is a homomorphism. -/
   natCast_succ : ∀ n, natCast (n + 1) = natCast n + 1 := by intros; rfl
-#align add_monoid_with_one AddMonoidWithOne
-#align add_monoid_with_one.to_has_nat_cast AddMonoidWithOne.toNatCast
-#align add_monoid_with_one.to_add_monoid AddMonoidWithOne.toAddMonoid
-#align add_monoid_with_one.to_has_one AddMonoidWithOne.toOne
-#align add_monoid_with_one.nat_cast_zero AddMonoidWithOne.natCast_zero
-#align add_monoid_with_one.nat_cast_succ AddMonoidWithOne.natCast_succ
 
 /-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`.  -/
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
-#align add_comm_monoid_with_one AddCommMonoidWithOne
-#align add_comm_monoid_with_one.to_add_monoid_with_one AddCommMonoidWithOne.toAddMonoidWithOne
-#align add_comm_monoid_with_one.to_add_comm_monoid AddCommMonoidWithOne.toAddCommMonoid
 
 library_note "coercion into rings"
 /--
@@ -126,7 +109,6 @@ variable [AddMonoidWithOne R]
 @[simp, norm_cast]
 theorem cast_zero : ((0 : ℕ) : R) = 0 :=
   AddMonoidWithOne.natCast_zero
-#align nat.cast_zero Nat.cast_zero
 
 -- Lemmas about `Nat.succ` need to get a low priority, so that they are tried last.
 -- This is because `Nat.succ _` matches `1`, `3`, `x+1`, etc.
@@ -134,17 +116,14 @@ theorem cast_zero : ((0 : ℕ) : R) = 0 :=
 @[norm_cast 500]
 theorem cast_succ (n : ℕ) : ((succ n : ℕ) : R) = n + 1 :=
   AddMonoidWithOne.natCast_succ _
-#align nat.cast_succ Nat.cast_succ
 
 theorem cast_add_one (n : ℕ) : ((n + 1 : ℕ) : R) = n + 1 :=
   cast_succ _
-#align nat.cast_add_one Nat.cast_add_one
 
 @[simp, norm_cast]
 theorem cast_ite (P : Prop) [Decidable P] (m n : ℕ) :
     ((ite P m n : ℕ) : R) = ite P (m : R) (n : R) := by
   split_ifs <;> rfl
-#align nat.cast_ite Nat.cast_ite
 
 end Nat
 
@@ -153,14 +132,12 @@ namespace Nat
 @[simp, norm_cast]
 theorem cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by
   rw [cast_succ, Nat.cast_zero, zero_add]
-#align nat.cast_one Nat.cast_oneₓ
 
 @[simp, norm_cast]
 theorem cast_add [AddMonoidWithOne R] (m n : ℕ) : ((m + n : ℕ) : R) = m + n := by
   induction n with
   | zero => simp
   | succ n ih => rw [add_succ, cast_succ, ih, cast_succ, add_assoc]
-#align nat.cast_add Nat.cast_addₓ
 
 /-- Computationally friendlier cast than `Nat.unaryCast`, using binary representation. -/
 protected def binCast [Zero R] [One R] [Add R] : ℕ → R
@@ -168,7 +145,6 @@ protected def binCast [Zero R] [One R] [Add R] : ℕ → R
   | n + 1 => if (n + 1) % 2 = 0
     then (Nat.binCast ((n + 1) / 2)) + (Nat.binCast ((n + 1) / 2))
     else (Nat.binCast ((n + 1) / 2)) + (Nat.binCast ((n + 1) / 2)) + 1
-#align nat.bin_cast Nat.binCast
 
 @[simp]
 theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
@@ -188,13 +164,8 @@ theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
         have h1 := Or.resolve_left (Nat.mod_two_eq_zero_or_one (succ k)) h
         rw [h1, Nat.add_comm 1, Nat.succ_mul, Nat.one_mul]
         simp only [Nat.cast_add, Nat.cast_one]
-#align nat.bin_cast_eq Nat.binCast_eq
-
-#noalign nat.cast_bit0
-#noalign nat.cast_bit1
 
 theorem cast_two [AddMonoidWithOne R] : ((2 : ℕ) : R) = (2 : R) := rfl
-#align nat.cast_two Nat.cast_two
 
 attribute [simp, norm_cast] Int.natAbs_ofNat
 
@@ -203,7 +174,6 @@ end Nat
 /-- `AddMonoidWithOne` implementation using unary recursion. -/
 protected abbrev AddMonoidWithOne.unary [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with }
-#align add_monoid_with_one.unary AddMonoidWithOne.unary
 
 /-- `AddMonoidWithOne` implementation using binary recursion. -/
 protected abbrev AddMonoidWithOne.binary [AddMonoid R] [One R] : AddMonoidWithOne R :=
@@ -214,13 +184,11 @@ protected abbrev AddMonoidWithOne.binary [AddMonoid R] [One R] : AddMonoidWithOn
       dsimp only [NatCast.natCast]
       letI : AddMonoidWithOne R := AddMonoidWithOne.unary
       rw [Nat.binCast_eq, Nat.binCast_eq, Nat.cast_succ] }
-#align add_monoid_with_one.binary AddMonoidWithOne.binary
 
 theorem one_add_one_eq_two [AddMonoidWithOne R] : 1 + 1 = (2 : R) := by
   rw [← Nat.cast_one, ← Nat.cast_add]
   apply congrArg
   decide
-#align one_add_one_eq_two one_add_one_eq_two
 
 theorem two_add_one_eq_three [AddMonoidWithOne R] : 2 + 1 = (3 : R) := by
   rw [← one_add_one_eq_two, ← Nat.cast_one, ← Nat.cast_add, ← Nat.cast_add]

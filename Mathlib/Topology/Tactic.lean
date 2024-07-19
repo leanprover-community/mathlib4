@@ -6,8 +6,6 @@ Authors: Reid Barton
 import Mathlib.Topology.Basic
 import Mathlib.Tactic.Continuity
 
-#align_import topology.tactic from "leanprover-community/mathlib"@"79abf670d5f946912964c232736e97a761f29ebb"
-
 /-!
 # Tactics for topology
 

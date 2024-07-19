@@ -5,8 +5,6 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 
-#align_import geometry.manifold.mfderiv from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
-
 /-!
 # The derivative of functions between smooth manifolds
 
@@ -127,7 +125,6 @@ point, when read in the model vector space. This property will be lifted to mani
 differentiable functions between manifolds. -/
 def DifferentiableWithinAtProp (f : H → H') (s : Set H) (x : H) : Prop :=
   DifferentiableWithinAt 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ Set.range I) (I x)
-#align differentiable_within_at_prop DifferentiableWithinAtProp
 
 /-- Being differentiable in the model space is a local property, invariant under smooth maps.
 Therefore, it will lift nicely to manifolds. -/
@@ -175,18 +172,15 @@ theorem differentiable_within_at_localInvariantProp :
       convert (this.differentiableWithinAt le_top).comp _ h _
       · ext y; simp only [mfld_simps]
       · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1 }
-#align differentiable_within_at_local_invariant_prop differentiable_within_at_localInvariantProp
 
 /-- Predicate ensuring that, at a point and within a set, a function can have at most one
 derivative. This is expressed using the preferred chart at the considered point. -/
 def UniqueMDiffWithinAt (s : Set M) (x : M) :=
   UniqueDiffWithinAt 𝕜 ((extChartAt I x).symm ⁻¹' s ∩ range I) ((extChartAt I x) x)
-#align unique_mdiff_within_at UniqueMDiffWithinAt
 
 /-- Predicate ensuring that, at all points of a set, a function can have at most one derivative. -/
 def UniqueMDiffOn (s : Set M) :=
   ∀ x ∈ s, UniqueMDiffWithinAt I s x
-#align unique_mdiff_on UniqueMDiffOn
 
 /-- `MDifferentiableWithinAt I I' f s x` indicates that the function `f` between manifolds
 has a derivative at the point `x` within the set `s`.
@@ -198,14 +192,12 @@ and in particular by coincidence `writtenInExtChartAt I I' x f` could be differe
 this would not mean anything relevant. -/
 def MDifferentiableWithinAt (f : M → M') (s : Set M) (x : M) :=
   LiftPropWithinAt (DifferentiableWithinAtProp I I') f s x
-#align mdifferentiable_within_at MDifferentiableWithinAt
 
 theorem mdifferentiableWithinAt_iff' (f : M → M') (s : Set M) (x : M) :
     MDifferentiableWithinAt I I' f s x ↔ ContinuousWithinAt f s x ∧
     DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f)
       ((extChartAt I x).symm ⁻¹' s ∩ range I) ((extChartAt I x) x) := by
   rw [MDifferentiableWithinAt, liftPropWithinAt_iff']; rfl
-#align mdifferentiable_within_at_iff_lift_prop_within_at mdifferentiableWithinAt_iff'
 
 @[deprecated (since := "2024-04-30")]
 alias mdifferentiableWithinAt_iff_liftPropWithinAt := mdifferentiableWithinAt_iff'
@@ -215,7 +207,6 @@ theorem MDifferentiableWithinAt.continuousWithinAt {f : M → M'} {s : Set M} {x
     (hf : MDifferentiableWithinAt I I' f s x) :
     ContinuousWithinAt f s x :=
   mdifferentiableWithinAt_iff' .. |>.1 hf |>.1
-#align mdifferentiable_within_at.continuous_within_at MDifferentiableWithinAt.continuousWithinAt
 
 variable {I I'} in
 theorem MDifferentiableWithinAt.differentiableWithinAt_writtenInExtChartAt
@@ -234,7 +225,6 @@ and in particular by coincidence `writtenInExtChartAt I I' x f` could be differe
 this would not mean anything relevant. -/
 def MDifferentiableAt (f : M → M') (x : M) :=
   LiftPropAt (DifferentiableWithinAtProp I I') f x
-#align mdifferentiable_at MDifferentiableAt
 
 theorem mdifferentiableAt_iff (f : M → M') (x : M) :
     MDifferentiableAt I I' f x ↔ ContinuousAt f x ∧
@@ -244,7 +234,6 @@ theorem mdifferentiableAt_iff (f : M → M') (x : M) :
   simp [DifferentiableWithinAtProp, Set.univ_inter]
   -- Porting note: `rfl` wasn't needed
   rfl
-#align mdifferentiable_at_iff_lift_prop_at mdifferentiableAt_iff
 
 @[deprecated (since := "2024-04-30")]
 alias mdifferentiableAt_iff_liftPropAt := mdifferentiableAt_iff
@@ -253,7 +242,6 @@ variable {I I'} in
 theorem MDifferentiableAt.continuousAt {f : M → M'} {x : M} (hf : MDifferentiableAt I I' f x) :
     ContinuousAt f x :=
   mdifferentiableAt_iff .. |>.1 hf |>.1
-#align mdifferentiable_at.continuous_at MDifferentiableAt.continuousAt
 
 variable {I I'} in
 theorem MDifferentiableAt.differentiableWithinAt_writtenInExtChartAt {f : M → M'} {x : M}
@@ -266,19 +254,16 @@ has a derivative within `s` at all points of `s`.
 This is a generalization of `DifferentiableOn` to manifolds. -/
 def MDifferentiableOn (f : M → M') (s : Set M) :=
   ∀ x ∈ s, MDifferentiableWithinAt I I' f s x
-#align mdifferentiable_on MDifferentiableOn
 
 /-- `MDifferentiable I I' f` indicates that the function `f` between manifolds
 has a derivative everywhere.
 This is a generalization of `Differentiable` to manifolds. -/
 def MDifferentiable (f : M → M') :=
   ∀ x, MDifferentiableAt I I' f x
-#align mdifferentiable MDifferentiable
 
 /-- Prop registering if a partial homeomorphism is a local diffeomorphism on its source -/
 def PartialHomeomorph.MDifferentiable (f : PartialHomeomorph M M') :=
   MDifferentiableOn I I' f f.source ∧ MDifferentiableOn I' I f.symm f.target
-#align local_homeomorph.mdifferentiable PartialHomeomorph.MDifferentiable
 
 variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
 
@@ -298,7 +283,6 @@ def HasMFDerivWithinAt (f : M → M') (s : Set M) (x : M)
   ContinuousWithinAt f s x ∧
     HasFDerivWithinAt (writtenInExtChartAt I I' x f : E → E') f'
       ((extChartAt I x).symm ⁻¹' s ∩ range I) ((extChartAt I x) x)
-#align has_mfderiv_within_at HasMFDerivWithinAt
 
 /-- `HasMFDerivAt I I' f x f'` indicates that the function `f` between manifolds
 has, at the point `x`, the derivative `f'`. Here, `f'` is a continuous linear
@@ -311,7 +295,6 @@ this would not mean anything relevant. -/
 def HasMFDerivAt (f : M → M') (x : M) (f' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)) :=
   ContinuousAt f x ∧
     HasFDerivWithinAt (writtenInExtChartAt I I' x f : E → E') f' (range I) ((extChartAt I x) x)
-#align has_mfderiv_at HasMFDerivAt
 
 /-- Let `f` be a function between two smooth manifolds. Then `mfderivWithin I I' f s x` is the
 derivative of `f` at `x` within `s`, as a continuous linear map from the tangent space at `x` to the
@@ -322,7 +305,6 @@ def mfderivWithin (f : M → M') (s : Set M) (x : M) : TangentSpace I x →L[�
         ((extChartAt I x) x) :
       _)
   else 0
-#align mfderiv_within mfderivWithin
 
 /-- Let `f` be a function between two smooth manifolds. Then `mfderiv I I' f x` is the derivative of
 `f` at `x`, as a continuous linear map from the tangent space at `x` to the tangent space at
@@ -331,16 +313,13 @@ def mfderiv (f : M → M') (x : M) : TangentSpace I x →L[𝕜] TangentSpace I'
   if MDifferentiableAt I I' f x then
     (fderivWithin 𝕜 (writtenInExtChartAt I I' x f : E → E') (range I) ((extChartAt I x) x) : _)
   else 0
-#align mfderiv mfderiv
 
 /-- The derivative within a set, as a map between the tangent bundles -/
 def tangentMapWithin (f : M → M') (s : Set M) : TangentBundle I M → TangentBundle I' M' := fun p =>
   ⟨f p.1, (mfderivWithin I I' f s p.1 : TangentSpace I p.1 → TangentSpace I' (f p.1)) p.2⟩
-#align tangent_map_within tangentMapWithin
 
 /-- The derivative, as a map between the tangent bundles -/
 def tangentMap (f : M → M') : TangentBundle I M → TangentBundle I' M' := fun p =>
   ⟨f p.1, (mfderiv I I' f p.1 : TangentSpace I p.1 → TangentSpace I' (f p.1)) p.2⟩
-#align tangent_map tangentMap
 
 end DerivativesDefinitions

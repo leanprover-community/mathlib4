@@ -55,7 +55,6 @@ if `f : M →*₀ N` satisfies this predicate, then `N` is isomorphic to the loc
 -- @[nolint has_nonempty_instance]
 structure LocalizationWithZeroMap extends LocalizationMap S N where
   map_zero' : toFun 0 = 0
-#align submonoid.localization_with_zero_map Submonoid.LocalizationWithZeroMap
 
 -- Porting note: no docstrings for LocalizationWithZeroMap.map_zero'
 attribute [nolint docBlame] LocalizationWithZeroMap.toLocalizationMap
@@ -66,7 +65,6 @@ variable {S N}
 /-- The monoid with zero hom underlying a `LocalizationMap`. -/
 def LocalizationWithZeroMap.toMonoidWithZeroHom (f : LocalizationWithZeroMap S N) : M →*₀ N :=
   { f with }
-#align submonoid.localization_with_zero_map.to_monoid_with_zero_hom Submonoid.LocalizationWithZeroMap.toMonoidWithZeroHom
 
 end Submonoid
 
@@ -81,11 +79,9 @@ instance : CommMonoidWithZero (Localization S) where
     simp only [← Localization.mk_zero y.2, mk_mul, mk_eq_mk_iff, mul_zero, zero_mul, r_of_eq]
   mul_zero := fun x ↦ Localization.induction_on x fun y => by
     simp only [← Localization.mk_zero y.2, mk_mul, mk_eq_mk_iff, mul_zero, zero_mul, r_of_eq]
-#align localization.mk_zero Localization.mk_zero
 
 theorem liftOn_zero {p : Type*} (f : M → S → p) (H) : liftOn 0 f H = f 0 1 := by
   rw [← mk_zero 1, liftOn_mk]
-#align localization.lift_on_zero Localization.liftOn_zero
 
 end Localization
 
@@ -96,7 +92,6 @@ namespace Submonoid
 @[simp]
 theorem LocalizationMap.sec_zero_fst {f : LocalizationMap S N} : f.toMap (f.sec 0).fst = 0 := by
   rw [LocalizationMap.sec_spec', mul_zero]
-#align submonoid.localization_map.sec_zero_fst Submonoid.LocalizationMap.sec_zero_fst
 
 namespace LocalizationWithZeroMap
 
@@ -113,7 +108,6 @@ noncomputable def lift (f : LocalizationWithZeroMap S N) (g : M →*₀ P)
       refine f.toLocalizationMap.eq_of_eq hg ?_
       rw [LocalizationMap.sec_zero_fst]
       exact f.toMonoidWithZeroHom.map_zero.symm }
-#align submonoid.localization_with_zero_map.lift Submonoid.LocalizationWithZeroMap.lift
 
 /-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
 if `M` is left cancellative monoid with zero, and all elements of `S` are

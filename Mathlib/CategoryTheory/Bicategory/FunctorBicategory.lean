@@ -5,8 +5,6 @@ Authors: Yuma Mizuno
 -/
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 
-#align_import category_theory.bicategory.functor_bicategory from "leanprover-community/mathlib"@"4ff75f5b8502275a4c2eb2d2f02bdf84d7fb8993"
-
 /-!
 # The bicategory of oplax functors between two bicategories
 
@@ -38,7 +36,6 @@ def whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ �
     dsimp
     rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc]
     simp
-#align category_theory.oplax_nat_trans.whisker_left CategoryTheory.OplaxNatTrans.whiskerLeft
 
 /-- Right whiskering of an oplax natural transformation and a modification. -/
 @[simps]
@@ -48,28 +45,24 @@ def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι �
     dsimp
     simp_rw [assoc, ← associator_inv_naturality_left, whisker_exchange_assoc]
     simp
-#align category_theory.oplax_nat_trans.whisker_right CategoryTheory.OplaxNatTrans.whiskerRight
 
 /-- Associator for the vertical composition of oplax natural transformations. -/
 -- Porting note: verified that projections are correct and changed @[simps] to @[simps!]
 @[simps!]
 def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι ≅ η ≫ θ ≫ ι :=
   ModificationIso.ofComponents (fun a => α_ (η.app a) (θ.app a) (ι.app a)) (by aesop_cat)
-#align category_theory.oplax_nat_trans.associator CategoryTheory.OplaxNatTrans.associator
 
 /-- Left unitor for the vertical composition of oplax natural transformations. -/
 -- Porting note: verified that projections are correct and changed @[simps] to @[simps!]
 @[simps!]
 def leftUnitor (η : F ⟶ G) : 𝟙 F ≫ η ≅ η :=
   ModificationIso.ofComponents (fun a => λ_ (η.app a)) (by aesop_cat)
-#align category_theory.oplax_nat_trans.left_unitor CategoryTheory.OplaxNatTrans.leftUnitor
 
 /-- Right unitor for the vertical composition of oplax natural transformations. -/
 -- Porting note: verified that projections are correct and changed @[simps] to @[simps!]
 @[simps!]
 def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
   ModificationIso.ofComponents (fun a => ρ_ (η.app a)) (by aesop_cat)
-#align category_theory.oplax_nat_trans.right_unitor CategoryTheory.OplaxNatTrans.rightUnitor
 
 end OplaxNatTrans
 
@@ -87,6 +80,5 @@ instance OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
   whisker_exchange {a b c f g h i} η θ := by
     ext
     exact whisker_exchange _ _
-#align category_theory.oplax_functor.bicategory CategoryTheory.OplaxFunctor.bicategory
 
 end CategoryTheory

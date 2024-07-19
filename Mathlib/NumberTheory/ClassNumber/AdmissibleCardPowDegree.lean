@@ -8,8 +8,6 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.RingTheory.Ideal.LocalRing
 
-#align_import number_theory.class_number.admissible_card_pow_degree from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
-
 /-!
 # Admissible absolute values on polynomials
 
@@ -55,7 +53,6 @@ theorem exists_eq_polynomial [Semiring Fq] {d : ℕ} {m : ℕ} (hm : Fintype.car
   rw [not_le] at hbj
   apply congr_fun i_eq.symm ⟨j, _⟩
   exact lt_of_lt_of_le (coe_lt_degree.mp hbj) hb
-#align polynomial.exists_eq_polynomial Polynomial.exists_eq_polynomial
 
 /-- If `A` is a family of enough low-degree polynomials over a finite ring,
 there is a pair of elements in `A` (with different indices but not necessarily
@@ -96,7 +93,6 @@ theorem exists_approx_polynomial_aux [Ring Fq] {d : ℕ} {m : ℕ} (hm : Fintype
   have : j = b.natDegree - (natDegree b - j.succ).succ := by
     rw [← Nat.succ_sub hbj, Nat.succ_sub_succ, tsub_tsub_cancel_of_le hbj.le]
   convert congr_fun i_eq.symm ⟨natDegree b - j.succ, hj⟩
-#align polynomial.exists_approx_polynomial_aux Polynomial.exists_approx_polynomial_aux
 
 variable [Field Fq]
 
@@ -147,7 +143,6 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
   refine le_trans ?_ (sub_le_sub_left (Nat.le_ceil _) (b.natDegree : ℝ))
   rw [← neg_div]
   exact le_of_eq (Nat.cast_sub le_b.le)
-#align polynomial.exists_approx_polynomial Polynomial.exists_approx_polynomial
 
 /-- If `x` is close to `y` and `y` is close to `z`, then `x` and `z` are at least as close. -/
 theorem cardPowDegree_anti_archimedean {x y z : Fq[X]} {a : ℤ} (hxy : cardPowDegree (x - y) < a)
@@ -170,7 +165,6 @@ theorem cardPowDegree_anti_archimedean {x y z : Fq[X]} {a : ℤ} (hxy : cardPowD
     degree_eq_natDegree hxy', ← degree_eq_natDegree hyz']
   convert degree_add_le (x - y) (y - z) using 2
   exact (sub_add_sub_cancel _ _ _).symm
-#align polynomial.card_pow_degree_anti_archimedean Polynomial.cardPowDegree_anti_archimedean
 
 /-- A slightly stronger version of `exists_partition` on which we perform induction on `n`:
 for all `ε > 0`, we can partition the remainders of any family of polynomials `A`
@@ -241,7 +235,6 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
   refine ⟨j, fun i => ⟨hj i, fun hi => ?_⟩⟩
   have := exists_nonempty_j ⟨t' i, ⟨i, rfl⟩, fun i' hi' => anti_archim' hi ((ht' _ _).mp hi')⟩
   contradiction
-#align polynomial.exists_partition_polynomial_aux Polynomial.exists_partition_polynomial_aux
 
 /-- For all `ε > 0`, we can partition the remainders of any family of polynomials `A`
 into classes, where all remainders in a class are close together. -/
@@ -251,7 +244,6 @@ theorem exists_partition_polynomial (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b : Fq[
         (cardPowDegree (A i₁ % b - A i₀ % b) : ℝ) < cardPowDegree b • ε := by
   obtain ⟨t, ht⟩ := exists_partition_polynomial_aux n hε hb A
   exact ⟨t, fun i₀ i₁ hi => (ht i₀ i₁).mp hi⟩
-#align polynomial.exists_partition_polynomial Polynomial.exists_partition_polynomial
 
 /-- `fun p => Fintype.card Fq ^ degree p` is an admissible absolute value.
 We set `q ^ degree 0 = 0`. -/
@@ -261,6 +253,5 @@ noncomputable def cardPowDegreeIsAdmissible :
       _ with
     card := fun ε => Fintype.card Fq ^ ⌈-log ε / log (Fintype.card Fq)⌉₊
     exists_partition' := fun n _ hε _ hb => exists_partition_polynomial n hε hb }
-#align polynomial.card_pow_degree_is_admissible Polynomial.cardPowDegreeIsAdmissible
 
 end Polynomial
