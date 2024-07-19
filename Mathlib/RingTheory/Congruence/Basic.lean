@@ -146,6 +146,7 @@ section Basic
 variable [Add R] [Mul R] (c : RingCon R)
 
 /-- Defining the quotient by a congruence relation of a type with addition and multiplication. -/
+@[reducible]
 protected def Quotient :=
   Quotient c.toSetoid
 #align ring_con.quotient RingCon.Quotient
@@ -195,14 +196,12 @@ section add_mul
 
 variable [Add R] [Mul R] (c : RingCon R)
 
-instance : Add c.Quotient := inferInstanceAs (Add c.toAddCon.Quotient)
+instance instAdd : Add c.Quotient := AddCon.hasAdd c.toAddCon
 
 @[simp, norm_cast]
 theorem coe_add (x y : R) : (↑(x + y) : c.Quotient) = ↑x + ↑y :=
   rfl
 #align ring_con.coe_add RingCon.coe_add
-
-instance : Mul c.Quotient := inferInstanceAs (Mul c.toCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_mul (x y : R) : (↑(x * y) : c.Quotient) = ↑x * ↑y :=
@@ -215,7 +214,7 @@ section Zero
 
 variable [AddZeroClass R] [Mul R] (c : RingCon R)
 
-instance : Zero c.Quotient := inferInstanceAs (Zero c.toAddCon.Quotient)
+instance instZero : Zero c.Quotient := AddCon.zero c.toAddCon
 
 @[simp, norm_cast]
 theorem coe_zero : (↑(0 : R) : c.Quotient) = 0 :=
@@ -254,21 +253,21 @@ section NegSubZSMul
 
 variable [AddGroup R] [Mul R] (c : RingCon R)
 
-instance : Neg c.Quotient := inferInstanceAs (Neg c.toAddCon.Quotient)
+instance : Neg c.Quotient := AddCon.hasNeg c.toAddCon
 
 @[simp, norm_cast]
 theorem coe_neg (x : R) : (↑(-x) : c.Quotient) = -x :=
   rfl
 #align ring_con.coe_neg RingCon.coe_neg
 
-instance : Sub c.Quotient := inferInstanceAs (Sub c.toAddCon.Quotient)
+instance : Sub c.Quotient := AddCon.hasSub c.toAddCon
 
 @[simp, norm_cast]
 theorem coe_sub (x y : R) : (↑(x - y) : c.Quotient) = x - y :=
   rfl
 #align ring_con.coe_sub RingCon.coe_sub
 
-instance hasZSMul : SMul ℤ c.Quotient := inferInstanceAs (SMul ℤ c.toAddCon.Quotient)
+instance hasZSMul : SMul ℤ c.Quotient := AddCon.Quotient.zsmul c.toAddCon
 #align ring_con.has_zsmul RingCon.hasZSMul
 
 @[simp, norm_cast]
@@ -282,7 +281,7 @@ section NSMul
 
 variable [AddMonoid R] [Mul R] (c : RingCon R)
 
-instance hasNSMul : SMul ℕ c.Quotient := inferInstanceAs (SMul ℕ c.toAddCon.Quotient)
+instance hasNSMul : SMul ℕ c.Quotient := AddCon.Quotient.nsmul c.toAddCon
 #align ring_con.has_nsmul RingCon.hasNSMul
 
 @[simp, norm_cast]
