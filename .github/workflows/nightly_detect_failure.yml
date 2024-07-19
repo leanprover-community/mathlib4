@@ -211,6 +211,8 @@ jobs:
                     print(messages[0]['content'])
                     print("###### Current message:")
                     print(payload)
+                else:
+                    print('The strings match!')
                 # Post the reminder message
                 request = {
                     'type': 'stream',
@@ -220,7 +222,5 @@ jobs:
                 }
                 result = client.send_message(request)
                 print(result)
-                else:
-                    print('The strings match!')
         else:
             print('No action needed.')
