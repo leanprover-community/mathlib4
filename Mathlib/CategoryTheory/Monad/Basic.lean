@@ -157,22 +157,21 @@ theorem Monad.left_unit (T : Monad C) (X : C) :
   T.left_unit' X
 #align category_theory.monad.left_unit CategoryTheory.Monad.left_unit
 
+theorem Monad.left_unit'' (T : Monad C) :
+    whiskerLeft (T : C ⥤ C) T.η ≫ T.μ = (Functor.rightUnitor _).hom := by
+  ext X
+  simp
+
 @[reassoc (attr := simp)]
 theorem Monad.right_unit (T : Monad C) (X : C) :
     (T : C ⥤ C).map (T.η.app X) ≫ T.μ.app X = 𝟙 ((T : C ⥤ C).obj X) :=
   T.right_unit' X
 #align category_theory.monad.right_unit CategoryTheory.Monad.right_unit
 
-theorem Monad.left_unit'' (T : Monad C) :
+theorem Monad.right_unit'' (T : Monad C) :
     whiskerRight T.η (T : C ⥤ C) ≫ T.μ = (Functor.leftUnitor _).hom := by
   ext X
   simp
-
-theorem Monad.right_unit'' (T : Monad C) :
-    whiskerLeft (T : C ⥤ C) T.η ≫ T.μ = (Functor.rightUnitor _).hom := by
-  ext X
-  simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, whiskerLeft_app, left_unit,
-    Functor.rightUnitor_hom_app]
 
 @[reassoc (attr := simp)]
 theorem Comonad.coassoc (G : Comonad C) (X : C) :
@@ -180,17 +179,63 @@ theorem Comonad.coassoc (G : Comonad C) (X : C) :
   G.coassoc' X
 #align category_theory.comonad.coassoc CategoryTheory.Comonad.coassoc
 
+/-- Coassociativity in terms of natural transformations. -/
+theorem Comonad.coassoc'' (G : Comonad C) :
+    G.δ ≫ whiskerRight G.δ (G : C ⥤ C) =
+      G.δ ≫ whiskerLeft (G : C ⥤ C) G.δ ≫ (Functor.associator _ _ _).inv := by
+  ext X
+  simp [G.coassoc]
+
 @[reassoc (attr := simp)]
 theorem Comonad.left_counit (G : Comonad C) (X : C) :
     G.δ.app X ≫ G.ε.app ((G : C ⥤ C).obj X) = 𝟙 ((G : C ⥤ C).obj X) :=
   G.left_counit' X
 #align category_theory.comonad.left_counit CategoryTheory.Comonad.left_counit
 
+theorem Comonad.left_counit'' (G : Comonad C) :
+    G.δ ≫ whiskerLeft (G : C ⥤ C) G.ε = (Functor.rightUnitor _).inv := by
+  ext X
+  simp
+
 @[reassoc (attr := simp)]
 theorem Comonad.right_counit (G : Comonad C) (X : C) :
     G.δ.app X ≫ (G : C ⥤ C).map (G.ε.app X) = 𝟙 ((G : C ⥤ C).obj X) :=
   G.right_counit' X
 #align category_theory.comonad.right_counit CategoryTheory.Comonad.right_counit
+
+theorem Comonad.right_counit'' (G : Comonad C) :
+    G.δ ≫ whiskerRight G.ε (G : C ⥤ C) = (Functor.leftUnitor _).inv := by
+  ext X
+  simp
+
+/-- A constructor for a monad structure. The axioms are stated in terms of the equalities of
+natural transformations. -/
+def Monad.ofNatTransEq {T : C ⥤ C} (η : 𝟭 _ ⟶ T) (μ : T ⋙ T ⟶ T)
+    (assoc : whiskerRight μ (T : C ⥤ C) ≫ μ = (Functor.associator _ _ _).hom ≫
+      whiskerLeft (T : C ⥤ C) μ ≫ μ)
+    (left_unit : whiskerLeft (T : C ⥤ C) η ≫ μ = (Functor.rightUnitor _).hom)
+    (right_unit : whiskerRight η (T : C ⥤ C) ≫ μ = (Functor.leftUnitor _).hom) :
+    Monad C where
+  toFunctor := T
+  η' := η
+  μ' := μ
+  assoc' := by simpa using NatTrans.congr_app assoc
+  left_unit' := by simpa using NatTrans.congr_app left_unit
+  right_unit' := by simpa using NatTrans.congr_app right_unit
+
+/-- A constructor for a comonad structure. The axioms are stated in terms of the equalities of
+natural transformations. -/
+def Comonad.ofNatTransEq {G : C ⥤ C} (ε : G ⟶ 𝟭 _) (δ : G ⟶ G ⋙ G)
+    (coassoc : δ ≫ whiskerRight δ G = δ ≫ whiskerLeft G δ ≫ (Functor.associator _ _ _).inv)
+    (left_counit : δ ≫ whiskerLeft G ε = (Functor.rightUnitor _).inv)
+    (right_counit : δ ≫ whiskerRight ε G = (Functor.leftUnitor _).inv) :
+    Comonad C where
+  toFunctor := G
+  ε' := ε
+  δ' := δ
+  coassoc' := by simpa using NatTrans.congr_app coassoc
+  left_counit' := by simpa using NatTrans.congr_app left_counit
+  right_counit' := by simpa using NatTrans.congr_app right_counit
 
 /-- A morphism of monads is a natural transformation compatible with η and μ. -/
 @[ext]

@@ -826,24 +826,20 @@ def stringPresenter : ExprPresenter where
       return d
     throwError "Couldn't find a string diagram."
 
+open scoped Jsx in
 /-- The string diagram widget. -/
 @[expr_presenter]
-def stringPresenterLeft : ExprPresenter where
-  userName := "String diagram of LHS"
+def stringEqPresenter : ExprPresenter where
+  userName := "Equality of string diagrams"
   layoutKind := .block
   present type := do
-    if let some d ← stringLeftM? type then
-      return d
-    throwError "Couldn't find a string diagram."
-
-/-- The string diagram widget. -/
-@[expr_presenter]
-def stringPresenterRight : ExprPresenter where
-  userName := "String diagram of RHS"
-  layoutKind := .block
-  present type := do
-    if let some d ← stringRightM? type then
-      return d
-    throwError "Couldn't find a string diagram."
+    let some d ← stringLeftM? type
+      | throwError "Couldn't find a string diagram."
+    let some e ← stringRightM? type
+      | throwError "Couldn't find a string diagram."
+    return <div className="flex">
+      <div className="w-50">{d}</div>
+      <div className="w-50">{e}</div>
+    </div>
 
 end Mathlib.Tactic.Widget.StringDiagram
