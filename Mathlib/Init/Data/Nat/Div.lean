@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 
 import Init.Data.Nat.Div
-import Mathlib.Mathport.Rename
 
 /-!
 # Note about `Mathlib/Init/`
@@ -21,5 +20,3 @@ These will be deleted soon so will not significantly delay deleting otherwise em
 
 # Align statements for declarations from Core
 -/
-
-#align nat.div_add_mod Nat.div_add_mod

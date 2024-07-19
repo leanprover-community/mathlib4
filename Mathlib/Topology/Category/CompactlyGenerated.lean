@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Topology.Category.CompHaus.Basic
+import Mathlib.CategoryTheory.Elementwise
 /-!
 
 # Compactly generated topological spaces
@@ -14,8 +15,9 @@ compact Hausdorff spaces `S` mapping continuously to `X`.
 
 ## TODO
 
-* Prove that `CompactlyGenerated` is a reflective subcategory of `TopCat`.
-* Prove that `CompactlyGenerated` is cartesian closed.
+* `CompactlyGenerated` is a reflective subcategory of `TopCat`.
+* `CompactlyGenerated` is cartesian closed.
+* Every first-countable space is `u`-compactly generated for every universe `u`.
 -/
 
 attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
@@ -122,15 +124,13 @@ def of : CompactlyGenerated.{u, w} where
 def compactlyGeneratedToTop : CompactlyGenerated.{u, w} ⥤ TopCat.{w} :=
   inducedFunctor _
 
-/-- The functor to `TopCat` is indeed fully faithful.-/
-def fullyFaithfulCompactlyGeneratedToTop : compactlyGeneratedToTop.FullyFaithful :=
+/-- `compactlyGeneratedToTop` is fully faithful. -/
+def fullyFaithulCompactlyGeneratedToTop : compactlyGeneratedToTop.{u, w}.FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
-instance : compactlyGeneratedToTop.{u, w}.Full  :=
-  inferInstanceAs (inducedFunctor _).Full
+instance : compactlyGeneratedToTop.{u, w}.Full := fullyFaithulCompactlyGeneratedToTop.full
 
-instance : compactlyGeneratedToTop.{u, w}.Faithful :=
-  inferInstanceAs (inducedFunctor _).Faithful
+instance : compactlyGeneratedToTop.{u, w}.Faithful := fullyFaithulCompactlyGeneratedToTop.faithful
 
 /-- Construct an isomorphism from a homeomorphism. -/
 @[simps hom inv]
