@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Lagrange Mathematics and Computing Research Center. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Anthony Bordg
+Authors: Anthony Bordg
 -/
 import Mathlib.Data.Rel
 import Mathlib.Order.GaloisConnection
