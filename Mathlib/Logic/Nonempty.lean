@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Init.ZeroOne
-import Mathlib.Init.Function
+import Mathlib.Algebra.Group.ZeroOne
+import Mathlib.Logic.Function.Defs
 
 #align_import logic.nonempty from "leanprover-community/mathlib"@"d2d8742b0c21426362a9dacebc6005db895ca963"
 

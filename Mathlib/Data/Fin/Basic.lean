@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.Defs
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Tactic.Common
@@ -800,8 +801,7 @@ lemma _root_.finCongr_eq_equivCast (h : n = m) : finCongr h = .cast (h ▸ rfl) 
 
 @[simp]
 theorem cast_zero {n' : ℕ} [NeZero n] {h : n = n'} : cast h (0 : Fin n) =
-    by { haveI : NeZero n' := by {rw [← h]; infer_instance}; exact 0} :=
-  ext rfl
+    by { haveI : NeZero n' := by {rw [← h]; infer_instance}; exact 0} := rfl
 #align fin.cast_zero Fin.cast_zero
 
 #align fin.cast_last Fin.cast_lastₓ
@@ -1879,8 +1879,6 @@ lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
   Nat.pos_of_ne_zero (val_ne_of_ne h)
 
 end AddGroup
-
-#align fin.coe_clamp Fin.coe_clamp
 
 @[simp]
 theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :

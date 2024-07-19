@@ -225,6 +225,10 @@ instance Sigma.discreteTopology {ι : Type*} {Y : ι → Type v} [∀ i, Topolog
   ⟨iSup_eq_bot.2 fun _ => by simp only [(h _).eq_bot, coinduced_bot]⟩
 #align sigma.discrete_topology Sigma.discreteTopology
 
+@[simp] lemma comap_nhdsWithin_range {α β} [TopologicalSpace β] (f : α → β) (y : β) :
+    comap f (𝓝[range f] y) = comap f (𝓝 y) := comap_inf_principal_range
+#align comap_nhds_within_range comap_nhdsWithin_range
+
 section Top
 
 variable [TopologicalSpace X]
@@ -240,6 +244,10 @@ theorem mem_nhds_subtype (s : Set X) (x : { x // x ∈ s }) (t : Set { x // x �
 theorem nhds_subtype (s : Set X) (x : { x // x ∈ s }) : 𝓝 x = comap (↑) (𝓝 (x : X)) :=
   nhds_induced _ x
 #align nhds_subtype nhds_subtype
+
+lemma nhds_subtype_eq_comap_nhdsWithin (s : Set X) (x : { x // x ∈ s }) :
+    𝓝 x = comap (↑) (𝓝[s] (x : X)) := by
+  rw [nhds_subtype, ← comap_nhdsWithin_range, Subtype.range_val]
 
 theorem nhdsWithin_subtype_eq_bot_iff {s t : Set X} {x : s} :
     𝓝[((↑) : s → X) ⁻¹' t] x = ⊥ ↔ 𝓝[t] (x : X) ⊓ 𝓟 s = ⊥ := by
@@ -1249,6 +1257,13 @@ theorem QuotientMap.restrictPreimage_isOpen {f : X → Y} (hf : QuotientMap f)
     (hs.preimage hf.continuous).openEmbedding_subtype_val.open_iff_image_open,
     image_val_preimage_restrictPreimage]
 
+open scoped Set.Notation in
+lemma isClosed_preimage_val {s t : Set X} : IsClosed (s ↓∩ t) ↔ s ∩ closure (s ∩ t) ⊆ t := by
+  rw [← closure_eq_iff_isClosed, embedding_subtype_val.closure_eq_preimage_closure_image,
+    ← Subtype.val_injective.image_injective.eq_iff, Subtype.image_preimage_coe,
+    Subtype.image_preimage_coe, subset_antisymm_iff, and_iff_left, Set.subset_inter_iff,
+    and_iff_right]
+  exacts [Set.inter_subset_left, Set.subset_inter Set.inter_subset_left subset_closure]
 end Subtype
 
 section Quotient

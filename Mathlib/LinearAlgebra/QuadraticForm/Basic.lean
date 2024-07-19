@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
+import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.LinearAlgebra.Matrix.Symmetric
+import Mathlib.Data.Finset.Sym
 import Mathlib.LinearAlgebra.BilinearMap
 
 #align_import linear_algebra.quadratic_form.basic from "leanprover-community/mathlib"@"d11f435d4e34a6cea0a1797d6b625b0c170be845"
@@ -97,6 +99,11 @@ Source of this name: https://en.wikipedia.org/wiki/Quadratic_form#Generalization
 def polar (f : M → N) (x y : M) :=
   f (x + y) - f x - f y
 #align quadratic_form.polar QuadraticMap.polar
+
+protected theorem map_add (f : M → N) (x y : M) :
+    f (x + y) = f x + f y + polar f x y := by
+  rw [polar]
+  abel
 
 theorem polar_add (f g : M → N) (x y : M) : polar (f + g) x y = polar f x y + polar g x y := by
   simp only [polar, Pi.add_apply]
@@ -373,6 +380,35 @@ theorem choose_exists_companion : Q.exists_companion.choose = polarBilin Q :=
     rw [polarBilin_apply_apply, polar, Q.exists_companion.choose_spec, sub_sub,
       add_sub_cancel_left]
 #align quadratic_form.some_exists_companion QuadraticMap.choose_exists_companion
+
+protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
+    Q (∑ i ∈ s, f i) = ∑ i ∈ s, Q (f i) +
+      ∑ ij in s.sym2.filter (¬ ·.IsDiag),
+        Sym2.lift ⟨fun i j => polar Q (f i) (f j), fun _ _ => polar_comm _ _ _⟩ ij := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha ih =>
+    simp_rw [Finset.sum_cons, QuadraticMap.map_add, ih, add_assoc, Finset.sym2_cons,
+      Finset.sum_filter, Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons,
+      Sym2.mkEmbedding_apply, Sym2.isDiag_iff_proj_eq, not_true, if_false, zero_add, Sym2.lift_mk,
+      ← polarBilin_apply_apply, _root_.map_sum, polarBilin_apply_apply]
+    congr 2
+    rw [add_comm]
+    congr! with i hi
+    rw [if_pos (ne_of_mem_of_not_mem hi ha).symm]
+
+protected theorem map_sum' {ι} (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
+    Q (∑ i ∈ s, f i) =
+      ∑ ij in s.sym2,
+        Sym2.lift ⟨fun i j => polar Q (f i) (f j), fun _ _ => polar_comm _ _ _⟩ ij
+      - ∑ i ∈ s, Q (f i) := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha ih =>
+    simp_rw [Finset.sum_cons, QuadraticMap.map_add Q, ih, add_assoc, Finset.sym2_cons,
+      Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons, Sym2.mkEmbedding_apply, Sym2.lift_mk,
+      ← polarBilin_apply_apply, _root_.map_sum, polarBilin_apply_apply, polar_self]
+    abel_nf
 
 end CommRing
 
@@ -1164,14 +1200,14 @@ variable [CommRing R] [AddCommMonoid M] [Module R M]
 
 /-- `M.toQuadraticMap'` is the map `fun x ↦ row x * M * col x` as a quadratic form. -/
 def Matrix.toQuadraticMap' (M : Matrix n n R) : QuadraticMap R (n → R) R :=
-  LinearMap.BilinMap.toQuadraticMap (Matrix.toLinearMap₂' M)
+  LinearMap.BilinMap.toQuadraticMap (Matrix.toLinearMap₂' R M)
 #align matrix.to_quadratic_form' Matrix.toQuadraticMap'
 
 variable [Invertible (2 : R)]
 
 /-- A matrix representation of the quadratic form. -/
 def QuadraticMap.toMatrix' (Q : QuadraticMap R (n → R) R) : Matrix n n R :=
-  LinearMap.toMatrix₂' (associated (R := R) Q)
+  LinearMap.toMatrix₂' R (associated Q)
 #align quadratic_form.to_matrix' QuadraticMap.toMatrix'
 
 open QuadraticMap
