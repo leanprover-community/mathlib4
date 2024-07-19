@@ -16,7 +16,6 @@ import Mathlib.Tactic.CategoryTheory.Elementwise
 # Products and coproducts in the category of topological spaces
 -/
 
--- Porting note: every ML3 decl has an uppercase letter
 set_option linter.uppercaseLean3 false
 
 open TopologicalSpace
@@ -219,7 +218,7 @@ theorem prodIsoProd_hom_snd (X Y : TopCat.{u}) :
 theorem prodIsoProd_hom_apply {X Y : TopCat.{u}} (x : ↑ (X ⨯ Y)) :
     (prodIsoProd X Y).hom x = ((Limits.prod.fst : X ⨯ Y ⟶ _) x,
     (Limits.prod.snd : X ⨯ Y ⟶ _) x) := by
-  -- Porting note: ext didn't pick this up
+  -- Porting note (#11041): `ext` didn't pick this up.
   apply Prod.ext
   · exact ConcreteCategory.congr_hom (prodIsoProd_hom_fst X Y) x
   · exact ConcreteCategory.congr_hom (prodIsoProd_hom_snd X Y) x
@@ -396,3 +395,5 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         change m x = dite _ _ _
         split_ifs <;> exact congr_arg _ (Equiv.apply_ofInjective_symm _ ⟨_, _⟩).symm
 #align Top.binary_cofan_is_colimit_iff TopCat.binaryCofan_isColimit_iff
+
+end TopCat

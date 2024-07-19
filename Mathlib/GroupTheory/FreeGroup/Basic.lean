@@ -765,10 +765,9 @@ theorem lift.of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
 @[to_additive]
 theorem lift.range_le {s : Subgroup β} (H : Set.range f ⊆ s) : (lift f).range ≤ s := by
   rintro _ ⟨⟨L⟩, rfl⟩;
-    exact
-      List.recOn L s.one_mem fun ⟨x, b⟩ tl ih =>
-        Bool.recOn b (by simp at ih ⊢; exact s.mul_mem (s.inv_mem <| H ⟨x, rfl⟩) ih)
-          (by simp at ih ⊢; exact s.mul_mem (H ⟨x, rfl⟩) ih)
+  exact List.recOn L s.one_mem fun ⟨x, b⟩ tl ih ↦
+    Bool.recOn b (by simp at ih ⊢; exact s.mul_mem (s.inv_mem <| H ⟨x, rfl⟩) ih)
+      (by simp at ih ⊢; exact s.mul_mem (H ⟨x, rfl⟩) ih)
 #align free_group.lift.range_le FreeGroup.lift.range_le
 #align free_add_group.lift.range_le FreeAddGroup.lift.range_le
 
@@ -1027,7 +1026,7 @@ instance : Monad FreeGroup.{u} where
   map {_α} {_β} {f} := map f
   bind {_α} {_β} {x} {f} := lift f x
 
-@[to_additive (attr := elab_as_elim)]
+@[to_additive (attr := elab_as_elim, induction_eliminator)]
 protected theorem induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C1 : C 1)
     (Cp : ∀ x, C <| pure x) (Ci : ∀ x, C (pure x) → C (pure x)⁻¹)
     (Cm : ∀ x y, C x → C y → C (x * y)) : C z :=

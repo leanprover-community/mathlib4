@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Prod
-import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Span
 import Mathlib.Order.PartialSups
 
@@ -684,7 +683,7 @@ theorem fst_sup_snd : Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂ = ⊤ :=
 theorem fst_inf_snd : Submodule.fst R M M₂ ⊓ Submodule.snd R M M₂ = ⊥ := by
   -- Porting note (#10936): was `tidy`
   rw [eq_bot_iff]; rintro ⟨x, y⟩
-  simp only [fst, comap_bot, snd, ge_iff_le, mem_inf, mem_ker, snd_apply, fst_apply, mem_bot,
+  simp only [fst, comap_bot, snd, mem_inf, mem_ker, snd_apply, fst_apply, mem_bot,
     Prod.mk_eq_zero, and_comm, imp_self]
 #align submodule.fst_inf_snd Submodule.fst_inf_snd
 

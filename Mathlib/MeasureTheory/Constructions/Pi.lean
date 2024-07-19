@@ -103,7 +103,7 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
   cases nonempty_encodable ι
   apply le_antisymm
   · refine iSup_le ?_; intro i; rw [comap_generateFrom]
-    apply generateFrom_le; rintro _ ⟨s, hs, rfl⟩; dsimp
+    apply generateFrom_le; rintro _ ⟨s, hs, rfl⟩
     choose t h1t h2t using hC
     simp_rw [eval_preimage, ← h2t]
     rw [← @iUnion_const _ ℕ _ s]
@@ -969,6 +969,26 @@ theorem volume_preserving_piFinsetUnion (α : ι → Type*) [DecidableEq ι] {s 
     (h : Disjoint s t) [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))] :
     MeasurePreserving (MeasurableEquiv.piFinsetUnion α h) volume volume :=
   measurePreserving_piFinsetUnion h (fun _ ↦ volume)
+
+theorem measurePreserving_pi {β : ι → Type*} [∀ i, MeasurableSpace (β i)]
+    (ν : (i : ι) → Measure (β i)) {f : (i : ι) → (α i) → (β i)} [∀ i, SigmaFinite (ν i)]
+    (hf : ∀ i, MeasurePreserving (f i) (μ i) (ν i)) :
+    MeasurePreserving (fun a i ↦ f i (a i)) (Measure.pi μ) (Measure.pi ν) where
+  measurable :=
+    measurable_pi_iff.mpr <| fun i ↦ (hf i).measurable.comp (measurable_pi_apply i)
+  map_eq := by
+    haveI : ∀ i, SigmaFinite (μ i) := fun i ↦ (hf i).sigmaFinite
+    refine (Measure.pi_eq fun s hs ↦ ?_).symm
+    rw [Measure.map_apply, Set.preimage_pi, Measure.pi_pi]
+    simp_rw [← MeasurePreserving.measure_preimage (hf _) (hs _)]
+    · exact measurable_pi_iff.mpr <| fun i ↦ (hf i).measurable.comp (measurable_pi_apply i)
+    · exact MeasurableSet.univ_pi hs
+
+theorem volume_preserving_pi {α' β' : ι → Type*} [∀ i, MeasureSpace (α' i)]
+    [∀ i, MeasureSpace (β' i)] [∀ i, SigmaFinite (volume : Measure (β' i))]
+    {f : (i : ι) → (α' i) → (β' i)} (hf : ∀ i, MeasurePreserving (f i)) :
+    MeasurePreserving (fun (a : (i : ι) → α' i) (i : ι) ↦ (f i) (a i)) :=
+  measurePreserving_pi _ _ hf
 
 end MeasurePreserving
 

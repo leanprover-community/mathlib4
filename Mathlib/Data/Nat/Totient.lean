@@ -7,7 +7,6 @@ import Mathlib.Algebra.CharP.Two
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Periodic
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Tactic.Monotonicity
 
 #align_import data.nat.totient from "leanprover-community/mathlib"@"5cc2dfdd3e92f340411acea4427d701dc7ed26f8"
 
@@ -88,10 +87,7 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
   · rw [← filter_coprime_Ico_eq_totient a k]
     simp only [add_zero, mul_one, mul_zero, le_of_lt (mod_lt n a_pos),
       Nat.zero_eq, zero_add]
-    -- Porting note: below line was `mono`
-    refine Finset.card_mono ?_
-    refine monotone_filter_left a.Coprime ?_
-    simp only [Finset.le_eq_subset]
+    gcongr
     exact Ico_subset_Ico rfl.le (add_le_add_left (le_of_lt (mod_lt n a_pos)) k)
   simp only [mul_succ]
   simp_rw [← add_assoc] at ih ⊢
@@ -326,7 +322,7 @@ theorem totient_eq_mul_prod_factors (n : ℕ) :
   simp only [totient_eq_div_primeFactors_mul n, prod_primeFactors_dvd n, cast_mul, cast_prod,
     cast_div_charZero, mul_comm_div, mul_right_inj' hn', div_eq_iff hpQ, ← prod_mul_distrib]
   refine prod_congr rfl fun p hp => ?_
-  have hp := pos_of_mem_factors (List.mem_toFinset.mp hp)
+  have hp := pos_of_mem_primeFactorsList (List.mem_toFinset.mp hp)
   have hp' : (p : ℚ) ≠ 0 := cast_ne_zero.mpr hp.ne.symm
   rw [sub_mul, one_mul, mul_comm, mul_inv_cancel hp', cast_pred hp]
 #align nat.totient_eq_mul_prod_factors Nat.totient_eq_mul_prod_factors

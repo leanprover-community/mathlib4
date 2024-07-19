@@ -395,6 +395,23 @@ theorem inv_closure : ∀ s : Set G, (closure s)⁻¹ = closure s⁻¹ :=
 #align inv_closure inv_closure
 #align neg_closure neg_closure
 
+variable [TopologicalSpace α] {f : α → G} {s : Set α} {x : α}
+
+@[to_additive (attr := simp)]
+lemma continuous_inv_iff : Continuous f⁻¹ ↔ Continuous f := (Homeomorph.inv G).comp_continuous_iff
+
+@[to_additive (attr := simp)]
+lemma continuousAt_inv_iff : ContinuousAt f⁻¹ x ↔ ContinuousAt f x :=
+  (Homeomorph.inv G).comp_continuousAt_iff _ _
+
+@[to_additive (attr := simp)]
+lemma continuousOn_inv_iff : ContinuousOn f⁻¹ s ↔ ContinuousOn f s :=
+  (Homeomorph.inv G).comp_continuousOn_iff _ _
+
+@[to_additive] alias ⟨Continuous.of_inv, _⟩ := continuous_inv_iff
+@[to_additive] alias ⟨ContinuousAt.of_inv, _⟩ := continuousAt_inv_iff
+@[to_additive] alias ⟨ContinuousOn.of_inv, _⟩ := continuousOn_inv_iff
+
 end ContinuousInvolutiveInv
 
 section LatticeOps
@@ -907,7 +924,6 @@ theorem continuous_of_continuousAt_one {M hom : Type*} [MulOneClass M] [Topologi
 #align continuous_of_continuous_at_one continuous_of_continuousAt_one
 #align continuous_of_continuous_at_zero continuous_of_continuousAt_zero
 
--- Porting note (#10756): new theorem
 @[to_additive continuous_of_continuousAt_zero₂]
 theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [TopologicalSpace M]
     [ContinuousMul M] [Group H] [TopologicalSpace H] [TopologicalGroup H] (f : G →* H →* M)

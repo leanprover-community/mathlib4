@@ -360,7 +360,7 @@ theorem HasFDerivAt.le_of_lipschitzOn
 then its derivative at `x₀` has norm bounded by `C`. -/
 theorem HasFDerivAt.le_of_lipschitz {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
     {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖f'‖ ≤ C :=
-  hf.le_of_lipschitzOn univ_mem (lipschitzOn_univ.2 hlip)
+  hf.le_of_lipschitzOn univ_mem (lipschitzOnWith_univ.2 hlip)
 
 nonrec theorem HasFDerivAtFilter.mono (h : HasFDerivAtFilter f f' x L₂) (hst : L₁ ≤ L₂) :
     HasFDerivAtFilter f f' x L₁ :=
@@ -608,7 +608,7 @@ its derivative at `x₀` has norm bounded by `C`.
 Version using `fderiv`. -/
 theorem norm_fderiv_le_of_lipschitz {f : E → F} {x₀ : E}
     {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖fderiv 𝕜 f x₀‖ ≤ C :=
-  norm_fderiv_le_of_lipschitzOn 𝕜 univ_mem (lipschitzOn_univ.2 hlip)
+  norm_fderiv_le_of_lipschitzOn 𝕜 univ_mem (lipschitzOnWith_univ.2 hlip)
 
 variable {𝕜}
 
@@ -1200,7 +1200,7 @@ theorem differentiable_const (c : F) : Differentiable 𝕜 fun _ : E => c := fun
   differentiableAt_const _
 #align differentiable_const differentiable_const
 
-@[fun_prop]
+@[simp, fun_prop]
 theorem differentiableOn_const (c : F) : DifferentiableOn 𝕜 (fun _ => c) s :=
   (differentiable_const _).differentiableOn
 #align differentiable_on_const differentiableOn_const
@@ -1280,5 +1280,9 @@ protected theorem HasCompactSupport.fderiv (hf : HasCompactSupport f) :
     HasCompactSupport (fderiv 𝕜 f) :=
   hf.mono' <| support_fderiv_subset 𝕜
 #align has_compact_support.fderiv HasCompactSupport.fderiv
+
+protected theorem HasCompactSupport.fderiv_apply (hf : HasCompactSupport f) (v : E) :
+    HasCompactSupport (fderiv 𝕜 f · v) :=
+  hf.fderiv 𝕜 |>.comp_left (g := fun L : E →L[𝕜] F ↦ L v) rfl
 
 end Support

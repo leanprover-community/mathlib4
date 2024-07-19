@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.Set.Constructions
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousOn
 
@@ -46,7 +47,7 @@ conditions are equivalent in this case).
 For our applications we are interested that there exists a countable basis, but we do not need the
 concrete basis itself. This allows us to declare these type classes as `Prop` to use them as mixins.
 
-### TODO:
+## TODO
 
 More fine grained instances for `FirstCountableTopology`,
 `TopologicalSpace.SeparableSpace`, and more.
@@ -118,6 +119,18 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
   · rw [← sInter_singleton t]
     exact ⟨{t}, ⟨finite_singleton t, singleton_subset_iff.2 ht⟩, rfl⟩
 #align topological_space.is_topological_basis_of_subbasis TopologicalSpace.isTopologicalBasis_of_subbasis
+
+theorem isTopologicalBasis_of_subbasis_of_finiteInter {s : Set (Set α)} (hsg : t = generateFrom s)
+    (hsi : FiniteInter s) : IsTopologicalBasis s := by
+  convert isTopologicalBasis_of_subbasis hsg
+  refine le_antisymm (fun t ht ↦ ⟨{t}, by simpa using ht⟩) ?_
+  rintro _ ⟨g, ⟨hg, hgs⟩, rfl⟩
+  lift g to Finset (Set α) using hg
+  exact hsi.finiteInter_mem g hgs
+
+theorem isTopologicalBasis_of_subbasis_of_inter {r : Set (Set α)} (hsg : t = generateFrom r)
+    (hsi : ∀ ⦃s⦄, s ∈ r → ∀ ⦃t⦄, t ∈ r → s ∩ t ∈ r) : IsTopologicalBasis (insert univ r) :=
+  isTopologicalBasis_of_subbasis_of_finiteInter (by simpa using hsg) (FiniteInter.mk₂ hsi)
 
 theorem IsTopologicalBasis.of_hasBasis_nhds {s : Set (Set α)}
     (h_nhds : ∀ a, (𝓝 a).HasBasis (fun t ↦ t ∈ s ∧ a ∈ t) id) : IsTopologicalBasis s where
@@ -303,31 +316,6 @@ protected theorem IsTopologicalBasis.continuous {β : Type*} [TopologicalSpace �
     (hB : IsTopologicalBasis B) (f : α → β) (hf : ∀ s ∈ B, IsOpen (f ⁻¹' s)) : Continuous f :=
   hB.continuous_iff.2 hf
 #align topological_space.is_topological_basis.continuous TopologicalSpace.IsTopologicalBasis.continuous
-
-section
-variable [TopologicalSpace β] [Preorder α] [Preorder β] {x : α × β}
-
-open OrderDual
-
-instance Prod.instNeBotNhdsWithinIio [hx₁ : (𝓝[<] x.1).NeBot] [hx₂ : (𝓝[<] x.2).NeBot] :
-    (𝓝[<] x).NeBot := by
-  -- Let's show that every neighborhood of `x` intersect `Iio x`.
-  simp_rw [nhdsWithin_neBot,
-  -- WLOG the neighborhood is the product of neighborhoods `V i` of `x i`.
-    (isTopologicalBasis_opens.prod isTopologicalBasis_opens).mem_nhds_iff] at hx₁ hx₂ ⊢
-  rintro t ⟨U, ⟨U, hU, V, hV, rfl⟩, ⟨hxU, hxV⟩, hUVt⟩
-  classical
-  -- There exist `y ∈ U`, `z ∈ V` such that `y < x.1`, `z < x.2`
-  obtain ⟨y, hyU, hyx⟩ := hx₁ $ hU.mem_nhds hxU
-  obtain ⟨z, hzV, hzx⟩ := hx₂ $ hV.mem_nhds hxV
-  -- Then `(y, z)` is in `U ×ˢ V` and `(y, z) < x`
-  exact ⟨(y, z), hUVt ⟨hyU, hzV⟩, Prod.lt_of_lt_of_le hyx hzx.le⟩
-
-instance Prod.instNeBotNhdsWithinIoi [(𝓝[>] x.1).NeBot] [(𝓝[>] x.2).NeBot] :
-    (𝓝[>] x).NeBot :=
-  Prod.instNeBotNhdsWithinIio (α := αᵒᵈ) (β := βᵒᵈ) (x := (toDual x.1, toDual x.2))
-
-end
 
 variable (α)
 
@@ -657,34 +645,6 @@ lemma isOpenMap_eval (i : ι) : IsOpenMap (Function.eval i : (∀ i, π i) → �
   · rw [eval_image_pi_of_not_mem (mod_cast hi), if_pos h]
     exact isOpen_univ
 
-open OrderDual
-
-variable  [∀ i, Preorder (π i)] [Nonempty ι] {x : ∀ i, π i}
-
-instance Pi.instNeBotNhdsWithinIio [hx : ∀ i, (𝓝[<] x i).NeBot] : (𝓝[<] x).NeBot := by
-  -- Let's show that every neighborhood of `x` intersect `Iio x`.
-  simp_rw [nhdsWithin_neBot,
-  -- WLOG the neighborhood is the product of neighborhoods `V i` of `x i`.
-    (isTopologicalBasis_pi fun _ ↦ isTopologicalBasis_opens).mem_nhds_iff] at hx ⊢
-  rintro t ⟨U, ⟨U, s, hU, rfl⟩, hxU, hUt⟩
-  classical
-  -- `isTopologicalBasis_pi` does not give us a product of open sets but a product of open sets on a
-  -- finset, so we need the following nonsense to make sure every factor is open.
-  let V (i) := if i ∈ s then U i else univ
-  have hV (i) : IsOpen (V i) := by
-    unfold_let; dsimp; split_ifs with hi; exacts [hU _ hi, isOpen_univ]
-  have hVU : pi s V = pi s U := Set.pi_congr rfl fun i hi ↦ if_pos hi
-  have hxV (i) : x i ∈ V i := by unfold_let; dsimp; split_ifs with hi; exacts [hxU _ hi, mem_univ _]
-  rw [← hVU, Set.mem_pi] at hxU
-  rw [← hVU] at hUt
-  -- Now, for every `i` there exists `y i ∈ V i` such that `y i < x i`
-  choose y hyV hyx using fun i ↦ hx i $ (hV i).mem_nhds (hxV i)
-  -- Then `y` is in the product of the `V i` and `y < x`
-  exact ⟨y, hUt fun i _ ↦ hyV i, lt_of_strongLT hyx⟩
-
-instance Pi.instNeBotNhdsWithinIoi [∀ i, (𝓝[>] x i).NeBot] : (𝓝[>] x).NeBot :=
-  Pi.instNeBotNhdsWithinIio (π := fun i ↦ (π i)ᵒᵈ) (x := fun i ↦ toDual (x i))
-
 end
 
 -- Porting note: moved `DenseRange.separableSpace` up
@@ -747,7 +707,7 @@ attribute [instance] FirstCountableTopology.nhds_generated_countable
 first-countable. -/
 theorem firstCountableTopology_induced (α β : Type*) [t : TopologicalSpace β]
     [FirstCountableTopology β] (f : α → β) : @FirstCountableTopology α (t.induced f) :=
-  let _ := t.induced f;
+  let _ := t.induced f
   ⟨fun x ↦ nhds_induced f x ▸ inferInstance⟩
 
 variable {α}

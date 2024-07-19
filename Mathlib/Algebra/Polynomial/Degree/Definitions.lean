@@ -119,6 +119,8 @@ theorem degree_eq_bot : degree p = ⊥ ↔ p = 0 :=
   ⟨fun h => support_eq_empty.1 (Finset.max_eq_bot.1 h), fun h => h.symm ▸ rfl⟩
 #align polynomial.degree_eq_bot Polynomial.degree_eq_bot
 
+theorem degree_ne_bot : degree p ≠ ⊥ ↔ p ≠ 0 := degree_eq_bot.not
+
 @[nontriviality]
 theorem degree_of_subsingleton [Subsingleton R] : degree p = ⊥ := by
   rw [Subsingleton.elim p 0, degree_zero]
@@ -1214,6 +1216,9 @@ theorem eq_C_coeff_zero_iff_natDegree_eq_zero : p = C (p.coeff 0) ↔ p.natDegre
 theorem eq_one_of_monic_natDegree_zero (hf : p.Monic) (hfd : p.natDegree = 0) : p = 1 := by
   rw [Monic.def, leadingCoeff, hfd] at hf
   rw [eq_C_of_natDegree_eq_zero hfd, hf, map_one]
+
+theorem Monic.natDegree_eq_zero (hf : p.Monic) : p.natDegree = 0 ↔ p = 1 :=
+  ⟨eq_one_of_monic_natDegree_zero hf, by rintro rfl; simp⟩
 
 theorem ne_zero_of_coe_le_degree (hdeg : ↑n ≤ p.degree) : p ≠ 0 :=
   zero_le_degree_iff.mp <| (WithBot.coe_le_coe.mpr n.zero_le).trans hdeg

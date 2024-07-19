@@ -5,7 +5,9 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Algebra.RestrictScalars
+import Mathlib.Algebra.Module.Rat
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.MulAction
 
@@ -136,8 +138,16 @@ instance MulOpposite.instNormedSpace : NormedSpace 𝕜 Eᵐᵒᵖ where
 /-- A subspace of a normed space is also a normed space, with the restriction of the norm. -/
 instance Submodule.normedSpace {𝕜 R : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] {E : Type*}
     [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E]
-    (s : Submodule R E) : NormedSpace 𝕜 s where norm_smul_le c x := norm_smul_le c (x : E)
+    (s : Submodule R E) : NormedSpace 𝕜 s where
+  norm_smul_le c x := norm_smul_le c (x : E)
 #align submodule.normed_space Submodule.normedSpace
+
+variable {S 𝕜 R E : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] [SeminormedAddCommGroup E]
+variable [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E] [SetLike S E] [AddSubgroupClass S E]
+variable [SMulMemClass S R E] (s : S)
+
+instance (priority := 75) SubmoduleClass.toNormedSpace : NormedSpace 𝕜 s where
+  norm_smul_le c x := norm_smul_le c (x : E)
 
 end SeminormedAddCommGroup
 
@@ -397,6 +407,16 @@ instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedF
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
   NormedAlgebra.induced 𝕜 S A S.val
 #align subalgebra.to_normed_algebra Subalgebra.toNormedAlgebra
+
+section SubalgebraClass
+
+variable {S 𝕜 E : Type*} [NormedField 𝕜] [SeminormedRing E] [NormedAlgebra 𝕜 E]
+variable [SetLike S E] [SubringClass S E] [SMulMemClass S 𝕜 E] (s : S)
+
+instance (priority := 75) SubalgebraClass.toNormedAlgebra : NormedAlgebra 𝕜 s where
+  norm_smul_le c x := norm_smul_le c (x : E)
+
+end SubalgebraClass
 
 section RestrictScalars
 

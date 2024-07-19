@@ -100,17 +100,17 @@ theorem isPrimePow_iff_unique_prime_dvd {n : ℕ} : IsPrimePow n ↔ ∃! p : �
   simp only [and_imp] at hq
   apply Nat.dvd_antisymm (Nat.ord_proj_dvd _ _)
   -- We need to show n ∣ p ^ n.factorization p
-  apply Nat.dvd_of_factors_subperm hn₀
-  rw [hp.factors_pow, List.subperm_ext_iff]
+  apply Nat.dvd_of_primeFactorsList_subperm hn₀
+  rw [hp.primeFactorsList_pow, List.subperm_ext_iff]
   intro q hq'
-  rw [Nat.mem_factors hn₀] at hq'
+  rw [Nat.mem_primeFactorsList hn₀] at hq'
   cases hq _ hq'.1 hq'.2
   simp
 #align is_prime_pow_iff_unique_prime_dvd isPrimePow_iff_unique_prime_dvd
 
 theorem isPrimePow_pow_iff {n k : ℕ} (hk : k ≠ 0) : IsPrimePow (n ^ k) ↔ IsPrimePow n := by
   simp only [isPrimePow_iff_unique_prime_dvd]
-  apply exists_unique_congr
+  apply existsUnique_congr
   simp only [and_congr_right_iff]
   intro p hp
   exact ⟨hp.dvd_of_dvd_pow, fun t => t.trans (dvd_pow_self _ hk)⟩

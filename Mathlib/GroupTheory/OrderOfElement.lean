@@ -243,7 +243,7 @@ theorem orderOf_le_of_pow_eq_one (hn : 0 < n) (h : x ^ n = 1) : orderOf x ≤ n 
 
 @[to_additive (attr := simp)]
 theorem orderOf_one : orderOf (1 : G) = 1 := by
-  rw [orderOf, ← minimalPeriod_id (x := (1:G)), ← one_mul_eq_id]
+  rw [orderOf, ← minimalPeriod_id (x := (1 : G)), ← one_mul_eq_id]
 #align order_of_one orderOf_one
 #align order_of_zero addOrderOf_zero
 
@@ -348,7 +348,7 @@ theorem orderOf_eq_of_pow_and_pow_div_prime (hn : 0 < n) (hx : x ^ n = 1)
     exact Dvd.intro_left (orderOf x * b) ha.symm
   -- Use the minimum prime factor of `a` as `p`.
   refine hd a.minFac (Nat.minFac_prime h) a_min_fac_dvd_p_sub_one ?_
-  rw [← orderOf_dvd_iff_pow_eq_one, Nat.dvd_div_iff a_min_fac_dvd_p_sub_one, ha, mul_comm,
+  rw [← orderOf_dvd_iff_pow_eq_one, Nat.dvd_div_iff_mul_dvd a_min_fac_dvd_p_sub_one, ha, mul_comm,
     Nat.mul_dvd_mul_iff_left (IsOfFinOrder.orderOf_pos _)]
   · exact Nat.minFac_dvd a
   · rw [isOfFinOrder_iff_pow_eq_one]
@@ -513,8 +513,8 @@ theorem orderOf_mul_eq_right_of_forall_prime_mul_dvd (hy : IsOfFinOrder y)
   apply orderOf_eq_of_pow_and_pow_div_prime hoy <;> simp only [Ne, ← orderOf_dvd_iff_pow_eq_one]
   · exact h.orderOf_mul_dvd_lcm.trans (lcm_dvd hxy dvd_rfl)
   refine fun p hp hpy hd => hp.ne_one ?_
-  rw [← Nat.dvd_one, ← mul_dvd_mul_iff_right hoy.ne', one_mul, ← dvd_div_iff hpy]
-  refine (orderOf_dvd_lcm_mul h).trans (lcm_dvd ((dvd_div_iff hpy).2 ?_) hd)
+  rw [← Nat.dvd_one, ← mul_dvd_mul_iff_right hoy.ne', one_mul, ← dvd_div_iff_mul_dvd hpy]
+  refine (orderOf_dvd_lcm_mul h).trans (lcm_dvd ((dvd_div_iff_mul_dvd hpy).2 ?_) hd)
   by_cases h : p ∣ orderOf x
   exacts [hdvd p hp h, (hp.coprime_iff_not_dvd.2 h).mul_dvd_of_dvd_of_dvd hpy hxy]
 #align commute.order_of_mul_eq_right_of_forall_prime_mul_dvd Commute.orderOf_mul_eq_right_of_forall_prime_mul_dvd
@@ -623,15 +623,13 @@ noncomputable def finEquivPowers (x : G) (hx : IsOfFinOrder x) : Fin (orderOf x)
 #align fin_equiv_powers finEquivPowers
 #align fin_equiv_multiples finEquivMultiples
 
--- This lemma has always been bad, but the linter only noticed after leanprover/lean4#2644.
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 lemma finEquivPowers_apply (x : G) (hx) {n : Fin (orderOf x)} :
     finEquivPowers x hx n = ⟨x ^ (n : ℕ), n, rfl⟩ := rfl
 #align fin_equiv_powers_apply finEquivPowers_apply
 #align fin_equiv_multiples_apply finEquivMultiples_apply
 
--- This lemma has always been bad, but the linter only noticed after leanprover/lean4#2644.
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 lemma finEquivPowers_symm_apply (x : G) (hx) (n : ℕ) {hn : ∃ m : ℕ, x ^ m = x ^ n} :
     (finEquivPowers x hx).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
   rw [Equiv.symm_apply_eq, finEquivPowers_apply, Subtype.mk_eq_mk, ← pow_mod_orderOf, Fin.val_mk]
@@ -893,9 +891,7 @@ noncomputable def powersEquivPowers (h : orderOf x = orderOf y) : powers x ≃ p
 #align powers_equiv_powers powersEquivPowers
 #align multiples_equiv_multiples multiplesEquivMultiples
 
--- Porting note: the simpNF linter complains that simp can change the LHS to something
--- that looks the same as the current LHS even with `pp.explicit`
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem powersEquivPowers_apply (h : orderOf x = orderOf y) (n : ℕ) :
     powersEquivPowers h ⟨x ^ n, n, rfl⟩ = ⟨y ^ n, n, rfl⟩ := by
   rw [powersEquivPowers, Equiv.trans_apply, Equiv.trans_apply, finEquivPowers_symm_apply, ←
@@ -1144,13 +1140,10 @@ lemma Nat.Coprime.pow_left_bijective (hn : (Nat.card G).Coprime n) : Bijective (
   (powCoprime hn).bijective
 
 @[to_additive add_inf_eq_bot_of_coprime]
-theorem inf_eq_bot_of_coprime {G : Type*} [Group G] {H K : Subgroup G} [Fintype H] [Fintype K]
-    (h : Nat.Coprime (Fintype.card H) (Fintype.card K)) : H ⊓ K = ⊥ := by
-  refine (H ⊓ K).eq_bot_iff_forall.mpr fun x hx => ?_
-  rw [← orderOf_eq_one_iff, ← Nat.dvd_one, ← h.gcd_eq_one, Nat.dvd_gcd_iff]
-  exact
-    ⟨(congr_arg (· ∣ Fintype.card H) (orderOf_coe ⟨x, hx.1⟩)).mpr orderOf_dvd_card,
-      (congr_arg (· ∣ Fintype.card K) (orderOf_coe ⟨x, hx.2⟩)).mpr orderOf_dvd_card⟩
+theorem inf_eq_bot_of_coprime {G : Type*} [Group G] {H K : Subgroup G}
+    (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
+  card_eq_one.mp (Nat.eq_one_of_dvd_coprimes h
+    (card_dvd_of_le inf_le_left) (card_dvd_of_le inf_le_right))
 #align inf_eq_bot_of_coprime inf_eq_bot_of_coprime
 #align add_inf_eq_bot_of_coprime add_inf_eq_bot_of_coprime
 
@@ -1303,6 +1296,10 @@ theorem IsOfFinOrder.prod_mk : IsOfFinOrder a → IsOfFinOrder b → IsOfFinOrde
 #align is_of_fin_order.prod_mk IsOfFinOrder.prod_mk
 #align is_of_fin_add_order.prod_mk IsOfFinAddOrder.prod_mk
 
+@[to_additive]
+lemma Prod.orderOf_mk : orderOf (a, b) = Nat.lcm (orderOf a) (orderOf b) :=
+  (a, b).orderOf
+
 end Prod
 
 -- TODO: Corresponding `pi` lemmas. We cannot currently state them here because of import cycles
@@ -1344,3 +1341,13 @@ lemma charP_of_prime_pow_injective (R) [Ring R] [Fintype R] (p n : ℕ) [hp : Fa
   obtain rfl : i = n := hR i hi $ by rw [← Nat.cast_pow, CharP.cast_eq_zero]
   assumption
 #align char_p_of_prime_pow_injective charP_of_prime_pow_injective
+
+namespace SemiconjBy
+
+@[to_additive]
+lemma orderOf_eq [Group G] (a : G) {x y : G} (h : SemiconjBy a x y) : orderOf x = orderOf y := by
+  rw [orderOf_eq_orderOf_iff]
+  intro n
+  exact (h.pow_right n).eq_one_iff
+
+end SemiconjBy

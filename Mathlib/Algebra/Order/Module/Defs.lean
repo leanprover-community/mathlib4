@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Positivity.Core
+import Mathlib.Algebra.Order.Field.Unbundled.Basic
 
 /-!
 # Monotonicity of scalar multiplication by positive elements
@@ -59,22 +60,33 @@ used implications are:
   * `SMulPosStrictMono → SMulPosMono`
   * `PosSMulReflectLE → PosSMulReflectLT`
   * `SMulPosReflectLE → SMulPosReflectLT`
-* When `β` is a linear order: `PosSMulStrictMono → PosSMulReflectLE`
-* When `α` is a linear order: `SMulPosStrictMono → SMulPosReflectLE`
+* When `β` is a linear order:
+  * `PosSMulStrictMono → PosSMulReflectLE`
+  * `PosSMulReflectLT → PosSMulMono` (not registered as instance)
+  * `SMulPosReflectLT → SMulPosMono` (not registered as instance)
+  * `PosSMulReflectLE → PosSMulStrictMono` (not registered as instance)
+  * `SMulPosReflectLE → SMulPosStrictMono` (not registered as instance)
+* When `α` is a linear order:
+  * `SMulPosStrictMono → SMulPosReflectLE`
 * When `α` is an ordered ring, `β` an ordered group and also an `α`-module:
   * `PosSMulMono → SMulPosMono`
   * `PosSMulStrictMono → SMulPosStrictMono`
-* When `α` is an ordered semifield, `β` is an `α`-module:
+* When `α` is an linear ordered semifield, `β` is an `α`-module:
   * `PosSMulStrictMono → PosSMulReflectLT`
   * `PosSMulMono → PosSMulReflectLE`
+* When `α` is a semiring, `β` is an `α`-module with `NoZeroSMulDivisors`:
+  * `PosSMulMono → PosSMulStrictMono` (not registered as instance)
+* When `α` is a ring, `β` is an `α`-module with `NoZeroSMulDivisors`:
+  * `SMulPosMono → SMulPosStrictMono` (not registered as instance)
 
 Further, the bundled non-granular typeclasses imply the granular ones like so:
 * `OrderedSMul → PosSMulStrictMono`
 * `OrderedSMul → PosSMulReflectLT`
 
-All these are registered as instances, which means that in practice you should not worry about these
-implications. However, if you encounter a case where you think a statement is true but not covered
-by the current implications, please bring it up on Zulip!
+Unless otherwise stated, all these implications are registered as instances,
+which means that in practice you should not worry about these implications.
+However, if you encounter a case where you think a statement is true but
+not covered by the current implications, please bring it up on Zulip!
 
 ## Implementation notes
 
@@ -984,13 +996,14 @@ variable [LinearOrderedSemifield α] [AddCommGroup β] [PartialOrder β]
 -- See note [lower instance priority]
 instance (priority := 100) PosSMulMono.toPosSMulReflectLE [MulAction α β] [PosSMulMono α β] :
     PosSMulReflectLE α β where
-  elim _a ha b₁ b₂ h := by simpa [ha.ne'] using smul_le_smul_of_nonneg_left h <| inv_nonneg.2 ha.le
+  elim _a ha b₁ b₂ h := by
+    simpa [ha.ne'] using smul_le_smul_of_nonneg_left h <| inv_nonneg (α := α) |>.2 ha.le
 
 -- See note [lower instance priority]
 instance (priority := 100) PosSMulStrictMono.toPosSMulReflectLT [MulActionWithZero α β]
     [PosSMulStrictMono α β] : PosSMulReflectLT α β :=
   PosSMulReflectLT.of_pos fun a ha b₁ b₂ h ↦ by
-    simpa [ha.ne'] using smul_lt_smul_of_pos_left h <| inv_pos.2 ha
+    simpa [ha.ne'] using smul_lt_smul_of_pos_left h <| inv_pos (α := α) |>.2 ha
 
 end LinearOrderedSemifield
 

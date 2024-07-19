@@ -141,7 +141,7 @@ theorem FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto
       (∀ u : ℕ → X, Tendsto u atTop (𝓝 a) → Tendsto (f ∘ u) atTop (𝓝 (f a))) → ContinuousAt f a) :
     FrechetUrysohnSpace X := by
   refine ⟨fun s x hcx => ?_⟩
-  by_cases hx : x ∈ s;
+  by_cases hx : x ∈ s
   · exact subset_seqClosure hx
   · obtain ⟨u, hux, hus⟩ : ∃ u : ℕ → X, Tendsto u atTop (𝓝 x) ∧ ∃ᶠ x in atTop, u x ∈ s := by
       simpa only [ContinuousAt, hx, tendsto_nhds_true, (· ∘ ·), ← not_frequently, exists_prop,
@@ -164,6 +164,20 @@ instance (priority := 100) FrechetUrysohnSpace.to_sequentialSpace [FrechetUrysoh
     SequentialSpace X :=
   ⟨fun s hs => by rw [← closure_eq_iff_isClosed, ← seqClosure_eq_closure, hs.seqClosure_eq]⟩
 #align frechet_urysohn_space.to_sequential_space FrechetUrysohnSpace.to_sequentialSpace
+
+theorem Inducing.frechetUrysohnSpace [FrechetUrysohnSpace Y] {f : X → Y} (hf : Inducing f) :
+    FrechetUrysohnSpace X := by
+  refine ⟨fun s x hx ↦ ?_⟩
+  rw [hf.closure_eq_preimage_closure_image, mem_preimage, mem_closure_iff_seq_limit] at hx
+  rcases hx with ⟨u, hus, hu⟩
+  choose v hv hvu using hus
+  refine ⟨v, hv, ?_⟩
+  simpa only [hf.tendsto_nhds_iff, (· ∘ ·), hvu]
+
+/-- Subtype of a Fréchet-Urysohn space is a Fréchet-Urysohn space. -/
+instance Subtype.instFrechetUrysohnSpace [FrechetUrysohnSpace X] {p : X → Prop} :
+    FrechetUrysohnSpace (Subtype p) :=
+  inducing_subtype_val.frechetUrysohnSpace
 
 /-- In a sequential space, a set is closed iff it's sequentially closed. -/
 theorem isSeqClosed_iff_isClosed [SequentialSpace X] {M : Set X} : IsSeqClosed M ↔ IsClosed M :=
@@ -194,14 +208,43 @@ theorem continuous_iff_seqContinuous [SequentialSpace X] {f : X → Y} :
   ⟨Continuous.seqContinuous, SeqContinuous.continuous⟩
 #align continuous_iff_seq_continuous continuous_iff_seqContinuous
 
+theorem SequentialSpace.coinduced [SequentialSpace X] (f : X → Y) :
+    @SequentialSpace Y (.coinduced f ‹_›) :=
+  letI : TopologicalSpace Y := .coinduced f ‹_›
+  ⟨fun s hs ↦ isClosed_coinduced.2 (hs.preimage continuous_coinduced_rng.seqContinuous).isClosed⟩
+
+protected theorem SequentialSpace.iSup {ι : Sort*} {t : ι → TopologicalSpace X}
+    (h : ∀ i, @SequentialSpace X (t i)) : @SequentialSpace X (⨆ i, t i) := by
+  letI : TopologicalSpace X := ⨆ i, t i
+  refine ⟨fun s hs ↦ isClosed_iSup_iff.2 fun i ↦ ?_⟩
+  letI := t i
+  exact IsSeqClosed.isClosed fun u x hus hux ↦ hs hus <| hux.mono_right <| nhds_mono <| le_iSup _ _
+
+protected theorem SequentialSpace.sup {t₁ t₂ : TopologicalSpace X}
+    (h₁ : @SequentialSpace X t₁) (h₂ : @SequentialSpace X t₂) :
+    @SequentialSpace X (t₁ ⊔ t₂) := by
+  rw [sup_eq_iSup]
+  exact .iSup <| Bool.forall_bool.2 ⟨h₂, h₁⟩
+
 theorem QuotientMap.sequentialSpace [SequentialSpace X] {f : X → Y} (hf : QuotientMap f) :
     SequentialSpace Y :=
-  ⟨fun _s hs => hf.isClosed_preimage.mp <| (hs.preimage <| hf.continuous.seqContinuous).isClosed⟩
+  hf.2.symm ▸ .coinduced f
 #align quotient_map.sequential_space QuotientMap.sequentialSpace
 
 /-- The quotient of a sequential space is a sequential space. -/
-instance [SequentialSpace X] {s : Setoid X} : SequentialSpace (Quotient s) :=
+instance Quotient.instSequentialSpace [SequentialSpace X] {s : Setoid X} :
+    SequentialSpace (Quotient s) :=
   quotientMap_quot_mk.sequentialSpace
+
+/-- The sum (disjoint union) of two sequential spaces is a sequential space. -/
+instance Sum.instSequentialSpace [SequentialSpace X] [SequentialSpace Y] :
+    SequentialSpace (X ⊕ Y) :=
+  .sup (.coinduced Sum.inl) (.coinduced Sum.inr)
+
+/-- The disjoint union of an indexed family of sequential spaces is a sequential space. -/
+instance Sigma.instSequentialSpace {ι : Type*} {X : ι → Type*}
+    [∀ i, TopologicalSpace (X i)] [∀ i, SequentialSpace (X i)] : SequentialSpace (Σ i, X i) :=
+  .iSup fun _ ↦ .coinduced _
 
 end TopologicalSpace
 

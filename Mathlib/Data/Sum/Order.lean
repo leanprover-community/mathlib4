@@ -688,7 +688,7 @@ theorem sumLexAssoc_symm_apply_inr_inr : (sumLexAssoc α β γ).symm (inr (inr c
 def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ ≃o βᵒᵈ ⊕ₗ αᵒᵈ :=
   { Equiv.sumComm α β with
     map_rel_iff' := @fun a b => by
-      rcases a with (a | a) <;> rcases b with (b | b);
+      rcases a with (a | a) <;> rcases b with (b | b)
       · simp
         change
           toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔
@@ -781,7 +781,7 @@ namespace WithTop
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
   ⟨(Equiv.optionEquivSumPUnit α).trans toLex, @fun a b => by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
-      ge_iff_le, Lex.toLex_le_toLex, le_refl, lex_inr_inr, le_top]
+      Lex.toLex_le_toLex, le_refl, lex_inr_inr, le_top]
     cases' a <;> cases' b
     · simp only [lex_inr_inr, le_top]
     · simp only [lex_inr_inl, false_iff]

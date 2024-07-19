@@ -347,7 +347,7 @@ theorem cases_head (h : ReflTransGen r a b) : a = b ∨ ∃ c, r a c ∧ ReflTra
   · left
     rfl
   · right
-    exact ⟨_, by assumption, by assumption⟩;
+    exact ⟨_, by assumption, by assumption⟩
 #align relation.refl_trans_gen.cases_head Relation.ReflTransGen.cases_head
 
 theorem cases_head_iff : ReflTransGen r a b ↔ a = b ∨ ∃ c, r a c ∧ ReflTransGen r c b := by
@@ -526,6 +526,10 @@ theorem TransGen.closed {p : α → α → Prop} :
     (∀ a b, r a b → TransGen p a b) → TransGen r a b → TransGen p a b :=
   TransGen.lift' id
 #align relation.trans_gen.closed Relation.TransGen.closed
+
+lemma TransGen.closed' {P : α → Prop} (dc : ∀ {a b}, r a b → P b → P a)
+    {a b : α} (h : TransGen r a b) : P b → P a :=
+  h.head_induction_on dc fun hr _ hi ↦ dc hr ∘ hi
 
 theorem TransGen.mono {p : α → α → Prop} :
     (∀ a b, r a b → p a b) → TransGen r a b → TransGen p a b :=

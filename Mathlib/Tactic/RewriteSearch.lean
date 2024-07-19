@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.List.EditDistance.Estimator
 import Mathlib.Data.MLList.BestFirst
 import Mathlib.Order.Interval.Finset.Nat
+import Batteries.Data.MLList.Heartbeats
 
 /-!
 # The `rw_search` tactic
@@ -43,8 +44,6 @@ but will not use local hypotheses to discharge side conditions.
 This limitation would need to be resolved in the `rw?` tactic first.
 
 -/
-
-set_option autoImplicit true
 
 namespace Mathlib.Tactic.RewriteSearch
 
@@ -326,3 +325,9 @@ elab_rules : tactic |
   let type? ← if min.rfl? = some true then pure none else do pure <| some (← min.goal.getType)
   addRewriteSuggestion tk (min.history.toList.map (·.2))
     type? (origSpan? := ← getRef)
+
+end RewriteSearch
+
+end Tactic
+
+end Mathlib
