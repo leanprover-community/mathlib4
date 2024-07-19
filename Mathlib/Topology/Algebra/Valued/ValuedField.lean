@@ -115,7 +115,7 @@ open WithZeroTopology
 open Valued
 
 lemma continuous_iff_restrictionRangeGroup_continuous [Valued K Γ₀] :
-  Continuous (Valued.v : K → Γ₀) ↔ Continuous (Valued.v.restrictionRangeGroup (R :=K) ) := by sorry
+    Continuous (Valued.v : K → Γ₀) ↔ Continuous (Valued.v.restrictionRangeGroup (R :=K) ) := by sorry
 
 theorem Valued.continuous_valuation [Valued K Γ₀] : Continuous (v : K → Γ₀) := by
   rw [continuous_iff_continuousAt]
