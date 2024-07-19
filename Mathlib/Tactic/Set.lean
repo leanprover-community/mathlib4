@@ -5,6 +5,17 @@ Authors: Ian Benway
 -/
 import Lean
 
+/-!
+# The `set` tactic
+
+This file defines the `set` tactic and its variant `set!`.
+
+`set a := t with h` is a variant of `let a := t`. It adds the hypothesis `h : a = t` to
+the local context and replaces `t` with `a` everywhere it can.
+`set a := t with ← h` will add `h : t = a` instead.
+`set! a := t with h` does not do any replacing.
+-/
+
 namespace Mathlib.Tactic
 open Lean Elab Elab.Tactic Meta
 
@@ -51,7 +62,8 @@ elab_rules : tactic
     let fvar ← liftMetaTacticAux fun goal ↦ do
       let (fvar, goal) ← (← goal.define a.getId ty vale).intro1P
       pure (fvar, [goal])
-    Term.addTermInfo' (isBinder := true) a (mkFVar fvar)
+    withMainContext <|
+      Term.addTermInfo' (isBinder := true) a (mkFVar fvar)
     if rw.isNone then
       evalTactic (← `(tactic| try rewrite [show $(← Term.exprToSyntax vale) = $a from rfl] at *))
     match h, rev with

@@ -439,8 +439,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     -- assumption for `g' ∘ f`).
     _ ≤ ∑ i ∈ Finset.range (n + 1), (n.choose i : ℝ) * (i ! * C * D ^ i) * D ^ (n - i + 1) := by
       gcongr with i hi
-      · simp only [mul_assoc (n.choose i : ℝ)]
-        exact I i hi
+      · exact I i hi
       · exact J i
     -- We are left with trivial algebraic manipulations to see that this is smaller than
     -- the claimed bound.

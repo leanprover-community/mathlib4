@@ -3,8 +3,10 @@ Copyright (c) 2019 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.Module.Submodule.Equiv
+import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Data.Bracket
-import Mathlib.LinearAlgebra.Basic
+import Mathlib.Tactic.Abel
 
 #align_import algebra.lie.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -275,7 +277,7 @@ instance Module.Dual.instLieModule : LieModule R L (M →ₗ[R] R) where
 end BasicProperties
 
 /-- A morphism of Lie algebras is a linear map respecting the bracket operations. -/
-structure LieHom (R L L': Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+structure LieHom (R L L' : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [LieRing L'] [LieAlgebra R L'] extends L →ₗ[R] L' where
   /-- A morphism of Lie algebras is compatible with brackets. -/
   map_lie' : ∀ {x y : L}, toFun ⁅x, y⁆ = ⁅toFun x, toFun y⁆

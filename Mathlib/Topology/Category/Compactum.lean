@@ -71,7 +71,6 @@ We also add wrappers around structures which already exist. Here are the main on
 
 -/
 
--- Porting note: "Compactum" is already upper case
 set_option linter.uppercaseLean3 false
 universe u
 
@@ -432,7 +431,7 @@ end Compactum
 
 /-- The functor functor from Compactum to CompHaus. -/
 def compactumToCompHaus : Compactum ⥤ CompHaus where
-  obj X := { toTop := { α := X } }
+  obj X := { toTop := { α := X }, prop := trivial }
   map := @fun X Y f =>
     { toFun := f
       continuous_toFun := Compactum.continuous_of_hom _ }
@@ -450,7 +449,7 @@ instance faithful : compactumToCompHaus.Faithful where
   -- Porting note: this used to be obviously (though it consumed a bit of memory)
   map_injective := by
     intro _ _ _ _ h
-    -- Porting note: ext gets confused by coercion using forget
+    -- Porting note (#11041): `ext` gets confused by coercion using forget.
     apply Monad.Algebra.Hom.ext
     apply congrArg (fun f => f.toFun) h
 #align Compactum_to_CompHaus.faithful compactumToCompHaus.faithful

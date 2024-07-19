@@ -41,7 +41,7 @@ theorem add_pow (h : Commute x y) (n : ℕ) :
   have h_first : ∀ n, t n 0 = y ^ n := fun n ↦ by
     simp only [t, choose_zero_right, _root_.pow_zero, Nat.cast_one, mul_one, one_mul, tsub_zero]
   have h_last : ∀ n, t n n.succ = 0 := fun n ↦ by
-    simp only [t, ge_iff_le, choose_succ_self, cast_zero, mul_zero]
+    simp only [t, choose_succ_self, cast_zero, mul_zero]
   have h_middle :
     ∀ n i : ℕ, i ∈ range n.succ → (t n.succ ∘ Nat.succ) i =
       x * t n i + y * t n i.succ := by
@@ -187,7 +187,6 @@ theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (
 
 variable {M R : Type*} [CommMonoid M] [NonAssocSemiring R]
 
--- Porting note (#10756): new lemma
 @[to_additive sum_choose_succ_nsmul]
 theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
     (∏ i ∈ range (n + 2), f i (n + 1 - i) ^ (n + 1).choose i) =
@@ -200,7 +199,6 @@ theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) 
   rw [prod_range_succ']
   simpa [Nat.choose_succ_succ, pow_add, prod_mul_distrib, A, mul_assoc] using mul_comm _ _
 
--- Porting note (#10756): new lemma
 @[to_additive sum_antidiagonal_choose_succ_nsmul]
 theorem prod_antidiagonal_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
     (∏ ij ∈ antidiagonal (n + 1), f ij.1 ij.2 ^ (n + 1).choose ij.1) =

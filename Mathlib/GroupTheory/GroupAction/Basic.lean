@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Group
 
 #align_import group_theory.group_action.basic from "leanprover-community/mathlib"@"d30d31261cdb4d2f5e612eabc3c4bf45556350d5"
@@ -38,7 +38,7 @@ open Function
 
 namespace MulAction
 
-variable (M : Type u) [Monoid M] (α : Type v) [MulAction M α]
+variable (M : Type u) [Monoid M] (α : Type v) [MulAction M α] {β : Type*} [MulAction M β]
 
 section Orbit
 
@@ -116,6 +116,18 @@ lemma orbit_submonoid_subset (S : Submonoid M) (a : α) : orbit S a ⊆ orbit M 
 lemma mem_orbit_of_mem_orbit_submonoid {S : Submonoid M} {a b : α} (h : a ∈ orbit S b) :
     a ∈ orbit M b :=
   orbit_submonoid_subset S _ h
+
+@[to_additive]
+lemma fst_mem_orbit_of_mem_orbit {x y : α × β} (h : x ∈ MulAction.orbit M y) :
+    x.1 ∈ MulAction.orbit M y.1 := by
+  rcases h with ⟨g, rfl⟩
+  exact mem_orbit _ _
+
+@[to_additive]
+lemma snd_mem_orbit_of_mem_orbit {x y : α × β} (h : x ∈ MulAction.orbit M y) :
+    x.2 ∈ MulAction.orbit M y.2 := by
+  rcases h with ⟨g, rfl⟩
+  exact mem_orbit _ _
 
 variable (M)
 
@@ -668,6 +680,18 @@ def selfEquivSigmaOrbits : α ≃ Σω : Ω, orbit G ω.out' :=
 #align mul_action.self_equiv_sigma_orbits MulAction.selfEquivSigmaOrbits
 #align add_action.self_equiv_sigma_orbits AddAction.selfEquivSigmaOrbits
 
+variable (β)
+
+@[to_additive]
+lemma orbitRel_le_fst :
+    orbitRel G (α × β) ≤ (orbitRel G α).comap Prod.fst :=
+  Setoid.le_def.2 fst_mem_orbit_of_mem_orbit
+
+@[to_additive]
+lemma orbitRel_le_snd :
+    orbitRel G (α × β) ≤ (orbitRel G β).comap Prod.snd :=
+  Setoid.le_def.2 snd_mem_orbit_of_mem_orbit
+
 end Orbit
 
 section Stabilizer
@@ -827,3 +851,5 @@ theorem mem_stabilizer_of_finite_iff_le_smul (s : Set α) (hs : s.Finite) (g : G
     g ∈ stabilizer G s ↔ s ⊆ g • s := by
   rw [← @inv_mem_iff, mem_stabilizer_of_finite_iff_smul_le s hs]
   exact Set.subset_set_smul_iff.symm
+
+end MulAction

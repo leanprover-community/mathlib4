@@ -208,6 +208,17 @@ theorem IntermediateField.eq_bot_of_isAlgClosed_of_isAlgebraic {k K : Type*} [Fi
   obtain ⟨y, hy⟩ := IsAlgClosed.algebraMap_surjective_of_isIntegral (k := k) (⟨x, hx⟩ : L)
   exact ⟨y, congr_arg (algebraMap L K) hy⟩
 
+lemma Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed (K : Type v) [Field K] [IsAlgClosed K]
+    [Algebra k K] (p q : k[X]) : IsCoprime p q ↔ ∀ a : K, aeval a p ≠ 0 ∨ aeval a q ≠ 0 := by
+  refine ⟨fun h => aeval_ne_zero_of_isCoprime h, fun h => isCoprime_of_dvd _ _ ?_ fun x hu h0 => ?_⟩
+  · replace h := h 0
+    contrapose! h
+    rw [h.left, h.right, map_zero, and_self]
+  · rintro ⟨_, rfl⟩ ⟨_, rfl⟩
+    obtain ⟨a, ha : _ = _⟩ := IsAlgClosed.exists_root (x.map <| algebraMap k K) <| by
+      simpa only [degree_map] using (ne_of_lt <| degree_pos_of_ne_zero_of_nonunit h0 hu).symm
+    exact not_and_or.mpr (h a) (by simp_rw [map_mul, ← eval_map_algebraMap, ha, zero_mul, true_and])
+
 /-- Typeclass for an extension being an algebraic closure. -/
 class IsAlgClosure (R : Type u) (K : Type v) [CommRing R] [Field K] [Algebra R K]
     [NoZeroSMulDivisors R K] : Prop where
@@ -229,7 +240,7 @@ instance (priority := 100) IsAlgClosure.normal (R K : Type*) [Field R] [Field K]
 #align is_alg_closure.normal IsAlgClosure.normal
 
 instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field K] [Algebra R K]
-    [IsAlgClosure R K] [CharZero R] : IsSeparable R K :=
+    [IsAlgClosure R K] [CharZero R] : Algebra.IsSeparable R K :=
   ⟨fun _ => (minpoly.irreducible (Algebra.IsIntegral.isIntegral _)).separable⟩
 #align is_alg_closure.separable IsAlgClosure.separable
 

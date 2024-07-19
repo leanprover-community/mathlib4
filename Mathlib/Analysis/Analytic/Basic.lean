@@ -3,6 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
+import Mathlib.Algebra.Star.Order
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Logic.Equiv.Fin
@@ -181,6 +182,11 @@ theorem constFormalMultilinearSeries_radius {v : F} :
   (constFormalMultilinearSeries 𝕜 E v).radius_eq_top_of_forall_image_add_eq_zero 1
     (by simp [constFormalMultilinearSeries])
 #align formal_multilinear_series.const_formal_multilinear_series_radius FormalMultilinearSeries.constFormalMultilinearSeries_radius
+
+/-- `0` has infinite radius of convergence -/
+@[simp] lemma zero_radius : (0 : FormalMultilinearSeries 𝕜 E F).radius = ∞ := by
+  rw [← constFormalMultilinearSeries_zero]
+  exact constFormalMultilinearSeries_radius
 
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ` tends to zero exponentially:
 for some `0 < a < 1`, `‖p n‖ rⁿ = o(aⁿ)`. -/
@@ -611,6 +617,9 @@ theorem AnalyticOn.add {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn �
   fun z hz => (hf z hz).add (hg z hz)
 #align analytic_on.add AnalyticOn.add
 
+theorem AnalyticOn.neg {s : Set E} (hf : AnalyticOn 𝕜 f s) : AnalyticOn 𝕜 (-f) s :=
+  fun z hz ↦ (hf z hz).neg
+
 theorem AnalyticOn.sub {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (f - g) s :=
   fun z hz => (hf z hz).sub (hg z hz)
@@ -1018,9 +1027,7 @@ theorem HasFPowerSeriesAt.apply_eq_zero {p : FormalMultilinearSeries 𝕜 E F} {
 /-- A one-dimensional formal multilinear series representing the zero function is zero. -/
 theorem HasFPowerSeriesAt.eq_zero {p : FormalMultilinearSeries 𝕜 𝕜 E} {x : 𝕜}
     (h : HasFPowerSeriesAt 0 p x) : p = 0 := by
-  -- Porting note: `funext; ext` was `ext (n x)`
-  funext n
-  ext x
+  ext n x
   rw [← mkPiRing_apply_one_eq_self (p n)]
   simp [h.apply_eq_zero n 1]
 #align has_fpower_series_at.eq_zero HasFPowerSeriesAt.eq_zero

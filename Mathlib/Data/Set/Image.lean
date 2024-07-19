@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.WithBot
+import Batteries.Tactic.Congr
 
 #align_import data.set.image from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 
@@ -219,6 +220,10 @@ theorem _root_.Function.Injective.mem_set_image {f : α → β} (hf : Injective 
     f a ∈ f '' s ↔ a ∈ s :=
   ⟨fun ⟨_, hb, Eq⟩ => hf Eq ▸ hb, mem_image_of_mem f⟩
 #align function.injective.mem_set_image Function.Injective.mem_set_image
+
+lemma preimage_subset_of_surjOn {t : Set β} (hf : Injective f) (h : SurjOn f s t) :
+    f ⁻¹' t ⊆ s := fun _ hx ↦
+  hf.mem_set_image.1 $ h hx
 
 theorem forall_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
     (∀ y ∈ f '' s, p y) ↔ ∀ ⦃x⦄, x ∈ s → p (f x) := by simp
@@ -576,6 +581,14 @@ theorem subset_image_iff {t : Set β} :
     fun ⟨u, hu, hu'⟩ ↦ hu'.symm ▸ image_mono hu⟩
   rwa [image_preimage_inter, inter_eq_left]
 
+@[simp]
+lemma exists_subset_image_iff {p : Set β → Prop} : (∃ t ⊆ f '' s, p t) ↔ ∃ t ⊆ s, p (f '' t) := by
+  simp [subset_image_iff]
+
+@[simp]
+lemma forall_subset_image_iff {p : Set β → Prop} : (∀ t ⊆ f '' s, p t) ↔ ∀ t ⊆ s, p (f '' t) := by
+  simp [subset_image_iff]
+
 theorem image_subset_image_iff {f : α → β} (hf : Injective f) : f '' s ⊆ f '' t ↔ s ⊆ t := by
   refine Iff.symm <| (Iff.intro (image_subset f)) fun h => ?_
   rw [← preimage_image_eq s hf, ← preimage_image_eq t hf]
@@ -805,10 +818,12 @@ theorem exists_subset_range_and_iff {f : α → β} {p : Set β → Prop} :
   rw [← exists_range_iff, range_image]; rfl
 #align set.exists_subset_range_and_iff Set.exists_subset_range_and_iff
 
+@[deprecated exists_subset_range_and_iff (since := "2024-06-06")]
 theorem exists_subset_range_iff {f : α → β} {p : Set β → Prop} :
     (∃ (s : _) (_ : s ⊆ range f), p s) ↔ ∃ s, p (f '' s) := by simp
 #align set.exists_subset_range_iff Set.exists_subset_range_iff
 
+@[simp]
 theorem forall_subset_range_iff {f : α → β} {p : Set β → Prop} :
     (∀ s, s ⊆ range f → p s) ↔ ∀ s, p (f '' s) := by
   rw [← forall_mem_range, range_image]; rfl

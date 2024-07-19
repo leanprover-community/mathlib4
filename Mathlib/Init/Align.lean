@@ -9,6 +9,17 @@ import Mathlib.Init.Logic
 import Mathlib.Tactic.Relation.Trans
 
 /-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+
 # Realignments from lean 3 `init`
 
 These are collected in one place only for ease of maintenance of a bunch of files that would
@@ -158,10 +169,6 @@ set_option align.precheck false in #align mk_array mkArray'
 set_option align.precheck false in #align nat.to_digits Nat.toDigits'
 
 /-! ## `init.data.setoid` -/
-
-attribute [refl] Setoid.refl
-attribute [symm] Setoid.symm
-attribute [trans] Setoid.trans
 
 /-! ## `init.data.sigma.basic` -/
 

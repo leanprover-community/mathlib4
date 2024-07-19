@@ -3,7 +3,6 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.Tactic.FieldSimp
@@ -390,7 +389,7 @@ theorem det_trans (f g : M ≃ₗ[R] M) :
   map_mul _ g f
 #align linear_equiv.det_trans LinearEquiv.det_trans
 
-@[simp, nolint simpNF]
+@[simp]
 theorem det_symm (f : M ≃ₗ[R] M) : LinearEquiv.det f.symm = LinearEquiv.det f⁻¹ :=
   map_inv _ f
 #align linear_equiv.det_symm LinearEquiv.det_symm

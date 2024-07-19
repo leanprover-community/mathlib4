@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Ring.Regular
 
 #align_import algebra.geom_sum from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -105,7 +106,7 @@ protected theorem Commute.geom_sum₂_mul_add {x y : α} (h : Commute x y) (n : 
   let f :  ℕ → ℕ → α := fun m i : ℕ => (x + y) ^ i * y ^ (m - 1 - i)
   -- Porting note: adding `hf` here, because below in two places `dsimp [f]` didn't work
   have hf : ∀ m i : ℕ, f m i = (x + y) ^ i * y ^ (m - 1 - i) := by
-    simp only [ge_iff_le, tsub_le_iff_right, forall_const]
+    simp only [tsub_le_iff_right, forall_const]
   change (∑ i ∈ range n, (f n) i) * x + y ^ n = (x + y) ^ n
   induction' n with n ih
   · rw [range_zero, sum_empty, zero_mul, zero_add, pow_zero, pow_zero]
@@ -496,7 +497,7 @@ theorem geom_sum_alternating_of_le_neg_one [StrictOrderedRing α] (hx : x + 1 �
 
 theorem geom_sum_alternating_of_lt_neg_one [StrictOrderedRing α] (hx : x + 1 < 0) (hn : 1 < n) :
     if Even n then (∑ i ∈ range n, x ^ i) < 0 else 1 < ∑ i ∈ range n, x ^ i := by
-  have hx0 : x < 0 := ((le_add_iff_nonneg_right _).2 zero_le_one).trans_lt hx
+  have hx0 : x < 0 := (le_add_of_nonneg_right zero_le_one).trans_lt hx
   refine Nat.le_induction ?_ ?_ n (show 2 ≤ n from hn)
   · simp only [geom_sum_two, lt_add_iff_pos_left, ite_true, gt_iff_lt, hx, even_two]
   clear hn

@@ -11,6 +11,9 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Cases
 import Mathlib.Order.Notation
+import Batteries.Data.Sum.Lemmas
+import Batteries.Tactic.Classical
+
 
 #align_import order.basic from "leanprover-community/mathlib"@"90df25ded755a2cf9651ea850d1abe429b1e4eb1"
 
@@ -1336,6 +1339,15 @@ theorem lt_iff : x < y ↔ x.1 < y.1 ∧ x.2 ≤ y.2 ∨ x.1 ≤ y.1 ∧ x.2 < y
 theorem mk_lt_mk : (a₁, b₁) < (a₂, b₂) ↔ a₁ < a₂ ∧ b₁ ≤ b₂ ∨ a₁ ≤ a₂ ∧ b₁ < b₂ :=
   lt_iff
 #align prod.mk_lt_mk Prod.mk_lt_mk
+
+protected lemma lt_of_lt_of_le (h₁ : x.1 < y.1) (h₂ : x.2 ≤ y.2) : x < y := by simp [lt_iff, *]
+protected lemma lt_of_le_of_lt (h₁ : x.1 ≤ y.1) (h₂ : x.2 < y.2) : x < y := by simp [lt_iff, *]
+
+lemma mk_lt_mk_of_lt_of_le (h₁ : a₁ < a₂) (h₂ : b₁ ≤ b₂) : (a₁, b₁) < (a₂, b₂) := by
+  simp [lt_iff, *]
+
+lemma mk_lt_mk_of_le_of_lt (h₁ : a₁ ≤ a₂) (h₂ : b₁ < b₂) : (a₁, b₁) < (a₂, b₂) := by
+  simp [lt_iff, *]
 
 end Preorder
 

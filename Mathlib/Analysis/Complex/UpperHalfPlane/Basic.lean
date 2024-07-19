@@ -3,11 +3,11 @@ Copyright (c) 2021 Alex Kontorovich and Heather Macbeth and Marc Masdeu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
-import Mathlib.Data.Fintype.Parity
-import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
+import Mathlib.Data.Fintype.Parity
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.LinearCombination
 
@@ -66,7 +66,8 @@ instance : Inhabited ℍ :=
 
 @[ext] theorem ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.eq h
 
-@[simp, norm_cast] theorem ext_iff {a b : ℍ} : (a : ℂ) = b ↔ a = b := Subtype.coe_inj
+protected theorem ext_iff {a b : ℍ} : a = b ↔ (a : ℂ) = b := Subtype.coe_inj.symm
+@[simp, norm_cast] theorem ext_iff' {a b : ℍ} : (a : ℂ) = b ↔ a = b := UpperHalfPlane.ext_iff.symm
 
 instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im :=
   Subtype.canLift fun (z : ℂ) => 0 < z.im
@@ -243,10 +244,6 @@ def smulAux' (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ :=
   num g z / denom g z
 #align upper_half_plane.smul_aux' UpperHalfPlane.smulAux'
 
-#adaptation_note /-- after v4.7.0-rc1, there is a performance problem in `field_simp`.
-(Part of the code was ignoring the `maxDischargeDepth` setting:
- now that we have to increase it, other paths become slow.) -/
-set_option maxHeartbeats 400000 in
 theorem smulAux'_im (g : GL(2, ℝ)⁺) (z : ℍ) :
     (smulAux' g z).im = det ↑ₘg * z.im / Complex.normSq (denom g z) := by
   rw [smulAux', Complex.div_im]
@@ -333,8 +330,7 @@ theorem SLOnGLPos_smul_apply (s : SL(2, ℤ)) (g : GL(2, ℝ)⁺) (z : ℍ) :
 #align upper_half_plane.SL_on_GL_pos_smul_apply UpperHalfPlane.ModularGroup.SLOnGLPos_smul_apply
 
 instance SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
-  smul_assoc := by
-    intro s g z
+  smul_assoc s g z := by
     simp only [SLOnGLPos_smul_apply]
     apply mul_smul'
 #align upper_half_plane.SL_to_GL_tower UpperHalfPlane.ModularGroup.SL_to_GL_tower
@@ -349,8 +345,7 @@ theorem subgroup_on_glpos_smul_apply (s : Γ) (g : GL(2, ℝ)⁺) (z : ℍ) :
 #align upper_half_plane.subgroup_on_GL_pos_smul_apply UpperHalfPlane.ModularGroup.subgroup_on_glpos_smul_apply
 
 instance subgroup_on_glpos : IsScalarTower Γ GL(2, ℝ)⁺ ℍ where
-  smul_assoc := by
-    intro s g z
+  smul_assoc s g z := by
     simp only [subgroup_on_glpos_smul_apply]
     apply mul_smul'
 #align upper_half_plane.subgroup_on_GL_pos UpperHalfPlane.ModularGroup.subgroup_on_glpos
@@ -523,7 +518,7 @@ theorem modular_S_smul (z : ℍ) : ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.i
 #align upper_half_plane.modular_S_smul UpperHalfPlane.modular_S_smul
 
 theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n : ℝ) +ᵥ z := by
-  rw [← ext_iff, coe_vadd, add_comm, specialLinearGroup_apply, coe_mk]
+  rw [UpperHalfPlane.ext_iff, coe_vadd, add_comm, specialLinearGroup_apply, coe_mk]
   -- Porting note: added `coeToGL` and merged `rw` and `simp`
   simp [coeToGL, ModularGroup.coe_T_zpow,
     of_apply, cons_val_zero, algebraMap.coe_one, Complex.ofReal_one, one_mul, cons_val_one,
@@ -565,7 +560,7 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : ↑�
     exact mul_ne_zero hc h_denom
   replace h : (a * d - b * c : ℂ) = (1 : ℂ) := by norm_cast
   field_simp
-  linear_combination (-(z * (c:ℂ) ^ 2) - c * d) * h
+  linear_combination (-(z * (c : ℂ) ^ 2) - c * d) * h
 #align upper_half_plane.exists_SL2_smul_eq_of_apply_zero_one_ne_zero UpperHalfPlane.exists_SL2_smul_eq_of_apply_zero_one_ne_zero
 
 end UpperHalfPlane

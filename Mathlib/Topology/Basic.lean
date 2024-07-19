@@ -168,7 +168,6 @@ theorem TopologicalSpace.ext_iff_isClosed {t₁ t₂ : TopologicalSpace X} :
 
 alias ⟨_, TopologicalSpace.ext_isClosed⟩ := TopologicalSpace.ext_iff_isClosed
 
--- Porting note (#10756): new lemma
 theorem isClosed_const {p : Prop} : IsClosed { _x : X | p } := ⟨isOpen_const (p := ¬p)⟩
 
 @[simp] theorem isClosed_empty : IsClosed (∅ : Set X) := isClosed_const
@@ -338,6 +337,16 @@ theorem interior_iInter_of_finite [Finite ι] (f : ι → Set X) :
     interior (⋂ i, f i) = ⋂ i, interior (f i) := by
   rw [← sInter_range, (finite_range f).interior_sInter, biInter_range]
 #align interior_Inter interior_iInter_of_finite
+
+@[simp]
+theorem interior_iInter₂_lt_nat {n : ℕ} (f : ℕ → Set X) :
+    interior (⋂ m < n, f m) = ⋂ m < n, interior (f m) :=
+  (finite_lt_nat n).interior_biInter f
+
+@[simp]
+theorem interior_iInter₂_le_nat {n : ℕ} (f : ℕ → Set X) :
+    interior (⋂ m ≤ n, f m) = ⋂ m ≤ n, interior (f m) :=
+  (finite_le_nat n).interior_biInter f
 
 theorem interior_union_isClosed_of_interior_empty (h₁ : IsClosed s)
     (h₂ : interior t = ∅) : interior (s ∪ t) = interior s :=
@@ -519,6 +528,16 @@ theorem closure_iUnion_of_finite [Finite ι] (f : ι → Set X) :
   rw [← sUnion_range, (finite_range _).closure_sUnion, biUnion_range]
 #align closure_Union closure_iUnion_of_finite
 
+@[simp]
+theorem closure_iUnion₂_lt_nat {n : ℕ} (f : ℕ → Set X) :
+    closure (⋃ m < n, f m) = ⋃ m < n, closure (f m) :=
+  (finite_lt_nat n).closure_biUnion f
+
+@[simp]
+theorem closure_iUnion₂_le_nat {n : ℕ} (f : ℕ → Set X) :
+    closure (⋃ m ≤ n, f m) = ⋃ m ≤ n, closure (f m) :=
+  (finite_le_nat n).closure_biUnion f
+
 theorem interior_subset_closure : interior s ⊆ closure s :=
   Subset.trans interior_subset subset_closure
 #align interior_subset_closure interior_subset_closure
@@ -649,6 +668,12 @@ theorem dense_compl_singleton_iff_not_open :
     exact ho hU
 #align dense_compl_singleton_iff_not_open dense_compl_singleton_iff_not_open
 
+theorem IsOpen.subset_interior_closure {s : Set X} (s_open : IsOpen s) :
+    s ⊆ interior (closure s) := s_open.subset_interior_iff.mpr subset_closure
+
+theorem IsClosed.closure_interior_subset {s : Set X} (s_closed : IsClosed s) :
+    closure (interior s) ⊆ s := s_closed.closure_subset_iff.mpr interior_subset
+
 /-!
 ### Frontier of a set
 -/
@@ -682,8 +707,10 @@ theorem frontier_subset_closure : frontier s ⊆ closure s :=
   diff_subset
 #align frontier_subset_closure frontier_subset_closure
 
-theorem IsClosed.frontier_subset (hs : IsClosed s) : frontier s ⊆ s :=
-  frontier_subset_closure.trans hs.closure_eq.subset
+theorem frontier_subset_iff_isClosed : frontier s ⊆ s ↔ IsClosed s := by
+  rw [frontier, diff_subset_iff, union_eq_right.mpr interior_subset, closure_subset_iff_isClosed]
+
+alias ⟨_, IsClosed.frontier_subset⟩ := frontier_subset_iff_isClosed
 #align is_closed.frontier_subset IsClosed.frontier_subset
 
 theorem frontier_closure_subset : frontier (closure s) ⊆ frontier s :=
@@ -732,6 +759,10 @@ theorem IsOpen.frontier_eq (hs : IsOpen s) : frontier s = closure s \ s := by
 theorem IsOpen.inter_frontier_eq (hs : IsOpen s) : s ∩ frontier s = ∅ := by
   rw [hs.frontier_eq, inter_diff_self]
 #align is_open.inter_frontier_eq IsOpen.inter_frontier_eq
+
+theorem disjoint_frontier_iff_isOpen : Disjoint (frontier s) s ↔ IsOpen s := by
+  rw [← isClosed_compl_iff, ← frontier_subset_iff_isClosed,
+    frontier_compl, subset_compl_iff_disjoint_right]
 
 /-- The frontier of a set is closed. -/
 theorem isClosed_frontier : IsClosed (frontier s) := by
@@ -826,9 +857,13 @@ theorem mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ t ⊆ s, IsOpen t ∧ x ∈ t :=
 /-- A predicate is true in a neighborhood of `x` iff it is true for all the points in an open set
 containing `x`. -/
 theorem eventually_nhds_iff {p : X → Prop} :
-    (∀ᶠ x in 𝓝 x, p x) ↔ ∃ t : Set X, (∀ x ∈ t, p x) ∧ IsOpen t ∧ x ∈ t :=
+    (∀ᶠ y in 𝓝 x, p y) ↔ ∃ t : Set X, (∀ y ∈ t, p y) ∧ IsOpen t ∧ x ∈ t :=
   mem_nhds_iff.trans <| by simp only [subset_def, exists_prop, mem_setOf_eq]
 #align eventually_nhds_iff eventually_nhds_iff
+
+theorem frequently_nhds_iff {p : X → Prop} :
+    (∃ᶠ y in 𝓝 x, p y) ↔ ∀ U : Set X, x ∈ U → IsOpen U → ∃ y ∈ U, p y :=
+  (nhds_basis_opens x).frequently_iff.trans <| by simp
 
 theorem mem_interior_iff_mem_nhds : x ∈ interior s ↔ s ∈ 𝓝 x :=
   mem_interior.trans mem_nhds_iff.symm
@@ -966,7 +1001,7 @@ theorem tendsto_nhds {f : α → X} {l : Filter α} :
 theorem tendsto_atTop_nhds [Nonempty α] [SemilatticeSup α] {f : α → X} :
     Tendsto f atTop (𝓝 x) ↔ ∀ U : Set X, x ∈ U → IsOpen U → ∃ N, ∀ n, N ≤ n → f n ∈ U :=
   (atTop_basis.tendsto_iff (nhds_basis_opens x)).trans <| by
-    simp only [and_imp, exists_prop, true_and_iff, mem_Ici, ge_iff_le]
+    simp only [and_imp, exists_prop, true_and_iff, mem_Ici]
 #align tendsto_at_top_nhds tendsto_atTop_nhds
 
 theorem tendsto_const_nhds {f : Filter α} : Tendsto (fun _ : α => x) f (𝓝 x) :=
@@ -1109,6 +1144,10 @@ theorem mapClusterPt_of_comp {F : Filter α} {φ : β → α} {p : Filter β}
   exact neBot_of_le this
 #align map_cluster_pt_of_comp mapClusterPt_of_comp
 
+theorem accPt_sup (x : X) (F G : Filter X) :
+    AccPt x (F ⊔ G) ↔ AccPt x F ∨ AccPt x G := by
+  simp only [AccPt, inf_sup_left, sup_neBot]
+
 theorem acc_iff_cluster (x : X) (F : Filter X) : AccPt x F ↔ ClusterPt x (𝓟 {x}ᶜ ⊓ F) := by
   rw [AccPt, nhdsWithin, ClusterPt, inf_assoc]
 #align acc_iff_cluster acc_iff_cluster
@@ -1137,6 +1176,9 @@ theorem accPt_iff_frequently (x : X) (C : Set X) : AccPt x (𝓟 C) ↔ ∃ᶠ y
 theorem AccPt.mono {F G : Filter X} (h : AccPt x F) (hFG : F ≤ G) : AccPt x G :=
   NeBot.mono h (inf_le_inf_left _ hFG)
 #align acc_pt.mono AccPt.mono
+
+theorem AccPt.clusterPt (x : X) (F : Filter X) (h : AccPt x F) : ClusterPt x F :=
+  ((acc_iff_cluster x F).mp h).mono inf_le_right
 
 /-!
 ### Interior, closure and frontier in terms of neighborhoods
@@ -1247,6 +1289,16 @@ alias mem_closure_iff_nhds_neBot := mem_closure_iff_nhds_ne_bot
 theorem mem_closure_iff_nhdsWithin_neBot : x ∈ closure s ↔ NeBot (𝓝[s] x) :=
   mem_closure_iff_clusterPt
 #align mem_closure_iff_nhds_within_ne_bot mem_closure_iff_nhdsWithin_neBot
+
+lemma nhdsWithin_neBot : (𝓝[s] x).NeBot ↔ ∀ ⦃t⦄, t ∈ 𝓝 x → (t ∩ s).Nonempty := by
+  rw [nhdsWithin, inf_neBot_iff]
+  exact forall₂_congr fun U _ ↦
+    ⟨fun h ↦ h (mem_principal_self _), fun h u hsu ↦ h.mono $ inter_subset_inter_right _ hsu⟩
+
+@[gcongr]
+theorem nhdsWithin_mono (x : X) {s t : Set X} (h : s ⊆ t) : 𝓝[s] x ≤ 𝓝[t] x :=
+  inf_le_inf_left _ (principal_mono.mpr h)
+#align nhds_within_mono nhdsWithin_mono
 
 lemma not_mem_closure_iff_nhdsWithin_eq_bot : x ∉ closure s ↔ 𝓝[s] x = ⊥ := by
   rw [mem_closure_iff_nhdsWithin_neBot, not_neBot]
@@ -1719,7 +1771,6 @@ theorem image_closure_subset_closure_image (h : Continuous f) :
   ((mapsTo_image f s).closure h).image_subset
 #align image_closure_subset_closure_image image_closure_subset_closure_image
 
--- Porting note (#10756): new lemma
 theorem closure_image_closure (h : Continuous f) :
     closure (f '' closure s) = closure (f '' s) :=
   Subset.antisymm
@@ -1777,8 +1828,12 @@ theorem DenseRange.closure_range (h : DenseRange f) : closure (range f) = univ :
   h.closure_eq
 #align dense_range.closure_range DenseRange.closure_range
 
-theorem Dense.denseRange_val (h : Dense s) : DenseRange ((↑) : s → X) := by
-  simpa only [DenseRange, Subtype.range_coe_subtype]
+@[simp]
+lemma denseRange_subtype_val {p : X → Prop} : DenseRange (@Subtype.val _ p) ↔ Dense {x | p x} := by
+  simp [DenseRange]
+
+theorem Dense.denseRange_val (h : Dense s) : DenseRange ((↑) : s → X) :=
+  denseRange_subtype_val.2 h
 #align dense.dense_range_coe Dense.denseRange_val
 
 theorem Continuous.range_subset_closure_image_dense {f : X → Y} (hf : Continuous f)

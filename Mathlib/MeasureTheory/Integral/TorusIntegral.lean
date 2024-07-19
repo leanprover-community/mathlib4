@@ -5,6 +5,7 @@ Authors: Cuma Kökmen, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Integral.CircleIntegral
+import Mathlib.Order.Fin.Tuple
 
 #align_import measure_theory.integral.torus_integral from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -140,7 +141,7 @@ theorem function_integrable [NormedSpace ℂ E] (hf : TorusIntegrable f c R) :
     IntegrableOn (fun θ : ℝⁿ => (∏ i, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ))
       (Icc (0 : ℝⁿ) fun _ => 2 * π) volume := by
   refine (hf.norm.const_mul (∏ i, |R i|)).mono' ?_ ?_
-  · refine (Continuous.aestronglyMeasurable ?_).smul hf.1; continuity
+  · refine (Continuous.aestronglyMeasurable ?_).smul hf.1; fun_prop
   simp [norm_smul, map_prod]
 #align torus_integrable.function_integrable TorusIntegrable.function_integrable
 

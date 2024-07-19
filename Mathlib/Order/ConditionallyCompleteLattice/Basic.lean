@@ -104,13 +104,10 @@ theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty) (h's : BddB
     exact Option.some_injective _
 #align with_top.coe_Inf' WithTop.coe_sInf'
 
--- Porting note: the mathlib3 proof uses `range_comp` in the opposite direction and
--- does not need `rfl`.
 @[norm_cast]
 theorem WithTop.coe_iInf [Nonempty ι] [InfSet α] {f : ι → α} (hf : BddBelow (range f)) :
     ↑(⨅ i, f i) = (⨅ i, f i : WithTop α) := by
-  rw [iInf, iInf, WithTop.coe_sInf' (range_nonempty f) hf, ← range_comp]
-  rfl
+  rw [iInf, iInf, WithTop.coe_sInf' (range_nonempty f) hf, ← range_comp, Function.comp_def]
 #align with_top.coe_infi WithTop.coe_iInf
 
 theorem WithTop.coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
@@ -121,12 +118,10 @@ theorem WithTop.coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
   · rintro ⟨x, _, ⟨⟩⟩
 #align with_top.coe_Sup' WithTop.coe_sSup'
 
--- Porting note: the mathlib3 proof uses `range_comp` in the opposite direction and
--- does not need `rfl`.
 @[norm_cast]
 theorem WithTop.coe_iSup [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)) :
     ↑(⨆ i, f i) = (⨆ i, f i : WithTop α) := by
-    rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp]; rfl
+  rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp, Function.comp_def]
 #align with_top.coe_supr WithTop.coe_iSup
 
 @[simp]
@@ -870,11 +865,9 @@ theorem ciInf_unique [Unique ι] {s : ι → α} : ⨅ i, s i = s default :=
   ciSup_unique (α := αᵒᵈ)
 #align infi_unique ciInf_unique
 
--- Porting note (#10756): new lemma
 theorem ciSup_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨆ i, s i = s i :=
   @ciSup_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
--- Porting note (#10756): new lemma
 theorem ciInf_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨅ i, s i = s i :=
   @ciInf_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
@@ -979,6 +972,12 @@ lemma Set.Iic_ciInf [Nonempty ι] {f : ι → α} (hf : BddBelow (range f)) :
 lemma Set.Ici_ciSup [Nonempty ι] {f : ι → α} (hf : BddAbove (range f)) :
     Ici (⨆ i, f i) = ⋂ i, Ici (f i) :=
   Iic_ciInf (α := αᵒᵈ) hf
+
+lemma sup_eq_top_of_top_mem [OrderTop α] (h : ⊤ ∈ s) : sSup s = ⊤ :=
+  top_unique <| le_csSup (OrderTop.bddAbove s) h
+
+lemma inf_eq_bot_of_bot_mem [OrderBot α] (h : ⊥ ∈ s) : sInf s = ⊥ :=
+  bot_unique <| csInf_le (OrderBot.bddBelow s) h
 
 end ConditionallyCompleteLattice
 
@@ -1105,12 +1104,12 @@ theorem cbiSup_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : �
       refine ⟨c ⊔ sSup ∅, ?_⟩
       rintro - ⟨i, rfl⟩
       by_cases hi : p i
-      · simp only [hi, dite_true, ge_iff_le, le_sup_iff, hc (mem_range_self _), true_or]
-      · simp only [hi, dite_false, ge_iff_le, le_sup_right]
+      · simp only [hi, dite_true, le_sup_iff, hc (mem_range_self _), true_or]
+      · simp only [hi, dite_false, le_sup_right]
     apply le_antisymm
     · apply ciSup_le (fun i ↦ ?_)
       by_cases hi : p i
-      · simp only [hi, dite_true, ge_iff_le, le_sup_iff]
+      · simp only [hi, dite_true, le_sup_iff]
         left
         exact le_ciSup H _
       · simp [hi]
@@ -1184,6 +1183,11 @@ In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonemp
 
 section ConditionallyCompleteLinearOrderBot
 
+@[simp]
+theorem csInf_univ [ConditionallyCompleteLinearOrder α] [OrderBot α] : sInf (univ : Set α) = ⊥ :=
+  isLeast_univ.csInf_eq
+#align cInf_univ csInf_univ
+
 variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {f : ι → α} {a : α}
 
 @[simp]
@@ -1199,11 +1203,6 @@ theorem ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := by
 theorem ciSup_false (f : False → α) : ⨆ i, f i = ⊥ :=
   ciSup_of_empty f
 #align csupr_false ciSup_false
-
-@[simp]
-theorem csInf_univ : sInf (univ : Set α) = ⊥ :=
-  isLeast_univ.csInf_eq
-#align cInf_univ csInf_univ
 
 theorem isLUB_csSup' {s : Set α} (hs : BddAbove s) : IsLUB s (sSup s) := by
   rcases eq_empty_or_nonempty s with (rfl | hne)
@@ -1388,14 +1387,13 @@ theorem isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) := by
     exact bot_le
 #align with_top.is_glb_Inf WithTop.isGLB_sInf
 
-noncomputable instance : CompleteLinearOrder (WithTop α) :=
-  { WithTop.linearOrder, WithTop.lattice, WithTop.orderTop, WithTop.orderBot with
-    sup := Sup.sup
-    le_sSup := fun s => (isLUB_sSup s).1
-    sSup_le := fun s => (isLUB_sSup s).2
-    inf := Inf.inf
-    le_sInf := fun s => (isGLB_sInf s).2
-    sInf_le := fun s => (isGLB_sInf s).1 }
+noncomputable instance : CompleteLinearOrder (WithTop α) where
+  __ := linearOrder
+  __ := LinearOrder.toBiheytingAlgebra
+  le_sSup s := (isLUB_sSup s).1
+  sSup_le s := (isLUB_sSup s).2
+  le_sInf s := (isGLB_sInf s).2
+  sInf_le s := (isGLB_sInf s).1
 
 /-- A version of `WithTop.coe_sSup'` with a more convenient but less general statement. -/
 @[norm_cast]
@@ -1693,7 +1691,8 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
 
 noncomputable instance WithTop.WithBot.completeLinearOrder {α : Type*}
     [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithTop (WithBot α)) :=
-  { WithTop.WithBot.completeLattice, WithTop.linearOrder with }
+  -- FIXME: Spread notation doesn't work
+  { completeLattice, linearOrder, LinearOrder.toBiheytingAlgebra with }
 #align with_top.with_bot.complete_linear_order WithTop.WithBot.completeLinearOrder
 
 noncomputable instance WithBot.WithTop.completeLattice {α : Type*}
@@ -1707,7 +1706,7 @@ noncomputable instance WithBot.WithTop.completeLattice {α : Type*}
 
 noncomputable instance WithBot.WithTop.completeLinearOrder {α : Type*}
     [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithBot (WithTop α)) :=
-  { WithBot.WithTop.completeLattice, WithBot.linearOrder with }
+  { completeLattice, linearOrder, LinearOrder.toBiheytingAlgebra with }
 #align with_bot.with_top.complete_linear_order WithBot.WithTop.completeLinearOrder
 
 namespace WithTop

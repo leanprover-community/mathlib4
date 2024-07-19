@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Eric Wieser
 -/
 import Mathlib.GroupTheory.Congruence.Basic
-import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.Tactic.AdaptationNote
 
@@ -310,7 +309,6 @@ unsuppress_compilation in
 @[inherit_doc tprod]
 notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
--- Porting note (#10756): new theorem
 theorem tprod_eq_tprodCoeff_one :
     ⇑(tprod R : MultilinearMap R s (⨂[R] i, s i)) = tprodCoeff R 1 := rfl
 
@@ -361,7 +359,7 @@ lemma lifts_zero : 0 ∈ lifts (0 : ⨂[R] i, s i) := by
 respectively, then `p + q` lifts `x + y`.
 -/
 lemma lifts_add {x y : ⨂[R] i, s i} {p q : FreeAddMonoid (R × Π i, s i)}
-    (hp : p ∈ lifts x) (hq : q ∈ lifts y): p + q ∈ lifts (x + y) := by
+    (hp : p ∈ lifts x) (hq : q ∈ lifts y) : p + q ∈ lifts (x + y) := by
   simp only [lifts, Set.mem_setOf_eq, AddCon.coe_add]
   rw [hp, hq]
 
@@ -667,7 +665,7 @@ This is `PiTensorProduct.map` for two arbitrary families of modules.
 This is `TensorProduct.map₂` for families of modules.
 -/
 def map₂ (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) :
-    (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] ⨂[R] i, t' i:=
+    (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] ⨂[R] i, t' i :=
   lift <| LinearMap.compMultilinearMap piTensorHomMap <| (tprod R).compLinearMap f
 
 lemma map₂_tprod_tprod (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) (x : Π i, s i) (y : Π i, t i) :
