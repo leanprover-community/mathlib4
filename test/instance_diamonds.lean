@@ -63,11 +63,9 @@ noncomputable def f : ℂ ⊗[ℝ] ℂ →ₗ[ℝ] ℝ :=
     { toFun := fun z => z.re • reLm
       map_add' := fun z w => by simp [add_smul]
       map_smul' := fun r z => by simp [mul_smul] }
-#align tensor_product.f TensorProduct.f
 
 @[simp]
 theorem f_apply (z w : ℂ) : f (z ⊗ₜ[ℝ] w) = z.re * w.re := by simp [f]
-#align tensor_product.f_apply TensorProduct.f_apply
 
 unseal Algebra.TensorProduct.mul in
 /- `TensorProduct.Algebra.module` forms a diamond with `Mul.toSMul` and

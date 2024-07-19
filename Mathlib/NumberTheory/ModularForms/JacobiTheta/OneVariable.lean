@@ -6,8 +6,6 @@ Authors: David Loeffler
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 
-#align_import number_theory.modular_forms.jacobi_theta.basic from "leanprover-community/mathlib"@"57f9349f2fe19d2de7207e99b0341808d977cdcf"
-
 /-! # Jacobi's theta function
 
 This file defines the one-variable Jacobi theta function
@@ -25,14 +23,12 @@ open scoped Real UpperHalfPlane
 
 /-- Jacobi's one-variable theta function `∑' (n : ℤ), exp (π * I * n ^ 2 * τ)`. -/
 noncomputable def jacobiTheta (τ : ℂ) : ℂ := ∑' n : ℤ, cexp (π * I * (n : ℂ) ^ 2 * τ)
-#align jacobi_theta jacobiTheta
 
 lemma jacobiTheta_eq_jacobiTheta₂ (τ : ℂ) : jacobiTheta τ = jacobiTheta₂ 0 τ :=
   tsum_congr (by simp [jacobiTheta₂_term])
 
 theorem jacobiTheta_two_add (τ : ℂ) : jacobiTheta (2 + τ) = jacobiTheta τ := by
   simp_rw [jacobiTheta_eq_jacobiTheta₂, add_comm, jacobiTheta₂_add_right]
-#align jacobi_theta_two_add jacobiTheta_two_add
 
 theorem jacobiTheta_T_sq_smul (τ : ℍ) : jacobiTheta (ModularGroup.T ^ 2 • τ :) = jacobiTheta τ := by
   suffices (ModularGroup.T ^ 2 • τ :) = (2 : ℂ) + ↑τ by simp_rw [this, jacobiTheta_two_add]
@@ -40,7 +36,6 @@ theorem jacobiTheta_T_sq_smul (τ : ℍ) : jacobiTheta (ModularGroup.T ^ 2 • �
   simp_rw [this, UpperHalfPlane.modular_T_zpow_smul, UpperHalfPlane.coe_vadd]
   norm_cast
 set_option linter.uppercaseLean3 false in
-#align jacobi_theta_T_sq_smul jacobiTheta_T_sq_smul
 
 theorem jacobiTheta_S_smul (τ : ℍ) :
     jacobiTheta ↑(ModularGroup.S • τ) = (-I * τ) ^ (1 / 2 : ℂ) * jacobiTheta τ := by
@@ -53,7 +48,6 @@ theorem jacobiTheta_S_smul (τ : ℍ) :
   rw [zero_pow two_ne_zero, mul_zero, zero_div, Complex.exp_zero, mul_one, ← mul_assoc, mul_one_div,
     div_self h1, one_mul, UpperHalfPlane.coe_mk, inv_neg, neg_div, one_div]
 set_option linter.uppercaseLean3 false in
-#align jacobi_theta_S_smul jacobiTheta_S_smul
 
 theorem norm_exp_mul_sq_le {τ : ℂ} (hτ : 0 < τ.im) (n : ℤ) :
     ‖cexp (π * I * (n : ℂ) ^ 2 * τ)‖ ≤ rexp (-π * τ.im) ^ n.natAbs := by
@@ -70,7 +64,6 @@ theorem norm_exp_mul_sq_le {τ : ℂ} (hτ : 0 < τ.im) (n : ℤ) :
   · have : n ^ 2 = (n.natAbs ^ 2 :) := by rw [Nat.cast_pow, Int.natAbs_sq]
     rw [this, zpow_natCast]
     exact pow_le_pow_of_le_one (exp_pos _).le h.le ((sq n.natAbs).symm ▸ n.natAbs.le_mul_self)
-#align norm_exp_mul_sq_le norm_exp_mul_sq_le
 
 theorem hasSum_nat_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
     HasSum (fun n : ℕ => cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)) ((jacobiTheta τ - 1) / 2) := by
@@ -84,13 +77,11 @@ theorem hasSum_nat_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
     Nat.cast_add, Nat.cast_one] at this
   convert this.div_const 2 using 1
   simp_rw [mul_div_cancel_right₀ _ (two_ne_zero' ℂ)]
-#align has_sum_nat_jacobi_theta hasSum_nat_jacobiTheta
 
 theorem jacobiTheta_eq_tsum_nat {τ : ℂ} (hτ : 0 < im τ) :
     jacobiTheta τ = ↑1 + ↑2 * ∑' n : ℕ, cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ) := by
   rw [(hasSum_nat_jacobiTheta hτ).tsum_eq, mul_div_cancel₀ _ (two_ne_zero' ℂ), ← add_sub_assoc,
     add_sub_cancel_left]
-#align jacobi_theta_eq_tsum_nat jacobiTheta_eq_tsum_nat
 
 /-- An explicit upper bound for `‖jacobiTheta τ - 1‖`. -/
 theorem norm_jacobiTheta_sub_one_le {τ : ℂ} (hτ : 0 < im τ) :
@@ -114,7 +105,6 @@ theorem norm_jacobiTheta_sub_one_le {τ : ℂ} (hτ : 0 < im τ) :
   have aux : Summable fun n : ℕ => ‖cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)‖ :=
     .of_nonneg_of_le (fun n => norm_nonneg _) this s.summable
   exact (norm_tsum_le_tsum_norm aux).trans ((tsum_mono aux s.summable this).trans_eq s.tsum_eq)
-#align norm_jacobi_theta_sub_one_le norm_jacobiTheta_sub_one_le
 
 /-- The norm of `jacobiTheta τ - 1` decays exponentially as `im τ → ∞`. -/
 theorem isBigO_at_im_infty_jacobiTheta_sub_one :
@@ -130,14 +120,11 @@ theorem isBigO_at_im_infty_jacobiTheta_sub_one :
     exact mul_pos pi_pos (hτ.symm ▸ zero_lt_one.trans_le hy)
   · rw [sub_pos, exp_lt_one_iff, neg_lt_zero]; exact pi_pos
 set_option linter.uppercaseLean3 false in
-#align is_O_at_im_infty_jacobi_theta_sub_one isBigO_at_im_infty_jacobiTheta_sub_one
 
 theorem differentiableAt_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
     DifferentiableAt ℂ jacobiTheta τ := by
   simp_rw [funext jacobiTheta_eq_jacobiTheta₂]
   exact differentiableAt_jacobiTheta₂_snd 0 hτ
-#align differentiable_at_jacobi_theta differentiableAt_jacobiTheta
 
 theorem continuousAt_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) : ContinuousAt jacobiTheta τ :=
   (differentiableAt_jacobiTheta hτ).continuousAt
-#align continuous_at_jacobi_theta continuousAt_jacobiTheta

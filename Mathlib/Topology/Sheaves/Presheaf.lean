@@ -9,8 +9,6 @@ import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.Topology.Sheaves.Init
 import Mathlib.Data.Set.Subsingleton
 
-#align_import topology.sheaves.presheaf from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
-
 /-!
 # Presheaves on a topological space
 
@@ -44,7 +42,6 @@ namespace TopCat
 def Presheaf (X : TopCat.{w}) : Type max u v w :=
   (Opens X)ᵒᵖ ⥤ C
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf TopCat.Presheaf
 
 instance (X : TopCat.{w}) : Category (Presheaf.{w, v, u} C X) :=
   inferInstanceAs (Category ((Opens X)ᵒᵖ ⥤ C : Type max u v w))
@@ -111,7 +108,6 @@ def restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C] {F : X.P
     {V : Opens X} (x : F.obj (op V)) {U : Opens X} (h : U ⟶ V) : F.obj (op U) :=
   F.map h.op x
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.restrict TopCat.Presheaf.restrict
 
 /-- restriction of a section along an inclusion -/
 scoped[AlgebraicGeometry] infixl:80 " |_ₕ " => TopCat.Presheaf.restrict
@@ -130,7 +126,6 @@ abbrev restrictOpen {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C] {
     F.obj (op U) :=
   x |_ₗ U ⟪e⟫
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.restrict_open TopCat.Presheaf.restrictOpen
 
 /-- restriction of a section to open subset -/
 scoped[AlgebraicGeometry] infixl:80 " |_ " => TopCat.Presheaf.restrictOpen
@@ -144,7 +139,6 @@ theorem restrict_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategor
   rw [← comp_apply, ← Functor.map_comp]
   rfl
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.restrict_restrict TopCat.Presheaf.restrict_restrict
 
 -- Porting note: linter tells this lemma is no going to be picked up by the simplifier, hence
 -- `@[simp]` is removed
@@ -154,7 +148,6 @@ theorem map_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C]
   delta restrictOpen restrict
   rw [← comp_apply, NatTrans.naturality, comp_apply]
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.map_restrict TopCat.Presheaf.map_restrict
 
 open CategoryTheory.Limits
 
@@ -174,11 +167,9 @@ theorem pushforward_map_app' {X Y : TopCat.{w}} (f : X ⟶ Y) {ℱ 𝒢 : X.Pres
     {U : (Opens Y)ᵒᵖ} : ((pushforward C f).map α).app U = α.app (op <| (Opens.map f).obj U.unop) :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pushforward_map_app' TopCat.Presheaf.pushforward_map_app'
 
 lemma id_pushforward (X : TopCat.{w}) : pushforward C (𝟙 X) = 𝟭 (X.Presheaf C) := rfl
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.id_pushforward TopCat.Presheaf.id_pushforward
 
 variable {C}
 
@@ -188,22 +179,18 @@ namespace Pushforward
 and the original presheaf. -/
 def id {X : TopCat.{w}} (ℱ : X.Presheaf C) : 𝟙 X _* ℱ ≅ ℱ := Iso.refl _
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pushforward.id TopCat.Presheaf.Pushforward.id
 
 @[simp]
 theorem id_hom_app {X : TopCat.{w}} (ℱ : X.Presheaf C) (U) : (id ℱ).hom.app U = 𝟙 _ := rfl
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pushforward.id_hom_app TopCat.Presheaf.Pushforward.id_hom_app
 
 @[simp]
 theorem id_inv_app {X : TopCat.{w}} (ℱ : X.Presheaf C) (U) :
     (id ℱ).inv.app U = 𝟙 _ := rfl
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pushforward.id_inv_app' TopCat.Presheaf.Pushforward.id_inv_app
 
 theorem id_eq {X : TopCat.{w}} (ℱ : X.Presheaf C) : 𝟙 X _* ℱ = ℱ := rfl
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pushforward.id_eq TopCat.Presheaf.Pushforward.id_eq
 
 /-- The natural isomorphism between
 the pushforward of a presheaf along the composition of two continuous maps and
@@ -211,25 +198,21 @@ the corresponding pushforward of a pushforward. -/
 def comp {X Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) (ℱ : X.Presheaf C) :
     (f ≫ g) _* ℱ ≅ g _* (f _* ℱ) := Iso.refl _
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pushforward.comp TopCat.Presheaf.Pushforward.comp
 
 theorem comp_eq {X Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) (ℱ : X.Presheaf C) :
     (f ≫ g) _* ℱ = g _* (f _* ℱ) :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pushforward.comp_eq TopCat.Presheaf.Pushforward.comp_eq
 
 @[simp]
 theorem comp_hom_app {X Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) (ℱ : X.Presheaf C) (U) :
     (comp f g ℱ).hom.app U = 𝟙 _ := rfl
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pushforward.comp_hom_app TopCat.Presheaf.Pushforward.comp_hom_app
 
 @[simp]
 theorem comp_inv_app {X Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) (ℱ : X.Presheaf C) (U) :
     (comp f g ℱ).inv.app U = 𝟙 _ := rfl
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pushforward.comp_inv_app TopCat.Presheaf.Pushforward.comp_inv_app
 
 end Pushforward
 
@@ -241,12 +224,10 @@ def pushforwardEq {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Preshe
     f _* ℱ ≅ g _* ℱ :=
   isoWhiskerRight (NatIso.op (Opens.mapIso f g h).symm) ℱ
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pushforward_eq TopCat.Presheaf.pushforwardEq
 
 theorem pushforward_eq' {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Presheaf C) :
     f _* ℱ = g _* ℱ := by rw [h]
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pushforward_eq' TopCat.Presheaf.pushforward_eq'
 
 @[simp]
 theorem pushforwardEq_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y}
@@ -254,7 +235,6 @@ theorem pushforwardEq_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y}
     (pushforwardEq h ℱ).hom.app U = ℱ.map (eqToHom (by aesop_cat)) := by
   simp [pushforwardEq]
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pushforward_eq_hom_app TopCat.Presheaf.pushforwardEq_hom_app
 
 variable (C)
 
@@ -265,7 +245,6 @@ section Iso
 def presheafEquivOfIso {X Y : TopCat} (H : X ≅ Y) : X.Presheaf C ≌ Y.Presheaf C :=
   Equivalence.congrLeft (Opens.mapMapIso H).symm.op
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.presheaf_equiv_of_iso TopCat.Presheaf.presheafEquivOfIso
 
 variable {C}
 
@@ -276,7 +255,6 @@ def toPushforwardOfIso {X Y : TopCat} (H : X ≅ Y) {ℱ : X.Presheaf C} {𝒢 :
     (α : H.hom _* ℱ ⟶ 𝒢) : ℱ ⟶ H.inv _* 𝒢 :=
   (presheafEquivOfIso _ H).toAdjunction.homEquiv ℱ 𝒢 α
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.to_pushforward_of_iso TopCat.Presheaf.toPushforwardOfIso
 
 @[simp]
 theorem toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf C} {𝒢 : Y.Presheaf C}
@@ -288,7 +266,6 @@ theorem toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf
   simp [-Functor.map_comp, ← Functor.map_comp_assoc]
   rfl
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.to_pushforward_of_iso_app TopCat.Presheaf.toPushforwardOfIso_app
 
 /-- If `H : X ≅ Y` is a homeomorphism,
 then given an `H _* ℱ ⟶ 𝒢`, we may obtain an `ℱ ⟶ H ⁻¹ _* 𝒢`.
@@ -297,7 +274,6 @@ def pushforwardToOfIso {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : Y.Presheaf C} {�
     (H₂ : ℱ ⟶ H₁.hom _* 𝒢) : H₁.inv _* ℱ ⟶ 𝒢 :=
   ((presheafEquivOfIso _ H₁.symm).toAdjunction.homEquiv ℱ 𝒢).symm H₂
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pushforward_to_of_iso TopCat.Presheaf.pushforwardToOfIso
 
 @[simp]
 theorem pushforwardToOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : Y.Presheaf C} {𝒢 : X.Presheaf C}
@@ -307,7 +283,6 @@ theorem pushforwardToOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : Y.Presheaf
         𝒢.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) := by
   simp [pushforwardToOfIso, Equivalence.toAdjunction]
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pushforward_to_of_iso_app TopCat.Presheaf.pushforwardToOfIso_app
 
 end Iso
 
@@ -320,14 +295,12 @@ on `X`. -/
 def pullback {X Y : TopCat.{v}} (f : X ⟶ Y) : Y.Presheaf C ⥤ X.Presheaf C :=
   (Opens.map f).op.lan
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pullback TopCat.Presheaf.pullback
 
 /-- The pullback and pushforward along a continuous map are adjoint to each other. -/
 def pushforwardPullbackAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
     pullback C f ⊣ pushforward C f :=
   Functor.lanAdjunction _ _
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pushforward_pullback_adjunction TopCat.Presheaf.pushforwardPullbackAdjunction
 
 /-- Pulling back along a homeomorphism is the same as pushing forward along its inverse. -/
 def pullbackHomIsoPushforwardInv {X Y : TopCat.{v}} (H : X ≅ Y) :
@@ -335,7 +308,6 @@ def pullbackHomIsoPushforwardInv {X Y : TopCat.{v}} (H : X ≅ Y) :
   Adjunction.leftAdjointUniq (pushforwardPullbackAdjunction C H.hom)
     (presheafEquivOfIso C H.symm).toAdjunction
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pullback_hom_iso_pushforward_inv TopCat.Presheaf.pullbackHomIsoPushforwardInv
 
 /-- Pulling back along the inverse of a homeomorphism is the same as pushing forward along it. -/
 def pullbackInvIsoPushforwardHom {X Y : TopCat.{v}} (H : X ≅ Y) :
@@ -343,7 +315,6 @@ def pullbackInvIsoPushforwardHom {X Y : TopCat.{v}} (H : X ≅ Y) :
   Adjunction.leftAdjointUniq (pushforwardPullbackAdjunction C H.inv)
     (presheafEquivOfIso C H).toAdjunction
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pullback_inv_iso_pushforward_hom TopCat.Presheaf.pullbackInvIsoPushforwardHom
 
 variable {C}
 
@@ -364,7 +335,6 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
     ((Opens.map f).op.isPointwiseLeftKanExtensionLanUnit ℱ (op U))
     (colimitOfDiagramTerminal hx _)
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pullback_obj_obj_of_image_open TopCat.Presheaf.pullbackObjObjOfImageOpen
 
 end
 

@@ -10,8 +10,6 @@ import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Conj
 
-#align_import representation_theory.Action from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
-
 /-!
 # `Action V G`, the category of actions of a monoid `G` inside some category `V`.
 
@@ -40,7 +38,6 @@ structure Action (G : MonCat.{u}) where
   V : V
   ρ : G ⟶ MonCat.of (End V)
 set_option linter.uppercaseLean3 false in
-#align Action Action
 
 namespace Action
 
@@ -49,7 +46,6 @@ variable {V}
 @[simp 1100]
 theorem ρ_one {G : MonCat.{u}} (A : Action V G) : A.ρ 1 = 𝟙 A.V := by rw [MonoidHom.map_one]; rfl
 set_option linter.uppercaseLean3 false in
-#align Action.ρ_one Action.ρ_one
 
 /-- When a group acts, we can lift the action to the group of automorphisms. -/
 @[simps]
@@ -62,7 +58,6 @@ def ρAut {G : Grp.{u}} (A : Action V (MonCat.of G)) : G ⟶ Grp.of (Aut A.V) wh
   map_one' := Aut.ext A.ρ.map_one
   map_mul' x y := Aut.ext (A.ρ.map_mul x y)
 set_option linter.uppercaseLean3 false in
-#align Action.ρ_Aut Action.ρAut
 
 -- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] Action.ρAut_apply_inv Action.ρAut_apply_hom
@@ -74,14 +69,12 @@ section
 instance inhabited' : Inhabited (Action (Type u) G) :=
   ⟨⟨PUnit, 1⟩⟩
 set_option linter.uppercaseLean3 false in
-#align Action.inhabited' Action.inhabited'
 
 /-- The trivial representation of a group. -/
 def trivial : Action AddCommGrp G where
   V := AddCommGrp.of PUnit
   ρ := 1
 set_option linter.uppercaseLean3 false in
-#align Action.trivial Action.trivial
 
 instance : Inhabited (Action AddCommGrp G) :=
   ⟨trivial G⟩
@@ -98,7 +91,6 @@ structure Hom (M N : Action V G) where
   hom : M.V ⟶ N.V
   comm : ∀ g : G, M.ρ g ≫ hom = hom ≫ N.ρ g := by aesop_cat
 set_option linter.uppercaseLean3 false in
-#align Action.hom Action.Hom
 
 namespace Hom
 
@@ -109,7 +101,6 @@ attribute [local simp] comm comm_assoc
 @[simps]
 def id (M : Action V G) : Action.Hom M M where hom := 𝟙 M.V
 set_option linter.uppercaseLean3 false in
-#align Action.hom.id Action.Hom.id
 
 instance (M : Action V G) : Inhabited (Action.Hom M M) :=
   ⟨id M⟩
@@ -120,7 +111,6 @@ instance (M : Action V G) : Inhabited (Action.Hom M M) :=
 def comp {M N K : Action V G} (p : Action.Hom M N) (q : Action.Hom N K) : Action.Hom M K where
   hom := p.hom ≫ q.hom
 set_option linter.uppercaseLean3 false in
-#align Action.hom.comp Action.Hom.comp
 
 end Hom
 
@@ -138,14 +128,12 @@ lemma hom_ext {M N : Action V G} (φ₁ φ₂ : M ⟶ N) (h : φ₁.hom = φ₂.
 theorem id_hom (M : Action V G) : (𝟙 M : Hom M M).hom = 𝟙 M.V :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align Action.id_hom Action.id_hom
 
 @[simp]
 theorem comp_hom {M N K : Action V G} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : Hom M K).hom = f.hom ≫ g.hom :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align Action.comp_hom Action.comp_hom
 
 /-- Construct an isomorphism of `G` actions/representations
 from an isomorphism of the underlying objects,
@@ -160,18 +148,15 @@ def mkIso {M N : Action V G} (f : M.V ≅ N.V)
     { hom := f.inv
       comm := fun g => by have w := comm g =≫ f.inv; simp at w; simp [w] }
 set_option linter.uppercaseLean3 false in
-#align Action.mk_iso Action.mkIso
 
 instance (priority := 100) isIso_of_hom_isIso {M N : Action V G} (f : M ⟶ N) [IsIso f.hom] :
     IsIso f := (mkIso (asIso f.hom) f.comm).isIso_hom
 set_option linter.uppercaseLean3 false in
-#align Action.is_iso_of_hom_is_iso Action.isIso_of_hom_isIso
 
 instance isIso_hom_mk {M N : Action V G} (f : M.V ⟶ N.V) [IsIso f] (w) :
     @IsIso _ _ M N (Hom.mk f w) :=
   (mkIso (asIso f) w).isIso_hom
 set_option linter.uppercaseLean3 false in
-#align Action.is_iso_hom_mk Action.isIso_hom_mk
 
 namespace FunctorCategoryEquivalence
 
@@ -187,7 +172,6 @@ def functor : Action V G ⥤ SingleObj G ⥤ V where
     { app := fun _ => f.hom
       naturality := fun _ _ g => f.comm g }
 set_option linter.uppercaseLean3 false in
-#align Action.functor_category_equivalence.functor Action.FunctorCategoryEquivalence.functor
 
 /-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps]
@@ -202,21 +186,18 @@ def inverse : (SingleObj G ⥤ V) ⥤ Action V G where
     { hom := f.app PUnit.unit
       comm := fun g => f.naturality g }
 set_option linter.uppercaseLean3 false in
-#align Action.functor_category_equivalence.inverse Action.FunctorCategoryEquivalence.inverse
 
 /-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
 def unitIso : 𝟭 (Action V G) ≅ functor ⋙ inverse :=
   NatIso.ofComponents fun M => mkIso (Iso.refl _)
 set_option linter.uppercaseLean3 false in
-#align Action.functor_category_equivalence.unit_iso Action.FunctorCategoryEquivalence.unitIso
 
 /-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (SingleObj G ⥤ V) :=
   NatIso.ofComponents fun M => NatIso.ofComponents fun X => Iso.refl _
 set_option linter.uppercaseLean3 false in
-#align Action.functor_category_equivalence.counit_iso Action.FunctorCategoryEquivalence.counitIso
 
 end FunctorCategoryEquivalence
 
@@ -236,11 +217,8 @@ def functorCategoryEquivalence : Action V G ≌ SingleObj G ⥤ V where
   unitIso := unitIso
   counitIso := counitIso
 set_option linter.uppercaseLean3 false in
-#align Action.functor_category_equivalence Action.functorCategoryEquivalence
 set_option linter.uppercaseLean3 false in
-#align Action.functor_category_equivalence.functor_def Action.functorCategoryEquivalence_functor
 set_option linter.uppercaseLean3 false in
-#align Action.functor_category_equivalence.inverse_def Action.functorCategoryEquivalence_inverse
 
 /-
 porting note: these two lemmas are redundant with the projections created by the @[simps]
@@ -271,7 +249,6 @@ def forget : Action V G ⥤ V where
   obj M := M.V
   map f := f.hom
 set_option linter.uppercaseLean3 false in
-#align Action.forget Action.forget
 
 instance : (forget V G).Faithful where map_injective w := Hom.ext _ _ w
 
@@ -280,7 +257,6 @@ instance [ConcreteCategory V] : ConcreteCategory (Action V G) where
 
 instance hasForgetToV [ConcreteCategory V] : HasForget₂ (Action V G) V where forget₂ := forget V G
 set_option linter.uppercaseLean3 false in
-#align Action.has_forget_to_V Action.hasForgetToV
 
 /-- The forgetful functor is intertwined by `functorCategoryEquivalence` with
 evaluation at `PUnit.star`. -/
@@ -288,7 +264,6 @@ def functorCategoryEquivalenceCompEvaluation :
     (functorCategoryEquivalence V G).functor ⋙ (evaluation _ _).obj PUnit.unit ≅ forget V G :=
   Iso.refl _
 set_option linter.uppercaseLean3 false in
-#align Action.functor_category_equivalence_comp_evaluation Action.functorCategoryEquivalenceCompEvaluation
 
 noncomputable instance instPreservesLimitsForget [HasLimits V] :
     Limits.PreservesLimits (forget V G) :=
@@ -305,7 +280,6 @@ theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
     N.ρ g = ((forget V G).mapIso f).conj (M.ρ g) := by
       rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
 set_option linter.uppercaseLean3 false in
-#align Action.iso.conj_ρ Action.Iso.conj_ρ
 
 /-- Actions/representations of the trivial group are just objects in the ambient category. -/
 def actionPunitEquivalence : Action V (MonCat.of PUnit) ≌ V where
@@ -320,7 +294,6 @@ def actionPunitEquivalence : Action V (MonCat.of PUnit) ≌ V where
       exact ρ_one X
   counitIso := NatIso.ofComponents fun X => Iso.refl _
 set_option linter.uppercaseLean3 false in
-#align Action.Action_punit_equivalence Action.actionPunitEquivalence
 
 variable (V)
 
@@ -338,7 +311,6 @@ def res {G H : MonCat} (f : G ⟶ H) : Action V H ⥤ Action V G where
     { hom := p.hom
       comm := fun g => p.comm (f g) }
 set_option linter.uppercaseLean3 false in
-#align Action.res Action.res
 
 /-- The natural isomorphism from restriction along the identity homomorphism to
 the identity functor on `Action V G`.
@@ -347,7 +319,6 @@ the identity functor on `Action V G`.
 def resId {G : MonCat} : res V (𝟙 G) ≅ 𝟭 (Action V G) :=
   NatIso.ofComponents fun M => mkIso (Iso.refl _)
 set_option linter.uppercaseLean3 false in
-#align Action.res_id Action.resId
 
 /-- The natural isomorphism from the composition of restrictions along homomorphisms
 to the restriction along the composition of homomorphism.
@@ -356,7 +327,6 @@ to the restriction along the composition of homomorphism.
 def resComp {G H K : MonCat} (f : G ⟶ H) (g : H ⟶ K) : res V g ⋙ res V f ≅ res V (f ≫ g) :=
   NatIso.ofComponents fun M => mkIso (Iso.refl _)
 set_option linter.uppercaseLean3 false in
-#align Action.res_comp Action.resComp
 
 -- TODO promote `res` to a pseudofunctor from
 -- the locally discrete bicategory constructed from `Monᵒᵖ` to `Cat`, sending `G` to `Action V G`.
@@ -385,6 +355,5 @@ def mapAction (F : V ⥤ W) (G : MonCat.{u}) : Action V G ⥤ Action W G where
   map_id M := by ext; simp only [Action.id_hom, F.map_id]
   map_comp f g := by ext; simp only [Action.comp_hom, F.map_comp]
 set_option linter.uppercaseLean3 false in
-#align category_theory.functor.map_Action CategoryTheory.Functor.mapAction
 
 end CategoryTheory.Functor

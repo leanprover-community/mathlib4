@@ -7,8 +7,6 @@ import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Tactic.Common
 
-#align_import group_theory.group_action.units from "leanprover-community/mathlib"@"f1a2caaf51ef593799107fe9a8d5e411599f3996"
-
 /-! # Group actions on and by `Mˣ`
 
 This file provides the action of a unit on a type `α`, `SMul Mˣ α`, in the presence of
@@ -60,6 +58,5 @@ instance mulDistribMulAction' [Group G] [Monoid M] [MulDistribMulAction G M] [SM
     smul := (· • ·),
     smul_one := fun _ => Units.ext <| smul_one _,
     smul_mul := fun _ _ _ => Units.ext <| smul_mul' _ _ _ }
-#align units.mul_distrib_mul_action' Units.mulDistribMulAction'
 
 end Units

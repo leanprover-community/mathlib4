@@ -9,8 +9,6 @@ import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
 
-#align_import algebraic_topology.simplicial_set from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
-
 /-!
 # Simplicial sets
 
@@ -45,7 +43,6 @@ This is the category of contravariant functors from
 def SSet : Type (u + 1) :=
   SimplicialObject (Type u)
 set_option linter.uppercaseLean3 false in
-#align sSet SSet
 
 namespace SSet
 
@@ -75,7 +72,6 @@ is the Yoneda embedding of `n`. -/
 def standardSimplex : SimplexCategory ⥤ SSet.{u} :=
   yoneda ⋙ uliftFunctor
 set_option linter.uppercaseLean3 false in
-#align sSet.standard_simplex SSet.standardSimplex
 
 @[inherit_doc SSet.standardSimplex]
 scoped[Simplicial] notation3 "Δ[" n "]" => SSet.standardSimplex.obj (SimplexCategory.mk n)
@@ -154,7 +150,6 @@ the monotone maps from `Fin (m+1)` to `Fin (n+1)`. -/
 def asOrderHom {n} {m} (α : Δ[n].obj m) : OrderHom (Fin (m.unop.len + 1)) (Fin (n + 1)) :=
   α.down.toOrderHom
 set_option linter.uppercaseLean3 false in
-#align sSet.as_order_hom SSet.asOrderHom
 
 end
 
@@ -169,7 +164,6 @@ def boundary (n : ℕ) : SSet.{u} where
       apply α.property
       exact Function.Surjective.of_comp h⟩
 set_option linter.uppercaseLean3 false in
-#align sSet.boundary SSet.boundary
 
 /-- The boundary `∂Δ[n]` of the `n`-th standard simplex -/
 scoped[Simplicial] notation3 "∂Δ[" n "]" => SSet.boundary n
@@ -177,7 +171,6 @@ scoped[Simplicial] notation3 "∂Δ[" n "]" => SSet.boundary n
 /-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
 def boundaryInclusion (n : ℕ) : ∂Δ[n] ⟶ Δ[n] where app m (α : { α : Δ[n].obj m // _ }) := α
 set_option linter.uppercaseLean3 false in
-#align sSet.boundary_inclusion SSet.boundaryInclusion
 
 /-- `horn n i` (or `Λ[n, i]`) is the `i`-th horn of the `n`-th standard simplex, where `i : n`.
 It consists of all `m`-simplices `α` of `Δ[n]`
@@ -193,7 +186,6 @@ def horn (n : ℕ) (i : Fin (n + 1)) : SSet where
       intro hj
       exact Set.range_comp_subset_range _ _ hj⟩
 set_option linter.uppercaseLean3 false in
-#align sSet.horn SSet.horn
 
 /-- The `i`-th horn `Λ[n, i]` of the standard `n`-simplex -/
 scoped[Simplicial] notation3 "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
@@ -202,7 +194,6 @@ scoped[Simplicial] notation3 "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
 def hornInclusion (n : ℕ) (i : Fin (n + 1)) : Λ[n, i] ⟶ Δ[n] where
   app m (α : { α : Δ[n].obj m // _ }) := α
 set_option linter.uppercaseLean3 false in
-#align sSet.horn_inclusion SSet.hornInclusion
 
 namespace horn
 
@@ -333,7 +324,6 @@ noncomputable def S1 : SSet :=
     Limits.parallelPair (standardSimplex.map <| SimplexCategory.δ 0 : Δ[0] ⟶ Δ[1])
       (standardSimplex.map <| SimplexCategory.δ 1)
 set_option linter.uppercaseLean3 false in
-#align sSet.S1 SSet.S1
 
 end Examples
 
@@ -341,7 +331,6 @@ end Examples
 def Truncated (n : ℕ) :=
   SimplicialObject.Truncated (Type u) n
 set_option linter.uppercaseLean3 false in
-#align sSet.truncated SSet.Truncated
 
 instance Truncated.largeCategory (n : ℕ) : LargeCategory (Truncated n) := by
   dsimp only [Truncated]
@@ -365,7 +354,6 @@ lemma Truncated.hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n
 def sk (n : ℕ) : SSet ⥤ SSet.Truncated n :=
   SimplicialObject.sk n
 set_option linter.uppercaseLean3 false in
-#align sSet.sk SSet.sk
 
 instance {n} : Inhabited (SSet.Truncated n) :=
   ⟨(sk n).obj <| Δ[0]⟩
@@ -375,7 +363,6 @@ augmented simplicial objects. -/
 abbrev Augmented :=
   SimplicialObject.Augmented (Type u)
 set_option linter.uppercaseLean3 false in
-#align sSet.augmented SSet.Augmented
 
 namespace Augmented
 
@@ -393,7 +380,6 @@ noncomputable def standardSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where
     { left := SSet.standardSimplex.map θ
       right := terminal.from _ }
 set_option linter.uppercaseLean3 false in
-#align sSet.augmented.standard_simplex SSet.Augmented.standardSimplex
 
 end Augmented
 

@@ -9,8 +9,6 @@ import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.Order.Hom.Basic
 import Mathlib.Order.CompleteBooleanAlgebra
 
-#align_import order.category.Preord from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
-
 /-!
 # Category of preorders
 
@@ -26,7 +24,6 @@ open CategoryTheory
 def Preord :=
   Bundled Preorder
 set_option linter.uppercaseLean3 false in
-#align Preord Preord
 
 namespace Preord
 
@@ -49,13 +46,11 @@ instance : CoeSort Preord Type* :=
 def of (α : Type*) [Preorder α] : Preord :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
-#align Preord.of Preord.of
 
 @[simp]
 theorem coe_of (α : Type*) [Preorder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align Preord.coe_of Preord.coe_of
 
 instance : Inhabited Preord :=
   ⟨of PUnit⟩
@@ -75,7 +70,6 @@ def Iso.mk {α β : Preord.{u}} (e : α ≃o β) : α ≅ β where
     ext x
     exact e.apply_symm_apply x
 set_option linter.uppercaseLean3 false in
-#align Preord.iso.mk Preord.Iso.mk
 
 /-- `OrderDual` as a functor. -/
 @[simps]
@@ -83,7 +77,6 @@ def dual : Preord ⥤ Preord where
   obj X := of Xᵒᵈ
   map := OrderHom.dual
 set_option linter.uppercaseLean3 false in
-#align Preord.dual Preord.dual
 
 /-- The equivalence between `Preord` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
@@ -93,7 +86,6 @@ def dualEquiv : Preord ≌ Preord where
   unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
   counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 set_option linter.uppercaseLean3 false in
-#align Preord.dual_equiv Preord.dualEquiv
 
 end Preord
 
@@ -104,7 +96,6 @@ def preordToCat : Preord.{u} ⥤ Cat where
   obj X := Cat.of X.1
   map f := f.monotone.functor
 set_option linter.uppercaseLean3 false in
-#align Preord_to_Cat preordToCat
 
 instance : preordToCat.{u}.Faithful where
   map_injective h := by ext x; exact Functor.congr_obj h x

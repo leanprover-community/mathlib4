@@ -5,8 +5,6 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.Data.Fintype.Powerset
 
-#align_import wiedijk_100_theorems.ascending_descending_sequences from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
-
 /-!
 # Erdős–Szekeres theorem
 
@@ -170,6 +168,5 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   apply not_le_of_lt hn
   -- Which follows from considering the cardinalities of the subset above, since `ab` is injective.
   simpa [ran, Nat.succ_injective, card_image_of_injective, ‹Injective ab›] using card_le_card this
-#align theorems_100.erdos_szekeres Theorems100.erdos_szekeres
 
 end Theorems100
