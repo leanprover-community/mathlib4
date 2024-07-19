@@ -29,7 +29,7 @@ Bergelson.
 -/
 
 open Filter Function MeasureTheory Set
-open scoped BigOperators ENNReal NNReal
+open scoped ENNReal
 
 variable {ι α : Type*} [MeasurableSpace α] {μ : Measure α} [IsFiniteMeasure μ] {r : ℝ≥0∞}
 

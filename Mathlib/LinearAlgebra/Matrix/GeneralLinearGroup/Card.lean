@@ -45,7 +45,7 @@ theorem card_linearIndependent {k : ℕ} (hk : k ≤ n) :
           card ((Submodule.span K (Set.range (s : Fin k → V)))ᶜ : Set (V)) =
           (q) ^ n - (q) ^ k := by
             rw [card_compl_set, card_eq_pow_finrank (K := K)
-            (V:=((Submodule.span K (Set.range (s : Fin k → V))) : Set (V)))]
+            (V := ((Submodule.span K (Set.range (s : Fin k → V))) : Set (V)))]
             simp only [SetLike.coe_sort_coe, finrank_span_eq_card s.2, card_fin]
             rw [card_eq_pow_finrank (K := K)]
       simp [card_congr (equiv_linearIndependent k), sum_congr _ _ this, ih (Nat.le_of_succ_le hk),

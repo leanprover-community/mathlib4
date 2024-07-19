@@ -72,7 +72,7 @@ namespace OscillationWithin
 
 /-- The oscillation within `D` of `f` at `x ∈ D` is 0 if and only if `ContinuousWithinAt f D x`. -/
 theorem eq_zero_iff_continuousWithinAt [TopologicalSpace E] (f : E → F) {D : Set E}
-    {x : E} (xD : x ∈ D): oscillationWithin f D x = 0 ↔ ContinuousWithinAt f D x := by
+    {x : E} (xD : x ∈ D) : oscillationWithin f D x = 0 ↔ ContinuousWithinAt f D x := by
   refine ⟨fun hf ↦ EMetric.tendsto_nhds.mpr (fun ε ε0 ↦ ?_), fun hf ↦ hf.oscillationWithin_eq_zero⟩
   simp_rw [← hf, oscillationWithin, iInf_lt_iff] at ε0
   obtain ⟨S, hS, Sε⟩ := ε0

@@ -77,7 +77,7 @@ theorem abs_det_eq_abs_det (u : Fin (rank K) → (𝓞 K)ˣ)
   -- And `g` corresponds to the restriction of `f⁻¹` to `{w // w ≠ w₂}`
   let g : {w // w ≠ w₂} ≃ Fin (rank K) :=
     (Equiv.subtypeEquiv f.symm (fun _ ↦ by simp [f])).trans
-      (finSuccAboveEquiv (f.symm w₂)).toEquiv.symm
+      (finSuccAboveEquiv (f.symm w₂)).symm
   have h_col := congr_arg abs <| Matrix.det_permute (g.trans e₂.symm)
     (Matrix.of fun i w : {w // w ≠ w₂} ↦ (mult w.val : ℝ) * (w.val (u (e₂ i) : K)).log)
   rw [abs_mul, ← Int.cast_abs, Equiv.Perm.sign_abs, Int.cast_one, one_mul] at h_col
@@ -108,3 +108,7 @@ theorem regulator_eq_det (w' : InfinitePlace K) (e : {w // w ≠ w'} ≃ Fin (ra
     rw [Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, Fintype.card_fin, rank])
   simp_rw [regulator_eq_det' K e', logEmbedding, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
   exact abs_det_eq_abs_det K (fun i ↦ fundSystem K i) e' e
+
+end Units
+
+end NumberField

@@ -7,8 +7,6 @@ import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Sets.Compacts
 
-#align_import topology.algebra.group.compact from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # Additional results on topological groups
 
@@ -41,8 +39,6 @@ theorem TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group
     (K : PositiveCompacts G) : LocallyCompactSpace G :=
   let ⟨_x, hx⟩ := K.interior_nonempty
   K.isCompact.locallyCompactSpace_of_mem_nhds_of_group (mem_interior_iff_mem_nhds.1 hx)
-#align topological_space.positive_compacts.locally_compact_space_of_group TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group
-#align topological_space.positive_compacts.locally_compact_space_of_add_group TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_addGroup
 
 end
 
@@ -59,7 +55,5 @@ instance QuotientGroup.continuousSMul [LocallyCompactSpace G] : ContinuousSMul G
       change Continuous fun p : G × G => QuotientGroup.mk (p.1 * p.2)
       exact continuous_coinduced_rng.comp continuous_mul
     exact QuotientMap.continuous_lift_prod_right quotientMap_quotient_mk' H
-#align quotient_group.has_continuous_smul QuotientGroup.continuousSMul
-#align quotient_add_group.has_continuous_vadd QuotientAddGroup.continuousVAdd
 
 end Quotient

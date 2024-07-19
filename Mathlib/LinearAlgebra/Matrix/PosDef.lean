@@ -6,8 +6,6 @@ Authors: Alexander Bentkamp, Mohanad Ahmed
 import Mathlib.LinearAlgebra.Matrix.Spectrum
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
-#align_import linear_algebra.matrix.pos_def from "leanprover-community/mathlib"@"07992a1d1f7a4176c6d3f160209608be4e198566"
-
 /-! # Positive Definite Matrices
 
 This file defines positive (semi)definite matrices and connects the notion to positive definiteness
@@ -46,7 +44,6 @@ open scoped Matrix
 nonnegative for all `x`. -/
 def PosSemidef (M : Matrix n n R) :=
   M.IsHermitian ∧ ∀ x : n → R, 0 ≤ dotProduct (star x) (M *ᵥ x)
-#align matrix.pos_semidef Matrix.PosSemidef
 
 /-- A diagonal matrix is positive semidefinite iff its diagonal entries are nonnegative. -/
 lemma posSemidef_diagonal_iff [DecidableEq n] {d : n → R} :
@@ -74,7 +71,7 @@ lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A)
     simpa only [star_mulVec, dotProduct_mulVec, vecMul_vecMul] using hA.2 (B *ᵥ x)
 
 lemma mul_mul_conjTranspose_same {A : Matrix n n R} (hA : PosSemidef A)
-    {m : Type*} [Fintype m] (B : Matrix m n R):
+    {m : Type*} [Fintype m] (B : Matrix m n R) :
     PosSemidef (B * A * Bᴴ) := by
   simpa only [conjTranspose_conjTranspose] using hA.conjTranspose_mul_mul_same Bᴴ
 
@@ -85,7 +82,6 @@ theorem submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m → n) :
     submatrix_mul (he₂ := Function.bijective_id), submatrix_id_id]
   simpa only [conjTranspose_submatrix, conjTranspose_one] using
     conjTranspose_mul_mul_same hM (Matrix.submatrix 1 id e)
-#align matrix.pos_semidef.submatrix Matrix.PosSemidef.submatrix
 
 theorem transpose {M : Matrix n n R} (hM : M.PosSemidef) : Mᵀ.PosSemidef := by
   refine ⟨IsHermitian.transpose hM.1, fun x => ?_⟩
@@ -233,7 +229,6 @@ end PosSemidef
 theorem posSemidef_submatrix_equiv {M : Matrix n n R} (e : m ≃ n) :
     (M.submatrix e e).PosSemidef ↔ M.PosSemidef :=
   ⟨fun h => by simpa using h.submatrix e.symm, fun h => h.submatrix _⟩
-#align matrix.pos_semidef_submatrix_equiv Matrix.posSemidef_submatrix_equiv
 
 /-- The conjugate transpose of a matrix mulitplied by the matrix is positive semidefinite -/
 theorem posSemidef_conjTranspose_mul_self (A : Matrix m n R) : PosSemidef (Aᴴ * A) := by
@@ -283,7 +278,7 @@ theorem PosSemidef.dotProduct_mulVec_zero_iff
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0` (linear maps version). -/
 theorem PosSemidef.toLinearMap₂'_zero_iff [DecidableEq n]
     {A : Matrix n n 𝕜} (hA : PosSemidef A) (x : n → 𝕜) :
-    Matrix.toLinearMap₂' A (star x) x = 0 ↔ Matrix.toLin' A x = 0 := by
+    Matrix.toLinearMap₂' 𝕜 A (star x) x = 0 ↔ Matrix.toLin' A x = 0 := by
   simpa only [toLinearMap₂'_apply', toLin'_apply] using hA.dotProduct_mulVec_zero_iff x
 
 /-!
@@ -294,13 +289,11 @@ theorem PosSemidef.toLinearMap₂'_zero_iff [DecidableEq n]
    and `xᴴMx` is greater than zero for all nonzero `x`. -/
 def PosDef (M : Matrix n n R) :=
   M.IsHermitian ∧ ∀ x : n → R, x ≠ 0 → 0 < dotProduct (star x) (M *ᵥ x)
-#align matrix.pos_def Matrix.PosDef
 
 namespace PosDef
 
 theorem isHermitian {M : Matrix n n R} (hM : M.PosDef) : M.IsHermitian :=
   hM.1
-#align matrix.pos_def.is_hermitian Matrix.PosDef.isHermitian
 
 theorem re_dotProduct_pos {M : Matrix n n 𝕜} (hM : M.PosDef) {x : n → 𝕜} (hx : x ≠ 0) :
     0 < RCLike.re (dotProduct (star x) (M *ᵥ x)) :=
@@ -313,13 +306,11 @@ theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
   · simp only [hx, zero_dotProduct, star_zero, RCLike.zero_re']
     exact le_rfl
   · exact le_of_lt (hM.2 x hx)
-#align matrix.pos_def.pos_semidef Matrix.PosDef.posSemidef
 
 theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
   refine ⟨IsHermitian.transpose hM.1, fun x hx => ?_⟩
   convert hM.2 (star x) (star_ne_zero.2 hx) using 1
   rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
-#align matrix.pos_def.transpose Matrix.PosDef.transpose
 
 protected lemma add_posSemidef {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosDef) (hB : B.PosSemidef) : (A + B).PosDef :=
@@ -338,20 +329,18 @@ protected lemma add {A : Matrix m m R} {B : Matrix m m R}
   hA.add_posSemidef hB.posSemidef
 
 theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
-    (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
-  refine ⟨hM, fun x hx => ?_⟩
-  simp only [toQuadraticForm', QuadraticForm.PosDef, LinearMap.BilinForm.toQuadraticForm_apply,
+    (hMq : M.toQuadraticMap'.PosDef) : M.PosDef := by
+  refine' ⟨hM, fun x hx => _⟩
+  simp only [toQuadraticMap', QuadraticMap.PosDef, LinearMap.BilinMap.toQuadraticMap_apply,
     toLinearMap₂'_apply'] at hMq
   apply hMq x hx
-#align matrix.pos_def_of_to_quadratic_form' Matrix.PosDef.of_toQuadraticForm'
 
 theorem toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
-    M.toQuadraticForm'.PosDef := by
+    M.toQuadraticMap'.PosDef := by
   intro x hx
-  simp only [Matrix.toQuadraticForm', LinearMap.BilinForm.toQuadraticForm_apply,
+  simp only [Matrix.toQuadraticMap', LinearMap.BilinMap.toQuadraticMap_apply,
     toLinearMap₂'_apply']
   apply hM.2 x hx
-#align matrix.pos_def_to_quadratic_form' Matrix.PosDef.toQuadraticForm'
 
 /-- The eigenvalues of a positive definite matrix are positive -/
 lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
@@ -364,7 +353,6 @@ theorem det_pos [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : 0 < det 
   apply Finset.prod_pos
   intro i _
   simpa using hM.eigenvalues_pos i
-#align matrix.pos_def.det_pos Matrix.PosDef.det_pos
 
 end PosDef
 
@@ -372,21 +360,21 @@ end Matrix
 
 namespace QuadraticForm
 
+open QuadraticMap
+
 variable {n : Type*} [Fintype n]
 
 theorem posDef_of_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)}
     (hQ : Q.toMatrix'.PosDef) : Q.PosDef := by
-  rw [← toQuadraticForm_associated ℝ Q,
-    ← LinearMap.toMatrix₂'.left_inv ((associatedHom (R := ℝ) ℝ) Q)]
+  rw [← toQuadraticMap_associated ℝ Q,
+    ← (LinearMap.toMatrix₂' ℝ).left_inv ((associatedHom (R := ℝ) ℝ) Q)]
   exact hQ.toQuadraticForm'
-#align quadratic_form.pos_def_of_to_matrix' QuadraticForm.posDef_of_toMatrix'
 
 theorem posDef_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)} (hQ : Q.PosDef) :
     Q.toMatrix'.PosDef := by
-  rw [← toQuadraticForm_associated ℝ Q, ←
-    LinearMap.toMatrix₂'.left_inv ((associatedHom (R := ℝ) ℝ) Q)] at hQ
+  rw [← toQuadraticMap_associated ℝ Q, ←
+    (LinearMap.toMatrix₂' ℝ).left_inv ((associatedHom (R := ℝ) ℝ) Q)] at hQ
   exact .of_toQuadraticForm' (isSymm_toMatrix' Q) hQ
-#align quadratic_form.pos_def_to_matrix' QuadraticForm.posDef_toMatrix'
 
 end QuadraticForm
 
@@ -414,12 +402,10 @@ noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.P
       smul_left := fun x y r => by
         simp only
         rw [← smul_eq_mul, ← smul_dotProduct, starRingEnd_apply, ← star_smul] }
-#align matrix.normed_add_comm_group.of_matrix Matrix.NormedAddCommGroup.ofMatrix
 
 /-- A positive definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/
 def InnerProductSpace.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
     @InnerProductSpace 𝕜 (n → 𝕜) _ (NormedAddCommGroup.ofMatrix hM) :=
   InnerProductSpace.ofCore _
-#align matrix.inner_product_space.of_matrix Matrix.InnerProductSpace.ofMatrix
 
 end Matrix
