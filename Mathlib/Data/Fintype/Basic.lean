@@ -114,7 +114,7 @@ theorem univ_eq_empty_iff : (univ : Finset α) = ∅ ↔ IsEmpty α := by
   rw [← not_nonempty_iff, ← univ_nonempty_iff, not_nonempty_iff_eq_empty]
 #align finset.univ_eq_empty_iff Finset.univ_eq_empty_iff
 
-theorem univ_nontrivial_iff:
+theorem univ_nontrivial_iff :
     (Finset.univ : Finset α).Nontrivial ↔ Nontrivial α := by
   rw [Finset.Nontrivial, Finset.coe_univ, Set.nontrivial_univ_iff]
 
@@ -589,7 +589,8 @@ def ofSubsingleton (a : α) [Subsingleton α] : Fintype α :=
   ⟨{a}, fun _ => Finset.mem_singleton.2 (Subsingleton.elim _ _)⟩
 #align fintype.of_subsingleton Fintype.ofSubsingleton
 
-@[simp]
+-- In principle, this could be a `simp` theorem but it applies to any occurence of `univ` and
+-- required unification of the (possibly very complex) `Fintype` instances.
 theorem univ_ofSubsingleton (a : α) [Subsingleton α] : @univ _ (ofSubsingleton a) = {a} :=
   rfl
 #align fintype.univ_of_subsingleton Fintype.univ_ofSubsingleton

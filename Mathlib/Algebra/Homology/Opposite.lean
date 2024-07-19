@@ -71,7 +71,7 @@ variable {ι V : Type*} [Category V] {c : ComplexShape ι}
 
 section
 
-variable [Preadditive V]
+variable [HasZeroMorphisms V]
 
 /-- Sends a complex `X` with objects in `V` to the corresponding complex with objects in `Vᵒᵖ`. -/
 @[simps]
@@ -223,14 +223,6 @@ def unopEquivalence : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≌ HomologicalComple
     exact Category.comp_id _
 #align homological_complex.unop_equivalence HomologicalComplex.unopEquivalence
 
-variable {V c}
-
-instance opFunctor_additive : (@opFunctor ι V _ c _).Additive where
-#align homological_complex.op_functor_additive HomologicalComplex.opFunctor_additive
-
-instance unopFunctor_additive : (@unopFunctor ι V _ c _).Additive where
-#align homological_complex.unop_functor_additive HomologicalComplex.unopFunctor_additive
-
 instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
     K.op.HasHomology i :=
   (inferInstance : (K.sc i).op.HasHomology)
@@ -238,6 +230,8 @@ instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
 instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.HasHomology i :=
   (inferInstance : (K.sc i).unop.HasHomology)
+
+variable {V c}
 
 /-- If `K` is a homological complex, then the homology of `K.op` identifies to
 the opposite of the homology of `K`. -/
@@ -250,6 +244,18 @@ then the homology of `K.unop` identifies to the opposite of the homology of `K`.
 def homologyUnop (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.homology i ≅ unop (K.homology i) :=
   (K.unop.homologyOp i).unop
+
+end
+
+section
+
+variable [Preadditive V]
+
+instance opFunctor_additive : (@opFunctor ι V _ c _).Additive where
+#align homological_complex.op_functor_additive HomologicalComplex.opFunctor_additive
+
+instance unopFunctor_additive : (@unopFunctor ι V _ c _).Additive where
+#align homological_complex.unop_functor_additive HomologicalComplex.unopFunctor_additive
 
 end
 

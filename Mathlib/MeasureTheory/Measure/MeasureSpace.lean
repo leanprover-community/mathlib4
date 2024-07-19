@@ -967,9 +967,13 @@ theorem nnreal_smul_coe_apply {_m : MeasurableSpace α} (c : ℝ≥0) (μ : Meas
 
 theorem ae_smul_measure_iff {p : α → Prop} {c : ℝ≥0∞} (hc : c ≠ 0) :
     (∀ᵐ x ∂c • μ, p x) ↔ ∀ᵐ x ∂μ, p x := by
-    simp only [ae_iff, Algebra.id.smul_eq_mul, smul_apply, or_iff_right_iff_imp, mul_eq_zero]
-    simp only [IsEmpty.forall_iff, hc]
+  simp [ae_iff, hc]
 #align measure_theory.measure.ae_smul_measure_iff MeasureTheory.Measure.ae_smul_measure_iff
+
+@[simp]
+theorem ae_smul_measure_eq {c : ℝ≥0∞} (hc : c ≠ 0) : ae (c • μ) = ae μ := by
+  ext
+  exact ae_smul_measure_iff hc
 
 theorem measure_eq_left_of_subset_of_measure_add_eq {s t : Set α} (h : (μ + ν) t ≠ ∞) (h' : s ⊆ t)
     (h'' : (μ + ν) s = (μ + ν) t) : μ s = μ t := by
@@ -1948,6 +1952,13 @@ theorem compl_mem_cofinite : sᶜ ∈ μ.cofinite ↔ μ s < ∞ := by rw [mem_c
 theorem eventually_cofinite {p : α → Prop} : (∀ᶠ x in μ.cofinite, p x) ↔ μ { x | ¬p x } < ∞ :=
   Iff.rfl
 #align measure_theory.measure.eventually_cofinite MeasureTheory.Measure.eventually_cofinite
+
+instance cofinite.instIsMeasurablyGenerated : IsMeasurablyGenerated μ.cofinite where
+  exists_measurable_subset s hs := by
+    refine ⟨(toMeasurable μ sᶜ)ᶜ, ?_, (measurableSet_toMeasurable _ _).compl, ?_⟩
+    · rwa [compl_mem_cofinite, measure_toMeasurable]
+    · rw [compl_subset_comm]
+      apply subset_toMeasurable
 
 end Measure
 

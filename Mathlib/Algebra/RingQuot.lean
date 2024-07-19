@@ -438,7 +438,7 @@ theorem ringQuot_ext [Semiring T] {r : R → R → Prop} (f g : RingQuot r →+*
 
 variable [Semiring T]
 
-irreducible_def preLift {r : R → R → Prop} { f : R →+* T } (h : ∀ ⦃x y⦄, r x y → f x = f y) :
+irreducible_def preLift {r : R → R → Prop} {f : R →+* T} (h : ∀ ⦃x y⦄, r x y → f x = f y) :
   RingQuot r →+* T :=
   { toFun := fun x ↦ Quot.lift f
         (by
@@ -603,7 +603,7 @@ theorem ringQuot_ext' {s : A → A → Prop} (f g : RingQuot s →ₐ[S] B)
   exact AlgHom.congr_fun w x
 #align ring_quot.ring_quot_ext' RingQuot.ringQuot_ext'
 
-irreducible_def preLiftAlgHom {s : A → A → Prop} { f : A →ₐ[S] B }
+irreducible_def preLiftAlgHom {s : A → A → Prop} {f : A →ₐ[S] B}
   (h : ∀ ⦃x y⦄, s x y → f x = f y) : RingQuot s →ₐ[S] B :=
 { toFun := fun x ↦ Quot.lift f
             (by

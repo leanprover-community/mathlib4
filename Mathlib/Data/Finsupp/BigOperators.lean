@@ -105,7 +105,7 @@ theorem Multiset.support_sum_eq [AddCommMonoid M] (s : Multiset (ι →₀ M))
     convert List.support_sum_eq a this
     · simp only [Multiset.quot_mk_to_coe'', Multiset.sum_coe]
     · dsimp only [Function.comp_def]
-      simp only [quot_mk_to_coe'', map_coe, sup_coe, ge_iff_le, Finset.le_eq_subset,
+      simp only [quot_mk_to_coe'', map_coe, sup_coe, Finset.le_eq_subset,
         Finset.sup_eq_union, Finset.bot_eq_empty, List.foldr_map]
   simp only [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.coe_eq_coe] at hl
   exact hl.symm.pairwise hd fun h ↦ _root_.Disjoint.symm h

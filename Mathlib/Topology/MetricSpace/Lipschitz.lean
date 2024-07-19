@@ -190,7 +190,7 @@ theorem _root_.lipschitzWith_min : LipschitzWith 1 fun p : ℝ × ℝ => min p.1
 
 lemma _root_.Real.lipschitzWith_toNNReal : LipschitzWith 1 Real.toNNReal := by
   refine lipschitzWith_iff_dist_le_mul.mpr (fun x y ↦ ?_)
-  simpa only [ge_iff_le, NNReal.coe_one, dist_prod_same_right, one_mul, Real.dist_eq] using
+  simpa only [NNReal.coe_one, dist_prod_same_right, one_mul, Real.dist_eq] using
     lipschitzWith_iff_dist_le_mul.mp lipschitzWith_max (x, 0) (y, 0)
 
 lemma cauchySeq_comp (hf : LipschitzWith K f) {u : ℕ → α} (hu : CauchySeq u) :

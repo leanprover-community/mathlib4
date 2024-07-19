@@ -113,7 +113,8 @@ def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra 
 #align algebra_map algebraMap
 
 /-- Coercion from a commutative semiring to an algebra over this semiring. -/
-@[coe] def Algebra.cast {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] : R → A :=
+@[coe, reducible]
+def Algebra.cast {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] : R → A :=
   algebraMap R A
 
 namespace algebraMap
@@ -127,15 +128,19 @@ section CommSemiringSemiring
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_zero : (↑(0 : R) : A) = 0 :=
   map_zero (algebraMap R A)
 #align algebra_map.coe_zero algebraMap.coe_zero
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_one : (↑(1 : R) : A) = 1 :=
   map_one (algebraMap R A)
 #align algebra_map.coe_one algebraMap.coe_one
+
+@[norm_cast]
+theorem coe_natCast (a : ℕ) : (↑(a : R) : A) = a :=
+  map_natCast (algebraMap R A) a
 
 @[norm_cast]
 theorem coe_add (a b : R) : (↑(a + b : R) : A) = ↑a + ↑b :=
@@ -162,6 +167,11 @@ variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
 theorem coe_neg (x : R) : (↑(-x : R) : A) = -↑x :=
   map_neg (algebraMap R A) x
 #align algebra_map.coe_neg algebraMap.coe_neg
+
+@[norm_cast]
+theorem coe_sub (a b : R) :
+    (↑(a - b : R) : A) = ↑a - ↑b :=
+  map_sub (algebraMap R A) a b
 
 end CommRingRing
 
@@ -409,5 +419,12 @@ end id
 end Semiring
 
 end Algebra
+
+@[norm_cast]
+theorem algebraMap.coe_smul (A B C : Type*) [SMul A B] [CommSemiring B] [Semiring C] [Algebra B C]
+    [SMul A C] [IsScalarTower A B C] (a : A) (b : B) : (a • b : B) = a • (b : C) := calc
+  ((a • b : B) : C) = (a • b) • 1 := Algebra.algebraMap_eq_smul_one _
+  _ = a • (b • 1) := smul_assoc ..
+  _ = a • (b : C) := congrArg _ (Algebra.algebraMap_eq_smul_one b).symm
 
 assert_not_exists Module.End
