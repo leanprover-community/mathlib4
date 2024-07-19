@@ -107,8 +107,8 @@ def getAllImports (cmd id : Syntax) (dbg? : Bool := false) :
     for t in tns do
       let new := match env.getModuleIdxFor? t with
         | some t => (hm.find? t).get!
-        | none   => .anonymous --instead of `getMainModule`, we omit the current module
-        if !fins.contains new then fins := fins.insert new
+        | none   => .anonymous -- instead of `getMainModule`, we omit the current module
+      if !fins.contains new then fins := fins.insert new
   return fins.erase .anonymous
 
 /-- `getIrredundantImports env importNames` takes an `Environment` and a `NameSet` as inputs.
