@@ -19,7 +19,7 @@ This is a combinatorial analogue of the linear span of a set of vectors.
 For `M : Matroid α`, this file defines a predicate `M.Flat : Set α → Prop` and a function
 `M.closure : Set α → Set α` corresponding to these notions, and develops API for the latter.
 API for `Matroid.Flat` will appear in another file; we include the definition here since
-it is used in the definition of `Matroid.cl`.
+it is used in the definition of `Matroid.closure`.
 
 ## Main definitions
 
@@ -29,14 +29,36 @@ it is used in the definition of `Matroid.cl`.
 ## Implementation details
 
 If `X : Set α` satisfies `X ⊆ M.E`, then it is clear how `M.closure X` should be defined.
-But `M.closure X` needs to be defined for all `X : Set α`, so a convention is needed for how `M.cl`
-handles sets containing junk elements outside `M.E`. Ideally, this convention should minimize
-the need to keep track of which sets are actually contained in the ground set.
+But `M.closure X` also needs to be defined for all `X : Set α`,
+so a convention is needed for how it handles sets containing junk elements outside `M.E`.
+All such choices come with tradeoffs. Provided that `M.closure X` has already been defined
+for `X ⊆ M.E`, the two best candidates for extending it to all `X` seem to be:
 
-All such choices come with tradeoffs; the definition we opt for satisfies `M.closure X = M.closure (X ∩ M.E)`.
-The drawback here is that the statement `X ⊆ M.closure X` requires the assumption `X ⊆ M.E`.
-But all the other properties of closure work nicely without extra assumptions;
-closure is monotone, idempotent, and `M.closure X ⊆ M.E` for all `X`.
+(1) The function for which `M.closure X = M.closure (X ∩ M.E)` for all `X : Set α`
+(2) The function for which `M.closure X = M.closure (X ∩ M.E) ∪ X` for all `X : Set α`
+
+For both options, the function `closure` is monotone and idempotent with no assumptions on its
+argument.
+
+Choice (1) has the advantage that `M.closure X ⊆ M.E` holds for all `X` without the assumption
+that `X ⊆ M.E`, which is very nice for `aesop_mat`. It is also fairly convenient to rewrite
+`M.closure X` to `M.closure (X ∩ M.E)` when one needs to work with a subset of the ground set.
+Its disadvantage is that the statement `X ⊆ M.closure X` is only true provided that `X ⊆ M.E`.
+
+Choice (2) has the reverse property: we would have `X ⊆ M.closure X` for all `X`, but the condition
+`M.closure X ⊆ M.E` requires `X ⊆ M.E` to hold. It has a couple of other advantages too:
+is is actually the closure function of a matroid on `α` with ground set `univ`
+(specifically, the direct sum of `M` and a free matroid on `M.Eᶜ`),
+and because of this, it is an example of a `ClosureOperator` on `α`, which in turn gives access
+to nice existing API for both `ClosureOperator` and `GaloisInsertion`.
+(This fails for choice (1), since `X ⊆ M.closure X` is required for
+a `ClosureOperator`, but isn't true for non-subsets of `M.E`)
+
+The API that choice (2) would offer is very beguiling, but after extensive experimentation in
+an external repo, it seems that (1) is far less rough around the edges in practice,
+so we go with (1).
+The `ClosureOperator`/`GaloisInsertion` API is still available on a subtype via
+`Matroid.SubtypeClosure`, albeit less elegantly.
 -/
 
 open Set
@@ -69,7 +91,7 @@ lemma Flat.iInter {ι : Type*} [Nonempty ι] {Fs : ι → Set α}
 /-- The property of being a flat gives rise to a `ClosureOperator` on the subsets of `M.E`,
 in which the `IsClosed` sets correspond to `Flat`s.
 (We can't define such an operator on all of `Set α`,
-since this would incorrectly force `univ` to always be a flat.)-/
+since this would incorrectly force `univ` to always be a flat.) -/
 def subtypeClosure (M : Matroid α) : ClosureOperator (Iic M.E) :=
   ClosureOperator.ofCompletePred (fun F ↦ M.Flat F.1) fun s hs ↦ by
     obtain (rfl | hne) := s.eq_empty_or_nonempty
