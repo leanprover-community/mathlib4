@@ -145,6 +145,42 @@ variable (F : OplaxFunctor B C)
 -- `PrelaxFunctor.map₂` to nonexistent `OplaxFunctor.map₂`
 #noalign category_theory.oplax_functor.to_prelax_functor_map₂
 
+section
+
+variable (F : OplaxFunctor B C)
+
+@[reassoc]
+lemma mapComp_assoc_left {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    F.mapComp f (g ≫ h) ≫ F.map f ◁ F.mapComp g h =
+      F.map₂ (α_ f g h).inv ≫ F.mapComp (f ≫ g) h ≫
+        F.mapComp f g ▷ F.map h ≫ (α_ (F.map f) (F.map g) (F.map h)).hom := by
+  rw [← F.map₂_associator, ← F.map₂_comp_assoc]
+  simp only [Iso.inv_hom_id, PrelaxFunctor.map₂_id, id_comp]
+
+@[reassoc]
+lemma mapComp_assoc_right {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    F.mapComp (f ≫ g) h ≫ F.mapComp f g ▷ F.map h =
+      F.map₂ (α_ f g h).hom ≫ F.mapComp f (g ≫ h) ≫
+        F.map f ◁ F.mapComp g h ≫ (α_ (F.map f) (F.map g) (F.map h)).inv := by
+  rw [F.map₂_associator_assoc]
+  simp only [Iso.hom_inv_id, comp_id]
+
+@[reassoc]
+theorem mapComp_id_left {a b : B} (f : a ⟶ b) :
+    F.mapComp (𝟙 a) f ≫ F.mapId a ▷ F.map f = F.map₂ (λ_ f).hom ≫ (λ_ (F.map f)).inv := by
+  rw [Iso.eq_comp_inv]
+  simp only [Category.assoc]
+  rw [← F.map₂_leftUnitor]
+
+@[reassoc]
+theorem mapComp_id_right {a b : B} (f : a ⟶ b) :
+    F.mapComp f (𝟙 b) ≫ F.map f ◁ F.mapId b = F.map₂ (ρ_ f).hom ≫ (ρ_ (F.map f)).inv := by
+  rw [Iso.eq_comp_inv]
+  simp only [Category.assoc]
+  rw [← F.map₂_rightUnitor]
+
+end
+
 /-- The identity oplax functor. -/
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : OplaxFunctor B B where

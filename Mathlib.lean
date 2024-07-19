@@ -1335,6 +1335,9 @@ import Mathlib.CategoryTheory.Bicategory.Kan.Adjunction
 import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
+import Mathlib.CategoryTheory.Bicategory.Monad.Adjunction
+import Mathlib.CategoryTheory.Bicategory.Monad.Basic
+import Mathlib.CategoryTheory.Bicategory.Monad.Cat
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation
 import Mathlib.CategoryTheory.Bicategory.SingleObj
 import Mathlib.CategoryTheory.Bicategory.Strict
@@ -4166,6 +4169,7 @@ import Mathlib.Tactic.Widget.Conv
 import Mathlib.Tactic.Widget.GCongr
 import Mathlib.Tactic.Widget.SelectInsertParamsClass
 import Mathlib.Tactic.Widget.SelectPanelUtils
+import Mathlib.Tactic.Widget.StringDiagram
 import Mathlib.Tactic.Zify
 import Mathlib.Testing.SlimCheck.Functions
 import Mathlib.Testing.SlimCheck.Gen

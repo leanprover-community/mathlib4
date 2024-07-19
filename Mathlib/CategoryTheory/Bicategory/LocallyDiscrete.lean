@@ -105,12 +105,12 @@ instance locallyDiscreteBicategory : Bicategory (LocallyDiscrete C) where
   rightUnitor f := eqToIso <| by apply Discrete.ext; simp
 #align category_theory.locally_discrete_bicategory CategoryTheory.locallyDiscreteBicategory
 
-/-- A locally discrete bicategory is strict. -/
-instance locallyDiscreteBicategory.strict : Strict (LocallyDiscrete C) where
-  id_comp f := Discrete.ext _ _ (Category.id_comp _)
-  comp_id f := Discrete.ext _ _ (Category.comp_id _)
-  assoc f g h := Discrete.ext _ _ (Category.assoc _ _ _)
-#align category_theory.locally_discrete_bicategory.strict CategoryTheory.locallyDiscreteBicategory.strict
+-- /-- A locally discrete bicategory is strict. -/
+-- instance locallyDiscreteBicategory.strict : Strict (LocallyDiscrete C) where
+--   id_comp f := Discrete.ext _ _ (Category.id_comp _)
+--   comp_id f := Discrete.ext _ _ (Category.comp_id _)
+--   assoc f g h := Discrete.ext _ _ (Category.assoc _ _ _)
+-- #align category_theory.locally_discrete_bicategory.strict CategoryTheory.locallyDiscreteBicategory.strict
 
 variable {I : Type u₁} [Category.{v₁} I] {B : Type u₂} [Bicategory.{w₂, v₂} B] [Strict B]
 
@@ -179,9 +179,9 @@ lemma comp_toLoc {a b c : C} (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).toLoc = f.t
 
 end Quiver.Hom
 
-@[simp]
-lemma CategoryTheory.LocallyDiscrete.eqToHom_toLoc {C : Type u} [Category.{v} C] {a b : C}
-    (h : a = b) : (eqToHom h).toLoc = eqToHom (congrArg LocallyDiscrete.mk h) := by
-  subst h; rfl
+-- @[simp]
+-- lemma CategoryTheory.LocallyDiscrete.eqToHom_toLoc {C : Type u} [Category.{v} C] {a b : C}
+--     (h : a = b) : (eqToHom h).toLoc = eqToHom (congrArg LocallyDiscrete.mk h) := by
+--   subst h; rfl
 
 end
