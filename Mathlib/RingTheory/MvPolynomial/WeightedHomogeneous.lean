@@ -8,8 +8,6 @@ import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Data.Finsupp.Weight
 
-#align_import ring_theory.mv_polynomial.weighted_homogeneous from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
-
 /-!
 # Weighted homogeneous polynomials
 
@@ -67,7 +65,6 @@ variable [SemilatticeSup M]
 /-- The weighted total degree of a multivariate polynomial, taking values in `WithBot M`. -/
 def weightedTotalDegree' (w : σ → M) (p : MvPolynomial σ R) : WithBot M :=
   p.support.sup fun s => weight w s
-#align mv_polynomial.weighted_total_degree' MvPolynomial.weightedTotalDegree'
 
 /-- The `weightedTotalDegree'` of a polynomial `p` is `⊥` if and only if `p = 0`. -/
 theorem weightedTotalDegree'_eq_bot_iff (w : σ → M) (p : MvPolynomial σ R) :
@@ -89,7 +86,6 @@ variable [OrderBot M]
   polynomial as a function taking values in `M`. -/
 def weightedTotalDegree (w : σ → M) (p : MvPolynomial σ R) : M :=
   p.support.sup fun s => weight w s
-#align mv_polynomial.weighted_total_degree MvPolynomial.weightedTotalDegree
 
 /-- This lemma relates `weightedTotalDegree` and `weightedTotalDegree'`. -/
 theorem weightedTotalDegree_coe (w : σ → M) (p : MvPolynomial σ R) (hp : p ≠ 0) :
@@ -122,7 +118,6 @@ end SemilatticeSup
   occurring in `φ` have weighted degree `m`. -/
 def IsWeightedHomogeneous (w : σ → M) (φ : MvPolynomial σ R) (m : M) : Prop :=
   ∀ ⦃d⦄, coeff d φ ≠ 0 → weight w d = m
-#align mv_polynomial.is_weighted_homogeneous MvPolynomial.IsWeightedHomogeneous
 
 variable (R)
 
@@ -217,8 +212,6 @@ theorem isWeightedHomogeneous_X (w : σ → M) (i : σ) :
     IsWeightedHomogeneous w (X i : MvPolynomial σ R) (w i) := by
   apply isWeightedHomogeneous_monomial
   simp only [weight, LinearMap.toAddMonoidHom_coe, total_single, one_nsmul]
-set_option linter.uppercaseLean3 false in
-#align mv_polynomial.is_weighted_homogeneous_X MvPolynomial.isWeightedHomogeneous_X
 
 namespace IsWeightedHomogeneous
 
@@ -300,7 +293,6 @@ variable {R}
 def weightedHomogeneousComponent (w : σ → M) (n : M) : MvPolynomial σ R →ₗ[R] MvPolynomial σ R :=
   letI := Classical.decEq M
   (Submodule.subtype _).comp <| Finsupp.restrictDom _ _ { d | weight w d = n }
-#align mv_polynomial.weighted_homogeneous_component MvPolynomial.weightedHomogeneousComponent
 
 section WeightedHomogeneousComponent
 
@@ -311,14 +303,12 @@ theorem coeff_weightedHomogeneousComponent [DecidableEq M] (d : σ →₀ ℕ) :
       if weight w d = n then coeff d φ else 0 :=
   letI := Classical.decEq M
   Finsupp.filter_apply (fun d : σ →₀ ℕ => weight w d = n) φ d |>.trans <| by convert rfl
-#align mv_polynomial.coeff_weighted_homogeneous_component MvPolynomial.coeff_weightedHomogeneousComponent
 
 theorem weightedHomogeneousComponent_apply [DecidableEq M] :
     weightedHomogeneousComponent w n φ =
       ∑ d ∈ φ.support.filter fun d => weight w d = n, monomial d (coeff d φ) :=
   letI := Classical.decEq M
   Finsupp.filter_eq_sum (fun d : σ →₀ ℕ => weight w d = n) φ |>.trans <| by convert rfl
-#align mv_polynomial.weighted_homogeneous_component_apply MvPolynomial.weightedHomogeneousComponent_apply
 
 /-- The `n` weighted homogeneous component of a polynomial is weighted homogeneous of
 weighted degree `n`. -/
