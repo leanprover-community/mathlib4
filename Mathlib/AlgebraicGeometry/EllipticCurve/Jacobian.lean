@@ -1547,6 +1547,7 @@ lemma toAffineLift_add (P Q : W.Point) :
 variable (W) in
 /-- The equivalence between the nonsingular rational points on a Weierstrass curve in Jacobian
 coordinates with those in affine coordinates. -/
+@[simps]
 noncomputable def toAffineAddEquiv : W.Point ≃+ W.toAffine.Point where
   toFun := toAffineLift
   invFun := fromAffine

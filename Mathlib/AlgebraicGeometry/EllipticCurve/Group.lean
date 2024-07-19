@@ -575,10 +575,8 @@ variable {F : Type u} [Field F] {W : Jacobian F}
 noncomputable instance : AddCommGroup W.Point where
   nsmul := nsmulRec
   zsmul := zsmulRec
-  zero_add _ := (toAffineAddEquiv W).injective <| by
-    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, zero_add]
-  add_zero _ := (toAffineAddEquiv W).injective <| by
-    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, add_zero]
+  zero_add _ := (toAffineAddEquiv W).injective <| by rw [map_add, toAffineAddEquiv_zero, zero_add]
+  add_zero _ := (toAffineAddEquiv W).injective <| by rw [map_add, toAffineAddEquiv_zero, add_zero]
   add_left_neg P := (toAffineAddEquiv W).injective <| by
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, add_left_neg, toAffineLift_zero]
   add_comm _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_comm]
