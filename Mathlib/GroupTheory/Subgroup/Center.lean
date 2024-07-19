@@ -7,8 +7,6 @@ import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.GroupTheory.Submonoid.Center
 
-#align_import group_theory.subgroup.basic from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
-
 /-!
 # Centers of subgroups
 
@@ -32,24 +30,17 @@ def center : Subgroup G :=
   { Submonoid.center G with
     carrier := Set.center G
     inv_mem' := Set.inv_mem_center }
-#align subgroup.center Subgroup.center
-#align add_subgroup.center AddSubgroup.center
 
 @[to_additive]
 theorem coe_center : ↑(center G) = Set.center G :=
   rfl
-#align subgroup.coe_center Subgroup.coe_center
-#align add_subgroup.coe_center AddSubgroup.coe_center
 
 @[to_additive (attr := simp)]
 theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
   rfl
-#align subgroup.center_to_submonoid Subgroup.center_toSubmonoid
-#align add_subgroup.center_to_add_submonoid AddSubgroup.center_toAddSubmonoid
 
 instance center.isCommutative : (center G).IsCommutative :=
   ⟨⟨fun a b => Subtype.ext (b.2.comm a).symm⟩⟩
-#align subgroup.center.is_commutative Subgroup.center.isCommutative
 
 /-- For a group with zero, the center of the units is the same as the units of the center. -/
 @[simps! apply_val_coe symm_apply_coe_val]
@@ -74,12 +65,9 @@ variable {G}
 theorem mem_center_iff {z : G} : z ∈ center G ↔ ∀ g, g * z = z * g := by
   rw [← Semigroup.mem_center_iff]
   exact Iff.rfl
-#align subgroup.mem_center_iff Subgroup.mem_center_iff
-#align add_subgroup.mem_center_iff AddSubgroup.mem_center_iff
 
 instance decidableMemCenter (z : G) [Decidable (∀ g, g * z = z * g)] : Decidable (z ∈ center G) :=
   decidable_of_iff' _ mem_center_iff
-#align subgroup.decidable_mem_center Subgroup.decidableMemCenter
 
 @[to_additive]
 instance centerCharacteristic : (center G).Characteristic := by
@@ -88,8 +76,6 @@ instance centerCharacteristic : (center G).Characteristic := by
   intro h
   rw [← ϕ.injective.eq_iff, ϕ.map_mul, ϕ.map_mul]
   exact (hg.comm (ϕ h)).symm
-#align subgroup.center_characteristic Subgroup.centerCharacteristic
-#align add_subgroup.center_characteristic AddSubgroup.centerCharacteristic
 
 theorem _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = ⊤ := by
   rw [eq_top_iff']
@@ -97,7 +83,6 @@ theorem _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = �
   rw [Subgroup.mem_center_iff]
   intro y
   exact mul_comm y x
-#align comm_group.center_eq_top CommGroup.center_eq_top
 
 /-- A group is commutative if the center is the whole group -/
 def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
@@ -108,7 +93,6 @@ def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
       apply Subgroup.mem_center_iff.mp _ x
       exact h y
   }
-#align group.comm_group_of_center_eq_top Group.commGroupOfCenterEqTop
 
 variable {H : Subgroup G}
 
@@ -117,8 +101,6 @@ section Normalizer
 @[to_additive]
 theorem center_le_normalizer : center G ≤ H.normalizer := fun x hx y => by
   simp [← mem_center_iff.mp hx y, mul_assoc]
-#align subgroup.center_le_normalizer Subgroup.center_le_normalizer
-#align add_subgroup.center_le_normalizer AddSubgroup.center_le_normalizer
 
 end Normalizer
 
@@ -130,11 +112,9 @@ variable {M : Type*} [Monoid M]
 
 theorem eq_of_left_mem_center {g h : M} (H : IsConj g h) (Hg : g ∈ Set.center M) : g = h := by
   rcases H with ⟨u, hu⟩; rwa [← u.mul_left_inj, Hg.comm u]
-#align is_conj.eq_of_left_mem_center IsConj.eq_of_left_mem_center
 
 theorem eq_of_right_mem_center {g h : M} (H : IsConj g h) (Hh : h ∈ Set.center M) : g = h :=
   (H.symm.eq_of_left_mem_center Hh).symm
-#align is_conj.eq_of_right_mem_center IsConj.eq_of_right_mem_center
 
 end IsConj
 

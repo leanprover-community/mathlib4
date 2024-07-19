@@ -6,8 +6,6 @@ Authors: Rémy Degenne
 import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.AEMeasurable
 
-#align_import measure_theory.function.conditional_expectation.unique from "leanprover-community/mathlib"@"d8bbb04e2d2a44596798a9207ceefc0fb236e41e"
-
 /-!
 # Uniqueness of the conditional expectation
 
@@ -27,7 +25,6 @@ defined in this file but is introduced in
 
 -/
 
-set_option linter.uppercaseLean3 false
 
 open scoped ENNReal MeasureTheory
 
@@ -65,7 +62,6 @@ theorem lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero (hm : m ≤ m0) (f : lpM
     have hfg_restrict : f =ᵐ[μ.restrict s] g := ae_restrict_of_ae hfg
     rw [integral_congr_ae hfg_restrict.symm]
     exact hf_zero s hs hμs
-#align measure_theory.Lp_meas.ae_eq_zero_of_forall_set_integral_eq_zero MeasureTheory.lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero
 
 @[deprecated (since := "2024-04-17")]
 alias lpMeas.ae_eq_zero_of_forall_set_integral_eq_zero :=
@@ -91,7 +87,6 @@ theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' (hm : m ≤ m0) (f : Lp E' 
     have hfg_restrict : f =ᵐ[μ.restrict s] f_meas := ae_restrict_of_ae hf_f_meas
     rw [integral_congr_ae hfg_restrict.symm]
     exact hf_zero s hs hμs
-#align measure_theory.Lp.ae_eq_zero_of_forall_set_integral_eq_zero' MeasureTheory.Lp.ae_eq_zero_of_forall_setIntegral_eq_zero'
 
 @[deprecated (since := "2024-04-17")]
 alias Lp.ae_eq_zero_of_forall_set_integral_eq_zero' :=
@@ -120,7 +115,6 @@ theorem Lp.ae_eq_of_forall_setIntegral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (h
   exact
     Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' 𝕜 hm (f - g) hp_ne_zero hp_ne_top hfg_int hfg'
       hfg_meas
-#align measure_theory.Lp.ae_eq_of_forall_set_integral_eq' MeasureTheory.Lp.ae_eq_of_forall_setIntegral_eq'
 
 @[deprecated (since := "2024-04-17")]
 alias Lp.ae_eq_of_forall_set_integral_eq' := Lp.ae_eq_of_forall_setIntegral_eq'
@@ -167,7 +161,6 @@ theorem ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFin
       integral_congr_ae (ae_restrict_of_ae hgm.ae_eq_mk.symm)]
     exact hfg_eq s hs hμs
   exact ae_eq_of_forall_setIntegral_eq_of_sigmaFinite hf_mk_int_finite hg_mk_int_finite hfg_mk_eq
-#align measure_theory.ae_eq_of_forall_set_integral_eq_of_sigma_finite' MeasureTheory.ae_eq_of_forall_setIntegral_eq_of_sigmaFinite'
 
 @[deprecated (since := "2024-04-17")]
 alias ae_eq_of_forall_set_integral_eq_of_sigmaFinite' :=
@@ -209,7 +202,6 @@ theorem integral_norm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : �
       ← Measure.restrict_restrict (hm _ h_meas_nonpos_g), ←
       Measure.restrict_restrict h_meas_nonpos_f]
     exact setIntegral_nonpos_le (hm _ h_meas_nonpos_g) hf hfi
-#align measure_theory.integral_norm_le_of_forall_fin_meas_integral_eq MeasureTheory.integral_norm_le_of_forall_fin_meas_integral_eq
 
 /-- Let `m` be a sub-σ-algebra of `m0`, `f` an `m0`-measurable function and `g` an `m`-measurable
 function, such that their integrals coincide on `m`-measurable sets with finite measure.
@@ -224,7 +216,6 @@ theorem lintegral_nnnorm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g 
     ofReal_integral_norm_eq_lintegral_nnnorm hgi, ENNReal.ofReal_le_ofReal_iff]
   · exact integral_norm_le_of_forall_fin_meas_integral_eq hm hf hfi hg hgi hgf hs hμs
   · positivity
-#align measure_theory.lintegral_nnnorm_le_of_forall_fin_meas_integral_eq MeasureTheory.lintegral_nnnorm_le_of_forall_fin_meas_integral_eq
 
 end IntegralNormLE
 

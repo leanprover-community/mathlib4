@@ -5,8 +5,6 @@ Authors: Scott Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomologicalComplex
 
-#align_import algebra.homology.flip from "leanprover-community/mathlib"@"ff511590476ef357b6132a45816adc120d5d7b1d"
-
 /-!
 # Bicomplexes
 
@@ -156,7 +154,6 @@ def flip (K : HomologicalComplex₂ C c₁ c₂) : HomologicalComplex₂ C c₂ 
   shape i i' w := by
     ext j
     exact (K.X j).shape i i' w
-#align homological_complex.flip_obj HomologicalComplex₂.flip
 
 @[simp]
 lemma flip_flip (K : HomologicalComplex₂ C c₁ c₂) : K.flip.flip = K := rfl
@@ -173,7 +170,6 @@ def flipFunctor :
         { f := fun j => (f.f j).f i
           comm' := by intros; simp }
       comm' := by intros; ext; simp }
-#align homological_complex.flip HomologicalComplex₂.flipFunctor
 
 /-- Auxiliary definition for `HomologicalComplex₂.flipEquivalence`. -/
 @[simps!]
@@ -182,7 +178,6 @@ def flipEquivalenceUnitIso :
   NatIso.ofComponents (fun K => HomologicalComplex.Hom.isoOfComponents (fun i₁ =>
     HomologicalComplex.Hom.isoOfComponents (fun i₂ => Iso.refl _)
     (by aesop_cat)) (by aesop_cat)) (by aesop_cat)
-#align homological_complex.flip_equivalence_unit_iso HomologicalComplex₂.flipEquivalenceUnitIso
 
 /-- Auxiliary definition for `HomologicalComplex₂.flipEquivalence`. -/
 @[simps!]
@@ -191,7 +186,6 @@ def flipEquivalenceCounitIso :
   NatIso.ofComponents (fun K => HomologicalComplex.Hom.isoOfComponents (fun i₂ =>
     HomologicalComplex.Hom.isoOfComponents (fun i₁ => Iso.refl _)
     (by aesop_cat)) (by aesop_cat)) (by aesop_cat)
-#align homological_complex.flip_equivalence_counit_iso HomologicalComplex₂.flipEquivalenceCounitIso
 
 /-- Flipping a complex of complexes over the diagonal, as an equivalence of categories. -/
 @[simps]
@@ -201,7 +195,6 @@ def flipEquivalence :
   inverse := flipFunctor C c₂ c₁
   unitIso := flipEquivalenceUnitIso C c₁ c₂
   counitIso := flipEquivalenceCounitIso C c₁ c₂
-#align homological_complex.flip_equivalence HomologicalComplex₂.flipEquivalence
 
 variable (K : HomologicalComplex₂ C c₁ c₂)
 

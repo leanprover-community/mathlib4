@@ -7,8 +7,6 @@ import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Order.Lattice
 
-#align_import topology.order.lower_topology from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
-
 /-!
 # Lower and Upper topology
 
@@ -69,7 +67,6 @@ def upper (α : Type*) [Preorder α] : TopologicalSpace α := generateFrom {s | 
 
 /-- Type synonym for a preorder equipped with the lower set topology. -/
 def WithLower (α : Type*) := α
-#align with_lower_topology Topology.WithLower
 
 variable {α β}
 
@@ -77,37 +74,28 @@ namespace WithLower
 
 /-- `toLower` is the identity function to the `WithLower` of a type.  -/
 @[match_pattern] def toLower : α ≃ WithLower α := Equiv.refl _
-#align with_lower_topology.to_lower Topology.WithLower.toLower
 
 /-- `ofLower` is the identity function from the `WithLower` of a type.  -/
 @[match_pattern] def ofLower : WithLower α ≃ α := Equiv.refl _
-#align with_lower_topology.of_lower Topology.WithLower.ofLower
 
 @[simp] lemma to_WithLower_symm_eq : (@toLower α).symm = ofLower := rfl
-#align with_lower_topology.to_with_lower_topology_symm_eq Topology.WithLower.to_WithLower_symm_eq
 
 @[simp] lemma of_WithLower_symm_eq : (@ofLower α).symm = toLower := rfl
-#align with_lower_topology.of_with_lower_topology_symm_eq Topology.WithLower.of_WithLower_symm_eq
 
 @[simp] lemma toLower_ofLower (a : WithLower α) : toLower (ofLower a) = a := rfl
-#align with_lower_topology.to_lower_of_lower Topology.WithLower.toLower_ofLower
 
 @[simp] lemma ofLower_toLower (a : α) : ofLower (toLower a) = a := rfl
-#align with_lower_topology.of_lower_to_lower Topology.WithLower.ofLower_toLower
 
 lemma toLower_inj {a b : α} : toLower a = toLower b ↔ a = b := Iff.rfl
-#align with_lower_topology.to_lower_inj Topology.WithLower.toLower_inj
 
 -- Porting note: removed @[simp] to make linter happy
 theorem ofLower_inj {a b : WithLower α} : ofLower a = ofLower b ↔ a = b :=
   Iff.rfl
-#align with_lower_topology.of_lower_inj Topology.WithLower.ofLower_inj
 
 /-- A recursor for `WithLower`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : WithLower α → Sort*} (h : ∀ a, β (toLower a)) : ∀ a, β a := fun a =>
   h (ofLower a)
-#align with_lower_topology.rec Topology.WithLower.rec
 
 instance [Nonempty α] : Nonempty (WithLower α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithLower α) := ‹Inhabited α›
@@ -118,11 +106,9 @@ instance : Preorder (WithLower α) := ‹Preorder α›
 instance : TopologicalSpace (WithLower α) := lower α
 
 lemma isOpen_preimage_ofLower : IsOpen (ofLower ⁻¹' s) ↔ (lower α).IsOpen s := Iff.rfl
-#align with_lower_topology.is_open_preimage_of_lower Topology.WithLower.isOpen_preimage_ofLower
 
 lemma isOpen_def (T : Set (WithLower α)) : IsOpen T ↔ (lower α).IsOpen (WithLower.toLower ⁻¹' T) :=
   Iff.rfl
-#align with_lower_topology.is_open_def Topology.WithLower.isOpen_def
 
 end WithLower
 
@@ -168,7 +154,6 @@ intervals.
 -/
 class IsLower (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
   topology_eq_lowerTopology : t = lower α
-#align lower_topology Topology.IsLower
 
 attribute [nolint docBlame] IsLower.topology_eq_lowerTopology
 
@@ -200,7 +185,6 @@ namespace IsLower
 which form a basis for the lower topology. -/
 def lowerBasis (α : Type*) [Preorder α] :=
   { s : Set α | ∃ t : Set α, t.Finite ∧ (upperClosure t : Set α)ᶜ = s }
-#align lower_topology.lower_basis Topology.IsLower.lowerBasis
 
 section Preorder
 
@@ -215,11 +199,9 @@ variable {α}
 -/
 def withLowerHomeomorph : WithLower α ≃ₜ α :=
   WithLower.ofLower.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
-#align lower_topology.with_lower_topology_homeomorph Topology.IsLower.withLowerHomeomorph
 
 theorem isOpen_iff_generate_Ici_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Ici a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
-#align lower_topology.is_open_iff_generate_Ici_compl Topology.IsLower.isOpen_iff_generate_Ici_compl
 
 instance _root_.OrderDual.instIsUpper [Preorder α] [TopologicalSpace α] [IsLower α] :
     IsUpper αᵒᵈ where
@@ -231,13 +213,11 @@ instance : ClosedIciTopology α :=
 
 -- Porting note: The old `IsLower.isClosed_Ici` was removed, since one can now use
 -- the general `isClosed_Ici` lemma thanks to the instance above.
-#align lower_topology.is_closed_Ici isClosed_Ici
 
 /-- The upper closure of a finite set is closed in the lower topology. -/
 theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α) := by
   simp only [← UpperSet.iInf_Ici, UpperSet.coe_iInf]
   exact h.isClosed_biUnion fun _ _ => isClosed_Ici
-#align lower_topology.is_closed_upper_closure Topology.IsLower.isClosed_upperClosure
 
 /-- Every set open in the lower topology is a lower set. -/
 theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
@@ -248,11 +228,9 @@ theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
   | univ => exact isLowerSet_univ
   | inter u v _ _ hu2 hv2 => exact hu2.inter hv2
   | sUnion _ _ ih => exact isLowerSet_sUnion ih
-#align lower_topology.is_lower_set_of_is_open Topology.IsLower.isLowerSet_of_isOpen
 
 theorem isUpperSet_of_isClosed (h : IsClosed s) : IsUpperSet s :=
   isLowerSet_compl.1 <| isLowerSet_of_isOpen h.isOpen_compl
-#align lower_topology.is_upper_set_of_is_closed Topology.IsLower.isUpperSet_of_isClosed
 
 /--
 The closure of a singleton `{a}` in the lower topology is the left-closed right-infinite interval
@@ -262,7 +240,6 @@ The closure of a singleton `{a}` in the lower topology is the left-closed right-
 theorem closure_singleton (a : α) : closure {a} = Ici a :=
   Subset.antisymm ((closure_minimal fun _ h => h.ge) <| isClosed_Ici) <|
     (isUpperSet_of_isClosed isClosed_closure).Ici_subset <| subset_closure rfl
-#align lower_topology.closure_singleton Topology.IsLower.closure_singleton
 
 protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
   convert isTopologicalBasis_of_subbasis (topology_eq α)
@@ -277,7 +254,6 @@ protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
     rw [subset_def, Subtype.forall'] at hs
     choose f hf using hs
     exact ⟨_, finite_range f, by simp_rw [biInter_range, hf, sInter_eq_iInter]⟩
-#align lower_topology.is_topological_basis Topology.IsLower.isTopologicalBasis
 
 /-- A function `f : β → α` with lower topology in the codomain is continuous
 if and only if the preimage of every interval `Set.Ici a` is a closed set.
@@ -429,12 +405,10 @@ protected lemma _root_.sInfHom.continuous (f : sInfHom α β) : Continuous f := 
     OrderHomClass.mono (f : α →o β) ha
   refine LE.le.trans ?_ (map_sInf f _).ge
   simp
-#align Inf_hom.continuous sInfHom.continuous
 
 -- see Note [lower instance priority]
 instance (priority := 90) IsLower.toContinuousInf : ContinuousInf α :=
   ⟨(infsInfHom : sInfHom (α × α) α).continuous⟩
-#align lower_topology.to_has_continuous_inf Topology.IsLower.toContinuousInf
 
 end CompleteLattice_IsLower
 

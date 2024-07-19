@@ -6,8 +6,6 @@ Authors: Scott Morrison, Johannes Hölzl
 import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.GroupTheory.FreeAbelianGroup
 
-#align_import algebra.category.Group.adjunctions from "leanprover-community/mathlib"@"ecef68622cf98f6d42c459e5b5a079aeecdd9842"
-
 
 /-!
 # Adjunctions regarding the category of (abelian) groups
@@ -33,7 +31,6 @@ category of abelian groups.
   abelian groups to groups.
 -/
 
-set_option linter.uppercaseLean3 false -- `AddCommGroup`
 
 noncomputable section
 
@@ -53,12 +50,10 @@ def free : Type u ⥤ AddCommGrp where
   map := FreeAbelianGroup.map
   map_id _ := AddMonoidHom.ext FreeAbelianGroup.map_id_apply
   map_comp _ _ := AddMonoidHom.ext FreeAbelianGroup.map_comp_apply
-#align AddCommGroup.free AddCommGrp.free
 
 @[simp]
 theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = FreeAbelianGroup α :=
   rfl
-#align AddCommGroup.free_obj_coe AddCommGrp.free_obj_coe
 
 -- This currently can't be a `simp` lemma,
 -- because `free_obj_coe` will simplify implicit arguments in the LHS.
@@ -66,7 +61,6 @@ theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = FreeAbelianGroup �
 theorem free_map_coe {α β : Type u} {f : α → β} (x : FreeAbelianGroup α) :
     (free.map f) x = f <$> x :=
   rfl
-#align AddCommGroup.free_map_coe AddCommGrp.free_map_coe
 
 /-- The free-forgetful adjunction for abelian groups.
 -/
@@ -79,7 +73,6 @@ def adj : free ⊣ forget AddCommGrp.{u} :=
         ext
         simp only [Equiv.symm_symm]
         apply FreeAbelianGroup.lift_comp }
-#align AddCommGroup.adj AddCommGrp.adj
 
 instance : (forget AddCommGrp.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
@@ -108,7 +101,6 @@ def free : Type u ⥤ Grp where
   map_comp := by
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     intros; ext1; erw [← FreeGroup.map.unique] <;> intros <;> rfl
-#align Group.free Grp.free
 
 /-- The free-forgetful adjunction for groups.
 -/
@@ -124,7 +116,6 @@ def adj : free ⊣ forget Grp.{u} :=
         apply FreeGroup.lift.unique
         intros
         apply FreeGroup.lift.of }
-#align Group.adj Grp.adj
 
 instance : (forget Grp.{u}).IsRightAdjoint  :=
   ⟨_, ⟨adj⟩⟩
@@ -142,7 +133,6 @@ def abelianize : Grp.{u} ⥤ CommGrp.{u} where
   map_comp := by
     intros; simp only [coe_comp]
     apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr; rfl
-#align abelianize Grp.abelianize
 
 /-- The abelianization-forgetful adjuction from `Group` to `CommGroup`. -/
 def abelianizeAdj : abelianize ⊣ forget₂ CommGrp.{u} Grp.{u} :=
@@ -157,7 +147,6 @@ def abelianizeAdj : abelianize ⊣ forget₂ CommGrp.{u} Grp.{u} :=
         apply Abelianization.lift.unique
         intros
         apply Abelianization.lift.of }
-#align abelianize_adj Grp.abelianizeAdj
 
 end Abelianization
 
@@ -170,7 +159,6 @@ def MonCat.units : MonCat.{u} ⥤ Grp.{u} where
   map f := Grp.ofHom <| Units.map f
   map_id _ := MonoidHom.ext fun _ => Units.ext rfl
   map_comp _ _ := MonoidHom.ext fun _ => Units.ext rfl
-#align Mon.units MonCat.units
 
 /-- The forgetful-units adjunction between `Grp` and `MonCat`. -/
 def Grp.forget₂MonAdj : forget₂ Grp MonCat ⊣ MonCat.units.{u} where
@@ -187,7 +175,6 @@ def Grp.forget₂MonAdj : forget₂ Grp MonCat ⊣ MonCat.units.{u} where
       naturality := by intros; exact MonoidHom.ext fun x => rfl }
   homEquiv_unit := MonoidHom.ext fun _ => Units.ext rfl
   homEquiv_counit := MonoidHom.ext fun _ => rfl
-#align Group.forget₂_Mon_adj Grp.forget₂MonAdj
 
 instance : MonCat.units.{u}.IsRightAdjoint :=
   ⟨_, ⟨Grp.forget₂MonAdj⟩⟩
@@ -199,7 +186,6 @@ def CommMonCat.units : CommMonCat.{u} ⥤ CommGrp.{u} where
   map f := CommGrp.ofHom <| Units.map f
   map_id _ := MonoidHom.ext fun _ => Units.ext rfl
   map_comp _ _ := MonoidHom.ext fun _ => Units.ext rfl
-#align CommMon.units CommMonCat.units
 
 /-- The forgetful-units adjunction between `CommGrp` and `CommMonCat`. -/
 def CommGrp.forget₂CommMonAdj : forget₂ CommGrp CommMonCat ⊣ CommMonCat.units.{u} where
@@ -216,7 +202,6 @@ def CommGrp.forget₂CommMonAdj : forget₂ CommGrp CommMonCat ⊣ CommMonCat.un
       naturality := by intros; exact MonoidHom.ext fun x => rfl }
   homEquiv_unit := MonoidHom.ext fun _ => Units.ext rfl
   homEquiv_counit := MonoidHom.ext fun _ => rfl
-#align CommGroup.forget₂_CommMon_adj CommGrp.forget₂CommMonAdj
 
 instance : CommMonCat.units.{u}.IsRightAdjoint :=
   ⟨_, ⟨CommGrp.forget₂CommMonAdj⟩⟩

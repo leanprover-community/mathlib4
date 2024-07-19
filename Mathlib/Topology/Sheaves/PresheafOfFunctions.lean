@@ -8,8 +8,6 @@ import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Category.TopCommRingCat
 import Mathlib.Topology.ContinuousFunction.Algebra
 
-#align_import topology.sheaves.presheaf_of_functions from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
-
 /-!
 # Presheaves of functions
 
@@ -50,22 +48,16 @@ def presheafToTypes (T : X → Type v) : X.Presheaf (Type v) where
     ext g
     rfl
   map_comp {U V W} i j := rfl
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf_to_Types TopCat.presheafToTypes
 
 @[simp]
 theorem presheafToTypes_obj {T : X → Type v} {U : (Opens X)ᵒᵖ} :
     (presheafToTypes X T).obj U = ∀ x : U.unop, T x :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf_to_Types_obj TopCat.presheafToTypes_obj
 
 @[simp]
 theorem presheafToTypes_map {T : X → Type v} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f} :
     (presheafToTypes X T).map i f = fun x => f (i.unop x) :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf_to_Types_map TopCat.presheafToTypes_map
 
 -- We don't just define this in terms of `presheafToTypes`,
 -- as it's helpful later to see (at a syntactic level) that `(presheafToType X T).obj U`
@@ -83,36 +75,26 @@ def presheafToType (T : Type v) : X.Presheaf (Type v) where
     ext g
     rfl
   map_comp {U V W} i j := rfl
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf_to_Type TopCat.presheafToType
 
 @[simp]
 theorem presheafToType_obj {T : Type v} {U : (Opens X)ᵒᵖ} :
     (presheafToType X T).obj U = (U.unop → T) :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf_to_Type_obj TopCat.presheafToType_obj
 
 @[simp]
 theorem presheafToType_map {T : Type v} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f} :
     (presheafToType X T).map i f = f ∘ i.unop :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf_to_Type_map TopCat.presheafToType_map
 
 /-- The presheaf of continuous functions on `X` with values in fixed target topological space
 `T`. -/
 def presheafToTop (T : TopCat.{v}) : X.Presheaf (Type v) :=
   (Opens.toTopCat X).op ⋙ yoneda.obj T
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf_to_Top TopCat.presheafToTop
 
 @[simp]
 theorem presheafToTop_obj (T : TopCat.{v}) (U : (Opens X)ᵒᵖ) :
     (presheafToTop X T).obj U = ((Opens.toTopCat X).obj (unop U) ⟶ T) :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf_to_Top_obj TopCat.presheafToTop_obj
 
 -- TODO upgrade the result to TopCommRing?
 /-- The (bundled) commutative ring of continuous functions from a topological space
@@ -122,8 +104,6 @@ def continuousFunctions (X : TopCat.{v}ᵒᵖ) (R : TopCommRingCat.{v}) : CommRi
   -- hence forms a ring
   @CommRingCat.of (X.unop ⟶ (forget₂ TopCommRingCat TopCat).obj R) <|
   show CommRing (ContinuousMap _ _) by infer_instance
-set_option linter.uppercaseLean3 false in
-#align Top.continuous_functions TopCat.continuousFunctions
 
 namespace continuousFunctions
 
@@ -135,8 +115,6 @@ def pullback {X Y : TopCatᵒᵖ} (f : X ⟶ Y) (R : TopCommRingCat) :
   map_zero' := rfl
   map_add' := by aesop_cat
   map_mul' := by aesop_cat
-set_option linter.uppercaseLean3 false in
-#align Top.continuous_functions.pullback TopCat.continuousFunctions.pullback
 
 /-- A homomorphism of topological rings can be postcomposed with functions from a source space `X`;
 this is a ring homomorphism (with respect to the pointwise ring operations on functions). -/
@@ -149,8 +127,6 @@ def map (X : TopCat.{u}ᵒᵖ) {R S : TopCommRingCat.{u}} (φ : R ⟶ S) :
   map_zero' := ContinuousMap.ext fun _ => φ.1.map_zero
   map_add' := fun _ _ => ContinuousMap.ext fun _ => φ.1.map_add _ _
   map_mul' := fun _ _ => ContinuousMap.ext fun _ => φ.1.map_mul _ _
-set_option linter.uppercaseLean3 false in
-#align Top.continuous_functions.map TopCat.continuousFunctions.map
 
 end continuousFunctions
 
@@ -172,8 +148,6 @@ def commRingYoneda : TopCommRingCat.{u} ⥤ TopCat.{u}ᵒᵖ ⥤ CommRingCat.{u}
     ext
     rfl
   map_comp {X Y Z} f g := rfl
-set_option linter.uppercaseLean3 false in
-#align Top.CommRing_yoneda TopCat.commRingYoneda
 
 /-- The presheaf (of commutative rings), consisting of functions on an open set `U ⊆ X` with
 values in some topological commutative ring `T`.
@@ -186,7 +160,5 @@ presheafToTopCommRing X (TopCommRing.of ℂ)
 -/
 def presheafToTopCommRing (T : TopCommRingCat.{v}) : X.Presheaf CommRingCat.{v} :=
   (Opens.toTopCat X).op ⋙ commRingYoneda.obj T
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf_to_TopCommRing TopCat.presheafToTopCommRing
 
 end TopCat

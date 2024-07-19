@@ -6,8 +6,6 @@ Authors: Yuma Mizuno, Calle Sönne
 import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 import Mathlib.CategoryTheory.Bicategory.Functor.Lax
 
-#align_import category_theory.bicategory.functor from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
-
 /-!
 # Pseudofunctors
 
@@ -53,7 +51,6 @@ variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
 --     (map_comp (f ≫ g) h).hom ≫
 --       (map_comp f g).hom ▷ map h ≫
 --        (α_ (map f) (map g) (map h)).hom ≫ map f ◁ (map_comp g h).inv ≫ (map_comp f (g ≫ h)).inv
-#noalign category_theory.pseudofunctor.map₂_associator_aux
 
 /-- A pseudofunctor `F` between bicategories `B` and `C` consists of a function between objects
 `F.obj`, a function between 1-morphisms `F.map`, and a function between 2-morphisms `F.map₂`.
@@ -92,7 +89,6 @@ structure Pseudofunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
     ∀ {a b : B} (f : a ⟶ b),
       map₂ (ρ_ f).hom = (mapComp f (𝟙 b)).hom ≫ map f ◁ (mapId b).hom ≫ (ρ_ (map f)).hom := by
     aesop_cat
-#align category_theory.pseudofunctor CategoryTheory.Pseudofunctor
 
 initialize_simps_projections Pseudofunctor (+toPrelaxFunctor, -obj, -map, -map₂)
 
@@ -117,22 +113,16 @@ attribute [nolint docBlame] CategoryTheory.Pseudofunctor.mapId
   CategoryTheory.Pseudofunctor.map₂_left_unitor
   CategoryTheory.Pseudofunctor.map₂_right_unitor
 
-#noalign category_theory.pseudofunctor.has_coe_to_prelax_functor
-
 variable (F : Pseudofunctor B C)
 
 -- Porting note: `toPrelaxFunctor_eq_coe` and `to_prelaxFunctor_obj`
 -- are syntactic tautologies in lean 4
-#noalign category_theory.pseudofunctor.to_prelax_functor_eq_coe
-#noalign category_theory.pseudofunctor.to_prelax_functor_obj
 
 -- Porting note: removed lemma `to_prelaxFunctor_map` relating the now
 -- nonexistent `PrelaxFunctor.map` and the now nonexistent `Pseudofunctor.map`
-#noalign category_theory.pseudofunctor.to_prelax_functor_map
 
 -- Porting note: removed lemma `to_prelaxFunctor_map₂` relating
 -- `PrelaxFunctor.map₂` to nonexistent `Pseudofunctor.map₂`
-#noalign category_theory.pseudofunctor.to_prelax_functor_map₂
 
 /-- The oplax functor associated with a pseudofunctor. -/
 @[simps]
@@ -140,19 +130,11 @@ def toOplax : OplaxFunctor B C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := fun a => (F.mapId a).hom
   mapComp := fun f g => (F.mapComp f g).hom
-#align category_theory.pseudofunctor.to_oplax CategoryTheory.Pseudofunctor.toOplax
-#align category_theory.pseudofunctor.to_oplax_map_id CategoryTheory.Pseudofunctor.toOplax_mapId
-#align category_theory.pseudofunctor.to_oplax_map_comp CategoryTheory.Pseudofunctor.toOplax_mapComp
-#noalign category_theory.pseudofunctor.to_oplax_obj
-#noalign category_theory.pseudofunctor.to_oplax_map
-#noalign category_theory.pseudofunctor.to_oplax_map₂
 
 instance hasCoeToOplax : Coe (Pseudofunctor B C) (OplaxFunctor B C) :=
   ⟨toOplax⟩
-#align category_theory.pseudofunctor.has_coe_to_oplax CategoryTheory.Pseudofunctor.hasCoeToOplax
 
 -- Porting note: `toOplax_eq_coe` is a syntactic tautology in lean 4
-#noalign category_theory.pseudofunctor.to_oplax_eq_coe
 
 /-- The Lax functor associated with a pseudofunctor. -/
 @[simps]
@@ -177,7 +159,6 @@ def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : Pseudofunctor B B where
   toPrelaxFunctor := PrelaxFunctor.id B
   mapId := fun a => Iso.refl (𝟙 a)
   mapComp := fun f g => Iso.refl (f ≫ g)
-#align category_theory.pseudofunctor.id CategoryTheory.Pseudofunctor.id
 
 instance : Inhabited (Pseudofunctor B B) :=
   ⟨id B⟩
@@ -194,7 +175,6 @@ def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D whe
   map₂_associator f g h := by dsimp; simp
   map₂_left_unitor f := by dsimp; simp
   map₂_right_unitor f := by dsimp; simp
-#align category_theory.pseudofunctor.comp CategoryTheory.Pseudofunctor.comp
 
 /-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps]
@@ -215,7 +195,6 @@ def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C whe
     rw [F'.mapCompIso_hom (f ≫ g) h, F'.mapCompIso_hom f g, ← F.map₂_associator_assoc, ←
       F'.mapCompIso_hom f (g ≫ h), ← F'.mapCompIso_hom g h, whiskerLeft_hom_inv_assoc,
       hom_inv_id, comp_id]
-#align category_theory.pseudofunctor.mk_of_oplax CategoryTheory.Pseudofunctor.mkOfOplax
 
 /-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps!]
@@ -235,7 +214,6 @@ noncomputable def mkOfOplax' (F : OplaxFunctor B C) [∀ a, IsIso (F.mapId a)]
     simp only [← assoc]
     rw [IsIso.eq_comp_inv, ← inv_whiskerLeft, IsIso.eq_comp_inv]
     simp only [assoc, F.map₂_associator]
-#align category_theory.pseudofunctor.mk_of_oplax' CategoryTheory.Pseudofunctor.mkOfOplax'
 
 /-- Construct a pseudofunctor from a lax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps]
