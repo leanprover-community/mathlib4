@@ -36,6 +36,7 @@ titlesAndRegexes=(
   "disabled simpNF lints"          "nolint simpNF"
   "disabled deprecation lints"     "set_option linter.deprecated false"
   "erw"                            "erw \["
+  "maxHeartBeats modifications"    "^ *set_option .*maxHeartbeats"
 )
 
 printf '|Current number|Change|Type|\n|-:|:-:|:-|\n'

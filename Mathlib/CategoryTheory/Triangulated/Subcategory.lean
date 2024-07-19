@@ -146,21 +146,21 @@ lemma isoClosure_W : S.isoClosure.W = S.W := by
   ext X Y f
   constructor
   · rintro ⟨Z, g, h, mem, ⟨Z', hZ', ⟨e⟩⟩⟩
-    refine' ⟨Z', g ≫ e.hom, e.inv ≫ h, isomorphic_distinguished _ mem _ _, hZ'⟩
+    refine ⟨Z', g ≫ e.hom, e.inv ≫ h, isomorphic_distinguished _ mem _ ?_, hZ'⟩
     exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm
   · rintro ⟨Z, g, h, mem, hZ⟩
     exact ⟨Z, g, h, mem, le_isoClosure _ _ hZ⟩
 
-lemma respectsIso_W : S.W.RespectsIso where
-  left := by
+instance respectsIso_W : S.W.RespectsIso where
+  precomp := by
     rintro X' X Y e f ⟨Z, g, h, mem, mem'⟩
-    refine' ⟨Z, g, h ≫ e.inv⟦(1 : ℤ)⟧', isomorphic_distinguished _ mem _ _, mem'⟩
-    refine' Triangle.isoMk _ _ e (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat) _
+    refine ⟨Z, g, h ≫ e.inv⟦(1 : ℤ)⟧', isomorphic_distinguished _ mem _ ?_, mem'⟩
+    refine Triangle.isoMk _ _ e (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat) ?_
     dsimp
     simp only [assoc, ← Functor.map_comp, e.inv_hom_id, Functor.map_id, comp_id, id_comp]
-  right := by
+  postcomp := by
     rintro X Y Y' e f ⟨Z, g, h, mem, mem'⟩
-    refine' ⟨Z, e.inv ≫ g, h, isomorphic_distinguished _ mem _ _, mem'⟩
+    refine ⟨Z, e.inv ≫ g, h, isomorphic_distinguished _ mem _ ?_, mem'⟩
     exact Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _)
 
 instance : S.W.ContainsIdentities := by
@@ -168,12 +168,12 @@ instance : S.W.ContainsIdentities := by
   exact ⟨fun X => ⟨_, _, _, contractible_distinguished X, zero _⟩⟩
 
 lemma W_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : S.W f := by
-  refine (S.respectsIso_W.arrow_mk_iso_iff ?_).1 (MorphismProperty.id_mem _ X)
+  refine (S.W.arrow_mk_iso_iff ?_).1 (MorphismProperty.id_mem _ X)
   exact Arrow.isoMk (Iso.refl _) (asIso f)
 
 lemma smul_mem_W_iff {X Y : C} (f : X ⟶ Y) (n : ℤˣ) :
     S.W (n • f) ↔ S.W f :=
-  S.respectsIso_W.arrow_mk_iso_iff (Arrow.isoMk (n • (Iso.refl _)) (Iso.refl _))
+  S.W.arrow_mk_iso_iff (Arrow.isoMk (n • (Iso.refl _)) (Iso.refl _))
 
 variable {S}
 
@@ -183,7 +183,7 @@ lemma W.shift {X₁ X₂ : C} {f : X₁ ⟶ X₂} (hf : S.W f) (n : ℤ) : S.W (
   exact ⟨_, _, _, Pretriangulated.Triangle.shift_distinguished _ hT n, S.shift _ _ mem⟩
 
 lemma W.unshift {X₁ X₂ : C} {f : X₁ ⟶ X₂} {n : ℤ} (hf : S.W (f⟦n⟧')) : S.W f :=
-  (S.respectsIso_W.arrow_mk_iso_iff
+  (S.W.arrow_mk_iso_iff
      (Arrow.isoOfNatIso (shiftEquiv C n).unitIso (Arrow.mk f))).2 (hf.shift (-n))
 
 instance : S.W.IsCompatibleWithShift ℤ where
@@ -222,7 +222,7 @@ instance [IsTriangulated C] : S.W.HasLeftCalculusOfFractions where
     have hf₂ : s ≫ (f₁ - f₂) = 0 := by rw [comp_sub, hf₁, sub_self]
     obtain ⟨q, hq⟩ := Triangle.yoneda_exact₂ _ H _ hf₂
     obtain ⟨Y', r, t, mem'⟩ := distinguished_cocone_triangle q
-    refine' ⟨Y', r, _, _⟩
+    refine ⟨Y', r, ?_, ?_⟩
     · exact ⟨_, _, _, rot_of_distTriang _ mem', S.shift _ _ mem⟩
     · have eq := comp_distTriang_mor_zero₁₂ _ mem'
       dsimp at eq
@@ -241,7 +241,7 @@ instance [IsTriangulated C] : S.W.HasRightCalculusOfFractions where
     have hf₂ : (f₁ - f₂) ≫ s = 0 := by rw [sub_comp, hf₁, sub_self]
     obtain ⟨q, hq⟩ := Triangle.coyoneda_exact₂ _ H _ hf₂
     obtain ⟨Y', r, t, mem'⟩ := distinguished_cocone_triangle₁ q
-    refine' ⟨Y', r, _, _⟩
+    refine ⟨Y', r, ?_, ?_⟩
     · exact ⟨_, _, _, mem', mem⟩
     · have eq := comp_distTriang_mor_zero₁₂ _ mem'
       dsimp at eq

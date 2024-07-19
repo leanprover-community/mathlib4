@@ -15,9 +15,8 @@ functions, in `fourierTransformCLM`. It is also given as a continuous linear equ
 `fourierTransformCLE`.
 -/
 
-open Real Complex TopologicalSpace SchwartzMap MeasureTheory MeasureTheory.Measure
-
-open scoped FourierTransform BigOperators
+open Real MeasureTheory MeasureTheory.Measure
+open scoped FourierTransform
 
 namespace SchwartzMap
 
@@ -108,3 +107,5 @@ noncomputable def fourierTransformCLE : 𝓢(V, E) ≃L[𝕜] 𝓢(V, E) where
     (fourierTransformCLE 𝕜).symm f = 𝓕⁻ f := by
   ext x
   exact (fourierIntegralInv_eq_fourierIntegral_neg f x).symm
+
+end SchwartzMap
