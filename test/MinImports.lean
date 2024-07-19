@@ -4,6 +4,17 @@ import Mathlib.Tactic.Lemma
 import Mathlib.Data.Nat.Notation
 import Mathlib.Data.Int.Notation
 import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.FunProp
+
+/-- info: import Mathlib.Tactic.FunProp.Attr -/
+#guard_msgs in
+#min_imports in (← `(declModifiers|@[fun_prop]))
+
+/-- info: import Mathlib.Algebra.Ring.Nat -/
+#guard_msgs in
+#min_imports in
+-- If `#min_imports` were parsing just the syntax, the imports would be `Mathlib.Algebra.Ring.Defs`.
+instance : Semiring Nat := inferInstance
 
 /-- info: import Mathlib.Algebra.Ring.Nat -/
 #guard_msgs in
