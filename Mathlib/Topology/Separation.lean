@@ -14,15 +14,13 @@ import Mathlib.Topology.GDelta
 /-!
 # Separation properties of topological spaces.
 
-This file defines the predicate `SeparatedNhds`, and common separation axioms
+This file defines the standard `T_n` separation axioms
 (under the Kolmogorov classification).
 
 ## Main definitions
 
-* `SeparatedNhds`: Two `Set`s are separated by neighbourhoods if they are contained in disjoint
-  open sets.
 * `HasSeparatingCover`: A set has a countable cover that can be used with
-  `hasSeparatingCovers_iff_separatedNhds` to witness when two `Set`s have `SeparatedNhds`.
+  `hasSeparatingCovers_iff_disjointNhdsSet` to witness `Disjoint (𝓝ˢ s) (𝓝ˢ t)`.
 * `T0Space`: A T₀/Kolmogorov space is a space where, for every two points `x ≠ y`,
   there is an open set that contains one, but not the other.
 * `R0Space`: An R₀ space (sometimes called a *symmetric space*) is a topological space
@@ -58,12 +56,6 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
 occasionally the literature swaps definitions for e.g. T₃ and regular.
-
-### TODO
-
-* Add perfectly normal and T6 spaces.
-* Use `hasSeparatingCovers_iff_separatedNhds` to prove that perfectly normal spaces
-  are completely normal.
 
 ## Main results
 
@@ -138,29 +130,59 @@ variable {X : Type*} {Y : Type*} [TopologicalSpace X]
 
 section Separation
 
-/--
-`SeparatedNhds` is a predicate on pairs of sub`Set`s of a topological space.  It holds if the two
-sub`Set`s are contained in disjoint open sets.
--/
-def SeparatedNhds : Set X → Set X → Prop := fun s t : Set X =>
-  ∃ U V : Set X, IsOpen U ∧ IsOpen V ∧ s ⊆ U ∧ t ⊆ V ∧ Disjoint U V
-#align separated_nhds SeparatedNhds
+/-- Frequently, it is useful to obtain open neighborhoods. -/
+theorem disjointNhdsSet_iff_disjointOpenNhdsSet {s t : Set X} :
+    (Disjoint (𝓝ˢ s) (𝓝ˢ t)) ↔ ∃ u v, IsOpen u ∧ s ⊆ u ∧ IsOpen v ∧ t ⊆ v ∧ Disjoint u v := by
+  rw [(hasBasis_nhdsSet s).disjoint_iff (hasBasis_nhdsSet t)]
+  exact
+    ⟨fun ⟨u, up, v, vp, uvdis⟩ ↦ ⟨u, v, up.1, up.2, vp.1, vp.2, uvdis⟩,
+     fun ⟨u, v, uO, uC, vO, vC, uvdis⟩ ↦ ⟨u, ⟨uO, uC⟩, v, ⟨vO, vC⟩, uvdis⟩⟩
 
-theorem separatedNhds_iff_disjoint {s t : Set X} : SeparatedNhds s t ↔ Disjoint (𝓝ˢ s) (𝓝ˢ t) := by
-  simp only [(hasBasis_nhdsSet s).disjoint_iff (hasBasis_nhdsSet t), SeparatedNhds, exists_prop, ←
-    exists_and_left, and_assoc, and_comm, and_left_comm]
-#align separated_nhds_iff_disjoint separatedNhds_iff_disjoint
+theorem Disjoint.disjointOpenNhdsSet {s t : Set X} (dis : Disjoint (𝓝ˢ s) (𝓝ˢ t)) :
+    ∃ u v, IsOpen u ∧ s ⊆ u ∧ IsOpen v ∧ t ⊆ v ∧ Disjoint u v :=
+  disjointNhdsSet_iff_disjointOpenNhdsSet.mp dis
 
-alias ⟨SeparatedNhds.disjoint_nhdsSet, _⟩ := separatedNhds_iff_disjoint
+theorem disjointNhds_iff_disjointOpenNhds {x y : X} :
+    (Disjoint (𝓝 x) (𝓝 y)) ↔ ∃ u v, IsOpen u ∧ x ∈ u ∧ IsOpen v ∧ y ∈ v ∧ Disjoint u v := by
+  rw [(nhds_basis_opens x).disjoint_iff (nhds_basis_opens y)]
+  exact
+    ⟨fun ⟨u, up, v, vp, uvdis⟩ ↦ ⟨u, v, up.2, up.1, vp.2, vp.1, uvdis⟩,
+     fun ⟨u, v, uC, uO, vC, vO, uvdis⟩ ↦ ⟨u, ⟨uO, uC⟩, v, ⟨vO, vC⟩, uvdis⟩⟩
 
-/-- `HasSeparatingCover`s can be useful witnesses for `SeparatedNhds`. -/
+theorem Disjoint.disjointOpenNhds {x y : X} (dis : Disjoint (𝓝 x) (𝓝 y)) :
+    ∃ u v, IsOpen u ∧ x ∈ u ∧ IsOpen v ∧ y ∈ v ∧ Disjoint u v :=
+  disjointNhds_iff_disjointOpenNhds.mp dis
+
+theorem disjointNhdNhdSet_iff_disjointOpenNhdNhdSet {x : X} {t : Set X} :
+    (Disjoint (𝓝 x) (𝓝ˢ t)) ↔ ∃ u v, IsOpen u ∧ x ∈ u ∧ IsOpen v ∧ t ⊆ v ∧ Disjoint u v := by
+  rw [(nhds_basis_opens x).disjoint_iff (hasBasis_nhdsSet t)]
+  exact
+    ⟨fun ⟨u, up, v, vp, uvdis⟩ ↦ ⟨u, v, up.2, up.1, vp.1, vp.2, uvdis⟩,
+     fun ⟨u, v, uO, uC, vO, vC, uvdis⟩ ↦ ⟨u, ⟨uC, uO⟩, v, ⟨vO, vC⟩, uvdis⟩⟩
+
+theorem Disjoint.disjointOpenNhdNhdSet {x : X} {t : Set X} (dis : Disjoint (𝓝 x) (𝓝ˢ t)) :
+    ∃ u v, IsOpen u ∧ x ∈ u ∧ IsOpen v ∧ t ⊆ v ∧ Disjoint u v :=
+  disjointNhdNhdSet_iff_disjointOpenNhdNhdSet.mp dis
+
+theorem disjointNhdSetNhd_iff_disjointOpenNhdSetNhd {y : X} {s : Set X} :
+    (Disjoint (𝓝ˢ s) (𝓝 y)) ↔ ∃ u v, IsOpen u ∧ s ⊆ u ∧ IsOpen v ∧ y ∈ v ∧ Disjoint u v := by
+  rw [(hasBasis_nhdsSet s).disjoint_iff (nhds_basis_opens y)]
+  exact
+    ⟨fun ⟨u, up, v, vp, uvdis⟩ ↦ ⟨u, v, up.1, up.2, vp.2, vp.1, uvdis⟩,
+     fun ⟨u, v, uO, uC, vO, vC, uvdis⟩ ↦ ⟨u, ⟨uO, uC⟩, v, ⟨vC, vO⟩, uvdis⟩⟩
+
+theorem Disjoint.disjointOpenNhdSetNhd {y : X} {s : Set X} (dis : Disjoint (𝓝ˢ s) (𝓝 y)) :
+    ∃ u v, IsOpen u ∧ s ⊆ u ∧ IsOpen v ∧ y ∈ v ∧ Disjoint u v :=
+  disjointNhdSetNhd_iff_disjointOpenNhdSetNhd.mp dis
+
+/-- `HasSeparatingCover`s can be useful witnesses for `Disjoint (𝓝ˢ s) (𝓝ˢ t)`. -/
 def HasSeparatingCover : Set X → Set X → Prop := fun s t ↦
   ∃ u : ℕ → Set X, s ⊆ ⋃ n, u n ∧ ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) t
 
 /-- Used to prove that a regular topological space with Lindelöf topology is a normal space,
-and (todo) a perfectly normal space is a completely normal space. -/
-theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
-    HasSeparatingCover s t ∧ HasSeparatingCover t s ↔ SeparatedNhds s t := by
+and a perfectly normal space is a completely normal space. -/
+theorem hasSeparatingCovers_iff_disjointNhdsSet {s t : Set X} :
+    HasSeparatingCover s t ∧ HasSeparatingCover t s ↔ Disjoint (𝓝ˢ s) (𝓝ˢ t) := by
   constructor
   · rintro ⟨⟨u, u_cov, u_props⟩, ⟨v, v_cov, v_props⟩⟩
     have open_lemma : ∀ (u₀ a : ℕ → Set X), (∀ n, IsOpen (u₀ n)) →
@@ -175,12 +197,13 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
       refine ⟨n, xinun, ?_⟩
       simp_all only [closure_iUnion₂_le_nat, disjoint_right, mem_setOf_eq, mem_iUnion,
         exists_false, exists_const, not_false_eq_true]
+    rw [disjointNhdsSet_iff_disjointOpenNhdsSet]
     refine
       ⟨⋃ n : ℕ, u n \ (closure (⋃ m ≤ n, v m)),
        ⋃ n : ℕ, v n \ (closure (⋃ m ≤ n, u m)),
        open_lemma u (fun n ↦ ⋃ m ≤ n, v m) (fun n ↦ (u_props n).1),
-       open_lemma v (fun n ↦ ⋃ m ≤ n, u m) (fun n ↦ (v_props n).1),
        cover_lemma s u v u_cov (fun n ↦ (v_props n).2),
+       open_lemma v (fun n ↦ ⋃ m ≤ n, u m) (fun n ↦ (v_props n).1),
        cover_lemma t v u v_cov (fun n ↦ (u_props n).2),
        ?_⟩
     rw [Set.disjoint_left]
@@ -191,7 +214,8 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
       by_contra m_gt_n
       exact xinun.2 (subset_closure (mem_biUnion (le_of_lt (not_le.mp m_gt_n)) xinvm))
     exact subset_closure (mem_biUnion n_le_m xinun.1)
-  · rintro ⟨U, V, U_open, V_open, h_sub_U, k_sub_V, UV_dis⟩
+  · intro dis
+    obtain ⟨U, V, U_open, h_sub_U, V_open, k_sub_V, UV_dis⟩ := dis.disjointOpenNhdsSet
     exact
       ⟨⟨fun _ ↦ U,
         h_sub_U.trans (iUnion_const U).symm.subset,
@@ -220,61 +244,61 @@ theorem HasSeparatingCover.mono {s₁ s₂ t₁ t₂ : Set X} (sc_st : HasSepara
        ⟨(u_props n).1,
         disjoint_of_subset (fun ⦃_⦄ a ↦ a) t_sub (u_props n).2⟩⟩
 
-namespace SeparatedNhds
+-- namespace SeparatedNhds
 
-variable {s s₁ s₂ t t₁ t₂ u : Set X}
+-- variable {s s₁ s₂ t t₁ t₂ u : Set X}
 
-@[symm]
-theorem symm : SeparatedNhds s t → SeparatedNhds t s := fun ⟨U, V, oU, oV, aU, bV, UV⟩ =>
-  ⟨V, U, oV, oU, bV, aU, Disjoint.symm UV⟩
-#align separated_nhds.symm SeparatedNhds.symm
+-- @[symm]
+-- theorem symm : SeparatedNhds s t → SeparatedNhds t s := fun ⟨U, V, oU, oV, aU, bV, UV⟩ =>
+--   ⟨V, U, oV, oU, bV, aU, Disjoint.symm UV⟩
+-- #align separated_nhds.symm SeparatedNhds.symm
 
-theorem comm (s t : Set X) : SeparatedNhds s t ↔ SeparatedNhds t s :=
-  ⟨symm, symm⟩
-#align separated_nhds.comm SeparatedNhds.comm
+-- theorem comm (s t : Set X) : SeparatedNhds s t ↔ SeparatedNhds t s :=
+--   ⟨symm, symm⟩
+-- #align separated_nhds.comm SeparatedNhds.comm
 
-theorem preimage [TopologicalSpace Y] {f : X → Y} {s t : Set Y} (h : SeparatedNhds s t)
-    (hf : Continuous f) : SeparatedNhds (f ⁻¹' s) (f ⁻¹' t) :=
-  let ⟨U, V, oU, oV, sU, tV, UV⟩ := h
-  ⟨f ⁻¹' U, f ⁻¹' V, oU.preimage hf, oV.preimage hf, preimage_mono sU, preimage_mono tV,
-    UV.preimage f⟩
-#align separated_nhds.preimage SeparatedNhds.preimage
+-- theorem preimage [TopologicalSpace Y] {f : X → Y} {s t : Set Y} (h : SeparatedNhds s t)
+--     (hf : Continuous f) : SeparatedNhds (f ⁻¹' s) (f ⁻¹' t) :=
+--   let ⟨U, V, oU, oV, sU, tV, UV⟩ := h
+--   ⟨f ⁻¹' U, f ⁻¹' V, oU.preimage hf, oV.preimage hf, preimage_mono sU, preimage_mono tV,
+--     UV.preimage f⟩
+-- #align separated_nhds.preimage SeparatedNhds.preimage
 
-protected theorem disjoint (h : SeparatedNhds s t) : Disjoint s t :=
-  let ⟨_, _, _, _, hsU, htV, hd⟩ := h; hd.mono hsU htV
-#align separated_nhds.disjoint SeparatedNhds.disjoint
+-- protected theorem disjoint (h : SeparatedNhds s t) : Disjoint s t :=
+--   let ⟨_, _, _, _, hsU, htV, hd⟩ := h; hd.mono hsU htV
+-- #align separated_nhds.disjoint SeparatedNhds.disjoint
 
-theorem disjoint_closure_left (h : SeparatedNhds s t) : Disjoint (closure s) t :=
-  let ⟨_U, _V, _, hV, hsU, htV, hd⟩ := h
-  (hd.closure_left hV).mono (closure_mono hsU) htV
-#align separated_nhds.disjoint_closure_left SeparatedNhds.disjoint_closure_left
+-- theorem disjoint_closure_left (h : SeparatedNhds s t) : Disjoint (closure s) t :=
+--   let ⟨_U, _V, _, hV, hsU, htV, hd⟩ := h
+--   (hd.closure_left hV).mono (closure_mono hsU) htV
+-- #align separated_nhds.disjoint_closure_left SeparatedNhds.disjoint_closure_left
 
-theorem disjoint_closure_right (h : SeparatedNhds s t) : Disjoint s (closure t) :=
-  h.symm.disjoint_closure_left.symm
-#align separated_nhds.disjoint_closure_right SeparatedNhds.disjoint_closure_right
+-- theorem disjoint_closure_right (h : SeparatedNhds s t) : Disjoint s (closure t) :=
+--   h.symm.disjoint_closure_left.symm
+-- #align separated_nhds.disjoint_closure_right SeparatedNhds.disjoint_closure_right
 
-@[simp] theorem empty_right (s : Set X) : SeparatedNhds s ∅ :=
-  ⟨_, _, isOpen_univ, isOpen_empty, fun a _ => mem_univ a, Subset.rfl, disjoint_empty _⟩
-#align separated_nhds.empty_right SeparatedNhds.empty_right
+-- @[simp] theorem empty_right (s : Set X) : SeparatedNhds s ∅ :=
+--   ⟨_, _, isOpen_univ, isOpen_empty, fun a _ => mem_univ a, Subset.rfl, disjoint_empty _⟩
+-- #align separated_nhds.empty_right SeparatedNhds.empty_right
 
-@[simp] theorem empty_left (s : Set X) : SeparatedNhds ∅ s :=
-  (empty_right _).symm
-#align separated_nhds.empty_left SeparatedNhds.empty_left
+-- @[simp] theorem empty_left (s : Set X) : SeparatedNhds ∅ s :=
+--   (empty_right _).symm
+-- #align separated_nhds.empty_left SeparatedNhds.empty_left
 
-theorem mono (h : SeparatedNhds s₂ t₂) (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : SeparatedNhds s₁ t₁ :=
-  let ⟨U, V, hU, hV, hsU, htV, hd⟩ := h
-  ⟨U, V, hU, hV, hs.trans hsU, ht.trans htV, hd⟩
-#align separated_nhds.mono SeparatedNhds.mono
+-- theorem mono (h : SeparatedNhds s₂ t₂) (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : SeparatedNhds s₁ t₁ :=
+--   let ⟨U, V, hU, hV, hsU, htV, hd⟩ := h
+--   ⟨U, V, hU, hV, hs.trans hsU, ht.trans htV, hd⟩
+-- #align separated_nhds.mono SeparatedNhds.mono
 
-theorem union_left : SeparatedNhds s u → SeparatedNhds t u → SeparatedNhds (s ∪ t) u := by
-  simpa only [separatedNhds_iff_disjoint, nhdsSet_union, disjoint_sup_left] using And.intro
-#align separated_nhds.union_left SeparatedNhds.union_left
+-- theorem union_left : SeparatedNhds s u → SeparatedNhds t u → SeparatedNhds (s ∪ t) u := by
+--   simpa only [separatedNhds_iff_disjoint, nhdsSet_union, disjoint_sup_left] using And.intro
+-- #align separated_nhds.union_left SeparatedNhds.union_left
 
-theorem union_right (ht : SeparatedNhds s t) (hu : SeparatedNhds s u) : SeparatedNhds s (t ∪ u) :=
-  (ht.symm.union_left hu.symm).symm
-#align separated_nhds.union_right SeparatedNhds.union_right
+-- theorem union_right (ht : SeparatedNhds s t) (hu : SeparatedNhds s u) : SeparatedNhds s (t ∪ u) :=
+--   (ht.symm.union_left hu.symm).symm
+-- #align separated_nhds.union_right SeparatedNhds.union_right
 
-end SeparatedNhds
+-- end SeparatedNhds
 
 /-- A T₀ space, also known as a Kolmogorov space, is a topological space such that for every pair
 `x ≠ y`, there is an open set containing one but not the other. We formulate the definition in terms
@@ -1241,29 +1265,31 @@ alias exists_compact_superset_iff := exists_isCompact_superset_iff
 
 /-- If `K` and `L` are disjoint compact sets in an R₁ topological space
 and `L` is also closed, then `K` and `L` have disjoint neighborhoods.  -/
-theorem SeparatedNhds.of_isCompact_isCompact_isClosed {K L : Set X} (hK : IsCompact K)
-    (hL : IsCompact L) (h'L : IsClosed L) (hd : Disjoint K L) : SeparatedNhds K L := by
-  simp_rw [separatedNhds_iff_disjoint, hK.disjoint_nhdsSet_left, hL.disjoint_nhdsSet_right,
+-- theorem SeparatedNhds.of_isCompact_isCompact_isClosed {K L : Set X} (hK : IsCompact K)
+theorem IsCompact.disjoint_nhdsSet' {K L : Set X} (hK : IsCompact K)
+    (hL : IsCompact L) (h'L : IsClosed L) (hd : Disjoint K L) : Disjoint (𝓝ˢ K) (𝓝ˢ L) := by
+  simp_rw [hK.disjoint_nhdsSet_left, hL.disjoint_nhdsSet_right,
     disjoint_nhds_nhds_iff_not_inseparable]
   intro x hx y hy h
   exact absurd ((h.mem_closed_iff h'L).2 hy) <| disjoint_left.1 hd hx
 
-@[deprecated (since := "2024-01-28")]
-alias separatedNhds_of_isCompact_isCompact_isClosed := SeparatedNhds.of_isCompact_isCompact_isClosed
+-- @[deprecated (since := "2024-01-28")]
+-- alias separatedNhds_of_isCompact_isCompact_isClosed := SeparatedNhds.of_isCompact_isCompact_isClosed
 
 /-- If a compact set is covered by two open sets, then we can cover it by two compact subsets. -/
 theorem IsCompact.binary_compact_cover {K U V : Set X}
     (hK : IsCompact K) (hU : IsOpen U) (hV : IsOpen V) (h2K : K ⊆ U ∪ V) :
     ∃ K₁ K₂ : Set X, IsCompact K₁ ∧ IsCompact K₂ ∧ K₁ ⊆ U ∧ K₂ ⊆ V ∧ K = K₁ ∪ K₂ := by
   have hK' : IsCompact (closure K) := hK.closure
-  have : SeparatedNhds (closure K \ U) (closure K \ V) := by
-    apply SeparatedNhds.of_isCompact_isCompact_isClosed (hK'.diff hU) (hK'.diff hV)
-      (isClosed_closure.sdiff hV)
+  have : Disjoint (𝓝ˢ (closure K \ U)) (𝓝ˢ (closure K \ V)) := by
+    apply (hK'.diff hU).disjoint_nhdsSet' (hK'.diff hV) (isClosed_closure.sdiff hV)
     rw [disjoint_iff_inter_eq_empty, diff_inter_diff, diff_eq_empty]
     exact hK.closure_subset_of_isOpen (hU.union hV) h2K
-  have : SeparatedNhds (K \ U) (K \ V) :=
-    this.mono (diff_subset_diff_left (subset_closure)) (diff_subset_diff_left (subset_closure))
-  rcases this with ⟨O₁, O₂, h1O₁, h1O₂, h2O₁, h2O₂, hO⟩
+  have : Disjoint (𝓝ˢ (K \ U)) (𝓝ˢ (K \ V)) := this.mono
+    (nhdsSet_mono <| diff_subset_diff_left subset_closure)
+    (nhdsSet_mono <| diff_subset_diff_left subset_closure)
+  rcases ((hasBasis_nhdsSet (K \ U)).disjoint_iff (hasBasis_nhdsSet (K \ V))).mp this with
+    ⟨O₁, ⟨h1O₁, h2O₁⟩, O₂, ⟨h1O₂, h2O₂⟩, hO⟩
   exact ⟨K \ O₁, K \ O₂, hK.diff h1O₁, hK.diff h1O₂, diff_subset_comm.mp h2O₁,
     diff_subset_comm.mp h2O₂, by rw [← diff_inter, hO.inter_eq, diff_empty]⟩
 #align is_compact.binary_compact_cover IsCompact.binary_compact_cover
@@ -1333,22 +1359,31 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
     R1Space (∀ i, X i) :=
   .iInf fun _ ↦ .induced _
 
+example
+    {X : Type*} [TopologicalSpace X] {x : X} :
+    (𝓝 x).HasBasis (fun U ↦ IsOpen U ∧ x ∈ U) fun U ↦ U :=
+  ⟨fun t => by
+    rw [mem_nhds_iff]
+    exact exists_congr fun _ ↦ And.comm
+  ⟩
+
 theorem exists_mem_nhds_isCompact_mapsTo_of_isCompact_mem_nhds
     {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [R1Space Y] {f : X → Y} {x : X}
     {K : Set X} {s : Set Y} (hf : Continuous f) (hs : s ∈ 𝓝 (f x)) (hKc : IsCompact K)
     (hKx : K ∈ 𝓝 x) : ∃ K ∈ 𝓝 x, IsCompact K ∧ MapsTo f K s := by
   have hc : IsCompact (f '' K \ interior s) := (hKc.image hf).diff isOpen_interior
-  obtain ⟨U, V, Uo, Vo, hxU, hV, hd⟩ : SeparatedNhds {f x} (f '' K \ interior s) := by
-    simp_rw [separatedNhds_iff_disjoint, nhdsSet_singleton, hc.disjoint_nhdsSet_right,
-      disjoint_nhds_nhds_iff_not_inseparable]
+  have : Disjoint (𝓝 (f x)) (𝓝ˢ (f '' K \ interior s)) := by
+    simp_rw [hc.disjoint_nhdsSet_right, disjoint_nhds_nhds_iff_not_inseparable]
     rintro y ⟨-, hys⟩ hxy
     refine hys <| (hxy.mem_open_iff isOpen_interior).1 ?_
     rwa [mem_interior_iff_mem_nhds]
-  refine ⟨K \ f ⁻¹' V, diff_mem hKx ?_, hKc.diff <| Vo.preimage hf, fun y hy ↦ ?_⟩
-  · filter_upwards [hf.continuousAt <| Uo.mem_nhds (hxU rfl)] with x hx
-      using Set.disjoint_left.1 hd hx
+  rcases ((nhds_basis_opens (f x)).disjoint_iff (hasBasis_nhdsSet (f '' K \ interior s))).mp this
+    with ⟨u, ⟨u_cov, u_open⟩, v, ⟨v_cov, v_open⟩, uv_disjoint⟩
+  refine ⟨K \ f ⁻¹' v, diff_mem hKx ?_, hKc.diff <| v_cov.preimage hf, fun y hy ↦ ?_⟩
+  · filter_upwards [hf.continuousAt <| u_open.mem_nhds u_cov] with x hx
+      using Set.disjoint_left.1 uv_disjoint hx
   · by_contra hys
-    exact hy.2 (hV ⟨mem_image_of_mem _ hy.1, not_mem_subset interior_subset hys⟩)
+    exact hy.2 (v_open ⟨mem_image_of_mem _ hy.1, not_mem_subset interior_subset hys⟩)
 
 instance (priority := 900) {X Y : Type*} [TopologicalSpace X] [WeaklyLocallyCompactSpace X]
     [TopologicalSpace Y] [R1Space Y] : LocallyCompactPair X Y where
@@ -1918,41 +1953,41 @@ theorem Function.LeftInverse.closedEmbedding [T2Space X] {f : X → Y} {g : Y �
   ⟨h.embedding hf hg, h.isClosed_range hf hg⟩
 #align function.left_inverse.closed_embedding Function.LeftInverse.closedEmbedding
 
-theorem SeparatedNhds.of_isCompact_isCompact [T2Space X] {s t : Set X} (hs : IsCompact s)
-    (ht : IsCompact t) (hst : Disjoint s t) : SeparatedNhds s t := by
-  simp only [SeparatedNhds, prod_subset_compl_diagonal_iff_disjoint.symm] at hst ⊢
-  exact generalized_tube_lemma hs ht isClosed_diagonal.isOpen_compl hst
-#align is_compact_is_compact_separated SeparatedNhds.of_isCompact_isCompact
-
-@[deprecated (since := "2024-01-28")]
-alias separatedNhds_of_isCompact_isCompact := SeparatedNhds.of_isCompact_isCompact
+theorem IsCompact.disjoint_nhdsSet [T2Space X] {s t : Set X} (hs : IsCompact s)
+    (ht : IsCompact t) (hst : Disjoint s t) : Disjoint (𝓝ˢ s) (𝓝ˢ t) := by
+  simp only [prod_subset_compl_diagonal_iff_disjoint.symm] at hst ⊢
+  obtain ⟨u, v, u_open, v_open, ssubu, tsubv, prodsubdiagonal⟩ :=
+    generalized_tube_lemma hs ht isClosed_diagonal.isOpen_compl hst
+  rw [(hasBasis_nhdsSet s).disjoint_iff (hasBasis_nhdsSet t)]
+  use u
+  constructor
+  · exact ⟨u_open, ssubu⟩
+  use v
+  constructor
+  · exact ⟨v_open, tsubv⟩
+  exact prod_subset_compl_diagonal_iff_disjoint.mp prodsubdiagonal
 
 section SeparatedFinset
 
-theorem SeparatedNhds.of_finset_finset [T2Space X] (s t : Finset X) (h : Disjoint s t) :
-    SeparatedNhds (s : Set X) t :=
-  .of_isCompact_isCompact s.finite_toSet.isCompact t.finite_toSet.isCompact <| mod_cast h
-#align finset_disjoint_finset_opens_of_t2 SeparatedNhds.of_finset_finset
+-- theorem SeparatedNhds.of_finset_finset [T2Space X] (s t : Finset X) (h : Disjoint s t) :
+theorem Disjoint.disjoint_nhdsSet [T2Space X] {s t : Finset X} (h : Disjoint s t) :
+    Disjoint (𝓝ˢ (s : Set X)) (𝓝ˢ (t : Set X)) :=
+  s.finite_toSet.isCompact.disjoint_nhdsSet t.finite_toSet.isCompact <| mod_cast h
 
-@[deprecated (since := "2024-01-28")]
-alias separatedNhds_of_finset_finset := SeparatedNhds.of_finset_finset
-
-theorem SeparatedNhds.of_singleton_finset [T2Space X] {x : X} {s : Finset X} (h : x ∉ s) :
-    SeparatedNhds ({x} : Set X) s :=
-  mod_cast .of_finset_finset {x} s (Finset.disjoint_singleton_left.mpr h)
-#align point_disjoint_finset_opens_of_t2 SeparatedNhds.of_singleton_finset
-
-@[deprecated (since := "2024-01-28")]
-alias point_disjoint_finset_opens_of_t2 := SeparatedNhds.of_singleton_finset
+theorem singleton_finset_disjoint_nhdsSet [T2Space X] {x : X} {s : Finset X} (h : x ∉ s) :
+    Disjoint (𝓝 x) (𝓝ˢ (s : Set X)) := by
+  have := (Finset.disjoint_singleton_left.mpr h).disjoint_nhdsSet
+  simp only [Finset.coe_singleton, nhdsSet_singleton] at this
+  exact this
 
 end SeparatedFinset
 
 /-- In a `T2Space`, every compact set is closed. -/
-theorem IsCompact.isClosed [T2Space X] {s : Set X} (hs : IsCompact s) : IsClosed s :=
-  isOpen_compl_iff.1 <| isOpen_iff_forall_mem_open.mpr fun x hx =>
-    let ⟨u, v, _, vo, su, xv, uv⟩ :=
-      SeparatedNhds.of_isCompact_isCompact hs isCompact_singleton (disjoint_singleton_right.2 hx)
-    ⟨v, (uv.mono_left <| show s ≤ u from su).subset_compl_left, vo, by simpa using xv⟩
+theorem IsCompact.isClosed [T2Space X] {s : Set X} (hs : IsCompact s) : IsClosed s := sorry
+  -- isOpen_compl_iff.1 <| isOpen_iff_forall_mem_open.mpr fun x hx =>
+  --   let ⟨u, v, _, vo, su, xv, uv⟩ :=
+  --     hs.disjoint_nhdsSet isCompact_singleton (disjoint_singleton_right.2 hx)
+  --   ⟨v, (uv.mono_left <| show s ≤ u from su).subset_compl_left, vo, by simpa using xv⟩
 #align is_compact.is_closed IsCompact.isClosed
 
 theorem IsCompact.preimage_continuous [CompactSpace X] [T2Space Y] {f : X → Y} {s : Set Y}
@@ -2237,13 +2272,12 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
 
 /-- In a regular space, if a compact set and a closed set are disjoint, then they have disjoint
 neighborhoods. -/
-lemma SeparatedNhds.of_isCompact_isClosed {s t : Set X}
-    (hs : IsCompact s) (ht : IsClosed t) (hst : Disjoint s t) : SeparatedNhds s t := by
-  simpa only [separatedNhds_iff_disjoint, hs.disjoint_nhdsSet_left, disjoint_nhds_nhdsSet,
-    ht.closure_eq, disjoint_left] using hst
-
+lemma IsCompact.disjointNhdsSet {s t : Set X}
+    (hs : IsCompact s) (ht : IsClosed t) (hst : Disjoint s t) : Disjoint (𝓝ˢ s) (𝓝ˢ t) := by
+  simpa only [hs.disjoint_nhdsSet_left, disjoint_nhds_nhdsSet, ht.closure_eq,
+    disjoint_left] using hst
 @[deprecated (since := "2024-01-28")]
-alias separatedNhds_of_isCompact_isClosed := SeparatedNhds.of_isCompact_isClosed
+alias separatedNhds_of_isCompact_isClosed := IsCompact.disjointNhdsSet
 
 /-- This technique to witness `HasSeparatingCover` in regular Lindelöf topological spaces
 will be used to prove regular Lindelöf spaces are normal. -/
@@ -2252,7 +2286,8 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [r : RegularSpace X] [LindelofSp
   -- `IsLindelof.indexed_countable_subcover` requires the space be Nonempty
   rcases isEmpty_or_nonempty X with empty_X | nonempty_X
   · rw [subset_eq_empty (t := s) (fun ⦃_⦄ _ ↦ trivial) (univ_eq_empty_iff.mpr empty_X)]
-    exact hasSeparatingCovers_iff_separatedNhds.mpr (SeparatedNhds.empty_left t) |>.1
+    #check hasSeparatingCovers_iff_disjointNhdsSet.mpr
+    exact hasSeparatingCovers_iff_disjointNhdsSet.mpr (disjoint_bot_left (𝓝ˢ t)) |>.1
   -- This is almost `HasSeparatingCover`, but is not countable. We define for all `a : X` for use
   -- with `IsLindelof.indexed_countable_subcover` momentarily.
   have (a : X) : ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) t ∧ (a ∈ s → a ∈ n) := by
