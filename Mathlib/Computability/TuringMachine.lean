@@ -1199,6 +1199,46 @@ end
 
 end TM0
 
+namespace TMQ
+
+variable (Γ : Type*) [Inhabited Γ]
+
+variable (Λ : Type*) [Inhabited Λ]
+
+/-- A Turing machine under the quintet definition (TMQ), which coincides with TM0 except that
+a symbol is written and the tape head moves each step.-/
+@[nolint unusedArguments]
+def Machine [Inhabited Λ] := Λ → Γ → Option (Λ × Γ × Dir)
+
+local notation "MachineQ" => Machine Γ Λ
+
+/-- The configuration state of a Turing machine, coincides with TM0 -/
+structure Cfg where
+  q : Λ
+  Tape : Tape Γ
+
+local notation "Cfg₀" => Cfg Γ Λ
+
+variable {Γ Λ}
+
+/-- For TMQ, a symbol is written and the tape head moves with every step -/
+def step (M : MachineQ) : Cfg₀ → Option Cfg₀ :=
+  fun ⟨q, T⟩ ↦ (M q T.1).map fun ⟨q', a , m⟩ ↦ ⟨q', (T.write a).move m⟩
+
+def init (l : List Γ) : Cfg₀ := ⟨default, Tape.mk₁ l⟩
+
+/-- Evaluate a Turing machine on initial input to a final state, if it terminates. -/
+def eval (M : MachineQ) (l : List Γ) : Part (ListBlank Γ) :=
+  (Turing.eval (step M) (init l)).map fun c ↦ c.Tape.right₀
+
+/-- Chainable step function -/
+def step' (M : MachineQ) (cfg : Option Cfg₀) : Option Cfg₀ := cfg.bind (step M)
+
+/-- Step a given number of times -/
+def multistep (M : MachineQ) (n : ℕ) (cfg : Cfg₀) : Option Cfg₀ := (step' M)^[n] (some cfg)
+
+end TMQ
+
 /-!
 ## The TM1 model
 
@@ -1227,7 +1267,6 @@ The `halt` command has a one step stutter before actually halting so that any ch
 the halt have a chance to be "committed", since the `eval` relation uses the final configuration
 before the halt as the output, and `move` and `write` etc. take 0 steps in this model.
 -/
-
 
 namespace TM1
 
