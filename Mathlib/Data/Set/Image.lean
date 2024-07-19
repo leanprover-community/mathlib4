@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.WithBot
 import Mathlib.Tactic.Use
+import Batteries.Tactic.Congr
 
 #align_import data.set.image from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 
