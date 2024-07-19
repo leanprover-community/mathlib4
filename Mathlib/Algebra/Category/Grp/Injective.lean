@@ -10,8 +10,6 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Instances.Rat
 
-#align_import algebra.category.Group.injective from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # Injective objects in the category of abelian groups
 
@@ -43,7 +41,6 @@ universe u
 
 variable (A : Type u) [AddCommGroup A]
 
-set_option linter.uppercaseLean3 false
 
 theorem Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun I g ↦ by
   rcases IsPrincipalIdealRing.principal I with ⟨m, rfl⟩
@@ -63,14 +60,11 @@ namespace AddCommGrp
 theorem injective_as_module_iff : Injective (⟨A⟩ : ModuleCat ℤ) ↔
     Injective (⟨A,inferInstance⟩ : AddCommGrp) :=
   ((forget₂ (ModuleCat ℤ) AddCommGrp).asEquivalence.map_injective_iff ⟨A⟩).symm
-#noalign AddCommGroup.injective_of_injective_as_module
-#noalign AddCommGroup.injective_as_module_of_injective_as_Ab
 
 instance injective_of_divisible [DivisibleBy A ℤ] :
     Injective (⟨A,inferInstance⟩ : AddCommGrp) :=
   (injective_as_module_iff A).mp <|
     Module.injective_object_of_injective_module (inj := (Module.Baer.of_divisible A).injective)
-#align AddCommGroup.injective_of_divisible AddCommGrp.injective_of_divisible
 
 instance injective_ratCircle : Injective <| of <| ULift.{u} <| AddCircle (1 : ℚ) :=
   injective_of_divisible _

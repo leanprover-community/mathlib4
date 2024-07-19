@@ -6,8 +6,6 @@ Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.Algebra.Group.Submonoid.Operations
 
-#align_import ring_theory.ore_localization.basic from "leanprover-community/mathlib"@"861a26926586cd46ff80264d121cdb6fa0e35cc1"
-
 /-!
 
 # Localization over left Ore sets.
@@ -64,7 +62,6 @@ def oreEqv : Setoid (X × S) where
         simp only [Submonoid.smul_def, Submonoid.coe_mul, mul_smul, mul_assoc] at *
       · rw [hur₂, smul_smul, h, mul_smul, hur₁]
       · rw [hs₂u, ← mul_assoc, h, mul_assoc, hs₁u]
-#align ore_localization.ore_eqv OreLocalization.oreEqv
 
 end OreLocalization
 
@@ -74,7 +71,6 @@ fulfilling the Ore condition."]
 def OreLocalization {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S]
     (X : Type*) [MulAction R X] :=
   Quotient (OreLocalization.oreEqv S X)
-#align ore_localization OreLocalization
 
 namespace OreLocalization
 
@@ -96,7 +92,6 @@ variable {X} [MulAction R X]
 as a difference of an element of `X` and `S`."]
 def oreDiv (r : X) (s : S) : X[S⁻¹] :=
   Quotient.mk' (r, s)
-#align ore_localization.ore_div OreLocalization.oreDiv
 
 @[inherit_doc]
 infixl:70 " /ₒ " => oreDiv
@@ -110,13 +105,11 @@ protected theorem ind {β : X[S⁻¹] → Prop}
   apply Quotient.ind
   rintro ⟨r, s⟩
   exact c r s
-#align ore_localization.ind OreLocalization.ind
 
 @[to_additive]
 theorem oreDiv_eq_iff {r₁ r₂ : X} {s₁ s₂ : S} :
     r₁ /ₒ s₁ = r₂ /ₒ s₂ ↔ ∃ (u : S) (v : R), u • r₂ = v • r₁ ∧ u * s₂ = v * s₁ :=
   Quotient.eq''
-#align ore_localization.ore_div_eq_iff OreLocalization.oreDiv_eq_iff
 
 /-- A fraction `r /ₒ s` is equal to its expansion by an arbitrary factor `t` if `t * s ∈ S`. -/
 @[to_additive "A difference `r -ₒ s` is equal to its expansion by an
@@ -125,13 +118,11 @@ protected theorem expand (r : X) (s : S) (t : R) (hst : t * (s : R) ∈ S) :
     r /ₒ s = t • r /ₒ ⟨t * s, hst⟩ := by
   apply Quotient.sound
   exact ⟨s, s * t, by rw [mul_smul, Submonoid.smul_def], by rw [← mul_assoc]⟩
-#align ore_localization.expand OreLocalization.expand
 
 /-- A fraction is equal to its expansion by a factor from `S`. -/
 @[to_additive "A difference is equal to its expansion by a summand from `S`."]
 protected theorem expand' (r : X) (s s' : S) : r /ₒ s = s' • r /ₒ (s' * s) :=
   OreLocalization.expand r s s' (by norm_cast; apply SetLike.coe_mem)
-#align ore_localization.expand' OreLocalization.expand'
 
 /-- Fractions which differ by a factor of the numerator can be proven equal if
 those factors expand to equal elements of `R`. -/
@@ -151,7 +142,6 @@ protected theorem eq_of_num_factor_eq {r r' r₁ r₂ : R} {s t : S} (h : t * r 
     _ = r₁' * t * r' * r₂ := by simp [← mul_assoc]
     _ = t' * r₁ * r' * r₂ := by rw [hr₁]
     _ = t' * (r₁ * r' * r₂) := by simp [← mul_assoc]
-#align ore_localization.eq_of_num_factor_eq OreLocalization.eq_of_num_factor_eq
 
 /-- A function or predicate over `X` and `S` can be lifted to `X[S⁻¹]` if it is invariant
 under expansion on the left. -/
@@ -168,14 +158,12 @@ def liftExpand {C : Sort*} (P : X → S → C)
     replace hs₂ : u * s₂ = ⟨_, s₁vS⟩ := by ext; simp [hs₂]
     rw [hP r₁ v s₁ s₁vS, hP r₂ u s₂ (by norm_cast; rwa [hs₂]), ← hr₂]
     simp only [← hs₂]; rfl
-#align ore_localization.lift_expand OreLocalization.liftExpand
 
 @[to_additive (attr := simp)]
 theorem liftExpand_of {C : Sort*} {P : X → S → C}
     {hP : ∀ (r : X) (t : R) (s : S) (ht : t * s ∈ S), P r s = P (t • r) ⟨t * s, ht⟩} (r : X)
     (s : S) : liftExpand P hP (r /ₒ s) = P r s :=
   rfl
-#align ore_localization.lift_expand_of OreLocalization.liftExpand_of
 
 /-- A version of `liftExpand` used to simultaneously lift functions with two arguments
 in `X[S⁻¹]`. -/
@@ -194,7 +182,6 @@ def lift₂Expand {C : Sort*} (P : X → S → X → S → C)
     ext x; induction' x with r₂ s₂
     dsimp only
     rw [liftExpand_of, liftExpand_of, hP r₁ t₁ s₁ ht₁ r₂ 1 s₂ (by simp)]; simp
-#align ore_localization.lift₂_expand OreLocalization.lift₂Expand
 
 @[to_additive (attr := simp)]
 theorem lift₂Expand_of {C : Sort*} {P : X → S → X → S → C}
@@ -204,7 +191,6 @@ theorem lift₂Expand_of {C : Sort*} {P : X → S → X → S → C}
         P r₁ s₁ r₂ s₂ = P (t₁ • r₁) ⟨t₁ * s₁, ht₁⟩ (t₂ • r₂) ⟨t₂ * s₂, ht₂⟩}
     (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) : lift₂Expand P hP (r₁ /ₒ s₁) (r₂ /ₒ s₂) = P r₁ s₁ r₂ s₂ :=
   rfl
-#align ore_localization.lift₂_expand_of OreLocalization.lift₂Expand_of
 
 @[to_additive]
 private def smul' (r₁ : R) (s₁ : S) (r₂ : X) (s₂ : S) : X[S⁻¹] :=
@@ -279,7 +265,6 @@ protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
     congr 1
     ext; simp only [Submonoid.coe_mul, ← mul_assoc]
     rw [mul_assoc _ r₃', ← h₃, ← mul_assoc, ← mul_assoc]
-#align ore_localization.mul OreLocalization.smul
 
 @[to_additive]
 instance : SMul R[S⁻¹] X[S⁻¹] :=
@@ -298,7 +283,6 @@ theorem oreDiv_smul_oreDiv {r₁ : R} {r₂ : X} {s₁ s₂ : S} :
 theorem oreDiv_mul_oreDiv {r₁ : R} {r₂ : R} {s₁ s₂ : S} :
     (r₁ /ₒ s₁) * (r₂ /ₒ s₂) = oreNum r₁ s₂ * r₂ /ₒ (oreDenom r₁ s₂ * s₁) := by
   with_unfolding_all rfl
-#align ore_localization.ore_div_mul_ore_div OreLocalization.oreDiv_mul_oreDiv
 
 /-- A characterization lemma for the scalar multiplication on the Ore localization,
 allowing for a choice of Ore numerator and Ore denominator. -/
@@ -315,7 +299,6 @@ allowing for a choice of Ore minuend and Ore subtrahend."]
 theorem oreDiv_mul_char (r₁ r₂ : R) (s₁ s₂ : S) (r' : R) (s' : S) (huv : s' * r₁ = r' * s₂) :
     r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) := by
   with_unfolding_all exact smul'_char r₁ r₂ s₁ s₂ s' r' huv
-#align ore_localization.ore_div_mul_char OreLocalization.oreDiv_mul_char
 
 /-- Another characterization lemma for the scalar multiplication on the Ore localizaion delivering
 Ore witnesses and conditions bundled in a sigma type. -/
@@ -332,7 +315,6 @@ Ore witnesses and conditions bundled in a sigma type. -/
 def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
     Σ'r' : R, Σ's' : S, s' * r₁ = r' * s₂ ∧ r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) :=
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_mul_oreDiv⟩
-#align ore_localization.ore_div_mul_char' OreLocalization.oreDivMulChar'
 
 /-- `1` in the localization, defined as `1 /ₒ 1`. -/
 @[to_additive (attr := irreducible) "`0` in the additive localization, defined as `0 -ₒ 0`."]
@@ -345,7 +327,6 @@ instance : One R[S⁻¹] :=
 @[to_additive]
 protected theorem one_def : (1 : R[S⁻¹]) = 1 /ₒ 1 := by
   with_unfolding_all rfl
-#align ore_localization.one_def OreLocalization.one_def
 
 @[to_additive]
 instance : Inhabited R[S⁻¹] :=
@@ -355,12 +336,10 @@ instance : Inhabited R[S⁻¹] :=
 protected theorem div_eq_one' {r : R} (hr : r ∈ S) : r /ₒ ⟨r, hr⟩ = 1 := by
   rw [OreLocalization.one_def, oreDiv_eq_iff]
   exact ⟨⟨r, hr⟩, 1, by simp, by simp⟩
-#align ore_localization.div_eq_one' OreLocalization.div_eq_one'
 
 @[to_additive (attr := simp)]
 protected theorem div_eq_one {s : S} : (s : R) /ₒ s = 1 :=
   OreLocalization.div_eq_one' _
-#align ore_localization.div_eq_one OreLocalization.div_eq_one
 
 @[to_additive]
 protected theorem one_smul (x : X[S⁻¹]) : (1 : R[S⁻¹]) • x = x := by
@@ -370,13 +349,11 @@ protected theorem one_smul (x : X[S⁻¹]) : (1 : R[S⁻¹]) • x = x := by
 @[to_additive]
 protected theorem one_mul (x : R[S⁻¹]) : 1 * x = x :=
   OreLocalization.one_smul x
-#align ore_localization.one_mul OreLocalization.one_mul
 
 @[to_additive]
 protected theorem mul_one (x : R[S⁻¹]) : x * 1 = x := by
   induction' x with r s
   simp [OreLocalization.one_def, oreDiv_mul_char r (1 : R) s (1 : S) r 1 (by simp)]
-#align ore_localization.mul_one OreLocalization.mul_one
 
 @[to_additive]
 protected theorem mul_smul (x y : R[S⁻¹]) (z : X[S⁻¹]) : (x * y) • z = x • y • z := by
@@ -396,7 +373,6 @@ protected theorem mul_smul (x y : R[S⁻¹]) (z : X[S⁻¹]) : (x * y) • z = x
 @[to_additive]
 protected theorem mul_assoc (x y z : R[S⁻¹]) : x * y * z = x * (y * z) :=
   OreLocalization.mul_smul x y z
-#align ore_localization.mul_assoc OreLocalization.mul_assoc
 
 /-- `npow` of `OreLocalization` -/
 @[to_additive (attr := irreducible) "`nsmul` of `AddOreLocalization`"]
@@ -418,7 +394,6 @@ instance instMulActionOreLocalization : MulAction R[S⁻¹] X[S⁻¹] where
 @[to_additive]
 protected theorem mul_inv (s s' : S) : ((s : R) /ₒ s') * ((s' : R) /ₒ s) = 1 := by
   simp [oreDiv_mul_char (s : R) s' s' s 1 1 (by simp)]
-#align ore_localization.mul_inv OreLocalization.mul_inv
 
 @[to_additive (attr := simp)]
 protected theorem one_div_smul {r : X} {s t : S} : ((1 : R) /ₒ t) • (r /ₒ s) = r /ₒ (s * t) := by
@@ -427,7 +402,6 @@ protected theorem one_div_smul {r : X} {s t : S} : ((1 : R) /ₒ t) • (r /ₒ 
 @[to_additive (attr := simp)]
 protected theorem one_div_mul {r : R} {s t : S} : (1 /ₒ t) * (r /ₒ s) = r /ₒ (s * t) := by
   simp [oreDiv_mul_char 1 r t s 1 s (by simp)]
-#align ore_localization.mul_one_div OreLocalization.one_div_mul
 
 @[to_additive (attr := simp)]
 protected theorem smul_cancel {r : X} {s t : S} : ((s : R) /ₒ t) • (r /ₒ s) = r /ₒ t := by
@@ -436,7 +410,6 @@ protected theorem smul_cancel {r : X} {s t : S} : ((s : R) /ₒ t) • (r /ₒ s
 @[to_additive (attr := simp)]
 protected theorem mul_cancel {r : R} {s t : S} : ((s : R) /ₒ t) * (r /ₒ s) = r /ₒ t := by
   simp [oreDiv_mul_char s.1 r t s 1 1 (by simp)]
-#align ore_localization.mul_cancel OreLocalization.mul_cancel
 
 @[to_additive (attr := simp)]
 protected theorem smul_cancel' {r₁ : R} {r₂ : X} {s t : S} :
@@ -447,7 +420,6 @@ protected theorem smul_cancel' {r₁ : R} {r₂ : X} {s t : S} :
 protected theorem mul_cancel' {r₁ r₂ : R} {s t : S} :
     ((r₁ * s) /ₒ t) * (r₂ /ₒ s) = (r₁ * r₂) /ₒ t := by
   simp [oreDiv_mul_char (r₁ * s) r₂ t s r₁ 1 (by simp)]
-#align ore_localization.mul_cancel' OreLocalization.mul_cancel'
 
 @[to_additive (attr := simp)]
 theorem smul_div_one {p : R} {r : X} {s : S} : (p /ₒ s) • (r /ₒ 1) = (p • r) /ₒ s := by
@@ -457,7 +429,6 @@ theorem smul_div_one {p : R} {r : X} {s : S} : (p /ₒ s) • (r /ₒ 1) = (p �
 theorem mul_div_one {p r : R} {s : S} : (p /ₒ s) * (r /ₒ 1) = (p * r) /ₒ s := by
   --TODO use coercion r ↦ r /ₒ 1
   simp [oreDiv_mul_char p r s 1 p 1 (by simp)]
-#align ore_localization.div_one_mul OreLocalization.mul_div_one
 
 /-- The fraction `s /ₒ 1` as a unit in `R[S⁻¹]`, where `s : S`. -/
 @[to_additive "The difference `s -ₒ 0` as a an additive unit."]
@@ -466,7 +437,6 @@ def numeratorUnit (s : S) : Units R[S⁻¹] where
   inv := (1 : R) /ₒ s
   val_inv := OreLocalization.mul_inv s 1
   inv_val := OreLocalization.mul_inv 1 s
-#align ore_localization.numerator_unit OreLocalization.numeratorUnit
 
 /-- The multiplicative homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the
 fraction `r /ₒ 1`. -/
@@ -476,17 +446,14 @@ def numeratorHom : R →* R[S⁻¹] where
   toFun r := r /ₒ 1
   map_one' := by with_unfolding_all rfl
   map_mul' _ _ := mul_div_one.symm
-#align ore_localization.numerator_hom OreLocalization.numeratorHom
 
 @[to_additive]
 theorem numeratorHom_apply {r : R} : numeratorHom r = r /ₒ (1 : S) :=
   rfl
-#align ore_localization.numerator_hom_apply OreLocalization.numeratorHom_apply
 
 @[to_additive]
 theorem numerator_isUnit (s : S) : IsUnit (numeratorHom (s : R) : R[S⁻¹]) :=
   ⟨numeratorUnit s, rfl⟩
-#align ore_localization.numerator_is_unit OreLocalization.numerator_isUnit
 
 section UMP
 
@@ -521,18 +488,15 @@ def universalMulHom : R[S⁻¹] →* T where
       Units.val_mul, mul_assoc, ← mul_assoc (fS s₁ : T), ← mul_assoc (fS s₁ : T), Units.mul_inv,
       one_mul, ← hf, ← mul_assoc, ← map_mul _ _ r₁, ha, map_mul, hf s₂, mul_assoc,
       ← mul_assoc (fS s₂ : T), (fS s₂).mul_inv, one_mul]
-#align ore_localization.universal_mul_hom OreLocalization.universalMulHom
 
 @[to_additive]
 theorem universalMulHom_apply {r : R} {s : S} :
     universalMulHom f fS hf (r /ₒ s) = ((fS s)⁻¹ : Units T) * f r :=
   rfl
-#align ore_localization.universal_mul_hom_apply OreLocalization.universalMulHom_apply
 
 @[to_additive]
 theorem universalMulHom_commutes {r : R} : universalMulHom f fS hf (numeratorHom r) = f r := by
   simp [numeratorHom_apply, universalMulHom_apply]
-#align ore_localization.universal_mul_hom_commutes OreLocalization.universalMulHom_commutes
 
 /-- The universal morphism `universalMulHom` is unique. -/
 @[to_additive "The universal morphism `universalAddHom` is unique."]
@@ -542,7 +506,6 @@ theorem universalMulHom_unique (φ : R[S⁻¹] →* T) (huniv : ∀ r : R, φ (n
   rw [universalMulHom_apply, ← huniv r, numeratorHom_apply, ← one_mul (φ (r /ₒ s)), ←
     Units.val_one, ← mul_left_inv (fS s), Units.val_mul, mul_assoc, ← hf, ← huniv, ← φ.map_mul,
     numeratorHom_apply, OreLocalization.mul_cancel]
-#align ore_localization.universal_mul_hom_unique OreLocalization.universalMulHom_unique
 
 end UMP
 
@@ -644,7 +607,6 @@ variable {R : Type*} [CommMonoid R] {S : Submonoid R} [OreSet S]
 theorem oreDiv_mul_oreDiv_comm {r₁ r₂ : R} {s₁ s₂ : S} :
     r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r₁ * r₂ /ₒ (s₁ * s₂) := by
   rw [oreDiv_mul_char r₁ r₂ s₁ s₂ r₁ s₂ (by simp [mul_comm]), mul_comm s₂]
-#align ore_localization.ore_div_mul_ore_div_comm OreLocalization.oreDiv_mul_oreDiv_comm
 
 @[to_additive]
 instance : CommMonoid R[S⁻¹] where
@@ -670,7 +632,6 @@ instance : Zero X[S⁻¹] :=
 
 protected theorem zero_def : (0 : X[S⁻¹]) = 0 /ₒ 1 := by
   with_unfolding_all rfl
-#align ore_localization.zero_def OreLocalization.zero_def
 
 end Zero
 
@@ -782,7 +743,6 @@ theorem oreDiv_add_oreDiv {r r' : X} {s s' : S} :
     r /ₒ s + r' /ₒ s' =
       (oreDenom (s : R) s' • r + oreNum (s : R) s' • r') /ₒ (oreDenom (s : R) s' * s) := by
   with_unfolding_all rfl
-#align ore_localization.ore_div_add_ore_div OreLocalization.oreDiv_add_oreDiv
 
 theorem oreDiv_add_char' {r r' : X} (s s' : S) (rb : R) (sb : R)
     (h : sb * s = rb * s') (h' : sb * s ∈ S) :
@@ -794,7 +754,6 @@ numerator and Ore denominator. -/
 theorem oreDiv_add_char {r r' : X} (s s' : S) (rb : R) (sb : S) (h : sb * s = rb * s') :
     r /ₒ s + r' /ₒ s' = (sb • r + rb • r') /ₒ (sb * s) :=
   oreDiv_add_char' s s' rb sb h (sb * s).2
-#align ore_localization.ore_div_add_char OreLocalization.oreDiv_add_char
 
 /-- Another characterization of the addition on the Ore localization, bundling up all witnesses
 and conditions into a sigma type. -/
@@ -802,12 +761,10 @@ def oreDivAddChar' (r r' : X) (s s' : S) :
     Σ'r'' : R,
       Σ's'' : S, s'' * s = r'' * s' ∧ r /ₒ s + r' /ₒ s' = (s'' • r + r'' • r') /ₒ (s'' * s) :=
   ⟨oreNum (s : R) s', oreDenom (s : R) s', ore_eq (s : R) s', oreDiv_add_oreDiv⟩
-#align ore_localization.ore_div_add_char' OreLocalization.oreDivAddChar'
 
 @[simp]
 theorem add_oreDiv {r r' : X} {s : S} : r /ₒ s + r' /ₒ s = (r + r') /ₒ s := by
   simp [oreDiv_add_char s s 1 1 (by simp)]
-#align ore_localization.add_ore_div OreLocalization.add_oreDiv
 
 protected theorem add_assoc (x y z : X[S⁻¹]) : x + y + z = x + (y + z) := by
   induction' x with r₁ s₁
@@ -820,18 +777,15 @@ protected theorem add_assoc (x y z : X[S⁻¹]) : x + y + z = x + (y + z) := by
   congr 2
   · rw [OreLocalization.expand r₂ s₂ ra (ha.symm ▸ (sa * s₁).2)]; congr; ext; exact ha
   · rw [OreLocalization.expand r₃ s₃ rc (hc.symm ▸ (sc * (sa * s₁)).2)]; congr; ext; exact hc
-#align ore_localization.add_assoc OreLocalization.add_assoc
 
 @[simp]
 theorem zero_oreDiv (s : S) : (0 : X) /ₒ s = 0 := by
   rw [OreLocalization.zero_def, oreDiv_eq_iff]
   exact ⟨s, 1, by simp⟩
-#align ore_localization.zero_div_eq_zero OreLocalization.zero_oreDiv
 
 protected theorem zero_add (x : X[S⁻¹]) : 0 + x = x := by
   induction x
   rw [← zero_oreDiv, add_oreDiv]; simp
-#align ore_localization.zero_add OreLocalization.zero_add
 
 protected theorem add_zero (x : X[S⁻¹]) : x + 0 = x := by
   induction x
@@ -887,7 +841,6 @@ protected theorem add_comm (x y : X[S⁻¹]) : x + y = y + x := by
   rcases oreDivAddChar' r r' s s' with ⟨ra, sa, ha, ha'⟩
   rw [ha', oreDiv_add_char' s' s _ _ ha.symm (ha ▸ (sa * s).2), add_comm]
   congr; ext; exact ha
-#align ore_localization.add_comm OreLocalization.add_comm
 
 instance instAddCommMonoidOreLocalization : AddCommMonoid X[S⁻¹] where
   add_comm := OreLocalization.add_comm
@@ -906,7 +859,6 @@ protected def neg : X[S⁻¹] → X[S⁻¹] :=
     -- Porting note(#12129): additional beta reduction needed
     beta_reduce
     rw [← smul_neg, ← OreLocalization.expand]
-#align ore_localization.neg OreLocalization.neg
 
 instance instNegOreLocalization : Neg X[S⁻¹] :=
   ⟨OreLocalization.neg⟩
@@ -914,11 +866,9 @@ instance instNegOreLocalization : Neg X[S⁻¹] :=
 @[simp]
 protected theorem neg_def (r : X) (s : S) : -(r /ₒ s) = -r /ₒ s := by
   with_unfolding_all rfl
-#align ore_localization.neg_def OreLocalization.neg_def
 
 protected theorem add_left_neg (x : X[S⁻¹]) : -x + x = 0 := by
   induction' x with r s; simp
-#align ore_localization.add_left_neg OreLocalization.add_left_neg
 
 /-- `zsmul` of `OreLocalization` -/
 @[irreducible]

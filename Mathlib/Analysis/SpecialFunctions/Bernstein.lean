@@ -8,8 +8,6 @@ import Mathlib.RingTheory.Polynomial.Bernstein
 import Mathlib.Topology.ContinuousFunction.Polynomial
 import Mathlib.Topology.ContinuousFunction.Compact
 
-#align_import analysis.special_functions.bernstein from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
-
 /-!
 # Bernstein approximations and Weierstrass' theorem
 
@@ -45,7 +43,6 @@ This result proves Weierstrass' theorem that polynomials are dense in `C([0,1], 
 although we defer an abstract statement of this until later.
 -/
 
-set_option linter.uppercaseLean3 false -- S
 
 noncomputable section
 
@@ -55,21 +52,18 @@ open scoped Classical BoundedContinuousFunction unitInterval
 -/
 def bernstein (n ν : ℕ) : C(I, ℝ) :=
   (bernsteinPolynomial ℝ n ν).toContinuousMapOn I
-#align bernstein bernstein
 
 @[simp]
 theorem bernstein_apply (n ν : ℕ) (x : I) :
     bernstein n ν x = (n.choose ν : ℝ) * (x : ℝ) ^ ν * (1 - (x : ℝ)) ^ (n - ν) := by
   dsimp [bernstein, Polynomial.toContinuousMapOn, Polynomial.toContinuousMap, bernsteinPolynomial]
   simp
-#align bernstein_apply bernstein_apply
 
 theorem bernstein_nonneg {n ν : ℕ} {x : I} : 0 ≤ bernstein n ν x := by
   simp only [bernstein_apply]
   have h₁ : (0 : ℝ) ≤ x := by unit_interval
   have h₂ : (0 : ℝ) ≤ 1 - x := by unit_interval
   positivity
-#align bernstein_nonneg bernstein_nonneg
 
 namespace Mathlib.Meta.Positivity
 
@@ -102,7 +96,6 @@ def z {n : ℕ} (k : Fin (n + 1)) : I :=
       rw [Set.mem_Icc, le_div_iff h₁, div_le_iff h₁]
       norm_cast
       simp [h₂]⟩
-#align bernstein.z bernstein.z
 
 local postfix:90 "/ₙ" => z
 
@@ -112,7 +105,6 @@ theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) =
   simp? [AlgHom.map_sum, Finset.sum_range] at this says
     simp only [Finset.sum_range, map_sum, Polynomial.coe_aeval_eq_eval, map_one] at this
   exact this
-#align bernstein.probability bernstein.probability
 
 theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
     (∑ k : Fin (n + 1), (x - k/ₙ : ℝ) ^ 2 * bernstein n k x) = (x : ℝ) * (1 - x) / n := by
@@ -134,7 +126,6 @@ theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
     field_simp [h]
     ring
   · ring
-#align bernstein.variance bernstein.variance
 
 end bernstein
 
@@ -147,7 +138,6 @@ given by `∑ k, f (k/n) * bernstein n k x`.
 -/
 def bernsteinApproximation (n : ℕ) (f : C(I, ℝ)) : C(I, ℝ) :=
   ∑ k : Fin (n + 1), f k/ₙ • bernstein n k
-#align bernstein_approximation bernsteinApproximation
 
 /-!
 We now set up some of the basic machinery of the proof that the Bernstein approximations
@@ -170,23 +160,19 @@ namespace bernsteinApproximation
 theorem apply (n : ℕ) (f : C(I, ℝ)) (x : I) :
     bernsteinApproximation n f x = ∑ k : Fin (n + 1), f k/ₙ * bernstein n k x := by
   simp [bernsteinApproximation]
-#align bernstein_approximation.apply bernsteinApproximation.apply
 
 /-- The modulus of (uniform) continuity for `f`, chosen so `|f x - f y| < ε/2` when `|x - y| < δ`.
 -/
 def δ (f : C(I, ℝ)) (ε : ℝ) (h : 0 < ε) : ℝ :=
   f.modulus (ε / 2) (half_pos h)
-#align bernstein_approximation.δ bernsteinApproximation.δ
 
 theorem δ_pos {f : C(I, ℝ)} {ε : ℝ} {h : 0 < ε} : 0 < δ f ε h :=
   f.modulus_pos
-#align bernstein_approximation.δ_pos bernsteinApproximation.δ_pos
 
 /-- The set of points `k` so `k/n` is within `δ` of `x`.
 -/
 def S (f : C(I, ℝ)) (ε : ℝ) (h : 0 < ε) (n : ℕ) (x : I) : Finset (Fin (n + 1)) :=
   {k : Fin (n + 1) | dist k/ₙ x < δ f ε h}.toFinset
-#align bernstein_approximation.S bernsteinApproximation.S
 
 /-- If `k ∈ S`, then `f(k/n)` is close to `f x`.
 -/
@@ -195,7 +181,6 @@ theorem lt_of_mem_S {f : C(I, ℝ)} {ε : ℝ} {h : 0 < ε} {n : ℕ} {x : I} {k
   apply f.dist_lt_of_dist_lt_modulus (ε / 2) (half_pos h)
   -- Porting note: `simp` fails to apply `Set.mem_toFinset` on its own
   simpa [S, (Set.mem_toFinset)] using m
-#align bernstein_approximation.lt_of_mem_S bernsteinApproximation.lt_of_mem_S
 
 /-- If `k ∉ S`, then as `δ ≤ |x - k/n|`, we have the inequality `1 ≤ δ^-2 * (x - k/n)^2`.
 This particular formulation will be helpful later.
@@ -207,7 +192,6 @@ theorem le_of_mem_S_compl {f : C(I, ℝ)} {ε : ℝ} {h : 0 < ε} {n : ℕ} {x :
   rw [zpow_neg, ← div_eq_inv_mul, zpow_two, ← pow_two, one_le_div (pow_pos δ_pos 2), sq_le_sq,
     abs_of_pos δ_pos]
   rwa [dist_comm] at m
-#align bernstein_approximation.le_of_mem_S_compl bernsteinApproximation.le_of_mem_S_compl
 
 end bernsteinApproximation
 
@@ -298,4 +282,3 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
       _ = 2 * ‖f‖ * δ ^ (-2 : ℤ) * x * (1 - x) / n := by rw [variance npos]; ring
       _ ≤ 2 * ‖f‖ * δ ^ (-2 : ℤ) * 1 * 1 / n := by gcongr <;> unit_interval
       _ < ε / 2 := by simp only [mul_one]; exact nh
-#align bernstein_approximation_uniform bernsteinApproximation_uniform

@@ -9,8 +9,6 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Field.Defs
 import Mathlib.RingTheory.OreLocalization.Basic
 
-#align_import ring_theory.ore_localization.basic from "leanprover-community/mathlib"@"861a26926586cd46ff80264d121cdb6fa0e35cc1"
-
 /-!
 
 # Module and Ring instances of Ore Localizations
@@ -71,19 +69,15 @@ attribute [local instance] OreLocalization.oreEqv
 
 protected theorem zero_mul (x : R[S⁻¹]) : 0 * x = 0 :=
   OreLocalization.zero_smul x
-#align ore_localization.zero_mul OreLocalization.zero_mul
 
 protected theorem mul_zero (x : R[S⁻¹]) : x * 0 = 0 :=
   OreLocalization.smul_zero x
-#align ore_localization.mul_zero OreLocalization.mul_zero
 
 protected theorem left_distrib (x y z : R[S⁻¹]) : x * (y + z) = x * y + x * z :=
   OreLocalization.smul_add _ _ _
-#align ore_localization.left_distrib OreLocalization.left_distrib
 
 theorem right_distrib (x y z : R[S⁻¹]) : (x + y) * z = x * z + y * z :=
   OreLocalization.add_smul _ _ _
-#align ore_localization.right_distrib OreLocalization.right_distrib
 
 instance : Semiring R[S⁻¹] where
   __ := inferInstanceAs (MonoidWithZero (R[S⁻¹]))
@@ -164,21 +158,17 @@ def universalHom : R[S⁻¹] →+* T :=
       rw [← Units.val_mul, ← mul_inv_rev, ← fS.map_mul, h₃']
       rw [Units.inv_mul_eq_iff_eq_mul, Units.eq_mul_inv_iff_mul_eq, ← hf, ← hf]
       simp only [map_mul] }
-#align ore_localization.universal_hom OreLocalization.universalHom
 
 theorem universalHom_apply {r : R} {s : S} :
     universalHom f fS hf (r /ₒ s) = ((fS s)⁻¹ : Units T) * f r :=
   rfl
-#align ore_localization.universal_hom_apply OreLocalization.universalHom_apply
 
 theorem universalHom_commutes {r : R} : universalHom f fS hf (numeratorHom r) = f r := by
   simp [numeratorHom_apply, universalHom_apply]
-#align ore_localization.universal_hom_commutes OreLocalization.universalHom_commutes
 
 theorem universalHom_unique (φ : R[S⁻¹] →+* T) (huniv : ∀ r : R, φ (numeratorHom r) = f r) :
     φ = universalHom f fS hf :=
   RingHom.coe_monoidHom_injective <| universalMulHom_unique (RingHom.toMonoidHom f) fS hf (↑φ) huniv
-#align ore_localization.universal_hom_unique OreLocalization.universalHom_unique
 
 end UMP
 
@@ -210,7 +200,6 @@ theorem numeratorHom_inj (hS : S ≤ nonZeroDivisorsRight R) :
   simp only [S.coe_one, mul_one, Submonoid.smul_def, smul_eq_mul] at h₁ h₂
   rw [← h₂, ← sub_eq_zero, ← mul_sub] at h₁
   exact (sub_eq_zero.mp (hS u.2 _ h₁)).symm
-#align ore_localization.numerator_hom_inj OreLocalization.numeratorHom_inj
 
 theorem subsingleton_iff :
     Subsingleton R[S⁻¹] ↔ 0 ∈ S := by
@@ -225,7 +214,6 @@ theorem nontrivial_iff :
 theorem nontrivial_of_nonZeroDivisors [Nontrivial R] (hS : S ≤ R⁰) :
     Nontrivial R[S⁻¹] :=
   nontrivial_iff.mpr (fun e ↦ one_ne_zero <| hS e 1 (mul_zero _))
-#align ore_localization.nontrivial_of_non_zero_divisors OreLocalization.nontrivial_of_nonZeroDivisors
 
 end Ring
 
@@ -260,7 +248,6 @@ protected def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=
           simp [ht, mul_zero]
         · simp only [hr, ht, dif_neg, not_false_iff, or_self_iff, mul_eq_zero, smul_eq_mul]
           apply OreLocalization.expand)
-#align ore_localization.inv OreLocalization.inv
 
 instance inv' : Inv R[R⁰⁻¹] :=
   ⟨OreLocalization.inv⟩
@@ -270,7 +257,6 @@ protected theorem inv_def {r : R} {s : R⁰} :
       if hr : r = (0 : R) then (0 : R[R⁰⁻¹])
       else s /ₒ ⟨r, fun _ => eq_zero_of_ne_zero_of_mul_right_eq_zero hr⟩ := by
   with_unfolding_all rfl
-#align ore_localization.inv_def OreLocalization.inv_def
 
 protected theorem mul_inv_cancel (x : R[R⁰⁻¹]) (h : x ≠ 0) : x * x⁻¹ = 1 := by
   induction' x with r s
@@ -280,12 +266,10 @@ protected theorem mul_inv_cancel (x : R[R⁰⁻¹]) (h : x ≠ 0) : x * x⁻¹ =
     simp at h
   simp only [hr]
   with_unfolding_all apply OreLocalization.mul_inv ⟨r, _⟩
-#align ore_localization.mul_inv_cancel OreLocalization.mul_inv_cancel
 
 protected theorem inv_zero : (0 : R[R⁰⁻¹])⁻¹ = 0 := by
   rw [OreLocalization.zero_def, OreLocalization.inv_def]
   simp
-#align ore_localization.inv_zero OreLocalization.inv_zero
 
 instance : DivisionRing R[R⁰⁻¹] where
   mul_inv_cancel := OreLocalization.mul_inv_cancel

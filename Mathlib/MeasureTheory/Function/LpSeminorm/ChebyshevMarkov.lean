@@ -5,8 +5,6 @@ Authors: Kexing Ying
 -/
 import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 
-#align_import measure_theory.function.lp_seminorm from "leanprover-community/mathlib"@"c4015acc0a223449d44061e27ddac1835a3852b9"
-
 /-!
 # Chebyshev-Markov inequality in terms of Lp seminorms
 
@@ -26,7 +24,6 @@ theorem pow_mul_meas_ge_le_snorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
   rw [snorm_eq_lintegral_rpow_nnnorm hp_ne_zero hp_ne_top]
   gcongr
   exact mul_meas_ge_le_lintegral₀ (hf.ennnorm.pow_const _) ε
-#align measure_theory.pow_mul_meas_ge_le_snorm MeasureTheory.pow_mul_meas_ge_le_snorm
 
 theorem mul_meas_ge_le_pow_snorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf : AEStronglyMeasurable f μ) (ε : ℝ≥0∞) :
@@ -38,7 +35,6 @@ theorem mul_meas_ge_le_pow_snorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
   rw [← ENNReal.rpow_one (ε * μ { x | ε ≤ (‖f x‖₊ : ℝ≥0∞) ^ p.toReal }), ← this, ENNReal.rpow_mul]
   gcongr
   exact pow_mul_meas_ge_le_snorm μ hp_ne_zero hp_ne_top hf ε
-#align measure_theory.mul_meas_ge_le_pow_snorm MeasureTheory.mul_meas_ge_le_pow_snorm
 
 /-- A version of Chebyshev-Markov's inequality using Lp-norms. -/
 theorem mul_meas_ge_le_pow_snorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
@@ -47,7 +43,6 @@ theorem mul_meas_ge_le_pow_snorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
   convert mul_meas_ge_le_pow_snorm μ hp_ne_zero hp_ne_top hf (ε ^ p.toReal) using 4
   ext x
   rw [ENNReal.rpow_le_rpow_iff (ENNReal.toReal_pos hp_ne_zero hp_ne_top)]
-#align measure_theory.mul_meas_ge_le_pow_snorm' MeasureTheory.mul_meas_ge_le_pow_snorm'
 
 theorem meas_ge_le_mul_pow_snorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf : AEStronglyMeasurable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
@@ -59,6 +54,5 @@ theorem meas_ge_le_mul_pow_snorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
   rw [ENNReal.inv_rpow, ← ENNReal.mul_le_mul_left hεpow hεpow', ← mul_assoc,
     ENNReal.mul_inv_cancel hεpow hεpow', one_mul]
   exact mul_meas_ge_le_pow_snorm' μ hp_ne_zero hp_ne_top hf ε
-#align measure_theory.meas_ge_le_mul_pow_snorm MeasureTheory.meas_ge_le_mul_pow_snorm
 
 end MeasureTheory

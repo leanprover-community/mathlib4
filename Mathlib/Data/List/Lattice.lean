@@ -6,8 +6,6 @@ Scott Morrison
 -/
 import Mathlib.Data.List.Basic
 
-#align_import data.list.lattice from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
-
 /-!
 # Lattice structure of lists
 
@@ -40,29 +38,6 @@ section Disjoint
 
 @[symm]
 theorem Disjoint.symm (d : Disjoint l₁ l₂) : Disjoint l₂ l₁ := fun _ i₂ i₁ => d i₁ i₂
-#align list.disjoint.symm List.Disjoint.symm
-
-#align list.disjoint_comm List.disjoint_comm
-#align list.disjoint_left List.disjoint_left
-#align list.disjoint_right List.disjoint_right
-#align list.disjoint_iff_ne List.disjoint_iff_ne
-#align list.disjoint_of_subset_left List.disjoint_of_subset_leftₓ
-#align list.disjoint_of_subset_right List.disjoint_of_subset_right
-#align list.disjoint_of_disjoint_cons_left List.disjoint_of_disjoint_cons_left
-#align list.disjoint_of_disjoint_cons_right List.disjoint_of_disjoint_cons_right
-#align list.disjoint_nil_left List.disjoint_nil_left
-#align list.disjoint_nil_right List.disjoint_nil_right
-#align list.singleton_disjoint List.singleton_disjointₓ
-#align list.disjoint_singleton List.disjoint_singleton
-#align list.disjoint_append_left List.disjoint_append_leftₓ
-#align list.disjoint_append_right List.disjoint_append_right
-#align list.disjoint_cons_left List.disjoint_cons_leftₓ
-#align list.disjoint_cons_right List.disjoint_cons_right
-#align list.disjoint_of_disjoint_append_left_left List.disjoint_of_disjoint_append_left_leftₓ
-#align list.disjoint_of_disjoint_append_left_right List.disjoint_of_disjoint_append_left_rightₓ
-#align list.disjoint_of_disjoint_append_right_left List.disjoint_of_disjoint_append_right_left
-#align list.disjoint_of_disjoint_append_right_right List.disjoint_of_disjoint_append_right_right
-#align list.disjoint_take_drop List.disjoint_take_dropₓ
 
 end Disjoint
 
@@ -73,17 +48,11 @@ variable [DecidableEq α]
 
 section Union
 
-#align list.nil_union List.nil_union
-#align list.cons_union List.cons_unionₓ
-#align list.mem_union List.mem_union_iff
-
 theorem mem_union_left (h : a ∈ l₁) (l₂ : List α) : a ∈ l₁ ∪ l₂ :=
   mem_union_iff.2 (Or.inl h)
-#align list.mem_union_left List.mem_union_left
 
 theorem mem_union_right (l₁ : List α) (h : a ∈ l₂) : a ∈ l₁ ∪ l₂ :=
   mem_union_iff.2 (Or.inr h)
-#align list.mem_union_right List.mem_union_right
 
 theorem sublist_suffix_of_union : ∀ l₁ l₂ : List α, ∃ t, t <+ l₁ ∧ t ++ l₂ = l₁ ∪ l₂
   | [], l₂ => ⟨[], by rfl, rfl⟩
@@ -95,28 +64,22 @@ theorem sublist_suffix_of_union : ∀ l₁ l₂ : List α, ∃ t, t <+ l₁ ∧ 
     else
       ⟨a :: t, s.cons_cons _, by
         simp only [cons_append, cons_union, e, insert_of_not_mem h]⟩
-#align list.sublist_suffix_of_union List.sublist_suffix_of_union
 
 theorem suffix_union_right (l₁ l₂ : List α) : l₂ <:+ l₁ ∪ l₂ :=
   (sublist_suffix_of_union l₁ l₂).imp fun _ => And.right
-#align list.suffix_union_right List.suffix_union_right
 
 theorem union_sublist_append (l₁ l₂ : List α) : l₁ ∪ l₂ <+ l₁ ++ l₂ :=
   let ⟨_, s, e⟩ := sublist_suffix_of_union l₁ l₂
   e ▸ (append_sublist_append_right _).2 s
-#align list.union_sublist_append List.union_sublist_append
 
 theorem forall_mem_union : (∀ x ∈ l₁ ∪ l₂, p x) ↔ (∀ x ∈ l₁, p x) ∧ ∀ x ∈ l₂, p x := by
   simp only [mem_union_iff, or_imp, forall_and]
-#align list.forall_mem_union List.forall_mem_union
 
 theorem forall_mem_of_forall_mem_union_left (h : ∀ x ∈ l₁ ∪ l₂, p x) : ∀ x ∈ l₁, p x :=
   (forall_mem_union.1 h).1
-#align list.forall_mem_of_forall_mem_union_left List.forall_mem_of_forall_mem_union_left
 
 theorem forall_mem_of_forall_mem_union_right (h : ∀ x ∈ l₁ ∪ l₂, p x) : ∀ x ∈ l₂, p x :=
   (forall_mem_union.1 h).2
-#align list.forall_mem_of_forall_mem_union_right List.forall_mem_of_forall_mem_union_right
 
 theorem Subset.union_eq_right {xs ys : List α} (h : xs ⊆ ys) : xs ∪ ys = ys := by
   induction xs with
@@ -135,17 +98,14 @@ section Inter
 @[simp]
 theorem inter_nil (l : List α) : [] ∩ l = [] :=
   rfl
-#align list.inter_nil List.inter_nil
 
 @[simp]
 theorem inter_cons_of_mem (l₁ : List α) (h : a ∈ l₂) : (a :: l₁) ∩ l₂ = a :: l₁ ∩ l₂ := by
   simp [Inter.inter, List.inter, h]
-#align list.inter_cons_of_mem List.inter_cons_of_mem
 
 @[simp]
 theorem inter_cons_of_not_mem (l₁ : List α) (h : a ∉ l₂) : (a :: l₁) ∩ l₂ = l₁ ∩ l₂ := by
   simp [Inter.inter, List.inter, h]
-#align list.inter_cons_of_not_mem List.inter_cons_of_not_mem
 
 @[simp]
 theorem inter_nil' (l : List α) : l ∩ [] = [] := by
@@ -155,49 +115,37 @@ theorem inter_nil' (l : List α) : l ∩ [] = [] := by
 
 theorem mem_of_mem_inter_left : a ∈ l₁ ∩ l₂ → a ∈ l₁ :=
   mem_of_mem_filter
-#align list.mem_of_mem_inter_left List.mem_of_mem_inter_left
 
 theorem mem_of_mem_inter_right (h : a ∈ l₁ ∩ l₂) : a ∈ l₂ := by simpa using of_mem_filter h
-#align list.mem_of_mem_inter_right List.mem_of_mem_inter_right
 
 theorem mem_inter_of_mem_of_mem (h₁ : a ∈ l₁) (h₂ : a ∈ l₂) : a ∈ l₁ ∩ l₂ :=
   mem_filter_of_mem h₁ <| by simpa using h₂
-#align list.mem_inter_of_mem_of_mem List.mem_inter_of_mem_of_mem
-
-#align list.mem_inter List.mem_inter_iff
 
 theorem inter_subset_left {l₁ l₂ : List α} : l₁ ∩ l₂ ⊆ l₁ :=
   filter_subset _
-#align list.inter_subset_left List.inter_subset_left
 
 theorem inter_subset_right {l₁ l₂ : List α} : l₁ ∩ l₂ ⊆ l₂ := fun _ => mem_of_mem_inter_right
-#align list.inter_subset_right List.inter_subset_right
 
 theorem subset_inter {l l₁ l₂ : List α} (h₁ : l ⊆ l₁) (h₂ : l ⊆ l₂) : l ⊆ l₁ ∩ l₂ := fun _ h =>
   mem_inter_iff.2 ⟨h₁ h, h₂ h⟩
-#align list.subset_inter List.subset_inter
 
 theorem inter_eq_nil_iff_disjoint : l₁ ∩ l₂ = [] ↔ Disjoint l₁ l₂ := by
   simp only [eq_nil_iff_forall_not_mem, mem_inter_iff, not_and]
   rfl
-#align list.inter_eq_nil_iff_disjoint List.inter_eq_nil_iff_disjoint
 
 alias ⟨_, Disjoint.inter_eq_nil⟩ := inter_eq_nil_iff_disjoint
 
 theorem forall_mem_inter_of_forall_left (h : ∀ x ∈ l₁, p x) (l₂ : List α) :
     ∀ x, x ∈ l₁ ∩ l₂ → p x :=
   BAll.imp_left (fun _ => mem_of_mem_inter_left) h
-#align list.forall_mem_inter_of_forall_left List.forall_mem_inter_of_forall_left
 
 theorem forall_mem_inter_of_forall_right (l₁ : List α) (h : ∀ x ∈ l₂, p x) :
     ∀ x, x ∈ l₁ ∩ l₂ → p x :=
   BAll.imp_left (fun _ => mem_of_mem_inter_right) h
-#align list.forall_mem_inter_of_forall_right List.forall_mem_inter_of_forall_right
 
 @[simp]
 theorem inter_reverse {xs ys : List α} : xs.inter ys.reverse = xs.inter ys := by
   simp only [List.inter, elem_eq_mem, mem_reverse]
-#align list.inter_reverse List.inter_reverse
 
 theorem Subset.inter_eq_left {xs ys : List α} (h : xs ⊆ ys) : xs ∩ ys = xs :=
   List.filter_eq_self.mpr fun _ ha => elem_eq_true_of_mem (h ha)
@@ -211,11 +159,9 @@ section BagInter
 
 @[simp]
 theorem nil_bagInter (l : List α) : [].bagInter l = [] := by cases l <;> rfl
-#align list.nil_bag_inter List.nil_bagInter
 
 @[simp]
 theorem bagInter_nil (l : List α) : l.bagInter [] = [] := by cases l <;> rfl
-#align list.bag_inter_nil List.bagInter_nil
 
 @[simp]
 theorem cons_bagInter_of_pos (l₁ : List α) (h : a ∈ l₂) :
@@ -223,14 +169,12 @@ theorem cons_bagInter_of_pos (l₁ : List α) (h : a ∈ l₂) :
   cases l₂
   · exact if_pos h
   · simp only [List.bagInter, if_pos (elem_eq_true_of_mem h)]
-#align list.cons_bag_inter_of_pos List.cons_bagInter_of_pos
 
 @[simp]
 theorem cons_bagInter_of_neg (l₁ : List α) (h : a ∉ l₂) :
     (a :: l₁).bagInter l₂ = l₁.bagInter l₂ := by
   cases l₂; · simp only [bagInter_nil]
   simp only [erase_of_not_mem h, List.bagInter, if_neg (mt mem_of_elem_eq_true h)]
-#align list.cons_bag_inter_of_neg List.cons_bagInter_of_neg
 
 @[simp]
 theorem mem_bagInter {a : α} : ∀ {l₁ l₂ : List α}, a ∈ l₁.bagInter l₂ ↔ a ∈ l₁ ∧ a ∈ l₂
@@ -246,7 +190,6 @@ theorem mem_bagInter {a : α} : ∀ {l₁ l₂ : List α}, a ∈ l₁.bagInter l
       apply or_iff_right_of_imp
       rintro ⟨rfl, h'⟩
       exact h.elim h'
-#align list.mem_bag_inter List.mem_bagInter
 
 @[simp]
 theorem count_bagInter {a : α} :
@@ -266,7 +209,6 @@ theorem count_bagInter {a : α} :
       · rw [← ab] at hb
         rw [count_eq_zero.2 hb, Nat.min_zero, Nat.min_zero]
       · rw [count_cons_of_ne ab]
-#align list.count_bag_inter List.count_bagInter
 
 theorem bagInter_sublist_left : ∀ l₁ l₂ : List α, l₁.bagInter l₂ <+ l₁
   | [], l₂ => by simp
@@ -275,14 +217,12 @@ theorem bagInter_sublist_left : ∀ l₁ l₂ : List α, l₁.bagInter l₂ <+ l
     · exact (bagInter_sublist_left _ _).cons_cons _
     · apply sublist_cons_of_sublist
       apply bagInter_sublist_left
-#align list.bag_inter_sublist_left List.bagInter_sublist_left
 
 theorem bagInter_nil_iff_inter_nil : ∀ l₁ l₂ : List α, l₁.bagInter l₂ = [] ↔ l₁ ∩ l₂ = []
   | [], l₂ => by simp
   | b :: l₁, l₂ => by
     by_cases h : b ∈ l₂ <;> simp [h]
     exact bagInter_nil_iff_inter_nil l₁ l₂
-#align list.bag_inter_nil_iff_inter_nil List.bagInter_nil_iff_inter_nil
 
 end BagInter
 

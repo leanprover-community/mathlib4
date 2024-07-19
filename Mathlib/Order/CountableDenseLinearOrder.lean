@@ -6,8 +6,6 @@ Authors: David Wärn
 import Mathlib.Order.Ideal
 import Mathlib.Data.Finset.Lattice
 
-#align_import order.countable_dense_linear_order from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
-
 /-!
 # The back and forth method and countable dense linear orders
 
@@ -64,7 +62,6 @@ theorem exists_between_finsets {α : Type*} [LinearOrder α] [DenselyOrdered α]
     else -- both sets are empty, use `Nonempty`
           nonem.elim
         fun m ↦ ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
-#align order.exists_between_finsets Order.exists_between_finsets
 
 variable (α β : Type*) [LinearOrder α] [LinearOrder β]
 
@@ -76,7 +73,6 @@ def PartialIso : Type _ :=
   { f : Finset (α × β) //
     ∀ p ∈ f, ∀ q ∈ f,
       cmp (Prod.fst p) (Prod.fst q) = cmp (Prod.snd p) (Prod.snd q) }
-#align order.partial_iso Order.PartialIso
 
 namespace PartialIso
 
@@ -120,7 +116,6 @@ theorem exists_across [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonem
       ⟨hr, hb.2 _ (Finset.mem_image.mpr ⟨(p1, p2), Finset.mem_filter.mpr ⟨hp, hr⟩, rfl⟩)⟩
     rw [← cmp_eq_gt_iff, ← cmp_eq_gt_iff] at this
     exact this.1.trans this.2.symm
-#align order.partial_iso.exists_across Order.PartialIso.exists_across
 
 /-- A partial isomorphism between `α` and `β` is also a partial isomorphism between `β` and `α`. -/
 protected def comm : PartialIso α β → PartialIso β α :=
@@ -134,7 +129,6 @@ protected def comm : PartialIso α β → PartialIso β α :=
         (by
           rw [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage] at hq
           rwa [← Finset.mem_coe])
-#align order.partial_iso.comm Order.PartialIso.comm
 
 variable (β)
 
@@ -155,7 +149,6 @@ def definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty 
       exact a_b _ qf
     · exact a_b _ pf
     · exact f.prop _ pf _ qf
-#align order.partial_iso.defined_at_left Order.PartialIso.definedAtLeft
 
 variable (α) {β}
 
@@ -172,7 +165,6 @@ def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty
     · change _ ⊆ f'.val.image _
       rwa [← Finset.coe_subset, Finset.coe_image, ← Equiv.symm_image_subset, ← Finset.coe_image,
         Finset.coe_subset]
-#align order.partial_iso.defined_at_right Order.PartialIso.definedAtRight
 
 variable {α}
 
@@ -182,7 +174,6 @@ def funOfIdeal [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β]
     (I : Ideal (PartialIso α β)) :
     (∃ f, f ∈ definedAtLeft β a ∧ f ∈ I) → { b // ∃ f ∈ I, (a, b) ∈ Subtype.val f } :=
   Classical.indefiniteDescription _ ∘ fun ⟨f, ⟨b, hb⟩, hf⟩ ↦ ⟨b, f, hf, hb⟩
-#align order.partial_iso.fun_of_ideal Order.PartialIso.funOfIdeal
 
 /-- Given an ideal which intersects `definedAtRight α b`, pick `a : α` such that
     some partial function in the ideal maps `a` to `b`. -/
@@ -190,7 +181,6 @@ def invOfIdeal [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty α]
     (I : Ideal (PartialIso α β)) :
     (∃ f, f ∈ definedAtRight α b ∧ f ∈ I) → { a // ∃ f ∈ I, (a, b) ∈ Subtype.val f } :=
   Classical.indefiniteDescription _ ∘ fun ⟨f, ⟨a, ha⟩, hf⟩ ↦ ⟨a, f, hf, ha⟩
-#align order.partial_iso.inv_of_ideal Order.PartialIso.invOfIdeal
 
 end PartialIso
 
@@ -215,7 +205,6 @@ theorem embedding_from_countable_to_dense [Countable α] [DenselyOrdered β] [No
   rcases (F a₂).prop with ⟨g, hg, ha₂⟩
   rcases our_ideal.directed _ hf _ hg with ⟨m, _hm, fm, gm⟩
   exact (lt_iff_lt_of_cmp_eq_cmp <| m.prop (a₁, _) (fm ha₁) (a₂, _) (gm ha₂)).mp
-#align order.embedding_from_countable_to_dense Order.embedding_from_countable_to_dense
 
 /-- Any two countable dense, nonempty linear orders without endpoints are order isomorphic. -/
 theorem iso_of_countable_dense [Countable α] [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α]
@@ -233,6 +222,5 @@ theorem iso_of_countable_dense [Countable α] [DenselyOrdered α] [NoMinOrder α
       rcases (G b).prop with ⟨g, hg, hb⟩
       rcases our_ideal.directed _ hf _ hg with ⟨m, _, fm, gm⟩
       exact m.prop (a, _) (fm ha) (_, b) (gm hb)⟩
-#align order.iso_of_countable_dense Order.iso_of_countable_dense
 
 end Order

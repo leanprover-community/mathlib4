@@ -10,8 +10,6 @@ import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Topology.Algebra.Order.UpperLower
 import Mathlib.Topology.MetricSpace.Sequences
 
-#align_import analysis.normed.order.upper_lower from "leanprover-community/mathlib"@"b1abe23ae96fef89ad30d9f4362c307f72a55010"
-
 /-!
 # Upper/lower/order-connected sets in normed groups
 
@@ -43,44 +41,32 @@ protected theorem IsUpperSet.thickening' (hs : IsUpperSet s) (ε : ℝ) :
     IsUpperSet (thickening ε s) := by
   rw [← ball_mul_one]
   exact hs.mul_left
-#align is_upper_set.thickening' IsUpperSet.thickening'
-#align is_upper_set.thickening IsUpperSet.thickening
 
 @[to_additive IsLowerSet.thickening]
 protected theorem IsLowerSet.thickening' (hs : IsLowerSet s) (ε : ℝ) :
     IsLowerSet (thickening ε s) := by
   rw [← ball_mul_one]
   exact hs.mul_left
-#align is_lower_set.thickening' IsLowerSet.thickening'
-#align is_lower_set.thickening IsLowerSet.thickening
 
 @[to_additive IsUpperSet.cthickening]
 protected theorem IsUpperSet.cthickening' (hs : IsUpperSet s) (ε : ℝ) :
     IsUpperSet (cthickening ε s) := by
   rw [cthickening_eq_iInter_thickening'']
   exact isUpperSet_iInter₂ fun δ _ => hs.thickening' _
-#align is_upper_set.cthickening' IsUpperSet.cthickening'
-#align is_upper_set.cthickening IsUpperSet.cthickening
 
 @[to_additive IsLowerSet.cthickening]
 protected theorem IsLowerSet.cthickening' (hs : IsLowerSet s) (ε : ℝ) :
     IsLowerSet (cthickening ε s) := by
   rw [cthickening_eq_iInter_thickening'']
   exact isLowerSet_iInter₂ fun δ _ => hs.thickening' _
-#align is_lower_set.cthickening' IsLowerSet.cthickening'
-#align is_lower_set.cthickening IsLowerSet.cthickening
 
 @[to_additive upperClosure_interior_subset] lemma upperClosure_interior_subset' (s : Set α) :
     (upperClosure (interior s) : Set α) ⊆ interior (upperClosure s) :=
   upperClosure_min (interior_mono subset_upperClosure) (upperClosure s).upper.interior
-#align upper_closure_interior_subset' upperClosure_interior_subset'
-#align upper_closure_interior_subset upperClosure_interior_subset
 
 @[to_additive lowerClosure_interior_subset] lemma lowerClosure_interior_subset' (s : Set α) :
     (lowerClosure (interior s) : Set α) ⊆ interior (lowerClosure s) :=
   lowerClosure_min (interior_mono subset_lowerClosure) (lowerClosure s).lower.interior
-#align lower_closure_interior_subset' lowerClosure_interior_subset'
-#align lower_closure_interior_subset lowerClosure_interior_subset
 
 end NormedOrderedGroup
 
@@ -106,7 +92,6 @@ theorem IsUpperSet.mem_interior_of_forall_lt (hs : IsUpperSet s) (hx : x ∈ clo
   refine hs (fun i => ?_) hz
   simp_rw [ball_pi _ hδ, Real.ball_eq_Ioo] at hw
   exact ((lt_sub_iff_add_lt.2 <| hyz _).trans (hw _ <| mem_univ _).1).le
-#align is_upper_set.mem_interior_of_forall_lt IsUpperSet.mem_interior_of_forall_lt
 
 theorem IsLowerSet.mem_interior_of_forall_lt (hs : IsLowerSet s) (hx : x ∈ closure s)
     (h : ∀ i, y i < x i) : y ∈ interior s := by
@@ -125,7 +110,6 @@ theorem IsLowerSet.mem_interior_of_forall_lt (hs : IsLowerSet s) (hx : x ∈ clo
   refine hs (fun i => ?_) hz
   simp_rw [ball_pi _ hδ, Real.ball_eq_Ioo] at hw
   exact ((hw _ <| mem_univ _).2.trans <| hyz _).le
-#align is_lower_set.mem_interior_of_forall_lt IsLowerSet.mem_interior_of_forall_lt
 
 end Finite
 
@@ -137,35 +121,29 @@ lemma dist_inf_sup_pi (x y : ι → ℝ) : dist (x ⊓ y) (x ⊔ y) = dist x y :
   refine' congr_arg NNReal.toReal (Finset.sup_congr rfl fun i _ ↦ _)
   simp only [Real.nndist_eq', sup_eq_max, inf_eq_min, max_sub_min_eq_abs, Pi.inf_apply,
     Pi.sup_apply, Real.nnabs_of_nonneg, abs_nonneg, Real.toNNReal_abs]
-#align dist_inf_sup dist_inf_sup_pi
 
 lemma dist_mono_left_pi : MonotoneOn (dist · y) (Ici y) := by
   refine' fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ _)
   rw [Real.nndist_eq, Real.nnabs_of_nonneg (sub_nonneg_of_le (‹y ≤ _› i : y i ≤ y₁ i)),
     Real.nndist_eq, Real.nnabs_of_nonneg (sub_nonneg_of_le (‹y ≤ _› i : y i ≤ y₂ i))]
   exact Real.toNNReal_mono (sub_le_sub_right (hy _) _)
-#align dist_mono_left dist_mono_left_pi
 
 lemma dist_mono_right_pi : MonotoneOn (dist x) (Ici x) := by
   simpa only [dist_comm _ x] using dist_mono_left_pi (y := x)
-#align dist_mono_right dist_mono_right_pi
 
 lemma dist_anti_left_pi : AntitoneOn (dist · y) (Iic y) := by
   refine' fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ _)
   rw [Real.nndist_eq', Real.nnabs_of_nonneg (sub_nonneg_of_le (‹_ ≤ y› i : y₂ i ≤ y i)),
     Real.nndist_eq', Real.nnabs_of_nonneg (sub_nonneg_of_le (‹_ ≤ y› i : y₁ i ≤ y i))]
   exact Real.toNNReal_mono (sub_le_sub_left (hy _) _)
-#align dist_anti_left dist_anti_left_pi
 
 lemma dist_anti_right_pi : AntitoneOn (dist x) (Iic x) := by
   simpa only [dist_comm] using dist_anti_left_pi (y := x)
-#align dist_anti_right dist_anti_right_pi
 
 lemma dist_le_dist_of_le_pi (ha : a₂ ≤ a₁) (h₁ : a₁ ≤ b₁) (hb : b₁ ≤ b₂) :
     dist a₁ b₁ ≤ dist a₂ b₂ :=
   (dist_mono_right_pi h₁ (h₁.trans hb) hb).trans $
     dist_anti_left_pi (ha.trans $ h₁.trans hb) (h₁.trans hb) ha
-#align dist_le_dist_of_le dist_le_dist_of_le_pi
 
 theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
     ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s := by
@@ -184,7 +162,6 @@ theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s)
   dsimp at hxy hz
   rw [abs_sub_le_iff] at hxy hz
   linarith
-#align is_upper_set.exists_subset_ball IsUpperSet.exists_subset_ball
 
 theorem IsLowerSet.exists_subset_ball (hs : IsLowerSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
     ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s := by
@@ -203,7 +180,6 @@ theorem IsLowerSet.exists_subset_ball (hs : IsLowerSet s) (hx : x ∈ closure s)
   dsimp at hxy hz
   rw [abs_sub_le_iff] at hxy hz
   linarith
-#align is_lower_set.exists_subset_ball IsLowerSet.exists_subset_ball
 
 end Fintype
 
@@ -228,7 +204,6 @@ protected lemma IsClosed.upperClosure_pi (hs : IsClosed s) (hs' : BddBelow s) :
     ⟨hg n, (hgf _).trans <| ha <| mem_range_self _⟩
   exact ⟨b, closure_minimal inter_subset_left hs hb,
     le_of_tendsto_of_tendsto' hbf (hx.comp hφ.tendsto_atTop) fun _ ↦ hgf _⟩
-#align is_closed.upper_closure IsClosed.upperClosure_pi
 
 protected lemma IsClosed.lowerClosure_pi (hs : IsClosed s) (hs' : BddAbove s) :
     IsClosed (lowerClosure s : Set (ι → ℝ)) := by
@@ -241,28 +216,23 @@ protected lemma IsClosed.lowerClosure_pi (hs : IsClosed s) (hs' : BddAbove s) :
     ⟨hg n, (ha $ mem_range_self _).trans $ hfg _⟩
   exact ⟨b, closure_minimal inter_subset_left hs hb,
     le_of_tendsto_of_tendsto' (hx.comp hφ.tendsto_atTop) hbf fun _ ↦ hfg _⟩
-#align is_closed.lower_closure IsClosed.lowerClosure_pi
 
 protected lemma IsClopen.upperClosure_pi (hs : IsClopen s) (hs' : BddBelow s) :
     IsClopen (upperClosure s : Set (ι → ℝ)) := ⟨hs.1.upperClosure_pi hs', hs.2.upperClosure⟩
-#align is_clopen.upper_closure IsClopen.upperClosure_pi
 
 protected lemma IsClopen.lowerClosure_pi (hs : IsClopen s) (hs' : BddAbove s) :
     IsClopen (lowerClosure s : Set (ι → ℝ)) := ⟨hs.1.lowerClosure_pi hs', hs.2.lowerClosure⟩
-#align is_clopen.lower_closure IsClopen.lowerClosure_pi
 
 lemma closure_upperClosure_comm_pi (hs : BddBelow s) :
     closure (upperClosure s : Set (ι → ℝ)) = upperClosure (closure s) :=
   (closure_minimal (upperClosure_anti subset_closure) $
       isClosed_closure.upperClosure_pi hs.closure).antisymm $
     upperClosure_min (closure_mono subset_upperClosure) (upperClosure s).upper.closure
-#align closure_upper_closure_comm closure_upperClosure_comm_pi
 
 lemma closure_lowerClosure_comm_pi (hs : BddAbove s) :
     closure (lowerClosure s : Set (ι → ℝ)) = lowerClosure (closure s) :=
   (closure_minimal (lowerClosure_mono subset_closure) $
         isClosed_closure.lowerClosure_pi hs.closure).antisymm $
     lowerClosure_min (closure_mono subset_lowerClosure) (lowerClosure s).lower.closure
-#align closure_lower_closure_comm closure_lowerClosure_comm_pi
 
 end Finite

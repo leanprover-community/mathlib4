@@ -6,8 +6,6 @@ Authors: Jeremy Avigad, Mario Carneiro
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.Find
 
-#align_import data.int.least_greatest from "leanprover-community/mathlib"@"3342d1b2178381196f818146ff79bc0e7ccd9e2d"
-
 /-! # Least upper bound and greatest lower bound properties for integers
 
 In this file we prove that a bounded above nonempty set of integers has the greatest element, and a
@@ -52,7 +50,6 @@ def leastOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb : ∀ z : ℤ,
   ⟨b + (Nat.find EX : ℤ), Nat.find_spec EX, fun z h =>
     match z, le.dest (Hb _ h), h with
     | _, ⟨_, rfl⟩, h => add_le_add_left (Int.ofNat_le.2 <| Nat.find_min' _ h) _⟩
-#align int.least_of_bdd Int.leastOfBdd
 
 
 /--
@@ -67,7 +64,6 @@ theorem exists_least_of_bdd
   let ⟨b , Hb⟩ := Hbdd
   let ⟨lb , H⟩ := leastOfBdd b Hb Hinh
   exact ⟨lb , H⟩
-#align int.exists_least_of_bdd Int.exists_least_of_bdd
 
 theorem coe_leastOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ} (Hb : ∀ z : ℤ, P z → b ≤ z)
     (Hb' : ∀ z : ℤ, P z → b' ≤ z) (Hinh : ∃ z : ℤ, P z) :
@@ -75,7 +71,6 @@ theorem coe_leastOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ} (Hb 
   rcases leastOfBdd b Hb Hinh with ⟨n, hn, h2n⟩
   rcases leastOfBdd b' Hb' Hinh with ⟨n', hn', h2n'⟩
   exact le_antisymm (h2n _ hn') (h2n' _ hn)
-#align int.coe_least_of_bdd_eq Int.coe_leastOfBdd_eq
 
 /-- A computable version of `exists_greatest_of_bdd`: given a decidable predicate on the
 integers, with an explicit upper bound and a proof that it is somewhere true, return
@@ -88,7 +83,6 @@ def greatestOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb : ∀ z : �
     ⟨-elt, by rw [neg_neg]; exact Helt⟩
   let ⟨lb, Plb, al⟩ := leastOfBdd (-b) Hbdd' Hinh'
   ⟨-lb, Plb, fun z h => le_neg.1 <| al _ <| by rwa [neg_neg]⟩
-#align int.greatest_of_bdd Int.greatestOfBdd
 
 /--
     If `P : ℤ → Prop` is a predicate such that the set `{m : P m}` is bounded above and nonempty,
@@ -102,7 +96,6 @@ theorem exists_greatest_of_bdd
   let ⟨b, Hb⟩ := Hbdd
   let ⟨lb, H⟩ := greatestOfBdd b Hb Hinh
   exact ⟨lb, H⟩
-#align int.exists_greatest_of_bdd Int.exists_greatest_of_bdd
 
 theorem coe_greatestOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ}
     (Hb : ∀ z : ℤ, P z → z ≤ b) (Hb' : ∀ z : ℤ, P z → z ≤ b') (Hinh : ∃ z : ℤ, P z) :
@@ -110,6 +103,5 @@ theorem coe_greatestOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ}
   rcases greatestOfBdd b Hb Hinh with ⟨n, hn, h2n⟩
   rcases greatestOfBdd b' Hb' Hinh with ⟨n', hn', h2n'⟩
   exact le_antisymm (h2n' _ hn) (h2n _ hn')
-#align int.coe_greatest_of_bdd_eq Int.coe_greatestOfBdd_eq
 
 end Int
