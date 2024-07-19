@@ -10,8 +10,6 @@ import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Data.Nat.Cast.NeZero
 import Mathlib.Algebra.Order.Ring.Nat
 
-#align_import data.nat.cast.basic from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
-
 /-!
 # Cast of natural numbers: lemmas about bundled ordered semirings
 
@@ -33,7 +31,6 @@ variable [CovariantClass α α (· + ·) (· ≤ ·)] [ZeroLEOneClass α]
 @[simp]
 theorem cast_nonneg {α} [OrderedSemiring α] (n : ℕ) : 0 ≤ (n : α) :=
   cast_nonneg' n
-#align nat.cast_nonneg Nat.cast_nonneg
 
 /-- Specialisation of `Nat.ofNat_nonneg'`, which seems to be easier for Lean to use. -/
 -- See note [no_index around OfNat.ofNat]
@@ -45,12 +42,10 @@ theorem ofNat_nonneg {α} [OrderedSemiring α] (n : ℕ) [n.AtLeastTwo] :
 @[simp, norm_cast]
 theorem cast_min {α} [LinearOrderedSemiring α] {a b : ℕ} : ((min a b : ℕ) : α) = min (a : α) b :=
   (@mono_cast α _).map_min
-#align nat.cast_min Nat.cast_min
 
 @[simp, norm_cast]
 theorem cast_max {α} [LinearOrderedSemiring α] {a b : ℕ} : ((max a b : ℕ) : α) = max (a : α) b :=
   (@mono_cast α _).map_max
-#align nat.cast_max Nat.cast_max
 
 section Nontrivial
 
@@ -59,7 +54,6 @@ variable [NeZero (1 : α)]
 /-- Specialisation of `Nat.cast_pos'`, which seems to be easier for Lean to use. -/
 @[simp]
 theorem cast_pos {α} [OrderedSemiring α] [Nontrivial α] {n : ℕ} : (0 : α) < n ↔ 0 < n := cast_pos'
-#align nat.cast_pos Nat.cast_pos
 
 /-- See also `Nat.ofNat_pos`, specialised for an `OrderedSemiring`. -/
 -- See note [no_index around OfNat.ofNat]
@@ -88,12 +82,10 @@ theorem cast_tsub [CanonicallyOrderedCommSemiring α] [Sub α] [OrderedSub α]
     exact mono_cast h
   · rcases le_iff_exists_add'.mp h with ⟨m, rfl⟩
     rw [add_tsub_cancel_right, cast_add, add_tsub_cancel_right]
-#align nat.cast_tsub Nat.cast_tsub
 
 @[simp, norm_cast]
 theorem abs_cast [LinearOrderedRing α] (a : ℕ) : |(a : α)| = a :=
   abs_of_nonneg (cast_nonneg a)
-#align nat.abs_cast Nat.abs_cast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
@@ -102,4 +94,3 @@ theorem abs_ofNat [LinearOrderedRing α] (n : ℕ) [n.AtLeastTwo] :
   abs_cast n
 
 end Nat
-

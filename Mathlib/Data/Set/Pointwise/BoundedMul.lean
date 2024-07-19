@@ -25,7 +25,4 @@ open Pointwise
 theorem BddAbove.mul [OrderedCommMonoid α] {A B : Set α} (hA : BddAbove A) (hB : BddAbove B) :
     BddAbove (A * B) :=
   hA.image2 (fun _ _ _ h ↦ mul_le_mul_right' h _) (fun _ _ _ h ↦ mul_le_mul_left' h _) hB
-#align set.bdd_above_mul Set.BddAbove.mul
-#align set.bdd_above_add Set.BddAbove.add
 end Set
-

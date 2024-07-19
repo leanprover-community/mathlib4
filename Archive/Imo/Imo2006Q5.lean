@@ -6,8 +6,6 @@ Authors: Violeta Hernández Palacios
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Dynamics.PeriodicPts
 
-#align_import imo.imo2006_q5 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
-
 /-!
 # IMO 2006 Q5
 
@@ -51,7 +49,6 @@ theorem Int.natAbs_eq_of_chain_dvd {l : Cycle ℤ} {x y : ℤ} (hl : l.Chain (·
     (hy : y ∈ l) : x.natAbs = y.natAbs := by
   rw [Cycle.chain_iff_pairwise] at hl
   exact Int.natAbs_eq_of_dvd_dvd (hl x hx y hy) (hl y hy x hx)
-#align imo2006_q5.int.nat_abs_eq_of_chain_dvd Imo2006Q5.Int.natAbs_eq_of_chain_dvd
 
 theorem Int.add_eq_add_of_natAbs_eq_of_natAbs_eq {a b c d : ℤ} (hne : a ≠ b)
     (h₁ : (c - a).natAbs = (d - b).natAbs) (h₂ : (c - b).natAbs = (d - a).natAbs) :
@@ -61,7 +58,6 @@ theorem Int.add_eq_add_of_natAbs_eq_of_natAbs_eq {a b c d : ℤ} (hne : a ≠ b)
     · exact (hne <| by linarith).elim
     · linarith
   · linarith
-#align imo2006_q5.int.add_eq_add_of_nat_abs_eq_of_nat_abs_eq Imo2006Q5.Int.add_eq_add_of_natAbs_eq_of_natAbs_eq
 
 /-- The main lemma in the proof: if $P^k(t)=t$, then $P(P(t))=t$. -/
 theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
@@ -121,15 +117,12 @@ theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
     · rw [neg_sub, sub_right_inj] at hn'
       simp only [Function.iterate_succ_apply'] at hn'
       exact isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate ht hn'.symm
-#align imo2006_q5.polynomial.is_periodic_pt_eval_two Imo2006Q5.Polynomial.isPeriodicPt_eval_two
 
 theorem Polynomial.iterate_comp_sub_X_ne {P : Polynomial ℤ} (hP : 1 < P.natDegree) {k : ℕ}
     (hk : 0 < k) : P.comp^[k] X - X ≠ 0 := by
   rw [sub_ne_zero]
   apply_fun natDegree
   simpa using (one_lt_pow hP hk.ne').ne'
-set_option linter.uppercaseLean3 false in
-#align imo2006_q5.polynomial.iterate_comp_sub_X_ne Imo2006Q5.Polynomial.iterate_comp_sub_X_ne
 
 /-- We solve the problem for the specific case k = 2 first. -/
 theorem imo2006_q5' {P : Polynomial ℤ} (hP : 1 < P.natDegree) :
@@ -188,7 +181,6 @@ theorem imo2006_q5' {P : Polynomial ℤ} (hP : 1 < P.natDegree) :
     · apply sub_dvd_eval_sub
     · rw [← ht]; apply sub_dvd_eval_sub
     · rw [← ha]; apply sub_dvd_eval_sub
-#align imo2006_q5.imo2006_q5' Imo2006Q5.imo2006_q5'
 
 end Imo2006Q5
 
@@ -205,4 +197,3 @@ theorem imo2006_q5 {P : Polynomial ℤ} (hP : 1 < P.natDegree) {k : ℕ} (hk : 0
   rw [Multiset.mem_toFinset, mem_roots hP', IsRoot.def, eval_sub, eval_comp, eval_X,
     sub_eq_zero]
   exact Polynomial.isPeriodicPt_eval_two ⟨k, hk, ht⟩
-#align imo2006_q5 imo2006_q5

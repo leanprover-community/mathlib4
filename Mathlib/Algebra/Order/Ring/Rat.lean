@@ -6,8 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Ring.Rat
 
-#align_import data.rat.order from "leanprover-community/mathlib"@"a59dad53320b73ef180174aae867addd707ef00e"
-
 /-!
 # The rational numbers form a linear ordered field
 
@@ -36,7 +34,6 @@ variable {a b c p q : ℚ}
   rw [mk'_eq_divInt, divInt_eq_iff hb.ne' (mod_cast hd)] at hab
   rw [← num_nonneg, ← mul_nonneg_iff_of_pos_right hb, ← hab,
     mul_nonneg_iff_of_pos_right (mod_cast Nat.pos_of_ne_zero hd)]
-#align rat.mk_nonneg Rat.divInt_nonneg_iff_of_pos_right
 
 @[simp] lemma divInt_nonneg {a b : ℤ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a /. b := by
   obtain rfl | hb := hb.eq_or_lt
@@ -76,7 +73,6 @@ protected lemma add_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a + b :=
       Nat.cast_eq_zero, not_false_iff]
     intro n₁0 n₂0
     apply add_nonneg <;> apply mul_nonneg <;> · first |assumption|apply Int.ofNat_zero_le
-#align rat.nonneg_add Rat.add_nonneg
 
 protected lemma mul_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a * b :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
@@ -86,8 +82,6 @@ protected lemma mul_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a * b :=
       simp only [d₁0, d₂0, mul_pos, divInt_nonneg_iff_of_pos_right,
         divInt_mul_divInt _ _ d₁0.ne' d₂0.ne']
       apply mul_nonneg
-#align rat.nonneg_mul Rat.mul_nonneg
-#align rat.mul_nonneg Rat.mul_nonneg
 
 -- Porting note (#11215): TODO can this be shortened?
 protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
@@ -134,11 +128,9 @@ protected lemma divInt_le_divInt {a b c d : ℤ} (b0 : 0 < b) (d0 : 0 < d) :
     a /. b ≤ c /. d ↔ a * d ≤ c * b := by
   rw [Rat.le_iff_sub_nonneg, ← sub_nonneg (α := ℤ)]
   simp [sub_eq_add_neg, ne_of_gt b0, ne_of_gt d0, mul_pos d0 b0]
-#align rat.le_def Rat.divInt_le_divInt
 
 protected lemma le_total : a ≤ b ∨ b ≤ a := by
   simpa only [← Rat.le_iff_sub_nonneg, neg_sub] using Rat.nonneg_total (b - a)
-#align rat.le_total Rat.le_total
 
 protected theorem not_le {a b : ℚ} : ¬a ≤ b ↔ b < a := (Bool.not_eq_false _).to_iff
 
@@ -162,9 +154,6 @@ instance linearOrder : LinearOrder ℚ where
   decidableLE := inferInstance
   decidableLT := inferInstance
   lt_iff_le_not_le _ _ := by rw [← Rat.not_le, and_iff_right_of_imp Rat.le_total.resolve_left]
-#align rat.le_refl le_refl
-#align rat.le_antisymm le_antisymm
-#align rat.le_trans le_trans
 
 /-!
 ### Extra instances to short-circuit type class resolution
@@ -187,7 +176,6 @@ protected lemma le_def : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := by
   rw [← num_divInt_den q, ← num_divInt_den p]
   conv_rhs => simp only [num_divInt_den]
   exact Rat.divInt_le_divInt (mod_cast p.pos) (mod_cast q.pos)
-#align rat.le_def' Rat.le_def
 
 protected lemma lt_def : p < q ↔ p.num * q.den < q.num * p.den := by
   rw [lt_iff_le_and_ne, Rat.le_def]
@@ -197,13 +185,9 @@ protected lemma lt_def : p < q ↔ p.num * q.den < q.num * p.den := by
     · have tmp := lt_iff_le_and_ne.mp h
       exact ⟨tmp.left, this.mpr tmp.right⟩
   exact not_iff_not.mpr eq_iff_mul_eq_mul
-#align rat.lt_def Rat.lt_def
-
-#noalign rat.nonneg_iff_zero_le
 
 protected theorem add_le_add_left {a b c : ℚ} : c + a ≤ c + b ↔ a ≤ b := by
   rw [Rat.le_iff_sub_nonneg, add_sub_add_left_eq_sub, ← Rat.le_iff_sub_nonneg]
-#align rat.add_le_add_left Rat.add_le_add_left
 
 instance instLinearOrderedCommRing : LinearOrderedCommRing ℚ where
   __ := Rat.linearOrder
@@ -231,7 +215,6 @@ instance : OrderedAddCommMonoid ℚ := by infer_instance
 
 @[simp] lemma num_nonpos {a : ℚ} : a.num ≤ 0 ↔ a ≤ 0 := by simpa using @num_nonneg (-a)
 @[simp] lemma num_pos {a : ℚ} : 0 < a.num ↔ 0 < a := lt_iff_lt_of_le_iff_le num_nonpos
-#align rat.num_pos_iff_pos Rat.num_pos
 @[simp] lemma num_neg {a : ℚ} : a.num < 0 ↔ a < 0 := lt_iff_lt_of_le_iff_le num_nonneg
 
 @[deprecated (since := "2024-02-16")] alias num_nonneg_iff_zero_le := num_nonneg
@@ -244,10 +227,8 @@ theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d
   · simp [div_def', Rat.divInt_le_divInt b_pos d_pos]
   · apply not_congr
     simp [div_def', Rat.divInt_le_divInt d_pos b_pos]
-#align rat.div_lt_div_iff_mul_lt_mul Rat.div_lt_div_iff_mul_lt_mul
 
 theorem lt_one_iff_num_lt_denom {q : ℚ} : q < 1 ↔ q.num < q.den := by simp [Rat.lt_def]
-#align rat.lt_one_iff_num_lt_denom Rat.lt_one_iff_num_lt_denom
 
 theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
   rcases le_total q 0 with hq | hq
@@ -259,6 +240,5 @@ theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
     rw [← num_divInt_den q, ← zero_divInt, Rat.divInt_le_divInt zero_lt_one (mod_cast q.pos),
       mul_one, zero_mul] at hq
     rw [Int.natAbs_of_nonneg hq, num_divInt_den]
-#align rat.abs_def Rat.abs_def
 
 end Rat

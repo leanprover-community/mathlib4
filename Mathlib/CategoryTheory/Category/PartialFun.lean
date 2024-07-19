@@ -6,8 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.CategoryTheory.Category.Pointed
 import Mathlib.Data.PFun
 
-#align_import category_theory.category.PartialFun from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
-
 /-!
 # The category of types with partial functions
 
@@ -37,8 +35,6 @@ variable {α β : Type*}
 /-- The category of types equipped with partial functions. -/
 def PartialFun : Type _ :=
   Type*
-set_option linter.uppercaseLean3 false
-#align PartialFun PartialFun
 
 namespace PartialFun
 
@@ -49,10 +45,8 @@ instance : CoeSort PartialFun Type* :=
 /-- Turns a type into a `PartialFun`. -/
 def of : Type* → PartialFun :=
   id
-#align PartialFun.of PartialFun.of
 
 -- Porting note: removed this lemma which is useless because of the expansion of coercions
-#noalign PartialFun.coe_of
 
 instance : Inhabited PartialFun :=
   ⟨Type*⟩
@@ -64,7 +58,6 @@ instance largeCategory : LargeCategory.{u} PartialFun where
   id_comp := @PFun.comp_id
   comp_id := @PFun.id_comp
   assoc _ _ _ := (PFun.comp_assoc _ _ _).symm
-#align PartialFun.large_category PartialFun.largeCategory
 
 /-- Constructs a partial function isomorphism between types from an equivalence between them. -/
 @[simps]
@@ -77,7 +70,6 @@ def Iso.mk {α β : PartialFun.{u}} (e : α ≃ β) : α ≅ β where
   inv_hom_id := (PFun.coe_comp _ _).symm.trans (by
     simp only [Equiv.self_comp_symm, PFun.coe_id]
     rfl)
-#align PartialFun.iso.mk PartialFun.Iso.mk
 
 end PartialFun
 
@@ -86,7 +78,6 @@ def typeToPartialFun : Type u ⥤ PartialFun where
   obj := id
   map := @PFun.lift
   map_comp _ _ := PFun.coe_comp _ _
-#align Type_to_PartialFun typeToPartialFun
 
 instance : typeToPartialFun.Faithful where
   map_injective {_ _} := PFun.lift_injective
@@ -108,7 +99,6 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
       exact ⟨⟨fun h₀ => h₁ ((congr_arg g.toFun h₀).trans g.map_point), h₁⟩, h₂⟩
     · rintro ⟨_, _, _⟩
       exact ⟨_, rfl⟩
-#align Pointed_to_PartialFun pointedToPartialFun
 
 /-- The functor which maps undefined values to a new point. This makes the maps total and creates
 pointed types. This is the noncomputable part of the equivalence `PartialFunEquivPointed`. It can't
@@ -125,7 +115,6 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
       map_comp := fun f g => Pointed.Hom.ext _ _ <| funext fun o => Option.recOn o rfl fun a => by
         dsimp [CategoryStruct.comp]
         rw [Part.bind_toOption g (f a), Option.elim'_eq_elim] }
-#align PartialFun_to_Pointed partialFunToPointed
 
 /-- The equivalence induced by `PartialFunToPointed` and `PointedToPartialFun`.
 `Part.equivOption` made functorial. -/
@@ -163,7 +152,6 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed :=
         obtain _ | ⟨a, ha⟩ := a
         · exact f.map_point.symm
         simp_all [Option.casesOn'_eq_elim, Part.elim_toOption]
-#align PartialFun_equiv_Pointed partialFunEquivPointed
 
 /-- Forgetting that maps are total and making them total again by adding a point is the same as just
 adding a point. -/
@@ -181,4 +169,3 @@ noncomputable def typeToPartialFunIsoPartialFunToPointed :
       funext fun a => Option.recOn a rfl fun a => by
         convert Part.some_toOption _
         simpa using (Part.get_eq_iff_mem (by trivial)).mp rfl
-#align Type_to_PartialFun_iso_PartialFun_to_Pointed typeToPartialFunIsoPartialFunToPointed

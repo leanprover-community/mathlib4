@@ -7,8 +7,6 @@ import Mathlib.Algebra.Polynomial.Taylor
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.AdicCompletion.Basic
 
-#align_import ring_theory.henselian from "leanprover-community/mathlib"@"d1accf4f9cddb3666c6e8e4da0ac2d19c4ed73f0"
-
 /-!
 # Henselian rings
 
@@ -80,7 +78,6 @@ theorem isLocalRingHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
   specialize h1 1
   simp? at h1 says simp only [mul_one, sub_add_cancel, IsUnit.mul_iff] at h1
   exact h1.1
-#align is_local_ring_hom_of_le_jacobson_bot isLocalRingHom_of_le_jacobson_bot
 
 /-- A ring `R` is *Henselian* at an ideal `I` if the following condition holds:
 for every polynomial `f` over `R`, with a *simple* root `a₀` over the quotient ring `R/I`,
@@ -95,7 +92,6 @@ class HenselianRing (R : Type*) [CommRing R] (I : Ideal R) : Prop where
   is_henselian :
     ∀ (f : R[X]) (_ : f.Monic) (a₀ : R) (_ : f.eval a₀ ∈ I)
       (_ : IsUnit (Ideal.Quotient.mk I (f.derivative.eval a₀))), ∃ a : R, f.IsRoot a ∧ a - a₀ ∈ I
-#align henselian_ring HenselianRing
 
 /-- A local ring `R` is *Henselian* if the following condition holds:
 for every polynomial `f` over `R`, with a *simple* root `a₀` over the residue field,
@@ -109,14 +105,12 @@ class HenselianLocalRing (R : Type*) [CommRing R] extends LocalRing R : Prop whe
   is_henselian :
     ∀ (f : R[X]) (_ : f.Monic) (a₀ : R) (_ : f.eval a₀ ∈ maximalIdeal R)
       (_ : IsUnit (f.derivative.eval a₀)), ∃ a : R, f.IsRoot a ∧ a - a₀ ∈ maximalIdeal R
-#align henselian_local_ring HenselianLocalRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) Field.henselian (K : Type*) [Field K] : HenselianLocalRing K where
   is_henselian f _ a₀ h₁ _ := by
     simp only [(maximalIdeal K).eq_bot_of_prime, Ideal.mem_bot] at h₁ ⊢
     exact ⟨a₀, h₁, sub_self _⟩
-#align field.henselian Field.henselian
 
 theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
     TFAE
@@ -153,7 +147,6 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
     refine ⟨a, ha₁, ?_⟩
     rwa [φ.map_sub, sub_eq_zero] at ha₂
   tfae_finish
-#align henselian_local_ring.tfae HenselianLocalRing.TFAE
 
 instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
     HenselianRing R (maximalIdeal R) where
@@ -268,4 +261,3 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         refine ha.symm.trans (SModEq.rfl.add ?_)
         rw [SModEq.zero, Ideal.neg_mem_iff]
         exact Ideal.mul_mem_right _ _ h₁
-#align is_adic_complete.henselian_ring IsAdicComplete.henselianRing

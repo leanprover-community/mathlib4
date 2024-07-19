@@ -7,8 +7,6 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.DirectSum.Ring
 
-#align_import algebra.direct_sum.algebra from "leanprover-community/mathlib"@"e5ba338e9ae4e7feae5027fd5198850971f0fa6a"
-
 /-! # Additively-graded algebra structures on `⨁ i, A i`
 
 This file provides `R`-algebra structures on external direct sums of `R`-modules.
@@ -50,7 +48,6 @@ class GAlgebra where
     ∀ r s, GradedMonoid.mk _ (toFun (r * s)) = .mk _ (GradedMonoid.GMul.mul (toFun r) (toFun s))
   commutes : ∀ (r) (x : GradedMonoid A), .mk _ (toFun r) * x = x * .mk _ (toFun r)
   smul_def : ∀ (r) (x : GradedMonoid A), r • x = .mk _ (toFun r) * x
-#align direct_sum.galgebra DirectSum.GAlgebra
 
 end
 
@@ -96,12 +93,10 @@ instance : Algebra R (⨁ i, A i) where
 theorem algebraMap_apply (r : R) :
     algebraMap R (⨁ i, A i) r = DirectSum.of A 0 (GAlgebra.toFun r) :=
   rfl
-#align direct_sum.algebra_map_apply DirectSum.algebraMap_apply
 
 theorem algebraMap_toAddMonoid_hom :
     ↑(algebraMap R (⨁ i, A i)) = (DirectSum.of A 0).comp (GAlgebra.toFun : R →+ A 0) :=
   rfl
-#align direct_sum.algebra_map_to_add_monoid_hom DirectSum.algebraMap_toAddMonoid_hom
 
 /-- A family of `LinearMap`s preserving `DirectSum.GOne.one` and `DirectSum.GMul.mul`
 describes an `AlgHom` on `⨁ i, A i`. This is a stronger version of `DirectSum.toSemiring`.
@@ -120,7 +115,6 @@ def toAlgebra (f : ∀ i, A i →ₗ[R] B) (hone : f _ GradedMonoid.GOne.one = 1
       show toModule R _ _ f (algebraMap R _ r) = _
       rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, map_smul, one_def,
         ← lof_eq_of R, toModule_lof, hone] }
-#align direct_sum.to_algebra DirectSum.toAlgebra
 
 /-- Two `AlgHom`s out of a direct sum are equal if they agree on the generators.
 
@@ -129,11 +123,9 @@ See note [partially-applied ext lemmas]. -/
 theorem algHom_ext' ⦃f g : (⨁ i, A i) →ₐ[R] B⦄
     (h : ∀ i, f.toLinearMap.comp (lof _ _ A i) = g.toLinearMap.comp (lof _ _ A i)) : f = g :=
   AlgHom.toLinearMap_injective <| DirectSum.linearMap_ext _ h
-#align direct_sum.alg_hom_ext' DirectSum.algHom_ext'
 
 theorem algHom_ext ⦃f g : (⨁ i, A i) →ₐ[R] B⦄ (h : ∀ i x, f (of A i x) = g (of A i x)) : f = g :=
   algHom_ext' R A fun i => LinearMap.ext <| h i
-#align direct_sum.alg_hom_ext DirectSum.algHom_ext
 
 /-- The piecewise multiplication from the `Mul` instance, as a bundled linear homomorphism.
 
@@ -166,4 +158,3 @@ instance Algebra.directSumGAlgebra {R A : Type*} [DecidableEq ι] [AddMonoid ι]
   commutes := fun _ ⟨_, _⟩ =>
     Sigma.ext ((zero_add _).trans (add_zero _).symm) (heq_of_eq <| Algebra.commutes _ _)
   smul_def := fun _ ⟨_, _⟩ => Sigma.ext (zero_add _).symm (heq_of_eq <| Algebra.smul_def _ _)
-#align algebra.direct_sum_galgebra Algebra.directSumGAlgebra
