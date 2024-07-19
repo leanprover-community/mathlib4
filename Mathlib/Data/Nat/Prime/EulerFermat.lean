@@ -31,3 +31,7 @@ theorem not_all_pow_pow_add_prime : ¬ ∀ n : ℕ, Nat.Prime (2 ^ (2 ^ n) + 1) 
   use 5
   have : 641 * 6700417 = 2 ^ 2 ^ 5 + 1 := by norm_num
   apply Nat.not_prime_mul' this <;> norm_num
+
+theorem not_prime_fermat_five : ¬ Nat.Prime (2 ^ (2 ^ 5) + 1) := by
+  have : 641 * 6700417 = 2 ^ 2 ^ 5 + 1 := by norm_num
+  apply Nat.not_prime_mul' this <;> norm_num
