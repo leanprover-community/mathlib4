@@ -122,12 +122,6 @@ notation "⌊" a "⌋₊" => Nat.floor a
 @[inherit_doc]
 notation "⌈" a "⌉₊" => Nat.ceil a
 
-end OrderedSemiring
-
-section LinearOrderedSemiring
-
-variable [LinearOrderedSemiring α] [FloorSemiring α] {a : α} {n : ℕ}
-
 theorem le_floor_iff (ha : 0 ≤ a) : n ≤ ⌊a⌋₊ ↔ (n : α) ≤ a :=
   FloorSemiring.gc_floor ha
 #align nat.le_floor_iff Nat.le_floor_iff
@@ -135,6 +129,21 @@ theorem le_floor_iff (ha : 0 ≤ a) : n ≤ ⌊a⌋₊ ↔ (n : α) ≤ a :=
 theorem le_floor (h : (n : α) ≤ a) : n ≤ ⌊a⌋₊ :=
   (le_floor_iff <| n.cast_nonneg.trans h).2 h
 #align nat.le_floor Nat.le_floor
+
+theorem gc_ceil_coe : GaloisConnection (ceil : α → ℕ) (↑) :=
+  FloorSemiring.gc_ceil
+#align nat.gc_ceil_coe Nat.gc_ceil_coe
+
+@[simp]
+theorem ceil_le : ⌈a⌉₊ ≤ n ↔ a ≤ n :=
+  gc_ceil_coe _ _
+#align nat.ceil_le Nat.ceil_le
+
+end OrderedSemiring
+
+section LinearOrderedSemiring
+
+variable [LinearOrderedSemiring α] [FloorSemiring α] {a : α} {n : ℕ}
 
 theorem floor_lt (ha : 0 ≤ a) : ⌊a⌋₊ < n ↔ a < n :=
   lt_iff_lt_of_le_iff_le <| le_floor_iff ha
@@ -276,16 +285,6 @@ theorem preimage_floor_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
 #align nat.preimage_floor_of_ne_zero Nat.preimage_floor_of_ne_zero
 
 /-! #### Ceil -/
-
-
-theorem gc_ceil_coe : GaloisConnection (ceil : α → ℕ) (↑) :=
-  FloorSemiring.gc_ceil
-#align nat.gc_ceil_coe Nat.gc_ceil_coe
-
-@[simp]
-theorem ceil_le : ⌈a⌉₊ ≤ n ↔ a ≤ n :=
-  gc_ceil_coe _ _
-#align nat.ceil_le Nat.ceil_le
 
 theorem lt_ceil : n < ⌈a⌉₊ ↔ (n : α) < a :=
   lt_iff_lt_of_le_iff_le ceil_le
