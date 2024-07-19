@@ -145,8 +145,9 @@ syntax "#min_imports in" term : command
 elab_rules : command
   | `(#min_imports in $cmd:command)=> do
     -- In case `cmd` is a "nameless" `instance`, we produce its name.
-    -- It is important that this is collected *before* adding the declaration to the environment.
-    -- it is important that this is collected *before* adding the declaration to the environment
+    -- It is important that this is collected *before* adding the declaration to the environment,
+    -- since `getId` probes the name-generator using the current environment: if the declaration
+    -- were already present, `getId` would return a new name that does not clash with it!
     let id ← getId cmd
     Elab.Command.elabCommand cmd <|> pure ()
     minImpsCore cmd id
