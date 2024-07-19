@@ -28,7 +28,6 @@ variable {α : Type*} {β : α → Type*}
 
 open OmegaCompletePartialOrder
 
-/- Porting note: in `#align`s, mathport is putting some `fix`es where `Fix`es should be. -/
 /-- Intuitively, a fixed point operator `fix` is lawful if it satisfies `fix f = f (fix f)` for all
 `f`, but this is inconsistent / uninteresting in most cases due to the existence of "exotic"
 functions `f`, such as the function that is defined iff its argument is not, familiar from the
