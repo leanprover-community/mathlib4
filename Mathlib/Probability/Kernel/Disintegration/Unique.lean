@@ -47,9 +47,9 @@ set. -/
 theorem eq_condKernel_of_measure_eq_compProd' (κ : kernel α Ω) [IsSFiniteKernel κ]
     (hκ : ρ = ρ.fst ⊗ₘ κ) {s : Set Ω} (hs : MeasurableSet s) :
     ∀ᵐ x ∂ρ.fst, κ x s = ρ.condKernel x s := by
-  refine ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite
+  refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite
     (kernel.measurable_coe κ hs) (kernel.measurable_coe ρ.condKernel hs) (fun t ht _ ↦ ?_)
-  conv_rhs => rw [Measure.set_lintegral_condKernel_eq_measure_prod ht hs, hκ]
+  conv_rhs => rw [Measure.setLIntegral_condKernel_eq_measure_prod ht hs, hκ]
   simp only [Measure.compProd_apply (ht.prod hs), Set.mem_prod, ← lintegral_indicator _ ht]
   congr with x
   by_cases hx : x ∈ t

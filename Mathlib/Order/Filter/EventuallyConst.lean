@@ -161,3 +161,5 @@ lemma eventuallyConst_atTop_nat {f : ℕ → α} :
   · induction m, hm using Nat.le_induction with
     | base => rfl
     | succ m hm ihm => exact (h m hm).trans ihm
+
+end Filter

@@ -106,7 +106,7 @@ class PreservesEffectiveEpiFamilies (F : C ⥤ D) : Prop where
   preserves : ∀ {α : Type u} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π],
     EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))
 
-instance map_effectiveEpiFamily (F : C ⥤ D) [PreservesEffectiveEpiFamilies.{_, _, u} F]
+instance map_effectiveEpiFamily (F : C ⥤ D) [PreservesEffectiveEpiFamilies.{u} F]
     {α : Type u} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π] :
     EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a)) :=
   PreservesEffectiveEpiFamilies.preserves X π
@@ -128,7 +128,7 @@ instance map_finite_effectiveEpiFamily (F : C ⥤ D) [F.PreservesFiniteEffective
     EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a)) :=
   PreservesFiniteEffectiveEpiFamilies.preserves X π
 
-instance (F : C ⥤ D) [PreservesEffectiveEpiFamilies.{_, _, 0} F] :
+instance (F : C ⥤ D) [PreservesEffectiveEpiFamilies.{0} F] :
     PreservesFiniteEffectiveEpiFamilies F where
   preserves _ _ := inferInstance
 
@@ -168,7 +168,7 @@ class ReflectsEffectiveEpiFamilies (F : C ⥤ D) : Prop where
     EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a)) →
     EffectiveEpiFamily X π
 
-lemma effectiveEpiFamily_of_map (F : C ⥤ D) [ReflectsEffectiveEpiFamilies.{_, _, u} F]
+lemma effectiveEpiFamily_of_map (F : C ⥤ D) [ReflectsEffectiveEpiFamilies.{u} F]
     {α : Type u} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B))
     (h : EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))) :
     EffectiveEpiFamily X π :=
@@ -192,7 +192,7 @@ lemma finite_effectiveEpiFamily_of_map (F : C ⥤ D) [ReflectsFiniteEffectiveEpi
     EffectiveEpiFamily X π :=
   ReflectsFiniteEffectiveEpiFamilies.reflects X π h
 
-instance (F : C ⥤ D) [ReflectsEffectiveEpiFamilies.{_, _, 0} F] :
+instance (F : C ⥤ D) [ReflectsEffectiveEpiFamilies.{0} F] :
     ReflectsFiniteEffectiveEpiFamilies F where
   reflects _ _ h := by
     have := F.effectiveEpiFamily_of_map _ _ h
@@ -219,3 +219,5 @@ instance (F : C ⥤ D) [IsEquivalence F] : F.ReflectsEffectiveEpiFamilies where
 end Reflects
 
 end Functor
+
+end CategoryTheory
