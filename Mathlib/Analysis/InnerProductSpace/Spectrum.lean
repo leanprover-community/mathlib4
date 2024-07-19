@@ -514,82 +514,6 @@ theorem ultra_silly_lemma (i : n) [Nonempty n] (γ : {x // x ≠ i} → 𝕜) :
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) =
     (⨅ (j : {x // x ≠ i}), eigenspace (T j) (γ j)) := rfl
 
-theorem indexing_nonsense0_general (i : n) [Nontrivial n] {𝕜 : Type*} [RCLike 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] (P : n × (n → 𝕜) → Submodule 𝕜 E) (γ : n → 𝕜) :
-    ⨅ (j : n), P (j, γ) = P (i, γ) ⊓ ⨅ (k : {x // i ≠ x}), P (k, γ) := by
-  ext v
-  simp [iInf, sInf] at *
-  constructor
-  · intro h
-    constructor
-    · exact h i
-    · exact fun i_1 _ ↦ h i_1
-  · intro h k
-    by_cases H : k = i
-    · rw [H]
-      exact h.1
-    · have F := h.2
-      simp only [ne_eq, Submodule.iInf_coe, Set.mem_iInter, SetLike.mem_coe, Subtype.forall] at F
-      exact F k fun a ↦ H (_root_.id (Eq.symm a))
-
-theorem indexing_nonsense0_general_2 (i : n) [Nontrivial n] {𝕜 : Type*} [Semiring 𝕜] {E : Type*}
-    [AddCommMonoid E] [Module 𝕜 E] (P : n × (n → 𝕜) → Submodule 𝕜 E) (γ : n → 𝕜) :
-    ⨅ (j : n), P (j, γ) = P (i, γ) ⊓ ⨅ (k : {x // i ≠ x}), P (k, γ) := by
-  ext v
-  simp [iInf, sInf] at *
-  constructor
-  · intro h
-    constructor
-    · exact h i
-    · exact fun i_1 _ ↦ h i_1
-  · intro h k
-    by_cases H : k = i
-    · rw [H]
-      exact h.1
-    · have F := h.2
-      simp only [ne_eq, Submodule.iInf_coe, Set.mem_iInter, SetLike.mem_coe, Subtype.forall] at F
-      exact F k fun a ↦ H (_root_.id (Eq.symm a))
-
-theorem indexing_nonsense0_general' {α : Type*} {β : Type*} (P : n × (n → α) → Set β) (i : n)
-    [Nontrivial n] (γ : n → α) :
-    ⨅ (j : n), P (j, γ) = P (i, γ) ⊓ ⨅ (k : {x // x ≠ i}), P (k, γ) := by
-  ext v
-  simp [iInf, sInf] at *
-  constructor
-  · intro h
-    constructor
-    · exact h i
-    · exact fun i_1 _ ↦ h i_1
-  · intro h k
-    by_cases H : k = i
-    · rw [H]
-      exact h.1
-    · have F := h.2
-      simp only [ne_eq, Submodule.iInf_coe, Set.mem_iInter, SetLike.mem_coe, Subtype.forall] at F
-      exact F k fun a ↦ H (_root_.id a)
-
-#find_home! indexing_nonsense0_general'
-
-theorem indexing_nonsense0 (i : n) [Nontrivial n] (γ : n → 𝕜) :
-     ⨅ (j : n), eigenspace (T j) (γ j) = (eigenspace (T i) (γ i)) ⊓
-     ⨅ (j : {x // x ≠ i}), eigenspace (T j) (γ j) := by
-  ext v
-  constructor
-  · intro h
-    simp [iInf, sInf] at *
-    constructor
-    · exact h i
-    · exact fun i_1 _ ↦ h i_1
-  · intro h
-    simp [iInf, sInf]
-    intro k
-    by_cases H : k = i
-    · rw [H]
-      exact h.1
-    · have F := h.2
-      simp only [ne_eq, Submodule.iInf_coe, Set.mem_iInter, SetLike.mem_coe, Subtype.forall] at F
-      exact F k fun a ↦ H (_root_.id a)
-
 variable {α β γ : Type*} [DecidableEq α] [CompleteLattice γ] (g : β → γ) (i : α)
 
 local notation "α'" => {y // y ≠ i}
@@ -614,15 +538,6 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
     = (⨆ (γ : {x // x ≠ i} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))))) := by
   apply basic
-
-  --rw [← (Equiv.funSplitAt i 𝕜).symm.iSup_comp, iSup_prod, iSup_comm]
-  --congr! with γ μ
-  --rw[iInf_split_single _ i]
-  --simp only [ne_eq, Equiv.funSplitAt_symm_apply, ↓reduceDIte]
-  --rw [iInf_subtype]
-  --congr! with x hx
-  --split_ifs
-  --rfl
 
 theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // x ≠ i} → 𝕜) :
     ⨆ μ, Submodule.map (⨅ (j: {x // x ≠ i}), eigenspace (T ↑j) (γ j)).subtype
@@ -710,47 +625,6 @@ theorem direct_sum_isInternal_simultaneous : DirectSum.IsInternal (fun (α : n �
     · exact orthogonalFamily_iInf_eigenspaces T hT
 
 end Simultaneous
-
-section ultra_generalized_PR
-
-universe u
-
-variable (n : Type u)(β : Type*)[Fintype n](γ : n → β )(α : Type*)[ConditionallyCompleteLattice α](P : β → α)
-
-theorem indexing_nonsense0_general (i : n) (β : Type*) (α : Type*) [CompleteLattice α]
-    (P : β → α) [Nontrivial n] (γ : n → β) : ⨅ (j : n), P (γ j) = P (γ i) ⊓ ⨅ (k : {x // i ≠ x}),
-    P (γ k) := by sorry
-
-theorem nonempty_iSup_eq_ssup_element_iSup_subtype(i: n)(P : β → α): (⨆ (γ : n → β), (⨅ (j : n), P (γ j)))
-    = (⨆ (ζ : { x // i ≠ x} → β ), (⨆ (μ : β), P (μ) ⊓ (⨅ (k : {x // i ≠ x}), P (ζ k)))) := by sorry
-
-end ultra_generalized_PR
-
-section specialized_proof
-universe u1
-variable {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable (n : Type u1)(i : n)[Fintype n](P : 𝕜  → Submodule 𝕜 E)
-
-theorem indexing_nonsense0_general' (i : n) [Nontrivial n] (P : 𝕜 → Submodule 𝕜 E) (γ : n → 𝕜) :
-    ⨅ (j : n), P (γ j) = P (γ i) ⊓ ⨅ (k : {x // i ≠ x}), P (γ k) := by
-  ext v
-  simp [iInf, sInf] at *
-  constructor
-  · intro h
-    constructor
-    · exact h i
-    · exact fun i_1 _ ↦ h i_1
-  · intro h
-    intro k
-    by_cases H : k = i
-    · rw [H]
-      exact h.1
-    · have F := h.2
-      simp only [ne_eq, Submodule.iInf_coe, Set.mem_iInter, SetLike.mem_coe, Subtype.forall] at F
-      exact F k fun a ↦ H (_root_.id (Eq.symm a))
-
-
-end specialized_proof
 
 end IsSymmetric
 
