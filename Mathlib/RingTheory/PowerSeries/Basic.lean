@@ -3,10 +3,12 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.MvPowerSeries.Basic
+import Mathlib.Tactic.MoveAdd
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
@@ -690,18 +692,35 @@ lemma coeff_one_mul (φ ψ : R⟦X⟧) : coeff R 1 (φ * ψ) =
     mul_comm, add_comm]
   norm_num
 
-/-- First coefficient of the `n`-th power of a power series with constant coefficient 1. -/
-lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) (hC : constantCoeff R φ = 1) :
-    coeff R 1 (φ ^ n) = n * coeff R 1 φ := by
+/-- First coefficient of the `n`-th power of a power series. -/
+lemma coeff_one_pow (n : ℕ) (hn : 1 ≤ n) (φ : R⟦X⟧) :
+    coeff R 1 (φ ^ n) = n * coeff R 1 φ * (constantCoeff R φ) ^ (n - 1) := by
   induction n with
-  | zero => simp only [pow_zero, coeff_one, one_ne_zero, ↓reduceIte, Nat.cast_zero, zero_mul]
+  | zero => by_contra; linarith
   | succ n' ih =>
       have h₁ (m : ℕ) : φ ^ (m + 1) = φ ^ m * φ := by exact rfl
       have h₂ : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
       rw [h₁, coeff_mul, h₂, Finset.sum_insert, Finset.sum_singleton]
-      simp only [coeff_zero_eq_constantCoeff, map_pow, Nat.cast_add, Nat.cast_one,
-        ih, hC, one_pow, one_mul, mul_one, ← one_add_mul, add_comm]
-      decide
+      · simp only [coeff_zero_eq_constantCoeff, map_pow, Nat.cast_add, Nat.cast_one,
+          add_tsub_cancel_right]
+        have h₀ : n' = 0 ∨ 1 ≤ n' := by omega
+        rcases h₀ with h' | h'
+        · by_contra h''
+          rw [h'] at h''
+          simp only [pow_zero, one_mul, coeff_one, one_ne_zero, ↓reduceIte, zero_mul, add_zero,
+            CharP.cast_eq_zero, zero_add, mul_one, not_true_eq_false] at h''
+          norm_num at h''
+        · rw [ih]
+          conv => lhs; arg 2; rw [mul_comm, ← mul_assoc]
+          move_mul [← (constantCoeff R) φ ^ (n' - 1)]
+          conv => enter [1, 2, 1, 1, 2]; rw [← pow_one (a := constantCoeff R φ)]
+          rw [← pow_add (a := constantCoeff R φ)]
+          conv => enter [1, 2, 1, 1]; rw [Nat.sub_add_cancel h']
+          conv => enter [1, 2, 1]; rw [mul_comm]
+          rw [mul_assoc, ← one_add_mul, add_comm, mul_assoc]
+          conv => enter [1, 2]; rw [mul_comm]
+          exact h'
+      · decide
 
 end CommSemiring
 
