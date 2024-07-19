@@ -462,7 +462,7 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
       simp only [s, f, Preimage, Embedding.coeFn_mk, Prod.lex_def, typein_lt_typein,
         typein_inj, mem_setOf_eq] at h
       exact max_le_iff.1 (le_iff_lt_or_eq.2 <| h.imp_right And.left)
-    suffices H : (insert (g p) { x | r x (g p) } : Set α) ≃ Sum { x | r x (g p) } PUnit from
+    suffices H : (insert (g p) { x | r x (g p) } : Set α) ≃ { x | r x (g p) } ⊕ PUnit from
       ⟨(Set.embeddingOfSubset _ _ this).trans
         ((Equiv.Set.prod _ _).trans (H.prodCongr H)).toEmbedding⟩
     refine (Equiv.Set.insert ?_).trans ((Equiv.refl _).sumCongr punitEquivPUnit)
@@ -1150,14 +1150,14 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
 
 theorem mk_bounded_set_le (α : Type u) (c : Cardinal) :
     #{ t : Set α // #t ≤ c } ≤ max #α ℵ₀ ^ c := by
-  trans #{ t : Set (Sum (ULift.{u} ℕ) α) // #t ≤ c }
+  trans #{ t : Set ((ULift.{u} ℕ) ⊕ α) // #t ≤ c }
   · refine ⟨Embedding.subtypeMap ?_ ?_⟩
     · apply Embedding.image
       use Sum.inr
       apply Sum.inr.inj
     intro s hs
     exact mk_image_le.trans hs
-  apply (mk_bounded_set_le_of_infinite (Sum (ULift.{u} ℕ) α) c).trans
+  apply (mk_bounded_set_le_of_infinite ((ULift.{u} ℕ) ⊕ α) c).trans
   rw [max_comm, ← add_eq_max] <;> rfl
 
 theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :

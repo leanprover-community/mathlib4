@@ -285,7 +285,7 @@ Case conversion may be inaccurate. Consider using '#align sum.traverse Sum.trave
 
 /-- Defines a `traverse` function on the second component of a sum type.
 This is used to give a `Traversable` instance for the functor `σ ⊕ -`. -/
-protected def traverse {α β} (f : α → F β) : Sum σ α → F (Sum σ β)
+protected def traverse {α β} (f : α → F β) : σ ⊕ α → F (σ ⊕ β)
   | Sum.inl x => pure (Sum.inl x)
   | Sum.inr x => Sum.inr <$> f x
 

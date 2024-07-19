@@ -355,13 +355,13 @@ theorem Fintype.card_lex (α : Type*) [Fintype α] : Fintype.card (Lex α) = Fin
 
 /-- Given that `α ⊕ β` is a fintype, `α` is also a fintype. This is non-computable as it uses
 that `Sum.inl` is an injection, but there's no clear inverse if `α` is empty. -/
-noncomputable def Fintype.sumLeft {α β} [Fintype (Sum α β)] : Fintype α :=
-  Fintype.ofInjective (Sum.inl : α → Sum α β) Sum.inl_injective
+noncomputable def Fintype.sumLeft {α β} [Fintype (α ⊕ β)] : Fintype α :=
+  Fintype.ofInjective (Sum.inl : α → α ⊕ β) Sum.inl_injective
 
 /-- Given that `α ⊕ β` is a fintype, `β` is also a fintype. This is non-computable as it uses
 that `Sum.inr` is an injection, but there's no clear inverse if `β` is empty. -/
-noncomputable def Fintype.sumRight {α β} [Fintype (Sum α β)] : Fintype β :=
-  Fintype.ofInjective (Sum.inr : β → Sum α β) Sum.inr_injective
+noncomputable def Fintype.sumRight {α β} [Fintype (α ⊕ β)] : Fintype β :=
+  Fintype.ofInjective (Sum.inr : β → α ⊕ β) Sum.inr_injective
 
 /-!
 ### Relation to `Finite`
@@ -941,10 +941,10 @@ instance [Infinite α] : Infinite (Finset α) :=
 instance [Infinite α] : Infinite (Option α) :=
   Infinite.of_injective some (Option.some_injective α)
 
-instance Sum.infinite_of_left [Infinite α] : Infinite (Sum α β) :=
+instance Sum.infinite_of_left [Infinite α] : Infinite (α ⊕ β) :=
   Infinite.of_injective Sum.inl Sum.inl_injective
 
-instance Sum.infinite_of_right [Infinite β] : Infinite (Sum α β) :=
+instance Sum.infinite_of_right [Infinite β] : Infinite (α ⊕ β) :=
   Infinite.of_injective Sum.inr Sum.inr_injective
 
 instance Prod.infinite_of_right [Nonempty α] [Infinite β] : Infinite (α × β) :=

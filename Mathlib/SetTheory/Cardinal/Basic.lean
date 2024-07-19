@@ -382,7 +382,7 @@ alias ⟨_, _root_.Set.Subsingleton.cardinal_mk_le_one⟩ := mk_le_one_iff_set_s
 instance : Add Cardinal.{u} :=
   ⟨map₂ Sum fun _ _ _ _ => Equiv.sumCongr⟩
 
-theorem add_def (α β : Type u) : #α + #β = #(Sum α β) :=
+theorem add_def (α β : Type u) : #α + #β = #(α ⊕ β) :=
   rfl
 
 instance : NatCast Cardinal.{u} :=
@@ -567,7 +567,7 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardina
     add_le_add_left := fun a b => add_le_add_left
     exists_add_of_le := fun {a b} =>
       inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
-        have : Sum α ((range f)ᶜ : Set β) ≃ β :=
+        have : α ⊕ ((range f)ᶜ : Set β) ≃ β :=
           (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
             Equiv.Set.sumCompl (range f)
         ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
