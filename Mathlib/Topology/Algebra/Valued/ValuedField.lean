@@ -44,10 +44,10 @@ section InversionEstimate
 
 variable (v : Valuation K Γ₀)
 
--- The following is the main technical lemma ensuring that inversion is continuous
--- in the topology induced by a valuation on a division ring (i.e. the next instance)
--- and the fact that a valued field is completable
--- [BouAC, VI.5.1 Lemme 1]
+/-- The following is the main technical lemma ensuring that inversion is continuous
+in the topology induced by a valuation on a division ring (i.e. the next instance)
+and the fact that a valued field is completable, see
+[N. Bourbaki, *Algèbre Commutative*, Chapitre 6, § 5, n. 1, Lemme 1][bourbaki1964] -/
 theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
     (h : v (x - y) < min (γ * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) < γ := by
   have hyp1 : v (x - y) < γ * (v y * v y) := lt_of_lt_of_le h (min_le_left _ _)
@@ -118,6 +118,9 @@ section
 open WithZeroTopology
 
 open Valued
+
+lemma continuous_iff_restrictionRangeGroup_continuous [Valued K Γ₀] :
+  Continuous (Valued.v : K → Γ₀) ↔ Continuous (Valued.v.restrictionRangeGroup (R :=K) ) := by sorry
 
 theorem Valued.continuous_valuation [Valued K Γ₀] : Continuous (v : K → Γ₀) := by
   rw [continuous_iff_continuousAt]
@@ -321,7 +324,7 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
       exact v.map_add x y
 #align valued.extension_valuation Valued.extensionValuation
 
--- Bourbaki CA VI §5 no.3 Proposition 5 (d)
+/- [N. Bourbaki, *Algèbre Commutative*, Chapitre 6, § 5, n. 3, Proposition 5][bourbaki1964] -/
 theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     closure ((↑) '' { x : K | v x < (γ : Γ₀) }) =
     { x : hat K | extensionValuation x < (γ : Γ₀) } := by
