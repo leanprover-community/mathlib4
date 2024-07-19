@@ -75,9 +75,8 @@ instance [HasWeakSheafify J A] : (presheafToSheaf J A).IsLeftAdjoint :=
 instance [HasWeakSheafify J A] : Reflective (sheafToPresheaf J A) where
   adj := sheafificationAdjunction _ _
 
-instance [HasSheafify J A] :  PreservesLimitsOfShape (Discrete (WalkingPair))
-    (reflector (sheafToPresheaf J A)) :=
-  inferInstanceAs (PreservesLimitsOfShape _ (presheafToSheaf _ _))
+instance [HasSheafify J A] :  PreservesFiniteLimits (reflector (sheafToPresheaf J A)) :=
+  inferInstanceAs (PreservesFiniteLimits (presheafToSheaf _ _))
 
 end
 
