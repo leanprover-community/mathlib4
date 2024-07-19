@@ -165,7 +165,7 @@ lemma id_zero (N : Type v) [AddCommGroup N] [Module R N] : (Subsingleton N) → 
 /-- If M is faithfully flat, then for every nonzero R-module N, then tensor product M⊗RN is nonzero,
 -/
 lemma tensorproduct_non_zero (N : Type v) [AddCommGroup N] [Module R N] [FaithfullyFlat R M] :
-Nontrivial N  → (Nontrivial (M ⊗[R] N)) := by
+    Nontrivial N  → (Nontrivial (M ⊗[R] N)) := by
   intro hN
   letI f := LinearMap.id (R:= R) (M:= N)
   have h : f ≠ 0 := by
