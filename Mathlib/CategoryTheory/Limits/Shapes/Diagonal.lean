@@ -149,7 +149,6 @@ def pullbackDiagonalMapIso :
       pullback i₁ i₂ where
   hom := pullbackDiagonalMapIso_hom f i i₁ i₂
   inv := pullbackDiagonalMapIso_inv f i i₁ i₂
-#align category_theory.limits.pullback_diagonal_map_iso CategoryTheory.Limits.pullbackDiagonalMapIso
 
 @[reassoc (attr := simp)]
 theorem pullbackDiagonalMapIso_hom_fst :
@@ -157,7 +156,6 @@ theorem pullbackDiagonalMapIso_hom_fst :
       pullback.snd _ _ ≫ pullback.fst _ _ := by
   delta pullbackDiagonalMapIso
   simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
-#align category_theory.limits.pullback_diagonal_map_iso_hom_fst CategoryTheory.Limits.pullbackDiagonalMapIso_hom_fst
 
 @[reassoc (attr := simp)]
 theorem pullbackDiagonalMapIso_hom_snd :
@@ -165,7 +163,6 @@ theorem pullbackDiagonalMapIso_hom_snd :
       pullback.snd _ _ ≫ pullback.snd _ _ := by
   delta pullbackDiagonalMapIso
   simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
-#align category_theory.limits.pullback_diagonal_map_iso_hom_snd CategoryTheory.Limits.pullbackDiagonalMapIso_hom_snd
 
 @[reassoc (attr := simp)]
 theorem pullbackDiagonalMapIso_inv_fst :
@@ -173,7 +170,6 @@ theorem pullbackDiagonalMapIso_inv_fst :
       pullback.fst _ _ ≫ i₁ ≫ pullback.fst _ _ := by
   delta pullbackDiagonalMapIso
   simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
-#align category_theory.limits.pullback_diagonal_map_iso_inv_fst CategoryTheory.Limits.pullbackDiagonalMapIso_inv_fst
 
 @[reassoc (attr := simp)]
 theorem pullbackDiagonalMapIso_inv_snd_fst :

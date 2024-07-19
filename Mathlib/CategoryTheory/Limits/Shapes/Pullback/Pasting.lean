@@ -404,7 +404,6 @@ noncomputable def pullbackRightPullbackFstIso :
   IsLimit.conePointUniqueUpToIso
     (pasteHorizIsPullback rfl (pullback.isLimit f g) (pullback.isLimit f' (pullback.fst f g)))
     (pullback.isLimit (f' ≫ f) g)
-#align category_theory.limits.pullback_right_pullback_fst_iso CategoryTheory.Limits.pullbackRightPullbackFstIso
 
 @[reassoc (attr := simp)]
 theorem pullbackRightPullbackFstIso_hom_fst :
@@ -436,7 +435,6 @@ theorem pullbackRightPullbackFstIso_inv_snd_fst :
       pullback.fst _ _ ≫ f' := by
   rw [← pullback.condition]
   exact pullbackRightPullbackFstIso_inv_fst_assoc f g f' _
-#align category_theory.limits.pullback_right_pullback_fst_iso_inv_snd_fst CategoryTheory.Limits.pullbackRightPullbackFstIso_inv_snd_fst
 
 end
 section
@@ -533,28 +531,24 @@ noncomputable def pushoutLeftPushoutInrIso :
   IsColimit.coconePointUniqueUpToIso
     (pasteHorizIsPushout rfl (pushout.isColimit f g) (pushout.isColimit (pushout.inr f g) g'))
     (pushout.isColimit f (g ≫ g'))
-#align category_theory.limits.pushout_left_pushout_inr_iso CategoryTheory.Limits.pushoutLeftPushoutInrIso
 
 @[reassoc (attr := simp)]
 theorem inl_pushoutLeftPushoutInrIso_inv :
     (pushout.inl f (g ≫ g')) ≫ (pushoutLeftPushoutInrIso f g g').inv =
       (pushout.inl f g) ≫ (pushout.inl (pushout.inr f g) g') :=
   IsColimit.comp_coconePointUniqueUpToIso_inv _ _ WalkingSpan.left
-#align category_theory.limits.inl_pushout_left_pushout_inr_iso_inv CategoryTheory.Limits.inl_pushoutLeftPushoutInrIso_inv
 
 @[reassoc (attr := simp)]
 theorem inr_pushoutLeftPushoutInrIso_hom :
     (pushout.inr (pushout.inr f g) g') ≫ (pushoutLeftPushoutInrIso f g g').hom =
       (pushout.inr f (g ≫ g')) :=
   IsColimit.comp_coconePointUniqueUpToIso_hom (pasteHorizIsPushout _ _ _) _ WalkingSpan.right
-#align category_theory.limits.inr_pushout_left_pushout_inr_iso_hom CategoryTheory.Limits.inr_pushoutLeftPushoutInrIso_hom
 
 @[reassoc (attr := simp)]
 theorem inr_pushoutLeftPushoutInrIso_inv :
     (pushout.inr f (g ≫ g')) ≫ (pushoutLeftPushoutInrIso f g g').inv =
       (pushout.inr (pushout.inr f g) g') :=
   IsColimit.comp_coconePointUniqueUpToIso_inv _ _ WalkingSpan.right
-#align category_theory.limits.inr_pushout_left_pushout_inr_iso_inv CategoryTheory.Limits.inr_pushoutLeftPushoutInrIso_inv
 
 @[reassoc (attr := simp)]
 theorem inl_inl_pushoutLeftPushoutInrIso_hom :
@@ -562,7 +556,6 @@ theorem inl_inl_pushoutLeftPushoutInrIso_hom :
       (pushoutLeftPushoutInrIso f g g').hom = (pushout.inl f (g ≫ g')) := by
   rw [← Category.assoc]
   apply IsColimit.comp_coconePointUniqueUpToIso_hom (pasteHorizIsPushout _ _ _) _ WalkingSpan.left
-#align category_theory.limits.inl_inl_pushout_left_pushout_inr_iso_hom CategoryTheory.Limits.inl_inl_pushoutLeftPushoutInrIso_hom
 
 @[reassoc (attr := simp)]
 theorem inr_inl_pushoutLeftPushoutInrIso_hom :
@@ -570,7 +563,6 @@ theorem inr_inl_pushoutLeftPushoutInrIso_hom :
       g' ≫ pushout.inr f (g ≫ g') := by
   rw [← Category.assoc, ← Iso.eq_comp_inv, Category.assoc, inr_pushoutLeftPushoutInrIso_inv,
     pushout.condition]
-#align category_theory.limits.inr_inl_pushout_left_pushout_inr_iso_hom CategoryTheory.Limits.inr_inl_pushoutLeftPushoutInrIso_hom
 
 end
 section

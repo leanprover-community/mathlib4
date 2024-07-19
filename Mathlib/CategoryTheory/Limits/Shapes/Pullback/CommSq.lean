@@ -455,7 +455,6 @@ theorem paste_vert {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁�
     (s : IsPullback h₁₁ v₁₁ v₁₂ h₂₁) (t : IsPullback h₂₁ v₂₁ v₂₂ h₃₁) :
     IsPullback h₁₁ (v₁₁ ≫ v₂₁) (v₁₂ ≫ v₂₂) h₃₁ :=
   of_isLimit (pasteHorizIsPullback rfl t.isLimit s.isLimit)
-#align category_theory.is_pullback.paste_vert CategoryTheory.IsPullback.paste_vert
 
 /-- Paste two pullback squares "horizontally" to obtain another pullback square. -/
 theorem paste_horiz {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₁₂ : X₁₂ ⟶ X₁₃}
@@ -471,7 +470,6 @@ theorem of_bot {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : 
     (s : IsPullback h₁₁ (v₁₁ ≫ v₂₁) (v₁₂ ≫ v₂₂) h₃₁) (p : h₁₁ ≫ v₁₂ = v₁₁ ≫ h₂₁)
     (t : IsPullback h₂₁ v₂₁ v₂₂ h₃₁) : IsPullback h₁₁ v₁₁ v₁₂ h₂₁ :=
   of_isLimit (leftSquareIsPullback (PullbackCone.mk h₁₁ _ p) rfl t.isLimit s.isLimit)
-#align category_theory.is_pullback.of_bot CategoryTheory.IsPullback.of_bot
 
 /-- Given a pullback square assembled from a commuting square on the left and
 a pullback square on the right, the left square is a pullback square. -/
@@ -649,7 +647,6 @@ theorem paste_vert {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁�
     (s : IsPushout h₁₁ v₁₁ v₁₂ h₂₁) (t : IsPushout h₂₁ v₂₁ v₂₂ h₃₁) :
     IsPushout h₁₁ (v₁₁ ≫ v₂₁) (v₁₂ ≫ v₂₂) h₃₁ :=
   of_isColimit (pasteHorizIsPushout rfl s.isColimit t.isColimit)
-#align category_theory.is_pushout.paste_vert CategoryTheory.IsPushout.paste_vert
 
 /-- Paste two pushout squares "horizontally" to obtain another pushout square. -/
 theorem paste_horiz {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₁₂ : X₁₂ ⟶ X₁₃}
@@ -666,7 +663,6 @@ theorem of_bot {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : 
     (t : IsPushout h₁₁ v₁₁ v₁₂ h₂₁) : IsPushout h₂₁ v₂₁ v₂₂ h₃₁ :=
   of_isColimit <| rightSquareIsPushout
     (PushoutCocone.mk _ _ p) (cocone_inr _) t.isColimit s.isColimit
-#align category_theory.is_pushout.of_bot CategoryTheory.IsPushout.of_bot
 
 /-- Given a pushout square assembled from a pushout square on the left and
 a commuting square on the right, the right square is a pushout square. -/
