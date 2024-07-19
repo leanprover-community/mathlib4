@@ -277,7 +277,6 @@ initialize_simps_projections MulEquiv (toFun → apply, invFun → symm_apply)
 @[to_additive (attr := simp)]
 theorem toEquiv_symm (f : M ≃* N) : (f.symm : N ≃ M) = (f : M ≃ N).symm := rfl
 
--- Porting note: doesn't align with Mathlib 3 because `MulEquiv.mk` has a new signature
 @[to_additive (attr := simp)]
 theorem coe_mk (f : M ≃ N) (hf : ∀ x y, f (x * y) = f x * f y) : (mk f hf : M → N) = f := rfl
 
@@ -290,8 +289,6 @@ theorem symm_symm (f : M ≃* N) : f.symm.symm = f := rfl
 theorem symm_bijective : Function.Bijective (symm : (M ≃* N) → N ≃* M) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
--- Porting note: this doesn't really align with mathlib3's `symm_mk`,
--- because the signature of `MulEquiv.mk` has changed.
 @[to_additive (attr := simp)]
 theorem symm_mk (f : M ≃ N) (h) :
     (MulEquiv.mk f h).symm = ⟨f.symm, (MulEquiv.mk f h).symm_map_mul⟩ := rfl

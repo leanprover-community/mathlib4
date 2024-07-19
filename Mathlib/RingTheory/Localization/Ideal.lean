@@ -46,7 +46,6 @@ private def map_ideal (I : Ideal R) : Ideal S where
     use ⟨Z, c'.2 * x'.2⟩
     simp only [← hx, ← hc, smul_eq_mul, Submodule.coe_mk, Submonoid.coe_mul, RingHom.map_mul]
     ring
--- Porting note: removed #align declaration since it is a private def
 
 theorem mem_map_algebraMap_iff {I : Ideal R} {z} : z ∈ Ideal.map (algebraMap R S) I ↔
     ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 := by

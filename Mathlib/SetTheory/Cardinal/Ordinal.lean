@@ -1266,22 +1266,18 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 
 
 -- theorem bit0_ne_zero (a : Cardinal) : ¬bit0 a = 0 ↔ ¬a = 0 := by simp [bit0]
--- #align cardinal.bit0_ne_zero Cardinal.bit0_ne_zero
 
 -- @[simp]
 -- theorem bit1_ne_zero (a : Cardinal) : ¬bit1 a = 0 := by simp [bit1]
--- #align cardinal.bit1_ne_zero Cardinal.bit1_ne_zero
 
 -- @[simp]
 -- theorem zero_lt_bit0 (a : Cardinal) : 0 < bit0 a ↔ 0 < a := by
 --   rw [← not_iff_not]
 --   simp [bit0]
--- #align cardinal.zero_lt_bit0 Cardinal.zero_lt_bit0
 
 -- @[simp]
 -- theorem zero_lt_bit1 (a : Cardinal) : 0 < bit1 a :=
 --   zero_lt_one.trans_le (self_le_add_left _ _)
--- #align cardinal.zero_lt_bit1 Cardinal.zero_lt_bit1
 
 -- @[simp]
 -- theorem one_le_bit0 (a : Cardinal) : 1 ≤ bit0 a ↔ 0 < a :=

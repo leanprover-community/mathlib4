@@ -59,8 +59,6 @@ structure Hom (A B : Algebra T) where
   /-- Compatibility with the structure morphism, for a morphism of algebras. -/
   h : (T : C ⥤ C).map f ≫ B.a = A.a ≫ f := by aesop_cat
 
--- Porting note: Manually adding aligns.
-
 -- Porting note: no need to restate axioms in lean4.
 --restate_axiom hom.h
 
@@ -298,8 +296,6 @@ structure Hom (A B : Coalgebra G) where
   f : A.A ⟶ B.A
   /-- Compatibility with the structure morphism, for a morphism of coalgebras. -/
   h : A.a ≫ (G : C ⥤ C).map f = f ≫ B.a := by aesop_cat
-
--- Porting note: Manually adding aligns.
 
 -- Porting note: no need to restate axioms in lean4.
 --restate_axiom hom.h

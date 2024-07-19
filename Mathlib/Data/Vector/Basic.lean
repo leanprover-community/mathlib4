@@ -687,8 +687,6 @@ instance : LawfulTraversable.{u} (flip Vector n) where
 --              unsupported tactic `reflect_name #[]" :
 --           reflected _ @Vector.cons.{u}).subst₄
 --       q(α) q(n) q(x) ih
--- #align vector.reflect vector.reflect
-
 
 section Simp
 

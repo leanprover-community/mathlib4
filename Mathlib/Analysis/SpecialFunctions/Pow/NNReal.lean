@@ -875,31 +875,25 @@ end ENNReal
 
 -- theorem nnrpow_pos (a : ℝ≥0) (b : ℝ) (b' : ℕ) (c : ℝ≥0) (hb : b = b') (h : a ^ b' = c) :
 --     a ^ b = c := by rw [← h, hb, NNReal.rpow_natCast]
--- #align norm_num.nnrpow_pos NormNum.nnrpow_pos
 
 -- theorem nnrpow_neg (a : ℝ≥0) (b : ℝ) (b' : ℕ) (c c' : ℝ≥0) (hb : b = b') (h : a ^ b' = c)
 --     (hc : c⁻¹ = c') : a ^ (-b) = c' := by
 --   rw [← hc, ← h, hb, NNReal.rpow_neg, NNReal.rpow_natCast]
--- #align norm_num.nnrpow_neg NormNum.nnrpow_neg
 
 -- theorem ennrpow_pos (a : ℝ≥0∞) (b : ℝ) (b' : ℕ) (c : ℝ≥0∞) (hb : b = b') (h : a ^ b' = c) :
 --     a ^ b = c := by rw [← h, hb, ENNReal.rpow_natCast]
--- #align norm_num.ennrpow_pos NormNum.ennrpow_pos
 
 -- theorem ennrpow_neg (a : ℝ≥0∞) (b : ℝ) (b' : ℕ) (c c' : ℝ≥0∞) (hb : b = b') (h : a ^ b' = c)
 --     (hc : c⁻¹ = c') : a ^ (-b) = c' := by
 --   rw [← hc, ← h, hb, ENNReal.rpow_neg, ENNReal.rpow_natCast]
--- #align norm_num.ennrpow_neg NormNum.ennrpow_neg
 
 -- /-- Evaluate `NNReal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
 -- unsafe def prove_nnrpow : expr → expr → tactic (expr × expr) :=
 --   prove_rpow' `` nnrpow_pos `` nnrpow_neg `` NNReal.rpow_zero q(ℝ≥0) q(ℝ) q((1 : ℝ≥0))
--- #align norm_num.prove_nnrpow norm_num.prove_nnrpow
 
 -- /-- Evaluate `ENNReal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
 -- unsafe def prove_ennrpow : expr → expr → tactic (expr × expr) :=
 --   prove_rpow' `` ennrpow_pos `` ennrpow_neg `` ENNReal.rpow_zero q(ℝ≥0∞) q(ℝ) q((1 : ℝ≥0∞))
--- #align norm_num.prove_ennrpow norm_num.prove_ennrpow
 
 -- /-- Evaluates expressions of the form `rpow a b` and `a ^ b` in the special case where
 -- `b` is an integer and `a` is a positive rational (so it's really just a rational power). -/
@@ -910,7 +904,6 @@ end ENNReal
 --   | q(@Pow.pow _ _ ENNReal.Real.hasPow $(a) $(b)) => b.to_int >> prove_ennrpow a b
 --   | q(ENNReal.rpow $(a) $(b)) => b.to_int >> prove_ennrpow a b
 --   | _ => tactic.failed
--- #align norm_num.eval_nnrpow_ennrpow norm_num.eval_nnrpow_ennrpow
 
 -- end NormNum
 

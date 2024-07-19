@@ -2374,7 +2374,6 @@ open scoped Classical
 -- theorem sep_def {α : Type*} (s : Finset α) (p : α → Prop) : { x ∈ s | p x } = s.filter p := by
 --   ext
 --   simp
--- #align finset.sep_def Finset.sep_def
 
 end Classical
 
@@ -2656,7 +2655,6 @@ theorem toFinset_dedup (m : Multiset α) : m.dedup.toFinset = m.toFinset := by
 -- @[simp]
 -- theorem toFinset_bind_dedup [DecidableEq β] (m : Multiset α) (f : α → Multiset β) :
 --     (m.dedup.bind f).toFinset = (m.bind f).toFinset := by simp_rw [toFinset, dedup_bind_dedup]
--- #align multiset.to_finset_bind_dedup Multiset.toFinset_bind_dedup
 
 @[simp]
 theorem toFinset_filter (s : Multiset α) (p : α → Prop) [DecidablePred p] :
