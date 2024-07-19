@@ -267,11 +267,6 @@ variable {σ : Type u}
 variable {F : Type u → Type u}
 variable [Applicative F]
 
--- Porting note: this was marked as a dubious translation but the only issue seems to be
--- a universe issue; this may be a bug in mathlib3port. I've carefully checked the universes
--- in mathlib3 and mathlib4 and they seem to match up exactly. Discussion here
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/why.20dubious.3F/
-
 /-- Defines a `traverse` function on the second component of a sum type.
 This is used to give a `Traversable` instance for the functor `σ ⊕ -`. -/
 protected def traverse {α β} (f : α → F β) : Sum σ α → F (Sum σ β)
