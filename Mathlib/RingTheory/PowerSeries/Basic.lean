@@ -554,7 +554,7 @@ variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
     coeff R d (∏ j ∈ s, f j) = ∑ l ∈ finsuppAntidiag s d, ∏ i ∈ s, coeff R (l i) (f i) := by
   simp only [coeff]
-  convert MvPowerSeries.coeff_prod _ _ _
+  erw [MvPowerSeries.coeff_prod]
   rw [← AddEquiv.finsuppUnique_symm d, ← mapRange_finsuppAntidiag_eq, sum_map, sum_congr rfl]
   intro x _
   apply prod_congr rfl
