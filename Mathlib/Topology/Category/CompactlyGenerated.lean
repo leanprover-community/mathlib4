@@ -15,8 +15,9 @@ compact Hausdorff spaces `S` mapping continuously to `X`.
 
 ## TODO
 
-* Prove that `CompactlyGenerated` is a reflective subcategory of `TopCat`.
-* Prove that `CompactlyGenerated` is cartesian closed.
+* `CompactlyGenerated` is a reflective subcategory of `TopCat`.
+* `CompactlyGenerated` is cartesian closed.
+* Every first-countable space is `u`-compactly generated for every universe `u`.
 -/
 
 attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
