@@ -18,8 +18,8 @@ We define `lFixedPoints` (resp. `rFixedPoints`) as the set of fixed points `J` (
 
 ## Main Results
 
-⋆ `to_galoisConnection`: we prove that the maps `leftDual` and `rightDual` form a Galois connection.
-⋆ `instEquivFixedPoints`: we prove that the said maps induce inverse bijections between the sets
+⋆ `galoisConnection`: we prove that the maps `leftDual` and `rightDual` form a Galois connection.
+⋆ `equivFixedPoints`: we prove that the said maps induce inverse bijections between the sets
 of fixed points.
 
 ## References
@@ -89,7 +89,7 @@ theorem is_lFixedPoint (I : (Set β)ᵒᵈ) : rightDual R I ∈ lFixedPoints R :
 
 /-- The maps `leftDual` and `rightDual` induce inverse bijections between the sets of fixed points.
 -/
-def instEquivFixedPoints : lFixedPoints R ≃ rFixedPoints R :=
+def equivFixedPoints : lFixedPoints R ≃ rFixedPoints R :=
     { toFun := fun ⟨J, _⟩ => ⟨leftDual R J, is_rFixedPoint R J⟩
       invFun := fun ⟨I, _⟩ => ⟨rightDual R I, is_lFixedPoint R I⟩
       left_inv := by
