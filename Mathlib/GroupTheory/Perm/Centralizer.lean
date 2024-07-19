@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir
 -/
 
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.Perm.ConjAct
 import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
