@@ -4,9 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 
-namespace Nat
+/-!
+# Main result
+Introduce main properties of `Up` (well-ordered relation for "upwards" induction on `ℕ`) and of
+ `ByteArray`
+-/
 
-/- Up -/
+namespace Nat
 
 /-- A well-ordered relation for "upwards" induction on the natural numbers up to some bound `ub`. -/
 def Up (ub a i : Nat) := i < a ∧ i < ub

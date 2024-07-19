@@ -255,7 +255,7 @@ theorem lintegral_mul_prod_lintegral_pow_le {p : ℝ} (hp₀ : 0 ≤ p)
     ∫⁻ x, f x ^ (1 - (#ι - 1 : ℝ) * p) * ∏ i, (∫⁻ xᵢ, f (update x i xᵢ) ∂μ i) ^ p ∂.pi μ
     ≤ (∫⁻ x, f x ∂.pi μ) ^ (1 + p) := by
   cases isEmpty_or_nonempty (∀ i, A i)
-  · simp_rw [lintegral_of_isEmpty]; refine' zero_le _
+  · simp_rw [lintegral_of_isEmpty]; refine zero_le _
   inhabit ∀ i, A i
   have H : (∅ : Finset ι) ≤ Finset.univ := Finset.empty_subset _
   simpa [lmarginal_univ] using GridLines.T_lmarginal_antitone μ hp₀ hp hf H default
