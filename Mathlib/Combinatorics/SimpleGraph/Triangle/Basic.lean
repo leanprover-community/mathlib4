@@ -11,6 +11,7 @@ import Mathlib.Data.Finset.Sym
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.NormNum.Ineq
 
 #align_import combinatorics.simple_graph.triangle.basic from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 

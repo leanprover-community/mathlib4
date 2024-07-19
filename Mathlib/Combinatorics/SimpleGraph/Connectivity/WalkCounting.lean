@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
+import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Counting walks of a given length
