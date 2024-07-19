@@ -67,12 +67,6 @@ instance universallyClosedTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
   comp_mem _ _ _ hf hg
 #align algebraic_geometry.universally_closed_type_comp AlgebraicGeometry.universallyClosedTypeComp
 
-instance topologically_isClosedMap_respectsIso : RespectsIso (topologically @IsClosedMap) := by
-  apply MorphismProperty.respectsIso_of_isStableUnderComposition
-  intro _ _ f hf
-  have : IsIso f := hf
-  exact (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso (asIso f))).isClosedMap
-
 instance universallyClosed_fst {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hg : UniversallyClosed g] :
     UniversallyClosed (pullback.fst f g) :=
   universallyClosed_stableUnderBaseChange.fst f g hg

@@ -3,8 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.LocalAtTarget
-import Mathlib.AlgebraicGeometry.Morphisms.Basic
+import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 
 #align_import algebraic_geometry.morphisms.open_immersion from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
@@ -38,6 +37,13 @@ theorem isOpenImmersion_iff_stalk {f : X ⟶ Y} : IsOpenImmersion f ↔
   · rintro ⟨h₁, h₂⟩; exact IsOpenImmersion.of_stalk_iso f h₁
 #align algebraic_geometry.is_open_immersion_iff_stalk AlgebraicGeometry.isOpenImmersion_iff_stalk
 
+theorem isOpenImmersion_eq_inf :
+    @IsOpenImmersion = (topologically OpenEmbedding) ⊓
+      stalkwise (fun f ↦ Function.Bijective f) := by
+  ext
+  exact isOpenImmersion_iff_stalk.trans
+    (and_congr Iff.rfl (forall_congr' fun x ↦ ConcreteCategory.isIso_iff_bijective _))
+
 instance isOpenImmersion_isStableUnderComposition :
     MorphismProperty.IsStableUnderComposition @IsOpenImmersion where
   comp_mem f g _ _ := LocallyRingedSpace.IsOpenImmersion.comp f g
@@ -50,29 +56,15 @@ instance isOpenImmersion_respectsIso : MorphismProperty.RespectsIso @IsOpenImmer
   infer_instance
 #align algebraic_geometry.is_open_immersion_respects_iso AlgebraicGeometry.isOpenImmersion_respectsIso
 
-instance isOpenImmersion_isLocalAtTarget : IsLocalAtTarget @IsOpenImmersion := by
-  apply IsLocalAtTarget.mk'
-  · intros; infer_instance
-  · intro X Y f ι U hU H
-    rw [isOpenImmersion_iff_stalk]
-    constructor
-    · apply (openEmbedding_iff_openEmbedding_of_iSup_eq_top hU f.1.base.2).mpr
-      intro i
-      have := (f ∣_ U i).openEmbedding
-      rw [morphismRestrict_val_base] at this
-      norm_cast
-    · intro x
-      obtain ⟨i, hi⟩ : ∃ i, f.1.base x ∈ U i := by
-        simpa only [← SetLike.mem_coe, Opens.coe_iSup, Set.mem_iUnion, Opens.coe_top, Set.mem_univ,
-          eq_iff_iff, iff_true] using congr(f.1.base x ∈ $hU)
-      have := Arrow.iso_w (morphismRestrictStalkMap
-        f (Scheme.ιOpens (U i)).opensRange ⟨x, ⟨_, hi⟩, rfl⟩)
-      dsimp only [Arrow.mk_hom] at this
-      rw [this]
-      haveI : IsOpenImmersion (f ∣_ (Scheme.ιOpens (U i)).opensRange) := by
-        rw [opensRange_ιOpens]
-        infer_instance
-      infer_instance
+instance : IsLocalAtTarget (stalkwise (fun f ↦ Function.Bijective f)) := by
+  apply stalkwiseIsLocalAtTarget_of_respectsIso
+  rw [RingHom.toMorphismProperty_respectsIso_iff]
+  convert (inferInstanceAs (MorphismProperty.isomorphisms CommRingCat).RespectsIso)
+  ext
+  exact (ConcreteCategory.isIso_iff_bijective _).symm
+
+instance isOpenImmersion_isLocalAtTarget : IsLocalAtTarget @IsOpenImmersion :=
+  isOpenImmersion_eq_inf ▸ inferInstance
 #align algebraic_geometry.is_open_immersion_is_local_at_target AlgebraicGeometry.isOpenImmersion_isLocalAtTarget
 
 theorem isOpenImmersion_stableUnderBaseChange :

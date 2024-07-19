@@ -3,6 +3,7 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
+import Mathlib.Analysis.NormedSpace.IndicatorFunction
 import Mathlib.MeasureTheory.Function.EssSup
 import Mathlib.MeasureTheory.Function.AEEqFun
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
@@ -279,6 +280,17 @@ theorem memℒp_neg_iff {f : α → E} : Memℒp (-f) p μ ↔ Memℒp f p μ :=
 #align measure_theory.mem_ℒp_neg_iff MeasureTheory.memℒp_neg_iff
 
 end Neg
+
+theorem snorm_indicator_eq_restrict {f : α → E} {s : Set α} (hs : MeasurableSet s) :
+    snorm (s.indicator f) p μ = snorm f p (μ.restrict s) := by
+  rcases eq_or_ne p ∞ with rfl | hp
+  · simp only [snorm_exponent_top, snormEssSup, ← ENNReal.essSup_indicator_eq_essSup_restrict hs,
+      ENNReal.coe_indicator, nnnorm_indicator_eq_indicator_nnnorm]
+  · rcases eq_or_ne p 0 with rfl | hp₀; · simp
+    simp only [snorm_eq_lintegral_rpow_nnnorm hp₀ hp, ← lintegral_indicator _ hs,
+      ENNReal.coe_indicator, nnnorm_indicator_eq_indicator_nnnorm]
+    congr with x
+    by_cases hx : x ∈ s <;> simp [ENNReal.toReal_pos, *]
 
 section Const
 
@@ -1155,6 +1167,25 @@ theorem _root_.Continuous.memℒp_top_of_hasCompactSupport
   apply memℒp_top_of_bound ?_ C (Filter.eventually_of_forall hC)
   exact (hf.stronglyMeasurable_of_hasCompactSupport h'f).aestronglyMeasurable
 
+section UnifTight
+
+/-- A single function that is `Memℒp f p μ` is tight with respect to `μ`. -/
+theorem Memℒp.exists_snorm_indicator_compl_lt {β : Type*} [NormedAddCommGroup β] (hp_top : p ≠ ∞)
+    {f : α → β} (hf : Memℒp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧ snorm (sᶜ.indicator f) p μ < ε := by
+  rcases eq_or_ne p 0 with rfl | hp₀
+  · use ∅; simp [pos_iff_ne_zero.2 hε] -- first take care of `p = 0`
+  · obtain ⟨s, hsm, hs, hε⟩ :
+        ∃ s, MeasurableSet s ∧ μ s < ∞ ∧ ∫⁻ a in sᶜ, (‖f a‖₊) ^ p.toReal ∂μ < ε ^ p.toReal := by
+      apply exists_setLintegral_compl_lt
+      · exact ((snorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top hp₀ hp_top).1 hf.2).ne
+      · simp [*]
+    refine ⟨s, hsm, hs, ?_⟩
+    rwa [snorm_indicator_eq_restrict hsm.compl, snorm_eq_lintegral_rpow_nnnorm hp₀ hp_top,
+      one_div, ENNReal.rpow_inv_lt_iff]
+    simp [ENNReal.toReal_pos, *]
+
+end UnifTight
 end ℒp
 
 end MeasureTheory
