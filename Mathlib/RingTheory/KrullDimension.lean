@@ -96,6 +96,7 @@ end DimensionZero
 
 section Field
 
+@[simp]
 theorem eq_zero_of_field (F : Type*) [Field F] : ringKrullDim F = 0 :=
   krullDim_eq_zero_of_unique
 
