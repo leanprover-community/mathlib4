@@ -186,17 +186,17 @@ def vcomp (η : StrongOplaxNatTrans F G) (θ : StrongOplaxNatTrans G H) : Strong
     { naturality := λ {a b} f ↦
         (α_ _ _ _).symm ≪≫ whiskerRightIso (η.naturality f) (θ.app b) ≪≫
         (α_ _ _ _) ≪≫ whiskerLeftIso (η.app a) (θ.naturality f) ≪≫ (α_ _ _ _).symm }
+end
+
+end StrongOplaxNatTrans
 
 variable (B C)
 
 @[simps id comp]
-instance : CategoryStruct (Pseudofunctor B C) where
+instance Pseudofunctor.categoryStruct : CategoryStruct (Pseudofunctor B C) where
   Hom F G := StrongOplaxNatTrans F.toOplax G.toOplax
   id F := StrongOplaxNatTrans.id F.toOplax
   comp := StrongOplaxNatTrans.vcomp
 
-end
-
-end StrongOplaxNatTrans
 
 end CategoryTheory
