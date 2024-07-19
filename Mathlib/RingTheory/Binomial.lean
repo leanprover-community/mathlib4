@@ -407,12 +407,12 @@ theorem choose_zero_ite (R) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] [Binomi
   rw [eq_ite_iff]
   by_cases hk: k = 0
   constructor
-  rw [hk, choose_zero_right, ← Prod.mk.inj_iff]
-  right
-  constructor
-  exact hk
-  rw [← @Nat.le_zero, Nat.not_le] at hk
-  rw [choose_zero_pos R hk]
+  · rw [hk, choose_zero_right, ← Prod.mk.inj_iff]
+  · right
+    constructor
+    · exact hk
+    · rw [← @Nat.le_zero, Nat.not_le] at hk
+      rw [choose_zero_pos R hk]
 
 @[simp]
 theorem choose_one_right' (r : R) : choose r 1 = r ^ 1 := by

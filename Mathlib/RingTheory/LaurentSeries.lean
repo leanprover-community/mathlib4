@@ -544,36 +544,36 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : LaurentSeries K} :
     rw [← f.single_order_mul_powerSeriesPart, hs, map_mul, valuation_single_zpow, neg_neg, mul_comm,
       ← le_mul_inv_iff₀, ofAdd_neg, WithZero.coe_inv, ← mul_inv, ← WithZero.coe_mul, ← ofAdd_add,
       ← WithZero.coe_inv, ← ofAdd_neg]
-    by_cases hDs : D + s ≤ 0
-    · apply le_trans ((PowerSeries.idealX K).valuation_le_one F)
-      rwa [← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, Multiplicative.ofAdd_le,
-        Left.nonneg_neg_iff]
-    · obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (le_of_lt <| not_le.mp hDs)
-      rw [hd]
-      apply (intValuation_le_iff_coeff_lt_eq_zero K F).mpr
-      intro n hn
-      rw [powerSeriesPart_coeff f n, hs]
-      apply h_val_f
-      linarith
-    simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff]
+    · by_cases hDs : D + s ≤ 0
+      · apply le_trans ((PowerSeries.idealX K).valuation_le_one F)
+        rwa [← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, Multiplicative.ofAdd_le,
+          Left.nonneg_neg_iff]
+      · obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (le_of_lt <| not_le.mp hDs)
+        rw [hd]
+        apply (intValuation_le_iff_coeff_lt_eq_zero K F).mpr
+        intro n hn
+        rw [powerSeriesPart_coeff f n, hs]
+        apply h_val_f
+        linarith
+    · simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff]
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat
       <| neg_nonpos_of_nonneg <| le_of_lt <| not_le.mp ord_nonpos
     rw [neg_inj] at hs
     rw [← f.single_order_mul_powerSeriesPart, hs, map_mul, valuation_single_zpow, mul_comm,
       ← le_mul_inv_iff₀, ofAdd_neg, WithZero.coe_inv, ← mul_inv, ← WithZero.coe_mul, ← ofAdd_add,
       ← WithZero.coe_inv, ← ofAdd_neg, neg_add, neg_neg]
-    by_cases hDs : D - s ≤ 0
-    · apply le_trans ((PowerSeries.idealX K).valuation_le_one F)
-      rw [← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, Multiplicative.ofAdd_le]
-      linarith
-    · obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (le_of_lt <| not_le.mp hDs)
-      rw [← neg_neg (-D + ↑s), ← sub_eq_neg_add, neg_sub, hd]
-      apply (intValuation_le_iff_coeff_lt_eq_zero K F).mpr
-      intro n hn
-      rw [powerSeriesPart_coeff f n, hs]
-      apply h_val_f (s + n)
-      linarith
-    simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff]
+    · by_cases hDs : D - s ≤ 0
+      · apply le_trans ((PowerSeries.idealX K).valuation_le_one F)
+        rw [← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, Multiplicative.ofAdd_le]
+        linarith
+      · obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (le_of_lt <| not_le.mp hDs)
+        rw [← neg_neg (-D + ↑s), ← sub_eq_neg_add, neg_sub, hd]
+        apply (intValuation_le_iff_coeff_lt_eq_zero K F).mpr
+        intro n hn
+        rw [powerSeriesPart_coeff f n, hs]
+        apply h_val_f (s + n)
+        linarith
+    · simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff]
 
 /- Two Laurent series whose difference has small valuation have the same coefficients for
 small enough indices. -/
