@@ -500,6 +500,8 @@ import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Algebra.MvPolynomial.Invertible
+import Mathlib.Algebra.MvPolynomial.Module.Basic
+import Mathlib.Algebra.MvPolynomial.Module.MvAEval
 import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.Algebra.MvPolynomial.Polynomial

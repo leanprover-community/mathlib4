@@ -37,14 +37,18 @@ See https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.231
 for the full discussion.
 -/
 @[nolint unusedArguments]
-def PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] := ℕ →₀ M
+def PolynomialModule (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M] := ℕ →₀ M
 #align polynomial_module PolynomialModule
 
-variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
+noncomputable instance (R M : Type*) [CommSemiring R] [AddCommGroup M] [Module R M] :
+    AddCommGroup (PolynomialModule R M) := Finsupp.instAddCommGroup
+
+variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 -- Porting note: stated instead of deriving
 noncomputable instance : Inhabited (PolynomialModule R M) := Finsupp.instInhabited
-noncomputable instance : AddCommGroup (PolynomialModule R M) := Finsupp.instAddCommGroup
+
+noncomputable instance : AddCommMonoid (PolynomialModule R M) := Finsupp.instAddCommMonoid
 
 variable {M}
 variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
@@ -106,11 +110,11 @@ lemma smul_def (f : R[X]) (m : PolynomialModule R M) :
     f • m = aeval (Finsupp.lmapDomain M R Nat.succ) f m := by
   rfl
 
-instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower S R M] :
+instance (M : Type u) [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower S R M] :
     IsScalarTower S R (PolynomialModule R M) :=
   Finsupp.isScalarTower _ _
 
-instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
+instance isScalarTower' (M : Type u) [AddCommMonoid M] [Module R M] [Module S M]
     [IsScalarTower S R M] : IsScalarTower S R[X] (PolynomialModule R M) := by
   haveI : IsScalarTower R R[X] (PolynomialModule R M) :=
     inferInstanceAs <| IsScalarTower R R[X] <| Module.AEval' <| Finsupp.lmapDomain M R Nat.succ
@@ -229,7 +233,7 @@ noncomputable def equivPolynomial {S : Type*} [CommRing S] [Algebra R S] :
   { (Polynomial.toFinsuppIso S).symm with map_smul' := fun _ _ => rfl }
 #align polynomial_module.equiv_polynomial PolynomialModule.equivPolynomial
 
-variable (R' : Type*) {M' : Type*} [CommRing R'] [AddCommGroup M'] [Module R' M']
+variable (R' : Type*) {M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module R' M']
 variable [Algebra R R'] [Module R M'] [IsScalarTower R R' M']
 
 /-- The image of a polynomial under a linear map. -/
