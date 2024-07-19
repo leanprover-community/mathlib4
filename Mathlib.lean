@@ -1,4 +1,5 @@
 import Mathlib.Algebra.AddConstMap.Basic
+import Mathlib.Algebra.AddConstMap.Equiv
 import Mathlib.Algebra.AddTorsor
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Algebra.Bilinear
@@ -285,6 +286,7 @@ import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
+import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.Basic
@@ -299,6 +301,7 @@ import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Algebra.GroupWithZero.Opposite
 import Mathlib.Algebra.GroupWithZero.Pi
 import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Algebra.GroupWithZero.Semiconj
@@ -436,7 +439,8 @@ import Mathlib.Algebra.Module.Card
 import Mathlib.Algebra.Module.CharacterModule
 import Mathlib.Algebra.Module.DedekindDomain
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Module.Equiv
+import Mathlib.Algebra.Module.Equiv.Basic
+import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.Algebra.Module.GradedModule
 import Mathlib.Algebra.Module.Hom
@@ -1125,6 +1129,7 @@ import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.Normed.Order.UpperLower
 import Mathlib.Analysis.Normed.Ring.Seminorm
+import Mathlib.Analysis.Normed.Ring.SeminormFromBounded
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.AddTorsorBases
 import Mathlib.Analysis.NormedSpace.AffineIsometry
@@ -2760,7 +2765,6 @@ import Mathlib.Init.Order.Defs
 import Mathlib.Init.Order.LinearOrder
 import Mathlib.Init.Quot
 import Mathlib.Init.Set
-import Mathlib.Init.ZeroOne
 import Mathlib.Lean.CoreM
 import Mathlib.Lean.Elab.Tactic.Basic
 import Mathlib.Lean.Elab.Term
@@ -3979,6 +3983,7 @@ import Mathlib.Tactic.CongrM
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Continuity.Init
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
@@ -4062,6 +4067,7 @@ import Mathlib.Tactic.Linter.TextBased
 import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.Measurability
 import Mathlib.Tactic.Measurability.Init
+import Mathlib.Tactic.MinImports
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.ModCases
 import Mathlib.Tactic.Monotonicity
@@ -4437,6 +4443,7 @@ import Mathlib.Topology.MetricSpace.Sequences
 import Mathlib.Topology.MetricSpace.ShrinkingLemma
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
 import Mathlib.Topology.MetricSpace.Thickening
+import Mathlib.Topology.MetricSpace.Ultra.Basic
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Metrizable.ContinuousMap
 import Mathlib.Topology.Metrizable.Uniformity
