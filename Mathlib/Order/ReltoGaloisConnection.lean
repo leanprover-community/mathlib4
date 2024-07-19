@@ -76,14 +76,14 @@ open GaloisConnection
 /-- `leftDual` maps every element `J` to `rFixedPoints`. -/
 @[simp]
 theorem is_rFixedPoint (J : Set α) : leftDual R J ∈ rFixedPoints R := by
-    unfold rFixedPoints; simp; apply le_antisymm
+    unfold rFixedPoints; apply le_antisymm
     · exact (galoisConnection R).l_u_le (leftDual R J)
     · apply (galoisConnection R).monotone_l; exact (galoisConnection R).le_u_l J
 
 /-- `rightDual` maps every element `I` to `lFixedPoints`. -/
 @[simp]
 theorem is_lFixedPoint (I : (Set β)ᵒᵈ) : rightDual R I ∈ lFixedPoints R := by
-    unfold lFixedPoints; simp; apply le_antisymm
+    unfold lFixedPoints; apply le_antisymm
     · apply (galoisConnection R).monotone_u; exact (galoisConnection R).l_u_le I
     · exact (galoisConnection R).le_u_l (rightDual R I)
 
@@ -93,9 +93,9 @@ def equivFixedPoints : lFixedPoints R ≃ rFixedPoints R :=
     { toFun := fun ⟨J, _⟩ => ⟨leftDual R J, is_rFixedPoint R J⟩
       invFun := fun ⟨I, _⟩ => ⟨rightDual R I, is_lFixedPoint R I⟩
       left_inv := by
-          intro J; simp; cases' J with J hJ; simp; rw[hJ]
+          intro J; cases' J with J hJ; simp; rw[hJ]
       right_inv := by
-          intro I; simp; cases' I with I hI; simp; rw[hI] }
+          intro I; cases' I with I hI; simp; rw[hI] }
 
 theorem le_imp_u_l_le {J J' : Set α} (h : J' ∈ lFixedPoints R) :
     J ≤ J' → rightDual R (leftDual R J) ≤ J' := by
