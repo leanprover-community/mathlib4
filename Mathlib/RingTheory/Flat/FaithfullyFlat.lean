@@ -194,7 +194,7 @@ variable (R : Type u) (S : Type v) (M : Type v)
 /-- If `S` is a faithfully flat `R`-algebra, then any faithfully flat `S`-Module is faithfully flat
 as an `R`-module. -/
 theorem comp [Module.FaithfullyFlat R S] [Module.FaithfullyFlat S M] :
-  FaithfullyFlat R M where
+    FaithfullyFlat R M where
     flat := Module.Flat.comp R S M
     zero_if_lTensor_zero := by
      introv
