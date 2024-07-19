@@ -409,7 +409,7 @@ example (a b c : Prop) (h : ¬ a) : if a then b else c = c := by
   simp only [h, ↓reduceIte]
 
 lemma restriction_eq (h : v x ≠ 0) : WithZero.unzero (v.restriction_ne_zero h) =
-  (⟨Units.mk0 (v x) h, v.mem_rangeGroup (by rfl)⟩ : v.rangeGroup) := by
+    (⟨Units.mk0 (v x) h, v.mem_rangeGroup (by rfl)⟩ : v.rangeGroup) := by
   simp only [restrictionRangeGroup, ne_eq, dite_not, coe_mk, MonoidWithZeroHom.coe_mk,
     ZeroHom.coe_mk, h, ↓reduceDIte, WithZero.unzero_coe]
 
