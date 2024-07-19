@@ -5,8 +5,6 @@ Authors: Floris van Doorn, Mario Carneiro
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 
-#align_import data.real.pi.bounds from "leanprover-community/mathlib"@"402f8982dddc1864bd703da2d6e2ee304a866973"
-
 /-!
 # Pi
 
@@ -35,7 +33,6 @@ theorem pi_gt_sqrtTwoAddSeries (n : ℕ) :
     all_goals apply pow_pos; norm_num
   apply lt_of_le_of_lt (le_of_eq _) this
   rw [pow_succ' _ (n + 1), ← mul_assoc, div_mul_cancel₀, mul_comm]; norm_num
-#align real.pi_gt_sqrt_two_add_series Real.pi_gt_sqrtTwoAddSeries
 
 theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
     π < (2 : ℝ) ^ (n + 1) * √(2 - sqrtTwoAddSeries 0 n) + 1 / (4 : ℝ) ^ n := by
@@ -69,7 +66,6 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
   rw [one_div, one_div, inv_mul_eq_iff_eq_mul₀, eq_comm, mul_inv_eq_iff_eq_mul₀, ← pow_add]
   · rw [add_assoc, Nat.mul_succ, add_comm, add_comm n, add_assoc, mul_comm n]
   all_goals norm_num
-#align real.pi_lt_sqrt_two_add_series Real.pi_lt_sqrtTwoAddSeries
 
 /-- From an upper bound on `sqrtTwoAddSeries 0 n = 2 cos (π / 2 ^ (n+1))` of the form
 `sqrtTwoAddSeries 0 n ≤ 2 - (a / 2 ^ (n + 1)) ^ 2)`, one can deduce the lower bound `a < π`
@@ -80,7 +76,6 @@ theorem pi_lower_bound_start (n : ℕ) {a}
   refine lt_of_le_of_lt ?_ (pi_gt_sqrtTwoAddSeries n); rw [mul_comm]
   refine (div_le_iff (pow_pos (by norm_num) _ : (0 : ℝ) < _)).mp (le_sqrt_of_sq_le ?_)
   rwa [le_sub_comm, show (0 : ℝ) = (0 : ℕ) / (1 : ℕ) by rw [Nat.cast_zero, zero_div]]
-#align real.pi_lower_bound_start Real.pi_lower_bound_start
 
 theorem sqrtTwoAddSeries_step_up (c d : ℕ) {a b n : ℕ} {z : ℝ} (hz : sqrtTwoAddSeries (c / d) n ≤ z)
     (hb : 0 < b) (hd : 0 < d) (h : (2 * b + a) * d ^ 2 ≤ c ^ 2 * b) :
@@ -91,7 +86,6 @@ theorem sqrtTwoAddSeries_step_up (c d : ℕ) {a b n : ℕ} {z : ℝ} (hz : sqrtT
   rw [sqrt_le_left (div_nonneg c.cast_nonneg d.cast_nonneg), div_pow,
     add_div_eq_mul_add_div _ _ (ne_of_gt hb'), div_le_div_iff hb' (pow_pos hd' _)]
   exact mod_cast h
-#align real.sqrt_two_add_series_step_up Real.sqrtTwoAddSeries_step_up
 
 section Tactic
 
@@ -134,7 +128,6 @@ theorem pi_upper_bound_start (n : ℕ) {a}
   · rwa [Nat.cast_zero, zero_div] at h
   · exact div_nonneg (sub_nonneg.2 h₂) (pow_nonneg (le_of_lt zero_lt_two) _)
   · exact pow_pos zero_lt_two _
-#align real.pi_upper_bound_start Real.pi_upper_bound_start
 
 theorem sqrtTwoAddSeries_step_down (a b : ℕ) {c d n : ℕ} {z : ℝ}
     (hz : z ≤ sqrtTwoAddSeries (a / b) n) (hb : 0 < b) (hd : 0 < d)
@@ -145,7 +138,6 @@ theorem sqrtTwoAddSeries_step_down (a b : ℕ) {c d n : ℕ} {z : ℝ}
   have hd' : 0 < (d : ℝ) := Nat.cast_pos.2 hd
   rw [div_pow, add_div_eq_mul_add_div _ _ (ne_of_gt hd'), div_le_div_iff (pow_pos hb' _) hd']
   exact mod_cast h
-#align real.sqrt_two_add_series_step_down Real.sqrtTwoAddSeries_step_down
 
 section Tactic
 
@@ -170,38 +162,31 @@ end Tactic
 
 theorem pi_gt_three : 3 < π := by
   pi_lower_bound [23/16]
-#align real.pi_gt_three Real.pi_gt_three
 
 theorem pi_gt_314 : 3.14 < π := by
   pi_lower_bound [99 / 70, 874 / 473, 1940 / 989, 1447 / 727]
-#align real.pi_gt_314 Real.pi_gt_314
 
 theorem pi_lt_315 : π < 3.15 := by
   pi_upper_bound [140 / 99, 279 / 151, 51 / 26, 412 / 207]
-#align real.pi_lt_315 Real.pi_lt_315
 
 theorem pi_gt_31415 : 3.1415 < π := by
   pi_lower_bound
         [11482 / 8119, 5401 / 2923, 2348 / 1197, 11367 / 5711, 25705 / 12868, 23235 / 11621]
-#align real.pi_gt_31415 Real.pi_gt_31415
 
 theorem pi_lt_31416 : π < 3.1416 := by
     pi_upper_bound
         [4756 / 3363, 101211 / 54775, 505534 / 257719, 83289 / 41846, 411278 / 205887,
           438142 / 219137, 451504 / 225769, 265603 / 132804, 849938 / 424971]
-#align real.pi_lt_31416 Real.pi_lt_31416
 
 theorem pi_gt_3141592 : 3.141592 < π := by
     pi_lower_bound
         [11482 / 8119, 7792 / 4217, 54055 / 27557, 949247 / 476920, 3310126 / 1657059,
           2635492 / 1318143, 1580265 / 790192, 1221775 / 610899, 3612247 / 1806132, 849943 / 424972]
-#align real.pi_gt_3141592 Real.pi_gt_3141592
 
 theorem pi_lt_3141593 : π < 3.141593 := by
     pi_upper_bound
         [27720 / 19601, 56935 / 30813, 49359 / 25163, 258754 / 130003, 113599 / 56868,
           1101994 / 551163, 8671537 / 4336095, 3877807 / 1938940, 52483813 / 26242030,
           56946167 / 28473117, 23798415 / 11899211]
-#align real.pi_lt_3141593 Real.pi_lt_3141593
 
 end Real

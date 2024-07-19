@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Linear.Yoneda
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 
-#align_import algebra.category.Module.monoidal.closed from "leanprover-community/mathlib"@"74403a3b2551b0970855e14ef5e8fd0d6af1bfc2"
-
 /-!
 # The monoidal closed structure on `Module R`.
 -/
@@ -42,7 +40,6 @@ def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
     erw [MonoidalCategory.braiding_hom_apply, TensorProduct.lift.tmul]
   right_inv f := rfl
 set_option linter.uppercaseLean3 false in
-#align Module.monoidal_closed_hom_equiv ModuleCat.monoidalClosedHomEquiv
 
 instance : MonoidalClosed (ModuleCat.{u} R) where
   closed M :=
@@ -60,7 +57,6 @@ theorem ihom_map_apply {M N P : ModuleCat.{u} R} (f : N ⟶ P) (g : ModuleCat.of
     (ihom M).map f g = g ≫ f :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align Module.ihom_map_apply ModuleCat.ihom_map_apply
 
 open MonoidalCategory
 
@@ -71,7 +67,6 @@ theorem monoidalClosed_curry {M N P : ModuleCat.{u} R} (f : M ⊗ N ⟶ P) (x : 
       ((MonoidalClosed.curry f : N →ₗ[R] M →ₗ[R] P) y) x = f (x ⊗ₜ[R] y) :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align Module.monoidal_closed_curry ModuleCat.monoidalClosed_curry
 
 @[simp]
 theorem monoidalClosed_uncurry
@@ -80,7 +75,6 @@ theorem monoidalClosed_uncurry
       @DFunLike.coe _ _ _ LinearMap.instFunLike (f y) x :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align Module.monoidal_closed_uncurry ModuleCat.monoidalClosed_uncurry
 
 /-- Describes the counit of the adjunction `M ⊗ - ⊣ Hom(M, -)`. Given an `R`-module `N` this
 should give a map `M ⊗ Hom(M, N) ⟶ N`, so we flip the order of the arguments in the identity map
@@ -90,7 +84,6 @@ theorem ihom_ev_app (M N : ModuleCat.{u} R) :
   apply TensorProduct.ext'
   apply ModuleCat.monoidalClosed_uncurry
 set_option linter.uppercaseLean3 false in
-#align Module.ihom_ev_app ModuleCat.ihom_ev_app
 
 /-- Describes the unit of the adjunction `M ⊗ - ⊣ Hom(M, -)`. Given an `R`-module `N` this should
 define a map `N ⟶ Hom(M, M ⊗ N)`, which is given by flipping the arguments in the natural
@@ -99,12 +92,10 @@ theorem ihom_coev_app (M N : ModuleCat.{u} R) :
     (ihom.coev M).app N = (TensorProduct.mk _ _ _).flip :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align Module.ihom_coev_app ModuleCat.ihom_coev_app
 
 theorem monoidalClosed_pre_app {M N : ModuleCat.{u} R} (P : ModuleCat.{u} R) (f : N ⟶ M) :
     (MonoidalClosed.pre f).app P = LinearMap.lcomp R _ f :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align Module.monoidal_closed_pre_app ModuleCat.monoidalClosed_pre_app
 
 end ModuleCat

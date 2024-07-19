@@ -6,8 +6,6 @@ Authors: Scott Morrison
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
-#align_import algebraic_geometry.presheafed_space from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
-
 /-!
 # Presheafed spaces
 
@@ -49,7 +47,6 @@ structure PresheafedSpace where
   carrier : TopCat
   protected presheaf : carrier.Presheaf C
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace AlgebraicGeometry.PresheafedSpace
 
 variable {C}
 
@@ -58,7 +55,6 @@ namespace PresheafedSpace
 -- Porting note: using `Coe` here triggers an error, `CoeOut` seems an acceptable alternative
 instance coeCarrier : CoeOut (PresheafedSpace C) TopCat where coe X := X.carrier
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.coe_carrier AlgebraicGeometry.PresheafedSpace.coeCarrier
 
 attribute [coe] PresheafedSpace.carrier
 
@@ -71,7 +67,6 @@ instance : CoeSort (PresheafedSpace C) Type* where coe := fun X => X.carrier
 theorem as_coe (X : PresheafedSpace.{w, v, u} C) : X.carrier = (X : TopCat.{w}) :=
   rfl-/
 set_option linter.uppercaseLean3 false in
-#noalign algebraic_geometry.PresheafedSpace.as_coe
 
 -- Porting note: removed @[simp] as the `simpVarHead` linter complains
 -- @[simp]
@@ -80,7 +75,6 @@ theorem mk_coe (carrier) (presheaf) :
         presheaf } : PresheafedSpace C) : TopCat) = carrier :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.mk_coe AlgebraicGeometry.PresheafedSpace.mk_coe
 
 instance (X : PresheafedSpace C) : TopologicalSpace X :=
   X.carrier.str
@@ -90,7 +84,6 @@ def const (X : TopCat) (Z : C) : PresheafedSpace C where
   carrier := X
   presheaf := (Functor.const _).obj Z
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.const AlgebraicGeometry.PresheafedSpace.const
 
 instance [Inhabited C] : Inhabited (PresheafedSpace C) :=
   ⟨const (TopCat.of PEmpty) default⟩
@@ -102,7 +95,6 @@ structure Hom (X Y : PresheafedSpace C) where
   base : (X : TopCat) ⟶ (Y : TopCat)
   c : Y.presheaf ⟶ base _* X.presheaf
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.hom AlgebraicGeometry.PresheafedSpace.Hom
 
 -- Porting note (#11041): eventually, the `ext` lemma shall be applied to terms in `X ⟶ Y`
 -- rather than `Hom X Y`, this one was renamed `Hom.ext` instead of `ext`,
@@ -120,7 +112,6 @@ theorem Hom.ext {X Y : PresheafedSpace C} (α β : Hom X Y) (w : α.base = β.ba
   subst h
   rfl
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.ext AlgebraicGeometry.PresheafedSpace.Hom.ext
 
 -- TODO including `injections` would make tidy work earlier.
 theorem hext {X Y : PresheafedSpace C} (α β : Hom X Y) (w : α.base = β.base) (h : HEq α.c β.c) :
@@ -129,7 +120,6 @@ theorem hext {X Y : PresheafedSpace C} (α β : Hom X Y) (w : α.base = β.base)
   cases β
   congr
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.hext AlgebraicGeometry.PresheafedSpace.hext
 
 -- Porting note: `eqToHom` is no longer necessary in the definition of `c`
 /-- The identity morphism of a `PresheafedSpace`. -/
@@ -137,25 +127,21 @@ def id (X : PresheafedSpace C) : Hom X X where
   base := 𝟙 (X : TopCat)
   c := 𝟙 _
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.id AlgebraicGeometry.PresheafedSpace.id
 
 instance homInhabited (X : PresheafedSpace C) : Inhabited (Hom X X) :=
   ⟨id X⟩
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.hom_inhabited AlgebraicGeometry.PresheafedSpace.homInhabited
 
 /-- Composition of morphisms of `PresheafedSpace`s. -/
 def comp {X Y Z : PresheafedSpace C} (α : Hom X Y) (β : Hom Y Z) : Hom X Z where
   base := α.base ≫ β.base
   c := β.c ≫ (Presheaf.pushforward _ β.base).map α.c
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.comp AlgebraicGeometry.PresheafedSpace.comp
 
 theorem comp_c {X Y Z : PresheafedSpace C} (α : Hom X Y) (β : Hom Y Z) :
     (comp α β).c = β.c ≫ (Presheaf.pushforward _ β.base).map α.c :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.comp_c AlgebraicGeometry.PresheafedSpace.comp_c
 
 variable (C)
 
@@ -181,7 +167,6 @@ instance categoryOfPresheafedSpaces : Category (PresheafedSpace C) where
       simp only [map_id, whiskerRight_id', assoc]
       erw [comp_id, comp_id]
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.category_of_PresheafedSpaces AlgebraicGeometry.PresheafedSpace.categoryOfPresheafedSpaces
 
 variable {C}
 
@@ -201,14 +186,12 @@ attribute [local simp] eqToHom_map
 theorem id_base (X : PresheafedSpace C) : (𝟙 X : X ⟶ X).base = 𝟙 (X : TopCat) :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.id_base AlgebraicGeometry.PresheafedSpace.id_base
 
 -- Porting note: `eqToHom` is no longer needed in the statements of `id_c` and `id_c_app`
 theorem id_c (X : PresheafedSpace C) :
     (𝟙 X : X ⟶ X).c = 𝟙 X.presheaf :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.id_c AlgebraicGeometry.PresheafedSpace.id_c
 
 @[simp]
 theorem id_c_app (X : PresheafedSpace C) (U) :
@@ -216,14 +199,12 @@ theorem id_c_app (X : PresheafedSpace C) (U) :
   rw [id_c, map_id]
   rfl
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.id_c_app AlgebraicGeometry.PresheafedSpace.id_c_app
 
 @[simp]
 theorem comp_base {X Y Z : PresheafedSpace C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).base = f.base ≫ g.base :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.comp_base AlgebraicGeometry.PresheafedSpace.comp_base
 
 instance (X Y : PresheafedSpace C) : CoeFun (X ⟶ Y) fun _ => (↑X → ↑Y) :=
   ⟨fun f => f.base⟩
@@ -231,7 +212,6 @@ instance (X Y : PresheafedSpace C) : CoeFun (X ⟶ Y) fun _ => (↑X → ↑Y) :
 -- Porting note: removed as this is a syntactic tauto
 --theorem coe_to_fun_eq {X Y : PresheafedSpace.{v, v, u} C} (f : X ⟶ Y) : (f : ↑X → ↑Y) = f.base :=
 --  rfl
-#noalign algebraic_geometry.PresheafedSpace.coe_to_fun_eq
 
 -- The `reassoc` attribute was added despite the LHS not being a composition of two homs,
 -- for the reasons explained in the docstring.
@@ -245,14 +225,12 @@ theorem comp_c_app {X Y Z : PresheafedSpace C} (α : X ⟶ Y) (β : Y ⟶ Z) (U)
     (α ≫ β).c.app U = β.c.app U ≫ α.c.app (op ((Opens.map β.base).obj (unop U))) :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.comp_c_app AlgebraicGeometry.PresheafedSpace.comp_c_app
 
 theorem congr_app {X Y : PresheafedSpace C} {α β : X ⟶ Y} (h : α = β) (U) :
     α.c.app U = β.c.app U ≫ X.presheaf.map (eqToHom (by subst h; rfl)) := by
   subst h
   simp
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.congr_app AlgebraicGeometry.PresheafedSpace.congr_app
 
 section
 
@@ -264,7 +242,6 @@ def forget : PresheafedSpace C ⥤ TopCat where
   obj X := (X : TopCat)
   map f := f.base
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.forget AlgebraicGeometry.PresheafedSpace.forget
 
 end
 
@@ -293,7 +270,6 @@ def isoOfComponents (H : X.1 ≅ Y.1) (α : H.hom _* X.2 ≅ Y.2) : X ≅ Y wher
     simp only [eqToHom_map, eqToHom_app, eqToHom_trans_assoc, eqToHom_refl, id_comp]
     apply Iso.inv_hom_id_app
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.iso_of_components AlgebraicGeometry.PresheafedSpace.isoOfComponents
 
 /-- Isomorphic `PresheafedSpace`s have naturally isomorphic presheaves. -/
 @[simps]
@@ -318,23 +294,19 @@ def sheafIsoOfIso (H : X ≅ Y) : Y.2 ≅ H.hom.base _* X.2 where
     erw [eq₂, reassoc_of% eq₁]
     simp
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.sheaf_iso_of_iso AlgebraicGeometry.PresheafedSpace.sheafIsoOfIso
 
 instance base_isIso_of_iso (f : X ⟶ Y) [IsIso f] : IsIso f.base :=
   ((forget _).mapIso (asIso f)).isIso_hom
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.base_is_iso_of_iso AlgebraicGeometry.PresheafedSpace.base_isIso_of_iso
 
 instance c_isIso_of_iso (f : X ⟶ Y) [IsIso f] : IsIso f.c :=
   (sheafIsoOfIso (asIso f)).isIso_hom
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.c_is_iso_of_iso AlgebraicGeometry.PresheafedSpace.c_isIso_of_iso
 
 /-- This could be used in conjunction with `CategoryTheory.NatIso.isIso_of_isIso_app`. -/
 theorem isIso_of_components (f : X ⟶ Y) [IsIso f.base] [IsIso f.c] : IsIso f :=
   (isoOfComponents (asIso f.base) (asIso f.c).symm).isIso_hom
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.is_iso_of_components AlgebraicGeometry.PresheafedSpace.isIso_of_components
 
 end Iso
 
@@ -348,7 +320,6 @@ def restrict {U : TopCat} (X : PresheafedSpace C) {f : U ⟶ (X : TopCat)}
   carrier := U
   presheaf := h.isOpenMap.functor.op ⋙ X.presheaf
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.restrict AlgebraicGeometry.PresheafedSpace.restrict
 
 /-- The map from the restriction of a presheafed space.
 -/
@@ -363,7 +334,6 @@ def ofRestrict {U : TopCat} (X : PresheafedSpace C) {f : U ⟶ (X : TopCat)}
           rw [← map_comp, ← map_comp]
           rfl }
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.of_restrict AlgebraicGeometry.PresheafedSpace.ofRestrict
 
 instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1) (hf : OpenEmbedding f) :
     Mono (X.ofRestrict hf) := by
@@ -394,7 +364,6 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1) (h
     simpa using h
 
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.of_restrict_mono AlgebraicGeometry.PresheafedSpace.ofRestrict_mono
 
 theorem restrict_top_presheaf (X : PresheafedSpace C) :
     (X.restrict (Opens.openEmbedding ⊤)).presheaf =
@@ -403,7 +372,6 @@ theorem restrict_top_presheaf (X : PresheafedSpace C) :
   rw [Opens.inclusion_top_functor X.carrier]
   rfl
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.restrict_top_presheaf AlgebraicGeometry.PresheafedSpace.restrict_top_presheaf
 
 theorem ofRestrict_top_c (X : PresheafedSpace C) :
     (X.ofRestrict (Opens.openEmbedding ⊤)).c =
@@ -421,7 +389,6 @@ theorem ofRestrict_top_c (X : PresheafedSpace C) :
   erw [eqToHom_map, eqToHom_app]
   simp
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.of_restrict_top_c AlgebraicGeometry.PresheafedSpace.ofRestrict_top_c
 
 /-- The map to the restriction of a presheafed space along the canonical inclusion from the top
 subspace.
@@ -431,7 +398,6 @@ def toRestrictTop (X : PresheafedSpace C) : X ⟶ X.restrict (Opens.openEmbeddin
   base := (Opens.inclusionTopIso X.carrier).inv
   c := eqToHom (restrict_top_presheaf X)
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.to_restrict_top AlgebraicGeometry.PresheafedSpace.toRestrictTop
 
 /-- The isomorphism from the restriction to the top subspace.
 -/
@@ -452,7 +418,6 @@ def restrictTopIso (X : PresheafedSpace C) : X.restrict (Opens.openEmbedding ⊤
         eqToHom_trans, eqToHom_refl]
       rfl
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.restrict_top_iso AlgebraicGeometry.PresheafedSpace.restrictTopIso
 
 end Restrict
 
@@ -463,17 +428,14 @@ def Γ : (PresheafedSpace C)ᵒᵖ ⥤ C where
   obj X := (unop X).presheaf.obj (op ⊤)
   map f := f.unop.c.app (op ⊤)
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.Γ AlgebraicGeometry.PresheafedSpace.Γ
 
 theorem Γ_obj_op (X : PresheafedSpace C) : Γ.obj (op X) = X.presheaf.obj (op ⊤) :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.Γ_obj_op AlgebraicGeometry.PresheafedSpace.Γ_obj_op
 
 theorem Γ_map_op {X Y : PresheafedSpace C} (f : X ⟶ Y) : Γ.map f.op = f.c.app (op ⊤) :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.Γ_map_op AlgebraicGeometry.PresheafedSpace.Γ_map_op
 
 end PresheafedSpace
 
@@ -507,32 +469,27 @@ def mapPresheaf (F : C ⥤ D) : PresheafedSpace C ⥤ PresheafedSpace D where
     ext U
     · rfl
     · simp
-#align category_theory.functor.map_presheaf CategoryTheory.Functor.mapPresheaf
 
 @[simp]
 theorem mapPresheaf_obj_X (F : C ⥤ D) (X : PresheafedSpace C) :
     (F.mapPresheaf.obj X : TopCat) = (X : TopCat) :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align category_theory.functor.map_presheaf_obj_X CategoryTheory.Functor.mapPresheaf_obj_X
 
 @[simp]
 theorem mapPresheaf_obj_presheaf (F : C ⥤ D) (X : PresheafedSpace C) :
     (F.mapPresheaf.obj X).presheaf = X.presheaf ⋙ F :=
   rfl
-#align category_theory.functor.map_presheaf_obj_presheaf CategoryTheory.Functor.mapPresheaf_obj_presheaf
 
 @[simp]
 theorem mapPresheaf_map_f (F : C ⥤ D) {X Y : PresheafedSpace C} (f : X ⟶ Y) :
     (F.mapPresheaf.map f).base = f.base :=
   rfl
-#align category_theory.functor.map_presheaf_map_f CategoryTheory.Functor.mapPresheaf_map_f
 
 @[simp]
 theorem mapPresheaf_map_c (F : C ⥤ D) {X Y : PresheafedSpace C} (f : X ⟶ Y) :
     (F.mapPresheaf.map f).c = whiskerRight f.c F :=
   rfl
-#align category_theory.functor.map_presheaf_map_c CategoryTheory.Functor.mapPresheaf_map_c
 
 end Functor
 
@@ -544,7 +501,6 @@ def onPresheaf {F G : C ⥤ D} (α : F ⟶ G) : G.mapPresheaf ⟶ F.mapPresheaf 
   app X :=
     { base := 𝟙 _
       c := whiskerLeft X.presheaf α ≫ eqToHom (Presheaf.Pushforward.id_eq _).symm }
-#align category_theory.nat_trans.on_presheaf CategoryTheory.NatTrans.onPresheaf
 
 -- TODO Assemble the last two constructions into a functor
 --   `(C ⥤ D) ⥤ (PresheafedSpace C ⥤ PresheafedSpace D)`

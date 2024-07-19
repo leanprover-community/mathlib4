@@ -5,8 +5,6 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
 
-#align_import data.rbtree.main from "leanprover-community/mathlib"@"4d4167104581a21259f7f448e1972a63a4546be7"
-
 /-!
 # Porting note: essentially already ported to std4
 

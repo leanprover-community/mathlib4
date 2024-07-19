@@ -13,9 +13,6 @@ import Mathlib.Algebra.Ring.Defs
 import Mathlib.Tactic.Tauto
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 
-#align_import algebra.order.ring.char_zero from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
-#align_import algebra.order.ring.defs from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"
-
 /-!
 # Ordered rings and semirings
 
@@ -126,7 +123,6 @@ class OrderedSemiring (α : Type u) extends Semiring α, OrderedAddCommMonoid α
   /-- In an ordered semiring, we can multiply an inequality `a ≤ b` on the right
   by a non-negative element `0 ≤ c` to obtain `a * c ≤ b * c`. -/
   protected mul_le_mul_of_nonneg_right : ∀ a b c : α, a ≤ b → 0 ≤ c → a * c ≤ b * c
-#align ordered_semiring OrderedSemiring
 
 /-- An `OrderedCommSemiring` is a commutative semiring with a partial order such that addition is
 monotone and multiplication by a nonnegative number is monotone. -/
@@ -134,7 +130,6 @@ class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring
   mul_le_mul_of_nonneg_right a b c ha hc :=
     -- parentheses ensure this generates an `optParam` rather than an `autoParam`
     (by simpa only [mul_comm] using mul_le_mul_of_nonneg_left a b c ha hc)
-#align ordered_comm_semiring OrderedCommSemiring
 
 /-- An `OrderedRing` is a ring with a partial order such that addition is monotone and
 multiplication by a nonnegative number is monotone. -/
@@ -143,12 +138,10 @@ class OrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
   protected zero_le_one : 0 ≤ (1 : α)
   /-- The product of non-negative elements is non-negative. -/
   protected mul_nonneg : ∀ a b : α, 0 ≤ a → 0 ≤ b → 0 ≤ a * b
-#align ordered_ring OrderedRing
 
 /-- An `OrderedCommRing` is a commutative ring with a partial order such that addition is monotone
 and multiplication by a nonnegative number is monotone. -/
 class OrderedCommRing (α : Type u) extends OrderedRing α, CommRing α
-#align ordered_comm_ring OrderedCommRing
 
 /-- A `StrictOrderedSemiring` is a nontrivial semiring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
@@ -160,12 +153,10 @@ class StrictOrderedSemiring (α : Type u) extends Semiring α, OrderedCancelAddC
   protected mul_lt_mul_of_pos_left : ∀ a b c : α, a < b → 0 < c → c * a < c * b
   /-- Right multiplication by a positive element is strictly monotone. -/
   protected mul_lt_mul_of_pos_right : ∀ a b c : α, a < b → 0 < c → a * c < b * c
-#align strict_ordered_semiring StrictOrderedSemiring
 
 /-- A `StrictOrderedCommSemiring` is a commutative semiring with a partial order such that
 addition is strictly monotone and multiplication by a positive number is strictly monotone. -/
 class StrictOrderedCommSemiring (α : Type u) extends StrictOrderedSemiring α, CommSemiring α
-#align strict_ordered_comm_semiring StrictOrderedCommSemiring
 
 /-- A `StrictOrderedRing` is a ring with a partial order such that addition is strictly monotone
 and multiplication by a positive number is strictly monotone. -/
@@ -174,12 +165,10 @@ class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, N
   protected zero_le_one : 0 ≤ (1 : α)
   /-- The product of two positive elements is positive. -/
   protected mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b
-#align strict_ordered_ring StrictOrderedRing
 
 /-- A `StrictOrderedCommRing` is a commutative ring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
 class StrictOrderedCommRing (α : Type*) extends StrictOrderedRing α, CommRing α
-#align strict_ordered_comm_ring StrictOrderedCommRing
 
 /- It's not entirely clear we should assume `Nontrivial` at this point; it would be reasonable to
 explore changing this, but be warned that the instances involving `Domain` may cause typeclass
@@ -188,23 +177,19 @@ search loops. -/
 addition is monotone and multiplication by a positive number is strictly monotone. -/
 class LinearOrderedSemiring (α : Type u) extends StrictOrderedSemiring α,
   LinearOrderedAddCommMonoid α
-#align linear_ordered_semiring LinearOrderedSemiring
 
 /-- A `LinearOrderedCommSemiring` is a nontrivial commutative semiring with a linear order such
 that addition is monotone and multiplication by a positive number is strictly monotone. -/
 class LinearOrderedCommSemiring (α : Type*) extends StrictOrderedCommSemiring α,
   LinearOrderedSemiring α
-#align linear_ordered_comm_semiring LinearOrderedCommSemiring
 
 /-- A `LinearOrderedRing` is a ring with a linear order such that addition is monotone and
 multiplication by a positive number is strictly monotone. -/
 class LinearOrderedRing (α : Type u) extends StrictOrderedRing α, LinearOrder α
-#align linear_ordered_ring LinearOrderedRing
 
 /-- A `LinearOrderedCommRing` is a commutative ring with a linear order such that addition is
 monotone and multiplication by a positive number is strictly monotone. -/
 class LinearOrderedCommRing (α : Type u) extends LinearOrderedRing α, CommMonoid α
-#align linear_ordered_comm_ring LinearOrderedCommRing
 
 section OrderedSemiring
 
@@ -212,17 +197,14 @@ variable [OrderedSemiring α] {a b c d : α}
 -- see Note [lower instance priority]
 instance (priority := 100) OrderedSemiring.zeroLEOneClass : ZeroLEOneClass α :=
   { ‹OrderedSemiring α› with }
-#align ordered_semiring.zero_le_one_class OrderedSemiring.zeroLEOneClass
 
 -- see Note [lower instance priority]
 instance (priority := 200) OrderedSemiring.toPosMulMono : PosMulMono α :=
   ⟨fun x _ _ h => OrderedSemiring.mul_le_mul_of_nonneg_left _ _ _ h x.2⟩
-#align ordered_semiring.to_pos_mul_mono OrderedSemiring.toPosMulMono
 
 -- see Note [lower instance priority]
 instance (priority := 200) OrderedSemiring.toMulPosMono : MulPosMono α :=
   ⟨fun x _ _ h => OrderedSemiring.mul_le_mul_of_nonneg_right _ _ _ h x.2⟩
-#align ordered_semiring.to_mul_pos_mono OrderedSemiring.toMulPosMono
 
 end OrderedSemiring
 
@@ -237,7 +219,6 @@ instance (priority := 100) OrderedRing.toOrderedSemiring : OrderedSemiring α :=
       simpa only [mul_sub, sub_nonneg] using OrderedRing.mul_nonneg _ _ hc (sub_nonneg.2 h),
     mul_le_mul_of_nonneg_right := fun a b c h hc => by
       simpa only [sub_mul, sub_nonneg] using OrderedRing.mul_nonneg _ _ (sub_nonneg.2 h) hc }
-#align ordered_ring.to_ordered_semiring OrderedRing.toOrderedSemiring
 
 end OrderedRing
 
@@ -248,7 +229,6 @@ variable [OrderedCommRing α]
 -- See note [lower instance priority]
 instance (priority := 100) OrderedCommRing.toOrderedCommSemiring : OrderedCommSemiring α :=
   { OrderedRing.toOrderedSemiring, ‹OrderedCommRing α› with }
-#align ordered_comm_ring.to_ordered_comm_semiring OrderedCommRing.toOrderedCommSemiring
 
 end OrderedCommRing
 
@@ -259,12 +239,10 @@ variable [StrictOrderedSemiring α] {a b c d : α}
 -- see Note [lower instance priority]
 instance (priority := 200) StrictOrderedSemiring.toPosMulStrictMono : PosMulStrictMono α :=
   ⟨fun x _ _ h => StrictOrderedSemiring.mul_lt_mul_of_pos_left _ _ _ h x.prop⟩
-#align strict_ordered_semiring.to_pos_mul_strict_mono StrictOrderedSemiring.toPosMulStrictMono
 
 -- see Note [lower instance priority]
 instance (priority := 200) StrictOrderedSemiring.toMulPosStrictMono : MulPosStrictMono α :=
   ⟨fun x _ _ h => StrictOrderedSemiring.mul_lt_mul_of_pos_right _ _ _ h x.prop⟩
-#align strict_ordered_semiring.to_mul_pos_strict_mono StrictOrderedSemiring.toMulPosStrictMono
 
 -- See note [reducible non-instances]
 /-- A choice-free version of `StrictOrderedSemiring.toOrderedSemiring` to avoid using choice in
@@ -283,7 +261,6 @@ abbrev StrictOrderedSemiring.toOrderedSemiring' [@DecidableRel α (· ≤ ·)] :
       obtain rfl | hc := Decidable.eq_or_lt_of_le hc
       · simp
       · exact (mul_lt_mul_of_pos_right hab hc).le }
-#align strict_ordered_semiring.to_ordered_semiring' StrictOrderedSemiring.toOrderedSemiring'
 
 -- see Note [lower instance priority]
 instance (priority := 100) StrictOrderedSemiring.toOrderedSemiring : OrderedSemiring α :=
@@ -294,19 +271,16 @@ instance (priority := 100) StrictOrderedSemiring.toOrderedSemiring : OrderedSemi
     mul_le_mul_of_nonneg_right := fun _ _ _ =>
       letI := @StrictOrderedSemiring.toOrderedSemiring' α _ (Classical.decRel _)
       mul_le_mul_of_nonneg_right }
-#align strict_ordered_semiring.to_ordered_semiring StrictOrderedSemiring.toOrderedSemiring
 
 -- see Note [lower instance priority]
 instance (priority := 100) StrictOrderedSemiring.toCharZero [StrictOrderedSemiring α] :
     CharZero α where
   cast_injective :=
     (strictMono_nat_of_lt_succ fun n ↦ by rw [Nat.cast_succ]; apply lt_add_one).injective
-#align strict_ordered_semiring.to_char_zero StrictOrderedSemiring.toCharZero
 
 -- see Note [lower instance priority]
 instance (priority := 100) StrictOrderedSemiring.toNoMaxOrder : NoMaxOrder α :=
   ⟨fun a => ⟨a + 1, lt_add_of_pos_right _ one_pos⟩⟩
-#align strict_ordered_semiring.to_no_max_order StrictOrderedSemiring.toNoMaxOrder
 
 end StrictOrderedSemiring
 
@@ -319,13 +293,11 @@ choice in basic `Nat` lemmas. -/
 abbrev StrictOrderedCommSemiring.toOrderedCommSemiring' [@DecidableRel α (· ≤ ·)] :
     OrderedCommSemiring α :=
   { ‹StrictOrderedCommSemiring α›, StrictOrderedSemiring.toOrderedSemiring' with }
-#align strict_ordered_comm_semiring.to_ordered_comm_semiring' StrictOrderedCommSemiring.toOrderedCommSemiring'
 
 -- see Note [lower instance priority]
 instance (priority := 100) StrictOrderedCommSemiring.toOrderedCommSemiring :
     OrderedCommSemiring α :=
   { ‹StrictOrderedCommSemiring α›, StrictOrderedSemiring.toOrderedSemiring with }
-#align strict_ordered_comm_semiring.to_ordered_comm_semiring StrictOrderedCommSemiring.toOrderedCommSemiring
 
 end StrictOrderedCommSemiring
 
@@ -340,7 +312,6 @@ instance (priority := 100) StrictOrderedRing.toStrictOrderedSemiring : StrictOrd
       simpa only [mul_sub, sub_pos] using StrictOrderedRing.mul_pos _ _ hc (sub_pos.2 h),
     mul_lt_mul_of_pos_right := fun a b c h hc => by
       simpa only [sub_mul, sub_pos] using StrictOrderedRing.mul_pos _ _ (sub_pos.2 h) hc }
-#align strict_ordered_ring.to_strict_ordered_semiring StrictOrderedRing.toStrictOrderedSemiring
 
 -- See note [reducible non-instances]
 /-- A choice-free version of `StrictOrderedRing.toOrderedRing` to avoid using choice in basic
@@ -353,13 +324,11 @@ abbrev StrictOrderedRing.toOrderedRing' [@DecidableRel α (· ≤ ·)] : Ordered
       obtain hb | hb := Decidable.eq_or_lt_of_le hb
       · rw [← hb, mul_zero]
       · exact (StrictOrderedRing.mul_pos _ _ ha hb).le }
-#align strict_ordered_ring.to_ordered_ring' StrictOrderedRing.toOrderedRing'
 
 -- see Note [lower instance priority]
 instance (priority := 100) StrictOrderedRing.toOrderedRing : OrderedRing α where
   __ := ‹StrictOrderedRing α›
   mul_nonneg := fun _ _ => mul_nonneg
-#align strict_ordered_ring.to_ordered_ring StrictOrderedRing.toOrderedRing
 
 end StrictOrderedRing
 
@@ -372,18 +341,15 @@ variable [StrictOrderedCommRing α]
 choice in basic `Int` lemmas. -/
 abbrev StrictOrderedCommRing.toOrderedCommRing' [@DecidableRel α (· ≤ ·)] : OrderedCommRing α :=
   { ‹StrictOrderedCommRing α›, StrictOrderedRing.toOrderedRing' with }
-#align strict_ordered_comm_ring.to_ordered_comm_ring' StrictOrderedCommRing.toOrderedCommRing'
 
 -- See note [lower instance priority]
 instance (priority := 100) StrictOrderedCommRing.toStrictOrderedCommSemiring :
     StrictOrderedCommSemiring α :=
   { ‹StrictOrderedCommRing α›, StrictOrderedRing.toStrictOrderedSemiring with }
-#align strict_ordered_comm_ring.to_strict_ordered_comm_semiring StrictOrderedCommRing.toStrictOrderedCommSemiring
 
 -- See note [lower instance priority]
 instance (priority := 100) StrictOrderedCommRing.toOrderedCommRing : OrderedCommRing α :=
   { ‹StrictOrderedCommRing α›, StrictOrderedRing.toOrderedRing with }
-#align strict_ordered_comm_ring.to_ordered_comm_ring StrictOrderedCommRing.toOrderedCommRing
 
 end StrictOrderedCommRing
 
@@ -394,12 +360,10 @@ variable [LinearOrderedSemiring α] {a b c d : α}
 -- see Note [lower instance priority]
 instance (priority := 200) LinearOrderedSemiring.toPosMulReflectLT : PosMulReflectLT α :=
   ⟨fun a _ _ => (monotone_mul_left_of_nonneg a.2).reflect_lt⟩
-#align linear_ordered_semiring.to_pos_mul_reflect_lt LinearOrderedSemiring.toPosMulReflectLT
 
 -- see Note [lower instance priority]
 instance (priority := 200) LinearOrderedSemiring.toMulPosReflectLT : MulPosReflectLT α :=
   ⟨fun a _ _ => (monotone_mul_right_of_nonneg a.2).reflect_lt⟩
-#align linear_ordered_semiring.to_mul_pos_reflect_lt LinearOrderedSemiring.toMulPosReflectLT
 
 attribute [local instance] LinearOrderedSemiring.decidableLE LinearOrderedSemiring.decidableLT
 
@@ -412,7 +376,6 @@ instance (priority := 100) LinearOrderedSemiring.noZeroDivisors : NoZeroDivisors
     obtain ha | ha := hab.1.lt_or_lt <;> obtain hb | hb := hab.2.lt_or_lt
     exacts [(mul_pos_of_neg_of_neg ha hb).ne', (mul_neg_of_neg_of_pos ha hb).ne,
       (mul_neg_of_pos_of_neg ha hb).ne, (mul_pos ha hb).ne']
-#align linear_ordered_ring.no_zero_divisors LinearOrderedSemiring.noZeroDivisors
 
 -- Note that we can't use `NoZeroDivisors.to_isDomain` since we are merely in a semiring.
 -- See note [lower instance priority]
@@ -423,7 +386,6 @@ instance (priority := 100) LinearOrderedRing.isDomain : IsDomain α where
   mul_right_cancel_of_ne_zero {b a c} ha h := by
     obtain ha | ha := ha.lt_or_lt
     exacts [(strictAnti_mul_right ha).injective h, (strictMono_mul_right_of_pos ha).injective h]
-#align linear_ordered_ring.is_domain LinearOrderedRing.isDomain
 
 end LinearOrderedSemiring
 
@@ -433,7 +395,6 @@ variable [LinearOrderedCommSemiring α] {a b c d : α}
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommSemiring.toLinearOrderedCancelAddCommMonoid :
     LinearOrderedCancelAddCommMonoid α where __ := ‹LinearOrderedCommSemiring α›
-#align linear_ordered_comm_semiring.to_linear_ordered_cancel_add_comm_monoid LinearOrderedCommSemiring.toLinearOrderedCancelAddCommMonoid
 
 end LinearOrderedCommSemiring
 
@@ -445,12 +406,10 @@ attribute [local instance] LinearOrderedRing.decidableLE LinearOrderedRing.decid
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrderedRing.toLinearOrderedSemiring : LinearOrderedSemiring α :=
   { ‹LinearOrderedRing α›, StrictOrderedRing.toStrictOrderedSemiring with }
-#align linear_ordered_ring.to_linear_ordered_semiring LinearOrderedRing.toLinearOrderedSemiring
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrderedRing.toLinearOrderedAddCommGroup :
     LinearOrderedAddCommGroup α where __ := ‹LinearOrderedRing α›
-#align linear_ordered_ring.to_linear_ordered_add_comm_group LinearOrderedRing.toLinearOrderedAddCommGroup
 
 end LinearOrderedRing
 
@@ -458,12 +417,10 @@ end LinearOrderedRing
 instance (priority := 100) LinearOrderedCommRing.toStrictOrderedCommRing
     [d : LinearOrderedCommRing α] : StrictOrderedCommRing α :=
   { d with }
-#align linear_ordered_comm_ring.to_strict_ordered_comm_ring LinearOrderedCommRing.toStrictOrderedCommRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrderedCommRing.toLinearOrderedCommSemiring
     [d : LinearOrderedCommRing α] : LinearOrderedCommSemiring α :=
   { d, LinearOrderedRing.toLinearOrderedSemiring with }
-#align linear_ordered_comm_ring.to_linear_ordered_comm_semiring LinearOrderedCommRing.toLinearOrderedCommSemiring
 
 assert_not_exists MonoidHom

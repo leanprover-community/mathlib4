@@ -6,8 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.Topology.Bornology.Hom
 
-#align_import topology.category.Born from "leanprover-community/mathlib"@"2143571557740bf69d0631339deea0d0e479df54"
-
 /-!
 # The category of bornologies
 
@@ -23,7 +21,6 @@ open CategoryTheory
 def Born :=
   Bundled Bornology
 set_option linter.uppercaseLean3 false in
-#align Born Born
 
 namespace Born
 
@@ -37,7 +34,6 @@ instance (X : Born) : Bornology X :=
 def of (α : Type*) [Bornology α] : Born :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
-#align Born.of Born.of
 
 instance : Inhabited Born :=
   ⟨of PUnit⟩

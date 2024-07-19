@@ -89,7 +89,6 @@ unsafe instance instRepr {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀
         Std.Format.join (f.support.val.unquot.map <|
           fun a => " | " ++ repr a ++ " => " ++ repr (f a))
       if p ≥ leadPrec then Format.paren ret else ret
-#align finsupp.has_repr Finsupp.instRepr
 
 -- This cannot be put in `Mathlib.Data.DFinsupp.Notation` where it belongs, since doc-strings
 -- can only be added/modified in the file where the corresponding declaration is defined.

@@ -5,8 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.Order.Category.Lat
 
-#align_import order.category.LinOrd from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
-
 /-!
 # Category of linear orders
 
@@ -22,7 +20,6 @@ universe u
 def LinOrd :=
   Bundled LinearOrder
 set_option linter.uppercaseLean3 false in
-#align LinOrd LinOrd
 
 namespace LinOrd
 
@@ -42,13 +39,11 @@ instance : CoeSort LinOrd Type* :=
 def of (α : Type*) [LinearOrder α] : LinOrd :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
-#align LinOrd.of LinOrd.of
 
 @[simp]
 theorem coe_of (α : Type*) [LinearOrder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align LinOrd.coe_of LinOrd.coe_of
 
 instance : Inhabited LinOrd :=
   ⟨of PUnit⟩
@@ -61,7 +56,6 @@ instance hasForgetToLat : HasForget₂ LinOrd Lat where
     { obj := fun X => Lat.of X
       map := fun {X Y} (f : OrderHom _ _) => OrderHomClass.toLatticeHom X Y f }
 set_option linter.uppercaseLean3 false in
-#align LinOrd.has_forget_to_Lat LinOrd.hasForgetToLat
 
 /-- Constructs an equivalence between linear orders from an order isomorphism between them. -/
 @[simps]
@@ -75,7 +69,6 @@ def Iso.mk {α β : LinOrd.{u}} (e : α ≃o β) : α ≅ β where
     ext x
     exact e.apply_symm_apply x
 set_option linter.uppercaseLean3 false in
-#align LinOrd.iso.mk LinOrd.Iso.mk
 
 /-- `OrderDual` as a functor. -/
 @[simps]
@@ -83,7 +76,6 @@ def dual : LinOrd ⥤ LinOrd where
   obj X := of Xᵒᵈ
   map := OrderHom.dual
 set_option linter.uppercaseLean3 false in
-#align LinOrd.dual LinOrd.dual
 
 /-- The equivalence between `LinOrd` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
@@ -93,7 +85,6 @@ def dualEquiv : LinOrd ≌ LinOrd where
   unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
   counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 set_option linter.uppercaseLean3 false in
-#align LinOrd.dual_equiv LinOrd.dualEquiv
 
 end LinOrd
 
@@ -101,4 +92,3 @@ theorem linOrd_dual_comp_forget_to_Lat :
     LinOrd.dual ⋙ forget₂ LinOrd Lat = forget₂ LinOrd Lat ⋙ Lat.dual :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align LinOrd_dual_comp_forget_to_Lat linOrd_dual_comp_forget_to_Lat

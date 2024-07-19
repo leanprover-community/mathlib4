@@ -9,8 +9,6 @@ import Mathlib.Algebra.Group.ULift
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.Algebra.Ring.Action.Group
 
-#align_import algebra.category.Mon.basic from "leanprover-community/mathlib"@"0caf3701139ef2e69c215717665361cda205a90b"
-
 /-!
 # Category instances for `Monoid`, `AddMonoid`, `CommMonoid`, and `AddCommMmonoid`.
 
@@ -31,9 +29,7 @@ open CategoryTheory
 def MonCat : Type (u + 1) :=
   Bundled Monoid
 set_option linter.uppercaseLean3 false in
-#align Mon MonCat
 set_option linter.uppercaseLean3 false in
-#align AddMon AddMonCat
 
 /-- The category of additive monoids and monoid morphisms. -/
 add_decl_doc AddMonCat
@@ -46,9 +42,7 @@ theory machinery work. -/
 abbrev AssocMonoidHom (M N : Type*) [Monoid M] [Monoid N] :=
   MonoidHom M N
 set_option linter.uppercaseLean3 false in
-#align Mon.assoc_monoid_hom MonCat.AssocMonoidHom
 set_option linter.uppercaseLean3 false in
-#align AddMon.assoc_add_monoid_hom AddMonCat.AssocAddMonoidHom
 
 /-- `AddMonoidHom` doesn't actually assume associativity. This alias is needed to make
 the category theory machinery work. -/
@@ -60,9 +54,7 @@ instance bundledHom : BundledHom AssocMonoidHom where
   id _ := MonoidHom.id _
   comp _ _ _ := MonoidHom.comp
 set_option linter.uppercaseLean3 false in
-#align Mon.bundled_hom MonCat.bundledHom
 set_option linter.uppercaseLean3 false in
-#align AddMon.bundled_hom AddMonCat.bundledHom
 
 deriving instance LargeCategory for MonCat
 attribute [to_additive instAddMonCatLargeCategory] instMonCatLargeCategory
@@ -110,9 +102,7 @@ lemma ext {X Y : MonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
 def of (M : Type u) [Monoid M] : MonCat :=
   Bundled.of M
 set_option linter.uppercaseLean3 false in
-#align Mon.of MonCat.of
 set_option linter.uppercaseLean3 false in
-#align AddMon.of AddMonCat.of
 
 /-- Construct a bundled `AddMonCat` from the underlying type and typeclass. -/
 add_decl_doc AddMonCat.of
@@ -123,9 +113,7 @@ add_decl_doc AddMonCat.of
 @[to_additive]
 theorem coe_of (R : Type u) [Monoid R] : (MonCat.of R : Type u) = R := rfl
 set_option linter.uppercaseLean3 false in
-#align Mon.coe_of MonCat.coe_of
 set_option linter.uppercaseLean3 false in
-#align AddMon.coe_of AddMonCat.coe_of
 
 @[to_additive]
 instance : Inhabited MonCat :=
@@ -137,9 +125,7 @@ instance : Inhabited MonCat :=
 @[to_additive]
 def ofHom {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) : of X ⟶ of Y := f
 set_option linter.uppercaseLean3 false in
-#align Mon.of_hom MonCat.ofHom
 set_option linter.uppercaseLean3 false in
-#align AddMon.of_hom AddMonCat.ofHom
 
 /-- Typecheck an `AddMonoidHom` as a morphism in `AddMonCat`. -/
 add_decl_doc AddMonCat.ofHom
@@ -148,7 +134,6 @@ add_decl_doc AddMonCat.ofHom
 lemma ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
 set_option linter.uppercaseLean3 false in
-#align Mon.of_hom_apply MonCat.ofHom_apply
 
 ---- Porting note: added to ease the port of `RepresentationTheory.Action.Basic`
 @[to_additive]
@@ -185,9 +170,7 @@ end MonCat
 def CommMonCat : Type (u + 1) :=
   Bundled CommMonoid
 set_option linter.uppercaseLean3 false in
-#align CommMon CommMonCat
 set_option linter.uppercaseLean3 false in
-#align AddCommMon AddCommMonCat
 
 /-- The category of additive commutative monoids and monoid morphisms. -/
 add_decl_doc AddCommMonCat
@@ -242,9 +225,7 @@ lemma ext {X Y : CommMonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g 
 def of (M : Type u) [CommMonoid M] : CommMonCat :=
   Bundled.of M
 set_option linter.uppercaseLean3 false in
-#align CommMon.of CommMonCat.of
 set_option linter.uppercaseLean3 false in
-#align AddCommMon.of AddCommMonCat.of
 
 /-- Construct a bundled `AddCommMonCat` from the underlying type and typeclass. -/
 add_decl_doc AddCommMonCat.of
@@ -261,17 +242,13 @@ instance : Inhabited CommMonCat :=
 theorem coe_of (R : Type u) [CommMonoid R] : (CommMonCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align CommMon.coe_of CommMonCat.coe_of
 set_option linter.uppercaseLean3 false in
-#align AddCommMon.coe_of AddCommMonCat.coe_of
 
 @[to_additive hasForgetToAddMonCat]
 instance hasForgetToMonCat : HasForget₂ CommMonCat MonCat :=
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
-#align CommMon.has_forget_to_Mon CommMonCat.hasForgetToMonCat
 set_option linter.uppercaseLean3 false in
-#align AddCommMon.has_forget_to_AddMon AddCommMonCat.hasForgetToAddMonCat
 
 @[to_additive]
 instance : Coe CommMonCat.{u} MonCat.{u} where coe := (forget₂ CommMonCat MonCat).obj
@@ -313,9 +290,7 @@ def MulEquiv.toMonCatIso (e : X ≃* Y) : MonCat.of X ≅ MonCat.of Y where
   hom := MonCat.ofHom e.toMonoidHom
   inv := MonCat.ofHom e.symm.toMonoidHom
 set_option linter.uppercaseLean3 false in
-#align mul_equiv.to_Mon_iso MulEquiv.toMonCatIso
 set_option linter.uppercaseLean3 false in
-#align add_equiv.to_AddMon_iso AddEquiv.toAddMonCatIso
 
 end
 
@@ -329,9 +304,7 @@ def MulEquiv.toCommMonCatIso (e : X ≃* Y) : CommMonCat.of X ≅ CommMonCat.of 
   hom := CommMonCat.ofHom e.toMonoidHom
   inv := CommMonCat.ofHom e.symm.toMonoidHom
 set_option linter.uppercaseLean3 false in
-#align mul_equiv.to_CommMon_iso MulEquiv.toCommMonCatIso
 set_option linter.uppercaseLean3 false in
-#align add_equiv.to_AddCommMon_iso AddEquiv.toAddCommMonCatIso
 
 /-- Build an isomorphism in the category `AddCommMonCat`
 from an `AddEquiv` between `AddCommMonoid`s. -/
@@ -347,18 +320,14 @@ namespace CategoryTheory.Iso
 def monCatIsoToMulEquiv {X Y : MonCat} (i : X ≅ Y) : X ≃* Y :=
   MonoidHom.toMulEquiv i.hom i.inv i.hom_inv_id i.inv_hom_id
 set_option linter.uppercaseLean3 false in
-#align category_theory.iso.Mon_iso_to_mul_equiv CategoryTheory.Iso.monCatIsoToMulEquiv
 set_option linter.uppercaseLean3 false in
-#align category_theory.iso.AddMon_iso_to_add_equiv CategoryTheory.Iso.addMonCatIsoToAddEquiv
 
 /-- Build a `MulEquiv` from an isomorphism in the category `CommMonCat`. -/
 @[to_additive "Build an `AddEquiv` from an isomorphism in the category\n`AddCommMonCat`."]
 def commMonCatIsoToMulEquiv {X Y : CommMonCat} (i : X ≅ Y) : X ≃* Y :=
   MonoidHom.toMulEquiv i.hom i.inv i.hom_inv_id i.inv_hom_id
 set_option linter.uppercaseLean3 false in
-#align category_theory.iso.CommMon_iso_to_mul_equiv CategoryTheory.Iso.commMonCatIsoToMulEquiv
 set_option linter.uppercaseLean3 false in
-#align category_theory.iso.CommMon_iso_to_add_equiv CategoryTheory.Iso.commMonCatIsoToAddEquiv
 
 end CategoryTheory.Iso
 
@@ -370,9 +339,7 @@ def mulEquivIsoMonCatIso {X Y : Type u} [Monoid X] [Monoid Y] :
   hom e := e.toMonCatIso
   inv i := i.monCatIsoToMulEquiv
 set_option linter.uppercaseLean3 false in
-#align mul_equiv_iso_Mon_iso mulEquivIsoMonCatIso
 set_option linter.uppercaseLean3 false in
-#align add_equiv_iso_AddMon_iso addEquivIsoAddMonCatIso
 
 /-- additive equivalences between `AddMonoid`s are the same
 as (isomorphic to) isomorphisms in `AddMonCat` -/
@@ -386,9 +353,7 @@ def mulEquivIsoCommMonCatIso {X Y : Type u} [CommMonoid X] [CommMonoid Y] :
   hom e := e.toCommMonCatIso
   inv i := i.commMonCatIsoToMulEquiv
 set_option linter.uppercaseLean3 false in
-#align mul_equiv_iso_CommMon_iso mulEquivIsoCommMonCatIso
 set_option linter.uppercaseLean3 false in
-#align add_equiv_iso_AddCommMon_iso addEquivIsoAddCommMonCatIso
 
 /-- additive equivalences between `AddCommMonoid`s are
 the same as (isomorphic to) isomorphisms in `AddCommMonCat` -/
@@ -403,9 +368,7 @@ instance MonCat.forget_reflects_isos : (forget MonCat.{u}).ReflectsIsomorphisms 
     let e : X ≃* Y := MulEquiv.mk i.toEquiv (MonoidHom.map_mul (show MonoidHom X Y from f))
     exact e.toMonCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
-#align Mon.forget_reflects_isos MonCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
-#align AddMon.forget_reflects_isos AddMonCat.forget_reflects_isos
 
 @[to_additive]
 instance CommMonCat.forget_reflects_isos : (forget CommMonCat.{u}).ReflectsIsomorphisms where
@@ -416,9 +379,7 @@ instance CommMonCat.forget_reflects_isos : (forget CommMonCat.{u}).ReflectsIsomo
       (MonoidHom.map_mul (show MonoidHom X Y from f))
     exact e.toCommMonCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
-#align CommMon.forget_reflects_isos CommMonCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
-#align AddCommMon.forget_reflects_isos AddCommMonCat.forget_reflects_isos
 
 -- Porting note: this was added in order to ensure that `forget₂ CommMonCat MonCat`
 -- automatically reflects isomorphisms

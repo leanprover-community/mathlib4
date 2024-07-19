@@ -47,7 +47,6 @@ defined as `{ f : Fin (n+1) → ℝ≥0 // ∑ i, f i = 1 }` with its subspace t
 noncomputable def TopCat.toSSet : TopCat ⥤ SSet :=
   Presheaf.restrictedYoneda SimplexCategory.toTop
 set_option linter.uppercaseLean3 false in
-#align Top.to_sSet TopCat.toSSet
 
 /-- The *geometric realization functor* is
 the left Kan extension of `SimplexCategory.toTop` along the Yoneda embedding.
@@ -56,14 +55,12 @@ It is left adjoint to `TopCat.toSSet`, as witnessed by `sSetTopAdj`. -/
 noncomputable def SSet.toTop : SSet ⥤ TopCat :=
   yoneda.leftKanExtension SimplexCategory.toTop
 set_option linter.uppercaseLean3 false in
-#align sSet.to_Top SSet.toTop
 
 /-- Geometric realization is left adjoint to the singular simplicial set construction. -/
 noncomputable def sSetTopAdj : SSet.toTop ⊣ TopCat.toSSet :=
   Presheaf.yonedaAdjunction (yoneda.leftKanExtension SimplexCategory.toTop)
     (yoneda.leftKanExtensionUnit SimplexCategory.toTop)
 set_option linter.uppercaseLean3 false in
-#align sSet_Top_adj sSetTopAdj
 
 /-- The geometric realization of the representable simplicial sets agree
   with the usual topological simplices. -/
@@ -71,4 +68,3 @@ noncomputable def SSet.toTopSimplex :
     (yoneda : SimplexCategory ⥤ _) ⋙ SSet.toTop ≅ SimplexCategory.toTop :=
   Presheaf.isExtensionAlongYoneda _
 set_option linter.uppercaseLean3 false in
-#align sSet.to_Top_simplex SSet.toTopSimplex

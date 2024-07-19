@@ -8,8 +8,6 @@ import Mathlib.Algebra.Category.ModuleCat.Kernels
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.CategoryTheory.Abelian.Basic
 
-#align_import algebra.category.Module.abelian from "leanprover-community/mathlib"@"09f981f72d43749f1fa072deade828d9c1e185bb"
-
 /-!
 # The category of left R-modules is abelian.
 
@@ -50,7 +48,6 @@ def normalMono (hf : Mono f) : NormalMono f where
               (LinearMap.quotKerEquivRange f ≪≫ₗ
               LinearEquiv.ofEq _ _ (Submodule.ker_mkQ _).symm))) <| by ext; rfl
 set_option linter.uppercaseLean3 false in
-#align Module.normal_mono ModuleCat.normalMono
 
 /-- In the category of modules, every epimorphism is normal. -/
 def normalEpi (hf : Epi f) : NormalEpi f where
@@ -72,7 +69,6 @@ def normalEpi (hf : Epi f) : NormalEpi f where
                 LinearMap.quotKerEquivRange f ≪≫ₗ
               LinearEquiv.ofTop _ (range_eq_top_of_epi _))) <| by ext; rfl
 set_option linter.uppercaseLean3 false in
-#align Module.normal_epi ModuleCat.normalEpi
 
 /-- The category of R-modules is abelian. -/
 instance abelian : Abelian (ModuleCat.{v} R) where
@@ -80,7 +76,6 @@ instance abelian : Abelian (ModuleCat.{v} R) where
   normalMonoOfMono := normalMono
   normalEpiOfEpi := normalEpi
 set_option linter.uppercaseLean3 false in
-#align Module.abelian ModuleCat.abelian
 
 section ReflectsLimits
 
@@ -94,23 +89,19 @@ instance forgetReflectsLimitsOfSize :
     ReflectsLimitsOfSize.{v, v} (forget (ModuleCatMax.{v, w} R)) :=
   reflectsLimitsOfReflectsIsomorphisms
 set_option linter.uppercaseLean3 false in
-#align Module.forget_reflects_limits_of_size ModuleCat.forgetReflectsLimitsOfSize
 
 instance forget₂ReflectsLimitsOfSize :
     ReflectsLimitsOfSize.{v, v} (forget₂ (ModuleCatMax.{v, w} R) AddCommGrp.{max v w}) :=
   reflectsLimitsOfReflectsIsomorphisms
 set_option linter.uppercaseLean3 false in
-#align Module.forget₂_reflects_limits_of_size ModuleCat.forget₂ReflectsLimitsOfSize
 
 instance forgetReflectsLimits : ReflectsLimits (forget (ModuleCat.{v} R)) :=
   ModuleCat.forgetReflectsLimitsOfSize.{v, v}
 set_option linter.uppercaseLean3 false in
-#align Module.forget_reflects_limits ModuleCat.forgetReflectsLimits
 
 instance forget₂ReflectsLimits : ReflectsLimits (forget₂ (ModuleCat.{v} R) AddCommGrp.{v}) :=
   ModuleCat.forget₂ReflectsLimitsOfSize.{v, v}
 set_option linter.uppercaseLean3 false in
-#align Module.forget₂_reflects_limits ModuleCat.forget₂ReflectsLimits
 
 end ReflectsLimits
 

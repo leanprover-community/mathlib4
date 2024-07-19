@@ -6,8 +6,6 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Nat.Bits
 import Mathlib.Order.Lattice
 
-#align_import data.nat.size from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
-
 /-! Lemmas about `size`. -/
 
 namespace Nat
@@ -17,36 +15,27 @@ namespace Nat
 section
 
 theorem shiftLeft_eq_mul_pow (m) : ∀ n, m <<< n = m * 2 ^ n := shiftLeft_eq _
-#align nat.shiftl_eq_mul_pow Nat.shiftLeft_eq_mul_pow
 
 theorem shiftLeft'_tt_eq_mul_pow (m) : ∀ n, shiftLeft' true m n + 1 = (m + 1) * 2 ^ n
   | 0 => by simp [shiftLeft', pow_zero, Nat.one_mul]
   | k + 1 => by
     rw [shiftLeft', bit_val, cond_true, add_assoc, ← Nat.mul_add_one, shiftLeft'_tt_eq_mul_pow m k,
       mul_left_comm, mul_comm 2, pow_succ]
-#align nat.shiftl'_tt_eq_mul_pow Nat.shiftLeft'_tt_eq_mul_pow
 
 end
 
-#align nat.one_shiftl Nat.one_shiftLeft
-#align nat.zero_shiftl Nat.zero_shiftLeft
-#align nat.shiftr_eq_div_pow Nat.shiftRight_eq_div_pow
-
 theorem shiftLeft'_ne_zero_left (b) {m} (h : m ≠ 0) (n) : shiftLeft' b m n ≠ 0 := by
   induction n <;> simp [bit_ne_zero, shiftLeft', *]
-#align nat.shiftl'_ne_zero_left Nat.shiftLeft'_ne_zero_left
 
 theorem shiftLeft'_tt_ne_zero (m) : ∀ {n}, (n ≠ 0) → shiftLeft' true m n ≠ 0
   | 0, h => absurd rfl h
   | succ _, _ => by dsimp [shiftLeft', bit]; omega
-#align nat.shiftl'_tt_ne_zero Nat.shiftLeft'_tt_ne_zero
 
 /-! ### `size` -/
 
 
 @[simp]
 theorem size_zero : size 0 = 0 := by simp [size]
-#align nat.size_zero Nat.size_zero
 
 @[simp]
 theorem size_bit {b n} (h : bit b n ≠ 0) : size (bit b n) = succ (size n) := by
@@ -56,17 +45,12 @@ theorem size_bit {b n} (h : bit b n ≠ 0) : size (bit b n) = succ (size n) := b
     rw [binaryRec]
     simp [h]
   rw [div2_bit]
-#align nat.size_bit Nat.size_bit
 
 section
-
-#noalign nat.size_bit0
-#noalign nat.size_bit1
 
 @[simp]
 theorem size_one : size 1 = 1 :=
   show size (bit true 0) = 1 by rw [size_bit, size_zero]; exact Nat.one_ne_zero
-#align nat.size_one Nat.size_one
 
 end
 
@@ -87,14 +71,12 @@ theorem size_shiftLeft' {b m n} (h : shiftLeft' b m n ≠ 0) :
   simp only [zero_add, one_mul] at this
   obtain rfl : n = 0 := not_ne_iff.1 fun hn ↦ ne_of_gt (Nat.one_lt_pow hn (by decide)) this
   rw [add_zero]
-#align nat.size_shiftl' Nat.size_shiftLeft'
 
 -- TODO: decide whether `Nat.shiftLeft_eq` (which rewrites the LHS into a power) should be a simp
 -- lemma; it was not in mathlib3. Until then, tell the simpNF linter to ignore the issue.
 @[simp, nolint simpNF]
 theorem size_shiftLeft {m} (h : m ≠ 0) (n) : size (m <<< n) = size m + n := by
   simp only [size_shiftLeft' (shiftLeft'_ne_zero_left _ h _), ← shiftLeft'_false]
-#align nat.size_shiftl Nat.size_shiftLeft
 
 theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   rw [← one_shiftLeft]
@@ -106,7 +88,6 @@ theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   · apply this h
   rw [size_bit h, shiftLeft_succ, shiftLeft_eq, one_mul]
   cases b <;> dsimp [bit] <;> omega
-#align nat.lt_size_self Nat.lt_size_self
 
 theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
   ⟨fun h => lt_of_lt_of_le (lt_size_self _) (pow_le_pow_of_le_right (by decide) h), by
@@ -125,33 +106,26 @@ theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
         simp only [shiftLeft_succ] at *
         refine lt_of_le_of_lt ?_ h
         cases b <;> dsimp [bit] <;> omega⟩
-#align nat.size_le Nat.size_le
 
 theorem lt_size {m n : ℕ} : m < size n ↔ 2 ^ m ≤ n := by
   rw [← not_lt, Decidable.iff_not_comm, not_lt, size_le]
-#align nat.lt_size Nat.lt_size
 
 theorem size_pos {n : ℕ} : 0 < size n ↔ 0 < n := by rw [lt_size]; rfl
-#align nat.size_pos Nat.size_pos
 
 theorem size_eq_zero {n : ℕ} : size n = 0 ↔ n = 0 := by
   simpa [Nat.pos_iff_ne_zero, not_iff_not] using size_pos
-#align nat.size_eq_zero Nat.size_eq_zero
 
 theorem size_pow {n : ℕ} : size (2 ^ n) = n + 1 :=
   le_antisymm (size_le.2 <| Nat.pow_lt_pow_right (by decide) (lt_succ_self _))
     (lt_size.2 <| le_rfl)
-#align nat.size_pow Nat.size_pow
 
 theorem size_le_size {m n : ℕ} (h : m ≤ n) : size m ≤ size n :=
   size_le.2 <| lt_of_le_of_lt h (lt_size_self _)
-#align nat.size_le_size Nat.size_le_size
 
 theorem size_eq_bits_len (n : ℕ) : n.bits.length = n.size := by
   induction' n using Nat.binaryRec' with b n h ih; · simp
   rw [size_bit, bits_append_bit _ _ h]
   · simp [ih]
   · simpa [bit_eq_zero_iff]
-#align nat.size_eq_bits_len Nat.size_eq_bits_len
 
 end Nat

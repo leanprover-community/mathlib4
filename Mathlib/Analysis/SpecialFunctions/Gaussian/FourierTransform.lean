@@ -44,7 +44,6 @@ variable {b : ℂ}
 with vertices at `(±T, 0)` and `(±T, c)`.  -/
 def verticalIntegral (b : ℂ) (c T : ℝ) : ℂ :=
   ∫ y : ℝ in (0 : ℝ)..c, I * (cexp (-b * (T + y * I) ^ 2) - cexp (-b * (T - y * I) ^ 2))
-#align gaussian_fourier.vertical_integral GaussianFourier.verticalIntegral
 
 /-- Explicit formula for the norm of the Gaussian function along the vertical
 edges. -/
@@ -54,7 +53,6 @@ theorem norm_cexp_neg_mul_sq_add_mul_I (b : ℂ) (c T : ℝ) :
   simp only [sq, re_add_im, mul_re, mul_im, add_re, add_im, ofReal_re, ofReal_im, I_re, I_im]
   ring_nf
 set_option linter.uppercaseLean3 false in
-#align gaussian_fourier.norm_cexp_neg_mul_sq_add_mul_I GaussianFourier.norm_cexp_neg_mul_sq_add_mul_I
 
 theorem norm_cexp_neg_mul_sq_add_mul_I' (hb : b.re ≠ 0) (c T : ℝ) :
     ‖cexp (-b * (T + c * I) ^ 2)‖ =
@@ -65,7 +63,6 @@ theorem norm_cexp_neg_mul_sq_add_mul_I' (hb : b.re ≠ 0) (c T : ℝ) :
     field_simp; ring
   rw [norm_cexp_neg_mul_sq_add_mul_I, this]
 set_option linter.uppercaseLean3 false in
-#align gaussian_fourier.norm_cexp_neg_mul_sq_add_mul_I' GaussianFourier.norm_cexp_neg_mul_sq_add_mul_I'
 
 theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤ T) :
     ‖verticalIntegral b c T‖ ≤
@@ -109,7 +106,6 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
     refine (norm_sub_le _ _).trans (add_le_add (vert_norm_bound hT absy) ?_)
     rw [← abs_neg y] at absy
     simpa only [neg_mul, ofReal_neg] using vert_norm_bound hT absy
-#align gaussian_fourier.vertical_integral_norm_le GaussianFourier.verticalIntegral_norm_le
 
 theorem tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
     Tendsto (verticalIntegral b c) atTop (𝓝 0) := by
@@ -126,7 +122,6 @@ theorem tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
   simp_rw [sq, ← mul_assoc, ← sub_mul]
   refine Tendsto.atTop_mul_atTop (tendsto_atTop_add_const_right _ _ ?_) tendsto_id
   exact (tendsto_const_mul_atTop_of_pos hb).mpr tendsto_id
-#align gaussian_fourier.tendsto_vertical_integral GaussianFourier.tendsto_verticalIntegral
 
 theorem integrable_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
     Integrable fun x : ℝ => cexp (-b * (x + c * I) ^ 2) := by
@@ -143,7 +138,6 @@ theorem integrable_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
   simp_rw [← neg_mul]
   apply integrable_exp_neg_mul_sq hb
 set_option linter.uppercaseLean3 false in
-#align gaussian_fourier.integrable_cexp_neg_mul_sq_add_real_mul_I GaussianFourier.integrable_cexp_neg_mul_sq_add_real_mul_I
 
 theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
     ∫ x : ℝ, cexp (-b * (x + c * I) ^ 2) = (π / b) ^ (1 / 2 : ℂ) := by
@@ -185,7 +179,6 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
     intervalIntegral_tendsto_integral (integrable_cexp_neg_mul_sq hb) tendsto_neg_atTop_atBot
       tendsto_id
 set_option linter.uppercaseLean3 false in
-#align gaussian_fourier.integral_cexp_neg_mul_sq_add_real_mul_I GaussianFourier.integral_cexp_neg_mul_sq_add_real_mul_I
 
 theorem _root_.integral_cexp_quadratic (hb : b.re < 0) (c d : ℂ) :
     ∫ x : ℝ, cexp (b * x ^ 2 + c * x + d) = (π / -b) ^ (1 / 2 : ℂ) * cexp (d - c^2 / (4 * b)) := by
@@ -220,7 +213,6 @@ theorem _root_.fourierIntegral_gaussian (hb : 0 < b.re) (t : ℂ) :
   conv => enter [1, 2, x]; rw [← Complex.exp_add, add_comm, ← add_zero (-b * x ^ 2 + I * t * x)]
   rw [integral_cexp_quadratic (show (-b).re < 0 by rwa [neg_re, neg_lt_zero]), neg_neg, zero_sub,
     mul_neg, div_neg, neg_neg, mul_pow, I_sq, neg_one_mul, mul_comm]
-#align fourier_transform_gaussian fourierIntegral_gaussian
 
 @[deprecated (since := "2024-02-21")]
 alias _root_.fourier_transform_gaussian := fourierIntegral_gaussian
@@ -252,7 +244,6 @@ theorem _root_.fourierIntegral_gaussian_pi (hb : 0 < b.re) :
     (𝓕 fun (x : ℝ) ↦ cexp (-π * b * x ^ 2)) =
     fun t : ℝ ↦ 1 / b ^ (1 / 2 : ℂ) * cexp (-π / b * t ^ 2) := by
   simpa only [mul_zero, zero_mul, add_zero] using fourierIntegral_gaussian_pi' hb 0
-#align fourier_transform_gaussian_pi fourierIntegral_gaussian_pi
 
 @[deprecated (since := "2024-02-21")]
 alias root_.fourier_transform_gaussian_pi := _root_.fourierIntegral_gaussian_pi
