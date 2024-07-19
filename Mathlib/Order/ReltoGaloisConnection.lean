@@ -73,7 +73,7 @@ def rFixedPoints := {I : (Set β)ᵒᵈ | leftDual R (rightDual R I) = I}
 
 open GaloisConnection
 
-/-- `leftDual` maps every element `J` to `uFixedPoints`. -/
+/-- `leftDual` maps every element `J` to `rFixedPoints`. -/
 @[simp]
 theorem is_rFixedPoint (J : Set α) : leftDual R J ∈ rFixedPoints R := by
     unfold rFixedPoints; simp; apply le_antisymm
