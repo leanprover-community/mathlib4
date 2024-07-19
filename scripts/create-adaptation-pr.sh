@@ -84,10 +84,10 @@ fi
 git push
 
 echo
-echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and squash merge the latest changes from 'origin/nightly-testing'"
+echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from 'origin/nightly-testing'"
 
 git checkout -b "bump/nightly-$NIGHTLYDATE"
-git merge --squash origin/nightly-testing
+git merge origin/nightly-testing
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -102,7 +102,7 @@ fi
 if git diff --name-only --diff-filter=U | grep -q .; then
   echo
   echo "### [user] Conflict resolution"
-  echo "We are squash merging the latest changes from 'origin/nightly-testing' into 'bump/nightly-$NIGHTLYDATE'"
+  echo "We are merging the latest changes from 'origin/nightly-testing' into 'bump/nightly-$NIGHTLYDATE'"
   echo "There seem to be conflicts: please resolve them"
   echo "Open `pwd` in a new terminal and run 'git status'"
   echo "Run 'git add' on the resolved files, but do not commit"
