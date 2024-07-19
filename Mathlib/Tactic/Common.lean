@@ -11,6 +11,14 @@ import Qq
 -- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
 import ImportGraph.Imports
 
+-- Currently we don't need to import all of ProofWidgets,
+-- but without this, if you don't run `lake build ProofWidgets` then `make test` will fail.
+-- Hopefully `lake` will be able to handle tests later.
+import ProofWidgets
+
+-- Import Mathlib-specific linters.
+import Mathlib.Tactic.Linter.Lint
+
 -- Now import all tactics defined in Mathlib that do not require theory files.
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.ApplyCongr
@@ -28,16 +36,17 @@ import Mathlib.Tactic.ClearExclamation
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
-import Mathlib.Tactic.Congr!
-import Mathlib.Tactic.Congrm
+import Mathlib.Tactic.CongrExclamation
+import Mathlib.Tactic.CongrM
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.DefEqTransformations
+import Mathlib.Tactic.DeprecateMe
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.Eqns
-import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.ExistsI
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FailIfNoProgress
@@ -55,7 +64,7 @@ import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.Lift
-import Mathlib.Tactic.Lint
+import Mathlib.Tactic.Linter
 import Mathlib.Tactic.MkIffOfInductiveProp
 -- NormNum imports `Algebra.Order.Invertible`, `Data.Int.Basic`, `Data.Nat.Cast.Commute`
 -- import Mathlib.Tactic.NormNum.Basic
@@ -84,6 +93,7 @@ import Mathlib.Tactic.Simps.Basic
 -- import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
+import Mathlib.Tactic.Subsingleton
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Tactic.SudoSetOption
@@ -100,7 +110,7 @@ import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.Variable
 import Mathlib.Tactic.Widget.Calc
-import Mathlib.Tactic.Widget.Congrm
+import Mathlib.Tactic.Widget.CongrM
 import Mathlib.Tactic.Widget.Conv
 import Mathlib.Tactic.WLOG
 import Mathlib.Util.AssertExists
@@ -114,6 +124,9 @@ thereby making tactics widely available without needing specific imports.
 
 We include some commented out imports here, with an explanation of their theory requirements,
 to save some time for anyone wondering why they are not here.
+
+We also import theory-free linters, commands, and utilities which are useful to have low in the
+import hierarchy.
 -/
 
 /-!

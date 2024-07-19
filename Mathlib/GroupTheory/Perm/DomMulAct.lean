@@ -89,12 +89,12 @@ section Fintype
 
 variable [Fintype α] [Fintype ι] [DecidableEq α] [DecidableEq ι]
 
-open BigOperators Nat
+open Nat
 
 variable (f)
 
 /-- The cardinality of the type of permutations preserving a function -/
-theorem stabilizer_card:
+theorem stabilizer_card :
     Fintype.card {g : Perm α // f ∘ g = f} = ∏ i, (Fintype.card {a // f a = i})! := by
   -- rewriting via Nat.card because Fintype instance is not found
   rw [← Nat.card_eq_fintype_card, Nat.card_congr (subtypeEquiv mk fun _ ↦ ?_),

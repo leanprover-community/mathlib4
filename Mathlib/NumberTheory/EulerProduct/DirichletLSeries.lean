@@ -5,21 +5,23 @@ Authors: Michael Stoll
 -/
 import Mathlib.NumberTheory.DirichletCharacter.Bounds
 import Mathlib.NumberTheory.EulerProduct.Basic
-import Mathlib.NumberTheory.ZetaFunction
+import Mathlib.NumberTheory.LSeries.Basic
+import Mathlib.NumberTheory.LSeries.RiemannZeta
 
 /-!
 # The Euler Product for the Riemann Zeta Function and Dirichlet L-Series
 
-The first main result of this file is `riemannZeta_eulerProduct`, which states
-the Euler Product formula for the Riemann ζ function
+The first main result of this file is the Euler Product formula for the Riemann ζ function
 $$\prod_p \frac{1}{1 - p^{-s}}
    = \lim_{n \to \infty} \prod_{p < n} \frac{1}{1 - p^{-s}} = \zeta(s)$$
 for $s$ with real part $> 1$ ($p$ runs through the primes).
-The formalized statement is the second equality above, since infinite products are not yet
-available in Mathlib.
+`riemannZeta_eulerProduct` is the second equality above. There are versions
+`riemannZeta_eulerProduct_hasProd` and `riemannZeta_eulerProduct_tprod` in terms of `HasProd`
+and `tprod`, respectively.
 
-The second result is `dirichletLSeries_eulerProduct`, which is the analogous statement
-for Dirichlet L-functions.
+The second result is `dirichletLSeries_eulerProduct` (with variants
+`dirichletLSeries_eulerProduct_hasProd` and `dirichletLSeries_eulerProduct_tprod`),
+which is the analogous statement for Dirichlet L-series.
 -/
 
 open Complex
@@ -58,6 +60,13 @@ lemma summable_riemannZetaSummand (hs : 1 < s.re) :
     abs_cpow_eq_rpow_re_of_nonneg (Nat.cast_nonneg n) <| re_neg_ne_zero_of_one_lt_re hs,
     neg_re, Real.rpow_neg <| Nat.cast_nonneg n]
 
+lemma tsum_riemannZetaSummand (hs : 1 < s.re) :
+    ∑' (n : ℕ), riemannZetaSummandHom (ne_zero_of_one_lt_re hs) n = riemannZeta s := by
+  have hsum := summable_riemannZetaSummand hs
+  rw [zeta_eq_tsum_one_div_nat_add_one_cpow hs, tsum_eq_zero_add hsum.of_norm, map_zero, zero_add]
+  simp only [riemannZetaSummandHom, cpow_neg, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
+    Nat.cast_add, Nat.cast_one, one_div]
+
 /-- When `s.re > 1`, the map `n ↦ χ(n) * n^(-s)` is norm-summable. -/
 lemma summable_dirichletSummand {N : ℕ} (χ : DirichletCharacter ℂ N) (hs : 1 < s.re) :
     Summable (fun n ↦ ‖dirichletSummandHom χ (ne_zero_of_one_lt_re hs) n‖) := by
@@ -65,21 +74,60 @@ lemma summable_dirichletSummand {N : ℕ} (χ : DirichletCharacter ℂ N) (hs : 
   exact (summable_riemannZetaSummand hs).of_nonneg_of_le (fun _ ↦ by positivity)
     (fun n ↦ mul_le_of_le_one_left (norm_nonneg _) <| χ.norm_le_one n)
 
-open Filter Nat Topology BigOperators EulerProduct
+open scoped LSeries.notation in
+lemma tsum_dirichletSummand {N : ℕ} (χ : DirichletCharacter ℂ N) (hs : 1 < s.re) :
+    ∑' (n : ℕ), dirichletSummandHom χ (ne_zero_of_one_lt_re hs) n = L ↗χ s := by
+  simp only [LSeries, LSeries.term, dirichletSummandHom]
+  refine tsum_congr (fun n ↦ ?_)
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp only [map_zero, ↓reduceIte]
+  · simp only [cpow_neg, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, hn, ↓reduceIte,
+      Field.div_eq_mul_inv]
 
-/-- The Euler product for the Riemann ζ function, valid for `s.re > 1`. -/
--- TODO: state in terms of `∏'` once this is in Mathlib
+open Filter Nat Topology EulerProduct
+
+/-- The Euler product for the Riemann ζ function, valid for `s.re > 1`.
+This version is stated in terms of `HasProd`. -/
+theorem riemannZeta_eulerProduct_hasProd (hs : 1 < s.re) :
+    HasProd (fun p : Primes ↦ (1 - (p : ℂ) ^ (-s))⁻¹) (riemannZeta s) := by
+  rw [← tsum_riemannZetaSummand hs]
+  apply eulerProduct_completely_multiplicative_hasProd <| summable_riemannZetaSummand hs
+
+/-- The Euler product for the Riemann ζ function, valid for `s.re > 1`.
+This version is stated in terms of `tprod`. -/
+theorem riemannZeta_eulerProduct_tprod (hs : 1 < s.re) :
+    ∏' p : Primes, (1 - (p : ℂ) ^ (-s))⁻¹ = riemannZeta s :=
+  (riemannZeta_eulerProduct_hasProd hs).tprod_eq
+
+/-- The Euler product for the Riemann ζ function, valid for `s.re > 1`.
+This version is stated in the form of convergence of finite partial products. -/
 theorem riemannZeta_eulerProduct (hs : 1 < s.re) :
-    Tendsto (fun n : ℕ ↦ ∏ p in primesBelow n, (1 - (p : ℂ) ^ (-s))⁻¹) atTop
+    Tendsto (fun n : ℕ ↦ ∏ p ∈ primesBelow n, (1 - (p : ℂ) ^ (-s))⁻¹) atTop
       (𝓝 (riemannZeta s)) := by
-  have hsum := summable_riemannZetaSummand hs
-  convert eulerProduct_completely_multiplicative hsum
-  rw [zeta_eq_tsum_one_div_nat_add_one_cpow hs, tsum_eq_zero_add hsum.of_norm, map_zero, zero_add]
-  simp [riemannZetaSummandHom, cpow_neg]
+  rw [← tsum_riemannZetaSummand hs]
+  apply eulerProduct_completely_multiplicative <| summable_riemannZetaSummand hs
 
-/-- The Euler product for Dirichlet L-series, valid for `s.re > 1`. -/
--- TODO: state in terms of `∏'` once this is in Mathlib
+open scoped LSeries.notation
+
+/-- The Euler product for Dirichlet L-series, valid for `s.re > 1`.
+This version is stated in terms of `HasProd`. -/
+theorem dirichletLSeries_eulerProduct_hasProd {N : ℕ} (χ : DirichletCharacter ℂ N)
+    (hs : 1 < s.re) :
+    HasProd (fun p : Primes ↦ (1 - χ p * (p : ℂ) ^ (-s))⁻¹) (L ↗χ s) := by
+  rw [← tsum_dirichletSummand χ hs]
+  convert eulerProduct_completely_multiplicative_hasProd <| summable_dirichletSummand χ hs
+
+/-- The Euler product for Dirichlet L-series, valid for `s.re > 1`.
+This version is stated in terms of `tprod`. -/
+theorem dirichletLSeries_eulerProduct_tprod {N : ℕ} (χ : DirichletCharacter ℂ N)
+    (hs : 1 < s.re) :
+    ∏' p : Primes, (1 - χ p * (p : ℂ) ^ (-s))⁻¹ = L ↗χ s :=
+  (dirichletLSeries_eulerProduct_hasProd χ hs).tprod_eq
+
+/-- The Euler product for Dirichlet L-series, valid for `s.re > 1`.
+This version is stated in the form of convergence of finite partial products. -/
 theorem dirichletLSeries_eulerProduct {N : ℕ} (χ : DirichletCharacter ℂ N) (hs : 1 < s.re) :
-    Tendsto (fun n : ℕ ↦ ∏ p in primesBelow n, (1 - χ p * (p : ℂ) ^ (-s))⁻¹) atTop
-      (𝓝 (∑' n : ℕ, dirichletSummandHom χ (ne_zero_of_one_lt_re hs) n)) := by
-  convert eulerProduct_completely_multiplicative <| summable_dirichletSummand χ hs
+    Tendsto (fun n : ℕ ↦ ∏ p ∈ primesBelow n, (1 - χ p * (p : ℂ) ^ (-s))⁻¹) atTop
+      (𝓝 (L ↗χ s)) := by
+  rw [← tsum_dirichletSummand χ hs]
+  apply eulerProduct_completely_multiplicative <| summable_dirichletSummand χ hs

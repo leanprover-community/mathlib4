@@ -6,8 +6,6 @@ Authors: Pierre-Alexandre Bazin
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.RingTheory.DedekindDomain.Ideal
 
-#align_import algebra.module.dedekind_domain from "leanprover-community/mathlib"@"cdc34484a07418af43daf8198beaf5c00324bca8"
-
 /-!
 # Modules over a Dedekind domain
 
@@ -19,8 +17,6 @@ direct sum of its `p i ^ e i`-torsion submodules for some prime ideals `p i` and
 
 
 universe u v
-
-open scoped BigOperators
 
 variable {R : Type u} [CommRing R] [IsDomain R] {M : Type v} [AddCommGroup M] [Module R M]
 
@@ -59,7 +55,6 @@ theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal {I : Ideal R} (hI 
       exact fun H => pq <| H.2.trans <| normalize_eq q
     · rw [← Ideal.zero_eq_bot]; apply pow_ne_zero; exact (prime_of_mem q hq).ne_zero
     · exact (prime_of_mem p hp).irreducible
-#align submodule.is_internal_prime_power_torsion_of_is_torsion_by_ideal Submodule.isInternal_prime_power_torsion_of_is_torsion_by_ideal
 
 /-- A finitely generated torsion module over a Dedekind domain is an internal direct sum of its
 `p i ^ e i`-torsion submodules where `p i` are factors of `(⊤ : Submodule R M).annihilator` and
@@ -69,10 +64,9 @@ theorem isInternal_prime_power_torsion [Module.Finite R M] (hM : Module.IsTorsio
       torsionBySet R M (p ^ (factors (⊤ : Submodule R M).annihilator).count ↑p : Ideal R) := by
   have hM' := Module.isTorsionBySet_annihilator_top R M
   have hI := Submodule.annihilator_top_inter_nonZeroDivisors hM
-  refine' isInternal_prime_power_torsion_of_is_torsion_by_ideal _ hM'
+  refine isInternal_prime_power_torsion_of_is_torsion_by_ideal ?_ hM'
   rw [← Set.nonempty_iff_ne_empty] at hI; rw [Submodule.ne_bot_iff]
   obtain ⟨x, H, hx⟩ := hI; exact ⟨x, H, nonZeroDivisors.ne_zero hx⟩
-#align submodule.is_internal_prime_power_torsion Submodule.isInternal_prime_power_torsion
 
 /-- A finitely generated torsion module over a Dedekind domain is an internal direct sum of its
 `p i ^ e i`-torsion submodules for some prime ideals `p i` and numbers `e i`. -/
@@ -81,6 +75,5 @@ theorem exists_isInternal_prime_power_torsion [Module.Finite R M] (hM : Module.I
       DirectSum.IsInternal fun p : P => torsionBySet R M (p ^ e p : Ideal R) :=
   ⟨_, _, fun p hp => prime_of_factor p (Multiset.mem_toFinset.mp hp), _,
     isInternal_prime_power_torsion hM⟩
-#align submodule.exists_is_internal_prime_power_torsion Submodule.exists_isInternal_prime_power_torsion
 
 end Submodule

@@ -13,6 +13,8 @@ import Mathlib.Data.Vector.Snoc
 
 set_option autoImplicit true
 
+namespace Mathlib
+
 namespace Vector
 
 /-!
@@ -49,7 +51,7 @@ theorem map_mapAccumr (f₁ : β → γ) :
 @[simp]
 theorem map_map (f₁ : β → γ) (f₂ : α → β) :
     map f₁ (map f₂ xs) = map (fun x => f₁ <| f₂ x) xs := by
-  induction xs using Vector.inductionOn <;> simp_all
+  induction xs <;> simp_all
 
 end Unary
 
@@ -393,3 +395,5 @@ theorem mapAccumr₂_flip (f : α → β → σ → σ × γ) :
 end Flip
 
 end Vector
+
+end Mathlib

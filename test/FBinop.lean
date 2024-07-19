@@ -66,8 +66,7 @@ example (s : Finset α) (t : Finset β) :
 structure SubObj (X : Type _) where
   carrier : Set X
 
-instance : SetLike (SubObj X) X
-    where
+instance : SetLike (SubObj X) X where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr
 
@@ -79,11 +78,12 @@ def SubObj.prod (s : SubObj X) (t : SubObj Y) : SubObj (X × Y) where
 structure DecSubObj (X : Type _) [DecidableEq X] where
   carrier : Set X
 
-instance [DecidableEq X] : SetLike (DecSubObj X) X
-    where
+instance [DecidableEq X] : SetLike (DecSubObj X) X where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr
 
 -- Note: this is testing instance arguments after the type.
 def DecSubObj.prod [DecidableEq X] [DecidableEq Y] (s : DecSubObj X) (t : DecSubObj Y) : DecSubObj (X × Y) where
   carrier := s ×ˢ' t
+
+end FBinopTests

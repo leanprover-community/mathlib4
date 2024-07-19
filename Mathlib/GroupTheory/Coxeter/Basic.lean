@@ -3,9 +3,9 @@ Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen, Mitchell Lee
 -/
+import Mathlib.Algebra.Ring.Int
 import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.GroupTheory.Coxeter.Matrix
-import Mathlib.Data.Int.Parity
 
 /-!
 # Coxeter groups and Coxeter systems
@@ -116,17 +116,19 @@ theorem reindex_relationsSet :
       apply congrArg Set.range
       ext ⟨i, i'⟩
       simp [relation, reindex_apply, M']
-  _ = _ := by simp [Set.range_comp]; rfl
+  _ = _ := by simp [Set.range_comp, relationsSet]
 
 /-- The isomorphism between the Coxeter group associated to the reindexed matrix `M.reindex e` and
 the Coxeter group associated to `M`. -/
 def reindexGroupEquiv : (M.reindex e).Group ≃* M.Group :=
-  (QuotientGroup.congr (Subgroup.normalClosure M.relationsSet)
+  .symm <| QuotientGroup.congr
+    (Subgroup.normalClosure M.relationsSet)
     (Subgroup.normalClosure (M.reindex e).relationsSet)
-    (FreeGroup.freeGroupCongr e) (by
+    (FreeGroup.freeGroupCongr e)
+    (by
       rw [reindex_relationsSet,
         Subgroup.map_normalClosure _ _ (by simpa using (FreeGroup.freeGroupCongr e).surjective),
-        MonoidHom.coe_coe])).symm
+        MonoidHom.coe_coe])
 
 theorem reindexGroupEquiv_apply_simple (i : B') :
     (M.reindexGroupEquiv e) ((M.reindex e).simple i) = M.simple (e.symm i) := rfl
@@ -300,7 +302,7 @@ private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M
   val_inv := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
   inv_val := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
 
-private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet)):
+private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet)) :
     (MulEquiv.toMonoidHom cs.mulEquiv : W →* PresentedGroup (M.relationsSet))
     ((MulEquiv.symm cs.mulEquiv) a) = a := calc
   _ = cs.mulEquiv ((MulEquiv.symm cs.mulEquiv) a) := by rfl
@@ -319,15 +321,14 @@ def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G)
     ext i
     simp only [MonoidHom.comp_apply, comp_apply, mem_setOf_eq, groupLift, simple]
     rw [← MonoidHom.toFun_eq_coe, toMonoidHom_apply_symm_apply, PresentedGroup.toGroup.of,
-      OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, Units.coeHom_apply]
-    rfl
+      OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, Units.coeHom_apply, restrictUnit]
   right_inv ι := by
     apply cs.ext_simple
     intro i
     dsimp only
     rw [groupLift, simple, MonoidHom.comp_apply, MonoidHom.comp_apply, toMonoidHom_apply_symm_apply,
       PresentedGroup.toGroup.of, CoxeterSystem.restrictUnit, Units.coeHom_apply]
-    rfl
+    simp only [comp_apply, simple]
 
 @[simp]
 theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
@@ -409,21 +410,13 @@ theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
   induction' m with m ih
   · simp [alternatingWord]
   · rw [alternatingWord_succ', wordProd_cons, ih]
-    rcases Nat.even_or_odd m with even | odd
-    · rcases even with ⟨k, rfl⟩
-      ring_nf
-      have : Odd (1 + k * 2) := by use k; ring
-      simp [← two_mul, Nat.odd_iff_not_even.mp this]
-      rw [Nat.add_mul_div_right _ _ (by norm_num : 0 < 2)]
-      norm_num
-    · rcases odd with ⟨k, rfl⟩
-      ring_nf
-      have h₁ : Odd (1 + k * 2) := by use k; ring
-      have h₂ : Even (2 + k * 2) := by use (k + 1); ring
-      simp [Nat.odd_iff_not_even.mp h₁, h₂]
-      rw [Nat.add_mul_div_right _ _ (by norm_num : 0 < 2)]
-      norm_num
-      rw [pow_succ', mul_assoc]
+    by_cases hm : Even m
+    · have h₁ : ¬ Even (m + 1) := by simp [hm, parity_simps]
+      have h₂ : (m + 1) / 2 = m / 2 := Nat.succ_div_of_not_dvd <| by rwa [← even_iff_two_dvd]
+      simp [hm, h₁, h₂]
+    · have h₁ : Even (m + 1) := by simp [hm, parity_simps]
+      have h₂ : (m + 1) / 2 = m / 2 + 1 := Nat.succ_div_of_dvd h₁.two_dvd
+      simp [hm, h₁, h₂, ← pow_succ', ← mul_assoc]
 
 theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (hm : m ≤ M i i' * 2) :
     π (alternatingWord i i' m) = π (alternatingWord i' i (M i i' * 2 - m)) := by
