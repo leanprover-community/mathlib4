@@ -59,7 +59,7 @@ theorem to_galoisConnection : GaloisConnection (leftDual R) (rightDual R) := by
       · intro h; apply h
       · intro h; apply h
     · constructor
-      · intro h; unfold u; intro a ha b hb; apply h; simpa; exact ha
+      · intro h; unfold rightDual; intro a ha b hb; apply h; simpa; exact ha
       · intro h; intro b hb a ha; apply h; simpa; exact hb
 
 /-! ### Induced equivalences and generation processes -/
