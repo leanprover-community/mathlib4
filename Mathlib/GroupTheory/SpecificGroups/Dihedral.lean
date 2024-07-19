@@ -6,8 +6,6 @@ Authors: Shing Tak Lam
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Exponent
 
-#align_import group_theory.specific_groups.dihedral from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # Dihedral Groups
 
@@ -27,7 +25,6 @@ inductive DihedralGroup (n : ℕ) : Type
   | r : ZMod n → DihedralGroup n
   | sr : ZMod n → DihedralGroup n
   deriving DecidableEq
-#align dihedral_group DihedralGroup
 
 namespace DihedralGroup
 
@@ -78,26 +75,21 @@ instance : Group (DihedralGroup n) where
 @[simp]
 theorem r_mul_r (i j : ZMod n) : r i * r j = r (i + j) :=
   rfl
-#align dihedral_group.r_mul_r DihedralGroup.r_mul_r
 
 @[simp]
 theorem r_mul_sr (i j : ZMod n) : r i * sr j = sr (j - i) :=
   rfl
-#align dihedral_group.r_mul_sr DihedralGroup.r_mul_sr
 
 @[simp]
 theorem sr_mul_r (i j : ZMod n) : sr i * r j = sr (i + j) :=
   rfl
-#align dihedral_group.sr_mul_r DihedralGroup.sr_mul_r
 
 @[simp]
 theorem sr_mul_sr (i j : ZMod n) : sr i * sr j = r (j - i) :=
   rfl
-#align dihedral_group.sr_mul_sr DihedralGroup.sr_mul_sr
 
 theorem one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
-#align dihedral_group.one_def DihedralGroup.one_def
 
 private def fintypeHelper : Sum (ZMod n) (ZMod n) ≃ DihedralGroup n where
   invFun i := match i with
@@ -124,7 +116,6 @@ instance : Nontrivial (DihedralGroup n) :=
 -/
 theorem card [NeZero n] : Fintype.card (DihedralGroup n) = 2 * n := by
   rw [← Fintype.card_eq.mpr ⟨fintypeHelper⟩, Fintype.card_sum, ZMod.card, two_mul]
-#align dihedral_group.card DihedralGroup.card
 
 theorem nat_card : Nat.card (DihedralGroup n) = 2 * n := by
   cases n
@@ -140,18 +131,15 @@ theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
     congr 1
     norm_cast
     rw [Nat.one_add]
-#align dihedral_group.r_one_pow DihedralGroup.r_one_pow
 
 -- @[simp] -- Porting note: simp changes the goal to `r 0 = 1`. `r_one_pow_n` is no longer useful.
 theorem r_one_pow_n : r (1 : ZMod n) ^ n = 1 := by
   rw [r_one_pow, one_def]
   congr 1
   exact ZMod.natCast_self _
-#align dihedral_group.r_one_pow_n DihedralGroup.r_one_pow_n
 
 -- @[simp] -- Porting note: simp changes the goal to `r 0 = 1`. `sr_mul_self` is no longer useful.
 theorem sr_mul_self (i : ZMod n) : sr i * sr i = 1 := by rw [sr_mul_sr, sub_self, one_def]
-#align dihedral_group.sr_mul_self DihedralGroup.sr_mul_self
 
 /-- If `0 < n`, then `sr i` has order 2.
 -/
@@ -162,7 +150,6 @@ theorem orderOf_sr (i : ZMod n) : orderOf (sr i) = 2 := by
   · -- Porting note: Previous proof was `decide`
     revert n
     simp_rw [one_def, ne_eq, forall_const, not_false_eq_true]
-#align dihedral_group.order_of_sr DihedralGroup.orderOf_sr
 
 /-- If `0 < n`, then `r 1` has order `n`.
 -/
@@ -182,14 +169,12 @@ theorem orderOf_r_one : orderOf (r 1 : DihedralGroup n) = n := by
     injection h1 with h2
     rw [← ZMod.val_eq_zero, ZMod.val_natCast, Nat.mod_eq_of_lt h] at h2
     exact absurd h2.symm (orderOf_pos _).ne
-#align dihedral_group.order_of_r_one DihedralGroup.orderOf_r_one
 
 /-- If `0 < n`, then `i : ZMod n` has order `n / gcd n i`.
 -/
 theorem orderOf_r [NeZero n] (i : ZMod n) : orderOf (r i) = n / Nat.gcd n i.val := by
   conv_lhs => rw [← ZMod.natCast_zmod_val i]
   rw [← r_one_pow, orderOf_pow, orderOf_r_one]
-#align dihedral_group.order_of_r DihedralGroup.orderOf_r
 
 theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
   rcases eq_zero_or_neZero n with (rfl | hn)
@@ -207,7 +192,6 @@ theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
       exact orderOf_r_one.symm
     · convert Monoid.order_dvd_exponent (sr (0 : ZMod n))
       exact (orderOf_sr 0).symm
-#align dihedral_group.exponent DihedralGroup.exponent
 
 /-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs (represented as
 $n + n + n + n*n$) of commuting elements. -/

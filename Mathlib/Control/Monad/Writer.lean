@@ -6,8 +6,6 @@ Authors: Simon Hudon, E.W.Ayers
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Equiv.Defs
 
-#align_import control.monad.writer from "leanprover-community/mathlib"@"9407b03373c8cd201df99d6bc5514fc2db44054f"
-
 /-!
 # Writer monads
 

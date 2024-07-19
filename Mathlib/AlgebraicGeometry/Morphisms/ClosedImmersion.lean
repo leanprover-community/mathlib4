@@ -3,10 +3,9 @@ Copyright (c) 2023 Jonas van der Schaaf. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 -/
-import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
-import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.RingTheory.LocalProperties
+import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 
 /-!
 
@@ -38,6 +37,7 @@ namespace AlgebraicGeometry
 
 /-- A morphism of schemes `X ⟶ Y` is a closed immersion if the underlying
 topological map is a closed embedding and the induced stalk maps are surjective. -/
+@[mk_iff]
 class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
   base_closed : ClosedEmbedding f.1.base
   surj_on_stalks : ∀ x, Function.Surjective (PresheafedSpace.stalkMap f.1 x)
@@ -51,6 +51,12 @@ lemma closedEmbedding {X Y : Scheme} (f : X ⟶ Y)
 lemma surjective_stalkMap {X Y : Scheme} (f : X ⟶ Y)
     [IsClosedImmersion f] (x : X) : Function.Surjective (PresheafedSpace.stalkMap f.1 x) :=
   IsClosedImmersion.surj_on_stalks x
+
+lemma eq_inf : @IsClosedImmersion = (topologically ClosedEmbedding) ⊓
+    stalkwise (fun f ↦ Function.Surjective f) := by
+  ext X Y f
+  rw [isClosedImmersion_iff]
+  rfl
 
 /-- Isomorphisms are closed immersions. -/
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsClosedImmersion f where
@@ -94,6 +100,14 @@ instance spec_of_quotient_mk {R : CommRingCat.{u}} (I : Ideal R) :
     IsClosedImmersion (Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk I))) :=
   spec_of_surjective _ Ideal.Quotient.mk_surjective
 
+/-- Any morphism between affine schemes that is surjective on global sections is a
+closed immersion. -/
+lemma of_surjective_of_isAffine {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y)
+    (h : Function.Surjective (Scheme.Γ.map f.op)) : IsClosedImmersion f := by
+  rw [MorphismProperty.arrow_mk_iso_iff @IsClosedImmersion (arrowIsoSpecΓOfIsAffine f)]
+  apply spec_of_surjective
+  exact h
+
 /-- If `f ≫ g` is a closed immersion, then `f` is a closed immersion. -/
 theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion g]
     [IsClosedImmersion (f ≫ g)] : IsClosedImmersion f where
@@ -115,5 +129,14 @@ instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f whe
   isCompact_preimage _ _ hU' := base_closed.isCompact_preimage hU'
 
 end IsClosedImmersion
+
+/-- Being surjective on stalks is local at the target. -/
+instance isSurjectiveOnStalks_isLocalAtTarget : IsLocalAtTarget
+    (stalkwise (fun f ↦ Function.Surjective f)) :=
+  stalkwiseIsLocalAtTarget_of_respectsIso surjective_respectsIso
+
+/-- Being a closed immersion is local at the target. -/
+instance IsClosedImmersion.isLocalAtTarget : IsLocalAtTarget @IsClosedImmersion :=
+  eq_inf ▸ inferInstance
 
 end AlgebraicGeometry

@@ -8,8 +8,6 @@ import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 import Mathlib.Data.Set.Subsingleton
 
-#align_import category_theory.preadditive.hom_orthogonal from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
-
 /-!
 # Hom orthogonal families.
 
@@ -53,7 +51,6 @@ there is at most one morphism between distinct objects.
 (In a category with zero morphisms, that must be the zero morphism.) -/
 def HomOrthogonal {ι : Type*} (s : ι → C) : Prop :=
   Pairwise fun i j => Subsingleton (s i ⟶ s j)
-#align category_theory.hom_orthogonal CategoryTheory.HomOrthogonal
 
 namespace HomOrthogonal
 
@@ -62,7 +59,6 @@ variable {ι : Type*} {s : ι → C}
 theorem eq_zero [HasZeroMorphisms C] (o : HomOrthogonal s) {i j : ι} (w : i ≠ j) (f : s i ⟶ s j) :
     f = 0 :=
   (o w).elim _ _
-#align category_theory.hom_orthogonal.eq_zero CategoryTheory.HomOrthogonal.eq_zero
 
 section
 
@@ -105,7 +101,6 @@ noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fini
     · simp
     · exfalso
       exact h w.symm
-#align category_theory.hom_orthogonal.matrix_decomposition CategoryTheory.HomOrthogonal.matrixDecomposition
 
 end
 
@@ -124,7 +119,6 @@ noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Typ
       ext
       dsimp [biproduct.components]
       simp }
-#align category_theory.hom_orthogonal.matrix_decomposition_add_equiv CategoryTheory.HomOrthogonal.matrixDecompositionAddEquiv
 
 @[simp]
 theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Finite α] {f : α → ι} (i : ι) :
@@ -141,7 +135,6 @@ theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Finite α] {f 
     have : biproduct.ι (fun a ↦ s (f a)) a ≫ biproduct.π (fun b ↦ s (f b)) b = 0 := by
       simpa using biproduct.ι_π_ne _ (Ne.symm h)
     rw [this, comp_zero]
-#align category_theory.hom_orthogonal.matrix_decomposition_id CategoryTheory.HomOrthogonal.matrixDecomposition_id
 
 theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Finite α] [Fintype β]
     [Finite γ] {f : α → ι} {g : β → ι} {h : γ → ι} (z : (⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b))
@@ -163,7 +156,6 @@ theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Finite
     have : biproduct.ι (fun b ↦ s (g b)) b ≫ w ≫ biproduct.π (fun b ↦ s (h b)) c = 0 := by
       apply o.eq_zero nm
     simp only [this, comp_zero]
-#align category_theory.hom_orthogonal.matrix_decomposition_comp CategoryTheory.HomOrthogonal.matrixDecomposition_comp
 
 section
 
@@ -180,7 +172,6 @@ noncomputable def matrixDecompositionLinearEquiv (o : HomOrthogonal s) {α β : 
       ext
       dsimp [biproduct.components]
       simp }
-#align category_theory.hom_orthogonal.matrix_decomposition_linear_equiv CategoryTheory.HomOrthogonal.matrixDecompositionLinearEquiv
 
 end
 
@@ -213,7 +204,6 @@ theorem equiv_of_iso (o : HomOrthogonal s) {α β : Type} [Finite α] [Finite β
       (by
         rw [← o.matrixDecomposition_comp]
         simp)
-#align category_theory.hom_orthogonal.equiv_of_iso CategoryTheory.HomOrthogonal.equiv_of_iso
 
 end
 

@@ -6,8 +6,6 @@ Authors: Anne Baanen, Alex J. Best
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Quotient
 
-#align_import linear_algebra.quotient_pi from "leanprover-community/mathlib"@"398f60f60b43ef42154bd2bdadf5133daf1577a4"
-
 /-!
 # Submodule quotients and direct sums
 
@@ -36,7 +34,6 @@ variable {Ns : ι → Type*} [∀ i, AddCommGroup (Ns i)] [∀ i, Module R (Ns i
 def piQuotientLift [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i)) (q : Submodule R N)
     (f : ∀ i, Ms i →ₗ[R] N) (hf : ∀ i, p i ≤ q.comap (f i)) : (∀ i, Ms i ⧸ p i) →ₗ[R] N ⧸ q :=
   lsum R (fun i => Ms i ⧸ p i) R fun i => (p i).mapQ q (f i) (hf i)
-#align submodule.pi_quotient_lift Submodule.piQuotientLift
 
 @[simp]
 theorem piQuotientLift_mk [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
@@ -44,7 +41,6 @@ theorem piQuotientLift_mk [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R 
     (piQuotientLift p q f hf fun i => Quotient.mk (x i)) = Quotient.mk (lsum _ _ R f x) := by
   rw [piQuotientLift, lsum_apply, sum_apply, ← mkQ_apply, lsum_apply, sum_apply, _root_.map_sum]
   simp only [coe_proj, mapQ_apply, mkQ_apply, comp_apply]
-#align submodule.pi_quotient_lift_mk Submodule.piQuotientLift_mk
 
 @[simp]
 theorem piQuotientLift_single [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
@@ -58,7 +54,6 @@ theorem piQuotientLift_single [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodul
   · intros
     have := Finset.mem_univ i
     contradiction
-#align submodule.pi_quotient_lift_single Submodule.piQuotientLift_single
 
 /-- Lift a family of maps to a quotient of direct sums. -/
 def quotientPiLift (p : ∀ i, Submodule R (Ms i)) (f : ∀ i, Ms i →ₗ[R] Ns i)
@@ -67,14 +62,12 @@ def quotientPiLift (p : ∀ i, Submodule R (Ms i)) (f : ∀ i, Ms i →ₗ[R] Ns
     mem_ker.mpr <| by
       ext i
       simpa using hf i (mem_pi.mp hx i (Set.mem_univ i))
-#align submodule.quotient_pi_lift Submodule.quotientPiLift
 
 @[simp]
 theorem quotientPiLift_mk (p : ∀ i, Submodule R (Ms i)) (f : ∀ i, Ms i →ₗ[R] Ns i)
     (hf : ∀ i, p i ≤ ker (f i)) (x : ∀ i, Ms i) :
     quotientPiLift p f hf (Quotient.mk x) = fun i => f i (x i) :=
   rfl
-#align submodule.quotient_pi_lift_mk Submodule.quotientPiLift_mk
 
 -- Porting note (#11083): split up the definition to avoid timeouts. Still slow.
 namespace quotientPi_aux
@@ -128,6 +121,5 @@ def quotientPi [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i)) :
   map_smul' := quotientPi_aux.map_smul p
   left_inv := left_inv p
   right_inv := right_inv p
-#align submodule.quotient_pi Submodule.quotientPi
 
 end Submodule

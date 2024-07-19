@@ -6,8 +6,6 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
-#align_import analysis.analytic.radius_liminf from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
-
 /-!
 # Representation of `FormalMultilinearSeries.radius` as a `liminf`
 
@@ -59,6 +57,5 @@ theorem radius_eq_liminf :
   · refine p.le_radius_of_isBigO (IsBigO.of_bound 1 ?_)
     refine (eventually_lt_of_lt_liminf hr).mp ((eventually_gt_atTop 0).mono fun n hn₀ hn => ?_)
     simpa using NNReal.coe_le_coe.2 ((this _ hn₀).1 hn.le)
-#align formal_multilinear_series.radius_eq_liminf FormalMultilinearSeries.radius_eq_liminf
 
 end FormalMultilinearSeries
