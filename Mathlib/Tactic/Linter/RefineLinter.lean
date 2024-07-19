@@ -7,11 +7,11 @@ import Lean.Elab.Command
 import Lean.Linter.Util
 
 /-!
-#  The "refine" linter
+# The "refine" linter
 
-The "refine" linter flags usages of `refine'`.
+The "refine" linter flags usages of the `refine'` tactic.
 
-The tactics `refine` and `refine'` are similar, but they handle meta-variable slightly differently.
+The tactics `refine` and `refine'` are similar, but they handle meta-variables slightly differently.
 This means that they are not completely interchangeable, nor can one completely replace the other.
 However, `refine` is more readable and (heuristically) tends to be more efficient on average.
 
@@ -28,7 +28,7 @@ register_option linter.refine : Bool := {
   descr := "enable the refine linter"
 }
 
-/-- `getRefine' t` returns all usages of `refine'` in the input syntax. -/
+/-- `getRefine' t` returns all usages of the `refine'` tactic in the input syntax `t`. -/
 partial
 def getRefine' : Syntax → Array Syntax
   | stx@(.node _ kind args) =>
