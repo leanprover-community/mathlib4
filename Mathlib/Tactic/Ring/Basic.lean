@@ -1007,12 +1007,10 @@ def evalDiv {a b : Q($α)} (rα : Q(DivisionRing $α)) (czα : Option Q(CharZero
   let ⟨d, vd, (pd : Q($a * $_c = $d))⟩ := evalMul sα va vc
   pure ⟨d, vd, (q(div_pf $pc $pd) : Expr)⟩
 
-theorem add_congr
-    (_ : a = a') (_ : b = b') (_ : a' + b' = c) : (a + b : R) = c := by
+theorem add_congr (_ : a = a') (_ : b = b') (_ : a' + b' = c) : (a + b : R) = c := by
   subst_vars; rfl
 
-theorem mul_congr
-    (_ : a = a') (_ : b = b') (_ : a' * b' = c) : (a * b : R) = c := by
+theorem mul_congr (_ : a = a') (_ : b = b') (_ : a' * b' = c) : (a * b : R) = c := by
   subst_vars; rfl
 
 theorem nsmul_congr {a a' : ℕ} (_ : (a : ℕ) = a') (_ : b = b') (_ : a' • b' = c) :
