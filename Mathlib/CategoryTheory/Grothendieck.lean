@@ -184,12 +184,11 @@ def map (α : F ⟶ G) : Grothendieck F ⥤ Grothendieck G where
     dsimp
     congr 1
     simp only [comp_fiber' f g, ← Category.assoc, Functor.map_comp, eqToHom_map]
-    apply congrFun (congrArg (· ≫ ·) ?_) ((α.app Z.base).map g.fiber)
-    have H := Functor.congr_hom (α.naturality g.base).symm f.fiber
-    erw [H, eqToHom_app, eqToHom_app]
+    congr 1
     simp only [Cat.comp_obj, eqToHom_trans, eqToHom_map, Cat.comp_map, eqToHom_trans_assoc,
       Category.assoc]
-    erw [eqToHom_app]
+    rw [eqToHom_app, eqToHom_app, eqToHom_app]
+    erw [Functor.congr_hom (α.naturality g.base).symm f.fiber]
     simp
 
 theorem map_obj {α : F ⟶ G} (X : Grothendieck F) :
