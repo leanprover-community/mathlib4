@@ -513,6 +513,71 @@ theorem ultra_silly_lemma (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
     (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) =
     (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j)) := rfl
 
+
+
+
+-- WELCOME TO JACK'S WILD RIDE
+
+
+
+
+
+theorem indexing_nonsense0_general (i : n) [Nontrivial n] {𝕜 : Type*} [RCLike 𝕜] {E : Type*}
+    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] (P : n × (n → 𝕜) → Submodule 𝕜 E) (γ : n → 𝕜) :
+    ⨅ (j : n), P (j, γ) = P (i, γ) ⊓ ⨅ (k : {x // i ≠ x}), P (k, γ) := by
+  ext v
+  simp [iInf, sInf] at *
+  constructor
+  · intro h
+    constructor
+    · exact h i
+    · exact fun i_1 _ ↦ h i_1
+  · intro h k
+    by_cases H : k = i
+    · rw [H]
+      exact h.1
+    · have F := h.2
+      simp only [ne_eq, Submodule.iInf_coe, Set.mem_iInter, SetLike.mem_coe, Subtype.forall] at F
+      exact F k fun a ↦ H (_root_.id (Eq.symm a))
+
+theorem indexing_nonsense0_general_2 (i : n) [Nontrivial n] {𝕜 : Type*} [Semiring 𝕜] {E : Type*}
+    [AddCommMonoid E] [Module 𝕜 E] (P : n × (n → 𝕜) → Submodule 𝕜 E) (γ : n → 𝕜) :
+    ⨅ (j : n), P (j, γ) = P (i, γ) ⊓ ⨅ (k : {x // i ≠ x}), P (k, γ) := by
+  ext v
+  simp [iInf, sInf] at *
+  constructor
+  · intro h
+    constructor
+    · exact h i
+    · exact fun i_1 _ ↦ h i_1
+  · intro h k
+    by_cases H : k = i
+    · rw [H]
+      exact h.1
+    · have F := h.2
+      simp only [ne_eq, Submodule.iInf_coe, Set.mem_iInter, SetLike.mem_coe, Subtype.forall] at F
+      exact F k fun a ↦ H (_root_.id (Eq.symm a))
+
+theorem indexing_nonsense0_general' {α : Type*} {β : Type*} (P : n × (n → α) → Set β) (i : n)
+    [Nontrivial n] (γ : n → α) :
+    ⨅ (j : n), P (j, γ) = P (i, γ) ⊓ ⨅ (k : {x // x ≠ i}), P (k, γ) := by
+  ext v
+  simp [iInf, sInf] at *
+  constructor
+  · intro h
+    constructor
+    · exact h i
+    · exact fun i_1 _ ↦ h i_1
+  · intro h k
+    by_cases H : k = i
+    · rw [H]
+      exact h.1
+    · have F := h.2
+      simp only [ne_eq, Submodule.iInf_coe, Set.mem_iInter, SetLike.mem_coe, Subtype.forall] at F
+      exact F k fun a ↦ H (_root_.id a)
+
+#find_home! indexing_nonsense0_general'
+
 theorem indexing_nonsense0 (i : n) [Nontrivial n] (γ : n → 𝕜) :
      ⨅ (j : n), eigenspace (T j) (γ j) = (eigenspace (T i) (γ i)) ⊓
      ⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j) := by
@@ -551,7 +616,24 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
     intro K H
     apply h K
     intro a w hw
-    rw [indexing_nonsense0 T (i := i) (γ := a)] at hw
+
+    --rw [indexing_nonsense0_general i (fun μ ↦ eigenspace (T μ.1) (μ.2 μ.1)) a (𝕜 := 𝕜) (E := E)] at hw
+    rw [indexing_nonsense0_general_2 i (fun μ ↦ eigenspace (T μ.1) (μ.2 μ.1)) a (𝕜 := 𝕜) (E := E)] at hw
+
+
+
+    /-
+    have H' := indexing_nonsense0_general' (fun μ ↦ eigenspace (T μ.1) (μ.2 μ.1)) i a (β := E) (α := 𝕜) (n := n)
+    simp only [Prod.fst, Prod.snd] at H'
+    simp only [Set.iInf_eq_iInter, ne_eq, Set.inf_eq_inter] at H'
+    rw [@Set.ext_iff] at H'
+    specialize H' w
+    simp only [Set.mem_iInter, SetLike.mem_coe, Set.mem_inter_iff] at H'
+    cases' H' with H1 H2
+    apply H1 at hw
+    cases' hw with hw1 hw2
+    -/
+
     exact H (fun j ↦ a ↑j) (a i) hw
   · intro h
     rw [iSup] at *
@@ -583,6 +665,18 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
         exact hK fun j ↦ γ j
       exact hgv K B
     exact h K A
+
+
+
+
+
+
+-- THE RIDE NEVER ENDS
+
+
+
+
+
 
 /-This is just index_convert, so we can probably remove later.-/
 theorem indexed_matching (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) (μ : 𝕜) :
