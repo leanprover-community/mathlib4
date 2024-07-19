@@ -53,11 +53,11 @@ theorem of_bot : IsPGroup p (⊥ : Subgroup G) :=
 theorem iff_card [Fact p.Prime] [Finite G] : IsPGroup p G ↔ ∃ n : ℕ, Nat.card G = p ^ n := by
   have hG : Nat.card G ≠ 0 := Nat.card_pos.ne'
   refine ⟨fun h => ?_, fun ⟨n, hn⟩ => of_card hn⟩
-  suffices ∀ q ∈ Nat.factors (Nat.card G), q = p by
-    use (Nat.card G).factors.length
-    rw [← List.prod_replicate, ← List.eq_replicate_of_mem this, Nat.prod_factors hG]
+  suffices ∀ q ∈ (Nat.card G).primeFactorsList, q = p by
+    use (Nat.card G).primeFactorsList.length
+    rw [← List.prod_replicate, ← List.eq_replicate_of_mem this, Nat.prod_primeFactorsList hG]
   intro q hq
-  obtain ⟨hq1, hq2⟩ := (Nat.mem_factors hG).mp hq
+  obtain ⟨hq1, hq2⟩ := (Nat.mem_primeFactorsList hG).mp hq
   haveI : Fact q.Prime := ⟨hq1⟩
   obtain ⟨g, hg⟩ := exists_prime_orderOf_dvd_card' q hq2
   obtain ⟨k, hk⟩ := (iff_orderOf.mp h) g

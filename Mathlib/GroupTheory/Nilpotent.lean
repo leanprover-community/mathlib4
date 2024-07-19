@@ -870,7 +870,7 @@ theorem IsPGroup.isNilpotent [Finite G] {p : ℕ} [hp : Fact (Nat.Prime p)] (h :
       exact of_quotient_center_nilpotent hnq
 #align is_p_group.is_nilpotent IsPGroup.isNilpotent
 
-variable [Fintype G]
+variable [Finite G]
 
 /-- If a finite group is the direct product of its Sylow groups, it is nilpotent -/
 theorem isNilpotent_of_product_of_sylow_group

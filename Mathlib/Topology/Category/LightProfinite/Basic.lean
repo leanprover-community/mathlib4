@@ -232,6 +232,10 @@ noncomputable instance createsCountableLimits {J : Type v} [SmallCategory J] [Co
 instance : HasCountableLimits LightProfinite where
   out _ := { has_limit := fun F ↦ ⟨limitCone F, limitConeIsLimit F⟩ }
 
+noncomputable instance : PreservesLimitsOfShape ℕᵒᵖ (forget LightProfinite.{u}) :=
+  have : PreservesLimitsOfSize.{0, 0} (forget Profinite.{u}) := preservesLimitsOfSizeShrink _
+  inferInstanceAs (PreservesLimitsOfShape ℕᵒᵖ (lightToProfinite ⋙ forget Profinite))
+
 variable {X Y : LightProfinite.{u}} (f : X ⟶ Y)
 
 /-- Any morphism of light profinite spaces is a closed map. -/
@@ -414,7 +418,7 @@ instance (S : LightDiagram.{u}) : SecondCountableTopology S.cone.pt := by
     refine @Finite.of_injective _ ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩ → (Fin 2)) ?_ _
       LocallyConstant.coe_injective
     refine @Pi.finite _ _ ?_ _
-    simp only [Functor.comp_obj, toProfinite_obj_toCompHaus_toTop_α]
+    simp only [Functor.comp_obj, toProfinite_obj, CompHausLike.coe_of]
     infer_instance
   · exact fun a ↦ a.snd.comap (S.cone.π.app ⟨a.fst⟩)
   · intro a

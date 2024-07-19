@@ -1880,8 +1880,6 @@ lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
 
 end AddGroup
 
-#align fin.coe_clamp Fin.coe_clamp
-
 @[simp]
 theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
     ((n : Fin m) : ℕ) = n % m :=
