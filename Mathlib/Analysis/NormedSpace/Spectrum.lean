@@ -610,9 +610,7 @@ lemma _root_.Subalgebra.frontier_spectrum : frontier (spectrum 𝕜 x) ⊆ spect
   intro μ hμ
   by_contra h
   rw [spectrum.not_mem_iff] at h
-  have h_isOpen : IsOpen (σ 𝕜 x)ᶜ := by
-    simpa [spectrum] using spectrum.isOpen_resolventSet x
-  rw [← frontier_compl, h_isOpen.frontier_eq, mem_diff] at hμ
+  rw [← frontier_compl, (spectrum.isClosed _).isOpen_compl.frontier_eq, mem_diff] at hμ
   obtain ⟨hμ₁, hμ₂⟩ := hμ
   rw [mem_closure_iff_clusterPt] at hμ₁
   apply hμ₂
@@ -635,7 +633,7 @@ lemma Subalgebra.frontier_subset_frontier :
   apply subset_inter (frontier_spectrum S x)
   rw [frontier_eq_closure_inter_closure]
   exact inter_subset_right |>.trans <|
-    closure_mono <| compl_subset_compl.mpr <| spectrum.subset_subalgebra' x
+    closure_mono <| compl_subset_compl.mpr <| spectrum.subset_subalgebra x
 
 open Set Notation
 
@@ -646,7 +644,7 @@ lemma Subalgebra.spectrum_sUnion_connectedComponentIn :
     σ 𝕜 x = σ 𝕜 (x : A) ∪ (⋃ z ∈ (σ 𝕜 x \ σ 𝕜 (x : A)), connectedComponentIn (σ 𝕜 (x : A))ᶜ z) := by
   suffices IsClopen ((σ 𝕜 (x : A))ᶜ ↓∩ (σ 𝕜 x \ σ 𝕜 (x : A))) by
     rw [← this.biUnion_connectedComponentIn (diff_subset_compl _ _),
-      union_diff_cancel (spectrum.subset_subalgebra' x)]
+      union_diff_cancel (spectrum.subset_subalgebra x)]
   have : CompleteSpace S := hS.completeSpace_coe
   have h_open : IsOpen (σ 𝕜 x \ σ 𝕜 (x : A)) := by
     rw [← (spectrum.isClosed (𝕜 := 𝕜) x).closure_eq, closure_eq_interior_union_frontier,
