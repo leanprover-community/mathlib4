@@ -429,7 +429,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
   rw [count_associates_factors_eq (Ideal.span {P}) (Ideal.span {Polynomial.X}) (span_ne_zero).1
     (Ideal.span_singleton_prime Polynomial.X_ne_zero|>.mpr prime_X) (span_ne_zero).2,
     count_associates_factors_eq (Ideal.span {↑(P : K⟦X⟧)}) (idealX K).asIdeal]
-  convert (normalized_count_X_eq_of_coe hP).symm
+  on_goal 1 => convert (normalized_count_X_eq_of_coe hP).symm
   exacts [count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X prime_X,
     count_span_normalizedFactors_eq_of_normUnit (coe_ne_zero hP) normUnit_X X_prime,
     span_ne_zero'.1, (idealX K).isPrime, span_ne_zero'.2]
@@ -591,18 +591,17 @@ theorem val_le_one_iff_eq_coe (f : LaurentSeries K) : Valued.v f ≤ (1 : ℤₘ
     ∃ F : PowerSeries K, F = f := by
   rw [← WithZero.coe_one, ← ofAdd_zero, ← neg_zero, valuation_le_iff_coeff_lt_eq_zero]
   refine ⟨fun h => ⟨PowerSeries.mk fun n => f.coeff n, ?_⟩, ?_⟩
-  ext (_ | n)
+  on_goal 1 => ext (_ | n)
   · simp only [Int.ofNat_eq_coe, coeff_coe_powerSeries, coeff_mk]
-  simp only [h (Int.negSucc n) (Int.negSucc_lt_zero n)]
-  swap
-  rintro ⟨F, rfl⟩ _ _
+  on_goal 1 => simp only [h (Int.negSucc n) (Int.negSucc_lt_zero n)]
+  on_goal 2 => rintro ⟨F, rfl⟩ _ _
   all_goals
     apply HahnSeries.embDomain_notin_range
     simp only [Nat.coe_castAddMonoidHom, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk,
       Set.mem_range, not_exists, Int.negSucc_lt_zero,]
     intro
-  linarith
-  simp only [not_false_eq_true]
+  · simp only [not_false_eq_true]
+  · linarith
 
 end LaurentSeries
 
