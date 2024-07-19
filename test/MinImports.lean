@@ -10,6 +10,13 @@ import Mathlib.Tactic.FunProp
 #guard_msgs in
 #min_imports in (← `(declModifiers|@[fun_prop]))
 
+namespace X
+/-- info: import Mathlib.Algebra.Ring.Nat -/
+#guard_msgs in
+#min_imports in
+protected def xxx : Semiring Nat := inferInstance
+end X
+
 /-- info: import Mathlib.Algebra.Ring.Nat -/
 #guard_msgs in
 #min_imports in
