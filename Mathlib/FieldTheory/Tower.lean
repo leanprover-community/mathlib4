@@ -9,8 +9,6 @@ import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.RingTheory.Ideal.LocalRing
 
-#align_import field_theory.tower from "leanprover-community/mathlib"@"c7bce2818663f456335892ddbdd1809f111a5b72"
-
 /-!
 # Tower of field extensions
 
@@ -59,14 +57,12 @@ theorem left [Nontrivial A] [FiniteDimensional F A] : FiniteDimensional F K :=
   let ⟨x, hx⟩ := exists_ne (0 : A)
   FiniteDimensional.of_injective
     (LinearMap.ringLmapEquivSelf K ℕ A |>.symm x |>.restrictScalars F) (smul_left_injective K hx)
-#align finite_dimensional.left FiniteDimensional.left
 
 theorem right [hf : FiniteDimensional F A] : FiniteDimensional K A :=
   let ⟨⟨b, hb⟩⟩ := hf
   ⟨⟨b, Submodule.restrictScalars_injective F _ _ <| by
     rw [Submodule.restrictScalars_top, eq_top_iff, ← hb, Submodule.span_le]
     exact Submodule.subset_span⟩⟩
-#align finite_dimensional.right FiniteDimensional.right
 
 theorem Subalgebra.isSimpleOrder_of_finrank_prime (F A) [Field F] [Ring A] [IsDomain A]
     [Algebra F A] (hp : (finrank F A).Prime) : IsSimpleOrder (Subalgebra F A) :=
@@ -80,12 +76,10 @@ theorem Subalgebra.isSimpleOrder_of_finrank_prime (F A) [Field F] [Ring A] [IsDo
       · exact fun h' => Subalgebra.eq_bot_of_finrank_one h'
       · exact
           Algebra.toSubmodule_eq_top.1 (eq_top_of_finrank_eq <| K.finrank_toSubmodule.trans h) }
-#align finite_dimensional.subalgebra.is_simple_order_of_finrank_prime FiniteDimensional.Subalgebra.isSimpleOrder_of_finrank_prime
 -- TODO: `IntermediateField` version
 
 @[deprecated (since := "2024-01-12")]
 alias finrank_linear_map' := FiniteDimensional.finrank_linearMap_self
-#align finite_dimensional.finrank_linear_map' FiniteDimensional.finrank_linear_map'
 
 end FiniteDimensional
 
