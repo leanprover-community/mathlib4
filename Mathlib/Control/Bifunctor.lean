@@ -5,6 +5,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Functor
 import Mathlib.Tactic.Common
+import Batteries.Data.Sum.Basic
 
 #align_import control.bifunctor from "leanprover-community/mathlib"@"dc1525fb3ef6eb4348fb1749c302d8abc303d34a"
 
