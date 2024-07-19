@@ -700,13 +700,13 @@ theorem IsComplement'.index_eq_card (h : IsComplement' H K) : K.index = Nat.card
   (card_left_transversal h).symm
 #align subgroup.is_complement'.index_eq_card Subgroup.IsComplement'.index_eq_card
 
-theorem IsComplement.card_mul [Fintype G] [Fintype S] [Fintype T] (h : IsComplement S T) :
-    Fintype.card S * Fintype.card T = Fintype.card G :=
-  (Fintype.card_prod _ _).symm.trans (Fintype.card_of_bijective h)
+theorem IsComplement.card_mul (h : IsComplement S T) :
+    Nat.card S * Nat.card T = Nat.card G :=
+  (Nat.card_prod _ _).symm.trans (Nat.card_eq_of_bijective _ h)
 #align subgroup.is_complement.card_mul Subgroup.IsComplement.card_mul
 
-theorem IsComplement'.card_mul [Fintype G] [Fintype H] [Fintype K] (h : IsComplement' H K) :
-    Fintype.card H * Fintype.card K = Fintype.card G :=
+theorem IsComplement'.card_mul (h : IsComplement' H K) :
+    Nat.card H * Nat.card K = Nat.card G :=
   IsComplement.card_mul h
 #align subgroup.is_complement'.card_mul Subgroup.IsComplement'.card_mul
 
@@ -717,21 +717,21 @@ theorem isComplement'_of_disjoint_and_mul_eq_univ (h1 : Disjoint H K)
   exact ⟨(⟨h, hh⟩, ⟨k, hk⟩), hg⟩
 #align subgroup.is_complement'_of_disjoint_and_mul_eq_univ Subgroup.isComplement'_of_disjoint_and_mul_eq_univ
 
-theorem isComplement'_of_card_mul_and_disjoint [Fintype G] [Fintype H] [Fintype K]
-    (h1 : Fintype.card H * Fintype.card K = Fintype.card G) (h2 : Disjoint H K) :
+theorem isComplement'_of_card_mul_and_disjoint [Finite G]
+    (h1 : Nat.card H * Nat.card K = Nat.card G) (h2 : Disjoint H K) :
     IsComplement' H K :=
-  (Fintype.bijective_iff_injective_and_card _).mpr
-    ⟨mul_injective_of_disjoint h2, (Fintype.card_prod H K).trans h1⟩
+  (Nat.bijective_iff_injective_and_card _).mpr
+    ⟨mul_injective_of_disjoint h2, (Nat.card_prod H K).trans h1⟩
 #align subgroup.is_complement'_of_card_mul_and_disjoint Subgroup.isComplement'_of_card_mul_and_disjoint
 
-theorem isComplement'_iff_card_mul_and_disjoint [Fintype G] [Fintype H] [Fintype K] :
-    IsComplement' H K ↔ Fintype.card H * Fintype.card K = Fintype.card G ∧ Disjoint H K :=
+theorem isComplement'_iff_card_mul_and_disjoint [Finite G] :
+    IsComplement' H K ↔ Nat.card H * Nat.card K = Nat.card G ∧ Disjoint H K :=
   ⟨fun h => ⟨h.card_mul, h.disjoint⟩, fun h => isComplement'_of_card_mul_and_disjoint h.1 h.2⟩
 #align subgroup.is_complement'_iff_card_mul_and_disjoint Subgroup.isComplement'_iff_card_mul_and_disjoint
 
-theorem isComplement'_of_coprime [Fintype G] [Fintype H] [Fintype K]
-    (h1 : Fintype.card H * Fintype.card K = Fintype.card G)
-    (h2 : Nat.Coprime (Fintype.card H) (Fintype.card K)) : IsComplement' H K :=
+theorem isComplement'_of_coprime [Finite G]
+    (h1 : Nat.card H * Nat.card K = Nat.card G)
+    (h2 : Nat.Coprime (Nat.card H) (Nat.card K)) : IsComplement' H K :=
   isComplement'_of_card_mul_and_disjoint h1 (disjoint_iff.mpr (inf_eq_bot_of_coprime h2))
 #align subgroup.is_complement'_of_coprime Subgroup.isComplement'_of_coprime
 

@@ -170,10 +170,6 @@ set_option align.precheck false in #align nat.to_digits Nat.toDigits'
 
 /-! ## `init.data.setoid` -/
 
-attribute [refl] Setoid.refl
-attribute [symm] Setoid.symm
-attribute [trans] Setoid.trans
-
 /-! ## `init.data.sigma.basic` -/
 
 /-! ## `init.data.string.basic` -/
