@@ -384,7 +384,8 @@ of global fields.
 noncomputable instance [IsPrincipalIdealRing R] : Fintype (ClassGroup R) where
   elems := {1}
   complete := by
-    #adaptation_note /-- 2024-07-18 need to disable elab_as_elim with `(P := _)` due to type-incorrect motive -/
+    #adaptation_note
+    /-- 2024-07-18 need to disable elab_as_elim with `(P := _)` due to type-incorrect motive -/
     refine ClassGroup.induction (P := _) (R := R) (FractionRing R) (fun I => ?_)
     rw [Finset.mem_singleton]
     exact ClassGroup.mk_eq_one_iff.mpr (I : FractionalIdeal R⁰ (FractionRing R)).isPrincipal
@@ -393,7 +394,8 @@ noncomputable instance [IsPrincipalIdealRing R] : Fintype (ClassGroup R) where
 theorem card_classGroup_eq_one [IsPrincipalIdealRing R] : Fintype.card (ClassGroup R) = 1 := by
   rw [Fintype.card_eq_one_iff]
   use 1
-  #adaptation_note /-- 2024-07-18 need to disable elab_as_elim due to incorrect motive -/
+  #adaptation_note
+  /-- 2024-07-18 need to disable elab_as_elim due to incorrect motive -/
   refine ClassGroup.induction (P := _) (R := R) (FractionRing R) (fun I => ?_)
   exact ClassGroup.mk_eq_one_iff.mpr (I : FractionalIdeal R⁰ (FractionRing R)).isPrincipal
 #align card_class_group_eq_one card_classGroup_eq_one
