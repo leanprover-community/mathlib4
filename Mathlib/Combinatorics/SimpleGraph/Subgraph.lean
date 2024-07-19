@@ -979,7 +979,7 @@ theorem singletonSubgraph_snd_le_subgraphOfAdj {u v : V} {h : G.Adj u v} :
   simp
 #align simple_graph.singleton_subgraph_snd_le_subgraph_of_adj SimpleGraph.singletonSubgraph_snd_le_subgraphOfAdj
 
-lemma subgraphOfAdj_support {u v : V} (h : G.Adj u v) :
+lemma support_subgraphOfAdj {u v : V} (h : G.Adj u v) :
     (G.subgraphOfAdj h).support = {u , v} := by
   ext
   rw [Subgraph.mem_support]
@@ -1008,7 +1008,7 @@ protected abbrev restrict {G' : G.Subgraph} : G.Subgraph → G'.coe.Subgraph :=
   Subgraph.comap G'.hom
 #align simple_graph.subgraph.restrict SimpleGraph.Subgraph.restrict
 
-lemma coeSubgraph_verts {G' : Subgraph G} (G'' : Subgraph G'.coe) :
+lemma verts_coeSubgraph {G' : Subgraph G} (G'' : Subgraph G'.coe) :
     G''.coeSubgraph.verts = (G''.verts : Set V) := rfl
 
 lemma coeSubgraph_adj {G' : G.Subgraph} (G'' : G'.coe.Subgraph) (v w : V) :

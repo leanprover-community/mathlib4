@@ -76,7 +76,7 @@ theorem IsMatching.toEdge_eq_toEdge_of_adj (h : M.IsMatching)
   rw [h.toEdge_eq_of_adj hv ha, h.toEdge_eq_of_adj hw (M.symm ha), Subtype.mk_eq_mk, Sym2.eq_swap]
 #align simple_graph.subgraph.is_matching.to_edge_eq_to_edge_of_adj SimpleGraph.Subgraph.IsMatching.toEdge_eq_toEdge_of_adj
 
-lemma IsMatching.map_hom_ofLE_IsMatching (h : M.IsMatching) (hGG' : G ≤ G') :
+lemma IsMatching.map_ofLE (h : M.IsMatching) (hGG' : G ≤ G') :
     (M.map (Hom.ofLE hGG')).IsMatching := by
   intro _ hv
   obtain ⟨_, hv, hv'⟩ := Set.mem_image _ _ _ |>.mp hv
@@ -84,7 +84,7 @@ lemma IsMatching.map_hom_ofLE_IsMatching (h : M.IsMatching) (hGG' : G ≤ G') :
   use w
   simpa using hv' ▸ hw
 
-lemma sup_IsMatching (hM : M.IsMatching) (hM' : M'.IsMatching)
+lemma IsMatching.sup (hM : M.IsMatching) (hM' : M'.IsMatching)
     (hd : Disjoint M.support M'.support) : (M ⊔ M').IsMatching := by
   intro v hv
   have aux {N N' : Subgraph G} (hN : N.IsMatching) (hd : Disjoint N.support N'.support)
@@ -104,7 +104,7 @@ lemma sup_IsMatching (hM : M.IsMatching) (hM' : M'.IsMatching)
     rw [sup_comm]
     exact aux hM' (Disjoint.symm hd) hmM'
 
-lemma iSup_IsMatching {ι : Sort _} {f : ι → Subgraph G} (hM : (i : ι) → (f i).IsMatching)
+lemma IsMatching.iSup {ι : Sort _} {f : ι → Subgraph G} (hM : (i : ι) → (f i).IsMatching)
     (hd : (i j : ι) → (i ≠ j) →  Disjoint ((f i).support) ((f j).support)) :
     (⨆ i , f i).IsMatching := by
   intro v hv
@@ -120,14 +120,14 @@ lemma iSup_IsMatching {ι : Sort _} {f : ι → Subgraph G} (hM : (i : ι) → (
     rw [Set.disjoint_left] at this
     simpa [(mem_support _).mpr ⟨w, hw.1⟩, (mem_support _).mpr ⟨y, hi'⟩] using @this v
 
-lemma subgraphOfAdj_IsMatching (h : G.Adj v w) : (G.subgraphOfAdj h).IsMatching := by
+lemma IsMatching.subgraphOfAdj (h : G.Adj v w) : (G.subgraphOfAdj h).IsMatching := by
   intro _ hv
   rw [subgraphOfAdj_verts, Set.mem_insert_iff, Set.mem_singleton_iff] at hv
   cases hv with
   | inl => use w; aesop
   | inr => use v; aesop
 
-lemma coe_IsMatching {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsMatching) :
+lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsMatching) :
     M.coeSubgraph.IsMatching := by
   intro _ hv
   obtain ⟨w, hw⟩ := hM <| Set.mem_of_mem_image_val <| M.coeSubgraph_verts.symm ▸ hv
