@@ -7,17 +7,6 @@ import Mathlib.Tactic.ToAdditive
 import Mathlib.Mathport.Rename
 
 /-!
-# Note about `Mathlib/Init/`
-The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
-(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
-
-We intend to move all the content of these files out into the main `Mathlib` directory structure.
-Contributions assisting with this are appreciated.
-
-`#align` statements without corresponding declarations
-(i.e. because the declaration is in Batteries or Lean) can be left here.
-These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
-
 ## Classes for `Zero` and `One`
 -/
 
@@ -46,10 +35,3 @@ instance (priority := 200) One.ofOfNat1 {α} [OfNat α (nat_lit 1)] : One α whe
   one := 1
 
 attribute [to_additive_change_numeral 2] OfNat OfNat.ofNat
-
-/- These attributes need to be in a low-level file where `@[to_additive]` exists. -/
-attribute [to_additive Empty] Empty
-attribute [to_additive PEmpty] PEmpty
-attribute [to_additive PUnit] PUnit
-attribute [to_additive existing Unit] Unit
-

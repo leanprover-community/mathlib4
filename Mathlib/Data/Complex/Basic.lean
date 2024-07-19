@@ -568,7 +568,7 @@ theorem conj_ofReal (r : ℝ) : conj (r : ℂ) = r :=
 @[simp]
 theorem conj_I : conj I = -I :=
   ext_iff.2 <| by simp
-  set_option linter.uppercaseLean3 false in
+set_option linter.uppercaseLean3 false in
 #align complex.conj_I Complex.conj_I
 
 #noalign complex.conj_bit0
