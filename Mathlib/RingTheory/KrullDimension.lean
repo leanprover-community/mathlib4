@@ -32,6 +32,7 @@ noncomputable abbrev ringKrullDim (R : Type*) [CommRing R] : WithBot (WithTop ‚Ñ
 
 namespace ringKrullDim
 
+@[nontriviality]
 lemma eq_bot_of_subsingleton (R : Type*) [CommRing R] [Subsingleton R] :
     ringKrullDim R = ‚ä• :=
   krullDim_eq_bot_of_isEmpty
