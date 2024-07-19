@@ -7,8 +7,6 @@ import Mathlib.Data.Int.Defs
 import Mathlib.Data.Nat.Defs
 import Mathlib.Tactic.Common
 
-#align_import data.int.sqrt from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
-
 /-!
 # Square root of integers
 
@@ -25,19 +23,15 @@ integer `r` such that `r * r ≤ n`. If it is negative, it returns `0`. For exam
 @[pp_nodot]
 def sqrt (z : ℤ) : ℤ :=
   Nat.sqrt <| Int.toNat z
-#align int.sqrt Int.sqrt
 
 theorem sqrt_eq (n : ℤ) : sqrt (n * n) = n.natAbs := by
   rw [sqrt, ← natAbs_mul_self, toNat_natCast, Nat.sqrt_eq]
-#align int.sqrt_eq Int.sqrt_eq
 
 theorem exists_mul_self (x : ℤ) : (∃ n, n * n = x) ↔ sqrt x * sqrt x = x :=
   ⟨fun ⟨n, hn⟩ => by rw [← hn, sqrt_eq, ← Int.ofNat_mul, natAbs_mul_self], fun h => ⟨sqrt x, h⟩⟩
-#align int.exists_mul_self Int.exists_mul_self
 
 theorem sqrt_nonneg (n : ℤ) : 0 ≤ sqrt n :=
   natCast_nonneg _
-#align int.sqrt_nonneg Int.sqrt_nonneg
 
 @[simp, norm_cast]
 theorem sqrt_natCast (n : ℕ) : Int.sqrt (n : ℤ) = Nat.sqrt n := by rw [sqrt, toNat_ofNat]

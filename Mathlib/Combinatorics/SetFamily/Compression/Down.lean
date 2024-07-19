@@ -5,8 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Finset.Lattice
 
-#align_import combinatorics.set_family.compression.down from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
-
 /-!
 # Down-compressions
 
@@ -44,18 +42,15 @@ namespace Finset
 /-- Elements of `𝒜` that do not contain `a`. -/
 def nonMemberSubfamily (a : α) (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
   𝒜.filter fun s => a ∉ s
-#align finset.non_member_subfamily Finset.nonMemberSubfamily
 
 /-- Image of the elements of `𝒜` which contain `a` under removing `a`. Finsets that do not contain
 `a` such that `insert a s ∈ 𝒜`. -/
 def memberSubfamily (a : α) (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
   (𝒜.filter fun s => a ∈ s).image fun s => erase s a
-#align finset.member_subfamily Finset.memberSubfamily
 
 @[simp]
 theorem mem_nonMemberSubfamily : s ∈ 𝒜.nonMemberSubfamily a ↔ s ∈ 𝒜 ∧ a ∉ s := by
   simp [nonMemberSubfamily]
-#align finset.mem_non_member_subfamily Finset.mem_nonMemberSubfamily
 
 @[simp]
 theorem mem_memberSubfamily : s ∈ 𝒜.memberSubfamily a ↔ insert a s ∈ 𝒜 ∧ a ∉ s := by
@@ -64,29 +59,24 @@ theorem mem_memberSubfamily : s ∈ 𝒜.memberSubfamily a ↔ insert a s ∈ �
   rintro ⟨s, ⟨hs1, hs2⟩, rfl⟩
   rw [insert_erase hs2]
   exact ⟨hs1, not_mem_erase _ _⟩
-#align finset.mem_member_subfamily Finset.mem_memberSubfamily
 
 theorem nonMemberSubfamily_inter (a : α) (𝒜 ℬ : Finset (Finset α)) :
     (𝒜 ∩ ℬ).nonMemberSubfamily a = 𝒜.nonMemberSubfamily a ∩ ℬ.nonMemberSubfamily a :=
   filter_inter_distrib _ _ _
-#align finset.non_member_subfamily_inter Finset.nonMemberSubfamily_inter
 
 theorem memberSubfamily_inter (a : α) (𝒜 ℬ : Finset (Finset α)) :
     (𝒜 ∩ ℬ).memberSubfamily a = 𝒜.memberSubfamily a ∩ ℬ.memberSubfamily a := by
   unfold memberSubfamily
   rw [filter_inter_distrib, image_inter_of_injOn _ _ ((erase_injOn' _).mono _)]
   simp
-#align finset.member_subfamily_inter Finset.memberSubfamily_inter
 
 theorem nonMemberSubfamily_union (a : α) (𝒜 ℬ : Finset (Finset α)) :
     (𝒜 ∪ ℬ).nonMemberSubfamily a = 𝒜.nonMemberSubfamily a ∪ ℬ.nonMemberSubfamily a :=
   filter_union _ _ _
-#align finset.non_member_subfamily_union Finset.nonMemberSubfamily_union
 
 theorem memberSubfamily_union (a : α) (𝒜 ℬ : Finset (Finset α)) :
     (𝒜 ∪ ℬ).memberSubfamily a = 𝒜.memberSubfamily a ∪ ℬ.memberSubfamily a := by
   simp_rw [memberSubfamily, filter_union, image_union]
-#align finset.member_subfamily_union Finset.memberSubfamily_union
 
 theorem card_memberSubfamily_add_card_nonMemberSubfamily (a : α) (𝒜 : Finset (Finset α)) :
     (𝒜.memberSubfamily a).card + (𝒜.nonMemberSubfamily a).card = 𝒜.card := by
@@ -94,7 +84,6 @@ theorem card_memberSubfamily_add_card_nonMemberSubfamily (a : α) (𝒜 : Finset
   · conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun s => (a ∈ s))]
   · apply (erase_injOn' _).mono
     simp
-#align finset.card_member_subfamily_add_card_non_member_subfamily Finset.card_memberSubfamily_add_card_nonMemberSubfamily
 
 theorem memberSubfamily_union_nonMemberSubfamily (a : α) (𝒜 : Finset (Finset α)) :
     𝒜.memberSubfamily a ∪ 𝒜.nonMemberSubfamily a = 𝒜.image fun s => s.erase a := by
@@ -108,33 +97,28 @@ theorem memberSubfamily_union_nonMemberSubfamily (a : α) (𝒜 : Finset (Finset
     by_cases ha : a ∈ s
     · exact Or.inl ⟨by rwa [insert_erase ha], not_mem_erase _ _⟩
     · exact Or.inr ⟨by rwa [erase_eq_of_not_mem ha], not_mem_erase _ _⟩
-#align finset.member_subfamily_union_non_member_subfamily Finset.memberSubfamily_union_nonMemberSubfamily
 
 @[simp]
 theorem memberSubfamily_memberSubfamily : (𝒜.memberSubfamily a).memberSubfamily a = ∅ := by
   ext
   simp
-#align finset.member_subfamily_member_subfamily Finset.memberSubfamily_memberSubfamily
 
 @[simp]
 theorem memberSubfamily_nonMemberSubfamily : (𝒜.nonMemberSubfamily a).memberSubfamily a = ∅ := by
   ext
   simp
-#align finset.member_subfamily_non_member_subfamily Finset.memberSubfamily_nonMemberSubfamily
 
 @[simp]
 theorem nonMemberSubfamily_memberSubfamily :
     (𝒜.memberSubfamily a).nonMemberSubfamily a = 𝒜.memberSubfamily a := by
   ext
   simp
-#align finset.non_member_subfamily_member_subfamily Finset.nonMemberSubfamily_memberSubfamily
 
 @[simp]
 theorem nonMemberSubfamily_nonMemberSubfamily :
     (𝒜.nonMemberSubfamily a).nonMemberSubfamily a = 𝒜.nonMemberSubfamily a := by
   ext
   simp
-#align finset.non_member_subfamily_non_member_subfamily Finset.nonMemberSubfamily_nonMemberSubfamily
 
 lemma memberSubfamily_image_insert (h𝒜 : ∀ s ∈ 𝒜, a ∉ s) :
     (𝒜.image <| insert a).memberSubfamily a = 𝒜 := by
@@ -229,7 +213,6 @@ def compression (a : α) (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
     disjoint_left.2 fun s h₁ h₂ => by
       have := (mem_filter.1 h₂).2
       exact this (mem_filter.1 h₁).1
-#align down.compression Down.compression
 
 @[inherit_doc]
 scoped[FinsetFamily] notation "𝓓 " => Down.compression
@@ -246,27 +229,23 @@ theorem mem_compression : s ∈ 𝓓 a 𝒜 ↔ s ∈ 𝒜 ∧ s.erase a ∈ �
         ⟨?_, fun h => ⟨_, h, erase_insert <| insert_ne_self.1 <| ne_of_mem_of_not_mem h hs⟩⟩)
   rintro ⟨t, ht, rfl⟩
   rwa [insert_erase (erase_ne_self.1 (ne_of_mem_of_not_mem ht hs).symm)]
-#align down.mem_compression Down.mem_compression
 
 theorem erase_mem_compression (hs : s ∈ 𝒜) : s.erase a ∈ 𝓓 a 𝒜 := by
   simp_rw [mem_compression, erase_idem, and_self_iff]
   refine (em _).imp_right fun h => ⟨h, ?_⟩
   rwa [insert_erase (erase_ne_self.1 (ne_of_mem_of_not_mem hs h).symm)]
-#align down.erase_mem_compression Down.erase_mem_compression
 
 -- This is a special case of `erase_mem_compression` once we have `compression_idem`.
 theorem erase_mem_compression_of_mem_compression : s ∈ 𝓓 a 𝒜 → s.erase a ∈ 𝓓 a 𝒜 := by
   simp_rw [mem_compression, erase_idem]
   refine Or.imp (fun h => ⟨h.2, h.2⟩) fun h => ?_
   rwa [erase_eq_of_not_mem (insert_ne_self.1 <| ne_of_mem_of_not_mem h.2 h.1)]
-#align down.erase_mem_compression_of_mem_compression Down.erase_mem_compression_of_mem_compression
 
 theorem mem_compression_of_insert_mem_compression (h : insert a s ∈ 𝓓 a 𝒜) : s ∈ 𝓓 a 𝒜 := by
   by_cases ha : a ∈ s
   · rwa [insert_eq_of_mem ha] at h
   · rw [← erase_insert ha]
     exact erase_mem_compression_of_mem_compression h
-#align down.mem_compression_of_insert_mem_compression Down.mem_compression_of_insert_mem_compression
 
 /-- Down-compressing a family is idempotent. -/
 @[simp]
@@ -276,7 +255,6 @@ theorem compression_idem (a : α) (𝒜 : Finset (Finset α)) : 𝓓 a (𝓓 a �
   rintro (h | h)
   · exact h.1
   · cases h.1 (mem_compression_of_insert_mem_compression h.2)
-#align down.compression_idem Down.compression_idem
 
 /-- Down-compressing a family doesn't change its size. -/
 @[simp]
@@ -288,6 +266,5 @@ theorem card_compression (a : α) (𝒜 : Finset (Finset α)) : (𝓓 a 𝒜).ca
   intro s hs
   rw [mem_coe, mem_filter] at hs
   exact not_imp_comm.1 erase_eq_of_not_mem (ne_of_mem_of_not_mem hs.1 hs.2).symm
-#align down.card_compression Down.card_compression
 
 end Down

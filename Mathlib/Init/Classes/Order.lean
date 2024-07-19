@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 
 import Batteries.Classes.Order
-import Mathlib.Mathport.Rename
 
 /-!
 # Note about `Mathlib/Init/`
@@ -21,5 +20,3 @@ These will be deleted soon so will not significantly delay deleting otherwise em
 
 # Align statements for declarations from Batteries
 -/
-
-#align ordering.swap_inj Ordering.swap_inj

@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
-#align_import algebraic_topology.dold_kan.decomposition from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
-
 /-!
 
 # Decomposition of the Q endomorphisms
@@ -79,8 +77,6 @@ theorem decomposition_Q (n q : ℕ) :
           forall_true_left, Finset.mem_filter, lt_self_iff_false, or_true, and_self, not_true,
           Finset.mem_erase, ne_eq, Fin.mk.injEq, true_and]
         aesop
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.decomposition_Q AlgebraicTopology.DoldKan.decomposition_Q
 
 variable (X)
 
@@ -94,7 +90,6 @@ identity given by `decomposition_Q n (n+1)`. -/
 structure MorphComponents (n : ℕ) (Z : C) where
   a : X _[n + 1] ⟶ Z
   b : Fin (n + 1) → (X _[n] ⟶ Z)
-#align algebraic_topology.dold_kan.morph_components AlgebraicTopology.DoldKan.MorphComponents
 
 namespace MorphComponents
 
@@ -104,7 +99,6 @@ variable {X} {n : ℕ} {Z Z' : C} (f : MorphComponents X n Z) (g : X' ⟶ X) (h 
 def φ {Z : C} (f : MorphComponents X n Z) : X _[n + 1] ⟶ Z :=
   PInfty.f (n + 1) ≫ f.a + ∑ i : Fin (n + 1), (P i).f (n + 1) ≫ X.δ i.rev.succ ≫
     f.b (Fin.rev i)
-#align algebraic_topology.dold_kan.morph_components.φ AlgebraicTopology.DoldKan.MorphComponents.φ
 
 variable (X n)
 
@@ -114,7 +108,6 @@ variable (X n)
 def id : MorphComponents X n (X _[n + 1]) where
   a := PInfty.f (n + 1)
   b i := X.σ i
-#align algebraic_topology.dold_kan.morph_components.id AlgebraicTopology.DoldKan.MorphComponents.id
 
 @[simp]
 theorem id_φ : (id X n).φ = 𝟙 _ := by
@@ -122,7 +115,6 @@ theorem id_φ : (id X n).φ = 𝟙 _ := by
   congr 1
   · simp only [id, PInfty_f, P_f_idem]
   · exact Eq.trans (by congr; simp) (decomposition_Q n (n + 1)).symm
-#align algebraic_topology.dold_kan.morph_components.id_φ AlgebraicTopology.DoldKan.MorphComponents.id_φ
 
 variable {X n}
 
@@ -131,20 +123,17 @@ variable {X n}
 def postComp : MorphComponents X n Z' where
   a := f.a ≫ h
   b i := f.b i ≫ h
-#align algebraic_topology.dold_kan.morph_components.post_comp AlgebraicTopology.DoldKan.MorphComponents.postComp
 
 @[simp]
 theorem postComp_φ : (f.postComp h).φ = f.φ ≫ h := by
   unfold φ postComp
   simp only [add_comp, sum_comp, assoc]
-#align algebraic_topology.dold_kan.morph_components.post_comp_φ AlgebraicTopology.DoldKan.MorphComponents.postComp_φ
 
 /-- A `MorphComponents` can be precomposed with a morphism of simplicial objects. -/
 @[simps]
 def preComp : MorphComponents X' n Z where
   a := g.app (op [n + 1]) ≫ f.a
   b i := g.app (op [n]) ≫ f.b i
-#align algebraic_topology.dold_kan.morph_components.pre_comp AlgebraicTopology.DoldKan.MorphComponents.preComp
 
 @[simp]
 theorem preComp_φ : (f.preComp g).φ = g.app (op [n + 1]) ≫ f.φ := by
@@ -153,7 +142,6 @@ theorem preComp_φ : (f.preComp g).φ = g.app (op [n + 1]) ≫ f.φ := by
   congr 1
   · simp only [P_f_naturality_assoc]
   · simp only [comp_sum, P_f_naturality_assoc, SimplicialObject.δ_naturality_assoc]
-#align algebraic_topology.dold_kan.morph_components.pre_comp_φ AlgebraicTopology.DoldKan.MorphComponents.preComp_φ
 
 end MorphComponents
 

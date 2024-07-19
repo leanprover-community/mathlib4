@@ -9,8 +9,6 @@ import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Field.Basic
 import Mathlib.GroupTheory.GroupAction.Group
 
-#align_import algebra.module.basic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
-
 /-!
 # Further basic results about modules.
 
@@ -43,7 +41,6 @@ theorem map_inv_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} 
     intro x
     rw [← smul_inv_smul₀ hR x, map_natCast_smul f R S, hS, zero_smul]
   · rw [← inv_smul_smul₀ hS (f _), ← map_natCast_smul f R S, smul_inv_smul₀ hR]
-#align map_inv_nat_cast_smul map_inv_natCast_smul
 
 @[deprecated (since := "2024-04-17")]
 alias map_inv_nat_cast_smul := map_inv_natCast_smul
@@ -55,7 +52,6 @@ theorem map_inv_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [F
   · rw [Int.cast_natCast, Int.cast_natCast, map_inv_natCast_smul _ R S]
   · simp_rw [Int.cast_neg, Int.cast_natCast, inv_neg, neg_smul, map_neg,
       map_inv_natCast_smul _ R S]
-#align map_inv_int_cast_smul map_inv_intCast_smul
 
 @[deprecated (since := "2024-04-17")]
 alias map_inv_int_cast_smul := map_inv_intCast_smul
@@ -66,7 +62,6 @@ theorem inv_natCast_smul_eq {E : Type*} (R S : Type*) [AddCommMonoid E] [Divisio
     [DivisionSemiring S] [Module R E] [Module S E] (n : ℕ) (x : E) :
     (n⁻¹ : R) • x = (n⁻¹ : S) • x :=
   map_inv_natCast_smul (AddMonoidHom.id E) R S n x
-#align inv_nat_cast_smul_eq inv_natCast_smul_eq
 
 @[deprecated (since := "2024-04-17")]
 alias inv_nat_cast_smul_eq := inv_natCast_smul_eq
@@ -76,7 +71,6 @@ agree on inverses of integer numbers in `R` and `S`. -/
 theorem inv_intCast_smul_eq {E : Type*} (R S : Type*) [AddCommGroup E] [DivisionRing R]
     [DivisionRing S] [Module R E] [Module S E] (n : ℤ) (x : E) : (n⁻¹ : R) • x = (n⁻¹ : S) • x :=
   map_inv_intCast_smul (AddMonoidHom.id E) R S n x
-#align inv_int_cast_smul_eq inv_intCast_smul_eq
 
 @[deprecated (since := "2024-04-17")]
 alias inv_int_cast_smul_eq := inv_intCast_smul_eq
@@ -87,7 +81,6 @@ theorem inv_natCast_smul_comm {α E : Type*} (R : Type*) [AddCommMonoid E] [Divi
     [Monoid α] [Module R E] [DistribMulAction α E] (n : ℕ) (s : α) (x : E) :
     (n⁻¹ : R) • s • x = s • (n⁻¹ : R) • x :=
   (map_inv_natCast_smul (DistribMulAction.toAddMonoidHom E s) R R n x).symm
-#align inv_nat_cast_smul_comm inv_natCast_smul_comm
 
 @[deprecated (since := "2024-04-17")]
 alias inv_nat_cast_smul_comm := inv_natCast_smul_comm
@@ -98,7 +91,6 @@ theorem inv_intCast_smul_comm {α E : Type*} (R : Type*) [AddCommGroup E] [Divis
     [Monoid α] [Module R E] [DistribMulAction α E] (n : ℤ) (s : α) (x : E) :
     (n⁻¹ : R) • s • x = s • (n⁻¹ : R) • x :=
   (map_inv_intCast_smul (DistribMulAction.toAddMonoidHom E s) R R n x).symm
-#align inv_int_cast_smul_comm inv_intCast_smul_comm
 
 @[deprecated (since := "2024-04-17")]
 alias inv_int_cast_smul_comm := inv_intCast_smul_comm
@@ -124,7 +116,6 @@ variable [GroupWithZero R] [AddMonoid M] [DistribMulAction R M]
 /-- This instance applies to `DivisionSemiring`s, in particular `NNReal` and `NNRat`. -/
 instance (priority := 100) GroupWithZero.toNoZeroSMulDivisors : NoZeroSMulDivisors R M :=
   ⟨fun {a _} h ↦ or_iff_not_imp_left.2 fun ha ↦ (smul_eq_zero_iff_eq <| Units.mk0 a ha).1 h⟩
-#align group_with_zero.to_no_zero_smul_divisors GroupWithZero.toNoZeroSMulDivisors
 
 end GroupWithZero
 
@@ -135,7 +126,6 @@ namespace Function
 lemma support_smul_subset_left [Zero R] [Zero M] [SMulWithZero R M] (f : α → R) (g : α → M) :
     support (f • g) ⊆ support f := fun x hfg hf ↦
   hfg <| by rw [Pi.smul_apply', hf, zero_smul]
-#align function.support_smul_subset_left Function.support_smul_subset_left
 
 -- Changed (2024-01-21): this lemma was generalised;
 -- the old version is now called `support_const_smul_subset`.
@@ -146,16 +136,13 @@ lemma support_smul_subset_right [Zero M] [SMulZeroClass R M] (f : α → R) (g :
 lemma support_const_smul_of_ne_zero [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M]
     (c : R) (g : α → M) (hc : c ≠ 0) : support (c • g) = support g :=
   ext fun x ↦ by simp only [hc, mem_support, Pi.smul_apply, Ne, smul_eq_zero, false_or_iff]
-#align function.support_const_smul_of_ne_zero Function.support_const_smul_of_ne_zero
 
 lemma support_smul [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] (f : α → R)
     (g : α → M) : support (f • g) = support f ∩ support g :=
   ext fun _ => smul_ne_zero_iff
-#align function.support_smul Function.support_smul
 
 lemma support_const_smul_subset [Zero M] [SMulZeroClass R M] (a : R) (f : α → M) :
     support (a • f) ⊆ support f := support_smul_subset_right (fun _ ↦ a) f
-#align function.support_smul_subset_right Function.support_const_smul_subset
 
 end Function
 
@@ -168,22 +155,18 @@ lemma indicator_smul_apply (s : Set α) (r : α → R) (f : α → M) (a : α) :
   dsimp only [indicator]
   split_ifs
   exacts [rfl, (smul_zero (r a)).symm]
-#align set.indicator_smul_apply Set.indicator_smul_apply
 
 lemma indicator_smul (s : Set α) (r : α → R) (f : α → M) :
     indicator s (fun a ↦ r a • f a) = fun a ↦ r a • indicator s f a :=
   funext <| indicator_smul_apply s r f
-#align set.indicator_smul Set.indicator_smul
 
 lemma indicator_const_smul_apply (s : Set α) (r : R) (f : α → M) (a : α) :
     indicator s (r • f ·) a = r • indicator s f a :=
   indicator_smul_apply s (fun _ ↦ r) f a
-#align set.indicator_const_smul_apply Set.indicator_const_smul_apply
 
 lemma indicator_const_smul (s : Set α) (r : R) (f : α → M) :
     indicator s (r • f ·) = (r • indicator s f ·) :=
   funext <| indicator_const_smul_apply s r f
-#align set.indicator_const_smul Set.indicator_const_smul
 
 end SMulZeroClass
 

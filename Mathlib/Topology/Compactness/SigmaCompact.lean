@@ -134,7 +134,6 @@ lemma Subtype.isSigmaCompact_iff {p : X → Prop} {s : Set { a // p a }} :
 class SigmaCompactSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a σ-compact space, `Set.univ` is a σ-compact set. -/
   isSigmaCompact_univ : IsSigmaCompact (univ : Set X)
-#align sigma_compact_space SigmaCompactSpace
 
 /-- A topological space is σ-compact iff `univ` is σ-compact. -/
 lemma isSigmaCompact_univ_iff : IsSigmaCompact (univ : Set X) ↔ SigmaCompactSpace X :=
@@ -171,12 +170,10 @@ lemma isSigmaCompact_iff_sigmaCompactSpace {s : Set X} :
 -- see Note [lower instance priority]
 instance (priority := 200) CompactSpace.sigma_compact [CompactSpace X] : SigmaCompactSpace X :=
   ⟨⟨fun _ => univ, fun _ => isCompact_univ, iUnion_const _⟩⟩
-#align compact_space.sigma_compact CompactSpace.sigma_compact
 
 theorem SigmaCompactSpace.of_countable (S : Set (Set X)) (Hc : S.Countable)
     (Hcomp : ∀ s ∈ S, IsCompact s) (HU : ⋃₀ S = univ) : SigmaCompactSpace X :=
   ⟨(exists_seq_cover_iff_countable ⟨_, isCompact_empty⟩).2 ⟨S, Hc, Hcomp, HU⟩⟩
-#align sigma_compact_space.of_countable SigmaCompactSpace.of_countable
 
 -- see Note [lower instance priority]
 instance (priority := 100) sigmaCompactSpace_of_locally_compact_second_countable
@@ -185,7 +182,6 @@ instance (priority := 100) sigmaCompactSpace_of_locally_compact_second_countable
   rcases countable_cover_nhds hxK with ⟨s, hsc, hsU⟩
   refine SigmaCompactSpace.of_countable _ (hsc.image K) (forall_mem_image.2 fun x _ => hKc x) ?_
   rwa [sUnion_image]
-#align sigma_compact_space_of_locally_compact_second_countable sigmaCompactSpace_of_locally_compact_second_countable
 
 -- Porting note: doesn't work on the same line
 variable (X)
@@ -196,16 +192,13 @@ open SigmaCompactSpace
 /-- A choice of compact covering for a `σ`-compact space, chosen to be monotone. -/
 def compactCovering : ℕ → Set X :=
   Accumulate exists_compact_covering.choose
-#align compact_covering compactCovering
 
 theorem isCompact_compactCovering (n : ℕ) : IsCompact (compactCovering X n) :=
   isCompact_accumulate (Classical.choose_spec SigmaCompactSpace.exists_compact_covering).1 n
-#align is_compact_compact_covering isCompact_compactCovering
 
 theorem iUnion_compactCovering : ⋃ n, compactCovering X n = univ := by
   rw [compactCovering, iUnion_accumulate]
   exact (Classical.choose_spec SigmaCompactSpace.exists_compact_covering).2
-#align Union_compact_covering iUnion_compactCovering
 
 theorem iUnion_closure_compactCovering : ⋃ n, closure (compactCovering X n) = univ :=
   eq_top_mono (iUnion_mono fun _ ↦ subset_closure) (iUnion_compactCovering X)
@@ -213,13 +206,11 @@ theorem iUnion_closure_compactCovering : ⋃ n, closure (compactCovering X n) = 
 @[mono, gcongr]
 theorem compactCovering_subset ⦃m n : ℕ⦄ (h : m ≤ n) : compactCovering X m ⊆ compactCovering X n :=
   monotone_accumulate h
-#align compact_covering_subset compactCovering_subset
 
 variable {X}
 
 theorem exists_mem_compactCovering (x : X) : ∃ n, x ∈ compactCovering X n :=
   iUnion_eq_univ_iff.mp (iUnion_compactCovering X) x
-#align exists_mem_compact_covering exists_mem_compactCovering
 
 instance [SigmaCompactSpace Y] : SigmaCompactSpace (X × Y) :=
   ⟨⟨fun n => compactCovering X n ×ˢ compactCovering Y n, fun _ =>
@@ -261,7 +252,6 @@ protected theorem ClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : ClosedEm
   ⟨⟨fun n => e ⁻¹' compactCovering X n, fun n =>
       he.isCompact_preimage (isCompact_compactCovering _ _), by
       rw [← preimage_iUnion, iUnion_compactCovering, preimage_univ]⟩⟩
-#align closed_embedding.sigma_compact_space ClosedEmbedding.sigmaCompactSpace
 
 theorem IsClosed.sigmaCompactSpace {s : Set X} (hs : IsClosed s) : SigmaCompactSpace s :=
   (closedEmbedding_subtype_val hs).sigmaCompactSpace
@@ -278,14 +268,12 @@ protected theorem LocallyFinite.countable_univ {f : ι → Set X} (hf : LocallyF
   rcases hne i with ⟨x, hx⟩
   rcases iUnion_eq_univ_iff.1 (iUnion_compactCovering X) x with ⟨n, hn⟩
   exact mem_iUnion.2 ⟨n, x, hx, hn⟩
-#align locally_finite.countable_univ LocallyFinite.countable_univ
 
 /-- If `f : ι → Set X` is a locally finite covering of a σ-compact topological space by nonempty
 sets, then the index type `ι` is encodable. -/
 protected noncomputable def LocallyFinite.encodable {ι : Type*} {f : ι → Set X}
     (hf : LocallyFinite f) (hne : ∀ i, (f i).Nonempty) : Encodable ι :=
   @Encodable.ofEquiv _ _ (hf.countable_univ hne).toEncodable (Equiv.Set.univ _).symm
-#align locally_finite.encodable LocallyFinite.encodable
 
 /-- In a topological space with sigma compact topology, if `f` is a function that sends each point
 `x` of a closed set `s` to a neighborhood of `x` within `s`, then for some countable set `t ⊆ s`,
@@ -301,7 +289,6 @@ theorem countable_cover_nhdsWithin_of_sigma_compact {f : X → Set X} {s : Set X
   rcases exists_mem_compactCovering x with ⟨n, hn⟩
   rcases mem_iUnion₂.1 (hsub n ⟨hn, hx⟩) with ⟨y, hyt : y ∈ t n, hyf : x ∈ s → x ∈ f y⟩
   exact ⟨y, mem_iUnion.2 ⟨n, hyt⟩, hyf hx⟩
-#align countable_cover_nhds_within_of_sigma_compact countable_cover_nhdsWithin_of_sigma_compact
 
 /-- In a topological space with sigma compact topology, if `f` is a function that sends each
 point `x` to a neighborhood of `x`, then for some countable set `s`, the neighborhoods `f x`,
@@ -312,7 +299,6 @@ theorem countable_cover_nhds_of_sigma_compact {f : X → Set X} (hf : ∀ x, f x
   rcases countable_cover_nhdsWithin_of_sigma_compact isClosed_univ fun x _ => hf x with
     ⟨s, -, hsc, hsU⟩
   exact ⟨s, hsc, univ_subset_iff.1 hsU⟩
-#align countable_cover_nhds_of_sigma_compact countable_cover_nhds_of_sigma_compact
 
 
 
@@ -334,7 +320,6 @@ structure CompactExhaustion (X : Type*) [TopologicalSpace X] where
   subset_interior_succ' : ∀ n, toFun n ⊆ interior (toFun (n + 1))
   /-- The union of all sets in a compact exhaustion equals the entire space. -/
   iUnion_eq' : ⋃ n, toFun n = univ
-#align compact_exhaustion CompactExhaustion
 
 namespace CompactExhaustion
 
@@ -353,31 +338,24 @@ theorem toFun_eq_coe : K.toFun = K := rfl
 
 protected theorem isCompact (n : ℕ) : IsCompact (K n) :=
   K.isCompact' n
-#align compact_exhaustion.is_compact CompactExhaustion.isCompact
 
 theorem subset_interior_succ (n : ℕ) : K n ⊆ interior (K (n + 1)) :=
   K.subset_interior_succ' n
-#align compact_exhaustion.subset_interior_succ CompactExhaustion.subset_interior_succ
 
 @[mono]
 protected theorem subset ⦃m n : ℕ⦄ (h : m ≤ n) : K m ⊆ K n :=
   OrderHomClass.mono K h
-#align compact_exhaustion.subset CompactExhaustion.subset
 
 theorem subset_succ (n : ℕ) : K n ⊆ K (n + 1) := K.subset n.le_succ
-#align compact_exhaustion.subset_succ CompactExhaustion.subset_succ
 
 theorem subset_interior ⦃m n : ℕ⦄ (h : m < n) : K m ⊆ interior (K n) :=
   Subset.trans (K.subset_interior_succ m) <| interior_mono <| K.subset h
-#align compact_exhaustion.subset_interior CompactExhaustion.subset_interior
 
 theorem iUnion_eq : ⋃ n, K n = univ :=
   K.iUnion_eq'
-#align compact_exhaustion.Union_eq CompactExhaustion.iUnion_eq
 
 theorem exists_mem (x : X) : ∃ n, x ∈ K n :=
   iUnion_eq_univ_iff.1 K.iUnion_eq x
-#align compact_exhaustion.exists_mem CompactExhaustion.exists_mem
 
 /-- A compact exhaustion eventually covers any compact set. -/
 theorem exists_superset_of_isCompact {s : Set X} (hs : IsCompact s) : ∃ n, s ⊆ K n := by
@@ -391,15 +369,12 @@ theorem exists_superset_of_isCompact {s : Set X} (hs : IsCompact s) : ∃ n, s �
 /-- The minimal `n` such that `x ∈ K n`. -/
 protected noncomputable def find (x : X) : ℕ :=
   Nat.find (K.exists_mem x)
-#align compact_exhaustion.find CompactExhaustion.find
 
 theorem mem_find (x : X) : x ∈ K (K.find x) :=
   Nat.find_spec (K.exists_mem x)
-#align compact_exhaustion.mem_find CompactExhaustion.mem_find
 
 theorem mem_iff_find_le {x : X} {n : ℕ} : x ∈ K n ↔ K.find x ≤ n :=
   ⟨fun h => Nat.find_min' (K.exists_mem x) h, fun h => K.subset h <| K.mem_find x⟩
-#align compact_exhaustion.mem_iff_find_le CompactExhaustion.mem_iff_find_le
 
 /-- Prepend the empty set to a compact exhaustion `K n`. -/
 def shiftr : CompactExhaustion X where
@@ -407,17 +382,14 @@ def shiftr : CompactExhaustion X where
   isCompact' n := Nat.casesOn n isCompact_empty K.isCompact
   subset_interior_succ' n := Nat.casesOn n (empty_subset _) K.subset_interior_succ
   iUnion_eq' := iUnion_eq_univ_iff.2 fun x => ⟨K.find x + 1, K.mem_find x⟩
-#align compact_exhaustion.shiftr CompactExhaustion.shiftr
 
 @[simp]
 theorem find_shiftr (x : X) : K.shiftr.find x = K.find x + 1 :=
   Nat.find_comp_succ _ _ (not_mem_empty _)
-#align compact_exhaustion.find_shiftr CompactExhaustion.find_shiftr
 
 theorem mem_diff_shiftr_find (x : X) : x ∈ K.shiftr (K.find x + 1) \ K.shiftr (K.find x) :=
   ⟨K.mem_find _,
     mt K.shiftr.mem_iff_find_le.1 <| by simp only [find_shiftr, not_le, Nat.lt_succ_self]⟩
-#align compact_exhaustion.mem_diff_shiftr_find CompactExhaustion.mem_diff_shiftr_find
 
 /-- A choice of an
 [exhaustion by compact sets](https://en.wikipedia.org/wiki/Exhaustion_by_compact_sets)
@@ -434,7 +406,6 @@ noncomputable def choice (X : Type*) [TopologicalSpace X] [WeaklyLocallyCompactS
       (interior_mono subset_union_left)
   · refine univ_subset_iff.1 (iUnion_compactCovering X ▸ ?_)
     exact iUnion_mono' fun n => ⟨n + 1, subset_union_right⟩
-#align compact_exhaustion.choice CompactExhaustion.choice
 
 noncomputable instance [LocallyCompactSpace X] :
     Inhabited (CompactExhaustion X) :=
