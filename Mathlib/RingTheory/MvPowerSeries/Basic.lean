@@ -777,8 +777,7 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent [DecidableEq σ]
   suffices m ≤ s.card by
     obtain ⟨m', hm'⟩ := Nat.exists_eq_add_of_le this
     rw [hm', pow_add, hf, MulZeroClass.zero_mul]
-  rw [← Nat.add_le_add_iff_right, add_comm s.card, Finset.card_sdiff_add_card_eq_card hs]
-  simp only [card_range]
+  rw [← Nat.add_le_add_iff_right, add_comm s.card, Finset.card_sdiff_add_card_eq_card hs, card_range]
   apply le_trans _ hn
   simp only [add_comm m, Nat.add_le_add_iff_right]
   rw [← hk.1, ← sum_sdiff hs]
