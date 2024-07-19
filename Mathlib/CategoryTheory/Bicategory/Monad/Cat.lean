@@ -6,6 +6,10 @@ Authors: Yuma Mizuno
 import Mathlib.CategoryTheory.Bicategory.Monad.Basic
 import Mathlib.CategoryTheory.Monad.Basic
 import Mathlib.CategoryTheory.Category.Cat
+/-!
+# Monads in Cat
+
+-/
 
 universe v₁ u₁
 

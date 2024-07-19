@@ -6,7 +6,7 @@ Authors: Scott Morrison, Yuma Mizuno, Oleksandr Manzyuk
 import Mathlib.CategoryTheory.Monoidal.Free.Basic
 import Mathlib.Lean.Meta
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
-import Mathlib.Tactic.CategoryTheory.BicategoricalComp
+-- import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
 #align_import category_theory.monoidal.coherence from "leanprover-community/mathlib"@"f187f1074fa1857c94589cc653c786cadc4c35ff"
@@ -188,7 +188,8 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
     (max 256 (synthInstance.maxSize.get opts))) do
   evalTactic (← `(tactic|
     (simp (config := {failIfUnchanged := false}) only
-      [monoidalComp, Category.assoc, MonoidalCoherence.hom]) <;>
+      [monoidalComp, Category.assoc, MonoidalCoherence.hom,
+        bicategoricalComp, BicategoricalCoherence.hom]) <;>
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
     (simp (config := {failIfUnchanged := false}) only
       [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂])))
@@ -217,7 +218,7 @@ def insertTrailingIds (g : MVarId) : MetaM MVarId := do
 -- Porting note: this is an ugly port, using too many `evalTactic`s.
 -- We can refactor later into either a `macro` (but the flow control is awkward)
 -- or a `MetaM` tactic.
-def coherence_loop (maxSteps := 37) : TacticM Unit :=
+def coherence_loop (maxSteps := 1024) : TacticM Unit :=
   match maxSteps with
   | 0 => exception' "`coherence` tactic reached iteration limit"
   | maxSteps' + 1 => do
