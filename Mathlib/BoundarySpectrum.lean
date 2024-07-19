@@ -48,7 +48,6 @@ lemma _root_.Subalgebra.isUnit_of_isUnit_val_of_eventually {l : Filter S} {a : S
   rw [Filter.eventually_map]
   apply hl.mp <| eventually_of_forall fun x hx ↦ ?_
   suffices Ring.inverse (val S x) = (val S ↑hx.unit⁻¹) from this ▸ Subtype.property _
-  have := (hx.map (val S)).unit_spec
   rw [← (hx.map (val S)).unit_spec, Ring.inverse_unit (hx.map (val S)).unit, val]
   apply Units.mul_eq_one_iff_inv_eq.mp
   simpa [-IsUnit.mul_val_inv] using congr(($hx.mul_val_inv : A))
@@ -63,10 +62,9 @@ lemma _root_.Subalgebra.frontier_spectrum : frontier (spectrum 𝕜 x) ⊆ spect
   intro μ hμ
   by_contra h
   rw [spectrum.not_mem_iff] at h
-  rw [← frontier_compl, IsOpen.frontier_eq, mem_diff] at hμ
-  swap
-  · rw [spectrum, compl_compl]
-    exact spectrum.isOpen_resolventSet (𝕜 := 𝕜) x
+  have h_isOpen : IsOpen (σ 𝕜 x)ᶜ := by
+    simpa [spectrum] using spectrum.isOpen_resolventSet x
+  rw [← frontier_compl, h_isOpen.frontier_eq, mem_diff] at hμ
   obtain ⟨hμ₁, hμ₂⟩ := hμ
   rw [mem_closure_iff_clusterPt] at hμ₁
   apply hμ₂
@@ -79,9 +77,9 @@ lemma _root_.Subalgebra.frontier_spectrum : frontier (spectrum 𝕜 x) ⊆ spect
     apply Eventually.filter_mono inf_le_right
     simp [spectrum.not_mem_iff]
 
-/-- If `S : Subalgebra 𝕜 A` is a closed subalgebra of a Banach algebra `A`, then for any
-`x : S`, the boundary of the spectrum of `x` relative to `S` is a subset of the boundary of the
- spectrum of `↑x : A` relative to `A`. -/
+/-- If `S` is a closed subalgebra of a Banach algebra `A`, then for any `x : S`, the boundary of
+the spectrum of `x` relative to `S` is a subset of the boundary of the spectrum of `↑x : A`
+relative to `A`. -/
 lemma Subalgebra.frontier_subset_frontier :
     frontier (spectrum 𝕜 x) ⊆ frontier (spectrum 𝕜 (x : A)) := by
   rw [frontier_eq_closure_inter_closure (s := spectrum 𝕜 (x : A)),
@@ -93,6 +91,8 @@ lemma Subalgebra.frontier_subset_frontier :
 
 open Set Notation
 
+
+-- where should this go? `Mathlib.Topology.Order` I guess?
 lemma isClopen_preimage_val {X : Type*} [TopologicalSpace X] {u v : Set X}
     (hu : IsOpen u) (huv : frontier u ∩ v = ∅) : IsClopen (v ↓∩ u) := by
   refine ⟨?_, isOpen_induced hu (f := Subtype.val)⟩
@@ -102,6 +102,7 @@ lemma isClopen_preimage_val {X : Type*} [TopologicalSpace X] {u v : Set X}
   rw [closure_eq_self_union_frontier, inter_union_distrib_left, inter_comm _ (frontier u),
     huv, union_empty]
 
+-- this can go in `Mathlib.Topology.Connected.Basic`
 /-- If `u v : Set X` and `u ⊆ v` is clopen in `v`, then `u` is the union of the connected
 components of `v` in `X` which intersect `u`. -/
 lemma IsClopen.biUnion_connectedComponentIn {X : Type*} [TopologicalSpace X] {u v : Set X}
@@ -115,10 +116,6 @@ lemma IsClopen.biUnion_connectedComponentIn {X : Type*} [TopologicalSpace X] {u 
   simp only [← connectedComponentIn_eq_image]
   exact le_antisymm (iUnion_subset fun _ ↦ le_rfl) <|
     iUnion_subset fun hx ↦ subset_iUnion₂_of_subset (huv₁ hx) hx le_rfl
-
-example {X : Type*} [TopologicalSpace X] {u v : Set X} (hu : IsOpen u) (huv₁ : u ⊆ v)
-    (huv₂ : frontier u ∩ v = ∅) : u = ⋃ x ∈ u, connectedComponentIn v x :=
-  isClopen_preimage_val hu huv₂ |>.biUnion_connectedComponentIn huv₁
 
 /-- If `S` is a closed subalgebra of a Banach algebra `A`, then for any `x : S`, the spectrum of `x`
 is the spectrum of `↑x : A` along with the connected components of the complement of the spectrum of
@@ -146,11 +143,13 @@ lemma Subalgebra.spectrum_sUnion_connectedComponentIn :
   refine inter_subset_inter_right _ ?_ |>.trans <| inter_subset_right
   exact frontier_subset_frontier S x
 
+/-- Let `S` be a closed subalgebra of a Banach algebra `A`, and let `x : S`. If `z` is in the
+spectrum of `x`, then the connected component of `z` in the complement of the spectrum of `↑x : A`
+is bounded (or else `z` actually belongs to the spectrum of `↑x : A`). -/
 lemma Subalgebra.spectrum_isBounded_connectedComponentIn {z : 𝕜} (hz : z ∈ σ 𝕜 x) :
     Bornology.IsBounded (connectedComponentIn (σ 𝕜 (x : A))ᶜ z) := by
   by_cases hz' : z ∈ σ 𝕜 (x : A)
-  · rw [connectedComponentIn_eq_empty (show z ∉ (σ 𝕜 (x : A))ᶜ from not_not.mpr hz')]
-    exact Bornology.isBounded_empty
+  · simp [connectedComponentIn_eq_empty (show z ∉ (σ 𝕜 (x : A))ᶜ from not_not.mpr hz')]
   · have : CompleteSpace S := hS.completeSpace_coe
     suffices connectedComponentIn (σ 𝕜 (x : A))ᶜ z ⊆ σ 𝕜 x from spectrum.isBounded x |>.subset this
     rw [spectrum_sUnion_connectedComponentIn S]
