@@ -7,8 +7,6 @@ Authors: Chris Hughes
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Data.Set.UnionLift
 
-#align_import algebra.algebra.subalgebra.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
-
 /-!
 # Subalgebras and directed Unions of sets
 
@@ -36,7 +34,6 @@ theorem coe_iSup_of_directed : ↑(iSup K) = ⋃ i, (K i : Set A) :=
   have : iSup K = s := le_antisymm
     (iSup_le fun i ↦ le_iSup (fun i ↦ (K i : Set A)) i) (Set.iUnion_subset fun _ ↦ le_iSup K _)
   this.symm ▸ rfl
-#align subalgebra.coe_supr_of_directed Subalgebra.coe_iSup_of_directed
 
 variable (K)
 variable (f : ∀ i, K i →ₐ[R] B) (hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h))
@@ -70,7 +67,6 @@ noncomputable def iSupLift : ↥T →ₐ[R] B :=
     commutes' := fun r => by
       dsimp
       apply Set.iUnionLift_const _ (fun _ => algebraMap R _ r) <;> simp }
-#align subalgebra.supr_lift Subalgebra.iSupLift
 
 variable {K dir f hf T hT}
 
@@ -79,24 +75,20 @@ theorem iSupLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
     iSupLift K dir f hf T hT (inclusion h x) = f i x := by
   dsimp [iSupLift, inclusion]
   rw [Set.iUnionLift_inclusion]
-#align subalgebra.supr_lift_inclusion Subalgebra.iSupLift_inclusion
 
 @[simp]
 theorem iSupLift_comp_inclusion {i : ι} (h : K i ≤ T) :
     (iSupLift K dir f hf T hT).comp (inclusion h) = f i := by ext; simp
-#align subalgebra.supr_lift_comp_inclusion Subalgebra.iSupLift_comp_inclusion
 
 @[simp]
 theorem iSupLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :
     iSupLift K dir f hf T hT ⟨x, hx⟩ = f i x := by
   dsimp [iSupLift, inclusion]
   rw [Set.iUnionLift_mk]
-#align subalgebra.supr_lift_mk Subalgebra.iSupLift_mk
 
 theorem iSupLift_of_mem {i : ι} (x : T) (hx : (x : A) ∈ K i) :
     iSupLift K dir f hf T hT x = f i ⟨x, hx⟩ := by
   dsimp [iSupLift, inclusion]
   rw [Set.iUnionLift_of_mem]
-#align subalgebra.supr_lift_of_mem Subalgebra.iSupLift_of_mem
 
 end Subalgebra

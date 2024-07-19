@@ -8,8 +8,6 @@ import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.NumberTheory.Bernoulli
 
-#align_import number_theory.bernoulli_polynomials from "leanprover-community/mathlib"@"ca3d21f7f4fd613c2a3c54ac7871163e1e5ecb3a"
-
 /-!
 # Bernoulli polynomials
 
@@ -52,7 +50,6 @@ namespace Polynomial
 /-- The Bernoulli polynomials are defined in terms of the negative Bernoulli numbers. -/
 def bernoulli (n : ℕ) : ℚ[X] :=
   ∑ i ∈ range (n + 1), Polynomial.monomial (n - i) (_root_.bernoulli i * choose n i)
-#align polynomial.bernoulli Polynomial.bernoulli
 
 theorem bernoulli_def (n : ℕ) : bernoulli n =
     ∑ i ∈ range (n + 1), Polynomial.monomial i (_root_.bernoulli (n - i) * choose n i) := by
@@ -61,7 +58,6 @@ theorem bernoulli_def (n : ℕ) : bernoulli n =
   rintro x hx
   rw [mem_range_succ_iff] at hx
   rw [choose_symm hx, tsub_tsub_cancel_of_le hx]
-#align polynomial.bernoulli_def Polynomial.bernoulli_def
 
 /-
 ### examples
@@ -70,7 +66,6 @@ section Examples
 
 @[simp]
 theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
-#align polynomial.bernoulli_zero Polynomial.bernoulli_zero
 
 @[simp]
 theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
@@ -80,7 +75,6 @@ theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli 
     intros x hx
     simp [tsub_eq_zero_iff_le, mem_range.1 hx]
   simp [this]
-#align polynomial.bernoulli_eval_zero Polynomial.bernoulli_eval_zero
 
 @[simp]
 theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
@@ -90,7 +84,6 @@ theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
   by_cases h : n = 1
   · norm_num [h]
   · simp [h, bernoulli_eq_bernoulli'_of_ne_one h]
-#align polynomial.bernoulli_eval_one Polynomial.bernoulli_eval_one
 
 end Examples
 
@@ -106,14 +99,12 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
   rw [mul_assoc, mul_assoc, ← Nat.cast_mul, ← Nat.cast_mul]
   congr 3
   rw [(choose_mul_succ_eq k m).symm]
-#align polynomial.derivative_bernoulli_add_one Polynomial.derivative_bernoulli_add_one
 
 theorem derivative_bernoulli (k : ℕ) :
     Polynomial.derivative (bernoulli k) = k * bernoulli (k - 1) := by
   cases k with
   | zero => rw [Nat.cast_zero, zero_mul, bernoulli_zero, derivative_one]
   | succ k => exact mod_cast derivative_bernoulli_add_one k
-#align polynomial.derivative_bernoulli Polynomial.derivative_bernoulli
 
 @[simp]
 nonrec theorem sum_bernoulli (n : ℕ) :
@@ -150,7 +141,6 @@ nonrec theorem sum_bernoulli (n : ℕ) :
     intro h₁
     exact (f x hx) h₁
   rw [g, zero_smul]
-#align polynomial.sum_bernoulli Polynomial.sum_bernoulli
 
 /-- Another version of `Polynomial.sum_bernoulli`. -/
 theorem bernoulli_eq_sub_sum (n : ℕ) :
@@ -158,7 +148,6 @@ theorem bernoulli_eq_sub_sum (n : ℕ) :
       monomial n (n.succ : ℚ) - ∑ k ∈ Finset.range n, ((n + 1).choose k : ℚ) • bernoulli k := by
   rw [Nat.cast_succ, ← sum_bernoulli n, sum_range_succ, add_sub_cancel_left, choose_succ_self_right,
     Nat.cast_succ]
-#align polynomial.bernoulli_eq_sub_sum Polynomial.bernoulli_eq_sub_sum
 
 /-- Another version of `sum_range_pow`. -/
 theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
@@ -176,14 +165,12 @@ theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
     · rw [Nat.sub_sub_self (mem_range_le hx)]
     · rw [← choose_symm (mem_range_le hx)]
   · norm_cast
-#align polynomial.sum_range_pow_eq_bernoulli_sub Polynomial.sum_range_pow_eq_bernoulli_sub
 
 /-- Rearrangement of `Polynomial.sum_range_pow_eq_bernoulli_sub`. -/
 theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =
     _root_.bernoulli p.succ + (p + 1 : ℚ) * ∑ k ∈ range n, (k : ℚ) ^ p := by
   apply eq_add_of_sub_eq'
   rw [sum_range_pow_eq_bernoulli_sub]
-#align polynomial.bernoulli_succ_eval Polynomial.bernoulli_succ_eval
 
 theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
     (bernoulli n).eval (1 + x) = (bernoulli n).eval x + n * x ^ (n - 1) := by
@@ -209,7 +196,6 @@ theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
       rw [succ_eq_add_one, ← choose_succ_self_right d]
   rw [Nat.cast_succ, ← smul_eq_mul, ← sum_range_succ _ d, eval_monomial_one_add_sub]
   simp_rw [smul_eq_mul]
-#align polynomial.bernoulli_eval_one_add Polynomial.bernoulli_eval_one_add
 
 open PowerSeries
 
@@ -257,6 +243,5 @@ theorem bernoulli_generating_function (t : A) :
     Polynomial.aeval_C]
   -- finally cancel the Bernoulli polynomial and the algebra_map
   field_simp
-#align polynomial.bernoulli_generating_function Polynomial.bernoulli_generating_function
 
 end Polynomial

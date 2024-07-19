@@ -9,8 +9,6 @@ import Mathlib.Tactic.IntervalCases
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
-#align_import group_theory.specific_groups.quaternion from "leanprover-community/mathlib"@"879155bff5af618b9062cbb2915347dafd749ad6"
-
 /-!
 # Quaternion Groups
 
@@ -54,7 +52,6 @@ inductive QuaternionGroup (n : ℕ) : Type
   | a : ZMod (2 * n) → QuaternionGroup n
   | xa : ZMod (2 * n) → QuaternionGroup n
   deriving DecidableEq
-#align quaternion_group QuaternionGroup
 
 namespace QuaternionGroup
 
@@ -111,26 +108,21 @@ instance : Group (QuaternionGroup n) where
 @[simp]
 theorem a_mul_a (i j : ZMod (2 * n)) : a i * a j = a (i + j) :=
   rfl
-#align quaternion_group.a_mul_a QuaternionGroup.a_mul_a
 
 @[simp]
 theorem a_mul_xa (i j : ZMod (2 * n)) : a i * xa j = xa (j - i) :=
   rfl
-#align quaternion_group.a_mul_xa QuaternionGroup.a_mul_xa
 
 @[simp]
 theorem xa_mul_a (i j : ZMod (2 * n)) : xa i * a j = xa (i + j) :=
   rfl
-#align quaternion_group.xa_mul_a QuaternionGroup.xa_mul_a
 
 @[simp]
 theorem xa_mul_xa (i j : ZMod (2 * n)) : xa i * xa j = a ((n : ZMod (2 * n)) + j - i) :=
   rfl
-#align quaternion_group.xa_mul_xa QuaternionGroup.xa_mul_xa
 
 theorem one_def : (1 : QuaternionGroup n) = a 0 :=
   rfl
-#align quaternion_group.one_def QuaternionGroup.one_def
 
 private def fintypeHelper : Sum (ZMod (2 * n)) (ZMod (2 * n)) ≃ QuaternionGroup n where
   invFun i :=
@@ -159,7 +151,6 @@ def quaternionGroupZeroEquivDihedralGroupZero : QuaternionGroup 0 ≃* DihedralG
   left_inv := by rintro (k | k) <;> rfl
   right_inv := by rintro (k | k) <;> rfl
   map_mul' := by rintro (k | k) (l | l) <;> simp
-#align quaternion_group.quaternion_group_zero_equiv_dihedral_group_zero QuaternionGroup.quaternionGroupZeroEquivDihedralGroupZero
 
 /-- If `0 < n`, then `QuaternionGroup n` is a finite group.
 -/
@@ -174,7 +165,6 @@ instance : Nontrivial (QuaternionGroup n) :=
 theorem card [NeZero n] : Fintype.card (QuaternionGroup n) = 4 * n := by
   rw [← Fintype.card_eq.mpr ⟨fintypeHelper⟩, Fintype.card_sum, ZMod.card, two_mul]
   ring
-#align quaternion_group.card QuaternionGroup.card
 
 @[simp]
 theorem a_one_pow (k : ℕ) : (a 1 : QuaternionGroup n) ^ k = a k := by
@@ -183,18 +173,15 @@ theorem a_one_pow (k : ℕ) : (a 1 : QuaternionGroup n) ^ k = a k := by
   · rw [pow_succ, IH, a_mul_a]
     congr 1
     norm_cast
-#align quaternion_group.a_one_pow QuaternionGroup.a_one_pow
 
 -- @[simp] -- Porting note: simp changes this to `a 0 = 1`, so this is no longer a good simp lemma.
 theorem a_one_pow_n : (a 1 : QuaternionGroup n) ^ (2 * n) = 1 := by
   rw [a_one_pow, one_def]
   congr 1
   exact ZMod.natCast_self _
-#align quaternion_group.a_one_pow_n QuaternionGroup.a_one_pow_n
 
 @[simp]
 theorem xa_sq (i : ZMod (2 * n)) : xa i ^ 2 = a n := by simp [sq]
-#align quaternion_group.xa_sq QuaternionGroup.xa_sq
 
 @[simp]
 theorem xa_pow_four (i : ZMod (2 * n)) : xa i ^ 4 = 1 := by
@@ -203,7 +190,6 @@ theorem xa_pow_four (i : ZMod (2 * n)) : xa i ^ 4 = 1 := by
   norm_cast
   rw [← two_mul]
   simp [one_def]
-#align quaternion_group.xa_pow_four QuaternionGroup.xa_pow_four
 
 /-- If `0 < n`, then `xa i` has order 4.
 -/
@@ -220,14 +206,12 @@ theorem orderOf_xa [NeZero n] (i : ZMod (2 * n)) : orderOf (xa i) = 4 := by
     simp only [ZMod.val_natCast, ZMod.val_zero, Nat.zero_div, Nat.mod_mul_left_div_self,
       Nat.div_self (NeZero.pos n)] at h'
   · norm_num
-#align quaternion_group.order_of_xa QuaternionGroup.orderOf_xa
 
 /-- In the special case `n = 1`, `Quaternion 1` is a cyclic group (of order `4`). -/
 theorem quaternionGroup_one_isCyclic : IsCyclic (QuaternionGroup 1) := by
   apply isCyclic_of_orderOf_eq_card
   · rw [card, mul_one]
     exact orderOf_xa 0
-#align quaternion_group.quaternion_group_one_is_cyclic QuaternionGroup.quaternionGroup_one_isCyclic
 
 /-- If `0 < n`, then `a 1` has order `2 * n`.
 -/
@@ -249,7 +233,6 @@ theorem orderOf_a_one : orderOf (a 1 : QuaternionGroup n) = 2 * n := by
   injection h1 with h2
   rw [← ZMod.val_eq_zero, ZMod.val_natCast, Nat.mod_eq_of_lt h] at h2
   exact absurd h2.symm (orderOf_pos _).ne
-#align quaternion_group.order_of_a_one QuaternionGroup.orderOf_a_one
 
 /-- If `0 < n`, then `a i` has order `(2 * n) / gcd (2 * n) i`.
 -/
@@ -257,7 +240,6 @@ theorem orderOf_a [NeZero n] (i : ZMod (2 * n)) :
     orderOf (a i) = 2 * n / Nat.gcd (2 * n) i.val := by
   conv_lhs => rw [← ZMod.natCast_zmod_val i]
   rw [← a_one_pow, orderOf_pow, orderOf_a_one]
-#align quaternion_group.order_of_a QuaternionGroup.orderOf_a
 
 theorem exponent : Monoid.exponent (QuaternionGroup n) = 2 * lcm n 2 := by
   rw [← normalize_eq 2, ← lcm_mul_left, normalize_eq]
@@ -279,6 +261,5 @@ theorem exponent : Monoid.exponent (QuaternionGroup n) = 2 * lcm n 2 := by
       exact orderOf_a_one.symm
     · convert Monoid.order_dvd_exponent (xa (0 : ZMod (2 * n)))
       exact (orderOf_xa 0).symm
-#align quaternion_group.exponent QuaternionGroup.exponent
 
 end QuaternionGroup

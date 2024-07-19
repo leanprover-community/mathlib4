@@ -9,8 +9,6 @@ import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Category.ModuleCat.Biproducts
 import Mathlib.RingTheory.SimpleModule
 
-#align_import algebra.module.pid from "leanprover-community/mathlib"@"cdc34484a07418af43daf8198beaf5c00324bca8"
-
 /-!
 # Structure of finitely generated modules over a PID
 
@@ -85,7 +83,6 @@ theorem Submodule.isInternal_prime_power_torsion_of_pid [Module.Finite R M]
   ext p : 1
   rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ← Ideal.span_singleton_pow,
     Ideal.span_singleton_generator]
-#align submodule.is_internal_prime_power_torsion_of_pid Submodule.isInternal_prime_power_torsion_of_pid
 
 /-- A finitely generated torsion module over a PID is an internal direct sum of its
 `p i ^ e i`-torsion submodules for some primes `p i` and numbers `e i`. -/
@@ -99,7 +96,6 @@ theorem Submodule.exists_isInternal_prime_power_torsion_of_pid [Module.Finite R 
     have hP := prime_of_factor p (Multiset.mem_toFinset.mp hp)
     haveI := Ideal.isPrime_of_prime hP
     exact (IsPrincipal.prime_generator_of_isPrime p hP.ne_zero).irreducible
-#align submodule.exists_is_internal_prime_power_torsion_of_pid Submodule.exists_isInternal_prime_power_torsion_of_pid
 
 namespace Module
 
@@ -122,7 +118,6 @@ theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
   have := (isTorsion'_powers_iff p).mp hM x; rw [prop] at this
   convert Associates.eq_pow_find_of_dvd_irreducible_pow (Associates.irreducible_mk.mpr hp)
     this.choose_spec
-#align ideal.torsion_of_eq_span_pow_p_order Ideal.torsionOf_eq_span_pow_pOrder
 
 theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ pOrder hM y))
     (h : p ^ k • x ∈ R ∙ y) : ∃ a : R, p ^ k • x = p ^ k • a • y := by
@@ -149,7 +144,6 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
   · use 0
     rw [zero_smul, smul_zero, ← Nat.sub_add_cancel (le_of_not_le hk), pow_add, mul_smul, hM',
       smul_zero]
-#align module.p_pow_smul_lift Module.p_pow_smul_lift
 
 open Submodule.Quotient
 
@@ -166,7 +160,6 @@ theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ 
   refine ⟨f1.choose - a • z, by rw [smul_sub, sub_eq_zero, ha], ?_⟩
   rw [mk_sub, mk_smul, (Quotient.mk_eq_zero _).mpr <| Submodule.mem_span_singleton_self _,
     smul_zero, sub_zero, f1.choose_spec]
-#align module.exists_smul_eq_zero_and_mk_eq Module.exists_smul_eq_zero_and_mk_eq
 
 open Finset Multiset
 
@@ -232,7 +225,6 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
       rw [← Set.range_comp, ← Set.insert_image_compl_eq_range _ j, Function.comp_apply,
         (Quotient.mk_eq_zero _).mpr (Submodule.mem_span_singleton_self _), span_insert_zero] at hs'
       exact hs'
-#align module.torsion_by_prime_power_decomposition Module.torsion_by_prime_power_decomposition
 
 end PTorsion
 
@@ -261,7 +253,6 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
               (DFinsupp.mapRange.linearEquiv fun i => quotEquivOfEq _ _ ?_)⟩⟩
   cases' i with i j
   simp only
-#align module.equiv_direct_sum_of_is_torsion Module.equiv_directSum_of_isTorsion
 
 /-- **Structure theorem of finitely generated modules over a PID** : A finitely generated
   module over a PID is isomorphic to the product of a free module and a direct sum of some
@@ -281,6 +272,5 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R N] :
       ⟨(lequivProdOfRightSplitExact (torsion R N).injective_subtype ?_ hf).symm.trans <|
           (h.prod g).trans <| LinearEquiv.prodComm.{u, u} R _ (Fin n →₀ R) ⟩⟩
   rw [range_subtype, ker_mkQ]
-#align module.equiv_free_prod_direct_sum Module.equiv_free_prod_directSum
 
 end Module

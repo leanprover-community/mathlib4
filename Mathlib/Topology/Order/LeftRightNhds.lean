@@ -58,19 +58,16 @@ theorem TFAE_mem_nhdsWithin_Ioi {a b : α} (hab : a < b) (s : Set α) :
     rcases exists_Ico_subset_of_mem_nhds' va hab with ⟨u, au, hu⟩
     exact ⟨u, au, fun x hx => hv ⟨hu ⟨le_of_lt hx.1, hx.2⟩, hx.1⟩⟩
   tfae_finish
-#align tfae_mem_nhds_within_Ioi TFAE_mem_nhdsWithin_Ioi
 
 theorem mem_nhdsWithin_Ioi_iff_exists_mem_Ioc_Ioo_subset {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[>] a ↔ ∃ u ∈ Ioc a u', Ioo a u ⊆ s :=
   (TFAE_mem_nhdsWithin_Ioi hu' s).out 0 3
-#align mem_nhds_within_Ioi_iff_exists_mem_Ioc_Ioo_subset mem_nhdsWithin_Ioi_iff_exists_mem_Ioc_Ioo_subset
 
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u)`
 with `a < u < u'`, provided `a` is not a top element. -/
 theorem mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[>] a ↔ ∃ u ∈ Ioi a, Ioo a u ⊆ s :=
   (TFAE_mem_nhdsWithin_Ioi hu' s).out 0 4
-#align mem_nhds_within_Ioi_iff_exists_Ioo_subset' mem_nhdsWithin_Ioi_iff_exists_Ioo_subset'
 
 theorem nhdsWithin_Ioi_basis' {a : α} (h : ∃ b, a < b) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
   let ⟨_, h⟩ := h
@@ -92,7 +89,6 @@ theorem mem_nhdsWithin_Ioi_iff_exists_Ioo_subset [NoMaxOrder α] {a : α} {s : S
     s ∈ 𝓝[>] a ↔ ∃ u ∈ Ioi a, Ioo a u ⊆ s :=
   let ⟨_u', hu'⟩ := exists_gt a
   mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' hu'
-#align mem_nhds_within_Ioi_iff_exists_Ioo_subset mem_nhdsWithin_Ioi_iff_exists_Ioo_subset
 
 /-- The set of points which are isolated on the right is countable when the space is
 second-countable. -/
@@ -118,7 +114,6 @@ theorem mem_nhdsWithin_Ioi_iff_exists_Ioc_subset [NoMaxOrder α] [DenselyOrdered
     exact ⟨v, hv.1, fun x hx => as ⟨hx.1, lt_of_le_of_lt hx.2 hv.2⟩⟩
   · rintro ⟨u, au, as⟩
     exact ⟨u, au, Subset.trans Ioo_subset_Ioc_self as⟩
-#align mem_nhds_within_Ioi_iff_exists_Ioc_subset mem_nhdsWithin_Ioi_iff_exists_Ioc_subset
 
 open List in
 /-- The following statements are equivalent:
@@ -136,19 +131,16 @@ theorem TFAE_mem_nhdsWithin_Iio {a b : α} (h : a < b) (s : Set α) :
         ∃ l ∈ Iio b, Ioo l b ⊆ s] := by-- 4 : `s` includes `(l, b)` for some `l < b`
   simpa only [exists_prop, OrderDual.exists, dual_Ioi, dual_Ioc, dual_Ioo] using
     TFAE_mem_nhdsWithin_Ioi h.dual (ofDual ⁻¹' s)
-#align tfae_mem_nhds_within_Iio TFAE_mem_nhdsWithin_Iio
 
 theorem mem_nhdsWithin_Iio_iff_exists_mem_Ico_Ioo_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Ico l' a, Ioo l a ⊆ s :=
   (TFAE_mem_nhdsWithin_Iio hl' s).out 0 3
-#align mem_nhds_within_Iio_iff_exists_mem_Ico_Ioo_subset mem_nhdsWithin_Iio_iff_exists_mem_Ico_Ioo_subset
 
 /-- A set is a neighborhood of `a` within `(-∞, a)` if and only if it contains an interval `(l, a)`
 with `l < a`, provided `a` is not a bottom element. -/
 theorem mem_nhdsWithin_Iio_iff_exists_Ioo_subset' {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Iio a, Ioo l a ⊆ s :=
   (TFAE_mem_nhdsWithin_Iio hl' s).out 0 4
-#align mem_nhds_within_Iio_iff_exists_Ioo_subset' mem_nhdsWithin_Iio_iff_exists_Ioo_subset'
 
 /-- A set is a neighborhood of `a` within `(-∞, a)` if and only if it contains an interval `(l, a)`
 with `l < a`. -/
@@ -156,7 +148,6 @@ theorem mem_nhdsWithin_Iio_iff_exists_Ioo_subset [NoMinOrder α] {a : α} {s : S
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Iio a, Ioo l a ⊆ s :=
   let ⟨_, h⟩ := exists_lt a
   mem_nhdsWithin_Iio_iff_exists_Ioo_subset' h
-#align mem_nhds_within_Iio_iff_exists_Ioo_subset mem_nhdsWithin_Iio_iff_exists_Ioo_subset
 
 /-- A set is a neighborhood of `a` within `(-∞, a)` if and only if it contains an interval `[l, a)`
 with `l < a`. -/
@@ -164,7 +155,6 @@ theorem mem_nhdsWithin_Iio_iff_exists_Ico_subset [NoMinOrder α] [DenselyOrdered
     {s : Set α} : s ∈ 𝓝[<] a ↔ ∃ l ∈ Iio a, Ico l a ⊆ s := by
   have : ofDual ⁻¹' s ∈ 𝓝[>] toDual a ↔ _ := mem_nhdsWithin_Ioi_iff_exists_Ioc_subset
   simpa only [OrderDual.exists, exists_prop, dual_Ioc] using this
-#align mem_nhds_within_Iio_iff_exists_Ico_subset mem_nhdsWithin_Iio_iff_exists_Ico_subset
 
 theorem nhdsWithin_Iio_basis' {a : α} (h : ∃ b, b < a) : (𝓝[<] a).HasBasis (· < a) (Ioo · a) :=
   let ⟨_, h⟩ := h
@@ -204,19 +194,16 @@ theorem TFAE_mem_nhdsWithin_Ici {a b : α} (hab : a < b) (s : Set α) :
       ⟨min u b, ⟨lt_min hua hab, min_le_right _ _⟩,
         (Ico_subset_Ico_right <| min_le_left _ _).trans hus⟩
   tfae_finish
-#align tfae_mem_nhds_within_Ici TFAE_mem_nhdsWithin_Ici
 
 theorem mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioc a u', Ico a u ⊆ s :=
   (TFAE_mem_nhdsWithin_Ici hu' s).out 0 3 (by norm_num) (by norm_num)
-#align mem_nhds_within_Ici_iff_exists_mem_Ioc_Ico_subset mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset
 
 /-- A set is a neighborhood of `a` within `[a, +∞)` if and only if it contains an interval `[a, u)`
 with `a < u < u'`, provided `a` is not a top element. -/
 theorem mem_nhdsWithin_Ici_iff_exists_Ico_subset' {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioi a, Ico a u ⊆ s :=
   (TFAE_mem_nhdsWithin_Ici hu' s).out 0 4 (by norm_num) (by norm_num)
-#align mem_nhds_within_Ici_iff_exists_Ico_subset' mem_nhdsWithin_Ici_iff_exists_Ico_subset'
 
 /-- A set is a neighborhood of `a` within `[a, +∞)` if and only if it contains an interval `[a, u)`
 with `a < u`. -/
@@ -224,12 +211,10 @@ theorem mem_nhdsWithin_Ici_iff_exists_Ico_subset [NoMaxOrder α] {a : α} {s : S
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioi a, Ico a u ⊆ s :=
   let ⟨_, hu'⟩ := exists_gt a
   mem_nhdsWithin_Ici_iff_exists_Ico_subset' hu'
-#align mem_nhds_within_Ici_iff_exists_Ico_subset mem_nhdsWithin_Ici_iff_exists_Ico_subset
 
 theorem nhdsWithin_Ici_basis_Ico [NoMaxOrder α] (a : α) :
     (𝓝[≥] a).HasBasis (fun u => a < u) (Ico a) :=
   ⟨fun _ => mem_nhdsWithin_Ici_iff_exists_Ico_subset⟩
-#align nhds_within_Ici_basis_Ico nhdsWithin_Ici_basis_Ico
 
 /-- The filter of right neighborhoods has a basis of closed intervals. -/
 theorem nhdsWithin_Ici_basis_Icc [NoMaxOrder α] [DenselyOrdered α] {a : α} :
@@ -243,7 +228,6 @@ with `a < u`. -/
 theorem mem_nhdsWithin_Ici_iff_exists_Icc_subset [NoMaxOrder α] [DenselyOrdered α] {a : α}
     {s : Set α} : s ∈ 𝓝[≥] a ↔ ∃ u, a < u ∧ Icc a u ⊆ s :=
   nhdsWithin_Ici_basis_Icc.mem_iff
-#align mem_nhds_within_Ici_iff_exists_Icc_subset mem_nhdsWithin_Ici_iff_exists_Icc_subset
 
 open List in
 /-- The following statements are equivalent:
@@ -261,19 +245,16 @@ theorem TFAE_mem_nhdsWithin_Iic {a b : α} (h : a < b) (s : Set α) :
       ∃ l ∈ Iio b, Ioc l b ⊆ s] := by-- 4 : `s` includes `(l, b]` for some `l < b`
   simpa only [exists_prop, OrderDual.exists, dual_Ici, dual_Ioc, dual_Icc, dual_Ico] using
     TFAE_mem_nhdsWithin_Ici h.dual (ofDual ⁻¹' s)
-#align tfae_mem_nhds_within_Iic TFAE_mem_nhdsWithin_Iic
 
 theorem mem_nhdsWithin_Iic_iff_exists_mem_Ico_Ioc_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Ico l' a, Ioc l a ⊆ s :=
   (TFAE_mem_nhdsWithin_Iic hl' s).out 0 3 (by norm_num) (by norm_num)
-#align mem_nhds_within_Iic_iff_exists_mem_Ico_Ioc_subset mem_nhdsWithin_Iic_iff_exists_mem_Ico_Ioc_subset
 
 /-- A set is a neighborhood of `a` within `(-∞, a]` if and only if it contains an interval `(l, a]`
 with `l < a`, provided `a` is not a bottom element. -/
 theorem mem_nhdsWithin_Iic_iff_exists_Ioc_subset' {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Iio a, Ioc l a ⊆ s :=
   (TFAE_mem_nhdsWithin_Iic hl' s).out 0 4 (by norm_num) (by norm_num)
-#align mem_nhds_within_Iic_iff_exists_Ioc_subset' mem_nhdsWithin_Iic_iff_exists_Ioc_subset'
 
 /-- A set is a neighborhood of `a` within `(-∞, a]` if and only if it contains an interval `(l, a]`
 with `l < a`. -/
@@ -281,7 +262,6 @@ theorem mem_nhdsWithin_Iic_iff_exists_Ioc_subset [NoMinOrder α] {a : α} {s : S
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Iio a, Ioc l a ⊆ s :=
   let ⟨_, hl'⟩ := exists_lt a
   mem_nhdsWithin_Iic_iff_exists_Ioc_subset' hl'
-#align mem_nhds_within_Iic_iff_exists_Ioc_subset mem_nhdsWithin_Iic_iff_exists_Ioc_subset
 
 /-- A set is a neighborhood of `a` within `(-∞, a]` if and only if it contains an interval `[l, a]`
 with `l < a`. -/
@@ -291,7 +271,6 @@ theorem mem_nhdsWithin_Iic_iff_exists_Icc_subset [NoMinOrder α] [DenselyOrdered
   _ ↔ ∃ u : α, toDual a < toDual u ∧ Icc (toDual a) (toDual u) ⊆ ofDual ⁻¹' s :=
     mem_nhdsWithin_Ici_iff_exists_Icc_subset
   _ ↔ ∃ l, l < a ∧ Icc l a ⊆ s := by simp only [dual_Icc]; rfl
-#align mem_nhds_within_Iic_iff_exists_Icc_subset mem_nhdsWithin_Iic_iff_exists_Icc_subset
 
 /-- The filter of left neighborhoods has a basis of closed intervals. -/
 theorem nhdsWithin_Iic_basis_Icc [NoMinOrder α] [DenselyOrdered α] {a : α} :
@@ -312,7 +291,6 @@ theorem nhds_eq_iInf_abs_sub (a : α) : 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| <
   refine (congr_arg₂ _ ?_ ?_).trans (inf_comm ..)
   · refine (Equiv.subLeft a).iInf_congr fun x => ?_; simp [Ioi]
   · refine (Equiv.subRight a).iInf_congr fun x => ?_; simp [Iio]
-#align nhds_eq_infi_abs_sub nhds_eq_iInf_abs_sub
 
 theorem orderTopology_of_nhds_abs {α : Type*} [TopologicalSpace α] [LinearOrderedAddCommGroup α]
     (h_nhds : ∀ a : α, 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r }) : OrderTopology α := by
@@ -320,17 +298,14 @@ theorem orderTopology_of_nhds_abs {α : Type*} [TopologicalSpace α] [LinearOrde
   rw [h_nhds]
   letI := Preorder.topology α; letI : OrderTopology α := ⟨rfl⟩
   exact (nhds_eq_iInf_abs_sub a).symm
-#align order_topology_of_nhds_abs orderTopology_of_nhds_abs
 
 theorem LinearOrderedAddCommGroup.tendsto_nhds {x : Filter β} {a : α} :
     Tendsto f x (𝓝 a) ↔ ∀ ε > (0 : α), ∀ᶠ b in x, |f b - a| < ε := by
   simp [nhds_eq_iInf_abs_sub, abs_sub_comm a]
-#align linear_ordered_add_comm_group.tendsto_nhds LinearOrderedAddCommGroup.tendsto_nhds
 
 theorem eventually_abs_sub_lt (a : α) {ε : α} (hε : 0 < ε) : ∀ᶠ x in 𝓝 a, |x - a| < ε :=
   (nhds_eq_iInf_abs_sub a).symm ▸
     mem_iInf_of_mem ε (mem_iInf_of_mem hε <| by simp only [abs_sub_comm, mem_principal_self])
-#align eventually_abs_sub_lt eventually_abs_sub_lt
 
 /-- In a linearly ordered additive commutative group with the order topology, if `f` tends to `C`
 and `g` tends to `atTop` then `f + g` tends to `atTop`. -/
@@ -340,14 +315,12 @@ theorem Filter.Tendsto.add_atTop {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tend
   obtain ⟨C', hC'⟩ : ∃ C', C' < C := exists_lt C
   refine tendsto_atTop_add_left_of_le' _ C' ?_ hg
   exact (hf.eventually (lt_mem_nhds hC')).mono fun x => le_of_lt
-#align filter.tendsto.add_at_top Filter.Tendsto.add_atTop
 
 /-- In a linearly ordered additive commutative group with the order topology, if `f` tends to `C`
 and `g` tends to `atBot` then `f + g` tends to `atBot`. -/
 theorem Filter.Tendsto.add_atBot {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x + g x) l atBot :=
   Filter.Tendsto.add_atTop (α := αᵒᵈ) hf hg
-#align filter.tendsto.add_at_bot Filter.Tendsto.add_atBot
 
 /-- In a linearly ordered additive commutative group with the order topology, if `f` tends to
 `atTop` and `g` tends to `C` then `f + g` tends to `atTop`. -/
@@ -355,7 +328,6 @@ theorem Filter.Tendsto.atTop_add {C : α} (hf : Tendsto f l atTop) (hg : Tendsto
     Tendsto (fun x => f x + g x) l atTop := by
   conv in _ + _ => rw [add_comm]
   exact hg.add_atTop hf
-#align filter.tendsto.at_top_add Filter.Tendsto.atTop_add
 
 /-- In a linearly ordered additive commutative group with the order topology, if `f` tends to
 `atBot` and `g` tends to `C` then `f + g` tends to `atBot`. -/
@@ -363,7 +335,6 @@ theorem Filter.Tendsto.atBot_add {C : α} (hf : Tendsto f l atBot) (hg : Tendsto
     Tendsto (fun x => f x + g x) l atBot := by
   conv in _ + _ => rw [add_comm]
   exact hg.add_atBot hf
-#align filter.tendsto.at_bot_add Filter.Tendsto.atBot_add
 
 theorem nhds_basis_abs_sub_lt [NoMaxOrder α] (a : α) :
     (𝓝 a).HasBasis (fun ε : α => (0 : α) < ε) fun ε => { b | |b - a| < ε } := by
@@ -371,13 +342,11 @@ theorem nhds_basis_abs_sub_lt [NoMaxOrder α] (a : α) :
   refine hasBasis_biInf_principal' (fun x hx y hy => ?_) (exists_gt _)
   exact ⟨min x y, lt_min hx hy, fun _ hz => hz.trans_le (min_le_left _ _),
     fun _ hz => hz.trans_le (min_le_right _ _)⟩
-#align nhds_basis_abs_sub_lt nhds_basis_abs_sub_lt
 
 theorem nhds_basis_Ioo_pos [NoMaxOrder α] (a : α) :
     (𝓝 a).HasBasis (fun ε : α => (0 : α) < ε) fun ε => Ioo (a - ε) (a + ε) := by
   convert nhds_basis_abs_sub_lt a
   simp only [Ioo, abs_lt, ← sub_lt_iff_lt_add, neg_lt_sub_iff_lt_add, sub_lt_comm]
-#align nhds_basis_Ioo_pos nhds_basis_Ioo_pos
 
 theorem nhds_basis_Icc_pos [NoMaxOrder α] [DenselyOrdered α] (a : α) :
     (𝓝 a).HasBasis ((0 : α) < ·) fun ε ↦ Icc (a - ε) (a + ε) :=
@@ -391,7 +360,6 @@ variable (α)
 theorem nhds_basis_zero_abs_sub_lt [NoMaxOrder α] :
     (𝓝 (0 : α)).HasBasis (fun ε : α => (0 : α) < ε) fun ε => { b | |b| < ε } := by
   simpa using nhds_basis_abs_sub_lt (0 : α)
-#align nhds_basis_zero_abs_sub_lt nhds_basis_zero_abs_sub_lt
 
 variable {α}
 
@@ -400,11 +368,8 @@ theorem nhds_basis_Ioo_pos_of_pos [NoMaxOrder α] {a : α} (ha : 0 < a) :
     (𝓝 a).HasBasis (fun ε : α => (0 : α) < ε ∧ ε ≤ a) fun ε => Ioo (a - ε) (a + ε) :=
   (nhds_basis_Ioo_pos a).restrict fun ε hε => ⟨min a ε, lt_min ha hε, min_le_left _ _,
     Ioo_subset_Ioo (sub_le_sub_left (min_le_right _ _) _) (add_le_add_left (min_le_right _ _) _)⟩
-#align nhds_basis_Ioo_pos_of_pos nhds_basis_Ioo_pos_of_pos
 
 end LinearOrderedAddCommGroup
-
-#align preimage_neg Set.image_negₓ
 
 namespace Set.OrdConnected
 

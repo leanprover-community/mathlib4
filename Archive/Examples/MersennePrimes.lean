@@ -5,8 +5,6 @@ Authors: Scott Morrison
 -/
 import Mathlib.NumberTheory.LucasLehmer
 
-#align_import examples.mersenne_primes from "leanprover-community/mathlib"@"58581d0fe523063f5651df0619be2bf65012a94a"
-
 /-!
 # Explicit Mersenne primes
 

@@ -8,8 +8,6 @@ import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Polynomial.FieldDivision
 
-#align_import data.polynomial.degree.card_pow_degree from "leanprover-community/mathlib"@"85d9f2189d9489f9983c0d01536575b0233bd305"
-
 /-!
 # Absolute value on polynomials over a finite field.
 
@@ -74,24 +72,20 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
       have hpq : p * q ≠ 0 := mul_ne_zero hp hq
       simp only [hpq, hp, hq, eq_self_iff_true, if_true, if_false, Polynomial.natDegree_mul hp hq,
         pow_add] }
-#align polynomial.card_pow_degree Polynomial.cardPowDegree
 
 theorem cardPowDegree_apply [DecidableEq Fq] (p : Fq[X]) :
     cardPowDegree p = if p = 0 then 0 else (Fintype.card Fq : ℤ) ^ natDegree p := by
   rw [cardPowDegree]
   dsimp
   convert rfl
-#align polynomial.card_pow_degree_apply Polynomial.cardPowDegree_apply
 
 @[simp]
 theorem cardPowDegree_zero : cardPowDegree (0 : Fq[X]) = 0 := rfl
-#align polynomial.card_pow_degree_zero Polynomial.cardPowDegree_zero
 
 @[simp]
 theorem cardPowDegree_nonzero (p : Fq[X]) (hp : p ≠ 0) :
     cardPowDegree p = (Fintype.card Fq : ℤ) ^ p.natDegree :=
   if_neg hp
-#align polynomial.card_pow_degree_nonzero Polynomial.cardPowDegree_nonzero
 
 theorem cardPowDegree_isEuclidean : IsEuclidean (cardPowDegree : AbsoluteValue Fq[X] ℤ) :=
   have card_pos : 0 < Fintype.card Fq := Fintype.card_pos_iff.mpr inferInstance
@@ -108,6 +102,5 @@ theorem cardPowDegree_isEuclidean : IsEuclidean (cardPowDegree : AbsoluteValue F
       · simp only [hp, hq, degree_zero, not_lt_bot, (pow_pos _).not_lt]
       · rw [degree_eq_natDegree hp, degree_eq_natDegree hq, Nat.cast_lt, pow_lt_pow_iff_right]
         exact mod_cast @Fintype.one_lt_card Fq _ _ }
-#align polynomial.card_pow_degree_is_euclidean Polynomial.cardPowDegree_isEuclidean
 
 end Polynomial
