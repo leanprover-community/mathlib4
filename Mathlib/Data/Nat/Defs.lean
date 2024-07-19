@@ -9,6 +9,7 @@ import Mathlib.Tactic.Cases
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.PushNeg
 import Mathlib.Util.AssertExists
+import Batteries.Data.Nat.Basic
 
 #align_import data.nat.basic from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 #align_import data.nat.sqrt from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
