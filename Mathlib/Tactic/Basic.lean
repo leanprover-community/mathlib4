@@ -11,7 +11,17 @@ import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Linter.OldObtain
 
-set_option autoImplicit true
+/-!
+# Basic tactics and utilities for tactic writing
+
+This file defines some basic utilities for tactic writing, and also
+- the `introv` tactic, which allows the user to automatically introduce the variables of a theorem
+and explicitly name the non-dependent hypotheses,
+- an `assumption` macro, calling the `assumption` tactic on all goals
+- the tactics `match_target`, `clear_aux_decl` (clearing all auxiliary declarations from the
+context) and `clear_value` (which clears the bodies of given local definitions,
+changing them into regular hypotheses).
+-/
 
 namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
@@ -30,7 +40,7 @@ Recall that variables linked this way should be considered to be semantically id
 
 The effect of this is, for example, the unused variable linter will see that variables
 from the first array are used if corresponding variables in the second array are used. -/
-def pushFVarAliasInfo [Monad m] [MonadInfoTree m]
+def pushFVarAliasInfo {m : Type → Type} [Monad m] [MonadInfoTree m]
     (oldFVars newFVars : Array FVarId) (newLCtx : LocalContext) : m Unit := do
   for old in oldFVars, new in newFVars do
     if old != new then
