@@ -352,6 +352,10 @@ instance preservesLimitsConst : PreservesLimitsOfSize.{w', w} (const D : C ⥤ _
     preservesLimitsOfNatIso <| Iso.symm <| constCompEvaluationObj _ _
 #align category_theory.limits.preserves_limits_const CategoryTheory.Limits.preservesLimitsConst
 
+instance evaluationPreservesColimitsOfSize [HasColimitsOfSize.{w, w'} C] (k : K) :
+    PreservesColimitsOfSize.{w, w'} ((evaluation K C).obj k) where
+  preservesColimitsOfShape := inferInstance
+
 instance evaluationPreservesColimits [HasColimits C] (k : K) :
     PreservesColimits ((evaluation K C).obj k) where
   preservesColimitsOfShape := inferInstance

@@ -38,6 +38,41 @@ namespace CategoryTheory
 
 open Category Limits
 
+section
+
+variable {C : Type u} [Category.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D]
+
+/-- If `X × -` preserves colimits in `D` for any `X : D`, then the product functor `F ⨯ -` for
+`F : C ⥤ D` also preserves colimits.
+
+Note this is (mathematically) a special case of the statement that
+"if limits commute with colimits in `D`, then they do as well in `C ⥤ D`"
+but the story in Lean is a bit more complex, and this statement isn't directly a special case.
+That is, even with a formalised proof of the general statement, there would still need to be some
+work to convert to this version: namely, the natural isomorphism
+`(evaluation C D).obj k ⋙ prod.functor.obj (F.obj k) ≅
+  prod.functor.obj F ⋙ (evaluation C D).obj k`
+-/
+def FunctorCategory.prodPreservesColimits' [HasBinaryProducts D] [HasColimitsOfSize.{w, w'} D]
+    [∀ X : D, PreservesColimitsOfSize.{w, w'} (prod.functor.obj X)] (F : C ⥤ D) :
+    PreservesColimitsOfSize.{w, w'} (prod.functor.obj F) where
+  preservesColimitsOfShape {J} := {
+    preservesColimit := fun {K : J ⥤ C ⥤ D} => ( {
+        preserves := fun {c : Cocone K} (t : IsColimit c) => by
+          apply evaluationJointlyReflectsColimits _ fun {k} => ?_
+          change IsColimit ((prod.functor.obj F ⋙ (evaluation _ _).obj k).mapCocone c)
+          let this :=
+            isColimitOfPreserves ((evaluation C D).obj k ⋙ prod.functor.obj (F.obj k)) t
+          apply IsColimit.mapCoconeEquiv _ this
+          apply (NatIso.ofComponents _ _).symm
+          · intro G
+            apply asIso (prodComparison ((evaluation C D).obj k) F G)
+          · intro G G'
+            apply prodComparison_natural ((evaluation C D).obj k) (𝟙 F) } ) }
+
+end
+
 variable {C : Type u} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{u} D]
 variable {E : Type u} [Category.{v₂} E]
@@ -63,6 +98,8 @@ def FunctorCategory.prodPreservesColimits [HasBinaryProducts D] [HasColimits D]
           preserves := fun {c : Cocone K} (t : IsColimit c) => by
             apply evaluationJointlyReflectsColimits _ fun {k} => ?_
             change IsColimit ((prod.functor.obj F ⋙ (evaluation _ _).obj k).mapCocone c)
+            have : PreservesColimit K ((evaluation C D).obj k) := by exact
+              PreservesColimitsOfShape.preservesColimit
             let this :=
               isColimitOfPreserves ((evaluation C D).obj k ⋙ prod.functor.obj (F.obj k)) t
             apply IsColimit.mapCoconeEquiv _ this
