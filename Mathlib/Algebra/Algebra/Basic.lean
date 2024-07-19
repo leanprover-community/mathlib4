@@ -5,6 +5,7 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Module.ULift

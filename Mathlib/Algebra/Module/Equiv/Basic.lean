@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
+import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.LinearMap.End
@@ -13,30 +14,7 @@ import Mathlib.GroupTheory.GroupAction.Group
 #align_import algebra.module.equiv from "leanprover-community/mathlib"@"ea94d7cd54ad9ca6b7710032868abb7c6a104c9c"
 
 /-!
-# (Semi)linear equivalences
-
-In this file we define
-
-* `LinearEquiv σ M M₂`, `M ≃ₛₗ[σ] M₂`: an invertible semilinear map. Here, `σ` is a `RingHom`
-  from `R` to `R₂` and an `e : M ≃ₛₗ[σ] M₂` satisfies `e (c • x) = (σ c) • (e x)`. The plain
-  linear version, with `σ` being `RingHom.id R`, is denoted by `M ≃ₗ[R] M₂`, and the
-  star-linear version (with `σ` being `starRingEnd`) is denoted by `M ≃ₗ⋆[R] M₂`.
-
-## Implementation notes
-
-To ensure that composition works smoothly for semilinear equivalences, we use the typeclasses
-`RingHomCompTriple`, `RingHomInvPair` and `RingHomSurjective` from
-`Algebra/Ring/CompTypeclasses`.
-
-The group structure on automorphisms, `LinearEquiv.automorphismGroup`, is provided elsewhere.
-
-## TODO
-
-* Parts of this file have not yet been generalized to semilinear maps
-
-## Tags
-
-linear equiv, linear equivalences, linear isomorphism, linear isomorphic
+# Further results on (semi)linear equivalences.
 -/
 
 open Function
@@ -47,95 +25,7 @@ variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
 variable {k : Type*} {K : Type*} {S : Type*} {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
 variable {N₁ : Type*} {N₂ : Type*} {N₃ : Type*} {N₄ : Type*} {ι : Type*}
 
-section
-
-/-- A linear equivalence is an invertible linear map. -/
--- Porting note (#11215): TODO @[nolint has_nonempty_instance]
-structure LinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
-  {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
-  [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends LinearMap σ M M₂, M ≃+ M₂
-#align linear_equiv LinearEquiv
-
-attribute [coe] LinearEquiv.toLinearMap
-
-/-- The linear map underlying a linear equivalence. -/
-add_decl_doc LinearEquiv.toLinearMap
-#align linear_equiv.to_linear_map LinearEquiv.toLinearMap
-
-/-- The additive equivalence of types underlying a linear equivalence. -/
-add_decl_doc LinearEquiv.toAddEquiv
-#align linear_equiv.to_add_equiv LinearEquiv.toAddEquiv
-
-/-- The backwards directed function underlying a linear equivalence. -/
-add_decl_doc LinearEquiv.invFun
-
-/-- `LinearEquiv.invFun` is a right inverse to the linear equivalence's underlying function. -/
-add_decl_doc LinearEquiv.right_inv
-
-/-- `LinearEquiv.invFun` is a left inverse to the linear equivalence's underlying function. -/
-add_decl_doc LinearEquiv.left_inv
-
-/-- The notation `M ≃ₛₗ[σ] M₂` denotes the type of linear equivalences between `M` and `M₂` over a
-ring homomorphism `σ`. -/
-notation:50 M " ≃ₛₗ[" σ "] " M₂ => LinearEquiv σ M M₂
-
-/-- The notation `M ≃ₗ [R] M₂` denotes the type of linear equivalences between `M` and `M₂` over
-a plain linear map `M →ₗ M₂`. -/
-notation:50 M " ≃ₗ[" R "] " M₂ => LinearEquiv (RingHom.id R) M M₂
-
-/-- `SemilinearEquivClass F σ M M₂` asserts `F` is a type of bundled `σ`-semilinear equivs
-`M → M₂`.
-
-See also `LinearEquivClass F R M M₂` for the case where `σ` is the identity map on `R`.
-
-A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
-is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
-`f (c • x) = (σ c) • f x`. -/
-class SemilinearEquivClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
-  (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-  (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
-  [EquivLike F M M₂]
-  extends AddEquivClass F M M₂ : Prop where
-  /-- Applying a semilinear equivalence `f` over `σ` to `r • x` equals `σ r • f x`. -/
-  map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
-#align semilinear_equiv_class SemilinearEquivClass
-
--- `R, S, σ, σ'` become metavars, but it's OK since they are outparams.
-
-/-- `LinearEquivClass F R M M₂` asserts `F` is a type of bundled `R`-linear equivs `M → M₂`.
-This is an abbreviation for `SemilinearEquivClass F (RingHom.id R) M M₂`.
--/
-abbrev LinearEquivClass (F : Type*) (R M M₂ : outParam Type*) [Semiring R] [AddCommMonoid M]
-    [AddCommMonoid M₂] [Module R M] [Module R M₂] [EquivLike F M M₂] :=
-  SemilinearEquivClass F (RingHom.id R) M M₂
-#align linear_equiv_class LinearEquivClass
-
-end
-
-namespace SemilinearEquivClass
-
-variable (F : Type*) [Semiring R] [Semiring S]
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
-variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
-
-instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-  [EquivLike F M M₂] [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
-  { s with }
-
-variable {F}
-
-/-- Reinterpret an element of a type of semilinear equivalences as a semilinear equivalence. -/
-@[coe]
-def semilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] (f : F) : M ≃ₛₗ[σ] M₂ :=
-  { (f : M ≃+ M₂), (f : M →ₛₗ[σ] M₂) with }
-
-/-- Reinterpret an element of a type of semilinear equivalences as a semilinear equivalence. -/
-instance instCoeToSemilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] : CoeHead F (M ≃ₛₗ[σ] M₂) where
-  coe f := semilinearEquiv f
-
-end SemilinearEquivClass
+section AddCommMonoid
 
 namespace LinearEquiv
 
@@ -738,8 +628,6 @@ theorem ofSubsingleton_self : ofSubsingleton M M = refl R M := by
 #align linear_equiv.of_subsingleton_self LinearEquiv.ofSubsingleton_self
 
 end OfSubsingleton
-
-end AddCommMonoid
 
 end LinearEquiv
 
@@ -1359,3 +1247,5 @@ theorem funCongrLeft_symm (e : m ≃ n) : (funCongrLeft R M e).symm = funCongrLe
 end LinearEquiv
 
 end FunLeft
+
+end AddCommMonoid
