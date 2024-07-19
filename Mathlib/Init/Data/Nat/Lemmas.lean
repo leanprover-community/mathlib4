@@ -24,8 +24,6 @@ universe u
 
 namespace Nat
 
-/-! addition -/
-
 /-! multiplication -/
 
 theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0

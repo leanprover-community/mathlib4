@@ -688,7 +688,6 @@ instance : LawfulTraversable.{u} (flip Vector n) where
 --           reflected _ @Vector.cons.{u}).subst₄
 --       q(α) q(n) q(x) ih
 
-
 section Simp
 
 variable (xs : Vector α n)

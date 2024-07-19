@@ -18,7 +18,6 @@ The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
 
 We intend to move all the content of these files out into the main `Mathlib` directory structure.
 Contributions assisting with this are appreciated.
-
 -/
 
 universe u v

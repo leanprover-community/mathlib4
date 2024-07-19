@@ -341,7 +341,6 @@ lemma RingEquiv_coe_eq {X Y : Type _} [CommSemiring X] [CommSemiring Y] (e : X �
 -- theorem ofHom_apply {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) (x : R) :
 --     ofHom f x = f x :=
 --   rfl
--- set_option linter.uppercaseLean3 false in
 
 instance : Inhabited CommSemiRingCat :=
   ⟨of PUnit⟩
@@ -495,7 +494,6 @@ lemma RingEquiv_coe_eq {X Y : Type _} [CommRing X] [CommRing Y] (e : X ≃+* Y) 
 -- theorem ofHom_apply {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (x : R) :
 --     ofHom f x = f x :=
 --   rfl
--- set_option linter.uppercaseLean3 false in
 
 instance : Inhabited CommRingCat :=
   ⟨of PUnit⟩
