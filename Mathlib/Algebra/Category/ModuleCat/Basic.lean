@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert A. Spencer, Markus Himmel
 -/
 import Mathlib.Algebra.Category.Grp.Preadditive
+import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.PUnitInstances.Module
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Linear.Basic
@@ -14,7 +15,7 @@ import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 /-!
 # The category of `R`-modules
 
-`Module.{v} R` is the category of bundled `R`-modules with carrier in the universe `v`. We show
+`ModuleCat.{v} R` is the category of bundled `R`-modules with carrier in the universe `v`. We show
 that it is preadditive and show that being an isomorphism, monomorphism and epimorphism is
 equivalent to being a linear equivalence, an injective linear map and a surjective linear map,
 respectively.
@@ -28,14 +29,15 @@ Similarly, there is a coercion from morphisms in `Module R` to linear maps.
 
 Porting note: the next two paragraphs should be revised.
 
-Unfortunately, Lean is not smart enough to see that, given an object `M : Module R`, the expression
-`of R M`, where we coerce `M` to the carrier type, is definitionally equal to `M` itself.
+Unfortunately, Lean is not smart enough to see that, given an object `M : ModuleCat R`,
+the expression `of R M`, where we coerce `M` to the carrier type,
+is definitionally equal to `M` itself.
 This means that to go the other direction, i.e., from linear maps/equivalences to (iso)morphisms
 in the category of `R`-modules, we have to take care not to inadvertently end up with an
 `of R M` where `M` is already an object. Hence, given `f : M →ₗ[R] N`,
-* if `M N : Module R`, simply use `f`;
-* if `M : Module R` and `N` is an unbundled `R`-module, use `↿f` or `asHomLeft f`;
-* if `M` is an unbundled `R`-module and `N : Module R`, use `↾f` or `asHomRight f`;
+* if `M N : ModuleCat R`, simply use `f`;
+* if `M : ModuleCat R` and `N` is an unbundled `R`-module, use `↿f` or `asHomLeft f`;
+* if `M` is an unbundled `R`-module and `N : ModuleCat R`, use `↾f` or `asHomRight f`;
 * if `M` and `N` are unbundled `R`-modules, use `↟f` or `asHom f`.
 
 Similarly, given `f : M ≃ₗ[R] N`, use `toModuleIso`, `toModuleIso'Left`, `toModuleIso'Right`
@@ -44,7 +46,7 @@ or `toModuleIso'`, respectively.
 The arrow notations are localized, so you may have to `open ModuleCat` (or `open scoped ModuleCat`)
 to use them. Note that the notation for `asHomLeft` clashes with the notation used to promote
 functions between types to morphisms in the category `Type`, so to avoid confusion, it is probably a
-good idea to avoid having the locales `Module` and `CategoryTheory.Type` open at the same time.
+good idea to avoid having the locales `ModuleCat` and `CategoryTheory.Type` open at the same time.
 
 If you get an error when trying to apply a theorem and the `convert` tactic produces goals of the
 form `M = of R M`, then you probably used an incorrect variant of `asHom` or `toModuleIso`.

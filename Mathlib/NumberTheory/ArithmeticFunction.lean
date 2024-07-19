@@ -946,7 +946,7 @@ theorem isMultiplicative_sigma {k : ℕ} : IsMultiplicative (σ k) := by
 
 /-- `Ω n` is the number of prime factors of `n`. -/
 def cardFactors : ArithmeticFunction ℕ :=
-  ⟨fun n => n.factors.length, by simp⟩
+  ⟨fun n => n.primeFactorsList.length, by simp⟩
 #align nat.arithmetic_function.card_factors ArithmeticFunction.cardFactors
 
 @[inherit_doc]
@@ -955,7 +955,7 @@ scoped[ArithmeticFunction] notation "Ω" => ArithmeticFunction.cardFactors
 @[inherit_doc]
 scoped[ArithmeticFunction.Omega] notation "Ω" => ArithmeticFunction.cardFactors
 
-theorem cardFactors_apply {n : ℕ} : Ω n = n.factors.length :=
+theorem cardFactors_apply {n : ℕ} : Ω n = n.primeFactorsList.length :=
   rfl
 #align nat.arithmetic_function.card_factors_apply ArithmeticFunction.cardFactors_apply
 
@@ -966,12 +966,12 @@ lemma cardFactors_zero : Ω 0 = 0 := by simp
 
 @[simp]
 theorem cardFactors_eq_one_iff_prime {n : ℕ} : Ω n = 1 ↔ n.Prime := by
-  refine ⟨fun h => ?_, fun h => List.length_eq_one.2 ⟨n, factors_prime h⟩⟩
+  refine ⟨fun h => ?_, fun h => List.length_eq_one.2 ⟨n, primeFactorsList_prime h⟩⟩
   cases' n with n
   · simp at h
   rcases List.length_eq_one.1 h with ⟨x, hx⟩
-  rw [← prod_factors n.add_one_ne_zero, hx, List.prod_singleton]
-  apply prime_of_mem_factors
+  rw [← prod_primeFactorsList n.add_one_ne_zero, hx, List.prod_singleton]
+  apply prime_of_mem_primeFactorsList
   rw [hx, List.mem_singleton]
 #align nat.arithmetic_function.card_factors_eq_one_iff_prime ArithmeticFunction.cardFactors_eq_one_iff_prime
 
@@ -995,12 +995,12 @@ theorem cardFactors_apply_prime {p : ℕ} (hp : p.Prime) : Ω p = 1 :=
 
 @[simp]
 theorem cardFactors_apply_prime_pow {p k : ℕ} (hp : p.Prime) : Ω (p ^ k) = k := by
-  rw [cardFactors_apply, hp.factors_pow, List.length_replicate]
+  rw [cardFactors_apply, hp.primeFactorsList_pow, List.length_replicate]
 #align nat.arithmetic_function.card_factors_apply_prime_pow ArithmeticFunction.cardFactors_apply_prime_pow
 
 /-- `ω n` is the number of distinct prime factors of `n`. -/
 def cardDistinctFactors : ArithmeticFunction ℕ :=
-  ⟨fun n => n.factors.dedup.length, by simp⟩
+  ⟨fun n => n.primeFactorsList.dedup.length, by simp⟩
 #align nat.arithmetic_function.card_distinct_factors ArithmeticFunction.cardDistinctFactors
 
 @[inherit_doc]
@@ -1016,15 +1016,15 @@ theorem cardDistinctFactors_zero : ω 0 = 0 := by simp
 theorem cardDistinctFactors_one : ω 1 = 0 := by simp [cardDistinctFactors]
 #align nat.arithmetic_function.card_distinct_factors_one ArithmeticFunction.cardDistinctFactors_one
 
-theorem cardDistinctFactors_apply {n : ℕ} : ω n = n.factors.dedup.length :=
+theorem cardDistinctFactors_apply {n : ℕ} : ω n = n.primeFactorsList.dedup.length :=
   rfl
 #align nat.arithmetic_function.card_distinct_factors_apply ArithmeticFunction.cardDistinctFactors_apply
 
 theorem cardDistinctFactors_eq_cardFactors_iff_squarefree {n : ℕ} (h0 : n ≠ 0) :
     ω n = Ω n ↔ Squarefree n := by
-  rw [squarefree_iff_nodup_factors h0, cardDistinctFactors_apply]
+  rw [squarefree_iff_nodup_primeFactorsList h0, cardDistinctFactors_apply]
   constructor <;> intro h
-  · rw [← n.factors.dedup_sublist.eq_of_length h]
+  · rw [← n.primeFactorsList.dedup_sublist.eq_of_length h]
     apply List.nodup_dedup
   · rw [h.dedup]
     rfl
@@ -1033,7 +1033,8 @@ theorem cardDistinctFactors_eq_cardFactors_iff_squarefree {n : ℕ} (h0 : n ≠ 
 @[simp]
 theorem cardDistinctFactors_apply_prime_pow {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) :
     ω (p ^ k) = 1 := by
-  rw [cardDistinctFactors_apply, hp.factors_pow, List.replicate_dedup hk, List.length_singleton]
+  rw [cardDistinctFactors_apply, hp.primeFactorsList_pow, List.replicate_dedup hk,
+    List.length_singleton]
 #align nat.arithmetic_function.card_distinct_factors_apply_prime_pow ArithmeticFunction.cardDistinctFactors_apply_prime_pow
 
 @[simp]
@@ -1146,7 +1147,7 @@ theorem IsMultiplicative.prodPrimeFactors_one_add_of_squarefree [CommSemiring R]
   trans (∏ᵖ p ∣ n, ((ζ : ArithmeticFunction R) + f) p)
   · simp_rw [prodPrimeFactors_apply hn.ne_zero, add_apply, natCoe_apply]
     apply Finset.prod_congr rfl; intro p hp
-    rw [zeta_apply_ne (prime_of_mem_factors <| List.mem_toFinset.mp hp).ne_zero, cast_one]
+    rw [zeta_apply_ne (prime_of_mem_primeFactorsList <| List.mem_toFinset.mp hp).ne_zero, cast_one]
   rw [isMultiplicative_zeta.natCast.prodPrimeFactors_add_of_squarefree h_mult hn,
     coe_zeta_mul_apply]
 
@@ -1156,7 +1157,7 @@ theorem IsMultiplicative.prodPrimeFactors_one_sub_of_squarefree [CommRing R]
   trans (∏ p ∈ n.primeFactors, (1 + (ArithmeticFunction.pmul (μ : ArithmeticFunction R) f) p))
   · apply Finset.prod_congr rfl; intro p hp
     rw [pmul_apply, intCoe_apply, ArithmeticFunction.moebius_apply_prime
-        (prime_of_mem_factors (List.mem_toFinset.mp hp))]
+        (prime_of_mem_primeFactorsList (List.mem_toFinset.mp hp))]
     ring
   · rw [(isMultiplicative_moebius.intCast.pmul hf).prodPrimeFactors_one_add_of_squarefree hn]
     simp_rw [pmul_apply, intCoe_apply]
