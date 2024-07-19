@@ -110,7 +110,7 @@ lemma lTensor_zero_iff_rTensor_zero : ∀ ⦃N N': Type v⦄ [AddCommGroup N][Mo
 An `R`-module `M` is faithfully flat iff it is flat and for all linear maps `f`, the map
 `id ⊗ f = 0`, if and only if `f = 0`. -/
 lemma zero_iff_rTensor_zero :
-  FaithfullyFlat R M ↔ (Module.Flat R M ∧
+    FaithfullyFlat R M ↔ (Module.Flat R M ∧
   (∀ ⦃N N': Type v⦄ [AddCommGroup N][Module R N][AddCommGroup N'] [Module R N'] (f : N →ₗ[R] N'),
   LinearMap.rTensor M f = 0 → (f = 0))):= by
     constructor
