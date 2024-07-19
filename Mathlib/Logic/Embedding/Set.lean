@@ -9,7 +9,6 @@ import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Pairwise
 import Mathlib.Data.Set.Image
 
-
 #align_import logic.embedding.set from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 
 /-!
@@ -170,20 +169,17 @@ variable {α ι : Type*} {s t r : Set α}
 @[norm_cast] lemma Function.Embedding.coe_sumSet (h : Disjoint s t) :
     (Function.Embedding.sumSet h : s ⊕ t → α) = Sum.elim (↑) (↑) := rfl
 
-@[simp] theorem Disjoint.sumSubtypeEmbedding_preimage_inl (h : Disjoint s t) :
+@[simp] theorem Function.Embedding.sumSet_preimage_inl (h : Disjoint s t) :
     .inl ⁻¹' (Function.Embedding.sumSet h ⁻¹' r) = r ∩ s := by
-  ext
-  simp
+  simp [Set.ext_iff]
 
-@[simp] theorem Disjoint.sumSubtypeEmbedding_preimage_inr {s t r : Set α} (h : Disjoint s t) :
+@[simp] theorem Function.Embedding.sumSet_preimage_inr (h : Disjoint s t) :
     .inr ⁻¹' (Function.Embedding.sumSet h ⁻¹' r) = r ∩ t := by
-  ext
-  simp
+  simp [Set.ext_iff]
 
-@[simp] theorem Disjoint.sumSubtypeEmbedding_range {s t : Set α} (h : Disjoint s t) :
+@[simp] theorem Function.Embedding.sumSet_range {s t : Set α} (h : Disjoint s t) :
     range (Function.Embedding.sumSet h) = s ∪ t := by
-  ext
-  simp
+  simp [Set.ext_iff]
 
 /-- For an indexed family `s : ι → Set α` of disjoint sets,
 the natural injection from the sigma-type `(i : ι) × ↑(s i)` to `α`. -/
@@ -195,18 +191,16 @@ the natural injection from the sigma-type `(i : ι) × ↑(s i)` to `α`. -/
     obtain rfl : i = j := h.eq (not_disjoint_iff.2 ⟨_, hx, hx'⟩)
     rfl
 
-@[norm_cast] lemma Function.Embedding.coe_sigmaSet {s : ι → Set α} (h : Pairwise (Disjoint on s)) :
+@[norm_cast] lemma Function.Embedding.coe_sigmaSet {s : ι → Set α} (h) :
     (Function.Embedding.sigmaSet h : ((i : ι) × s i) → α) = fun x ↦ x.2.1 := rfl
 
-@[simp] theorem Pairwise.disjointSigmaSubtypeEmbedding_preimage {s : ι → Set α}
+@[simp] theorem Function.Embedding.sigmaSet_preimage {s : ι → Set α}
     (h : Pairwise (Disjoint on s)) (i : ι) (r : Set α) :
-    Sigma.mk i ⁻¹' ((Function.Embedding.sigmaSet h) ⁻¹' r) = r ∩ s i := by
-  ext
-  simp
+    Sigma.mk i ⁻¹' (Function.Embedding.sigmaSet h ⁻¹' r) = r ∩ s i := by
+  simp [Set.ext_iff]
 
-@[simp] theorem Pairwise.dijsointSigmaSubtypeEmbedding_range {s : ι → Set α}
+@[simp] theorem Function.Embedding.sigmaSet_range {s : ι → Set α}
     (h : Pairwise (Disjoint on s)) : Set.range (Function.Embedding.sigmaSet h) = ⋃ i, s i := by
-  ext
-  simp
+  simp [Set.ext_iff]
 
 end Disjoint
