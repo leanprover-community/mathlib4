@@ -8,8 +8,6 @@ import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.Tactic.AdaptationNote
 
-#align_import number_theory.modular_forms.slash_actions from "leanprover-community/mathlib"@"738054fa93d43512da144ec45ce799d18fd44248"
-
 /-!
 # Slash actions
 
@@ -48,7 +46,6 @@ class SlashAction (β G α γ : Type*) [Group G] [AddMonoid α] [SMul γ α] whe
   slash_mul : ∀ (k : β) (g h : G) (a : α), map k (g * h) a = map k h (map k g a)
   smul_slash : ∀ (k : β) (g : G) (a : α) (z : γ), map k g (z • a) = z • map k g a
   add_slash : ∀ (k : β) (g : G) (a b : α), map k g (a + b) = map k g a + map k g b
-#align slash_action SlashAction
 
 scoped[ModularForm] notation:100 f " ∣[" k ";" γ "] " a:100 => SlashAction.map γ k a f
 
@@ -61,14 +58,12 @@ theorem SlashAction.neg_slash {β G α γ : Type*} [Group G] [AddGroup α] [SMul
     [SlashAction β G α γ] (k : β) (g : G) (a : α) : (-a) ∣[k;γ] g = -a ∣[k;γ] g :=
   eq_neg_of_add_eq_zero_left <| by
     rw [← SlashAction.add_slash, add_left_neg, SlashAction.zero_slash]
-#align slash_action.neg_slash SlashAction.neg_slash
 
 @[simp]
 theorem SlashAction.smul_slash_of_tower {R β G α : Type*} (γ : Type*) [Group G] [AddGroup α]
     [Monoid γ] [MulAction γ α] [SMul R γ] [SMul R α] [IsScalarTower R γ α] [SlashAction β G α γ]
     (k : β) (g : G) (a : α) (r : R) : (r • a) ∣[k;γ] g = r • a ∣[k;γ] g := by
   rw [← smul_one_smul γ r a, SlashAction.smul_slash, smul_one_smul]
-#align slash_action.smul_slash_of_tower SlashAction.smul_slash_of_tower
 
 attribute [simp] SlashAction.zero_slash SlashAction.slash_one SlashAction.smul_slash
   SlashAction.add_slash
@@ -82,7 +77,6 @@ def monoidHomSlashAction {β G H α γ : Type*} [Group G] [AddMonoid α] [SMul �
   slash_mul k g gg a := by simp only [map_mul, SlashAction.slash_mul]
   smul_slash _ _ := SlashAction.smul_slash _ _
   add_slash _ g _ _ := SlashAction.add_slash _ (h g) _ _
-#align monoid_hom_slash_action monoidHomSlashAction
 
 namespace ModularForm
 
@@ -91,7 +85,6 @@ noncomputable section
 /-- The weight `k` action of `GL(2, ℝ)⁺` on functions `f : ℍ → ℂ`. -/
 def slash (k : ℤ) (γ : GL(2, ℝ)⁺) (f : ℍ → ℂ) (x : ℍ) : ℂ :=
   f (γ • x) * (((↑ₘγ).det : ℝ) : ℂ) ^ (k - 1) * UpperHalfPlane.denom γ x ^ (-k)
-#align modular_form.slash ModularForm.slash
 
 variable {Γ : Subgroup SL(2, ℤ)} {k : ℤ} (f : ℍ → ℂ)
 
@@ -155,31 +148,24 @@ end
 
 theorem slash_def (A : GL(2, ℝ)⁺) : f ∣[k] A = slash k A f :=
   rfl
-#align modular_form.slash_def ModularForm.slash_def
 
 instance subgroupAction (Γ : Subgroup SL(2, ℤ)) : SlashAction ℤ Γ (ℍ → ℂ) ℂ :=
   monoidHomSlashAction
     (MonoidHom.comp Matrix.SpecialLinearGroup.toGLPos
       (MonoidHom.comp (Matrix.SpecialLinearGroup.map (Int.castRingHom ℝ)) (Subgroup.subtype Γ)))
-#align modular_form.subgroup_action ModularForm.subgroupAction
 
 @[simp]
 theorem subgroup_slash (Γ : Subgroup SL(2, ℤ)) (γ : Γ) : f ∣[k] γ = f ∣[k] (γ : GL(2, ℝ)⁺) :=
   rfl
-#align modular_form.subgroup_slash ModularForm.subgroup_slash
 
 instance SLAction : SlashAction ℤ SL(2, ℤ) (ℍ → ℂ) ℂ :=
   monoidHomSlashAction
     (MonoidHom.comp Matrix.SpecialLinearGroup.toGLPos
       (Matrix.SpecialLinearGroup.map (Int.castRingHom ℝ)))
-set_option linter.uppercaseLean3 false in
-#align modular_form.SL_action ModularForm.SLAction
 
 @[simp]
 theorem SL_slash (γ : SL(2, ℤ)) : f ∣[k] γ = f ∣[k] (γ : GL(2, ℝ)⁺) :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align modular_form.SL_slash ModularForm.SL_slash
 
 theorem is_invariant_const (A : SL(2, ℤ)) (x : ℂ) :
     Function.const ℍ x ∣[(0 : ℤ)] A = Function.const ℍ x := by
@@ -192,7 +178,6 @@ theorem is_invariant_const (A : SL(2, ℤ)) (x : ℂ) :
 -- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
 theorem is_invariant_one (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] A = (1 : ℍ → ℂ) :=
   is_invariant_const _ _
-#align modular_form.is_invariant_one ModularForm.is_invariant_one
 
 /-- A function `f : ℍ → ℂ` is slash-invariant, of weight `k ∈ ℤ` and level `Γ`,
   if for every matrix `γ ∈ Γ` we have `f(γ • z)= (c*z+d)^k f(z)` where `γ= ![![a, b], ![c, d]]`,
@@ -206,7 +191,6 @@ theorem slash_action_eq'_iff (k : ℤ) (Γ : Subgroup SL(2, ℤ)) (f : ℍ → �
       sl_moeb]
     rfl
   · convert zpow_ne_zero k (denom_ne_zero γ z)
-#align modular_form.slash_action_eq'_iff ModularForm.slash_action_eq'_iff
 
 theorem mul_slash (k1 k2 : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = ((↑ₘA).det : ℝ) • f ∣[k1] A * g ∣[k2] A := by
@@ -226,7 +210,6 @@ theorem mul_slash (k1 k2 : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
     exact UpperHalfPlane.denom_ne_zero A x
   rw [h1, h22]
   ring
-#align modular_form.mul_slash ModularForm.mul_slash
 
 -- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
 theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
@@ -237,13 +220,10 @@ theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
       apply mul_slash
     _ = (1 : ℝ) • f ∣[k1] A * g ∣[k2] A := by rw [det_coe']
     _ = f ∣[k1] A * g ∣[k2] A := by rw [one_smul]
-set_option linter.uppercaseLean3 false in
-#align modular_form.mul_slash_SL2 ModularForm.mul_slash_SL2
 
 theorem mul_slash_subgroup (k1 k2 : ℤ) (Γ : Subgroup SL(2, ℤ)) (A : Γ) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A :=
   mul_slash_SL2 k1 k2 A f g
-#align modular_form.mul_slash_subgroup ModularForm.mul_slash_subgroup
 
 end
 
