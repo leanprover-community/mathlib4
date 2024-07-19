@@ -1,4 +1,5 @@
 import Mathlib.Tactic.Basic
+import Batteries.Tactic.Init
 
 example : ∀ a b : Nat, a = b → b = a := by
   introv h

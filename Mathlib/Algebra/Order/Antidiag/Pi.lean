@@ -67,7 +67,7 @@ where
     match d with
     | 0 =>
       if h : n = 0 then
-        ⟨{0}, by simp [h, Subsingleton.elim finZeroElim ![]]⟩
+        ⟨{0}, by simp [h, Subsingleton.elim _ ![]]⟩
       else
         ⟨∅, by simp [Ne.symm h]⟩
     | d + 1 =>

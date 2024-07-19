@@ -204,11 +204,7 @@ theorem essInf_antitone_measure {f : α → β} (hμν : μ ≪ ν) : essInf f �
 
 theorem essSup_smul_measure {f : α → β} {c : ℝ≥0∞} (hc : c ≠ 0) :
     essSup f (c • μ) = essSup f μ := by
-  simp_rw [essSup]
-  suffices h_smul : ae (c • μ) = ae μ by rw [h_smul]
-  ext1
-  simp_rw [mem_ae_iff]
-  simp [hc]
+  simp_rw [essSup, Measure.ae_smul_measure_eq hc]
 #align ess_sup_smul_measure essSup_smul_measure
 
 section TopologicalSpace

@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
 import Mathlib.Data.Part
 import Mathlib.Data.Rel
+import Batteries.WF
 
 #align_import data.pfun from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
