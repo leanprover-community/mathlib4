@@ -2203,7 +2203,7 @@ end Mathlib.Meta
 
 namespace Finset
 section Filter
-variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s : Finset α}
+variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s t : Finset α}
 
 @[simp]
 theorem filter_val (s : Finset α) : (filter p s).1 = s.1.filter p :=
