@@ -51,14 +51,6 @@ section
 
 variable {C : Type u} [Category.{v} C]
 
-lemma IsPushout.of_iso {X₁ X₂ X₃ X₄ Y₁ Y₂ Y₃ Y₄ : C}
-    {f : X₁ ⟶ X₂} {g : X₁ ⟶ X₃} {h : X₂ ⟶ X₄} {i : X₃ ⟶ X₄} (H : IsPushout f g h i)
-    {f' : Y₁ ⟶ Y₂} {g' : Y₁ ⟶ Y₃} {h' : Y₂ ⟶ Y₄} {i' : Y₃ ⟶ Y₄}
-    (e₁ : X₁ ≅ Y₁) (e₂ : X₂ ≅ Y₂) (e₃ : X₃ ≅ Y₃) (e₄ : X₄ ≅ Y₄)
-    (commf : f ≫ e₂.hom = e₁.hom ≫ f') (commg : g ≫ e₃.hom = e₁.hom ≫ g')
-    (commh : h ≫ e₄.hom = e₂.hom ≫ h') (commi : i ≫ e₄.hom = e₃.hom ≫ i') :
-   IsPushout f' g' h' i' := sorry
-
 abbrev Sieve.ofTwoArrows {U V X : C} (i : U ⟶ X) (j : V ⟶ X) : Sieve X :=
   Sieve.ofArrows (Y := pairFunction U V) (fun k ↦ WalkingPair.casesOn k i j)
 
@@ -71,18 +63,32 @@ namespace Limits.PullbackCone.IsLimit
 
 noncomputable def equiv : c.pt ≃ { p : X × Y // f p.1 = g p.2 } :=
   have : HasPullback f g := ⟨_, hc⟩
-  Equiv.trans (IsLimit.conePointUniqueUpToIso hc
-    (pullbackIsPullback f g)).toEquiv (pullbackEquiv f g)
+  (IsLimit.conePointUniqueUpToIso hc
+    (pullbackIsPullback f g)).toEquiv.trans (pullbackEquiv f g)
 
 @[simp]
 lemma equiv_apply_fst (x : c.pt) : (equiv hc x).1.1 = c.fst x := by
-  sorry
+  erw [pullbackEquiv_fst]
+  exact congr_fun ((IsLimit.conePointUniqueUpToIso_hom_comp hc _) .left) x
 
 @[simp]
 lemma equiv_apply_snd (x : c.pt) : (equiv hc x).1.2 = c.snd x := by
-  sorry
+  erw [pullbackEquiv_snd]
+  exact congr_fun ((IsLimit.conePointUniqueUpToIso_hom_comp hc _) .right) x
 
-lemma concrete_ext {z₁ z₂ : c.pt}
+@[simp]
+lemma equiv_symm_apply_fst (x : { p : X × Y // f p.1 = g p.2 }) :
+    c.fst ((equiv hc).symm x) = x.1.1 := by
+  obtain ⟨x, rfl⟩ := (equiv hc).surjective x
+  simp
+
+@[simp]
+lemma equiv_symm_apply_snd (x : { p : X × Y // f p.1 = g p.2 }) :
+    c.snd ((equiv hc).symm x) = x.1.2 := by
+  obtain ⟨x, rfl⟩ := (equiv hc).surjective x
+  simp
+
+lemma type_ext {z₁ z₂ : c.pt}
     (h₁ : c.fst z₁ = c.fst z₂)
     (h₂ : c.snd z₁ = c.snd z₂): z₁ = z₂ := by
   apply (equiv hc).injective
@@ -136,28 +142,82 @@ variable {J}
 section
 
 variable {X U V W : C} (i : U ⟶ X) (j : V ⟶ X) (p : W ⟶ U) (q : W ⟶ V) [Mono i]
+  (H : ∀ (F : Sheaf J (Type v)),
+    IsPullback (F.val.map i.op) (F.val.map j.op) (F.val.map p.op) (F.val.map q.op))
+
+namespace mk'
+
+variable {i j p q}
+variable (s : PushoutCocone ((yoneda ⋙ presheafToSheaf J _).map p)
+    ((yoneda ⋙ presheafToSheaf J _).map q))
+
+noncomputable def aux₁ : s.pt.val.obj (op X) :=
+  (PullbackCone.IsLimit.equiv (H s.pt).isLimit).symm
+    ⟨⟨yonedaEquiv ((sheafificationAdjunction _ _).homEquiv _ _ s.inl),
+       yonedaEquiv ((sheafificationAdjunction _ _).homEquiv _ _ s.inr)⟩, by
+        simpa only [yonedaEquiv_naturality, ← Adjunction.homEquiv_naturality_left]
+          using congr_arg yonedaEquiv
+            (congr_arg ((sheafificationAdjunction _ _).homEquiv _ _) s.condition)⟩
+
+lemma map_i_op_aux₁ : s.pt.val.map i.op (aux₁ H s) =
+    yonedaEquiv ((sheafificationAdjunction _ _).homEquiv _ _ s.inl) :=
+  PullbackCone.IsLimit.equiv_symm_apply_fst (H s.pt).isLimit _
+
+lemma map_j_op_aux₁ : s.pt.val.map j.op (aux₁ H s) =
+    yonedaEquiv ((sheafificationAdjunction _ _).homEquiv _ _ s.inr) :=
+  PullbackCone.IsLimit.equiv_symm_apply_snd (H s.pt).isLimit _
+
+noncomputable def aux₂ : (presheafToSheaf J (Type v)).obj (yoneda.obj X) ⟶ s.pt :=
+  ((sheafificationAdjunction _ _).homEquiv _ _).symm (yonedaEquiv.symm (aux₁ H s))
+
+lemma yonedaEquiv_sheafificationAdjunction_homEquiv_aux₂ :
+    yonedaEquiv ((sheafificationAdjunction _ _).homEquiv _ _ (aux₂ H s)) =
+      aux₁ H s := by
+  simp only [aux₂, Equiv.apply_symm_apply]
+
+lemma map_i_comp_aux₂ :
+    (yoneda ⋙ presheafToSheaf J (Type v)).map i ≫ mk'.aux₂ H s = s.inl := by
+  apply ((sheafificationAdjunction _ _).homEquiv _ _).injective
+  apply yonedaEquiv.injective
+  dsimp only [aux₂, Functor.comp_map]
+  rw [← map_i_op_aux₁ H s, ← Adjunction.homEquiv_naturality_left_symm,
+    Equiv.apply_symm_apply, ← yonedaEquiv_naturality, Equiv.apply_symm_apply]
+  dsimp
+
+lemma map_j_comp_aux₂ :
+    (yoneda ⋙ presheafToSheaf J (Type v)).map j ≫ mk'.aux₂ H s = s.inr := by
+  apply ((sheafificationAdjunction _ _).homEquiv _ _).injective
+  apply yonedaEquiv.injective
+  dsimp only [aux₂, Functor.comp_map]
+  rw [← map_j_op_aux₁ H s, ← Adjunction.homEquiv_naturality_left_symm,
+    Equiv.apply_symm_apply, ← yonedaEquiv_naturality, Equiv.apply_symm_apply]
+  dsimp
+
+end mk'
 
 @[simps]
-def mk' (fac : p ≫ i = q ≫ j) (H : ∀ (F : Sheaf J (Type v)),
+noncomputable def mk' (fac : p ≫ i = q ≫ j) (H : ∀ (F : Sheaf J (Type v)),
     IsPullback (F.val.map i.op) (F.val.map j.op) (F.val.map p.op) (F.val.map q.op)) :
     J.MayerVietorisSquare where
   fac := fac
-  isColimit := PushoutCocone.IsColimit.mk _
-    (fun s ↦ ((sheafificationAdjunction _ _).homEquiv _ _).symm (yonedaEquiv.symm
-      ((PullbackCone.IsLimit.equiv (H s.pt).isLimit).symm
-        ⟨⟨yonedaEquiv ((sheafificationAdjunction _ _).homEquiv _ _ s.inl),
-          yonedaEquiv ((sheafificationAdjunction _ _).homEquiv _ _ s.inr)⟩, by
-            simpa only [yonedaEquiv_naturality, ← Adjunction.homEquiv_naturality_left]
-              using congr_arg yonedaEquiv (congr_arg ((sheafificationAdjunction _ _).homEquiv _ _) s.condition)⟩)))
-    (fun s ↦ by
-      dsimp only
-      sorry)
-    (fun s ↦ by
-      dsimp only
-      sorry)
+  isColimit := PushoutCocone.IsColimit.mk _ (fun s ↦ mk'.aux₂ H s)
+    (fun s ↦ mk'.map_i_comp_aux₂ H s) (fun s ↦ mk'.map_j_comp_aux₂ H s)
     (fun s m hm₁ hm₂ ↦ by
-      dsimp only
-      sorry)
+      apply ((sheafificationAdjunction _ _).homEquiv _ _).injective
+      apply yonedaEquiv.injective
+      apply PullbackCone.IsLimit.type_ext (H s.pt).isLimit
+      · rw [mk'.yonedaEquiv_sheafificationAdjunction_homEquiv_aux₂]
+        dsimp
+        rw [mk'.map_i_op_aux₁, ← hm₁]
+        erw [Adjunction.homEquiv_naturality_left]
+        rw [yonedaEquiv_naturality]
+        rfl
+      · rw [mk'.yonedaEquiv_sheafificationAdjunction_homEquiv_aux₂]
+        dsimp
+        rw [mk'.map_j_op_aux₁, ← hm₂]
+        erw [Adjunction.homEquiv_naturality_left]
+        rw [yonedaEquiv_naturality]
+        rfl)
 
 variable {i j p q}
 
