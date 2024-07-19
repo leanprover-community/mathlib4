@@ -518,10 +518,6 @@ variable {α β γ : Type*} [DecidableEq α] [CompleteLattice γ] (g : β → γ
 
 local notation "α'" => {y // y ≠ i}
 
-example : (⨆ f : α → β, ⨅ x, g (f x)) =
-    ⨆ f' : α' → β, ⨆ y : β, ⨅ x, g (Equiv.funSplitAt i β |>.symm (y, f') x) := by
-  rw [← (Equiv.funSplitAt i β).symm.iSup_comp, iSup_prod, iSup_comm]
-
 theorem basic (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
     ⨆ f' : α' → β, ⨆ y : β, s i y ⊓ ⨅ x' : α', (s x' (f' x')) := by
   -- not a super clean proof, but it works.
@@ -533,11 +529,6 @@ theorem basic (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
   congr! with x hx
   split_ifs
   rfl
-
-theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j : n, eigenspace (T j) (γ j)
-    = (⨆ (γ : {x // x ≠ i} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
-    (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))))) := by
-  apply basic
 
 theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // x ≠ i} → 𝕜) :
     ⨆ μ, Submodule.map (⨅ (j: {x // x ≠ i}), eigenspace (T ↑j) (γ j)).subtype
@@ -600,7 +591,7 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
       (fun (i_1 : {x // x ≠ i}) ↦ hT ↑i_1) (fun (i_1 j : { x // x ≠ i }) ↦ hC ↑i_1 ↑j)
     simp only [Submodule.orthogonal_eq_bot_iff] at *
     rw [← index_post_exhaust] at D
-    · rw [indexing_nonsense]
+    · rw [basic i (fun _ ↦ (fun μ ↦ (eigenspace (T _) μ )))]
       exact D
     · exact fun i ↦ hT i
     · exact hC
