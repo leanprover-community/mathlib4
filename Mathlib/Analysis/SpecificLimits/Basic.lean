@@ -64,13 +64,13 @@ theorem NNReal.tendsto_const_div_atTop_nhds_zero_nat (C : ℝ≥0) :
 @[deprecated (since := "2024-01-31")]
 alias NNReal.tendsto_const_div_atTop_nhds_0_nat := NNReal.tendsto_const_div_atTop_nhds_zero_nat
 
-theorem EReal.tendsto_const_div_atTop_nhds_zero_nat {x : EReal} (h : x ≠ ⊥) (h' : x ≠ ⊤) :
-    Tendsto (fun n : ℕ ↦ x / n) atTop (nhds 0) := by
-  have : (fun n : ℕ ↦ x / n) = fun n : ℕ ↦ ((x.toReal / n : ℝ) : EReal) := by
+theorem EReal.tendsto_const_div_atTop_nhds_zero_nat {C : EReal} (h : C ≠ ⊥) (h' : C ≠ ⊤) :
+    Tendsto (fun n : ℕ ↦ C / n) atTop (nhds 0) := by
+  have : (fun n : ℕ ↦ C / n) = fun n : ℕ ↦ ((C.toReal / n : ℝ) : EReal) := by
     ext n
-    nth_rw 1 [← coe_toReal h' h, ← natCast_eq_coe_coe n, ← coe_div x.toReal n]
-  rw [this, ← EReal.coe_zero, EReal.tendsto_coe]
-  exact _root_.tendsto_const_div_atTop_nhds_zero_nat x.toReal
+    nth_rw 1 [← coe_toReal h' h, ← coe_coe_eq_natCast n, ← coe_div C.toReal n]
+  rw [this, ← coe_zero, tendsto_coe]
+  exact _root_.tendsto_const_div_atTop_nhds_zero_nat C.toReal
 
 theorem tendsto_one_div_add_atTop_nhds_zero_nat :
     Tendsto (fun n : ℕ ↦ 1 / ((n : ℝ) + 1)) atTop (𝓝 0) :=
