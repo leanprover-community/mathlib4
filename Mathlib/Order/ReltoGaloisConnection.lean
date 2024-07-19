@@ -86,7 +86,7 @@ theorem is_lFixedPoint (I : (Set β)ᵒᵈ) : u R I ∈ lFixedPoints R := by
     · exact (to_galoisConnection R).le_u_l (u R I)
 
 /-- The maps `l` and `u` induce inverse bijections between the sets of fixed points. -/
-instance instEquivFixedPoints : lFixedPoints R ≃ uFixedPoints R :=
+def instEquivFixedPoints : lFixedPoints R ≃ uFixedPoints R :=
     { toFun := fun ⟨J, _⟩ => ⟨l R J, is_uFixedPoint R J⟩
       invFun := fun ⟨I, _⟩ => ⟨u R I, is_lFixedPoint R I⟩
       left_inv := by
