@@ -232,35 +232,23 @@ lemma hasBasis_seminorms : (𝓝 (0 : E →WOT[𝕜] F)).HasBasis (seminormFamil
   let p := seminormFamily 𝕜 E F
   rw [nhds_induced, nhds_pi]
   simp [map_zero, zero_apply]
-  have h := @Metric.nhds_basis_ball 𝕜 _ 0
-  have h' := Filter.hasBasis_pi fun _ : (E × F⋆) => h
-  have h'' := Filter.HasBasis.comap (fun (A : E →WOT[𝕜] F) (p : E × F⋆) => p.2 (A p.1)) h'
-  refine h''.to_hasBasis ?_ ?_
-  · intro U hU
-    obtain ⟨hU₁, hU₂⟩ := hU
-    simp only [id]
-    let U' := hU₁.toFinset
-    by_cases hU₃ : U.fst.Nonempty
-    · have hU₃' : U'.Nonempty := hU₁.toFinset_nonempty.mpr hU₃
-      refine ⟨(U'.sup p).ball 0 <| U'.inf' hU₃' U.snd, p.basisSets_mem _ <|
-        (Finset.lt_inf'_iff _).2 fun y hy => hU₂ y <| hU₁.mem_toFinset.mp hy, fun x hx y hy => ?_⟩
+  have h := Filter.hasBasis_pi (fun _ : (E × F⋆) ↦ Metric.nhds_basis_ball (x := 0)) |>.comap
+    (inducingFn 𝕜 E F)
+  refine h.to_hasBasis' ?_ ?_
+  · rintro ⟨s, U₂⟩ ⟨hs, hU₂⟩
+    lift s to Finset (E × F⋆) using hs
+    by_cases hU₃ : s.Nonempty
+    · refine ⟨(s.sup p).ball 0 <| s.inf' hU₃ U₂, p.basisSets_mem _ <| (Finset.lt_inf'_iff _).2 hU₂,
+        fun x hx y hy => ?_⟩
       simp only [Set.mem_preimage, Set.mem_pi, mem_ball_zero_iff]
-      rw [Seminorm.mem_ball_zero] at hx
-      have hyU' : y ∈ U' := (Set.Finite.mem_toFinset hU₁).mpr hy
-      have hp : p y ≤ U'.sup p := Finset.le_sup hyU'
+      rw [id, Seminorm.mem_ball_zero] at hx
+      have hp : p y ≤ s.sup p := Finset.le_sup hy
       refine lt_of_le_of_lt (hp x) (lt_of_lt_of_le hx ?_)
-      exact Finset.inf'_le _ hyU'
-    · rw [Set.not_nonempty_iff_eq_empty.mp hU₃]
-      simp only [Set.empty_pi, Set.preimage_univ, Set.subset_univ, and_true_iff]
-      exact ⟨(p 0).ball 0 1, p.basisSets_singleton_mem 0 one_pos⟩
-  · intro U (hU : U ∈ p.basisSets)
-    rw [SeminormFamily.basisSets_iff] at hU
-    obtain ⟨s, r, hr, hU⟩ := hU
-    rw [hU]
-    refine ⟨(s, fun _ => r), ⟨by simp only [s.finite_toSet], fun y _ => hr⟩, fun x hx => ?_⟩
-    simp only [Set.mem_preimage, Set.mem_pi, Finset.mem_coe, mem_ball_zero_iff] at hx
-    simp only [_root_.id, Seminorm.mem_ball, sub_zero]
-    exact Seminorm.finset_sup_apply_lt hr fun y hy => hx y hy
+      exact Finset.inf'_le _ hy
+    · rw [Finset.not_nonempty_iff_eq_empty.mp hU₃]
+      exact ⟨(p 0).ball 0 1, p.basisSets_singleton_mem 0 one_pos, by simp⟩
+  · suffices ∀ U ∈ p.basisSets, U ∈ 𝓝 (0 : E →WOT[𝕜] F) by simpa [nhds_induced, nhds_pi]
+    exact p.basisSets_mem_nhds fun ⟨x, y⟩ ↦ continuous_dual_apply x y |>.norm
 
 lemma withSeminorms : WithSeminorms (seminormFamily 𝕜 E F) :=
   SeminormFamily.withSeminorms_of_hasBasis _ hasBasis_seminorms
