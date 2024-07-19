@@ -62,9 +62,8 @@ abbrev equivReindex : (K →+* ℂ) ≃ (ChooseBasisIndex ℤ (𝓞 K)) := Finty
 abbrev basisMatrix : Matrix (K →+* ℂ) (K →+* ℂ) ℂ :=
   (of fun i ↦ latticeBasis K (equivReindex K i)).transpose
 
-lemma inv_mulVec_eq_vec {n : Type _}{ α : Type _} [Fintype n] [DecidableEq n]
-  [CommRing α] {A : Matrix n n α}
-    [Invertible A] {u v : n → α} (hM : u = A.mulVec v) : A⁻¹.mulVec u = v := by
+lemma inv_mulVec_eq_vec {n : Type _} { α : Type _} [Fintype n] [DecidableEq n] [CommRing α]
+    {A : Matrix n n α} [Invertible A] {u v : n → α} (hM : u = A.mulVec v) : A⁻¹.mulVec u = v := by
   rw [hM, mulVec_mulVec, inv_mul_of_invertible, one_mulVec]
 
 variable [DecidableEq (K →+* ℂ)]
@@ -86,8 +85,8 @@ instance : Invertible (basisMatrix K) := invertibleOfIsUnitDet _
     (det_transpose (basisMatrix K) ▸ (Ne.isUnit (det_of_basisMatrix_non_zero K)))
 
 theorem canonicalEmbedding_eq_basisMatrix_mulVec (α : K) :
-  canonicalEmbedding K α = (basisMatrix K).mulVec
-    (fun i ↦ (((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)) := by
+    canonicalEmbedding K α = (basisMatrix K).mulVec
+      (fun i ↦ (((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)) := by
   ext i
   rw [← (latticeBasis K).sum_repr (canonicalEmbedding K α), ← Equiv.sum_comp (equivReindex K)]
   simp only [canonicalEmbedding.integralBasis_repr_apply, mulVec, dotProduct,
