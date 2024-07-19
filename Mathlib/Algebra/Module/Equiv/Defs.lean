@@ -246,10 +246,6 @@ theorem ext (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
 #align linear_equiv.ext LinearEquiv.ext
 
-theorem ext_iff : e = e' ↔ ∀ x, e x = e' x :=
-  DFunLike.ext_iff
-#align linear_equiv.ext_iff LinearEquiv.ext_iff
-
 protected theorem congr_arg {x x'} : x = x' → e x = e x' :=
   DFunLike.congr_arg e
 #align linear_equiv.congr_arg LinearEquiv.congr_arg
