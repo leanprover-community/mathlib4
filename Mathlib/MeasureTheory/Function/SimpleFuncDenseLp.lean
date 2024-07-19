@@ -918,7 +918,9 @@ theorem Lp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (P : Lp E p �
       P (hf.toLp f) → P (hg.toLp g) → P (hf.toLp f + hg.toLp g))
     (h_closed : IsClosed { f : Lp E p μ | P f }) : ∀ f : Lp E p μ, P f := by
   refine fun f => (Lp.simpleFunc.denseRange hp_ne_top).induction_on f h_closed ?_
-  refine Lp.simpleFunc.induction (α := α) (E := E) (lt_of_lt_of_le zero_lt_one _i.elim).ne'
+  #adaptation_note
+  /-- 2024-07-18 need to disable elab_as_elim with `(P := _)` due to type-incorrect motive -/
+  refine Lp.simpleFunc.induction (P := _) (α := α) (E := E) (lt_of_lt_of_le zero_lt_one _i.elim).ne'
     hp_ne_top ?_ ?_
   · exact fun c s => h_ind c
   · exact fun f g hf hg => h_add hf hg

@@ -161,11 +161,7 @@ theorem induction_on₃ {C : Finmap β → Finmap β → Finmap β → Prop} (s�
 theorem ext : ∀ {s t : Finmap β}, s.entries = t.entries → s = t
   | ⟨l₁, h₁⟩, ⟨l₂, _⟩, H => by congr
 #align finmap.ext Finmap.ext
-
-@[simp]
-theorem ext_iff' {s t : Finmap β} : s.entries = t.entries ↔ s = t :=
-  Finmap.ext_iff.symm
-#align finmap.ext_iff Finmap.ext_iff'
+#align finmap.ext_iff Finmap.ext_iff
 
 /-! ### mem -/
 

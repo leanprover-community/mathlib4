@@ -364,6 +364,9 @@ protected theorem coe_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
     ↑(OfScientific.ofScientific m s e : ℝ≥0) = (OfScientific.ofScientific m s e : ℝ) :=
   rfl
 
+@[simp, norm_cast]
+lemma algebraMap_eq_coe : (algebraMap ℝ≥0 ℝ : ℝ≥0 → ℝ) = (↑) := rfl
+
 noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
 @[simp, norm_cast] lemma coe_le_coe : (r₁ : ℝ) ≤ r₂ ↔ r₁ ≤ r₂ := Iff.rfl

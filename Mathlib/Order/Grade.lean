@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Vladimir Ivanov
 -/
 import Mathlib.Data.Int.SuccPred
-import Mathlib.Order.Fin
+import Mathlib.Order.Fin.Basic
 
 #align_import order.grade from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
@@ -348,3 +348,17 @@ abbrev GradeMinOrder.finToNat (n : ℕ) [GradeMinOrder (Fin n) α] : GradeMinOrd
 instance GradeOrder.natToInt [GradeOrder ℕ α] : GradeOrder ℤ α :=
   (GradeOrder.liftLeft _ Int.natCast_strictMono) fun _ _ => CovBy.intCast
 #align grade_order.nat_to_int GradeOrder.natToInt
+
+theorem GradeOrder.wellFoundedLT (𝕆 : Type*) [Preorder α] [Preorder 𝕆] [GradeOrder 𝕆 α]
+    [WellFoundedLT 𝕆] : WellFoundedLT α :=
+  (grade_strictMono (𝕆 := 𝕆)).wellFoundedLT
+
+theorem GradeOrder.wellFoundedGT (𝕆 : Type*) [Preorder α] [Preorder 𝕆] [GradeOrder 𝕆 α]
+    [WellFoundedGT 𝕆] : WellFoundedGT α :=
+  (grade_strictMono (𝕆 := 𝕆)).wellFoundedGT
+
+instance [GradeOrder ℕ α] : WellFoundedLT α :=
+  GradeOrder.wellFoundedLT ℕ
+
+instance [GradeOrder ℕᵒᵈ α] : WellFoundedGT α :=
+  GradeOrder.wellFoundedGT ℕᵒᵈ

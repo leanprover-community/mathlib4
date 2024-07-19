@@ -2566,7 +2566,7 @@ end DecidablePiExists
 
 section Filter
 
-variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s : Finset α}
+variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s t : Finset α}
 
 /-- `Finset.filter p s` is the set of elements of `s` that satisfy `p`.
 
@@ -2910,6 +2910,8 @@ theorem filter_union_filter_neg_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
     (s.filter p ∪ s.filter fun a => ¬p a) = s :=
   filter_union_filter_of_codisjoint _ _ _ <| @codisjoint_hnot_right _ _ p
 #align finset.filter_union_filter_neg_eq Finset.filter_union_filter_neg_eq
+
+lemma filter_inj : s.filter p = t.filter p ↔ ∀ ⦃a⦄, p a → (a ∈ s ↔ a ∈ t) := by simp [ext_iff]
 
 end Filter
 

@@ -857,9 +857,13 @@ theorem mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ t ⊆ s, IsOpen t ∧ x ∈ t :=
 /-- A predicate is true in a neighborhood of `x` iff it is true for all the points in an open set
 containing `x`. -/
 theorem eventually_nhds_iff {p : X → Prop} :
-    (∀ᶠ x in 𝓝 x, p x) ↔ ∃ t : Set X, (∀ x ∈ t, p x) ∧ IsOpen t ∧ x ∈ t :=
+    (∀ᶠ y in 𝓝 x, p y) ↔ ∃ t : Set X, (∀ y ∈ t, p y) ∧ IsOpen t ∧ x ∈ t :=
   mem_nhds_iff.trans <| by simp only [subset_def, exists_prop, mem_setOf_eq]
 #align eventually_nhds_iff eventually_nhds_iff
+
+theorem frequently_nhds_iff {p : X → Prop} :
+    (∃ᶠ y in 𝓝 x, p y) ↔ ∀ U : Set X, x ∈ U → IsOpen U → ∃ y ∈ U, p y :=
+  (nhds_basis_opens x).frequently_iff.trans <| by simp
 
 theorem mem_interior_iff_mem_nhds : x ∈ interior s ↔ s ∈ 𝓝 x :=
   mem_interior.trans mem_nhds_iff.symm
@@ -1140,6 +1144,10 @@ theorem mapClusterPt_of_comp {F : Filter α} {φ : β → α} {p : Filter β}
   exact neBot_of_le this
 #align map_cluster_pt_of_comp mapClusterPt_of_comp
 
+theorem accPt_sup (x : X) (F G : Filter X) :
+    AccPt x (F ⊔ G) ↔ AccPt x F ∨ AccPt x G := by
+  simp only [AccPt, inf_sup_left, sup_neBot]
+
 theorem acc_iff_cluster (x : X) (F : Filter X) : AccPt x F ↔ ClusterPt x (𝓟 {x}ᶜ ⊓ F) := by
   rw [AccPt, nhdsWithin, ClusterPt, inf_assoc]
 #align acc_iff_cluster acc_iff_cluster
@@ -1168,6 +1176,9 @@ theorem accPt_iff_frequently (x : X) (C : Set X) : AccPt x (𝓟 C) ↔ ∃ᶠ y
 theorem AccPt.mono {F G : Filter X} (h : AccPt x F) (hFG : F ≤ G) : AccPt x G :=
   NeBot.mono h (inf_le_inf_left _ hFG)
 #align acc_pt.mono AccPt.mono
+
+theorem AccPt.clusterPt (x : X) (F : Filter X) (h : AccPt x F) : ClusterPt x F :=
+  ((acc_iff_cluster x F).mp h).mono inf_le_right
 
 /-!
 ### Interior, closure and frontier in terms of neighborhoods

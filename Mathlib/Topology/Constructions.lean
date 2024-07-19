@@ -225,6 +225,10 @@ instance Sigma.discreteTopology {ι : Type*} {Y : ι → Type v} [∀ i, Topolog
   ⟨iSup_eq_bot.2 fun _ => by simp only [(h _).eq_bot, coinduced_bot]⟩
 #align sigma.discrete_topology Sigma.discreteTopology
 
+@[simp] lemma comap_nhdsWithin_range {α β} [TopologicalSpace β] (f : α → β) (y : β) :
+    comap f (𝓝[range f] y) = comap f (𝓝 y) := comap_inf_principal_range
+#align comap_nhds_within_range comap_nhdsWithin_range
+
 section Top
 
 variable [TopologicalSpace X]
@@ -240,6 +244,10 @@ theorem mem_nhds_subtype (s : Set X) (x : { x // x ∈ s }) (t : Set { x // x �
 theorem nhds_subtype (s : Set X) (x : { x // x ∈ s }) : 𝓝 x = comap (↑) (𝓝 (x : X)) :=
   nhds_induced _ x
 #align nhds_subtype nhds_subtype
+
+lemma nhds_subtype_eq_comap_nhdsWithin (s : Set X) (x : { x // x ∈ s }) :
+    𝓝 x = comap (↑) (𝓝[s] (x : X)) := by
+  rw [nhds_subtype, ← comap_nhdsWithin_range, Subtype.range_val]
 
 theorem nhdsWithin_subtype_eq_bot_iff {s t : Set X} {x : s} :
     𝓝[((↑) : s → X) ⁻¹' t] x = ⊥ ↔ 𝓝[t] (x : X) ⊓ 𝓟 s = ⊥ := by
