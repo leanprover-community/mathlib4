@@ -55,6 +55,10 @@ variable {C : Type u} [Category.{v} C]
 abbrev Sieve.ofTwoArrows {U V X : C} (i : U ⟶ X) (j : V ⟶ X) : Sieve X :=
   Sieve.ofArrows (Y := pairFunction U V) (fun k ↦ WalkingPair.casesOn k i j)
 
+end
+
+section
+
 variable {X Y S : Type v} {f : X ⟶ S} {g : Y ⟶ S} {c : PullbackCone f g}
   (hc : IsLimit c)
 
