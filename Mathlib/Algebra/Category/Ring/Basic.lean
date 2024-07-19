@@ -211,8 +211,6 @@ def ofHom {R S : Type u} [Ring R] [Ring S] (f : R →+* S) : of R ⟶ of S :=
 -- @[simp]
 -- theorem ofHom_apply {R S : Type u} [Ring R] [Ring S] (f : R →+* S) (x : R) : ofHom f x = f x :=
 --   rfl
--- set_option linter.uppercaseLean3 false in
--- #align Ring.of_hom_apply RingCat.ofHom_apply
 
 instance : Inhabited RingCat :=
   ⟨of PUnit⟩

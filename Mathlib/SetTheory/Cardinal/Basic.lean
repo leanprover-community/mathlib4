@@ -551,7 +551,6 @@ protected theorem zero_le : ∀ a : Cardinal, 0 ≤ a := by
 
 private theorem add_le_add' : ∀ {a b c d : Cardinal}, a ≤ b → c ≤ d → a + c ≤ b + d := by
   rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨δ⟩ ⟨e₁⟩ ⟨e₂⟩; exact ⟨e₁.sumMap e₂⟩
--- #align cardinal.add_le_add' Cardinal.add_le_add'
 
 instance add_covariantClass : CovariantClass Cardinal Cardinal (· + ·) (· ≤ ·) :=
   ⟨fun _ _ _ => add_le_add' le_rfl⟩
@@ -2001,6 +2000,5 @@ end Cardinal
 --   |-- We already know that `0 ≤ x` for all `x : Cardinal`
 --     _ =>
 --     failed
--- #align tactic.positivity_cardinal_pow tactic.positivity_cardinal_pow
 
 -- end Tactic

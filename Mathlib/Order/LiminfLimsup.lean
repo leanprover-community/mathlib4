@@ -367,7 +367,6 @@ macro "isBoundedDefault" : tactic =>
 --   tactic.applyc `` is_cobounded_le_of_bot <|>
 --     tactic.applyc `` is_cobounded_ge_of_top <|>
 --       tactic.applyc `` is_bounded_le_of_top <|> tactic.applyc `` is_bounded_ge_of_bot
--- #align filter.is_bounded_default filter.IsBounded_default
 
 
 section ConditionallyCompleteLattice

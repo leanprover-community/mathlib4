@@ -13,10 +13,6 @@ The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
 We intend to move all the content of these files out into the main `Mathlib` directory structure.
 Contributions assisting with this are appreciated.
 
-`#align` statements without corresponding declarations
-(i.e. because the declaration is in Batteries or Lean) can be left here.
-These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
-
 # Quot
 
 Some induction principles tagged with `elab_as_elim`, since the attribute is missing in core.
