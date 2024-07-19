@@ -139,7 +139,7 @@ variable (M' : Type v) [AddCommGroup M'] [Module R M']
 
 /-- An `R`-module linearly equivalent to a faithfully flat `R`-module is faithfully flat. -/
 lemma of_linearEquiv [f : FaithfullyFlat R M][AddCommGroup M'][Module R M'](e : M' ≃ₗ[R] M) :
-FaithfullyFlat R M' where
+    FaithfullyFlat R M' where
       flat := Module.Flat.of_linearEquiv R M M' e
       zero_if_lTensor_zero := by
        introv
