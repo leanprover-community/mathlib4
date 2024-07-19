@@ -10,7 +10,6 @@ import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.Init.Align
 import Mathlib.Tactic.GCongr
 
 /-!

@@ -9,6 +9,4 @@ there is no point porting these files directly.
 They can be rewritten from scratch as needed, just as for tactics.
 -/
 
-import Mathlib.Init.Align
-
 /-! # Empty placeholder for Mathlib3's `buffer` -/
