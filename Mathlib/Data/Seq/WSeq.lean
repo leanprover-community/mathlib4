@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Logic.Relation
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Seq.Seq
+import Batteries.Data.DList
 
 #align_import data.seq.wseq from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 

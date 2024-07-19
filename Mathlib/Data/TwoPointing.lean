@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Logic.Nonempty
+import Batteries.Data.Sum.Lemmas
 
 #align_import data.two_pointing from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 

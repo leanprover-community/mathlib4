@@ -86,11 +86,12 @@ random testing
 
 -/
 
-set_option autoImplicit true
-
 namespace SlimCheck
 
 open Random Gen
+
+universe u v
+variable {α β : Type*}
 
 /-- Given an example `x : α`, `Shrinkable α` gives us a way to shrink it
 and suggest simpler examples. -/

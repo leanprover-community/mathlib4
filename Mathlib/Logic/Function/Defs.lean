@@ -9,6 +9,7 @@ import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.TypeStar
+import Batteries.Logic
 
 #align_import init.function from "leanprover-community/lean"@"03a6a6015c0b12dce7b36b4a1f7205a92dfaa592"
 

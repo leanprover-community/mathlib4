@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Fin.Tuple
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Ker
+import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.Logic.Equiv.Fin
 
