@@ -327,10 +327,12 @@ lemma isBoundedUnder_sum {κ : Type*} [DecidableEq κ] [AddCommMonoid R] {r : R 
     {u : κ → α → R} (s : Finset κ) :
     (∀ k ∈ s, f.IsBoundedUnder r (u k)) →
       f.IsBoundedUnder r (∑ k ∈ s, u k) := by
-  induction' s using Finset.induction_on with k₀ s k₀_notin_s ih
-  · simp only [Finset.not_mem_empty, false_implies, implies_true, Finset.sum_empty, true_implies]
+  induction s using Finset.induction_on
+  case empty =>
+    simp only [Finset.not_mem_empty, false_implies, implies_true, Finset.sum_empty, true_implies]
     refine ⟨0, by simp_all only [eventually_map, Pi.zero_apply, eventually_true]⟩
-  · simp only [Finset.mem_insert, forall_eq_or_imp, and_imp] at *
+  case insert k₀ s k₀_notin_s ih =>
+    simp only [Finset.mem_insert, forall_eq_or_imp, and_imp] at *
     intro bdd_k₀ bdd_rest
     simpa only [Finset.sum_insert k₀_notin_s] using hr _ _ bdd_k₀ (ih bdd_rest)
 
