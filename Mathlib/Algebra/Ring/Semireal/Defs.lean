@@ -5,6 +5,7 @@ Authors: Florent Schaffhauser
 -/
 
 import Mathlib.Algebra.Ring.Semireal.SumsOfSquares
+import Mathlib.Algebra.Order.Field.Defs
 
 /-!
 # Semireal rings

@@ -5,7 +5,7 @@ Authors: Florent Schaffhauser
 -/
 
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.Ring.Defs
 
 /-!
 # Sums of squares
