@@ -28,6 +28,10 @@ theorem gramDet_vsub_aux {n} (p : Fin (n + 1) → P) :
     gramDet (𝕜 := ℝ) (fun k : Fin n => p (.succ k) -ᵥ p 0) =
       gramDet (fun k : Fin n => p (.castSucc k) -ᵥ p (.last n)) := by
   sorry
+theorem gramDet_vsub_aux' {n} (p : Fin (n + 1) → P) (i j : Fin n):
+    gramDet (𝕜 := ℝ) (fun k : Fin n => p (.succAbove i k) -ᵥ p i) =
+      gramDet (fun k : Fin n => p (.succAbove j k) -ᵥ p j) := by
+  sorry
 
 /-- The Gram determinant applied to an affine collection of points is the same whichever one is
 used as the base point. -/
