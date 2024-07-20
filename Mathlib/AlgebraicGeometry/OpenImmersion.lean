@@ -112,7 +112,6 @@ lemma image_preimage_eq_opensRange_inter (U : Opens Y) : f ''ᵁ f ⁻¹ᵁ U = 
 /-- The isomorphism `Γ(Y, f(U)) ≅ Γ(X, U)` induced by an open immersion `f : X ⟶ Y`. -/
 def appIso (U) : Γ(Y, f ''ᵁ U) ≅ Γ(X, U) :=
   (asIso <| LocallyRingedSpace.IsOpenImmersion.invApp f U).symm
-#align algebraic_geometry.Scheme.hom.inv_app AlgebraicGeometry.Scheme.Hom.appIso
 
 @[reassoc (attr := simp)]
 theorem appIso_inv_naturality {U V : Opens X} (i : op U ⟶ op V) :
@@ -548,7 +547,6 @@ theorem app_eq_appIso_inv_app_of_comp_eq {X Y U : Scheme.{u}} (f : Y ⟶ U) (g :
   rw [Scheme.comp_app, Category.assoc, Scheme.Hom.appIso_inv_app_assoc, f.naturality_assoc,
     ← Functor.map_comp, ← op_comp, Quiver.Hom.unop_op, eqToHom_map, eqToHom_trans,
     eqToHom_op, eqToHom_refl, CategoryTheory.Functor.map_id, Category.comp_id]
-#align algebraic_geometry.IsOpenImmersion.app_eq_inv_app_app_of_comp_eq AlgebraicGeometry.IsOpenImmersion.app_eq_appIso_inv_app_of_comp_eq
 
 theorem lift_app {X Y U : Scheme.{u}} (f : U ⟶ Y) (g : X ⟶ Y) [IsOpenImmersion f] (H)
     (V : Opens U) :
@@ -556,7 +554,6 @@ theorem lift_app {X Y U : Scheme.{u}} (f : U ⟶ Y) (g : X ⟶ Y) [IsOpenImmersi
       X.presheaf.map (eqToHom <| IsOpenImmersion.app_eq_invApp_app_of_comp_eq_aux _ _ _
         (IsOpenImmersion.lift_fac f g H).symm V).op :=
   IsOpenImmersion.app_eq_appIso_inv_app_of_comp_eq _ _ _ (lift_fac _ _ _).symm _
-#align algebraic_geometry.IsOpenImmersion.lift_app AlgebraicGeometry.IsOpenImmersion.lift_app
 
 /-- If `f` is an open immersion `X ⟶ Y`, the global sections of `X`
 are naturally isomorphic to the sections of `Y` over the image of `f`. -/
@@ -603,7 +600,6 @@ theorem image_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpenImmersion f]
   · rw [← e, f.image_preimage_eq_opensRange_inter, inf_eq_right]
     refine Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
   · exact (X.basicOpen_le r).trans (f.preimage_image_eq _).ge
-#align algebraic_geometry.Scheme.image_basic_open AlgebraicGeometry.Scheme.image_basicOpen
 
 end Scheme
 
