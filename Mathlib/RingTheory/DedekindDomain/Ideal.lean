@@ -1437,7 +1437,7 @@ theorem count_span_normalizedFactors_eq {r X : R} (hr : r ≠ 0) (hX : Prime X) 
   rw [multiplicity_eq_count_normalizedFactors (Prime.irreducible hX) hr,
     multiplicity_eq_count_normalizedFactors (Prime.irreducible ?_), normalize_apply,
     normUnit_eq_one, Units.val_one, one_eq_top, mul_top, Nat.cast_inj] at this
-  simp only [normalize_apply, this]
+  · simp only [normalize_apply, this]
   · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, hr, not_false_eq_true]
   · simpa only [prime_span_singleton_iff]
 

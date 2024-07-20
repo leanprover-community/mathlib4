@@ -155,7 +155,7 @@ theorem ae_bdd_condexp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
   suffices (μ {x | ↑R < |(μ[f|m]) x|}).toReal * ↑R < (μ {x | ↑R < |(μ[f|m]) x|}).toReal * ↑R by
     exact this.ne rfl
   refine lt_of_lt_of_le (setIntegral_gt_gt R.coe_nonneg ?_ h.ne.symm) ?_
-  exact integrable_condexp.abs.integrableOn
+  · exact integrable_condexp.abs.integrableOn
   refine (setIntegral_abs_condexp_le ?_ _).trans ?_
   · simp_rw [← Real.norm_eq_abs]
     exact @measurableSet_lt _ _ _ _ _ m _ _ _ _ _ measurable_const
