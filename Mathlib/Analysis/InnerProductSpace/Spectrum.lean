@@ -386,8 +386,11 @@ theorem invariance_iInf [Nonempty n] (i : n) :
 theorem basic_index1 {α β : Type*} [DecidableEq α] [CompleteLattice β]
     (i : α) (s : α → β) : ⨅ x, s x = s i ⊓ ⨅ (x' : {y // y ≠ i}),
       (s x') := by
-  rw [iInf_subtype]
-  exact iInf_split_single s i
+  rw [iInf_subtype]; exact iInf_split_single s i
+
+--I think index_convert is a bit more subtle than basic_index1 gives it credit for.
+--Is there an intermediate abstract lemma? Maybe using a more general invariant subspace like the
+--other abstract lemma did. (This should work... like in invariant_subspace_eigenspace_exhaust below)
 
 theorem index_convert' (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} → 𝕜) : (eigenspace (T i) μ ⊓
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) =
@@ -411,13 +414,8 @@ theorem index_convert' (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} →
    rhs
    rhs
    ext j
-   rw [←C2] --bad design. There is a submodule_subtype here killing us
-
-
-  --still sucking wind on this one. Must be a better piecewise function approach here.
-  --the problem seems to be this function...
+   rw [←C2]
   sorry
-
 
 theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} → 𝕜) : (eigenspace (T i) μ ⊓
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) =
