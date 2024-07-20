@@ -397,21 +397,6 @@ theorem eigenspace_of_subsingleton_nonempty [Subsingleton n] (h : Nonempty n) :
   · exact hT i
   · intro γ j; congr!
 
-/--The following result is auxiliary, and not meant to be used outside this file. It forms
-the base case of the induction proof of `orthogonalComplement_iSup_iInf_eigenspaces_eq_bot`-/
-theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base [Subsingleton n]:
-    (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
-  simp only [Submodule.orthogonal_eq_bot_iff]
-  by_cases case : Nonempty n
-  · have i := choice case
-    have := uniqueOfSubsingleton i
-    conv =>
-      lhs; rhs; ext γ; rw [ciInf_subsingleton i]
-    rw [← (Equiv.funUnique n 𝕜).symm.iSup_comp]
-    apply pre_exhaust (hT i)
-  · simp only [not_nonempty_iff] at case
-    simp only [iInf_of_empty, ciSup_unique]
-
 theorem invariance_iInf [Nonempty n] (i : n) :
     ∀ γ : {x // x ≠ i} → 𝕜, ∀ v ∈ (⨅ (j : {x // x ≠ i}),
     eigenspace ((Subtype.restrict (fun x ↦ x ≠ i) T) j) (γ j)), (T i) v ∈ (⨅ (j : {x // x ≠ i}),
@@ -546,6 +531,35 @@ theorem index_post_exhaust (i : n) [Nontrivial n] :
   simp only [ne_eq, Submodule.orthogonal_eq_bot_iff]
   conv => lhs; rhs; ext γ; rhs; ext μ; rw [index_convert T hC i]
   conv => lhs; rhs; ext γ; rw [prelim_sub_exhaust T hT hC]
+
+theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot':
+    (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
+  revert T
+  refine' Fintype.induction_subsingleton_or_nontrivial n _ _
+  · intro m _ hhm T hT _
+    simp only [Submodule.orthogonal_eq_bot_iff]
+    by_cases case : Nonempty m
+    · have i := choice case
+      have := uniqueOfSubsingleton i
+      conv => lhs; rhs; ext γ; rw [ciInf_subsingleton i]
+      rw [← (Equiv.funUnique m 𝕜).symm.iSup_comp]
+      apply pre_exhaust (hT i)
+    · simp only [not_nonempty_iff] at case
+      simp only [iInf_of_empty, ciSup_unique]
+  · intro m hm hmm H T hT hC
+    obtain ⟨i, _ , _ ⟩ := exists_pair_ne m
+    have C : Fintype.card { x // x ≠ i } < Fintype.card m := by
+      simp only [ne_eq, Fintype.card_subtype_compl, Fintype.card_ofSubsingleton,
+      tsub_lt_self_iff, zero_lt_one, and_true]
+      exact Fintype.card_pos
+    have D := H {x // x ≠ i} C (Subtype.restrict (fun x ↦ x ≠ i) T)
+      (fun (i_1 : {x // x ≠ i}) ↦ hT ↑i_1) (fun (i_1 j : { x // x ≠ i }) ↦ hC ↑i_1 ↑j)
+    simp only [Submodule.orthogonal_eq_bot_iff] at *
+    rw [← index_post_exhaust] at D
+    · rw [basic i (fun _ ↦ (fun μ ↦ (eigenspace (T _) μ )))]
+      exact D
+    · exact fun i ↦ hT i
+    · exact hC
 
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
