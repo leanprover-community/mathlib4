@@ -423,7 +423,7 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base [Subsingleton n]:
     rw [← (eq_triv i).symm.iSup_comp]
     apply pre_exhaust (hT i)
   · simp only [not_nonempty_iff] at case
-    simp only [iInf_of_empty, ciSup_unique, Submodule.top_orthogonal_eq_bot]
+    simp only [iInf_of_empty, ciSup_unique]
 
 theorem invariance_iInf [Nonempty n] (i : n) :
     ∀ γ : {x // x ≠ i} → 𝕜, ∀ v ∈ (⨅ (j : {x // x ≠ i}),
