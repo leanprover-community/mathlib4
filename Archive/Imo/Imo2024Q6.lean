@@ -250,11 +250,12 @@ lemma card_range_fExample : #(Set.range (fun x ↦ fExample x + fExample (-x))) 
   rw [h]
   simp
 
-/-- This is to be determined by the solver of the original problem. -/
-def answer : ℕ := 2
-
-theorem _root_.imo2024q6 : (∀ f, Aquaesulian f → #(Set.range (fun x ↦ f x + f (-x))) ≤ answer) ∧
-    ∃ f, Aquaesulian f ∧ #(Set.range (fun x ↦ f x + f (-x))) = answer :=
-  ⟨fun _ ↦ Aquaesulian.card_le_two, ⟨fExample, aquaesulian_fExample, card_range_fExample⟩⟩
+/-- The answer 2 is to be determined by the solver of the original problem. -/
+theorem _root_.imo2024q6 : (∀ f, Aquaesulian f → #(Set.range (fun x ↦ f x + f (-x))) ≤ (2 : ℕ)) ∧
+    ∀ c : ℕ, (∀ f, Aquaesulian f → #(Set.range (fun x ↦ f x + f (-x))) ≤ c) → 2 ≤ c := by
+  refine ⟨fun _ ↦ Aquaesulian.card_le_two, fun c h ↦ ?_⟩
+  replace h := h fExample aquaesulian_fExample
+  rw [card_range_fExample] at h
+  exact_mod_cast h
 
 end Imo2024Q6
