@@ -622,7 +622,7 @@ protected def prod {β} (t₁ : Ordnode α) (t₂ : Ordnode β) : Ordnode (α ×
 `Or.inl a ∈ s.copair t` iff `a ∈ s`, and `Or.inr b ∈ s.copair t` iff `b ∈ t`.
 
     copair {1, 2} {2, 3} = {inl 1, inl 2, inr 2, inr 3} -/
-protected def copair {β} (t₁ : Ordnode α) (t₂ : Ordnode β) : Ordnode (Sum α β) :=
+protected def copair {β} (t₁ : Ordnode α) (t₂ : Ordnode β) : Ordnode (α ⊕ β) :=
   merge (map Sum.inl t₁) (map Sum.inr t₂)
 
 /-- O(n). Map a partial function across a set. The result depends on a proof

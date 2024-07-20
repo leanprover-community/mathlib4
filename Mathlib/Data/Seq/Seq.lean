@@ -547,7 +547,7 @@ def toStream (s : Seq α) (h : ¬s.Terminates) : Stream' α := fun n =>
 /-- Convert a sequence into either a list or a stream depending on whether
   it is finite or infinite. (Without decidability of the infiniteness predicate,
   this is not constructively possible.) -/
-def toListOrStream (s : Seq α) [Decidable s.Terminates] : Sum (List α) (Stream' α) :=
+def toListOrStream (s : Seq α) [Decidable s.Terminates] : List α ⊕ Stream' α :=
   if h : s.Terminates then Sum.inl (toList s h) else Sum.inr (toStream s h)
 
 @[simp]

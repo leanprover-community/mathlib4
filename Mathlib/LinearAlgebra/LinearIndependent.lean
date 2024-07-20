@@ -699,7 +699,7 @@ theorem LinearIndependent.total_ne_of_not_mem_support [Nontrivial R] (hv : Linea
   simp only [not_exists, not_and, mem_map] at p -- Porting note: `mem_map` isn't currently triggered
   exact p f (f.mem_supported_support R) rfl
 
-theorem linearIndependent_sum {v : Sum ι ι' → M} :
+theorem linearIndependent_sum {v : ι ⊕ ι' → M} :
     LinearIndependent R v ↔
       LinearIndependent R (v ∘ Sum.inl) ∧
         LinearIndependent R (v ∘ Sum.inr) ∧
