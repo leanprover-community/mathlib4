@@ -30,15 +30,15 @@ In the stacks project, the definition of faithfully flat is different but tag
 - `Module.FaithfullyFlat.comp`: https://stacks.math.columbia.edu/tag/00HC
 -/
 
-universe u v
+universe u
 
 namespace Module
 
-variable (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M]
+variable (R : Type u) (M : Type u) [CommRing R] [AddCommGroup M] [Module R M]
 
 @[mk_iff] class FaithfullyFlat : Prop where
   flat : Module.Flat R M := by infer_instance
-  zero_if_lTensor_zero :  ∀ ⦃N N': Type v⦄ [AddCommGroup N][Module R N][AddCommGroup N']
+  zero_if_lTensor_zero :  ∀ ⦃N N': Type u⦄ [AddCommGroup N][Module R N][AddCommGroup N']
   [Module R N'](f : N →ₗ[R] N'),
      LinearMap.lTensor M f = 0 → (f = 0)
 
@@ -55,12 +55,12 @@ instance self (R : Type u) [CommRing R] : FaithfullyFlat R R where
     rw [h, hf]
     rfl
 
-variable {N : Type v} [AddCommGroup N] [Module R N]
+variable {N : Type u} [AddCommGroup N] [Module R N]
 
 /--
 If `M` is a faithfully flat module, then for all linear maps `f`, the map `id ⊗ f = 0`, if and only
 if  `f = 0`. -/
-lemma zero_iff_lTensor_zero {N' : Type v} [AddCommGroup N'] [Module R N']
+lemma zero_iff_lTensor_zero {N' : Type u} [AddCommGroup N'] [Module R N']
     [h: FaithfullyFlat R M] (f : N →ₗ[R] N') :
     (f = 0) ↔  LinearMap.lTensor M f = 0 := by
       constructor
@@ -74,7 +74,7 @@ A faithfully flat `R`-module `M` is flat and for all linear maps `f`, the map `f
 only if  `f = 0`. -/
 lemma zero_iff_lTensor_zero' :
     FaithfullyFlat R M → (Module.Flat R M ∧
-  (∀ ⦃N N': Type v⦄ [AddCommGroup N][Module R N][AddCommGroup N'] [Module R N'] (f : N →ₗ[R] N'),
+  (∀ ⦃N N': Type u⦄ [AddCommGroup N][Module R N][AddCommGroup N'] [Module R N'] (f : N →ₗ[R] N'),
   (f = 0) ↔ LinearMap.lTensor M f = 0)):= by
       intro h
       constructor
@@ -86,7 +86,7 @@ lemma zero_iff_lTensor_zero' :
         exact LinearMap.lTensor_zero M
       exact Module.FaithfullyFlat.zero_if_lTensor_zero f
 
-lemma lTensor_zero_iff_rTensor_zero : ∀ ⦃N N': Type v⦄ [AddCommGroup N][Module R N][AddCommGroup N']
+lemma lTensor_zero_iff_rTensor_zero : ∀ ⦃N N': Type u⦄ [AddCommGroup N][Module R N][AddCommGroup N']
     [Module R N'] (f : N →ₗ[R] N'), LinearMap.lTensor M f = 0 ↔ LinearMap.rTensor M f = 0 := by
     introv
     constructor
@@ -112,7 +112,7 @@ An `R`-module `M` is faithfully flat iff it is flat and for all linear maps `f`,
 `id ⊗ f = 0`, if and only if `f = 0`. -/
 lemma zero_iff_rTensor_zero :
     FaithfullyFlat R M ↔ (Module.Flat R M ∧
-  (∀ ⦃N N': Type v⦄ [AddCommGroup N][Module R N][AddCommGroup N'] [Module R N'] (f : N →ₗ[R] N'),
+  (∀ ⦃N N': Type u⦄ [AddCommGroup N][Module R N][AddCommGroup N'] [Module R N'] (f : N →ₗ[R] N'),
   LinearMap.rTensor M f = 0 → (f = 0))):= by
     constructor
     intro FF
@@ -136,7 +136,7 @@ lemma zero_iff_rTensor_zero :
 
 open LinearMap
 
-variable (M' : Type v) [AddCommGroup M'] [Module R M']
+variable (M' : Type u) [AddCommGroup M'] [Module R M']
 
 /-- An `R`-module linearly equivalent to a faithfully flat `R`-module is faithfully flat. -/
 lemma of_linearEquiv [f : FaithfullyFlat R M][AddCommGroup M'][Module R M'](e : M' ≃ₗ[R] M) :
@@ -157,7 +157,7 @@ open TensorProduct
 
 -- The following lemma proves implication (1) to (2) in https://stacks.math.columbia.edu/tag/00HP
 
-lemma id_zero (N : Type v) [AddCommGroup N] [Module R N] : (Subsingleton N) → LinearMap.id (R:= R)
+lemma id_zero (N : Type u) [AddCommGroup N] [Module R N] : (Subsingleton N) → LinearMap.id (R:= R)
 (M:= N)= 0 := by
    intro hN
    ext x
@@ -165,7 +165,7 @@ lemma id_zero (N : Type v) [AddCommGroup N] [Module R N] : (Subsingleton N) → 
    exact Subsingleton.eq_zero x
 /-- If M is faithfully flat, then for every nonzero R-module N, then tensor product M⊗RN is nonzero,
 -/
-lemma tensorproduct_non_zero (N : Type v) [AddCommGroup N] [Module R N] [FaithfullyFlat R M] :
+lemma tensorproduct_non_zero (N : Type u) [AddCommGroup N] [Module R N] [FaithfullyFlat R M] :
     Nontrivial N  → (Nontrivial (M ⊗[R] N)) := by
   intro hN
   letI f := LinearMap.id (R:= R) (M:= N)
@@ -188,7 +188,7 @@ lemma tensorproduct_non_zero (N : Type v) [AddCommGroup N] [Module R N] [Faithfu
   apply id_zero R (M ⊗[R] N)
   exact not_nontrivial_iff_subsingleton.mp h1
 
-variable (R : Type u) (S : Type v) (M : Type v)
+variable (R : Type u) (S : Type u) (M : Type u)
   [CommRing R] [CommRing S] [Algebra R S]
   [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
 
