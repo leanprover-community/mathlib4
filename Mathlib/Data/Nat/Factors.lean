@@ -7,7 +7,6 @@ import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.Sort
-import Mathlib.Data.List.Chain
 
 /-!
 # Prime numbers

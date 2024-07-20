@@ -236,7 +236,7 @@ open Sum
 
 /-- Given a `TransvectionStruct` on `n`, define the corresponding `TransvectionStruct` on `n ⊕ p`
 using the identity on `p`. -/
-def sumInl (t : TransvectionStruct n R) : TransvectionStruct (Sum n p) R where
+def sumInl (t : TransvectionStruct n R) : TransvectionStruct (n ⊕ p) R where
   i := inl t.i
   j := inl t.j
   hij := by simp [t.hij]
@@ -321,19 +321,19 @@ of the matrices, through a suitable reindexing to identify any fintype with `Fin
 
 namespace Pivot
 
-variable {R} {r : ℕ} (M : Matrix (Sum (Fin r) Unit) (Sum (Fin r) Unit) 𝕜)
+variable {R} {r : ℕ} (M : Matrix (Fin r ⊕ Unit) (Fin r ⊕ Unit) 𝕜)
 
-open Sum Unit Fin TransvectionStruct
+open Unit Sum Fin TransvectionStruct
 
 /-- A list of transvections such that multiplying on the left with these transvections will replace
 the last column with zeroes. -/
-def listTransvecCol : List (Matrix (Sum (Fin r) Unit) (Sum (Fin r) Unit) 𝕜) :=
+def listTransvecCol : List (Matrix (Fin r ⊕ Unit) (Fin r ⊕ Unit) 𝕜) :=
   List.ofFn fun i : Fin r =>
     transvection (inl i) (inr unit) <| -M (inl i) (inr unit) / M (inr unit) (inr unit)
 
 /-- A list of transvections such that multiplying on the right with these transvections will replace
 the last row with zeroes. -/
-def listTransvecRow : List (Matrix (Sum (Fin r) Unit) (Sum (Fin r) Unit) 𝕜) :=
+def listTransvecRow : List (Matrix (Fin r ⊕ Unit) (Fin r ⊕ Unit) 𝕜) :=
   List.ofFn fun i : Fin r =>
     transvection (inr unit) (inl i) <| -M (inr unit) (inl i) / M (inr unit) (inr unit)
 
@@ -356,7 +356,7 @@ theorem listTransvecRow_get (i : Fin (listTransvecRow M).length) :
   simp [listTransvecRow, Fin.cast]
 
 /-- Multiplying by some of the matrices in `listTransvecCol M` does not change the last row. -/
-theorem listTransvecCol_mul_last_row_drop (i : Sum (Fin r) Unit) {k : ℕ} (hk : k ≤ r) :
+theorem listTransvecCol_mul_last_row_drop (i : Fin r ⊕ Unit) {k : ℕ} (hk : k ≤ r) :
     (((listTransvecCol M).drop k).prod * M) (inr unit) i = M (inr unit) i := by
   induction hk using Nat.decreasingInduction with
   | of_succ n hn IH =>
@@ -368,7 +368,7 @@ theorem listTransvecCol_mul_last_row_drop (i : Sum (Fin r) Unit) {k : ℕ} (hk :
       Matrix.one_mul]
 
 /-- Multiplying by all the matrices in `listTransvecCol M` does not change the last row. -/
-theorem listTransvecCol_mul_last_row (i : Sum (Fin r) Unit) :
+theorem listTransvecCol_mul_last_row (i : Fin r ⊕ Unit) :
     ((listTransvecCol M).prod * M) (inr unit) i = M (inr unit) i := by
   simpa using listTransvecCol_mul_last_row_drop M i (zero_le _)
 
@@ -419,7 +419,7 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
     simpa only [not_le] using i.2
 
 /-- Multiplying by some of the matrices in `listTransvecRow M` does not change the last column. -/
-theorem mul_listTransvecRow_last_col_take (i : Sum (Fin r) Unit) {k : ℕ} (hk : k ≤ r) :
+theorem mul_listTransvecRow_last_col_take (i : Fin r ⊕ Unit) {k : ℕ} (hk : k ≤ r) :
     (M * ((listTransvecRow M).take k).prod) i (inr unit) = M i (inr unit) := by
   induction' k with k IH
   · simp only [Matrix.mul_one, List.take_zero, List.prod_nil, List.take, Matrix.mul_one]
@@ -436,7 +436,7 @@ theorem mul_listTransvecRow_last_col_take (i : Sum (Fin r) Unit) {k : ℕ} (hk :
     simp only [Ne, not_false_iff]
 
 /-- Multiplying by all the matrices in `listTransvecRow M` does not change the last column. -/
-theorem mul_listTransvecRow_last_col (i : Sum (Fin r) Unit) :
+theorem mul_listTransvecRow_last_col (i : Fin r ⊕ Unit) :
     (M * (listTransvecRow M).prod) i (inr unit) = M i (inr unit) := by
   have A : (listTransvecRow M).length = r := by simp [listTransvecRow]
   rw [← List.take_length (listTransvecRow M), A]
@@ -526,12 +526,12 @@ theorem isTwoBlockDiagonal_listTransvecCol_mul_mul_listTransvecRow
 /-- There exist two lists of `TransvectionStruct` such that multiplying by them on the left and
 on the right makes a matrix block-diagonal, when the last coefficient is nonzero. -/
 theorem exists_isTwoBlockDiagonal_of_ne_zero (hM : M (inr unit) (inr unit) ≠ 0) :
-    ∃ L L' : List (TransvectionStruct (Sum (Fin r) Unit) 𝕜),
+    ∃ L L' : List (TransvectionStruct (Fin r ⊕ Unit) 𝕜),
       IsTwoBlockDiagonal ((L.map toMatrix).prod * M * (L'.map toMatrix).prod) := by
-  let L : List (TransvectionStruct (Sum (Fin r) Unit) 𝕜) :=
+  let L : List (TransvectionStruct (Fin r ⊕ Unit) 𝕜) :=
     List.ofFn fun i : Fin r =>
       ⟨inl i, inr unit, by simp, -M (inl i) (inr unit) / M (inr unit) (inr unit)⟩
-  let L' : List (TransvectionStruct (Sum (Fin r) Unit) 𝕜) :=
+  let L' : List (TransvectionStruct (Fin r ⊕ Unit) 𝕜) :=
     List.ofFn fun i : Fin r =>
       ⟨inr unit, inl i, by simp, -M (inr unit) (inl i) / M (inr unit) (inr unit)⟩
   refine ⟨L, L', ?_⟩
@@ -543,8 +543,8 @@ theorem exists_isTwoBlockDiagonal_of_ne_zero (hM : M (inr unit) (inr unit) ≠ 0
 /-- There exist two lists of `TransvectionStruct` such that multiplying by them on the left and
 on the right makes a matrix block-diagonal. -/
 theorem exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
-    (M : Matrix (Sum (Fin r) Unit) (Sum (Fin r) Unit) 𝕜) :
-    ∃ L L' : List (TransvectionStruct (Sum (Fin r) Unit) 𝕜),
+    (M : Matrix (Fin r ⊕ Unit) (Fin r ⊕ Unit) 𝕜) :
+    ∃ L L' : List (TransvectionStruct (Fin r ⊕ Unit) 𝕜),
       IsTwoBlockDiagonal ((L.map toMatrix).prod * M * (L'.map toMatrix).prod) := by
   by_cases H : IsTwoBlockDiagonal M
   · refine ⟨List.nil, List.nil, by simpa using H⟩
@@ -588,8 +588,8 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_induction
       ∀ M : Matrix (Fin r) (Fin r) 𝕜,
         ∃ (L₀ L₀' : List (TransvectionStruct (Fin r) 𝕜)) (D₀ : Fin r → 𝕜),
           (L₀.map toMatrix).prod * M * (L₀'.map toMatrix).prod = diagonal D₀)
-    (M : Matrix (Sum (Fin r) Unit) (Sum (Fin r) Unit) 𝕜) :
-    ∃ (L L' : List (TransvectionStruct (Sum (Fin r) Unit) 𝕜)) (D : Sum (Fin r) Unit → 𝕜),
+    (M : Matrix (Fin r ⊕ Unit) (Fin r ⊕ Unit) 𝕜) :
+    ∃ (L L' : List (TransvectionStruct (Fin r ⊕ Unit) 𝕜)) (D : Fin r ⊕ Unit → 𝕜),
       (L.map toMatrix).prod * M * (L'.map toMatrix).prod = diagonal D := by
   rcases exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec M with ⟨L₁, L₁', hM⟩
   let M' := (L₁.map toMatrix).prod * M * (L₁'.map toMatrix).prod
@@ -643,7 +643,7 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_aux (n : Type) [F
     ext i j
     rw [Fintype.card_eq_zero_iff] at hn
     exact hn.elim' i
-  · have e : n ≃ Sum (Fin r) Unit := by
+  · have e : n ≃ Fin r ⊕ Unit := by
       refine Fintype.equivOfCardEq ?_
       rw [hn]
       rw [@Fintype.card_sum (Fin r) Unit _ _]
