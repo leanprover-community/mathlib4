@@ -6,8 +6,6 @@ Authors: Chris Hughes
 import Mathlib.Data.W.Basic
 import Mathlib.SetTheory.Cardinal.Ordinal
 
-#align_import data.W.cardinal from "leanprover-community/mathlib"@"6eeb941cf39066417a09b1bbc6e74761cadfcb1a"
-
 /-!
 # Cardinality of W-types
 
@@ -35,7 +33,6 @@ namespace WType
 
 open Cardinal
 
-set_option linter.uppercaseLean3 false
 
 theorem cardinal_mk_eq_sum' : #(WType β) = sum (fun a : α => #(WType β) ^ lift.{u} #(β a)) :=
   (mk_congr <| equivSigma β).trans <| by
@@ -86,12 +83,10 @@ variable {β : α → Type u}
 
 theorem cardinal_mk_eq_sum : #(WType β) = sum (fun a : α => #(WType β) ^ #(β a)) :=
   cardinal_mk_eq_sum'.trans <| by simp_rw [lift_id]
-#align W_type.cardinal_mk_eq_sum WType.cardinal_mk_eq_sum
 
 /-- `#(WType β)` is the least cardinal `κ` such that `sum (fun a : α ↦ κ ^ #(β a)) ≤ κ` -/
 theorem cardinal_mk_le_of_le {κ : Cardinal.{u}} (hκ : (sum fun a : α => κ ^ #(β a)) ≤ κ) :
     #(WType β) ≤ κ := cardinal_mk_le_of_le' <| by simp_rw [lift_id]; exact hκ
-#align W_type.cardinal_mk_le_of_le WType.cardinal_mk_le_of_le
 
 /-- If, for any `a : α`, `β a` is finite, then the cardinality of `WType β`
   is at most the maximum of the cardinality of `α` and `ℵ₀`  -/
