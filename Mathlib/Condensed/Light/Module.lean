@@ -11,7 +11,6 @@ import Mathlib.CategoryTheory.Sites.Abelian
 import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.CategoryTheory.Sites.Equivalence
 import Mathlib.Condensed.Light.Basic
-
 /-!
 
 # Light condensed `R`-modules
