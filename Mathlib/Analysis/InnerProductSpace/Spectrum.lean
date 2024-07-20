@@ -410,52 +410,17 @@ def eq_triv [Subsingleton n] (i : n) : (n → 𝕜) ≃ 𝕜 where
     intro h
     rfl
 
-theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base' [Subsingleton n]:
+/--The following result is auxiliary, and not meant to be used outside this file. It forms
+the base case of the induction proof of `orthogonalComplement_iSup_iInf_eigenspaces_eq_bot`-/
+theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base [Subsingleton n]:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   simp only [Submodule.orthogonal_eq_bot_iff]
   by_cases case : Nonempty n
   · have i := choice case
     conv =>
       lhs; rhs; ext γ; rw [ciInf_subsingleton i]
-
-  · simp only [not_nonempty_iff] at case
-    simp only [iInf_of_empty, ciSup_unique, Submodule.top_orthogonal_eq_bot]
-
-/--The following result is auxiliary, and not meant to be used outside this file. It forms
-the base case of the induction proof of `orthogonalComplement_iSup_iInf_eigenspaces_eq_bot`-/
-theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base [Subsingleton n]:
-    (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
-  by_cases case : Nonempty n
-  · obtain ⟨S, hS⟩ := eigenspace_of_subsingleton_nonempty T hT case
-    have h1 : (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace S (γ j)) : Submodule 𝕜 E))
-        = (⨆ t, eigenspace S t) := by
-      have h2 : ∀ (K : Submodule 𝕜 E), ((∀ (a : n → 𝕜), ⨅ j, eigenspace S (a j) ≤ K) ↔
-        (∀ (b : 𝕜), eigenspace S b ≤ K)) := by
-        intro K
-        constructor
-        · intro H b
-          have := H (Function.const n b)
-          simpa only [ge_iff_le, Function.const_apply, ciInf_const]
-        · intro h f
-          have c := choice case
-          have A := eq_const_of_subsingleton f c; have := h (f c); rw [A]
-          simpa only [Function.const_apply, ciInf_const, ge_iff_le]
-      ext F
-      simp only [iSup, sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
-          Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
-          SetLike.mem_coe] at *
-      constructor
-      · intro hF i hi
-        have I : ∀ (a : 𝕜), eigenspace S a ≤ i := fun a ↦ hi a
-        rw [← h2] at I; apply hF; exact I
-      · intro hF i hi
-        have I : ∀ (a : n → 𝕜), ⨅ j, eigenspace S (a j) ≤ i := fun a ↦ hi fun j ↦ a j
-        rw [h2] at I; apply hF; exact I
-    simp only [hS]
-    rw [← orthogonalComplement_iSup_eigenspaces_eq_bot hS.1]
-    apply orthogonalComplement_eq_orthogonalComplement.mp
-    simp only [Submodule.orthogonal_orthogonal, Submodule.mk.injEq, AddSubmonoid.mk.injEq,
-      AddSubsemigroup.mk.injEq]; exact h1
+    rw [← (eq_triv i).symm.iSup_comp]
+    apply pre_exhaust (hT i)
   · simp only [not_nonempty_iff] at case
     simp only [iInf_of_empty, ciSup_unique, Submodule.top_orthogonal_eq_bot]
 
