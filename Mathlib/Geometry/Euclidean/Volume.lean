@@ -13,10 +13,29 @@ open scoped BigOperators RealInnerProductSpace
 
 noncomputable section
 
+/-- The Gram determinant of a set of vectors; equal to the squared volume of the parallelepiped.
+
+https://en.wikipedia.org/wiki/Gram_matrix-/
+def gramDet {ι 𝕜 V} [RCLike 𝕜] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [Fintype ι] [DecidableEq ι] (v : ι → V) : 𝕜 :=
+  Matrix.det <| Matrix.of fun i j => inner (v i) (v j)
+
 namespace Affine.Simplex
 
 variable {V : Type*} {P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+
+theorem gramDet_vsub_aux {n} (p : Fin (n + 1) → P) :
+    gramDet (𝕜 := ℝ) (fun k : Fin n => p (.succ k) -ᵥ p 0) =
+      gramDet (fun k : Fin n => p (.castSucc k) -ᵥ p (.last n)) := by
+  sorry
+
+/-- The Gram determinant applied to an affine collection of points is the same whichever one is
+used as the base point. -/
+theorem gramDet_vsub {ι} [Fintype ι] [DecidableEq ι] (i j : ι) (p : ι → P) :
+    gramDet (𝕜 := ℝ) (fun k : {k // k ≠ i} => p k -ᵥ p i) =
+      gramDet (fun k : {k // k ≠ j} => p k -ᵥ p j) := by
+  sorry
+
 
 /-- The face of `s` that doesn't include `i` -/
 @[simps (config := .asFn)]
