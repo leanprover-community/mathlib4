@@ -121,8 +121,7 @@ instance : NonTorsionWeight (1 : σ → ℕ) := nonTorsionWeight_of 1
   (by simp only [Pi.one_apply, ne_eq, one_ne_zero, not_false_eq_true, implies_true])
 
 lemma degree_eq_zero_iff (d : σ →₀ ℕ) : degree d = 0 ↔ d = 0 := by
-  simp only [degree_eq_weight_one]
-  exact weight_eq_zero_iff_eq_zero 1 d
+  simp only [degree_eq_weight_one, weight_eq_zero_iff_eq_zero]
 
 theorem degree_zero : degree (0 : σ →₀ ℕ) = 0 := by rw [degree_eq_zero_iff]
 

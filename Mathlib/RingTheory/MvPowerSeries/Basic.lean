@@ -27,7 +27,8 @@ We provide the natural inclusion from multivariate polynomials to multivariate f
 
 - `MvPowerSeries.X`: the indeterminates
 
-- `MvPowerSeries.coeff`, `MvPowerSeries.constantCoeff`: the coefficients of a `MvPowerSeries`, its constant coefficient
+- `MvPowerSeries.coeff`, `MvPowerSeries.constantCoeff`:
+the coefficients of a `MvPowerSeries`, its constant coefficient
 
 - `MvPowerSeries.monomial`: the monomials
 
