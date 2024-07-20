@@ -84,25 +84,9 @@ instance coeComonad : Coe (Comonad C) (C ⥤ C) :=
 def Monad.Simps.coe :=
   (T : C ⥤ C)
 
-/-- A custom simps projection for the unit of a monad, in simp normal form. -/
-def Monad.Simps.η : 𝟭 _ ⟶ (T : C ⥤ C) :=
-  T.η
-
-/-- A custom simps projection for the multiplication of a monad, in simp normal form. -/
-def Monad.Simps.μ : (T : C ⥤ C) ⋙ (T : C ⥤ C) ⟶ (T : C ⥤ C) :=
-  T.μ
-
 /-- A custom simps projection for the functor part of a comonad, as a coercion. -/
 def Comonad.Simps.coe :=
   (G : C ⥤ C)
-
-/-- A custom simps projection for the counit of a comonad, in simp normal form. -/
-def Comonad.Simps.ε : (G : C ⥤ C) ⟶ 𝟭 _ :=
-  G.ε
-
-/-- A custom simps projection for the comultiplication of a comonad, in simp normal form. -/
-def Comonad.Simps.δ : (G : C ⥤ C) ⟶ (G : C ⥤ C) ⋙ (G : C ⥤ C) :=
-  G.δ
 
 initialize_simps_projections CategoryTheory.Monad (toFunctor → coe)
 
