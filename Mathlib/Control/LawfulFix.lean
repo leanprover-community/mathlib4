@@ -162,7 +162,7 @@ variable {f}
 variable (hc : ωScottContinuous f)
 
 theorem fix_eq : Part.fix f = f (Part.fix f) := by
-  rw [fix_eq_ωSup f, (ωScottContinuous_iff_monotone_map_ωSup.mp hc).2]
+  rw [fix_eq_ωSup f, hc.monotone_map_ωSup.2]
   apply le_antisymm
   · apply ωSup_le_ωSup_of_le _
     intro i
