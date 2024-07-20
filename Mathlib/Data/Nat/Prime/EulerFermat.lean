@@ -16,7 +16,7 @@ Euler proved around 1738 that some Fermat numbers are prime, but not `F₅`.
 open Nat
 
 /-- `a ^ n + 1` is prime only if `n` is a power of two. -/
-theorem pow_of_pow_add_prime (a n : ℕ) (ha : 1 < a) (hn : 1 < n) (hP : Nat.Prime (a ^ n + 1)) :
+theorem pow_of_pow_add_prime (a n : ℕ) (ha : 1 < a) (hn : 1 < n) (hP : (a ^ n + 1).Prime) :
     ∃ m : ℕ, n = 2 ^ m := by
   obtain ⟨k, m, hm, rfl⟩ := exists_eq_two_pow_mul_odd (one_pos.trans hn).ne'
   rw [pow_mul] at hP
