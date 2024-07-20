@@ -917,7 +917,7 @@ lemma map_some {x y : F} (h : (W.baseChange F).toAffine.Nonsingular x y) :
     map W f (some h) = some ((W.baseChange_nonsingular f.injective ..).mpr h) :=
   rfl
 
-lemma map_id (P : W⟮F⟯) : map W (Algebra.ofId F F) P = P := by
+lemma map_id (P : W⟮F⟯) : map W (AlgHom.id R F) P = P := by
   cases P <;> rfl
 
 lemma map_map (P : W⟮F⟯) : map W g (map W f P) = map W (g.comp f) P := by
