@@ -51,7 +51,6 @@ Scott topology.
 -/
 def ScottContinuous (f : α → β) : Prop :=
   ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
-#align scott_continuous ScottContinuous
 
 @[simp] lemma scottContinuousOn_univ : ScottContinuousOn univ f ↔ ScottContinuous f := by
   simp [ScottContinuousOn, ScottContinuous]
@@ -61,7 +60,6 @@ lemma ScottContinuous.scottContinuousOn {D : Set (Set α)} :
 
 protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f :=
   h.scottContinuousOn.monotone univ (fun _ _ _ ↦ trivial)
-#align scott_continuous.monotone ScottContinuous.monotone
 
 @[simp] lemma ScottContinuous.id : ScottContinuous (id : α → α) := by simp [ScottContinuous]
 
