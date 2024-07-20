@@ -48,6 +48,7 @@ open FiniteDimensional
 noncomputable section
 
 -- Closed and n-dimensional manifolds: these should also move to a separate file.
+-- TODO: generalise to `BoundarylessManifold I M`
 section ClosedManifold
 
 variable (n : ℕ) {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -125,6 +126,38 @@ example [Fact (finrank ℝ F = 1 + 1)] :
 end examples
 
 end ClosedManifold
+
+-- Pre-requisite: the interval `Icc x y has boundary {x, y}`, and related results.
+-- TODO: move to `Instances/Real` (and make that import `InteriorBoundary`)
+section BoundaryIntervals
+
+variable {x y : ℝ} (hxy : x < y)
+
+open Set
+
+lemma boundary_IccManifold [h : Fact (x < y)] : (𝓡∂ 1).boundary (Set.Icc x y) =
+    { ⟨x, ⟨le_refl x, by linarith⟩⟩, ⟨y, ⟨by linarith, le_refl y⟩⟩} := by
+  sorry
+
+variable {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace H]
+  [TopologicalSpace M] [ChartedSpace H M] {I : ModelWithCorners ℝ E H}
+  [SmoothManifoldWithCorners I M] [I.Boundaryless] [CompactSpace M] [FiniteDimensional ℝ E]
+
+/-- The boundary of the interval [x,y], as a subset of `Icc x y`. -/
+def A : Set (Icc x y) := { ⟨x, ⟨le_refl x, by linarith⟩⟩, ⟨y, ⟨by linarith, le_refl y⟩⟩}
+
+/-- A product `M × [x,y]` has boundary `M × {x,y}`. -/
+lemma boundary_product [h : Fact (x < y)] :
+    (I.prod (𝓡∂ 1)).boundary (M × Icc x y) = ((univ : Set M) × (A hxy)) := by
+  have : (𝓡∂ 1).boundary (Set.Icc x y) = A hxy := by
+    rw [boundary_IccManifold hxy]; simp only [A]
+  rw [boundary_of_boundaryless_left]
+  rw [this]
+  set X := (modelWithCornersEuclideanHalfSpace 1).boundary ↑(Icc x y)
+  -- one coercion doesn't align; this should be obvious now!
+  sorry
+
+end BoundaryIntervals
 
 -- Let M, M' and W be smooth manifolds.
 variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
