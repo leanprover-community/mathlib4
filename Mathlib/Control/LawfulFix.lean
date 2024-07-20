@@ -257,9 +257,8 @@ variable {f : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) �
 variable (hc : ωScottContinuous f)
 
 theorem uncurry_curry_continuous :
-    ωScottContinuous <| (monotoneUncurry α β γ).comp <| f.comp <| monotoneCurry α β γ := by
-  apply ωScottContinuous.comp (continuous_uncurry _ _ _)
-    (ωScottContinuous.comp hc (continuous_curry _ _ _))
+    ωScottContinuous <| (monotoneUncurry α β γ).comp <| f.comp <| monotoneCurry α β γ :=
+  (continuous_uncurry _ _ _).comp (hc.comp (continuous_curry _ _ _))
 
 end Curry
 
