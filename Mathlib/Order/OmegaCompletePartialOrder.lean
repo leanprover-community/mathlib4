@@ -274,7 +274,8 @@ lemma ωScottContinuous_iff_monotone_map_ωSup :
   · rw [← hc] at hda
     rw [← hf.2 c, ωSup_eq_of_isLUB hda]
 
-alias ⟨_, ωScottContinuous.of_monotone_map_ωSup⟩ := ωScottContinuous_iff_monotone_map_ωSup
+alias ⟨ωScottContinuous.monotone_map_ωSup, ωScottContinuous.of_monotone_map_ωSup⟩ :=
+  ωScottContinuous_iff_monotone_map_ωSup
 
 lemma ωScottContinuous.comp (hg : ωScottContinuous g) (hf : ωScottContinuous f) :
     ωScottContinuous (g.comp f) :=
