@@ -143,17 +143,17 @@ def map {α α' ι} (f : α → α') (l : Line α ι) : Line α' ι where
   proper := ⟨l.proper.choose, by simp only [l.proper.choose_spec, Option.map_none']⟩
 
 /-- A point in `ι → α` and a line in `ι' → α` determine a line in `ι ⊕ ι' → α`. -/
-def vertical {α ι ι'} (v : ι → α) (l : Line α ι') : Line α (Sum ι ι') where
+def vertical {α ι ι'} (v : ι → α) (l : Line α ι') : Line α (ι ⊕ ι') where
   idxFun := Sum.elim (some ∘ v) l.idxFun
   proper := ⟨Sum.inr l.proper.choose, l.proper.choose_spec⟩
 
 /-- A line in `ι → α` and a point in `ι' → α` determine a line in `ι ⊕ ι' → α`. -/
-def horizontal {α ι ι'} (l : Line α ι) (v : ι' → α) : Line α (Sum ι ι') where
+def horizontal {α ι ι'} (l : Line α ι) (v : ι' → α) : Line α (ι ⊕ ι') where
   idxFun := Sum.elim l.idxFun (some ∘ v)
   proper := ⟨Sum.inl l.proper.choose, l.proper.choose_spec⟩
 
 /-- One line in `ι → α` and one in `ι' → α` together determine a line in `ι ⊕ ι' → α`. -/
-def prod {α ι ι'} (l : Line α ι) (l' : Line α ι') : Line α (Sum ι ι') where
+def prod {α ι ι'} (l : Line α ι) (l' : Line α ι') : Line α (ι ⊕ ι') where
   idxFun := Sum.elim l.idxFun l'.idxFun
   proper := ⟨Sum.inl l.proper.choose, l.proper.choose_spec⟩
 
@@ -256,7 +256,7 @@ private theorem exists_mono_in_high_dimension' :
     specialize ihα ((ι → Option α) → κ)
     obtain ⟨ι', _inst, hι'⟩ := ihα
     -- We claim that `ι ⊕ ι'` works for `Option α` and `κ`-coloring.
-    refine ⟨Sum ι ι', inferInstance, ?_⟩
+    refine ⟨ι ⊕ ι', inferInstance, ?_⟩
     intro C
     -- A `κ`-coloring of `ι ⊕ ι' → Option α` induces an `(ι → Option α) → κ`-coloring of `ι' → α`.
     specialize hι' fun v' v => C (Sum.elim v (some ∘ v'))
@@ -301,7 +301,6 @@ private theorem exists_mono_in_high_dimension' :
       exact ⟨fun ⟨q, hq, he⟩ => h ⟨q, hq, he⟩, s.distinct_colors⟩
     -- Finally, we really do have `r+1` lines!
     · rw [Multiset.card_cons, Multiset.card_map, sr])
--- Porting note: Remove align on private declas
 
 /-- The Hales-Jewett theorem: for any finite types `α` and `κ`, there exists a finite type `ι` such
 that whenever the hypercube `ι → α` is `κ`-colored, there is a monochromatic combinatorial line. -/
