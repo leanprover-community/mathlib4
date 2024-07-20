@@ -5,8 +5,10 @@ Authors: Michail Karatarakis
 -/
 import Mathlib.NumberTheory.SiegelsLemma
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+import Mathlib.NumberTheory.NumberField.EquivReindex
 
 /-!
+
 # House of an algebraic number
 This file defines the house of an algebraic number `α`, which is
 the largest modulus of its conjugates.

@@ -176,55 +176,6 @@ theorem integralBasis_repr_apply [NumberField K] (x : K) (i : Free.ChooseBasisIn
     rfl
   simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, this, Basis.repr_self]
 
-variable [NumberField K]
-
-open Module.Free Matrix
-
-/-- An equivalence between the set of embeddings of `K` into `ℂ` and the
-  index set of the chosen basis of the ring of integers of `K`. -/
-noncomputable abbrev equivReindex : (K →+* ℂ) ≃ (ChooseBasisIndex ℤ (𝓞 K)) :=
-    Fintype.equivOfCardEq <|
-  by rw [Embeddings.card, ← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank]
-
-/-- The basis matrix for the embeddings of `K` into `ℂ`. This matrix is formed by
-  taking the lattice basis vectors of `K` and reindexing them according to the
-  equivalence `equivReindex`, then transposing the resulting matrix. -/
-noncomputable abbrev basisMatrix : Matrix (K →+* ℂ) (K →+* ℂ) ℂ :=
-  (Matrix.of fun i ↦ latticeBasis K (equivReindex K i))
-
-variable [DecidableEq (K →+* ℂ)]
-
-theorem det_of_basisMatrix_non_zero : (basisMatrix K).det ≠ 0 := by
-  let e : (K →+* ℂ) ≃ ChooseBasisIndex ℤ (𝓞 K) := equivReindex K
-  let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
-    RingHom.equivRatAlgHom
-  rw [show (basisMatrix K) = N by
-    ext:2; simp only [N, transpose_apply, latticeBasis_apply, integralBasis_apply,
-    of_apply, apply_at]; rfl, ← pow_ne_zero_iff two_ne_zero]
-  convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
-    (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
-  rw [← Algebra.discr_reindex ℚ (integralBasis K) e.symm]
-  exact (Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ
-    (fun _ => integralBasis K (e _)) RingHom.equivRatAlgHom).symm
-
-noncomputable instance : Invertible (basisMatrix K) := invertibleOfIsUnitDet _
-    (Ne.isUnit (det_of_basisMatrix_non_zero K))
-
-theorem canonicalEmbedding_eq_basisMatrix_mulVec (α : K) :
-    canonicalEmbedding K α = (basisMatrix K).transpose.mulVec
-      (fun i ↦ (((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)) := by
-  ext i
-  rw [← (latticeBasis K).sum_repr (canonicalEmbedding K α), ← Equiv.sum_comp (equivReindex K)]
-  simp only [canonicalEmbedding.integralBasis_repr_apply, mulVec, dotProduct,
-    transpose_apply, of_apply, Fintype.sum_apply, mul_comm, Basis.repr_reindex,
-    Finsupp.mapDomain_equiv_apply, Equiv.symm_symm, Pi.smul_apply, smul_eq_mul]
-
-theorem inverse_basisMatrix_mulVec_eq_repr (α : 𝓞 K) :
-    ∀ i, ((basisMatrix K).transpose)⁻¹.mulVec (fun j =>
-      canonicalEmbedding K (algebraMap (𝓞 K) K α) j) i =
-      ((integralBasis K).reindex (equivReindex K).symm).repr α i := fun i => by
-  rw [inv_mulVec_eq_vec (canonicalEmbedding_eq_basisMatrix_mulVec K α)]
-
 end NumberField.canonicalEmbedding
 
 namespace NumberField.mixedEmbedding
