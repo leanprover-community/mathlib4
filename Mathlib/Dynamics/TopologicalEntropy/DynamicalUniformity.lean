@@ -3,8 +3,9 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone
 -/
-import Mathlib.Tactic
-import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Topology.UniformSpace.Basic
 
 /-!
 # Dynamical uniformities
@@ -24,8 +25,10 @@ and time `n`.
 entropy
 
 ## TODO
+Once #PR14718 has passed, add product of uniformities.
+
 In the context of (pseudo-e)metric spaces, relate the usual definition of dynamical balls with
-these dynamical uniformities
+these dynamical uniformities.
 -/
 
 namespace DynamicalUniformity
@@ -58,14 +61,14 @@ theorem dynamical_uni_of_uni [UniformSpace X] {T : X → X} (h : UniformContinuo
   rw [map_iterate T T k]
   exact uniformContinuous_def.1 (UniformContinuous.iterate T k h) U U_uni
 
-theorem dynamical_uni_of_rfl_is_rfl (T : X → X) {U : Set (X × X)} (h : idRel ⊆ U) (n : ℕ) :
+theorem dynamical_uni_of_rfl (T : X → X) {U : Set (X × X)} (h : idRel ⊆ U) (n : ℕ) :
     idRel ⊆ (DynamicalUni T U n) := by
   simp only [DynamicalUni, map_iterate, subset_iInter_iff, idRel_subset, mem_preimage, map_apply]
   intro _ _ _
   apply h
   rw [mem_idRel]
 
-theorem dynamical_uni_of_symm_is_symm (T : X → X) {U : Set (X × X)} (h : SymmetricRel U) (n : ℕ) :
+theorem dynamical_uni_of_symm (T : X → X) {U : Set (X × X)} (h : SymmetricRel U) (n : ℕ) :
     SymmetricRel (DynamicalUni T U n) := by
   ext xy
   simp only [DynamicalUni, map_iterate, mem_preimage, mem_iInter]
@@ -73,7 +76,7 @@ theorem dynamical_uni_of_symm_is_symm (T : X → X) {U : Set (X × X)} (h : Symm
   rw [map_apply', map_apply']
   exact SymmetricRel.mk_mem_comm h
 
-theorem dynamical_uni_of_comp_is_comp (T : X → X) (U V : Set (X × X)) (n : ℕ) :
+theorem dynamical_uni_of_comp (T : X → X) (U V : Set (X × X)) (n : ℕ) :
     (DynamicalUni T U n) ○ (DynamicalUni T V n) ⊆ DynamicalUni T (U ○ V) n := by
   simp only [DynamicalUni, map_iterate, subset_iInter_iff]
   intro k k_n xy xy_comp
@@ -81,7 +84,7 @@ theorem dynamical_uni_of_comp_is_comp (T : X → X) (U V : Set (X × X)) (n : �
   rcases xy_comp with ⟨z, hz1, hz2⟩
   exact mem_ball_comp (hz1 k k_n) (hz2 k k_n)
 
-theorem dynamical_uni_of_open_is_open [TopologicalSpace X] {T : X → X} (T_cont : Continuous T)
+theorem dynamical_uni_of_open [TopologicalSpace X] {T : X → X} (T_cont : Continuous T)
     {U : Set (X × X)} (U_open : IsOpen U) (n : ℕ) :
     IsOpen (DynamicalUni T U n) := by
   rw [dynamical_uni_inter_Ico T U n]
@@ -117,8 +120,8 @@ theorem inter_of_dynamical_balls (T : X → X) (n : ℕ) {U : Set (X × X)} (U_s
     (x y : X) (h : (ball x (DynamicalUni T U n) ∩ ball y (DynamicalUni T U n)).Nonempty) :
     x ∈ ball y (DynamicalUni T (U ○ U) n) := by
   rcases h with ⟨z, z_Bx, z_By⟩
-  rw [mem_ball_symmetry (dynamical_uni_of_symm_is_symm T U_symm n)] at z_Bx
-  exact dynamical_uni_of_comp_is_comp T U U n (mem_ball_comp z_By z_Bx)
+  rw [mem_ball_symmetry (dynamical_uni_of_symm T U_symm n)] at z_Bx
+  exact dynamical_uni_of_comp T U U n (mem_ball_comp z_By z_Bx)
 
 /--Preimages of dynamical uniformities under semiconjugacies.-/
 theorem preimage_of_dynamical_uni {Y : Type*} {S : X → X} {T : Y → Y} {φ : X → Y}
@@ -130,27 +133,4 @@ theorem preimage_of_dynamical_uni {Y : Type*} {S : X → X} {T : Y → Y} {φ : 
   rw [← preimage_comp, ← preimage_comp, map_iterate S S k, map_iterate T T k, map_comp_map,
     map_comp_map, (Function.Semiconj.iterate_right h k).comp_eq]
 
-/--Notation for the product of two uniform neighborhoods.-/
-def UniformityProd {Y : Type*} (U : Set (X × X)) (V : Set (Y × Y)) : Set ((X × Y) × X × Y) :=
-  {W : (X × Y) × X × Y | (W.1.1, W.2.1) ∈ U ∧ (W.1.2, W.2.2) ∈ V}
-/-Should be expanded and put into the library on uniform spaces.-/
-
-theorem ball_prod {Y : Type*} (U : Set (X × X)) (V : Set (Y × Y)) (xy : X × Y) :
-    ball xy (UniformityProd U V) = ball xy.1 U ×ˢ ball xy.2 V := by
-  ext p
-  simp only [ball, UniformityProd, mem_setOf_eq, mem_prod, mem_preimage]
-
-theorem dynamical_uni_prod {Y : Type*} (S : X → X) (T : Y → Y) (U : Set (X × X)) (V : Set (Y × Y))
-    (n : ℕ) :
-    DynamicalUni (map S T) (UniformityProd U V) n =
-    UniformityProd (DynamicalUni S U n) (DynamicalUni T V n) := by
-  ext xy
-  rw [dynamical_uni_mem]
-  simp only [UniformityProd, mem_setOf_eq]
-  rw [dynamical_uni_mem, dynamical_uni_mem, ← forall₂_and]
-  refine forall₂_congr fun k _ ↦ ?_
-  simp only [map_iterate, map_fst, map_snd]
-
 end DynamicalUniformity
-
-#lint
