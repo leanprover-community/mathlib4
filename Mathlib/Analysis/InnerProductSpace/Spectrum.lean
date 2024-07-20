@@ -507,7 +507,7 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
         (⨆ μ, Submodule.map (⨅ (j: {x // x ≠ i}), eigenspace (T ↑j) (γ j)).subtype
         (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) =
         (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) :=
-          fun γ ↦ prelim_sub_exhaust T hT hC i γ
+         fun γ ↦ invariant_subspace_eigenspace_exhaust (T i) (hT i) (invariance_iInf T hC i γ)
     have E : (⨆ (γ : {x // x ≠ i} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓ (⨅ (j : {x // x ≠ i}),
     eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))))) = ⨆ (γ : {x // x ≠ i} → 𝕜),
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) := by
