@@ -397,7 +397,7 @@ theorem mk_option {α : Type u} : #(Option α) = #α + 1 := by
   rw [(Equiv.optionEquivSumPUnit.{u, u} α).cardinal_eq, mk_sum, mk_eq_one PUnit, lift_id, lift_id]
 
 @[simp]
-theorem mk_psum (α : Type u) (β : Type v) : #(PSum α β) = lift.{v} #α + lift.{u} #β :=
+theorem mk_psum (α : Type u) (β : Type v) : #(α ⊕' β) = lift.{v} #α + lift.{u} #β :=
   (mk_congr (Equiv.psumEquivSum α β)).trans (mk_sum α β)
 
 @[simp]

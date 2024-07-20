@@ -63,7 +63,7 @@ instance Quot.instIsEmpty {α : Sort*} [IsEmpty α] {r : α → α → Prop} : I
 instance Quotient.instIsEmpty {α : Sort*} [IsEmpty α] {s : Setoid α} : IsEmpty (Quotient s) :=
   Quot.instIsEmpty
 
-instance [IsEmpty α] [IsEmpty β] : IsEmpty (PSum α β) :=
+instance [IsEmpty α] [IsEmpty β] : IsEmpty (α ⊕' β) :=
   ⟨fun x ↦ PSum.rec IsEmpty.false IsEmpty.false x⟩
 
 instance instIsEmptySum {α β} [IsEmpty α] [IsEmpty β] : IsEmpty (α ⊕ β) :=
@@ -176,7 +176,7 @@ theorem isEmpty_sum {α β} : IsEmpty (α ⊕ β) ↔ IsEmpty α ∧ IsEmpty β 
   simp only [← not_nonempty_iff, nonempty_sum, not_or]
 
 @[simp]
-theorem isEmpty_psum {α β} : IsEmpty (PSum α β) ↔ IsEmpty α ∧ IsEmpty β := by
+theorem isEmpty_psum {α β} : IsEmpty (α ⊕' β) ↔ IsEmpty α ∧ IsEmpty β := by
   simp only [← not_nonempty_iff, nonempty_psum, not_or]
 
 @[simp]

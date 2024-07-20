@@ -854,7 +854,7 @@ open scoped Classical
 
 One can obtain the relevant typeclasses via `cases fintypeOrInfinite α`.
 -/
-noncomputable def fintypeOrInfinite (α : Type*) : PSum (Fintype α) (Infinite α) :=
+noncomputable def fintypeOrInfinite (α : Type*) : Fintype α ⊕' Infinite α :=
   if h : Infinite α then PSum.inr h else PSum.inl (fintypeOfNotInfinite h)
 
 end
