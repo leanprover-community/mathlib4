@@ -39,7 +39,7 @@ theorem house_eq_sup' (α : K) :
   rw [house, ← coe_nnnorm, nnnorm_eq, ← sup'_eq_sup univ_nonempty]
 
 theorem house_sum_le_sum_house {ι : Type*} (s : Finset ι) (α : ι → K) :
-    house (∑ i in s, α i) ≤ ∑ i in s, house (α i) := by
+    house (∑ i ∈ s, α i) ≤ ∑ i ∈ s, house (α i) := by
   simp only [house, map_sum]; apply norm_sum_le_of_le; intros; rfl
 
 theorem house_nonneg (α : K) : 0 ≤ house α := norm_nonneg _
@@ -110,7 +110,7 @@ private theorem supOfBasis_nonneg : 0 ≤ supOfBasis K := by
   simp only [supOfBasis, le_sup'_iff, mem_univ, and_self,
     exists_const, house_nonneg]
 
-variable {α : Type _} {β : Type _} [Fintype α] [Fintype β] [DecidableEq β] [DecidableEq α]
+variable {α : Type*} {β : Type*} [Fintype α] [Fintype β] [DecidableEq β] [DecidableEq α]
 
 variable (a : Matrix α β (𝓞 K))
 
@@ -281,6 +281,8 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
         (supOfBasis_nonneg _))
   · rw [mul_comm (q : ℝ) (c₁ K)]; rfl
 
+/-- There exists a "small" non-zero algebraic integral solution of an
+ non-trivial underdetermined system of linear equations with algebraic integer coefficients.-/
 theorem exists_ne_zero_int_vec_house_le :
     ∃ (ξ : β → 𝓞 K), ξ ≠ 0 ∧ a *ᵥ ξ = 0 ∧
     ∀ l, house (ξ l).1 ≤ c₁ K * ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by
