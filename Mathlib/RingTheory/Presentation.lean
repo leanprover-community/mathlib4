@@ -231,3 +231,7 @@ def baseChange : Presentation T (T ⊗[R] S) where
   span_range_relation_eq_ker := P.span_range_relation_eq_ker_baseChange
 
 end Construction
+
+end Presentation
+
+end Algebra

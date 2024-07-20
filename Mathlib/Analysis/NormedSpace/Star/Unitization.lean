@@ -5,8 +5,6 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.Unitization
-
-#align_import analysis.normed_space.star.mul from "leanprover-community/mathlib"@"b2ff9a3d7a15fd5b0f060b135421d6a89a999c2f"
 /-! # The minimal unitization of a C⋆-algebra
 
 This file shows that when `E` is a C⋆-algebra (over a densely normed field `𝕜`), that the minimal
@@ -57,7 +55,7 @@ variable (E)
 
 /-- A C⋆-algebra over a densely normed field is a regular normed algebra. -/
 instance CstarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
-  isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 E) fun a => NNReal.eq_iff.mpr <|
+  isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 E) fun a => NNReal.eq_iff.mp <|
     show ‖mul 𝕜 E a‖₊ = ‖a‖₊ by
     rw [← sSup_closed_unit_ball_eq_nnnorm]
     refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ?_ ?_ fun r hr => ?_
@@ -127,7 +125,7 @@ variable {𝕜}
 
 /-- The norm on `Unitization 𝕜 E` satisfies the C⋆-property -/
 instance Unitization.instCstarRing : CstarRing (Unitization 𝕜 E) where
-  norm_star_mul_self {x} := by
+  norm_mul_self_le x := by
     -- rewrite both sides as a `⊔`
     simp only [Unitization.norm_def, Prod.norm_def, ← sup_eq_max]
     -- Show that `(Unitization.splitMul 𝕜 E x).snd` satisifes the C⋆-property, in two stages:

@@ -9,8 +9,6 @@ import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.Nilpotent.Basic
 
-#align_import linear_algebra.eigenspace.basic from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
-
 /-!
 # Eigenvectors and eigenvalues
 
@@ -64,27 +62,22 @@ variable {K R : Type v} {V M : Type w} [CommRing R] [AddCommGroup M] [Module R M
     such that `f x = μ • x`. (Def 5.36 of [axler2015])-/
 def eigenspace (f : End R M) (μ : R) : Submodule R M :=
   LinearMap.ker (f - algebraMap R (End R M) μ)
-#align module.End.eigenspace Module.End.eigenspace
 
 @[simp]
 theorem eigenspace_zero (f : End R M) : f.eigenspace 0 = LinearMap.ker f := by simp [eigenspace]
-#align module.End.eigenspace_zero Module.End.eigenspace_zero
 
 /-- A nonzero element of an eigenspace is an eigenvector. (Def 5.7 of [axler2015]) -/
 def HasEigenvector (f : End R M) (μ : R) (x : M) : Prop :=
   x ∈ eigenspace f μ ∧ x ≠ 0
-#align module.End.has_eigenvector Module.End.HasEigenvector
 
 /-- A scalar `μ` is an eigenvalue for a linear map `f` if there are nonzero vectors `x`
     such that `f x = μ • x`. (Def 5.5 of [axler2015]) -/
 def HasEigenvalue (f : End R M) (a : R) : Prop :=
   eigenspace f a ≠ ⊥
-#align module.End.has_eigenvalue Module.End.HasEigenvalue
 
 /-- The eigenvalues of the endomorphism `f`, as a subtype of `R`. -/
 def Eigenvalues (f : End R M) : Type _ :=
   { μ : R // f.HasEigenvalue μ }
-#align module.End.eigenvalues Module.End.Eigenvalues
 
 @[coe]
 def Eigenvalues.val (f : Module.End R M) : Eigenvalues f → R := Subtype.val
@@ -100,16 +93,13 @@ theorem hasEigenvalue_of_hasEigenvector {f : End R M} {μ : R} {x : M} (h : HasE
     HasEigenvalue f μ := by
   rw [HasEigenvalue, Submodule.ne_bot_iff]
   use x; exact h
-#align module.End.has_eigenvalue_of_has_eigenvector Module.End.hasEigenvalue_of_hasEigenvector
 
 theorem mem_eigenspace_iff {f : End R M} {μ : R} {x : M} : x ∈ eigenspace f μ ↔ f x = μ • x := by
   rw [eigenspace, LinearMap.mem_ker, LinearMap.sub_apply, algebraMap_end_apply, sub_eq_zero]
-#align module.End.mem_eigenspace_iff Module.End.mem_eigenspace_iff
 
 theorem HasEigenvector.apply_eq_smul {f : End R M} {μ : R} {x : M} (hx : f.HasEigenvector μ x) :
     f x = μ • x :=
   mem_eigenspace_iff.mp hx.1
-#align module.End.has_eigenvector.apply_eq_smul Module.End.HasEigenvector.apply_eq_smul
 
 theorem HasEigenvector.pow_apply {f : End R M} {μ : R} {v : M} (hv : f.HasEigenvector μ v) (n : ℕ) :
     (f ^ n) v = μ ^ n • v := by
@@ -118,7 +108,6 @@ theorem HasEigenvector.pow_apply {f : End R M} {μ : R} {v : M} (hv : f.HasEigen
 theorem HasEigenvalue.exists_hasEigenvector {f : End R M} {μ : R} (hμ : f.HasEigenvalue μ) :
     ∃ v, f.HasEigenvector μ v :=
   Submodule.exists_mem_ne_zero_of_ne_bot hμ
-#align module.End.has_eigenvalue.exists_has_eigenvector Module.End.HasEigenvalue.exists_hasEigenvector
 
 lemma HasEigenvalue.pow {f : End R M} {μ : R} (h : f.HasEigenvalue μ) (n : ℕ) :
     (f ^ n).HasEigenvalue (μ ^ n) := by
@@ -143,12 +132,10 @@ theorem HasEigenvalue.mem_spectrum {f : End R M} {μ : R} (hμ : HasEigenvalue f
   rcases hμ.exists_hasEigenvector with ⟨v, hv⟩
   refine hv.2 ((LinearMap.ker_eq_bot'.mp f'.ker) v (?_ : μ • v - f v = 0))
   rw [hv.apply_eq_smul, sub_self]
-#align module.End.mem_spectrum_of_has_eigenvalue Module.End.HasEigenvalue.mem_spectrum
 
 theorem hasEigenvalue_iff_mem_spectrum [FiniteDimensional K V] {f : End K V} {μ : K} :
     f.HasEigenvalue μ ↔ μ ∈ spectrum K f := by
   rw [spectrum.mem_iff, IsUnit.sub_iff, LinearMap.isUnit_iff_ker_eq_bot, HasEigenvalue, eigenspace]
-#align module.End.has_eigenvalue_iff_mem_spectrum Module.End.hasEigenvalue_iff_mem_spectrum
 
 alias ⟨_, HasEigenvalue.of_mem_spectrum⟩ := hasEigenvalue_iff_mem_spectrum
 
@@ -162,7 +149,6 @@ theorem eigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
     _ = LinearMap.ker (b • (f - b⁻¹ • algebraMap K (End K V) a)) := by
         rw [LinearMap.ker_smul _ b hb]
     _ = LinearMap.ker (b • f - algebraMap K (End K V) a) := by rw [smul_sub, smul_inv_smul₀ hb]
-#align module.End.eigenspace_div Module.End.eigenspace_div
 
 /-- The generalized eigenspace for a linear map `f`, a scalar `μ`, and an exponent `k ∈ ℕ` is the
 kernel of `(f - μ • id) ^ k`. (Def 8.10 of [axler2015]). Furthermore, a generalized eigenspace for
@@ -174,66 +160,55 @@ def genEigenspace (f : End R M) (μ : R) : ℕ →o Submodule R M where
     exact
       LinearMap.ker_le_ker_comp ((f - algebraMap R (End R M) μ) ^ k)
         ((f - algebraMap R (End R M) μ) ^ (m - k))
-#align module.End.generalized_eigenspace Module.End.genEigenspace
 
 @[simp]
 theorem mem_genEigenspace (f : End R M) (μ : R) (k : ℕ) (m : M) :
     m ∈ f.genEigenspace μ k ↔ ((f - μ • (1 : End R M)) ^ k) m = 0 := Iff.rfl
-#align module.End.mem_generalized_eigenspace Module.End.mem_genEigenspace
 
 @[simp]
 theorem genEigenspace_zero (f : End R M) (k : ℕ) :
     f.genEigenspace 0 k = LinearMap.ker (f ^ k) := by
   simp [Module.End.genEigenspace]
-#align module.End.generalized_eigenspace_zero Module.End.genEigenspace_zero
 
 /-- A nonzero element of a generalized eigenspace is a generalized eigenvector.
     (Def 8.9 of [axler2015])-/
 def HasGenEigenvector (f : End R M) (μ : R) (k : ℕ) (x : M) : Prop :=
   x ≠ 0 ∧ x ∈ genEigenspace f μ k
-#align module.End.has_generalized_eigenvector Module.End.HasGenEigenvector
 
 /-- A scalar `μ` is a generalized eigenvalue for a linear map `f` and an exponent `k ∈ ℕ` if there
     are generalized eigenvectors for `f`, `k`, and `μ`. -/
 def HasGenEigenvalue (f : End R M) (μ : R) (k : ℕ) : Prop :=
   genEigenspace f μ k ≠ ⊥
-#align module.End.has_generalized_eigenvalue Module.End.HasGenEigenvalue
 
 /-- The generalized eigenrange for a linear map `f`, a scalar `μ`, and an exponent `k ∈ ℕ` is the
     range of `(f - μ • id) ^ k`. -/
 def genEigenrange (f : End R M) (μ : R) (k : ℕ) : Submodule R M :=
   LinearMap.range ((f - algebraMap R (End R M) μ) ^ k)
-#align module.End.generalized_eigenrange Module.End.genEigenrange
 
 /-- The exponent of a generalized eigenvalue is never 0. -/
 theorem exp_ne_zero_of_hasGenEigenvalue {f : End R M} {μ : R} {k : ℕ}
     (h : f.HasGenEigenvalue μ k) : k ≠ 0 := by
   rintro rfl
   exact h LinearMap.ker_id
-#align module.End.exp_ne_zero_of_has_generalized_eigenvalue Module.End.exp_ne_zero_of_hasGenEigenvalue
 
 /-- The union of the kernels of `(f - μ • id) ^ k` over all `k`. -/
 def maxGenEigenspace (f : End R M) (μ : R) : Submodule R M :=
   ⨆ k, f.genEigenspace μ k
-#align module.End.maximal_generalized_eigenspace Module.End.maxGenEigenspace
 
 theorem genEigenspace_le_maximal (f : End R M) (μ : R) (k : ℕ) :
     f.genEigenspace μ k ≤ f.maxGenEigenspace μ :=
   le_iSup _ _
-#align module.End.generalized_eigenspace_le_maximal Module.End.genEigenspace_le_maximal
 
 @[simp]
 theorem mem_maxGenEigenspace (f : End R M) (μ : R) (m : M) :
     m ∈ f.maxGenEigenspace μ ↔ ∃ k : ℕ, ((f - μ • (1 : End R M)) ^ k) m = 0 := by
   simp only [maxGenEigenspace, ← mem_genEigenspace, Submodule.mem_iSup_of_chain]
-#align module.End.mem_maximal_generalized_eigenspace Module.End.mem_maxGenEigenspace
 
 /-- If there exists a natural number `k` such that the kernel of `(f - μ • id) ^ k` is the
 maximal generalized eigenspace, then this value is the least such `k`. If not, this value is not
 meaningful. -/
 noncomputable def maxGenEigenspaceIndex (f : End R M) (μ : R) :=
   monotonicSequenceLimitIndex (f.genEigenspace μ)
-#align module.End.maximal_generalized_eigenspace_index Module.End.maxGenEigenspaceIndex
 
 /-- For an endomorphism of a Noetherian module, the maximal eigenspace is always of the form kernel
 `(f - μ • id) ^ k` for some `k`. -/
@@ -242,7 +217,6 @@ theorem maxGenEigenspace_eq [h : IsNoetherian R M] (f : End R M) (μ : R) :
       f.genEigenspace μ (maxGenEigenspaceIndex f μ) := by
   rw [isNoetherian_iff_wellFounded] at h
   exact (WellFounded.iSup_eq_monotonicSequenceLimit h (f.genEigenspace μ) : _)
-#align module.End.maximal_generalized_eigenspace_eq Module.End.maxGenEigenspace_eq
 
 /-- A generalized eigenvalue for some exponent `k` is also
     a generalized eigenvalue for exponents larger than `k`. -/
@@ -253,13 +227,11 @@ theorem hasGenEigenvalue_of_hasGenEigenvalue_of_le {f : End R M} {μ : R} {k : �
   contrapose! hk
   rw [← le_bot_iff, ← hk]
   exact (f.genEigenspace μ).monotone hm
-#align module.End.has_generalized_eigenvalue_of_has_generalized_eigenvalue_of_le Module.End.hasGenEigenvalue_of_hasGenEigenvalue_of_le
 
 /-- The eigenspace is a subspace of the generalized eigenspace. -/
 theorem eigenspace_le_genEigenspace {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k) :
     f.eigenspace μ ≤ f.genEigenspace μ k :=
   (f.genEigenspace μ).monotone (Nat.succ_le_of_lt hk)
-#align module.End.eigenspace_le_generalized_eigenspace Module.End.eigenspace_le_genEigenspace
 
 /-- All eigenvalues are generalized eigenvalues. -/
 theorem hasGenEigenvalue_of_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k)
@@ -267,7 +239,6 @@ theorem hasGenEigenvalue_of_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk :
   apply hasGenEigenvalue_of_hasGenEigenvalue_of_le hk
   rw [HasGenEigenvalue, genEigenspace, OrderHom.coe_mk, pow_one]
   exact hμ
-#align module.End.has_generalized_eigenvalue_of_has_eigenvalue Module.End.hasGenEigenvalue_of_hasEigenvalue
 
 /-- All generalized eigenvalues are eigenvalues. -/
 theorem hasEigenvalue_of_hasGenEigenvalue {f : End R M} {μ : R} {k : ℕ}
@@ -275,21 +246,18 @@ theorem hasEigenvalue_of_hasGenEigenvalue {f : End R M} {μ : R} {k : ℕ}
   intro contra; apply hμ
   erw [LinearMap.ker_eq_bot] at contra ⊢; rw [LinearMap.coe_pow]
   exact Function.Injective.iterate contra k
-#align module.End.has_eigenvalue_of_has_generalized_eigenvalue Module.End.hasEigenvalue_of_hasGenEigenvalue
 
 /-- Generalized eigenvalues are actually just eigenvalues. -/
 @[simp]
 theorem hasGenEigenvalue_iff_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k) :
     f.HasGenEigenvalue μ k ↔ f.HasEigenvalue μ :=
   ⟨hasEigenvalue_of_hasGenEigenvalue, hasGenEigenvalue_of_hasEigenvalue hk⟩
-#align module.End.has_generalized_eigenvalue_iff_has_eigenvalue Module.End.hasGenEigenvalue_iff_hasEigenvalue
 
 /-- Every generalized eigenvector is a generalized eigenvector for exponent `finrank K V`.
     (Lemma 8.11 of [axler2015]) -/
 theorem genEigenspace_le_genEigenspace_finrank [FiniteDimensional K V] (f : End K V)
     (μ : K) (k : ℕ) : f.genEigenspace μ k ≤ f.genEigenspace μ (finrank K V) :=
   ker_pow_le_ker_pow_finrank _ _
-#align module.End.generalized_eigenspace_le_generalized_eigenspace_finrank Module.End.genEigenspace_le_genEigenspace_finrank
 
 @[simp] theorem iSup_genEigenspace_eq_genEigenspace_finrank
     [FiniteDimensional K V] (f : End K V) (μ : K) :
@@ -301,7 +269,6 @@ theorem genEigenspace_eq_genEigenspace_finrank_of_le [FiniteDimensional K V]
     (f : End K V) (μ : K) {k : ℕ} (hk : finrank K V ≤ k) :
     f.genEigenspace μ k = f.genEigenspace μ (finrank K V) :=
   ker_pow_eq_ker_pow_finrank_of_le hk
-#align module.End.generalized_eigenspace_eq_generalized_eigenspace_finrank_of_le Module.End.genEigenspace_eq_genEigenspace_finrank_of_le
 
 lemma mapsTo_genEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) (k : ℕ) :
     MapsTo g (f.genEigenspace μ k) (f.genEigenspace μ k) := by
@@ -434,7 +401,6 @@ theorem eigenvectors_linearIndependent [NoZeroSMulDivisors R M]
   CompleteLattice.Independent.linearIndependent _
     (f.eigenspaces_independent.comp Subtype.coe_injective) (fun μ => (h_eigenvec μ).1) fun μ =>
     (h_eigenvec μ).2
-#align module.End.eigenvectors_linear_independent Module.End.eigenvectors_linearIndependent
 
 /-- If `f` maps a subspace `p` into itself, then the generalized eigenspace of the restriction
     of `f` to `p` is the part of the generalized eigenspace of `f` that lies in `p`. -/
@@ -448,7 +414,6 @@ theorem genEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ) (μ :
     apply (Submodule.ker_subtype _).symm
   · erw [pow_succ, pow_succ, LinearMap.ker_comp, LinearMap.ker_comp, ih, ← LinearMap.ker_comp,
       LinearMap.comp_assoc]
-#align module.End.generalized_eigenspace_restrict Module.End.genEigenspace_restrict
 
 lemma _root_.Submodule.inf_genEigenspace (f : End R M) (p : Submodule R M) {k : ℕ} {μ : R}
     (hfp : ∀ x : M, x ∈ p → f x ∈ p) :
@@ -463,7 +428,6 @@ theorem eigenspace_restrict_le_eigenspace (f : End R M) {p : Submodule R M} (hfp
   rintro a ⟨x, hx, rfl⟩
   simp only [SetLike.mem_coe, mem_eigenspace_iff, LinearMap.restrict_apply] at hx ⊢
   exact congr_arg Subtype.val hx
-#align module.End.eigenspace_restrict_le_eigenspace Module.End.eigenspace_restrict_le_eigenspace
 
 /-- Generalized eigenrange and generalized eigenspace for exponent `finrank K V` are disjoint. -/
 theorem generalized_eigenvec_disjoint_range_ker [FiniteDimensional K V] (f : End K V) (μ : K) :
@@ -482,7 +446,6 @@ theorem generalized_eigenvec_disjoint_range_ker [FiniteDimensional K V] (f : End
   rw [disjoint_iff_inf_le, genEigenrange, LinearMap.range_eq_map,
     Submodule.map_inf_eq_map_inf_comap, top_inf_eq, h]
   apply Submodule.map_comap_le
-#align module.End.generalized_eigenvec_disjoint_range_ker Module.End.generalized_eigenvec_disjoint_range_ker
 
 /-- If an invariant subspace `p` of an endomorphism `f` is disjoint from the `μ`-eigenspace of `f`,
 then the restriction of `f` to `p` has trivial `μ`-eigenspace. -/
@@ -491,7 +454,6 @@ theorem eigenspace_restrict_eq_bot {f : End R M} {p : Submodule R M} (hfp : ∀ 
   rw [eq_bot_iff]
   intro x hx
   simpa using hμp.le_bot ⟨eigenspace_restrict_le_eigenspace f hfp μ ⟨x, hx, rfl⟩, x.prop⟩
-#align module.End.eigenspace_restrict_eq_bot Module.End.eigenspace_restrict_eq_bot
 
 /-- The generalized eigenspace of an eigenvalue has positive dimension for positive exponents. -/
 theorem pos_finrank_genEigenspace_of_hasEigenvalue [FiniteDimensional K V] {f : End K V}
@@ -502,8 +464,6 @@ theorem pos_finrank_genEigenspace_of_hasEigenvalue [FiniteDimensional K V] {f : 
     _ < finrank K (f.eigenspace μ) := Submodule.finrank_lt_finrank_of_lt (bot_lt_iff_ne_bot.2 hx)
     _ ≤ finrank K (f.genEigenspace μ k) :=
       Submodule.finrank_mono ((f.genEigenspace μ).monotone (Nat.succ_le_of_lt hk))
-
-#align module.End.pos_finrank_generalized_eigenspace_of_has_eigenvalue Module.End.pos_finrank_genEigenspace_of_hasEigenvalue
 
 /-- A linear map maps a generalized eigenrange into itself. -/
 theorem map_genEigenrange_le {f : End K V} {μ : K} {n : ℕ} :
@@ -516,8 +476,6 @@ theorem map_genEigenrange_le {f : End K V} {μ : K} {n : ℕ} :
         rw [Algebra.mul_sub_algebraMap_pow_commutes]
     _ = Submodule.map ((f - algebraMap _ _ μ) ^ n) (LinearMap.range f) := LinearMap.range_comp _ _
     _ ≤ f.genEigenrange μ n := LinearMap.map_le_range
-
-#align module.End.map_generalized_eigenrange_le Module.End.map_genEigenrange_le
 
 lemma iSup_genEigenspace_le_smul (f : Module.End R M) (μ t : R) :
     (⨆ k, f.genEigenspace μ k) ≤ ⨆ k, (t • f).genEigenspace (t * μ) k := by
