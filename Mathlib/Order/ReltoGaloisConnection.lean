@@ -54,13 +54,13 @@ def rightDual (I : (Set β)ᵒᵈ) : Set α := {a : α | ∀ ⦃b⦄, b ∈ ofDu
 
 /-- The pair of functions `leftDual` and `rightDual` forms a Galois connection. -/
 theorem galoisConnection : GaloisConnection R.leftDual R.rightDual := by
-    intros J I; apply Iff.trans (b := ∀ b ∈ ofDual I, ∀ a ∈ J, R a b)
-    · constructor <;> intro h <;> apply h
-    · constructor
-      · intro h a ha b hb
-        exact h (by simpa) hb a ha
-      · intro h b hb a ha
-        exact h (by simpa) hb
+  intros J I; apply Iff.trans (b := ∀ b ∈ ofDual I, ∀ a ∈ J, R a b)
+  · constructor <;> intro h <;> apply h
+  · constructor
+    · intro h a ha b hb
+      exact h (by simpa) hb a ha
+    · intro h b hb a ha
+      exact h (by simpa) hb
 
 /-! ### Induced equivalences and generation processes -/
 
@@ -75,15 +75,17 @@ open GaloisConnection
 
 /-- `leftDual` maps every element `J` to `rFixedPoints`. -/
 theorem leftDual_mem_rFixedPoint (J : Set α) : R.leftDual J ∈ R.rFixedPoints := by
-    unfold rFixedPoints; apply le_antisymm
-    · exact R.galoisConnection.l_u_le (R.leftDual J)
-    · apply R.galoisConnection.monotone_l; exact R.galoisConnection.le_u_l J
+  unfold rFixedPoints
+  apply le_antisymm
+  · exact R.galoisConnection.l_u_le (R.leftDual J)
+  · apply R.galoisConnection.monotone_l; exact R.galoisConnection.le_u_l J
 
 /-- `rightDual` maps every element `I` to `lFixedPoints`. -/
 theorem rightDual_mem_lFixedPoint (I : (Set β)ᵒᵈ) : R.rightDual I ∈ R.lFixedPoints := by
-    unfold lFixedPoints; apply le_antisymm
-    · apply R.galoisConnection.monotone_u; exact R.galoisConnection.l_u_le I
-    · exact R.galoisConnection.le_u_l (R.rightDual I)
+  unfold lFixedPoints
+  apply le_antisymm
+  · apply R.galoisConnection.monotone_u; exact R.galoisConnection.l_u_le I
+  · exact R.galoisConnection.le_u_l (R.rightDual I)
 
 /-- The maps `leftDual` and `rightDual` induce inverse bijections between the sets of fixed points.
 -/
