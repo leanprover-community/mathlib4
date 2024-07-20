@@ -6,9 +6,10 @@ Authors: Johan Commelin, Kenny Lau
 
 import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Algebra.Order.Antidiag.Finsupp
+import Mathlib.Data.Finsupp.Antidiagonal
+import Mathlib.Data.Finsupp.Weight
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.Tactic.Linarith
-import Mathlib.Data.Finsupp.Antidiagonal
 
 /-!
 # Formal (multivariate) power series
@@ -632,30 +633,6 @@ theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ �
     rw [this, coeff_prod]
   rw [Finset.prod_const, card_range]
 
-/-- The degree of a monomial. -/
-def degree (d : σ →₀ ℕ) : ℕ := d.sum fun _ ↦ id
-
-@[simp]
-theorem degree_zero : degree (0 : σ →₀ ℕ) = 0 := by
-  simp only [degree, sum_zero_index]
-
-theorem degree_add (d d' : σ →₀ ℕ) :
-    degree (d + d') = degree d + degree d' := by
-  classical
-  simp only [degree, mem_union, mem_support_iff, ne_eq, id_eq, implies_true, sum_add_index]
-
-theorem degree_eq_zero_iff (d : σ →₀ ℕ) : degree d = 0 ↔ d = 0 := by
-  constructor <;>
-  intro hd
-  · ext x
-    simp only [Finsupp.coe_zero, Pi.zero_apply, ← Nat.lt_one_iff, ← not_le]
-    intro hx
-    apply Nat.not_add_one_le_zero 0
-    rw [zero_add, ← hd]
-    exact hx.trans
-      <| single_le_sum (fun _ _ ↦ zero_le _) (mem_support_iff.mpr <| Nat.not_eq_zero_of_lt hx)
-  · simp only [hd, degree_zero]
-
 /-- Vanishing of coefficients of powers of multivariate power series
 when the constant coefficient is nilpotent
 [N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2, proposition 3][bourbaki1981] -/
@@ -667,6 +644,7 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent [DecidableEq σ]
   intro k hk
   rw [mem_finsuppAntidiag] at hk
   set s := (range n).filter fun i ↦ k i = 0 with hs_def
+  have hs : s ⊆ range n := filter_subset _ _
   have hs' (i : ℕ) (hi : i ∈ s) : coeff R (k i) f = constantCoeff σ R f := by
     simp only [hs_def, mem_filter] at hi
     rw [hi.2, coeff_zero_eq_constantCoeff]
@@ -683,10 +661,11 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent [DecidableEq σ]
     Finset.card_sdiff_add_card_eq_card (filter_subset _ _), card_range]
   apply le_trans _ hn
   simp only [add_comm m, Nat.add_le_add_iff_right, ← hk.1,
-    ← sum_sdiff (filter_subset _ _ : s ⊆ range n), sum_eq_zero (s := s) hs'', add_zero]
+    ← sum_sdiff (hs), sum_eq_zero (s := s) hs'', add_zero]
+  rw [← hs_def]
   convert Finset.card_nsmul_le_sum (range n \ s) (fun x ↦ degree (k x)) 1 _
   · simp only [Algebra.id.smul_eq_mul, mul_one]
-  · exact sum_sum_index' (congrFun rfl) fun _ x ↦ congrFun rfl
+  · simp only [degree_eq_weight_one, map_sum]
   · simp only [hs_def, mem_filter, mem_sdiff, mem_range, not_and, and_imp]
     intro i hi hi'
     rw [← not_lt, Nat.lt_one_iff, degree_eq_zero_iff]
