@@ -584,8 +584,10 @@ lemma coeff_one_mul (φ ψ : R⟦X⟧) : coeff R 1 (φ * ψ) =
   norm_num
 
 /-- First coefficient of the `n`-th power of a power series. -/
-lemma coeff_one_pow (n : ℕ) (hn : 1 ≤ n) (φ : R⟦X⟧) :
+lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
     coeff R 1 (φ ^ n) = n * coeff R 1 φ * (constantCoeff R φ) ^ (n - 1) := by
+  rcases Nat.eq_zero_or_pos n with (rfl | hn)
+  · simp
   induction n with
   | zero => by_contra; linarith
   | succ n' ih =>
