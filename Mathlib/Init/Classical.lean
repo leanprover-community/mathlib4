@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Tactic.IrreducibleDef
-import Mathlib.Mathport.Rename
 
 /-!
 # Note about `Mathlib/Init/`
