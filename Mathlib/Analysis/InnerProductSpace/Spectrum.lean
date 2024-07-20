@@ -384,7 +384,8 @@ theorem invariance_iInf [Nonempty n] (i : n) :
   exact fun i_1 ↦ eigenspace_invariant (hC (↑i_1) i) (γ i_1) v (hv i_1)
 
 theorem basic_index1 {α β : Type*} [DecidableEq α] [CompleteLattice β]
-    (i : α) (s : α → β) : ⨅ x, s x = s i ⊓ ⨅ (x' : {y // y ≠ i}), (s x') := by
+    (i : α) (s : α → β) : ⨅ x, s x = s i ⊓ ⨅ (x' : {y // y ≠ i}),
+      (s x') := by
   rw [iInf_subtype]
   exact iInf_split_single s i
 
@@ -410,8 +411,7 @@ theorem index_convert' (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} →
    rhs
    rhs
    ext j
-   rw [←C2]
-  simp [ne_eq] --bad design. There is a submodule_subtype here killing us
+   rw [←C2] --bad design. There is a submodule_subtype here killing us
 
 
   --still sucking wind on this one. Must be a better piecewise function approach here.
@@ -509,12 +509,11 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     have E : (⨆ (γ : {x // x ≠ i} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓ (⨅ (j : {x // x ≠ i}),
     eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))))) = ⨆ (γ : {x // x ≠ i} → 𝕜),
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) := by
-      simp only [ne_eq, Submodule.orthogonal_eq_bot_iff]
       conv => lhs; rhs; ext γ; rhs; ext μ; rw [index_convert T hC i] --shorten index_convert
       conv => lhs; rhs; ext γ; rw [EE γ]
     rw [← E] at D
-    · rw [basic i (fun _ ↦ (fun μ ↦ (eigenspace (T _) μ )))]
-      exact D
+    rw [basic i (fun _ ↦ (fun μ ↦ (eigenspace (T _) μ )))]
+    exact D
 
 theorem orthogonalFamily_iInf_eigenspaces : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
     (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))
