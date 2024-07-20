@@ -394,13 +394,6 @@ theorem invariance_iInf [Nonempty n] (i : n) :
   simp only [Submodule.mem_iInf] at *
   exact fun i_1 ↦ eigenspace_invariant (hC (↑i_1) i) (γ i_1) v (hv i_1)
 
-@[simp]
-theorem inf_restrict [Nonempty n] (i : n) (γ : {x // x ≠ i} → 𝕜) :
-    (⨆ (μ : 𝕜) , eigenspace ((T i).restrict
-    ((invariance_iInf T hC i γ))) μ) = ⊤ :=
-    pre_exhaust fun x y ↦
-      hT i ((⨅ j, eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)).subtype x) ↑y
-
 theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} → 𝕜) : (eigenspace (T i) μ ⊓
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) =
     Submodule.map (Submodule.subtype ((⨅ (j : {x // x ≠ i}), eigenspace (T j) (γ j))))
