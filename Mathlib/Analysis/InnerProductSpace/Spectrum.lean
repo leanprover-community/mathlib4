@@ -524,14 +524,6 @@ theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // x ≠ i} → 𝕜)
       fun (i_1 : {x // x ≠ i}) ↦ eigenspace (T ↑i_1) (γ i_1)).mpr fun i_1 ↦ h (↑i_1) i_1.property
     exact RR Final
 
-theorem index_post_exhaust (i : n) [Nontrivial n] :
-    (⨆ (γ : {x // x ≠ i} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓ (⨅ (j : {x // x ≠ i}),
-    eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))))) = ⨆ (γ : {x // x ≠ i} → 𝕜),
-    (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) := by
-  simp only [ne_eq, Submodule.orthogonal_eq_bot_iff]
-  conv => lhs; rhs; ext γ; rhs; ext μ; rw [index_convert T hC i]
-  conv => lhs; rhs; ext γ; rw [prelim_sub_exhaust T hT hC]
-
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   revert T
@@ -553,11 +545,15 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
       (by simp only [not_true_eq_false, not_false_eq_true])) (Subtype.restrict (fun x ↦ x ≠ i) T)
         (fun (i_1 : {x // x ≠ i}) ↦ hT ↑i_1) (fun (i_1 j : { x // x ≠ i }) ↦ hC ↑i_1 ↑j)
     simp only [Submodule.orthogonal_eq_bot_iff] at *
-    rw [← index_post_exhaust] at D
+    have E : (⨆ (γ : {x // x ≠ i} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓ (⨅ (j : {x // x ≠ i}),
+    eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))))) = ⨆ (γ : {x // x ≠ i} → 𝕜),
+    (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) := by
+      simp only [ne_eq, Submodule.orthogonal_eq_bot_iff]
+      conv => lhs; rhs; ext γ; rhs; ext μ; rw [index_convert T hC i]
+      conv => lhs; rhs; ext γ; rw [prelim_sub_exhaust T hT hC]
+    rw [← E] at D
     · rw [basic i (fun _ ↦ (fun μ ↦ (eigenspace (T _) μ )))]
       exact D
-    · exact fun i ↦ hT i
-    · exact hC
 
 theorem orthogonalFamily_iInf_eigenspaces : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
     (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))
