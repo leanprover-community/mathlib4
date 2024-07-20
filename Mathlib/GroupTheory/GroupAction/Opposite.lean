@@ -7,8 +7,6 @@ import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.NeZero
 
-#align_import group_theory.group_action.opposite from "leanprover-community/mathlib"@"4330aae21f538b862f8aead371cfb6ee556398f1"
-
 /-!
 # Scalar actions on and by `Mᵐᵒᵖ`
 
@@ -65,4 +63,3 @@ open MulOpposite
 instance CancelMonoidWithZero.toFaithfulSMul_opposite [CancelMonoidWithZero α]
     [Nontrivial α] : FaithfulSMul αᵐᵒᵖ α :=
   ⟨fun h => unop_injective <| mul_left_cancel₀ one_ne_zero (h 1)⟩
-#align cancel_monoid_with_zero.to_has_faithful_opposite_scalar CancelMonoidWithZero.toFaithfulSMul_opposite

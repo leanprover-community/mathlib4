@@ -7,8 +7,6 @@ import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.LinearAlgebra.Matrix.Basis
 
-#align_import ring_theory.adjoin.power_basis from "leanprover-community/mathlib"@"825edd3cd735e87495b0c2a2114fc3929eefce41"
-
 /-!
 # Power basis for `Algebra.adjoin R {x}`
 
@@ -50,7 +48,6 @@ noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
     use f
     ext
     exact aeval_algebraMap_apply S (⟨x, _⟩ : adjoin K {x}) _
-#align algebra.adjoin.power_basis_aux Algebra.adjoin.powerBasisAux
 
 /-- The power basis `1, x, ..., x ^ (d - 1)` for `K[x]`,
 where `d` is the degree of the minimal polynomial of `x`. See `Algebra.adjoin.powerBasis'` for
@@ -62,7 +59,6 @@ noncomputable def adjoin.powerBasis {x : S} (hx : IsIntegral K x) :
   dim := (minpoly K x).natDegree
   basis := adjoin.powerBasisAux hx
   basis_eq_pow i := by rw [adjoin.powerBasisAux, Basis.mk_apply]
-#align algebra.adjoin.power_basis Algebra.adjoin.powerBasis
 
 end Algebra
 
@@ -76,7 +72,6 @@ noncomputable def PowerBasis.ofGenMemAdjoin {x : S} (B : PowerBasis K S) (hint :
   (Algebra.adjoin.powerBasis hint).map <|
     (Subalgebra.equivOfEq _ _ <| PowerBasis.adjoin_eq_top_of_gen_mem_adjoin hx).trans
       Subalgebra.topEquiv
-#align power_basis.of_gen_mem_adjoin PowerBasis.ofGenMemAdjoin
 
 section IsIntegral
 
@@ -121,7 +116,6 @@ theorem repr_gen_pow_isIntegral [IsDomain S]
     rw [Algebra.smul_def, mul_one]
     exact isIntegral_algebraMap
   · simp [hij, isIntegral_zero]
-#align power_basis.repr_gen_pow_is_integral PowerBasis.repr_gen_pow_isIntegral
 
 /-- Let `B : PowerBasis S A` be such that `IsIntegral R B.gen`, and let `x y : A` be elements with
 integral coordinates in the base `B.basis`. Then `IsIntegral R ((B.basis.repr (x * y) i)` for all
@@ -140,7 +134,6 @@ theorem repr_mul_isIntegral [IsDomain S] {x y : A} (hx : ∀ i, IsIntegral R (B.
   refine (hy _).mul ((hx _).mul ?_)
   simp only [coe_basis, ← pow_add]
   exact repr_gen_pow_isIntegral hB hmin _ _
-#align power_basis.repr_mul_is_integral PowerBasis.repr_mul_isIntegral
 
 /-- Let `B : PowerBasis S A` be such that `IsIntegral R B.gen`, and let `x : A` be an element
 with integral coordinates in the base `B.basis`. Then `IsIntegral R ((B.basis.repr (x ^ n) i)` for
@@ -164,7 +157,6 @@ theorem repr_pow_isIntegral [IsDomain S] {x : A} (hx : ∀ i, IsIntegral R (B.ba
   · intro hx
     rw [pow_succ]
     exact repr_mul_isIntegral hB (fun _ => hn _ le_rfl (fun _ => hx _) _) hx hmin
-#align power_basis.repr_pow_is_integral PowerBasis.repr_pow_isIntegral
 
 /-- Let `B B' : PowerBasis K S` be such that `IsIntegral R B.gen`, and let `P : R[X]` be such that
 `aeval B.gen P = B'.gen`. Then `IsIntegral R (B.basis.to_matrix B'.basis i j)` for all `i` and `j`
@@ -181,7 +173,6 @@ theorem toMatrix_isIntegral {B B' : PowerBasis K S} {P : R[X]} (h : aeval B.gen 
   rw [Algebra.smul_def, IsScalarTower.algebraMap_apply R K S, ← Algebra.smul_def,
     LinearEquiv.map_smul, algebraMap_smul]
   exact (repr_gen_pow_isIntegral hB hmin _ _).smul _
-#align power_basis.to_matrix_is_integral PowerBasis.toMatrix_isIntegral
 
 end PowerBasis
 

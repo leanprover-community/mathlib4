@@ -81,6 +81,8 @@ end CountableCategory
 
 instance (α : Type*) [Category α] [FinCategory α] : CountableCategory α where
 
+instance : CountableCategory ℕ where
+
 open Opposite
 
 /-- The opposite of a countable category is countable. -/
