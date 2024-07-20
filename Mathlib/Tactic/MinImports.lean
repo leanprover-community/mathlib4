@@ -118,7 +118,6 @@ def getAllImports (cmd id : Syntax) (dbg? : Bool := false) :
     realizeGlobalConstNoOverload id2 <|>
     -- failing everything, use the current namespace followed by the visible name
     return ns ++ id1.getId)
-  dbg_trace "using: {nm}"
   -- We collect the implied declaration names, the `SyntaxNodeKinds` and the attributes.
   let ts := getVisited env nm
               |>.append (getVisited env id.getId)
