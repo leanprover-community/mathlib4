@@ -3,7 +3,6 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.Instances.Sphere
 import Mathlib.Geometry.Manifold.InteriorBoundary
@@ -12,17 +11,13 @@ import Mathlib.Geometry.Manifold.InteriorBoundary
 # Unoriented bordism theory
 
 In this file, we sketch the beginnings of unoriented bordism theory.
-Some pieces can already go in mathlib already.
-This is not ready for mathlib yet (as we still need the instance that the boundary
-of a manifold is a manifold again, might might need some hypotheses to be true).
+Not all of this might end up in mathlib already (depending on how many pre-requisites are missing),
+but a fair number of pieces already can be upstreamed!
+
 -/
 
 /-
 Missing API for this to work nicely:
-- boundary of manifolds: add a typeclass "HasNiceBoundary" (or so) which says
-  the boundary is a manifold, and the inclusion is smooth (perhaps with demanding "dimension one less")
-  The current definition of boundary and corners will not satisfy this, but many nice manifolds
-  will. Prove that boundaryless manifolds are of this form, or so.
 - add disjoint union of top. spaces and induced maps: mathlib has this
 - define the disjoint union of smooth manifolds, and the associated maps: show they are smooth
 (perhaps prove as abstract nonsense? will see!)
@@ -34,11 +29,11 @@ Missing API for this to work nicely:
 equivalences work nicely in the standard design... that's a "how to do X in Lean" question
 - postponed: transitivity of the bordism relation (uses the collar neighbourhood theorem)
 
-define induced maps between bordism groups (on singular n-manifolds is easy and done)
-functoriality: what exactly do I have to show? also DTT question
+- define induced maps between bordism groups (on singular n-manifolds is easy and done)
+- functoriality: what exactly do I have to show? also DTT question
 
-prove some of the easy axioms of homology... perhaps all of it?
-does mathlib have a class "extraordinary homology theory"? this could be an interesting instance...
+- prove some of the easy axioms of homology... perhaps all of it?
+- does mathlib have a class "extraordinary homology theory"? this could be an interesting instance...
 -/
 
 open scoped Manifold
