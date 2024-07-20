@@ -7,8 +7,6 @@ import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.NormedSpace.Basic
 
-#align_import analysis.asymptotics.specific_asymptotics from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # A collection of specific asymptotic results
 
@@ -31,7 +29,6 @@ theorem Filter.IsBoundedUnder.isLittleO_sub_self_inv {𝕜 E : Type*} [NormedFie
   refine (h.isBigO_const (one_ne_zero' ℝ)).trans_isLittleO (isLittleO_const_left.2 <| Or.inr ?_)
   simp only [(· ∘ ·), norm_inv]
   exact (tendsto_norm_sub_self_punctured_nhds a).inv_tendsto_zero
-#align filter.is_bounded_under.is_o_sub_self_inv Filter.IsBoundedUnder.isLittleO_sub_self_inv
 
 end NormedField
 
@@ -44,28 +41,24 @@ theorem pow_div_pow_eventuallyEq_atTop {p q : ℕ} :
   apply (eventually_gt_atTop (0 : 𝕜)).mono fun x hx => _
   intro x hx
   simp [zpow_sub₀ hx.ne']
-#align pow_div_pow_eventually_eq_at_top pow_div_pow_eventuallyEq_atTop
 
 theorem pow_div_pow_eventuallyEq_atBot {p q : ℕ} :
     (fun x : 𝕜 => x ^ p / x ^ q) =ᶠ[atBot] fun x => x ^ ((p : ℤ) - q) := by
   apply (eventually_lt_atBot (0 : 𝕜)).mono fun x hx => _
   intro x hx
   simp [zpow_sub₀ hx.ne]
-#align pow_div_pow_eventually_eq_at_bot pow_div_pow_eventuallyEq_atBot
 
 theorem tendsto_pow_div_pow_atTop_atTop {p q : ℕ} (hpq : q < p) :
     Tendsto (fun x : 𝕜 => x ^ p / x ^ q) atTop atTop := by
   rw [tendsto_congr' pow_div_pow_eventuallyEq_atTop]
   apply tendsto_zpow_atTop_atTop
   omega
-#align tendsto_pow_div_pow_at_top_at_top tendsto_pow_div_pow_atTop_atTop
 
 theorem tendsto_pow_div_pow_atTop_zero [TopologicalSpace 𝕜] [OrderTopology 𝕜] {p q : ℕ}
     (hpq : p < q) : Tendsto (fun x : 𝕜 => x ^ p / x ^ q) atTop (𝓝 0) := by
   rw [tendsto_congr' pow_div_pow_eventuallyEq_atTop]
   apply tendsto_zpow_atTop_zero
   omega
-#align tendsto_pow_div_pow_at_top_zero tendsto_pow_div_pow_atTop_zero
 
 end LinearOrderedField
 
@@ -77,7 +70,6 @@ theorem Asymptotics.isLittleO_pow_pow_atTop_of_lt [OrderTopology 𝕜] {p q : �
     (fun x : 𝕜 => x ^ p) =o[atTop] fun x => x ^ q := by
   refine (isLittleO_iff_tendsto' ?_).mpr (tendsto_pow_div_pow_atTop_zero hpq)
   exact (eventually_gt_atTop 0).mono fun x hx hxq => (pow_ne_zero q hx.ne' hxq).elim
-#align asymptotics.is_o_pow_pow_at_top_of_lt Asymptotics.isLittleO_pow_pow_atTop_of_lt
 
 theorem Asymptotics.IsBigO.trans_tendsto_norm_atTop {α : Type*} {u v : α → 𝕜} {l : Filter α}
     (huv : u =O[l] v) (hu : Tendsto (fun x => ‖u x‖) l atTop) :
@@ -86,8 +78,6 @@ theorem Asymptotics.IsBigO.trans_tendsto_norm_atTop {α : Type*} {u v : α → �
   rw [IsBigOWith] at hcuv
   convert Tendsto.atTop_div_const hc (tendsto_atTop_mono' l hcuv hu)
   rw [mul_div_cancel_left₀ _ hc.ne.symm]
-set_option linter.uppercaseLean3 false in
-#align asymptotics.is_O.trans_tendsto_norm_at_top Asymptotics.IsBigO.trans_tendsto_norm_atTop
 
 end NormedLinearOrderedField
 
@@ -126,7 +116,6 @@ theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f 
     _ = ε * ‖∑ i ∈ range n, g i‖ := by
       simp only [B]
       ring
-#align asymptotics.is_o.sum_range Asymptotics.IsLittleO.sum_range
 
 theorem Asymptotics.isLittleO_sum_range_of_tendsto_zero {α : Type*} [NormedAddCommGroup α]
     {f : ℕ → α} (h : Tendsto f atTop (𝓝 0)) :
@@ -134,7 +123,6 @@ theorem Asymptotics.isLittleO_sum_range_of_tendsto_zero {α : Type*} [NormedAddC
   have := ((isLittleO_one_iff ℝ).2 h).sum_range fun i => zero_le_one
   simp only [sum_const, card_range, Nat.smul_one_eq_cast] at this
   exact this tendsto_natCast_atTop_atTop
-#align asymptotics.is_o_sum_range_of_tendsto_zero Asymptotics.isLittleO_sum_range_of_tendsto_zero
 
 /-- The Cesaro average of a converging sequence converges to the same limit. -/
 theorem Filter.Tendsto.cesaro_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {u : ℕ → E}
@@ -150,12 +138,10 @@ theorem Filter.Tendsto.cesaro_smul {E : Type*} [NormedAddCommGroup E] [NormedSpa
   · filter_upwards [Ici_mem_atTop 1] with n npos
     have nposℝ : (0 : ℝ) < n := Nat.cast_pos.2 npos
     rw [Algebra.id.smul_eq_mul, inv_mul_cancel nposℝ.ne']
-#align filter.tendsto.cesaro_smul Filter.Tendsto.cesaro_smul
 
 /-- The Cesaro average of a converging sequence converges to the same limit. -/
 theorem Filter.Tendsto.cesaro {u : ℕ → ℝ} {l : ℝ} (h : Tendsto u atTop (𝓝 l)) :
     Tendsto (fun n : ℕ => (n⁻¹ : ℝ) * ∑ i ∈ range n, u i) atTop (𝓝 l) :=
   h.cesaro_smul
-#align filter.tendsto.cesaro Filter.Tendsto.cesaro
 
 end Real
