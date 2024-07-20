@@ -26,8 +26,8 @@ of `R`.
 
 ## Theorems
 
-- `SumSq.nonneg`: sums of squares are non-negative.
 - `isSumSq.add`: if `S₁` and `S₂` are sums of squares in a semiring `R`, then so is `S₁ + S₂`.
+- `SumSq.nonneg`: sums of squares are non-negative.
 
 ## Instances
 
@@ -45,19 +45,6 @@ in `R`.
 inductive isSumSq {R : Type*} [Mul R] [Add R] [Zero R] : R → Prop
   | zero                           : isSumSq 0
   | sq_add (x S : R) (pS : isSumSq S) : isSumSq (x * x + S)
-/--
-Let `R` be a linearly ordered semiring `R` in which the property `a ≤ b → ∃ c, a + c = b` holds
-(e.g. `R = ℕ`). If `S : R` is a sum of squares in `R`, then `0 ≤ S`. This is used to show that
-linearly ordered fields are semireal.
--/
-
-theorem isSumSq.nonneg  {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {S : R}
-    (pS : isSumSq S) : 0 ≤ S := by
-  induction pS with
-  | zero          => simp only [le_refl]
-  | sq_add x S _ ih  =>
-    apply add_nonneg ?_ ih
-    simp only [Eq.symm (pow_two x), sq_nonneg]
 
 /--
 The type of sums of squares in a semiring `R` is the subtype of `R` defined by the predicate
@@ -90,3 +77,17 @@ def SumSq.add {R : Type*} [Semiring R] (S₁ : SumSqIn R) (S₂ : SumSqIn R) : S
   ⟨S₁.val + S₂.val, isSumSq.add S₁.ppty S₂.ppty⟩
 
 instance {R : Type*} [Semiring R] : Add (SumSqIn R) := ⟨SumSq.add⟩
+
+/--
+Let `R` be a linearly ordered semiring `R` in which the property `a ≤ b → ∃ c, a + c = b` holds
+(e.g. `R = ℕ`). If `S : R` is a sum of squares in `R`, then `0 ≤ S`. This is used to show that
+linearly ordered fields are semireal.
+-/
+
+theorem isSumSq.nonneg  {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {S : R}
+    (pS : isSumSq S) : 0 ≤ S := by
+  induction pS with
+  | zero          => simp only [le_refl]
+  | sq_add x S _ ih  =>
+    apply add_nonneg ?_ ih
+    simp only [← pow_two x, sq_nonneg]
