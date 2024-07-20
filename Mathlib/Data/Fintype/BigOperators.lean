@@ -206,7 +206,7 @@ theorem Fintype.prod_sum_elim (f : α₁ → M) (g : α₂ → M) :
   prod_disj_sum _ _ _
 
 @[to_additive (attr := simp)]
-theorem Fintype.prod_sum_type (f : Sum α₁ α₂ → M) :
+theorem Fintype.prod_sum_type (f : α₁ ⊕ α₂ → M) :
     ∏ x, f x = (∏ a₁, f (Sum.inl a₁)) * ∏ a₂, f (Sum.inr a₂) :=
   prod_disj_sum _ _ _
 

@@ -226,7 +226,7 @@ instance [Finite ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, 
   · simp only [iUnion_compactCovering, pi_univ]
   · exact fun i => compactCovering_subset (X i)
 
-instance [SigmaCompactSpace Y] : SigmaCompactSpace (Sum X Y) :=
+instance [SigmaCompactSpace Y] : SigmaCompactSpace (X ⊕ Y) :=
   ⟨⟨fun n => Sum.inl '' compactCovering X n ∪ Sum.inr '' compactCovering Y n, fun n =>
       ((isCompact_compactCovering X n).image continuous_inl).union
         ((isCompact_compactCovering Y n).image continuous_inr),

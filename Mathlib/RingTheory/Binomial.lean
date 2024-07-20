@@ -307,14 +307,16 @@ theorem smeval_ascPochhammer_nat_cast [NatPowAssoc R] (n k : ℕ) :
 
 theorem multichoose_neg_self (n : ℕ) : multichoose (-n : ℤ) n = (-1)^n := by
   apply nsmul_right_injective _ (Nat.factorial_ne_zero _)
-  simp only
+  on_goal 1 => simp only
+  -- This closes both remaining goals at once.
   rw [factorial_nsmul_multichoose_eq_ascPochhammer, smeval_ascPochhammer_self_neg, nsmul_eq_mul,
     Nat.cast_comm]
 
 @[simp]
 theorem multichoose_neg_succ (n : ℕ) : multichoose (-n : ℤ) (n + 1) = 0 := by
   apply nsmul_right_injective _ (Nat.factorial_ne_zero _)
-  simp only
+  on_goal 1 => simp only
+  -- This closes both remaining goals at once.
   rw [factorial_nsmul_multichoose_eq_ascPochhammer, smeval_ascPochhammer_succ_neg, smul_zero]
 
 theorem multichoose_neg_add (n k : ℕ) : multichoose (-n : ℤ) (n + k + 1) = 0 := by
@@ -407,12 +409,12 @@ theorem choose_zero_ite (R) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] [Binomi
   rw [eq_ite_iff]
   by_cases hk: k = 0
   constructor
-  rw [hk, choose_zero_right, ← Prod.mk.inj_iff]
-  right
-  constructor
-  exact hk
-  rw [← @Nat.le_zero, Nat.not_le] at hk
-  rw [choose_zero_pos R hk]
+  · rw [hk, choose_zero_right, ← Prod.mk.inj_iff]
+  · right
+    constructor
+    · exact hk
+    · rw [← @Nat.le_zero, Nat.not_le] at hk
+      rw [choose_zero_pos R hk]
 
 @[simp]
 theorem choose_one_right' (r : R) : choose r 1 = r ^ 1 := by

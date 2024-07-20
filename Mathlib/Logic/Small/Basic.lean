@@ -59,8 +59,8 @@ instance small_Pi {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (β 
 instance small_prod {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (α × β) :=
   ⟨⟨Shrink α × Shrink β, ⟨Equiv.prodCongr (equivShrink α) (equivShrink β)⟩⟩⟩
 
-instance small_sum {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (Sum α β) :=
-  ⟨⟨Sum (Shrink α) (Shrink β), ⟨Equiv.sumCongr (equivShrink α) (equivShrink β)⟩⟩⟩
+instance small_sum {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (α ⊕ β) :=
+  ⟨⟨Shrink α ⊕ Shrink β, ⟨Equiv.sumCongr (equivShrink α) (equivShrink β)⟩⟩⟩
 
 instance small_set {α} [Small.{w} α] : Small.{w} (Set α) :=
   ⟨⟨Set (Shrink α), ⟨Equiv.Set.congr (equivShrink α)⟩⟩⟩

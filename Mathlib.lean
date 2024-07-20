@@ -289,6 +289,7 @@ import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.GroupWithZero.Action.Opposite
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.GroupWithZero.Center
 import Mathlib.Algebra.GroupWithZero.Commute
@@ -2460,6 +2461,7 @@ import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Card
 import Mathlib.Data.Sym.Sym2
 import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.Data.Sym.Sym2.Order
 import Mathlib.Data.Tree.Basic
 import Mathlib.Data.Tree.Get
 import Mathlib.Data.TwoPointing
@@ -2673,7 +2675,6 @@ import Mathlib.GroupTheory.GroupAction.FixedPoints
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.GroupTheory.GroupAction.Period
 import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.GroupTheory.GroupAction.Pointwise
@@ -2939,6 +2940,7 @@ import Mathlib.LinearAlgebra.Projectivization.Basic
 import Mathlib.LinearAlgebra.Projectivization.Independence
 import Mathlib.LinearAlgebra.Projectivization.Subspace
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
+import Mathlib.LinearAlgebra.QuadraticForm.Basis
 import Mathlib.LinearAlgebra.QuadraticForm.Complex
 import Mathlib.LinearAlgebra.QuadraticForm.Dual
 import Mathlib.LinearAlgebra.QuadraticForm.Isometry
@@ -4068,6 +4070,7 @@ import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Linter.OldObtain
+import Mathlib.Tactic.Linter.RefineLinter
 import Mathlib.Tactic.Linter.Style
 import Mathlib.Tactic.Linter.TextBased
 import Mathlib.Tactic.Linter.UnusedTactic
