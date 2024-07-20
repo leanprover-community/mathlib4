@@ -337,6 +337,7 @@ theorem coe_smul (g : G) (b : Basis ι R M) : ⇑(g • b) = g • ⇑b := rfl
 /-- When the group in question is the automorphisms, `•` coincides with `Basis.map`. -/
 @[simp]
 theorem smul_eq_map (g : M ≃ₗ[R] M) (b : Basis ι R M) : g • b = b.map g := rfl
+
 @[simp] theorem repr_smul_apply (g : G) (b : Basis ι R M) :
     (g • b).repr = (DistribMulAction.toLinearEquiv _ _ g).symm.trans b.repr := rfl
 
