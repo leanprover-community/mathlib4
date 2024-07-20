@@ -7,8 +7,6 @@ import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Opposites
 import Mathlib.Logic.Embedding.Basic
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Tactic.Common
 
 /-!
 # Definitions of group actions
