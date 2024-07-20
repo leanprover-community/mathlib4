@@ -270,3 +270,5 @@ lemma closure_insert_eq_of_mem_closure (he : e ∈ M.closure X) :
 
 lemma mem_closure_self (M : Matroid α) (e : α) (he : e ∈ M.E := by aesop_mat) : e ∈ M.closure {e} :=
   mem_closure_of_mem' M rfl
+
+end Matroid
