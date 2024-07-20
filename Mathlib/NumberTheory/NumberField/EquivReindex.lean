@@ -5,22 +5,34 @@ Authors: Michail Karatarakis
 -/
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 
-namespace NumberField
+/-!
+
+# House of an algebraic number
+This file introduces an equivalence between the set of embeddings of `K` into `ℂ` and the
+index set of the chosen basis of the ring of integers of `K`.
+
+## Tagshouse
+number field, algebraic number
+-/
 
 variable (K : Type*) [Field K] [NumberField K]
+
+namespace NumberField
+
+noncomputable section
 
 open Module.Free FiniteDimensional canonicalEmbedding Matrix Finset
 
 /-- An equivalence between the set of embeddings of `K` into `ℂ` and the
   index set of the chosen basis of the ring of integers of `K`. -/
-noncomputable abbrev equivReindex : (K →+* ℂ) ≃ (ChooseBasisIndex ℤ (𝓞 K)) :=
+abbrev equivReindex : (K →+* ℂ) ≃ (ChooseBasisIndex ℤ (𝓞 K)) :=
     Fintype.equivOfCardEq <|
   by rw [Embeddings.card, ← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank]
 
 /-- The basis matrix for the embeddings of `K` into `ℂ`. This matrix is formed by
   taking the lattice basis vectors of `K` and reindexing them according to the
   equivalence `equivReindex`, then transposing the resulting matrix. -/
-noncomputable abbrev basisMatrix : Matrix (K →+* ℂ) (K →+* ℂ) ℂ :=
+abbrev basisMatrix : Matrix (K →+* ℂ) (K →+* ℂ) ℂ :=
   (Matrix.of fun i ↦ latticeBasis K (equivReindex K i))
 
 variable [DecidableEq (K →+* ℂ)]
@@ -38,7 +50,7 @@ theorem det_of_basisMatrix_non_zero : (basisMatrix K).det ≠ 0 := by
   exact (Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ
     (fun _ => integralBasis K (e _)) RingHom.equivRatAlgHom).symm
 
-noncomputable instance : Invertible (basisMatrix K) := invertibleOfIsUnitDet _
+instance : Invertible (basisMatrix K) := invertibleOfIsUnitDet _
     (Ne.isUnit (det_of_basisMatrix_non_zero K))
 
 theorem canonicalEmbedding_eq_basisMatrix_mulVec (α : K) :
@@ -55,5 +67,7 @@ theorem inverse_basisMatrix_mulVec_eq_repr (α : 𝓞 K) :
       canonicalEmbedding K (algebraMap (𝓞 K) K α) j) i =
       ((integralBasis K).reindex (equivReindex K).symm).repr α i := fun i => by
   rw [inv_mulVec_eq_vec (canonicalEmbedding_eq_basisMatrix_mulVec K α)]
+
+end
 
 end NumberField
