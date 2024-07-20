@@ -259,7 +259,7 @@ def fromSpec :
     (Spec Γ(X, U)) ⟶ X :=
   haveI : IsAffine (X ∣_ᵤ U) := hU
   Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op) ≫
-    (X ∣_ᵤ U).isoSpec.inv ≫ Scheme.ιOpens U
+    (X ∣_ᵤ U).isoSpec.inv ≫ U.ι
 
 instance isOpenImmersion_fromSpec :
     IsOpenImmersion hU.fromSpec := by
@@ -268,7 +268,7 @@ instance isOpenImmersion_fromSpec :
 
 @[simp]
 theorem range_fromSpec :
-    Set.range hU.fromSpec.1.base = (U : Set X) := by
+    Set.range hU.fromSpec.val.base = (U : Set X) := by
   delta IsAffineOpen.fromSpec; dsimp
   rw [Function.comp.assoc, Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
   · exact Subtype.range_coe
@@ -291,7 +291,7 @@ theorem map_fromSpec {V : X.Opens} (hV : IsAffineOpen V) (f : op U ⟶ op V) :
 
 protected theorem isCompact :
     IsCompact (U : Set X) := by
-  convert @IsCompact.image _ _ _ _ Set.univ hU.fromSpec.1.base PrimeSpectrum.compactSpace.1
+  convert @IsCompact.image _ _ _ _ Set.univ hU.fromSpec.val.base PrimeSpectrum.compactSpace.1
     (by fun_prop)
   convert hU.range_fromSpec.symm
   exact Set.image_univ
@@ -336,12 +336,12 @@ corresponds to the affine open sets containing in the subset. -/
 @[simps! apply_coe_coe]
 def _root_.AlgebraicGeometry.affineOpensRestrict {X : Scheme.{u}} (U : X.Opens) :
     (X ∣_ᵤ U).affineOpens ≃ { V : X.affineOpens // V ≤ U } :=
-  (IsOpenImmersion.affineOpensEquiv (Scheme.ιOpens U)).trans (Equiv.subtypeEquivProp (by simp))
+  (IsOpenImmersion.affineOpensEquiv (U.ι)).trans (Equiv.subtypeEquivProp (by simp))
 
 @[simp]
 lemma _root_.AlgebraicGeometry.affineOpensRestrict_symm_apply_coe
     {X : Scheme.{u}} (U : X.Opens) (V) :
-    ((affineOpensRestrict U).symm V).1 = Scheme.ιOpens U ⁻¹ᵁ V := rfl
+    ((affineOpensRestrict U).symm V).1 = U.ι ⁻¹ᵁ V := rfl
 
 instance (priority := 100) _root_.AlgebraicGeometry.Scheme.compactSpace_of_isAffine
     (X : Scheme) [IsAffine X] :
@@ -444,7 +444,7 @@ this is the canonical map `Γ(𝒪ₓ, D(f)) ⟶ Γ(Spec 𝒪ₓ(U), D(f))`
 This is an isomorphism, as witnessed by an `IsIso` instance. -/
 def basicOpenSectionsToAffine :
     Γ(X, X.basicOpen f) ⟶ Γ(Spec Γ(X, U), PrimeSpectrum.basicOpen f) :=
-  hU.fromSpec.1.c.app (op <| X.basicOpen f) ≫
+  hU.fromSpec.val.c.app (op <| X.basicOpen f) ≫
     (Spec Γ(X, U)).presheaf.map (eqToHom <| (hU.fromSpec_preimage_basicOpen f).symm).op
 
 instance basicOpenSectionsToAffine_isIso :
@@ -530,7 +530,7 @@ theorem _root_.AlgebraicGeometry.exists_basicOpen_le_affine_inter
 noncomputable def primeIdealOf (x : U) :
     PrimeSpectrum Γ(X, U) :=
   ((@Scheme.isoSpec (X ∣_ᵤ U) hU).hom ≫
-    Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op)).1.base x
+    Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op)).val.base x
 
 theorem fromSpec_primeIdealOf (x : U) :
     hU.fromSpec.val.base (hU.primeIdealOf x) = x.1 := by
@@ -545,15 +545,15 @@ theorem fromSpec_primeIdealOf (x : U) :
     Scheme.ofRestrict_val_base]
   rfl -- `rfl` was not needed before #13170
 
-theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.1.base y ∈ U) :
+theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.val.base y ∈ U) :
     @IsLocalization.AtPrime
       (R := Γ(X, U))
-      (S := X.presheaf.stalk <| hU.fromSpec.1.base y) _ _
+      (S := X.presheaf.stalk <| hU.fromSpec.val.base y) _ _
       ((TopCat.Presheaf.algebra_section_stalk X.presheaf _)) y.asIdeal _ := by
   apply
     (@IsLocalization.isLocalization_iff_of_ringEquiv (R := Γ(X, U))
-      (S := X.presheaf.stalk (hU.fromSpec.1.base y)) _ y.asIdeal.primeCompl _
-      (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨hU.fromSpec.1.base y, hy⟩) _ _
+      (S := X.presheaf.stalk (hU.fromSpec.val.base y)) _ y.asIdeal.primeCompl _
+      (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨hU.fromSpec.val.base y, hy⟩) _ _
       (asIso <| PresheafedSpace.stalkMap hU.fromSpec.1 y).commRingCatIsoToRingEquiv).mpr
   -- Porting note: need to know what the ring is and after convert, instead of equality
   -- we get an `iff`.
@@ -586,11 +586,11 @@ theorem basicOpen_union_eq_self_iff (s : Set Γ(X, U)) :
     ⨆ f : s, X.basicOpen (f : Γ(X, U)) = U ↔ Ideal.span s = ⊤ := by
   trans ⋃ i : s, (PrimeSpectrum.basicOpen i.1).1 = Set.univ
   · trans
-      hU.fromSpec.1.base ⁻¹' (⨆ f : s, X.basicOpen (f : Γ(X, U))).1 =
-        hU.fromSpec.1.base ⁻¹' U.1
+      hU.fromSpec.val.base ⁻¹' (⨆ f : s, X.basicOpen (f : Γ(X, U))).1 =
+        hU.fromSpec.val.base ⁻¹' U.1
     · refine ⟨fun h => by rw [h], ?_⟩
       intro h
-      apply_fun Set.image hU.fromSpec.1.base at h
+      apply_fun Set.image hU.fromSpec.val.base at h
       rw [Set.image_preimage_eq_inter_range, Set.image_preimage_eq_inter_range, hU.range_fromSpec]
         at h
       simp only [Set.inter_self, Opens.carrier_eq_coe, Set.inter_eq_right] at h

@@ -164,7 +164,7 @@ instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
   rw [← D.ι_isoLocallyRingedSpace_inv]; infer_instance
 
 theorem ι_jointly_surjective (x : 𝖣.glued.carrier) :
-    ∃ (i : D.J) (y : (D.U i).carrier), (D.ι i).1.base y = x :=
+    ∃ (i : D.J) (y : (D.U i).carrier), (D.ι i).val.base y = x :=
   𝖣.ι_jointly_surjective (forgetToTop ⋙ forget TopCat) x
 
 -- Porting note: promote to higher priority to short circuit simplifier
@@ -206,24 +206,24 @@ def isoCarrier :
 
 @[simp]
 theorem ι_isoCarrier_inv (i : D.J) :
-    (D_).ι i ≫ D.isoCarrier.inv = (D.ι i).1.base := by
+    (D_).ι i ≫ D.isoCarrier.inv = (D.ι i).val.base := by
   delta isoCarrier
   rw [Iso.trans_inv, GlueData.ι_gluedIso_inv_assoc, Functor.mapIso_inv, Iso.trans_inv,
     Functor.mapIso_inv, Iso.trans_inv, SheafedSpace.forgetToPresheafedSpace_map, forget_map,
     forget_map, ← comp_base, ← Category.assoc,
     D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.ι_isoPresheafedSpace_inv i]
   erw [← Category.assoc, D.toLocallyRingedSpaceGlueData.ι_isoSheafedSpace_inv i]
-  change (_ ≫ D.isoLocallyRingedSpace.inv).1.base = _
+  change (_ ≫ D.isoLocallyRingedSpace.inv).val.base = _
   rw [D.ι_isoLocallyRingedSpace_inv i]
 
 /-- An equivalence relation on `Σ i, D.U i` that holds iff `𝖣 .ι i x = 𝖣 .ι j y`.
 See `AlgebraicGeometry.Scheme.GlueData.ι_eq_iff`. -/
 def Rel (a b : Σ i, ((D.U i).carrier : Type _)) : Prop :=
   a = b ∨
-    ∃ x : (D.V (a.1, b.1)).carrier, (D.f _ _).1.base x = a.2 ∧ (D.t _ _ ≫ D.f _ _).1.base x = b.2
+    ∃ x : (D.V (a.1, b.1)).carrier, (D.f _ _).val.base x = a.2 ∧ (D.t _ _ ≫ D.f _ _).val.base x = b.2
 
 theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
-    (𝖣.ι i).1.base x = (𝖣.ι j).1.base y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
+    (𝖣.ι i).val.base x = (𝖣.ι j).val.base y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
   refine Iff.trans ?_
     (TopCat.GlueData.ι_eq_iff_rel
       D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData
@@ -234,7 +234,7 @@ theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
     rfl -- `rfl` was not needed before #13170
   · infer_instance
 
-theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen ((D.ι i).1.base ⁻¹' U) := by
+theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen ((D.ι i).val.base ⁻¹' U) := by
   rw [← (TopCat.homeoOfIso D.isoCarrier.symm).isOpen_preimage]
   rw [TopCat.GlueData.isOpen_iff]
   apply forall_congr'
@@ -338,7 +338,7 @@ def fromGlued : 𝒰.gluedCover.glued ⟶ X := by
 theorem ι_fromGlued (x : 𝒰.J) : 𝒰.gluedCover.ι x ≫ 𝒰.fromGlued = 𝒰.map x :=
   Multicoequalizer.π_desc _ _ _ _ _
 
-theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.1.base := by
+theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.val.base := by
   intro x y h
   obtain ⟨i, x, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective x
   obtain ⟨j, y, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective y
@@ -368,12 +368,12 @@ instance fromGlued_stalk_iso (x : 𝒰.gluedCover.glued.carrier) :
   rw [this]
   infer_instance
 
-theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.1.base := by
+theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.val.base := by
   intro U hU
   rw [isOpen_iff_forall_mem_open]
   intro x hx
   rw [𝒰.gluedCover.isOpen_iff] at hU
-  use 𝒰.fromGlued.val.base '' U ∩ Set.range (𝒰.map (𝒰.f x)).1.base
+  use 𝒰.fromGlued.val.base '' U ∩ Set.range (𝒰.map (𝒰.f x)).val.base
   use Set.inter_subset_left
   constructor
   · rw [← Set.image_preimage_eq_inter_range]
@@ -384,7 +384,7 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.1.base := by
     exact Set.preimage_image_eq _ 𝒰.fromGlued_injective
   · exact ⟨hx, 𝒰.covers x⟩
 
-theorem fromGlued_openEmbedding : OpenEmbedding 𝒰.fromGlued.1.base :=
+theorem fromGlued_openEmbedding : OpenEmbedding 𝒰.fromGlued.val.base :=
   openEmbedding_of_continuous_injective_open
     (by fun_prop) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
 
@@ -392,7 +392,7 @@ instance : Epi 𝒰.fromGlued.val.base := by
   rw [TopCat.epi_iff_surjective]
   intro x
   obtain ⟨y, h⟩ := 𝒰.covers x
-  use (𝒰.gluedCover.ι (𝒰.f x)).1.base y
+  use (𝒰.gluedCover.ι (𝒰.f x)).val.base y
   erw [← comp_apply] -- now `erw` after #13170
   rw [← 𝒰.ι_fromGlued (𝒰.f x)] at h
   exact h

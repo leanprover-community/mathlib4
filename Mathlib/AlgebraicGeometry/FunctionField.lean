@@ -75,9 +75,9 @@ theorem Scheme.germToFunctionField_injective [IsIntegral X] (U : X.Opens) [Nonem
 
 theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f]
     [hX : IrreducibleSpace X] [IrreducibleSpace Y] :
-    f.1.base (genericPoint X) = genericPoint Y := by
+    f.val.base (genericPoint X) = genericPoint Y := by
   apply ((genericPoint_spec Y).eq _).symm
-  convert (genericPoint_spec X).image (show Continuous f.1.base by fun_prop)
+  convert (genericPoint_spec X).image (show Continuous f.val.base by fun_prop)
   symm
   rw [eq_top_iff, Set.top_eq_univ, Set.top_eq_univ]
   convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.isOpen_range _
@@ -124,7 +124,7 @@ instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain 
 instance {X : Scheme} [IsIntegral X] {U : X.Opens} [hU : Nonempty U] :
     IsIntegral (X ∣_ᵤ U) :=
   haveI : Nonempty (X ∣_ᵤ U) := hU
-  isIntegral_of_isOpenImmersion (Scheme.ιOpens U)
+  isIntegral_of_isOpenImmersion (U.ι)
 
 theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : X.Opens}
     (hU : IsAffineOpen U) [h : Nonempty U] :
@@ -139,7 +139,7 @@ theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : 
       ((X ∣_ᵤ U).isoSpec.hom ≫ Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op))
   -- Porting note: this was `ext1`
   apply Subtype.ext
-  exact (genericPoint_eq_of_isOpenImmersion (Scheme.ιOpens U)).symm
+  exact (genericPoint_eq_of_isOpenImmersion (U.ι)).symm
 
 theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : X.Opens)
     (hU : IsAffineOpen U) [hU' : Nonempty U] :
