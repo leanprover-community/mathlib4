@@ -140,7 +140,7 @@ theorem card_eq_zero_of_injective [Nonempty α] {f : α → β} (hf : Function.I
 theorem card_eq_zero_of_embedding [Nonempty α] (f : α ↪ β) (h : Nat.card α = 0) : Nat.card β = 0 :=
   card_eq_zero_of_injective f.2 h
 
-theorem card_sum [Finite α] [Finite β] : Nat.card (Sum α β) = Nat.card α + Nat.card β := by
+theorem card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + Nat.card β := by
   haveI := Fintype.ofFinite α
   haveI := Fintype.ofFinite β
   simp only [Nat.card_eq_fintype_card, Fintype.card_sum]
