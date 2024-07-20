@@ -5,9 +5,7 @@ Authors: Stuart Presnell
 -/
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Nat.GCD.BigOperators
-import Mathlib.Data.Nat.PrimeFin
 import Mathlib.NumberTheory.Padics.PadicVal
-import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Prime factorizations
