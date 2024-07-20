@@ -17,16 +17,16 @@ A `MorphismProperty Scheme` is a predicate on morphisms between schemes. For pro
 the target, its behaviour is entirely determined by its definition on morphisms into affine schemes,
 which we call an `AffineTargetMorphismProperty`. In this file, we provide API lemmas for properties
 local at the target, and special support for those properties whose `AffineTargetMorphismProperty`
-takes on a more simple form. The main interfaces of the API are the typeclasses
-`IsLocalAtTarget` and `HasAffineProperty`, which we describle in detail below.
+takes on a more simple form. We also provide API lemmas for properties local at the target.
+The main interfaces of the API are the typeclasses `IsLocalAtTarget`, `IsLocalAtSource` and
+`HasAffineProperty`, which we describle in detail below.
 
 ## `IsLocalAtTarget`
 
 - `AlgebraicGeometry.IsLocalAtTarget`: We say that `IsLocalAtTarget P` for
 `P : MorphismProperty Scheme` if
 1. `P` respects isomorphisms.
-2. If `P` holds for `f : X ⟶ Y`, then `P` holds for `f ∣_ U` for any open `U` of `Y`.
-3. If `P` holds for `f ∣_ U` for an open cover `U` of `Y`, then `P` holds for `f`.
+2. `P` holds for `f ∣_ U` for an open cover `U` of `Y` if and only if `P` holds for `f`.
 
 For a morphism property `P` local at the target and `f : X ⟶ Y`, we provide these API lemmas:
 
@@ -38,6 +38,24 @@ For a morphism property `P` local at the target and `f : X ⟶ Y`, we provide th
     `P f ↔ ∀ i, P (f ∣_ U i)` for a family `U i` of open sets covering `Y`.
 - `AlgebraicGeometry.IsLocalAtTarget.iff_of_openCover`:
     `P f ↔ ∀ i, P (𝒰.pullbackHom f i)` for `𝒰 : Y.openCover`.
+
+## `IsLocalAtSource`
+
+- `AlgebraicGeometry.IsLocalAtSource`: We say that `IsLocalAtSource P` for
+`P : MorphismProperty Scheme` if
+1. `P` respects isomorphisms.
+2. `P` holds for `𝒰.map i ≫ f` for an open cover `𝒰` of `X` iff `P` holds for `f : X ⟶ Y`.
+
+For a morphism property `P` local at the source and `f : X ⟶ Y`, we provide these API lemmas:
+
+- `AlgebraicGeometry.IsLocalAtTarget.comp`:
+    `P` is preserved under composition with open immersions at the source.
+- `AlgebraicGeometry.IsLocalAtTarget.iff_of_iSup_eq_top`:
+    `P f ↔ ∀ i, P (ιOpens U ≫ f)` for a family `U i` of open sets covering `X`.
+- `AlgebraicGeometry.IsLocalAtTarget.iff_of_openCover`:
+    `P f ↔ ∀ i, P (𝒰.map i ≫ f)` for `𝒰 : X.openCover`.
+- `AlgebraicGeometry.IsLocalAtTarget.of_isOpenImmersion`: If `P` contains identities then `P` holds
+    for open immersions.
 
 ## `AffineTargetMorphismProperty`
 
@@ -212,7 +230,7 @@ instance inf (P Q : MorphismProperty Scheme) [IsLocalAtSource P] [IsLocalAtSourc
 variable {P} [IsLocalAtSource P]
 variable {X Y U V : Scheme.{u}} {f : X ⟶ Y} {g : U ⟶ Y} [IsOpenImmersion g] (𝒰 : X.OpenCover)
 
-lemma of_isOpenImmersion {UX : Scheme.{u}} (H : P f) (i : UX ⟶ X) [IsOpenImmersion i] :
+lemma comp {UX : Scheme.{u}} (H : P f) (i : UX ⟶ X) [IsOpenImmersion i] :
     P (i ≫ f) :=
   (iff_of_openCover' f (X.affineCover.add i)).mp H .none
 
@@ -225,7 +243,7 @@ lemma of_iSup_eq_top {ι} (U : ι → Opens X) (hU : iSup U = ⊤)
 
 theorem iff_of_iSup_eq_top {ι} (U : ι → Opens X) (hU : iSup U = ⊤) :
     P f ↔ ∀ i, P (Scheme.ιOpens (U i) ≫ f) :=
-  ⟨fun H _ ↦ of_isOpenImmersion H _, of_iSup_eq_top U hU⟩
+  ⟨fun H _ ↦ comp H _, of_iSup_eq_top U hU⟩
 
 lemma of_openCover (H : ∀ i, P (𝒰.map i ≫ f)) : P f := by
   refine of_iSup_eq_top (fun i ↦ (𝒰.map i).opensRange) 𝒰.iSup_opensRange fun i ↦ ?_
@@ -236,7 +254,21 @@ lemma of_openCover (H : ∀ i, P (𝒰.map i ≫ f)) : P f := by
 
 theorem iff_of_openCover :
     P f ↔ ∀ i, P (𝒰.map i ≫ f) :=
-  ⟨fun H _ ↦ of_isOpenImmersion H _, of_openCover _⟩
+  ⟨fun H _ ↦ comp H _, of_openCover _⟩
+
+variable (f) in
+lemma of_isOpenImmersion [P.ContainsIdentities] [IsOpenImmersion f] : P f :=
+  Category.comp_id f ▸ comp (P.id_mem Y) f
+
+lemma isLocalAtTarget [P.IsMultiplicative]
+    (hP : ∀ {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion g], P (f ≫ g) → P f) :
+    IsLocalAtTarget P where
+  iff_of_openCover' {X Y} f 𝒰 := by
+    refine (iff_of_openCover (𝒰.pullbackCover f)).trans (forall_congr' fun i ↦ ?_)
+    rw [← Scheme.OpenCover.pullbackHom_map]
+    constructor
+    · exact hP _ _
+    · exact fun H ↦ P.comp_mem _ _ H (of_isOpenImmersion _)
 
 end IsLocalAtSource
 
