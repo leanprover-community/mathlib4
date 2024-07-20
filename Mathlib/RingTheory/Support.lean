@@ -3,8 +3,9 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.RingTheory.PrimeSpectrum
 import Mathlib.Algebra.Module.LocalizedModule
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+import Mathlib.RingTheory.Localization.AtPrime
 
 /-!
 
@@ -14,18 +15,19 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 - `Module.support`: The support of an `R`-module as a subset of `Spec R`.
 - `Module.mem_support_iff_exists_annihilator`: `p ∈ Supp M ↔ ∃ m, Ann(m) ≤ p`.
 - `Module.stableUnderSpecialization_support`: `Supp M` is stable under specialization.
-- `LocalizedModule.subsingleton_iff_disjoint` : `M[1/f] = 0 ↔ D(f) ∩ Supp M = 0`.
 - `Module.support_eq_empty_iff`: `Supp M = ∅ ↔ M = 0`
 - `Module.support_of_exact`: `Supp N = Supp M ∪ Supp P` for an exact sequence `0 → M → N → P → 0`.
 - `Module.support_eq_zeroLocus`: If `M` is `R`-finite, then `Supp M = Z(Ann(M))`.
 - `LocalizedModule.exists_subsingleton_away`:
   If `M` is `R`-finite and `Mₚ = 0`, then `M[1/f] = 0` for some `p ∈ D(f)`.
 
+Also see `AlgebraicGeometry/PrimeSpectrum/Module` for other results
+depending on the zariski topology.
+
 ## TODO
 - Connect to associated primes once we have them in mathlib.
 - Given an `R`-algebra `f : R → A` and a finite `R`-module `M`,
   `Supp_A (A ⊗ M) = f♯ ⁻¹ Supp M` where `f♯ : Spec A → Spec R`. (stacks#0BUR)
-- If `M` is finitely presented, the complement of `Supp M` is quasi-compact. (stacks#051B)
 -/
 
 variable {R M} [CommRing R] [AddCommGroup M] [Module R M]
@@ -77,13 +79,6 @@ lemma Module.annihilator_le_of_mem_support {p} (hp : p ∈ Module.support R M) :
   obtain ⟨m, hm⟩ := mem_support_iff_exists_annihilator.mp hp
   exact le_trans ((Submodule.subtype _).annihilator_le_of_injective Subtype.val_injective) hm
 
-lemma Module.stableUnderSpecialization_support :
-    StableUnderSpecialization (Module.support R M) := by
-  intros x y e H
-  rw [mem_support_iff_exists_annihilator] at H ⊢
-  obtain ⟨m, hm⟩ := H
-  exact ⟨m, hm.trans ((PrimeSpectrum.le_iff_specializes _ _).mpr e)⟩
-
 lemma LocalizedModule.subsingleton_iff_support_subset {f : R} :
     Subsingleton (LocalizedModule (.powers f) M) ↔
       Module.support R M ⊆ PrimeSpectrum.zeroLocus {f} := by
@@ -128,14 +123,6 @@ lemma Module.support_of_noZeroSMulDivisors [NoZeroSMulDivisors R M] [Nontrivial 
   simp only [Set.eq_univ_iff_forall, mem_support_iff', ne_eq, smul_eq_zero, not_or]
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
   exact fun p ↦ ⟨x, fun r hr ↦ ⟨fun e ↦ hr (e ▸ p.asIdeal.zero_mem), hx⟩⟩
-
-/-- `M[1/f] = 0` if and only if `D(f) ∩ Supp M = 0`. -/
-lemma LocalizedModule.subsingleton_iff_disjoint {f : R} :
-    Subsingleton (LocalizedModule (.powers f) M) ↔
-      Disjoint ↑(PrimeSpectrum.basicOpen f) (Module.support R M) := by
-  rw [subsingleton_iff_support_subset, PrimeSpectrum.basicOpen_eq_zeroLocus_compl,
-    disjoint_compl_left_iff]
-  rfl
 
 lemma Module.mem_support_iff_of_finite [Module.Finite R M] {p} :
     p ∈ Module.support R M ↔ Module.annihilator R M ≤ p.asIdeal := by
@@ -190,27 +177,12 @@ lemma LinearEquiv.support_eq (e : M ≃ₗ[R] N) :
   (Module.support_subset_of_injective e.toLinearMap e.injective).antisymm
     (Module.support_subset_of_surjective e.toLinearMap e.surjective)
 
-variable {A} [CommRing A] [Algebra R A] [Module A M]
-
-lemma Module.support_subset_preimage_comap [IsScalarTower R A M] :
-    Module.support A M ⊆ PrimeSpectrum.comap (algebraMap R A) ⁻¹' Module.support R M := by
-  intro x hx
-  simp only [Set.mem_preimage, mem_support_iff', PrimeSpectrum.comap_asIdeal, Ideal.mem_comap,
-    ne_eq, not_imp_not] at hx ⊢
-  obtain ⟨m, hm⟩ := hx
-  exact ⟨m, fun r e ↦ hm _ (by simpa)⟩
-
 section Finite
 
 /-- If `M` is `R`-finite, then `Supp M = Z(Ann(M))`. -/
 lemma Module.support_eq_zeroLocus [Module.Finite R M] :
     Module.support R M = PrimeSpectrum.zeroLocus (Module.annihilator R M) :=
   Set.ext fun _ ↦ mem_support_iff_of_finite
-
-lemma Module.isClosed_support [Module.Finite R M] :
-    IsClosed (Module.support R M) :=
-  support_eq_zeroLocus (R := R) (M := M) ▸
-    PrimeSpectrum.isClosed_zeroLocus (Module.annihilator R M)
 
 /-- If `M` is a finite module such that `Mₚ = 0` for some `p`,
 then `M[1/f] = 0` for some `p ∈ D(f)`. -/
@@ -219,9 +191,10 @@ lemma LocalizedModule.exists_subsingleton_away [Module.Finite R M] (p : Ideal R)
     ∃ f ∉ p, Subsingleton (LocalizedModule (.powers f) M) := by
   have : ⟨p, inferInstance⟩ ∈ (Module.support R M)ᶜ := by
     simpa [Module.not_mem_support_iff]
-  obtain ⟨_, ⟨_, ⟨f, rfl⟩, rfl⟩, h₁, h₂⟩ :=
-    PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open this
-      Module.isClosed_support.isOpen_compl
-  exact ⟨f, h₁, subsingleton_iff_disjoint.mpr (Set.subset_compl_iff_disjoint_right.mp h₂)⟩
+  rw [Module.support_eq_zeroLocus, ← Set.biUnion_of_singleton (Module.annihilator R M : Set R),
+    PrimeSpectrum.zeroLocus_iUnion₂, Set.compl_iInter₂, Set.mem_iUnion₂] at this
+  obtain ⟨f, hf, hf'⟩ := this
+  exact ⟨f, by simpa using hf', subsingleton_iff.mpr
+    fun m ↦ ⟨f, Submonoid.mem_powers f, Module.mem_annihilator.mp hf _⟩⟩
 
 end Finite
