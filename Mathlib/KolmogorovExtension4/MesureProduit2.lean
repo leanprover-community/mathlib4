@@ -78,23 +78,19 @@ def zer : (X 0) ≃ᵐ ((i : Iic 0) → X i) where
 
 noncomputable def prod_meas : Measure ((n : ℕ) → X n) :=
   ((μ 0).map zer).bind
-    (@ionescu_tulcea_kernel _ (ProbabilityMeasure.nonempty ⟨μ 0, hμ 0⟩) _
+    (@ionescuTulceaKernel _ (ProbabilityMeasure.nonempty ⟨μ 0, hμ 0⟩) _
       (fun n ↦ kernel.const _ (μ (n + 1))) _ 0)
 
 instance {X Y : Type*} [MeasurableSpace X] [MeasurableSpace Y] {μ : Measure X} {κ : kernel X Y}
     [IsProbabilityMeasure μ] [IsMarkovKernel κ] : IsProbabilityMeasure (μ.bind κ) := by
   constructor
-  rw [Measure.bind_apply]
+  rw [Measure.bind_apply MeasurableSet.univ (kernel.measurable _)]
   simp
-  · exact MeasurableSet.univ
-  · exact kernel.measurable _
 
 instance : IsProbabilityMeasure (prod_meas μ) := by
   rw [prod_meas]
-  have : IsProbabilityMeasure ((μ 0).map zer) := by
-    constructor
-    rw [Measure.map_apply zer.measurable MeasurableSet.univ]
-    simp
+  have : IsProbabilityMeasure ((μ 0).map zer) :=
+    isProbabilityMeasure_map zer.measurable.aemeasurable
   infer_instance
 
 theorem er_succ_preimage_pi {n : ℕ} (hn : 0 < n) (s : (i : Ioc 0 (n + 1)) → Set (X i)) :
@@ -151,14 +147,14 @@ theorem kerNat_prod {N : ℕ} (hN : 0 < N) :
     · exact (e n).measurable_invFun (ms _)
 
 theorem prod_noyau_proj (N : ℕ) :
-    composition (fun n ↦ kernel.const _ (μ (n + 1))) 0 N =
+    partialKernel (fun n ↦ kernel.const _ (μ (n + 1))) 0 N =
       kernel.map ((kernel.deterministic id measurable_id) ×ₖ
           (kernel.const _ (Measure.pi (fun i : Ioc 0 N ↦ μ i))))
         (el 0 N (zero_le N)) (el 0 N (zero_le N)).measurable := by
   rcases eq_zero_or_pos N with hN | hN
   · cases hN
     have : IsEmpty (Ioc 0 0) := by simp
-    rw [composition, dif_neg (lt_irrefl 0), Measure.pi_of_empty]
+    rw [partialKernel, dif_neg (lt_irrefl 0), Measure.pi_of_empty]
     ext x s ms
     rw [kernel.map_apply, kernel.deterministic_apply, kernel.prod_apply,
       kernel.deterministic_apply, kernel.const_apply, Measure.dirac_prod_dirac,
@@ -169,7 +165,7 @@ theorem prod_noyau_proj (N : ℕ) :
     simp only [id_eq, el, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, mem_preimage]
     congrm (fun i ↦ ?_) ∈ s
     simp [(mem_Iic_zero i.2).symm]
-  · rw [composition, dif_pos hN, kerNat_prod _ hN]
+  · rw [partialKernel, dif_pos hN, kerNat_prod _ hN]
 
 theorem el_preimage {n : ℕ} (s : (i : Iic n) → Set (X i)) :
     (el 0 n (zero_le n)) ⁻¹' (Set.univ.pi s) =
@@ -222,7 +218,8 @@ theorem projectiveLimit_prod_meas : IsProjectiveLimit (prod_meas μ)
     simp
   rw [this, ← Measure.map_map (measurable_proj₂' _ _ sub) (measurable_proj' _)]
   congr
-  rw [prod_meas, Measure.map_bind, map_bind_eq_bind_comap, ionescu_tulcea_proj, prod_noyau_proj]
+  rw [prod_meas, Measure.map_bind, map_bind_eq_bind_comap, ionescuTulceaKernel_proj,
+    prod_noyau_proj]
   refine (Measure.pi_eq fun s ms ↦ ?_).symm
   have mpis := MeasurableSet.univ_pi ms
   rw [Measure.bind_apply mpis (kernel.measurable _), ← prod_Iic,
