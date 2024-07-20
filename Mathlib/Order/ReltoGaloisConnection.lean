@@ -46,11 +46,11 @@ open OrderDual
 
 /-- `leftDual` maps any set `J` of elements of type `α` to the set `{b : β | ∀ a ∈ J, R a b}` of
 elements `b` of type `β` such that `R a b` for every element `a` of `J`. -/
-def leftDual (J : Set α) : (Set β)ᵒᵈ := toDual {b : β | ∀ a ∈ J, R a b}
+def leftDual (J : Set α) : (Set β)ᵒᵈ := toDual {b : β | ∀ ⦃a⦄, a ∈ J → R a b}
 
 /-- `rightDual` maps any set `I` of elements of type `β` to the set `{a : α | ∀ b ∈ ofDual I, R a b}`
 of elements `a` of type `α` such that `R a b` for every element `b` of `I`. -/
-def rightDual (I : (Set β)ᵒᵈ) : Set α := {a : α | ∀ b ∈ ofDual I, R a b}
+def rightDual (I : (Set β)ᵒᵈ) : Set α := {a : α | ∀ ⦃b⦄, b ∈ ofDual I → R a b}
 
 /-- The pair of functions `leftDual` and `rightDual` forms a Galois connection. -/
 theorem galoisConnection : GaloisConnection (leftDual R) (rightDual R) := by
