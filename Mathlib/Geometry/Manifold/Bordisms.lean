@@ -213,35 +213,35 @@ such a structure is in fact canonically induced.
 -/
 structure BoundaryManifoldData (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) [SmoothManifoldWithCorners I M] where
-  -- TODO: give these fields better names!
   E' : Type*
-  [normedGroup : NormedAddCommGroup E']
+  [normedAddCommGroup : NormedAddCommGroup E']
   [normedSpace : NormedSpace ℝ E']
   H' : Type*
-  [topH : TopologicalSpace H']
+  [topologicalSpace : TopologicalSpace H']
   charts : ChartedSpace H' (I.boundary M)
-  J : ModelWithCorners ℝ E' H'
-  mfd : SmoothManifoldWithCorners J (I.boundary M)
+  model : ModelWithCorners ℝ E' H'
+  smoothManifold : SmoothManifoldWithCorners model (I.boundary M)
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
   {J : ModelWithCorners ℝ E' H'} [SmoothManifoldWithCorners J N]
 
-instance (d : BoundaryManifoldData M I) : TopologicalSpace d.H' := d.topH
+instance (d : BoundaryManifoldData M I) : TopologicalSpace d.H' := d.topologicalSpace
 
-instance (d : BoundaryManifoldData M I) : NormedAddCommGroup d.E' := d.normedGroup
+instance (d : BoundaryManifoldData M I) : NormedAddCommGroup d.E' := d.normedAddCommGroup
 
 instance (d : BoundaryManifoldData M I) : NormedSpace ℝ d.E' := d.normedSpace
 
 instance (d : BoundaryManifoldData M I) : ChartedSpace d.H' (I.boundary M) := d.charts
 
-instance (d : BoundaryManifoldData M I) : SmoothManifoldWithCorners d.J (I.boundary M) := d.mfd
+instance (d : BoundaryManifoldData M I) : SmoothManifoldWithCorners d.model (I.boundary M) :=
+  d.smoothManifold
 
 -- In general, constructing `BoundaryManifoldData` requires deep results: some cases and results
 -- we can state already. Boundaryless manifolds have nice boundary, as do products.
 
--- move to SmoothManifoldWithCorners
+-- move to `ChartedSpace.lean`
 /-- An empty type is a charted space over any topological space. -/
 def ChartedSpace.empty (H : Type*) [TopologicalSpace H]
  (M : Type*) [TopologicalSpace M] [IsEmpty M] : ChartedSpace H M where
@@ -250,7 +250,7 @@ def ChartedSpace.empty (H : Type*) [TopologicalSpace H]
   mem_chart_source x := False.elim (IsEmpty.false x)
   chart_mem_atlas x := False.elim (IsEmpty.false x)
 
--- move to InteriorBoundary
+-- move to `InteriorBoundary.lean`
 instance [BoundarylessManifold I M] : IsEmpty (I.boundary M) :=
   isEmpty_coe_sort.mpr (ModelWithCorners.Boundaryless.boundary_eq_empty I)
 
@@ -260,9 +260,10 @@ def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] : BoundaryMa
   E' := E
   H' := E
   charts := ChartedSpace.empty E (I.boundary M : Set M)
-  J := modelWithCornersSelf ℝ E
-  mfd := by sorry -- the empty set is a smooth manifold; do we have this already?
+  model := modelWithCornersSelf ℝ E
+  smoothManifold := by sorry -- the empty set is a smooth manifold; do we have this already?
 
+#exit
 -- another trivial case: modelWithCornersSelf on euclidean half space!
 
 variable (M N) in
@@ -273,8 +274,8 @@ def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M] :
   E' := E × E'
   H' := H × H'
   charts := sorry --ChartedSpace.prod H H'
-  J := sorry
-  mfd := sorry
+  model := sorry
+  smoothManifold := sorry
 
 /- TODO: fix the statement and details, once the first construction is clearer
 /-- If `M` has nice boundary and `N` is boundaryless, `M × N` has nice boundary. -/
@@ -306,7 +307,7 @@ has a charted space structure and model (included in `d`) which makes it a smoot
 such that the inclusion `∂M → M` is smooth. -/
 class HasNiceBoundary (d : BoundaryManifoldData M I) where
   /-- The inclusion of `∂M` into `M` is smooth w.r.t. `d`. -/
-  smooth_inclusion : ContMDiff d.J I 1 ((fun ⟨x, _⟩ ↦ x) : (I.boundary M) → M)
+  smooth_inclusion : ContMDiff d.model I 1 ((fun ⟨x, _⟩ ↦ x) : (I.boundary M) → M)
 
 instance [BoundarylessManifold I M] :
     HasNiceBoundary (BoundaryManifoldData.of_boundaryless (I := I) (M := M)) where
