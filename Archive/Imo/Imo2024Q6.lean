@@ -54,10 +54,12 @@ lemma Aquaesulian.injective : Function.Injective f := by
   · exact (h.eq_of_apply_eq_inl he.symm hc).symm
   · exact h.eq_of_apply_eq_inl he hc
 
+@[simp]
 lemma Aquaesulian.apply_zero : f 0 = 0 := by
   refine h.injective ?_
   convert h.apply_apply_add 0 using 1 <;> simp
 
+@[simp]
 lemma Aquaesulian.apply_neg_apply_add (x : G) : f (-(f x)) + x = 0 := by
   rcases h x (-(f x)) with hc | hc
   · rw [add_right_neg, ← h.apply_zero] at hc
@@ -65,13 +67,13 @@ lemma Aquaesulian.apply_neg_apply_add (x : G) : f (-(f x)) + x = 0 := by
   · rw [add_right_neg, h.apply_zero] at hc
     exact hc.symm
 
+@[simp]
 lemma Aquaesulian.apply_neg_apply (x : G) : f (-(f x)) = -x := by
   rw [← add_eq_zero_iff_eq_neg]
   exact h.apply_neg_apply_add x
 
 lemma Aquaesulian.apply_neg_apply_neg (x : G) : f (-(f (-x))) = x := by
-  convert h.apply_neg_apply (-x)
-  rw [neg_neg]
+  simp [h]
 
 lemma Aquaesulian.apply_neg_of_apply_eq {x₁ x₂ : G} (hx : f x₁ = x₂) : f (-x₂) = -x₁ := by
   rw [← hx]
