@@ -6,10 +6,7 @@ Authors: Johannes Hölzl, Scott Morrison
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Regular.SMul
-import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Rat.BigOperators
-import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Miscellaneous definitions, lemmas, and constructions using finsupp
