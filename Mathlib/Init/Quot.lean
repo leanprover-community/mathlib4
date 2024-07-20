@@ -22,9 +22,6 @@ These will be deleted soon so will not significantly delay deleting otherwise em
 Some induction principles tagged with `elab_as_elim`, since the attribute is missing in core.
 -/
 
-#align quotient.induction_on Quotient.inductionOn
-#align quot.induction_on Quot.inductionOn
-
 universe u v
 variable {α : Sort u} {r : α → α → Prop} {motive : Quot r → Sort v}
 
@@ -35,7 +32,6 @@ protected abbrev Quot.recOn'
     (h : (a b : α) → (p : r a b) → Eq.ndrec (f a) (Quot.sound p) = f b) :
     motive q :=
  q.rec f h
-#align quot.rec_on Quot.recOn'
 -- expected token
 
 /-- Version of `Quot.recOnSubsingleton` tagged with `elab_as_elim` -/
@@ -48,6 +44,5 @@ protected abbrev Quot.recOnSubsingleton'
   induction q using Quot.rec
   apply f
   apply Subsingleton.elim
-#align quot.rec_on_subsingleton Quot.recOnSubsingleton'
 
 theorem Quotient.mk'_eq_mk [s : Setoid α] : Quotient.mk' = Quotient.mk s := rfl

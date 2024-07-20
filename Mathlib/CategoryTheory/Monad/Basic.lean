@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 
-#align_import category_theory.monad.basic from "leanprover-community/mathlib"@"9c6816cab5872990d450d2c2e7832176167b1c07"
-
 /-!
 # Monads
 
@@ -45,7 +43,6 @@ structure Monad extends C ⥤ C where
   assoc : ∀ X, toFunctor.map (NatTrans.app μ X) ≫ μ.app _ = μ.app _ ≫ μ.app _ := by aesop_cat
   left_unit : ∀ X : C, η.app (toFunctor.obj X) ≫ μ.app _ = 𝟙 _ := by aesop_cat
   right_unit : ∀ X : C, toFunctor.map (η.app X) ≫ μ.app _ = 𝟙 _ := by aesop_cat
-#align category_theory.monad CategoryTheory.Monad
 
 /-- The data of a comonad on C consists of an endofunctor G together with natural transformations
 ε : G ⟶ 𝟭 C and δ : G ⟶ G ⋙ G satisfying three equations:
@@ -62,18 +59,15 @@ structure Comonad extends C ⥤ C where
     aesop_cat
   left_counit : ∀ X : C, δ.app X ≫ ε.app (toFunctor.obj X) = 𝟙 _ := by aesop_cat
   right_counit : ∀ X : C, δ.app X ≫ toFunctor.map (ε.app X) = 𝟙 _ := by aesop_cat
-#align category_theory.comonad CategoryTheory.Comonad
 
 variable {C}
 variable (T : Monad C) (G : Comonad C)
 
 instance coeMonad : Coe (Monad C) (C ⥤ C) :=
   ⟨fun T => T.toFunctor⟩
-#align category_theory.coe_monad CategoryTheory.coeMonad
 
 instance coeComonad : Coe (Comonad C) (C ⥤ C) :=
   ⟨fun G => G.toFunctor⟩
-#align category_theory.coe_comonad CategoryTheory.coeComonad
 
 -- Porting note: these lemmas are syntactic tautologies
 --@[simp]
@@ -86,51 +80,33 @@ instance coeComonad : Coe (Comonad C) (C ⥤ C) :=
 --  rfl
 --#align category_theory.comonad_to_functor_eq_coe CategoryTheory.comonad_toFunctor_eq_coe
 
-#align category_theory.monad.η CategoryTheory.Monad.η
-#align category_theory.monad.μ CategoryTheory.Monad.μ
-#align category_theory.comonad.ε CategoryTheory.Comonad.ε
-#align category_theory.comonad.δ CategoryTheory.Comonad.δ
-
 /-- A custom simps projection for the functor part of a monad, as a coercion. -/
 def Monad.Simps.coe :=
   (T : C ⥤ C)
-#align category_theory.monad.simps.coe CategoryTheory.Monad.Simps.coe
 
 /-- A custom simps projection for the unit of a monad, in simp normal form. -/
 def Monad.Simps.η : 𝟭 _ ⟶ (T : C ⥤ C) :=
   T.η
-#align category_theory.monad.simps.η CategoryTheory.Monad.Simps.η
 
 /-- A custom simps projection for the multiplication of a monad, in simp normal form. -/
 def Monad.Simps.μ : (T : C ⥤ C) ⋙ (T : C ⥤ C) ⟶ (T : C ⥤ C) :=
   T.μ
-#align category_theory.monad.simps.μ CategoryTheory.Monad.Simps.μ
 
 /-- A custom simps projection for the functor part of a comonad, as a coercion. -/
 def Comonad.Simps.coe :=
   (G : C ⥤ C)
-#align category_theory.comonad.simps.coe CategoryTheory.Comonad.Simps.coe
 
 /-- A custom simps projection for the counit of a comonad, in simp normal form. -/
 def Comonad.Simps.ε : (G : C ⥤ C) ⟶ 𝟭 _ :=
   G.ε
-#align category_theory.comonad.simps.ε CategoryTheory.Comonad.Simps.ε
 
 /-- A custom simps projection for the comultiplication of a comonad, in simp normal form. -/
 def Comonad.Simps.δ : (G : C ⥤ C) ⟶ (G : C ⥤ C) ⋙ (G : C ⥤ C) :=
   G.δ
-#align category_theory.comonad.simps.δ CategoryTheory.Comonad.Simps.δ
 
 initialize_simps_projections CategoryTheory.Monad (toFunctor → coe)
 
 initialize_simps_projections CategoryTheory.Comonad (toFunctor → coe)
-
-#align category_theory.monad.assoc CategoryTheory.Monad.assoc
-#align category_theory.monad.left_unit CategoryTheory.Monad.left_unit
-#align category_theory.monad.right_unit CategoryTheory.Monad.right_unit
-#align category_theory.comonad.coassoc CategoryTheory.Comonad.coassoc
-#align category_theory.comonad.left_counit CategoryTheory.Comonad.left_counit
-#align category_theory.comonad.right_counit CategoryTheory.Comonad.right_counit
 
 -- Porting note: investigate whether `Monad.assoc` can be a `simp` lemma?
 attribute [reassoc (attr := simp)] Monad.left_unit Monad.right_unit
@@ -142,7 +118,6 @@ structure MonadHom (T₁ T₂ : Monad C) extends NatTrans (T₁ : C ⥤ C) T₂ 
   app_η : ∀ X, T₁.η.app X ≫ app X = T₂.η.app X := by aesop_cat
   app_μ : ∀ X, T₁.μ.app X ≫ app X = (T₁.map (app X) ≫ app _) ≫ T₂.μ.app X := by
     aesop_cat
-#align category_theory.monad_hom CategoryTheory.MonadHom
 
 initialize_simps_projections MonadHom (+toNatTrans, -app)
 
@@ -151,7 +126,6 @@ initialize_simps_projections MonadHom (+toNatTrans, -app)
 structure ComonadHom (M N : Comonad C) extends NatTrans (M : C ⥤ C) N where
   app_ε : ∀ X, app X ≫ N.ε.app X = M.ε.app X := by aesop_cat
   app_δ : ∀ X, app X ≫ N.δ.app X = M.δ.app X ≫ app _ ≫ N.map (app X) := by aesop_cat
-#align category_theory.comonad_hom CategoryTheory.ComonadHom
 
 initialize_simps_projections ComonadHom (+toNatTrans, -app)
 
@@ -202,13 +176,11 @@ instance {T : Monad C} : Inhabited (MonadHom T T) :=
 @[simp]
 theorem MonadHom.id_toNatTrans (T : Monad C) : (𝟙 T : T ⟶ T).toNatTrans = 𝟙 (T : C ⥤ C) :=
   rfl
-#align category_theory.monad_hom.id_to_nat_trans CategoryTheory.MonadHom.id_toNatTrans
 
 @[simp]
 theorem MonadHom.comp_toNatTrans {T₁ T₂ T₃ : Monad C} (f : T₁ ⟶ T₂) (g : T₂ ⟶ T₃) :
     (f ≫ g).toNatTrans = ((f.toNatTrans : _ ⟶ (T₂ : C ⥤ C)) ≫ g.toNatTrans : (T₁ : C ⥤ C) ⟶ T₃) :=
   rfl
-#align category_theory.monad_hom.comp_to_nat_trans CategoryTheory.MonadHom.comp_toNatTrans
 
 instance {G : Comonad C} : Inhabited (ComonadHom G G) :=
   ⟨𝟙 G⟩
@@ -216,13 +188,11 @@ instance {G : Comonad C} : Inhabited (ComonadHom G G) :=
 @[simp]
 theorem ComonadHom.id_toNatTrans (T : Comonad C) : (𝟙 T : T ⟶ T).toNatTrans = 𝟙 (T : C ⥤ C) :=
   rfl
-#align category_theory.comonad_hom.id_to_nat_trans CategoryTheory.ComonadHom.id_toNatTrans
 
 @[simp]
 theorem comp_toNatTrans {T₁ T₂ T₃ : Comonad C} (f : T₁ ⟶ T₂) (g : T₂ ⟶ T₃) :
     (f ≫ g).toNatTrans = ((f.toNatTrans : _ ⟶ (T₂ : C ⥤ C)) ≫ g.toNatTrans : (T₁ : C ⥤ C) ⟶ T₃) :=
   rfl
-#align category_theory.comp_to_nat_trans CategoryTheory.comp_toNatTrans
 
 /-- Construct a monad isomorphism from a natural isomorphism of functors where the forward
 direction is a monad morphism. -/
@@ -243,7 +213,6 @@ def MonadIso.mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N)
         simp only [NatTrans.naturality, Iso.inv_hom_id_app, assoc, comp_id, f_μ,
           NatTrans.naturality_assoc, Iso.inv_hom_id_app_assoc, ← Functor.map_comp_assoc]
         simp }
-#align category_theory.monad_iso.mk CategoryTheory.MonadIso.mk
 
 /-- Construct a comonad isomorphism from a natural isomorphism of functors where the forward
 direction is a comonad morphism. -/
@@ -264,7 +233,6 @@ def ComonadIso.mk {M N : Comonad C} (f : (M : C ⥤ C) ≅ N)
         simp only [reassoc_of% (f_δ X), Iso.hom_inv_id_app_assoc, NatTrans.naturality_assoc]
         rw [← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
         apply (comp_id _).symm }
-#align category_theory.comonad_iso.mk CategoryTheory.ComonadIso.mk
 
 variable (C)
 
@@ -274,7 +242,6 @@ variable (C)
 def monadToFunctor : Monad C ⥤ C ⥤ C where
   obj T := T
   map f := f.toNatTrans
-#align category_theory.monad_to_functor CategoryTheory.monadToFunctor
 
 instance : (monadToFunctor C).Faithful where
 
@@ -282,7 +249,6 @@ theorem monadToFunctor_mapIso_monad_iso_mk {M N : Monad C} (f : (M : C ⥤ C) �
     (monadToFunctor _).mapIso (MonadIso.mk f f_η f_μ) = f := by
   ext
   rfl
-#align category_theory.monad_to_functor_map_iso_monad_iso_mk CategoryTheory.monadToFunctor_mapIso_monad_iso_mk
 
 instance : (monadToFunctor C).ReflectsIsomorphisms where
   reflects f _ := (MonadIso.mk (asIso ((monadToFunctor C).map f)) f.app_η f.app_μ).isIso_hom
@@ -293,7 +259,6 @@ instance : (monadToFunctor C).ReflectsIsomorphisms where
 def comonadToFunctor : Comonad C ⥤ C ⥤ C where
   obj G := G
   map f := f.toNatTrans
-#align category_theory.comonad_to_functor CategoryTheory.comonadToFunctor
 
 instance : (comonadToFunctor C).Faithful where
 
@@ -301,7 +266,6 @@ theorem comonadToFunctor_mapIso_comonad_iso_mk {M N : Comonad C} (f : (M : C ⥤
     (comonadToFunctor _).mapIso (ComonadIso.mk f f_ε f_δ) = f := by
   ext
   rfl
-#align category_theory.comonad_to_functor_map_iso_comonad_iso_mk CategoryTheory.comonadToFunctor_mapIso_comonad_iso_mk
 
 instance : (comonadToFunctor C).ReflectsIsomorphisms where
   reflects f _ := (ComonadIso.mk (asIso ((comonadToFunctor C).map f)) f.app_ε f.app_δ).isIso_hom
@@ -316,14 +280,12 @@ and replaced with `@[simps]` in the two declarations below-/
 @[simps!]
 def MonadIso.toNatIso {M N : Monad C} (h : M ≅ N) : (M : C ⥤ C) ≅ N :=
   (monadToFunctor C).mapIso h
-#align category_theory.monad_iso.to_nat_iso CategoryTheory.MonadIso.toNatIso
 
 /-- An isomorphism of comonads gives a natural isomorphism of the underlying functors.
 -/
 @[simps!]
 def ComonadIso.toNatIso {M N : Comonad C} (h : M ≅ N) : (M : C ⥤ C) ≅ N :=
   (comonadToFunctor C).mapIso h
-#align category_theory.comonad_iso.to_nat_iso CategoryTheory.ComonadIso.toNatIso
 
 variable (C)
 
@@ -335,7 +297,6 @@ def id : Monad C where
   toFunctor := 𝟭 C
   η := 𝟙 (𝟭 C)
   μ := 𝟙 (𝟭 C)
-#align category_theory.monad.id CategoryTheory.Monad.id
 
 instance : Inhabited (Monad C) :=
   ⟨Monad.id C⟩
@@ -350,7 +311,6 @@ def id : Comonad C where
   toFunctor := 𝟭 _
   ε := 𝟙 (𝟭 C)
   δ := 𝟙 (𝟭 C)
-#align category_theory.comonad.id CategoryTheory.Comonad.id
 
 instance : Inhabited (Comonad C) :=
   ⟨Comonad.id C⟩
