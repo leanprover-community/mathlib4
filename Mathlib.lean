@@ -2369,15 +2369,6 @@ import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Rat.Sqrt
 import Mathlib.Data.Rat.Star
-import Mathlib.Data.Rbmap.Basic
-import Mathlib.Data.Rbmap.Default
-import Mathlib.Data.Rbtree.Basic
-import Mathlib.Data.Rbtree.DefaultLt
-import Mathlib.Data.Rbtree.Find
-import Mathlib.Data.Rbtree.Init
-import Mathlib.Data.Rbtree.Insert
-import Mathlib.Data.Rbtree.Main
-import Mathlib.Data.Rbtree.MinMax
 import Mathlib.Data.Real.Archimedean
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Cardinality
