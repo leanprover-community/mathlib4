@@ -161,7 +161,6 @@ theorem continuous_eval_const (x : Π i, E i) :
   letI := TopologicalAddGroup.toUniformSpace F
   haveI := comm_topologicalAddGroup_is_uniform (G := F)
   exact (uniformContinuous_eval_const x).continuous
-#align continuous_multilinear_map.continuous_eval_left ContinuousMultilinearMap.continuous_eval_const
 
 @[deprecated (since := "2024-04-10")] alias continuous_eval_left := continuous_eval_const
 
@@ -191,11 +190,9 @@ theorem hasSum_eval {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E F}
     {q : ContinuousMultilinearMap 𝕜 E F} (h : HasSum p q) (m : Π i, E i) :
     HasSum (fun a => p a m) (q m) :=
   h.map (applyAddHom m) (continuous_eval_const m)
-#align continuous_multilinear_map.has_sum_eval ContinuousMultilinearMap.hasSum_eval
 
 theorem tsum_eval [T2Space F] {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E F} (hp : Summable p)
     (m : Π i, E i) : (∑' a, p a) m = ∑' a, p a m :=
   (hasSum_eval hp.hasSum m).tsum_eq.symm
-#align continuous_multilinear_map.tsum_eval ContinuousMultilinearMap.tsum_eval
 
 end ContinuousMultilinearMap

@@ -109,7 +109,6 @@ lemma MonotoneOn.image_Iic_subset (h : MonotoneOn f (Iic b)) : f '' Iic b ⊆ Ii
 
 lemma MonotoneOn.image_Icc_subset (h : MonotoneOn f (Icc a b)) : f '' Icc a b ⊆ Icc (f a) (f b) :=
   h.mapsTo_Icc.image_subset
-#align monotone_on.image_Icc_subset MonotoneOn.image_Icc_subset
 
 lemma AntitoneOn.image_Ici_subset (h : AntitoneOn f (Ici a)) : f '' Ici a ⊆ Iic (f a) :=
   h.mapsTo_Ici.image_subset
@@ -119,7 +118,6 @@ lemma AntitoneOn.image_Iic_subset (h : AntitoneOn f (Iic b)) : f '' Iic b ⊆ Ic
 
 lemma AntitoneOn.image_Icc_subset (h : AntitoneOn f (Icc a b)) : f '' Icc a b ⊆ Icc (f b) (f a) :=
   h.mapsTo_Icc.image_subset
-#align antitone_on.image_Icc_subset AntitoneOn.image_Icc_subset
 
 lemma StrictMonoOn.image_Ioi_subset (h : StrictMonoOn f (Ici a)) : f '' Ioi a ⊆ Ioi (f a) :=
   h.mapsTo_Ioi.image_subset
@@ -147,7 +145,6 @@ lemma Monotone.image_Iic_subset (h : Monotone f) : f '' Iic b ⊆ Iic (f b) :=
 
 lemma Monotone.image_Icc_subset (h : Monotone f) : f '' Icc a b ⊆ Icc (f a) (f b) :=
   (h.monotoneOn _).image_Icc_subset
-#align monotone.image_Icc_subset Monotone.image_Icc_subset
 
 lemma Antitone.image_Ici_subset (h : Antitone f) : f '' Ici a ⊆ Iic (f a) :=
   (h.antitoneOn _).image_Ici_subset
@@ -157,7 +154,6 @@ lemma Antitone.image_Iic_subset (h : Antitone f) : f '' Iic b ⊆ Ici (f b) :=
 
 lemma Antitone.image_Icc_subset (h : Antitone f) : f '' Icc a b ⊆ Icc (f b) (f a) :=
   (h.antitoneOn _).image_Icc_subset
-#align antitone.image_Icc_subset Antitone.image_Icc_subset
 
 lemma StrictMono.image_Ioi_subset (h : StrictMono f) : f '' Ioi a ⊆ Ioi (f a) :=
   (h.strictMonoOn _).image_Ioi_subset

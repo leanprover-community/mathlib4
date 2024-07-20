@@ -6,8 +6,6 @@ Authors: Pierre-Alexandre Bazin
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.RingTheory.Ideal.Operations
 
-#align_import ring_theory.coprime.ideal from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
-
 /-!
 # An additional lemma about coprime ideals
 
@@ -110,6 +108,5 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
       rw [dif_neg]
       rintro rfl
       exact hat hj
-#align ideal.supr_infi_eq_top_iff_pairwise Ideal.iSup_iInf_eq_top_iff_pairwise
 
 end Ideal
