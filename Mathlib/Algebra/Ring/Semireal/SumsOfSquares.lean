@@ -42,10 +42,9 @@ in `R`.
 -/
 
 @[mk_iff]
-inductive isSumSq {R : Type*} [Semiring R] : R → Prop
-  | zero                           : isSumSq (0 : R)
-  | sq_add (x S : R) (pS : isSumSq S) : isSumSq (x ^ 2 + S)
-
+inductive isSumSq {R : Type*} [Mul R] [Add R] [Zero R] : R → Prop
+  | zero                           : isSumSq 0
+  | sq_add (x S : R) (pS : isSumSq S) : isSumSq (x * x + S)
 /--
 Let `R` be a linearly ordered semiring `R` in which the property `a ≤ b → ∃ c, a + c = b` holds
 (e.g. `R = ℕ`). If `S : R` is a sum of squares in `R`, then `0 ≤ S`. This is used to show that
@@ -58,7 +57,7 @@ theorem isSumSq.nonneg  {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] 
   | zero          => simp only [le_refl]
   | sq_add x S _ ih  =>
     apply add_nonneg ?_ ih
-    simp only [sq_nonneg]
+    simp only [Eq.symm (pow_two x), sq_nonneg]
 
 /--
 The type of sums of squares in a semiring `R` is the subtype of `R` defined by the predicate
