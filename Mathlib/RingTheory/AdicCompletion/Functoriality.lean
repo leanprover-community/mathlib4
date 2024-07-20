@@ -24,6 +24,8 @@ In this file we establish functorial properties of the adic completion.
 
 -/
 
+suppress_compilation
+
 variable {R : Type*} [CommRing R] (I : Ideal R)
 variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {N : Type*} [AddCommGroup N] [Module R N]
@@ -190,12 +192,6 @@ theorem map_mk (f : M →ₗ[R] N) (a : AdicCauchySequence I M) :
 theorem map_zero : map I (0 : M →ₗ[R] N) = 0 := by
   ext
   simp
-
-@[simp]
-theorem val_sum {α : Type*} (s : Finset α) (f : α → AdicCompletion I M) (n : ℕ) :
-    (Finset.sum s f).val n = Finset.sum s (fun a ↦ (f a).val n) := by
-  change (Submodule.subtype (AdicCompletion.submodule I M) _) n = _
-  rw [map_sum, Finset.sum_apply, Submodule.coeSubtype]
 
 /-- A linear equiv induces a linear equiv on adic completions. -/
 def congr (f : M ≃ₗ[R] N) :
