@@ -153,7 +153,8 @@ def pullback : Stonean where
       exact IsCompact.image isCompact_univ i.continuous
     is_hausdorff := by
       dsimp [TopCat.of]
-      exact inferInstance }
+      exact inferInstance
+    prop := trivial }
   extrDisc := by
     constructor
     intro U hU
@@ -248,7 +249,7 @@ lemma pullback.hom_ext {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : Ope
   exact hfst
 
 /-- The explicit pullback cone is a limit cone. -/
-def pullback.isLimit  : IsLimit (pullback.cone f hi) :=
+def pullback.isLimit : IsLimit (pullback.cone f hi) :=
   Limits.PullbackCone.isLimitAux _
     (fun s => pullback.lift f hi s.fst s.snd s.condition)
     (fun _ => pullback.lift_fst _ _ _ _ _)
