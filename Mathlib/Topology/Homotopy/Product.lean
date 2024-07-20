@@ -63,7 +63,6 @@ variable {I A : Type*} {X : I → Type*} [∀ i, TopologicalSpace (X i)] [Topolo
 --   toFun t i := homotopies i t
 --   map_zero_left t := by ext i; simp only [pi_eval, Homotopy.apply_zero]
 --   map_one_left t := by ext i; simp only [pi_eval, Homotopy.apply_one]
--- #align continuous_map.homotopy.pi ContinuousMap.Homotopy.pi
 
 /-- The relative product homotopy of `homotopies` between functions `f` and `g` -/
 @[simps!]

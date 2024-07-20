@@ -344,7 +344,6 @@ theorem one_mem_inv_coe_ideal [IsDomain A] {I : Ideal A} (hI : I ≠ ⊥) :
   intro y hy
   rw [one_mul]
   exact FractionalIdeal.coeIdeal_le_one hy
--- #align fractional_ideal.one_mem_inv_coe_ideal FractionalIdeal.one_mem_inv_coe_ideal
 
 /-- Specialization of `exists_primeSpectrum_prod_le_and_ne_bot_of_domain` to Dedekind domains:
 Let `I : Ideal A` be a nonzero ideal, where `A` is a Dedekind domain that is not a field.
