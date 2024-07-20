@@ -38,7 +38,7 @@ equivalences work nicely in the standard design... that's a "how to do X in Lean
 
 open scoped Manifold
 open Metric (sphere)
-open FiniteDimensional
+open FiniteDimensional Set
 
 noncomputable section
 
@@ -131,9 +131,7 @@ section BoundaryIntervals
 
 variable {x y : ℝ} (hxy : x < y)
 
-open Set
-
-lemma boundary_IccManifold [h : Fact (x < y)] : (𝓡∂ 1).boundary (Set.Icc x y) =
+lemma boundary_IccManifold [h : Fact (x < y)] : (𝓡∂ 1).boundary (Icc x y) =
     { ⟨x, ⟨le_refl x, by linarith⟩⟩, ⟨y, ⟨by linarith, le_refl y⟩⟩} := by
   sorry
 
@@ -146,14 +144,11 @@ def A : Set (Icc x y) := { ⟨x, ⟨le_refl x, by linarith⟩⟩, ⟨y, ⟨by li
 
 /-- A product `M × [x,y]` has boundary `M × {x,y}`. -/
 lemma boundary_product [h : Fact (x < y)] :
-    (I.prod (𝓡∂ 1)).boundary (M × Icc x y) = ((univ : Set M) × (A hxy)) := by
-  have : (𝓡∂ 1).boundary (Set.Icc x y) = A hxy := by
+    (I.prod (𝓡∂ 1)).boundary (M × Icc x y) = Set.prod univ (A hxy) := by
+  have : (𝓡∂ 1).boundary (Icc x y) = A hxy := by
     rw [boundary_IccManifold hxy]; simp only [A]
   rw [I.boundary_of_boundaryless_left]
   rw [this]
-  set X := (modelWithCornersEuclideanHalfSpace 1).boundary ↑(Icc x y)
-  -- one coercion doesn't align; this should be obvious now!
-  sorry
 
 end BoundaryIntervals
 -- Let M, M' and W be smooth manifolds.
@@ -257,7 +252,7 @@ def ChartedSpace.empty (H : Type*) [TopologicalSpace H]
 
 -- move to InteriorBoundary
 instance [BoundarylessManifold I M] : IsEmpty (I.boundary M) :=
-  Set.isEmpty_coe_sort.mpr (ModelWithCorners.Boundaryless.boundary_eq_empty I)
+  isEmpty_coe_sort.mpr (ModelWithCorners.Boundaryless.boundary_eq_empty I)
 
 variable (M) in
 /-- If `M` is boundaryless, its boundary manifold data is easy to construct. -/
