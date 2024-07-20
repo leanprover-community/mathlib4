@@ -9,8 +9,7 @@ import Lean.Message
 # Additional operations on MessageData and related types
 -/
 
-set_option autoImplicit true
+open Lean Std MessageData
 
-open Lean Std Format MessageData
-instance [ToMessageData α] [ToMessageData β] : ToMessageData (α × β) :=
+instance {α β : Type} [ToMessageData α] [ToMessageData β] : ToMessageData (α × β) :=
   ⟨fun x => paren <| toMessageData x.1 ++ ofFormat "," ++ Format.line ++ toMessageData x.2⟩
