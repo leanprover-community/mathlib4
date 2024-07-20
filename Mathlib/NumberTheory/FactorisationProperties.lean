@@ -20,7 +20,7 @@ This file defines abundant, pseudoperfect, deficient, and weird numbers and form
   equals `n`
 * `Nat.Deficient`: a natural number `n` is _deficient_ if the sum of its proper divisors is less
   than `n`
-* `Nat.Weird`: a natural number is _weird_ if it is both abundant and not pseudoperfect
+* `Nat.Weird`: a natural number is _weird_ if it is both abundant but not pseudoperfect
 
 ## Main Results
 * `Nat.deficient_or_perfect_or_abundant`: A positive natural number is either deficient,
@@ -68,24 +68,24 @@ theorem not_pseudoperfect_iff_forall :
   rw [Pseudoperfect, not_and_or]
   simp only [not_lt, nonpos_iff_eq_zero, mem_powerset, not_exists, not_and, ne_eq]
 
-theorem isDeficient_one : Deficient 1 := zero_lt_one
+theorem Deficient_one : Deficient 1 := zero_lt_one
 
-theorem isDeficient_two : Deficient 2 := one_lt_two
+theorem Deficient_two : Deficient 2 := one_lt_two
 
-theorem isDeficient_three : Deficient 3 := by norm_num [Deficient]
+theorem Deficient_three : Deficient 3 := by norm_num [Deficient]
 
-theorem isAbundant_twelve : Abundant 12 := by
+theorem Abundant_twelve : Abundant 12 := by
   rw [Abundant, show properDivisors 12 = {1,2,3,4,6} by rfl]
   norm_num
 
-set_option maxRecDepth 1800 in
-theorem isWeird_seventy : Weird 70 := by
+set_option maxRecDepth 1730 in
+theorem Weird_seventy : Weird 70 := by
   rw [Weird, Abundant, not_pseudoperfect_iff_forall]
-  have div70 : properDivisors 70 = {1, 2, 5, 7, 10, 14, 35} := by rfl
+  have h : properDivisors 70 = {1, 2, 5, 7, 10, 14, 35} := by rfl
   constructor
-  · rw [div70]
+  · rw [h]
     repeat norm_num
-  · rw [div70]
+  · rw [h]
     right
     intro s hs
     have hs' := mem_powerset.mpr hs
@@ -140,7 +140,7 @@ theorem prime_not_perfect (h : Prime p) : ¬ Perfect p := by
 theorem prime_pow_deficient (h : Prime n) : Deficient (n ^ m) := by
   rcases Nat.eq_zero_or_pos m with (hL | _)
   · rw [hL, Nat.pow_zero]
-    exact isDeficient_one
+    exact Deficient_one
   · have h1 : properDivisors (n ^ m) = image (n ^ ·) (range m) := by
       apply subset_antisymm <;> intro a
       · simp only [mem_properDivisors, mem_image, mem_range, dvd_prime_pow h]
