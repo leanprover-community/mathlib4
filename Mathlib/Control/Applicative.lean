@@ -60,9 +60,6 @@ theorem Applicative.ext {F} :
 
 end Lemmas
 
--- Porting note: mathport failed to see the #align on `CommApplicative`,
--- therefore using `IsCommApplicative` instead.
-
 -- Porting note: we have a monad instance for `Id` but not `id`, mathport can't tell
 -- which one is intended
 

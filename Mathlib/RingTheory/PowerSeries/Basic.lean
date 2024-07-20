@@ -590,9 +590,9 @@ lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) (hC : constantCoeff R φ = 1) :
       have h₁ (m : ℕ) : φ ^ (m + 1) = φ ^ m * φ := by exact rfl
       have h₂ : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
       rw [h₁, coeff_mul, h₂, Finset.sum_insert, Finset.sum_singleton]
-      simp only [coeff_zero_eq_constantCoeff, map_pow, Nat.cast_add, Nat.cast_one,
-        ih, hC, one_pow, one_mul, mul_one, ← one_add_mul, add_comm]
-      decide
+      · simp only [coeff_zero_eq_constantCoeff, map_pow, Nat.cast_add, Nat.cast_one,
+          ih, hC, one_pow, one_mul, mul_one, ← one_add_mul, add_comm]
+      · decide
 
 end CommSemiring
 
