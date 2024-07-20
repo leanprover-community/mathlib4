@@ -253,7 +253,7 @@ lemma card_range_fExample : #(Set.range (fun x ↦ fExample x + fExample (-x))) 
 /-- This is to be determined by the solver of the original problem. -/
 def answer : ℕ := 2
 
-theorem result : (∀ f, Aquaesulian f → #(Set.range (fun x ↦ f x + f (-x))) ≤ answer) ∧
+theorem _root_.imo2024q6 : (∀ f, Aquaesulian f → #(Set.range (fun x ↦ f x + f (-x))) ≤ answer) ∧
     ∃ f, Aquaesulian f ∧ #(Set.range (fun x ↦ f x + f (-x))) = answer :=
   ⟨fun _ ↦ Aquaesulian.card_le_two, ⟨fExample, aquaesulian_fExample, card_range_fExample⟩⟩
 
