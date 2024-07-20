@@ -670,12 +670,6 @@ open CategoryTheory.Limits.WalkingCospan
 variable {W X Y Z : Type u}
 variable (f : X ⟶ Z) (g : Y ⟶ Z)
 
---/-- The pullback cone given by the instance `HasPullbacks (Type u)` is isomorphic to the
---explicit pullback cone given by `pullbackLimitCone`.
----/
---noncomputable def pullbackConeIsoPullback : limit.cone (cospan f g) ≅ pullbackCone f g :=
---  (limit.isLimit _).uniqueUpToIso (pullbackLimitCone f g).isLimit
-
 /-- The pullback given by the instance `HasPullbacks (Type u)` is isomorphic to the
 explicit pullback object given by `PullbackObj`.
 -/
