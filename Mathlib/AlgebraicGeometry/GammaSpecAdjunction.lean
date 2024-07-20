@@ -63,7 +63,7 @@ variable (X : LocallyRingedSpace.{u})
 
 /-- The map from the global sections to a stalk. -/
 def ΓToStalk (x : X) : Γ.obj (op X) ⟶ X.presheaf.stalk x :=
-  X.presheaf.germ (⟨x, trivial⟩ : (⊤ : Opens X))
+  X.presheaf.germ (⟨x, trivial⟩ : (⊤ : X.Opens))
 
 lemma ΓToStalk_stalkMap {X Y : LocallyRingedSpace} (f : X ⟶ Y) (x : X) :
     Y.ΓToStalk (f.val.base x) ≫ PresheafedSpace.stalkMap f.val x =
@@ -112,7 +112,7 @@ attribute [nolint simpNF] AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase_appl
 variable (r : Γ.obj (op X))
 
 /-- The preimage in `X` of a basic open in `Spec Γ(X)` (as an open set). -/
-abbrev toΓSpecMapBasicOpen : Opens X :=
+abbrev toΓSpecMapBasicOpen : X.Opens :=
   (Opens.map X.toΓSpecBase).obj (basicOpen r)
 
 /-- The preimage is the basic open in `X` defined by the same element `r`. -/
@@ -484,7 +484,7 @@ theorem toOpen_unit_app_val_c_app' {X : Scheme.{u}} (U : Opens (PrimeSpectrum Γ
 
 end ΓSpec
 
-theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : Opens X) :
+theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : X.Opens) :
     (Scheme.ΓSpecIso Γ(X, U)).hom =
       Scheme.Γ.map (Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op)).op ≫
       (ΓSpec.adjunction.unit.app (X ∣_ᵤ U)).app ⊤ ≫
