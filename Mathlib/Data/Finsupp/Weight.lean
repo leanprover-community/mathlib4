@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.LinearAlgebra.Finsupp
 
@@ -48,7 +49,7 @@ end AddCommMonoid
 
 section OrderedAddCommMonoid
 
-theorem Nat.le_weight (w : σ → ℕ) (s : σ) (hs : w s ≠ 0) (f : σ →₀ ℕ) :
+theorem le_weight (w : σ → ℕ) {s : σ} (hs : w s ≠ 0) (f : σ →₀ ℕ) :
     f s ≤ weight w f := by
   classical
   simp only [weight_apply, Finsupp.sum]
@@ -69,7 +70,7 @@ instance : SMulPosMono ℕ M := ⟨
     exact le_add_of_nonneg_right (nsmul_nonneg hb (m' - m)) ⟩
 
 variable {w} in
-theorem le_weight_of_nonneg' (hw : ∀ s, 0 ≤ w s) (s : σ) (f : σ →₀ ℕ) (hs : f s ≠ 0) :
+theorem le_weight_of_nonneg' (hw : ∀ s, 0 ≤ w s) {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
     w s ≤ weight w f := by
   classical
   simp only [weight_apply, Finsupp.sum]
@@ -87,14 +88,13 @@ section CanonicallyOrderedAddCommMonoid
 
 variable {M : Type*} [CanonicallyOrderedAddCommMonoid M] (w : σ → M)
 
-theorem le_weight' (s : σ) (f : σ →₀ ℕ) (hs : f s ≠ 0) :
+theorem le_weight' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
     w s ≤ weight w f :=
-  le_weight_of_nonneg' w (fun _ ↦ zero_le _) s f hs
+  le_weight_of_nonneg' w (fun _ ↦ zero_le _) hs
 
-/-- If `M` is a `CanonicallyOrderedAddCommMonoid`, then the `weightedHomogeneousComponent`
-  of weighted degree `0` of a polynomial is its constant coefficient. -/
+/-- If `M` is a `CanonicallyOrderedAddCommMonoid`, then `weight f` is zero iff `f=0. -/
 theorem weight_eq_zero_iff_eq_zero
-    (w : σ → M) [NonTorsionWeight w] (f : σ →₀ ℕ) :
+    (w : σ → M) [NonTorsionWeight w] {f : σ →₀ ℕ} :
     weight w f = 0 ↔ f = 0 := by
   classical
   constructor
@@ -104,14 +104,14 @@ theorem weight_eq_zero_iff_eq_zero
     by_contra hs
     apply NonTorsionWeight.ne_zero w _
     rw [← nonpos_iff_eq_zero, ← h]
-    exact le_weight' w s f hs
+    exact le_weight' w hs
   · intro h
     rw [h, map_zero]
 
 end CanonicallyOrderedAddCommMonoid
 
 /-- The degree of a finsupp function. -/
-abbrev degree (d : σ →₀ ℕ) := ∑ i ∈ d.support, d i
+def degree (d : σ →₀ ℕ) := ∑ i ∈ d.support, d i
 
 theorem degree_eq_weight_one (d : σ →₀ ℕ) :
     degree d = weight 1 d := by
@@ -128,7 +128,7 @@ theorem degree_zero : degree (0 : σ →₀ ℕ) = 0 := by rw [degree_eq_zero_if
 
 theorem le_degree (s : σ) (f : σ →₀ ℕ) : f s ≤ degree f  := by
   rw [degree_eq_weight_one]
-  apply Nat.le_weight
+  apply le_weight
   simp only [Pi.one_apply, ne_eq, one_ne_zero, not_false_eq_true]
 
 end Finsupp
