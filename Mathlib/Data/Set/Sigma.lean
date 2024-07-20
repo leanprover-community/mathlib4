@@ -44,6 +44,10 @@ theorem image_sigmaMk_preimage_sigmaMap {β : ι' → Type*} {f : ι → ι'} (h
   rcases hxy with ⟨rfl, hxy⟩; rw [heq_iff_eq] at hxy; subst y
   exact ⟨x, hys, rfl⟩
 
+@[simp] theorem iUnion_preimage_image_sigmaMk_eq  {f : (i : ι) → Set (α i)} :
+    ⋃ i, Sigma.mk j ⁻¹' (Sigma.mk i '' (f i)) = f j := by
+  aesop
+
 /-- Indexed sum of sets. `s.sigma t` is the set of dependent pairs `⟨i, a⟩` such that `i ∈ s` and
 `a ∈ t i`. -/
 protected def sigma (s : Set ι) (t : ∀ i, Set (α i)) : Set (Σ i, α i) := {x | x.1 ∈ s ∧ x.2 ∈ t x.1}
