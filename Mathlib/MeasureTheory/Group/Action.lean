@@ -67,6 +67,37 @@ instance smul_nnreal [SMulInvariantMeasure M α μ] (c : ℝ≥0) : SMulInvarian
 
 end SMulInvariantMeasure
 
+section AE_smul
+
+variable {m : MeasurableSpace α} [MeasurableSpace G] [SMul G α]
+  (μ : Measure α) [SMulInvariantMeasure G α μ] {s : Set α}
+
+/-- See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`. -/
+@[to_additive "See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`."]
+theorem measure_preimage_smul_le (c : G) (s : Set α) : μ ((c • ·) ⁻¹' s) ≤ μ s :=
+  (outerMeasure_le_iff (m := .map (c • ·) μ.1)).2
+    (fun _s hs ↦ (SMulInvariantMeasure.measure_preimage_smul _ hs).le) _
+
+/-- See also `smul_ae`. -/
+@[to_additive "See also `vadd_ae`."]
+theorem tendsto_smul_ae (c : G) : Filter.Tendsto (c • ·) (ae μ) (ae μ) := fun _s hs ↦
+  eq_bot_mono (measure_preimage_smul_le μ c _) hs
+
+variable {μ}
+
+@[to_additive]
+theorem measure_preimage_smul_null (h : μ s = 0) (c : G) : μ ((c • ·) ⁻¹' s) = 0 :=
+  eq_bot_mono (measure_preimage_smul_le μ c _) h
+
+@[to_additive]
+theorem measure_preimage_smul_of_nullMeasurableSet (hs : NullMeasurableSet s μ) (c : G) :
+    μ ((c • ·) ⁻¹' s) = μ s := by
+  rw [← measure_toMeasurable s,
+    ← SMulInvariantMeasure.measure_preimage_smul c (measurableSet_toMeasurable μ s)]
+  exact measure_congr (tendsto_smul_ae μ c hs.toMeasurable_ae_eq) |>.symm
+
+end AE_smul
+
 section AE
 
 variable {m : MeasurableSpace α} [MeasurableSpace G] [Group G] [MulAction G α]
@@ -74,9 +105,7 @@ variable {m : MeasurableSpace α} [MeasurableSpace G] [Group G] [MulAction G α]
 
 @[to_additive]
 theorem measure_smul_null {s} (h : μ s = 0) (c : G) : μ (c • s) = 0 := by
-  rcases exists_measurable_superset_of_null h with ⟨t, hst, htm, ht⟩
-  rw [← SMulInvariantMeasure.measure_preimage_smul c⁻¹ htm, preimage_smul_inv] at ht
-  exact measure_mono_null (image_mono hst) ht
+  simpa only [preimage_smul_inv] using measure_preimage_smul_null h c⁻¹
 
 @[to_additive (attr := simp)]
 theorem measure_smul_eq_zero_iff {s} (c : G) : μ (c • s) = 0 ↔ μ s = 0 :=
@@ -98,6 +127,17 @@ theorem smul_set_ae_le (c : G) {s t : Set α} : c • s ≤ᵐ[μ] c • t ↔ s
 @[to_additive (attr := simp)]
 theorem smul_set_ae_eq (c : G) {s t : Set α} : c • s =ᵐ[μ] c • t ↔ s =ᵐ[μ] t := by
   simp only [Filter.eventuallyLE_antisymm_iff, smul_set_ae_le]
+
+variable (μ)
+
+@[to_additive (attr := simp)]
+theorem measure_preimage_smul (c : G) (s : Set α) : μ ((c • ·) ⁻¹' s) = μ s :=
+  (measure_preimage_smul_le μ c s).antisymm <| by
+    simpa [preimage_preimage] using measure_preimage_smul_le μ c⁻¹ ((c • ·) ⁻¹' s)
+
+@[to_additive (attr := simp)]
+theorem measure_smul (c : G) (s : Set α) : μ (c • s) = μ s := by
+  simpa only [preimage_smul_inv] using measure_preimage_smul μ c⁻¹ s
 
 end AE
 
@@ -218,14 +258,6 @@ add_decl_doc vaddInvariantMeasure_tfae
 
 variable {G}
 variable [SMulInvariantMeasure G α μ]
-
-@[to_additive (attr := simp)]
-theorem measure_preimage_smul (s : Set α) : μ ((c • ·) ⁻¹' s) = μ s :=
-  ((smulInvariantMeasure_tfae G μ).out 0 3 rfl rfl).mp ‹_› c s
-
-@[to_additive (attr := simp)]
-theorem measure_smul (s : Set α) : μ (c • s) = μ s :=
-  ((smulInvariantMeasure_tfae G μ).out 0 4 rfl rfl).mp ‹_› c s
 
 variable {μ}
 
