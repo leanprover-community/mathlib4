@@ -64,9 +64,7 @@ theorem dynamical_uni_of_uni [UniformSpace X] {T : X → X} (h : UniformContinuo
 theorem dynamical_uni_of_rfl (T : X → X) {U : Set (X × X)} (h : idRel ⊆ U) (n : ℕ) :
     idRel ⊆ (DynamicalUni T U n) := by
   simp only [DynamicalUni, map_iterate, subset_iInter_iff, idRel_subset, mem_preimage, map_apply]
-  intro _ _ _
-  apply h
-  rw [mem_idRel]
+  exact fun i _ a ↦ h rfl
 
 theorem dynamical_uni_of_symm (T : X → X) {U : Set (X × X)} (h : SymmetricRel U) (n : ℕ) :
     SymmetricRel (DynamicalUni T U n) := by
