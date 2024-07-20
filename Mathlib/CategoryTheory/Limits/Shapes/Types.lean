@@ -663,7 +663,7 @@ end Pullback
 
 namespace Types
 
-namespace Pullback
+section Pullback
 
 open CategoryTheory.Limits.WalkingCospan
 
