@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.Set.Image
 import Mathlib.Order.WellFounded
@@ -911,13 +912,23 @@ theorem of_surjective {α β} [Infinite β] (f : α → β) (hf : Surjective f) 
 
 end Infinite
 
-instance : Infinite ℕ :=
-  Infinite.of_not_fintype <| by
-    intro h
-    exact (Finset.range _).card_le_univ.not_lt ((Nat.lt_succ_self _).trans_eq (card_range _).symm)
+instance Nat.instInfinite : Infinite ℕ :=
+  Infinite.of_not_fintype fun h ↦ Nat.not_succ_le_self _ $ by
+    simpa using le_sup (f := id) (mem_univ (Finset.univ.sup id + 1))
 
 instance Int.infinite : Infinite ℤ :=
   Infinite.of_injective Int.ofNat fun _ _ => Int.ofNat.inj
+
+/-- A nonempty preorder with no maximal element is infinite. This is not an instance to avoid
+a cycle with `Infinite α → Nontrivial α → Nonempty α`. -/
+theorem NoMaxOrder.infinite [Preorder α] [Nonempty α] [NoMaxOrder α] : Infinite α :=
+  let ⟨f, hf⟩ := Nat.exists_strictMono α
+  Infinite.of_injective f hf.injective
+
+/-- A nonempty preorder with no minimal element is infinite. This is not an instance to avoid
+a cycle with `Infinite α → Nontrivial α → Nonempty α`. -/
+theorem NoMinOrder.infinite [Preorder α] [Nonempty α] [NoMinOrder α] : Infinite α :=
+  @NoMaxOrder.infinite αᵒᵈ _ _ _
 
 instance [Nonempty α] : Infinite (Multiset α) :=
   let ⟨x⟩ := ‹Nonempty α›
@@ -985,11 +996,6 @@ private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
 noncomputable def natEmbedding (α : Type*) [Infinite α] : ℕ ↪ α :=
   ⟨_, natEmbeddingAux_injective α⟩
 
-/-- See `Infinite.exists_superset_card_eq` for a version that, for an `s : Finset α`,
-provides a superset `t : Finset α`, `s ⊆ t` such that `t.card` is fixed. -/
-theorem exists_subset_card_eq (α : Type*) [Infinite α] (n : ℕ) : ∃ s : Finset α, s.card = n :=
-  ⟨(range n).map (natEmbedding α), by rw [card_map, card_range]⟩
-
 /-- See `Infinite.exists_subset_card_eq` for a version that provides an arbitrary
 `s : Finset α` for any cardinality. -/
 theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : s.card ≤ n) :
@@ -1002,6 +1008,11 @@ theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : s.
     obtain ⟨x, hx⟩ := exists_not_mem_finset t
     refine ⟨Finset.cons x t hx, hs.trans (Finset.subset_cons _), ?_⟩
     simp [hx, ht]
+
+/-- See `Infinite.exists_superset_card_eq` for a version that, for an `s : Finset α`,
+provides a superset `t : Finset α`, `s ⊆ t` such that `t.card` is fixed. -/
+theorem exists_subset_card_eq (α : Type*) [Infinite α] (n : ℕ) : ∃ s : Finset α, s.card = n := by
+  simpa using exists_superset_card_eq ∅ _
 
 end Infinite
 

@@ -9,7 +9,6 @@ import Mathlib.Data.List.OfFn
 import Mathlib.Data.Rel
 import Mathlib.Order.Fin.Basic
 import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Linarith
 
 /-!
 # Series of a relation

@@ -176,10 +176,6 @@ theorem card_erase_eq_ite : (s.erase a).card = if a ∈ s then s.card - 1 else s
 end InsertErase
 
 @[simp]
-theorem card_range (n : ℕ) : (range n).card = n :=
-  Multiset.card_range n
-
-@[simp]
 theorem card_attach : s.attach.card = s.card :=
   Multiset.card_attach
 
@@ -289,26 +285,6 @@ nonrec lemma card_lt_card (h : s ⊂ t) : s.card < t.card := card_lt_card <| val
 
 lemma card_strictMono : StrictMono (card : Finset α → ℕ) := fun _ _ ↦ card_lt_card
 
-theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i, ∃ h : i < n, f i h = a)
-    (hf' : ∀ i (h : i < n), f i h ∈ s)
-    (f_inj : ∀ i j (hi : i < n) (hj : j < n), f i hi = f j hj → i = j) : s.card = n := by
-  classical
-  have : s = (range n).attach.image fun i => f i.1 (mem_range.1 i.2) := by
-    ext a
-    suffices _ : a ∈ s ↔ ∃ (i : _) (hi : i ∈ range n), f i (mem_range.1 hi) = a by
-      simpa only [mem_image, mem_attach, true_and_iff, Subtype.exists]
-    constructor
-    · intro ha; obtain ⟨i, hi, rfl⟩ := hf a ha; use i, mem_range.2 hi
-    · rintro ⟨i, hi, rfl⟩; apply hf'
-  calc
-    s.card = ((range n).attach.image fun i => f i.1 (mem_range.1 i.2)).card := by rw [this]
-    _      = (range n).attach.card := ?_
-    _      = (range n).card := card_attach
-    _      = n := card_range n
-  apply card_image_of_injective
-  intro ⟨i, hi⟩ ⟨j, hj⟩ eq
-  exact Subtype.eq <| f_inj i j (mem_range.1 hi) (mem_range.1 hj) eq
-
 section bij
 variable {t : Finset β}
 
@@ -410,12 +386,6 @@ theorem exists_ne_map_eq_of_card_lt_of_maps_to {t : Finset β} (hc : t.card < s.
   intro x hx y hy
   contrapose
   exact hz x hx y hy
-
-lemma le_card_of_inj_on_range (f : ℕ → α) (hf : ∀ i < n, f i ∈ s)
-    (f_inj : ∀ i < n, ∀ j < n, f i = f j → i = j) : n ≤ s.card :=
-  calc
-    n = card (range n) := (card_range n).symm
-    _ ≤ s.card := card_le_card_of_injOn f (by simpa only [mem_range]) (by simpa)
 
 lemma surj_on_of_inj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
     (hinj : ∀ a₁ a₂ ha₁ ha₂, f a₁ ha₁ = f a₂ ha₂ → a₁ = a₂) (hst : t.card ≤ s.card) :

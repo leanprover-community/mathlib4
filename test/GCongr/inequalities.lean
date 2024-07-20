@@ -5,6 +5,8 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Parity
+import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.SuccessIfFailWithMsg

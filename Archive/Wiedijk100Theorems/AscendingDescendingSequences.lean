@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.Data.Fintype.Powerset
+import Mathlib.Order.Interval.Finset .Nat
 
 /-!
 # Erdős–Szekeres theorem

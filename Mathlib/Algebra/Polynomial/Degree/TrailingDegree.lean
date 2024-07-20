@@ -435,8 +435,7 @@ theorem ne_zero_of_trailingDegree_lt {n : ℕ∞} (h : trailingDegree p < n) : p
   h.not_le (by simp [h₀])
 
 lemma natTrailingDegree_eq_zero_of_constantCoeff_ne_zero (h : constantCoeff p ≠ 0) :
-    p.natTrailingDegree = 0 :=
-  le_antisymm (natTrailingDegree_le_of_ne_zero h) zero_le'
+    p.natTrailingDegree = 0 := Nat.le_zero.1 (natTrailingDegree_le_of_ne_zero h)
 
 namespace Monic
 

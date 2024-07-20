@@ -5,9 +5,9 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Data.Countable.Basic
 import Mathlib.Logic.Encodable.Basic
+import Mathlib.Order.Hom.Basic
+import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Order.SuccPred.Basic
-import Mathlib.Order.Interval.Finset.Defs
-import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
 # Linear locally finite orders

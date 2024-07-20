@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.Card
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Multiset coercion to type

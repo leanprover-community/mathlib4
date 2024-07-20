@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.BigOperators.Ring.Multiset
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Ring.Basic
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Int.Cast.Lemmas
 
@@ -243,17 +244,6 @@ theorem prod_one_sub_ordered [LinearOrder ι] (s : Finset ι) (f : ι → α) :
     ∏ i ∈ s, (1 - f i) = 1 - ∑ i ∈ s, f i * ∏ j ∈ s.filter (· < i), (1 - f j) := by
   rw [prod_sub_ordered]
   simp
-
-theorem prod_range_natCast_sub (n k : ℕ) :
-    ∏ i ∈ range k, (n - i : α) = (∏ i ∈ range k, (n - i) : ℕ) := by
-  rw [prod_natCast]
-  rcases le_or_lt k n with hkn | hnk
-  · exact prod_congr rfl fun i hi => (Nat.cast_sub <| (mem_range.1 hi).le.trans hkn).symm
-  · rw [← mem_range] at hnk
-    rw [prod_eq_zero hnk, prod_eq_zero hnk] <;> simp
-
-@[deprecated (since := "2024-05-27")] alias prod_range_cast_nat_sub := prod_range_natCast_sub
-
 
 end CommRing
 

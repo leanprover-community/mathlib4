@@ -7,6 +7,7 @@ import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Prime elements in rings
