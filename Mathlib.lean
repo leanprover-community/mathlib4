@@ -2211,6 +2211,7 @@ import Mathlib.Data.Matrix.Rank
 import Mathlib.Data.Matrix.Reflection
 import Mathlib.Data.Matrix.RowCol
 import Mathlib.Data.Matroid.Basic
+import Mathlib.Data.Matroid.Closure
 import Mathlib.Data.Matroid.Constructions
 import Mathlib.Data.Matroid.Dual
 import Mathlib.Data.Matroid.IndepAxioms
@@ -2767,6 +2768,7 @@ import Mathlib.Lean.Expr
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Expr.ExtraRecognizers
 import Mathlib.Lean.Expr.ReplaceRec
+import Mathlib.Lean.GoalsLocation
 import Mathlib.Lean.Json
 import Mathlib.Lean.LocalContext
 import Mathlib.Lean.Message
@@ -2774,6 +2776,7 @@ import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Basic
 import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Lean.Meta.DiscrTree
+import Mathlib.Lean.Meta.KAbstractPositions
 import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Name
 import Mathlib.Lean.PrettyPrinter.Delaborator
@@ -4168,6 +4171,7 @@ import Mathlib.Tactic.Widget.CommDiag
 import Mathlib.Tactic.Widget.CongrM
 import Mathlib.Tactic.Widget.Conv
 import Mathlib.Tactic.Widget.GCongr
+import Mathlib.Tactic.Widget.InteractiveUnfold
 import Mathlib.Tactic.Widget.SelectInsertParamsClass
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.Zify
