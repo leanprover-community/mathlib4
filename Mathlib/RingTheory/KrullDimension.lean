@@ -43,7 +43,7 @@ lemma ringKrullDim_nonneg_of_nontrivial [Nontrivial R] :
 
 theorem ringKrullDim_eq_topologicalKrullDim :
     ringKrullDim R = topologicalKrullDim (PrimeSpectrum R) :=
-  Eq.symm $ krullDim_orderDual.symm.trans $ krullDim_eq_of_orderIso
+  Eq.symm <| krullDim_orderDual.symm.trans <| krullDim_eq_of_orderIso
   (PrimeSpectrum.pointsEquivIrreducibleCloseds R).symm
 
 /-- If `f : R →+* S` is surjective, then `ringKrullDim S ≤ ringKrullDim R`. -/
@@ -63,43 +63,29 @@ theorem ringKrullDim_eq_of_ringEquiv (e : R ≃+* S) :
   le_antisymm (ringKrullDim_le_of_surjective e.symm e.symm.surjective)
     (ringKrullDim_le_of_surjective e e.surjective)
 
-/-- An alias for `ringKrullDim_eq_of_ringEquiv`. -/
-theorem _root_.RingEquiv.ringKrullDim (e : R ≃+* S) :
-    ringKrullDim R = ringKrullDim S :=
-  le_antisymm (ringKrullDim_le_of_surjective e.symm e.symm.surjective)
-    (ringKrullDim_le_of_surjective e e.surjective)
+alias RingEquiv.ringKrullDim := ringKrullDim_eq_of_ringEquiv
 
 section DimensionZero
 
-theorem _root_.PrimeSpectrum.asIdeal.isMaximal_of_ringKrullDim_eq_zero
-    (I : PrimeSpectrum R) (hdim : ringKrullDim R = 0) :
-    I.asIdeal.IsMaximal := by
-  have h := mem_maximals_of_krullDim_eq_zero hdim I
+theorem Ideal.IsPrime.isMaximal_of_ringKrullDim_eq_zero
+    {I : Ideal R} (hI : I.IsPrime) (hdim : ringKrullDim R = 0) :
+    I.IsMaximal := by
+  have h := mem_maximals_of_krullDim_eq_zero hdim ⟨I, hI⟩
   simp only [maximals, Set.top_eq_univ, Set.mem_univ, true_implies, true_and] at h
   constructor; constructor
   · exact Ideal.IsPrime.ne_top'
   · intro J hIJ; by_contra hJ
     obtain ⟨M, hM1, hM2⟩ := Ideal.exists_le_maximal J hJ
-    have := h $ show _ ≤ ⟨M, hM1.isPrime⟩ by exact (le_of_lt $ lt_of_lt_of_le hIJ hM2 : _ ≤ _)
-    exact (lt_self_iff_false _).1 $ lt_of_lt_of_le (lt_of_le_of_lt (by exact this) hIJ) hM2
+    have := h <| show _ ≤ ⟨M, hM1.isPrime⟩ by exact (le_of_lt <| lt_of_lt_of_le hIJ hM2 : _ ≤ _)
+    exact (lt_self_iff_false _).1 <| lt_of_lt_of_le (lt_of_le_of_lt (by exact this) hIJ) hM2
 
-theorem _root_.Ideal.IsPrime.isMaximal_of_ringKrullDim_eq_zero
+theorem Ideal.IsPrime.mem_minimalPrimes_of_ringKrullDim_eq_zero
     {I : Ideal R} (hI : I.IsPrime) (hdim : ringKrullDim R = 0) :
-    I.IsMaximal :=
-  PrimeSpectrum.asIdeal.isMaximal_of_ringKrullDim_eq_zero ⟨I, hI⟩ hdim
-
-theorem _root_.PrimeSpectrum.asIdeal.mem_minimalPrimes_of_ringKrullDim_eq_zero
-    (I : PrimeSpectrum R) (hdim : ringKrullDim R = 0) :
-    I.asIdeal ∈ minimalPrimes R := by
-  have h := mem_minimals_of_krullDim_eq_zero hdim I
+    I ∈ minimalPrimes R := by
+  have h := mem_minimals_of_krullDim_eq_zero hdim ⟨I, hI⟩
   simp only [minimals, Set.top_eq_univ, Set.mem_univ, true_implies, true_and] at h
-  exact ⟨⟨I.isPrime, OrderBot.bot_le I.asIdeal⟩, by
-    rintro J ⟨hJ, _⟩ hJI; exact h $ show ⟨J, hJ⟩ ≤ I by exact hJI⟩
-
-theorem _root_.Ideal.IsPrime.mem_minimalPrimes_of_ringKrullDim_eq_zero
-    {I : Ideal R} (hI : I.IsPrime) (hdim : ringKrullDim R = 0) :
-    I ∈ minimalPrimes R :=
-  PrimeSpectrum.asIdeal.mem_minimalPrimes_of_ringKrullDim_eq_zero ⟨I, hI⟩ hdim
+  exact ⟨⟨hI, OrderBot.bot_le I⟩, by
+    rintro J ⟨hJ, _⟩ hJI; exact h (show PrimeSpectrum.mk J hJ ≤ PrimeSpectrum.mk I hI by exact hJI)⟩
 
 end DimensionZero
 
