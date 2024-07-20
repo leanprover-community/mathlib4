@@ -57,17 +57,10 @@ theorem galoisConnection : GaloisConnection (leftDual R) (rightDual R) := by
     intros J I; apply Iff.trans (b := ∀ b ∈ ofDual I, ∀ a ∈ J, R a b)
     · constructor <;> intro h <;> apply h
     · constructor
-      · intro h
-        unfold rightDual
-        intro a ha b hb
-        apply h
-        simpa
-        exact ha
-      · intro h
-        intro b hb a ha
-        apply h
-        simpa
-        exact hb
+      · intro h a ha b hb
+        exact h (by simpa) hb a ha
+      · intro h b hb a ha
+        exact h (by simpa) hb
 
 /-! ### Induced equivalences and generation processes -/
 
