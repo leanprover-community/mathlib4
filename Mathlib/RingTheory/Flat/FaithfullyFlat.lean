@@ -17,7 +17,7 @@ import Mathlib.Algebra.Module.Defs
 A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and,
 for all `R`-module homomorphism `f : N → N'` such that `id ⊗ f = 0`, we have `f = 0`.
 
-In the stacks project, the definition of faithfully flat is different but tag
+In the Stacks project, the definition of faithfully flat is different but tag
 <https://stacks.math.columbia.edu/tag/00TN> proves that their definition is equivalent to this.
 
 ## Main declaration
@@ -35,6 +35,11 @@ universe u
 namespace Module
 
 variable (R : Type u) (M : Type u) [CommRing R] [AddCommGroup M] [Module R M]
+
+/--
+A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and,
+for all `R`-module homomorphism `f : N → N'` such that `id ⊗ f = 0`, we have `f = 0`.
+-/
 
 @[mk_iff] class FaithfullyFlat : Prop where
   flat : Module.Flat R M := by infer_instance
