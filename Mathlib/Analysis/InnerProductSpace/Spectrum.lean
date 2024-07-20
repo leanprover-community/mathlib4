@@ -9,6 +9,7 @@ import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Order.CompleteLattice
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Tactic.SimpRw
 
 #align_import analysis.inner_product_space.spectrum from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
@@ -498,11 +499,6 @@ theorem ext_experiment (i : n) [Nonempty n] (γ : {x // x ≠ i} → 𝕜) : ∀
   have H := inf_restrict T hT hC i γ
   simp only [ne_eq, H, Submodule.mem_top, implies_true]
 
-@[simp]
-theorem ultra_silly_lemma (i : n) [Nonempty n] (γ : {x // x ≠ i} → 𝕜) :
-    (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) =
-    (⨅ (j : {x // x ≠ i}), eigenspace (T j) (γ j)) := rfl
-
 variable {α β γ : Type*} [DecidableEq α] [CompleteLattice γ] (g : β → γ) (i : α)
 
 local notation "α'" => {y // y ≠ i}
@@ -540,8 +536,11 @@ theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // x ≠ i} → 𝕜)
     (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) ⊤ := by
       congr!; exact inf_restrict T hT hC i fun j ↦ γ j
     simp only [Submodule.mem_iInf, Subtype.forall, Submodule.mem_mk, AddSubmonoid.mem_mk,
-      AddSubsemigroup.mem_mk, Set.mem_iInter, ultra_silly_lemma,
-      Submodule.map_iSup, Submodule.map_top, Submodule.range_subtype] at *
+      AddSubsemigroup.mem_mk, Set.mem_iInter] at *
+    have H :  (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)).subtype =
+        (⨅ (j : {x // x ≠ i}), eigenspace (T j) (γ j)).subtype := rfl
+    rw [H] at B
+    simp only [Submodule.map_iSup, Submodule.map_top, Submodule.range_subtype] at *
     intro h F hH
     have hH1 : ∀ (a : 𝕜), Submodule.map (⨅ (j : {x // x ≠ i}) , eigenspace (T ↑j) (γ j)).subtype
         (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) a) ≤ F := fun a ↦ hH a
