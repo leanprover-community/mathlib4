@@ -71,34 +71,35 @@ theorem _root_.RingEquiv.ringKrullDim (e : R ≃+* S) :
 
 section DimensionZero
 
-theorem _root_.Ideal.IsPrime.isMaximal_of_ringKrullDim_eq_zero
-    {I : Ideal R} (hI : I.IsPrime) (hdim : ringKrullDim R = 0) :
-    I.IsMaximal := by
-  have h := mem_maximals_of_krullDim_eq_zero hdim ⟨I, hI⟩
+theorem _root_.PrimeSpectrum.asIdeal.isMaximal_of_ringKrullDim_eq_zero
+    (I : PrimeSpectrum R) (hdim : ringKrullDim R = 0) :
+    I.asIdeal.IsMaximal := by
+  have h := mem_maximals_of_krullDim_eq_zero hdim I
   simp only [maximals, Set.top_eq_univ, Set.mem_univ, true_implies, true_and] at h
   constructor; constructor
-  · exact Ideal.IsPrime.ne_top hI
-  · intro J hIJ
-    by_contra hJ
+  · exact Ideal.IsPrime.ne_top'
+  · intro J hIJ; by_contra hJ
     obtain ⟨M, hM1, hM2⟩ := Ideal.exists_le_maximal J hJ
-    simpa only [lt_self_iff_false] using lt_of_le_of_lt
-      (show M ≤ I by
-        exact h $ show PrimeSpectrum.mk I hI ≤ ⟨M, hM1.isPrime⟩ by
-          exact (le_of_lt $ lt_of_lt_of_le hIJ hM2 : I ≤ M))
-      (lt_of_lt_of_le hIJ hM2)
+    have := h $ show _ ≤ ⟨M, hM1.isPrime⟩ by exact (le_of_lt $ lt_of_lt_of_le hIJ hM2 : _ ≤ _)
+    exact (lt_self_iff_false _).1 $ lt_of_lt_of_le (lt_of_le_of_lt (by exact this) hIJ) hM2
+
+theorem _root_.Ideal.IsPrime.isMaximal_of_ringKrullDim_eq_zero
+    {I : Ideal R} (hI : I.IsPrime) (hdim : ringKrullDim R = 0) :
+    I.IsMaximal :=
+  PrimeSpectrum.asIdeal.isMaximal_of_ringKrullDim_eq_zero ⟨I, hI⟩ hdim
+
+theorem _root_.PrimeSpectrum.asIdeal.mem_minimalPrimes_of_ringKrullDim_eq_zero
+    (I : PrimeSpectrum R) (hdim : ringKrullDim R = 0) :
+    I.asIdeal ∈ minimalPrimes R := by
+  have h := mem_minimals_of_krullDim_eq_zero hdim I
+  simp only [minimals, Set.top_eq_univ, Set.mem_univ, true_implies, true_and] at h
+  exact ⟨⟨I.isPrime, OrderBot.bot_le I.asIdeal⟩, by
+    rintro J ⟨hJ, _⟩ hJI; exact h $ show ⟨J, hJ⟩ ≤ I by exact hJI⟩
 
 theorem _root_.Ideal.IsPrime.mem_minimalPrimes_of_ringKrullDim_eq_zero
     {I : Ideal R} (hI : I.IsPrime) (hdim : ringKrullDim R = 0) :
-    I ∈ minimalPrimes R := by
-  obtain ⟨p, hp, le⟩ := Ideal.exists_minimalPrimes_le (I := ⊥) (J := I) bot_le
-  by_cases hIp : I = p
-  · subst hIp; exact hp
-  · let x : LTSeries (PrimeSpectrum R) := ⟨1, ![⟨p, hp.1.1⟩, ⟨I, hI⟩],
-      fun i ↦ by fin_cases i; exact ⟨le, by contrapose! hIp; exact le_antisymm hIp le⟩⟩
-    have : 1 ≤ ringKrullDim R :=
-      le_iSup (α := WithBot (WithTop ℕ)) (f := fun x : LTSeries _ ↦ x.length) x
-    rw [hdim] at this
-    norm_num at this
+    I ∈ minimalPrimes R :=
+  PrimeSpectrum.asIdeal.mem_minimalPrimes_of_ringKrullDim_eq_zero ⟨I, hI⟩ hdim
 
 end DimensionZero
 
