@@ -170,16 +170,6 @@ lemma Icc_insert_succ_right (h : a ≤ b + 1) : insert (b + 1) (Icc a b) = Icc a
   simp only [mem_insert, mem_Icc]
   omega
 
-lemma Icc_insert_succ_left (h : a ≤ b) : insert a (Icc (a + 1) b) = Icc a b := by
-  ext x
-  simp only [mem_insert, mem_Icc]
-  omega
-
-lemma Icc_insert_succ_right (h : a ≤ b + 1) : insert (b + 1) (Icc a b) = Icc a (b + 1) := by
-  ext x
-  simp only [mem_insert, mem_Icc]
-  omega
-
 theorem image_sub_const_Ico (h : c ≤ a) :
     ((Ico a b).image fun x => x - c) = Ico (a - c) (b - c) := by
   ext x
