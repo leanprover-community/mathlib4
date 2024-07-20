@@ -57,52 +57,6 @@ abbrev Sieve.ofTwoArrows {U V X : C} (i : U ⟶ X) (j : V ⟶ X) : Sieve X :=
 
 end
 
-section
-
-variable {X Y S : Type v} {f : X ⟶ S} {g : Y ⟶ S} {c : PullbackCone f g}
-  (hc : IsLimit c)
-
-open Concrete
-
-namespace Limits.PullbackCone.IsLimit
-
-noncomputable def equiv : c.pt ≃ { p : X × Y // f p.1 = g p.2 } :=
-  have : HasPullback f g := ⟨_, hc⟩
-  (IsLimit.conePointUniqueUpToIso hc
-    (pullbackIsPullback f g)).toEquiv.trans (pullbackEquiv f g)
-
-@[simp]
-lemma equiv_apply_fst (x : c.pt) : (equiv hc x).1.1 = c.fst x := by
-  erw [pullbackEquiv_fst]
-  exact congr_fun ((IsLimit.conePointUniqueUpToIso_hom_comp hc _) .left) x
-
-@[simp]
-lemma equiv_apply_snd (x : c.pt) : (equiv hc x).1.2 = c.snd x := by
-  erw [pullbackEquiv_snd]
-  exact congr_fun ((IsLimit.conePointUniqueUpToIso_hom_comp hc _) .right) x
-
-@[simp]
-lemma equiv_symm_apply_fst (x : { p : X × Y // f p.1 = g p.2 }) :
-    c.fst ((equiv hc).symm x) = x.1.1 := by
-  obtain ⟨x, rfl⟩ := (equiv hc).surjective x
-  simp
-
-@[simp]
-lemma equiv_symm_apply_snd (x : { p : X × Y // f p.1 = g p.2 }) :
-    c.snd ((equiv hc).symm x) = x.1.2 := by
-  obtain ⟨x, rfl⟩ := (equiv hc).surjective x
-  simp
-
-lemma type_ext {z₁ z₂ : c.pt}
-    (h₁ : c.fst z₁ = c.fst z₂)
-    (h₂ : c.snd z₁ = c.snd z₂): z₁ = z₂ := by
-  apply (equiv hc).injective
-  ext <;> simpa
-
-end Limits.PullbackCone.IsLimit
-
-end
-
 namespace GrothendieckTopology
 
 variable {C : Type u} [Category.{v} C]
@@ -157,7 +111,7 @@ variable (s : PushoutCocone ((yoneda ⋙ presheafToSheaf J _).map p)
     ((yoneda ⋙ presheafToSheaf J _).map q))
 
 noncomputable def aux₁ : s.pt.val.obj (op X) :=
-  (PullbackCone.IsLimit.equiv (H s.pt).isLimit).symm
+  (PullbackCone.IsLimit.equivPullbackObj (H s.pt).isLimit).symm
     ⟨⟨yonedaEquiv ((sheafificationAdjunction _ _).homEquiv _ _ s.inl),
        yonedaEquiv ((sheafificationAdjunction _ _).homEquiv _ _ s.inr)⟩, by
         simpa only [yonedaEquiv_naturality, ← Adjunction.homEquiv_naturality_left]
@@ -166,11 +120,11 @@ noncomputable def aux₁ : s.pt.val.obj (op X) :=
 
 lemma map_i_op_aux₁ : s.pt.val.map i.op (aux₁ H s) =
     yonedaEquiv ((sheafificationAdjunction _ _).homEquiv _ _ s.inl) :=
-  PullbackCone.IsLimit.equiv_symm_apply_fst (H s.pt).isLimit _
+  PullbackCone.IsLimit.equivPullbackObj_symm_apply_fst (H s.pt).isLimit _
 
 lemma map_j_op_aux₁ : s.pt.val.map j.op (aux₁ H s) =
     yonedaEquiv ((sheafificationAdjunction _ _).homEquiv _ _ s.inr) :=
-  PullbackCone.IsLimit.equiv_symm_apply_snd (H s.pt).isLimit _
+  PullbackCone.IsLimit.equivPullbackObj_symm_apply_snd (H s.pt).isLimit _
 
 noncomputable def aux₂ : (presheafToSheaf J (Type v)).obj (yoneda.obj X) ⟶ s.pt :=
   ((sheafificationAdjunction _ _).homEquiv _ _).symm (yonedaEquiv.symm (aux₁ H s))
