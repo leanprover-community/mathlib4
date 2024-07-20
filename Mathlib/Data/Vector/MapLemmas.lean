@@ -58,7 +58,7 @@ end Unary
 section Binary
 
 variable {α β : Type} {n : ℕ} (xs : Vector α n) (ys : Vector β n)
-variable {σ₁ σ₂ : Type} {s₁ : σ₁} {s₂ : σ₂}
+variable {σ₁ σ₂ : Type} {s₁ : σ₁} {s₂ : σ₂} {γ ζ : Type*}
 
 @[simp]
 theorem mapAccumr₂_mapAccumr_left {γ ζ : Type} (f₁ : γ → β → σ₁ → σ₁ × ζ) (f₂ : α → σ₂ → σ₂ × γ) :
@@ -72,7 +72,7 @@ theorem mapAccumr₂_mapAccumr_left {γ ζ : Type} (f₁ : γ → β → σ₁ �
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem map₂_map_left {γ ζ : Type*} (f₁ : γ → β → ζ) (f₂ : α → γ) :
+theorem map₂_map_left (f₁ : γ → β → ζ) (f₂ : α → γ) :
     map₂ f₁ (map f₂ xs) ys = map₂ (fun x y => f₁ (f₂ x) y) xs ys := by
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
@@ -88,7 +88,7 @@ theorem mapAccumr₂_mapAccumr_right {γ ζ : Type} (f₁ : α → γ → σ₁ 
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem map₂_map_right {γ ζ : Type*} (f₁ : α → γ → ζ) (f₂ : β → γ) :
+theorem map₂_map_right (f₁ : α → γ → ζ) (f₂ : β → γ) :
     map₂ f₁ xs (map f₂ ys) = map₂ (fun x y => f₁ x (f₂ y)) xs ys := by
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
@@ -104,7 +104,7 @@ theorem mapAccumr_mapAccumr₂ {γ ζ : Type} (f₁ : γ → σ₁ → σ₁ × 
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem map_map₂ {γ ζ : Type*} (f₁ : γ → ζ) (f₂ : α → β → γ) :
+theorem map_map₂ (f₁ : γ → ζ) (f₂ : α → β → γ) :
     map f₁ (map₂ f₂ xs ys) = map₂ (fun x y => f₁ <| f₂ x y) xs ys := by
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
