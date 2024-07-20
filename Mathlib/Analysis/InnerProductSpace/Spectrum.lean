@@ -443,12 +443,9 @@ theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} → 
       rw [← B]
       exact hw j hj
 
-variable {α β γ : Type*} [DecidableEq α] [CompleteLattice γ] (g : β → γ) (i : α)
-
-local notation "α'" => {y // y ≠ i}
-
-theorem basic (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
-    ⨆ f' : α' → β, ⨆ y : β, s i y ⊓ ⨅ x' : α', (s x' (f' x')) := by
+theorem basic {α β γ : Type*} [DecidableEq α] [CompleteLattice γ]
+    (i : α) (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
+      ⨆ f' : {y // y ≠ i} → β, ⨆ y : β, s i y ⊓ ⨅ x' : {y // y ≠ i}, (s x' (f' x')) := by
   rw [← (Equiv.funSplitAt i β).symm.iSup_comp, iSup_prod, iSup_comm]
   congr!  with f' y
   rw [iInf_split_single _ i, iInf_subtype]
