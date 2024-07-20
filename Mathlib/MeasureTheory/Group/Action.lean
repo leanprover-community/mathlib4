@@ -101,15 +101,26 @@ end AE_smul
 section AE
 
 variable {m : MeasurableSpace α} [MeasurableSpace G] [Group G] [MulAction G α]
-  {μ : Measure α} [SMulInvariantMeasure G α μ]
-
-@[to_additive]
-theorem measure_smul_null {s} (h : μ s = 0) (c : G) : μ (c • s) = 0 := by
-  simpa only [preimage_smul_inv] using measure_preimage_smul_null h c⁻¹
+  (μ : Measure α) [SMulInvariantMeasure G α μ]
 
 @[to_additive (attr := simp)]
-theorem measure_smul_eq_zero_iff {s} (c : G) : μ (c • s) = 0 ↔ μ s = 0 :=
-  ⟨fun h ↦ by simpa using measure_smul_null h c⁻¹, fun h ↦ measure_smul_null h c⟩
+theorem measure_preimage_smul (c : G) (s : Set α) : μ ((c • ·) ⁻¹' s) = μ s :=
+  (measure_preimage_smul_le μ c s).antisymm <| by
+    simpa [preimage_preimage] using measure_preimage_smul_le μ c⁻¹ ((c • ·) ⁻¹' s)
+
+@[to_additive (attr := simp)]
+theorem measure_smul (c : G) (s : Set α) : μ (c • s) = μ s := by
+  simpa only [preimage_smul_inv] using measure_preimage_smul μ c⁻¹ s
+
+variable {μ}
+
+@[to_additive]
+theorem measure_smul_eq_zero_iff {s} (c : G) : μ (c • s) = 0 ↔ μ s = 0 := by
+  rw [measure_smul]
+
+@[to_additive]
+theorem measure_smul_null {s} (h : μ s = 0) (c : G) : μ (c • s) = 0 :=
+  (measure_smul_eq_zero_iff _).2 h
 
 @[to_additive (attr := simp)]
 theorem smul_mem_ae (c : G) {s : Set α} : c • s ∈ ae μ ↔ s ∈ ae μ := by
@@ -127,17 +138,6 @@ theorem smul_set_ae_le (c : G) {s t : Set α} : c • s ≤ᵐ[μ] c • t ↔ s
 @[to_additive (attr := simp)]
 theorem smul_set_ae_eq (c : G) {s t : Set α} : c • s =ᵐ[μ] c • t ↔ s =ᵐ[μ] t := by
   simp only [Filter.eventuallyLE_antisymm_iff, smul_set_ae_le]
-
-variable (μ)
-
-@[to_additive (attr := simp)]
-theorem measure_preimage_smul (c : G) (s : Set α) : μ ((c • ·) ⁻¹' s) = μ s :=
-  (measure_preimage_smul_le μ c s).antisymm <| by
-    simpa [preimage_preimage] using measure_preimage_smul_le μ c⁻¹ ((c • ·) ⁻¹' s)
-
-@[to_additive (attr := simp)]
-theorem measure_smul (c : G) (s : Set α) : μ (c • s) = μ s := by
-  simpa only [preimage_smul_inv] using measure_preimage_smul μ c⁻¹ s
 
 end AE
 
