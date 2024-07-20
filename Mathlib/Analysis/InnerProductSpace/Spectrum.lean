@@ -375,17 +375,6 @@ variable {n m : Type u} [Fintype n] [Fintype m] (T : n → (E →ₗ[𝕜] E))
 
 open Classical
 
-theorem eigenspace_of_subsingleton_nonempty [Subsingleton n] (h : Nonempty n) :
-    ∃ (S : E →ₗ[𝕜] E), S.IsSymmetric ∧ (∀ (γ : n → 𝕜), (∀ (i : n),
-    (eigenspace (T i) (γ i) = eigenspace S (γ i)))) := by
-  have i := choice h
-  have : ∀ j : n, T i = T j := by
-    intro j; congr!
-  use T i
-  constructor
-  · exact hT i
-  · intro γ j; congr!
-
 theorem invariance_iInf [Nonempty n] (i : n) :
     ∀ γ : {x // x ≠ i} → 𝕜, ∀ v ∈ (⨅ (j : {x // x ≠ i}),
     eigenspace ((Subtype.restrict (fun x ↦ x ≠ i) T) j) (γ j)), (T i) v ∈ (⨅ (j : {x // x ≠ i}),
