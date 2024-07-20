@@ -81,13 +81,13 @@ def rFixedPoints := {I : (Set β)ᵒᵈ | leftDual R (rightDual R I) = I}
 open GaloisConnection
 
 /-- `leftDual` maps every element `J` to `rFixedPoints`. -/
-theorem is_rFixedPoint (J : Set α) : leftDual R J ∈ rFixedPoints R := by
+theorem leftDual_mem_rFixedPoint (J : Set α) : leftDual R J ∈ rFixedPoints R := by
     unfold rFixedPoints; apply le_antisymm
     · exact (galoisConnection R).l_u_le (leftDual R J)
     · apply (galoisConnection R).monotone_l; exact (galoisConnection R).le_u_l J
 
 /-- `rightDual` maps every element `I` to `lFixedPoints`. -/
-theorem is_lFixedPoint (I : (Set β)ᵒᵈ) : rightDual R I ∈ lFixedPoints R := by
+theorem rightDual_mem_lFixedPoint (I : (Set β)ᵒᵈ) : rightDual R I ∈ lFixedPoints R := by
     unfold lFixedPoints; apply le_antisymm
     · apply (galoisConnection R).monotone_u; exact (galoisConnection R).l_u_le I
     · exact (galoisConnection R).le_u_l (rightDual R I)
@@ -95,8 +95,8 @@ theorem is_lFixedPoint (I : (Set β)ᵒᵈ) : rightDual R I ∈ lFixedPoints R :
 /-- The maps `leftDual` and `rightDual` induce inverse bijections between the sets of fixed points.
 -/
 def equivFixedPoints : lFixedPoints R ≃ rFixedPoints R where
-    toFun := fun ⟨J, _⟩ => ⟨leftDual R J, is_rFixedPoint R J⟩
-    invFun := fun ⟨I, _⟩ => ⟨rightDual R I, is_lFixedPoint R I⟩
+    toFun := fun ⟨J, _⟩ => ⟨leftDual R J, leftDual_mem_rFixedPoint R J⟩
+    invFun := fun ⟨I, _⟩ => ⟨rightDual R I, rightDual_mem_lFixedPoint R I⟩
     left_inv := by intro J; cases' J with J hJ; simp; rw [hJ]
     right_inv := by intro I; cases' I with I hI; simp; rw [hI]
 
