@@ -1310,10 +1310,10 @@ def zeroAddRelabelling : ∀ x : PGame.{u}, 0 + x ≡r x
 theorem zero_add_equiv (x : PGame.{u}) : 0 + x ≈ x :=
   (zeroAddRelabelling x).equiv
 
-theorem leftMoves_add : ∀ x y : PGame.{u}, (x + y).LeftMoves = x.LeftMoves ⊕ y.LeftMoves
+theorem leftMoves_add : ∀ x y : PGame.{u}, (x + y).LeftMoves = (x.LeftMoves ⊕ y.LeftMoves)
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩ => rfl
 
-theorem rightMoves_add : ∀ x y : PGame.{u}, (x + y).RightMoves = x.RightMoves ⊕ y.RightMoves
+theorem rightMoves_add : ∀ x y : PGame.{u}, (x + y).RightMoves = (x.RightMoves ⊕ y.RightMoves)
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩ => rfl
 
 /-- Converts a left move for `x` or `y` into a left move for `x + y` and vice versa.

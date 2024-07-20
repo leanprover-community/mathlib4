@@ -248,12 +248,12 @@ instance : Mul PGame.{u} :=
 
 theorem leftMoves_mul :
     ∀ x y : PGame.{u},
-      (x * y).LeftMoves = (x.LeftMoves × y.LeftMoves) ⊕ (x.RightMoves × y.RightMoves)
+      (x * y).LeftMoves = (x.LeftMoves × y.LeftMoves ⊕ x.RightMoves × y.RightMoves)
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩ => rfl
 
 theorem rightMoves_mul :
     ∀ x y : PGame.{u},
-      (x * y).RightMoves = (x.LeftMoves × y.RightMoves) ⊕ (x.RightMoves × y.LeftMoves)
+      (x * y).RightMoves = (x.LeftMoves × y.RightMoves ⊕ x.RightMoves × y.LeftMoves)
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩ => rfl
 
 /-- Turns two left or right moves for `x` and `y` into a left move for `x * y` and vice versa.

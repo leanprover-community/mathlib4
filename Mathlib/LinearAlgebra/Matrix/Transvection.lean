@@ -323,7 +323,7 @@ namespace Pivot
 
 variable {R} {r : ℕ} (M : Matrix (Fin r ⊕ Unit) (Fin r ⊕ Unit) 𝕜)
 
-open Unit ⊕ Fin TransvectionStruct
+open Unit Sum Fin TransvectionStruct
 
 /-- A list of transvections such that multiplying on the left with these transvections will replace
 the last column with zeroes. -/
