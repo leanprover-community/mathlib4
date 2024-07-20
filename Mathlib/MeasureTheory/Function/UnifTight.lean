@@ -207,12 +207,9 @@ theorem unifTight_finite [Finite ι] (hp_top : p ≠ ∞) {f : ι → α → β}
 
 end UnifTight
 
-
 section VitaliConvergence
 
-variable {μ : Measure α} {p : ℝ≥0∞}
-
-variable {f : ℕ → α → β} {g : α → β}
+variable {μ : Measure α} {p : ℝ≥0∞} {f : ℕ → α → β} {g : α → β}
 
 /-! Both directions and an iff version of Vitali's convergence theorem on measure spaces
    of not necessarily finite volume. See `Thm III.6.15` of Dunford & Schwartz, Part I (1958). -/
@@ -391,7 +388,6 @@ theorem tendstoInMeasure_notFinite_iff_tendsto_Lp (hp : 1 ≤ p) (hp' : p ≠ �
         (fun n => (hf n).aestronglyMeasurable) hg.aestronglyMeasurable h,
       unifIntegrable_of_tendsto_Lp hp hp' hf hg h,
       unifTight_of_tendsto_Lp hp' hf hg h⟩⟩
-
 
 end VitaliConvergence
 end MeasureTheory
