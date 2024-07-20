@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
 
-import Mathlib.Topology.Filter
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
