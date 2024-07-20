@@ -454,12 +454,6 @@ theorem index_eigen_extend (i : n) [Nonempty n] (γ : {x // x ≠ i} → 𝕜) (
   rw [← hb']
   exact hb a ha
 
-theorem ext_experiment (i : n) [Nonempty n] (γ : {x // x ≠ i} → 𝕜) : ∀ x,
-    x ∈ (⨆ (μ : 𝕜) , eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) ↔
-    x ∈ (⊤ : Submodule 𝕜 ↥(⨅ j, eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) := by
-  have H := inf_restrict T hT hC i γ
-  simp only [ne_eq, H, Submodule.mem_top, implies_true]
-
 variable {α β γ : Type*} [DecidableEq α] [CompleteLattice γ] (g : β → γ) (i : α)
 
 local notation "α'" => {y // y ≠ i}
