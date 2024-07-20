@@ -96,3 +96,5 @@ theorem choose_modEq_prod_range_choose_nat {a : ℕ} (ha₁ : n < p ^ a) (ha₂ 
 
 alias lucas_theorem := choose_modEq_prod_range_choose
 alias lucas_theorem_nat := choose_modEq_prod_range_choose_nat
+
+end Choose
