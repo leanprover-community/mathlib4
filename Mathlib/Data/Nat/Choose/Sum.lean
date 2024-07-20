@@ -11,8 +11,6 @@ import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
-#align_import data.nat.choose.sum from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
-
 /-!
 # Sums of binomial coefficients
 
@@ -65,7 +63,6 @@ theorem add_pow (h : Commute x y) (n : ℕ) :
     rw [pow_succ' (x + y), ih, add_mul, mul_sum, mul_sum]
     congr 1
     rw [sum_range_succ', sum_range_succ, h_first, h_last, mul_zero, add_zero, _root_.pow_succ']
-#align commute.add_pow Commute.add_pow
 
 /-- A version of `Commute.add_pow` that avoids ℕ-subtraction by summing over the antidiagonal and
 also with the binomial coefficient applied via scalar action of ℕ. -/
@@ -73,7 +70,6 @@ theorem add_pow' (h : Commute x y) (n : ℕ) :
     (x + y) ^ n = ∑ m ∈ antidiagonal n, choose n m.fst • (x ^ m.fst * y ^ m.snd) := by
   simp_rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun m p ↦ choose n m • (x ^ m * y ^ p),
     _root_.nsmul_eq_mul, cast_comm, h.add_pow]
-#align commute.add_pow' Commute.add_pow'
 
 end Commute
 
@@ -81,7 +77,6 @@ end Commute
 theorem add_pow [CommSemiring R] (x y : R) (n : ℕ) :
     (x + y) ^ n = ∑ m ∈ range (n + 1), x ^ m * y ^ (n - m) * choose n m :=
   (Commute.all x y).add_pow n
-#align add_pow add_pow
 
 namespace Nat
 
@@ -89,7 +84,6 @@ namespace Nat
 theorem sum_range_choose (n : ℕ) : (∑ m ∈ range (n + 1), choose n m) = 2 ^ n := by
   have := (add_pow 1 1 n).symm
   simpa [one_add_one_eq_two] using this
-#align nat.sum_range_choose Nat.sum_range_choose
 
 theorem sum_range_choose_halfway (m : Nat) : (∑ i ∈ range (m + 1), choose (2 * m + 1) i) = 4 ^ m :=
   have : (∑ i ∈ range (m + 1), choose (2 * m + 1) (2 * m + 1 - i)) =
@@ -113,13 +107,11 @@ theorem sum_range_choose_halfway (m : Nat) : (∑ i ∈ range (m + 1), choose (2
       _ = ∑ i ∈ range (2 * m + 2), choose (2 * m + 1) i := sum_range_add_sum_Ico _ (by omega)
       _ = 2 ^ (2 * m + 1) := sum_range_choose (2 * m + 1)
       _ = 2 * 4 ^ m := by rw [Nat.pow_succ, pow_mul, mul_comm]; rfl
-#align nat.sum_range_choose_halfway Nat.sum_range_choose_halfway
 
 theorem choose_middle_le_pow (n : ℕ) : choose (2 * n + 1) n ≤ 4 ^ n := by
   have t : choose (2 * n + 1) n ≤ ∑ i ∈ range (n + 1), choose (2 * n + 1) i :=
     single_le_sum (fun x _ ↦ by omega) (self_mem_range_succ n)
   simpa [sum_range_choose_halfway n] using t
-#align nat.choose_middle_le_pow Nat.choose_middle_le_pow
 
 theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
     4 ^ n ≤ (2 * n + 1) * choose (2 * n) n :=
@@ -128,7 +120,6 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
     _ = ∑ m ∈ range (2 * n + 1), choose (2 * n) m := by set_option simprocs false in simp [add_pow]
     _ ≤ ∑ m ∈ range (2 * n + 1), choose (2 * n) (2 * n / 2) := by gcongr; apply choose_le_middle
     _ = (2 * n + 1) * choose (2 * n) n := by simp
-#align nat.four_pow_le_two_mul_add_one_mul_central_binom Nat.four_pow_le_two_mul_add_one_mul_central_binom
 
 /-- **Zhu Shijie's identity** aka hockey-stick identity. -/
 theorem sum_Icc_choose (n k : ℕ) : ∑ m ∈ Icc k n, m.choose k = (n + 1).choose (k + 1) := by
@@ -148,12 +139,10 @@ theorem Int.alternating_sum_range_choose {n : ℕ} :
     have h := add_pow (-1 : ℤ) 1 n.succ
     simp only [one_pow, mul_one, add_left_neg] at h
     rw [← h, zero_pow n.succ_ne_zero, if_neg (Nat.succ_ne_zero n)]
-#align int.alternating_sum_range_choose Int.alternating_sum_range_choose
 
 theorem Int.alternating_sum_range_choose_of_ne {n : ℕ} (h0 : n ≠ 0) :
     (∑ m ∈ range (n + 1), ((-1) ^ m * ↑(choose n m) : ℤ)) = 0 := by
   rw [Int.alternating_sum_range_choose, if_neg h0]
-#align int.alternating_sum_range_choose_of_ne Int.alternating_sum_range_choose_of_ne
 
 namespace Finset
 
@@ -169,13 +158,11 @@ theorem sum_powerset_apply_card {α β : Type*} [AddCommMonoid α] (f : ℕ → 
     rw [← card_powersetCard, ← sum_const]
     refine sum_congr powersetCard_eq_filter.symm fun z hz ↦ ?_
     rw [(mem_powersetCard.1 hz).2]
-#align finset.sum_powerset_apply_card Finset.sum_powerset_apply_card
 
 theorem sum_powerset_neg_one_pow_card {α : Type*} [DecidableEq α] {x : Finset α} :
     (∑ m ∈ x.powerset, (-1 : ℤ) ^ m.card) = if x = ∅ then 1 else 0 := by
   rw [sum_powerset_apply_card]
   simp only [nsmul_eq_mul', ← card_eq_zero, Int.alternating_sum_range_choose]
-#align finset.sum_powerset_neg_one_pow_card Finset.sum_powerset_neg_one_pow_card
 
 theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (h0 : x.Nonempty) :
     (∑ m ∈ x.powerset, (-1 : ℤ) ^ m.card) = 0 := by
@@ -183,7 +170,6 @@ theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (
     rw [sum_powerset_neg_one_pow_card, if_neg]
     rw [← Ne, ← nonempty_iff_ne_empty]
     apply h0
-#align finset.sum_powerset_neg_one_pow_card_of_nonempty Finset.sum_powerset_neg_one_pow_card_of_nonempty
 
 variable {M R : Type*} [CommMonoid M] [NonAssocSemiring R]
 
@@ -220,7 +206,6 @@ theorem sum_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
       (∑ i ∈ range (n + 1), (n.choose i : R) * f i (n + 1 - i)) +
         ∑ i ∈ range (n + 1), (n.choose i : R) * f (i + 1) (n - i) := by
   simpa only [nsmul_eq_mul] using sum_choose_succ_nsmul f n
-#align finset.sum_choose_succ_mul Finset.sum_choose_succ_mul
 
 /-- The sum along the antidiagonal of `(n+1).choose i * f i j` can be split into two sums along the
 antidiagonal at rank `n`, respectively of `n.choose i * f i (j+1)` and `n.choose j * f (i+1) j`. -/
@@ -229,7 +214,6 @@ theorem sum_antidiagonal_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
       (∑ ij ∈ antidiagonal n, (n.choose ij.1 : R) * f ij.1 (ij.2 + 1)) +
         ∑ ij ∈ antidiagonal n, (n.choose ij.2 : R) * f (ij.1 + 1) ij.2 := by
   simpa only [nsmul_eq_mul] using sum_antidiagonal_choose_succ_nsmul f n
-#align finset.sum_antidiagonal_choose_succ_mul Finset.sum_antidiagonal_choose_succ_mul
 
 theorem sum_antidiagonal_choose_add (d n : ℕ) :
     (Finset.sum (antidiagonal n) fun ij => (d + ij.2).choose d) =
