@@ -491,7 +491,17 @@ theorem basic (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
 variable (F : Submodule 𝕜 E) (S : E →ₗ[𝕜] E) (hS: IsSymmetric S) (hInv : ∀ v ∈ F, S v ∈ F)
 
 theorem invariant_subspace_exhaust : ⨆ μ, Submodule.map
-    F.subtype (eigenspace (S.restrict hInv) μ)  = F := by sorry
+    F.subtype (eigenspace (S.restrict hInv) μ)  = F := by
+  sorry
+
+/-The following proof is substantially shorter due to the abstraction above. Maybe prelim_sub_exhaust
+can be removed and the abstract proof incorporated inline below. -/
+theorem prelim_sub_exhaust' (i : n) [Nontrivial n] (γ : {x // x ≠ i} → 𝕜) :
+    ⨆ μ, Submodule.map (⨅ (j: {x // x ≠ i}), eigenspace (T ↑j) (γ j)).subtype
+    (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) =
+    (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) :=
+  invariant_subspace_exhaust (⨅ (j : {x // x ≠ i}), eigenspace (T ↑j) (γ j)) (T i)
+     (invariance_iInf T hC i γ)
 
 theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // x ≠ i} → 𝕜) :
     ⨆ μ, Submodule.map (⨅ (j: {x // x ≠ i}), eigenspace (T ↑j) (γ j)).subtype
