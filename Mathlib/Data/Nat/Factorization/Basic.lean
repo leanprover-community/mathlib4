@@ -5,6 +5,7 @@ Authors: Stuart Presnell
 -/
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.Factorization.Defs
+import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Order.Interval.Finset.Nat
 
 /-!
