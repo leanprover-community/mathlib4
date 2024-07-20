@@ -308,6 +308,7 @@ theorem smeval_ascPochhammer_nat_cast [NatPowAssoc R] (n k : ℕ) :
 theorem multichoose_neg_self (n : ℕ) : multichoose (-n : ℤ) n = (-1)^n := by
   apply nsmul_right_injective _ (Nat.factorial_ne_zero _)
   on_goal 1 => simp only
+  -- This closes both remaining goals at once.
   rw [factorial_nsmul_multichoose_eq_ascPochhammer, smeval_ascPochhammer_self_neg, nsmul_eq_mul,
     Nat.cast_comm]
 
@@ -315,6 +316,7 @@ theorem multichoose_neg_self (n : ℕ) : multichoose (-n : ℤ) n = (-1)^n := by
 theorem multichoose_neg_succ (n : ℕ) : multichoose (-n : ℤ) (n + 1) = 0 := by
   apply nsmul_right_injective _ (Nat.factorial_ne_zero _)
   on_goal 1 => simp only
+  -- This closes both remaining goals at once.
   rw [factorial_nsmul_multichoose_eq_ascPochhammer, smeval_ascPochhammer_succ_neg, smul_zero]
 
 theorem multichoose_neg_add (n k : ℕ) : multichoose (-n : ℤ) (n + k + 1) = 0 := by

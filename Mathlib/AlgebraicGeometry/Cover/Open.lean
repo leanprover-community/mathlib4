@@ -461,6 +461,7 @@ lemma isNilpotent_of_isNilpotent_cover {X : Scheme.{u}} {U : Opens X} (s : Γ(X,
   use N
   apply zero_of_zero_cover
   on_goal 1 => intro i; simp only [map_pow]
+  -- This closes both remaining goals at once.
   exact pow_eq_zero_of_le (hfnleN i) (hfn i)
 
 section deprecated
