@@ -43,15 +43,15 @@ def DynamicalUni (T : X → X) (U : Set (X × X)) (n : ℕ) : Set (X × X) :=
 
 theorem dynamical_uni_inter_Ico (T : X → X) (U : Set (X × X)) (n : ℕ) :
     DynamicalUni T U n = ⋂ k : Ico 0 n, (map T T)^[k] ⁻¹' U := by
-  simp only [DynamicalUni, iInter_coe_set, mem_Ico, zero_le, true_and]
+  simp [DynamicalUni, iInter_coe_set, mem_Ico, zero_le, true_and]
 
 theorem dynamical_uni_mem {T : X → X} {U : Set (X × X)} {n : ℕ} {x y : X} :
     (x, y) ∈ DynamicalUni T U n ↔ ∀ k < n, (T^[k] x, T^[k] y) ∈ U := by
-  simp only [DynamicalUni, map_iterate, mem_preimage, mem_iInter, map_apply]
+  simp [DynamicalUni, map_iterate, mem_preimage, mem_iInter, map_apply]
 
 theorem dynamical_balls_mem {T : X → X} {U : Set (X × X)} {n : ℕ} {x y : X} :
     y ∈ ball x (DynamicalUni T U n) ↔ ∀ k < n, T^[k] y ∈ ball (T^[k] x) U := by
-  simp only [ball, mem_preimage]; exact dynamical_uni_mem
+  simp [ball, mem_preimage]; exact dynamical_uni_mem
 
 theorem dynamical_uni_of_uni [UniformSpace X] {T : X → X} (h : UniformContinuous T)
     {U : Set (X × X)} (U_uni : U ∈ 𝓤 X) (n : ℕ) :
@@ -101,18 +101,15 @@ theorem dynamical_uni_antitone_time (T : X → X) (U : Set (X × X)) :
 
 @[simp]
 theorem dynamical_uni_time_zero {T : X → X} {U : Set (X × X)} :
-    DynamicalUni T U 0 = univ := by
-  simp only [DynamicalUni, not_lt_zero', iInter_of_empty, iInter_univ]
+    DynamicalUni T U 0 = univ := by simp [DynamicalUni]
 
 @[simp]
 theorem dynamical_time_one {T : X → X} {U : Set (X × X)} :
-    DynamicalUni T U 1 = U := by
-  simp [DynamicalUni]
+    DynamicalUni T U 1 = U := by simp [DynamicalUni]
 
 @[simp]
 theorem dynamical_univ {T : X → X} {n : ℕ} :
-    DynamicalUni T univ n = univ := by
-  simp [DynamicalUni]
+    DynamicalUni T univ n = univ := by simp [DynamicalUni]
 
 theorem inter_of_dynamical_balls (T : X → X) (n : ℕ) {U : Set (X × X)} (U_symm : SymmetricRel U)
     (x y : X) (h : (ball x (DynamicalUni T U n) ∩ ball y (DynamicalUni T U n)).Nonempty) :
