@@ -329,7 +329,6 @@ theorem semi_final_exhaust': (fun (α : 𝕜) ↦  eigenspace A α)  = fun (α :
     (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) := by
   funext; exact (semi_final_exhaust hB hAB).symm
 
-
 theorem exhaust : (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α))) = ⊤ := by
   rw [← pre_exhaust hA ]
   rw[semi_final_exhaust' hB hAB]
@@ -396,6 +395,31 @@ theorem eigenspace_of_subsingleton_nonempty [Subsingleton n] (h : Nonempty n) :
   constructor
   · exact hT i
   · intro γ j; congr!
+
+def eq_triv [Subsingleton n] (i : n) : (n → 𝕜) ≃ 𝕜 where
+  toFun := fun f ↦ f i
+  invFun := fun t ↦ (fun (_ : n) ↦ t)
+  left_inv : Function.LeftInverse (fun (t : 𝕜) ↦ (fun (x : n) ↦ t)) (fun f ↦ f i) := by
+    intro x
+    simp only
+    exact
+      Eq.symm
+        ((fun x y ↦ (Function.funext_iff_of_subsingleton x y).mp) i
+          i rfl)
+  right_inv : Function.RightInverse (fun (t : 𝕜) ↦ (fun i ↦ t)) (fun f ↦ f i) := by
+    intro h
+    rfl
+
+theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base' [Subsingleton n]:
+    (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
+  simp only [Submodule.orthogonal_eq_bot_iff]
+  by_cases case : Nonempty n
+  · have i := choice case
+    conv =>
+      lhs; rhs; ext γ; rw [ciInf_subsingleton i]
+
+  · simp only [not_nonempty_iff] at case
+    simp only [iInf_of_empty, ciSup_unique, Submodule.top_orthogonal_eq_bot]
 
 /--The following result is auxiliary, and not meant to be used outside this file. It forms
 the base case of the induction proof of `orthogonalComplement_iSup_iInf_eigenspaces_eq_bot`-/
