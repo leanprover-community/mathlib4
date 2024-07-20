@@ -415,7 +415,7 @@ theorem piRing_symm_apply (f : ι → M) (g : ι → R) : (piRing R M ι S).symm
 /-- `Equiv.sumArrowEquivProdArrow` as a linear equivalence.
 -/
 def sumArrowLequivProdArrow (α β R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :
-    (Sum α β → M) ≃ₗ[R] (α → M) × (β → M) :=
+    (α ⊕ β → M) ≃ₗ[R] (α → M) × (β → M) :=
   { Equiv.sumArrowEquivProdArrow α β
       M with
     map_add' := by
@@ -426,12 +426,12 @@ def sumArrowLequivProdArrow (α β R M : Type*) [Semiring R] [AddCommMonoid M] [
       ext <;> rfl }
 
 @[simp]
-theorem sumArrowLequivProdArrow_apply_fst {α β} (f : Sum α β → M) (a : α) :
+theorem sumArrowLequivProdArrow_apply_fst {α β} (f : α ⊕ β → M) (a : α) :
     (sumArrowLequivProdArrow α β R M f).1 a = f (Sum.inl a) :=
   rfl
 
 @[simp]
-theorem sumArrowLequivProdArrow_apply_snd {α β} (f : Sum α β → M) (b : β) :
+theorem sumArrowLequivProdArrow_apply_snd {α β} (f : α ⊕ β → M) (b : β) :
     (sumArrowLequivProdArrow α β R M f).2 b = f (Sum.inr b) :=
   rfl
 
