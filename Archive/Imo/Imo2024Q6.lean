@@ -9,13 +9,13 @@ import Mathlib.SetTheory.Cardinal.Basic
 /-!
 # IMO 2024 Q6
 
-A function $f \colon \mathbb{Q} \to \mathbb{Q}$ is called \emph{aquaesulian} if the following
-property holds: for every $x,y \in \mathbb{Q}$,
-\[ f(x + f(y)) = f(x) + y \qquad \text{or} \qquad f(f(x) + y) = x + f(y). \]
+A function `f: ℚ → ℚ` is called *aquaesulian* if the following
+property holds: for every `x, y ∈ ℚ`,
+`f(x + f(y)) = f(x) + y` or `f(f(x) + y) = x + f(y)`.
 
-Show that there exists an integer $c$ such that for any aquaesulian function $f$ there are at
-most $c$ different rational numbers of the form $f(r)+f(-r)$ for some rational number $r$,
-and find the smallest possible value of $c$.
+Show that there exists an integer `c` such that for any aquaesulian function `f` there are at
+most `c` different rational numbers of the form `f(r)+f(-r)` for some rational number `r`,
+and find the smallest possible value of `c`.
 
 We follow Solution 1 from the
 [official solutions](https://www.imo2024.uk/s/IMO-2024-Paper-1-Solutions.pdf). A key observation
