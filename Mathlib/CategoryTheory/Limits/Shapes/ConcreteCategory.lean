@@ -183,7 +183,7 @@ end BinaryProducts
 
 section Pullbacks
 
-variable [ConcreteCategory.{w} C] {X₁ X₂ S : C} (f₁ : X₁ ⟶ S) (f₂ : X₂ ⟶ S)
+variable [ConcreteCategory.{v} C] {X₁ X₂ S : C} (f₁ : X₁ ⟶ S) (f₂ : X₂ ⟶ S)
     [HasPullback f₁ f₂] [PreservesLimit (cospan f₁ f₂) (forget C)]
 
 /-- In a concrete category `C`, given two morphisms `f₁ : X₁ ⟶ S` and `f₂ : X₂ ⟶ S`,
@@ -215,20 +215,6 @@ lemma pullbackMk_snd (x₁ : X₁) (x₂ : X₂) (h : f₁ x₁ = f₂ x₂) :
     pullback.snd f₁ f₂ (pullbackMk f₁ f₂ x₁ x₂ h) = x₂ :=
   (congr_fun (PreservesPullback.iso_inv_snd (forget C) f₁ f₂) _).trans
     (congr_fun (Types.pullbackIsoPullback_inv_snd ((forget C).map f₁) ((forget C).map f₂)) _)
-
-@[simp]
-lemma pullbackEquiv_fst (x : (forget C).obj (pullback f₁ f₂)) :
-    (pullbackEquiv _ _ x).1.1 =
-      pullback.fst f₁ f₂ x := by
-  obtain ⟨x₁, x₂, h, rfl⟩ := pullbackMk_surjective _ _ x
-  rw [pullbackMk_fst, pullbackMk, Equiv.apply_symm_apply]
-
-@[simp]
-lemma pullbackEquiv_snd (x : (forget C).obj (pullback f₁ f₂)) :
-    (pullbackEquiv _ _ x).1.2 =
-      pullback.snd f₁ f₂ x := by
-  obtain ⟨x₁, x₂, h, rfl⟩ := pullbackMk_surjective _ _ x
-  rw [pullbackMk_snd, pullbackMk, Equiv.apply_symm_apply]
 
 end Pullbacks
 

@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 The purpose of this file is to allow the formalization of long exact
 Mayer-Vietoris sequences in sheaf cohomology. If `X` is an open subset
 of a topological space that is covered by two open subsets `U` and `V`,
-it is known that this is a long exact sequence
+it is known that there is a long exact sequence
 `... ⟶ H^q(X) ⟶ H^q(U) ⊞ H^q(V) ⟶ H^q(W) ⟶ H^{q+1}(X) ⟶ ...`
 when `W` is the intersection of `U` and `V`, and `H^q` are the
 cohomology groups with values in an abelian sheaf.
@@ -314,20 +314,14 @@ namespace Opens
 open CategoryTheory Limits
 
 variable {T : Type u} [TopologicalSpace T]
-  (U V X W : TopologicalSpace.Opens T)
-  (hX : X = U ⊔ V)
-  (hW : W = U ⊓ V)
-
-instance (f : U ⟶ V) : Mono f where
-  right_cancellation := by
-    intros
-    apply Subsingleton.elim
+  (U V : TopologicalSpace.Opens T)
 
 @[simps! X U V W i j p q]
-noncomputable def mayerVietorisSquare' :
+noncomputable def mayerVietorisSquare'
+    (X W : TopologicalSpace.Opens T) (hX : X = U ⊔ V) (hW : W = U ⊓ V) :
     (Opens.grothendieckTopology T).MayerVietorisSquare :=
   GrothendieckTopology.MayerVietorisSquare.mk_of_isPullback
-    (J := (Opens.grothendieckTopology T))
+    (J := Opens.grothendieckTopology T)
     (X := X) (U := U) (V := V) (W := W)
     (i := homOfLE (by simp only [hX, le_sup_left]))
     (j := homOfLE (by simp only [hX, le_sup_right]))
