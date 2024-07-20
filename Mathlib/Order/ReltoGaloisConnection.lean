@@ -101,7 +101,7 @@ theorem le_imp_u_l_le {J J' : Set α} (h : J' ∈ R.lFixedPoints) :
   apply (galoisConnection R).monotone_l
   exact h₁
 
-theorem ge_imp_ge_l_u {I I' : (Set β)ᵒᵈ} (h : I' ∈ rFixedPoints R) :
+theorem ge_imp_ge_l_u {I I' : (Set β)ᵒᵈ} (h : I' ∈ R.rFixedPoints) :
     I' ≥ I → I' ≥ R.leftDual (R.rightDual I) := by
   intro h₁
   rw [← h]
