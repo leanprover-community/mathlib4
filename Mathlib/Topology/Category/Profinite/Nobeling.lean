@@ -7,7 +7,7 @@ import Mathlib.Algebra.Category.ModuleCat.Free
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.Category.Profinite.Product
 import Mathlib.Topology.LocallyConstant.Algebra
-import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Data.Bool.Basic
 
 /-!
 
@@ -231,7 +231,7 @@ noncomputable
 def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] :
     CategoryTheory.Limits.IsLimit (spanCone hC) := by
   refine (IsLimit.postcomposeHomEquiv (NatIso.ofComponents
-    (fun s ↦ (Profinite.isoOfBijective _ (iso_map_bijective C (· ∈ unop s)))) ?_) (spanCone hC))
+    (fun s ↦ (CompHausLike.isoOfBijective _ (iso_map_bijective C (· ∈ unop s)))) ?_) (spanCone hC))
     (IsLimit.ofIsoLimit (indexCone_isLimit hC) (Cones.ext (Iso.refl _) ?_))
   · intro ⟨s⟩ ⟨t⟩ ⟨⟨⟨f⟩⟩⟩
     ext x
