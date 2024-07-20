@@ -7,8 +7,6 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.LatticeIntervals
 import Mathlib.Order.Interval.Set.OrdConnected
 
-#align_import order.complete_lattice_intervals from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
-
 /-! # Subtypes of conditionally complete linear orders
 
 In this file we give conditions on a subset of a conditionally complete linear order, to ensure that
@@ -41,7 +39,6 @@ noncomputable def subsetSupSet [Inhabited s] : SupSet s where
     if ht : t.Nonempty ∧ BddAbove t ∧ sSup ((↑) '' t : Set α) ∈ s
     then ⟨sSup ((↑) '' t : Set α), ht.2.2⟩
     else default
-#align subset_has_Sup subsetSupSet
 
 attribute [local instance] subsetSupSet
 
@@ -52,12 +49,10 @@ theorem subset_sSup_def [Inhabited s] :
       then ⟨sSup ((↑) '' t : Set α), ht.2.2⟩
       else default :=
   rfl
-#align subset_Sup_def subset_sSup_def
 
 theorem subset_sSup_of_within [Inhabited s] {t : Set s}
     (h' : t.Nonempty) (h'' : BddAbove t)  (h : sSup ((↑) '' t : Set α) ∈ s) :
     sSup ((↑) '' t : Set α) = (@sSup s _ t : α) := by simp [dif_pos, h, h', h'']
-#align subset_Sup_of_within subset_sSup_of_within
 
 theorem subset_sSup_emptyset [Inhabited s] :
     sSup (∅ : Set s) = default := by
@@ -81,7 +76,6 @@ noncomputable def subsetInfSet [Inhabited s] : InfSet s where
     if ht : t.Nonempty ∧ BddBelow t ∧ sInf ((↑) '' t : Set α) ∈ s
     then ⟨sInf ((↑) '' t : Set α), ht.2.2⟩
     else default
-#align subset_has_Inf subsetInfSet
 
 attribute [local instance] subsetInfSet
 
@@ -92,12 +86,10 @@ theorem subset_sInf_def [Inhabited s] :
       then ⟨sInf ((↑) '' t : Set α), ht.2.2⟩ else
       default :=
   rfl
-#align subset_Inf_def subset_sInf_def
 
 theorem subset_sInf_of_within [Inhabited s] {t : Set s}
     (h' : t.Nonempty) (h'' : BddBelow t) (h : sInf ((↑) '' t : Set α) ∈ s) :
     sInf ((↑) '' t : Set α) = (@sInf s _ t : α) := by simp [dif_pos, h, h', h'']
-#align subset_Inf_of_within subset_sInf_of_within
 
 theorem subset_sInf_emptyset [Inhabited s] :
     sInf (∅ : Set s) = default := by
@@ -144,7 +136,6 @@ noncomputable abbrev subsetConditionallyCompleteLinearOrder [Inhabited s]
       exact (Subtype.mono_coe s).csInf_image_le hct h_bdd
     csSup_of_not_bddAbove := fun t ht ↦ by simp [ht]
     csInf_of_not_bddBelow := fun t ht ↦ by simp [ht] }
-#align subset_conditionally_complete_linear_order subsetConditionallyCompleteLinearOrder
 
 /-- The `sSup` function on a nonempty `OrdConnected` set `s` in a conditionally complete linear
 order takes values within `s`, for all nonempty bounded-above subsets of `s`. -/
@@ -155,7 +146,6 @@ theorem sSup_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Se
   refine hs.out c.2 B.2 ⟨?_, ?_⟩
   · exact (Subtype.mono_coe s).le_csSup_image hct ⟨B, hB⟩
   · exact (Subtype.mono_coe s).csSup_image_le ⟨c, hct⟩ hB
-#align Sup_within_of_ord_connected sSup_within_of_ordConnected
 
 /-- The `sInf` function on a nonempty `OrdConnected` set `s` in a conditionally complete linear
 order takes values within `s`, for all nonempty bounded-below subsets of `s`. -/
@@ -166,7 +156,6 @@ theorem sInf_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Se
   refine hs.out B.2 c.2 ⟨?_, ?_⟩
   · exact (Subtype.mono_coe s).le_csInf_image ⟨c, hct⟩ hB
   · exact (Subtype.mono_coe s).csInf_image_le hct ⟨B, hB⟩
-#align Inf_within_of_ord_connected sInf_within_of_ordConnected
 
 /-- A nonempty `OrdConnected` set in a conditionally complete linear order is naturally a
 conditionally complete linear order. -/
@@ -175,7 +164,6 @@ noncomputable instance ordConnectedSubsetConditionallyCompleteLinearOrder [Inhab
   subsetConditionallyCompleteLinearOrder s
     (fun h => sSup_within_of_ordConnected h)
     (fun h => sInf_within_of_ordConnected h)
-#align ord_connected_subset_conditionally_complete_linear_order ordConnectedSubsetConditionallyCompleteLinearOrder
 
 end OrdConnected
 

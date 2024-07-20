@@ -7,8 +7,6 @@ import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Group.Invertible.Basic
 import Mathlib.GroupTheory.Perm.Basic
 
-#align_import group_theory.group_action.group from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
-
 /-!
 # More lemmas about group actions
 
@@ -30,12 +28,6 @@ variable [Group α] [MulAction α β]
 @[to_additive (attr := simps)]
 def MulAction.toPerm (a : α) : Equiv.Perm β :=
   ⟨fun x => a • x, fun x => a⁻¹ • x, inv_smul_smul a, smul_inv_smul a⟩
-#align mul_action.to_perm MulAction.toPerm
-#align add_action.to_perm AddAction.toPerm
-#align add_action.to_perm_apply AddAction.toPerm_apply
-#align mul_action.to_perm_apply MulAction.toPerm_apply
-#align add_action.to_perm_symm_apply AddAction.toPerm_symm_apply
-#align mul_action.to_perm_symm_apply MulAction.toPerm_symm_apply
 
 /-- Given an action of an additive group `α` on `β`, each `g : α` defines a permutation of `β`. -/
 add_decl_doc AddAction.toPerm
@@ -45,8 +37,6 @@ add_decl_doc AddAction.toPerm
 lemma MulAction.toPerm_injective [FaithfulSMul α β] :
     Function.Injective (MulAction.toPerm : α → Equiv.Perm β) :=
   (show Function.Injective (Equiv.toFun ∘ MulAction.toPerm) from smul_left_injective').of_comp
-#align mul_action.to_perm_injective MulAction.toPerm_injective
-#align add_action.to_perm_injective AddAction.toPerm_injective
 
 variable (α) (β)
 
@@ -56,8 +46,6 @@ def MulAction.toPermHom : α →* Equiv.Perm β where
   toFun := MulAction.toPerm
   map_one' := Equiv.ext <| one_smul α
   map_mul' u₁ u₂ := Equiv.ext <| mul_smul (u₁ : α) u₂
-#align mul_action.to_perm_hom MulAction.toPermHom
-#align mul_action.to_perm_hom_apply MulAction.toPermHom_apply
 
 /-- Given an action of an additive group `α` on a set `β`, each `g : α` defines a permutation of
 `β`. -/
@@ -65,7 +53,6 @@ def MulAction.toPermHom : α →* Equiv.Perm β where
 def AddAction.toPermHom (α : Type*) [AddGroup α] [AddAction α β] :
     α →+ Additive (Equiv.Perm β) :=
   MonoidHom.toAdditive'' <| MulAction.toPermHom (Multiplicative α) β
-#align add_action.to_perm_hom AddAction.toPermHom
 
 /-- The tautological action by `Equiv.Perm α` on `α`.
 
@@ -74,54 +61,39 @@ instance Equiv.Perm.applyMulAction (α : Type*) : MulAction (Equiv.Perm α) α w
   smul f a := f a
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
-#align equiv.perm.apply_mul_action Equiv.Perm.applyMulAction
 
 @[simp]
 protected lemma Equiv.Perm.smul_def {α : Type*} (f : Equiv.Perm α) (a : α) : f • a = f a :=
   rfl
-#align equiv.perm.smul_def Equiv.Perm.smul_def
 
 /-- `Equiv.Perm.applyMulAction` is faithful. -/
 instance Equiv.Perm.applyFaithfulSMul (α : Type*) : FaithfulSMul (Equiv.Perm α) α :=
   ⟨Equiv.ext⟩
-#align equiv.perm.apply_has_faithful_smul Equiv.Perm.applyFaithfulSMul
 
 variable {α} {β}
 
 @[to_additive]
 protected lemma MulAction.bijective (g : α) : Function.Bijective (g • · : β → β) :=
   (MulAction.toPerm g).bijective
-#align mul_action.bijective MulAction.bijective
-#align add_action.bijective AddAction.bijective
 
 @[to_additive]
 protected lemma MulAction.injective (g : α) : Function.Injective (g • · : β → β) :=
   (MulAction.bijective g).injective
-#align mul_action.injective MulAction.injective
-#align add_action.injective AddAction.injective
 
 @[to_additive]
 protected lemma MulAction.surjective (g : α) : Function.Surjective (g • · : β → β) :=
   (MulAction.bijective g).surjective
-#align mul_action.surjective MulAction.surjective
-#align add_action.surjective AddAction.surjective
 
 @[to_additive]
 lemma smul_left_cancel (g : α) {x y : β} (h : g • x = g • y) : x = y := MulAction.injective g h
-#align smul_left_cancel smul_left_cancel
-#align vadd_left_cancel vadd_left_cancel
 
 @[to_additive (attr := simp)]
 lemma smul_left_cancel_iff (g : α) {x y : β} : g • x = g • y ↔ x = y :=
   (MulAction.injective g).eq_iff
-#align smul_left_cancel_iff smul_left_cancel_iff
-#align vadd_left_cancel_iff vadd_left_cancel_iff
 
 @[to_additive]
 lemma smul_eq_iff_eq_inv_smul (g : α) {x y : β} : g • x = y ↔ x = g⁻¹ • y :=
   (MulAction.toPerm g).apply_eq_iff_eq_symm_apply
-#align smul_eq_iff_eq_inv_smul smul_eq_iff_eq_inv_smul
-#align vadd_eq_iff_eq_neg_vadd vadd_eq_iff_eq_neg_vadd
 
 end Group
 
@@ -154,8 +126,6 @@ def arrowAction {G A B : Type*} [DivisionMonoid G] [MulAction G A] : MulAction G
   mul_smul x y f := by
     show (fun a => f ((x*y)⁻¹ • a)) = (fun a => f (y⁻¹ • x⁻¹ • a))
     simp only [mul_smul, mul_inv_rev]
-#align arrow_action arrowAction
-#align arrow_add_action arrowAddAction
 
 end Arrow
 
@@ -166,8 +136,6 @@ variable [Monoid α] [MulAction α β]
 lemma smul_left_cancel {a : α} (ha : IsUnit a) {x y : β} : a • x = a • y ↔ x = y :=
   let ⟨u, hu⟩ := ha
   hu ▸ smul_left_cancel_iff u
-#align is_unit.smul_left_cancel IsUnit.smul_left_cancel
-#align is_add_unit.vadd_left_cancel IsAddUnit.vadd_left_cancel
 
 end IsUnit
 
@@ -176,6 +144,5 @@ variable [Group α] [Monoid β] [MulAction α β] [SMulCommClass α β β] [IsSc
 
 @[simp] lemma isUnit_smul_iff (g : α) (m : β) : IsUnit (g • m) ↔ IsUnit m :=
   ⟨fun h => inv_smul_smul g m ▸ h.smul g⁻¹, IsUnit.smul g⟩
-#align is_unit_smul_iff isUnit_smul_iff
 
 end SMul

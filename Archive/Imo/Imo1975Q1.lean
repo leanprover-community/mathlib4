@@ -8,8 +8,6 @@ import Mathlib.Algebra.Order.Rearrangement
 import Mathlib.Data.Real.Basic
 import Mathlib.Order.Interval.Finset.Nat
 
-#align_import imo.imo1975_q1 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
-
 /-!
 # IMO 1975 Q1
 
@@ -45,4 +43,3 @@ theorem imo1975_q1 :
   -- finally we need to show that `x` and `y` 'vary' together on `[1, n]` and this is due to both of
   -- them being `decreasing`
   exact AntitoneOn.monovaryOn hx hy
-#align imo1975_q1 imo1975_q1
