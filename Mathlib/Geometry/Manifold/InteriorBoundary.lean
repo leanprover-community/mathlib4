@@ -126,27 +126,33 @@ instance : BoundarylessManifold I M where
     let r := ((chartAt H x).isOpen_extend_target I).interior_eq
     have : extChartAt I x = (chartAt H x).extend I := rfl
     rw [← this] at r
-    rw [ModelWithCorners.isInteriorPoint_iff, r]
+    rw [isInteriorPoint_iff, r]
     exact PartialEquiv.map_source _ (mem_extChartAt_source _ _)
 
 end Boundaryless
 
 section BoundarylessManifold
-variable [BoundarylessManifold I M]
 
-lemma _root_.BoundarylessManifold.isInteriorPoint {x : M} :
+lemma _root_.BoundarylessManifold.isInteriorPoint {x : M} [BoundarylessManifold I M] :
     IsInteriorPoint I x := BoundarylessManifold.isInteriorPoint' x
 
 /-- If `I` is boundaryless, `M` has full interior. -/
-lemma interior_eq_univ : I.interior M = univ :=
+lemma interior_eq_univ [BoundarylessManifold I M] : I.interior M = univ :=
   eq_univ_of_forall fun _ => BoundarylessManifold.isInteriorPoint I
 
 /-- Boundaryless manifolds have empty boundary. -/
-lemma Boundaryless.boundary_eq_empty : I.boundary M = ∅ := by
+lemma Boundaryless.boundary_eq_empty [BoundarylessManifold I M] : I.boundary M = ∅ := by
   rw [I.boundary_eq_complement_interior, I.interior_eq_univ, compl_empty_iff]
 
+/-- Manifolds with empty boundary are boundaryless. -/
+lemma Boundaryless.of_boundary_eq_empty (h : I.boundary M = ∅) : BoundarylessManifold I M where--:= by
+  isInteriorPoint' x := by
+    show x ∈ I.interior M
+    rw [boundary_eq_complement_interior, compl_empty_iff] at h
+    rw [h]
+    trivial
+
 end BoundarylessManifold
-end ModelWithCorners
 
 -- Interior and boundary of the product of two manifolds.
 section prod
@@ -158,43 +164,53 @@ variable {I}
   (J : ModelWithCorners 𝕜 E' H') [SmoothManifoldWithCorners J N] {x : M} {y : N}
 
 /-- The interior of `M × N` is the product of the interiors of `M` and `N`. -/
-lemma ModelWithCorners.interior_prod :
+lemma interior_prod :
     (I.prod J).interior (M × N) = (I.interior M) ×ˢ (J.interior N) := by
   ext p
   have aux : (interior (range ↑I)) ×ˢ (interior (range J)) = interior (range (I.prod J)) := by
     rw [← interior_prod_eq, ← Set.range_prod_map, modelWithCorners_prod_coe]
   constructor <;> intro hp
   · replace hp : (I.prod J).IsInteriorPoint p := hp
-    rw [ModelWithCorners.IsInteriorPoint, ← aux] at hp
+    rw [IsInteriorPoint, ← aux] at hp
     exact hp
   · obtain ⟨h₁, h₂⟩ := Set.mem_prod.mp hp
     rw [ModelWithCorners.interior] at h₁ h₂
     show (I.prod J).IsInteriorPoint p
-    rw [ModelWithCorners.IsInteriorPoint, ← aux]
+    rw [IsInteriorPoint, ← aux]
     apply mem_prod.mpr; constructor; exacts [h₁, h₂]
 
 /-- The boundary of `M × N` is `∂M × N ∪ (M × ∂N)`. -/
-lemma ModelWithCorners.boundary_prod :
+lemma boundary_prod :
     (I.prod J).boundary (M × N) = Set.prod univ (J.boundary N) ∪ Set.prod (I.boundary M) univ := by
   let h := calc (I.prod J).boundary (M × N)
     _ = ((I.prod J).interior (M × N))ᶜ := (I.prod J).boundary_eq_complement_interior
-    _ = ((I.interior M) ×ˢ (J.interior N))ᶜ := by rw [ModelWithCorners.interior_prod]
+    _ = ((I.interior M) ×ˢ (J.interior N))ᶜ := by rw [interior_prod]
     _ = (I.interior M)ᶜ ×ˢ univ ∪ univ ×ˢ (J.interior N)ᶜ := by rw [compl_prod_eq_union]
   rw [h, I.boundary_eq_complement_interior, J.boundary_eq_complement_interior, union_comm]
   rfl
 
 /-- If `M` is boundaryless, `∂(M×N) = M × ∂N`. -/
-lemma boundary_of_boundaryless_left [I.Boundaryless] :
+lemma boundary_of_boundaryless_left [BoundarylessManifold I M] :
     (I.prod J).boundary (M × N) = Set.prod (univ : Set M) (J.boundary N) := by
-  rw [ModelWithCorners.boundary_prod, ModelWithCorners.Boundaryless.boundary_eq_empty I]
+  rw [boundary_prod, Boundaryless.boundary_eq_empty I]
   have : Set.prod (∅ : Set M) (univ : Set N) = ∅ := Set.empty_prod
   rw [this, union_empty]
 
 /-- If `N` is boundaryless, `∂(M×N) = ∂M × N`. -/
-lemma boundary_of_boundaryless_right [J.Boundaryless] :
+lemma boundary_of_boundaryless_right [BoundarylessManifold J N] :
     (I.prod J).boundary (M × N) = Set.prod (I.boundary M) (univ : Set N) := by
-  rw [ModelWithCorners.boundary_prod, ModelWithCorners.Boundaryless.boundary_eq_empty J]
+  rw [boundary_prod, Boundaryless.boundary_eq_empty J]
   have : Set.prod (univ : Set M) (∅ : Set N) = ∅ := Set.prod_empty
   rw [this, empty_union]
 
+/-- The product of boundaryless manifolds is boundaryless. -/
+instance BoundarylessManifold.prod [BoundarylessManifold I M] [BoundarylessManifold J N] :
+    BoundarylessManifold (I.prod J) (M × N) := by
+  apply Boundaryless.of_boundary_eq_empty
+  rw [boundary_of_boundaryless_left, Boundaryless.boundary_eq_empty]
+  have : Set.prod (univ : Set M) (∅ : Set N) = ∅ := Set.prod_empty
+  rw [this]
+
 end prod
+
+end ModelWithCorners

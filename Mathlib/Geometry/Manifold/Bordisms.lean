@@ -151,7 +151,7 @@ lemma boundary_product [h : Fact (x < y)] :
     (I.prod (𝓡∂ 1)).boundary (M × Icc x y) = ((univ : Set M) × (A hxy)) := by
   have : (𝓡∂ 1).boundary (Set.Icc x y) = A hxy := by
     rw [boundary_IccManifold hxy]; simp only [A]
-  rw [boundary_of_boundaryless_left]
+  rw [I.boundary_of_boundaryless_left]
   rw [this]
   set X := (modelWithCornersEuclideanHalfSpace 1).boundary ↑(Icc x y)
   -- one coercion doesn't align; this should be obvious now!
