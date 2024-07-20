@@ -5,8 +5,6 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Order.Ring.Abs
 
-#align_import data.int.order.lemmas from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
-
 /-!
 # Further lemmas about the integers
 
@@ -28,19 +26,14 @@ variable {a b : ℤ} {n : ℕ}
 theorem natAbs_eq_iff_mul_self_eq {a b : ℤ} : a.natAbs = b.natAbs ↔ a * a = b * b := by
   rw [← abs_eq_iff_mul_self_eq, abs_eq_natAbs, abs_eq_natAbs]
   exact Int.natCast_inj.symm
-#align int.nat_abs_eq_iff_mul_self_eq Int.natAbs_eq_iff_mul_self_eq
-
-#align int.eq_nat_abs_iff_mul_eq_zero Int.eq_natAbs_iff_mul_eq_zero
 
 theorem natAbs_lt_iff_mul_self_lt {a b : ℤ} : a.natAbs < b.natAbs ↔ a * a < b * b := by
   rw [← abs_lt_iff_mul_self_lt, abs_eq_natAbs, abs_eq_natAbs]
   exact Int.ofNat_lt.symm
-#align int.nat_abs_lt_iff_mul_self_lt Int.natAbs_lt_iff_mul_self_lt
 
 theorem natAbs_le_iff_mul_self_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a * a ≤ b * b := by
   rw [← abs_le_iff_mul_self_le, abs_eq_natAbs, abs_eq_natAbs]
   exact Int.ofNat_le.symm
-#align int.nat_abs_le_iff_mul_self_le Int.natAbs_le_iff_mul_self_le
 
 /-! ### units -/
 
@@ -52,6 +45,5 @@ theorem eq_zero_of_abs_lt_dvd {m x : ℤ} (h1 : m ∣ x) (h2 : |x| < m) : x = 0 
   apply mul_eq_zero_of_right
   rw [← abs_lt_one_iff, ← mul_lt_iff_lt_one_right (abs_pos.mpr hm), ← abs_mul]
   exact lt_of_lt_of_le h2 (le_abs_self m)
-#align int.eq_zero_of_abs_lt_dvd Int.eq_zero_of_abs_lt_dvd
 
 end Int
