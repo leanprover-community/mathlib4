@@ -10,7 +10,7 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 
 # Subsets of prime spectra related to modules
 
-## Main result
+## Main results
 
 - `LocalizedModule.subsingleton_iff_disjoint` : `M[1/f] = 0 ↔ D(f) ∩ Supp M = 0`.
 - `Module.isClosed_support` : If `M` is a finite `R`-module, then `Supp M` is closed.
