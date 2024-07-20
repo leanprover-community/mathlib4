@@ -126,7 +126,6 @@ theorem single_zero_one_eq_one : (Finsupp.single 0 1 : R[T;T⁻¹]) = (1 : R[T;T
 
 /-!  ### The functions `C` and `T`. -/
 
-
 /-- The ring homomorphism `C`, including `R` into the ring of Laurent polynomials over `R` as
 the constant Laurent polynomials. -/
 def C : R →+* R[T;T⁻¹] :=
@@ -147,10 +146,6 @@ theorem single_eq_C (r : R) : Finsupp.single 0 r = C r := rfl
 
 @[simp] lemma C_apply (t : R) (n : ℤ) : C t n = if n = 0 then t else 0 := by
   rw [← single_eq_C, Finsupp.single_apply]; aesop
-
-@[simp]
-lemma smul_C (r s : R) : r • C s = C (r * s) := by
-  rw [← single_eq_C, smul_single', ← @single_eq_C]
 
 /-- The function `n ↦ T ^ n`, implemented as a sequence `ℤ → R[T;T⁻¹]`.
 
@@ -297,7 +292,8 @@ theorem C_mul (r : R) (f : R[T;T⁻¹]) : r • f = C r * f := by
   | h_add _ _ hp hq =>
     rw [smul_add, mul_add, hp, hq]
   | h_C_mul_T n s =>
-    rw [← mul_assoc, ← smul_mul_assoc, smul_C, RingHom.map_mul]
+    rw [← mul_assoc, ← smul_mul_assoc, mul_right_inj_of_invertible, ← map_mul, ← single_eq_C,
+      Finsupp.smul_single', single_eq_C]
 
 /-- `trunc : R[T;T⁻¹] →+ R[X]` maps a Laurent polynomial `f` to the polynomial whose terms of
 nonnegative degree coincide with the ones of `f`.  The terms of negative degree of `f` "vanish".
@@ -587,11 +583,11 @@ theorem eval_single (n : ℤ) (r : R) : eval (Finsupp.single n r) x = r • (x ^
 
 @[simp]
 theorem eval_C_mul_T_n (n : ℤ) (r : R) : (C r * T n).eval x = r • (x ^ n).val := by
-  rw [← @single_eq_C_mul_T, eval_single]
+  rw [← single_eq_C_mul_T, eval_single]
 
 @[simp]
 theorem eval_C (r : R) : (C r).eval x = r • 1 := by
-  rw [← @single_eq_C, eval_single x (0 : ℤ) r, zpow_zero, Units.val_one]
+  rw [← single_eq_C, eval_single x (0 : ℤ) r, zpow_zero, Units.val_one]
 
 end SMulWithZero
 
@@ -620,26 +616,19 @@ theorem eval_add : (f + g).eval x = f.eval x + g.eval x := by
   rw [Finsupp.sum_add_index (fun n _ => zero_smul R (x ^ n).val) (fun n _ r r' => add_smul r r' _)]
 
 @[simp]
-theorem eval_smul (r : R) : (r • f).eval x = r • (f.eval x) := by
-  induction f using LaurentPolynomial.induction_on with
-  | h_C s =>
-    rw [smul_C, eval_C, eval_C, mul_smul]
-  | h_add hp hq=>
-    rw [smul_add, eval_add, eval_add, hp, hq, smul_add]
-  | h_C_mul_T n s _ =>
-    rw [eval_C_mul_T_n, ← single_eq_C_mul_T, smul_single', eval_single, mul_smul]
-  | h_C_mul_T_Z n s _ =>
-    rw [eval_C_mul_T_n, ← single_eq_C_mul_T, smul_single', eval_single, mul_smul]
-
 theorem eval_C_mul (r : R) : (C r * f).eval x = r • (f.eval x) := by
-  rw [← eval_smul, C_mul]
+  induction f using LaurentPolynomial.induction_on' with
+  | h_add p q hp hq=>
+    rw [mul_add, eval_add, eval_add, smul_add, hp, hq]
+  | h_C_mul_T n s =>
+    rw [← mul_assoc, ← map_mul, eval_C_mul_T_n, eval_C_mul_T_n, mul_smul]
 
 /-- Evaluation as an `R`-linear map. -/
 @[simps]
 def leval (R) [Semiring R] [Module R S] (x : Sˣ) : R[T;T⁻¹] →ₗ[R] S where -- make R explicit?
     toFun f := f.eval x
     map_add' f g := eval_add f g x
-    map_smul' r f := eval_smul f x r
+    map_smul' r f := by simp
 
 -- TODO: linear map from R[T;T⁻¹] ⊗[R] M to M via unit in R.
 -- TODO: R-algebra maps from R[T;T⁻¹] to S are in bijection with units in S.
