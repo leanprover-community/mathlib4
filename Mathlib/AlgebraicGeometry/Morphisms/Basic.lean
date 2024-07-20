@@ -163,6 +163,87 @@ theorem iff_of_openCover (𝒰 : Y.OpenCover) :
 
 end IsLocalAtTarget
 
+/--
+We say that `P : MorphismProperty Scheme` is local at the source if
+1. `P` respects isomorphisms.
+2. `P` holds for `𝒰.map i ≫ f` for an open cover `𝒰` of `X` iff `P` holds for `f : X ⟶ Y`.
+Also see `IsLocalAtSource.mk'` for a convenient constructor.
+-/
+class IsLocalAtSource (P : MorphismProperty Scheme) : Prop where
+  /-- `P` respects isomorphisms. -/
+  respectsIso : P.RespectsIso := by infer_instance
+  /-- `P` holds for `f ∣_ U` for an open cover `U` of `Y` if and only if `P` holds for `f`.  -/
+  iff_of_openCover' :
+    ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} X),
+      P f ↔ ∀ i, P (𝒰.map i ≫ f)
+
+namespace IsLocalAtSource
+
+attribute [instance] respectsIso
+
+/--
+`P` is local at the target if
+1. `P` respects isomorphisms.
+2. If `P` holds for `f : X ⟶ Y`, then `P` holds for `f ∣_ U` for any `U`.
+3. If `P` holds for `f ∣_ U` for an open cover `U` of `Y`, then `P` holds for `f`.
+-/
+protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
+    (restrict : ∀ {X Y : Scheme} (f : X ⟶ Y) (U : Opens X), P f → P (Scheme.ιOpens U ≫ f))
+    (of_sSup_eq_top :
+      ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Opens X), iSup U = ⊤ →
+        (∀ i, P (Scheme.ιOpens (U i) ≫ f)) → P f) :
+    IsLocalAtSource P := by
+  refine ⟨inferInstance, fun {X Y} f 𝒰 ↦
+    ⟨fun H i ↦ ?_, fun H ↦ of_sSup_eq_top f _ 𝒰.iSup_opensRange fun i ↦ ?_⟩⟩
+  · rw [← IsOpenImmersion.isoOfRangeEq_hom_fac (𝒰.map i) (Scheme.ιOpens _)
+      (congr_arg Opens.carrier (opensRange_ιOpens (𝒰.map i).opensRange).symm), Category.assoc,
+      P.cancel_left_of_respectsIso]
+    exact restrict _ _ H
+  · rw [← IsOpenImmersion.isoOfRangeEq_inv_fac (𝒰.map i) (Scheme.ιOpens _)
+      (congr_arg Opens.carrier (opensRange_ιOpens (𝒰.map i).opensRange).symm), Category.assoc,
+      P.cancel_left_of_respectsIso]
+    exact H _
+
+/-- The intersection of two morphism properties that are local at the target is again local at
+the target. -/
+instance inf (P Q : MorphismProperty Scheme) [IsLocalAtSource P] [IsLocalAtSource Q] :
+    IsLocalAtSource (P ⊓ Q) where
+  iff_of_openCover' {X Y} f 𝒰 :=
+    ⟨fun h i ↦ ⟨(iff_of_openCover' f 𝒰).mp h.left i, (iff_of_openCover' f 𝒰).mp h.right i⟩,
+     fun h ↦ ⟨(iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).left),
+      (iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).right)⟩⟩
+
+variable {P} [IsLocalAtSource P]
+variable {X Y U V : Scheme.{u}} {f : X ⟶ Y} {g : U ⟶ Y} [IsOpenImmersion g] (𝒰 : X.OpenCover)
+
+lemma of_isOpenImmersion {UX : Scheme.{u}} (H : P f) (i : UX ⟶ X) [IsOpenImmersion i] :
+    P (i ≫ f) :=
+  (iff_of_openCover' f (X.affineCover.add i)).mp H .none
+
+lemma of_iSup_eq_top {ι} (U : ι → Opens X) (hU : iSup U = ⊤)
+    (H : ∀ i, P (Scheme.ιOpens (U i) ≫ f)) : P f := by
+  refine (iff_of_openCover' f
+    (X.openCoverOfSuprEqTop (s := Set.range U) Subtype.val (by ext; simp [← hU]))).mpr fun i ↦ ?_
+  obtain ⟨_, i, rfl⟩ := i
+  exact H i
+
+theorem iff_of_iSup_eq_top {ι} (U : ι → Opens X) (hU : iSup U = ⊤) :
+    P f ↔ ∀ i, P (Scheme.ιOpens (U i) ≫ f) :=
+  ⟨fun H _ ↦ of_isOpenImmersion H _, of_iSup_eq_top U hU⟩
+
+lemma of_openCover (H : ∀ i, P (𝒰.map i ≫ f)) : P f := by
+  refine of_iSup_eq_top (fun i ↦ (𝒰.map i).opensRange) 𝒰.iSup_opensRange fun i ↦ ?_
+  rw [← IsOpenImmersion.isoOfRangeEq_inv_fac (𝒰.map i) (Scheme.ιOpens _)
+    (congr_arg Opens.carrier (opensRange_ιOpens (𝒰.map i).opensRange).symm), Category.assoc,
+    P.cancel_left_of_respectsIso]
+  exact H i
+
+theorem iff_of_openCover :
+    P f ↔ ∀ i, P (𝒰.map i ≫ f) :=
+  ⟨fun H _ ↦ of_isOpenImmersion H _, of_openCover _⟩
+
+end IsLocalAtSource
+
 /-- An `AffineTargetMorphismProperty` is a class of morphisms from an arbitrary scheme into an
 affine scheme. -/
 def AffineTargetMorphismProperty :=
