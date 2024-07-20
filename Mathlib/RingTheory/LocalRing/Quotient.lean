@@ -51,7 +51,8 @@ theorem quotient_span_eq_top_iff_span_eq_top (s : Set S) :
 
 attribute [local instance] Ideal.Quotient.field
 
-variable [Module.Free R S] in
+variable [Module.Free R S]
+
 theorem finrank_quotient_map :
     finrank (R ⧸ p) (S ⧸ pS) = finrank R S := by
   classical
@@ -71,5 +72,31 @@ theorem finrank_quotient_map :
     apply (quotient_span_eq_top_iff_span_eq_top _).mp
     rw [← Set.range_comp, show Ideal.Quotient.mk pS ∘ b' = ⇑b from funext hb']
     exact b.span_eq
+
+/-- Given a basis of `S`, the induced basis of `S / Ideal.map (algebraMap R S) p`. -/
+noncomputable
+def basisQuotient {ι} [Fintype ι] (b : Basis ι R S) : Basis ι (R ⧸ p) (S ⧸ pS) :=
+  basisOfTopLeSpanOfCardEqFinrank (Ideal.Quotient.mk pS ∘ b) (by
+    rw [Set.range_comp]
+    exact ((quotient_span_eq_top_iff_span_eq_top _).mpr b.span_eq).ge)
+    (by rw [finrank_quotient_map, finrank_eq_card_basis b])
+
+lemma basisQuotient_apply {ι} [Fintype ι] (b : Basis ι R S) (i) :
+    (basisQuotient b) i = Ideal.Quotient.mk pS (b i) := by
+  delta basisQuotient
+  rw [coe_basisOfTopLeSpanOfCardEqFinrank, Function.comp_apply]
+
+lemma basisQuotient_repr {ι} [Fintype ι] (b : Basis ι R S) (x) (i) :
+    (basisQuotient b).repr (Ideal.Quotient.mk pS x) i =
+    Ideal.Quotient.mk p (b.repr x i) := by
+  refine congr_fun (g := Ideal.Quotient.mk p ∘ b.repr x) ?_ i
+  apply (Finsupp.linearEquivFunOnFinite (R ⧸ p) _ _).symm.injective
+  apply (basisQuotient b).repr.symm.injective
+  simp only [Finsupp.linearEquivFunOnFinite_symm_coe, LinearEquiv.symm_apply_apply,
+    Basis.repr_symm_apply]
+  rw [Finsupp.total_eq_fintype_total_apply _ (R ⧸ p), Fintype.total_apply]
+  simp only [Function.comp_apply, basisQuotient_apply,
+    Ideal.Quotient.mk_smul_mk_quotient_map_quotient, ← Algebra.smul_def]
+  rw [← map_sum, Basis.sum_repr b x]
 
 end LocalRing

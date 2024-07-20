@@ -30,67 +30,21 @@ variable [Module.Free R S] [Module.Finite R S]
 
 attribute [local instance] Ideal.Quotient.field
 
-theorem finrank_quotient_map_of_localRing :
-    finrank (R ⧸ p) (S ⧸ pS) = finrank R S := by
-  classical
-  have : Module.Finite R (S ⧸ pS) := Module.Finite.of_surjective
-    (IsScalarTower.toAlgHom R S (S ⧸ pS)).toLinearMap (Ideal.Quotient.mk_surjective (I := pS))
-  have : Module.Finite (R ⧸ p) (S ⧸ pS) := Module.Finite.of_restrictScalars_finite R _ _
-  apply le_antisymm
-  · let b := Module.Free.chooseBasis R S
-    conv_rhs => rw [finrank_eq_card_chooseBasisIndex]
-    apply finrank_le_of_span_eq_top
-    rw [Set.range_comp]
-    apply (quotient_span_eq_top_iff_span_eq_top _).mpr b.span_eq
-  · let b := Module.Free.chooseBasis (R ⧸ p) (S ⧸ pS)
-    choose b' hb' using fun i ↦ Ideal.Quotient.mk_surjective (b i)
-    conv_rhs => rw [finrank_eq_card_chooseBasisIndex]
-    apply finrank_le_of_span_eq_top
-    apply (quotient_span_eq_top_iff_span_eq_top _).mp
-    rw [← Set.range_comp, show Ideal.Quotient.mk pS ∘ b' = ⇑b from funext hb']
-    exact b.span_eq
-
-/-- Given a basis of `S`, the induced basis of `S / Ideal.map (algebraMap R S) p`. -/
-noncomputable
-def basisQuotientOfLocalRing {ι} [Fintype ι] (b : Basis ι R S) : Basis ι (R ⧸ p) (S ⧸ pS) :=
-  basisOfTopLeSpanOfCardEqFinrank (Ideal.Quotient.mk pS ∘ b) (by
-    rw [Set.range_comp]
-    exact ((quotient_span_eq_top_iff_span_eq_top _).mpr b.span_eq).ge)
-    (by rw [finrank_quotient_map_of_localRing, finrank_eq_card_basis b])
-
-lemma basisQuotientOfLocalRing_apply {ι} [Fintype ι] (b : Basis ι R S) (i) :
-    (basisQuotientOfLocalRing b) i = Ideal.Quotient.mk pS (b i) := by
-  delta basisQuotientOfLocalRing
-  rw [coe_basisOfTopLeSpanOfCardEqFinrank, Function.comp_apply]
-
-lemma basisQuotientOfLocalRing_repr {ι} [Fintype ι] (b : Basis ι R S) (x) (i) :
-    (basisQuotientOfLocalRing b).repr (Ideal.Quotient.mk pS x) i =
-    Ideal.Quotient.mk p (b.repr x i) := by
-  refine congr_fun (g := Ideal.Quotient.mk p ∘ b.repr x) ?_ i
-  apply (Finsupp.linearEquivFunOnFinite (R ⧸ p) _ _).symm.injective
-  apply (basisQuotientOfLocalRing b).repr.symm.injective
-  simp only [Finsupp.linearEquivFunOnFinite_symm_coe, LinearEquiv.symm_apply_apply,
-    Basis.repr_symm_apply]
-  rw [Finsupp.total_eq_fintype_total_apply _ (R ⧸ p), Fintype.total_apply]
-  simp only [Function.comp_apply, basisQuotientOfLocalRing_apply,
-    Ideal.Quotient.mk_smul_mk_quotient_map_quotient, ← Algebra.smul_def]
-  rw [← map_sum, Basis.sum_repr b x]
-
 lemma Algebra.trace_quotient_mk (x : S) :
     Algebra.trace (R ⧸ p) (S ⧸ pS) (Ideal.Quotient.mk pS x) =
       Ideal.Quotient.mk p (Algebra.trace R S x) := by
   classical
   let ι := Module.Free.ChooseBasisIndex R S
   let b : Basis ι R S := Module.Free.chooseBasis R S
-  rw [trace_eq_matrix_trace b, trace_eq_matrix_trace (basisQuotientOfLocalRing b)]
+  rw [trace_eq_matrix_trace b, trace_eq_matrix_trace (basisQuotient b)]
   show _ = (Ideal.Quotient.mk p).toAddMonoidHom _
   rw [AddMonoidHom.map_trace]
   congr 1
   ext i j
   simp only [leftMulMatrix_apply, coe_lmul_eq_mul, LinearMap.toMatrix_apply,
-    basisQuotientOfLocalRing_apply, LinearMap.mul_apply', RingHom.toAddMonoidHom_eq_coe,
+    basisQuotient_apply, LinearMap.mul_apply', RingHom.toAddMonoidHom_eq_coe,
     AddMonoidHom.mapMatrix_apply, AddMonoidHom.coe_coe, Matrix.map_apply, ← map_mul,
-    basisQuotientOfLocalRing_repr]
+    basisQuotient_repr]
 
 end LocalRing
 
