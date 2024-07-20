@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
+import Mathlib.CategoryTheory.Preadditive.Biproducts
 
 /-!
 # Relation between pullback/pushout squares and kernel/cokernel sequences
