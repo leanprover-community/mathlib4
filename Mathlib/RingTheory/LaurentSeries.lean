@@ -283,6 +283,7 @@ theorem coe_def : (f : LaurentSeries F) = coeAlgHom F f :=
   rfl
 
 attribute [-instance] RatFunc.instCoePolynomial in
+-- avoids a diamond, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/compiling.20behaviour.20within.20one.20file
 theorem coe_num_denom : (f : LaurentSeries F) = f.num / f.denom :=
   liftAlgHom_apply _ _ f
 
