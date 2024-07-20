@@ -286,30 +286,38 @@ def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] : BoundaryMa
     --haveI := ChartedSpace.empty E (I.boundary M : Set M)
     sorry -- apply SmoothManifoldWithCorners.empty
 
-#exit
 -- another trivial case: modelWithCornersSelf on euclidean half space!
 
 variable (M N) in
 /-- If `M` is boundaryless and `N` has nice boundary, so does `M × N`. -/
-def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M] :
-    BoundaryManifoldData (M × N) (I.prod J) where
-  -- TODO: all these data are wrong or missing... need to use the fact that I know the boundary!
-  E' := E × E'
-  H' := H × H'
-  charts := sorry --ChartedSpace.prod H H'
-  model := sorry
-  smoothManifold := sorry
+def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M]
+    (bd : BoundaryManifoldData N J) : BoundaryManifoldData (M × N) (I.prod J) where
+  E' := E × bd.E'
+  H' := ModelProd H bd.H'
+  charts := by
+    haveI := bd.charts
+    convert prodChartedSpace H M bd.H' (J.boundary N)
+    -- TODO: convert between these... mathematically equivalent...
+    -- ChartedSpace (ModelProd H bd.H') ↑((I.prod J).boundary (M × N)) = ChartedSpace (ModelProd H bd.H') (M × ↑(J.boundary N))
+    sorry
+  model := I.prod bd.model
+  smoothManifold := by
+    convert SmoothManifoldWithCorners.prod (I := I) (I' := bd.model) M (J.boundary N)
+    -- same issue as above
+    sorry
 
-/- TODO: fix the statement and details, once the first construction is clearer
+-- TODO: fix the details once I found a solution for the above
 /-- If `M` has nice boundary and `N` is boundaryless, `M × N` has nice boundary. -/
-def BoundaryManifoldData.prod_of_boundaryless_right [BoundarylessManifold J N] :
-    BoundaryManifoldData (M × N) (I.prod J) where
-  E' := sorry --E × E'
-  H' := sorry --H × H'
-  charts := sorry --ChartedSpace.prod H H'
-  J := sorry
-  mfd := sorry
--/
+def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M I)
+    [BoundarylessManifold J N] : BoundaryManifoldData (M × N) (I.prod J) where
+  E' := bd.E' × E'
+  H' := ModelProd bd.H' H'
+  charts := by
+    haveI := bd.charts
+    convert prodChartedSpace bd.H' (I.boundary M) H' N
+    sorry -- same issue as above
+  model := bd.model.prod J
+  smoothManifold := sorry -- similar
 
 /-- If `M` is modelled on finite-dimensional Euclidean half-space, it has nice boundary.
 Proving this requires knowing homology groups of spheres (or similar). -/
@@ -328,9 +336,9 @@ instance manifolds with corners violate it, but it is satisfied in most cases of
 `HasNiceBoundary d` formalises this: the boundary of the manifold `M` modelled on `I`
 has a charted space structure and model (included in `d`) which makes it a smooth manifold,
 such that the inclusion `∂M → M` is smooth. -/
-class HasNiceBoundary (d : BoundaryManifoldData M I) where
+class HasNiceBoundary (bd : BoundaryManifoldData M I) where
   /-- The inclusion of `∂M` into `M` is smooth w.r.t. `d`. -/
-  smooth_inclusion : ContMDiff d.model I 1 ((fun ⟨x, _⟩ ↦ x) : (I.boundary M) → M)
+  smooth_inclusion : ContMDiff bd.model I 1 ((fun ⟨x, _⟩ ↦ x) : (I.boundary M) → M)
 
 instance [BoundarylessManifold I M] :
     HasNiceBoundary (BoundaryManifoldData.of_boundaryless (I := I) (M := M)) where
