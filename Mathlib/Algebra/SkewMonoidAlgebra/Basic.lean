@@ -30,12 +30,11 @@ endowed with a skewed convolution product.
 -/
 @[ext]
 structure SkewMonoidAlgebra (k : Type*) (G : Type*) [Zero k] where
-  /-- Map **from** the associated finitely supported function. -/
+  /-- Map **from** `G →₀ k`. -/
   ofFinsupp ::
-  /-- Map **to** the associated finitely supported function. -/
+  /-- Map **to** `G →₀ k`. -/
   toFinsupp : G →₀ k
 
-open BigOperators
 open Function hiding Commute
 namespace SkewMonoidAlgebra
 
@@ -106,13 +105,13 @@ theorem ofFinsupp_injective :
     Function.Injective (ofFinsupp : Finsupp _ _ → SkewMonoidAlgebra k G) :=
   fun _x _y => congr_arg toFinsupp
 
-@[simp]
-theorem toFinsupp_eq_zero {a : SkewMonoidAlgebra k G} : a.toFinsupp = 0 ↔ a = 0 := by
-  rw [← toFinsupp_zero, toFinsupp_inj]
-
 /-- A more convenient spelling of `SkewMonoidAlgebra.ofFinsupp.injEq` in terms of `Iff`. -/
 theorem ofFinsupp_inj {a b} : (⟨a⟩ : SkewMonoidAlgebra k G) = ⟨b⟩ ↔ a = b :=
   ofFinsupp_injective.eq_iff
+
+@[simp]
+theorem toFinsupp_eq_zero {a : SkewMonoidAlgebra k G} : a.toFinsupp = 0 ↔ a = 0 := by
+  rw [← toFinsupp_zero, toFinsupp_inj]
 
 @[simp]
 theorem ofFinsupp_eq_zero {a} : (⟨a⟩ : SkewMonoidAlgebra k G) = 0 ↔ a = 0 := by
@@ -123,12 +122,12 @@ instance inhabited : Inhabited (SkewMonoidAlgebra k G) := ⟨0⟩
 instance nontrivial [Nontrivial k] [Nonempty G] :
     Nontrivial (SkewMonoidAlgebra k G) := Function.Injective.nontrivial ofFinsupp_injective
 
-instance addCommMonoid : AddCommMonoid (SkewMonoidAlgebra k G) :=
-{ Function.Injective.addCommMonoid toFinsupp toFinsupp_injective toFinsupp_zero
-      toFinsupp_add (fun _ _ => toFinsupp_smul _ _) with
+instance addCommMonoid : AddCommMonoid (SkewMonoidAlgebra k G) where
+    __ := toFinsupp_injective.addCommMonoid _ toFinsupp_zero toFinsupp_add
+      (fun _ _ => toFinsupp_smul _ _)
     toAdd  := SkewMonoidAlgebra.add'
     toZero := SkewMonoidAlgebra.zero
-    nsmul  := (. • .) }
+    nsmul  := (. • .)
 
 instance isCancelAdd [IsCancelAdd k] : IsCancelAdd (SkewMonoidAlgebra k G) :=
   Function.Injective.isCancelAdd toFinsupp toFinsupp_injective toFinsupp_add
@@ -370,7 +369,7 @@ section mapDomain
 /-- Given `f : G → G'` and `v : SkewMonoidAlgebra k G`, `mapDomain f v : SkewMonoidAlgebra k G'`
 is the finitely supported function whose value at `a : G'` is the sum of `v x` over all `x`
 such that `f x = a`. -/
-abbrev mapDomain {G' : Type*} (f : G → G') (v : SkewMonoidAlgebra k G) : SkewMonoidAlgebra k G' :=
+def mapDomain {G' : Type*} (f : G → G') (v : SkewMonoidAlgebra k G) : SkewMonoidAlgebra k G' :=
   v.sum fun a => single (f a)
 
 lemma toFinsupp_mapDomain {G' : Type*} (f : G → G') (v : SkewMonoidAlgebra k G) :
@@ -397,7 +396,7 @@ theorem mapDomain_sum {k' G' : Type*} [AddCommMonoid k'] {f : G → G'} {s : Ske
     {v : G → k' → SkewMonoidAlgebra k G} :
     mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) := by
   ext1
-  simp only [toFinsupp_sum']
+  simp only [toFinsupp_sum', mapDomain]
   exact Finsupp.mapDomain_sum
 
 theorem sum_mapDomain_index {α β M N : Type*}
@@ -504,25 +503,24 @@ end SMul
 section DistribSMul
 
 instance nonUnitalNonAssocSemiring [NonAssocSemiring k] [DistribSMul G k] :
-    NonUnitalNonAssocSemiring (SkewMonoidAlgebra k G) :=
-  { SkewMonoidAlgebra.addCommMonoid with
-    left_distrib := fun f g h => by
-      haveI := Classical.decEq G
-      simp only [mul_def]
-      refine Eq.trans (congr_arg (sum f) (funext₂ fun a₁ b₁ => sum_add_index ?_ ?_)) ?_ <;>
-        simp only [smul_zero, smul_add, mul_add, mul_zero, single_zero, single_add,
-          forall_true_iff, sum_add]
-    right_distrib := fun f g h => by
-      haveI := Classical.decEq G
-      simp only [mul_def]
-      refine Eq.trans (sum_add_index ?_ ?_) ?_ <;>
-        simp only [add_mul, zero_mul, single_zero, single_add, forall_true_iff, sum_zero, sum_add]
-    zero_mul := fun f => by
-      simp only [mul_def]
-      exact sum_zero_index
-    mul_zero := fun f => by
-      simp only [mul_def]
-      exact Eq.trans (congr_arg (sum f) (funext₂ fun a₁ b₁ => sum_zero_index)) sum_zero }
+    NonUnitalNonAssocSemiring (SkewMonoidAlgebra k G) where
+  left_distrib := fun f g h => by
+    haveI := Classical.decEq G
+    simp only [mul_def]
+    refine Eq.trans (congr_arg (sum f) (funext₂ fun a₁ b₁ => sum_add_index ?_ ?_)) ?_ <;>
+      simp only [smul_zero, smul_add, mul_add, mul_zero, single_zero, single_add,
+        forall_true_iff, sum_add]
+  right_distrib := fun f g h => by
+    haveI := Classical.decEq G
+    simp only [mul_def]
+    refine Eq.trans (sum_add_index ?_ ?_) ?_ <;>
+      simp only [add_mul, zero_mul, single_zero, single_add, forall_true_iff, sum_zero, sum_add]
+  zero_mul := fun f => by
+    simp only [mul_def]
+    exact sum_zero_index
+  mul_zero := fun f => by
+    simp only [mul_def]
+    exact Eq.trans (congr_arg (sum f) (funext₂ fun a₁ b₁ => sum_zero_index)) sum_zero
 
 variable [Semiring R] [Semiring k] [SMul G k]
 
@@ -548,39 +546,37 @@ variable [Semiring k] [Monoid G] [MulSemiringAction G k]
 
 open MulSemiringAction
 
-instance nonUnitalSemiring : NonUnitalSemiring (SkewMonoidAlgebra k G) :=
-  { SkewMonoidAlgebra.nonUnitalNonAssocSemiring with
-    mul_assoc := fun f g h => by
-      simp only [mul_def]
-      rw [sum_sum_index]; congr; ext a₁ b₁
-      rw [sum_sum_index, sum_sum_index]; congr; ext a₂ b₂
-      rw [sum_sum_index, sum_single_index]; congr; ext a₃ b₃
-      rw [sum_single_index, mul_assoc, mul_assoc]
-      all_goals simp only [smul_add, mul_smul, smul_mul, smul_zero,
-        mul_zero, forall_const, single_zero, single_add, forall_true_iff, add_mul,
-        mul_add, zero_mul, mul_zero, sum_zero, sum_add] }
+instance nonUnitalSemiring : NonUnitalSemiring (SkewMonoidAlgebra k G) where
+  mul_assoc := fun f g h => by
+    simp only [mul_def]
+    rw [sum_sum_index]; congr; ext a₁ b₁
+    rw [sum_sum_index, sum_sum_index]; congr; ext a₂ b₂
+    rw [sum_sum_index, sum_single_index]; congr; ext a₃ b₃
+    rw [sum_single_index, mul_assoc, mul_assoc]
+    all_goals simp only [smul_add, mul_smul, smul_mul, smul_zero,
+      mul_zero, forall_const, single_zero, single_add, forall_true_iff, add_mul,
+      mul_add, zero_mul, mul_zero, sum_zero, sum_add]
 
-instance nonAssocSemiring : NonAssocSemiring (SkewMonoidAlgebra k G) :=
-  { SkewMonoidAlgebra.nonUnitalNonAssocSemiring with
-    natCast := fun n => single 1 n
-    natCast_zero := by simp only [Nat.cast_zero, single_zero]
-    natCast_succ := fun _ => by simp only [Nat.cast_add, Nat.cast_one, single_add]; rfl
-    one_mul := fun f => by
-      simp only [one_def, mul_def]
-      rw [sum_single_index]
-      simp only [one_mul, one_smul, zero_mul, single_zero, sum_zero,
-       sum_single_index, sum_single]
-      simp only [one_mul, one_smul, zero_mul, single_zero, sum_zero];
-    mul_one := fun f => by
-      simp only [one_def, mul_def, mul_one, smul_zero, mul_zero, single_zero, sum_single_index,
-        MulDistribMulAction.smul_one]
-      rw [sum_single] }
+instance nonAssocSemiring : NonAssocSemiring (SkewMonoidAlgebra k G) where
+  natCast := fun n => single 1 n
+  natCast_zero := by simp only [Nat.cast_zero, single_zero]
+  natCast_succ := fun _ => by simp only [Nat.cast_add, Nat.cast_one, single_add]; rfl
+  one_mul := fun f => by
+    simp only [one_def, mul_def]
+    rw [sum_single_index]
+    simp only [one_mul, one_smul, zero_mul, single_zero, sum_zero,
+      sum_single_index, sum_single]
+    simp only [one_mul, one_smul, zero_mul, single_zero, sum_zero];
+  mul_one := fun f => by
+    simp only [one_def, mul_def, mul_one, smul_zero, mul_zero, single_zero, sum_single_index,
+      MulDistribMulAction.smul_one]
+    rw [sum_single]
 
 theorem natCast_def (n : ℕ) : (n : SkewMonoidAlgebra k G) = single (1 : G) (n : k) := rfl
 
-instance semiring : Semiring (SkewMonoidAlgebra k G) :=
-  { SkewMonoidAlgebra.nonUnitalSemiring,
-    SkewMonoidAlgebra.nonAssocSemiring with }
+instance semiring : Semiring (SkewMonoidAlgebra k G) where
+  __ := SkewMonoidAlgebra.nonUnitalSemiring
+  __ := SkewMonoidAlgebra.nonAssocSemiring
 
 variable [Semiring R]
 
@@ -591,10 +587,10 @@ theorem liftNC_one {g_hom : Type*} [FunLike g_hom G R] [OneHomClass g_hom G R] (
 
 /-- `liftNC` as a `RingHom`, for when `f x` and `g y` commute -/
 def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ {x y}, (f (y • x)) * g y = (g y) * (f x)) :
-    SkewMonoidAlgebra k G →+* R :=
-  { liftNC (f : k →+ R) g with
-    map_one' := liftNC_one _ _
-    map_mul' := fun _a _b => liftNC_mul _ _ _ _ fun {_ _} _ => h_comm }
+    SkewMonoidAlgebra k G →+* R where
+  __ := liftNC (f : k →+ R) g
+  map_one' := liftNC_one _ _
+  map_mul' := fun _a _b => liftNC_mul _ _ _ _ fun {_ _} _ => h_comm
 
 end Semiring
 
@@ -605,58 +601,60 @@ section DerivedInstances
 instance unique [AddCommMonoid k] [Subsingleton k] : Unique (SkewMonoidAlgebra k G) :=
   Function.Injective.unique toFinsupp_injective
 
-instance addCommGroup [AddCommGroup k] : AddCommGroup (SkewMonoidAlgebra k G) :=
-  { Function.Injective.addCommGroup toFinsupp toFinsupp_injective (toFinsupp_zero (k := k))
-      toFinsupp_add toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_smul _ _)
-      (fun _ _ => toFinsupp_smul _ _) with
-   toAdd := SkewMonoidAlgebra.add' }
+instance addCommGroup [AddCommGroup k] : AddCommGroup (SkewMonoidAlgebra k G) where
+  __ := toFinsupp_injective.addCommGroup _ (toFinsupp_zero (k := k))
+    toFinsupp_add toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_smul _ _)
+    (fun _ _ => toFinsupp_smul _ _)
+  toAdd := SkewMonoidAlgebra.add'
 
 instance nonUnitalNonAssocRing [Ring k] [Monoid G] [MulSemiringAction G k] :
-    NonUnitalNonAssocRing (SkewMonoidAlgebra k G) :=
-  { SkewMonoidAlgebra.addCommGroup, SkewMonoidAlgebra.nonUnitalNonAssocSemiring with }
+    NonUnitalNonAssocRing (SkewMonoidAlgebra k G) where
+  __ := SkewMonoidAlgebra.addCommGroup
+  __ := SkewMonoidAlgebra.nonUnitalNonAssocSemiring
 
 instance nonUnitalRing [Ring k] [Monoid G] [MulSemiringAction G k] :
-    NonUnitalRing (SkewMonoidAlgebra k G) :=
-  { SkewMonoidAlgebra.addCommGroup, SkewMonoidAlgebra.nonUnitalSemiring with }
+    NonUnitalRing (SkewMonoidAlgebra k G) where
+  __ := SkewMonoidAlgebra.addCommGroup
+  __ := SkewMonoidAlgebra.nonUnitalSemiring
 
 instance nonAssocRing [Ring k] [Monoid G] [MulSemiringAction G k] :
-    NonAssocRing (SkewMonoidAlgebra k G) :=
-  { SkewMonoidAlgebra.addCommGroup,
-    SkewMonoidAlgebra.nonAssocSemiring with
-    intCast := fun z => single 1 (z : k)
-    intCast_ofNat := fun n => by simp; rfl
-    intCast_negSucc := fun n => by
-      simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, single_add]
-      rw [single]; rw [single];
-      simp only [Finsupp.single_neg, ofFinsupp_neg, ofFinsupp_single, ofFinsupp_one, add_right_inj]
-      rfl }
+    NonAssocRing (SkewMonoidAlgebra k G) where
+  __ := SkewMonoidAlgebra.addCommGroup
+  __ := SkewMonoidAlgebra.nonAssocSemiring
+  intCast := fun z => single 1 (z : k)
+  intCast_ofNat := fun n => by simp; rfl
+  intCast_negSucc := fun n => by
+    simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, single_add]
+    rw [single]; rw [single];
+    simp only [Finsupp.single_neg, ofFinsupp_neg, ofFinsupp_single, ofFinsupp_one, add_right_inj]
+    rfl
 
-theorem int_cast_def [Ring k] [Monoid G] [MulSemiringAction G k] (z : ℤ) :
+theorem intCast_def [Ring k] [Monoid G] [MulSemiringAction G k] (z : ℤ) :
     (z : SkewMonoidAlgebra k G) = single (1 : G) (z : k) :=
   rfl
 
-instance ring [Ring k] [Monoid G] [MulSemiringAction G k]: Ring (SkewMonoidAlgebra k G) :=
-  { SkewMonoidAlgebra.nonAssocRing, SkewMonoidAlgebra.semiring with }
+instance ring [Ring k] [Monoid G] [MulSemiringAction G k]: Ring (SkewMonoidAlgebra k G) where
+  __ := SkewMonoidAlgebra.nonAssocRing
+  __ := SkewMonoidAlgebra.semiring
 
 variable {S : Type*}
 
 instance distribSMul {S} [AddCommMonoid k] [DistribSMul S k] :
-    DistribSMul S (SkewMonoidAlgebra k G) :=
-  { Function.Injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
-      toFinsupp_smul with
-    toSMulZeroClass := SkewMonoidAlgebra.smulZeroClass }
+    DistribSMul S (SkewMonoidAlgebra k G) where
+  __ := toFinsupp_injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩
+    toFinsupp_smul
+  toSMulZeroClass := SkewMonoidAlgebra.smulZeroClass
 
 instance distribMulAction {S} [Monoid S] [AddCommMonoid k]  [DistribMulAction S k] :
-    DistribMulAction S (SkewMonoidAlgebra k G) :=
-  { Function.Injective.distribMulAction ⟨⟨toFinsupp, toFinsupp_zero (k := k)⟩, toFinsupp_add⟩
-      toFinsupp_injective toFinsupp_smul with
-    toSMul := smulZeroClass.toSMul }
+    DistribMulAction S (SkewMonoidAlgebra k G) where
+  __ := toFinsupp_injective.distribMulAction ⟨⟨toFinsupp, toFinsupp_zero (k := k)⟩, toFinsupp_add⟩
+      toFinsupp_smul
+  toSMul := smulZeroClass.toSMul
 
 instance module {S} [Semiring S] [AddCommMonoid k] [Module S k] :
-    Module S (SkewMonoidAlgebra k G) :=
-  { Function.Injective.module _ ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
-      toFinsupp_smul with
-    toDistribMulAction := distribMulAction }
+    Module S (SkewMonoidAlgebra k G) where
+  __ := toFinsupp_injective.module _ ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_smul
+  toDistribMulAction := distribMulAction
 
 instance faithfulSMul {S} [AddCommMonoid k] [SMulZeroClass S k] [FaithfulSMul S k] [Nonempty G] :
     FaithfulSMul S (SkewMonoidAlgebra k G) where
@@ -672,7 +670,7 @@ instance smulCommClass {S₁ S₂} [AddCommMonoid k] [SMulZeroClass S₁ k] [SMu
   ⟨by rintro m n ⟨f⟩; simp_rw [← ofFinsupp_smul, smul_comm m n f]⟩
 
 instance isCentralScalar {S} [AddCommMonoid k] [SMulZeroClass S k] [SMulZeroClass Sᵐᵒᵖ k]
-    [IsCentralScalar S k] : IsCentralScalar S (SkewMonoidAlgebra k G)  :=
+    [IsCentralScalar S k] : IsCentralScalar S (SkewMonoidAlgebra k G) :=
   ⟨by rintro _ ⟨⟩; simp_rw [← ofFinsupp_smul, op_smul_eq_smul]⟩
 
 variable {M α : Type*} [Monoid G] [AddCommMonoid M] [MulAction G α]
@@ -705,7 +703,7 @@ def comapDistribMulActionSelf [AddCommMonoid k] :
   smul_zero g := by
     ext
     simp only [comapSMul_def, smul_eq_mul, sum_zero_index, toFinsupp_zero, Finsupp.coe_zero,
-      Pi.zero_apply]
+      Pi.zero_apply, mapDomain]
   smul_add g f f' := by
     ext
     simp only [comapSMul_def, mapDomain_add]
@@ -937,10 +935,9 @@ variable [DistribMulAction R M] [DistribMulAction R N]
 
 See also `lsingle` for the version as a linear map. -/
 @[simps]
-def DistribMulActionHom.single {α : Type*} (a : α) : M →+[R] SkewMonoidAlgebra M α :=
-  { singleAddHom a with
-    map_smul' := fun k m => by
-      simp only [singleAddHom, smul_single, MonoidHom.id_apply] }
+def DistribMulActionHom.single {α : Type*} (a : α) : M →+[R] SkewMonoidAlgebra M α where
+  __ := singleAddHom a
+  map_smul' := fun k m => by simp only [singleAddHom, smul_single, MonoidHom.id_apply]
 
 theorem distribMulActionHom_ext {α : Type*} {f g : SkewMonoidAlgebra M α →+[R] N}
     (h : ∀ (a : α) (m : M), f (single a m) = g (single a m)) : f = g :=
@@ -954,8 +951,9 @@ theorem distribMulActionHom_ext' {α : Type*} {f g : SkewMonoidAlgebra M α →+
   distribMulActionHom_ext fun a => DistribMulActionHom.congr_fun (h a)
 
 /-- Interpret `single a` as a linear map. -/
-def lsingle {α : Type*} (a : α) [Module R M] : M →ₗ[R] (SkewMonoidAlgebra M α) :=
-  { singleAddHom a with map_smul' := fun _ _ => (smul_single _ _ _).symm }
+def lsingle {α : Type*} (a : α) [Module R M] : M →ₗ[R] (SkewMonoidAlgebra M α) where
+  __ := singleAddHom a
+  map_smul' := fun _ _ => (smul_single _ _ _).symm
 
 /-- Two `R`-linear maps from `SkewMonoidAlgebra M α` which agree on each `single x y`
   agree everywhere. -/
@@ -1002,13 +1000,13 @@ section Semiring
 variable [Semiring k] [MulSemiringAction G k]
 
 /-- `single 1` as a `RingHom` -/
-def singleOneRingHom : k →+* SkewMonoidAlgebra k G :=
-  { singleAddHom 1 with
-    map_one' := rfl
-    map_mul' := fun x y => by
-      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, singleAddHom_apply,
-        single_mul_single, mul_one]
-      simp only [one_smul] }
+def singleOneRingHom : k →+* SkewMonoidAlgebra k G where
+  __ := singleAddHom 1
+  map_one' := rfl
+  map_mul' := fun x y => by
+    simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, singleAddHom_apply,
+      single_mul_single, mul_one]
+    simp only [one_smul]
 
 /-- `mapDomain` is an `AddMonoidHom`. -/
 @[simps]
@@ -1023,10 +1021,10 @@ def mapDomain.addMonoidHom {M α β : Type*} [AddCommMonoid M] (f : α → β) :
   between their skew monoid algebras. -/
 def mapDomainRingHom {H F : Type*} [Monoid H] [FunLike F G H] [MonoidHomClass F G H]
     [MulSemiringAction H k] {f : F} (hf : ∀ (a : G) (x : k), a • x = (f a) • x) :
-    SkewMonoidAlgebra k G →+* SkewMonoidAlgebra k H :=
-  { (mapDomain.addMonoidHom f : SkewMonoidAlgebra k G →+ SkewMonoidAlgebra k H) with
-    map_one' := mapDomain_one f
-    map_mul' := fun x y => mapDomain_mul x y hf }
+    SkewMonoidAlgebra k G →+* SkewMonoidAlgebra k H where
+  __ := (mapDomain.addMonoidHom f : SkewMonoidAlgebra k G →+ SkewMonoidAlgebra k H)
+  map_one' := mapDomain_one f
+  map_mul' := fun x y => mapDomain_mul x y hf
 
 /-- If two ring homomorphisms from `SkewMonoidAlgebra k G` are equal on all `single a 1`
 and `single 1 b`, then they are equal. -/
@@ -1060,21 +1058,20 @@ variable [CommSemiring k]
   In particular this provides the instance `Algebra k (SkewMonoidAlgebra k G)`.
   This requires `SmulTrivAction G k A`. -/
 instance algebra {A : Type*} [Semiring A] [MulSemiringAction G A] [Algebra k A]
-    [SMulCommClass G k A] : Algebra k (SkewMonoidAlgebra A G) :=
-  { singleOneRingHom.comp (algebraMap k A) with
-    smul_def' := fun r a => by
-      simp only [RingHom.coe_comp, comp_apply]
-      ext
-      simp only [toFinsupp_smul, Finsupp.coe_smul, Pi.smul_apply, Algebra.smul_def,
-        singleOneRingHom, singleAddHom, ZeroHom.toFun_eq_coe, ZeroHom.coe_mk, RingHom.coe_mk,
-        MonoidHom.coe_mk, OneHom.coe_mk, single_one_mul_apply]
-    commutes' := fun r f => by
-      simp only [RingHom.coe_comp, comp_apply]
-      ext
-      simp only [singleOneRingHom, singleAddHom, ZeroHom.toFun_eq_coe, ZeroHom.coe_mk,
-        RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, single_one_mul_apply, mul_single_one_apply,
-        smul_algebraMap, Algebra.commutes]
-         }
+    [SMulCommClass G k A] : Algebra k (SkewMonoidAlgebra A G) where
+  __ := singleOneRingHom.comp (algebraMap k A)
+  smul_def' := fun r a => by
+    simp only [RingHom.coe_comp, comp_apply]
+    ext
+    simp only [toFinsupp_smul, Finsupp.coe_smul, Pi.smul_apply, Algebra.smul_def,
+      singleOneRingHom, singleAddHom, ZeroHom.toFun_eq_coe, ZeroHom.coe_mk, RingHom.coe_mk,
+      MonoidHom.coe_mk, OneHom.coe_mk, single_one_mul_apply]
+  commutes' := fun r f => by
+    simp only [RingHom.coe_comp, comp_apply]
+    ext
+    simp only [singleOneRingHom, singleAddHom, ZeroHom.toFun_eq_coe, ZeroHom.coe_mk,
+      RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, single_one_mul_apply, mul_single_one_apply,
+      smul_algebraMap, Algebra.commutes]
 
 @[simp]
 theorem coe_algebraMap {A : Type*} [Semiring A] [Algebra k A] [MulSemiringAction G A]
@@ -1189,28 +1186,27 @@ def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] {H
     [Monoid H] [FunLike F G H] [MonoidHomClass F G H] [MulSemiringAction G A]
     [MulSemiringAction H A] [SMulCommClass G k A] [SMulCommClass H k A] {f : F}
     (hf : ∀ (a : G) (x : A), a • x = (f a) • x) :
-    SkewMonoidAlgebra A G →ₐ[k] SkewMonoidAlgebra A H :=
-  { mapDomainRingHom hf with
-    commutes' := mapDomain_algebraMap f }
+    SkewMonoidAlgebra A G →ₐ[k] SkewMonoidAlgebra A H where
+  __ := mapDomainRingHom hf
+  commutes' := mapDomain_algebraMap f
 
 end lift
 section CommSemiring
 
 instance commSemiring [CommSemiring k] [CommMonoid G] [MulSemiringAction G k]
-    [SMulCommClass G k k] : CommSemiring (SkewMonoidAlgebra k G) :=
-  { SkewMonoidAlgebra.semiring with
-    mul_comm := by
-      intro a b
-      simp only [mul_def]
-      have hgk (g : G) (r : k) : g • r = r := by
-        rw [← Algebra.id.map_eq_self r, smul_algebraMap g r]
-      simp_rw [hgk, sum]
-      rw [Finsupp.sum_comm]
-      apply Finsupp.sum_congr
-      intro x _
-      apply Finsupp.sum_congr
-      intro y _
-      rw [mul_comm, mul_comm (a.toFinsupp y) _] }
+    [SMulCommClass G k k] : CommSemiring (SkewMonoidAlgebra k G) where
+  mul_comm := by
+    intro a b
+    simp only [mul_def]
+    have hgk (g : G) (r : k) : g • r = r := by
+      rw [← Algebra.id.map_eq_self r, smul_algebraMap g r]
+    simp_rw [hgk, sum]
+    rw [Finsupp.sum_comm]
+    apply Finsupp.sum_congr
+    intro x _
+    apply Finsupp.sum_congr
+    intro y _
+    rw [mul_comm, mul_comm (a.toFinsupp y) _]
 
 end CommSemiring
 
