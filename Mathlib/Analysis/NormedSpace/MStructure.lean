@@ -347,6 +347,7 @@ theorem contractive {P : A →L[𝕜] A} (h : IsLprojection A P) : ‖P‖ ≤ 1
   simp only [ContinuousLinearMap.smul_def, ContinuousLinearMap.coe_sub', Pi.sub_apply,
     ContinuousLinearMap.one_apply, one_mul, le_add_iff_nonneg_right, norm_nonneg]
 
+/-- The subtype of L-projections -/
 notation "Pₗ[" 𝕜 "](" A ")" => { P : A →L[𝕜] A // IsLprojection A P }
 
 variable (P : Pₗ[𝕜](A))
