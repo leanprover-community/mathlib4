@@ -45,7 +45,7 @@ It also works incrementally, providing information that it better suited, for in
 files.
  -/
 register_option linter.minImports : Bool := {
-  defValue := false
+  defValue := true
   descr := "enable the minImports linter"
 }
 
@@ -63,7 +63,28 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx => do
     if (← MonadState.get).messages.hasErrors then
       return
     let prevImports ← minImportsRef.get
-    --if stx.isOfKind ``Parser.Command.eoi then logInfo m!"{(← getEnv).imports.map (·.module)}"
+    if stx.isOfKind ``Parser.Command.eoi then
+      let impsInFile : NameSet :=
+        .fromArray (((← getEnv).imports.map (·.module)).erase `Init) Name.quickCmp
+      let newImps := prevImports.diff impsInFile
+      let redundImps := impsInFile.diff prevImports
+      let fil ← IO.FS.readFile (← getFileName)
+      for i in redundImps do
+        match fil.splitOn (" " ++ i.toString) with
+          | a::_::_ =>
+            let al := a.length
+            let impPos : Syntax := .ofRange ⟨⟨al + 1⟩, ⟨al + i.toString.length + 1⟩⟩
+            logWarningAt impPos m!"unneeded import '{i}'"
+          | _ => dbg_trace f!"'{i}' not found"
+      if !newImps.isEmpty then
+        let withImport := (newImps.toArray.qsort Name.lt).map (s!"import {·}")
+        let firstImport : Syntax := match fil.splitOn "\nimport " with
+          | a::_::_ => .ofRange ⟨⟨a.length+1⟩, ⟨a.length + "import".length + 1⟩⟩
+          | _ => .ofRange ⟨⟨0⟩, ⟨19⟩⟩
+        logWarningAt firstImport m!"-- missing imports\n{"\n".intercalate withImport.toList}"
+      --let currImps := (((← getEnv).imports.map (·.module)).qsort Name.lt).erase `Init
+      --if prevImports.toArray.qsort Name.lt != currImps then
+      --  logInfo m!"{currImps}"
     let id ← getId stx
     --if id != default then dbg_trace "using {id}"
     let newImports := getIrredundantImports (← getEnv) (← getAllImports stx id)
@@ -74,7 +95,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx => do
     if currImpArray != #[] &&
        currImpArray ≠ prevImports.toArray.qsort Name.lt then
       minImportsRef.modify fun _ => currImports
-      Linter.logLint linter.minImports stx m!"Imports increased to\n{currImpArray}"
+      --Linter.logLint linter.minImports stx m!"Imports increased to\n{currImpArray}"
 
 initialize addLinter minImportsLinter
 
