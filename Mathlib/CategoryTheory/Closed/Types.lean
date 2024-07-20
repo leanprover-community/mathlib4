@@ -66,7 +66,7 @@ def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
 instance {C : Type u₁} [Category.{v₁} C] : CartesianClosed (C ⥤ Type (max u₁ v₁)) :=
   CartesianClosed.mk _
     (fun F => by
-      have := FunctorCategory.prodPreservesColimits' F
+      letI := FunctorCategory.prodPreservesColimits' F
       have := Presheaf.isLeftAdjoint_of_preservesColimits' (prod.functor.obj F)
       exact Exponentiable.mk _ _ (Adjunction.ofIsLeftAdjoint (prod.functor.obj F)))
 
