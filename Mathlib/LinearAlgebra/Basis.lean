@@ -347,6 +347,9 @@ instance : MulAction G (Basis ι R M) :=
 instance [SMulCommClass G G' M] : SMulCommClass G G' (Basis ι R M) where
   smul_comm _g _g' _b := DFunLike.ext _ _ fun _ => smul_comm _ _ _
 
+instance [SMul G G'] [IsScalarTower G G' M] : IsScalarTower G G' (Basis ι R M) where
+  smul_assoc _g _g' _b := DFunLike.ext _ _ fun _ => smul_assoc _ _ _
+
 end SMul
 
 section MapCoeffs
