@@ -484,6 +484,15 @@ theorem basic (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
   · simp
   · simp [dif_neg hx]
 
+--prove general invariant subspace exhaust result, and the intersection eigenspace one will
+--follow as an application of this. Unnecessary detail will be removed from the body of the
+--proof by doing this.
+
+variable (F : Submodule 𝕜 E) (S : E →ₗ[𝕜] E) (hS: IsSymmetric S) (hInv : ∀ v ∈ F, S v ∈ F)
+
+theorem invariant_subspace_exhaust : ⨆ μ, Submodule.map
+    F.subtype (eigenspace (S.restrict hInv) μ)  = F := by sorry
+
 theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // x ≠ i} → 𝕜) :
     ⨆ μ, Submodule.map (⨅ (j: {x // x ≠ i}), eigenspace (T ↑j) (γ j)).subtype
     (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) =
@@ -549,8 +558,8 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))))) = ⨆ (γ : {x // x ≠ i} → 𝕜),
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) := by
       simp only [ne_eq, Submodule.orthogonal_eq_bot_iff]
-      conv => lhs; rhs; ext γ; rhs; ext μ; rw [index_convert T hC i]
-      conv => lhs; rhs; ext γ; rw [prelim_sub_exhaust T hT hC]
+      conv => lhs; rhs; ext γ; rhs; ext μ; rw [index_convert T hC i] --shorten index_convert
+      conv => lhs; rhs; ext γ; rw [prelim_sub_exhaust T hT hC] --shorten prelim_sub_exhaust
     rw [← E] at D
     · rw [basic i (fun _ ↦ (fun μ ↦ (eigenspace (T _) μ )))]
       exact D
