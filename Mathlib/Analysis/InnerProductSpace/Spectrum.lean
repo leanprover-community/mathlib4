@@ -461,7 +461,7 @@ theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} → 
       rw [← B]
       exact hw j hj
 
-theorem basic {α β γ : Type*} [DecidableEq α] [CompleteLattice γ]
+theorem iSup_iInf_fun_index_split_single {α β γ : Type*} [DecidableEq α] [CompleteLattice γ]
     (i : α) (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
       ⨆ f' : {y // y ≠ i} → β, ⨆ y : β, s i y ⊓ ⨅ x' : {y // y ≠ i}, (s x' (f' x')) := by
   rw [← (Equiv.funSplitAt i β).symm.iSup_comp, iSup_prod, iSup_comm]
@@ -512,7 +512,7 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
       conv => lhs; rhs; ext γ; rhs; ext μ; rw [index_convert T hC i] --shorten index_convert
       conv => lhs; rhs; ext γ; rw [EE γ]
     rw [← E] at D
-    rw [basic i (fun _ ↦ (fun μ ↦ (eigenspace (T _) μ )))]
+    rw [iSup_iInf_fun_index_split_single i (fun _ ↦ (fun μ ↦ (eigenspace (T _) μ )))]
     exact D
 
 theorem orthogonalFamily_iInf_eigenspaces : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
