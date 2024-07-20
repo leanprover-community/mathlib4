@@ -34,7 +34,7 @@ attribute [local instance] Matrix.seminormedAddCommGroup
 /-- The house of an algebraic number as the norm of its image by the canonical embedding. -/
 def house (α : K) : ℝ := ‖canonicalEmbedding K α‖
 
-/-- The house is the largest of the modulus of the conjugates. -/
+/-- The house is the largest of the modulus of the conjugates of an algebraic number. -/
 theorem house_eq_sup' (α : K) :
     house α = univ.sup' univ_nonempty (fun φ : K →+* ℂ ↦ ‖φ α‖₊) := by
   rw [house, ← coe_nnnorm, nnnorm_eq, ← sup'_eq_sup univ_nonempty]
