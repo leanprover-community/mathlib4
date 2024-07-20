@@ -166,7 +166,7 @@ theorem ofCoprodI_of (i : ι) (g : G i) :
 
 theorem induction_on {motive : PushoutI φ → Prop}
     (x : PushoutI φ)
-    (of  : ∀ (i : ι) (g : G i), motive (of i g))
+    (of : ∀ (i : ι) (g : G i), motive (of i g))
     (base : ∀ h, motive (base φ h))
     (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive x := by
   delta PushoutI PushoutI.of PushoutI.base at *
