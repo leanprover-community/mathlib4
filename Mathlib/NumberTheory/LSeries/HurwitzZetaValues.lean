@@ -215,14 +215,12 @@ theorem riemannZeta_two_mul_nat {k : ℕ} (hk : k ≠ 0) :
   · rw [← Nat.cast_two, ← Nat.cast_mul, zeta_nat_eq_tsum_of_gt_one (by omega)]
     simp only [push_cast]
   · norm_cast
-#align riemann_zeta_two_mul_nat riemannZeta_two_mul_nat
 
 theorem riemannZeta_two : riemannZeta 2 = (π : ℂ) ^ 2 / 6 := by
   convert congr_arg ((↑) : ℝ → ℂ) hasSum_zeta_two.tsum_eq
   · rw [← Nat.cast_two, zeta_nat_eq_tsum_of_gt_one one_lt_two]
     simp only [push_cast]
   · norm_cast
-#align riemann_zeta_two riemannZeta_two
 
 theorem riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
   convert congr_arg ((↑) : ℝ → ℂ) hasSum_zeta_four.tsum_eq
@@ -230,7 +228,6 @@ theorem riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
       zeta_nat_eq_tsum_of_gt_one (by norm_num : 1 < 4)]
     simp only [push_cast]
   · norm_cast
-#align riemann_zeta_four riemannZeta_four
 
 /-- Value of Riemann zeta at `-ℕ` in terms of `bernoulli'`. -/
 theorem riemannZeta_neg_nat_eq_bernoulli' (k : ℕ) :
@@ -249,4 +246,3 @@ theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
   rw [riemannZeta_neg_nat_eq_bernoulli', bernoulli, Rat.cast_mul, Rat.cast_pow, Rat.cast_neg,
     Rat.cast_one, ← neg_one_mul, ← mul_assoc, pow_succ, ← mul_assoc, ← mul_pow, neg_one_mul (-1),
     neg_neg, one_pow, one_mul]
-#align riemann_zeta_neg_nat_eq_bernoulli riemannZeta_neg_nat_eq_bernoulli

@@ -5,8 +5,6 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Data.ENNReal.Real
 
-#align_import data.real.conjugate_exponents from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
-
 /-!
 # Real conjugate exponents
 
@@ -40,11 +38,9 @@ norms. -/
 structure IsConjExponent (p q : ℝ) : Prop where
   one_lt : 1 < p
   inv_add_inv_conj : p⁻¹ + q⁻¹ = 1
-#align real.is_conjugate_exponent Real.IsConjExponent
 
 /-- The conjugate exponent of `p` is `q = p/(p-1)`, so that `1/p + 1/q = 1`. -/
 def conjExponent (p : ℝ) : ℝ := p / (p - 1)
-#align real.conjugate_exponent Real.conjExponent
 
 variable {a b p q : ℝ} (h : p.IsConjExponent q)
 
@@ -55,68 +51,53 @@ namespace IsConjExponent
 with `field_simp` given a proof that these denominators are non-zero, so we record the most usual
 ones. -/
 theorem pos : 0 < p := lt_trans zero_lt_one h.one_lt
-#align real.is_conjugate_exponent.pos Real.IsConjExponent.pos
 
 theorem nonneg : 0 ≤ p := le_of_lt h.pos
-#align real.is_conjugate_exponent.nonneg Real.IsConjExponent.nonneg
 
 theorem ne_zero : p ≠ 0 := ne_of_gt h.pos
-#align real.is_conjugate_exponent.ne_zero Real.IsConjExponent.ne_zero
 
 theorem sub_one_pos : 0 < p - 1 := sub_pos.2 h.one_lt
-#align real.is_conjugate_exponent.sub_one_pos Real.IsConjExponent.sub_one_pos
 
 theorem sub_one_ne_zero : p - 1 ≠ 0 := ne_of_gt h.sub_one_pos
-#align real.is_conjugate_exponent.sub_one_ne_zero Real.IsConjExponent.sub_one_ne_zero
 
 protected lemma inv_pos : 0 < p⁻¹ := inv_pos.2 h.pos
 protected lemma inv_nonneg : 0 ≤ p⁻¹ := h.inv_pos.le
 protected lemma inv_ne_zero : p⁻¹ ≠ 0 := h.inv_pos.ne'
 
 theorem one_div_pos : 0 < 1 / p := _root_.one_div_pos.2 h.pos
-#align real.is_conjugate_exponent.one_div_pos Real.IsConjExponent.one_div_pos
 
 theorem one_div_nonneg : 0 ≤ 1 / p := le_of_lt h.one_div_pos
-#align real.is_conjugate_exponent.one_div_nonneg Real.IsConjExponent.one_div_nonneg
 
 theorem one_div_ne_zero : 1 / p ≠ 0 := ne_of_gt h.one_div_pos
-#align real.is_conjugate_exponent.one_div_ne_zero Real.IsConjExponent.one_div_ne_zero
 
 theorem conj_eq : q = p / (p - 1) := by
   have := h.inv_add_inv_conj
   rw [← eq_sub_iff_add_eq', inv_eq_iff_eq_inv] at this
   field_simp [this, h.ne_zero]
-#align real.is_conjugate_exponent.conj_eq Real.IsConjExponent.conj_eq
 
 lemma conjExponent_eq : conjExponent p = q := h.conj_eq.symm
-#align real.is_conjugate_exponent.conjugate_eq Real.IsConjExponent.conjExponent_eq
 
 lemma one_sub_inv : 1 - p⁻¹ = q⁻¹ := sub_eq_of_eq_add' h.inv_add_inv_conj.symm
 lemma inv_sub_one : p⁻¹ - 1 = -q⁻¹ := by rw [← h.inv_add_inv_conj, sub_add_cancel_left]
 
 theorem sub_one_mul_conj : (p - 1) * q = p :=
   mul_comm q (p - 1) ▸ (eq_div_iff h.sub_one_ne_zero).1 h.conj_eq
-#align real.is_conjugate_exponent.sub_one_mul_conj Real.IsConjExponent.sub_one_mul_conj
 
 theorem mul_eq_add : p * q = p + q := by
   simpa only [sub_mul, sub_eq_iff_eq_add, one_mul] using h.sub_one_mul_conj
-#align real.is_conjugate_exponent.mul_eq_add Real.IsConjExponent.mul_eq_add
 
 @[symm] protected lemma symm : q.IsConjExponent p where
   one_lt := by simpa only [h.conj_eq] using (one_lt_div h.sub_one_pos).mpr (sub_one_lt p)
   inv_add_inv_conj := by simpa [add_comm] using h.inv_add_inv_conj
-#align real.is_conjugate_exponent.symm Real.IsConjExponent.symm
 
 theorem div_conj_eq_sub_one : p / q = p - 1 := by
   field_simp [h.symm.ne_zero]
   rw [h.sub_one_mul_conj]
-#align real.is_conjugate_exponent.div_conj_eq_sub_one Real.IsConjExponent.div_conj_eq_sub_one
 
 theorem inv_add_inv_conj_ennreal : (ENNReal.ofReal p)⁻¹ + (ENNReal.ofReal q)⁻¹ = 1 := by
   rw [← ENNReal.ofReal_one, ← ENNReal.ofReal_inv_of_pos h.pos,
     ← ENNReal.ofReal_inv_of_pos h.symm.pos, ← ENNReal.ofReal_add h.inv_nonneg h.symm.inv_nonneg,
     h.inv_add_inv_conj]
-#align real.is_conjugate_exponent.inv_add_inv_conj_ennreal Real.IsConjExponent.inv_add_inv_conj_ennreal
 
 protected lemma inv_inv (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) : a⁻¹.IsConjExponent b⁻¹ :=
   ⟨one_lt_inv ha $ by linarith, by simpa only [inv_inv]⟩
@@ -131,15 +112,12 @@ end IsConjExponent
 
 lemma isConjExponent_iff_eq_conjExponent (hp : 1 < p) : p.IsConjExponent q ↔ q = p / (p - 1) :=
   ⟨IsConjExponent.conj_eq, fun h ↦ ⟨hp, by field_simp [h]⟩⟩
-#align real.is_conjugate_exponent_iff Real.isConjExponent_iff
 
 lemma IsConjExponent.conjExponent (h : 1 < p) : p.IsConjExponent (conjExponent p) :=
   (isConjExponent_iff_eq_conjExponent h).2 rfl
-#align real.is_conjugate_exponent_conjugate_exponent Real.IsConjExponent.conjExponent
 
 lemma isConjExponent_one_div (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) :
     (1 / a).IsConjExponent (1 / b) := by simpa using IsConjExponent.inv_inv ha hb hab
-#align real.is_conjugate_exponent_one_div Real.isConjExponent_one_div
 
 end Real
 
@@ -152,8 +130,6 @@ norms. -/
 structure IsConjExponent (p q : ℝ≥0) : Prop where
   one_lt : 1 < p
   inv_add_inv_conj : p⁻¹ + q⁻¹ = 1
-#align real.is_conjugate_exponent.one_lt_nnreal NNReal.IsConjExponent.one_lt
-#align real.is_conjugate_exponent.inv_add_inv_conj_nnreal NNReal.IsConjExponent.inv_add_inv_conj
 
 /-- The conjugate exponent of `p` is `q = p/(p-1)`, so that `1/p + 1/q = 1`. -/
 noncomputable def conjExponent (p : ℝ≥0) : ℝ≥0 := p / (p - 1)
