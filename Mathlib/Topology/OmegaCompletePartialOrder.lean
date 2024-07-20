@@ -123,6 +123,4 @@ theorem continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
     (hf : ωScottContinuous f) : _root_.Continuous f := by
   rw [continuous_def]
   intro s hs
-  change ωScottContinuous (s ∘ f)
-  change ωScottContinuous s at hs
   exact ωScottContinuous.comp hs hf
