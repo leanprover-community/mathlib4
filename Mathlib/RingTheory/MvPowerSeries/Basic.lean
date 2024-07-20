@@ -21,6 +21,33 @@ A formal power series is to a polynomial like an infinite sum is to a finite sum
 
 We provide the natural inclusion from multivariate polynomials to multivariate formal power series.
 
+## Main definitions
+
+- `MvPowerSeries.C`: constant power series
+
+- `MvPowerSeries.X`: the indeterminates
+
+- `MvPowerSeries.coeff`, `MvPowerSeries.constantCoeff`: the coefficients of a `MvPowerSeries`, its constant coefficient
+
+- `MvPowerSeries.monomial`: the monomials
+
+- `MvPowerSeries.coeff_mul`: computes the coefficients of the product of two `MvPowerSeries`
+
+- `MvPowerSeries.coeff_prod` : computes the coefficients of products of `MvPowerSeries`
+
+- `MvPowerSeries.coeff_pow` : computes the coefficients of powers of a `MvPowerSeries`
+
+- `MvPowerSeries.coeff_eq_zero_of_constantCoeff_nilpotent`: if the constant coefficient
+of a `MvPowerSeries` is nilpotent, then some coefficients of its powers are automatically zero
+
+- `MvPowerSeries.map`: apply a `RingHom` to the coefficients of a `MvPowerSeries` (as a `RingHom)
+
+- `MvPowerSeries.X_pow_dvd_iff`, `MvPowerSeries.X_dvd_iff`: equivalent
+conditions for (a power of) an indeterminate to divide a `MvPowerSeries`
+
+- `MvPolynomial.toMvPowerSeries`: the canonical coercion from `MvPolynomial` to `MvPowerSeries`
+
+
 ## Note
 
 This file sets up the (semi)ring structure on multivariate power series:
