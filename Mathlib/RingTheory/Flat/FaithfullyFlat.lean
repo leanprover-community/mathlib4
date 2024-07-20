@@ -162,12 +162,6 @@ open TensorProduct
 
 -- The following lemma proves implication (1) to (2) in https://stacks.math.columbia.edu/tag/00HP
 
-lemma id_zero (N : Type u) [AddCommGroup N] [Module R N] : (Subsingleton N) → LinearMap.id (R:= R)
-(M:= N)= 0 := by
-   intro hN
-   ext x
-   rw [LinearMap.id_apply (R := R) x, LinearMap.zero_apply]
-   exact Subsingleton.eq_zero x
 /-- If M is faithfully flat, then for every nonzero R-module N, then tensor product M⊗RN is nonzero,
 -/
 lemma tensorproduct_non_zero (N : Type u) [AddCommGroup N] [Module R N] [FaithfullyFlat R M] :
@@ -190,8 +184,8 @@ lemma tensorproduct_non_zero (N : Type u) [AddCommGroup N] [Module R N] [Faithfu
   contrapose
   push_neg
   intro h1
-  apply id_zero R (M ⊗[R] N)
-  exact not_nontrivial_iff_subsingleton.mp h1
+  have h2: Subsingleton (M ⊗[R] N):= not_nontrivial_iff_subsingleton.mp h1
+  exact identityMapOfZeroModuleIsZero
 
 variable (R : Type u) (S : Type u) (M : Type u)
   [CommRing R] [CommRing S] [Algebra R S]
