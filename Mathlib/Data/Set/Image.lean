@@ -759,19 +759,19 @@ theorem isCompl_range_inl_range_inr : IsCompl (range <| @Sum.inl α β) (range S
     (by rintro (x | y) - <;> [left; right] <;> exact mem_range_self _)
 
 @[simp]
-theorem range_inl_union_range_inr : range (Sum.inl : α → Sum α β) ∪ range Sum.inr = univ :=
+theorem range_inl_union_range_inr : range (Sum.inl : α → α ⊕ β) ∪ range Sum.inr = univ :=
   isCompl_range_inl_range_inr.sup_eq_top
 
 @[simp]
-theorem range_inl_inter_range_inr : range (Sum.inl : α → Sum α β) ∩ range Sum.inr = ∅ :=
+theorem range_inl_inter_range_inr : range (Sum.inl : α → α ⊕ β) ∩ range Sum.inr = ∅ :=
   isCompl_range_inl_range_inr.inf_eq_bot
 
 @[simp]
-theorem range_inr_union_range_inl : range (Sum.inr : β → Sum α β) ∪ range Sum.inl = univ :=
+theorem range_inr_union_range_inl : range (Sum.inr : β → α ⊕ β) ∪ range Sum.inl = univ :=
   isCompl_range_inl_range_inr.symm.sup_eq_top
 
 @[simp]
-theorem range_inr_inter_range_inl : range (Sum.inr : β → Sum α β) ∩ range Sum.inl = ∅ :=
+theorem range_inr_inter_range_inl : range (Sum.inr : β → α ⊕ β) ∩ range Sum.inl = ∅ :=
   isCompl_range_inl_range_inr.symm.inf_eq_bot
 
 @[simp]
@@ -785,22 +785,22 @@ theorem preimage_inr_image_inl (s : Set α) : Sum.inr ⁻¹' (@Sum.inl α β '' 
   simp
 
 @[simp]
-theorem preimage_inl_range_inr : Sum.inl ⁻¹' range (Sum.inr : β → Sum α β) = ∅ := by
+theorem preimage_inl_range_inr : Sum.inl ⁻¹' range (Sum.inr : β → α ⊕ β) = ∅ := by
   rw [← image_univ, preimage_inl_image_inr]
 
 @[simp]
-theorem preimage_inr_range_inl : Sum.inr ⁻¹' range (Sum.inl : α → Sum α β) = ∅ := by
+theorem preimage_inr_range_inl : Sum.inr ⁻¹' range (Sum.inl : α → α ⊕ β) = ∅ := by
   rw [← image_univ, preimage_inr_image_inl]
 
 @[simp]
-theorem compl_range_inl : (range (Sum.inl : α → Sum α β))ᶜ = range (Sum.inr : β → Sum α β) :=
+theorem compl_range_inl : (range (Sum.inl : α → α ⊕ β))ᶜ = range (Sum.inr : β → α ⊕ β) :=
   IsCompl.compl_eq isCompl_range_inl_range_inr
 
 @[simp]
-theorem compl_range_inr : (range (Sum.inr : β → Sum α β))ᶜ = range (Sum.inl : α → Sum α β) :=
+theorem compl_range_inr : (range (Sum.inr : β → α ⊕ β))ᶜ = range (Sum.inl : α → α ⊕ β) :=
   IsCompl.compl_eq isCompl_range_inl_range_inr.symm
 
-theorem image_preimage_inl_union_image_preimage_inr (s : Set (Sum α β)) :
+theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
     Sum.inl '' (Sum.inl ⁻¹' s) ∪ Sum.inr '' (Sum.inr ⁻¹' s) = s := by
   rw [image_preimage_eq_inter_range, image_preimage_eq_inter_range, ← inter_union_distrib_left,
     range_inl_union_range_inr, inter_univ]
@@ -890,7 +890,7 @@ theorem image_eq_range (f : α → β) (s : Set α) : f '' s = range fun x : s =
   · rintro ⟨⟨x, h1⟩, h2⟩
     exact ⟨x, h1, h2⟩
 
-theorem _root_.Sum.range_eq (f : Sum α β → γ) :
+theorem _root_.Sum.range_eq (f : α ⊕ β → γ) :
     range f = range (f ∘ Sum.inl) ∪ range (f ∘ Sum.inr) :=
   ext fun _ => Sum.exists
 

@@ -9,7 +9,6 @@ The porting header is just here to mark that no further work on `data.hash_map` 
 -/
 import Batteries.Data.HashMap.Basic
 import Batteries.Data.RBMap.Basic
-import Mathlib.Mathport.Rename
 
 /-!
 # Additional API for `HashMap` and `RBSet`.

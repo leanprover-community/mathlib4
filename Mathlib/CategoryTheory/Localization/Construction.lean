@@ -58,7 +58,7 @@ structure LocQuiver (W : MorphismProperty C) where
   /-- underlying object -/
   obj : C
 
-instance : Quiver (LocQuiver W) where Hom A B := Sum (A.obj ⟶ B.obj) { f : B.obj ⟶ A.obj // W f }
+instance : Quiver (LocQuiver W) where Hom A B := (A.obj ⟶ B.obj) ⊕ { f : B.obj ⟶ A.obj // W f }
 
 /-- The object in the path category of `LocQuiver W` attached to an object in
 the category `C` -/

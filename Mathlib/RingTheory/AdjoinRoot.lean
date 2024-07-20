@@ -12,6 +12,7 @@ import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.QuotientNoetherian
+import Mathlib.RingTheory.Polynomial.Quotient
 
 /-!
 # Adjoining roots of polynomials
