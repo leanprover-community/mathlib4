@@ -83,7 +83,7 @@ variable {n}
 
 /-- The product of a closed `n`- and a closed closed `m`-manifold is a closed `n+m`-manifold. -/
 instance ClosedNManifold.prod {m n : ℕ} [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 E']
-    [CompactSpace M] [I.Boundaryless] [CompactSpace N] [J.Boundaryless]
+    [CompactSpace M] [BoundarylessManifold I M] [CompactSpace N] [BoundarylessManifold J N]
     (s : ClosedNManifold m M I) (t : ClosedNManifold n N J) :
     ClosedNManifold (m + n) (M × N) (I.prod J) where
   -- TODO: can I inherit this from `NManifold.prod`?
@@ -139,7 +139,7 @@ lemma boundary_IccManifold [h : Fact (x < y)] : (𝓡∂ 1).boundary (Set.Icc x 
 
 variable {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace H]
   [TopologicalSpace M] [ChartedSpace H M] {I : ModelWithCorners ℝ E H}
-  [SmoothManifoldWithCorners I M] [I.Boundaryless] [CompactSpace M] [FiniteDimensional ℝ E]
+  [SmoothManifoldWithCorners I M] [BoundarylessManifold I M] [CompactSpace M] [FiniteDimensional ℝ E]
 
 /-- The boundary of the interval [x,y], as a subset of `Icc x y`. -/
 def A : Set (Icc x y) := { ⟨x, ⟨le_refl x, by linarith⟩⟩, ⟨y, ⟨by linarith, le_refl y⟩⟩}
@@ -171,7 +171,7 @@ closed smooth `n`-manifold `M` and a continuous map `f : M → X`. -/
 structure _root_.SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ)
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) [SmoothManifoldWithCorners I M]
-    [CompactSpace M] [I.Boundaryless] [FiniteDimensional ℝ E] extends ClosedNManifold n M I where
+    [CompactSpace M] [BoundarylessManifold I M] [FiniteDimensional ℝ E] extends ClosedNManifold n M I where
   f : M → X
   hf : Continuous f
 
@@ -181,7 +181,7 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {I' : ModelWithCorners ℝ E' H'} [SmoothManifoldWithCorners I' M'] {n : ℕ}
-  [I.Boundaryless] [CompactSpace M] [FiniteDimensional ℝ E]
+  [BoundarylessManifold I M] [CompactSpace M] [FiniteDimensional ℝ E]
 
 /-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself. -/
 noncomputable def refl (hdim : finrank ℝ E = n) : SingularNManifold M n M I where
@@ -319,17 +319,15 @@ instance [BoundarylessManifold I M] :
 
 end HasNiceBoundary
 
-#exit
-
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {I' : ModelWithCorners ℝ E' H'} [SmoothManifoldWithCorners I' M']
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   {I'' : ModelWithCorners ℝ E'' H''} [SmoothManifoldWithCorners I'' M''] {n : ℕ}
-  [CompactSpace M] [I.Boundaryless] [FiniteDimensional ℝ E]
-  [CompactSpace M'] [I'.Boundaryless] [FiniteDimensional ℝ E']
-  [CompactSpace M''] [I''.Boundaryless] [FiniteDimensional ℝ E'']
+  [CompactSpace M] [BoundarylessManifold I M] [FiniteDimensional ℝ E]
+  [CompactSpace M'] [BoundarylessManifold I' M'] [FiniteDimensional ℝ E']
+  [CompactSpace M''] [BoundarylessManifold I'' M''] [FiniteDimensional ℝ E'']
 
 namespace UnorientedCobordism
 
@@ -341,8 +339,8 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {I' : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I' M']
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
   {I'' : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I'' M''] {n : ℕ}
-  [CompactSpace M] [I.Boundaryless]
-  [CompactSpace M'] [I'.Boundaryless] [CompactSpace M''] [I''.Boundaryless]
+  [CompactSpace M] [BoundarylessManifold I M]
+  [CompactSpace M'] [BoundarylessManifold I' M'] [CompactSpace M''] [BoundarylessManifold I'' M'']
 
 -- All this is full sci-fi, but let's pretend this for now to limp along!!
 namespace ScifiBoundary
