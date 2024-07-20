@@ -3,10 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.Grp.Adjunctions
-import Mathlib.CategoryTheory.Sites.Adjunction
+import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 # Mayer-Vietoris squares
