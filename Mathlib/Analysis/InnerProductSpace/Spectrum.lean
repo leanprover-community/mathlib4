@@ -397,20 +397,6 @@ theorem eigenspace_of_subsingleton_nonempty [Subsingleton n] (h : Nonempty n) :
   · exact hT i
   · intro γ j; congr!
 
-def eq_triv [Subsingleton n] (i : n) : (n → 𝕜) ≃ 𝕜 where
-  toFun := fun f ↦ f i
-  invFun := fun t ↦ (fun (_ : n) ↦ t)
-  left_inv : Function.LeftInverse (fun (t : 𝕜) ↦ (fun (x : n) ↦ t)) (fun f ↦ f i) := by
-    intro x
-    simp only
-    exact
-      Eq.symm
-        ((fun x y ↦ (Function.funext_iff_of_subsingleton x y).mp) i
-          i rfl)
-  right_inv : Function.RightInverse (fun (t : 𝕜) ↦ (fun i ↦ t)) (fun f ↦ f i) := by
-    intro h
-    rfl
-
 /--The following result is auxiliary, and not meant to be used outside this file. It forms
 the base case of the induction proof of `orthogonalComplement_iSup_iInf_eigenspaces_eq_bot`-/
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base [Subsingleton n]:
@@ -418,9 +404,10 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base [Subsingleton n]:
   simp only [Submodule.orthogonal_eq_bot_iff]
   by_cases case : Nonempty n
   · have i := choice case
+    have : Unique n := by refine uniqueOfSubsingleton i
     conv =>
       lhs; rhs; ext γ; rw [ciInf_subsingleton i]
-    rw [← (eq_triv i).symm.iSup_comp]
+    rw [← (Equiv.funUnique n 𝕜).symm.iSup_comp]
     apply pre_exhaust (hT i)
   · simp only [not_nonempty_iff] at case
     simp only [iInf_of_empty, ciSup_unique]
