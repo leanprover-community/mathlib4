@@ -44,7 +44,7 @@ theorem image_sigmaMk_preimage_sigmaMap {β : ι' → Type*} {f : ι → ι'} (h
   rcases hxy with ⟨rfl, hxy⟩; rw [heq_iff_eq] at hxy; subst y
   exact ⟨x, hys, rfl⟩
 
-@[simp] theorem iUnion_preimage_image_sigmaMk_eq  {f : (i : ι) → Set (α i)} :
+@[simp] theorem iUnion_preimage_image_sigmaMk_eq {f : (i : ι) → Set (α i)} :
     ⋃ i, Sigma.mk j ⁻¹' (Sigma.mk i '' (f i)) = f j := by
   aesop
 
