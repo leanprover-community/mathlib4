@@ -296,6 +296,7 @@ theorem coe_injective : Function.Injective ((↑) : RatFunc F → LaurentSeries 
 theorem coe_apply : coeAlgHom F f = f :=
   rfl
 
+-- avoids a diamond, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/compiling.20behaviour.20within.20one.20file
 theorem coe_coe (P : Polynomial F) : ((P : PowerSeries F) : LaurentSeries F) = (P : RatFunc F) := by
   simp only [coePolynomial, coe_def, AlgHom.commutes, algebraMap_hahnSeries_apply]
 
