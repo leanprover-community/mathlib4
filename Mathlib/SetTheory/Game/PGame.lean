@@ -1015,7 +1015,7 @@ theorem Equiv.ext' {x y : PGame}
     (hl : (∀ a ∈ₗ x, ∃ b ∈ₗ y, a ≈ b) ∧ (∀ b ∈ₗ y, ∃ a ∈ₗ x, a ≈ b))
     (hr : (∀ a ∈ᵣ x, ∃ b ∈ᵣ y, a ≈ b) ∧ (∀ b ∈ᵣ y, ∃ a ∈ᵣ x, a ≈ b)) :
     x ≈ y := by
-  refine' Equiv.ext (hl.imp (fun h i ↦ _) (fun h i ↦ _)) (hr.imp (fun h i ↦ _) (fun h i ↦ _)) <;>
+  refine Equiv.ext (hl.imp (fun h i ↦ ?_) (fun h i ↦ ?_)) (hr.imp (fun h i ↦ ?_) (fun h i ↦ ?_)) <;>
     obtain ⟨_, ⟨i, hi⟩, h⟩ := h _ ⟨i, refl _⟩
   · exact ⟨i, Equiv.trans h hi.equiv⟩
   · exact ⟨i, Equiv.trans hi.symm.equiv h⟩
@@ -1026,7 +1026,7 @@ theorem Equiv.ext'' {x y : PGame}
     (hl : Relator.BiTotal fun (a : {a // a ∈ₗ x}) (b : {b // b ∈ₗ y}) ↦ a.1 ≈ b.1)
     (hr : Relator.BiTotal fun (a : {a // a ∈ᵣ x}) (b : {b // b ∈ᵣ y}) ↦ a.1 ≈ b.1) :
     x ≈ y := by
-  refine' Equiv.ext (hl.imp (fun h i ↦ _) (fun h i ↦ _)) (hr.imp (fun h i ↦ _) (fun h i ↦ _)) <;>
+  refine Equiv.ext (hl.imp (fun h i ↦ ?_) (fun h i ↦ ?_)) (hr.imp (fun h i ↦ ?_) (fun h i ↦ ?_)) <;>
     obtain ⟨⟨_, i, hi⟩, h⟩ := h ⟨_, ⟨i, refl _⟩⟩
   · exact ⟨i, Equiv.trans h hi.equiv⟩
   · exact ⟨i, Equiv.trans hi.symm.equiv h⟩
@@ -1775,7 +1775,7 @@ lemma Identical.add_right {x₁ x₂ y} : x₁ ≡ x₂ → x₁ + y ≡ x₂ + 
   match x₁, x₂, y with
   | mk x₁l x₁r x₁L x₁R, mk x₂l x₂r x₂L x₂R, mk yl yr yL yR => by
     intro h
-    refine' ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;> rintro (_ | _) <;> try exact ⟨.inr _, h.add_right⟩
+    refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩ <;> rintro (_ | _) <;> try exact ⟨.inr _, h.add_right⟩
     · exact (h.1.1 _).elim (⟨.inl ·, ·.add_right⟩)
     · exact (h.1.2 _).elim (⟨.inl ·, ·.add_right⟩)
     · exact (h.2.1 _).elim (⟨.inl ·, ·.add_right⟩)
