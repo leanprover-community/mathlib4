@@ -52,6 +52,12 @@ instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCate
 instance subsingleton_hom {α : Type u} [Preorder α] (U V : α) :
   Subsingleton (U ⟶ V) := ⟨fun _ _ => ULift.ext _ _ (Subsingleton.elim _ _ )⟩
 
+instance {α : Type u} [Preorder α] {U V : α} (f : U ⟶ V) : Mono f where
+  right_cancellation _ _ _ := Subsingleton.elim _ _
+
+instance {α : Type u} [Preorder α] {U V : α} (f : U ⟶ V) : Epi f where
+  left_cancellation _ _ _ := Subsingleton.elim _ _
+
 end Preorder
 
 namespace CategoryTheory
