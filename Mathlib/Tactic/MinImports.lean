@@ -91,7 +91,8 @@ def previousInstName : Name → Name
                     | _ => ""
     let newTailPrefix := tail.dropRightWhile (· != '_')
     if newTailPrefix.isEmpty then nm else
-    let newTail := (if newTailPrefix.back == '_' then newTailPrefix.dropRight 1 else newTailPrefix) ++ newTail
+    let newTail :=
+      (if newTailPrefix.back == '_' then newTailPrefix.dropRight 1 else newTailPrefix) ++ newTail
     .str init newTail
   | nm => nm
 
