@@ -138,17 +138,14 @@ end Function
 
 -- private theorem function_const_nonneg_of_pos [Preorder α] (ha : 0 < a) : 0 ≤ const ι a :=
 --   const_nonneg_of_nonneg _ ha.le
--- #align tactic.function_const_nonneg_of_pos tactic.function_const_nonneg_of_pos
 
 -- variable [Nonempty ι]
 
 -- private theorem function_const_ne_zero : a ≠ 0 → const ι a ≠ 0 :=
 --   const_ne_zero.2
--- #align tactic.function_const_ne_zero tactic.function_const_ne_zero
 
 -- private theorem function_const_pos [Preorder α] : 0 < a → 0 < const ι a :=
 --   const_pos.2
--- #align tactic.function_const_pos tactic.function_const_pos
 
 -- /-- Extension for the `positivity` tactic: `Function.const` is positive/nonnegative/nonzero if
 -- its input is. -/
@@ -164,6 +161,5 @@ end Function
 --       | nonzero p => nonzero <$> to_expr ``(function_const_ne_zero $(ι) $(p))
 --   | e =>
 --     pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `Function.const ι a`"
--- #align tactic.positivity_const tactic.positivity_const
 
 -- end Tactic
