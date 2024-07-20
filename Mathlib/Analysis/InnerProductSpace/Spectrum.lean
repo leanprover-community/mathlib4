@@ -383,6 +383,32 @@ theorem invariance_iInf [Nonempty n] (i : n) :
   simp only [Submodule.mem_iInf] at *
   exact fun i_1 ↦ eigenspace_invariant (hC (↑i_1) i) (γ i_1) v (hv i_1)
 
+theorem basic_index1 {α β : Type*} [DecidableEq α] [CompleteLattice β]
+    (i : α) (s : α → β) : ⨅ x, s x = s i ⊓ ⨅ (x' : {y // y ≠ i}), (s x') := by
+  rw [iInf_subtype]
+  exact iInf_split_single s i
+
+theorem index_convert' (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} → 𝕜) : (eigenspace (T i) μ ⊓
+    (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) =
+    Submodule.map (Submodule.subtype ((⨅ (j : {x // x ≠ i}), eigenspace (T j) (γ j))))
+    (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) := by
+  let f : n → 𝕜 := Set.piecewise (fun x ↦ i ≠ x) (Function.extend Subtype.val γ 1)
+    (Function.const n μ)
+  have C1 : f i = μ := Set.piecewise_eq_of_not_mem (fun x ↦ x ≠ i) (Function.extend Subtype.val γ 1)
+    (Function.const n μ) fun a ↦ a rfl
+  have C2 : ∀ (j : {x // x ≠ i}), f j = γ j:= by
+    intro j
+    have := j.2
+    simp only [ne_eq, Subtype.coe_prop, Set.piecewise_eq_of_mem, f]
+    --refine Function.Injective.extend_apply Subtype.val_injective γ f _ j
+    --exact
+    sorry
+  have := basic_index1 i (fun (x : n) ↦ eigenspace (T x) (f x))
+  rw [C1] at this
+  --still sucking wind on this one. Must be a better piecewise function approach here.
+  sorry
+
+
 theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} → 𝕜) : (eigenspace (T i) μ ⊓
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) =
     Submodule.map (Submodule.subtype ((⨅ (j : {x // x ≠ i}), eigenspace (T j) (γ j))))
