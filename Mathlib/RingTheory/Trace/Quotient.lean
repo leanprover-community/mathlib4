@@ -5,6 +5,8 @@ Authors: Andrew Yang, Riccardo Brasca
 -/
 
 import Mathlib.RingTheory.LocalRing.Quotient
+import Mathlib.RingTheory.DedekindDomain.Dvr
+import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 /-!
 

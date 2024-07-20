@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Riccardo Brasca
 -/
 
-import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
-import Mathlib.RingTheory.Trace.Basic
-import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+import Mathlib.LinearAlgebra.FreeModule.PID
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 
 /-!
 
