@@ -3,7 +3,6 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Sites.Sheafification
@@ -63,7 +62,7 @@ namespace GrothendieckTopology
 
 variable {C : Type u} [Category.{v} C]
   (J : GrothendieckTopology C)
-  [HasWeakSheafify J (Type v)] [HasWeakSheafify J AddCommGrp.{v}]
+  [HasWeakSheafify J (Type v)]
 
 /-- A Mayer-Vietoris square in a category `C` equipped with a Grothendieck
 topology consists of a commutative square `p ≫ i = q ≫ j` in `C`
