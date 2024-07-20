@@ -80,14 +80,6 @@ instance coeComonad : Coe (Comonad C) (C ⥤ C) :=
 --  rfl
 --#align category_theory.comonad_to_functor_eq_coe CategoryTheory.comonad_toFunctor_eq_coe
 
-/-- A custom simps projection for the functor part of a monad, as a coercion. -/
-def Monad.Simps.coe :=
-  (T : C ⥤ C)
-
-/-- A custom simps projection for the functor part of a comonad, as a coercion. -/
-def Comonad.Simps.coe :=
-  (G : C ⥤ C)
-
 initialize_simps_projections CategoryTheory.Monad (toFunctor → coe)
 
 initialize_simps_projections CategoryTheory.Comonad (toFunctor → coe)
