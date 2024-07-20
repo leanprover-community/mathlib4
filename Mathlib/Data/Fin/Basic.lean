@@ -10,6 +10,7 @@ import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Tactic.Common
 
+
 /-!
 # The finite type with `n` elements
 
@@ -85,8 +86,10 @@ instance {n : ℕ} : CanLift ℕ (Fin n) Fin.val (· < n) where
 /-- A dependent variant of `Fin.elim0`. -/
 def rec0 {α : Fin 0 → Sort*} (i : Fin 0) : α i := absurd i.2 (Nat.not_lt_zero _)
 
+
 variable {n m : ℕ}
 --variable {a b : Fin n} -- this *really* breaks stuff
+
 
 theorem val_injective : Function.Injective (@Fin.val n) :=
   @Fin.eq_of_val_eq n
@@ -99,6 +102,7 @@ lemma size_positive' [Nonempty (Fin n)] : 0 < n :=
 
 protected theorem prop (a : Fin n) : a.val < n :=
   a.2
+
 
 section Order
 variable {a b c : Fin n}
@@ -143,21 +147,23 @@ section coe
 ### coercions and constructions
 -/
 
+
 theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
-  ext_iff.symm
+  Fin.ext_iff.symm
 
 @[deprecated Fin.ext_iff (since := "2024-02-20")]
 theorem eq_iff_veq (a b : Fin n) : a = b ↔ a.1 = b.1 :=
-  ext_iff
+  Fin.ext_iff
 
 theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
-  ext_iff.not
+  Fin.ext_iff.not
 
 -- Porting note: I'm not sure if this comment still applies.
 -- built-in reduction doesn't always work
 @[simp, nolint simpNF]
 theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
-  ext_iff
+  Fin.ext_iff
+
 
 -- syntactic tautologies now
 
@@ -183,6 +189,7 @@ protected theorem heq_ext_iff {k l : ℕ} (h : k = l) {i : Fin k} {j : Fin l} :
   subst h
   simp [val_eq_val]
 
+
 end coe
 
 section Order
@@ -193,8 +200,10 @@ section Order
 
 
 
+
 theorem le_iff_val_le_val {a b : Fin n} : a ≤ b ↔ (a : ℕ) ≤ b :=
   Iff.rfl
+
 
 /-- `a < b` as natural numbers if and only if `a < b` in `Fin n`. -/
 @[norm_cast, simp]
@@ -205,6 +214,7 @@ theorem val_fin_lt {n : ℕ} {a b : Fin n} : (a : ℕ) < (b : ℕ) ↔ a < b :=
 @[norm_cast, simp]
 theorem val_fin_le {n : ℕ} {a b : Fin n} : (a : ℕ) ≤ (b : ℕ) ↔ a ≤ b :=
   Iff.rfl
+
 
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem min_val {a : Fin n} : min (a : ℕ) n = a := by simp
@@ -244,6 +254,7 @@ def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
 instance {n : ℕ} [NeZero n] : Zero (Fin n) := ⟨ofNat'' 0⟩
 instance {n : ℕ} [NeZero n] : One (Fin n) := ⟨ofNat'' 1⟩
 
+
 /--
 The `Fin.val_zero` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
@@ -251,6 +262,7 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 @[simp]
 theorem val_zero' (n : ℕ) [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
   rfl
+
 
 /--
 The `Fin.zero_le` in `Lean` only applies in `Fin (n+1)`.
@@ -260,12 +272,14 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 protected theorem zero_le' [NeZero n] (a : Fin n) : 0 ≤ a :=
   Nat.zero_le a.val
 
+
 /--
 The `Fin.pos_iff_ne_zero` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
-  rw [← val_fin_lt, val_zero', Nat.pos_iff_ne_zero, Ne, Ne, ext_iff, val_zero']
+  rw [← val_fin_lt, val_zero', Nat.pos_iff_ne_zero, Ne, Ne, Fin.ext_iff, val_zero']
+
 
 @[simp] lemma cast_eq_self (a : Fin n) : cast rfl a = a := rfl
 
@@ -277,6 +291,7 @@ theorem rev_involutive : Involutive (rev : Fin n → Fin n) := rev_rev
 def revPerm : Equiv.Perm (Fin n) :=
   Involutive.toPerm rev rev_involutive
 
+
 theorem rev_injective : Injective (@rev n) :=
   rev_involutive.injective
 
@@ -286,9 +301,14 @@ theorem rev_surjective : Surjective (@rev n) :=
 theorem rev_bijective : Bijective (@rev n) :=
   rev_involutive.bijective
 
+
+
 @[simp]
 theorem revPerm_symm : (@revPerm n).symm = revPerm :=
   rfl
+
+
+
 
 theorem cast_rev (i : Fin n) (h : n = m) :
     cast h i.rev = (i.cast h).rev := by
@@ -311,9 +331,11 @@ theorem lt_rev_iff {i j : Fin n} : i < rev j ↔ j < rev i := by
 theorem le_rev_iff {i j : Fin n} : i ≤ rev j ↔ j ≤ rev i := by
   rw [← rev_le_rev, rev_rev]
 
+
 -- Porting note: this is now syntactically equal to `val_last`
 
 @[simp] theorem val_rev_zero [NeZero n] : ((rev 0 : Fin n) : ℕ) = n.pred := rfl
+
 
 theorem last_pos' [NeZero n] : 0 < last n := n.pos_of_neZero
 
@@ -329,6 +351,7 @@ section Add
 ### addition, numerals, and coercion from Nat
 -/
 
+
 @[simp]
 theorem val_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
   rfl
@@ -336,6 +359,7 @@ theorem val_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
 -- Porting note: Delete this lemma after porting
 theorem val_one'' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % (n + 1) :=
   rfl
+
 
 instance nontrivial {n : ℕ} : Nontrivial (Fin (n + 2)) where
   exists_pair_ne := ⟨0, 1, (ne_iff_vne 0 1).mpr (by simp [val_one, val_zero])⟩
@@ -345,6 +369,7 @@ theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
   simp [← Nat.one_eq_succ_zero, Fin.nontrivial, not_nontrivial, Nat.succ_le_iff]
 -- Porting note: here and in the next lemma, had to use `← Nat.one_eq_succ_zero`.
 
+
 section Monoid
 
 -- Porting note (#10618): removing `simp`, `simp` can prove it with AddCommMonoid instance
@@ -353,7 +378,7 @@ protected theorem add_zero [NeZero n] (k : Fin n) : k + 0 = k := by
 
 -- Porting note (#10618): removing `simp`, `simp` can prove it with AddCommMonoid instance
 protected theorem zero_add [NeZero n] (k : Fin n) : 0 + k = k := by
-  simp [ext_iff, add_def, mod_eq_of_lt (is_lt k)]
+  simp [Fin.ext_iff, add_def, mod_eq_of_lt (is_lt k)]
 
 instance {a : ℕ} [NeZero n] : OfNat (Fin n) a where
   ofNat := Fin.ofNat' a n.pos_of_neZero
@@ -383,6 +408,7 @@ lemma natCast_def [NeZero n] (a : ℕ) : (a : Fin n) = ⟨a % n, mod_lt _ n.pos_
 
 end Monoid
 
+
 theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
     (↑(a + b) : ℕ) = if n ≤ a + b then a + b - n else a + b := by
   rw [Fin.val_add, Nat.add_mod_eq_ite, Nat.mod_eq_of_lt (show ↑a < n from a.2),
@@ -409,7 +435,7 @@ theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).
 /-- If `n` is non-zero, converting the value of a `Fin n` to `Fin n` results
 in the same value.  -/
 @[simp] theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a :=
-  ext <| val_cast_of_lt a.isLt
+  Fin.ext <| val_cast_of_lt a.isLt
 
 -- Porting note: this is syntactically the same as `val_cast_of_lt`
 
@@ -452,6 +478,7 @@ lemma natCast_strictMono (hbn : b ≤ n) (hab : a < b) : (a : Fin (n + 1)) < b :
 
 end OfNatCoe
 
+
 @[simp]
 theorem one_eq_zero_iff [NeZero n] : (1 : Fin n) = 0 ↔ n = 1 := by
   obtain _ | _ | n := n <;> simp [Fin.ext_iff]
@@ -467,7 +494,8 @@ section Succ
 ### succ and casts into larger Fin types
 -/
 
-lemma succ_injective (n : ℕ) : Injective (@Fin.succ n) := fun a b ↦ by simp [ext_iff]
+
+lemma succ_injective (n : ℕ) : Injective (@Fin.succ n) := fun a b ↦ by simp [Fin.ext_iff]
 
 /-- `Fin.succ` as an `Embedding` -/
 def succEmb (n : ℕ) : Fin n ↪ Fin (n + 1) where
@@ -477,12 +505,14 @@ def succEmb (n : ℕ) : Fin n ↪ Fin (n + 1) where
 @[simp]
 theorem val_succEmb : ⇑(succEmb n) = Fin.succ := rfl
 
+
 @[simp]
 theorem exists_succ_eq {x : Fin (n + 1)} : (∃ y, Fin.succ y = x) ↔ x ≠ 0 :=
   ⟨fun ⟨_, hy⟩ => hy ▸ succ_ne_zero _, x.cases (fun h => h.irrefl.elim) (fun _ _ => ⟨_, rfl⟩)⟩
 
 theorem exists_succ_eq_of_ne_zero {x : Fin (n + 1)} (h : x ≠ 0) :
     ∃ y, Fin.succ y = x := exists_succ_eq.mpr h
+
 
 @[simp]
 theorem succ_zero_eq_one' [NeZero n] : Fin.succ (0 : Fin n) = 1 := by
@@ -492,6 +522,7 @@ theorem succ_zero_eq_one' [NeZero n] : Fin.succ (0 : Fin n) = 1 := by
 
 theorem one_pos' [NeZero n] : (0 : Fin (n + 1)) < 1 := succ_zero_eq_one' (n := n) ▸ succ_pos _
 theorem zero_ne_one' [NeZero n] : (0 : Fin (n + 1)) ≠ 1 := Fin.ne_of_lt one_pos'
+
 
 /--
 The `Fin.succ_one_eq_two` in `Lean` only applies in `Fin (n+2)`.
@@ -506,6 +537,7 @@ theorem succ_one_eq_two' [NeZero n] : Fin.succ (1 : Fin (n + 1)) = 2 := by
 -- Version of `succ_one_eq_two` to be used by `dsimp`.
 -- Note the `'` swapped around due to a move to std4.
 
+
 /--
 The `Fin.le_zero_iff` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
@@ -513,6 +545,7 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 @[simp]
 theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
   ⟨fun h => Fin.ext <| by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact Nat.le_refl _⟩
+
 
 -- Move to Batteries?
 @[simp] theorem cast_refl {n : Nat} (h : n = n) :
@@ -540,6 +573,7 @@ def castLEEmb (h : n ≤ m) : Fin n ↪ Fin m where
   inj' := castLE_injective _
 
 @[simp, norm_cast] lemma coe_castLEEmb {m n} (hmn : m ≤ n) : castLEEmb hmn = castLE hmn := rfl
+
 
 /- The next proof can be golfed a lot using `Fintype.card`.
 It is written this way to define `ENat.card` and `Nat.card` without a `Fintype` dependency
@@ -576,13 +610,14 @@ lemma equiv_iff_eq : Nonempty (Fin m ≃ Fin n) ↔ m = n :=
 
 @[simp]
 theorem range_castLE {n k : ℕ} (h : n ≤ k) : Set.range (castLE h) = { i : Fin k | (i : ℕ) < n } :=
-  Set.ext fun x => ⟨fun ⟨y, hy⟩ => hy ▸ y.2, fun hx => ⟨⟨x, hx⟩, Fin.ext rfl⟩⟩
+  Set.ext fun x => ⟨fun ⟨y, hy⟩ => hy ▸ y.2, fun hx => ⟨⟨x, hx⟩, rfl⟩⟩
 
 @[simp]
 theorem coe_of_injective_castLE_symm {n k : ℕ} (h : n ≤ k) (i : Fin k) (hi) :
     ((Equiv.ofInjective _ (castLE_injective h)).symm ⟨i, hi⟩ : ℕ) = i := by
   rw [← coe_castLE h]
   exact congr_arg Fin.val (Equiv.apply_ofInjective_symm _ _)
+
 
 theorem leftInverse_cast (eq : n = m) : LeftInverse (cast eq.symm) (cast eq) :=
   fun _ => rfl
@@ -617,9 +652,14 @@ lemma _root_.finCongr_symm_apply_coe (h : m = n) (k : Fin n) : ((finCongr h).sym
 a generic theorem about `cast`. -/
 lemma _root_.finCongr_eq_equivCast (h : n = m) : finCongr h = .cast (h ▸ rfl) := by subst h; simp
 
+
 @[simp]
 theorem cast_zero {n' : ℕ} [NeZero n] {h : n = n'} : cast h (0 : Fin n) =
     by { haveI : NeZero n' := by {rw [← h]; infer_instance}; exact 0} := rfl
+
+
+
+
 
 /-- While in many cases `Fin.cast` is better than `Equiv.cast`/`cast`, sometimes we want to apply
 a generic theorem about `cast`. -/
@@ -633,11 +673,23 @@ See also `Fin.natAddEmb` and `Fin.addNatEmb`. -/
 @[simps! apply]
 def castAddEmb (m) : Fin n ↪ Fin (n + m) := castLEEmb (le_add_right n m)
 
+
+
+
+
+
+
+
+
+
 /-- `Fin.castSucc` as an `Embedding`, `castSuccEmb i` embeds `i : Fin n` in `Fin (n+1)`. -/
 @[simps! apply]
 def castSuccEmb : Fin n ↪ Fin (n + 1) := castAddEmb _
 
 @[simp, norm_cast] lemma coe_castSuccEmb : (castSuccEmb : Fin n → Fin (n + 1)) = Fin.castSucc := rfl
+
+
+
 
 @[simp]
 theorem castSucc_le_castSucc_iff {a b : Fin n} : castSucc a ≤ castSucc b ↔ a ≤ b := Iff.rfl
@@ -664,6 +716,7 @@ theorem succ_le_or_le_castSucc (p : Fin (n + 1)) (i : Fin n) : succ i ≤ p ∨ 
 theorem exists_castSucc_eq_of_ne_last {x : Fin (n + 1)} (h : x ≠ (last _)) :
     ∃ y, Fin.castSucc y = x := exists_castSucc_eq.mpr h
 
+
 theorem forall_fin_succ' {P : Fin (n + 1) → Prop} :
     (∀ i, P i) ↔ (∀ i : Fin n, P i.castSucc) ∧ P (.last _) :=
   ⟨fun H => ⟨fun _ => H _, H _⟩, fun ⟨H0, H1⟩ i => Fin.lastCases H1 H0 i⟩
@@ -682,8 +735,7 @@ The `Fin.castSucc_zero` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 @[simp]
-theorem castSucc_zero' [NeZero n] : castSucc (0 : Fin n) = 0 :=
-  ext rfl
+theorem castSucc_zero' [NeZero n] : castSucc (0 : Fin n) = 0 := rfl
 
 /-- `castSucc i` is positive when `i` is positive.
 
@@ -722,6 +774,7 @@ theorem succ_ne_last_of_lt {p i : Fin n} (h : i < p) : succ i ≠ last n := by
   · rw [succ_ne_last_iff, Ne, Fin.ext_iff]
     exact ((le_last _).trans_lt' h).ne
 
+
 @[norm_cast, simp]
 theorem coe_eq_castSucc {a : Fin n} : (a : Fin (n + 1)) = castSucc a := by
   ext
@@ -729,6 +782,8 @@ theorem coe_eq_castSucc {a : Fin n} : (a : Fin (n + 1)) = castSucc a := by
 
 theorem coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin <| n + 1) < k ↔ j < k := by
   simp only [coe_eq_castSucc, castSucc_lt_castSucc_iff]
+
+
 
 @[simp]
 theorem range_castSucc {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) =
@@ -740,17 +795,33 @@ theorem coe_of_injective_castSucc_symm {n : ℕ} (i : Fin n.succ) (hi) :
   rw [← coe_castSucc]
   exact congr_arg val (Equiv.apply_ofInjective_symm _ _)
 
+
 /-- `Fin.addNat` as an `Embedding`, `addNatEmb m i` adds `m` to `i`, generalizes `Fin.succ`. -/
 @[simps! apply]
 def addNatEmb (m) : Fin n ↪ Fin (n + m) where
   toFun := (addNat · m)
   inj' a b := by simp [Fin.ext_iff]
 
+
+
+
+
+
 /-- `Fin.natAdd` as an `Embedding`, `natAddEmb n i` adds `n` to `i` "on the left". -/
 @[simps! apply]
 def natAddEmb (n) {m} : Fin m ↪ Fin (n + m) where
   toFun := natAdd n
   inj' a b := by simp [Fin.ext_iff]
+
+
+
+
+
+
+
+
+
+
 
 end Succ
 
@@ -759,6 +830,7 @@ section Pred
 /-!
 ### pred
 -/
+
 
 
 
@@ -1398,6 +1470,9 @@ section Rec
 ### recursion and induction principles
 -/
 
+
+
+
 end Rec
 
 theorem liftFun_iff_succ {α : Type*} (r : α → α → Prop) [IsTrans α r] {f : Fin (n + 1) → α} :
@@ -1427,6 +1502,7 @@ theorem neg_def (a : Fin n) : -a = ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩ := rfl
 protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
   rfl
 
+
 theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
 
 instance uniqueFinOne : Unique (Fin 1) where
@@ -1446,7 +1522,7 @@ theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
   constructor
 
 theorem last_sub (i : Fin (n + 1)) : last n - i = Fin.rev i :=
-  ext <| by rw [coe_sub_iff_le.2 i.le_last, val_last, val_rev, Nat.succ_sub_succ_eq_sub]
+  Fin.ext <| by rw [coe_sub_iff_le.2 i.le_last, val_last, val_rev, Nat.succ_sub_succ_eq_sub]
 
 theorem add_one_le_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) : a + 1 ≤ b := by
   cases' a with a ha
@@ -1496,20 +1572,22 @@ section Mul
 ### mul
 -/
 
+
 protected theorem mul_one' [NeZero n] (k : Fin n) : k * 1 = k := by
   cases' n with n
   · simp [eq_iff_true_of_subsingleton]
   cases n
   · simp [fin_one_eq_zero]
-  simp [ext_iff, mul_def, mod_eq_of_lt (is_lt k)]
+  simp [Fin.ext_iff, mul_def, mod_eq_of_lt (is_lt k)]
+
 
 protected theorem one_mul' [NeZero n] (k : Fin n) : (1 : Fin n) * k = k := by
   rw [Fin.mul_comm, Fin.mul_one']
 
-protected theorem mul_zero' [NeZero n] (k : Fin n) : k * 0 = 0 := by simp [ext_iff, mul_def]
+protected theorem mul_zero' [NeZero n] (k : Fin n) : k * 0 = 0 := by simp [Fin.ext_iff, mul_def]
 
 protected theorem zero_mul' [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
-  simp [ext_iff, mul_def]
+  simp [Fin.ext_iff, mul_def]
 
 end Mul
 

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Devon Tuma
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.MeasureTheory.Measure.Dirac
 
+
 /-!
 # Probability mass functions
 
@@ -51,9 +52,6 @@ instance instFunLike : FunLike (PMF α) α ℝ≥0∞ where
 @[ext]
 protected theorem ext {p q : PMF α} (h : ∀ x, p x = q x) : p = q :=
   DFunLike.ext p q h
-
-theorem ext_iff {p q : PMF α} : p = q ↔ ∀ x, p x = q x :=
-  DFunLike.ext_iff
 
 theorem hasSum_coe_one (p : PMF α) : HasSum p 1 :=
   p.2

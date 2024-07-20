@@ -7,6 +7,7 @@ import Mathlib.Topology.Homotopy.Equiv
 import Mathlib.CategoryTheory.Equivalence
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 
+
 /-!
 # Homotopic maps induce naturally isomorphic functors
 
@@ -74,7 +75,7 @@ section Casts
 
 /-- Abbreviation for `eqToHom` that accepts points in a topological space -/
 abbrev hcast {X : TopCat} {x₀ x₁ : X} (hx : x₀ = x₁) : fromTop x₀ ⟶ fromTop x₁ :=
-  eqToHom <| FundamentalGroupoid.ext _ _ hx
+  eqToHom <| FundamentalGroupoid.ext hx
 
 @[simp]
 theorem hcast_def {X : TopCat} {x₀ x₁ : X} (hx₀ : x₀ = x₁) :

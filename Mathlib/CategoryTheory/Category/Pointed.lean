@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Adjunction.Basic
 
+
 /-!
 # The category of pointed types
 
@@ -99,8 +100,8 @@ between them. -/
 def Iso.mk {α β : Pointed} (e : α ≃ β) (he : e α.point = β.point) : α ≅ β where
   hom := ⟨e, he⟩
   inv := ⟨e.symm, e.symm_apply_eq.2 he.symm⟩
-  hom_inv_id := Pointed.Hom.ext _ _ e.symm_comp_self
-  inv_hom_id := Pointed.Hom.ext _ _ e.self_comp_symm
+  hom_inv_id := Pointed.Hom.ext e.symm_comp_self
+  inv_hom_id := Pointed.Hom.ext e.self_comp_symm
 
 end Pointed
 
@@ -109,8 +110,8 @@ end Pointed
 def typeToPointed : Type u ⥤ Pointed.{u} where
   obj X := ⟨Option X, none⟩
   map f := ⟨Option.map f, rfl⟩
-  map_id _ := Pointed.Hom.ext _ _ Option.map_id
-  map_comp _ _ := Pointed.Hom.ext _ _ (Option.map_comp_map _ _).symm
+  map_id _ := Pointed.Hom.ext Option.map_id
+  map_comp _ _ := Pointed.Hom.ext (Option.map_comp_map _ _).symm
 
 /-- `typeToPointed` is the free functor. -/
 def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=

@@ -10,6 +10,7 @@ import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.Data.Set.Lattice
 
+
 /-!
 # Sylow theorems
 
@@ -69,9 +70,6 @@ instance : CoeOut (Sylow p G) (Subgroup G) :=
 
 @[ext]
 theorem ext {P Q : Sylow p G} (h : (P : Subgroup G) = Q) : P = Q := by cases P; cases Q; congr
-
-theorem ext_iff {P Q : Sylow p G} : P = Q ↔ (P : Subgroup G) = Q :=
-  ⟨congr_arg _, ext⟩
 
 instance : SetLike (Sylow p G) G where
   coe := (↑)
@@ -348,6 +346,7 @@ noncomputable def Sylow.equivQuotientNormalizer [Fact p.Prime] [Finite (Sylow p 
     _ ≃ orbit G P := Equiv.setCongr P.orbit_eq_top.symm
     _ ≃ G ⧸ stabilizer G P := orbitEquivQuotientStabilizer G P
     _ ≃ G ⧸ (P : Subgroup G).normalizer := by rw [P.stabilizer_eq_normalizer]
+
 
 instance [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
     Finite (G ⧸ (P : Subgroup G).normalizer) :=

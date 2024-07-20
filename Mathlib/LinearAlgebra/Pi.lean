@@ -11,6 +11,7 @@ import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.Logic.Equiv.Fin
 
+
 /-!
 # Pi types of modules
 
@@ -171,9 +172,6 @@ note [partially-applied ext lemmas]. -/
 theorem pi_ext' (h : ∀ i, f.comp (single i) = g.comp (single i)) : f = g := by
   refine pi_ext fun i x => ?_
   convert LinearMap.congr_fun (h i) x
-
-theorem pi_ext'_iff : f = g ↔ ∀ i, f.comp (single i) = g.comp (single i) :=
-  ⟨fun h _ => h ▸ rfl, pi_ext'⟩
 
 end Ext
 

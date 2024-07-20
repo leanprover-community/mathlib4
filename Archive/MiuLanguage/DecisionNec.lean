@@ -127,7 +127,7 @@ theorem goodm_of_rule1 (xs : Miustr) (h₁ : Derivable (xs ++ ↑[I])) (h₂ : G
   · change ¬M ∈ tail (xs ++ ↑([I] ++ [U]))
     rw [← append_assoc, tail_append_singleton_of_ne_nil]
     · simp_rw [mem_append, mem_singleton, or_false]; exact nmtail
-    · exact append_ne_nil_of_ne_nil_left _ _ this
+    · exact append_ne_nil_of_ne_nil_left this _
 
 theorem goodm_of_rule2 (xs : Miustr) (_ : Derivable (M :: xs)) (h₂ : Goodm (M :: xs)) :
     Goodm (↑(M :: xs) ++ xs) := by

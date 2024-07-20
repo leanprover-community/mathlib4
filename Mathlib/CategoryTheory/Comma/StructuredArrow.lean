@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.Logic.Small.Set
 
+
 /-!
 # The category of "structured arrows"
 
@@ -168,7 +169,7 @@ picks up on it. Either way simp solves these. -/
 attribute [-simp, nolint simpNF] isoMk_hom_left_down_down isoMk_inv_left_down_down
 
 theorem ext {A B : StructuredArrow S T} (f g : A ⟶ B) : f.right = g.right → f = g :=
-  CommaMorphism.ext _ _ (Subsingleton.elim _ _)
+  CommaMorphism.ext (Subsingleton.elim _ _)
 
 theorem ext_iff {A B : StructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.right = g.right :=
   ⟨fun h => h ▸ rfl, ext f g⟩
@@ -513,7 +514,7 @@ picks up on it. Either way simp solves these. -/
 attribute [-simp, nolint simpNF] isoMk_hom_right_down_down isoMk_inv_right_down_down
 
 theorem ext {A B : CostructuredArrow S T} (f g : A ⟶ B) (h : f.left = g.left) : f = g :=
-  CommaMorphism.ext _ _ h (Subsingleton.elim _ _)
+  CommaMorphism.ext h (Subsingleton.elim _ _)
 
 theorem ext_iff {A B : CostructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.left = g.left :=
   ⟨fun h => h ▸ rfl, ext f g⟩

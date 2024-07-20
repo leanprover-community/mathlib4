@@ -10,6 +10,7 @@ import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Util.AssertExists
 
+
 /-!
 # (Semi)ring equivs
 
@@ -176,9 +177,6 @@ protected theorem congr_arg {f : R ≃+* S} {x x' : R} : x = x' → f x = f x' :
 
 protected theorem congr_fun {f g : R ≃+* S} (h : f = g) (x : R) : f x = g x :=
   DFunLike.congr_fun h x
-
-protected theorem ext_iff {f g : R ≃+* S} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 @[simp]
 theorem toAddEquiv_eq_coe (f : R ≃+* S) : f.toAddEquiv = ↑f :=

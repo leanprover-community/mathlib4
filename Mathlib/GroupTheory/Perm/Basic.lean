@@ -9,6 +9,7 @@ import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Tactic.Common
 
+
 /-!
 # The group of permutations (self-equivalences) of a type `α`
 
@@ -281,8 +282,8 @@ def extendDomainHom : Perm α →* Perm β where
 
 theorem extendDomainHom_injective : Function.Injective (extendDomainHom f) :=
   (injective_iff_map_eq_one (extendDomainHom f)).mpr fun e he =>
-    ext fun x =>
-      f.injective (Subtype.ext ((extendDomain_apply_image e f x).symm.trans (ext_iff.mp he (f x))))
+    ext fun x => f.injective <|
+      Subtype.ext ((extendDomain_apply_image e f x).symm.trans (Perm.ext_iff.mp he (f x)))
 
 @[simp]
 theorem extendDomain_eq_one_iff {e : Perm α} {f : α ≃ Subtype p} : e.extendDomain f = 1 ↔ e = 1 :=

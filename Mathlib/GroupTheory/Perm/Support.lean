@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Perm.Basic
 
+
 /-!
 # support of a permutation
 
@@ -164,7 +165,8 @@ theorem Disjoint.mul_apply_eq_iff {σ τ : Perm α} (hστ : Disjoint σ τ) {a 
   · exact ⟨(congr_arg σ hτ).symm.trans h, hτ⟩
 
 theorem Disjoint.mul_eq_one_iff {σ τ : Perm α} (hστ : Disjoint σ τ) :
-    σ * τ = 1 ↔ σ = 1 ∧ τ = 1 := by simp_rw [ext_iff, one_apply, hστ.mul_apply_eq_iff, forall_and]
+    σ * τ = 1 ↔ σ = 1 ∧ τ = 1 := by
+  simp_rw [Perm.ext_iff, one_apply, hστ.mul_apply_eq_iff, forall_and]
 
 theorem Disjoint.zpow_disjoint_zpow {σ τ : Perm α} (hστ : Disjoint σ τ) (m n : ℤ) :
     Disjoint (σ ^ m) (τ ^ n) := fun x =>

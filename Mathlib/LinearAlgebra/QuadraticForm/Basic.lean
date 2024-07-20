@@ -10,6 +10,7 @@ import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.Data.Finset.Sym
 import Mathlib.LinearAlgebra.BilinearMap
 
+
 /-!
 # Quadratic maps
 
@@ -187,9 +188,6 @@ theorem ext (H : ∀ x : M, Q x = Q' x) : Q = Q' :=
 
 theorem congr_fun (h : Q = Q') (x : M) : Q x = Q' x :=
   DFunLike.congr_fun h _
-
-theorem ext_iff : Q = Q' ↔ ∀ x, Q x = Q' x :=
-  DFunLike.ext_iff
 
 /-- Copy of a `QuadraticMap` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
@@ -1127,6 +1125,7 @@ theorem toMatrix'_comp (Q : QuadraticMap R (m → R) R) (f : (n → R) →ₗ[R]
     (Q.comp f).toMatrix' = (LinearMap.toMatrix' f)ᵀ * Q.toMatrix' * (LinearMap.toMatrix' f) := by
   ext
   simp only [QuadraticMap.associated_comp, LinearMap.toMatrix₂'_compl₁₂, toMatrix']
+
 
 section Discriminant
 

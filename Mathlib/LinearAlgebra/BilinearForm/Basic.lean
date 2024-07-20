@@ -6,6 +6,7 @@ Authors: Andreas Swerdlow, Kexing Ying
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.LinearAlgebra.BilinearMap
 
+
 /-!
 # Bilinear form
 
@@ -100,8 +101,6 @@ theorem coe_injective : Function.Injective ((fun B x y => B x y) : BilinForm R M
 theorem ext (H : ∀ x y : M, B x y = D x y) : B = D := ext₂ H
 
 theorem congr_fun (h : B = D) (x y : M) : B x y = D x y := congr_fun₂ h _ _
-
-theorem ext_iff : B = D ↔ ∀ x y, B x y = D x y := ext_iff₂
 
 @[deprecated (since := "2024-04-14")]
 theorem coe_zero : ⇑(0 : BilinForm R M) = 0 :=

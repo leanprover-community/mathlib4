@@ -11,6 +11,7 @@ import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Tactic.ArithMult
 
+
 /-!
 # Arithmetic Functions and Dirichlet Convolution
 
@@ -117,9 +118,6 @@ theorem zero_apply {x : ℕ} : (0 : ArithmeticFunction R) x = 0 :=
 @[ext]
 theorem ext ⦃f g : ArithmeticFunction R⦄ (h : ∀ x, f x = g x) : f = g :=
   ZeroHom.ext h
-
-theorem ext_iff {f g : ArithmeticFunction R} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 section One
 

@@ -7,6 +7,7 @@ import Mathlib.Logic.Function.Defs
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Inhabit
 
+
 /-!
 # Extra facts about `Prod`
 
@@ -15,6 +16,7 @@ It also defines better delaborators for product projections.
 -/
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
+
 
 @[deprecated (since := "2024-05-08")] alias Prod_map := Prod.map_apply
 
@@ -54,6 +56,7 @@ theorem map_mk (f : α → γ) (g : β → δ) (a : α) (b : β) : map f g (a, b
 --  See `map_apply`, `map_fst`, and `map_snd` for slightly weaker lemmas in the `simp` set.
 theorem map_apply' (f : α → γ) (g : β → δ) (p : α × β) : map f g p = (f p.1, g p.2) :=
   rfl
+
 
 #adaptation_note
 /--
@@ -98,11 +101,9 @@ lemma mk_inj_left {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b
 
 lemma mk_inj_right {a₁ a₂ : α} {b : β} : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).eq_iff
 
-theorem ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 := by
-  rw [mk.inj_iff]
 
 theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β ↦ (f p.1, g p.2) :=
-  funext fun p ↦ ext (map_fst f g p) (map_snd f g p)
+  funext fun p ↦ Prod.ext (map_fst f g p) (map_snd f g p)
 
 theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
   rfl
@@ -124,10 +125,10 @@ theorem snd_surjective [h : Nonempty α] : Function.Surjective (@snd α β) :=
   fun y ↦ h.elim fun x ↦ ⟨⟨x, y⟩, rfl⟩
 
 theorem fst_injective [Subsingleton β] : Function.Injective (@fst α β) :=
-  fun _ _ h ↦ ext h (Subsingleton.elim _ _)
+  fun _ _ h ↦ Prod.ext h (Subsingleton.elim _ _)
 
 theorem snd_injective [Subsingleton α] : Function.Injective (@snd α β) :=
-  fun _ _ h ↦ ext (Subsingleton.elim _ _) h
+  fun _ _ h ↦ Prod.ext (Subsingleton.elim _ _) h
 
 /-- Swap the factors of a product. `swap (a, b) = (b, a)` -/
 def swap : α × β → β × α := fun p ↦ (p.2, p.1)
@@ -188,6 +189,7 @@ theorem snd_eq_iff : ∀ {p : α × β} {x : β}, p.2 = x ↔ p = (p.1, x)
   | ⟨a, b⟩, x => by simp
 
 variable {r : α → α → Prop} {s : β → β → Prop} {x y : α × β}
+
 
 lemma lex_iff : Prod.Lex r s x y ↔ r x.1 y.1 ∨ x.1 = y.1 ∧ s x.2 y.2 := lex_def _ _
 
@@ -263,7 +265,7 @@ namespace Function
 variable {f : α → γ} {g : β → δ} {f₁ : α → β} {g₁ : γ → δ} {f₂ : β → α} {g₂ : δ → γ}
 
 theorem Injective.prodMap (hf : Injective f) (hg : Injective g) : Injective (map f g) :=
-  fun _ _ h ↦ ext (hf (ext_iff.1 h).1) (hg <| (ext_iff.1 h).2)
+  fun _ _ h ↦ Prod.ext (hf <| congr_arg Prod.fst h) (hg <| congr_arg Prod.snd h)
 
 theorem Surjective.prodMap (hf : Surjective f) (hg : Surjective g) : Surjective (map f g) :=
   fun p ↦

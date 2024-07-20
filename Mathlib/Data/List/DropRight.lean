@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Data.List.Infix
+
 /-!
 
 # Dropping or taking from lists on the right
@@ -106,8 +107,8 @@ theorem rdropWhile_singleton (x : α) : rdropWhile p [x] = if p x then [] else [
 
 theorem rdropWhile_last_not (hl : l.rdropWhile p ≠ []) : ¬p ((rdropWhile p l).getLast hl) := by
   simp_rw [rdropWhile]
-  rw [getLast_reverse]
-  exact dropWhile_nthLe_zero_not _ _ _
+  rw [getLast_reverse, head_dropWhile_not p]
+  simp
 
 theorem rdropWhile_prefix : l.rdropWhile p <+: l := by
   rw [← reverse_suffix, rdropWhile, reverse_reverse]

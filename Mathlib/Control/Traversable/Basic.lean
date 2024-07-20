@@ -7,6 +7,7 @@ import Mathlib.Data.Option.Defs
 import Mathlib.Control.Functor
 import Batteries.Data.List.Basic
 
+
 /-!
 # Traversable type class
 
@@ -116,10 +117,6 @@ theorem ext ⦃η η' : ApplicativeTransformation F G⦄ (h : ∀ (α : Type u) 
   apply coe_inj
   ext1 α
   exact funext (h α)
-
-theorem ext_iff {η η' : ApplicativeTransformation F G} :
-    η = η' ↔ ∀ (α : Type u) (x : F α), η x = η' x :=
-  ⟨fun h _ _ => h ▸ rfl, fun h => ext h⟩
 
 section Preserves
 

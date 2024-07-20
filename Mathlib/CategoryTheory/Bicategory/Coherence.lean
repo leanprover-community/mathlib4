@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.Bicategory.Free
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 
+
 /-!
 # The coherence theorem for bicategories
 
@@ -186,9 +187,9 @@ def normalize (B : Type u) [Quiver.{v + 1} B] :
     Pseudofunctor (FreeBicategory B) (LocallyDiscrete (Paths B)) where
   obj a := ⟨a⟩
   map f := ⟨normalizeAux nil f⟩
-  map₂ η := eqToHom <| Discrete.ext _ _ <| normalizeAux_congr nil η
-  mapId a := eqToIso <| Discrete.ext _ _ rfl
-  mapComp f g := eqToIso <| Discrete.ext _ _ <| normalizeAux_nil_comp f g
+  map₂ η := eqToHom <| Discrete.ext <| normalizeAux_congr nil η
+  mapId a := eqToIso <| Discrete.ext rfl
+  mapComp f g := eqToIso <| Discrete.ext <| normalizeAux_nil_comp f g
 
 /-- Auxiliary definition for `normalizeEquiv`. -/
 def normalizeUnitIso (a b : FreeBicategory B) :

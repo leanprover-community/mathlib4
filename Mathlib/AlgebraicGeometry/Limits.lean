@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.AlgebraicGeometry.AffineScheme
 
+
 /-!
 # (Co)Limits of Schemes
 
@@ -58,8 +59,8 @@ def Scheme.emptyTo (X : Scheme.{u}) : ∅ ⟶ X :=
 @[ext]
 theorem Scheme.empty_ext {X : Scheme.{u}} (f g : ∅ ⟶ X) : f = g :=
   -- Porting note (#11041): `ext` regression
-  LocallyRingedSpace.Hom.ext _ _ <| PresheafedSpace.ext _ _ (by ext a; exact PEmpty.elim a) <|
-    NatTrans.ext _ _ <| funext fun a => by aesop_cat
+  LocallyRingedSpace.Hom.ext <| PresheafedSpace.ext _ _ (by ext a; exact PEmpty.elim a) <|
+    NatTrans.ext <| funext fun a => by aesop_cat
 
 theorem Scheme.eq_emptyTo {X : Scheme.{u}} (f : ∅ ⟶ X) : f = Scheme.emptyTo X :=
   Scheme.empty_ext f (Scheme.emptyTo X)

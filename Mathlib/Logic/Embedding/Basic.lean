@@ -7,6 +7,7 @@ import Mathlib.Data.Option.Basic
 import Mathlib.Data.Prod.PProd
 import Mathlib.Logic.Equiv.Basic
 
+
 /-!
 # Injective functions
 -/
@@ -104,10 +105,6 @@ theorem ext {α β} {f g : Embedding α β} (h : ∀ x, f x = g x) : f = g :=
 instance {α β : Sort*} [IsEmpty α] : Unique (α ↪ β) where
   default := ⟨isEmptyElim, Function.injective_of_subsingleton _⟩
   uniq := by intro; ext v; exact isEmptyElim v
-
--- Porting note : in Lean 3 `DFunLike.ext_iff.symm` works
-theorem ext_iff {α β} {f g : Embedding α β} : (∀ x, f x = g x) ↔ f = g :=
-  Iff.symm (DFunLike.ext_iff)
 
 @[simp]
 theorem toFun_eq_coe {α β} (f : α ↪ β) : toFun f = f :=

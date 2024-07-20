@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Topology.Sets.Opens
 
+
 /-!
 # Partial homeomorphisms
 
@@ -288,12 +289,6 @@ called `EqOnSource`. -/
 protected theorem ext (e' : PartialHomeomorph X Y) (h : ∀ x, e x = e' x)
     (hinv : ∀ x, e.symm x = e'.symm x) (hs : e.source = e'.source) : e = e' :=
   toPartialEquiv_injective (PartialEquiv.ext h hinv hs)
-
-protected theorem ext_iff {e e' : PartialHomeomorph X Y} :
-    e = e' ↔ (∀ x, e x = e' x) ∧ (∀ x, e.symm x = e'.symm x) ∧ e.source = e'.source :=
-  ⟨by
-    rintro rfl
-    exact ⟨fun x => rfl, fun x => rfl, rfl⟩, fun h => e.ext e' h.1 h.2.1 h.2.2⟩
 
 @[simp, mfld_simps]
 theorem symm_toPartialEquiv : e.symm.toPartialEquiv = e.toPartialEquiv.symm :=
@@ -1115,6 +1110,7 @@ The converse is also true; see `OpenEmbedding.toPartialHomeomorph`. -/
 theorem to_openEmbedding (h : e.source = Set.univ) : OpenEmbedding e :=
   e.openEmbedding_restrict.comp
     ((Homeomorph.setCongr h).trans <| Homeomorph.Set.univ X).symm.openEmbedding
+
 
 end PartialHomeomorph
 

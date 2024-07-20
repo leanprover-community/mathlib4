@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.CategoryTheory.Category.Pointed
 
+
 /-!
 # The category of bipointed types
 
@@ -147,15 +148,15 @@ def pointedToBipointed : Pointed.{u} ⥤ Bipointed where
 def pointedToBipointedFst : Pointed.{u} ⥤ Bipointed where
   obj X := ⟨Option X, X.point, none⟩
   map f := ⟨Option.map f.toFun, congr_arg _ f.map_point, rfl⟩
-  map_id _ := Bipointed.Hom.ext _ _ Option.map_id
-  map_comp f g := Bipointed.Hom.ext _ _ (Option.map_comp_map f.1 g.1).symm
+  map_id _ := Bipointed.Hom.ext Option.map_id
+  map_comp f g := Bipointed.Hom.ext (Option.map_comp_map f.1 g.1).symm
 
 /-- The functor from `Pointed` to `Bipointed` which adds a first point. -/
 def pointedToBipointedSnd : Pointed.{u} ⥤ Bipointed where
   obj X := ⟨Option X, none, X.point⟩
   map f := ⟨Option.map f.toFun, rfl, congr_arg _ f.map_point⟩
-  map_id _ := Bipointed.Hom.ext _ _ Option.map_id
-  map_comp f g := Bipointed.Hom.ext _ _ (Option.map_comp_map f.1 g.1).symm
+  map_id _ := Bipointed.Hom.ext Option.map_id
+  map_comp f g := Bipointed.Hom.ext (Option.map_comp_map f.1 g.1).symm
 
 @[simp]
 theorem pointedToBipointedFst_comp_swap :

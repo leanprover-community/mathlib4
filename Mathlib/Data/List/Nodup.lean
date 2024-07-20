@@ -7,6 +7,7 @@ import Mathlib.Data.List.Forall2
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Init.Data.Fin.Basic
 
+
 /-!
 # Lists with no duplicates
 
@@ -23,17 +24,6 @@ variable {α : Type u} {β : Type v} {l l₁ l₂ : List α} {r : α → α → 
 
 namespace List
 
-@[simp]
-theorem forall_mem_ne {a : α} {l : List α} : (∀ a' : α, a' ∈ l → ¬a = a') ↔ a ∉ l :=
-  ⟨fun h m => h _ m rfl, fun h _ m e => h (e.symm ▸ m)⟩
-
-@[simp]
-theorem nodup_nil : @Nodup α [] :=
-  Pairwise.nil
-
-@[simp]
-theorem nodup_cons {a : α} {l : List α} : Nodup (a :: l) ↔ a ∉ l ∧ Nodup l := by
-  simp only [Nodup, pairwise_cons, forall_mem_ne]
 
 protected theorem Pairwise.nodup {l : List α} {r : α → α → Prop} [IsIrrefl α r] (h : Pairwise r l) :
     Nodup l :=
@@ -60,8 +50,6 @@ theorem Nodup.not_mem (h : (a :: l).Nodup) : a ∉ l :=
 theorem not_nodup_cons_of_mem : a ∈ l → ¬Nodup (a :: l) :=
   imp_not_comm.1 Nodup.not_mem
 
-protected theorem Nodup.sublist : l₁ <+ l₂ → Nodup l₂ → Nodup l₁ :=
-  Pairwise.sublist
 
 theorem not_nodup_pair (a : α) : ¬Nodup [a, a] :=
   not_nodup_cons_of_mem <| mem_singleton_self _
@@ -160,6 +148,7 @@ theorem get_indexOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.leng
     indexOf (get l i) l = i := by
   simp [indexOf_getElem, H]
 
+
 theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|
     forall_congr' fun a =>
@@ -171,13 +160,6 @@ theorem nodup_iff_count_eq_one [DecidableEq α] : Nodup l ↔ ∀ a ∈ l, count
     ⟨fun H h => H.antisymm (count_pos_iff_mem.mpr h),
      fun H => if h : _ then (H h).le else (count_eq_zero.mpr h).trans_le (Nat.zero_le 1)⟩
 
-theorem nodup_replicate (a : α) : ∀ {n : ℕ}, Nodup (replicate n a) ↔ n ≤ 1
-  | 0 => by simp [Nat.zero_le]
-  | 1 => by simp
-  | n + 2 =>
-    iff_of_false
-      (fun H => nodup_iff_sublist.1 H a ((replicate_sublist_replicate _).2 (Nat.le_add_left 2 n)))
-      (not_le_of_lt <| Nat.le_add_left 2 n)
 
 @[simp]
 theorem count_eq_one_of_mem [DecidableEq α] {a : α} {l : List α} (d : Nodup l) (h : a ∈ l) :
@@ -265,20 +247,6 @@ theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := b
 theorem nodup_reverse {l : List α} : Nodup (reverse l) ↔ Nodup l :=
   pairwise_reverse.trans <| by simp only [Nodup, Ne, eq_comm]
 
-theorem Nodup.erase_eq_filter [DecidableEq α] {l} (d : Nodup l) (a : α) :
-    l.erase a = l.filter (· ≠ a) := by
-  induction' d with b l m _ IH; · rfl
-  by_cases h : b = a
-  · subst h
-    rw [erase_cons_head, filter_cons_of_neg _ (by simp)]
-    symm
-    rw [filter_eq_self]
-    simpa [@eq_comm α] using m
-  · rw [erase_cons_tail _ (not_beq_of_ne h), filter_cons_of_pos, IH]
-    simp [h]
-
-theorem Nodup.erase [DecidableEq α] (a : α) : Nodup l → Nodup (l.erase a) :=
-  Nodup.sublist <| erase_sublist _ _
 
 theorem Nodup.erase_getElem [DecidableEq α] {l : List α} (hl : l.Nodup)
     (i : Nat) (h : i < l.length) : l.erase l[i] = l.eraseIdx ↑i := by
@@ -303,11 +271,6 @@ theorem Nodup.erase_get [DecidableEq α] {l : List α} (hl : l.Nodup) (i : Fin l
 theorem Nodup.diff [DecidableEq α] : l₁.Nodup → (l₁.diff l₂).Nodup :=
   Nodup.sublist <| diff_sublist _ _
 
-theorem Nodup.mem_erase_iff [DecidableEq α] (d : Nodup l) : a ∈ l.erase b ↔ a ≠ b ∧ a ∈ l := by
-  rw [d.erase_eq_filter, mem_filter, and_comm, decide_eq_true_iff]
-
-theorem Nodup.not_mem_erase [DecidableEq α] (h : Nodup l) : a ∉ l.erase a := fun H =>
-  (h.mem_erase_iff.1 H).1 rfl
 
 theorem nodup_join {L : List (List α)} :
     Nodup (join L) ↔ (∀ l ∈ L, Nodup l) ∧ Pairwise Disjoint L := by
@@ -363,8 +326,8 @@ theorem Nodup.diff_eq_filter [DecidableEq α] :
   | l₁, [], _ => by simp
   | l₁, a :: l₂, hl₁ => by
     rw [diff_cons, (hl₁.erase _).diff_eq_filter, hl₁.erase_eq_filter, filter_filter]
-    simp only [decide_not, Bool.not_eq_true', decide_eq_false_iff_not, ne_eq, and_comm,
-      Bool.decide_and, find?, mem_cons, not_or]
+    simp only [decide_not, Bool.not_eq_true', decide_eq_false_iff_not, bne_iff_ne, ne_eq, and_comm,
+      Bool.decide_and, mem_cons, not_or]
 
 theorem Nodup.mem_diff_iff [DecidableEq α] (hl₁ : l₁.Nodup) : a ∈ l₁.diff l₂ ↔ a ∈ l₁ ∧ a ∉ l₂ := by
   rw [hl₁.diff_eq_filter, mem_filter, decide_eq_true_iff]

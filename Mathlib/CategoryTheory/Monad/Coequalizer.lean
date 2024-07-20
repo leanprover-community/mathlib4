@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
 import Mathlib.CategoryTheory.Monad.Algebra
 
+
 /-!
 # Special coequalizers associated to a monad
 
@@ -60,7 +61,7 @@ def FreeCoequalizer.π : (Monad.free T).obj X.A ⟶ X where
 theorem FreeCoequalizer.condition :
     FreeCoequalizer.topMap X ≫ FreeCoequalizer.π X =
       FreeCoequalizer.bottomMap X ≫ FreeCoequalizer.π X :=
-  Algebra.Hom.ext _ _ X.assoc.symm
+  Algebra.Hom.ext X.assoc.symm
 
 instance : IsReflexivePair (FreeCoequalizer.topMap X) (FreeCoequalizer.bottomMap X) := by
   apply IsReflexivePair.mk' _ _ _

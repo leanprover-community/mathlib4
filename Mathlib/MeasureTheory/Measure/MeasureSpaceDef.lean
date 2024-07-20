@@ -7,6 +7,7 @@ import Mathlib.MeasureTheory.OuterMeasure.Induced
 import Mathlib.MeasureTheory.OuterMeasure.AE
 import Mathlib.Order.Filter.CountableInter
 
+
 /-!
 # Measure spaces
 
@@ -128,9 +129,6 @@ theorem ofMeasurable_apply {m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞}
 theorem ext (h : ∀ s, MeasurableSet s → μ₁ s = μ₂ s) : μ₁ = μ₂ :=
   toOuterMeasure_injective <| by
   rw [← trimmed, OuterMeasure.trim_congr (h _), trimmed]
-
-theorem ext_iff : μ₁ = μ₂ ↔ ∀ s, MeasurableSet s → μ₁ s = μ₂ s :=
-  ⟨by rintro rfl s _hs; rfl, Measure.ext⟩
 
 theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
   ⟨by rintro rfl s; rfl, fun h ↦ Measure.ext (fun s _ ↦ h s)⟩

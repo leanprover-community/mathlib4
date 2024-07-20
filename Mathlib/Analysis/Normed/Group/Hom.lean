@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Analysis.Normed.Group.Int
 import Mathlib.Analysis.Normed.Group.Uniform
 
+
 /-!
 # Normed groups homomorphisms
 
@@ -103,9 +104,6 @@ theorem coe_inj_iff : f = g ↔ (f : V₁ → V₂) = g :=
 @[ext]
 theorem ext (H : ∀ x, f x = g x) : f = g :=
   coe_inj <| funext H
-
-theorem ext_iff : f = g ↔ ∀ x, f x = g x :=
-  ⟨by rintro rfl x; rfl, ext⟩
 
 variable (f g)
 

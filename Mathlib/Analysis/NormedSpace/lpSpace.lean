@@ -9,6 +9,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Data.Set.Image
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
+
 /-!
 # ℓp space
 
@@ -310,9 +311,6 @@ instance coeFun : CoeFun (lp E p) fun _ => ∀ i, E i :=
 @[ext]
 theorem ext {f g : lp E p} (h : (f : ∀ i, E i) = g) : f = g :=
   Subtype.ext h
-
-protected theorem ext_iff {f g : lp E p} : f = g ↔ (f : ∀ i, E i) = g :=
-  Subtype.ext_iff
 
 theorem eq_zero' [IsEmpty α] (f : lp E p) : f = 0 :=
   Subsingleton.elim f 0

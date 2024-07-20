@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.SetTheory.Cardinal.Basic
 
+
 /-!
 # Basics on First-Order Structures
 This file defines first-order languages and structures in the style of the
@@ -447,9 +448,6 @@ theorem toFun_eq_coe {f : M →[L] N} : f.toFun = (f : M → N) :=
 theorem ext ⦃f g : M →[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
-theorem ext_iff {f g : M →[L] N} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 @[simp]
 theorem map_fun (φ : M →[L] N) {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
     φ (funMap f x) = funMap f (φ ∘ x) :=
@@ -564,9 +562,6 @@ theorem coe_injective : @Function.Injective (M ↪[L] N) (M → N) (↑)
 @[ext]
 theorem ext ⦃f g : M ↪[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   coe_injective (funext h)
-
-theorem ext_iff {f g : M ↪[L] N} : f = g ↔ ∀ x, f x = g x :=
-  ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 
 theorem toHom_injective : @Function.Injective (M ↪[L] N) (M →[L] N) (·.toHom) := by
   intro f f' h
@@ -762,9 +757,6 @@ theorem coe_injective : @Function.Injective (M ≃[L] N) (M → N) (↑) :=
 @[ext]
 theorem ext ⦃f g : M ≃[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   coe_injective (funext h)
-
-theorem ext_iff {f g : M ≃[L] N} : f = g ↔ ∀ x, f x = g x :=
-  ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 
 theorem bijective (f : M ≃[L] N) : Function.Bijective f :=
   EquivLike.bijective f

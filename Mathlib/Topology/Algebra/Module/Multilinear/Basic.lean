@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.Multilinear.Basic
 
+
 /-!
 # Continuous multilinear maps
 
@@ -100,9 +101,6 @@ theorem coe_coe : (f.toMultilinearMap : (∀ i, M₁ i) → M₂) = f :=
 @[ext]
 theorem ext {f f' : ContinuousMultilinearMap R M₁ M₂} (H : ∀ x, f x = f' x) : f = f' :=
   DFunLike.ext _ _ H
-
-theorem ext_iff {f f' : ContinuousMultilinearMap R M₁ M₂} : f = f' ↔ ∀ x, f x = f' x := by
-  rw [← toMultilinearMap_injective.eq_iff, MultilinearMap.ext_iff]; rfl
 
 @[simp]
 theorem map_add [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :

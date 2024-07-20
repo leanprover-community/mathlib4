@@ -8,6 +8,7 @@ import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Data.Bracket
 
+
 /-!
 # Semirings and rings
 
@@ -209,7 +210,7 @@ lemma eq_or_eq_neg_of_sq_eq_sq (a b : R) : a ^ 2 = b ^ 2 → a = b ∨ a = -b :=
 namespace Units
 
 protected lemma sq_eq_sq_iff_eq_or_eq_neg {a b : Rˣ} : a ^ 2 = b ^ 2 ↔ a = b ∨ a = -b := by
-  simp_rw [ext_iff, val_pow_eq_pow_val, sq_eq_sq_iff_eq_or_eq_neg, Units.val_neg]
+  simp_rw [Units.ext_iff, val_pow_eq_pow_val, sq_eq_sq_iff_eq_or_eq_neg, Units.val_neg]
 
 protected lemma eq_or_eq_neg_of_sq_eq_sq (a b : Rˣ) (h : a ^ 2 = b ^ 2) : a = b ∨ a = -b :=
   Units.sq_eq_sq_iff_eq_or_eq_neg.1 h

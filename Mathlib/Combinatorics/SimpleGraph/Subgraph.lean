@@ -6,6 +6,7 @@ Authors: Hunter Monroe, Kyle Miller, Alena Gusakov
 import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Combinatorics.SimpleGraph.Maps
 
+
 /-!
 # Subgraphs of a simple graph
 
@@ -245,7 +246,7 @@ def copy (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts)
 
 theorem copy_eq (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts)
     (adj' : V → V → Prop) (hadj : adj' = G'.Adj) : G'.copy V'' hV adj' hadj = G' :=
-  Subgraph.ext _ _ hV hadj
+  Subgraph.ext hV hadj
 
 /-- The union of two subgraphs. -/
 instance : Sup G.Subgraph where

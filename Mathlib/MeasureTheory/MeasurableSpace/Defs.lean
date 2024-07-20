@@ -8,6 +8,7 @@ import Mathlib.Order.Disjointed
 import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.Measurability
 
+
 /-!
 # Measurable spaces and measurable functions
 
@@ -110,6 +111,7 @@ protected theorem MeasurableSet.iUnion [Countable ι] ⦃f : ι → Set α⦄
   · rcases exists_surjective_nat ι with ⟨e, he⟩
     rw [← iUnion_congr_of_surjective _ he (fun _ => rfl)]
     exact m.measurableSet_iUnion _ fun _ => h _
+
 
 protected theorem MeasurableSet.biUnion {f : β → Set α} {s : Set β} (hs : s.Countable)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋃ b ∈ s, f b) := by
@@ -227,10 +229,6 @@ theorem MeasurableSpace.measurableSet_injective : Injective (@MeasurableSet α)
 theorem MeasurableSpace.ext {m₁ m₂ : MeasurableSpace α}
     (h : ∀ s : Set α, MeasurableSet[m₁] s ↔ MeasurableSet[m₂] s) : m₁ = m₂ :=
   measurableSet_injective <| funext fun s => propext (h s)
-
-theorem MeasurableSpace.ext_iff {m₁ m₂ : MeasurableSpace α} :
-    m₁ = m₂ ↔ ∀ s : Set α, MeasurableSet[m₁] s ↔ MeasurableSet[m₂] s :=
-  ⟨fun h _ => h ▸ Iff.rfl, MeasurableSpace.ext⟩
 
 /-- A typeclass mixin for `MeasurableSpace`s such that each singleton is measurable. -/
 class MeasurableSingletonClass (α : Type*) [MeasurableSpace α] : Prop where

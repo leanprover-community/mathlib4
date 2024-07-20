@@ -9,6 +9,7 @@ import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Group.Hom.CompTypeclasses
 
+
 /-!
 # Equivariant homomorphisms
 
@@ -155,10 +156,6 @@ protected theorem map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m 
 theorem ext {f g : X →ₑ[φ] Y} :
     (∀ x, f x = g x) → f = g :=
   DFunLike.ext f g
-
-theorem ext_iff  {f g : X →ₑ[φ] Y} :
-    f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 protected theorem congr_fun {f g : X →ₑ[φ] Y} (h : f = g) (x : X) :
     f x = g x :=
@@ -428,9 +425,6 @@ theorem coe_fn_coe' (f : A →ₑ+[φ] B) : ⇑(f : A →ₑ[φ] B) = f :=
 theorem ext {f g : A →ₑ+[φ] B} : (∀ x, f x = g x) → f = g :=
   DFunLike.ext f g
 
-theorem ext_iff {f g : A →ₑ+[φ] B} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 protected theorem congr_fun {f g : A →ₑ+[φ] B} (h : f = g) (x : A) : f x = g x :=
   DFunLike.congr_fun h _
 
@@ -547,8 +541,6 @@ theorem ext_ring {f g : R →ₑ+[σ] N'} (h : f 1 = g 1) : f = g := by
   ext x
   rw [← mul_one x, ← smul_eq_mul R, f.map_smulₑ, g.map_smulₑ, h]
 
-theorem ext_ring_iff {f g : R →ₑ+[σ] N'} : f = g ↔ f 1 = g 1 :=
-  ⟨fun h => h ▸ rfl, ext_ring⟩
 
 end Semiring
 
@@ -675,9 +667,6 @@ theorem coe_fn_coe' (f : R →ₑ+*[φ] S) : ⇑(f : R →ₑ+[φ] S) = f :=
 @[ext]
 theorem ext {f g : R →ₑ+*[φ] S} : (∀ x, f x = g x) → f = g :=
   DFunLike.ext f g
-
-theorem ext_iff {f g : R →ₑ+*[φ] S} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 protected theorem map_zero (f : R →ₑ+*[φ] S) : f 0 = 0 :=
   map_zero f

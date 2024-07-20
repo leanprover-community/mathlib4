@@ -7,6 +7,7 @@ import Mathlib.Data.Option.Basic
 import Mathlib.Data.Set.Basic
 import Batteries.Tactic.Congr
 
+
 /-!
 
 # Partial Equivalences
@@ -80,9 +81,6 @@ theorem coe_mk_apply (f₁ : α → Option β) (f₂ : β → Option α) (h) (x 
 
 @[ext] theorem ext {f g : α ≃. β} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
-
-theorem ext_iff {f g : α ≃. β} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 /-- The identity map as a partial equivalence. -/
 @[refl]

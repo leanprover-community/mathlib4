@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Nat.Cast.Order.Ring
 
+
 /-!
 # Nonnegative rationals
 
@@ -59,9 +60,6 @@ protected theorem coe_injective : Injective ((↑) : ℚ≥0 → ℚ) :=
 @[simp, norm_cast]
 theorem coe_inj : (p : ℚ) = q ↔ p = q :=
   Subtype.coe_inj
-
-theorem ext_iff : p = q ↔ (p : ℚ) = q :=
-  Subtype.ext_iff
 
 theorem ne_iff {x y : ℚ≥0} : (x : ℚ) ≠ (y : ℚ) ↔ x ≠ y :=
   NNRat.coe_inj.not

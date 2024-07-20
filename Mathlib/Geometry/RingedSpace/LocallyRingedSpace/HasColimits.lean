@@ -8,6 +8,7 @@ import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.Geometry.RingedSpace.OpenImmersion
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 
+
 /-!
 # Colimits of LocallyRingedSpace
 
@@ -255,7 +256,7 @@ noncomputable def coequalizerCofork : Cofork f g :=
   @Cofork.ofπ _ _ _ _ f g (coequalizer f g) ⟨coequalizer.π f.1 g.1,
     -- Porting note: this used to be automatic
     HasCoequalizer.coequalizer_π_stalk_isLocalRingHom _ _⟩
-    (LocallyRingedSpace.Hom.ext _ _ (coequalizer.condition f.1 g.1))
+    (LocallyRingedSpace.Hom.ext (coequalizer.condition f.1 g.1))
 
 theorem isLocalRingHom_stalkMap_congr {X Y : RingedSpace} (f g : X ⟶ Y) (H : f = g) (x)
     (h : IsLocalRingHom (PresheafedSpace.stalkMap f x)) :

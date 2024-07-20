@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Yaël Dillies
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.NormedSpace.Real
 
+
 /-!
 # Properties of pointwise scalar multiplication of sets in normed spaces.
 
@@ -362,7 +363,7 @@ theorem smul_closedBall (c : 𝕜) (x : E) {r : ℝ} (hr : 0 ≤ r) :
   · exact smul_closedBall' hc x r
 
 theorem smul_closedUnitBall (c : 𝕜) : c • closedBall (0 : E) (1 : ℝ) = closedBall (0 : E) ‖c‖ := by
-  rw [smul_closedBall _ _ zero_le_one, smul_zero, mul_one]
+  rw [_root_.smul_closedBall _ _ zero_le_one, smul_zero, mul_one]
 
 variable [NormedSpace ℝ E]
 

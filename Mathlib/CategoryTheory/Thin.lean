@@ -6,6 +6,7 @@ Authors: Scott Morrison, Bhavik Mehta
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Iso
 
+
 /-!
 # Thin categories
 A thin category (also known as a sparse category) is a category with at most one morphism between
@@ -44,7 +45,7 @@ variable [Quiver.IsThin C]
 
 /-- If `C` is a thin category, then `D ⥤ C` is a thin category. -/
 instance functor_thin : Quiver.IsThin (D ⥤ C) := fun _ _ =>
-  ⟨fun α β => NatTrans.ext α β (funext fun _ => Subsingleton.elim _ _)⟩
+  ⟨fun α β => NatTrans.ext (by subsingleton)⟩
 
 /-- To show `X ≅ Y` in a thin category, it suffices to just give any morphism in each direction. -/
 def iso_of_both_ways {X Y : C} (f : X ⟶ Y) (g : Y ⟶ X) :

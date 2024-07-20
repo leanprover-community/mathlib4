@@ -6,6 +6,7 @@ Authors: Aaron Anderson
 import Mathlib.Algebra.Group.Support
 import Mathlib.Order.WellFoundedSet
 
+
 /-!
 # Hahn Series
 If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of formal series over `Γ` with
@@ -53,7 +54,7 @@ section Zero
 variable [PartialOrder Γ] [Zero R]
 
 theorem coeff_injective : Injective (coeff : HahnSeries Γ R → Γ → R) :=
-  HahnSeries.ext
+  fun _ _ => HahnSeries.ext
 
 @[simp]
 theorem coeff_inj {x y : HahnSeries Γ R} : x.coeff = y.coeff ↔ x = y :=
@@ -154,7 +155,7 @@ def single (a : Γ) : ZeroHom R (HahnSeries Γ R) where
   toFun r :=
     { coeff := Pi.single a r
       isPWO_support' := (Set.isPWO_singleton a).mono Pi.support_single_subset }
-  map_zero' := HahnSeries.ext _ _ (Pi.single_zero _)
+  map_zero' := HahnSeries.ext (Pi.single_zero _)
 
 variable {a b : Γ} {r : R}
 

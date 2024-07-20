@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.CompleteLattice
 
+
 /-!
 # Theory of sieves
 
@@ -90,6 +91,7 @@ inductive singleton' : ⦃Y : C⦄ → (Y ⟶ X) → Prop
 def singleton : Presieve X := singleton' f
 
 lemma singleton.mk {f : Y ⟶ X} : singleton f f := singleton'.mk
+
 
 @[simp]
 theorem singleton_eq_iff_domain (f g : Y ⟶ X) : singleton f g ↔ f = g := by
@@ -266,9 +268,6 @@ theorem arrows_ext : ∀ {R S : Sieve X}, R.arrows = S.arrows → R = S := by
 @[ext]
 protected theorem ext {R S : Sieve X} (h : ∀ ⦃Y⦄ (f : Y ⟶ X), R f ↔ S f) : R = S :=
   arrows_ext <| funext fun _ => funext fun f => propext <| h f
-
-protected theorem ext_iff {R S : Sieve X} : R = S ↔ ∀ ⦃Y⦄ (f : Y ⟶ X), R f ↔ S f :=
-  ⟨fun h _ _ => h ▸ Iff.rfl, Sieve.ext⟩
 
 open Lattice
 

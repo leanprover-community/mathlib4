@@ -6,6 +6,7 @@ Authors: Bhavik Mehta
 import Mathlib.Combinatorics.Enumerative.Composition
 import Mathlib.Tactic.ApplyFun
 
+
 /-!
 # Partitions
 
@@ -73,7 +74,7 @@ def ofComposition (n : ℕ) (c : Composition n) : Partition n where
 theorem ofComposition_surj {n : ℕ} : Function.Surjective (ofComposition n) := by
   rintro ⟨b, hb₁, hb₂⟩
   induction b using Quotient.inductionOn with | _ b => ?_
-  exact ⟨⟨b, hb₁, by simpa using hb₂⟩, Partition.ext _ _ rfl⟩
+  exact ⟨⟨b, hb₁, by simpa using hb₂⟩, Partition.ext rfl⟩
 
 -- The argument `n` is kept explicit here since it is useful in tactic mode proofs to generate the
 -- proof obligation `l.sum = n`.

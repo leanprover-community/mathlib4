@@ -11,6 +11,7 @@ import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Hom.Set
 import Mathlib.Order.SetNotation
 
+
 /-!
 # Theory of complete lattices
 
@@ -1543,8 +1544,8 @@ theorem snd_sInf [InfSet α] [InfSet β] (s : Set (α × β)) : (sInf s).snd = s
   rfl
 
 theorem swap_sInf [InfSet α] [InfSet β] (s : Set (α × β)) : (sInf s).swap = sInf (Prod.swap '' s) :=
-  ext (congr_arg sInf <| image_comp Prod.fst swap s : _)
-    (congr_arg sInf <| image_comp Prod.snd swap s : _)
+  Prod.ext (congr_arg sInf <| image_comp Prod.fst swap s)
+    (congr_arg sInf <| image_comp Prod.snd swap s)
 
 theorem fst_sSup [SupSet α] [SupSet β] (s : Set (α × β)) : (sSup s).fst = sSup (Prod.fst '' s) :=
   rfl
@@ -1553,8 +1554,8 @@ theorem snd_sSup [SupSet α] [SupSet β] (s : Set (α × β)) : (sSup s).snd = s
   rfl
 
 theorem swap_sSup [SupSet α] [SupSet β] (s : Set (α × β)) : (sSup s).swap = sSup (Prod.swap '' s) :=
-  ext (congr_arg sSup <| image_comp Prod.fst swap s : _)
-    (congr_arg sSup <| image_comp Prod.snd swap s : _)
+  Prod.ext (congr_arg sSup <| image_comp Prod.fst swap s)
+    (congr_arg sSup <| image_comp Prod.snd swap s)
 
 theorem fst_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).fst = ⨅ i, (f i).fst :=
   congr_arg sInf (range_comp _ _).symm
