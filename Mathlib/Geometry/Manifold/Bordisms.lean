@@ -254,6 +254,25 @@ def ChartedSpace.empty (H : Type*) [TopologicalSpace H]
 instance [BoundarylessManifold I M] : IsEmpty (I.boundary M) :=
   isEmpty_coe_sort.mpr (ModelWithCorners.Boundaryless.boundary_eq_empty I)
 
+/-- The empty set is a smooth manifold w.r.t. any charted space and model. -/
+def SmoothManifoldWithCorners.empty [IsEmpty M] : SmoothManifoldWithCorners I M := by
+  apply smoothManifoldWithCorners_of_contDiffOn
+  intro e e' _ _ x hx
+  set t := I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I
+  -- Since `M` is empty, the condition about compatibility of transition maps is vacuous.
+  have : (e.symm ≫ₕ e').source = ∅ := calc (e.symm ≫ₕ e').source
+    _ = (e.symm.source) ∩ e.symm ⁻¹' e'.source := by rw [← PartialHomeomorph.trans_source]
+    _ = (e.symm.source) ∩ e.symm ⁻¹' ∅ := by rw [eq_empty_of_isEmpty (e'.source)]
+    _ = (e.symm.source) ∩ ∅ := by rw [preimage_empty]
+    _ = ∅ := inter_empty e.symm.source
+  have : t = ∅ := calc t
+    _ = I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I := by
+      rw [← Subtype.preimage_val_eq_preimage_val_iff]
+    _ = ∅ ∩ range I := by rw [this, preimage_empty]
+    _ = ∅ := empty_inter (range I)
+  rw [this] at hx
+  apply False.elim hx
+
 variable (M) in
 /-- If `M` is boundaryless, its boundary manifold data is easy to construct. -/
 def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] : BoundaryManifoldData M I where
@@ -261,7 +280,11 @@ def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] : BoundaryMa
   H' := E
   charts := ChartedSpace.empty E (I.boundary M : Set M)
   model := modelWithCornersSelf ℝ E
-  smoothManifold := by sorry -- the empty set is a smooth manifold; do we have this already?
+  smoothManifold := by
+    -- as-is, this errors with "failed to synthesize ChartedSpace E ↑(I.boundary M)" (which is fair)
+    -- adding this line errors with "tactic 'apply' failed, failed to assign synthesized instance"
+    --haveI := ChartedSpace.empty E (I.boundary M : Set M)
+    sorry -- apply SmoothManifoldWithCorners.empty
 
 #exit
 -- another trivial case: modelWithCornersSelf on euclidean half space!
