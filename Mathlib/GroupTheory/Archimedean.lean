@@ -5,7 +5,6 @@ Authors: Heather Macbeth, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Subgroup.Order
 import Mathlib.Algebra.Order.Archimedean
-import Mathlib.Data.Set.Lattice
 
 /-!
 # Archimedean groups

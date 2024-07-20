@@ -6,6 +6,11 @@ import Mathlib.Data.Int.Notation
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.FunProp
 
+open Lean.Elab.Command Mathlib.Command.MinImports in
+run_cmd liftTermElabM do
+  guard ([`A, `A.B.C_3, `A.B.C_2, `A.B.C_1, `A.B.C_0, `A.B.C].map previousInstName
+      == [`A, `A.B.C_2, `A.B.C_1, `A.B.C,   `A.B.C,   `A.B.C])
+
 /-- info: import Mathlib.Tactic.FunProp.Attr -/
 #guard_msgs in
 #min_imports in (← `(declModifiers|@[fun_prop]))
@@ -27,6 +32,39 @@ instance : Semiring Nat := inferInstance
 #guard_msgs in
 #min_imports in
 instance withName : Semiring Nat := inferInstance
+
+/--
+warning: Imports increased to
+[Init.Guard, Lean.Parser.Term, Mathlib.Data.Int.Notation]
+note: this linter can be disabled with `set_option linter.minImports false`
+-/
+#guard_msgs in
+set_option linter.minImports true in
+#guard (0 : ℤ) = 0
+
+#guard_msgs in
+-- no new imports needed here, so no message
+set_option linter.minImports true in
+#guard (0 : ℤ) = 0
+
+set_option linter.minImports false in
+
+#reset_min_imports
+
+/--
+warning: Imports increased to
+[Init.Guard, Lean.Parser.Term, Mathlib.Data.Int.Notation]
+note: this linter can be disabled with `set_option linter.minImports false`
+-/
+#guard_msgs in
+-- again, the imports pick-up, after the reset
+set_option linter.minImports true in
+#guard (0 : ℤ) = 0
+
+/-- info: import Mathlib.Algebra.Ring.Nat -/
+#guard_msgs in
+#min_imports in
+noncomputable instance : Semiring Nat := inferInstance
 
 /--
 info: ℤ : Type
