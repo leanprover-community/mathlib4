@@ -364,7 +364,7 @@ theorem totallyBounded_preimage {f : α → β} {s : Set β} (hf : UniformInduci
     (hs : TotallyBounded s) : TotallyBounded (f ⁻¹' s) :=
   (totallyBounded_image_iff hf).1 <| hs.subset <| image_preimage_subset ..
 
-instance CompleteSpace.sum [CompleteSpace α] [CompleteSpace β] : CompleteSpace (Sum α β) := by
+instance CompleteSpace.sum [CompleteSpace α] [CompleteSpace β] : CompleteSpace (α ⊕ β) := by
   rw [completeSpace_iff_isComplete_univ, ← range_inl_union_range_inr]
   exact uniformEmbedding_inl.toUniformInducing.isComplete_range.union
     uniformEmbedding_inr.toUniformInducing.isComplete_range

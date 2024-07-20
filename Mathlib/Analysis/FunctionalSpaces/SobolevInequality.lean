@@ -328,7 +328,8 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux
         · exact hu.comp (by convert contDiff_update 1 x i)
         · exact h2u.comp_closedEmbedding (closedEmbedding_update x i)
     _ ≤ ∫⁻ xᵢ, (‖fderiv ℝ u (update x i xᵢ)‖₊ : ℝ≥0∞) := ?_
-  gcongr with y; swap; exact Measure.restrict_le_self
+  gcongr with y; swap
+  · exact Measure.restrict_le_self
   -- bound the derivative which appears
   calc ‖deriv (u ∘ update x i) y‖₊ = ‖fderiv ℝ u (update x i y) (deriv (update x i) y)‖₊ := by
         rw [fderiv.comp_deriv _ (hu.differentiable le_rfl).differentiableAt

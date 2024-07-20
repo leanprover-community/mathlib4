@@ -72,10 +72,10 @@ noncomputable def equiv_GL_linearindependent (hn : 0 < n) :
     rw [Set.finrank, ← rank_eq_finrank_span_cols, rank_unit]⟩
   invFun M := GeneralLinearGroup.mk'' (transpose (M.1)) <| by
     have : Nonempty (Fin n) := Fin.pos_iff_nonempty.1 hn
-    rw [← Basis.coePiBasisFun.toMatrix_eq_transpose,
-      ← coe_basisOfLinearIndependentOfCardEqFinrank M.2]
     let b := basisOfLinearIndependentOfCardEqFinrank M.2 (by simp)
     have := (Pi.basisFun 𝔽 (Fin n)).invertibleToMatrix b
+    rw [← Basis.coePiBasisFun.toMatrix_eq_transpose,
+      ← coe_basisOfLinearIndependentOfCardEqFinrank M.2]
     exact isUnit_det_of_invertible _
   left_inv := fun x ↦ Units.ext (ext fun i j ↦ rfl)
   right_inv := by exact congrFun rfl
