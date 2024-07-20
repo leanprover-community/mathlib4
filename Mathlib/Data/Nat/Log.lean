@@ -196,8 +196,6 @@ theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / 
   rw [div_lt_iff_lt_mul (by omega), ← succ_le_iff, ← pred_eq_sub_one,
     succ_pred_eq_of_pos (by omega)]
   exact Nat.add_le_mul hn hb
--- Porting note: Was private in mathlib 3
--- #align nat.add_pred_div_lt Nat.add_pred_div_lt
 
 /-! ### Ceil logarithm -/
 

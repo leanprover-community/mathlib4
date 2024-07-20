@@ -6,6 +6,8 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Finset.Sym
+import Mathlib.Data.Sym.Sym2.Order
 
 /-!
 # Big operators
@@ -518,7 +520,7 @@ theorem prod_subset (h : s₁ ⊆ s₂) (hf : ∀ x ∈ s₂, x ∉ s₁ → f x
   prod_subset_one_on_sdiff h (by simpa) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
-theorem prod_disj_sum (s : Finset α) (t : Finset γ) (f : Sum α γ → β) :
+theorem prod_disj_sum (s : Finset α) (t : Finset γ) (f : α ⊕ γ → β) :
     ∏ x ∈ s.disjSum t, f x = (∏ x ∈ s, f (Sum.inl x)) * ∏ x ∈ t, f (Sum.inr x) := by
   rw [← map_inl_disjUnion_map_inr, prod_disjUnion, prod_map, prod_map]
   rfl
@@ -2229,3 +2231,15 @@ end AddCommMonoid
 
 @[deprecated (since := "2023-12-23")] alias Equiv.prod_comp' := Fintype.prod_equiv
 @[deprecated (since := "2023-12-23")] alias Equiv.sum_comp' := Fintype.sum_equiv
+
+theorem Finset.sum_sym2_filter_not_isDiag {ι α} [LinearOrder ι] [AddCommMonoid α]
+    (s : Finset ι) (p : Sym2 ι → α) :
+    ∑ i in s.sym2.filter (¬ ·.IsDiag), p i =
+      ∑ i in s.offDiag.filter (fun i => i.1 < i.2), p s(i.1, i.2) := by
+  rw [Finset.offDiag_filter_lt_eq_filter_le]
+  conv_rhs => rw [← Finset.sum_subtype_eq_sum_filter]
+  refine (Finset.sum_equiv Sym2.sortEquiv.symm ?_ ?_).symm
+  · rintro ⟨⟨i₁, j₁⟩, hij₁⟩
+    simp [and_assoc]
+  · rintro ⟨⟨i₁, j₁⟩, hij₁⟩
+    simp
