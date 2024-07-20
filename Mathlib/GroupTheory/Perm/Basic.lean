@@ -176,7 +176,7 @@ theorem sumCongr_one {α β : Type*} : sumCongr (1 : Perm α) (1 : Perm β) = 1 
 This is particularly useful for its `MonoidHom.range` projection, which is the subgroup of
 permutations which do not exchange elements between `α` and `β`. -/
 @[simps]
-def sumCongrHom (α β : Type*) : Perm α × Perm β →* Perm (Sum α β) where
+def sumCongrHom (α β : Type*) : Perm α × Perm β →* Perm (α ⊕ β) where
   toFun a := sumCongr a.1 a.2
   map_one' := sumCongr_one
   map_mul' _ _ := (sumCongr_mul _ _ _ _).symm
