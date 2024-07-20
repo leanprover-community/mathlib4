@@ -404,8 +404,18 @@ theorem index_convert' (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} →
     --exact
     sorry
   have := basic_index1 i (fun (x : n) ↦ eigenspace (T x) (f x))
-  rw [C1] at this
+  rw [←C1]
+  conv =>
+   lhs
+   rhs
+   rhs
+   ext j
+   rw [←C2]
+  simp [ne_eq] --bad design. There is a submodule_subtype here killing us
+
+
   --still sucking wind on this one. Must be a better piecewise function approach here.
+  --the problem seems to be this function...
   sorry
 
 
