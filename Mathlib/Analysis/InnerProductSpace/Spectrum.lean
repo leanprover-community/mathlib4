@@ -404,7 +404,7 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base [Subsingleton n]:
   simp only [Submodule.orthogonal_eq_bot_iff]
   by_cases case : Nonempty n
   · have i := choice case
-    have : Unique n := by refine uniqueOfSubsingleton i
+    have := uniqueOfSubsingleton i
     conv =>
       lhs; rhs; ext γ; rw [ciInf_subsingleton i]
     rw [← (Equiv.funUnique n 𝕜).symm.iSup_comp]
