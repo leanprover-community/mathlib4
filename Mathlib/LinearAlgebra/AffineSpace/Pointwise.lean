@@ -17,7 +17,7 @@ open Affine Pointwise
 
 open Set
 
-variable {k V P V₁ P₁ V₂ P₂ : Type*}
+variable {M k V P V₁ P₁ V₂ P₂ : Type*}
 
 namespace AffineSubspace
 section Ring
@@ -74,47 +74,46 @@ theorem map_pointwise_vadd (f : P₁ →ᵃ[k] P₂) (v : V₁) (s : AffineSubsp
   ext
   exact f.map_vadd _ _
 
-end Ring
-
-section CommRing
-variable [CommRing k] [AddCommGroup V] [Module k V] {a : k}
+section SMul
+variable [Monoid M] [DistribMulAction M V] [SMulCommClass M k V] {a : M}
 
 /-- The multiplicative action on an affine subspace corresponding to applying the action to every
 element.
 
 This is available as an instance in the `Pointwise` locale. -/
-protected def pointwiseSMul : SMul k (AffineSubspace k V) where
-  smul a s := s.map (LinearMap.lsmul _ _ a).toAffineMap
+protected def pointwiseSMul : SMul M (AffineSubspace k V) where
+  smul a s := s.map (DistribMulAction.toLinearMap k _ a).toAffineMap
 
 scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseSMul
 
 @[simp, norm_cast]
-lemma coe_smul (a : k) (s : AffineSubspace k V) : ↑(a • s) = a • (s : Set V) := rfl
+lemma coe_smul (a : M) (s : AffineSubspace k V) : ↑(a • s) = a • (s : Set V) := rfl
 
 /-- The multiplicative action on an affine subspace corresponding to applying the action to every
 element.
 
 This is available as an instance in the `Pointwise` locale. -/
-protected def mulAction : MulAction k (AffineSubspace k V) :=
+protected def mulAction : MulAction M (AffineSubspace k V) :=
   SetLike.coe_injective.mulAction _ coe_smul
 
 scoped[Pointwise] attribute [instance] AffineSubspace.mulAction
 
-lemma smul_eq_map (a : k) (s : AffineSubspace k V) :
-    a • s = s.map (LinearMap.lsmul _ _ a).toAffineMap := rfl
+lemma smul_eq_map (a : M) (s : AffineSubspace k V) :
+    a • s = s.map (DistribMulAction.toLinearMap k _ a).toAffineMap := rfl
 
 lemma smul_mem_smul_iff (ha : IsUnit a) {s : AffineSubspace k V} {p : V} :
     a • p ∈ a • s ↔ p ∈ s := smul_mem_smul_set_iff (a := ha.unit)
 
-@[simp] lemma smul_bot (a : k) : a • (⊥ : AffineSubspace k V) = ⊥ := by
+@[simp] lemma smul_bot (a : M) : a • (⊥ : AffineSubspace k V) = ⊥ := by
   ext; simp [smul_eq_map, map_bot]
 
 @[simp] lemma smul_top (ha : IsUnit a) : a • (⊤ : AffineSubspace k V) = ⊤ := by
   ext x; simpa [smul_eq_map, map_top] using ⟨ha.unit⁻¹ • x, smul_inv_smul ha.unit _⟩
 
-lemma smul_span (a : k) (s : Set V) : a • affineSpan k s = affineSpan k (a • s) := map_span _ s
+lemma smul_span (a : M) (s : Set V) : a • affineSpan k s = affineSpan k (a • s) := map_span _ s
 
-end CommRing
+end SMul
+end Ring
 
 section Field
 variable [Field k] [AddCommGroup V] [Module k V] {a : k}

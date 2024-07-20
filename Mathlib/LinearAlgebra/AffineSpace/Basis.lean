@@ -51,7 +51,7 @@ structure AffineBasis (ι : Type u₁) (k : Type u₂) {V : Type u₃} (P : Type
   protected ind' : AffineIndependent k toFun
   protected tot' : affineSpan k (range toFun) = ⊤
 
-variable {ι ι' k V P : Type*} [AddCommGroup V] [AffineSpace V P]
+variable {ι ι' G k V P : Type*} [AddCommGroup V] [AffineSpace V P]
 
 namespace AffineBasis
 
@@ -273,25 +273,25 @@ instance instAddAction : AddAction V (AffineBasis ι k P) :=
   congr! 1
   rw [vadd_vsub_assoc, neg_add_eq_sub, vsub_vadd_eq_vsub_sub]
 
-end Ring
+section SMul
+variable [Group G] [SMul G k] [DistribMulAction G V] [SMulCommClass G k V] (b : AffineBasis ι k P)
+  {s : Finset ι} {i j : ι} (e : ι ≃ ι')
 
-section CommRing
-variable [CommRing k] [Module k V] (b : AffineBasis ι k P) {s : Finset ι} {i j : ι} (e : ι ≃ ι')
-
-instance instSMul : SMul kˣ (AffineBasis ι k V) where
+instance instSMul : SMul G (AffineBasis ι k V) where
   smul a b :=
     { toFun := a • ⇑b,
       ind' := b.ind'.smul,
       tot' := by
-        rw [Pi.smul_def, ← smul_set_range, Units.smul_def, ← AffineSubspace.smul_span, b.tot,
-          AffineSubspace.smul_top a.isUnit] }
+        rw [Pi.smul_def, ← smul_set_range, ← AffineSubspace.smul_span, b.tot,
+          AffineSubspace.smul_top (Group.isUnit a)] }
 
-@[simp, norm_cast] lemma coe_smul (a : kˣ) (b : AffineBasis ι k V) : ⇑(a • b) = a • ⇑b := rfl
+@[simp, norm_cast] lemma coe_smul (a : G) (b : AffineBasis ι k V) : ⇑(a • b) = a • ⇑b := rfl
 
-instance instMulAction : MulAction kˣ (AffineBasis ι k V) :=
+instance instMulAction : MulAction G (AffineBasis ι k V) :=
   DFunLike.coe_injective.mulAction _ coe_smul
 
-end CommRing
+end SMul
+end Ring
 
 section DivisionRing
 
