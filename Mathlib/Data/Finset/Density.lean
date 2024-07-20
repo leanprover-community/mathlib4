@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Fintype.Card
+import Mathlib.Data.NNRat.Order
 
 /-!
 # Density of a finite set

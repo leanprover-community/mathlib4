@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Algebra.Order.Group.Abs
 
 /-!
 # Absolute values in linear ordered rings.

@@ -6,6 +6,8 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Star.Order
 import Mathlib.Algebra.Order.Monoid.Submonoid
 import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Order.Group.Abs
 
 /-!
 # Star ordered ring structure on `ℤ`

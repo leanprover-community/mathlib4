@@ -6,9 +6,9 @@ Authors: Mario Carneiro
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Data.Nat.Cast.NeZero
 import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
 
 /-!
 # Cast of natural numbers: lemmas about bundled ordered semirings

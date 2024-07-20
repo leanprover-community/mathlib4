@@ -5,9 +5,9 @@ Authors: Damiano Testa, Ruben Van de Velde
 -/
 
 import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.InjSurj
 import Mathlib.Order.Atoms
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
 
 /-!
 # Facts about ordered structures and ordered instances on subgroups

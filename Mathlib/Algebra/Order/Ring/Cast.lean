@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Algebra.Order.Group.Abs
 
 /-!
 # Order properties of cast of integers
