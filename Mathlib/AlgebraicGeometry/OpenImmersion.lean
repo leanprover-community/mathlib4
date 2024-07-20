@@ -109,12 +109,10 @@ lemma image_preimage_eq_opensRange_inter (U : Opens Y) : f ''ᵁ f ⁻¹ᵁ U = 
   apply Opens.ext
   simp [Set.image_preimage_eq_range_inter]
 
-/-- The isomorphism `Γ(X, U) ⟶ Γ(Y, f(U))` induced by an open immersion `f : X ⟶ Y`. -/
-def invApp (U) : Γ(X, U) ⟶ Γ(Y, f ''ᵁ U) :=
-  LocallyRingedSpace.IsOpenImmersion.invApp f U
-
-instance (U) : IsIso (f.invApp U) := inferInstanceAs
-  (IsIso <| PresheafedSpace.IsOpenImmersion.invApp f.1 U)
+/-- The isomorphism `Γ(Y, f(U)) ≅ Γ(X, U)` induced by an open immersion `f : X ⟶ Y`. -/
+def appIso (U) : Γ(Y, f ''ᵁ U) ≅ Γ(X, U) :=
+  (asIso <| LocallyRingedSpace.IsOpenImmersion.invApp f U).symm
+#align algebraic_geometry.Scheme.hom.inv_app AlgebraicGeometry.Scheme.Hom.appIso
 
 @[reassoc (attr := simp)]
 theorem appIso_inv_naturality {U V : Opens X} (i : op U ⟶ op V) :
