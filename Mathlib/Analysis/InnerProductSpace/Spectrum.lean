@@ -338,17 +338,6 @@ theorem post_exhaust: (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ e
   rw [Submodule.orthogonal_eq_bot_iff]
   apply exhaust hA hB hAB
 
-/- theorem iSup_iSup_eigenspace_inf_top: (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α))) = ⊤  := by
-  rw[iSup_comm]
-  conv =>
-    rhs
-    exact (Submodule.orthogonal_eq_bot_iff.mp (hA.orthogonalComplement_iSup_eigenspaces_eq_bot)).symm
-  conv =>
-   lhs
-   rhs
-   simp only[← restrict_eq_inf hAB , ← Submodule.map_iSup, iSup_restrict_eq_top hB hAB,
-   Submodule.map_top, Submodule.range_subtype] -/
-
 theorem Orthogonality: OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) =>
     (eigenspace B i.1 ⊓ eigenspace A i.2 : Submodule 𝕜 E))
     (fun i => (eigenspace B i.1 ⊓ eigenspace A i.2).subtypeₗᵢ) := by
@@ -484,64 +473,22 @@ theorem basic (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
   · simp
   · simp [dif_neg hx]
 
---prove general invariant subspace exhaust result, and the intersection eigenspace one will
---follow as an application of this. Unnecessary detail will be removed from the body of the
---proof by doing this.
-
-variable (F : Submodule 𝕜 E) (S : E →ₗ[𝕜] E) (hS: IsSymmetric S) (hInv : ∀ v ∈ F, S v ∈ F)
-
-theorem invariant_subspace_exhaust : ⨆ μ, Submodule.map
-    F.subtype (eigenspace (S.restrict hInv) μ)  = F := by
-  sorry
+theorem invariant_subspace_eigenspace_exhaust {F : Submodule 𝕜 E} {S : E →ₗ[𝕜] E}
+    (hS: IsSymmetric S) (hInv : ∀ v ∈ F, S v ∈ F) : ⨆ μ, Submodule.map F.subtype
+    (eigenspace (S.restrict hInv) μ)  = F := by
+ conv_lhs => rw [← Submodule.map_iSup]
+ conv_rhs => rw [← Submodule.map_subtype_top F]
+ congr!
+ have H : IsSymmetric (S.restrict hInv) := fun x y ↦ hS (F.subtype x) ↑y
+ apply Submodule.orthogonal_eq_bot_iff.mp (H.orthogonalComplement_iSup_eigenspaces_eq_bot)
 
 /-The following proof is substantially shorter due to the abstraction above. Maybe prelim_sub_exhaust
 can be removed and the abstract proof incorporated inline below. -/
-theorem prelim_sub_exhaust' (i : n) [Nontrivial n] (γ : {x // x ≠ i} → 𝕜) :
-    ⨆ μ, Submodule.map (⨅ (j: {x // x ≠ i}), eigenspace (T ↑j) (γ j)).subtype
-    (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) =
-    (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) :=
-  invariant_subspace_exhaust (⨅ (j : {x // x ≠ i}), eigenspace (T ↑j) (γ j)) (T i)
-     (invariance_iInf T hC i γ)
-
 theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // x ≠ i} → 𝕜) :
     ⨆ μ, Submodule.map (⨅ (j: {x // x ≠ i}), eigenspace (T ↑j) (γ j)).subtype
     (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) =
-    (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) := by
-  simp only [iSup, sSup, ne_eq, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-  ext v
-  constructor
-  · simp only [iInf, sInf, Set.mem_range, Subtype.exists, Set.iInter_exists, Submodule.mem_mk,
-      AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter]
-    intro h K j hj HH
-    apply h
-    rw [← HH]
-    intro a w hw
-    simp only [Submodule.mem_map, Subtype.exists, Set.mem_range, Set.iInter_exists,
-      Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter] at hw
-    obtain ⟨a, ⟨ha, hb⟩⟩ := hw
-    rw [← hb.2]
-    exact ha (eigenspace (Subtype.restrict (fun x ↦ ¬x = i) T ⟨j, hj⟩) (γ ⟨j, hj⟩)) j hj rfl
-  · have B : Submodule.map (Submodule.subtype (⨅ j, eigenspace (Subtype.restrict
-    (fun x ↦ x ≠ i) T j) (γ j))) (⨆ (μ : 𝕜) , eigenspace ((T i).restrict
-    ((invariance_iInf T hC i γ))) μ) = Submodule.map (Submodule.subtype (⨅ j, eigenspace
-    (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) ⊤ := by
-      congr!; exact inf_restrict T hT hC i fun j ↦ γ j
-    simp only [Submodule.mem_iInf, Subtype.forall, Submodule.mem_mk, AddSubmonoid.mem_mk,
-      AddSubsemigroup.mem_mk, Set.mem_iInter] at *
-    have H :  (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)).subtype =
-        (⨅ (j : {x // x ≠ i}), eigenspace (T j) (γ j)).subtype := rfl
-    rw [H] at B
-    simp only [Submodule.map_iSup, Submodule.map_top, Submodule.range_subtype] at *
-    intro h F hH
-    have hH1 : ∀ (a : 𝕜), Submodule.map (⨅ (j : {x // x ≠ i}) , eigenspace (T ↑j) (γ j)).subtype
-        (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) a) ≤ F := fun a ↦ hH a
-    have RR : (⨆ μ : 𝕜, Submodule.map (⨅ (j : {x // x ≠ i}), eigenspace (T ↑j) (γ j)).subtype
-        (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ)) ≤ F := by
-      simp only [iSup_le_iff, hH1, implies_true]
-    rw [B] at RR
-    have Final : v ∈ ⨅ (j: {x // x ≠ i}), eigenspace (T ↑j) (γ j) := (Submodule.mem_iInf
-      fun (i_1 : {x // x ≠ i}) ↦ eigenspace (T ↑i_1) (γ i_1)).mpr fun i_1 ↦ h (↑i_1) i_1.property
-    exact RR Final
+    (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) :=
+    invariant_subspace_eigenspace_exhaust (hT i) (invariance_iInf T hC i γ)
 
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
