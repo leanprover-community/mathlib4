@@ -26,9 +26,9 @@ is also proved later in the file.
 
 * `MeasureTheory.unifTight_finite`: a finite sequence of Lp functions is uniformly
   tight.
-* `MeasureTheory.tendsto_Lp_notFinite_of_tendsto_ae`: a sequence of Lp functions which is uniformly
+* `MeasureTheory.tendsto_Lp_of_tendsto_ae`: a sequence of Lp functions which is uniformly
   integrable and uniformly tight converges in Lp if it converge almost everywhere.
-* `MeasureTheory.tendstoInMeasure_notFinite_iff_tendsto_Lp`: Vitali convergence theorem:
+* `MeasureTheory.tendstoInMeasure_iff_tendsto_Lp`: Vitali convergence theorem:
   a sequence of Lp functions converges in Lp if and only if it is uniformly integrable,
   uniformly tight and converges in measure.
 
@@ -247,7 +247,7 @@ private theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, Memℒp (
    are unwrapped and strengthened (by known lemmas) to also have the `StronglyMeasurable`
    and a.e. convergence hypotheses. The bulk of the proof is done under these stronger hypotheses.-/
 
-theorem tendsto_Lp_notFinite_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞)
+theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞)
     {f : ℕ → α → β} {g : α → β} (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g)
     (hg' : Memℒp g p μ) (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
@@ -275,7 +275,7 @@ theorem tendsto_Lp_notFinite_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ �
   -- It is enough to have in the context a term of `Fact (μ E < ∞)`, which is our `ffmE` below,
   -- which is automatically fed into `Restrict.isFiniteInstance`.
   have ffmE : Fact _ := { out := hfmE }
-  have hInner := tendsto_Lp_of_tendsto_ae_of_meas hp hp' hf hg hgE' huiE hfgE
+  have hInner := tendsto_Lp_finite_of_tendsto_ae_of_meas hp hp' hf hg hgE' huiE hfgE
   rw [ENNReal.tendsto_atTop_zero] at hInner
   -- get a sufficiently large N for given ε, and consider any n ≥ N
   obtain ⟨N, hfngε⟩ := hInner (ε / 3) hε'
@@ -320,7 +320,7 @@ theorem tendsto_Lp_notFinite_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ �
     _ ≤ (ε / 3 + ε / 3) + ε / 3 := add_le_add hfngEcε hfngEε
     _ = ε := by simp only [ENNReal.add_thirds] --ENNReal.add_thirds ε
 
-/- Lemma used in `tendsto_Lp_notFinite_of_tendsto_ae`. -/
+/- Lemma used in `tendsto_Lp_of_tendsto_ae`. -/
 private theorem ae_tendsto_ae_congr {f f' : ℕ → α → β} {g g' : α → β}
     (hff' : ∀ (n : ℕ), f n =ᵐ[μ] f' n) (hgg' : g =ᵐ[μ] g')
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
@@ -330,7 +330,7 @@ private theorem ae_tendsto_ae_congr {f f' : ℕ → α → β} {g g' : α → β
   apply Tendsto.congr hff'x
   rw [← hgg'x]; exact hfgx
 
-theorem tendsto_Lp_notFinite_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
+theorem tendsto_Lp_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
     {f : ℕ → α → β} {g : α → β} (haef : ∀ n, AEStronglyMeasurable (f n) μ)
     (hg' : Memℒp g p μ) (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
@@ -349,20 +349,20 @@ theorem tendsto_Lp_notFinite_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
   have haefg (n : ℕ) : f n - g =ᵐ[μ] f' n - g' := (hff' n).sub hgg'
   have hsnfg (n : ℕ) := snorm_congr_ae (p := p) (haefg n)
   apply Filter.Tendsto.congr (fun n => (hsnfg n).symm)
-  exact tendsto_Lp_notFinite_of_tendsto_ae_of_meas hp hp' hf hg hg'' hui' hut' haefg'
+  exact tendsto_Lp_of_tendsto_ae_of_meas hp hp' hf hg hg'' hui' hut' haefg'
 
 
 /-- Forward direction of Vitali's convergence theorem (non-finite version):
     if `f` is a sequence of uniformly integrable, uniformly tight functions that converge in
     measure to some function `g` in a finite measure space, then `f` converge in Lp to `g`. -/
-theorem tendsto_Lp_notFinite_of_tendstoInMeasure (hp : 1 ≤ p) (hp' : p ≠ ∞)
+theorem tendsto_Lp_of_tendstoInMeasure (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : Memℒp g p μ)
     (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)
     (hfg : TendstoInMeasure μ f atTop g) : Tendsto (fun n => snorm (f n - g) p μ) atTop (𝓝 0) := by
   refine tendsto_of_subseq_tendsto fun ns hns => ?_
   obtain ⟨ms, _, hms'⟩ := TendstoInMeasure.exists_seq_tendsto_ae fun ε hε => (hfg ε hε).comp hns
   exact ⟨ms,
-    tendsto_Lp_notFinite_of_tendsto_ae hp hp' (fun _ => hf _) hg
+    tendsto_Lp_of_tendsto_ae hp hp' (fun _ => hf _) hg
       (fun ε hε => -- `UnifIntegrable` on a subsequence
         let ⟨δ, hδ, hδ'⟩ := hui hε
         ⟨δ, hδ, fun i s hs hμs => hδ' _ s hs hμs⟩)
@@ -376,13 +376,11 @@ theorem tendsto_Lp_notFinite_of_tendstoInMeasure (hp : 1 ≤ p) (hp' : p ≠ ∞
 
 A sequence of functions `f` converges to `g` in Lp
 if and only if it is uniformly integrable, uniformly tight and converges to `g` in measure. -/
--- XXX: logically, this should be renamed to `tendstoInMeasure_iff_tendsto_Lp`, while
---  the current version of that could be renamed to `tendstoInMeasure_iff_tendsto_Lp_of_isFinite`.
-theorem tendstoInMeasure_notFinite_iff_tendsto_Lp (hp : 1 ≤ p) (hp' : p ≠ ∞)
+theorem tendstoInMeasure_iff_tendsto_Lp (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ n, Memℒp (f n) p μ) (hg : Memℒp g p μ) :
     TendstoInMeasure μ f atTop g ∧ UnifIntegrable f p μ ∧ UnifTight f p μ
       ↔ Tendsto (fun n => snorm (f n - g) p μ) atTop (𝓝 0) :=
-  ⟨fun h => tendsto_Lp_notFinite_of_tendstoInMeasure hp hp' (fun n => (hf n).1) hg h.2.1 h.2.2 h.1,
+  ⟨fun h => tendsto_Lp_of_tendstoInMeasure hp hp' (fun n => (hf n).1) hg h.2.1 h.2.2 h.1,
     fun h =>
     ⟨tendstoInMeasure_of_tendsto_snorm (lt_of_lt_of_le zero_lt_one hp).ne'
         (fun n => (hf n).aestronglyMeasurable) hg.aestronglyMeasurable h,

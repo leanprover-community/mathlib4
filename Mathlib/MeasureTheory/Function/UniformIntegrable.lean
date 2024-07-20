@@ -32,9 +32,9 @@ formulate the martingale convergence theorem.
 
 * `MeasureTheory.unifIntegrable_finite`: a finite sequence of Lp functions is uniformly
   integrable.
-* `MeasureTheory.tendsto_Lp_of_tendsto_ae`: a sequence of Lp functions which is uniformly
+* `MeasureTheory.tendsto_Lp_finite_of_tendsto_ae`: a sequence of Lp functions which is uniformly
   integrable converges in Lp if they converge almost everywhere.
-* `MeasureTheory.tendstoInMeasure_iff_tendsto_Lp`: Vitali convergence theorem:
+* `MeasureTheory.tendstoInMeasure_iff_tendsto_Lp_finite`: Vitali convergence theorem:
   a sequence of Lp functions converges in Lp if and only if it is uniformly integrable
   and converges in measure.
 
