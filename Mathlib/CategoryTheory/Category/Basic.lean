@@ -313,7 +313,7 @@ theorem epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Ep
 
 section
 
-variable [Quiver.IsThin C] {X Y : C} (f : X ⟶ Y)
+variable [Quiver.IsThin C] (f : X ⟶ Y)
 
 instance : Mono f where
   right_cancellation _ _ _ := Subsingleton.elim _ _
