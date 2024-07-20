@@ -25,13 +25,13 @@ with respect to `w : σ → M` is the sum `∑(s i)•(w i)`. -/
 noncomputable def weight : (σ →₀ ℕ) →+ M :=
   (Finsupp.total σ M ℕ w).toAddMonoidHom
 
-@[deprecated weight]
+@[deprecated weight (since := "2024-07-20")]
 alias _root_.MvPolynomial.weightedDegree := weight
 
 theorem weight_apply (f : σ →₀ ℕ) :
     weight w f = Finsupp.sum f (fun i c => c • w i) := rfl
 
-@[deprecated weight_apply]
+@[deprecated weight_apply (since := "2024-07-20")]
 alias _root_.MvPolynomial.weightedDegree_apply := weight_apply
 
 /-- A weight function is nontorsion if its values are not torsion. -/
@@ -119,14 +119,14 @@ end CanonicallyOrderedAddCommMonoid
 /-- The degree of a finsupp function. -/
 def degree (d : σ →₀ ℕ) := ∑ i ∈ d.support, d i
 
-@[deprecated degree]
+@[deprecated degree (since := "2024-07-20")]
 alias _root_.MvPolynomial.degree := degree
 
 lemma degree_eq_zero_iff (d : σ →₀ ℕ) : degree d = 0 ↔ d = 0 := by
   simp only [degree, Finset.sum_eq_zero_iff, Finsupp.mem_support_iff, ne_eq, Decidable.not_imp_self,
     DFunLike.ext_iff, Finsupp.coe_zero, Pi.zero_apply]
 
-@[deprecated degree_eq_zero_iff]
+@[deprecated degree_eq_zero_iff (since := "2024-07-20")]
 alias _root_.MvPolynomial.degree_eq_zero_iff := degree_eq_zero_iff
 
 theorem degree_zero : degree (0 : σ →₀ ℕ) = 0 := by rw [degree_eq_zero_iff]
@@ -135,7 +135,7 @@ theorem degree_eq_weight_one (d : σ →₀ ℕ) :
     degree d = weight 1 d := by
   simp only [degree, weight_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum]
 
-@[deprecated degree_eq_weight_one]
+@[deprecated degree_eq_weight_one (since := "2024-07-20")]
 alias _root_.MvPolynomial.weightedDegree_one := degree_eq_weight_one
 
 theorem le_degree (s : σ) (f : σ →₀ ℕ) : f s ≤ degree f  := by
