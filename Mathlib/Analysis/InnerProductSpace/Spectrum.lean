@@ -443,17 +443,6 @@ theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} → 
       rw [← B]
       exact hw j hj
 
-theorem index_eigen_extend (i : n) [Nonempty n] (γ : {x // x ≠ i} → 𝕜) (μ : 𝕜) (x : E) :
-    x ∈ Submodule.map (Submodule.subtype (⨅ (j: {x // x ≠ i}), eigenspace (T ↑j) (γ j)))
-    (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) →
-    x ∈ (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) := by
-  intro h
-  simp only [ne_eq, Submodule.mem_map, Subtype.exists, Submodule.mem_iInf, Subtype.forall] at *
-  intro a ha
-  obtain ⟨b, ⟨hb, ⟨_, hb'⟩⟩⟩ := h
-  rw [← hb']
-  exact hb a ha
-
 variable {α β γ : Type*} [DecidableEq α] [CompleteLattice γ] (g : β → γ) (i : α)
 
 local notation "α'" => {y // y ≠ i}
