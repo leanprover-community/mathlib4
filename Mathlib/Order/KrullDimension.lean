@@ -6,6 +6,7 @@ Authors: Jujian Zhang, Fangming Li
 
 import Mathlib.Order.RelSeries
 import Mathlib.Order.WithBot
+import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Nat.Lattice
 
 /-!
@@ -96,6 +97,74 @@ lemma krullDim_eq_zero_of_unique [Unique α] : krullDim α = 0 := by
   refine (LTSeries.longestOf_len_unique (default : LTSeries α) fun q ↦ show _ ≤ 0 from ?_).symm
   by_contra r
   exact ne_of_lt (q.step ⟨0, not_le.mp r⟩) <| Subsingleton.elim _ _
+
+lemma mem_maximals_of_krullDim_eq_zero :
+    krullDim α = 0 → ∀ a : α, a ∈ maximals (· ≤ ·) ⊤ := by
+  intro h a
+  simp only [maximals, Set.top_eq_univ, Set.mem_univ, true_implies, true_and]
+  intro b hab
+  by_contra hba
+  let x : LTSeries α := ⟨1, ![a, b], fun i ↦ by
+    refine' Fin.cases _ _ _
+    · exact 0
+    · exact 1
+    · rw [Fin.fin_one_eq_zero i]
+      exact (Preorder.lt_iff_le_not_le a b).2 ⟨hab, hba⟩
+    · simp only [IsEmpty.forall_iff]⟩
+  have : 1 ≤ krullDim α := le_iSup (α := WithBot (WithTop ℕ)) (fun x : LTSeries _ ↦ x.length) x
+  rw [h] at this
+  exfalso
+  erw [WithBot.one_le_coe] at this
+  norm_num at this
+
+lemma mem_minimals_of_krullDim_eq_zero :
+    krullDim α = 0 → ∀ a : α, a ∈ minimals (· ≤ ·) ⊤ := by
+  intro h a
+  simp only [minimals, Set.top_eq_univ, Set.mem_univ, true_implies, true_and]
+  intro b hab
+  by_contra hba
+  let x : LTSeries α := ⟨1, ![b, a], fun i ↦ by
+    refine' Fin.cases _ _ _
+    · exact 0
+    · exact 1
+    · rw [Fin.fin_one_eq_zero i]
+      exact (Preorder.lt_iff_le_not_le b a).2 ⟨hab, hba⟩
+    · simp only [IsEmpty.forall_iff]⟩
+  have : 1 ≤ krullDim α := le_iSup (α := WithBot (WithTop ℕ)) (fun x : LTSeries _ ↦ x.length) x
+  rw [h] at this
+  exfalso
+  erw [WithBot.one_le_coe] at this
+  norm_num at this
+
+lemma krullDim_eq_zero_iff_mem_maximals_of_nonempty [Nonempty α] :
+    krullDim α = 0 ↔ ∀ a : α, a ∈ maximals (· ≤ ·) ⊤ := by
+  constructor
+  · intro h a
+    exact mem_maximals_of_krullDim_eq_zero h a
+  · intro h
+    have (p : LTSeries α) : p.length = 0 := by
+      by_contra hp
+      let h0 := h (p.2 0)
+      simp only [maximals, Set.top_eq_univ, Set.mem_univ, true_implies, true_and] at h0
+      exact (lt_self_iff_false $ p.2 ⟨1, _⟩).mp $ lt_of_le_of_lt
+        (h0 $ le_of_lt $ p.3 ⟨0, Nat.one_le_iff_ne_zero.mpr hp⟩)
+        (p.3 ⟨0, Nat.one_le_iff_ne_zero.mpr hp⟩)
+    simp only [krullDim, this, Nat.cast_zero, ciSup_const]
+
+lemma krullDim_eq_zero_iff_mem_minimals_of_nonempty [Nonempty α] :
+    krullDim α = 0 ↔ ∀ a : α, a ∈ minimals (· ≤ ·) ⊤ := by
+  constructor
+  · intro h a
+    exact mem_minimals_of_krullDim_eq_zero h a
+  · intro h
+    have (p : LTSeries α) : p.length = 0 := by
+      by_contra hp
+      let h0 := h (p.2 ⟨1, zero_add 1 ▸ Nat.succ_lt_succ (Nat.one_le_iff_ne_zero.mpr hp)⟩)
+      simp only [minimals, Set.top_eq_univ, Set.mem_univ, true_implies, true_and] at h0
+      exact (lt_self_iff_false $ p.2 ⟨1, _⟩).mp $ lt_of_le_of_lt
+        (h0 $ le_of_lt $ p.3 ⟨0, Nat.one_le_iff_ne_zero.mpr hp⟩)
+        (p.3 ⟨0, Nat.one_le_iff_ne_zero.mpr hp⟩)
+    simp only [krullDim, this, Nat.cast_zero, ciSup_const]
 
 lemma krullDim_nonpos_of_subsingleton [Subsingleton α] : krullDim α ≤ 0 := by
   by_cases hα : Nonempty α
