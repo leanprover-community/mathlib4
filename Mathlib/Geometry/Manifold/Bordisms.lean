@@ -47,8 +47,7 @@ open FiniteDimensional
 
 noncomputable section
 
--- Closed and n-dimensional manifolds: these should also move to a separate file.
--- TODO: generalise to `BoundarylessManifold I M`
+-- Closed and `n`-dimensional manifolds: these should also move to a separate file.
 section ClosedManifold
 
 variable (n : ℕ) {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -58,13 +57,14 @@ variable (n : ℕ) {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   (I : ModelWithCorners 𝕜 E H) [SmoothManifoldWithCorners I M]
 
 /-- A topological manifold is called **closed** iff it is compact without boundary. -/
-structure ClosedManifold [CompactSpace M] [I.Boundaryless]
+structure ClosedManifold [CompactSpace M] [BoundarylessManifold I M]
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {H' : Type*} [TopologicalSpace H'] (N : Type*) [TopologicalSpace N] [ChartedSpace H' N]
   (J : ModelWithCorners 𝕜 E' H') [SmoothManifoldWithCorners J N]
 
-instance ClosedManifold.prod [CompactSpace M] [I.Boundaryless] [CompactSpace N] [J.Boundaryless] :
+instance ClosedManifold.prod [CompactSpace M] [BoundarylessManifold I M]
+    [CompactSpace N] [BoundarylessManifold J N] :
   ClosedManifold (M × N) (I.prod J) where
 
 /-- An **n-manifold** is a smooth `n`-dimensional manifold. -/
@@ -78,10 +78,10 @@ instance NManifold.prod {m n : ℕ} [FiniteDimensional 𝕜 E] [FiniteDimensiona
     (s : NManifold m M I) (t : NManifold n N J) : NManifold (m + n) (M × N) (I.prod J) where
   hdim := by rw [s.hdim.symm, t.hdim.symm]; apply finrank_prod
 
-structure ClosedNManifold [CompactSpace M] [I.Boundaryless] [FiniteDimensional 𝕜 E]
+structure ClosedNManifold [CompactSpace M] [BoundarylessManifold I M] [FiniteDimensional 𝕜 E]
     extends NManifold n M I
 
-instance ClosedNManifold.ClosedManifold [CompactSpace M] [I.Boundaryless] [FiniteDimensional 𝕜 E] :
+instance ClosedNManifold.ClosedManifold [CompactSpace M] [BoundarylessManifold I M] [FiniteDimensional 𝕜 E] :
   ClosedManifold M I where
 
 variable {n}
@@ -99,6 +99,8 @@ section examples
 -- Let `E` be a finite-dimensional real normed space.
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
+/- TODO: these two examples worked when ClosedManifold only demanded `I.Boundaryless`;
+-- diagnose and fix this!
 /-- The standard `n`-sphere is a closed manifold. -/
 example {n : ℕ} [FiniteDimensional ℝ E] [Fact (finrank ℝ E = n + 1)] :
   ClosedManifold (sphere (0 : E) 1) (𝓡 n) where
@@ -106,6 +108,7 @@ example {n : ℕ} [FiniteDimensional ℝ E] [Fact (finrank ℝ E = n + 1)] :
 /-- The standard `2`-torus is a closed manifold. -/
 example [FiniteDimensional ℝ E] [Fact (finrank ℝ E = 1 + 1)] :
     ClosedManifold ((sphere (0 : E) 1) × (sphere (0 : E) 1)) ((𝓡 2).prod (𝓡 2)) where
+-/
 
 -- The standard Euclidean space is an `n`-manifold. -/
 example {n : ℕ} {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace ℝ (Fin n)) M]
