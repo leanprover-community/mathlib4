@@ -332,7 +332,7 @@ instance : SMul G (Basis ι R M) where
 @[simp]
 theorem smul_apply (g : G) (b : Basis ι R M) (i : ι) : (g • b) i = g • b i := rfl
 
-theorem coe_smul (g : G) (b : Basis ι R M) : ⇑(g • b) = g • ⇑b := rfl
+@[norm_cast] theorem coe_smul (g : G) (b : Basis ι R M) : ⇑(g • b) = g • ⇑b := rfl
 
 /-- When the group in question is the automorphisms, `•` coincides with `Basis.map`. -/
 @[simp]
