@@ -48,7 +48,6 @@ def AffineTargetMorphismProperty.diagonal (P : AffineTargetMorphismProperty) :
   fun {X _} f _ =>
     ∀ ⦃U₁ U₂ : Scheme⦄ (f₁ : U₁ ⟶ X) (f₂ : U₂ ⟶ X) [IsAffine U₁] [IsAffine U₂] [IsOpenImmersion f₁]
       [IsOpenImmersion f₂], P (pullback.mapDesc f₁ f₂ f)
-#align algebraic_geometry.affine_target_morphism_property.diagonal AlgebraicGeometry.AffineTargetMorphismProperty.diagonal
 
 instance AffineTargetMorphismProperty.diagonal_respectsIso (P : AffineTargetMorphismProperty)
     [P.toProperty.RespectsIso] : P.diagonal.toProperty.RespectsIso := by
@@ -60,7 +59,6 @@ instance AffineTargetMorphismProperty.diagonal_respectsIso (P : AffineTargetMorp
   · introv H _ _
     rw [pullback.mapDesc_comp, P.cancel_right_of_respectsIso]
     apply H
-#align algebraic_geometry.affine_target_morphism_property.diagonal_respects_iso AlgebraicGeometry.AffineTargetMorphismProperty.diagonal_respectsIso
 
 theorem HasAffineProperty.diagonal_of_openCover (P) {Q} [HasAffineProperty P Q]
     {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} Y) [∀ i, IsAffine (𝒰.obj i)]
@@ -84,7 +82,6 @@ theorem HasAffineProperty.diagonal_of_openCover (P) {Q} [HasAffineProperty P Q]
       Functor.const_obj_obj, cospan_one, cospan_left, cospan_right, Category.comp_id]
     convert h𝒰' i j k
     ext <;> simp [Scheme.OpenCover.pullbackHom]
-#align algebraic_geometry.diagonal_target_affine_locally_of_open_cover AlgebraicGeometry.HasAffineProperty.diagonal_of_openCover
 
 theorem HasAffineProperty.diagonal_of_openCover_diagonal
     (P) {Q} [HasAffineProperty P Q]
@@ -109,7 +106,6 @@ theorem HasAffineProperty.diagonal_of_diagonal_of_isPullback
   · apply pullback.hom_ext <;> simp
   · infer_instance
   · infer_instance
-#align algebraic_geometry.affine_target_morphism_property.diagonal_of_target_affine_locally AlgebraicGeometry.HasAffineProperty.diagonal_of_diagonal_of_isPullback
 
 theorem HasAffineProperty.diagonal_iff
     (P) {Q} [HasAffineProperty P Q] {X Y} {f : X ⟶ Y} [IsAffine Y] :
@@ -139,7 +135,6 @@ instance HasAffineProperty.diagonal_affineProperty_isLocal
     intro i
     exact (Q.diagonal.arrow_mk_iso_iff
       (morphismRestrictEq _ (by simp [𝒰]) ≪≫ morphismRestrictOpensRange _ _)).mp (hs' i)
-#align algebraic_geometry.affine_target_morphism_property.is_local.diagonal AlgebraicGeometry.HasAffineProperty.diagonal_affineProperty_isLocal
 
 instance (P) {Q} [HasAffineProperty P Q] : HasAffineProperty P.diagonal Q.diagonal where
   isLocal_affineProperty := letI := HasAffineProperty.isLocal_affineProperty P; inferInstance
@@ -182,8 +177,6 @@ theorem universally_isLocalAtTarget (P : MorphismProperty Scheme)
           simp [IsOpenImmersion.isoOfRangeEq_hom_fac_assoc, Scheme.restrictIsoOfEq,
             morphismRestrict_ι_assoc, h.1.1]
 
-#align algebraic_geometry.universally_is_local_at_target_of_morphism_restrict AlgebraicGeometry.universally_isLocalAtTarget
-
 end Universally
 
 section Topologically
@@ -192,7 +185,6 @@ section Topologically
 def topologically
     (P : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (_ : α → β), Prop) :
     MorphismProperty Scheme.{u} := fun _ _ f => P f.1.base
-#align algebraic_geometry.morphism_property.topologically AlgebraicGeometry.topologically
 
 variable (P : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (_ : α → β), Prop)
 

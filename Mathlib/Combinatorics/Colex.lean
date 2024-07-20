@@ -8,8 +8,6 @@ import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Nat.BitIndices
 import Mathlib.Order.SupClosed
 
-#align_import combinatorics.colex from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
-
 /-!
 # Colexigraphic order
 
@@ -59,8 +57,6 @@ colex, colexicographic, binary
 -/
 
 open Finset Function
-
-#align nat.sum_two_pow_lt Nat.geomSum_lt
 
 variable {α β : Type*}
 
