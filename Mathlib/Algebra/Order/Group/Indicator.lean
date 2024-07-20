@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
+import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 
 /-!
 # Support of a function in an order
