@@ -60,27 +60,9 @@ The conditional kernel is unique (almost everywhere w.r.t. `fst κ`): this is pr
 * `MeasureTheory.Measure.compProd_fst_condKernel`: `ρ.fst ⊗ₘ ρ.condKernel = ρ`
 -/
 
-#align_import probability.kernel.disintegration from "leanprover-community/mathlib"@"6315581f5650ffa2fbdbbbedc41243c8d7070981"
-
 open MeasureTheory Set Filter MeasurableSpace
 
 open scoped ENNReal MeasureTheory Topology ProbabilityTheory
-
-#noalign probability_theory.cond_kernel_real
-#noalign probability_theory.cond_kernel_real_Iic
-#noalign probability_theory.setLIntegral_cond_kernel_real_Iic
-#noalign probability_theory.setLIntegral_cond_kernel_real_univ
-#noalign probability_theory.lintegral_cond_kernel_real_univ
-#noalign probability_theory.setLIntegral_cond_kernel_real_prod
-#noalign probability_theory.lintegral_cond_kernel_real_mem
-#noalign probability_theory.kernel.const_eq_comp_prod_real
-#noalign probability_theory.measure_eq_comp_prod_real
-#noalign probability_theory.lintegral_cond_kernel_real
-#noalign probability_theory.ae_cond_kernel_real_eq_one
-#noalign probability_theory.exists_cond_kernel
-#noalign probability_theory.cond_kernel_def
-#noalign probability_theory.kernel.const_unit_eq_comp_prod
-#noalign probability_theory.kernel.const_eq_comp_prod
 
 namespace ProbabilityTheory.kernel
 
@@ -384,7 +366,6 @@ noncomputable
 irreducible_def _root_.MeasureTheory.Measure.condKernel (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ] :
     kernel α Ω :=
   comap (condKernelUnitBorel (const Unit ρ)) (fun a ↦ ((), a)) measurable_prod_mk_left
-#align measure_theory.measure.cond_kernel MeasureTheory.Measure.condKernel
 
 lemma _root_.MeasureTheory.Measure.condKernel_apply (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ]
     (a : α) :
@@ -410,7 +391,6 @@ lemma _root_.MeasureTheory.Measure.compProd_fst_condKernel
     simp only [prodMkLeft_apply, Measure.condKernel_apply]
   rw [Measure.compProd, h1, h2, compProd_fst_condKernelUnitBorel]
   simp
-#align probability_theory.measure_eq_comp_prod MeasureTheory.Measure.compProd_fst_condKernel
 
 /-- Auxiliary lemma for `condKernel_apply_of_ne_zero`. -/
 lemma _root_.MeasureTheory.Measure.condKernel_apply_of_ne_zero_of_measurableSet
