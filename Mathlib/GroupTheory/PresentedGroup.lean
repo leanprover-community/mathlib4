@@ -82,6 +82,7 @@ def toGroup : PresentedGroup rels →* G :=
 theorem toGroup.of {x : α} : toGroup h (of x) = f x :=
   FreeGroup.lift.of
 
+@[simp]
 theorem toGroup.unique (g : PresentedGroup rels →* G)
     (hg : ∀ x : α, g (PresentedGroup.of x) = f x) : ∀ {x}, g x = toGroup h x := by
   intro x
@@ -111,6 +112,15 @@ theorem equivPresentedGroup_apply_of (x : α) (rels : Set (FreeGroup α)) (e : �
 theorem equivPresentedGroup_symm_apply_of (x : β) (rels : Set (FreeGroup α)) (e : α ≃ β) :
     (equivPresentedGroup rels e).symm (PresentedGroup.of x) =
       PresentedGroup.of (rels := rels) (e.symm x) := rfl
+
+@[ext]
+lemma ext
+    {φ ψ : PresentedGroup rels →* G}
+    (hx : ∀ (x : α), φ (PresentedGroup.of x) = ψ (PresentedGroup.of x)) :
+    φ = ψ := by
+  refine QuotientGroup.monoidHom_ext (Subgroup.normalClosure rels) ?h
+  ext
+  apply hx
 
 end ToGroup
 
