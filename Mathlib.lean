@@ -730,6 +730,7 @@ import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Ring.Rat
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
+import Mathlib.Algebra.Ring.Semireal.Defs
 import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Algebra.Ring.Subring.MulOpposite
 import Mathlib.Algebra.Ring.Subring.Order
