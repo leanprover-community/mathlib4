@@ -15,7 +15,7 @@ We gather results about the quotients of local rings.
 
 -/
 
-open Submodule
+open Submodule FiniteDimensional
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [LocalRing R] [Module.Finite R S]
 
@@ -48,5 +48,28 @@ theorem quotient_span_eq_top_iff_span_eq_top (s : Set S) :
     change _ = LinearMap.range (Ideal.Quotient.mkₐ _ _) at H
     rwa [LinearMap.range_eq_top.mpr (Ideal.Quotient.mkₐ_surjective _ _),
       restrictScalars_eq_top_iff] at H
+
+attribute [local instance] Ideal.Quotient.field
+
+variable [Module.Free R S] in
+theorem finrank_quotient_map :
+    finrank (R ⧸ p) (S ⧸ pS) = finrank R S := by
+  classical
+  have : Module.Finite R (S ⧸ pS) := Module.Finite.of_surjective
+    (IsScalarTower.toAlgHom R S (S ⧸ pS)).toLinearMap (Ideal.Quotient.mk_surjective (I := pS))
+  have : Module.Finite (R ⧸ p) (S ⧸ pS) := Module.Finite.of_restrictScalars_finite R _ _
+  apply le_antisymm
+  · let b := Module.Free.chooseBasis R S
+    conv_rhs => rw [finrank_eq_card_chooseBasisIndex]
+    apply finrank_le_of_span_eq_top
+    rw [Set.range_comp]
+    apply (quotient_span_eq_top_iff_span_eq_top _).mpr b.span_eq
+  · let b := Module.Free.chooseBasis (R ⧸ p) (S ⧸ pS)
+    choose b' hb' using fun i ↦ Ideal.Quotient.mk_surjective (b i)
+    conv_rhs => rw [finrank_eq_card_chooseBasisIndex]
+    apply finrank_le_of_span_eq_top
+    apply (quotient_span_eq_top_iff_span_eq_top _).mp
+    rw [← Set.range_comp, show Ideal.Quotient.mk pS ∘ b' = ⇑b from funext hb']
+    exact b.span_eq
 
 end LocalRing
