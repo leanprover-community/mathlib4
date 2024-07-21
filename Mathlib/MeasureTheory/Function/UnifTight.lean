@@ -212,11 +212,11 @@ section VitaliConvergence
 variable {μ : Measure α} {p : ℝ≥0∞} {f : ℕ → α → β} {g : α → β}
 
 /-! Both directions and an iff version of Vitali's convergence theorem on measure spaces
-   of not necessarily finite volume. See `Thm III.6.15` of Dunford & Schwartz, Part I (1958). -/
+of not necessarily finite volume. See `Thm III.6.15` of Dunford & Schwartz, Part I (1958). -/
 
 /- We start with the reverse direction. We only need to show that uniform tightness follows
-   from convergence in Lp. Mathlib already has the analogous `unifIntegrable_of_tendsto_Lp`
-   and `tendstoInMeasure_of_tendsto_snorm`. -/
+from convergence in Lp. Mathlib already has the analogous `unifIntegrable_of_tendsto_Lp`
+and `tendstoInMeasure_of_tendsto_snorm`. -/
 
 /-- Intermediate lemma for `unifTight_of_tendsto_Lp`. -/
 theorem unifTight_of_tendsto_Lp_zero (hp' : p ≠ ∞) (hf : ∀ n, Memℒp (f n) p μ)
@@ -244,8 +244,8 @@ private theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, Memℒp (
 
 
 /- Next we deal with the forward direction. The `Memℒp` and `TendstoInMeasure` hypotheses
-   are unwrapped and strengthened (by known lemmas) to also have the `StronglyMeasurable`
-   and a.e. convergence hypotheses. The bulk of the proof is done under these stronger hypotheses.-/
+are unwrapped and strengthened (by known lemmas) to also have the `StronglyMeasurable`
+and a.e. convergence hypotheses. The bulk of the proof is done under these stronger hypotheses.-/
 
 theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞)
     {f : ℕ → α → β} {g : α → β} (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g)
@@ -352,8 +352,8 @@ theorem tendsto_Lp_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
   exact tendsto_Lp_of_tendsto_ae_of_meas hp hp' hf hg hg'' hui' hut' haefg'
 
 /-- Forward direction of Vitali's convergence theorem (non-finite version):
-    if `f` is a sequence of uniformly integrable, uniformly tight functions that converge in
-    measure to some function `g` in a finite measure space, then `f` converge in Lp to `g`. -/
+if `f` is a sequence of uniformly integrable, uniformly tight functions that converge in
+measure to some function `g` in a finite measure space, then `f` converge in Lp to `g`. -/
 theorem tendsto_Lp_of_tendstoInMeasure (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : Memℒp g p μ)
     (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)
