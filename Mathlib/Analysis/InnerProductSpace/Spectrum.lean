@@ -388,10 +388,6 @@ theorem basic_index1 {α β : Type*} [DecidableEq α] [CompleteLattice β]
       (s x') := by
   rw [iInf_subtype]; exact iInf_split_single s i
 
---I think index_convert is a bit more subtle than basic_index1 gives it credit for.
---Is there an intermediate abstract lemma? Maybe using a more general invariant subspace like the
---other abstract lemma did. (This should work... like in invariant_subspace_eigenspace_exhaust below)
-
 theorem invariant_subspace_eigen_convert {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
     (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : (eigenspace S μ) ⊓ F =
     Submodule.map (Submodule.subtype F)
@@ -422,12 +418,6 @@ theorem invariant_subspace_eigen_convert {F : Submodule 𝕜 E} (S : E →ₗ[�
       simp only [Submodule.coeSubtype] at B
       rw [← B]
       exact Submodule.coe_mem y
-
-theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} → 𝕜) : (eigenspace (T i) μ ⊓
-    (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) =
-    Submodule.map (Submodule.subtype ((⨅ (j : {x // x ≠ i}), eigenspace (T j) (γ j))))
-    (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) :=
-    invariant_subspace_eigen_convert (T i) μ (invariance_iInf T hC i γ)
 
 theorem iSup_iInf_fun_index_split_single {α β γ : Type*} [DecidableEq α] [CompleteLattice γ]
     (i : α) (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
@@ -469,16 +459,13 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
       (by simp only [not_true_eq_false, not_false_eq_true])) (Subtype.restrict (fun x ↦ x ≠ i) T)
         (fun (i_1 : {x // x ≠ i}) ↦ hT ↑i_1) (fun (i_1 j : { x // x ≠ i }) ↦ hC ↑i_1 ↑j)
     simp only [Submodule.orthogonal_eq_bot_iff] at *
-    have EE : ∀ (γ : {x // x ≠ i} → 𝕜),
-        (⨆ μ, Submodule.map (⨅ (j: {x // x ≠ i}), eigenspace (T ↑j) (γ j)).subtype
-        (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) =
-        (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) :=
-         fun γ ↦ invariant_subspace_eigenspace_exhaust (T i) (hT i) (invariance_iInf T hC i γ)
     have E : (⨆ (γ : {x // x ≠ i} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓ (⨅ (j : {x // x ≠ i}),
     eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))))) = ⨆ (γ : {x // x ≠ i} → 𝕜),
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) := by
-      conv => lhs; rhs; ext γ; rhs; ext μ; rw [index_convert T hC i] --shorten index_convert
-      conv => lhs; rhs; ext γ; rw [EE γ]
+      conv => lhs; rhs; ext γ; rhs; ext μ; rw [invariant_subspace_eigen_convert (T i) μ
+        (invariance_iInf T hC i γ)]
+      conv => lhs; rhs; ext γ; rw [invariant_subspace_eigenspace_exhaust (T i) (hT i)
+        (invariance_iInf T hC i γ)]
     rw [← E] at D
     rw [iSup_iInf_fun_index_split_single i (fun _ ↦ (fun μ ↦ (eigenspace (T _) μ )))]
     exact D
