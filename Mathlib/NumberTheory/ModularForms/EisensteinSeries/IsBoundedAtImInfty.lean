@@ -27,10 +27,8 @@ we then use our bounds for Eisenstein series in these vertical strips to get the
 
 noncomputable section
 
-open ModularForm EisensteinSeries UpperHalfPlane Set Filter Function Complex Matrix
-  SlashInvariantForm
-
-open scoped Topology BigOperators Nat MatrixGroups
+open ModularForm UpperHalfPlane  Matrix SlashInvariantForm CongruenceSubgroup
+open scoped MatrixGroups
 
 namespace EisensteinSeries
 
@@ -69,3 +67,5 @@ theorem isBoundedAtImInfty_eisensteinSeries_SIF {N : ℕ+} (a : Fin 2 → ZMod N
     exact_mod_cast
       summand_bound_of_mem_verticalStrip (lt_trans two_pos hk').le x two_pos
       (verticalStrip_anti_right N hz hn)
+
+end EisensteinSeries

@@ -9,8 +9,6 @@ import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Data.Set.Pointwise.Basic
 
-#align_import algebra.hom.freiman from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
-
 /-!
 # Freiman homomorphisms
 
@@ -78,8 +76,6 @@ structure IsMulFreimanHom (n : ℕ) (A : Set α) (B : Set β) (f : α → β) : 
   map_prod_eq_map_prod ⦃s t : Multiset α⦄ (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A) (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A)
     (hs : Multiset.card s = n) (ht : Multiset.card t = n) (h : s.prod = t.prod) :
     (s.map f).prod = (t.map f).prod
-#align map_prod_eq_map_prod IsMulFreimanHom.map_prod_eq_map_prod
-#align map_sum_eq_map_sum IsAddFreimanHom.map_sum_eq_map_sum
 
 /-- An additive `n`-Freiman homomorphism from a set `A` to a set `B` is a bijective map which
 preserves sums of `n` elements. -/
@@ -112,8 +108,6 @@ lemma IsMulFreimanHom.mul_eq_mul (hf : IsMulFreimanHom 2 A B f) {a b c d : α}
     f a * f b = f c * f d := by
   simp_rw [← prod_pair] at h ⊢
   refine hf.map_prod_eq_map_prod ?_ ?_ (card_pair _ _) (card_pair _ _) h <;> simp [ha, hb, hc, hd]
-#align map_mul_map_eq_map_mul_map IsMulFreimanHom.mul_eq_mul
-#align map_add_map_eq_map_add_map IsAddFreimanHom.add_eq_add
 
 @[to_additive]
 lemma IsMulFreimanIso.mul_eq_mul (hf : IsMulFreimanIso 2 A B f) {a b c d : α}
@@ -233,8 +227,6 @@ lemma IsMulFreimanHom.mono (hmn : m ≤ n) (hf : IsMulFreimanHom n A B f) :
     · rw [_root_.map_add, card_replicate, hs, Nat.add_sub_cancel' hmn]
     · rw [_root_.map_add, card_replicate, ht, Nat.add_sub_cancel' hmn]
     · rw [prod_add, prod_add, h]
-#align map_prod_eq_map_prod_of_le IsMulFreimanHom.mono
-#align map_sum_eq_map_sum_of_le IsAddFreimanHom.mono
 
 end CancelCommMonoid
 
@@ -366,82 +358,3 @@ lemma isAddFreimanIso_Iio (hm : m ≠ 0) (hkmn : m * k ≤ n) :
   · simp [Nat.lt_succ_iff]
 
 end Fin
-
-#noalign add_freiman_hom
-#noalign freiman_hom
-#noalign add_freiman_hom_class
-#noalign freiman_hom_class
-#noalign freiman_hom.fun_like
-#noalign add_freiman_hom.fun_like
-#noalign freiman_hom.freiman_hom_class
-#noalign add_freiman_hom.freiman_hom_class
-#noalign freiman_hom.to_fun_eq_coe
-#noalign add_freiman_hom.to_fun_eq_coe
-#noalign freiman_hom.ext
-#noalign add_freiman_hom.ext
-#noalign freiman_hom.coe_mk
-#noalign add_freiman_hom.coe_nat_eq_mk
-#noalign freiman_hom.mk_coe
-#noalign add_freiman_hom.mk_coe
-#noalign add_freiman_hom.id
-#noalign freiman_hom.id_apply
-#noalign freiman_hom.comp
-#noalign add_freiman_hom.comp
-#noalign freiman_hom.coe_comp
-#noalign add_freiman_hom.coe_comp
-#noalign freiman_hom.comp_apply
-#noalign add_freiman_hom.comp_apply
-#noalign freiman_hom.comp_assoc
-#noalign add_freiman_hom.comp_assoc
-#noalign freiman_hom.cancel_right
-#noalign add_freiman_hom.cancel_right
-#noalign freiman_hom.cancel_right_on
-#noalign add_freiman_hom.cancel_right_on
-#noalign freiman_hom.cancel_left_on
-#noalign add_freiman_hom.cancel_left_on
-#noalign freiman_hom.comp_id
-#noalign add_freiman_hom.comp_id
-#noalign freiman_hom.id_comp
-#noalign add_freiman_hom.id_comp
-#noalign freiman_hom.const
-#noalign add_freiman_hom.const
-#noalign freiman_hom.const_apply
-#noalign add_freiman_hom.const_apply
-#noalign freiman_hom.const_comp
-#noalign add_freiman_hom.const_comp
-#noalign freiman_hom.one_apply
-#noalign add_freiman_hom.zero_apply
-#noalign freiman_hom.one_comp
-#noalign add_freiman_hom.zero_comp
-#noalign freiman_hom.mul_apply
-#noalign add_freiman_hom.add_apply
-#noalign freiman_hom.mul_comp
-#noalign add_freiman_hom.add_comp
-#noalign freiman_hom.inv_apply
-#noalign add_freiman_hom.neg_apply
-#noalign freiman_hom.inv_comp
-#noalign add_freiman_hom.neg_comp
-#noalign freiman_hom.div_apply
-#noalign add_freiman_hom.sub_apply
-#noalign freiman_hom.div_comp
-#noalign add_freiman_hom.sub_comp
-#noalign freiman_hom.comm_monoid
-#noalign add_freiman_hom.add_comm_monoid
-#noalign freiman_hom.comm_group
-#noalign add_freiman_hom.add_comm_group
-#noalign monoid_hom.freiman_hom_class
-#noalign add_monoid_hom.freiman_hom_class
-#noalign monoid_hom.to_freiman_hom
-#noalign add_monoid_hom.to_add_freiman_hom
-#noalign monoid_hom.to_freiman_hom_coe
-#noalign add_monoid_hom.to_freiman_hom_coe
-#noalign monoid_hom.to_freiman_hom_injective
-#noalign add_monoid_hom.to_freiman_hom_injective
-#noalign freiman_hom.to_freiman_hom
-#noalign add_freiman_hom.to_add_freiman_hom
-#noalign freiman_hom.freiman_hom_class_of_le
-#noalign add_freiman_hom.add_freiman_hom_class_of_le
-#noalign freiman_hom.to_freiman_hom_coe
-#noalign add_freiman_hom.to_add_freiman_hom_coe
-#noalign freiman_hom.to_freiman_hom_injective
-#noalign add_freiman_hom.to_freiman_hom_injective
