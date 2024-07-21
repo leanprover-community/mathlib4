@@ -264,14 +264,12 @@ lemma eq1 {l r} {L : l → PGame} {R : r → PGame}
     simp only [← one_def]
   case' left₁ i j | right₂ i j =>
     specialize inv_r i
-    have : IsUnit (mk (R i) (h5.2.2 i)) := by
-      use ⟨_, _, inv_r, by rw [mul_comm]; exact inv_r⟩
+    have : IsUnit (mk (R i) (h5.2.2 i)) := by rw [isUnit_iff_exists_inv]; exact ⟨_, inv_r⟩
     lift (mk (R i) (h5.2.2 i)) to Surrealˣ using this with s
     have : mk (R i).inv' (h4 i) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_r)
   case' left₂ i j | right₁ i j =>
     specialize inv_l i
-    have : IsUnit (mk (L i) (h5.2.1 i)) := by
-      use ⟨_, _, inv_l, by rw [mul_comm]; exact inv_l⟩
+    have : IsUnit (mk (L i) (h5.2.1 i)) := by rw [isUnit_iff_exists_inv]; exact ⟨_, inv_l⟩
     lift (mk (L i) (h5.2.1 i)) to Surrealˣ using this with s
     have : mk (L i).inv' (h3 i i.2) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_l)
   all_goals
@@ -388,8 +386,7 @@ lemma eq2 {l r} {L : l → PGame} {R : r → PGame}
     ring_nf
     conv_lhs => simp [inv']
     specialize inv_r i
-    have : IsUnit (mk (R i) (h5.2.2 i)) := by
-      use ⟨_, _, inv_r, by rw [mul_comm]; exact inv_r⟩
+    have : IsUnit (mk (R i) (h5.2.2 i)) := by rw [isUnit_iff_exists_inv]; exact ⟨_, inv_r⟩
     lift (mk (R i) (h5.2.2 i)) to Surrealˣ using this with s
     have : mk (R i).inv' (h4 i) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_r)
   case' left₂ i j | right₁ i j =>
@@ -398,8 +395,7 @@ lemma eq2 {l r} {L : l → PGame} {R : r → PGame}
     ring_nf
     conv_lhs => simp [inv']
     specialize inv_l i
-    have : IsUnit (mk (L i) (h5.2.1 i)) := by
-      use ⟨_, _, inv_l, by rw [mul_comm]; exact inv_l⟩
+    have : IsUnit (mk (L i) (h5.2.1 i)) := by rw [isUnit_iff_exists_inv]; exact ⟨_, inv_l⟩
     lift (mk (L i) (h5.2.1 i)) to Surrealˣ using this with s
     have : mk (L i).inv' (h3 i i.2) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_l)
   all_goals
