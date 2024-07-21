@@ -248,7 +248,7 @@ theorem tendsto_pow_zero_of_constantCoeff_nilpotent {f} (hf : IsNilpotent (const
   obtain ⟨m, hm⟩ := hf
   simp_rw [tendsto_iff_coeff_tendsto, coeff_zero]
   exact fun d =>  tendsto_atTop_of_eventually_const fun n hn =>
-    coeff_eq_zero_of_constantCoeff_nilpotent f m hm d n hn
+    coeff_eq_zero_of_constantCoeff_nilpotent hm hn
 
 theorem tendsto_pow_zero_of_constantCoeff_zero {f} (hf : constantCoeff σ α f = 0) :
     Filter.Tendsto (fun n : ℕ => f ^ n) Filter.atTop (nhds 0) := by
@@ -260,25 +260,25 @@ theorem tendsto_pow_zero_of_constantCoeff_zero {f} (hf : constantCoeff σ α f =
 theorem tendsto_pow_of_constantCoeff_nilpotent_iff [DiscreteTopology α] (f) :
     Filter.Tendsto (fun n : ℕ => f ^ n) Filter.atTop (nhds 0) ↔
       IsNilpotent (constantCoeff σ α f) := by
-  refine' ⟨_, tendsto_pow_zero_of_constantCoeff_nilpotent ⟩
-  · intro h
-    suffices Filter.Tendsto (fun n : ℕ => constantCoeff σ α (f ^ n)) Filter.atTop (nhds 0) by
-      simp only [Filter.tendsto_def] at this
-      specialize this {0} _
-      suffices  ∀ x : α, {x} ∈ nhds x by exact this 0
-      rw [← discreteTopology_iff_singleton_mem_nhds]; infer_instance
-      simp only [map_pow, Filter.mem_atTop_sets, ge_iff_le, Set.mem_preimage,
-        Set.mem_singleton_iff] at this
-      obtain ⟨m, hm⟩ := this
-      use m
-      apply hm m (le_refl m)
-    simp only [← @comp_apply _ α ℕ]
-    rw [← Filter.tendsto_map'_iff]
-    simp only [Filter.Tendsto, Filter.map_le_iff_le_comap] at h ⊢
-    apply le_trans h
-    apply Filter.comap_mono
-    rw [← Filter.map_le_iff_le_comap]
-    apply continuous_constantCoeff.continuousAt
+  refine ⟨?_, tendsto_pow_zero_of_constantCoeff_nilpotent ⟩
+  intro h
+  suffices Filter.Tendsto (fun n : ℕ => constantCoeff σ α (f ^ n)) Filter.atTop (nhds 0) by
+    simp only [Filter.tendsto_def] at this
+    specialize this {0} _
+    suffices  ∀ x : α, {x} ∈ nhds x by exact this 0
+    rw [← discreteTopology_iff_singleton_mem_nhds]; infer_instance
+    simp only [map_pow, Filter.mem_atTop_sets, ge_iff_le, Set.mem_preimage,
+      Set.mem_singleton_iff] at this
+    obtain ⟨m, hm⟩ := this
+    use m
+    apply hm m (le_refl m)
+  simp only [← @comp_apply _ α ℕ]
+  rw [← Filter.tendsto_map'_iff]
+  simp only [Filter.Tendsto, Filter.map_le_iff_le_comap] at h ⊢
+  apply le_trans h
+  apply Filter.comap_mono
+  rw [← Filter.map_le_iff_le_comap]
+  apply continuous_constantCoeff.continuousAt
 
 end
 
