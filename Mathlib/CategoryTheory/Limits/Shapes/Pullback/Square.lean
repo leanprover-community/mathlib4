@@ -1,5 +1,19 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Square
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+
+/-!
+# Commutative squares that are pushout or pullback squares
+
+In this file, we translate the `IsPushout` and `IsPullback`
+API for the objects of the category `Square C` of commutative
+squares in a category `C`.
+
+-/
 
 universe v u
 
