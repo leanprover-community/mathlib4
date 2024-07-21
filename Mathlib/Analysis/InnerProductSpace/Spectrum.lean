@@ -413,8 +413,8 @@ theorem invariant_subspace_eigen_convert {F : Submodule 𝕜 E} (S : E →ₗ[�
       exists_eq_right] at h
     obtain ⟨y, hy⟩ := h
     simp only [mem_eigenspace_iff, SetLike.mk_smul_mk] at hy
-    simp only [mem_eigenspace_iff]--Can't seem to finish this...
-    sorry
+    simp only [mem_eigenspace_iff]
+
 
 theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} → 𝕜) : (eigenspace (T i) μ ⊓
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) =
