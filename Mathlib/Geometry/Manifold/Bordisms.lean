@@ -3,6 +3,7 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.Instances.Sphere
 import Mathlib.Geometry.Manifold.InteriorBoundary
@@ -153,6 +154,7 @@ lemma boundary_product [h : Fact (x < y)] :
   rw [this]
 
 end BoundaryIntervals
+
 -- Let M, M' and W be smooth manifolds.
 variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
@@ -423,6 +425,12 @@ is a smooth manifold modeled on `(E, H)`. -/
 -- XXX. do I really need the same model twice??
 instance SmoothManifoldWithCorners.sum : SmoothManifoldWithCorners I (M ⊕ M') := sorry
 
+/-- The inclusion `M → M ⊕ M'` is smooth. -/
+lemma ContMDiff.inl : ContMDiff I I ∞ (M' := M ⊕ M') (fun x ↦ Sum.inl x) := sorry
+
+/-- The inclusion `M' → M ⊕ M'` is smooth. -/
+lemma ContMDiff.inr : ContMDiff I I ∞ (M' := M ⊕ M') (fun x ↦ Sum.inr x) := sorry
+
 end DisjUnion
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
@@ -442,59 +450,81 @@ namespace UnorientedCobordism
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
-  {I' : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I' M']
+  /-{I' : ModelWithCorners ℝ E H}-/ [SmoothManifoldWithCorners I M']
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
-  {I'' : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I'' M''] {n : ℕ}
+  /-{I'' : ModelWithCorners ℝ E H}-/ [SmoothManifoldWithCorners I M''] {n : ℕ}
   [CompactSpace M] [BoundarylessManifold I M]
-  [CompactSpace M'] [BoundarylessManifold I' M'] [CompactSpace M''] [BoundarylessManifold I'' M'']
+  [CompactSpace M'] [BoundarylessManifold I M'] [CompactSpace M''] [BoundarylessManifold I M'']
 
-/-- An **unoriented cobordism** between two singular `n`-manifolds (M,f) and (N,g) on `X`
-is a compact smooth `n`-manifold `W` with a continuous map `F: W→ X` whose boundary is diffeomorphic
-to the disjoint union M ⊔ N such that F restricts to f resp. g in the obvious way. -/
-structure _root_.UnorientedCobordism (s : SingularNManifold X n M I) (t : SingularNManifold X n M' I')
-    (W : Type*) [TopologicalSpace W] [ChartedSpace H'' W]
-    (J : ModelWithCorners ℝ E'' H'') [SmoothManifoldWithCorners J W] where
+/-- An **unoriented cobordism** between two singular `n`-manifolds `(M,f)` and `(N,g)` on `X`
+is a compact smooth `n`-manifold `W` with a continuous map `F: W → X`
+whose boundary is diffeomorphic to the disjoint union `M ⊔ N` such that `F` restricts to `f`
+resp. `g` in the obvious way. -/
+structure UnorientedCobordism (s : SingularNManifold X n M I)
+    (t : SingularNManifold X n M' I) {W : Type*} [TopologicalSpace W]
+    [ChartedSpace H'' W] {J : ModelWithCorners ℝ E'' H''} [SmoothManifoldWithCorners J W]
+    (bd : BoundaryManifoldData W J) [HasNiceBoundary bd] where
   hW : CompactSpace W
   hW' : finrank ℝ E'' = n + 1
   F : W → X
   hF : Continuous F
-  -- φ : Diffeomorph model I (J.boundary W) M ∞--(I.disjUnion I') (M ⊔ M')
-  -- φ : Diffeomorph (∂ W) (induced J) (M ⊔ M') I.disjUnion I'
-  -- hFf : F.restrict φ^{-1}(M) = s.f
-  -- hFg : F.restrict φ^{-1}(N) = t.f
+  /-- The boundary of `W` is diffeomorphic to the disjoint union `M ⊔ M'`. -/
+  φ : Diffeomorph bd.model I (J.boundary W) (M ⊕ M') ∞
+  /-- `F` restricted to `M ↪ ∂W` equals `f`: this is formalised more nicely as
+  `f = F ∘ ι ∘ φ⁻¹ : M → X`, where `ι : ∂W → W` is the inclusion. -/
+  hFf : F ∘ ((fun ⟨x, _⟩ ↦ x : J.boundary W → W)) ∘ φ.symm ∘ (fun x ↦ Sum.inl x) = s.f
+  /-- `F` restricted to `N ↪ ∂W` equals `g` -/
+  hFg : F ∘ ((fun ⟨x, _⟩ ↦ x : J.boundary W → W)) ∘ φ.symm ∘ (fun x ↦ Sum.inr x) = t.f
 
-open Set
+variable {s : SingularNManifold X n M I}
+  {t : SingularNManifold X n M' I} {W : Type*} [TopologicalSpace W] [ChartedSpace H'' W]
+  {J : ModelWithCorners ℝ E'' H''} [SmoothManifoldWithCorners J W]
+  {bd : BoundaryManifoldData W J} [HasNiceBoundary bd]
 
-#exit
+-- TODO: can I remove the `Fact`, concluding the empty set otherwise? or is this not useful?
+variable {x y : ℝ} [Fact (x < y)] in
+def bar : BoundaryManifoldData ((Icc x y)) (modelWithCornersEuclideanHalfSpace 1) := sorry
+
+def foo : BoundaryManifoldData (M × (Icc (0 : ℝ) (1 : ℝ))) (I.prod (𝓡∂ 1)) := by
+  apply BoundaryManifoldData.prod_of_boundaryless_left
+  apply bar
+
+instance : HasNiceBoundary (foo (M := M) (I := I)) := sorry
 
 /-- Each singular `n`-manifold `(M,f)` is cobordant to itself. -/
 def refl (s : SingularNManifold X n M I) :
-    UnorientedCobordism s s (M × (Icc (0 : ℝ) 1)) (I.prod (𝓡∂ 1)) where
+    UnorientedCobordism s s (W := (M × (Icc (0 : ℝ) 1))) (J := (I.prod (𝓡∂ 1))) foo where
   hW := by infer_instance
   hW' := by rw [finrank_prod, s.hdim, finrank_euclideanSpace_fin]
   F := s.f ∘ (fun p ↦ p.1)
   hF := s.hf.comp continuous_fst
+  φ := sorry
+  hFf := sorry
+  hFg := sorry
 
-variable (s : SingularNManifold X n M I) (t : SingularNManifold X n M' I')
+variable (s : SingularNManifold X n M I) (t : SingularNManifold X n M' I)
   {W : Type*} [TopologicalSpace W] [ChartedSpace H'' W]
   {J : ModelWithCorners ℝ E'' H''} [SmoothManifoldWithCorners J W]
+  {bd : BoundaryManifoldData W J} [HasNiceBoundary bd]
 
 /-- Being cobordant is symmetric. -/
-def symm (φ : UnorientedCobordism s t W J) : UnorientedCobordism t s W J where
+def symm (φ : UnorientedCobordism s t (W := W) (J := J) bd) : UnorientedCobordism t s bd where
   hW := φ.hW
   hW' := φ.hW'
   F := φ.F
   hF := φ.hF
-  -- TODO: boundary stuff...
+  φ := sorry
+  hFf := sorry
+  hFg := sorry
 
 -- Fleshing out the details for transitivity will take us too far: we merely sketch the necessary
 -- pieces.
 section transSketch
 
-variable {u : SingularNManifold X n M'' I''}
+variable {u : SingularNManifold X n M'' I}
   {W' : Type*} [TopologicalSpace W'] [ChartedSpace H''' W']
   {J' : ModelWithCorners ℝ E''' H'''} [SmoothManifoldWithCorners J' W']
-variable {s t}
+  {bd' : BoundaryManifoldData W' J'} [HasNiceBoundary bd']
 
 -- Idea: glue the cobordisms W and W' along their common boundary M',
 -- as identified by the diffeomorphism W → M' ← W'.
@@ -503,10 +533,11 @@ variable {s t}
 -- mathlib has abstract pushouts (and proved that TopCat has them);
 -- `Topology/Category/TopCat/Limits/Pullbacks.lean` provides a concrete description of pullbacks
 -- in TopCat. A good next step would be to adapt this argument to pushouts, and use this here.
-def glue (φ : UnorientedCobordism s t W J) (ψ : UnorientedCobordism t u W' J') : Type* := sorry
+-- XXX: can I remove the s and t variables from this definition?
+def glue (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') : Type* := sorry
 
-instance (φ : UnorientedCobordism s t W J) (ψ : UnorientedCobordism t u W' J') :
-    TopologicalSpace (glue φ ψ) := sorry
+instance (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
+    TopologicalSpace (glue s t φ ψ) := sorry
 
 -- TODO: Using E and H in this declaration and the next one is wrong...
 -- Do I need to demand that all manifolds are modeled on the same spaces H and E,
@@ -515,21 +546,32 @@ instance (φ : UnorientedCobordism s t W J) (ψ : UnorientedCobordism t u W' J')
 -- the question is where this complexity should go.)
 
 -- This and the next item require the collar neighbourhood theorem-
-instance (φ : UnorientedCobordism s t W J) (ψ : UnorientedCobordism t u W' J') :
-    ChartedSpace H (glue φ ψ) := sorry
+instance (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
+    ChartedSpace H (glue s t φ ψ) := sorry
 
-def glueModel (φ : UnorientedCobordism s t W J) (ψ : UnorientedCobordism t u W' J') :
+-- TODO: can I remove the s and t variables from this one?
+def glueModel (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
     ModelWithCorners ℝ E H := sorry
 
-instance (φ : UnorientedCobordism s t W J) (ψ : UnorientedCobordism t u W' J') :
-    SmoothManifoldWithCorners (glueModel φ ψ) (glue φ ψ) := sorry
+instance (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
+    SmoothManifoldWithCorners (glueModel s t φ ψ) (glue s t φ ψ) := sorry
 
-noncomputable def trans (φ : UnorientedCobordism s t W J) (ψ : UnorientedCobordism t u W' J') :
-    UnorientedCobordism s u (glue φ ψ) (glueModel φ ψ) where
+-- TODO: can I remove the s and t variables from this one?
+def glueBoundaryData (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
+  BoundaryManifoldData (glue s t φ ψ) (glueModel s t φ ψ) := sorry
+
+instance (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
+  HasNiceBoundary (glueBoundaryData s t φ ψ) := sorry
+
+noncomputable def trans (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
+    UnorientedCobordism s u (glueBoundaryData s t φ ψ) where
   hW := sorry
   hW' := sorry
   F := sorry
   hF := sorry
+  φ := sorry
+  hFf := sorry
+  hFg := sorry
 
 end transSketch
 
