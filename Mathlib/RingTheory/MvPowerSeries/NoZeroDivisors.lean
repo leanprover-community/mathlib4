@@ -66,22 +66,6 @@ theorem mem_nonZeroDivisors_of_constantCoeff {φ : MvPowerSeries σ R}
 
 end Semiring
 
-section
-
-variable {σ R : Type*} [Semiring R] [NoZeroDivisors R]
-
-instance : NoZeroDivisors (MvPowerSeries σ R) where
-  eq_zero_or_eq_zero_of_mul_eq_zero {φ ψ} h := by
-    letI : LinearOrder σ := LinearOrder.swap σ WellOrderingRel.isWellOrder.linearOrder
-    letI : WellFoundedGT σ := by
-      unfold WellFoundedGT
-      suffices IsWellFounded σ fun x y ↦ WellOrderingRel x y by
-        exact this
-      exact IsWellOrder.toIsWellFounded
-    simpa only [eq_zero_iff_lexOrder_eq_top, lexOrder_mul, WithTop.add_eq_top] using h
-
-end
-
 
 end MvPowerSeries
 
