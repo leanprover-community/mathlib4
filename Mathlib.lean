@@ -2748,7 +2748,6 @@ import Mathlib.Init.Data.Nat.GCD
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Init.Data.Ordering.Lemmas
-import Mathlib.Init.Data.Prod
 import Mathlib.Init.Data.Quot
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Init.Data.Sigma.Lex
