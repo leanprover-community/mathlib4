@@ -112,10 +112,7 @@ lemma mapCoeffs_apply (p : A[X]) (i) :
 @[simp]
 lemma mapCoeffs_monomial (n : ℕ) (x : A) :
     mapCoeffs (monomial n x) = monomial n x′ := by
-  simp only [mapCoeffs, Derivation.coe_equiv_comp, LinearMap.coe_comp,
-    LinearMap.coe_restrictScalars, LinearEquiv.coe_coe, Derivation.coeFn_coe, Function.comp_apply,
-    Derivation.mapCoeffs_monomial]
-  rfl
+  simp [mapCoeffs]
 
 @[simp]
 lemma mapCoeffs_X :
@@ -130,13 +127,9 @@ variable {K : Type*} [CommDifferentialRing K] [DifferentialAlgebra A K]
 theorem apply_aeval_eq' (x : K) (p : A[X]) :
     (aeval x p)′ = aeval x (mapCoeffs p) +
       aeval x (derivative p) * x′ := by
-  convert Derivation.apply_aeval_eq' (R := ℤ) (A := A) (M := A)
-      (K := K) (M' := K)
-      CommDifferentialRing.deriv CommDifferentialRing.deriv (Algebra.linearMap A K) ..
-  · simp only [mapCoeffs, Derivation.coe_equiv_comp, LinearMap.coe_comp,
-      LinearMap.coe_restrictScalars, LinearEquiv.coe_coe, Derivation.coeFn_coe, Function.comp_apply]
-    sorry
+  convert Derivation.apply_aeval_eq'
+      CommDifferentialRing.deriv _ (Algebra.linearMap A K) ..
+  · simp [mapCoeffs]
   · simp [deriv_algebraMap]
-
 
 end DifferentialRing
