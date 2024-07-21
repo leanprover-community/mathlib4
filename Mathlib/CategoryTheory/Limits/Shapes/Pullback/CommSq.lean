@@ -584,7 +584,7 @@ end
 -- and `vᵢⱼ` for a vertical morphism starting at `(i,j)`.
 /-- Paste two pullback squares "vertically" to obtain another pullback square.
 
-The objects here fit into the following diagram:
+The objects in the statement fit into the following diagram:
 ```
 X₁₁ - h₁₁ -> X₁₂
 |            |
@@ -605,7 +605,7 @@ theorem paste_vert {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁�
 
 /-- Paste two pullback squares "horizontally" to obtain another pullback square.
 
-The objects here fit into the following diagram:
+The objects in the statement fit into the following diagram:
 ```
 X₁₁ - h₁₁ -> X₁₂ - h₁₂ -> X₁₃
 |            |            |
@@ -623,7 +623,7 @@ theorem paste_horiz {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁�
 /-- Given a pullback square assembled from a commuting square on the top and
 a pullback square on the bottom, the top square is a pullback square.
 
-The objects here fit into the following diagram:
+The objects in the statement fit into the following diagram:
 ```
 X₁₁ - h₁₁ -> X₁₂
 |            |
@@ -645,7 +645,7 @@ theorem of_bot {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : 
 /-- Given a pullback square assembled from a commuting square on the left and
 a pullback square on the right, the left square is a pullback square.
 
-The objects here fit into the following diagram:
+The objects in the statement fit into the following diagram:
 ```
 X₁₁ - h₁₁ -> X₁₂ - h₁₂ -> X₁₃
 |            |            |
@@ -693,7 +693,7 @@ theorem of_right' {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₂
 /-- Variant of `IsPullback.of_bot`, where `v₁₁` is induced from a morphism `v₃₁ : X₁₁ ⟶ X₃₁`, and
 the universal property of the bottom square.
 
-The objects here fit into the following diagram:
+The objects in the statement fit into the following diagram:
 ```
 X₁₁ - h₁₁ -> X₁₂
 |            |
@@ -886,14 +886,38 @@ end
 -- Objects here are arranged in a 3x2 grid, and indexed by their xy coordinates.
 -- Morphisms are named `hᵢⱼ` for a horizontal morphism starting at `(i,j)`,
 -- and `vᵢⱼ` for a vertical morphism starting at `(i,j)`.
-/-- Paste two pushout squares "vertically" to obtain another pushout square. -/
+/-- Paste two pushout squares "vertically" to obtain another pushout square.
+
+The objects in the statement fit into the following diagram:
+```
+X₁₁ - h₁₁ -> X₁₂
+|            |
+v₁₁          v₁₂
+↓            ↓
+X₂₁ - h₂₁ -> X₂₂
+|            |
+v₂₁          v₂₂
+↓            ↓
+X₃₁ - h₃₁ -> X₃₂
+```
+-/
 theorem paste_vert {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₂₁ : X₂₁ ⟶ X₂₂}
     {h₃₁ : X₃₁ ⟶ X₃₂} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
     (s : IsPushout h₁₁ v₁₁ v₁₂ h₂₁) (t : IsPushout h₂₁ v₂₁ v₂₂ h₃₁) :
     IsPushout h₁₁ (v₁₁ ≫ v₂₁) (v₁₂ ≫ v₂₂) h₃₁ :=
   of_isColimit (bigSquareIsPushout _ _ _ _ _ _ _ s.w t.w t.isColimit s.isColimit)
 
-/-- Paste two pushout squares "horizontally" to obtain another pushout square. -/
+/-- Paste two pushout squares "horizontally" to obtain another pushout square.
+
+The objects in the statement fit into the following diagram:
+```
+X₁₁ - h₁₁ -> X₁₂ - h₁₂ -> X₁₃
+|            |            |
+v₁₁          v₁₂          v₁₃
+↓            ↓            ↓
+X₂₁ - h₂₁ -> X₂₂ - h₂₂ -> X₂₃
+```
+-/
 theorem paste_horiz {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₁₂ : X₁₂ ⟶ X₁₃}
     {h₂₁ : X₂₁ ⟶ X₂₂} {h₂₂ : X₂₂ ⟶ X₂₃} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₁₃ : X₁₃ ⟶ X₂₃}
     (s : IsPushout h₁₁ v₁₁ v₁₂ h₂₁) (t : IsPushout h₁₂ v₁₂ v₁₃ h₂₂) :
@@ -901,32 +925,96 @@ theorem paste_horiz {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁�
   (paste_vert s.flip t.flip).flip
 
 /-- Given a pushout square assembled from a pushout square on the top and
-a commuting square on the bottom, the bottom square is a pushout square. -/
-theorem of_bot {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₂₁ : X₂₁ ⟶ X₂₂} {h₃₁ : X₃₁ ⟶ X₃₂}
+a commuting square on the bottom, the bottom square is a pushout square.
+
+The objects in the statement fit into the following diagram:
+```
+X₁₁ - h₁₁ -> X₁₂
+|            |
+v₁₁          v₁₂
+↓            ↓
+X₂₁ - h₂₁ -> X₂₂
+|            |
+v₂₁          v₂₂
+↓            ↓
+X₃₁ - h₃₁ -> X₃₂
+```
+-/
+theorem of_top {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₂₁ : X₂₁ ⟶ X₂₂} {h₃₁ : X₃₁ ⟶ X₃₂}
     {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
     (s : IsPushout h₁₁ (v₁₁ ≫ v₂₁) (v₁₂ ≫ v₂₂) h₃₁) (p : h₂₁ ≫ v₂₂ = v₂₁ ≫ h₃₁)
     (t : IsPushout h₁₁ v₁₁ v₁₂ h₂₁) : IsPushout h₂₁ v₂₁ v₂₂ h₃₁ :=
   of_isColimit (rightSquareIsPushout _ _ _ _ _ _ _ t.w p t.isColimit s.isColimit)
 
 /-- Given a pushout square assembled from a pushout square on the left and
-a commuting square on the right, the right square is a pushout square. -/
-theorem of_right {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₁₂ : X₁₂ ⟶ X₁₃} {h₂₁ : X₂₁ ⟶ X₂₂}
+a commuting square on the right, the right square is a pushout square.
+
+The objects in the statement fit into the following diagram:
+```
+X₁₁ - h₁₁ -> X₁₂ - h₁₂ -> X₁₃
+|            |            |
+v₁₁          v₁₂          v₁₃
+↓            ↓            ↓
+X₂₁ - h₂₁ -> X₂₂ - h₂₂ -> X₂₃
+```
+-/
+theorem of_left {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₁₂ : X₁₂ ⟶ X₁₃} {h₂₁ : X₂₁ ⟶ X₂₂}
     {h₂₂ : X₂₂ ⟶ X₂₃} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₁₃ : X₁₃ ⟶ X₂₃}
     (s : IsPushout (h₁₁ ≫ h₁₂) v₁₁ v₁₃ (h₂₁ ≫ h₂₂)) (p : h₁₂ ≫ v₁₃ = v₁₂ ≫ h₂₂)
     (t : IsPushout h₁₁ v₁₁ v₁₂ h₂₁) : IsPushout h₁₂ v₁₂ v₁₃ h₂₂ :=
-  (of_bot s.flip p.symm t.flip).flip
+  (of_top s.flip p.symm t.flip).flip
 
 theorem paste_vert_iff {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₂₁ : X₂₁ ⟶ X₂₂}
     {h₃₁ : X₃₁ ⟶ X₃₂} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
     (s : IsPushout h₁₁ v₁₁ v₁₂ h₂₁) (e : h₂₁ ≫ v₂₂ = v₂₁ ≫ h₃₁) :
     IsPushout h₁₁ (v₁₁ ≫ v₂₁) (v₁₂ ≫ v₂₂) h₃₁ ↔ IsPushout h₂₁ v₂₁ v₂₂ h₃₁ :=
-  ⟨fun h => h.of_bot e s, s.paste_vert⟩
+  ⟨fun h => h.of_top e s, s.paste_vert⟩
 
 theorem paste_horiz_iff {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₁₂ : X₁₂ ⟶ X₁₃}
     {h₂₁ : X₂₁ ⟶ X₂₂} {h₂₂ : X₂₂ ⟶ X₂₃} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₁₃ : X₁₃ ⟶ X₂₃}
     (s : IsPushout h₁₁ v₁₁ v₁₂ h₂₁) (e : h₁₂ ≫ v₁₃ = v₁₂ ≫ h₂₂) :
     IsPushout (h₁₁ ≫ h₁₂) v₁₁ v₁₃ (h₂₁ ≫ h₂₂) ↔ IsPushout h₁₂ v₁₂ v₁₃ h₂₂ :=
-  ⟨fun h => h.of_right e s, s.paste_horiz⟩
+  ⟨fun h => h.of_left e s, s.paste_horiz⟩
+
+/-- Variant of `IsPushout.of_top` where `v₂₂` is induced from a morphism `v₁₃ : X₁₂ ⟶ X₃₂`, and
+the universal property of the top square.
+
+The objects in the statement fit into the following diagram:
+```
+X₁₁ - h₁₁ -> X₁₂
+|            |
+v₁₁          v₁₂
+↓            ↓
+X₂₁ - h₂₁ -> X₂₂
+|            |
+v₂₁          v₂₂
+↓            ↓
+X₃₁ - h₃₁ -> X₃₂
+```
+-/
+theorem of_top' {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₂₁ : X₂₁ ⟶ X₂₂} {h₃₁ : X₃₁ ⟶ X₃₂}
+    {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₁₃ : X₁₂ ⟶ X₃₂} {v₂₁ : X₂₁ ⟶ X₃₁}
+    (s : IsPushout h₁₁ (v₁₁ ≫ v₂₁) v₁₃ h₃₁) (t : IsPushout h₁₁ v₁₁ v₁₂ h₂₁) :
+      IsPushout h₂₁ v₂₁ (t.desc v₁₃ (v₂₁ ≫ h₃₁) (by rw [s.w, Category.assoc])) h₃₁ :=
+  of_top ((t.inl_desc _ _ _).symm ▸ s) (t.inr_desc _ _ _) t
+
+/-- Variant of `IsPushout.of_right` where `h₂₂` is induced from a morphism `h₂₃ : X₂₁ ⟶ X₂₃`, and
+the universal property of the left square.
+
+The objects in the statement fit into the following diagram:
+```
+X₁₁ - h₁₁ -> X₁₂ - h₁₂ -> X₁₃
+|            |            |
+v₁₁          v₁₂          v₁₃
+↓            ↓            ↓
+X₂₁ - h₂₁ -> X₂₂ - h₂₂ -> X₂₃
+```
+-/
+theorem of_left' {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₁₂ : X₁₂ ⟶ X₁₃} {h₂₁ : X₂₁ ⟶ X₂₂}
+    {h₂₃ : X₂₁ ⟶ X₂₃} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₁₃ : X₁₃ ⟶ X₂₃}
+    (s : IsPushout (h₁₁ ≫ h₁₂) v₁₁ v₁₃ h₂₃) (t : IsPushout h₁₁ v₁₁ v₁₂ h₂₁) :
+    IsPushout h₁₂ v₁₂ v₁₃ (t.desc (h₁₂ ≫ v₁₃) h₂₃ (by rw [← Category.assoc, s.w])) :=
+  of_left ((t.inr_desc _ _ _).symm ▸ s) (by simp only [inl_desc]) t
 
 section
 
@@ -947,7 +1035,7 @@ theorem of_has_biproduct (X Y : C) [HasBinaryBiproduct X Y] :
 theorem inl_snd' {b : BinaryBicone X Y} (h : b.IsBilimit) :
     IsPushout b.inl (0 : X ⟶ 0) b.snd (0 : 0 ⟶ Y) := by
   apply flip
-  refine of_right ?_ (by simp) (of_isBilimit h)
+  refine of_left ?_ (by simp) (of_isBilimit h)
   simp
 
 /-- The square
@@ -967,7 +1055,7 @@ theorem inl_snd (X Y : C) [HasBinaryBiproduct X Y] :
 
 theorem inr_fst' {b : BinaryBicone X Y} (h : b.IsBilimit) :
     IsPushout b.inr (0 : Y ⟶ 0) b.fst (0 : 0 ⟶ X) := by
-  refine of_bot ?_ (by simp) (of_isBilimit h)
+  refine of_top ?_ (by simp) (of_isBilimit h)
   simp
 
 /-- The square
@@ -987,7 +1075,7 @@ theorem inr_fst (X Y : C) [HasBinaryBiproduct X Y] :
 
 theorem of_is_bilimit' {b : BinaryBicone X Y} (h : b.IsBilimit) :
     IsPushout b.fst b.snd (0 : X ⟶ 0) (0 : Y ⟶ 0) := by
-  refine IsPushout.of_right ?_ (by simp) (IsPushout.inl_snd' h)
+  refine IsPushout.of_left ?_ (by simp) (IsPushout.inl_snd' h)
   simp
 
 theorem of_hasBinaryBiproduct (X Y : C) [HasBinaryBiproduct X Y] :
