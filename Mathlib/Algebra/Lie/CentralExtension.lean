@@ -31,6 +31,12 @@ linear map `ρ : L → End R M` such that `ρ [x,y] = c(x,y) ρ x ρ y` or somet
 * cocycle description
 * cohomological criterion for triviality
 
+## References
+
+* [N. Bourbaki, *Lie groups and {L}ie algebras. {C}hapters 1--3*][bourbaki1975]
+-- extensions are chapter 1 section 7, cohomology is Exercises section 3 (p116, near end of book)
+
+
 ## Tags
 
 lie ring, lie algebra, central extension
@@ -40,7 +46,7 @@ suppress_compilation
 
 open scoped TensorProduct
 
-variable (R L M : Type*)
+variable {R L M : Type*}
 
 namespace LieAlgebra
 
@@ -49,10 +55,50 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing M] [LieAlgebra R M]
 /-- A Lie algebra homomorphism is a central extension if it is surjective and the kernel lies in the
 center. The center condition is equivalent to the kernel being a trivial module for the adjoint
 adjoint action. -/
-def IsCentralExtension (f : M →ₗ⁅R⁆ L) : Prop := Function.Surjective f ∧ LieModule.IsTrivial M f.ker
+class IsCentralExtension (f : M →ₗ⁅R⁆ L) : Prop where
+  protected surjective : Function.Surjective f
+  protected central : LieModule.IsTrivial M f.ker
 
-/-- A Lie algebra homomorphism is module-split if it is surjective and the source is linearly
-isomorphic to the direct sum of the kernel and the target. -/
-def IsModuleSplit (f : M →ₗ⁅R⁆ L) : Prop := Function.Surjective f ∧ Nonempty (M ≃ₗ[R] L × f.ker)
+lemma surjective_of_central_extension (f : M →ₗ⁅R⁆ L) [IsCentralExtension f] :
+    Function.Surjective f := IsCentralExtension.surjective
+
+lemma central_of_central_extension (f : M →ₗ⁅R⁆ L) [IsCentralExtension f] :
+    LieModule.IsTrivial M f.ker := IsCentralExtension.central
+
+/-- A module-splitting is a surjective Lie algebra homomorphism equipped with a linear isomorphism
+from the source to the direct sum of the kernel and the target. This should be revised to the usual
+notion of splitting of a surjection. -/
+class ModuleSplitting (f : M →ₗ⁅R⁆ L) where
+/-- The map `f` is surjective. -/
+  protected surjective : Prop := Function.Surjective f
+/-- The source splits as an `R`-module. -/
+  protected splitting : M ≃ₗ[R] L × f.ker
+/-- The splitting is compatible with `f`. -/
+  protected compatible : Prop := (LinearMap.fst R L f.ker) ∘ₗ splitting = (f : M →ₗ[R] L)
+
+/-!
+/-- A Lie algebra 2-cocycle. -/
+structure 2cocycle [AddCommGroup V] [LieModule L V] where
+  toFun : (Fin 2 → L) → V
+  map_add' :
+  map_smul' :
+  map_eq_zero_of_eq' :
+  cocycle-cond :
+
+
+/-- Make a cocycle from a module-split central extendion-/
+def cocycle_of_splitting (f : M →ₗ⁅R⁆ L) [IsCentralExtension f] [ModuleSplitting f] :
+    L [⋀^(Fin 2)]→ₗ[R] f.ker where
+  toFun g := LinearMap.snd
+    ⁅ModuleSplitting.splitting.symm (LinearMap.inl R L f.ker (g 0)), ModuleSplitting.splitting.symm (LinearMap.inl R L f.ker (g 1))⁆
+    -- [(a,b),(c,d)] = (cocycle(b,d),[b, d]) : use splitting.symm ∘ₗ LinearMap.inl
+  map_add' := sorry
+  map_smul' := sorry
+  map_eq_zero_of_eq' := sorry
+
+-- /--Make a module-split central extension from a 2-cocycle (with trivial coefficients)-/
+--def splitting_of_cocycle (f : 2-cocycle L V) : L × V →ₗ⁅R⁆ L where
+
+-/
 
 end LieAlgebra
