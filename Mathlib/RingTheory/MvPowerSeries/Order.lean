@@ -144,7 +144,7 @@ theorem nat_le_weightedOrder {f : MvPowerSeries σ R} {n : ℕ}
     (h : ∀ d, weight w d < n → coeff R d f = 0) : ↑n ≤ f.weightedOrder w := by
   by_contra H; rw [not_le] at H
   have : ↑(toNat (f.weightedOrder w)) = f.weightedOrder w := by
-    rw [coe_toNat_eq_self] ; exact ne_top_of_lt H
+    rw [coe_toNat_eq_self]; exact ne_top_of_lt H
   obtain ⟨d, hd, hfd⟩ := exists_coeff_ne_zero_of_weightedOrder w f this
   rw [← hd, Nat.cast_lt] at H
   exact hfd (h d H)
