@@ -92,7 +92,6 @@ structure Hom (sq₁ sq₂ : Square C) where
 
 namespace Hom
 
-
 attribute [reassoc (attr := simp)] comm₁₂ comm₁₃ comm₂₄ comm₃₄
 
 /-- The identity of a commutative square. -/
