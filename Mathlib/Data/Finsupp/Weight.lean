@@ -120,10 +120,10 @@ theorem le_weight (w : σ → ℕ) {s : σ} (hs : w s ≠ 0) (f : σ →₀ ℕ)
 
 variable [OrderedAddCommMonoid M] (w : σ → M)
 
-instance : SMulPosMono ℕ M := ⟨
-  fun b hb m m' h ↦ by
+instance : SMulPosMono ℕ M :=
+  ⟨fun b hb m m' h ↦ by
     rw [← Nat.add_sub_of_le h, add_smul]
-    exact le_add_of_nonneg_right (nsmul_nonneg hb (m' - m)) ⟩
+    exact le_add_of_nonneg_right (nsmul_nonneg hb (m' - m))⟩
 
 variable {w} in
 theorem le_weight_of_nonneg' (hw : ∀ s, 0 ≤ w s) {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
