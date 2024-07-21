@@ -312,7 +312,7 @@ lemma isOpen_iff_Iic_compl_or_univ (U : Set α) :
       exact ⟨(isLowerSet_of_isClosed hU.isClosed_compl).Iic_subset
         (dirSupClosed_iff_forall_sSup.mp (dirSupClosed_of_isClosed  hU.isClosed_compl)
         neUc (isChain_of_trichotomous Uᶜ).directedOn le_rfl),
-        fun  _ ha ↦ CompleteLattice.le_sSup Uᶜ _ ha⟩
+        fun  _ ha ↦ le_sSup Uᶜ _ ha⟩
   · intro H
     rcases H with ⟨a,ha⟩ | hU
     · rw [← isClosed_compl_iff, ha, compl_compl]
