@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Functor.Const
+import Mathlib.Order.Fin.Basic
 import Mathlib.Tactic.FinCases
 
 /-!
