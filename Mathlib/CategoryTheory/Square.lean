@@ -31,9 +31,6 @@ maps (`arrowArrowEquivalence'`).
 
 ## TODO
 * define `Functor.mapSquare`
-* introduce the pullback cone, the pushout cocone
-attached to `sq : Square C` and define the
-properties `IsPushout` and `IsPullback`.
 * construct the equivalence `(Square C)ᵒᵖ ≌ Square C`
 
 -/
