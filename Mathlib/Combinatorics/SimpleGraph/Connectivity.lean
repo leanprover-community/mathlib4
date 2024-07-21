@@ -208,6 +208,17 @@ theorem adj_getVert_succ {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
     · exact ih (Nat.succ_lt_succ_iff.1 hi)
 
 @[simp]
+lemma cons_getVert_succ {u v w n} (p : G.Walk v w) (h : G.Adj u v) :
+    (Walk.cons h p).getVert n.succ = p.getVert n := rfl
+
+lemma cons_getVert {u v w n} (p : G.Walk v w) (h : G.Adj u v) (hn : 0 < n) :
+    (Walk.cons h p).getVert n = p.getVert (n - 1) := by
+  obtain ⟨i, hi⟩ : ∃ (i : ℕ), i.succ = n := by
+    use (n - 1); exact Nat.sub_one_add_one_eq_of_pos hn
+  rw [← hi]
+  simp only [Nat.succ_eq_add_one, cons_getVert_succ, Nat.add_sub_cancel]
+
+@[simp]
 theorem cons_append {u v w x : V} (h : G.Adj u v) (p : G.Walk v w) (q : G.Walk w x) :
     (cons h p).append q = cons h (p.append q) := rfl
 
@@ -769,6 +780,12 @@ def notNilRec {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → So
   | nil => fun hp => absurd .nil hp
   | .cons h q => fun _ => cons h q
 
+@[simp]
+lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → Sort*}
+    (cons : {u v w : V} → (h : G.Adj u v) → (q : G.Walk v w) →
+    motive (Walk.cons h q) Walk.not_nil_cons) (h' : G.Adj u v) (q' : G.Walk v w) :
+    @Walk.notNilRec _ _ _ _ _ cons _ _ = cons h' q' := by rfl
+
 /-- The second vertex along a non-nil walk. -/
 def sndOfNotNil (p : G.Walk v w) (hp : ¬ p.Nil) : V :=
   p.notNilRec (@fun _ u _ _ _ => u) hp
@@ -812,6 +829,11 @@ variable {x y : V} -- TODO: rename to u, v, w instead?
 @[simp] lemma support_tail (p : G.Walk v v) (hp) :
     (p.tail hp).support = p.support.tail := by
   rw [← cons_support_tail p hp, List.tail_cons]
+
+@[simp]
+lemma cons_tail {t u v}  (p : G.Walk u v) (h : G.Adj t u) :
+    (Walk.cons h p).tail (Walk.not_nil_cons) = p := by
+  unfold Walk.tail; simp only [notNilRec_cons]
 
 /-! ### Trails, paths, circuits, cycles -/
 
@@ -1207,6 +1229,31 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
     · obtain ⟨d, hd, hcd⟩ := ih h vS
       exact ⟨d, List.Mem.tail _ hd, hcd⟩
     · exact ⟨⟨(x, y), a⟩, List.Mem.head _, uS, h⟩
+
+/-- Given a walk `w` and a node in the support, there exists a natural `n`, such that given node
+is the `n`-th node (zero-indexed) in the walk. In addition, `n` is at most the length of the path.
+Due to the definition of `getVert` it would otherwise be legal to return a larger `n` for the last
+node. -/
+theorem exists_getVert {u v w : V} (w : G.Walk v w) (h : u ∈ w.support) :
+    ∃ n, w.getVert n = u ∧ n ≤ w.length := by
+  obtain ⟨q, r, hqr⟩ := SimpleGraph.Walk.mem_support_iff_exists_append.mp h
+  use q.length
+  rw [hqr]
+  rw [Walk.getVert_append]
+  simp only [lt_self_iff_false, ↓reduceIte, Nat.sub_self, getVert_zero, length_append,
+    Nat.le_add_right, and_self]
+
+lemma getVert_tail_support_get {u v n} (p : G.Walk u v) (hnp: ¬ p.Nil) :
+    (p.tail hnp).getVert n = p.getVert (n + 1) :=
+  p.notNilRec (fun _ _ ↦ by simp only [cons_tail, cons_getVert_succ]) hnp
+
+@[simp]
+lemma cons_sndOfNotNil (q : G.Walk v w) (hadj : G.Adj u v) :
+    (Walk.cons hadj q).sndOfNotNil (not_nil_cons) = v := by
+  unfold sndOfNotNil; simp only [notNilRec_cons]
+
+lemma getVert_one (p : G.Walk u v) (hnp : ¬ p.Nil) : p.getVert 1 = p.sndOfNotNil hnp :=
+  p.notNilRec (fun _ _ ↦ by simp only [cons_getVert_succ, getVert_zero, cons_sndOfNotNil]) hnp
 
 end Walk
 
