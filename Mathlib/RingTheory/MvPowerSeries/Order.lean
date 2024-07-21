@@ -450,8 +450,8 @@ def homogeneousComponent (p : ℕ) : MvPowerSeries σ R →ₗ[R] MvPowerSeries 
     ext d
     simp only [map_add, coeff_apply, Pi.add_apply]
     split_ifs with h
-    . rfl
-    . rw [add_zero]
+    · rfl
+    · rw [add_zero]
   map_smul' a f := by
     ext d
     simp only [id_eq, eq_mpr_eq_cast, AddHom.toFun_eq_coe, AddHom.coe_mk, map_smul,
