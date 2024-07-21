@@ -306,8 +306,7 @@ lemma isOpen_iff_Iic_compl_or_univ (U : Set α) :
     rcases eq_empty_or_nonempty Uᶜ with eUc | neUc
     · exact Or.inr (compl_empty_iff.mp eUc)
     · apply Or.inl
-      let b := sSup Uᶜ
-      use b
+      use sSup Uᶜ
       rw [eq_compl_comm, le_antisymm_iff]
       exact ⟨(isLowerSet_of_isClosed hU.isClosed_compl).Iic_subset
         (dirSupClosed_iff_forall_sSup.mp (dirSupClosed_of_isClosed  hU.isClosed_compl)
