@@ -306,6 +306,44 @@ theorem as_tsum [T2Space α] (f : MvPowerSeries σ α) :
     f = tsum fun d : σ →₀ ℕ => monomial α d (coeff α d f) :=
   (HasSum.tsum_eq (hasSum_of_monomials_self _)).symm
 
+/-- A multivariate power series is the sum (in the sense of summable families)
+of its weighted homogeneous components  -/
+theorem hasSum_of_weightedHomogeneousComponents_self (w : σ → ℕ) (f : MvPowerSeries σ α) :
+    HasSum (fun p => weightedHomogeneousComponent w p f) f := by
+  rw [Pi.hasSum]
+  intro d
+  have hd : ∀ (b' : ℕ), b' ≠ (weight w) d → (weightedHomogeneousComponent w b') f d = 0 := by
+    intro p h
+    rw [← coeff_apply (weightedHomogeneousComponent w p f) d, coeff_weightedHomogeneousComponent,
+      if_neg (Ne.symm h)]
+  convert hasSum_single (weight w d) hd using 1
+  · rw [← coeff_apply f d, ← coeff_apply (weightedHomogeneousComponent w (weight w d) f) d,
+      coeff_weightedHomogeneousComponent]
+    simp only [eq_self_iff_true, if_true]
+
+theorem weightedHomogeneousComponents_self_summable (w : σ → ℕ) (f : MvPowerSeries σ α) :
+    Summable fun p => weightedHomogeneousComponent w p f :=
+  (hasSum_of_weightedHomogeneousComponents_self w f).summable
+
+theorem as_tsum_of_weightedHomogeneousComponents_self [T2Space α] (w : σ → ℕ) (f : MvPowerSeries σ α) :
+    f = tsum fun p => weightedHomogeneousComponent w p f := by
+  haveI := t2Space σ α
+  exact HasSum.unique (hasSum_of_weightedHomogeneousComponents_self w f)
+   (weightedHomogeneousComponents_self_summable w f).hasSum
+
+/-- A multivariate power series is the sum (in the sense of summable families) of its homogeneous components -/
+theorem hasSum_of_homogeneousComponents_self (f : MvPowerSeries σ α) :
+    HasSum (fun p => homogeneousComponent p f) f :=
+  hasSum_of_homogeneousComponents_self _ f
+
+theorem homogeneousComponents_self_summable (f : MvPowerSeries σ α) :
+    Summable fun p => homogeneousComponent p f :=
+  weightedHomogeneousComponents_self_summable 1 f
+
+theorem as_tsum_of_homogeneousComponents_self [T2Space α] (f : MvPowerSeries σ α) :
+    f = tsum fun p => weightedHomogeneousComponent w p f := by
+  as_tsum_of_weightedHomogeneousComponents_self 1 f
+
 end Summable
 
 end MvPowerSeries
