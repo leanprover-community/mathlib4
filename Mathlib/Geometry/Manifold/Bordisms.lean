@@ -433,19 +433,11 @@ lemma ContMDiff.inr : ContMDiff I I ∞ (M' := M ⊕ M') (fun x ↦ Sum.inr x) :
 
 end DisjUnion
 
-variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
-  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  {I' : ModelWithCorners ℝ E' H'} [SmoothManifoldWithCorners I' M']
-  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
-  {I'' : ModelWithCorners ℝ E'' H''} [SmoothManifoldWithCorners I'' M''] {n : ℕ}
-  [CompactSpace M] [BoundarylessManifold I M] [FiniteDimensional ℝ E]
-  [CompactSpace M'] [BoundarylessManifold I' M'] [FiniteDimensional ℝ E']
-  [CompactSpace M''] [BoundarylessManifold I'' M''] [FiniteDimensional ℝ E'']
-
 namespace UnorientedCobordism
 
 -- TODO: for now, assume all manifolds are modelled on the same chart and model space...
+-- Is this necessary (`H` presumably is necessary for disjoint unions to work out...)?
+-- How would that work in practice? Post-compose with a suitable equivalence of H resp. E?
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
@@ -455,6 +447,9 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   /-{I'' : ModelWithCorners ℝ E H}-/ [SmoothManifoldWithCorners I M''] {n : ℕ}
   [CompactSpace M] [BoundarylessManifold I M]
   [CompactSpace M'] [BoundarylessManifold I M'] [CompactSpace M''] [BoundarylessManifold I M'']
+  [CompactSpace M] [FiniteDimensional ℝ E]
+  [CompactSpace M'] [FiniteDimensional ℝ E'] [CompactSpace M''] [FiniteDimensional ℝ E'']
+
 
 /-- An **unoriented cobordism** between two singular `n`-manifolds `(M,f)` and `(N,g)` on `X`
 is a compact smooth `n`-manifold `W` with a continuous map `F: W → X`
@@ -533,19 +528,13 @@ variable {u : SingularNManifold X n M'' I}
 -- mathlib has abstract pushouts (and proved that TopCat has them);
 -- `Topology/Category/TopCat/Limits/Pullbacks.lean` provides a concrete description of pullbacks
 -- in TopCat. A good next step would be to adapt this argument to pushouts, and use this here.
--- XXX: can I remove the s and t variables from this definition?
+-- TODO: can I remove the s and t variables from this definition?
 def glue (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') : Type* := sorry
 
 instance (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
     TopologicalSpace (glue s t φ ψ) := sorry
 
--- TODO: Using E and H in this declaration and the next one is wrong...
--- Do I need to demand that all manifolds are modeled on the same spaces H and E,
--- or choose an explicit isomorphism? What's the best way here?
--- (In practice, post-composing with a suitable equivalence allows assuming H and E are the same...
--- the question is where this complexity should go.)
-
--- This and the next item require the collar neighbourhood theorem-
+-- This and the next item require the collar neighbourhood theorem.
 instance (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
     ChartedSpace H (glue s t φ ψ) := sorry
 
