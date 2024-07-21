@@ -21,10 +21,12 @@ Define the interior and boundary of a manifold.
 - `ModelWithCorners.univ_eq_interior_union_boundary`: `M` is the union of its interior and boundary
 - `ModelWithCorners.interior_boundary_disjoint`: interior and boundary of `M` are disjoint
 - `BoundarylessManifold.isInteriorPoint`: if `M` is boundaryless, every point is an interior point
-
+- `ModelWithCorners.Boundaryless.{boundary_eq_empty, of_boundary_eq_empty}`:
+`M` is boundaryless if and only if its boundary is empty
 - `ModelWithCorners.interior_prod`: the interior of `M × N` is the product of the interiors
 of `M` and `N`.
 - `ModelWithCorners.boundary_prod`: the boundary of `M × N` is `∂M × N ∪ (M × ∂N)`.
+- `ModelWithCorners.BoundarylessManifold.prod`: if `M` and `N` are boundaryless, so is `M × N`
 
 ## Tags
 manifold, interior, boundary
