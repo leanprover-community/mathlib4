@@ -292,10 +292,6 @@ lemma sFinite_of_absolutelyContinuous_of_isFiniteMeasure [IsFiniteMeasure ν] (h
 theorem sFinite_of_absolutelyContinuous [SFinite ν] (hμν : μ ≪ ν) : SFinite μ :=
   sFinite_of_absolutelyContinuous_of_isFiniteMeasure (hμν.trans (absolutelyContinuous_toFinite ν))
 
-/-- If a measure `μ` is s-finite, then `μ.withDensity f` is s-finite for all `f`. -/
-instance [SFinite μ] (f : α → ℝ≥0∞) : SFinite (μ.withDensity f) :=
-  sFinite_of_absolutelyContinuous (withDensity_absolutelyContinuous _ _)
-
 end WithDensitySFinite
 
 end MeasureTheory
