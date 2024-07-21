@@ -94,6 +94,8 @@ section examples
 -- Let `E` be a finite-dimensional real normed space.
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
+-- TODO: move the empty manifold here, once its definition is in a separate file
+
 /- TODO: these two examples worked when ClosedManifold only demanded `I.Boundaryless`;
 -- diagnose and fix this!
 /-- The standard `n`-sphere is a closed manifold. -/
@@ -255,7 +257,7 @@ instance [BoundarylessManifold I M] : IsEmpty (I.boundary M) :=
   isEmpty_coe_sort.mpr (ModelWithCorners.Boundaryless.boundary_eq_empty I)
 
 /-- The empty set is a smooth manifold w.r.t. any charted space and model. -/
-def SmoothManifoldWithCorners.empty [IsEmpty M] : SmoothManifoldWithCorners I M := by
+instance SmoothManifoldWithCorners.empty [IsEmpty M] : SmoothManifoldWithCorners I M := by
   apply smoothManifoldWithCorners_of_contDiffOn
   intro e e' _ _ x hx
   set t := I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I
@@ -273,6 +275,19 @@ def SmoothManifoldWithCorners.empty [IsEmpty M] : SmoothManifoldWithCorners I M 
   rw [this] at hx
   apply False.elim hx
 
+/-- The empty manifold is boundaryless. -/
+instance ModelWithCorners.BoundarylessManifold.of_empty [IsEmpty M] :
+    BoundarylessManifold I M where
+  isInteriorPoint' x := False.elim (IsEmpty.false x)
+
+/-- The empty manifold is closed. -/
+example [IsEmpty M] : ClosedManifold M I where
+
+/- n-dimensionality, however, requires a finite-dimensional model...
+-- FIXME: is this the right design decision?
+example {n : ℕ} [FiniteDimensional ℝ E] [IsEmpty M] : ClosedNManifold n M I where
+  hdim := sorry -/
+
 variable (M) in
 /-- If `M` is boundaryless, its boundary manifold data is easy to construct. -/
 def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] : BoundaryManifoldData M I where
@@ -288,7 +303,7 @@ def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] : BoundaryMa
 
 -- another trivial case: modelWithCornersSelf on euclidean half space!
 
-variable (M N) in
+variable (M I) in
 /-- If `M` is boundaryless and `N` has nice boundary, so does `M × N`. -/
 def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M]
     (bd : BoundaryManifoldData N J) : BoundaryManifoldData (M × N) (I.prod J) where
@@ -307,6 +322,7 @@ def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M]
     sorry
 
 -- TODO: fix the details once I found a solution for the above
+variable (N J) in
 /-- If `M` has nice boundary and `N` is boundaryless, `M × N` has nice boundary. -/
 def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M I)
     [BoundarylessManifold J N] : BoundaryManifoldData (M × N) (I.prod J) where
@@ -340,11 +356,38 @@ class HasNiceBoundary (bd : BoundaryManifoldData M I) where
   /-- The inclusion of `∂M` into `M` is smooth w.r.t. `d`. -/
   smooth_inclusion : ContMDiff bd.model I 1 ((fun ⟨x, _⟩ ↦ x) : (I.boundary M) → M)
 
+/-- A manifold without boundary (trivially) has nice boundary. -/
 instance [BoundarylessManifold I M] :
     HasNiceBoundary (BoundaryManifoldData.of_boundaryless (I := I) (M := M)) where
+  smooth_inclusion :=
+    have : I.boundary M = ∅ := ModelWithCorners.Boundaryless.boundary_eq_empty I
+    fun p ↦ False.elim (IsEmpty.false p)
+
+/-- If `M` has nice boundary and `N` is boundaryless, `M × N` also has nice boundary. -/
+instance (bd : BoundaryManifoldData M I) [h : HasNiceBoundary bd] [BoundarylessManifold J N] :
+    HasNiceBoundary (BoundaryManifoldData.prod_of_boundaryless_right N J bd) where
+  smooth_inclusion := by
+    let bd'' := BoundaryManifoldData.prod_of_boundaryless_right N J bd
+    let I'' := bd''.model
+    have h : ContMDiff bd.model I 1 ((fun ⟨x, _⟩ ↦ x) : (I.boundary M) → M) := h.smooth_inclusion
+    have h' : ContMDiff J J 1 (fun x ↦ x : N → N) := contMDiff_id
+    have : ContMDiff ((bd.model).prod J) (I.prod J) 1
+        (fun (⟨x, _⟩, y) ↦ (x, y) : (I.boundary M) × N → M × N) := by
+      -- TODO: how to apply prod with just two factors? let aux := ContMDiff.prod h h'
+      sorry
+    convert this
+    -- xxx: add as API lemma, that bd''.model is what we think it is... simp only [bd''.model]
+    -- TODO need to rewrite: boundary is the product of boundaries, f factors accordingly...
+    sorry
+
+/-- If `M` is boundaryless and `N` has nice boundary, `M × N` also has nice boundary. -/
+instance (bd : BoundaryManifoldData N J) [HasNiceBoundary bd] [BoundarylessManifold I M] :
+    HasNiceBoundary (BoundaryManifoldData.prod_of_boundaryless_left M I bd) where
   smooth_inclusion := sorry
 
 end HasNiceBoundary
+
+#exit
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
