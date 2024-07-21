@@ -25,8 +25,8 @@ it corresponds to the topology defined by [bourbaki1981], chapter 4, §4, n°2
 
 It is *not* the adic topology in general.
 
-- `tendsto_pow_zero_of_constantCoeff_zero` : if the constant coefficient of `f`
-is nilpotent, then the powers of `f` converge to zero
+- `tendsto_pow_zero_of_constantCoeff_nilpotent`, `tendsto_pow_zero_of_constantCoeff_zero`:
+if the constant coefficient of `f` is nilpotent, or vanishes, then the powers of `f` converge to zero.
 
 - `tendsto_pow_of_constantCoeff_nilpotent_iff` : the powers of `f` converge to zero iff
 the constant coefficient of `f` is nilpotent
