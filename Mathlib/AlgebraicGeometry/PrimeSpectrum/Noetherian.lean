@@ -6,8 +6,6 @@ Authors: Filippo A. E. Nuccio, Andrew Yang
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.Topology.NoetherianSpace
 
-#align_import algebraic_geometry.prime_spectrum.noetherian from "leanprover-community/mathlib"@"052f6013363326d50cb99c6939814a4b8eb7b301"
-
 /-!
 This file proves additional properties of the prime spectrum a ring is Noetherian.
 -/

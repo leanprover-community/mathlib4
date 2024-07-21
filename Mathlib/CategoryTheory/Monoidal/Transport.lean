@@ -5,8 +5,6 @@ Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 
-#align_import category_theory.monoidal.transport from "leanprover-community/mathlib"@"31529827d0f68d1fbd429edc393a928f677f4aba"
-
 /-!
 # Transport a monoidal structure along an equivalence.
 
@@ -163,12 +161,10 @@ def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
   induced e.inverse
     { μIso := fun X Y => e.unitIso.app _
       εIso := e.unitIso.app _ }
-#align category_theory.monoidal.transport CategoryTheory.Monoidal.transport
 
 /-- A type synonym for `D`, which will carry the transported monoidal structure. -/
 @[nolint unusedArguments]
 def Transported (_ : C ≌ D) := D
-#align category_theory.monoidal.transported CategoryTheory.Monoidal.Transported
 
 instance (e : C ≌ D) : Category (Transported e) := (inferInstance : Category D)
 
@@ -188,21 +184,17 @@ instance (e : C ≌ D) : Inhabited (Transported e) :=
 def fromTransported (e : C ≌ D) : MonoidalFunctor (Transported e) C := by
   dsimp only [transport, Transported.instMonoidalCategory]
   exact fromInduced (D := Transported e) e.inverse _
-#align category_theory.monoidal.from_transported CategoryTheory.Monoidal.fromTransported
 
 instance instIsEquivalence_fromTransported (e : C ≌ D) :
     (fromTransported e).IsEquivalence := by
   dsimp [fromTransported]
   infer_instance
 
-#noalign category_theory.monoidal.lax_to_transported
-
 /-- We can upgrade `e.functor` to a monoidal functor from `C` to `D` with the transported structure.
 -/
 @[simps!]
 def toTransported (e : C ≌ D) : MonoidalFunctor C (Transported e) :=
   monoidalInverse (fromTransported e) e.symm.toAdjunction
-#align category_theory.monoidal.to_transported CategoryTheory.Monoidal.toTransported
 
 instance (e : C ≌ D) : (toTransported e).IsEquivalence :=
   e.isEquivalence_functor
@@ -213,7 +205,6 @@ def transportedMonoidalUnitIso (e : C ≌ D) :
     LaxMonoidalFunctor.id C ≅
       (toTransported e).toLaxMonoidalFunctor ⊗⋙ (fromTransported e).toLaxMonoidalFunctor :=
   asIso (monoidalCounit (fromTransported e) e.symm.toAdjunction) |>.symm
-#align category_theory.monoidal.transported_monoidal_unit_iso CategoryTheory.Monoidal.transportedMonoidalUnitIso
 
 /-- The counit isomorphism upgrades to a monoidal isomorphism. -/
 @[simps! hom inv]
@@ -221,6 +212,5 @@ def transportedMonoidalCounitIso (e : C ≌ D) :
     (fromTransported e).toLaxMonoidalFunctor ⊗⋙ (toTransported e).toLaxMonoidalFunctor ≅
       LaxMonoidalFunctor.id (Transported e) :=
   asIso (monoidalUnit (fromTransported e) e.symm.toAdjunction) |>.symm
-#align category_theory.monoidal.transported_monoidal_counit_iso CategoryTheory.Monoidal.transportedMonoidalCounitIso
 
 end CategoryTheory.Monoidal
