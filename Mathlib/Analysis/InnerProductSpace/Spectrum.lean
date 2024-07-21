@@ -321,27 +321,17 @@ theorem restrict_eq_inf : (fun (γ : 𝕜) ↦
     rw [restrict_coe_apply]
     exact mem_eigenspace_iff.mp x1
 
-theorem semi_final_exhaust : (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) = eigenspace A α := by
-   rw [← restrict_eq_inf hAB , ← Submodule.map_iSup, iSup_restrict_eq_top hB hAB,
-   Submodule.map_top, Submodule.range_subtype]
-
-theorem pre_exhaust :  (⨆ (γ : 𝕜), eigenspace A γ) =  ⊤ := by
-  exact Submodule.orthogonal_eq_bot_iff.mp (hA.orthogonalComplement_iSup_eigenspaces_eq_bot)
-
-theorem semi_final_exhaust': (fun (α : 𝕜) ↦  eigenspace A α)  = fun (α : 𝕜) ↦
+theorem iSup_simultaneous_eigenspaces_eq_top :
+    (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α))) = ⊤ := by
+  have : (fun (α : 𝕜) ↦  eigenspace A α)  = fun (α : 𝕜) ↦
     (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) := by
-  funext; exact (semi_final_exhaust hB hAB).symm
+    funext; rw [← restrict_eq_inf hAB , ← Submodule.map_iSup, iSup_restrict_eq_top hB hAB,
+    Submodule.map_top, Submodule.range_subtype]
+  rw [← Submodule.orthogonal_eq_bot_iff.mp (hA.orthogonalComplement_iSup_eigenspaces_eq_bot), this]
 
-theorem exhaust : (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α))) = ⊤ := by
-  rw [← pre_exhaust hA ]
-  rw[semi_final_exhaust' hB hAB]
 
-theorem post_exhaust: (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)))ᗮ = ⊥ := by
-  rw [Submodule.orthogonal_eq_bot_iff]
-  apply exhaust hA hB hAB
-
-theorem Orthogonality: OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) =>
-    (eigenspace B i.1 ⊓ eigenspace A i.2 : Submodule 𝕜 E))
+theorem orthogonality_of_simultaneous_eigenspaces_of_pairwise_commuting_symmetric :
+    OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) => (eigenspace B i.1 ⊓ eigenspace A i.2 : Submodule 𝕜 E))
     (fun i => (eigenspace B i.1 ⊓ eigenspace A i.2).subtypeₗᵢ) := by
   refine orthogonalFamily_iff_pairwise.mpr ?_
   intro i j hij v ⟨hv1 , hv2⟩
@@ -349,17 +339,15 @@ theorem Orthogonality: OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) =>
   push_neg at H
   by_cases C: i.1 = j.1
   <;> intro w ⟨hw1, hw2⟩
-  have HC := H C
-  have A := orthogonalFamily_iff_pairwise.mp hA.orthogonalFamily_eigenspaces HC
-  exact A hv2 w hw2
-  have B := orthogonalFamily_iff_pairwise.mp hB.orthogonalFamily_eigenspaces C
-  exact B hv1 w hw1
+  · exact orthogonalFamily_iff_pairwise.mp hA.orthogonalFamily_eigenspaces (H C) hv2 w hw2
+  · exact orthogonalFamily_iff_pairwise.mp hB.orthogonalFamily_eigenspaces C hv1 w hw1
 
-theorem eigenspace_direct_sum_internal: DirectSum.IsInternal
-    (fun (i : 𝕜 × 𝕜) ↦ (eigenspace B i.1 ⊓ eigenspace A i.2)):= by
-  apply (OrthogonalFamily.isInternal_iff (Orthogonality hA hB)).mpr
+theorem DirectSum.IsInternal_of_simultaneous_eigenspaces_of_pairwise_commuting_symmetric:
+    DirectSum.IsInternal (fun (i : 𝕜 × 𝕜) ↦ (eigenspace B i.1 ⊓ eigenspace A i.2)):= by
+  apply (OrthogonalFamily.isInternal_iff
+    (orthogonality_of_simultaneous_eigenspaces_of_pairwise_commuting_symmetric hA hB)).mpr
   rw [Submodule.orthogonal_eq_bot_iff, iSup_prod, iSup_comm]
-  exact exhaust hA hB hAB
+  exact iSup_simultaneous_eigenspaces_eq_top hA hB hAB
 
 end Pair
 
