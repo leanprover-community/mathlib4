@@ -16,10 +16,10 @@ objects in a category `Square C`.
 The four objects in a commutative square are
 numbered as follows:
 ```
-X₁ ⟶ X₂
-|    |
-v    v
-X₃ ⟶ X₄
+X₁ --> X₂
+|      |
+v      v
+X₃ --> X₄
 ```
 
 We define the flip functor, and two equivalences with
@@ -92,7 +92,6 @@ structure Hom (sq₁ sq₂ : Square C) where
 
 namespace Hom
 
-
 attribute [reassoc (attr := simp)] comm₁₂ comm₁₃ comm₂₄ comm₃₄
 
 /-- The identity of a commutative square. -/
@@ -147,9 +146,9 @@ def isoMk {sq₁ sq₂ : Square C} (e₁ : sq₁.X₁ ≅ sq₂.X₁) (e₂ : sq
                       comp_id, comm₁₂, Iso.inv_hom_id_assoc]
       comm₁₃ := by simp only [← cancel_mono e₃.hom, assoc, Iso.inv_hom_id,
                       comp_id, comm₁₃, Iso.inv_hom_id_assoc]
-      comm₂₄ := by  simp only [← cancel_mono e₄.hom, assoc, Iso.inv_hom_id,
+      comm₂₄ := by simp only [← cancel_mono e₄.hom, assoc, Iso.inv_hom_id,
                       comp_id, comm₂₄, Iso.inv_hom_id_assoc]
-      comm₃₄ := by  simp only [← cancel_mono e₄.hom, assoc, Iso.inv_hom_id,
+      comm₃₄ := by simp only [← cancel_mono e₄.hom, assoc, Iso.inv_hom_id,
                       comp_id, comm₃₄, Iso.inv_hom_id_assoc] }
 
 /-- Flipping a square by switching the top-right and the bottom-left objects. -/
