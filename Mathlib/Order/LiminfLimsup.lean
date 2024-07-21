@@ -1522,6 +1522,8 @@ section frequently_bounded
 
 variable {R S : Type*} {F : Filter R} [LinearOrder R] [LinearOrder S]
 
+namespace Filter
+
 /-- For nontrivial filters in linear orders, coboundedness for `≤` implies frequent boundedness
 from below. -/
 lemma IsCobounded.frequently_ge [NeBot F] (cobdd : IsCobounded (· ≤ ·) F) :
@@ -1537,11 +1539,20 @@ lemma IsCobounded.frequently_ge [NeBot F] (cobdd : IsCobounded (· ≤ ·) F) :
   specialize ht t' (by filter_upwards [ev] with _ h using (not_le.mp h).le)
   apply lt_irrefl t' <| lt_of_lt_of_le ht' ht
 
+lemma IsCobounded.eventually_atBot_frequently_ge [NeBot F] (cobdd : IsCobounded (· ≤ ·) F) :
+    ∀ᶠ l in atBot, ∃ᶠ x in F, l ≤ x := by
+  obtain ⟨l, hl⟩ := cobdd.frequently_ge
+  filter_upwards [Iic_mem_atBot l] with b hb using hl.mono fun x hx ↦ le_trans hb hx
+
 /-- For nontrivial filters in linear orders, coboundedness for `≥` implies frequent boundedness
 from above. -/
 lemma IsCobounded.frequently_le [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
     ∃ u, ∃ᶠ x in F, x ≤ u :=
-  IsCobounded.frequently_ge (R := Rᵒᵈ) cobdd
+  cobdd.frequently_ge (R := Rᵒᵈ)
+
+lemma IsCobounded.eventually_atTop_frequently_le [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
+    ∀ᶠ u in atTop, ∃ᶠ x in F, x ≤ u :=
+  cobdd.eventually_atBot_frequently_ge (R := Rᵒᵈ)
 
 /-- In linear orders, frequent boundedness from below implies coboundedness for `≤`. -/
 lemma IsCobounded.of_frequently_ge {l : R} (freq_ge : ∃ᶠ x in F, l ≤ x) :
@@ -1561,6 +1572,8 @@ lemma IsCobounded.of_frequently_ge {l : R} (freq_ge : ∃ᶠ x in F, l ≤ x) :
 lemma IsCobounded.of_frequently_le {u : R} (freq_le : ∃ᶠ r in F, r ≤ u) :
     IsCobounded (· ≥ ·) F :=
   IsCobounded.of_frequently_ge (R := Rᵒᵈ) freq_le
+
+end Filter
 
 lemma Monotone.frequently_ge_map_of_frequently_ge {f : R → S} (f_incr : Monotone f)
     {l : R} (freq_ge : ∃ᶠ x in F, l ≤ x) :
