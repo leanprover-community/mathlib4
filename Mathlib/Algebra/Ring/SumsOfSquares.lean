@@ -42,8 +42,8 @@ in `R`.
 -/
 
 @[mk_iff]
-inductive isSumSq {R : Type*} [Mul R] [Add R] [Zero R] : R → Prop
-  | zero                           : isSumSq 0
+inductive isSumSq {R : Type*} [Add R] [Mul R] [Zero R] : R → Prop
+  | zero                              : isSumSq 0
   | sq_add (x S : R) (pS : isSumSq S) : isSumSq (x * x + S)
 
 /--
@@ -52,7 +52,7 @@ The type of sums of squares in a semiring `R` is the subtype of `R` defined by t
 where `x : R` and `hx` is a proof of  the proposition `isSumSq x`.
 -/
 
-structure SumSqIn (R : Type*) [Semiring R] where
+structure SumSqIn (R : Type*) [Add R] [Mul R] [Zero R] where
   /-- `val` is a term in `R` and `ppty` is a proof of the proposition `isSumSq val` -/
   val  : R
   ppty : isSumSq val
@@ -61,11 +61,12 @@ structure SumSqIn (R : Type*) [Semiring R] where
 If `S1` and `S2` are sums of squares in a semiring `R`, then `S1 + S2` is a sum of squares in `R`.
 -/
 
+-- *TODO*: `isSumSq.add` could be rewritten with weaker assumptions on `R` (we only need to guarantee that we can use `AddZeroClass.zero_add` and `AddSemigroup.add_assoc`).
 theorem isSumSq.add {R : Type*} [Semiring R] {S1 S2 : R} (h1 : isSumSq S1) (h2 : isSumSq S2) :
     isSumSq (S1 + S2) := by
   induction h1 with
-  | zero => simp only [zero_add]; exact h2
-  | sq_add a S hS ih =>  rw [add_assoc]; exact isSumSq.sq_add a (S + S2) ih
+  | zero             => rewrite [zero_add]; exact h2
+  | sq_add a S hS ih => rewrite [add_assoc]; exact isSumSq.sq_add a (S + S2) ih
 
 /--
 Given terms `(S₁ S₂ : SumSqIn R)` where `Sᵢ = ⟨xᵢ, hxᵢ⟩`, we define `S1 + S2` to be the dependent
