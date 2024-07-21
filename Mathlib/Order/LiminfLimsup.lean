@@ -367,7 +367,6 @@ macro "isBoundedDefault" : tactic =>
 --   tactic.applyc `` is_cobounded_le_of_bot <|>
 --     tactic.applyc `` is_cobounded_ge_of_top <|>
 --       tactic.applyc `` is_bounded_le_of_top <|> tactic.applyc `` is_bounded_ge_of_bot
--- #align filter.is_bounded_default filter.IsBounded_default
 
 
 section ConditionallyCompleteLattice
@@ -1387,9 +1386,7 @@ theorem isCoboundedUnder_le_max [LinearOrder β] {f : Filter α} {u v : α → �
     apply hb c
     rw [eventually_map] at hc ⊢
     refine hc.mono (fun _ ↦ ?_)
-    simp only [max_le_iff, and_imp]
-    intro _ _
-    trivial
+    simp (config := { contextual := true }) only [implies_true, max_le_iff, and_imp]
 
 theorem limsup_max [ConditionallyCompleteLinearOrder β] {f : Filter α} {u v : α → β}
     (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)

@@ -656,8 +656,11 @@ variable [Group α] {H : Type*} [Group H]
 /-- An equivalence between any non-empty fiber of a `MonoidHom` and its kernel. -/
 @[to_additive "An equivalence between any non-empty fiber of an `AddMonoidHom` and its kernel."]
 def fiberEquivKer (f : α →* H) (a : α) : f ⁻¹' {f a} ≃ f.ker :=
-  (Equiv.setCongr <| Set.ext fun _ => by erw [mem_singleton_iff, mem_smul_set_iff_inv_smul_mem,
-    mem_ker, map_mul, map_inv, inv_mul_eq_one, eq_comm]).trans <| Subgroup.leftCosetEquivSubgroup a
+  .trans
+    (Equiv.setCongr <| Set.ext fun _ => by
+      rw [mem_preimage, mem_singleton_iff, mem_smul_set_iff_inv_smul_mem, SetLike.mem_coe, mem_ker,
+        smul_eq_mul, map_mul, map_inv, inv_mul_eq_one, eq_comm])
+    (Subgroup.leftCosetEquivSubgroup a)
 
 @[to_additive (attr := simp)]
 lemma fiberEquivKer_apply (f : α →* H) (a : α) (g : f ⁻¹' {f a}) : f.fiberEquivKer a g = a⁻¹ * g :=

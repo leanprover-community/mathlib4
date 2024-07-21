@@ -291,6 +291,16 @@ def _root_.LinearEquiv.compDer : Derivation R A M ≃ₗ[R] Derivation R A N :=
     left_inv := fun D => by ext a; exact e.symm_apply_apply (D a)
     right_inv := fun D => by ext a; exact e.apply_symm_apply (D a) }
 
+@[simp]
+theorem linearEquiv_coe_to_linearMap_comp :
+    (e.compDer D : A →ₗ[R] N) = (e.toLinearMap : M →ₗ[R] N).comp (D : A →ₗ[R] M) :=
+  rfl
+
+@[simp]
+theorem linearEquiv_coe_comp :
+    (e.compDer D : A → N) = (e.toLinearMap : M →ₗ[R] N).comp (D : A →ₗ[R] M) :=
+  rfl
+
 end PushForward
 
 variable (A) in

@@ -66,8 +66,7 @@ def coeff (A : HVertexOperator Γ R V W) (n : Γ) : V →ₗ[R] W where
   toFun v := ((of R).symm (A v)).coeff n
   map_add' _ _ := by simp
   map_smul' _ _ := by
-    simp only [map_smul, RingHom.id_apply]
-    exact rfl
+    simp only [map_smul, RingHom.id_apply, of_symm_smul, HahnSeries.smul_coeff]
 
 @[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.coeff := coeff
 
@@ -92,12 +91,8 @@ condition, we produce a heterogeneous vertex operator. -/
 def of_coeff (f : Γ → V →ₗ[R] W)
     (hf : ∀ x : V , (Function.support (f · x)).IsPWO) : HVertexOperator Γ R V W where
   toFun x := (of R) { coeff := fun g => f g x, isPWO_support' := hf x }
-  map_add' _ _ := by
-    ext
-    simp
-  map_smul' _ _ := by
-    ext
-    simp
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
 
 @[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.HetVertexOperator.of_coeff := of_coeff
 
@@ -189,15 +184,15 @@ end  Module
 section Products
 
 variable {Γ Γ' : Type*} [OrderedCancelAddCommMonoid Γ] [OrderedCancelAddCommMonoid Γ'] {R : Type*}
-  [CommRing R] {V W : Type*} [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
+  [CommRing R] {U V W : Type*} [AddCommGroup U] [Module R U] [AddCommGroup V] [Module R V]
+  [AddCommGroup W] [Module R W] (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ' R U V)
 
 open HahnModule
 
 /-- The composite of two heterogeneous vertex operators acting on a vector, as an iterated Hahn
   series.-/
 @[simps]
-def CompHahnSeries {U : Type*} [AddCommGroup U] [Module R U] (A : HVertexOperator Γ R V W)
-    (B : HVertexOperator Γ' R U V) (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
+def compHahnSeries {U : Type*} (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
   coeff g' := A (coeff B g' u)
   isPWO_support' := by
     refine Set.IsPWO.mono (((of R).symm (B u)).isPWO_support') ?_
@@ -205,42 +200,37 @@ def CompHahnSeries {U : Type*} [AddCommGroup U] [Module R U] (A : HVertexOperato
     exact fun g' hg' hAB => hg' (by simp [hAB])
 
 @[simp]
-theorem CompHahnSeries.add {U : Type*} [AddCommGroup U] [Module R U] (A : HVertexOperator Γ R V W)
-    (B : HVertexOperator Γ' R U V) (u v : U) :
+theorem compHahnSeries.add (u v : U) :
     CompHahnSeries A B (u + v) = CompHahnSeries A B u + CompHahnSeries A B v := by
   ext
-  simp only [CompHahnSeries_coeff, map_add, coeff_apply, HahnSeries.add_coeff', Pi.add_apply]
+  simp only [compHahnSeries_coeff, map_add, coeff_apply, HahnSeries.add_coeff', Pi.add_apply]
   rw [← @HahnSeries.add_coeff]
 
 @[simp]
-theorem CompHahnSeries.sMul {U : Type*} [AddCommGroup U] [Module R U]
+theorem CompHahnSeries.smul {U : Type*} [AddCommGroup U] [Module R U]
     (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ' R U V) (r : R) (u : U) :
     CompHahnSeries A B (r • u) = r • CompHahnSeries A B u := by
   ext
   rw [HahnSeries.smul_coeff]
-  simp only [CompHahnSeries_coeff, LinearMapClass.map_smul, coeff_apply]
+  simp only [compHahnSeries_coeff, LinearMapClass.map_smul, coeff_apply]
 
 /-- The composite of two heterogeneous vertex operators, as a heterogeneous vertex operator. -/
 @[simps]
-def HComp {U : Type*} [AddCommGroup U] [Module R U] (A : HVertexOperator Γ R V W)
-    (B : HVertexOperator Γ' R U V) : HVertexOperator (Γ' ×ₗ Γ) R U W where
+def comp : HVertexOperator (Γ' ×ₗ Γ) R U W where
   toFun u := HahnModule.of R (HahnSeries.ofIterate (CompHahnSeries A B u))
-  map_add' := by
-    intro u v
+  map_add' u v := by
     ext g
     simp only [HahnSeries.ofIterate, CompHahnSeries.add, Equiv.symm_apply_apply,
       HahnModule.of_symm_add, HahnSeries.add_coeff', Pi.add_apply]
-  map_smul' := by
-    intro r x
+  map_smul' r x := by
     ext g
-    simp only [HahnSeries.ofIterate, CompHahnSeries.sMul, Equiv.symm_apply_apply, RingHom.id_apply,
-      HahnSeries.smul_coeff, CompHahnSeries_coeff, coeff_apply]
+    simp only [HahnSeries.ofIterate, compHahnSeries.smul, Equiv.symm_apply_apply, RingHom.id_apply,
+      HahnSeries.smul_coeff, compHahnSeries_coeff, coeff_apply]
     exact rfl
 
 @[simp]
-theorem coeff_HComp {U : Type*} [AddCommGroup U] [Module R U] (A : HVertexOperator Γ R V W)
-    (B : HVertexOperator Γ' R U V) (g : Γ' ×ₗ Γ) :
-    (HComp A B).coeff g = A.coeff (ofLex g).2 ∘ₗ B.coeff (ofLex g).1 := by
+theorem comp_coeff (g : Γ' ×ₗ Γ) :
+    (comp A B).coeff g = A.coeff (ofLex g).2 ∘ₗ B.coeff (ofLex g).1 := by
   rfl
 
 -- TODO: comp_assoc

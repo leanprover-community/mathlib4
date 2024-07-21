@@ -84,14 +84,14 @@ variable (R S)
 
 /-- The map from the direct sum of prime spectra to the prime spectrum of a direct product. -/
 @[simp]
-def primeSpectrumProdOfSum : Sum (PrimeSpectrum R) (PrimeSpectrum S) → PrimeSpectrum (R × S)
+def primeSpectrumProdOfSum : PrimeSpectrum R ⊕ PrimeSpectrum S → PrimeSpectrum (R × S)
   | Sum.inl ⟨I, _⟩ => ⟨Ideal.prod I ⊤, Ideal.isPrime_ideal_prod_top⟩
   | Sum.inr ⟨J, _⟩ => ⟨Ideal.prod ⊤ J, Ideal.isPrime_ideal_prod_top'⟩
 
 /-- The prime spectrum of `R × S` is in bijection with the disjoint unions of the prime spectrum of
 `R` and the prime spectrum of `S`. -/
 noncomputable def primeSpectrumProd :
-    PrimeSpectrum (R × S) ≃ Sum (PrimeSpectrum R) (PrimeSpectrum S) :=
+    PrimeSpectrum (R × S) ≃ PrimeSpectrum R ⊕ PrimeSpectrum S :=
   Equiv.symm <|
     Equiv.ofBijective (primeSpectrumProdOfSum R S) (by
         constructor

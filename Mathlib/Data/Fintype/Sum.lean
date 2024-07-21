@@ -20,18 +20,18 @@ variable {α β : Type*}
 
 open Finset
 
-instance (α : Type u) (β : Type v) [Fintype α] [Fintype β] : Fintype (Sum α β) where
+instance (α : Type u) (β : Type v) [Fintype α] [Fintype β] : Fintype (α ⊕ β) where
   elems := univ.disjSum univ
   complete := by rintro (_ | _) <;> simp
 
 @[simp]
 theorem Finset.univ_disjSum_univ {α β : Type*} [Fintype α] [Fintype β] :
-    univ.disjSum univ = (univ : Finset (Sum α β)) :=
+    univ.disjSum univ = (univ : Finset (α ⊕ β)) :=
   rfl
 
 @[simp]
 theorem Fintype.card_sum [Fintype α] [Fintype β] :
-    Fintype.card (Sum α β) = Fintype.card α + Fintype.card β :=
+    Fintype.card (α ⊕ β) = Fintype.card α + Fintype.card β :=
   card_disjSum _ _
 
 /-- If the subtype of all-but-one elements is a `Fintype` then the type itself is a `Fintype`. -/
@@ -125,7 +125,7 @@ section
 open scoped Classical
 
 @[simp]
-theorem infinite_sum : Infinite (Sum α β) ↔ Infinite α ∨ Infinite β := by
+theorem infinite_sum : Infinite (α ⊕ β) ↔ Infinite α ∨ Infinite β := by
   refine ⟨fun H => ?_, fun H => H.elim (@Sum.infinite_of_left α β) (@Sum.infinite_of_right α β)⟩
   contrapose! H; haveI := fintypeOfNotInfinite H.1; haveI := fintypeOfNotInfinite H.2
   exact Infinite.false
