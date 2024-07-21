@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
 import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Algebra.Group.Int
 import Mathlib.Data.Int.Lemmas
@@ -1395,12 +1396,10 @@ theorem abs_sub_round_div_natCast_eq {m n : ℕ} :
   rw [abs_sub_round_eq_min, Nat.cast_min, ← min_div_div_right hn'.le,
     fract_div_natCast_eq_div_natCast_mod, Nat.cast_sub (m.mod_lt hn).le, sub_div, div_self hn'.ne']
 
-@[simp]
 theorem round_half_bot (x : α) : x - 1 / 2 < round x := by
   rw [round_eq x, show x - 1 / 2 = x + 1 / 2 - 1 by ring]
   exact Int.sub_one_lt_floor (x + 1 / 2)
 
-@[simp]
 theorem round_half_top (x : α) : (round x : α) ≤ x + 1 / 2 := by
   rw [round_eq x]
   exact Int.floor_le (x + 1 / 2)
