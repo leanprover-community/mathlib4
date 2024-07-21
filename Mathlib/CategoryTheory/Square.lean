@@ -16,10 +16,10 @@ objects in a category `Square C`.
 The four objects in a commutative square are
 numbered as follows:
 ```
-X₁ ⟶ X₂
-|    |
-v    v
-X₃ ⟶ X₄
+X₁ --> X₂
+|      |
+v      v
+X₃ --> X₄
 ```
 
 We define the flip functor, and two equivalences with
