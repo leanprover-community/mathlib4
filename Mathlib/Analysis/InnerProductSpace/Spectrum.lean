@@ -299,34 +299,41 @@ theorem eigen_extend (γ : 𝕜) (x : E) : x ∈ Submodule.map (Submodule.subtyp
   exact (AddSubmonoid.mk_eq_zero (ker (A -
     (algebraMap 𝕜 (Module.End 𝕜 E)) α)).toAddSubgroup.toAddSubmonoid).mp hy
 
-theorem restrict_eq_inf : (fun (γ : 𝕜) ↦
+theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
+    (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : (eigenspace S μ) ⊓ F =
+    Submodule.map (Submodule.subtype F)
+    (eigenspace (S.restrict (hInv)) μ) := by
+  ext v
+  constructor
+  · intro h
+    simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
+      exists_eq_right, mem_eigenspace_iff]; use h.2
+    exact Eq.symm (SetCoe.ext (_root_.id (Eq.symm (mem_eigenspace_iff.mp h.1))))
+  · intro h
+    simp only [Submodule.mem_inf]
+    constructor
+    · simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
+      exists_eq_right, mem_eigenspace_iff, SetLike.mk_smul_mk, restrict_apply,
+      Subtype.mk.injEq] at h
+      obtain ⟨_, hy⟩ := h
+      simpa [mem_eigenspace_iff]
+    · simp only [Submodule.coeSubtype] at h
+      obtain ⟨y, hy⟩ := h
+      simp only [← hy.2, Submodule.coeSubtype, SetLike.coe_mem]
+
+theorem invariant_subspace_inf_eigenspace_eq_restrict' : (fun (γ : 𝕜) ↦
     Submodule.map (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict
     (eigenspace_invariant hAB α)) γ)) = (fun (γ : 𝕜) ↦ (eigenspace B γ ⊓ eigenspace A α)) := by
   funext γ
-  ext x
-  simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
-      exists_eq_right] at *
-  constructor
-  <;> intro ⟨x1, x2⟩
-  · constructor
-    <;> rw [SetLike.mem_coe]
-    · apply eigen_extend hAB γ x
-      simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
-        exists_eq_right]
-      use x1
-    · exact x1
-  · use x2
-    refine mem_eigenspace_iff.mpr ?h.a
-    refine SetCoe.ext ?h.a.a
-    rw [restrict_coe_apply]
-    exact mem_eigenspace_iff.mp x1
+  exact Eq.symm (invariant_subspace_inf_eigenspace_eq_restrict B γ (eigenspace_invariant hAB α))
 
 theorem iSup_simultaneous_eigenspaces_eq_top :
     (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α))) = ⊤ := by
   have : (fun (α : 𝕜) ↦  eigenspace A α)  = fun (α : 𝕜) ↦
-    (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) := by
-    funext; rw [← restrict_eq_inf hAB , ← Submodule.map_iSup, iSup_restrict_eq_top hB hAB,
-    Submodule.map_top, Submodule.range_subtype]
+      (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) := by
+    funext; rw [← invariant_subspace_inf_eigenspace_eq_restrict' hAB,
+       ← Submodule.map_iSup, iSup_restrict_eq_top hB hAB, Submodule.map_top,
+       Submodule.range_subtype]
   rw [← Submodule.orthogonal_eq_bot_iff.mp (hA.orthogonalComplement_iSup_eigenspaces_eq_bot), this]
 
 theorem orthogonality_of_simultaneous_eigenspaces_of_pairwise_commuting_symmetric :
@@ -367,28 +374,6 @@ theorem invariance_iInf [Nonempty n] (i : n) :
   intro γ v hv
   simp only [Submodule.mem_iInf] at *
   exact fun i_1 ↦ eigenspace_invariant (hC (↑i_1) i) (γ i_1) v (hv i_1)
-
-theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
-    (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : (eigenspace S μ) ⊓ F =
-    Submodule.map (Submodule.subtype F)
-    (eigenspace (S.restrict (hInv)) μ) := by
-  ext v
-  constructor
-  · intro h
-    simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
-      exists_eq_right, mem_eigenspace_iff]; use h.2
-    exact Eq.symm (SetCoe.ext (_root_.id (Eq.symm (mem_eigenspace_iff.mp h.1))))
-  · intro h
-    simp only [Submodule.mem_inf]
-    constructor
-    · simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
-      exists_eq_right, mem_eigenspace_iff, SetLike.mk_smul_mk, restrict_apply,
-      Subtype.mk.injEq] at h
-      obtain ⟨_, hy⟩ := h
-      simpa [mem_eigenspace_iff]
-    · simp only [Submodule.coeSubtype] at h
-      obtain ⟨y, hy⟩ := h
-      simp only [← hy.2, Submodule.coeSubtype, SetLike.coe_mem]
 
 theorem iSup_iInf_fun_index_split_single {α β γ : Type*} [DecidableEq α] [CompleteLattice γ]
     (i : α) (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
