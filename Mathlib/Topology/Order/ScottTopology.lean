@@ -312,8 +312,7 @@ lemma isOpen_iff_Iic_compl_or_univ (U : Set α) :
         (dirSupClosed_iff_forall_sSup.mp (dirSupClosed_of_isClosed  hU.isClosed_compl)
         neUc (isChain_of_trichotomous Uᶜ).directedOn le_rfl),
         fun  _ ha ↦ le_sSup ha⟩
-  · intro H
-    rcases H with ⟨a,rfl⟩ | rfl
+  · rintro (⟨a,rfl⟩ | rfl)
     · exact isClosed_Iic.isOpen_compl
     · exact isOpen_univ
 
