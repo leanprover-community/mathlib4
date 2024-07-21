@@ -32,7 +32,7 @@ lemma ext_inner_iff {A B : E →WOT[𝕜] F} : A = B ↔ ∀ x y, ⟪y, A x⟫_�
 
 open Filter in
 /-- The defining property of the weak operator topology: a function `f` tends to
-`A : E →WOT[𝕜] F` along filter `l` iff `⟪y, (f a), x⟫` tends to `⟪y, A x⟫` along the same filter. -/
+`A : E →WOT[𝕜] F` along filter `l` iff `⟪y, (f a) x⟫` tends to `⟪y, A x⟫` along the same filter. -/
 lemma tendsto_iff_forall_inner_apply_tendsto [CompleteSpace F] {α : Type*} {l : Filter α}
     {f : α → E →WOT[𝕜] F} {A : E →WOT[𝕜] F} :
     Tendsto f l (𝓝 A) ↔ ∀ x y, Tendsto (fun a => ⟪y, (f a) x⟫_𝕜) l (𝓝 ⟪y, A x⟫_𝕜) := by
