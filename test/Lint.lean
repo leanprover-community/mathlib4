@@ -56,5 +56,4 @@ note: this linter can be disabled with `set_option linter.dupNamespace false`
 set_option linter.dupNamespace true in
 export Nat (add)
 
-
 end add

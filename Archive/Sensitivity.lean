@@ -11,8 +11,6 @@ import Mathlib.LinearAlgebra.Dual
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Data.Real.Sqrt
 
-#align_import sensitivity from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
-
 /-!
 # Huang's sensitivity theorem
 
@@ -34,7 +32,6 @@ The project was developed at https://github.com/leanprover-community/lean-sensit
 archived at https://github.com/leanprover-community/mathlib/blob/master/archive/sensitivity.lean
 -/
 
-set_option linter.uppercaseLean3 false
 
 
 namespace Sensitivity
@@ -61,7 +58,6 @@ Notations:
 /-- The hypercube in dimension `n`. -/
 def Q (n : ℕ) :=
   Fin n → Bool
-#align sensitivity.Q Sensitivity.Q
 
 instance (n) : Inhabited (Q n) := inferInstanceAs (Inhabited (Fin n → Bool))
 
@@ -70,7 +66,6 @@ instance (n) : Fintype (Q n) := inferInstanceAs (Fintype (Fin n → Bool))
 /-- The projection from `Q n.succ` to `Q n` forgetting the first value
 (ie. the image of zero). -/
 def π {n : ℕ} : Q n.succ → Q n := fun p => p ∘ Fin.succ
-#align sensitivity.π Sensitivity.π
 
 namespace Q
 
@@ -87,7 +82,6 @@ instance : Unique (Q 0) :=
 
 /-- `Q n` has 2^n elements. -/
 theorem card : card (Q n) = 2 ^ n := by simp [Q]
-#align sensitivity.Q.card Sensitivity.Q.card
 
 /-! Until the end of this namespace, `n` will be an implicit argument (still
 a natural number). -/
@@ -103,16 +97,13 @@ theorem succ_n_eq (p q : Q n.succ) : p = q ↔ p 0 = q 0 ∧ π p = π q := by
     · rwa [hx]
     · rw [← Fin.succ_pred x hx]
       convert congr_fun h (Fin.pred x hx)
-#align sensitivity.Q.succ_n_eq Sensitivity.Q.succ_n_eq
 
 /-- The adjacency relation defining the graph structure on `Q n`:
 `p.adjacent q` if there is an edge from `p` to `q` in `Q n`. -/
 def adjacent {n : ℕ} (p : Q n) : Set (Q n) := { q | ∃! i, p i ≠ q i }
-#align sensitivity.Q.adjacent Sensitivity.Q.adjacent
 
 /-- In `Q 0`, no two vertices are adjacent. -/
 theorem not_adjacent_zero (p q : Q 0) : q ∉ p.adjacent := by rintro ⟨v, _⟩; apply finZeroElim v
-#align sensitivity.Q.not_adjacent_zero Sensitivity.Q.not_adjacent_zero
 
 /-- If `p` and `q` in `Q n.succ` have different values at zero then they are adjacent
 iff their projections to `Q n` are equal. -/
@@ -128,7 +119,6 @@ theorem adj_iff_proj_eq {p q : Q n.succ} (h₀ : p 0 ≠ q 0) : q ∈ p.adjacent
     contrapose! hy
     rw [← Fin.succ_pred _ hy]
     apply congr_fun heq
-#align sensitivity.Q.adj_iff_proj_eq Sensitivity.Q.adj_iff_proj_eq
 
 /-- If `p` and `q` in `Q n.succ` have the same value at zero then they are adjacent
 iff their projections to `Q n` are adjacent. -/
@@ -153,12 +143,10 @@ theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
       apply Fin.succ_ne_zero
     apply h_uni
     simp [π, hy]
-#align sensitivity.Q.adj_iff_proj_adj Sensitivity.Q.adj_iff_proj_adj
 
 @[symm]
 theorem adjacent.symm {p q : Q n} : q ∈ p.adjacent ↔ p ∈ q.adjacent := by
   simp only [adjacent, ne_comm, Set.mem_setOf_eq]
-#align sensitivity.Q.adjacent.symm Sensitivity.Q.adjacent.symm
 
 end Q
 
@@ -169,7 +157,6 @@ end Q
 def V : ℕ → Type
   | 0 => ℝ
   | Nat.succ n => V n × V n
-#align sensitivity.V Sensitivity.V
 
 namespace V
 
@@ -193,19 +180,16 @@ end V
 noncomputable def e : ∀ {n}, Q n → V n
   | 0 => fun _ => (1 : ℝ)
   | Nat.succ _ => fun x => cond (x 0) (e (π x), 0) (0, e (π x))
-#align sensitivity.e Sensitivity.e
 
 @[simp]
 theorem e_zero_apply (x : Q 0) : e x = (1 : ℝ) :=
   rfl
-#align sensitivity.e_zero_apply Sensitivity.e_zero_apply
 
 /-- The dual basis to `e`, defined inductively. -/
 noncomputable def ε : ∀ {n : ℕ}, Q n → V n →ₗ[ℝ] ℝ
   | 0, _ => LinearMap.id
   | Nat.succ _, p =>
     cond (p 0) ((ε <| π p).comp <| LinearMap.fst _ _ _) ((ε <| π p).comp <| LinearMap.snd _ _ _)
-#align sensitivity.ε Sensitivity.ε
 
 variable {n : ℕ}
 
@@ -222,7 +206,6 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
       repeat rw [Bool.cond_false]
       simp only [LinearMap.fst_apply, LinearMap.snd_apply, LinearMap.comp_apply, IH, V]
       congr 1; rw [Q.succ_n_eq]; simp [hp, hq]
-#align sensitivity.duality Sensitivity.duality
 
 /-- Any vector in `V n` annihilated by all `ε p`'s is zero. -/
 theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
@@ -238,7 +221,6 @@ theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
       | rw [ε, show q 0 = true from rfl, Bool.cond_true] at h
       | rw [ε, show q 0 = false from rfl, Bool.cond_false] at h
       rwa [show p = π q by ext; simp [q, Fin.succ_ne_zero, π]]
-#align sensitivity.epsilon_total Sensitivity.epsilon_total
 
 open Module
 
@@ -247,7 +229,6 @@ and `ε` computes coefficients of decompositions of vectors on that basis. -/
 theorem dualBases_e_ε (n : ℕ) : DualBases (@e n) (@ε n) where
   eval := duality
   total := @epsilon_total _
-#align sensitivity.dual_bases_e_ε Sensitivity.dualBases_e_ε
 
 /-! We will now derive the dimension of `V`, first as a cardinal in `dim_V` and,
 since this cardinal is finite, as a natural number in `finrank_V` -/
@@ -257,7 +238,6 @@ theorem dim_V : Module.rank ℝ (V n) = 2 ^ n := by
   have : Module.rank ℝ (V n) = (2 ^ n : ℕ) := by
     rw [rank_eq_card_basis (dualBases_e_ε _).basis, Q.card]
   assumption_mod_cast
-#align sensitivity.dim_V Sensitivity.dim_V
 
 instance : FiniteDimensional ℝ (V n) :=
   FiniteDimensional.of_fintype_basis (dualBases_e_ε _).basis
@@ -265,7 +245,6 @@ instance : FiniteDimensional ℝ (V n) :=
 theorem finrank_V : finrank ℝ (V n) = 2 ^ n := by
   have := @dim_V n
   rw [← finrank_eq_rank] at this; assumption_mod_cast
-#align sensitivity.finrank_V Sensitivity.finrank_V
 
 /-! ### The linear map -/
 
@@ -276,7 +255,6 @@ noncomputable def f : ∀ n, V n →ₗ[ℝ] V n
   | 0 => 0
   | Nat.succ n =>
     LinearMap.prod (LinearMap.coprod (f n) LinearMap.id) (LinearMap.coprod LinearMap.id (-f n))
-#align sensitivity.f Sensitivity.f
 
 /-! The preceding definition uses linear map constructions to automatically
 get that `f` is linear, but its values are somewhat buried as a side-effect.
@@ -286,14 +264,12 @@ The next two lemmas unbury them. -/
 @[simp]
 theorem f_zero : f 0 = 0 :=
   rfl
-#align sensitivity.f_zero Sensitivity.f_zero
 
 theorem f_succ_apply (v : V n.succ) : f n.succ v = (f n v.1 + v.2, v.1 - f n v.2) := by
   cases v
   rw [f]
   simp only [sub_eq_add_neg]
   exact rfl
-#align sensitivity.f_succ_apply Sensitivity.f_succ_apply
 
 /-! In the next statement, the explicit conversion `(n : ℝ)` of `n` to a real number
 is necessary since otherwise `n • v` refers to the multiplication defined
@@ -304,7 +280,6 @@ theorem f_squared : ∀ v : V n, (f n) (f n v) = (n : ℝ) • v := by
   induction' n with n IH _ <;> intro v
   · simp only [Nat.zero_eq, Nat.cast_zero, zero_smul]; rfl
   · cases v; rw [f_succ_apply, f_succ_apply]; simp [IH, add_smul (n : ℝ) 1, add_assoc, V]; abel
-#align sensitivity.f_squared Sensitivity.f_squared
 
 /-! We now compute the matrix of `f` in the `e` basis (`p` is the line index,
 `q` the column index). -/
@@ -323,12 +298,10 @@ theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 
       repeat rw [Bool.cond_false]
       simp [hp, hq, IH, duality, abs_of_nonneg ite_nonneg, Q.adj_iff_proj_eq,
         Q.adj_iff_proj_adj]
-#align sensitivity.f_matrix Sensitivity.f_matrix
 
 /-- The linear operator $g_m$ corresponding to Knuth's matrix $B_m$. -/
 noncomputable def g (m : ℕ) : V m →ₗ[ℝ] V m.succ :=
   LinearMap.prod (f m + √ (m + 1) • LinearMap.id) LinearMap.id
-#align sensitivity.g Sensitivity.g
 
 /-! In the following lemmas, `m` will denote a natural number. -/
 
@@ -340,14 +313,12 @@ variable {m : ℕ}
 
 theorem g_apply : ∀ v, g m v = (f m v + √ (m + 1) • v, v) := by
   delta g; intro v; erw [LinearMap.prod_apply]; simp
-#align sensitivity.g_apply Sensitivity.g_apply
 
 theorem g_injective : Injective (g m) := by
   rw [g]
   intro x₁ x₂ h
   simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk.inj_iff, Pi.prod] at h
   exact h.right
-#align sensitivity.g_injective Sensitivity.g_injective
 
 theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m + 1) • w := by
   rcases hv with ⟨v, rfl⟩
@@ -355,7 +326,6 @@ theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m +
   rw [f_succ_apply, g_apply]
   simp [this, f_squared, smul_add, add_smul, smul_smul, V]
   abel
-#align sensitivity.f_image_g Sensitivity.f_image_g
 
 /-!
 ### The main proof
@@ -423,7 +393,6 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
   rw [pow_succ'] at dim_le
   rw [Set.toFinset_card] at hH
   linarith
-#align sensitivity.exists_eigenvalue Sensitivity.exists_eigenvalue
 
 /-- **Huang sensitivity theorem** also known as the **Huang degree theorem** -/
 theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
@@ -470,7 +439,6 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
       apply Finset.card_le_card
       rw [Set.toFinset_inter]
       convert Finset.inter_subset_inter_right coeffs_support
-#align sensitivity.huang_degree_theorem Sensitivity.huang_degree_theorem
 
 end
 

@@ -8,6 +8,7 @@ import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Star.Order
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # The continuous functional calculus
@@ -260,21 +261,6 @@ end cfcHom
 
 section CFC
 
--- right now these tactics are just wrappers, but potentially they could be more sophisticated.
-
-/-- A tactic used to automatically discharge goals relating to the continuous functional calculus,
-specifically whether the element satisfies the predicate. -/
-syntax (name := cfcTac) "cfc_tac" : tactic
-macro_rules
-  | `(tactic| cfc_tac) => `(tactic| (try (first | assumption | infer_instance | aesop)))
-
--- we may want to try using `fun_prop` directly in the future.
-/-- A tactic used to automatically discharge goals relating to the continuous functional calculus,
-specifically concerning continuity of the functions involved. -/
-syntax (name := cfcContTac) "cfc_cont_tac" : tactic
-macro_rules
-  | `(tactic| cfc_cont_tac) => `(tactic| try (first | fun_prop (disch := aesop) | assumption))
-
 open scoped Classical in
 /-- This is the *continuous functional calculus* of an element `a : A` applied to bare functions.
 When either `a` does not satisfy the predicate `p` (i.e., `a` is not `IsStarNormal`,
@@ -428,6 +414,19 @@ lemma cfc_add (f g : R → R) (hf : ContinuousOn f (spectrum R a) := by cfc_cont
   · rw [cfc_apply f a, cfc_apply g a, ← map_add, cfc_apply _ a]
     congr
   · simp [cfc_apply_of_not_predicate a ha]
+
+lemma cfc_const_add (r : R) (f : R → R) (a : A)
+    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
+    cfc (fun x => r + f x) a = algebraMap R A r + cfc f a := by
+  have : (fun z => r + f z) = (fun z => (fun _ => r) z + f z) := by ext; simp
+  rw [this, cfc_add a _ _ (continuousOn_const (c := r)) hf, cfc_const r a ha]
+
+lemma cfc_add_const (r : R) (f : R → R) (a : A)
+    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
+    cfc (fun x => f x + r) a = cfc f a + algebraMap R A r := by
+  rw [add_comm (cfc f a)]
+  conv_lhs => simp only [add_comm]
+  exact cfc_const_add r f a hf ha
 
 open Finset in
 lemma cfc_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
@@ -798,6 +797,11 @@ lemma cfc_nonneg_iff (f : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) :
     (ha : p a := by cfc_tac) : 0 ≤ cfc f a ↔ ∀ x ∈ spectrum R a, 0 ≤ f x := by
   rw [cfc_apply .., cfcHom_nonneg_iff, ContinuousMap.le_def]
   simp
+
+lemma StarOrderedRing.nonneg_iff_spectrum_nonneg (a : A) (ha : p a := by cfc_tac) :
+    0 ≤ a ↔ ∀ x ∈ spectrum R a, 0 ≤ x := by
+  have := cfc_nonneg_iff (id : R → R) a (by fun_prop) ha
+  simpa [cfc_id _ a ha] using this
 
 lemma cfc_nonneg {f : R → R} {a : A} (h : ∀ x ∈ spectrum R a, 0 ≤ f x) :
     0 ≤ cfc f a := by

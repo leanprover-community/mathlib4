@@ -60,7 +60,6 @@ theorem tendsto_integral_of_dominated_convergence {F : ℕ → α → G} {f : α
     exact tendsto_setToFun_of_dominated_convergence (dominatedFinMeasAdditive_weightedSMul μ)
       bound F_measurable bound_integrable h_bound h_lim
   · simp [integral, hG]
-#align measure_theory.tendsto_integral_of_dominated_convergence MeasureTheory.tendsto_integral_of_dominated_convergence
 
 /-- Lebesgue dominated convergence theorem for filters with a countable basis -/
 theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter ι} [l.IsCountablyGenerated]
@@ -73,7 +72,6 @@ theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter ι} [l
     exact tendsto_setToFun_filter_of_dominated_convergence (dominatedFinMeasAdditive_weightedSMul μ)
       bound hF_meas h_bound bound_integrable h_lim
   · simp [integral, hG, tendsto_const_nhds]
-#align measure_theory.tendsto_integral_filter_of_dominated_convergence MeasureTheory.tendsto_integral_filter_of_dominated_convergence
 
 /-- Lebesgue dominated convergence theorem for series. -/
 theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι → α → G} {f : α → G}
@@ -102,7 +100,6 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
     calc
       ‖∑ n ∈ s, F n a‖ ≤ ∑ n ∈ s, bound n a := norm_sum_le_of_le _ fun n _ => hFa n
       _ ≤ ∑' n, bound n a := sum_le_tsum _ (fun n _ => ha0 n) has
-#align measure_theory.has_sum_integral_of_dominated_convergence MeasureTheory.hasSum_integral_of_dominated_convergence
 
 theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AEStronglyMeasurable (f i) μ)
     (hf' : ∑' i, ∫⁻ a : α, ‖f i a‖₊ ∂μ ≠ ∞) :
@@ -135,7 +132,6 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
     exact ENNReal.coe_tsum (NNReal.summable_coe.mp ha)
   · filter_upwards [hhh] with x hx
     exact hx.of_norm.hasSum
-#align measure_theory.integral_tsum MeasureTheory.integral_tsum
 
 lemma hasSum_integral_of_summable_integral_norm {ι} [Countable ι] {F : ι → α → E}
     (hF_int : ∀ i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
@@ -182,7 +178,6 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
     refine fun n => eventually_of_forall fun x => ?_
     exact indicator_le_indicator_of_subset (h_anti (zero_le n)) (fun a => norm_nonneg _) _
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
-#align antitone.tendsto_set_integral Antitone.tendsto_setIntegral
 
 @[deprecated (since := "2024-04-17")]
 alias _root_.Antitone.tendsto_set_integral :=  _root_.Antitone.tendsto_setIntegral
@@ -212,7 +207,6 @@ nonrec theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter
     ← ae_restrict_iff' (α := ℝ) (μ := μ) measurableSet_uIoc] at *
   exact tendsto_const_nhds.smul <|
     tendsto_integral_filter_of_dominated_convergence bound hF_meas h_bound bound_integrable h_lim
-#align interval_integral.tendsto_integral_filter_of_dominated_convergence intervalIntegral.tendsto_integral_filter_of_dominated_convergence
 
 /-- Lebesgue dominated convergence theorem for parametric interval integrals. -/
 nonrec theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι → ℝ → E}
@@ -228,7 +222,6 @@ nonrec theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F :
     (hasSum_integral_of_dominated_convergence bound hF_meas h_bound bound_summable bound_integrable
           h_lim).const_smul
       _
-#align interval_integral.has_sum_integral_of_dominated_convergence intervalIntegral.hasSum_integral_of_dominated_convergence
 
 /-- Interval integrals commute with countable sums, when the supremum norms are summable (a
 special case of the dominated convergence theorem). -/
@@ -249,13 +242,11 @@ theorem hasSum_intervalIntegral_of_summable_norm [Countable ι] {f : ι → C(�
     have := hf_sum.of_norm
     simpa only [Compacts.coe_mk, ContinuousMap.restrict_apply]
       using ContinuousMap.summable_apply this x
-#align interval_integral.has_sum_interval_integral_of_summable_norm intervalIntegral.hasSum_intervalIntegral_of_summable_norm
 
 theorem tsum_intervalIntegral_eq_of_summable_norm [Countable ι] {f : ι → C(ℝ, E)}
     (hf_sum : Summable fun i : ι => ‖(f i).restrict (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖) :
     ∑' i : ι, ∫ x in a..b, f i x = ∫ x in a..b, ∑' i : ι, f i x :=
   (hasSum_intervalIntegral_of_summable_norm hf_sum).tsum_eq
-#align interval_integral.tsum_interval_integral_eq_of_summable_norm intervalIntegral.tsum_intervalIntegral_eq_of_summable_norm
 
 variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
 
@@ -272,7 +263,6 @@ theorem continuousWithinAt_of_dominated_interval {F : X → ℝ → E} {x₀ : X
     (h_cont : ∀ᵐ t ∂μ, t ∈ Ι a b → ContinuousWithinAt (fun x => F x t) s x₀) :
     ContinuousWithinAt (fun x => ∫ t in a..b, F x t ∂μ) s x₀ :=
   tendsto_integral_filter_of_dominated_convergence bound hF_meas h_bound bound_integrable h_cont
-#align interval_integral.continuous_within_at_of_dominated_interval intervalIntegral.continuousWithinAt_of_dominated_interval
 
 /-- Continuity of interval integral with respect to a parameter at a point.
   Given `F : X → ℝ → E`, assume `F x` is ae-measurable on `[a, b]` for `x` in a
@@ -287,7 +277,6 @@ theorem continuousAt_of_dominated_interval {F : X → ℝ → E} {x₀ : X} {bou
     (h_cont : ∀ᵐ t ∂μ, t ∈ Ι a b → ContinuousAt (fun x => F x t) x₀) :
     ContinuousAt (fun x => ∫ t in a..b, F x t ∂μ) x₀ :=
   tendsto_integral_filter_of_dominated_convergence bound hF_meas h_bound bound_integrable h_cont
-#align interval_integral.continuous_at_of_dominated_interval intervalIntegral.continuousAt_of_dominated_interval
 
 /-- Continuity of interval integral with respect to a parameter.
   Given `F : X → ℝ → E`, assume each `F x` is ae-measurable on `[a, b]`,
@@ -304,7 +293,6 @@ theorem continuous_of_dominated_interval {F : X → ℝ → E} {bound : ℝ → 
     continuousAt_of_dominated_interval (eventually_of_forall hF_meas) (eventually_of_forall h_bound)
         bound_integrable <|
       h_cont.mono fun _ himp hx => (himp hx).continuousAt
-#align interval_integral.continuous_of_dominated_interval intervalIntegral.continuous_of_dominated_interval
 
 end DCT
 
@@ -379,7 +367,6 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
         simp [hx₀]
   · apply continuousWithinAt_of_not_mem_closure
     rwa [closure_Icc]
-#align interval_integral.continuous_within_at_primitive intervalIntegral.continuousWithinAt_primitive
 
 variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
@@ -472,7 +459,6 @@ theorem continuousOn_primitive (h_int : IntegrableOn f (Icc a b) μ) :
     exact h_int.mono Ioc_subset_Icc_self le_rfl
   · rw [Icc_eq_empty h]
     exact continuousOn_empty _
-#align interval_integral.continuous_on_primitive intervalIntegral.continuousOn_primitive
 
 theorem continuousOn_primitive_Icc (h_int : IntegrableOn f (Icc a b) μ) :
     ContinuousOn (fun x => ∫ t in Icc a x, f t ∂μ) (Icc a b) := by
@@ -481,7 +467,6 @@ theorem continuousOn_primitive_Icc (h_int : IntegrableOn f (Icc a b) μ) :
     exact integral_Icc_eq_integral_Ioc
   rw [aux]
   exact continuousOn_primitive h_int
-#align interval_integral.continuous_on_primitive_Icc intervalIntegral.continuousOn_primitive_Icc
 
 /-- Note: this assumes that `f` is `IntervalIntegrable`, in contrast to some other lemmas here. -/
 theorem continuousOn_primitive_interval' (h_int : IntervalIntegrable f μ b₁ b₂)
@@ -489,19 +474,16 @@ theorem continuousOn_primitive_interval' (h_int : IntervalIntegrable f μ b₁ b
   refine continuousWithinAt_primitive (measure_singleton _) ?_
   rw [min_eq_right ha.1, max_eq_right ha.2]
   simpa [intervalIntegrable_iff, uIoc] using h_int
-#align interval_integral.continuous_on_primitive_interval' intervalIntegral.continuousOn_primitive_interval'
 
 theorem continuousOn_primitive_interval (h_int : IntegrableOn f (uIcc a b) μ) :
     ContinuousOn (fun x => ∫ t in a..x, f t ∂μ) (uIcc a b) :=
   continuousOn_primitive_interval' h_int.intervalIntegrable left_mem_uIcc
-#align interval_integral.continuous_on_primitive_interval intervalIntegral.continuousOn_primitive_interval
 
 theorem continuousOn_primitive_interval_left (h_int : IntegrableOn f (uIcc a b) μ) :
     ContinuousOn (fun x => ∫ t in x..b, f t ∂μ) (uIcc a b) := by
   rw [uIcc_comm a b] at h_int ⊢
   simp only [integral_symm b]
   exact (continuousOn_primitive_interval h_int).neg
-#align interval_integral.continuous_on_primitive_interval_left intervalIntegral.continuousOn_primitive_interval_left
 
 theorem continuous_primitive (h_int : ∀ a b, IntervalIntegrable f μ a b) (a : ℝ) :
     Continuous fun b => ∫ x in a..b, f x ∂μ := by
@@ -511,12 +493,10 @@ theorem continuous_primitive (h_int : ∀ a b, IntervalIntegrable f μ a b) (a :
   cases' exists_gt b₀ with b₂ hb₂
   apply ContinuousWithinAt.continuousAt _ (Icc_mem_nhds hb₁ hb₂)
   exact continuousWithinAt_primitive (measure_singleton b₀) (h_int _ _)
-#align interval_integral.continuous_primitive intervalIntegral.continuous_primitive
 
 nonrec theorem _root_.MeasureTheory.Integrable.continuous_primitive (h_int : Integrable f μ)
     (a : ℝ) : Continuous fun b => ∫ x in a..b, f x ∂μ :=
   continuous_primitive (fun _ _ => h_int.intervalIntegrable) a
-#align measure_theory.integrable.continuous_primitive MeasureTheory.Integrable.continuous_primitive
 
 end ContinuousPrimitive
 

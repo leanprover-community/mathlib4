@@ -64,6 +64,13 @@ namespace Embedding
 variable {c c'}
 variable (e : Embedding c c')
 
+/-- The opposite embedding in `Embedding c.symm c'.symm` of `e : Embedding c c'`. -/
+@[simps]
+def op : Embedding c.symm c'.symm where
+  f := e.f
+  injective_f := e.injective_f
+  rel h := e.rel h
+
 /-- An embedding of complex shapes `e` satisfies `e.IsRelIff` if the implication
 `e.rel` is an equivalence. -/
 class IsRelIff : Prop where
