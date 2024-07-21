@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
 
 import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.RingTheory.MvPowerSeries.Basic
+import Mathlib.RingTheory.MvPowerSeries.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.UniformGroup
@@ -288,7 +288,7 @@ section Summable
 
 variable [Semiring α] [TopologicalSpace α]
 
-open WithPiTopology
+open WithPiTopology Finsupp
 
 variable {σ α}
 
@@ -314,10 +314,10 @@ theorem hasSum_of_weightedHomogeneousComponents_self (w : σ → ℕ) (f : MvPow
   intro d
   have hd : ∀ (b' : ℕ), b' ≠ (weight w) d → (weightedHomogeneousComponent w b') f d = 0 := by
     intro p h
-    rw [← coeff_apply (weightedHomogeneousComponent w p f) d, coeff_weightedHomogeneousComponent,
+    rw [← coeff_apply α (weightedHomogeneousComponent w p f) d, coeff_weightedHomogeneousComponent,
       if_neg (Ne.symm h)]
   convert hasSum_single (weight w d) hd using 1
-  · rw [← coeff_apply f d, ← coeff_apply (weightedHomogeneousComponent w (weight w d) f) d,
+  · rw [← coeff_apply α f d, ← coeff_apply α (weightedHomogeneousComponent w (weight w d) f) d,
       coeff_weightedHomogeneousComponent]
     simp only [eq_self_iff_true, if_true]
 
@@ -336,14 +336,14 @@ theorem as_tsum_of_weightedHomogeneousComponents_self [T2Space α]
 of its homogeneous components -/
 theorem hasSum_of_homogeneousComponents_self (f : MvPowerSeries σ α) :
     HasSum (fun p => homogeneousComponent p f) f :=
-  hasSum_of_homogeneousComponents_self _ f
+  hasSum_of_weightedHomogeneousComponents_self _ f
 
 theorem homogeneousComponents_self_summable (f : MvPowerSeries σ α) :
     Summable fun p => homogeneousComponent p f :=
   weightedHomogeneousComponents_self_summable 1 f
 
 theorem as_tsum_of_homogeneousComponents_self [T2Space α] (f : MvPowerSeries σ α) :
-    f = tsum fun p => weightedHomogeneousComponent w p f := by
+    f = tsum fun p => homogeneousComponent p f :=
   as_tsum_of_weightedHomogeneousComponents_self 1 f
 
 end Summable
