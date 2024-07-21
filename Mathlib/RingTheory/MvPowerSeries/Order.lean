@@ -177,7 +177,7 @@ theorem weightedOrder_eq_nat {f : MvPowerSeries σ R} {n : ℕ} :
     constructor
     · intro h hd
       exact h (weight w d) hd rfl
-    · intro h m hm hd; rw [← hd] at hm ; exact h hm
+    · intro h m hm hd; rw [← hd] at hm; exact h hm
 
 /-- The order of the sum of two formal power series is at least the minimum of their orders.-/
 theorem le_weightedOrder_add (f g : MvPowerSeries σ R) :
