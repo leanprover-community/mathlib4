@@ -831,8 +831,9 @@ instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) := by
 in `End_R M` is the same as multplying by the inverse of `2` in `R`. -/
 @[simp]
 lemma half_moduleEnd_smul_eq_half_smul [Invertible (2 : R)] (x : M) :
-    ⅟ (2 : Module.End R M) • x = ⅟ (2 : R) • x := by
-  rw [invOf_smul_eq_iff, two_smul, ← add_smul, invOf_two_add_invOf_two, one_smul]
+    ⅟ (2 : Module.End R M) x = ⅟ (2 : R) • x := by
+  rw [← LinearMap.smul_def, invOf_smul_eq_iff, two_smul, ← add_smul, invOf_two_add_invOf_two,
+    one_smul]
 
 variable [AddCommGroup N] [Module R N]
 variable (S) [CommSemiring S] [Algebra S R] [Module S N] [IsScalarTower S R N]
@@ -1340,7 +1341,7 @@ theorem basisRepr_eq_of_iIsOrtho {R M} [CommRing R] [AddCommGroup M] [Module R M
   refine sum_congr rfl fun j hj => ?_
   rw [← @associated_eq_self_apply R, LinearMap.map_sum₂, sum_eq_single_of_mem j hj]
   · rw [LinearMap.map_smul, LinearMap.map_smul₂, smul_eq_mul, associated_apply, smul_eq_mul,
-      smul_eq_mul, half_moduleEnd_smul_eq_half_smul]
+      smul_eq_mul, LinearMap.smul_def, half_moduleEnd_smul_eq_half_smul]
     ring_nf
   · intro i _ hij
     rw [LinearMap.map_smul, LinearMap.map_smul₂,
