@@ -171,7 +171,7 @@ instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v 
   c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) $ by simp)
     (fun _ _ _ _ ↦ Subsingleton.elim _ _)
 
-lemma odd_card_exists_odd_component
+lemma exists_odd_component_of_odd_card
     (ho : Odd (Fintype.card V)) : ∃ (c : ConnectedComponent G), Odd (Nat.card c.supp) := by
   simp_rw [Nat.odd_iff_not_even]
   by_contra! hc
@@ -185,8 +185,7 @@ lemma odd_card_exists_odd_component
     ext v
     simp only [Set.mem_toFinset, Set.mem_iUnion, ConnectedComponent.mem_supp_iff, exists_eq',
       Finset.mem_biUnion, Finset.mem_univ, true_and, true_iff]
-  rw [this]
-  rw [Finset.card_biUnion (fun x _ y _ hxy ↦
+  rw [this, Finset.card_biUnion (fun x _ y _ hxy ↦
     Set.disjoint_toFinset.mpr (ConnectedComponent.supp_disjoint hxy))]
   simp only [Set.toFinset_card]
   exact Finset.even_sum _ fun c _ => (by
