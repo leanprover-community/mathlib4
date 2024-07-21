@@ -44,7 +44,8 @@ and all coefficients of strictly smaller weight vanish.
 `MvPowerSeries.weightedOrder_monomial_of_ne_zero`:
 the weighted order of a monomial, of a monomial with nonzero coefficient
 
-- `MvPowerSeries.le_weightedOrder_add`: the order of the sum of two formal power series is at least the minimum of their orders.
+- `MvPowerSeries.le_weightedOrder_add`: the order of the sum of
+two multivariate power series is at least the minimum of their orders.
 
 - `MvPowerSeries.weightedOrder_add_of_weightedOrder_ne`:
 the weighted_order of the sum of two formal power series is
