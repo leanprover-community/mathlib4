@@ -274,6 +274,26 @@ def map (sq : Square C) (F : C ⥤ D) : Square D where
   f₃₄ := F.map sq.f₃₄
   fac := by simpa using F.congr_map sq.fac
 
+/-- The map `Square C → Square Cᵒᵖ` which switches `X₁` and `X₃`, but
+does not move `X₂` and `X₃`. -/
+@[simps]
+protected def op (sq : Square C) : Square Cᵒᵖ where
+  f₁₂ := sq.f₂₄.op
+  f₁₃ := sq.f₃₄.op
+  f₂₄ := sq.f₁₂.op
+  f₃₄ := sq.f₁₃.op
+  fac := Quiver.Hom.unop_inj sq.fac
+
+/-- The map `Square Cᵒᵖ → Square C` which switches `X₁` and `X₃`, but
+does not move `X₂` and `X₃`. -/
+@[simps]
+protected def unop (sq : Square Cᵒᵖ) : Square C where
+  f₁₂ := sq.f₂₄.unop
+  f₁₃ := sq.f₃₄.unop
+  f₂₄ := sq.f₁₂.unop
+  f₃₄ := sq.f₁₃.unop
+  fac := Quiver.Hom.op_inj sq.fac
+
 end Square
 
 namespace Functor

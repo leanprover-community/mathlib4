@@ -3,12 +3,8 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-=======
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
 import Mathlib.CategoryTheory.Limits.Shapes.Types
->>>>>>> origin/mayer-vietoris-square-basic
 import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
@@ -50,9 +46,11 @@ of types, then the types of sections of `F` over `S.X`, `S.U`,
 * https://stacks.math.columbia.edu/tag/08GL
 
 -/
-universe v u
+universe v v' u u'
 
 namespace CategoryTheory
+
+open Limits Opposite
 
 namespace GrothendieckTopology
 
@@ -73,132 +71,70 @@ namespace MayerVietorisSquare
 variable {J}
 variable (S : J.MayerVietorisSquare)
 
-lemma isPushout :
-    letI F := yoneda ⋙ presheafToSheaf J _
-    IsPushout (F.map S.p) (F.map S.q) (F.map S.i) (F.map S.j) where
-  w := by simp only [← Functor.map_comp, S.fac]
-  isColimit' := ⟨S.isColimit⟩
-
 /-- The condition that a Mayer-Vietoris square becomes a pullback square
 when we evaluate a presheaf on it. --/
 def SheafCondition {A : Type u'} [Category.{v'} A] (P : Cᵒᵖ ⥤ A) : Prop :=
-  IsPullback (P.map S.i.op) (P.map S.j.op) (P.map S.p.op) (P.map S.q.op)
+  (S.toSquare.op.map P).IsPullback
 
-section
+lemma sheafCondition_iff_comp_coyoneda {A : Type u'} [Category.{v'} A] (P : Cᵒᵖ ⥤ A) :
+    S.SheafCondition P ↔ ∀ (X : Aᵒᵖ), S.SheafCondition (P ⋙ coyoneda.obj X) :=
+  Square.isPullback_iff_map_coyoneda_isPullback (S.op.map P)
 
-variable (F : Sheaf J (Type v))
+abbrev toPullbackObj (P : Cᵒᵖ ⥤ Type v') :
+    P.obj (op S.X₄) → Types.PullbackObj (P.map S.f₁₂.op) (P.map S.f₁₃.op) :=
+  (S.toSquare.op.map P).pullbackCone.toPullbackObj
 
-/-- Given `S : J.MayerVietoris Square` and `F : Sheaf J (Type _)`,
-this is the pullback cone corresponding to the (pullback) square
-obtained by evaluating `F` on the square `S`. -/
-@[simps!]
-def pullbackConeOfSheaf :
-    PullbackCone (F.val.map S.p.op) (F.val.map S.q.op) :=
-  PullbackCone.mk (F.val.map S.i.op) (F.val.map S.j.op) (by
-    simp only [← Functor.map_comp, ← op_comp, S.fac])
+lemma sheafCondition_iff_bijective_toPullbackObj (P : Cᵒᵖ ⥤ Type v') :
+    S.SheafCondition P ↔ Function.Bijective (S.toPullbackObj P) := by
+  have := (S.toSquare.op.map P).pullbackCone.isLimitEquivBijective
+  exact ⟨fun h ↦ this h.isLimit, fun h ↦ Square.IsPullback.mk _ (this.symm h)⟩
 
-/-- Given `S : J.MayerVietoris Square` and `F : Sheaf J (Type _)`, this is
-the map from  -/
-abbrev toPullbackSections :
-    F.val.obj (op S.X) → Types.PullbackObj (F.val.map S.p.op) (F.val.map S.q.op) :=
-  (S.pullbackConeOfSheaf F).toPullbackObj
+namespace SheafCondition
 
-namespace bijective_toPullbackSections
+variable {S}
+variable {P : Cᵒᵖ ⥤ Type v'} (h : S.SheafCondition P)
 
-@[simps!]
-noncomputable def pullbackCone :
-    PullbackCone
-      ((yoneda.obj F).map ((yoneda ⋙ presheafToSheaf J _).map S.p).op)
-      ((yoneda.obj F).map ((yoneda ⋙ presheafToSheaf J _).map S.q).op) :=
-  PullbackCone.mk ((yoneda.obj F).map ((yoneda ⋙ presheafToSheaf J _).map S.i).op)
-    ((yoneda.obj F).map ((yoneda ⋙ presheafToSheaf J _).map S.j).op) (by
-      dsimp
-      simp only [← Functor.map_comp, ← op_comp, S.fac])
+lemma bijective_toPullbackObj : Function.Bijective (S.toPullbackObj P) := by
+  rwa [← sheafCondition_iff_bijective_toPullbackObj]
 
-noncomputable def isLimitPullbackCone : IsLimit (pullbackCone S F) :=
-  isLimitPullbackConeMapOfIsLimit (yoneda.obj F) (by
-    simp only [← Functor.map_comp, ← op_comp, S.fac])
-    ((PushoutCocone.isColimitEquivIsLimitOp _ S.isPushout.isColimit).ofIsoLimit
-      (PullbackCone.ext (Iso.refl _)))
+lemma ext {x y : P.obj (op S.X₄)}
+    (h₁ : P.map S.f₂₄.op x = P.map S.f₂₄.op y)
+    (h₂ : P.map S.f₃₄.op x = P.map S.f₃₄.op y) : x = y :=
+  h.bijective_toPullbackObj.injective (by ext <;> assumption)
 
-noncomputable def pullbackObjEquiv :
-  Types.PullbackObj
-    ((yoneda.obj F).map ((yoneda ⋙ presheafToSheaf J _).map S.p).op)
-    ((yoneda.obj F).map ((yoneda ⋙ presheafToSheaf J _).map S.q).op) ≃
-    Types.PullbackObj (F.val.map S.p.op) (F.val.map S.q.op) :=
-  Types.pullbackMapEquiv _ _ _ _
-    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
-    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
-    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
-    (fun x ↦ by
-      dsimp
-      rw [yonedaEquiv_naturality]
-      erw [Adjunction.homEquiv_naturality_left]
-      rfl)
-    (fun x ↦ by
-      dsimp
-      rw [yonedaEquiv_naturality]
-      erw [Adjunction.homEquiv_naturality_left]
-      rfl)
+variable (u : P.obj (op S.X₂)) (v : P.obj (op S.X₃))
+  (huv : P.map S.f₁₂.op u = P.map S.f₁₃.op v)
 
-lemma pullbackObjEquiv_comm :
-    (S.pullbackConeOfSheaf F).toPullbackObj ∘
-      ((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv =
-        pullbackObjEquiv S F ∘ (pullbackCone S F).toPullbackObj := by
-  ext x
-  all_goals
-    dsimp [pullbackObjEquiv, Types.pullbackMapEquiv]
-    rw [yonedaEquiv_naturality]
-    erw [Adjunction.homEquiv_naturality_left]
-    rfl
+/-- If `S` is a Mayer-Vietoris square, and `P` is a presheaf
+which satisfies the sheaf condition with respect to `S`, then
+elements of `P` over `S.X₂` and `S.X₃` can be glued if the
+coincide over `S.X₁`. -/
+noncomputable def glue : P.obj (op S.X₄) :=
+  (PullbackCone.IsLimit.equivPullbackObj h.isLimit).symm ⟨⟨u, v⟩, huv⟩
 
-end bijective_toPullbackSections
+@[simp]
+lemma map_f₂₄_op_glue : P.map S.f₂₄.op (h.glue u v huv) = u :=
+  PullbackCone.IsLimit.equivPullbackObj_symm_apply_fst h.isLimit _
 
-open bijective_toPullbackSections in
-lemma bijective_toPullbackSections :
-    Function.Bijective (S.pullbackConeOfSheaf F).toPullbackObj := by
-  suffices Function.Bijective (pullbackObjEquiv S F ∘ (pullbackCone S F).toPullbackObj) by
-    rw [← pullbackObjEquiv_comm, Function.Bijective.of_comp_iff _
-      (by apply Equiv.bijective)] at this
-    exact this
-  rw [Function.Bijective.of_comp_iff' (by apply Equiv.bijective)]
-  exact (PullbackCone.isLimitEquivBijective _).1
-    (isLimitPullbackCone S F)
+@[simp]
+lemma map_f₃₄_op_glue : P.map S.f₃₄.op (h.glue u v huv) = v :=
+  PullbackCone.IsLimit.equivPullbackObj_symm_apply_snd h.isLimit _
 
-lemma isPullback_of_sheaf :
-    IsPullback (F.val.map S.i.op) (F.val.map S.j.op)
-      (F.val.map S.p.op) (F.val.map S.q.op) where
-  w := by simp only [← Functor.map_comp, ← op_comp, S.fac]
-  isLimit' := ⟨(PullbackCone.isLimitEquivBijective _).2
-    (S.bijective_toPullbackSections F)⟩
+end SheafCondition
 
-lemma ext {x y : F.val.obj (op S.X)} (h₁ : F.val.map S.i.op x = F.val.map S.i.op y)
-    (h₂ : F.val.map S.j.op x = F.val.map S.j.op y) : x = y :=
-  PullbackCone.IsLimit.type_ext (S.isPullback_of_sheaf F).isLimit h₁ h₂
+private lemma sheafCondition_of_sheaf' (F : Sheaf J (Type v)) :
+    S.SheafCondition F.val := by
+  dsimp [SheafCondition]
+  have := S.isPushout.op.map (yoneda.obj F)
+  -- up to bijections (not isomorphisms), the goal is `this`
+  sorry
 
-section
-
-variable (u : F.val.obj (op S.U)) (v : F.val.obj (op S.V))
-  (h : F.val.map S.p.op u = F.val.map S.q.op v)
-
-/-- If `S` is a Mayer-Vietoris square, a section of a sheaf
-on `S.X` can be constructed by gluing sections over `S.U` and `S.V`
-which coincide on `S.W`. -/
-noncomputable def glue : F.val.obj (op S.X) :=
-  (PullbackCone.IsLimit.equivPullbackObj (S.isPullback_of_sheaf F).isLimit).symm
-    ⟨⟨u, v⟩, h⟩
-
-lemma map_i_op_glue : F.val.map S.i.op (S.glue F u v h) = u :=
-  PullbackCone.IsLimit.equivPullbackObj_symm_apply_fst
-    (S.isPullback_of_sheaf F).isLimit _
-
-lemma map_j_op_glue : F.val.map S.j.op (S.glue F u v h) = v :=
-  PullbackCone.IsLimit.equivPullbackObj_symm_apply_snd
-    (S.isPullback_of_sheaf F).isLimit _
-
-end
-
-end
+lemma sheafCondition_of_sheaf {A : Type u'} [Category.{v} A]
+    (F : Sheaf J A) : S.SheafCondition F.val := by
+  rw [sheafCondition_iff_comp_coyoneda]
+  intro X
+  exact S.sheafCondition_of_sheaf'
+    ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (F.cond X.unop)⟩
 
 end MayerVietorisSquare
 
