@@ -1522,7 +1522,7 @@ section frequently_bounded
 
 variable {R S : Type*} {F : Filter R} [LinearOrder R] [LinearOrder S]
 
-/-- For nontrivial filters in linear orders, coboundedness for `≤` implies frequently boundedness
+/-- For nontrivial filters in linear orders, coboundedness for `≤` implies frequent boundedness
 from below. -/
 lemma IsCobounded.frequently_ge [NeBot F] (cobdd : IsCobounded (· ≤ ·) F) :
     ∃ l, ∃ᶠ x in F, l ≤ x := by
@@ -1537,13 +1537,13 @@ lemma IsCobounded.frequently_ge [NeBot F] (cobdd : IsCobounded (· ≤ ·) F) :
   specialize ht t' (by filter_upwards [ev] with _ h using (not_le.mp h).le)
   apply lt_irrefl t' <| lt_of_lt_of_le ht' ht
 
-/-- For nontrivial filters in linear orders, coboundedness for `≥` implies frequently boundedness
+/-- For nontrivial filters in linear orders, coboundedness for `≥` implies frequent boundedness
 from above. -/
 lemma IsCobounded.frequently_le [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
     ∃ u, ∃ᶠ x in F, x ≤ u :=
   IsCobounded.frequently_ge (R := Rᵒᵈ) cobdd
 
-/-- In linear orders, frequently boundedness from below implies coboundedness for `≤`. -/
+/-- In linear orders, frequent boundedness from below implies coboundedness for `≤`. -/
 lemma isCobounded_le_of_frequently_ge {l : R} (freq_ge : ∃ᶠ x in F, l ≤ x) :
     IsCobounded (· ≤ ·) F := by
   by_cases lbot : IsBot l
@@ -1557,7 +1557,7 @@ lemma isCobounded_le_of_frequently_ge {l : R} (freq_ge : ∃ᶠ x in F, l ≤ x)
   obtain ⟨w, l_le_w, w_le_u⟩ := key.exists
   exact hl'.le.trans <| l_le_w.trans w_le_u
 
-/-- In linear orders, frequently boundedness from above implies coboundedness for `≥`. -/
+/-- In linear orders, frequent boundedness from above implies coboundedness for `≥`. -/
 lemma isCobounded_ge_of_frequently_le {u : R} (freq_le : ∃ᶠ r in F, r ≤ u) :
     IsCobounded (· ≥ ·) F :=
   isCobounded_le_of_frequently_ge (R := Rᵒᵈ) freq_le
