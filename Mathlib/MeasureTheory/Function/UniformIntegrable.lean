@@ -32,9 +32,9 @@ formulate the martingale convergence theorem.
 
 * `MeasureTheory.unifIntegrable_finite`: a finite sequence of Lp functions is uniformly
   integrable.
-* `MeasureTheory.tendsto_Lp_of_tendsto_ae`: a sequence of Lp functions which is uniformly
+* `MeasureTheory.tendsto_Lp_finite_of_tendsto_ae`: a sequence of Lp functions which is uniformly
   integrable converges in Lp if they converge almost everywhere.
-* `MeasureTheory.tendstoInMeasure_iff_tendsto_Lp`: Vitali convergence theorem:
+* `MeasureTheory.tendstoInMeasure_iff_tendsto_Lp_finite`: Vitali convergence theorem:
   a sequence of Lp functions converges in Lp if and only if it is uniformly integrable
   and converges in measure.
 
@@ -131,6 +131,32 @@ protected theorem ae_eq (hf : UnifIntegrable f p μ) (hfg : ∀ n, f n =ᵐ[μ] 
   refine ⟨δ, hδ_pos, fun n s hs hμs => (le_of_eq <| snorm_congr_ae ?_).trans (hfδ n s hs hμs)⟩
   filter_upwards [hfg n] with x hx
   simp_rw [Set.indicator_apply, hx]
+
+/-- Uniform integrability is preserved by restriction of the functions to a set. -/
+protected theorem indicator (hf : UnifIntegrable f p μ) (E : Set α) :
+    UnifIntegrable (fun i => E.indicator (f i)) p μ := fun ε hε ↦ by
+  obtain ⟨δ, hδ_pos, hε⟩ := hf hε
+  refine ⟨δ, hδ_pos, fun i s hs hμs ↦ ?_⟩
+  calc
+    snorm (s.indicator (E.indicator (f i))) p μ = snorm (E.indicator (s.indicator (f i))) p μ := by
+      simp only [indicator_indicator, inter_comm]
+    _ ≤ snorm (s.indicator (f i)) p μ := snorm_indicator_le _
+    _ ≤ ENNReal.ofReal ε := hε _ _ hs hμs
+
+/-- Uniform integrability is preserved by restriction of the measure to a set. -/
+protected theorem restrict (hf : UnifIntegrable f p μ) (E : Set α) :
+    UnifIntegrable f p (μ.restrict E) := fun ε hε ↦ by
+  obtain ⟨δ, hδ_pos, hδε⟩ := hf hε
+  refine ⟨δ, hδ_pos, fun i s hs hμs ↦ ?_⟩
+  rw [μ.restrict_apply hs, ← measure_toMeasurable] at hμs
+  calc
+    snorm (indicator s (f i)) p (μ.restrict E) = snorm (f i) p (μ.restrict (s ∩ E)) := by
+      rw [snorm_indicator_eq_snorm_restrict hs, μ.restrict_restrict hs]
+    _ ≤ snorm (f i) p (μ.restrict (toMeasurable μ (s ∩ E))) :=
+      snorm_mono_measure _ <| Measure.restrict_mono (subset_toMeasurable _ _) le_rfl
+    _ = snorm (indicator (toMeasurable μ (s ∩ E)) (f i)) p μ :=
+      (snorm_indicator_eq_snorm_restrict (measurableSet_toMeasurable _ _)).symm
+    _ ≤ ENNReal.ofReal ε := hδε i _ (measurableSet_toMeasurable _ _) hμs
 
 end UnifIntegrable
 
