@@ -27,7 +27,8 @@ order is finite, then there exists a nonzero coefficient of weight the weighted 
 - `MvPowerSeries.weightedOrder_le` : if a coefficient is nonzero, then
 the weighted order is at most the weight of that exponent.
 
-- `MvPowerSeries.coeff_of_lt_weightedOrder`: all coefficients of weights strictly less than the weighted order vanish
+- `MvPowerSeries.coeff_of_lt_weightedOrder`:
+all coefficients of weights strictly less than the weighted order vanish
 
 - `MvPowerSeries.weightedOrder_eq_top_iff`: the weighted order of `f` is `⊤`
 if and only `f = 0`.
@@ -39,7 +40,8 @@ then the weighted order is at least `n`.
 there exists a nonzero coefficient of weight `n`,
 and all coefficients of strictly smaller weight vanish.
 
-- `MvPowerSeries.weightedOrder_monomial`, `MvPowerSeries.weightedOrder_monomial_of_ne_zero`:
+- `MvPowerSeries.weightedOrder_monomial`,
+`MvPowerSeries.weightedOrder_monomial_of_ne_zero`:
 the weighted order of a monomial, of a monomial with nonzero coefficient
 
 - `MvPowerSeries.le_weightedOrder_add`: the order of the sum of two formal power series is at least the minimum of their orders.
@@ -75,7 +77,8 @@ then there exists a non zero coefficient of degree equal to the order
 - `MvPowerSeries.order_le` : if a coefficient of some degree is nonzero, then the order
 is at least that degree
 
-- `MvPowerSeries.nat_le_order`: if all coefficients of degree strictly smaller than some integer vanish, then the order is at at least that integer.
+- `MvPowerSeries.nat_le_order`: if all coefficients of degree strictly smaller
+than some integer vanish, then the order is at at least that integer.
 
 - `MvPowerSeries.order_eq_nat_iff`:  the order of a power series is an integer `n`
 iff there exists a nonzero coefficient in that degree, and all coefficients below
