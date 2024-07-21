@@ -309,7 +309,7 @@ lemma isOpen_iff_Iic_compl_or_univ (U : Set α) :
       let b := sSup Uᶜ
       use b
       rw [eq_compl_comm, le_antisymm_iff]
-      exact ⟨IsLowerSet.Iic_subset (isLowerSet_of_isClosed (isClosed_compl_iff.mpr hU))
+      exact ⟨(isLowerSet_of_isClosed hU.isClosed_compl).Iic_subset
         (dirSupClosed_iff_forall_sSup.mp (dirSupClosed_of_isClosed (isClosed_compl_iff.mpr hU))
         neUc (isChain_of_trichotomous Uᶜ).directedOn le_rfl),
         fun  _ ha ↦ CompleteLattice.le_sSup Uᶜ _ ha⟩
