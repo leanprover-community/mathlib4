@@ -3,7 +3,8 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.OpenImmersion
+import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
+import Mathlib.RingTheory.LocalProperties
 
 /-!
 
@@ -30,6 +31,7 @@ namespace AlgebraicGeometry
 
 /-- A morphism of schemes `f : X ⟶ Y` is a preimmersion if the underlying map of
 topological spaces is an embedding and the induced morphisms of stalks are all surjective. -/
+@[mk_iff]
 class IsPreimmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
   base_embedding : Embedding f.1.base
   surj_on_stalks : ∀ x, Function.Surjective (PresheafedSpace.stalkMap f.1 x)
@@ -41,7 +43,21 @@ lemma Scheme.Hom.stalkMap_surjective {X Y : Scheme} (f : Hom X Y) [IsPreimmersio
     Function.Surjective (PresheafedSpace.stalkMap f.1 x) :=
   IsPreimmersion.surj_on_stalks x
 
+lemma isPreimmersion_eq_inf :
+    @IsPreimmersion = topologically Embedding ⊓ stalkwise (Function.Surjective ·) := by
+  ext
+  rw [isPreimmersion_iff]
+  rfl
+
+/-- Being surjective on stalks is local at the target. -/
+instance isSurjectiveOnStalks_isLocalAtTarget : IsLocalAtTarget
+    (stalkwise (fun f ↦ Function.Surjective f)) :=
+  stalkwiseIsLocalAtTarget_of_respectsIso surjective_respectsIso
+
 namespace IsPreimmersion
+
+instance : IsLocalAtTarget @IsPreimmersion :=
+  isPreimmersion_eq_inf ▸ inferInstance
 
 instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f] : IsPreimmersion f where
   base_embedding := f.openEmbedding.toEmbedding
@@ -57,9 +73,6 @@ instance : MorphismProperty.IsMultiplicative @IsPreimmersion where
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion f]
     [IsPreimmersion g] : IsPreimmersion (f ≫ g) :=
   MorphismProperty.IsStableUnderComposition.comp_mem f g inferInstance inferInstance
-
-instance respectsIso : MorphismProperty.RespectsIso @IsPreimmersion := by
-  constructor <;> intro X Y Z e f hf <;> infer_instance
 
 instance (priority := 900) {X Y} (f : X ⟶ Y) [IsPreimmersion f] : Mono f := by
   refine (Scheme.forgetToLocallyRingedSpace ⋙

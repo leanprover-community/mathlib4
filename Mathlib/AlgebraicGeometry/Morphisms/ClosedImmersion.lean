@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
-import Mathlib.RingTheory.LocalProperties
-import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
+import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 
 /-!
 
@@ -57,6 +56,18 @@ lemma eq_inf : @IsClosedImmersion = (topologically ClosedEmbedding) ⊓
   ext X Y f
   rw [isClosedImmersion_iff]
   rfl
+
+lemma iff_isPreimmersion {X Y : Scheme} {f : X ⟶ Y} :
+    IsClosedImmersion f ↔ IsPreimmersion f ∧ IsClosed (Set.range f.1.base) := by
+  rw [and_comm, isClosedImmersion_iff, isPreimmersion_iff, ← and_assoc, closedEmbedding_iff,
+    @and_comm (Embedding _)]
+
+lemma of_isPreimmersion {X Y : Scheme} (f : X ⟶ Y) [IsPreimmersion f]
+    (hf : IsClosed (Set.range f.1.base)) : IsClosedImmersion f :=
+  iff_isPreimmersion.mpr ⟨‹_›, hf⟩
+
+instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : IsPreimmersion f :=
+  (iff_isPreimmersion.mp ‹_›).1
 
 /-- Isomorphisms are closed immersions. -/
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsClosedImmersion f where
@@ -129,11 +140,6 @@ instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f whe
   isCompact_preimage _ _ hU' := base_closed.isCompact_preimage hU'
 
 end IsClosedImmersion
-
-/-- Being surjective on stalks is local at the target. -/
-instance isSurjectiveOnStalks_isLocalAtTarget : IsLocalAtTarget
-    (stalkwise (fun f ↦ Function.Surjective f)) :=
-  stalkwiseIsLocalAtTarget_of_respectsIso surjective_respectsIso
 
 /-- Being a closed immersion is local at the target. -/
 instance IsClosedImmersion.isLocalAtTarget : IsLocalAtTarget @IsClosedImmersion :=
