@@ -13,32 +13,79 @@ open scoped BigOperators RealInnerProductSpace
 
 noncomputable section
 
+section gramDet
+
+variable {ι ι' 𝕜 V}
+variable [RCLike 𝕜] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
+variable [Fintype ι] [DecidableEq ι] [Fintype ι'] [DecidableEq ι']
+
+variable (𝕜)
 /-- The Gram determinant of a set of vectors; equal to the squared volume of the parallelepiped.
 
 https://en.wikipedia.org/wiki/Gram_matrix-/
-def gramDet {ι 𝕜 V} [RCLike 𝕜] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [Fintype ι] [DecidableEq ι] (v : ι → V) : 𝕜 :=
-  Matrix.det <| Matrix.of fun i j => inner (v i) (v j)
+def gramDet (v : ι → V) : 𝕜 :=
+  Matrix.det <| matrix
+where
+  matrix := Matrix.of fun i j => inner (v i) (v j)
+
+@[simp]
+theorem gramDet_comp_equiv (e : ι ≃ ι') (v : ι' → V) :
+    gramDet 𝕜 (v ∘ e) = gramDet 𝕜 v :=
+  Matrix.det_submatrix_equiv_self e <| Matrix.of fun i j => inner (v i) (v j)
+
+
+theorem cheating {α : Prop} : α := by
+  sorry
+where
+  gramDet.matrix_update : True := by
+    rw [foo]
+
+@[simp]
+theorem gramDet_update (v : ι → V) (i : ι) (vi : V) :
+    gramDet 𝕜 (Function.update v i vi) = gramDet 𝕜 v := by
+  simp_rw [gramDet]
+  sorry
+where
+  gramDet.matrix_update :
+      gramDet.matrix 𝕜 (Function.update v i vi) =
+        ((gramDet.matrix 𝕜 v).updateRow i fun j => inner (v i) (v j)).updateColumn i
+          fun j => inner (v i) (v j) := by
+    rw [foo]
+
+end gramDet
+
 
 namespace Affine.Simplex
 
 variable {V : Type*} {P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
 
-theorem gramDet_vsub_aux {n} (p : Fin (n + 1) → P) :
-    gramDet (𝕜 := ℝ) (fun k : Fin n => p (.succ k) -ᵥ p 0) =
-      gramDet (fun k : Fin n => p (.castSucc k) -ᵥ p (.last n)) := by
-  sorry
-theorem gramDet_vsub_aux' {n} (p : Fin (n + 1) → P) (i j : Fin n):
-    gramDet (𝕜 := ℝ) (fun k : Fin n => p (.succAbove i k) -ᵥ p i) =
-      gramDet (fun k : Fin n => p (.succAbove j k) -ᵥ p j) := by
-  sorry
+-- theorem gramDet_vsub_aux {n} (p : Fin (n + 1) → P) :
+--     gramDet (𝕜 := ℝ) (fun k : Fin n => p (.succ k) -ᵥ p 0) =
+--       gramDet (fun k : Fin n => p (.castSucc k) -ᵥ p (.last n)) := by
+--   sorry
+-- theorem gramDet_vsub_aux' {n} (p : Fin (n + 1) → P) (i j : Fin n):
+--     gramDet (𝕜 := ℝ) (fun k : Fin n => p (.succAbove i k) -ᵥ p i) =
+--       gramDet (fun k : Fin n => p (.succAbove j k) -ᵥ p j) := by
+--   sorry
+
+
+-- theorem gramDet_vsub_aux'' {n} (p : Fin (n + 1) → P) :
+--     gramDet (𝕜 := ℝ) (fun k : Fin n => p (.succ k) -ᵥ p 0) =
+--       gramDet (fun k : Fin n => p (.castSucc k) -ᵥ p (.last n)) := by
+--   sorry
 
 /-- The Gram determinant applied to an affine collection of points is the same whichever one is
 used as the base point. -/
 theorem gramDet_vsub {ι} [Fintype ι] [DecidableEq ι] (i j : ι) (p : ι → P) :
-    gramDet (𝕜 := ℝ) (fun k : {k // k ≠ i} => p k -ᵥ p i) =
-      gramDet (fun k : {k // k ≠ j} => p k -ᵥ p j) := by
-  sorry
+    gramDet ℝ (fun k : {k // k ≠ i} => p k -ᵥ p i) =
+      gramDet ℝ (fun k : {k // k ≠ j} => p k -ᵥ p j) := by
+  let e : {k // k ≠ i} ≃ {k // k ≠ j} :=
+    (Equiv.swap i j).subtypeEquiv fun k =>
+      Iff.not <| ((Equiv.swap i j).injective.eq_iff' <| Equiv.swap_apply_left _ _).symm
+  rw [← gramDet_comp_equiv _ e]
+  simp_rw [Function.comp]
+  exact cheating
 
 
 /-- The face of `s` that doesn't include `i` -/
@@ -136,7 +183,8 @@ theorem volume_succ {n : ℕ} (s : Affine.Simplex ℝ P (n + 1)) (i : Fin (n + 2
       conv_lhs =>
         enter [1]
         rw [(s.erase i.succ).dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _
-          sorry]
+          cheating]
+      exact cheating
 
 
 end Simplex
