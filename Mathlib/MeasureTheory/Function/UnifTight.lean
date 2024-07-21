@@ -242,7 +242,6 @@ private theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, Memℒp (
   · exact unifTight_const hp' hg
   · exact unifTight_of_tendsto_Lp_zero hp' (fun n => (hf n).sub hg) hfg
 
-
 /- Next we deal with the forward direction. The `Memℒp` and `TendstoInMeasure` hypotheses
 are unwrapped and strengthened (by known lemmas) to also have the `StronglyMeasurable`
 and a.e. convergence hypotheses. The bulk of the proof is done under these stronger hypotheses.-/
