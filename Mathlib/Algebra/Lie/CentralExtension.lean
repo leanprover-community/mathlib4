@@ -90,7 +90,8 @@ structure 2cocycle [AddCommGroup V] [LieModule L V] where
 def cocycle_of_splitting (f : M →ₗ⁅R⁆ L) [IsCentralExtension f] [ModuleSplitting f] :
     L [⋀^(Fin 2)]→ₗ[R] f.ker where
   toFun g := LinearMap.snd
-    ⁅ModuleSplitting.splitting.symm (LinearMap.inl R L f.ker (g 0)), ModuleSplitting.splitting.symm (LinearMap.inl R L f.ker (g 1))⁆
+    ⁅ModuleSplitting.splitting.symm (LinearMap.inl R L f.ker (g 0)), ModuleSplitting.splitting.symm
+      (LinearMap.inl R L f.ker (g 1))⁆
     -- [(a,b),(c,d)] = (cocycle(b,d),[b, d]) : use splitting.symm ∘ₗ LinearMap.inl
   map_add' := sorry
   map_smul' := sorry
