@@ -3791,6 +3791,7 @@ import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.MvPowerSeries.Inverse
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 import Mathlib.RingTheory.MvPowerSeries.Order
+import Mathlib.RingTheory.MvPowerSeries.Topology
 import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.Nilpotent.Basic
