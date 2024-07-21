@@ -163,7 +163,6 @@ def toAddSubgroup (s : Subfield K) : AddSubgroup K :=
 -- /-- The underlying submonoid of a subfield. -/
 -- def toSubmonoid (s : Subfield K) : Submonoid K :=
 --   { s.toSubring.toSubmonoid with }
--- #align subfield.to_submonoid Subfield.toSubmonoid
 
 instance : SetLike (Subfield K) K where
   coe s := s.carrier
