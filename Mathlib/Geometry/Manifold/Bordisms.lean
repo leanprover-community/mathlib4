@@ -478,17 +478,19 @@ variable {s : SingularNManifold X n M I}
 
 -- TODO: can I remove the `Fact`, concluding the empty set otherwise? or is this not useful?
 variable {x y : ℝ} [Fact (x < y)] in
-def bar : BoundaryManifoldData ((Icc x y)) (modelWithCornersEuclideanHalfSpace 1) := sorry
+def _root_.boundaryData_IccManifold : BoundaryManifoldData ((Icc x y)) (𝓡∂ 1) := sorry
 
-def foo : BoundaryManifoldData (M × (Icc (0 : ℝ) (1 : ℝ))) (I.prod (𝓡∂ 1)) := by
-  apply BoundaryManifoldData.prod_of_boundaryless_left
-  apply bar
+variable (x y : ℝ) [Fact (x < y)] (M I) in
+abbrev foo  : BoundaryManifoldData (M × (Icc x y)) (I.prod (𝓡∂ 1)) :=
+  BoundaryManifoldData.prod_of_boundaryless_left (M := M) (I := I)
+    (boundaryData_IccManifold (x := x) (y := y))
 
-instance : HasNiceBoundary (foo (M := M) (I := I)) := sorry
+variable {x y : ℝ} [Fact (x < y)] in
+instance : HasNiceBoundary (foo M I x y) := sorry
 
 /-- Each singular `n`-manifold `(M,f)` is cobordant to itself. -/
 def refl (s : SingularNManifold X n M I) :
-    UnorientedCobordism s s (W := (M × (Icc (0 : ℝ) 1))) (J := (I.prod (𝓡∂ 1))) foo where
+    UnorientedCobordism s s (foo M I (0 : ℝ) (1 : ℝ)) where
   hW := by infer_instance
   hW' := by rw [finrank_prod, s.hdim, finrank_euclideanSpace_fin]
   F := s.f ∘ (fun p ↦ p.1)
