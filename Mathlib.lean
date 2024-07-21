@@ -2092,6 +2092,7 @@ import Mathlib.Data.Finsupp.Order
 import Mathlib.Data.Finsupp.PWO
 import Mathlib.Data.Finsupp.Pointwise
 import Mathlib.Data.Finsupp.ToDFinsupp
+import Mathlib.Data.Finsupp.Weight
 import Mathlib.Data.Finsupp.WellFounded
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.BigOperators
