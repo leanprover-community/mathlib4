@@ -70,6 +70,7 @@ protected abbrev tmul (B₁ : BilinMap A M₁ N₁) (B₂ : BilinMap  R M₂ N�
     BilinMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
   tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
 
+/-
 attribute [local ext] TensorProduct.ext in
 /-- A tensor product of symmetric bilinear forms is symmetric. -/
 lemma _root_.LinearMap.IsSymm.tmul {B₁ : BilinMap A M₁ A} {B₂ : BilinMap R M₂ R}
@@ -77,6 +78,7 @@ lemma _root_.LinearMap.IsSymm.tmul {B₁ : BilinMap A M₁ A} {B₂ : BilinMap R
   rw [LinearMap.isSymm_iff_eq_flip]
   ext x₁ x₂ y₁ y₂
   exact congr_arg₂ (HSMul.hSMul) (hB₂ x₂ y₂) (hB₁ x₁ y₁)
+-/
 
 variable (A) in
 /-- The base change of a bilinear form. -/
@@ -89,10 +91,12 @@ theorem baseChange_tmul (B₂ : BilinMap R M₂ R) (a : A) (m₂ : M₂)
     B₂.baseChange A (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (a * a') ⊗ₜ (B₂ m₂ m₂') :=
   rfl
 
+/-
 variable (A) in
 /-- The base change of a symmetric bilinear form is symmetric. -/
 lemma IsSymm.baseChange {B₂ : BilinForm R M₂} (hB₂ : B₂.IsSymm) : (B₂.baseChange A).IsSymm :=
   IsSymm.tmul mul_comm hB₂
+-/
 
 end CommSemiring
 
@@ -105,6 +109,7 @@ variable [Module.Free R M₁] [Module.Finite R M₁]
 variable [Module.Free R M₂] [Module.Finite R M₂]
 variable [Nontrivial R]
 
+/-
 variable (R) in
 /-- `tensorDistrib` as an equivalence. -/
 noncomputable def tensorDistribEquiv :
@@ -115,6 +120,7 @@ noncomputable def tensorDistribEquiv :
   TensorProduct.dualDistribEquiv R (M₁ ⊗ M₁) (M₂ ⊗ M₂) ≪≫ₗ
   (TensorProduct.tensorTensorTensorComm R _ _ _ _).dualMap ≪≫ₗ
   (TensorProduct.lift.equiv R _ _ _).symm
+
 
 @[simp]
 theorem tensorDistribEquiv_tmul (B₁ : BilinMap R M₁ R) (B₂ : BilinMap R M₂ R) (m₁ : M₁) (m₂ : M₂)
@@ -136,6 +142,7 @@ theorem tensorDistribEquiv_toLinearMap :
 theorem tensorDistribEquiv_apply (B : BilinForm R M₁ ⊗ BilinForm R M₂) :
     tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂) B = tensorDistrib R R B :=
   DFunLike.congr_fun (tensorDistribEquiv_toLinearMap R M₁ M₂) B
+-/
 
 end CommRing
 
