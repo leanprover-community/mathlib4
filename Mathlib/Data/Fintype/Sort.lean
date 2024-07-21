@@ -32,9 +32,9 @@ variable {α : Type*} [DecidableEq α] [Fintype α] [LinearOrder α] {m n : ℕ}
 cardinality `n`, then `Fin m ⊕ Fin n ≃ α`. The equivalence sends elements of `Fin m` to
 elements of `s` and elements of `Fin n` to elements of `sᶜ` while preserving order on each
 "half" of `Fin m ⊕ Fin n` (using `Set.orderIsoOfFin`). -/
-def finSumEquivOfFinset (hm : s.card = m) (hn : sᶜ.card = n) : Sum (Fin m) (Fin n) ≃ α :=
+def finSumEquivOfFinset (hm : s.card = m) (hn : sᶜ.card = n) : Fin m ⊕ Fin n ≃ α :=
   calc
-    Sum (Fin m) (Fin n) ≃ Sum (s : Set α) (sᶜ : Set α) :=
+    Fin m ⊕ Fin n ≃ (s : Set α) ⊕ (sᶜ : Set α) :=
       Equiv.sumCongr (s.orderIsoOfFin hm).toEquiv <|
         (sᶜ.orderIsoOfFin hn).toEquiv.trans <| Equiv.Set.ofEq s.coe_compl
     _ ≃ α := Equiv.Set.sumCompl _

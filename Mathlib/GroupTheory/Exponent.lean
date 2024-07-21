@@ -7,7 +7,6 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Peel
 
 /-!
@@ -311,7 +310,7 @@ theorem exponent_ne_zero_iff_range_orderOf_finite (h : ∀ g : G, 0 < orderOf g)
   refine ⟨fun he => ?_, fun he => ?_⟩
   · by_contra h
     obtain ⟨m, ⟨t, rfl⟩, het⟩ := Set.Infinite.exists_gt h (exponent G)
-    exact pow_ne_one_of_lt_orderOf' he het (pow_exponent_eq_one t)
+    exact pow_ne_one_of_lt_orderOf he het (pow_exponent_eq_one t)
   · lift Set.range (orderOf (G := G)) to Finset ℕ using he with t ht
     have htpos : 0 < t.prod id := by
       refine Finset.prod_pos fun a ha => ?_

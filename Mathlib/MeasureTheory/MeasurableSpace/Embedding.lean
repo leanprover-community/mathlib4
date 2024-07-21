@@ -350,7 +350,7 @@ def prodAssoc : (α × β) × γ ≃ᵐ α × β × γ where
   measurable_invFun := (measurable_fst.prod_mk measurable_snd.fst).prod_mk measurable_snd.snd
 
 /-- Sums of measurable spaces are symmetric. -/
-def sumCongr (ab : α ≃ᵐ β) (cd : γ ≃ᵐ δ) : Sum α γ ≃ᵐ Sum β δ where
+def sumCongr (ab : α ≃ᵐ β) (cd : γ ≃ᵐ δ) : α ⊕ γ ≃ᵐ β ⊕ δ where
   toEquiv := .sumCongr ab.toEquiv cd.toEquiv
   measurable_toFun := ab.measurable.sumMap cd.measurable
   measurable_invFun := ab.symm.measurable.sumMap cd.symm.measurable
@@ -385,7 +385,7 @@ def Set.rangeInl : (range Sum.inl : Set (α ⊕ β)) ≃ᵐ α where
   measurable_invFun := Measurable.subtype_mk measurable_inl
 
 /-- `β` is equivalent to its image in `α ⊕ β` as measurable spaces. -/
-def Set.rangeInr : (range Sum.inr : Set (Sum α β)) ≃ᵐ β where
+def Set.rangeInr : (range Sum.inr : Set (α ⊕ β)) ≃ᵐ β where
   toEquiv := Equiv.Set.rangeInr α β
   measurable_toFun s (hs : MeasurableSet s) := by
     refine ⟨_, hs.inr_image, Set.ext ?_⟩

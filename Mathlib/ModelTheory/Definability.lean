@@ -192,8 +192,8 @@ theorem definable_iff_finitely_definable :
     exact Definable.mono hd hA0
 
 /-- This lemma is only intended as a helper for `Definable.image_comp`. -/
-theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M)}
-    (h : A.Definable L s) : A.Definable L ((fun g : Sum α (Fin m) → M => g ∘ Sum.inl) '' s) := by
+theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (α ⊕ (Fin m) → M)}
+    (h : A.Definable L s) : A.Definable L ((fun g : α ⊕ (Fin m) → M => g ∘ Sum.inl) '' s) := by
   obtain ⟨φ, rfl⟩ := h
   refine ⟨(BoundedFormula.relabel id φ).exs, ?_⟩
   ext x

@@ -86,7 +86,6 @@ private theorem ext_aux (I J : HasZeroMorphisms C)
   congr
   · apply proof_irrel_heq
   · apply proof_irrel_heq
--- Porting note: private def; no align
 
 /-- If you're tempted to use this lemma "in the wild", you should probably
 carefully consider whether you've made a mistake in allowing two
