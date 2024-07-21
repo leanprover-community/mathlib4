@@ -13,6 +13,40 @@ If `stx` is a command, then it also elaborates `stx` and, in case it is a declar
 it also finds the imports implied by the declaration.
 
 Unlike the related `#find_home`, this command takes into account notation and tactic information.
+
+## Limitations
+
+Parsing of `attribute`s is hard and the command makes minimal effort to support them.
+Here is an example where the command fails to notice a dependency:
+```lean
+import Mathlib.Data.Sym.Sym2.Init -- the actual minimal import
+import Aesop.Frontend.Attribute   -- the import that `#min_imports in` suggests
+
+import Mathlib.Tactic.MinImports
+
+-- import Aesop.Frontend.Attribute
+#min_imports in
+@[aesop (rule_sets := [Sym2]) [safe [constructors, cases], norm]]
+inductive Rel (α : Type) : α × α → α × α → Prop
+  | refl (x y : α) : Rel _ (x, y) (x, y)
+  | swap (x y : α) : Rel _ (x, y) (y, x)
+
+-- `import Mathlib.Data.Sym.Sym2.Init` is not detected by `#min_imports in`.
+```
+
+## Todo
+
+*Examples*
+When parsing an `example`, `#min_imports in` retrieves all the information that it can from the
+`Syntax` of the `example`, but, since the `example` is not added to the environment, it fails
+to retrieve any `Expr` information about the proof term.
+It would be desirable to make `#min_imports in example ...` inspect the resulting proof and
+report imports, but this feature is missing for the moment.
+
+*Using `InfoTrees`*
+It may be more efficient (not necessarily in terms of speed, but of simplicity of code),
+to inspect the `InfoTrees` for each command and retrieve information from there.
+I have not looked into this yet.
 -/
 
 open Lean Elab Command
