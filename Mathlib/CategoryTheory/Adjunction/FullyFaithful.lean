@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.MorphismProperty.Basic
 import Mathlib.CategoryTheory.EpiMono
 
-#align_import category_theory.adjunction.fully_faithful from "leanprover-community/mathlib"@"9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a"
-
 /-!
 # Adjoints of fully faithful functors
 
@@ -66,8 +64,6 @@ instance [L.Full] [L.Faithful] (X : C) : IsIso (h.unit.app X) :=
 /-- If the left adjoint is fully faithful, then the unit is an isomorphism. -/
 instance unit_isIso_of_L_fully_faithful [L.Full] [L.Faithful] : IsIso (Adjunction.unit h) :=
   NatIso.isIso_of_isIso_app _
-set_option linter.uppercaseLean3 false in
-#align category_theory.unit_is_iso_of_L_fully_faithful CategoryTheory.Adjunction.unit_isIso_of_L_fully_faithful
 
 /-- If the right adjoint is faithful, then each component of the counit is an epimorphism.-/
 instance counit_epi_of_R_faithful [R.Faithful] (X : D) : Epi (h.counit.app X) where
@@ -89,8 +85,6 @@ instance [R.Full] [R.Faithful] (X : D) : IsIso (h.counit.app X) :=
 /-- If the right adjoint is fully faithful, then the counit is an isomorphism. -/
 instance counit_isIso_of_R_fully_faithful [R.Full] [R.Faithful] : IsIso (Adjunction.counit h) :=
   NatIso.isIso_of_isIso_app _
-set_option linter.uppercaseLean3 false in
-#align category_theory.counit_is_iso_of_R_fully_faithful CategoryTheory.Adjunction.counit_isIso_of_R_fully_faithful
 
 /-- If the unit of an adjunction is an isomorphism, then its inverse on the image of L is given
 by L whiskered with the counit. -/
@@ -98,14 +92,11 @@ by L whiskered with the counit. -/
 theorem inv_map_unit {X : C} [IsIso (h.unit.app X)] :
     inv (L.map (h.unit.app X)) = h.counit.app (L.obj X) :=
   IsIso.inv_eq_of_hom_inv_id (h.left_triangle_components X)
-#align category_theory.inv_map_unit CategoryTheory.Adjunction.inv_map_unit
 
 /-- If the unit is an isomorphism, bundle one has an isomorphism `L ⋙ R ⋙ L ≅ L`. -/
 @[simps!]
 noncomputable def whiskerLeftLCounitIsoOfIsIsoUnit [IsIso h.unit] : L ⋙ R ⋙ L ≅ L :=
   (L.associator R L).symm ≪≫ isoWhiskerRight (asIso h.unit).symm L ≪≫ Functor.leftUnitor _
-set_option linter.uppercaseLean3 false in
-#align category_theory.whisker_left_L_counit_iso_of_is_iso_unit CategoryTheory.Adjunction.whiskerLeftLCounitIsoOfIsIsoUnit
 
 /-- If the counit of an adjunction is an isomorphism, then its inverse on the image of R is given
 by R whiskered with the unit. -/
@@ -113,14 +104,11 @@ by R whiskered with the unit. -/
 theorem inv_counit_map {X : D} [IsIso (h.counit.app X)] :
     inv (R.map (h.counit.app X)) = h.unit.app (R.obj X) :=
   IsIso.inv_eq_of_inv_hom_id (h.right_triangle_components X)
-#align category_theory.inv_counit_map CategoryTheory.Adjunction.inv_counit_map
 
 /-- If the counit of an is an isomorphism, one has an isomorphism `(R ⋙ L ⋙ R) ≅ R`. -/
 @[simps!]
 noncomputable def whiskerLeftRUnitIsoOfIsIsoCounit [IsIso h.counit] : R ⋙ L ⋙ R ≅ R :=
   (R.associator L R).symm ≪≫ isoWhiskerRight (asIso h.counit) R ≪≫ Functor.leftUnitor _
-set_option linter.uppercaseLean3 false in
-#align category_theory.whisker_left_R_unit_iso_of_is_iso_counit CategoryTheory.Adjunction.whiskerLeftRUnitIsoOfIsIsoCounit
 
 /-- If each component of the unit is a monomorphism, then the left adjoint is faithful. -/
 lemma faithful_L_of_mono_unit_app [∀ X, Mono (h.unit.app X)] : L.Faithful where
@@ -168,8 +156,6 @@ instance whiskerLeft_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
   rw [← IsIso.eq_inv_comp] at this
   rw [this]
   infer_instance
-set_option linter.uppercaseLean3 false in
-#align category_theory.whisker_left_counit_iso_of_L_fully_faithful CategoryTheory.Adjunction.whiskerLeft_counit_iso_of_L_fully_faithful
 
 instance whiskerRight_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
     IsIso (whiskerRight h.counit R) := by
@@ -177,8 +163,6 @@ instance whiskerRight_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
   rw [← IsIso.eq_inv_comp] at this
   rw [this]
   infer_instance
-set_option linter.uppercaseLean3 false in
-#align category_theory.whisker_right_counit_iso_of_L_fully_faithful CategoryTheory.Adjunction.whiskerRight_counit_iso_of_L_fully_faithful
 
 instance whiskerLeft_unit_iso_of_R_fully_faithful [R.Full] [R.Faithful] :
     IsIso (whiskerLeft R h.unit) := by
@@ -186,8 +170,6 @@ instance whiskerLeft_unit_iso_of_R_fully_faithful [R.Full] [R.Faithful] :
   rw [← IsIso.eq_comp_inv] at this
   rw [this]
   infer_instance
-set_option linter.uppercaseLean3 false in
-#align category_theory.whisker_left_unit_iso_of_R_fully_faithful CategoryTheory.Adjunction.whiskerLeft_unit_iso_of_R_fully_faithful
 
 instance whiskerRight_unit_iso_of_R_fully_faithful [R.Full] [R.Faithful] :
     IsIso (whiskerRight h.unit L) := by
@@ -195,8 +177,6 @@ instance whiskerRight_unit_iso_of_R_fully_faithful [R.Full] [R.Faithful] :
   rw [← IsIso.eq_comp_inv] at this
   rw [this]
   infer_instance
-set_option linter.uppercaseLean3 false in
-#align category_theory.whisker_right_unit_iso_of_R_fully_faithful CategoryTheory.Adjunction.whiskerRight_unit_iso_of_R_fully_faithful
 
 instance [L.Faithful] [L.Full] {Y : C} : IsIso (h.counit.app (L.obj Y)) :=
   isIso_of_hom_comp_eq_id _ (h.left_triangle_components Y)
@@ -240,7 +220,6 @@ lemma isIso_unit_app_iff_mem_essImage [R.Faithful] [R.Full] {Y : C} :
 theorem mem_essImage_of_unit_isIso (A : C)
     [IsIso (h.unit.app A)] : A ∈ R.essImage :=
   ⟨L.obj A, ⟨(asIso (h.unit.app A)).symm⟩⟩
-#align category_theory.mem_ess_image_of_unit_is_iso CategoryTheory.Adjunction.mem_essImage_of_unit_isIso
 
 @[deprecated (since := "2024-06-19")] alias _root_.CategoryTheory.mem_essImage_of_unit_isIso :=
   mem_essImage_of_unit_isIso
