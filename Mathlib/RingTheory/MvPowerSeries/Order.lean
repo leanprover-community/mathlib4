@@ -271,8 +271,8 @@ theorem coeff_mul_of_lt_weightedOrder [DecidableEq σ] (f : MvPowerSeries σ R)
 
 theorem coeff_mul_one_sub_of_lt_weightedOrder [DecidableEq σ] {R : Type _} [CommRing R]
     {f g : MvPowerSeries σ R} (d : σ →₀ ℕ) (h : ↑(weight w d) < g.weightedOrder w) :
-    coeff R d (f * (1 - g)) = coeff R d f :=
-  by simp only [coeff_mul_of_lt_weightedOrder w f h, mul_sub, mul_one, _root_.map_sub, sub_zero]
+    coeff R d (f * (1 - g)) = coeff R d f := by
+  simp only [coeff_mul_of_lt_weightedOrder w f h, mul_sub, mul_one, _root_.map_sub, sub_zero]
 
 theorem coeff_mul_prod_one_sub_of_lt_weightedOrder {R ι : Type _} [CommRing R] (d : σ →₀ ℕ)
     (s : Finset ι) (f : MvPowerSeries σ R) (g : ι → MvPowerSeries σ R) :
