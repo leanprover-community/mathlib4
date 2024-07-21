@@ -1144,6 +1144,42 @@ theorem deleteVerts_inter_verts_set_right_eq :
 
 end DeleteVerts
 
+section SymmDiff
+
+variable {u v w : V} (H H': Subgraph G)
+
+/-- The symmetric difference of two subgraphs. An edge is in the resulting graph iff it is in
+exactly one of the operands. -/
+def symmDiff : Subgraph G := {
+  verts := H.verts ∪ H'.verts,
+  Adj := fun v w ↦ (¬ H.Adj v w ∧ H'.Adj v w) ∨ (H.Adj v w ∧ ¬ H'.Adj v w),
+  adj_sub := fun hvw ↦ by
+    cases hvw <;> next h1 => simp only [h1.1, h1.2, H'.adj_sub, H.adj_sub]
+  edge_vert := fun hvw ↦ by
+    cases hvw
+    next h1 => right; exact H'.support_subset_verts (H'.mem_support.mpr ⟨_, h1.2⟩)
+    next h2 => left; exact H.support_subset_verts (H.mem_support.mpr ⟨_, h2.1⟩)
+  symm := fun _ _ hvw ↦ by
+    cases hvw
+    next h1 => left; exact ⟨fun h ↦ h1.1 h.symm, h1.2.symm⟩
+    next h2 => right; exact ⟨h2.1.symm, fun h ↦ h2.2 h.symm⟩
+  }
+
+@[simp]
+lemma symmDiff_verts : (H.symmDiff H').verts = H.verts ∪ H'.verts := by rfl
+
+@[simp]
+lemma symmDiff_adj : (H.symmDiff H').Adj v w = ((¬H.Adj v w ∧ H'.Adj v w) ∨ (H.Adj v w ∧ ¬H'.Adj v w)) := rfl
+
+lemma symmDiff_adj_comm : (H.symmDiff H').Adj v w = (H.symmDiff H').Adj v w := by
+  simp only [symmDiff_adj, eq_iff_iff]
+
+@[simp]
+lemma symmDiff_singletonSubgraph_adj : (H.symmDiff (G.singletonSubgraph u)).Adj v w = H.Adj v w := by
+  simp [singletonSubgraph_adj, Pi.bot_apply, eq_iff_iff, Prop.bot_eq_false]
+
+end SymmDiff
+
 end Subgraph
 
 end SimpleGraph
