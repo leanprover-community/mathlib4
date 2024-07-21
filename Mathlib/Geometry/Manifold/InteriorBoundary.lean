@@ -145,7 +145,7 @@ lemma Boundaryless.boundary_eq_empty [BoundarylessManifold I M] : I.boundary M =
   rw [I.boundary_eq_complement_interior, I.interior_eq_univ, compl_empty_iff]
 
 /-- Manifolds with empty boundary are boundaryless. -/
-lemma Boundaryless.of_boundary_eq_empty (h : I.boundary M = ∅) : BoundarylessManifold I M where--:= by
+lemma Boundaryless.of_boundary_eq_empty (h : I.boundary M = ∅) : BoundarylessManifold I M where
   isInteriorPoint' x := by
     show x ∈ I.interior M
     rw [boundary_eq_complement_interior, compl_empty_iff] at h

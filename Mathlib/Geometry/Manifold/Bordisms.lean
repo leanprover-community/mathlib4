@@ -248,7 +248,7 @@ instance (d : BoundaryManifoldData M I) : SmoothManifoldWithCorners d.model (I.b
 -- move to `ChartedSpace.lean`
 /-- An empty type is a charted space over any topological space. -/
 def ChartedSpace.empty (H : Type*) [TopologicalSpace H]
- (M : Type*) [TopologicalSpace M] [IsEmpty M] : ChartedSpace H M where
+    (M : Type*) [TopologicalSpace M] [IsEmpty M] : ChartedSpace H M where
   atlas := ∅
   chartAt x := False.elim (IsEmpty.false x)
   mem_chart_source x := False.elim (IsEmpty.false x)
@@ -340,8 +340,9 @@ def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M
 /-- If `M` is modelled on finite-dimensional Euclidean half-space, it has nice boundary.
 Proving this requires knowing homology groups of spheres (or similar). -/
 def BoundaryManifoldData.of_Euclidean_halfSpace (n : ℕ) [Zero (Fin n)]
-  {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanHalfSpace n) M]
-  [SmoothManifoldWithCorners (𝓡∂ n) M] : BoundaryManifoldData M (𝓡∂ n) := sorry
+    {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanHalfSpace n) M]
+    [SmoothManifoldWithCorners (𝓡∂ n) M] : BoundaryManifoldData M (𝓡∂ n) :=
+  sorry
 
 -- Another example: if E is a half-space in a Banach space, defined by a linear functional,
 -- the boundary of B is also nice: this is proven in Roig-Dominguez' textbook
@@ -564,10 +565,10 @@ instance (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
 
 -- TODO: can I remove the s and t variables from this one?
 def glueBoundaryData (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
-  BoundaryManifoldData (glue s t φ ψ) (glueModel s t φ ψ) := sorry
+    BoundaryManifoldData (glue s t φ ψ) (glueModel s t φ ψ) := sorry
 
 instance (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
-  HasNiceBoundary (glueBoundaryData s t φ ψ) := sorry
+    HasNiceBoundary (glueBoundaryData s t φ ψ) := sorry
 
 noncomputable def trans (φ : UnorientedCobordism s t bd) (ψ : UnorientedCobordism t u bd') :
     UnorientedCobordism s u (glueBoundaryData s t φ ψ) where

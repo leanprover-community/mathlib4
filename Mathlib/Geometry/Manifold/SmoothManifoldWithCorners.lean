@@ -64,7 +64,8 @@ one could use
 
 However, this is not the recommended way: a theorem proved using this assumption would not apply
 for instance to the tangent space of such a manifold, which is modelled on
-`(EuclideanSpace ℝ (Fin n)) × (EuclideanSpace ℝ (Fin n))` and not on `EuclideanSpace ℝ (Fin (2 * n))`!
+`(EuclideanSpace ℝ (Fin n)) × (EuclideanSpace ℝ (Fin n))`
+and not on `EuclideanSpace ℝ (Fin (2 * n))`!
 In the same way, it would not apply to product manifolds, modelled on
 `(EuclideanSpace ℝ (Fin n)) × (EuclideanSpace ℝ (Fin m))`.
 The right invocation does not focus on one specific construction, but on all constructions sharing
