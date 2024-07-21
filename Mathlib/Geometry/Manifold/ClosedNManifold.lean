@@ -13,7 +13,6 @@ import Mathlib.Geometry.Manifold.InteriorBoundary
 We define closed `n`-dimensional manifolds and show a few basic properties.
 
 ## Main definitions
-TODO add parameters!
 * `ClosedManifold M I`: a topological manifold `M` is closed if it is compact and boundaryless
 * `NManifold n M I`: an n-manifold is a smooth `n`-dimensional manifold `M`.
 * `ClosedNManifold n M I`: a closed n-manifold `M` is both closed and an `n`-manifold
@@ -29,8 +28,7 @@ TODO add parameters!
   - the standard n-sphere is a closed n-manifold
   - the standard two-torus `S¹ × S¹` is a closed 2-manifold
 
-TODO: wait for the product results to be merged! investigate why the spheres fail!
-
+TODO: investigate why the spheres fail!
 -/
 
 open scoped Manifold
@@ -52,9 +50,9 @@ variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {H' : Type*} [TopologicalSpace H'] (N : Type*) [TopologicalSpace N] [ChartedSpace H' N]
   (J : ModelWithCorners 𝕜 E' H') [SmoothManifoldWithCorners J N]
 
--- instance ClosedManifold.prod [CompactSpace M] [BoundarylessManifold I M]
---     [CompactSpace N] [BoundarylessManifold J N] :
---   ClosedManifold (M × N) (I.prod J) where
+instance ClosedManifold.prod [CompactSpace M] [BoundarylessManifold I M]
+    [CompactSpace N] [BoundarylessManifold J N] :
+  ClosedManifold (M × N) (I.prod J) where
 
 /-- An **n-manifold** is a smooth `n`-dimensional manifold. -/
 structure NManifold [NormedAddCommGroup E]  [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E]
@@ -68,33 +66,41 @@ instance NManifold.prod {m n : ℕ} [FiniteDimensional 𝕜 E] [FiniteDimensiona
   hdim := by rw [s.hdim.symm, t.hdim.symm]; apply finrank_prod
 
 structure ClosedNManifold [CompactSpace M] [BoundarylessManifold I M] [FiniteDimensional 𝕜 E]
-    extends NManifold n M I
+  extends NManifold n M I
 
-instance ClosedNManifold.ClosedManifold [CompactSpace M] [BoundarylessManifold I M] [FiniteDimensional 𝕜 E] :
-  ClosedManifold M I where
+instance ClosedNManifold.ClosedManifold [CompactSpace M] [BoundarylessManifold I M]
+  [FiniteDimensional 𝕜 E] : ClosedManifold M I where
 
 variable {n}
 
--- /-- The product of a closed `n`- and a closed closed `m`-manifold is a closed `n+m`-manifold. -/
--- instance ClosedNManifold.prod {m n : ℕ} [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 E']
---     [CompactSpace M] [BoundarylessManifold I M] [CompactSpace N] [BoundarylessManifold J N]
---     (s : ClosedNManifold m M I) (t : ClosedNManifold n N J) :
---     ClosedNManifold (m + n) (M × N) (I.prod J) where
---   -- TODO: can I inherit this from `NManifold.prod`?
---   hdim := by rw [s.hdim.symm, t.hdim.symm]; apply finrank_prod
+/-- The product of a closed `n`- and a closed closed `m`-manifold is a closed `n+m`-manifold. -/
+instance ClosedNManifold.prod {m n : ℕ} [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 E']
+    [CompactSpace M] [BoundarylessManifold I M] [CompactSpace N] [BoundarylessManifold J N]
+    (s : ClosedNManifold m M I) (t : ClosedNManifold n N J) :
+    ClosedNManifold (m + n) (M × N) (I.prod J) where
+  -- TODO: can I inherit this from `NManifold.prod`?
+  hdim := by rw [s.hdim.symm, t.hdim.symm]; apply finrank_prod
 
 section examples
 
+/-- The empty manifold is closed. -/
+instance [IsEmpty M] : ClosedManifold M I where
+
+-- The empty manifold, modelled on an `n`-dimensional space, is a closed `n`-manifold.
+-- FIXME: is requiring the model space to be n-dimensional the right design decision?
+instance {n : ℕ} [FiniteDimensional 𝕜 E] (h : finrank 𝕜 E = n) [IsEmpty M] :
+    ClosedNManifold n M I where
+  hdim := h
+
 -- Let `E` be a finite-dimensional real normed space.
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-
--- TODO: move the empty manifold here, once its definition is in a separate file
 
 /- TODO: these two examples worked when ClosedManifold only demanded `I.Boundaryless`;
 -- diagnose and fix this!
 /-- The standard `n`-sphere is a closed manifold. -/
 example {n : ℕ} [FiniteDimensional ℝ E] [Fact (finrank ℝ E = n + 1)] :
   ClosedManifold (sphere (0 : E) 1) (𝓡 n) where
+
 /-- The standard `2`-torus is a closed manifold. -/
 example [FiniteDimensional ℝ E] [Fact (finrank ℝ E = 1 + 1)] :
     ClosedManifold ((sphere (0 : E) 1) × (sphere (0 : E) 1)) ((𝓡 2).prod (𝓡 2)) where

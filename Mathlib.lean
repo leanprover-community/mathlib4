@@ -2581,6 +2581,7 @@ import Mathlib.Geometry.Manifold.Algebra.Structures
 import Mathlib.Geometry.Manifold.AnalyticManifold
 import Mathlib.Geometry.Manifold.BumpFunction
 import Mathlib.Geometry.Manifold.ChartedSpace
+import Mathlib.Geometry.Manifold.ClosedNManifold
 import Mathlib.Geometry.Manifold.Complex
 import Mathlib.Geometry.Manifold.ConformalGroupoid
 import Mathlib.Geometry.Manifold.ContMDiff.Atlas
