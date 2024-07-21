@@ -146,7 +146,7 @@ variable {M : Type*} [CanonicallyOrderedAddCommMonoid M] (w : σ → M)
 
 theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
     w s ≤ weight w f :=
-  le_weight_of_nonneg' w (fun _ ↦ zero_le _) hs
+  le_weight_of_ne_zero w (fun _ ↦ zero_le _) hs
 
 /-- If `M` is a `CanonicallyOrderedAddCommMonoid`, then `weight f` is zero iff `f=0. -/
 theorem weight_eq_zero_iff_eq_zero
@@ -160,7 +160,7 @@ theorem weight_eq_zero_iff_eq_zero
     by_contra hs
     apply NonTorsionWeight.ne_zero w _
     rw [← nonpos_iff_eq_zero, ← h]
-    exact le_weight' w hs
+    exact le_weight_of_ne_zero' w hs
   · intro h
     rw [h, map_zero]
 
@@ -179,6 +179,7 @@ lemma degree_eq_zero_iff (d : σ →₀ ℕ) : degree d = 0 ↔ d = 0 := by
 @[deprecated degree_eq_zero_iff (since := "2024-07-20")]
 alias _root_.MvPolynomial.degree_eq_zero_iff := degree_eq_zero_iff
 
+@[simp]
 theorem degree_zero : degree (0 : σ →₀ ℕ) = 0 := by rw [degree_eq_zero_iff]
 
 theorem degree_eq_weight_one (d : σ →₀ ℕ) :
