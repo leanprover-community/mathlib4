@@ -396,19 +396,15 @@ theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S 
   constructor
   · intro h
     simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
-      exists_eq_right, @mem_eigenspace_iff]; use h.2
+      exists_eq_right, mem_eigenspace_iff]; use h.2
     exact Eq.symm (SetCoe.ext (_root_.id (Eq.symm (mem_eigenspace_iff.mp h.1))))
   · intro h
     simp only [Submodule.mem_inf]
     constructor
     · simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
-      exists_eq_right] at h
-      obtain ⟨y, hy⟩ := h
-      simp only [mem_eigenspace_iff, SetLike.mk_smul_mk] at hy
-      simp only [mem_eigenspace_iff]
-      rw [@restrict_apply] at hy
-      simp only [Subtype.mk.injEq] at hy
-      exact hy
+      exists_eq_right, mem_eigenspace_iff, SetLike.mk_smul_mk, @restrict_apply, Subtype.mk.injEq] at h
+      obtain ⟨_, hy⟩ := h
+      simpa [mem_eigenspace_iff]
     · obtain ⟨y, hy⟩ := h
       have B := hy.2
       simp only [Submodule.coeSubtype] at B
