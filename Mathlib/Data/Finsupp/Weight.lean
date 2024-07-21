@@ -88,7 +88,7 @@ alias _root_.MvPolynomial.weightedDegree_apply := weight_apply
 class NonTorsionWeight (w : σ → M) : Prop where
   eq_zero_of_smul_eq_zero {n : ℕ} {s : σ} (h : n • w s = 0)  : n = 0
 
-/-- Without zero divisors, nonzero weight is a NonTorsionWeight -/
+/-- Without zero divisors, nonzero weight is a `NonTorsionWeight` -/
 theorem nonTorsionWeight_of [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
     NonTorsionWeight w where
   eq_zero_of_smul_eq_zero {n s} h := by
