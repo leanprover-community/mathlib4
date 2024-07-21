@@ -395,33 +395,18 @@ theorem basic_index1 {α β : Type*} [DecidableEq α] [CompleteLattice β]
 theorem invariant_subspace_eigen_convert {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
     (hS: IsSymmetric S) (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : eigenspace S μ ⊓ F =
     Submodule.map (Submodule.subtype F)
-    (eigenspace (S.restrict (hInv)) μ) := by sorry
-
-
-theorem index_convert' (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} → 𝕜) : (eigenspace (T i) μ ⊓
-    (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) =
-    Submodule.map (Submodule.subtype ((⨅ (j : {x // x ≠ i}), eigenspace (T j) (γ j))))
-    (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) := by
-  let f : n → 𝕜 := Set.piecewise (fun x ↦ i ≠ x) (Function.extend Subtype.val γ 1)
-    (Function.const n μ)
-  have C1 : f i = μ := Set.piecewise_eq_of_not_mem (fun x ↦ x ≠ i) (Function.extend Subtype.val γ 1)
-    (Function.const n μ) fun a ↦ a rfl
-  have C2 : ∀ (j : {x // x ≠ i}), f j = γ j:= by
-    intro j
-    have := j.2
-    simp only [ne_eq, Subtype.coe_prop, Set.piecewise_eq_of_mem, f]
-    --refine Function.Injective.extend_apply Subtype.val_injective γ f _ j
-    --exact
-    sorry
-  have := basic_index1 i (fun (x : n) ↦ eigenspace (T x) (f x))
-  rw [←C1]
-  conv =>
-   lhs
-   rhs
-   rhs
-   ext j
-   rw [←C2]
-  sorry
+    (eigenspace (S.restrict (hInv)) μ) := by
+  ext v
+  constructor
+  · intro h
+    simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
+      exists_eq_right]
+    use h.2
+    have A := h.1
+    rw [@mem_eigenspace_iff]
+    simp only [SetLike.mem_coe, mem_eigenspace_iff] at A
+    exact Eq.symm (SetCoe.ext (_root_.id (Eq.symm A)))
+  ·
 
 theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} → 𝕜) : (eigenspace (T i) μ ⊓
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) =
