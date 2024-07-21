@@ -76,7 +76,7 @@ lemma SymmetricRel.dynEntourage (T : X → X) {U : Set (X × X)} (h : SymmetricR
   rw [map_apply', map_apply']
   exact SymmetricRel.mk_mem_comm h
 
-lemma comp_dynEntourage_subset_dynEtourage_comp (T : X → X) (U V : Set (X × X)) (n : ℕ) :
+lemma dynEntourage_comp_subset (T : X → X) (U V : Set (X × X)) (n : ℕ) :
     (dynEntourage T U n) ○ (dynEntourage T V n) ⊆ dynEntourage T (U ○ V) n := by
   simp only [dynEntourage, map_iterate, subset_iInter_iff]
   intro k k_n xy xy_comp
@@ -118,9 +118,9 @@ lemma mem_ball_dynEntourage_comp (T : X → X) (n : ℕ) {U : Set (X × X)} (U_s
     x ∈ ball y (dynEntourage T (U ○ U) n) := by
   rcases h with ⟨z, z_Bx, z_By⟩
   rw [mem_ball_symmetry (SymmetricRel.dynEntourage T U_symm n)] at z_Bx
-  exact comp_dynEntourage_subset_dynEtourage_comp T U U n (mem_ball_comp z_By z_Bx)
+  exact dynEntourage_comp_subset T U U n (mem_ball_comp z_By z_Bx)
 
-lemma preimage_dynEntourage_of_semiconj {Y : Type*} {S : X → X} {T : Y → Y} {φ : X → Y}
+lemma Function.Semiconj.preimage_dynEntourage {Y : Type*} {S : X → X} {T : Y → Y} {φ : X → Y}
     (h : Function.Semiconj φ S T) (U : Set (Y × Y)) (n : ℕ) :
     (map φ φ)⁻¹' (dynEntourage T U n) = dynEntourage S ((map φ φ)⁻¹' U) n := by
   unfold dynEntourage
