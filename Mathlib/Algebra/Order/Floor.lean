@@ -1399,7 +1399,7 @@ theorem sub_half_lt_round (x : α) : x - 1 / 2 < round x := by
   rw [round_eq x, show x - 1 / 2 = x + 1 / 2 - 1 by nlinarith]
   exact Int.sub_one_lt_floor (x + 1 / 2)
 
-theorem round_le_add_half (x : α) : (round x : α) ≤ x + 1 / 2 := by
+theorem round_le_add_half (x : α) : round x ≤ x + 1 / 2 := by
   rw [round_eq x]
   exact Int.floor_le (x + 1 / 2)
 
