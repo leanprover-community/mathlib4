@@ -101,6 +101,9 @@ namespace DifferentialRing
 
 variable {A : Type*} [CommDifferentialRing A]
 
+/--
+A specialization of `Derivation.mapCoeffs` for the case of a differential ring.
+-/
 def mapCoeffs : Derivation ℤ A[X] A[X] :=
   PolynomialModule.equivPolynomialSelf.compDer CommDifferentialRing.deriv.mapCoeffs
 
