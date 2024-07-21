@@ -5,8 +5,6 @@ Authors: Michael Stoll
 -/
 import Mathlib.Logic.Equiv.TransferInstance
 
-#align_import number_theory.legendre_symbol.add_character from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
-
 /-!
 # Characters from additive to multiplicative monoids
 
@@ -65,8 +63,6 @@ structure AddChar where
   Do not use this directly. Instead use `AddChar.map_add_eq_mul`. -/
   map_add_eq_mul' : ∀ a b : A, toFun (a + b) = toFun a * toFun b
 
-#align add_char AddChar
-
 end AddCharDef
 
 namespace AddChar
@@ -81,8 +77,6 @@ instance instFunLike : FunLike (AddChar A M) A M where
   coe := AddChar.toFun
   coe_injective' φ ψ h := by cases φ; cases ψ; congr
 
-#noalign add_char.has_coe_to_fun
-
 -- Porting note (#5229): added.
 @[ext] lemma ext (f g : AddChar A M) (h : ∀ x : A, f x = g x) : f = g :=
   DFunLike.ext f g h
@@ -94,11 +88,9 @@ instance instFunLike : FunLike (AddChar A M) A M where
 
 /-- An additive character maps `0` to `1`. -/
 @[simp] lemma map_zero_eq_one (ψ : AddChar A M) : ψ 0 = 1 := ψ.map_zero_eq_one'
-#align add_char.map_zero_one AddChar.map_zero_eq_one
 
 /-- An additive character maps sums to products. -/
 lemma map_add_eq_mul (ψ : AddChar A M) (x y : A) : ψ (x + y) = ψ x * ψ y := ψ.map_add_eq_mul' x y
-#align add_char.map_add_mul AddChar.map_add_eq_mul
 
 @[deprecated (since := "2024-06-06")] alias map_zero_one := map_zero_eq_one
 @[deprecated (since := "2024-06-06")] alias map_add_mul := map_add_eq_mul
@@ -108,20 +100,16 @@ def toMonoidHom (φ : AddChar A M) : Multiplicative A →* M where
   toFun := φ.toFun
   map_one' := φ.map_zero_eq_one'
   map_mul' := φ.map_add_eq_mul'
-#align add_char.to_monoid_hom AddChar.toMonoidHom
 
 -- this instance was a bad idea and conflicted with `instFunLike` above
-#noalign add_char.monoid_hom_class
 
 @[simp] lemma toMonoidHom_apply (ψ : AddChar A M) (a : Multiplicative A) :
   ψ.toMonoidHom a = ψ (Multiplicative.toAdd a) :=
   rfl
-#align add_char.coe_to_fun_apply AddChar.toMonoidHom_apply
 
 /-- An additive character maps multiples by natural numbers to powers. -/
 lemma map_nsmul_eq_pow (ψ : AddChar A M) (n : ℕ) (x : A) : ψ (n • x) = ψ x ^ n :=
   ψ.toMonoidHom.map_pow x n
-#align add_char.map_nsmul_pow AddChar.map_nsmul_eq_pow
 
 @[deprecated (since := "2024-06-06")] alias map_nsmul_pow := map_nsmul_eq_pow
 
@@ -237,15 +225,12 @@ lemma ne_one_iff : ψ ≠ 1 ↔ ∃ x, ψ x ≠ 1 := DFunLike.ne_iff
 /-- An additive character is *nontrivial* if it takes a value `≠ 1`. -/
 @[deprecated (since := "2024-06-06")]
 def IsNontrivial (ψ : AddChar A M) : Prop := ∃ a : A, ψ a ≠ 1
-#align add_char.is_nontrivial AddChar.IsNontrivial
 
 set_option linter.deprecated false in
 /-- An additive character is nontrivial iff it is not the trivial character. -/
 @[deprecated ne_one_iff (since := "2024-06-06")]
 lemma isNontrivial_iff_ne_trivial (ψ : AddChar A M) : IsNontrivial ψ ↔ ψ ≠ 1 :=
   not_forall.symm.trans (DFunLike.ext_iff (f := ψ) (g := 1)).symm.not
-
-#align add_char.is_nontrivial_iff_ne_trivial AddChar.isNontrivial_iff_ne_trivial
 
 end Basic
 
@@ -287,11 +272,8 @@ instance instCommGroup : CommGroup (AddChar A M) :=
   { instCommMonoid with
     inv := fun ψ ↦ ψ.compAddMonoidHom negAddMonoidHom
     mul_left_inv := fun ψ ↦ by ext1 x; simp [negAddMonoidHom, ← map_add_eq_mul]}
-#align add_char.comm_group AddChar.instCommGroup
-#align add_char.has_inv AddChar.instCommGroup
 
 @[simp] lemma inv_apply (ψ : AddChar A M) (x : A) : ψ⁻¹ x = ψ (-x) := rfl
-#align add_char.inv_apply AddChar.inv_apply
 
 end fromAddCommGroup
 
@@ -315,7 +297,6 @@ lemma map_neg_eq_inv (ψ : AddChar A M) (a : A) : ψ (-a) = (ψ a)⁻¹ := by
 /-- An additive character maps integer scalar multiples to integer powers. -/
 lemma map_zsmul_eq_zpow (ψ : AddChar A M) (n : ℤ) (a : A) : ψ (n • a) = (ψ a) ^ n :=
   ψ.toMonoidHom.map_zpow a n
-#align add_char.map_zsmul_zpow AddChar.map_zsmul_eq_zpow
 
 @[deprecated (since := "2024-06-06")] alias map_neg_inv := map_neg_eq_inv
 @[deprecated (since := "2024-06-06")] alias map_zsmul_zpow := map_zsmul_eq_zpow
@@ -348,35 +329,29 @@ variable {R M : Type*} [Ring R] [CommMonoid M]
 This satisfies `mulShift ψ a x = ψ (a * x)`. -/
 def mulShift (ψ : AddChar R M) (r : R) : AddChar R M :=
   ψ.compAddMonoidHom (AddMonoidHom.mulLeft r)
-#align add_char.mul_shift AddChar.mulShift
 
 @[simp] lemma mulShift_apply {ψ : AddChar R M} {r : R} {x : R} : mulShift ψ r x = ψ (r * x) :=
   rfl
-#align add_char.mul_shift_apply AddChar.mulShift_apply
 
 /-- `ψ⁻¹ = mulShift ψ (-1))`. -/
 theorem inv_mulShift (ψ : AddChar R M) : ψ⁻¹ = mulShift ψ (-1) := by
   ext
   rw [inv_apply, mulShift_apply, neg_mul, one_mul]
-#align add_char.inv_mul_shift AddChar.inv_mulShift
 
 /-- If `n` is a natural number, then `mulShift ψ n x = (ψ x) ^ n`. -/
 theorem mulShift_spec' (ψ : AddChar R M) (n : ℕ) (x : R) : mulShift ψ n x = ψ x ^ n := by
   rw [mulShift_apply, ← nsmul_eq_mul, map_nsmul_eq_pow]
-#align add_char.mul_shift_spec' AddChar.mulShift_spec'
 
 /-- If `n` is a natural number, then `ψ ^ n = mulShift ψ n`. -/
 theorem pow_mulShift (ψ : AddChar R M) (n : ℕ) : ψ ^ n = mulShift ψ n := by
   ext x
   rw [pow_apply, ← mulShift_spec']
-#align add_char.pow_mul_shift AddChar.pow_mulShift
 
 /-- The product of `mulShift ψ r` and `mulShift ψ s` is `mulShift ψ (r + s)`. -/
 theorem mulShift_mul (ψ : AddChar R M) (r s : R) :
     mulShift ψ r * mulShift ψ s = mulShift ψ (r + s) := by
   ext
   rw [mulShift_apply, right_distrib, map_add_eq_mul]; norm_cast
-#align add_char.mul_shift_mul AddChar.mulShift_mul
 
 lemma mulShift_mulShift (ψ : AddChar R M) (r s : R) :
     mulShift (mulShift ψ r) s = mulShift ψ (r * s) := by
@@ -387,7 +362,6 @@ lemma mulShift_mulShift (ψ : AddChar R M) (r s : R) :
 @[simp]
 theorem mulShift_zero (ψ : AddChar R M) : mulShift ψ 0 = 1 := by
   ext; rw [mulShift_apply, zero_mul, map_zero_eq_one, one_apply]
-#align add_char.mul_shift_zero AddChar.mulShift_zero
 
 @[simp]
 lemma mulShift_one (ψ : AddChar R M) : mulShift ψ 1 = ψ := by

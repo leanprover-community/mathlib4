@@ -67,7 +67,7 @@ where
     match d with
     | 0 =>
       if h : n = 0 then
-        ⟨{0}, by simp [h, Subsingleton.elim finZeroElim ![]]⟩
+        ⟨{0}, by simp [h, Subsingleton.elim _ ![]]⟩
       else
         ⟨∅, by simp [Ne.symm h]⟩
     | d + 1 =>
@@ -209,7 +209,7 @@ lemma piAntidiag_univ_fin_eq_antidiagonalTuple (n k : ℕ) :
 lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     n •ℕ piAntidiag s m = (piAntidiag s (n * m)).filter fun f : ι → ℕ ↦ ∀ i ∈ s, n ∣ f i := by
   ext f
-  refine' mem_smul_finset.trans _
+  refine mem_smul_finset.trans ?_
   simp only [mem_smul_finset, mem_filter, mem_piAntidiag, Function.Embedding.coeFn_mk, exists_prop,
     and_assoc]
   constructor

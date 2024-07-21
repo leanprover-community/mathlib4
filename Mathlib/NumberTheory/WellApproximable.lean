@@ -6,8 +6,6 @@ Authors: Oliver Nash
 import Mathlib.Dynamics.Ergodic.AddCircle
 import Mathlib.MeasureTheory.Covering.LiminfLimsup
 
-#align_import number_theory.well_approximable from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
-
 /-!
 # Well-approximable numbers and Gallagher's ergodic theorem
 
@@ -70,15 +68,11 @@ elements within a distance `δ` of a point of order `n`. -/
 `approxAddOrderOf A n δ` is the set of elements within a distance `δ` of a point of order `n`."]
 def approxOrderOf (A : Type*) [SeminormedGroup A] (n : ℕ) (δ : ℝ) : Set A :=
   thickening δ {y | orderOf y = n}
-#align approx_order_of approxOrderOf
-#align approx_add_order_of approxAddOrderOf
 
 @[to_additive mem_approx_add_orderOf_iff]
 theorem mem_approxOrderOf_iff {A : Type*} [SeminormedGroup A] {n : ℕ} {δ : ℝ} {a : A} :
     a ∈ approxOrderOf A n δ ↔ ∃ b : A, orderOf b = n ∧ a ∈ ball b δ := by
   simp only [approxOrderOf, thickening_eq_biUnion_ball, mem_iUnion₂, mem_setOf_eq, exists_prop]
-#align mem_approx_order_of_iff mem_approxOrderOf_iff
-#align mem_approx_add_order_of_iff mem_approx_add_orderOf_iff
 
 /-- In a seminormed group `A`, given a sequence of distances `δ₁, δ₂, ...`, `wellApproximable A δ`
 is the limsup as `n → ∞` of the sets `approxOrderOf A n δₙ`. Thus, it is the set of points that
@@ -89,16 +83,12 @@ distances `δ₁, δ₂, ...`, `addWellApproximable A δ` is the limsup as `n �
 `approxAddOrderOf A n δₙ`."]
 def wellApproximable (A : Type*) [SeminormedGroup A] (δ : ℕ → ℝ) : Set A :=
   blimsup (fun n => approxOrderOf A n (δ n)) atTop fun n => 0 < n
-#align well_approximable wellApproximable
-#align add_well_approximable addWellApproximable
 
 @[to_additive mem_add_wellApproximable_iff]
 theorem mem_wellApproximable_iff {A : Type*} [SeminormedGroup A] {δ : ℕ → ℝ} {a : A} :
     a ∈ wellApproximable A δ ↔
       a ∈ blimsup (fun n => approxOrderOf A n (δ n)) atTop fun n => 0 < n :=
   Iff.rfl
-#align mem_well_approximable_iff mem_wellApproximable_iff
-#align mem_add_well_approximable_iff mem_add_wellApproximable_iff
 
 namespace approxOrderOf
 
@@ -114,8 +104,6 @@ theorem image_pow_subset_of_coprime (hm : 0 < m) (hmn : n.Coprime m) :
   apply ball_subset_thickening hb ((m : ℝ) • δ)
   convert pow_mem_ball hm hab using 1
   simp only [nsmul_eq_mul, Algebra.id.smul_eq_mul]
-#align approx_order_of.image_pow_subset_of_coprime approxOrderOf.image_pow_subset_of_coprime
-#align approx_add_order_of.image_nsmul_subset_of_coprime approxAddOrderOf.image_nsmul_subset_of_coprime
 
 @[to_additive]
 theorem image_pow_subset (n : ℕ) (hm : 0 < m) :
@@ -127,8 +115,6 @@ theorem image_pow_subset (n : ℕ) (hm : 0 < m) :
   apply ball_subset_thickening hb (m * δ)
   convert pow_mem_ball hm hab using 1
   simp only [nsmul_eq_mul]
-#align approx_order_of.image_pow_subset approxOrderOf.image_pow_subset
-#align approx_add_order_of.image_nsmul_subset approxAddOrderOf.image_nsmul_subset
 
 @[to_additive]
 theorem smul_subset_of_coprime (han : (orderOf a).Coprime n) :
@@ -140,8 +126,6 @@ theorem smul_subset_of_coprime (han : (orderOf a).Coprime n) :
   refine ⟨a * b, ?_, hc⟩
   rw [← hb] at han ⊢
   exact (Commute.all a b).orderOf_mul_eq_mul_orderOf_of_coprime han
-#align approx_order_of.smul_subset_of_coprime approxOrderOf.smul_subset_of_coprime
-#align approx_add_order_of.vadd_subset_of_coprime approxAddOrderOf.vadd_subset_of_coprime
 
 @[to_additive vadd_eq_of_mul_dvd]
 theorem smul_eq_of_mul_dvd (hn : 0 < n) (han : orderOf a ^ 2 ∣ n) :
@@ -164,8 +148,6 @@ theorem smul_eq_of_mul_dvd (hn : 0 < n) (han : orderOf a ^ 2 ∣ n) :
     · simp only [f, Subtype.mk_eq_mk, Subtype.coe_mk, mul_inv_cancel_left]
   simpa only [mem_setOf_eq, Subtype.coe_mk, iUnion_coe_set] using
     hf.iUnion_comp fun b => ball (b : A) δ
-#align approx_order_of.smul_eq_of_mul_dvd approxOrderOf.smul_eq_of_mul_dvd
-#align approx_add_order_of.vadd_eq_of_mul_dvd approxAddOrderOf.vadd_eq_of_mul_dvd
 
 end approxOrderOf
 
@@ -178,7 +160,6 @@ theorem mem_approxAddOrderOf_iff {δ : ℝ} {x : UnitAddCircle} {n : ℕ} (hn : 
   constructor
   · rintro ⟨y, ⟨m, hm₁, hm₂, rfl⟩, hx⟩; exact ⟨m, hm₁, hm₂, hx⟩
   · rintro ⟨m, hm₁, hm₂, hx⟩; exact ⟨↑((m : ℝ) / n), ⟨m, hm₁, hm₂, rfl⟩, hx⟩
-#align unit_add_circle.mem_approx_add_order_of_iff UnitAddCircle.mem_approxAddOrderOf_iff
 
 theorem mem_addWellApproximable_iff (δ : ℕ → ℝ) (x : UnitAddCircle) :
     x ∈ addWellApproximable UnitAddCircle δ ↔
@@ -189,7 +170,6 @@ theorem mem_addWellApproximable_iff (δ : ℕ → ℝ) (x : UnitAddCircle) :
   · exact (mem_approxAddOrderOf_iff hn.1).mp hn.2
   · have h : 0 < n := by obtain ⟨m, hm₁, _, _⟩ := hn; exact pos_of_gt hm₁
     exact ⟨h, (mem_approxAddOrderOf_iff h).mpr hn⟩
-#align unit_add_circle.mem_add_well_approximable_iff UnitAddCircle.mem_addWellApproximable_iff
 
 end UnitAddCircle
 
@@ -330,7 +310,6 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       simp only [h, union_ae_eq_univ_of_ae_eq_univ_left]
     · cases' hB p with _ h; · contradiction
       simp only [h, union_ae_eq_univ_of_ae_eq_univ_left, union_ae_eq_univ_of_ae_eq_univ_right]
-#align add_circle.add_well_approximable_ae_empty_or_univ AddCircle.addWellApproximable_ae_empty_or_univ
 
 /-- A general version of **Dirichlet's approximation theorem**.
 
