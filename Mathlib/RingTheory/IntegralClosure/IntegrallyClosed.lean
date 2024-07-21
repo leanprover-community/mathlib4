@@ -6,8 +6,6 @@ Authors: Anne Baanen
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.Localization.Integral
 
-#align_import ring_theory.integrally_closed from "leanprover-community/mathlib"@"d35b4ff446f1421bd551fafa4b8efd98ac3ac408"
-
 /-!
 # Integrally closed rings
 
@@ -69,7 +67,6 @@ This definition uses `FractionRing R` to denote `Frac(R)`. See `isIntegrallyClos
 if you want to choose another field of fractions for `R`.
 -/
 abbrev IsIntegrallyClosed (R : Type*) [CommRing R] := IsIntegrallyClosedIn R (FractionRing R)
-#align is_integrally_closed IsIntegrallyClosed
 
 section Iff
 
@@ -104,7 +101,6 @@ theorem isIntegrallyClosed_iff_isIntegrallyClosedIn :
 /-- `R` is integrally closed iff it is the integral closure of itself in its field of fractions. -/
 theorem isIntegrallyClosed_iff_isIntegralClosure : IsIntegrallyClosed R ↔ IsIntegralClosure R R K :=
   isIntegrallyClosed_iff_isIntegrallyClosedIn K
-#align is_integrally_closed_iff_is_integral_closure isIntegrallyClosed_iff_isIntegralClosure
 
 /-- `R` is integrally closed in `A` iff all integral elements of `A` are also elements of `R`. -/
 theorem isIntegrallyClosedIn_iff {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] :
@@ -125,7 +121,6 @@ theorem isIntegrallyClosed_iff :
     IsIntegrallyClosed R ↔ ∀ {x : K}, IsIntegral R x → ∃ y, algebraMap R K y = x := by
   simp [isIntegrallyClosed_iff_isIntegrallyClosedIn K, isIntegrallyClosedIn_iff,
         IsFractionRing.injective R K]
-#align is_integrally_closed_iff isIntegrallyClosed_iff
 
 end Iff
 
@@ -205,18 +200,15 @@ theorem algebraMap_eq_of_integral {x : K} : IsIntegral R x → ∃ y : R, algebr
 
 theorem isIntegral_iff {x : K} : IsIntegral R x ↔ ∃ y : R, algebraMap R K y = x :=
   IsIntegrallyClosedIn.isIntegral_iff
-#align is_integrally_closed.is_integral_iff IsIntegrallyClosed.isIntegral_iff
 
 theorem exists_algebraMap_eq_of_isIntegral_pow {x : K} {n : ℕ} (hn : 0 < n)
     (hx : IsIntegral R <| x ^ n) : ∃ y : R, algebraMap R K y = x :=
   IsIntegrallyClosedIn.exists_algebraMap_eq_of_isIntegral_pow hn hx
-#align is_integrally_closed.exists_algebra_map_eq_of_is_integral_pow IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow
 
 theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Algebra R K]
     {S : Subalgebra R K} [IsIntegrallyClosed S] [IsFractionRing S K] {x : K} {n : ℕ} (hn : 0 < n)
     (hx : x ^ n ∈ S) : ∃ y : S, algebraMap S K y = x :=
   IsIntegrallyClosedIn.exists_algebraMap_eq_of_pow_mem_subalgebra hn hx
-#align is_integrally_closed.exists_algebra_map_eq_of_pow_mem_subalgebra IsIntegrallyClosed.exists_algebraMap_eq_of_pow_mem_subalgebra
 
 variable (R S K)
 
@@ -230,7 +222,6 @@ variable {R}
 theorem integralClosure_eq_bot_iff : integralClosure R K = ⊥ ↔ IsIntegrallyClosed R :=
   (IsIntegrallyClosedIn.integralClosure_eq_bot_iff _ (IsFractionRing.injective _ _)).trans
     (isIntegrallyClosed_iff_isIntegrallyClosedIn _).symm
-#align is_integrally_closed.integral_closure_eq_bot_iff IsIntegrallyClosed.integralClosure_eq_bot_iff
 
 @[simp]
 theorem pow_dvd_pow_iff {n : ℕ} (hn : n ≠ 0) {a b : R} : a ^ n ∣ b ^ n ↔ a ∣ b  := by
@@ -258,7 +249,6 @@ except the `NoZeroSMulDivisors` hypothesis isn't inferred automatically from `Is
 @[simp]
 theorem integralClosure_eq_bot : integralClosure R K = ⊥ :=
   (integralClosure_eq_bot_iff K).mpr ‹_›
-#align is_integrally_closed.integral_closure_eq_bot IsIntegrallyClosed.integralClosure_eq_bot
 
 end IsIntegrallyClosed
 
@@ -276,6 +266,5 @@ theorem isIntegrallyClosedOfFiniteExtension [IsDomain R] [FiniteDimensional K L]
     IsIntegrallyClosed (integralClosure R L) :=
   letI : IsFractionRing (integralClosure R L) L := isFractionRing_of_finite_extension K L
   (integralClosure_eq_bot_iff L).mp integralClosure_idem
-#align integral_closure.is_integrally_closed_of_finite_extension integralClosure.isIntegrallyClosedOfFiniteExtension
 
 end integralClosure

@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Endofunctor.Algebra
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
-#align_import category_theory.preadditive.endo_functor from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
-
 /-!
 # Preadditive structure on algebras over a monad
 
@@ -103,10 +101,8 @@ instance Endofunctor.algebraPreadditive : Preadditive (Endofunctor.Algebra F) wh
     intros
     apply Algebra.Hom.ext
     apply comp_add
-#align category_theory.endofunctor.algebra_preadditive CategoryTheory.Endofunctor.algebraPreadditive
 
 instance Algebra.forget_additive : (Endofunctor.Algebra.forget F).Additive where
-#align category_theory.algebra.forget_additive CategoryTheory.Algebra.forget_additive
 
 @[simps]
 instance Endofunctor.coalgebraPreadditive : Preadditive (Endofunctor.Coalgebra F) where
@@ -183,9 +179,7 @@ instance Endofunctor.coalgebraPreadditive : Preadditive (Endofunctor.Coalgebra F
     intros
     apply Coalgebra.Hom.ext
     apply comp_add
-#align category_theory.endofunctor.coalgebra_preadditive CategoryTheory.Endofunctor.coalgebraPreadditive
 
 instance Coalgebra.forget_additive : (Endofunctor.Coalgebra.forget F).Additive where
-#align category_theory.coalgebra.forget_additive CategoryTheory.Coalgebra.forget_additive
 
 end CategoryTheory

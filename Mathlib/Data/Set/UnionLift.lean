@@ -6,8 +6,6 @@ Authors: Chris Hughes
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Directed
 
-#align_import data.set.Union_lift from "leanprover-community/mathlib"@"5a4ea8453f128345f73cc656e80a49de2a54f481"
-
 /-!
 # Union lift
 This file defines `Set.iUnionLift` to glue together functions defined on each of a collection of
@@ -55,7 +53,6 @@ noncomputable def iUnionLift (S : ι → Set α) (f : ∀ i, S i → β)
     (hT : T ⊆ iUnion S) (x : T) : β :=
   let i := Classical.indefiniteDescription _ (mem_iUnion.1 (hT x.prop))
   f i ⟨x, i.prop⟩
-#align set.Union_lift Set.iUnionLift
 
 variable {S : ι → Set α} {f : ∀ i, S i → β}
   {hf : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩} {T : Set α}
@@ -64,17 +61,14 @@ variable {S : ι → Set α} {f : ∀ i, S i → β}
 @[simp]
 theorem iUnionLift_mk {i : ι} (x : S i) (hx : (x : α) ∈ T) :
     iUnionLift S f hf T hT ⟨x, hx⟩ = f i x := hf _ i x _ _
-#align set.Union_lift_mk Set.iUnionLift_mk
 
 @[simp]
 theorem iUnionLift_inclusion {i : ι} (x : S i) (h : S i ⊆ T) :
     iUnionLift S f hf T hT (Set.inclusion h x) = f i x :=
   iUnionLift_mk x _
-#align set.Union_lift_inclusion Set.iUnionLift_inclusion
 
 theorem iUnionLift_of_mem (x : T) {i : ι} (hx : (x : α) ∈ S i) :
     iUnionLift S f hf T hT x = f i ⟨x, hx⟩ := by cases' x with x hx; exact hf _ _ _ _ _
-#align set.Union_lift_of_mem Set.iUnionLift_of_mem
 
 theorem preimage_iUnionLift (t : Set β) :
     iUnionLift S f hf T hT ⁻¹' t =
@@ -98,7 +92,6 @@ theorem iUnionLift_const (c : T) (ci : ∀ i, S i) (hci : ∀ i, (ci i : α) = c
   let ⟨i, hi⟩ := Set.mem_iUnion.1 (hT c.prop)
   have : ci i = ⟨c, hi⟩ := Subtype.ext (hci i)
   rw [iUnionLift_of_mem _ hi, ← this, h]
-#align set.Union_lift_const Set.iUnionLift_const
 
 /-- `iUnionLift_unary` is useful for proving that `iUnionLift` is a homomorphism
   of algebraic structures when defined on the Union of algebraic subobjects.
@@ -118,7 +111,6 @@ theorem iUnionLift_unary (u : T → T) (ui : ∀ i, S i → S i)
     cases x
     rfl
   conv_lhs => rw [this, hui, iUnionLift_inclusion]
-#align set.Union_lift_unary Set.iUnionLift_unary
 
 /-- `iUnionLift_binary` is useful for proving that `iUnionLift` is a homomorphism
   of algebraic structures when defined on the Union of algebraic subobjects.
@@ -148,7 +140,6 @@ theorem iUnionLift_binary (dir : Directed (· ≤ ·) S) (op : T → T → T) (o
     (opi k ⟨x, hik hi⟩ ⟨y, hjk hj⟩).prop
   conv_lhs => rw [hx, hy, ← hopi, iUnionLift_of_mem _ hxy]
   rfl
-#align set.Union_lift_binary Set.iUnionLift_binary
 
 end UnionLift
 
@@ -162,17 +153,14 @@ noncomputable def liftCover (S : ι → Set α) (f : ∀ i, S i → β)
     (hf : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩)
     (hS : iUnion S = univ) (a : α) : β :=
   iUnionLift S f hf univ hS.symm.subset ⟨a, trivial⟩
-#align set.lift_cover Set.liftCover
 
 @[simp]
 theorem liftCover_coe {i : ι} (x : S i) : liftCover S f hf hS x = f i x :=
   iUnionLift_mk x _
-#align set.lift_cover_coe Set.liftCover_coe
 
 theorem liftCover_of_mem {i : ι} {x : α} (hx : (x : α) ∈ S i) :
     liftCover S f hf hS x = f i ⟨x, hx⟩ :=
   iUnionLift_of_mem (⟨x, trivial⟩ : {_z // True}) hx
-#align set.lift_cover_of_mem Set.liftCover_of_mem
 
 theorem preimage_liftCover (t : Set β) : liftCover S f hf hS ⁻¹' t = ⋃ i, (↑) '' (f i ⁻¹' t) := by
   change (iUnionLift S f hf univ hS.symm.subset ∘ fun a => ⟨a, mem_univ a⟩) ⁻¹' t = _
