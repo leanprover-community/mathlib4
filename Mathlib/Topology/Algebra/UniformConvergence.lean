@@ -6,8 +6,6 @@ Authors: Anatole Dedecker
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Algebra.Module.Pi
 
-#align_import topology.algebra.uniform_convergence from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # Algebraic facts about the topology of uniform convergence
 
@@ -231,16 +229,12 @@ protected theorem UniformFun.hasBasis_nhds_one_of_basis {p : ι → Prop} {b : �
   convert UniformFun.hasBasis_nhds_of_basis α _ (1 : α →ᵤ G) this
   -- Porting note: removed `ext i f` here, as it has already been done by `convert`.
   simp
-#align uniform_fun.has_basis_nhds_one_of_basis UniformFun.hasBasis_nhds_one_of_basis
-#align uniform_fun.has_basis_nhds_zero_of_basis UniformFun.hasBasis_nhds_zero_of_basis
 
 @[to_additive]
 protected theorem UniformFun.hasBasis_nhds_one :
     (𝓝 1 : Filter (α →ᵤ G)).HasBasis (fun V : Set G => V ∈ (𝓝 1 : Filter G)) fun V =>
       { f : α → G | ∀ x, f x ∈ V } :=
   UniformFun.hasBasis_nhds_one_of_basis (basis_sets _)
-#align uniform_fun.has_basis_nhds_one UniformFun.hasBasis_nhds_one
-#align uniform_fun.has_basis_nhds_zero UniformFun.hasBasis_nhds_zero
 
 /-- Let `𝔖 : Set (Set α)`. If `G` is a uniform group, then `α →ᵤ[𝔖] G` is a uniform group as
 well. -/
@@ -266,8 +260,6 @@ protected theorem UniformOnFun.hasBasis_nhds_one_of_basis (𝔖 : Set <| Set α)
   convert UniformOnFun.hasBasis_nhds_of_basis α _ 𝔖 (1 : α →ᵤ[𝔖] G) h𝔖₁ h𝔖₂ this
   -- Porting note: removed `ext i f` here, as it has already been done by `convert`.
   simp [UniformOnFun.gen]
-#align uniform_on_fun.has_basis_nhds_one_of_basis UniformOnFun.hasBasis_nhds_one_of_basis
-#align uniform_on_fun.has_basis_nhds_zero_of_basis UniformOnFun.hasBasis_nhds_zero_of_basis
 
 @[to_additive]
 protected theorem UniformOnFun.hasBasis_nhds_one (𝔖 : Set <| Set α) (h𝔖₁ : 𝔖.Nonempty)
@@ -276,8 +268,6 @@ protected theorem UniformOnFun.hasBasis_nhds_one (𝔖 : Set <| Set α) (h𝔖�
       (fun SV : Set α × Set G => SV.1 ∈ 𝔖 ∧ SV.2 ∈ (𝓝 1 : Filter G)) fun SV =>
       { f : α →ᵤ[𝔖] G | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
   UniformOnFun.hasBasis_nhds_one_of_basis 𝔖 h𝔖₁ h𝔖₂ (basis_sets _)
-#align uniform_on_fun.has_basis_nhds_one UniformOnFun.hasBasis_nhds_one
-#align uniform_on_fun.has_basis_nhds_zero UniformOnFun.hasBasis_nhds_zero
 
 end Group
 
