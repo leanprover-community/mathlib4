@@ -680,7 +680,7 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent [DecidableEq σ]
     simp only [hs_def, mem_filter] at hi
     rw [hi.2]
   rw [← prod_sdiff (s₁ := s) (filter_subset _ _)]
-  refine' mul_eq_zero_of_right _ _
+  apply mul_eq_zero_of_right
   rw [prod_congr rfl hs', prod_const]
   suffices m ≤ s.card by
     obtain ⟨m', hm'⟩ := Nat.exists_eq_add_of_le this
