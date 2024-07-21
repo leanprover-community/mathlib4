@@ -15,7 +15,7 @@ Mayer-Vietoris sequences in sheaf cohomology. If `X₄` is an open subset
 of a topological space that is covered by two open subsets `X₂` and `X₃`,
 it is known that there is a long exact sequence
 `... ⟶ H^q(X₄) ⟶ H^q(X₂) ⊞ H^q(X₃) ⟶ H^q(X₁) ⟶ H^{q+1}(X₄) ⟶ ...`
-when `X₁` is the intersection of `X₂` and `X₃`, and `H^q` are the
+where `X₁` is the intersection of `X₂` and `X₃`, and `H^q` are the
 cohomology groups with values in an abelian sheaf.
 
 In this file, we introduce a structure
