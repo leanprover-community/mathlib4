@@ -1,4 +1,4 @@
-import Mathlib.Tactic.MultigoalsLinter
+import Mathlib.Tactic.Linter.Multigoals
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Basic
 
