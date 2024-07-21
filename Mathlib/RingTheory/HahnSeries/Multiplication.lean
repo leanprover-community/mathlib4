@@ -641,7 +641,7 @@ instance instNoZeroSMulDivisors {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Zero
     contrapose! hxy
     simp_all only [ne_eq]
     rw [← HahnModule.ext_iff, Function.funext_iff, not_forall]
-    refine' ⟨x.order + ((of R).symm y).order, _⟩
+    refine ⟨x.order + ((of R).symm y).order, ?_⟩
     rw [smul_coeff_order_add_order x y, of_symm_zero, HahnSeries.zero_coeff, smul_eq_zero]
     simp only [HahnSeries.leadingCoeff_ne_iff.mpr hxy.1, false_or]
     exact HahnSeries.leadingCoeff_ne_iff.mpr hxy.2 -- defeq abuse?

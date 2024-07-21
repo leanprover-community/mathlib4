@@ -524,7 +524,6 @@ theorem isUnit_iff [IsDomain R] {x : HahnSeries Γ R} :
       ((mul_coeff_order_add_order u i).symm.trans ?_)
   rw [ui, one_coeff, if_pos]
   rw [← order_mul (left_ne_zero_of_mul_eq_one ui) (right_ne_zero_of_mul_eq_one ui), ui, order_one]
-#align hahn_series.is_unit_iff HahnSeries.isUnit_iff
 
 end CommRing
 
