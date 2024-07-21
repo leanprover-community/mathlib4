@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Init.Data.Ordering.Lemmas
+import Mathlib.Data.Ordering.Lemmas
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.Tactic.NormNum
 import Mathlib.Data.PNat.Basic

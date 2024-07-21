@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Init.Algebra.Classes
-import Mathlib.Init.Data.Ordering.Basic
+import Mathlib.Data.Ordering.Basic
 
 /-!
 # Note about `Mathlib/Init/`
