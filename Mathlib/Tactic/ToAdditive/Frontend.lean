@@ -484,24 +484,6 @@ unsafe abbrev FindM := StateT (PtrSet Expr) Id
     failure
   modify fun s => s.insert e
 
-unsafe def findM? (p : Expr → Bool) (e : Expr) : OptionT FindM Expr :=
-  let rec visit (e : Expr) := do
-    checkVisited e
-    if p e then
-      pure e
-    else match e with
-      | .forallE _ d b _ => visit d <|> visit b
-      | .lam _ d b _     => visit d <|> visit b
-      | .mdata _ b       => visit b
-      | .letE _ t v b _  => visit t <|> visit v <|> visit b
-      | .app f a         => visit f <|> visit a
-      | .proj _ _ b      => visit b
-      | _                => failure
-  visit e
-
-unsafe def findUnsafe? (p : Expr → Bool) (e : Expr) : Option Expr :=
-  Id.run <| findM? p e |>.run' mkPtrSet
-
 end FindImpl
 
 open FindImpl in
