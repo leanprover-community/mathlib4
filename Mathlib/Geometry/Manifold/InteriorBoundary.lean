@@ -132,6 +132,10 @@ end Boundaryless
 
 section BoundarylessManifold
 
+/-- The empty manifold is boundaryless. -/
+instance BoundarylessManifold.of_empty [IsEmpty M] : BoundarylessManifold I M where
+  isInteriorPoint' x := (IsEmpty.false x).elim
+
 lemma _root_.BoundarylessManifold.isInteriorPoint {x : M} [BoundarylessManifold I M] :
     IsInteriorPoint I x := BoundarylessManifold.isInteriorPoint' x
 
@@ -142,6 +146,9 @@ lemma interior_eq_univ [BoundarylessManifold I M] : I.interior M = univ :=
 /-- Boundaryless manifolds have empty boundary. -/
 lemma Boundaryless.boundary_eq_empty [BoundarylessManifold I M] : I.boundary M = ∅ := by
   rw [I.boundary_eq_complement_interior, I.interior_eq_univ, compl_empty_iff]
+
+instance [BoundarylessManifold I M] : IsEmpty (I.boundary M) :=
+  isEmpty_coe_sort.mpr (Boundaryless.boundary_eq_empty I)
 
 /-- Manifolds with empty boundary are boundaryless. -/
 lemma Boundaryless.of_boundary_eq_empty (h : I.boundary M = ∅) : BoundarylessManifold I M where
