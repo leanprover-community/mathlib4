@@ -102,11 +102,11 @@ lemma dynEntourage_antitone (T : X → X) (U : Set (X × X)) :
   use k, lt_of_lt_of_le k_m m_n
 
 @[simp]
-lemma dynEntourage_zero_eq_univ {T : X → X} {U : Set (X × X)} :
+lemma dynEntourage_zero {T : X → X} {U : Set (X × X)} :
     dynEntourage T U 0 = univ := by simp [dynEntourage]
 
 @[simp]
-lemma dynEntourage_one_eq_self {T : X → X} {U : Set (X × X)} :
+lemma dynEntourage_one {T : X → X} {U : Set (X × X)} :
     dynEntourage T U 1 = U := by simp [dynEntourage]
 
 @[simp]
