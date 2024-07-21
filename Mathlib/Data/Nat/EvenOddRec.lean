@@ -5,13 +5,7 @@ Authors: Stuart Presnell
 -/
 import Mathlib.Algebra.Ring.Parity
 import Mathlib.Data.Nat.Bits
-
-#align_import data.nat.even_odd_rec from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 /-! # A recursion principle based on even and odd numbers. -/
-
--- Porting note (#11215): TODO:
--- Remove dependence on deprecated definitions bit0, bit1.
-set_option linter.deprecated false
 
 namespace Nat
 
@@ -25,13 +19,11 @@ def evenOddRec {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ n, P n → P (2 * n)
   binaryRec h0 (fun
     | false, i, hi => (h_even i hi : P (2 * i))
     | true, i, hi => (h_odd i hi : P (2 * i + 1))) n
-#align nat.even_odd_rec Nat.evenOddRec
 
 @[simp]
 theorem evenOddRec_zero {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
     (h_odd : ∀ i, P i → P (2 * i + 1)) : evenOddRec h0 h_even h_odd 0 = h0 :=
   binaryRec_zero _ _
-#align nat.even_odd_rec_zero Nat.evenOddRec_zero
 
 @[simp]
 theorem evenOddRec_even {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
@@ -39,7 +31,6 @@ theorem evenOddRec_even {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ i, P i → 
     (2 * n).evenOddRec h0 h_even h_odd = h_even n (evenOddRec h0 h_even h_odd n) := by
   apply binaryRec_eq' false n
   simp [H]
-#align nat.even_odd_rec_even Nat.evenOddRec_even
 
 @[simp]
 theorem evenOddRec_odd {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
@@ -47,7 +38,6 @@ theorem evenOddRec_odd {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ i, P i → P
     (2 * n + 1).evenOddRec h0 h_even h_odd = h_odd n (evenOddRec h0 h_even h_odd n) := by
   apply binaryRec_eq' true n
   simp [H]
-#align nat.even_odd_rec_odd Nat.evenOddRec_odd
 
 /-- Strong recursion principle on even and odd numbers: if for all `i : ℕ` we can prove `P (2 * i)`
 from `P j` for all `j < 2 * i` and we can prove `P (2 * i + 1)` from `P j` for all `j < 2 * i + 1`,

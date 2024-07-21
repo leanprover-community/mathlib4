@@ -7,8 +7,6 @@ import Mathlib.Algebra.Polynomial.UnitTrinomial
 import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.Tactic.LinearCombination
 
-#align_import ring_theory.polynomial.selmer from "leanprover-community/mathlib"@"3e00d81bdcbf77c8188bbd18f5524ddc3ed8cac6"
-
 /-!
 # Irreducibility of Selmer Polynomials
 
@@ -43,8 +41,6 @@ theorem X_pow_sub_X_sub_one_irreducible_aux (z : ℂ) : ¬(z ^ n = z + 1 ∧ z ^
   · exact z_ne_zero (by rwa [key, self_eq_add_left] at h1)
   · exact one_ne_zero (by rwa [key, self_eq_add_right] at h1)
   · exact z_ne_zero (pow_eq_zero (by rwa [key, add_self_eq_zero] at h2))
-set_option linter.uppercaseLean3 false in
-#align polynomial.X_pow_sub_X_sub_one_irreducible_aux Polynomial.X_pow_sub_X_sub_one_irreducible_aux
 
 theorem X_pow_sub_X_sub_one_irreducible (hn1 : n ≠ 1) : Irreducible (X ^ n - X - 1 : ℤ[X]) := by
   by_cases hn0 : n = 0
@@ -65,8 +61,6 @@ theorem X_pow_sub_X_sub_one_irreducible (hn1 : n ≠ 1) : Irreducible (X ^ n - X
   rw [add_mul, add_mul, add_zero, mul_assoc (-1 : ℂ), ← pow_succ, Nat.sub_add_cancel hn.le] at h2
   rw [h1] at h2 ⊢
   exact ⟨rfl, by linear_combination -h2⟩
-set_option linter.uppercaseLean3 false in
-#align polynomial.X_pow_sub_X_sub_one_irreducible Polynomial.X_pow_sub_X_sub_one_irreducible
 
 theorem X_pow_sub_X_sub_one_irreducible_rat (hn1 : n ≠ 1) : Irreducible (X ^ n - X - 1 : ℚ[X]) := by
   by_cases hn0 : n = 0
@@ -80,7 +74,5 @@ theorem X_pow_sub_X_sub_one_irreducible_rat (hn1 : n ≠ 1) : Irreducible (X ^ n
   · rwa [Polynomial.map_sub, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_one,
       Polynomial.map_X] at h
   · exact hp.symm ▸ (trinomial_monic zero_lt_one hn).isPrimitive
-set_option linter.uppercaseLean3 false in
-#align polynomial.X_pow_sub_X_sub_one_irreducible_rat Polynomial.X_pow_sub_X_sub_one_irreducible_rat
 
 end Polynomial
