@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Algebra.Group.Int
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Nat.Cast.Order.Field
+import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.GaloisConnection
