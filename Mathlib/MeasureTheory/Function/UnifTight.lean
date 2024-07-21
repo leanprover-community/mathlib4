@@ -27,7 +27,7 @@ is also proved later in the file.
 * `MeasureTheory.unifTight_finite`: a finite sequence of Lp functions is uniformly
   tight.
 * `MeasureTheory.tendsto_Lp_of_tendsto_ae`: a sequence of Lp functions which is uniformly
-  integrable and uniformly tight converges in Lp if it converge almost everywhere.
+  integrable and uniformly tight converges in Lp if it converges almost everywhere.
 * `MeasureTheory.tendstoInMeasure_iff_tendsto_Lp`: Vitali convergence theorem:
   a sequence of Lp functions converges in Lp if and only if it is uniformly integrable,
   uniformly tight and converges in measure.
@@ -219,7 +219,7 @@ from convergence in Lp. Mathlib already has the analogous `unifIntegrable_of_ten
 and `tendstoInMeasure_of_tendsto_snorm`. -/
 
 /-- Intermediate lemma for `unifTight_of_tendsto_Lp`. -/
-theorem unifTight_of_tendsto_Lp_zero (hp' : p ≠ ∞) (hf : ∀ n, Memℒp (f n) p μ)
+private theorem unifTight_of_tendsto_Lp_zero (hp' : p ≠ ∞) (hf : ∀ n, Memℒp (f n) p μ)
     (hf_tendsto : Tendsto (fun n => snorm (f n) p μ) atTop (𝓝 0)) : UnifTight f p μ := fun ε hε ↦by
   rw [ENNReal.tendsto_atTop_zero] at hf_tendsto
   obtain ⟨N, hNε⟩ := hf_tendsto ε (by simpa only [gt_iff_lt, ENNReal.coe_pos])
@@ -247,7 +247,8 @@ private theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, Memℒp (
 are unwrapped and strengthened (by known lemmas) to also have the `StronglyMeasurable`
 and a.e. convergence hypotheses. The bulk of the proof is done under these stronger hypotheses.-/
 
-theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞)
+/-- Bulk of the proof under strengthened hypotheses. Invoked from `tendsto_Lp_of_tendsto_ae`. -/
+private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞)
     {f : ℕ → α → β} {g : α → β} (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g)
     (hg' : Memℒp g p μ) (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
@@ -330,6 +331,7 @@ private theorem ae_tendsto_ae_congr {f f' : ℕ → α → β} {g g' : α → β
   apply Tendsto.congr hff'x
   rw [← hgg'x]; exact hfgx
 
+/-- Forward direction of Vitali's convergnece theorem, with a.e. instead of InMeasure convergence.-/
 theorem tendsto_Lp_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
     {f : ℕ → α → β} {g : α → β} (haef : ∀ n, AEStronglyMeasurable (f n) μ)
     (hg' : Memℒp g p μ) (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)
@@ -351,7 +353,7 @@ theorem tendsto_Lp_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
   apply Filter.Tendsto.congr (fun n => (hsnfg n).symm)
   exact tendsto_Lp_of_tendsto_ae_of_meas hp hp' hf hg hg'' hui' hut' haefg'
 
-/-- Forward direction of Vitali's convergence theorem (non-finite version):
+/-- Forward direction of Vitali's convergence theorem:
 if `f` is a sequence of uniformly integrable, uniformly tight functions that converge in
 measure to some function `g` in a finite measure space, then `f` converge in Lp to `g`. -/
 theorem tendsto_Lp_of_tendstoInMeasure (hp : 1 ≤ p) (hp' : p ≠ ∞)
