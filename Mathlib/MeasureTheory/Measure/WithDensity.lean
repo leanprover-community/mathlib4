@@ -655,7 +655,7 @@ instance [SFinite μ] (c : ℝ≥0∞) : SFinite (c • μ) := by
   infer_instance
 
 /-- If `μ ≪ ν` and `ν` is s-finite, then `μ` is s-finite. -/
-theorem sFinite_of_absolutelyContinuous {μ ν : Measure α} [SFinite ν] (hμν : μ ≪ ν) :
+theorem sFinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : μ ≪ ν) :
     SFinite μ := by
   rw [← Measure.restrict_add_restrict_compl (μ := μ) measurableSet_sigmaFiniteSetWRT,
     restrict_compl_sigmaFiniteSetWRT hμν]
