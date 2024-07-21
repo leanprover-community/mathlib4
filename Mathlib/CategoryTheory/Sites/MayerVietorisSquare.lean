@@ -3,13 +3,8 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.Grp.Adjunctions
-import Mathlib.CategoryTheory.Sites.Adjunction
-import Mathlib.CategoryTheory.Sites.OneHypercover
-import Mathlib.CategoryTheory.Sites.Sheafification
-import Mathlib.CategoryTheory.Sites.Spaces
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 # Mayer-Vietoris squares
@@ -48,7 +43,7 @@ of types, then the types of sections of `F` over `S.X`, `S.U`,
 * https://stacks.math.columbia.edu/tag/08GL
 
 -/
-universe w v u
+universe w v u v' u'
 
 namespace CategoryTheory
 
@@ -68,7 +63,7 @@ namespace GrothendieckTopology
 
 variable {C : Type u} [Category.{v} C]
   (J : GrothendieckTopology C)
-  [HasWeakSheafify J (Type v)] [HasWeakSheafify J AddCommGrp.{v}]
+  [HasWeakSheafify J (Type v)]
 
 /-- A Mayer-Vietoris square in a category `C` equipped with a Grothendieck
 topology consists of a commutative square `p ≫ i = q ≫ j` in `C`
@@ -113,16 +108,26 @@ lemma isPushout :
   w := by simp only [← Functor.map_comp, S.fac]
   isColimit' := ⟨S.isColimit⟩
 
+/-- The condition that a Mayer-Vietoris square becomes a pullback square
+when we evaluate a presheaf on it. --/
+def SheafCondition {A : Type u'} [Category.{v'} A] (P : Cᵒᵖ ⥤ A) : Prop :=
+  IsPullback (P.map S.i.op) (P.map S.j.op) (P.map S.p.op) (P.map S.q.op)
+
 section
 
 variable (F : Sheaf J (Type v))
 
+/-- Given `S : J.MayerVietoris Square` and `F : Sheaf J (Type _)`,
+this is the pullback cone corresponding to the (pullback) square
+obtained by evaluating `F` on the square `S`. -/
 @[simps!]
 def pullbackConeOfSheaf :
     PullbackCone (F.val.map S.p.op) (F.val.map S.q.op) :=
   PullbackCone.mk (F.val.map S.i.op) (F.val.map S.j.op) (by
     simp only [← Functor.map_comp, ← op_comp, S.fac])
 
+/-- Given `S : J.MayerVietoris Square` and `F : Sheaf J (Type _)`, this is
+the map from  -/
 abbrev toPullbackSections :
     F.val.obj (op S.X) → Types.PullbackObj (F.val.map S.p.op) (F.val.map S.q.op) :=
   (S.pullbackConeOfSheaf F).toPullbackObj
