@@ -474,7 +474,37 @@ structure Config : Type where
   existing : Option Bool := none
   deriving Repr
 
-open Lean.Expr.FindImpl in
+-- This used to live in the lean4 repo until https://github.com/leanprover/lean4/pull/4795
+namespace FindImpl
+
+unsafe abbrev FindM := StateT (PtrSet Expr) Id
+
+@[inline] unsafe def checkVisited (e : Expr) : OptionT FindM Unit := do
+  if (← get).contains e then
+    failure
+  modify fun s => s.insert e
+
+unsafe def findM? (p : Expr → Bool) (e : Expr) : OptionT FindM Expr :=
+  let rec visit (e : Expr) := do
+    checkVisited e
+    if p e then
+      pure e
+    else match e with
+      | .forallE _ d b _ => visit d <|> visit b
+      | .lam _ d b _     => visit d <|> visit b
+      | .mdata _ b       => visit b
+      | .letE _ t v b _  => visit t <|> visit v <|> visit b
+      | .app f a         => visit f <|> visit a
+      | .proj _ _ b      => visit b
+      | _                => failure
+  visit e
+
+unsafe def findUnsafe? (p : Expr → Bool) (e : Expr) : Option Expr :=
+  Id.run <| findM? p e |>.run' mkPtrSet
+
+end FindImpl
+
+open FindImpl in
 /-- Implementation function for `additiveTest`.
   We cache previous applications of the function, using the same method that `Expr.find?` uses,
   to avoid visiting the same subexpression many times. Note that we only need to cache the
