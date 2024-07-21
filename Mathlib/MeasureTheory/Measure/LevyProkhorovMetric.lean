@@ -414,8 +414,7 @@ lemma LevyProkhorov.continuous_toProbabilityMeasure :
     filter_upwards [key (aux _), ε_of_room <| Iio_mem_nhds <| half_pos <|
                       Real.mul_pos (inv_pos.mpr norm_f_pos) δ_pos]
       with n hn hn'
-    simp only [gt_iff_lt, eventually_atTop, ne_eq, mem_map,
-               mem_atTop_sets, mem_preimage, mem_Iio] at *
+    simp only [mem_preimage, mem_Iio] at *
     specialize εs_pos n
     have bound := BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt
                     (Ps n) P (ε := dist (μs n) ν + εs n) ?_ ?_ f ?_

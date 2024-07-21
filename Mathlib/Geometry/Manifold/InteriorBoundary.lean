@@ -175,8 +175,8 @@ lemma interior_prod :
   · obtain ⟨h₁, h₂⟩ := Set.mem_prod.mp hp
     rw [ModelWithCorners.interior] at h₁ h₂
     show (I.prod J).IsInteriorPoint p
-    rw [IsInteriorPoint, ← aux]
-    apply mem_prod.mpr; constructor; exacts [h₁, h₂]
+    rw [IsInteriorPoint, ← aux, mem_prod]
+    exact ⟨h₁, h₂⟩
 
 /-- The boundary of `M × N` is `∂M × N ∪ (M × ∂N)`. -/
 lemma boundary_prod :
