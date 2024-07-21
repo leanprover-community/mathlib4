@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos Fernandez
 -/
 
-import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Data.Finsupp.Weight
 
 /-! # Order of multivariate power series
