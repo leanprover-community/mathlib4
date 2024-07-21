@@ -1572,7 +1572,7 @@ variable {ι' : Type*} {R M₂}
 
 /-- A multilinear map on `∀ i : ι ⊕ ι', M'` defines a multilinear map on `∀ i : ι, M'`
 taking values in the space of multilinear maps on `∀ i : ι', M'`. -/
-def currySum (f : MultilinearMap R (fun _ : Sum ι ι' => M') M₂) :
+def currySum (f : MultilinearMap R (fun _ : ι ⊕ ι' => M') M₂) :
     MultilinearMap R (fun _ : ι => M') (MultilinearMap R (fun _ : ι' => M') M₂) where
   toFun u :=
     { toFun := fun v => f (Sum.elim u v)
@@ -1592,14 +1592,14 @@ def currySum (f : MultilinearMap R (fun _ : Sum ι ι' => M') M₂) :
       simp only [MultilinearMap.coe_mk, smul_apply, ← Sum.update_elim_inl, f.map_smul]
 
 @[simp]
-theorem currySum_apply (f : MultilinearMap R (fun _ : Sum ι ι' => M') M₂) (u : ι → M')
+theorem currySum_apply (f : MultilinearMap R (fun _ : ι ⊕ ι' => M') M₂) (u : ι → M')
     (v : ι' → M') : f.currySum u v = f (Sum.elim u v) :=
   rfl
 
 /-- A multilinear map on `∀ i : ι, M'` taking values in the space of multilinear maps
 on `∀ i : ι', M'` defines a multilinear map on `∀ i : ι ⊕ ι', M'`. -/
 def uncurrySum (f : MultilinearMap R (fun _ : ι => M') (MultilinearMap R (fun _ : ι' => M') M₂)) :
-    MultilinearMap R (fun _ : Sum ι ι' => M') M₂ where
+    MultilinearMap R (fun _ : ι ⊕ ι' => M') M₂ where
   toFun u := f (u ∘ Sum.inl) (u ∘ Sum.inr)
   map_add' u i x y := by
     letI := (@Sum.inl_injective ι ι').decidableEq
@@ -1617,7 +1617,7 @@ def uncurrySum (f : MultilinearMap R (fun _ : ι => M') (MultilinearMap R (fun _
 @[simp]
 theorem uncurrySum_aux_apply
     (f : MultilinearMap R (fun _ : ι => M') (MultilinearMap R (fun _ : ι' => M') M₂))
-    (u : Sum ι ι' → M') : f.uncurrySum u = f (u ∘ Sum.inl) (u ∘ Sum.inr) :=
+    (u : ι ⊕ ι' → M') : f.uncurrySum u = f (u ∘ Sum.inl) (u ∘ Sum.inr) :=
   rfl
 
 variable (ι ι' R M₂ M')
@@ -1626,7 +1626,7 @@ variable (ι ι' R M₂ M')
 of multilinear maps on `∀ i : ι, M'` taking values in the space of multilinear maps
 on `∀ i : ι', M'`. -/
 def currySumEquiv :
-    MultilinearMap R (fun _ : Sum ι ι' => M') M₂ ≃ₗ[R]
+    MultilinearMap R (fun _ : ι ⊕ ι' => M') M₂ ≃ₗ[R]
       MultilinearMap R (fun _ : ι => M') (MultilinearMap R (fun _ : ι' => M') M₂) where
   toFun := currySum
   invFun := uncurrySum

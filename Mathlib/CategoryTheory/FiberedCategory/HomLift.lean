@@ -113,6 +113,7 @@ lemma of_commSq {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.o
 instance comp {R S T : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (g : S ⟶ T) (φ : a ⟶ b)
     (ψ : b ⟶ c) [p.IsHomLift f φ] [p.IsHomLift g ψ] : p.IsHomLift (f ≫ g) (φ ≫ ψ) := by
   apply of_commSq
+  -- This line transforms the first goal in suitable form; the last line closes all three goals.
   on_goal 1 => rw [p.map_comp]
   apply CommSq.horiz_comp (commSq p f φ) (commSq p g ψ)
 

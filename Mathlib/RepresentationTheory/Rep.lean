@@ -424,7 +424,6 @@ def MonoidalClosed.linearHomEquiv : (A ⊗ B ⟶ C) ≃ₗ[k] B ⟶ A ⟶[Rep k 
   { (ihom.adjunction A).homEquiv _ _ with
     map_add' := fun _ _ => rfl
     map_smul' := fun _ _ => rfl }
-  set_option linter.uppercaseLean3 false in
 
 /-- There is a `k`-linear isomorphism between the sets of representation morphisms`Hom(A ⊗ B, C)`
 and `Hom(A, Homₖ(B, C))`. -/
