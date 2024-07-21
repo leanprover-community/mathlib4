@@ -111,7 +111,7 @@ theorem le_weight (w : σ → ℕ) {s : σ} (hs : w s ≠ 0) (f : σ →₀ ℕ)
   simp only [weight_apply, Finsupp.sum]
   by_cases h : s ∈ f.support
   · rw [Finset.sum_eq_add_sum_diff_singleton h]
-    refine' le_trans _ (Nat.le_add_right _ _)
+    refine le_trans ?_ (Nat.le_add_right _ _)
     apply Nat.le_mul_of_pos_right
     exact Nat.zero_lt_of_ne_zero hs
   · simp only [not_mem_support_iff] at h
