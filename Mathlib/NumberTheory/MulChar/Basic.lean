@@ -443,9 +443,9 @@ lemma ringHomComp_mul (χ φ : MulChar R R') (f : R' →+* R'') :
 
 lemma ringHomComp_pow (χ : MulChar R R') (f : R' →+* R'') (n : ℕ) :
     χ.ringHomComp f ^ n = (χ ^ n).ringHomComp f := by
-  induction n
-  case zero => simp only [pow_zero, ringHomComp_one]
-  case succ n ih => simp only [pow_succ, ih, ringHomComp_mul]
+  induction n with
+  | zero => simp only [pow_zero, ringHomComp_one]
+  | succ n ih => simp only [pow_succ, ih, ringHomComp_mul]
 
 lemma injective_ringHomComp {f : R' →+* R''} (hf : Function.Injective f) :
     Function.Injective (ringHomComp (R := R) · f) := by

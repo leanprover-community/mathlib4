@@ -253,7 +253,7 @@ end DecidableEq
   · simp
   classical
   rw [← toColex_sdiff_le_toColex_sdiff', cons_sdiff_cons hab, cons_sdiff_cons hab.symm,
-   singleton_le_singleton]
+    singleton_le_singleton]
 
 @[simp] lemma cons_lt_cons (ha hb) : toColex (s.cons a ha) < toColex (s.cons b hb) ↔ a < b :=
   lt_iff_lt_of_le_iff_le' (cons_le_cons _ _) (cons_le_cons _ _)
@@ -274,7 +274,7 @@ lemma erase_le_erase (ha : a ∈ s) (hb : b ∈ s) :
   · simp
   classical
   rw [← toColex_sdiff_le_toColex_sdiff', erase_sdiff_erase hab hb, erase_sdiff_erase hab.symm ha,
-   singleton_le_singleton]
+    singleton_le_singleton]
 
 lemma erase_lt_erase (ha : a ∈ s) (hb : b ∈ s) :
     toColex (s.erase a) < toColex (s.erase b) ↔ b < a :=
