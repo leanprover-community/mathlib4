@@ -38,6 +38,7 @@ All such choices come with tradeoffs. Provided that `M.closure X` has already be
 for `X ⊆ M.E`, the two best candidates for extending it to all `X` seem to be:
 
 (1) The function for which `M.closure X = M.closure (X ∩ M.E)` for all `X : Set α`
+
 (2) The function for which `M.closure X = M.closure (X ∩ M.E) ∪ X` for all `X : Set α`
 
 For both options, the function `closure` is monotone and idempotent with no assumptions on `X`.
