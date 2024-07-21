@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Joël Riou
+Authors: Scott Morrison, Joël Riou, Calle Sönne
 -/
 import Mathlib.CategoryTheory.CommSq
 import Mathlib.CategoryTheory.Limits.Opposites
@@ -201,6 +201,21 @@ theorem cone_snd (h : IsPullback fst snd f g) : h.cone.snd = snd :=
 noncomputable def isLimit (h : IsPullback fst snd f g) : IsLimit h.cone :=
   h.isLimit'.some
 
+/- Basic API for the universal property -/
+noncomputable def lift (hP : IsPullback fst snd f g) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
+    (w : h ≫ f = k ≫ g) : W ⟶ P :=
+  PullbackCone.IsLimit.lift hP.isLimit h k w
+
+@[reassoc (attr := simp)]
+lemma lift_fst (hP : IsPullback fst snd f g) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
+    (w : h ≫ f = k ≫ g) : hP.lift h k w ≫ fst = h :=
+  PullbackCone.IsLimit.lift_fst hP.isLimit h k w
+
+@[reassoc (attr := simp)]
+lemma lift_snd (hP : IsPullback fst snd f g) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
+    (w : h ≫ f = k ≫ g) : hP.lift h k w ≫ snd = k :=
+  PullbackCone.IsLimit.lift_snd hP.isLimit h k w
+
 /-- If `c` is a limiting pullback cone, then we have an `IsPullback c.fst c.snd f g`. -/
 theorem of_isLimit {c : PullbackCone f g} (h : Limits.IsLimit c) : IsPullback c.fst c.snd f g :=
   { w := c.condition
@@ -248,6 +263,38 @@ theorem of_hasBinaryProduct [HasBinaryProduct X Y] [HasZeroObject C] [HasZeroMor
     IsPullback Limits.prod.fst Limits.prod.snd (0 : X ⟶ 0) (0 : Y ⟶ 0) := by
   convert @of_is_product _ _ X Y 0 _ (limit.isLimit _) HasZeroObject.zeroIsTerminal
     <;> subsingleton
+
+section
+
+variable {P': C} {fst' : P' ⟶ X} {snd' : P' ⟶ Y}
+
+/-- Any object at the top left of a pullback square is isomorphic to the object at the top left
+of any other pullback square with the same cospan. -/
+noncomputable def isoIsPullback (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
+    P ≅ P' :=
+  IsLimit.conePointUniqueUpToIso h.isLimit h'.isLimit
+
+@[simp]
+theorem isoIsPullback_hom_fst (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
+    (h.isoIsPullback h').hom ≫ fst' = fst :=
+  IsLimit.conePointUniqueUpToIso_hom_comp h.isLimit h'.isLimit WalkingCospan.left
+
+@[simp]
+theorem isoIsPullback_hom_snd (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
+    (h.isoIsPullback h').hom ≫ snd' = snd :=
+  IsLimit.conePointUniqueUpToIso_hom_comp h.isLimit h'.isLimit WalkingCospan.right
+
+@[simp]
+theorem isoIsPullback_inv_fst (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
+    (h.isoIsPullback h').inv ≫ fst = fst' := by
+  simp only [Iso.inv_comp_eq, isoIsPullback_hom_fst]
+
+@[simp]
+theorem isoIsPullback_inv_snd (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
+    (h.isoIsPullback h').inv ≫ snd = snd' := by
+  simp only [Iso.inv_comp_eq, isoIsPullback_hom_snd]
+
+end
 
 variable {X Y}
 
@@ -337,6 +384,21 @@ theorem cocone_inr (h : IsPushout f g inl inr) : h.cocone.inr = inr :=
 noncomputable def isColimit (h : IsPushout f g inl inr) : IsColimit h.cocone :=
   h.isColimit'.some
 
+/- Basic API for the universal property -/
+noncomputable def desc (hP : IsPushout f g inl inr) {W : C} (h : X ⟶ W) (k : Y ⟶ W)
+    (w : f ≫ h = g ≫ k) : P ⟶ W :=
+  PushoutCocone.IsColimit.desc hP.isColimit h k w
+
+@[reassoc (attr := simp)]
+lemma inl_desc (hP : IsPushout f g inl inr) {W : C} (h : X ⟶ W) (k : Y ⟶ W)
+    (w : f ≫ h = g ≫ k) : inl ≫ hP.desc h k w = h :=
+  PushoutCocone.IsColimit.inl_desc hP.isColimit h k w
+
+@[reassoc (attr := simp)]
+lemma inr_desc (hP : IsPushout f g inl inr) {W : C} (h : X ⟶ W) (k : Y ⟶ W)
+    (w : f ≫ h = g ≫ k) : inr ≫ hP.desc h k w = k :=
+  PushoutCocone.IsColimit.inr_desc hP.isColimit h k w
+
 /-- If `c` is a colimiting pushout cocone, then we have an `IsPushout f g c.inl c.inr`. -/
 theorem of_isColimit {c : PushoutCocone f g} (h : Limits.IsColimit c) : IsPushout f g c.inl c.inr :=
   { w := c.condition
@@ -385,6 +447,39 @@ theorem of_hasBinaryCoproduct [HasBinaryCoproduct X Y] [HasZeroObject C] [HasZer
     IsPushout (0 : 0 ⟶ X) (0 : 0 ⟶ Y) coprod.inl coprod.inr := by
   convert @of_is_coproduct _ _ 0 X Y _ (colimit.isColimit _) HasZeroObject.zeroIsInitial
     <;> subsingleton
+
+section
+
+variable {P': C} {inl' : X ⟶ P'} {inr' : Y ⟶ P'}
+
+/-- Any object at the bottom right of a pushout square is isomorphic to the object at the bottom
+right of any other pushout square with the same span. -/
+noncomputable def isoIsPushout (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
+    P ≅ P' :=
+  IsColimit.coconePointUniqueUpToIso h.isColimit h'.isColimit
+
+@[simp]
+theorem inl_isoIsPushout_hom (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
+    inl ≫ (h.isoIsPushout h').hom = inl' :=
+  IsColimit.comp_coconePointUniqueUpToIso_hom h.isColimit h'.isColimit WalkingSpan.left
+
+@[simp]
+theorem inr_isoIsPushout_hom (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
+    inr ≫ (h.isoIsPushout h').hom = inr' :=
+  IsColimit.comp_coconePointUniqueUpToIso_hom h.isColimit h'.isColimit WalkingSpan.right
+
+@[simp]
+theorem inl_isoIsPushout_inv (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
+    inl' ≫ (h.isoIsPushout h').inv = inl := by
+  simp only [Iso.comp_inv_eq, inl_isoIsPushout_hom]
+
+@[simp]
+theorem inr_isoIsPushout_inv (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
+    inr' ≫ (h.isoIsPushout h').inv = inr := by
+  simp only [Iso.comp_inv_eq, inr_isoIsPushout_hom]
+
+end
+
 
 variable {X Y}
 
@@ -487,14 +582,38 @@ end
 -- Objects here are arranged in a 3x2 grid, and indexed by their xy coordinates.
 -- Morphisms are named `hᵢⱼ` for a horizontal morphism starting at `(i,j)`,
 -- and `vᵢⱼ` for a vertical morphism starting at `(i,j)`.
-/-- Paste two pullback squares "vertically" to obtain another pullback square. -/
+/-- Paste two pullback squares "vertically" to obtain another pullback square.
+
+The objects here fit into the following diagram:
+```
+X₁₁ - h₁₁ -> X₁₂
+|            |
+v₁₁          v₁₂
+↓            ↓
+X₂₁ - h₂₁ -> X₂₂
+|            |
+v₂₁          v₂₂
+↓            ↓
+X₃₁ - h₃₁ -> X₃₂
+```
+-/
 theorem paste_vert {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₂₁ : X₂₁ ⟶ X₂₂}
     {h₃₁ : X₃₁ ⟶ X₃₂} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
     (s : IsPullback h₁₁ v₁₁ v₁₂ h₂₁) (t : IsPullback h₂₁ v₂₁ v₂₂ h₃₁) :
     IsPullback h₁₁ (v₁₁ ≫ v₂₁) (v₁₂ ≫ v₂₂) h₃₁ :=
   of_isLimit (bigSquareIsPullback _ _ _ _ _ _ _ s.w t.w t.isLimit s.isLimit)
 
-/-- Paste two pullback squares "horizontally" to obtain another pullback square. -/
+/-- Paste two pullback squares "horizontally" to obtain another pullback square.
+
+The objects here fit into the following diagram:
+```
+X₁₁ - h₁₁ -> X₁₂ - h₁₂ -> X₁₃
+|            |            |
+v₁₁          v₁₂          v₁₃
+↓            ↓            ↓
+X₂₁ - h₂₁ -> X₂₂ - h₂₂ -> X₂₃
+```
+-/
 theorem paste_horiz {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₁₂ : X₁₂ ⟶ X₁₃}
     {h₂₁ : X₂₁ ⟶ X₂₂} {h₂₂ : X₂₂ ⟶ X₂₃} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₁₃ : X₁₃ ⟶ X₂₃}
     (s : IsPullback h₁₁ v₁₁ v₁₂ h₂₁) (t : IsPullback h₁₂ v₁₂ v₁₃ h₂₂) :
@@ -502,7 +621,21 @@ theorem paste_horiz {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁�
   (paste_vert s.flip t.flip).flip
 
 /-- Given a pullback square assembled from a commuting square on the top and
-a pullback square on the bottom, the top square is a pullback square. -/
+a pullback square on the bottom, the top square is a pullback square.
+
+The objects here fit into the following diagram:
+```
+X₁₁ - h₁₁ -> X₁₂
+|            |
+v₁₁          v₁₂
+↓            ↓
+X₂₁ - h₂₁ -> X₂₂
+|            |
+v₂₁          v₂₂
+↓            ↓
+X₃₁ - h₃₁ -> X₃₂
+```
+-/
 theorem of_bot {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₂₁ : X₂₁ ⟶ X₂₂} {h₃₁ : X₃₁ ⟶ X₃₂}
     {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
     (s : IsPullback h₁₁ (v₁₁ ≫ v₂₁) (v₁₂ ≫ v₂₂) h₃₁) (p : h₁₁ ≫ v₁₂ = v₁₁ ≫ h₂₁)
@@ -510,7 +643,17 @@ theorem of_bot {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : 
   of_isLimit (leftSquareIsPullback _ _ _ _ _ _ _ p t.w t.isLimit s.isLimit)
 
 /-- Given a pullback square assembled from a commuting square on the left and
-a pullback square on the right, the left square is a pullback square. -/
+a pullback square on the right, the left square is a pullback square.
+
+The objects here fit into the following diagram:
+```
+X₁₁ - h₁₁ -> X₁₂ - h₁₂ -> X₁₃
+|            |            |
+v₁₁          v₁₂          v₁₃
+↓            ↓            ↓
+X₂₁ - h₂₁ -> X₂₂ - h₂₂ -> X₂₃
+```
+-/
 theorem of_right {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₁₂ : X₁₂ ⟶ X₁₃} {h₂₁ : X₂₁ ⟶ X₂₂}
     {h₂₂ : X₂₂ ⟶ X₂₃} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₁₃ : X₁₃ ⟶ X₂₃}
     (s : IsPullback (h₁₁ ≫ h₁₂) v₁₁ v₁₃ (h₂₁ ≫ h₂₂)) (p : h₁₁ ≫ v₁₂ = v₁₁ ≫ h₂₁)
@@ -528,6 +671,46 @@ theorem paste_horiz_iff {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h
     (s : IsPullback h₁₂ v₁₂ v₁₃ h₂₂) (e : h₁₁ ≫ v₁₂ = v₁₁ ≫ h₂₁) :
     IsPullback (h₁₁ ≫ h₁₂) v₁₁ v₁₃ (h₂₁ ≫ h₂₂) ↔ IsPullback h₁₁ v₁₁ v₁₂ h₂₁ :=
   ⟨fun h => h.of_right e s, fun h => h.paste_horiz s⟩
+
+/-- Variant of `IsPullback.of_right` where `h₁₁` is induced from a morphism `h₁₃ : X₁₁ ⟶ X₁₃`, and
+the universal property of the right square.
+
+The objects fit in the following diagram:
+```
+X₁₁ - h₁₁ -> X₁₂ - h₁₂ -> X₁₃
+|            |            |
+v₁₁          v₁₂          v₁₃
+↓            ↓            ↓
+X₂₁ - h₂₁ -> X₂₂ - h₂₂ -> X₂₃
+```
+-/
+theorem of_right' {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₂ : X₁₂ ⟶ X₁₃} {h₂₁ : X₂₁ ⟶ X₂₂}
+    {h₂₂ : X₂₂ ⟶ X₂₃} {h₁₃ : X₁₁ ⟶ X₁₃} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₁₃ : X₁₃ ⟶ X₂₃}
+    (s : IsPullback h₁₃ v₁₁ v₁₃ (h₂₁ ≫ h₂₂)) (t : IsPullback h₁₂ v₁₂ v₁₃ h₂₂) :
+    IsPullback (t.lift h₁₃ (v₁₁ ≫ h₂₁) (by rw [s.w, Category.assoc])) v₁₁ v₁₂ h₂₁ :=
+  of_right ((t.lift_fst _ _ _) ▸ s) (t.lift_snd _ _ _) t
+
+/-- Variant of `IsPullback.of_bot`, where `v₁₁` is induced from a morphism `v₃₁ : X₁₁ ⟶ X₃₁`, and
+the universal property of the bottom square.
+
+The objects here fit into the following diagram:
+```
+X₁₁ - h₁₁ -> X₁₂
+|            |
+v₁₁          v₁₂
+↓            ↓
+X₂₁ - h₂₁ -> X₂₂
+|            |
+v₂₁          v₂₂
+↓            ↓
+X₃₁ - h₃₁ -> X₃₂
+```
+-/
+theorem of_bot' {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₂₁ : X₂₁ ⟶ X₂₂}
+    {h₃₁ : X₃₁ ⟶ X₃₂} {v₃₁ : X₁₁ ⟶ X₃₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
+    (s : IsPullback h₁₁ v₃₁ (v₁₂ ≫ v₂₂) h₃₁) (t : IsPullback h₂₁ v₂₁ v₂₂ h₃₁) :
+    IsPullback h₁₁ (t.lift (h₁₁ ≫ v₁₂) v₃₁ (by rw [Category.assoc, s.w])) v₁₂ h₂₁ :=
+  of_bot ((t.lift_snd _ _ _) ▸ s) (by simp only [lift_fst]) t
 
 section
 
@@ -626,6 +809,30 @@ theorem of_vert_isIso [IsIso snd] [IsIso f] (sq : CommSq fst snd f g) : IsPullba
 lemma of_id_fst : IsPullback (𝟙 _) f f (𝟙 _) := IsPullback.of_horiz_isIso ⟨by simp⟩
 
 lemma of_id_snd : IsPullback f (𝟙 _) (𝟙 _) f := IsPullback.of_vert_isIso ⟨by simp⟩
+
+/-- The following diagram is a pullback
+```
+X --f--> Z
+|        |
+id       id
+v        v
+X --f--> Z
+```
+-/
+def id_vert (f : X ⟶ Z) : IsPullback f (𝟙 X) (𝟙 Z) f :=
+  of_vert_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
+
+/-- The following diagram is a pullback
+```
+X --id--> X
+|         |
+f         f
+v         v
+Z --id--> Z
+```
+-/
+def id_horiz (f : X ⟶ Z) : IsPullback (𝟙 X) f f (𝟙 Z) :=
+  of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
 end IsPullback
 
@@ -825,6 +1032,30 @@ theorem of_vert_isIso [IsIso g] [IsIso inl] (sq : CommSq f g inl inr) : IsPushou
 lemma of_id_fst : IsPushout (𝟙 _) f f (𝟙 _) := IsPushout.of_horiz_isIso ⟨by simp⟩
 
 lemma of_id_snd : IsPushout f (𝟙 _) (𝟙 _) f := IsPushout.of_vert_isIso ⟨by simp⟩
+
+/-- The following diagram is a pullback
+```
+X --f--> Z
+|        |
+id       id
+v        v
+X --f--> Z
+```
+-/
+def id_vert (f : X ⟶ Z) : IsPushout f (𝟙 X) (𝟙 Z) f :=
+  of_vert_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
+
+/-- The following diagram is a pullback
+```
+X --id--> X
+|         |
+f         f
+v         v
+Z --id--> Z
+```
+-/
+def id_horiz (f : X ⟶ Z) : IsPushout (𝟙 X) f f (𝟙 Z) :=
+  of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
 end IsPushout
 
