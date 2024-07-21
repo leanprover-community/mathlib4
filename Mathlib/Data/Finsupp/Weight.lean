@@ -126,7 +126,7 @@ instance : SMulPosMono ℕ M :=
     exact le_add_of_nonneg_right (nsmul_nonneg hb (m' - m))⟩
 
 variable {w} in
-theorem le_weight_of_nonneg' (hw : ∀ s, 0 ≤ w s) {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
+theorem le_weight_of_ne_zero (hw : ∀ s, 0 ≤ w s) {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
     w s ≤ weight w f := by
   classical
   simp only [weight_apply, Finsupp.sum]
