@@ -160,7 +160,7 @@ lemma pos_num_eq_normalization :
   proven later in `onag_1_10_ii`.
 -/
 
-lemma invVal_numeric {l r} (L : l → PGame) (R : r → PGame)
+lemma invVal_numeric {l r} {L : l → PGame} {R : r → PGame}
     (h1 : ∀ i, (L i).Numeric) (h2 : ∀ j, (R j).Numeric) (h3 : ∀ i, 0 < L i → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric) {b : Bool}
     (i : InvTy {i // 0 < L i} r b) :
@@ -216,7 +216,7 @@ lemma inv'_numeric_right (ih_xl : ∀ i, 0 < x.moveLeft i → (x.moveLeft i).inv
 -/
 
 /-- Given `y''`, return `(x', x'_inv, y')` -/
-def components {l r} (L : l → PGame) (R : r → PGame)
+def components {l r} {L : l → PGame} {R : r → PGame}
     (h1 : ∀ i, (L i).Numeric) (h2 : ∀ j, (R j).Numeric)
     (h3 : ∀ i, 0 < L i → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric) {b : Bool}
@@ -238,7 +238,7 @@ def components {l r} (L : l → PGame) (R : r → PGame)
       Surreal.mk ((PGame.mk l r L R).inv'.moveRight j) (by apply inv'_numeric_right <;> tauto))
 
 /-- The identity `1 - x*y'' = (1 - x * y')*(x' - x)/x'` -/
-lemma eq1 {l r} (L : l → PGame) (R : r → PGame)
+lemma eq1 {l r} {L : l → PGame} {R : r → PGame}
     (h1 : ∀ i, (L i).Numeric) (h2 : ∀ j, (R j).Numeric) (h3 : ∀ i, 0 < L i → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric) {b : Bool}
     (x_pos : 0 < PGame.mk l r L R)
@@ -246,7 +246,7 @@ lemma eq1 {l r} (L : l → PGame) (R : r → PGame)
       (Surreal.mk (L i) (by tauto)) * (Surreal.mk (L i).inv' (h3 i i.2)) = 1)
     (inv_r : ∀ j, (Surreal.mk (R j) (by tauto)) * (Surreal.mk (R j).inv' (by tauto)) = 1)
     (i'' : InvTy {i // 0 < L i} r b) :
-    let (x', x'_inv, y') := components L R h1 h2 h3 h4 h5 x_pos i''
+    let (x', x'_inv, y') := components h1 h2 h3 h4 h5 x_pos i''
     let x := Surreal.mk (PGame.mk l r L R) h5
     let y'' := match b with
       | false => Surreal.mk ((PGame.mk l r L R).inv'.moveLeft i'')
@@ -287,7 +287,7 @@ lemma eq1 {l r} (L : l → PGame) (R : r → PGame)
     field_simp
     ring
 
-lemma onag_1_10_i' {l r} (L : l → PGame) (R : r → PGame)
+lemma onag_1_10_i' {l r} {L : l → PGame} {R : r → PGame}
     (h1 : ∀ i, (L i).Numeric) (h2 : ∀ j, (R j).Numeric) (h3 : ∀ i, 0 < (L i) → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric) (b : Bool)
     (inv_l : ∀ (i : { i // 0 < L i }),
@@ -311,7 +311,7 @@ lemma onag_1_10_i' {l r} (L : l → PGame) (R : r → PGame)
   induction i' <;> simp only
   · simp [invVal, ← zero_def]
   · case _ j i1 ih =>
-      have := eq1 L R h1 h2 h3 h4 h5 x_pos inv_l inv_r (InvTy.left₁ j i1)
+      have := eq1 h1 h2 h3 h4 h5 x_pos inv_l inv_r (InvTy.left₁ j i1)
       simp only [inv', moveLeft_mk, components] at this
       simp only at ih
       rw [Iff.symm sub_pos] at ih ⊢
@@ -320,7 +320,7 @@ lemma onag_1_10_i' {l r} (L : l → PGame) (R : r → PGame)
       apply Numeric.lt_moveRight
       exact h5
   · case _ j i1 ih =>
-      have := eq1 L R h1 h2 h3 h4 h5 x_pos inv_l inv_r (InvTy.left₂ j i1)
+      have := eq1 h1 h2 h3 h4 h5 x_pos inv_l inv_r (InvTy.left₂ j i1)
       simp only [inv', moveLeft_mk, components, moveRight_mk] at this
       simp only at ih
       rw [Iff.symm sub_pos]
@@ -334,7 +334,7 @@ lemma onag_1_10_i' {l r} (L : l → PGame) (R : r → PGame)
         simp only [moveLeft_mk] at this
         exact this
   · case _ j i1 ih =>
-      have := eq1 L R h1 h2 h3 h4 h5 x_pos inv_l inv_r (InvTy.right₁ j i1)
+      have := eq1 h1 h2 h3 h4 h5 x_pos inv_l inv_r (InvTy.right₁ j i1)
       simp only [inv', moveRight_mk, components, moveLeft_mk] at this
       simp only at ih
       rw [Iff.symm sub_pos] at ih
@@ -349,7 +349,7 @@ lemma onag_1_10_i' {l r} (L : l → PGame) (R : r → PGame)
           exact this
       · exact ihl_pos j
   · case _ j i1 ih =>
-      have := eq1 L R h1 h2 h3 h4 h5 x_pos inv_l inv_r (InvTy.right₂ j i1)
+      have := eq1 h1 h2 h3 h4 h5 x_pos inv_l inv_r (InvTy.right₂ j i1)
       simp only [inv', moveRight_mk, components] at this
       simp only at ih
       rw [Iff.symm sub_neg] at ih
@@ -364,7 +364,7 @@ lemma onag_1_10_i' {l r} (L : l → PGame) (R : r → PGame)
       · exact ihr_pos j
 
 /-- The identity `x' * y + x * y' - x' * y' = 1 + x' * (y - y'')` -/
-lemma eq2 {l r} (L : l → PGame) (R : r → PGame)
+lemma eq2 {l r} {L : l → PGame} {R : r → PGame}
     (h1 : ∀ i, (L i).Numeric) (h2 : ∀ j, (R j).Numeric) (h3 : ∀ i, 0 < (L i) → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric) {b : Bool}
     (inv_l : ∀ (i : { i // 0 < L i }),
@@ -373,7 +373,7 @@ lemma eq2 {l r} (L : l → PGame) (R : r → PGame)
     (inv_numeric : ((PGame.mk l r L R).inv').Numeric)
     (x_pos: 0 < PGame.mk l r L R)
     (i'' : InvTy {i // 0 < L i} r b) :
-    let (x', _, y') := components L R h1 h2 h3 h4 h5 x_pos i''
+    let (x', _, y') := components h1 h2 h3 h4 h5 x_pos i''
     let x := Surreal.mk (PGame.mk l r L R) h5
     let y'' := Surreal.mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
         (fun j => (R j).inv') (PGame.mk l r L R) i'')
@@ -421,7 +421,7 @@ lemma eq2 {l r} (L : l → PGame) (R : r → PGame)
     field_simp
     ring
 
-lemma onag_1_10_iii_left' {l r} (L : l → PGame) (R : r → PGame)
+lemma onag_1_10_iii_left' {l r} {L : l → PGame} {R : r → PGame}
     (h1 : ∀ i, (L i).Numeric) (h2 : ∀ j, (R j).Numeric) (h3 : ∀ i, 0 < (L i) → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric)
     (inv_l : ∀ (i : { i // 0 < L i }),
@@ -450,7 +450,7 @@ lemma onag_1_10_iii_left' {l r} (L : l → PGame) (R : r → PGame)
   · case _ val =>
       rcases val with ⟨i, j⟩
       simp only
-      have := eq2 L R h1 h2 h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.right₁ i j)
+      have := eq2 h1 h2 h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.right₁ i j)
       simp only [components] at this
       conv_lhs at this => {
         pattern (occs := *) (PGame.mk l r L R).inv'.moveLeft j
@@ -469,7 +469,7 @@ lemma onag_1_10_iii_left' {l r} (L : l → PGame) (R : r → PGame)
   · case _ val =>
       rcases val with ⟨i, j⟩
       simp only
-      have := eq2 L R h1 h2 h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.right₂ i j)
+      have := eq2 h1 h2 h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.right₂ i j)
       simp only [components] at this
       conv_lhs at this => {
         pattern (occs := *) (PGame.mk l r L R).inv'.moveRight j
@@ -486,7 +486,7 @@ lemma onag_1_10_iii_left' {l r} (L : l → PGame) (R : r → PGame)
         }
         exact this
 
-lemma onag_1_10_iii_right' {l r} (L : l → PGame) (R : r → PGame)
+lemma onag_1_10_iii_right' {l r} {L : l → PGame} {R : r → PGame}
     (h1 : ∀ i, (L i).Numeric) (h2 : ∀ j, (R j).Numeric) (h3 : ∀ i, 0 < (L i) → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric)
     (inv_l : ∀ (i : { i // 0 < L i }),
@@ -515,7 +515,7 @@ lemma onag_1_10_iii_right' {l r} (L : l → PGame) (R : r → PGame)
   · case _ val =>
       rcases val with ⟨i, j⟩
       simp only
-      have := eq2 L R h1 h2 h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.left₂ i j)
+      have := eq2 h1 h2 h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.left₂ i j)
       simp only [components] at this
       conv_lhs at this => {
         pattern (occs := *) (PGame.mk l r L R).inv'.moveRight j
@@ -534,7 +534,7 @@ lemma onag_1_10_iii_right' {l r} (L : l → PGame) (R : r → PGame)
   · case _ val =>
       rcases val with ⟨i, j⟩
       simp only
-      have := eq2 L R h1 h2 h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.left₁ i j)
+      have := eq2 h1 h2 h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.left₁ i j)
       simp only [components] at this
       conv_lhs at this => {
         pattern (occs := *) (PGame.mk l r L R).inv'.moveLeft j
@@ -585,8 +585,8 @@ lemma onag_1_10 :
       have := ih_xr.2
       simpa [← mk_mul, one_def, mk_eq_mk]
 
-    have onag_1_10_i_left := onag_1_10_i' xL xR xl_num xr_num h3 h4 x_num false inv_l inv_r x_pos
-    have onag_1_10_i_right := onag_1_10_i' xL xR xl_num xr_num h3 h4 x_num true inv_l inv_r x_pos
+    have onag_1_10_i_left := onag_1_10_i' xl_num xr_num h3 h4 x_num false inv_l inv_r x_pos
+    have onag_1_10_i_right := onag_1_10_i' xl_num xr_num h3 h4 x_num true inv_l inv_r x_pos
     simp only at onag_1_10_i_left onag_1_10_i_right
 
     have onag_1_10_ii : (x.inv').Numeric := by
@@ -602,7 +602,7 @@ lemma onag_1_10 :
         · exact inv'_numeric_right x_num x_pos h3 h4
 
     have onag_1_10_iii_left : ∀ i, ((normalization x) * x.inv').moveLeft i < 1 := by
-      have := onag_1_10_iii_left' xL xR xl_num xr_num h3 h4 x_num inv_l inv_r
+      have := onag_1_10_iii_left' xl_num xr_num h3 h4 x_num inv_l inv_r
           (by rwa [x_rfl] at onag_1_10_ii) x_pos
       rw [x_rfl]
       intro i
@@ -626,7 +626,7 @@ lemma onag_1_10 :
           exact this
 
     have onag_1_10_iii_right : ∀ j, 1 < ((normalization x) * x.inv').moveRight j := by
-      have := onag_1_10_iii_right' xL xR xl_num xr_num h3 h4 x_num inv_l inv_r
+      have := onag_1_10_iii_right' xl_num xr_num h3 h4 x_num inv_l inv_r
           (by rwa [x_rfl] at onag_1_10_ii) x_pos
       rw [x_rfl]
       intro i
