@@ -406,49 +406,21 @@ theorem invariant_subspace_eigen_convert {F : Submodule 𝕜 E} (S : E →ₗ[�
     rw [@mem_eigenspace_iff]
     simp only [SetLike.mem_coe, mem_eigenspace_iff] at A
     exact Eq.symm (SetCoe.ext (_root_.id (Eq.symm A)))
-  ·
+  · intro h
+    simp only [Submodule.mem_inf]
+    constructor
+    simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
+      exists_eq_right] at h
+    obtain ⟨y, hy⟩ := h
+    simp only [mem_eigenspace_iff, SetLike.mk_smul_mk] at hy
+    simp only [mem_eigenspace_iff]--Can't seem to finish this...
+    sorry
 
 theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} → 𝕜) : (eigenspace (T i) μ ⊓
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) =
     Submodule.map (Submodule.subtype ((⨅ (j : {x // x ≠ i}), eigenspace (T j) (γ j))))
-    (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) := by
-  ext v
-  constructor
-  · intro h
-    simp only [ne_eq, Submodule.mem_inf, Submodule.mem_iInf, Subtype.forall] at h
-    obtain ⟨A, B⟩ := h
-    simp only [ne_eq, Submodule.mem_map, Subtype.exists, Submodule.mem_iInf, Subtype.forall]
-    use v
-    use B
-    constructor
-    · ext
-      simp only [sub_apply, Module.algebraMap_end_apply, SetLike.mk_smul_mk,
-        AddSubgroupClass.coe_sub, restrict_coe_apply, ZeroMemClass.coe_zero]
-      exact A
-    · rfl
-  · intro h
-    constructor
-    · simp only [ne_eq, Submodule.mem_map, Subtype.exists, Submodule.mem_iInf, Subtype.forall] at h
-      obtain ⟨w, hw, A, B⟩ := h
-      simp only [SetLike.mem_coe, eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply]
-      simp only [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply, SetLike.mk_smul_mk]
-        at A
-      rw [← B]
-      exact
-        (AddSubmonoid.mk_eq_zero
-              (⨅ j,
-                    ker
-                      (Subtype.restrict (fun x ↦ ¬x = i) T j -
-                        (algebraMap 𝕜 (Module.End 𝕜 E)) (γ j))).toAddSubgroup.toAddSubmonoid).mp
-          A
-    · simp only [ne_eq, Submodule.iInf_coe, Set.mem_iInter, SetLike.mem_coe, Subtype.forall]
-      intro j hj
-      simp only [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply] at *
-      simp only [ne_eq, Submodule.mem_map, mem_ker, sub_apply, Module.algebraMap_end_apply,
-        Subtype.exists, SetLike.mk_smul_mk, Submodule.mem_iInf, Subtype.forall] at h
-      obtain ⟨w, hw, _, B⟩ := h
-      rw [← B]
-      exact hw j hj
+    (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) :=
+    invariant_subspace_eigen_convert (T i) (hT i) μ (invariance_iInf T hC i γ)
 
 theorem iSup_iInf_fun_index_split_single {α β γ : Type*} [DecidableEq α] [CompleteLattice γ]
     (i : α) (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
