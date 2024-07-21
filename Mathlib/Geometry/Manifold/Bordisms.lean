@@ -77,8 +77,8 @@ instance NManifold.prod {m n : ℕ} [FiniteDimensional 𝕜 E] [FiniteDimensiona
 structure ClosedNManifold [CompactSpace M] [BoundarylessManifold I M] [FiniteDimensional 𝕜 E]
     extends NManifold n M I
 
-instance ClosedNManifold.ClosedManifold [CompactSpace M] [BoundarylessManifold I M] [FiniteDimensional 𝕜 E] :
-  ClosedManifold M I where
+instance ClosedNManifold.ClosedManifold [CompactSpace M] [BoundarylessManifold I M]
+  [FiniteDimensional 𝕜 E] : ClosedManifold M I where
 
 variable {n}
 
@@ -168,9 +168,9 @@ namespace SingularNManifold
 /-- A **singular `n`-manifold** on a topological space `X` consists of a
 closed smooth `n`-manifold `M` and a continuous map `f : M → X`. -/
 structure _root_.SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ)
-    (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+    (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [CompactSpace M]
     (I : ModelWithCorners ℝ E H) [SmoothManifoldWithCorners I M]
-    [CompactSpace M] [BoundarylessManifold I M] [FiniteDimensional ℝ E] extends ClosedNManifold n M I where
+    [BoundarylessManifold I M] [FiniteDimensional ℝ E] extends ClosedNManifold n M I where
   f : M → X
   hf : Continuous f
 
@@ -315,7 +315,8 @@ def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M]
     haveI := bd.charts
     convert prodChartedSpace H M bd.H' (J.boundary N)
     -- TODO: convert between these... mathematically equivalent...
-    -- ChartedSpace (ModelProd H bd.H') ↑((I.prod J).boundary (M × N)) = ChartedSpace (ModelProd H bd.H') (M × ↑(J.boundary N))
+    -- ChartedSpace (ModelProd H bd.H') ↑((I.prod J).boundary (M × N)) =
+    --   ChartedSpace (ModelProd H bd.H') (M × ↑(J.boundary N))
     sorry
   model := I.prod bd.model
   smoothManifold := by
