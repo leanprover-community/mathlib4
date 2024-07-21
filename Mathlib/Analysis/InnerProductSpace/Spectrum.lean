@@ -355,19 +355,11 @@ theorem Orthogonality: OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) =>
   have B := orthogonalFamily_iff_pairwise.mp hB.orthogonalFamily_eigenspaces C
   exact B hv1 w hw1
 
-theorem eigenspace_directsum_internal: DirectSum.IsInternal
+theorem eigenspace_direct_sum_internal: DirectSum.IsInternal
     (fun (i : 𝕜 × 𝕜) ↦ (eigenspace B i.1 ⊓ eigenspace A i.2)):= by
-  have One := Orthogonality hA hB
-  have Two : ⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) =
-      ⨆ (i : 𝕜 × 𝕜), (eigenspace B i.1 ⊓ eigenspace A i.2) := by
-    simp only [iSup_prod]
-    exact iSup_comm
-  have Three : ⨆ (i : 𝕜 × 𝕜), (eigenspace B i.1 ⊓ eigenspace A i.2) = ⊤ := by
-    rw [← Two]
-    exact exhaust hA hB hAB
-  have Four : (⨆ (i : 𝕜 × 𝕜), (eigenspace B i.1 ⊓ eigenspace A i.2))ᗮ = ⊥ := by
-    simp only [Submodule.orthogonal_eq_bot_iff, Three]
-  exact (OrthogonalFamily.isInternal_iff One).mpr Four
+  apply (OrthogonalFamily.isInternal_iff (Orthogonality hA hB)).mpr
+  rw [Submodule.orthogonal_eq_bot_iff, iSup_prod, iSup_comm]
+  exact exhaust hA hB hAB
 
 end Pair
 
