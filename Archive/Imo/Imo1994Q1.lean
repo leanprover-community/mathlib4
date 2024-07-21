@@ -9,8 +9,6 @@ import Mathlib.Data.Finset.Sort
 import Mathlib.Order.Interval.Finset.Fin
 import Mathlib.Tactic.Linarith
 
-#align_import imo.imo1994_q1 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
-
 /-!
 # IMO 1994 Q1
 
@@ -40,7 +38,6 @@ theorem tedious (m : ℕ) (k : Fin (m + 1)) : m - ((m + 1 - ↑k) + m) % (m + 1)
   have : (k + c + 1 - k) + (k + c) = c + (k + c + 1) := by omega
   rw [Fin.val_mk, this, Nat.add_mod_right, Nat.mod_eq_of_lt, Nat.add_sub_cancel]
   omega
-#align imo1994_q1.tedious Imo1994Q1.tedious
 
 end Imo1994Q1
 
@@ -92,4 +89,3 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     simpa using (hrange (a i) (ha i)).1
   -- A set of size `k+1` embed in one of size `k`, which yields a contradiction
   simpa [Fin.coe_sub, tedious, rev] using card_le_card hf
-#align imo1994_q1 imo1994_q1
