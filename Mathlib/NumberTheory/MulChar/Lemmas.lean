@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.NumberTheory.MulChar.Basic
-import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
