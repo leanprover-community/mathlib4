@@ -303,7 +303,7 @@ theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S 
       obtain ⟨_, hy⟩ := h
       simpa [mem_eigenspace_iff]
     · simp only [Submodule.coeSubtype] at h
-      obtain ⟨y, hy⟩ := h
+      obtain ⟨_, hy⟩ := h
       simp only [← hy.2, Submodule.coeSubtype, SetLike.coe_mem]
 
 theorem invariant_subspace_inf_eigenspace_eq_restrict' : (fun (γ : 𝕜) ↦
