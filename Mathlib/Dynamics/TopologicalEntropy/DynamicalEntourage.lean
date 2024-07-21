@@ -43,40 +43,40 @@ to time `n`.-/
 def dynEntourage (T : X → X) (U : Set (X × X)) (n : ℕ) : Set (X × X) :=
   ⋂ k < n, (map T T)^[k] ⁻¹' U
 
-lemma dynamical_uni_inter_Ico (T : X → X) (U : Set (X × X)) (n : ℕ) :
+lemma dynEntourage_eq_inter_Ico (T : X → X) (U : Set (X × X)) (n : ℕ) :
     dynEntourage T U n = ⋂ k : Ico 0 n, (map T T)^[k] ⁻¹' U := by
   simp [dynEntourage, iInter_coe_set, mem_Ico, zero_le, true_and]
 
-lemma dynamical_uni_mem {T : X → X} {U : Set (X × X)} {n : ℕ} {x y : X} :
+lemma mem_dynEntourage {T : X → X} {U : Set (X × X)} {n : ℕ} {x y : X} :
     (x, y) ∈ dynEntourage T U n ↔ ∀ k < n, (T^[k] x, T^[k] y) ∈ U := by
   simp [dynEntourage, map_iterate, mem_preimage, mem_iInter, map_apply]
 
-lemma dynamical_balls_mem {T : X → X} {U : Set (X × X)} {n : ℕ} {x y : X} :
+lemma mem_ball_dynEntourage {T : X → X} {U : Set (X × X)} {n : ℕ} {x y : X} :
     y ∈ ball x (dynEntourage T U n) ↔ ∀ k < n, T^[k] y ∈ ball (T^[k] x) U := by
-  simp [ball, mem_preimage]; exact dynamical_uni_mem
+  simp [ball, mem_preimage]; exact mem_dynEntourage
 
-lemma dynamical_uni_of_uni [UniformSpace X] {T : X → X} (h : UniformContinuous T)
+lemma dynEntourage_mem_uniformity [UniformSpace X] {T : X → X} (h : UniformContinuous T)
     {U : Set (X × X)} (U_uni : U ∈ 𝓤 X) (n : ℕ) :
     dynEntourage T U n ∈ 𝓤 X := by
-  rw [dynamical_uni_inter_Ico T U n]
+  rw [dynEntourage_eq_inter_Ico T U n]
   refine Filter.iInter_mem.2 fun k ↦ ?_
   rw [map_iterate T T k]
   exact uniformContinuous_def.1 (UniformContinuous.iterate T k h) U U_uni
 
-lemma dynamical_uni_of_rfl (T : X → X) {U : Set (X × X)} (h : idRel ⊆ U) (n : ℕ) :
+lemma idRel_subset_dynEntourage (T : X → X) {U : Set (X × X)} (h : idRel ⊆ U) (n : ℕ) :
     idRel ⊆ (dynEntourage T U n) := by
   simp only [dynEntourage, map_iterate, subset_iInter_iff, idRel_subset, mem_preimage, map_apply]
   exact fun _ _ _ ↦ h rfl
 
-lemma dynamical_uni_of_symm (T : X → X) {U : Set (X × X)} (h : SymmetricRel U) (n : ℕ) :
+lemma SymmetricRel.dynEntourage (T : X → X) {U : Set (X × X)} (h : SymmetricRel U) (n : ℕ) :
     SymmetricRel (dynEntourage T U n) := by
   ext xy
-  simp only [dynEntourage, map_iterate, mem_preimage, mem_iInter]
+  simp only [DynamicalEntourage.dynEntourage, map_iterate, mem_preimage, mem_iInter]
   refine forall₂_congr fun k _ ↦ ?_
   rw [map_apply', map_apply']
   exact SymmetricRel.mk_mem_comm h
 
-lemma dynamical_uni_of_comp (T : X → X) (U V : Set (X × X)) (n : ℕ) :
+lemma comp_dynEntourage_subset_dynEtourage_comp (T : X → X) (U V : Set (X × X)) (n : ℕ) :
     (dynEntourage T U n) ○ (dynEntourage T V n) ⊆ dynEntourage T (U ○ V) n := by
   simp only [dynEntourage, map_iterate, subset_iInter_iff]
   intro k k_n xy xy_comp
@@ -84,44 +84,43 @@ lemma dynamical_uni_of_comp (T : X → X) (U V : Set (X × X)) (n : ℕ) :
   rcases xy_comp with ⟨z, hz1, hz2⟩
   exact mem_ball_comp (hz1 k k_n) (hz2 k k_n)
 
-lemma dynamical_uni_of_open [TopologicalSpace X] {T : X → X} (T_cont : Continuous T)
+lemma isOpen_dynEntourage [TopologicalSpace X] {T : X → X} (T_cont : Continuous T)
     {U : Set (X × X)} (U_open : IsOpen U) (n : ℕ) :
     IsOpen (dynEntourage T U n) := by
-  rw [dynamical_uni_inter_Ico T U n]
+  rw [dynEntourage_eq_inter_Ico T U n]
   refine isOpen_iInter_of_finite fun k ↦ ?_
   exact continuous_def.1 (Continuous.iterate (Continuous.prod_map T_cont T_cont) k) U U_open
 
-lemma dynamical_uni_monotone_uni (T : X → X) (n : ℕ) :
+lemma Monotone.dynEntourage_entourage (T : X → X) (n : ℕ) :
     Monotone (fun U : Set (X × X) ↦ dynEntourage T U n) :=
   fun _ _ h ↦ iInter₂_mono fun _ _ ↦ preimage_mono h
 
-lemma dynamical_uni_antitone_time (T : X → X) (U : Set (X × X)) :
+lemma Antitone.dynEntourage_time (T : X → X) (U : Set (X × X)) :
     Antitone (fun n : ℕ ↦ dynEntourage T U n) := by
   intro m n m_n
   refine iInter₂_mono' fun k k_m ↦ ?_
   use k, lt_of_lt_of_le k_m m_n
 
 @[simp]
-lemma dynamical_uni_time_zero {T : X → X} {U : Set (X × X)} :
+lemma dynEntourage_time_zero_eq_univ {T : X → X} {U : Set (X × X)} :
     dynEntourage T U 0 = univ := by simp [dynEntourage]
 
 @[simp]
-lemma dynamical_time_one {T : X → X} {U : Set (X × X)} :
+lemma dynEntourage_time_one_eq_self {T : X → X} {U : Set (X × X)} :
     dynEntourage T U 1 = U := by simp [dynEntourage]
 
 @[simp]
-lemma dynamical_univ {T : X → X} {n : ℕ} :
+lemma dynEntourage_univ_eq_univ {T : X → X} {n : ℕ} :
     dynEntourage T univ n = univ := by simp [dynEntourage]
 
-lemma inter_of_dynamical_balls (T : X → X) (n : ℕ) {U : Set (X × X)} (U_symm : SymmetricRel U)
+lemma mem_ball_dynEntourage_comp (T : X → X) (n : ℕ) {U : Set (X × X)} (U_symm : SymmetricRel U)
     (x y : X) (h : (ball x (dynEntourage T U n) ∩ ball y (dynEntourage T U n)).Nonempty) :
     x ∈ ball y (dynEntourage T (U ○ U) n) := by
   rcases h with ⟨z, z_Bx, z_By⟩
-  rw [mem_ball_symmetry (dynamical_uni_of_symm T U_symm n)] at z_Bx
-  exact dynamical_uni_of_comp T U U n (mem_ball_comp z_By z_Bx)
+  rw [mem_ball_symmetry (SymmetricRel.dynEntourage T U_symm n)] at z_Bx
+  exact comp_dynEntourage_subset_dynEtourage_comp T U U n (mem_ball_comp z_By z_Bx)
 
-/--Preimages of dynamical uniformities under semiconjugacies.-/
-lemma preimage_of_dynamical_uni {Y : Type*} {S : X → X} {T : Y → Y} {φ : X → Y}
+lemma preimage_dynEntourage_of_semiconj {Y : Type*} {S : X → X} {T : Y → Y} {φ : X → Y}
     (h : Function.Semiconj φ S T) (U : Set (Y × Y)) (n : ℕ) :
     (map φ φ)⁻¹' (dynEntourage T U n) = dynEntourage S ((map φ φ)⁻¹' U) n := by
   unfold dynEntourage
