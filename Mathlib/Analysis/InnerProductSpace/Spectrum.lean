@@ -393,7 +393,7 @@ theorem basic_index1 {α β : Type*} [DecidableEq α] [CompleteLattice β]
 --other abstract lemma did. (This should work... like in invariant_subspace_eigenspace_exhaust below)
 
 theorem invariant_subspace_eigen_convert {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
-    (hS: IsSymmetric S) (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : eigenspace S μ ⊓ F =
+    (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : (eigenspace S μ) ⊓ F =
     Submodule.map (Submodule.subtype F)
     (eigenspace (S.restrict (hInv)) μ) := by
   ext v
@@ -409,18 +409,25 @@ theorem invariant_subspace_eigen_convert {F : Submodule 𝕜 E} (S : E →ₗ[�
   · intro h
     simp only [Submodule.mem_inf]
     constructor
-    simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
+    · simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
       exists_eq_right] at h
-    obtain ⟨y, hy⟩ := h
-    simp only [mem_eigenspace_iff, SetLike.mk_smul_mk] at hy
-    simp only [mem_eigenspace_iff]
-
+      obtain ⟨y, hy⟩ := h
+      simp only [mem_eigenspace_iff, SetLike.mk_smul_mk] at hy
+      simp only [mem_eigenspace_iff]
+      rw [@restrict_apply] at hy
+      simp only [Subtype.mk.injEq] at hy
+      exact hy
+    · obtain ⟨y, hy⟩ := h
+      have B := hy.2
+      simp only [Submodule.coeSubtype] at B
+      rw [← B]
+      exact Submodule.coe_mem y
 
 theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} → 𝕜) : (eigenspace (T i) μ ⊓
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) =
     Submodule.map (Submodule.subtype ((⨅ (j : {x // x ≠ i}), eigenspace (T j) (γ j))))
     (eigenspace ((T i).restrict ((invariance_iInf T hC i γ))) μ) :=
-    invariant_subspace_eigen_convert (T i) (hT i) μ (invariance_iInf T hC i γ)
+    invariant_subspace_eigen_convert (T i) μ (invariance_iInf T hC i γ)
 
 theorem iSup_iInf_fun_index_split_single {α β γ : Type*} [DecidableEq α] [CompleteLattice γ]
     (i : α) (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
