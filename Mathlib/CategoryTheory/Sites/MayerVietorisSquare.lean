@@ -27,7 +27,7 @@ that the square in `C` becomes a pushout square in
 the category of sheaves after the application of the
 functor `yoneda ⋙ presheafToSheaf J _`. Note that in the
 standard case of a covering by two open subsets, the morphism
-`f₃₄ : X₃ ⟶ X₄` would also be a monomophism, but this dissymetry
+`f₃₄ : X₃ ⟶ X₄` would also be a monomorphism, but this dissymetry
 allows the example of Nisnevich distinguished squares in the
 case of the Nisnevich topology on schemes (in which case
 `f₂₄ : X₂ ⟶ X₄` shall be an open immersion and
