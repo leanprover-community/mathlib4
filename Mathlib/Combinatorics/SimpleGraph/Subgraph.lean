@@ -1172,10 +1172,9 @@ lemma symmDiff_verts : (H.symmDiff H').verts = H.verts ∪ H'.verts := by rfl
 lemma symmDiff_adj : (H.symmDiff H').Adj v w = ((¬H.Adj v w ∧ H'.Adj v w) ∨
     (H.Adj v w ∧ ¬H'.Adj v w)) := rfl
 
-lemma symmDiff_adj_comm : (H.symmDiff H').Adj v w = (H.symmDiff H').Adj v w := by
-  simp only [symmDiff_adj, eq_iff_iff]
+lemma symmDiff_adj_comm : (H.symmDiff H').Adj v w = (H'.symmDiff H).Adj v w := by
+  unfold symmDiff; simp only [eq_iff_iff]; tauto
 
-@[simp]
 lemma symmDiff_singletonSubgraph_adj : (H.symmDiff (G.singletonSubgraph u)).Adj v w
     = H.Adj v w := by
   simp only [symmDiff_adj, singletonSubgraph_adj, Pi.bot_apply, Prop.bot_eq_false, and_false,
