@@ -329,7 +329,6 @@ theorem iSup_simultaneous_eigenspaces_eq_top :
     Submodule.map_top, Submodule.range_subtype]
   rw [← Submodule.orthogonal_eq_bot_iff.mp (hA.orthogonalComplement_iSup_eigenspaces_eq_bot), this]
 
-
 theorem orthogonality_of_simultaneous_eigenspaces_of_pairwise_commuting_symmetric :
     OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) => (eigenspace B i.1 ⊓ eigenspace A i.2 : Submodule 𝕜 E))
     (fun i => (eigenspace B i.1 ⊓ eigenspace A i.2).subtypeₗᵢ) := by
@@ -421,7 +420,7 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
       have := uniqueOfSubsingleton i
       conv => lhs; rhs; ext γ; rw [ciInf_subsingleton i]
       rw [← (Equiv.funUnique m 𝕜).symm.iSup_comp]
-      apply pre_exhaust (hT i)
+      apply Submodule.orthogonal_eq_bot_iff.mp ((hT i).orthogonalComplement_iSup_eigenspaces_eq_bot)
     · simp only [not_nonempty_iff] at case
       simp only [iInf_of_empty, ciSup_unique]
   · intro m hm hmm H T hT hC
