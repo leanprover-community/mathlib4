@@ -315,8 +315,7 @@ lemma isOpen_iff_Iic_compl_or_univ (U : Set α) :
         fun  _ ha ↦ le_sSup Uᶜ _ ha⟩
   · intro H
     rcases H with ⟨a,ha⟩ | hU
-    · rw [← isClosed_compl_iff, ha, compl_compl]
-      exact isClosed_Iic
+    · exact isClosed_Iic.isOpen_compl
     · rw [hU]
       exact isOpen_univ
 
