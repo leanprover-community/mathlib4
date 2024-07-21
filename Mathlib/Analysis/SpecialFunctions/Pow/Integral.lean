@@ -6,8 +6,6 @@ Authors: Kalle Kytölä
 import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.MeasureTheory.Integral.Layercake
 
-#align_import measure_theory.integral.layercake from "leanprover-community/mathlib"@"08a4542bec7242a5c60f179e4e49de8c0d677b1b"
-
 /-!
 # The integral of the real power of a nonnegative function
 
@@ -70,7 +68,6 @@ theorem lintegral_rpow_eq_lintegral_meas_le_mul :
                   (μ := μ)
     exact (Measurable.ennreal_ofReal (hf := measurable_id)).comp_aemeasurable
       ((f_mble.pow aux).div_const p)
-#align measure_theory.lintegral_rpow_eq_lintegral_meas_le_mul MeasureTheory.lintegral_rpow_eq_lintegral_meas_le_mul
 
 end Layercake
 
@@ -92,7 +89,6 @@ theorem lintegral_rpow_eq_lintegral_meas_lt_mul :
   filter_upwards [meas_le_ae_eq_meas_lt μ (volume.restrict (Ioi 0)) f]
     with t ht
   rw [ht]
-#align lintegral_rpow_eq_lintegral_meas_lt_mul MeasureTheory.lintegral_rpow_eq_lintegral_meas_lt_mul
 
 end LayercakeLT
 

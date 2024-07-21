@@ -63,3 +63,5 @@ theorem subcanonical : Sheaf.Subcanonical (coherentTopology C) :=
   Sheaf.Subcanonical.of_yoneda_isSheaf _ isSheaf_yoneda_obj
 
 end coherentTopology
+
+end CategoryTheory
