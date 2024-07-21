@@ -139,8 +139,8 @@ over `M`, for example, is obtained by requiring the instances `AddGroup M` and
 `ContinuousAdd M` and `ContinuousNeg M`. -/
 class ContinuousNeg (G : Type u) [TopologicalSpace G] [Neg G] : Prop where
   continuous_neg : Continuous fun a : G => -a
--- Porting note: added
-attribute [continuity] ContinuousNeg.continuous_neg
+
+attribute [continuity, fun_prop] ContinuousNeg.continuous_neg
 
 /-- Basic hypothesis to talk about a topological group. A topological group over `M`, for example,
 is obtained by requiring the instances `Group M` and `ContinuousMul M` and
@@ -149,8 +149,7 @@ is obtained by requiring the instances `Group M` and `ContinuousMul M` and
 class ContinuousInv (G : Type u) [TopologicalSpace G] [Inv G] : Prop where
   continuous_inv : Continuous fun a : G => a⁻¹
 
--- Porting note: added
-attribute [continuity] ContinuousInv.continuous_inv
+attribute [continuity, fun_prop] ContinuousInv.continuous_inv
 
 export ContinuousInv (continuous_inv)
 
@@ -159,6 +158,15 @@ export ContinuousNeg (continuous_neg)
 section ContinuousInv
 
 variable [TopologicalSpace G] [Inv G] [ContinuousInv G]
+
+@[to_additive]
+theorem ContinuousInv.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F α β] [Group α]
+    [Group β] [MonoidHomClass F α β] [tβ : TopologicalSpace β] [ContinuousInv β] (f : F) :
+    @ContinuousInv α (tβ.induced f) _ := by
+  let _tα := tβ.induced f
+  refine ⟨continuous_induced_rng.2 ?_⟩
+  simp only [Function.comp, map_inv]
+  fun_prop
 
 @[to_additive]
 protected theorem Specializes.inv {x y : G} (h : x ⤳ y) : (x⁻¹) ⤳ (y⁻¹) :=
