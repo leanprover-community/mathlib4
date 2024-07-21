@@ -290,15 +290,6 @@ theorem iSup_restrict_eq_top: (⨆ γ , (eigenspace (LinearMap.restrict B
     exact orthogonalComplement_iSup_eigenspaces_eq_bot (LinearMap.IsSymmetric.restrict_invariant hB
     (eigenspace_invariant hAB α))
 
-theorem eigen_extend (γ : 𝕜) (x : E) : x ∈ Submodule.map (Submodule.subtype (eigenspace A α))
-    (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ) → x ∈ eigenspace B γ := by
-  simp only [mem_ker, sub_apply, Module.algebraMap_end_apply, Submodule.mem_map, mem_ker, sub_apply,
-  Module.algebraMap_end_apply, Submodule.coeSubtype, Subtype.exists, SetLike.mk_smul_mk,
-  exists_and_right, exists_eq_right] at *
-  intro ⟨y, hy⟩
-  exact (AddSubmonoid.mk_eq_zero (ker (A -
-    (algebraMap 𝕜 (Module.End 𝕜 E)) α)).toAddSubgroup.toAddSubmonoid).mp hy
-
 theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
     (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : (eigenspace S μ) ⊓ F =
     Submodule.map (Submodule.subtype F)
