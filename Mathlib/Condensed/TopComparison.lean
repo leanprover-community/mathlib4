@@ -19,6 +19,7 @@ We apply this API to `CompHaus` and define the functor
 `topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u}`.
 
 ## Projects
+
 * Define compactly generated topological spaces.
 * Prove that `topCatToCondensedSet` restricted to compactly generated spaces is fully faithful.
 -/
