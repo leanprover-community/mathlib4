@@ -40,6 +40,15 @@ namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α} [IsFiniteMeasure ν] {s t : Set α}
 
+open Classical in
+/-- A measurable set such that `μ.restrict (μ.sigmaFiniteSetWRT ν)` is sigma-finite and
+`ν (μ.sigmaFiniteSetWRT ν)` has maximal measure among such sets. -/
+def Measure.sigmaFiniteSetWRT' (μ ν : Measure α) [IsFiniteMeasure ν] : Set α :=
+  if ∃ s : Set α, MeasurableSet s ∧ SigmaFinite (μ.restrict s)
+    ∧ (∀ t (_ : MeasurableSet t) (_ : t ⊆ sᶜ) (_ : ν t ≠ 0), μ t = ∞)
+  then s
+  else ∅
+
 /-- Let `C` be the supremum of `ν s` over all measurable sets `s` such that `μ.restrict s` is
 sigma-finite. `C` is finite since `ν` is a finite measure. Then there exists a measurable set `t`
 with `μ.restrict t` sigma-finite such that `ν t ≥ C - 1/n`. -/
