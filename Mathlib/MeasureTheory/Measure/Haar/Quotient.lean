@@ -131,7 +131,7 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotien
   map_mul_left_eq_self x := by
     ext A hA
     obtain ⟨x₁, h⟩ := @Quotient.exists_rep _ (QuotientGroup.leftRel Γ) x
-    convert measure_preimage_smul x₁ μ A using 1
+    convert measure_preimage_smul μ x₁ A using 1
     · rw [← h, Measure.map_apply (measurable_const_mul _) hA]
       simp [← MulAction.Quotient.coe_smul_out', ← Quotient.mk''_eq_mk]
     exact smulInvariantMeasure_quotient ν
