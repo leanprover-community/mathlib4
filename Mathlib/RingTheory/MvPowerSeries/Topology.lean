@@ -325,13 +325,15 @@ theorem weightedHomogeneousComponents_self_summable (w : σ → ℕ) (f : MvPowe
     Summable fun p => weightedHomogeneousComponent w p f :=
   (hasSum_of_weightedHomogeneousComponents_self w f).summable
 
-theorem as_tsum_of_weightedHomogeneousComponents_self [T2Space α] (w : σ → ℕ) (f : MvPowerSeries σ α) :
+theorem as_tsum_of_weightedHomogeneousComponents_self [T2Space α]
+    (w : σ → ℕ) (f : MvPowerSeries σ α) :
     f = tsum fun p => weightedHomogeneousComponent w p f := by
   haveI := t2Space σ α
   exact HasSum.unique (hasSum_of_weightedHomogeneousComponents_self w f)
    (weightedHomogeneousComponents_self_summable w f).hasSum
 
-/-- A multivariate power series is the sum (in the sense of summable families) of its homogeneous components -/
+/-- A multivariate power series is the sum (in the sense of summable families)
+of its homogeneous components -/
 theorem hasSum_of_homogeneousComponents_self (f : MvPowerSeries σ α) :
     HasSum (fun p => homogeneousComponent p f) f :=
   hasSum_of_homogeneousComponents_self _ f
