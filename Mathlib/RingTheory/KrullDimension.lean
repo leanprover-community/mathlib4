@@ -21,7 +21,8 @@ prime ideals ordered by inclusion.
 * `ringKrullDim_eq_topologicalKrullDim`: the ring theoretic Krull dimension of a commutative ring
 is equal to the topological Krull dimension of its prime spectrum.
 
-* `ringKrullDim_eq_zero_of_field`: the Krull dimension of a field is zero.
+* `ringKrullDim_eq_zero_iff_isField_of_isDomain`: the Krull dimension of an integral domain is zero
+if and only if it is a field.
 -/
 
 /--
@@ -98,6 +99,28 @@ theorem ringKrullDim_eq_zero_of_field (F : Type*) [Field F] : ringKrullDim F = 0
 theorem ringKrullDim_eq_zero_of_isField {F : Type*} [CommRing F] (hF : IsField F) :
     ringKrullDim F = 0 :=
   @krullDim_eq_zero_of_unique _ _ <| @PrimeSpectrum.instUnique _ hF.toField
+
+theorem ringKrullDim_eq_zero_iff_isField_of_isDomain [IsDomain R] :
+    ringKrullDim R = 0 ↔ IsField R := by
+  constructor
+  · intro hdim
+    exact {
+      exists_pair_ne := by
+        rw [← nontrivial_iff, ← not_subsingleton_iff_nontrivial]
+        intro h
+        rw [ringKrullDim_eq_bot_of_subsingleton] at hdim
+        norm_num at hdim
+      mul_comm := CommMonoid.mul_comm
+      mul_inv_cancel := by
+        intro a ha
+        by_contra h
+        have hbot := Ideal.IsPrime.isMaximal_of_ringKrullDim_eq_zero Ideal.bot_prime hdim
+        have hnetop : Ideal.span {a} ≠ ⊤ := Ideal.span_singleton_ne_top <| fun h' ↦
+          h ⟨(isUnit_iff_exists.1 h').choose, (isUnit_iff_exists.1 h').choose_spec.1⟩
+        have boteqspan := Ideal.IsMaximal.eq_of_le hbot hnetop (OrderBot.bot_le (Ideal.span {a}))
+        exact ha <| Ideal.span_singleton_eq_bot.1 boteqspan.symm
+    }
+  · exact ringKrullDim_eq_zero_of_isField
 
 end Field
 
