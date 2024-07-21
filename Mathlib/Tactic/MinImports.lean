@@ -36,11 +36,17 @@ inductive Rel (α : Type) : α × α → α × α → Prop
 
 ## Todo
 
+*Examples*
 When parsing an `example`, `#min_imports in` retrieves all the information that it can from the
 `Syntax` of the `example`, but, since the `example` is not added to the environment, it fails
 to retrieve any `Expr` information about the proof term.
 It would be desirable to make `#min_imports in example ...` inspect the resulting proof and
 report imports, but this feature is missing for the moment.
+
+*Using `InfoTrees`*
+It may be more efficient (not necessarily in terms of speed, but of simplicity of code),
+to inspect the `InfoTrees` for each command and retrieve information from there.
+I have not looked into this yet.
 -/
 
 open Lean Elab Command
