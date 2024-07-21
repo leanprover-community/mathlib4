@@ -26,7 +26,6 @@ With `open scoped RightActions`, this provides:
 * `p <+ᵥ v` as an alias for `AddOpposite.op v +ᵥ p`
 -/
 
-
 variable {R M N α : Type*}
 
 /-! ### Actions _on_ the opposite type

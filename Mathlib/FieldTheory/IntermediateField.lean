@@ -555,6 +555,14 @@ instance hasLift {F : IntermediateField K L} :
 theorem lift_injective (F : IntermediateField K L) : Function.Injective F.lift :=
   map_injective F.val
 
+theorem lift_le {F : IntermediateField K L} (E : IntermediateField K F) : lift E ≤ F := by
+  rintro _ ⟨x, _, rfl⟩
+  exact x.2
+
+theorem mem_lift {F : IntermediateField K L} {E : IntermediateField K F} (x : F) :
+    x.1 ∈ lift E ↔ x ∈ E :=
+  Subtype.val_injective.mem_set_image
+
 section RestrictScalars
 
 variable (K)
@@ -643,6 +651,39 @@ theorem extendScalars_injective :
   (extendScalars.orderIso F).injective
 
 end ExtendScalars
+
+section Restrict
+
+variable {F E : IntermediateField K L} (h : F ≤ E)
+
+/--
+If `F ≤ E` are two intermediate fields of `L / K`, then `F` is also an intermediate field of
+`E / K`. It is an inverse of `IntermediateField.lift`, and can be viewed as a dual to
+`IntermediateField.extendScalars`.
+-/
+def restrict : IntermediateField K E :=
+  (IntermediateField.inclusion h).fieldRange
+
+theorem mem_restrict (x : E) : x ∈ restrict h ↔ x.1 ∈ F :=
+  Set.ext_iff.mp (Set.range_inclusion h) x
+
+@[simp]
+theorem lift_restrict : lift (restrict h) = F := by
+  ext x
+  refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+  · let y : E := ⟨x, lift_le (restrict h) hx⟩
+    exact (mem_restrict h y).1 ((mem_lift y).1 hx)
+  · let y : E := ⟨x, h hx⟩
+    exact (mem_lift y).2 ((mem_restrict h y).2 hx)
+
+/--
+`F` is equivalent to `F` as an intermediate field of `E / K`.
+-/
+noncomputable def restrict_algEquiv :
+    F ≃ₐ[K] ↥(IntermediateField.restrict h) :=
+  AlgEquiv.ofInjectiveField _
+
+end Restrict
 
 end Tower
 
