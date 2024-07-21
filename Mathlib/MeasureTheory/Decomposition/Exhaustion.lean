@@ -125,7 +125,7 @@ lemma measurableSet_sigmaFiniteSetGE (μ ν : Measure α) [IsFiniteMeasure ν] (
     MeasurableSet (μ.sigmaFiniteSetGE ν n) :=
   (exists_isSigmaFiniteSet_measure_ge μ ν n).choose_spec.1
 
-instance (n : ℕ) : SigmaFinite (μ.restrict (μ.sigmaFiniteSetGE ν n)) :=
+local instance (n : ℕ) : SigmaFinite (μ.restrict (μ.sigmaFiniteSetGE ν n)) :=
   (exists_isSigmaFiniteSet_measure_ge μ ν n).choose_spec.2.1
 
 lemma measure_sigmaFiniteSetGE_le (μ ν : Measure α) [IsFiniteMeasure ν] (n : ℕ) :
@@ -161,7 +161,7 @@ lemma measurableSet_sigmaFiniteSetWRT' (μ ν : Measure α) [IsFiniteMeasure ν]
     MeasurableSet (μ.sigmaFiniteSetWRT' ν) :=
   MeasurableSet.iUnion (measurableSet_sigmaFiniteSetGE _ _)
 
-instance [IsFiniteMeasure ν] : SigmaFinite (μ.restrict (μ.sigmaFiniteSetWRT' ν)) := by
+local instance [IsFiniteMeasure ν] : SigmaFinite (μ.restrict (μ.sigmaFiniteSetWRT' ν)) := by
   let f : ℕ × ℕ → Set α := fun p : ℕ × ℕ ↦ (μ.sigmaFiniteSetWRT' ν)ᶜ
     ∪ (spanningSets (μ.restrict (μ.sigmaFiniteSetGE ν p.1)) p.2 ∩ (μ.sigmaFiniteSetGE ν p.1))
   suffices (μ.restrict (μ.sigmaFiniteSetWRT' ν)).FiniteSpanningSetsIn (Set.range f) from
@@ -236,7 +236,8 @@ lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT [SFinite ν]
   have ⟨ν', hν', hνν'⟩ := exists_absolutelyContinuous_isFiniteMeasure ν
   have h : ∃ s : Set α, MeasurableSet s ∧ SigmaFinite (μ.restrict s)
       ∧ (∀ t (_ : MeasurableSet t) (_ : t ⊆ sᶜ) (_ : ν t ≠ 0), μ t = ∞) := by
-    refine ⟨μ.sigmaFiniteSetWRT' ν', measurableSet_sigmaFiniteSetWRT' μ ν', inferInstance,
+    refine ⟨μ.sigmaFiniteSetWRT' ν', measurableSet_sigmaFiniteSetWRT' μ ν',
+      instSigmaFiniteRestrictSigmaFiniteSetWRT',
       fun t ht ht_subset hνt ↦ measure_eq_top_of_subset_compl_sigmaFiniteSetWRT' ht ht_subset ?_⟩
     exact fun hν't ↦ hνt (hνν' hν't)
   rw [Measure.sigmaFiniteSetWRT, dif_pos h] at hs_subset
