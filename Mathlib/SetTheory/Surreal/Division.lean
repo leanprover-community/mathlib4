@@ -3,7 +3,6 @@ Copyright (c) 2024 Theodore Hwa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Theodore Hwa
 -/
-import Batteries.Tactic.Case
 import Mathlib.SetTheory.Surreal.Multiplication
 import Mathlib.Tactic.Ring.RingNF
 import Mathlib.Tactic.FieldSimp
@@ -262,8 +261,7 @@ lemma eq1 {l r} {L : l → PGame} {R : r → PGame}
     on_goal 3 =>
       apply invVal_numeric <;> tauto
     on_goal 3 => exact numeric_one
-    try case _ : (L _).Numeric => apply h5.2.1
-    try case _ : (R _).Numeric => apply h5.2.2
+    on_goal 2 => first | apply h5.2.1 | apply h5.2.2
     simp only [← one_def]
   on_goal 3 =>
     case _ j _ => exact h3 j j.2
@@ -388,8 +386,7 @@ lemma eq2 {l r} {L : l → PGame} {R : r → PGame}
     on_goal 3 =>
       apply invVal_numeric <;> tauto
     on_goal 3 => exact numeric_one
-    try case _ : (L _).Numeric => apply h5.2.1
-    try case _ : (R _).Numeric => apply h5.2.2
+    on_goal 2 => first | apply h5.2.1 | apply h5.2.2
     simp only [← one_def]
   on_goal 3 =>
     case _ j _ => exact h3 j j.2
