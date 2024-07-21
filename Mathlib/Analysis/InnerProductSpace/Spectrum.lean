@@ -388,7 +388,7 @@ theorem basic_index1 {α β : Type*} [DecidableEq α] [CompleteLattice β]
       (s x') := by
   rw [iInf_subtype]; exact iInf_split_single s i
 
-theorem invariant_subspace_eigen_convert {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
+theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
     (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : (eigenspace S μ) ⊓ F =
     Submodule.map (Submodule.subtype F)
     (eigenspace (S.restrict (hInv)) μ) := by
@@ -462,7 +462,7 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     have E : (⨆ (γ : {x // x ≠ i} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓ (⨅ (j : {x // x ≠ i}),
     eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))))) = ⨆ (γ : {x // x ≠ i} → 𝕜),
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) := by
-      conv => lhs; rhs; ext γ; rhs; ext μ; rw [invariant_subspace_eigen_convert (T i) μ
+      conv => lhs; rhs; ext γ; rhs; ext μ; rw [invariant_subspace_inf_eigenspace_eq_restrict (T i) μ
         (invariance_iInf T hC i γ)]
       conv => lhs; rhs; ext γ; rw [invariant_subspace_eigenspace_exhaust (T i) (hT i)
         (invariance_iInf T hC i γ)]
