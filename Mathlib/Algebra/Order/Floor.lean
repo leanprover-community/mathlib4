@@ -14,7 +14,6 @@ import Mathlib.Order.GaloisConnection
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
 
 /-!
 # Floor and ceil
