@@ -61,7 +61,10 @@ structure SumSqIn (R : Type*) [Add R] [Mul R] [Zero R] where
 If `S1` and `S2` are sums of squares in a semiring `R`, then `S1 + S2` is a sum of squares in `R`.
 -/
 
--- *TODO*: `isSumSq.add` could be rewritten with weaker assumptions on `R` (we only need to guarantee that we can use `AddZeroClass.zero_add` and `AddSemigroup.add_assoc`).
+/-
+*TODO*: `isSumSq.add` could be rewritten with weaker assumptions on `R` (we only need to
+guarantee that we can use `AddZeroClass.zero_add` and `AddSemigroup.add_assoc`).
+-/
 theorem isSumSq.add {R : Type*} [Semiring R] {S1 S2 : R} (h1 : isSumSq S1) (h2 : isSumSq S2) :
     isSumSq (S1 + S2) := by
   induction h1 with
