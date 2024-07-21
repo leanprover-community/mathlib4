@@ -276,10 +276,10 @@ section Simultaneous
 
 section Pair
 
-variable {A B : E →ₗ[𝕜] E}  {α β : 𝕜} (hA : A.IsSymmetric) (hB : B.IsSymmetric)
+variable {α : 𝕜} {A B : E →ₗ[𝕜] E} (hA : A.IsSymmetric) (hB : B.IsSymmetric)
     (hAB : A ∘ₗ B = B ∘ₗ A)
 
-theorem eigenspace_invariant  (α : 𝕜) : ∀ v ∈ (eigenspace A α), (B v ∈ eigenspace A α) := by
+theorem eigenspace_invariant (α : 𝕜) : ∀ v ∈ (eigenspace A α), (B v ∈ eigenspace A α) := by
   intro v hv
   rw [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply, ← comp_apply A B v, hAB,
   comp_apply B A v, ← map_smul, ← map_sub, hv, map_zero] at *
