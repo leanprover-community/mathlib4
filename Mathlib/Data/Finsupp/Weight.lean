@@ -144,7 +144,7 @@ section CanonicallyOrderedAddCommMonoid
 
 variable {M : Type*} [CanonicallyOrderedAddCommMonoid M] (w : σ → M)
 
-theorem le_weight' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
+theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
     w s ≤ weight w f :=
   le_weight_of_nonneg' w (fun _ ↦ zero_le _) hs
 
