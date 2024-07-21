@@ -387,7 +387,43 @@ instance (bd : BoundaryManifoldData N J) [HasNiceBoundary bd] [BoundarylessManif
 
 end HasNiceBoundary
 
-#exit
+section DisjUnion
+
+-- Let M, M' and M'' be smooth manifolds *over the same space* `H`.
+-- TODO: need we also assume their models are literally the same? or on the same space E?
+-- or can something weaker suffice?
+variable {M : Type*} [TopologicalSpace M] [cm : ChartedSpace H M]
+  {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
+  {M' : Type*} [TopologicalSpace M'] [cm': ChartedSpace H M']
+  /-{I' : ModelWithCorners ℝ E H}-/ [SmoothManifoldWithCorners I M']
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
+  {I'' : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I'' M'']
+
+/-- A partial homeomorphism `M → H` defines a partial homeomorphism `M ⊕ M' → H`. -/
+def foo (φ : PartialHomeomorph M H) : PartialHomeomorph (M ⊕ M') H := sorry
+
+def bar (φ : PartialHomeomorph M' H) : PartialHomeomorph (M ⊕ M') H := sorry
+
+def foo' (A : Set (PartialHomeomorph M H)) : Set (PartialHomeomorph (M ⊕ M') H) := { foo φ | φ : A }
+
+def bar' (A : Set (PartialHomeomorph M' H)) : Set (PartialHomeomorph (M ⊕ M') H) := { bar φ | φ : A }
+
+/-- The disjoint union of two charted spaces on `H` is a charted space over `H`. -/
+instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') where
+  atlas := (foo' cm.atlas) ∪ (bar' cm'.atlas)
+  -- others should be easy
+  chartAt x := by sorry
+    --by_cases h : x ∈ M
+    --if x ∈ M then foo (cm.chartAt x) else
+  mem_chart_source p := sorry
+  chart_mem_atlas := sorry
+
+/-- The disjoint union of two smooth manifolds modelled on `(E,H)`
+is a smooth manifold modeled on `(E, H)`. -/
+-- XXX. do I really need the same model twice??
+instance SmoothManifoldWithCorners.sum : SmoothManifoldWithCorners I (M ⊕ M') := sorry
+
+end DisjUnion
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
@@ -412,22 +448,6 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [CompactSpace M] [BoundarylessManifold I M]
   [CompactSpace M'] [BoundarylessManifold I' M'] [CompactSpace M''] [BoundarylessManifold I'' M'']
 
--- All this is full sci-fi, but let's pretend this for now to limp along!!
-namespace ScifiBoundary
-
-variable {E₀ : Type*} [NormedAddCommGroup E₀] [NormedSpace ℝ E₀] [FiniteDimensional ℝ E₀]
-  (hE : finrank ℝ E = n + 1) (hE₀ : finrank ℝ E₀ = n)
-  {H₀ : Type*} [TopologicalSpace H₀]
-
-instance charts : ChartedSpace H₀ (I.boundary M) := sorry
-
--- TODO: this depends on I and M
-def model : ModelWithCorners ℝ E₀ H₀ := sorry
-
-instance manifold : SmoothManifoldWithCorners (H := H₀) (E := E₀) model/-(model I M)-/ (I.boundary M) := sorry
-
-end ScifiBoundary
-
 /-- An **unoriented cobordism** between two singular `n`-manifolds (M,f) and (N,g) on `X`
 is a compact smooth `n`-manifold `W` with a continuous map `F: W→ X` whose boundary is diffeomorphic
 to the disjoint union M ⊔ N such that F restricts to f resp. g in the obvious way. -/
@@ -444,6 +464,8 @@ structure _root_.UnorientedCobordism (s : SingularNManifold X n M I) (t : Singul
   -- hFg : F.restrict φ^{-1}(N) = t.f
 
 open Set
+
+#exit
 
 /-- Each singular `n`-manifold `(M,f)` is cobordant to itself. -/
 def refl (s : SingularNManifold X n M I) :
