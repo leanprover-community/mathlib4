@@ -102,8 +102,7 @@ namespace DifferentialRing
 variable {A : Type*} [CommDifferentialRing A]
 
 def mapCoeffs : Derivation ℤ A[X] A[X] :=
-  PolynomialModule.equivPolynomialSelf.compDer <|
-    CommDifferentialRing.deriv.mapCoeffs (M := A)
+  PolynomialModule.equivPolynomialSelf.compDer CommDifferentialRing.deriv.mapCoeffs
 
 @[simp]
 lemma mapCoeffs_apply (p : A[X]) (i) :
