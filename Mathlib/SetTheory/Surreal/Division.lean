@@ -111,7 +111,7 @@ lemma num_of_normalization_num : (normalization x).Numeric := by
     exact this
 
 lemma pos_num_eq_normalization :
-    Surreal.mk x x_num = Surreal.mk (normalization x) (num_of_normalization_num x_num x_pos) := by
+    mk x x_num = mk (normalization x) (num_of_normalization_num x_num x_pos) := by
   simp only [mk_eq_mk]
   rw [equiv_def]
   rcases x with ⟨xl, xr, xL, xR⟩
@@ -223,33 +223,32 @@ def components {l r} {L : l → PGame} {R : r → PGame}
   match i'' with
   | InvTy.zero => (0, 0, 0)
   | InvTy.left₁ i j =>
-    (Surreal.mk (R i) (h5.2.2 i), Surreal.mk (R i).inv' (by tauto),
-      Surreal.mk ((PGame.mk l r L R).inv'.moveLeft j) (by apply inv'_numeric_left <;> tauto))
+    (mk (R i) (h5.2.2 i), mk (R i).inv' (by tauto),
+      mk ((PGame.mk l r L R).inv'.moveLeft j) (by apply inv'_numeric_left <;> tauto))
   | InvTy.left₂ i j =>
-    (Surreal.mk (L i) (h5.2.1 i), Surreal.mk (L i).inv' (h3 i i.2),
-      Surreal.mk ((PGame.mk l r L R).inv'.moveRight j) (by apply inv'_numeric_right <;> tauto))
+    (mk (L i) (h5.2.1 i), mk (L i).inv' (h3 i i.2),
+      mk ((PGame.mk l r L R).inv'.moveRight j) (by apply inv'_numeric_right <;> tauto))
   | InvTy.right₁ i j =>
-    (Surreal.mk (L i) (h5.2.1 i), Surreal.mk (L i).inv' (h3 i i.2),
-      Surreal.mk ((PGame.mk l r L R).inv'.moveLeft j) (by apply inv'_numeric_left <;> tauto))
+    (mk (L i) (h5.2.1 i), mk (L i).inv' (h3 i i.2),
+      mk ((PGame.mk l r L R).inv'.moveLeft j) (by apply inv'_numeric_left <;> tauto))
   | InvTy.right₂ i j =>
-    (Surreal.mk (R i) (h5.2.2 i), Surreal.mk (R i).inv' (by tauto),
-      Surreal.mk ((PGame.mk l r L R).inv'.moveRight j) (by apply inv'_numeric_right <;> tauto))
+    (mk (R i) (h5.2.2 i), mk (R i).inv' (by tauto),
+      mk ((PGame.mk l r L R).inv'.moveRight j) (by apply inv'_numeric_right <;> tauto))
 
 /-- The identity `1 - x*y'' = (1 - x * y')*(x' - x)/x'` -/
 lemma eq1 {l r} {L : l → PGame} {R : r → PGame}
     (h3 : ∀ i, 0 < L i → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric) {b : Bool}
     (x_pos : 0 < PGame.mk l r L R)
-    (inv_l : ∀ (i : { i // 0 < L i }),
-      (Surreal.mk (L i) (h5.2.1 i)) * (Surreal.mk (L i).inv' (h3 i i.2)) = 1)
-    (inv_r : ∀ j, (Surreal.mk (R j) (h5.2.2 j)) * (Surreal.mk (R j).inv' (by tauto)) = 1)
+    (inv_l : ∀ (i : { i // 0 < L i }), (mk (L i) (h5.2.1 i)) * (mk (L i).inv' (h3 i i.2)) = 1)
+    (inv_r : ∀ j, (mk (R j) (h5.2.2 j)) * (mk (R j).inv' (by tauto)) = 1)
     (i'' : InvTy {i // 0 < L i} r b) :
     let (x', x'_inv, y') := components h3 h4 h5 x_pos i''
-    let x := Surreal.mk (PGame.mk l r L R) h5
+    let x := mk (PGame.mk l r L R) h5
     let y'' := match b with
-      | false => Surreal.mk ((PGame.mk l r L R).inv'.moveLeft i'')
+      | false => mk ((PGame.mk l r L R).inv'.moveLeft i'')
         (by apply inv'_numeric_left <;> tauto)
-      | true => Surreal.mk ((PGame.mk l r L R).inv'.moveRight i'')
+      | true => mk ((PGame.mk l r L R).inv'.moveRight i'')
         (by apply inv'_numeric_right <;> tauto)
     match i'' with
     | InvTy.zero => true
@@ -272,15 +271,15 @@ lemma eq1 {l r} {L : l → PGame} {R : r → PGame}
     case _ j _ => exact h3 j j.2
   case' left₁ i j | right₂ i j =>
     specialize inv_r i
-    have : IsUnit (Surreal.mk (R i) (h5.2.2 i)) := by
+    have : IsUnit (mk (R i) (h5.2.2 i)) := by
       use ⟨_, _, inv_r, by rw [mul_comm]; exact inv_r⟩
-    lift (Surreal.mk (R i) (h5.2.2 i)) to Surrealˣ using id this with s
+    lift (mk (R i) (h5.2.2 i)) to Surrealˣ using id this with s
     have : mk (R i).inv' (by tauto) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_r)
   case' left₂ i j | right₁ i j =>
     specialize inv_l i
-    have : IsUnit (Surreal.mk (L i) (h5.2.1 i)) := by
+    have : IsUnit (mk (L i) (h5.2.1 i)) := by
       use ⟨_, _, inv_l, by rw [mul_comm]; exact inv_l⟩
-    lift (Surreal.mk (L i) (h5.2.1 i)) to Surrealˣ using id this with s
+    lift (mk (L i) (h5.2.1 i)) to Surrealˣ using id this with s
     have : mk (L i).inv' (h3 i i.2) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_l)
   all_goals
     rw [this]
@@ -290,13 +289,12 @@ lemma eq1 {l r} {L : l → PGame} {R : r → PGame}
 lemma onag_1_10_i' {l r} {L : l → PGame} {R : r → PGame}
     (h3 : ∀ i, 0 < (L i) → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric) (b : Bool)
-    (inv_l : ∀ (i : { i // 0 < L i }),
-      (Surreal.mk (L i) (h5.2.1 i)) * (Surreal.mk (L i).inv' (h3 i i.2)) = 1)
-    (inv_r : ∀ j, (Surreal.mk (R j) (h5.2.2 j)) * (Surreal.mk (R j).inv' (by tauto)) = 1)
+    (inv_l : ∀ (i : { i // 0 < L i }), (mk (L i) (h5.2.1 i)) * (mk (L i).inv' (h3 i i.2)) = 1)
+    (inv_r : ∀ j, (mk (R j) (h5.2.2 j)) * (mk (R j).inv' (by tauto)) = 1)
     (x_pos: 0 < PGame.mk l r L R)
     (i' : InvTy {i // 0 < L i} r b) :
-    let x := Surreal.mk (PGame.mk l r L R) (by tauto)
-    let y' := Surreal.mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
+    let x := mk (PGame.mk l r L R) (by tauto)
+    let y' := mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
         (fun j => (R j).inv') (PGame.mk l r L R) i')
       (by apply invVal_numeric <;> tauto)
     match b with
@@ -367,18 +365,17 @@ lemma onag_1_10_i' {l r} {L : l → PGame} {R : r → PGame}
 lemma eq2 {l r} {L : l → PGame} {R : r → PGame}
     (h3 : ∀ i, 0 < (L i) → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric) {b : Bool}
-    (inv_l : ∀ (i : { i // 0 < L i }),
-      (Surreal.mk (L i) (h5.2.1 i)) * (Surreal.mk (L i).inv' (h3 i i.2)) = 1)
-    (inv_r : ∀ j, (Surreal.mk (R j) (h5.2.2 j)) * (Surreal.mk (R j).inv' (by tauto)) = 1)
+    (inv_l : ∀ (i : { i // 0 < L i }), (mk (L i) (h5.2.1 i)) * (mk (L i).inv' (h3 i i.2)) = 1)
+    (inv_r : ∀ j, (mk (R j) (h5.2.2 j)) * (mk (R j).inv' (by tauto)) = 1)
     (inv_numeric : ((PGame.mk l r L R).inv').Numeric)
     (x_pos: 0 < PGame.mk l r L R)
     (i'' : InvTy {i // 0 < L i} r b) :
     let (x', _, y') := components h3 h4 h5 x_pos i''
-    let x := Surreal.mk (PGame.mk l r L R) h5
-    let y'' := Surreal.mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
+    let x := mk (PGame.mk l r L R) h5
+    let y'' := mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
         (fun j => (R j).inv') (PGame.mk l r L R) i'')
       (by apply invVal_numeric <;> tauto)
-    let y := Surreal.mk ((PGame.mk l r L R).inv') inv_numeric
+    let y := mk ((PGame.mk l r L R).inv') inv_numeric
     match i'' with
     | InvTy.zero => true
     | _ => x' * y + x * y' - x' * y' = 1 + x' * (y - y'') := by
@@ -404,9 +401,9 @@ lemma eq2 {l r} {L : l → PGame} {R : r → PGame}
     ring_nf
     conv_lhs => simp [inv']
     specialize inv_r i
-    have : IsUnit (Surreal.mk (R i) (h5.2.2 i)) := by
+    have : IsUnit (mk (R i) (h5.2.2 i)) := by
       use ⟨_, _, inv_r, by rw [mul_comm]; exact inv_r⟩
-    lift (Surreal.mk (R i) (h5.2.2 i)) to Surrealˣ using id this with s
+    lift (mk (R i) (h5.2.2 i)) to Surrealˣ using id this with s
     have : mk (R i).inv' (by tauto) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_r)
   case' left₂ i j | right₁ i j =>
     apply_fun (fun x => x - mk (L i) (h5.2.1 i) * mk (PGame.mk l r L R).inv' inv_numeric)
@@ -414,9 +411,9 @@ lemma eq2 {l r} {L : l → PGame} {R : r → PGame}
     ring_nf
     conv_lhs => simp [inv']
     specialize inv_l i
-    have : IsUnit (Surreal.mk (L i) (h5.2.1 i)) := by
+    have : IsUnit (mk (L i) (h5.2.1 i)) := by
       use ⟨_, _, inv_l, by rw [mul_comm]; exact inv_l⟩
-    lift (Surreal.mk (L i) (h5.2.1 i)) to Surrealˣ using id this with s
+    lift (mk (L i) (h5.2.1 i)) to Surrealˣ using id this with s
     have : mk (L i).inv' (h3 i i.2) = ↑s⁻¹ := Eq.symm (Units.inv_eq_of_mul_eq_one_right inv_l)
   all_goals
     rw [this]
@@ -426,25 +423,24 @@ lemma eq2 {l r} {L : l → PGame} {R : r → PGame}
 lemma onag_1_10_iii_left' {l r} {L : l → PGame} {R : r → PGame}
     (h3 : ∀ i, 0 < (L i) → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric)
-    (inv_l : ∀ (i : { i // 0 < L i }),
-      (Surreal.mk (L i) (h5.2.1 i)) * (Surreal.mk (L i).inv' (h3 i i.2)) = 1)
-    (inv_r : ∀ j, (Surreal.mk (R j) (h5.2.2 j)) * (Surreal.mk (R j).inv' (by tauto)) = 1)
+    (inv_l : ∀ (i : { i // 0 < L i }), (mk (L i) (h5.2.1 i)) * (mk (L i).inv' (h3 i i.2)) = 1)
+    (inv_r : ∀ j, (mk (R j) (h5.2.2 j)) * (mk (R j).inv' (by tauto)) = 1)
     (inv_numeric : ((PGame.mk l r L R).inv').Numeric)
     (x_pos: 0 < PGame.mk l r L R)
     (ij : Sum ({ i // 0 < L i } × InvTy { i // 0 < L i } r false)
       (r × InvTy { i // 0 < L i } r true)) :
-    let x := Surreal.mk (PGame.mk l r L R) (by tauto)
-    let y := Surreal.mk ((PGame.mk l r L R).inv') inv_numeric
+    let x := mk (PGame.mk l r L R) (by tauto)
+    let y := mk ((PGame.mk l r L R).inv') inv_numeric
     match ij with
     | Sum.inl ⟨i, j⟩ =>
-      let x' := Surreal.mk (L i) (h5.2.1 i)
-      let y' := Surreal.mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
+      let x' := mk (L i) (h5.2.1 i)
+      let y' := mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
         (fun j => (R j).inv') (PGame.mk l r L R) j)
         (by apply invVal_numeric <;> tauto)
       x' * y + x * y' - x' * y' < 1
     | Sum.inr ⟨i, j⟩ =>
-      let x' := Surreal.mk (R i) (h5.2.2 i)
-      let y' := Surreal.mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
+      let x' := mk (R i) (h5.2.2 i)
+      let y' := mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
         (fun j => (R j).inv') (PGame.mk l r L R) j)
         (by apply invVal_numeric <;> tauto)
       x' * y + x * y' - x' * y' < 1 := by
@@ -463,7 +459,7 @@ lemma onag_1_10_iii_left' {l r} {L : l → PGame} {R : r → PGame}
       apply mul_neg_of_pos_of_neg
       · exact i.2
       · apply sub_neg.mpr
-        have := Surreal.mk_lt_mk_moveRight inv_numeric (InvTy.right₁ i j)
+        have := mk_lt_mk_moveRight inv_numeric (InvTy.right₁ i j)
         conv_rhs at this => {
           simp [inv']
         }
@@ -482,7 +478,7 @@ lemma onag_1_10_iii_left' {l r} {L : l → PGame} {R : r → PGame}
       apply mul_neg_of_pos_of_neg
       · exact right_pos_of_pos h5 x_pos i
       · apply sub_neg.mpr
-        have := Surreal.mk_lt_mk_moveRight inv_numeric (InvTy.right₂ i j)
+        have := mk_lt_mk_moveRight inv_numeric (InvTy.right₂ i j)
         conv_rhs at this => {
           simp [inv']
         }
@@ -491,25 +487,24 @@ lemma onag_1_10_iii_left' {l r} {L : l → PGame} {R : r → PGame}
 lemma onag_1_10_iii_right' {l r} {L : l → PGame} {R : r → PGame}
     (h3 : ∀ i, 0 < (L i) → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric)
-    (inv_l : ∀ (i : { i // 0 < L i }),
-      (Surreal.mk (L i) (h5.2.1 i)) * (Surreal.mk (L i).inv' (h3 i i.2)) = 1)
-    (inv_r : ∀ j, (Surreal.mk (R j) (h5.2.2 j)) * (Surreal.mk (R j).inv' (by tauto)) = 1)
+    (inv_l : ∀ (i : { i // 0 < L i }),(mk (L i) (h5.2.1 i)) * (mk (L i).inv' (h3 i i.2)) = 1)
+    (inv_r : ∀ j, (mk (R j) (h5.2.2 j)) * (mk (R j).inv' (by tauto)) = 1)
     (inv_numeric : ((PGame.mk l r L R).inv').Numeric)
     (x_pos: 0 < PGame.mk l r L R)
     (ij : Sum ({ i // 0 < L i } × InvTy { i // 0 < L i } r true)
       (r × InvTy { i // 0 < L i } r false)) :
-    let x := Surreal.mk (PGame.mk l r L R) (by tauto)
-    let y := Surreal.mk ((PGame.mk l r L R).inv') inv_numeric
+    let x := mk (PGame.mk l r L R) (by tauto)
+    let y := mk ((PGame.mk l r L R).inv') inv_numeric
     match ij with
     | Sum.inl ⟨i, j⟩ =>
-      let x' := Surreal.mk (L i) (h5.2.1 i)
-      let y' := Surreal.mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
+      let x' := mk (L i) (h5.2.1 i)
+      let y' := mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
         (fun j => (R j).inv') (PGame.mk l r L R) j)
         (by apply invVal_numeric <;> tauto)
       1 < x' * y + x * y' - x' * y'
     | Sum.inr ⟨i, j⟩ =>
-      let x' := Surreal.mk (R i) (h5.2.2 i)
-      let y' := Surreal.mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
+      let x' := mk (R i) (h5.2.2 i)
+      let y' := mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
         (fun j => (R j).inv') (PGame.mk l r L R) j)
         (by apply invVal_numeric <;> tauto)
       1 < x' * y + x * y' - x' * y' := by
@@ -528,7 +523,7 @@ lemma onag_1_10_iii_right' {l r} {L : l → PGame} {R : r → PGame}
       apply Left.mul_pos
       · exact i.2
       · apply sub_pos.mpr
-        have := Surreal.mk_moveLeft_lt_mk inv_numeric (InvTy.left₂ i j)
+        have := mk_moveLeft_lt_mk inv_numeric (InvTy.left₂ i j)
         conv_rhs at this => {
           simp [inv']
         }
@@ -547,7 +542,7 @@ lemma onag_1_10_iii_right' {l r} {L : l → PGame} {R : r → PGame}
       apply Left.mul_pos
       · exact right_pos_of_pos h5 x_pos i
       · apply sub_pos.mpr
-        have := Surreal.mk_moveLeft_lt_mk inv_numeric (InvTy.left₁ i j)
+        have := mk_moveLeft_lt_mk inv_numeric (InvTy.left₁ i j)
         conv_rhs at this => {
           simp [inv']
         }
@@ -650,8 +645,8 @@ lemma onag_1_10 :
           exact this
 
     have onag_1_10_iv' :
-        Surreal.mk (normalization x) (num_of_normalization_num x_num x_pos) *
-          Surreal.mk (x.inv') onag_1_10_ii = 1 := by
+        mk (normalization x) (num_of_normalization_num x_num x_pos) *
+          mk (x.inv') onag_1_10_ii = 1 := by
       simp only [← mk_mul, one_def, mk_eq_mk]
       rw [equiv_def]
       constructor <;> rw [le_iff_forall_lf]
@@ -674,7 +669,7 @@ lemma onag_1_10 :
           exact lf_of_lt this
 
     have onag_1_10_iv : x * x.inv' ≈ 1 := by
-      suffices Surreal.mk x x_num * Surreal.mk x.inv' onag_1_10_ii = 1 by
+      suffices mk x x_num * mk x.inv' onag_1_10_ii = 1 by
         simp only [← mk_mul, one_def, mk_eq_mk] at this
         exact this
       rwa [pos_num_eq_normalization x_num x_pos]
