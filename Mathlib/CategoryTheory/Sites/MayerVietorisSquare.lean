@@ -15,7 +15,7 @@ Mayer-Vietoris sequences in sheaf cohomology. If `X₄` is an open subset
 of a topological space that is covered by two open subsets `X₂` and `X₃`,
 it is known that there is a long exact sequence
 `... ⟶ H^q(X₄) ⟶ H^q(X₂) ⊞ H^q(X₃) ⟶ H^q(X₁) ⟶ H^{q+1}(X₄) ⟶ ...`
-when `X₁` is the intersection of `X₂` and `X₃`, and `H^q` are the
+where `X₁` is the intersection of `X₂` and `X₃`, and `H^q` are the
 cohomology groups with values in an abelian sheaf.
 
 In this file, we introduce a structure
@@ -27,13 +27,13 @@ that the square in `C` becomes a pushout square in
 the category of sheaves after the application of the
 functor `yoneda ⋙ presheafToSheaf J _`. Note that in the
 standard case of a covering by two open subsets, the morphism
-`f₃₄ : X₃ ⟶ X₄` would also be a monomophism, but this dissymetry
+`f₃₄ : X₃ ⟶ X₄` would also be a monomorphism, but this dissymetry
 allows the example of Nisnevich distinguished squares in the
 case of the Nisnevich topology on schemes (in which case
 `f₂₄ : X₂ ⟶ X₄` shall be an open immersion and
 `f₃₄ : X₃ ⟶ X₄` an étale map that is an isomorphism over
 the closed (reduced) subscheme `X₄ - X₂`,
-and `X₁` is the the pullback of `f₂₄` and `f₃₄`.).
+and `X₁` shall be the pullback of `f₂₄` and `f₃₄`.).
 
 Given `S : J.MayerVietorisSquare`, we show that if `F` is a sheaf
 of types, then the types of sections of `F` over `S.X`, `S.U`,
