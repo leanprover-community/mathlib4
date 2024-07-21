@@ -61,19 +61,20 @@ variable {sq}
 
 /-- If a commutative square `sq` is a pullback square,
 then `sq.pullbackCone` is limit. -/
-noncomputable nonrec def IsPullback.isLimit (h : sq.IsPullback) :
+noncomputable def IsPullback.isLimit (h : sq.IsPullback) :
     IsLimit sq.pullbackCone :=
-  h.isLimit
+  CategoryTheory.IsPullback.isLimit h
 
 /-- If a commutative square `sq` is a pushout square,
 then `sq.pushoutCocone` is colimit. -/
-noncomputable nonrec def IsPushout.isColimit (h : sq.IsPushout) :
+noncomputable def IsPushout.isColimit (h : sq.IsPushout) :
     IsColimit sq.pushoutCocone :=
-  h.isColimit
+  CategoryTheory.IsPushout.isColimit h
 
-nonrec lemma IsPullback.of_iso {sq₁ sq₂ : Square C} (h : sq₁.IsPullback)
+lemma IsPullback.of_iso {sq₁ sq₂ : Square C} (h : sq₁.IsPullback)
     (e : sq₁ ≅ sq₂) : sq₂.IsPullback := by
-  refine h.of_iso (evaluation₁.mapIso e) (evaluation₂.mapIso e)
+  refine CategoryTheory.IsPullback.of_iso h
+    (evaluation₁.mapIso e) (evaluation₂.mapIso e)
     (evaluation₃.mapIso e) (evaluation₄.mapIso e) ?_ ?_ ?_ ?_
   all_goals aesop_cat
 
@@ -81,9 +82,10 @@ lemma IsPullback.iff_of_iso {sq₁ sq₂ : Square C} (e : sq₁ ≅ sq₂) :
     sq₁.IsPullback ↔ sq₂.IsPullback :=
   ⟨fun h ↦ h.of_iso e, fun h ↦ h.of_iso e.symm⟩
 
-nonrec lemma IsPushout.of_iso {sq₁ sq₂ : Square C} (h : sq₁.IsPushout)
+lemma IsPushout.of_iso {sq₁ sq₂ : Square C} (h : sq₁.IsPushout)
     (e : sq₁ ≅ sq₂) : sq₂.IsPushout := by
-  refine h.of_iso (evaluation₁.mapIso e) (evaluation₂.mapIso e)
+  refine CategoryTheory.IsPushout.of_iso h
+    (evaluation₁.mapIso e) (evaluation₂.mapIso e)
     (evaluation₃.mapIso e) (evaluation₄.mapIso e) ?_ ?_ ?_ ?_
   all_goals aesop_cat
 

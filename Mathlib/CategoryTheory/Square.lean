@@ -30,9 +30,7 @@ or a vertical morphism betwen two horizontal
 maps (`arrowArrowEquivalence'`).
 
 ## TODO
-* introduce the pullback cone, the pushout cocone
-attached to `sq : Square C` and define the
-properties `IsPushout` and `IsPullback`.
+* define `Functor.mapSquare`
 * construct the equivalence `(Square C)ᵒᵖ ≌ Square C`
 
 -/
