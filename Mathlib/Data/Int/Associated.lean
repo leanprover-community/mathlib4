@@ -5,8 +5,6 @@ Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Ring.Int
-
-#align_import data.int.associated from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 /-!
 # Associated elements and the integers
 
@@ -28,4 +26,3 @@ theorem Int.natAbs_eq_iff_associated {a b : ℤ} : a.natAbs = b.natAbs ↔ Assoc
     obtain rfl | rfl := Int.units_eq_one_or u
     · exact Or.inl (by simp)
     · exact Or.inr (by simp)
-#align int.nat_abs_eq_iff_associated Int.natAbs_eq_iff_associated

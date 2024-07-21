@@ -9,8 +9,6 @@ import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.Category.CompHausLike.Basic
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 
-#align_import topology.category.CompHaus.basic from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
-
 /-!
 # The category of Compact Hausdorff Spaces
 
@@ -38,8 +36,6 @@ open CategoryTheory CompHausLike
 
 /-- The category of compact Hausdorff spaces. -/
 abbrev CompHaus := CompHausLike (fun _ ↦ True)
-set_option linter.uppercaseLean3 false in
-#align CompHaus CompHaus
 
 namespace CompHaus
 
@@ -63,8 +59,6 @@ instance : HasProp (fun _ ↦ True) X := ⟨trivial⟩
 taking a type, and bundling the compact Hausdorff topology
 found by typeclass inference. -/
 abbrev of : CompHaus := CompHausLike.of _ X
-set_option linter.uppercaseLean3 false in
-#align CompHaus.of CompHaus.of
 
 end CompHaus
 
@@ -73,8 +67,6 @@ end CompHaus
 abbrev compHausToTop : CompHaus.{u} ⥤ TopCat.{u} :=
   CompHausLike.compHausLikeToTop _
   -- deriving Full, Faithful -- Porting note: deriving fails, adding manually.
-set_option linter.uppercaseLean3 false in
-#align CompHaus_to_Top compHausToTop
 
 /-- (Implementation) The object part of the compactification functor from topological spaces to
 compact Hausdorff spaces.
@@ -82,8 +74,6 @@ compact Hausdorff spaces.
 @[simps!]
 def stoneCechObj (X : TopCat) : CompHaus :=
   CompHaus.of (StoneCech X)
-set_option linter.uppercaseLean3 false in
-#align StoneCech_obj stoneCechObj
 
 /-- (Implementation) The bijection of homsets to establish the reflective adjunction of compact
 Hausdorff spaces in topological spaces.
@@ -112,43 +102,30 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
     apply ContinuousMap.ext
     intro
     exact congr_fun (stoneCechExtend_extends hf) _
-#align stone_cech_equivalence stoneCechEquivalence
 
 /-- The Stone-Cech compactification functor from topological spaces to compact Hausdorff spaces,
 left adjoint to the inclusion functor.
 -/
 noncomputable def topToCompHaus : TopCat.{u} ⥤ CompHaus.{u} :=
   Adjunction.leftAdjointOfEquiv stoneCechEquivalence.{u} fun _ _ _ _ _ => rfl
-set_option linter.uppercaseLean3 false in
-#align Top_to_CompHaus topToCompHaus
 
 theorem topToCompHaus_obj (X : TopCat) : ↥(topToCompHaus.obj X) = StoneCech X :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align Top_to_CompHaus_obj topToCompHaus_obj
 
 /-- The category of compact Hausdorff spaces is reflective in the category of topological spaces.
 -/
 noncomputable instance compHausToTop.reflective : Reflective compHausToTop where
   L := topToCompHaus
   adj := Adjunction.adjunctionOfEquivLeft _ _
-set_option linter.uppercaseLean3 false in
-#align CompHaus_to_Top.reflective compHausToTop.reflective
 
 noncomputable instance compHausToTop.createsLimits : CreatesLimits compHausToTop :=
   monadicCreatesLimits _
-set_option linter.uppercaseLean3 false in
-#align CompHaus_to_Top.creates_limits compHausToTop.createsLimits
 
 instance CompHaus.hasLimits : Limits.HasLimits CompHaus :=
   hasLimits_of_hasLimits_createsLimits compHausToTop
-set_option linter.uppercaseLean3 false in
-#align CompHaus.has_limits CompHaus.hasLimits
 
 instance CompHaus.hasColimits : Limits.HasColimits CompHaus :=
   hasColimits_of_reflective compHausToTop
-set_option linter.uppercaseLean3 false in
-#align CompHaus.has_colimits CompHaus.hasColimits
 
 namespace CompHaus
 
@@ -188,8 +165,6 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
         ext ⟨x, hx⟩
         simp only [comp_apply, Functor.const_obj_map, id_apply]
         exact (hx f).symm } }
-set_option linter.uppercaseLean3 false in
-#align CompHaus.limit_cone CompHaus.limitCone
 
 /-- The limit cone `CompHaus.limitCone F` is indeed a limit cone. -/
 def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) :
@@ -198,8 +173,6 @@ def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u
   { lift := fun S => (TopCat.limitConeIsLimit FF).lift (compHausToTop.mapCone S)
     fac := fun S => (TopCat.limitConeIsLimit FF).fac (compHausToTop.mapCone S)
     uniq := fun S => (TopCat.limitConeIsLimit FF).uniq (compHausToTop.mapCone S) }
-set_option linter.uppercaseLean3 false in
-#align CompHaus.limit_cone_is_limit CompHaus.limitConeIsLimit
 
 theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
@@ -243,8 +216,6 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
     exact zero_ne_one H
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget CompHaus).epi_of_epi_map
-set_option linter.uppercaseLean3 false in
-#align CompHaus.epi_iff_surjective CompHaus.epi_iff_surjective
 
 end CompHaus
 
