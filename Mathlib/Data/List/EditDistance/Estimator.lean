@@ -23,10 +23,8 @@ This is then used in the implementation of `rewrite_search`
 to avoid needing the entire edit distance calculation in unlikely search paths.
 -/
 
-set_option autoImplicit true
-
-variable {α β δ : Type} [CanonicallyLinearOrderedAddCommMonoid δ]
-    (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β)
+variable {α : Type*} {β δ : Type} [CanonicallyLinearOrderedAddCommMonoid δ]
+  (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β)
 
 /--
 Data showing that the Levenshtein distance from `xs` to `ys`

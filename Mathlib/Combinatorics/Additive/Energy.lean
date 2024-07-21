@@ -8,8 +8,6 @@ import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Finset.Pointwise
 
-#align_import combinatorics.additive.energy from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
-
 /-!
 # Additive energy
 
@@ -54,8 +52,6 @@ quadruples `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b�
 The notation `E[s, t]` is available in scope `Combinatorics.Additive`."]
 def mulEnergy (s t : Finset α) : ℕ :=
   (((s ×ˢ s) ×ˢ t ×ˢ t).filter fun x : (α × α) × α × α => x.1.1 * x.2.1 = x.1.2 * x.2.2).card
-#align finset.multiplicative_energy Finset.mulEnergy
-#align finset.additive_energy Finset.addEnergy
 
 /-- The multiplicative energy of two finsets `s` and `t` in a group is the number of quadruples
 `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ * b₁ = a₂ * b₂`. -/
@@ -78,18 +74,12 @@ open scoped Combinatorics.Additive
 @[to_additive (attr := gcongr)]
 lemma mulEnergy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : Eₘ[s₁, t₁] ≤ Eₘ[s₂, t₂] := by
   unfold mulEnergy; gcongr
-#align finset.multiplicative_energy_mono Finset.mulEnergy_mono
-#align finset.additive_energy_mono Finset.addEnergy_mono
 
 @[to_additive] lemma mulEnergy_mono_left (hs : s₁ ⊆ s₂) : Eₘ[s₁, t] ≤ Eₘ[s₂, t] :=
   mulEnergy_mono hs Subset.rfl
-#align finset.multiplicative_energy_mono_left Finset.mulEnergy_mono_left
-#align finset.additive_energy_mono_left Finset.addEnergy_mono_left
 
 @[to_additive] lemma mulEnergy_mono_right (ht : t₁ ⊆ t₂) : Eₘ[s, t₁] ≤ Eₘ[s, t₂] :=
   mulEnergy_mono Subset.rfl ht
-#align finset.multiplicative_energy_mono_right Finset.mulEnergy_mono_right
-#align finset.additive_energy_mono_right Finset.addEnergy_mono_right
 
 @[to_additive] lemma le_mulEnergy : s.card * t.card ≤ Eₘ[s, t] := by
   rw [← card_product]
@@ -100,23 +90,15 @@ lemma mulEnergy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : Eₘ[s₁, t₁
         implies_true]) fun a _ b _ => ?_
   simp only [Prod.mk.inj_iff, and_self_iff, and_imp]
   exact Prod.ext
-#align finset.le_multiplicative_energy Finset.le_mulEnergy
-#align finset.le_additive_energy Finset.le_addEnergy
 
 @[to_additive] lemma mulEnergy_pos (hs : s.Nonempty) (ht : t.Nonempty) : 0 < Eₘ[s, t] :=
   (mul_pos hs.card_pos ht.card_pos).trans_le le_mulEnergy
-#align finset.multiplicative_energy_pos Finset.mulEnergy_pos
-#align finset.additive_energy_pos Finset.addEnergy_pos
 
 variable (s t)
 
 @[to_additive (attr := simp)] lemma mulEnergy_empty_left : Eₘ[∅, t] = 0 := by simp [mulEnergy]
-#align finset.multiplicative_energy_empty_left Finset.mulEnergy_empty_left
-#align finset.additive_energy_empty_left Finset.addEnergy_empty_left
 
 @[to_additive (attr := simp)] lemma mulEnergy_empty_right : Eₘ[s, ∅] = 0 := by simp [mulEnergy]
-#align finset.multiplicative_energy_empty_right Finset.mulEnergy_empty_right
-#align finset.additive_energy_empty_right Finset.addEnergy_empty_right
 
 variable {s t}
 
@@ -125,13 +107,9 @@ variable {s t}
     simp_rw [not_and_or, not_nonempty_iff_eq_empty] at H
     obtain rfl | rfl := H <;> simp [Nat.not_lt_zero] at h
   mpr h := mulEnergy_pos h.1 h.2
-#align finset.multiplicative_energy_pos_iff Finset.mulEnergy_pos_iff
-#align finset.additive_energy_pos_iff Finset.addEnergy_pos_iff
 
 @[to_additive (attr := simp)] lemma mulEnergy_eq_zero_iff : Eₘ[s, t] = 0 ↔ s = ∅ ∨ t = ∅ := by
   simp [← (Nat.zero_le _).not_gt_iff_eq, not_and_or, imp_iff_or_not, or_comm]
-#align finset.multiplicative_energy_eq_zero_iff Finset.mulEnergy_eq_zero_iff
-#align finset.additive_energy_eq_zero_iff Finset.addEnergy_eq_zero_iff
 
 @[to_additive] lemma mulEnergy_eq_card_filter (s t : Finset α) :
     Eₘ[s, t] = (((s ×ˢ t) ×ˢ s ×ˢ t).filter fun ((a, b), c, d) ↦ a * b = c * d).card :=
@@ -187,8 +165,6 @@ variable [CommMonoid α]
 @[to_additive] lemma mulEnergy_comm (s t : Finset α) : Eₘ[s, t] = Eₘ[t, s] := by
   rw [mulEnergy, ← Finset.card_map (Equiv.prodComm _ _).toEmbedding, map_filter]
   simp [-Finset.card_map, eq_comm, mulEnergy, mul_comm, map_eq_image, Function.comp]
-#align finset.multiplicative_energy_comm Finset.mulEnergy_comm
-#align finset.additive_energy_comm Finset.addEnergy_comm
 
 end CommMonoid
 
@@ -212,14 +188,10 @@ lemma mulEnergy_univ_left : Eₘ[univ, t] = Fintype.card α * t.card ^ 2 := by
   refine ⟨fun h => ⟨a.1.1 * a.2.2⁻¹, _, _, h.1, by simp [f, mul_right_comm, h.2]⟩, ?_⟩
   rintro ⟨b, c, d, hcd, rfl⟩
   simpa [mul_right_comm]
-#align finset.multiplicative_energy_univ_left Finset.mulEnergy_univ_left
-#align finset.additive_energy_univ_left Finset.addEnergy_univ_left
 
 @[to_additive (attr := simp)]
 lemma mulEnergy_univ_right : Eₘ[s, univ] = Fintype.card α * s.card ^ 2 := by
   rw [mulEnergy_comm, mulEnergy_univ_left]
-#align finset.multiplicative_energy_univ_right Finset.mulEnergy_univ_right
-#align finset.additive_energy_univ_right Finset.addEnergy_univ_right
 
 end CommGroup
 
