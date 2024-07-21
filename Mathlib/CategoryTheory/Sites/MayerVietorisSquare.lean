@@ -33,7 +33,7 @@ case of the Nisnevich topology on schemes (in which case
 `f₂₄ : X₂ ⟶ X₄` shall be an open immersion and
 `f₃₄ : X₃ ⟶ X₄` an étale map that is an isomorphism over
 the closed (reduced) subscheme `X₄ - X₂`,
-and `X₁` is the the pullback of `f₂₄` and `f₃₄`.).
+and `X₁` shall be the pullback of `f₂₄` and `f₃₄`.).
 
 ## TODO
 * show that when "evaluating" a sheaf on a Mayer-Vietoris
