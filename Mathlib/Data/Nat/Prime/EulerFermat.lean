@@ -25,12 +25,3 @@ theorem pow_of_pow_add_prime (a n : ℕ) (ha : 1 < a) (hn : 1 < n) (hP : (a ^ n 
   have h := hm.nat_add_dvd_pow_add_pow (a ^ 2 ^ k) 1
   rw [one_pow, hP.dvd_iff_eq (Nat.lt_add_right 1 ha).ne', add_left_inj, pow_eq_self_iff ha] at h
   rw [h, mul_one]
-
-theorem not_prime_fermat_five : ¬ Nat.Prime (2 ^ (2 ^ 5) + 1) := by
-  have : 641 * 6700417 = 2 ^ 2 ^ 5 + 1 := by norm_num
-  apply Nat.not_prime_mul' this <;> norm_num
-
-theorem not_all_pow_pow_add_prime : ¬ ∀ n : ℕ, Nat.Prime (2 ^ (2 ^ n) + 1) := by
-  rw [not_forall]
-  use 5
-  apply not_prime_fermat_five
