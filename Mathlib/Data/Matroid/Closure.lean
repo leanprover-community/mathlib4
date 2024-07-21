@@ -38,6 +38,7 @@ All such choices come with tradeoffs. Provided that `M.closure X` has already be
 for `X ⊆ M.E`, the two best candidates for extending it to all `X` seem to be:
 
 (1) The function for which `M.closure X = M.closure (X ∩ M.E)` for all `X : Set α`
+
 (2) The function for which `M.closure X = M.closure (X ∩ M.E) ∪ X` for all `X : Set α`
 
 For both options, the function `closure` is monotone and idempotent with no assumptions on `X`.
@@ -88,7 +89,7 @@ lemma Flat.iInter {ι : Type*} [Nonempty ι] {Fs : ι → Set α}
   refine ⟨fun I X hI hIX ↦ subset_iInter fun i ↦ ?_,
     (iInter_subset _ (Classical.arbitrary _)).trans (hFs _).subset_ground⟩
   obtain ⟨J, hIJ, hJ⟩ := hI.indep.subset_basis_of_subset (hI.subset.trans (iInter_subset _ i))
-  refine' subset_union_right.trans ((hFs i).1 (X := Fs i ∪ X) hIJ _)
+  refine subset_union_right.trans ((hFs i).1 (X := Fs i ∪ X) hIJ ?_)
   convert hIJ.basis_union (hIX.basis_union_of_subset hIJ.indep hJ) using 1
   rw [← union_assoc, union_eq_self_of_subset_right hIJ.subset]
 

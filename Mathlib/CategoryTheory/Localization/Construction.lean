@@ -58,7 +58,7 @@ structure LocQuiver (W : MorphismProperty C) where
   /-- underlying object -/
   obj : C
 
-instance : Quiver (LocQuiver W) where Hom A B := Sum (A.obj ⟶ B.obj) { f : B.obj ⟶ A.obj // W f }
+instance : Quiver (LocQuiver W) where Hom A B := (A.obj ⟶ B.obj) ⊕ { f : B.obj ⟶ A.obj // W f }
 
 /-- The object in the path category of `LocQuiver W` attached to an object in
 the category `C` -/
@@ -122,7 +122,7 @@ def wIso {X Y : C} (w : X ⟶ Y) (hw : W w) : Iso (W.Q.obj X) (W.Q.obj Y) where
   inv_hom_id := Quotient.sound _ (relations.Winv₂ w hw)
 
 /-- The formal inverse in `W.Localization` of a morphism `w` in `W`. -/
-abbrev winv {X Y : C} (w : X ⟶ Y) (hw : W w) :=
+abbrev wInv {X Y : C} (w : X ⟶ Y) (hw : W w) :=
   (wIso w hw).inv
 
 variable (W)
@@ -210,7 +210,7 @@ morphisms in the original category, the inverses of the morphisms
 in `W` and if it is stable under composition -/
 theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
     [P.IsStableUnderComposition] (hP₁ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P (W.Q.map f))
-    (hP₂ : ∀ ⦃X Y : C⦄ (w : X ⟶ Y) (hw : W w), P (winv w hw)) :
+    (hP₂ : ∀ ⦃X Y : C⦄ (w : X ⟶ Y) (hw : W w), P (wInv w hw)) :
     P = ⊤ := by
   funext X Y f
   ext
