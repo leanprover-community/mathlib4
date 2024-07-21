@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
--- import Mathlib.RingTheory.MvPowerSeries.Basic
+import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Data.Finsupp.WellFounded
-import Mathlib.RingTheory.MvPowerSeries.LexOrder
 
 /-! # ZeroDivisors in a MvPowerSeries ring
 
@@ -65,7 +64,6 @@ theorem mem_nonZeroDivisors_of_constantCoeff {φ : MvPowerSeries σ R}
       false_implies]
 
 end Semiring
-
 
 end MvPowerSeries
 
