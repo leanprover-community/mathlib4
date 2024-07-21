@@ -39,7 +39,7 @@ theorem Subtype.nontrivial_iff_exists_ne (p : α → Prop) (x : Subtype p) :
 
 /-- An inhabited type is either nontrivial, or has a unique element. -/
 noncomputable def nontrivialPSumUnique (α : Type*) [Inhabited α] :
-    PSum (Nontrivial α) (Unique α) :=
+    Nontrivial α ⊕' Unique α :=
   if h : Nontrivial α then PSum.inl h
   else
     PSum.inr
