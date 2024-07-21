@@ -236,7 +236,7 @@ lemma isUpperSet_of_isOpen : IsOpen s → IsUpperSet s := fun h ↦
 lemma isLowerSet_of_isClosed : IsClosed s → IsLowerSet s := fun h ↦
   (isClosed_iff_isLowerSet_and_dirSupClosed.mp h).left
 
-lemma DirSupClosed_of_isClosed : IsClosed s → DirSupClosed s := fun h ↦
+lemma dirSupClosed_of_isClosed : IsClosed s → DirSupClosed s := fun h ↦
   (isClosed_iff_isLowerSet_and_dirSupClosed.mp h).right
 
 lemma lowerClosure_subset_closure : ↑(lowerClosure s) ⊆ closure s := by
