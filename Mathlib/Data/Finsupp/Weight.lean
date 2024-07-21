@@ -11,7 +11,57 @@ import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.LinearAlgebra.Finsupp
 
 
-/-! # weights of Finsupp functions -/
+/-! # weights of Finsupp functions
+
+The theory of multivariate polynomials and power series is built
+on the type `σ →₀ ℕ` which gives the exponents of the monomials.
+Many aspects of the theory (degree, order, graded ring structure)
+require to classify these exponents according to their total sum
+`∑  i, f i`, or variants, and this files provides some API for that.
+
+## Weight
+
+We fix a type `σ` and an `AddCommMonoid M`, as well as a function `w : σ → M`.
+
+- `Finsupp.weight` of a finitely supported function `f : σ →₀ ℕ`
+with respect to `w`: it is the sum `∑ (f i) • (w i)`.
+It is an `AddMonoidHom` map defined using `Finsupp.total`.
+
+- `Finsupp.le_weight`says that `f s ≤ f.weight w` when `M = ℕ``
+
+- `Finsupp.le_weight_of_nonneg'` says that `w s ≤ f.weight w`
+for `OrderedAddCommMonoid M`, when `f s ≠ 0` and all `w i` are nonnegative.
+
+- `Finsupp.le_weight'` is the same statement for `CanonicallyOrderedAddCommMonoid M`.
+
+- `NonTorsionWeight`: all values `w s` are non torsion in `M`.
+
+- `Finsupp.weight_eq_zero_iff_eq_zero` says that `f.weight w = 0` iff
+`f = 0` for `NonTorsion Weight w` and `CanonicallyOrderedAddCommMonoid M`.
+
+## Degree
+
+- `Finsupp.degree`:  the weight when all components of `w` are equal to `1 : ℕ`.
+The present choice is to have it defined as a plain function.
+
+- `Finsupp.degree_eq_zero_iff` says that `f.degree = 0` iff `f = 0`.
+
+- `Finsupp.le_degree` says that `f s ≤ f.degree`.
+
+- `Finsupp.degree_eq_weight_one` says `f.degree = f.weight 1`.
+This is useful to access the additivity properties of `Finsupp.degree`
+
+
+## TODO
+
+* The relevant generality of these constructions is not clear.
+It could probably be generalized to `w : σ → M` and `f : σ →₀ N`,
+provided `N` is a commutative semiring and `M`is an `N`-module.
+
+* Maybe `Finsupp.weight w` and `Finsupp.degree` should have similar types,
+both `AddCommMonoidHom` or both functions.
+
+-/
 
 variable {σ M : Type*} (w : σ → M)
 
@@ -20,8 +70,8 @@ namespace Finsupp
 section AddCommMonoid
 
 variable [AddCommMonoid M]
-/-- The `weight` of the finitely supported function `s : σ →₀ ℕ`
-with respect to `w : σ → M` is the sum `∑(s i)•(w i)`. -/
+/-- The `weight` of the finitely supported function `f : σ →₀ ℕ`
+with respect to `w : σ → M` is the sum `∑(f i)•(w i)`. -/
 noncomputable def weight : (σ →₀ ℕ) →+ M :=
   (Finsupp.total σ M ℕ w).toAddMonoidHom
 
