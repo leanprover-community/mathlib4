@@ -18,6 +18,10 @@ If `μ, ν` are two measures with `ν` s-finite, then there exists a set `s` suc
   for all measurable sets `t ⊆ (μ.sigmaFiniteSetWRT ν)ᶜ`, either `ν t = 0` or `μ t = ∞`.
   If no such set exists (which is only possible if `ν` is not s-finite), we define
   `μ.sigmaFiniteSetWRT ν = ∅`.
+* `MeasureTheory.Measure.sigmaFiniteSet`: for an s-finite measure `μ`, a measurable set such that
+  `μ.restrict μ.sigmaFiniteSet` is sigma-finite, and for all sets `s ⊆ μ.sigmaFiniteSetᶜ`,
+  either `μ s = 0` or `μ s = ∞`.
+  Defined as `μ.sigmaFiniteSetWRT μ`.
 
 ## Main statements
 
@@ -27,6 +31,12 @@ If `μ, ν` are two measures with `ν` s-finite, then there exists a set `s` suc
 * `restrict_compl_sigmaFiniteSetWRT`: if `μ ≪ ν` and `ν` is s-finite, then
   `μ.restrict (μ.sigmaFiniteSetWRT ν)ᶜ = ∞ • ν.restrict (μ.sigmaFiniteSetWRT ν)ᶜ`. As a consequence,
   that restriction is s-finite.
+
+* An instance showing that `μ.restrict μ.sigmaFiniteSet` is sigma-finite.
+* `restrict_compl_sigmaFiniteSet_eq_zero_or_top`: the measure `μ.restrict μ.sigmaFiniteSetᶜ` takes
+  only two values: 0 and ∞ .
+* `measure_compl_sigmaFiniteSet_eq_zero_iff_sigmaFinite`: an s-finite measure `μ` is sigma-finite
+  iff `μ μ.sigmaFiniteSetᶜ = 0`.
 
 ## References
 
@@ -51,6 +61,7 @@ def Measure.sigmaFiniteSetWRT (μ ν : Measure α) : Set α :=
   then h.choose
   else ∅
 
+@[measurability]
 lemma measurableSet_sigmaFiniteSetWRT :
     MeasurableSet (μ.sigmaFiniteSetWRT ν) := by
   rw [Measure.sigmaFiniteSetWRT]
@@ -255,5 +266,71 @@ lemma measure_eq_top_of_absolutelyContinuous_of_subset_compl_sigmaFiniteSetWRT [
     Set.inter_eq_left.mpr hs_subset]
 
 end SFinite
+
+@[simp]
+lemma measure_compl_sigmaFiniteSetWRT (hμν : μ ≪ ν) [SigmaFinite μ] [SFinite ν] :
+    ν (μ.sigmaFiniteSetWRT ν)ᶜ = 0 := by
+  have h : ν (μ.sigmaFiniteSetWRT ν)ᶜ ≠ 0 → μ (μ.sigmaFiniteSetWRT ν)ᶜ = ⊤ :=
+    measure_eq_top_of_subset_compl_sigmaFiniteSetWRT measurableSet_sigmaFiniteSetWRT.compl
+      subset_rfl
+  by_contra h0
+  refine ENNReal.top_ne_zero ?_
+  rw [← h h0, ← Measure.iSup_restrict_spanningSets]
+  simp_rw [Measure.restrict_apply' (measurable_spanningSets μ _), ENNReal.iSup_eq_zero]
+  intro i
+  by_contra h_ne_zero
+  have h_zero_top := measure_eq_top_of_subset_compl_sigmaFiniteSetWRT
+    (measurableSet_sigmaFiniteSetWRT.compl.inter (measurable_spanningSets _ _))
+    (Set.inter_subset_left : (μ.sigmaFiniteSetWRT ν)ᶜ ∩ spanningSets μ i ⊆ _) ?_
+  swap; · exact fun h ↦ h_ne_zero (hμν h)
+  refine absurd h_zero_top (ne_of_lt ?_)
+  exact (measure_mono Set.inter_subset_right).trans_lt (measure_spanningSets_lt_top μ i)
+
+section SigmaFiniteSet
+
+/-- A measurable set such that `μ.restrict μ.sigmaFiniteSet` is sigma-finite,
+  and for all measurable sets `s ⊆ μ.sigmaFiniteSetᶜ`, either `μ s = 0` or `μ s = ∞`. -/
+def Measure.sigmaFiniteSet (μ : Measure α) [SFinite μ] : Set α := μ.sigmaFiniteSetWRT μ
+
+@[measurability]
+lemma measurableSet_sigmaFiniteSet [SFinite μ] : MeasurableSet μ.sigmaFiniteSet :=
+  measurableSet_sigmaFiniteSetWRT
+
+lemma measure_eq_zero_or_top_of_subset_compl_sigmaFiniteSet [SFinite μ]
+    (ht_subset : t ⊆ μ.sigmaFiniteSetᶜ) :
+    μ t = 0 ∨ μ t = ∞ := by
+  by_cases h0 : μ t = 0
+  · exact Or.inl h0
+  · exact Or.inr <| measure_eq_top_of_absolutelyContinuous_of_subset_compl_sigmaFiniteSetWRT
+      Measure.AbsolutelyContinuous.rfl ht_subset h0
+
+/-- The measure `μ.restrict μ.sigmaFiniteSetᶜ` takes only two values: 0 and ∞ . -/
+lemma restrict_compl_sigmaFiniteSet_eq_zero_or_top (μ : Measure α) [SFinite μ] (s : Set α) :
+    μ.restrict μ.sigmaFiniteSetᶜ s = 0 ∨ μ.restrict μ.sigmaFiniteSetᶜ s = ∞ := by
+  rw [Measure.restrict_apply' measurableSet_sigmaFiniteSet.compl]
+  exact measure_eq_zero_or_top_of_subset_compl_sigmaFiniteSet Set.inter_subset_right
+
+/-- The restriction of an s-finite measure `μ` to `μ.sigmaFiniteSet` is sigma-finite. -/
+instance (μ : Measure α) [SFinite μ] : SigmaFinite (μ.restrict μ.sigmaFiniteSet) := by
+  rw [Measure.sigmaFiniteSet]
+  infer_instance
+
+lemma sigmaFinite_of_measure_compl_sigmaFiniteSet_eq_zero [SFinite μ]
+    (h : μ μ.sigmaFiniteSetᶜ = 0) :
+    SigmaFinite μ := by
+  rw [← Measure.restrict_add_restrict_compl (μ := μ) (measurableSet_sigmaFiniteSet (μ := μ)),
+    Measure.restrict_eq_zero.mpr h, add_zero]
+  infer_instance
+
+@[simp]
+lemma measure_compl_sigmaFiniteSet (μ : Measure α) [SigmaFinite μ] : μ μ.sigmaFiniteSetᶜ = 0 :=
+  measure_compl_sigmaFiniteSetWRT Measure.AbsolutelyContinuous.rfl
+
+/-- An s-finite measure `μ` is sigma-finite iff `μ μ.sigmaFiniteSetᶜ = 0`. -/
+lemma measure_compl_sigmaFiniteSet_eq_zero_iff_sigmaFinite (μ : Measure α) [SFinite μ] :
+    μ μ.sigmaFiniteSetᶜ = 0 ↔ SigmaFinite μ :=
+  ⟨sigmaFinite_of_measure_compl_sigmaFiniteSet_eq_zero, fun _ ↦ measure_compl_sigmaFiniteSet μ⟩
+
+end SigmaFiniteSet
 
 end MeasureTheory
