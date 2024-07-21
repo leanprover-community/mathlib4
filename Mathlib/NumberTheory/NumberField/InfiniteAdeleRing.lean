@@ -31,10 +31,10 @@ space `ℝ ^ r₁ × ℂ ^ r₂` used in
 ## Main results
  - `NumberField.InfiniteAdeleRing.locallyCompactSpace` : the infinite adele ring is a
   locally compact space.
- - `NumberField.InfiniteAdeleRing.mixedEmbedding_eq_globalEmbedding_comp` : applying the
-  ring isomorphism of `equiv_mixedSpace` to a globally embedded `(x)ᵥ` in the infinite adele
-  ring, where `x ∈ K`, is the same as applying the embedding `K → ℝ ^ r₁ × ℂ ^ r₂` given by
-  `NumberField.mixedEmbedding` to `x`.
+ - `NumberField.InfiniteAdeleRing.mixedEmbedding_eq_globalEmbedding_comp` : embedding any `x ∈ K`
+  globally `(x)ᵥ` in the infinite adele ring first and then applying the ring isomorphism of
+  `equiv_mixedSpace` to `ℝ ^ r₁ × ℂ ^ r₂` is the same as applying the mixed embedding
+  `K → ℝ ^ r₁ × ℂ ^ r₂` given by `NumberField.mixedEmbedding` to `x`.
 
 ## Tags
 infinite adele ring, number field

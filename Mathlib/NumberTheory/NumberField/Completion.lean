@@ -14,24 +14,24 @@ import Mathlib.Topology.Instances.Real
 
 This file contains the completion of a number field at its infinite places.
 
-We first define abstractly the uniform structure associated to a (semi)ring with an associated
-absolute value, derived from a `NormedRing` instance. Let `v` be an infinite place, to which
-is associated an absolute value; the abstract uniform structure of this absolute value is
-used to define a `NormedField` instance, and therefore a uniform structure. We complete `K`
-at `v` using the `UniformSpace.Completion` functor with respect to this uniform structure to
-obtain `v.completion`.
+We first define abstractly the uniform structure of any (semi)ring which has an associated
+absolute value, derived from a `NormedRing` instance. Then, if `v` is an infinite place of
+a number field `K`, then the absolute value on `K` coming from `v` gives a uniform structure
+on `K` from the abstract instance. Using this structure, `K` is completed at `v` using the
+`UniformSpace.Completion` functor to obtain `v.completion`.
 
-The embedding `v.embedding : K →+* ℂ` associated to an infinite place enjoys useful properties
-within the uniform structure defined by `v`; namely, it is a uniform embedding and an isometry.
-This is because the absolute value associated to `v` factors through `v.embedding`. This allows
-us to show that the completion of `K` at an infinite place is locally compact. Moreover, we can
-extend `v.embedding` to a embedding `v.completion →+* ℂ`. We show that if `v` is real (i.e.,
-`v.embedding (K) ⊆ ℝ`) then the extended embedding gives an isomorphism `v.completion ≃+* ℝ`,
-else the extended embedding gives an isomorphism `v.completion ≃+* ℂ`.
+The embedding `v.embedding : K →+* ℂ` associated to the infinite place `v` of `K` enjoys useful
+properties within the uniform structure defined by `v`; namely, it is a uniform embedding and an
+isometry. This is because the absolute value associated to `v` factors through `v.embedding`.
+We can extend `v.embedding` to an embedding `v.completion →+* ℂ` which is also uniform and
+isometric, from which we see that the completion of `K` at an infinite place is locally compact.
+We moreover show that if `v` is real (i.e., `v.embedding (K) ⊆ ℝ`) then the extended embedding
+gives an isomorphism `v.completion ≃+* ℝ`, else the extended embedding gives an isomorphism
+`v.completion ≃+* ℂ`.
 
 ## Main definitions
  - `WithAbs` : type synonym equipping a semiring with an absolute value.
- - `AbsoluteValue.completion` : the uniform space completion of a field `K` equipped with real
+ - `AbsoluteValue.completion` : the completion of a field `K` equipped with a real
   absolute value.
  - `NumberField.InfinitePlace.completion` : the completion of a number field `K` at an infinite
   place, obtained by completing `K` with respect to the absolute value associated to the infinite
@@ -39,7 +39,7 @@ else the extended embedding gives an isomorphism `v.completion ≃+* ℂ`.
  - `NumberField.InfinitePlace.Completion.extensionEmbedding` : the embedding `v.embedding : K →+* ℂ`
   extended to `v.completion →+* ℂ`.
  - `NumberField.InfinitePlace.Completion.extensionEmbedding_of_isReal` : if the infinite place `v`
-  is real, then this extends the embedding `v.embedding_of_isReal : K →+* ℝ` to
+  is real, then this extends the embedding `v.embedding_of_isReal _ : K →+* ℝ` to
   `v.completion →+* ℝ`.
  - `NumberField.InfinitePlace.Completion.equivReal_of_isReal` : the ring isomorphism
   `v.completion ≃+* ℝ` when `v` is a real infinite place; the forward direction of this is
@@ -143,7 +143,7 @@ open WithAbs
 
 variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ)
 
-/-- The completion of a field with respect to a real absolute value. -/
+/-- The completion of a field `K` with respect to a real absolute value on `K`. -/
 def completion := UniformSpace.Completion (WithAbs v)
 
 namespace Completion
@@ -168,16 +168,16 @@ instance : Algebra (WithAbs v) v.completion :=
 
 variable {A : Type*} [NormedField A] [CompleteSpace A] {f : WithAbs v →+* A} {v}
 
-/-- If the absolute value of a normed field factors through an embedding into another normed field
-`A`, then this extends that embedding to `v.completion →+* A`. -/
+/-- If the absolute value `v` of a normed field factors through an embedding into another normed
+field `A`, then that embedding can be extended to `v.completion →+* A`. -/
 def extensionEmbedding_of_comp
     (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : A → ℝ)).comp f.injective) :
     v.completion →+* A :=
   UniformSpace.Completion.extensionHom _
     (WithAbs.uniformInducing_of_comp h).uniformContinuous.continuous
 
-/-- If the absolute value of a normed field factors through a normed embedding, then the extended
-embedding `v.completion →+* A` preserves distances. -/
+/-- If the absolute value `v` of a normed field factors through a normed embedding, then the
+extended embedding `v.completion →+* A` preserves distances. -/
 theorem extensionEmbedding_dist_eq_of_comp
     (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : A → ℝ)).comp f.injective)
     (x y : v.completion) :
@@ -192,22 +192,22 @@ theorem extensionEmbedding_dist_eq_of_comp
       (WithAbs.uniformInducing_of_comp h).uniformContinuous]
     exact Isometry.dist_eq (WithAbs.isometry_of_comp h) _ _
 
-/-- If the absolute value of a normed field factors through a normed embedding, then the
+/-- If the absolute value `v` of a normed field factors through a normed embedding, then the
 extended embedding `v.completion →+* A` is an isometry. -/
 theorem isometry_extensionEmbedding_of_comp
     (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : A → ℝ)).comp f.injective) :
     Isometry (extensionEmbedding_of_comp h) :=
   Isometry.of_dist_eq <| extensionEmbedding_dist_eq_of_comp h
 
-/-- If the absolute value of a normed field factors through a normed embedding, then the
+/-- If the absolute value `v` of a normed field factors through a normed embedding, then the
 extended embedding `v.completion →+* A` is a closed embedding. -/
 theorem closedEmbedding_extensionEmbedding_of_comp
     (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : A → ℝ)).comp f.injective) :
     ClosedEmbedding (extensionEmbedding_of_comp h) :=
   (isometry_extensionEmbedding_of_comp h).closedEmbedding
 
-/-- The completion of any normed field with an absolute value, such that the absolute value
-factors through an embedding into a normed locally compact field, is also locally compact. -/
+/-- If the absolute value `v` of a normed field factors through a normed embedding into a locally
+compact space, then the completion `v.completion` is locally compact. -/
 theorem locallyCompactSpace [LocallyCompactSpace A]
     (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : A → ℝ)).comp f.injective)  :
     LocallyCompactSpace (v.completion) :=
@@ -263,11 +263,13 @@ instance : Coe K v.completion :=
 instance : Algebra K v.completion :=
   inferInstanceAs (Algebra (WithAbs v.1) v.1.completion)
 
-/-- The embedding associated to an infinite place extended to an embedding `v.completion →+* ℂ`. -/
+/-- The embedding `v.completion →+* ℂ` extended from the embedding associated to the infinite place
+`v`. -/
 def extensionEmbedding :=
   extensionEmbedding_of_comp v.abs_eq_comp
 
-/-- The embedding `K →+* ℝ` associated to a real infinite place extended to `v.completion →+* ℝ`. -/
+/-- The embedding `v.completion →+* ℝ` extended from the embedding associated to the real infinite
+place `v`. -/
 def extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsReal v) :=
   extensionEmbedding_of_comp <| abs_of_isReal_eq_comp hv
 
@@ -275,7 +277,7 @@ def extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsReal v) :=
 theorem isometry_extensionEmbedding : Isometry (extensionEmbedding v) :=
   Isometry.of_dist_eq (extensionEmbedding_dist_eq_of_comp v.abs_eq_comp)
 
-/-- The embedding `v.completion →+* ℝ` at a real infinite palce is an isometry. -/
+/-- The embedding `v.completion →+* ℝ` at a real infinite place `v` is an isometry. -/
 theorem isometry_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsReal v) :
     Isometry (extensionEmbedding_of_isReal hv) :=
   Isometry.of_dist_eq (extensionEmbedding_dist_eq_of_comp <| abs_of_isReal_eq_comp hv)
