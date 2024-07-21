@@ -5,7 +5,6 @@ Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.GroupTheory.Congruence.Basic
-import Mathlib.Init.Data.Prod
 import Mathlib.RingTheory.OreLocalization.Basic
 
 

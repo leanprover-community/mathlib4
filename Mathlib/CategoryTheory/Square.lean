@@ -31,9 +31,6 @@ maps (`arrowArrowEquivalence'`).
 
 ## TODO
 * define `Functor.mapSquare`
-* introduce the pullback cone, the pushout cocone
-attached to `sq : Square C` and define the
-properties `IsPushout` and `IsPullback`.
 * construct the equivalence `(Square C)ᵒᵖ ≌ Square C`
 
 -/
@@ -243,6 +240,30 @@ def arrowArrowEquivalence' : Square C ≌ Arrow (Arrow C) where
   inverse := fromArrowArrowFunctor'
   unitIso := Iso.refl _
   counitIso := Iso.refl _
+
+/-- The top-left evaluation `Square C ⥤ C`. -/
+@[simps]
+def evaluation₁ : Square C ⥤ C where
+  obj sq := sq.X₁
+  map φ := φ.τ₁
+
+/-- The top-right evaluation `Square C ⥤ C`. -/
+@[simps]
+def evaluation₂ : Square C ⥤ C where
+  obj sq := sq.X₂
+  map φ := φ.τ₂
+
+/-- The bottom-left evaluation `Square C ⥤ C`. -/
+@[simps]
+def evaluation₃ : Square C ⥤ C where
+  obj sq := sq.X₃
+  map φ := φ.τ₃
+
+/-- The bottom-right evaluation `Square C ⥤ C`. -/
+@[simps]
+def evaluation₄ : Square C ⥤ C where
+  obj sq := sq.X₄
+  map φ := φ.τ₄
 
 end Square
 
