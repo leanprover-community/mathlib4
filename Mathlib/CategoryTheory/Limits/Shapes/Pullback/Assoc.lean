@@ -105,7 +105,6 @@ def pullbackPullbackLeftIsPullback [HasPullback (g₂ ≫ f₃) f₄] : IsLimit 
     (show l₁ ≫ g₂ = l₂ ≫ g₃ from (pullback.lift_fst _ _ _).symm)) := by
   apply leftSquareIsPullback _ rfl (pullbackIsPullback f₃ f₄)
   simpa [PullbackCone.pasteHoriz] using PullbackCone.mkSelfIsLimit (pullbackIsPullback _ f₄)
-#align category_theory.limits.pullback_pullback_left_is_pullback CategoryTheory.Limits.pullbackPullbackLeftIsPullback
 
 /-- `(X₁ ×[Y₁] X₂) ×[Y₂] X₃` is the pullback `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)`. -/
 def pullbackAssocIsPullback [HasPullback (g₂ ≫ f₃) f₄] :
@@ -115,7 +114,6 @@ def pullbackAssocIsPullback [HasPullback (g₂ ≫ f₃) f₄] :
           rw [pullback.lift_fst_assoc, Category.assoc, Category.assoc, pullback.condition])) := by
   simpa using pasteVertIsPullback rfl (pullbackIsPullback _ _)
     (pullbackPullbackLeftIsPullback f₁ f₂ f₃ f₄)
-#align category_theory.limits.pullback_assoc_is_pullback CategoryTheory.Limits.pullbackAssocIsPullback
 
 theorem hasPullback_assoc [HasPullback (g₂ ≫ f₃) f₄] : HasPullback f₁ (g₃ ≫ f₂) :=
   ⟨⟨⟨_, pullbackAssocIsPullback f₁ f₂ f₃ f₄⟩⟩⟩
@@ -125,7 +123,6 @@ def pullbackPullbackRightIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
     IsLimit (PullbackCone.mk l₁' l₂' (show l₁' ≫ g₂ = l₂' ≫ g₃ from pullback.lift_snd _ _ _)) := by
   apply topSquareIsPullback rfl (pullbackIsPullback f₁ f₂)
   simpa [PullbackCone.pasteVert] using PullbackCone.mkSelfIsLimit (pullbackIsPullback _ _)
-#align category_theory.limits.pullback_pullback_right_is_pullback CategoryTheory.Limits.pullbackPullbackRightIsPullback
 
 /-- `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)` is the pullback `(X₁ ×[Y₁] X₂) ×[Y₂] X₃`. -/
 def pullbackAssocSymmIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
@@ -135,7 +132,6 @@ def pullbackAssocSymmIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
           rw [pullback.lift_snd_assoc, Category.assoc, Category.assoc, pullback.condition])) := by
   simpa [PullbackCone.pasteHoriz] using pasteHorizIsPullback rfl
     (pullbackIsPullback f₃ f₄) (pullbackPullbackRightIsPullback _ _ _ _)
-#align category_theory.limits.pullback_assoc_symm_is_pullback CategoryTheory.Limits.pullbackAssocSymmIsPullback
 
 theorem hasPullback_assoc_symm [HasPullback f₁ (g₃ ≫ f₂)] : HasPullback (g₂ ≫ f₃) f₄ :=
   ⟨⟨⟨_, pullbackAssocSymmIsPullback f₁ f₂ f₃ f₄⟩⟩⟩
@@ -284,7 +280,6 @@ def pushoutPushoutLeftIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
   apply botSquareIsPushout rfl (pushoutIsPushout _ g₄)
   simpa [PushoutCocone.pasteVert] using
     PushoutCocone.mkSelfIsColimit (pushoutIsPushout (g₃ ≫ f₂) g₄)
-#align category_theory.limits.pushout_pushout_left_is_pushout CategoryTheory.Limits.pushoutPushoutLeftIsPushout
 
 /-- `(X₁ ⨿[Z₁] X₂) ⨿[Z₂] X₃` is the pushout `X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)`. -/
 def pushoutAssocIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
@@ -294,7 +289,6 @@ def pushoutAssocIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
           rw [Category.assoc, pushout.inl_desc, pushout.condition_assoc])) := by
   simpa using pasteHorizIsPushout rfl (pushoutIsPushout g₁ g₂)
     (pushoutPushoutLeftIsPushout g₁ g₂ g₃ g₄)
-#align category_theory.limits.pushout_assoc_is_pushout CategoryTheory.Limits.pushoutAssocIsPushout
 
 theorem hasPushout_assoc [HasPushout (g₃ ≫ f₂) g₄] : HasPushout g₁ (g₂ ≫ f₃) :=
   ⟨⟨⟨_, pushoutAssocIsPushout g₁ g₂ g₃ g₄⟩⟩⟩
@@ -304,7 +298,6 @@ def pushoutPushoutRightIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
     IsColimit (PushoutCocone.mk l₁ l₂ (show f₂ ≫ l₁ = f₃ ≫ l₂ from pushout.inr_desc _ _ _)) := by
   apply rightSquareIsPushout _ rfl (pushoutIsPushout _ _)
   simpa [PushoutCocone.pasteHoriz] using PushoutCocone.mkSelfIsColimit (pushoutIsPushout _ _)
-#align category_theory.limits.pushout_pushout_right_is_pushout CategoryTheory.Limits.pushoutPushoutRightIsPushout
 
 /-- `X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)` is the pushout `(X₁ ⨿[Z₁] X₂) ⨿[Z₂] X₃`. -/
 def pushoutAssocSymmIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
@@ -313,7 +306,6 @@ def pushoutAssocSymmIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
         (show (g₃ ≫ f₂) ≫ l₁ = g₄ ≫ f₄ ≫ l₂ by
           rw [Category.assoc, pushout.inr_desc, pushout.condition_assoc])) := by
   simpa using pasteVertIsPushout rfl (pushoutIsPushout _ _) (pushoutPushoutRightIsPushout _ _ _ _)
-#align category_theory.limits.pushout_assoc_symm_is_pushout CategoryTheory.Limits.pushoutAssocSymmIsPushout
 
 theorem hasPushout_assoc_symm [HasPushout g₁ (g₂ ≫ f₃)] : HasPushout (g₃ ≫ f₂) g₄ :=
   ⟨⟨⟨_, pushoutAssocSymmIsPushout g₁ g₂ g₃ g₄⟩⟩⟩
