@@ -124,7 +124,7 @@ lemma mapCoeffs_C (x : A) :
 
 variable {K : Type*} [CommDifferentialRing K] [DifferentialAlgebra A K]
 
-theorem apply_aeval_eq' (x : K) (p : A[X]) :
+theorem deriv_aeval_eq (x : K) (p : A[X]) :
     (aeval x p)′ = aeval x (mapCoeffs p) +
       aeval x (derivative p) * x′ := by
   convert Derivation.apply_aeval_eq'
