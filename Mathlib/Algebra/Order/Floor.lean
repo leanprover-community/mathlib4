@@ -1340,6 +1340,11 @@ theorem round_le (x : α) (z : ℤ) : |x - round x| ≤ |x - z| := by
     norm_cast
     exact floor_le_sub_one_iff.mpr hx
 
+@[simp]
+theorem round_half_bot (x : α) : a - (1 / 2 : ℚ) < round a := by
+  rw [round_eq, show (a - 1 / 2 : ℚ) = (a + 1 / 2) - 1 by ring]
+  exact Int.sub_one_lt_floor (a + 1 / 2)
+
 end LinearOrderedRing
 
 section LinearOrderedField
