@@ -126,8 +126,7 @@ variable {K : Type*} [CommDifferentialRing K] [DifferentialAlgebra A K]
 theorem deriv_aeval_eq (x : K) (p : A[X]) :
     (aeval x p)′ = aeval x (mapCoeffs p) +
       aeval x (derivative p) * x′ := by
-  convert Derivation.apply_aeval_eq'
-      CommDifferentialRing.deriv _ (Algebra.linearMap A K) ..
+  convert Derivation.apply_aeval_eq' CommDifferentialRing.deriv _ (Algebra.linearMap A K) ..
   · simp [mapCoeffs]
   · simp [deriv_algebraMap]
 
