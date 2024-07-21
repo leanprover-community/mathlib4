@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Order.AddTorsor
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.WellFoundedSet
 
 /-!
@@ -49,7 +48,7 @@ theorem smulAntidiagonal_mono_right (h : t₁ ⊆ t₂) :
 
 end SMul
 
-open SMul Pointwise
+open SMul
 
 namespace SMulAntidiagonal
 
@@ -114,32 +113,4 @@ theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (smulAntidiagonal s 
   refine' mn.ne (g.injective <| (h.natEmbedding _).injective _)
   exact eq_of_fst_le_fst_of_snd_le_snd (hg _ _ mn.le) h2'
 
-end SMulAntidiagonal
-
-@[to_additive]
-theorem Nonempty.SMul [SMul G P] {s : Set G} {t : Set P} :
-    s.Nonempty → t.Nonempty → (s • t).Nonempty :=
-  Nonempty.image2
-
-@[to_additive]
-theorem IsPWO.SMul [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P] {s : Set G}
-    {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s • t) := by
-  rw [← @image_smul_prod]
-  exact (hs.prod ht).image_of_monotone (monotone_fst.SMul monotone_snd)
-
-@[to_additive]
-theorem IsWF.SMul [LinearOrder G] [LinearOrder P] [SMul G P] [IsOrderedCancelSMul G P] {s : Set G}
-    {t : Set P} (hs : s.IsWF) (ht : t.IsWF) : IsWF (s • t) :=
-  (hs.isPWO.SMul ht.isPWO).isWF
-
--- _root_ seems to be needed here, and I have no idea why.
-@[to_additive]
-theorem IsWF.min_SMul [LinearOrder G] [LinearOrder P] [_root_.SMul G P] [IsOrderedCancelSMul G P]
-    {s : Set G} {t : Set P} (hs : s.IsWF) (ht : t.IsWF) (hsn : s.Nonempty) (htn : t.Nonempty) :
-    (hs.SMul ht).min (hsn.SMul htn) = hs.min hsn • ht.min htn := by
-  refine' le_antisymm (IsWF.min_le _ _ (mem_smul.2 ⟨_, hs.min_mem _, _, ht.min_mem _, rfl⟩)) _
-  rw [IsWF.le_min_iff]
-  rintro _ ⟨x, hx, y, hy, rfl⟩
-  exact IsOrderedSMul.smul_le_smul (hs.min_le _ hx) (ht.min_le _ hy)
-
-end Set
+end Set.SMulAntidiagonal
