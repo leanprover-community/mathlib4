@@ -460,7 +460,7 @@ section LinearOrderedRing
 variable [LinearOrderedRing α] [FloorSemiring α]
 
 theorem sub_one_lt_floor (a : α) : a - 1 < ⌊a⌋₊ :=
-  sub_lt_iff_lt_add.2 <| lt_floor_add_one a
+  _iff_lt_add.2 <| lt_floor_add_one a
 
 end LinearOrderedRing
 
@@ -635,7 +635,7 @@ theorem lt_floor_add_one (a : α) : a < ⌊a⌋ + 1 := by
 
 @[simp]
 theorem sub_one_lt_floor (a : α) : a - 1 < ⌊a⌋ :=
-  sub_lt_iff_lt_add.2 (lt_floor_add_one a)
+  _iff_lt_add.2 (lt_floor_add_one a)
 
 @[simp]
 theorem floor_intCast (z : ℤ) : ⌊(z : α)⌋ = z :=
@@ -726,14 +726,14 @@ theorem floor_sub_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
     ⌊a - (no_index (OfNat.ofNat n))⌋ = ⌊a⌋ - OfNat.ofNat n :=
   floor_sub_nat a n
 
-theorem abs_sub_lt_one_of_floor_eq_floor {α : Type*} [LinearOrderedCommRing α] [FloorRing α]
+theorem abs__one_of_floor_eq_floor {α : Type*} [LinearOrderedCommRing α] [FloorRing α]
     {a b : α} (h : ⌊a⌋ = ⌊b⌋) : |a - b| < 1 := by
   have : a < ⌊a⌋ + 1 := lt_floor_add_one a
   have : b < ⌊b⌋ + 1 := lt_floor_add_one b
   have : (⌊a⌋ : α) = ⌊b⌋ := Int.cast_inj.2 h
   have : (⌊a⌋ : α) ≤ a := floor_le a
   have : (⌊b⌋ : α) ≤ b := floor_le b
-  exact abs_sub_lt_iff.2 ⟨by linarith, by linarith⟩
+  exact abs__iff.2 ⟨by linarith, by linarith⟩
 
 theorem floor_eq_iff : ⌊a⌋ = z ↔ ↑z ≤ a ∧ a < z + 1 := by
   rw [le_antisymm_iff, le_floor, ← Int.lt_add_one_iff, floor_lt, Int.cast_add, Int.cast_one,
@@ -848,7 +848,7 @@ lemma fract_pos : 0 < fract a ↔ a ≠ ⌊a⌋ :=
   (fract_nonneg a).lt_iff_ne.trans <| ne_comm.trans sub_ne_zero
 
 theorem fract_lt_one (a : α) : fract a < 1 :=
-  sub_lt_comm.1 <| sub_one_lt_floor _
+  _comm.1 <| sub_one_lt_floor _
 
 @[simp]
 theorem fract_zero : fract (0 : α) = 0 := by rw [fract, floor_zero, cast_zero, sub_self]
@@ -924,7 +924,7 @@ theorem fract_neg {x : α} (hx : fract x ≠ 0) : fract (-x) = 1 - fract x := by
   constructor
   · rw [le_sub_iff_add_le, zero_add]
     exact (fract_lt_one x).le
-  refine ⟨sub_lt_self _ (lt_of_le_of_ne' (fract_nonneg x) hx), -⌊x⌋ - 1, ?_⟩
+  refine ⟨_self _ (lt_of_le_of_ne' (fract_nonneg x) hx), -⌊x⌋ - 1, ?_⟩
   simp only [sub_sub_eq_add_sub, cast_sub, cast_neg, cast_one, sub_left_inj]
   conv in -x => rw [← floor_add_fract x]
   simp [-floor_add_fract]
@@ -951,7 +951,7 @@ theorem preimage_fract (s : Set α) :
   simp only [mem_preimage, mem_iUnion, mem_inter_iff]
   refine ⟨fun h => ⟨⌊x⌋, h, fract_nonneg x, fract_lt_one x⟩, ?_⟩
   rintro ⟨m, hms, hm0, hm1⟩
-  obtain rfl : ⌊x⌋ = m := floor_eq_iff.2 ⟨sub_nonneg.1 hm0, sub_lt_iff_lt_add'.1 hm1⟩
+  obtain rfl : ⌊x⌋ = m := floor_eq_iff.2 ⟨sub_nonneg.1 hm0, _iff_lt_add'.1 hm1⟩
   exact hms
 
 theorem image_fract (s : Set α) : fract '' s = ⋃ m : ℤ, (fun x : α => x - m) '' s ∩ Ico 0 1 := by
@@ -1399,7 +1399,7 @@ theorem sub_half_lt_round (x : α) : x - 1 / 2 < round x := by
   rw [round_eq x, show x - 1 / 2 = x + 1 / 2 - 1 by ring]
   exact Int.sub_one_lt_floor (x + 1 / 2)
 
-theorem round_half_top (x : α) : (round x : α) ≤ x + 1 / 2 := by
+theorem round_le_add_half (x : α) : (round x : α) ≤ x + 1 / 2 := by
   rw [round_eq x]
   exact Int.floor_le (x + 1 / 2)
 
