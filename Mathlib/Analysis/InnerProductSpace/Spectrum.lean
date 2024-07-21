@@ -392,6 +392,12 @@ theorem basic_index1 {α β : Type*} [DecidableEq α] [CompleteLattice β]
 --Is there an intermediate abstract lemma? Maybe using a more general invariant subspace like the
 --other abstract lemma did. (This should work... like in invariant_subspace_eigenspace_exhaust below)
 
+theorem invariant_subspace_eigen_convert {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
+    (hS: IsSymmetric S) (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : eigenspace S μ ⊓ F =
+    Submodule.map (Submodule.subtype F)
+    (eigenspace (S.restrict (hInv)) μ) := by sorry
+
+
 theorem index_convert' (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // x ≠ i} → 𝕜) : (eigenspace (T i) μ ⊓
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))) =
     Submodule.map (Submodule.subtype ((⨅ (j : {x // x ≠ i}), eigenspace (T j) (γ j))))
