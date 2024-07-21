@@ -274,6 +274,8 @@ end Version2
 
 section Simultaneous
 
+section Pair
+
 variable {A B : E →ₗ[𝕜] E}  {α β : 𝕜} (hA : A.IsSymmetric) (hB : B.IsSymmetric)
      [FiniteDimensional 𝕜 E] (hAB : A ∘ₗ B = B ∘ₗ A)
 
@@ -367,6 +369,10 @@ theorem eigenspace_directsum_internal: DirectSum.IsInternal
     simp only [Submodule.orthogonal_eq_bot_iff, Three]
   exact (OrthogonalFamily.isInternal_iff One).mpr Four
 
+end Pair
+
+section Tuple
+
 universe u
 
 variable {n m : Type u} [Fintype n] [Fintype m] (T : n → (E →ₗ[𝕜] E))
@@ -383,11 +389,6 @@ theorem invariance_iInf [Nonempty n] (i : n) :
   simp only [Submodule.mem_iInf] at *
   exact fun i_1 ↦ eigenspace_invariant (hC (↑i_1) i) (γ i_1) v (hv i_1)
 
-theorem basic_index1 {α β : Type*} [DecidableEq α] [CompleteLattice β]
-    (i : α) (s : α → β) : ⨅ x, s x = s i ⊓ ⨅ (x' : {y // y ≠ i}),
-      (s x') := by
-  rw [iInf_subtype]; exact iInf_split_single s i
-
 theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
     (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : (eigenspace S μ) ⊓ F =
     Submodule.map (Submodule.subtype F)
@@ -402,14 +403,13 @@ theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S 
     simp only [Submodule.mem_inf]
     constructor
     · simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
-      exists_eq_right, mem_eigenspace_iff, SetLike.mk_smul_mk, @restrict_apply, Subtype.mk.injEq] at h
+      exists_eq_right, mem_eigenspace_iff, SetLike.mk_smul_mk, restrict_apply,
+      Subtype.mk.injEq] at h
       obtain ⟨_, hy⟩ := h
       simpa [mem_eigenspace_iff]
-    · obtain ⟨y, hy⟩ := h
-      have B := hy.2
-      simp only [Submodule.coeSubtype] at B
-      rw [← B]
-      exact Submodule.coe_mem y
+    · simp only [Submodule.coeSubtype] at h
+      obtain ⟨y, hy⟩ := h
+      simp only [← hy.2, Submodule.coeSubtype, SetLike.coe_mem]
 
 theorem iSup_iInf_fun_index_split_single {α β γ : Type*} [DecidableEq α] [CompleteLattice γ]
     (i : α) (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
@@ -480,6 +480,8 @@ theorem direct_sum_isInternal_simultaneous : DirectSum.IsInternal (fun (α : n �
     rw [OrthogonalFamily.isInternal_iff]
     · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot T hT hC
     · exact orthogonalFamily_iInf_eigenspaces T hT
+
+end Tuple
 
 end Simultaneous
 
