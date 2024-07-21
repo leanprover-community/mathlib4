@@ -5,8 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Algebra.Ring.Int
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Nat.Cast.Commute
 
 /-!
 # Cast of integers (additional theorems)

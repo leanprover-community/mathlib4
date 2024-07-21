@@ -136,7 +136,7 @@ theorem isLocallyNoetherian_iff_of_affine_openCover (𝒰 : Scheme.OpenCover.{v,
   · intro hCNoeth
     let fS i : X.affineOpens := ⟨Scheme.Hom.opensRange (𝒰.map i), isAffineOpen_opensRange _⟩
     apply isLocallyNoetherian_of_affine_cover (S := fS)
-    rw [← Scheme.OpenCover.iSup_opensRange 𝒰]
+    · rw [← Scheme.OpenCover.iSup_opensRange 𝒰]
     intro i
     apply isNoetherianRing_of_ringEquiv (R := Γ(𝒰.obj i, ⊤))
     apply CategoryTheory.Iso.commRingCatIsoToRingEquiv

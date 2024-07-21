@@ -102,7 +102,7 @@ theorem prod_snd : (p.prod q).snd = (p.snd, q.snd) :=
 
 /-- The sum of two pointings. Keeps the first point from the left and the second point from the
 right. -/
-protected def sum : TwoPointing (Sum α β) :=
+protected def sum : TwoPointing (α ⊕ β) :=
   ⟨(Sum.inl p.fst, Sum.inr q.snd), Sum.inl_ne_inr⟩
 
 @[simp]

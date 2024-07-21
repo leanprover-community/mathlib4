@@ -543,12 +543,6 @@ def partition (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α ×
     let (r₁, r₂) := partition p r
     if p x then (link l₁ x r₁, merge l₂ r₂) else (merge l₁ r₁, link l₂ x r₂)
 
-/- warning: ordnode.map -> Ordnode.map is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : Type.{u2}}, (α -> β) -> (Ordnode.{u1} α) -> (Ordnode.{u2} β)
-but is expected to have type
-  forall {α : Type.{u2}} {β : Type.{u1}}, (α -> β) -> (Ordnode.{u2} α) -> (Ordnode.{u1} β)
-Case conversion may be inaccurate. Consider using '#align ordnode.map Ordnode.mapₓ'. -/
 /-- O(n). Map a function across a tree, without changing the structure. Only valid when
 the function is strictly monotone, i.e. `x < y → f x < f y`.
 
@@ -558,12 +552,6 @@ def map {β} (f : α → β) : Ordnode α → Ordnode β
   | nil => nil
   | node s l x r => node s (map f l) (f x) (map f r)
 
-/- warning: ordnode.fold -> Ordnode.fold is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : Sort.{u2}}, β -> (β -> α -> β -> β) -> (Ordnode.{u1} α) -> β
-but is expected to have type
-  forall {α : Type.{u2}} {β : Sort.{u1}}, β -> (β -> α -> β -> β) -> (Ordnode.{u2} α) -> β
-Case conversion may be inaccurate. Consider using '#align ordnode.fold Ordnode.foldₓ'. -/
 /-- O(n). Fold a function across the structure of a tree.
 
      fold z f {1, 2, 4} = f (f z 1 z) 2 (f z 4 z)
@@ -574,12 +562,6 @@ def fold {β} (z : β) (f : β → α → β → β) : Ordnode α → β
   | nil => z
   | node _ l x r => f (fold z f l) x (fold z f r)
 
-/- warning: ordnode.foldl -> Ordnode.foldl is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : Sort.{u2}}, (β -> α -> β) -> β -> (Ordnode.{u1} α) -> β
-but is expected to have type
-  forall {α : Type.{u2}} {β : Sort.{u1}}, (β -> α -> β) -> β -> (Ordnode.{u2} α) -> β
-Case conversion may be inaccurate. Consider using '#align ordnode.foldl Ordnode.foldlₓ'. -/
 /-- O(n). Fold a function from left to right (in increasing order) across the tree.
 
      foldl f z {1, 2, 4} = f (f (f z 1) 2) 4 -/
@@ -587,12 +569,6 @@ def foldl {β} (f : β → α → β) : β → Ordnode α → β
   | z, nil => z
   | z, node _ l x r => foldl f (f (foldl f z l) x) r
 
-/- warning: ordnode.foldr -> Ordnode.foldr is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : Sort.{u2}}, (α -> β -> β) -> (Ordnode.{u1} α) -> β -> β
-but is expected to have type
-  forall {α : Type.{u2}} {β : Sort.{u1}}, (α -> β -> β) -> (Ordnode.{u2} α) -> β -> β
-Case conversion may be inaccurate. Consider using '#align ordnode.foldr Ordnode.foldrₓ'. -/
 /-- O(n). Fold a function from right to left (in decreasing order) across the tree.
 
      foldr f {1, 2, 4} z = f 1 (f 2 (f 4 z)) -/
@@ -646,17 +622,9 @@ protected def prod {β} (t₁ : Ordnode α) (t₂ : Ordnode β) : Ordnode (α ×
 `Or.inl a ∈ s.copair t` iff `a ∈ s`, and `Or.inr b ∈ s.copair t` iff `b ∈ t`.
 
     copair {1, 2} {2, 3} = {inl 1, inl 2, inr 2, inr 3} -/
-protected def copair {β} (t₁ : Ordnode α) (t₂ : Ordnode β) : Ordnode (Sum α β) :=
+protected def copair {β} (t₁ : Ordnode α) (t₂ : Ordnode β) : Ordnode (α ⊕ β) :=
   merge (map Sum.inl t₁) (map Sum.inr t₂)
 
-/- warning: ordnode.pmap -> Ordnode.pmap is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {P : α -> Prop} {β : Type.{u2}}, (forall (a : α), (P a) -> β) ->
-    (forall (t : Ordnode.{u1} α), (Ordnode.All.{u1} α P t) -> (Ordnode.{u2} β))
-but is expected to have type
-  forall {α : Type.{u2}} {P : α -> Prop} {β : Type.{u1}}, (forall (a : α), (P a) -> β) ->
-    (forall (t : Ordnode.{u2} α), (Ordnode.All.{u2} α P t) -> (Ordnode.{u1} β))S
-Case conversion may be inaccurate. Consider using '#align ordnode.pmap Ordnode.pmapₓ'. -/
 /-- O(n). Map a partial function across a set. The result depends on a proof
 that the function is defined on all members of the set.
 
