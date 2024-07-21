@@ -201,7 +201,7 @@ theorem cone_snd (h : IsPullback fst snd f g) : h.cone.snd = snd :=
 noncomputable def isLimit (h : IsPullback fst snd f g) : IsLimit h.cone :=
   h.isLimit'.some
 
-/- Basic API for the universal property -/
+/-- API for PullbackCone.IsLimit.lift for `IsPullback` -/
 noncomputable def lift (hP : IsPullback fst snd f g) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
     (w : h ≫ f = k ≫ g) : W ⟶ P :=
   PullbackCone.IsLimit.lift hP.isLimit h k w
@@ -384,7 +384,7 @@ theorem cocone_inr (h : IsPushout f g inl inr) : h.cocone.inr = inr :=
 noncomputable def isColimit (h : IsPushout f g inl inr) : IsColimit h.cocone :=
   h.isColimit'.some
 
-/- Basic API for the universal property -/
+/-- API for PushoutCocone.IsColimit.lift for `IsPushout` -/
 noncomputable def desc (hP : IsPushout f g inl inr) {W : C} (h : X ⟶ W) (k : Y ⟶ W)
     (w : f ≫ h = g ≫ k) : P ⟶ W :=
   PushoutCocone.IsColimit.desc hP.isColimit h k w
@@ -819,7 +819,7 @@ v        v
 X --f--> Z
 ```
 -/
-def id_vert (f : X ⟶ Z) : IsPullback f (𝟙 X) (𝟙 Z) f :=
+lemma id_vert (f : X ⟶ Z) : IsPullback f (𝟙 X) (𝟙 Z) f :=
   of_vert_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
 /-- The following diagram is a pullback
@@ -831,7 +831,7 @@ v         v
 Z --id--> Z
 ```
 -/
-def id_horiz (f : X ⟶ Z) : IsPullback (𝟙 X) f f (𝟙 Z) :=
+lemma id_horiz (f : X ⟶ Z) : IsPullback (𝟙 X) f f (𝟙 Z) :=
   of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
 end IsPullback
@@ -1130,7 +1130,7 @@ v        v
 X --f--> Z
 ```
 -/
-def id_vert (f : X ⟶ Z) : IsPushout f (𝟙 X) (𝟙 Z) f :=
+lemma id_vert (f : X ⟶ Z) : IsPushout f (𝟙 X) (𝟙 Z) f :=
   of_vert_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
 /-- The following diagram is a pullback
@@ -1142,7 +1142,7 @@ v         v
 Z --id--> Z
 ```
 -/
-def id_horiz (f : X ⟶ Z) : IsPushout (𝟙 X) f f (𝟙 Z) :=
+lemma id_horiz (f : X ⟶ Z) : IsPushout (𝟙 X) f f (𝟙 Z) :=
   of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
 end IsPushout
