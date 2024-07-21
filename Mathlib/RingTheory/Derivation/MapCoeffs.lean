@@ -3,7 +3,7 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.RingTheory.Derivation.Basic
+import Mathlib.RingTheory.Derivation.DifferentialRing
 import Mathlib.Algebra.Polynomial.Module.Basic
 
 /-!
@@ -96,3 +96,47 @@ theorem apply_eval_eq (x : A) (p : A[X]) :
   apply_aeval_eq d x p
 
 end Derivation
+
+namespace DifferentialRing
+
+variable {A : Type*} [CommDifferentialRing A]
+
+def mapCoeffs : Derivation ℤ A[X] A[X] :=
+  PolynomialModule.equivPolynomialSelf.compDer <|
+    CommDifferentialRing.deriv.mapCoeffs (M := A)
+
+@[simp]
+lemma mapCoeffs_apply (p : A[X]) (i) :
+    coeff (mapCoeffs p) i = (coeff p i)′ := rfl
+
+@[simp]
+lemma mapCoeffs_monomial (n : ℕ) (x : A) :
+    mapCoeffs (monomial n x) = monomial n x′ := by
+  simp only [mapCoeffs, Derivation.coe_equiv_comp, LinearMap.coe_comp,
+    LinearMap.coe_restrictScalars, LinearEquiv.coe_coe, Derivation.coeFn_coe, Function.comp_apply,
+    Derivation.mapCoeffs_monomial]
+  rfl
+
+@[simp]
+lemma mapCoeffs_X :
+    mapCoeffs (X : A[X]) = 0 := by simp [← monomial_one_one_eq_X]
+
+@[simp]
+lemma mapCoeffs_C (x : A) :
+    mapCoeffs (C x) = C x′ := by simp [← monomial_zero_left]
+
+variable {K : Type*} [CommDifferentialRing K] [DifferentialAlgebra A K]
+
+theorem apply_aeval_eq' (x : K) (p : A[X]) :
+    (aeval x p)′ = aeval x (mapCoeffs p) +
+      aeval x (derivative p) * x′ := by
+  convert Derivation.apply_aeval_eq' (R := ℤ) (A := A) (M := A)
+      (K := K) (M' := K)
+      CommDifferentialRing.deriv CommDifferentialRing.deriv (Algebra.linearMap A K) ..
+  · simp only [mapCoeffs, Derivation.coe_equiv_comp, LinearMap.coe_comp,
+      LinearMap.coe_restrictScalars, LinearEquiv.coe_coe, Derivation.coeFn_coe, Function.comp_apply]
+    sorry
+  · simp [deriv_algebraMap]
+
+
+end DifferentialRing
