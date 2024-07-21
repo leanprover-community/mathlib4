@@ -256,7 +256,8 @@ theorem tendsto_pow_zero_of_constantCoeff_zero {f} (hf : constantCoeff σ α f =
   rw [hf]
   exact IsNilpotent.zero
 
-/-- [bourbaki1981], chap. 4, §4, n°2, corollaire de la prop. 3 -/
+/-- The powers of a `MvPowerSeries` converge to 0 iff its constant coefficient is nilpotent.
+N. Bourbaki, *Algebra II*, [bourbaki1981] (chap. 4, §4, n°2, corollaire de la prop. 3) -/
 theorem tendsto_pow_of_constantCoeff_nilpotent_iff [DiscreteTopology α] (f) :
     Filter.Tendsto (fun n : ℕ => f ^ n) Filter.atTop (nhds 0) ↔
       IsNilpotent (constantCoeff σ α f) := by
