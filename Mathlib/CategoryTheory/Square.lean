@@ -157,8 +157,6 @@ def isoMk {sq₁ sq₂ : Square C} (e₁ : sq₁.X₁ ≅ sq₂.X₁) (e₂ : sq
 def flip (sq : Square C) : Square C where
   fac := sq.fac.symm
 
-variable (C)
-
 /-- The functor which flips commutative squares. -/
 @[simps]
 def flipFunctor : Square C ⥤ Square C where
@@ -172,8 +170,8 @@ def flipFunctor : Square C ⥤ Square C where
 /-- Flipping commutative squares is an auto-equivalence. -/
 @[simps]
 def flipEquivalence : Square C ≌ Square C where
-  functor := flipFunctor C
-  inverse := flipFunctor C
+  functor := flipFunctor
+  inverse := flipFunctor
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
@@ -207,8 +205,8 @@ commutative square `sq` to the obvious arrow from the left morphism of `sq`
 to the right morphism of `sq`. -/
 @[simps]
 def arrowArrowEquivalence : Square C ≌ Arrow (Arrow C) where
-  functor := toArrowArrowFunctor C
-  inverse := fromArrowArrowFunctor C
+  functor := toArrowArrowFunctor
+  inverse := fromArrowArrowFunctor
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
@@ -242,8 +240,8 @@ commutative square `sq` to the obvious arrow from the top morphism of `sq`
 to the bottom morphism of `sq`. -/
 @[simps]
 def arrowArrowEquivalence' : Square C ≌ Arrow (Arrow C) where
-  functor := toArrowArrowFunctor' C
-  inverse := fromArrowArrowFunctor' C
+  functor := toArrowArrowFunctor'
+  inverse := fromArrowArrowFunctor'
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
