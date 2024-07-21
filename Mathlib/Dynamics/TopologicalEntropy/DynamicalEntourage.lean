@@ -96,8 +96,7 @@ lemma dynEntourage_monotone (T : X → X) (n : ℕ) :
 
 lemma dynEntourage_antitone (T : X → X) (U : Set (X × X)) :
     Antitone (fun n : ℕ ↦ dynEntourage T U n) := by
-  intro m n m_n
-  refine iInter₂_mono' fun k k_m ↦ ?_
+  refine fun m n m_n ↦ iInter₂_mono' fun k k_m ↦ ?_
   use k, lt_of_lt_of_le k_m m_n
 
 @[simp]
