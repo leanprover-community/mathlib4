@@ -313,11 +313,9 @@ lemma isOpen_iff_Iic_compl_or_univ (U : Set α) :
         neUc (isChain_of_trichotomous Uᶜ).directedOn le_rfl),
         fun  _ ha ↦ le_sSup ha⟩
   · intro H
-    rcases H with ⟨a,ha⟩ | hU
-    · rw [ha]
-      exact isClosed_Iic.isOpen_compl
-    · rw [hU]
-      exact isOpen_univ
+    rcases H with ⟨a,rfl⟩ | rfl
+    · exact isClosed_Iic.isOpen_compl
+    · exact isOpen_univ
 
 end CompleteLinearOrder
 
