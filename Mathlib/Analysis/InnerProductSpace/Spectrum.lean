@@ -277,18 +277,12 @@ section Simultaneous
 section Pair
 
 variable {A B : E →ₗ[𝕜] E}  {α β : 𝕜} (hA : A.IsSymmetric) (hB : B.IsSymmetric)
-     [FiniteDimensional 𝕜 E] (hAB : A ∘ₗ B = B ∘ₗ A)
+    (hAB : A ∘ₗ B = B ∘ₗ A)
 
 theorem eigenspace_invariant  (α : 𝕜) : ∀ v ∈ (eigenspace A α), (B v ∈ eigenspace A α) := by
   intro v hv
   rw [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply, ← comp_apply A B v, hAB,
   comp_apply B A v, ← map_smul, ← map_sub, hv, map_zero] at *
-
-theorem iSup_restrict_eq_top: (⨆ γ , (eigenspace (LinearMap.restrict B
-    (eigenspace_invariant hAB α)) γ)) = ⊤ := by
-    rw [← Submodule.orthogonal_eq_bot_iff]
-    exact orthogonalComplement_iSup_eigenspaces_eq_bot (LinearMap.IsSymmetric.restrict_invariant hB
-    (eigenspace_invariant hAB α))
 
 theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
     (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : (eigenspace S μ) ⊓ F =
@@ -317,6 +311,12 @@ theorem invariant_subspace_inf_eigenspace_eq_restrict' : (fun (γ : 𝕜) ↦
     (eigenspace_invariant hAB α)) γ)) = (fun (γ : 𝕜) ↦ (eigenspace B γ ⊓ eigenspace A α)) := by
   funext γ
   exact Eq.symm (invariant_subspace_inf_eigenspace_eq_restrict B γ (eigenspace_invariant hAB α))
+
+theorem iSup_restrict_eq_top: (⨆ γ , (eigenspace (LinearMap.restrict B
+    (eigenspace_invariant hAB α)) γ)) = ⊤ := by
+    rw [← Submodule.orthogonal_eq_bot_iff]
+    exact orthogonalComplement_iSup_eigenspaces_eq_bot (LinearMap.IsSymmetric.restrict_invariant hB
+    (eigenspace_invariant hAB α))
 
 theorem iSup_simultaneous_eigenspaces_eq_top :
     (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α))) = ⊤ := by
