@@ -5,7 +5,6 @@ Authors: Aaron Anderson
 -/
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 import Mathlib.Data.Finsupp.PWO
 
 /-!
@@ -174,11 +173,6 @@ def toMvPowerSeries {σ : Type*} [Finite σ] : HahnSeries (σ →₀ ℕ) R ≃+
       rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 
 variable {σ : Type*} [Finite σ]
-
--- TODO : generalize to all (?) rings of Hahn Series
-/-- If R has no zero divisors, then `HahnSeries (σ →₀ ℕ) R` has no zero divisors, for finite `σ` -/
-instance [NoZeroDivisors R] : NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) :=
-  MulEquiv.noZeroDivisors (A := HahnSeries (σ →₀ ℕ) R) (MvPowerSeries σ R) toMvPowerSeries.toMulEquiv
 
 theorem coeff_toMvPowerSeries {f : HahnSeries (σ →₀ ℕ) R} {n : σ →₀ ℕ} :
     MvPowerSeries.coeff R n (toMvPowerSeries f) = f.coeff n :=
