@@ -290,10 +290,10 @@ section SigmaFiniteSet
 
 /-- A measurable set such that `μ.restrict μ.sigmaFiniteSet` is sigma-finite,
   and for all measurable sets `s ⊆ μ.sigmaFiniteSetᶜ`, either `μ s = 0` or `μ s = ∞`. -/
-def Measure.sigmaFiniteSet (μ : Measure α) [SFinite μ] : Set α := μ.sigmaFiniteSetWRT μ
+def Measure.sigmaFiniteSet (μ : Measure α) : Set α := μ.sigmaFiniteSetWRT μ
 
 @[measurability]
-lemma measurableSet_sigmaFiniteSet [SFinite μ] : MeasurableSet μ.sigmaFiniteSet :=
+lemma measurableSet_sigmaFiniteSet : MeasurableSet μ.sigmaFiniteSet :=
   measurableSet_sigmaFiniteSetWRT
 
 lemma measure_eq_zero_or_top_of_subset_compl_sigmaFiniteSet [SFinite μ]
@@ -311,12 +311,11 @@ lemma restrict_compl_sigmaFiniteSet_eq_zero_or_top (μ : Measure α) [SFinite μ
   exact measure_eq_zero_or_top_of_subset_compl_sigmaFiniteSet Set.inter_subset_right
 
 /-- The restriction of an s-finite measure `μ` to `μ.sigmaFiniteSet` is sigma-finite. -/
-instance (μ : Measure α) [SFinite μ] : SigmaFinite (μ.restrict μ.sigmaFiniteSet) := by
+instance : SigmaFinite (μ.restrict μ.sigmaFiniteSet) := by
   rw [Measure.sigmaFiniteSet]
   infer_instance
 
-lemma sigmaFinite_of_measure_compl_sigmaFiniteSet_eq_zero [SFinite μ]
-    (h : μ μ.sigmaFiniteSetᶜ = 0) :
+lemma sigmaFinite_of_measure_compl_sigmaFiniteSet_eq_zero (h : μ μ.sigmaFiniteSetᶜ = 0) :
     SigmaFinite μ := by
   rw [← Measure.restrict_add_restrict_compl (μ := μ) (measurableSet_sigmaFiniteSet (μ := μ)),
     Measure.restrict_eq_zero.mpr h, add_zero]
@@ -327,7 +326,7 @@ lemma measure_compl_sigmaFiniteSet (μ : Measure α) [SigmaFinite μ] : μ μ.si
   measure_compl_sigmaFiniteSetWRT Measure.AbsolutelyContinuous.rfl
 
 /-- An s-finite measure `μ` is sigma-finite iff `μ μ.sigmaFiniteSetᶜ = 0`. -/
-lemma measure_compl_sigmaFiniteSet_eq_zero_iff_sigmaFinite (μ : Measure α) [SFinite μ] :
+lemma measure_compl_sigmaFiniteSet_eq_zero_iff_sigmaFinite (μ : Measure α) :
     μ μ.sigmaFiniteSetᶜ = 0 ↔ SigmaFinite μ :=
   ⟨sigmaFinite_of_measure_compl_sigmaFiniteSet_eq_zero, fun _ ↦ measure_compl_sigmaFiniteSet μ⟩
 
