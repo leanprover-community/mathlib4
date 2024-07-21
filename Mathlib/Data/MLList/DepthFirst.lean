@@ -3,6 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Lean.Data.HashSet
 import Batteries.Data.MLList.Basic
 import Mathlib.Control.Combinators
 
@@ -18,9 +19,11 @@ It can be nice to represent the choices via a lazy list,
 so the later choices don't need to be evaluated while we do depth first search on earlier choices.
 -/
 
-set_option autoImplicit true
+universe u
+variable {α : Type u} {m : Type u → Type u}
 
 section
+
 variable [Monad m] [Alternative m]
 
 /-- A generalisation of `depthFirst`, which allows the generation function to know the current

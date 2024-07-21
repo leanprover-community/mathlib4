@@ -10,8 +10,6 @@ import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.Nat.Prime.Defs
 
-#align_import number_theory.primorial from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
-
 /-!
 # Primorial
 
@@ -35,26 +33,22 @@ open Nat
 -/
 def primorial (n : ℕ) : ℕ :=
   ∏ p ∈ filter Nat.Prime (range (n + 1)), p
-#align primorial primorial
 
 local notation x "#" => primorial x
 
 theorem primorial_pos (n : ℕ) : 0 < n# :=
   prod_pos fun _p hp ↦ (mem_filter.1 hp).2.pos
-#align primorial_pos primorial_pos
 
 theorem primorial_succ {n : ℕ} (hn1 : n ≠ 1) (hn : Odd n) : (n + 1)# = n# := by
   refine prod_congr ?_ fun _ _ ↦ rfl
   rw [range_succ, filter_insert, if_neg fun h ↦ odd_iff_not_even.mp hn _]
   exact fun h ↦ h.even_sub_one <| mt succ.inj hn1
-#align primorial_succ primorial_succ
 
 theorem primorial_add (m n : ℕ) :
     (m + n)# = m# * ∏ p ∈ filter Nat.Prime (Ico (m + 1) (m + n + 1)), p := by
   rw [primorial, primorial, ← Ico_zero_eq_range, ← prod_union, ← filter_union, Ico_union_Ico_eq_Ico]
   exacts [Nat.zero_le _, add_le_add_right (Nat.le_add_right _ _) _,
     disjoint_filter_filter <| Ico_disjoint_Ico_consecutive _ _ _]
-#align primorial_add primorial_add
 
 theorem primorial_add_dvd {m n : ℕ} (h : n ≤ m) : (m + n)# ∣ m# * choose (m + n) m :=
   calc
@@ -65,11 +59,9 @@ theorem primorial_add_dvd {m n : ℕ} (h : n ≤ m) : (m + n)# ∣ m# * choose (
           rw [mem_filter, mem_Ico] at hp
           exact hp.2.dvd_choose_add hp.1.1 (h.trans_lt (m.lt_succ_self.trans_le hp.1.1))
               (Nat.lt_succ_iff.1 hp.1.2)
-#align primorial_add_dvd primorial_add_dvd
 
 theorem primorial_add_le {m n : ℕ} (h : n ≤ m) : (m + n)# ≤ m# * choose (m + n) m :=
   le_of_dvd (mul_pos (primorial_pos _) (choose_pos <| Nat.le_add_right _ _)) (primorial_add_dvd h)
-#align primorial_add_le primorial_add_le
 
 theorem primorial_le_4_pow (n : ℕ) : n# ≤ 4 ^ n := by
   induction' n using Nat.strong_induction_on with n ihn
@@ -90,4 +82,3 @@ theorem primorial_le_4_pow (n : ℕ) : n# ≤ 4 ^ n := by
         (n + 1)# = n# := primorial_succ hn ho
         _ ≤ 4 ^ n := ihn n n.lt_succ_self
         _ ≤ 4 ^ (n + 1) := pow_le_pow_of_le_right four_pos n.le_succ
-#align primorial_le_4_pow primorial_le_4_pow
