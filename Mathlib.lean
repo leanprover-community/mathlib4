@@ -3680,6 +3680,7 @@ import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.RingTheory.DedekindDomain.SInteger
 import Mathlib.RingTheory.DedekindDomain.SelmerGroup
 import Mathlib.RingTheory.Derivation.Basic
+import Mathlib.RingTheory.Derivation.DifferentialRing
 import Mathlib.RingTheory.Derivation.Lie
 import Mathlib.RingTheory.Derivation.MapCoeffs
 import Mathlib.RingTheory.Derivation.ToSquareZero
