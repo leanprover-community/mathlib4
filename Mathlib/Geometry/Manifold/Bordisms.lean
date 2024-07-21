@@ -431,6 +431,15 @@ lemma ContMDiff.inl : ContMDiff I I ∞ (M' := M ⊕ M') (fun x ↦ Sum.inl x) :
 /-- The inclusion `M' → M ⊕ M'` is smooth. -/
 lemma ContMDiff.inr : ContMDiff I I ∞ (M' := M ⊕ M') (fun x ↦ Sum.inr x) := sorry
 
+-- TODO: name this nicely; add associativity version as well
+-- this seems to be missing for sums of topological spaces (but surely exists abstractly):
+variable (I M M') in -- TODO: argument order is weird!
+def equivDisjUnionSum : Diffeomorph I I (M ⊕ M') (M' ⊕ M) ∞ := sorry
+
+lemma sdfdsf : (equivDisjUnionSum M I M') ∘ (fun x ↦ Sum.inl x) = (fun x ↦ Sum.inr x) := sorry
+
+lemma hogehoge : (equivDisjUnionSum M I M') ∘ (fun x ↦ Sum.inr x) = (fun x ↦ Sum.inl x) := sorry
+
 end DisjUnion
 
 namespace UnorientedCobordism
@@ -488,14 +497,19 @@ abbrev foo  : BoundaryManifoldData (M × (Icc x y)) (I.prod (𝓡∂ 1)) :=
 variable {x y : ℝ} [Fact (x < y)] in
 instance : HasNiceBoundary (foo M I x y) := sorry
 
+/-- If `M` is boundaryless, `∂(M × [0,1])` is diffeomorph to the disjoint union `M ⊔ M`. -/
+def Diffeomorph.productInterval_sum : Diffeomorph ((foo M I 0 1).model) I
+    ((I.prod (𝓡∂ 1)).boundary (M × (Icc (0 : ℝ) 1))) (M ⊕ M') ∞ :=
+  sorry
+
 /-- Each singular `n`-manifold `(M,f)` is cobordant to itself. -/
-def refl (s : SingularNManifold X n M I) :
-    UnorientedCobordism s s (foo M I (0 : ℝ) (1 : ℝ)) where
+def refl (s : SingularNManifold X n M I) : UnorientedCobordism s s (foo M I 0 1) where
   hW := by infer_instance
   hW' := by rw [finrank_prod, s.hdim, finrank_euclideanSpace_fin]
   F := s.f ∘ (fun p ↦ p.1)
   hF := s.hf.comp continuous_fst
-  φ := sorry
+  φ := Diffeomorph.productInterval_sum
+  -- TODO: most of these proofs should become API lemmas about `Diffeomorph.productInterval_sum`
   hFf := sorry
   hFg := sorry
 
@@ -505,12 +519,13 @@ variable (s : SingularNManifold X n M I) (t : SingularNManifold X n M' I)
   {bd : BoundaryManifoldData W J} [HasNiceBoundary bd]
 
 /-- Being cobordant is symmetric. -/
-def symm (φ : UnorientedCobordism s t (W := W) (J := J) bd) : UnorientedCobordism t s bd where
+def symm (φ : UnorientedCobordism s t bd) : UnorientedCobordism t s bd where
   hW := φ.hW
   hW' := φ.hW'
   F := φ.F
   hF := φ.hF
-  φ := sorry
+  φ := Diffeomorph.trans φ.φ (equivDisjUnionSum M I M')
+  -- apply sdfdsf resp. hogehoge, and combine with φ.hFf and φ.hFg
   hFf := sorry
   hFg := sorry
 
