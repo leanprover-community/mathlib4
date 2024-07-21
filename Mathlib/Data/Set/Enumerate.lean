@@ -8,8 +8,6 @@ import Mathlib.Algebra.Group.Nat
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Common
 
-#align_import data.set.enumerate from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
-
 /-!
 # Set enumeration
 This file allows enumeration of sets given a choice function.
@@ -37,12 +35,10 @@ def enumerate : Set α → ℕ → Option α
   | s, n + 1 => do
     let a ← sel s
     enumerate (s \ {a}) n
-#align set.enumerate Set.enumerate
 
 theorem enumerate_eq_none_of_sel {s : Set α} (h : sel s = none) : ∀ {n}, enumerate sel s n = none
   | 0 => by simp [h, enumerate]
   | n + 1 => by simp [h, enumerate]
-#align set.enumerate_eq_none_of_sel Set.enumerate_eq_none_of_sel
 
 theorem enumerate_eq_none :
     ∀ {s n₁ n₂}, enumerate sel s n₁ = none → n₁ ≤ n₂ → enumerate sel s n₂ = none
@@ -57,7 +53,6 @@ theorem enumerate_eq_none :
           simp only [enumerate, hs, Option.bind_eq_bind, Option.some_bind] at h ⊢
         have hm : n ≤ m' := Nat.le_of_succ_le_succ hm
         exact enumerate_eq_none h hm
-#align set.enumerate_eq_none Set.enumerate_eq_none
 
 theorem enumerate_mem (h_sel : ∀ s a, sel s = some a → a ∈ s) :
     ∀ {s n a}, enumerate sel s n = some a → a ∈ s
@@ -70,7 +65,6 @@ theorem enumerate_mem (h_sel : ∀ s a, sel s = some a → a ∈ s) :
       exact fun h' : enumerate sel (s \ {a'}) n = some a ↦
         have : a ∈ s \ {a'} := enumerate_mem h_sel h'
         this.left
-#align set.enumerate_mem Set.enumerate_mem
 
 theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, sel s = some a → a ∈ s)
     (h₁ : enumerate sel s n₁ = some a) (h₂ : enumerate sel s n₂ = some a) : n₁ = n₂ := by
@@ -99,7 +93,6 @@ theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, 
         simp_all only [add_comm, self_eq_add_left, enumerate, Option.some.injEq,
                        Nat.add_succ, Nat.succ.injEq]
         exact ih h₁ h₂
-#align set.enumerate_inj Set.enumerate_inj
 
 end Enumerate
 

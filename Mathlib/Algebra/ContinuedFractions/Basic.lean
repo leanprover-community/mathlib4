@@ -7,8 +7,6 @@ import Mathlib.Data.Seq.Seq
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.PNat.Defs
 
-#align_import algebra.continued_fractions.basic from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
-
 /-!
 # Basic Definitions/Theorems for Continued Fractions
 
@@ -54,7 +52,6 @@ structure GenContFract.Pair where
   /-- Partial denominator -/
   b : α
   deriving Inhabited
-#align generalized_continued_fraction.pair GenContFract.Pair
 
 open GenContFract
 
@@ -71,7 +68,6 @@ instance [Repr α] : Repr (Pair α) :=
 /-- Maps a function `f` on both components of a given pair. -/
 def map {β : Type*} (f : α → β) (gp : Pair α) : Pair β :=
   ⟨f gp.a, f gp.b⟩
-#align generalized_continued_fraction.pair.map GenContFract.Pair.map
 
 section coe
 
@@ -89,7 +85,6 @@ instance : Coe (Pair α) (Pair β) :=
 
 @[simp, norm_cast]
 theorem coe_toPair {a b : α} : (↑(Pair.mk a b) : Pair β) = Pair.mk (a : β) (b : β) := rfl
-#align generalized_continued_fraction.pair.coe_to_generalized_continued_fraction_pair GenContFract.Pair.coe_toPair
 
 end coe
 
@@ -115,9 +110,6 @@ structure GenContFract where
   h : α
   /-- Sequence of partial numerator and denominator pairs. -/
   s : Stream'.Seq <| Pair α
-#align generalized_continued_fraction GenContFract
-#align generalized_continued_fraction.ext_iff GenContFract.ext_iff
-#align generalized_continued_fraction.ext GenContFract.ext
 
 variable {α}
 
@@ -126,7 +118,6 @@ namespace GenContFract
 /-- Constructs a generalized continued fraction without fractional part. -/
 def ofInteger (a : α) : GenContFract α :=
   ⟨a, Stream'.Seq.nil⟩
-#align generalized_continued_fraction.of_integer GenContFract.ofInteger
 
 instance [Inhabited α] : Inhabited (GenContFract α) :=
   ⟨ofInteger default⟩
@@ -134,29 +125,24 @@ instance [Inhabited α] : Inhabited (GenContFract α) :=
 /-- Returns the sequence of partial numerators `aᵢ` of `g`. -/
 def partNums (g : GenContFract α) : Stream'.Seq α :=
   g.s.map Pair.a
-#align generalized_continued_fraction.partial_numerators GenContFract.partNums
 
 /-- Returns the sequence of partial denominators `bᵢ` of `g`. -/
 def partDens (g : GenContFract α) : Stream'.Seq α :=
   g.s.map Pair.b
-#align generalized_continued_fraction.partial_denominators GenContFract.partDens
 
 /-- A gcf terminated at position `n` if its sequence terminates at position `n`. -/
 def TerminatedAt (g : GenContFract α) (n : ℕ) : Prop :=
   g.s.TerminatedAt n
-#align generalized_continued_fraction.terminated_at GenContFract.TerminatedAt
 
 /-- It is decidable whether a gcf terminated at a given position. -/
 instance terminatedAtDecidable (g : GenContFract α) (n : ℕ) :
     Decidable (g.TerminatedAt n) := by
   unfold TerminatedAt
   infer_instance
-#align generalized_continued_fraction.terminated_at_decidable GenContFract.terminatedAtDecidable
 
 /-- A gcf terminates if its sequence terminates. -/
 def Terminates (g : GenContFract α) : Prop :=
   g.s.Terminates
-#align generalized_continued_fraction.terminates GenContFract.Terminates
 
 section coe
 
@@ -180,7 +166,6 @@ instance : Coe (GenContFract α) (GenContFract β) :=
 theorem coe_toGenContFract {g : GenContFract α} :
     (g : GenContFract β) =
       ⟨(g.h : β), (g.s.map (↑) : Stream'.Seq <| Pair β)⟩ := rfl
-#align generalized_continued_fraction.coe_to_generalized_continued_fraction GenContFract.coe_toGenContFract
 
 end coe
 
@@ -199,7 +184,6 @@ $$
 def GenContFract.IsSimpContFract (g : GenContFract α)
     [One α] : Prop :=
   ∀ (n : ℕ) (aₙ : α), g.partNums.get? n = some aₙ → aₙ = 1
-#align generalized_continued_fraction.is_simple_continued_fraction GenContFract.IsSimpContFract
 
 variable (α)
 
@@ -217,7 +201,6 @@ It is encoded as the subtype of gcfs that satisfy `GenContFract.IsSimpContFract`
  -/
 def SimpContFract [One α] :=
   { g : GenContFract α // g.IsSimpContFract }
-#align simple_continued_fraction SimpContFract
 
 variable {α}
 
@@ -229,7 +212,6 @@ variable [One α]
 /-- Constructs a simple continued fraction without fractional part. -/
 def ofInteger (a : α) : SimpContFract α :=
   ⟨GenContFract.ofInteger a, fun n aₙ h ↦ by cases h⟩
-#align simple_continued_fraction.of_integer SimpContFract.ofInteger
 
 instance : Inhabited (SimpContFract α) :=
   ⟨ofInteger 1⟩
@@ -242,7 +224,6 @@ instance : Coe (SimpContFract α) (GenContFract α) :=
 -- Porting note: Syntactic tautology due to change in `Coe` above.
 -- theorem coe_toGenContFract {s : SimpContFract α} :
 --     (↑s : GenContFract α) = s.val := rfl
-#noalign simple_continued_fraction.coe_to_generalized_continued_fraction
 
 end SimpContFract
 
@@ -254,7 +235,6 @@ def SimpContFract.IsContFract [One α] [NatCast α] [IntCast α]
     (s : SimpContFract α) : Prop :=
   (∃ n : ℤ, (↑s : GenContFract α).h = ↑n) ∧
     ∀ (n : ℕ) (bₙ : α), (↑s : GenContFract α).partDens.get? n = some bₙ → ∃ n : ℕ+, bₙ = ↑n
-#align simple_continued_fraction.is_continued_fraction SimpContFract.IsContFract
 
 variable (α)
 
@@ -264,7 +244,6 @@ integer and all partial denominators are positive naturals. It is the subtype of
  -/
 def ContFract [One α] [NatCast α] [IntCast α] :=
   { s : SimpContFract α // s.IsContFract }
-#align continued_fraction ContFract
 
 variable {α}
 
@@ -277,7 +256,6 @@ variable [One α] [NatCast α] [IntCast α]
 /-- Constructs a continued fraction without fractional part. -/
 def ofInteger (n : ℤ) : ContFract α :=
   ⟨SimpContFract.ofInteger (↑n : α), ⟨n, rfl⟩, fun n bₙ h ↦ by cases h⟩
-#align continued_fraction.of_integer ContFract.ofInteger
 
 instance : Inhabited (ContFract α) :=
   ⟨ofInteger 0⟩
@@ -290,7 +268,6 @@ instance : Coe (ContFract α) (SimpContFract α) :=
 -- Porting note: Syntactic tautology due to change of `Coe` above.
 -- theorem coe_to_simpleContFract {c : ContFract α} :
 --     (↑c : SimpContFract α) = c.val := rfl
-#noalign continued_fraction.coe_to_simple_continued_fraction
 
 /-- Lift a cf to a scf using the inclusion map. -/
 instance : Coe (ContFract α) (GenContFract α) :=
@@ -300,7 +277,6 @@ instance : Coe (ContFract α) (GenContFract α) :=
 -- Porting note: Syntactic tautology due to change of `Coe` above.
 -- theorem coe_toGenContFract {c : ContFract α} :
 --     (↑c : GenContFract α) = c.val := rfl
-#noalign continued_fraction.coe_to_generalized_continued_fraction
 
 end ContFract
 
@@ -332,14 +308,12 @@ We start with the definition of the recurrence relation. Given a gcf `g`, for al
 -/
 def nextNum (a b ppredA predA : K) : K :=
   b * predA + a * ppredA
-#align generalized_continued_fraction.next_numerator GenContFract.nextNum
 
 /-- Returns the next denominator `Bₙ = bₙ₋₁ * Bₙ₋₁ + aₙ₋₁ * Bₙ₋₂`, where `predB` is `Bₙ₋₁` and
 `ppredB` is `Bₙ₋₂`, `a` is `aₙ₋₁`, and `b` is `bₙ₋₁`.
 -/
 def nextDen (aₙ bₙ ppredB predB : K) : K :=
   bₙ * predB + aₙ * ppredB
-#align generalized_continued_fraction.next_denominator GenContFract.nextDen
 
 /--
 Returns the next continuants `⟨Aₙ, Bₙ⟩` using `nextNum` and `nextDen`, where `pred`
@@ -347,7 +321,6 @@ is `⟨Aₙ₋₁, Bₙ₋₁⟩`, `ppred` is `⟨Aₙ₋₂, Bₙ₋₂⟩`, `a
 -/
 def nextConts (a b : K) (ppred pred : Pair K) : Pair K :=
   ⟨nextNum a b ppred.a pred.a, nextDen a b ppred.b pred.b⟩
-#align generalized_continued_fraction.next_continuants GenContFract.nextConts
 
 /-- Returns the continuants `⟨Aₙ₋₁, Bₙ₋₁⟩` of `g`. -/
 def contsAux (g : GenContFract K) : Stream' (Pair K)
@@ -357,27 +330,22 @@ def contsAux (g : GenContFract K) : Stream' (Pair K)
     match g.s.get? n with
     | none => contsAux g (n + 1)
     | some gp => nextConts gp.a gp.b (contsAux g n) (contsAux g (n + 1))
-#align generalized_continued_fraction.continuants_aux GenContFract.contsAux
 
 /-- Returns the continuants `⟨Aₙ, Bₙ⟩` of `g`. -/
 def conts (g : GenContFract K) : Stream' (Pair K) :=
   g.contsAux.tail
-#align generalized_continued_fraction.continuants GenContFract.conts
 
 /-- Returns the numerators `Aₙ` of `g`. -/
 def nums (g : GenContFract K) : Stream' K :=
   g.conts.map Pair.a
-#align generalized_continued_fraction.numerators GenContFract.nums
 
 /-- Returns the denominators `Bₙ` of `g`. -/
 def dens (g : GenContFract K) : Stream' K :=
   g.conts.map Pair.b
-#align generalized_continued_fraction.denominators GenContFract.dens
 
 /-- Returns the convergents `Aₙ / Bₙ` of `g`, where `Aₙ, Bₙ` are the nth continuants of `g`. -/
 def convs (g : GenContFract K) : Stream' K :=
   fun n : ℕ ↦ g.nums n / g.dens n
-#align generalized_continued_fraction.convergents GenContFract.convs
 
 /--
 Returns the approximation of the fraction described by the given sequence up to a given position n.
@@ -390,7 +358,6 @@ def convs'Aux : Stream'.Seq (Pair K) → ℕ → K
     match s.head with
     | none => 0
     | some gp => gp.a / (gp.b + convs'Aux s.tail n)
-#align generalized_continued_fraction.convergents'_aux GenContFract.convs'Aux
 
 /-- Returns the convergents of `g` by evaluating the fraction described by `g` up to a given
 position `n`. For example, `convs' [9; (1, 2), (3, 4), (5, 6)] 2 = 9 + 1 / (2 + 3 / 4)` and
@@ -398,6 +365,5 @@ position `n`. For example, `convs' [9; (1, 2), (3, 4), (5, 6)] 2 = 9 + 1 / (2 + 
 -/
 def convs' (g : GenContFract K) (n : ℕ) : K :=
   g.h + convs'Aux g.s n
-#align generalized_continued_fraction.convergents' GenContFract.convs'
 
 end GenContFract

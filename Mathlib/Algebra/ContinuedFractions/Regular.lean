@@ -88,7 +88,6 @@ theorem fib_le_contsAux_b :
         mono
         · norm_num
         · tauto)
-#align generalized_continued_fraction.fib_le_of_continuants_aux_b ContFract.fib_le_contsAux_b
 
 /-- Shows that the `n`th denominator is greater than or equal to the `n + 1`th fibonacci number,
 that is `Nat.fib (n + 1) ≤ Bₙ`. -/
@@ -100,7 +99,6 @@ theorem succ_nth_fib_le_nth_den (hyp : n = 0 ∨ ¬(↑r : GenContFract K).Termi
     | zero => exact Or.inl <| le_refl 1
     | succ n => exact Or.inr (Or.resolve_left hyp n.succ_ne_zero)
   exact fib_le_contsAux_b this
-#align generalized_continued_fraction.succ_nth_fib_le_of_nth_denom ContFract.succ_nth_fib_le_nth_den
 
 /-! As a simple consequence, we can now derive that all denominators are nonnegative. -/
 
@@ -121,12 +119,10 @@ theorem zero_le_contsAux_b : 0 ≤ ((↑r : GenContFract K).contsAux n).b := by
       calc
         (0 : K) ≤ fib (n + 1) := mod_cast (n + 1).fib.zero_le
         _ ≤ ((↑r : GenContFract K).contsAux (n + 1)).b := fib_le_contsAux_b (Or.inr not_terminated)
-#align generalized_continued_fraction.zero_le_of_continuants_aux_b ContFract.zero_le_contsAux_b
 
 /-- Shows that all denominators are nonnegative. -/
 theorem zero_le_den : 0 ≤ (↑r : GenContFract K).dens n := by
   rw [den_eq_conts_b, nth_cont_eq_succ_nth_contAux]; exact zero_le_contsAux_b
-#align generalized_continued_fraction.zero_le_of_denom ContFract.zero_le_den
 
 theorem le_succ_succ_get?_contsAux_b {b : K}
     (nth_partDen_eq : (↑r : GenContFract K).partDens.get? n = some b) :
@@ -136,7 +132,6 @@ theorem le_succ_succ_get?_contsAux_b {b : K}
     exists_s_b_of_partDen nth_partDen_eq
   simp [r.val.property _ _ (partNum_eq_s_a nth_s_eq), zero_le_contsAux_b,
     GenContFract.contsAux_recurrence nth_s_eq rfl rfl]
-#align generalized_continued_fraction.le_of_succ_succ_nth_continuants_aux_b ContFract.le_succ_succ_get?_contsAux_b
 
 /-- Shows that `bₙ * Bₙ ≤ Bₙ₊₁`, where `bₙ` is the `n`th partial denominator and `Bₙ₊₁` and `Bₙ` are
 the `n + 1`th and `n`th denominator of the continued fraction. -/
@@ -145,7 +140,6 @@ theorem le_succ_get?_den {b : K}
     b * (↑r : GenContFract K).dens n ≤ (↑r : GenContFract K).dens (n + 1) := by
   rw [den_eq_conts_b, nth_cont_eq_succ_nth_contAux]
   exact le_succ_succ_get?_contsAux_b nth_partDenom_eq
-#align generalized_continued_fraction.le_of_succ_nth_denom ContFract.le_succ_get?_den
 
 /-- Shows that the sequence of denominators is monotone, that is `Bₙ ≤ Bₙ₊₁`. -/
 theorem den_mono : (↑r : GenContFract K).dens n ≤ (↑r : GenContFract K).dens (n + 1) := by
@@ -166,6 +160,5 @@ theorem den_mono : (↑r : GenContFract K).dens n ≤ (↑r : GenContFract K).de
       g.dens n ≤ b * g.dens n := by
         simpa using mul_le_mul_of_nonneg_right this zero_le_den
       _ ≤ g.dens (n + 1) := le_succ_get?_den nth_partDen_eq
-#align generalized_continued_fraction.of_denom_mono ContFract.den_mono
 
 end ContFract
