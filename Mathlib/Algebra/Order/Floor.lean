@@ -1342,12 +1342,12 @@ theorem round_le (x : α) (z : ℤ) : |x - round x| ≤ |x - z| := by
     exact floor_le_sub_one_iff.mpr hx
 
 @[simp]
-theorem round_half_bot [HSub α ℝ α] : x - (1 / 2 : ℝ) < round x := by
-  rw [round_eq x, show (x - 1 / 2 : ℝ) = (x + 1 / 2) - 1 by ring]
+theorem round_half_bot (x : α) : x - (1 / 2 : ℚ) < round x := by
+  rw [round_eq x, show x - (1 / 2 : ℚ) = x + 1 / 2 - 1 by ring]
   exact Int.sub_one_lt_floor (x + 1 / 2)
 
 @[simp]
-theorem round_half_top (x : α) [HAdd α ℝ α] : (round x : α) ≤ x + (1 / 2 : ℝ) := by
+theorem round_half_top (x : α) : (round x : α) ≤ x + 1 / 2 := by
   rw [round_eq x]
   exact Int.floor_le (x + 1 / 2)
 
