@@ -20,9 +20,10 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 suppress_compilation
 
-universe u v w uι uR uA uM₁ uM₂
+universe u v w uι uR uA uM₁ uM₂ uN₁ uN₂
 
-variable {ι : Type uι} {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂}
+variable {ι : Type uι} {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂} {N₁ : Type uN₁}
+  {N₂ : Type uN₂}
 
 open TensorProduct
 
@@ -35,23 +36,27 @@ open LinearMap (BilinForm)
 
 section CommSemiring
 variable [CommSemiring R] [CommSemiring A]
-variable [AddCommMonoid M₁] [AddCommMonoid M₂]
-variable [Algebra R A] [Module R M₁] [Module A M₁]
+variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid N₁] [AddCommMonoid N₂]
+variable [Algebra R A] [Module R M₁] [Module A M₁] [Module R N₁] [Module A N₁]
 variable [SMulCommClass R A M₁] [SMulCommClass A R M₁] [IsScalarTower R A M₁]
-variable [Module R M₂]
+variable [SMulCommClass R A N₁] [SMulCommClass A R N₁] [IsScalarTower R A N₁]
+variable [Module R M₂] [Module R N₂]
 
 variable (R A) in
-/-- The tensor product of two bilinear forms injects into bilinear forms on tensor products.
+/-- The tensor product of two bilinear maps injects into bilinear maps on tensor products.
 
-Note this is heterobasic; the bilinear form on the left can take values in an (commutative) algebra
-over the ring in which the right bilinear form is valued. -/
-def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm A (M₁ ⊗[R] M₂) :=
-  ((TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R A M₁ M₂ M₁ M₂).dualMap
-    ≪≫ₗ (TensorProduct.lift.equiv A (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) A).symm).toLinearMap
-  ∘ₗ TensorProduct.AlgebraTensorModule.dualDistrib R _ _ _
+Note this is heterobasic; the bilinear map on the left can take values in a module over a
+(commutative) algebra over the ring of the module in which the right bilinear map is valued. -/
+def tensorDistrib :
+    BilinMap A M₁ N₁ ⊗[R] BilinMap R M₂ N₂ →ₗ[A] BilinMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
+  (TensorProduct.lift.equiv A (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂)).symm.toLinearMap ∘ₗ
+ ((LinearMap.llcomp A _ _ _).flip
+   (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R A M₁ M₂ M₁ M₂).toLinearMap)
+  ∘ₗ TensorProduct.AlgebraTensorModule.homTensorHomMap R _ _ _ _ _ _
   ∘ₗ (TensorProduct.AlgebraTensorModule.congr
-    (TensorProduct.lift.equiv A M₁ M₁ A)
+    (TensorProduct.lift.equiv A M₁ M₁ N₁)
     (TensorProduct.lift.equiv R _ _ _)).toLinearMap
+
 
 -- TODO: make the RHS `MulOpposite.op (B₂ m₂ m₂') • B₁ m₁ m₁'` so that this has a nicer defeq for
 -- `R = A` of `B₁ m₁ m₁' * B₂ m₂ m₂'`, as it did before the generalization in #6306.
