@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 
-import Mathlib.Mathport.Rename
 
 /-!
 # Note about `Mathlib/Init/`
@@ -13,10 +12,6 @@ The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
 
 We intend to move all the content of these files out into the main `Mathlib` directory structure.
 Contributions assisting with this are appreciated.
-
-`#align` statements without corresponding declarations
-(i.e. because the declaration is in Batteries or Lean) can be left here.
-These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
 
 # Helper definitions and instances for `Ordering`
 -/
@@ -48,7 +43,6 @@ assuming that incomparable terms are `Ordering.eq`.
 -/
 def cmpUsing {α : Type u} (lt : α → α → Prop) [DecidableRel lt] (a b : α) : Ordering :=
   if lt a b then Ordering.lt else if lt b a then Ordering.gt else Ordering.eq
-#align cmp_using cmpUsing
 
 /--
 Construct an `Ordering` from a type with a decidable `LT` instance,
