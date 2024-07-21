@@ -30,8 +30,6 @@ We introduce binomial expansions using `embDomain`.
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 
-set_option linter.uppercaseLean3 false
-
 open Finset Function
 
 open scoped Classical

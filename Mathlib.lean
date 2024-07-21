@@ -399,6 +399,7 @@ import Mathlib.Algebra.Lie.CartanMatrix
 import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.Algebra.Lie.CentralExtension
 import Mathlib.Algebra.Lie.Character
+import Mathlib.Algebra.Lie.ChevalleyEilenberg
 import Mathlib.Algebra.Lie.Classical
 import Mathlib.Algebra.Lie.Derivation.AdjointAction
 import Mathlib.Algebra.Lie.Derivation.Basic
@@ -434,7 +435,6 @@ import Mathlib.Algebra.Lie.Weights.Chain
 import Mathlib.Algebra.Lie.Weights.Killing
 import Mathlib.Algebra.Lie.Weights.Linear
 import Mathlib.Algebra.Lie.Weights.RootSystem
-import Mathlib.Algebra.Lie.«Chevalley-Eilenberg»
 import Mathlib.Algebra.LinearRecurrence
 import Mathlib.Algebra.ModEq
 import Mathlib.Algebra.Module.Algebra

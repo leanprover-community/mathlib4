@@ -421,7 +421,7 @@ theorem choose_one_right [NatPowAssoc R] (r : R) : choose r 1 = r := by
   rw [choose_one_right', npow_one]
 
 theorem descPochhammer_succ_succ_smeval {R} [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R]
-    (r : S) (k : ℕ) : smeval (descPochhammer ℤ (k + 1)) (r + 1) =
+    (r : R) (k : ℕ) : smeval (descPochhammer ℤ (k + 1)) (r + 1) =
     (k + 1) • smeval (descPochhammer ℤ k) r + smeval (descPochhammer ℤ (k + 1)) r := by
   nth_rw 1 [descPochhammer_succ_left]
   rw [descPochhammer_succ_right, mul_comm (descPochhammer ℤ k)]

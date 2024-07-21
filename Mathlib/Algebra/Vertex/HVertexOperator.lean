@@ -192,7 +192,7 @@ open HahnModule
 /-- The composite of two heterogeneous vertex operators acting on a vector, as an iterated Hahn
   series.-/
 @[simps]
-def compHahnSeries {U : Type*} (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
+def compHahnSeries (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
   coeff g' := A (coeff B g' u)
   isPWO_support' := by
     refine Set.IsPWO.mono (((of R).symm (B u)).isPWO_support') ?_
@@ -201,15 +201,15 @@ def compHahnSeries {U : Type*} (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
 
 @[simp]
 theorem compHahnSeries.add (u v : U) :
-    CompHahnSeries A B (u + v) = CompHahnSeries A B u + CompHahnSeries A B v := by
+    compHahnSeries A B (u + v) = compHahnSeries A B u + compHahnSeries A B v := by
   ext
   simp only [compHahnSeries_coeff, map_add, coeff_apply, HahnSeries.add_coeff', Pi.add_apply]
   rw [← @HahnSeries.add_coeff]
 
 @[simp]
-theorem CompHahnSeries.smul {U : Type*} [AddCommGroup U] [Module R U]
+theorem compHahnSeries.smul {U : Type*} [AddCommGroup U] [Module R U]
     (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ' R U V) (r : R) (u : U) :
-    CompHahnSeries A B (r • u) = r • CompHahnSeries A B u := by
+    compHahnSeries A B (r • u) = r • compHahnSeries A B u := by
   ext
   rw [HahnSeries.smul_coeff]
   simp only [compHahnSeries_coeff, LinearMapClass.map_smul, coeff_apply]
@@ -217,10 +217,10 @@ theorem CompHahnSeries.smul {U : Type*} [AddCommGroup U] [Module R U]
 /-- The composite of two heterogeneous vertex operators, as a heterogeneous vertex operator. -/
 @[simps]
 def comp : HVertexOperator (Γ' ×ₗ Γ) R U W where
-  toFun u := HahnModule.of R (HahnSeries.ofIterate (CompHahnSeries A B u))
+  toFun u := HahnModule.of R (HahnSeries.ofIterate (compHahnSeries A B u))
   map_add' u v := by
     ext g
-    simp only [HahnSeries.ofIterate, CompHahnSeries.add, Equiv.symm_apply_apply,
+    simp only [HahnSeries.ofIterate, compHahnSeries.add, Equiv.symm_apply_apply,
       HahnModule.of_symm_add, HahnSeries.add_coeff', Pi.add_apply]
   map_smul' r x := by
     ext g
