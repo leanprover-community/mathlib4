@@ -80,7 +80,7 @@ namespace UnifTight
 
 theorem eventually_cofinite_indicator (hf : UnifTight f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∀ᶠ s in μ.cofinite.smallSets, ∀ i, snorm (s.indicator (f i)) p μ ≤ ε := by
-  by_cases hε_top : ε = ∞; filter_upwards; exact fun _ _ ↦ hε_top.symm ▸ le_top
+  by_cases hε_top : ε = ∞; subst hε_top; simp
   rcases hf (pos_iff_ne_zero.2 (toNNReal_ne_zero.mpr ⟨hε,hε_top⟩)) with ⟨s, hμs, hfs⟩
   refine (eventually_smallSets' ?_).2 ⟨sᶜ, ?_, fun i ↦ (coe_toNNReal hε_top) ▸ hfs i⟩
   · intro s t hst ht i
@@ -320,7 +320,7 @@ theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞)
     _ ≤ (ε / 3 + ε / 3) + ε / 3 := add_le_add hfngEcε hfngEε
     _ = ε := by simp only [ENNReal.add_thirds] --ENNReal.add_thirds ε
 
-/- Lemma used in `tendsto_Lp_of_tendsto_ae`. -/
+/-- Lemma used in `tendsto_Lp_of_tendsto_ae`. -/
 private theorem ae_tendsto_ae_congr {f f' : ℕ → α → β} {g g' : α → β}
     (hff' : ∀ (n : ℕ), f n =ᵐ[μ] f' n) (hgg' : g =ᵐ[μ] g')
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
@@ -351,7 +351,6 @@ theorem tendsto_Lp_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
   apply Filter.Tendsto.congr (fun n => (hsnfg n).symm)
   exact tendsto_Lp_of_tendsto_ae_of_meas hp hp' hf hg hg'' hui' hut' haefg'
 
-
 /-- Forward direction of Vitali's convergence theorem (non-finite version):
     if `f` is a sequence of uniformly integrable, uniformly tight functions that converge in
     measure to some function `g` in a finite measure space, then `f` converge in Lp to `g`. -/
@@ -371,7 +370,6 @@ theorem tendsto_Lp_of_tendstoInMeasure (hp : 1 ≤ p) (hp' : p ≠ ∞)
         ⟨s, hμs, fun i => hfε _⟩)
       hms'⟩
 
-
 /-- **Vitali's convergence theorem** (non-finite measure version).
 
 A sequence of functions `f` converges to `g` in Lp
@@ -379,13 +377,12 @@ if and only if it is uniformly integrable, uniformly tight and converges to `g` 
 theorem tendstoInMeasure_iff_tendsto_Lp (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ n, Memℒp (f n) p μ) (hg : Memℒp g p μ) :
     TendstoInMeasure μ f atTop g ∧ UnifIntegrable f p μ ∧ UnifTight f p μ
-      ↔ Tendsto (fun n => snorm (f n - g) p μ) atTop (𝓝 0) :=
-  ⟨fun h => tendsto_Lp_of_tendstoInMeasure hp hp' (fun n => (hf n).1) hg h.2.1 h.2.2 h.1,
-    fun h =>
-    ⟨tendstoInMeasure_of_tendsto_snorm (lt_of_lt_of_le zero_lt_one hp).ne'
+      ↔ Tendsto (fun n => snorm (f n - g) p μ) atTop (𝓝 0) where
+  mp h := tendsto_Lp_of_tendstoInMeasure hp hp' (fun n => (hf n).1) hg h.2.1 h.2.2 h.1
+  mpr h := ⟨tendstoInMeasure_of_tendsto_snorm (lt_of_lt_of_le zero_lt_one hp).ne'
         (fun n => (hf n).aestronglyMeasurable) hg.aestronglyMeasurable h,
       unifIntegrable_of_tendsto_Lp hp hp' hf hg h,
-      unifTight_of_tendsto_Lp hp' hf hg h⟩⟩
+      unifTight_of_tendsto_Lp hp' hf hg h⟩
 
 end VitaliConvergence
 end MeasureTheory
