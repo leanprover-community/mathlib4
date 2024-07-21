@@ -298,7 +298,6 @@ theorem toMatrix_reindexEquiv_prod (e : n ≃ p) (L : List (TransvectionStruct n
   · simp only [toMatrix_reindexEquiv, IH, Function.comp_apply, List.prod_cons,
       reindexAlgEquiv_apply, List.map]
     exact (reindexAlgEquiv_mul R _ _ _ _).symm
-#align matrix.transvection_struct.to_matrix_reindex_equiv_prod Matrix.TransvectionStruct.toMatrix_reindexEquiv_prod
 
 end TransvectionStruct
 
