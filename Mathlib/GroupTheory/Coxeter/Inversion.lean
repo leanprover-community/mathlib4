@@ -250,7 +250,8 @@ theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
   · dsimp only [rightInvSeq]
     rcases j with _ | j'
     · simp [getD_cons_zero]
-    · simp [getD_cons_succ, ih j']
+    · simp only [getD_eq_getElem?, get?_eq_getElem?] at ih
+      simp [getD_cons_succ, ih j']
 
 theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
     (lis ω).getD j 1 =
@@ -298,9 +299,9 @@ theorem leftInvSeq_take (ω : List B) (j : ℕ) :
     lis (ω.take j) = (lis ω).take j := by
   obtain le | ge := Nat.le_or_ge j ω.length
   · simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse]
-    rw [List.reverse_take j (by simpa)]
+    rw [List.take_reverse j (by simpa)]
     nth_rw 1 [← List.reverse_reverse ω]
-    rw [List.reverse_take j (by simpa)]
+    rw [List.take_reverse j (by simpa)]
     simp [rightInvSeq_drop]
   · rw [take_length_le ge, take_length_le (by simpa)]
 
@@ -325,10 +326,9 @@ theorem wordProd_mul_getD_rightInvSeq (ω : List B) (j : ℕ) :
   nth_rw 1 [← take_append_drop (j + 1) ω]
   rw [take_succ]
   obtain lt | le := lt_or_le j ω.length
-  · rw [get?_eq_get lt]
-    simp only [wordProd_append, wordProd_cons, mul_assoc]
+  · simp only [get?_eq_getElem?, getElem?_eq_getElem lt, wordProd_append, wordProd_cons, mul_assoc]
     simp
-  · rw [get?_eq_none.mpr le]
+  · simp only [get?_eq_getElem?, getElem?_eq_none le]
     simp
 
 theorem getD_leftInvSeq_mul_wordProd (ω : List B) (j : ℕ) :
@@ -337,10 +337,9 @@ theorem getD_leftInvSeq_mul_wordProd (ω : List B) (j : ℕ) :
   nth_rw 4 [← take_append_drop (j + 1) ω]
   rw [take_succ]
   obtain lt | le := lt_or_le j ω.length
-  · rw [get?_eq_get lt]
-    simp only [wordProd_append, wordProd_cons, mul_assoc]
+  · simp only [get?_eq_getElem?, getElem?_eq_getElem lt, wordProd_append, wordProd_cons, mul_assoc]
     simp
-  · rw [get?_eq_none.mpr le]
+  · simp only [get?_eq_getElem?, getElem?_eq_none le]
     simp
 
 theorem isRightInversion_of_mem_rightInvSeq {ω : List B} (hω : cs.IsReduced ω) {t : W}
@@ -379,7 +378,7 @@ theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
   have : List.map (fun x ↦ x⁻¹) (ris ω.reverse) = ris ω.reverse := calc
     List.map (fun x ↦ x⁻¹) (ris ω.reverse)
     _ = List.map id (ris ω.reverse)             := by
-        apply List.map_congr
+        apply List.map_congr_left
         intro t ht
         exact (cs.isReflection_of_mem_rightInvSeq _ ht).inv
     _ = ris ω.reverse                           := map_id _
@@ -401,12 +400,13 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
   have h₃ : t' = (ris ω).getD j' 1                    := by
     rw [h₂, cs.getD_rightInvSeq, cs.getD_rightInvSeq,
       (Nat.sub_add_cancel (by omega) : j' - 1 + 1 = j'), eraseIdx_eq_take_drop_succ,
-      drop_append_eq_append_drop, drop_length_le (by simp; left; omega), length_take,
+      drop_append_eq_append_drop, drop_length_le (by simp [j_lt_j'.le]), length_take,
       drop_drop, nil_append, min_eq_left_of_lt (j_lt_j'.trans j'_lt_length), ← add_assoc,
       Nat.sub_add_cancel (by omega), mul_left_inj, mul_right_inj]
     congr 2
     show get? (take j ω ++ drop (j + 1) ω) (j' - 1) = get? ω j'
-    rw [get?_append_right (by simp; left; exact Nat.le_sub_one_of_lt j_lt_j'), get?_drop]
+    rw [get?_eq_getElem?, get?_eq_getElem?,
+      getElem?_append_right (by simp [Nat.le_sub_one_of_lt j_lt_j']), getElem?_drop]
     congr
     show j + 1 + (j' - 1 - List.length (take j ω)) = j'
     rw [length_take]

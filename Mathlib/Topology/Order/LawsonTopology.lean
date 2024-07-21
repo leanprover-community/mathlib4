@@ -127,7 +127,8 @@ lemma toLawson_inj {a b : α} : toLawson a = toLawson b ↔ a = b := Iff.rfl
 @[simp, nolint simpNF]
 lemma ofLawson_inj {a b : WithLawson α} : ofLawson a = ofLawson b ↔ a = b := Iff.rfl
 
-/-- A recursor for `WithLawson`. Use as `induction' x using WithLawson.rec`. -/
+/-- A recursor for `WithLawson`. Use as `induction' x`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : WithLawson α → Sort*}
     (h : ∀ a, β (toLawson a)) : ∀ a, β a := fun a => h (ofLawson a)
 
@@ -237,3 +238,5 @@ instance (priority := 90) t0Space : T0Space α :=
 end PartialOrder
 
 end IsLawson
+
+end Topology
