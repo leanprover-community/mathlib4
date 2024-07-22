@@ -3,7 +3,6 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Batteries.Data.List.Pairwise
 import Mathlib.Data.List.Sort
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Algebra.BigOperators.Ring.List
@@ -57,14 +56,16 @@ theorem bitIndices_bit_false (n : ℕ) :
   rw [← bitIndices_bit_false, bit_false]
 
 @[simp] theorem bitIndices_sorted {n : ℕ} : n.bitIndices.Sorted (· < ·) := by
-  induction' n using binaryRec with b n hs; simp
+  induction' n using binaryRec with b n hs
+  · simp
   suffices List.Pairwise (fun a b ↦ a < b) n.bitIndices by
     cases b <;> simpa [List.Sorted, bit_false, bit_true, List.pairwise_map]
   exact List.Pairwise.imp (by simp) hs
 
 @[simp] theorem bitIndices_two_pow_mul (k n : ℕ) :
     bitIndices (2^k * n) = (bitIndices n).map (· + k) := by
-  induction' k with k ih; simp
+  induction' k with k ih
+  · simp
   rw [add_comm, pow_add, pow_one, mul_assoc, bitIndices_two_mul, ih, List.map_map, comp_add_right]
   simp [add_comm (a := 1)]
 
@@ -72,7 +73,8 @@ theorem bitIndices_bit_false (n : ℕ) :
   rw [← mul_one (a := 2^k), bitIndices_two_pow_mul]; simp
 
 @[simp] theorem twoPowSum_bitIndices (n : ℕ) : (n.bitIndices.map (fun i ↦ 2 ^ i)).sum = n := by
-  induction' n using binaryRec with b n hs; rfl
+  induction' n using binaryRec with b n hs
+  · rfl
   have hrw : (fun i ↦ 2^i) ∘ (fun x ↦ x+1) = fun i ↦ 2 * 2 ^ i := by
     ext i; simp [pow_add, mul_comm]
   cases b
@@ -83,7 +85,8 @@ theorem bitIndices_bit_false (n : ℕ) :
 See `Finset.equivBitIndices` for this bijection. -/
 theorem bitIndices_twoPowsum {L : List ℕ} (hL : List.Sorted (· < ·) L) :
     (L.map (fun i ↦ 2^i)).sum.bitIndices = L := by
-  cases' L with a L; rfl
+  cases' L with a L
+  · rfl
   obtain ⟨haL, hL⟩ := sorted_cons.1 hL
   simp_rw [Nat.lt_iff_add_one_le] at haL
   have h' : ∃ (L₀ : List ℕ), L₀.Sorted (· < ·) ∧ L = L₀.map (· + a + 1) := by
