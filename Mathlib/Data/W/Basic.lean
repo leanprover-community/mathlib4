@@ -5,8 +5,6 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Logic.Equiv.List
 
-#align_import data.W.basic from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
-
 /-!
 # W types
 
@@ -28,7 +26,6 @@ identifier `W` in the root namespace.
 -/
 
 -- For "W_type"
-set_option linter.uppercaseLean3 false
 
 /--
 Given `β : α → Type*`, `WType β` is the type of finitely branching trees where nodes are labeled by
@@ -36,7 +33,6 @@ elements of `α` and the children of a node labeled `a` are indexed by elements 
 -/
 inductive WType {α : Type*} (β : α → Type*)
   | mk (a : α) (f : β a → WType β) : WType β
-#align W_type WType
 
 instance : Inhabited (WType fun _ : Unit => Empty) :=
   ⟨WType.mk Unit.unit Empty.elim⟩
@@ -49,23 +45,19 @@ variable {α : Type*} {β : α → Type*}
   element `a` of `α`, and the children of the node as a function `β a → WType β`. -/
 def toSigma : WType β → Σa : α, β a → WType β
   | ⟨a, f⟩ => ⟨a, f⟩
-#align W_type.to_sigma WType.toSigma
 
 /-- The canonical map from the sigma type into a `WType`. Given a node `a : α`, and
   its children as a function `β a → WType β`, return the corresponding tree. -/
 def ofSigma : (Σa : α, β a → WType β) → WType β
   | ⟨a, f⟩ => WType.mk a f
-#align W_type.of_sigma WType.ofSigma
 
 @[simp]
 theorem ofSigma_toSigma : ∀ w : WType β, ofSigma (toSigma w) = w
   | ⟨_, _⟩ => rfl
-#align W_type.of_sigma_to_sigma WType.ofSigma_toSigma
 
 @[simp]
 theorem toSigma_ofSigma : ∀ s : Σa : α, β a → WType β, toSigma (ofSigma s) = s
   | ⟨_, _⟩ => rfl
-#align W_type.to_sigma_of_sigma WType.toSigma_ofSigma
 
 variable (β)
 
@@ -77,9 +69,6 @@ def equivSigma : WType β ≃ Σa : α, β a → WType β where
   invFun := ofSigma
   left_inv := ofSigma_toSigma
   right_inv := toSigma_ofSigma
-#align W_type.equiv_sigma WType.equivSigma
-#align W_type.equiv_sigma_symm_apply WType.equivSigma_symm_apply
-#align W_type.equiv_sigma_apply WType.equivSigma_apply
 
 variable {β}
 
@@ -87,7 +76,6 @@ variable {β}
 /-- The canonical map from `WType β` into any type `γ` given a map `(Σ a : α, β a → γ) → γ`. -/
 def elim (γ : Type*) (fγ : (Σa : α, β a → γ) → γ) : WType β → γ
   | ⟨a, f⟩ => fγ ⟨a, fun b => elim γ fγ (f b)⟩
-#align W_type.elim WType.elim
 
 theorem elim_injective (γ : Type*) (fγ : (Σa : α, β a → γ) → γ)
     (fγ_injective : Function.Injective fγ) : Function.Injective (elim γ fγ)
@@ -95,7 +83,6 @@ theorem elim_injective (γ : Type*) (fγ : (Σa : α, β a → γ) → γ)
     obtain ⟨rfl, h⟩ := Sigma.mk.inj_iff.mp (fγ_injective h)
     congr with x
     exact elim_injective γ fγ fγ_injective (congr_fun (eq_of_heq h) x : _)
-#align W_type.elim_injective WType.elim_injective
 
 instance [hα : IsEmpty α] : IsEmpty (WType β) :=
   ⟨fun w => WType.recOn w (IsEmpty.elim hα)⟩
@@ -117,23 +104,19 @@ theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : 
       · simp_all
       · refine congr_arg Nat.succ (ih ?_)
         simp_all [Function.funext_iff]⟩
-#align W_type.infinite_of_nonempty_of_is_empty WType.infinite_of_nonempty_of_isEmpty
 
 variable [∀ a : α, Fintype (β a)]
 
 /-- The depth of a finitely branching tree. -/
 def depth : WType β → ℕ
   | ⟨_, f⟩ => (Finset.sup Finset.univ fun n => depth (f n)) + 1
-#align W_type.depth WType.depth
 
 theorem depth_pos (t : WType β) : 0 < t.depth := by
   cases t
   apply Nat.succ_pos
-#align W_type.depth_pos WType.depth_pos
 
 theorem depth_lt_depth_mk (a : α) (f : β a → WType β) (i : β a) : depth (f i) < depth ⟨a, f⟩ :=
   Nat.lt_succ_of_le (Finset.le_sup (f := (depth <| f ·)) (Finset.mem_univ i))
-#align W_type.depth_lt_depth_mk WType.depth_lt_depth_mk
 
 /-
 Show that W types are encodable when `α` is an encodable fintype and for every `a : α`, `β a` is

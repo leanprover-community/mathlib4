@@ -264,7 +264,7 @@ linear equivalence between `ContinuousMultilinearMap 𝕜 E F` and `(⨂[𝕜] i
 (induced by `PiTensorProduct.lift`). Here we give the upgrade of this equivalence to
 an isometric linear equivalence; in particular, it is a continuous linear equivalence.
 -/
-noncomputable def liftIsometry  : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F :=
+noncomputable def liftIsometry : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F :=
   { liftEquiv 𝕜 E F with
     norm_map' := by
       intro f
