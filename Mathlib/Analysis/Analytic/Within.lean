@@ -74,23 +74,23 @@ lemma AnalyticWithinAt.continuousWithinAt {f : E → F} {s : Set E} {x : E}
   rcases h with ⟨p, h⟩
   exact h.continuousWithinAt
 
-/-- `AnalyticWithinAt` is trivial if `𝓝[s] x = ⊥` -/
-lemma analyticWithinAt_of_eq_bot {f : E → F} {s : Set E} {x : E} (h : 𝓝[s] x = ⊥) :
+/-- `AnalyticWithinAt` is trivial if `{x} ∈ 𝓝[s] x` -/
+lemma analyticWithinAt_of_singleton_mem {f : E → F} {s : Set E} {x : E} (h : {x} ∈ 𝓝[s] x) :
     AnalyticWithinAt 𝕜 f s x := by
-  have fc : ContinuousWithinAt f s x := by simp only [ContinuousWithinAt, h, tendsto_bot]
-  rw [← not_mem_closure_iff_nhdsWithin_eq_bot, ← mem_compl_iff, ← interior_compl] at h
-  rcases mem_interior.mp h with ⟨t, st, ot, xt⟩
+  have fc : ContinuousWithinAt f s x :=
+    Filter.Tendsto.mono_left (tendsto_pure_nhds _ _) (Filter.le_pure_iff.mpr h)
+  rcases mem_nhdsWithin.mp h with ⟨t, ot, xt, st⟩
   rcases Metric.mem_nhds_iff.mp (ot.mem_nhds xt) with ⟨r, r0, rt⟩
-  exact ⟨0, ENNReal.ofReal r, {
-    r_le := by simp only [FormalMultilinearSeries.zero_radius, le_top]
+  exact ⟨constFormalMultilinearSeries 𝕜 E (f x), .ofReal r, {
+    r_le := by simp only [FormalMultilinearSeries.constFormalMultilinearSeries_radius, le_top]
     r_pos := by positivity
     hasSum := by
       intro y ys yr
-      have : x + y ∈ sᶜ := by
-        refine st (rt ?_)
-        simpa only [Metric.mem_ball, dist_self_add_left, Metric.emetric_ball,
-          dist_zero_right] using yr
-      exact (this ys).elim
+      simp only [subset_singleton_iff, mem_inter_iff, and_imp] at st
+      specialize st (x + y) (rt (by simpa using yr)) ys
+      simp only [st]
+      apply (hasFPowerSeriesOnBall_const (e := 0)).hasSum
+      simp only [Metric.emetric_ball_top, mem_univ]
     continuousWithinAt := fc
   }⟩
 
