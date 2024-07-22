@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Jon Bannon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jon Bannon, Jack Cheverton and Samyak Dhar Tuladhar
+Authors: Jon Bannon, Jack Cheverton, Samyak Dhar Tuladhar
 -/
 
 import Mathlib.Analysis.InnerProductSpace.Spectrum
