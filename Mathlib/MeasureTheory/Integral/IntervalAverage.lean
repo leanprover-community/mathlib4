@@ -6,8 +6,6 @@ Authors: Yury Kudryashov
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.MeasureTheory.Integral.Average
 
-#align_import measure_theory.integral.interval_average from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
-
 /-!
 # Integral average over an interval
 
@@ -38,7 +36,6 @@ notation3 "⨍ "(...)" in "a".."b",
 
 theorem interval_average_symm (f : ℝ → E) (a b : ℝ) : (⨍ x in a..b, f x) = ⨍ x in b..a, f x := by
   rw [setAverage_eq, setAverage_eq, uIoc_comm]
-#align interval_average_symm interval_average_symm
 
 theorem interval_average_eq (f : ℝ → E) (a b : ℝ) :
     (⨍ x in a..b, f x) = (b - a)⁻¹ • ∫ x in a..b, f x := by
@@ -47,9 +44,7 @@ theorem interval_average_eq (f : ℝ → E) (a b : ℝ) :
       ENNReal.toReal_ofReal (sub_nonneg.2 h)]
   · rw [setAverage_eq, uIoc_of_ge h.le, Real.volume_Ioc, intervalIntegral.integral_of_ge h.le,
       ENNReal.toReal_ofReal (sub_nonneg.2 h.le), smul_neg, ← neg_smul, ← inv_neg, neg_sub]
-#align interval_average_eq interval_average_eq
 
 theorem interval_average_eq_div (f : ℝ → ℝ) (a b : ℝ) :
     (⨍ x in a..b, f x) = (∫ x in a..b, f x) / (b - a) := by
   rw [interval_average_eq, smul_eq_mul, div_eq_inv_mul]
-#align interval_average_eq_div interval_average_eq_div

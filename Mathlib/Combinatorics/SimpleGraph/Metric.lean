@@ -6,8 +6,6 @@ Authors: Kyle Miller, Vincent Beffara, Rida Hamadani
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Data.ENat.Lattice
 
-#align_import combinatorics.simple_graph.metric from "leanprover-community/mathlib"@"352ecfe114946c903338006dd3287cb5a9955ff2"
-
 /-!
 # Graph metric
 
@@ -20,7 +18,7 @@ which is the `ℕ`-valued version of `SimpleGraph.edist`.
 - `SimpleGraph.edist` is the graph extended metric.
 - `SimpleGraph.dist` is the graph metric.
 
-## Todo
+## TODO
 
 - Provide an additional computable version of `SimpleGraph.dist`
   for when `G` is connected.

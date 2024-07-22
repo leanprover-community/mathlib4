@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Functor.Const
+import Mathlib.Order.Fin.Basic
 import Mathlib.Tactic.FinCases
 
 /-!
@@ -537,7 +538,7 @@ def isoMkSucc {F G : ComposableArrows C (n + 1)} (α : F.obj' 0 ≅ G.obj' 0)
 
 lemma ext_succ {F G : ComposableArrows C (n + 1)} (h₀ : F.obj' 0 = G.obj' 0)
     (h : F.δ₀ = G.δ₀) (w : F.map' 0 1 = eqToHom h₀ ≫ G.map' 0 1 ≫
-      eqToHom (Functor.congr_obj h.symm 0)): F = G := by
+      eqToHom (Functor.congr_obj h.symm 0)) : F = G := by
   have : ∀ i, F.obj i = G.obj i := by
     intro ⟨i, hi⟩
     cases' i with i

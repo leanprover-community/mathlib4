@@ -20,7 +20,7 @@ the underlying space is metrizable and separable.
 * `MeasureTheory.FiniteMeasure.prod`: The product of two finite measures.
 * `MeasureTheory.ProbabilityMeasure.prod`: The product of two probability measures.
 
-## Todo
+## TODO
 
 * Add continuous dependence of the product measures on the factors.
 

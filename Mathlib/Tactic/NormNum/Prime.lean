@@ -6,8 +6,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Data.Nat.Prime.Defs
 
-#align_import data.nat.prime_norm_num from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
-
 /-!
 # `norm_num` extensions on natural numbers
 
@@ -234,3 +232,9 @@ theorem factorsHelper_end (n : ℕ) (l : List ℕ) (H : FactorsHelper n 2 l) : N
   have := List.chain'_iff_pairwise.1 (@List.Chain'.tail _ _ (_ :: _) h₁)
   (List.eq_of_perm_of_sorted (Nat.factors_unique h₃ h₂) this (Nat.factors_sorted _)).symm
 -/
+
+end NormNum
+
+end Meta
+
+end Mathlib
