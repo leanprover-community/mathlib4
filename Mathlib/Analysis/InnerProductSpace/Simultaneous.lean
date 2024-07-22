@@ -22,8 +22,8 @@ of symmetric operators on a finite-dimensional inner product space.
 
 ## TODO
 
-Develop `Diagonalization` class that selects a basis of (simultaneous) eigenvectors in a
-principled way.
+Develop a `Diagonalization` structure for linear maps and / or matrices which consists of a basis,
+and a proof obligation that the basis vectors are eigenvectors.
 
 ## Tags
 
