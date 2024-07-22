@@ -6,8 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.InnerProductSpace.Orientation
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
-#align_import measure_theory.measure.haar.inner_product_space from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
-
 /-!
 # Volume forms and measures on inner product spaces
 
@@ -20,8 +18,7 @@ the canonical `volume` from the `MeasureSpace` instance.
 
 open FiniteDimensional MeasureTheory MeasureTheory.Measure Set
 
-variable {ι F : Type*}
-
+variable {ι E F : Type*}
 variable [Fintype ι] [NormedAddCommGroup F] [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
   [MeasurableSpace F] [BorelSpace F]
 
@@ -35,14 +32,13 @@ parallelepiped associated to any orthonormal basis. This is a rephrasing of
 theorem Orientation.measure_orthonormalBasis (o : Orientation ℝ F (Fin n))
     (b : OrthonormalBasis ι ℝ F) : o.volumeForm.measure (parallelepiped b) = 1 := by
   have e : ι ≃ Fin n := by
-    refine' Fintype.equivFinOfCardEq _
+    refine Fintype.equivFinOfCardEq ?_
     rw [← _i.out, finrank_eq_card_basis b.toBasis]
   have A : ⇑b = b.reindex e ∘ e := by
     ext x
     simp only [OrthonormalBasis.coe_reindex, Function.comp_apply, Equiv.symm_apply_apply]
   rw [A, parallelepiped_comp_equiv, AlternatingMap.measure_parallelepiped,
     o.abs_volumeForm_apply_of_orthonormal, ENNReal.ofReal_one]
-#align orientation.measure_orthonormal_basis Orientation.measure_orthonormalBasis
 
 /-- In an oriented inner product space, the measure coming from the canonical volume form
 associated to an orientation coincides with the volume. -/
@@ -53,7 +49,6 @@ theorem Orientation.measure_eq_volume (o : Orientation ℝ F (Fin n)) :
   rw [addHaarMeasure_unique o.volumeForm.measure
     (stdOrthonormalBasis ℝ F).toBasis.parallelepiped, A, one_smul]
   simp only [volume, Basis.addHaar]
-#align orientation.measure_eq_volume Orientation.measure_eq_volume
 
 end
 
@@ -65,7 +60,6 @@ theorem OrthonormalBasis.volume_parallelepiped (b : OrthonormalBasis ι ℝ F) :
   let o := (stdOrthonormalBasis ℝ F).toBasis.orientation
   rw [← o.measure_eq_volume]
   exact o.measure_orthonormalBasis b
-#align orthonormal_basis.volume_parallelepiped OrthonormalBasis.volume_parallelepiped
 
 /-- The Haar measure defined by any orthonormal basis of a finite-dimensional inner product space
 is equal to its volume measure. -/
@@ -127,3 +121,30 @@ lemma volume_euclideanSpace_eq_dirac [IsEmpty ι] :
   rfl
 
 end PiLp
+
+namespace LinearIsometryEquiv
+
+variable [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+  [MeasurableSpace E] [BorelSpace E]
+
+variable (f : E ≃ₗᵢ[ℝ] F)
+
+/-- Every linear isometry on a real finite dimensional Hilbert space is measure-preserving. -/
+theorem measurePreserving : MeasurePreserving f := by
+  refine ⟨f.continuous.measurable, ?_⟩
+  rcases exists_orthonormalBasis ℝ E with ⟨w, b, _hw⟩
+  erw [← OrthonormalBasis.addHaar_eq_volume b, ← OrthonormalBasis.addHaar_eq_volume (b.map f),
+    Basis.map_addHaar _ f.toContinuousLinearEquiv]
+  congr
+
+/-- Every linear isometry equivalence is a measurable equivalence. -/
+def toMeasureEquiv : E ≃ᵐ F where
+  toEquiv := f
+  measurable_toFun := f.continuous.measurable
+  measurable_invFun := f.symm.continuous.measurable
+
+@[simp] theorem coe_toMeasureEquiv : (f.toMeasureEquiv : E → F) = f := rfl
+
+theorem toMeasureEquiv_symm : f.toMeasureEquiv.symm = f.symm.toMeasureEquiv := rfl
+
+end LinearIsometryEquiv

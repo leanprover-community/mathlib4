@@ -6,8 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.MeanValue
 
-#align_import analysis.calculus.fderiv_symmetric from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
-
 /-!
 # Symmetry of the second derivative
 
@@ -72,8 +70,8 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
       fun h => h ^ 2 := by
   -- it suffices to check that the expression is bounded by `ε * ((‖v‖ + ‖w‖) * ‖w‖) * h^2` for
   -- small enough `h`, for any positive `ε`.
-  refine' IsLittleO.trans_isBigO
-    (isLittleO_iff.2 fun ε εpos => _) (isBigO_const_mul_self ((‖v‖ + ‖w‖) * ‖w‖) _ _)
+  refine IsLittleO.trans_isBigO
+    (isLittleO_iff.2 fun ε εpos => ?_) (isBigO_const_mul_self ((‖v‖ + ‖w‖) * ‖w‖) _ _)
   -- consider a ball of radius `δ` around `x` in which the Taylor approximation for `f''` is
   -- good up to `δ`.
   rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, isLittleO_iff] at hx
@@ -112,15 +110,15 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
   have g_deriv : ∀ t ∈ Icc (0 : ℝ) 1, HasDerivWithinAt g (g' t) (Icc 0 1) t := by
     intro t ht
     apply_rules [HasDerivWithinAt.sub, HasDerivWithinAt.add]
-    · refine' (hf _ _).comp_hasDerivWithinAt _ _
+    · refine (hf _ ?_).comp_hasDerivWithinAt _ ?_
       · exact xt_mem t ht
       apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.const_add, HasDerivAt.smul_const,
         hasDerivAt_mul_const]
     · apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.smul_const, hasDerivAt_mul_const]
     · apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.smul_const, hasDerivAt_mul_const]
     · suffices H : HasDerivWithinAt (fun u => ((u * h) ^ 2 / 2) • f'' w w)
-          ((((2 : ℕ) : ℝ) * (t * h) ^ (2 - 1) * (1 * h) / 2) • f'' w w) (Icc 0 1) t
-      · convert H using 2
+          ((((2 : ℕ) : ℝ) * (t * h) ^ (2 - 1) * (1 * h) / 2) • f'' w w) (Icc 0 1) t by
+        convert H using 2
         ring
       apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.smul_const, hasDerivAt_id',
         HasDerivAt.pow, HasDerivAt.mul_const]
@@ -147,10 +145,10 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
       _ ≤ ε * ‖h • v + (t * h) • w‖ * ‖h • w‖ := by
         apply mul_le_mul_of_nonneg_right _ (norm_nonneg _)
         have H : x + h • v + (t * h) • w ∈ Metric.ball x δ ∩ interior s := by
-          refine' ⟨_, xt_mem t ⟨ht.1, ht.2.le⟩⟩
+          refine ⟨?_, xt_mem t ⟨ht.1, ht.2.le⟩⟩
           rw [add_assoc, add_mem_ball_iff_norm]
           exact I.trans_lt hδ
-        simpa only [mem_setOf_eq, add_assoc x, add_sub_cancel'] using sδ H
+        simpa only [mem_setOf_eq, add_assoc x, add_sub_cancel_left] using sδ H
       _ ≤ ε * (‖h • v‖ + ‖h • w‖) * ‖h • w‖ := by
         gcongr
         apply (norm_add_le _ _).trans
@@ -165,12 +163,11 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
       norm_image_sub_le_of_norm_deriv_le_segment' g_deriv g'_bound 1 (right_mem_Icc.2 zero_le_one)
   convert I using 1
   · congr 1
-    simp only [Nat.one_ne_zero, add_zero, one_mul, zero_div, zero_mul, sub_zero,
-      zero_smul, Ne.def, not_false_iff, bit0_eq_zero, zero_pow]
+    simp only [g, Nat.one_ne_zero, add_zero, one_mul, zero_div, zero_mul, sub_zero,
+      zero_smul, Ne, not_false_iff, zero_pow]
     abel
   · simp only [Real.norm_eq_abs, abs_mul, add_nonneg (norm_nonneg v) (norm_nonneg w), abs_of_nonneg,
-      hpos.le, mul_assoc, pow_bit0_abs, norm_nonneg, abs_pow]
-#align convex.taylor_approx_two_segment Convex.taylor_approx_two_segment
+      hpos.le, mul_assoc, norm_nonneg, abs_pow]
 
 /-- One can get `f'' v w` as the limit of `h ^ (-2)` times the alternate sum of the values of `f`
 along the vertices of a quadrilateral with sides `h v` and `h w` based at `x`.
@@ -196,15 +193,15 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
     abel
   have h2v : x + (2 : ℝ) • v ∈ interior s := by
     convert s_conv.add_smul_sub_mem_interior xs h4v A using 1
-    simp only [smul_smul, one_div, add_sub_cancel', add_right_inj]
+    simp only [smul_smul, one_div, add_sub_cancel_left, add_right_inj]
     norm_num
   have h2w : x + (2 : ℝ) • w ∈ interior s := by
     convert s_conv.add_smul_sub_mem_interior xs h4w A using 1
-    simp only [smul_smul, one_div, add_sub_cancel', add_right_inj]
+    simp only [smul_smul, one_div, add_sub_cancel_left, add_right_inj]
     norm_num
   have hvw : x + (v + w) ∈ interior s := by
     convert s_conv.add_smul_sub_mem_interior xs h2v2w A using 1
-    simp only [smul_smul, one_div, add_sub_cancel', add_right_inj, smul_add, smul_sub]
+    simp only [smul_smul, one_div, add_sub_cancel_left, add_right_inj, smul_add, smul_sub]
     norm_num
     abel
   have h2vw : x + (2 • v + w) ∈ interior s := by
@@ -214,7 +211,8 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
     abel
   have hvww : x + (v + w) + w ∈ interior s := by
     convert s_conv.interior.add_smul_sub_mem h2w h2v2w B using 1
-    rw [one_div, add_sub_add_right_eq_sub, add_sub_cancel', inv_smul_smul₀ two_ne_zero, two_smul]
+    rw [one_div, add_sub_add_right_eq_sub, add_sub_cancel_left, inv_smul_smul₀ two_ne_zero,
+      two_smul]
     abel
   have TA1 := s_conv.taylor_approx_two_segment hf xs hx h2vw h2vww
   have TA2 := s_conv.taylor_approx_two_segment hf xs hx hvw hvww
@@ -224,7 +222,6 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
     ContinuousLinearMap.add_apply, Pi.smul_apply, ContinuousLinearMap.coe_smul',
     ContinuousLinearMap.map_smul]
   abel
-#align convex.is_o_alternate_sum_square Convex.isLittleO_alternate_sum_square
 
 /-- Assume that `f` is differentiable inside a convex set `s`, and that its derivative `f'` is
 differentiable at a point `x`. Then, given two vectors `v` and `w` pointing inside `s`, one
@@ -251,7 +248,6 @@ theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
     · filter_upwards [self_mem_nhdsWithin] with h (hpos : 0 < h)
       field_simp [LT.lt.ne' hpos, SMul.smul]
   simpa only [sub_eq_zero] using isLittleO_const_const_iff.1 B
-#align convex.second_derivative_within_at_symmetric_of_mem_interior Convex.second_derivative_within_at_symmetric_of_mem_interior
 
 /-- If a function is differentiable inside a convex set with nonempty interior, and has a second
 derivative at a point of this convex set, then this second derivative is symmetric. -/
@@ -269,7 +265,7 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
     intro m
     have : x + (4 : ℝ) • (z + (0 : ℝ) • m) = y := by simp [hz]
     rw [← this]
-    refine' tendsto_const_nhds.add <| tendsto_const_nhds.smul <| tendsto_const_nhds.add _
+    refine tendsto_const_nhds.add <| tendsto_const_nhds.smul <| tendsto_const_nhds.add ?_
     exact continuousAt_id.smul continuousAt_const
   have B : ∀ m : E, ∀ᶠ t in 𝓝[>] (0 : ℝ), x + (4 : ℝ) • (z + t • m) ∈ interior s := by
     intro m
@@ -301,7 +297,6 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
     at this
   apply smul_right_injective F _ this
   simp [(tpos v).ne', (tpos w).ne']
-#align convex.second_derivative_within_at_symmetric Convex.second_derivative_within_at_symmetric
 
 /-- If a function is differentiable around `x`, and has two derivatives at `x`, then the second
 derivative is symmetric. -/
@@ -314,11 +309,9 @@ theorem second_derivative_symmetric_of_eventually {f : E → F} {f' : E → E �
   exact
     Convex.second_derivative_within_at_symmetric (convex_ball x ε) A
       (fun y hy => hε (interior_subset hy)) (Metric.mem_ball_self εpos) hx.hasFDerivWithinAt v w
-#align second_derivative_symmetric_of_eventually second_derivative_symmetric_of_eventually
 
 /-- If a function is differentiable, and has two derivatives at `x`, then the second
 derivative is symmetric. -/
 theorem second_derivative_symmetric {f : E → F} {f' : E → E →L[ℝ] F} {f'' : E →L[ℝ] E →L[ℝ] F}
     (hf : ∀ y, HasFDerivAt f (f' y) y) (hx : HasFDerivAt f' f'' x) (v w : E) : f'' v w = f'' w v :=
   second_derivative_symmetric_of_eventually (Filter.eventually_of_forall hf) hx v w
-#align second_derivative_symmetric second_derivative_symmetric

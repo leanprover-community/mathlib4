@@ -1,8 +1,7 @@
-import Mathlib.Tactic.Congr!
-import Std.Tactic.GuardExpr
+import Mathlib.Tactic.CongrExclamation
+import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Subtype
-import Mathlib.Data.List.BigOperators.Basic
 
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
@@ -89,8 +88,13 @@ example (s t : Set α) (f : Subtype s → α) (g : Subtype t → α) :
   · guard_target = HEq f g
     exact test_sorry
 
+set_option linter.unusedTactic false in
 /- `ι = κ` is not plausible -/
-example (f : ι → α) (g : κ → α) :
+-- This test does not work unless we specify that `ι` and `κ` lie in the same universe.
+-- Prior to https://github.com/leanprover/lean4/pull/4493 it did,
+-- because previously bodies of `example`s were (confusingly!) allowed to
+-- affect the elaboration of the signature!
+example {ι κ : Type u} (f : ι → α) (g : κ → α) :
     Set.image f Set.univ = Set.image g Set.univ := by
   congr!
   guard_target = Set.image f Set.univ = Set.image g Set.univ
@@ -120,6 +124,7 @@ example (p q r : Prop) : p ∧ q ↔ p ∧ r := by
   guard_target = q ↔ r
   exact test_sorry
 
+set_option linter.unusedTactic false in
 /- Congruence here is not OK by default since `α = β` is not generally plausible. -/
 example (α β) [inst1 : Add α] [inst2 : Add β] (x : α) (y : β) : HEq (x + x) (y + y) := by
   congr!
@@ -215,13 +220,13 @@ example {α β γ δ} {F : ∀{α β}, (α → β) → γ → δ} {f g : α → 
   funext
   apply h
 
-example {α β} {f : _ → β} {x y : {x : {x : α // x = x} // x = x} } (h : x.1 = y.1) :
+example {α β} {f : _ → β} {x y : {x : {x : α // x = x} // x = x}} (h : x.1 = y.1) :
     f x = f y := by
   congr! 1
   ext1
   exact h
 
-example {α β} {F : _ → β} {f g : {f : α → β // f = f} }
+example {α β} {F : _ → β} {f g : {f : α → β // f = f}}
     (h : ∀ x : α, (f : α → β) x = (g : α → β) x) :
     F f = F g := by
   congr!
@@ -258,6 +263,7 @@ example (x y z : Nat) (h : x = z) (hy : y = 2) : 1 + x + y = g z + 2 := by
   funext
   simp [g, Nat.add_comm]
 
+set_option linter.unusedTactic false in
 example (Fintype : Type → Type)
     (α β : Type) (inst : Fintype α) (inst' : Fintype β) : HEq inst inst' := by
   congr!
@@ -291,6 +297,7 @@ example (x y x' : Nat) (hx : id x = id x') : x + y = x' + y := by
   congr! (config := { closePost := false })
   exact hx
 
+set_option linter.unusedTactic false in
 example : { f : Nat → Nat // f = id } :=
   ⟨?_, by
     -- prevents `rfl` from solving for `?m` in `?m = id`:
@@ -310,3 +317,28 @@ example {α} [AddCommMonoid α] [PartialOrder α] {a b c d e f g : α} :
     (a + b) + (c + d) + (e + f) + g ≤ a + d + e + f + c + b + g := by
   ac_change a + d + e + f + c + g + b ≤ a + d + e + f + c + g + b
   rfl
+
+/-!
+Lawful BEq instances are "subsingletons".
+-/
+
+example (inst1 : BEq α) [LawfulBEq α] (inst2 : BEq α) [LawfulBEq α] (xs : List α) (x : α) :
+    @List.erase _ inst1 xs x = @List.erase _ inst2 xs x := by
+  congr!
+
+/--
+error: unsolved goals
+case h.e'_2
+α : Type
+inst1 : BEq α
+inst✝¹ : LawfulBEq α
+inst2 : BEq α
+inst✝ : LawfulBEq α
+xs : List α
+x : α
+⊢ inst1 = inst2
+-/
+#guard_msgs in
+example {α : Type} (inst1 : BEq α) [LawfulBEq α] (inst2 : BEq α) [LawfulBEq α] (xs : List α) (x : α) :
+    @List.erase _ inst1 xs x = @List.erase _ inst2 xs x := by
+  congr! (config := { beqEq := false })
