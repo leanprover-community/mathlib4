@@ -7,10 +7,10 @@ Authors: Jon Bannon, Jack Cheverton and Samyak Dhar Tuladhar
 import Mathlib.Analysis.InnerProductSpace.Spectrum
 
 
-/-! # Simultaneous eigenspaces of commuting tuples of symmetric operators
+/-! # Simultaneous eigenspaces of commuting finite tuples of symmetric operators
 
 This file collects various decomposition results for simultaneous eigenspaces of commuting
-tuples of symmetric operators on a finite dimensional Hilbert space.
+finite tuples of symmetric operators on a finite dimensional Hilbert space.
 
 # Main Results
 
