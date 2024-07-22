@@ -8,6 +8,7 @@ import Mathlib.Topology.Algebra.LinearTopology
 
 /-! # Topologicall nilpotent elements -/
 
+/-- An element is topologically nilpotent if its powers converge to `0` -/
 def IsTopologicallyNilpotent
     {α : Type*} [Semiring α] [TopologicalSpace α] (a : α) : Prop :=
     Filter.Tendsto (fun n : ℕ => a ^ n) Filter.atTop (nhds 0)

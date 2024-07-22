@@ -73,6 +73,7 @@ structure EvalDomain (a : σ → S) : Prop where
   hpow : ∀ s, IsTopologicallyNilpotent (a s)
   tendsto_zero : Filter.Tendsto a Filter.cofinite (nhds 0)
 
+/-- The domain of evaluation of `MvPowerSeries`, as an ideal -/
 def EvalDomain_ideal [LinearTopology S] : Ideal (σ → S) where
   carrier := setOf EvalDomain
   add_mem' {a} {b} ha hb := {
@@ -243,12 +244,12 @@ theorem _root_.MvPolynomial.coeToMvPowerSeries_denseInducing :
     coeToMvPowerSeries_denseRange
 
 variable (φ a)
-/-- Evaluation of power series at adequate elements, as a `RingHom` -/
+/-- Evaluation of power series at adequate elements -/
 noncomputable def eval₂ : MvPowerSeries σ R → S :=
   DenseInducing.extend coeToMvPowerSeries_denseInducing (MvPolynomial.eval₂ φ a)
 
-
-/-- Evaluation of power series at adequate elements, as a `RingHom` -/
+/-- Evaluation of power series at adequate elements,
+alternate definition that coincides with evaluation on MvPolynomial  -/
 noncomputable def eval₂' (f : MvPowerSeries σ R) :
     S := by
   let hp := fun (p : MvPolynomial σ R) ↦ p = f
@@ -337,7 +338,7 @@ theorem eval₂_unique
   (DenseInducing.extend_unique _ h hε).symm
 
 theorem comp_eval₂
-    {T : Type*} [CommRing T] [UniformSpace T] [LinearTopology T] [T2Space T]
+    {T : Type*} [CommRing T] [UniformSpace T] [T2Space T]
     {ε : S →+* T} (hε : Continuous ε) :
     ε ∘ eval₂ φ a = eval₂ (ε.comp φ) (ε ∘ a) := by
   rw [← coe_eval₂Hom hφ ha, ← RingHom.coe_comp]

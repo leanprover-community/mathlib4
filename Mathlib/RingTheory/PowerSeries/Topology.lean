@@ -62,15 +62,18 @@ theorem tendsto_iff_coeff_tendsto [Semiring α] {ι : Type*}
 variable (α)
 
 /-- The semiring topology on PowerSeries of a topological semiring -/
-scoped instance topologicalSemiring [Semiring α] [TopologicalSemiring α] :
+@[scoped instance]
+theorem topologicalSemiring [Semiring α] [TopologicalSemiring α] :
     TopologicalSemiring (PowerSeries α) := MvPowerSeries.WithPiTopology.topologicalSemiring Unit α
 
 /-- The ring topology on PowerSeries of a topological ring -/
-scoped instance topologicalRing [Ring α] [TopologicalRing α] :
+@[scoped instance]
+theorem topologicalRing [Ring α] [TopologicalRing α] :
     TopologicalRing (PowerSeries α) := MvPowerSeries.WithPiTopology.topologicalRing Unit α
 
 /-- PowerSeries on a T2Space form a T2Space -/
-scoped instance t2Space [T2Space α] : T2Space (PowerSeries α) :=
+@[scoped instance]
+theorem t2Space [T2Space α] : T2Space (PowerSeries α) :=
   MvPowerSeries.WithPiTopology.t2Space Unit α
 
 end WithPiTopology
@@ -95,20 +98,25 @@ theorem uniformContinuous_component :
   uniformContinuous_pi.mp uniformContinuous_id
 
 /-- The uniform_add_group structure on PowerSeries of a uniform_add_group -/
-scoped instance uniformAddGroup [AddGroup α] [UniformAddGroup α] :
+@[scoped instance]
+theorem uniformAddGroup [AddGroup α] [UniformAddGroup α] :
     UniformAddGroup (PowerSeries α) :=
   MvPowerSeries.WithPiUniformity.uniformAddGroup Unit α
 
 /-- Completeness of the uniform structure on PowerSeries -/
-scoped instance completeSpace [AddGroup α] [CompleteSpace α] :
+@[scoped instance]
+theorem completeSpace [AddGroup α] [CompleteSpace α] :
     CompleteSpace (PowerSeries α) :=
   MvPowerSeries.WithPiUniformity.completeSpace Unit α
 
 /-- Separation of the uniform structure on PowerSeries -/
-scoped instance t0Space [T0Space α] : T0Space (PowerSeries α) :=
+@[scoped instance]
+theorem t0Space [T0Space α] : T0Space (PowerSeries α) :=
   MvPowerSeries.WithPiUniformity.t0Space Unit α
 
-scoped instance uniform_topologicalRing [Ring α] [UniformAddGroup α] [TopologicalRing α] :
+/-- the topological ring structure on Power Series` -/
+@[scoped instance]
+theorem uniform_topologicalRing [Ring α] [UniformAddGroup α] [TopologicalRing α] :
     TopologicalRing (PowerSeries α) :=
   MvPowerSeries.WithPiUniformity.uniform_topologicalRing Unit α
 

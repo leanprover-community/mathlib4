@@ -22,6 +22,7 @@ structure EvalDomain (a : S) : Prop where
 
 open WithPiUniformity
 
+/-- The domain of evaluation of `PowerSeries`, as an ideal -/
 def EvalDomain.ideal [LinearTopology S] : Ideal S where
   carrier   := setOf IsTopologicallyNilpotent
   add_mem'  := IsTopologicallyNilpotent.add
@@ -30,20 +31,24 @@ def EvalDomain.ideal [LinearTopology S] : Ideal S where
 
 variable {φ : R →+* S} (hφ : Continuous φ) (a : S)
 
+/-- Evaluation of power series at adequate elements -/
 noncomputable def eval₂ : PowerSeries R → S :=
   MvPowerSeries.eval₂ φ (fun _ ↦ a)
 
 variable [hS : LinearTopology S] {a : S} (ha : EvalDomain a)
 
-def EvalDomain.const : MvPowerSeries.EvalDomain (fun (_ : Unit) ↦ a) where
+theorem EvalDomain.const : MvPowerSeries.EvalDomain (fun (_ : Unit) ↦ a) where
   hpow := fun _ ↦ ha.hpow
   tendsto_zero := by simp only [Filter.cofinite_eq_bot, Filter.tendsto_bot]
 
+/-- For `EvalDomain a`, the evaluation homomorphism at `a` on `PowerSeries` -/
 noncomputable def eval₂Hom : PowerSeries R →+* S :=
   MvPowerSeries.eval₂Hom hφ ha.const
 
 variable [Algebra R S] [ContinuousSMul R S]
 
+/-- For `EvalDomain a`, the evaluation homomorphism at `a` on `PowerSeries`,
+as an `AlgHom` -/
 noncomputable def aeval : PowerSeries R →ₐ[R] S :=
   MvPowerSeries.aeval ha.const
 
