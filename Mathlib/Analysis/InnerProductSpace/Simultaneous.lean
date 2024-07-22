@@ -44,6 +44,7 @@ section Pair
 
 variable {α : 𝕜} {A B : E →ₗ[𝕜] E} (hA : A.IsSymmetric) (hB : B.IsSymmetric)
     (hAB : A ∘ₗ B = B ∘ₗ A)
+
 /--If a pair of operators commute, then the eigenspaces of one are invariant under the other.-/
 theorem eigenspace_invariant_of_commute (α : 𝕜) :
     ∀ v ∈ (eigenspace A α), (B v ∈ eigenspace A α) := by
