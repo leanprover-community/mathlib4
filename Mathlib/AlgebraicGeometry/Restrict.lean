@@ -62,7 +62,7 @@ lemma Scheme.Opens.toScheme_presheaf_obj (V) : Γ(U, V) = Γ(X, U.ι ''ᵁ V) :=
 
 @[simp]
 lemma Scheme.Opens.ι_app (V) :
-  U.ι.app V = X.presheaf.map (homOfLE (Set.image_preimage_subset _ _)).op := rfl
+    U.ι.app V = X.presheaf.map (homOfLE (Set.image_preimage_subset _ _)).op := rfl
 
 @[simp]
 lemma Scheme.Opens.ι_appLE (V W e) :
@@ -71,6 +71,11 @@ lemma Scheme.Opens.ι_appLE (V W e) :
   simp only [Hom.appLE, ι_app, Functor.op_obj, Opens.carrier_eq_coe, toScheme_presheaf_map,
     Quiver.Hom.unop_op, Hom.opensFunctor_map_homOfLE, Opens.coe_inclusion, ← Functor.map_comp]
   rfl
+
+@[simp]
+lemma Scheme.Opens.ι_appIso (V) :
+    U.ι.appIso V = Iso.refl _ :=
+  X.ofRestrict_appIso _ _
 
 @[simp]
 lemma Scheme.Opens.ι_image_top : U.ι ''ᵁ ⊤ = U :=
@@ -114,9 +119,9 @@ def opensRestrict :
     Scheme.Opens U ≃ { V : X.Opens // V ≤ U } :=
   (IsOpenImmersion.opensEquiv (U.ι)).trans (Equiv.subtypeEquivProp (by simp))
 
-instance ΓRestrictAlgebra {X : Scheme.{u}} {Y : TopCat.{u}} {f : Y ⟶ X} (hf : OpenEmbedding f) :
-    Algebra (Scheme.Γ.obj (op X)) (Scheme.Γ.obj (op <| X.restrict hf)) :=
-  (Scheme.Γ.map (X.ofRestrict hf).op).toAlgebra
+instance ΓRestrictAlgebra {X : Scheme.{u}} (U : X.Opens) :
+    Algebra (Scheme.Γ.obj (op X)) (Scheme.Γ.obj (op U)) :=
+  (Scheme.Γ.map U.ι.op).toAlgebra
 
 lemma Scheme.map_basicOpen' (r : Γ(U, ⊤)) :
     U.ι ''ᵁ (U.toScheme.basicOpen r) = X.basicOpen

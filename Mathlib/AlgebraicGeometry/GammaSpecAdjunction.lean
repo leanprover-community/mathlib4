@@ -485,11 +485,8 @@ theorem toOpen_unit_app_val_c_app' {X : Scheme.{u}} (U : Opens (PrimeSpectrum Γ
 end ΓSpec
 
 theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : X.Opens) :
-    (Scheme.ΓSpecIso Γ(X, U)).hom =
-      Scheme.Γ.map (Spec.map U.topIso.inv).op ≫
-      (ΓSpec.adjunction.unit.app U).app ⊤ ≫
-      X.presheaf.map (eqToHom U.ι_image_top.symm).op := by
-  dsimp
+    (Scheme.ΓSpecIso Γ(X, U)).hom = (Spec.map U.topIso.inv).app ⊤ ≫
+      (ΓSpec.adjunction.unit.app U).app ⊤ ≫ U.topIso.hom := by
   rw [ΓSpec.adjunction_unit_app_app_top] -- why can't simp find this
   simp
 
