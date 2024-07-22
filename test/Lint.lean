@@ -58,13 +58,31 @@ export Nat (add)
 
 end add
 
-theorem toAlign : True := .intro
-
+set_option linter.cdot false in
 /--
-warning: This `#align` spans 2 lines, instead of just one.
-Do not worry, the 100 character limit does not apply to `#align` statements!
-note: this linter can be disabled with `set_option linter.oneLineAlign false`
+warning: Please, use '·' (typed as `\·`) instead of '.' as 'cdot'.
+note: this linter can be disabled with `set_option linter.cdot false`
+---
+warning: Please, use '·' (typed as `\·`) instead of '.' as 'cdot'.
+note: this linter can be disabled with `set_option linter.cdot false`
+---
+warning: Please, use '·' (typed as `\·`) instead of '.' as 'cdot'.
+note: this linter can be disabled with `set_option linter.cdot false`
 -/
 #guard_msgs in
-#align to_align
-  toAlign
+set_option linter.cdot true in
+attribute [instance] Int.add in
+instance : Inhabited Nat where
+  default := by
+    . have := 0
+      · have : Nat → Nat → Nat := (· + .)
+        . exact 0
+
+set_option linter.cdot false in
+/--
+warning: Please, use '·' (typed as `\·`) instead of '.' as 'cdot'.
+note: this linter can be disabled with `set_option linter.cdot false`
+-/
+#guard_msgs in
+set_option linter.cdot true in
+example : Add Nat where add := (. + ·)

@@ -7,8 +7,6 @@ import Mathlib.MeasureTheory.Measure.Doubling
 import Mathlib.MeasureTheory.Covering.Vitali
 import Mathlib.MeasureTheory.Covering.Differentiation
 
-#align_import measure_theory.covering.density_theorem from "leanprover-community/mathlib"@"5f6e827d81dfbeb6151d7016586ceeb0099b9655"
-
 /-!
 # Uniformly locally doubling measures and Lebesgue's density theorem
 
@@ -64,7 +62,6 @@ irreducible_def vitaliFamily (K : ℝ) : VitaliFamily μ := by
       ⟨zero_lt_three, le_max_right _ _⟩ (min_le_right _ _)
   exact (Vitali.vitaliFamily μ (scalingConstantOf μ (max (4 * K + 3) 3)) A).enlarge (R / 4)
     (by linarith)
-#align is_unif_loc_doubling_measure.vitali_family IsUnifLocDoublingMeasure.vitaliFamily
 
 /-- In the Vitali family `IsUnifLocDoublingMeasure.vitaliFamily K`, the sets based at `x`
 contain all balls `closedBall y r` when `dist x y ≤ K * r`. -/
@@ -107,7 +104,6 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
     apply (measure_mono this).trans _
     refine le_mul_of_one_le_left (zero_le _) ?_
     exact ENNReal.one_le_coe_iff.2 (le_max_right _ _)
-#align is_unif_loc_doubling_measure.closed_ball_mem_vitali_family_of_dist_le_mul IsUnifLocDoublingMeasure.closedBall_mem_vitaliFamily_of_dist_le_mul
 
 theorem tendsto_closedBall_filterAt {K : ℝ} {x : α} {ι : Type*} {l : Filter ι} (w : ι → α)
     (δ : ι → ℝ) (δlim : Tendsto δ l (𝓝[>] 0)) (xmem : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)) :
@@ -130,7 +126,6 @@ theorem tendsto_closedBall_filterAt {K : ℝ} {x : α} {ι : Type*} {l : Filter 
       simpa [abs_eq_self.mpr hj₀.le] using (lt_div_iff' hK).mp hjε
     simp only [mem_closedBall] at hx hy ⊢
     linarith [dist_triangle_right y x (w j)]
-#align is_unif_loc_doubling_measure.tendsto_closed_ball_filter_at IsUnifLocDoublingMeasure.tendsto_closedBall_filterAt
 
 end
 
@@ -149,7 +144,6 @@ theorem ae_tendsto_measure_inter_div (S : Set α) (K : ℝ) : ∀ᵐ x ∂μ.res
       Tendsto (fun j => μ (S ∩ closedBall (w j) (δ j)) / μ (closedBall (w j) (δ j))) l (𝓝 1) := by
   filter_upwards [(vitaliFamily μ K).ae_tendsto_measure_inter_div S] with x hx ι l w δ δlim
     xmem using hx.comp (tendsto_closedBall_filterAt μ _ _ δlim xmem)
-#align is_unif_loc_doubling_measure.ae_tendsto_measure_inter_div IsUnifLocDoublingMeasure.ae_tendsto_measure_inter_div
 
 /-- A version of **Lebesgue differentiation theorem** for a sequence of closed balls whose
 centers are not required to be fixed. -/
@@ -159,7 +153,6 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ)
       Tendsto (fun j => ⨍ y in closedBall (w j) (δ j), ‖f y - f x‖ ∂μ) l (𝓝 0) := by
   filter_upwards [(vitaliFamily μ K).ae_tendsto_average_norm_sub hf] with x hx ι l w δ δlim
     xmem using hx.comp (tendsto_closedBall_filterAt μ _ _ δlim xmem)
-#align is_unif_loc_doubling_measure.ae_tendsto_average_norm_sub IsUnifLocDoublingMeasure.ae_tendsto_average_norm_sub
 
 /-- A version of **Lebesgue differentiation theorem** for a sequence of closed balls whose
 centers are not required to be fixed. -/
@@ -170,7 +163,6 @@ theorem ae_tendsto_average [NormedSpace ℝ E] [CompleteSpace E]
         Tendsto (fun j => ⨍ y in closedBall (w j) (δ j), f y ∂μ) l (𝓝 (f x)) := by
   filter_upwards [(vitaliFamily μ K).ae_tendsto_average hf] with x hx ι l w δ δlim xmem using
     hx.comp (tendsto_closedBall_filterAt μ _ _ δlim xmem)
-#align is_unif_loc_doubling_measure.ae_tendsto_average IsUnifLocDoublingMeasure.ae_tendsto_average
 
 end Applications
 
