@@ -188,9 +188,8 @@ class IsIntegral : Prop where
 
 attribute [instance] IsIntegral.component_integral IsIntegral.nonempty
 
-instance [h : IsIntegral X] : IsDomain Γ(X, ⊤) :=
-  @IsIntegral.component_integral _ _ _ (by
-    simp only [Set.univ_nonempty, Opens.nonempty_coeSort, Opens.coe_top])
+instance [IsIntegral X] : IsDomain Γ(X, ⊤) :=
+  @IsIntegral.component_integral _ _ _ ⟨Nonempty.some inferInstance, trivial⟩
 
 instance (priority := 900) isReduced_of_isIntegral [IsIntegral X] : IsReduced X := by
   constructor
@@ -200,8 +199,12 @@ instance (priority := 900) isReduced_of_isIntegral [IsIntegral X] : IsReduced X 
     haveI : Subsingleton Γ(X, U) :=
       CommRingCat.subsingleton_of_isTerminal (X.sheaf.isTerminalOfEqEmpty this)
     infer_instance
-  · haveI : Nonempty U := by simpa
+  · haveI : Nonempty U := show Nonempty (U : Set X) by simpa
     infer_instance
+
+instance Scheme.component_nontrivial (X : Scheme.{u}) (U : Opens X) [Nonempty U] :
+    Nontrivial Γ(X, U) :=
+  LocallyRingedSpace.component_nontrivial (hU := ‹_›)
 
 instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := by
   by_contra H
@@ -219,10 +222,9 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := b
   let e : Γ(X, _) ≅ CommRingCat.of _ :=
     (X.sheaf.isProductOfDisjoint ⟨_, hS.1⟩ ⟨_, hT.1⟩ ?_).conePointUniqueUpToIso
       (CommRingCat.prodFanIsLimit _ _)
-  · apply (config := { allowSynthFailures := true }) false_of_nontrivial_of_product_domain
-    · exact e.symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
-    · apply X.toLocallyRingedSpace.component_nontrivial
-    · apply X.toLocallyRingedSpace.component_nontrivial
+  · have : IsDomain (Γ(X, ⟨Sᶜ, hS.1⟩) × Γ(X, ⟨Tᶜ, hT.1⟩)) :=
+      e.symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
+    exact false_of_nontrivial_of_product_domain Γ(X, ⟨Sᶜ, hS.1⟩) Γ(X, ⟨Tᶜ, hT.1⟩)
   · ext x
     constructor
     · rintro ⟨hS, hT⟩
@@ -294,6 +296,6 @@ theorem map_injective_of_isIntegral [IsIntegral X] {U V : X.Opens} (i : U ⟶ V)
   contrapose!
   simp_rw [Ne, ← Opens.not_nonempty_iff_eq_bot, Classical.not_not]
   apply nonempty_preirreducible_inter U.isOpen (RingedSpace.basicOpen _ _).isOpen
-  simpa using H
+  simpa using show Nonempty (U : Set X) from H
 
 end AlgebraicGeometry

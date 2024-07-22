@@ -55,7 +55,7 @@ variable (U : X.Opens)
 
 instance : IsOpenImmersion U.ι := inferInstanceAs (IsOpenImmersion (X.ofRestrict _))
 
-lemma Scheme.Opens.toScheme_carrier : (U.toScheme : Type u) = U := rfl
+lemma Scheme.Opens.toScheme_carrier : (U : Type u) = (U : Set X) := rfl
 lemma Scheme.Opens.toScheme_presheaf_obj (V) : Γ(U, V) = Γ(X, U.ι ''ᵁ V) := rfl
 @[simp] lemma Scheme.Opens.toScheme_presheaf_map {V W} (i : V ⟶ W) :
     U.toScheme.presheaf.map i = X.presheaf.map (U.ι.opensFunctor.map i.unop).op := rfl
