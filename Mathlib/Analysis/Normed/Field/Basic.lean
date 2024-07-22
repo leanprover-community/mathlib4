@@ -239,6 +239,16 @@ theorem nnnorm_mul_le (a b : α) : ‖a * b‖₊ ≤ ‖a‖₊ * ‖b‖₊ :=
     Real.toNNReal_mono (norm_mul_le _ _)
 #align nnnorm_mul_le nnnorm_mul_le
 
+lemma norm_mul_le_norm_right {a : α} (ha : ‖a‖ ≤ 1) (b : α) : ‖a * b‖ ≤ ‖b‖ := calc
+  ‖a * b‖ ≤ ‖a‖ * ‖b‖ := norm_mul_le _ _
+  _ ≤ 1 * ‖b‖ := by gcongr
+  _ = ‖b‖ := one_mul _
+
+lemma norm_mul_le_norm_left {b : α} (hb : ‖b‖ ≤ 1) (a : α) : ‖a * b‖ ≤ ‖a‖ := calc
+  ‖a * b‖ ≤ ‖a‖ * ‖b‖ := norm_mul_le _ _
+  _ ≤ ‖a‖ * 1 := by gcongr
+  _ = ‖a‖ := mul_one _
+
 theorem one_le_norm_one (β) [NormedRing β] [Nontrivial β] : 1 ≤ ‖(1 : β)‖ :=
   (le_mul_iff_one_le_left <| norm_pos_iff.mpr (one_ne_zero : (1 : β) ≠ 0)).mp
     (by simpa only [mul_one] using norm_mul_le (1 : β) 1)
