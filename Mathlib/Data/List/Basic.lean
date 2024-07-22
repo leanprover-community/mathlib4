@@ -1051,7 +1051,8 @@ theorem ext_nthLe {l₁ l₂ : List α} (hl : length l₁ = length l₂)
   ext_get hl h
 
 @[simp]
-theorem getElem_indexOf [DecidableEq α] {a : α} : ∀ {l : List α} (h), l[indexOf a l] = a
+theorem getElem_indexOf [DecidableEq α] {a : α} : ∀ {l : List α} (h : indexOf a l < l.length),
+    l[indexOf a l] = a
   | b :: l, h => by
     by_cases h' : b = a <;>
     simp [h', if_pos, if_false, getElem_indexOf]
