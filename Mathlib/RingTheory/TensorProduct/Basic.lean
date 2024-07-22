@@ -399,7 +399,7 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
       rw [algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc, ← one_def, one_mul]
     toRingHom := TensorProduct.includeLeftRingHom.comp (algebraMap S A) }
 
-open Nat in
+open scoped Nat in
 example : (Nat.instAlgebraOfSemiring : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
 
 -- This is for the `undergrad.yaml` list.
@@ -561,7 +561,7 @@ theorem intCast_def' (z : ℤ) : (z : A ⊗[R] B) = (1 : A) ⊗ₜ (z : B) := by
 example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := by
   with_reducible_and_instances rfl
 
-open Int in
+open scoped Int in
 -- fails at `with_reducible_and_instances rfl` #10906
 example : (Int.instAlgebraOfRing _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
 
@@ -592,13 +592,13 @@ end RightAlgebra
 
 end CommRing
 
-open Int in
+open scoped Int in
 /-- Verify that typeclass search finds the ring structure on `A ⊗[ℤ] B`
 when `A` and `B` are merely rings, by treating both as `ℤ`-algebras.
 -/
 example [Ring A] [Ring B] : Ring (A ⊗[ℤ] B) := by infer_instance
 
-open Int in
+open scoped Int in
 /-- Verify that typeclass search finds the comm_ring structure on `A ⊗[ℤ] B`
 when `A` and `B` are merely comm_rings, by treating both as `ℤ`-algebras.
 -/

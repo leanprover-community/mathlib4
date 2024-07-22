@@ -78,12 +78,12 @@ instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M
     Algebra R (CliffordAlgebra Q) :=
   RingQuot.instAlgebra _
 
-open Nat in
+open scoped Nat in
 -- verify there are no diamonds
 -- but doesn't work at `reducible_and_instances` #10906
 example : (Nat.instAlgebraOfSemiring : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 
-open Int in
+open scoped Int in
 -- but doesn't work at `reducible_and_instances` #10906
 example : (Int.instAlgebraOfRing _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 

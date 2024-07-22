@@ -75,7 +75,7 @@ noncomputable def quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I �
       Submodule.quotientPi (show _ → Submodule R R from fun i => span ({a i} : Set R))
     exact this
 
-open Int in
+open scoped Int in
 /-- Ideal quotients over a free finite extension of `ℤ` are isomorphic to a direct product of
 `ZMod`. -/
 noncomputable def quotientEquivPiZMod (I : Ideal S) (b : Basis ι ℤ S) (hI : I ≠ ⊥) :
@@ -86,7 +86,7 @@ noncomputable def quotientEquivPiZMod (I : Ideal S) (b : Basis ι ℤ S) (hI : I
     AddEquiv.piCongrRight fun i => ↑(Int.quotientSpanEquivZMod (a i))
   (↑(e : (S ⧸ I) ≃ₗ[ℤ] _) : S ⧸ I ≃+ _).trans e'
 
-open Int in
+open scoped Int in
 /-- A nonzero ideal over a free finite extension of `ℤ` has a finite quotient.
 
 Can't be an instance because of the side condition `I ≠ ⊥`, and more importantly,

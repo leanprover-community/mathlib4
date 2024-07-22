@@ -877,13 +877,13 @@ theorem associated_rightInverse :
     Function.RightInverse (associatedHom S) (BilinMap.toQuadraticMap : _ → QuadraticMap R M R) :=
   fun Q => toQuadraticMap_associated S Q
 
-open Int in
+open scoped Int in
 /-- `associated'` is the `ℤ`-linear map that sends a quadratic form on a module `M` over `R` to its
 associated symmetric bilinear form. -/
 abbrev associated' : QuadraticMap R M R →ₗ[ℤ] BilinMap R M R :=
   associatedHom ℤ
 
-open Nat in
+open scoped Nat in
 /-- Symmetric bilinear forms can be lifted to quadratic forms -/
 instance canLift :
     CanLift (BilinMap R M R) (QuadraticForm R M) (associatedHom ℕ) LinearMap.IsSymm where
@@ -1022,7 +1022,7 @@ section Ring
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
-open Int in
+open scoped Int in
 /-- The associated bilinear form of an anisotropic quadratic form is nondegenerate. -/
 theorem separatingLeft_of_anisotropic [Invertible (2 : R)] (Q : QuadraticMap R M R)
     (hB : Q.Anisotropic) :
@@ -1175,7 +1175,7 @@ end Semiring
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
-open Nat in
+open scoped Nat in
 /-- There exists a non-null vector with respect to any symmetric, nonzero bilinear form `B`
 on a module `M` over a ring `R` with invertible `2`, i.e. there exists some
 `x : M` such that `B x x ≠ 0`. -/

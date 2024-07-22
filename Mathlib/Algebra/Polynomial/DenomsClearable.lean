@@ -73,7 +73,7 @@ end DenomsClearable
 
 open RingHom
 
-open Int in
+open scoped Int in
 /-- Evaluating a polynomial with integer coefficients at a rational number and clearing
 denominators, yields a number greater than or equal to one.  The target can be any
 `LinearOrderedField K`.

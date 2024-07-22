@@ -115,7 +115,7 @@ theorem exists_one_le_pow_mul_dist {Z N R : Type*} [PseudoMetricSpace R] {d : N 
     refine mul_le_mul_of_nonneg_left ((B this).trans ?_) (zero_le_one.trans (d0 a))
     exact mul_le_mul_of_nonneg_left (le_max_right _ M) dist_nonneg
 
-open Int in
+open scoped Int in
 theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : ℤ[X]} (f0 : f ≠ 0)
     (fa : eval α (map (algebraMap ℤ ℝ) f) = 0) :
     ∃ A : ℝ, 0 < A ∧ ∀ a : ℤ, ∀ b : ℕ,
@@ -168,7 +168,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
     refine ⟨hq, Finset.mem_coe.mp (Multiset.mem_toFinset.mpr ?_)⟩
     exact (mem_roots fR0).mpr (IsRoot.def.mpr hy)
 
-open Int in
+open scoped Int in
 /-- **Liouville's Theorem** -/
 protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental ℤ x := by
   -- Proceed by contradiction: if `x` is algebraic, then `x` is the root (`ef0`) of a

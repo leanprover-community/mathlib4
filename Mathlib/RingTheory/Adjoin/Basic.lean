@@ -439,7 +439,7 @@ end AlgHom
 
 section NatInt
 
-open Nat Int
+open scoped Nat Int
 
 theorem Algebra.adjoin_nat {R : Type*} [Semiring R] (s : Set R) :
     adjoin ℕ s = subalgebraOfSubsemiring (Subsemiring.closure s) :=

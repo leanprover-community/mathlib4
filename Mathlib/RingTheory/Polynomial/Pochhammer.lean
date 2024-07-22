@@ -93,7 +93,7 @@ theorem ascPochhammer_eval_comp {R : Type*} [CommSemiring R] (n : ℕ) (p : R[X]
 
 end
 
-open Nat in
+open scoped Nat in
 @[simp, norm_cast]
 theorem ascPochhammer_eval_cast (n k : ℕ) :
     (((ascPochhammer ℕ n).eval k : ℕ) : S) = ((ascPochhammer S n).eval k : S) := by
@@ -111,7 +111,7 @@ theorem ascPochhammer_zero_eval_zero : (ascPochhammer S 0).eval 0 = 1 := by simp
 theorem ascPochhammer_ne_zero_eval_zero {n : ℕ} (h : n ≠ 0) : (ascPochhammer S n).eval 0 = 0 := by
   simp [ascPochhammer_eval_zero, h]
 
-open Nat in
+open scoped Nat in
 theorem ascPochhammer_succ_right (n : ℕ) :
     ascPochhammer S (n + 1) = ascPochhammer S n * (X + (n : S[X])) := by
   suffices h : ascPochhammer ℕ (n + 1) = ascPochhammer ℕ n * (X + (n : ℕ[X])) by
@@ -188,7 +188,7 @@ end StrictOrderedSemiring
 
 section Factorial
 
-open Nat
+open scoped Nat
 
 variable (S : Type*) [Semiring S] (r n : ℕ)
 
@@ -259,7 +259,7 @@ theorem descPochhammer_map (f : R →+* T) (n : ℕ) :
   · simp [ih, descPochhammer_succ_left, map_comp]
 end
 
-open Int in
+open scoped Int in
 @[simp, norm_cast]
 theorem descPochhammer_eval_cast (n : ℕ) (k : ℤ) :
     (((descPochhammer ℤ n).eval k : ℤ) : R) = ((descPochhammer R n).eval k : R) := by
@@ -278,7 +278,7 @@ theorem descPochhammer_zero_eval_zero : (descPochhammer R 0).eval 0 = 1 := by si
 theorem descPochhammer_ne_zero_eval_zero {n : ℕ} (h : n ≠ 0) : (descPochhammer R n).eval 0 = 0 := by
   simp [descPochhammer_eval_zero, h]
 
-open Int in
+open scoped Int in
 theorem descPochhammer_succ_right (n : ℕ) :
     descPochhammer R (n + 1) = descPochhammer R n * (X - (n : R[X])) := by
   suffices h : descPochhammer ℤ (n + 1) = descPochhammer ℤ n * (X - (n : ℤ[X])) by
@@ -327,7 +327,7 @@ theorem descPochhammer_eq_ascPochhammer (n : ℕ) :
     rw [Nat.cast_succ, sub_add, add_sub_cancel_right, descPochhammer_succ_right,
       ascPochhammer_succ_left, ih, X_mul, mul_X_comp, comp_assoc, add_comp, X_comp, one_comp]
 
-open Nat in
+open scoped Nat in
 theorem descPochhammer_eval_eq_ascPochhammer (r : R) (n : ℕ) :
     (descPochhammer R n).eval r = (ascPochhammer R n).eval (r - n + 1) := by
   induction n with

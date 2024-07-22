@@ -139,7 +139,7 @@ theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 
   simp only [latticeBasis, integralBasis_apply, coe_basisOfLinearIndependentOfCardEqFinrank,
     Function.comp_apply, Equiv.apply_symm_apply]
 
-open Int in
+open scoped Int in
 theorem mem_span_latticeBasis [NumberField K] (x : (K →+* ℂ) → ℂ) :
     x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔
       x ∈ ((canonicalEmbedding K).comp (algebraMap (𝓞 K) K)).range := by
@@ -572,7 +572,7 @@ theorem latticeBasis_apply (i : ChooseBasisIndex ℤ (𝓞 K)) :
   simp only [latticeBasis, coe_basisOfLinearIndependentOfCardEqFinrank, Function.comp_apply,
     canonicalEmbedding.latticeBasis_apply, integralBasis_apply, commMap_canonical_eq_mixed]
 
-open Int in
+open scoped Int in
 theorem mem_span_latticeBasis (x : (E K)) :
     x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔
       x ∈ ((mixedEmbedding K).comp (algebraMap (𝓞 K) K)).range := by
@@ -652,7 +652,7 @@ theorem fractionalIdealLatticeBasis_apply (i : ChooseBasisIndex ℤ I) :
   simp only [fractionalIdealLatticeBasis, Basis.coe_reindex, Basis.coe_mk, Function.comp_apply,
     Equiv.apply_symm_apply]
 
-open Int in
+open scoped Int in
 theorem mem_span_fractionalIdealLatticeBasis (x : (E K)) :
     x ∈ Submodule.span ℤ (Set.range (fractionalIdealLatticeBasis K I)) ↔
       x ∈ mixedEmbedding K '' I := by

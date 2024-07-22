@@ -25,7 +25,9 @@ obtained by `X a ↦ a`.
 
 namespace MvPolynomial
 
-open Function Nat Int
+open Function
+
+open scoped Nat Int
 
 variable (A B R : Type*) [CommSemiring A] [CommSemiring B] [CommRing R] [Algebra A B]
 

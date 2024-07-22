@@ -438,7 +438,7 @@ theorem of_pow : ∀ n : ℕ, Irrational (x ^ n) → Irrational x
     rw [pow_succ] at h
     exact h.mul_cases.elim (of_pow n) id
 
-open Int in
+open scoped Int in
 theorem of_zpow : ∀ m : ℤ, Irrational (x ^ m) → Irrational x
   | (n : ℕ) => fun h => by
     rw [zpow_natCast] at h

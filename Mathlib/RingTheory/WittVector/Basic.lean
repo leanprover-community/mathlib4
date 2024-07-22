@@ -132,7 +132,7 @@ end WittVector
 
 namespace WittVector
 
-open Int
+open scoped Int
 
 /-- Evaluates the `n`th Witt polynomial on the first `n` coefficients of `x`,
 producing a value in `R`.

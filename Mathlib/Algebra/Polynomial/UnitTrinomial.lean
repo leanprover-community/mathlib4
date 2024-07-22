@@ -320,7 +320,7 @@ theorem irreducible_of_isCoprime (hp : p.IsUnitTrinomial) (h : IsCoprime p p.mir
     Irreducible p :=
   irreducible_of_coprime hp fun _ => h.isUnit_of_dvd'
 
-open Int in
+open scoped Int in
 /-- A unit trinomial is irreducible if it has no complex roots in common with its mirror -/
 theorem irreducible_of_coprime' (hp : IsUnitTrinomial p)
     (h : ∀ z : ℂ, ¬(aeval z p = 0 ∧ aeval z (mirror p) = 0)) : Irreducible p := by

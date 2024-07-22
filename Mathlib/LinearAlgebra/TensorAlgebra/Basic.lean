@@ -71,7 +71,7 @@ instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
     Algebra R (TensorAlgebra A M) :=
   RingQuot.instAlgebra _
 
-open Nat in
+open scoped Nat in
 -- verify there is no diamond
 -- but doesn't work at `reducible_and_instances` #10906
 example : (Nat.instAlgebraOfSemiring : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
@@ -93,7 +93,7 @@ namespace TensorAlgebra
 instance {S : Type*} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
   RingQuot.instRing (Rel S M)
 
-open Int in
+open scoped Int in
 -- verify there is no diamond
 -- but doesn't work at `reducible_and_instances` #10906
 variable (S M : Type) [CommRing S] [AddCommGroup M] [Module S M] in

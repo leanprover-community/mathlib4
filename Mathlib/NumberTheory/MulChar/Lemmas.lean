@@ -195,7 +195,7 @@ lemma exists_apply_eq_pow {χ : MulChar F R} {n : ℕ} (hn : n ≠ 0) (hχ : χ 
   obtain ⟨k, hk₁, hk₂⟩ := hμ.eq_pow_of_pow_eq_one hζ' hn'
   exact ⟨k, hk₁, (hζ₂ ▸ hk₂).symm⟩
 
-open Int in
+open scoped Int in
 /-- The values of a multiplicative character `χ` such that `χ^n = 1` are contained in `ℤ[μ]` when
 `μ` is a primitive `n`th root of unity. -/
 lemma apply_mem_algebraAdjoin_of_pow_eq_one {χ : MulChar F R} {n : ℕ} (hn : n ≠ 0) (hχ : χ ^ n = 1)
@@ -208,7 +208,7 @@ lemma apply_mem_algebraAdjoin_of_pow_eq_one {χ : MulChar F R} {n : ℕ} (hn : n
     obtain ⟨k, _, hk⟩ := IsPrimitiveRoot.eq_pow_of_pow_eq_one hμ hζ₁ (Nat.pos_of_ne_zero hn)
     exact hζ₂ ▸ hk ▸ Subalgebra.pow_mem _ (Algebra.self_mem_adjoin_singleton ℤ μ) k
 
-open Int in
+open scoped Int in
 /-- The values of a multiplicative character of order `n` are contained in `ℤ[μ]` when
 `μ` is a primitive `n`th root of unity. -/
 lemma apply_mem_algebraAdjoin {χ : MulChar F R} {μ : R} (hμ : IsPrimitiveRoot μ (orderOf χ))

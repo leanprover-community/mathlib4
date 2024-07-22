@@ -29,7 +29,7 @@ namespace IsPrimitiveRoot
 
 section CommRing
 
-open Int
+open scoped Int
 
 variable {n : ℕ} {K : Type*} [CommRing K] {μ : K} (h : IsPrimitiveRoot μ n)
 

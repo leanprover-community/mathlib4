@@ -332,7 +332,7 @@ theorem _root_.AlgHom.map_adjugate {R A B : Type*} [CommSemiring R] [CommRing A]
     f.mapMatrix M.adjugate = Matrix.adjugate (f.mapMatrix M) :=
   f.toRingHom.map_adjugate _
 
-open Int in
+open scoped Int in
 theorem det_adjugate (A : Matrix n n α) : (adjugate A).det = A.det ^ (Fintype.card n - 1) := by
   -- get rid of the `- 1`
   rcases (Fintype.card n).eq_zero_or_pos with h_card | h_card
@@ -482,7 +482,7 @@ theorem det_smul_adjugate_adjugate (A : Matrix n n α) :
   rwa [← Matrix.mul_assoc, mul_adjugate, Matrix.mul_smul, Matrix.mul_one, Matrix.smul_mul,
     Matrix.one_mul] at this
 
-open Int in
+open scoped Int in
 /-- Note that this is not true for `Fintype.card n = 1` since `1 - 2 = 0` and not `-1`. -/
 theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
     adjugate (adjugate A) = det A ^ (Fintype.card n - 2) • A := by

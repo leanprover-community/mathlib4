@@ -69,7 +69,7 @@ theorem cyclotomic_expand_eq_cyclotomic_mul {p n : ℕ} (hp : Nat.Prime p) (hdiv
       Nat.totient_mul ((Nat.Prime.coprime_iff_not_dvd hp).2 hdiv), Nat.totient_prime hp,
       mul_comm (p - 1), ← Nat.mul_succ, Nat.sub_one, Nat.succ_pred_eq_of_pos hp.pos]
 
-open Int in
+open scoped Int in
 /-- If `p` is a prime such that `p ∣ n`, then
 `expand R p (cyclotomic n R) = cyclotomic (p * n) R`. -/
 @[simp]

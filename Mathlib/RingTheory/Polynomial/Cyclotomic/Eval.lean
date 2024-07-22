@@ -287,7 +287,7 @@ theorem cyclotomic_eval_le_add_one_pow_totient {q : ℝ} (hq' : 1 < q) :
   | 2 => by simp
   | n + 3 => (cyclotomic_eval_lt_add_one_pow_totient le_add_self hq').le
 
-open Int in
+open scoped Int in
 theorem sub_one_pow_totient_lt_natAbs_cyclotomic_eval {n : ℕ} {q : ℕ} (hn' : 1 < n) (hq : q ≠ 1) :
     (q - 1) ^ totient n < ((cyclotomic n ℤ).eval ↑q).natAbs := by
   rcases hq.lt_or_lt.imp_left Nat.lt_one_iff.mp with (rfl | hq')

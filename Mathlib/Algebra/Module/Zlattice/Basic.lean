@@ -82,7 +82,7 @@ variable [FloorRing K]
 
 section Fintype
 
-open Int
+open scoped Int
 
 variable [Fintype ι]
 
@@ -263,7 +263,7 @@ end NormedLatticeField
 
 section Real
 
-open Int in
+open scoped Int in
 theorem discreteTopology_pi_basisFun [Finite ι] :
     DiscreteTopology (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
   cases nonempty_fintype ι
@@ -283,7 +283,7 @@ theorem fundamentalDomain_subset_parallelepiped [Fintype ι] :
   rw [fundamentalDomain, parallelepiped_basis_eq, Set.setOf_subset_setOf]
   exact fun _ h i ↦ Set.Ico_subset_Icc_self (h i)
 
-open Int in
+open scoped Int in
 instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
   have h : Set.MapsTo b.equivFun (span ℤ (Set.range b)) (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
     intro _ hx
@@ -471,7 +471,7 @@ instance instModuleFree_of_discrete_addSubgroup {E : Type*} [NormedAddCommGroup 
     exact noZeroSMulDivisors _
   infer_instance
 
-open Int in
+open scoped Int in
 theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
   classical
   have : Module.Finite ℤ L := module_finite K L
@@ -574,7 +574,7 @@ def Basis.ofZlatticeBasis :
 theorem Basis.ofZlatticeBasis_apply (i : ι) :
     b.ofZlatticeBasis K L i =  b i := by simp [Basis.ofZlatticeBasis]
 
-open Int in
+open scoped Int in
 @[simp]
 theorem Basis.ofZlatticeBasis_repr_apply (x : L) (i : ι) :
     (b.ofZlatticeBasis K L).repr x i = b.repr x i := by

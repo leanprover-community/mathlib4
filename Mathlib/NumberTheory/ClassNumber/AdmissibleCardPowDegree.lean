@@ -96,7 +96,7 @@ theorem exists_approx_polynomial_aux [Ring Fq] {d : ℕ} {m : ℕ} (hm : Fintype
 
 variable [Field Fq]
 
-open Int in
+open scoped Int in
 /-- If `A` is a family of enough low-degree polynomials over a finite field,
 there is a pair of elements in `A` (with different indices but not necessarily
 distinct), such that the difference of their remainders is close together. -/
@@ -167,7 +167,7 @@ theorem cardPowDegree_anti_archimedean {x y z : Fq[X]} {a : ℤ} (hxy : cardPowD
   convert degree_add_le (x - y) (y - z) using 2
   exact (sub_add_sub_cancel _ _ _).symm
 
-open Int in
+open scoped Int in
 /-- A slightly stronger version of `exists_partition` on which we perform induction on `n`:
 for all `ε > 0`, we can partition the remainders of any family of polynomials `A`
 into equivalence classes, where the equivalence(!) relation is "closer than `ε`". -/

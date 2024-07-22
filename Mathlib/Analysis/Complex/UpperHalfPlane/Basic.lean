@@ -26,9 +26,9 @@ We define the notation `ℍ` for the upper half plane available in the locale
 
 noncomputable section
 
-open Int Matrix Matrix.SpecialLinearGroup
+open Matrix Matrix.SpecialLinearGroup
 
-open scoped Classical MatrixGroups
+open scoped Classical Int MatrixGroups
 
 /- Disable these instances as they are not the simp-normal form, and having them disabled ensures
 we state lemmas in this file without spurious `coe_fn` terms. -/

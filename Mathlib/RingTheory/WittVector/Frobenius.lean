@@ -197,7 +197,7 @@ theorem bind₁_frobeniusPoly_wittPolynomial (n : ℕ) :
 
 variable {p}
 
-open Int
+open scoped Int
 
 /-- `frobeniusFun` is the function underlying the ring endomorphism
 `frobenius : 𝕎 R →+* frobenius 𝕎 R`. -/

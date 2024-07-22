@@ -31,7 +31,7 @@ theorem vAdd_width_periodic (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Gamma
     empty_val', cons_val_fin_one, cons_val_one, head_fin_const, Int.cast_zero, zero_mul, head_cons,
     Int.cast_one, zero_add, one_zpow, one_mul]
 
-open Int in
+open scoped Int in
 theorem T_zpow_width_invariant (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Gamma N) k) (z : ℍ) :
     f (((ModularGroup.T ^ (N * n))) • z) = f z := by
   rw [modular_T_zpow_smul z (N * n)]

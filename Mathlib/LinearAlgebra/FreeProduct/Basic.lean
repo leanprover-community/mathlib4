@@ -85,7 +85,7 @@ def algEquiv_quot_algEquiv
       fun x y h ↦ by apply RingQuot.mkAlgHom_rel; simpa⟩))
     (by ext b; simp) (by ext a; simp)
 
-open Nat in
+open scoped Nat in
 /--If two (semi)rings are equivalent and their quotients by a relation `rel` are defined,
 then their quotients are also equivalent.
 

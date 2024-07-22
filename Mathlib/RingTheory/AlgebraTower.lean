@@ -47,7 +47,7 @@ def Invertible.algebraTower (r : R) [Invertible (algebraMap R S r)] :
   Invertible.copy (Invertible.map (algebraMap S A) (algebraMap R S r)) (algebraMap R A r)
     (IsScalarTower.algebraMap_apply R S A r)
 
-open Nat in
+open scoped Nat in
 /-- A natural number that is invertible when coerced to `R` is also invertible
 when coerced to any `R`-algebra. -/
 def invertibleAlgebraCoeNat (n : ℕ) [inv : Invertible (n : R)] : Invertible (n : A) :=

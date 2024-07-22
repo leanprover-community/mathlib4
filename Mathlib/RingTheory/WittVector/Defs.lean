@@ -138,7 +138,7 @@ def wittPow (n : ℕ) : ℕ → MvPolynomial (Fin 1 × ℕ) ℤ :=
 
 variable {p}
 
-open Int
+open scoped Int
 
 /-- An auxiliary definition used in `WittVector.eval`.
 Evaluates a polynomial whose variables come from the disjoint union of `k` copies of `ℕ`,
@@ -290,7 +290,7 @@ end WittStructureSimplifications
 
 section Coeff
 
-open Int
+open scoped Int
 
 variable (R)
 

@@ -118,17 +118,17 @@ end Algebra
 
 section Ring
 
+open scoped Nat Int
+
 variable (R S M : Type*) [Ring R] [Ring S]
 variable [AddCommGroup M] [Module R M] [Module S M] [SMulCommClass R S M]
 
-open Nat Int in
 /-- A `Submodule` over `R ⊗[ℕ] S` is naturally also a `Submodule` over the canonically-isomorphic
 ring `R ⊗[ℤ] S`. -/
 @[simps!]
 def toSubbimoduleInt (p : Submodule (R ⊗[ℕ] S) M) : Submodule (R ⊗[ℤ] S) M :=
   baseChange ℤ p
 
-open Nat Int in
 /-- A `Submodule` over `R ⊗[ℤ] S` is naturally also a `Submodule` over the canonically-isomorphic
 ring `R ⊗[ℕ] S`. -/
 @[simps!]

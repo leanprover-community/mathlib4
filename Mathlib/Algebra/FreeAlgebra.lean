@@ -201,7 +201,7 @@ instance instDistrib : Distrib (FreeAlgebra R X) where
     rintro ⟨⟩ ⟨⟩ ⟨⟩
     exact Quot.sound Rel.right_distrib
 
-open Nat in
+open scoped Nat in
 instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
   add_assoc := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
@@ -253,7 +253,7 @@ instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra
     exact Quot.sound Rel.central_scalar
   smul_def' _ _ := rfl
 
-open Nat in
+open scoped Nat in
 -- verify there is no diamond at `default` transparency but we will need
 -- `reducible_and_instances` which currently fails #10906
 variable (S : Type) [CommSemiring S] in
@@ -276,7 +276,7 @@ instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A] [Algebra R A
 instance {S : Type*} [CommRing S] : Ring (FreeAlgebra S X) :=
   Algebra.semiringToRing S
 
-open Int in
+open scoped Int in
 -- verify there is no diamond but we will need
 -- `reducible_and_instances` which currently fails #10906
 variable (S : Type) [CommRing S] in

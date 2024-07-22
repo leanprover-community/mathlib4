@@ -318,7 +318,7 @@ theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ �
     Real.norm_eq_abs, mul_left_comm]
   exact mul_div_mul_left _ _ (mt _root_.abs_eq_zero.1 a.2.ne')
 
-open Int in
+open scoped Int in
 /-- `SL(2, ℝ)` acts on the upper half plane as an isometry. -/
 instance : IsometricSMul SL(2, ℝ) ℍ :=
   ⟨fun g => by
