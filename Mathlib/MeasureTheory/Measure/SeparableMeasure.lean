@@ -92,7 +92,7 @@ structure Measure.MeasureDense (μ : Measure X) (𝒜 : Set (Set X)) : Prop :=
     0 < ε → ∃ t ∈ 𝒜, μ (s ∆ t) < ENNReal.ofReal ε
 
 /-- The set of measurable sets is measure-dense. -/
-theorem measurable_measureDense : μ.MeasureDense {s | MeasurableSet s} where
+theorem measureDense_measurableSet : μ.MeasureDense {s | MeasurableSet s} where
   measurable := fun _ h ↦ h
   approx := fun s hs _ ε ε_pos ↦ ⟨s, hs, by simpa⟩
 
