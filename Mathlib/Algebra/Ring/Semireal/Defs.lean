@@ -39,8 +39,6 @@ structure isSemireal [CommRing R] : Prop where
   non_trivial        : (0 : R) ≠ 1
   neg_one_not_SumSq  : ¬isSumSq (-1 : R)
 
-variable {R} in
-
 instance [LinearOrderedField R] : isSemireal R where
   non_trivial := zero_ne_one
   neg_one_not_SumSq := by
