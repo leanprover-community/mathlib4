@@ -53,14 +53,8 @@ of elements `a` of type `α` such that `R a b` for every element `b` of `I`. -/
 def rightDual (I : Set β) : Set α := {a : α | ∀ ⦃b⦄, b ∈ I → R a b}
 
 /-- The pair of functions `leftDual` and `rightDual` forms a Galois connection. -/
-theorem gc_leftDual_rightDual : GaloisConnection (toDual ∘ R.leftDual) (R.rightDual ∘ ofDual) := by
-  intros J I; apply Iff.trans (b := ∀ b ∈ ofDual I, ∀ a ∈ J, R a b)
-  · constructor <;> intro h <;> apply h
-  · constructor
-    · intro h a ha b hb
-      exact h (by simpa) hb a ha
-    · intro h b hb a ha
-      exact h (by simpa) hb
+theorem gc_leftDual_rightDual : GaloisConnection (toDual ∘ R.leftDual) (R.rightDual ∘ ofDual) :=
+  fun J I ↦ ⟨fun h a ha b hb ↦ h (by simpa) ha, fun h b hb a ha ↦ h (by simpa) hb⟩
 
 /-! ### Induced equivalences and generation processes -/
 
