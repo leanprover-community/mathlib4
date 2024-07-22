@@ -172,6 +172,21 @@ lemma exact_of_comp_of_mem_range
     (h1 : g ∘ₗ f = 0) (h2 : ∀ x, g x = 0 → x ∈ range f) : Exact f g :=
   exact_of_comp_eq_zero_of_ker_le_range h1 h2
 
+variable {R M N P : Type*} [CommRing R]
+  [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [Module R M] [Module R N] [Module R P]
+
+lemma exact_subtype_mkQ (Q : Submodule R N) :
+    Exact (Submodule.subtype Q) (Submodule.mkQ Q) := by
+  rw [exact_iff, Submodule.ker_mkQ, Submodule.range_subtype Q]
+
+lemma exact_map_mkQ_range (f : M →ₗ[R] N) :
+    Exact f (Submodule.mkQ (range f)) :=
+  exact_iff.mpr <| Submodule.ker_mkQ _
+
+lemma exact_subtype_ker_map (g : N →ₗ[R] P) :
+    Exact (Submodule.subtype (ker g)) g :=
+  exact_iff.mpr <| (Submodule.range_subtype _).symm
+
 end LinearMap
 
 variable (f g) in
