@@ -147,7 +147,7 @@ variable {K}
 
 section IntermediateField
 
-theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hsmulTower¬IsIntegral K x) :
+theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hx : ¬IsIntegral K x) :
     norm K (AdjoinSimple.gen K x) = 1 := by
   rw [norm_eq_one_of_not_exists_basis]
   contrapose! hx

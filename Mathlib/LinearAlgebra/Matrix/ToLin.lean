@@ -955,4 +955,3 @@ lemma end_apply_apply (ij : ι × ι) (k : ι) : (b.end ij) (b k) = if ij.2 = k 
   linearMap_apply_apply b b ij k
 
 end Basis
-smulTowersmulTowersmulTowersmulTower
