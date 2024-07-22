@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Adjunction.Basic
 
-
 /-!
 # The category of pointed types
 

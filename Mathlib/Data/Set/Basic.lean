@@ -11,7 +11,6 @@ import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
 import Mathlib.Util.Delaborators
 
-
 /-!
 # Basic properties of sets
 
@@ -1726,7 +1725,6 @@ theorem subset_symmDiff_union_symmDiff_right (h : Disjoint t u) : s ⊆ s ∆ t 
 end
 
 /-! ### Powerset -/
-
 
 theorem mem_powerset {x s : Set α} (h : x ⊆ s) : x ∈ 𝒫 s := @h
 

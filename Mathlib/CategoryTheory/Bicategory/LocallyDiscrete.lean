@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 import Mathlib.CategoryTheory.Bicategory.Strict
 
-
 /-!
 # Locally discrete bicategories
 

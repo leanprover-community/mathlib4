@@ -9,7 +9,6 @@ import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Group.Hom.CompTypeclasses
 
-
 /-!
 # Equivariant homomorphisms
 

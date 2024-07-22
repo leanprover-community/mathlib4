@@ -8,7 +8,6 @@ import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.Bicategory.Free
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 
-
 /-!
 # The coherence theorem for bicategories
 

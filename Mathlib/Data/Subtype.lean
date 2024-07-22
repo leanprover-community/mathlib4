@@ -6,7 +6,6 @@ Authors: Johannes Hölzl
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.AdaptationNote
 
-
 /-!
 # Subtypes
 
@@ -28,8 +27,6 @@ open Function
 namespace Subtype
 
 variable {α β γ : Sort*} {p q : α → Prop}
-
-
 
 attribute [coe] Subtype.val
 

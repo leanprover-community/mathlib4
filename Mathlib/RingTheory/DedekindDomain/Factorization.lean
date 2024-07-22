@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.RingTheory.DedekindDomain.Ideal
 
-
 /-!
 # Factorization of ideals and fractional ideals of Dedekind domains
 Every nonzero ideal `I` of a Dedekind domain `R` can be factored as a product `∏_v v^{n_v}` over the

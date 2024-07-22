@@ -8,7 +8,6 @@ import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Data.Bracket
 
-
 /-!
 # Semirings and rings
 

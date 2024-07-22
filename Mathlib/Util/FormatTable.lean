@@ -5,7 +5,6 @@ Authors: Bolton Bailey
 -/
 import Mathlib.Data.String.Defs
 
-
 /-!
 # Format Table
 

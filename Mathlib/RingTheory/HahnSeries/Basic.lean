@@ -6,7 +6,6 @@ Authors: Aaron Anderson
 import Mathlib.Algebra.Group.Support
 import Mathlib.Order.WellFoundedSet
 
-
 /-!
 # Hahn Series
 If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of formal series over `Γ` with

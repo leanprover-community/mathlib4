@@ -13,7 +13,6 @@ import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Algebra.Ring.Regular
 
-
 /-!
 # Nonnegative real numbers
 

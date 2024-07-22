@@ -8,7 +8,6 @@ import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Order.RelClasses
 
-
 /-!
 # Relation homomorphisms, embeddings, isomorphisms
 

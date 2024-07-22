@@ -10,7 +10,6 @@ import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Tactic.MoveAdd
 
-
 /-!
 # Formal power series (in one variable)
 

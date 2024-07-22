@@ -10,7 +10,6 @@ import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
-
 /-!
 # Affine independence
 

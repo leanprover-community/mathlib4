@@ -7,7 +7,6 @@ import Mathlib.Logic.Encodable.Basic
 import Mathlib.Logic.Pairwise
 import Mathlib.Data.Set.Subsingleton
 
-
 /-!
 # Lattice operations on encodable types
 

@@ -7,7 +7,6 @@ import Mathlib.Data.Option.Basic
 import Mathlib.Data.Prod.PProd
 import Mathlib.Logic.Equiv.Basic
 
-
 /-!
 # Injective functions
 -/

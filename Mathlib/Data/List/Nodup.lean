@@ -7,7 +7,6 @@ import Mathlib.Data.List.Forall2
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Init.Data.Fin.Basic
 
-
 /-!
 # Lists with no duplicates
 

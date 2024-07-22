@@ -9,7 +9,6 @@ import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.IsPoly
 import Mathlib.FieldTheory.Perfect
 
-
 /-!
 ## The Frobenius operator
 

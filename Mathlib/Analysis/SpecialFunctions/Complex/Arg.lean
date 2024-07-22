@@ -6,7 +6,6 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Angle
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 
-
 /-!
 # The argument of a complex number.
 
@@ -156,7 +155,6 @@ theorem arg_nonneg_iff {z : ℂ} : 0 ≤ arg z ↔ 0 ≤ z.im := by
         intro h
         exact Real.sin_neg_of_neg_of_neg_pi_lt h (neg_pi_lt_arg _)⟩
     _ ↔ _ := by rw [sin_arg, le_div_iff (abs.pos h₀), zero_mul]
-
 
 @[simp]
 theorem arg_neg_iff {z : ℂ} : arg z < 0 ↔ z.im < 0 :=

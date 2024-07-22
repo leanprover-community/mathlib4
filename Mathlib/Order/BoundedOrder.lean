@@ -7,7 +7,6 @@ import Mathlib.Order.Lattice
 import Mathlib.Order.ULift
 import Mathlib.Tactic.PushNeg
 
-
 /-!
 # ⊤ and ⊥, bounded lattices and variants
 

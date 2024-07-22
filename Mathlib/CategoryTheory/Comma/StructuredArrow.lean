@@ -9,7 +9,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.Logic.Small.Set
 
-
 /-!
 # The category of "structured arrows"
 

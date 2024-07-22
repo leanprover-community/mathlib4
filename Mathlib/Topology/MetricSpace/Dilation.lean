@@ -8,7 +8,6 @@ import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Data.FunLike.Basic
 
-
 /-!
 # Dilations
 

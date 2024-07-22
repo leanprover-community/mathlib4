@@ -11,7 +11,6 @@ import Mathlib.Tactic.Use
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.SimpRw
 
-
 /-!
 # Relation closures
 

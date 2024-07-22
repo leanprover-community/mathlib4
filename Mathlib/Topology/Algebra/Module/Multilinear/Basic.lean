@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.Multilinear.Basic
 
-
 /-!
 # Continuous multilinear maps
 

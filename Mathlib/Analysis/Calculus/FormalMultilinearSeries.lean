@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.Multilinear.Curry
 
-
 /-!
 # Formal multilinear series
 

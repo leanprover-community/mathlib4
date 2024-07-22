@@ -6,7 +6,6 @@ Authors: Johannes Hölzl
 import Mathlib.Logic.Function.Defs
 import Mathlib.Logic.Function.Basic
 
-
 /-!
 # Sigma types
 

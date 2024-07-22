@@ -6,7 +6,6 @@ Authors: Aaron Anderson
 import Mathlib.Data.Fintype.Basic
 import Mathlib.ModelTheory.Substructures
 
-
 /-!
 # Elementary Maps Between First-Order Structures
 

@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Mathlib.Data.List.Range
 import Mathlib.Data.Multiset.Range
 
-
 /-!
 # The `Nodup` predicate for multisets without duplicate elements.
 -/

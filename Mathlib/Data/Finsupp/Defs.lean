@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Data.Set.Finite
 
-
 /-!
 # Type of functions with finite support
 
@@ -80,7 +79,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 -/
 
-
 noncomputable section
 
 open Finset Function
@@ -105,7 +103,6 @@ namespace Finsupp
 
 /-! ### Basic declarations about `Finsupp` -/
 
-
 section Basic
 
 variable [Zero M]
@@ -126,9 +123,7 @@ instance instCoeFun : CoeFun (α →₀ M) fun _ => α → M :=
 theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
 
-
 lemma ne_iff {f g : α →₀ M} : f ≠ g ↔ ∃ a, f a ≠ g a := DFunLike.ne_iff
-
 
 @[simp, norm_cast]
 theorem coe_mk (f : α → M) (s : Finset α) (h : ∀ a, a ∈ s ↔ f a ≠ 0) : ⇑(⟨s, f, h⟩ : α →₀ M) = f :=
@@ -179,7 +174,6 @@ theorem support_eq_empty {f : α →₀ M} : f.support = ∅ ↔ f = 0 :=
 theorem support_nonempty_iff {f : α →₀ M} : f.support.Nonempty ↔ f ≠ 0 := by
   simp only [Finsupp.support_eq_empty, Finset.nonempty_iff_ne_empty, Ne]
 
-
 theorem card_support_eq_zero {f : α →₀ M} : card f.support = 0 ↔ f = 0 := by simp
 
 instance instDecidableEq [DecidableEq α] [DecidableEq M] : DecidableEq (α →₀ M) := fun f g =>
@@ -219,7 +213,6 @@ theorem unique_ext [Unique α] {f g : α →₀ M} (h : f default = g default) :
 end Basic
 
 /-! ### Declarations about `single` -/
-
 
 section Single
 
@@ -431,7 +424,6 @@ end Single
 
 /-! ### Declarations about `update` -/
 
-
 section Update
 
 variable [Zero M] (f : α →₀ M) (a : α) (b : M) (i : α)
@@ -524,7 +516,6 @@ end Update
 
 /-! ### Declarations about `erase` -/
 
-
 section Erase
 
 variable [Zero M]
@@ -616,7 +607,6 @@ end Erase
 
 /-! ### Declarations about `onFinset` -/
 
-
 section OnFinset
 
 variable [Zero M]
@@ -675,7 +665,6 @@ end OfSupportFinite
 
 /-! ### Declarations about `mapRange` -/
 
-
 section MapRange
 
 variable [Zero M] [Zero N] [Zero P]
@@ -733,7 +722,6 @@ theorem support_mapRange_of_injective {e : M → N} (he0 : e 0 = 0) (f : ι →�
 end MapRange
 
 /-! ### Declarations about `embDomain` -/
-
 
 section EmbDomain
 
@@ -839,7 +827,6 @@ end EmbDomain
 
 /-! ### Declarations about `zipWith` -/
 
-
 section ZipWith
 
 variable [Zero M] [Zero N] [Zero P]
@@ -877,7 +864,6 @@ theorem zipWith_single_single (f : M → N → P) (hf : f 0 0 = 0) (a : α) (m :
 end ZipWith
 
 /-! ### Additive monoid structure on `α →₀ M` -/
-
 
 section AddZeroClass
 

@@ -20,7 +20,6 @@ import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.CC
 
-
 /-!
 # Equivalence between types
 

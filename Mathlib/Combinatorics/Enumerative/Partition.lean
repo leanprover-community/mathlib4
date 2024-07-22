@@ -6,7 +6,6 @@ Authors: Bhavik Mehta
 import Mathlib.Combinatorics.Enumerative.Composition
 import Mathlib.Tactic.ApplyFun
 
-
 /-!
 # Partitions
 

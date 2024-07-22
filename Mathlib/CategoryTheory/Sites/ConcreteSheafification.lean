@@ -6,7 +6,6 @@ Authors: Adam Topaz
 import Mathlib.CategoryTheory.Sites.Plus
 import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 
-
 /-!
 
 # Sheafification

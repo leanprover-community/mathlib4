@@ -7,7 +7,6 @@ import Mathlib.Logic.Function.Defs
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Inhabit
 
-
 /-!
 # Extra facts about `Prod`
 
@@ -16,7 +15,6 @@ It also defines better delaborators for product projections.
 -/
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
-
 
 @[deprecated (since := "2024-05-08")] alias Prod_map := Prod.map_apply
 
@@ -56,7 +54,6 @@ theorem map_mk (f : α → γ) (g : β → δ) (a : α) (b : β) : map f g (a, b
 --  See `map_apply`, `map_fst`, and `map_snd` for slightly weaker lemmas in the `simp` set.
 theorem map_apply' (f : α → γ) (g : β → δ) (p : α × β) : map f g p = (f p.1, g p.2) :=
   rfl
-
 
 #adaptation_note
 /--
@@ -100,7 +97,6 @@ theorem mk.inj_right {α β : Type*} (b : β) :
 lemma mk_inj_left {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk.inj_left _).eq_iff
 
 lemma mk_inj_right {a₁ a₂ : α} {b : β} : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).eq_iff
-
 
 theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β ↦ (f p.1, g p.2) :=
   funext fun p ↦ Prod.ext (map_fst f g p) (map_snd f g p)
@@ -189,7 +185,6 @@ theorem snd_eq_iff : ∀ {p : α × β} {x : β}, p.2 = x ↔ p = (p.1, x)
   | ⟨a, b⟩, x => by simp
 
 variable {r : α → α → Prop} {s : β → β → Prop} {x y : α × β}
-
 
 lemma lex_iff : Prod.Lex r s x y ↔ r x.1 y.1 ∨ x.1 = y.1 ∧ s x.2 y.2 := lex_def _ _
 

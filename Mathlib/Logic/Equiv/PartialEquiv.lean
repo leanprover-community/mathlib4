@@ -8,7 +8,6 @@ import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.Attr.Core
 
-
 /-!
 # Partial equivalences
 

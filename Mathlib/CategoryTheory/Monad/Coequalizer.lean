@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
 import Mathlib.CategoryTheory.Monad.Algebra
 
-
 /-!
 # Special coequalizers associated to a monad
 
