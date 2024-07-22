@@ -137,12 +137,25 @@ lemma mem_toSubring [SmoothRing I' R] {x : M} (a : Germ (𝓝 x) R) :
 
 /-- The map `C^∞(M, R) → Germ (𝓝 x) R` as a ring homomorphism, for a smooth ring `R`. -/
 def germOfContMDiffMap (R : Type*) [CommRing R] [TopologicalSpace R] [ChartedSpace H' R]
-    [SmoothRing I' R] (x : M) : C^∞⟮I, M; I', R⟯ →+* Germ (𝓝 x) R :=
+    [SmoothRing I' R] (x : M) : C^∞⟮I, M; I', R⟯  →+* Germ (𝓝 x) R :=
   (Germ.coeRingHom _).comp SmoothMap.coeFnRingHom
 
-lemma toSubring_eq_range [SmoothRing I' R] (x : M) :
+lemma subring_eq_range [SmoothRing I' R] (x : M) :
     smoothGerm.subring I I' R x = (germOfContMDiffMap I I' R x).range := by
   rfl
+
+def aux [SmoothRing I' R] (x : M) : R →+* (Germ (𝓝 x) R) :=
+  sorry--Filter.Germ.coeRingHom (R := R) (α := M) (𝓝 x) --a--sorry
+-- -- TODO complete this!
+-- def xxxalgebra [SmoothRing I' R] (x : M) : Algebra R (Germ (𝓝 x) R) where
+--   __ := aux I I' R x--toFun := sorry
+-- --   commutes' := sorry
+-- --   smul_def' := sorry
+
+-- /-- The map `C^∞(M, R) → Germ (𝓝 x) R` as an `R`-algebra homomorphism, for a smooth ring `R`. -/
+--  def germOfContMDiffMap2 (R : Type*) [CommRing R] [TopologicalSpace R] [ChartedSpace H' R]
+--     [SmoothRing I' R] (x : M) : C^∞⟮I, M; I', R⟯  →ₐ Germ (𝓝 x) R := sorry
+
 
 end subring
 
