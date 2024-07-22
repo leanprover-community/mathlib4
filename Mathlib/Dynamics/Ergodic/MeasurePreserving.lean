@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Measure.AEMeasurable
+import Mathlib.Order.Filter.EventuallyConst
 
 /-!
 # Measure preserving maps
@@ -31,7 +32,7 @@ variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [Measur
 
 namespace MeasureTheory
 
-open Measure Function Set
+open Measure Function Set Filter
 
 variable {μa : Measure α} {μb : Measure β} {μc : Measure γ} {μd : Measure δ}
 
@@ -62,7 +63,7 @@ theorem of_isEmpty [IsEmpty β] (f : α → β) (μa : Measure α) (μb : Measur
 theorem symm (e : α ≃ᵐ β) {μa : Measure α} {μb : Measure β} (h : MeasurePreserving e μa μb) :
     MeasurePreserving e.symm μb μa :=
   ⟨e.symm.measurable, by
-    rw [← h.map_eq, map_map e.symm.measurable e.measurable, e.symm_comp_self, map_id]⟩
+    rw [← h.map_eq, map_map e.symm.measurable e.measurable, e.symm_comp_self, Measure.map_id]⟩
 
 theorem restrict_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : MeasurableSet s) : MeasurePreserving f (μa.restrict (f ⁻¹' s)) (μb.restrict s) :=
@@ -116,16 +117,27 @@ protected theorem sigmaFinite {f : α → β} (hf : MeasurePreserving f μa μb)
 theorem measure_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : MeasurableSet s) : μa (f ⁻¹' s) = μb s := by rw [← hf.map_eq, map_apply hf.1 hs]
 
+theorem measure_preimage₀ {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
+    (hs : NullMeasurableSet s μb) : μa (f ⁻¹' s) = μb s := by
+  rw [← hf.map_eq] at hs ⊢
+  rw [map_apply₀ hf.1.aemeasurable hs]
+
 theorem measure_preimage_emb {f : α → β} (hf : MeasurePreserving f μa μb)
     (hfe : MeasurableEmbedding f) (s : Set β) : μa (f ⁻¹' s) = μb s := by
   rw [← hf.map_eq, hfe.map_apply]
 
-protected theorem iterate {f : α → α} (hf : MeasurePreserving f μa μa) :
-    ∀ n, MeasurePreserving f^[n] μa μa
-  | 0 => MeasurePreserving.id μa
-  | n + 1 => (MeasurePreserving.iterate hf n).comp hf
+theorem aeconst_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
+    (hs : NullMeasurableSet s μb) :
+    EventuallyConst (f ⁻¹' s) (ae μa) ↔ EventuallyConst s (ae μb) := by
+  simp only [eventuallyConst_set', ae_eq_empty, ae_eq_univ, ← preimage_compl]
+  rw [hf.measure_preimage₀ hs, hf.measure_preimage₀ hs.compl]
 
 variable {μ : Measure α} {f : α → α} {s : Set α}
+
+protected theorem iterate (hf : MeasurePreserving f μ μ) :
+    ∀ n, MeasurePreserving f^[n] μ μ
+  | 0 => .id μ
+  | n + 1 => (MeasurePreserving.iterate hf n).comp hf
 
 open scoped symmDiff in
 lemma measure_symmDiff_preimage_iterate_le
