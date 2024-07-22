@@ -34,37 +34,37 @@ depending on the zariski topology.
 -- See `AlgebraicGeometry/PrimeSpectrum/Module`
 assert_not_exists TopologicalSpace
 
-variable {R M} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {p : PrimeSpectrum R}
 
 variable (R M) in
 /-- The support of a module, defined as the set of primes `p` such that `Mₚ ≠ 0`. -/
 def Module.support : Set (PrimeSpectrum R) :=
   { p | Nontrivial (LocalizedModule p.asIdeal.primeCompl M) }
 
-lemma Module.mem_support_iff {p} :
+lemma Module.mem_support_iff :
     p ∈ Module.support R M ↔ Nontrivial (LocalizedModule p.asIdeal.primeCompl M) := Iff.rfl
 
-lemma Module.not_mem_support_iff {p} :
+lemma Module.not_mem_support_iff :
     p ∉ Module.support R M ↔ Subsingleton (LocalizedModule p.asIdeal.primeCompl M) :=
   not_nontrivial_iff_subsingleton
 
-lemma Module.not_mem_support_iff' {p} :
+lemma Module.not_mem_support_iff' :
     p ∉ Module.support R M ↔ ∀ m : M, ∃ r ∉ p.asIdeal, r • m = 0 := by
   rw [not_mem_support_iff, LocalizedModule.subsingleton_iff]
   rfl
 
-lemma Module.mem_support_iff' {p} :
+lemma Module.mem_support_iff' :
     p ∈ Module.support R M ↔ ∃ m : M, ∀ r ∉ p.asIdeal, r • m ≠ 0 := by
   rw [← @not_not (_ ∈ _), not_mem_support_iff']
   push_neg
   rfl
 
-lemma Module.mem_support_iff_exists_annihilator {p} :
+lemma Module.mem_support_iff_exists_annihilator :
     p ∈ Module.support R M ↔ ∃ m : M, (R ∙ m).annihilator ≤ p.asIdeal := by
   rw [Module.mem_support_iff']
   simp_rw [not_imp_not, SetLike.le_def, Submodule.mem_annihilator_span_singleton]
 
-lemma Module.mem_support_iff_of_span_eq_top {s : Set M} (hs : Submodule.span R s = ⊤) {p} :
+lemma Module.mem_support_iff_of_span_eq_top {s : Set M} (hs : Submodule.span R s = ⊤) :
     p ∈ Module.support R M ↔ ∃ m ∈ s, (R ∙ m).annihilator ≤ p.asIdeal := by
   constructor
   · contrapose
@@ -78,7 +78,7 @@ lemma Module.mem_support_iff_of_span_eq_top {s : Set M} (hs : Submodule.span R s
   · intro ⟨m, _, hm⟩
     exact mem_support_iff_exists_annihilator.mpr ⟨m, hm⟩
 
-lemma Module.annihilator_le_of_mem_support {p} (hp : p ∈ Module.support R M) :
+lemma Module.annihilator_le_of_mem_support (hp : p ∈ Module.support R M) :
     Module.annihilator R M ≤ p.asIdeal := by
   obtain ⟨m, hm⟩ := mem_support_iff_exists_annihilator.mp hp
   exact le_trans ((Submodule.subtype _).annihilator_le_of_injective Subtype.val_injective) hm
@@ -114,7 +114,7 @@ lemma Module.support_eq_empty [Subsingleton M] :
     Module.support R M = ∅ :=
   Module.support_eq_empty_iff.mpr ‹_›
 
-lemma Module.support_of_algebra {A} [Ring A] [Algebra R A] :
+lemma Module.support_of_algebra {A : Type*} [Ring A] [Algebra R A] :
     Module.support R A = PrimeSpectrum.zeroLocus (RingHom.ker (algebraMap R A)) := by
   ext p
   simp only [mem_support_iff', ne_eq, PrimeSpectrum.mem_zeroLocus, SetLike.coe_subset_coe]
@@ -128,7 +128,7 @@ lemma Module.support_of_noZeroSMulDivisors [NoZeroSMulDivisors R M] [Nontrivial 
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
   exact fun p ↦ ⟨x, fun r hr ↦ ⟨fun e ↦ hr (e ▸ p.asIdeal.zero_mem), hx⟩⟩
 
-lemma Module.mem_support_iff_of_finite [Module.Finite R M] {p} :
+lemma Module.mem_support_iff_of_finite [Module.Finite R M] :
     p ∈ Module.support R M ↔ Module.annihilator R M ≤ p.asIdeal := by
   classical
   obtain ⟨s, hs⟩ := ‹Module.Finite R M›
@@ -143,7 +143,7 @@ lemma Module.mem_support_iff_of_finite [Module.Finite R M] {p} :
     rw [hk, mul_comm, mul_smul, hx, smul_zero]
   · exact p.asIdeal.primeCompl.prod_mem (fun x _ ↦ hx' x)
 
-variable {N P} [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
+variable {N P : Type*} [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
 variable (f : M →ₗ[R] N) (g : N →ₗ[R] P)
 
 lemma Module.support_subset_of_injective (hf : Function.Injective f) :
