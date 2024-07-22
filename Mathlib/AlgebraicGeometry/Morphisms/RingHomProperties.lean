@@ -370,9 +370,6 @@ theorem openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
     rw [this] at H
     haveI : IsAffine _ := V.2
     rw [← Category.assoc]
-    -- Porting note: Lean could find this previously
-    have : IsOpenImmersion <| (Scheme.ofRestrict U (Opens.openEmbedding V.val)) ≫ g :=
-      LocallyRingedSpace.IsOpenImmersion.comp _ _
     apply H
   tfae_have 4 → 3
   · intro H 𝒰 _ i; apply H

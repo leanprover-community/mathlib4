@@ -34,38 +34,34 @@ variable {C : Type u₁} [Category.{v} C]
 
 section
 
-variable {X : Scheme.{u}}
+variable {X : Scheme.{u}} (U : X.Opens)
+
+namespace Scheme.Opens
 
 /-- Open susets of a scheme as a scheme. -/
 @[coe]
-def Scheme.Opens.toScheme {X : Scheme.{u}} (U : X.Opens) : Scheme.{u} :=
+def toScheme {X : Scheme.{u}} (U : X.Opens) : Scheme.{u} :=
   X.restrict U.openEmbedding
 
-instance : CoeOut X.Opens Scheme := ⟨Scheme.Opens.toScheme⟩
-
--- /-- `X ∣_ᵤ U` is notation for `X.restrict U.openEmbedding`, the restriction of `X` to an open set
---   `U` of `X`. -/
--- notation3:60 X:60 " ∣_ᵤ " U:61 => @Scheme.Opens.toScheme X U
+instance : CoeOut X.Opens Scheme := ⟨toScheme⟩
 
 /-- The restriction of a scheme to an open subset. -/
 @[simps! val_base_apply]
-def Scheme.Opens.ι {X : Scheme.{u}} (U : X.Opens) : ↑U ⟶ X := X.ofRestrict _
-
-variable (U : X.Opens)
+def ι : ↑U ⟶ X := X.ofRestrict _
 
 instance : IsOpenImmersion U.ι := inferInstanceAs (IsOpenImmersion (X.ofRestrict _))
 
-lemma Scheme.Opens.toScheme_carrier : (U : Type u) = (U : Set X) := rfl
-lemma Scheme.Opens.toScheme_presheaf_obj (V) : Γ(U, V) = Γ(X, U.ι ''ᵁ V) := rfl
-@[simp] lemma Scheme.Opens.toScheme_presheaf_map {V W} (i : V ⟶ W) :
+lemma toScheme_carrier : (U : Type u) = (U : Set X) := rfl
+lemma toScheme_presheaf_obj (V) : Γ(U, V) = Γ(X, U.ι ''ᵁ V) := rfl
+@[simp] lemma toScheme_presheaf_map {V W} (i : V ⟶ W) :
     U.toScheme.presheaf.map i = X.presheaf.map (U.ι.opensFunctor.map i.unop).op := rfl
 
 @[simp]
-lemma Scheme.Opens.ι_app (V) :
-    U.ι.app V = X.presheaf.map (homOfLE (Set.image_preimage_subset _ _)).op := rfl
+lemma ι_app (V) : U.ι.app V = X.presheaf.map (homOfLE (Set.image_preimage_subset _ _)).op :=
+  rfl
 
 @[simp]
-lemma Scheme.Opens.ι_appLE (V W e) :
+lemma ι_appLE (V W e) :
     U.ι.appLE V W e =
       X.presheaf.map (homOfLE (x := U.ι ''ᵁ W) (Set.image_subset_iff.mpr ‹_›)).op := by
   simp only [Hom.appLE, ι_app, Functor.op_obj, Opens.carrier_eq_coe, toScheme_presheaf_map,
@@ -73,44 +69,60 @@ lemma Scheme.Opens.ι_appLE (V W e) :
   rfl
 
 @[simp]
-lemma Scheme.Opens.ι_appIso (V) :
-    U.ι.appIso V = Iso.refl _ :=
+lemma ι_appIso (V) : U.ι.appIso V = Iso.refl _ :=
   X.ofRestrict_appIso _ _
 
 @[simp]
-lemma Scheme.Opens.ι_image_top : U.ι ''ᵁ ⊤ = U :=
+lemma opensRange_ι : U.ι.opensRange = U :=
+  Opens.ext Subtype.range_val
+
+@[simp]
+lemma range_ι : Set.range U.ι.val.base = U :=
+  Subtype.range_val
+
+lemma ι_image_top : U.ι ''ᵁ ⊤ = U :=
   U.openEmbedding_obj_top
 
 @[simp]
-lemma Scheme.Opens.ι_preimage_self :
-    U.ι ⁻¹ᵁ U = ⊤ :=
+lemma ι_preimage_self : U.ι ⁻¹ᵁ U = ⊤ :=
   Opens.inclusion_map_eq_top _
 
-instance Scheme.Opens.ι_appLE_isIso :
+instance ι_appLE_isIso :
     IsIso (U.ι.appLE U ⊤ U.ι_preimage_self.ge) := by
   simp only [ι, ofRestrict_appLE]
   show IsIso (X.presheaf.map (eqToIso U.ι_image_top).hom.op)
   infer_instance
 
-lemma Scheme.ofRestrict_app_self :
-    U.ι.app U = X.presheaf.map (eqToHom (by simp)).op := rfl
+lemma ι_app_self : U.ι.app U = X.presheaf.map (eqToHom (X := U.ι ''ᵁ _) (by simp)).op := rfl
 
-lemma Scheme.eq_restrict_presheaf_map_eqToHom {V W : Opens U} (e : U.ι ''ᵁ V = U.ι ''ᵁ W) :
+lemma eq_presheaf_map_eqToHom {V W : Opens U} (e : U.ι ''ᵁ V = U.ι ''ᵁ W) :
     X.presheaf.map (eqToHom e).op =
       U.toScheme.presheaf.map (eqToHom <| U.openEmbedding.functor_obj_injective e).op := rfl
 
 @[simp]
-lemma Scheme.Opens.opensRange_ι : U.ι.opensRange = U :=
-  Opens.ext Subtype.range_val
-
-@[simp]
-lemma Scheme.Opens.range_ι : Set.range U.ι.val.base = U :=
-  Subtype.range_val
-
-@[simp]
-lemma Scheme.Opens.nonempty_iff : Nonempty U.toScheme ↔ (U : Set X).Nonempty := by
+lemma nonempty_iff : Nonempty U.toScheme ↔ (U : Set X).Nonempty := by
   simp only [toScheme_carrier, SetLike.coe_sort_coe, nonempty_subtype]
   rfl
+
+attribute [-simp] eqToHom_op in
+/-- The global sections of the restriction is isomorphic to the sections on the open set. -/
+@[simps!]
+def topIso : Γ(U, ⊤) ≅ Γ(X, U) :=
+  X.presheaf.mapIso (eqToIso U.ι_image_top.symm).op
+
+/-- The stalks of an open subscheme is isomorphic to the stalk of the original scheme. -/
+def stalkIso {X : Scheme.{u}} (U : X.Opens) (x : U) :
+    U.toScheme.presheaf.stalk x ≅ X.presheaf.stalk x.1 :=
+  X.restrictStalkIso (Opens.openEmbedding _) _
+
+@[reassoc (attr := simp)]
+lemma germ_stalkIso_hom {X : Scheme.{u}} (U : X.Opens)
+      {V : TopologicalSpace.Opens U} (x : V) :
+      U.toScheme.presheaf.germ x ≫ (U.stalkIso x.1).hom =
+        X.presheaf.germ ⟨x.1.1, show x.1.1 ∈ U.ι ''ᵁ V from ⟨x.1, x.2, rfl⟩⟩ :=
+    PresheafedSpace.restrictStalkIso_hom_eq_germ _ _ _ _ _
+
+end Scheme.Opens
 
 /-- If `U` is a family of open sets that covers `X`, then `X.restrict U` forms an `X.open_cover`. -/
 @[simps! J obj map]
@@ -126,12 +138,6 @@ def Scheme.openCoverOfSuprEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
     erw [Subtype.range_coe]
     have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
     exact (Opens.mem_iSup.mp this).choose_spec
-
-attribute [-simp] eqToHom_op in
-/-- The global sections of the restriction is isomorphic to the sections on the open set. -/
-@[simps!]
-def Scheme.Opens.topIso : Γ(U, ⊤) ≅ Γ(X, U) :=
-  X.presheaf.mapIso (eqToIso U.ι_image_top.symm).op
 
 /-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
 @[simps!]
@@ -466,17 +472,6 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Op
   dsimp [Opens.map_coe]
   rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left, Scheme.Opens.range_ι]
   exact Y.basicOpen_le r
-
-def Scheme.Opens.stalkIso {X : Scheme.{u}} (U : X.Opens) (x : U) :
-    U.toScheme.presheaf.stalk x ≅ X.presheaf.stalk x.1 :=
-  X.restrictStalkIso (Opens.openEmbedding _) _
-
-@[reassoc (attr := simp)]
-lemma Scheme.Opens.germ_stalkIso_hom {X : Scheme.{u}} (U : X.Opens)
-      {V : TopologicalSpace.Opens U} (x : V) :
-      U.toScheme.presheaf.germ x ≫ (U.stalkIso x.1).hom =
-        X.presheaf.germ ⟨x.1.1, show x.1.1 ∈ U.ι ''ᵁ V from ⟨x.1, x.2, rfl⟩⟩ :=
-    PresheafedSpace.restrictStalkIso_hom_eq_germ _ _ _ _ _
 
 /-- The stalk map of a restriction of a morphism is isomorphic to the stalk map of the original map.
 -/
