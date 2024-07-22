@@ -5,7 +5,7 @@ Authors: Chris Hughes, Michael Stoll
 -/
 import Mathlib.Data.Nat.Squarefree
 import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
-import Mathlib.Tactic.LinearCombination
+import Mathlib.NumberTheory.Padics.PadicVal
 
 /-!
 # Sums of two squares
