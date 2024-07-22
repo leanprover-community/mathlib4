@@ -16,11 +16,11 @@ This is different from the radical of an ideal.
 
 - `radical`: The radical of an element `a` in a unique factorization monoid is the product of
   its prime factors.
-- `radical_associated_eq`: If `a` and `b` are associates, i.e. `a * u = b` for some unit `u`,
+- `radical_eq_of_associated`: If `a` and `b` are associates, i.e. `a * u = b` for some unit `u`,
   then `radical a = radical b`.
 - `radical_unit_hMul`: Multiplying unit does not change the radical.
-- `radical_dvd_self`: `rad(a)` divides `a`.
-- `radical_pow`: `rad(a ^ n) = rad(a)` for any `n ≥ 1`
+- `radical_dvd_self`: `radical a` divides `a`.
+- `radical_pow`: `radical (a ^ n) = radical a` for any `n ≥ 1`
 - `radical_prime`: Radical of a prime element is equal to its normalization
 
 ## TODO
@@ -52,23 +52,23 @@ the prime factors of `a`.
 def radical (a : α) : α :=
   (primeFactors a).prod id
 
-theorem radical_zero_eq_one : radical (0 : α) = 1 := by
+theorem radical_zero_eq : radical (0 : α) = 1 := by
   rw [radical, primeFactors, normalizedFactors_zero, Multiset.toFinset_zero, Finset.prod_empty]
 
-theorem radical_one_eq_one : radical (1 : α) = 1 := by
+theorem radical_one_eq : radical (1 : α) = 1 := by
   rw [radical, primeFactors, normalizedFactors_one, Multiset.toFinset_zero, Finset.prod_empty]
 
-theorem radical_associated_eq {a b : α} (h : Associated a b) : radical a = radical b := by
+theorem radical_eq_of_associated {a b : α} (h : Associated a b) : radical a = radical b := by
   rcases iff_iff_and_or_not_and_not.mp h.eq_zero_iff with (⟨rfl, rfl⟩ | ⟨ha, hb⟩)
   · rfl
   · simp_rw [radical, primeFactors]
     rw [(associated_iff_normalizedFactors_eq_normalizedFactors ha hb).mp h]
 
 theorem radical_unit_eq_one {a : α} (h : IsUnit a) : radical a = 1 :=
-  (radical_associated_eq (associated_one_iff_isUnit.mpr h)).trans radical_one_eq_one
+  (radical_eq_of_associated (associated_one_iff_isUnit.mpr h)).trans radical_one_eq
 
 theorem radical_unit_hMul {u : αˣ} {a : α} : radical ((↑u : α) * a) = radical a :=
-  radical_associated_eq (associated_unit_mul_left _ _ u.isUnit)
+  radical_eq_of_associated (associated_unit_mul_left _ _ u.isUnit)
 
 theorem primeFactors_pow (a : α) {n : ℕ} (hn : 0 < n) : primeFactors (a ^ n) = primeFactors a := by
   simp_rw [primeFactors]
