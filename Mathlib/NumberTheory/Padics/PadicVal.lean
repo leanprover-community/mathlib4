@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
 import Mathlib.NumberTheory.Divisors
-import Mathlib.Data.Nat.Digits
+import Mathlib.NumberTheory.Padics.PadicValDefs
 import Mathlib.Data.Nat.MaxPowDiv
-import Mathlib.Data.Nat.Multiplicity
-import Mathlib.Tactic.IntervalCases
 
 /-!
 # `p`-adic Valuation
@@ -67,11 +65,6 @@ open Nat
 open Rat
 
 open multiplicity
-
-/-- For `p ≠ 1`, the `p`-adic valuation of a natural `n ≠ 0` is the largest natural number `k` such
-that `p^k` divides `n`. If `n = 0` or `p = 1`, then `padicValNat p q` defaults to `0`. -/
-def padicValNat (p : ℕ) (n : ℕ) : ℕ :=
-  if h : p ≠ 1 ∧ 0 < n then (multiplicity p n).get (multiplicity.finite_nat_iff.2 h) else 0
 
 namespace padicValNat
 
@@ -253,9 +246,6 @@ theorem padicValNat_def [hp : Fact p.Prime] {n : ℕ} (hn : 0 < n) :
     padicValNat p n = (multiplicity p n).get (multiplicity.finite_nat_iff.2 ⟨hp.out.ne_one, hn⟩) :=
   dif_pos ⟨hp.out.ne_one, hn⟩
 
-theorem padicValNat_def' {n : ℕ} (hp : p ≠ 1) (hn : 0 < n) :
-    ↑(padicValNat p n) = multiplicity p n := by simp [padicValNat, hp, hn]
-
 @[simp]
 theorem padicValNat_self [Fact p.Prime] : padicValNat p p = 1 := by
   rw [padicValNat_def (@Fact.out p.Prime).pos]
@@ -270,28 +260,6 @@ theorem dvd_iff_padicValNat_ne_zero {p n : ℕ} [Fact p.Prime] (hn0 : n ≠ 0) :
     p ∣ n ↔ padicValNat p n ≠ 0 :=
   ⟨fun h => one_le_iff_ne_zero.mp (one_le_padicValNat_of_dvd hn0.bot_lt h), fun h =>
     Classical.not_not.1 (mt padicValNat.eq_zero_of_not_dvd h)⟩
-
-open List
-
-theorem le_multiplicity_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : ℕ} (ha : a.Prime)
-    (hb : b ≠ 0) :
-    ↑n ≤ multiplicity a b ↔ replicate n a <+~ b.primeFactorsList :=
-  (replicate_subperm_primeFactorsList_iff ha hb).trans
-    multiplicity.pow_dvd_iff_le_multiplicity |>.symm
-
-@[deprecated (since := "2024-07-17")]
-alias le_multiplicity_iff_replicate_subperm_factors :=
-  le_multiplicity_iff_replicate_subperm_primeFactorsList
-
-theorem le_padicValNat_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : ℕ} (ha : a.Prime)
-    (hb : b ≠ 0) :
-    n ≤ padicValNat a b ↔ replicate n a <+~ b.primeFactorsList := by
-  rw [← le_multiplicity_iff_replicate_subperm_primeFactorsList ha hb,
-    ← padicValNat_def' ha.ne_one (Nat.pos_of_ne_zero hb), Nat.cast_le]
-
-@[deprecated (since := "2024-07-17")]
-alias le_padicValNat_iff_replicate_subperm_factors :=
-  le_padicValNat_iff_replicate_subperm_primeFactorsList
 
 end padicValNat
 
