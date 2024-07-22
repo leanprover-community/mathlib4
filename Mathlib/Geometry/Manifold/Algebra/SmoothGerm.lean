@@ -41,7 +41,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 variable (N) in
 /-- The set of all germs of smooth functions `M → N` at `x : N`. -/
-def _root_.smoothGerm (x : M) : Set (Germ (𝓝 x) N) :=
+def smoothGerm (x : M) : Set (Germ (𝓝 x) N) :=
   { Filter.Germ.ofFun f | f : SmoothMap I I' M N }
 
 @[simp]
@@ -67,25 +67,26 @@ theorem coe_eq_coe (f g : C^∞⟮I, M; I', N⟯) {x : M} (h : ∀ᶠ y in 𝓝 
 -- All respective axioms are easy to prove by choosing explicit representatives.
 section subring
 
--- xxx: would this be useful? Zero resp. One imply the space of smooth germs has one...
 variable (I' : ModelWithCorners 𝕜 E' H')
   (R : Type*) [CommRing R] [TopologicalSpace R] [ChartedSpace H' R]
 
 /-- If `R` is a manifold with smooth multiplication,
-`smoothGerm I I' R x` is a sub-semigroup of `Germ (𝓝 x) R`. -/
--- FIXME: is this definition useful, given it has the same assumptions as `submonoid`?
-def subsemigroup [SmoothMul I' R] (x : M) : Subsemigroup (Germ (𝓝 x) R) where
+`smoothGerm I I' R x` is a submonoid of `Germ (𝓝 x) R`. -/
+def submonoid [SmoothMul I' R] (x : M) : Submonoid (Germ (𝓝 x) R) where
   carrier := smoothGerm I I' R x
   mul_mem' ha hb := by
     choose f hf using ha
     choose g hg using hb
     exact ⟨f * g, by rw [← hf, ← hg, SmoothMap.coe_mul, Germ.coe_mul]⟩
-
-/-- If `R` is a manifold with smooth multiplication,
-`smoothGerm I I' R x` is a submonoid of `Germ (𝓝 x) R`. -/
-def submonoid [SmoothMul I' R] (x : M) : Submonoid (Germ (𝓝 x) R) where
-  toSubsemigroup := smoothGerm.subsemigroup I I' R x
   one_mem' := ⟨1, by rw [SmoothMap.coe_one, Germ.coe_one]⟩
+
+@[simp, norm_cast]
+lemma coe_submonoid [SmoothMul I' R] (x : M) :
+  smoothGerm.submonoid I I' R x = smoothGerm I I' R x := rfl
+
+@[simp]
+lemma mem_submonoid [SmoothMul I' R] {x : M} (a : Germ (𝓝 x) R) :
+    a ∈ smoothGerm.submonoid I I' R x ↔ a ∈ smoothGerm I I' R x := Iff.rfl
 
 /-- If `R` is a manifold with smooth addition,
 `smoothGerm I I' R x` is an additive sub-semigroup of `Germ (𝓝 x) R`. -/
@@ -96,6 +97,14 @@ def addSubsemigroup [SmoothAdd I' R] (x : M) : AddSubsemigroup (Germ (𝓝 x) R)
     choose g hg using hb
     exact ⟨f + g, by rw [← hf, ← hg, SmoothMap.coe_add, Germ.coe_add]⟩
 
+@[simp, norm_cast]
+lemma coe_addSubsemigroup [SmoothAdd I' R] (x : M) :
+  smoothGerm.addSubsemigroup I I' R x = smoothGerm I I' R x := rfl
+
+@[simp]
+lemma mem_addSubsemigroup [SmoothAdd I' R] {x : M} (a : Germ (𝓝 x) R) :
+    a ∈ smoothGerm.addSubsemigroup I I' R x ↔ a ∈ smoothGerm I I' R x := Iff.rfl
+
 /-- If `G` is an additive Lie group, `smoothGerm I I' G x` is
 an additive subgroup of `Germ (𝓝 x) G`. -/
 def addSubgroup [LieAddGroup I' R] (x : M) : AddSubgroup (Germ (𝓝 x) R) where
@@ -104,6 +113,14 @@ def addSubgroup [LieAddGroup I' R] (x : M) : AddSubgroup (Germ (𝓝 x) R) where
   neg_mem' h := by
     choose f hf using h
     exact ⟨-f, by rw [← hf, SmoothMap.coe_neg, Germ.coe_neg]⟩
+
+@[simp, norm_cast]
+lemma coe_addSubgroup [LieAddGroup I' R] (x : M) :
+  smoothGerm.addSubgroup I I' R x = smoothGerm I I' R x := rfl
+
+@[simp]
+lemma mem_addSubgroup [LieAddGroup I' R] {x : M} (a : Germ (𝓝 x) R) :
+    a ∈ smoothGerm.addSubgroup I I' R x ↔ a ∈ smoothGerm I I' R x := Iff.rfl
 
 /-- If `R` is a smooth ring, `smoothGerm I I' R x` is a subring of `Germ (𝓝 x) R`. -/
 def subring [SmoothRing I' R] (x : M) : Subring (Germ (𝓝 x) R) where
@@ -114,6 +131,7 @@ def subring [SmoothRing I' R] (x : M) : Subring (Germ (𝓝 x) R) where
 lemma coe_toSubring [SmoothRing I' R] (x : M) : smoothGerm.subring I I' R x = smoothGerm I I' R x :=
   rfl
 
+@[simp]
 lemma mem_toSubring [SmoothRing I' R] {x : M} (a : Germ (𝓝 x) R) :
     a ∈ smoothGerm.subring I I' R x ↔ a ∈ smoothGerm I I' R x := Iff.rfl
 
