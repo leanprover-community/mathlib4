@@ -331,10 +331,6 @@ def TM2ComputableInPolyTime.comp {α β γ : Type} {eα : FinEncoding α} {eβ :
     (h2 : TM2ComputableInPolyTime eβ eγ g) :
     TM2ComputableInPolyTime eα eγ (g ∘ f) := sorry
 
-def TM2ComputableInPolyTime.comp {α β γ : Type} {eα : FinEncoding α} {eβ : FinEncoding β}
-    {eγ : FinEncoding γ} {f : α → β} {g : β → γ} (h1 : TM2ComputableInPolyTime eα eβ f)
-    (h2 : TM2ComputableInPolyTime eβ eγ g) :
-    TM2ComputableInPolyTime eα eγ (g ∘ f) := sorry
 
 end
 
