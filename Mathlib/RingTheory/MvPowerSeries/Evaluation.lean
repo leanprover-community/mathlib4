@@ -9,17 +9,15 @@ import Mathlib.Data.Nat.Lattice
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.MvPowerSeries.Topology
 import Mathlib.RingTheory.MvPowerSeries.Trunc
-import Mathlib.Topology.Algebra.TopologicalAlgebra
 import Mathlib.Topology.Algebra.LinearTopology
 import Mathlib.Topology.Algebra.TopologicallyNilpotent
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.UniformRing
-import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.Defs.Induced
-import Mathlib.Topology.Sets.Compacts
 import Mathlib.Topology.Support
 import Mathlib.Topology.UniformSpace.Pi
+import Mathlib.Topology.Algebra.Algebra
 
 /-! # Evaluation of (multivariate) power series
 

@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
 
 import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Algebra.Algebra.Pi
 
 /-!  # Topological algebras
 
