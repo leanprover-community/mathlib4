@@ -101,7 +101,7 @@ lemma LocalizedModule.subsingleton_iff_support_subset {f : R} :
       rw [Ideal.radical_eq_sInf, Ideal.mem_sInf]
       rintro p ⟨hp, hp'⟩
       simpa using H (Module.mem_support_iff_exists_annihilator (p := ⟨p, hp'⟩).mpr ⟨_, hp⟩)
-    refine ⟨_, ⟨n, rfl⟩, (Submodule.mem_annihilator_span_singleton _ _).mp hn⟩
+    exact ⟨_, ⟨n, rfl⟩, (Submodule.mem_annihilator_span_singleton _ _).mp hn⟩
 
 lemma Module.support_eq_empty_iff :
     Module.support R M = ∅ ↔ Subsingleton M := by
