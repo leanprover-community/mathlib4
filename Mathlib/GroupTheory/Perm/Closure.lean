@@ -6,8 +6,6 @@ Authors: Chris Hughes, Yaël Dillies
 
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 
-#align_import group_theory.perm.cycle.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
-
 /-!
 # Closure results for permutation groups
 
@@ -39,7 +37,6 @@ theorem closure_isCycle : closure { σ : Perm β | IsCycle σ } = ⊤ := by
     cases nonempty_fintype β
     exact
       top_le_iff.mp (le_trans (ge_of_eq closure_isSwap) (closure_mono fun _ => IsSwap.isCycle))
-#align equiv.perm.closure_is_cycle Equiv.Perm.closure_isCycle
 
 variable [DecidableEq α] [Fintype α]
 
@@ -91,7 +88,6 @@ theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.su
   rintro τ ⟨y, z, _, h6⟩
   rw [h6.eq_swap]
   exact step4 y z
-#align equiv.perm.closure_cycle_adjacent_swap Equiv.Perm.closure_cycle_adjacent_swap
 
 theorem closure_cycle_coprime_swap {n : ℕ} {σ : Perm α} (h0 : Nat.Coprime n (Fintype.card α))
     (h1 : IsCycle σ) (h2 : σ.support = ⊤) (x : α) :
@@ -108,7 +104,6 @@ theorem closure_cycle_coprime_swap {n : ℕ} {σ : Perm α} (h0 : Nat.Coprime n 
   exact
     ⟨Subgroup.pow_mem (closure _) (subset_closure (Set.mem_insert σ _)) n,
       Set.singleton_subset_iff.mpr (subset_closure (Set.mem_insert_of_mem _ (Set.mem_singleton _)))⟩
-#align equiv.perm.closure_cycle_coprime_swap Equiv.Perm.closure_cycle_coprime_swap
 
 theorem closure_prime_cycle_swap {σ τ : Perm α} (h0 : (Fintype.card α).Prime) (h1 : IsCycle σ)
     (h2 : σ.support = ⊤) (h3 : IsSwap τ) : closure ({σ, τ} : Set (Perm α)) = ⊤ := by
@@ -120,10 +115,19 @@ theorem closure_prime_cycle_swap {σ τ : Perm α} (h0 : (Fintype.card α).Prime
   refine closure_cycle_coprime_swap
     (Nat.Coprime.symm (h0.coprime_iff_not_dvd.mpr fun h => h4 ?_)) h1 h2 x
   cases' h with m hm
+<<<<<<< HEAD
   have h2' : σ.support.toFinset = Finset.univ := by
     simp only [h2, Set.top_eq_univ, Set.toFinset_univ]
   rwa [hm, pow_mul, ← Finset.card_univ, ← h2', ← supportCard_compute, ← h1.orderOf,
     pow_orderOf_eq_one, one_pow, one_apply] at hi
 #align equiv.perm.closure_prime_cycle_swap Equiv.Perm.closure_prime_cycle_swap
+=======
+  rwa [hm, pow_mul, ← Finset.card_univ, ← h2, ← h1.orderOf, pow_orderOf_eq_one, one_pow,
+    one_apply] at hi
+>>>>>>> master
 
 end Generation
+
+end Perm
+
+end Equiv

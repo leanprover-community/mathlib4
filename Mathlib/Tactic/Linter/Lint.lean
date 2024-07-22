@@ -49,6 +49,8 @@ Linter that checks whether a structure should be in Prop.
 
 end Std.Tactic.Lint
 
+namespace Mathlib.Linter
+
 /-!
 #  `dupNamespace` linter
 
@@ -57,8 +59,6 @@ at least twice consecutively.
 
 For instance, `Nat.Nat.foo` and `One.two.two` trigger a warning, while `Nat.One.Nat` does not.
 -/
-
-namespace Mathlib.Linter
 
 /--
 The `dupNamespace` linter is set on by default.  Lean emits a warning on any declaration that
@@ -108,4 +108,54 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx => do
 
 initialize addLinter dupNamespace
 
-end Mathlib.Linter.DupNamespaceLinter
+end DupNamespaceLinter
+
+/-!
+# The "missing end" linter
+
+The "missing end" linter emits a warning on non-closed `section`s and `namespace`s.
+It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
+-/
+
+open Lean Elab Command
+
+/-- The "missing end" linter emits a warning on non-closed `section`s and `namespace`s.
+It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
+-/
+register_option linter.missingEnd : Bool := {
+  defValue := true
+  descr := "enable the missing end linter"
+}
+
+namespace MissingEnd
+
+/-- Gets the value of the `linter.missingEnd` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.missingEnd o
+
+@[inherit_doc Mathlib.Linter.linter.missingEnd]
+def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
+    -- Only run this linter at the end of a module.
+    unless stx.isOfKind ``Lean.Parser.Command.eoi do return
+    -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
+    unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
+      return
+    if getLinterHash (← getOptions) && !(← MonadState.get).messages.hasErrors then
+      let sc ← getScopes
+      -- The last scope is always the "base scope", corresponding to no active `section`s or
+      -- `namespace`s. We are interested in any *other* unclosed scopes.
+      if sc.length == 1 then return
+      let ends := sc.dropLast.map fun s ↦ (s.header, s.isNoncomputable)
+      -- If the outermost scope corresponds to a `noncomputable section`, we ignore it.
+      let ends := if ends.getLast!.2 then ends.dropLast else ends
+      -- If there are any further un-closed scopes, we emit a warning.
+      if !ends.isEmpty then
+        let ending := (ends.map Prod.fst).foldl (init := "") fun a b ↦
+          a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
+        Linter.logLint linter.missingEnd stx
+         m!"unclosed sections or namespaces; expected: '{ending}'"
+
+initialize addLinter missingEndLinter
+
+end MissingEnd
+
+end Mathlib.Linter

@@ -245,7 +245,7 @@ def postcompPostcompIso (G : D ⥤ E) (G' : E ⥤ E') [G.CommShift A] [G'.CommSh
 which commutes with the shift. -/
 @[simps!]
 def postcompIsoOfIso {G G' : D ⥤ E} (e : G ≅ G') [G.CommShift A] [G'.CommShift A]
-    [NatTrans.CommShift e.hom A]:
+    [NatTrans.CommShift e.hom A] :
     F.postcomp G ≅ F.postcomp G' :=
   isoMk (fun a => isoWhiskerLeft (F.functor a) e) (fun n a a' ha' => by
     ext X
