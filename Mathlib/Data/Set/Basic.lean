@@ -1348,6 +1348,12 @@ theorem default_coe_singleton (x : α) : (default : ({x} : Set α)) = ⟨x, rfl�
   rfl
 #align set.default_coe_singleton Set.default_coe_singleton
 
+lemma inter_singleton (s : Set α) (a : α) : s ∩ {a} = {a} ∨ s ∩ {a} = ∅ := by
+  simpa using Classical.em (a ∈ s)
+
+lemma singleton_inter (s : Set α) (a : α) : s ∩ {a} = {a} ∨ s ∩ {a} = ∅ := by
+  simpa using Classical.em (a ∈ s)
+
 /-! ### Lemmas about sets defined as `{x ∈ s | p x}`. -/
 
 
