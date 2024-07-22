@@ -140,61 +140,6 @@ lemma IsMatching.map_hom_ofLE_IsMatching (h : M.IsMatching) (hGG' : G ≤ G') :
   use w
   simpa using hv' ▸ hw
 
-lemma sup_IsMatching (hM : M.IsMatching) (hM' : M'.IsMatching)
-    (hd : Disjoint M.support M'.support) : (M ⊔ M').IsMatching := by
-  intro v hv
-  have aux {N N' : Subgraph G} (hN : N.IsMatching) (hd : Disjoint N.support N'.support)
-    (hmN: v ∈ N.verts) : ∃! w, (N ⊔ N').Adj v w := by
-    obtain ⟨w, hw⟩ := hN hmN
-    use w
-    refine ⟨sup_adj.mpr (.inl hw.1), ?_⟩
-    intro y hy
-    cases hy with
-    | inl h => exact hw.2 y h
-    | inr h =>
-      rw [Set.disjoint_left] at hd
-      simpa [(mem_support _).mpr ⟨w, hw.1⟩, (mem_support _).mpr ⟨y, h⟩] using @hd v
-  cases Set.mem_or_mem_of_mem_union hv with
-  | inl hmM => exact aux hM hd hmM
-  | inr hmM' =>
-    rw [sup_comm]
-    exact aux hM' (Disjoint.symm hd) hmM'
-
-lemma iSup_IsMatching {ι : Sort _} {f : ι → Subgraph G} (hM : (i : ι) → (f i).IsMatching)
-    (hd : (i j : ι) → (i ≠ j) →  Disjoint ((f i).support) ((f j).support)) :
-    (⨆ i , f i).IsMatching := by
-  intro v hv
-  obtain ⟨i , hi⟩ := Set.mem_iUnion.mp (verts_iSup ▸ hv)
-  obtain ⟨w , hw⟩ := hM i hi
-  use w
-  refine ⟨iSup_adj.mpr ⟨i, hw.1⟩, ?_⟩
-  intro y hy
-  obtain ⟨i' , hi'⟩ := iSup_adj.mp hy
-  by_cases heq : i = i'
-  · exact hw.2 y (heq.symm ▸ hi')
-  · have := hd _ _ heq
-    rw [Set.disjoint_left] at this
-    simpa [(mem_support _).mpr ⟨w, hw.1⟩, (mem_support _).mpr ⟨y, hi'⟩] using @this v
-
-lemma subgraphOfAdj_IsMatching (h : G.Adj v w) : (G.subgraphOfAdj h).IsMatching := by
-  intro _ hv
-  rw [subgraphOfAdj_verts, Set.mem_insert_iff, Set.mem_singleton_iff] at hv
-  cases hv with
-  | inl => use w; aesop
-  | inr => use v; aesop
-
-lemma coe_IsMatching {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsMatching) :
-    M.coeSubgraph.IsMatching := by
-  intro _ hv
-  obtain ⟨w, hw⟩ := hM <| Set.mem_of_mem_image_val <| M.coeSubgraph_verts.symm ▸ hv
-  use w
-  refine ⟨?_, fun y hy => ?_⟩
-  · obtain ⟨v, hv⟩ := (Set.mem_image _ _ _).mp <| (coeSubgraph_verts M).symm ▸ hv
-    simp only [coeSubgraph_adj, Subtype.coe_eta, Subtype.coe_prop, exists_const]
-    exact ⟨hv.2 ▸ v.2, hw.1⟩
-  · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
-    rw [← hw.2 ⟨y, hw'⟩ hvw]
-
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
 matched.
