@@ -86,7 +86,7 @@ theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
         * house (algebraMap (𝓞 K) K α) := ?_
     _ = ↑(finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖ * house (algebraMap (𝓞 K) K α) := ?_
 
-  · rw [← inverse_basisMatrix_mulVec_eq_repr K]
+  · rw [← inverse_basisMatrix_mulVec_eq_repr]
     apply le_trans
     · apply le_trans (AbsoluteValue.sum_le Complex.abs _ _)
       · exact sum_le_sum (fun _ _ => (AbsoluteValue.map_mul Complex.abs _ _).le)
