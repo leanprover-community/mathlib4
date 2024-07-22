@@ -34,8 +34,6 @@ self-adjoint operator, simultaneous eigenspaces, simultaneous diagonalization
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
-
 open Module.End
 
 namespace LinearMap
@@ -102,7 +100,7 @@ theorem iSup_simultaneous_eigenspaces_eq_top :
 
 /--The simultaneous eigenspaces of a pair of commuting symmetric operators form an
 `OrthogonalFamily`.-/
-theorem orthogonality_of_simultaneous_eigenspaces_of_pairwise_commuting_symmetric :
+theorem orthogonality_of_simultaneous_eigenspaces_of_commuting_symmetric_pair :
     OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) => (eigenspace B i.1 ⊓ eigenspace A i.2 : Submodule 𝕜 E))
     (fun i => (eigenspace B i.1 ⊓ eigenspace A i.2).subtypeₗᵢ) := by
   refine orthogonalFamily_iff_pairwise.mpr ?_
@@ -119,7 +117,7 @@ decomposes as an internal direct sum of simultaneous eigenspaces. -/
 theorem DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_pair:
     DirectSum.IsInternal (fun (i : 𝕜 × 𝕜) ↦ (eigenspace B i.1 ⊓ eigenspace A i.2)):= by
   apply (OrthogonalFamily.isInternal_iff
-    (orthogonality_of_simultaneous_eigenspaces_of_pairwise_commuting_symmetric hA hB)).mpr
+    (orthogonality_of_simultaneous_eigenspaces_of_commuting_symmetric_pair hA hB)).mpr
   rw [Submodule.orthogonal_eq_bot_iff, iSup_prod, iSup_comm]
   exact iSup_simultaneous_eigenspaces_eq_top hA hB hAB
 
