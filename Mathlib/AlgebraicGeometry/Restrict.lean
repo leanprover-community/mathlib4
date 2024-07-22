@@ -264,7 +264,7 @@ lemma Scheme.restrictRestrict_inv_restrict_restrict (X : Scheme.{u}) (U : X.Open
 /-- If `U = V`, then `X ∣_ U` is isomorphic to `X ∣_ V`. -/
 noncomputable
 def Scheme.restrictIsoOfEq (X : Scheme.{u}) {U V : X.Opens} (e : U = V) :
-    U.toScheme ≅ V :=
+    (U : Scheme.{u}) ≅ V :=
   IsOpenImmersion.isoOfRangeEq U.ι (V.ι) (by rw [e])
 
 end
@@ -272,12 +272,10 @@ end
 /-- The restriction of an isomorphism onto an open set. -/
 noncomputable abbrev Scheme.restrictMapIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f]
     (U : Y.Opens) : (f ⁻¹ᵁ U).toScheme ≅ U := by
-  apply IsOpenImmersion.isoOfRangeEq (f := X.ofRestrict _ ≫ f) (Y.ofRestrict _) _
-  dsimp [restrict]
-  rw [Set.range_comp, Subtype.range_val, Subtype.range_coe]
-  refine @Set.image_preimage_eq _ _ f.val.base U.1 ?_
-  rw [← TopCat.epi_iff_surjective]
-  infer_instance
+  apply IsOpenImmersion.isoOfRangeEq (f := (f ⁻¹ᵁ U).ι ≫ f) U.ι _
+  dsimp
+  rw [Set.range_comp, Opens.range_ι, Opens.range_ι]
+  refine @Set.image_preimage_eq _ _ f.val.base U.1 f.homeomorph.surjective
 
 section MorphismRestrict
 
