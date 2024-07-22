@@ -53,7 +53,7 @@ of elements `a` of type `α` such that `R a b` for every element `b` of `I`. -/
 def rightDual (I : Set β) : Set α := {a : α | ∀ ⦃b⦄, b ∈ I → R a b}
 
 /-- The pair of functions `leftDual` and `rightDual` forms a Galois connection. -/
-theorem gc_leftDual_rightDual : GaloisConnection (toDual ∘ leftDual R) (rightDual R ∘ ofDual) := by
+theorem gc_leftDual_rightDual : GaloisConnection (toDual ∘ R.leftDual) (R.rightDual ∘ ofDual) := by
   intros J I; apply Iff.trans (b := ∀ b ∈ ofDual I, ∀ a ∈ J, R a b)
   · constructor <;> intro h <;> apply h
   · constructor
@@ -80,7 +80,7 @@ theorem leftDual_mem_rFixedPoint (J : Set α) : R.leftDual J ∈ R.rFixedPoints 
   · exact R.gc_leftDual_rightDual.l_u_le (R.leftDual J)
 
 /-- `rightDual` maps every element `I` to `lFixedPoints`. -/
-theorem rightDual_mem_lFixedPoint (I : (Set β)ᵒᵈ) : R.rightDual I ∈ R.lFixedPoints := by
+theorem rightDual_mem_lFixedPoint (I : Set β) : R.rightDual I ∈ R.lFixedPoints := by
   unfold lFixedPoints
   apply le_antisymm
   · apply R.gc_leftDual_rightDual.monotone_u; exact R.gc_leftDual_rightDual.l_u_le I
