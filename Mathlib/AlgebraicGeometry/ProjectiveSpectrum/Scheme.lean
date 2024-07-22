@@ -123,12 +123,12 @@ local notation3 "Proj.T" => PresheafedSpace.carrier <| SheafedSpace.toPresheafed
 
 /-- `Proj` restrict to some open set -/
 macro "Proj| " U:term : term =>
-  `((Proj.toLocallyRingedSpace 𝒜).restrict (Opens.openEmbedding (X := Proj.T) ($U : P.Opensroj.T)))
+  `((Proj.toLocallyRingedSpace 𝒜).restrict (Opens.openEmbedding (X := Proj.T) ($U : Opens Proj.T)))
 
 /-- the underlying topological space of `Proj` restricted to some open set -/
 local notation "Proj.T| " U => PresheafedSpace.carrier <| SheafedSpace.toPresheafedSpace
   <| LocallyRingedSpace.toSheafedSpace
-    <| (LocallyRingedSpace.restrict Proj (Opens.openEmbedding (X := Proj.T) (U : P.Opensroj.T)))
+    <| (LocallyRingedSpace.restrict Proj (Opens.openEmbedding (X := Proj.T) (U : Opens Proj.T)))
 
 /-- basic open sets in `Proj` -/
 local notation "pbo " x => ProjectiveSpectrum.basicOpen 𝒜 x
