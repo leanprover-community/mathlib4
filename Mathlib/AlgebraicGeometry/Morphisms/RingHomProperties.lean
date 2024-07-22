@@ -320,6 +320,32 @@ instance : P.IsStableUnderComposition where
     rw [iff_of_isAffine (P := P)] at hf hg ⊢
     exact (isLocal_ringHomProperty P).StableUnderComposition _ _ hg hf
 
+theorem of_comp
+    (H : ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
+      ∀ (f : R →+* S) (g : S →+* T), Q (g.comp f) → Q g)
+    {X Y Z : Scheme.{u}} {f : X ⟶ Y} {g : Y ⟶ Z} (h : P (f ≫ g)) : P f := by
+  wlog hZ : IsAffine Z generalizing X Y Z
+  · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) _
+      (g.preimage_iSup_eq_top (iSup_affineOpens_eq_top Z))]
+    intro U
+    have H := IsLocalAtTarget.restrict h U.1
+    rw [morphismRestrict_comp] at H
+    exact this H inferInstance
+  wlog hY : IsAffine Y generalizing X Y
+  · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top Y)]
+    intro U
+    have H := comp_of_isOpenImmersion P (Scheme.ιOpens (f ⁻¹ᵁ U.1)) (f ≫ g) h
+    rw [← morphismRestrict_ι_assoc] at H
+    exact this H inferInstance
+  wlog hY : IsAffine X generalizing X
+  · rw [IsLocalAtSource.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top X)]
+    intro U
+    have H := comp_of_isOpenImmersion P (Scheme.ιOpens U.1) (f ≫ g) h
+    rw [← Category.assoc] at H
+    exact this H inferInstance
+  rw [iff_of_isAffine (P := P)] at h ⊢
+  exact H _ _ h
+
 instance : P.IsMultiplicative where
 
 lemma of_isOpenImmersion [IsOpenImmersion f] : P f := IsLocalAtSource.of_isOpenImmersion f
