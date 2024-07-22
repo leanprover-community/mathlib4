@@ -16,7 +16,7 @@ This file introduces the following properties of a map `f : X → Y` between top
 (Open and closed maps need not be continuous.)
 
 * `Inducing f` means the topology on `X` is the one induced via `f` from the topology on `Y`.
-  These behave like embeddings except they need not be injective. Instead, points of `X` which
+  These behave like embeddings except they need not be injective. Instead, points of `X` whichq
   are identified by `f` are also inseparable in the topology on `X`.
 * `Embedding f` means `f` is inducing and also injective. Equivalently, `f` identifies `X` with
   a subspace of `Y`.

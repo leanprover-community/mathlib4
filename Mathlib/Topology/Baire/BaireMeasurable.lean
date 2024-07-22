@@ -174,7 +174,7 @@ theorem BaireMeasurableSet.preimage (hc : Continuous f) (ho : IsOpenMap f)
   exact hc.measurable hu
 
 theorem Homeomorph.residual_map_eq (h : α ≃ₜ β) : (residual α).map h = residual β := by
-  refine' le_antisymm (residual_map_le_of_isOpenMap h.continuous h.isOpenMap) (le_map _)
+  refine le_antisymm (residual_map_le_of_isOpenMap h.continuous h.isOpenMap) (le_map ?_)
   simp_rw[← preimage_symm]
   exact residual_map_le_of_isOpenMap h.symm.continuous h.symm.isOpenMap
 
