@@ -35,23 +35,6 @@ variable [SMulCommClass R A M₁] [SMulCommClass A R M₁] [IsScalarTower R A M�
 variable [SMulCommClass R A N₁] [SMulCommClass A R N₁] [IsScalarTower R A N₁]
 variable [Module R M₂] [Module R N₂] [Invertible (2 : R)]
 
-/-- When `N₁` and `N₂` are equivalent, bilinear maps on `M` into `N₁` are equivalent to bilinear
-maps into `N₂`. -/
-@[simps]
-def congr₂ (e : N₁ ≃ₗ[R] N₂) : QuadraticMap R M₁ N₁ ≃ₗ[R] QuadraticMap R M₁ N₂ where
-  toFun Q := e.compQuadraticMap Q
-  invFun Q := e.symm.compQuadraticMap Q
-  left_inv _ := ext fun x => by
-    simp only [LinearMap.compQuadraticMap_apply, LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
-  right_inv _ := ext fun x => by
-    simp only [LinearMap.compQuadraticMap_apply, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply]
-  map_add' _ _ := ext fun x => by
-    simp only [LinearMap.compQuadraticMap_apply, add_apply, map_add, LinearEquiv.coe_coe]
-  map_smul' _ _ := ext fun x => by
-    simp only [LinearMap.compQuadraticMap_apply, smul_apply, LinearMapClass.map_smul,
-      LinearEquiv.coe_coe, RingHom.id_apply]
-
-
 variable (R A) in
 /-- The tensor product of two quadratic maps injects into quadratic maps on tensor products.
 
