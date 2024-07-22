@@ -10,18 +10,18 @@ import Mathlib.Topology.KrullDimension
 # Krull dimensions of (commutative) rings
 
 Given a commutative ring, its ring theoretic Krull dimension is the order theoretic Krull dimension
-applied to its prime spectrum. Unfolding this definition, it is the length of the longest series of
-prime ideals ordered by inclusion.
+of its prime spectrum. Unfolding this definition, it is the length of the longest sequence(s) of
+prime ideals ordered by strict inclusion.
 
 
 ## Main definitions and results
 
-* `ringKrullDim`: the ring theoretic Krull dimension of a commutative ring.
+* `ringKrullDim`: The ring theoretic Krull dimension of a commutative ring.
 
-* `ringKrullDim_eq_topologicalKrullDim`: the ring theoretic Krull dimension of a commutative ring
+* `ringKrullDim_eq_topologicalKrullDim`: The ring theoretic Krull dimension of a commutative ring
 is equal to the topological Krull dimension of its prime spectrum.
 
-* `ringKrullDim_eq_zero_iff_isField_of_isDomain`: the Krull dimension of an integral domain is zero
+* `ringKrullDim_eq_zero_iff_isField_of_isDomain`: The Krull dimension of an integral domain is zero
 if and only if it is a field.
 -/
 
@@ -70,23 +70,25 @@ section DimensionZero
 
 theorem Ideal.IsPrime.isMaximal_of_ringKrullDim_eq_zero
     {I : Ideal R} (hI : I.IsPrime) (hdim : ringKrullDim R = 0) :
-    I.IsMaximal := by
-  have h := mem_maximals_of_krullDim_eq_zero hdim ⟨I, hI⟩
-  simp only [maximals, Set.top_eq_univ, Set.mem_univ, true_implies, true_and] at h
-  constructor; constructor
-  · exact Ideal.IsPrime.ne_top'
-  · intro J hIJ; by_contra hJ
-    obtain ⟨M, hM1, hM2⟩ := Ideal.exists_le_maximal J hJ
-    have := h <| show _ ≤ ⟨M, hM1.isPrime⟩ by exact (le_of_lt <| lt_of_lt_of_le hIJ hM2 : _ ≤ _)
-    exact (lt_self_iff_false _).1 <| lt_of_lt_of_le (lt_of_le_of_lt (by exact this) hIJ) hM2
+    I.IsMaximal :=
+  (PrimeSpectrum.isMaximal_iff ⟨I, _⟩).2 <| mem_maximals_of_krullDim_eq_zero hdim ⟨I, hI⟩
+
+theorem ringKrullDim_eq_zero_iff_forall_isMaximal [Nontrivial R] :
+    ringKrullDim R = 0 ↔ ∀ (I : Ideal R), I.IsPrime → I.IsMaximal := by
+  refine krullDim_eq_zero_iff_mem_maximals_of_nonempty.trans ?_
+  simp_rw [← PrimeSpectrum.isMaximal_iff]
+  exact ⟨(· ⟨·, ·⟩), (· _ <| PrimeSpectrum.isPrime ·)⟩
 
 theorem Ideal.IsPrime.mem_minimalPrimes_of_ringKrullDim_eq_zero
     {I : Ideal R} (hI : I.IsPrime) (hdim : ringKrullDim R = 0) :
-    I ∈ minimalPrimes R := by
-  have h := mem_minimals_of_krullDim_eq_zero hdim ⟨I, hI⟩
-  simp only [minimals, Set.top_eq_univ, Set.mem_univ, true_implies, true_and] at h
-  exact ⟨⟨hI, OrderBot.bot_le I⟩, by
-    rintro J ⟨hJ, _⟩ hJI; exact h (show PrimeSpectrum.mk J hJ ≤ PrimeSpectrum.mk I hI by exact hJI)⟩
+    I ∈ minimalPrimes R :=
+  (PrimeSpectrum.mem_minimalPrimes_iff ⟨I, _⟩).2 <| mem_minimals_of_krullDim_eq_zero hdim ⟨I, hI⟩
+
+theorem ringKrullDim_eq_zero_iff_forall_mem_minimalPrimes [Nontrivial R] :
+    ringKrullDim R = 0 ↔ ∀ (I : Ideal R), I.IsPrime → I ∈ minimalPrimes R := by
+  refine krullDim_eq_zero_iff_mem_minimals_of_nonempty.trans ?_
+  simp_rw [← PrimeSpectrum.mem_minimalPrimes_iff]
+  exact ⟨(· ⟨·, ·⟩), (· _ <| PrimeSpectrum.isPrime ·)⟩
 
 end DimensionZero
 
@@ -100,27 +102,13 @@ theorem ringKrullDim_eq_zero_of_isField {F : Type*} [CommRing F] (hF : IsField F
     ringKrullDim F = 0 :=
   @krullDim_eq_zero_of_unique _ _ <| @PrimeSpectrum.instUnique _ hF.toField
 
+attribute [local instance] Ideal.bot_prime
+
 theorem ringKrullDim_eq_zero_iff_isField_of_isDomain [IsDomain R] :
     ringKrullDim R = 0 ↔ IsField R := by
-  constructor
-  · intro hdim
-    exact {
-      exists_pair_ne := by
-        rw [← nontrivial_iff, ← not_subsingleton_iff_nontrivial]
-        intro h
-        rw [ringKrullDim_eq_bot_of_subsingleton] at hdim
-        norm_num at hdim
-      mul_comm := CommMonoid.mul_comm
-      mul_inv_cancel := by
-        intro a ha
-        by_contra h
-        have hbot := Ideal.IsPrime.isMaximal_of_ringKrullDim_eq_zero Ideal.bot_prime hdim
-        have hnetop : Ideal.span {a} ≠ ⊤ := Ideal.span_singleton_ne_top <| fun h' ↦
-          h ⟨(isUnit_iff_exists.1 h').choose, (isUnit_iff_exists.1 h').choose_spec.1⟩
-        have boteqspan := Ideal.IsMaximal.eq_of_le hbot hnetop (OrderBot.bot_le (Ideal.span {a}))
-        exact ha <| Ideal.span_singleton_eq_bot.1 boteqspan.symm
-    }
-  · exact ringKrullDim_eq_zero_of_isField
+  simp only [ringKrullDim_eq_zero_iff_forall_mem_minimalPrimes, minimalPrimes,
+    Ideal.minimalPrimes_eq_subsingleton_self, Set.mem_singleton_iff,
+    ← not_iff_comm.mp Ring.not_isField_iff_exists_prime, ne_eq, not_exists, not_and, not_imp_not]
 
 end Field
 

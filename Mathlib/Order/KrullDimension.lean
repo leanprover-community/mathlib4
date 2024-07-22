@@ -147,11 +147,11 @@ lemma krullDim_eq_zero_iff_mem_maximals_of_nonempty [Nonempty α] :
   simp only [krullDim, this, Nat.cast_zero, ciSup_const]
 
 lemma mem_minimals_of_krullDim_eq_zero (h : krullDim α = 0) (a : α) :
-    a ∈ minimals (· ≤ ·) ⊤ :=
+    a ∈ minimals (· ≤ ·) Set.univ :=
   mem_maximals_of_krullDim_eq_zero (krullDim_orderDual.trans h) a
 
 lemma krullDim_eq_zero_iff_mem_minimals_of_nonempty [Nonempty α] :
-    krullDim α = 0 ↔ ∀ a : α, a ∈ minimals (· ≤ ·) ⊤ := by
+    krullDim α = 0 ↔ ∀ a : α, a ∈ minimals (· ≤ ·) Set.univ := by
   rw [← krullDim_orderDual, krullDim_eq_zero_iff_mem_maximals_of_nonempty]
   rfl
 
