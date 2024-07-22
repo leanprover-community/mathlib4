@@ -563,6 +563,7 @@ lemma indep_iff_closure_ssubset_ssubset_forall (hI : I ⊆ M.E := by aesop_mat) 
     insert_diff_singleton, insert_eq_of_mem heI]
 
 end Indep
+
 section insert
 
 lemma mem_closure_insert (he : e ∉ M.closure X) (hef : e ∈ M.closure (insert f X)) :
