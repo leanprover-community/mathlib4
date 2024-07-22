@@ -26,7 +26,7 @@ This file defines operations on two-sided-ideals of a ring `R`.
 
 - `TwoSidedIdeal.comap`: pullback of a two-sided-ideal; defined as the preimage of a
   two-sided-ideal.
-- `TwoSidedIdeal.map`: pushout of a two-sided-ideal; defined as the span of the image of a
+- `TwoSidedIdeal.map`: pushforward of a two-sided-ideal; defined as the span of the image of a
   two-sided-ideal.
 - `TwoSidedIdeal.ker`: the kernel of a ring homomorphism as a two-sided-ideal.
 -/
@@ -148,6 +148,14 @@ lemma mem_span_iff_exists {s : Set R} {x} :
     exact ⟨S.ringCon, fun a b H ↦ ⟨PUnit, inferInstance, fun _ ↦ 1, fun _ ↦ 1,
       fun _ ↦ ⟨a - b, by simp [H]⟩, by simp⟩, hI⟩
 
+/-- Given an ideal `I`, `span I` is the smallest two-sided-ideal containing `I`. -/
+def fromIdeal : Ideal R →o TwoSidedIdeal R where
+  toFun I := span I
+  monotone' _ _ := span_mono
+
+lemma mem_fromIdeal {I : Ideal R} {x : R} :
+    x ∈ fromIdeal I ↔ x ∈ span I := by simp [fromIdeal]
+
 /-- Every two-sided-ideal is also a left-ideal. -/
 def asIdeal : TwoSidedIdeal R →o Ideal R where
   toFun I :=
@@ -156,11 +164,6 @@ def asIdeal : TwoSidedIdeal R →o Ideal R where
     zero_mem' := I.zero_mem
     smul_mem' := fun r x hx => I.mul_mem_left r x hx }
   monotone' _ _ h _ h' := h h'
-
-/-- Given an ideal `I`, `span I` is the smallest two-sided-ideal containing `I`. -/
-def fromIdeal : Ideal R →o TwoSidedIdeal R where
-  toFun I := span I
-  monotone' _ _ := span_mono
 
 lemma mem_asIdeal {I : TwoSidedIdeal R} {x : R} :
     x ∈ TwoSidedIdeal.asIdeal I ↔ x ∈ I := by simp [asIdeal]
@@ -171,6 +174,11 @@ def asIdealMop : TwoSidedIdeal R →o Ideal Rᵐᵒᵖ where
   monotone' I J h x h' := by
     simp only [mem_asIdeal, mem_iff, RingCon.op_iff, MulOpposite.unop_zero] at h' ⊢
     exact J.rel_iff _ _ |>.2 $ h $ I.rel_iff 0 x.unop |>.1 h'
+
+lemma mem_asIdealMop {I : TwoSidedIdeal R} {x : Rᵐᵒᵖ} :
+    x ∈ asIdealMop I ↔ x.unop ∈ I := by
+  simpa [asIdealMop, asIdeal, TwoSidedIdeal.mem_iff, RingCon.op_iff] using
+    ⟨I.ringCon.symm, I.ringCon.symm⟩
 
 end Ring
 
