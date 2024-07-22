@@ -369,7 +369,7 @@ theorem SpecΓIdentity_hom_app_fromSpec :
     Opens.map_top, Functor.id_obj, Functor.comp_obj,
     Functor.rightOp_obj, Scheme.Γ_obj, unop_op, Scheme.Spec_obj, Scheme.Opens.topIso_hom,
     Category.assoc]
-  rw [← Functor.map_comp_assoc, ← op_comp, eqToHom_trans, Scheme.eq_restrict_presheaf_map_eqToHom,
+  rw [← Functor.map_comp_assoc, ← op_comp, eqToHom_trans, Scheme.Opens.eq_presheaf_map_eqToHom,
     Scheme.Hom.naturality_assoc, Scheme.inv_app_top, IsIso.hom_inv_id_assoc]
   simp only [eqToHom_op, eqToHom_map, Spec.map_eqToHom, eqToHom_unop,
     Scheme.Spec_map_presheaf_map_eqToHom, eqToHom_trans]
