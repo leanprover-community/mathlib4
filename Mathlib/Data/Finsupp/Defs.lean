@@ -79,7 +79,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 -/
 
-
 noncomputable section
 
 open Finset Function
@@ -103,7 +102,6 @@ infixr:25 " →₀ " => Finsupp
 namespace Finsupp
 
 /-! ### Basic declarations about `Finsupp` -/
-
 
 section Basic
 
@@ -212,13 +210,9 @@ noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →�
 theorem unique_ext [Unique α] {f g : α →₀ M} (h : f default = g default) : f = g :=
   ext fun a => by rwa [Unique.eq_default a]
 
-theorem unique_ext_iff [Unique α] {f g : α →₀ M} : f = g ↔ f default = g default :=
-  ⟨fun h => h ▸ rfl, unique_ext⟩
-
 end Basic
 
 /-! ### Declarations about `single` -/
-
 
 section Single
 
@@ -365,7 +359,8 @@ theorem unique_single [Unique α] (x : α →₀ M) : x = single default (x defa
 
 @[simp]
 theorem unique_single_eq_iff [Unique α] {b' : M} : single a b = single a' b' ↔ b = b' := by
-  rw [unique_ext_iff, Unique.eq_default a, Unique.eq_default a', single_eq_same, single_eq_same]
+  rw [Finsupp.unique_ext_iff, Unique.eq_default a, Unique.eq_default a',
+    single_eq_same, single_eq_same]
 
 lemma apply_single [AddCommMonoid N] [AddCommMonoid P]
     {F : Type*} [FunLike F N P] [AddMonoidHomClass F N P] (e : F)
@@ -428,7 +423,6 @@ theorem equivFunOnFinite_symm_single [DecidableEq α] [Finite α] (x : α) (m : 
 end Single
 
 /-! ### Declarations about `update` -/
-
 
 section Update
 
@@ -522,7 +516,6 @@ end Update
 
 /-! ### Declarations about `erase` -/
 
-
 section Erase
 
 variable [Zero M]
@@ -614,7 +607,6 @@ end Erase
 
 /-! ### Declarations about `onFinset` -/
 
-
 section OnFinset
 
 variable [Zero M]
@@ -673,7 +665,6 @@ end OfSupportFinite
 
 /-! ### Declarations about `mapRange` -/
 
-
 section MapRange
 
 variable [Zero M] [Zero N] [Zero P]
@@ -731,7 +722,6 @@ theorem support_mapRange_of_injective {e : M → N} (he0 : e 0 = 0) (f : ι →�
 end MapRange
 
 /-! ### Declarations about `embDomain` -/
-
 
 section EmbDomain
 
@@ -837,7 +827,6 @@ end EmbDomain
 
 /-! ### Declarations about `zipWith` -/
 
-
 section ZipWith
 
 variable [Zero M] [Zero N] [Zero P]
@@ -875,7 +864,6 @@ theorem zipWith_single_single (f : M → N → P) (hf : f 0 0 = 0) (a : α) (m :
 end ZipWith
 
 /-! ### Additive monoid structure on `α →₀ M` -/
-
 
 section AddZeroClass
 

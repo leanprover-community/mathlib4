@@ -98,7 +98,7 @@ attribute [simp] List.mem_bind
 
 /-! ### length -/
 
-alias ⟨ne_nil_of_length_pos, length_pos_of_ne_nil⟩ := length_pos
+alias ⟨_, length_pos_of_ne_nil⟩ := length_pos
 
 theorem length_pos_iff_ne_nil {l : List α} : 0 < length l ↔ l ≠ [] :=
   ⟨ne_nil_of_length_pos, length_pos_of_ne_nil⟩
@@ -353,8 +353,8 @@ theorem getLast_cons {a : α} {l : List α} :
   · rfl
 
 theorem getLast_append_singleton {a : α} (l : List α) :
-    getLast (l ++ [a]) (append_ne_nil_of_ne_nil_right l _ (cons_ne_nil a _)) = a := by
-  simp only [getLast_append]
+    getLast (l ++ [a]) (append_ne_nil_of_ne_nil_right l (cons_ne_nil a _)) = a := by
+  simp [getLast_append]
 
 -- Porting note: name should be fixed upstream
 theorem getLast_append' (l₁ l₂ : List α) (h : l₂ ≠ []) :
@@ -365,8 +365,8 @@ theorem getLast_append' (l₁ l₂ : List α) (h : l₂ ≠ []) :
     rw [List.getLast_cons]
     exact ih
 
-theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne_nil a l) = a :=
-  getLast_concat ..
+theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne_nil a l) = a := by
+  simp
 
 @[simp]
 theorem getLast_singleton' (a : α) : getLast [a] (cons_ne_nil a []) = a := rfl
@@ -558,9 +558,6 @@ theorem head!_mem_self [Inhabited α] {l : List α} (h : l ≠ nil) : l.head! �
   have h' := mem_cons_self l.head! l.tail
   rwa [cons_head!_tail h] at h'
 
-theorem head_mem {l : List α} : ∀ (h : l ≠ nil), l.head h ∈ l := by
-  cases l <;> simp
-
 theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail = l.tail ++ l' := by
   cases l
   · contradiction
@@ -679,7 +676,6 @@ theorem bidirectionalRec_nil {motive : List α → Sort*}
     (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) :
     bidirectionalRec nil singleton cons_append [] = nil := bidirectionalRec.eq_1 ..
 
-
 @[simp]
 theorem bidirectionalRec_singleton {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
@@ -760,13 +756,6 @@ alias sublist_nil_iff_eq_nil := sublist_nil
 
 @[simp] lemma sublist_singleton {l : List α} {a : α} : l <+ [a] ↔ l = [] ∨ l = [a] := by
   constructor <;> rintro (_ | _) <;> aesop
-
-theorem sublist_replicate_iff {l : List α} {a : α} {n : ℕ} :
-    l <+ replicate n a ↔ ∃ k ≤ n, l = replicate k a :=
-  ⟨fun h =>
-    ⟨l.length, h.length_le.trans_eq (length_replicate _ _),
-      eq_replicate_length.mpr fun b hb => eq_of_mem_replicate (h.subset hb)⟩,
-    by rintro ⟨k, h, rfl⟩; exact (replicate_sublist_replicate _).mpr h⟩
 
 theorem Sublist.antisymm (s₁ : l₁ <+ l₂) (s₂ : l₂ <+ l₁) : l₁ = l₂ :=
   s₁.eq_of_length_le s₂.length_le
@@ -2112,9 +2101,6 @@ attribute [simp 1100] filterMap_cons_none
 -- removing attribute `nolint simpNF`
 attribute [simp 1100] filterMap_cons_some
 
-theorem Sublist.map (f : α → β) {l₁ l₂ : List α} (s : l₁ <+ l₂) : map f l₁ <+ map f l₂ :=
-  filterMap_eq_map f ▸ s.filterMap _
-
 theorem filterMap_eq_bind_toList (f : α → Option β) (l : List α) :
     l.filterMap f = l.bind fun a ↦ (f a).toList := by
   induction' l with a l ih <;> simp [filterMap_cons]
@@ -2351,7 +2337,6 @@ theorem length_eraseIdx_add_one {l : List ι} {i : ℕ} (h : i < l.length) :
   _ = i + (l.length - (i + 1)) + 1                    := by rw [length_drop]
   _ = (i + 1) + (l.length - (i + 1))                  := by omega
   _ = l.length                                        := Nat.add_sub_cancel' (succ_le_of_lt h)
-
 
 end Erase
 
@@ -2659,15 +2644,6 @@ instance (p : α → Prop) [DecidablePred p] : DecidablePred (Forall p) := fun _
 end Forall
 
 /-! ### Miscellaneous lemmas -/
-
-theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
-    (hl' : 0 < l.length := (by
-      contrapose! hl
-      simpa [length_eq_zero] using hl)) :
-    l.reverse.getLast hl = l.get ⟨0, hl'⟩ := by
-  rw [getLast_eq_get, get_reverse']
-  · simp
-  · simpa using hl'
 
 @[simp]
 theorem getElem_attach (L : List α) (i : Nat) (h : i < L.attach.length) :

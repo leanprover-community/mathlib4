@@ -187,7 +187,7 @@ theorem ne_of_adj_of_not_adj {v w x : V} (h : G.Adj v x) (hn : ¬G.Adj w x) : v 
   hn (h' ▸ h)
 
 theorem adj_injective : Injective (Adj : SimpleGraph V → V → V → Prop) :=
-  SimpleGraph.ext
+  fun _ _ => SimpleGraph.ext
 
 @[simp]
 theorem adj_inj {G H : SimpleGraph V} : G.Adj = H.Adj ↔ G = H :=
@@ -419,6 +419,7 @@ def edgeSetEmbedding (V : Type*) : SimpleGraph V ↪o Set (Sym2 V) :=
 /-- `G.edgeSet` is the edge set for `G`.
 This is an abbreviation for `edgeSetEmbedding G` that permits dot notation. -/
 abbrev edgeSet (G : SimpleGraph V) : Set (Sym2 V) := edgeSetEmbedding V G
+
 
 @[simp]
 theorem mem_edgeSet : s(v, w) ∈ G.edgeSet ↔ G.Adj v w :=

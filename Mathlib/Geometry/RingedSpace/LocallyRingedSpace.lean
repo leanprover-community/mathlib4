@@ -189,8 +189,8 @@ def isoOfSheafedSpaceIso {X Y : LocallyRingedSpace.{u}} (f : X.toSheafedSpace â‰
     X â‰… Y where
   hom := homOfSheafedSpaceHomOfIsIso f.hom
   inv := homOfSheafedSpaceHomOfIsIso f.inv
-  hom_inv_id := Hom.ext _ _ f.hom_inv_id
-  inv_hom_id := Hom.ext _ _ f.inv_hom_id
+  hom_inv_id := Hom.ext f.hom_inv_id
+  inv_hom_id := Hom.ext f.inv_hom_id
 
 instance : forgetToSheafedSpace.ReflectsIsomorphisms where reflects {_ _} f i :=
   { out :=

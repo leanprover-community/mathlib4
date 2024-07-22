@@ -134,11 +134,6 @@ theorem ext {χ χ' : MulChar R R'} (h : ∀ a : Rˣ, χ a = χ' a) : χ = χ' :
   · exact h ha.unit
   · rw [map_nonunit χ ha, map_nonunit χ' ha]
 
-theorem ext_iff {χ χ' : MulChar R R'} : χ = χ' ↔ ∀ a : Rˣ, χ a = χ' a :=
-  ⟨by
-    rintro rfl a
-    rfl, ext⟩
-
 /-!
 ### Equivalence of multiplicative characters with homomorphisms on units
 
@@ -404,7 +399,7 @@ set_option linter.deprecated false in
 /-- A multiplicative character is nontrivial iff it is not the trivial character. -/
 @[deprecated (since := "2024-06-16")]
 theorem isNontrivial_iff (χ : MulChar R R') : χ.IsNontrivial ↔ χ ≠ 1 := by
-  simp only [IsNontrivial, Ne, ext_iff, not_forall, one_apply_coe]
+  simp only [IsNontrivial, Ne, MulChar.ext_iff, not_forall, one_apply_coe]
 
 end nontrivial
 

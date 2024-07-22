@@ -24,18 +24,9 @@ namespace List
 -- @[simp]
 theorem join_singleton (l : List α) : [l].join = l := by rw [join, join, append_nil]
 
-@[simp]
-theorem join_eq_nil : ∀ {L : List (List α)}, join L = [] ↔ ∀ l ∈ L, l = []
-  | [] => iff_of_true rfl (forall_mem_nil _)
-  | l :: L => by simp only [join, append_eq_nil, join_eq_nil, forall_mem_cons]
+@[deprecated join_eq_nil_iff (since := "2024-07-10")]
+theorem join_eq_nil : ∀ {L : List (List α)}, join L = [] ↔ ∀ l ∈ L, l = [] := join_eq_nil_iff
 
-@[simp]
-theorem join_append (L₁ L₂ : List (List α)) : join (L₁ ++ L₂) = join L₁ ++ join L₂ := by
-  induction L₁
-  · rfl
-  · simp [*]
-
-theorem join_concat (L : List (List α)) (l : List α) : join (L.concat l) = join L ++ l := by simp
 
 @[simp]
 theorem join_filter_not_isEmpty  :
@@ -183,17 +174,6 @@ theorem append_join_map_append (L : List (List α)) (x : List α) :
   · rw [map_nil, join, append_nil, map_nil, join, nil_append]
   · rw [map_cons, join, map_cons, join, append_assoc, ih, append_assoc, append_assoc]
 
-/-- Reversing a join is the same as reversing the order of parts and reversing all parts. -/
-theorem reverse_join (L : List (List α)) :
-    L.join.reverse = (L.map reverse).reverse.join := by
-  induction' L with _ _ ih
-  · rfl
-  · rw [join, reverse_append, ih, map_cons, reverse_cons', join_concat]
-
-/-- Joining a reverse is the same as reversing all parts and reversing the joined result. -/
-theorem join_reverse (L : List (List α)) :
-    L.reverse.join = (L.map reverse).join.reverse := by
-  simpa [reverse_reverse, map_reverse] using congr_arg List.reverse (reverse_join L.reverse)
 
 /-- Any member of `L : List (List α))` is a sublist of `L.join` -/
 lemma sublist_join (L : List (List α)) {s : List α} (hs : s ∈ L) :
