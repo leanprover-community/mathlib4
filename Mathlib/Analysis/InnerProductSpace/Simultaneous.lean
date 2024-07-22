@@ -5,7 +5,9 @@ Authors: Jon Bannon, Jack Cheverton and Samyak Dhar Tuladhar
 -/
 
 import Mathlib.Analysis.InnerProductSpace.Spectrum
-
+import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Order.CompleteLattice
+import Mathlib.Tactic.SimpRw
 
 /-! # Simultaneous eigenspaces of commuting finite tuples of symmetric operators
 

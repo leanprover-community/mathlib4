@@ -6,10 +6,7 @@ Authors: Heather Macbeth
 import Mathlib.Analysis.InnerProductSpace.Rayleigh
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.Order.CompleteLattice
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-import Mathlib.Analysis.InnerProductSpace.Projection
-import Mathlib.Tactic.SimpRw
 
 /-! # Spectral theory of self-adjoint operators
 
