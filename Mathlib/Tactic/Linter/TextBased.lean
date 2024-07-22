@@ -14,8 +14,15 @@ This file defines various mathlib linters which are based on reading the source 
 In practice, only style linters will have this form.
 All of these have been rewritten from the `lint-style.py` script.
 
-For now, this only contains the linters for the copyright and author headers and large files:
-further linters will be ported in subsequent PRs.
+For now, this only contains linters checking
+- that the copyright header and authors line are correctly formatted
+- for certain disallowed imports
+- if the string "adaptation note" is used instead of the command #adaptation_note
+- for isolated focusing dots
+- lines are at most 100 chars
+- files are at most 1500 lines long (unless specifically allowed).
+
+Further linters will be ported in subsequent PRs.
 
 An executable running all these linters is defined in `scripts/lint-style.lean`.
 -/
@@ -45,6 +52,8 @@ inductive StyleError where
   /-- Lint against "too broad" imports, such as `Mathlib.Tactic` or any module in `Lake`
   (unless carefully measured) -/
   | broadImport (module : BroadImports)
+  /-- An isolated focusing dot: a focusing dot on its own line -/
+  | isolatedCDot
   /-- Line longer than 100 characters -/
   | lineLength (actual : Int) : StyleError
   /-- The current file was too large: this error contains the current number of lines
@@ -80,6 +89,7 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
       "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see \
       e.g. mathlib4#13779). Please consider carefully if this import is useful and make sure to \
       benchmark it. If this is fine, feel free to allow this linter."
+  | StyleError.isolatedCDot => "Line is an isolated focusing dot ·"
   | StyleError.lineLength n => s!"Line has {n} characters, which is more than 100"
   | StyleError.fileTooLong currentSize sizeLimit previousLimit =>
     match style with
@@ -100,6 +110,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.authors => "ERR_AUT"
   | StyleError.adaptationNote => "ERR_ADN"
   | StyleError.broadImport _ => "ERR_IMP"
+  | StyleError.isolatedCDot => "ERR_DOT"
   | StyleError.lineLength _ => "ERR_LIN"
   | StyleError.fileTooLong _ _ _ => "ERR_NUM_LIN"
 
@@ -203,6 +214,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
           else none
         | "ERR_AUT" => some (StyleError.authors)
         | "ERR_ADN" => some (StyleError.adaptationNote)
+        | "ERR_DOT" => some (StyleError.isolatedCDot)
         | "ERR_IMP" =>
           -- XXX tweak exceptions messages to ease parsing?
           if (errorMessage.get! 0).containsSubstr "tactic" then
@@ -332,6 +344,17 @@ def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
       lineNumber := lineNumber + 1
   return errors
 
+/-- Lint a collection of input strings if one of them contains an isolated focusing dot:
+these should go next to the subsequent line instead. -/
+def isolatedCDotLinter : TextbasedLinter := fun lines ↦ Id.run do
+  let mut errors := Array.mkEmpty 0
+  let mut lineNumber := 1
+  for line in lines do
+    if line.trimLeft == "." then
+      errors := errors.push (StyleError.isolatedCDot, lineNumber)
+    lineNumber := lineNumber + 1
+  return errors
+
 /-- Iterates over a collection of strings, finding all lines which are longer than 101 chars.
 We allow URLs to be longer, though.
 -/
@@ -370,7 +393,8 @@ end
 
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
-    copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, lineLengthLinter
+    copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, isolatedCDotLinter,
+    lineLengthLinter
   ]
 
 /-- Controls what kind of output this programme produces. -/

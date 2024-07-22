@@ -40,7 +40,6 @@ import shutil
 ERR_MOD = 2 # module docstring
 ERR_IBY = 11 # isolated by
 ERR_IWH = 22 # isolated where
-ERR_DOT = 12 # isolated focusing dot
 ERR_SEM = 13 # the substring " ;"
 ERR_WIN = 14 # Windows line endings "\r\n"
 ERR_TWS = 15 # trailing whitespace
@@ -264,8 +263,6 @@ def isolated_by_dot_semicolon_check(lines, path):
                     line = f"{indent}{line.lstrip()[3:]}"
         elif line.lstrip() == "where":
             errors += [(ERR_IWH, line_nr, path)]
-        elif line.strip() in (".", "·"):
-            errors += [(ERR_DOT, line_nr, path)]
         if " ;" in line:
             errors += [(ERR_SEM, line_nr, path)]
             line = line.replace(" ;", ";")
@@ -315,8 +312,6 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
         if errno == ERR_IWH:
             output_message(path, line_nr, "ERR_IWH", "Line is an isolated where")
-        if errno == ERR_DOT:
-            output_message(path, line_nr, "ERR_DOT", "Line is an isolated focusing dot")
         if errno == ERR_SEM:
             output_message(path, line_nr, "ERR_SEM", "Line contains a space before a semicolon")
         if errno == ERR_WIN:
