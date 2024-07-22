@@ -6,7 +6,7 @@ Authors: Tian Chen, Mantas Bakšys
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Ring.Int
-import Mathlib.NumberTheory.Padics.PadicVal
+import Mathlib.NumberTheory.Padics.PadicValDefs
 import Mathlib.RingTheory.Ideal.Quotient
 
 /-!
