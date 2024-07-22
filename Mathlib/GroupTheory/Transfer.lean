@@ -5,7 +5,6 @@ Authors: Thomas Browning
 -/
 import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Sylow
-import Mathlib.GroupTheory.Subgroup.Center
 
 /-!
 # The Transfer Homomorphism
