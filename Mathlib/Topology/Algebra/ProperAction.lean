@@ -169,7 +169,7 @@ theorem t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
       simp
     simp [m]
   rw [r_eq_r']
-  exact ProperSMul.isProperMap_smul_pair'.isClosedMap.closed_range
+  exact ProperSMul.isProperMap_smul_pair'.isClosedMap.isClosed_range
 
 /-- If a T2 group acts properly on a topological space, then this topological space is T2. -/
 @[to_additive "If a T2 group acts properly on a topological space,
@@ -192,7 +192,7 @@ theorem t2Space_of_properSMul_of_t2Group [h_proper : ProperSMul G X] [T2Space G]
   have : g ∘ f = fun x ↦ (x, x) := by ext x <;> simp
   have range_gf : range (g ∘ f) = diagonal X := by simp [this]
   rw [← range_gf]
-  exact (proper_f.comp proper_g).closed_range
+  exact (proper_f.comp proper_g).isClosed_range
 
 /-- If two groups `H` and `G` act on a topological space `X` such that `G` acts properly and
 there exists a group homomorphims `H → G` which is a closed embedding compatible with the actions,
