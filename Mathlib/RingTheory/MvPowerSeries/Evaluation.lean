@@ -21,7 +21,7 @@ import Mathlib.Topology.Sets.Compacts
 import Mathlib.Topology.Support
 import Mathlib.Topology.UniformSpace.Pi
 
-/- # Evaluation of (multivariate) power series
+/-! # Evaluation of (multivariate) power series
 
 Let `σ`, `R` `S` be types, with `CommRing R`, `CommRing S`.
 One assumes that `TopologicalRing R` and `UniformAddGroup R`,
@@ -388,10 +388,8 @@ theorem aeval_unique {ε : MvPowerSeries σ R →ₐ[R] S} (hε : Continuous ε)
       RingHom.coe_coe, eval₂_mul, MvPolynomial.eval₂_X, h]
 
 theorem hasSum_aeval (f : MvPowerSeries σ R) :
-    HasSum
-    (fun (d : σ →₀ ℕ) ↦ (coeff R d f) • (d.prod fun s e => (a s) ^ e))
-    (MvPowerSeries.aeval ha f)
-     :=  by
+    HasSum (fun (d : σ →₀ ℕ) ↦ (coeff R d f) • (d.prod fun s e => (a s) ^ e))
+      (MvPowerSeries.aeval ha f) :=  by
   have := hasSum_eval₂ (continuous_algebraMap R S) ha f
   simp_rw [← smul_eq_mul, algebraMap_smul] at this
   rw [coe_aeval]
