@@ -54,14 +54,16 @@ theorem eigenspace_invariant_of_commute (α : 𝕜) : ∀ v ∈ (eigenspace A α
 /--The inf of an eigenspace of an operator with another invariant subspace
 agrees with the corresponding eigenspace of the restriction of that operator to the
 invariant subspace-/
-theorem invariant_subspace_inf_eigenspace_eq_restrict
-     : (fun (γ : 𝕜) ↦
-    Submodule.map (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict
-    (eigenspace_invariant_of_commute hAB α)) γ)) = (fun (γ : 𝕜) ↦ (eigenspace B γ ⊓ eigenspace A α))
-    := by
-  funext γ
+theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
+    (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : (eigenspace S μ) ⊓ F =
+    Submodule.map (Submodule.subtype F)
+    (eigenspace (S.restrict (hInv)) μ) := by
   ext v
   constructor
+  · intro h
+    simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
+      exists_eq_right, mem_eigenspace_iff]; use h.2
+    exact Eq.symm (SetCoe.ext (_root_.id (Eq.symm (mem_eigenspace_iff.mp h.1))))
   · intro h
     simp only [Submodule.mem_inf]
     constructor
@@ -73,11 +75,15 @@ theorem invariant_subspace_inf_eigenspace_eq_restrict
     · simp only [Submodule.coeSubtype] at h
       obtain ⟨_, hy⟩ := h
       simp only [← hy.2, Submodule.coeSubtype, SetLike.coe_mem]
-  · intro h
-    simp only [Submodule.mem_inf, Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
-      exists_eq_right, SetLike.mk_smul_mk] at *
-    use h.2
-    exact SetCoe.ext h.1
+
+/--Auxiliary: function version of `invariant_subspace_inf_eigenspace_eq_restrict` -/
+theorem invariant_subspace_inf_eigenspace_eq_restrict' : (fun (γ : 𝕜) ↦
+    Submodule.map (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict
+    (eigenspace_invariant_of_commute hAB α)) γ))
+    = (fun (γ : 𝕜) ↦ (eigenspace B γ ⊓ eigenspace A α)) := by
+  funext γ
+  exact Eq.symm (invariant_subspace_inf_eigenspace_eq_restrict B γ
+    (eigenspace_invariant_of_commute hAB α))
 
 /-- If A and B are commuting symmetric operators then the eigenspaces of the restriction
 of B to any eigenspace of A exhaust that eigenspace.-/
@@ -93,9 +99,9 @@ theorem iSup_simultaneous_eigenspaces_eq_top :
     (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α))) = ⊤ := by
   have : (fun (α : 𝕜) ↦  eigenspace A α)  = fun (α : 𝕜) ↦
       (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) := by
-    funext; rw [← invariant_subspace_inf_eigenspace_eq_restrict hAB,
-       ← Submodule.map_iSup, iSup_inf_eq_top hB hAB, Submodule.map_top,
-       Submodule.range_subtype]
+    funext γ
+    rw [← invariant_subspace_inf_eigenspace_eq_restrict' hAB, ← Submodule.map_iSup,
+      iSup_inf_eq_top hB hAB, Submodule.map_top, Submodule.range_subtype]
   rw [← Submodule.orthogonal_eq_bot_iff.mp (hA.orthogonalComplement_iSup_eigenspaces_eq_bot), this]
 
 /--The simultaneous eigenspaces of a pair of commuting symmetric operators form an
