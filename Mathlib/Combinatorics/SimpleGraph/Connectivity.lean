@@ -2066,12 +2066,12 @@ lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.c
   exact ⟨connectedComponentMk_eq_of_adj <| Subgraph.Adj.coe <| h.2 ▸ hadj.symm, rfl⟩
 
 lemma iUnion_supp : ⋃ c : G.ConnectedComponent, c.supp = Set.univ := by
-  refine eq_univ_of_forall fun v ↦ ⟨G.connectedComponentMk v, ?_⟩
+  refine Set.eq_univ_of_forall fun v ↦ ⟨G.connectedComponentMk v, ?_⟩
   simp only [Set.mem_range, SetLike.mem_coe]
   exact ⟨by use G.connectedComponentMk v; exact rfl, rfl⟩
 
-lemma pairwise_disjoint_supp : Pairwise fun c c' ↦ Disjoint c.supp c'.supp := by
-  intro s hsx hsy
+lemma pairwise_disjoint_supp : Pairwise fun (c c': ConnectedComponent G) ↦ Disjoint c.supp c'.supp := by
+  intro _ _ h s hsx hsy
   simp only [Set.toFinset_card, Finset.mem_univ, ne_eq, Set.le_eq_subset,
     Set.bot_eq_empty, Set.subset_empty_iff, Set.eq_empty_iff_forall_not_mem] at *
   intro v hv
