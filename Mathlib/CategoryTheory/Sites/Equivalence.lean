@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.InducedTopology
+import Mathlib.CategoryTheory.Sites.LocallyBijective
+import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
 import Mathlib.CategoryTheory.Sites.Whiskering
 /-!
 # Equivalences of sheaf categories
@@ -34,15 +36,15 @@ sufficiently small limits in the sheaf category on the essentially small site.
 
 -/
 
-universe u
+universe v₁ v₂ v₃ u₁ u₂ u₃ w
 
 namespace CategoryTheory
 
 open Functor Limits GrothendieckTopology
 
-variable {C : Type*} [Category C] (J : GrothendieckTopology C)
-variable {D : Type*} [Category D] (K : GrothendieckTopology D) (e : C ≌ D)
-variable (A : Type*) [Category A]
+variable {C : Type u₁} [Category.{v₁} C] (J : GrothendieckTopology C)
+variable {D : Type u₂} [Category.{v₂} D] (K : GrothendieckTopology D) (e : C ≌ D) (G : D ⥤ C)
+variable (A : Type u₃) [Category.{v₃} A]
 
 namespace Equivalence
 
@@ -211,7 +213,7 @@ theorem hasSheafCompose : J.HasSheafCompose F where
 
 end Equivalence
 
-variable [EssentiallySmall C]
+variable [EssentiallySmall.{w} C]
 variable (B : Type*) [Category B] (F : A ⥤ B)
 variable [HasSheafify ((equivSmallModel C).locallyCoverDense J).inducedTopology A]
 variable [((equivSmallModel C).locallyCoverDense J).inducedTopology.HasSheafCompose F]
@@ -237,14 +239,68 @@ instance hasSheafComposeEssentiallySmallSite : HasSheafCompose J F :=
 
 instance hasLimitsEssentiallySmallSite
     [HasLimits <| Sheaf ((equivSmallModel C).locallyCoverDense J).inducedTopology A] :
-    HasLimitsOfSize <| Sheaf J A :=
+    HasLimitsOfSize.{max v₃ w, max v₃ w} <| Sheaf J A :=
   Adjunction.has_limits_of_equivalence ((equivSmallModel C).sheafCongr J
     ((equivSmallModel C).locallyCoverDense J).inducedTopology A).functor
 
 instance hasColimitsEssentiallySmallSite
     [HasColimits <| Sheaf ((equivSmallModel C).locallyCoverDense J).inducedTopology A] :
-    HasColimitsOfSize <| Sheaf J A :=
+    HasColimitsOfSize.{max v₃ w, max v₃ w} <| Sheaf J A :=
   Adjunction.has_colimits_of_equivalence ((equivSmallModel C).sheafCongr J
     ((equivSmallModel C).locallyCoverDense J).inducedTopology A).functor
+
+namespace GrothendieckTopology
+
+variable {A}
+variable [G.IsCoverDense J] [Functor.IsContinuous G K J] [G.Full]
+  [(G.sheafPushforwardContinuous A K J).EssSurj]
+
+open Localization
+
+lemma W_inverseImage_whiskeringLeft :
+    K.W.inverseImage ((whiskeringLeft Dᵒᵖ Cᵒᵖ A).obj G.op) = J.W := by
+  ext P Q f
+  have h₁ : K.W (A := A) =
+    Localization.LeftBousfield.W (· ∈ Set.range (sheafToPresheaf J A ⋙
+      ((whiskeringLeft Dᵒᵖ Cᵒᵖ A).obj G.op)).obj) := by
+    rw [W_eq_W_range_sheafToPresheaf_obj, ← LeftBousfield.W_isoClosure]
+    conv_rhs => rw [← LeftBousfield.W_isoClosure]
+    apply congr_arg
+    ext P
+    constructor
+    · rintro ⟨_, ⟨R, rfl⟩, ⟨e⟩⟩
+      exact ⟨_, ⟨_, rfl⟩, ⟨e.trans ((sheafToPresheaf _ _).mapIso
+        ((G.sheafPushforwardContinuous A K J).objObjPreimageIso R).symm)⟩⟩
+    · rintro ⟨_, ⟨R, rfl⟩, ⟨e⟩⟩
+      exact ⟨G.op ⋙ R.val, ⟨(G.sheafPushforwardContinuous A K J).obj R, rfl⟩, ⟨e⟩⟩
+  have h₂ : ∀ (R : Sheaf J A),
+    Function.Bijective (fun (g : G.op ⋙ Q ⟶ G.op ⋙ R.val) ↦ whiskerLeft G.op f ≫ g) ↔
+      Function.Bijective (fun (g : Q ⟶ R.val) ↦ f ≫ g) := fun R ↦ by
+    rw [← Function.Bijective.of_comp_iff _
+      (Functor.whiskerLeft_obj_map_bijective_of_isCoverDense J G Q R.val R.cond)]
+    exact Function.Bijective.of_comp_iff'
+      (Functor.whiskerLeft_obj_map_bijective_of_isCoverDense J G P R.val R.cond)
+        (fun g ↦ f ≫ g)
+  rw [h₁, J.W_eq_W_range_sheafToPresheaf_obj, MorphismProperty.inverseImage_iff]
+  constructor
+  · rintro h _ ⟨R, rfl⟩
+    exact (h₂ R).1 (h _ ⟨R, rfl⟩)
+  · rintro h _ ⟨R, rfl⟩
+    exact (h₂ R).2 (h _ ⟨R, rfl⟩)
+
+lemma W_whiskerLeft_iff {P Q : Cᵒᵖ ⥤ A} (f : P ⟶ Q) :
+    K.W (whiskerLeft G.op f) ↔ J.W f := by
+  rw [← W_inverseImage_whiskeringLeft J K G]
+  rfl
+
+variable [G.IsCocontinuous K J] (hG : CoverPreserving K J G) [ConcreteCategory A]
+  [K.WEqualsLocallyBijective A]
+
+lemma WEqualsLocallyBijective.transport : J.WEqualsLocallyBijective A where
+  iff f := by
+    rw [← W_whiskerLeft_iff J K G f, ← Presheaf.isLocallyInjective_whisker_iff K J G f hG,
+      ← Presheaf.isLocallySurjective_whisker_iff K J G f hG, W_iff_isLocallyBijective]
+
+end GrothendieckTopology
 
 end CategoryTheory

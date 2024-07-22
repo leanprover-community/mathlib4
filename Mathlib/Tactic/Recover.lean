@@ -5,10 +5,19 @@ Authors: Gabriel Ebner, Siddhartha Gadgil, Jannis Limperg
 -/
 import Lean
 
-open Lean (HashSet)
-open Lean Meta Elab Tactic
+/-!
+# The `recover` tactic modifier
+
+This defines the `recover` tactic modifier, which can be used to debug cases where goals
+are not closed correctly. `recover tacs` for a tactic (or tactic sequence) `tacs`
+applies the tactics and then adds goals
+that are not closed, starting from the original goal.
+-/
 
 namespace Mathlib.Tactic
+
+open Lean (HashSet)
+open Lean Meta Elab Tactic
 
 /--
 Get all metavariables which `mvarId` depends on. These are the metavariables
@@ -45,8 +54,8 @@ partial def getUnassignedGoalMVarDependencies (mvarId : MVarId) :
           go pendingMVarId
 
 /-- Modifier `recover` for a tactic (sequence) to debug cases where goals are closed incorrectly.
-The tactic `recover tacs` for a tactic (sequence) tacs applies the tactics and then adds goals
-that are not closed starting from the original -/
+The tactic `recover tacs` for a tactic (sequence) `tacs` applies the tactics and then adds goals
+that are not closed, starting from the original goal. -/
 elab "recover " tacs:tacticSeq : tactic => do
   let originalGoals ← getGoals
   evalTactic tacs

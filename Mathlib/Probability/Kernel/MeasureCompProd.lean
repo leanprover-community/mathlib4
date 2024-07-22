@@ -97,12 +97,15 @@ lemma lintegral_compProd [SFinite μ] [IsSFiniteKernel κ]
   rw [compProd, kernel.lintegral_compProd _ _ _ hf]
   simp
 
-lemma set_lintegral_compProd [SFinite μ] [IsSFiniteKernel κ]
+lemma setLIntegral_compProd [SFinite μ] [IsSFiniteKernel κ]
     {f : α × β → ℝ≥0∞} (hf : Measurable f)
     {s : Set α} (hs : MeasurableSet s) {t : Set β} (ht : MeasurableSet t) :
     ∫⁻ x in s ×ˢ t, f x ∂(μ ⊗ₘ κ) = ∫⁻ a in s, ∫⁻ b in t, f (a, b) ∂(κ a) ∂μ := by
-  rw [compProd, kernel.set_lintegral_compProd _ _ _ hf hs ht]
+  rw [compProd, kernel.setLIntegral_compProd _ _ _ hf hs ht]
   simp
+
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_compProd := setLIntegral_compProd
 
 lemma integrable_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {E : Type*} [NormedAddCommGroup E]
     {f : α × β → E} (hf : AEStronglyMeasurable f (μ ⊗ₘ κ)) :
@@ -127,9 +130,8 @@ lemma setIntegral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
   rw [compProd, ProbabilityTheory.setIntegral_compProd hs ht hf]
   simp
 
-@[deprecated]
-alias set_integral_compProd :=
-  setIntegral_compProd -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_compProd := setIntegral_compProd
 
 end Integral
 
