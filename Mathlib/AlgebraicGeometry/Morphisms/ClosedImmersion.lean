@@ -3,12 +3,11 @@ Copyright (c) 2023 Jonas van der Schaaf. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
-import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField
-import Mathlib.RingTheory.LocalProperties
+import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
+import Mathlib.RingTheory.RingHom.Surjective
+import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField
 
 /-!
 
@@ -34,7 +33,7 @@ is a closed immersion and the induced morphisms of stalks are all surjective.
 
 universe v u
 
-open CategoryTheory TopologicalSpace
+open CategoryTheory TopologicalSpace Opposite
 
 namespace AlgebraicGeometry
 
@@ -131,16 +130,19 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion 
 instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f where
   isCompact_preimage _ _ hU' := base_closed.isCompact_preimage hU'
 
+end IsClosedImmersion
+
 section Affine
 
-open Opposite LocallyRingedSpace
+variable {X Y : Scheme.{u}} [IsAffine Y] {f : X ⟶ Y}
+
+open IsClosedImmersion LocallyRingedSpace
 
 /-- If `f : X ⟶ Y` is a morphism of schemes with quasi-compact source and affine target, `f`
 has a closed image and `f` induces an injection on global sections, then
 `f` is surjective. -/
-lemma surjective_of_isClosed_range_of_injective {X Y : Scheme} [IsAffine Y] [CompactSpace X]
-    {f : X ⟶ Y} (hfcl : IsClosed (Set.range f.val.base))
-    (hfinj : Function.Injective (f.app ⊤)) :
+lemma surjective_of_isClosed_range_of_injective [CompactSpace X]
+    (hfcl : IsClosed (Set.range f.val.base)) (hfinj : Function.Injective (f.app ⊤)) :
     Function.Surjective f.val.base := by
   obtain ⟨I, hI⟩ := (Scheme.eq_zeroLocus_of_isClosed_of_isAffine Y (Set.range f.val.base)).mp hfcl
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
@@ -161,8 +163,8 @@ lemma surjective_of_isClosed_range_of_injective {X Y : Scheme} [IsAffine Y] [Com
 
 /-- If `f : X ⟶ Y` is open, injective, `X` is quasi-compact and `Y` is affine, then `f` is stalkwise
 injective if it is injective on global sections. -/
-lemma stalkMap_injective_of_isOpenMap_of_injective {X Y : Scheme} {f : X ⟶ Y} [CompactSpace X]
-    [IsAffine Y] (hfopen : IsOpenMap f.val.base) (hfinj₁ : Function.Injective f.val.base)
+lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
+    (hfopen : IsOpenMap f.val.base) (hfinj₁ : Function.Injective f.val.base)
     (hfinj₂ : Function.Injective (f.app ⊤)) (x : X) :
     Function.Injective (LocallyRingedSpace.stalkMap f x) := by
   let φ : Γ(Y, ⊤) ⟶ Γ(X, ⊤) := f.app ⊤
@@ -200,11 +202,12 @@ lemma stalkMap_injective_of_isOpenMap_of_injective {X Y : Scheme} {f : X ⟶ Y} 
   rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero] at hfinj₂
   exact hfinj₂ _ (Scheme.zero_of_zero_cover _ _ hn)
 
+namespace IsClosedImmersion
+
 /-- If `f` is a closed immersion with affine target such that the induced map on global
 sections is injective, `f` is an isomorphism. -/
-theorem isIso_of_isClosedImmersion_of_injective_of_isAffine {X Y : Scheme} [IsAffine Y]
-    (f : X ⟶ Y) [IsClosedImmersion f] (hf : Function.Injective (f.app ⊤)) :
-    IsIso f := (isIso_iff_stalk_iso f).mpr <|
+theorem isIso_of_injective_of_isAffine [IsClosedImmersion f]
+    (hf : Function.Injective (f.app ⊤)) : IsIso f := (isIso_iff_stalk_iso f).mpr <|
   have : CompactSpace X := (closedEmbedding f).compactSpace
   have hiso : IsIso f.val.base := TopCat.isIso_of_bijective_of_isClosedMap _
     ⟨(closedEmbedding f).inj,
@@ -214,9 +217,22 @@ theorem isIso_of_isClosedImmersion_of_injective_of_isAffine {X Y : Scheme} [IsAf
     ⟨stalkMap_injective_of_isOpenMap_of_injective ((TopCat.homeoOfIso (asIso f.val.base)).isOpenMap)
     (closedEmbedding f).inj hf _, surjective_stalkMap f x⟩⟩
 
-end Affine
+variable (f)
+
+/-- If `f` is a closed immersion with affine target, the source is affine and
+the induced map on global sections is surjective. -/
+theorem isAffine_surjective_of_isAffine [IsClosedImmersion f] :
+    IsAffine X ∧ Function.Surjective (f.app ⊤) := by
+  obtain ⟨Z, g, h, rfl, hZA, hh, hg⟩ := exists_factorization_of_isAffine f
+  haveI := of_surjective_of_isAffine h hh
+  haveI := IsClosedImmersion.of_comp g h
+  haveI := isIso_of_injective_of_isAffine hg
+  exact ⟨isAffine_of_isIso g,
+    (ConcreteCategory.bijective_of_isIso (g.app ⊤)).surjective.comp hh⟩
 
 end IsClosedImmersion
+
+end Affine
 
 /-- Being surjective on stalks is local at the target. -/
 instance isSurjectiveOnStalks_isLocalAtTarget : IsLocalAtTarget
@@ -226,5 +242,22 @@ instance isSurjectiveOnStalks_isLocalAtTarget : IsLocalAtTarget
 /-- Being a closed immersion is local at the target. -/
 instance IsClosedImmersion.isLocalAtTarget : IsLocalAtTarget @IsClosedImmersion :=
   eq_inf ▸ inferInstance
+
+/-- On morphisms with affine target, being a closed immersion is precisely having affine source
+and being surjective on global sections. -/
+instance IsClosedImmersion.hasAffineProperty : HasAffineProperty @IsClosedImmersion
+    (fun X Y f ↦ IsAffine X ∧ Function.Surjective (f.app ⊤)) := by
+  convert HasAffineProperty.of_isLocalAtTarget @IsClosedImmersion
+  refine ⟨fun ⟨h₁, h₂⟩ ↦ of_surjective_of_isAffine _ h₂, by apply isAffine_surjective_of_isAffine⟩
+
+/-- Being a closed immersion is stable under base change. -/
+instance IsClosedImmersion.stableUnderBaseChange :
+    MorphismProperty.StableUnderBaseChange @IsClosedImmersion := by
+  apply HasAffineProperty.stableUnderBaseChange
+  haveI := HasAffineProperty.isLocal_affineProperty @IsClosedImmersion
+  apply AffineTargetMorphismProperty.StableUnderBaseChange.mk
+  intro X Y S _ _ f g ⟨ha, hsurj⟩
+  exact ⟨inferInstance, (RingHom.surjective_stableUnderBaseChange).Γ_pullback_fst
+    RingHom.surjective_respectsIso _ _ hsurj⟩
 
 end AlgebraicGeometry
