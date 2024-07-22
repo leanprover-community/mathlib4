@@ -53,6 +53,8 @@ theorem det_of_basisMatrix_non_zero : (basisMatrix K).det ≠ 0 := by
 instance : Invertible (basisMatrix K) := invertibleOfIsUnitDet _
     (Ne.isUnit (det_of_basisMatrix_non_zero K))
 
+variable {K}
+
 theorem canonicalEmbedding_eq_basisMatrix_mulVec (α : K) :
     canonicalEmbedding K α = (basisMatrix K).transpose.mulVec
       (fun i ↦ (((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)) := by
@@ -66,7 +68,7 @@ theorem inverse_basisMatrix_mulVec_eq_repr (α : 𝓞 K) :
     ∀ i, ((basisMatrix K).transpose)⁻¹.mulVec (fun j =>
       canonicalEmbedding K (algebraMap (𝓞 K) K α) j) i =
       ((integralBasis K).reindex (equivReindex K).symm).repr α i := fun i => by
-  rw [inv_mulVec_eq_vec (canonicalEmbedding_eq_basisMatrix_mulVec K α)]
+  rw [inv_mulVec_eq_vec (canonicalEmbedding_eq_basisMatrix_mulVec ((algebraMap (𝓞 K) K) α))]
 
 end
 
