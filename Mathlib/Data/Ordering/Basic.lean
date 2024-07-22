@@ -5,17 +5,6 @@ Authors: Leonardo de Moura
 -/
 
 
-/-!
-# Note about `Mathlib/Init/`
-The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
-(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
-
-We intend to move all the content of these files out into the main `Mathlib` directory structure.
-Contributions assisting with this are appreciated.
-
-# Helper definitions and instances for `Ordering`
--/
-
 universe u
 
 deriving instance Repr for Ordering
