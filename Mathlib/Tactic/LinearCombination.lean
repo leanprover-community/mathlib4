@@ -360,6 +360,24 @@ theorem neg_intRawCast {α : Type*} [LinearOrderedRing α] {a : ℕ} : (Int.rawC
 theorem neg_ratRawCast {α : Type*} [LinearOrderedField α] {a b : ℕ} : (Rat.rawCast (Int.negOfNat a.succ) b.succ : α) + 0 < 0 := by
   simp [div_neg_iff, -Nat.succ_eq_add_one]
 
+-- TODO
+-- make finishing-only tactic
+-- make a `Tactic.Tactic` everywhere relevant, not a `Syntax.Tactic`
+
+def lhsRelZero (int_lem rat_lem : Name) : Tactic.TacticM Unit :=
+    Tactic.liftMetaTactic <| fun g ↦ do
+  let e ← g.getType
+  let whnfEType ← withReducible do whnf e
+  let leftSummand := whnfEType.getAppArgs[2]!.getAppArgs[4]!
+  let int? : Bool := leftSummand.isAppOfArity ``Int.rawCast 3
+  let lem : Name := if int? then int_lem else rat_lem
+  let pf ← mkConstWithFreshMVarLevels lem
+  trace[debug] "trying the proof {pf}"
+  g.apply pf
+
+elab "nonpos_rawcast" : tactic => lhsRelZero ``nonpos_intRawCast ``nonpos_ratRawCast
+elab "neg_rawcast" : tactic => lhsRelZero ``neg_intRawCast ``neg_ratRawCast
+
 /-- Implementation of `linear_combination`. -/
 def elabLinearCombination
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term) :
@@ -384,11 +402,9 @@ def elabLinearCombination
   let defaultTac :=
     match goalRel with
     | Eq => `(tactic | ring)
-    | Le =>
-    -- FIXME do I need parentheses around `(conv_lhs => ring1)`?
-    `(tactic | ((conv_lhs => ring1); try first | exact nonpos_intRawCast | exact nonpos_ratRawCast))
-    | Lt =>
-    `(tactic | ((conv_lhs => ring1); try first | exact neg_intRawCast | exact neg_ratRawCast))
+      -- FIXME do I need parentheses around `(conv_lhs => ring1)`?
+    | Le => `(tactic | ((conv_lhs => ring1); all_goals nonpos_rawcast))
+    | Lt => `(tactic | ((conv_lhs => ring1); all_goals neg_rawcast))
   let norm := norm?.getD (Unhygienic.run defaultTac)
   let exp1 :=
     match hypRel.relImpRelData goalRel with

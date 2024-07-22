@@ -242,7 +242,7 @@ example {x y : ℤ} (hx : x + 3 ≤ 2) (hy : y + 2 * x ≥ 3) : y > 3 := by line
 
 example {x y z : ℚ} (h1 : 4 * x + y + 3 * z ≤ 25) (h2 : -x + 2 * y + z = 3)
     (h3 : 5 * x + 7 * z = 43) :
-    x < 4 := by
+    x ≤ 4 := by
   linear_combination (14 * h1 - 7 * h2 - 5 * h3) / 38
 
 example {a b c d e : ℚ}
