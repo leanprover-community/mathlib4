@@ -158,4 +158,66 @@ initialize addLinter missingEndLinter
 
 end MissingEnd
 
+/-!
+# The `cdot` linter
+
+The `cdot` linter is a syntax-linter that flags uses of the "cdot" `·` that are achieved
+by typing a character different form `·`.
+For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter.
+-/
+
+/--
+The `cdot` linter flags uses of the "cdot" `·` that are achieved by typing a character
+different form `·`.
+For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter. -/
+register_option linter.cdot : Bool := {
+  defValue := true
+  descr := "enable the `cdot` linter"
+}
+
+/-- `isCDot? stx` checks whether `stx` is a `Syntax` node corresponding to a `cdot` typed with
+the character `·`. -/
+def isCDot? : Syntax → Bool
+  | .node _ ``cdotTk #[.node _ `patternIgnore #[.node _ _ #[.atom _ v]]] => v == "·"
+  | .node _ ``Lean.Parser.Term.cdot #[.atom _ v] => v == "·"
+  | _ => false
+
+/--
+`findDot stx` extracts from `stx` the syntax nodes of `kind` `Lean.Parser.Term.cdot` or `cdotTk`. -/
+partial
+def findDot : Syntax → Array Syntax
+  | stx@(.node _ k args) =>
+    let dargs := (args.map findDot).flatten
+    match k with
+      | ``Lean.Parser.Term.cdot => dargs.push stx
+      | ``cdotTk => dargs.push stx
+      | _ =>  dargs
+  |_ => #[]
+
+/-- `unwanted.cDot stx` returns an array of syntax atoms corresponding to `cdot`s that are not
+written with the character `·`.
+This is precisely what the `cdot` linter flags.
+-/
+def unwanted.cDot (stx : Syntax) : Array Syntax :=
+  (findDot stx).filter (!isCDot? ·)
+
+namespace CDotLinter
+
+/-- Gets the value of the `linter.generic` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.cdot o
+
+@[inherit_doc linter.cdot]
+def cdotLinter : Linter where run := withSetOptionIn fun stx => do
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    for s in unwanted.cDot stx do
+      Linter.logLint linter.cdot s
+        m!"Please, use '·' (typed as `\\·`) instead of '{s}' as 'cdot'."
+
+initialize addLinter cdotLinter
+
+end CDotLinter
+
 end Mathlib.Linter

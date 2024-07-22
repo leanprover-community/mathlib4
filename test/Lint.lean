@@ -57,3 +57,23 @@ set_option linter.dupNamespace true in
 export Nat (add)
 
 end add
+
+set_option linter.cdot false in
+/--
+warning: Please, use '·' (typed as `\·`) instead of '.' as 'cdot'.
+note: this linter can be disabled with `set_option linter.cdot false`
+---
+warning: Please, use '·' (typed as `\·`) instead of '.' as 'cdot'.
+note: this linter can be disabled with `set_option linter.cdot false`
+---
+warning: Please, use '·' (typed as `\·`) instead of '.' as 'cdot'.
+note: this linter can be disabled with `set_option linter.cdot false`
+-/
+#guard_msgs in
+set_option linter.cdot true in
+attribute [instance] Int.add in
+instance : Inhabited Nat where
+  default := by
+    . have := 0
+      · have : Nat → Nat → Nat := (· + .)
+        . exact 0
