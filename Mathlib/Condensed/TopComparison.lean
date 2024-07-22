@@ -18,10 +18,6 @@ satisfies the sheaf condition for the regular and extensive topologies respectiv
 We apply this API to `CompHaus` and define the functor
 `topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u}`.
 
-## Projects
-
-* Define compactly generated topological spaces.
-* Prove that `topCatToCondensedSet` restricted to compactly generated spaces is fully faithful.
 -/
 
 universe w w' v u
