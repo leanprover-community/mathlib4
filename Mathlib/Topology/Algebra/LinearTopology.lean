@@ -16,57 +16,43 @@ and there admits a basis of neighborhoods of 0 consisting of ideals.
 
 - For `Ring R` and `TopologicalSpace R`, the type class `LinearTopology A`
 asserts that the topology is linear.
+
 -/
 
 section Complements
 
--- TODO: This is similar to `le_iff_nhds`, do we need this variant?
--- Probably not :
-theorem TopologicalSpace.le_iff_nhds_le {α : Type*} (τ τ' : TopologicalSpace α) :
-    τ ≤ τ' ↔ ∀ (s : Set α), ∀ a ∈ s, s ∈ @nhds α τ' a → s ∈ @nhds α τ a := by
-  rw [le_iff_nhds]
-  rw [forall_comm]
-  apply forall_congr'
-  intro a
-  rw [Filter.le_def]
-  apply forall_congr'
-  intro s
-  constructor
-  · exact fun h _ ↦ h
-  · intro h
-    by_cases ha : a ∈ s
-    · exact h ha
-    · exact fun hs ↦ False.elim (ha (mem_of_mem_nhds hs))
-
 /-- If `a, b` are two elements of a topological group `α`, then a set `V` belongs to `nhds (a + b)`
   if and only if `Add.add a ⁻¹' V ∈ nhds b`.  -/
-theorem mem_nhds_add_iff {α : Type*} [AddCommGroup α] [TopologicalSpace α] [TopologicalAddGroup α]
-    (V : Set α) (a b : α) : V ∈ nhds (a + b) ↔ Add.add a ⁻¹' V ∈ nhds b := by
+theorem mem_nhds_add_left_iff
+    {α : Type*} [AddCommGroup α] [TopologicalSpace α] [TopologicalAddGroup α]
+    {V : Set α} {a b : α} :
+    V ∈ nhds (a + b) ↔ (fun x ↦ a + x) ⁻¹' V ∈ nhds b := by
+  refine ⟨fun hV => (continuous_add_left a).continuousAt.preimage_mem_nhds hV, ?_⟩
+  intro hV
+  suffices h : V = (fun x ↦ -a + x) ⁻¹'  ((fun x ↦ a + x) ⁻¹' V) by
+    rw [h]
+    apply ContinuousAt.preimage_mem_nhds (continuous_add_left (-a)).continuousAt
+    convert hV
+    apply neg_add_cancel_left
+  rw [Set.preimage_preimage, eq_comm]
+  simp_rw [add_neg_cancel_left, Set.preimage_id']
+
+/-- If `a, b` are two elements of a topological group `α`, then a set `V` belongs to `nhds (a + b)`
+  if and only if `(fun x ↦ x + b) ⁻¹' V ∈ nhds b`.  -/
+theorem mem_nhds_add_right_iff
+    {α : Type*} [AddCommGroup α] [TopologicalSpace α] [TopologicalAddGroup α]
+    {V : Set α} {a b : α} :
+    V ∈ nhds (a + b) ↔ (fun x ↦ x + b) ⁻¹' V ∈ nhds a := by
   constructor
-  · exact fun hV => ContinuousAt.preimage_mem_nhds (continuous_add_left a).continuousAt hV
+  · exact fun hV ↦ (continuous_add_right b).continuousAt.preimage_mem_nhds  hV
   · intro hV
-    suffices h : V = Add.add (-a) ⁻¹' (Add.add a ⁻¹' V) by
+    suffices h : V = (fun x ↦  x + -b) ⁻¹' ((fun x ↦ x + b) ⁻¹' V) by
       rw [h]
-      apply ContinuousAt.preimage_mem_nhds (continuous_add_left (-a)).continuousAt
+      apply ContinuousAt.preimage_mem_nhds (continuous_add_right (-b)).continuousAt
       convert hV
-      apply neg_add_cancel_left
+      rw [add_neg_eq_iff_eq_add]
     rw [Set.preimage_preimage, eq_comm]
-    convert Set.preimage_id'
-    apply add_neg_cancel_left a
-
-theorem TopologicalAddGroup.ext_iff_nhds_zero {α : Type*} [AddCommGroup α]
-    (τ : TopologicalSpace α) [@TopologicalAddGroup α τ _]
-    (τ' : TopologicalSpace α) [@TopologicalAddGroup α τ' _] :
-    τ = τ' ↔ @nhds _ τ 0 = @nhds _ τ' 0 := by
-  rw [TopologicalSpace.ext_iff_nhds]
-  constructor
-  · intro h
-    exact h 0
-  · intro h a
-    ext s
-    rw [← add_zero a]
-    simp only [mem_nhds_add_iff, h]
-
+    simp_rw [neg_add_cancel_right, Set.preimage_id']
 
 end Complements
 
