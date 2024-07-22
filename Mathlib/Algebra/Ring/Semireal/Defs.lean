@@ -27,17 +27,21 @@ semireal.
 [lam_1984](https://doi.org/10.1216/RMJ-1984-14-4-767)
 -/
 
+variable {R : Type*}
+
+variable (R) in
+
 /--
 A semireal ring is a non-trivial commutative ring (with unit) in which `-1` is *not* a sum of
 squares. Note that `-1` does not make sense in a semiring.
 -/
 
 @[class, mk_iff]
-structure isSemireal (R : Type*) [CommRing R] : Prop where
+structure isSemireal [CommRing R] : Prop where
   non_trivial        : (0 : R) ≠ 1
   neg_one_not_SumSq  : ¬isSumSq (-1 : R)
 
-instance {R : Type*} [LinearOrderedField R] : isSemireal R where
+instance [LinearOrderedField R] : isSemireal R where
   non_trivial := zero_ne_one
   neg_one_not_SumSq := by
     intro h
