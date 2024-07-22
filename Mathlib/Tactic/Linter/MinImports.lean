@@ -14,8 +14,8 @@ computed so far, it emits a warning mentioning the bigger minimal imports.
 
 Unlike the related `#min_imports` command, the linter takes into account notation and tactic
 information.
-It also works incrementally, providing information that it better suited, for instance, to split
-files.
+It also works incrementally, accumulating increasing import information.
+This is better suited, for instance, to split files.
 -/
 
 open Lean Elab Command
