@@ -174,28 +174,26 @@ theorem affineLocally_iff_affineOpens_le
       rw [e'']
       convert V.2
     have := H ⟨U'.ι ⁻¹ᵁ V.1, h⟩
-    simp only [Scheme.Γ_obj, Scheme.restrict_presheaf_obj, Opens.coe_inclusion, eqToHom_op,
-      Scheme.ofRestrict_app, TopCat.coe_of, Functor.id_obj, Functor.comp_obj, Opens.map_top,
-      Scheme.Opens.toScheme_presheaf_map, Quiver.Hom.unop_op] at this
-    -- rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Scheme.Hom.appLE,
-    --   Category.assoc, ← X.presheaf.map_comp]
-    -- · convert this using 1
-    --   congr 1
-    --   rw [X.presheaf.map_comp]
-    --   · simp only [Scheme.ofRestrict_val_c_app, Scheme.restrict_presheaf_map, ← X.presheaf.map_comp]
-    --     congr 1
-    -- · dsimp only [Functor.op, unop_op]
-    --   rw [Opens.openEmbedding_obj_top]
-    --   congr 1
-    --   exact e''.symm
+    simp only [Scheme.Γ_obj, Opens.coe_inclusion, eqToHom_op, Scheme.Opens.ι_app, Opens.map_top,
+      Functor.op_obj, Opens.carrier_eq_coe, Opens.coe_top, Set.preimage_univ,
+      Scheme.Opens.toScheme_presheaf_map, ← Functor.map_comp] at this
+    rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Scheme.Hom.appLE,
+      Category.assoc, ← X.presheaf.map_comp]
+    · convert this using 1
+    · dsimp only [Functor.op, unop_op]
+      rw [Opens.openEmbedding_obj_top]
+      congr 1
+      exact e''.symm
   · intro H V
-    sorry
-    -- specialize H ⟨_, V.2.image_of_isOpenImmersion (Scheme.Opens.ι _)⟩ (Subtype.coe_image_subset _ _)
-    -- rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc]
-    -- · convert H
-    --   simp only [Scheme.ofRestrict_val_c_app, Scheme.restrict_presheaf_map, ← X.presheaf.map_comp]
-    --   congr 1
-    -- · dsimp only [Functor.op, unop_op]; rw [Opens.openEmbedding_obj_top]
+    specialize H ⟨_, V.2.image_of_isOpenImmersion (Scheme.Opens.ι _)⟩ (Subtype.coe_image_subset _ _)
+    simp only [Scheme.Γ_obj, Opens.coe_inclusion, eqToHom_op, Scheme.Opens.ι_app, Opens.map_top,
+      Functor.op_obj, Opens.carrier_eq_coe, Opens.coe_top, Set.preimage_univ,
+      Scheme.Opens.toScheme_presheaf_map, Scheme.Hom.appLE] at H ⊢
+    rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc]
+    · convert H
+      simp only [Scheme.ofRestrict_val_c_app, Scheme.restrict_presheaf_map, ← X.presheaf.map_comp]
+      congr 1
+    · dsimp only [Functor.op, unop_op]; rw [Opens.openEmbedding_obj_top]
 
 -- The `IsLocalization` is not necessary, but Lean errors if it is omitted.
 @[nolint unusedHavesSuffices]
@@ -236,35 +234,35 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso @P)
       intro V hV
       rw [Scheme.preimage_basicOpen] at hV
       subst hV
-      exact U.2.ιOpens_basicOpen_preimage (Scheme.Γ.map f.op r.1)
+      exact U.2.ι_basicOpen_preimage (Scheme.Γ.map f.op r.1)
 
 variable (hP : RingHom.PropertyIsLocal @P)
 
 theorem sourceAffineLocally_of_source_open_cover_aux (h₁ : RingHom.RespectsIso @P)
     (h₃ : RingHom.OfLocalizationSpanTarget @P) {X Y : Scheme.{u}} (f : X ⟶ Y) (U : X.affineOpens)
     (s : Set (X.presheaf.obj (op U.1))) (hs : Ideal.span s = ⊤)
-    (hs' : ∀ r : s, P (Scheme.Γ.map (Scheme.ιOpens (X.basicOpen r.1) ≫ f).op)) :
-    P (Scheme.Γ.map (U.ι ≫ f).op) := by
+    (hs' : ∀ r : s, P (Scheme.Γ.map ((X.basicOpen r.1).ι ≫ f).op)) :
+    P (Scheme.Γ.map (U.1.ι ≫ f).op) := by
   apply_fun Ideal.map (X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op) at hs
   rw [Ideal.map_span, Ideal.map_top] at hs
   apply h₃.ofIsLocalization h₁ _ _ hs
   rintro ⟨s, r, hr, hs⟩
-  refine ⟨_, _, _, @AlgebraicGeometry.Γ_restrict_isLocalization (X ∣_ᵤ U.1) U.2 s, ?_⟩
+  refine ⟨_, _, _, @AlgebraicGeometry.Γ_restrict_isLocalization U.1 U.2 s, ?_⟩
   rw [RingHom.algebraMap_toAlgebra, ← CommRingCat.comp_eq_ring_hom_comp, ← Functor.map_comp,
     ← op_comp, ← h₁.cancel_right_isIso _ (Scheme.Γ.mapIso (Scheme.restrictRestrict _ _ _).op).inv]
   subst hs
   rw [← h₁.cancel_right_isIso _
-    (Scheme.Γ.mapIso (Scheme.restrictIsoOfEq _ (Scheme.map_basicOpen_map _ _ _)).op).inv]
+    (Scheme.Γ.mapIso (Scheme.restrictIsoOfEq _ (Scheme.map_basicOpen_map _ _)).op).inv]
   simp only [Functor.mapIso_inv, Iso.op_inv, ← Functor.map_comp, ← op_comp,
-    Scheme.restrictRestrict_inv_restrict_restrict_assoc, Scheme.restrictIsoOfEq,
-    IsOpenImmersion.isoOfRangeEq_inv_fac_assoc]
+    Scheme.restrictRestrict_inv_restrict_restrict_assoc, Scheme.restrictIsoOfEq]
+  erw [IsOpenImmersion.isoOfRangeEq_inv_fac_assoc]
   exact hs' ⟨r, hr⟩
 
 theorem isOpenImmersionCat_comp_of_sourceAffineLocally (h₁ : RingHom.RespectsIso @P)
     {X Y Z : Scheme.{u}} [IsAffine X] [IsAffine Z] (f : X ⟶ Y) [IsOpenImmersion f] (g : Y ⟶ Z)
     (h₂ : sourceAffineLocally (@P) g) : P (Scheme.Γ.map (f ≫ g).op) := by
   rw [← h₁.cancel_right_isIso _
-    (Scheme.Γ.map (IsOpenImmersion.isoOfRangeEq (Y.ofRestrict _) f _).hom.op),
+    (Scheme.Γ.map (IsOpenImmersion.isoOfRangeEq f.opensRange.ι f _).hom.op),
     ← Functor.map_comp, ← op_comp]
   · convert h₂ ⟨_, isAffineOpen_opensRange f⟩ using 3
     · rw [IsOpenImmersion.isoOfRangeEq_hom_fac_assoc]
@@ -345,10 +343,9 @@ theorem affine_openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
           P (Scheme.Γ.map (g ≫ f).op)] := by
   tfae_have 1 → 4
   · intro H U g _ hg
-    specialize H ⟨⟨_, hg.base_open.isOpen_range⟩, isAffineOpen_opensRange g⟩
+    specialize H ⟨g.opensRange, isAffineOpen_opensRange g⟩
     rw [← hP.respectsIso.cancel_right_isIso _ (Scheme.Γ.map (IsOpenImmersion.isoOfRangeEq g
-      (X.ofRestrict (Opens.openEmbedding ⟨_, hg.base_open.isOpen_range⟩))
-      Subtype.range_coe.symm).hom.op),
+      g.opensRange.ι Subtype.range_coe.symm).hom.op),
       ← Scheme.Γ.map_comp, ← op_comp, IsOpenImmersion.isoOfRangeEq_hom_fac_assoc] at H
     exact H
   tfae_have 4 → 3
