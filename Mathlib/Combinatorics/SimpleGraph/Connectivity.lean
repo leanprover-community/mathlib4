@@ -3,11 +3,10 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.Data.Fintype.Card
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Algebra.Order.Ring.Nat
-
 
 /-!
 
@@ -2066,15 +2065,12 @@ lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.c
   rw [← (mem_supp_iff _ _).mp h.1]
   exact ⟨connectedComponentMk_eq_of_adj <| Subgraph.Adj.coe <| h.2 ▸ hadj.symm, rfl⟩
 
-lemma univ_eq_union_supp : (Set.univ : Set V) = ⋃ (c : G.ConnectedComponent), c.supp := by
-  ext v
-  refine ⟨?_, fun _ ↦ trivial⟩
-  intro _
-  use G.connectedComponentMk v
+lemma iUnion_supp : ⋃ c : G.ConnectedComponent, c.supp = Set.univ := by
+  refine eq_univ_of_forall fun v ↦ ⟨G.connectedComponentMk v, ?_⟩
   simp only [Set.mem_range, SetLike.mem_coe]
   exact ⟨by use G.connectedComponentMk v; exact rfl, rfl⟩
 
-lemma supp_disjoint {c c' : ConnectedComponent G} (h : c ≠ c') : Disjoint c.supp c'.supp := by
+lemma pairwise_disjoint_supp : Pairwise fun c c' ↦ Disjoint c.supp c'.supp := by
   intro s hsx hsy
   simp only [Set.toFinset_card, Finset.mem_univ, ne_eq, Set.le_eq_subset,
     Set.bot_eq_empty, Set.subset_empty_iff, Set.eq_empty_iff_forall_not_mem] at *
