@@ -250,6 +250,7 @@ end Version2
 end IsSymmetric
 
 end LinearMap
+
 section Nonneg
 
 @[simp]
@@ -278,6 +279,5 @@ theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenv
     rw [← RCLike.ofReal_pow, ← RCLike.ofReal_mul] at this
     exact mod_cast this
   exact (mul_pos_iff_of_pos_right hpos).mp (this ▸ hnn v)
-
 
 end Nonneg
