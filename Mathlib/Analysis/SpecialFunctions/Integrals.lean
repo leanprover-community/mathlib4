@@ -255,7 +255,7 @@ theorem intervalIntegrable_inv_one_add_sq :
 /-! ### Integrals of the form `c * ∫ x in a..b, f (c * x + d)` -/
 
 
--- Porting note (#10618): was @[simp];
+-- Porting note (#10618): was @[simp]
 -- simpNF says LHS does not simplify when applying lemma on itself
 theorem mul_integral_comp_mul_right : (c * ∫ x in a..b, f (x * c)) = ∫ x in a * c..b * c, f x :=
   smul_integral_comp_mul_right f c
