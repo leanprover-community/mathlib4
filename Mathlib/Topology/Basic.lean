@@ -727,10 +727,6 @@ theorem frequently_nhds_iff {p : X → Prop} :
     (∃ᶠ y in 𝓝 x, p y) ↔ ∀ U : Set X, x ∈ U → IsOpen U → ∃ y ∈ U, p y :=
   (nhds_basis_opens x).frequently_iff.trans <| by simp
 
-theorem frequently_nhds_iff {p : X → Prop} :
-    (∃ᶠ y in 𝓝 x, p y) ↔ ∀ U : Set X, x ∈ U → IsOpen U → ∃ y ∈ U, p y :=
-  (nhds_basis_opens x).frequently_iff.trans <| by simp
-
 theorem mem_interior_iff_mem_nhds : x ∈ interior s ↔ s ∈ 𝓝 x :=
   mem_interior.trans mem_nhds_iff.symm
 
@@ -968,10 +964,6 @@ theorem accPt_sup (x : X) (F G : Filter X) :
     AccPt x (F ⊔ G) ↔ AccPt x F ∨ AccPt x G := by
   simp only [AccPt, inf_sup_left, sup_neBot]
 
-theorem accPt_sup (x : X) (F G : Filter X) :
-    AccPt x (F ⊔ G) ↔ AccPt x F ∨ AccPt x G := by
-  simp only [AccPt, inf_sup_left, sup_neBot]
-
 theorem acc_iff_cluster (x : X) (F : Filter X) : AccPt x F ↔ ClusterPt x (𝓟 {x}ᶜ ⊓ F) := by
   rw [AccPt, nhdsWithin, ClusterPt, inf_assoc]
 
@@ -995,9 +987,6 @@ theorem accPt_iff_frequently (x : X) (C : Set X) : AccPt x (𝓟 C) ↔ ∃ᶠ y
 `x` is an accumulation point of `D`. -/
 theorem AccPt.mono {F G : Filter X} (h : AccPt x F) (hFG : F ≤ G) : AccPt x G :=
   NeBot.mono h (inf_le_inf_left _ hFG)
-
-theorem AccPt.clusterPt (x : X) (F : Filter X) (h : AccPt x F) : ClusterPt x F :=
-  ((acc_iff_cluster x F).mp h).mono inf_le_right
 
 theorem AccPt.clusterPt (x : X) (F : Filter X) (h : AccPt x F) : ClusterPt x F :=
   ((acc_iff_cluster x F).mp h).mono inf_le_right
