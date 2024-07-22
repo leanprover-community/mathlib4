@@ -124,7 +124,7 @@ theorem Basis.isScalarTower_finsupp {ι} (b : Basis ι S A) : IsScalarTower R S 
 
 variable {R}
 
-/-- `Basis.SMul (b : Basis ι R S) (c : Basis ι S A)` is the `R`-basis on `A`
+/-- `Basis.smulTower (b : Basis ι R S) (c : Basis ι S A)` is the `R`-basis on `A`
 where the `(i, j)`th basis vector is `b i • c j`. -/
 noncomputable def Basis.smulTower {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) :
     Basis (ι × ι') R A :=
