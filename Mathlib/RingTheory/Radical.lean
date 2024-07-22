@@ -8,14 +8,16 @@ import Mathlib.RingTheory.UniqueFactorizationDomain
 /-!
 # Radical of an element of a unique factorization normalization monoid
 
-This file defines a radical `rad(a)` of an element `a` of a unique factorization normalization
+This file defines a radical of an element `a` of a unique factorization normalization
 monoid, which is defined as a product of normalized prime factors of `a` without duplication.
-This is different from the radical of ideal.
+This is different from the radical of an ideal.
 
 ## Main declarations
 
+- `radical`: The radical of an element `a` in a unique factorization monoid is the product of
+  its prime factors.
 - `radical_associated_eq`: If `a` and `b` are associates, i.e. `a * u = b` for some unit `u`,
-  then `rad(a) = rad(b)`.
+  then `radical a = radical b`.
 - `radical_unit_hMul`: Multiplying unit does not change the radical.
 - `radical_dvd_self`: `rad(a)` divides `a`.
 - `radical_pow`: `rad(a ^ n) = rad(a)` for any `n ≥ 1`
@@ -23,9 +25,9 @@ This is different from the radical of ideal.
 
 ## TODO
 
-- Make a comparison with `Ideal.radical`. Especially, for principal ideal, `rad((a)) = (rad(a))`,
-  where the first (resp. second) `rad` is radical of an ideal (resp. element).
-- Prove `rad(rad(a)) = rad(a)`.
+- Make a comparison with `Ideal.radical`. Especially, for principal ideal,
+  `Ideal.radical (Ideal.span {a}) = Ideal.span {radical a}`.
+- Prove `radical (radical a) = radical a`.
 -/
 
 noncomputable section
@@ -35,14 +37,18 @@ open scoped Classical
 open UniqueFactorizationMonoid
 
 variable {k : Type _} [Field k]
+-- `CancelCommMonoidWithZero` is required by `UniqueFactorizationMonoid`
 variable {α : Type _} [CancelCommMonoidWithZero α] [NormalizationMonoid α]
   [UniqueFactorizationMonoid α]
 
-/-- Prime factors of a polynomial `a` are monic factors of `a` without duplication. -/
+/-- The finite set of prime factors of an element in a unique factorization monoid. -/
 def primeFactors (a : α) : Finset α :=
   (normalizedFactors a).toFinset
 
-/-- Radical of a polynomial `a` is a product of prime factors of `a`. -/
+/--
+Radical of an element `a` in a unique factorization monoid is the product of
+the prime factors of `a`.
+-/
 def radical (a : α) : α :=
   (primeFactors a).prod id
 
