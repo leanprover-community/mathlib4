@@ -512,7 +512,7 @@ theorem exists_signed_sum' {α : Type u_1} [Nonempty α] [DecidableEq α] (s : F
         Fintype.card β = n ∧ ∀ a ∈ s, (∑ i, if g i = a then (sgn i : ℤ) else 0) = f a := by
   obtain ⟨β, _, sgn, g, hg, hβ, hf⟩ := exists_signed_sum s f
   refine
-    ⟨Sum β (Fin (n - ∑ i ∈ s, (f i).natAbs)), inferInstance, Sum.elim sgn 0,
+    ⟨β ⊕ (Fin (n - ∑ i ∈ s, (f i).natAbs)), inferInstance, Sum.elim sgn 0,
       Sum.elim g (Classical.arbitrary (Fin (n - Finset.sum s fun i => Int.natAbs (f i)) → α)),
         ?_, by simp [hβ, h], fun a ha => by simp [hf _ ha]⟩
   rintro (b | b) hb

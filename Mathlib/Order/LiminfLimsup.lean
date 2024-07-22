@@ -259,6 +259,66 @@ theorem IsCobounded.mono (h : f ≤ g) : f.IsCobounded r → g.IsCobounded r
 
 end Relation
 
+section add_and_sum
+
+open Filter BigOperators Set
+
+variable {α : Type*} {f : Filter α} [NeBot f]
+variable {R : Type*} [Preorder R]
+
+lemma isBoundedUnder_ge_add [Add R]
+    [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
+    {u v : α → R} (u_bdd_ge : f.IsBoundedUnder (· ≥ ·) u) (v_bdd_ge : f.IsBoundedUnder (· ≥ ·) v) :
+    f.IsBoundedUnder (· ≥ ·) (u + v) := by
+  obtain ⟨U, hU⟩ := u_bdd_ge
+  obtain ⟨V, hV⟩ := v_bdd_ge
+  use U + V
+  simp only [eventually_map, Pi.add_apply] at hU hV ⊢
+  filter_upwards [hU, hV] with a hu hv using add_le_add hu hv
+
+lemma isBoundedUnder_le_add [Add R]
+    [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
+    {u v : α → R} (u_bdd_le : f.IsBoundedUnder (· ≤ ·) u) (v_bdd_le : f.IsBoundedUnder (· ≤ ·) v) :
+    f.IsBoundedUnder (· ≤ ·) (u + v) := by
+  obtain ⟨U, hU⟩ := u_bdd_le
+  obtain ⟨V, hV⟩ := v_bdd_le
+  use U + V
+  simp only [eventually_map, Pi.add_apply] at hU hV ⊢
+  filter_upwards [hU, hV] with a hu hv using add_le_add hu hv
+
+lemma isBoundedUnder_sum {κ : Type*} [DecidableEq κ] [AddCommMonoid R] {r : R → R → Prop}
+    (hr : ∀ (v₁ v₂ : α → R), f.IsBoundedUnder r v₁ → f.IsBoundedUnder r v₂
+      → f.IsBoundedUnder r (v₁ + v₂)) (hr₀ : r 0 0)
+    {u : κ → α → R} (s : Finset κ) :
+    (∀ k ∈ s, f.IsBoundedUnder r (u k)) →
+      f.IsBoundedUnder r (∑ k ∈ s, u k) := by
+  induction s using Finset.induction_on
+  case empty =>
+    simp only [Finset.not_mem_empty, false_implies, implies_true, Finset.sum_empty, true_implies]
+    refine ⟨0, by simp_all only [eventually_map, Pi.zero_apply, eventually_true]⟩
+  case insert k₀ s k₀_notin_s ih =>
+    simp only [Finset.mem_insert, forall_eq_or_imp, and_imp] at *
+    intro bdd_k₀ bdd_rest
+    simpa only [Finset.sum_insert k₀_notin_s] using hr _ _ bdd_k₀ (ih bdd_rest)
+
+lemma isBoundedUnder_le_sum {κ : Type*} [DecidableEq κ] [AddCommMonoid R]
+    [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
+    {u : κ → α → R} (s : Finset κ) :
+    (∀ k ∈ s, f.IsBoundedUnder (· ≤ ·) (u k)) →
+      f.IsBoundedUnder (· ≤ ·) (∑ k ∈ s, u k) := by
+  apply isBoundedUnder_sum (fun _ _ ↦ isBoundedUnder_le_add) le_rfl
+
+lemma isBoundedUnder_ge_sum {κ : Type*} [DecidableEq κ] [AddCommMonoid R]
+    [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
+    {u : κ → α → R} (s : Finset κ) :
+    (∀ k ∈ s, f.IsBoundedUnder (· ≥ ·) (u k)) →
+      f.IsBoundedUnder (· ≥ ·) (∑ k ∈ s, u k) := by
+  haveI aux : CovariantClass R R (fun a b ↦ a + b) (· ≥ ·) :=
+    { elim := fun x _ _ hy ↦ add_le_add_left hy x }
+  apply isBoundedUnder_sum (fun _ _ ↦ isBoundedUnder_ge_add) le_rfl
+
+end add_and_sum
+
 section Nonempty
 variable [Preorder α] [Nonempty α] {f : Filter β} {u : β → α}
 
@@ -367,7 +427,6 @@ macro "isBoundedDefault" : tactic =>
 --   tactic.applyc `` is_cobounded_le_of_bot <|>
 --     tactic.applyc `` is_cobounded_ge_of_top <|>
 --       tactic.applyc `` is_bounded_le_of_top <|> tactic.applyc `` is_bounded_ge_of_bot
--- #align filter.is_bounded_default filter.IsBounded_default
 
 
 section ConditionallyCompleteLattice
@@ -1387,9 +1446,7 @@ theorem isCoboundedUnder_le_max [LinearOrder β] {f : Filter α} {u v : α → �
     apply hb c
     rw [eventually_map] at hc ⊢
     refine hc.mono (fun _ ↦ ?_)
-    simp only [max_le_iff, and_imp]
-    intro _ _
-    trivial
+    simp (config := { contextual := true }) only [implies_true, max_le_iff, and_imp]
 
 theorem limsup_max [ConditionallyCompleteLinearOrder β] {f : Filter α} {u v : α → β}
     (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)

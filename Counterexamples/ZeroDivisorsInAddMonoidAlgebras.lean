@@ -86,7 +86,7 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
     refine (Finset.sum_eq_single 0 ?_ ?_).trans ?_
     · intro b hb b0
       rw [single_pow, one_pow, single_eq_of_ne]
-      exact nsmul_ne_zero_of_lt_addOrderOf' b0 (Finset.mem_range.mp hb)
+      exact nsmul_ne_zero_of_lt_addOrderOf b0 (Finset.mem_range.mp hb)
     · simp only [(zero_lt_two.trans_le o2).ne', Finset.mem_range, not_lt, Nat.le_zero,
         false_imp_iff]
     · rw [single_pow, one_pow, zero_smul, single_eq_same]
@@ -94,7 +94,7 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
     refine sub_ne_zero.mpr (ne_of_eq_of_ne (?_ : (_ : R) = 0) ?_)
     · have a0 : a ≠ 0 :=
         ne_of_eq_of_ne (one_nsmul a).symm
-          (nsmul_ne_zero_of_lt_addOrderOf' one_ne_zero (Nat.succ_le_iff.mp o2))
+          (nsmul_ne_zero_of_lt_addOrderOf one_ne_zero (Nat.succ_le_iff.mp o2))
       simp only [a0, single_eq_of_ne, Ne, not_false_iff]
     · simpa only [single_eq_same] using zero_ne_one
   · convert Commute.geom_sum₂_mul (α := AddMonoidAlgebra R A) _ (addOrderOf a) using 3

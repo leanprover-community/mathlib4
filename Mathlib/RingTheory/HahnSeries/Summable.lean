@@ -463,9 +463,9 @@ theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1) :
     intro h
     rw [h, zero_mul] at hr
     exact (zero_ne_one' R) hr
-  refine lt_of_le_of_ne (LE.le.trans ?_ min_orderTop_le_orderTop_sub) fun h => ?_
+  refine lt_of_le_of_ne (le_trans ?_ min_orderTop_le_orderTop_sub) fun h => ?_
   · refine le_min (by rw [orderTop_one]) ?_
-    refine LE.le.trans ?_ orderTop_add_orderTop_le_orderTop_mul
+    refine le_trans ?_ orderTop_add_orderTop_le_orderTop_mul
     by_cases h : x = 0; · simp [h]
     rw [← order_eq_orderTop_of_ne h, orderTop_single
       (fun _ => by simp_all only [zero_mul, zero_ne_one]), ← @WithTop.coe_add,

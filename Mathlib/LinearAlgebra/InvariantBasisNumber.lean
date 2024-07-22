@@ -285,7 +285,6 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
       rw [Submodule.quotientRel_r_def] at hab
       rw [← LinearMap.map_sub]
       exact Ideal.map_pi _ _ hab e h)
--- Porting note: `#noalign` since this is marked `private`
 
 /-- An isomorphism of `R`-modules `R^n ≃ R^m` induces an isomorphism of `R/I`-modules
     `R^n/I^n ≃ R^m/I^m`. -/
