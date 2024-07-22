@@ -263,21 +263,6 @@ def OpenCover.inter {X : Scheme.{u}} (𝒰₁ : Scheme.OpenCover.{v₁} X)
     exact ⟨𝒰₁.covers x, 𝒰₂.covers x⟩
   IsOpen x := inferInstance
 
-/-- If `U` is a family of open sets that covers `X`, then `X.restrict U` forms an `X.open_cover`. -/
-@[simps! J obj map]
-def openCoverOfSuprEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
-    (hU : ⨆ i, U i = ⊤) : X.OpenCover where
-  J := s
-  obj i := X.restrict (U i).openEmbedding
-  map i := X.ofRestrict (U i).openEmbedding
-  f x :=
-    haveI : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
-    (Opens.mem_iSup.mp this).choose
-  covers x := by
-    erw [Subtype.range_coe]
-    have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
-    exact (Opens.mem_iSup.mp this).choose_spec
-
 /--
 An affine open cover of `X` consists of a family of open immersions into `X` from
 spectra of rings.

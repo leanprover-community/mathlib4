@@ -3,7 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.OpenImmersion
+import Mathlib.AlgebraicGeometry.Cover.Open
 
 /-!
 # Restriction of Schemes and Morphisms
@@ -111,6 +111,21 @@ lemma Scheme.Opens.range_ι : Set.range U.ι.val.base = U :=
 lemma Scheme.Opens.nonempty_iff : Nonempty U.toScheme ↔ (U : Set X).Nonempty := by
   simp only [toScheme_carrier, SetLike.coe_sort_coe, nonempty_subtype]
   rfl
+
+/-- If `U` is a family of open sets that covers `X`, then `X.restrict U` forms an `X.open_cover`. -/
+@[simps! J obj map]
+def Scheme.openCoverOfSuprEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
+    (hU : ⨆ i, U i = ⊤) : X.OpenCover where
+  J := s
+  obj i := U i
+  map i := (U i).ι
+  f x :=
+    haveI : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
+    (Opens.mem_iSup.mp this).choose
+  covers x := by
+    erw [Subtype.range_coe]
+    have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
+    exact (Opens.mem_iSup.mp this).choose_spec
 
 attribute [-simp] eqToHom_op in
 /-- The global sections of the restriction is isomorphic to the sections on the open set. -/
