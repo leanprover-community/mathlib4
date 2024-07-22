@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Ring.Int
 import Mathlib.NumberTheory.Padics.PadicValDefs
 import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Multiplicity in Number Theory

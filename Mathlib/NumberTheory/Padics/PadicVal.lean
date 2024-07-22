@@ -6,6 +6,7 @@ Authors: Robert Y. Lewis, Matthew Robert Ballard
 import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.Padics.PadicValDefs
 import Mathlib.Data.Nat.MaxPowDiv
+import Mathlib.Data.Nat.Multiplicity
 
 /-!
 # `p`-adic Valuation
