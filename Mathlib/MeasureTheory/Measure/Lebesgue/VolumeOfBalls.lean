@@ -52,8 +52,8 @@ theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : �
       integral_singleton, finrank_zero_of_subsingleton, Nat.cast_zero, zero_div, zero_add,
       Real.Gamma_one, div_one, norm_zero, Real.zero_rpow (ne_of_gt hp), neg_zero, Real.exp_zero,
       smul_eq_mul, mul_one, ofReal_toReal (measure_ne_top μ {0})]
-  · have : (0:ℝ) < finrank ℝ E := Nat.cast_pos.mpr finrank_pos
-    have : ((∫ y in Set.Ioi (0:ℝ), y ^ (finrank ℝ E - 1) • Real.exp (-y ^ p)) /
+  · have : (0 : ℝ) < finrank ℝ E := Nat.cast_pos.mpr finrank_pos
+    have : ((∫ y in Set.Ioi (0 : ℝ), y ^ (finrank ℝ E - 1) • Real.exp (-y ^ p)) /
         Real.Gamma ((finrank ℝ E) / p + 1)) * (finrank ℝ E) = 1 := by
       simp_rw [← Real.rpow_natCast _ (finrank ℝ E - 1), smul_eq_mul, Nat.cast_sub finrank_pos,
         Nat.cast_one]
@@ -344,9 +344,10 @@ theorem EuclideanSpace.volume_closedBall (x : EuclideanSpace ℝ ι) (r : ℝ) :
       .ofReal (sqrt π ^ card ι / Gamma (card ι / 2 + 1)) := by
   rw [addHaar_closedBall_eq_addHaar_ball, EuclideanSpace.volume_ball]
 
--- 2024-04-06
-@[deprecated] alias Euclidean_space.volume_ball := EuclideanSpace.volume_ball
-@[deprecated] alias Euclidean_space.volume_closedBall := EuclideanSpace.volume_closedBall
+@[deprecated (since := "2024-04-06")]
+alias Euclidean_space.volume_ball := EuclideanSpace.volume_ball
+@[deprecated (since := "2024-04-06")]
+alias Euclidean_space.volume_closedBall := EuclideanSpace.volume_closedBall
 
 end EuclideanSpace
 
