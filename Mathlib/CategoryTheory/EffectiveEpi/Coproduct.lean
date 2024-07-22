@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.EffectiveEpi.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.Tactic.ApplyFun
 /-!
 
@@ -62,19 +62,19 @@ theorem effectiveEpiFamilyStructOfEffectiveEpiDesc_aux {B : C} {α : Type*} {X :
     {π : (a : α) → X a ⟶ B} [HasCoproduct X]
     [∀ {Z : C} (g : Z ⟶ ∐ X) (a : α), HasPullback g (Sigma.ι X a)]
     [∀ {Z : C} (g : Z ⟶ ∐ X), HasCoproduct fun a ↦ pullback g (Sigma.ι X a)]
-    [∀ {Z : C} (g : Z ⟶ ∐ X), Epi (Sigma.desc fun a ↦ pullback.fst (f := g) (g := (Sigma.ι X a)))]
+    [∀ {Z : C} (g : Z ⟶ ∐ X), Epi (Sigma.desc fun a ↦ pullback.fst g (Sigma.ι X a))]
     {W : C} {e : (a : α) → X a ⟶ W} (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
       g₁ ≫ π a₁ = g₂ ≫ π a₂ → g₁ ≫ e a₁ = g₂ ≫ e a₂) {Z : C}
     {g₁ g₂ : Z ⟶ ∐ fun b ↦ X b} (hg : g₁ ≫ Sigma.desc π = g₂ ≫ Sigma.desc π) :
     g₁ ≫ Sigma.desc e = g₂ ≫ Sigma.desc e := by
-  apply_fun ((Sigma.desc fun a ↦ pullback.fst (f := g₁) (g := (Sigma.ι X a))) ≫ ·) using
+  apply_fun ((Sigma.desc fun a ↦ pullback.fst g₁ (Sigma.ι X a)) ≫ ·) using
     (fun a b ↦ (cancel_epi _).mp)
   ext a
   simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app]
   rw [← Category.assoc, pullback.condition]
   simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
-  apply_fun ((Sigma.desc fun a ↦ pullback.fst (f := pullback.fst ≫ g₂)
-    (g := (Sigma.ι X a))) ≫ ·) using (fun a b ↦ (cancel_epi _).mp)
+  apply_fun ((Sigma.desc fun a ↦ pullback.fst (pullback.fst _ _ ≫ g₂) (Sigma.ι X a)) ≫ ·)
+    using (fun a b ↦ (cancel_epi _).mp)
   ext b
   simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app]
   simp only [← Category.assoc]
@@ -82,11 +82,11 @@ theorem effectiveEpiFamilyStructOfEffectiveEpiDesc_aux {B : C} {α : Type*} {X :
   simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
   rw [← Category.assoc]
   apply h
-  apply_fun (pullback.fst (f := g₁) (g := (Sigma.ι X a)) ≫ ·) at hg
+  apply_fun (pullback.fst g₁ (Sigma.ι X a) ≫ ·) at hg
   rw [← Category.assoc, pullback.condition] at hg
   simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app] at hg
-  apply_fun ((Sigma.ι (fun a ↦ pullback _ _) b) ≫ (Sigma.desc fun a ↦ pullback.fst
-    (f := pullback.fst ≫ g₂) (g := (Sigma.ι X a))) ≫ ·) at hg
+  apply_fun ((Sigma.ι (fun a ↦ pullback _ _) b) ≫ (Sigma.desc fun a ↦
+    pullback.fst (pullback.fst _ _ ≫ g₂) (Sigma.ι X a)) ≫ ·) at hg
   simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app] at hg
   simp only [← Category.assoc] at hg
   rw [(Category.assoc _ _ g₂), pullback.condition] at hg
@@ -103,7 +103,7 @@ def effectiveEpiFamilyStructOfEffectiveEpiDesc {B : C} {α : Type*} (X : α → 
     [∀ {Z : C} (g : Z ⟶ ∐ X) (a : α), HasPullback g (Sigma.ι X a)]
     [∀ {Z : C} (g : Z ⟶ ∐ X), HasCoproduct (fun a ↦ pullback g (Sigma.ι X a))]
     [∀ {Z : C} (g : Z ⟶ ∐ X),
-      Epi (Sigma.desc (fun a ↦ pullback.fst (f := g) (g := (Sigma.ι X a))))] :
+      Epi (Sigma.desc (fun a ↦ pullback.fst g (Sigma.ι X a)))] :
     EffectiveEpiFamilyStruct X π where
   desc e h := EffectiveEpi.desc (Sigma.desc π) (Sigma.desc e) fun _ _ hg ↦
     effectiveEpiFamilyStructOfEffectiveEpiDesc_aux h hg
@@ -115,3 +115,5 @@ def effectiveEpiFamilyStructOfEffectiveEpiDesc {B : C} {α : Type*} (X : α → 
     apply EffectiveEpi.uniq (Sigma.desc π)
     ext
     simpa using hm _
+
+end CategoryTheory
