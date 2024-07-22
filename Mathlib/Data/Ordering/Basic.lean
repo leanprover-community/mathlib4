@@ -5,6 +5,10 @@ Authors: Leonardo de Moura
 -/
 
 
+/-!
+# Helper definitions and instances for `Ordering`
+-/
+
 universe u
 
 deriving instance Repr for Ordering
