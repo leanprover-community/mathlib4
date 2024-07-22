@@ -15,7 +15,7 @@ def IsTopologicallyNilpotent
 namespace IsTopologicallyNilpotent
 
 theorem map {α β : Type*} [CommRing α] [CommRing β] [TopologicalSpace α] [TopologicalSpace β]
-  {φ : α →+* β} (hφ : Continuous φ) {a : α} (ha : IsTopologicallyNilpotent a) :
+    {φ : α →+* β} (hφ : Continuous φ) {a : α} (ha : IsTopologicallyNilpotent a) :
   IsTopologicallyNilpotent (φ a) := by
   unfold IsTopologicallyNilpotent at ha ⊢
   simp_rw [← map_pow]
