@@ -1537,6 +1537,7 @@ theorem scanr_cons (f : α → β → β) (b : β) (a : α) (l : List α) :
   | cons hd tl ih => simp only [foldr, ih]
 
 section FoldlEqFoldr
+
 -- foldl and foldr coincide when f is commutative and associative
 variable {f : α → α → α}
 
