@@ -15,7 +15,7 @@ of symmetric operators on a finite-dimensional inner product space.
 
 # Main Result
 
-* `DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_pair` establishes that
+* `DirectSum.IsInternal.eigenspaces_of_commuting_symmetric_pair` establishes that
    if `{A B : E →ₗ[𝕜] E}`, then `IsSymmetric A`, `IsSymmetric B` and `A ∘ₗ B = B ∘ₗ A` imply that
    `E` decomposes as an internal direct sum of the pairwise orthogonal spaces
    `eigenspace B μ ⊓ eigenspace A ν`
