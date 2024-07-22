@@ -183,23 +183,23 @@ def isCDot? : Syntax → Bool
   | _ => false
 
 /--
-`findDot stx` extracts from `stx` the syntax nodes of `kind` `Lean.Parser.Term.cdot` or `cdotTk`. -/
+`findCDot stx` extracts from `stx` the syntax nodes of `kind` `Lean.Parser.Term.cdot` or `cdotTk`. -/
 partial
-def findDot : Syntax → Array Syntax
+def findCDot : Syntax → Array Syntax
   | stx@(.node _ k args) =>
-    let dargs := (args.map findDot).flatten
+    let dargs := (args.map findCDot).flatten
     match k with
       | ``Lean.Parser.Term.cdot => dargs.push stx
       | ``cdotTk => dargs.push stx
       | _ =>  dargs
   |_ => #[]
 
-/-- `unwanted.cDot stx` returns an array of syntax atoms corresponding to `cdot`s that are not
+/-- `unwanted_cdot stx` returns an array of syntax atoms corresponding to `cdot`s that are not
 written with the character `·`.
 This is precisely what the `cdot` linter flags.
 -/
-def unwanted.cDot (stx : Syntax) : Array Syntax :=
-  (findDot stx).filter (!isCDot? ·)
+def unwanted_cdot (stx : Syntax) : Array Syntax :=
+  (findCDot stx).filter (!isCDot? ·)
 
 namespace CDotLinter
 
@@ -212,7 +212,7 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx => do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    for s in unwanted.cDot stx do
+    for s in unwanted_cdot stx do
       Linter.logLint linter.cdot s
         m!"Please, use '·' (typed as `\\·`) instead of '{s}' as 'cdot'."
 
