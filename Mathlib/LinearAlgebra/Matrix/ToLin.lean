@@ -844,25 +844,25 @@ variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 variable (b : Basis m R S) (c : Basis n S T)
 
-theorem smul_leftMulMatrix (x) (ik jk) :
-    leftMulMatrix (b.smul c) x ik jk = leftMulMatrix b (leftMulMatrix c x ik.2 jk.2) ik.1 jk.1 := by
-  simp only [leftMulMatrix_apply, LinearMap.toMatrix_apply, mul_comm, Basis.smul_apply,
-    Basis.smul_repr, Finsupp.smul_apply, id.smul_eq_mul, LinearEquiv.map_smul, mul_smul_comm,
+theorem smulTower_leftMulMatrix (x) (ik jk) :
+    leftMulMatrix (b.smulTower c) x ik jk = leftMulMatrix b (leftMulMatrix c x ik.2 jk.2) ik.1 jk.1 := by
+  simp only [leftMulMatrix_apply, LinearMap.toMatrix_apply, mul_comm, Basis.smulTower_apply,
+    Basis.smulTower_repr, Finsupp.smul_apply, id.smul_eq_mul, LinearEquiv.map_smul, mul_smul_comm,
     coe_lmul_eq_mul, LinearMap.mul_apply']
 
-theorem smul_leftMulMatrix_algebraMap (x : S) :
-    leftMulMatrix (b.smul c) (algebraMap _ _ x) = blockDiagonal fun _ ↦ leftMulMatrix b x := by
+theorem smulTower_leftMulMatrix_algebraMap (x : S) :
+    leftMulMatrix (b.smulTower c) (algebraMap _ _ x) = blockDiagonal fun _ ↦ leftMulMatrix b x := by
   ext ⟨i, k⟩ ⟨j, k'⟩
-  rw [smul_leftMulMatrix, AlgHom.commutes, blockDiagonal_apply, algebraMap_matrix_apply]
+  rw [smulTower_leftMulMatrix, AlgHom.commutes, blockDiagonal_apply, algebraMap_matrix_apply]
   split_ifs with h <;> simp only at h <;> simp [h]
 
-theorem smul_leftMulMatrix_algebraMap_eq (x : S) (i j k) :
-    leftMulMatrix (b.smul c) (algebraMap _ _ x) (i, k) (j, k) = leftMulMatrix b x i j := by
-  rw [smul_leftMulMatrix_algebraMap, blockDiagonal_apply_eq]
+theorem smulTower_leftMulMatrix_algebraMap_eq (x : S) (i j k) :
+    leftMulMatrix (b.smulTower c) (algebraMap _ _ x) (i, k) (j, k) = leftMulMatrix b x i j := by
+  rw [smulTower_leftMulMatrix_algebraMap, blockDiagonal_apply_eq]
 
-theorem smul_leftMulMatrix_algebraMap_ne (x : S) (i j) {k k'} (h : k ≠ k') :
-    leftMulMatrix (b.smul c) (algebraMap _ _ x) (i, k) (j, k') = 0 := by
-  rw [smul_leftMulMatrix_algebraMap, blockDiagonal_apply_ne _ _ _ h]
+theorem smulTower_leftMulMatrix_algebraMap_ne (x : S) (i j) {k k'} (h : k ≠ k') :
+    leftMulMatrix (b.smulTower c) (algebraMap _ _ x) (i, k) (j, k') = 0 := by
+  rw [smulTower_leftMulMatrix_algebraMap, blockDiagonal_apply_ne _ _ _ h]
 
 end LmulTower
 
