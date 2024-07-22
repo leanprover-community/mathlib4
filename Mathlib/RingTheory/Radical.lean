@@ -52,9 +52,11 @@ the prime factors of `a`.
 def radical (a : α) : α :=
   (primeFactors a).prod id
 
+@[simp]
 theorem radical_zero_eq : radical (0 : α) = 1 := by
   rw [radical, primeFactors, normalizedFactors_zero, Multiset.toFinset_zero, Finset.prod_empty]
 
+@[simp]
 theorem radical_one_eq : radical (1 : α) = 1 := by
   rw [radical, primeFactors, normalizedFactors_one, Multiset.toFinset_zero, Finset.prod_empty]
 
