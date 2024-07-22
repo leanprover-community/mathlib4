@@ -69,7 +69,7 @@ the subtype `↑(Iic M.E)` via `Matroid.SubtypeClosure`, albeit less elegantly.
 open Set
 namespace Matroid
 
-variable {ι α : Type*} {M : Matroid α} {F X Y : Set α} {e : α}
+variable {ι α : Type*} {M : Matroid α} {F X Y : Set α} {e f : α}
 
 section Flat
 
@@ -274,7 +274,7 @@ lemma mem_closure_self (M : Matroid α) (e : α) (he : e ∈ M.E := by aesop_mat
 
 section Indep
 
-variable {ι : Sort*} {I J B : Set α} {f x y : α}
+variable {ι : Sort*} {I J B : Set α} {x y : α}
 
 lemma Indep.closure_eq_setOf_basis_insert (hI : M.Indep I) :
     M.closure I = {x | M.Basis I (insert x I)} := by
@@ -514,6 +514,107 @@ lemma Basis.eq_of_closure_subset (hI : M.Basis I X) (hJI : J ⊆ I) (hJ : X ⊆ 
 @[simp] lemma empty_basis_iff : M.Basis ∅ X ↔ X ⊆ M.closure ∅ := by
   rw [basis_iff_indep_closure, and_iff_right M.empty_indep, and_iff_left (empty_subset _)]
 
+lemma indep_iff_not_mem_closure_diff_forall (hI : I ⊆ M.E := by aesop_mat) :
+    M.Indep I ↔ ∀ e ∈ I, e ∉ M.closure (I \ {e}) := by
+  use fun h e heI he ↦ ((h.closure_inter_eq_self_of_subset diff_subset).subset ⟨he, heI⟩).2 rfl
+  intro h
+  obtain ⟨J, hJ⟩ := M.exists_basis I
+  convert hJ.indep
+  refine hJ.subset.antisymm' (fun e he ↦ by_contra fun heJ ↦ h _ he ?_)
+  exact mem_of_mem_of_subset
+    (hJ.subset_closure he) (M.closure_subset_closure (subset_diff_singleton hJ.subset heJ))
+
+lemma indep_iff_not_mem_closure_diff_forall' :
+    M.Indep I ↔ I ⊆ M.E ∧ ∀ e ∈ I, e ∉ M.closure (I \ {e}) :=
+  ⟨fun h ↦ ⟨h.subset_ground, (indep_iff_not_mem_closure_diff_forall h.subset_ground).mp h⟩, fun h ↦
+    (indep_iff_not_mem_closure_diff_forall h.1).mpr h.2⟩
+
+lemma Indep.not_mem_closure_diff_of_mem (hI : M.Indep I) (he : e ∈ I) : e ∉ M.closure (I \ {e}) :=
+  (indep_iff_not_mem_closure_diff_forall'.1 hI).2 e he
+
+lemma indep_iff_closure_diff_ne_forall : M.Indep I ↔ ∀ e ∈ I,
+    M.closure (I \ {e}) ≠ M.closure I := by
+  rw [indep_iff_not_mem_closure_diff_forall']
+  refine ⟨fun ⟨hIE, h⟩ e heI h_eq ↦ h e heI (h_eq.symm.subset (M.mem_closure_of_mem heI)),
+    fun h ↦ ⟨fun e heI ↦ by_contra fun heE ↦ h e heI ?_,fun e heI hin ↦ h e heI ?_⟩⟩
+  · rw [← closure_inter_ground, inter_comm, inter_diff_distrib_left,
+      inter_singleton_eq_empty.mpr heE, diff_empty, inter_comm, closure_inter_ground]
+  nth_rw 2 [show I = insert e (I \ {e}) by simp [heI]]
+  rw [← closure_insert_closure_eq_closure_insert, insert_eq_of_mem hin, closure_closure]
+
+lemma Indep.closure_diff_singleton_ssubset (hI : M.Indep I) (he : e ∈ I) :
+    M.closure (I \ {e}) ⊂ M.closure I :=
+  ssubset_of_subset_of_ne (M.closure_mono diff_subset) (indep_iff_closure_diff_ne_forall.mp hI _ he)
+
+lemma indep_iff_closure_ssubset_ssubset_forall (hI : I ⊆ M.E := by aesop_mat) :
+    M.Indep I ↔ (∀ J, J ⊂ I → M.closure J ⊂ M.closure I) := by
+  rw [indep_iff_not_mem_closure_diff_forall]
+  refine ⟨fun h J hJI ↦ (M.closure_subset_closure hJI.subset).ssubset_of_ne (fun h_eq ↦ ?_),
+    fun h e heI hin ↦ ?_⟩
+  · obtain ⟨e,heJ,h'⟩ := ssubset_iff_insert.1 hJI
+    apply h e (h' (mem_insert _ _))
+    have heI := M.mem_closure_of_mem (h' (mem_insert e J))
+    rw [← h_eq] at heI
+    refine mem_of_mem_of_subset heI (M.closure_subset_closure ?_)
+    rw [subset_diff, disjoint_singleton_right, and_iff_left heJ]
+    exact (subset_insert _ _).trans h'
+  refine (h (I \ {e}) (diff_singleton_sSubset.2 heI)).ne ?_
+  rw [← closure_closure, ← insert_eq_of_mem hin, closure_insert_closure_eq_closure_insert,
+    insert_diff_singleton, insert_eq_of_mem heI]
+
 end Indep
+section insert
+
+lemma mem_closure_insert (he : e ∉ M.closure X) (hef : e ∈ M.closure (insert f X)) :
+    f ∈ M.closure (insert e X) := by
+  rw [← closure_inter_ground] at *
+  have hfE : f ∈ M.E := by
+    by_contra! hfE; rw [insert_inter_of_not_mem hfE] at hef; exact he hef
+  have heE : e ∈ M.E := (M.closure_subset_ground _) hef
+  rw [insert_inter_of_mem hfE] at hef; rw [insert_inter_of_mem heE]
+
+  obtain ⟨I, hI⟩ := M.exists_basis (X ∩ M.E)
+  rw [← hI.closure_eq_closure, hI.indep.not_mem_closure_iff] at he
+  rw [← closure_insert_closure_eq_closure_insert, ← hI.closure_eq_closure,
+    closure_insert_closure_eq_closure_insert, he.1.mem_closure_iff] at *
+  rw [or_iff_not_imp_left, dep_iff, insert_comm,
+    and_iff_left (insert_subset heE (insert_subset hfE hI.indep.subset_ground)), not_not]
+  intro h
+  rw [(h.subset (subset_insert _ _)).mem_closure_iff, or_iff_right (h.not_dep), mem_insert_iff,
+    or_iff_left he.2] at hef
+  subst hef; apply mem_insert
+
+lemma closure_exchange (he : e ∈ M.closure (insert f X) \ M.closure X) :
+    f ∈ M.closure (insert e X) \ M.closure X :=
+  ⟨mem_closure_insert he.2 he.1, fun hf ↦ by
+    rwa [closure_insert_eq_of_mem_closure hf, diff_self, iff_false_intro (not_mem_empty _)] at he⟩
+
+lemma closure_exchange_iff :
+    e ∈ M.closure (insert f X) \ M.closure X ↔ f ∈ M.closure (insert e X) \ M.closure X :=
+  ⟨closure_exchange, closure_exchange⟩
+
+lemma closure_insert_eq_closure_insert_of_mem (he : e ∈ M.closure (insert f X) \ M.closure X) :
+    M.closure (insert e X) = M.closure (insert f X) := by
+  have hf := closure_exchange he
+  rw [eq_comm, ← closure_closure, ← insert_eq_of_mem he.1, closure_insert_closure_eq_closure_insert,
+    insert_comm, ← closure_closure, ← closure_insert_closure_eq_closure_insert,
+    insert_eq_of_mem hf.1, closure_closure, closure_closure]
+
+lemma closure_diff_singleton_eq_closure (h : e ∈ M.closure (X \ {e})) :
+    M.closure (X \ {e}) = M.closure X := by
+  refine (em (e ∈ X)).elim (fun h' ↦ ?_) (fun h' ↦ by rw [diff_singleton_eq_self h'])
+  convert M.closure_insert_closure_eq_closure_insert e (X \ {e}) using 1
+  · rw [insert_eq_of_mem h, closure_closure]
+  rw [insert_diff_singleton, insert_eq_of_mem h']
+
+lemma mem_closure_diff_singleton_iff_closure (he : e ∈ X) (heE : e ∈ M.E := by aesop_mat) :
+    e ∈ M.closure (X \ {e}) ↔ M.closure (X \ {e}) = M.closure X :=
+  ⟨closure_diff_singleton_eq_closure, fun h ↦ by rw [h]; exact M.mem_closure_of_mem' he⟩
+
+end insert
+
+lemma ext_closure {M₁ M₂ : Matroid α} (h : ∀ X, M₁.closure X = M₂.closure X) : M₁ = M₂ :=
+  eq_of_indep_iff_indep_forall (by simpa using h univ)
+    (fun _ _ ↦ by simp_rw [indep_iff_closure_diff_ne_forall, h])
 
 end Matroid
