@@ -154,7 +154,7 @@ theorem hasSum_of_monomials_self (f : PowerSeries α) :
   simp only [LinearEquiv.coe_toEquiv, comp_apply, monomial, coeff,
     Finsupp.LinearEquiv.finsuppUnique_apply, PUnit.default_eq_unit]
   congr
-  all_goals { ext ; simp }
+  all_goals { ext; simp }
 
 /-- If the coefficient space is T2, then the power series is `tsum` of its monomials -/
 theorem as_tsum [T2Space α] (f : PowerSeries α) :
