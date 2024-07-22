@@ -46,14 +46,14 @@ open OrderDual
 
 /-- `leftDual` maps any set `J` of elements of type `α` to the set `{b : β | ∀ a ∈ J, R a b}` of
 elements `b` of type `β` such that `R a b` for every element `a` of `J`. -/
-def leftDual (J : Set α) : (Set β)ᵒᵈ := toDual {b : β | ∀ ⦃a⦄, a ∈ J → R a b}
+def leftDual (J : Set α) : Set β := {b : β | ∀ ⦃a⦄, a ∈ J → R a b}
 
 /-- `rightDual` maps any set `I` of elements of type `β` to the set `{a : α | ∀ b ∈ ofDual I, R a b}`
 of elements `a` of type `α` such that `R a b` for every element `b` of `I`. -/
-def rightDual (I : (Set β)ᵒᵈ) : Set α := {a : α | ∀ ⦃b⦄, b ∈ ofDual I → R a b}
+def rightDual (I : Set β) : Set α := {a : α | ∀ ⦃b⦄, b ∈ I → R a b}
 
 /-- The pair of functions `leftDual` and `rightDual` forms a Galois connection. -/
-theorem galoisConnection : GaloisConnection R.leftDual R.rightDual := by
+theorem gc_leftDual_rightDual : GaloisConnection (toDual ∘ leftDual R) (rightDual R ∘ ofDual) := by
   intros J I; apply Iff.trans (b := ∀ b ∈ ofDual I, ∀ a ∈ J, R a b)
   · constructor <;> intro h <;> apply h
   · constructor
@@ -67,9 +67,8 @@ theorem galoisConnection : GaloisConnection R.leftDual R.rightDual := by
 /-- `lFixedPoints` is the set of elements `J : Set α` satisfying `rightDual (leftDual J) = J`. -/
 def lFixedPoints := {J : Set α | R.rightDual (R.leftDual J) = J}
 
-/-- `rFixedPoints` is the set of elements `I : (Set β)ᵒᵈ` satisfying `leftDual (rightDual I) = I`.
--/
-def rFixedPoints := {I : (Set β)ᵒᵈ | R.leftDual (R.rightDual I) = I}
+/-- `rFixedPoints` is the set of elements `I : Set β` satisfying `leftDual (rightDual I) = I`. -/
+def rFixedPoints := {I : Set β | R.leftDual (R.rightDual I) = I}
 
 open GaloisConnection
 
@@ -77,15 +76,15 @@ open GaloisConnection
 theorem leftDual_mem_rFixedPoint (J : Set α) : R.leftDual J ∈ R.rFixedPoints := by
   unfold rFixedPoints
   apply le_antisymm
-  · exact R.galoisConnection.l_u_le (R.leftDual J)
-  · apply R.galoisConnection.monotone_l; exact R.galoisConnection.le_u_l J
+  · apply R.gc_leftDual_rightDual.monotone_l; exact R.gc_leftDual_rightDual.le_u_l J
+  · exact R.gc_leftDual_rightDual.l_u_le (R.leftDual J)
 
 /-- `rightDual` maps every element `I` to `lFixedPoints`. -/
 theorem rightDual_mem_lFixedPoint (I : (Set β)ᵒᵈ) : R.rightDual I ∈ R.lFixedPoints := by
   unfold lFixedPoints
   apply le_antisymm
-  · apply R.galoisConnection.monotone_u; exact R.galoisConnection.l_u_le I
-  · exact R.galoisConnection.le_u_l (R.rightDual I)
+  · apply R.gc_leftDual_rightDual.monotone_u; exact R.gc_leftDual_rightDual.l_u_le I
+  · exact R.gc_leftDual_rightDual.le_u_l (R.rightDual I)
 
 /-- The maps `leftDual` and `rightDual` induce inverse bijections between the sets of fixed points.
 -/
@@ -99,16 +98,16 @@ theorem le_imp_u_l_le {J J' : Set α} (h : J' ∈ R.lFixedPoints) :
     J ≤ J' → R.rightDual (R.leftDual J) ≤ J' := by
   intro h₁
   rw[← h]
-  apply R.galoisConnection.monotone_u
-  apply R.galoisConnection.monotone_l
+  apply R.gc_leftDual_rightDual.monotone_u
+  apply R.gc_leftDual_rightDual.monotone_l
   exact h₁
 
-theorem ge_imp_ge_l_u {I I' : (Set β)ᵒᵈ} (h : I' ∈ R.rFixedPoints) :
+theorem ge_imp_ge_l_u {I I' : Set β} (h : I' ∈ R.rFixedPoints) :
     I' ≥ I → I' ≥ R.leftDual (R.rightDual I) := by
   intro h₁
   rw [← h]
-  apply R.galoisConnection.monotone_l
-  apply R.galoisConnection.monotone_u
+  apply R.gc_leftDual_rightDual.monotone_l
+  apply R.gc_leftDual_rightDual.monotone_u
   exact h₁
 
 end Rel
