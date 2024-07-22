@@ -34,72 +34,6 @@ end
 
 open Set Filter TopologicalSpace Function Topology Filter BigOperators
 
-/- MI: I am commenting out this section because in the Mathlib file, there is a comment that
-`ContinuousSMul` is reused for `TopologicalAlgebra`.
-In terms of `DContinuousSMul`, the only one of these lemmas that seems to be missing in Mathlib
- is `DiscreteTopology.continuousSMul`.
--/
-/- section TopologicalAlgebra
-
-/-- A topological algebra `S` over a commutative topological semiring `R` is an `R`-algebra `S`
-  which is a topological semiring and such that the algebra map from `R` to `S` is continuous. -/
-class TopologicalAlgebra (R : Type*) [CommSemiring R] [TopologicalSpace R]
-    [TopologicalSemiring R] (A : Type*) [Semiring A] [TopologicalSpace A] [TopologicalSemiring A] extends
-    Algebra R A where
-  continuous_algebraMap : Continuous (algebraMap R A)
-
-variable (R : Type*) [CommSemiring R] [TopologicalSpace R] [TopologicalSemiring R]
-  (A : Type*) [Semiring A] [TopologicalSpace A] [TopologicalSemiring A]
-
-/-- If `R` is a discrete topological ring,
-  then any topological ring `S` which is an `R`-algebra
-  is also a topological `R`-algebra. -/
-instance DiscreteTopology.topologicalAlgebra [DiscreteTopology R] [Algebra R A] :
-    TopologicalAlgebra R A :=
-  { (inferInstance : Algebra R A) with
-    continuous_algebraMap := continuous_of_discreteTopology }
-
-namespace Subalgebra
-
-variable [TopologicalAlgebra R A]
-/-- An `R`-subalgebra `S` of `A` is a topological algebra (with the subspace topology). -/
-instance topologicalAlgebra (S : Subalgebra R A) :
-    TopologicalAlgebra R S where
-  continuous_algebraMap := by
-    rw [inducing_subtype_val.continuous_iff]
-    suffices Subtype.val ∘ (algebraMap R S) = algebraMap R A by
-      erw [this]
-      exact TopologicalAlgebra.continuous_algebraMap
-    rfl
-
-end Subalgebra
-
-section Prod
-
-/-- The product topology on the cartesian product of two topological algebras
-  makes the product into a topological algebra. -/
-instance [TopologicalAlgebra R A] {B : Type*} [Semiring B] [TopologicalSpace B]
-    [TopologicalSemiring B] [TopologicalAlgebra R B] : TopologicalAlgebra R (A × B) :=
-{ (inferInstance : Algebra R (A × B)) with
-  continuous_algebraMap := continuous_prod_mk.mpr
-    ⟨TopologicalAlgebra.continuous_algebraMap, TopologicalAlgebra.continuous_algebraMap⟩ }
-
-end Prod
-
-section Pi
-
-/-- The product topology on the cartesian product of two topological algebras
-  makes the product into a topological algebra. -/
-instance Pi.topologicalAlgebra {β : Type*} {C : β → Type*} [∀ b, Semiring (C b)]
-    [∀ b, TopologicalSpace (C b)] [∀ b, TopologicalSemiring (C b)]
-    [∀ b, TopologicalAlgebra R (C b)] :
-  TopologicalAlgebra R (Π b , C b) :=
-{ toAlgebra := Pi.algebra _ _
-  continuous_algebraMap :=
-    continuous_pi_iff.mpr fun _ =>  TopologicalAlgebra.continuous_algebraMap }
-
-end Pi -/
-
 section TopologicalAlgebra
 
 variable (R : Type*) [CommSemiring R] [TopologicalSpace R] [TopologicalSemiring R]
@@ -112,9 +46,10 @@ instance DiscreteTopology.continuousSMul [DiscreteTopology R] [Algebra R A] :
     ContinuousSMul R A := continuousSMul_of_algebraMap _ _ continuous_of_discreteTopology
 section
 
-/-- Continuous algebra homomorphisms between algebras. We only put the type classes that are necessary for the
-definition, although in applications `M` and `B` will be topological algebras over the topological
-ring `R`. -/
+/-- Continuous algebra homomorphisms between algebras.
+We only put the type classes that are necessary for the definition,
+although in applications `M` and `B` will be topological algebras
+over the topological ring `R`. -/
 structure ContinuousAlgHom (R : Type*) [CommSemiring R] (A : Type*) [Semiring A]
     [TopologicalSpace A] (B : Type*) [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
     extends A →ₐ[R] B where
@@ -259,9 +194,10 @@ theorem _root_.Submodule.topologicalClosure_map' [TopologicalSpace R] [Continuou
 /-- Under a dense continuous algebra map, a submodule whose `TopologicalClosure` is `⊤` is sent to
 another such submodule.  That is, the image of a dense set under a map with dense range is dense.
 -/
-theorem _root_.DenseRange.topologicalClosure_map_submodule' [TopologicalSpace R] [ContinuousAdd A]
-    [ContinuousSMul R B] [ContinuousAdd B] {f : A →A[R] B}  (hf' : DenseRange f) {s : Submodule R A}
-    (hs : s.topologicalClosure = ⊤) : (s.map (f : A →ₐ[R] B)).topologicalClosure = ⊤ := by
+theorem _root_.DenseRange.topologicalClosure_map_submodule'
+    [TopologicalSpace R] [ContinuousAdd A] [ContinuousSMul R B] [ContinuousAdd B]
+    {f : A →A[R] B}  (hf' : DenseRange f) {s : Submodule R A} (hs : s.topologicalClosure = ⊤) :
+    (s.map (f : A →ₐ[R] B)).topologicalClosure = ⊤ := by
   rw [SetLike.ext'_iff] at hs ⊢
   simp only [Submodule.topologicalClosure_coe, Submodule.top_coe, ← dense_iff_closure_eq] at hs ⊢
   exact hf'.dense_image f.continuous hs

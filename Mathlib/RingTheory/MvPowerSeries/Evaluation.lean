@@ -141,7 +141,8 @@ section Evaluation
 
 variable {σ : Type*} [DecidableEq σ]
 variable {R : Type*} [CommRing R] [UniformSpace R] [UniformAddGroup R] [TopologicalRing R]
-variable {S : Type*} [CommRing S] [UniformSpace S] [UniformAddGroup S][TopologicalRing S] [T2Space S] [CompleteSpace S]
+variable {S : Type*} [CommRing S] [UniformSpace S] [UniformAddGroup S]
+  [TopologicalRing S] [T2Space S] [CompleteSpace S]
 variable {φ : R →+* S} (hφ : Continuous φ)
 
 
@@ -172,7 +173,8 @@ theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformContinuous  :
   specialize tendsto_zero I hI
   simp only [Filter.mem_cofinite] at tendsto_zero
   let hpow' := fun s ↦ hpow s hI
-  simp only [Filter.mem_map, Filter.mem_atTop_sets, ge_iff_le, Set.mem_preimage, SetLike.mem_coe] at hpow'
+  simp only [Filter.mem_map, Filter.mem_atTop_sets, ge_iff_le,
+    Set.mem_preimage, SetLike.mem_coe] at hpow'
 
   let n : σ → ℕ := fun s ↦ sInf {n : ℕ | (a s) ^ n.succ ∈ I}
   have hn_ne : ∀ s, Set.Nonempty {n : ℕ | (a s) ^ n.succ ∈ I} := fun s ↦ by
@@ -183,7 +185,8 @@ theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformContinuous  :
   have hn : Set.Finite (n.support) := by
     apply @Finite.Set.subset  _ _ _ tendsto_zero
     intro s
-    simp only [Function.mem_support, ne_eq, Set.mem_compl_iff, Set.mem_preimage, SetLike.mem_coe, not_imp_comm, not_not]
+    simp only [Function.mem_support, ne_eq, Set.mem_compl_iff,
+      Set.mem_preimage, SetLike.mem_coe, not_imp_comm, not_not]
     simp only [imp_or, n, Nat.sInf_eq_zero, Set.mem_setOf_eq, zero_add, pow_one, imp_self, true_or]
 
   let n₀ : σ →₀ ℕ := {
@@ -319,7 +322,8 @@ theorem hasSum_eval₂ (f : MvPowerSeries σ R) :
     (fun (d : σ →₀ ℕ) ↦ φ (coeff R d f) * (d.prod fun s e => (a s) ^ e))
     (MvPowerSeries.eval₂ φ a f) := by
   convert (hasSum_of_monomials_self f).map (eval₂Hom hφ ha) (continuous_eval₂ hφ ha) with d
-  simp only [Function.comp_apply, coe_eval₂Hom, ← MvPolynomial.coe_monomial, eval₂_coe hφ ha, eval₂_monomial]
+  simp only [Function.comp_apply, coe_eval₂Hom, ← MvPolynomial.coe_monomial,
+    eval₂_coe hφ ha, eval₂_monomial]
 
 theorem eval₂_eq_sum (f : MvPowerSeries σ R) :
     MvPowerSeries.eval₂ φ a f =
@@ -402,7 +406,8 @@ theorem aeval_eq_sum (f : MvPowerSeries σ R) :
 
 theorem comp_aeval
     {T : Type*} [CommRing T] [UniformSpace T] [UniformAddGroup T]
-    [LinearTopology T] [T2Space T] [TopologicalRing T] [Algebra R T] [ContinuousSMul R T] [CompleteSpace T]
+    [LinearTopology T] [T2Space T] [TopologicalRing T] [Algebra R T]
+    [ContinuousSMul R T] [CompleteSpace T]
     {ε : S →ₐ[R] T} (hε : Continuous ε) :
     ε.comp (aeval ha) = aeval (ha.map hε)  := by
   apply DFunLike.coe_injective

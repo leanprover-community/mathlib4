@@ -28,7 +28,8 @@ theorem mul_right {α : Type*} [CommRing α] [TopologicalSpace α] [LinearTopolo
   rw [LinearTopology.mem_nhds_zero_iff] at hv
   rcases hv with ⟨I, _, I_mem_nhds, I_subset⟩
   specialize ha I_mem_nhds
-  simp only [Filter.mem_map, Filter.mem_atTop_sets, ge_iff_le, Set.mem_preimage, SetLike.mem_coe] at ha ⊢
+  simp only [Filter.mem_map, Filter.mem_atTop_sets, ge_iff_le,
+    Set.mem_preimage, SetLike.mem_coe] at ha ⊢
   rcases ha with ⟨n, ha⟩
   use n
   intro m hm
