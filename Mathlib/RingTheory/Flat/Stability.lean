@@ -6,6 +6,7 @@ Authors: Christian Merten
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.RingTheory.Localization.BaseChange
 
 /-!
 # Flatness is stable under composition and base change
@@ -144,5 +145,20 @@ theorem isBaseChange [Module.Flat R M] (N : Type t) [AddCommGroup N] [Module R N
   of_linearEquiv S (S ⊗[R] M) N (IsBaseChange.equiv h).symm
 
 end BaseChange
+
+section Localization
+
+variable (R : Type u) (S : Type v) (M : Type w)
+  [CommRing R] [CommRing S] [Algebra R S]
+  [AddCommGroup M] [Module R M]
+
+theorem isLocalizedModule_ofFlat [Module.Flat R M] (S : Submonoid R) : Module.Flat (Localization S)
+ (LocalizedModule S M) := by
+  fapply Module.Flat.isBaseChange (R:=R) (M:=M) (S:=Localization S)
+  exact LocalizedModule.mkLinearMap S M
+  rw [← isLocalizedModule_iff_isBaseChange S]
+  exact localizedModuleIsLocalizedModule S
+
+end Localization
 
 end Module.Flat
