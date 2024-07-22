@@ -292,21 +292,10 @@ theorem IsSeqCompact.image (f_cont : SeqContinuous f) {K : Set X} (K_cpt : IsSeq
 
 /-- The range of sequentially continuous function on a sequentially compact space is sequentially
 compact. -/
-theorem isSeqCompact_range [SeqCompactSpace X] (f_cont : SeqContinuous f) :
+theorem IsSeqCompact.range [SeqCompactSpace X] (f_cont : SeqContinuous f) :
     IsSeqCompact (Set.range f) := by
   rw [← Set.image_univ]
   exact IsSeqCompact.image f_cont ((seqCompactSpace_iff X).mp ‹SeqCompactSpace X›)
-
-/-- Sequential compactness of sets is preserved under continuous functions. -/
-theorem IsSeqCompact.image_of_continuous (f_cont : Continuous f) {K : Set X}
-    (K_cpt : IsSeqCompact K) :
-    IsSeqCompact (f '' K) :=
-  K_cpt.image f_cont.seqContinuous
-
-/-- The range of continuous function on a sequentially compact space is sequentially compact. -/
-theorem isSeqCompact_range_of_continuous [SeqCompactSpace X] (f_cont : Continuous f) :
-    IsSeqCompact (Set.range f) :=
-  isSeqCompact_range f_cont.seqContinuous
 
 end Image
 
