@@ -5,7 +5,6 @@ Authors: Kenny Lau
 -/
 import Mathlib.CategoryTheory.Sites.Canonical
 
-
 /-!
 # Grothendieck Topology and Sheaves on the Category of Types
 

@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Topology.Sets.Opens
 
-
 /-!
 # Partial homeomorphisms
 

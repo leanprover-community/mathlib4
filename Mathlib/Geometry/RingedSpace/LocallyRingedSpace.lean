@@ -6,7 +6,6 @@ Authors: Johan Commelin
 import Mathlib.Geometry.RingedSpace.Basic
 import Mathlib.Geometry.RingedSpace.Stalks
 
-
 /-!
 # The category of locally ringed spaces
 

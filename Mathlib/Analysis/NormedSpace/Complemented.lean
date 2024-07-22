@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.NormedSpace.Banach
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
-
 /-!
 # Complemented subspaces of normed vector spaces
 

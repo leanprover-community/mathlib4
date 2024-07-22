@@ -5,7 +5,6 @@ Authors: Sean Leather, Mario Carneiro
 -/
 import Mathlib.Data.List.Sigma
 
-
 /-!
 # Association Lists
 

@@ -16,7 +16,6 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Topology.ContinuousFunction.Compact
 import Mathlib.Order.Filter.IndicatorFunction
 
-
 /-!
 # Lp space
 

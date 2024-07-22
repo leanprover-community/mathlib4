@@ -12,7 +12,6 @@ import Batteries.Tactic.Lint.Basic
 import Mathlib.Data.Nat.Notation
 import Mathlib.Data.Int.Notation
 
-
 /-!
 # Basic logic properties
 

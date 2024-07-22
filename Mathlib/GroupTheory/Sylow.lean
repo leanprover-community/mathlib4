@@ -10,7 +10,6 @@ import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.Data.Set.Lattice
 
-
 /-!
 # Sylow theorems
 

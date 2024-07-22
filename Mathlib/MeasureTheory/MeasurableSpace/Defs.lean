@@ -8,7 +8,6 @@ import Mathlib.Order.Disjointed
 import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.Measurability
 
-
 /-!
 # Measurable spaces and measurable functions
 

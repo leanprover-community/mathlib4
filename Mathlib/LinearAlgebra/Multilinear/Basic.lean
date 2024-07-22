@@ -12,7 +12,6 @@ import Mathlib.LinearAlgebra.Pi
 import Mathlib.Logic.Equiv.Fintype
 import Mathlib.Tactic.Abel
 
-
 /-!
 # Multilinear maps
 

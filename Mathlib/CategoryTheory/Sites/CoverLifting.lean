@@ -8,7 +8,6 @@ import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Sites.Continuous
 import Mathlib.CategoryTheory.Sites.Sheafification
 
-
 /-!
 # Cocontinuous functors between sites.
 

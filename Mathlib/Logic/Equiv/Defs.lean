@@ -10,7 +10,6 @@ import Mathlib.Logic.Unique
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.Conv
 
-
 /-!
 # Equivalence between types
 

@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Measure.GiryMonad
 
-
 /-!
 # Markov Kernels
 

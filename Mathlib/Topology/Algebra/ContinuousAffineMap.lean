@@ -7,7 +7,6 @@ import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Algebra.Module.Basic
 
-
 /-!
 # Continuous affine maps.
 

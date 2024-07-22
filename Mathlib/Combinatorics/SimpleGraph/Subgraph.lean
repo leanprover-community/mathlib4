@@ -6,7 +6,6 @@ Authors: Hunter Monroe, Kyle Miller, Alena Gusakov
 import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Combinatorics.SimpleGraph.Maps
 
-
 /-!
 # Subgraphs of a simple graph
 

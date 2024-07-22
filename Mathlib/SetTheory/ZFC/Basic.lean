@@ -8,7 +8,6 @@ import Mathlib.Logic.Small.Basic
 import Mathlib.Logic.Function.OfArity
 import Mathlib.Order.WellFounded
 
-
 /-!
 # A model of ZFC
 

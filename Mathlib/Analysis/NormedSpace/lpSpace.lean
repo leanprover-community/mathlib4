@@ -9,7 +9,6 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Data.Set.Image
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
-
 /-!
 # ℓp space
 

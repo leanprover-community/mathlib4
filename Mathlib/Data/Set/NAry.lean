@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Data.Set.Prod
 
-
 /-!
 # N-ary images of sets
 

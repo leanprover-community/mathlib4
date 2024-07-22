@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 import Mathlib.Control.ULift
 import Mathlib.Logic.Equiv.Basic
 
-
 /-!
 # Extra lemmas about `ULift` and `PLift`
 

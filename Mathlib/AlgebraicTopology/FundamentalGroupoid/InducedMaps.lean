@@ -7,7 +7,6 @@ import Mathlib.Topology.Homotopy.Equiv
 import Mathlib.CategoryTheory.Equivalence
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 
-
 /-!
 # Homotopic maps induce naturally isomorphic functors
 

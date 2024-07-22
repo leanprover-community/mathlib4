@@ -8,7 +8,6 @@ import Mathlib.Order.Filter.Germ.Basic
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
-
 /-!
 
 # Almost everywhere equal functions

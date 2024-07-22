@@ -7,7 +7,6 @@ import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Tactic.FinCases
 import Mathlib.Topology.Sets.Closeds
 
-
 /-!
 # Locally constant functions
 

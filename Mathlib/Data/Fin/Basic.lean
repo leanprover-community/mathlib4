@@ -10,7 +10,6 @@ import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Tactic.Common
 
-
 /-!
 # The finite type with `n` elements
 

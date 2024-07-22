@@ -7,7 +7,6 @@ import Mathlib.Logic.Function.Defs
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Inhabit
 
-
 /-!
 # Extra facts about `Prod`
 

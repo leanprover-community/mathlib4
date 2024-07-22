@@ -6,7 +6,6 @@ Authors: Scott Morrison, Bhavik Mehta
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Iso
 
-
 /-!
 # Thin categories
 A thin category (also known as a sparse category) is a category with at most one morphism between

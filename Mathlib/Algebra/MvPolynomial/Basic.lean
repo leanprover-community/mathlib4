@@ -11,7 +11,6 @@ import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Order.SymmDiff
 import Mathlib.RingTheory.Adjoin.Basic
 
-
 /-!
 # Multivariate polynomials
 

@@ -6,7 +6,6 @@ Authors: Andreas Swerdlow, Kexing Ying
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.LinearAlgebra.BilinearMap
 
-
 /-!
 # Bilinear form
 

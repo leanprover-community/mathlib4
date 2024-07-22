@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Data.Set.Finite
 
-
 /-!
 # Type of functions with finite support
 

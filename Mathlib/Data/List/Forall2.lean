@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Data.List.Basic
 
-
 /-!
 # Double universal quantification on a list
 

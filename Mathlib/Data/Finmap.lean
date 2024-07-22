@@ -7,7 +7,6 @@ import Mathlib.Data.List.AList
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Part
 
-
 /-!
 # Finite maps over `Multiset`
 -/

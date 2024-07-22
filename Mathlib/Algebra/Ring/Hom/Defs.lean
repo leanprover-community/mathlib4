@@ -8,7 +8,6 @@ import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.Basic
 
-
 /-!
 # Homomorphisms of semirings and rings
 

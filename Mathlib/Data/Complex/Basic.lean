@@ -10,7 +10,6 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Image
 import Mathlib.Tactic.Ring
 
-
 /-!
 # The complex numbers
 

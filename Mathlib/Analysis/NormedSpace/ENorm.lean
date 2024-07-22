@@ -5,7 +5,6 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.NormedSpace.Basic
 
-
 /-!
 # Extended norm
 

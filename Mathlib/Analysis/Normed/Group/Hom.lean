@@ -6,7 +6,6 @@ Authors: Johan Commelin
 import Mathlib.Analysis.Normed.Group.Int
 import Mathlib.Analysis.Normed.Group.Uniform
 
-
 /-!
 # Normed groups homomorphisms
 

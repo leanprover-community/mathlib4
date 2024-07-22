@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Yaël Dillies
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.NormedSpace.Real
 
-
 /-!
 # Properties of pointwise scalar multiplication of sets in normed spaces.
 

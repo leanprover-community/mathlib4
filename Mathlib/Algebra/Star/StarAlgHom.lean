@@ -9,7 +9,6 @@ import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Star.Prod
 import Mathlib.Algebra.Star.StarRingHom
 
-
 /-!
 # Morphisms of star algebras
 

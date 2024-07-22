@@ -7,7 +7,6 @@ import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.MeasureTheory.Group.Measure
 import Mathlib.Topology.Constructions
 
-
 /-!
 # Product measures
 

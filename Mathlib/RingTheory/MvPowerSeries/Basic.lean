@@ -9,7 +9,6 @@ import Mathlib.Algebra.Order.Antidiag.Finsupp
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.Tactic.Linarith
 
-
 /-!
 # Formal (multivariate) power series
 

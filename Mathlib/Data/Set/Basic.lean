@@ -11,7 +11,6 @@ import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
 import Mathlib.Util.Delaborators
 
-
 /-!
 # Basic properties of sets
 

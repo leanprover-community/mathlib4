@@ -10,7 +10,6 @@ import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.Data.Finset.Sym
 import Mathlib.LinearAlgebra.BilinearMap
 
-
 /-!
 # Quadratic maps
 

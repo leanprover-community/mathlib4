@@ -8,7 +8,6 @@ import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.MvPowerSeries.Basic
 
-
 /-!
 # Formal power series (in one variable)
 

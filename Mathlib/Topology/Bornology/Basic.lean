@@ -5,7 +5,6 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Order.Filter.Cofinite
 
-
 /-!
 # Basic theory of bornology
 

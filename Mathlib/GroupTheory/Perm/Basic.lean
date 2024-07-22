@@ -9,7 +9,6 @@ import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Tactic.Common
 
-
 /-!
 # The group of permutations (self-equivalences) of a type `α`
 

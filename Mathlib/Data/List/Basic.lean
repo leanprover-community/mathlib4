@@ -15,7 +15,6 @@ import Mathlib.Tactic.Common
 import Batteries.Data.List.EraseIdx
 import Batteries.Data.List.Perm
 
-
 /-!
 # Basic properties of lists
 -/

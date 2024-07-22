@@ -5,7 +5,6 @@ Authors: Scott Morrison
 -/
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
-
 /-!
 # Another version of the sheaf condition.
 

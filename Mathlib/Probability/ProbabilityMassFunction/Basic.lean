@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Devon Tuma
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.MeasureTheory.Measure.Dirac
 
-
 /-!
 # Probability mass functions
 

@@ -10,7 +10,6 @@ import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Util.AssertExists
 
-
 /-!
 # (Semi)ring equivs
 

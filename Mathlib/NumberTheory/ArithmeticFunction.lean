@@ -11,7 +11,6 @@ import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Tactic.ArithMult
 
-
 /-!
 # Arithmetic Functions and Dirichlet Convolution
 

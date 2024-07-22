@@ -8,7 +8,6 @@ import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.TFAE
 
-
 /-!
 
 # The basics of valuation theory.

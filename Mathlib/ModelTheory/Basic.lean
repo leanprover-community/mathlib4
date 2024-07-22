@@ -6,7 +6,6 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.SetTheory.Cardinal.Basic
 
-
 /-!
 # Basics on First-Order Structures
 This file defines first-order languages and structures in the style of the

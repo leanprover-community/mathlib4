@@ -10,7 +10,6 @@ import Mathlib.Data.Set.List
 import Mathlib.Init.Quot
 import Mathlib.Order.Hom.Basic
 
-
 /-!
 # Multisets
 These are implemented as the quotient of a list by permutations.

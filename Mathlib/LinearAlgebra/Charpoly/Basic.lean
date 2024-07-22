@@ -7,7 +7,6 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 import Mathlib.FieldTheory.Minpoly.Field
 
-
 /-!
 
 # Characteristic polynomial
