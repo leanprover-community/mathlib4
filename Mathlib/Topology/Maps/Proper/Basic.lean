@@ -47,8 +47,8 @@ instead our definition of `IsProperMap` coincides with what they call "Bourbaki-
 
 Concerning `isProperMap_iff_isCompact_preimage`, this result should be the only one needed to link
 the definition of a proper map and the criteria "preimage of compact sets are compact", however
-the notion of compactly generated space is not yet in Mathlib so it is used as an intermediate
-result to prove
+the notion of compactly generated space is not yet in Mathlib (TODO)
+so it is used as an intermediate result to prove
 `WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage` and
 `SequentialSpace.isProperMap_iff_isCompact_preimage`. In the future those should be inferred
 by typeclass inference.
