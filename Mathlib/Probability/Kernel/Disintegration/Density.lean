@@ -802,7 +802,7 @@ lemma tendsto_density_fst_atTop_ae_of_monotone [IsFiniteKernel κ]
 end UnivFst
 
 end Density
-  
+
 end Kernel
 
 end ProbabilityTheory
