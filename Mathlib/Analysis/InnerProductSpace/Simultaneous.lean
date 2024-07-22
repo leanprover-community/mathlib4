@@ -8,7 +8,7 @@ import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Order.CompleteLattice
 
-/-! # Simultaneous eigenspaces of commuting finite tuples of symmetric operators
+/-! # Simultaneous eigenspaces of a commuting pair of symmetric operators
 
 This file collects various decomposition results for simultaneous eigenspaces of a commuting pair
 of symmetric operators on a finite-dimensional Hilbert space.
