@@ -11,9 +11,6 @@ import Mathlib.Analysis.Calculus.Deriv.ZPow
 We define the logarithmic derivative of a function f as `deriv f / f`. We then prove some basic
 facts about this, including how it changes under multiplication and composition.
 
-We conclude by showing that the logarithmic derivative of a sequence of functions converging
-locally uniformly to a function is the logarithmic derivative of the limit function. This is useful
-for example for the Mittag-Leffler expansion of the cotangent function.
 -/
 
 noncomputable section
