@@ -6,6 +6,13 @@ Authors: Anne Baanen, Mario Carneiro, Alex J. Best
 
 import Lean
 
+/-!
+# The `simp_rw` tactic
+
+This file defines the `simp_rw` tactic: it functions as a mix of `simp` and `rw`.
+Like `rw`, it applies each rewrite rule in the given order, but like `simp` it repeatedly applies
+these rules and also under binders like `∀ x, ...`, `∃ x, ...` and `fun x ↦ ...`.
+-/
 namespace Mathlib.Tactic
 
 open Lean Parser.Tactic Elab.Tactic
@@ -47,10 +54,10 @@ For example, neither `simp` nor `rw` can solve the following, but `simp_rw` can:
 
 ```lean
 example {a : ℕ}
-  (h1 : ∀ a b : ℕ, a - 1 ≤ b ↔ a ≤ b + 1)
-  (h2 : ∀ a b : ℕ, a ≤ b ↔ ∀ c, c < a → c < b) :
-  (∀ b, a - 1 ≤ b) = ∀ b c : ℕ, c < a → c < b + 1 :=
-by simp_rw [h1, h2]
+    (h1 : ∀ a b : ℕ, a - 1 ≤ b ↔ a ≤ b + 1)
+    (h2 : ∀ a b : ℕ, a ≤ b ↔ ∀ c, c < a → c < b) :
+    (∀ b, a - 1 ≤ b) = ∀ b c : ℕ, c < a → c < b + 1 := by
+  simp_rw [h1, h2]
 ```
 -/
 elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => focus do

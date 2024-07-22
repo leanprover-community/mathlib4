@@ -8,8 +8,6 @@ import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 
-#align_import analysis.calculus.series from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # Smoothness of series
 
@@ -26,7 +24,7 @@ We also give versions of these statements which are localized to a set.
 
 open Set Metric TopologicalSpace Function Asymptotics Filter
 
-open scoped Topology NNReal BigOperators
+open scoped Topology NNReal
 
 variable {α β 𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
@@ -46,13 +44,12 @@ theorem summable_of_summable_hasFDerivAt_of_isPreconnected (hu : Summable u) (hs
     (hx : x ∈ s) : Summable fun n => f n x := by
   haveI := Classical.decEq α
   rw [summable_iff_cauchySeq_finset] at hf0 ⊢
-  have A : UniformCauchySeqOn (fun t : Finset α => fun x => ∑ i in t, f' i x) atTop s :=
+  have A : UniformCauchySeqOn (fun t : Finset α => fun x => ∑ i ∈ t, f' i x) atTop s :=
     (tendstoUniformlyOn_tsum hu hf').uniformCauchySeqOn
   -- Porting note: Lean 4 failed to find `f` by unification
-  refine cauchy_map_of_uniformCauchySeqOn_fderiv (f := fun t x ↦ ∑ i in t, f i x)
+  refine cauchy_map_of_uniformCauchySeqOn_fderiv (f := fun t x ↦ ∑ i ∈ t, f i x)
     hs h's A (fun t y hy => ?_) hx₀ hx hf0
   exact HasFDerivAt.sum fun i _ => hf i y hy
-#align summable_of_summable_has_fderiv_at_of_is_preconnected summable_of_summable_hasFDerivAt_of_isPreconnected
 
 /-- Consider a series of functions `∑' n, f n x` on a preconnected open set. If the series converges
 at a point, and all functions in the series are differentiable with a summable bound on the
@@ -75,14 +72,13 @@ theorem hasFDerivAt_tsum_of_isPreconnected (hu : Summable u) (hs : IsOpen s)
     (hx : x ∈ s) : HasFDerivAt (fun y => ∑' n, f n y) (∑' n, f' n x) x := by
   classical
     have A :
-      ∀ x : E, x ∈ s → Tendsto (fun t : Finset α => ∑ n in t, f n x) atTop (𝓝 (∑' n, f n x)) := by
+      ∀ x : E, x ∈ s → Tendsto (fun t : Finset α => ∑ n ∈ t, f n x) atTop (𝓝 (∑' n, f n x)) := by
       intro y hy
       apply Summable.hasSum
       exact summable_of_summable_hasFDerivAt_of_isPreconnected hu hs h's hf hf' hx₀ hf0 hy
     refine hasFDerivAt_of_tendstoUniformlyOn hs (tendstoUniformlyOn_tsum hu hf')
       (fun t y hy => ?_) A _ hx
     exact HasFDerivAt.sum fun n _ => hf n y hy
-#align has_fderiv_at_tsum_of_is_preconnected hasFDerivAt_tsum_of_isPreconnected
 
 /-- Consider a series of functions `∑' n, f n x` on a preconnected open set. If the series converges
 at a point, and all functions in the series are differentiable with a summable bound on the
@@ -107,7 +103,6 @@ theorem summable_of_summable_hasFDerivAt (hu : Summable u)
   let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   exact summable_of_summable_hasFDerivAt_of_isPreconnected hu isOpen_univ isPreconnected_univ
     (fun n x _ => hf n x) (fun n x _ => hf' n x) (mem_univ _) hf0 (mem_univ _)
-#align summable_of_summable_has_fderiv_at summable_of_summable_hasFDerivAt
 
 /-- Consider a series of functions `∑' n, f n x`. If the series converges at a
 point, and all functions in the series are differentiable with a summable bound on the derivatives,
@@ -127,7 +122,6 @@ theorem hasFDerivAt_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (f' 
   let A : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   exact hasFDerivAt_tsum_of_isPreconnected hu isOpen_univ isPreconnected_univ
     (fun n x _ => hf n x) (fun n x _ => hf' n x) (mem_univ _) hf0 (mem_univ _)
-#align has_fderiv_at_tsum hasFDerivAt_tsum
 
 /-- Consider a series of functions `∑' n, f n x`. If the series converges at a
 point, and all functions in the series are differentiable with a summable bound on the derivatives,
@@ -152,7 +146,6 @@ theorem differentiable_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (
     have : (fun x => ∑' n, f n x) = 0 := by ext1 x; exact tsum_eq_zero_of_not_summable (h x)
     rw [this]
     exact differentiable_const 0
-#align differentiable_tsum differentiable_tsum
 
 /-- Consider a series of functions `∑' n, f n x`. If all functions in the series are differentiable
 with a summable bound on the derivatives, then the series is differentiable.
@@ -168,7 +161,6 @@ theorem fderiv_tsum_apply (hu : Summable u) (hf : ∀ n, Differentiable 𝕜 (f 
     (hf' : ∀ n x, ‖fderiv 𝕜 (f n) x‖ ≤ u n) (hf0 : Summable fun n => f n x₀) (x : E) :
     fderiv 𝕜 (fun y => ∑' n, f n y) x = ∑' n, fderiv 𝕜 (f n) x :=
   (hasFDerivAt_tsum hu (fun n x => (hf n x).hasFDerivAt) hf' hf0 _).fderiv
-#align fderiv_tsum_apply fderiv_tsum_apply
 
 theorem deriv_tsum_apply (hu : Summable u) (hg : ∀ n, Differentiable 𝕜 (g n))
     (hg' : ∀ n y, ‖deriv (g n) y‖ ≤ u n) (hg0 : Summable fun n => g n y₀) (y : 𝕜) :
@@ -180,7 +172,6 @@ theorem fderiv_tsum (hu : Summable u) (hf : ∀ n, Differentiable 𝕜 (f n))
     (fderiv 𝕜 fun y => ∑' n, f n y) = fun x => ∑' n, fderiv 𝕜 (f n) x := by
   ext1 x
   exact fderiv_tsum_apply hu hf hf' hf0 x
-#align fderiv_tsum fderiv_tsum
 
 theorem deriv_tsum (hu : Summable u) (hg : ∀ n, Differentiable 𝕜 (g n))
     (hg' : ∀ n y, ‖deriv (g n) y‖ ≤ u n) (hg0 : Summable fun n => g n y₀) :
@@ -212,7 +203,6 @@ theorem iteratedFDeriv_tsum (hf : ∀ i, ContDiff 𝕜 N (f i))
     · intro n x
       simpa only [iteratedFDeriv_succ_eq_comp_left, LinearIsometryEquiv.norm_map, comp_apply]
         using h'f k.succ n x hk
-#align iterated_fderiv_tsum iteratedFDeriv_tsum
 
 /-- Consider a series of smooth functions, with summable uniform bounds on the successive
 derivatives. Then the iterated derivative of the sum is the sum of the iterated derivative. -/
@@ -222,7 +212,6 @@ theorem iteratedFDeriv_tsum_apply (hf : ∀ i, ContDiff 𝕜 N (f i))
     (hk : (k : ℕ∞) ≤ N) (x : E) :
     iteratedFDeriv 𝕜 k (fun y => ∑' n, f n y) x = ∑' n, iteratedFDeriv 𝕜 k (f n) x := by
   rw [iteratedFDeriv_tsum hf hv h'f hk]
-#align iterated_fderiv_tsum_apply iteratedFDeriv_tsum_apply
 
 /-- Consider a series of functions `∑' i, f i x`. Assume that each individual function `f i` is of
 class `C^N`, and moreover there is a uniform summable upper bound on the `k`-th derivative
@@ -249,7 +238,6 @@ theorem contDiff_tsum (hf : ∀ i, ContDiff 𝕜 N (f i)) (hv : ∀ k : ℕ, (k 
     refine differentiable_tsum (hv _ h'm) A fun n x => ?_
     rw [fderiv_iteratedFDeriv, comp_apply, LinearIsometryEquiv.norm_map]
     exact h'f _ _ _ h'm
-#align cont_diff_tsum contDiff_tsum
 
 /-- Consider a series of functions `∑' i, f i x`. Assume that each individual function `f i` is of
 class `C^N`, and moreover there is a uniform summable upper bound on the `k`-th derivative
@@ -276,7 +264,7 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
         exact (WithTop.coe_le_coe.2 hi).trans hm
       eventually_cofinite.2 A
     let T : Finset α := ht.toFinset
-    have : (fun x => ∑' i, f i x) = (fun x => ∑ i in T, f i x) +
+    have : (fun x => ∑' i, f i x) = (fun x => ∑ i ∈ T, f i x) +
         fun x => ∑' i : { i // i ∉ T }, f i x := by
       ext1 x
       refine (sum_add_tsum_subtype_compl ?_ T).symm
@@ -292,4 +280,3 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
     simp only [t, T, Finite.mem_toFinset, mem_setOf_eq, Finset.mem_range, not_forall, not_le,
       exists_prop, not_exists, not_and, not_lt] at hi
     exact hi k (Nat.lt_succ_iff.2 (WithTop.coe_le_coe.1 hk)) x
-#align cont_diff_tsum_of_eventually contDiff_tsum_of_eventually

@@ -563,8 +563,8 @@ lemma leftRightHomologyComparison'_eq_liftH :
 
 @[reassoc (attr := simp)]
 lemma π_leftRightHomologyComparison'_ι :
-    h₁.π ≫ leftRightHomologyComparison' h₁ h₂ ≫ h₂.ι = h₁.i ≫ h₂.p :=
-  by simp only [leftRightHomologyComparison'_eq_liftH,
+    h₁.π ≫ leftRightHomologyComparison' h₁ h₂ ≫ h₂.ι = h₁.i ≫ h₂.p := by
+  simp only [leftRightHomologyComparison'_eq_liftH,
     RightHomologyData.liftH_ι, LeftHomologyData.π_descH]
 
 lemma leftRightHomologyComparison'_eq_descH :
@@ -839,7 +839,7 @@ noncomputable def homologyι : S.homology ⟶ S.opcycles :=
   S.rightHomologyIso.inv ≫ S.rightHomologyι
 
 @[reassoc (attr := simp)]
-lemma homologyπ_comp_leftHomologyIso_inv:
+lemma homologyπ_comp_leftHomologyIso_inv :
     S.homologyπ ≫ S.leftHomologyIso.inv = S.leftHomologyπ := by
   dsimp only [homologyπ]
   simp only [assoc, Iso.hom_inv_id, comp_id]

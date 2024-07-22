@@ -24,7 +24,7 @@ homomorphism.
 
 -/
 
-open TensorProduct Bialgebra BigOperators
+open TensorProduct Bialgebra
 
 universe u v w
 

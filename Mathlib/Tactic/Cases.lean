@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Lean.Elab.Tactic.Induction
 import Batteries.Tactic.OpenPrivate
-import Batteries.Data.List.Basic
 import Mathlib.Lean.Expr.Basic
 
 /-!

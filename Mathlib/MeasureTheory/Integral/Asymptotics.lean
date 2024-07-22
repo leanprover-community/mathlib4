@@ -132,3 +132,5 @@ theorem LocallyIntegrable.integrable_of_isBigO_atTop_of_norm_isNegInvariant
   exact h_map_neg ▸ hf.aestronglyMeasurable.restrict
 
 end LinearOrderedAddCommGroup
+
+end MeasureTheory

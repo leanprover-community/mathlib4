@@ -9,8 +9,6 @@ import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 
-#align_import data.polynomial.partial_fractions from "leanprover-community/mathlib"@"6e70e0d419bf686784937d64ed4bfde866ff229e"
-
 /-!
 
 # Partial fractions
@@ -77,13 +75,10 @@ theorem div_eq_quo_add_rem_div_add_rem_div (f : R[X]) {g₁ g₂ : R[X]} (hg₁ 
   field_simp
   norm_cast
   linear_combination -1 * f * hcd + -1 * g₁ * hfc + -1 * g₂ * hfd
-#align div_eq_quo_add_rem_div_add_rem_div div_eq_quo_add_rem_div_add_rem_div
 
 end TwoDenominators
 
 section NDenominators
-
-open BigOperators
 
 -- Porting note: added for scoped `Algebra.cast` instance
 open algebraMap
@@ -96,7 +91,7 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
     (hg : ∀ i ∈ s, (g i).Monic) (hcop : Set.Pairwise ↑s fun i j => IsCoprime (g i) (g j)) :
     ∃ (q : R[X]) (r : ι → R[X]),
       (∀ i ∈ s, (r i).degree < (g i).degree) ∧
-        ((↑f : K) / ∏ i in s, ↑(g i)) = ↑q + ∑ i in s, (r i : K) / (g i : K) := by
+        ((↑f : K) / ∏ i ∈ s, ↑(g i)) = ↑q + ∑ i ∈ s, (r i : K) / (g i : K) := by
   classical
   induction' s using Finset.induction_on with a b hab Hind f generalizing f
   · refine ⟨f, fun _ : ι => (0 : R[X]), fun i => ?_, by simp⟩
@@ -105,7 +100,7 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
     div_eq_quo_add_rem_div_add_rem_div R K f
       (hg a (b.mem_insert_self a) : Monic (g a))
       (monic_prod_of_monic _ _ fun i hi => hg i (Finset.mem_insert_of_mem hi) :
-        Monic (∏ i : ι in b, g i))
+        Monic (∏ i ∈ b, g i))
       (IsCoprime.prod_right fun i hi =>
         hcop (Finset.mem_coe.2 (b.mem_insert_self a))
           (Finset.mem_coe.2 (Finset.mem_insert_of_mem hi)) (by rintro rfl; exact hab hi))
@@ -123,7 +118,7 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
       exact hrdeg i (Finset.mem_of_mem_insert_of_ne hi h1)
   norm_cast at hf IH ⊢
   rw [Finset.prod_insert hab, hf, IH, Finset.sum_insert hab, if_pos rfl]
-  trans (↑(q₀ + q : R[X]) : K) + (↑r₁ / ↑(g a) + ∑ i : ι in b, (r i : K) / (g i : K))
+  trans (↑(q₀ + q : R[X]) : K) + (↑r₁ / ↑(g a) + ∑ i ∈ b, (r i : K) / (g i : K))
   · push_cast
     ring
   congr 2
@@ -131,6 +126,5 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
   rw [if_neg]
   rintro rfl
   exact hab hxb
-#align div_eq_quo_add_sum_rem_div div_eq_quo_add_sum_rem_div
 
 end NDenominators

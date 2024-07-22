@@ -10,8 +10,6 @@ import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Tactic.GCongr.Core
 
-#align_import algebra.order.smul from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
-
 /-!
 # Ordered scalar product
 
@@ -43,7 +41,9 @@ ordered module, ordered scalar, ordered smul, ordered action, ordered vector spa
 -/
 
 /-- The ordered scalar product property is when an ordered additive commutative monoid
-with a partial order has a scalar multiplication which is compatible with the order.
+with a partial order has a scalar multiplication which is compatible with the order. Note that this
+is different from `IsOrderedSMul`, which uses `≤`, has no semiring assumption, and has no positivity
+constraint on the defining conditions.
 -/
 class OrderedSMul (R M : Type*) [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] :
   Prop where
@@ -51,7 +51,6 @@ class OrderedSMul (R M : Type*) [OrderedSemiring R] [OrderedAddCommMonoid M] [SM
   protected smul_lt_smul_of_pos : ∀ {a b : M}, ∀ {c : R}, a < b → 0 < c → c • a < c • b
   /-- If `c • a < c • b` for some positive `c`, then `a < b`. -/
   protected lt_of_smul_lt_smul_of_pos : ∀ {a b : M}, ∀ {c : R}, c • a < c • b → 0 < c → a < b
-#align ordered_smul OrderedSMul
 
 variable {ι α β γ 𝕜 R M N : Type*}
 
@@ -77,7 +76,6 @@ theorem OrderedSMul.mk'' [OrderedSemiring 𝕜] [LinearOrderedAddCommMonoid M] [
     (h : ∀ ⦃c : 𝕜⦄, 0 < c → StrictMono fun a : M => c • a) : OrderedSMul 𝕜 M :=
   { smul_lt_smul_of_pos := fun hab hc => h hc hab
     lt_of_smul_lt_smul_of_pos := fun hab hc => (h hc).lt_iff_lt.1 hab }
-#align ordered_smul.mk'' OrderedSMul.mk''
 
 instance Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ M :=
   OrderedSMul.mk'' fun n hn a b hab => by
@@ -87,7 +85,6 @@ instance Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ 
       induction n with
       | zero => dsimp; rwa [one_nsmul, one_nsmul]
       | succ n ih => simp only [succ_nsmul _ n.succ, _root_.add_lt_add (ih n.succ_pos) hab]
-#align nat.ordered_smul Nat.orderedSMul
 
 instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
   OrderedSMul.mk'' fun n hn => by
@@ -95,7 +92,6 @@ instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
     · simp only [Int.ofNat_eq_coe, Int.natCast_pos, natCast_zsmul] at hn ⊢
       exact strictMono_smul_left_of_pos hn
     · cases (Int.negSucc_not_pos _).1 hn
-#align int.ordered_smul Int.orderedSMul
 
 section LinearOrderedSemiring
 variable [LinearOrderedSemiring R] [LinearOrderedAddCommMonoid M] [SMulWithZero R M]
@@ -104,7 +100,6 @@ variable [LinearOrderedSemiring R] [LinearOrderedAddCommMonoid M] [SMulWithZero 
 -- TODO: `LinearOrderedField M → OrderedSMul ℚ M`
 instance LinearOrderedSemiring.toOrderedSMul : OrderedSMul R R :=
   OrderedSMul.mk'' fun _ => strictMono_mul_left_of_pos
-#align linear_ordered_semiring.to_ordered_smul LinearOrderedSemiring.toOrderedSMul
 
 end LinearOrderedSemiring
 
@@ -121,13 +116,11 @@ theorem OrderedSMul.mk' (h : ∀ ⦃a b : M⦄ ⦃c : 𝕜⦄, a < b → 0 < c �
     refine fun a b c hab hc => (h hab hc).lt_of_ne ?_
     rw [Ne, hc.ne'.isUnit.smul_left_cancel]
     exact hab.ne
-  refine' { smul_lt_smul_of_pos := fun {a b c} => hlt' a b c..}
-  intro a b c hab hc
+  refine ⟨fun {a b c} => hlt' a b c, fun {a b c hab hc} => ?_⟩
   obtain ⟨c, rfl⟩ := hc.ne'.isUnit
   rw [← inv_smul_smul c a, ← inv_smul_smul c b]
   refine hlt' _ _ _ hab (pos_of_mul_pos_right ?_ hc.le)
   simp only [c.mul_inv, zero_lt_one]
-#align ordered_smul.mk' OrderedSMul.mk'
 
 instance [OrderedSMul 𝕜 M] [OrderedSMul 𝕜 N] : OrderedSMul 𝕜 (M × N) :=
   OrderedSMul.mk' fun _ _ _ h hc =>
@@ -136,10 +129,6 @@ instance [OrderedSMul 𝕜 M] [OrderedSMul 𝕜 N] : OrderedSMul 𝕜 (M × N) :
 instance Pi.orderedSMul {M : ι → Type*} [∀ i, OrderedAddCommMonoid (M i)]
     [∀ i, MulActionWithZero 𝕜 (M i)] [∀ i, OrderedSMul 𝕜 (M i)] : OrderedSMul 𝕜 (∀ i, M i) :=
   OrderedSMul.mk' fun _ _ _ h hc i => smul_le_smul_of_nonneg_left (h.le i) hc.le
-#align pi.ordered_smul Pi.orderedSMul
-
-#noalign pi.ordered_smul'
-#noalign pi.ordered_smul''
 
 end LinearOrderedSemifield
 

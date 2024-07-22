@@ -55,4 +55,3 @@ lemma ker_surjective : Surjective (ker : Filter α → Set α) := gi_principal_k
   exact forall₂_congr fun s _ ↦ ⟨fun h ↦ h _ Subset.rfl, fun ha t ht ↦ ht ha⟩
 
 end Filter
-
