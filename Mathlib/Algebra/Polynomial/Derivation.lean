@@ -147,3 +147,5 @@ theorem comp_aeval_eq (d : Derivation R A M) (f : R[X]) :
   calc
     _ = (AEval.of R M a).symm (d.compAEval a f) := rfl
     _ = _ := by simp [-compAEval_apply, compAEval_eq]
+
+end Derivation

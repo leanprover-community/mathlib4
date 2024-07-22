@@ -32,7 +32,6 @@ abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace 
   toBornology := Bornology.induced f
   cobounded_sets := Set.ext fun s => mem_comap_iff_compl.trans <| by
     simp only [← isBounded_def, isBounded_iff, forall_mem_image, mem_setOf]
-#align pseudo_metric_space.induced PseudoMetricSpace.induced
 
 /-- Pull back a pseudometric space structure by an inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `TopologicalSpace`
@@ -40,7 +39,6 @@ structure. -/
 def Inducing.comapPseudoMetricSpace {α β} [TopologicalSpace α] [m : PseudoMetricSpace β] {f : α → β}
     (hf : Inducing f) : PseudoMetricSpace α :=
   .replaceTopology (.induced f m) hf.induced
-#align inducing.comap_pseudo_metric_space Inducing.comapPseudoMetricSpace
 
 /-- Pull back a pseudometric space structure by a uniform inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `UniformSpace`
@@ -48,17 +46,13 @@ structure. -/
 def UniformInducing.comapPseudoMetricSpace {α β} [UniformSpace α] [m : PseudoMetricSpace β]
     (f : α → β) (h : UniformInducing f) : PseudoMetricSpace α :=
   .replaceUniformity (.induced f m) h.comap_uniformity.symm
-#align uniform_inducing.comap_pseudo_metric_space UniformInducing.comapPseudoMetricSpace
 
 instance Subtype.pseudoMetricSpace {p : α → Prop} : PseudoMetricSpace (Subtype p) :=
   PseudoMetricSpace.induced Subtype.val ‹_›
-#align subtype.pseudo_metric_space Subtype.pseudoMetricSpace
 
 lemma Subtype.dist_eq {p : α → Prop} (x y : Subtype p) : dist x y = dist (x : α) y := rfl
-#align subtype.dist_eq Subtype.dist_eq
 
 lemma Subtype.nndist_eq {p : α → Prop} (x y : Subtype p) : nndist x y = nndist (x : α) y := rfl
-#align subtype.nndist_eq Subtype.nndist_eq
 
 namespace MulOpposite
 
@@ -68,23 +62,15 @@ instance instPseudoMetricSpace : PseudoMetricSpace αᵐᵒᵖ :=
 
 @[to_additive (attr := simp)]
 lemma dist_unop (x y : αᵐᵒᵖ) : dist (unop x) (unop y) = dist x y := rfl
-#align mul_opposite.dist_unop MulOpposite.dist_unop
-#align add_opposite.dist_unop AddOpposite.dist_unop
 
 @[to_additive (attr := simp)]
 lemma dist_op (x y : α) : dist (op x) (op y) = dist x y := rfl
-#align mul_opposite.dist_op MulOpposite.dist_op
-#align add_opposite.dist_op AddOpposite.dist_op
 
 @[to_additive (attr := simp)]
 lemma nndist_unop (x y : αᵐᵒᵖ) : nndist (unop x) (unop y) = nndist x y := rfl
-#align mul_opposite.nndist_unop MulOpposite.nndist_unop
-#align add_opposite.nndist_unop AddOpposite.nndist_unop
 
 @[to_additive (attr := simp)]
 lemma nndist_op (x y : α) : nndist (op x) (op y) = nndist x y := rfl
-#align mul_opposite.nndist_op MulOpposite.nndist_op
-#align add_opposite.nndist_op AddOpposite.nndist_op
 
 end MulOpposite
 
@@ -93,32 +79,27 @@ section NNReal
 instance : PseudoMetricSpace ℝ≥0 := Subtype.pseudoMetricSpace
 
 lemma NNReal.dist_eq (a b : ℝ≥0) : dist a b = |(a : ℝ) - b| := rfl
-#align nnreal.dist_eq NNReal.dist_eq
 
 lemma NNReal.nndist_eq (a b : ℝ≥0) : nndist a b = max (a - b) (b - a) :=
   eq_of_forall_ge_iff fun _ => by
     simp only [max_le_iff, tsub_le_iff_right (α := ℝ≥0)]
     simp only [← NNReal.coe_le_coe, coe_nndist, dist_eq, abs_sub_le_iff,
       tsub_le_iff_right, NNReal.coe_add]
-#align nnreal.nndist_eq NNReal.nndist_eq
 
 @[simp]
 lemma NNReal.nndist_zero_eq_val (z : ℝ≥0) : nndist 0 z = z := by
   simp only [NNReal.nndist_eq, max_eq_right, tsub_zero, zero_tsub, zero_le']
-#align nnreal.nndist_zero_eq_val NNReal.nndist_zero_eq_val
 
 @[simp]
 lemma NNReal.nndist_zero_eq_val' (z : ℝ≥0) : nndist z 0 = z := by
   rw [nndist_comm]
   exact NNReal.nndist_zero_eq_val z
-#align nnreal.nndist_zero_eq_val' NNReal.nndist_zero_eq_val'
 
 lemma NNReal.le_add_nndist (a b : ℝ≥0) : a ≤ b + nndist a b := by
   suffices (a : ℝ) ≤ (b : ℝ) + dist a b by
     rwa [← NNReal.coe_le_coe, NNReal.coe_add, coe_nndist]
   rw [← sub_le_iff_le_add']
   exact le_of_abs_le (dist_eq a b).ge
-#align nnreal.le_add_nndist NNReal.le_add_nndist
 
 lemma NNReal.ball_zero_eq_Ico' (c : ℝ≥0) :
     Metric.ball (0 : ℝ≥0) c.toReal = Set.Ico 0 c := by ext x; simp
@@ -146,16 +127,12 @@ variable [PseudoMetricSpace β]
 instance : PseudoMetricSpace (ULift β) := PseudoMetricSpace.induced ULift.down ‹_›
 
 lemma dist_eq (x y : ULift β) : dist x y = dist x.down y.down := rfl
-#align ulift.dist_eq ULift.dist_eq
 
 lemma nndist_eq (x y : ULift β) : nndist x y = nndist x.down y.down := rfl
-#align ulift.nndist_eq ULift.nndist_eq
 
 @[simp] lemma dist_up_up (x y : β) : dist (ULift.up x) (ULift.up y) = dist x y := rfl
-#align ulift.dist_up_up ULift.dist_up_up
 
 @[simp] lemma nndist_up_up (x y : β) : nndist (ULift.up x) (ULift.up y) = nndist x y := rfl
-#align ulift.nndist_up_up ULift.nndist_up_up
 
 end ULift
 
@@ -173,28 +150,22 @@ instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
     simp only [← isBounded_image_fst_and_snd, isBounded_iff_eventually, forall_mem_image, ←
       eventually_and, ← forall_and, ← max_le_iff]
     rfl
-#align prod.pseudo_metric_space_max Prod.pseudoMetricSpaceMax
 
 lemma Prod.dist_eq {x y : α × β} : dist x y = max (dist x.1 y.1) (dist x.2 y.2) := rfl
-#align prod.dist_eq Prod.dist_eq
 
 @[simp]
 lemma dist_prod_same_left {x : α} {y₁ y₂ : β} : dist (x, y₁) (x, y₂) = dist y₁ y₂ := by
   simp [Prod.dist_eq, dist_nonneg]
-#align dist_prod_same_left dist_prod_same_left
 
 @[simp]
 lemma dist_prod_same_right {x₁ x₂ : α} {y : β} : dist (x₁, y) (x₂, y) = dist x₁ x₂ := by
   simp [Prod.dist_eq, dist_nonneg]
-#align dist_prod_same_right dist_prod_same_right
 
 lemma ball_prod_same (x : α) (y : β) (r : ℝ) : ball x r ×ˢ ball y r = ball (x, y) r :=
   ext fun z => by simp [Prod.dist_eq]
-#align ball_prod_same ball_prod_same
 
 lemma closedBall_prod_same (x : α) (y : β) (r : ℝ) :
     closedBall x r ×ˢ closedBall y r = closedBall (x, y) r := ext fun z => by simp [Prod.dist_eq]
-#align closed_ball_prod_same closedBall_prod_same
 
 lemma sphere_prod (x : α × β) (r : ℝ) :
     sphere x r = sphere x.1 r ×ˢ closedBall x.2 r ∪ closedBall x.1 r ×ˢ sphere x.2 r := by
@@ -207,7 +178,6 @@ lemma sphere_prod (x : α × β) (r : ℝ) :
       max_eq_iff]
     refine or_congr (and_congr_right ?_) (and_comm.trans (and_congr_left ?_))
     all_goals rintro rfl; rfl
-#align sphere_prod sphere_prod
 
 end Prod
 
@@ -219,60 +189,49 @@ lemma uniformContinuous_dist : UniformContinuous fun p : α × α => dist p.1 p.
       _ ≤ dist a b + dist a b := add_le_add (le_max_left _ _) (le_max_right _ _)
       _ < ε / 2 + ε / 2 := add_lt_add h h
       _ = ε := add_halves ε⟩
-#align uniform_continuous_dist uniformContinuous_dist
 
 protected lemma UniformContinuous.dist [UniformSpace β] {f g : β → α} (hf : UniformContinuous f)
     (hg : UniformContinuous g) : UniformContinuous fun b => dist (f b) (g b) :=
   uniformContinuous_dist.comp (hf.prod_mk hg)
-#align uniform_continuous.dist UniformContinuous.dist
 
 @[continuity]
 lemma continuous_dist : Continuous fun p : α × α ↦ dist p.1 p.2 := uniformContinuous_dist.continuous
-#align continuous_dist continuous_dist
 
 @[continuity, fun_prop]
 protected lemma Continuous.dist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => dist (f b) (g b) :=
   continuous_dist.comp (hf.prod_mk hg : _)
-#align continuous.dist Continuous.dist
 
 protected lemma Filter.Tendsto.dist {f g : β → α} {x : Filter β} {a b : α}
     (hf : Tendsto f x (𝓝 a)) (hg : Tendsto g x (𝓝 b)) :
     Tendsto (fun x => dist (f x) (g x)) x (𝓝 (dist a b)) :=
   (continuous_dist.tendsto (a, b)).comp (hf.prod_mk_nhds hg)
-#align filter.tendsto.dist Filter.Tendsto.dist
 
 lemma continuous_iff_continuous_dist [TopologicalSpace β] {f : β → α} :
     Continuous f ↔ Continuous fun x : β × β => dist (f x.1) (f x.2) :=
   ⟨fun h => h.fst'.dist h.snd', fun h =>
     continuous_iff_continuousAt.2 fun _ => tendsto_iff_dist_tendsto_zero.2 <|
       (h.comp (continuous_id.prod_mk continuous_const)).tendsto' _ _ <| dist_self _⟩
-#align continuous_iff_continuous_dist continuous_iff_continuous_dist
 
 lemma uniformContinuous_nndist : UniformContinuous fun p : α × α => nndist p.1 p.2 :=
   uniformContinuous_dist.subtype_mk _
-#align uniform_continuous_nndist uniformContinuous_nndist
 
 protected lemma UniformContinuous.nndist [UniformSpace β] {f g : β → α} (hf : UniformContinuous f)
     (hg : UniformContinuous g) : UniformContinuous fun b => nndist (f b) (g b) :=
   uniformContinuous_nndist.comp (hf.prod_mk hg)
-#align uniform_continuous.nndist UniformContinuous.nndist
 
 lemma continuous_nndist : Continuous fun p : α × α => nndist p.1 p.2 :=
   uniformContinuous_nndist.continuous
-#align continuous_nndist continuous_nndist
 
 @[fun_prop]
 protected lemma Continuous.nndist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => nndist (f b) (g b) :=
   continuous_nndist.comp (hf.prod_mk hg : _)
-#align continuous.nndist Continuous.nndist
 
 protected lemma Filter.Tendsto.nndist {f g : β → α} {x : Filter β} {a b : α}
     (hf : Tendsto f x (𝓝 a)) (hg : Tendsto g x (𝓝 b)) :
     Tendsto (fun x => nndist (f x) (g x)) x (𝓝 (nndist a b)) :=
   (continuous_nndist.tendsto (a, b)).comp (hf.prod_mk_nhds hg)
-#align filter.tendsto.nndist Filter.Tendsto.nndist
 
 section Pi
 
@@ -298,23 +257,18 @@ instance pseudoMetricSpacePi : PseudoMetricSpace (∀ b, π b) := by
   refine ⟨fun H x hx y hy ↦ NNReal.coe_le_coe.2 <| Finset.sup_le fun b _ ↦ H b hx hy,
     fun H b x hx y hy ↦ NNReal.coe_le_coe.2 ?_⟩
   simpa only using Finset.sup_le_iff.1 (NNReal.coe_le_coe.1 <| H hx hy) b (Finset.mem_univ b)
-#align pseudo_metric_space_pi pseudoMetricSpacePi
 
 lemma nndist_pi_def (f g : ∀ b, π b) : nndist f g = sup univ fun b => nndist (f b) (g b) := rfl
-#align nndist_pi_def nndist_pi_def
 
 lemma dist_pi_def (f g : ∀ b, π b) : dist f g = (sup univ fun b => nndist (f b) (g b) : ℝ≥0) := rfl
-#align dist_pi_def dist_pi_def
 
 lemma nndist_pi_le_iff {f g : ∀ b, π b} {r : ℝ≥0} :
     nndist f g ≤ r ↔ ∀ b, nndist (f b) (g b) ≤ r := by simp [nndist_pi_def]
-#align nndist_pi_le_iff nndist_pi_le_iff
 
 lemma nndist_pi_lt_iff {f g : ∀ b, π b} {r : ℝ≥0} (hr : 0 < r) :
     nndist f g < r ↔ ∀ b, nndist (f b) (g b) < r := by
   rw [← bot_eq_zero'] at hr
   simp [nndist_pi_def, Finset.sup_lt_iff hr]
-#align nndist_pi_lt_iff nndist_pi_lt_iff
 
 lemma nndist_pi_eq_iff {f g : ∀ b, π b} {r : ℝ≥0} (hr : 0 < r) :
     nndist f g = r ↔ (∃ i, nndist (f i) (g i) = r) ∧ ∀ b, nndist (f b) (g b) ≤ r := by
@@ -323,25 +277,21 @@ lemma nndist_pi_eq_iff {f g : ∀ b, π b} {r : ℝ≥0} (hr : 0 < r) :
   intro h
   refine exists_congr fun b => ?_
   apply (and_iff_right <| h _).symm
-#align nndist_pi_eq_iff nndist_pi_eq_iff
 
 lemma dist_pi_lt_iff {f g : ∀ b, π b} {r : ℝ} (hr : 0 < r) :
     dist f g < r ↔ ∀ b, dist (f b) (g b) < r := by
   lift r to ℝ≥0 using hr.le
   exact nndist_pi_lt_iff hr
-#align dist_pi_lt_iff dist_pi_lt_iff
 
 lemma dist_pi_le_iff {f g : ∀ b, π b} {r : ℝ} (hr : 0 ≤ r) :
     dist f g ≤ r ↔ ∀ b, dist (f b) (g b) ≤ r := by
   lift r to ℝ≥0 using hr
   exact nndist_pi_le_iff
-#align dist_pi_le_iff dist_pi_le_iff
 
 lemma dist_pi_eq_iff {f g : ∀ b, π b} {r : ℝ} (hr : 0 < r) :
     dist f g = r ↔ (∃ i, dist (f i) (g i) = r) ∧ ∀ b, dist (f b) (g b) ≤ r := by
   lift r to ℝ≥0 using hr.le
   simp_rw [← coe_nndist, NNReal.coe_inj, nndist_pi_eq_iff hr, NNReal.coe_le_coe]
-#align dist_pi_eq_iff dist_pi_eq_iff
 
 lemma dist_pi_le_iff' [Nonempty β] {f g : ∀ b, π b} {r : ℝ} :
     dist f g ≤ r ↔ ∀ b, dist (f b) (g b) ≤ r := by
@@ -349,34 +299,27 @@ lemma dist_pi_le_iff' [Nonempty β] {f g : ∀ b, π b} {r : ℝ} :
   · exact dist_pi_le_iff hr
   · exact iff_of_false (fun h => hr <| dist_nonneg.trans h) fun h =>
       hr <| dist_nonneg.trans <| h <| Classical.arbitrary _
-#align dist_pi_le_iff' dist_pi_le_iff'
 
 lemma dist_pi_const_le (a b : α) : (dist (fun _ : β => a) fun _ => b) ≤ dist a b :=
   (dist_pi_le_iff dist_nonneg).2 fun _ => le_rfl
-#align dist_pi_const_le dist_pi_const_le
 
 lemma nndist_pi_const_le (a b : α) : (nndist (fun _ : β => a) fun _ => b) ≤ nndist a b :=
   nndist_pi_le_iff.2 fun _ => le_rfl
-#align nndist_pi_const_le nndist_pi_const_le
 
 @[simp]
 lemma dist_pi_const [Nonempty β] (a b : α) : (dist (fun _ : β => a) fun _ => b) = dist a b := by
   simpa only [dist_edist] using congr_arg ENNReal.toReal (edist_pi_const a b)
-#align dist_pi_const dist_pi_const
 
 @[simp]
 lemma nndist_pi_const [Nonempty β] (a b : α) : (nndist (fun _ : β => a) fun _ => b) = nndist a b :=
   NNReal.eq <| dist_pi_const a b
-#align nndist_pi_const nndist_pi_const
 
 lemma nndist_le_pi_nndist (f g : ∀ b, π b) (b : β) : nndist (f b) (g b) ≤ nndist f g := by
   rw [← ENNReal.coe_le_coe, ← edist_nndist, ← edist_nndist]
   exact edist_le_pi_edist f g b
-#align nndist_le_pi_nndist nndist_le_pi_nndist
 
 lemma dist_le_pi_dist (f g : ∀ b, π b) (b : β) : dist (f b) (g b) ≤ dist f g := by
   simp only [dist_nndist, NNReal.coe_le_coe, nndist_le_pi_nndist f g b]
-#align dist_le_pi_dist dist_le_pi_dist
 
 /-- An open ball in a product space is a product of open balls. See also `ball_pi'`
 for a version assuming `Nonempty β` instead of `0 < r`. -/
@@ -384,14 +327,12 @@ lemma ball_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 < r) :
     ball x r = Set.pi univ fun b => ball (x b) r := by
   ext p
   simp [dist_pi_lt_iff hr]
-#align ball_pi ball_pi
 
 /-- An open ball in a product space is a product of open balls. See also `ball_pi`
 for a version assuming `0 < r` instead of `Nonempty β`. -/
 lemma ball_pi' [Nonempty β] (x : ∀ b, π b) (r : ℝ) :
     ball x r = Set.pi univ fun b => ball (x b) r :=
   (lt_or_le 0 r).elim (ball_pi x) fun hr => by simp [ball_eq_empty.2 hr]
-#align ball_pi' ball_pi'
 
 /-- A closed ball in a product space is a product of closed balls. See also `closedBall_pi'`
 for a version assuming `Nonempty β` instead of `0 ≤ r`. -/
@@ -399,14 +340,12 @@ lemma closedBall_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 ≤ r) :
     closedBall x r = Set.pi univ fun b => closedBall (x b) r := by
   ext p
   simp [dist_pi_le_iff hr]
-#align closed_ball_pi closedBall_pi
 
 /-- A closed ball in a product space is a product of closed balls. See also `closedBall_pi`
 for a version assuming `0 ≤ r` instead of `Nonempty β`. -/
 lemma closedBall_pi' [Nonempty β] (x : ∀ b, π b) (r : ℝ) :
     closedBall x r = Set.pi univ fun b => closedBall (x b) r :=
   (le_or_lt 0 r).elim (closedBall_pi x) fun hr => by simp [closedBall_eq_empty.2 hr]
-#align closed_ball_pi' closedBall_pi'
 
 /-- A sphere in a product space is a union of spheres on each component restricted to the closed
 ball. -/
@@ -424,21 +363,18 @@ lemma sphere_pi (x : ∀ b, π b) {r : ℝ} (h : 0 < r ∨ Nonempty β) :
     exact le_antisymm (hx default) dist_nonneg
   · ext
     simp [dist_pi_eq_iff hr, dist_pi_le_iff hr.le]
-#align sphere_pi sphere_pi
 
 @[simp]
 lemma Fin.nndist_insertNth_insertNth {n : ℕ} {α : Fin (n + 1) → Type*}
     [∀ i, PseudoMetricSpace (α i)] (i : Fin (n + 1)) (x y : α i) (f g : ∀ j, α (i.succAbove j)) :
     nndist (i.insertNth x f) (i.insertNth y g) = max (nndist x y) (nndist f g) :=
   eq_of_forall_ge_iff fun c => by simp [nndist_pi_le_iff, i.forall_iff_succAbove]
-#align fin.nndist_insert_nth_insert_nth Fin.nndist_insertNth_insertNth
 
 @[simp]
 lemma Fin.dist_insertNth_insertNth {n : ℕ} {α : Fin (n + 1) → Type*}
     [∀ i, PseudoMetricSpace (α i)] (i : Fin (n + 1)) (x y : α i) (f g : ∀ j, α (i.succAbove j)) :
     dist (i.insertNth x f) (i.insertNth y g) = max (dist x y) (dist f g) := by
   simp only [dist_nndist, Fin.nndist_insertNth_insertNth, NNReal.coe_max]
-#align fin.dist_insert_nth_insert_nth Fin.dist_insertNth_insertNth
 
 end Pi
 

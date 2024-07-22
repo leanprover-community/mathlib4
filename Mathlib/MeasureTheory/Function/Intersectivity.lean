@@ -29,7 +29,7 @@ Bergelson.
 -/
 
 open Filter Function MeasureTheory Set
-open scoped BigOperators ENNReal NNReal
+open scoped ENNReal
 
 variable {ι α : Type*} [MeasurableSpace α] {μ : Measure α} [IsFiniteMeasure μ] {r : ℝ≥0∞}
 
@@ -39,7 +39,7 @@ measure at least `r` has an infinite subset whose finite intersections all have 
 TODO: The infinity of `t` should be strengthened to `t` having positive natural density. -/
 lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ : r ≠ 0)
     (hr : ∀ n, r ≤ μ (s n)) :
-  ∃ t : Set ℕ, t.Infinite ∧ ∀ ⦃u⦄, u ⊆ t → u.Finite → 0 < μ (⋂ n ∈ u, s n) := by
+    ∃ t : Set ℕ, t.Infinite ∧ ∀ ⦃u⦄, u ⊆ t → u.Finite → 0 < μ (⋂ n ∈ u, s n) := by
   -- We let `M f` be the set on which the norm of `f` exceeds its essential supremum, and `N` be the
   -- union of `M` of the finite products of the indicators of the `s n`.
   let M (f : α → ℝ) : Set α := {x | snormEssSup f μ < ‖f x‖₊}
@@ -93,20 +93,20 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
       _ ≤ ⨍⁻ x, limsup (f · x) atTop ∂μ := limsup_lintegral_le 1 hf (ae_of_all _ $ hf₁ ·) (by simp)
       _ ≤ limsup (f · x) atTop := hx
   -- This exactly means that the `s n` containing `x` have all their finite intersection non-null.
-  refine ⟨{n | x ∈ s n}, fun hxs ↦ ?_, fun u hux hu ↦ ?_⟩
-  -- This next block proves that a set of strictly positive natural density is infinite, mixed with
-  -- the fact that `{n | x ∈ s n}` has strictly positive natural density.
-  -- TODO: Separate it out to a lemma once we have a natural density API.
-  · refine ENNReal.div_ne_zero.2 ⟨hr₀, measure_ne_top _ _⟩ $ eq_bot_mono hx $ Tendsto.limsup_eq $
-      tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-      (h := fun n ↦ (n.succ : ℝ≥0∞)⁻¹ * hxs.toFinset.card) ?_ bot_le fun n ↦ mul_le_mul_left' ?_ _
-    · simpa using ENNReal.Tendsto.mul_const (ENNReal.tendsto_inv_nat_nhds_zero.comp $
-        tendsto_add_atTop_nat 1) (.inr $ ENNReal.natCast_ne_top _)
-    · classical
-      simpa only [Finset.sum_apply, indicator_apply, Pi.one_apply, Finset.sum_boole, Nat.cast_le]
-        using Finset.card_le_card fun m hm ↦ hxs.mem_toFinset.2 (Finset.mem_filter.1 hm).2
-  · simp_rw [← hu.mem_toFinset]
-    exact hN₁ _ ⟨x, mem_iInter₂.2 fun n hn ↦ hux $ hu.mem_toFinset.1 hn, hxN⟩
+  · refine ⟨{n | x ∈ s n}, fun hxs ↦ ?_, fun u hux hu ↦ ?_⟩
+    -- This next block proves that a set of strictly positive natural density is infinite, mixed with
+    -- the fact that `{n | x ∈ s n}` has strictly positive natural density.
+    -- TODO: Separate it out to a lemma once we have a natural density API.
+    · refine ENNReal.div_ne_zero.2 ⟨hr₀, measure_ne_top _ _⟩ $ eq_bot_mono hx $ Tendsto.limsup_eq $
+        tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
+        (h := fun n ↦ (n.succ : ℝ≥0∞)⁻¹ * hxs.toFinset.card) ?_ bot_le fun n ↦ mul_le_mul_left' ?_ _
+      · simpa using ENNReal.Tendsto.mul_const (ENNReal.tendsto_inv_nat_nhds_zero.comp $
+          tendsto_add_atTop_nat 1) (.inr $ ENNReal.natCast_ne_top _)
+      · classical
+        simpa only [Finset.sum_apply, indicator_apply, Pi.one_apply, Finset.sum_boole, Nat.cast_le]
+          using Finset.card_le_card fun m hm ↦ hxs.mem_toFinset.2 (Finset.mem_filter.1 hm).2
+    · simp_rw [← hu.mem_toFinset]
+      exact hN₁ _ ⟨x, mem_iInter₂.2 fun n hn ↦ hux $ hu.mem_toFinset.1 hn, hxN⟩
   · refine eventually_of_forall fun n ↦ ?_
     obtain rfl | _ := eq_zero_or_neZero μ
     · simp
@@ -120,7 +120,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
 measure at least `r` has an infinite subset whose finite intersections all have positive volume. -/
 lemma bergelson [Infinite ι] {s : ι → Set α} (hs : ∀ i, MeasurableSet (s i)) (hr₀ : r ≠ 0)
     (hr : ∀ i, r ≤ μ (s i)) :
-  ∃ t : Set ι, t.Infinite ∧ ∀ ⦃u⦄, u ⊆ t → u.Finite → 0 < μ (⋂ i ∈ u, s i) := by
+    ∃ t : Set ι, t.Infinite ∧ ∀ ⦃u⦄, u ⊆ t → u.Finite → 0 < μ (⋂ i ∈ u, s i) := by
   obtain ⟨t, ht, h⟩ := bergelson' (fun n ↦ hs $ Infinite.natEmbedding _ n) hr₀ (fun n ↦ hr _)
   refine ⟨_, ht.image $ (Infinite.natEmbedding _).injective.injOn, fun u hut hu ↦
     (h (preimage_subset_of_surjOn (Infinite.natEmbedding _).injective hut) $ hu.preimage
