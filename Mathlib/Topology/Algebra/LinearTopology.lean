@@ -31,8 +31,11 @@ that the range of `B` defines a basis of neighborhoods of `0` for *some* topolog
 - `Ideal.IsBasis.topologicalRing`: an `Ideal.IsBasis` defines a topological ring
 
 - `Ideal.IsBasis.toIdealBasis` and `IdealBasis.toIsBasis` convert one
-structure to another; in one direction, `IdealBasis.toIsBasis.toIdealBasis_eq` proves that this identity; in the otheer direction,
-`Ideal.IsBasis.ofIdealBasis_topology_eq` proves that the topologies coincide
+structure to another.
+
+- `IdealBasis.toIsBasis.toIdealBasis_eq` proves that this identity;
+
+- `Ideal.IsBasis.ofIdealBasis_topology_eq` proves that the topologies coincide.
 
 - For `Ring R` and `TopologicalSpace R`, the type class `LinearTopology R`
 asserts that the topology is linear.
@@ -40,7 +43,8 @@ asserts that the topology is linear.
 - `LinearTopology.topologicalRing`: instance showing that then the ring is
 a topological ring.
 
-- `LinearTopology.tendsto_zero_mul`: for `f, g : ι → R` such that `f i` converges to `0`, `f i * g i` converges to `0`
+- `LinearTopology.tendsto_zero_mul`: for `f, g : ι → R`
+such that `f i` converges to `0`, then `f i * g i` converges to `0`
 
 -/
 
@@ -79,7 +83,8 @@ variable {α}
 
 variable {ι : Sort*} (B : ι → Ideal α)
 
-/-- `Ideal.IsBasis B` means the image of `B` is a filter basis consisting of left- and right-ideals. -/
+/-- `Ideal.IsBasis B` means the image of `B` is a filter basis consisting
+of left- and right-ideals. -/
 structure Ideal.IsBasis  : Prop where
   /-- There is an `i : ι` -/
   nonempty : Nonempty ι
