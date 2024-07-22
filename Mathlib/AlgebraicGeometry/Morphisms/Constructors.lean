@@ -156,7 +156,7 @@ end Diagonal
 section Universally
 
 theorem universally_isLocalAtTarget (P : MorphismProperty Scheme)
-    (hP₂ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Opens Y.carrier)
+    (hP₂ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Y.Opens.carrier)
       (_ : iSup U = ⊤), (∀ i, P (f ∣_ U i)) → P f) : IsLocalAtTarget P.universally := by
   apply IsLocalAtTarget.mk'
   · exact fun {X Y} f U => P.universally_stableUnderBaseChange

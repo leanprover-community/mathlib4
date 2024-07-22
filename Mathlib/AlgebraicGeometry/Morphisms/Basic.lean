@@ -51,7 +51,7 @@ For a morphism property `P` local at the source and `f : X ⟶ Y`, we provide th
 - `AlgebraicGeometry.IsLocalAtTarget.comp`:
     `P` is preserved under composition with open immersions at the source.
 - `AlgebraicGeometry.IsLocalAtTarget.iff_of_iSup_eq_top`:
-    `P f ↔ ∀ i, P (ιOpens U ≫ f)` for a family `U i` of open sets covering `X`.
+    `P f ↔ ∀ i, P (U.ι ≫ f)` for a family `U i` of open sets covering `X`.
 - `AlgebraicGeometry.IsLocalAtTarget.iff_of_openCover`:
     `P f ↔ ∀ i, P (𝒰.map i ≫ f)` for `𝒰 : X.openCover`.
 - `AlgebraicGeometry.IsLocalAtTarget.of_isOpenImmersion`: If `P` contains identities then `P` holds
@@ -124,9 +124,9 @@ attribute [instance] respectsIso
 3. If `P` holds for `f ∣_ U` for an open cover `U` of `Y`, then `P` holds for `f`.
 -/
 protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
-    (restrict : ∀ {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y), P f → P (f ∣_ U))
+    (restrict : ∀ {X Y : Scheme} (f : X ⟶ Y) (U : Y.Opens), P f → P (f ∣_ U))
     (of_sSup_eq_top :
-      ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Opens Y), iSup U = ⊤ →
+      ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Y.Opens), iSup U = ⊤ →
         (∀ i, P (f ∣_ U i)) → P f) :
     IsLocalAtTarget P := by
   refine ⟨inferInstance, fun {X Y} f 𝒰 ↦ ⟨?_, fun H ↦ of_sSup_eq_top f _ 𝒰.iSup_opensRange ?_⟩⟩
@@ -150,10 +150,10 @@ lemma of_isPullback {UX UY : Scheme.{u}} {iY : UY ⟶ Y} [IsOpenImmersion iY]
   rw [← P.cancel_left_of_respectsIso h.isoPullback.inv, h.isoPullback_inv_snd]
   exact (iff_of_openCover' f (Y.affineCover.add iY)).mp H .none
 
-theorem restrict (hf : P f) (U : Opens Y) : P (f ∣_ U) :=
+theorem restrict (hf : P f) (U : Y.Opens) : P (f ∣_ U) :=
   of_isPullback (isPullback_morphismRestrict f U).flip hf
 
-lemma of_iSup_eq_top {ι} (U : ι → Opens Y) (hU : iSup U = ⊤)
+lemma of_iSup_eq_top {ι} (U : ι → Y.Opens) (hU : iSup U = ⊤)
     (H : ∀ i, P (f ∣_ U i)) : P f := by
   refine (IsLocalAtTarget.iff_of_openCover' f
     (Y.openCoverOfSuprEqTop (s := Set.range U) Subtype.val (by ext; simp [← hU]))).mpr fun i ↦ ?_
@@ -163,7 +163,7 @@ lemma of_iSup_eq_top {ι} (U : ι → Opens Y) (hU : iSup U = ⊤)
   rw [opensRange_ιOpens]
   exact H i
 
-theorem iff_of_iSup_eq_top {ι} (U : ι → Opens Y) (hU : iSup U = ⊤) :
+theorem iff_of_iSup_eq_top {ι} (U : ι → Y.Opens) (hU : iSup U = ⊤) :
     P f ↔ ∀ i, P (f ∣_ U i) :=
   ⟨fun H _ ↦ restrict H _, of_iSup_eq_top U hU⟩
 
@@ -202,9 +202,9 @@ attribute [instance] respectsIso
 3. If `P` holds for `f ∣_ U` for an open cover `U` of `Y`, then `P` holds for `f`.
 -/
 protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
-    (restrict : ∀ {X Y : Scheme} (f : X ⟶ Y) (U : Opens X), P f → P (Scheme.ιOpens U ≫ f))
+    (restrict : ∀ {X Y : Scheme} (f : X ⟶ Y) (U : X.Opens), P f → P (U.ι ≫ f))
     (of_sSup_eq_top :
-      ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Opens X), iSup U = ⊤ →
+      ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → X.Opens), iSup U = ⊤ →
         (∀ i, P (Scheme.ιOpens (U i) ≫ f)) → P f) :
     IsLocalAtSource P := by
   refine ⟨inferInstance, fun {X Y} f 𝒰 ↦
@@ -234,14 +234,14 @@ lemma comp {UX : Scheme.{u}} (H : P f) (i : UX ⟶ X) [IsOpenImmersion i] :
     P (i ≫ f) :=
   (iff_of_openCover' f (X.affineCover.add i)).mp H .none
 
-lemma of_iSup_eq_top {ι} (U : ι → Opens X) (hU : iSup U = ⊤)
+lemma of_iSup_eq_top {ι} (U : ι → X.Opens) (hU : iSup U = ⊤)
     (H : ∀ i, P (Scheme.ιOpens (U i) ≫ f)) : P f := by
   refine (iff_of_openCover' f
     (X.openCoverOfSuprEqTop (s := Set.range U) Subtype.val (by ext; simp [← hU]))).mpr fun i ↦ ?_
   obtain ⟨_, i, rfl⟩ := i
   exact H i
 
-theorem iff_of_iSup_eq_top {ι} (U : ι → Opens X) (hU : iSup U = ⊤) :
+theorem iff_of_iSup_eq_top {ι} (U : ι → X.Opens) (hU : iSup U = ⊤) :
     P f ↔ ∀ i, P (Scheme.ιOpens (U i) ≫ f) :=
   ⟨fun H _ ↦ comp H _, of_iSup_eq_top U hU⟩
 
@@ -469,7 +469,7 @@ instance (priority := 900) : P.RespectsIso := by
   infer_instance
 
 theorem of_iSup_eq_top
-    {ι} (U : ι → Y.affineOpens) (hU : ⨆ i, (U i : Opens Y) = ⊤)
+    {ι} (U : ι → Y.affineOpens) (hU : ⨆ i, (U i : Y.Opens) = ⊤)
     (hU' : ∀ i, Q (f ∣_ U i)) :
     P f := by
   letI := isLocal_affineProperty P
@@ -492,7 +492,7 @@ theorem of_iSup_eq_top
   | hU i => exact hU' i
 
 theorem iff_of_iSup_eq_top
-    {ι} (U : ι → Y.affineOpens) (hU : ⨆ i, (U i : Opens Y) = ⊤) :
+    {ι} (U : ι → Y.affineOpens) (hU : ⨆ i, (U i : Y.Opens) = ⊤) :
     P f ↔ ∀ i, Q (f ∣_ U i) :=
   ⟨fun H _ ↦ restrict H _, fun H ↦ HasAffineProperty.of_iSup_eq_top U hU H⟩
 

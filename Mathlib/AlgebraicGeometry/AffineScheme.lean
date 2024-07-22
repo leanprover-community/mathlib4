@@ -179,12 +179,12 @@ noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetTo
 end AffineScheme
 
 /-- An open subset of a scheme is affine if the open subscheme is affine. -/
-def IsAffineOpen {X : Scheme} (U : Opens X) : Prop :=
+def IsAffineOpen {X : Scheme} (U : X.Opens) : Prop :=
   IsAffine (X ∣_ᵤ U)
 
 /-- The set of affine opens as a subset of `opens X`. -/
-def Scheme.affineOpens (X : Scheme) : Set (Opens X) :=
-  {U : Opens X | IsAffineOpen U}
+def Scheme.affineOpens (X : Scheme) : Set X.Opens :=
+  {U : X.Opens | IsAffineOpen U}
 
 instance {Y : Scheme.{u}} (U : Y.affineOpens) :
     IsAffine (Scheme.restrict Y <| Opens.openEmbedding U.val) :=
@@ -195,7 +195,7 @@ theorem isAffineOpen_opensRange {X Y : Scheme} [IsAffine X] (f : X ⟶ Y)
   refine isAffine_of_isIso (IsOpenImmersion.isoOfRangeEq f (Y.ofRestrict _) ?_).inv
   exact Subtype.range_val.symm
 
-theorem isAffineOpen_top (X : Scheme) [IsAffine X] : IsAffineOpen (⊤ : Opens X) := by
+theorem isAffineOpen_top (X : Scheme) [IsAffine X] : IsAffineOpen (⊤ : X.Opens) := by
   convert isAffineOpen_opensRange (𝟙 X)
   ext1
   exact Set.range_id.symm
@@ -223,7 +223,7 @@ theorem isBasis_affine_open (X : Scheme) : Opens.IsBasis X.affineOpens := by
   rcases hS with ⟨i, rfl⟩
   exact isAffineOpen_opensRange _
 
-theorem iSup_affineOpens_eq_top (X : Scheme) : ⨆ i : X.affineOpens, (i : Opens X) = ⊤ := by
+theorem iSup_affineOpens_eq_top (X : Scheme) : ⨆ i : X.affineOpens, (i : X.Opens) = ⊤ := by
   apply Opens.ext
   rw [Opens.coe_iSup]
   apply IsTopologicalBasis.sUnion_eq
@@ -236,7 +236,7 @@ theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
   ΓSpec.adjunction_unit_map_basicOpen _ _
 
 theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
-    Opens.IsBasis (Set.range (X.basicOpen : Γ(X, ⊤) → Opens X)) := by
+    Opens.IsBasis (Set.range (X.basicOpen : Γ(X, ⊤) → X.Opens)) := by
   delta Opens.IsBasis
   convert PrimeSpectrum.isBasis_basic_opens.inducing
     (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso X.isoSpec)).inducing using 1
@@ -252,14 +252,14 @@ theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
 
 namespace IsAffineOpen
 
-variable {X Y : Scheme.{u}} {U : Opens X} (hU : IsAffineOpen U) (f : Γ(X, U))
+variable {X Y : Scheme.{u}} {U : X.Opens} (hU : IsAffineOpen U) (f : Γ(X, U))
 
 /-- The open immersion `Spec Γ(X, U) ⟶ X` for an affine `U`. -/
 def fromSpec :
     (Spec Γ(X, U)) ⟶ X :=
   haveI : IsAffine (X ∣_ᵤ U) := hU
   Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op) ≫
-    (X ∣_ᵤ U).isoSpec.inv ≫ Scheme.ιOpens U
+    (X ∣_ᵤ U).isoSpec.inv ≫ U.ι
 
 instance isOpenImmersion_fromSpec :
     IsOpenImmersion hU.fromSpec := by
@@ -279,7 +279,7 @@ theorem range_fromSpec :
 theorem opensRange_fromSpec : Scheme.Hom.opensRange hU.fromSpec = U := Opens.ext (range_fromSpec hU)
 
 @[reassoc (attr := simp)]
-theorem map_fromSpec {V : Opens X} (hV : IsAffineOpen V) (f : op U ⟶ op V) :
+theorem map_fromSpec {V : X.Opens} (hV : IsAffineOpen V) (f : op U ⟶ op V) :
     Spec.map (X.presheaf.map f) ≫ hU.fromSpec = hV.fromSpec := by
   have : IsAffine (X.restrictFunctor.obj U).left := hU
   haveI : IsAffine _ := hV
@@ -303,13 +303,13 @@ theorem image_of_isOpenImmersion (f : X ⟶ Y) [H : IsOpenImmersion f] :
   ext1
   exact Set.image_eq_range _ _
 
-theorem preimage_of_isIso {U : Opens Y.carrier} (hU : IsAffineOpen U) (f : X ⟶ Y) [IsIso f] :
+theorem preimage_of_isIso {U : Y.Opens.carrier} (hU : IsAffineOpen U) (f : X ⟶ Y) [IsIso f] :
     IsAffineOpen (f ⁻¹ᵁ U) :=
   haveI : IsAffine _ := hU
   isAffine_of_isIso (f ∣_ U)
 
 theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
-    (f : AlgebraicGeometry.Scheme.Hom X Y) [H : IsOpenImmersion f] {U : Opens X} :
+    (f : AlgebraicGeometry.Scheme.Hom X Y) [H : IsOpenImmersion f] {U : X.Opens} :
     IsAffineOpen (f ''ᵁ U) ↔ IsAffineOpen U := by
   refine ⟨fun hU => @isAffine_of_isIso _ _
     (IsOpenImmersion.isoOfRangeEq (X.ofRestrict U.openEmbedding ≫ f) (Y.ofRestrict _) ?_).hom ?_ hU,
@@ -334,14 +334,14 @@ def _root_.AlgebraicGeometry.IsOpenImmersion.affineOpensEquiv (f : X ⟶ Y) [H :
 /-- The affine open sets of an open subscheme
 corresponds to the affine open sets containing in the subset. -/
 @[simps! apply_coe_coe]
-def _root_.AlgebraicGeometry.affineOpensRestrict {X : Scheme.{u}} (U : Opens X) :
+def _root_.AlgebraicGeometry.affineOpensRestrict {X : Scheme.{u}} (U : X.Opens) :
     (X ∣_ᵤ U).affineOpens ≃ { V : X.affineOpens // V ≤ U } :=
-  (IsOpenImmersion.affineOpensEquiv (Scheme.ιOpens U)).trans (Equiv.subtypeEquivProp (by simp))
+  (IsOpenImmersion.affineOpensEquiv U.ι).trans (Equiv.subtypeEquivProp (by simp))
 
 @[simp]
 lemma _root_.AlgebraicGeometry.affineOpensRestrict_symm_apply_coe
-    {X : Scheme.{u}} (U : Opens X) (V) :
-    ((affineOpensRestrict U).symm V).1 = Scheme.ιOpens U ⁻¹ᵁ V := rfl
+    {X : Scheme.{u}} (U : X.Opens) (V) :
+    ((affineOpensRestrict U).symm V).1 = U.ι ⁻¹ᵁ V := rfl
 
 instance (priority := 100) _root_.AlgebraicGeometry.Scheme.compactSpace_of_isAffine
     (X : Scheme) [IsAffine X] :
@@ -420,16 +420,16 @@ theorem ιOpens_basicOpen_preimage (r : Γ(X, ⊤)) :
     ← Scheme.basicOpen_res _ _ (homOfLE le_top).op]
   exact hU.basicOpen _
 
-theorem exists_basicOpen_le {V : Opens X} (x : V) (h : ↑x ∈ U) :
+theorem exists_basicOpen_le {V : X.Opens} (x : V) (h : ↑x ∈ U) :
     ∃ f : Γ(X, U), X.basicOpen f ≤ V ∧ ↑x ∈ X.basicOpen f := by
   have : IsAffine _ := hU
   obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, h₁, h₂⟩ :=
     (isBasis_basicOpen (X ∣_ᵤ U)).exists_subset_of_mem_open (x.2 : ⟨x, h⟩ ∈ _)
       ((Opens.map U.inclusion).obj V).isOpen
   have :
-    Scheme.ιOpens U ''ᵁ ((X ∣_ᵤ U).basicOpen r) =
+    U.ι ''ᵁ ((X ∣_ᵤ U).basicOpen r) =
       X.basicOpen (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r) := by
-    refine (Scheme.image_basicOpen (Scheme.ιOpens U) r).trans ?_
+    refine (Scheme.image_basicOpen U.ι r).trans ?_
     rw [Scheme.basicOpen_res_eq]
     simp only [Scheme.restrict_presheaf_obj, Scheme.ofRestrict_appIso, Iso.refl_inv,
       CommRingCat.id_apply]
@@ -475,8 +475,8 @@ instance _root_.AlgebraicGeometry.isLocalization_away_of_isAffine
     IsLocalization.Away r Γ(X, X.basicOpen r) :=
   isLocalization_basicOpen (isAffineOpen_top X) r
 
-lemma appLE_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Opens Y} (hU : IsAffineOpen U)
-    {V : Opens X} (hV : IsAffineOpen V) (e) (r : Γ(Y, U)) :
+lemma appLE_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens} (hU : IsAffineOpen U)
+    {V : X.Opens} (hV : IsAffineOpen V) (e) (r : Γ(Y, U)) :
     letI := hU.isLocalization_basicOpen r
     letI := hV.isLocalization_basicOpen (f.appLE U V e r)
     f.appLE (Y.basicOpen r) (X.basicOpen (f.appLE U V e r))
@@ -489,7 +489,7 @@ lemma appLE_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Opens Y} (hU : IsA
     RingHom.algebraMap_toAlgebra, RingHom.algebraMap_toAlgebra, ← CommRingCat.comp_eq_ring_hom_comp,
     Scheme.Hom.appLE_map, Scheme.Hom.map_appLE]
 
-theorem isLocalization_of_eq_basicOpen {V : Opens X} (i : V ⟶ U) (e : V = X.basicOpen f) :
+theorem isLocalization_of_eq_basicOpen {V : X.Opens} (i : V ⟶ U) (e : V = X.basicOpen f) :
     @IsLocalization.Away _ _ f Γ(X, V) _ (X.presheaf.map i.op).toAlgebra := by
   subst e; convert isLocalization_basicOpen hU f using 3
 
@@ -507,7 +507,7 @@ theorem basicOpen_basicOpen_is_basicOpen (g : Γ(X, X.basicOpen f)) :
   rw [Scheme.basicOpen_res]
   refine (inf_eq_left.mpr ?_).symm
   -- Porting note: a little help is needed here
-  convert inf_le_left (α := Opens X) using 1
+  convert inf_le_left (α := X.Opens) using 1
   apply Scheme.basicOpen_of_isUnit
   apply
     Submonoid.leftInv_le_isUnit _
@@ -515,7 +515,7 @@ theorem basicOpen_basicOpen_is_basicOpen (g : Γ(X, X.basicOpen f)) :
         _).prop
 
 theorem _root_.AlgebraicGeometry.exists_basicOpen_le_affine_inter
-    {V : Opens X} (hV : IsAffineOpen V) (x : X) (hx : x ∈ U ⊓ V) :
+    {V : X.Opens} (hV : IsAffineOpen V) (x : X) (hx : x ∈ U ⊓ V) :
     ∃ (f : Γ(X, U)) (g : Γ(X, V)), X.basicOpen f = X.basicOpen g ∧ x ∈ X.basicOpen f := by
   obtain ⟨f, hf₁, hf₂⟩ := hU.exists_basicOpen_le ⟨x, hx.2⟩ hx.1
   obtain ⟨g, hg₁, hg₂⟩ := hV.exists_basicOpen_le ⟨x, hf₂⟩ hx.2
@@ -628,7 +628,7 @@ Then `P` holds for every affine open of `X`.
 This is also known as the **Affine communication lemma** in [*The rising sea*][RisingSea]. -/
 @[elab_as_elim]
 theorem of_affine_open_cover {X : Scheme} {P : X.affineOpens → Prop}
-    {ι} (U : ι → X.affineOpens) (iSup_U : (⨆ i, U i : Opens X) = ⊤)
+    {ι} (U : ι → X.affineOpens) (iSup_U : (⨆ i, U i : X.Opens) = ⊤)
     (V : X.affineOpens)
     (basicOpen : ∀ (U : X.affineOpens) (f : Γ(X, U)), P U → P (X.affineBasicOpen f))
     (openCover :
@@ -639,7 +639,7 @@ theorem of_affine_open_cover {X : Scheme} {P : X.affineOpens → Prop}
   classical
   have : ∀ (x : V.1), ∃ f : Γ(X, V), ↑x ∈ X.basicOpen f ∧ P (X.affineBasicOpen f) := by
     intro x
-    obtain ⟨i, hi⟩ := Opens.mem_iSup.mp (show x.1 ∈ (⨆ i, U i : Opens X) from iSup_U ▸ trivial)
+    obtain ⟨i, hi⟩ := Opens.mem_iSup.mp (show x.1 ∈ (⨆ i, U i : X.Opens) from iSup_U ▸ trivial)
     obtain ⟨f, g, e, hf⟩ := exists_basicOpen_le_affine_inter V.prop (U i).prop x ⟨x.prop, hi⟩
     refine ⟨f, hf, ?_⟩
     convert basicOpen _ g (hU i) using 1

@@ -95,7 +95,7 @@ variable {X : Scheme}
 /-- If a scheme `X` has a cover by affine opens whose sections are Noetherian rings,
 then `X` is locally Noetherian. -/
 theorem isLocallyNoetherian_of_affine_cover {ι} {S : ι → X.affineOpens}
-    (hS : (⨆ i, S i : Opens X) = ⊤)
+    (hS : (⨆ i, S i : X.Opens) = ⊤)
     (hS' : ∀ i, IsNoetherianRing Γ(X, S i)) : IsLocallyNoetherian X := by
   refine ⟨fun U => ?_⟩
   induction U using of_affine_open_cover S hS with
@@ -116,7 +116,7 @@ are noetherian rings.
 
 See [Har77], Proposition II.3.2. -/
 theorem isLocallyNoetherian_iff_of_iSup_eq_top {ι} {S : ι → X.affineOpens}
-    (hS : (⨆ i, S i : Opens X) = ⊤) :
+    (hS : (⨆ i, S i : X.Opens) = ⊤) :
     IsLocallyNoetherian X ↔ ∀ i, IsNoetherianRing Γ(X, S i) :=
   ⟨fun _ i => IsLocallyNoetherian.component_noetherian (S i),
    isLocallyNoetherian_of_affine_cover hS⟩
@@ -183,7 +183,7 @@ lemma noetherianSpace_of_isAffine [IsAffine X] [IsNoetherianRing Γ(X, ⊤)] :
     NoetherianSpace X :=
   (noetherianSpace_iff_of_homeomorph X.isoSpec.inv.homeomorph).mp inferInstance
 
-lemma noetherianSpace_of_isAffineOpen (U : Opens X) (hU : IsAffineOpen U)
+lemma noetherianSpace_of_isAffineOpen (U : X.Opens) (hU : IsAffineOpen U)
     [IsNoetherianRing Γ(X, U)] :
     NoetherianSpace U := by
   have : IsNoetherianRing Γ(X ∣_ᵤ U, ⊤) := isNoetherianRing_of_ringEquiv _
@@ -232,7 +232,7 @@ class IsNoetherian (X : Scheme) extends IsLocallyNoetherian X, CompactSpace X : 
 /-- A scheme is Noetherian if and only if it is covered by finitely many affine opens whose
 sections are noetherian rings. -/
 theorem isNoetherian_iff_of_finite_iSup_eq_top {ι} [Finite ι] {S : ι → X.affineOpens}
-    (hS : (⨆ i, S i : Opens X) = ⊤) :
+    (hS : (⨆ i, S i : X.Opens) = ⊤) :
     IsNoetherian X ↔ ∀ i, IsNoetherianRing Γ(X, S i) := by
   constructor
   · intro h i

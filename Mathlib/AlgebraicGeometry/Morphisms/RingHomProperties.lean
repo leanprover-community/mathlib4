@@ -81,11 +81,11 @@ theorem RespectsIso.basicOpen_iff_localization (hP : RespectsIso @P) {X Y : Sche
 RespectsIso.ofRestrict_morphismRestrict_iff_of_isAffine := RespectsIso.basicOpen_iff_localization
 
 theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P) {X Y : Scheme.{u}}
-    [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj (Opposite.op ⊤)) (U : Opens X.carrier)
+    [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj (Opposite.op ⊤)) (U : X.Opens.carrier)
     (hU : IsAffineOpen U) {V : Opens _}
     (e : V = (Scheme.ιOpens <| f ⁻¹ᵁ Y.basicOpen r) ⁻¹ᵁ U) :
-    P (Scheme.Γ.map (Scheme.ιOpens V ≫ f ∣_ Y.basicOpen r).op) ↔
-    P (Localization.awayMap (Scheme.Γ.map (Scheme.ιOpens U ≫ f).op) r) := by
+    P (Scheme.Γ.map (Scheme.V.ι ≫ f ∣_ Y.basicOpen r).op) ↔
+    P (Localization.awayMap (Scheme.Γ.map (U.ι ≫ f).op) r) := by
   subst e
   refine (hP.cancel_right_isIso _
     (Scheme.Γ.mapIso (Scheme.restrictRestrictComm _ _ _).op).inv).symm.trans ?_
@@ -241,7 +241,7 @@ theorem sourceAffineLocally_of_source_open_cover_aux (h₁ : RingHom.RespectsIso
     (h₃ : RingHom.OfLocalizationSpanTarget @P) {X Y : Scheme.{u}} (f : X ⟶ Y) (U : X.affineOpens)
     (s : Set (X.presheaf.obj (op U.1))) (hs : Ideal.span s = ⊤)
     (hs' : ∀ r : s, P (Scheme.Γ.map (Scheme.ιOpens (X.basicOpen r.1) ≫ f).op)) :
-    P (Scheme.Γ.map (Scheme.ιOpens U ≫ f).op) := by
+    P (Scheme.Γ.map (U.ι ≫ f).op) := by
   apply_fun Ideal.map (X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op) at hs
   rw [Ideal.map_span, Ideal.map_top] at hs
   apply h₃.ofIsLocalization h₁ _ _ hs
