@@ -20,7 +20,7 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 
 -/
 
-variable {R A M : Type*} [CommRing R] [AddCommGroup M] [Module R M] 
+variable {R A M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
   [CommRing A] [Algebra R A] [Module A M]
 
 
