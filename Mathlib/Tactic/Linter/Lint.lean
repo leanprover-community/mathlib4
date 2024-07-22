@@ -162,7 +162,7 @@ end MissingEnd
 # The `cdot` linter
 
 The `cdot` linter is a syntax-linter that flags uses of the "cdot" `·` that are achieved
-by typing a character different form `·`.
+by typing a character different from `·`.
 For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter.
 -/
 
