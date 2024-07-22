@@ -3,7 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.OpenImmersion
+import Mathlib.AlgebraicGeometry.Cover.Open
 
 /-!
 # Restriction of Schemes and Morphisms
@@ -365,6 +365,16 @@ theorem Γ_map_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
   rw [Scheme.Γ_map_op, morphismRestrict_app f U ⊤, f.naturality_assoc, ← X.presheaf.map_comp]
   rfl
 
+@[simp]
+lemma morphismRestrict_id {X : Scheme.{u}} (U : Opens X) : 𝟙 X ∣_ U = 𝟙 _ := by
+  ext1
+  · ext; erw [morphismRestrict_val_base (𝟙 X) U]; rfl
+  · simp only [Scheme.restrict_presheaf_obj, Scheme.id_val_base, Opens.carrier_eq_coe,
+      TopCat.coe_id, id_eq, eq_mpr_eq_cast, morphismRestrict_app', Scheme.Hom.appLE, Scheme.id_app,
+      Category.id_comp, eqToHom_op, Scheme.restrict_presheaf_map, ← Functor.map_comp]
+    rw [← X.presheaf.map_id]
+    rfl
+
 /-- Restricting a morphism onto the image of an open immersion is isomorphic to the base change
 along the immersion. -/
 def morphismRestrictOpensRange
@@ -455,5 +465,20 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) [IsOpenImmersion f] :
   exact PresheafedSpace.IsOpenImmersion.comp _ _
 
 end MorphismRestrict
+
+/-- The restriction of an open cover to an open subset. -/
+@[simps! J obj map]
+noncomputable
+def Scheme.OpenCover.restrict {X : Scheme} (𝒰 : X.OpenCover) (U : Opens X) : (X ∣_ᵤ U).OpenCover := by
+  refine copy (𝒰.pullbackCover (ιOpens U)) 𝒰.J _ (𝒰.map · ∣_ U) (Equiv.refl _)
+    (fun i ↦ IsOpenImmersion.isoOfRangeEq (ιOpens _) (pullback.snd _ _) ?_) ?_
+  · erw [IsOpenImmersion.range_pullback_snd_of_left (ιOpens U) (𝒰.map i)]
+    rw [opensRange_ιOpens]
+    exact Subtype.range_val
+  · intro i
+    rw [← cancel_mono (ιOpens U)]
+    simp only [morphismRestrict_ι, pullbackCover_J, Equiv.refl_apply, pullbackCover_obj,
+      pullbackCover_map, Category.assoc, pullback.condition]
+    erw [IsOpenImmersion.isoOfRangeEq_hom_fac_assoc]
 
 end AlgebraicGeometry
