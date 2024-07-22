@@ -14,7 +14,16 @@ tuples of symmetric operators on a finite dimensional Hilbert space.
 
 # Main Results
 
-*
+* `DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_pair` establishes that
+   if `{A B : E →ₗ[𝕜] E}`, then `IsSymmetric A`, `IsSymmetric B` and `A ∘ₗ B = B ∘ₗ A` imply that
+   `E` decomposes as an internal direct sum of the pairwise orthogonal spaces
+   `eigenspace B μ ⊓ eigenspace A ν`
+
+* `DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_tuple` establishes that
+   if `n` is a `Fintype`,  `T : n → (E →ₗ[𝕜] E)` is a tuple of operators, then
+   `∀ (i : n), ((T i).IsSymmetric))` and `∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))`
+   imply that `E` decomposes as an internal direct sum of the pairwise orthogonal spaces
+   `⨅ (j : n), (eigenspace (T j) (γ j))`, where `γ : n → 𝕜`.
 
 ## TODO
 
@@ -103,6 +112,8 @@ theorem orthogonality_of_simultaneous_eigenspaces_of_pairwise_commuting_symmetri
   · exact orthogonalFamily_iff_pairwise.mp hA.orthogonalFamily_eigenspaces (H C) hv2 w hw2
   · exact orthogonalFamily_iff_pairwise.mp hB.orthogonalFamily_eigenspaces C hv1 w hw1
 
+/-- Given a commuting pair of symmetric linear operators, the Hilbert space on which they act
+decomposes as an internal direct sum of simultaneous eigenspaces. -/
 theorem DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_pair:
     DirectSum.IsInternal (fun (i : 𝕜 × 𝕜) ↦ (eigenspace B i.1 ⊓ eigenspace A i.2)):= by
   apply (OrthogonalFamily.isInternal_iff
@@ -192,13 +203,13 @@ theorem orthogonalFamily_iInf_eigenspaces : OrthogonalFamily 𝕜 (fun (γ : n �
   · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (f _)).mp Ef.2 _
   · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (g _)).mp Eg.2 _
 
-/-- The Hilbert space on which a finite commuting family of symmetric linear operators acts
-decomposes as an internal direct sum of simultaneous eigenspaces for these operators. -/
-theorem direct_sum_isInternal_simultaneous : DirectSum.IsInternal (fun (α : n → 𝕜) ↦
-    ⨅ (j : n), (eigenspace (T j) (α j))) := by
-    rw [OrthogonalFamily.isInternal_iff]
-    · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot T hT hC
-    · exact orthogonalFamily_iInf_eigenspaces T hT
+/-- Given a finite commuting family of symmetric linear operators, the Hilbert space on which they
+act decomposes as an internal direct sum of simultaneous eigenspaces. -/
+theorem DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_tuple :
+    DirectSum.IsInternal (fun (α : n → 𝕜) ↦ ⨅ (j : n), (eigenspace (T j) (α j))) := by
+  rw [OrthogonalFamily.isInternal_iff]
+  · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot T hT hC
+  · exact orthogonalFamily_iInf_eigenspaces T hT
 
 end Tuple
 
