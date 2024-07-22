@@ -351,7 +351,7 @@ such that the preimage of any compact set is compact.
 This result is a direct consequence of `isProperMap_iff_isCompact_preimage`, because any
 Hausdorff and weakly locally compact space is compactly generated.
 In the future it should be inferred by typeclass inference, however compactly generated spaces
-are not yet in Mathlib, therefore we also add this theorem. -/
+are not yet in Mathlib (TODO), therefore we also add this theorem. -/
 theorem WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage [T2Space Y]
     [WeaklyLocallyCompactSpace Y] :
     IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) :=
