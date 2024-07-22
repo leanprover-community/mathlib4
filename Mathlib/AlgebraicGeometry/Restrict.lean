@@ -469,7 +469,8 @@ end MorphismRestrict
 /-- The restriction of an open cover to an open subset. -/
 @[simps! J obj map]
 noncomputable
-def Scheme.OpenCover.restrict {X : Scheme} (𝒰 : X.OpenCover) (U : Opens X) : (X ∣_ᵤ U).OpenCover := by
+def Scheme.OpenCover.restrict {X : Scheme.{u}} (𝒰 : X.OpenCover) (U : Opens X) :
+    (X ∣_ᵤ U).OpenCover := by
   refine copy (𝒰.pullbackCover (ιOpens U)) 𝒰.J _ (𝒰.map · ∣_ U) (Equiv.refl _)
     (fun i ↦ IsOpenImmersion.isoOfRangeEq (ιOpens _) (pullback.snd _ _) ?_) ?_
   · erw [IsOpenImmersion.range_pullback_snd_of_left (ιOpens U) (𝒰.map i)]
