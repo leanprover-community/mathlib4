@@ -32,8 +32,6 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDi
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
-open scoped ComplexConjugate
-
 open Module.End
 
 namespace LinearMap
