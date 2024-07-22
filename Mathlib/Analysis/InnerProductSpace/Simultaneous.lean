@@ -11,7 +11,7 @@ import Mathlib.Order.CompleteLattice
 /-! # Simultaneous eigenspaces of a commuting pair of symmetric operators
 
 This file collects various decomposition results for simultaneous eigenspaces of a commuting pair
-of symmetric operators on a finite-dimensional Hilbert space.
+of symmetric operators on a finite-dimensional inner product space.
 
 # Main Result
 
