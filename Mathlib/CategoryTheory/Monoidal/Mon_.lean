@@ -9,8 +9,6 @@ import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.Algebra.PUnitInstances.Algebra
 
-#align_import category_theory.monoidal.Mon_ from "leanprover-community/mathlib"@"a836c6dba9bd1ee2a0cdc9af0006a596f243031c"
-
 /-!
 # The category of monoids in a monoidal category.
 
@@ -20,7 +18,6 @@ the category of lax monoidal functors from the unit monoidal category to `C`.  W
 
 -/
 
-set_option linter.uppercaseLean3 false
 
 universe v₁ v₂ u₁ u₂ u
 
@@ -43,7 +40,6 @@ structure Mon_ where
   -- and chooses to place the associator on the right-hand side.
   -- The heuristic is that unitors and associators "don't have much weight".
   mul_assoc : (mul ▷ X) ≫ mul = (α_ X X X).hom ≫ (X ◁ mul) ≫ mul := by aesop_cat
-#align Mon_ Mon_
 
 attribute [reassoc] Mon_.one_mul Mon_.mul_one
 
@@ -63,7 +59,6 @@ def trivial : Mon_ C where
   mul := (λ_ _).hom
   mul_assoc := by coherence
   mul_one := by coherence
-#align Mon_.trivial Mon_.trivial
 
 instance : Inhabited (Mon_ C) :=
   ⟨trivial C⟩
@@ -74,16 +69,13 @@ variable {M : Mon_ C}
 @[simp]
 theorem one_mul_hom {Z : C} (f : Z ⟶ M.X) : (M.one ⊗ f) ≫ M.mul = (λ_ Z).hom ≫ f := by
   rw [tensorHom_def'_assoc, M.one_mul, leftUnitor_naturality]
-#align Mon_.one_mul_hom Mon_.one_mul_hom
 
 @[simp]
 theorem mul_one_hom {Z : C} (f : Z ⟶ M.X) : (f ⊗ M.one) ≫ M.mul = (ρ_ Z).hom ≫ f := by
   rw [tensorHom_def_assoc, M.mul_one, rightUnitor_naturality]
-#align Mon_.mul_one_hom Mon_.mul_one_hom
 
 theorem mul_assoc_flip :
     (M.X ◁ M.mul) ≫ M.mul = (α_ M.X M.X M.X).inv ≫ (M.mul ▷ M.X) ≫ M.mul := by simp
-#align Mon_.assoc_flip Mon_.mul_assoc_flip
 
 /-- A morphism of monoid objects. -/
 @[ext]
@@ -91,7 +83,6 @@ structure Hom (M N : Mon_ C) where
   hom : M.X ⟶ N.X
   one_hom : M.one ≫ hom = N.one := by aesop_cat
   mul_hom : M.mul ≫ hom = (hom ⊗ hom) ≫ N.mul := by aesop_cat
-#align Mon_.hom Mon_.Hom
 
 attribute [reassoc (attr := simp)] Hom.one_hom Hom.mul_hom
 
@@ -99,17 +90,14 @@ attribute [reassoc (attr := simp)] Hom.one_hom Hom.mul_hom
 @[simps]
 def id (M : Mon_ C) : Hom M M where
   hom := 𝟙 M.X
-#align Mon_.id Mon_.id
 
 instance homInhabited (M : Mon_ C) : Inhabited (Hom M M) :=
   ⟨id M⟩
-#align Mon_.hom_inhabited Mon_.homInhabited
 
 /-- Composition of morphisms of monoid objects. -/
 @[simps]
 def comp {M N O : Mon_ C} (f : Hom M N) (g : Hom N O) : Hom M O where
   hom := f.hom ≫ g.hom
-#align Mon_.comp Mon_.comp
 
 instance : Category (Mon_ C) where
   Hom M N := Hom M N
@@ -124,13 +112,11 @@ lemma ext {X Y : Mon_ C} {f g : X ⟶ Y} (w : f.hom = g.hom) : f = g :=
 @[simp]
 theorem id_hom' (M : Mon_ C) : (𝟙 M : Hom M M).hom = 𝟙 M.X :=
   rfl
-#align Mon_.id_hom' Mon_.id_hom'
 
 @[simp]
 theorem comp_hom' {M N K : Mon_ C} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : Hom M K).hom = f.hom ≫ g.hom :=
   rfl
-#align Mon_.comp_hom' Mon_.comp_hom'
 
 section
 
@@ -141,12 +127,10 @@ variable (C)
 def forget : Mon_ C ⥤ C where
   obj A := A.X
   map f := f.hom
-#align Mon_.forget Mon_.forget
 
 end
 
 instance forget_faithful : (forget C).Faithful where
-#align Mon_.forget_faithful Mon_.forget_faithful
 
 instance {A B : Mon_ C} (f : A ⟶ B) [e : IsIso ((forget C).map f)] : IsIso f.hom :=
   e
@@ -169,7 +153,6 @@ def mkIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one := b
       rw [← cancel_mono f.hom]
       slice_rhs 2 3 => rw [mul_f]
       simp }
-#align Mon_.iso_of_iso Mon_.mkIso
 
 instance uniqueHomFromTrivial (A : Mon_ C) : Unique (trivial C ⟶ A) where
   default :=
@@ -180,7 +163,6 @@ instance uniqueHomFromTrivial (A : Mon_ C) : Unique (trivial C ⟶ A) where
     simp only [trivial_X]
     rw [← Category.id_comp f.hom]
     erw [f.one_hom]
-#align Mon_.unique_hom_from_trivial Mon_.uniqueHomFromTrivial
 
 open CategoryTheory.Limits
 
@@ -223,7 +205,6 @@ def mapMon (F : LaxMonoidalFunctor C D) : Mon_ C ⥤ Mon_ D where
         dsimp
         rw [Category.assoc, F.μ_natural_assoc, ← F.toFunctor.map_comp, ← F.toFunctor.map_comp,
           f.mul_hom] }
-#align category_theory.lax_monoidal_functor.map_Mon CategoryTheory.LaxMonoidalFunctor.mapMon
 
 variable (C D)
 
@@ -232,7 +213,6 @@ variable (C D)
 def mapMonFunctor : LaxMonoidalFunctor C D ⥤ Mon_ C ⥤ Mon_ D where
   obj := mapMon
   map α := { app := fun A => { hom := α.app A.X } }
-#align category_theory.lax_monoidal_functor.map_Mon_functor CategoryTheory.LaxMonoidalFunctor.mapMonFunctor
 
 end CategoryTheory.LaxMonoidalFunctor
 
@@ -247,7 +227,6 @@ namespace EquivLaxMonoidalFunctorPUnit
 def laxMonoidalToMon : LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C ⥤ Mon_ C where
   obj F := (F.mapMon : Mon_ _ ⥤ Mon_ C).obj (trivial (Discrete PUnit))
   map α := ((mapMonFunctor (Discrete PUnit) C).map α).app _
-#align Mon_.equiv_lax_monoidal_functor_punit.lax_monoidal_to_Mon Mon_.EquivLaxMonoidalFunctorPUnit.laxMonoidalToMon
 
 /-- Implementation of `Mon_.equivLaxMonoidalFunctorPUnit`. -/
 @[simps]
@@ -259,7 +238,6 @@ def monToLaxMonoidal : Mon_ C ⥤ LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C 
     μ := fun _ _ => A.mul }
   map f :=
   { app := fun _ => f.hom }
-#align Mon_.equiv_lax_monoidal_functor_punit.Mon_to_lax_monoidal Mon_.EquivLaxMonoidalFunctorPUnit.monToLaxMonoidal
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
@@ -273,13 +251,11 @@ def unitIso :
   NatIso.ofComponents
     (fun F =>
       MonoidalNatIso.ofComponents (fun _ => F.toFunctor.mapIso (eqToIso (by ext))))
-#align Mon_.equiv_lax_monoidal_functor_punit.unit_iso Mon_.EquivLaxMonoidalFunctorPUnit.unitIso
 
 /-- Implementation of `Mon_.equivLaxMonoidalFunctorPUnit`. -/
 @[simps!]
 def counitIso : monToLaxMonoidal C ⋙ laxMonoidalToMon C ≅ 𝟭 (Mon_ C) :=
   NatIso.ofComponents (fun F => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } })
-#align Mon_.equiv_lax_monoidal_functor_punit.counit_iso Mon_.EquivLaxMonoidalFunctorPUnit.counitIso
 
 end EquivLaxMonoidalFunctorPUnit
 
@@ -296,7 +272,6 @@ def equivLaxMonoidalFunctorPUnit : LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C
   inverse := monToLaxMonoidal C
   unitIso := unitIso C
   counitIso := counitIso C
-#align Mon_.equiv_lax_monoidal_functor_punit Mon_.equivLaxMonoidalFunctorPUnit
 
 end Mon_
 
@@ -359,17 +334,14 @@ theorem one_associator {M N P : Mon_ C} :
   rw [← cancel_epi (λ_ (𝟙_ C)).inv]
   slice_lhs 1 2 => rw [leftUnitor_inv_naturality]
   simp
-#align Mon_.one_associator Mon_.one_associator
 
 theorem one_leftUnitor {M : Mon_ C} :
     ((λ_ (𝟙_ C)).inv ≫ (𝟙 (𝟙_ C) ⊗ M.one)) ≫ (λ_ M.X).hom = M.one := by
   simp
-#align Mon_.one_left_unitor Mon_.one_leftUnitor
 
 theorem one_rightUnitor {M : Mon_ C} :
     ((λ_ (𝟙_ C)).inv ≫ (M.one ⊗ 𝟙 (𝟙_ C))) ≫ (ρ_ M.X).hom = M.one := by
   simp [← unitors_equal]
-#align Mon_.one_right_unitor Mon_.one_rightUnitor
 
 section BraidedCategory
 
@@ -384,7 +356,6 @@ theorem Mon_tensor_one_mul (M N : Mon_ C) :
   slice_lhs 3 4 => rw [← tensor_comp, one_mul M, one_mul N]
   symm
   exact tensor_left_unitality C M.X N.X
-#align Mon_.Mon_tensor_one_mul Mon_.Mon_tensor_one_mul
 
 theorem Mon_tensor_mul_one (M N : Mon_ C) :
     (M.X ⊗ N.X) ◁ ((λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one)) ≫
@@ -395,7 +366,6 @@ theorem Mon_tensor_mul_one (M N : Mon_ C) :
   slice_lhs 3 4 => rw [← tensor_comp, mul_one M, mul_one N]
   symm
   exact tensor_right_unitality C M.X N.X
-#align Mon_.Mon_tensor_mul_one Mon_.Mon_tensor_mul_one
 
 theorem Mon_tensor_mul_assoc (M N : Mon_ C) :
     ((tensor_μ C (M.X, N.X) (M.X, N.X) ≫ (M.mul ⊗ N.mul)) ▷ (M.X ⊗ N.X)) ≫
@@ -409,7 +379,6 @@ theorem Mon_tensor_mul_assoc (M N : Mon_ C) :
   slice_lhs 1 3 => rw [tensor_associativity]
   slice_lhs 3 4 => rw [← tensor_μ_natural_right]
   simp
-#align Mon_.Mon_tensor_mul_assoc Mon_.Mon_tensor_mul_assoc
 
 theorem mul_associator {M N P : Mon_ C} :
     (tensor_μ C (M.X ⊗ N.X, P.X) (M.X ⊗ N.X, P.X) ≫
@@ -425,7 +394,6 @@ theorem mul_associator {M N P : Mon_ C} :
   simp only [tensorHom_id, id_tensorHom]
   slice_lhs 1 3 => rw [associator_monoidal]
   simp only [Category.assoc]
-#align Mon_.mul_associator Mon_.mul_associator
 
 theorem mul_leftUnitor {M : Mon_ C} :
     (tensor_μ C (𝟙_ C, M.X) (𝟙_ C, M.X) ≫ ((λ_ (𝟙_ C)).hom ⊗ M.mul)) ≫ (λ_ M.X).hom =
@@ -435,7 +403,6 @@ theorem mul_leftUnitor {M : Mon_ C} :
   slice_lhs 3 4 => rw [leftUnitor_naturality]
   slice_lhs 1 3 => rw [← leftUnitor_monoidal]
   simp only [Category.assoc, Category.id_comp]
-#align Mon_.mul_left_unitor Mon_.mul_leftUnitor
 
 theorem mul_rightUnitor {M : Mon_ C} :
     (tensor_μ C (M.X, 𝟙_ C) (M.X, 𝟙_ C) ≫ (M.mul ⊗ (λ_ (𝟙_ C)).hom)) ≫ (ρ_ M.X).hom =
@@ -445,7 +412,6 @@ theorem mul_rightUnitor {M : Mon_ C} :
   slice_lhs 3 4 => rw [rightUnitor_naturality]
   slice_lhs 1 3 => rw [← rightUnitor_monoidal]
   simp only [Category.assoc, Category.id_comp]
-#align Mon_.mul_right_unitor Mon_.mul_rightUnitor
 
 @[simps tensorObj_X tensorHom_hom]
 instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) :=
@@ -529,7 +495,6 @@ theorem tensor_mul (M N : Mon_ C) : (M ⊗ N).mul =
 
 instance monMonoidal : MonoidalCategory (Mon_ C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
-#align Mon_.Mon_monoidal Mon_.monMonoidal
 
 variable (C)
 
