@@ -861,15 +861,6 @@ lemma support_subgraphOfAdj {u v : V} (h : G.Adj u v) :
   rintro ⟨_, hw⟩
   exact hw.elim (fun h1 ↦ .inl h1.1.symm) fun hr ↦ .inr hr.2.symm
 
-lemma subgraphOfAdj_support {u v : V} (h : G.Adj u v) :
-    (G.subgraphOfAdj h).support = {u , v} := by
-  ext
-  rw [Subgraph.mem_support]
-  simp only [subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
-  refine ⟨?_, fun h ↦ h.elim (fun hl ↦ ⟨v, .inl ⟨hl.symm, rfl⟩⟩) fun hr ↦ ⟨u, .inr ⟨rfl, hr.symm⟩⟩⟩
-  rintro ⟨_, hw⟩
-  exact hw.elim (fun h1 ↦ .inl h1.1.symm) fun hr ↦ .inr hr.2.symm
-
 end MkProperties
 
 namespace Subgraph
@@ -890,9 +881,6 @@ protected abbrev restrict {G' : G.Subgraph} : G.Subgraph → G'.coe.Subgraph :=
 
 @[simp]
 lemma verts_coeSubgraph {G' : Subgraph G} (G'' : Subgraph G'.coe) :
-    G''.coeSubgraph.verts = (G''.verts : Set V) := rfl
-
-lemma coeSubgraph_verts {G' : Subgraph G} (G'' : Subgraph G'.coe) :
     G''.coeSubgraph.verts = (G''.verts : Set V) := rfl
 
 lemma coeSubgraph_adj {G' : G.Subgraph} (G'' : G'.coe.Subgraph) (v w : V) :
