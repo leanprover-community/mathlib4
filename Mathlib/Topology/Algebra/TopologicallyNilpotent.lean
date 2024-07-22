@@ -60,7 +60,7 @@ theorem add {α : Type*} [CommRing α] [TopologicalSpace α] [LinearTopology α]
   apply le_trans hm (Nat.le_add_right _ _)
 
 theorem zero {α : Type*} [CommRing α] [TopologicalSpace α] :
-  IsTopologicallyNilpotent (0 : α) := tendsto_atTop_of_eventually_const (i₀ := 1)
+    IsTopologicallyNilpotent (0 : α) := tendsto_atTop_of_eventually_const (i₀ := 1)
     (fun _ hi => by rw [zero_pow (Nat.ne_zero_iff_zero_lt.mpr hi)])
 
 end IsTopologicallyNilpotent
