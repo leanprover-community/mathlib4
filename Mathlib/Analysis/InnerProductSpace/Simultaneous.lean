@@ -10,21 +10,15 @@ import Mathlib.Order.CompleteLattice
 
 /-! # Simultaneous eigenspaces of commuting finite tuples of symmetric operators
 
-This file collects various decomposition results for simultaneous eigenspaces of commuting
-finite tuples of symmetric operators on a finite dimensional Hilbert space.
+This file collects various decomposition results for simultaneous eigenspaces of a commuting pair
+of symmetric operators on a finite-dimensional Hilbert space.
 
-# Main Results
+# Main Result
 
 * `DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_pair` establishes that
    if `{A B : E →ₗ[𝕜] E}`, then `IsSymmetric A`, `IsSymmetric B` and `A ∘ₗ B = B ∘ₗ A` imply that
    `E` decomposes as an internal direct sum of the pairwise orthogonal spaces
    `eigenspace B μ ⊓ eigenspace A ν`
-
-* `DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_tuple` establishes that
-   if `n` is a `Fintype`,  `T : n → (E →ₗ[𝕜] E)` is a tuple of operators, then
-   `∀ (i : n), ((T i).IsSymmetric))` and `∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))`
-   imply that `E` decomposes as an internal direct sum of the pairwise orthogonal spaces
-   `⨅ (j : n), (eigenspace (T j) (γ j))`, where `γ : n → 𝕜`.
 
 ## TODO
 
@@ -123,96 +117,6 @@ theorem DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_
   exact iSup_simultaneous_eigenspaces_eq_top hA hB hAB
 
 end Pair
-
-section Tuple
-
-universe u
-
-variable {n m : Type u} [Fintype n] [Fintype m] (T : n → (E →ₗ[𝕜] E))
-    (hT :(∀ (i : n), ((T i).IsSymmetric)))
-    (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i)))
-
-open Classical
-
-theorem invariance_iInf [Nonempty n] (i : n) :
-    ∀ γ : {x // x ≠ i} → 𝕜, ∀ v ∈ (⨅ (j : {x // x ≠ i}),
-    eigenspace ((Subtype.restrict (fun x ↦ x ≠ i) T) j) (γ j)), (T i) v ∈ (⨅ (j : {x // x ≠ i}),
-    eigenspace ((Subtype.restrict (fun x ↦ x ≠ i) T) j) (γ j)) := by
-  intro γ v hv
-  simp only [Submodule.mem_iInf] at *
-  exact fun i_1 ↦ eigenspace_invariant (hC (↑i_1) i) (γ i_1) v (hv i_1)
-
-theorem iSup_iInf_fun_index_split_single {α β γ : Type*} [DecidableEq α] [CompleteLattice γ]
-    (i : α) (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
-      ⨆ f' : {y // y ≠ i} → β, ⨆ y : β, s i y ⊓ ⨅ x' : {y // y ≠ i}, (s x' (f' x')) := by
-  rw [← (Equiv.funSplitAt i β).symm.iSup_comp, iSup_prod, iSup_comm]
-  congr!  with f' y
-  rw [iInf_split_single _ i, iInf_subtype]
-  congr! with x hx
-  · simp
-  · simp [dif_neg hx]
-
-theorem invariant_subspace_eigenspace_exhaust {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
-    (hS: IsSymmetric S) (hInv : ∀ v ∈ F, S v ∈ F) : ⨆ μ, Submodule.map F.subtype
-    (eigenspace (S.restrict hInv) μ)  = F := by
- conv_lhs => rw [← Submodule.map_iSup]
- conv_rhs => rw [← Submodule.map_subtype_top F]
- congr!
- have H : IsSymmetric (S.restrict hInv) := fun x y ↦ hS (F.subtype x) ↑y
- apply Submodule.orthogonal_eq_bot_iff.mp (H.orthogonalComplement_iSup_eigenspaces_eq_bot)
-
-theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
-    (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
-  revert T
-  refine Fintype.induction_subsingleton_or_nontrivial n ?_ ?_
-  · intro m _ hhm T hT _
-    simp only [Submodule.orthogonal_eq_bot_iff]
-    by_cases case : Nonempty m
-    · have i := choice case
-      have := uniqueOfSubsingleton i
-      conv => lhs; rhs; ext γ; rw [ciInf_subsingleton i]
-      rw [← (Equiv.funUnique m 𝕜).symm.iSup_comp]
-      apply Submodule.orthogonal_eq_bot_iff.mp ((hT i).orthogonalComplement_iSup_eigenspaces_eq_bot)
-    · simp only [not_nonempty_iff] at case
-      simp only [iInf_of_empty, ciSup_unique]
-  · intro m hm hmm H T hT hC
-    obtain ⟨w, i , h⟩ := exists_pair_ne m
-    simp only [ne_eq] at h
-    have D := H {x // x ≠ i} (Fintype.card_subtype_lt (p := fun (x : m) ↦ ¬x = i) (x := i)
-      (by simp only [not_true_eq_false, not_false_eq_true])) (Subtype.restrict (fun x ↦ x ≠ i) T)
-        (fun (i_1 : {x // x ≠ i}) ↦ hT ↑i_1) (fun (i_1 j : { x // x ≠ i }) ↦ hC ↑i_1 ↑j)
-    simp only [Submodule.orthogonal_eq_bot_iff] at *
-    have E : (⨆ (γ : {x // x ≠ i} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓ (⨅ (j : {x // x ≠ i}),
-    eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))))) = ⨆ (γ : {x // x ≠ i} → 𝕜),
-    (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) := by
-      conv => lhs; rhs; ext γ; rhs; ext μ; rw [invariant_subspace_inf_eigenspace_eq_restrict (T i) μ
-        (invariance_iInf T hC i γ)]
-      conv => lhs; rhs; ext γ; rw [invariant_subspace_eigenspace_exhaust (T i) (hT i)
-        (invariance_iInf T hC i γ)]
-    rw [← E] at D
-    rw [iSup_iInf_fun_index_split_single i (fun _ ↦ (fun μ ↦ (eigenspace (T _) μ )))]
-    exact D
-
-theorem orthogonalFamily_iInf_eigenspaces : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
-    (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))
-    (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (γ j))).subtypeₗᵢ) := by
-  intro f g hfg Ef Eg
-  obtain ⟨a , ha⟩ := Function.ne_iff.mp hfg
-  have H := (orthogonalFamily_eigenspaces (hT a) ha)
-  simp only [Submodule.coe_subtypeₗᵢ, Submodule.coeSubtype, Subtype.forall] at H
-  apply H
-  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (f _)).mp Ef.2 _
-  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (g _)).mp Eg.2 _
-
-/-- Given a finite commuting family of symmetric linear operators, the Hilbert space on which they
-act decomposes as an internal direct sum of simultaneous eigenspaces. -/
-theorem DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_tuple :
-    DirectSum.IsInternal (fun (α : n → 𝕜) ↦ ⨅ (j : n), (eigenspace (T j) (α j))) := by
-  rw [OrthogonalFamily.isInternal_iff]
-  · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot T hT hC
-  · exact orthogonalFamily_iInf_eigenspaces T hT
-
-end Tuple
 
 end IsSymmetric
 
