@@ -154,7 +154,7 @@ variable (R : Type u) (S : Type v) (M : Type w)
   [AddCommGroup M] [Module R M]
 
 theorem isLocalizedModule_ofFlat [Module.Flat R M] (S : Submonoid R) : Module.Flat (Localization S)
- (LocalizedModule S M) := by
+  (LocalizedModule S M) := by
   fapply Module.Flat.isBaseChange (R:=R) (M:=M) (S:=Localization S)
   exact LocalizedModule.mkLinearMap S M
   rw [← isLocalizedModule_iff_isBaseChange S]
