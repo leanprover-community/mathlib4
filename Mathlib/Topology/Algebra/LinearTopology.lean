@@ -43,7 +43,7 @@ theorem TopologicalSpace.le_iff_nhds_le {α : Type*} (τ τ' : TopologicalSpace 
 theorem mem_nhds_add_iff {α : Type*} [AddCommGroup α] [TopologicalSpace α] [TopologicalAddGroup α]
     (V : Set α) (a b : α) : V ∈ nhds (a + b) ↔ Add.add a ⁻¹' V ∈ nhds b := by
   constructor
-  . exact fun hV => ContinuousAt.preimage_mem_nhds (continuous_add_left a).continuousAt hV
+  · exact fun hV => ContinuousAt.preimage_mem_nhds (continuous_add_left a).continuousAt hV
   · intro hV
     suffices h : V = Add.add (-a) ⁻¹' (Add.add a ⁻¹' V) by
       rw [h]
@@ -116,7 +116,7 @@ def Ideal.IsBasis.toIdealBasis (hB : Ideal.IsBasis B) : IdealBasis α where
     exact hB.mul_right i b ha
 
 /-- An `Ideal.IsBasis` associated with an `IdealBasis` -/
-def IdealBasis.toIsBasis (B : IdealBasis α) :
+theorem IdealBasis.toIsBasis (B : IdealBasis α) :
     Ideal.IsBasis (ι := B.sets) (fun x => (x : Ideal α)) where
   nonempty := Set.nonempty_coe_sort.mpr B.nonempty
   inter := fun s t ↦ by
@@ -236,6 +236,7 @@ section LinearTopology
 
 variable (α : Type u) [Ring α]
 
+/-- A topology on a ring is linear if its topology is defined by a family of ideals -/
 class LinearTopology [τ : TopologicalSpace α]
     extends IdealBasis α where
   isTopology :  τ = toIdealBasis.toIsBasis.topology
