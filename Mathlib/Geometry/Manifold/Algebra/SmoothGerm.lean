@@ -82,7 +82,7 @@ def submonoid [SmoothMul I' R] (x : M) : Submonoid (Germ (𝓝 x) R) where
 
 @[simp, norm_cast]
 lemma coe_submonoid [SmoothMul I' R] (x : M) :
-  smoothGerm.submonoid I I' R x = smoothGerm I I' R x := rfl
+    smoothGerm.submonoid I I' R x = smoothGerm I I' R x := rfl
 
 @[simp]
 lemma mem_submonoid [SmoothMul I' R] {x : M} (a : Germ (𝓝 x) R) :
@@ -99,7 +99,7 @@ def addSubsemigroup [SmoothAdd I' R] (x : M) : AddSubsemigroup (Germ (𝓝 x) R)
 
 @[simp, norm_cast]
 lemma coe_addSubsemigroup [SmoothAdd I' R] (x : M) :
-  smoothGerm.addSubsemigroup I I' R x = smoothGerm I I' R x := rfl
+    smoothGerm.addSubsemigroup I I' R x = smoothGerm I I' R x := rfl
 
 @[simp]
 lemma mem_addSubsemigroup [SmoothAdd I' R] {x : M} (a : Germ (𝓝 x) R) :
@@ -116,7 +116,7 @@ def addSubgroup [LieAddGroup I' R] (x : M) : AddSubgroup (Germ (𝓝 x) R) where
 
 @[simp, norm_cast]
 lemma coe_addSubgroup [LieAddGroup I' R] (x : M) :
-  smoothGerm.addSubgroup I I' R x = smoothGerm I I' R x := rfl
+    smoothGerm.addSubgroup I I' R x = smoothGerm I I' R x := rfl
 
 @[simp]
 lemma mem_addSubgroup [LieAddGroup I' R] {x : M} (a : Germ (𝓝 x) R) :
