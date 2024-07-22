@@ -60,6 +60,8 @@ structure Kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] where
   /-- DO NOT USE. Use `Kernel.measurable` instead. -/
   measurable' : Measurable toFun
 
+@[deprecated (since := "2024-07-22")] alias kernel := Kernel
+
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 namespace Kernel
