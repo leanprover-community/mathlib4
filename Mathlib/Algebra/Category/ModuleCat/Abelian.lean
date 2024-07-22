@@ -6,9 +6,7 @@ Authors: Markus Himmel
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Algebra.Category.ModuleCat.Kernels
 import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.CategoryTheory.Abelian.Exact
-
-#align_import algebra.category.Module.abelian from "leanprover-community/mathlib"@"09f981f72d43749f1fa072deade828d9c1e185bb"
+import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 # The category of left R-modules is abelian.
@@ -49,8 +47,6 @@ def normalMono (hf : Mono f) : NormalMono f where
             ((Submodule.quotEquivOfEqBot _ (ker_eq_bot_of_mono _)).symm ≪≫ₗ
               (LinearMap.quotKerEquivRange f ≪≫ₗ
               LinearEquiv.ofEq _ _ (Submodule.ker_mkQ _).symm))) <| by ext; rfl
-set_option linter.uppercaseLean3 false in
-#align Module.normal_mono ModuleCat.normalMono
 
 /-- In the category of modules, every epimorphism is normal. -/
 def normalEpi (hf : Epi f) : NormalEpi f where
@@ -71,61 +67,35 @@ def normalEpi (hf : Epi f) : NormalEpi f where
             (Submodule.quotEquivOfEq _ _ (Submodule.range_subtype _) ≪≫ₗ
                 LinearMap.quotKerEquivRange f ≪≫ₗ
               LinearEquiv.ofTop _ (range_eq_top_of_epi _))) <| by ext; rfl
-set_option linter.uppercaseLean3 false in
-#align Module.normal_epi ModuleCat.normalEpi
 
 /-- The category of R-modules is abelian. -/
 instance abelian : Abelian (ModuleCat.{v} R) where
   has_cokernels := hasCokernels_moduleCat
   normalMonoOfMono := normalMono
   normalEpiOfEpi := normalEpi
-set_option linter.uppercaseLean3 false in
-#align Module.abelian ModuleCat.abelian
 
 section ReflectsLimits
 
 -- Porting note: added to make the following definitions work
 instance : HasLimitsOfSize.{v,v} (ModuleCatMax.{v, w} R) :=
-  ModuleCat.hasLimitsOfSize.{v, max v w, _, v}
+  ModuleCat.hasLimitsOfSize.{v, v, max v w}
 
 /- We need to put this in this weird spot because we need to know that the category of modules
     is balanced. -/
 instance forgetReflectsLimitsOfSize :
     ReflectsLimitsOfSize.{v, v} (forget (ModuleCatMax.{v, w} R)) :=
   reflectsLimitsOfReflectsIsomorphisms
-set_option linter.uppercaseLean3 false in
-#align Module.forget_reflects_limits_of_size ModuleCat.forgetReflectsLimitsOfSize
 
 instance forget₂ReflectsLimitsOfSize :
-    ReflectsLimitsOfSize.{v, v} (forget₂ (ModuleCatMax.{v, w} R) AddCommGroupCat.{max v w}) :=
+    ReflectsLimitsOfSize.{v, v} (forget₂ (ModuleCatMax.{v, w} R) AddCommGrp.{max v w}) :=
   reflectsLimitsOfReflectsIsomorphisms
-set_option linter.uppercaseLean3 false in
-#align Module.forget₂_reflects_limits_of_size ModuleCat.forget₂ReflectsLimitsOfSize
 
 instance forgetReflectsLimits : ReflectsLimits (forget (ModuleCat.{v} R)) :=
   ModuleCat.forgetReflectsLimitsOfSize.{v, v}
-set_option linter.uppercaseLean3 false in
-#align Module.forget_reflects_limits ModuleCat.forgetReflectsLimits
 
-instance forget₂ReflectsLimits : ReflectsLimits (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}) :=
+instance forget₂ReflectsLimits : ReflectsLimits (forget₂ (ModuleCat.{v} R) AddCommGrp.{v}) :=
   ModuleCat.forget₂ReflectsLimitsOfSize.{v, v}
-set_option linter.uppercaseLean3 false in
-#align Module.forget₂_reflects_limits ModuleCat.forget₂ReflectsLimits
 
 end ReflectsLimits
-
-variable {O : ModuleCat.{v} R} (g : N ⟶ O)
-
-open LinearMap
-
-attribute [local instance] Preadditive.hasEqualizers_of_hasKernels
-
-theorem exact_iff : Exact f g ↔ LinearMap.range f = LinearMap.ker g := by
-  rw [abelian.exact_iff' f g (kernelIsLimit _) (cokernelIsColimit _)]
-  exact
-    ⟨fun h => le_antisymm (range_le_ker_iff.2 h.1) (ker_le_range_iff.2 h.2), fun h =>
-      ⟨range_le_ker_iff.1 <| le_of_eq h, ker_le_range_iff.1 <| le_of_eq h.symm⟩⟩
-set_option linter.uppercaseLean3 false in
-#align Module.exact_iff ModuleCat.exact_iff
 
 end ModuleCat

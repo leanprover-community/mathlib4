@@ -3,11 +3,8 @@ Copyright (c) 2024 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import Batteries.Data.RBMap.Basic
-
 import Mathlib.Tactic.FunProp.FunctionData
-
-import Batteries.Lean.HashSet
+import Batteries.Data.RBMap.Basic
 
 /-!
 ## `funProp`
@@ -95,7 +92,7 @@ deriving Inhabited
 structure State where
   /-- Simp's cache is used as the `funProp` tactic is designed to be used inside of simp and utilize
   its cache -/
-  cache        : Simp.Cache := {}
+  cache : Simp.Cache := {}
   /-- Count the number of steps and stop when maxSteps is reached. -/
   numSteps := 0
   /-- Log progress and failures messages that should be displayed to the user at the end. -/

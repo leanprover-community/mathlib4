@@ -6,7 +6,6 @@ Authors: Damiano Testa
 
 import Mathlib.Algebra.Order.Field.InjSurj
 import Mathlib.Algebra.Field.Subfield
-import Mathlib.Algebra.Ring.Subring.Order
 
 /-!
 # Ordered instances on subfields
@@ -24,7 +23,6 @@ instance (priority := 75) toLinearOrderedField [LinearOrderedField K]
     (fun _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (by intros; rfl)
     (fun _ => rfl) (fun _ => rfl) (fun _ => rfl) (by intros; rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align subfield_class.to_linear_ordered_field SubfieldClass.toLinearOrderedField
 
 end SubfieldClass
 
@@ -37,6 +35,5 @@ instance toLinearOrderedField [LinearOrderedField K] (s : Subfield K) : LinearOr
     (fun _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (by intros; rfl)
     (fun _ => rfl) (fun _ => rfl) (fun _ => rfl) (by intros; rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align subfield.to_linear_ordered_field Subfield.toLinearOrderedField
 
 end Subfield

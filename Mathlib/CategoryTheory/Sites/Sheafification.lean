@@ -3,7 +3,7 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
@@ -211,15 +211,20 @@ noncomputable def sheafificationIso (P : Sheaf J D) : P ≅ (presheafToSheaf J D
   inv_hom_id := by
     ext1
     apply (isoSheafify J P.2).inv_hom_id
-#align category_theory.sheafification_iso CategoryTheory.sheafificationIso
 
 instance isIso_sheafificationAdjunction_counit (P : Sheaf J D) :
     IsIso ((sheafificationAdjunction J D).counit.app P) :=
   isIso_of_fully_faithful (sheafToPresheaf J D) _
-#align category_theory.is_iso_sheafification_adjunction_counit CategoryTheory.isIso_sheafificationAdjunction_counit
 
 instance sheafification_reflective : IsIso (sheafificationAdjunction J D).counit :=
   NatIso.isIso_of_isIso_app _
-#align category_theory.sheafification_reflective CategoryTheory.sheafification_reflective
+
+variable (J D)
+
+/-- The natural isomorphism `𝟭 (Sheaf J D) ≅ sheafToPresheaf J D ⋙ presheafToSheaf J D`. -/
+@[simps!]
+noncomputable def sheafificationNatIso :
+    𝟭 (Sheaf J D) ≅ sheafToPresheaf J D ⋙ presheafToSheaf J D :=
+  NatIso.ofComponents (fun P => sheafificationIso P) (by aesop_cat)
 
 end CategoryTheory

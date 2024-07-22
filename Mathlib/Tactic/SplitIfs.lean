@@ -39,11 +39,21 @@ match loc with
    then return (SplitPosition.target, ← getMainTarget) :: candidates.toList
    else return candidates.toList
 
+/-- Return the condition and decidable instance of an `if` expression to case split. -/
+private partial def findIfToSplit? (e : Expr) : Option (Expr × Expr) :=
+  match e.find? fun e => (e.isIte || e.isDIte) && !(e.getArg! 1 5).hasLooseBVars with
+  | some iteApp =>
+    let cond := iteApp.getArg! 1 5
+    let dec := iteApp.getArg! 2 5
+    -- Try to find a nested `if` in `cond`
+    findIfToSplit? cond |>.getD (cond, dec)
+  | none => none
+
 /-- Finds an if condition to split. If successful, returns the position and the condition.
 -/
 private def findIfCondAt (loc : Location) : TacticM (Option (SplitPosition × Expr)) := do
   for (pos, e) in (← getSplitCandidates loc) do
-    if let some cond := SplitIf.findIfToSplit? e
+    if let some (cond, _) := findIfToSplit? e
     then return some (pos, cond)
   return none
 
@@ -91,10 +101,12 @@ private def getNextName (hNames: IO.Ref (List (TSyntax `Lean.binderIdent))) : Me
 /-- Returns `true` if the condition or its negation already appears as a hypothesis.
 -/
 private def valueKnown (cond : Expr) : TacticM Bool := do
-  let hTypes ← (((← getLCtx).getFVarIds.map mkFVar).mapM inferType : MetaM _)
-  let hTypes := hTypes.toList
   let not_cond := mkApp (mkConst `Not) cond
-  return (hTypes.contains cond) || (hTypes.contains not_cond)
+  for h in ← getLocalHyps do
+    let ty ← instantiateMVars (← inferType h)
+    if cond == ty then return true
+    if not_cond == ty then return true
+  return false
 
 /-- Main loop of split_ifs. Pulls names for new hypotheses from `hNames`.
 Stops if it encounters a condition in the passed-in `List Expr`.
