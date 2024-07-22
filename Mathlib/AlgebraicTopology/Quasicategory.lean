@@ -82,7 +82,7 @@ class trivialKanFibration {X Y : SSet} (p : X ⟶ Y) where
 
 /- equivalent definition of trivial Kan fibration by 006Y -/
 class rlp_mono {X Y : SSet} (p : X ⟶ Y) where
-  has_rlp (A B : SSet) (i : A ⟶ B) [Mono i] : HasLiftingProperty i p
+  has_rlp {A B : SSet} (i : A ⟶ B) [Mono i] : HasLiftingProperty i p
 
 /- RLP wrt all monomorphisms implies trivial Kan fib -/
 instance tkf_of_rlp_mono {X Y : SSet} (p : X ⟶ Y) [rlp_mono p] :
@@ -92,32 +92,105 @@ instance tkf_of_rlp_mono {X Y : SSet} (p : X ⟶ Y) [rlp_mono p] :
 instance rlp_mono_of_tkf {X Y : SSet} (p : X ⟶ Y) [trivialKanFibration p] :
     rlp_mono p := sorry
 
+open MonoidalCategory
+
+section
+
+open MonoidalClosed
+
 noncomputable
 abbrev Fun : SSetᵒᵖ ⥤ SSet ⥤ SSet := MonoidalClosed.internalHom
 
-def ihom_equiv (X Y Z : SSet) : (ihom X).obj ((ihom Y).obj Z) ≅ (ihom Y).obj ((ihom X).obj Z) where
-  hom := { app := fun n x ↦ { app := fun m f ym ↦ {
-    app := fun k g xk ↦ (x.app k (f ≫ g) xk).app k (𝟙 _) (Y.map g ym)
-    naturality := by
-      dsimp at f ⊢
-      intro k l g h
-      ext xk
-      dsimp
-      have := congr_fun ((x.app k (f ≫ h) xk).naturality g (𝟙 k)) (Y.map h ym)
-      dsimp at this
-      rw [← this]
-      simp
+open SSet standardSimplex in
+def ihom_simplices (X Y : SSet) (n : ℕ) : (ihom X).obj Y _[n] ≅ Δ[n] ⊗ X ⟶ Y where
+  hom a := {
+    app := fun k ⟨d, x⟩ ↦ a.app k (objEquiv _ _ d).op x
+    naturality := fun m l f ↦ by
+      ext ⟨d, x⟩
+      exact congr_fun (a.naturality f (objEquiv _ _ d).op) x
+  }
+  inv a := {
+    app := fun k d x ↦ a.app k ((objEquiv _ _).symm d.unop, x)
+    naturality := fun f d ↦ by
+      ext x
+      exact congr_fun (a.naturality f) ((objEquiv _ _).symm d.unop, x)
+  }
 
-      sorry
-      }
-    }
-  }
-  inv := { app := fun n x ↦ { app := fun m f xm ↦ {
-    app := fun k g yk ↦ (x.app k (f ≫ g) yk).app k (𝟙 _) (X.map g xm)
-    naturality := sorry
-      }
-    }
-  }
+/-
+noncomputable
+def ihom_equiv'_aux (X Y Z : SSet) (n : ℕ) (f : Δ[n] ⊗ X ⟶ (ihom Y).obj Z) :
+    Δ[n] ⊗ Y ⟶ (ihom X).obj Z :=
+  curry ((α_ X Δ[n] Y).inv ≫ (β_ X Δ[n]).hom ▷ Y ≫ (β_ (Δ[n] ⊗ X) Y).hom ≫ (uncurry f))
+
+noncomputable
+def ihom_equiv' (X Y Z : SSet) (n : ℕ) :
+    (Δ[n] ⊗ X ⟶ (ihom Y).obj Z) ≅ (Δ[n] ⊗ Y ⟶ (ihom X).obj Z) where
+  hom f := ihom_equiv'_aux X Y Z n f
+  inv f := ihom_equiv'_aux Y X Z n f
+  hom_inv_id := by
+    ext f m ⟨d, Xm⟩
+    sorry
+  inv_hom_id := sorry
+-/
+
+noncomputable
+def temp1 (X Y Z : SSet) : (ihom X).obj ((ihom Y).obj Z) ⟶ (ihom (X ⊗ Y)).obj Z where
+  app := fun n x ↦ by
+    refine ⟨?_, ?_⟩
+    · rintro m f ⟨Xm, Ym⟩
+      exact (x.app m f Xm).app m (𝟙 m) Ym
+    · intro m l f g
+      ext ⟨Xm, Ym⟩
+      change
+        (x.app l (g ≫ f) (X.map f Xm)).app l (𝟙 l) (Y.map f Ym) = Z.map f ((x.app m g Xm).app m (𝟙 m) Ym)
+      have := (congr_fun (x.naturality f g) Xm)
+      simp at this
+      rw [this]
+      simp [ihom, Closed.rightAdj, FunctorToTypes.rightAdj, Functor.ihom, Functor.hom₂Functor]
+      have := congr_fun ((x.app m g Xm).naturality f (𝟙 m)) Ym
+      simp at this
+      aesop
+
+noncomputable
+def temp2 (X Y Z : SSet) : (ihom (X ⊗ Y)).obj Z ⟶ (ihom X).obj ((ihom Y).obj Z) where
+  app := fun n x ↦ by
+    refine ⟨?_, ?_⟩
+    · intro m f Xm
+      refine ⟨?_, ?_⟩
+      · intro l g Yl
+        exact x.app l (f ≫ g) (X.map g Xm, Yl)
+      · intro l k g h
+        ext Yl
+        simp
+        have := congr_fun (x.naturality g (f ≫ h)) (X.map h Xm, Yl)
+        simp at this
+        rw [← this]
+        aesop
+    · intro m l f g
+      ext Xm
+      simp [ihom, Closed.rightAdj, FunctorToTypes.rightAdj, Functor.ihom, Functor.hom₂Functor]
+
+variable (X Y Z : SSet) (n : SimplexCategoryᵒᵖ)
+
+noncomputable
+def temp (X Y Z : SSet) : (ihom X).obj ((ihom Y).obj Z) ≅ (ihom (X ⊗ Y)).obj Z where
+  hom := temp1 X Y Z
+  inv := temp2 X Y Z
+  hom_inv_id := by
+    ext n x
+    change (X.temp2 Y Z).app n ((X.temp1 Y Z).app n x) = _
+    simp [temp1, temp2]
+    sorry
+  inv_hom_id := sorry
+
+noncomputable
+def ihom_equiv (X Y Z : SSet) : (ihom X).obj ((ihom Y).obj Z) ≅ (ihom Y).obj ((ihom X).obj Z) where
+  hom := (temp X Y Z).hom ≫ (pre (β_ X Y).inv).app Z ≫ (temp Y X Z).inv
+  inv := (temp Y X Z).hom ≫ (pre (β_ X Y).hom).app Z ≫ (temp X Y Z).inv
+  hom_inv_id := sorry
+  inv_hom_id := sorry
+
+end
 
 -- `0079`
 /- if B is a quasicat, then Fun(Δ[2], B) ⟶ Fun(Λ[2, 1], B) is a trivial Kan fib -/
@@ -130,11 +203,11 @@ instance quasicat_of_horn_tkf (B : SSet)
     [trivialKanFibration ((Fun.map (hornInclusion 2 1).op).app B)] :
     Quasicategory B := sorry
 
-open MonoidalCategory
 instance (B : SSet) (n : ℕ) : Mono ((boundaryInclusion n) ▷ B) where
   right_cancellation := sorry
 
--- changing the square to apply the lifting property of p
+/- changing the square to apply the lifting property of p
+   on the monomorphism `(boundaryInclusion n ▷ B)` -/
 lemma induced_tkf_aux (B X Y : SSet) (p : X ⟶ Y)
     [trivialKanFibration p] (n : ℕ) [h : HasLiftingProperty (boundaryInclusion n ▷ B) p] :
     HasLiftingProperty (boundaryInclusion n) ((Fun.obj (Opposite.op B)).map p) where
@@ -142,10 +215,10 @@ lemma induced_tkf_aux (B X Y : SSet) (p : X ⟶ Y)
     intro f g sq
     dsimp at f g sq
     have w := sq.w
-    have := (yonedaEquiv _ _ g)
-    dsimp [ihom, Closed.rightAdj, FunctorToTypes.rightAdj, Functor.ihom,
-      Functor.hom₂Functor] at this
-    --have := h.sq_hasLift
+    have map := (yonedaEquiv ((ihom B).obj Y) [n]).trans (ihom_simplices B Y n).toEquiv
+    have g' := map g
+    have δ := (boundaryInclusion n ▷ B)
+    have := δ ≫ g'
     sorry
 
 -- `0071` (special case of `0070`)
@@ -154,37 +227,25 @@ noncomputable
 instance induced_tkf (B X Y : SSet) (p : X ⟶ Y) [trivialKanFibration p] :
     trivialKanFibration ((Fun.obj (.op B)).map p) where
   has_rlp n := by
-    have := (rlp_mono_of_tkf p).has_rlp _ _ ((boundaryInclusion n) ▷ B)
+    have := (rlp_mono_of_tkf p).has_rlp ((boundaryInclusion n) ▷ B)
     apply induced_tkf_aux
 
 -- uses `0071` and `0079`
 /- the map Fun(Δ[2], Fun(S, D)) ⟶ Fun(Λ[2,1], Fun(S, D)) is a trivial Kan fib -/
--- apply `to_be_shown` and `0079`. need lemma about tranferring lifting properties through isom
+-- apply `ihom_equiv` and `0079`
 open MonoidalClosed in
 noncomputable
 instance fun_quasicat_aux (S D : SSet) [Quasicategory D] :
     trivialKanFibration ((Fun.map (hornInclusion 2 1).op).app ((Fun.obj (.op S)).obj D)) where
   has_rlp n := by
+    -- since Fun[Δ[n], D] ⟶ Fun[Λ[2,1], D] is a TKF by `0079`,
+    -- get Fun(S, Fun(Δ[n], D)) ⟶ Fun(S, (Λ[2,1], D)) is a TKF by `0071`
     have := (induced_tkf S _ _ ((Fun.map (hornInclusion 2 1).op).app D)).has_rlp n
     dsimp at this
-    have H : Arrow.mk ((ihom S).map ((pre (hornInclusion 2 1)).app D)) ≅
-        Arrow.mk ((pre (hornInclusion 2 1)).app ((ihom S).obj D)) := {
-      hom := {
-        left := (ihom_equiv _ _ _).hom
-        right := (ihom_equiv _ _ _).inv }
-      inv := {
-        left := (ihom_equiv _ _ _).inv
-        right := (ihom_equiv _ _ _).hom
-        w := by
-          dsimp
-          ext n x
-          change ((ihom S).map ((MonoidalClosed.pre (hornInclusion 2 1)).app D)).app n
-            ((S.ihom_equiv Δ[2] D).inv.app n x) = ((Λ[2, 1].ihom_equiv S D).hom).app n
-              (((MonoidalClosed.pre (hornInclusion 2 1)).app ((ihom S).obj D)).app n x)
-          sorry
-      }
-    }
-    exact HasLiftingProperty.of_arrow_iso_right _ H
+    have H : Arrow.mk ((ihom S).map ((MonoidalClosed.pre (hornInclusion 2 1)).app D)) ≅
+        Arrow.mk ((Fun.map (hornInclusion 2 1).op).app ((Fun.obj (Opposite.op S)).obj D)) :=
+      CategoryTheory.Comma.isoMk (ihom_equiv _ _ _) (ihom_equiv _ _ _)
+    exact HasLiftingProperty.of_arrow_iso_right (boundaryInclusion n) H
 
 -- `0066`
 /- if D is a quasicat, then Fun(S, D) is -/
