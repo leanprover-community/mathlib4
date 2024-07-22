@@ -1247,7 +1247,7 @@ end IsLocalizedModule
 
 section Subsingleton
 
-variable {R M} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 lemma LocalizedModule.mem_ker_mkLinearMap_iff {S : Submonoid R} {m} :
     m ∈ LinearMap.ker (LocalizedModule.mkLinearMap S M) ↔ ∃ r ∈ S, r • m = 0 := by
