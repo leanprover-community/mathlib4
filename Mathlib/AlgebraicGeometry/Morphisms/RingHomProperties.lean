@@ -341,3 +341,5 @@ lemma stableUnderBaseChange (hP : RingHom.StableUnderBaseChange Q) : P.StableUnd
   exact hP.pullback_fst_app_top _ (isLocal_ringHomProperty P).respectsIso _ _ H
 
 end HasRingHomProperty
+
+end AlgebraicGeometry
