@@ -1298,18 +1298,24 @@ theorem _root_.Nat.card_divisors {n : ℕ} (hn : n ≠ 0) :
 @[deprecated (since := "2024-06-09")] theorem card_divisors (n : ℕ) (hn : n ≠ 0) :
     n.divisors.card = n.primeFactors.prod (n.factorization · + 1) := Nat.card_divisors hn
 
-theorem _root_.Nat.Coprime.card_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
-    (m * n).divisors.card = m.divisors.card * n.divisors.card := by
-  simp only [← sigma_zero_apply, isMultiplicative_sigma.map_mul_of_coprime hmn]
-
 theorem _root_.Nat.sum_divisors {n : ℕ} (hn : n ≠ 0) :
     ∑ d ∈ n.divisors, d = ∏ p ∈ n.primeFactors, ∑ k ∈ .range (n.factorization p + 1), p ^ k := by
   rw [← sigma_one_apply, isMultiplicative_sigma.multiplicative_factorization _ hn]
   exact Finset.prod_congr n.support_factorization fun _ h =>
     sigma_one_apply_prime_pow <| Nat.prime_of_mem_primeFactors h
 
-theorem _root_.Nat.Coprime.sum_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
+end ArithmeticFunction
+
+namespace Nat.Coprime
+
+open ArithmeticFunction
+
+theorem card_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
+    (m * n).divisors.card = m.divisors.card * n.divisors.card := by
+  simp only [← sigma_zero_apply, isMultiplicative_sigma.map_mul_of_coprime hmn]
+
+theorem sum_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
     ∑ d ∈ (m * n).divisors, d = (∑ d ∈ m.divisors, d) * ∑ d ∈ n.divisors, d := by
   simp only [← sigma_one_apply, isMultiplicative_sigma.map_mul_of_coprime hmn]
 
-end ArithmeticFunction
+end Nat.Coprime
