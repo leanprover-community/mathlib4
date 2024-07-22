@@ -91,11 +91,6 @@ theorem self (hp : 1 < p) : padicValNat p p = 1 := by
   have eq_zero_false : p = 0 ↔ False := iff_false_intro (zero_lt_one.trans hp).ne'
   simp [padicValNat, neq_one, eq_zero_false]
 
-@[simp]
-theorem eq_zero_iff {n : ℕ} : padicValNat p n = 0 ↔ p = 1 ∨ n = 0 ∨ ¬p ∣ n := by
-  simp only [padicValNat, dite_eq_right_iff, PartENat.get_eq_iff_eq_coe, Nat.cast_zero,
-    multiplicity_eq_zero, and_imp, pos_iff_ne_zero, Ne, ← or_iff_not_imp_left]
-
 theorem eq_zero_of_not_dvd {n : ℕ} (h : ¬p ∣ n) : padicValNat p n = 0 :=
   eq_zero_iff.2 <| Or.inr <| Or.inr h
 
