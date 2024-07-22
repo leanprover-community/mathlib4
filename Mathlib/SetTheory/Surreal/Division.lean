@@ -239,8 +239,8 @@ lemma eq1 {l r} {L : l → PGame} {R : r → PGame}
     (h3 : ∀ i, 0 < L i → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric) {b : Bool}
     (x_pos : 0 < PGame.mk l r L R)
-    (inv_l : ∀ (i : { i // 0 < L i }), (mk (L i) (h5.2.1 i)) * (mk (L i).inv' (h3 i i.2)) = 1)
-    (inv_r : ∀ j, (mk (R j) (h5.2.2 j)) * (mk (R j).inv' (h4 j)) = 1)
+    (inv_l : ∀ (i : { i // 0 < L i }), mk (L i) (h5.2.1 i) * mk (L i).inv' (h3 i i.2) = 1)
+    (inv_r : ∀ j, mk (R j) (h5.2.2 j) * mk (R j).inv' (h4 j) = 1)
     (i'' : InvTy {i // 0 < L i} r b) :
     let (x', x'_inv, y') := components h3 h4 h5 x_pos i''
     let x := mk (PGame.mk l r L R) h5
@@ -280,8 +280,8 @@ lemma eq1 {l r} {L : l → PGame} {R : r → PGame}
 lemma onag_1_10_i' {l r} {L : l → PGame} {R : r → PGame}
     (h3 : ∀ i, 0 < (L i) → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric) (b : Bool)
-    (inv_l : ∀ (i : { i // 0 < L i }), (mk (L i) (h5.2.1 i)) * (mk (L i).inv' (h3 i i.2)) = 1)
-    (inv_r : ∀ j, (mk (R j) (h5.2.2 j)) * (mk (R j).inv' (h4 j)) = 1)
+    (inv_l : ∀ (i : { i // 0 < L i }), mk (L i) (h5.2.1 i) * mk (L i).inv' (h3 i i.2) = 1)
+    (inv_r : ∀ j, mk (R j) (h5.2.2 j) * mk (R j).inv' (h4 j) = 1)
     (x_pos: 0 < PGame.mk l r L R)
     (i' : InvTy {i // 0 < L i} r b) :
     let x := mk (PGame.mk l r L R) h5
@@ -356,9 +356,9 @@ lemma onag_1_10_i' {l r} {L : l → PGame} {R : r → PGame}
 lemma eq2 {l r} {L : l → PGame} {R : r → PGame}
     (h3 : ∀ i, 0 < (L i) → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric) {b : Bool}
-    (inv_l : ∀ (i : { i // 0 < L i }), (mk (L i) (h5.2.1 i)) * (mk (L i).inv' (h3 i i.2)) = 1)
-    (inv_r : ∀ j, (mk (R j) (h5.2.2 j)) * (mk (R j).inv' (h4 j)) = 1)
-    (inv_numeric : ((PGame.mk l r L R).inv').Numeric)
+    (inv_l : ∀ (i : { i // 0 < L i }), mk (L i) (h5.2.1 i) * mk (L i).inv' (h3 i i.2) = 1)
+    (inv_r : ∀ j, mk (R j) (h5.2.2 j) * mk (R j).inv' (h4 j) = 1)
+    (inv_numeric : (PGame.mk l r L R).inv'.Numeric)
     (x_pos: 0 < PGame.mk l r L R)
     (i'' : InvTy {i // 0 < L i} r b) :
     let (x', _, y') := components h3 h4 h5 x_pos i''
@@ -406,9 +406,9 @@ lemma eq2 {l r} {L : l → PGame} {R : r → PGame}
 lemma onag_1_10_iii_left' {l r} {L : l → PGame} {R : r → PGame}
     (h3 : ∀ i, 0 < (L i) → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric)
-    (inv_l : ∀ (i : { i // 0 < L i }), (mk (L i) (h5.2.1 i)) * (mk (L i).inv' (h3 i i.2)) = 1)
-    (inv_r : ∀ j, (mk (R j) (h5.2.2 j)) * (mk (R j).inv' (h4 j)) = 1)
-    (inv_numeric : ((PGame.mk l r L R).inv').Numeric)
+    (inv_l : ∀ (i : { i // 0 < L i }), mk (L i) (h5.2.1 i) * mk (L i).inv' (h3 i i.2) = 1)
+    (inv_r : ∀ j, mk (R j) (h5.2.2 j) * mk (R j).inv' (h4 j) = 1)
+    (inv_numeric : (PGame.mk l r L R).inv'.Numeric)
     (x_pos: 0 < PGame.mk l r L R)
     (ij : Sum ({ i // 0 < L i } × InvTy { i // 0 < L i } r false)
       (r × InvTy { i // 0 < L i } r true)) :
@@ -466,9 +466,9 @@ lemma onag_1_10_iii_left' {l r} {L : l → PGame} {R : r → PGame}
 lemma onag_1_10_iii_right' {l r} {L : l → PGame} {R : r → PGame}
     (h3 : ∀ i, 0 < (L i) → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric)
-    (inv_l : ∀ (i : { i // 0 < L i }),(mk (L i) (h5.2.1 i)) * (mk (L i).inv' (h3 i i.2)) = 1)
-    (inv_r : ∀ j, (mk (R j) (h5.2.2 j)) * (mk (R j).inv' (h4 j)) = 1)
-    (inv_numeric : ((PGame.mk l r L R).inv').Numeric)
+    (inv_l : ∀ (i : { i // 0 < L i }), mk (L i) (h5.2.1 i) * mk (L i).inv' (h3 i i.2) = 1)
+    (inv_r : ∀ j, mk (R j) (h5.2.2 j) * mk (R j).inv' (h4 j) = 1)
+    (inv_numeric : (PGame.mk l r L R).inv'.Numeric)
     (x_pos: 0 < PGame.mk l r L R)
     (ij : Sum ({ i // 0 < L i } × InvTy { i // 0 < L i } r true)
       (r × InvTy { i // 0 < L i } r false)) :
