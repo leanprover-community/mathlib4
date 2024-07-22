@@ -60,18 +60,17 @@ theorem basis_le_iff [Nontrivial α] {d e : σ →₀ ℕ} :
   simp only [basis, Submodule.mk_le_mk, AddSubmonoid.mk_le_mk, setOf_subset_setOf]
   intro h
   rw [← inf_eq_right]
-  apply le_antisymm
-  . exact inf_le_right
-  . by_contra h'
-    simp only [AddSubsemigroup.mk_le_mk, setOf_subset_setOf] at h
-    specialize h (monomial α e 1) _
-    . intro e' he'
-      apply coeff_monomial_ne
-      intro hee'
-      rw [hee'] at he'
-      apply h'
-      exact le_inf_iff.mpr ⟨he', le_rfl⟩
-    apply one_ne_zero' α
+  apply le_antisymm inf_le_right
+  by_contra h'
+  simp only [AddSubsemigroup.mk_le_mk, setOf_subset_setOf] at h
+  specialize h (monomial α e 1) _
+  · intro e' he'
+    apply coeff_monomial_ne
+    intro hee'
+    rw [hee'] at he'
+    apply h'
+    exact le_inf_iff.mpr ⟨he', le_rfl⟩
+  · apply one_ne_zero' α
     convert h e le_rfl
     rw [coeff_monomial_same]
 
@@ -115,10 +114,10 @@ theorem basis_mem_nhds_zero (d : σ →₀ ℕ) :
   use Finset.Iic d, Finset.finite_toSet _, (fun e => if e ≤ d then {0} else univ)
   constructor
   · intro e
-    split_ifs with h
-    . simp only [nhds_discrete, Filter.mem_pure, mem_singleton_iff]
+    split_ifs
+    · simp only [nhds_discrete, Filter.mem_pure, mem_singleton_iff]
       rfl
-    . simp only [Filter.univ_mem]
+    · simp only [Filter.univ_mem]
   · intro f
     simp only [Finset.coe_Iic, mem_pi, mem_Iic, mem_ite_univ_right, mem_singleton_iff, mem_coe]
     exact forall_imp (fun e h he => h he he)
