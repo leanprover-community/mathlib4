@@ -367,7 +367,7 @@ theorem card_classGroup_eq_one [IsPrincipalIdealRing R] : Fintype.card (ClassGro
   rw [Fintype.card_eq_one_iff]
   use 1
   #adaptation_note
-  /-- 2024-07-18 need to disable elab_as_elim due to incorrect motive -/
+  /-- 2024-07-18 need to disable elab_as_elim with `(P := _)` due to type-incorrect motive -/
   refine ClassGroup.induction (P := _) (R := R) (FractionRing R) (fun I => ?_)
   exact ClassGroup.mk_eq_one_iff.mpr (I : FractionalIdeal R⁰ (FractionRing R)).isPrincipal
 
