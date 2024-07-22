@@ -84,8 +84,7 @@ theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace {X Y : Scheme} [IsAf
   · intro H U V
     haveI : IsAffine _ := U.2
     haveI : IsAffine _ := V.2
-    let g : pullback (X.ofRestrict U.1.openEmbedding) (X.ofRestrict V.1.openEmbedding) ⟶ X :=
-      pullback.fst _ _ ≫ X.ofRestrict _
+    let g : pullback U.1.ι V.1.ι ⟶ X := pullback.fst _ _ ≫ U.1.ι
     -- Porting note: `inferInstance` does not work here
     have : IsOpenImmersion g := PresheafedSpace.IsOpenImmersion.comp _ _
     have e := Homeomorph.ofEmbedding _ this.base_open.toEmbedding
@@ -197,7 +196,7 @@ theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : X.Opens) (hU : IsAff
   simpa [mul_comm x] using d.symm
 
 theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux_aux {X : TopCat}
-    (F : X.Presheaf CommRingCat) {U₁ U₂ U₃ U₄ U₅ U₆ U₇ : X.Opens} {n₁ n₂ : ℕ}
+    (F : X.Presheaf CommRingCat) {U₁ U₂ U₃ U₄ U₅ U₆ U₇ : Opens X} {n₁ n₂ : ℕ}
     {y₁ : F.obj (op U₁)} {y₂ : F.obj (op U₂)} {f : F.obj (op <| U₁ ⊔ U₂)}
     {x : F.obj (op U₃)} (h₄₁ : U₄ ≤ U₁) (h₄₂ : U₄ ≤ U₂) (h₅₁ : U₅ ≤ U₁) (h₅₃ : U₅ ≤ U₃)
     (h₆₂ : U₆ ≤ U₂) (h₆₃ : U₆ ≤ U₃) (h₇₄ : U₇ ≤ U₄) (h₇₅ : U₇ ≤ U₅) (h₇₆ : U₇ ≤ U₆)
