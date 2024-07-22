@@ -115,16 +115,10 @@ theorem closure_prime_cycle_swap {σ τ : Perm α} (h0 : (Fintype.card α).Prime
   refine closure_cycle_coprime_swap
     (Nat.Coprime.symm (h0.coprime_iff_not_dvd.mpr fun h => h4 ?_)) h1 h2 x
   cases' h with m hm
-<<<<<<< HEAD
   have h2' : σ.support.toFinset = Finset.univ := by
     simp only [h2, Set.top_eq_univ, Set.toFinset_univ]
   rwa [hm, pow_mul, ← Finset.card_univ, ← h2', ← supportCard_compute, ← h1.orderOf,
     pow_orderOf_eq_one, one_pow, one_apply] at hi
-#align equiv.perm.closure_prime_cycle_swap Equiv.Perm.closure_prime_cycle_swap
-=======
-  rwa [hm, pow_mul, ← Finset.card_univ, ← h2, ← h1.orderOf, pow_orderOf_eq_one, one_pow,
-    one_apply] at hi
->>>>>>> master
 
 end Generation
 

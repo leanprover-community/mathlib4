@@ -199,49 +199,26 @@ variable [Fintype α] [DecidableEq α] (p : Equiv.Perm α) (x : α)
 until looping. That means when `f x = x`, `toList f x = []`.
 -/
 def toList : List α :=
-<<<<<<< HEAD
   (List.range (cycleOf p x).support.toFinset.card).map fun k => (p ^ k) x
-#align equiv.perm.to_list Equiv.Perm.toList
-=======
-  (List.range (cycleOf p x).support.card).map fun k => (p ^ k) x
->>>>>>> master
 
 @[simp]
 theorem toList_one : toList (1 : Perm α) x = [] := by simp [toList, cycleOf_one]
 
 @[simp]
-<<<<<<< HEAD
 theorem toList_eq_nil_iff {p : Perm α} {x} : toList p x = [] ↔ x ∉ p.support := by
   simp_rw [toList, ← supportCard_compute, not_mem_support, map_eq_nil, range_eq_nil,
   supportCard_eq_zero, cycleOf_eq_one_iff]
-#align equiv.perm.to_list_eq_nil_iff Equiv.Perm.toList_eq_nil_iff
 
 @[simp]
 theorem length_toList : length (toList p x) = (cycleOf p x).supportCard := by
   simp_rw [toList, ← supportCard_compute, length_map, length_range]
-#align equiv.perm.length_to_list Equiv.Perm.length_toList
 
 theorem toList_ne_singleton (y : α) : toList p x ≠ [y] := by
   intro H
   simpa [supportCard_ne_one] using congr_arg length H
-#align equiv.perm.to_list_ne_singleton Equiv.Perm.toList_ne_singleton
 
 theorem two_le_length_toList_iff_mem_support {p : Perm α} {x : α} :
     2 ≤ length (toList p x) ↔ x ∈ p.support := by simp [mem_support]
-#align equiv.perm.two_le_length_to_list_iff_mem_support Equiv.Perm.two_le_length_toList_iff_mem_support
-=======
-theorem toList_eq_nil_iff {p : Perm α} {x} : toList p x = [] ↔ x ∉ p.support := by simp [toList]
-
-@[simp]
-theorem length_toList : length (toList p x) = (cycleOf p x).support.card := by simp [toList]
-
-theorem toList_ne_singleton (y : α) : toList p x ≠ [y] := by
-  intro H
-  simpa [card_support_ne_one] using congr_arg length H
-
-theorem two_le_length_toList_iff_mem_support {p : Perm α} {x : α} :
-    2 ≤ length (toList p x) ↔ x ∈ p.support := by simp
->>>>>>> master
 
 theorem length_toList_pos_of_mem_support (h : x ∈ p.support) : 0 < length (toList p x) :=
   zero_lt_two.trans_le (two_le_length_toList_iff_mem_support.mpr h)
@@ -364,11 +341,6 @@ theorem toList_formPerm_nontrivial (l : List α) (hl : 2 ≤ l.length) (hn : Nod
   · refine ext_getElem (by simp) fun k hk hk' => ?_
     simp only [get_eq_getElem, formPerm_pow_apply_getElem _ hn, zero_add, getElem_map,
       getElem_range, Nat.mod_eq_of_lt hk']
-<<<<<<< HEAD
-#align equiv.perm.to_list_form_perm_nontrivial Equiv.Perm.toList_formPerm_nontrivial
-=======
-  · simpa [hs] using get_mem _ _ _
->>>>>>> master
 
 theorem toList_formPerm_isRotated_self (l : List α) (hl : 2 ≤ l.length) (hn : Nodup l) (x : α)
     (hx : x ∈ l) : toList (formPerm l) x ~r l := by

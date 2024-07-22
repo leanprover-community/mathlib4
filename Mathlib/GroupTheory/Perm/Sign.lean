@@ -55,7 +55,6 @@ theorem ne_and_ne_of_swap_mul_apply_ne_self {f : Perm α} {x y : α} (hy : (swap
   by_cases h : f y = x
   · constructor <;> intro <;> simp_all only [if_true, eq_self_iff_true, not_true, Ne]
   · split_ifs at hy with h <;> try { simp [*] at * }
-#align equiv.perm.ne_and_ne_of_swap_mul_apply_ne_self Equiv.Perm.ne_and_ne_of_swap_mul_apply_ne_self
 
 /-- Given a list `l : List α` and a permutation `f : Perm α` such that the nonfixed points of `f`
   are in `l`, recursively factors `f` as a product of transpositions. -/
