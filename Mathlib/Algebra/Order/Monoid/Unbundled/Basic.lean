@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Dami
 Yuyang Zhao
 -/
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-import Mathlib.Init.Data.Ordering.Basic
+import Mathlib.Data.Ordering.Basic
 import Mathlib.Order.MinMax
 import Mathlib.Tactic.Contrapose
 
