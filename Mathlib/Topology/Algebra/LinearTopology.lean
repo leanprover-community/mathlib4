@@ -19,43 +19,6 @@ asserts that the topology is linear.
 
 -/
 
-section Complements
-
-/-- If `a, b` are two elements of a topological group `α`, then a set `V` belongs to `nhds (a + b)`
-  if and only if `Add.add a ⁻¹' V ∈ nhds b`.  -/
-theorem mem_nhds_add_left_iff
-    {α : Type*} [AddCommGroup α] [TopologicalSpace α] [TopologicalAddGroup α]
-    {V : Set α} {a b : α} :
-    V ∈ nhds (a + b) ↔ (fun x ↦ a + x) ⁻¹' V ∈ nhds b := by
-  refine ⟨fun hV => (continuous_add_left a).continuousAt.preimage_mem_nhds hV, ?_⟩
-  intro hV
-  suffices h : V = (fun x ↦ -a + x) ⁻¹'  ((fun x ↦ a + x) ⁻¹' V) by
-    rw [h]
-    apply ContinuousAt.preimage_mem_nhds (continuous_add_left (-a)).continuousAt
-    convert hV
-    apply neg_add_cancel_left
-  rw [Set.preimage_preimage, eq_comm]
-  simp_rw [add_neg_cancel_left, Set.preimage_id']
-
-/-- If `a, b` are two elements of a topological group `α`, then a set `V` belongs to `nhds (a + b)`
-  if and only if `(fun x ↦ x + b) ⁻¹' V ∈ nhds b`.  -/
-theorem mem_nhds_add_right_iff
-    {α : Type*} [AddCommGroup α] [TopologicalSpace α] [TopologicalAddGroup α]
-    {V : Set α} {a b : α} :
-    V ∈ nhds (a + b) ↔ (fun x ↦ x + b) ⁻¹' V ∈ nhds a := by
-  constructor
-  · exact fun hV ↦ (continuous_add_right b).continuousAt.preimage_mem_nhds  hV
-  · intro hV
-    suffices h : V = (fun x ↦  x + -b) ⁻¹' ((fun x ↦ x + b) ⁻¹' V) by
-      rw [h]
-      apply ContinuousAt.preimage_mem_nhds (continuous_add_right (-b)).continuousAt
-      convert hV
-      rw [add_neg_eq_iff_eq_add]
-    rw [Set.preimage_preimage, eq_comm]
-    simp_rw [neg_add_cancel_right, Set.preimage_id']
-
-end Complements
-
 section Definitions
 
 variable (α : Type*) [Ring α]
