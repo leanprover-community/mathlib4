@@ -63,7 +63,7 @@ variable (X : LocallyRingedSpace.{u})
 
 /-- The map from the global sections to a stalk. -/
 def ΓToStalk (x : X) : Γ.obj (op X) ⟶ X.presheaf.stalk x :=
-  X.presheaf.germ (⟨x, trivial⟩ : (⊤ : X.Opens))
+  X.presheaf.germ (⟨x, trivial⟩ : (⊤ : Opens X))
 
 lemma ΓToStalk_stalkMap {X Y : LocallyRingedSpace} (f : X ⟶ Y) (x : X) :
     Y.ΓToStalk (f.val.base x) ≫ PresheafedSpace.stalkMap f.val x =
@@ -112,7 +112,7 @@ attribute [nolint simpNF] AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase_appl
 variable (r : Γ.obj (op X))
 
 /-- The preimage in `X` of a basic open in `Spec Γ(X)` (as an open set). -/
-abbrev toΓSpecMapBasicOpen : X.Opens :=
+abbrev toΓSpecMapBasicOpen : Opens X :=
   (Opens.map X.toΓSpecBase).obj (basicOpen r)
 
 /-- The preimage is the basic open in `X` defined by the same element `r`. -/
@@ -486,10 +486,10 @@ end ΓSpec
 
 theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : X.Opens) :
     (Scheme.ΓSpecIso Γ(X, U)).hom =
-      Scheme.Γ.map (Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op)).op ≫
-      (ΓSpec.adjunction.unit.app (X ∣_ᵤ U)).app ⊤ ≫
-      X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op := by
-  dsimp [-Scheme.SpecΓIdentity_hom_app]
+      Scheme.Γ.map (Spec.map U.topIso.inv).op ≫
+      (ΓSpec.adjunction.unit.app U).app ⊤ ≫
+      X.presheaf.map (eqToHom U.ι_image_top.symm).op := by
+  dsimp
   rw [ΓSpec.adjunction_unit_app_app_top] -- why can't simp find this
   simp
 
