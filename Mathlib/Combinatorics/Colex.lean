@@ -338,7 +338,7 @@ lemma lt_iff_max'_mem {s t : Colex α} :
   rw [lt_iff_le_and_ne, le_iff_max'_mem]; aesop
 
 lemma lt_iff_exists_filter_lt :
-    toColex s < toColex t ↔ ∃ w ∈ t \ s, s.filter (w < .) = t.filter (w < .) := by
+    toColex s < toColex t ↔ ∃ w ∈ t \ s, s.filter (w < ·) = t.filter (w < ·) := by
   simp only [lt_iff_exists_forall_lt, mem_sdiff, filter_inj, and_assoc]
   refine ⟨fun h ↦ ?_, ?_⟩
   · let u := (t \ s).filter fun w ↦ ∀ a ∈ s, a ∉ t → a < w
