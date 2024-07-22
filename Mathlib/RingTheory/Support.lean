@@ -14,7 +14,6 @@ import Mathlib.RingTheory.Localization.AtPrime
 ## Main results
 - `Module.support`: The support of an `R`-module as a subset of `Spec R`.
 - `Module.mem_support_iff_exists_annihilator`: `p ∈ Supp M ↔ ∃ m, Ann(m) ≤ p`.
-- `Module.stableUnderSpecialization_support`: `Supp M` is stable under specialization.
 - `Module.support_eq_empty_iff`: `Supp M = ∅ ↔ M = 0`
 - `Module.support_of_exact`: `Supp N = Supp M ∪ Supp P` for an exact sequence `0 → M → N → P → 0`.
 - `Module.support_eq_zeroLocus`: If `M` is `R`-finite, then `Supp M = Z(Ann(M))`.
