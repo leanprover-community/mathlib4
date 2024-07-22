@@ -186,8 +186,7 @@ def IsAffineOpen {X : Scheme} (U : X.Opens) : Prop :=
 def Scheme.affineOpens (X : Scheme) : Set X.Opens :=
   {U : X.Opens | IsAffineOpen U}
 
-instance {Y : Scheme.{u}} (U : Y.affineOpens) :
-    IsAffine (Scheme.restrict Y <| Opens.openEmbedding U.val) :=
+instance {Y : Scheme.{u}} (U : Y.affineOpens) : IsAffine U :=
   U.property
 
 theorem isAffineOpen_opensRange {X Y : Scheme} [IsAffine X] (f : X ⟶ Y)

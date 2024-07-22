@@ -121,9 +121,8 @@ instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain 
   ext
   exact mem_nonZeroDivisors_iff_ne_zero
 
-instance {X : Scheme} [IsIntegral X] {U : X.Opens} [hU : Nonempty U] :
-    IsIntegral (X ∣_ᵤ U) :=
-  haveI : Nonempty (X ∣_ᵤ U) := hU
+instance {X : Scheme} [IsIntegral X] {U : X.Opens} [Nonempty U] :
+    IsIntegral U :=
   isIntegral_of_isOpenImmersion U.ι
 
 theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : X.Opens}
@@ -136,19 +135,18 @@ theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : 
   delta IsAffineOpen.primeIdealOf
   convert
     genericPoint_eq_of_isOpenImmersion
-      ((X ∣_ᵤ U).isoSpec.hom ≫ Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op))
+      (U.toScheme.isoSpec.hom ≫ Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op))
   -- Porting note: this was `ext1`
   apply Subtype.ext
   exact (genericPoint_eq_of_isOpenImmersion U.ι).symm
 
 theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : X.Opens)
-    (hU : IsAffineOpen U) [hU' : Nonempty U] :
+    (hU : IsAffineOpen U) [Nonempty U] :
     IsFractionRing Γ(X, U) X.functionField := by
   haveI : IsAffine _ := hU
-  haveI : Nonempty (X ∣_ᵤ U) := hU'
-  haveI : IsIntegral (X ∣_ᵤ U) :=
+  haveI : IsIntegral U :=
     @isIntegral_of_isAffine_of_isDomain _ _ _
-      (by dsimp; rw [Opens.openEmbedding_obj_top]; infer_instance)
+      (by rw [Scheme.Opens.toScheme_presheaf_obj, Opens.openEmbedding_obj_top]; infer_instance)
   delta IsFractionRing Scheme.functionField
   convert hU.isLocalization_stalk ⟨genericPoint X, _⟩ using 1
   rw [hU.primeIdealOf_genericPoint, genericPoint_eq_bot_of_affine]

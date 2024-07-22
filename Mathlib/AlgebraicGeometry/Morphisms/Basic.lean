@@ -159,8 +159,8 @@ lemma of_iSup_eq_top {ι} (U : ι → Y.Opens) (hU : iSup U = ⊤)
     (Y.openCoverOfSuprEqTop (s := Set.range U) Subtype.val (by ext; simp [← hU]))).mpr fun i ↦ ?_
   obtain ⟨_, i, rfl⟩ := i
   refine (P.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mp ?_
-  show P (f ∣_ (Scheme.ιOpens (U i)).opensRange)
-  rw [opensRange_ιOpens]
+  show P (f ∣_ (U i).ι.opensRange)
+  rw [Scheme.Opens.opensRange_ι]
   exact H i
 
 theorem iff_of_iSup_eq_top {ι} (U : ι → Y.Opens) (hU : iSup U = ⊤) :
@@ -205,16 +205,16 @@ protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
     (restrict : ∀ {X Y : Scheme} (f : X ⟶ Y) (U : X.Opens), P f → P (U.ι ≫ f))
     (of_sSup_eq_top :
       ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → X.Opens), iSup U = ⊤ →
-        (∀ i, P (Scheme.ιOpens (U i) ≫ f)) → P f) :
+        (∀ i, P ((U i).ι ≫ f)) → P f) :
     IsLocalAtSource P := by
   refine ⟨inferInstance, fun {X Y} f 𝒰 ↦
     ⟨fun H i ↦ ?_, fun H ↦ of_sSup_eq_top f _ 𝒰.iSup_opensRange fun i ↦ ?_⟩⟩
-  · rw [← IsOpenImmersion.isoOfRangeEq_hom_fac (𝒰.map i) (Scheme.ιOpens _)
-      (congr_arg Opens.carrier (opensRange_ιOpens (𝒰.map i).opensRange).symm), Category.assoc,
+  · rw [← IsOpenImmersion.isoOfRangeEq_hom_fac (𝒰.map i) (Scheme.Opens.ι _)
+      (congr_arg Opens.carrier (𝒰.map i).opensRange.opensRange_ι.symm), Category.assoc,
       P.cancel_left_of_respectsIso]
     exact restrict _ _ H
-  · rw [← IsOpenImmersion.isoOfRangeEq_inv_fac (𝒰.map i) (Scheme.ιOpens _)
-      (congr_arg Opens.carrier (opensRange_ιOpens (𝒰.map i).opensRange).symm), Category.assoc,
+  · rw [← IsOpenImmersion.isoOfRangeEq_inv_fac (𝒰.map i) (Scheme.Opens.ι _)
+      (congr_arg Opens.carrier (𝒰.map i).opensRange.opensRange_ι.symm), Category.assoc,
       P.cancel_left_of_respectsIso]
     exact H _
 
@@ -235,20 +235,20 @@ lemma comp {UX : Scheme.{u}} (H : P f) (i : UX ⟶ X) [IsOpenImmersion i] :
   (iff_of_openCover' f (X.affineCover.add i)).mp H .none
 
 lemma of_iSup_eq_top {ι} (U : ι → X.Opens) (hU : iSup U = ⊤)
-    (H : ∀ i, P (Scheme.ιOpens (U i) ≫ f)) : P f := by
+    (H : ∀ i, P ((U i).ι ≫ f)) : P f := by
   refine (iff_of_openCover' f
     (X.openCoverOfSuprEqTop (s := Set.range U) Subtype.val (by ext; simp [← hU]))).mpr fun i ↦ ?_
   obtain ⟨_, i, rfl⟩ := i
   exact H i
 
 theorem iff_of_iSup_eq_top {ι} (U : ι → X.Opens) (hU : iSup U = ⊤) :
-    P f ↔ ∀ i, P (Scheme.ιOpens (U i) ≫ f) :=
+    P f ↔ ∀ i, P ((U i).ι ≫ f) :=
   ⟨fun H _ ↦ comp H _, of_iSup_eq_top U hU⟩
 
 lemma of_openCover (H : ∀ i, P (𝒰.map i ≫ f)) : P f := by
   refine of_iSup_eq_top (fun i ↦ (𝒰.map i).opensRange) 𝒰.iSup_opensRange fun i ↦ ?_
-  rw [← IsOpenImmersion.isoOfRangeEq_inv_fac (𝒰.map i) (Scheme.ιOpens _)
-    (congr_arg Opens.carrier (opensRange_ιOpens (𝒰.map i).opensRange).symm), Category.assoc,
+  rw [← IsOpenImmersion.isoOfRangeEq_inv_fac (𝒰.map i) (Scheme.Opens.ι _)
+    (congr_arg Opens.carrier (𝒰.map i).opensRange.opensRange_ι.symm), Category.assoc,
     P.cancel_left_of_respectsIso]
   exact H i
 
