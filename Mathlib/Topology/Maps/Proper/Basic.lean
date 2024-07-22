@@ -322,7 +322,7 @@ continuous maps such that the preimage of any compact set is compact.
 
 This result should be the only one needed to link the definition of a proper map and
 the criteria "preimage of compact sets are compact", but the notion of compactly generated space
-is not yet in Mathlib so we use it as an intermediate result to prove
+is not yet in Mathlib (TODO) so we use it as an intermediate result to prove
 `WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage` and
 `SequentialSpace.isProperMap_iff_isCompact_preimage`. In the future those should be inferred
 by typeclass inference. -/
