@@ -237,7 +237,7 @@ def functor {E : Cat.{v,u}} : (E ⥤ Cat.{v,u}) ⥤ Over (T := Cat.{v,u}) E wher
   map {F G} α := Over.homMk (X:= E) (Grothendieck.map α) Grothendieck.functor_comp_forget
   map_id F := by
     ext
-    exact Grothendieck.map_id_eq (F:= F)
+    exact Grothendieck.map_id_eq (F := F)
   map_comp α β := by
     simp [Grothendieck.map_comp_eq α β]
     rfl
@@ -246,13 +246,13 @@ universe w
 
 variable (G : C ⥤ Type w)
 
-/-- Auxiliary definition for `grothendieck_Type_to_Cat`, to speed up elaboration. -/
+/-- Auxiliary definition for `grothendieckTypeToCat`, to speed up elaboration. -/
 @[simps!]
 def grothendieckTypeToCatFunctor : Grothendieck (G ⋙ typeToCat) ⥤ G.Elements where
   obj X := ⟨X.1, X.2.as⟩
-  map := @fun X Y f => ⟨f.1, f.2.1.1⟩
+  map f := ⟨f.1, f.2.1.1⟩
 
-/-- Auxiliary definition for `grothendieck_Type_to_Cat`, to speed up elaboration. -/
+/-- Auxiliary definition for `grothendieckTypeToCat`, to speed up elaboration. -/
 -- Porting note:
 -- `simps` is incorrectly producing Prop-valued projections here,
 -- so we manually specify which ones to produce.

@@ -8,7 +8,7 @@ import Mathlib.Algebra.Module.BigOperators
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Data.Nat.Squarefree
 import Mathlib.Data.Nat.GCD.BigOperators
-import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Data.Nat.Factorization.Induction
 import Mathlib.Tactic.ArithMult
 
 
