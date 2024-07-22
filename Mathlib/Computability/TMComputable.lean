@@ -98,7 +98,6 @@ instance inhabitedCfg : Inhabited (Cfg tm) :=
 @[simp]
 def step : tm.Cfg → Option tm.Cfg :=
   Turing.TM2.step tm.m
-#align turing.fin_tm2.step Turing.FinTM2.step
 
 /--
 A (TM2) Multi-tape Turing Machine composing the operations of two other Multi-tape Turing Machines.
