@@ -190,6 +190,10 @@ def ihom_equiv (X Y Z : SSet) : (ihom X).obj ((ihom Y).obj Z) ≅ (ihom Y).obj (
   hom_inv_id := sorry
   inv_hom_id := sorry
 
+noncomputable
+def FunctorToTypes.homEquiv' (X Y Z : SSet) : (X ⊗ Y ⟶ Z) ≃ (X ⟶ Y.ihom Z) :=
+  ((β_ X Y).homFromEquiv).trans (FunctorToTypes.homEquiv Y X Z)
+
 end
 
 -- `0079`
@@ -211,14 +215,34 @@ instance (B : SSet) (n : ℕ) : Mono ((boundaryInclusion n) ▷ B) where
 lemma induced_tkf_aux (B X Y : SSet) (p : X ⟶ Y)
     [trivialKanFibration p] (n : ℕ) [h : HasLiftingProperty (boundaryInclusion n ▷ B) p] :
     HasLiftingProperty (boundaryInclusion n) ((Fun.obj (Opposite.op B)).map p) where
-  sq_hasLift := by
-    intro f g sq
+  sq_hasLift {f g sq} := by
     dsimp at f g sq
-    have w := sq.w
-    have map := (yonedaEquiv ((ihom B).obj Y) [n]).trans (ihom_simplices B Y n).toEquiv
-    have g' := map g
-    have δ := (boundaryInclusion n ▷ B)
-    have := δ ≫ g'
+    let map := (yonedaEquiv ((ihom B).obj Y) [n]).trans (ihom_simplices B Y n).toEquiv
+    let g' := map g
+    let δ := (boundaryInclusion n ▷ B)
+    let homEquiv := (FunctorToTypes.homEquiv' ∂Δ[n] B X)
+    let f' := homEquiv.symm f
+    have w' : f' ≫ p = δ ≫ g':= by
+      ext m ⟨d, Bm⟩
+      have := (congr_fun (congr_app sq.w m) d)
+      simp [ihom, Closed.rightAdj] at this
+      simp [δ, f', g', map, homEquiv, FunctorToTypes.homEquiv', FunctorToTypes.homEquiv]
+      change (FunctorToTypes.homEquiv_invFun f ≫ p).app m ((β_ ∂Δ[n] B).hom.app m (d, Bm)) =
+        ((B.ihom_simplices Y n).hom ((((ihom B).obj Y).yonedaEquiv [n]) g)).app m ((boundaryInclusion n ▷ B).app m (d, Bm))
+      simp [FunctorToTypes.homEquiv_invFun, ihom_simplices, standardSimplex.objEquiv, Equiv.ulift,
+        ihom, Closed.rightAdj, FunctorToTypes.rightAdj, Functor.ihom,
+        yonedaEquiv, yonedaCompUliftFunctorEquiv]
+      change ((FunctorToTypes.rightAdj B).map p).app m (f.app m d) =
+        g.app m ((boundaryInclusion n).app m d) at this
+      simp [FunctorToTypes.rightAdj, FunctorToTypes.rightAdj_map] at this
+      apply_fun (fun f ↦ f.app m (𝟙 m) Bm) at this
+      simp at this
+      change  p.app m ((f.app m d).app m (𝟙 m) Bm) = _
+      rw [this]
+      sorry
+    have newSq := CommSq.mk w'
+    letI _ : HasLiftingProperty δ p := sorry
+    have newSq_hasLift := h.sq_hasLift newSq
     sorry
 
 -- `0071` (special case of `0070`)
