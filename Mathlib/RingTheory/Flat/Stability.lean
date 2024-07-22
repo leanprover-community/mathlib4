@@ -19,7 +19,8 @@ We show that flatness is stable under composition and base change.
                       then `M` is a flat `R`-module
 * `Module.Flat.baseChange`: if `M` is a flat `R`-module and `S` is any `R`-algebra,
                             then `S ⊗[R] M` is `S`-flat.
-
+* `Module.Flat.isLocalizedModule_ofFlat`: if `M` is a flat `R`-module and `S` is a submonoid of `R`
+                                          then the localization of `M` at `S` is flat.
 -/
 
 universe u v w t
