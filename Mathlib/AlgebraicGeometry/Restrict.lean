@@ -117,7 +117,7 @@ def stalkIso {X : Scheme.{u}} (U : X.Opens) (x : U) :
 
 @[reassoc (attr := simp)]
 lemma germ_stalkIso_hom {X : Scheme.{u}} (U : X.Opens)
-      {V : TopologicalSpace.Opens U} (x : V) :
+    {V : TopologicalSpace.Opens U} (x : V) :
       U.toScheme.presheaf.germ x ≫ (U.stalkIso x.1).hom =
         X.presheaf.germ ⟨x.1.1, show x.1.1 ∈ U.ι ''ᵁ V from ⟨x.1, x.2, rfl⟩⟩ :=
     PresheafedSpace.restrictStalkIso_hom_eq_germ _ _ _ _ _
