@@ -702,7 +702,7 @@ theorem image_mem_functorPushforward (R : Sieve X) {V} {f : V ⟶ X} (h : R f) :
 
 lemma functorPushforward_ofArrows {ι : Type*} (Y : ι → C) (f : ∀ i, Y i ⟶ X) :
     functorPushforward F (ofArrows Y f) =
-      ofArrows (fun i => F.obj (Y i)) (fun i => F.map (f i)) := by
+      ofArrows (fun i ↦ F.obj (Y i)) (fun i ↦ F.map (f i)) := by
   ext Z g
   constructor
   · rintro ⟨T, a, b, ⟨U, c, d, hd, rfl⟩, rfl⟩

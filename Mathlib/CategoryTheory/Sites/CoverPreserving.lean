@@ -52,10 +52,6 @@ variable {A : Type u₃} [Category.{v₃} A]
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 variable {L : GrothendieckTopology A}
 
--- to be moved
-lemma Functor.congr_map {X Y : C} {f g : X ⟶ Y} (h : f = g) : F.map f = F.map g :=
-  Prefunctor.congr_map F.toPrefunctor h
-
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is *cover-preserving*
 if for all covering sieves `R` in `C`, `R.functorPushforward G` is a covering sieve in `D`.
 -/
