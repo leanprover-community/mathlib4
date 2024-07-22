@@ -146,7 +146,7 @@ theorem t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
   set pipi := Prod.map π π
   have pipiopen : IsOpenMap pipi := IsOpenMap.prod hpiopen hpiopen -- π × π open
   have pipisurj : (Function.Surjective (pipi) ) :=  -- π × π surj
-    Function.Surjective.Prod_map pisurj pisurj
+    Function.Surjective.prodMap pisurj pisurj
   have pipipquotient := -- π × π is a QuotientMap because open, continuous and surj
     IsOpenMap.to_quotientMap pipiopen (Continuous.prod_map picont picont) pipisurj
   rw [<-QuotientMap.isClosed_preimage pipipquotient] -- closed iff preimage closed
