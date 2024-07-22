@@ -1110,7 +1110,6 @@ theorem to_openEmbedding (h : e.source = Set.univ) : OpenEmbedding e :=
   e.openEmbedding_restrict.comp
     ((Homeomorph.setCongr h).trans <| Homeomorph.Set.univ X).symm.openEmbedding
 
-
 end PartialHomeomorph
 
 namespace Homeomorph

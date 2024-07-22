@@ -156,7 +156,6 @@ theorem arg_nonneg_iff {z : ℂ} : 0 ≤ arg z ↔ 0 ≤ z.im := by
         exact Real.sin_neg_of_neg_of_neg_pi_lt h (neg_pi_lt_arg _)⟩
     _ ↔ _ := by rw [sin_arg, le_div_iff (abs.pos h₀), zero_mul]
 
-
 @[simp]
 theorem arg_neg_iff {z : ℂ} : arg z < 0 ↔ z.im < 0 :=
   lt_iff_lt_of_le_iff_le arg_nonneg_iff

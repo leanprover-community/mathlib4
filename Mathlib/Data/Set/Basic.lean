@@ -1726,7 +1726,6 @@ end
 
 /-! ### Powerset -/
 
-
 theorem mem_powerset {x s : Set α} (h : x ⊆ s) : x ∈ 𝒫 s := @h
 
 theorem subset_of_mem_powerset {x s : Set α} (h : x ∈ 𝒫 s) : x ⊆ s := @h

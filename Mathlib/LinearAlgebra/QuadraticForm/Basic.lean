@@ -1125,7 +1125,6 @@ theorem toMatrix'_comp (Q : QuadraticMap R (m → R) R) (f : (n → R) →ₗ[R]
   ext
   simp only [QuadraticMap.associated_comp, LinearMap.toMatrix₂'_compl₁₂, toMatrix']
 
-
 section Discriminant
 
 variable {Q : QuadraticMap R (n → R) R}

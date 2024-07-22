@@ -111,7 +111,6 @@ protected theorem MeasurableSet.iUnion [Countable ι] ⦃f : ι → Set α⦄
     rw [← iUnion_congr_of_surjective _ he (fun _ => rfl)]
     exact m.measurableSet_iUnion _ fun _ => h _
 
-
 protected theorem MeasurableSet.biUnion {f : β → Set α} {s : Set β} (hs : s.Countable)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋃ b ∈ s, f b) := by
   rw [biUnion_eq_iUnion]

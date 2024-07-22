@@ -28,8 +28,6 @@ namespace Subtype
 
 variable {α β γ : Sort*} {p q : α → Prop}
 
-
-
 attribute [coe] Subtype.val
 
 initialize_simps_projections Subtype (val → coe)

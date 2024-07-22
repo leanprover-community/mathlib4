@@ -346,7 +346,6 @@ noncomputable def Sylow.equivQuotientNormalizer [Fact p.Prime] [Finite (Sylow p 
     _ ≃ G ⧸ stabilizer G P := orbitEquivQuotientStabilizer G P
     _ ≃ G ⧸ (P : Subgroup G).normalizer := by rw [P.stabilizer_eq_normalizer]
 
-
 instance [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
     Finite (G ⧸ (P : Subgroup G).normalizer) :=
   Finite.of_equiv (Sylow p G) P.equivQuotientNormalizer
