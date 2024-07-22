@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Etienne Marion
 -/
 import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.StoneCech
 import Mathlib.Topology.Filter
-import Mathlib.Order.Filter.Cofinite
 import Mathlib.Topology.Defs.Sequences
 
 /-!
@@ -49,8 +47,8 @@ instead our definition of `IsProperMap` coincides with what they call "Bourbaki-
 
 Concerning `isProperMap_iff_isCompact_preimage`, this result should be the only one needed to link
 the definition of a proper map and the criteria "preimage of compact sets are compact", however
-the notion of compactly generated space is not yet in Mathlib so it is used as an intermediate
-result to prove
+the notion of compactly generated space is not yet in Mathlib (TODO)
+so it is used as an intermediate result to prove
 `WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage` and
 `SequentialSpace.isProperMap_iff_isCompact_preimage`. In the future those should be inferred
 by typeclass inference.
@@ -76,6 +74,8 @@ so don't hesitate to have a look!
 * [Stacks: Characterizing proper maps](https://stacks.math.columbia.edu/tag/005M)
 -/
 
+assert_not_exists StoneCech
+
 open Filter Topology Function Set
 open Prod (fst snd)
 
@@ -87,7 +87,7 @@ universe u v
 /-- A map `f : X → Y` between two topological spaces is said to be **proper** if it is continuous
 and, for all `ℱ : Filter X`, any cluster point of `map f ℱ` is the image by `f` of a cluster point
 of `ℱ`. -/
-@[mk_iff isProperMap_iff_clusterPt]
+@[mk_iff isProperMap_iff_clusterPt, fun_prop]
 structure IsProperMap (f : X → Y) extends Continuous f : Prop where
   /-- By definition, if `f` is a proper map and `ℱ` is any filter on `X`, then any cluster point of
   `map f ℱ` is the image by `f` of some cluster point of `ℱ`. -/
@@ -99,7 +99,7 @@ for closed maps. -/
 add_decl_doc isProperMap_iff_clusterPt
 
 /-- By definition, a proper map is continuous. -/
-@[continuity, fun_prop]
+@[fun_prop]
 lemma IsProperMap.continuous (h : IsProperMap f) : Continuous f := h.toContinuous
 
 /-- A proper map is closed. -/
@@ -138,7 +138,7 @@ lemma IsProperMap.ultrafilter_le_nhds_of_tendsto (h : IsProperMap f) ⦃𝒰 : U
 /-- The composition of two proper maps is proper. -/
 lemma IsProperMap.comp (hf : IsProperMap f) (hg : IsProperMap g) :
     IsProperMap (g ∘ f) := by
-  refine ⟨by continuity, fun ℱ z h ↦ ?_⟩
+  refine ⟨by fun_prop, fun ℱ z h ↦ ?_⟩
   rw [mapClusterPt_comp] at h
   rcases hg.clusterPt_of_mapClusterPt h with ⟨y, rfl, hy⟩
   rcases hf.clusterPt_of_mapClusterPt hy with ⟨x, rfl, hx⟩
@@ -296,8 +296,10 @@ lemma isProperMap_restr_of_proper_of_closed {U : Set X} (hf : IsProperMap f) (hU
   IsProperMap.comp (isProperMap_subtype_val_of_closed hU) hf
 
 /-- The range of a proper map is closed. -/
-lemma IsProperMap.closed_range (hf : IsProperMap f) : IsClosed (range f) :=
-  hf.isClosedMap.closed_range
+lemma IsProperMap.isClosed_range (hf : IsProperMap f) : IsClosed (range f) :=
+  hf.isClosedMap.isClosed_range
+
+@[deprecated (since := "2024-05-08")] alias IsProperMap.closed_range := IsProperMap.isClosed_range
 
 /-- Version of `isProperMap_iff_isClosedMap_and_compact_fibers` in terms of `cofinite` and
 `cocompact`. Only works when the codomain is `T1`. -/
@@ -320,18 +322,18 @@ continuous maps such that the preimage of any compact set is compact.
 
 This result should be the only one needed to link the definition of a proper map and
 the criteria "preimage of compact sets are compact", but the notion of compactly generated space
-is not yet in Mathlib so we use it as an intermediate result to prove
+is not yet in Mathlib (TODO) so we use it as an intermediate result to prove
 `WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage` and
 `SequentialSpace.isProperMap_iff_isCompact_preimage`. In the future those should be inferred
 by typeclass inference. -/
 theorem isProperMap_iff_isCompact_preimage [T2Space Y]
     (compactlyGenerated : ∀ s : Set Y, IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K)) :
-    IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) :=
-  ⟨fun hf ↦ ⟨hf.continuous, fun _ ↦ hf.isCompact_preimage⟩,
-    fun ⟨hf, h⟩ ↦ isProperMap_iff_isClosedMap_and_compact_fibers.2
+    IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) where
+  mp hf := ⟨hf.continuous, fun _ ↦ hf.isCompact_preimage⟩
+  mpr := fun ⟨hf, h⟩ ↦ isProperMap_iff_isClosedMap_and_compact_fibers.2
     ⟨hf, fun _ hs ↦ (compactlyGenerated _).2
     fun _ hK ↦ image_inter_preimage .. ▸ (((h hK).inter_left hs).image hf).isClosed,
-    fun _ ↦ h isCompact_singleton⟩⟩
+    fun _ ↦ h isCompact_singleton⟩
 
 /-- A locally compact space is compactly generated. -/
 theorem compactlyGenerated_of_weaklyLocallyCompactSpace [T2Space X] [WeaklyLocallyCompactSpace X]
@@ -349,7 +351,7 @@ such that the preimage of any compact set is compact.
 This result is a direct consequence of `isProperMap_iff_isCompact_preimage`, because any
 Hausdorff and weakly locally compact space is compactly generated.
 In the future it should be inferred by typeclass inference, however compactly generated spaces
-are not yet in Mathlib, therefore we also add this theorem. -/
+are not yet in Mathlib (TODO), therefore we also add this theorem. -/
 theorem WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage [T2Space Y]
     [WeaklyLocallyCompactSpace Y] :
     IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) :=
@@ -371,8 +373,8 @@ such that the preimage of any compact set is compact.
 
 This result is a direct consequence of `isProperMap_iff_isCompact_preimage`, because any
 Hausdorff and sequential space is compactly generated. In the future it should be inferred
-by typeclass inference, however compactly generated spaces are not yet in Mathlib, therefore
-we also add this theorem. -/
+by typeclass inference, however compactly generated spaces are not yet in Mathlib (TODO),
+therefore we also add this theorem. -/
 theorem SequentialSpace.isProperMap_iff_isCompact_preimage [T2Space Y] [SequentialSpace Y] :
     IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) :=
   _root_.isProperMap_iff_isCompact_preimage
@@ -456,44 +458,3 @@ theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [Topologica
     rcases hx (U ×ˢ {𝒢 | Uᶜ ∈ 𝒢}) (prod_mem_nhds hU (isOpen_setOf_mem.mem_nhds hUc)) with
       ⟨⟨z, 𝒢⟩, ⟨⟨hz : z ∈ U, hz' : Uᶜ ∈ 𝒢⟩, rfl : 𝒢 = pure z⟩⟩
     exact hz' hz
-
-/-- A map `f : X → Y` is proper if and only if it is continuous and the map
-`(Prod.map f id : X × Ultrafilter X → Y × Ultrafilter X)` is closed. This is stronger than
-`isProperMap_iff_universally_closed` since it shows that there's only one space to check to get
-properness, but in most cases it doesn't matter. -/
-theorem isProperMap_iff_isClosedMap_ultrafilter {X : Type u} {Y : Type v} [TopologicalSpace X]
-    [TopologicalSpace Y] {f : X → Y} :
-    IsProperMap f ↔ Continuous f ∧ IsClosedMap
-      (Prod.map f id : X × Ultrafilter X → Y × Ultrafilter X) := by
-  -- The proof is basically the same as above.
-  constructor <;> intro H
-  · exact ⟨H.continuous, H.universally_closed _⟩
-  · rw [isProperMap_iff_ultrafilter]
-    refine ⟨H.1, fun 𝒰 y hy ↦ ?_⟩
-    let F : Set (X × Ultrafilter X) := closure {xℱ | xℱ.2 = pure xℱ.1}
-    have := H.2 F isClosed_closure
-    have : (y, 𝒰) ∈ Prod.map f id '' F :=
-      this.mem_of_tendsto (hy.prod_mk_nhds (Ultrafilter.tendsto_pure_self 𝒰))
-        (eventually_of_forall fun x ↦ ⟨⟨x, pure x⟩, subset_closure rfl, rfl⟩)
-    rcases this with ⟨⟨x, _⟩, hx, ⟨_, _⟩⟩
-    refine ⟨x, rfl, fun U hU ↦ Ultrafilter.compl_not_mem_iff.mp fun hUc ↦ ?_⟩
-    rw [mem_closure_iff_nhds] at hx
-    rcases hx (U ×ˢ {𝒢 | Uᶜ ∈ 𝒢}) (prod_mem_nhds hU ((ultrafilter_isOpen_basic _).mem_nhds hUc))
-      with ⟨⟨y, 𝒢⟩, ⟨⟨hy : y ∈ U, hy' : Uᶜ ∈ 𝒢⟩, rfl : 𝒢 = pure y⟩⟩
-    exact hy' hy
-
-/-- A map `f : X → Y` is proper if and only if it is continuous and **universally closed**, in the
-sense that for any topological space `Z`, the map `Prod.map f id : X × Z → Y × Z` is closed. Note
-that `Z` lives in the same universe as `X` here, but `IsProperMap.universally_closed` does not
-have this restriction.
-
-This is taken as the definition of properness in
-[N. Bourbaki, *General Topology*][bourbaki1966]. -/
-theorem isProperMap_iff_universally_closed {X : Type u} {Y : Type v} [TopologicalSpace X]
-    [TopologicalSpace Y] {f : X → Y} :
-    IsProperMap f ↔ Continuous f ∧ ∀ (Z : Type u) [TopologicalSpace Z],
-      IsClosedMap (Prod.map f id : X × Z → Y × Z) := by
-  constructor <;> intro H
-  · exact ⟨H.continuous, fun Z ↦ H.universally_closed _⟩
-  · rw [isProperMap_iff_isClosedMap_ultrafilter]
-    exact ⟨H.1, H.2 _⟩
