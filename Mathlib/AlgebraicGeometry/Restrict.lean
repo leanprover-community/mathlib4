@@ -107,6 +107,11 @@ lemma Scheme.Opens.opensRange_ι : U.ι.opensRange = U :=
 lemma Scheme.Opens.range_ι : Set.range U.ι.val.base = U :=
   Subtype.range_val
 
+@[simp]
+lemma Scheme.Opens.nonempty_iff : Nonempty U.toScheme ↔ (U : Set X).Nonempty := by
+  simp only [toScheme_carrier, SetLike.coe_sort_coe, nonempty_subtype]
+  rfl
+
 attribute [-simp] eqToHom_op in
 /-- The global sections of the restriction is isomorphic to the sections on the open set. -/
 @[simps!]

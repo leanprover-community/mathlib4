@@ -199,7 +199,7 @@ instance (priority := 900) isReduced_of_isIntegral [IsIntegral X] : IsReduced X 
     haveI : Subsingleton Γ(X, U) :=
       CommRingCat.subsingleton_of_isTerminal (X.sheaf.isTerminalOfEqEmpty this)
     infer_instance
-  · haveI : Nonempty U := show Nonempty (U : Set X) by simpa
+  · haveI : Nonempty U := by simpa
     infer_instance
 
 instance Scheme.component_nontrivial (X : Scheme.{u}) (U : Opens X) [Nonempty U] :
@@ -296,6 +296,6 @@ theorem map_injective_of_isIntegral [IsIntegral X] {U V : X.Opens} (i : U ⟶ V)
   contrapose!
   simp_rw [Ne, ← Opens.not_nonempty_iff_eq_bot, Classical.not_not]
   apply nonempty_preirreducible_inter U.isOpen (RingedSpace.basicOpen _ _).isOpen
-  simpa using show Nonempty (U : Set X) from H
+  simpa using H
 
 end AlgebraicGeometry
