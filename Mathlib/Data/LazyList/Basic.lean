@@ -66,7 +66,8 @@ instance : LawfulTraversable LazyList := by
         Function.comp, Thunk.pure, ofList]
     · apply ih
 
-@[deprecated (since := "2024-07-22"), simp] theorem bind_singleton {α} (x : LazyList α) : x.bind singleton = x := by
+@[deprecated (since := "2024-07-22"), simp]
+theorem bind_singleton {α} (x : LazyList α) : x.bind singleton = x := by
   induction x using LazyList.rec (motive_2 := fun xs => xs.get.bind singleton = xs.get) with
   | nil => simp [LazyList.bind]
   | cons h t ih =>
