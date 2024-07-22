@@ -1172,6 +1172,18 @@ theorem map_toOuterMeasure (hf : AEMeasurable f μ) :
 @[simp] lemma mapₗ_eq_zero_iff (hf : Measurable f) : Measure.mapₗ f μ = 0 ↔ μ = 0 := by
   rw [mapₗ_apply_of_measurable hf, map_eq_zero_iff hf.aemeasurable]
 
+/-- If `map f μ = μ`, then the measure of the preimage of any null measurable set `s`
+is equal to the measure of `s`.
+Note that this lemma does not assume (a.e.) measurability of `f`. -/
+lemma measure_preimage_of_map_eq_self {f : α → α} (hf : map f μ = μ)
+    {s : Set α} (hs : NullMeasurableSet s μ) : μ (f ⁻¹' s) = μ s := by
+  if hfm : AEMeasurable f μ then
+    rw [← map_apply₀ hfm, hf]
+    rwa [hf]
+  else
+    rw [map_of_not_aemeasurable hfm] at hf
+    simp [← hf]
+
 lemma map_ne_zero_iff (hf : AEMeasurable f μ) : μ.map f ≠ 0 ↔ μ ≠ 0 := (map_eq_zero_iff hf).not
 lemma mapₗ_ne_zero_iff (hf : Measurable f) : Measure.mapₗ f μ ≠ 0 ↔ μ ≠ 0 :=
   (mapₗ_eq_zero_iff hf).not
