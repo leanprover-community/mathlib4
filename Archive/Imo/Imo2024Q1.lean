@@ -32,24 +32,17 @@ def Condition (α : ℝ) : Prop := (∀ n : ℕ, 0 < n → (n : ℤ) ∣ ∑ i �
 
 lemma condition_two_mul_int (m : ℤ) : Condition (2 * m) := by
   rintro n -
-  suffices (n : ℤ) ∣ ∑ i ∈ Finset.Icc 1 n, ⌊((i * (2 * m) : ℤ) : ℝ)⌋ from mod_cast this
   suffices (n : ℤ) ∣ ∑ i ∈ Finset.Icc 0 n, ⌊((i * (2 * m) : ℤ) : ℝ)⌋ by
-    convert this using 1
-    convert (Finset.sum_insert_zero (a := 0) ?_).symm
-    · exact (Nat.Icc_insert_succ_left (Nat.zero_le n)).symm
-    · simp
-  simp_rw [Int.floor_intCast, ← Finset.sum_mul, ← Nat.Ico_succ_right, Nat.succ_eq_add_one,
-           ← Finset.range_eq_Ico, ← mul_assoc]
+    rw [← Nat.Icc_insert_succ_left n.zero_le, Finset.sum_insert_zero (by norm_num)] at this
+    exact_mod_cast this
+  simp_rw [Int.floor_intCast, ← Finset.sum_mul, ← Nat.Ico_succ_right, ← Finset.range_eq_Ico,
+           ← mul_assoc]
   refine dvd_mul_of_dvd_left ?_ _
-  suffices (n : ℤ) ∣ ((n + 1) * (n + 1 - 1) : ℕ) by
-    convert this
-    rw [← Finset.sum_range_id_mul_two]
-    push_cast
-    rfl
+  rw [← Nat.cast_sum, ← Nat.cast_ofNat (n := 2), ← Nat.cast_mul, Finset.sum_range_id_mul_two]
   simp
 
 lemma condition_sub_two_mul_int_iff {α : ℝ} (m : ℤ) : Condition (α - 2 * m) ↔ Condition α := by
-  simp_rw [Condition]
+  unfold Condition
   peel with n hn
   refine dvd_iff_dvd_of_dvd_sub ?_
   simp_rw [← Finset.sum_sub_distrib, mul_sub]
@@ -71,8 +64,7 @@ variable {α : ℝ} (hc : Condition α)
 lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
   rcases h with ⟨h0, h2⟩
   refine ⟨?_, h2⟩
-  by_contra hn
-  rw [not_le] at hn
+  by_contra! hn
   have hr : 1 < ⌈α⁻¹⌉₊ := by
     rw [Nat.lt_ceil]
     exact_mod_cast one_lt_inv h0 hn
