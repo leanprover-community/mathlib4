@@ -8,6 +8,7 @@ import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.AlgebraicGeometry.Cover.Open
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.RingTheory.Localization.InvSubmonoid
+import Mathlib.RingTheory.LocalProperties
 
 /-!
 # Affine schemes
@@ -114,6 +115,13 @@ noncomputable
 def arrowIsoSpecΓOfIsAffine {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
     Arrow.mk f ≅ Arrow.mk (Spec.map (Scheme.Γ.map f.op)) :=
   Arrow.isoMk X.isoSpec Y.isoSpec (ΓSpec.adjunction.unit_naturality _)
+
+/-- If `f : A ⟶ B` is a ring homomorphism, the corresponding arrow is isomorphic
+to the arrow of the morphism induced on global sections by the map on prime spectra. -/
+def arrowIsoΓSpecOfIsAffine {A B : CommRingCat} (f : A ⟶ B) :
+    Arrow.mk f ≅ Arrow.mk ((Spec.map f).app ⊤) :=
+  Arrow.isoMk (Scheme.ΓSpecIso _).symm (Scheme.ΓSpecIso _).symm
+    (Scheme.ΓSpecIso_inv_naturality f).symm
 
 namespace AffineScheme
 
@@ -704,6 +712,55 @@ lemma Scheme.eq_zeroLocus_of_isClosed_of_isAffine (X : Scheme.{u}) [IsAffine X] 
     exact zeroLocus_isClosed X I.carrier
 
 end ZeroLocus
+
+section Factorization
+
+/-- `f : X ⟶ Spec A` factors via some `Spec B` as `f = g ≫ h` such that `Γ(g)` is
+injective and `Γ(h)` is surjective. -/
+lemma exists_factorization_of_spec {X : Scheme.{u}} {A : CommRingCat} (f : X ⟶ Spec A) :
+    ∃ (B : CommRingCat) (g : X ⟶ Spec B) (h : A ⟶ B),
+      f = g ≫ Spec.map h ∧ Function.Surjective h ∧ Function.Injective (g.app ⊤) := by
+  let φ : A ⟶ Γ(X, ⊤) := (((ΓSpec.adjunction).homEquiv X (op A)).symm f).unop
+  let B : CommRingCat := CommRingCat.of <| A ⧸ (RingHom.ker φ)
+  let φ' : B ⟶ Scheme.Γ.obj (op X) := RingHom.kerLift φ
+  let h : A ⟶ B := Ideal.Quotient.mk (RingHom.ker φ)
+  refine ⟨B, (ΓSpec.adjunction).homEquiv X (op B) φ'.op, h, ?_, Ideal.Quotient.mk_surjective, ?_⟩
+  · apply ((ΓSpec.adjunction).homEquiv X (op A)).symm.injective
+    apply Opposite.unop_injective
+    rw [Adjunction.homEquiv_naturality_left_symm, Adjunction.homEquiv_counit]
+    change φ = (_ ≫ _) ≫ _
+    erw [← Spec_Γ_naturality]
+    rw [Category.assoc]
+    erw [toSpecΓ_ΓSpec_adjunction_homEquiv φ']
+    ext a
+    apply RingHom.kerLift_mk
+  · rw [ΓSpec_adjunction_homEquiv_eq]
+    apply (RingHom.kerLift_injective φ).comp
+    exact ((ConcreteCategory.isIso_iff_bijective (inv (toSpecΓ B))).mp inferInstance).injective
+
+open RingHom
+
+/-- If `f : X ⟶ Y` is a morphism with affine target, `f` factors via an affine scheme `Z`
+as `f = g ≫ h` such that `Γ(g)` is injective and `Γ(h)` is surjective. -/
+lemma exists_factorization_of_isAffine {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
+    ∃ (Z : Scheme.{u}) (g : X ⟶ Z) (h : Z ⟶ Y),
+      f = g ≫ h ∧ IsAffine Z ∧ Function.Surjective (h.app ⊤) ∧ Function.Injective (g.app ⊤) := by
+  obtain ⟨B, g, h, hcomp, hsurj, hinj⟩ := exists_factorization_of_spec (f ≫ Y.isoSpec.hom)
+  refine ⟨Spec B, g, Spec.map h ≫ Y.isoSpec.inv, ?_, inferInstance, ?_, hinj⟩
+  · rw [← Category.assoc, ← hcomp, Category.assoc, Iso.hom_inv_id, Category.comp_id]
+  · simp only [Scheme.comp_coeBase, Opens.map_comp_obj, Opens.map_top, Scheme.comp_app,
+      CommRingCat.coe_comp]
+    apply Function.Surjective.comp
+    · haveI : (toMorphismProperty (fun f ↦ Function.Surjective f)).RespectsIso := by
+        rw [← toMorphismProperty_respectsIso_iff]
+        exact surjective_respectsIso
+      exact (MorphismProperty.arrow_mk_iso_iff
+        (toMorphismProperty (fun f ↦ Function.Surjective f))
+        (arrowIsoΓSpecOfIsAffine h).symm).mpr hsurj
+    · apply Function.Bijective.surjective
+      apply ConcreteCategory.bijective_of_isIso
+
+end Factorization
 
 @[deprecated (since := "2024-06-21"), nolint defLemma]
 alias isAffineAffineScheme := isAffine_affineScheme
