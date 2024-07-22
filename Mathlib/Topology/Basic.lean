@@ -1587,6 +1587,20 @@ theorem ContinuousAt.eventually_mem {f : X → Y} {x : X} (hf : ContinuousAt f x
     (hs : s ∈ 𝓝 (f x)) : ∀ᶠ y in 𝓝 x, f y ∈ s :=
   hf hs
 
+/--
+Note: Version with (hl₁ : 𝓝 x ≤ l₁) is also true.
+
+Example usage:
+```
+example (x : ℝ) (f : ℝ → ℝ) (hf : Tendsto f (𝓝[>] x) atTop) : ¬ ContinuousAt f x := by
+  not_continuousAt_of_tendsto hf nhdsWithin_le_nhds (by simp)
+```
+-/
+lemma not_continuousAt_of_tendsto {f : X → Y} {l₁ : Filter X} {l₂ : Filter Y} {x : X}
+    (hf : Tendsto f l₁ l₂) [l₁.NeBot] (hl₁ : l₁ ≤ 𝓝 x) (hl₂ : Disjoint (𝓝 (f x)) l₂) :
+    ¬ ContinuousAt f x := fun cont ↦
+  (cont.mono_left hl₁).not_tendsto hl₂ hf
+
 /-- Deprecated, please use `not_mem_tsupport_iff_eventuallyEq` instead. -/
 @[deprecated (since := "2024-01-15")]
 theorem eventuallyEq_zero_nhds {M₀} [Zero M₀] {f : X → M₀} :
