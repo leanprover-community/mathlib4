@@ -30,6 +30,10 @@ depending on the zariski topology.
   `Supp_A (A ⊗ M) = f♯ ⁻¹ Supp M` where `f♯ : Spec A → Spec R`. (stacks#0BUR)
 -/
 
+-- Basic files in `RingTheory` should avoid depending on the Zariski topology
+-- See `AlgebraicGeometry/PrimeSpectrum/Module`
+assert_not_exists TopologicalSpace
+
 variable {R M} [CommRing R] [AddCommGroup M] [Module R M]
 
 variable (R M) in
