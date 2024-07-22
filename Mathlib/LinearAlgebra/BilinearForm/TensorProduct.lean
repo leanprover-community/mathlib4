@@ -75,14 +75,9 @@ def congrtmp (e : N₁ ≃ₗ[R] N₂) : BilinMap R M₁ N₁ ≃ₗ[R] BilinMap
     simp only [compr₂_apply, smul_apply, LinearMapClass.map_smul, LinearEquiv.coe_coe,
       RingHom.id_apply]
 
-def conjecture1 : A ⊗[R] R ≃ₗ[A] A := AlgebraTensorModule.rid R A A
-
-def conjecture2 : BilinMap A (M₁ ⊗[R] M₂) (A ⊗[R] R) ≃ₗ[A] BilinForm A (M₁ ⊗[R] M₂) :=
-  congrtmp conjecture1
-
 variable (R A) in
 def tensorDistrib' : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm A (M₁ ⊗[R] M₂) :=
-  conjecture2.toLinearMap ∘ₗ (tensorDistrib R A)
+  (congrtmp (AlgebraTensorModule.rid R A A)).toLinearMap ∘ₗ (tensorDistrib R A)
 
 @[simp]
 theorem tensorDistrib_tmul (B₁ : BilinMap A M₁ N₁) (B₂ : BilinMap R M₂ N₂) (m₁ : M₁) (m₂ : M₂)
