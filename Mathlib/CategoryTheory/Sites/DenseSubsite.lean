@@ -76,34 +76,64 @@ def Sieve.coverByImage (G : C ⥤ D) (U : D) : Sieve U :=
   ⟨Presieve.coverByImage G U, fun ⟨⟨Z, f₁, f₂, (e : _ = _)⟩⟩ g =>
     ⟨⟨Z, g ≫ f₁, f₂, show (g ≫ f₁) ≫ f₂ = g ≫ _ by rw [Category.assoc, ← e]⟩⟩⟩
 
+/--
+For a functor `G : C ⥤ D`, and an morphism `U ⟶ G.obj V`,
+`Sieve.coverByImageHom G f` is the sieve of `U`
+consisting of those arrows that factor through images of arrows of `G`.
+-/
+def Sieve.coverByImageHom (G : C ⥤ D) {U V : C} (f : G.obj U ⟶ G.obj V) : Sieve (G.obj U) where
+  arrows Y i := ∃ (Y' : C) (lift : Y ⟶ G.obj Y') (fac₁ : Y' ⟶ V) (fac₂ : Y' ⟶ U),
+    G.map fac₁ = G.map fac₂ ≫ f ∧ lift ≫ G.map fac₂ = i
+  downward_closed := by
+    rintro Y₁ Y₂ i₁ ⟨Y'₁, lift₁, fac₁, fac₂, e₁, rfl⟩ i₂
+    refine ⟨_, _, _, fac₂, e₁, Category.assoc _ _ _⟩
+
+lemma Sieve.coverByImageHom_le (G : C ⥤ D) [G.Full] {U V : C} (f : G.obj U ⟶ G.obj V) :
+    coverByImage G _ ≤ coverByImageHom G f := by
+  rintro W g ⟨Z, lift, fac, e⟩
+  exact ⟨Z, lift, G.preimage (fac ≫ f), G.preimage fac,
+    by rw [G.map_preimage, G.map_preimage], by rw [G.map_preimage, e]⟩
+
 theorem Presieve.in_coverByImage (G : C ⥤ D) {X : D} {Y : C} (f : G.obj Y ⟶ X) :
     Presieve.coverByImage G X f :=
   ⟨⟨Y, 𝟙 _, f, by simp⟩⟩
 
-/-- A functor `G : (C, J) ⥤ (D, K)` is cover dense if for each object in `D`,
+/-- A functor `G : (C, J) ⥤ (D, K)` is cover dense if for each object and arrows in `D`,
   there exists a covering sieve in `D` that factors through images of `G`.
 
 This definition can be found in https://ncatlab.org/nlab/show/dense+sub-site Definition 2.2.
 -/
 class Functor.IsCoverDense (G : C ⥤ D) (K : GrothendieckTopology D) : Prop where
-  is_cover : ∀ U : D, Sieve.coverByImage G U ∈ K U
+  coverByImage_mem : ∀ U : D, Sieve.coverByImage G U ∈ K U
+  coverByImageHom_mem : ∀ {U V} (f : G.obj U ⟶ G.obj V), Sieve.coverByImageHom G f ∈ K _
 
-lemma Functor.is_cover_of_isCoverDense (G : C ⥤ D) (K : GrothendieckTopology D)
-    [G.IsCoverDense K] (U : D) : Sieve.coverByImage G U ∈ K U := by
-  apply Functor.IsCoverDense.is_cover
+lemma Functor.coverByImage_mem (G : C ⥤ D) (K : GrothendieckTopology D)
+    [G.IsCoverDense K] (U : D) : Sieve.coverByImage G U ∈ K U :=
+  Functor.IsCoverDense.coverByImage_mem _
+
+lemma Functor.coverByImageHom_mem (G : C ⥤ D) (K : GrothendieckTopology D)
+    [G.IsCoverDense K] {U V} (f : G.obj U ⟶ G.obj V) : Sieve.coverByImageHom G f ∈ K _ :=
+  Functor.IsCoverDense.coverByImageHom_mem _
+
+lemma Functor.isCoverDense_of_full (G : C ⥤ D)
+    [Full G]
+    (K : GrothendieckTopology D)
+    (coverByImage_mem : ∀ U : D, Sieve.coverByImage G U ∈ K U) : G.IsCoverDense K where
+  coverByImage_mem := coverByImage_mem
+  coverByImageHom_mem f :=
+    K.superset_covering (Sieve.coverByImageHom_le G f) (coverByImage_mem _)
 
 lemma Functor.isCoverDense_of_generate_singleton_functor_π_mem (G : C ⥤ D)
+    [Full G]
     (K : GrothendieckTopology D)
     (h : ∀ B, ∃ (X : C) (f : G.obj X ⟶ B), Sieve.generate (Presieve.singleton f) ∈ K B) :
-    G.IsCoverDense K where
-  is_cover B := by
-    obtain ⟨X, f, h⟩ := h B
-    refine K.superset_covering ?_ h
-    intro Y f ⟨Z, g, _, h, w⟩
-    cases h
-    exact ⟨⟨_, g, _, w⟩⟩
-
-attribute [nolint docBlame] CategoryTheory.Functor.IsCoverDense.is_cover
+    G.IsCoverDense K := by
+  apply Functor.isCoverDense_of_full
+  intro B
+  obtain ⟨X, f, h⟩ := h B
+  refine K.superset_covering ?_ h
+  rintro Y f ⟨Z, g, _, ⟨⟩, w⟩
+  exact ⟨⟨_, g, _, w⟩⟩
 
 open Presieve Opposite
 
@@ -117,21 +147,31 @@ variable {A : Type*} [Category A] (G : C ⥤ D) [G.IsCoverDense K]
 -- this is not marked with `@[ext]` because `H` can not be inferred from the type
 theorem ext (ℱ : SheafOfTypes K) (X : D) {s t : ℱ.val.obj (op X)}
     (h : ∀ ⦃Y : C⦄ (f : G.obj Y ⟶ X), ℱ.val.map f.op s = ℱ.val.map f.op t) : s = t := by
-  apply (ℱ.cond (Sieve.coverByImage G X) (G.is_cover_of_isCoverDense K X)).isSeparatedFor.ext
+  apply (ℱ.cond (Sieve.coverByImage G X) (G.coverByImage_mem K X)).isSeparatedFor.ext
   rintro Y _ ⟨Z, f₁, f₂, ⟨rfl⟩⟩
   simp [h f₂]
 
 variable {G}
 
-theorem functorPullback_pushforward_covering [Full G] {X : C}
+theorem functorPullback_pushforward_covering {X : C}
     (T : K (G.obj X)) : (T.val.functorPullback G).functorPushforward G ∈ K (G.obj X) := by
-  refine K.superset_covering ?_ (K.bind_covering T.property
-    fun Y f _ => G.is_cover_of_isCoverDense K Y)
-  rintro Y _ ⟨Z, _, f, hf, ⟨W, g, f', ⟨rfl⟩⟩, rfl⟩
-  use W; use G.preimage (f' ≫ f); use g
-  constructor
-  · simpa using T.val.downward_closed hf f'
-  · simp
+  let 𝒰 := Sieve.bind T.1.arrows fun Y _ _ ↦ Sieve.coverByImage G Y
+  have : ∀ (Y) (f : Y ⟶ G.obj X), 𝒰 f → Exists _ :=
+    fun _ _ h ↦ h
+  choose Z iYZ iZX hiZX H e using this
+  refine K.superset_covering ?_
+    (K.bind_covering (K.bind_covering T.property fun Y _ _ ↦ G.coverByImage_mem _ _)
+      fun Z f hf ↦ K.pullback_stable (H _ _ hf).some.lift
+        (G.coverByImageHom_mem K ((H _ _ hf).some.map ≫ iZX _ _ _)))
+  rintro Y _ ⟨W, iYW, iWX, hiWX : 𝒰 _, ⟨V, iYV, iVX, iVU, e₁, e₂⟩, rfl⟩
+  generalize Nonempty.some (H W iWX hiWX) = L at *
+  obtain ⟨U, iWU, iUZ, e₃⟩ := L
+  dsimp only at *
+  dsimp only at iVU
+  refine ⟨_, iVX, iYV, ?_, ?_⟩
+  · have := T.1.downward_closed (hiZX W iWX hiWX) (G.map iVU ≫ iUZ)
+    rwa [Category.assoc, ← e₁] at this
+  · rw [e₁, reassoc_of% e₂, reassoc_of% e₃, e]
 
 /-- (Implementation). Given a hom between the pullbacks of two sheaves, we can whisker it with
 `coyoneda` to obtain a hom between the pullbacks of the sheaves of maps from `X`.
@@ -153,8 +193,6 @@ theorem sheaf_eq_amalgamation (ℱ : Sheaf K A) {X : A} {U : D} {T : Sieve U} (h
     (x : FamilyOfElements _ T) (hx) (t) (h : x.IsAmalgamation t) :
     t = (ℱ.cond X T hT).amalgamate x hx :=
   (ℱ.cond X T hT).isSeparatedFor x t _ h ((ℱ.cond X T hT).isAmalgamation hx)
-
-variable [Full G]
 
 namespace Types
 
@@ -180,24 +218,49 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
 /-- (Implementation). The `pushforwardFamily` defined is compatible. -/
 theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     (pushforwardFamily α x).Compatible := by
-  intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ e
-  apply IsCoverDense.ext G
-  intro Y f
+  rintro Y₁ Y₂ Z iZY₁ iZY₂ f₁ f₂ h₁ h₂ e
   simp only [pushforwardFamily, ← FunctorToTypes.map_comp_apply, ← op_comp]
-  change (ℱ.map _ ≫ α.app (op _) ≫ ℱ'.val.map _) _ = (ℱ.map _ ≫ α.app (op _) ≫ ℱ'.val.map _) _
-  rw [← G.map_preimage (f ≫ g₁ ≫ _)]
-  rw [← G.map_preimage (f ≫ g₂ ≫ _)]
-  erw [← α.naturality (G.preimage _).op]
-  erw [← α.naturality (G.preimage _).op]
-  refine congr_fun ?_ x
-  simp only [Functor.comp_map, ← Category.assoc, Functor.op_map, Quiver.Hom.unop_op,
-    ← ℱ.map_comp, ← op_comp, G.map_preimage]
-  congr 3
-  simp [e]
+  generalize Nonempty.some h₁ = l₁
+  generalize Nonempty.some h₂ = l₂
+  obtain ⟨W₁, iYW₁, iWX₁, rfl⟩ := l₁
+  obtain ⟨W₂, iYW₂, iWX₂, rfl⟩ := l₂
+  dsimp only
+  simp_rw [← Category.assoc] at e
+  generalize iZY₁ ≫ iYW₁ = iZW₁ at e ⊢
+  generalize iZY₂ ≫ iYW₂ = iZW₂ at e ⊢
+  clear iZY₁ iYW₁ iZY₂ iYW₂ h₁ h₂ Y₁ Y₂
+  apply (ℱ'.2 _ (G.coverByImage_mem _ _)).isSeparatedFor.ext
+  rintro Y iYZ ⟨V, iYV, iVZ, rfl⟩
+  simp only [op_comp, FunctorToTypes.map_comp_apply]
+  congr 1
+  apply (ℱ'.2 _ (G.coverByImage_mem _ _)).isSeparatedFor.ext
+
+
+  apply (ℱ'.2 _ (K.intersection_covering (G.coverByImageHom_mem _ (g₁ ≫ l₁.lift))
+    (G.coverByImageHom_mem _ (g₂ ≫ l₂.lift)))).isSeparatedFor.ext
+  rintro Y iYZ ⟨⟨U, iYU, iU₁, iUZ, e₁, rfl⟩, ⟨V, iYV, iV₂, iVZ, e₂, e₃⟩⟩
+  change (ℱ.map _ ≫ α.app (op _) ≫ ℱ'.val.map _ ≫ ℱ'.val.map _) _ =
+    (ℱ.map _ ≫ α.app (op _) ≫ ℱ'.val.map _ ≫ ℱ'.val.map _) _
+  simp_rw [← Functor.map_comp, ← op_comp, Category.assoc]
+  rw [← e₁, ← reassoc_of% e₃, ← e₂]
+  simp_rw [op_comp, Functor.map_comp]
+  rw [← iU₁.unop_op, ← iV₂.unop_op]
+  simp_rw [← G.op_map, ← Functor.comp_map, ← α.naturality_assoc]
+  simp only [Functor.comp_map, G.op_map, Quiver.Hom.unop_op, ← Functor.map_comp_assoc, ← op_comp, e₁, e₂,
+    Category.assoc, Presieve.CoverByImageStructure.fac, e]
+  -- rw [← G.map_preimage (f ≫ g₁ ≫ _)]
+  -- rw [← G.map_preimage (f ≫ g₂ ≫ _)]
+  -- erw [← α.naturality (G.preimage _).op]
+  -- erw [← α.naturality (G.preimage _).op]
+  -- refine congr_fun ?_ x
+  -- simp only [Functor.comp_map, ← Category.assoc, Functor.op_map, Quiver.Hom.unop_op,
+  --   ← ℱ.map_comp, ← op_comp, G.map_preimage]
+  -- congr 3
+  -- simp [e]
 
 /-- (Implementation). The morphism `ℱ(X) ⟶ ℱ'(X)` given by gluing the `pushforwardFamily`. -/
 noncomputable def appHom (X : D) : ℱ.obj (op X) ⟶ ℱ'.val.obj (op X) := fun x =>
-  (ℱ'.cond _ (G.is_cover_of_isCoverDense _ X)).amalgamate (pushforwardFamily α x)
+  (ℱ'.cond _ (G.coverByImage_mem _ X)).amalgamate (pushforwardFamily α x)
     (pushforwardFamily_compatible α x)
 
 @[simp]
@@ -221,7 +284,7 @@ theorem pushforwardFamily_apply {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y �
 @[simp]
 theorem appHom_restrict {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) (x) :
     ℱ'.val.map f (appHom α X x) = α.app (op Y) (ℱ.map f x) :=
-  ((ℱ'.cond _ (G.is_cover_of_isCoverDense _ X)).valid_glue
+  ((ℱ'.cond _ (G.coverByImage_mem _ X)).valid_glue
       (pushforwardFamily_compatible α x) f.unop
           (Presieve.in_coverByImage G f.unop)).trans (pushforwardFamily_apply _ _ _)
 
@@ -458,6 +521,22 @@ lemma compatiblePreserving [Faithful G] : CompatiblePreserving K G := by
   rw [← G.map_preimage (i ≫ f₁)]
   rw [← G.map_preimage (i ≫ f₂)]
   apply hx (G.preimage (i ≫ f₁)) ((G.preimage (i ≫ f₂))) hg₁ hg₂
+  apply G.map_injective
+  simp [eq]
+
+lemma compatiblePreserving' (hG : CoverPreserving J K G) [Faithful G] :
+    CompatiblePreserving K G := by
+  constructor
+  intro ℱ Z T x hx Y₁ Y₂ X f₁ f₂ g₁ g₂ hg₁ hg₂ eq
+  -- apply Functor.IsCoverDense.ext G
+  -- intro W i
+  have := K.intersection_covering (K.pullback_stable f₁ (hG.1 (J.top_mem Y₁)))
+    (K.pullback_stable f₂ (hG.1 (J.top_mem Y₂)))
+  apply (ℱ.2 _ this).isSeparatedFor.ext
+  rintro W i ⟨⟨W₁, i₁, j₁, -, e₁⟩, ⟨W₂, i₂, j₂, -, e₂⟩⟩
+  simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
+  simp_rw [e₁, e₂, op_comp, FunctorToTypes.map_comp_apply]
+  apply hx i₁ i₂ hg₁ hg₂
   apply G.map_injective
   simp [eq]
 
