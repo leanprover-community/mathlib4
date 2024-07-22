@@ -168,7 +168,7 @@ For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter.
 
 /--
 The `cdot` linter flags uses of the "cdot" `·` that are achieved by typing a character
-different form `·`.
+different from `·`.
 For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter. -/
 register_option linter.cdot : Bool := {
   defValue := true
@@ -186,16 +186,15 @@ def isCDot? : Syntax → Bool
 `findCDot stx` extracts from `stx` the syntax nodes of `kind` `Lean.Parser.Term.cdot` or `cdotTk`. -/
 partial
 def findCDot : Syntax → Array Syntax
-  | stx@(.node _ k args) =>
+  | stx@(.node _ kind args) =>
     let dargs := (args.map findCDot).flatten
-    match k with
-      | ``Lean.Parser.Term.cdot => dargs.push stx
-      | ``cdotTk => dargs.push stx
+    match kind with
+      | ``Lean.Parser.Term.cdot | ``cdotTk=> dargs.push stx
       | _ =>  dargs
   |_ => #[]
 
-/-- `unwanted_cdot stx` returns an array of syntax atoms corresponding to `cdot`s that are not
-written with the character `·`.
+/-- `unwanted_cdot stx` returns an array of syntax atoms within `stx`
+corresponding to `cdot`s that are not written with the character `·`.
 This is precisely what the `cdot` linter flags.
 -/
 def unwanted_cdot (stx : Syntax) : Array Syntax :=
@@ -213,8 +212,7 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx => do
     if (← MonadState.get).messages.hasErrors then
       return
     for s in unwanted_cdot stx do
-      Linter.logLint linter.cdot s
-        m!"Please, use '·' (typed as `\\·`) instead of '{s}' as 'cdot'."
+      Linter.logLint linter.cdot s m!"Please, use '·' (typed as `\\·`) instead of '{s}' as 'cdot'."
 
 initialize addLinter cdotLinter
 
