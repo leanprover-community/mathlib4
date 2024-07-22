@@ -136,7 +136,8 @@ noncomputable def Basis.smulTower {ι : Type v₁} {ι' : Type w₁} (b : Basis 
           Finsupp.lcongr (Equiv.prodComm ι' ι) (LinearEquiv.refl _ _))))
 
 @[simp]
-theorem Basis.smulTower_repr {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (x ij) :
+theorem Basis.smulTower_repr {ι : Type v₁} {ι' : Type w₁}
+    (b : Basis ι R S) (c : Basis ι' S A) (x ij) :
     (b.smulTower c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by
   simp [smulTower]
 
@@ -145,7 +146,8 @@ theorem Basis.smulTower_repr_mk {ι : Type v₁} {ι' : Type w₁} (b : Basis ι
   b.smulTower_repr c x (i, j)
 
 @[simp]
-theorem Basis.smulTower_apply {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (ij) :
+theorem Basis.smulTower_apply {ι : Type v₁} {ι' : Type w₁}
+    (b : Basis ι R S) (c : Basis ι' S A) (ij) :
     (b.smulTower c) ij = b ij.1 • c ij.2 := by
   obtain ⟨i, j⟩ := ij
   rw [Basis.apply_eq_iff]
