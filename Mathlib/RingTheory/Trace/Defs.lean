@@ -122,7 +122,7 @@ theorem trace_comp_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : T
   rw [LinearMap.comp_apply, LinearMap.restrictScalars_apply, trace_trace_of_basis b c]
 
 @[simp]
-theorem trace_trace  [Algebra S T] [IsScalarTower R S T]
+theorem trace_trace [Algebra S T] [IsScalarTower R S T]
     [Module.Free R S] [Module.Finite R S] [Module.Free S T] [Module.Finite S T] (x : T) :
     trace R S (trace S T x) = trace R T x :=
   trace_trace_of_basis (Module.Free.chooseBasis R S) (Module.Free.chooseBasis S T) x
