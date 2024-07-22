@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
 import Mathlib.NumberTheory.Divisors
-import Mathlib.Data.Nat.MaxPowDiv
 import Mathlib.Data.Nat.Multiplicity
 
 /-!
@@ -23,8 +22,6 @@ universe u
 
 open Nat
 
-open Rat
-
 open multiplicity
 
 variable {p : ℕ}
@@ -33,6 +30,12 @@ variable {p : ℕ}
 that `p^k` divides `n`. If `n = 0` or `p = 1`, then `padicValNat p q` defaults to `0`. -/
 def padicValNat (p : ℕ) (n : ℕ) : ℕ :=
   if h : p ≠ 1 ∧ 0 < n then (multiplicity p n).get (multiplicity.finite_nat_iff.2 h) else 0
+
+/-- A simplification of `padicValNat` when one input is prime, by analogy with
+`padicValRat_def`. -/
+theorem padicValNat_def [hp : Fact p.Prime] {n : ℕ} (hn : 0 < n) :
+    padicValNat p n = (multiplicity p n).get (multiplicity.finite_nat_iff.2 ⟨hp.out.ne_one, hn⟩) :=
+  dif_pos ⟨hp.out.ne_one, hn⟩
 
 theorem padicValNat_def' {n : ℕ} (hp : p ≠ 1) (hn : 0 < n) :
     ↑(padicValNat p n) = multiplicity p n := by simp [padicValNat, hp, hn]
@@ -47,12 +50,22 @@ open List
 @[simp]
 protected theorem zero : padicValNat p 0 = 0 := by simp [padicValNat]
 
+/-- `padicValNat p 1` is `0` for any `p`. -/
+@[simp]
+protected theorem one : padicValNat p 1 = 0 := by
+  unfold padicValNat
+  split_ifs
+  · simp
+  · rfl
+
 @[simp]
 theorem eq_zero_iff {n : ℕ} : padicValNat p n = 0 ↔ p = 1 ∨ n = 0 ∨ ¬p ∣ n := by
   simp only [padicValNat, dite_eq_right_iff, PartENat.get_eq_iff_eq_coe, Nat.cast_zero,
     multiplicity_eq_zero, and_imp, pos_iff_ne_zero, Ne, ← or_iff_not_imp_left]
 
 end padicValNat
+
+open List
 
 theorem le_multiplicity_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : ℕ} (ha : a.Prime)
     (hb : b ≠ 0) :

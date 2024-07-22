@@ -72,14 +72,6 @@ open multiplicity
 
 variable {p : ℕ}
 
-/-- `padicValNat p 1` is `0` for any `p`. -/
-@[simp]
-protected theorem one : padicValNat p 1 = 0 := by
-  unfold padicValNat
-  split_ifs
-  · simp
-  · rfl
-
 /-- If `p ≠ 0` and `p ≠ 1`, then `padicValNat p p` is `1`. -/
 @[simp]
 theorem self (hp : 1 < p) : padicValNat p p = 1 := by
@@ -230,12 +222,6 @@ theorem zero_le_padicValRat_of_nat (n : ℕ) : 0 ≤ padicValRat p n := by simp
 /-- `padicValRat` coincides with `padicValNat`. -/
 @[norm_cast]
 theorem padicValRat_of_nat (n : ℕ) : ↑(padicValNat p n) = padicValRat p n := by simp
-
-/-- A simplification of `padicValNat` when one input is prime, by analogy with
-`padicValRat_def`. -/
-theorem padicValNat_def [hp : Fact p.Prime] {n : ℕ} (hn : 0 < n) :
-    padicValNat p n = (multiplicity p n).get (multiplicity.finite_nat_iff.2 ⟨hp.out.ne_one, hn⟩) :=
-  dif_pos ⟨hp.out.ne_one, hn⟩
 
 @[simp]
 theorem padicValNat_self [Fact p.Prime] : padicValNat p p = 1 := by
