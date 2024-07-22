@@ -974,7 +974,7 @@ theorem mem_lowerBounds_image (Has : a ∈ lowerBounds s) (Hat : a ∈ t) :
 theorem mem_lowerBounds_image_self : a ∈ lowerBounds t → a ∈ t → f a ∈ lowerBounds (f '' t) :=
   Hf.mem_lowerBounds_image subset_rfl
 
-theorem image_upperBounds_subset_upperBounds_image (Hst : s ⊆ t) :
+theorem image_upperBounds_subset_upperBounds_image (Hf : MonotoneOn f t) (Hst : s ⊆ t) :
     f '' (upperBounds s ∩ t) ⊆ upperBounds (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩
   exact Hf.mem_upperBounds_image Hst ha.1 ha.2
@@ -1056,7 +1056,8 @@ theorem mem_upperBounds_image (Ha : a ∈ upperBounds s) : f a ∈ upperBounds (
 theorem mem_lowerBounds_image (Ha : a ∈ lowerBounds s) : f a ∈ lowerBounds (f '' s) :=
   forall_mem_image.2 fun _ H => Hf (Ha H)
 
-theorem image_upperBounds_subset_upperBounds_image : f '' upperBounds s ⊆ upperBounds (f '' s) := by
+theorem image_upperBounds_subset_upperBounds_image (Hf : Monotone f) :
+    f '' upperBounds s ⊆ upperBounds (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩
   exact Hf.mem_upperBounds_image ha
 
