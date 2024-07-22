@@ -251,7 +251,7 @@ instance IsClosedImmersion.hasAffineProperty : HasAffineProperty @IsClosedImmers
   refine ⟨fun ⟨h₁, h₂⟩ ↦ of_surjective_of_isAffine _ h₂, by apply isAffine_surjective_of_isAffine⟩
 
 /-- Being a closed immersion is stable under base change. -/
-instance IsClosedImmersion.stableUnderBaseChange :
+lemma IsClosedImmersion.stableUnderBaseChange :
     MorphismProperty.StableUnderBaseChange @IsClosedImmersion := by
   apply HasAffineProperty.stableUnderBaseChange
   haveI := HasAffineProperty.isLocal_affineProperty @IsClosedImmersion
