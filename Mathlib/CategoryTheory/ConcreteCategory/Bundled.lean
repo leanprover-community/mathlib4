@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johannes Hölzl, Reid Barton, Sean Leather
 -/
 import Batteries.Tactic.Lint.Misc
-import Mathlib.Mathport.Rename
 
 /-!
 # Bundled types

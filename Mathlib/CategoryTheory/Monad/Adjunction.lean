@@ -44,13 +44,13 @@ the category `C`.
 @[simps! coe η μ]
 def toMonad (h : L ⊣ R) : Monad C where
   toFunctor := L ⋙ R
-  η' := h.unit
-  μ' := whiskerRight (whiskerLeft L h.counit) R
-  assoc' X := by
+  η := h.unit
+  μ := whiskerRight (whiskerLeft L h.counit) R
+  assoc X := by
     dsimp
     rw [← R.map_comp]
     simp
-  right_unit' X := by
+  right_unit X := by
     dsimp
     rw [← R.map_comp]
     simp
@@ -62,13 +62,13 @@ the category `D`.
 @[simps coe ε δ]
 def toComonad (h : L ⊣ R) : Comonad D where
   toFunctor := R ⋙ L
-  ε' := h.counit
-  δ' := whiskerRight (whiskerLeft R h.unit) L
-  coassoc' X := by
+  ε := h.counit
+  δ := whiskerRight (whiskerLeft R h.unit) L
+  coassoc X := by
     dsimp
     rw [← L.map_comp]
     simp
-  right_counit' X := by
+  right_counit X := by
     dsimp
     rw [← L.map_comp]
     simp

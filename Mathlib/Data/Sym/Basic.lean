@@ -538,7 +538,7 @@ namespace SymOptionSuccEquiv
 
 /-- Function from the symmetric product over `Option` splitting on whether or not
 it contains a `none`. -/
-def encode [DecidableEq α] (s : Sym (Option α) n.succ) : Sum (Sym (Option α) n) (Sym α n.succ) :=
+def encode [DecidableEq α] (s : Sym (Option α) n.succ) : Sym (Option α) n ⊕ Sym α n.succ :=
   if h : none ∈ s then Sum.inl (s.erase none h)
   else
     Sum.inr
@@ -560,7 +560,7 @@ theorem encode_of_not_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h 
 
 /-- Inverse of `Sym_option_succ_equiv.decode`. -/
 -- @[simp] Porting note: not a nice simp lemma, applies too often in Lean4
-def decode : Sum (Sym (Option α) n) (Sym α n.succ) → Sym (Option α) n.succ
+def decode : Sym (Option α) n ⊕ Sym α n.succ → Sym (Option α) n.succ
   | Sum.inl s => none ::ₛ s
   | Sum.inr s => s.map Embedding.some
 
@@ -581,7 +581,7 @@ theorem decode_encode [DecidableEq α] (s : Sym (Option α) n.succ) : decode (en
     convert s.attach_map_coe
 
 @[simp]
-theorem encode_decode [DecidableEq α] (s : Sum (Sym (Option α) n) (Sym α n.succ)) :
+theorem encode_decode [DecidableEq α] (s : Sym (Option α) n ⊕ Sym α n.succ) :
     encode (decode s) = s := by
   obtain s | s := s
   · simp
@@ -598,7 +598,7 @@ end SymOptionSuccEquiv
 /-- The symmetric product over `Option` is a disjoint union over simpler symmetric products. -/
 --@[simps]
 def symOptionSuccEquiv [DecidableEq α] :
-    Sym (Option α) n.succ ≃ Sum (Sym (Option α) n) (Sym α n.succ) where
+    Sym (Option α) n.succ ≃ Sym (Option α) n ⊕ Sym α n.succ where
   toFun := SymOptionSuccEquiv.encode
   invFun := SymOptionSuccEquiv.decode
   left_inv := SymOptionSuccEquiv.decode_encode
