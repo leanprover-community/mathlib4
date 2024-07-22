@@ -48,7 +48,7 @@ noncomputable def tensorDistrib :
   -- while `letI`s would produce a better term than `let`, they would make this already-slow
   -- definition even slower.
   let toQ := BilinMap.toQuadraticMapLinearMap A A (M₁ ⊗[R] M₂)
-  let tmulB := BilinMap.tensorDistrib R A (M₁ := M₁) (M₂ := M₂)
+  let tmulB := BilinMap.tensorDistrib' R A (M₁ := M₁) (M₂ := M₂)
   let toB := AlgebraTensorModule.map
       (QuadraticMap.associated : QuadraticMap A M₁ N₁ →ₗ[A] BilinMap A M₁ N₁)
       (QuadraticMap.associated : QuadraticMap R M₂ N₂ →ₗ[R] BilinMap R M₂ N₂)
@@ -60,7 +60,7 @@ noncomputable def tensorDistrib :
 theorem tensorDistrib_tmul (Q₁ : QuadraticMap A M₁ N₁) (Q₂ : QuadraticMap R M₂ N₂) (m₁ : M₁)
     (m₂ : M₂) : tensorDistrib R A (Q₁ ⊗ₜ Q₂) (m₁ ⊗ₜ m₂) = Q₁ m₁ ⊗ₜ Q₂ m₂   :=
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
-  (BilinMap.tensorDistrib_tmul _ _ _ _ _ _).trans <| congr_arg₂ _
+  (BilinMap.tensorDistrib_tmul' _ _ _ _ _ _).trans <| congr_arg₂ _
     (associated_eq_self_apply _ _ _) (associated_eq_self_apply _ _ _)
 
 /-- The tensor product of two quadratic forms, a shorthand for dot notation. -/
