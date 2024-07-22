@@ -27,7 +27,7 @@ More precisely, the measure of the symmetric difference of these two sets tends 
 theorem tendsto_measure_symmDiff_preimage_nhds_zero
     {l : Filter α} {f : α → C(X, Y)} {g : C(X, Y)} {s : Set Y} (hfg : Tendsto f l (𝓝 g))
     (hf : ∀ᶠ a in l, MeasurePreserving (f a) μ ν) (hg : MeasurePreserving g μ ν)
-    (hs : MeasurableSet s) (hνs : ν s ≠ ∞) :
+    (hs : NullMeasurableSet s ν) (hνs : ν s ≠ ∞) :
     Tendsto (fun a ↦ μ ((f a ⁻¹' s) ∆ (g ⁻¹' s))) l (𝓝 0) := by
   have : ν.InnerRegularCompactLTTop := by
     rw [← hg.map_eq]
@@ -40,7 +40,7 @@ theorem tendsto_measure_symmDiff_preimage_nhds_zero
     -- Indeed, we can choose an open set `U` such that `ν (U ∆ s) < ε / 3`,
     -- apply the lemma to `U`, then use the triangle inequality for `μ (_ ∆ _)`.
     rcases hs.exists_isOpen_symmDiff_lt hνs H.ne' with ⟨U, hUo, hU, hUs⟩
-    have hmU : MeasurableSet U := hUo.measurableSet
+    have hmU : NullMeasurableSet U ν := hUo.measurableSet.nullMeasurableSet
     replace hUs := hUs.le
     filter_upwards [hf, this hmU hU.ne _ H hUo] with a hfa ha
     calc
@@ -60,7 +60,7 @@ theorem tendsto_measure_symmDiff_preimage_nhds_zero
   have hνs' : μ (g ⁻¹' s) ≠ ∞ := by rwa [hg.measure_preimage hs]
   obtain ⟨K, hKg, hKco, hKcl, hKμ⟩ :
       ∃ K, MapsTo g K s ∧ IsCompact K ∧ IsClosed K ∧ μ (g ⁻¹' s \ K) < ε / 2 :=
-    (hs.preimage hg.measurable).exists_isCompact_isClosed_diff_lt hνs' <| by simp [hε.ne']
+    (hg.measurable hso.measurableSet).exists_isCompact_isClosed_diff_lt hνs' <| by simp [hε.ne']
   have hKm : MeasurableSet K := hKcl.measurableSet
   -- Take `a` such that `f a` is measure preserving and maps `K` to `s`.
   -- This is possible, because `K` is a compact set and `s` is an open set.
@@ -89,18 +89,15 @@ theorem isClosed_setOf_preimage_ae_eq {f : Z → C(X, Y)} (hf : Continuous f)
     (hfm : ∀ z, MeasurePreserving (f z) μ ν) (s : Set X)
     {t : Set Y} (htm : NullMeasurableSet t ν) (ht : ν t ≠ ∞) :
     IsClosed {z | f z ⁻¹' t =ᵐ[μ] s} := by
-  -- obtain h | ⟨z₀, hz₀⟩ := eq_empty_or_nonempty {z | f z ⁻¹' t =ᵐ[μ] s}
-  -- · simp [h]
-  -- rcases htm with ⟨t', ht'm, htt'⟩
-  -- rw [measure_congr htt'] at ht
-  -- set φ : Z → Lp ℝ 1 μ := fun z ↦
-  --   Lp.compMeasurePreserving (f z) (hfm z) (indicatorConstLp 1 ht'm ht 1)
-  -- have : IsClosed {z | φ z = φ z₀} :=
-  --   isClosed_eq (continuous_const.compMeasurePreservingLp hf _ ENNReal.one_ne_top) continuous_const
-  -- convert this using 3 with z
-  -- simp_rw [φ, Lp.indicatorConstLp_compMeasurePreserving, indicatorConstLp_inj (hc := one_ne_zero)]
-  -- rw [((hfm z).quasiMeasurePreserving.preimage_ae_eq htt').congr_left,
-  --   ← ((hfm z₀).quasiMeasurePreserving.preimage_ae_eq htt').congr_right,
-  --   hz₀.out.congr_right]
+  rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
+  intro z hz
+  replace hz : ∀ᶠ ε : ℝ≥0∞ in 𝓝 0, ε < μ ((f z ⁻¹' t) ∆ s) := by
+    apply gt_mem_nhds
+    rwa [pos_iff_ne_zero, ne_eq, measure_symmDiff_eq_zero_iff]
+  filter_upwards [(tendsto_measure_symmDiff_preimage_nhds_zero (hf.tendsto z)
+    (eventually_of_forall hfm) (hfm z) htm ht).eventually hz] with w hw
+  intro (hw' : f w ⁻¹' t =ᵐ[μ] s)
+  rw [measure_congr (hw'.symmDiff (ae_eq_refl _)), symmDiff_comm] at hw
+  exact hw.false
 
 end MeasureTheory
