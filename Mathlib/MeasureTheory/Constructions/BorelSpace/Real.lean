@@ -499,7 +499,7 @@ variable (μ : Measure ℝ) [IsFiniteMeasureOnCompacts μ]
 
 lemma tendsto_measure_Icc_nhdsWithin_right' (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[>] (0 : ℝ)) (𝓝 (μ {b})) := by
-  rw [Real.singleton_eq_inter_Ioo]
+  rw [Real.singleton_eq_inter_Icc]
   apply tendsto_measure_biInter_gt (fun r hr ↦ measurableSet_Icc)
   · intro r s _rpos hrs
     exact Icc_subset_Icc (by linarith) (by linarith)
