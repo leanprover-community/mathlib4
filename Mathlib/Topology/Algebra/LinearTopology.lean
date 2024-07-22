@@ -241,6 +241,7 @@ class LinearTopology [τ : TopologicalSpace α]
     extends IdealBasis α where
   isTopology :  τ = toIdealBasis.toIsBasis.topology
 
+/-- If the topology of a ring is linear, then it makes the ring a topological ring -/
 instance [TopologicalSpace α] [hLT : LinearTopology α] :
   TopologicalRing α  :=
   hLT.isTopology ▸ Ideal.IsBasis.to_topologicalRing hLT.toIdealBasis.toIsBasis
