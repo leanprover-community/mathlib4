@@ -328,12 +328,12 @@ is not yet in Mathlib so we use it as an intermediate result to prove
 by typeclass inference. -/
 theorem isProperMap_iff_isCompact_preimage [T2Space Y]
     (compactlyGenerated : ∀ s : Set Y, IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K)) :
-    IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) :=
-  ⟨fun hf ↦ ⟨hf.continuous, fun _ ↦ hf.isCompact_preimage⟩,
-    fun ⟨hf, h⟩ ↦ isProperMap_iff_isClosedMap_and_compact_fibers.2
+    IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) where
+  mp hf := ⟨hf.continuous, fun _ ↦ hf.isCompact_preimage⟩
+  mpr := fun ⟨hf, h⟩ ↦ isProperMap_iff_isClosedMap_and_compact_fibers.2
     ⟨hf, fun _ hs ↦ (compactlyGenerated _).2
     fun _ hK ↦ image_inter_preimage .. ▸ (((h hK).inter_left hs).image hf).isClosed,
-    fun _ ↦ h isCompact_singleton⟩⟩
+    fun _ ↦ h isCompact_singleton⟩
 
 /-- A locally compact space is compactly generated. -/
 theorem compactlyGenerated_of_weaklyLocallyCompactSpace [T2Space X] [WeaklyLocallyCompactSpace X]
