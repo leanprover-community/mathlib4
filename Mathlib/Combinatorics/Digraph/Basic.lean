@@ -19,14 +19,6 @@ This module defines directed graphs on a vertex type `V`.
 * `CompleteAtomicBooleanAlgebra` instance: Under the subgraph relation, `Digraph` forms a
   `CompleteAtomicBooleanAlgebra`. In other words, this is the complete lattice of spanning subgraphs
   of the complete graph.
-
-## Todo
-
-* The implementation of digraphs is currently incomplete. It was originally created by Kyle Miller
-using an older version of Mathlib. This version of the module is being ported into the current
-version of Mathlib by Jack Cheverton. Furthermore, new additions to the module are being made
-based on what has been added to SimpleGraph since the original implementation of Digraph was
-created.
 -/
 
 open Finset Function
@@ -56,7 +48,7 @@ def Digraph.mk' {V : Type u} :
     funext v w
     simpa only [eq_iff_iff, Bool.coe_iff_coe] using congr_fun₂ h v w
 
-/-- The complete graph on a type `V` is the digraph with all pairs of vertices
+/-- The complete digraph on a type `V` is the digraph with all pairs of vertices
 adjacent. In `Mathlib`, this is usually referred to as `⊤`. Note that all vertices are adjacent to
 themselves. -/
 def Digraph.completeGraph (V : Type u) : Digraph V where Adj := ⊤
@@ -64,9 +56,9 @@ def Digraph.completeGraph (V : Type u) : Digraph V where Adj := ⊤
 /-- The graph with no edges on a given vertex type `V`. `Mathlib` prefers the notation `⊥`. -/
 def Digraph.emptyGraph (V : Type u) : Digraph V where Adj _ _ := False
 
-/-- Two vertices are adjacent in the complete bipartite graph on two vertex types
+/-- Two vertices are adjacent in the complete bipartite digraph on two vertex types
 if and only if they are not from the same side.
-Any bipartite graph may be regarded as a subgraph of one of these. -/
+Any bipartite digraph may be regarded as a subgraph of one of these. -/
 @[simps]
 def Digraph.completeBipartiteGraph (V W : Type*) : Digraph (Sum V W) where
   Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
@@ -106,7 +98,7 @@ instance : Sup (Digraph V) where
 theorem sup_adj (x y : Digraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w :=
   Iff.rfl
 
-/-- The infimum of two graphs `x ⊓ y` has edges where both `x` and `y` have edges. -/
+/-- The infimum of two digraphs `x ⊓ y` has edges where both `x` and `y` have edges. -/
 instance : Inf (Digraph V) where
   inf x y :=
     { Adj := x.Adj ⊓ y.Adj }
@@ -158,7 +150,7 @@ theorem iSup_adj {f : ι → Digraph V} : (⨆ i, f i).Adj a b ↔ ∃ i, (f i).
 theorem iInf_adj {f : ι → Digraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (f i).Adj a b) := by
   simp [iInf]
 
-/-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
+/-- For digraphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
 instance distribLattice : DistribLattice (Digraph V) :=
   { show DistribLattice (Digraph V) from
       adj_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl with
