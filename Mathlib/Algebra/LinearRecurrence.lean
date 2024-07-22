@@ -6,8 +6,6 @@ Authors: Anatole Dedecker
 import Mathlib.Algebra.Polynomial.Eval
 import Mathlib.LinearAlgebra.Dimension.Constructions
 
-#align_import algebra.linear_recurrence from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
-
 /-!
 # Linear recurrence
 
@@ -49,7 +47,6 @@ open Polynomial
 structure LinearRecurrence (α : Type*) [CommSemiring α] where
   order : ℕ
   coeffs : Fin order → α
-#align linear_recurrence LinearRecurrence
 
 instance (α : Type*) [CommSemiring α] : Inhabited (LinearRecurrence α) :=
   ⟨⟨0, default⟩⟩
@@ -64,7 +61,6 @@ variable {α : Type*} [CommSemiring α] (E : LinearRecurrence α)
   `u (n + order) = ∑ i : Fin order, coeffs i * u (n + i)` for any `n`. -/
 def IsSolution (u : ℕ → α) :=
   ∀ n, u (n + E.order) = ∑ i, E.coeffs i * u (n + i)
-#align linear_recurrence.is_solution LinearRecurrence.IsSolution
 
 /-- A solution of a `LinearRecurrence` which satisfies certain initial conditions.
   We will prove this is the only such solution. -/
@@ -79,21 +75,18 @@ def mkSol (init : Fin E.order → α) : ℕ → α
           · convert add_le_add (zero_le (k : ℕ)) (not_lt.mp h)
             simp only [zero_add]
         E.coeffs k * mkSol init (n - E.order + k)
-#align linear_recurrence.mk_sol LinearRecurrence.mkSol
 
 /-- `E.mkSol` indeed gives solutions to `E`. -/
 theorem is_sol_mkSol (init : Fin E.order → α) : E.IsSolution (E.mkSol init) := by
   intro n
   rw [mkSol]
   simp
-#align linear_recurrence.is_sol_mk_sol LinearRecurrence.is_sol_mkSol
 
 /-- `E.mkSol init`'s first `E.order` terms are `init`. -/
 theorem mkSol_eq_init (init : Fin E.order → α) : ∀ n : Fin E.order, E.mkSol init n = init n := by
   intro n
   rw [mkSol]
   simp only [n.is_lt, dif_pos, Fin.mk_val, Fin.eta]
-#align linear_recurrence.mk_sol_eq_init LinearRecurrence.mkSol_eq_init
 
 /-- If `u` is a solution to `E` and `init` designates its first `E.order` values,
   then `∀ n, u n = E.mkSol init n`. -/
@@ -113,7 +106,6 @@ theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → α} {init : Fin E.order → α} 
       simp only [zero_add]
   rw [eq_mk_of_is_sol_of_eq_init h heq (n - E.order + k)]
   simp
-#align linear_recurrence.eq_mk_of_is_sol_of_eq_init LinearRecurrence.eq_mk_of_is_sol_of_eq_init
 
 /-- If `u` is a solution to `E` and `init` designates its first `E.order` values,
   then `u = E.mkSol init`. This proves that `E.mkSol init` is the only solution
@@ -121,7 +113,6 @@ theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → α} {init : Fin E.order → α} 
 theorem eq_mk_of_is_sol_of_eq_init' {u : ℕ → α} {init : Fin E.order → α} (h : E.IsSolution u)
     (heq : ∀ n : Fin E.order, u n = init n) : u = E.mkSol init :=
   funext (E.eq_mk_of_is_sol_of_eq_init h heq)
-#align linear_recurrence.eq_mk_of_is_sol_of_eq_init' LinearRecurrence.eq_mk_of_is_sol_of_eq_init'
 
 /-- The space of solutions of `E`, as a `Submodule` over `α` of the module `ℕ → α`. -/
 def solSpace : Submodule α (ℕ → α) where
@@ -129,13 +120,11 @@ def solSpace : Submodule α (ℕ → α) where
   zero_mem' n := by simp
   add_mem' {u v} hu hv n := by simp [mul_add, sum_add_distrib, hu n, hv n]
   smul_mem' a u hu n := by simp [hu n, mul_sum]; congr; ext; ac_rfl
-#align linear_recurrence.sol_space LinearRecurrence.solSpace
 
 /-- Defining property of the solution space : `u` is a solution
   iff it belongs to the solution space. -/
 theorem is_sol_iff_mem_solSpace (u : ℕ → α) : E.IsSolution u ↔ u ∈ E.solSpace :=
   Iff.rfl
-#align linear_recurrence.is_sol_iff_mem_sol_space LinearRecurrence.is_sol_iff_mem_solSpace
 
 /-- The function that maps a solution `u` of `E` to its first
   `E.order` terms as a `LinearEquiv`. -/
@@ -150,7 +139,6 @@ def toInit : E.solSpace ≃ₗ[α] Fin E.order → α where
   invFun u := ⟨E.mkSol u, E.is_sol_mkSol u⟩
   left_inv u := by ext n; symm; apply E.eq_mk_of_is_sol_of_eq_init u.2; intro k; rfl
   right_inv u := Function.funext_iff.mpr fun n ↦ E.mkSol_eq_init u n
-#align linear_recurrence.to_init LinearRecurrence.toInit
 
 /-- Two solutions are equal iff they are equal on `range E.order`. -/
 theorem sol_eq_of_eq_init (u v : ℕ → α) (hu : E.IsSolution u) (hv : E.IsSolution v) :
@@ -164,7 +152,6 @@ theorem sol_eq_of_eq_init (u v : ℕ → α) (hu : E.IsSolution u) (hv : E.IsSol
   rw [← E.toInit.toEquiv.apply_eq_iff_eq, LinearEquiv.coe_toEquiv]
   ext x
   exact mod_cast h (mem_range.mpr x.2)
-#align linear_recurrence.sol_eq_of_eq_init LinearRecurrence.sol_eq_of_eq_init
 
 /-! `E.tupleSucc` maps `![s₀, s₁, ..., sₙ]` to `![s₁, ..., sₙ, ∑ (E.coeffs i) * sᵢ]`,
   where `n := E.order`. This operation is quite useful for determining closed-form
@@ -184,7 +171,6 @@ def tupleSucc : (Fin E.order → α) →ₗ[α] Fin E.order → α where
     simp only
     split_ifs with h <;> simp [h, mul_sum]
     exact sum_congr rfl fun x _ ↦ by ac_rfl
-#align linear_recurrence.tuple_succ LinearRecurrence.tupleSucc
 
 end CommSemiring
 
@@ -198,7 +184,6 @@ variable {α : Type*} [CommRing α] [StrongRankCondition α] (E : LinearRecurren
 theorem solSpace_rank : Module.rank α E.solSpace = E.order :=
   letI := nontrivial_of_invariantBasisNumber α
   @rank_fin_fun α _ _ E.order ▸ E.toInit.rank_eq
-#align linear_recurrence.sol_space_rank LinearRecurrence.solSpace_rank
 
 end StrongRankCondition
 
@@ -210,7 +195,6 @@ variable {α : Type*} [CommRing α] (E : LinearRecurrence α)
 `X ^ E.order - ∑ i : Fin E.order, (E.coeffs i) * X ^ i`. -/
 def charPoly : α[X] :=
   Polynomial.monomial E.order 1 - ∑ i : Fin E.order, Polynomial.monomial i (E.coeffs i)
-#align linear_recurrence.char_poly LinearRecurrence.charPoly
 
 /-- The geometric sequence `q^n` is a solution of `E` iff
   `q` is a root of `E`'s characteristic polynomial. -/
@@ -225,7 +209,6 @@ theorem geom_sol_iff_root_charPoly (q : α) :
   · intro h n
     simp only [pow_add, sub_eq_zero.mp h, mul_sum]
     exact sum_congr rfl fun _ _ ↦ by ring
-#align linear_recurrence.geom_sol_iff_root_char_poly LinearRecurrence.geom_sol_iff_root_charPoly
 
 end CommRing
 

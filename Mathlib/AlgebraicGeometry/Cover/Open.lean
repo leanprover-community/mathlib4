@@ -18,7 +18,6 @@ This file provides the basic API for open covers of schemes.
 - `AlgebraicGeometry.Scheme.AffineOpenCover`: The type of affine open covers of a scheme `X`.
 -/
 
-set_option linter.uppercaseLean3 false
 
 noncomputable section
 
@@ -53,7 +52,6 @@ structure OpenCover (X : Scheme.{u}) where
   covers : ∀ x, x ∈ Set.range (map (f x)).1.base
   /-- the embedding of subschemes are open immersions -/
   IsOpen : ∀ x, IsOpenImmersion (map x) := by infer_instance
-#align algebraic_geometry.Scheme.open_cover AlgebraicGeometry.Scheme.OpenCover
 
 @[deprecated (since := "2024-06-23")] alias OpenCover.Covers := OpenCover.covers
 
@@ -78,7 +76,6 @@ def affineCover (X : Scheme.{u}) : OpenCover X where
     erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
     change Epi ((SheafedSpace.forget _).map (LocallyRingedSpace.forgetToSheafedSpace.map _))
     infer_instance
-#align algebraic_geometry.Scheme.affine_cover AlgebraicGeometry.Scheme.affineCover
 
 instance : Inhabited X.OpenCover :=
   ⟨X.affineCover⟩
@@ -89,12 +86,10 @@ theorem OpenCover.iUnion_range {X : Scheme.{u}} (𝒰 : X.OpenCover) :
   intro x
   rw [Set.mem_iUnion]
   exact ⟨𝒰.f x, 𝒰.covers x⟩
-#align algebraic_geometry.Scheme.open_cover.Union_range AlgebraicGeometry.Scheme.OpenCover.iUnion_range
 
 theorem OpenCover.iSup_opensRange {X : Scheme.{u}} (𝒰 : X.OpenCover) :
     ⨆ i, (𝒰.map i).opensRange = ⊤ :=
   Opens.ext <| by rw [Opens.coe_iSup]; exact 𝒰.iUnion_range
-#align algebraic_geometry.Scheme.open_cover.supr_opens_range AlgebraicGeometry.Scheme.OpenCover.iSup_opensRange
 
 /-- Given an open cover `{ Uᵢ }` of `X`, and for each `Uᵢ` an open cover, we may combine these
 open covers to form an open cover of `X`.  -/
@@ -115,7 +110,6 @@ def OpenCover.bind (f : ∀ x : 𝒰.J, OpenCover (𝒰.obj x)) : OpenCover X wh
   -- Porting note: weirdly, even though no input is needed, `inferInstance` does not work
   -- `PresheafedSpace.IsOpenImmersion.comp` is marked as `instance`
   IsOpen x := PresheafedSpace.IsOpenImmersion.comp _ _
-#align algebraic_geometry.Scheme.open_cover.bind AlgebraicGeometry.Scheme.OpenCover.bind
 
 /-- An isomorphism `X ⟶ Y` is an open cover of `Y`. -/
 @[simps J obj map]
@@ -129,7 +123,6 @@ def openCoverOfIsIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : OpenCover.{v} 
     all_goals try trivial
     rw [← TopCat.epi_iff_surjective]
     infer_instance
-#align algebraic_geometry.Scheme.open_cover_of_is_iso AlgebraicGeometry.Scheme.openCoverOfIsIso
 
 /-- We construct an open cover from another, by providing the needed fields and showing that the
 provided fields are isomorphic with the original open cover. -/
@@ -147,7 +140,6 @@ def OpenCover.copy {X : Scheme.{u}} (𝒰 : OpenCover X) (J : Type*) (obj : J �
     -- Porting note: weirdly, even though no input is needed, `inferInstance` does not work
     -- `PresheafedSpace.IsOpenImmersion.comp` is marked as `instance`
     IsOpen := fun i => by rw [e₂]; exact PresheafedSpace.IsOpenImmersion.comp _ _ }
-#align algebraic_geometry.Scheme.open_cover.copy AlgebraicGeometry.Scheme.OpenCover.copy
 
 -- Porting note: need more hint on universe level
 /-- The pushforward of an open cover along an isomorphism. -/
@@ -157,7 +149,6 @@ def OpenCover.pushforwardIso {X Y : Scheme.{u}} (𝒰 : OpenCover.{v} X) (f : X 
   ((openCoverOfIsIso.{v, u} f).bind fun _ => 𝒰).copy 𝒰.J _ _
     ((Equiv.punitProd _).symm.trans (Equiv.sigmaEquivProd PUnit 𝒰.J).symm) (fun _ => Iso.refl _)
     fun _ => (Category.id_comp _).symm
-#align algebraic_geometry.Scheme.open_cover.pushforward_iso AlgebraicGeometry.Scheme.OpenCover.pushforwardIso
 
 /-- Adding an open immersion into an open cover gives another open cover. -/
 @[simps]
@@ -169,7 +160,6 @@ def OpenCover.add {X Y : Scheme.{u}} (𝒰 : X.OpenCover) (f : Y ⟶ X) [IsOpenI
   f x := some (𝒰.f x)
   covers := 𝒰.covers
   IsOpen := by rintro (_ | _) <;> dsimp <;> infer_instance
-#align algebraic_geometry.Scheme.open_cover.add AlgebraicGeometry.Scheme.OpenCover.add
 
 /-- Given an open cover on `X`, we may pull them back along a morphism `W ⟶ X` to obtain
 an open cover of `W`. -/
@@ -190,7 +180,6 @@ def OpenCover.pullbackCover {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ X
     · obtain ⟨y, h⟩ := 𝒰.covers (f.1.base x)
       exact ⟨y, h.symm⟩
     · rw [← TopCat.epi_iff_surjective]; infer_instance
-#align algebraic_geometry.Scheme.open_cover.pullback_cover AlgebraicGeometry.Scheme.OpenCover.pullbackCover
 
 /-- The family of morphisms from the pullback cover to the original cover. -/
 def OpenCover.pullbackHom {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ X) (i) :
@@ -243,7 +232,6 @@ def OpenCover.finiteSubcover {X : Scheme.{u}} (𝒰 : OpenCover X) [H : CompactS
       map := fun x => 𝒰.map (𝒰.f x.1)
       f := fun x => (h x).choose
       covers := fun x => (h x).choose_spec }
-#align algebraic_geometry.Scheme.open_cover.finite_subcover AlgebraicGeometry.Scheme.OpenCover.finiteSubcover
 
 instance [H : CompactSpace X] : Fintype 𝒰.finiteSubcover.J := by
   delta OpenCover.finiteSubcover; infer_instance
@@ -262,7 +250,6 @@ theorem OpenCover.compactSpace {X : Scheme.{u}} (𝒰 : X.OpenCover) [Finite �
           (IsOpenImmersion.isoOfRangeEq (𝒰.map i)
                   (X.ofRestrict (Opens.openEmbedding ⟨_, (𝒰.IsOpen i).base_open.isOpen_range⟩))
                   Subtype.range_coe.symm).hom.1.base))
-#align algebraic_geometry.Scheme.open_cover.compact_space AlgebraicGeometry.Scheme.OpenCover.compactSpace
 
 /-- Given open covers `{ Uᵢ }` and `{ Uⱼ }`, we may form the open cover `{ Uᵢ ∩ Uⱼ }`. -/
 def OpenCover.inter {X : Scheme.{u}} (𝒰₁ : Scheme.OpenCover.{v₁} X)
@@ -275,7 +262,6 @@ def OpenCover.inter {X : Scheme.{u}} (𝒰₁ : Scheme.OpenCover.{v₁} X)
     rw [IsOpenImmersion.range_pullback_to_base_of_left]
     exact ⟨𝒰₁.covers x, 𝒰₂.covers x⟩
   IsOpen x := inferInstance
-#align algebraic_geometry.Scheme.open_cover.inter AlgebraicGeometry.Scheme.OpenCover.inter
 
 /-- If `U` is a family of open sets that covers `X`, then `X.restrict U` forms an `X.open_cover`. -/
 @[simps! J obj map]
@@ -291,7 +277,6 @@ def openCoverOfSuprEqTop {s : Type*} (X : Scheme.{u}) (U : s → Opens X)
     erw [Subtype.range_coe]
     have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : Opens X) by trivial
     exact (Opens.mem_iSup.mp this).choose_spec
-#align algebraic_geometry.Scheme.open_cover_of_supr_eq_top AlgebraicGeometry.Scheme.openCoverOfSuprEqTop
 
 /--
 An affine open cover of `X` consists of a family of open immersions into `X` from
@@ -495,23 +480,19 @@ def affineBasisCoverOfAffine (R : CommRingCat.{u}) : OpenCover (Spec R) where
       change Epi (Spec.map (CommRingCat.ofHom (algebraMap _ _))).1.base
       infer_instance
   IsOpen x := AlgebraicGeometry.Scheme.basic_open_isOpenImmersion x
-#align algebraic_geometry.Scheme.affine_basis_cover_of_affine AlgebraicGeometry.Scheme.affineBasisCoverOfAffine
 
 /-- We may bind the basic open sets of an open affine cover to form an affine cover that is also
 a basis. -/
 def affineBasisCover (X : Scheme.{u}) : OpenCover X :=
   X.affineCover.bind fun _ => affineBasisCoverOfAffine _
-#align algebraic_geometry.Scheme.affine_basis_cover AlgebraicGeometry.Scheme.affineBasisCover
 
 /-- The coordinate ring of a component in the `affine_basis_cover`. -/
 def affineBasisCoverRing (X : Scheme.{u}) (i : X.affineBasisCover.J) : CommRingCat :=
   CommRingCat.of <| @Localization.Away (X.local_affine i.1).choose_spec.choose _ i.2
-#align algebraic_geometry.Scheme.affine_basis_cover_ring AlgebraicGeometry.Scheme.affineBasisCoverRing
 
 theorem affineBasisCover_obj (X : Scheme.{u}) (i : X.affineBasisCover.J) :
     X.affineBasisCover.obj i = Spec (X.affineBasisCoverRing i) :=
   rfl
-#align algebraic_geometry.Scheme.affine_basis_cover_obj AlgebraicGeometry.Scheme.affineBasisCover_obj
 
 theorem affineBasisCover_map_range (X : Scheme.{u}) (x : X)
     (r : (X.local_affine x).choose_spec.choose) :
@@ -521,7 +502,6 @@ theorem affineBasisCover_map_range (X : Scheme.{u}) (x : X)
   -- Porting note: `congr` fails to see the goal is comparing image of the same function
   refine congr_arg (_ '' ·) ?_
   exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r : _)
-#align algebraic_geometry.Scheme.affine_basis_cover_map_range AlgebraicGeometry.Scheme.affineBasisCover_map_range
 
 theorem affineBasisCover_is_basis (X : Scheme.{u}) :
     TopologicalSpace.IsTopologicalBasis
@@ -541,7 +521,6 @@ theorem affineBasisCover_is_basis (X : Scheme.{u}) :
     refine ⟨_, ⟨⟨_, s⟩, rfl⟩, ?_, ?_⟩ <;> erw [affineBasisCover_map_range]
     · exact ⟨x, hxV, e⟩
     · rw [Set.image_subset_iff]; exact hVU
-#align algebraic_geometry.Scheme.affine_basis_cover_is_basis AlgebraicGeometry.Scheme.affineBasisCover_is_basis
 
 end deprecated
 

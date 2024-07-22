@@ -6,8 +6,6 @@ Authors: Henrik Böving, Simon Hudon
 import Mathlib.Testing.SlimCheck.Sampleable
 import Lean
 
-#align_import testing.slim_check.testable from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
-
 /-!
 # `Testable` Class
 
@@ -79,13 +77,11 @@ random testing
 
 -/
 
-set_option autoImplicit true
-
 namespace SlimCheck
 
 /-- Result of trying to disprove `p`
 The constructors are:
-* `success : (PSum Unit p) → TestResult p`
+* `success : (Unit ⊕' p) → TestResult p`
   succeed when we find another example satisfying `p`
   In `success h`, `h` is an optional proof of the proposition.
   Without the proof, all we know is that we found one example
@@ -103,7 +99,7 @@ The constructors are:
   is the number of times that the counter-example was shrunk.
 -/
 inductive TestResult (p : Prop) where
-  | success : PSum Unit p → TestResult p
+  | success : Unit ⊕' p → TestResult p
   | gaveUp : Nat → TestResult p
   | failure : ¬ p → List String → Nat → TestResult p
   deriving Inhabited
@@ -144,6 +140,8 @@ class PrintableProp (p : Prop) where
 
 export PrintableProp (printProp)
 
+variable {p q : Prop}
+
 instance (priority := low) : PrintableProp p where
   printProp := "⋯"
 
@@ -165,7 +163,7 @@ def toString : TestResult p → String
 instance : ToString (TestResult p) := ⟨toString⟩
 
 /-- Applicative combinator proof carrying test results. -/
-def combine {p q : Prop} : PSum Unit (p → q) → PSum Unit p → PSum Unit q
+def combine {p q : Prop} : Unit ⊕' (p → q) → Unit ⊕' p → Unit ⊕' q
   | PSum.inr f, PSum.inr proof => PSum.inr <| f proof
   | _, _ => PSum.inl ()
 
@@ -195,7 +193,7 @@ def or : TestResult p → TestResult q → TestResult (p ∨ q)
 /-- If `q → p`, then `¬ p → ¬ q` which means that testing `p` can allow us
 to find counter-examples to `q`. -/
 def imp (h : q → p) (r : TestResult p)
-    (p : PSum Unit (p → q) := PSum.inl ()) : TestResult q :=
+    (p : Unit ⊕' (p → q) := PSum.inl ()) : TestResult q :=
   match r with
   | failure h2 xs n => failure (mt h h2) xs n
   | success h2 => success <| combine p h2
@@ -209,15 +207,15 @@ def iff (h : q ↔ p) (r : TestResult p) : TestResult q :=
 we record that value using this function so that our counter-examples
 can be informative. -/
 def addInfo (x : String) (h : q → p) (r : TestResult p)
-    (p : PSum Unit (p → q) := PSum.inl ()) : TestResult q :=
+    (p : Unit ⊕' (p → q) := PSum.inl ()) : TestResult q :=
   if let failure h2 xs n := r then
     failure (mt h h2) (x :: xs) n
   else
     imp h r p
 
 /-- Add some formatting to the information recorded by `addInfo`. -/
-def addVarInfo [Repr γ] (var : String) (x : γ) (h : q → p) (r : TestResult p)
-    (p : PSum Unit (p → q) := PSum.inl ()) : TestResult q :=
+def addVarInfo {γ : Type*} [Repr γ] (var : String) (x : γ) (h : q → p) (r : TestResult p)
+    (p : Unit ⊕' (p → q) := PSum.inl ()) : TestResult q :=
   addInfo s!"{var} := {repr x}" h r p
 
 def isFailure : TestResult p → Bool
@@ -244,7 +242,8 @@ open TestResult
 def runProp (p : Prop) [Testable p] : Configuration → Bool → Gen (TestResult p) := Testable.run
 
 /-- A `dbgTrace` with special formatting -/
-def slimTrace [Pure m] (s : String) : m PUnit := dbgTrace s!"[SlimCheck: {s}]" (fun _ ↦ pure ())
+def slimTrace {m : Type → Type*} [Pure m] (s : String) : m PUnit :=
+  dbgTrace s!"[SlimCheck: {s}]" (fun _ ↦ pure ())
 
 instance andTestable [Testable p] [Testable q] : Testable (p ∧ q) where
   run := fun cfg min ↦ do
@@ -317,7 +316,11 @@ def addShrinks (n : Nat) : TestResult p → TestResult p
   | TestResult.failure p xs m => TestResult.failure p xs (m + n)
   | p => p
 
-instance [Pure m] : Inhabited (OptionT m α) := ⟨(pure none : m (Option α))⟩
+universe u in
+instance {α : Type u} {m : Type u → Type*} [Pure m] : Inhabited (OptionT m α) :=
+  ⟨(pure none : m (Option α))⟩
+
+variable {α : Sort*}
 
 /-- Shrink a counter-example `x` by using `Shrinkable.shrink x`, picking the first
 candidate that falsifies a property and recursively shrinking that one.
@@ -383,7 +386,7 @@ where
   run := fun cfg min ↦
     imp (fun h (b : Bool) ↦ h b) <$> Testable.runProp (NamedBinder var <| ∀ b : Bool, β b) cfg min
 
-instance (priority := high) unusedVarTestable [Nonempty α] [Testable β] :
+instance (priority := high) unusedVarTestable {β : Prop} [Nonempty α] [Testable β] :
   Testable (NamedBinder var (α → β))
 where
   run := fun cfg min ↦ do
@@ -420,6 +423,8 @@ end Testable
 
 section PrintableProp
 
+variable {α : Type*} {x y : α}
+
 instance Eq.printableProp [Repr α] {x y : α} : PrintableProp (x = y) where
   printProp := s!"{repr x} = {repr y}"
 
@@ -431,6 +436,8 @@ instance LE.printableProp [Repr α] [LE α] {x y : α} : PrintableProp (x ≤ y)
 
 instance LT.printableProp [Repr α] [LT α] {x y : α} : PrintableProp (x < y) where
   printProp := s!"{repr x} < {repr y}"
+
+variable {x y : Prop}
 
 instance And.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ∧ y) where
   printProp := s!"{printProp x} ∧ {printProp y}"
