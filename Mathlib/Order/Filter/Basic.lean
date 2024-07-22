@@ -79,7 +79,7 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 assert_not_exists OrderedSemiring
 
 open Function Set Order
-open scoped Classical
+open scoped Classical symmDiff
 
 universe u v w x y
 
@@ -1391,6 +1391,10 @@ theorem EventuallyEq.compl {s t : Set α} {l : Filter α} (h : s =ᶠ[l] t) :
 theorem EventuallyEq.diff {s t s' t' : Set α} {l : Filter α} (h : s =ᶠ[l] t) (h' : s' =ᶠ[l] t') :
     (s \ s' : Set α) =ᶠ[l] (t \ t' : Set α) :=
   h.inter h'.compl
+
+protected theorem EventuallyEq.symmDiff {s t s' t' : Set α} {l : Filter α}
+    (h : s =ᶠ[l] t) (h' : s' =ᶠ[l] t') : (s ∆ s' : Set α) =ᶠ[l] (t ∆ t' : Set α) :=
+  (h.diff h').union (h'.diff h)
 
 theorem eventuallyEq_empty {s : Set α} {l : Filter α} : s =ᶠ[l] (∅ : Set α) ↔ ∀ᶠ x in l, x ∉ s :=
   eventuallyEq_set.trans <| by simp

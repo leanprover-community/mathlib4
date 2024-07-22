@@ -98,7 +98,7 @@ variable [CommMonoid α] {a b u : α}
 /-- In a commutative monoid, an element `a` divides an element `b` iff `a` divides all left
     associates of `b`. -/
 @[simp]
-theorem dvd_mul_left(hu : IsUnit u)  : a ∣ u * b ↔ a ∣ b := by
+theorem dvd_mul_left (hu : IsUnit u) : a ∣ u * b ↔ a ∣ b := by
   rcases hu with ⟨u, rfl⟩
   apply Units.dvd_mul_left
 

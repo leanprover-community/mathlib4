@@ -7,7 +7,6 @@ Authors: Sam van Gool
 import Mathlib.Order.PrimeIdeal
 import Mathlib.Order.Zorn
 
-
 /-!
 # Separating prime filters and ideals
 
