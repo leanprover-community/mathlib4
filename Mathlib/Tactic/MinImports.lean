@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import ImportGraph.Imports
+import Batteries.Data.Array.Basic
 
 /-! # `#min_imports in` a command to find minimal imports
 
@@ -181,3 +182,131 @@ elab_rules : command
   | `(#min_imports in $cmd:term) => minImpsCore cmd cmd
 
 end Mathlib.Command.MinImports
+
+namespace Mathlib.WithInfoTrees
+
+/-- `Lean.Elab.Info.getNames i ref` takes as input an `Info` `i` and a `NameSet` `ref`.
+It scans all the possibilities for `Info` except for `CompletionInfo`,
+looking for `Name`s and adds them to `ref`.
+
+When it is done, it returns the updated `ref`. -/
+def _root_.Lean.Elab.Info.getNames (i : Info) (ref : NameSet) : NameSet :=
+  match i with
+    | .ofTacticInfo i         => ref.insert i.elaborator
+    | .ofTermInfo i           => ref.insert i.elaborator
+    | .ofCommandInfo i        => ref.insert i.elaborator
+    | .ofMacroExpansionInfo i => ref.insert i.stx.getKind
+    | .ofOptionInfo i         => (ref.insert i.declName).insert i.optionName
+    | .ofFieldInfo i          => (ref.insert i.projName).insert i.fieldName
+    | .ofUserWidgetInfo i     => ref.insert i.id
+    | .ofCustomInfo i         => ref.insert i.value.typeName
+    | .ofOmissionInfo i       => ref.insert i.elaborator
+    | _ => ref
+
+/-- `Array.insertIf l a` takes as input an array `l` of terms of type `α` and
+a term `a` of type `α`.  If `a` is not already contained in `l`, then it adds it to `l`, otherwise
+it does nothing. -/
+def _root_.Array.insertIf {α} [BEq α] (l : Array α) (a : α) : Array α :=
+  if !l.contains a then l.push a else l
+
+/-- `Lean.Elab.Info.getSyntax i ref` takes as input an `Info` `i` and a `Array` of `Syntax` `ref`.
+It scans all the possibilities for `Info` except for `CompletionInfo`,
+looking for `Syntax`s and adds them to `ref`.
+
+When it is done, it returns the updated `ref`. -/
+def _root_.Lean.Elab.Info.getSyntax (i : Info) (ref : Array Syntax) : Array Syntax :=
+  match i with
+    | .ofTacticInfo i         => ref.insertIf i.stx
+    | .ofTermInfo i           => ref.insertIf i.stx
+    | .ofCommandInfo i        => ref.insertIf i.stx
+    | .ofMacroExpansionInfo i => (ref.insertIf i.stx).insertIf i.output
+    | .ofOptionInfo i         => ref.insertIf i.stx
+    | .ofFieldInfo i          => ref.insertIf i.stx
+    | .ofUserWidgetInfo i     => ref.insertIf i.stx
+    | .ofCustomInfo i         => ref.insertIf i.stx
+    | .ofFieldRedeclInfo i    => ref.insertIf i.stx
+    | .ofOmissionInfo i       => ref.insertIf i.stx
+    | _ => ref
+
+/-- `mctxToExpr mc init` takes as input a `MetavarContext` `mc` and a `HashSet` of `Expr` `init`.
+It scans all the `Expr`essions contained in the `eAssignment` for `mc` and adds them to `init`.
+-/
+-- check if there is more besides the `eAssignment`
+def mctxToExpr (mc : MetavarContext) (init : HashSet Expr) : HashSet Expr :=
+  mc.eAssignment.foldl (init := init) fun es _mv e => HashSet.insert es e
+
+/-- `localDeclToExpr ld` takes as input a `LocalDecl` `ld`, extracts its `type` and, if it has
+one, also its `value` and returns them as an array.
+-/
+def localDeclToExpr : LocalDecl → Array Expr
+  | .cdecl _ _ _ type _ _ => #[type]
+  | .ldecl _ _ _ type value _ _ => #[type, value]
+
+/-- `Lean.HashSet.getLctxExpr lctx ref` takes as input a `LocalContext` `lctx` and a `HashSet` of
+`Expr`s `ref`.
+It scans all the `Expr`essions contained in the `LocalDecl`s contained in `lctx` and
+adds them to `ref`. -/
+def _root_.Lean.HashSet.getLctxExpr (lctx : LocalContext) (ref : HashSet Expr) : HashSet Expr :=
+  ref.insertMany <| (lctx.decls.toArray.reduceOption.map localDeclToExpr).flatten
+
+/-- `Lean.Elab.Info.getExpr i ref` takes as input an `Info` `i` and a `HashSet` of `Expr` `ref`.
+It scans all the possibilities for `Info` except for `CompletionInfo`,
+looking for `Expr`s and adds them to `ref`.
+
+When it is done, it returns the updated `ref`. -/
+def _root_.Lean.Elab.Info.getExpr (i : Info) (ref : HashSet Expr) : HashSet Expr :=
+  match i with
+    | .ofTacticInfo i         => mctxToExpr i.mctxBefore ref
+    | .ofMacroExpansionInfo i => ref.getLctxExpr i.lctx
+    | .ofFieldInfo i          => (ref.getLctxExpr i.lctx).insert i.val
+    | .ofTermInfo i =>
+      ((ref.getLctxExpr i.lctx).insert i.expr).insert (i.expectedType?.getD default)
+    | .ofOmissionInfo i =>
+      ((ref.getLctxExpr i.lctx).insert i.expr).insert (i.expectedType?.getD default)
+    | _ => ref
+
+/--  `Lean.Elab.InfoTree.getExpr i` takes as input an `Infotree` `i` and
+collects all the `Expr`s that it contains, returning them as a `HashSet`. -/
+partial
+def _root_.Lean.Elab.InfoTree.getExpr : InfoTree → HashSet Expr
+  | .context i t =>
+    if let .commandCtx c := i then mctxToExpr c.mctx t.getExpr
+    else t.getExpr
+  | .node i children => (children.map getExpr).foldl .merge (i.getExpr {})
+  | .hole _ => {}
+
+/--  `Lean.Elab.InfoTree.getNames i` takes as input an `Infotree` `i` and
+collects all the `Names`s that it contains, returning them as a `NameSet`. -/
+partial
+def _root_.Lean.Elab.InfoTree.getNames : InfoTree → NameSet
+  | .context i t =>
+    if let .parentDeclCtx n := i then t.getNames.insert n
+    else t.getNames
+  | .node i children => (children.map getNames).foldl .append (i.getNames {})
+  | .hole _ => {}
+
+/--  `Lean.Elab.InfoTree.getSyntax i` takes as input an `Infotree` `i` and
+collects all the `Syntax`s that it contains, returning them as an `Array`. -/
+partial
+def _root_.Lean.Elab.InfoTree.getSyntax : InfoTree → Array Syntax
+  | .context _ t     => t.getSyntax
+  | .node i children => (children.map getSyntax).foldl (·.foldl .insertIf ·) (i.getSyntax #[])
+  | .hole _          => {}
+
+open Mathlib.Command.MinImports in
+/-- `getAllImpliedConstants env i` takes as input an `Environment` `env` and an `InfoTree` `i`,
+scans `i` for all `Name` and `SyntaxNodeKind` information, extracts all contants contained in
+`Expr`s and returns all of them as a `NameSet`. -/
+def getAllImpliedConstants (env : Environment) (i : InfoTree) : NameSet :=
+  let exs := i.getExpr
+  let nms := i.getNames
+  let stxs := i.getSyntax
+  let exnms := exs.fold (init := {}) fun a b => b.getUsedConstantsAsSet.append a
+  let exnVis : NameSet := exnms.fold (init := {}) fun a b => (getVisited env b).append a
+  let stxnms := stxs.foldl (init := {})
+    fun a b => (getSyntaxNodeKinds b).append a
+  let stxids := stxs.foldl (init := {})
+    fun a b => (getIds b).append a
+  ((exnVis.append nms).append stxnms).append stxids
+
+end Mathlib.WithInfoTrees
