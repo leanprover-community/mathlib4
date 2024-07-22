@@ -845,7 +845,8 @@ variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 variable (b : Basis m R S) (c : Basis n S T)
 
 theorem smulTower_leftMulMatrix (x) (ik jk) :
-    leftMulMatrix (b.smulTower c) x ik jk = leftMulMatrix b (leftMulMatrix c x ik.2 jk.2) ik.1 jk.1 := by
+    leftMulMatrix (b.smulTower c) x ik jk =
+      leftMulMatrix b (leftMulMatrix c x ik.2 jk.2) ik.1 jk.1 := by
   simp only [leftMulMatrix_apply, LinearMap.toMatrix_apply, mul_comm, Basis.smulTower_apply,
     Basis.smulTower_repr, Finsupp.smul_apply, id.smul_eq_mul, LinearEquiv.map_smul, mul_smul_comm,
     coe_lmul_eq_mul, LinearMap.mul_apply']
