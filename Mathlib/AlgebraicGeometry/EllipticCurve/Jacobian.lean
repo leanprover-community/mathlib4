@@ -544,8 +544,9 @@ lemma Y_eq_negY_of_Y_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hQz : Q z ≠ 0)
 
 lemma nonsingular_iff_of_Y_eq_negY {P : Fin 3 → F} (hPz : P z ≠ 0) (hy : P y = W.negY P) :
     W.Nonsingular P ↔ W.Equation P ∧ eval P W.polynomialX ≠ 0 := by
-  rw [nonsingular_iff_of_Z_ne_zero hPz, show eval P W.polynomialY = P y - W.negY P by
-      rw [negY, eval_polynomialY]; ring1, hy, sub_self, ne_self_iff_false, or_false]
+  have : eval P W.polynomialY = P y - W.negY P := by
+    rw [negY, eval_polynomialY]; ring1
+  rw [nonsingular_iff_of_Z_ne_zero hPz, this, hy, sub_self, ne_self_iff_false, or_false]
 
 end Negation
 

@@ -133,7 +133,6 @@ lemma mulOption_lt_iff_P1 {i j k l} :
     (⟦mulOption x y i k⟧ : Game) < -⟦mulOption x (-y) j l⟧ ↔
     P1 (x.moveLeft i) x (x.moveLeft j) y (y.moveLeft k) (-(-y).moveLeft l) := by
   dsimp only [P1, mulOption, quot_sub, quot_add]
-  congr
   simp_rw [neg_sub', neg_add, quot_mul_neg, neg_neg]
 
 lemma mulOption_lt_mul_iff_P3 {i j} :

@@ -28,7 +28,6 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
 /-- A nontrivial Lie module is *irreducible* if its only Lie submodules are `⊥` and `⊤`. -/
 abbrev LieModule.IsIrreducible : Prop :=
   IsSimpleOrder (LieSubmodule R L M)
-#align lie_module.is_irreducible LieModule.IsIrreducible
 
 namespace LieAlgebra
 
@@ -48,7 +47,6 @@ whereas we reserve it for Lie algebras that are a direct sum of simple Lie algeb
 -/
 class HasTrivialRadical : Prop where
   radical_eq_bot : radical R L = ⊥
-#align lie_algebra.is_semisimple LieAlgebra.HasTrivialRadical
 
 export HasTrivialRadical (radical_eq_bot)
 attribute [simp] radical_eq_bot
@@ -58,7 +56,6 @@ action, and it is non-Abelian. -/
 class IsSimple : Prop where
   eq_bot_or_eq_top : ∀ I : LieIdeal R L, I = ⊥ ∨ I = ⊤
   non_abelian : ¬IsLieAbelian L
-#align lie_algebra.is_simple LieAlgebra.IsSimple
 
 /--
 A *semisimple* Lie algebra is one that is a direct sum of non-abelian atomic ideals.
