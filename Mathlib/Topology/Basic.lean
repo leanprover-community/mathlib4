@@ -1233,7 +1233,7 @@ theorem Dense.inter_nhds_nonempty (hs : Dense s) (ht : t ∈ 𝓝 x) :
 theorem union_compl_closure_dense {s : Set X} :
     Dense (s ∪ (closure s)ᶜ) := by
   rw [dense_iff_closure_eq, closure_union, ← univ_subset_iff]
-  refine' _root_.subset_trans _ (union_subset_union_right _ (subset_closure))
+  refine _root_.subset_trans ?_ (union_subset_union_right _ (subset_closure))
   simp
 
 theorem closure_diff : closure s \ closure t ⊆ closure (s \ t) :=
