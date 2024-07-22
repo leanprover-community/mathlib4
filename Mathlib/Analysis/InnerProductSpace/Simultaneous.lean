@@ -152,7 +152,7 @@ theorem invariant_subspace_eigenspace_exhaust {F : Submodule 𝕜 E} (S : E →�
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   revert T
-  refine' Fintype.induction_subsingleton_or_nontrivial n _ _
+  refine Fintype.induction_subsingleton_or_nontrivial n ?_ ?_
   · intro m _ hhm T hT _
     simp only [Submodule.orthogonal_eq_bot_iff]
     by_cases case : Nonempty m
