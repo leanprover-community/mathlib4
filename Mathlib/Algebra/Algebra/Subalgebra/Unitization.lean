@@ -229,6 +229,7 @@ namespace NonUnitalSubsemiring
 
 variable {R S : Type*} [Semiring R] [SetLike S R] [hSR : NonUnitalSubsemiringClass S R] (s : S)
 
+open Nat in
 /-- The natural `ℕ`-algebra homomorphism from the unitization of a non-unital subsemiring to
 its `Subsemiring.closure`. -/
 def unitization : Unitization ℕ s →ₐ[ℕ] R :=
@@ -238,6 +239,7 @@ def unitization : Unitization ℕ s →ₐ[ℕ] R :=
 theorem unitization_apply (x : Unitization ℕ s) : unitization s x = x.fst + x.snd :=
   rfl
 
+open Nat in
 theorem unitization_range :
     (unitization s).range = subalgebraOfSubsemiring (Subsemiring.closure s) := by
   have := AddSubmonoidClass.nsmulMemClass (S := S)
@@ -276,6 +278,7 @@ namespace NonUnitalSubring
 
 variable {R S : Type*} [Ring R] [SetLike S R] [hSR : NonUnitalSubringClass S R] (s : S)
 
+open Int in
 /-- The natural `ℤ`-algebra homomorphism from the unitization of a non-unital subring to
 its `Subring.closure`. -/
 def unitization : Unitization ℤ s →ₐ[ℤ] R :=
@@ -285,6 +288,7 @@ def unitization : Unitization ℤ s →ₐ[ℤ] R :=
 theorem unitization_apply (x : Unitization ℤ s) : unitization s x = x.fst + x.snd :=
   rfl
 
+open Int in
 theorem unitization_range :
     (unitization s).range = subalgebraOfSubring (Subring.closure s) := by
   have := AddSubgroupClass.zsmulMemClass (S := S)

@@ -300,6 +300,8 @@ end Field
 
 section Int
 
+open Int
+
 /-- Two (finite) ℤ-bases have the same discriminant. -/
 theorem discr_eq_discr [Fintype ι] (b : Basis ι ℤ A) (b' : Basis ι ℤ A) :
     Algebra.discr ℤ b = Algebra.discr ℤ b' := by

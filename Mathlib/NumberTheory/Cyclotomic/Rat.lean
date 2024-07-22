@@ -26,7 +26,7 @@ universe u
 
 open Algebra IsCyclotomicExtension Polynomial NumberField
 
-open scoped Cyclotomic Nat
+open scoped Cyclotomic Int Nat
 
 variable {p : ℕ+} {k : ℕ} {K : Type u} [Field K] [CharZero K] {ζ : K} [hp : Fact (p : ℕ).Prime]
 

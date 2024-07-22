@@ -43,7 +43,7 @@ lemma prod_pow_sub_one_eq_order {n : ℕ} {μ : R} (hμ : IsPrimitiveRoot μ (n 
   have : (-1 : R) ^ n = ∏ k ∈ range n, -1 := by rw [prod_const, card_range]
   simp only [this, ← prod_mul_distrib, neg_one_mul, neg_sub, ← prod_one_sub_pow_eq_order hμ]
 
-open Algebra in
+open Int Algebra in
 /-- If `μ` is a primitive `n`th root of unity in `R` and `k < n`, then `n` is divisible
 by `(μ-1)^k` in `ℤ[μ] ⊆ R`. -/
 lemma self_sub_one_pow_dvd_order {k n : ℕ} (hn : k < n) {μ : R} (hμ : IsPrimitiveRoot μ n) :

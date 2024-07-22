@@ -26,6 +26,7 @@ variable (K : Type*) [Field K] [NumberField K]
 
 namespace RingOfIntegers
 
+open scoped Int in
 noncomputable instance instFintypeClassGroup : Fintype (ClassGroup (𝓞 K)) :=
   ClassGroup.fintypeOfAdmissibleOfFinite ℚ K AbsoluteValue.absIsAdmissible
 

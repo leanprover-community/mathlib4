@@ -261,6 +261,7 @@ instance instSMulCommClass [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCom
     SMulCommClass S T (RingQuot r) :=
   ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_comm]⟩
 
+open Nat in
 instance instAddCommMonoid (r : R → R → Prop) : AddCommMonoid (RingQuot r) where
   add := (· + ·)
   zero := 0
@@ -334,6 +335,7 @@ instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
 private def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : RingQuot r :=
   ⟨Quot.mk _ z⟩
 
+open Int in
 instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
   { RingQuot.instSemiring r with
     neg := Neg.neg

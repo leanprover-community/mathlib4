@@ -230,6 +230,7 @@ theorem absNorm_ne_zero_iff (I : Ideal S) : Ideal.absNorm I ≠ 0 ↔ Finite (S 
   ⟨fun h => Nat.finite_of_card_ne_zero h, fun h =>
     (@AddSubgroup.finiteIndex_of_finite_quotient _ _ _ h).finiteIndex⟩
 
+open Int in
 /-- Let `e : S ≃ I` be an additive isomorphism (therefore a `ℤ`-linear equiv).
 Then an alternative way to compute the norm of `I` is given by taking the determinant of `e`.
 See `natAbs_det_basis_change` for a more familiar formulation of this result. -/
@@ -306,6 +307,7 @@ theorem natAbs_det_basis_change {ι : Type*} [Fintype ι] [DecidableEq ι] (b : 
       rw [Basis.det_comp_basis]
     _ = _ := natAbs_det_equiv I e
 
+open Int in
 @[simp]
 theorem absNorm_span_singleton (r : S) :
     absNorm (span ({r} : Set S)) = (Algebra.norm ℤ r).natAbs := by
@@ -323,20 +325,23 @@ theorem absNorm_span_singleton (r : S) :
 theorem absNorm_dvd_absNorm_of_le {I J : Ideal S} (h : J ≤ I) : Ideal.absNorm I ∣ Ideal.absNorm J :=
   map_dvd absNorm (dvd_iff_le.mpr h)
 
+open Int in
 theorem absNorm_dvd_norm_of_mem {I : Ideal S} {x : S} (h : x ∈ I) :
     ↑(Ideal.absNorm I) ∣ Algebra.norm ℤ x := by
   rw [← Int.dvd_natAbs, ← absNorm_span_singleton x, Int.natCast_dvd_natCast]
   exact absNorm_dvd_absNorm_of_le ((span_singleton_le_iff_mem _).mpr h)
 
+open Int in
 @[simp]
 theorem absNorm_span_insert (r : S) (s : Set S) :
-    absNorm (span (insert r s)) ∣ gcd (absNorm (span s)) (Algebra.norm ℤ r).natAbs :=
+    absNorm (span (insert r s)) ∣ GCDMonoid.gcd (absNorm (span s)) (Algebra.norm ℤ r).natAbs :=
   (dvd_gcd_iff _ _ _).mpr
     ⟨absNorm_dvd_absNorm_of_le (span_mono (Set.subset_insert _ _)),
       _root_.trans
         (absNorm_dvd_absNorm_of_le (span_mono (Set.singleton_subset_iff.mpr (Set.mem_insert _ _))))
         (by rw [absNorm_span_singleton])⟩
 
+open Int in
 theorem absNorm_eq_zero_iff {I : Ideal S} : Ideal.absNorm I = 0 ↔ I = ⊥ := by
   constructor
   · intro hI
@@ -378,6 +383,7 @@ theorem absNorm_mem (I : Ideal S) : ↑(Ideal.absNorm I) ∈ I := by
 theorem span_singleton_absNorm_le (I : Ideal S) : Ideal.span {(Ideal.absNorm I : S)} ≤ I := by
   simp only [Ideal.span_le, Set.singleton_subset_iff, SetLike.mem_coe, Ideal.absNorm_mem I]
 
+open Int in
 theorem span_singleton_absNorm {I : Ideal S} (hI : (Ideal.absNorm I).Prime) :
     Ideal.span (singleton (Ideal.absNorm I : ℤ)) = I.comap (algebraMap ℤ S) := by
   have : Ideal.IsPrime (Ideal.span (singleton (Ideal.absNorm I : ℤ))) := by
@@ -406,6 +412,7 @@ theorem finite_setOf_absNorm_eq [CharZero S] {n : ℕ} (hn : 0 < n) :
       comap_map_mk (span_singleton_absNorm_le J), ← hJ.symm]
     congr
 
+open Int in
 theorem norm_dvd_iff {x : S} (hx : Prime (Algebra.norm ℤ x)) {y : ℤ} :
     Algebra.norm ℤ x ∣ y ↔ x ∣ y := by
   rw [← Ideal.mem_span_singleton (y := x), ← eq_intCast (algebraMap ℤ S), ← Ideal.mem_comap,

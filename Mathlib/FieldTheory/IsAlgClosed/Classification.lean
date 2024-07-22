@@ -155,6 +155,7 @@ end Cardinal
 
 variable {K L : Type} [Field K] [Field L] [IsAlgClosed K] [IsAlgClosed L]
 
+open Int in
 /-- Two uncountable algebraically closed fields of characteristic zero are isomorphic
 if they have the same cardinality. -/
 theorem ringEquivOfCardinalEqOfCharZero [CharZero K] [CharZero L] (hK : ℵ₀ < #K)

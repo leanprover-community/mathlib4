@@ -531,8 +531,9 @@ section CyclotomicRing
 instance CyclotomicField.algebraBase : Algebra A (CyclotomicField n K) :=
   SplittingField.algebra' (cyclotomic n K)
 
+open Int in
 /-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` #10906 -/
-example : algebraInt (CyclotomicField n ℚ) = CyclotomicField.algebraBase _ _ _ := rfl
+example : Int.instAlgebraOfRing (CyclotomicField n ℚ) = CyclotomicField.algebraBase _ _ _ := rfl
 
 instance CyclotomicField.algebra' {R : Type*} [CommRing R] [Algebra R K] :
     Algebra R (CyclotomicField n K) :=
@@ -574,9 +575,10 @@ instance : Inhabited (CyclotomicRing n A K) := by
 instance algebraBase : Algebra A (CyclotomicRing n A K) :=
   (adjoin A _).algebra
 
+open Int in
 -- Ensure that there is no diamonds with ℤ.
 -- but there is at `reducible_and_instances` #10906
-example {n : ℕ+} : CyclotomicRing.algebraBase n ℤ ℚ = algebraInt _ := rfl
+example {n : ℕ+} : CyclotomicRing.algebraBase n ℤ ℚ = Int.instAlgebraOfRing _ := rfl
 
 instance : NoZeroSMulDivisors A (CyclotomicRing n A K) :=
   (adjoin A _).noZeroSMulDivisors_bot

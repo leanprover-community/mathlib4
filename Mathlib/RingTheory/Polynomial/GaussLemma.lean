@@ -307,12 +307,14 @@ end NormalizedGCDMonoid
 
 end FractionMap
 
+open Int in
 /-- **Gauss's Lemma** for `ℤ` states that a primitive integer polynomial is irreducible iff it is
   irreducible over `ℚ`. -/
 theorem IsPrimitive.Int.irreducible_iff_irreducible_map_cast {p : ℤ[X]} (hp : p.IsPrimitive) :
     Irreducible p ↔ Irreducible (p.map (Int.castRingHom ℚ)) :=
   hp.irreducible_iff_irreducible_map_fraction_map
 
+open Int in
 theorem IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast (p q : ℤ[X]) (hp : p.IsPrimitive)
     (hq : q.IsPrimitive) : p ∣ q ↔ p.map (Int.castRingHom ℚ) ∣ q.map (Int.castRingHom ℚ) :=
   hp.dvd_iff_fraction_map_dvd_fraction_map ℚ hq

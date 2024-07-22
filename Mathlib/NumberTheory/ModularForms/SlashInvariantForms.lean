@@ -88,6 +88,7 @@ theorem slash_action_eqn [SlashInvariantFormClass F Γ k] (f : F) (γ : Γ) :
     ↑f ∣[k] γ = ⇑f :=
   SlashInvariantFormClass.slash_action_eq f γ
 
+open Int in
 theorem slash_action_eqn' (k : ℤ) (Γ : Subgroup SL(2, ℤ)) [SlashInvariantFormClass F Γ k] (f : F)
     (γ : Γ) (z : ℍ) : f (γ • z) = ((↑ₘ[ℤ] γ 1 0 : ℂ) * z + (↑ₘ[ℤ] γ 1 1 : ℂ)) ^ k * f z := by
   rw [← ModularForm.slash_action_eq'_iff, slash_action_eqn]

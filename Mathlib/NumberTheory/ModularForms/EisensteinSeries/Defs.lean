@@ -88,6 +88,7 @@ section eisSummand
 /-- The function on `(Fin 2 → ℤ)` whose sum defines an Eisenstein series. -/
 def eisSummand (k : ℤ) (v : Fin 2 → ℤ) (z : ℍ) : ℂ := (v 0 * z.1 + v 1) ^ (-k)
 
+open Int in
 /-- How the `eisSummand` function changes under the Moebius action. -/
 theorem eisSummand_SL2_apply (k : ℤ) (i : (Fin 2 → ℤ)) (A : SL(2, ℤ)) (z : ℍ) :
     eisSummand k i (A • z) = (z.denom A) ^ k * eisSummand k (i ᵥ* A) z := by

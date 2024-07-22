@@ -226,7 +226,7 @@ variable {R : Type*} [Semiring R]
 -- `ℕ`-algebras. This is only an issue since `Algebra.id` and `algebraNat` are not yet defeq.
 -- TODO: fix this by adding an `ofNat` field to semirings.
 /-- Semiring ⥤ ℕ-Alg -/
-instance (priority := 99) algebraNat : Algebra ℕ R where
+protected scoped instance (priority := 99) Nat.instAlgebraOfSemiring : Algebra ℕ R where
   commutes' := Nat.cast_commute
   smul_def' _ _ := nsmul_eq_mul _ _
   toRingHom := Nat.castRingHom R
@@ -244,11 +244,12 @@ variable (R : Type*) [Ring R]
 -- `ℤ`-algebras. This is only an issue since `Algebra.id ℤ` and `algebraInt ℤ` are not yet defeq.
 -- TODO: fix this by adding an `ofInt` field to rings.
 /-- Ring ⥤ ℤ-Alg -/
-instance (priority := 99) algebraInt : Algebra ℤ R where
+protected scoped instance (priority := 99) Int.instAlgebraOfRing : Algebra ℤ R where
   commutes' := Int.cast_commute
   smul_def' _ _ := zsmul_eq_mul _ _
   toRingHom := Int.castRingHom R
 
+open Int in
 /-- A special case of `eq_intCast'` that happens to be true definitionally -/
 @[simp]
 theorem algebraMap_int_eq : algebraMap ℤ R = Int.castRingHom R :=
@@ -294,11 +295,13 @@ theorem iff_algebraMap_injective [CommRing R] [Ring A] [IsDomain A] [Algebra R A
   ⟨@NoZeroSMulDivisors.algebraMap_injective R A _ _ _ _, NoZeroSMulDivisors.of_algebraMap_injective⟩
 
 -- see note [lower instance priority]
+open Nat in
 instance (priority := 100) CharZero.noZeroSMulDivisors_nat [Semiring R] [NoZeroDivisors R]
     [CharZero R] : NoZeroSMulDivisors ℕ R :=
   NoZeroSMulDivisors.of_algebraMap_injective <| (algebraMap ℕ R).injective_nat
 
 -- see note [lower instance priority]
+open Int in
 instance (priority := 100) CharZero.noZeroSMulDivisors_int [Ring R] [NoZeroDivisors R]
     [CharZero R] : NoZeroSMulDivisors ℤ R :=
   NoZeroSMulDivisors.of_algebraMap_injective <| (algebraMap ℤ R).injective_int
@@ -330,6 +333,7 @@ theorem algebra_compatible_smul (r : R) (m : M) : r • m = (algebraMap R A) r �
 theorem algebraMap_smul (r : R) (m : M) : (algebraMap R A) r • m = r • m :=
   (algebra_compatible_smul A r m).symm
 
+open Int in
 theorem intCast_smul {k V : Type*} [CommRing k] [AddCommGroup V] [Module k V] (r : ℤ) (x : V) :
     (r : k) • x = r • x :=
   algebraMap_smul k r x

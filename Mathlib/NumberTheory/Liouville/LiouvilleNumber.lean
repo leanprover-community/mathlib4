@@ -191,6 +191,7 @@ theorem liouville_liouvilleNumber {m : ℕ} (hm : 2 ≤ m) : Liouville (liouvill
   have hpos := remainder_pos m1 n
   simpa [abs_of_pos hpos, hpos.ne'] using @remainder_lt n m (by assumption_mod_cast)
 
+open Int in
 theorem transcendental_liouvilleNumber {m : ℕ} (hm : 2 ≤ m) :
     Transcendental ℤ (liouvilleNumber m) :=
   (liouville_liouvilleNumber hm).transcendental

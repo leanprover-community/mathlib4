@@ -189,6 +189,7 @@ theorem isNoetherianRing_of_fg {S : Subalgebra R A} (HS : S.FG) [IsNoetherianRin
   let ⟨t, ht⟩ := HS
   ht ▸ (Algebra.adjoin_eq_range R (↑t : Set A)).symm ▸ AlgHom.isNoetherianRing_range _
 
+open Int in
 theorem is_noetherian_subring_closure (s : Set R) (hs : s.Finite) :
     IsNoetherianRing (Subring.closure s) :=
   show IsNoetherianRing (subalgebraOfSubring (Subring.closure s)) from

@@ -30,7 +30,7 @@ polynomial factor occurring in the `n`th derivative of a gaussian.
 
 noncomputable section
 
-open Polynomial
+open Int Polynomial
 
 namespace Polynomial
 

@@ -342,6 +342,7 @@ theorem one_kronecker [MulZeroOneClass α] [DecidableEq l] (B : Matrix m n α) :
   (diagonal_kronecker _ _).trans <|
     congr_arg _ <| congr_arg _ <| funext fun _ => Matrix.ext fun _ _ => one_mul _
 
+open Nat in
 theorem mul_kronecker_mul [Fintype m] [Fintype m'] [CommSemiring α] (A : Matrix l m α)
     (B : Matrix m n α) (A' : Matrix l' m' α) (B' : Matrix m' n' α) :
     (A * B) ⊗ₖ (A' * B') = A ⊗ₖ A' * B ⊗ₖ B' :=
@@ -358,10 +359,12 @@ theorem kronecker_assoc' [Semigroup α] (A : Matrix l m α) (B : Matrix n p α) 
     A ⊗ₖ (B ⊗ₖ C) :=
   kroneckerMap_assoc₁ _ _ _ _ A B C mul_assoc
 
+open Nat in
 theorem trace_kronecker [Fintype m] [Fintype n] [Semiring α] (A : Matrix m m α) (B : Matrix n n α) :
     trace (A ⊗ₖ B) = trace A * trace B :=
   trace_kroneckerMapBilinear (Algebra.lmul ℕ α).toLinearMap _ _
 
+open Nat in
 theorem det_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [CommRing R]
     (A : Matrix m m R) (B : Matrix n n R) :
     det (A ⊗ₖ B) = det A ^ Fintype.card n * det B ^ Fintype.card m := by

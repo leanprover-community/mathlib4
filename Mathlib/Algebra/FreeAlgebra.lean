@@ -201,6 +201,7 @@ instance instDistrib : Distrib (FreeAlgebra R X) where
     rintro ⟨⟩ ⟨⟩ ⟨⟩
     exact Quot.sound Rel.right_distrib
 
+open Nat in
 instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
   add_assoc := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
@@ -252,10 +253,11 @@ instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra
     exact Quot.sound Rel.central_scalar
   smul_def' _ _ := rfl
 
+open Nat in
 -- verify there is no diamond at `default` transparency but we will need
 -- `reducible_and_instances` which currently fails #10906
 variable (S : Type) [CommSemiring S] in
-example : (algebraNat : Algebra ℕ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
+example : (Nat.instAlgebraOfSemiring : Algebra ℕ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
 instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
     [SMul R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] :
@@ -274,10 +276,11 @@ instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A] [Algebra R A
 instance {S : Type*} [CommRing S] : Ring (FreeAlgebra S X) :=
   Algebra.semiringToRing S
 
+open Int in
 -- verify there is no diamond but we will need
 -- `reducible_and_instances` which currently fails #10906
 variable (S : Type) [CommRing S] in
-example : (algebraInt _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
+example : (Int.instAlgebraOfRing _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
 variable {X}
 

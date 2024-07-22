@@ -29,6 +29,8 @@ namespace IsPrimitiveRoot
 
 section CommRing
 
+open Int
+
 variable {n : ℕ} {K : Type*} [CommRing K] {μ : K} (h : IsPrimitiveRoot μ n)
 
 /-- `μ` is integral over `ℤ`. -/

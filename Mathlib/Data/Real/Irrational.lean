@@ -457,6 +457,7 @@ open Polynomial
 
 variable (x : ℝ) (p : ℤ[X])
 
+open Int in
 theorem one_lt_natDegree_of_irrational_root (hx : Irrational x) (p_nonzero : p ≠ 0)
     (x_is_root : aeval x p = 0) : 1 < p.natDegree := by
   by_contra rid

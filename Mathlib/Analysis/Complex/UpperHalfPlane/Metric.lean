@@ -318,6 +318,7 @@ theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ �
     Real.norm_eq_abs, mul_left_comm]
   exact mul_div_mul_left _ _ (mt _root_.abs_eq_zero.1 a.2.ne')
 
+open Int in
 /-- `SL(2, ℝ)` acts on the upper half plane as an isometry. -/
 instance : IsometricSMul SL(2, ℝ) ℍ :=
   ⟨fun g => by
@@ -327,7 +328,7 @@ instance : IsometricSMul SL(2, ℝ) ℍ :=
         have h₂ : Complex.abs (y₁ * y₂) ≠ 0 := by simp [y₁.ne_zero, y₂.ne_zero]
         simp only [dist_eq, modular_S_smul, inv_neg, neg_div, div_mul_div_comm, coe_mk, mk_im,
           div_one, Complex.inv_im, Complex.neg_im, coe_im, neg_neg, Complex.normSq_neg,
-          mul_eq_mul_left_iff, Real.arsinh_inj, one_ne_zero, or_false_iff,
+          Int.mul_eq_mul_left_iff, Real.arsinh_inj, one_ne_zero, or_false_iff,
           dist_neg_neg, mul_neg, neg_mul, dist_inv_inv₀ y₁.ne_zero y₂.ne_zero, ←
           AbsoluteValue.map_mul, ← Complex.normSq_mul, Real.sqrt_div h₁, ← Complex.abs_apply,
           mul_div (2 : ℝ), div_div_div_comm, div_self h₂, Complex.norm_eq_abs]

@@ -1105,6 +1105,7 @@ section Nat
 
 variable {R : Type*} [Semiring R]
 
+open Nat in
 /-- A subsemiring is an `ℕ`-subalgebra. -/
 def subalgebraOfSubsemiring (S : Subsemiring R) : Subalgebra ℕ R :=
   { S with algebraMap_mem' := fun i => natCast_mem S i }
@@ -1120,6 +1121,7 @@ section Int
 
 variable {R : Type*} [Ring R]
 
+open Int in
 /-- A subring is a `ℤ`-subalgebra. -/
 def subalgebraOfSubring (S : Subring R) : Subalgebra ℤ R :=
   { S with

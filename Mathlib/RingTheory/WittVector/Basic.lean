@@ -132,6 +132,8 @@ end WittVector
 
 namespace WittVector
 
+open Int
+
 /-- Evaluates the `n`th Witt polynomial on the first `n` coefficients of `x`,
 producing a value in `R`.
 This function will be bundled as the ring homomorphism `WittVector.ghostMap`

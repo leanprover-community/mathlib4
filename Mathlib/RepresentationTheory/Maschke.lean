@@ -164,6 +164,7 @@ theorem exists_isCompl (p : Submodule (MonoidAlgebra k G) V) :
 instance complementedLattice : ComplementedLattice (Submodule (MonoidAlgebra k G) V) :=
   ⟨exists_isCompl⟩
 
+open Nat in
 instance [AddGroup G] : IsSemisimpleRing (AddMonoidAlgebra k G) :=
   letI : Invertible (Fintype.card (Multiplicative G) : k) := by
     rwa [Fintype.card_congr Multiplicative.toAdd]

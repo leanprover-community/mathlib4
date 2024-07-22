@@ -884,6 +884,7 @@ theorem mk_algebraMap {A : Type*} [CommSemiring A] [Algebra A R] (m : A) :
     mk (algebraMap A R m) 1 = algebraMap A (Localization M) m := by
   rw [mk_eq_mk', mk'_eq_iff_eq_mul, Submonoid.coe_one, map_one, mul_one]; rfl
 
+open Nat in
 theorem mk_natCast (m : ℕ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℕ) _
 
@@ -948,6 +949,7 @@ theorem sub_mk (a c) (b d) : (mk a b : Localization M) - mk c d =
     mk ((d : R) * a - b * c) (b * d) := by
   rw [sub_eq_add_neg, neg_mk, add_mk, add_comm, mul_neg, ← sub_eq_add_neg]
 
+open Int in
 theorem mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℤ) _
 

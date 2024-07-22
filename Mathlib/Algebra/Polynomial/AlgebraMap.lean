@@ -124,6 +124,7 @@ theorem eval₂_algebraMap_X {R A : Type*} [CommSemiring R] [Semiring A] [Algebr
   simp only [map_sum, map_mul, map_pow, eq_intCast, map_intCast]
   simp [Polynomial.C_eq_algebraMap]
 
+open Int in
 -- these used to be about `algebraMap ℤ R`, but now the simp-normal form is `Int.castRingHom R`.
 @[simp]
 theorem ringHom_eval₂_intCastRingHom {R S : Type*} [Ring R] [Ring S] (p : ℤ[X]) (f : R →+* S)
@@ -133,6 +134,7 @@ theorem ringHom_eval₂_intCastRingHom {R S : Type*} [Ring R] [Ring S] (p : ℤ[
 @[deprecated (since := "2024-05-27")]
 alias ringHom_eval₂_cast_int_ringHom := ringHom_eval₂_intCastRingHom
 
+open Int in
 @[simp]
 theorem eval₂_intCastRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] →+* R) :
     eval₂ (Int.castRingHom R) (f X) p = f p :=

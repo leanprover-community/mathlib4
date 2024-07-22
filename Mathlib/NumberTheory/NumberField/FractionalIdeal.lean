@@ -26,7 +26,7 @@ variable (K : Type*) [Field K] [NumberField K]
 
 namespace NumberField
 
-open scoped nonZeroDivisors
+open scoped Int nonZeroDivisors
 
 section Basis
 

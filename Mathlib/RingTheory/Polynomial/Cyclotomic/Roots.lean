@@ -150,6 +150,7 @@ theorem cyclotomic_injective [CharZero R] : Function.Injective fun n => cyclotom
     replace hprim := hprim.eq_orderOf
     rwa [← IsPrimitiveRoot.eq_orderOf hroot] at hprim
 
+open Int in
 /-- The minimal polynomial of a primitive `n`-th root of unity `μ` divides `cyclotomic n ℤ`. -/
 theorem _root_.IsPrimitiveRoot.minpoly_dvd_cyclotomic {n : ℕ} {K : Type*} [Field K] {μ : K}
     (h : IsPrimitiveRoot μ n) (hpos : 0 < n) [CharZero K] : minpoly ℤ μ ∣ cyclotomic n ℤ := by
@@ -167,6 +168,7 @@ theorem _root_.IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible {K : Type*} 
   refine minpoly.eq_of_irreducible_of_monic h ?_ (cyclotomic.monic n K)
   rwa [aeval_def, eval₂_eq_eval_map, map_cyclotomic, ← IsRoot.def, isRoot_cyclotomic_iff]
 
+open Int in
 /-- `cyclotomic n ℤ` is the minimal polynomial of a primitive `n`-th root of unity `μ`. -/
 theorem cyclotomic_eq_minpoly {n : ℕ} {K : Type*} [Field K] {μ : K} (h : IsPrimitiveRoot μ n)
     (hpos : 0 < n) [CharZero K] : cyclotomic n ℤ = minpoly ℤ μ := by
@@ -174,18 +176,21 @@ theorem cyclotomic_eq_minpoly {n : ℕ} {K : Type*} [Field K] {μ : K} (h : IsPr
     (cyclotomic.monic n ℤ) (h.minpoly_dvd_cyclotomic hpos) ?_
   simpa [natDegree_cyclotomic n ℤ] using totient_le_degree_minpoly h
 
+open Int in
 /-- `cyclotomic n ℚ` is the minimal polynomial of a primitive `n`-th root of unity `μ`. -/
 theorem cyclotomic_eq_minpoly_rat {n : ℕ} {K : Type*} [Field K] {μ : K} (h : IsPrimitiveRoot μ n)
     (hpos : 0 < n) [CharZero K] : cyclotomic n ℚ = minpoly ℚ μ := by
   rw [← map_cyclotomic_int, cyclotomic_eq_minpoly h hpos]
   exact (minpoly.isIntegrallyClosed_eq_field_fractions' _ (IsPrimitiveRoot.isIntegral h hpos)).symm
 
+open Int in
 /-- `cyclotomic n ℤ` is irreducible. -/
 theorem cyclotomic.irreducible {n : ℕ} (hpos : 0 < n) : Irreducible (cyclotomic n ℤ) := by
   rw [cyclotomic_eq_minpoly (isPrimitiveRoot_exp n hpos.ne') hpos]
   apply minpoly.irreducible
   exact (isPrimitiveRoot_exp n hpos.ne').isIntegral hpos
 
+open Int in
 /-- `cyclotomic n ℚ` is irreducible. -/
 theorem cyclotomic.irreducible_rat {n : ℕ} (hpos : 0 < n) : Irreducible (cyclotomic n ℚ) := by
   rw [← map_cyclotomic_int]

@@ -65,6 +65,7 @@ variable (P : ℕ → Prop)
 def selectPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
   if P n then X n else 0
 
+open Int in
 theorem coeff_select (x : 𝕎 R) (n : ℕ) :
     (select P x).coeff n = aeval x.coeff (selectPoly P n) := by
   dsimp [select, selectPoly]
@@ -79,6 +80,7 @@ instance select_isPoly {P : ℕ → Prop} : IsPoly p fun _ _ x => select P x := 
   funext i
   apply coeff_select
 
+open Int in
 theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬P i) x = x := by
   -- Porting note: TC search was insufficient to find this instance, even though all required
   -- instances exist. See zulip: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/WittVector.20saga/near/370073526]

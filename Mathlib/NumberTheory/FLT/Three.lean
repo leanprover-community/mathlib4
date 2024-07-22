@@ -159,6 +159,7 @@ def FermatLastTheoremForThreeGen : Prop :=
   ∀ a b c : 𝓞 K, ∀ u : (𝓞 K)ˣ, c ≠ 0 → ¬ λ ∣ a → ¬ λ ∣ b  → λ ∣ c → IsCoprime a b →
     a ^ 3 + b ^ 3 ≠ u * c ^ 3
 
+open scoped Int in
 /-- To prove `FermatLastTheoremFor 3`, it is enough to prove `FermatLastTheoremForThreeGen`. -/
 lemma FermatLastTheoremForThree_of_FermatLastTheoremThreeGen :
     FermatLastTheoremForThreeGen hζ → FermatLastTheoremFor 3 := by

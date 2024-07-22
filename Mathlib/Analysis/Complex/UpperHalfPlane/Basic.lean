@@ -26,7 +26,7 @@ We define the notation `ℍ` for the upper half plane available in the locale
 
 noncomputable section
 
-open Matrix Matrix.SpecialLinearGroup
+open Int Matrix Matrix.SpecialLinearGroup
 
 open scoped Classical MatrixGroups
 

@@ -67,6 +67,7 @@ theorem FiniteField.isSquare_neg_two_iff :
       quadraticChar_neg_two hF, χ₈'_nat_eq_if_mod_eight]
     omega
 
+open Int in
 /-- The relation between the values of the quadratic character of one field `F` at the
 cardinality of another field `F'` and of the quadratic character of `F'` at the cardinality
 of `F`. -/
