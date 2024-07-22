@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 

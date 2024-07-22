@@ -5,8 +5,6 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.GCDMonoid.Basic
 
-#align_import algebra.punit_instances from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
-
 /-!
 # Instances on PUnit
 
@@ -41,27 +39,19 @@ instance commGroup : CommGroup PUnit where
 @[to_additive (attr := simp, nolint simpNF)]
 theorem one_eq : (1 : PUnit) = unit :=
   rfl
-#align punit.one_eq PUnit.one_eq
-#align punit.zero_eq PUnit.zero_eq
 
 -- note simp can prove this when the Boolean ring structure is introduced
 @[to_additive]
 theorem mul_eq {x y : PUnit} : x * y = unit :=
   rfl
-#align punit.mul_eq PUnit.mul_eq
-#align punit.add_eq PUnit.add_eq
 
 @[to_additive (attr := simp)]
 theorem div_eq {x y : PUnit} : x / y = unit :=
   rfl
-#align punit.div_eq PUnit.div_eq
-#align punit.sub_eq PUnit.sub_eq
 
 @[to_additive (attr := simp)]
 theorem inv_eq {x : PUnit} : x⁻¹ = unit :=
   rfl
-#align punit.inv_eq PUnit.inv_eq
-#align punit.neg_eq PUnit.neg_eq
 
 instance commRing : CommRing PUnit where
   __ := PUnit.commGroup
@@ -94,16 +84,13 @@ instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
 -- Porting note (#10618): simpNF lint: simp can prove this @[simp]
 theorem gcd_eq {x y : PUnit} : gcd x y = unit :=
   rfl
-#align punit.gcd_eq PUnit.gcd_eq
 
 -- Porting note (#10618): simpNF lint: simp can prove this @[simp]
 theorem lcm_eq {x y : PUnit} : lcm x y = unit :=
   rfl
-#align punit.lcm_eq PUnit.lcm_eq
 
 @[simp]
 theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
   rfl
-#align punit.norm_unit_eq PUnit.norm_unit_eq
 
 end PUnit
