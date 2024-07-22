@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 
-import Mathlib.RingTheory.TwoSidedIdeal.Lattice
-import Mathlib.Order.Atoms
+import Mathlib.RingTheory.SimpleRing.Defs
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Ring.Subring.Basic
 
-/-! # Simple rings
+/-! # Basic Properties of Simple rings
 
 A ring `R` is **simple** if it has only two two-sided ideals, namely `0` and `⟨1⟩`.
 
@@ -22,12 +21,6 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `0` and `�
 -/
 
 variable (R : Type*) [NonUnitalNonAssocRing R]
-
-/--
-A ring `R` is **simple** if it has only two two-sided ideals, namely `0` and `⟨1⟩`.
--/
-class IsSimpleRing : Prop where
-  simple : IsSimpleOrder (TwoSidedIdeal R)
 
 namespace IsSimpleRing
 
@@ -50,7 +43,7 @@ lemma one_mem_of_ne_zero_mem {A : Type*} [NonAssocRing A] [IsSimpleRing A] (I : 
     {x : A} (hx : x ≠ 0) (hxI : x ∈ I) : (1 : A) ∈ I :=
   one_mem_of_ne_bot I (by rintro rfl; exact hx hxI)
 
-instance of_divisionRing (A : Type*) [DivisionRing A] : IsSimpleRing A where
+instance _root_.DivisionRing.isSimpleRing (A : Type*) [DivisionRing A] : IsSimpleRing A where
   simple :=
   { exists_pair_ne := ⟨⊥, ⊤, bot_ne_top⟩
     eq_bot_or_eq_top := fun I ↦ (eq_or_ne I ⊥).elim .inl fun H ↦ .inr $ by
@@ -61,7 +54,7 @@ instance of_divisionRing (A : Type*) [DivisionRing A] : IsSimpleRing A where
       simpa [inv_mul_cancel hx2] using I.mul_mem_left x⁻¹ _ hx1 }
 
 open TwoSidedIdeal in
-lemma center_isField (A : Type*) [Ring A] [IsSimpleRing A] : IsField (Subring.center A) where
+lemma isField_center (A : Type*) [Ring A] [IsSimpleRing A] : IsField (Subring.center A) where
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩
   mul_comm := by
     rintro ⟨x, hx⟩ ⟨y, hy⟩
@@ -90,14 +83,13 @@ lemma center_isField (A : Type*) [Ring A] [IsSimpleRing A] : IsField (Subring.ce
       _ = y * (a * (x * y)) := by rw [mul_assoc a x y]
       _ = y * a := by rw [hy, mul_one]
 
-lemma iff_isField_of_commutative (A : Type*) [CommRing A]  :
-    IsField A ↔ IsSimpleRing A :=
-  ⟨fun h ↦ letI := IsField.toField h; inferInstance, fun _ ↦ by
-    have h := center_isField A
+lemma iff_isField_of_commutative (A : Type*) [CommRing A] : IsSimpleRing A ↔ IsField A :=
+  ⟨fun _ ↦ by
+    have h := isField_center A
     refine ⟨⟨0, 1, zero_ne_one⟩, mul_comm, fun {a} ha ↦ ?_⟩
     obtain ⟨⟨b, _⟩, hb⟩ := h.mul_inv_cancel
       (a := ⟨a, Subring.mem_center_iff.2 fun b ↦ mul_comm _ _⟩)
       (by contrapose! ha; simpa [Subtype.ext_iff] using ha)
-    exact ⟨b, Subtype.ext_iff |>.1 hb⟩⟩
+    exact ⟨b, Subtype.ext_iff |>.1 hb⟩, fun h ↦ letI := IsField.toField h; inferInstance⟩
 
 end IsSimpleRing
