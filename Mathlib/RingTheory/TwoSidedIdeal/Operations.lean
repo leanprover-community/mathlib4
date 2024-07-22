@@ -157,7 +157,7 @@ def asIdeal : TwoSidedIdeal R →o Ideal R where
     smul_mem' := fun r x hx => I.mul_mem_left r x hx }
   monotone' _ _ h _ h' := h h'
 
-/--Given an ideal `I`, `span I` is the smallest two-sided-ideal containing `I`.-/
+/-- Given an ideal `I`, `span I` is the smallest two-sided-ideal containing `I`. -/
 def fromIdeal : Ideal R →o TwoSidedIdeal R where
   toFun I := span I
   monotone' _ _ := span_mono
