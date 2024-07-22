@@ -31,7 +31,7 @@ namespace AbelRuffini
 
 open Function Polynomial Polynomial.Gal Ideal
 
-open scoped Polynomial
+open scoped Int Polynomial
 
 attribute [local instance] splits_ℚ_ℂ
 
