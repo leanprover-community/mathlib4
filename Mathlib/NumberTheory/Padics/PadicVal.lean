@@ -72,10 +72,6 @@ open multiplicity
 
 variable {p : ℕ}
 
-/-- `padicValNat p 0` is `0` for any `p`. -/
-@[simp]
-protected theorem zero : padicValNat p 0 = 0 := by simp [padicValNat]
-
 /-- `padicValNat p 1` is `0` for any `p`. -/
 @[simp]
 protected theorem one : padicValNat p 1 = 0 := by
