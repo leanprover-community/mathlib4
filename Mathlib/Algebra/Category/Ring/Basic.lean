@@ -666,6 +666,16 @@ theorem commRingIsoToRingEquiv_symm_toRingHom {X Y : CommRingCat} (i : X ≅ Y) 
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.CommRing_iso_to_ring_equiv_symm_to_ring_hom CategoryTheory.Iso.commRingIsoToRingEquiv_symm_toRingHom
 
+@[simp]
+lemma commRingIsoToRingEquiv_apply {X Y : CommRingCat} (i : X ≅ Y) (x : X) :
+    i.commRingCatIsoToRingEquiv x = i.hom x :=
+  rfl
+
+@[simp]
+lemma commRingIsoToRingEquiv_symm_apply {X Y : CommRingCat} (i : X ≅ Y) (y : Y) :
+    i.commRingCatIsoToRingEquiv.symm y = i.inv y :=
+  rfl
+
 end CategoryTheory.Iso
 
 /-- Ring equivalences between `RingCat`s are the same as (isomorphic to) isomorphisms in

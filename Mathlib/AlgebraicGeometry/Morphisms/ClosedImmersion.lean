@@ -5,6 +5,7 @@ Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 -/
 import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
+import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField
 import Mathlib.RingTheory.LocalProperties
@@ -33,7 +34,7 @@ is a closed immersion and the induced morphisms of stalks are all surjective.
 
 universe v u
 
-open CategoryTheory
+open CategoryTheory TopologicalSpace
 
 namespace AlgebraicGeometry
 
@@ -123,8 +124,8 @@ open Opposite LocallyRingedSpace
 has a closed image and `f` induces an injection on global sections, then
 `f` is surjective. -/
 lemma surjective_of_isClosed_range_of_injective {X Y : Scheme} [IsAffine Y] [CompactSpace X]
-    (f : X ⟶ Y) (hfcl : IsClosed (Set.range f.val.base))
-    (hfinj : Function.Injective (f.val.c.app (op ⊤))) :
+    {f : X ⟶ Y} (hfcl : IsClosed (Set.range f.val.base))
+    (hfinj : Function.Injective (f.app ⊤)) :
     Function.Surjective f.val.base := by
   obtain ⟨I, hI⟩ := (Scheme.eq_zeroLocus_of_isClosed_of_isAffine Y (Set.range f.val.base)).mp hfcl
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
@@ -142,6 +143,125 @@ lemma surjective_of_isClosed_range_of_injective {X Y : Scheme} [IsAffine Y] [Com
     erw [← Γevaluation_naturality_apply (𝒰.map i ≫ f)]
     simpa
   exact (Y.mem_zeroLocus_iff I _).mp (hI ▸ Set.mem_range_self ((𝒰.map i).val.base x.val)) s hs
+
+lemma injective_of_isLocalization {R S T} [CommRing R] (M : Submonoid R) [CommRing S] [Algebra R S]
+    [IsLocalization M S] [CommRing T] (f : S →+* T) :
+    Function.Injective f ↔ ∀ (x y : R),
+      algebraMap R S x = algebraMap R S y ↔ f (algebraMap R S x) = f (algebraMap R S y) := by
+  rw [← IsLocalization.lift_of_comp (M := M) f, IsLocalization.lift_injective_iff]
+  simp
+
+lemma injective_iff_of_isLocalization' {R S T} [CommRing R] (M : Submonoid R) [CommRing S] [Algebra R S]
+    [IsLocalization M S] [CommRing T] (f : S →+* T) :
+    Function.Injective f ↔ ∀ (x : R), algebraMap R S x = 0 ↔ f (algebraMap R S x) = 0 := by
+  rw [injective_of_isLocalization M]
+  constructor
+  · intro h x
+    rw [← map_zero (algebraMap R S), ← map_zero f, ← map_zero (algebraMap R S)]
+    exact h x 0
+  · intro h x y
+    rw [← sub_eq_zero]
+    nth_rw 2 [← sub_eq_zero]
+    repeat rw [← map_sub]
+    exact h (x - y)
+
+lemma injective_of_isLocalization' {R S T} [CommRing R] (M : Submonoid R) [CommRing S] [Algebra R S]
+    [IsLocalization M S] [CommRing T] (f : S →+* T)
+    (h : ∀ (x : R), f (algebraMap R S x) = 0 → algebraMap R S x = 0) :
+    Function.Injective f := by
+  rw [injective_iff_of_isLocalization' M]
+  exact fun x ↦ ⟨fun h ↦ by rw [h]; simp, h x⟩
+
+theorem _root_.AlgebraicGeometry.IsAffineOpen.stalkMap_injective_of {X Y : Scheme} (f : X ⟶ Y) {U : Opens Y}
+    (hU : IsAffineOpen U) (x : X) (hx : f.val.base x ∈ U)
+    (h : ∀ g, LocallyRingedSpace.stalkMap f x (Y.presheaf.germ ⟨f.val.base x, hx⟩ g) = 0 →
+      Y.presheaf.germ ⟨f.val.base x, hx⟩ g = 0) :
+    Function.Injective (LocallyRingedSpace.stalkMap f x) := by
+  have := hU.isLocalization_stalk ⟨f.val.base x, hx⟩
+  apply @injective_of_isLocalization' _ _ _ _ (hU.primeIdealOf ⟨f.val.base x, hx⟩).asIdeal.primeCompl
+    _ (Y.presheaf.algebra_section_stalk ⟨f.val.base x, hx⟩)
+  exact h
+
+theorem stalkMap_injective_of {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] (x : X)
+    (h : ∀ g,
+      LocallyRingedSpace.stalkMap f x (Y.ΓToStalk (f.val.base x) g) = 0 → Y.ΓToStalk (f.val.base x) g = 0) :
+    Function.Injective (LocallyRingedSpace.stalkMap f x) :=
+  (isAffineOpen_top Y).stalkMap_injective_of f x trivial h
+
+lemma ΓToStalk_eq_zero_of {X : Scheme} (x : X) (f s : Γ(X, ⊤)) (hx : x ∈ X.basicOpen s)
+    {n : ℕ} (hf : s ^ n * f = 0) : X.ΓToStalk x f = 0 := by
+  rw [Scheme.mem_basicOpen_top] at hx
+  replace hx : IsUnit (X.ΓToStalk x s) := hx
+  have hu : IsUnit (X.ΓToStalk x (s ^ n)) := by
+    rw [map_pow]
+    exact IsUnit.pow n hx
+  rw [← hu.mul_right_eq_zero, ← map_mul, hf, map_zero]
+
+lemma pow_mul_eq_zero_of_le {R : Type*} [CommRing R] {a b : R} {m n : ℕ} (hmn : m ≤ n)
+    (h : a ^ m * b = 0) : a ^ n * b = 0 := by
+  have : n = n - m + m := by
+    omega
+  rw [show n = n - m + m by omega, pow_add, mul_assoc, h]
+  simp
+
+lemma map_le {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y} (hUV : U ≤ V) :
+    f⁻¹ᵁ U ≤ f⁻¹ᵁ V :=
+  leOfHom <| (Opens.map f.val.base).map (homOfLE hUV)
+
+/-- If `f : X ⟶ Y` is open, injective, `X` is quasi-compact and `Y` is affine, then `f` is stalkwise
+injective if it is injective on global sections. -/
+lemma stalkMap_injective_of_isOpenMap_of_injective {X Y : Scheme} {f : X ⟶ Y} [CompactSpace X]
+    [IsAffine Y] (hfopen : IsOpenMap f.val.base) (hfinj₁ : Function.Injective f.val.base)
+    (hfinj₂ : Function.Injective (f.app ⊤)) (x : X) :
+    Function.Injective (LocallyRingedSpace.stalkMap f x) := by
+  let φ : Γ(Y, ⊤) ⟶ Γ(X, ⊤) := f.app ⊤
+  let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
+  have (i : 𝒰.J) : IsAffine (𝒰.obj i) := Scheme.isAffine_affineCover X _
+  let res (i : 𝒰.J) : Γ(X, ⊤) ⟶ Γ(𝒰.obj i, ⊤) := (𝒰.map i).app ⊤
+  refine stalkMap_injective_of _ _ (fun (g : Γ(Y, ⊤)) h ↦ ?_)
+  erw [ΓToStalk_stalkMap_apply] at h
+  obtain ⟨U, w, (hx : x ∈ U), hg⟩ :=
+    X.toRingedSpace.eq_zero_res_of_eq_zero_germ ⊤ (φ g) ⟨x, trivial⟩ h
+  obtain ⟨_, ⟨s, rfl⟩, hyv, bsle⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_basicOpen Y)
+    (show f.val.base x ∈ ⟨f.val.base '' U.carrier, hfopen U.carrier U.is_open'⟩ from ⟨x, by simpa⟩)
+  let W (i : 𝒰.J) : TopologicalSpace.Opens (𝒰.obj i) := (𝒰.obj i).basicOpen ((res i) (φ s))
+  have hwle (i : 𝒰.J) : W i ≤ (𝒰.map i)⁻¹ᵁ U := by
+    show ((𝒰.obj i).basicOpen ((𝒰.map i ≫ f).app ⊤ s)) ≤ _
+    rw [← Scheme.preimage_basicOpen, Scheme.comp_coeBase, Opens.map_comp_obj]
+    refine map_le _ (le_trans (map_le f bsle) (le_of_eq ?_))
+    simp [Set.preimage_image_eq _ hfinj₁]
+  have h0 (i : 𝒰.J) : (𝒰.map i).appLE _ (W i) (by simp) (φ g) = 0 := by
+    rw [← Scheme.Hom.appLE_map _ _ (homOfLE <| hwle i).op, ← Scheme.Hom.map_appLE _ le_rfl w.op]
+    simp only [CommRingCat.coe_comp_of, RingHom.coe_comp, Function.comp_apply]
+    erw [hg]
+    simp only [map_zero]
+  have h1 (i : 𝒰.J) : ∃ n, (res i) (φ (s ^ n * g)) = 0 := by
+    obtain ⟨n, hn⟩ := exists_of_Γres_zero_of_qcqs (s := ((res i) (φ s))) (h0 i)
+    exact ⟨n, by rwa [map_mul, map_mul, map_pow, map_pow]⟩
+  have h2 : ∃ n, ∀ i, (res i) (φ (s ^ n * g)) = 0 := by
+    choose fn hfn using h1
+    refine ⟨Finset.sup Finset.univ fn, fun i ↦ ?_⟩
+    rw [map_mul, map_pow, map_mul, map_pow]
+    simp only [map_mul, map_pow, map_mul, map_pow] at hfn
+    apply pow_mul_eq_zero_of_le (Finset.le_sup (Finset.mem_univ i)) (hfn i)
+  obtain ⟨n, hn⟩ := h2
+  apply ΓToStalk_eq_zero_of (f.val.base x) g s hyv
+  rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero] at hfinj₂
+  exact hfinj₂ _ (Scheme.zero_of_zero_cover _ _ hn)
+
+/-- If `f` is a closed immersion with affine target such that the induced map on global
+sections is injective, `f` is an isomorphism. -/
+theorem isIso_of_isClosedImmersion_of_injective_of_isAffine {X Y : Scheme} [IsAffine Y]
+    (f : X ⟶ Y) [IsClosedImmersion f] (hf : Function.Injective (f.app ⊤)) :
+    IsIso f := (isIso_iff_stalk_iso f).mpr <|
+  have : CompactSpace X := (closedEmbedding f).compactSpace
+  have hiso : IsIso f.val.base := TopCat.isIso_of_bijective_of_isClosedMap _
+    ⟨(closedEmbedding f).inj,
+     surjective_of_isClosed_range_of_injective ((closedEmbedding f).isClosed_range) hf⟩
+    ((closedEmbedding f).isClosedMap)
+  ⟨hiso, fun x ↦ (ConcreteCategory.isIso_iff_bijective _).mpr
+    ⟨stalkMap_injective_of_isOpenMap_of_injective ((TopCat.homeoOfIso (asIso f.val.base)).isOpenMap)
+    (closedEmbedding f).inj hf _, surjective_stalkMap f x⟩⟩
 
 end Affine
 
