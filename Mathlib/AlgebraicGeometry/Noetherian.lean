@@ -186,8 +186,8 @@ lemma noetherianSpace_of_isAffine [IsAffine X] [IsNoetherianRing Γ(X, ⊤)] :
 lemma noetherianSpace_of_isAffineOpen (U : X.Opens) (hU : IsAffineOpen U)
     [IsNoetherianRing Γ(X, U)] :
     NoetherianSpace U := by
-  have : IsNoetherianRing Γ(X ∣_ᵤ U, ⊤) := isNoetherianRing_of_ringEquiv _
-    (X.restrictFunctorΓ.app (op U)).symm.commRingCatIsoToRingEquiv
+  have : IsNoetherianRing Γ(U, ⊤) := isNoetherianRing_of_ringEquiv _
+    (Scheme.restrictFunctorΓ.app (op U)).symm.commRingCatIsoToRingEquiv
   exact @noetherianSpace_of_isAffine _ hU _
 
 /-- Any open immersion `Z ⟶ X` with `X` locally Noetherian is quasi-compact.
@@ -249,7 +249,7 @@ theorem isNoetherian_iff_of_finite_iSup_eq_top {ι} [Finite ι] {S : ι → X.af
       convert CompactSpace.isCompact_univ
       have : NoetherianSpace (S i) := by
         apply noetherianSpace_of_isAffineOpen (S i).1 (S i).2
-      apply NoetherianSpace.compactSpace
+      apply NoetherianSpace.compactSpace (S i)
 
 /-- A version of `isNoetherian_iff_of_finite_iSup_eq_top` using `Scheme.OpenCover`. -/
 theorem isNoetherian_iff_of_finite_affine_openCover {𝒰 : Scheme.OpenCover.{v, u} X}
