@@ -393,12 +393,12 @@ def Perm.slice [DecidableEq α] (n m : ℕ) :
 /-- A lazy list, in decreasing order, of sizes that should be
 sliced off a list of length `n`
 -/
-def sliceSizes : ℕ → LazyList ℕ+
+def sliceSizes : ℕ → List ℕ+
   | n =>
     if h : 0 < n then
       have : n / 2 < n := Nat.div_lt_self h (by decide : 1 < 2)
-      LazyList.cons ⟨_, h⟩ (sliceSizes <| n / 2)
-    else LazyList.nil
+      ⟨_, h⟩ :: (sliceSizes <| n / 2)
+    else []
 
 /-- Shrink a permutation of a list, slicing a segment in the middle.
 
@@ -410,7 +410,7 @@ protected def shrinkPerm {α : Type} [DecidableEq α] :
     (Σ' xs ys : List α, xs ~ ys ∧ ys.Nodup) → List (Σ' xs ys : List α, xs ~ ys ∧ ys.Nodup)
   | xs => do
     let k := xs.1.length
-    let n ← (sliceSizes k).toList
+    let n ← sliceSizes k
     let i ← List.finRange <| k / n
     pure <| Perm.slice (i * n) n xs
 
