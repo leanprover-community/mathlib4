@@ -9,7 +9,7 @@ import Mathlib.Topology.Algebra.LinearTopology
 /-! # Topologicall nilpotent elements -/
 
 def IsTopologicallyNilpotent
-  {α : Type*} [Semiring α] [TopologicalSpace α] (a : α) : Prop :=
+    {α : Type*} [Semiring α] [TopologicalSpace α] (a : α) : Prop :=
     Filter.Tendsto (fun n : ℕ => a ^ n) Filter.atTop (nhds 0)
 
 namespace IsTopologicallyNilpotent
