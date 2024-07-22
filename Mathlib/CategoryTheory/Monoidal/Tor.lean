@@ -6,8 +6,6 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Abelian.LeftDerived
 import Mathlib.CategoryTheory.Monoidal.Preadditive
 
-#align_import category_theory.monoidal.tor from "leanprover-community/mathlib"@"09f981f72d43749f1fa072deade828d9c1e185bb"
-
 /-!
 # Tor, the left-derived functor of tensor product
 
@@ -40,8 +38,6 @@ variable (C : Type*) [Category C] [MonoidalCategory C]
 def Tor (n : ℕ) : C ⥤ C ⥤ C where
   obj X := Functor.leftDerived ((tensoringLeft C).obj X) n
   map f := NatTrans.leftDerived ((tensoringLeft C).map f) n
-set_option linter.uppercaseLean3 false in
-#align category_theory.Tor CategoryTheory.Tor
 
 /-- An alternative definition of `Tor`, where we left-derive in the first factor instead. -/
 @[simps! obj_obj]
@@ -49,8 +45,6 @@ def Tor' (n : ℕ) : C ⥤ C ⥤ C :=
   Functor.flip
     { obj := fun X => Functor.leftDerived ((tensoringRight C).obj X) n
       map := fun f => NatTrans.leftDerived ((tensoringRight C).map f) n }
-set_option linter.uppercaseLean3 false in
-#align category_theory.Tor' CategoryTheory.Tor'
 
 -- Porting note: the `checkType` linter complains about the automatically generated
 -- lemma `Tor'_map_app`, but not about this one
