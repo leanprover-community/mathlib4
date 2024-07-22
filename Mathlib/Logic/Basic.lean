@@ -591,8 +591,6 @@ theorem forall_apply_eq_imp_iff' {f : α → β} {p : β → Prop} :
 theorem forall_eq_apply_imp_iff' {f : α → β} {p : β → Prop} :
     (∀ a b, b = f a → p b) ↔ ∀ a, p (f a) := by simp
 
-@[simp] theorem exists_eq_right' {a' : α} : (∃ a, p a ∧ a' = a) ↔ p a' := by simp [@eq_comm _ a']
-
 theorem exists₂_comm
     {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
     (∃ i₁ j₁ i₂ j₂, p i₁ j₁ i₂ j₂) ↔ ∃ i₂ j₂ i₁ j₁, p i₁ j₁ i₂ j₂ := by
