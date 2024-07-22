@@ -507,4 +507,32 @@ instance AdicCompletion.instIsScalarTower' :
 
 end AlgebraInstances
 
+open nonZeroDivisors algebraMap in
+variable {R K} in
+lemma clear_local_denominator (v : HeightOneSpectrum R)
+    (a : v.adicCompletion K) : ∃ b ∈ R⁰, a * b ∈ v.adicCompletionIntegers K := by
+  by_cases ha : a ∈ v.adicCompletionIntegers K
+  · use 1
+    simp [ha, Submonoid.one_mem]
+  · rw [not_mem_adicCompletionIntegers] at ha
+    -- Let the additive valuation of a be -d with d>0
+    obtain ⟨d, hd⟩ : ∃ d : ℤ, Valued.v a = ofAdd d :=
+      Option.ne_none_iff_exists'.mp <| (lt_trans zero_lt_one ha).ne'
+    rw [hd, WithZero.one_lt_coe, ← ofAdd_zero, ofAdd_lt] at ha
+    -- let ϖ be a uniformiser
+    obtain ⟨ϖ, hϖ⟩ := int_valuation_exists_uniformizer v
+    have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp at hϖ
+    -- use ϖ^d
+    refine ⟨ϖ^d.natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _, ?_⟩
+    -- now manually translate the goal (an inequality in ℤₘ₀) to an inequality in ℤ
+    rw [mem_adicCompletionIntegers, algebraMap.coe_pow, map_mul, hd, map_pow,
+      valuedAdicCompletion_eq_valuation, valuation_eq_intValuationDef, hϖ, ← WithZero.coe_pow,
+      ← WithZero.coe_mul, WithZero.coe_le_one, ← toAdd_le, toAdd_mul, toAdd_ofAdd, toAdd_pow,
+      toAdd_ofAdd, toAdd_one,
+      show d.natAbs • (-1) = (d.natAbs : ℤ) • (-1) by simp only [nsmul_eq_mul,
+        Int.natCast_natAbs, smul_eq_mul],
+      ← Int.eq_natAbs_of_zero_le ha.le, smul_eq_mul]
+    -- and now it's easy
+    linarith
+
 end IsDedekindDomain.HeightOneSpectrum
