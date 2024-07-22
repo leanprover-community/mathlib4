@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.LinearAlgebra.BilinearForm.Hom
 
 /-!
 # The bilinear form on a tensor product
@@ -57,25 +58,12 @@ def tensorDistrib' :
     (TensorProduct.lift.equiv A M₁ M₁ N₁)
     (TensorProduct.lift.equiv R _ _ _)).toLinearMap
 
+@[simp]
 theorem tensorDistrib_tmul' (B₁ : BilinMap A M₁ N₁) (B₂ : BilinMap R M₂ N₂) (m₁ : M₁) (m₂ : M₂)
     (m₁' : M₁) (m₂' : M₂) :
     tensorDistrib' R A (B₁ ⊗ₜ B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂')
       = B₁ m₁ m₁' ⊗ₜ B₂ m₂ m₂' :=
   rfl
-
-/-- This probably belongs somewhere else -/
-def congrtmp (e : N₁ ≃ₗ[R] N₂) : BilinMap R M₁ N₁ ≃ₗ[R] BilinMap R M₁ N₂ where
-  toFun B := LinearMap.compr₂ B e
-  invFun B := LinearMap.compr₂ B e.symm
-  left_inv B := ext₂ fun x => by
-    simp only [compr₂_apply, LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply, implies_true]
-  right_inv B := ext₂ fun x => by
-    simp only [compr₂_apply, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply, implies_true]
-  map_add' B B' := ext₂ fun x y => by
-    simp only [compr₂_apply, add_apply, map_add, LinearEquiv.coe_coe]
-  map_smul' B B' := ext₂ fun x y => by
-    simp only [compr₂_apply, smul_apply, LinearMapClass.map_smul, LinearEquiv.coe_coe,
-      RingHom.id_apply]
 
 variable (R A) in
 /-- The tensor product of two bilinear forms injects into bilinear forms on tensor products.
@@ -83,7 +71,7 @@ variable (R A) in
 Note this is heterobasic; the bilinear form on the left can take values in an (commutative) algebra
 over the ring in which the right bilinear form is valued. -/
 def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm A (M₁ ⊗[R] M₂) :=
-  (congrtmp (AlgebraTensorModule.rid R A A)).toLinearMap ∘ₗ (tensorDistrib' R A)
+  (congr₂ (AlgebraTensorModule.rid R A A)).toLinearMap ∘ₗ (tensorDistrib' R A)
 
 variable (R A) in
 
