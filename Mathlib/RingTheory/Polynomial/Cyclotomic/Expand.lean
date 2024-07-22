@@ -6,8 +6,6 @@ Authors: Riccardo Brasca
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.Data.ZMod.Algebra
 
-#align_import ring_theory.polynomial.cyclotomic.expand from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
-
 /-!
 # Cyclotomic polynomials and `expand`.
 
@@ -70,7 +68,6 @@ theorem cyclotomic_expand_eq_cyclotomic_mul {p n : ℕ} (hp : Nat.Prime p) (hdiv
       natDegree_cyclotomic, mul_comm n,
       Nat.totient_mul ((Nat.Prime.coprime_iff_not_dvd hp).2 hdiv), Nat.totient_prime hp,
       mul_comm (p - 1), ← Nat.mul_succ, Nat.sub_one, Nat.succ_pred_eq_of_pos hp.pos]
-#align polynomial.cyclotomic_expand_eq_cyclotomic_mul Polynomial.cyclotomic_expand_eq_cyclotomic_mul
 
 /-- If `p` is a prime such that `p ∣ n`, then
 `expand R p (cyclotomic n R) = cyclotomic (p * n) R`. -/
@@ -94,7 +91,6 @@ theorem cyclotomic_expand_eq_cyclotomic {p n : ℕ} (hp : Nat.Prime p) (hdiv : p
     rw [Nat.mul_div_cancel _ hp.pos]
   · rw [natDegree_expand, natDegree_cyclotomic, natDegree_cyclotomic, mul_comm n,
       Nat.totient_mul_of_prime_of_dvd hp hdiv, mul_comm]
-#align polynomial.cyclotomic_expand_eq_cyclotomic Polynomial.cyclotomic_expand_eq_cyclotomic
 
 /-- If the `p ^ n`th cyclotomic polynomial is irreducible, so is the `p ^ m`th, for `m ≤ n`. -/
 theorem cyclotomic_irreducible_pow_of_irreducible_pow {p : ℕ} (hp : Nat.Prime p) {R} [CommRing R]
@@ -108,14 +104,12 @@ theorem cyclotomic_irreducible_pow_of_irreducible_pow {p : ℕ} (hp : Nat.Prime 
   have : m + k ≠ 0 := (add_pos_of_pos_of_nonneg hm k.zero_le).ne'
   rw [Nat.add_succ, pow_succ, ← cyclotomic_expand_eq_cyclotomic hp <| dvd_pow_self p this] at h
   exact hk (by omega) (of_irreducible_expand hp.ne_zero h)
-#align polynomial.cyclotomic_irreducible_pow_of_irreducible_pow Polynomial.cyclotomic_irreducible_pow_of_irreducible_pow
 
 /-- If `Irreducible (cyclotomic (p ^ n) R)` then `Irreducible (cyclotomic p R).` -/
 theorem cyclotomic_irreducible_of_irreducible_pow {p : ℕ} (hp : Nat.Prime p) {R} [CommRing R]
     [IsDomain R] {n : ℕ} (hn : n ≠ 0) (h : Irreducible (cyclotomic (p ^ n) R)) :
     Irreducible (cyclotomic p R) :=
   pow_one p ▸ cyclotomic_irreducible_pow_of_irreducible_pow hp hn.bot_lt h
-#align polynomial.cyclotomic_irreducible_of_irreducible_pow Polynomial.cyclotomic_irreducible_of_irreducible_pow
 
 section CharP
 
@@ -132,7 +126,6 @@ theorem cyclotomic_mul_prime_eq_pow_of_not_dvd (R : Type*) {p n : ℕ} [hp : Fac
   conv_rhs => rw [← map_cyclotomic_int]
   rw [← map_expand, cyclotomic_expand_eq_cyclotomic_mul hp.out hn, Polynomial.map_mul,
     map_cyclotomic, map_cyclotomic]
-#align polynomial.cyclotomic_mul_prime_eq_pow_of_not_dvd Polynomial.cyclotomic_mul_prime_eq_pow_of_not_dvd
 
 /-- If `R` is of characteristic `p` and `p ∣ n`, then
 `cyclotomic (n * p) R = (cyclotomic n R) ^ p`. -/
@@ -144,7 +137,6 @@ theorem cyclotomic_mul_prime_dvd_eq_pow (R : Type*) {p n : ℕ} [hp : Fact (Nat.
       this, Polynomial.map_pow]
   rw [← ZMod.expand_card, ← map_cyclotomic_int n, ← map_expand,
     cyclotomic_expand_eq_cyclotomic hp.out hn, map_cyclotomic]
-#align polynomial.cyclotomic_mul_prime_dvd_eq_pow Polynomial.cyclotomic_mul_prime_dvd_eq_pow
 
 /-- If `R` is of characteristic `p` and `¬p ∣ m`, then
 `cyclotomic (p ^ k * m) R = (cyclotomic m R) ^ (p ^ k - p ^ (k - 1))`. -/
@@ -159,7 +151,6 @@ theorem cyclotomic_mul_prime_pow_eq (R : Type*) {p m : ℕ} [Fact (Nat.Prime p)]
     · simp only [tsub_zero, Nat.succ_sub_succ_eq_sub]
       rw [Nat.mul_sub_right_distrib, mul_comm, pow_succ]
     · assumption
-#align polynomial.cyclotomic_mul_prime_pow_eq Polynomial.cyclotomic_mul_prime_pow_eq
 
 /-- If `R` is of characteristic `p` and `¬p ∣ m`, then `ζ` is a root of `cyclotomic (p ^ k * m) R`
  if and only if it is a primitive `m`-th root of unity. -/
@@ -177,7 +168,6 @@ theorem isRoot_cyclotomic_prime_pow_mul_iff_of_charP {m k p : ℕ} {R : Type*} [
     rw [cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, IsRoot.def, eval_pow,
       h, zero_pow]
     exact Nat.sub_ne_zero_of_lt $ pow_right_strictMono hp.out.one_lt $ Nat.pred_lt hk.ne'
-#align polynomial.is_root_cyclotomic_prime_pow_mul_iff_of_char_p Polynomial.isRoot_cyclotomic_prime_pow_mul_iff_of_charP
 
 end CharP
 
