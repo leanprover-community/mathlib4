@@ -479,12 +479,12 @@ theorem of_iSup_eq_top
   induction V using of_affine_open_cover U hU  with
   | basicOpen U r h =>
     haveI : IsAffine _ := U.2
-    have := AffineTargetMorphismProperty.IsLocal.to_basicOpen (f ∣_ U.1) ((Y.resTop U).inv r) h
+    have := AffineTargetMorphismProperty.IsLocal.to_basicOpen (f ∣_ U.1) (U.1.topIso.inv r) h
     exact (Q.arrow_mk_iso_iff
       (morphismRestrictRestrictBasicOpen f _ r)).mp this
   | openCover U s hs H =>
     apply AffineTargetMorphismProperty.IsLocal.of_basicOpenCover _
-      (s.image (Y.resTop _).inv) (by simp [← Ideal.map_span, hs, Ideal.map_top])
+      (s.image (Scheme.Opens.topIso _).inv) (by simp [← Ideal.map_span, hs, Ideal.map_top])
     intro ⟨r, hr⟩
     obtain ⟨r, hr', rfl⟩ := Finset.mem_image.mp hr
     exact (Q.arrow_mk_iso_iff
@@ -536,7 +536,7 @@ instance (priority := 900) : IsLocalAtTarget P := by
     have : P (𝒰.pullbackHom f i) := by
       refine (P.arrow_mk_iso_iff
         (morphismRestrictEq _ ?_ ≪≫ morphismRestrictOpensRange f (𝒰.map i))).mp (H i)
-      exact (opensRange_ιOpens _).symm
+      exact (Scheme.Opens.opensRange_ι _).symm
     rw [← Q.cancel_left_of_respectsIso (𝒰.pullbackCoverAffineRefinementObjIso f _).inv,
       𝒰.pullbackCoverAffineRefinementObjIso_inv_pullbackHom]
     exact of_isPullback (.of_hasPullback _ _) this
