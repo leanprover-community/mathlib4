@@ -122,7 +122,7 @@ theorem affineLocally_respectsIso (h : RingHom.RespectsIso P) : (affineLocally P
 
 open Scheme in
 theorem sourceAffineLocally_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y)
-    (U : Opens Y) (hU : IsAffineOpen U) :
+    (U : Y.Opens) (hU : IsAffineOpen U) :
     @sourceAffineLocally P _ _ (f ∣_ U) hU ↔
       ∀ (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U), P (f.appLE U V e) := by
   dsimp only [sourceAffineLocally]
@@ -130,7 +130,7 @@ theorem sourceAffineLocally_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y)
   rw [(affineOpensRestrict (f ⁻¹ᵁ U)).forall_congr_left, Subtype.forall]
   refine forall₂_congr fun V h ↦ ?_
   have := (affineOpensRestrict (f ⁻¹ᵁ U)).apply_symm_apply ⟨V, h⟩
-  exact f.appLE_congr _ (ιOpens_image_top _) congr($(this).1.1) _
+  exact f.appLE_congr _ (Opens.ι_image_top _) congr($(this).1.1) _
 
 theorem affineLocally_iff_affineOpens_le {X Y : Scheme.{u}} (f : X ⟶ Y) :
     affineLocally.{u} P f ↔
@@ -241,10 +241,10 @@ theorem of_source_openCover [IsAffine Y]
   | hU i =>
     specialize H i
     rw [← (isLocal_ringHomProperty P).respectsIso.cancel_right_isIso _
-      ((IsOpenImmersion.isoOfRangeEq (𝒰.map i) (Scheme.ιOpens (S i).1)
+      ((IsOpenImmersion.isoOfRangeEq (𝒰.map i) (S i).1.ι
       Subtype.range_coe.symm).inv.app _), ← Scheme.comp_app,
       IsOpenImmersion.isoOfRangeEq_inv_fac_assoc, Scheme.comp_app,
-      Scheme.ofRestrict_app, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map] at H
+      Scheme.Opens.ι_app, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map] at H
     exact (f.appLE_congr _ rfl (by simp) Q).mp H
 
 theorem iff_of_source_openCover [IsAffine Y] (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] :
@@ -287,6 +287,7 @@ instance : P.ContainsIdentities where
   id_mem X := by
     rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
     intro U
+    have : IsAffine (𝟙 X ⁻¹ᵁ U.1) := U.2
     rw [morphismRestrict_id, iff_of_isAffine (P := P), Scheme.id_app]
     exact (isLocal_ringHomProperty P).HoldsForLocalizationAway.of_bijective _ _
       Function.bijective_id
@@ -326,13 +327,13 @@ theorem of_comp
   wlog hY : IsAffine Y generalizing X Y
   · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top Y)]
     intro U
-    have H := comp_of_isOpenImmersion P (Scheme.ιOpens (f ⁻¹ᵁ U.1)) (f ≫ g) h
+    have H := comp_of_isOpenImmersion P (f ⁻¹ᵁ U.1).ι (f ≫ g) h
     rw [← morphismRestrict_ι_assoc] at H
     exact this H inferInstance
   wlog hY : IsAffine X generalizing X
   · rw [IsLocalAtSource.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top X)]
     intro U
-    have H := comp_of_isOpenImmersion P (Scheme.ιOpens U.1) (f ≫ g) h
+    have H := comp_of_isOpenImmersion P U.1.ι (f ≫ g) h
     rw [← Category.assoc] at H
     exact this H inferInstance
   rw [iff_of_isAffine (P := P)] at h ⊢
