@@ -17,7 +17,7 @@ an s-finite Kernel.
 
 * `ProbabilityTheory.Kernel.withDensity κ (f : α → β → ℝ≥0∞)`:
   kernel `a ↦ (κ a).withDensity (f a)`. It is defined if `κ` is s-finite. If `f` is finite
-  everywhere, then this is also an s-finite Kernel. The class of s-finite kernels is the smallest
+  everywhere, then this is also an s-finite kernel. The class of s-finite kernels is the smallest
   class of kernels that contains finite kernels and which is stable by `withDensity`.
   Integral: `∫⁻ b, g b ∂(withDensity κ f a) = ∫⁻ b, f a b * g b ∂(κ a)`
 

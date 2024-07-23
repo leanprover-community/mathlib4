@@ -588,7 +588,7 @@ variable {γ δ : Type*} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {
 /-- The pushforward of a kernel along a measurable function.
 We include measurability in the assumptions instead of using junk values
 to make sure that typeclass inference can infer that the `map` of a Markov kernel
-is again a Markov Kernel. -/
+is again a Markov kernel. -/
 noncomputable def map (κ : Kernel α β) (f : β → γ) (hf : Measurable f) : Kernel α γ where
   toFun a := (κ a).map f
   measurable' := (Measure.measurable_map _ hf).comp (Kernel.measurable κ)
@@ -643,7 +643,7 @@ lemma map_const (μ : Measure α) {f : α → β} (hf : Measurable f) :
 /-- Pullback of a kernel, such that for each set s `comap κ g hg c s = κ (g c) s`.
 We include measurability in the assumptions instead of using junk values
 to make sure that typeclass inference can infer that the `comap` of a Markov kernel
-is again a Markov Kernel. -/
+is again a Markov kernel. -/
 def comap (κ : Kernel α β) (g : γ → α) (hg : Measurable g) : Kernel γ β where
   toFun a := κ (g a)
   measurable' := κ.measurable.comp hg

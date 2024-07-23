@@ -209,17 +209,17 @@ lemma borelMarkovFromReal_apply' (Ω : Type*) [Nonempty Ω] [MeasurableSpace Ω]
   · rw [Measure.comap_apply _ he.injective he.measurableSet_image' _ hs]
   · rw [Measure.comap_apply _ he.injective he.measurableSet_image' _ hs, Measure.dirac_apply]
 
-/-- When `η` is an s-finite kernel, `borelMarkovFromReal Ω η` is an s-finite Kernel. -/
+/-- When `η` is an s-finite kernel, `borelMarkovFromReal Ω η` is an s-finite kernel. -/
 instance instIsSFiniteKernelBorelMarkovFromReal (η : Kernel α ℝ) [IsSFiniteKernel η] :
     IsSFiniteKernel (borelMarkovFromReal Ω η) :=
   IsSFiniteKernel.comapRight _ (measurableEmbedding_embeddingReal Ω)
 
-/-- When `η` is a finite kernel, `borelMarkovFromReal Ω η` is a finite Kernel. -/
+/-- When `η` is a finite kernel, `borelMarkovFromReal Ω η` is a finite kernel. -/
 instance instIsFiniteKernelBorelMarkovFromReal (η : Kernel α ℝ) [IsFiniteKernel η] :
     IsFiniteKernel (borelMarkovFromReal Ω η) :=
   IsFiniteKernel.comapRight _ (measurableEmbedding_embeddingReal Ω)
 
-/-- When `η` is a Markov kernel, `borelMarkovFromReal Ω η` is a Markov Kernel. -/
+/-- When `η` is a Markov kernel, `borelMarkovFromReal Ω η` is a Markov kernel. -/
 instance instIsMarkovKernelBorelMarkovFromReal (η : Kernel α ℝ) [IsMarkovKernel η] :
     IsMarkovKernel (borelMarkovFromReal Ω η) := by
   refine IsMarkovKernel.comapRight _ (measurableEmbedding_embeddingReal Ω) (fun a ↦ ?_)
@@ -481,7 +481,7 @@ irreducible_def condKernel [h : CountableOrCountablyGenerated α β]
   if hα : Countable α then condKernelCountable κ
   else letI := h.countableOrCountablyGenerated.resolve_left hα; condKernelBorel κ
 
-/-- `condKernel κ` is a Markov Kernel. -/
+/-- `condKernel κ` is a Markov kernel. -/
 instance instIsMarkovKernelCondKernel [CountableOrCountablyGenerated α β]
     (κ : Kernel α (β × Ω)) [IsFiniteKernel κ] :
     IsMarkovKernel (condKernel κ) := by

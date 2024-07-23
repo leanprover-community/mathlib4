@@ -340,7 +340,7 @@ end SFinite
 
 section Deterministic
 
-/-- Kernel which to `a` associates the dirac measure at `f a`. This is a Markov Kernel. -/
+/-- Kernel which to `a` associates the dirac measure at `f a`. This is a Markov kernel. -/
 noncomputable def deterministic (f : α → β) (hf : Measurable f) : Kernel α β where
   toFun a := Measure.dirac (f a)
   measurable' := by
@@ -484,7 +484,7 @@ alias set_integral_const := setIntegral_const
 end Const
 
 /-- In a countable space with measurable singletons, every function `α → MeasureTheory.Measure β`
-defines a Kernel. -/
+defines a kernel. -/
 def ofFunOfCountable [MeasurableSpace α] {_ : MeasurableSpace β} [Countable α]
     [MeasurableSingletonClass α] (f : α → Measure β) : Kernel α β where
   toFun := f

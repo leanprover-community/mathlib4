@@ -32,7 +32,7 @@ namespace MeasureTheory.Measure
 variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
   {μ : Measure α} {κ η : Kernel α β}
 
-/-- The composition-product of a measure and a Kernel. -/
+/-- The composition-product of a measure and a kernel. -/
 noncomputable
 def compProd (μ : Measure α) (κ : Kernel α β) : Measure (α × β) :=
   (Kernel.const Unit μ ⊗ₖ Kernel.prodMkLeft Unit κ) ()

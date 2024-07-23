@@ -216,7 +216,7 @@ theorem condDistrib_ae_eq_condexp (hX : Measurable X) (hY : Measurable Y) (hs : 
     exact @Measurable.ennreal_toReal _ (mβ.comap X) _ (measurable_condDistrib hs)
 
 /-- The conditional expectation of a function `f` of the product `(X, Y)` is almost everywhere equal
-to the integral of `y ↦ f(X, y)` against the `condDistrib` Kernel. -/
+to the integral of `y ↦ f(X, y)` against the `condDistrib` kernel. -/
 theorem condexp_prod_ae_eq_integral_condDistrib' [NormedSpace ℝ F] [CompleteSpace F]
     (hX : Measurable X) (hY : AEMeasurable Y μ)
     (hf_int : Integrable f (μ.map fun a => (X a, Y a))) :
@@ -240,7 +240,7 @@ theorem condexp_prod_ae_eq_integral_condDistrib' [NormedSpace ℝ F] [CompleteSp
   · exact aestronglyMeasurable'_integral_condDistrib hX.aemeasurable hY hf_int.1
 
 /-- The conditional expectation of a function `f` of the product `(X, Y)` is almost everywhere equal
-to the integral of `y ↦ f(X, y)` against the `condDistrib` Kernel. -/
+to the integral of `y ↦ f(X, y)` against the `condDistrib` kernel. -/
 theorem condexp_prod_ae_eq_integral_condDistrib₀ [NormedSpace ℝ F] [CompleteSpace F]
     (hX : Measurable X) (hY : AEMeasurable Y μ)
     (hf : AEStronglyMeasurable f (μ.map fun a => (X a, Y a)))
@@ -251,7 +251,7 @@ theorem condexp_prod_ae_eq_integral_condDistrib₀ [NormedSpace ℝ F] [Complete
   condexp_prod_ae_eq_integral_condDistrib' hX hY hf_int'
 
 /-- The conditional expectation of a function `f` of the product `(X, Y)` is almost everywhere equal
-to the integral of `y ↦ f(X, y)` against the `condDistrib` Kernel. -/
+to the integral of `y ↦ f(X, y)` against the `condDistrib` kernel. -/
 theorem condexp_prod_ae_eq_integral_condDistrib [NormedSpace ℝ F] [CompleteSpace F]
     (hX : Measurable X) (hY : AEMeasurable Y μ) (hf : StronglyMeasurable f)
     (hf_int : Integrable (fun a => f (X a, Y a)) μ) :
