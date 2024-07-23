@@ -619,7 +619,7 @@ lemma stalkMap_inv_hom {X Y : Scheme.{u}} (e : X ≅ Y) (x : X) :
     e.inv.stalkMap (e.hom.val.base x) ≫ e.hom.stalkMap x = eqToHom (by simp) :=
   LocallyRingedSpace.stalkMap_inv_hom (Scheme.forgetToLocallyRingedSpace.mapIso e) x
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+@[reassoc, elementwise]
 lemma stalkMap_germ {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (x : f ⁻¹ᵁ U) :
     Y.presheaf.germ ⟨f.val.base x.val, x.property⟩ ≫ f.stalkMap x =
       f.app U ≫ X.presheaf.germ x :=
