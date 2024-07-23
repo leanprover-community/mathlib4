@@ -20,6 +20,11 @@ with `X` and `Y` horizontally (from left to right), and the composition of morph
 and `g : Y ⟶ Z` corresponds to connecting two nodes associated with `f` and `g` vertically (from
 top to bottom) by strings associated with `Y`.
 
+When drawing string diagrams, it is common to ignore associators and unitors. We follow this
+convention. To do this, we need to extract non-structural morphisms that are not associators
+and unitors from lean expressions. This operation is performed using the `Tactic.Monoidal.eval`
+function.
+
 In this file, we will sometimes refer to objects and morphisms in monoidal categories
 as 1-morphisms and 2-morphisms, borrowing the terminology of the theory of 2-categories.
 
