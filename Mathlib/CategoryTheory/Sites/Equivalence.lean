@@ -46,43 +46,6 @@ variable {C : Type u₁} [Category.{v₁} C] (J : GrothendieckTopology C)
 variable {D : Type u₂} [Category.{v₂} D] (K : GrothendieckTopology D) (e : C ≌ D) (G : D ⥤ C)
 variable (A : Type u₃) [Category.{v₃} A]
 
-variable {J} in
-lemma pullback_mem_iff_of_isIso {X Y : C} {i : X ⟶ Y} [IsIso i] {S : Sieve Y} :
-    S.pullback i ∈ J _ ↔ S ∈ J _ := by
-  refine ⟨fun H ↦ ?_, J.pullback_stable i⟩
-  convert J.pullback_stable (inv i) H
-  rw [← Sieve.pullback_comp, IsIso.inv_hom_id, Sieve.pullback_id]
-
-@[simp]
-lemma Sieve.comp_mem_iff {X Y Z : C} (i : X ⟶ Y) (f : Y ⟶ Z) [IsIso i] (S : Sieve Z) :
-    S (i ≫ f) ↔ S f := by
-  refine ⟨fun H ↦ ?_, fun H ↦ S.downward_closed H _⟩
-  convert S.downward_closed H (inv i)
-  simp
-
-lemma Sieve.functorPushforward_functor {X} (S : Sieve X) :
-    S.functorPushforward e.functor = (S.pullback (e.unitInv.app X)).functorPullback e.inverse := by
-  ext Y iYX
-  constructor
-  · rintro ⟨Z, iZX, iYZ, hiZX, rfl⟩
-    simpa using S.downward_closed hiZX (e.inverse.map iYZ ≫ e.unitInv.app Z)
-  · intro H
-    exact ⟨_, e.inverse.map iYX ≫ e.unitInv.app X, e.counitInv.app Y, by simpa using H, by simp⟩
-
-@[simp]
-lemma Sieve.mem_functorPushforward_functor {X Y} {S : Sieve X} {f : Y ⟶ e.functor.obj X} :
-    S.functorPushforward e.functor f ↔ S (e.inverse.map f ≫ e.unitInv.app X) :=
-  congr($(S.functorPushforward_functor e).arrows f)
-
-lemma Sieve.functorPushforward_inverse {X} (S : Sieve X) :
-    S.functorPushforward e.inverse = (S.pullback (e.counit.app X)).functorPullback e.functor :=
-  Sieve.functorPushforward_functor e.symm S
-
-@[simp]
-lemma Sieve.mem_functorPushforward_inverse {X Y} {S : Sieve X} {f : Y ⟶ e.inverse.obj X} :
-    S.functorPushforward e.inverse f ↔ S (e.functor.map f ≫ e.counit.app X) :=
-  congr($(S.functorPushforward_inverse e).arrows f)
-
 namespace Equivalence
 
 instance (priority := 900) [G.IsEquivalence] : IsCoverDense G J where
@@ -103,7 +66,7 @@ instance : e.functor.IsDenseSubsite J (e.inverse.inducedTopology J) := by
   have : J = e.functor.inducedTopology (e.inverse.inducedTopology J) := by
     ext X S
     show _ ↔ _ ∈ J.sieves _
-    erw [← pullback_mem_iff_of_isIso (i := e.unit.app X)]
+    erw [← GrothendieckTopology.pullback_mem_iff_of_isIso (i := e.unit.app X)]
     congr!; ext Y f; simp
   nth_rw 1 [this]
   infer_instance
