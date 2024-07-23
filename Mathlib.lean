@@ -3541,7 +3541,6 @@ import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.RelIso.Group
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.RelSeries
-import Mathlib.Order.RelToGaloisConnection
 import Mathlib.Order.SemiconjSup
 import Mathlib.Order.SetNotation
 import Mathlib.Order.Sublattice
@@ -3564,6 +3563,7 @@ import Mathlib.Order.WellFoundedSet
 import Mathlib.Order.WithBot
 import Mathlib.Order.Zorn
 import Mathlib.Order.ZornAtoms
+import Mathlib.Order.«Order.Rel.GaloisConnection»
 import Mathlib.Probability.BorelCantelli
 import Mathlib.Probability.Cdf
 import Mathlib.Probability.CondCount
