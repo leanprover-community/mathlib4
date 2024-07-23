@@ -18,7 +18,7 @@ variable {ι : Type*}
 namespace Finset
 
 lemma even_sum_of_even_card_odd {s : Finset ι} (f : ι → ℕ)
-    (h : Even ((Finset.subtype (fun x ↦ Odd (f x)) s).card)) : Even (∑ i ∈ s, f i) := by
+    (h : Even (s.filter fun x ↦ Odd (f x)).card) : Even (∑ i ∈ s, f i) := by
   simp only [Finset.card_subtype, Nat.odd_iff_not_even] at h
   rw [← Finset.sum_filter_add_sum_filter_not _ (fun x ↦ Even (f x))]
   rw [Nat.even_add]
