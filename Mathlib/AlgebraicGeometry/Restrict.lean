@@ -11,8 +11,8 @@ import Mathlib.AlgebraicGeometry.Cover.Open
 ## Main definition
 - `AlgebraicGeometry.Scheme.restrict`: The restriction of a scheme along an open embedding.
   The map `X.restrict f ⟶ X` is `AlgebraicGeometry.Scheme.ofRestrict`.
-  `X ∣_ᵤ U` is the notation for restricting onto an open set, and `U.ι` is a shorthand
-  for `X.restrict U.open_embedding : X ∣_ᵤ U ⟶ X`.
+  `U : X.Opens` has a coercion to `Scheme` and `U.ι` is a shorthand
+  for `X.restrict U.open_embedding : U ⟶ X`.
 - `AlgebraicGeometry.morphism_restrict`: The restriction of `X ⟶ Y` to `X ∣_ᵤ f ⁻¹ᵁ U ⟶ Y ∣_ᵤ U`.
 
 -/
@@ -38,7 +38,7 @@ variable {X : Scheme.{u}} (U : X.Opens)
 
 namespace Scheme.Opens
 
-/-- Open susets of a scheme as a scheme. -/
+/-- Open subset of a scheme as a scheme. -/
 @[coe]
 def toScheme {X : Scheme.{u}} (U : X.Opens) : Scheme.{u} :=
   X.restrict U.openEmbedding
@@ -52,8 +52,11 @@ def ι : ↑U ⟶ X := X.ofRestrict _
 instance : IsOpenImmersion U.ι := inferInstanceAs (IsOpenImmersion (X.ofRestrict _))
 
 lemma toScheme_carrier : (U : Type u) = (U : Set X) := rfl
+
 lemma toScheme_presheaf_obj (V) : Γ(U, V) = Γ(X, U.ι ''ᵁ V) := rfl
-@[simp] lemma toScheme_presheaf_map {V W} (i : V ⟶ W) :
+
+@[simp]
+lemma toScheme_presheaf_map {V W} (i : V ⟶ W) :
     U.toScheme.presheaf.map i = X.presheaf.map (U.ι.opensFunctor.map i.unop).op := rfl
 
 @[simp]
@@ -110,7 +113,7 @@ attribute [-simp] eqToHom_op in
 def topIso : Γ(U, ⊤) ≅ Γ(X, U) :=
   X.presheaf.mapIso (eqToIso U.ι_image_top.symm).op
 
-/-- The stalks of an open subscheme is isomorphic to the stalk of the original scheme. -/
+/-- The stalks of an open subscheme are isomorphic to the stalks of the original scheme. -/
 def stalkIso {X : Scheme.{u}} (U : X.Opens) (x : U) :
     U.toScheme.presheaf.stalk x ≅ X.presheaf.stalk x.1 :=
   X.restrictStalkIso (Opens.openEmbedding _) _
