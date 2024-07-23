@@ -578,6 +578,12 @@ theorem fromSpec_primeIdealOf (x : U) :
   rfl -- `rfl` was not needed before #13170
 #align algebraic_geometry.is_affine_open.from_Spec_prime_ideal_of AlgebraicGeometry.IsAffineOpen.fromSpec_primeIdealOf
 
+section
+
+variable (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.1.base y ∈ U)
+
+end
+
 theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.1.base y ∈ U) :
     @IsLocalization.AtPrime
       (R := Γ(X, U))
@@ -587,7 +593,7 @@ theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.1.b
     (@IsLocalization.isLocalization_iff_of_ringEquiv (R := Γ(X, U))
       (S := X.presheaf.stalk (hU.fromSpec.1.base y)) _ y.asIdeal.primeCompl _
       (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨hU.fromSpec.1.base y, hy⟩) _ _
-      (asIso <| PresheafedSpace.stalkMap hU.fromSpec.1 y).commRingCatIsoToRingEquiv).mpr
+      (asIso <| hU.fromSpec.stalkMap y).commRingCatIsoToRingEquiv).mpr
   -- Porting note: need to know what the ring is and after convert, instead of equality
   -- we get an `iff`.
   convert StructureSheaf.IsLocalization.to_stalk Γ(X, U) y using 1
@@ -729,6 +735,20 @@ lemma Scheme.eq_zeroLocus_of_isClosed_of_isAffine (X : Scheme.{u}) [IsAffine X] 
     exact zeroLocus_isClosed X I.carrier
 
 end ZeroLocus
+
+section Stalks
+
+/-- Variant of `AlgebraicGeometry.localRingHom_comp_stalkIso` for `Spec.map`. -/
+@[elementwise]
+lemma Scheme.localRingHom_comp_stalkIso {R S : CommRingCat} (f : R ⟶ S) (p : PrimeSpectrum S) :
+    (StructureSheaf.stalkIso R (PrimeSpectrum.comap f p)).hom ≫
+      CategoryStruct.comp (Y := CommRingCat.of (Localization.AtPrime p.asIdeal))
+        (Localization.localRingHom (PrimeSpectrum.comap f p).asIdeal p.asIdeal f rfl)
+        (StructureSheaf.stalkIso S p).inv =
+    (Spec.map f).stalkMap p :=
+  AlgebraicGeometry.localRingHom_comp_stalkIso f p
+
+end Stalks
 
 @[deprecated (since := "2024-06-21"), nolint defLemma]
 alias isAffineAffineScheme := isAffine_affineScheme

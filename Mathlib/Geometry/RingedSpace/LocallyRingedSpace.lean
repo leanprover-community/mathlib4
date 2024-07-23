@@ -66,7 +66,7 @@ set_option linter.uppercaseLean3 false in
 instance : CoeSort LocallyRingedSpace (Type u) :=
   ⟨fun X : LocallyRingedSpace => (X.toTopCat : Type _)⟩
 
-instance (x : X) : LocalRing (X.stalk x) :=
+instance (x : X) : LocalRing (X.presheaf.stalk x) :=
   X.localRing x
 
 -- PROJECT: how about a typeclass "has_structure_sheaf" to mediate the 𝒪 notation, rather
@@ -84,7 +84,7 @@ structure Hom (X Y : LocallyRingedSpace.{u}) : Type _ where
   /-- the underlying morphism between ringed spaces -/
   val : X.toSheafedSpace ⟶ Y.toSheafedSpace
   /-- the underlying morphism induces a local ring homomorphism on stalks -/
-  prop : ∀ x, IsLocalRingHom (PresheafedSpace.stalkMap val x)
+  prop : ∀ x, IsLocalRingHom (val.stalkMap x)
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.hom AlgebraicGeometry.LocallyRingedSpace.Hom
 
@@ -94,33 +94,24 @@ instance : Quiver LocallyRingedSpace :=
 @[ext] lemma Hom.ext' (X Y : LocallyRingedSpace.{u}) {f g : X ⟶ Y} (h : f.val = g.val) : f = g :=
   Hom.ext _ _ h
 
--- TODO perhaps we should make a bundled `LocalRing` and return one here?
--- TODO define `sheaf.stalk` so we can write `X.𝒪.stalk` here?
-/-- The stalk of a locally ringed space, just as a `CommRing`.
--/
-noncomputable def stalk (X : LocallyRingedSpace.{u}) (x : X) : CommRingCat :=
-  X.presheaf.stalk x
-set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.LocallyRingedSpace.stalk AlgebraicGeometry.LocallyRingedSpace.stalk
-
 -- Porting note (#10754): added this instance to help Lean realize stalks are local
 -- (so that `0 ≠ 1` works below)
-instance stalkLocal (x : X) : LocalRing <| X.stalk x := X.localRing x
+instance stalkLocal (x : X) : LocalRing <| X.presheaf.stalk x := X.localRing x
 
 /-- A morphism of locally ringed spaces `f : X ⟶ Y` induces
 a local ring homomorphism from `Y.stalk (f x)` to `X.stalk x` for any `x : X`.
 -/
-noncomputable def stalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
-    Y.stalk (f.1.1 x) ⟶ X.stalk x :=
-  PresheafedSpace.stalkMap f.1 x
+noncomputable def Hom.stalkMap {X Y : LocallyRingedSpace.{u}} (f : Hom X Y) (x : X) :
+    Y.presheaf.stalk (f.1.1 x) ⟶ X.presheaf.stalk x :=
+  f.val.stalkMap x
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.LocallyRingedSpace.stalk_map AlgebraicGeometry.LocallyRingedSpace.stalkMap
+#align algebraic_geometry.LocallyRingedSpace.stalk_map AlgebraicGeometry.LocallyRingedSpace.Hom.stalkMap
 
-instance {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) : IsLocalRingHom (stalkMap f x) :=
+instance {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) : IsLocalRingHom (f.stalkMap x) :=
   f.2 x
 
 instance {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
-    IsLocalRingHom (PresheafedSpace.stalkMap f.1 x) :=
+    IsLocalRingHom (f.val.stalkMap x) :=
   f.2 x
 
 /-- The identity morphism on a locally ringed space. -/
@@ -205,7 +196,7 @@ def homOfSheafedSpaceHomOfIsIso {X Y : LocallyRingedSpace.{u}}
     -- Here we need to see that the stalk maps are really local ring homomorphisms.
     -- This can be solved by type class inference, because stalk maps of isomorphisms
     -- are isomorphisms and isomorphisms are local ring homomorphisms.
-    show IsLocalRingHom (PresheafedSpace.stalkMap (SheafedSpace.forgetToPresheafedSpace.map f) x) by
+    show IsLocalRingHom ((SheafedSpace.forgetToPresheafedSpace.map f).stalkMap x) by
       infer_instance
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.hom_of_SheafedSpace_hom_of_is_iso AlgebraicGeometry.LocallyRingedSpace.homOfSheafedSpaceHomOfIsIso
@@ -332,11 +323,11 @@ theorem preimage_basicOpen {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) {U : Ope
   · rintro ⟨⟨y, hyU⟩, hy : IsUnit _, rfl : y = _⟩
     erw [RingedSpace.mem_basicOpen _ _ ⟨x, show x ∈ (Opens.map f.1.base).obj U from hyU⟩,
       ← PresheafedSpace.stalkMap_germ_apply]
-    exact (PresheafedSpace.stalkMap f.1 _).isUnit_map hy
+    exact (f.val.stalkMap _).isUnit_map hy
   · rintro ⟨y, hy : IsUnit _, rfl⟩
     erw [RingedSpace.mem_basicOpen _ _ ⟨f.1.base y.1, y.2⟩]
     erw [← PresheafedSpace.stalkMap_germ_apply] at hy
-    exact (isUnit_map_iff (PresheafedSpace.stalkMap f.1 _) _).mp hy
+    exact (isUnit_map_iff (f.val.stalkMap _) _).mp hy
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.preimage_basic_open AlgebraicGeometry.LocallyRingedSpace.preimage_basicOpen
 
@@ -349,7 +340,7 @@ theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
     iff_false, not_exists]
   intros hx
   rw [map_zero, isUnit_zero_iff]
-  change (0 : X.stalk x) ≠ (1 : X.stalk x)
+  change (0 : X.presheaf.stalk x) ≠ (1 : X.presheaf.stalk x)
   exact zero_ne_one
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.basic_open_zero AlgebraicGeometry.LocallyRingedSpace.basicOpen_zero
@@ -372,6 +363,73 @@ instance component_nontrivial (X : LocallyRingedSpace.{u}) (U : Opens X.carrier)
   (X.presheaf.germ hU.some).domain_nontrivial
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.component_nontrivial AlgebraicGeometry.LocallyRingedSpace.component_nontrivial
+
+@[simp]
+lemma iso_hom_val_base_inv_val_base {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) :
+    e.hom.val.base ≫ e.inv.val.base = 𝟙 _ := by
+  rw [← SheafedSpace.comp_base, ← LocallyRingedSpace.comp_val]
+  simp
+
+@[simp]
+lemma iso_hom_val_base_inv_val_base_apply {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) (x : X) :
+    (e.inv.val.base (e.hom.val.base x)) = x := by
+  show (e.hom.val.base ≫ e.inv.val.base) x = 𝟙 X.toPresheafedSpace x
+  simp
+
+@[simp]
+lemma iso_inv_val_base_hom_val_base {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) :
+    e.inv.val.base ≫ e.hom.val.base = 𝟙 _ := by
+  rw [← SheafedSpace.comp_base, ← LocallyRingedSpace.comp_val]
+  simp
+
+@[simp]
+lemma iso_inv_val_base_hom_val_base_apply {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) (y : Y) :
+    (e.hom.val.base (e.inv.val.base y)) = y := by
+  show (e.inv.val.base ≫ e.hom.val.base) y = 𝟙 Y.toPresheafedSpace y
+  simp
+
+section Stalks
+
+@[simp]
+lemma stalkMap_id (X : LocallyRingedSpace.{u}) (x : X) :
+    (𝟙 X : X ⟶ X).stalkMap x = 𝟙 (X.presheaf.stalk x) :=
+  PresheafedSpace.stalkMap.id _ x
+
+lemma stalkMap_comp {X Y Z : LocallyRingedSpace.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g : X ⟶ Z).stalkMap x = g.stalkMap (f.val.base x) ≫ f.stalkMap x :=
+  PresheafedSpace.stalkMap.comp f.val g.val x
+
+@[reassoc]
+lemma stalkMap_congr {X Y : LocallyRingedSpace.{u}} (f g : X ⟶ Y) (hfg : f = g) (x x' : X)
+    (hxx' : x = x') : f.stalkMap x ≫ eqToHom (by rw [hxx']) =
+      eqToHom (by rw [hfg, hxx']) ≫ g.stalkMap x' :=
+  PresheafedSpace.stalkMap.congr f.val g.val (by rw [hfg]) x x' hxx'
+
+@[reassoc]
+lemma stalkMap_congr_hom {X Y : LocallyRingedSpace.{u}} (f g : X ⟶ Y) (hfg : f = g) (x : X) :
+    f.stalkMap x =
+      eqToHom (by rw [hfg]) ≫ g.stalkMap x :=
+  PresheafedSpace.stalkMap.congr_hom f.val g.val (by rw [hfg]) x
+
+@[reassoc]
+lemma stalkMap_congr_point {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x x' : X) (hxx' : x = x') :
+    f.stalkMap x ≫ eqToHom (by rw [hxx']) =
+      eqToHom (by rw [hxx']) ≫ f.stalkMap x' :=
+  PresheafedSpace.stalkMap.congr_point f.val x x' hxx'
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma stalkMap_hom_inv {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) (y : Y) :
+    e.hom.stalkMap (e.inv.val.base y) ≫ e.inv.stalkMap y = eqToHom (by simp) := by
+  rw [← stalkMap_comp, LocallyRingedSpace.stalkMap_congr_hom (e.inv ≫ e.hom) (𝟙 _) (by simp)]
+  simp
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma stalkMap_inv_hom {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) (x : X) :
+    e.inv.stalkMap (e.hom.val.base x) ≫ e.hom.stalkMap x = eqToHom (by simp) := by
+  rw [← stalkMap_comp, LocallyRingedSpace.stalkMap_congr_hom (e.hom ≫ e.inv) (𝟙 _) (by simp)]
+  simp
+
+end Stalks
 
 end LocallyRingedSpace
 

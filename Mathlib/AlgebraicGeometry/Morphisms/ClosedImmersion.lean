@@ -40,7 +40,7 @@ namespace AlgebraicGeometry
 topological map is a closed embedding and the induced stalk maps are surjective. -/
 class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
   base_closed : ClosedEmbedding f.1.base
-  surj_on_stalks : ∀ x, Function.Surjective (PresheafedSpace.stalkMap f.1 x)
+  surj_on_stalks : ∀ x, Function.Surjective (f.stalkMap x)
 
 namespace IsClosedImmersion
 
@@ -49,7 +49,7 @@ lemma closedEmbedding {X Y : Scheme} (f : X ⟶ Y)
   IsClosedImmersion.base_closed
 
 lemma surjective_stalkMap {X Y : Scheme} (f : X ⟶ Y)
-    [IsClosedImmersion f] (x : X) : Function.Surjective (PresheafedSpace.stalkMap f.1 x) :=
+    [IsClosedImmersion f] (x : X) : Function.Surjective (f.stalkMap x) :=
   IsClosedImmersion.surj_on_stalks x
 
 /-- Isomorphisms are closed immersions. -/
@@ -61,7 +61,7 @@ instance : MorphismProperty.IsMultiplicative @IsClosedImmersion where
   id_mem _ := inferInstance
   comp_mem {X Y Z} f g hf hg := by
     refine ⟨hg.base_closed.comp hf.base_closed, fun x ↦ ?_⟩
-    erw [PresheafedSpace.stalkMap.comp]
+    rw [Scheme.stalkMap_comp]
     exact (hf.surj_on_stalks x).comp (hg.surj_on_stalks (f.1.1 x))
 
 /-- Composition of closed immersions is a closed immersion. -/
@@ -80,7 +80,8 @@ theorem spec_of_surjective {R S : CommRingCat} (f : R ⟶ S) (h : Function.Surje
     IsClosedImmersion (Spec.map f) where
   base_closed := PrimeSpectrum.closedEmbedding_comap_of_surjective _ _ h
   surj_on_stalks x := by
-    erw [← localRingHom_comp_stalkIso, CommRingCat.coe_comp, CommRingCat.coe_comp]
+    rw [← Scheme.localRingHom_comp_stalkIso]
+    erw [CommRingCat.coe_comp, CommRingCat.coe_comp]
     apply Function.Surjective.comp (Function.Surjective.comp _ _) _
     · exact (ConcreteCategory.bijective_of_isIso (StructureSheaf.stalkIso S x).inv).2
     · exact surjective_localRingHom_of_surjective f h x.asIdeal
@@ -108,7 +109,7 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion 
       exact ClosedEmbedding.isClosedMap h _ hZ
   surj_on_stalks x := by
     have h := surjective_stalkMap (f ≫ g) x
-    erw [Scheme.comp_val, PresheafedSpace.stalkMap.comp] at h
+    simp_rw [Scheme.comp_val, Scheme.stalkMap_comp] at h
     exact Function.Surjective.of_comp h
 
 instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f where

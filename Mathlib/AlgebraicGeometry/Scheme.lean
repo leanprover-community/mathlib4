@@ -149,6 +149,15 @@ lemma appLE_congr (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V')
 noncomputable def homeomorph [IsIso f] : X ≃ₜ Y :=
   TopCat.homeoOfIso (asIso <| f.val.base)
 
+section Stalks
+
+/-- A morphism of schemes `f : X ⟶ Y` induces a local ring homomorphis from `Y.presheaf.stalk (f x)`
+to `X.presheaf.stalk x` for any `x : X`. -/
+def stalkMap (x : X) : Y.presheaf.stalk (f.val.base x) ⟶ X.presheaf.stalk x :=
+  f.val.stalkMap x
+
+end Stalks
+
 end Hom
 
 /-- The forgetful functor from `Scheme` to `LocallyRingedSpace`. -/
@@ -595,5 +604,82 @@ theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : Opens X} (h : U
   refine (Scheme.congr_app this _).trans ?_
   simp [eqToHom_map]
 #align algebraic_geometry.Scheme.Spec_map_presheaf_map_eqToHom AlgebraicGeometry.Scheme.Spec_map_presheaf_map_eqToHom
+
+@[simp]
+lemma Scheme.iso_hom_val_base_inv_val_base {X Y : Scheme.{u}} (e : X ≅ Y) :
+    e.hom.val.base ≫ e.inv.val.base = 𝟙 _ :=
+  LocallyRingedSpace.iso_hom_val_base_inv_val_base (Scheme.forgetToLocallyRingedSpace.mapIso e)
+
+@[simp]
+lemma Scheme.iso_hom_val_base_inv_val_base_apply {X Y : Scheme.{u}} (e : X ≅ Y) (x : X) :
+    (e.inv.val.base (e.hom.val.base x)) = x := by
+  show (e.hom.val.base ≫ e.inv.val.base) x = 𝟙 X.toPresheafedSpace x
+  simp
+
+@[simp]
+lemma Scheme.iso_inv_val_base_hom_val_base {X Y : Scheme.{u}} (e : X ≅ Y) :
+    e.inv.val.base ≫ e.hom.val.base = 𝟙 _ :=
+  LocallyRingedSpace.iso_inv_val_base_hom_val_base (Scheme.forgetToLocallyRingedSpace.mapIso e)
+
+@[simp]
+lemma Scheme.iso_inv_val_base_hom_val_base_apply {X Y : Scheme.{u}} (e : X ≅ Y) (y : Y) :
+    (e.hom.val.base (e.inv.val.base y)) = y := by
+  show (e.inv.val.base ≫ e.hom.val.base) y = 𝟙 Y.toPresheafedSpace y
+  simp
+
+section Stalks
+
+namespace Scheme
+
+@[simp]
+lemma stalkMap_id (X : Scheme.{u}) (x : X) :
+    (𝟙 X : X ⟶ X).stalkMap x = 𝟙 (X.presheaf.stalk x) :=
+  PresheafedSpace.stalkMap.id _ x
+
+lemma stalkMap_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g : X ⟶ Z).stalkMap x = g.stalkMap (f.val.base x) ≫ f.stalkMap x :=
+  PresheafedSpace.stalkMap.comp f.val g.val x
+
+@[reassoc]
+lemma stalkMap_congr {X Y : Scheme.{u}} (f g : X ⟶ Y) (hfg : f = g) (x x' : X)
+    (hxx' : x = x') : f.stalkMap x ≫ eqToHom (by rw [hxx']) =
+      eqToHom (by rw [hfg, hxx']) ≫ g.stalkMap x' :=
+  PresheafedSpace.stalkMap.congr f.val g.val (by rw [hfg]) x x' hxx'
+
+@[reassoc]
+lemma stalkMap_congr_hom {X Y : Scheme.{u}} (f g : X ⟶ Y) (hfg : f = g) (x : X) :
+    f.stalkMap x = eqToHom (by rw [hfg]) ≫ g.stalkMap x :=
+  PresheafedSpace.stalkMap.congr_hom f.val g.val (by rw [hfg]) x
+
+@[reassoc]
+lemma stalkMap_congr_point {X Y : Scheme.{u}} (f : X ⟶ Y) (x x' : X) (hxx' : x = x') :
+    f.stalkMap x ≫ eqToHom (by rw [hxx']) = eqToHom (by rw [hxx']) ≫ f.stalkMap x' :=
+  PresheafedSpace.stalkMap.congr_point f.val x x' hxx'
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma stalkMap_hom_inv {X Y : Scheme.{u}} (e : X ≅ Y) (y : Y) :
+    e.hom.stalkMap (e.inv.val.base y) ≫ e.inv.stalkMap y = eqToHom (by simp) :=
+  LocallyRingedSpace.stalkMap_hom_inv (Scheme.forgetToLocallyRingedSpace.mapIso e) y
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma stalkMap_inv_hom {X Y : Scheme.{u}} (e : X ≅ Y) (x : X) :
+    e.inv.stalkMap (e.hom.val.base x) ≫ e.hom.stalkMap x = eqToHom (by simp) :=
+  LocallyRingedSpace.stalkMap_inv_hom (Scheme.forgetToLocallyRingedSpace.mapIso e) x
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma stalkMap_germ {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (x : f ⁻¹ᵁ U) :
+    Y.presheaf.germ ⟨f.val.base x.val, x.property⟩ ≫ f.stalkMap x =
+      f.app U ≫ X.presheaf.germ x :=
+  PresheafedSpace.stalkMap_germ f.val U x
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma stalkMap_germ' {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (x : X) (hx : f.val.base x ∈ U) :
+    Y.presheaf.germ ⟨f.val.base x, hx⟩ ≫ f.stalkMap x =
+      f.app U ≫ X.presheaf.germ (U := f⁻¹ᵁ U) ⟨x, hx⟩ :=
+  PresheafedSpace.stalkMap_germ' f.val U x hx
+
+end Scheme
+
+end Stalks
 
 end AlgebraicGeometry

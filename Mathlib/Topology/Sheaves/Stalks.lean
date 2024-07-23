@@ -101,6 +101,10 @@ def germ (F : X.Presheaf C) {U : Opens X} (x : U) : F.obj (op U) ⟶ stalk F x :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ TopCat.Presheaf.germ
 
+/-- The germ of a global section of a presheaf at a point. -/
+def Γgerm (F : X.Presheaf C) (x : X) : F.obj (op ⊤) ⟶ stalk F x :=
+  F.germ ⟨x, show x ∈ ⊤ by trivial⟩
+
 theorem germ_res (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) :
     F.map i.op ≫ germ F x = germ F (i x : V) :=
   let i' : (⟨U, x.2⟩ : OpenNhds x.1) ⟶ ⟨V, (i x : V).2⟩ := i
@@ -108,12 +112,20 @@ theorem germ_res (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_res TopCat.Presheaf.germ_res
 
+lemma Γgerm_res (F : X.Presheaf C) {U : Opens X} {i : U ⟶ ⊤} (x : U) :
+    F.map i.op ≫ germ F x = Γgerm F (i x) :=
+  germ_res F i x
+
 -- Porting note: `@[elementwise]` did not generate the best lemma when applied to `germ_res`
 attribute [local instance] ConcreteCategory.instFunLike in
 theorem germ_res_apply (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) [ConcreteCategory C]
     (s) : germ F x (F.map i.op s) = germ F (i x) s := by rw [← comp_apply, germ_res]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_res_apply TopCat.Presheaf.germ_res_apply
+
+attribute [local instance] ConcreteCategory.instFunLike in
+lemma Γgerm_res_apply (F : X.Presheaf C) {U : Opens X} {i : U ⟶ ⊤} (x : U) [ConcreteCategory C]
+    (s) : germ F x (F.map i.op s) = Γgerm F x.val s := germ_res_apply F i x s
 
 /-- A morphism from the stalk of `F` at `x` to some object `Y` is completely determined by its
 composition with the `germ` morphisms.
@@ -132,6 +144,13 @@ theorem stalkFunctor_map_germ {F G : X.Presheaf C} (U : Opens X) (x : U) (f : F 
   colimit.ι_map (whiskerLeft (OpenNhds.inclusion x.1).op f) (op ⟨U, x.2⟩)
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_functor_map_germ TopCat.Presheaf.stalkFunctor_map_germ
+
+@[reassoc, elementwise]
+lemma TopCat.Presheaf.germ_congr {C : Type*} [Category C] [HasColimits C] {X : TopCat}
+    (F : TopCat.Presheaf C X) {U : Opens X} (x x' : U) (h : x = x') :
+    F.germ x ≫ eqToHom (by rw [h]) = F.germ x' := by
+  subst h
+  simp
 
 variable (C)
 

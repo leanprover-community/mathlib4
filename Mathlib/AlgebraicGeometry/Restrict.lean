@@ -450,24 +450,19 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Open
 /-- The stalk map of a restriction of a morphism is isomorphic to the stalk map of the original map.
 -/
 def morphismRestrictStalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (x) :
-    Arrow.mk (PresheafedSpace.stalkMap (f ∣_ U).1 x) ≅
-      Arrow.mk (PresheafedSpace.stalkMap f.1 x.1) := by
-  fapply Arrow.isoMk'
-  · refine Y.restrictStalkIso U.openEmbedding ((f ∣_ U).1.1 x) ≪≫ TopCat.Presheaf.stalkCongr _ ?_
-    apply Inseparable.of_eq
-    exact morphismRestrict_base_coe f U x
-  · exact X.restrictStalkIso (Opens.openEmbedding _) _
-  · apply TopCat.Presheaf.stalk_hom_ext
+    Arrow.mk ((f ∣_ U).stalkMap x) ≅ Arrow.mk (f.stalkMap x.1) := Arrow.isoMk' _ _
+  (Y.restrictStalkIso U.openEmbedding ((f ∣_ U).1.1 x) ≪≫
+    (TopCat.Presheaf.stalkCongr _ <| Inseparable.of_eq <| morphismRestrict_base_coe f U x))
+  (X.restrictStalkIso (Opens.openEmbedding _) _) <| by
+    apply TopCat.Presheaf.stalk_hom_ext
     intro V hxV
     change ↑(f ⁻¹ᵁ U) at x
-    simp only [Scheme.restrict_presheaf_obj, unop_op, Opens.coe_inclusion, Iso.trans_hom,
-      TopCat.Presheaf.stalkCongr_hom, Category.assoc, Scheme.restrict_toPresheafedSpace]
-    rw [PresheafedSpace.restrictStalkIso_hom_eq_germ_assoc,
-      TopCat.Presheaf.germ_stalkSpecializes'_assoc,
-      PresheafedSpace.stalkMap_germ'_assoc, PresheafedSpace.stalkMap_germ',
-      ← Scheme.Hom.app, ← Scheme.Hom.app, morphismRestrict_app,
-      PresheafedSpace.restrictStalkIso_hom_eq_germ, Category.assoc, TopCat.Presheaf.germ_res]
-    rfl
+    simp only [Scheme.restrict_presheaf_obj, Iso.trans_hom, Category.assoc,
+      Scheme.stalkMap_germ'_assoc, morphismRestrict_app']
+    simp only [Scheme.restrict_toPresheafedSpace, PresheafedSpace.restrictStalkIso_hom_eq_germ_assoc]
+    simp only [Scheme.Hom.appLE, Scheme.Hom.app, Scheme.restrict,
+      PresheafedSpace.restrictStalkIso_hom_eq_germ]
+    simp [TopCat.Presheaf.germ_res]
 
 #align algebraic_geometry.morphism_restrict_stalk_map AlgebraicGeometry.morphismRestrictStalkMap
 
