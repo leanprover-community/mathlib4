@@ -390,7 +390,7 @@ def Perm.slice [DecidableEq α] (n m : ℕ) :
     have h₀ : xs' ~ ys.inter xs' := List.Perm.dropSlice_inter _ _ h h'
     ⟨xs', ys.inter xs', h₀, h'.inter _⟩
 
-/-- A lazy list, in decreasing order, of sizes that should be
+/-- A list, in decreasing order, of sizes that should be
 sliced off a list of length `n`
 -/
 def sliceSizes : ℕ → List ℕ+
