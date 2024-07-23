@@ -15,7 +15,7 @@ independent sets of the summands.
 
 We can ask for such a sum both for pairs and for arbitrary indexed collections of matroids,
 and we can also ask for the 'disjoint union' to be either set-theoretic or type-theoretic.
-To this end, we define five separate versions of the sum contruction.
+To this end, we define five separate versions of the sum construction.
 
 ## Main definitions
 
