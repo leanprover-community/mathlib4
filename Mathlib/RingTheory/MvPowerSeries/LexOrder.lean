@@ -47,8 +47,9 @@ theorem lexOrder_def_of_ne_zero {φ : MvPowerSeries σ R} (hφ : φ ≠ 0) :
     simp only [dif_neg hφ]
   simp only [Set.image_nonempty, Function.support_nonempty_iff, ne_eq, hφ, not_false_eq_true]
 
-theorem eq_zero_iff_lexOrder_eq_top (φ : MvPowerSeries σ R) :
-    φ = 0 ↔ lexOrder φ = ⊤ := by
+@[simp]
+theorem lexOrder_eq_top_iff_eq_zero (φ : MvPowerSeries σ R) :
+    lexOrder φ = ⊤ ↔ φ = 0 := by
   unfold lexOrder
   split_ifs with h
   · simp only [h]
