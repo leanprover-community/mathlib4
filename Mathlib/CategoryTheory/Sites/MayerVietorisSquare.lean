@@ -28,14 +28,14 @@ In this file, we introduce a structure
 `GrothendieckTopology.MayerVietorisSquare` which extends `Squace C`,
 and asserts properties which shall imply the existence of long
 exact Mayer-Vietoris sequences in sheaf cohomology (TODO).
-We require that the map `X₂ ⟶ X₄` is a monomorphism and
+We require that the map `X₁ ⟶ X₃` is a monomorphism and
 that the square in `C` becomes a pushout square in
 the category of sheaves after the application of the
 functor `yoneda ⋙ presheafToSheaf J _`. Note that in the
-standard case of a covering by two open subsets, the morphism
-`f₃₄ : X₃ ⟶ X₄` would also be a monomorphism, but this dissymetry
-allows the example of Nisnevich distinguished squares in the
-case of the Nisnevich topology on schemes (in which case
+standard case of a covering by two open subsets, all
+the morphisms in the square would be monomorphisms,
+but this dissymetry allows the example of Nisnevich distinguished
+squares in the case of the Nisnevich topology on schemes (in which case
 `f₂₄ : X₂ ⟶ X₄` shall be an open immersion and
 `f₃₄ : X₃ ⟶ X₄` an étale map that is an isomorphism over
 the closed (reduced) subscheme `X₄ - X₂`,
@@ -118,7 +118,7 @@ which form a covering of `S.X₄`. -/
 noncomputable def mk_of_isPullback (sq : Square C) [Mono sq.f₂₄] [Mono sq.f₃₄]
     (h₁ : sq.IsPullback) (h₂ : Sieve.ofTwoArrows sq.f₂₄ sq.f₃₄ ∈ J sq.X₄) :
     J.MayerVietorisSquare :=
-  have : Mono sq.f₁₃ := sorry
+  have : Mono sq.f₁₃ := h₁.mono_f₁₃
   mk' sq (fun F ↦ by
     apply Square.IsPullback.mk
     refine PullbackCone.IsLimit.mk _
