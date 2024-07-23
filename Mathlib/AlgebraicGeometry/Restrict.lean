@@ -3,7 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.OpenImmersion
+import Mathlib.AlgebraicGeometry.Cover.Open
 
 /-!
 # Restriction of Schemes and Morphisms
@@ -288,6 +288,10 @@ theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens 
   -- Porting note: changed `rw` to `erw`
   erw [pullbackRestrictIsoRestrict_inv_fst]; rw [Category.comp_id]
 
+@[simp]
+lemma morphismRestrict_id {X : Scheme.{u}} (U : Opens X) : 𝟙 X ∣_ U = 𝟙 _ := by
+  rw [← cancel_mono (Scheme.ιOpens U), morphismRestrict_ι, Category.comp_id, Category.id_comp]
+
 theorem morphismRestrict_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (U : Opens Z) :
     (f ≫ g) ∣_ U = f ∣_ g ⁻¹ᵁ U ≫ g ∣_ U := by
   delta morphismRestrict
@@ -455,5 +459,21 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) [IsOpenImmersion f] :
   exact PresheafedSpace.IsOpenImmersion.comp _ _
 
 end MorphismRestrict
+
+/-- The restriction of an open cover to an open subset. -/
+@[simps! J obj map]
+noncomputable
+def Scheme.OpenCover.restrict {X : Scheme.{u}} (𝒰 : X.OpenCover) (U : Opens X) :
+    (X ∣_ᵤ U).OpenCover := by
+  refine copy (𝒰.pullbackCover (ιOpens U)) 𝒰.J _ (𝒰.map · ∣_ U) (Equiv.refl _)
+    (fun i ↦ IsOpenImmersion.isoOfRangeEq (ιOpens _) (pullback.snd _ _) ?_) ?_
+  · erw [IsOpenImmersion.range_pullback_snd_of_left (ιOpens U) (𝒰.map i)]
+    rw [opensRange_ιOpens]
+    exact Subtype.range_val
+  · intro i
+    rw [← cancel_mono (ιOpens U)]
+    simp only [morphismRestrict_ι, pullbackCover_J, Equiv.refl_apply, pullbackCover_obj,
+      pullbackCover_map, Category.assoc, pullback.condition]
+    erw [IsOpenImmersion.isoOfRangeEq_hom_fac_assoc]
 
 end AlgebraicGeometry
