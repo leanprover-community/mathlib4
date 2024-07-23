@@ -94,56 +94,52 @@ lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
 lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2)
     {n : ℕ} (hn : 0 < n) : α ∈ Set.Ico ((2 * n - 1) / n : ℝ) 2 := by
   suffices ∑ i ∈ Finset.Icc 1 n, ⌊i * α⌋ = n ^ 2 ∧ α ∈ Set.Ico ((2 * n - 1) / n : ℝ) 2 from this.2
-  induction' n with k hk
-  · simp at hn
-  · rcases k with ⟨⟩ | ⟨n⟩
-    · have h' := hc.mem_Ico_one_of_mem_Ioo h
-      rcases h' with ⟨h1, h2⟩
-      simp only [zero_add, Finset.Icc_self, Finset.sum_singleton, Nat.cast_one, one_mul, one_pow,
-                 Int.floor_eq_iff, Int.cast_one, mul_one, div_one, Set.mem_Ico, tsub_le_iff_right]
-      exact ⟨⟨h1, by linarith⟩, by linarith, h2⟩
-    · replace hk := hk (by omega)
-      rcases hk with ⟨hks, hkl, hk2⟩
-      have hs : (∑ i ∈ Finset.Icc 1 (n + 1 + 1), ⌊i * α⌋) =
-           ⌊(n + 1 + 1 : ℕ) * α⌋ + ((n + 1 : ℕ) : ℤ) ^ 2 := by
-        have hn11 : n + 1 + 1 ∉ Finset.Icc 1 (n + 1) := by
-          rw [Finset.mem_Icc]
-          omega
-        rw [← Nat.Icc_insert_succ_right (by omega), Finset.sum_insert hn11, hks]
-      replace hc := hc (n + 1 + 1) hn
-      rw [hs] at hc ⊢
-      have hkl' : 2 * n + 2 ≤ ⌊(n + 1 + 1 : ℕ) * α⌋ := by
-        rw [Int.le_floor]
-        calc ((2 * n + 2 : ℤ) : ℝ) = ((2 * n + 2 : ℤ) : ℝ) + 0 := (add_zero _).symm
-          _ ≤ ((2 * n + 2 : ℤ) : ℝ) + n / (n + 1) := by gcongr; positivity
-          _ = (n + 1 + 1 : ℕ) * ((2 * (n + 1 : ℕ) - 1) / ((n + 1 : ℕ) : ℝ) : ℝ) := by
-            field_simp
-            ring
-          _ ≤ (n + 1 + 1 : ℕ) * α := by gcongr
-      have hk2' : ⌊(n + 1 + 1 : ℕ) * α⌋ < (n + 1 + 1 : ℕ) * 2 := by
-        rw [Int.floor_lt]
-        push_cast
-        gcongr
-      have hk : ⌊(n + 1 + 1 : ℕ) * α⌋ = 2 * n + 2 ∨ ⌊(n + 1 + 1 : ℕ) * α⌋ = 2 * n + 3 := by omega
-      have hk' : ⌊(n + 1 + 1 : ℕ) * α⌋ = 2 * n + 3 := by
-        rcases hk with hk | hk
-        · rw [hk] at hc
-          have hc' : ((n + 1 + 1 : ℕ) : ℤ) ∣ ((n + 1 + 1 : ℕ) : ℤ) * ((n + 1 + 1 : ℕ) : ℤ) - 1 := by
-            convert hc using 1
-            push_cast
-            ring
-          rw [dvd_sub_right (dvd_mul_right _ _), ← isUnit_iff_dvd_one, Int.isUnit_iff] at hc'
-          omega
-        · exact hk
-      rw [hk']
-      refine ⟨?_, ?_, h.2⟩
-      · push_cast
-        ring
-      · rw [Int.floor_eq_iff] at hk'
-        rw [div_le_iff (mod_cast hn), mul_comm α]
-        convert hk'.1
-        push_cast
-        ring
+  induction' n, hn using Nat.le_induction with k kpos hk
+  · obtain ⟨h1, h2⟩ := hc.mem_Ico_one_of_mem_Ioo h
+    simp only [zero_add, Finset.Icc_self, Finset.sum_singleton, Nat.cast_one, one_mul, one_pow,
+               Int.floor_eq_iff, Int.cast_one, mul_one, div_one, Set.mem_Ico, tsub_le_iff_right]
+    exact ⟨⟨h1, by linarith⟩, by linarith, h2⟩
+  · rcases hk with ⟨hks, hkl, hk2⟩
+    have hs : (∑ i ∈ Finset.Icc 1 (k + 1), ⌊i * α⌋) =
+         ⌊(k + 1 : ℕ) * α⌋ + ((k : ℕ) : ℤ) ^ 2 := by
+      have hn11 : k + 1 ∉ Finset.Icc 1 k := by
+        rw [Finset.mem_Icc]
+        omega
+      rw [← Nat.Icc_insert_succ_right (Nat.le_add_left 1 k), Finset.sum_insert hn11, hks]
+    replace hc := hc (k + 1) k.succ_pos
+    rw [hs] at hc ⊢
+    have hkl' : 2 * k ≤ ⌊(k + 1 : ℕ) * α⌋ := by
+      rw [Int.le_floor]
+      calc ((2 * k : ℤ) : ℝ) = ((2 * k : ℤ) : ℝ) + 0 := (add_zero _).symm
+        _ ≤ ((2 * k : ℤ) : ℝ) + (k - 1) / k := by gcongr; norm_cast; positivity
+        _ = (k + 1 : ℕ) * ((2 * (k : ℕ) - 1) / ((k : ℕ) : ℝ) : ℝ) := by
+          field_simp
+          ring
+        _ ≤ (k + 1 : ℕ) * α := by gcongr
+    have hk2' : ⌊(k + 1 : ℕ) * α⌋ < (k + 1 : ℕ) * 2 := by
+      rw [Int.floor_lt]
+      push_cast
+      gcongr
+    have hk : ⌊(k + 1 : ℕ) * α⌋ = 2 * k  ∨ ⌊(k + 1 : ℕ) * α⌋ = 2 * k + 1 := by omega
+    have hk' : ⌊(k + 1 : ℕ) * α⌋ = 2 * k + 1 := by
+      rcases hk with hk | hk
+      · rw [hk] at hc
+        have hc' : ((k + 1 : ℕ) : ℤ) ∣ ((k + 1 : ℕ) : ℤ) * ((k + 1 : ℕ) : ℤ) - 1 := by
+          convert hc using 1
+          push_cast
+          ring
+        rw [dvd_sub_right (dvd_mul_right _ _), ← isUnit_iff_dvd_one, Int.isUnit_iff] at hc'
+        omega
+      · exact hk
+    rw [hk']
+    refine ⟨?_, ?_, h.2⟩
+    · push_cast
+      ring
+    · rw [Int.floor_eq_iff] at hk'
+      rw [div_le_iff (by norm_cast; omega), mul_comm α]
+      convert hk'.1
+      push_cast
+      ring
 
 end Condition
 
