@@ -763,13 +763,12 @@ private lemma alternatization_map_eq_coe_aux (m : MultilinearMap R (fun _ : ι =
 
 private theorem alternization_map_eq_zero_of_eq_aux (m : MultilinearMap R (fun _ : ι => M) N')
     (v : ι → M) (i j : ι) (hv : v i = v j) (i_ne_j : i ≠ j) :
-    ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ v = 0 := by
-  exact
-    Finset.sum_involution (fun σ _ => swap i j * σ)
-      -- Porting note: `-Equiv.Perm.sign_swap'` is required.
-      (fun σ _ => by simp [Perm.sign_swap i_ne_j, apply_swap_eq_self hv, -Equiv.Perm.sign_swap'])
-      (fun σ _ _ => (not_congr swap_mul_eq_iff).mpr i_ne_j) (fun σ _ => Finset.mem_univ _)
-      fun σ _ => swap_mul_involutive i j σ
+    ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ v = 0 :=
+  Finset.sum_involution (fun σ _ => swap i j * σ)
+    -- Porting note: `-Equiv.Perm.sign_swap'` is required.
+    (fun σ _ => by simp [Perm.sign_swap i_ne_j, apply_swap_eq_self hv, -Equiv.Perm.sign_swap'])
+    (fun σ _ _ => (not_congr swap_mul_eq_iff).mpr i_ne_j) (fun σ _ => Finset.mem_univ _)
+    fun σ _ => swap_mul_involutive i j σ
 
 /-- Produce an `AlternatingMap` out of a `MultilinearMap`, by summing over all argument
 permutations. -/
@@ -791,11 +790,11 @@ def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→�
 
 theorem alternatization_def (m : MultilinearMap R (fun _ : ι => M) N') :
     ⇑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ : _) :=
-  alternatization_map_eq_coe_aux _
+  alternatization_map_eq_coe_aux m
 
 theorem alternatization_coe (m : MultilinearMap R (fun _ : ι => M) N') :
     ↑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ : _) :=
-  coe_injective (alternatization_map_eq_coe_aux _)
+  coe_injective (alternatization_map_eq_coe_aux m)
 
 theorem alternatization_apply (m : MultilinearMap R (fun _ : ι => M) N') (v : ι → M) :
     alternatization m v = ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ v := by
