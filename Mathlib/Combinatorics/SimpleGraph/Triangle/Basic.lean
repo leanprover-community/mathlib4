@@ -11,7 +11,6 @@ import Mathlib.Data.Finset.Sym
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.NormNum.Ineq
 
 /-!
 # Triangles in graphs
