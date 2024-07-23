@@ -87,7 +87,7 @@ theorem coeff_eq_zero_of_lt_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ �
     by_contra h'
     exact WellFounded.not_lt_min _ (toLex '' φ.support) ne (Set.mem_image_equiv.mpr h') h
 
-theorem lexOrder_le_of_coeff_neq_zero {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
+theorem lexOrder_le_of_coeff_ne_zero {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
     (h : coeff R d φ ≠ 0) : lexOrder φ ≤ toLex d := by
   rw [← not_lt]
   intro h'
