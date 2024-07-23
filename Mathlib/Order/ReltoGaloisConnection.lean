@@ -56,7 +56,7 @@ def rightDual (I : Set β) : Set α := {a : α | ∀ ⦃b⦄, b ∈ I → R a b}
 theorem gc_leftDual_rightDual : GaloisConnection (toDual ∘ R.leftDual) (R.rightDual ∘ ofDual) :=
   fun J I ↦ ⟨fun h a ha b hb ↦ h (by simpa) ha, fun h b hb a ha ↦ h (by simpa) hb⟩
 
-/-! ### Induced equivalences and generation processes -/
+/-! ### Induced equivalences between fixed points -/
 
 /-- `lFixedPoints` is the set of elements `J : Set α` satisfying `rightDual (leftDual J) = J`. -/
 def lFixedPoints := {J : Set α | R.rightDual (R.leftDual J) = J}
