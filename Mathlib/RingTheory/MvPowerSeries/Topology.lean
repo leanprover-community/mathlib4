@@ -232,7 +232,8 @@ theorem variables_tendsto_zero [Ring R] [TopologicalRing R] :
       apply h
       exact ⟨x, h'⟩
 
-theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommRing R] {f} (hf : IsNilpotent (constantCoeff σ R f)) :
+theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommRing R]
+    {f} (hf : IsNilpotent (constantCoeff σ R f)) :
     Filter.Tendsto (fun n : ℕ => f ^ n) Filter.atTop (nhds 0) := by
   classical
   obtain ⟨m, hm⟩ := hf
@@ -240,7 +241,8 @@ theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommRing R] {f} (hf : IsNil
   exact fun d =>  tendsto_atTop_of_eventually_const fun n hn =>
     coeff_eq_zero_of_constantCoeff_nilpotent hm hn
 
-theorem tendsto_pow_zero_of_constantCoeff_zero [CommRing R] {f} (hf : constantCoeff σ R f = 0) :
+theorem tendsto_pow_zero_of_constantCoeff_zero [CommRing R]
+    {f} (hf : constantCoeff σ R f = 0) :
     Filter.Tendsto (fun n : ℕ => f ^ n) Filter.atTop (nhds 0) := by
   apply tendsto_pow_zero_of_constantCoeff_nilpotent
   rw [hf]
