@@ -60,7 +60,7 @@ class ProperVAdd (G X : Type*) [TopologicalSpace G] [TopologicalSpace X] [AddGro
     [AddAction G X] : Prop where
   /-- Proper group action in the sense of Bourbaki:
   the map `G × X → X × X` is a proper map (see `isProperMap`). -/
-  isProperMap_vadd_pair' : IsProperMap (fun gx ↦ ⟨gx.1 +ᵥ gx.2, gx.2⟩ : G × X → X × X)
+  isProperMap_vadd_pair : IsProperMap (fun gx ↦ (gx.1 +ᵥ gx.2, gx.2) : G × X → X × X)
 
 /-- Proper group action in the sense of Bourbaki:
 the map `G × X → X × X` is a proper map (see `isProperMap`). -/
@@ -69,18 +69,9 @@ class ProperSMul (G X : Type*) [TopologicalSpace G] [TopologicalSpace X] [Group 
     [MulAction G X] : Prop where
   /-- Proper group action in the sense of Bourbaki:
   the map `G × X → X × X` is a proper map (see `isProperMap`). -/
-  isProperMap_smul_pair' : IsProperMap (fun gx ↦ ⟨gx.1 • gx.2, gx.2⟩ : G × X → X × X)
+  isProperMap_smul_pair : IsProperMap (fun gx ↦ (gx.1 • gx.2, gx.2) : G × X → X × X)
 
 attribute [to_additive existing] properSMul_iff
-
-/-- By definition, if G acts properly on X then
-the map `G × X → X × X` is a proper map. -/
-@[to_additive "By definition, if G acts properly on X then
-the map `G × X → X × X` is a proper map."]
-lemma isProperMap_smul_pair (G X : Type*) [Group G] [MulAction G X]
-    [TopologicalSpace G] [TopologicalSpace X] [ProperSMul G X] :
-    IsProperMap (fun gx ↦ ⟨gx.1 • gx.2, gx.2⟩ : G × X → X × X) :=
-  ProperSMul.isProperMap_smul_pair'
 
 variable {G X Y Z : Type*} [Group G] [MulAction G X] [MulAction G Y]
 variable [TopologicalSpace G] [TopologicalSpace X] [TopologicalSpace Y]
@@ -89,8 +80,8 @@ variable [TopologicalSpace Z]
 /-- If a group acts properly then in particular it acts continuously. -/
 @[to_additive "If a group acts properly then in particular it acts continuously."]
 -- See note [lower instance property]
-instance (priority := 100) [ProperSMul G X] : ContinuousSMul G X where
-  continuous_smul := (isProperMap_smul_pair G X).continuous.fst
+instance (priority := 100) ProperSMul.toContinuousSMul [ProperSMul G X] : ContinuousSMul G X where
+  continuous_smul := isProperMap_smul_pair.continuous.fst
 
 /-- A group `G` acts properly on a topological space `X` if and only if for all ultrafilters
 `𝒰` on `X × G`, if `𝒰` converges to `(x₁, x₂)` along the map `(g, x) ↦ (g • x, x)`,
@@ -113,7 +104,7 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto :
   · rw [properSMul_iff, isProperMap_iff_ultrafilter]
     refine ⟨by fun_prop, fun 𝒰 (x₁, x₂) hxx ↦ ?_⟩
     rcases h 𝒰 x₁ x₂ hxx with ⟨g, hg1, hg2⟩
-    refine ⟨(g, x₂), by rw [hg1], ?_⟩
+    refine ⟨(g, x₂), by simp_rw [hg1], ?_⟩
     rw [nhds_prod_eq, 𝒰.le_prod]
     exact ⟨hg2, (continuous_snd.tendsto _).comp hxx⟩
 
@@ -169,7 +160,7 @@ theorem t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
       simp
     simp [m]
   rw [r_eq_r']
-  exact ProperSMul.isProperMap_smul_pair'.isClosedMap.isClosed_range
+  exact ProperSMul.isProperMap_smul_pair.isClosedMap.isClosed_range
 
 /-- If a T2 group acts properly on a topological space, then this topological space is T2. -/
 @[to_additive "If a T2 group acts properly on a topological space,
@@ -203,13 +194,13 @@ actions, then `H` also acts properly on `X`."]
 theorem properSMul_of_closedEmbedding {H : Type*} [Group H] [MulAction H X] [TopologicalSpace H]
     [ProperSMul G X] (f : H →* G) (f_clemb : ClosedEmbedding f)
     (f_compat : ∀ (h : H) (x : X), f h • x = h • x) : ProperSMul H X where
-  isProperMap_smul_pair' := by
+  isProperMap_smul_pair := by
     have := isProperMap_of_closedEmbedding f_clemb
     have h : IsProperMap (Prod.map f (fun x : X ↦ x)) := IsProperMap.prod_map this isProperMap_id
     have : (fun hx : H × X ↦ (hx.1 • hx.2, hx.2)) = (fun hx ↦ (f hx.1 • hx.2, hx.2)) := by
       simp [f_compat]
     rw [this]
-    exact h.comp <| isProperMap_smul_pair G X
+    exact h.comp <| ProperSMul.isProperMap_smul_pair
 
 /-- If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`. -/
 @[to_additive "If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`."]
@@ -278,7 +269,7 @@ theorem properlyDiscontinuousSMul_iff_properSMul [T2Space X] [DiscreteTopology G
     -- Now set `h : (g, x) ↦ (g⁻¹ • x, x)`, because `f` is proper by hypothesis, so is `h`.
     have : IsProperMap (fun gx : G × X ↦ (gx.1⁻¹ • gx.2, gx.2)) :=
       (IsProperMap.prod_map (Homeomorph.isProperMap (Homeomorph.inv G)) isProperMap_id).comp <|
-        isProperMap_smul_pair ..
+        ProperSMul.isProperMap_smul_pair
     --But we also have that `{g | Set.Nonempty ((g • ·) '' K ∩ L)} = h ⁻¹ (K × L)`, which
     -- concludes the proof.
     have eq : {g | Set.Nonempty ((g • ·) '' K ∩ L)} =
