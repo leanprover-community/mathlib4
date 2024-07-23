@@ -23,6 +23,7 @@ namespace Square
 variable {C : Type*} [Category C] [Preadditive C]
   (sq : Square C) [HasBinaryBiproduct sq.X₂ sq.X₃]
 
+/-- The cokernel cofork attached to a commutative square in a preadditive category. -/
 noncomputable abbrev cokernelCofork  :
     CokernelCofork (biprod.lift sq.f₁₂ (-sq.f₁₃)) :=
   CokernelCofork.ofπ (biprod.desc sq.f₂₄ sq.f₃₄) (by simp [sq.fac])
