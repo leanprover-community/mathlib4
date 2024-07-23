@@ -246,22 +246,6 @@ noncomputable def shortComplex :
   zero := (S.map (yoneda ⋙ (whiskeringRight _ _ _).obj AddCommGrp.free ⋙
       presheafToSheaf J _)).cokernelCofork.condition
 
-instance : (AddCommGrp.free.{v}).PreservesMonomorphisms := by
-  sorry
-
-variable (X : Cᵒᵖ)
-
-instance {F G : C ⥤ Type u'} (f : F ⟶ G) [Mono f] (X : C) :
-    Mono (f.app X) :=
-  inferInstanceAs (Mono (((evaluation _ _).obj X).map f))
-
-instance {F G : C ⥤ Type u'} (f : F ⟶ G) [Mono f] :
-    Mono (whiskerRight f AddCommGrp.free) := by
-  have : ∀ (X : C), Mono ((whiskerRight f AddCommGrp.free).app X) := fun X ↦ by
-    dsimp
-    infer_instance
-  apply NatTrans.mono_of_mono_app
-
 instance : Mono S.shortComplex.f := by
   have : Mono (S.shortComplex.f ≫ biprod.snd) := by
     dsimp
