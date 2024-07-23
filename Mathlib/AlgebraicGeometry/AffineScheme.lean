@@ -354,23 +354,15 @@ theorem fromSpec_preimage_self :
   rw [Opens.map_coe, Opens.coe_top, ← hU.range_fromSpec, ← Set.image_univ]
   exact Set.preimage_image_eq _ PresheafedSpace.IsOpenImmersion.base_open.inj
 
-#adaptation_note /-- 2024-04-23
-The backwards compatibility flags don't help here. -/
-set_option maxHeartbeats 400000 in
--- Doesn't build without the `IsAffine` instance but the linter complains
-@[nolint unusedHavesSuffices]
 theorem SpecΓIdentity_hom_app_fromSpec :
     (Scheme.ΓSpecIso Γ(X, U)).hom ≫ hU.fromSpec.app U =
       (Spec Γ(X, U)).presheaf.map (eqToHom hU.fromSpec_preimage_self).op := by
-  have : IsAffine _ := hU
-  delta IsAffineOpen.fromSpec Scheme.isoSpec
-  rw [Scheme.comp_app, Scheme.comp_app, ΓSpecIso_obj_hom, Scheme.Opens.ι_app_self]
-  simp only [asIso_inv, Scheme.comp_coeBase, Opens.map_comp_obj, Scheme.Opens.topIso_inv,
-    Opens.map_top, Functor.id_obj, Functor.comp_obj,
+  simp only [fromSpec, Scheme.isoSpec, asIso_inv, Scheme.comp_coeBase, Opens.map_comp_obj,
+    ΓSpecIso_obj_hom, Scheme.Opens.topIso_inv, Opens.map_top, Functor.id_obj, Functor.comp_obj,
     Functor.rightOp_obj, Scheme.Γ_obj, unop_op, Scheme.Spec_obj, Scheme.Opens.topIso_hom,
-    Category.assoc]
-  rw [← Functor.map_comp_assoc, ← op_comp, eqToHom_trans, Scheme.Opens.eq_presheaf_map_eqToHom,
-    Scheme.Hom.naturality_assoc, Scheme.inv_app_top, IsIso.hom_inv_id_assoc]
+    Scheme.comp_app, Scheme.Opens.ι_app_self, Category.assoc, ← Functor.map_comp_assoc, ← op_comp,
+    eqToHom_trans, Scheme.Opens.eq_presheaf_map_eqToHom, Scheme.Hom.naturality_assoc,
+    Scheme.inv_app_top, IsIso.hom_inv_id_assoc]
   simp only [eqToHom_op, eqToHom_map, Spec.map_eqToHom, eqToHom_unop,
     Scheme.Spec_map_presheaf_map_eqToHom, eqToHom_trans]
 
