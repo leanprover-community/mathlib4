@@ -177,22 +177,23 @@ elab_rules : tactic | `(tactic| slim_check $[$cfg]?) => withMainContext do
       || (← isTracingEnabledFor `slim_check.shrink.candidates) }
   let inst ← try
     synthInstance (← mkAppM ``Testable #[tgt'])
-  catch _ => throwError "Failed to create a `testable` instance for `{tgt}`.
-What to do:
-1. make sure that the types you are using have `SlimCheck.SampleableExt` instances
-   (you can use `#sample my_type` if you are unsure);
-2. make sure that the relations and predicates that your proposition use are decidable;
-3. make sure that instances of `SlimCheck.Testable` exist that, when combined,
-   apply to your decorated proposition:
-```
-{tgt'}
-```
-
-Use `set_option trace.Meta.synthInstance true` to understand what instances are missing.
-
-Try this:
-set_option trace.Meta.synthInstance true
-#synth SlimCheck.Testable ({tgt'})"
+  catch _ => throwError "\
+      Failed to create a `testable` instance for `{tgt}`.\
+    \nWhat to do:\
+    \n1. make sure that the types you are using have `SlimCheck.SampleableExt` instances\
+    \n  (you can use `#sample my_type` if you are unsure);\
+    \n2. make sure that the relations and predicates that your proposition use are decidable;\
+    \n3. make sure that instances of `SlimCheck.Testable` exist that, when combined,\
+    \n  apply to your decorated proposition:\
+    \n```\
+    \n{tgt'}\
+    \n```\
+    \n\
+    \nUse `set_option trace.Meta.synthInstance true` to understand what instances are missing.\
+    \n\
+    \nTry this:\
+    \nset_option trace.Meta.synthInstance true\
+    \n#synth SlimCheck.Testable ({tgt'})"
   let e ← mkAppOptM ``Testable.check #[tgt, toExpr cfg, tgt', inst]
   trace[slim_check.decoration] "[testable decoration]\n  {tgt'}"
   -- Porting note: I have not ported support for `trace.slim_check.instance`.

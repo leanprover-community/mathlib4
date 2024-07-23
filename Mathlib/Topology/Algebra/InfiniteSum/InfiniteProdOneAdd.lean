@@ -1,6 +1,7 @@
 
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Analysis.Complex.LocallyUniformLimit
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
 
 open Filter Function Complex
 
@@ -37,7 +38,7 @@ theorem unif_prod_bound3 (F : ι → α → ℂ)
     apply Complex.abs.nonneg
     apply hs a
   have hexp : 0 < Real.exp T := by have := Real.exp_pos T; apply this
-  refine' ⟨Real.exp T, _⟩
+  refine ⟨Real.exp T, ?_⟩
   simp [hexp]
   intro n x
   apply le_trans (prod_be_exp _ _)
@@ -60,7 +61,7 @@ theorem unif_prod_bound (F : ℕ → ℂ → ℂ) (K : Set ℂ)
     apply Complex.abs.nonneg
     apply hs a
   have hexp : 0 < Real.exp T := by have := Real.exp_pos T; apply this
-  refine' ⟨Real.exp T, _⟩
+  refine ⟨Real.exp T, ?_⟩
   simp [hexp]
   intro n x hx
   apply le_trans (prod_be_exp _ _)
@@ -239,7 +240,7 @@ theorem tsum_unif (F : ℕ → ℂ → ℂ) (K : Set ℂ)
   intro ε hε
   have HF := hf ε hε
   obtain ⟨N, hN⟩ := HF
-  refine' ⟨N, _⟩
+  refine ⟨N, ?_⟩
   intro n x hx _
   have hnn : N ≤ N := by rfl
   have HN2 := hN N hnn x hx
@@ -463,7 +464,7 @@ theorem sum_prod_unif_conv (F : ℕ → ℂ → ℂ) (g : ℂ → ℂ) (K : Set 
   obtain ⟨δ, hδ⟩ := hdelta
   have HH := H δ hδ.1
   obtain ⟨N, HN⟩ := HH
-  refine' ⟨N, _⟩
+  refine ⟨N, ?_⟩
   intro n hn m hm x hx
   have hCm := hC (Finset.range m) x
   have hCn := hC (Finset.range n) x
@@ -563,7 +564,7 @@ variable (f : ℕ → ℂ → ℂ)
 
 
 lemma A2  (f : ℕ → ℂ → ℂ) (hf : ∀ x : ℂ,  Summable fun n => Complex.log (1 + (f n x))) :
-  (fun a : ℂ => Complex.exp  (∑' n : ℕ, Complex.log (1 + (f n a)))) =
+  (Complex.exp ∘ (fun a : ℂ =>   (∑' n : ℕ, Complex.log (1 + (f n a))))) =
     (fun a : ℂ => ∏' n : ℕ, (1 + (f n a))) := by
   ext a
   have := (hf a).hasSum.cexp
@@ -595,7 +596,7 @@ have ha : 0 < ε/(2*(Real.exp a)) := by
 have H := this 0 (ε/(2* Real.exp a)) ha
 rw [Metric.eventually_nhds_iff] at H
 obtain ⟨δ, hδ⟩ := H
-refine' ⟨δ, hδ.1, _⟩
+refine ⟨δ, hδ.1, ?_⟩
 intros x _ y hy hxy
 have h3 := hδ.2 (y := x -y) (by simpa using hxy)
 rw [dist_eq_norm] at *
@@ -627,6 +628,12 @@ theorem UniformContinuousOn.comp_tendstoUniformlyOn (s : Set ℂ) (F : ℕ → �
   rw [uniformContinuousOn_iff_restrict] at hg
   apply (UniformContinuous.comp_tendstoUniformlyOn hg h)
 
+theorem UniformContinuousOn.comp_tendstoUniformly (s K : Set ℂ) (F : ℕ → K → s) (f : K → s) {g : ℂ → ℂ}
+    (hg : UniformContinuousOn g s) (h : TendstoUniformly F f atTop) :
+    TendstoUniformly (fun i => fun x =>  g  (F i x)) (fun x => g (f x)) atTop := by
+  rw [uniformContinuousOn_iff_restrict] at hg
+  apply (UniformContinuous.comp_tendstoUniformly hg h)
+
 lemma A33 (f : ℕ → ℂ → ℂ) (g : ℂ → ℂ) (K : Set ℂ) (T : ℝ) (hf : TendstoUniformlyOn f g atTop K)
  (hg : ∀ x : ℂ, x ∈ K → (g x).re ≤ T) : ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ (n : ℕ) (x : ℂ), x ∈ K → N ≤ n →
    (f n x).re ≤ T + ε := by
@@ -652,13 +659,207 @@ lemma A33 (f : ℕ → ℂ → ℂ) (g : ℂ → ℂ) (K : Set ℂ) (T : ℝ) (h
 lemma A3 (f : ℕ → ℂ → ℂ) (g : ℂ → ℂ) (K : Set ℂ) (hf : TendstoUniformlyOn f g atTop K)
   (hg : ∃ T : ℝ, ∀ x : ℂ, x ∈ K → (g x).re ≤ T) :
     TendstoUniformlyOn (fun n => fun x => cexp (f n x)) (cexp ∘ g) atTop K := by
-  rw [Metric.tendstoUniformlyOn_iff] at hf
-  simp at hf
-  have hf2 := hf (1) (by exact Real.zero_lt_one)
-  obtain ⟨N, hN⟩ := hf2
+  obtain ⟨T, hT⟩ := hg
+  have := A33 f g K T hf hT
+  rw [Metric.tendstoUniformlyOn_iff] at *
+  simp at *
+  have ht := this 1 (by exact Real.zero_lt_one)
+  obtain ⟨δ, hδ⟩ := ht
+  let F : ℕ → K → {x : ℂ | x.re ≤ T + 1} := fun n => fun x => ⟨f (n + δ) x, by
+    have := hδ (n + δ) x x.2
+    simp at this
+    exact this⟩
+  let G : K → {x : ℂ | x.re ≤ T + 1} := fun x => ⟨g x, by
+    simp
+    apply le_trans (hT x x.2)
+    linarith⟩
+  have wish : TendstoUniformly F G atTop := by
+    rw [Metric.tendstoUniformly_iff]
+    simp [F, G]
+    intro ε hε
+    have hff := hf ε hε
+    obtain ⟨N2, hN2⟩ := hff
+    use (max N2 δ) - δ
+    intro n hn x hx
+    have hN2 := hN2 (n + δ)
+    rw [@Nat.sub_le_iff_le_add] at hn
+    apply hN2
+    apply le_trans ?_ hn
+    exact Nat.le_max_left N2 δ
+    apply hx
+  have w2 := UniformContinuousOn.comp_tendstoUniformly  {x : ℂ | x.re ≤ T + 1} K F G (A4 (T + 1))
+    wish
+  simp [F,G] at w2
+  rw [Metric.tendstoUniformly_iff] at *
+  simp at w2
+  intro ε hε
+  have w3 := w2 ε hε
+  obtain ⟨N2, hN2⟩ := w3
+  use N2 + δ
+  intro b hb x hx
+  have : ∃ b' : ℕ, b = b' + δ ∧ N2 ≤ b' := by
+    rw [@le_iff_exists_add] at hb
+    obtain ⟨c, hc⟩ := hb
+    use N2 + c
+    simp only [hc, le_add_iff_nonneg_right, zero_le, and_true]
+    group
+  obtain ⟨b', hb', hb''⟩ := this
+  rw [hb']
+  apply hN2 b' hb'' x hx
 
+
+lemma A3w (f : ℕ → ℂ → ℂ) (K : Set ℂ) (h : ∀ x : ℂ,  Summable fun n => Complex.log (1 + (f n x)))
+    (hf : TendstoUniformlyOn (fun n : ℕ => fun a : ℂ => ∑ i in Finset.range n, Complex.log (1 + (f i a)))
+      (fun a : ℂ => ∑' n : ℕ, Complex.log (1 + (f n a))) Filter.atTop K)
+  (hb : ∀ i : ℕ, ∀ x : ℂ, x ∈ K → ((1 + f i x) ≠ 0))
+  (hg : ∃ T : ℝ, ∀ x : ℂ, x ∈ K → (∑' n : ℕ, Complex.log (1 + (f n x))).re ≤ T) :
+    TendstoUniformlyOn (fun n : ℕ => fun a : ℂ => ∏ i in Finset.range n, (1 + f i a))
+      (fun a => ∏' i, (1 + f i a)) atTop K := by
+  have := A3 (fun n : ℕ => fun a : ℂ => ∑ i in Finset.range n, (Complex.log (1 + (f i a))))
+    (fun a : ℂ =>(∑' n : ℕ, Complex.log (1 + (f n a)))) K hf hg
+  have := TendstoUniformlyOn.congr this
+    (F' := (fun n : ℕ => fun a : ℂ => ∏ i in Finset.range n, (1 + (f i a))))
+  have hr := A2 f h
+  rw [← hr]
+  apply this
+  simp
+  use 0
+  simp
+  intro b
+  intro x hx
+  simp
+  rw [@exp_sum]
+  congr
+  ext y
+  apply Complex.exp_log
+  exact hb y x hx
+
+open Real
+
+theorem euler_sin_prod' (x : ℂ) (h0 : x ≠ 0) :
+    Tendsto (fun n : ℕ => ∏ i : ℕ in Finset.range n, (1 + -x ^ 2 / (↑i + 1) ^ 2)) atTop
+      (𝓝 ((fun t : ℂ => sin (↑π * t) / (↑π * t)) x)) := by
+  have := tendsto_euler_sin_prod x
+  rw [Metric.tendsto_atTop] at *
+  intro ε hε
+  have hh : ↑π * x ≠ 0 := by apply mul_ne_zero; norm_cast; apply Real.pi_ne_zero; apply h0
+  have hex : 0 < ε * Complex.abs (π * x) := by
+    apply mul_pos; apply hε; apply Complex.abs.pos;
+    apply hh
+  have h1 := this (ε * Complex.abs (π * x)) hex
+  obtain ⟨N, hN⟩ := h1
+  refine ⟨N, ?_⟩
+  intro n hn
+  have h2 := hN n hn
+  simp
+  rw [dist_eq_norm] at *
+  have :
+    ∏ i : ℕ in Finset.range n, (1 + -x ^ 2 / (↑i + 1) ^ 2) - sin (↑π * x) / (↑π * x) =
+      (↑π * x * ∏ i : ℕ in Finset.range n, (1 + -x ^ 2 / (↑i + 1) ^ 2) - sin (↑π * x)) / (↑π * x) :=
+    by
+    have tt :=
+      sub_div' (sin (↑π * x)) (∏ i : ℕ in Finset.range n, (1 + -x ^ 2 / (↑i + 1) ^ 2)) (↑π * x) hh
+    simp at *
+    rw [tt]
+    ring
+  norm_cast at *
+  rw [this]
+  field_simp
+  rw [div_lt_iff]
+  simp at *
+  norm_cast at *
+  have hr : Complex.abs ((↑π * x * ∏ x_1 in Finset.range n, (1 + -x ^ 2 / (((x_1 + 1) : ℕ) ^ 2)))
+    - sin (↑π * x)) =
+    Complex.abs ((↑π * x * ∏ x_1 in Finset.range n, (1 -x ^ 2 / ((x_1 + 1) ^ 2)) - sin (↑π * x)) ):=
+    by
+      congr
+      ext1
+      norm_cast
+      ring
+  norm_cast at *
+  simp at *
+  rw [hr]
+  convert h2
+  apply mul_pos
+  simpa using Real.pi_ne_zero
+  apply Complex.abs.pos
+  exact h0
+
+
+lemma prodd (x : ℂ) (h0 : x ≠ 0) :
+  ( ∏' i : ℕ, (1 + -x ^ 2 / (↑i + 1) ^ 2)) = (((fun t : ℂ => sin (↑π * t) / (↑π * t)) x)) := by
+  rw [← Multipliable.hasProd_iff]
+  rw [Multipliable.hasProd_iff_tendsto_nat]
+  have := euler_sin_prod' x h0
+  simp at this
+  apply this
+  sorry
+  sorry
+
+lemma log_of_summable (f : ℕ → ℂ) (hf : Summable f) :
+    Summable (fun n : ℕ => Complex.log (1 + f n)) := by
+  -- summable_norm_iff
+  --rw [← summable_abs_iff ] at hf
+  --apply Summable.of_norm
+/-   have hff : Summable (fun n => fun x => Complex.abs (f n x)) := by
+    --apply summable_abs_iff.mpr hf
+    sorry
+  have := Summable.of_norm_bounded (E := ℂ) (fun n => fun x => Complex.abs (f n x)) hff
+ -/
+  have hff : Summable (fun n => Complex.abs (f n)) := by
+    sorry
+  apply  Summable.of_norm_bounded (fun n => Complex.abs (f n)) hff
+  intro n
+  simp
+  --have := Complex.norm_log_one_add_sub_self_le
 
 
 
 
   sorry
+
+
+
+local notation "ℍ'" => {z : ℂ | 0 < Complex.im z}
+
+theorem tendsto_locally_uniformly_euler_sin_prod' (z : ℍ') (r : ℝ) (hr : 0 < r) :
+    TendstoUniformlyOn (fun n : ℕ => fun z : ℂ => ∏ j in Finset.range n, (1 + -z ^ 2 / (j + 1) ^ 2))
+      (fun x => ( ∏' i : ℕ, (1 + -x ^ 2 / (↑i + 1) ^ 2))) atTop (Metric.ball z r ∩ ℍ') := by
+  apply A3w
+
+  sorry
+  sorry
+  sorry
+  sorry
+
+
+/- lemma fin0 (f : ℕ → ℂ → ℂ) (g : ℂ → ℂ) (K : Set ℂ) (hf :
+    TendstoUniformlyOn (fun n : ℕ => fun a : ℂ => ∑ i in Finset.range n, (f i a))
+      (fun a : ℂ => ∑' n : ℕ, (f n a)) Filter.atTop K)
+    (hp : ∀ x : ℂ, x ∈ K → Tendsto
+      (fun n : ℕ => ∏ i in Finset.range n, (1 + f i x)) atTop (𝓝 (g x)))
+    (hb : ∃ T : ℝ, ∀ x : ℂ, x ∈ K → ∑' n : ℕ, Complex.abs (f n x) ≤ T) :
+    TendstoUniformlyOn (fun n : ℕ =>
+      fun a : ℂ => ∏ i in Finset.range n, (1 + f i a)) g Filter.atTop K := by
+
+
+    sorry
+
+lemma fin (f : ℕ → ℂ → ℂ) (g : ℂ → ℂ) (K : Set ℂ) (hf :
+    TendstoUniformlyOn (fun n : ℕ => fun a : ℂ => ∑ i in Finset.range n, (f i a))
+      (fun a : ℂ => ∑' n : ℕ, (f n a)) Filter.atTop K)
+    (hp : ∀ x : ℂ, x ∈ K → Tendsto
+      (fun n : ℕ => ∏ i in Finset.range n, (1 + f i x)) atTop (𝓝 (g x)))
+    (hb : ∃ T : ℝ, ∀ x : ℂ, x ∈ K → ∑' n : ℕ, Complex.abs (f n x) ≤ T) :
+    TendstoUniformlyOn (fun n : ℕ =>
+      fun a : ℂ => ∏ i in Finset.range n, (1 + f i a)) g Filter.atTop K := by
+    --have := tsum_unif2 f K hf
+    /- rw [Metric.tendstoUniformlyOn_iff] at hf
+    simp only [gt_iff_lt, eventually_atTop, ge_iff_le] at hf
+    have hf2 := hf ((1 : ℝ)/2) (one_half_pos)
+    obtain ⟨N0, hN0⟩ := hf2 -/
+    have A : ∃  n : ℕ, ∀ m : ℕ, m ≤ n → ∀ x : ℂ, x ∈ K →  Complex.abs (f m x) ≤ (1/2) := by sorry
+    obtain ⟨n0, hn0⟩ := A
+
+    sorry
+ -/

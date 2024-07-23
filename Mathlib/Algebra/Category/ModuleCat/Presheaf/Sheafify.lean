@@ -49,7 +49,7 @@ end smul
 section
 
 variable {R₀ R : Cᵒᵖ ⥤ RingCat.{u}} (α : R₀ ⟶ R) [Presheaf.IsLocallyInjective J α]
-  {M₀ : PresheafOfModules.{v} R₀} {A : Cᵒᵖ ⥤ AddCommGroupCat.{v}} (φ : M₀.presheaf ⟶ A)
+  {M₀ : PresheafOfModules.{v} R₀} {A : Cᵒᵖ ⥤ AddCommGrp.{v}} (φ : M₀.presheaf ⟶ A)
   [Presheaf.IsLocallyInjective J φ] (hA : Presheaf.IsSeparated J A)
   {X : C} (r : R.obj (Opposite.op X)) (m : A.obj (Opposite.op X)) {P : Presieve X}
   (r₀ : FamilyOfElements (R₀ ⋙ forget _) P) (m₀ : FamilyOfElements (M₀.presheaf ⋙ forget _) P)
@@ -80,7 +80,7 @@ lemma isCompatible_map_smul_aux {Y Z : C} (f : Y ⟶ X) (g : Z ⟶ Y)
   rw [← PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective α φ hA (R₀.map g.op r₀) r₀'
     (M₀.presheaf.map g.op m₀) m₀', M₀.map_smul]
   · rw [hr₀', R.map_comp, comp_apply, ← hr₀, NatTrans.naturality_apply]
-  · rw [hm₀', A.map_comp, AddCommGroupCat.coe_comp, Function.comp_apply, ← hm₀]
+  · rw [hm₀', A.map_comp, AddCommGrp.coe_comp, Function.comp_apply, ← hm₀]
     erw [NatTrans.naturality_apply]
     rfl
 
@@ -123,7 +123,7 @@ variable {R₀ : Cᵒᵖ ⥤ RingCat.{u}} {R : Sheaf J RingCat.{u}} (α : R₀ �
 
 namespace PresheafOfModules
 
-variable {M₀ : PresheafOfModules.{v} R₀} {A : Sheaf J AddCommGroupCat.{v}}
+variable {M₀ : PresheafOfModules.{v} R₀} {A : Sheaf J AddCommGrp.{v}}
   (φ : M₀.presheaf ⟶ A.val)
   [Presheaf.IsLocallyInjective J φ] [Presheaf.IsLocallySurjective J φ]
 
@@ -326,7 +326,7 @@ instance : Presheaf.IsLocallyInjective J (toSheafify α φ).hom := by
 instance : Presheaf.IsLocallySurjective J (toSheafify α φ).hom := by
   dsimp; infer_instance
 
-variable [J.WEqualsLocallyBijective AddCommGroupCat.{v}]
+variable [J.WEqualsLocallyBijective AddCommGrp.{v}]
 
 /-- The bijection `((sheafify α φ).val ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj F)` which
 is part of the universal property of the sheafification of the presheaf of modules `M₀`,
@@ -355,7 +355,7 @@ noncomputable def sheafifyHomEquiv {F : SheafOfModules.{v} R} :
 
 section
 
-variable {M₀' : PresheafOfModules.{v} R₀} {A' : Sheaf J AddCommGroupCat.{v}}
+variable {M₀' : PresheafOfModules.{v} R₀} {A' : Sheaf J AddCommGrp.{v}}
   (φ' : M₀'.presheaf ⟶ A'.val)
   [Presheaf.IsLocallyInjective J φ'] [Presheaf.IsLocallySurjective J φ']
   (τ₀ : M₀ ⟶ M₀') (τ : A ⟶ A')

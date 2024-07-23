@@ -7,8 +7,6 @@ import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 import Mathlib.Algebra.CharP.CharAndCard
 
-#align_import number_theory.legendre_symbol.gauss_sum from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
-
 /-!
 # Gauss sums
 
@@ -68,7 +66,6 @@ variable {R' : Type v} [CommRing R']
 /-- Definition of the Gauss sum associated to a multiplicative and an additive character. -/
 def gaussSum (χ : MulChar R R') (ψ : AddChar R R') : R' :=
   ∑ a, χ a * ψ a
-#align gauss_sum gaussSum
 
 /-- Replacing `ψ` by `mulShift ψ a` and multiplying the Gauss sum by `χ a` does not change it. -/
 theorem gaussSum_mulShift (χ : MulChar R R') (ψ : AddChar R R') (a : Rˣ) :
@@ -76,7 +73,6 @@ theorem gaussSum_mulShift (χ : MulChar R R') (ψ : AddChar R R') (a : Rˣ) :
   simp only [gaussSum, mulShift_apply, Finset.mul_sum]
   simp_rw [← mul_assoc, ← map_mul]
   exact Fintype.sum_bijective _ a.mulLeft_bijective _ _ fun x ↦ rfl
-#align gauss_sum_mul_shift gaussSum_mulShift
 
 end GaussSumDef
 
@@ -92,21 +88,20 @@ variable {R : Type u} [Field R] [Fintype R] {R' : Type v} [CommRing R'] [IsDomai
 
 -- A helper lemma for `gaussSum_mul_gaussSum_eq_card` below
 -- Is this useful enough in other contexts to be public?
-private theorem gaussSum_mul_aux {χ : MulChar R R'} (hχ : χ.IsNontrivial) (ψ : AddChar R R')
+private theorem gaussSum_mul_aux {χ : MulChar R R'} (hχ : χ ≠ 1) (ψ : AddChar R R')
     (b : R) :
     ∑ a, χ (a * b⁻¹) * ψ (a - b) = ∑ c, χ c * ψ (b * (c - 1)) := by
   rcases eq_or_ne b 0 with hb | hb
   · -- case `b = 0`
     simp only [hb, inv_zero, mul_zero, MulChar.map_zero, zero_mul,
-      Finset.sum_const_zero, map_zero_eq_one, mul_one]
-    exact (hχ.sum_eq_zero).symm
+      Finset.sum_const_zero, map_zero_eq_one, mul_one, χ.sum_eq_zero_of_ne_one hχ]
   · -- case `b ≠ 0`
     refine (Fintype.sum_bijective _ (mulLeft_bijective₀ b hb) _ _ fun x ↦ ?_).symm
     rw [mul_assoc, mul_comm x, ← mul_assoc, mul_inv_cancel hb, one_mul, mul_sub, mul_one]
 
 /-- We have `gaussSum χ ψ * gaussSum χ⁻¹ ψ⁻¹ = Fintype.card R`
 when `χ` is nontrivial and `ψ` is primitive (and `R` is a field). -/
-theorem gaussSum_mul_gaussSum_eq_card {χ : MulChar R R'} (hχ : χ.IsNontrivial) {ψ : AddChar R R'}
+theorem gaussSum_mul_gaussSum_eq_card {χ : MulChar R R'} (hχ : χ ≠ 1) {ψ : AddChar R R'}
     (hψ : IsPrimitive ψ) :
     gaussSum χ ψ * gaussSum χ⁻¹ ψ⁻¹ = Fintype.card R := by
   simp only [gaussSum, AddChar.inv_apply, Finset.sum_mul, Finset.mul_sum, MulChar.inv_apply']
@@ -120,18 +115,16 @@ theorem gaussSum_mul_gaussSum_eq_card {χ : MulChar R R'} (hχ : χ.IsNontrivial
   simp_rw [← Finset.mul_sum, sum_mulShift _ hψ, sub_eq_zero, apply_ite, Nat.cast_zero, mul_zero]
   rw [Finset.sum_ite_eq' Finset.univ (1 : R)]
   simp only [Finset.mem_univ, map_one, one_mul, if_true]
-#align gauss_sum_mul_gauss_sum_eq_card gaussSum_mul_gaussSum_eq_card
 
 /-- When `χ` is a nontrivial quadratic character, then the square of `gaussSum χ ψ`
 is `χ(-1)` times the cardinality of `R`. -/
-theorem gaussSum_sq {χ : MulChar R R'} (hχ₁ : χ.IsNontrivial) (hχ₂ : IsQuadratic χ)
+theorem gaussSum_sq {χ : MulChar R R'} (hχ₁ : χ ≠ 1) (hχ₂ : IsQuadratic χ)
     {ψ : AddChar R R'} (hψ : IsPrimitive ψ) :
     gaussSum χ ψ ^ 2 = χ (-1) * Fintype.card R := by
   rw [pow_two, ← gaussSum_mul_gaussSum_eq_card hχ₁ hψ, hχ₂.inv, mul_rotate']
   congr
   rw [mul_comm, ← gaussSum_mulShift _ _ (-1 : Rˣ), inv_mulShift]
   rfl
-#align gauss_sum_sq gaussSum_sq
 
 end GaussSumProd
 
@@ -154,7 +147,6 @@ theorem gaussSum_frob (χ : MulChar R R') (ψ : AddChar R R') :
   rw [← frobenius_def, gaussSum, gaussSum, map_sum]
   simp_rw [pow_apply' χ fp.1.ne_zero, map_mul, frobenius_def]
   rfl
-#align gauss_sum_frob gaussSum_frob
 
 /-- For a quadratic character `χ` and when the characteristic `p` of the target ring
 is a unit in the source ring, the `p`th power of the Gauss sum of`χ` and `ψ` is
@@ -165,7 +157,6 @@ theorem MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : MulChar R 
   rw [_root_.gaussSum_frob, pow_mulShift, hχ.pow_char p, ← gaussSum_mulShift χ ψ hp.unit,
     ← mul_assoc, hp.unit_spec, ← pow_two, ← pow_apply' _ two_ne_zero, hχ.sq_eq_one, ← hp.unit_spec,
     one_apply_coe, one_mul]
-#align mul_char.is_quadratic.gauss_sum_frob MulChar.IsQuadratic.gaussSum_frob
 
 /-- For a quadratic character `χ` and when the characteristic `p` of the target ring
 is a unit in the source ring and `n` is a natural number, the `p^n`th power of the Gauss
@@ -177,7 +168,6 @@ theorem MulChar.IsQuadratic.gaussSum_frob_iter (n : ℕ) (hp : IsUnit (p : R)) {
   · rw [pow_zero, pow_one, pow_zero, MulChar.map_one, one_mul]
   · rw [pow_succ, pow_mul, ih, mul_pow, hχ.gaussSum_frob _ hp, ← mul_assoc, pow_succ, map_mul,
       ← pow_apply' χ fp.1.ne_zero ((p : R) ^ n), hχ.pow_char p]
-#align mul_char.is_quadratic.gauss_sum_frob_iter MulChar.IsQuadratic.gaussSum_frob_iter
 
 end gaussSum_frob
 
@@ -207,12 +197,11 @@ theorem Char.card_pow_char_pow {χ : MulChar R R'} (hχ : IsQuadratic χ) (ψ : 
   apply mul_right_cancel₀ this
   rw [← hχ.gaussSum_frob_iter p n hp ψ, ← pow_mul, ← pow_succ,
     Nat.two_mul_div_two_add_one_of_odd (fp.1.eq_two_or_odd'.resolve_left hp').pow]
-#align char.card_pow_char_pow Char.card_pow_char_pow
 
 /-- When `F` and `F'` are finite fields and `χ : F → F'` is a nontrivial quadratic character,
 then `(χ(-1) * #F)^(#F'/2) = χ #F'`. -/
 theorem Char.card_pow_card {F : Type*} [Field F] [Fintype F] {F' : Type*} [Field F'] [Fintype F']
-    {χ : MulChar F F'} (hχ₁ : χ.IsNontrivial) (hχ₂ : IsQuadratic χ)
+    {χ : MulChar F F'} (hχ₁ : χ ≠ 1) (hχ₂ : IsQuadratic χ)
     (hch₁ : ringChar F' ≠ ringChar F) (hch₂ : ringChar F' ≠ 2) :
     (χ (-1) * Fintype.card F) ^ (Fintype.card F' / 2) = χ (Fintype.card F') := by
   obtain ⟨n, hp, hc⟩ := FiniteField.card F (ringChar F)
@@ -227,8 +216,7 @@ theorem Char.card_pow_card {F : Type*} [Field F] [Fintype F] {F' : Type*} [Field
   have := Fact.mk (hchar.subst hp')
   rw [Ne, ← Nat.prime_dvd_prime_iff_eq hp' hp, ← isUnit_iff_not_dvd_char, hchar] at hch₁
   exact Char.card_pow_char_pow (hχ₂.comp _) ψ.char (ringChar FF') n' hch₁ (hchar ▸ hch₂)
-       (gaussSum_sq (hχ₁.comp <| RingHom.injective _) (hχ₂.comp _) ψ.prim)
-#align char.card_pow_card Char.card_pow_card
+       (gaussSum_sq ((ringHomComp_ne_one_iff (RingHom.injective _)).mpr hχ₁) (hχ₂.comp _) ψ.prim)
 
 end GaussSumValues
 
@@ -317,7 +305,5 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
       (FiniteField.isSquare_iff hF <| hp2 2).mp ⟨2, pow_two 2⟩, one_mul]
   apply (algebraMap F FF).injective
   simpa only [map_pow, map_ofNat, map_intCast, Nat.cast_ofNat] using h
-
-#align finite_field.two_pow_card FiniteField.two_pow_card
 
 end GaussSumTwo
