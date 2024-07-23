@@ -15,97 +15,318 @@ This file describes behavior of norms in ultrametric spaces.
 
 * A normed additive group has an ultrametric iff the norm is nonarchimedean
 
+## Implementation details
+
+Some results are proved first about `nnnorm : X → ℝ≥0` because the bottom element
+in `NNReal` is 0, so easier to make statements about maxima of empty sets.
+
 ## Tags
 
 ultrametric, nonarchimedean
 -/
-open Metric IsUltrametricDist
+open Metric IsUltrametricDist NNReal
 
 namespace IsUltrametricDist
 
-lemma norm_add_le_max {X : Type*} [SeminormedAddGroup X] [IsUltrametricDist X] (x y : X) :
+section AddGroup
+
+variable {S ι : Type*} [SeminormedAddGroup S] [IsUltrametricDist S]
+
+lemma norm_add_le_max (x y : S) :
     ‖x + y‖ ≤ max ‖x‖ ‖y‖ := by
   simpa [dist_eq_norm x (-y)] using dist_triangle_max x 0 (-y)
 
-lemma isUltrametricDist_of_forall_norm_add_le_max_norm {X : Type*} [SeminormedAddGroup X]
-    (h : ∀ x y : X, ‖x + y‖ ≤ max ‖x‖ ‖y‖) : IsUltrametricDist X := by
+lemma isUltrametricDist_of_forall_norm_add_le_max_norm
+    (h : ∀ x y : S, ‖x + y‖ ≤ max ‖x‖ ‖y‖) : IsUltrametricDist S := by
   constructor
   intro x y z
-  simp_rw [dist_eq_norm]
-  apply (h _ _).trans'
-  simp
+  simpa [dist_eq_norm] using h (x - y) (y - z)
 
-lemma isUltrametricDist_of_isNonarchimedean_norm {X : Type*} [SeminormedAddGroup X]
-    (h : IsNonarchimedean (norm : X → ℝ)) : IsUltrametricDist X :=
+lemma isUltrametricDist_of_isNonarchimedean_norm
+    (h : IsNonarchimedean (norm : S → ℝ)) : IsUltrametricDist S :=
   isUltrametricDist_of_forall_norm_add_le_max_norm h
 
-section AddGroup
+lemma nnnorm_add_le_max (x y : S) :
+    ‖x + y‖₊ ≤ max ‖x‖₊ ‖y‖₊ :=
+  norm_add_le_max _ _
 
-variable {X : Type*} [SeminormedAddCommGroup X] [IsUltrametricDist X]
+lemma isUltrametricDist_of_forall_nnnorm_add_le_max_nnnorm
+    (h : ∀ x y : S, ‖x + y‖₊ ≤ max ‖x‖₊ ‖y‖₊) : IsUltrametricDist S :=
+  isUltrametricDist_of_forall_norm_add_le_max_norm h
+
+lemma isUltrametricDist_of_isNonarchimedean_nnnorm
+    (h : IsNonarchimedean ((↑) ∘ (nnnorm : S → ℝ≥0))) : IsUltrametricDist S :=
+  isUltrametricDist_of_forall_nnnorm_add_le_max_nnnorm h
+
+lemma _root_.Set.finite_range_iSup_mem {ι X : Type*} [ConditionallyCompleteLattice X]
+    {s : Set ι} (hs : s.Finite) (f : ι → X) :
+    Set.Finite (Set.range fun i ↦ ⨆ (_ : i ∈ s), f i) := by
+  classical
+  simp_rw [ciSup_eq_ite]
+  refine ((hs.image f).union (Set.finite_singleton (sSup (∅ : Set X)))).subset ?_
+  intro
+  simp only [dite_eq_ite, Set.mem_range, Set.union_singleton, Set.mem_insert_iff,
+    forall_exists_index]
+  rintro x rfl
+  split_ifs with hx
+  · exact Or.inr ⟨x, hx, rfl⟩
+  · simp
+
+lemma _root_.Real.toNNReal_iSup {ι : Sort*} {s : ι → ℝ} (hs : ∀ i, 0 ≤ s i) :
+    (⨆ i, s i).toNNReal = ⨆ i, (s i).toNNReal := by
+  refine le_antisymm ?_ ?_
+  · simp [Real.toNNReal_le_iff_le_coe, coe_iSup, hs]
+  · simp [Real.le_toNNReal_iff_coe_le (Real.iSup_nonneg hs), hs]
+
+lemma _root_.List.nnnorm_sum_le_iSup_nnnorm (l : List S) :
+    ‖l.sum‖₊ ≤ ⨆ x ∈ l, ‖x‖₊ := by
+  rw [le_ciSup_iff']
+  · intro b h
+    induction l with
+    | nil => simp
+    | cons x xs IH =>
+      rw [List.sum_cons]
+      refine (nnnorm_add_le_max _ _).trans (max_le ((h x).trans' ?_) (IH fun y ↦ (h y).trans' ?_))
+      · simp [le_ciSup_iff' (Set.finite_range _).bddAbove]
+      · rw [le_ciSup_iff' (Set.finite_range _).bddAbove]
+        intro c hy
+        rw [ciSup_le_iff']
+        · intro
+          solve_by_elim
+        · refine ⟨‖c‖₊, ?_⟩
+          rintro z ⟨hz, rfl⟩
+          solve_by_elim
+  · exact (Set.finite_range_iSup_mem l.finite_toSet _).bddAbove
+
+lemma _root_.List.norm_sum_le_iSup_norm (l : List S) :
+    ‖l.sum‖ ≤ ⨆ x ∈ l, ‖x‖ := by
+  have := l.nnnorm_sum_le_iSup_nnnorm
+  rw [← Subtype.coe_le_coe] at this
+  simpa using this
 
 /-- All triangles are isosceles in an ultrametric normed commutative additive group. -/
 lemma norm_add_eq_max_of_norm_ne_norm
-    {x y : X} (h : ‖x‖ ≠ ‖y‖) : ‖x + y‖ = max ‖x‖ ‖y‖ := by
-  wlog hxy : ‖y‖ ≤ ‖x‖
-  · rw [add_comm, max_comm]
-    exact this (Ne.symm h) (le_of_not_le hxy)
+    {x y : S} (h : ‖x‖ ≠ ‖y‖) : ‖x + y‖ = max ‖x‖ ‖y‖ := by
+  rcases le_total ‖x‖ ‖y‖ with hxy|hxy  -- instead of wlog, which would require add_comm
+  · rw [max_eq_right hxy]
+    refine le_antisymm ((norm_add_le_max x y).trans ?_) ?_
+    · simp [h, hxy]
+    · simpa [(lt_of_le_of_ne hxy h).not_le] using norm_add_le_max (-x) (x + y)
   · rw [max_eq_left hxy]
     refine le_antisymm ((norm_add_le_max x y).trans ?_) ?_
     · simp [h, hxy]
     · simpa [(lt_of_le_of_ne hxy (Ne.symm h)).not_le] using norm_add_le_max (x + y) (-y)
 
 /-- All triangles are isosceles in an ultrametric normed commutative additive group. -/
-lemma norm_sub_eq_max_of_norm_sub_ne_norm_sub (x y z : X) (h : ‖x - y‖ ≠ ‖y - z‖) :
+lemma nnnorm_add_eq_max_of_nnnorm_ne_nnnorm
+    {x y : S} (h : ‖x‖₊ ≠ ‖y‖₊) : ‖x + y‖₊ = max ‖x‖₊ ‖y‖₊ := by
+  rw [ne_eq] at h
+  rw [Subtype.ext_iff] at h ⊢
+  simpa using norm_add_eq_max_of_norm_ne_norm h
+
+/-- All triangles are isosceles in an ultrametric normed commutative additive group. -/
+lemma norm_sub_eq_max_of_norm_sub_ne_norm_sub (x y z : S) (h : ‖x - y‖ ≠ ‖y - z‖) :
     ‖x - z‖ = max ‖x - y‖ ‖y - z‖ := by
   simpa using norm_add_eq_max_of_norm_ne_norm h
 
 /-- All triangles are isosceles in an ultrametric normed commutative additive group. -/
-lemma dist_eq_max_of_dist_ne_dist (x y z : X) (h : dist x y ≠ dist y z) :
+lemma dist_eq_max_of_dist_ne_dist (x y z : S) (h : dist x y ≠ dist y z) :
     dist x z = max (dist x y) (dist y z) := by
   simp only [dist_eq_norm] at h ⊢
   exact norm_sub_eq_max_of_norm_sub_ne_norm_sub _ _ _ h
 
+/-- All triangles are isosceles in an ultrametric normed commutative additive group. -/
+lemma nnnorm_sub_eq_max_of_nnnorm_sub_ne_nnnorm_sub (x y z : S) (h : ‖x - y‖₊ ≠ ‖y - z‖₊) :
+    ‖x - z‖₊ = max ‖x - y‖₊ ‖y - z‖₊ := by
+  rw [ne_eq] at h
+  rw [Subtype.ext_iff] at h ⊢
+  simpa using norm_add_eq_max_of_norm_ne_norm h
+
+lemma nnnorm_nsmul_le (x : S) (n : ℕ) :
+    ‖n • x‖₊ ≤ ‖x‖₊ := by
+  induction n with
+  | zero => simp
+  | succ n hn => simpa [add_nsmul, hn] using nnnorm_add_le_max (n • x) x
+
+lemma norm_nsmul_le (x : S) (n : ℕ) :
+    ‖n • x‖ ≤ ‖x‖ :=
+  nnnorm_nsmul_le x n
+
+lemma nnnorm_zsmul_le (x : S) (z : ℤ) :
+    ‖z • x‖₊ ≤ ‖x‖₊ := by
+  induction z <;>
+  simpa using nnnorm_nsmul_le _ _
+
+lemma norm_zsmul_le (x : S) (z : ℤ) :
+    ‖z • x‖ ≤ ‖x‖ :=
+  nnnorm_zsmul_le x z
+
 end AddGroup
 
-section Field
+section AddCommGroup
 
-variable {K : Type*} [NormedField K]
+variable {M ι : Type*} [SeminormedAddCommGroup M] [IsUltrametricDist M]
 
-lemma norm_add_one_le_max_norm_one [IsUltrametricDist K] (x : K) :
+lemma _root_.Multiset.nnnorm_sum_le_iSup_nnnorm (s : Multiset M) :
+    ‖s.sum‖₊ ≤ ⨆ i ∈ s, ‖i‖₊ :=
+  Quotient.inductionOn s (by simpa using List.nnnorm_sum_le_iSup_nnnorm)
+
+lemma _root_.Multiset.norm_sum_le_iSup_norm (s : Multiset M) :
+    ‖s.sum‖ ≤ ⨆ i ∈ s, ‖i‖ :=
+  Quotient.inductionOn s (by simpa using List.norm_sum_le_iSup_norm)
+
+/-- Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum. -/
+lemma _root_.Finset.nnnorm_sum_le_iSup_nnnorm (s : Finset ι) (f : ι → M) :
+    ‖∑ i ∈ s, f i‖₊ ≤ ⨆ i ∈ s, ‖f i‖₊ := by
+  refine ((s.1.map f).nnnorm_sum_le_iSup_nnnorm).trans ?_
+  refine ciSup_le ?_
+  intro
+  classical
+  rw [ciSup_eq_ite]
+  split_ifs with hx
+  · simp only [Multiset.mem_map, Finset.mem_val] at hx
+    obtain ⟨i, hi, rfl⟩ := hx
+    rw [le_ciSup_iff']
+    · intro _ hb
+      simpa [hi] using hb i
+    · exact (Set.finite_range_iSup_mem s.finite_toSet _).bddAbove
+  · simp
+
+/-- Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum. -/
+lemma _root_.Finset.norm_sum_le_iSup_norm (s : Finset ι) (f : ι → M) :
+    ‖∑ i ∈ s, f i‖ ≤ ⨆ i ∈ s, ‖f i‖ := by
+  have := s.nnnorm_sum_le_iSup_nnnorm f
+  rw [← Subtype.coe_le_coe] at this
+  simpa using this
+
+/-- Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum. -/
+lemma _root_.Finset.nnnorm_sum_le_sup_nnnorm (s : Finset ι) (f : ι → M) :
+    ‖∑ i ∈ s, f i‖₊ ≤ s.sup (‖f ·‖₊) := by
+  refine (s.nnnorm_sum_le_iSup_nnnorm _).trans ?_
+  rw [ciSup_le_iff']
+  · intro i
+    classical
+    rw [ciSup_eq_ite]
+    split_ifs with hi
+    · exact Finset.le_sup (f := (‖f ·‖₊)) hi
+    · simp
+  · exact (Set.finite_range_iSup_mem s.finite_toSet _).bddAbove
+
+/-- Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum.
+This version is phrased using `Finset.sup'` and `Finset.Nonempty` due to `Finset.sup`
+operating over an `OrderBot`, which `ℝ` is not.
+-/
+lemma _root_.Finset.Nonempty.norm_sum_le_sup'_norm {s : Finset ι} (hs : s.Nonempty) (f : ι → M) :
+    ‖∑ i ∈ s, f i‖ ≤ s.sup' hs (‖f ·‖) := by
+  refine (s.norm_sum_le_iSup_norm _).trans ?_
+  classical
+  simp_rw [ciSup_eq_ite]
+  obtain ⟨i, -⟩ := id hs
+  have : Nonempty ι := ⟨i⟩
+  refine ciSup_le ?_
+  intro i'
+  split_ifs with hi
+  · exact Finset.le_sup' (f := (‖f ·‖)) hi
+  · simpa using hs
+
+/-- Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum. -/
+lemma _root_.Fintype.nnnorm_sum_le_sup_norm (s : Finset ι) (f : ι → M) :
+    ‖∑ i ∈ s, f i‖₊ ≤ s.sup (‖f ·‖₊) := by
+  refine (s.nnnorm_sum_le_iSup_nnnorm _).trans ?_
+  rw [ciSup_le_iff']
+  · intro i
+    classical
+    rw [ciSup_eq_ite]
+    split_ifs with hi
+    · exact Finset.le_sup (f := (‖f ·‖₊)) hi
+    · simp
+  · exact (Set.finite_range_iSup_mem s.finite_toSet _).bddAbove
+
+/-- Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum. -/
+lemma _root_.Fintype.nnnorm_sum_le_iSup_nnnorm [Fintype ι] (f : ι → M) :
+    ‖∑ i, f i‖₊ ≤ ⨆ i, ‖f i‖₊ := by
+  simpa using Finset.nnnorm_sum_le_iSup_nnnorm Finset.univ f
+
+/-- Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum. -/
+lemma _root_.Fintype.norm_sum_le_iSup_norm [Fintype ι] (f : ι → M) :
+    ‖∑ i, f i‖ ≤ ⨆ i, ‖f i‖ := by
+  simpa using Finset.norm_sum_le_iSup_norm Finset.univ f
+
+/-- Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum. -/
+lemma _root_.nnnorm_finsum_le_iSup_nnnorm (f : ι → M) :
+    ‖∑ᶠ i, f i‖₊ ≤ ⨆ i, ‖f i‖₊ := by
+  classical
+  rw [finsum_def]
+  split_ifs with h
+  · refine (h.toFinset.nnnorm_sum_le_iSup_nnnorm f).trans ?_
+    rw [ciSup_le_iff']
+    · intro
+      rw [ciSup_le_iff' (Set.finite_range _).bddAbove]
+      intro
+      refine le_ciSup (f := (‖f ·‖₊))
+        (((h.image (‖f ·‖₊)).union (Set.finite_singleton 0)).subset ?_).bddAbove  _
+      intro
+      simp only [Set.mem_range, Set.union_singleton, Set.mem_insert_iff, Set.mem_image,
+        Function.mem_support, ne_eq, forall_exists_index]
+      rintro i rfl
+      refine (eq_or_ne _ _).imp_right (fun hi ↦ ⟨i, mt ?_ hi, rfl⟩)
+      simp (config := {contextual := true})
+    · refine (Set.finite_range_iSup_mem (h.subset ?_) _).bddAbove
+      intro _ ha -- needed becaues `(Function.support f).Finite` doesn't simplify as expected
+      simpa using ha
+  · simp
+
+/-- Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum. -/
+lemma _root_.norm_finsum_le_iSup_norm (f : ι → M) :
+    ‖∑ᶠ i, f i‖ ≤ ⨆ i, ‖f i‖ := by
+  have := nnnorm_finsum_le_iSup_nnnorm f
+  rw [← Subtype.coe_le_coe] at this
+  simpa using this
+
+end AddCommGroup
+
+section DivisionRing
+
+variable {K : Type*} [NormedDivisionRing K] [IsUltrametricDist K]
+
+lemma norm_add_one_le_max_norm_one (x : K) :
     ‖x + 1‖ ≤ max ‖x‖ 1 := by
   simpa using norm_add_le_max x 1
 
-lemma norm_sub_one_le_one_of_norm_le_one [IsUltrametricDist K] {x : K} (h : ‖x‖ ≤ 1) :
-    ‖x - 1‖ ≤ 1 := by
-  simpa [← sub_eq_add_neg, h] using norm_add_le_max x (-1)
+lemma nnnorm_add_one_le_max_nnnorm_one (x : K) :
+    ‖x + 1‖₊ ≤ max ‖x‖₊ 1 := by
+  simpa using norm_add_le_max x 1
 
-lemma isUltrametricDist_of_forall_norm_add_one_le_max_norm_one
-    (h : ∀ x : K, ‖x + 1‖ ≤ max ‖x‖ 1) : IsUltrametricDist K := by
-  apply isUltrametricDist_of_forall_norm_add_le_max_norm
-  intro x y
-  rcases eq_or_ne y 0 with rfl|hy
-  · simp
-  rw [← div_le_div_right (c := ‖y‖) (by simpa using hy), ← norm_div, add_div, div_self hy,
-      ← max_div_div_right (norm_nonneg _), div_self (by simp [hy]), ← norm_div]
-  exact h _
+-- lemma norm_sub_one_le_one_of_norm_le_one [IsUltrametricDist K] {x : K} (h : ‖x‖ ≤ 1) :
+--     ‖x - 1‖ ≤ 1 := by
+--   simpa [← sub_eq_add_neg, h] using norm_add_le_max x (-1)
 
-lemma isUltrametricDist_of_forall_norm_sub_one_of_norm_le_one
-    (h : ∀ x : K, ‖x‖ ≤ 1 → ‖x - 1‖ ≤ 1) : IsUltrametricDist K := by
-  have : ∀ x : K, ‖x‖ ≤ 1 → ‖x + 1‖ ≤ 1 := by
-    intro x hx
-    specialize h (-x) (by simpa using hx)
-    rwa [← neg_add', norm_neg] at h
-  apply isUltrametricDist_of_forall_norm_add_one_le_max_norm_one
-  intro x
-  cases le_or_lt ‖x‖ 1 with
-  | inl h => simpa [h] using this _ h
-  | inr h =>
-    suffices ‖x + 1‖ ≤ ‖x‖ by simp [this]
-    rw [← div_le_div_right (c := ‖x‖) (h.trans' zero_lt_one), div_self (h.trans' zero_lt_one).ne',
-        ← norm_div, add_div, div_self (by simpa using (h.trans' zero_lt_one)), add_comm]
-    apply this
-    simp [inv_le_one_iff, h.le]
+-- lemma nnnorm_sub_one_le_one_of_nnnorm_le_one [IsUltrametricDist K] {x : K} (h : ‖x‖₊ ≤ 1) :
+--     ‖x - 1‖₊ ≤ 1 := by
+--   simpa [← sub_eq_add_neg, h] using nnnorm_add_le_max x (-1)
 
-end Field
+lemma nnnorm_natCast_le_one (n : ℕ) :
+    ‖(n : K)‖₊ ≤ 1 := by
+  induction n with
+  | zero => simp
+  | succ n hn => simpa [hn] using nnnorm_add_one_le_max_nnnorm_one (n : K)
+
+lemma norm_natCast_le_one (n : ℕ) :
+    ‖(n : K)‖ ≤ 1 := by
+  rw [← Real.toNNReal_le_toNNReal_iff zero_le_one]
+  simpa using nnnorm_natCast_le_one n
+
+lemma nnnorm_intCast_le_one (z : ℤ) :
+    ‖(z : K)‖₊ ≤ 1 := by
+  induction z
+  · simpa using nnnorm_natCast_le_one _
+  · simpa only [Int.cast_negSucc, Nat.cast_one, nnnorm_neg] using nnnorm_natCast_le_one _
+
+lemma norm_intCast_le_one (z : ℤ) :
+    ‖(z : K)‖ ≤ 1 := by
+  rw [← Real.toNNReal_le_toNNReal_iff zero_le_one]
+  simpa using nnnorm_intCast_le_one z
+
+end DivisionRing
 
 end IsUltrametricDist
