@@ -658,7 +658,7 @@ variable (b' : Basis ι' R M')
 /-- `Basis.prod` maps an `ι`-indexed basis for `M` and an `ι'`-indexed basis for `M'`
 to an `ι ⊕ ι'`-index basis for `M × M'`.
 For the specific case of `R × R`, see also `Basis.finTwoProd`. -/
-protected def prod : Basis (Sum ι ι') R (M × M') :=
+protected def prod : Basis (ι ⊕ ι') R (M × M') :=
   ofRepr ((b.repr.prod b'.repr).trans (Finsupp.sumFinsuppLEquivProdFinsupp R).symm)
 
 @[simp]

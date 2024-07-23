@@ -267,25 +267,9 @@ variable {σ : Type u}
 variable {F : Type u → Type u}
 variable [Applicative F]
 
--- Porting note: this was marked as a dubious translation but the only issue seems to be
--- a universe issue; this may be a bug in mathlib3port. I've carefully checked the universes
--- in mathlib3 and mathlib4 and they seem to match up exactly. Discussion here
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/why.20dubious.3F/
-
-/- warning: sum.traverse -> Sum.traverse is a dubious translation:
-lean 3 declaration is
-  forall {σ : Type.{u}} {F : Type.{u} -> Type.{u}} [_inst_1 : Applicative.{u u} F]
-    {α : Type.{u_1}} {β : Type.{u}}, (α -> (F β)) -> (Sum.{u u_1} σ α) ->
-    (F (Sum.{u u} σ β))
-but is expected to have type
-  forall {σ : Type.{u}} {F : Type.{u} -> Type.{u}} [_inst_1 : Applicative.{u u} F]
-    {α : Type.{_aux_param_0}} {β : Type.{u}}, (α -> (F β)) -> (Sum.{u _aux_param_0} σ α) ->
-    (F (Sum.{u u} σ β))
-Case conversion may be inaccurate. Consider using '#align sum.traverse Sum.traverseₓ'. -/
-
 /-- Defines a `traverse` function on the second component of a sum type.
 This is used to give a `Traversable` instance for the functor `σ ⊕ -`. -/
-protected def traverse {α β} (f : α → F β) : Sum σ α → F (Sum σ β)
+protected def traverse {α β} (f : α → F β) : σ ⊕ α → F (σ ⊕ β)
   | Sum.inl x => pure (Sum.inl x)
   | Sum.inr x => Sum.inr <$> f x
 

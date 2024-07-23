@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Init.Data.Ordering.Lemmas
+import Mathlib.Data.Ordering.Lemmas
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.Tactic.NormNum
 import Mathlib.Data.PNat.Basic
@@ -926,7 +926,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
 
 /-- Given an ordinal, returns `inl none` for `0`, `inl (some a)` for `a+1`, and
   `inr f` for a limit ordinal `a`, where `f i` is a sequence converging to `a`. -/
-def fundamentalSequence : ONote → Sum (Option ONote) (ℕ → ONote)
+def fundamentalSequence : ONote → (Option ONote) ⊕ (ℕ → ONote)
   | zero => Sum.inl none
   | oadd a m b =>
     match fundamentalSequence b with
@@ -967,7 +967,7 @@ private theorem exists_lt_omega_opow' {α} {o b : Ordinal} (hb : 1 < b) (ho : o.
   * `inl (some a)` means `o = succ a`
   * `inr f` means `o` is a limit ordinal and `f` is a
     strictly increasing sequence which converges to `o` -/
-def FundamentalSequenceProp (o : ONote) : Sum (Option ONote) (ℕ → ONote) → Prop
+def FundamentalSequenceProp (o : ONote) : (Option ONote) ⊕ (ℕ → ONote) → Prop
   | Sum.inl none => o = 0
   | Sum.inl (some a) => o.repr = succ a.repr ∧ (o.NF → a.NF)
   | Sum.inr f =>

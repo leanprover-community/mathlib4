@@ -1395,6 +1395,14 @@ theorem abs_sub_round_div_natCast_eq {m n : ℕ} :
   rw [abs_sub_round_eq_min, Nat.cast_min, ← min_div_div_right hn'.le,
     fract_div_natCast_eq_div_natCast_mod, Nat.cast_sub (m.mod_lt hn).le, sub_div, div_self hn'.ne']
 
+theorem sub_half_lt_round (x : α) : x - 1 / 2 < round x := by
+  rw [round_eq x, show x - 1 / 2 = x + 1 / 2 - 1 by nlinarith]
+  exact Int.sub_one_lt_floor (x + 1 / 2)
+
+theorem round_le_add_half (x : α) : round x ≤ x + 1 / 2 := by
+  rw [round_eq x]
+  exact Int.floor_le (x + 1 / 2)
+
 end LinearOrderedField
 
 end round
