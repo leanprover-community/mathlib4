@@ -192,7 +192,8 @@ lemma odd_card_odd_components (ho : Odd (Fintype.card V)) :
 
   simp only [Set.toFinset_card]
   simp_rw [Fintype.card_eq_nat_card]
-  have : Even (Finset.filter (fun x : ConnectedComponent G ↦ Odd (Nat.card ↑x.supp)) Finset.univ).card := by
+  have : Even (Finset.filter (fun x : ConnectedComponent G ↦ Odd (Nat.card ↑x.supp))
+      Finset.univ).card := by
     simp only [Finset.subtype_univ, Finset.card_univ, Nat.card_eq_fintype_card]
     simp only [Nat.card_eq_fintype_card] at hc
     rw [Fintype.card_ofFinset] at hc
