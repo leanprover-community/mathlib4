@@ -110,9 +110,6 @@ instance (priority := 900) locallyCoverDense_of_isCoverDense [G.IsCoverDense K] 
     IsCoverDense.functorPullback_pushforward_covering _
 
 instance (priority := 900) [G.IsCoverDense K] : G.IsDenseSubsite (G.inducedTopology K) K where
-  isCoverDense' := inferInstance
-  isLocallyFull' := inferInstance
-  isLocallyFaithful' := inferInstance
   functorPushforward_mem_iff := Iff.rfl
 
 @[deprecated (since := "2024-07-23")]

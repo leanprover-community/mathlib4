@@ -501,9 +501,9 @@ variable (J : GrothendieckTopology C) (K : GrothendieckTopology D) (G : C ⥤ D)
 if `G` is cover-dense, locally fully-faithful,
 and `S` is a cover of `C` if and only if the image of `S` in `D` is a cover. -/
 class IsDenseSubsite : Prop where
-  isCoverDense' : G.IsCoverDense K
-  isLocallyFull' : G.IsLocallyFull K
-  isLocallyFaithful' : G.IsLocallyFaithful K
+  isCoverDense' : G.IsCoverDense K := by infer_instance
+  isLocallyFull' : G.IsLocallyFull K := by infer_instance
+  isLocallyFaithful' : G.IsLocallyFaithful K := by infer_instance
   functorPushforward_mem_iff : ∀ {X : C} {S : Sieve X}, S.functorPushforward G ∈ K _ ↔ S ∈ J _
 
 namespace IsDenseSubsite
