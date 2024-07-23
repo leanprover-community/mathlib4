@@ -225,13 +225,10 @@ example (K : Type)
 /-! ### Linear inequalities -/
 
 example (x : ℚ) (hx : x ≤ 3) : x - 1 ≤ 5 := by linear_combination hx
-
 example (x : ℝ) (hx : x ≤ 3) : x - 1 ≤ 5 := by linear_combination hx
 
 example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≤ 1) : a + b ≤ 2 := by linear_combination h1 + h2
-
 example (a b : ℚ) (h1 : a ≤ 1) (h2 : b = 1) : a + b < 3 := by linear_combination h1 + h2
-
 example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≥ 2) : a ≤ b := by linear_combination h1 + h2
 
 example (a : ℚ) (ha : 0 ≤ a) : 0 ≤ 2 * a := by linear_combination 2 * ha
