@@ -185,7 +185,8 @@ variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 lemma eq_affineLocally : P = affineLocally Q := eq_affineLocally'
 
-instance : HasAffineProperty P (sourceAffineLocally Q) where
+@[local instance]
+lemma HasAffineProperty : HasAffineProperty P (sourceAffineLocally Q) where
   isLocal_affineProperty := sourceAffineLocally_isLocal _
     (isLocal_ringHomProperty P).respectsIso
     (isLocal_ringHomProperty P).LocalizationPreserves
