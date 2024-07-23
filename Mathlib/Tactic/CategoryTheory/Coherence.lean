@@ -23,9 +23,6 @@ are equal.
 
 -/
 
--- Porting note: restore when ported
--- import Mathlib.CategoryTheory.Bicategory.CoherenceTactic
-
 universe v u
 
 open CategoryTheory FreeMonoidalCategory
