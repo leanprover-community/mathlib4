@@ -6,6 +6,7 @@ Authors: Anatole Dedecker, Etienne Marion
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Filter
 import Mathlib.Topology.Defs.Sequences
+import Mathlib.Topology.Category.CompactlyGenerated
 
 /-!
 # Proper maps between topological spaces
@@ -73,8 +74,6 @@ so don't hesitate to have a look!
 * [N. Bourbaki, *General Topology*][bourbaki1966]
 * [Stacks: Characterizing proper maps](https://stacks.math.columbia.edu/tag/005M)
 -/
-
-assert_not_exists StoneCech
 
 open Filter Topology Function Set
 open Prod (fst snd)
@@ -317,6 +316,23 @@ lemma isProperMap_iff_isClosedMap_and_tendsto_cofinite [T1Space Y] :
 theorem Continuous.isProperMap [CompactSpace X] [T2Space Y] (hf : Continuous f) : IsProperMap f :=
   isProperMap_iff_isClosedMap_and_tendsto_cofinite.2 ⟨hf, hf.isClosedMap, by simp⟩
 
+theorem compactlyGenerated_isClosed_iff [CompactlyGeneratedSpace X] [T2Space X] (s : Set X) :
+    IsClosed s ↔ ∀ (K : Set X), IsCompact K → IsClosed (s ∩ K) := by
+  constructor
+  · intro hs K hK
+    exact hs.inter hK.isClosed
+  · intro h
+    rw [eq_compactlyGenerated (X := X), TopologicalSpace.compactlyGenerated, isClosed_coinduced]
+    refine isClosed_sigma_iff.mpr ?mpr.a
+    intro SF
+    change IsClosed (SF.2 ⁻¹' s)
+    rw [← Set.preimage_inter_range]
+    apply IsClosed.preimage
+    fun_prop
+    apply h
+    apply isCompact_range
+    fun_prop
+
 /-- If `Y` is Hausdorff and compactly generated, then proper maps `X → Y` are exactly
 continuous maps such that the preimage of any compact set is compact.
 
@@ -326,18 +342,16 @@ is not yet in Mathlib (TODO) so we use it as an intermediate result to prove
 `WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage` and
 `SequentialSpace.isProperMap_iff_isCompact_preimage`. In the future those should be inferred
 by typeclass inference. -/
-theorem isProperMap_iff_isCompact_preimage [T2Space Y]
-    (compactlyGenerated : ∀ s : Set Y, IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K)) :
+theorem isProperMap_iff_isCompact_preimage [T2Space Y] [CompactlyGeneratedSpace Y] :
     IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) where
   mp hf := ⟨hf.continuous, fun _ ↦ hf.isCompact_preimage⟩
   mpr := fun ⟨hf, h⟩ ↦ isProperMap_iff_isClosedMap_and_compact_fibers.2
-    ⟨hf, fun _ hs ↦ (compactlyGenerated _).2
+    ⟨hf, fun _ hs ↦ (compactlyGenerated_isClosed_iff _).2
     fun _ hK ↦ image_inter_preimage .. ▸ (((h hK).inter_left hs).image hf).isClosed,
     fun _ ↦ h isCompact_singleton⟩
 
 /-- A locally compact space is compactly generated. -/
-theorem compactlyGenerated_of_weaklyLocallyCompactSpace [T2Space X] [WeaklyLocallyCompactSpace X]
-    {s : Set X} : IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
+instance [T2Space X] [WeaklyLocallyCompactSpace X] := by
   refine ⟨fun hs K hK ↦ hs.inter hK.isClosed, fun h ↦ ?_⟩
   rw [isClosed_iff_forall_filter]
   intro x ℱ hℱ₁ hℱ₂ hℱ₃

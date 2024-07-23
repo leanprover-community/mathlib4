@@ -89,6 +89,38 @@ lemma compactlyGeneratedSpace_of_continuous_maps {X : Type w} [t : TopologicalSp
     rw [← @continuous_sigma_iff]
     apply continuous_coinduced_rng
 
+example {X : Type*} [TopologicalSpace X] [T2Space X] :
+    CompactlyGeneratedSpace X ↔
+      (∀ s, IsClosed s ↔ ∀ (K : Set X), IsCompact K → IsClosed (s ∩ K)) := by
+  constructor
+  · intro _ s
+    constructor
+    · intro hs K hK
+      exact hs.inter hK.isClosed
+    · intro h
+      rw [eq_compactlyGenerated (X := X), TopologicalSpace.compactlyGenerated, isClosed_coinduced]
+      refine isClosed_sigma_iff.mpr ?mpr.a
+      intro SF
+      change IsClosed (SF.2 ⁻¹' s)
+      rw [← Set.preimage_inter_range]
+      apply IsClosed.preimage
+      fun_prop
+      apply h
+      apply isCompact_range
+      fun_prop
+  · intro h
+    apply compactlyGeneratedSpace_of_continuous_maps
+    intro Y _ f h'
+    rw [continuous_iff_isClosed]
+    intro t ht
+    rw [h]
+    intro K hK
+    rw [Set.inter_comm, ← Subtype.image_preimage_coe]
+    apply (IsClosed.closedEmbedding_subtype_val _).isClosedMap
+    · rw [← Set.preimage_comp]
+      apply ht.preimage
+      sorry
+
 /-- The type of `u`-compactly generated `w`-small topological spaces. -/
 structure CompactlyGenerated where
   /-- The underlying topological space of an object of `CompactlyGenerated`. -/
