@@ -3,7 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.Algebra.Category.Grp.Abelian
 import Mathlib.Algebra.Category.Grp.Adjunctions
+import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+import Mathlib.Algebra.Homology.Square
+import Mathlib.CategoryTheory.Sites.Abelian
 import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
 import Mathlib.CategoryTheory.Limits.Shapes.Types
@@ -52,9 +56,10 @@ namespace CategoryTheory
 open Limits Opposite
 
 variable {C : Type u} [Category.{v} C]
-  {J : GrothendieckTopology C} [HasWeakSheafify J (Type v)]
+  {J : GrothendieckTopology C}
 
 lemma Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff
+    [HasWeakSheafify J (Type v)]
     (F : Sheaf J (Type v)) (sq : Square C) :
     (sq.op.map ((yoneda ⋙ presheafToSheaf J _).op ⋙ yoneda.obj F)).IsPullback ↔
       (sq.op.map F.val).IsPullback := by
@@ -76,22 +81,28 @@ variable (J)
 
 /-- A Mayer-Vietoris square in a category `C` equipped with a Grothendieck
 topology consists of a commutative square `f₁₂ ≫ f₂₄ = f₁₃ ≫ f₃₄` in `C`
-such that `f₂₄` is a monomorphism and that the square becomes a
+such that `f₁₃` is a monomorphism and that the square becomes a
 pushout square in the category of sheaves of sets. -/
-structure MayerVietorisSquare extends Square C where
-  mono_f₂₄ : Mono toSquare.f₂₄ := by infer_instance
+structure MayerVietorisSquare [HasWeakSheafify J (Type v)] extends Square C where
+  mono_f₁₃ : Mono toSquare.f₁₃ := by infer_instance
   /-- the square becomes a pushout square in the category of sheaves of types -/
   isPushout : (toSquare.map (yoneda ⋙ presheafToSheaf J _)).IsPushout
 
 namespace MayerVietorisSquare
 
+attribute [instance] mono_f₁₃
+
 variable {J}
 
+section
+
+variable [HasWeakSheafify J (Type v)]
+
 /-- Constructor for Mayer-Vietoris squares taking as an input
-a square `sq` such that `sq.f₂₄` is a mono and that for every
+a square `sq` such that `sq.f₁₃` is a mono and that for every
 sheaf of types `F`, the square `sq.op.map F.val` is a pullback square. -/
 @[simps toSquare]
-noncomputable def mk' (sq : Square C) [Mono sq.f₂₄]
+noncomputable def mk' (sq : Square C) [Mono sq.f₁₃]
     (H : ∀ (F : Sheaf J (Type v)), (sq.op.map F.val).IsPullback) :
     J.MayerVietorisSquare where
   toSquare := sq
@@ -107,6 +118,7 @@ which form a covering of `S.X₄`. -/
 noncomputable def mk_of_isPullback (sq : Square C) [Mono sq.f₂₄] [Mono sq.f₃₄]
     (h₁ : sq.IsPullback) (h₂ : Sieve.ofTwoArrows sq.f₂₄ sq.f₃₄ ∈ J sq.X₄) :
     J.MayerVietorisSquare :=
+  have : Mono sq.f₁₃ := sorry
   mk' sq (fun F ↦ by
     apply Square.IsPullback.mk
     refine PullbackCone.IsLimit.mk _
@@ -207,6 +219,66 @@ lemma sheafCondition_of_sheaf {A : Type u'} [Category.{v} A]
   exact (Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff _ S.toSquare).1
     (S.isPushout.op.map
       (yoneda.obj ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (F.cond X.unop)⟩))
+
+end
+
+variable [HasWeakSheafify J (Type v)] [HasSheafify J AddCommGrp.{v}]
+  (S : J.MayerVietorisSquare)
+
+/-- The short complex of abelian sheaves
+`ℤ[S.X₁] ⟶ ℤ[S.X₂] ⊞ ℤ[S.X₃] ⟶ ℤ[S.X₄]`
+where the left map is a difference and the right map a sum. -/
+@[simps]
+noncomputable def shortComplex :
+    ShortComplex (Sheaf J AddCommGrp.{v}) where
+  X₁ := (presheafToSheaf J _).obj (yoneda.obj S.X₁ ⋙ AddCommGrp.free)
+  X₂ := (presheafToSheaf J _).obj (yoneda.obj S.X₂ ⋙ AddCommGrp.free) ⊞
+    (presheafToSheaf J _).obj (yoneda.obj S.X₃ ⋙ AddCommGrp.free)
+  X₃ := (presheafToSheaf J _).obj (yoneda.obj S.X₄ ⋙ AddCommGrp.free)
+  f :=
+    biprod.lift
+      ((presheafToSheaf J _).map (whiskerRight (yoneda.map S.f₁₂) _))
+      (-(presheafToSheaf J _).map (whiskerRight (yoneda.map S.f₁₃) _))
+  g :=
+    biprod.desc
+      ((presheafToSheaf J _).map (whiskerRight (yoneda.map S.f₂₄) _))
+      ((presheafToSheaf J _).map (whiskerRight (yoneda.map S.f₃₄) _))
+  zero := (S.map (yoneda ⋙ (whiskeringRight _ _ _).obj AddCommGrp.free ⋙
+      presheafToSheaf J _)).cokernelCofork.condition
+
+instance : (AddCommGrp.free.{v}).PreservesMonomorphisms := by
+  sorry
+
+variable (X : Cᵒᵖ)
+
+instance {F G : C ⥤ Type u'} (f : F ⟶ G) [Mono f] (X : C) :
+    Mono (f.app X) :=
+  inferInstanceAs (Mono (((evaluation _ _).obj X).map f))
+
+instance {F G : C ⥤ Type u'} (f : F ⟶ G) [Mono f] :
+    Mono (whiskerRight f AddCommGrp.free) := by
+  have : ∀ (X : C), Mono ((whiskerRight f AddCommGrp.free).app X) := fun X ↦ by
+    dsimp
+    infer_instance
+  apply NatTrans.mono_of_mono_app
+
+instance : Mono S.shortComplex.f := by
+  have : Mono (S.shortComplex.f ≫ biprod.snd) := by
+    dsimp
+    simp only [biprod.lift_snd]
+    infer_instance
+  exact mono_of_mono _ biprod.snd
+
+instance : Epi S.shortComplex.g :=
+  (S.shortComplex.exact_and_epi_g_iff_g_is_cokernel.2
+    ⟨S.isPushoutAddCommGrpFreeSheaf.isColimitCokernelCofork⟩).2
+
+lemma shortComplex_exact : S.shortComplex.Exact :=
+  ShortComplex.exact_of_g_is_cokernel _
+    S.isPushoutAddCommGrpFreeSheaf.isColimitCokernelCofork
+
+lemma shortComplex_shortExact : S.shortComplex.ShortExact where
+  exact := S.shortComplex_exact
 
 end MayerVietorisSquare
 

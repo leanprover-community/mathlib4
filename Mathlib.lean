@@ -386,6 +386,7 @@ import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.Homology.SingleHomology
+import Mathlib.Algebra.Homology.Square
 import Mathlib.Algebra.Homology.TotalComplex
 import Mathlib.Algebra.Homology.TotalComplexShift
 import Mathlib.Algebra.Homology.TotalComplexSymmetry
