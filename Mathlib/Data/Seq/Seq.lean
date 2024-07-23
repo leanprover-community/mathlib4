@@ -405,27 +405,27 @@ instance coeStream : Coe (Stream' α) (Seq α) :=
 /-- Embed a `LazyList α` as a sequence. Note that even though this
   is non-meta, it will produce infinite sequences if used with
   cyclic `LazyList`s created by meta constructions. -/
-def ofLazyList : LazyList α → Seq α :=
+def ofLazyList : MLList Id α → Seq α :=
   corec fun l =>
-    match l with
-    | LazyList.nil => none
-    | LazyList.cons a l' => some (a, l'.get)
+    match l.uncons with
+    | .none => none
+    | .some (a, l') => some (a, l')
 
-instance coeLazyList : Coe (LazyList α) (Seq α) :=
+instance coeLazyList : Coe (MLList Id α) (Seq α) :=
   ⟨ofLazyList⟩
 
 /-- Translate a sequence into a `LazyList`. Since `LazyList` and `List`
   are isomorphic as non-meta types, this function is necessarily meta. -/
-unsafe def toLazyList : Seq α → LazyList α
+unsafe def toLazyList : Seq α → MLList Id α
   | s =>
     match destruct s with
-    | none => LazyList.nil
-    | some (a, s') => LazyList.cons a (toLazyList s')
+    | none => .nil
+    | some (a, s') => .cons a (toLazyList s')
 
 /-- Translate a sequence to a list. This function will run forever if
   run on an infinite sequence. -/
 unsafe def forceToList (s : Seq α) : List α :=
-  (toLazyList s).toList
+  (toLazyList s).force
 
 /-- The sequence of natural numbers some 0, some 1, ... -/
 def nats : Seq ℕ :=

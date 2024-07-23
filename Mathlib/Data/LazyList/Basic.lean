@@ -16,6 +16,8 @@ This file contains various definitions and proofs on lazy lists.
 TODO: This file will soon be deprecated.
 -/
 
+-- The whole file is full of deprecations about LazyList
+set_option linter.deprecated false
 
 universe u
 
