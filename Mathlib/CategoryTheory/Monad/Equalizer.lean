@@ -17,7 +17,8 @@ In `C`, this fork diagram is a split equalizer (in particular, it is still an eq
 This split equalizer is known as the Beck equalizer (as it features heavily in Beck's
 comonadicity theorem).
 
-This file is adapted from `CategoryTheory.Monad.Coequalizer`. Please try to keep them in sync.
+This file is adapted from `Mathlib.CategoryTheory.Monad.Coequalizer`.
+Please try to keep them in sync.
 
 -/
 

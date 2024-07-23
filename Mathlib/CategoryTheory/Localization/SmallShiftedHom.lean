@@ -45,6 +45,17 @@ in the localized category with respect to a class of morphisms `W`. -/
 abbrev HasSmallLocalizedShiftedHom : Prop :=
   ∀ (a b : M), HasSmallLocalizedHom.{w} W (X⟦a⟧) (Y⟦b⟧)
 
+variable (M) in
+lemma hasSmallLocalizedShiftedHom_iff
+    (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M] (X Y : C) :
+    HasSmallLocalizedShiftedHom.{w} W M X Y ↔
+      ∀ (a b : M), Small.{w} ((L.obj X)⟦a⟧ ⟶ (L.obj Y)⟦b⟧) := by
+  dsimp [HasSmallLocalizedShiftedHom]
+  have eq := fun (a b : M) ↦ small_congr.{w}
+    (Iso.homCongr ((L.commShiftIso a).app X) ((L.commShiftIso b).app Y))
+  dsimp at eq
+  simp only [hasSmallLocalizedHom_iff _ L, eq]
+
 variable [HasSmallLocalizedShiftedHom.{w} W M X Y]
 
 variable (M) in
@@ -119,6 +130,14 @@ noncomputable def comp {a b c : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     SmallShiftedHom.{w} W X Z c :=
   SmallHom.comp f (g.shift a c h)
 
+variable (W) in
+/-- The canonical map `(X ⟶ Y) → SmallShiftedHom.{w} W X Y m₀` when `m₀ = 0` and
+`[HasSmallLocalizedShiftedHom.{w} W M X Y]` holds. -/
+noncomputable def mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
+    (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) :
+    SmallShiftedHom.{w} W X Y m₀ :=
+  SmallHom.mk W (f ≫ (shiftFunctorZero' C m₀ hm₀).inv.app Y)
+
 end
 
 section
@@ -164,6 +183,18 @@ lemma equiv_comp [HasSmallLocalizedShiftedHom.{w} W M X Y]
   simp only [equiv_shift', Functor.comp_obj, Iso.app_hom, assoc, Iso.inv_hom_id_app,
     comp_id, Functor.map_comp]
   rfl
+
+@[simp]
+lemma equiv_mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
+    (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) :
+    equiv W L (SmallShiftedHom.mk₀ W m₀ hm₀ f) =
+      ShiftedHom.mk₀ m₀ hm₀ (L.map f) := by
+  subst hm₀
+  dsimp [equiv, mk₀]
+  erw [SmallHom.equiv_mk, Iso.homToEquiv_apply, Functor.map_comp]
+  dsimp [equiv, mk₀, ShiftedHom.mk₀, shiftFunctorZero']
+  simp only [comp_id, L.commShiftIso_zero, Functor.CommShift.isoZero_hom_app, assoc,
+    ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.id_obj, Functor.map_id, id_comp]
 
 end
 

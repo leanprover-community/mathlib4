@@ -5,8 +5,6 @@ Authors: Robert Y. Lewis, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 
-#align_import topology.metric_space.cau_seq_filter from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # Completeness in terms of `Cauchy` filters vs `isCauSeq` sequences
 
@@ -39,7 +37,6 @@ theorem CauSeq.tendsto_limit [NormedRing β] [hn : IsAbsoluteValue (norm : β �
       dsimp [Metric.ball]
       rw [dist_comm, dist_eq_norm]
       solve_by_elim)
-#align cau_seq.tendsto_limit CauSeq.tendsto_limit
 
 variable [NormedField β]
 
@@ -56,20 +53,19 @@ theorem CauchySeq.isCauSeq {f : ℕ → β} (hf : CauchySeq f) : IsCauSeq norm f
   cases' cauchy_iff.1 hf with hf1 hf2
   intro ε hε
   rcases hf2 { x | dist x.1 x.2 < ε } (dist_mem_uniformity hε) with ⟨t, ⟨ht, htsub⟩⟩
-  simp only [mem_map, mem_atTop_sets, ge_iff_le, mem_preimage] at ht; cases' ht with N hN
+  simp only [mem_map, mem_atTop_sets, mem_preimage] at ht; cases' ht with N hN
   exists N
   intro j hj
   rw [← dist_eq_norm]
   apply @htsub (f j, f N)
   apply Set.mk_mem_prod <;> solve_by_elim [le_refl]
-#align cauchy_seq.is_cau_seq CauchySeq.isCauSeq
 
 theorem CauSeq.cauchySeq (f : CauSeq β norm) : CauchySeq f := by
   refine cauchy_iff.2 ⟨by infer_instance, fun s hs => ?_⟩
   rcases mem_uniformity_dist.1 hs with ⟨ε, ⟨hε, hεs⟩⟩
   cases' CauSeq.cauchy₂ f hε with N hN
   exists { n | n ≥ N }.image f
-  simp only [exists_prop, mem_atTop_sets, mem_map, mem_image, ge_iff_le, mem_setOf_eq]
+  simp only [exists_prop, mem_atTop_sets, mem_map, mem_image, mem_setOf_eq]
   constructor
   · exists N
     intro b hb
@@ -80,13 +76,11 @@ theorem CauSeq.cauchySeq (f : CauSeq β norm) : CauchySeq f := by
     apply hεs
     rw [dist_eq_norm]
     apply hN <;> assumption
-#align cau_seq.cauchy_seq CauSeq.cauchySeq
 
 /-- In a normed field, `CauSeq` coincides with the usual notion of Cauchy sequences. -/
 theorem isCauSeq_iff_cauchySeq {α : Type u} [NormedField α] {u : ℕ → α} :
     IsCauSeq norm u ↔ CauchySeq u :=
   ⟨fun h => CauSeq.cauchySeq ⟨u, h⟩, fun h => h.isCauSeq⟩
-#align cau_seq_iff_cauchy_seq isCauSeq_iff_cauchySeq
 
 -- see Note [lower instance priority]
 /-- A complete normed field is complete as a metric space, as Cauchy sequences converge by
@@ -102,4 +96,3 @@ instance (priority := 100) completeSpace_of_cauSeq_isComplete [CauSeq.IsComplete
   cases' (CauSeq.equiv_lim ⟨u, C⟩) _ εpos with N hN
   exists N
   simpa [dist_eq_norm] using hN
-#align complete_space_of_cau_seq_complete completeSpace_of_cauSeq_isComplete
