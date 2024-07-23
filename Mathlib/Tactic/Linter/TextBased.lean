@@ -11,18 +11,22 @@ import Mathlib.Data.Nat.Notation
 ## Text-based linters
 
 This file defines various mathlib linters which are based on reading the source code only.
-In practice, only style linters will have this form.
-All of these have been rewritten from the `lint-style.py` script.
+In practice, all such linters check for code style issues.
 
 For now, this only contains linters checking
 - that the copyright header and authors line are correctly formatted
+- existence of module docstrings (in the right place)
 - for certain disallowed imports
 - if the string "adaptation note" is used instead of the command #adaptation_note
 - for isolated focusing dots
-- lines are at most 100 chars
+- lines are at most 100 chars (except for URLs)
 - files are at most 1500 lines long (unless specifically allowed).
 
-Further linters will be ported in subsequent PRs.
+For historic reasons, some of these checks are still written in a Python script `lint-style.py`:
+these are gradually being rewritten in Lean.
+
+This linter maintains a list of exceptions, for legacy reasons.
+Ideally, the length of the list of exceptions tends to 0.
 
 An executable running all these linters is defined in `scripts/lint-style.lean`.
 -/
