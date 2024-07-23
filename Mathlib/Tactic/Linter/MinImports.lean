@@ -73,8 +73,8 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx => do
       -- this is a hack to obtain some `Syntax` information for the `import X` commands
       let fil ← IO.FS.readFile (← getFileName)
       for i in currentlyUnneededImports do
-        -- looking for the position of `import i`, so we split at ` i` and
-        -- compute the length of the string until `...import| i`
+        -- looking for the position of 'import i', so we split at ' i' and
+        -- compute the length of the string until '...import| i'
         match fil.splitOn (" " ++ i.toString) with
           | a::_::_ =>
             let al := a.length
@@ -93,7 +93,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx => do
         logWarningAt firstImport m!"-- missing imports\n{"\n".intercalate withImport.toList}"
     let id ← getId stx
     let newImports := getIrredundantImports (← getEnv) (← getAllImports stx id)
-    let tot := (newImports.append importsSoFar) --.erase `Lean.Parser.Command
+    let tot := (newImports.append importsSoFar)
     let redundant := (← getEnv).findRedundantImports tot.toArray
     let currImports := tot.diff redundant
     let currImpArray := currImports.toArray.qsort Name.lt
