@@ -6,7 +6,6 @@ Authors: Eric Wieser
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Set.Pointwise.Interval
 
-
 /-! # Pointwise operations on intervals
 
 This should be kept in sync with `Mathlib/Data/Set/Pointwise/Interval.lean`.

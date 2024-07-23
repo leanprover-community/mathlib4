@@ -337,8 +337,9 @@ noncomputable def typeBEquivSo' [Invertible (2 : R)] : typeB l R ≃ₗ⁅R⁆ s
   apply (skewAdjointMatricesLieSubalgebraEquiv (JB l R) (PB l R) (by infer_instance)).trans
   symm
   apply
-    (skewAdjointMatricesLieSubalgebraEquivTranspose (indefiniteDiagonal (Unit ⊕ l) l R)
-        (Matrix.reindexAlgEquiv _ (Equiv.sumAssoc PUnit l l)) (Matrix.transpose_reindex _ _)).trans
+    (skewAdjointMatricesLieSubalgebraEquivTranspose (indefiniteDiagonal (Sum Unit l) l R)
+        (Matrix.reindexAlgEquiv _ _ (Equiv.sumAssoc PUnit l l))
+        (Matrix.transpose_reindex _ _)).trans
   apply LieEquiv.ofEq
   ext A
   rw [jb_transform, ← val_unitOfInvertible (2 : R), ← Units.smul_def, LieSubalgebra.mem_coe,

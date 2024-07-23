@@ -217,7 +217,7 @@ lemma derivative_det_one_add_X_smul (M : Matrix n n R) :
   · ext; simp [e]
   · delta trace
     rw [← (Fintype.equivFin n).symm.sum_comp]
-    rfl
+    simp_rw [e, reindexLinearEquiv_apply, reindex_apply, diag_apply, submatrix_apply]
 
 lemma coeff_det_one_add_X_smul_one (M : Matrix n n R) :
     (det (1 + (X : R[X]) • M.map C)).coeff 1 = trace M := by
