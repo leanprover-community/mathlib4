@@ -129,13 +129,6 @@ theorem stalkFunctor_map_germ {F G : X.Presheaf C} (U : Opens X) (x : U) (f : F 
     germ F x ≫ (stalkFunctor C x.1).map f = f.app (op U) ≫ germ G x :=
   colimit.ι_map (whiskerLeft (OpenNhds.inclusion x.1).op f) (op ⟨U, x.2⟩)
 
-@[reassoc, elementwise]
-lemma TopCat.Presheaf.germ_congr {C : Type*} [Category C] [HasColimits C] {X : TopCat}
-    (F : TopCat.Presheaf C X) {U : Opens X} (x x' : U) (h : x = x') :
-    F.germ x ≫ eqToHom (by rw [h]) = F.germ x' := by
-  subst h
-  simp
-
 variable (C)
 
 /-- For a presheaf `F` on a space `X`, a continuous map `f : X ⟶ Y` induces a morphisms between the
