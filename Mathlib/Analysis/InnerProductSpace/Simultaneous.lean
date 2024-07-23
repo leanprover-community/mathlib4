@@ -86,16 +86,16 @@ theorem invariant_subspace_inf_eigenspace_eq_restrict' : (fun (γ : 𝕜) ↦
   exact Eq.symm (invariant_subspace_inf_eigenspace_eq_restrict B γ
     (eigenspace_invariant_of_commute hAB α))
 
-/-- If A and B are commuting symmetric operators then the eigenspaces of the restriction
-of B to any eigenspace of A exhaust that eigenspace.-/
+/-- If A and B are commuting symmetric operators on a finite dimensional inner product space
+then the eigenspaces of the restriction of B to any eigenspace of A exhaust that eigenspace.-/
 theorem iSup_inf_eq_top: (⨆ γ , (eigenspace (LinearMap.restrict B
     (eigenspace_invariant_of_commute hAB α)) γ)) = ⊤ := by
     rw [← Submodule.orthogonal_eq_bot_iff]
     exact orthogonalComplement_iSup_eigenspaces_eq_bot (LinearMap.IsSymmetric.restrict_invariant hB
     (eigenspace_invariant_of_commute hAB α))
 
-/--If A and B are commuting symmetric operators acting on a Hilbert Space, then the
-simultaneous eigenspaces of A and B exhaust the Hilbert Space. -/
+/--If A and B are commuting symmetric operators acting on a finite dimensional inner product space,
+then the simultaneous eigenspaces of A and B exhaust the space. -/
 theorem iSup_simultaneous_eigenspaces_eq_top :
     (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α))) = ⊤ := by
   have : (fun (α : 𝕜) ↦  eigenspace A α)  = fun (α : 𝕜) ↦
@@ -119,8 +119,8 @@ theorem orthogonality_of_simultaneous_eigenspaces_of_commuting_symmetric_pair :
   · exact orthogonalFamily_iff_pairwise.mp hA.orthogonalFamily_eigenspaces (H C) hv2 w hw2
   · exact orthogonalFamily_iff_pairwise.mp hB.orthogonalFamily_eigenspaces C hv1 w hw1
 
-/-- Given a commuting pair of symmetric linear operators, the Hilbert space on which they act
-decomposes as an internal direct sum of simultaneous eigenspaces. -/
+/-- Given a commuting pair of symmetric linear operators on a finite dimensional inner product space
+, the space decomposes as an internal direct sum of simultaneous eigenspaces of these operators. -/
 theorem DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_pair:
     DirectSum.IsInternal (fun (i : 𝕜 × 𝕜) ↦ (eigenspace B i.1 ⊓ eigenspace A i.2)):= by
   apply (OrthogonalFamily.isInternal_iff
