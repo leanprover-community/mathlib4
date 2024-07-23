@@ -62,7 +62,7 @@ class Differential.ContainConstants (A B : Type*) [CommRing A] [CommRing B]
   protected mem_range_of_deriv_eq_zero {x : B} (h : x′ = 0) : x ∈ (algebraMap A B).range
 
 lemma mem_range_of_deriv_eq_zero (A : Type*) {B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-    [Differential A] [Differential B] [DifferentialAlgebra A B] [Differential.ContainConstants A B]
+    [Differential B] [Differential.ContainConstants A B]
     {x : B} (h : x′ = 0) : x ∈ (algebraMap A B).range :=
   Differential.ContainConstants.mem_range_of_deriv_eq_zero h
 
@@ -84,8 +84,7 @@ def Differential.equiv {R R2 : Type*} [CommRing R] [CommRing R2] [Differential R
 /--
 Transfer a `DifferentialAlgebra` instance accross a `AlgEquiv`.
 -/
-@[reducible]
-def DifferentialAlgebra.equiv {A : Type*} [CommRing A] [Differential A]
+lemma DifferentialAlgebra.equiv {A : Type*} [CommRing A] [Differential A]
     {R R2 : Type*} [CommRing R] [CommRing R2] [Differential R2] [Algebra A R]
     [Algebra A R2] [DifferentialAlgebra A R2] (h : R ≃ₐ[A] R2) :
     letI := Differential.equiv h.toRingEquiv
