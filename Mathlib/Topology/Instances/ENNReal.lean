@@ -1525,7 +1525,7 @@ lemma isCoboundedUnder_toReal_of_liminf_ne_top {xs : ι → ℝ≥0∞} (liminf_
     nth_rw 1 [hi]
     refine toReal_min ?_ b_ne_top
     exact ne_top_of_le_ne_top b_ne_top <| hi ▸ min_le_right (xs i) b
-  apply isCobounded_ge_of_frequently_le (u := b.toReal)
+  apply IsCobounded.of_frequently_le (u := b.toReal)
   simp only [frequently_map]
   exact freq_eq_min'.mono fun i hi ↦ hi ▸ min_le_right (xs i).toReal b.toReal
 
@@ -1564,7 +1564,7 @@ lemma liminf_toReal_eq_zero_of_liminf_eq_top {xs : ι → ℝ≥0∞} (liminf_eq
       · apply le_liminf_of_le
         · obtain ⟨b, hb⟩ := bdd
           simp only [upperBounds, mem_setOf_eq] at hb
-          apply isCobounded_ge_of_frequently_le (u := b+1)
+          apply IsCobounded.of_frequently_le (u := b+1)
           simp only [frequently_map]
           by_contra con
           simp at con
