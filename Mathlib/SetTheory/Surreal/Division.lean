@@ -72,18 +72,12 @@ variable (x_pos : 0 < x)
 
 /-- This applies to an arbitrary `LinearCommOrderedRing` and probably should go elsewhere. -/
 lemma inv_pos_of_pos {x y : Surreal} (h_inv: x * y = 1) (h : 0 < x) : 0 < y := by
-  apply (pos_iff_pos_of_mul_pos _).mp
-  on_goal 2 => exact x
-  · exact h
-  · simp only [h_inv, zero_lt_one]
+  apply (pos_iff_pos_of_mul_pos _).mp h
+  rw [h_inv]
+  exact zero_lt_one
 
-lemma right_pos_of_pos : ∀ j, 0 < x.moveRight j := by
-  apply le_of_lt at x_pos
-  rw [le_iff_forall_lt] at x_pos
-  simp only [zero_leftMoves, IsEmpty.forall_iff, true_and] at x_pos
-  · exact x_pos
-  · exact numeric_zero
-  · exact x_num
+lemma right_pos_of_pos : ∀ j, 0 < x.moveRight j :=
+  fun j => lt_trans x_pos (Numeric.lt_moveRight x_num j)
 
 /-! ### Normalization of a positive numeric game -/
 
