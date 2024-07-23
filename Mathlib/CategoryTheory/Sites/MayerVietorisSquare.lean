@@ -35,9 +35,9 @@ case of the Nisnevich topology on schemes (in which case
 the closed (reduced) subscheme `X₄ - X₂`,
 and `X₁` shall be the pullback of `f₂₄` and `f₃₄`.).
 
-Given `S : J.MayerVietorisSquare`, we show that if `F` is a sheaf
-of types, then the types of sections of `F` over `S.X`, `S.U`,
-`S.V`, `S.W` form a pullback square.
+Given a Mayer-Vietoris square `S` and a presheaf `P` on `C`,
+we introduce a sheaf condition `S.SheafCondition P` and show
+that it is indeed satisfied by sheaves.
 
 ## TODO
 * provide constructors for `MayerVietorisSquare`
@@ -80,6 +80,9 @@ lemma sheafCondition_iff_comp_coyoneda {A : Type u'} [Category.{v'} A] (P : Cᵒ
     S.SheafCondition P ↔ ∀ (X : Aᵒᵖ), S.SheafCondition (P ⋙ coyoneda.obj X) :=
   Square.isPullback_iff_map_coyoneda_isPullback (S.op.map P)
 
+/-- Given a Mayer-Vietoris square `S` and a presheaf of types, this is the
+map from `P.obj (op S.X₄)` to the explicit fibre product of
+`P.map S.f₁₂.op` and `P.map S.f₁₃.op`. -/
 abbrev toPullbackObj (P : Cᵒᵖ ⥤ Type v') :
     P.obj (op S.X₄) → Types.PullbackObj (P.map S.f₁₂.op) (P.map S.f₁₃.op) :=
   (S.toSquare.op.map P).pullbackCone.toPullbackObj
@@ -124,10 +127,17 @@ end SheafCondition
 
 private lemma sheafCondition_of_sheaf' (F : Sheaf J (Type v)) :
     S.SheafCondition F.val := by
-  dsimp [SheafCondition]
-  have := S.isPushout.op.map (yoneda.obj F)
-  -- up to bijections (not isomorphisms), the goal is `this`
-  sorry
+  refine (S.isPushout.op.map (yoneda.obj F)).of_equiv
+    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
+    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
+    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
+    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv) ?_ ?_ ?_ ?_
+  all_goals
+    ext x
+    dsimp
+    rw [yonedaEquiv_naturality]
+    erw [Adjunction.homEquiv_naturality_left]
+    rfl
 
 lemma sheafCondition_of_sheaf {A : Type u'} [Category.{v} A]
     (F : Sheaf J A) : S.SheafCondition F.val := by
