@@ -89,28 +89,35 @@ lemma compactlyGeneratedSpace_of_continuous_maps {X : Type w} [t : TopologicalSp
     rw [← @continuous_sigma_iff]
     apply continuous_coinduced_rng
 
-example {X : Type u} [TopologicalSpace X] [T2Space X] :
+theorem compactlyGeneratedSpace_iff {X : Type u} [TopologicalSpace X] [T2Space X] :
     CompactlyGeneratedSpace.{u} X ↔
-      (∀ s, IsClosed s ↔ ∀ (K : Set X), IsCompact K → IsClosed (s ∩ K)) where
+      (∀ s, IsClosed s ↔ (∀ (S : CompHaus.{u}) (f : C(S, X)), IsClosed (f ⁻¹' s))) where
   mp := by
-    refine fun _ s ↦ ⟨fun hs K hK ↦ hs.inter hK.isClosed, fun h ↦ ?_⟩
+    refine fun _ s ↦ ⟨fun hs _ f ↦ hs.preimage f.continuous, fun h ↦ ?_⟩
     rw [eq_compactlyGenerated (X := X), TopologicalSpace.compactlyGenerated, isClosed_coinduced,
       isClosed_sigma_iff]
-    intro Sf
-    change IsClosed (Sf.2 ⁻¹' s)
-    rw [← Set.preimage_inter_range]
-    exact (h _ (isCompact_range Sf.2.continuous)).preimage Sf.2.continuous
-  mpr := by
-    refine fun h1 ↦ compactlyGeneratedSpace_of_continuous_maps fun f h2 ↦
-      continuous_iff_isClosed.2 fun t ht ↦ (h1 _).2 fun K hK ↦ ?_
-    rw [Set.inter_comm, ← Subtype.image_preimage_coe]
-    apply hK.isClosed.closedEmbedding_subtype_val.isClosedMap
-    rw [← Set.preimage_comp]
-    apply ht.preimage
+    exact fun ⟨S, f⟩ ↦ h S f
+  mpr := fun h1 ↦ compactlyGeneratedSpace_of_continuous_maps fun f h2 ↦
+    continuous_iff_isClosed.2 fun t ht ↦ (h1 _).2 fun S g ↦ ht.preimage (h2 S g)
+
+theorem IsClosed.isClosedMap_subtype_val {X : Type*} [TopologicalSpace X]
+    {s : Set X} (hs : IsClosed s) :
+    IsClosedMap (@Subtype.val X s) := hs.closedEmbedding_subtype_val.isClosedMap
+
+theorem compactlyGeneratedSpace_iff_of_t2 {X : Type u} [TopologicalSpace X] [T2Space X] :
+    CompactlyGeneratedSpace.{u} X ↔
+      (∀ s, IsClosed s ↔ ∀ (K : Set X), IsCompact K → IsClosed (s ∩ K)) := by
+  rw [compactlyGeneratedSpace_iff]
+  congrm (∀ s, IsClosed s ↔ ?_)
+  refine ⟨fun h K hK ↦ ?_, fun h S f ↦ ?_⟩
+  · rw [Set.inter_comm, ← Subtype.image_preimage_coe]
+    refine IsClosed.isClosedMap_subtype_val hK.isClosed _ ?_
     have := isCompact_iff_compactSpace.1 hK
-    exact h2 (CompHaus.of K)
+    exact h (CompHaus.of K)
       { toFun := Subtype.val,
         continuous_toFun := continuous_subtype_val }
+  · rw [← Set.preimage_inter_range]
+    exact (h _ (isCompact_range f.continuous)).preimage f.continuous
 
 /-- The type of `u`-compactly generated `w`-small topological spaces. -/
 structure CompactlyGenerated where
