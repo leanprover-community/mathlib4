@@ -142,13 +142,9 @@ theorem summable_measure_toReal [hμ : IsFiniteMeasure μ] {f : ℕ → Set α}
   exact ne_of_lt (measure_lt_top _ _)
 
 theorem ae_eq_univ_iff_measure_eq [IsFiniteMeasure μ] (hs : NullMeasurableSet s μ) :
-    s =ᵐ[μ] univ ↔ μ s = μ univ := by
-  refine ⟨measure_congr, fun h => ?_⟩
-  obtain ⟨t, -, ht₁, ht₂⟩ := hs.exists_measurable_subset_ae_eq
-  exact
-    ht₂.symm.trans
-      (ae_eq_of_subset_of_measure_ge (subset_univ t) (Eq.le ((measure_congr ht₂).trans h).symm) ht₁
-        (measure_ne_top μ univ))
+    s =ᵐ[μ] univ ↔ μ s = μ univ :=
+  ⟨measure_congr, fun h ↦
+    ae_eq_of_subset_of_measure_ge (subset_univ _) h.ge hs (measure_ne_top _ _)⟩
 
 theorem ae_iff_measure_eq [IsFiniteMeasure μ] {p : α → Prop}
     (hp : NullMeasurableSet { a | p a } μ) : (∀ᵐ a ∂μ, p a) ↔ μ { a | p a } = μ univ := by
@@ -160,7 +156,7 @@ theorem ae_mem_iff_measure_eq [IsFiniteMeasure μ] {s : Set α} (hs : NullMeasur
 
 lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
     {X : Type*} [MeasurableSpace X] {μ : Measure X} [IsFiniteMeasure μ]
-    {Es : ℕ → Set X} (Es_mble : ∀ i, MeasurableSet (Es i))
+    {Es : ℕ → Set X} (Es_mble : ∀ i, NullMeasurableSet (Es i) μ)
     (Es_disj : Pairwise fun n m ↦ Disjoint (Es n) (Es m)) :
     Tendsto (μ ∘ fun n ↦ ⋃ i ≥ n, Es i) atTop (𝓝 0) := by
   have decr : Antitone fun n ↦ ⋃ i ≥ n, Es i :=
@@ -173,15 +169,14 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
     obtain ⟨k, k_gt_j, x_in_Es_k⟩ := hx (j+1)
     have oops := (Es_disj (Nat.ne_of_lt k_gt_j)).ne_of_mem x_in_Es_j x_in_Es_k
     contradiction
-  have key :=
-    tendsto_measure_iInter (μ := μ) (fun n ↦ by measurability) decr ⟨0, measure_ne_top _ _⟩
+  have key := tendsto_measure_iInter (μ := μ) (fun n ↦ by measurability) decr ⟨0, measure_ne_top _ _⟩
   simp only [nothing, measure_empty] at key
   convert key
 
 open scoped symmDiff
 
 theorem abs_toReal_measure_sub_le_measure_symmDiff'
-    (hs : MeasurableSet s) (ht : MeasurableSet t) (hs' : μ s ≠ ∞) (ht' : μ t ≠ ∞) :
+    (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ) (hs' : μ s ≠ ∞) (ht' : μ t ≠ ∞) :
     |(μ s).toReal - (μ t).toReal| ≤ (μ (s ∆ t)).toReal := by
   have hst : μ (s \ t) ≠ ∞ := (measure_lt_top_of_subset diff_subset hs').ne
   have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset diff_subset ht').ne
@@ -195,7 +190,7 @@ theorem abs_toReal_measure_sub_le_measure_symmDiff'
   abel
 
 theorem abs_toReal_measure_sub_le_measure_symmDiff [IsFiniteMeasure μ]
-    (hs : MeasurableSet s) (ht : MeasurableSet t) :
+    (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ) :
     |(μ s).toReal - (μ t).toReal| ≤ (μ (s ∆ t)).toReal :=
   abs_toReal_measure_sub_le_measure_symmDiff' hs ht (measure_ne_top μ s) (measure_ne_top μ t)
 
