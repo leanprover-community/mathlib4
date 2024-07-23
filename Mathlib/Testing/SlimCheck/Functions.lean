@@ -9,7 +9,6 @@ import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
-import Batteries.Data.LazyList
 
 /-!
 ## `slim_check`: generators for functions
