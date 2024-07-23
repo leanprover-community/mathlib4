@@ -106,24 +106,24 @@ lemma num_of_normalization_num : (normalization x).Numeric := by
 lemma pos_num_eq_normalization :
     mk x x_num = mk (normalization x) (num_of_normalization_num x_num x_pos) := by
   simp only [mk_eq_mk]
+  apply PGame.Equiv.trans  -- we show: x ≈ x.insertLeft 0 ≈ normalization x
+  · symm
+    apply insertLeft_equiv_of_lf (lf_of_lt x_pos)
   rw [equiv_def]
   rcases x with ⟨xl, xr, xL, xR⟩
   simp only [normalization, insertLeft]
   constructor <;> (
     rw [le_def]
     simp only [leftMoves_mk, moveLeft_mk, Sum.exists, Sum.elim_inl, Subtype.exists, exists_prop,
-      Sum.elim_inr, exists_const, rightMoves_mk, moveRight_mk]
+      Sum.elim_inr, exists_const, Sum.forall, le_refl, or_true, zero_rightMoves, IsEmpty.exists_iff,
+      or_false, implies_true, and_true, rightMoves_mk, moveRight_mk]
   )
   · constructor
     · intro i
       left
       by_contra bad
       simp only [not_or, not_exists, not_and, PGame.not_le] at bad
-      rw [lf_iff_lt numeric_zero] at bad
-      on_goal 2 =>
-        rw [numeric_def] at x_num
-        simp only [leftMoves_mk, rightMoves_mk, moveLeft_mk, moveRight_mk] at x_num
-        simp only [x_num]
+      rw [lf_iff_lt numeric_zero (x_num.2.1 i)] at bad
       rcases bad with ⟨bad1, bad2⟩
       specialize bad1 i bad2
       exact lf_irrefl _ bad1
@@ -132,16 +132,9 @@ lemma pos_num_eq_normalization :
       use j
   · constructor
     · intro i
-      rcases i with i | val
-      · simp only [Sum.elim_inl]
-        left
-        use i
-      · simp only [Sum.elim_inr, zero_rightMoves, IsEmpty.exists_iff, or_false]
-        apply lf_of_lt at x_pos
-        rw [lf_iff_exists_le] at x_pos
-        simp only [leftMoves_mk, moveLeft_mk, zero_rightMoves, IsEmpty.exists_iff, or_false]
-          at x_pos
-        exact x_pos
+      left
+      left
+      use i
     · intro j
       right
       use j
