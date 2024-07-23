@@ -9,7 +9,7 @@ import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Linter.OldObtain
-import Mathlib.Tactic.MultigoalsLinter
+import Mathlib.Tactic.Linter.Multigoal
 
 /-!
 # Basic tactics and utilities for tactic writing

@@ -1,6 +1,7 @@
-import Mathlib.Tactic.MultigoalsLinter
-import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Conv
+import Mathlib.Tactic.Linter.Multigoal
+
 
 set_option linter.multiGoal false in
 #guard_msgs(drop warning) in
