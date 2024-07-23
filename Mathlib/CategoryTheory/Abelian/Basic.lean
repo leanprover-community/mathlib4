@@ -611,8 +611,8 @@ instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd f g) :=
     let u := biprod.desc (0 : X ⟶ R) e
     -- The composite pullback f g ⟶ X ⊞ Y ⟶ R is zero by assumption.
     have hu : PullbackToBiproductIsKernel.pullbackToBiproduct f g ≫ u = 0 := by simpa [u]
-    -- pullback_to_biproduct f g is a kernel of (f, -g), so (f, -g) is a
-    -- cokernel of pullback_to_biproduct f g
+    -- pullbackToBiproduct f g is a kernel of (f, -g), so (f, -g) is a
+    -- cokernel of pullbackToBiproduct f g
     have :=
       epiIsCokernelOfKernel _
         (PullbackToBiproductIsKernel.isLimitPullbackToBiproduct f g)
@@ -643,8 +643,8 @@ instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst f g) :=
     let u := biprod.desc e (0 : Y ⟶ R)
     -- The composite pullback f g ⟶ X ⊞ Y ⟶ R is zero by assumption.
     have hu : PullbackToBiproductIsKernel.pullbackToBiproduct f g ≫ u = 0 := by simpa [u]
-    -- pullback_to_biproduct f g is a kernel of (f, -g), so (f, -g) is a
-    -- cokernel of pullback_to_biproduct f g
+    -- pullbackToBiproduct f g is a kernel of (f, -g), so (f, -g) is a
+    -- cokernel of pullbackToBiproduct f g
     have :=
       epiIsCokernelOfKernel _
         (PullbackToBiproductIsKernel.isLimitPullbackToBiproduct f g)

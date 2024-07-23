@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Data.Rat.Cast.Defs
 import Mathlib.Algebra.Field.Basic
 
-
 /-!
 # Some exiled lemmas about casting
 

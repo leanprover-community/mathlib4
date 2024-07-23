@@ -12,9 +12,6 @@ import Mathlib.Condensed.TopComparison
 
 We define the functor `topCatToLightCondSet : TopCat.{u} ⥤ LightCondSet.{u}`.
 
-## Projects
-
-* Prove that `topCatToLightCondSet` restricted to sequential spaces is fully faithful.
 -/
 
 universe w w' v u

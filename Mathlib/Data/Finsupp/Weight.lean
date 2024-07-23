@@ -10,7 +10,6 @@ import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.LinearAlgebra.Finsupp
 
-
 /-! # weights of Finsupp functions
 
 The theory of multivariate polynomials and power series is built
