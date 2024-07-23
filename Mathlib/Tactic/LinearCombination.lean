@@ -89,36 +89,13 @@ theorem sub_le_eq [AddGroup α] [LE α] [CovariantClass α α (Function.swap (·
     (p₁ : (a₁:α) ≤ b₁) (p₂ : a₂ = b₂) : a₁ - a₂ ≤ b₁ - b₂ :=
   p₂ ▸ sub_le_sub_right p₁ b₂
 
--- theorem sub_eq_le [AddGroup α] [LE α] [CovariantClass α α (· + ·) (· ≤ ·)]
---     [CovariantClass α α (Function.swap (· + ·)) (· ≤ ·)]
---     (p₁ : (a₁:α) = b₁) (p₂ : b₂ ≤ a₂) : a₁ - a₂ ≤ b₁ - b₂ :=
---   p₁ ▸ sub_le_sub_left p₂ b₁
-
--- theorem sub_lt_le [LinearOrderedAddCommGroup α]
---     (p₁ : (a₁:α) < b₁) (p₂ : b₂ ≤ a₂) : a₁ - a₂ < b₁ - b₂ :=
---   (sub_lt_sub_right p₁ a₂).trans_le (sub_le_sub_left p₂ _)
-
--- theorem sub_le_lt [AddGroup α] [Preorder α]
---     [CovariantClass α α (· + ·) (· < ·)]
---     [CovariantClass α α (Function.swap (· + ·)) (· ≤ ·)]
---     [CovariantClass α α (Function.swap (· + ·)) (· < ·)]
---     (p₁ : (a₁:α) ≤ b₁) (p₂ : b₂ < a₂) : a₁ - a₂ < b₁ - b₂ :=
---   (sub_le_sub_right p₁ a₂).trans_lt (sub_lt_sub_left p₂ _)
-
 theorem sub_lt_eq [AddGroup α] [LT α] [CovariantClass α α (Function.swap (· + ·)) (· < ·)]
     (p₁ : (a₁:α) < b₁) (p₂ : a₂ = b₂) : a₁ - a₂ < b₁ - b₂ :=
   p₂ ▸ sub_lt_sub_right p₁ b₂
 
--- theorem sub_eq_lt [AddGroup α] [LT α] [CovariantClass α α (· + ·) (· < ·)]
---     [CovariantClass α α (Function.swap (· + ·)) (· < ·)]
---     (p₁ : (a₁:α) = b₁) (p₂ : b₂ < a₂) : a₁ - a₂ < b₁ - b₂ :=
---   p₁ ▸ sub_lt_sub_left p₂ b₁
-
 /-! ### Negation -/
 
 theorem neg_eq [Neg α] (p : (a:α) = b) : -a = -b := p ▸ rfl
--- alias ⟨_, neg_le⟩ := neg_le_neg_iff
--- alias ⟨_, neg_lt⟩ := neg_lt_neg_iff
 
 /-! ### Multiplication -/
 
@@ -276,21 +253,15 @@ partial def expandLinearCombo : Term → TermElabM (Option (RelType × Term))
       | none => pure none
       | _ => failure
   | e => do
-      trace[debug] "leaf case"
       let e ← elabTerm e none
-      trace[debug] "{e}"
       let eType ← inferType e
-      trace[debug] "type is {eType}"
       let whnfEType ← withReducible do whnf eType
-      trace[debug] "whnf of above is {whnfEType}"
       let relType := whnfEType.relType
-      trace[debug] "the relation is {reprStr relType}"
       let s ← e.toSyntax
       pure <| relType.map (fun r ↦ (r, s))
 
 def expandLinearComboClean (stx : Syntax.Term) : TermElabM (Option (RelType × Syntax.Term)) := do
   let result ← expandLinearCombo stx
-  trace[debug] "{result.map Prod.snd}"
   return result.map fun r => (r.1, ⟨r.2.raw.setInfo (SourceInfo.fromRef stx true)⟩)
 
 theorem eq_trans₃ (p : (a:α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b' := p₁ ▸ p₂ ▸ p
@@ -373,7 +344,6 @@ def lhsRelZero (int_lem rat_lem : Name) : Tactic.TacticM Unit :=
   let int? : Bool := leftSummand.isAppOfArity ``Int.rawCast 3
   let lem : Name := if int? then int_lem else rat_lem
   let pf ← mkConstWithFreshMVarLevels lem
-  trace[debug] "trying the proof {pf}"
   g.apply pf
 
 elab "nonpos_rawcast" : tactic => lhsRelZero ``nonpos_intRawCast ``nonpos_ratRawCast
@@ -389,10 +359,6 @@ def elabLinearCombination
     match (← expandLinearComboClean e) with
     | none => (Prod.mk Eq) <$> `(Eq.refl $e)
     | some p => pure p
-  trace[debug] "input is {input}"
-  trace[debug] "built-up expression has the relation {reprStr hypRel}"
-  trace[debug] "built-up expression is the proof {p}"
-  trace[debug] "exponent {exp?}"
   let e ← Lean.Elab.Tactic.getMainTarget
   let whnfEType ← withReducible do whnf e
   let goalRel : Option RelType := whnfEType.relType
