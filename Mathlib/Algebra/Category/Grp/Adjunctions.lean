@@ -74,7 +74,7 @@ def adj : free ⊣ forget AddCommGrp.{u} :=
         simp only [Equiv.symm_symm]
         apply FreeAbelianGroup.lift_comp }
 
-instance : (free.{u}).IsLeftAdjoint :=
+instance : free.{u}.IsLeftAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
 instance : (forget AddCommGrp.{u}).IsRightAdjoint :=
