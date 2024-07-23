@@ -156,11 +156,8 @@ instance comp {Z : PresheafedSpace C} (g : Y ⟶ Z) [hg : IsOpenImmersion g] :
     · exact c_iso' g ((opensFunctor f).obj U) (by ext; simp)
     · apply c_iso' f U
       ext1
-      dsimp only [Opens.map_coe, IsOpenMap.functor_obj_coe, comp_base]
-      -- Porting note: slightly more hand holding here: `g ∘ f` and `fun x => g (f x)`
-      erw [coe_comp, show g.base ∘ f.base = fun x => g.base (f.base x) from rfl,
-        ← Set.image_image g.base f.base, Set.preimage_image_eq _ hg.base_open.inj]
-         -- now `erw` after #13170
+      dsimp only [Opens.map_coe, IsOpenMap.functor_obj_coe, comp_base, TopCat.coe_comp]
+      rw [Set.image_comp, Set.preimage_image_eq _ hg.base_open.inj]
 
 /-- For an open immersion `f : X ⟶ Y` and an open set `U ⊆ X`, we have the map `X(U) ⟶ Y(U)`. -/
 noncomputable def invApp (U : Opens X) :

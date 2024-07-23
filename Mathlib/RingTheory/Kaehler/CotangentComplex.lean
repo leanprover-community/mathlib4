@@ -52,8 +52,7 @@ lemma cotangentSpaceBasis_repr_tmul (r x i) :
     P.cotangentSpaceBasis.repr (r ⊗ₜ .D _ _ x) i = r * aeval P.val (pderiv i x) := by
   classical
   simp only [cotangentSpaceBasis, Basis.baseChange_repr_tmul, mvPolynomialBasis_repr_apply,
-    Algebra.smul_def, mul_comm r]
-  rfl
+    Algebra.smul_def, mul_comm r, algebraMap_apply]
 
 lemma cotangentSpaceBasis_repr_one_tmul (x i) :
     P.cotangentSpaceBasis.repr (1 ⊗ₜ .D _ _ x) i = aeval P.val (pderiv i x) := by
@@ -130,8 +129,8 @@ lemma map_id :
     CotangentSpace.map (.id P) = LinearMap.id := by
   apply P.cotangentSpaceBasis.ext
   intro i
-  simp only [cotangentSpaceBasis_apply, map_tmul, _root_.map_one, Hom.toAlgHom_X]
-  rfl
+  simp only [cotangentSpaceBasis_apply, map_tmul, _root_.map_one, Hom.toAlgHom_X, Hom.id_val,
+    LinearMap.id_coe, id_eq]
 
 lemma map_comp (f : Hom P P') (g : Hom P' P'') :
     CotangentSpace.map (g.comp f) =
@@ -226,7 +225,7 @@ def Hom.sub (f g : Hom P P') : P.CotangentSpace →ₗ[S] P'.Cotangent := by
     simp only [LinearMap.sub_apply, AlgHom.toLinearMap_apply, _root_.map_one, sub_self,
       Submodule.zero_mem]
   · intro x y
-    ext;
+    ext
     simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
       Cotangent.val_mk, Cotangent.val_add, Cotangent.val_smul''', ← map_smul, ← map_add,
       Ideal.toCotangent_eq, AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid,

@@ -450,7 +450,6 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
   apply card_orderOf_eq_totient_aux₁ hn hd
   by_contra h0
   -- Must qualify `Finset.card_eq_zero` because of leanprover/lean4#2849
-  -- Must specify the argument `α` to avoid mathlib4#10830
   simp_rw [not_lt, Nat.le_zero, Finset.card_eq_zero] at h0
   apply lt_irrefl c
   calc

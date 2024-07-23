@@ -657,10 +657,8 @@ theorem subtypeVal_diagSub {α : TypeVec n} : subtypeVal (repeatEq α) ⊚ diagS
   ext i x
   induction' i with _ _ _ i_ih
   · simp [comp, diagSub, subtypeVal, prod.diag]
-  · simp only [prod.diag]
-    simp? [comp, diagSub, subtypeVal, prod.diag] at * says
-      simp only [comp, subtypeVal, diagSub] at *
-    apply @i_ih (drop _)
+  · simp only [comp, subtypeVal, diagSub, prod.diag] at *
+    apply i_ih
 
 @[simp]
 theorem toSubtype_of_subtype {α : TypeVec n} (p : α ⟹ «repeat» n Prop) :

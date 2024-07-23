@@ -179,11 +179,8 @@ nonrec theorem formPerm_eq_formPerm_iff {α : Type*} [DecidableEq α] {s s' : Cy
   revert s s'
   intro s s'
   apply @Quotient.inductionOn₂' _ _ _ _ _ s s'
-  intro l l'
-  -- Porting note: was `simpa using formPerm_eq_formPerm_iff`
-  simp only [mk''_eq_coe, nodup_coe_iff, formPerm_coe, coe_eq_coe, length_coe]
-  intro hs hs'
-  constructor <;> intro h <;> simp_all only [formPerm_eq_formPerm_iff]
+  intro l l' hl hl'
+  simpa using formPerm_eq_formPerm_iff hl hl'
 
 end Cycle
 

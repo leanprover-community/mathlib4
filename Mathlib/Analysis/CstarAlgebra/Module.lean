@@ -119,9 +119,9 @@ lemma innerₛₗ_apply {x y : E} : innerₛₗ x y = ⟪x, y⟫ := rfl
 @[simp]
 lemma inner_sum_right {ι : Type*} [DecidableEq ι] {s : Finset ι} {x : E} {y : ι → E} :
     ⟪x, ∑ i ∈ s, y i⟫ = ∑ i ∈ s, ⟪x, y i⟫ := by
-  induction s using Finset.induction_on
-  case empty => simp
-  case insert a t a_notmem_t hbase =>
+  induction s using Finset.induction_on with
+  | empty => simp
+  | @insert a t a_notmem_t hbase =>
     simp_rw [Finset.sum_insert a_notmem_t]
     simp only [inner_add_right, hbase]
 

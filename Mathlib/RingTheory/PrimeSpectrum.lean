@@ -371,7 +371,7 @@ section Order
 
 We endow `PrimeSpectrum R` with a partial order induced from the ideal lattice.
 This is exactly the specialization order.
-See the corresponding section at `AlgebraicGeometry/PrimeSpectrum/Basic`.
+See the corresponding section at `Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic`.
 -/
 
 instance : PartialOrder (PrimeSpectrum R) :=

@@ -90,12 +90,12 @@ lemma exists_walk_of_edist_ne_top (h : G.edist u v ≠ ⊤) :
   (reachable_of_edist_ne_top h).exists_walk_length_eq_edist
 
 protected theorem edist_triangle : G.edist u w ≤ G.edist u v + G.edist v w := by
-  rcases eq_or_ne (G.edist u v) ⊤ with huv | huv
-  case inl => simp [huv]
-  case inr =>
-    rcases eq_or_ne (G.edist v w) ⊤ with hvw | hvw
-    case inl => simp [hvw]
-    case inr =>
+  cases eq_or_ne (G.edist u v) ⊤ with
+  | inl huv => simp [huv]
+  | inr huv =>
+    cases eq_or_ne (G.edist v w) ⊤ with
+    | inl hvw => simp [hvw]
+    | inr hvw =>
       obtain ⟨p, hp⟩ := exists_walk_of_edist_ne_top huv
       obtain ⟨q, hq⟩ := exists_walk_of_edist_ne_top hvw
       rw [← hp, ← hq, ← Nat.cast_add, ← Walk.length_append]
