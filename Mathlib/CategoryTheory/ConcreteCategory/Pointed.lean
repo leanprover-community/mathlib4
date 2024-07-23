@@ -99,8 +99,7 @@ theorem Hom.ext {A B : Pointed C} (f g : A ⟶ B) (w : f.obj = g.obj) : f = g :=
   rfl
 
 @[simp]
-theorem comp_obj {A B C : Pointed C} {f : A ⟶ B} {g : B ⟶ C} :
-  (f ≫ g).obj = f.obj ≫ g.obj := rfl
+theorem comp_obj {A B C : Pointed C} {f : A ⟶ B} {g : B ⟶ C} : (f ≫ g).obj = f.obj ≫ g.obj := rfl
 
 @[simp]
 theorem id_obj {A : Pointed C} : (𝟙 A : A ⟶ A).obj = 𝟙 A.obj := rfl
