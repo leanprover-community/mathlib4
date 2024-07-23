@@ -6,8 +6,6 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 
-
-
 /-!
 # Higher differentiability in finite dimensions.
 
