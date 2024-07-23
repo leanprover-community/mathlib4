@@ -132,14 +132,6 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
   · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
     rw [← hw.2 ⟨y, hw'⟩ hvw]
 
-lemma IsMatching.map_hom_ofLE_IsMatching (h : M.IsMatching) (hGG' : G ≤ G') :
-    (M.map (Hom.ofLE hGG')).IsMatching := by
-  intro _ hv
-  obtain ⟨_, hv, hv'⟩ := Set.mem_image _ _ _ |>.mp hv
-  obtain ⟨w, hw⟩ := h hv
-  use w
-  simpa using hv' ▸ hw
-
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
 matched.
@@ -201,9 +193,6 @@ namespace ConnectedComponent
 section Finite
 
 variable [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
-
-instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v ∈ c.supp) :=
-  c.recOn fun w ↦ decidable_of_iff (G.Reachable v w) <| by simp fun _ _ _ _ ↦ Subsingleton.elim _ _
 
 lemma even_card_of_isPerfectMatching (c : ConnectedComponent G) (hM : M.IsPerfectMatching) :
     Even (Fintype.card c.supp) := by
