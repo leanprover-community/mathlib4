@@ -6,26 +6,23 @@ Authors: Daniel Weber
 import Mathlib.RingTheory.Derivation.Basic
 
 /-!
-# Differential Rings and Algebras
+# Differential and Algebras
 
-This file defines differential rings, which are rings with a bundled `Derivation ℤ R R`, and
-differential algebras, which are algebras of differential rings where the algebra map commutes
-with the derivative.
-
-This file also defines the x′ notation for the derivative of x in a differential ring.
+This file defines derivations from a commutative ring to itself as a typeclass, which lets us
+use the x′ notation for the derivative of x.
 -/
 
 /--
-A `CommRing` with a bundled `Derivation` to itself.
+A derivation from a ring to itself, as a typeclass.
 -/
-class CommDifferentialRing (R : Type*) extends CommRing R where
+class Differential (R : Type*) [CommRing R] where
   /-- The `Derivation` assosiated with the ring. -/
   deriv : Derivation ℤ R R
 
 @[inherit_doc]
-scoped[DifferentialRing] postfix:max "′" => CommDifferentialRing.deriv
+scoped[Differential] postfix:max "′" => Differential.deriv
 
-open scoped DifferentialRing
+open scoped Differential
 
 open Lean PrettyPrinter Delaborator SubExpr in
 /--
@@ -36,69 +33,68 @@ so the default delaborator doesn't work.
 def delabDeriv : Delab := do
   let e ← getExpr
   guard <| e.isAppOfArity' ``DFunLike.coe 6
-  guard <| (e.getArg!' 4).isAppOf' ``CommDifferentialRing.deriv
+  guard <| (e.getArg!' 4).isAppOf' ``Differential.deriv
   let arg ← withAppArg delab
   `($arg′)
 
 /--
 A differential algebra is an `Algebra` where the derivation commutes with `algebraMap`.
 -/
-class DifferentialAlgebra (A B : Type*) [CommDifferentialRing A] [CommDifferentialRing B]
-    extends Algebra A B where
+class DifferentialAlgebra (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
+    [Differential A] [Differential B] : Prop where
   deriv_algebraMap : ∀ a : A, (algebraMap A B a)′ = algebraMap A B a′
 
 export DifferentialAlgebra (deriv_algebraMap)
+
+@[norm_cast]
+lemma algebraMap.coe_deriv {A : Type*} {B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+    [Differential A] [Differential B] [DifferentialAlgebra A B] (a : A) :
+    (a′ : A) = (a : B)′ :=
+  (DifferentialAlgebra.deriv_algebraMap _).symm
 
 /--
 A differential ring `A` and an algebra over it `B` share constants if all
 constants in B are in the range of `algberaMap A B`.
 -/
-class CommDifferentialRing.ContainConstants (A B : Type*) [CommRing A] [CommDifferentialRing B]
-    [Algebra A B] : Prop where
+class Differential.ContainConstants (A B : Type*) [CommRing A] [CommRing B]
+    [Algebra A B] [Differential B] : Prop where
   /-- If the derivative of x is 0, then it's in the range of `algberaMap A B`. -/
   protected mem_range_of_deriv_eq_zero {x : B} (h : x′ = 0) : x ∈ (algebraMap A B).range
 
-lemma mem_range_of_deriv_eq_zero (A : Type*) {B : Type*} [CommDifferentialRing A]
-    [CommDifferentialRing B] [DifferentialAlgebra A B] [CommDifferentialRing.ContainConstants A B]
-    {x : B} (h : x′ = 0) :
-    x ∈ (algebraMap A B).range :=
-  CommDifferentialRing.ContainConstants.mem_range_of_deriv_eq_zero h
+lemma mem_range_of_deriv_eq_zero (A : Type*) {B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+    [Differential A] [Differential B] [DifferentialAlgebra A B] [Differential.ContainConstants A B]
+    {x : B} (h : x′ = 0) : x ∈ (algebraMap A B).range :=
+  Differential.ContainConstants.mem_range_of_deriv_eq_zero h
 
-instance (A : Type*) [CommDifferentialRing A] : DifferentialAlgebra A A where
+instance (A : Type*) [CommRing A] [Differential A] : DifferentialAlgebra A A where
   deriv_algebraMap _ := rfl
 
-instance (A : Type*) [CommDifferentialRing A] : CommDifferentialRing.ContainConstants A A where
+instance (A : Type*) [CommRing A] [Differential A] : Differential.ContainConstants A A where
   mem_range_of_deriv_eq_zero {x} _ := ⟨x, rfl⟩
 
 /--
-Transfer a `CommDifferentialRing` instance accross a `RingEquiv`.
+Transfer a `Differential` instance accross a `RingEquiv`.
 -/
 @[reducible]
-def CommDifferentialRing.equiv {R R2 : Type*} [CommRing R] [CommDifferentialRing R2] (h : R ≃+* R2):
-    CommDifferentialRing R where
-  deriv := Derivation.mk' (h.symm.toAddMonoidHom.toIntLinearMap ∘ₗ
-    CommDifferentialRing.deriv.toLinearMap ∘ₗ h.toAddMonoidHom.toIntLinearMap) (by simp)
-
-@[norm_cast]
-lemma algebraMap.coe_deriv {A : Type*} {B : Type*} [CommDifferentialRing A] [CommDifferentialRing B]
-    [DifferentialAlgebra A B] (a : A) :
-    (a′ : A) = (a : B)′ :=
-  (DifferentialAlgebra.deriv_algebraMap _).symm
+def Differential.equiv {R R2 : Type*} [CommRing R] [CommRing R2] [Differential R2]
+    (h : R ≃+* R2) : Differential R :=
+  ⟨Derivation.mk' (h.symm.toAddMonoidHom.toIntLinearMap ∘ₗ
+    Differential.deriv.toLinearMap ∘ₗ h.toAddMonoidHom.toIntLinearMap) (by simp)⟩
 
 /--
 Transfer a `DifferentialAlgebra` instance accross a `AlgEquiv`.
 -/
 @[reducible]
-def DifferentialAlgebra.equiv {A : Type*} [CommDifferentialRing A]
-    {R R2 : Type*} [CommRing R] [CommDifferentialRing R2] [Algebra A R] [DifferentialAlgebra A R2]
-    (h : R ≃ₐ[A] R2) :
-    letI := CommDifferentialRing.equiv h.toRingEquiv
+def DifferentialAlgebra.equiv {A : Type*} [CommRing A] [Differential A]
+    {R R2 : Type*} [CommRing R] [CommRing R2] [Differential R2] [Algebra A R]
+    [Algebra A R2] [DifferentialAlgebra A R2] (h : R ≃ₐ[A] R2) :
+    letI := Differential.equiv h.toRingEquiv
     DifferentialAlgebra A R :=
-  letI := CommDifferentialRing.equiv h.toRingEquiv
-  DifferentialAlgebra.mk fun a ↦ by
+  letI := Differential.equiv h.toRingEquiv
+  ⟨fun a ↦ by
     change (LinearMap.comp ..) _ = _
     simp only [AlgEquiv.toRingEquiv_eq_coe, RingHom.toAddMonoidHom_eq_coe,
       RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom, LinearMap.coe_comp,
       AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.coe_coe, RingHom.coe_coe, Derivation.coeFn_coe,
       Function.comp_apply, AlgEquiv.commutes, deriv_algebraMap]
-    apply h.symm.commutes
+    apply h.symm.commutes⟩
