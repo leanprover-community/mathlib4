@@ -37,17 +37,17 @@ and for `f : Spec B ⟶ Spec A`, it is equivalent to the ring hom property `Q` o
 For `HasRingHomProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
 - `AlgebraicGeometry.HasRingHomProperty.iff_appLE`:
     `P f` if and only if `Q (f.appLE U V _)` for all affine `U : Opens Y` and `V : Opens X`.
-- `AlgebraicGeometry.HasAffineProperty.iff_of_source_openCover`:
+- `AlgebraicGeometry.HasRingHomProperty.iff_of_source_openCover`:
     If `Y` is affine, `P f ↔ ∀ i, Q ((𝒰.map i ≫ f).app ⊤)` for an affine open cover `𝒰` of `X`.
-- `AlgebraicGeometry.HasAffineProperty.iff_of_isAffine`:
+- `AlgebraicGeometry.HasRingHomProperty.iff_of_isAffine`:
     If `X` and `Y` are affine, then `P f ↔ Q (f.app ⊤)`.
-- `AlgebraicGeometry.HasAffineProperty.Spec_iff`:
+- `AlgebraicGeometry.HasRingHomProperty.Spec_iff`:
     `P (Spec.map φ) ↔ Q φ`
-- `AlgebraicGeometry.HasAffineProperty.iff_of_iSup_eq_top`:
+- `AlgebraicGeometry.HasRingHomProperty.iff_of_iSup_eq_top`:
     If `Y` is affine, `P f ↔ ∀ i, Q (f.appLE ⊤ (U i) _)` for a family `U` of affine opens of `X`.
-- `AlgebraicGeometry.HasAffineProperty.of_isOpenImmersion`:
+- `AlgebraicGeometry.HasRingHomProperty.of_isOpenImmersion`:
     If `f` is an open immersion then `P f`.
-- `AlgebraicGeometry.HasAffineProperty.stableUnderBaseChange`:
+- `AlgebraicGeometry.HasRingHomProperty.stableUnderBaseChange`:
     If `Q` is stable under base change, then so is `P`.
 
 We also provide the instances `P.IsMultiplicative`, `P.IsStableUnderComposition`,
