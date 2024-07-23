@@ -197,7 +197,7 @@ theorem toSubgraph_adj_getVert {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.leng
       exact ih (Nat.succ_lt_succ_iff.mp hi)
 
 theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
-    (w.toSubgraph).Adj u' v' ↔ ∃ i, s(w.getVert i, w.getVert (i + 1)) =
+    w.toSubgraph.Adj u' v' ↔ ∃ i, s(w.getVert i, w.getVert (i + 1)) =
     s(u', v') ∧ i < w.length := by
   constructor
   · intro hadj
