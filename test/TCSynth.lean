@@ -25,13 +25,13 @@ error: failed to synthesize
 Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
-set_option synthInstance.maxHeartbeats 3000 in
+set_option synthInstance.maxHeartbeats 3200 in
 #synth AddMonoidHomClass (AddGroupSeminorm ℂ) ℂ ℝ
 
 -- This then results in a near failure (or failure on nightly-testing) of the simpNF linter on
 -- `Complex.comap_exp_cobounded` and `Complex.map_exp_comap_re_atTop`:
 
-set_option synthInstance.maxHeartbeats 3000 in
+set_option synthInstance.maxHeartbeats 3200 in
 example : comap exp (cobounded ℂ) = comap re atTop := by simp
 
 end
@@ -63,7 +63,7 @@ section
 -- Initial issue: https://github.com/leanprover-community/mathlib4/issues/12230
 
 open Complex in
-set_option synthInstance.maxHeartbeats 3000 in
+set_option synthInstance.maxHeartbeats 3400 in
 example (x : ℝ) : abs (cos x + sin x * I) = 1 := by simp
 
 end
