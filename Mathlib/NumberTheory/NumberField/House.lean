@@ -295,7 +295,7 @@ theorem exists_ne_zero_int_vec_house_le :
   have hfinq : Fintype.card (β × (K →+* ℂ)) = q * h := by
     rw [Fintype.card_prod, cardβ, Embeddings.card]
   have ⟨x, hxl, hmulvec0, hxbound⟩ :=
-    Int.Matrix.exists_ne_zero_int_vec_norm_le (asiegel K a)
+    Int.Matrix.exists_ne_zero_int_vec_norm_le' (asiegel K a)
       (by rwa [hfinp, hfinq]) (by rwa [hfinp]) (asiegel_ne_0 K a ha)
   simp only [hfinp, hfinq, Nat.cast_mul] at hmulvec0 hxbound
   rw [← sub_mul, mul_div_mul_right _ _ (mod_cast finrank_pos.ne')] at hxbound
