@@ -533,24 +533,6 @@ def mapEmbedding (M : Matroid α) (f : α ↪ β) : Matroid β := M.map f f.inje
   rw [preimage_image_eq _ f.injective]
   exact ⟨hI, image_subset_range _ _⟩
 
-@[simp] lemma mapEmbedding_base_iff {f : α ↪ β} {B : Set β} :
-    (M.mapEmbedding f).Base B ↔ M.Base (f ⁻¹' B) ∧ B ⊆ range f := by
-  rw [mapEmbedding, map_base_iff]
-  refine ⟨?_, fun ⟨h,h'⟩ ↦ ⟨f ⁻¹' B, h, by rwa [eq_comm, image_preimage_eq_iff]⟩⟩
-  rintro ⟨B, hB, rfl⟩
-  rw [preimage_image_eq _ f.injective]
-  exact ⟨hB, image_subset_range _ _⟩
-
-@[simp] lemma mapEmbedding_basis_iff {f : α ↪ β} {I X : Set β} :
-    (M.mapEmbedding f).Basis I X ↔ M.Basis (f ⁻¹' I) (f ⁻¹' X) ∧ I ⊆ X ∧ X ⊆ range f := by
-  rw [mapEmbedding, map_basis_iff']
-  refine ⟨?_, fun ⟨hb, hIX, hX⟩ ↦ ?_⟩
-  · rintro ⟨I, X, hIX, rfl, rfl⟩
-    simp [preimage_image_eq _ f.injective, image_subset f hIX.subset, hIX]
-  obtain ⟨X, rfl⟩ := subset_range_iff_exists_image_eq.1 hX
-  obtain ⟨I, -, rfl⟩ := subset_image_iff.1 hIX
-  exact ⟨I, X, by simpa [preimage_image_eq _ f.injective] using hb⟩
-
 lemma Indep.mapEmbedding (hI : M.Indep I) (f : α ↪ β) : (M.mapEmbedding f).Indep (f '' I) := by
   simpa [preimage_image_eq I f.injective]
 
