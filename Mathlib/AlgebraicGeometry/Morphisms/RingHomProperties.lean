@@ -105,8 +105,7 @@ theorem StableUnderBaseChange.Γ_pullback_fst (hP : StableUnderBaseChange @P) (h
   erw [← PreservesPullback.iso_inv_fst AffineScheme.forgetToScheme (AffineScheme.ofHom f)
       (AffineScheme.ofHom g)]
   rw [op_comp, Functor.map_comp, hP'.cancel_right_isIso, AffineScheme.forgetToScheme_map]
-  have :=
-    _root_.congr_arg Quiver.Hom.unop
+  have := congr_arg Quiver.Hom.unop
       (PreservesPullback.iso_hom_fst AffineScheme.Γ.rightOp (AffineScheme.ofHom f)
         (AffineScheme.ofHom g))
   simp only [Quiver.Hom.unop_op, Functor.rightOp_map, unop_comp] at this
