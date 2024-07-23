@@ -274,22 +274,22 @@ noncomputable def isoIsPullback (h : IsPullback fst snd f g) (h' : IsPullback fs
     P ≅ P' :=
   IsLimit.conePointUniqueUpToIso h.isLimit h'.isLimit
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem isoIsPullback_hom_fst (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
     (h.isoIsPullback h').hom ≫ fst' = fst :=
   IsLimit.conePointUniqueUpToIso_hom_comp h.isLimit h'.isLimit WalkingCospan.left
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem isoIsPullback_hom_snd (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
     (h.isoIsPullback h').hom ≫ snd' = snd :=
   IsLimit.conePointUniqueUpToIso_hom_comp h.isLimit h'.isLimit WalkingCospan.right
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem isoIsPullback_inv_fst (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
     (h.isoIsPullback h').inv ≫ fst = fst' := by
   simp only [Iso.inv_comp_eq, isoIsPullback_hom_fst]
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem isoIsPullback_inv_snd (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
     (h.isoIsPullback h').inv ≫ snd = snd' := by
   simp only [Iso.inv_comp_eq, isoIsPullback_hom_snd]
@@ -303,23 +303,23 @@ isomorphic to the pullback provided by the `HasLimit` API. -/
 noncomputable def isoPullback (h : IsPullback fst snd f g) [HasPullback f g] : P ≅ pullback f g :=
   (limit.isoLimitCone ⟨_, h.isLimit⟩).symm
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem isoPullback_hom_fst (h : IsPullback fst snd f g) [HasPullback f g] :
     h.isoPullback.hom ≫ pullback.fst _ _ = fst := by
   dsimp [isoPullback, cone, CommSq.cone]
   simp
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem isoPullback_hom_snd (h : IsPullback fst snd f g) [HasPullback f g] :
     h.isoPullback.hom ≫ pullback.snd _ _ = snd := by
   dsimp [isoPullback, cone, CommSq.cone]
   simp
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem isoPullback_inv_fst (h : IsPullback fst snd f g) [HasPullback f g] :
     h.isoPullback.inv ≫ fst = pullback.fst _ _ := by simp [Iso.inv_comp_eq]
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem isoPullback_inv_snd (h : IsPullback fst snd f g) [HasPullback f g] :
     h.isoPullback.inv ≫ snd = pullback.snd _ _ := by simp [Iso.inv_comp_eq]
 
@@ -458,22 +458,22 @@ noncomputable def isoIsPushout (h : IsPushout f g inl inr) (h' : IsPushout f g i
     P ≅ P' :=
   IsColimit.coconePointUniqueUpToIso h.isColimit h'.isColimit
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem inl_isoIsPushout_hom (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
     inl ≫ (h.isoIsPushout h').hom = inl' :=
   IsColimit.comp_coconePointUniqueUpToIso_hom h.isColimit h'.isColimit WalkingSpan.left
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem inr_isoIsPushout_hom (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
     inr ≫ (h.isoIsPushout h').hom = inr' :=
   IsColimit.comp_coconePointUniqueUpToIso_hom h.isColimit h'.isColimit WalkingSpan.right
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem inl_isoIsPushout_inv (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
     inl' ≫ (h.isoIsPushout h').inv = inl := by
   simp only [Iso.comp_inv_eq, inl_isoIsPushout_hom]
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem inr_isoIsPushout_inv (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
     inr' ≫ (h.isoIsPushout h').inv = inr := by
   simp only [Iso.comp_inv_eq, inr_isoIsPushout_hom]
@@ -488,23 +488,23 @@ isomorphic to the pullback provided by the `HasLimit` API. -/
 noncomputable def isoPushout (h : IsPushout f g inl inr) [HasPushout f g] : P ≅ pushout f g :=
   (colimit.isoColimitCocone ⟨_, h.isColimit⟩).symm
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem inl_isoPushout_inv (h : IsPushout f g inl inr) [HasPushout f g] :
     pushout.inl _ _ ≫ h.isoPushout.inv = inl := by
   dsimp [isoPushout, cocone, CommSq.cocone]
   simp
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem inr_isoPushout_inv (h : IsPushout f g inl inr) [HasPushout f g] :
     pushout.inr _ _ ≫ h.isoPushout.inv = inr := by
   dsimp [isoPushout, cocone, CommSq.cocone]
   simp
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem inl_isoPushout_hom (h : IsPushout f g inl inr) [HasPushout f g] :
     inl ≫ h.isoPushout.hom = pushout.inl _ _ := by simp [← Iso.eq_comp_inv]
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem inr_isoPushout_hom (h : IsPushout f g inl inr) [HasPushout f g] :
     inr ≫ h.isoPushout.hom = pushout.inr _ _ := by simp [← Iso.eq_comp_inv]
 
