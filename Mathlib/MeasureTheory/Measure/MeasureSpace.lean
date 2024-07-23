@@ -1679,7 +1679,7 @@ theorem exists_preimage_eq_of_preimage_ae {f : α → α} (h : QuasiMeasurePrese
     MeasurableSet.measurableSet_limsup fun n =>
       preimage_iterate_eq ▸ h.measurable.iterate n hs,
     h.limsup_preimage_iterate_ae_eq hs',
-    Filter.CompleteLatticeHom.apply_limsup_iterate (CompleteLatticeHom.setPreimage f) s⟩
+    (CompleteLatticeHom.setPreimage f).apply_limsup_iterate s⟩
 
 open Pointwise
 

@@ -5,7 +5,6 @@ Authors: Peter Nelson
 -/
 import Aesop
 
-
 /-!
 # Matroid Rule Set
 
