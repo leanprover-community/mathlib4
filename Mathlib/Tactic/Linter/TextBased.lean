@@ -415,7 +415,6 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
     IO (Array ErrorContext) := do
   let lines ← IO.FS.lines path
   -- We don't need to run any checks on imports-only files.
-  -- NB. The Python script used to still run a few linters; this is in fact not necessary.
   if isImportsOnlyFile lines then
     return #[]
   let mut errors := #[]
@@ -464,6 +463,12 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 
       numberErrorFiles := numberErrorFiles + 1
   match mode with
   | OutputSetting.print style =>
+    -- Run the remaining python linters. It is easier to just run on all files.
+    -- If this poses an issue, I can either filter the output
+    -- or wait until lint-style.py is fully rewritten in Lean.
+    -- TODO: pass any flags passed to the script... in practice, I only care about fix!
+    let pythonOutput ← IO.Process.run { cmd := "./scripts/print-style-errors.sh" }
+    if pythonOutput != "" then IO.println pythonOutput
     formatErrors allUnexpectedErrors style
     if numberErrorFiles > 0 && mode matches OutputSetting.print _ then
       IO.println s!"error: found {numberErrorFiles} new style errors\n\
