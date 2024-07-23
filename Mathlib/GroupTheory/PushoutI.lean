@@ -6,7 +6,6 @@ Authors: Chris Hughes
 
 import Mathlib.GroupTheory.CoprodI
 import Mathlib.GroupTheory.Coprod.Basic
-import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.GroupTheory.Complement
 
 /-!
