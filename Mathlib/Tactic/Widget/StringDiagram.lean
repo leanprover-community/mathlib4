@@ -245,7 +245,7 @@ def fromExpr (e : Expr) : MonoidalM Html := do
     mkStringDiagram (← e'.nodes) (← e'.strands)
     match ← DiagramBuilderM.buildDiagram dsl sty with
     | some html => return html
-    | none => return <span>No String Diagram.</span>
+    | none => return <span>No non-structural morphisms found.</span>
 
 open scoped Jsx in
 /-- The RPC method for displaying string diagrams. -/
