@@ -136,6 +136,14 @@ def map {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : F₁.Elements ⥤ F₂
 theorem map_π {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : map α ⋙ π F₂ = π F₁ :=
   rfl
 
+variable {D : Type u} [Category.{v} D] in
+
+@[simps obj map]
+def pullback (F : D ⥤ Type w) (G : C ⥤ D) :
+    (G ⋙ F).Elements ⥤ F.Elements where
+  obj X := ⟨G.obj X.1, X.2⟩
+  map {X Y} f := ⟨G.map f.1, f.2⟩
+
 /-- The forward direction of the equivalence `F.Elements ≅ (*, F)`. -/
 def toStructuredArrow : F.Elements ⥤ StructuredArrow PUnit F where
   obj X := StructuredArrow.mk fun _ => X.2
