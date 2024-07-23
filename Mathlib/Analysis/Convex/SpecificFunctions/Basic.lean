@@ -7,8 +7,6 @@ import Mathlib.Analysis.Convex.Slope
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Tactic.LinearCombination
 
-#align_import analysis.convex.specific_functions.basic from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
-
 /-!
 # Collection of convex functions
 
@@ -56,12 +54,10 @@ theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by
         linarith [add_one_lt_exp h1.ne']
       _ = exp (z - y) * exp y - exp y := by ring
       _ ≤ exp z - exp y := by rw [← exp_add]; ring_nf; rfl
-#align strict_convex_on_exp strictConvexOn_exp
 
 /-- `Real.exp` is convex on the whole real line. -/
 theorem convexOn_exp : ConvexOn ℝ univ exp :=
   strictConvexOn_exp.convexOn
-#align convex_on_exp convexOn_exp
 
 /-- `Real.log` is strictly concave on `(0, +∞)`. -/
 theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
@@ -92,7 +88,6 @@ theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
       _ < -log (x / y) := by linarith [log_lt_sub_one_of_pos hxy' hxy'']
       _ = -(log x - log y) := by rw [log_div hx.ne' hy.ne']
       _ = log y - log x := by ring
-#align strict_concave_on_log_Ioi strictConcaveOn_log_Ioi
 
 /-- **Bernoulli's inequality** for real exponents, strict version: for `1 < p` and `-1 ≤ s`, with
 `s ≠ 0`, we have `1 + p * s < (1 + s) ^ p`. -/
@@ -120,7 +115,6 @@ theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
     · rw [add_sub_cancel_left, log_one, sub_zero]
     · apply add_lt_add_left (lt_mul_of_one_lt_left hs' hp)
-#align one_add_mul_self_lt_rpow_one_add one_add_mul_self_lt_rpow_one_add
 
 /-- **Bernoulli's inequality** for real exponents, non-strict version: for `1 ≤ p` and `-1 ≤ s`
 we have `1 + p * s ≤ (1 + s) ^ p`. -/
@@ -131,7 +125,6 @@ theorem one_add_mul_self_le_rpow_one_add {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp
   by_cases hs' : s = 0
   · simp [hs']
   exact (one_add_mul_self_lt_rpow_one_add hs hs' hp).le
-#align one_add_mul_self_le_rpow_one_add one_add_mul_self_le_rpow_one_add
 
 /-- **Bernoulli's inequality** for real exponents, strict version: for `0 < p < 1` and `-1 ≤ s`,
 with `s ≠ 0`, we have `(1 + s) ^ p < 1 + p * s`. -/
@@ -201,13 +194,11 @@ theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) 
       exact Or.inl ⟨hz, hy.le⟩
     · rw [sub_ne_zero]
       exact ((one_lt_div hy).mpr hyz).ne'
-#align strict_convex_on_rpow strictConvexOn_rpow
 
 theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : ℝ ↦ x ^ p := by
   rcases eq_or_lt_of_le hp with (rfl | hp)
   · simpa using convexOn_id (convex_Ici _)
   exact (strictConvexOn_rpow hp).convexOn
-#align convex_on_rpow convexOn_rpow
 
 theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
   refine ⟨convex_Iio _, ?_⟩
@@ -220,7 +211,6 @@ theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
     _ < log (a • -x + b • -y) := strictConcaveOn_log_Ioi.2 hx' hy' hxy' ha hb hab
     _ = log (-(a • x + b • y)) := by congr 1; simp only [Algebra.id.smul_eq_mul]; ring
     _ = _ := by rw [log_neg_eq_log]
-#align strict_concave_on_log_Iio strictConcaveOn_log_Iio
 
 namespace Real
 

@@ -9,8 +9,6 @@ import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Tactic.GCongr
 import Mathlib.Topology.Order.LeftRightNhds
 
-#align_import algebra.continued_fractions.computation.approximation_corollaries from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
-
 /-!
 # Corollaries From Approximation Lemmas (`Algebra.ContinuedFractions.Computation.Approximations`)
 
@@ -50,7 +48,6 @@ namespace GenContFract
 
 theorem of_convs_eq_convs' : (of v).convs = (of v).convs' :=
   @ContFract.convs_eq_convs' _ _ (ContFract.of v)
-#align generalized_continued_fraction.of_convergents_eq_convergents' GenContFract.of_convs_eq_convs'
 
 /-- The recurrence relation for the convergents of the continued fraction expansion
 of an element `v` of `K` in terms of the convergents of the inverse of its fractional part.
@@ -58,7 +55,6 @@ of an element `v` of `K` in terms of the convergents of the inverse of its fract
 theorem convs_succ (n : ℕ) :
     (of v).convs (n + 1) = ⌊v⌋ + 1 / (of (Int.fract v)⁻¹).convs n := by
   rw [of_convs_eq_convs', convs'_succ, of_convs_eq_convs']
-#align generalized_continued_fraction.convergents_succ GenContFract.convs_succ
 
 section Convergence
 
@@ -117,12 +113,10 @@ theorem of_convergence_epsilon :
       _ ≤ fib (n + 1) * fib (n + 1) := by exact_mod_cast (fib (n + 1)).le_mul_self
       _ ≤ fib (n + 1) * fib (n + 2) := by gcongr; exact_mod_cast fib_le_fib_succ
       _ ≤ B * nB := by gcongr
-#align generalized_continued_fraction.of_convergence_epsilon GenContFract.of_convergence_epsilon
 
 theorem of_convergence [TopologicalSpace K] [OrderTopology K] :
     Filter.Tendsto (of v).convs Filter.atTop <| 𝓝 v := by
   simpa [LinearOrderedAddCommGroup.tendsto_nhds, abs_sub_comm] using of_convergence_epsilon v
-#align generalized_continued_fraction.of_convergence GenContFract.of_convergence
 
 end Convergence
 

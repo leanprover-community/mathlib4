@@ -58,7 +58,6 @@ variable [FunLike F M N] [MulActionSemiHomClass F σ M N]
 theorem image_smul_setₛₗ :
     h '' (c • s) = σ c • h '' s := by
   simp only [← image_smul, image_image, map_smulₛₗ h]
-#align image_smul_setₛₗ image_smul_setₛₗ
 
 /-- Translation of preimage is contained in preimage of translation -/
 theorem smul_preimage_set_leₛₗ :
@@ -89,7 +88,6 @@ theorem preimage_smul_setₛₗ_of_units (hc : IsUnit c) (hc' : IsUnit (σ c)) :
   apply preimage_smul_setₛₗ'
   · exact (MulAction.smul_bijective_of_is_unit hc).surjective
   · exact (MulAction.smul_bijective_of_is_unit hc').injective
-#align preimage_smul_setₛₗ preimage_smul_setₛₗ_of_units
 
 
 /-- `preimage_smul_setₛₗ` in the context of a `MonoidHom` -/
@@ -129,7 +127,6 @@ variable [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂]
 theorem image_smul_set :
     h '' (c • s) = c • h '' s :=
   image_smul_setₛₗ _ _ _ h c s
-#align image_smul_set image_smul_set
 
 theorem smul_preimage_set_le :
     c • h ⁻¹' t ⊆ h ⁻¹' (c • t) :=
@@ -140,7 +137,6 @@ variable {c}
 theorem preimage_smul_set (hc : IsUnit c) :
     h ⁻¹' (c • t) = c • h ⁻¹' t :=
   preimage_smul_setₛₗ_of_units _ _ _ h t hc hc
-#align preimage_smul_set preimage_smul_set
 
 theorem Group.preimage_smul_set
     {R : Type*} [Group R] (M₁ M₂ : Type*)
