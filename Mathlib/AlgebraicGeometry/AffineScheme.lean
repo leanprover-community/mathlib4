@@ -33,10 +33,6 @@ We also define predicates about affine schemes and affine open sets.
 
 -- Explicit universe annotations were used in this file to improve perfomance #12737
 
-
-set_option allowUnsafeReducibility true in
-attribute [local reducible] Quiver.Hom
-
 noncomputable section
 
 open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace

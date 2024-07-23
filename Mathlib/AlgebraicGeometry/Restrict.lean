@@ -60,7 +60,8 @@ lemma toScheme_presheaf_map {V W} (i : V ⟶ W) :
     U.toScheme.presheaf.map i = X.presheaf.map (U.ι.opensFunctor.map i.unop).op := rfl
 
 @[simp]
-lemma ι_app (V) : U.ι.app V = X.presheaf.map (homOfLE (Set.image_preimage_subset _ _)).op :=
+lemma ι_app (V) : U.ι.app V = X.presheaf.map
+    (homOfLE (x := U.ι ''ᵁ U.ι ⁻¹ᵁ V) (Set.image_preimage_subset _ _)).op :=
   rfl
 
 @[simp]
