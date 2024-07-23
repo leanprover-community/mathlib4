@@ -543,12 +543,6 @@ theorem fromSpec_primeIdealOf (x : U) :
     Scheme.ofRestrict_val_base]
   rfl -- `rfl` was not needed before #13170
 
-section
-
-variable (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.1.base y ∈ U)
-
-end
-
 theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.1.base y ∈ U) :
     @IsLocalization.AtPrime
       (R := Γ(X, U))
