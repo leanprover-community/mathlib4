@@ -808,6 +808,7 @@ import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.IsOpenComapC
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Maximal
+import Mathlib.AlgebraicGeometry.PrimeSpectrum.Module
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
@@ -994,6 +995,7 @@ import Mathlib.Analysis.Complex.TaylorSeries
 import Mathlib.Analysis.Complex.Tietze
 import Mathlib.Analysis.Complex.UnitDisc.Basic
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Analysis.Complex.UpperHalfPlane.Metric
@@ -1277,6 +1279,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.ComplexDeriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
@@ -2068,6 +2071,7 @@ import Mathlib.Data.Finset.Pointwise.Interval
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Finset.SMulAntidiagonal
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Finset.Sort
@@ -2289,6 +2293,8 @@ import Mathlib.Data.Nat.Factorial.Cast
 import Mathlib.Data.Nat.Factorial.DoubleFactorial
 import Mathlib.Data.Nat.Factorial.SuperFactorial
 import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Data.Nat.Factorization.Defs
+import Mathlib.Data.Nat.Factorization.Induction
 import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Data.Nat.Factorization.Root
 import Mathlib.Data.Nat.Factors
@@ -2329,6 +2335,8 @@ import Mathlib.Data.Opposite
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Option.NAry
+import Mathlib.Data.Ordering.Basic
+import Mathlib.Data.Ordering.Lemmas
 import Mathlib.Data.Ordmap.Ordnode
 import Mathlib.Data.Ordmap.Ordset
 import Mathlib.Data.PEquiv
@@ -2432,6 +2440,7 @@ import Mathlib.Data.Set.Pointwise.ListOfFn
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Pointwise.Support
 import Mathlib.Data.Set.Prod
+import Mathlib.Data.Set.SMulAntidiagonal
 import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Sigma
 import Mathlib.Data.Set.Subset
@@ -2748,14 +2757,10 @@ import Mathlib.Init.Data.List.Instances
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.GCD
 import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Data.Ordering.Basic
-import Mathlib.Init.Data.Ordering.Lemmas
-import Mathlib.Init.Data.Prod
 import Mathlib.Init.Data.Quot
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Init.Data.Sigma.Lex
 import Mathlib.Init.Logic
-import Mathlib.Init.Meta.WellFoundedTactics
 import Mathlib.Init.Order.Defs
 import Mathlib.Init.Order.LinearOrder
 import Mathlib.Init.Quot
@@ -3762,6 +3767,7 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.LocalRing.RingHom.Defs
+import Mathlib.RingTheory.Localization.Algebra
 import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
@@ -3870,6 +3876,7 @@ import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.RingTheory.Smooth.StandardSmooth
+import Mathlib.RingTheory.Support
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.TensorProduct.MvPolynomial
 import Mathlib.RingTheory.Trace.Basic
@@ -4297,6 +4304,7 @@ import Mathlib.Topology.Category.Profinite.Limits
 import Mathlib.Topology.Category.Profinite.Nobeling
 import Mathlib.Topology.Category.Profinite.Product
 import Mathlib.Topology.Category.Profinite.Projective
+import Mathlib.Topology.Category.Sequential
 import Mathlib.Topology.Category.Stonean.Adjunctions
 import Mathlib.Topology.Category.Stonean.Basic
 import Mathlib.Topology.Category.Stonean.EffectiveEpi
