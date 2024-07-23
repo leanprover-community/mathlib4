@@ -34,3 +34,5 @@ lemma starConvex_ofReal_slitPlane {x : ℝ} (hx : 0 < x) : StarConvex ℝ ↑x s
 
 /-- The slit plane is star-shaped at `1`. -/
 lemma starConvex_one_slitPlane : StarConvex ℝ 1 slitPlane := starConvex_slitPlane one_pos
+
+end Complex
