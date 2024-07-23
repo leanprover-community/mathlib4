@@ -763,8 +763,7 @@ private lemma alternatization_map_eq_coe_aux (m : MultilinearMap R (fun _ : ι =
 
 private theorem alternization_map_eq_zero_of_eq_aux (m : MultilinearMap R (fun _ : ι => M) N')
     (v : ι → M) (i j : ι) (hv : v i = v j) (i_ne_j : i ≠ j) :
-    (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ) v = 0 := by
-  rw [sum_apply]
+    ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ v = 0 := by
   exact
     Finset.sum_involution (fun σ _ => swap i j * σ)
       -- Porting note: `-Equiv.Perm.sign_swap'` is required.
@@ -779,9 +778,7 @@ def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→�
     { toFun := fun x ↦ ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ x
       map_add' := by rw [alternatization_map_eq_coe_aux]; simp
       map_smul' := by rw [alternatization_map_eq_coe_aux]; simp
-      map_eq_zero_of_eq' := by
-        simp (config := {beta := false}) only [alternatization_map_eq_coe_aux]
-        apply alternization_map_eq_zero_of_eq_aux
+      map_eq_zero_of_eq' := alternization_map_eq_zero_of_eq_aux m
     }
   map_add' a b := by
     ext
