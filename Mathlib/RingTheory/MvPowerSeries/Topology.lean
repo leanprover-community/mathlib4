@@ -67,11 +67,9 @@ open Function
 
 variable (σ : Type _) (R : Type _)
 
-section Topological
+namespace WithPiTopology
 
 variable [TopologicalSpace R]
-
-namespace WithPiTopology
 
 /-- The pointwise topology on MvPowerSeries -/
 scoped instance topologicalSpace : TopologicalSpace (MvPowerSeries σ R) :=
@@ -133,10 +131,6 @@ variable (σ R)
 
 end WithPiTopology
 
-end Topological
-
-section Uniform
-
 namespace WithPiUniformity
 
 open WithPiTopology
@@ -192,17 +186,12 @@ theorem uniformContinuous_component :
 
 end WithPiUniformity
 
-end Uniform
-
-section
-
 variable {σ R} [DecidableEq σ]
+variable [TopologicalSpace R]
 
-variable [TopologicalSpace R] [CommRing R] [TopologicalRing R]
+open WithPiTopology
 
-open WithPiTopology WithPiUniformity
-
-theorem continuous_C :
+theorem continuous_C [Ring R] [TopologicalRing R] :
     Continuous (C σ R) := by
   apply continuous_of_continuousAt_zero
   rw [continuousAt_pi]
@@ -214,7 +203,7 @@ theorem continuous_C :
   · convert continuousAt_const
     rw [coeff_C, if_neg hd]
 
-theorem variables_tendsto_zero :
+theorem variables_tendsto_zero [Ring R] [TopologicalRing R] :
     Filter.Tendsto (fun s : σ => (X s : MvPowerSeries σ R)) Filter.cofinite (nhds 0) := by
   classical
   rw [tendsto_pi_nhds]
@@ -243,7 +232,7 @@ theorem variables_tendsto_zero :
       apply h
       exact ⟨x, h'⟩
 
-theorem tendsto_pow_zero_of_constantCoeff_nilpotent {f} (hf : IsNilpotent (constantCoeff σ R f)) :
+theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommRing R] {f} (hf : IsNilpotent (constantCoeff σ R f)) :
     Filter.Tendsto (fun n : ℕ => f ^ n) Filter.atTop (nhds 0) := by
   classical
   obtain ⟨m, hm⟩ := hf
@@ -251,7 +240,7 @@ theorem tendsto_pow_zero_of_constantCoeff_nilpotent {f} (hf : IsNilpotent (const
   exact fun d =>  tendsto_atTop_of_eventually_const fun n hn =>
     coeff_eq_zero_of_constantCoeff_nilpotent hm hn
 
-theorem tendsto_pow_zero_of_constantCoeff_zero {f} (hf : constantCoeff σ R f = 0) :
+theorem tendsto_pow_zero_of_constantCoeff_zero [CommRing R] {f} (hf : constantCoeff σ R f = 0) :
     Filter.Tendsto (fun n : ℕ => f ^ n) Filter.atTop (nhds 0) := by
   apply tendsto_pow_zero_of_constantCoeff_nilpotent
   rw [hf]
@@ -259,7 +248,7 @@ theorem tendsto_pow_zero_of_constantCoeff_zero {f} (hf : constantCoeff σ R f = 
 
 /-- The powers of a `MvPowerSeries` converge to 0 iff its constant coefficient is nilpotent.
 N. Bourbaki, *Algebra II*, [bourbaki1981] (chap. 4, §4, n°2, corollaire de la prop. 3) -/
-theorem tendsto_pow_of_constantCoeff_nilpotent_iff [DiscreteTopology R] (f) :
+theorem tendsto_pow_of_constantCoeff_nilpotent_iff [CommRing R] [DiscreteTopology R] (f) :
     Filter.Tendsto (fun n : ℕ => f ^ n) Filter.atTop (nhds 0) ↔
       IsNilpotent (constantCoeff σ R f) := by
   refine ⟨?_, tendsto_pow_zero_of_constantCoeff_nilpotent ⟩
@@ -282,15 +271,8 @@ theorem tendsto_pow_of_constantCoeff_nilpotent_iff [DiscreteTopology R] (f) :
   rw [← Filter.map_le_iff_le_comap]
   apply continuous_constantCoeff.continuousAt
 
-end
 
-section Summable
-
-variable [Semiring R] [TopologicalSpace R]
-
-open WithPiTopology
-
-variable {σ R}
+variable [Semiring R]
 
 /-- A power series is the sum (in the sense of summable families) of its monomials -/
 theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
@@ -305,7 +287,5 @@ theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
 theorem as_tsum [T2Space R] (f : MvPowerSeries σ R) :
     f = tsum fun d : σ →₀ ℕ => monomial R d (coeff R d f) :=
   (HasSum.tsum_eq (hasSum_of_monomials_self _)).symm
-
-end Summable
 
 end MvPowerSeries
