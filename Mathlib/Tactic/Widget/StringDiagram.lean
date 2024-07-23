@@ -293,8 +293,16 @@ def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
     | none => return <span>No String Diagram.</span>
     | some (lhs, rhs) =>
       return <div className="flex">
-        <div className="w-50">{lhs}</div>
-        <div className="w-50">{rhs}</div>
+        <div className="w-50">
+          <details «open»={true}>
+            <summary className="mv2 pointer">String diagram for LHS</summary> {lhs}
+          </details>
+        </div>
+        <div className="w-50">
+          <details «open»={true}>
+            <summary className="mv2 pointer">String diagram for RHS</summary> {rhs}
+          </details>
+        </div>
       </div>
 
 end StringDiagram
