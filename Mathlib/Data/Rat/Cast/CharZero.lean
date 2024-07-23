@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Data.Rat.Cast.Defs
 
-
 /-!
 # Casts of rational numbers into characteristic zero fields (or division rings).
 -/

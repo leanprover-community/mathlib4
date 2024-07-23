@@ -335,4 +335,21 @@ theorem iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
 theorem iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
   exact iInter_Iic_eq_empty_iff.mpr not_bddBelow_coe
 
+/-- Exponentiation is eventually larger than linear growth. -/
+lemma exists_natCast_add_one_le_pow_of_one_le {a : ℝ} (ha : 1 ≤ a) :
+    ∃ m : ℕ, (m + 1 : ℝ) ≤ a ^ m := by
+  obtain ⟨k, hk⟩ : ∃ k : ℕ, a ≥ 1 / k + 1 := by
+    contrapose! ha
+    simpa using (ha 0)
+  use 2 * k ^ 2
+  refine (pow_le_pow_left (by positivity) hk _).trans' ?_
+  rcases k.zero_le.eq_or_lt with rfl|kpos
+  · simp
+  rw [pow_two, mul_left_comm, pow_mul]
+  have := mul_add_one_le_add_one_pow (a := 1 / k) (by simp) k
+  rw [div_mul_cancel₀ _ (by simp [kpos.ne'])] at this
+  refine (pow_le_pow_left (by positivity) this _).trans' ?_
+  rw [mul_left_comm, ← pow_two]
+  exact_mod_cast Nat.two_mul_sq_add_one_le_two_pow_two_mul _
+
 end Real

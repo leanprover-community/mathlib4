@@ -91,11 +91,10 @@ noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : Complete
   sInf_le := fun _ _ ha => Finset.inf_le (Set.mem_toFinset.mpr ha)
   le_sInf := fun s _ ha => Finset.le_inf fun b hb => ha _ <| Set.mem_toFinset.mp hb
 
--- Porting note: `convert` doesn't work as well as it used to.
 -- See note [reducible non-instances]
 /-- A finite bounded distributive lattice is completely distributive. -/
-noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder α] :
-    CompleteDistribLattice α where
+noncomputable abbrev toCompleteDistribLatticeMinimalAxioms [DistribLattice α] [BoundedOrder α] :
+    CompleteDistribLattice.MinimalAxioms α where
   __ := toCompleteLattice α
   iInf_sup_le_sup_sInf := fun a s => by
     convert (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
@@ -107,6 +106,11 @@ noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder 
     rw [Finset.sup_eq_iSup]
     simp_rw [Set.mem_toFinset]
     rfl
+
+-- See note [reducible non-instances]
+/-- A finite bounded distributive lattice is completely distributive. -/
+noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder α] :
+    CompleteDistribLattice α := .ofMinimalAxioms (toCompleteDistribLatticeMinimalAxioms _)
 
 -- See note [reducible non-instances]
 /-- A finite bounded linear order is complete. -/
