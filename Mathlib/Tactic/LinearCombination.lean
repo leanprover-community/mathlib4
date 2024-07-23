@@ -363,6 +363,7 @@ theorem neg_ratRawCast {α : Type*} [LinearOrderedField α] {a b : ℕ} : (Rat.r
 -- TODO
 -- make finishing-only tactic
 -- make a `Tactic.Tactic` everywhere relevant, not a `Syntax.Tactic`
+-- fail better with negative coefficients or with coefficients which just don't work
 
 def lhsRelZero (int_lem rat_lem : Name) : Tactic.TacticM Unit :=
     Tactic.liftMetaTactic <| fun g ↦ do
