@@ -191,6 +191,11 @@ theorem nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
   · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_left h.le _
     exact (Nat.sub_eq_zero_of_le this).symm ▸ dvd_zero (x - y)
 
+lemma nat_pow_sub_dvd_pow_mul_sub (x m n : ℕ) : x ^ m - 1 ∣ x ^ (m * n) - 1 := by
+  nth_rw 2 [← Nat.one_pow n]
+  rw [Nat.pow_mul x m n]
+  apply nat_sub_dvd_pow_sub_pow (x ^ m) 1
+
 theorem Odd.add_dvd_pow_add_pow [CommRing α] (x y : α) {n : ℕ} (h : Odd n) :
     x + y ∣ x ^ n + y ^ n := by
   have h₁ := geom_sum₂_mul x (-y) n
