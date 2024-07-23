@@ -61,14 +61,14 @@ theorem lexOrder_zero : lexOrder (0 : MvPowerSeries σ R) = ⊤ := by
 
 theorem exists_finsupp_eq_lexOrder_of_ne_zero {φ : MvPowerSeries σ R} (hφ : φ ≠ 0) :
     ∃ (d : σ →₀ ℕ), lexOrder φ = toLex d := by
-  simp only [ne_eq, eq_zero_iff_lexOrder_eq_top, WithTop.ne_top_iff_exists] at hφ
+  simp only [ne_eq, ← lexOrder_eq_top_iff_eq_zero, WithTop.ne_top_iff_exists] at hφ
   obtain ⟨p, hp⟩ := hφ
   exact ⟨ofLex p, by simp only [toLex_ofLex, hp]⟩
 
 theorem coeff_ne_zero_of_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
     (h : toLex d = lexOrder φ) : coeff R d φ ≠ 0 := by
   have hφ : φ ≠ 0 := by
-    simp only [ne_eq, eq_zero_iff_lexOrder_eq_top, ← h, WithTop.coe_ne_top, not_false_eq_true]
+    simp only [ne_eq, ← lexOrder_eq_top_iff_eq_zero, ← h, WithTop.coe_ne_top, not_false_eq_true]
   have hφ' := lexOrder_def_of_ne_zero hφ
   rcases hφ' with ⟨ne, hφ'⟩
   simp only [← h, WithTop.coe_eq_coe] at hφ'
@@ -103,7 +103,7 @@ theorem le_lexOrder_iff {φ : MvPowerSeries σ R} {w : WithTop (Lex (σ →₀ �
     rw [← not_lt]
     intro h'
     have hφ : φ ≠ 0 := by
-      rw [ne_eq, eq_zero_iff_lexOrder_eq_top]
+      rw [ne_eq, ← lexOrder_eq_top_iff_eq_zero]
       intro h''
       rw [h'', ← not_le] at h'
       apply h'
@@ -178,7 +178,7 @@ theorem lexOrder_mul [NoZeroDivisors R] (φ ψ : MvPowerSeries σ R) :
   rcases exists_finsupp_eq_lexOrder_of_ne_zero hψ with ⟨q, hq⟩
   apply le_antisymm _ (lexOrder_mul_ge φ ψ)
   rw [hp, hq]
-  apply lexOrder_le_of_coeff_neq_zero (d := p + q)
+  apply lexOrder_le_of_coeff_ne_zero (d := p + q)
   rw [coeff_mul_of_add_lexOrder hp hq, mul_ne_zero_iff]
   exact ⟨coeff_ne_zero_of_lexOrder hp.symm, coeff_ne_zero_of_lexOrder hq.symm⟩
 
