@@ -288,6 +288,10 @@ theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens 
   -- Porting note: changed `rw` to `erw`
   erw [pullbackRestrictIsoRestrict_inv_fst]; rw [Category.comp_id]
 
+@[simp]
+lemma morphismRestrict_id {X : Scheme.{u}} (U : Opens X) : 𝟙 X ∣_ U = 𝟙 _ := by
+  rw [← cancel_mono (Scheme.ιOpens U), morphismRestrict_ι, Category.comp_id, Category.id_comp]
+
 theorem morphismRestrict_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (U : Opens Z) :
     (f ≫ g) ∣_ U = f ∣_ g ⁻¹ᵁ U ≫ g ∣_ U := by
   delta morphismRestrict
@@ -364,16 +368,6 @@ theorem Γ_map_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
         f.app U ≫ X.presheaf.map (eqToHom (f ⁻¹ᵁ U).openEmbedding_obj_top).op := by
   rw [Scheme.Γ_map_op, morphismRestrict_app f U ⊤, f.naturality_assoc, ← X.presheaf.map_comp]
   rfl
-
-@[simp]
-lemma morphismRestrict_id {X : Scheme.{u}} (U : Opens X) : 𝟙 X ∣_ U = 𝟙 _ := by
-  ext1
-  · ext; erw [morphismRestrict_val_base (𝟙 X) U]; rfl
-  · simp only [Scheme.restrict_presheaf_obj, Scheme.id_val_base, Opens.carrier_eq_coe,
-      TopCat.coe_id, id_eq, eq_mpr_eq_cast, morphismRestrict_app', Scheme.Hom.appLE, Scheme.id_app,
-      Category.id_comp, eqToHom_op, Scheme.restrict_presheaf_map, ← Functor.map_comp]
-    rw [← X.presheaf.map_id]
-    rfl
 
 /-- Restricting a morphism onto the image of an open immersion is isomorphic to the base change
 along the immersion. -/
