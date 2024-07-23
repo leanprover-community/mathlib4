@@ -106,12 +106,6 @@ set_option linter.minImports true in
 -- finally, we leave the linter "on", to give it a chance to parse `eoi`
 -- and to silence it, we make sure to put in a command for each import
 
-/--
-warning: Imports increased to
-[Init.Guard, Lean.Parser.Command, Mathlib.Data.Int.Notation]
-note: this linter can be disabled with `set_option linter.minImports false`
--/
-#guard_msgs in
 set_option linter.minImports true
 
 /--

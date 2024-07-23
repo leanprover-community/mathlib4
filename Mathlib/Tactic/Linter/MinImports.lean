@@ -62,6 +62,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx => do
       return
     if (← MonadState.get).messages.hasErrors then
       return
+    if stx == (← `(command| set_option $(mkIdent `linter.minImports) true)) then return
     let importsSoFar ← minImportsRef.get
     -- when the linter reaches the end of the file or `#exit`, it gives a report
     if #[``Parser.Command.eoi, ``Lean.Parser.Command.exit].contains stx.getKind  then
