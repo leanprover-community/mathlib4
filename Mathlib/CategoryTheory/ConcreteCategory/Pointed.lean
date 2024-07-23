@@ -19,6 +19,12 @@ of `X`, often called the basepoint.
   with a category structure where the morphisms are the morphisms of the original category that
   preserve the basepoint.
 
+* `Pointed.map`, for a map of concrete categories, takes the pointed objects of `C` to
+  the pointed objects of `D`.
+
+* `Pointed.functor` gives, for a map of concrete categories, a functor between the correponding
+  categories of pointed objects.
+
 ### Implementation notes
 
 This construction is equivalent to a special case of the category of elements construction and
