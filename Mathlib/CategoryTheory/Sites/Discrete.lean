@@ -76,9 +76,9 @@ lemma isDiscrete_iff_isIso_counit_app {L : A ⥤ Sheaf J A} (adj : L ⊣ (sheafS
 section Equivalence
 
 variable {D : Type*} [Category D] (K : GrothendieckTopology D) [HasWeakSheafify K A]
-variable (G : C ⥤ D) [G.Full] [G.Faithful]
+variable (G : C ⥤ D)
   [∀ (X : Dᵒᵖ), HasLimitsOfShape (StructuredArrow X G.op) A]
-  [G.IsCoverDense K] [G.IsContinuous J K] [G.IsCocontinuous J K] (ht' : IsTerminal (G.obj t))
+  [G.IsDenseSubsite J K] (ht' : IsTerminal (G.obj t))
 
 variable [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
 

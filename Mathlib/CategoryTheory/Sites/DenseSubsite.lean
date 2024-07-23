@@ -75,18 +75,6 @@ theorem Presieve.in_coverByImage (G : C ⥤ D) {X : D} {Y : C} (f : G.obj Y ⟶ 
     Presieve.coverByImage G X f :=
   ⟨⟨Y, 𝟙 _, f, by simp⟩⟩
 
--- /--
--- For a functor `G : C ⥤ D`, and an morphism `U ⟶ G.obj V`,
--- `Sieve.coverByImageHom G f` is the sieve of `U`
--- consisting of those arrows that factor through images of arrows of `G`.
--- -/
--- def Sieve.coverByImageHom (G : C ⥤ D) {U V : C} (f : G.obj U ⟶ G.obj V) : Sieve (G.obj U) where
---   arrows Y i := ∃ (Y' : C) (lift : Y ⟶ G.obj Y') (fac₁ : Y' ⟶ V) (fac₂ : Y' ⟶ U),
---     G.map fac₁ = G.map fac₂ ≫ f ∧ lift ≫ G.map fac₂ = i
---   downward_closed := by
---     rintro Y₁ Y₂ i₁ ⟨Y'₁, lift₁, fac₁, fac₂, e₁, rfl⟩ i₂
---     refine ⟨_, _, _, fac₂, e₁, Category.assoc _ _ _⟩
-
 /--
 For a functor `G : C ⥤ D`, and an morphism `f : G.obj U ⟶ G.obj V`,
 `Sieve.hasLift G f` is the sieve of `U`
@@ -114,31 +102,47 @@ def Sieve.equalizer {U V : C} (f₁ f₂ : U ⟶ V) : Sieve U where
 @[simp]
 lemma Sieve.equalizer_self {U V : C} (f : U ⟶ V) : equalizer f f = ⊤ := by ext; simp
 
+class Functor.IsLocallyFullyFaithful (G : C ⥤ D) (K : GrothendieckTopology D) : Prop where
+  functorPushforward_hasLift_mem : ∀ {U V} (f : G.obj U ⟶ G.obj V),
+    (Sieve.hasLift G f).functorPushforward G ∈ K _
+  functorPushforward_equalizer_mem : ∀ {U V : C} (f₁ f₂ : U ⟶ V), G.map f₁ = G.map f₂ →
+    (Sieve.equalizer f₁ f₂).functorPushforward G ∈ K _
+
 /-- A functor `G : (C, J) ⥤ (D, K)` is cover dense if for each object and arrows in `D`,
   there exists a covering sieve in `D` that factors through images of `G`.
 
 This definition can be found in https://ncatlab.org/nlab/show/dense+sub-site Definition 2.2.
 -/
-class Functor.IsCoverDense (G : C ⥤ D) (K : GrothendieckTopology D) : Prop where
+class Functor.IsCoverDense (G : C ⥤ D) (K : GrothendieckTopology D)
+    extends G.IsLocallyFullyFaithful K : Prop where
   coverByImage_mem : ∀ U : D, Sieve.coverByImage G U ∈ K U
-  functorPushforward_hasLift_mem : ∀ {U V} (f : G.obj U ⟶ G.obj V),
-    (Sieve.hasLift G f).functorPushforward G ∈ K _
-  functorPushforward_equalizer_mem : ∀ {U V : C} (f₁ f₂ : U ⟶ V), G.map f₁ = G.map f₂ →
-    (Sieve.equalizer f₁ f₂).functorPushforward G ∈ K _
 
 lemma Functor.coverByImage_mem (G : C ⥤ D) (K : GrothendieckTopology D)
     [G.IsCoverDense K] (U : D) : Sieve.coverByImage G U ∈ K U :=
   Functor.IsCoverDense.coverByImage_mem _
 
 lemma Functor.functorPushforward_hasLift_mem (G : C ⥤ D) (K : GrothendieckTopology D)
-    [G.IsCoverDense K] {U V} (f : G.obj U ⟶ G.obj V) :
+    [G.IsLocallyFullyFaithful K] {U V} (f : G.obj U ⟶ G.obj V) :
     (Sieve.hasLift G f).functorPushforward G ∈ K _ :=
-  Functor.IsCoverDense.functorPushforward_hasLift_mem _
+  Functor.IsLocallyFullyFaithful.functorPushforward_hasLift_mem _
 
 lemma Functor.functorPushforward_equalizer_mem (G : C ⥤ D) (K : GrothendieckTopology D)
-    [G.IsCoverDense K] {U V} (f₁ f₂ : U ⟶ V) (e : G.map f₁ = G.map f₂) :
+    [G.IsLocallyFullyFaithful K] {U V} (f₁ f₂ : U ⟶ V) (e : G.map f₁ = G.map f₂) :
       (Sieve.equalizer f₁ f₂).functorPushforward G ∈ K _ :=
-  Functor.IsCoverDense.functorPushforward_equalizer_mem _ _ e
+  Functor.IsLocallyFullyFaithful.functorPushforward_equalizer_mem _ _ e
+
+instance (G : C ⥤ D) [G.Faithful] [G.Full] : G.IsLocallyFullyFaithful K where
+  functorPushforward_hasLift_mem f :=
+    K.superset_covering (Sieve.coverByImage_le_hasLift G f) (G.coverByImage_mem _)
+  functorPushforward_equalizer_mem f₁ f₂ e := by obtain rfl := G.map_injective e; simp
+
+lemma Functor.isLocallyCoverDenseOfFullyFaithful (G : C ⥤ D) [Faithful G] [Full G]
+    (K : GrothendieckTopology D)
+    (coverByImage_mem : ∀ U : D, Sieve.coverByImage G U ∈ K U) : G.IsCoverDense K where
+  coverByImage_mem := coverByImage_mem
+  functorPushforward_hasLift_mem f :=
+    K.superset_covering (Sieve.coverByImage_le_hasLift G f) (coverByImage_mem _)
+  functorPushforward_equalizer_mem f₁ f₂ e := by obtain rfl := G.map_injective e; simp
 
 lemma Functor.isCoverDense_of_full_of_faithful (G : C ⥤ D) [Faithful G] [Full G]
     (K : GrothendieckTopology D)
