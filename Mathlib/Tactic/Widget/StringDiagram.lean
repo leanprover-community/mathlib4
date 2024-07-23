@@ -20,6 +20,10 @@ with `X` and `Y` horizontally (from left to right), and the composition of morph
 and `g : Y ⟶ Z` corresponds to connecting two nodes associated with `f` and `g` vertically (from
 top to bottom) by strings associated with `Y`.
 
+Currently, the string diagram widget provided in this file deals with equalities of morphisms
+in monoidal categories. It displays string diagrams corresponding to the morphisms for the
+left-hand and right-hand sides of the equality.
+
 Some examples can be found in `test/StringDiagram.lean`.
 
 When drawing string diagrams, it is common to ignore associators and unitors. We follow this
