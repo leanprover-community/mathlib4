@@ -28,8 +28,8 @@ equivalences.
 
 - `GroupExtension.Splitting S`: structure for splittings of a group extension `S` of `G` by `N` as
   section homomorphisms `G → E`
-- `SemidirectProduct.toGroupExtension φ`: a canonical group extension giving a semidirect product,
-  `1 → N → N ⋊[φ] G → G → 1`
+- `SemidirectProduct.toGroupExtension φ`: the group extension associated to the semidirect product
+  coming from `φ : G →* MulAut N`, `1 → N → N ⋊[φ] G → G → 1`
 
 ## TODO
 
@@ -132,7 +132,7 @@ namespace SemidirectProduct
 
 variable (φ : G →* MulAut N)
 
-/-- A canonical group extension giving a semidirect product -/
+/-- The group extension associated to the semidirect product -/
 def toGroupExtension : GroupExtension N (N ⋊[φ] G) G where
   inl_injective := inl_injective
   range_inl_eq_ker_rightHom := range_inl_eq_ker_rightHom
