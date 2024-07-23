@@ -54,10 +54,6 @@ protected class Algebra.IsAlgebraic : Prop :=
 protected class Algebra.Transcendental : Prop :=
   transcendental : ∃ x : A, Transcendental R x
 
-/-- An algebra is transcendental if some element is transcendental. -/
-protected class Algebra.Transcendental : Prop :=
-  transcendental : ∃ x : A, Transcendental R x
-
 variable {R A}
 
 lemma Algebra.isAlgebraic_def : Algebra.IsAlgebraic R A ↔ ∀ x : A, IsAlgebraic R x :=
@@ -88,10 +84,6 @@ theorem Algebra.isAlgebraic_iff : Algebra.IsAlgebraic R A ↔ (⊤ : Subalgebra 
 theorem isAlgebraic_iff_not_injective {x : A} :
     IsAlgebraic R x ↔ ¬Function.Injective (Polynomial.aeval x : R[X] →ₐ[R] A) := by
   simp only [IsAlgebraic, injective_iff_map_eq_zero, not_forall, and_comm, exists_prop]
-
-theorem transcendental_iff_injective {x : A} :
-    Transcendental R x ↔ Function.Injective (Polynomial.aeval x : R[X] →ₐ[R] A) :=
-  isAlgebraic_iff_not_injective.not_left
 
 theorem transcendental_iff_injective {x : A} :
     Transcendental R x ↔ Function.Injective (Polynomial.aeval x : R[X] →ₐ[R] A) :=
