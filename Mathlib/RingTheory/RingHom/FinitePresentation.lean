@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 
 # The meta properties of finitely-presented ring homomorphisms.
 
-The main result is `RingHom.finitePresentation_is_local`.
+The main result is `RingHom.finitePresentation_isLocal`.
 
 -/
 
@@ -159,14 +159,14 @@ theorem finitePresentation_ofLocalizationSpanTarget :
   exact finitePresentation_ofLocalizationSpanTarget_aux f' hf' t ht Ht
 
 /-- Being finitely-presented is a local property of rings. -/
-theorem finitePresentation_is_local : PropertyIsLocal @FinitePresentation :=
+theorem finitePresentation_isLocal : PropertyIsLocal @FinitePresentation :=
   ⟨finitePresentation_localizationPreserves,
     finitePresentation_ofLocalizationSpanTarget, finitePresentation_stableUnderComposition,
     finitePresentation_holdsForLocalizationAway⟩
 
 /-- Being finitely-presented respects isomorphisms. -/
 theorem finitePresentation_respectsIso : RingHom.RespectsIso @RingHom.FinitePresentation :=
-  RingHom.finitePresentation_is_local.respectsIso
+  RingHom.finitePresentation_isLocal.respectsIso
 
 /-- Being finitely-presented is stable under base change. -/
 theorem finitePresentation_stableUnderBaseChange : StableUnderBaseChange @FinitePresentation := by
