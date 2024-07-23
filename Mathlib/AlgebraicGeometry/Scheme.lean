@@ -153,7 +153,7 @@ lemma preimage_iSup {ι} (U : ι → Opens Y) : f ⁻¹ᵁ iSup U = ⨆ i, f ⁻
   Opens.ext (by simp)
 
 lemma preimage_iSup_eq_top {ι} {U : ι → Opens Y} (hU : iSup U = ⊤) :
-    ⨆ i, f ⁻¹ᵁ U i = ⊤ := (f.preimage_iSup U).symm.trans (by rw [hU]; rfl)
+    ⨆ i, f ⁻¹ᵁ U i = ⊤ := f.preimage_iSup U ▸ hU ▸ rfl
 
 end Hom
 
