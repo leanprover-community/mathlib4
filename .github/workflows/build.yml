@@ -77,7 +77,7 @@ jobs:
 
       - name: "run style linters"
         run: |
-          ./scripts/lint-style.sh
+          lake exe lint-style
 
       - name: Install bibtool
         if: ${{ 'ubuntu-latest' == 'ubuntu-latest' }}
