@@ -332,7 +332,7 @@ theorem neg_ratRawCast {α : Type*} [LinearOrderedField α] {a b : ℕ} : (Rat.r
   simp [div_neg_iff, -Nat.succ_eq_add_one]
 
 -- TODO
--- make finishing-only tactic
+-- make finishing-only tactic (note there is `Tactic.liftMetaFinishingTactic`)
 -- make a `Tactic.Tactic` everywhere relevant, not a `Syntax.Tactic`
 -- fail better with negative coefficients or with coefficients which just don't work
 
