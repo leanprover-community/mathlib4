@@ -110,14 +110,14 @@ unless its `SyntaxNodeKind` is either in `exclusions` or in `ignoreBranch`.
 -/
 partial
 def getManyGoals : InfoTree → Array (Syntax × Nat)
-  | .node k args =>
+  | .node info args =>
     let kargs := (args.map getManyGoals).foldl (· ++ ·) #[]
-    if let .ofTacticInfo i := k then
-      if ignoreBranch.contains i.stx.getKind then #[] else
-      if let  .original .. := i.stx.getHeadInfo then
-        let newGoals := i.goalsAfter.filter (i.goalsBefore.contains ·)
-        if newGoals.length != 0 && !exclusions.contains i.stx.getKind then
-          kargs.push (i.stx, newGoals.length)
+    if let .ofTacticInfo info := info then
+      if ignoreBranch.contains info.stx.getKind then #[] else
+      if let .original .. := info.stx.getHeadInfo then
+        let newGoals := info.goalsAfter.filter (info.goalsBefore.contains ·)
+        if newGoals.length != 0 && !exclusions.contains info.stx.getKind then
+          kargs.push (info.stx, newGoals.length)
         else kargs
       else kargs
     else kargs
