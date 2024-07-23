@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
+import Mathlib.Algebra.Homology.DerivedCategory.Basic
 import Mathlib.CategoryTheory.Localization.SmallShiftedHom
 
 /-!
@@ -317,6 +317,7 @@ lemma homAddEquiv_apply (α : Ext X Y n) : homAddEquiv α = α.hom := rfl
 end
 
 variable (X Y Z) in
+/-- The composition of `Ext`, as a bilinear map. -/
 @[simps!]
 noncomputable def bilinearComp (a b c : ℕ) (h : a + b = c) :
     Ext X Y a →+ Ext Y Z b →+ Ext X Z c :=
