@@ -91,7 +91,7 @@ def equivFixedPoints : R.leftFixedPoints ≃ R.rightFixedPoints where
 theorem u_l_le_of_le {J J' : Set α} (h : J' ∈ R.leftFixedPoints) :
     J ≤ J' → R.rightDual (R.leftDual J) ≤ J' := by
   intro h₁
-  rw[← h]
+  rw [← h]
   apply R.gc_leftDual_rightDual.monotone_u
   apply R.gc_leftDual_rightDual.monotone_l
   exact h₁
