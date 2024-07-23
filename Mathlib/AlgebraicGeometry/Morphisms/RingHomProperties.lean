@@ -37,7 +37,7 @@ and for `f : Spec B ⟶ Spec A`, it is equivalent to the ring hom property `Q`.
 For `HasRingHomProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
 - `AlgebraicGeometry.HasAffineProperty.iff_appLE`:
     `P f` if and only if `Q (f.appLE U V _)` for all affine `U : Opens Y` and `V : Opens X`.
-- `AlgebraicGeometry.HasAffineProperty.iff_of_openCover`:
+- `AlgebraicGeometry.HasAffineProperty.iff_of_source_openCover`:
     If `Y` is affine, `P f ↔ ∀ i, Q ((𝒰.map i ≫ f).app ⊤)` for an affine open cover `𝒰` of `X`.
 - `AlgebraicGeometry.HasAffineProperty.iff_of_isAffine`:
     If `X` and `Y` are affine, then `P f ↔ Q (f.app ⊤)`.
@@ -216,7 +216,7 @@ variable {P f}
 lemma iff_appLE : P f ↔ ∀ (U : Y.affineOpens) (V : X.affineOpens) (e), Q (f.appLE U V e) := by
   rw [eq_affineLocally P, affineLocally_iff_affineOpens_le]
 
-theorem of_openCover [IsAffine Y]
+theorem of_source_openCover [IsAffine Y]
     (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] (H : ∀ i, Q ((𝒰.map i ≫ f).app ⊤)) :
     P f := by
   rw [HasAffineProperty.iff_of_isAffine (P := P)]
@@ -245,13 +245,13 @@ theorem of_openCover [IsAffine Y]
       Scheme.ofRestrict_app, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map] at H
     exact (f.appLE_congr _ rfl (by simp) Q).mp H
 
-theorem iff_of_openCover [IsAffine Y] (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] :
+theorem iff_of_source_openCover [IsAffine Y] (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] :
     P f ↔ ∀ i, Q ((𝒰.map i ≫ f).app ⊤) :=
-  ⟨fun H i ↦ app_top P _ (comp_of_isOpenImmersion P (𝒰.map i) f H), of_openCover 𝒰⟩
+  ⟨fun H i ↦ app_top P _ (comp_of_isOpenImmersion P (𝒰.map i) f H), of_source_openCover 𝒰⟩
 
 theorem iff_of_isAffine [IsAffine X] [IsAffine Y] :
     P f ↔ Q (f.app ⊤) := by
-  rw [iff_of_openCover (P := P) (Scheme.openCoverOfIsIso.{u} (𝟙 _))]
+  rw [iff_of_source_openCover (P := P) (Scheme.openCoverOfIsIso.{u} (𝟙 _))]
   simp
 
 theorem Spec_iff {R S : CommRingCat.{u}} {φ : R ⟶ S} :
@@ -265,7 +265,7 @@ theorem of_iSup_eq_top [IsAffine Y] {ι : Type*}
     (H : ∀ i, Q (f.appLE ⊤ (U i).1 le_top)) :
     P f := by
   have (i) : IsAffine ((X.openCoverOfSuprEqTop _ hU).obj i) := (U i).2
-  refine of_openCover (X.openCoverOfSuprEqTop _ hU) fun i ↦ ?_
+  refine of_source_openCover (X.openCoverOfSuprEqTop _ hU) fun i ↦ ?_
   simpa [Scheme.Hom.app_eq_appLE] using (f.appLE_congr _ rfl (by simp) Q).mp (H i)
 
 theorem iff_of_iSup_eq_top [IsAffine Y] {ι : Type*}
@@ -273,22 +273,12 @@ theorem iff_of_iSup_eq_top [IsAffine Y] {ι : Type*}
     P f ↔ ∀ i, Q (f.appLE ⊤ (U i).1 le_top) :=
   ⟨fun H _ ↦ appLE P f H ⟨_, isAffineOpen_top _⟩ _ le_top, of_iSup_eq_top U hU⟩
 
-lemma HasAffineProperty.isLocalAtSource (P) {Q} [HasAffineProperty P Q]
-    (H : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine Y] (𝒰 : Scheme.OpenCover.{u} X),
-        Q f ↔ ∀ i, Q (𝒰.map i ≫ f)) : IsLocalAtSource P where
-  iff_of_openCover' {X Y} f 𝒰 := by
-    simp_rw [IsLocalAtTarget.iff_of_iSup_eq_top _ (iSup_affineOpens_eq_top Y)]
-    rw [forall_comm]
-    refine forall_congr' fun U ↦ ?_
-    simp_rw [HasAffineProperty.iff_of_isAffine, morphismRestrict_comp]
-    exact @H _ _ (f ∣_ U.1) U.2 (𝒰.restrict (f ⁻¹ᵁ U.1))
-
 instance : IsLocalAtSource P := by
   apply HasAffineProperty.isLocalAtSource
   intros X Y f _ 𝒰
   simp_rw [← HasAffineProperty.iff_of_isAffine (P := P),
-    iff_of_openCover 𝒰.affineRefinement.openCover,
-    fun i ↦ iff_of_openCover (P := P) (f := 𝒰.map i ≫ f) (𝒰.obj i).affineCover]
+    iff_of_source_openCover 𝒰.affineRefinement.openCover,
+    fun i ↦ iff_of_source_openCover (P := P) (f := 𝒰.map i ≫ f) (𝒰.obj i).affineCover]
   simp [Scheme.OpenCover.affineRefinement]
 
 instance : P.ContainsIdentities where
@@ -296,8 +286,8 @@ instance : P.ContainsIdentities where
     rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
     intro U
     rw [morphismRestrict_id, iff_of_isAffine (P := P), Scheme.id_app]
-    have := IsLocalization.at_units (.powers (1 : Γ(X ∣_ᵤ 𝟙 X ⁻¹ᵁ U, ⊤))) (by simp)
-    exact (isLocal_ringHomProperty P).HoldsForLocalizationAway Γ(X ∣_ᵤ 𝟙 X ⁻¹ᵁ U, ⊤) 1
+    exact (isLocal_ringHomProperty P).HoldsForLocalizationAway.of_bijective _ _
+      Function.bijective_id
 
 instance : P.IsStableUnderComposition where
   comp_mem {X Y Z} f g hf hg := by
