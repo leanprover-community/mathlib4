@@ -831,6 +831,12 @@ theorem norm_mkPiAlgebraFin_zero : ‖ContinuousMultilinearMap.mkPiAlgebraFin �
     simp
 #align continuous_multilinear_map.norm_mk_pi_algebra_fin_zero ContinuousMultilinearMap.norm_mkPiAlgebraFin_zero
 
+theorem norm_mkPiAlgebraFin_le :
+    ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n A‖ ≤ max 1 ‖(1 : A)‖ := by
+  cases n
+  · exact norm_mkPiAlgebraFin_zero.le.trans (le_max_right _ _)
+  · exact (norm_mkPiAlgebraFin_le_of_pos (Nat.zero_lt_succ _)).trans (le_max_left _ _)
+
 @[simp]
 theorem norm_mkPiAlgebraFin [NormOneClass A] :
     ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n A‖ = 1 := by
