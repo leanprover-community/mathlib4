@@ -274,7 +274,7 @@ theorem sdiff_sup : y \ (x ⊔ z) = y \ x ⊓ y \ z :=
                       inf_inf_sdiff, inf_bot_eq])
 
 theorem sdiff_eq_sdiff_iff_inf_eq_inf : y \ x = y \ z ↔ y ⊓ x = y ⊓ z :=
-  ⟨fun h => eq_of_inf_eq_sup_eq (by rw [inf_inf_sdiff, h, inf_inf_sdiff])
+  ⟨fun h => eq_of_inf_eq_sup_eq (a := y \ x) (by rw [inf_inf_sdiff, h, inf_inf_sdiff])
     (by rw [sup_inf_sdiff, h, sup_inf_sdiff]),
     fun h => by rw [← sdiff_inf_self_right, ← sdiff_inf_self_right z y, inf_comm, h, inf_comm]⟩
 
@@ -770,7 +770,7 @@ end lift
 
 instance PUnit.instBooleanAlgebra : BooleanAlgebra PUnit where
   __ := PUnit.instBiheytingAlgebra
-  le_sup_inf := _
+  le_sup_inf := by simp
   inf_compl_le_bot _ := trivial
   top_le_sup_compl _ := trivial
 

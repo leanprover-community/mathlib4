@@ -40,8 +40,7 @@ protected theorem IsGδ.setOf_irrational : IsGδ { x | Irrational x } :=
 
 theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
   refine Real.isTopologicalBasis_Ioo_rat.dense_iff.2 ?_
-  simp only [gt_iff_lt, Rat.cast_lt, not_lt, Rat.cast_le, mem_iUnion, mem_singleton_iff,
-    exists_prop, forall_exists_index, and_imp]
+  simp only [mem_iUnion, mem_singleton_iff, exists_prop, forall_exists_index, and_imp]
   rintro _ a b hlt rfl _
   rw [inter_comm]
   exact exists_irrational_btwn (Rat.cast_lt.2 hlt)

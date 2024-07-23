@@ -6,7 +6,6 @@ Authors: Scott Morrison, Johannes Hölzl
 import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.GroupTheory.FreeAbelianGroup
 
-
 /-!
 # Adjunctions regarding the category of (abelian) groups
 

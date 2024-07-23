@@ -584,8 +584,8 @@ instance : HasPullbacks.{u} (Type u) :=
 instance : HasPushouts.{u} (Type u) :=
   hasPushouts_of_hasWidePushouts.{u} (Type u)
 
-variable {X Y Z : Type u}
-variable (f : X ⟶ Z) (g : Y ⟶ Z)
+variable {X Y Z : Type u} {X' Y' Z' : Type v}
+variable (f : X ⟶ Z) (g : Y ⟶ Z) (f' : X' ⟶ Z') (g' : Y' ⟶ Z')
 
 -- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The usual explicit pullback in the category of types, as a subtype of the product.
@@ -597,6 +597,33 @@ abbrev PullbackObj : Type u :=
 -- `PullbackObj f g` comes with a coercion to the product type `X × Y`.
 example (p : PullbackObj f g) : X × Y :=
   p
+
+/-- The map `PullbackObj f g → PullbackObj f' g'` induced
+by a commutative diagram. -/
+@[simps coe_fst coe_snd]
+def pullbackMap (a : X → X') (b : Y → Y') (c : Z → Z')
+    (commf : ∀ x, c (f x) = f' (a x))
+    (commg : ∀ y, c (g y) = g' (b y))
+    (x : PullbackObj f g) : PullbackObj f' g' :=
+  ⟨⟨a x.1.1, b x.1.2⟩, by
+    dsimp
+    rw [← commg, ← commf, x.2]⟩
+
+/-- The bijection `PullbackObj f g ≃ PullbackObj f' g'` induced
+by an equivalence between two pullback diagrams of types. -/
+@[simps]
+def pullbackMapEquiv (a : X ≃ X') (b : Y ≃ Y') (c : Z ≃ Z')
+    (commf : ∀ x, c (f x) = f' (a x))
+    (commg : ∀ y, c (g y) = g' (b y)) :
+    PullbackObj f g ≃ PullbackObj f' g' where
+  toFun := pullbackMap f g f' g' a b c commf commg
+  invFun := pullbackMap f' g' f g a.symm b.symm c.symm (fun x' ↦ by
+    obtain ⟨x, rfl⟩ := a.surjective x'
+    simp only [← commf, Equiv.symm_apply_apply]) (fun y' ↦ by
+    obtain ⟨y, rfl⟩ := b.surjective y'
+    simp only [← commg, Equiv.symm_apply_apply])
+  left_inv _ := by ext <;> simp
+  right_inv _ := by ext <;> simp
 
 /-- The explicit pullback cone on `PullbackObj f g`.
 This is bundled with the `IsLimit` data as `pullbackLimitCone f g`.
@@ -624,9 +651,12 @@ end Types
 section Pullback
 
 variable {X Y S : Type v} {f : X ⟶ S} {g : Y ⟶ S} {c : PullbackCone f g}
-  (hc : IsLimit c)
 
-namespace PullbackCone.IsLimit
+namespace PullbackCone
+
+namespace IsLimit
+
+variable (hc : IsLimit c)
 
 /-- A limit pullback cone in the category of types identifies to the explicit pullback. -/
 noncomputable def equivPullbackObj : c.pt ≃ Types.PullbackObj f g :=
@@ -657,7 +687,27 @@ lemma equivPullbackObj_symm_apply_snd (x : Types.PullbackObj f g) :
 lemma type_ext {x y : c.pt} (h₁ : c.fst x = c.fst y) (h₂ : c.snd x = c.snd y) : x = y :=
   (equivPullbackObj hc).injective (by ext <;> assumption)
 
-end PullbackCone.IsLimit
+end IsLimit
+
+variable (c)
+
+/-- Given `c : PullbackCone f g` in the category of types, this is
+the canonical map `c.pt → Types.PullbackObj f g`. -/
+@[simps coe_fst coe_snd]
+def toPullbackObj (x : c.pt) : Types.PullbackObj f g :=
+  ⟨⟨c.fst x, c.snd x⟩, congr_fun c.condition x⟩
+
+/-- A pullback cone `c` in the category of types is limit iff the
+map `c.toPullbackObj : c.pt → Types.PullbackObj f g` is a bijection. -/
+noncomputable def isLimitEquivBijective :
+    IsLimit c ≃ Function.Bijective c.toPullbackObj where
+  toFun h := (IsLimit.equivPullbackObj h).bijective
+  invFun h := IsLimit.ofIsoLimit (Types.pullbackLimitCone f g).isLimit
+    (Iso.symm (PullbackCone.ext (Equiv.ofBijective _ h).toIso))
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := rfl
+
+end PullbackCone
 
 end Pullback
 
