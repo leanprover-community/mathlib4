@@ -90,41 +90,27 @@ lemma compactlyGeneratedSpace_of_continuous_maps {X : Type w} [t : TopologicalSp
     apply continuous_coinduced_rng
 
 example {X : Type u} [TopologicalSpace X] [T2Space X] :
-    CompactlyGeneratedSpace.{u, u} X ↔
+    CompactlyGeneratedSpace.{u} X ↔
       (∀ s, IsClosed s ↔ ∀ (K : Set X), IsCompact K → IsClosed (s ∩ K)) where
   mp := by
-    intro _ s
-    constructor
-    · intro hs K hK
-      exact hs.inter hK.isClosed
-    · intro h
-      rw [eq_compactlyGenerated (X := X), TopologicalSpace.compactlyGenerated, isClosed_coinduced]
-      refine isClosed_sigma_iff.mpr ?mpr.a
-      intro SF
-      change IsClosed (SF.2 ⁻¹' s)
-      rw [← Set.preimage_inter_range]
-      apply IsClosed.preimage
-      fun_prop
-      apply h
-      apply isCompact_range
-      fun_prop
+    refine fun _ s ↦ ⟨fun hs K hK ↦ hs.inter hK.isClosed, fun h ↦ ?_⟩
+    rw [eq_compactlyGenerated (X := X), TopologicalSpace.compactlyGenerated, isClosed_coinduced,
+      isClosed_sigma_iff]
+    intro Sf
+    change IsClosed (Sf.2 ⁻¹' s)
+    rw [← Set.preimage_inter_range]
+    exact (h _ (isCompact_range Sf.2.continuous)).preimage Sf.2.continuous
   mpr := by
-    intro h
-    apply compactlyGeneratedSpace_of_continuous_maps
-    intro Y _ f h'
-    rw [continuous_iff_isClosed]
-    intro t ht
-    rw [h]
-    intro K hK
+    refine fun h1 ↦ compactlyGeneratedSpace_of_continuous_maps fun f h2 ↦
+      continuous_iff_isClosed.2 fun t ht ↦ (h1 _).2 fun K hK ↦ ?_
     rw [Set.inter_comm, ← Subtype.image_preimage_coe]
-    apply (IsClosed.closedEmbedding_subtype_val _).isClosedMap
-    · rw [← Set.preimage_comp]
-      apply ht.preimage
-      have := isCompact_iff_compactSpace.1 hK
-      exact h' (CompHaus.of K)
-        { toFun := Subtype.val,
-          continuous_toFun := continuous_subtype_val }
-    · exact hK.isClosed
+    apply hK.isClosed.closedEmbedding_subtype_val.isClosedMap
+    rw [← Set.preimage_comp]
+    apply ht.preimage
+    have := isCompact_iff_compactSpace.1 hK
+    exact h2 (CompHaus.of K)
+      { toFun := Subtype.val,
+        continuous_toFun := continuous_subtype_val }
 
 /-- The type of `u`-compactly generated `w`-small topological spaces. -/
 structure CompactlyGenerated where
