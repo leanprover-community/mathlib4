@@ -59,6 +59,11 @@ example (x y : ℚ) (h1 : 3 * x + 2 * y = 10) (h2 : 2 * x + 5 * y = 3) : -11 * y
 example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) : b = 2 / 3 := by
   linear_combination ha / 6 + hab / 3
 
+example (a b : ℚ) (h1 : a + b = 1) (h2 : a - b = 1) : a = 1 := by linear_combination (h1 + h2) / 2
+-- example (a b : ℤ) (h1 : a + b = 1) (h2 : a - b = 1) : a = 1 := by
+  -- linear_combination (h1 + h2) / 2
+-- FIXME handle this? at least give a better error message
+
 /-! ### Cases with more than 2 equations -/
 
 example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) (hignore : 3 = a + b) : b = 2 / 3 := by
