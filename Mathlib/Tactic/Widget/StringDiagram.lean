@@ -20,6 +20,8 @@ with `X` and `Y` horizontally (from left to right), and the composition of morph
 and `g : Y ⟶ Z` corresponds to connecting two nodes associated with `f` and `g` vertically (from
 top to bottom) by strings associated with `Y`.
 
+Some examples can be found in `test/StringDiagram.lean`.
+
 When drawing string diagrams, it is common to ignore associators and unitors. We follow this
 convention. To do this, we need to extract non-structural morphisms that are not associators
 and unitors from lean expressions. This operation is performed using the `Tactic.Monoidal.eval`
