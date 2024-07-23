@@ -184,7 +184,7 @@ lemma toSubgraph_le_induce_support (p : G.Walk u v) :
   exact p.verts_toSubgraph.symm
 
 theorem toSubgraph_adj_getVert {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
-    (w.toSubgraph).Adj (w.getVert i) (w.getVert (i + 1)) := by
+    w.toSubgraph.Adj (w.getVert i) (w.getVert (i + 1)) := by
   induction w generalizing i with
   | nil => cases hi
   | cons hxy i' ih =>

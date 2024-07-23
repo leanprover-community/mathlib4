@@ -209,12 +209,12 @@ theorem adj_getVert_succ {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
 
 @[simp]
 lemma cons_getVert_succ {u v w n} (p : G.Walk v w) (h : G.Adj u v) :
-    (Walk.cons h p).getVert (n + 1) = p.getVert n := rfl
+    (p.cons h).getVert (n + 1) = p.getVert n := rfl
 
-lemma cons_getVert {u v w n} (p : G.Walk v w) (h : G.Adj u v) (hn : 0 < n) :
+lemma cons_getVert {u v w n} (p : G.Walk v w) (h : G.Adj u v) (hn : n ≠ 0) :
     (Walk.cons h p).getVert n = p.getVert (n - 1) := by
   obtain ⟨i, hi⟩ : ∃ (i : ℕ), i.succ = n := by
-    use (n - 1); exact Nat.sub_one_add_one_eq_of_pos hn
+    use n - 1; exact Nat.sub_one_add_one_eq_of_pos hn
   rw [← hi]
   simp only [Nat.succ_eq_add_one, cons_getVert_succ, Nat.add_sub_cancel]
 
@@ -831,7 +831,7 @@ variable {x y : V} -- TODO: rename to u, v, w instead?
   rw [← cons_support_tail p hp, List.tail_cons]
 
 @[simp]
-lemma cons_tail {t u v}  (p : G.Walk u v) (h : G.Adj t u) :
+lemma tail_cons {t u v} (p : G.Walk u v) (h : G.Adj t u) :
     (Walk.cons h p).tail (Walk.not_nil_cons) = p := by
   unfold Walk.tail; simp only [notNilRec_cons]
 
@@ -1234,8 +1234,8 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
 is the `n`-th node (zero-indexed) in the walk. In addition, `n` is at most the length of the path.
 Due to the definition of `getVert` it would otherwise be legal to return a larger `n` for the last
 node. -/
-theorem exists_getVert {u v w : V} (w : G.Walk v w) (h : u ∈ w.support) :
-    ∃ n, w.getVert n = u ∧ n ≤ w.length := by
+theorem mem_support_iff_exists_getVert {u v w : V} {w : G.Walk v w} :
+    u ∈ w.support ↔ ∃ n, w.getVert n = u ∧ n ≤ w.length := by
   obtain ⟨q, r, hqr⟩ := SimpleGraph.Walk.mem_support_iff_exists_append.mp h
   use q.length
   rw [hqr]
@@ -1243,7 +1243,7 @@ theorem exists_getVert {u v w : V} (w : G.Walk v w) (h : u ∈ w.support) :
   simp only [lt_self_iff_false, ↓reduceIte, Nat.sub_self, getVert_zero, length_append,
     Nat.le_add_right, and_self]
 
-lemma getVert_tail_support_get {u v n} (p : G.Walk u v) (hnp: ¬ p.Nil) :
+lemma getVert_tail {u v n} (p : G.Walk u v) (hnp: ¬ p.Nil) :
     (p.tail hnp).getVert n = p.getVert (n + 1) :=
   p.notNilRec (fun _ _ ↦ by simp only [cons_tail, cons_getVert_succ]) hnp
 
