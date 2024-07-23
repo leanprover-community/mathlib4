@@ -558,7 +558,7 @@ theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : Opens X} (h : U
   refine (Scheme.congr_app this _).trans ?_
   simp [eqToHom_map]
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma Scheme.iso_hom_val_base_inv_val_base {X Y : Scheme.{u}} (e : X ≅ Y) :
     e.hom.val.base ≫ e.inv.val.base = 𝟙 _ :=
   LocallyRingedSpace.iso_hom_val_base_inv_val_base (Scheme.forgetToLocallyRingedSpace.mapIso e)
@@ -569,7 +569,7 @@ lemma Scheme.iso_hom_val_base_inv_val_base_apply {X Y : Scheme.{u}} (e : X ≅ Y
   show (e.hom.val.base ≫ e.inv.val.base) x = 𝟙 X.toPresheafedSpace x
   simp
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma Scheme.iso_inv_val_base_hom_val_base {X Y : Scheme.{u}} (e : X ≅ Y) :
     e.inv.val.base ≫ e.hom.val.base = 𝟙 _ :=
   LocallyRingedSpace.iso_inv_val_base_hom_val_base (Scheme.forgetToLocallyRingedSpace.mapIso e)

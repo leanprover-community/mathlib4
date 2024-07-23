@@ -95,12 +95,14 @@ def germ (F : X.Presheaf C) {U : Opens X} (x : U) : F.obj (op U) ⟶ stalk F x :
 def Γgerm (F : X.Presheaf C) (x : X) : F.obj (op ⊤) ⟶ stalk F x :=
   F.germ ⟨x, show x ∈ ⊤ by trivial⟩
 
+@[reassoc (attr := simp)]
 theorem germ_res (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) :
     F.map i.op ≫ germ F x = germ F (i x : V) :=
   let i' : (⟨U, x.2⟩ : OpenNhds x.1) ⟶ ⟨V, (i x : V).2⟩ := i
   colimit.w ((OpenNhds.inclusion x.1).op ⋙ F) i'.op
 
-lemma Γgerm_res (F : X.Presheaf C) {U : Opens X} {i : U ⟶ ⊤} (x : U) :
+@[reassoc]
+lemma map_germ_eq_Γgerm (F : X.Presheaf C) {U : Opens X} {i : U ⟶ ⊤} (x : U) :
     F.map i.op ≫ germ F x = Γgerm F (i x) :=
   germ_res F i x
 
