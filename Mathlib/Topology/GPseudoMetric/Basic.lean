@@ -3,10 +3,11 @@ Copyright (c) 2024 Edward van de Meent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edward van de Meent
 -/
-import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.NeZero
-import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Data.Set.Lattice
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+
 
 /-!
 # Pseudo-metrics with generic codomain
@@ -47,7 +48,7 @@ structure GPseudoMetric (α : Type*) (β : Type*) [LinearOrder β] [AddCommMonoi
   protected triangle' : ∀ x y z : α, toFun x z ≤ toFun x y + toFun y z
 
 namespace GPseudoMetric
-variable {α β : Type*} [LinearOrder β] [AddCommMonoid β] [CovariantClass β β (. + .) (. ≤ .)]
+variable {α β : Type*} [LinearOrder β] [AddCommMonoid β] [CovariantClass β β (· + ·) (· ≤ ·)]
 
 @[ext]
 protected theorem ext {d₁ d₂ : GPseudoMetric α β} (h : d₁.toFun = d₂.toFun) : d₁ = d₂ := by
@@ -60,13 +61,13 @@ instance : FunLike (GPseudoMetric α β) α (α → β) where
 end GPseudoMetric
 /-- A class for types of pseudo-metric functions on `α` with values in `β` -/
 class GPseudoMetricClass (T : Type*) (α β : outParam Type*) [LinearOrder β] [AddCommMonoid β]
-    [CovariantClass β β (. + .) (. ≤ .)] [FunLike T α (α → β)] : Prop :=
+    [CovariantClass β β (· + ·) (· ≤ ·)] [FunLike T α (α → β)] : Prop :=
   gdist_self' : ∀ (gdist : T), ∀ x : α, gdist x x = 0
   comm' : ∀ (gdist : T), ∀ x y:α, gdist x y = gdist y x
   triangle' : ∀ (gdist : T), ∀ (x y z : α), gdist x z ≤ gdist x y + gdist y z
 
 namespace GPseudoMetric
-variable {α β : Type*} [LinearOrder β] [AddCommMonoid β] [CovariantClass β β (. + .) (. ≤ .)]
+variable {α β : Type*} [LinearOrder β] [AddCommMonoid β] [CovariantClass β β (· + ·) (· ≤ ·)]
 
 instance: GPseudoMetricClass (GPseudoMetric α β) α β where
   gdist_self' := GPseudoMetric.gdist_self'
@@ -96,7 +97,7 @@ theorem triangle4 (x y z w : α) : gdist x w ≤ gdist x y + gdist y z + gdist z
     gdist x w
       ≤ gdist x z + gdist z w := triangle gdist x z w
     _ ≤ (gdist x y + gdist y z + gdist z w : β) :=
-      @act_rel_act_of_rel β β (Function.swap (. + .)) (. ≤ .) _ _ _ _ (triangle gdist x y z)
+      @act_rel_act_of_rel β β (Function.swap (· + ·)) (· ≤ ·) _ _ _ _ (triangle gdist x y z)
 
 theorem triangle4_left (x₁ y₁ x₂ y₂ : α) :
     gdist x₂ y₂ ≤ gdist x₁ y₁ + (gdist x₁ x₂ + gdist y₁ y₂) := by
@@ -122,7 +123,7 @@ end GPseudoMetric
 namespace GMetric
 open GPseudoMetric
 
-variable {α β : Type*} [LinearOrder β] [AddCommMonoid β] [CovariantClass β β (. + .) (. ≤ .)]
+variable {α β : Type*} [LinearOrder β] [AddCommMonoid β] [CovariantClass β β (· + ·) (· ≤ ·)]
   {T : Type*} [FunLike T α (α → β)] [GPseudoMetricClass T α β] (gdist : T)
 variable {x y z : α} {δ ε ε₁ ε₂ : β} {s : Set α}
 
@@ -215,7 +216,7 @@ end non_cancel
 
 section weak_cancel
 
-variable [ContravariantClass β β (. + .) (. < .)]
+variable [ContravariantClass β β (· + ·) (· < ·)]
 
 theorem closedBall_disjoint_closedBall (h : δ + ε < gdist x y) :
     Disjoint (closedBall gdist x δ) (closedBall gdist y ε) :=
@@ -289,7 +290,7 @@ end weak_cancel
 
 section strong_cancel
 
-variable [ContravariantClass β β (. + .) (. ≤ .)]
+variable [ContravariantClass β β (· + ·) (· ≤ ·)]
 
 theorem closedBall_disjoint_ball
     (h : δ + ε ≤ gdist x y) : Disjoint (closedBall gdist x δ) (ball gdist y ε) :=
@@ -329,4 +330,6 @@ theorem gdist_lt_add_of_nonempty_ball_inter_ball
     (h : (ball gdist x ε₁ ∩ ball gdist y ε₂).Nonempty) : gdist x y < ε₁ + ε₂ :=
   gdist_lt_add_of_nonempty_closedBall_inter_ball gdist <|
     h.mono (inter_subset_inter (ball_subset_closedBall gdist) Subset.rfl)
+
 end strong_cancel
+end GMetric
