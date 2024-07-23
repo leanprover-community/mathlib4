@@ -371,6 +371,42 @@ lemma stalkMap_inv_hom {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) (x : X) :
   rw [← stalkMap_comp, LocallyRingedSpace.stalkMap_congr_hom (e.hom ≫ e.inv) (𝟙 _) (by simp)]
   simp
 
+@[reassoc, elementwise]
+lemma stalkMap_germ {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (U : Opens Y)
+    (x : (Opens.map f.val.base).obj U) :
+    Y.presheaf.germ ⟨f.val.base x.val, x.property⟩ ≫ f.stalkMap x.val =
+      f.val.c.app (op U) ≫ X.presheaf.germ x :=
+  PresheafedSpace.stalkMap_germ f.val U x
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma stalkMap_germ' {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (U : Opens Y) (x : X)
+    (hx : f.val.base x ∈ U) :
+    Y.presheaf.germ ⟨f.val.base x, hx⟩ ≫ f.stalkMap x =
+      f.val.c.app (op U) ≫ X.presheaf.germ (U := (Opens.map f.val.base).obj U) ⟨x, hx⟩ :=
+  PresheafedSpace.stalkMap_germ' f.val U x hx
+
+variable {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat} (h : OpenEmbedding f)
+  (V : Opens U) (x : U) (hx : x ∈ V)
+
+@[elementwise, reassoc]
+lemma restrictStalkIso_hom_eq_germ :
+    (X.restrict h).presheaf.germ ⟨x, hx⟩ ≫ (X.restrictStalkIso h x).hom =
+      X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ :=
+  PresheafedSpace.restrictStalkIso_hom_eq_germ X.toPresheafedSpace h V x hx
+
+@[simp, elementwise, reassoc]
+lemma restrictStalkIso_inv_eq_germ :
+    X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ ≫
+      (X.restrictStalkIso h x).inv = (X.restrict h).presheaf.germ ⟨x, hx⟩ :=
+  PresheafedSpace.restrictStalkIso_inv_eq_germ X.toPresheafedSpace h V x hx
+
+lemma restrictStalkIso_inv_eq_ofRestrict :
+    (X.restrictStalkIso h x).inv = (X.ofRestrict h).stalkMap x :=
+  PresheafedSpace.restrictStalkIso_inv_eq_ofRestrict X.toPresheafedSpace h x
+
+instance ofRestrict_stalkMap_isIso : IsIso ((X.ofRestrict h).stalkMap x) :=
+  PresheafedSpace.ofRestrict_stalkMap_isIso X.toPresheafedSpace h x
+
 end Stalks
 
 end LocallyRingedSpace

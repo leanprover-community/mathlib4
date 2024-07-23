@@ -631,6 +631,25 @@ lemma stalkMap_germ' {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (x : X) (hx 
       f.app U ≫ X.presheaf.germ (U := f⁻¹ᵁ U) ⟨x, hx⟩ :=
   PresheafedSpace.stalkMap_germ' f.val U x hx
 
+variable {U : TopCat} (X : Scheme.{u}) {f : U ⟶ X.toTopCat} (h : OpenEmbedding f)
+  (V : Opens U) (x : U) (hx : x ∈ V)
+
+@[elementwise, reassoc]
+lemma restrictStalkIso_hom_eq_germ :
+    (X.restrict h).presheaf.germ ⟨x, hx⟩ ≫ (X.restrictStalkIso h x).hom =
+      X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ :=
+  PresheafedSpace.restrictStalkIso_hom_eq_germ X.toPresheafedSpace h V x hx
+
+@[simp, elementwise, reassoc]
+lemma restrictStalkIso_inv_eq_germ :
+    X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ ≫
+      (X.restrictStalkIso h x).inv = (X.restrict h).presheaf.germ ⟨x, hx⟩ :=
+  PresheafedSpace.restrictStalkIso_inv_eq_germ X.toPresheafedSpace h V x hx
+
+lemma restrictStalkIso_inv_eq_ofRestrict :
+    (X.restrictStalkIso h x).inv = (X.ofRestrict h).stalkMap x :=
+  PresheafedSpace.restrictStalkIso_inv_eq_ofRestrict X.toPresheafedSpace h x
+
 end Scheme
 
 end Stalks

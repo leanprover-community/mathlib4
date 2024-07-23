@@ -615,9 +615,8 @@ lemma awayToΓ_ΓToStalk (f) (x) :
       (Proj.stalkIso' 𝒜 x.1).toCommRingCatIso.inv ≫
       ((Proj.toLocallyRingedSpace 𝒜).restrictStalkIso (Opens.openEmbedding _) x).inv := by
   rw [awayToΓ, Category.assoc, ← Category.assoc _ (Iso.inv _),
-    Iso.eq_comp_inv, Category.assoc, Category.assoc]
-  simp only [LocallyRingedSpace.restrict, Presheaf.Γgerm]
-  erw [PresheafedSpace.restrictStalkIso_hom_eq_germ]
+    Iso.eq_comp_inv, Category.assoc, Category.assoc, Presheaf.Γgerm]
+  rw [LocallyRingedSpace.restrictStalkIso_hom_eq_germ]
   simp only [Proj.toLocallyRingedSpace, Proj.toSheafedSpace]
   rw [Presheaf.germ_res, awayToSection_germ]
   rfl
