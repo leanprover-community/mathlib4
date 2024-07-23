@@ -152,10 +152,6 @@ def opensRestrict :
     Scheme.Opens U ≃ { V : X.Opens // V ≤ U } :=
   (IsOpenImmersion.opensEquiv (U.ι)).trans (Equiv.subtypeEquivProp (by simp))
 
-instance ΓRestrictAlgebra {X : Scheme.{u}} (U : X.Opens) :
-    Algebra (Scheme.Γ.obj (op X)) (Scheme.Γ.obj (op U)) :=
-  (Scheme.Γ.map U.ι.op).toAlgebra
-
 lemma Scheme.map_basicOpen' (r : Γ(U, ⊤)) :
     U.ι ''ᵁ (U.toScheme.basicOpen r) = X.basicOpen
       (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r) := by
