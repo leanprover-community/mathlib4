@@ -18,7 +18,8 @@ We define `lFixedPoints` (resp. `rFixedPoints`) as the set of fixed points `J` (
 
 ## Main Results
 
-⋆ `galoisConnection`: we prove that the maps `leftDual` and `rightDual` form a Galois connection.
+⋆ `Rel.gc_leftDual_rightDual`: we prove that the maps `toDual ∘ R.leftDual` and
+  `R.rightDual ∘ ofDual` form a Galois connection.
 ⋆ `equivFixedPoints`: we prove that the said maps induce inverse bijections between the sets
 of fixed points.
 
