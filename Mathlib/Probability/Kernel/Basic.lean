@@ -57,7 +57,7 @@ iff `∀ s : Set β, MeasurableSet s → Measurable (fun a ↦ κ a s)`. -/
 structure Kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] where
   /-- The underlying function of a kernel.
 
-  Do not use this function directly. Instead use the coercion coming from the `DFunLike` 
+  Do not use this function directly. Instead use the coercion coming from the `DFunLike`
   instance. -/
   toFun : α → Measure β
   /-- A kernel is a measurable map.
