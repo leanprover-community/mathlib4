@@ -11,6 +11,13 @@ import Mathlib.Tactic.Conv
 import Mathlib.Init.Set
 import Lean.Elab.Tactic.Location
 
+/-!
+# The `push_neg` tactic
+
+The `push_neg` tactic pushes negations inside expressions: it can be applied to goals as well
+as local hypotheses and also works as a `conv` tactic.
+-/
+
 namespace Mathlib.Tactic.PushNeg
 
 open Lean Meta Elab.Tactic Parser.Tactic

@@ -5,8 +5,6 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.RingTheory.DedekindDomain.Ideal
 
-#align_import ring_theory.dedekind_domain.factorization from "leanprover-community/mathlib"@"2f588be38bb5bec02f218ba14f82fc82eb663f87"
-
 /-!
 # Factorization of ideals and fractional ideals of Dedekind domains
 Every nonzero ideal `I` of a Dedekind domain `R` can be factored as a product `∏_v v^{n_v}` over the
@@ -62,7 +60,6 @@ variable [IsDedekindDomain R] (v : HeightOneSpectrum R)
   power of `v` dividing `I`. -/
 def IsDedekindDomain.HeightOneSpectrum.maxPowDividing (I : Ideal R) : Ideal R :=
   v.asIdeal ^ (Associates.mk v.asIdeal).count (Associates.mk I).factors
-#align is_dedekind_domain.height_one_spectrum.max_pow_dividing IsDedekindDomain.HeightOneSpectrum.maxPowDividing
 
 /-- Only finitely many maximal ideals of `R` divide a given nonzero ideal. -/
 theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
@@ -74,7 +71,6 @@ theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
   intro v w hvw
   simp? at hvw says simp only [Subtype.mk.injEq] at hvw
   exact Subtype.coe_injective (HeightOneSpectrum.ext _ _ hvw)
-#align ideal.finite_factors Ideal.finite_factors
 
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that the
   multiplicity of `v` in the factorization of `I`, denoted `val_v(I)`, is nonzero. -/
@@ -88,7 +84,6 @@ theorem Associates.finite_factors {I : Ideal R} (hI : I ≠ 0) :
     exact Associates.count_ne_zero_iff_dvd hI v.irreducible
   rw [Filter.eventually_cofinite, h_supp]
   exact Ideal.finite_factors hI
-#align associates.finite_factors Associates.finite_factors
 
 namespace Ideal
 
@@ -105,7 +100,6 @@ theorem finite_mulSupport {I : Ideal R} (hI : I ≠ 0) :
         pow_zero _]
     exact hv hv'
   Finite.subset (Filter.eventually_cofinite.mp (Associates.finite_factors hI)) h_subset
-#align ideal.finite_mul_support Ideal.finite_mulSupport
 
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^(val_v(I))`, regarded as a fractional ideal, is not `(1)`. -/
@@ -115,7 +109,6 @@ theorem finite_mulSupport_coe {I : Ideal R} (hI : I ≠ 0) :
   rw [mulSupport]
   simp_rw [Ne, zpow_natCast, ← FractionalIdeal.coeIdeal_pow, FractionalIdeal.coeIdeal_eq_one]
   exact finite_mulSupport hI
-#align ideal.finite_mul_support_coe Ideal.finite_mulSupport_coe
 
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^-(val_v(I))` is not the unit ideal. -/
@@ -125,7 +118,6 @@ theorem finite_mulSupport_inv {I : Ideal R} (hI : I ≠ 0) :
   rw [mulSupport]
   simp_rw [zpow_neg, Ne, inv_eq_one]
   exact finite_mulSupport_coe hI
-#align ideal.finite_mul_support_inv Ideal.finite_mulSupport_inv
 
 /-- For every nonzero ideal `I` of `v`, `v^(val_v(I) + 1)` does not divide `∏_v v^(val_v(I))`. -/
 theorem finprod_not_dvd (I : Ideal R) (hI : I ≠ 0) :
@@ -142,7 +134,6 @@ theorem finprod_not_dvd (I : Ideal R) (hI : I ≠ 0) :
   have hvw := Prime.dvd_of_dvd_pow hv_prime hvw'
   rw [Prime.dvd_prime_iff_associated hv_prime hw_prime, associated_iff_eq] at hvw
   exact (Finset.mem_erase.mp hw).1 (HeightOneSpectrum.ext w v (Eq.symm hvw))
-#align ideal.finprod_not_dvd Ideal.finprod_not_dvd
 
 end Ideal
 
@@ -154,7 +145,6 @@ theorem Associates.finprod_ne_zero (I : Ideal R) :
     intro v _
     apply pow_ne_zero _ v.ne_bot
   · exact one_ne_zero
-#align associates.finprod_ne_zero Associates.finprod_ne_zero
 
 namespace Ideal
 
@@ -172,7 +162,6 @@ theorem finprod_count (I : Ideal R) (hI : I ≠ 0) : (Associates.mk v.asIdeal).c
   rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le h_ne_zero hv] at h_dvd h_not_dvd
   rw [not_le] at h_not_dvd
   apply Nat.eq_of_le_of_lt_succ h_dvd h_not_dvd
-#align ideal.finprod_count Ideal.finprod_count
 
 /-- The ideal `I` equals the finprod `∏_v v^(val_v(I))`. -/
 theorem finprod_heightOneSpectrum_factorization {I : Ideal R} (hI : I ≠ 0) :
@@ -187,7 +176,6 @@ theorem finprod_heightOneSpectrum_factorization {I : Ideal R} (hI : I ≠ 0) :
   rw [← hJv]
   apply Ideal.finprod_count
     ⟨J, Ideal.isPrime_of_prime (irreducible_iff_prime.mp hv), Irreducible.ne_zero hv⟩ I hI
-#align ideal.finprod_height_one_spectrum_factorization Ideal.finprod_heightOneSpectrum_factorization
 
 variable (K)
 
@@ -200,7 +188,6 @@ theorem finprod_heightOneSpectrum_factorization_coe {I : Ideal R} (hI : I ≠ 0)
   rw [FractionalIdeal.coeIdeal_finprod R⁰ K (le_refl _)]
   simp_rw [IsDedekindDomain.HeightOneSpectrum.maxPowDividing, FractionalIdeal.coeIdeal_pow,
     zpow_natCast]
-#align ideal.finprod_height_one_spectrum_factorization_coe Ideal.finprod_heightOneSpectrum_factorization_coe
 
 end Ideal
 
