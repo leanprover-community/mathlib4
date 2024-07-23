@@ -11,7 +11,7 @@ import Mathlib.MeasureTheory.Integral.SetIntegral
 
 For an s-finite kernel `κ : Kernel α β` and a function `f : α → β → ℝ≥0∞` which is finite
 everywhere, we define `withDensity κ f` as the kernel `a ↦ (κ a).withDensity (f a)`. This is
-an s-finite Kernel.
+an s-finite kernel.
 
 ## Main definitions
 

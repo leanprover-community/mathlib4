@@ -174,7 +174,7 @@ A Borel space `Ω` embeds measurably into `ℝ` (with embedding `e`), hence we c
 from a `Kernel α ℝ` by taking the comap by `e`.
 Here we take the comap of a modification of `η : Kernel α ℝ`, useful when `η a` is a probability
 measure with all its mass on `range e` almost everywhere with respect to some measure and we want to
-ensure that the comap is a Markov Kernel.
+ensure that the comap is a Markov kernel.
 We thus take the comap by `e` of a kernel defined piecewise: `η` when
 `η a (range (embeddingReal Ω))ᶜ = 0`, and an arbitrary deterministic kernel otherwise. -/
 noncomputable

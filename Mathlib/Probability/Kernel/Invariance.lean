@@ -13,7 +13,7 @@ kernel `μ.bind κ` is the same measure.
 
 ## Main definitions
 
-* `ProbabilityTheory.Kernel.Invariant`: invariance of a given measure with respect to a Kernel.
+* `ProbabilityTheory.Kernel.Invariant`: invariance of a given measure with respect to a kernel.
 
 ## Useful lemmas
 
