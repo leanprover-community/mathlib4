@@ -613,6 +613,10 @@ lemma closure_diff_singleton_eq_closure (h : e ∈ M.closure (X \ {e})) :
     M.closure (X \ {e}) = M.closure X :=
   closure_diff_eq_self (by simpa)
 
+lemma subset_closure_diff_iff_closure_eq (h : Y ⊆ X) (hY : Y ⊆ M.E := by aesop_mat) :
+    Y ⊆ M.closure (X \ Y) ↔ M.closure (X \ Y) = M.closure X :=
+  ⟨closure_diff_eq_self, fun h' ↦ (M.subset_closure_of_subset' h).trans h'.symm.subset⟩
+
 lemma mem_closure_diff_singleton_iff_closure (he : e ∈ X) (heE : e ∈ M.E := by aesop_mat) :
     e ∈ M.closure (X \ {e}) ↔ M.closure (X \ {e}) = M.closure X :=
   ⟨closure_diff_singleton_eq_closure, fun h ↦ by rw [h]; exact M.mem_closure_of_mem' he⟩
