@@ -263,7 +263,7 @@ def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
         Meta.withLCtx lctx md.localInstances do
           let e : Expr ← g.mvarId.getType
           let some (_, lhs, rhs) := e.eq? | return none
-          let some ctx ← mkContext lhs | return none
+          let some ctx ← mkContext? lhs | return none
           MonoidalM.run ctx do
             return some ⟨← fromExpr lhs, ← fromExpr rhs⟩)
     match inner with
