@@ -140,8 +140,8 @@ def multiGoalLinter : Linter where
   run := withSetOptionIn fun _stx => do
     let mod ← getMainModule
     unless getLinterHash (← getOptions) &&
-           -- the linter only runs on `Mathlib`, `Archive`, `Counterexamples` and its own test file
-           (libraries.contains (mod.components.getD 0 default) || mod == `test.MultigoalsLinter) do
+        -- the linter only runs on `Mathlib`, `Archive`, `Counterexamples` and its own test file
+        (libraries.contains (mod.components.getD 0 default) || mod == `test.Multigoal) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
