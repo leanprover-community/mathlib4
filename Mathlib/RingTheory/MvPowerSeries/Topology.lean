@@ -203,7 +203,7 @@ theorem continuous_C [Ring R] [TopologicalRing R] :
   · convert continuousAt_const
     rw [coeff_C, if_neg hd]
 
-theorem variables_tendsto_zero [Ring R] [TopologicalRing R] :
+theorem variables_tendsto_zero [Semiring R] :
     Filter.Tendsto (fun s : σ => (X s : MvPowerSeries σ R)) Filter.cofinite (nhds 0) := by
   classical
   rw [tendsto_pi_nhds]
@@ -232,7 +232,7 @@ theorem variables_tendsto_zero [Ring R] [TopologicalRing R] :
       apply h
       exact ⟨x, h'⟩
 
-theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommRing R]
+theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommSemiring R]
     {f} (hf : IsNilpotent (constantCoeff σ R f)) :
     Filter.Tendsto (fun n : ℕ => f ^ n) Filter.atTop (nhds 0) := by
   classical
@@ -241,7 +241,7 @@ theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommRing R]
   exact fun d =>  tendsto_atTop_of_eventually_const fun n hn =>
     coeff_eq_zero_of_constantCoeff_nilpotent hm hn
 
-theorem tendsto_pow_zero_of_constantCoeff_zero [CommRing R]
+theorem tendsto_pow_zero_of_constantCoeff_zero [CommSemiring R]
     {f} (hf : constantCoeff σ R f = 0) :
     Filter.Tendsto (fun n : ℕ => f ^ n) Filter.atTop (nhds 0) := by
   apply tendsto_pow_zero_of_constantCoeff_nilpotent
