@@ -3536,6 +3536,7 @@ import Mathlib.Order.PrimeIdeal
 import Mathlib.Order.PrimeSeparator
 import Mathlib.Order.PropInstances
 import Mathlib.Order.Radical
+import Mathlib.Order.Rel.GaloisConnection
 import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.RelIso.Group
@@ -3563,7 +3564,6 @@ import Mathlib.Order.WellFoundedSet
 import Mathlib.Order.WithBot
 import Mathlib.Order.Zorn
 import Mathlib.Order.ZornAtoms
-import Mathlib.Order.«Order.Rel.GaloisConnection»
 import Mathlib.Probability.BorelCantelli
 import Mathlib.Probability.Cdf
 import Mathlib.Probability.CondCount
