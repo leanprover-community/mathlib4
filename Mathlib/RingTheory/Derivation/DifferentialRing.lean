@@ -62,8 +62,8 @@ class Differential.ContainConstants (A B : Type*) [CommRing A] [CommRing B]
   protected mem_range_of_deriv_eq_zero {x : B} (h : x′ = 0) : x ∈ (algebraMap A B).range
 
 lemma mem_range_of_deriv_eq_zero (A : Type*) {B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-    [Differential B] [Differential.ContainConstants A B]
-    {x : B} (h : x′ = 0) : x ∈ (algebraMap A B).range :=
+    [Differential B] [Differential.ContainConstants A B] {x : B} (h : x′ = 0) :
+    x ∈ (algebraMap A B).range :=
   Differential.ContainConstants.mem_range_of_deriv_eq_zero h
 
 instance (A : Type*) [CommRing A] [Differential A] : DifferentialAlgebra A A where
