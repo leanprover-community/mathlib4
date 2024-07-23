@@ -2,6 +2,7 @@ import Mathlib.AlgebraicTopology.Nerve
 import Mathlib.CategoryTheory.Category.Quiv
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
 import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
@@ -15,22 +16,105 @@ universe v v₁ v₂ u u₁ u₂
 
 variable (K : Type u) [Category.{v} K]
 
+instance : MonoidalClosed SSet := sorry
+
 namespace SimplicialCategory
 variable [SimplicialCategory K]
 variable {K}
-noncomputable def cotensor [SimplicialCategory K] : SSetᵒᵖ ⥤ K ⥤ K := sorry
 
-abbrev cotensorObj (A : SSet) (B : K) : K := (cotensor.obj (.op A)).obj B
+instance : CartesianClosed SSet := sorry
+-- instance : HasBinaryProducts SSet := by infer_instance
 
-infixr:60 " ⋔ " => cotensorObj
+-- ER: Should work but can't figure out the monoidal product is the cartesian product.
+-- ER: Also I can't get the × notation to work for the product.
+def sComp (X Y Z : K) : Limits.prod (sHom X Y) (sHom Y Z) ⟶ sHom X Z := by sorry
+--  have := sHomComp X Y Z
 
-def foo (X : K) : IsTerminal ((⊥_ SSet) ⋔ X) := sorry
+def coneNatTrans {A : SSet} {AX X : K} (Y : K) (cone : A ⟶ sHom AX X) : sHom Y AX ⟶ (A ⟹ sHom Y X) :=
+  let map := (prod.map (𝟙 (sHom Y AX)) cone) ≫ (sComp Y AX X)
+  (CartesianClosed.curry ((prod.braiding A (sHom Y AX)).hom ≫ map))
+
+structure IsCotensor {A : SSet} {X : K} (AX : K) (cone : A ⟶ sHom AX X) where
+  uniq : ∀ (Y : K), (IsIso (coneNatTrans Y cone))
+
+structure CotensorCone (A : SSet) (X : K) where
+  /-- The object -/
+  obj : K
+  /-- The cone itself -/
+  cone : A ⟶ sHom obj X
+  /-- The universal property of the limit cone -/
+  is_cotensor : IsCotensor obj cone
+
+/-- `HasCotensor F` represents the mere existence of a simplicial cotensor. -/
+class HasCotensor (A : SSet) (X : K) : Prop where mk' ::
+  /-- There is some limit cone for `F` -/
+  exists_cotensor : Nonempty (CotensorCone A X)
+
+theorem HasCotensor.mk {A : SSet} {X : K} (c : CotensorCone A X) : HasCotensor A X :=
+  ⟨Nonempty.intro c⟩
+
+/-- Use the axiom of choice to extract explicit `CotensorCone A X` from `HasCotensor A X`. -/
+def getCotensorCone (A : SSet) (X : K) [HasCotensor A X] : CotensorCone A X :=
+  Classical.choice <| HasCotensor.exists_cotensor
+
+variable (K) in
+/-- `K` has simplicial cotensors  -/
+class HasCotensors : Prop where
+  /-- All `A : SSet` and `X : K` have a cotensor. -/
+  has_cotensors : ∀ A : SSet, ∀ X : K, HasCotensor A X := by infer_instance -- ER: I don't get what this means.
+
+-- ER: copied; not sure what this is.
+instance (priority := 100) hasCotensorsOfHasCotensors {K : Type u} [Category.{v} K] [SimplicialCategory K] [HasCotensors K] (A : SSet) (X : K) : HasCotensor A X := HasCotensors.has_cotensors A X
+
+-- Interface to the `HasCotensor` class.
+/-- An arbitrary choice of cotensor obj. -/
+def cotensor.obj (A : SSet) (X : K) [HasCotensor A X] : K :=
+  (getCotensorCone A X).obj
+
+infixr:60 " ⋔ " => cotensor.obj
+
+/-- The associated cotensor cone. -/
+def cotensor.cone (A : SSet) (X : K) [HasCotensor A X] : A ⟶ sHom (A ⋔ X) X :=
+  (getCotensorCone A X).cone
+
+/-- The universal property of this cone.  -/
+def cotensor.is_cotensor (A : SSet) (X : K) [HasCotensor A X] :
+    IsCotensor (A ⋔ X) (cotensor.cone A X) := (getCotensorCone A X).is_cotensor
+
+def cotensor.iso (A : SSet) (X : K) [HasCotensor A X] (Y : K) :
+    (sHom Y (A ⋔ X)) ≅ (A ⟹ sHom Y X) := by
+  have := (cotensor.is_cotensor A X).uniq Y
+  exact asIso (coneNatTrans Y (cone A X))
+
+-- ER: Finish by applying ev0 to cotensor.iso and using a similar equivalence that calculates the 0-simplicies in the cartesian closed structure.
+def cotensor.iso.underlying (A : SSet) (X : K) [HasCotensor A X] (Y : K) :
+  (Y ⟶ (A ⋔ X)) ≃ (A ⟶ sHom Y X) := by
+  have := SimplicialCategory.homEquiv' Y (A ⋔ X)
+  sorry
+
+def cotensorCovMap [HasCotensors K] (A : SSet) {X Y : K} (f : X ⟶ Y) : A ⋔ X ⟶ A ⋔ Y :=
+  (cotensor.iso.underlying A Y (A ⋔ X)).symm
+    ((cotensor.cone A X) ≫ (sHomWhiskerLeft (A ⋔ X) f))
+
+def cotensorContraMap [HasCotensors K] {A B : SSet} (i : A ⟶ B) (X : K) : B ⋔ X ⟶ A ⋔ X :=
+  (cotensor.iso.underlying A X (B ⋔ X)).symm (i ≫ (cotensor.cone B X))
+
+theorem cotensor_bifunctoriality [HasCotensors K] {A B : SSet} (i : A ⟶ B) {X Y : K} (f : X ⟶ Y) :
+    (cotensorCovMap B f) ≫ (cotensorContraMap i Y) =
+    (cotensorContraMap i X) ≫ (cotensorCovMap A f) := by sorry
+
+-- noncomputable def cotensor [SimplicialCategory K] : SSetᵒᵖ ⥤ K ⥤ K := sorry
+
+-- abbrev cotensorObj (A : SSet) (X : K) : K := (cotensor.obj (.op A)).obj X
+
+-- infixr:60 " ⋔⋔ " => cotensorObj
+
+-- def foo (X : K) : IsTerminal ((⊥_ SSet) ⋔⋔ X) := sorry
+
 
 end SimplicialCategory
 
 open SimplicialCategory
-
-instance : MonoidalClosed SSet := sorry
 
 class InfinityCosmosBase extends SimplicialCategory K where
   IsIsoFibration {X Y : K} : (X ⟶ Y) → Prop
@@ -53,11 +137,17 @@ class InfinityCosmosBase extends SimplicialCategory K where
   has_limits_of_towers_isIsoFibration (F : ℕᵒᵖ ⥤ K) (hf) :
     haveI := has_limits_of_towers F hf
     IsIsoFibration (limit.π F (.op 0))
+  [has_cotensors : HasCotensors K] -- ER: Added
+  -- leibniz_cotensor {X Y : K} (f : X ⟶ Y) (A B : SSet) (i : A ⟶ B) [Mono i]
+  --   (hf : IsIsoFibration f) {P : K} (fst : P ⟶ B ⋔⋔ Y) (snd : P ⟶ A ⋔⋔ X)
+  --   (h : IsPullback fst snd ((cotensor.map (.op i)).app Y) ((cotensor.obj (.op A)).map f)) :
+  --   IsIsoFibration (h.isLimit.lift <|
+  --     PullbackCone.mk ((cotensor.obj (.op B)).map f) ((cotensor.map (.op i)).app X) (by aesop_cat))
   leibniz_cotensor {X Y : K} (f : X ⟶ Y) (A B : SSet) (i : A ⟶ B) [Mono i]
     (hf : IsIsoFibration f) {P : K} (fst : P ⟶ B ⋔ Y) (snd : P ⟶ A ⋔ X)
-    (h : IsPullback fst snd ((cotensor.map (.op i)).app Y) ((cotensor.obj (.op A)).map f)) :
+    (h : IsPullback fst snd (cotensorContraMap i Y) (cotensorCovMap A f)) :
     IsIsoFibration (h.isLimit.lift <|
-      PullbackCone.mk ((cotensor.obj (.op B)).map f) ((cotensor.map (.op i)).app X) (by aesop_cat))
+      PullbackCone.mk (cotensorCovMap B f) (cotensorContraMap i X) (cotensor_bifunctoriality i f))
   local_isoFibration {X Y Z : K} (f : Y ⟶ Z) (hf : IsIsoFibration f) :
     -- FIXME (V := SSet)
     ∀ (_ : MonoidalClosed.curry (EnrichedCategory.comp (V := SSet) X Y Z) = _), sorry
