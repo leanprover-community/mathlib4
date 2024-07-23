@@ -138,6 +138,8 @@ theorem map_π {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : map α ⋙ π F
 
 variable {D : Type u} [Category.{v} D] in
 
+/-- The canonical functor between the category of elements of the base-change of `F : D ⥤ Type w`
+along a functor `G : C ⥤ D` and the category of elements of `F`.-/
 @[simps obj map]
 def pullback (F : D ⥤ Type w) (G : C ⥤ D) :
     (G ⋙ F).Elements ⥤ F.Elements where

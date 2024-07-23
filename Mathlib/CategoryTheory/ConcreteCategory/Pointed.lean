@@ -49,8 +49,7 @@ variable (C) in
 
 /-- The pointed objects of a category `C`. A pointed object in `C` is an object `X : C`
 together with a distinguished element `x` of the underlying type of `X`, often called
-the basepoint.
- -/
+the basepoint. -/
 class Pointed where
   /-- the underlying object -/
   obj : C
@@ -121,12 +120,14 @@ instance concreteCategory : ConcreteCategory (Pointed C) where
 instance : (forget (Pointed C)).Faithful := by
   exact forget_faithful
 
+/-- The forward direction of the equivalence `Pointed C ≌ (forget C).Elements`. -/
 @[simps obj]
 def toCategoryOfElement :
     Pointed C ⥤ (forget C).Elements where
   obj X := ⟨X.obj, X.pt⟩
   map {X Y} f := ⟨f.obj, f.pt⟩
 
+/-- The reverse direction of the equivalence `Pointed C ≌ (forget C).Elements`. -/
 @[simps map]
 def fromCategoryOfElements :
     (forget C).Elements ⥤ Pointed C where
