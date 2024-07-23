@@ -3,11 +3,7 @@ Copyright (c) 2022 Julian Berman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Berman
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.GroupTheory.Exponent
-import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.PGroup
-import Mathlib.GroupTheory.QuotientGroup
 
 /-!
 # Torsion groups

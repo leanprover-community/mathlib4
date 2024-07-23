@@ -377,12 +377,10 @@ def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
 
                 have : _ = s.snd.base := limit.lift_π s' WalkingCospan.right
                 conv_lhs =>
-                  erw [← this]
+                  rw [← this]
                   dsimp [s']
-                  -- Porting note: need a bit more hand holding here about function composition
-                  rw [show ∀ f g, f ∘ g = fun x => f (g x) from fun _ _ => rfl]
-                  erw [← Set.preimage_preimage]
-                erw [Set.preimage_image_eq _
+                  rw [Function.comp_def, ← Set.preimage_preimage]
+                rw [Set.preimage_image_eq _
                     (TopCat.snd_openEmbedding_of_left_openEmbedding hf.base_open g.base).inj]
                 rfl))
       naturality := fun U V i => by
