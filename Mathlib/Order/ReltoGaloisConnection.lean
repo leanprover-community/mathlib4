@@ -58,37 +58,37 @@ theorem gc_leftDual_rightDual : GaloisConnection (toDual ∘ R.leftDual) (R.righ
 
 /-! ### Induced equivalences between fixed points -/
 
-/-- `lFixedPoints` is the set of elements `J : Set α` satisfying `rightDual (leftDual J) = J`. -/
-def lFixedPoints := {J : Set α | R.rightDual (R.leftDual J) = J}
+/-- `leftFixedPoints` is the set of elements `J : Set α` satisfying `rightDual (leftDual J) = J`. -/
+def leftFixedPoints := {J : Set α | R.rightDual (R.leftDual J) = J}
 
-/-- `rFixedPoints` is the set of elements `I : Set β` satisfying `leftDual (rightDual I) = I`. -/
-def rFixedPoints := {I : Set β | R.leftDual (R.rightDual I) = I}
+/-- `rightFixedPoints` is the set of elements `I : Set β` satisfying `leftDual (rightDual I) = I`. -/
+def rightFixedPoints := {I : Set β | R.leftDual (R.rightDual I) = I}
 
 open GaloisConnection
 
-/-- `leftDual` maps every element `J` to `rFixedPoints`. -/
-theorem leftDual_mem_rFixedPoint (J : Set α) : R.leftDual J ∈ R.rFixedPoints := by
-  unfold rFixedPoints
+/-- `leftDual` maps every element `J` to `rightFixedPoints`. -/
+theorem leftDual_mem_rightFixedPoint (J : Set α) : R.leftDual J ∈ R.rightFixedPoints := by
+  unfold rightFixedPoints
   apply le_antisymm
   · apply R.gc_leftDual_rightDual.monotone_l; exact R.gc_leftDual_rightDual.le_u_l J
   · exact R.gc_leftDual_rightDual.l_u_le (R.leftDual J)
 
-/-- `rightDual` maps every element `I` to `lFixedPoints`. -/
-theorem rightDual_mem_lFixedPoint (I : Set β) : R.rightDual I ∈ R.lFixedPoints := by
-  unfold lFixedPoints
+/-- `rightDual` maps every element `I` to `leftFixedPoints`. -/
+theorem rightDual_mem_leftFixedPoint (I : Set β) : R.rightDual I ∈ R.leftFixedPoints := by
+  unfold leftFixedPoints
   apply le_antisymm
   · apply R.gc_leftDual_rightDual.monotone_u; exact R.gc_leftDual_rightDual.l_u_le I
   · exact R.gc_leftDual_rightDual.le_u_l (R.rightDual I)
 
 /-- The maps `leftDual` and `rightDual` induce inverse bijections between the sets of fixed points.
 -/
-def equivFixedPoints : R.lFixedPoints ≃ R.rFixedPoints where
-  toFun := fun ⟨J, _⟩ => ⟨R.leftDual J, R.leftDual_mem_rFixedPoint J⟩
-  invFun := fun ⟨I, _⟩ => ⟨R.rightDual I, R.rightDual_mem_lFixedPoint I⟩
+def equivFixedPoints : R.leftFixedPoints ≃ R.rightFixedPoints where
+  toFun := fun ⟨J, _⟩ => ⟨R.leftDual J, R.leftDual_mem_rightFixedPoint J⟩
+  invFun := fun ⟨I, _⟩ => ⟨R.rightDual I, R.rightDual_mem_leftFixedPoint I⟩
   left_inv J := by cases' J with J hJ; simp; rw [hJ]
   right_inv I := by cases' I with I hI; simp; rw [hI]
 
-theorem u_l_le_of_le {J J' : Set α} (h : J' ∈ R.lFixedPoints) :
+theorem u_l_le_of_le {J J' : Set α} (h : J' ∈ R.leftFixedPoints) :
     J ≤ J' → R.rightDual (R.leftDual J) ≤ J' := by
   intro h₁
   rw[← h]
@@ -96,7 +96,7 @@ theorem u_l_le_of_le {J J' : Set α} (h : J' ∈ R.lFixedPoints) :
   apply R.gc_leftDual_rightDual.monotone_l
   exact h₁
 
-theorem ge_l_u_of_ge {I I' : Set β} (h : I' ∈ R.rFixedPoints) :
+theorem ge_l_u_of_ge {I I' : Set β} (h : I' ∈ R.rightFixedPoints) :
     I' ≥ I → I' ≥ R.leftDual (R.rightDual I) := by
   intro h₁
   rw [← h]
