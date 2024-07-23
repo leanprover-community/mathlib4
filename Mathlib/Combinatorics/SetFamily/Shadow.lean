@@ -7,8 +7,6 @@ import Mathlib.Data.Finset.Grade
 import Mathlib.Data.Finset.Sups
 import Mathlib.Logic.Function.Iterate
 
-#align_import combinatorics.set_family.shadow from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
-
 /-!
 # Shadows
 
@@ -59,7 +57,6 @@ variable [DecidableEq α] {𝒜 : Finset (Finset α)} {s t : Finset α} {a : α}
 elements from any set in `𝒜`. -/
 def shadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
   𝒜.sup fun s => s.image (erase s)
-#align finset.shadow Finset.shadow
 
 -- Porting note: added `inherit_doc` to calm linter
 @[inherit_doc] scoped[FinsetFamily] notation:max "∂ " => Finset.shadow
@@ -70,7 +67,6 @@ open FinsetFamily
 @[simp]
 theorem shadow_empty : ∂ (∅ : Finset (Finset α)) = ∅ :=
   rfl
-#align finset.shadow_empty Finset.shadow_empty
 
 @[simp] lemma shadow_iterate_empty (k : ℕ) : ∂^[k] (∅ : Finset (Finset α)) = ∅ := by
   induction' k <;> simp [*, shadow_empty]
@@ -78,24 +74,20 @@ theorem shadow_empty : ∂ (∅ : Finset (Finset α)) = ∅ :=
 @[simp]
 theorem shadow_singleton_empty : ∂ ({∅} : Finset (Finset α)) = ∅ :=
   rfl
-#align finset.shadow_singleton_empty Finset.shadow_singleton_empty
 
 --TODO: Prove `∂ {{a}} = {∅}` quickly using `covers` and `GradeOrder`
 /-- The shadow is monotone. -/
 @[mono]
 theorem shadow_monotone : Monotone (shadow : Finset (Finset α) → Finset (Finset α)) := fun _ _ =>
   sup_mono
-#align finset.shadow_monotone Finset.shadow_monotone
 
 /-- `t` is in the shadow of `𝒜` iff there is a `s ∈ 𝒜` from which we can remove one element to
 get `t`. -/
 lemma mem_shadow_iff : t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜, ∃ a ∈ s, erase s a = t := by
   simp only [shadow, mem_sup, mem_image]
-#align finset.mem_shadow_iff Finset.mem_shadow_iff
 
 theorem erase_mem_shadow (hs : s ∈ 𝒜) (ha : a ∈ s) : erase s a ∈ ∂ 𝒜 :=
   mem_shadow_iff.2 ⟨s, hs, a, ha, rfl⟩
-#align finset.erase_mem_shadow Finset.erase_mem_shadow
 
 /-- `t ∈ ∂𝒜` iff `t` is exactly one element less than something from `𝒜`.
 
@@ -108,7 +100,6 @@ lemma mem_shadow_iff_exists_sdiff : t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s �
 lemma mem_shadow_iff_insert_mem : t ∈ ∂ 𝒜 ↔ ∃ a ∉ t, insert a t ∈ 𝒜 := by
   simp_rw [mem_shadow_iff_exists_sdiff, ← covBy_iff_card_sdiff_eq_one, covBy_iff_exists_insert]
   aesop
-#align finset.mem_shadow_iff_insert_mem Finset.mem_shadow_iff_insert_mem
 
 /-- `s ∈ ∂ 𝒜` iff `s` is exactly one element less than something from `𝒜`.
 
@@ -119,7 +110,6 @@ lemma mem_shadow_iff_exists_mem_card_add_one :
     and_congr_right fun hst ↦ ?_
   rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
-#align finset.mem_shadow_iff_exists_mem_card_add_one Finset.mem_shadow_iff_exists_mem_card_add_one
 
 lemma mem_shadow_iterate_iff_exists_card :
     t ∈ ∂^[k] 𝒜 ↔ ∃ u : Finset α, u.card = k ∧ Disjoint t u ∧ t ∪ u ∈ 𝒜 := by
@@ -150,7 +140,6 @@ lemma mem_shadow_iterate_iff_exists_mem_card_add :
     and_congr_right fun hst ↦ ?_
   rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
-#align finset.mem_shadow_iff_exists_mem_card_add Finset.mem_shadow_iterate_iff_exists_mem_card_add
 
 /-- The shadow of a family of `r`-sets is a family of `r - 1`-sets. -/
 protected theorem _root_.Set.Sized.shadow (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
@@ -158,7 +147,6 @@ protected theorem _root_.Set.Sized.shadow (h𝒜 : (𝒜 : Set (Finset α)).Size
   intro A h
   obtain ⟨A, hA, i, hi, rfl⟩ := mem_shadow_iff.1 h
   rw [card_erase_of_mem hi, h𝒜 hA]
-#align finset.set.sized.shadow Set.Sized.shadow
 
 /-- The `k`-th shadow of a family of `r`-sets is a family of `r - k`-sets. -/
 lemma _root_.Set.Sized.shadow_iterate (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
@@ -172,13 +160,11 @@ theorem sized_shadow_iff (h : ∅ ∉ 𝒜) :
   refine ⟨fun h𝒜 s hs => ?_, Set.Sized.shadow⟩
   obtain ⟨a, ha⟩ := nonempty_iff_ne_empty.2 (ne_of_mem_of_not_mem hs h)
   rw [← h𝒜 (erase_mem_shadow hs ha), card_erase_add_one ha]
-#align finset.sized_shadow_iff Finset.sized_shadow_iff
 
 /-- Being in the shadow of `𝒜` means we have a superset in `𝒜`. -/
 lemma exists_subset_of_mem_shadow (hs : t ∈ ∂ 𝒜) : ∃ s ∈ 𝒜, t ⊆ s :=
   let ⟨t, ht, hst⟩ := mem_shadow_iff_exists_mem_card_add_one.1 hs
   ⟨t, ht, hst.1⟩
-#align finset.exists_subset_of_mem_shadow Finset.exists_subset_of_mem_shadow
 
 end Shadow
 
@@ -193,7 +179,6 @@ variable [DecidableEq α] [Fintype α] {𝒜 : Finset (Finset α)} {s t : Finset
 `k` elements from any set in `𝒜`. -/
 def upShadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
   𝒜.sup fun s => sᶜ.image fun a => insert a s
-#align finset.up_shadow Finset.upShadow
 
 -- Porting note: added `inherit_doc` to calm linter
 @[inherit_doc] scoped[FinsetFamily] notation:max "∂⁺ " => Finset.upShadow
@@ -202,23 +187,19 @@ def upShadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
 @[simp]
 theorem upShadow_empty : ∂⁺ (∅ : Finset (Finset α)) = ∅ :=
   rfl
-#align finset.up_shadow_empty Finset.upShadow_empty
 
 /-- The upper shadow is monotone. -/
 @[mono]
 theorem upShadow_monotone : Monotone (upShadow : Finset (Finset α) → Finset (Finset α)) :=
   fun _ _ => sup_mono
-#align finset.up_shadow_monotone Finset.upShadow_monotone
 
 /-- `t` is in the upper shadow of `𝒜` iff there is a `s ∈ 𝒜` from which we can remove one element
 to get `t`. -/
 lemma mem_upShadow_iff : t ∈ ∂⁺ 𝒜 ↔ ∃ s ∈ 𝒜, ∃ a ∉ s, insert a s = t := by
   simp_rw [upShadow, mem_sup, mem_image, mem_compl]
-#align finset.mem_up_shadow_iff Finset.mem_upShadow_iff
 
 theorem insert_mem_upShadow (hs : s ∈ 𝒜) (ha : a ∉ s) : insert a s ∈ ∂⁺ 𝒜 :=
   mem_upShadow_iff.2 ⟨s, hs, a, ha, rfl⟩
-#align finset.insert_mem_up_shadow Finset.insert_mem_upShadow
 
 /-- `t` is in the upper shadow of `𝒜` iff `t` is exactly one element more than something from `𝒜`.
 
@@ -231,7 +212,6 @@ finset is in `𝒜`. -/
 lemma mem_upShadow_iff_erase_mem : t ∈ ∂⁺ 𝒜 ↔ ∃ a, a ∈ t ∧ erase t a ∈ 𝒜 := by
   simp_rw [mem_upShadow_iff_exists_sdiff, ← covBy_iff_card_sdiff_eq_one, covBy_iff_exists_erase]
   aesop
-#align finset.mem_up_shadow_iff_erase_mem Finset.mem_upShadow_iff_erase_mem
 
 /-- `t` is in the upper shadow of `𝒜` iff `t` is exactly one element less than something from `𝒜`.
 
@@ -242,7 +222,6 @@ lemma mem_upShadow_iff_exists_mem_card_add_one :
     and_congr_right fun hst ↦ ?_
   rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
-#align finset.mem_up_shadow_iff_exists_mem_card_add_one Finset.mem_upShadow_iff_exists_mem_card_add_one
 
 lemma mem_upShadow_iterate_iff_exists_card :
     t ∈ ∂⁺^[k] 𝒜 ↔ ∃ u : Finset α, u.card = k ∧ u ⊆ t ∧ t \ u ∈ 𝒜 := by
@@ -285,13 +264,11 @@ protected lemma _root_.Set.Sized.upShadow (h𝒜 : (𝒜 : Set (Finset α)).Size
   intro A h
   obtain ⟨A, hA, i, hi, rfl⟩ := mem_upShadow_iff.1 h
   rw [card_insert_of_not_mem hi, h𝒜 hA]
-#align finset.set.sized.up_shadow Set.Sized.upShadow
 
 /-- Being in the upper shadow of `𝒜` means we have a superset in `𝒜`. -/
 theorem exists_subset_of_mem_upShadow (hs : s ∈ ∂⁺ 𝒜) : ∃ t ∈ 𝒜, t ⊆ s :=
   let ⟨t, ht, hts, _⟩ := mem_upShadow_iff_exists_mem_card_add_one.1 hs
   ⟨t, ht, hts⟩
-#align finset.exists_subset_of_mem_up_shadow Finset.exists_subset_of_mem_upShadow
 
 /-- `t ∈ ∂^k 𝒜` iff `t` is exactly `k` elements more than something in `𝒜`. -/
 theorem mem_upShadow_iff_exists_mem_card_add :
@@ -315,21 +292,18 @@ theorem mem_upShadow_iff_exists_mem_card_add :
     refine ⟨u, mem_upShadow_iff_exists_mem_card_add_one.2 ⟨t, ht, htu, hu⟩, hus, ?_⟩
     rw [hu, ← hcard, add_right_comm]
     rfl
-#align finset.mem_up_shadow_iff_exists_mem_card_add Finset.mem_upShadow_iff_exists_mem_card_add
 
 @[simp] lemma shadow_compls : ∂ 𝒜ᶜˢ = (∂⁺ 𝒜)ᶜˢ := by
   ext s
   simp only [mem_image, exists_prop, mem_shadow_iff, mem_upShadow_iff, mem_compls]
   refine (compl_involutive.toPerm _).exists_congr_left.trans ?_
   simp [← compl_involutive.eq_iff]
-#align finset.up_shadow_image_compl Finset.shadow_compls
 
 @[simp] lemma upShadow_compls : ∂⁺ 𝒜ᶜˢ = (∂ 𝒜)ᶜˢ := by
   ext s
   simp only [mem_image, exists_prop, mem_shadow_iff, mem_upShadow_iff, mem_compls]
   refine (compl_involutive.toPerm _).exists_congr_left.trans ?_
   simp [← compl_involutive.eq_iff]
-#align finset.shadow_image_compl Finset.upShadow_compls
 
 end UpShadow
 
