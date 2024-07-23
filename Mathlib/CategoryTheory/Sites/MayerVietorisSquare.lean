@@ -91,7 +91,7 @@ variable {J}
 a square `sq` such that `sq.f₂₄` is a mono and that for every
 sheaf of types `F`, the square `sq.op.map F.val` is a pullback square. -/
 @[simps toSquare]
-noncomputable def mk' (sq : Square C) [Mono sq.f₂₄]
+noncomputable def mk' (sq : Square C) [Mono sq.f₁₃]
     (H : ∀ (F : Sheaf J (Type v)), (sq.op.map F.val).IsPullback) :
     J.MayerVietorisSquare where
   toSquare := sq
@@ -107,6 +107,7 @@ which form a covering of `S.X₄`. -/
 noncomputable def mk_of_isPullback (sq : Square C) [Mono sq.f₂₄] [Mono sq.f₃₄]
     (h₁ : sq.IsPullback) (h₂ : Sieve.ofTwoArrows sq.f₂₄ sq.f₃₄ ∈ J sq.X₄) :
     J.MayerVietorisSquare :=
+  have : Mono sq.f₁₃ := h₁.mono_f₁₃
   mk' sq (fun F ↦ by
     apply Square.IsPullback.mk
     refine PullbackCone.IsLimit.mk _
