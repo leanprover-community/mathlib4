@@ -538,4 +538,19 @@ theorem affineLocally_isStableUnderComposition : (affineLocally @P).IsStableUnde
             pullback.fst _ _))).out 0 3
         apply this.mp hf
 
+theorem stableUnderBaseChange_sourceAffineLocally
+    (hP : PropertyIsLocal P) (hP' : StableUnderBaseChange P) :
+    (AlgebraicGeometry.sourceAffineLocally P).StableUnderBaseChange := by
+  intro X Y Z hZ hX f g H
+  have := (hP.affine_openCover_TFAE
+    (CategoryTheory.Limits.pullback.fst : CategoryTheory.Limits.pullback f g ⟶ _)).out 0 1
+  rw [this]
+  have := (hP.affine_openCover_TFAE g).out 0 2
+  rw [this] at H
+  use AlgebraicGeometry.Scheme.Pullback.openCoverOfRight Y.affineCover f g
+  constructor
+  · intro i; erw [CategoryTheory.Limits.pullback.lift_fst]; rw [CategoryTheory.Category.comp_id]
+    exact hP'.Γ_pullback_fst hP.respectsIso _ _ (H Y.affineCover i)
+  · dsimp; infer_instance
+
 end RingHom.PropertyIsLocal

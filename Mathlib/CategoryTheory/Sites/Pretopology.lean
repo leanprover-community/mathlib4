@@ -204,6 +204,49 @@ instance : OrderBot (Pretopology C) where
 theorem toGrothendieck_bot : toGrothendieck C ⊥ = ⊥ :=
   (gi C).gc.l_bot
 
+instance : InfSet (Pretopology C) where
+  sInf T := {
+    coverings := fun X S => ∀ t ∈ T, t X S
+    has_isos := fun X Y f hf t _ => t.has_isos _
+    pullbacks := fun X Y f S hS t ht => t.pullbacks _ _ <| hS _ ht
+    transitive := fun X S Si hS hSi t ht => by
+      apply t.transitive
+      · exact hS _ ht
+      · intros
+        apply hSi _ _ _ ht
+  }
+
+def completeLattice : CompleteLattice (Pretopology C) := completeLatticeOfInf _ fun S => by
+  refine ⟨?_, ?_⟩
+  · intro t ht X S hS
+    exact hS _ <| ht
+  · intro t ht X S hS q hq
+    apply ht
+    · exact hq
+    · exact hS
+
+/-- Construct a complete lattice from the `Inf`, but make the trivial and discrete topologies
+definitionally equal to the bottom and top respectively.
+-/
+instance : CompleteLattice (Pretopology C) :=
+  CompleteLattice.copy (completeLattice C) _ rfl ⊤
+    (by
+      apply le_antisymm
+      · exact @CompleteLattice.le_top _ (completeLattice C) (⊤ : Pretopology C)
+      · intro X S _
+        apply Set.mem_univ)
+    (trivial C)
+    (by
+      apply le_antisymm
+      · intro X S hS
+        dsimp [trivial] at hS
+        obtain ⟨_, _, f, h⟩ := hS
+        rw [h]
+        apply has_isos
+      · exact @CompleteLattice.bot_le _ (completeLattice C) (trivial C))
+    _ rfl _ rfl _ rfl sInf rfl
+
+
 end Pretopology
 
 end CategoryTheory
