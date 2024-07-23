@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.GroupTheory.Perm.Cycle.Type
-import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.GroupTheory.OrderOfElement
 
 /-!
 # Fixed-point-free automorphisms
@@ -40,7 +38,7 @@ namespace FixedPointFree
 variable [Group G] {φ : G →* G} (hφ : FixedPointFree φ)
 
 theorem commutatorMap_injective : Function.Injective (commutatorMap φ) := by
-  refine' fun x y h ↦ inv_mul_eq_one.mp <| hφ _ _
+  refine fun x y h ↦ inv_mul_eq_one.mp <| hφ _ ?_
   rwa [map_mul, map_inv, eq_inv_mul_iff_mul_eq, ← mul_assoc, ← eq_div_iff_mul_eq', ← division_def]
 
 variable [Finite G]

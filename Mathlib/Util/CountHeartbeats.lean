@@ -24,6 +24,61 @@ open Lean Elab Command Meta
 namespace Mathlib.CountHeartbeats
 
 
+
+open Tactic
+
+/--
+Run a tactic, optionally restoring the original state, and report just the number of heartbeats.
+-/
+def runTacForHeartbeats (tac : TSyntax `Lean.Parser.Tactic.tacticSeq) (revert : Bool := true) :
+    TacticM Nat := do
+  let start ← IO.getNumHeartbeats
+  let s ← saveState
+  evalTactic tac
+  if revert then restoreState s
+  return (← IO.getNumHeartbeats) - start
+
+/--
+Given a `List Nat`, return the minimum, maximum, and standard deviation.
+-/
+def variation (counts : List Nat) : List Nat :=
+  let min := counts.minimum?.getD 0
+  let max := counts.maximum?.getD 0
+  let toFloat (n : Nat) := n.toUInt64.toFloat
+  let toNat (f : Float) := f.toUInt64.toNat
+  let counts' := counts.map toFloat
+  let μ : Float := counts'.foldl (· + ·) 0 / toFloat counts.length
+  let stddev : Float := Float.sqrt <|
+    ((counts'.map fun i => (i - μ)^2).foldl (· + ·) 0) / toFloat counts.length
+  [min, max, toNat stddev]
+
+/--
+Given a `List Nat`, log an info message with the minimum, maximum, and standard deviation.
+-/
+def logVariation {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
+    (counts : List Nat) : m Unit := do
+  if let [min, max, stddev] := variation counts then
+  -- convert `[min, max, stddev]` to user-facing heartbeats
+  logInfo s!"Min: {min / 1000} Max: {max / 1000} StdDev: {stddev / 10}%"
+
+/-- Count the heartbeats used by a tactic, e.g.: `count_heartbeats simp`. -/
+elab "count_heartbeats " tac:tacticSeq : tactic => do
+  logInfo s!"{← runTacForHeartbeats tac (revert := false)}"
+
+/--
+`count_heartbeats! in tac` runs a tactic 10 times, counting the heartbeats used, and logs the range
+and standard deviation. The tactic `count_heartbeats! n in tac` runs it `n` times instead.
+-/
+elab "count_heartbeats! " n:(num)? "in" ppLine tac:tacticSeq : tactic => do
+  let n := match n with
+           | some j => j.getNat
+           | none => 10
+  -- First run the tactic `n-1` times, reverting the state.
+  let counts ← (List.range (n - 1)).mapM fun _ => runTacForHeartbeats tac
+  -- Then run once more, keeping the state.
+  let counts := (← runTacForHeartbeats tac (revert := false)) :: counts
+  logVariation counts
+
 /--
 Count the heartbeats used in the enclosed command.
 
@@ -60,3 +115,34 @@ elab "count_heartbeats " "in" ppLine cmd:command : command => do
       Command.liftCoreM <| MetaM.run' do
         Lean.Meta.Tactic.TryThis.addSuggestion (← getRef)
           (← set_option hygiene false in `(command| set_option maxHeartbeats $m in $cmd))
+
+/--
+Run a command, optionally restoring the original state, and report just the number of heartbeats.
+-/
+def elabForHeartbeats (cmd : TSyntax `command) (revert : Bool := true) : CommandElabM Nat := do
+  let start ← IO.getNumHeartbeats
+  let s ← get
+  elabCommand (← `(command| set_option maxHeartbeats 0 in $cmd))
+  if revert then set s
+  return (← IO.getNumHeartbeats) - start
+
+/--
+`count_heartbeats! in cmd` runs a command `10` times, reporting the range in heartbeats, and the
+standard deviation. The command `count_heartbeats! n in cmd` runs it `n` times instead.
+
+Example usage:
+```
+count_heartbeats! in
+def f := 37
+```
+displays the info message `Min: 7 Max: 8 StdDev: 14%`.
+-/
+elab "count_heartbeats! " n:(num)? "in" ppLine cmd:command : command => do
+  let n := match n with
+           | some j => j.getNat
+           | none => 10
+  -- First run the command `n-1` times, reverting the state.
+  let counts ← (List.range (n - 1)).mapM fun _ => elabForHeartbeats cmd
+  -- Then run once more, keeping the state.
+  let counts := (← elabForHeartbeats cmd (revert := false)) :: counts
+  logVariation counts

@@ -48,7 +48,7 @@ private inductive Tree where
 
 private partial def toTree (s : Syntax) : TermElabM Tree := do
   let result ← go s
-  synthesizeSyntheticMVars (mayPostpone := true)
+  synthesizeSyntheticMVars (postpone := .yes)
   return result
 where
   go (s : Syntax) : TermElabM Tree := do
