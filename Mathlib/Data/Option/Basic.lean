@@ -365,6 +365,7 @@ theorem get!_some [Inhabited α] (a : α) : (some a).get! = a :=
 theorem get!_none [Inhabited α] : (none : Option α).get! = default :=
   rfl
 
+set_option linter.multiGoal false in
 @[simp]
 lemma bnot_isSome (a : Option α) : (! a.isSome) = a.isNone := by
   funext
@@ -375,6 +376,7 @@ lemma bnot_comp_isSome : (! ·) ∘ @Option.isSome α = Option.isNone := by
   funext
   simp
 
+set_option linter.multiGoal false in
 @[simp]
 lemma bnot_isNone (a : Option α) : (! a.isNone) = a.isSome := by
   funext

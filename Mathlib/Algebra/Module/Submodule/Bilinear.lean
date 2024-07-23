@@ -51,19 +51,20 @@ theorem map₂_le {f : M →ₗ[R] N →ₗ[R] P} {p : Submodule R M} {q : Submo
     iSup_le fun ⟨m, hm⟩ => map_le_iff_le_comap.2 fun n hn => H m hm n hn⟩
 
 variable (R)
-set_option linter.multiGoal false in
 theorem map₂_span_span (f : M →ₗ[R] N →ₗ[R] P) (s : Set M) (t : Set N) :
     map₂ f (span R s) (span R t) = span R (Set.image2 (fun m n => f m n) s t) := by
   apply le_antisymm
   · rw [map₂_le]
     apply @span_induction' R M _ _ _ s
-    intro a ha
-    apply @span_induction' R N _ _ _ t
-    intro b hb
-    exact subset_span ⟨_, ‹_›, _, ‹_›, rfl⟩
-    all_goals intros; simp only [*, add_mem, smul_mem, zero_mem, _root_.map_zero, map_add,
-                                 LinearMap.zero_apply, LinearMap.add_apply, LinearMap.smul_apply,
-                                 map_smul]
+    on_goal 1 =>
+      intro a ha
+      apply @span_induction' R N _ _ _ t
+      on_goal 1 => intro b hb
+      · exact subset_span ⟨_, ‹_›, _, ‹_›, rfl⟩
+    all_goals
+      intros
+      simp only [*, add_mem, smul_mem, zero_mem, _root_.map_zero, map_add,
+        LinearMap.zero_apply, LinearMap.add_apply, LinearMap.smul_apply, map_smul]
   · rw [span_le, image2_subset_iff]
     intro a ha b hb
     exact apply_mem_map₂ _ (subset_span ha) (subset_span hb)
