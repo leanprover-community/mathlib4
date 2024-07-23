@@ -239,6 +239,9 @@ example (a b : ℚ) (h1 : a ≤ 1) (h2 : b = 1) : (a + b) / 2 ≤ 1 := by linear
 
 example {x y : ℤ} (hx : x + 3 ≤ 2) (hy : y + 2 * x ≥ 3) : y > 3 := by linear_combination hy + 2 * hx
 
+example {x y : ℤ} (h : x + 1 ≤ y) : x < y := by linear_combination h
+-- example {x y : ℤ} (h : x < y) : x + 1 ≤ y := by linear_combination h -- FIXME: handle this?
+
 example {x y z : ℚ} (h1 : 4 * x + y + 3 * z ≤ 25) (h2 : -x + 2 * y + z = 3)
     (h3 : 5 * x + 7 * z = 43) :
     x ≤ 4 := by
