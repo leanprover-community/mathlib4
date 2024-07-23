@@ -217,10 +217,9 @@ lemma gaussianReal_absolutelyContinuous (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) 
 lemma gaussianReal_absolutelyContinuous' (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
     volume ≪ gaussianReal μ v := by
   rw [gaussianReal_of_var_ne_zero _ hv]
-  refine withDensity_absolutelyContinuous' ?_ ?_ ?_
+  refine withDensity_absolutelyContinuous' ?_ ?_
   · exact (measurable_gaussianPDF _ _).aemeasurable
   · exact ae_of_all _ (fun _ ↦ (gaussianPDF_pos _ hv _).ne')
-  · exact ae_of_all _ (fun _ ↦ ENNReal.ofReal_ne_top)
 
 lemma rnDeriv_gaussianReal (μ : ℝ) (v : ℝ≥0) :
     ∂(gaussianReal μ v)/∂volume =ₐₛ gaussianPDF μ v := by
@@ -292,9 +291,8 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
     exact fun _ ↦ HasDerivAt.const_mul _ (hasDerivAt_id _)
   change (gaussianReal μ v).map e.symm = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v)
   ext s' hs'
-  rw [MeasurableEquiv.gaussianReal_map_symm_apply hv e he' hs']
-  simp only [MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, ne_eq, mul_eq_zero]
-  rw [gaussianReal_apply_eq_integral _ _ s']
+  rw [MeasurableEquiv.gaussianReal_map_symm_apply hv e he' hs',
+    gaussianReal_apply_eq_integral _ _ s']
   swap
   · simp only [ne_eq, mul_eq_zero, hv, or_false]
     rw [← NNReal.coe_inj]
