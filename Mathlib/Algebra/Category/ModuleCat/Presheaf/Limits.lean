@@ -128,7 +128,7 @@ noncomputable instance toPresheafPreservesLimit :
     PreservesLimit F (toPresheaf R) :=
   preservesLimitOfPreservesLimitCone (isLimitLimitCone F)
     (Limits.evaluationJointlyReflectsLimits _
-      (fun X => isLimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGroupCat)
+      (fun X => isLimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrp)
         (isLimitLimitCone F)))
 
 end Limits
