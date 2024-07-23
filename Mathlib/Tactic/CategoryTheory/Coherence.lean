@@ -3,7 +3,7 @@ Copyright (c) 2022. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
-import Mathlib.CategoryTheory.Monoidal.Free.Basic
+import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.Lean.Meta
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
@@ -122,8 +122,8 @@ def mkProjectMapExpr (e : Expr) : TermElabM Expr := do
 def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 512 (synthInstance.maxSize.get opts))) do
-  -- TODO: is this `dsimp only` step necessary? It doesn't appear to be in the tests below.
-  let (ty, _) ← dsimp (← g.getType) (← Simp.Context.ofNames [] true)
+  let (ty, _) ← dsimp (← g.getType)
+    { simpTheorems := #[.addDeclToUnfoldCore {} ``MonoidalCoherence.hom] }
   let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
   let projectMap_lhs ← mkProjectMapExpr lhs
   let projectMap_rhs ← mkProjectMapExpr rhs
@@ -285,9 +285,7 @@ syntax (name := coherence) "coherence" : tactic
 elab_rules : tactic
 | `(tactic| coherence) => do
   evalTactic (← `(tactic|
-    (simp (config := {failIfUnchanged := false}) only [bicategoricalComp,
-      BicategoricalCoherence.hom,
-      monoidalComp]);
+    (simp (config := {failIfUnchanged := false}) only [bicategoricalComp, monoidalComp]);
     whisker_simps (config := {failIfUnchanged := false});
     monoidal_simps (config := {failIfUnchanged := false})))
   coherence_loop
