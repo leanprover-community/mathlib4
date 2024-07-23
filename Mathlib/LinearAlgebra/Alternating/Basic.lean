@@ -798,7 +798,7 @@ theorem alternatization_coe (m : MultilinearMap R (fun _ : ι => M) N') :
 
 theorem alternatization_apply (m : MultilinearMap R (fun _ : ι => M) N') (v : ι → M) :
     alternatization m v = ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ v := by
-  simp only [alternatization_def, smul_apply, sum_apply]
+  rfl
 
 end MultilinearMap
 
