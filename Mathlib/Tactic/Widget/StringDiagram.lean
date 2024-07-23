@@ -12,6 +12,17 @@ import Mathlib.Tactic.CategoryTheory.Monoidal
 This file provides tactic/meta infrastructure for displaying string diagrams for morphisms
 in monoidal categories in the infoview.
 
+String diagrams are graphical representations of morphisms in monoidal categories, which are
+useful for rewriting computations. More precisely, objects in a monoidal category is represented
+by strings, and morphisms between two objects is represented by nodes connecting two strings
+associated with the objects. The tensor product `X ⊗ Y` corresponds to putting strings associated
+with `X` and `Y` horizontally (from left to right), and the composition of morphisms `f : X ⟶ Y`
+and `g : Y ⟶ Z` corresponds to connecting two nodes associated with `f` and `g` vertically (from
+top to bottom) by strings associated with `Y`.
+
+In this file, we will sometimes refer to objects and morphisms in monoidal categories
+as 1-morphisms and 2-morphisms, borrowing the terminology of the theory of 2-categories.
+
 -/
 
 namespace Mathlib.Tactic
