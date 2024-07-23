@@ -10,23 +10,23 @@ import Mathlib.Order.GaloisConnection
 # The Galois Connection Induced by a Relation
 
 In this file, we show that an arbitrary relation `R` between a pair of types `α` and `β` defines
-a pair `leftDual` and `rightDual` of adjoint order-preserving maps between the corresponding posets
-`Set α` and `(Set β)ᵒᵈ`.
-We define `lFixedPoints` (resp. `rFixedPoints`) as the set of fixed points `J` (resp. `I`) of
-`Set α` (resp. `(Set β)ᵒᵈ`) such that `rightDual (leftDual J) = J` (resp.
-`leftDual (rightDual I) = I`).
+a pair `toDual ∘ R.leftDual` and `R.rightDual ∘ ofDual` of adjoint order-preserving maps between the
+corresponding posets `Set α` and `(Set β)ᵒᵈ`.
+We define `R.leftFixedPoints` (resp. `R.rightFixedPoints`) as the set of fixed points `J`
+(resp. `I`) of `Set α` (resp. `Set β`) such that `rightDual (leftDual J) = J`
+(resp. `leftDual (rightDual I) = I`).
 
 ## Main Results
 
 ⋆ `Rel.gc_leftDual_rightDual`: we prove that the maps `toDual ∘ R.leftDual` and
   `R.rightDual ∘ ofDual` form a Galois connection.
-⋆ `equivFixedPoints`: we prove that the said maps induce inverse bijections between the sets
-of fixed points.
+⋆ `Rel.equivFixedPoints`: we prove that the maps `R.leftDual` and `R.rightDual` induce inverse
+  bijections between the sets of fixed points.
 
 ## References
 
 ⋆ Engendrement de topologies, démontrabilité et opérations sur les sous-topos, Olivia Caramello and
-Laurent Lafforgue (in preparation)
+  Laurent Lafforgue (in preparation)
 
 ## Tags
 
