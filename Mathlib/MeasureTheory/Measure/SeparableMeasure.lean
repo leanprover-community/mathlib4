@@ -8,7 +8,7 @@ import Mathlib.MeasureTheory.Measure.WithDensityFinite
 import Mathlib.MeasureTheory.SetAlgebra
 
 /-!
-# Separable measure spaces
+# Separable measure
 
 The goal of this file is to give a sufficient condition on the measure space `(X, μ)` and the
 `NormedAddCommGroup E` for the space `MeasureTheory.Lp E p μ` to have `SecondCountableTopology` when
