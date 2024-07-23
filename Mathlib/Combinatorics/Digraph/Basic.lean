@@ -10,11 +10,14 @@ import Mathlib.Tactic.ApplyFun
 /-!
 # Digraphs
 
-This module defines directed graphs on a vertex type `V`.
+This module defines directed graphs on a vertex type `V`. Although the structure is definitionally
+equivalent to a `Quiver` in a specialized universe, the intention is to consider graph theory
+language as basic. Furthermore, `Digraph` is not intended to be used as a class.
 
 ## Main definitions
 
-* `Digraph` is a structure for the relation
+* `Digraph` is a structure for relations. Unlike `SimpleGraph`, the relation does not need to be
+  symmetric or irreflexive.
 
 * `CompleteAtomicBooleanAlgebra` instance: Under the subgraph relation, `Digraph` forms a
   `CompleteAtomicBooleanAlgebra`. In other words, this is the complete lattice of spanning subgraphs
