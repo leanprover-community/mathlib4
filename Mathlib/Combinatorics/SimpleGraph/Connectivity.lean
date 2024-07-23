@@ -209,7 +209,7 @@ theorem adj_getVert_succ {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
 
 @[simp]
 lemma cons_getVert_succ {u v w n} (p : G.Walk v w) (h : G.Adj u v) :
-    (Walk.cons h p).getVert n.succ = p.getVert n := rfl
+    (Walk.cons h p).getVert (n + 1) = p.getVert n := rfl
 
 lemma cons_getVert {u v w n} (p : G.Walk v w) (h : G.Adj u v) (hn : 0 < n) :
     (Walk.cons h p).getVert n = p.getVert (n - 1) := by
