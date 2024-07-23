@@ -755,7 +755,7 @@ open Equiv
 
 variable [Fintype ι] [DecidableEq ι]
 
-private lemma eq_val (m : MultilinearMap R (fun _ : ι => M) N') :
+private lemma alternatization_map_eq_coe_aux (m : MultilinearMap R (fun _ : ι => M) N') :
     (fun x ↦ ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ x) =
       ⇑(∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ) := by
   ext
@@ -777,11 +777,10 @@ permutations. -/
 def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→ₗ[R] N' where
   toFun m :=
     { toFun := fun x ↦ ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ x
-      map_add' := by rw [eq_val]; simp
-      map_smul' := by rw [eq_val]; simp
+      map_add' := by rw [alternatization_map_eq_coe_aux]; simp
+      map_smul' := by rw [alternatization_map_eq_coe_aux]; simp
       map_eq_zero_of_eq' := by
-        dsimp (config := {beta := false}) only
-        rw [eq_val]
+        simp (config := {beta := false}) only [alternatization_map_eq_coe_aux]
         apply alternization_map_eq_zero_of_eq_aux
     }
   map_add' a b := by
