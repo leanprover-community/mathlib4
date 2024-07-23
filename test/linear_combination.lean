@@ -224,6 +224,8 @@ example (K : Type)
 
 /-! ### Linear inequalities -/
 
+example : (3:ℤ) ≤ 4 := by linear_combination
+
 example (x : ℚ) (hx : x ≤ 3) : x - 1 ≤ 5 := by linear_combination hx
 example (x : ℝ) (hx : x ≤ 3) : x - 1 ≤ 5 := by linear_combination hx
 
