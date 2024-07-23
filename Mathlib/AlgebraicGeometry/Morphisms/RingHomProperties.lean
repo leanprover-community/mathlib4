@@ -32,10 +32,10 @@ We also provide the following interface:
 ## `HasRingHomProperty`
 
 `HasRingHomProperty P Q` is a type class asserting that `P` is local at the target and the source,
-and for `f : Spec B ⟶ Spec A`, it is equivalent to the ring hom property `Q`.
+and for `f : Spec B ⟶ Spec A`, it is equivalent to the ring hom property `Q` on `Γ(f)`.
 
 For `HasRingHomProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
-- `AlgebraicGeometry.HasAffineProperty.iff_appLE`:
+- `AlgebraicGeometry.HasRingHomProperty.iff_appLE`:
     `P f` if and only if `Q (f.appLE U V _)` for all affine `U : Opens Y` and `V : Opens X`.
 - `AlgebraicGeometry.HasAffineProperty.iff_of_source_openCover`:
     If `Y` is affine, `P f ↔ ∀ i, Q ((𝒰.map i ≫ f).app ⊤)` for an affine open cover `𝒰` of `X`.
@@ -171,6 +171,7 @@ and for `f : Spec B ⟶ Spec A`, it is equivalent to the ring hom property `Q`.
 To make the proofs easier, we state it instead as
 1. `Q` is local (See `RingHom.PropertyIsLocal`)
 2. `P f` if and only if `Q` holds for every `Γ(Y, U) ⟶ Γ(X, V)` for all affine `U`, `V`.
+See `HasRingHomProperty.iff_appLE`.
 -/
 class HasRingHomProperty (P : MorphismProperty Scheme.{u})
     (Q : outParam (∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)) : Prop where
@@ -186,9 +187,9 @@ lemma eq_affineLocally : P = affineLocally Q := eq_affineLocally'
 
 instance : HasAffineProperty P (sourceAffineLocally Q) where
   isLocal_affineProperty := sourceAffineLocally_isLocal _
-    (HasRingHomProperty.isLocal_ringHomProperty P).respectsIso
-    (HasRingHomProperty.isLocal_ringHomProperty P).LocalizationPreserves
-    (HasRingHomProperty.isLocal_ringHomProperty P).ofLocalizationSpan
+    (isLocal_ringHomProperty P).respectsIso
+    (isLocal_ringHomProperty P).LocalizationPreserves
+    (isLocal_ringHomProperty P).ofLocalizationSpan
   eq_targetAffineLocally' := eq_affineLocally P
 
 theorem appLE (H : P f) (U : Y.affineOpens) (V : X.affineOpens) (e) : Q (f.appLE U V e) := by

@@ -57,23 +57,7 @@ theorem locallyOfFiniteType_of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 open scoped TensorProduct in
 lemma locallyOfFiniteType_stableUnderBaseChange :
-    MorphismProperty.StableUnderBaseChange @LocallyOfFiniteType := by
-  apply HasRingHomProperty.stableUnderBaseChange
-  apply RingHom.StableUnderBaseChange.mk _ RingHom.finiteType_is_local.respectsIso
-  intros R S T _ _ _ _ _ H
-  have H : Algebra.FiniteType R T := by
-    delta RingHom.FiniteType at H; convert H; exact Algebra.algebra_ext _ _ fun _ ↦ rfl
-  suffices Algebra.FiniteType S (S ⊗[R] T) by
-    delta RingHom.FiniteType; convert this; exact Algebra.algebra_ext _ _ fun _ ↦ rfl
-  obtain ⟨ι, _, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial'.mp H
-  let g := (Algebra.TensorProduct.productLeftAlgHom
-    (Algebra.TensorProduct.includeLeft : S →ₐ[S] S ⊗[R] T)
-    (Algebra.TensorProduct.includeRight.comp f))
-  have hg : Function.Surjective g := by
-    show Function.Surjective (g.toLinearMap.restrictScalars R)
-    convert f.toLinearMap.lTensor_surjective S hf using 2
-    ext; simp [g]
-  exact ((Algebra.FiniteType.mvPolynomial _ _).equiv
-    (MvPolynomial.algebraTensorAlgEquiv R (σ := ι) S).symm).of_surjective _ hg
+    MorphismProperty.StableUnderBaseChange @LocallyOfFiniteType :=
+  HasRingHomProperty.stableUnderBaseChange RingHom.finiteType_stableUnderBaseChange
 
 end AlgebraicGeometry
