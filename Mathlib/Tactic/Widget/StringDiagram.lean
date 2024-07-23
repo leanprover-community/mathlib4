@@ -207,8 +207,9 @@ def addConstructor (tp : String) (v : PenroseVar) (nm : String) (vs : List Penro
 open scoped Jsx in
 /-- Construct a string diagram from a Penrose `sub`stance program and expressions `embeds` to
 display as labels in the diagram. -/
-def mkStringDiagram (nodes : List (List Node)) (strands : List (List Strand)) :
-    DiagramBuilderM PUnit := do
+def mkStringDiagram (e : NormalExpr) : DiagramBuilderM PUnit := do
+  let nodes ← e.nodes
+  let strands ← e.strands
   /- Add 2-morphisms. -/
   for x in nodes.join do
     match x with
@@ -242,7 +243,7 @@ open scoped Jsx in
 def fromExpr (e : Expr) : MonoidalM Html := do
   let e' := (← eval e).expr
   DiagramBuilderM.run do
-    mkStringDiagram (← e'.nodes) (← e'.strands)
+    mkStringDiagram e'
     match ← DiagramBuilderM.buildDiagram dsl sty with
     | some html => return html
     | none => return <span>No non-structural morphisms found.</span>
