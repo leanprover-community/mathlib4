@@ -91,9 +91,9 @@ lemma compactlyGeneratedSpace_of_continuous_maps {X : Type w} [t : TopologicalSp
 
 example {X : Type*} [TopologicalSpace X] [T2Space X] :
     CompactlyGeneratedSpace X ↔
-      (∀ s, IsClosed s ↔ ∀ (K : Set X), IsCompact K → IsClosed (s ∩ K)) := by
-  constructor
-  · intro _ s
+      (∀ s, IsClosed s ↔ ∀ (K : Set X), IsCompact K → IsClosed (s ∩ K)) where
+  mp := by
+    intro _ s
     constructor
     · intro hs K hK
       exact hs.inter hK.isClosed
@@ -108,7 +108,8 @@ example {X : Type*} [TopologicalSpace X] [T2Space X] :
       apply h
       apply isCompact_range
       fun_prop
-  · intro h
+  mpr := by
+    intro h
     apply compactlyGeneratedSpace_of_continuous_maps
     intro Y _ f h'
     rw [continuous_iff_isClosed]
