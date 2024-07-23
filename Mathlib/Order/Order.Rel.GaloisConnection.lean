@@ -69,14 +69,12 @@ open GaloisConnection
 
 /-- `leftDual` maps every element `J` to `rightFixedPoints`. -/
 theorem leftDual_mem_rightFixedPoint (J : Set α) : R.leftDual J ∈ R.rightFixedPoints := by
-  unfold rightFixedPoints
   apply le_antisymm
   · apply R.gc_leftDual_rightDual.monotone_l; exact R.gc_leftDual_rightDual.le_u_l J
   · exact R.gc_leftDual_rightDual.l_u_le (R.leftDual J)
 
 /-- `rightDual` maps every element `I` to `leftFixedPoints`. -/
 theorem rightDual_mem_leftFixedPoint (I : Set β) : R.rightDual I ∈ R.leftFixedPoints := by
-  unfold leftFixedPoints
   apply le_antisymm
   · apply R.gc_leftDual_rightDual.monotone_u; exact R.gc_leftDual_rightDual.l_u_le I
   · exact R.gc_leftDual_rightDual.le_u_l (R.rightDual I)
