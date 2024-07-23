@@ -178,7 +178,7 @@ lemma odd_card_odd_components (ho : Odd (Fintype.card V)) :
   by_contra! hc
   simp_rw [← Nat.odd_iff_not_even] at hc
   rw [
-    ← (set_fintype_card_eq_univ_iff _).mpr (@ConnectedComponent.iUnion_supp _ G),
+    ← (set_fintype_card_eq_univ_iff _).mpr (ConnectedComponent.iUnion_supp G),
     ← Set.toFinset_card, Nat.odd_iff_not_even] at ho
   apply ho
   have : Set.toFinset (⋃ (x : ConnectedComponent G), ConnectedComponent.supp x) =

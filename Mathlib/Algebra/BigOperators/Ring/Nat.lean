@@ -25,7 +25,7 @@ lemma even_sum_of_even_card_odd {s : Finset ι} (f : ι → ℕ)
   simp only [Finset.mem_filter, and_imp, imp_self, implies_true, Finset.even_sum, true_iff]
   rw [@Finset.card_eq_sum_ones] at h
   rw [Nat.even_iff, Finset.sum_nat_mod, Finset.sum_filter]
-  have (a : ι): (if ¬Even (f a) then f a % 2 else 0) = if ¬Even (f a) then 1 else 0 := by
+  have (a) : (if ¬Even (f a) then f a % 2 else 0) = if ¬Even (f a) then 1 else 0 := by
     split_ifs
     · rfl
     · rwa [← @Nat.odd_iff, @Nat.odd_iff_not_even]

@@ -2065,7 +2065,7 @@ lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.c
   rw [← (mem_supp_iff _ _).mp h.1]
   exact ⟨connectedComponentMk_eq_of_adj <| Subgraph.Adj.coe <| h.2 ▸ hadj.symm, rfl⟩
 
-lemma iUnion_supp : ⋃ c : G.ConnectedComponent, c.supp = Set.univ := by
+lemma iUnion_supp (G : SimpleGraph V): ⋃ c : G.ConnectedComponent, c.supp = Set.univ := by
   refine Set.eq_univ_of_forall fun v ↦ ⟨G.connectedComponentMk v, ?_⟩
   simp only [Set.mem_range, SetLike.mem_coe]
   exact ⟨by use G.connectedComponentMk v; exact rfl, rfl⟩
