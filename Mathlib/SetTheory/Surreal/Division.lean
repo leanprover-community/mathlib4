@@ -173,15 +173,7 @@ lemma inv'_numeric (ih_xl : ∀ i, 0 < x.moveLeft i → (x.moveLeft i).inv'.Nume
   constructor <;> (
     intro i
     rcases x with ⟨xl, xr, xL, xR⟩
-    rw [numeric_def] at x_num
-    simp only [leftMoves_mk, rightMoves_mk, moveLeft_mk, moveRight_mk] at *
-    simp only [inv', leftMoves_mk, moveLeft_mk] at i ⊢
-    apply invVal_numeric
-    · exact ih_xl
-    · exact ih_xr
-    · rw [numeric_def]
-      simp only [leftMoves_mk, rightMoves_mk, moveLeft_mk, moveRight_mk, x_num, implies_true,
-        and_self]
+    exact invVal_numeric ih_xl ih_xr x_num i
   )
 
 lemma inv'_numeric_left (ih_xl : ∀ i, 0 < x.moveLeft i → (x.moveLeft i).inv'.Numeric)
