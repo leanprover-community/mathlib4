@@ -431,8 +431,9 @@ Print formatted errors for all unexpected style violations to standard output;
 update the list of style exceptions if configured so.
 Return the number of files which had new style errors.
 `moduleNames` are all the modules to lint,
-`mode` specifies what kind of output this script should produce. -/
-def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 := do
+`mode` specifies what kind of output this script should produce,
+`fix` configures whether fixable errors should be corrected in-place. -/
+def lintModules (moduleNames : Array String) (mode : OutputSetting) (fix : Bool) : IO UInt32 := do
   -- Read the style exceptions file.
   -- We also have a `nolints` file with manual exceptions for the linter.
   let exceptionsFilePath : FilePath := "scripts" / "style-exceptions.txt"
@@ -466,8 +467,8 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 
     -- Run the remaining python linters. It is easier to just run on all files.
     -- If this poses an issue, I can either filter the output
     -- or wait until lint-style.py is fully rewritten in Lean.
-    -- TODO: pass any flags passed to the script... in practice, I only care about fix!
-    let pythonOutput ← IO.Process.run { cmd := "./scripts/print-style-errors.sh" }
+    let args := if fix then #["--fix"] else #[]
+    let pythonOutput ← IO.Process.run { cmd := "./scripts/print-style-errors.sh", args := args }
     if pythonOutput != "" then IO.println pythonOutput
     formatErrors allUnexpectedErrors style
     if numberErrorFiles > 0 && mode matches OutputSetting.print _ then
