@@ -140,6 +140,16 @@ theorem inf_toSubfield (S T : IntermediateField F E) :
     (S ⊓ T).toSubfield = S.toSubfield ⊓ T.toSubfield :=
   rfl
 
+@[simp]
+theorem sup_toSubfield (S T : IntermediateField F E) :
+    (S ⊔ T).toSubfield = S.toSubfield ⊔ T.toSubfield := by
+  rw [← S.toSubfield.closure_eq, ← T.toSubfield.closure_eq, ← Subfield.closure_union]
+  change Subfield.closure (Set.range (algebraMap F E) ∪ (S ∪ T)) = Subfield.closure (S ∪ T)
+  congr 1
+  rw [Set.union_eq_right]
+  rintro _ ⟨x, rfl⟩
+  exact Or.inl (algebraMap_mem S x)
+
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (IntermediateField F E)) : (↑(sInf S) : Set E) =
     sInf ((fun (x : IntermediateField F E) => (x : Set E)) '' S) :=
@@ -155,6 +165,23 @@ theorem sInf_toSubfield (S : Set (IntermediateField F E)) :
     (sInf S).toSubfield = sInf (toSubfield '' S) :=
   SetLike.coe_injective <| by simp [Set.sUnion_image]
 
+@[simp]
+theorem sSup_toSubfield (S : Set (IntermediateField F E)) (hS : S.Nonempty) :
+    (sSup S).toSubfield = sSup (toSubfield '' S) := by
+  have h : toSubfield '' S = Subfield.closure '' (SetLike.coe '' S) := by
+    rw [Set.image_image]
+    congr! with x
+    exact x.toSubfield.closure_eq.symm
+  rw [h, sSup_image, ← Subfield.closure_sUnion]
+  change Subfield.closure (Set.range (algebraMap F E) ∪ ⋃₀ (SetLike.coe '' S)) =
+    Subfield.closure (⋃₀ (SetLike.coe '' S))
+  congr 1
+  rw [Set.union_eq_right]
+  rintro _ ⟨x, rfl⟩
+  obtain ⟨y, hy⟩ := hS
+  simp only [Set.mem_sUnion, Set.mem_image, exists_exists_and_eq_and, SetLike.mem_coe]
+  exact ⟨y, hy, algebraMap_mem y x⟩
+
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} (S : ι → IntermediateField F E) : (↑(iInf S) : Set E) = ⋂ i, S i := by
   simp [iInf]
@@ -168,6 +195,12 @@ theorem iInf_toSubalgebra {ι : Sort*} (S : ι → IntermediateField F E) :
 theorem iInf_toSubfield {ι : Sort*} (S : ι → IntermediateField F E) :
     (iInf S).toSubfield = ⨅ i, (S i).toSubfield :=
   SetLike.coe_injective <| by simp [iInf]
+
+@[simp]
+theorem iSup_toSubfield {ι : Sort*} [Nonempty ι] (S : ι → IntermediateField F E) :
+    (iSup S).toSubfield = ⨆ i, (S i).toSubfield := by
+  simp only [iSup, Set.range_nonempty, sSup_toSubfield, ← Set.range_comp]
+  rfl
 
 /-- Construct an algebra isomorphism from an equality of intermediate fields -/
 @[simps! apply]
