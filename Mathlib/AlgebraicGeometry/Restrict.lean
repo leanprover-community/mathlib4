@@ -333,8 +333,9 @@ theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Open
   erw [pullbackRestrictIsoRestrict_inv_fst]; rw [Category.comp_id]
 
 @[simp]
-lemma morphismRestrict_id {X : Scheme.{u}} (U : Opens X) : 𝟙 X ∣_ U = 𝟙 _ := by
-  rw [← cancel_mono (Scheme.ιOpens U), morphismRestrict_ι, Category.comp_id, Category.id_comp]
+lemma morphismRestrict_id {X : Scheme.{u}} (U : X.Opens) : 𝟙 X ∣_ U = 𝟙 _ := by
+  rw [← cancel_mono U.ι, morphismRestrict_ι, Category.comp_id, Category.id_comp]
+  rfl
 
 theorem morphismRestrict_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (U : Opens Z) :
     (f ≫ g) ∣_ U = f ∣_ g ⁻¹ᵁ U ≫ g ∣_ U := by
@@ -512,14 +513,14 @@ end MorphismRestrict
 @[simps! J obj map]
 noncomputable
 def Scheme.OpenCover.restrict {X : Scheme.{u}} (𝒰 : X.OpenCover) (U : Opens X) :
-    (X ∣_ᵤ U).OpenCover := by
-  refine copy (𝒰.pullbackCover (ιOpens U)) 𝒰.J _ (𝒰.map · ∣_ U) (Equiv.refl _)
-    (fun i ↦ IsOpenImmersion.isoOfRangeEq (ιOpens _) (pullback.snd _ _) ?_) ?_
-  · erw [IsOpenImmersion.range_pullback_snd_of_left (ιOpens U) (𝒰.map i)]
-    rw [opensRange_ιOpens]
+    U.toScheme.OpenCover := by
+  refine copy (𝒰.pullbackCover U.ι) 𝒰.J _ (𝒰.map · ∣_ U) (Equiv.refl _)
+    (fun i ↦ IsOpenImmersion.isoOfRangeEq (Opens.ι _) (pullback.snd _ _) ?_) ?_
+  · erw [IsOpenImmersion.range_pullback_snd_of_left U.ι (𝒰.map i)]
+    rw [Opens.opensRange_ι]
     exact Subtype.range_val
   · intro i
-    rw [← cancel_mono (ιOpens U)]
+    rw [← cancel_mono U.ι]
     simp only [morphismRestrict_ι, pullbackCover_J, Equiv.refl_apply, pullbackCover_obj,
       pullbackCover_map, Category.assoc, pullback.condition]
     erw [IsOpenImmersion.isoOfRangeEq_hom_fac_assoc]
