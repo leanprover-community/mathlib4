@@ -7,6 +7,8 @@ import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Sites.CoverLifting
 import Mathlib.CategoryTheory.Sites.CoverPreserving
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
+
 /-!
 # Dense subsites
 
@@ -123,15 +125,15 @@ theorem ext (ℱ : SheafOfTypes K) (X : D) {s t : ℱ.val.obj (op X)}
 
 variable {G}
 
-theorem functorPullback_pushforward_covering [Full G] {X : C}
+theorem functorPullback_pushforward_covering [G.IsLocallyFull K] {X : C}
     (T : K (G.obj X)) : (T.val.functorPullback G).functorPushforward G ∈ K (G.obj X) := by
-  refine K.superset_covering ?_ (K.bind_covering T.property
-    fun Y f _ => G.is_cover_of_isCoverDense K Y)
-  rintro Y _ ⟨Z, _, f, hf, ⟨W, g, f', ⟨rfl⟩⟩, rfl⟩
-  use W; use G.preimage (f' ≫ f); use g
-  constructor
-  · simpa using T.val.downward_closed hf f'
-  · simp
+  refine K.transitive T.2 _ fun Y iYX hiYX ↦ ?_
+  apply K.transitive (G.is_cover_of_isCoverDense _ _) _
+  rintro W _ ⟨Z, iWZ, iZY, rfl⟩
+  rw [Sieve.pullback_comp]; apply K.pullback_stable; clear W iWZ
+  apply K.superset_covering ?_ (G.functorPushforward_hasLift_mem _ (iZY ≫ iYX))
+  rintro W _ ⟨V, iVZ, iWV, ⟨iVX, e⟩, rfl⟩
+  exact ⟨_, iVX, iWV, by simpa [e] using T.1.downward_closed hiYX (G.map iVZ ≫ iZY), by simp [e]⟩
 
 /-- (Implementation). Given a hom between the pullbacks of two sheaves, we can whisker it with
 `coyoneda` to obtain a hom between the pullbacks of the sheaves of maps from `X`.
@@ -154,11 +156,23 @@ theorem sheaf_eq_amalgamation (ℱ : Sheaf K A) {X : A} {U : D} {T : Sieve U} (h
     t = (ℱ.cond X T hT).amalgamate x hx :=
   (ℱ.cond X T hT).isSeparatedFor x t _ h ((ℱ.cond X T hT).isAmalgamation hx)
 
-variable [Full G]
+variable [G.IsLocallyFull K]
 
 namespace Types
 
 variable {ℱ : Dᵒᵖ ⥤ Type v} {ℱ' : SheafOfTypes.{v} K} (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val)
+
+theorem naturality_apply {X Y : C} (i : G.obj X ⟶ G.obj Y) (x) :
+    ℱ'.1.map i.op (α.app _ x) = α.app _ (ℱ.map i.op x) := by
+  have {X Y} (i : X ⟶ Y) (x) :
+      ℱ'.1.map (G.map i).op (α.app _ x) = α.app _ (ℱ.map (G.map i).op x) := by
+    exact congr_fun (α.naturality i.op).symm x
+  refine IsLocallyFull.ext G _ i fun V iVX iVY e ↦ ?_
+  simp only [comp_obj, types_comp_apply, ← FunctorToTypes.map_comp_apply, ← op_comp, ← e, this]
+
+@[reassoc]
+theorem naturality {X Y : C} (i : G.obj X ⟶ G.obj Y) :
+    α.app _ ≫ ℱ'.1.map i.op = ℱ.map i.op ≫ α.app _ := types_ext _ _ (naturality_apply α i)
 
 /--
 (Implementation). Given a section of `ℱ` on `X`, we can obtain a family of elements valued in `ℱ'`
@@ -180,20 +194,23 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
 /-- (Implementation). The `pushforwardFamily` defined is compatible. -/
 theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     (pushforwardFamily α x).Compatible := by
-  intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ e
-  apply IsCoverDense.ext G
-  intro Y f
-  simp only [pushforwardFamily, ← FunctorToTypes.map_comp_apply, ← op_comp]
-  change (ℱ.map _ ≫ α.app (op _) ≫ ℱ'.val.map _) _ = (ℱ.map _ ≫ α.app (op _) ≫ ℱ'.val.map _) _
-  rw [← G.map_preimage (f ≫ g₁ ≫ _)]
-  rw [← G.map_preimage (f ≫ g₂ ≫ _)]
-  erw [← α.naturality (G.preimage _).op]
-  erw [← α.naturality (G.preimage _).op]
-  refine congr_fun ?_ x
-  simp only [Functor.comp_map, ← Category.assoc, Functor.op_map, Quiver.Hom.unop_op,
-    ← ℱ.map_comp, ← op_comp, G.map_preimage]
-  congr 3
-  simp [e]
+  have {X Y} (i : X ⟶ Y) (x) :
+      ℱ'.1.map (G.map i).op (α.app _ x) = α.app _ (ℱ.map (G.map i).op x) := by
+    exact congr_fun (α.naturality i.op).symm x
+  suffices ∀ {Z W₁ W₂} (iWX₁ : G.obj W₁ ⟶ X) (iWX₂ : G.obj W₂ ⟶ X) (iZW₁ : Z ⟶ G.obj W₁)
+      (iZW₂ : Z ⟶ G.obj W₂), iZW₁ ≫ iWX₁ = iZW₂ ≫ iWX₂ →
+      ℱ'.1.map iZW₁.op (α.app _ (ℱ.map iWX₁.op x)) = ℱ'.1.map iZW₂.op (α.app _ (ℱ.map iWX₂.op x)) by
+    rintro Y₁ Y₂ Z iZY₁ iZY₂ f₁ f₂ h₁ h₂ e
+    simp only [pushforwardFamily, ← FunctorToTypes.map_comp_apply, ← op_comp]
+    generalize Nonempty.some h₁ = l₁
+    generalize Nonempty.some h₂ = l₂
+    obtain ⟨W₁, iYW₁, iWX₁, rfl⟩ := l₁
+    obtain ⟨W₂, iYW₂, iWX₂, rfl⟩ := l₂
+    exact this _ _ _ _ (by simpa only [Category.assoc] using e)
+  introv e
+  refine ext G _ _ fun V iVZ ↦ ?_
+  simp only [← op_comp, ← FunctorToTypes.map_comp_apply, ← Functor.map_comp, naturality_apply,
+    Category.assoc, e]
 
 /-- (Implementation). The morphism `ℱ(X) ⟶ ℱ'(X)` given by gluing the `pushforwardFamily`. -/
 noncomputable def appHom (X : D) : ℱ.obj (op X) ⟶ ℱ'.val.obj (op X) := fun x =>
@@ -203,20 +220,10 @@ noncomputable def appHom (X : D) : ℱ.obj (op X) ⟶ ℱ'.val.obj (op X) := fun
 @[simp]
 theorem pushforwardFamily_apply {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y ⟶ X) :
     pushforwardFamily α x f (Presieve.in_coverByImage G f) = α.app (op Y) (ℱ.map f.op x) := by
-  unfold pushforwardFamily
-  -- Porting note: congr_fun was more powerful in Lean 3; I had to explicitly supply
-  -- the type of the first input here even though it's obvious (there is a unique occurrence
-  -- of x on each side of the equality)
-  refine congr_fun (?_ :
-    (fun t => ℱ'.val.map ((Nonempty.some (_ : coverByImage G X f)).lift.op)
-      (α.app (op (Nonempty.some (_ : coverByImage G X f)).1)
-        (ℱ.map ((Nonempty.some (_ : coverByImage G X f)).map.op) t))) =
-    (fun t => α.app (op Y) (ℱ.map (f.op) t))) x
-  rw [← G.map_preimage (Nonempty.some _ : Presieve.CoverByImageStructure _ _).lift]
-  change ℱ.map _ ≫ α.app (op _) ≫ ℱ'.val.map _ = ℱ.map f.op ≫ α.app (op Y)
-  erw [← α.naturality (G.preimage _).op]
-  simp only [← Functor.map_comp, ← Category.assoc, Functor.comp_map, G.map_preimage, G.op_map,
-    Quiver.Hom.unop_op, ← op_comp, Presieve.CoverByImageStructure.fac]
+  simp only [pushforwardFamily_def, op_obj]
+  generalize Nonempty.some (Presieve.in_coverByImage G f) = l
+  obtain ⟨W, iYW, iWX, rfl⟩ := l
+  simp only [← op_comp, ← FunctorToTypes.map_comp_apply, naturality_apply]
 
 @[simp]
 theorem appHom_restrict {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) (x) :
@@ -399,10 +406,9 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
   congr 1
   simp only [Category.assoc]
   congr 1
-  rw [← G.map_preimage hf.some.map]
-  symm
-  apply α.naturality (G.preimage hf.some.map).op
-  -- porting note; Lean 3 needed a random `inferInstance` for cleanup here; not necessary in lean 4
+  have := naturality_apply (G := G) (ℱ := ℱ ⋙ coyoneda.obj (op <| (G.op ⋙ ℱ).obj X))
+    (ℱ' := ⟨_, ℱ'.2 ((G.op ⋙ ℱ).obj X)⟩) (whiskerRight α (coyoneda.obj _)) hf.some.map (𝟙 _)
+  simpa using this
 
 variable (G)
 
@@ -449,19 +455,20 @@ theorem iso_of_restrict_iso {ℱ ℱ' : Sheaf K A} (α : ℱ ⟶ ℱ') (i : IsIs
 variable (G K)
 
 /-- A fully faithful cover-dense functor preserves compatible families. -/
-lemma compatiblePreserving [Faithful G] : CompatiblePreserving K G := by
+lemma compatiblePreserving [G.IsLocallyFaithful K] : CompatiblePreserving K G := by
   constructor
   intro ℱ Z T x hx Y₁ Y₂ X f₁ f₂ g₁ g₂ hg₁ hg₂ eq
   apply Functor.IsCoverDense.ext G
   intro W i
-  simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-  rw [← G.map_preimage (i ≫ f₁)]
-  rw [← G.map_preimage (i ≫ f₂)]
-  apply hx (G.preimage (i ≫ f₁)) ((G.preimage (i ≫ f₂))) hg₁ hg₂
-  apply G.map_injective
-  simp [eq]
+  refine IsLocallyFull.ext G _ (i ≫ f₁) fun V₁ iVW iV₁Y₁ e₁ ↦ ?_
+  refine IsLocallyFull.ext G _ (G.map iVW ≫ i ≫ f₂) fun V₂ iV₂V₁ iV₂Y₂ e₂ ↦ ?_
+  refine IsLocallyFaithful.ext G _ (iV₂V₁ ≫ iV₁Y₁ ≫ g₁) (iV₂Y₂ ≫ g₂) (by simp [e₁, e₂, eq]) ?_
+  intro V₃ iV₃ e₄
+  simp only [← op_comp, ← FunctorToTypes.map_comp_apply, ← e₁, ← e₂, ← Functor.map_comp]
+  apply hx
+  simpa using e₄
 
-lemma isContinuous [Faithful G] (Hp : CoverPreserving J K G) : G.IsContinuous J K :=
+lemma isContinuous [G.IsLocallyFaithful K] (Hp : CoverPreserving J K G) : G.IsContinuous J K :=
   isContinuous_of_coverPreserving (compatiblePreserving K G) Hp
 
 instance full_sheafPushforwardContinuous [G.IsContinuous J K] :
@@ -482,10 +489,70 @@ end IsCoverDense
 /-- If `G : C ⥤ D` is cover dense and full, then the
 map `(P ⟶ Q) → (G.op ⋙ P ⟶ G.op ⋙ Q)` is bijective when `Q` is a sheaf`. -/
 lemma whiskerLeft_obj_map_bijective_of_isCoverDense (G : C ⥤ D)
-    [G.IsCoverDense K] [G.Full] {A : Type*} [Category A]
+    [G.IsCoverDense K] [G.IsLocallyFull K] {A : Type*} [Category A]
     (P Q : Dᵒᵖ ⥤ A) (hQ : Presheaf.IsSheaf K Q) :
     Function.Bijective (((whiskeringLeft Cᵒᵖ Dᵒᵖ A).obj G.op).map : (P ⟶ Q) → _) :=
   (IsCoverDense.restrictHomEquivHom (ℱ' := ⟨Q, hQ⟩)).symm.bijective
+
+variable {A : Type*} [Category A]
+variable (J : GrothendieckTopology C) (K : GrothendieckTopology D) (G : C ⥤ D)
+
+/-- The functor `G : C ⥤ D` exhibits `(C, J)` as a dense subsite of `(D, K)`
+if `G` is cover-dense, locally fully-faithful,
+and `S` is a cover of `C` if and only if the image of `S` in `D` is a cover. -/
+class IsDenseSubsite : Prop where
+  isCoverDense' : G.IsCoverDense K
+  isLocallyFull' : G.IsLocallyFull K
+  isLocallyFaithful' : G.IsLocallyFaithful K
+  functorPushforward_mem_iff : ∀ {X : C} {S : Sieve X}, S.functorPushforward G ∈ K _ ↔ S ∈ J _
+
+namespace IsDenseSubsite
+
+variable [G.IsDenseSubsite J K]
+
+lemma isCoverDense : G.IsCoverDense K := isCoverDense' J
+lemma isLocallyFull : G.IsLocallyFull K := isLocallyFull' J
+lemma isLocallyFaithful : G.IsLocallyFaithful K := isLocallyFaithful' J
+
+lemma coverPreserving [G.IsDenseSubsite J K] : CoverPreserving J K G :=
+  ⟨functorPushforward_mem_iff.mpr⟩
+
+instance (priority := 900) [G.IsDenseSubsite J K] : G.IsContinuous J K :=
+  letI := IsDenseSubsite.isCoverDense J K G
+  letI := IsDenseSubsite.isLocallyFull J K G
+  letI := IsDenseSubsite.isLocallyFaithful J K G
+  IsCoverDense.isContinuous J K G (IsDenseSubsite.coverPreserving J K G)
+
+instance (priority := 900) [G.IsDenseSubsite J K] : G.IsCocontinuous J K where
+  cover_lift hS :=
+    letI := IsDenseSubsite.isCoverDense J K G
+    letI := IsDenseSubsite.isLocallyFull J K G
+    IsDenseSubsite.functorPushforward_mem_iff.mp
+      (IsCoverDense.functorPullback_pushforward_covering ⟨_, hS⟩)
+
+instance full_sheafPushforwardContinuous [G.IsDenseSubsite J K] :
+    Full (G.sheafPushforwardContinuous A J K) :=
+  letI := IsDenseSubsite.isCoverDense J K G
+  letI := IsDenseSubsite.isLocallyFull J K G
+  inferInstance
+
+instance faithful_sheafPushforwardContinuous [G.IsDenseSubsite J K] :
+    Faithful (G.sheafPushforwardContinuous A J K) :=
+  letI := IsDenseSubsite.isCoverDense J K G
+  letI := IsDenseSubsite.isLocallyFull J K G
+  inferInstance
+
+lemma hasLift_mem [G.IsDenseSubsite J K] {U V} (f : G.obj U ⟶ G.obj V) :
+    Sieve.hasLift G f ∈ J _ :=
+  letI := IsDenseSubsite.isLocallyFull J K G
+  IsDenseSubsite.functorPushforward_mem_iff.mp (G.functorPushforward_hasLift_mem K f)
+
+lemma equalizer_mem [G.IsDenseSubsite J K] {U V} (f₁ f₂ : U ⟶ V) (e : G.map f₁ = G.map f₂) :
+    Sieve.equalizer f₁ f₂ ∈ J _ :=
+  letI := IsDenseSubsite.isLocallyFaithful J K G
+  IsDenseSubsite.functorPushforward_mem_iff.mp (G.functorPushforward_equalizer_mem K f₁ f₂ e)
+
+end IsDenseSubsite
 
 end Functor
 
@@ -493,22 +560,85 @@ end CategoryTheory
 
 namespace CategoryTheory.Functor.IsCoverDense
 
-open CategoryTheory
+open CategoryTheory Opposite
 
 universe w'
 variable {C D : Type*} [Category C] [Category D]
-variable (G : C ⥤ D) [Full G] [Faithful G]
+variable (G : C ⥤ D)
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 variable {A : Type w} [Category.{w'} A] [∀ X, Limits.HasLimitsOfShape (StructuredArrow X G.op) A]
-variable [G.IsCoverDense K] [G.IsContinuous J K] [G.IsCocontinuous J K]
+variable [G.IsDenseSubsite J K]
+
+lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
+    IsIso ((yoneda.map ((G.op.ranCounit.app Y.val).app (op U))).app (op X)) := by
+  rw [isIso_iff_bijective]
+  constructor
+  · intro f₁ f₂ e
+    apply (isPointwiseRightKanExtensionRanCounit G.op Y.1 (.op (G.obj U))).hom_ext
+    rintro ⟨⟨⟨⟩⟩, ⟨W⟩, g⟩
+    obtain ⟨g, rfl⟩ : ∃ g' : G.obj W ⟶ G.obj U, g = g'.op := ⟨g.unop, rfl⟩
+    simp only [id_obj, comp_obj, StructuredArrow.proj_obj, RightExtension.coneAt_pt,
+      RightExtension.mk_left, RightExtension.coneAt_π_app, const_obj_obj, op_obj,
+      whiskeringLeft_obj_obj, RightExtension.mk_hom]
+    apply (Y.2 X _ (IsDenseSubsite.hasLift_mem J K G g)).isSeparatedFor.ext
+    rintro V iVW ⟨iVU, e'⟩
+    have := congr($e ≫ Y.1.map iVU.op)
+    simp only [comp_obj, yoneda_map_app, Category.assoc, coyoneda_obj_obj, comp_map,
+      coyoneda_obj_map, ← NatTrans.naturality, op_obj, op_map, Quiver.Hom.unop_op, ← map_comp_assoc,
+      ← op_comp, ← e'] at this ⊢
+    erw [← NatTrans.naturality] at this
+    exact this
+  · intro f
+    have (X Y Z) (f : X ⟶ Y) (g : G.obj Y ⟶ G.obj Z) (hf : Sieve.hasLift G g f) : Exists _ := hf
+    choose l hl using this
+    let c : Limits.Cone (StructuredArrow.proj (op (G.obj U)) G.op ⋙ Y.val) := by
+      refine ⟨X, ⟨fun g ↦ ?_, ?_⟩⟩
+      · refine Y.2.amalgamate ⟨_, IsDenseSubsite.hasLift_mem J K G g.hom.unop⟩
+          (fun I ↦ f ≫ Y.1.map (l _ _ _ _ _ I.hf).op) fun I₁ I₂ r ↦ ?_
+        apply (Y.2 X _ (IsDenseSubsite.equalizer_mem J K G (r.g₁ ≫ l _ _ _ _ _ I₁.hf)
+          (r.g₂ ≫ l _ _ _ _ _ I₂.hf) ?_)).isSeparatedFor.ext fun V iUV (hiUV : _ = _) ↦ ?_
+        · simp only [const_obj_obj, op_obj, map_comp, hl]
+          simp only [← map_comp_assoc, r.w]
+        · simp [← map_comp, ← op_comp, hiUV]
+      · rintro ⟨⟨⟨⟩⟩, ⟨W₁⟩, g₁⟩ ⟨⟨⟨⟩⟩, ⟨W₂⟩, g₂⟩ ⟨⟨⟨⟨⟩⟩⟩, i, hi⟩
+        dsimp at g₁ g₂ i hi
+        obtain rfl : g₂ = g₁ ≫ (G.map i.unop).op := by simpa only [Category.id_comp] using hi
+        obtain ⟨g, rfl⟩ : ∃ g' : G.obj W₁ ⟶ G.obj U, g₁ = g'.op := ⟨g₁.unop, rfl⟩
+        obtain ⟨i, rfl⟩ : ∃ i' : W₂ ⟶ W₁, i = i'.op := ⟨i.unop, rfl⟩
+        simp only [const_obj_obj, id_obj, comp_obj, StructuredArrow.proj_obj, const_obj_map, op_obj,
+          unop_comp, Quiver.Hom.unop_op, Category.id_comp, comp_map, StructuredArrow.proj_map]
+        apply Y.2.hom_ext ⟨_, IsDenseSubsite.hasLift_mem J K G (G.map i ≫ g)⟩
+        intro I
+        simp only [Presheaf.IsSheaf.amalgamate_map, Category.assoc, ← Functor.map_comp, ← op_comp]
+        let I' : GrothendieckTopology.Cover.Arrow ⟨_, IsDenseSubsite.hasLift_mem J K G g⟩ :=
+          ⟨_, I.f ≫ i, ⟨l _ _ _ _ _ I.hf, by simp [hl]⟩⟩
+        refine Eq.trans ?_ (Y.2.amalgamate_map _ _ _ I').symm
+        apply (Y.2 X _ (IsDenseSubsite.equalizer_mem J K G (l _ _ _ _ _ I.hf)
+          (l _ _ _ _ _ I'.hf) (by simp [hl]))).isSeparatedFor.ext fun V iUV (hiUV : _ = _) ↦ ?_
+        simp [← Functor.map_comp, ← op_comp, hiUV]
+    refine ⟨(isPointwiseRightKanExtensionRanCounit G.op Y.1 (.op (G.obj U))).lift c, ?_⟩
+    · have := (isPointwiseRightKanExtensionRanCounit G.op Y.1 (.op (G.obj U))).fac c (.mk (𝟙 _))
+      simp only [id_obj, comp_obj, StructuredArrow.proj_obj, StructuredArrow.mk_right,
+        RightExtension.coneAt_pt, RightExtension.mk_left, RightExtension.coneAt_π_app,
+        const_obj_obj, op_obj, StructuredArrow.mk_hom_eq_self, map_id, whiskeringLeft_obj_obj,
+        RightExtension.mk_hom, Category.id_comp, StructuredArrow.mk_left, unop_id] at this
+      simp only [id_obj, yoneda_map_app, this]
+      apply Y.2.hom_ext ⟨_, IsDenseSubsite.hasLift_mem J K G (𝟙 (G.obj U))⟩ _ _ fun I ↦ ?_
+      apply (Y.2 X _ (IsDenseSubsite.equalizer_mem J K G (l _ _ _ _ _ I.hf)
+        I.f (by simp [hl]))).isSeparatedFor.ext fun V iUV (hiUV : _ = _) ↦ ?_
+      simp [← Functor.map_comp, ← op_comp, hiUV]
 
 instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.app Y) := by
-    haveI : IsIso ((sheafToPresheaf J A).map
-        ((G.sheafAdjunctionCocontinuous A J K).counit.app Y)) := by
-      dsimp
-      rw [sheafAdjunctionCocontinuous_counit_app_val]
-      infer_instance
-    apply ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
+  apply (config := { allowSynthFailures := true })
+  ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
+  apply (config := { allowSynthFailures := true }) NatIso.isIso_of_isIso_app
+  intro ⟨U⟩
+  apply (config := { allowSynthFailures := true }) ReflectsIsomorphisms.reflects yoneda
+  apply (config := { allowSynthFailures := true }) NatIso.isIso_of_isIso_app
+  intro ⟨X⟩
+  simp only [comp_obj, sheafToPresheaf_obj, sheafPushforwardContinuous_obj_val_obj, yoneda_obj_obj,
+    id_obj, sheafToPresheaf_map, sheafAdjunctionCocontinuous_counit_app_val, ranAdjunction_counit]
+  exact isIso_ranCounit_app_of_isDenseSubsite G J K Y U X
 
 variable (A)
 
