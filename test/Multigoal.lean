@@ -66,6 +66,22 @@ example (p : Prop) (hp : p) : (0 = 0 ∧ p) ∨ 0 = 0 := by
   rfl
   assumption
 
+#guard_msgs(drop warning) in
+set_option linter.multiGoal true in
+/--
+warning: 'rfl' leaves 2 goals 'Lean.Parser.Tactic.tacticRfl'
+note: this linter can be disabled with `set_option linter.multiGoal false`
+---
+warning: 'trivial' leaves 1 goal 'Lean.Parser.Tactic.tacticTrivial'
+note: this linter can be disabled with `set_option linter.multiGoal false`
+-/
+#guard_msgs in
+example : 0 = 0 ∧ 0 = 0 ∧ 0 = 0 := by
+  refine ⟨?_, ?_, ?_⟩
+  rfl
+  trivial
+  rfl
+
 example (p : Bool) : 0 = 0 := by
   cases p
   case' false => rfl
