@@ -202,7 +202,7 @@ instance (priority := 900) isReduced_of_isIntegral [IsIntegral X] : IsReduced X 
   · haveI : Nonempty U := by simpa
     infer_instance
 
-instance Scheme.component_nontrivial (X : Scheme.{u}) (U : Opens X) [Nonempty U] :
+instance Scheme.component_nontrivial (X : Scheme.{u}) (U : X.Opens) [Nonempty U] :
     Nontrivial Γ(X, U) :=
   LocallyRingedSpace.component_nontrivial (hU := ‹_›)
 
