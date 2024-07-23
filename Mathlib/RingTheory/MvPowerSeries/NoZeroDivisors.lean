@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
--- import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Data.Finsupp.WellFounded
 import Mathlib.RingTheory.MvPowerSeries.LexOrder
 
