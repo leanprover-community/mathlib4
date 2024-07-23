@@ -2089,18 +2089,23 @@ theorem disjoint_finset_sum_right {β : Type*} {i : Finset β} {f : β → Multi
     {a : Multiset α} : Multiset.Disjoint a (i.sum f) ↔ ∀ b ∈ i, Multiset.Disjoint a (f b) := by
   simpa only [disjoint_comm] using disjoint_finset_sum_left
 
+@[simp]
+lemma mem_sum {s : Finset ι} {m : ι → Multiset α} : a ∈ ∑ i ∈ s, m i ↔ ∃ i ∈ s, a ∈ m i := by
+  induction' s using Finset.cons_induction <;> simp [*]
+
 variable [DecidableEq α]
 
-@[simp]
 theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a in s.toFinset, s.count a = card s := by
   simpa using (Finset.sum_multiset_map_count s (fun _ => (1 : ℕ))).symm
 
-@[simp]
-theorem sum_count_eq [Fintype α] (s : Multiset α) : ∑ a, s.count a = Multiset.card s := by
+@[simp] lemma sum_count_eq_card {s : Finset α} {m : Multiset α} (hms : ∀ a ∈ m, a ∈ s) :
+    ∑ a ∈ s, m.count a = card m := by
   rw [← toFinset_sum_count_eq, ← Finset.sum_filter_ne_zero]
-  congr
-  ext
-  simp
+  congr with a
+  simpa using hms a
+
+@[deprecated sum_count_eq_card (since := "2024-07-21")]
+theorem sum_count_eq [Fintype α] (s : Multiset α) : ∑ a, s.count a = Multiset.card s := by simp
 
 theorem count_sum' {s : Finset β} {a : α} {f : β → Multiset α} :
     count a (∑ x ∈ s, f x) = ∑ x ∈ s, count a (f x) := by
