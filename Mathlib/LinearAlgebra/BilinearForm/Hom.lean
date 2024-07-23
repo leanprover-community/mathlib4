@@ -311,19 +311,9 @@ variable [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁] [Module R N�
 
 /-- When `N₁` and `N₂` are equivalent, bilinear maps on `M` into `N₁` are equivalent to bilinear
 maps into `N₂`. -/
-@[simps]
-def _root_.LinearMap.BilinMap.congr₂ (e : N₁ ≃ₗ[R] N₂) : BilinMap R M N₁ ≃ₗ[R] BilinMap R M N₂ where
-  toFun B := LinearMap.compr₂ B e
-  invFun B := LinearMap.compr₂ B e.symm
-  left_inv B := ext₂ fun x => by
-    simp only [compr₂_apply, LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply, implies_true]
-  right_inv B := ext₂ fun x => by
-    simp only [compr₂_apply, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply, implies_true]
-  map_add' B B' := ext₂ fun x y => by
-    simp only [compr₂_apply, LinearMap.add_apply, map_add, LinearEquiv.coe_coe]
-  map_smul' B B' := ext₂ fun x y => by
-    simp only [compr₂_apply, smul_apply, LinearMapClass.map_smul, LinearEquiv.coe_coe,
-      RingHom.id_apply]
+@[simps!]
+def _root_.LinearMap.BilinMap.congr₂ (e : N₁ ≃ₗ[R] N₂) : BilinMap R M N₁ ≃ₗ[R] BilinMap R M N₂ :=
+  LinearEquiv.congrRight (LinearEquiv.congrRight e)
 
 end congr
 
