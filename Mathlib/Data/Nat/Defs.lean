@@ -352,7 +352,7 @@ lemma one_lt_mul_iff : 1 < m * n ↔ 0 < m ∧ 0 < n ∧ (1 < m ∨ 1 < n) := by
 lemma eq_one_of_mul_eq_one_right (H : m * n = 1) : m = 1 := eq_one_of_dvd_one ⟨n, H.symm⟩
 
 lemma eq_one_of_mul_eq_one_left (H : m * n = 1) : n = 1 :=
-  eq_one_of_mul_eq_one_right (by rwa [Nat.mul_comm])
+  eq_one_of_mul_eq_one_right (n := m) (by rwa [Nat.mul_comm])
 
 @[simp] protected lemma lt_mul_iff_one_lt_left (hb : 0 < b) : b < a * b ↔ 1 < a := by
   simpa using Nat.mul_lt_mul_right (b := 1) hb

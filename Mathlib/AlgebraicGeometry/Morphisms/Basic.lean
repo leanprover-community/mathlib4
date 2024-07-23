@@ -582,6 +582,16 @@ theorem stableUnderBaseChange (hP' : Q.StableUnderBaseChange) :
       rw [← pullbackSymmetry_hom_comp_snd, Q.cancel_left_of_respectsIso]
       apply of_isPullback (.of_hasPullback _ _) H)
 
+lemma isLocalAtSource
+    (H : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine Y] (𝒰 : Scheme.OpenCover.{u} X),
+        Q f ↔ ∀ i, Q (𝒰.map i ≫ f)) : IsLocalAtSource P where
+  iff_of_openCover' {X Y} f 𝒰 := by
+    simp_rw [IsLocalAtTarget.iff_of_iSup_eq_top _ (iSup_affineOpens_eq_top Y)]
+    rw [forall_comm]
+    refine forall_congr' fun U ↦ ?_
+    simp_rw [HasAffineProperty.iff_of_isAffine, morphismRestrict_comp]
+    exact @H _ _ (f ∣_ U.1) U.2 (𝒰.restrict (f ⁻¹ᵁ U.1))
+
 end HasAffineProperty
 
 end targetAffineLocally
