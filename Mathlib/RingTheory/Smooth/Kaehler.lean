@@ -41,7 +41,7 @@ variable (g : S →ₐ[R] P) (hg : (IsScalarTower.toAlgHom R P S).comp g = AlgHo
 /--
 Given a surjective algebra homomorphism `f : P →ₐ[R] S` with square-zero kernel `I`,
 and a section `g : S →ₐ[R] P` (as an algebra homomorphism),
-we get a `R`-derivation `P → I` via `x ↦ x - g (f x)`.
+we get an `R`-derivation `P → I` via `x ↦ x - g (f x)`.
 -/
 @[simps]
 def derivationOfSectionOfKerSqZero (f : P →ₐ[R] S) (hf' : (RingHom.ker f) ^ 2 = ⊥) (g : S →ₐ[R] P)
@@ -105,7 +105,6 @@ lemma retractionOfSectionOfKerSqZero_tmul_D (s : S) (t : P) :
     LinearMap.liftBaseChange_tmul, SetLike.val_smul_of_tower]
   erw [Derivation.liftKaehlerDifferential_comp_D]
   exact mul_sub (g s) t (g (algebraMap P S t))
-
 
 lemma retractionOfSectionOfKerSqZero_comp_kerToTensor :
     (retractionOfSectionOfKerSqZero hf' g hg).comp (kerToTensor R P S) = LinearMap.id := by
@@ -187,7 +186,7 @@ end ofRetraction
 
 /--
 Given a surjective algebra homomorphism `f : P →ₐ[R] S` with square-zero kernel `I`,
-there is a one-to-one correspondance between `P`-linear retractions of `I →ₗ[P] S ⊗[P] Ω[P/R]`
+there is a one-to-one correspondence between `P`-linear retractions of `I →ₗ[P] S ⊗[P] Ω[P/R]`
 and algebra homomorphism sections of `f`.
 -/
 noncomputable
