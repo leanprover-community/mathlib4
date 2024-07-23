@@ -1,39 +1,29 @@
 /-
-Copyright (c) 2021 Andrew Yang. All rights reserved.
+Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
 
 /-!
-# Dense subsites
-
-We define `IsCoverDense` functors into sites as functors such that there exists a covering sieve
-that factors through images of the functor for each object in `D`.
+# Locally fully faithful functors into sites
 
 ## Main results
 
-- `CategoryTheory.Functor.IsCoverDense.Types.presheafHom`: If `G : C ⥤ (D, K)` is
-  and cover-dense, then given any presheaf `ℱ` and sheaf `ℱ'` on `D`,
-  and a morphism `α : G ⋙ ℱ ⟶ G ⋙ ℱ'`, we may glue them together to obtain
-  a morphism of presheaves `ℱ ⟶ ℱ'`.
-- `CategoryTheory.Functor.IsCoverDense.sheafIso`: If `ℱ` above is a sheaf and `α` is an iso,
-  then the result is also an iso.
-- `CategoryTheory.Functor.IsCoverDense.iso_of_restrict_iso`: If `G : C ⥤ (D, K)` is
-  and cover-dense, then given any sheaves `ℱ, ℱ'` on `D`, and a morphism `α : ℱ ⟶ ℱ'`,
-  then `α` is an iso if `G ⋙ ℱ ⟶ G ⋙ ℱ'` is iso.
-- `CategoryTheory.Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting`:
-  If `G : (C, J) ⥤ (D, K)` is faithful, cover-lifting, cover-preserving, and cover-dense,
-  then it will induce an equivalence of categories of sheaves valued in a complete category.
+- `CategoryTheory.Functor.IsLocallyFull`:
+  A functor `G : C ⥤ D` is locally full wrt a topology on `D` if for every `f : G.obj U ⟶ G.obj V`,
+  the set of `G.map fᵢ : G.obj Wᵢ ⟶ G.obj U` such that `G.map fᵢ ≫ f` is
+  in the image of `G` is a coverage of the topology on `D`.
+- `CategoryTheory.Functor.IsLocallyFaithful`:
+  A functor `G : C ⥤ D` is locally faithful wrt a topology on `D` if for every `f₁ f₂ : U ⟶ V` whose
+  image in `D` are equal, the set of `G.map gᵢ : G.obj Wᵢ ⟶ G.obj U` such that `gᵢ ≫ f₁ = gᵢ ≫ f₂`
+  is a coverage of the topology on `D`.
 
 ## References
 
-* [Elephant]: *Sketches of an Elephant*, ℱ. T. Johnstone: C2.2.
-* https://ncatlab.org/nlab/show/dense+sub-site
-* https://ncatlab.org/nlab/show/comparison+lemma
+* https://arxiv.org/pdf/1906.08737
 
 -/
-
 
 universe w v u
 
@@ -73,10 +63,20 @@ open Presieve Opposite
 
 namespace Functor
 
+/--
+A functor `G : C ⥤ D` is locally full wrt a topology on `D` if for every `f : G.obj U ⟶ G.obj V`,
+the set of `G.map fᵢ : G.obj Wᵢ ⟶ G.obj U` such that `G.map fᵢ ≫ f` is
+in the image of `G` is a coverage of the topology on `D`.
+-/
 class IsLocallyFull : Prop where
   functorPushforward_hasLift_mem : ∀ {U V} (f : G.obj U ⟶ G.obj V),
     (Sieve.hasLift G f).functorPushforward G ∈ K _
 
+/--
+A functor `G : C ⥤ D` is locally faithful wrt a topology on `D` if for every `f₁ f₂ : U ⟶ V` whose
+image in `D` are equal, the set of `G.map gᵢ : G.obj Wᵢ ⟶ G.obj U` such that `gᵢ ≫ f₁ = gᵢ ≫ f₂`
+is a coverage of the topology on `D`.
+-/
 class IsLocallyFaithful : Prop where
   functorPushforward_equalizer_mem : ∀ {U V : C} (f₁ f₂ : U ⟶ V), G.map f₁ = G.map f₂ →
     (Sieve.equalizer f₁ f₂).functorPushforward G ∈ K _

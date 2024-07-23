@@ -82,11 +82,11 @@ variable (G : C ⥤ D)
 
 variable [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
 
-open Functor.IsCoverDense
+open Functor.IsDenseSubsite
 
 noncomputable example :
     let e : Sheaf J A ≌ Sheaf K A :=
-      sheafEquivOfCoverPreservingCoverLifting G J K A
+      sheafEquiv G J K A
     e.inverse ⋙ (sheafSections J A).obj (op t) ≅ (sheafSections K A).obj (op (G.obj t)) :=
   Iso.refl _
 
@@ -99,10 +99,10 @@ property of a sheaf of being a discrete object is invariant under equivalence of
 -/
 noncomputable def equivCommuteConstant :
     let e : Sheaf J A ≌ Sheaf K A :=
-      sheafEquivOfCoverPreservingCoverLifting G J K A
+      sheafEquiv G J K A
     constantSheaf J A ⋙ e.functor ≅ constantSheaf K A :=
   let e : Sheaf J A ≌ Sheaf K A :=
-      sheafEquivOfCoverPreservingCoverLifting G J K A
+      sheafEquiv G J K A
   (Adjunction.leftAdjointUniq ((constantSheafAdj J A ht).comp e.toAdjunction)
     (constantSheafAdj K A ht'))
 
@@ -115,10 +115,10 @@ property of a sheaf of being a discrete object is invariant under equivalence of
 -/
 noncomputable def equivCommuteConstant' :
     let e : Sheaf J A ≌ Sheaf K A :=
-      sheafEquivOfCoverPreservingCoverLifting G J K A
+      sheafEquiv G J K A
     constantSheaf J A ≅ constantSheaf K A ⋙ e.inverse :=
   let e : Sheaf J A ≌ Sheaf K A :=
-      sheafEquivOfCoverPreservingCoverLifting G J K A
+      sheafEquiv G J K A
   isoWhiskerLeft (constantSheaf J A) e.unitIso ≪≫
     isoWhiskerRight (equivCommuteConstant J A ht K G ht') e.inverse
 
@@ -128,7 +128,7 @@ categories.
 -/
 lemma isDiscrete_iff_of_equivalence (F : Sheaf K A) :
     let e : Sheaf J A ≌ Sheaf K A :=
-      sheafEquivOfCoverPreservingCoverLifting G J K A
+      sheafEquiv G J K A
     haveI : (constantSheaf K A).Faithful :=
       Functor.Faithful.of_iso (equivCommuteConstant J A ht K G ht')
     haveI : (constantSheaf K A).Full :=

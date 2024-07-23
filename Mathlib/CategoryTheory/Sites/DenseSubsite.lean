@@ -15,25 +15,23 @@ import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
 We define `IsCoverDense` functors into sites as functors such that there exists a covering sieve
 that factors through images of the functor for each object in `D`.
 
-We will primarily consider cover-dense functors that are also full, since this notion is in general
-not well-behaved otherwise. Note that https://ncatlab.org/nlab/show/dense+sub-site indeed has a
-weaker notion of cover-dense that loosens this requirement, but it would not have all the properties
-we would need, and some sheafification would be needed for here and there.
-
 ## Main results
 
-- `CategoryTheory.Functor.IsCoverDense.Types.presheafHom`: If `G : C ⥤ (D, K)` is full
+- `CategoryTheory.Functor.IsCoverDense.Types.presheafHom`: If `G : C ⥤ (D, K)` is locally-full
   and cover-dense, then given any presheaf `ℱ` and sheaf `ℱ'` on `D`,
   and a morphism `α : G ⋙ ℱ ⟶ G ⋙ ℱ'`, we may glue them together to obtain
   a morphism of presheaves `ℱ ⟶ ℱ'`.
 - `CategoryTheory.Functor.IsCoverDense.sheafIso`: If `ℱ` above is a sheaf and `α` is an iso,
   then the result is also an iso.
-- `CategoryTheory.Functor.IsCoverDense.iso_of_restrict_iso`: If `G : C ⥤ (D, K)` is full
+- `CategoryTheory.Functor.IsCoverDense.iso_of_restrict_iso`: If `G : C ⥤ (D, K)` is locally-full
   and cover-dense, then given any sheaves `ℱ, ℱ'` on `D`, and a morphism `α : ℱ ⟶ ℱ'`,
   then `α` is an iso if `G ⋙ ℱ ⟶ G ⋙ ℱ'` is iso.
-- `CategoryTheory.Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting`:
-  If `G : (C, J) ⥤ (D, K)` is fully-faithful, cover-lifting, cover-preserving, and cover-dense,
-  then it will induce an equivalence of categories of sheaves valued in a complete category.
+- `CategoryTheory.Functor.IsDenseSubsite`:
+  The functor `G : C ⥤ D` exhibits `(C, J)` as a dense subsite of `(D, K)` if `G` is cover-dense,
+  locally fully-faithful, and `S` is a cover of `C` iff the image of `S` in `D` is a cover.
+- `CategoryTheory.Functor.IsDenseSubsite.sheafEquiv`:
+  If `G : C ⥤ D` exhibits `(C, J)` as a dense subsite of `(D, K)`,
+  it induces an equivalence of category of sheaves valued in a category with suitable limits.
 
 ## References
 
@@ -194,9 +192,6 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
 /-- (Implementation). The `pushforwardFamily` defined is compatible. -/
 theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     (pushforwardFamily α x).Compatible := by
-  have {X Y} (i : X ⟶ Y) (x) :
-      ℱ'.1.map (G.map i).op (α.app _ x) = α.app _ (ℱ.map (G.map i).op x) := by
-    exact congr_fun (α.naturality i.op).symm x
   suffices ∀ {Z W₁ W₂} (iWX₁ : G.obj W₁ ⟶ X) (iWX₂ : G.obj W₂ ⟶ X) (iZW₁ : Z ⟶ G.obj W₁)
       (iZW₂ : Z ⟶ G.obj W₂), iZW₁ ≫ iWX₁ = iZW₂ ≫ iWX₂ →
       ℱ'.1.map iZW₁.op (α.app _ (ℱ.map iWX₁.op x)) = ℱ'.1.map iZW₂.op (α.app _ (ℱ.map iWX₂.op x)) by
@@ -257,8 +252,10 @@ noncomputable def appIso {ℱ ℱ' : SheafOfTypes.{v} K} (i : G.op ⋙ ℱ.val �
     intro Y f
     simp
 
-/-- Given a natural transformation `G ⋙ ℱ ⟶ G ⋙ ℱ'` between presheaves of types, where `G` is
-full and cover-dense, and `ℱ'` is a sheaf, we may obtain a natural transformation between sheaves.
+/--
+Given a natural transformation `G ⋙ ℱ ⟶ G ⋙ ℱ'` between presheaves of types,
+where `G` is locally-full and cover-dense, and `ℱ'` is a sheaf,
+we may obtain a natural transformation between sheaves.
 -/
 @[simps]
 noncomputable def presheafHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) : ℱ ⟶ ℱ'.val where
@@ -270,16 +267,20 @@ noncomputable def presheafHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) : ℱ �
     simp only [appHom_restrict, types_comp_apply, ← FunctorToTypes.map_comp_apply]
     -- Porting note: Lean 3 proof continued with a rewrite but we're done here
 
-/-- Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of types, where `G` is full
-and cover-dense, and `ℱ, ℱ'` are sheaves, we may obtain a natural isomorphism between presheaves.
+/--
+Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of types,
+where `G` is locally-full and cover-dense, and `ℱ, ℱ'` are sheaves,
+we may obtain a natural isomorphism between presheaves.
 -/
 @[simps!]
 noncomputable def presheafIso {ℱ ℱ' : SheafOfTypes.{v} K} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val) :
     ℱ.val ≅ ℱ'.val :=
   NatIso.ofComponents (fun X => appIso i (unop X)) @(presheafHom i.hom).naturality
 
-/-- Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of types, where `G` is full
-and cover-dense, and `ℱ, ℱ'` are sheaves, we may obtain a natural isomorphism between sheaves.
+/--
+Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of types,
+where `G` is locally-full and cover-dense, and `ℱ, ℱ'` are sheaves,
+we may obtain a natural isomorphism between sheaves.
 -/
 @[simps]
 noncomputable def sheafIso {ℱ ℱ' : SheafOfTypes.{v} K} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val) :
@@ -338,17 +339,19 @@ noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
     ext X x
     exact congr_fun (((sheafCoyonedaHom α).app X).naturality i) x
 
-/-- Given a natural transformation `G ⋙ ℱ ⟶ G ⋙ ℱ'` between presheaves of arbitrary category,
-where `G` is full and cover-dense, and `ℱ'` is a sheaf, we may obtain a natural transformation
-between presheaves.
+/--
+Given a natural transformation `G ⋙ ℱ ⟶ G ⋙ ℱ'` between presheaves of arbitrary category,
+where `G` is locally-full and cover-dense, and `ℱ'` is a sheaf, we may obtain a natural
+transformation between presheaves.
 -/
 noncomputable def sheafHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) : ℱ ⟶ ℱ'.val :=
   let α' := sheafYonedaHom α
   { app := fun X => yoneda.preimage (α'.app X)
     naturality := fun X Y f => yoneda.map_injective (by simpa using α'.naturality f) }
 
-/-- Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of arbitrary category,
-where `G` is full and cover-dense, and `ℱ', ℱ` are sheaves,
+/--
+Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of arbitrary category,
+where `G` is locally-full and cover-dense, and `ℱ', ℱ` are sheaves,
 we may obtain a natural isomorphism between presheaves.
 -/
 @[simps!]
@@ -370,8 +373,9 @@ noncomputable def presheafIso {ℱ ℱ' : Sheaf K A} (i : G.op ⋙ ℱ.val ≅ G
   haveI : IsIso (sheafHom i.hom) := by apply NatIso.isIso_of_isIso_app
   apply asIso (sheafHom i.hom)
 
-/-- Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of arbitrary category,
-where `G` is full and cover-dense, and `ℱ', ℱ` are sheaves,
+/--
+Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of arbitrary category,
+where `G` is locally-full and cover-dense, and `ℱ', ℱ` are sheaves,
 we may obtain a natural isomorphism between presheaves.
 -/
 @[simps]
@@ -385,8 +389,7 @@ noncomputable def sheafIso {ℱ ℱ' : Sheaf K A} (i : G.op ⋙ ℱ.val ≅ G.op
     ext1
     apply (presheafIso i).inv_hom_id
 
-/-- The constructed `sheafHom α` is equal to `α` when restricted onto `C`.
--/
+/-- The constructed `sheafHom α` is equal to `α` when restricted onto `C`. -/
 theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
     whiskerLeft G.op (sheafHom α) = α := by
   ext X
@@ -412,7 +415,8 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
 
 variable (G)
 
-/-- If the pullback map is obtained via whiskering,
+/--
+If the pullback map is obtained via whiskering,
 then the result `sheaf_hom (whisker_left G.op α)` is equal to `α`.
 -/
 theorem sheafHom_eq (α : ℱ ⟶ ℱ'.val) : sheafHom (whiskerLeft G.op α) = α := by
@@ -434,7 +438,8 @@ theorem sheafHom_eq (α : ℱ ⟶ ℱ'.val) : sheafHom (whiskerLeft G.op α) = �
 
 variable {G}
 
-/-- A full and cover-dense functor `G` induces an equivalence between morphisms into a sheaf and
+/--
+A locally-full and cover-dense functor `G` induces an equivalence between morphisms into a sheaf and
 morphisms over the restrictions via `G`.
 -/
 noncomputable def restrictHomEquivHom : (G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) ≃ (ℱ ⟶ ℱ'.val) where
@@ -443,8 +448,8 @@ noncomputable def restrictHomEquivHom : (G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) ≃
   left_inv := sheafHom_restrict_eq
   right_inv := sheafHom_eq _
 
-/-- Given a full and cover-dense functor `G` and a natural transformation of sheaves `α : ℱ ⟶ ℱ'`,
-if the pullback of `α` along `G` is iso, then `α` is also iso.
+/-- Given a locally-full and cover-dense functor `G` and a natural transformation of sheaves
+`α : ℱ ⟶ ℱ'`, if the pullback of `α` along `G` is iso, then `α` is also iso.
 -/
 theorem iso_of_restrict_iso {ℱ ℱ' : Sheaf K A} (α : ℱ ⟶ ℱ') (i : IsIso (whiskerLeft G.op α.val)) :
     IsIso α := by
@@ -454,7 +459,7 @@ theorem iso_of_restrict_iso {ℱ ℱ' : Sheaf K A} (α : ℱ ⟶ ℱ') (i : IsIs
 
 variable (G K)
 
-/-- A fully faithful cover-dense functor preserves compatible families. -/
+/-- A locally-fully-faithful and cover-dense functor preserves compatible families. -/
 lemma compatiblePreserving [G.IsLocallyFaithful K] : CompatiblePreserving K G := by
   constructor
   intro ℱ Z T x hx Y₁ Y₂ X f₁ f₂ g₁ g₂ hg₁ hg₂ eq
@@ -558,7 +563,7 @@ end Functor
 
 end CategoryTheory
 
-namespace CategoryTheory.Functor.IsCoverDense
+namespace CategoryTheory.Functor.IsDenseSubsite
 
 open CategoryTheory Opposite
 
@@ -642,21 +647,30 @@ instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.a
 
 variable (A)
 
-/-- Given a functor between small sites that is cover-dense, cover-preserving, and cover-lifting,
-it induces an equivalence of category of sheaves valued in a complete category.
+/--
+If `G : C ⥤ D` exhibits `(C, J)` as a dense subsite of `(D, K)`,
+it induces an equivalence of category of sheaves valued in a category with suitable limits.
 -/
 @[simps! functor inverse]
-noncomputable def sheafEquivOfCoverPreservingCoverLifting : Sheaf J A ≌ Sheaf K A :=
+noncomputable def sheafEquiv : Sheaf J A ≌ Sheaf K A :=
   (G.sheafAdjunctionCocontinuous A J K).toEquivalence.symm
 
 variable [HasWeakSheafify J A] [HasWeakSheafify K A]
 
 /-- The natural isomorphism exhibiting the compatibility of
-`sheafEquivOfCoverPreservingCoverLifting` with sheafification. -/
+`IsDenseSubsite.sheafEquiv` with sheafification. -/
 noncomputable
-abbrev sheafEquivOfCoverPreservingCoverLiftingSheafificationCompatibility :
+abbrev sheafEquivSheafificationCompatibility :
     (whiskeringLeft _ _ A).obj G.op ⋙ presheafToSheaf _ _ ≅
-      presheafToSheaf _ _ ⋙ (sheafEquivOfCoverPreservingCoverLifting G J K A).inverse := by
+      presheafToSheaf _ _ ⋙ (sheafEquiv G J K A).inverse := by
   apply Functor.pushforwardContinuousSheafificationCompatibility
 
-end CategoryTheory.Functor.IsCoverDense
+end IsDenseSubsite
+
+@[deprecated (since := "2024-07-23")]
+alias IsCoverDense.sheafEquivOfCoverPreservingCoverLifting := IsDenseSubsite.sheafEquiv
+@[deprecated (since := "2024-07-23")]
+alias IsCoverDense.sheafEquivOfCoverPreservingCoverLiftingSheafificationCompatibility :=
+  IsDenseSubsite.sheafEquivSheafificationCompatibility
+
+end CategoryTheory.Functor
