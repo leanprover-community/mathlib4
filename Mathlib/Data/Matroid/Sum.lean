@@ -257,7 +257,7 @@ section disjointSum
 variable {α : Type*} {M N : Matroid α}
 
 /-- The sum of two matroids on `α` with disjoint ground sets, as a `Matroid α`. -/
-@[simps!] def disjointSum (M N : Matroid α) (h : Disjoint M.E N.E) : Matroid α :=
+def disjointSum (M N : Matroid α) (h : Disjoint M.E N.E) : Matroid α :=
   ((M.restrictSubtype M.E).sum (N.restrictSubtype N.E)).mapEmbedding <| Function.Embedding.sumSet h
 
 @[simp] lemma disjointSum_ground_eq {h} : (M.disjointSum N h).E = M.E ∪ N.E := by
