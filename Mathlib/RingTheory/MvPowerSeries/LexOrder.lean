@@ -30,7 +30,7 @@ variable [LinearOrder σ] [WellFoundedGT σ]
 noncomputable def lexOrder (φ : MvPowerSeries σ R) : (WithTop (Lex (σ →₀ ℕ))) := by
   classical
   exact if h : φ = 0 then ⊤ else by
-    have ne : Set.Nonempty (toLex '' φ.support)  := by
+    have ne : Set.Nonempty (toLex '' φ.support) := by
       simp only [Set.image_nonempty, Function.support_nonempty_iff, ne_eq, h, not_false_eq_true]
     apply WithTop.some
     apply WellFounded.min _ (toLex '' φ.support) ne
