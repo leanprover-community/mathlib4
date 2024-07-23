@@ -157,7 +157,7 @@ lemma cfc_eq (f : ℝ → ℝ) : cfc f A = hA.cfc f := by
   have := cfcHom_eq_of_continuous_of_map_id hA' hA.cfcAux hA.closedEmbedding_cfcAux.continuous
     hA.cfcAux_id
   rw [cfc_apply f A hA' (by rw [continuousOn_iff_continuous_restrict]; fun_prop), this]
-  rfl
+  simp only [cfcAux_apply, ContinuousMap.coe_mk, Function.comp, Set.restrict_apply, IsHermitian.cfc]
 
 end IsHermitian
 end Matrix
