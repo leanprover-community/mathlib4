@@ -3,6 +3,7 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Algebra.BigOperators.Nat.Finset
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.SetTheory.Cardinal.Finite
@@ -171,12 +172,13 @@ instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v 
   c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) $ by simp)
     (fun _ _ _ _ ↦ Subsingleton.elim _ _)
 
-lemma exists_odd_component_of_odd_card
-    (ho : Odd (Fintype.card V)) : ∃ (c : ConnectedComponent G), Odd (Nat.card c.supp) := by
+lemma odd_card_odd_components (ho : Odd (Fintype.card V)) :
+    Odd (Nat.card ({(c : ConnectedComponent G) | Odd (Nat.card c.supp)})) := by
   simp_rw [Nat.odd_iff_not_even]
   by_contra! hc
+  simp_rw [← Nat.odd_iff_not_even] at hc
   rw [
-    ← (set_fintype_card_eq_univ_iff _).mpr ((@ConnectedComponent.univ_eq_union_supp _ G).symm),
+    ← (set_fintype_card_eq_univ_iff _).mpr (@ConnectedComponent.iUnion_supp _ G),
     ← Set.toFinset_card, Nat.odd_iff_not_even] at ho
   apply ho
   have : Set.toFinset (⋃ (x : ConnectedComponent G), ConnectedComponent.supp x) =
@@ -186,13 +188,16 @@ lemma exists_odd_component_of_odd_card
     simp only [Set.mem_toFinset, Set.mem_iUnion, ConnectedComponent.mem_supp_iff, exists_eq',
       Finset.mem_biUnion, Finset.mem_univ, true_and, true_iff]
   rw [this, Finset.card_biUnion (fun x _ y _ hxy ↦
-    Set.disjoint_toFinset.mpr (ConnectedComponent.supp_disjoint hxy))]
+    Set.disjoint_toFinset.mpr (ConnectedComponent.pairwise_disjoint_supp hxy))]
+
   simp only [Set.toFinset_card]
-  exact Finset.even_sum _ fun c _ => (by
-    have := hc c
-    rw [@Nat.card_eq_fintype_card] at this
-    exact this
-    )
+  simp_rw [Fintype.card_eq_nat_card]
+  have : Even ((Finset.subtype
+      (fun (c : ConnectedComponent G) ↦ Odd (Nat.card c.supp)) Finset.univ).card) := by
+    simp only [Finset.subtype_univ, Finset.card_univ, Nat.card_eq_fintype_card]
+    simp only [Nat.card_eq_fintype_card] at hc
+    exact hc
+  exact Finset.even_sum_of_even_card_odd _ this
 
 end Finite
 

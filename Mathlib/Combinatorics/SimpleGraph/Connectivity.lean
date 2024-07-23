@@ -2070,7 +2070,8 @@ lemma iUnion_supp : ⋃ c : G.ConnectedComponent, c.supp = Set.univ := by
   simp only [Set.mem_range, SetLike.mem_coe]
   exact ⟨by use G.connectedComponentMk v; exact rfl, rfl⟩
 
-lemma pairwise_disjoint_supp : Pairwise fun (c c': ConnectedComponent G) ↦ Disjoint c.supp c'.supp := by
+lemma pairwise_disjoint_supp :
+    Pairwise fun (c c': ConnectedComponent G) ↦ Disjoint c.supp c'.supp := by
   intro _ _ h s hsx hsy
   simp only [Set.toFinset_card, Finset.mem_univ, ne_eq, Set.le_eq_subset,
     Set.bot_eq_empty, Set.subset_empty_iff, Set.eq_empty_iff_forall_not_mem] at *
