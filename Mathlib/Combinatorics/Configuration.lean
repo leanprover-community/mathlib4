@@ -6,6 +6,11 @@ Authors: Thomas Browning
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Matrix.Basic
+import Mathlib.LinearAlgebra.CrossProduct
+import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.LinearAlgebra.Projectivization.Basic
 import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
@@ -461,6 +466,106 @@ theorem card_points [Fintype P] [Finite L] : Fintype.card P = order P L ^ 2 + or
 
 theorem card_lines [Finite P] [Fintype L] : Fintype.card L = order P L ^ 2 + order P L + 1 :=
   (card_points (Dual L) (Dual P)).trans (congr_arg (fun n => n ^ 2 + n + 1) (Dual.order P L))
+
+namespace ofField
+
+open scoped LinearAlgebra.Projectivization
+
+open Matrix
+
+variable {K : Type*} [Field K] {m : Type*} [Fintype m]
+
+def orthogonal : ℙ K (m → K) → ℙ K (m → K) → Prop :=
+  Quotient.lift₂ (fun v w ↦ dotProduct v.1 w.1 = 0) (fun _ _ _ _ ⟨_, h1⟩ ⟨_, h2⟩ ↦ by
+    simp_rw [← h1, ← h2, dotProduct_smul, smul_dotProduct, smul_smul, smul_eq_zero_iff_eq])
+
+def orthogonal_mk (v w : m → K) (hv : v ≠ 0) (hw : w ≠ 0) :
+    orthogonal (Projectivization.mk K v hv) (Projectivization.mk K w hw) ↔ dotProduct v w = 0 :=
+  Iff.rfl
+
+#check crossProduct
+
+lemma orthogonal_comm (v w : ℙ K (m → K)) : orthogonal v w ↔ orthogonal w v := by
+  induction' v with v hv
+  induction' w with w hw
+  rw [orthogonal_mk, orthogonal_mk, dotProduct_comm]
+
+instance : Membership (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
+  ⟨orthogonal⟩
+
+lemma mem_iff (v w : ℙ K (Fin 3 → K)) : v ∈ w ↔ orthogonal v w :=
+  Iff.rfl
+
+instance : Nondegenerate (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
+  { exists_point := by
+      sorry
+    exists_line := by
+      sorry
+    eq_or_eq := by
+      intro p₁ p₂ l₁ l₂ h₁₁ h₂₁ h₁₂ h₂₂
+      induction' p₁ with p₁ hp₁
+      induction' p₂ with p₂ hp₂
+      induction' l₁ with l₁ hl₁
+      induction' l₂ with l₂ hl₂
+      rw [mem_iff, orthogonal_mk] at h₁₁ h₂₁ h₁₂ h₂₂
+      sorry
+       }
+
+instance : HasPoints (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
+  { mkPoint := by
+      intro v w h
+      refine' Projectivization.mk K (crossProduct v.rep w.rep) ?_
+    mkPoint_ax := sorry }
+
+instance : HasLines (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) := sorry
+
+instance : ProjectivePlane (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) := sorry
+
+end ofField
+
+-- namespace ofField
+
+-- def points (k : Type*) [Field k] :=
+--   {M : Submodule k (Fin 3 → k) | FiniteDimensional.finrank k M = 1}
+
+-- def lines (k : Type*) [Field k] :=
+--   {M : Submodule k (Fin 3 → k) | FiniteDimensional.finrank k M = 2}
+
+-- instance (k : Type*) [Field k] : Membership (points k) (lines k) :=
+--   ⟨fun p l ↦ p.1 ≤ l.1⟩
+
+-- instance (k : Type*) [Field k] : Nondegenerate (points k) (lines k) :=
+--   { exists_point := by
+--       intro l
+--       have key : l.1 ≠ ⊤ := by
+--         intro h
+--         have key := h ▸ l.2
+--         rw [lines, Set.mem_setOf_eq, finrank_top, FiniteDimensional.finrank_fin_fun] at key
+--         norm_num at key
+--       rw [Ne, eq_top_iff, SetLike.not_le_iff_exists] at key
+--       obtain ⟨x, -, hx⟩ := key
+--       refine ⟨⟨Submodule.span k {x}, ?_⟩, fun h ↦ hx (h (Submodule.mem_span_singleton_self x))⟩
+--       change FiniteDimensional.finrank k (Submodule.span k {x}) = 1
+--       apply finrank_span_singleton
+--       contrapose! hx
+--       rw [hx]
+--       exact Submodule.zero_mem l.1
+--     exists_line := by
+--       intro p
+--     eq_or_eq := sorry }
+
+-- instance (k : Type*) [Field k] : HasPoints (points k) (lines k) :=
+--   { mkPoint := sorry
+--     mkPoint_ax := sorry }
+
+-- instance (k : Type*) [Field k] : HasLines (points k) (lines k) :=
+--   { mkLine := sorry
+--     mkLine_ax := sorry }
+
+-- instance (k : Type*) [Field k] : ProjectivePlane (points k) (lines k) :=
+--   { exists_config := sorry }
+
+-- end ofField
 
 end ProjectivePlane
 
