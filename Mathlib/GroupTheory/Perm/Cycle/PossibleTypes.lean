@@ -51,8 +51,7 @@ theorem Equiv.Perm.exists_with_cycleType_iff {m : Multiset ℕ} :
       intro x hx; simp only [Function.comp_apply]
       rw [supportCard_compute]
       have H : x.formPerm.support = ↑x.toFinset := by
-        refine' List.support_formPerm_of_nodup x (hp_nodup x hx) _
-        intro a h
+        refine List.support_formPerm_of_nodup x (hp_nodup x hx) (fun a h => ?_)
         apply Nat.not_succ_le_self 1
         conv_rhs => rw [← List.length_singleton a]; rw [← h]
         exact hp2 x hx

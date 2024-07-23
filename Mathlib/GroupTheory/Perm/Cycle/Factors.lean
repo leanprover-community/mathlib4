@@ -262,7 +262,7 @@ theorem SameCycle.exists_pow_eq_of_mem_support {f} [DecidableEq α] [Fintype α]
     (hx : x ∈ f.support) : ∃ i < (f.cycleOf x).supportCard, (f ^ i) x = y := by
   rw [mem_support] at hx
   rw [supportCard_compute]
-  refine' Equiv.Perm.IsCycleOn.exists_pow_eq (b := y) (s := (f.cycleOf x).support.toFinset) _ _ _
+  refine Equiv.Perm.IsCycleOn.exists_pow_eq ?_ ?_ ?_
   · simp only [Set.coe_toFinset]
     exact f.isCycleOn_support_cycleOf x
   · simp only [Set.mem_toFinset]

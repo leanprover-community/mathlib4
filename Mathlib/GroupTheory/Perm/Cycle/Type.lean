@@ -323,7 +323,7 @@ theorem exists_fixed_point_of_prime {p n : ℕ} [hp : Fact p.Prime] (hα : ¬p �
   classical
     contrapose! hα
     simp_rw [← mem_support, ← Set.eq_univ_iff_forall] at hα
-    refine' Nat.modEq_zero_iff_dvd.1 ((congr_arg _ (Finset.card_eq_zero.2 _)).mp
+    refine Nat.modEq_zero_iff_dvd.1 ((congr_arg _ (Finset.card_eq_zero.2 ?_)).mp
       (card_compl_support_modEq hσ).symm)
     rw [Finset.compl_eq_empty_iff, Set.toFinset_eq_univ]
     exact hα
