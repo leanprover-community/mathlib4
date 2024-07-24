@@ -782,8 +782,8 @@ instance : DistribLattice (Filter α) :=
         ⟨t₁, x.sets_of_superset hs inter_subset_left, ht₁, t₂,
           x.sets_of_superset hs inter_subset_right, ht₂, rfl⟩ }
 
--- The dual version does not hold! `Filter α` is not a `CompleteDistribLattice`. -/
-instance : Coframe (Filter α) :=
+/-- The dual version does not hold! `Filter α` is not a `CompleteDistribLattice`. -/
+def coframeMinimalAxioms : Coframe.MinimalAxioms (Filter α) :=
   { Filter.instCompleteLatticeFilter with
     iInf_sup_le_sup_sInf := fun f s t ⟨h₁, h₂⟩ => by
       rw [iInf_subtype']
@@ -795,6 +795,8 @@ instance : Coframe (Filter α) :=
       rintro ⟨i⟩ u _ ih
       rw [Finset.inf_insert, sup_inf_left]
       exact le_inf (iInf_le _ _) ih }
+
+instance instCoframe : Coframe (Filter α) := .ofMinimalAxioms coframeMinimalAxioms
 
 theorem mem_iInf_finset {s : Finset α} {f : α → Filter β} {t : Set β} :
     (t ∈ ⨅ a ∈ s, f a) ↔ ∃ p : α → Set β, (∀ a ∈ s, p a ∈ f a) ∧ t = ⋂ a ∈ s, p a := by

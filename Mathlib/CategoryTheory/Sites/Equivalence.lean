@@ -60,8 +60,6 @@ instance (priority := 900) [G.IsEquivalence] : IsCoverDense G J where
     replace := Sieve.downward_closed _ this (e.unit.app Y)
     simpa [g] using this
 
-theorem locallyCoverDense : e.inverse.LocallyCoverDense J := inferInstance
-
 instance : e.functor.IsDenseSubsite J (e.inverse.inducedTopology J) := by
   have : J = e.functor.inducedTopology (e.inverse.inducedTopology J) := by
     ext X S
