@@ -86,3 +86,18 @@ note: this linter can be disabled with `set_option linter.cdot false`
 #guard_msgs in
 set_option linter.cdot true in
 example : Add Nat where add := (. + ·)
+
+set_option linter.longLine false
+/--
+warning: This line exceeds the 100 character limit, please shorten it!
+note: this linter can be disabled with `set_option linter.longLine false`
+-/
+#guard_msgs in
+set_option linter.longLine true in
+/-!                                                                                                -/
+
+set_option linter.longLine false
+#guard_msgs in
+-- lines with more than 100 characters containing `http` are allowed
+set_option linter.longLine true in
+/-!  http                                                                                          -/

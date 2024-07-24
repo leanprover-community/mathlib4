@@ -218,4 +218,34 @@ initialize addLinter cdotLinter
 
 end CDotLinter
 
+/-- The "longLine" linter emits a warning on lines longer than 100 characters. -/
+register_option linter.longLine : Bool := {
+  defValue := true
+  descr := "enable the longLine linter"
+}
+
+namespace LongLine
+
+/-- Gets the value of the `linter.longLine` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.longLine o
+
+@[inherit_doc Mathlib.Linter.linter.longLine]
+def longLineLinter : Linter where
+  run := withSetOptionIn fun stx => do
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    let sstr := stx.getSubstring?
+    let longLines := ((sstr.getD default).splitOn "\n").filter
+      (100 < ·.toString.length)
+    for line in longLines do
+      if (line.splitOn "http").length == 1 then
+        Linter.logLint linter.longLine (.ofRange ⟨line.startPos, line.stopPos⟩)
+          m!"This line exceeds the 100 character limit, please shorten it!"
+
+initialize addLinter longLineLinter
+
+end LongLine
+
 end Mathlib.Linter
