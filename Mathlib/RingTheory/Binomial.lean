@@ -406,15 +406,9 @@ theorem choose_zero_pos (R) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] [Binomi
 
 theorem choose_zero_ite (R) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] [BinomialRing R]
     (k : ℕ) : choose (0 : R) k = if k = 0 then 1 else 0 := by
-  rw [eq_ite_iff]
-  by_cases hk: k = 0
-  constructor
-  · rw [hk, choose_zero_right, ← Prod.mk.inj_iff]
-  · right
-    constructor
-    · exact hk
-    · rw [← @Nat.le_zero, Nat.not_le] at hk
-      rw [choose_zero_pos R hk]
+  split_ifs with hk
+  · rw [hk, choose_zero_right]
+  · rw [choose_zero_pos R <| Nat.pos_of_ne_zero hk]
 
 @[simp]
 theorem choose_one_right' (r : R) : choose r 1 = r ^ 1 := by
@@ -429,13 +423,13 @@ theorem descPochhammer_succ_succ_smeval {R} [NonAssocRing R] [Pow R ℕ] [NatPow
   nth_rw 1 [descPochhammer_succ_left]
   rw [descPochhammer_succ_right, mul_comm (descPochhammer ℤ k)]
   simp only [smeval_comp ℤ _ _ (r + 1), smeval_sub, smeval_add, smeval_mul, smeval_X, smeval_one,
-  npow_one, npow_zero, one_smul, add_sub_cancel_right, sub_mul, add_mul, add_smul, one_mul]
+    npow_one, npow_zero, one_smul, add_sub_cancel_right, sub_mul, add_mul, add_smul, one_mul]
   rw [← C_eq_natCast, smeval_C, npow_zero, add_comm (k • smeval (descPochhammer ℤ k) r) _,
     add_assoc, add_comm (k • smeval (descPochhammer ℤ k) r) _, ← add_assoc,  ← add_sub_assoc,
     nsmul_eq_mul, zsmul_one, Int.cast_natCast, sub_add_cancel, add_comm]
 
 theorem choose_succ_succ [NatPowAssoc R] (r : R) (k : ℕ) :
-    choose (r+1) (k + 1) = choose r k + choose r (k + 1) := by
+    choose (r + 1) (k + 1) = choose r k + choose r (k + 1) := by
   refine nsmul_right_injective (Nat.factorial (k + 1)) (Nat.factorial_ne_zero (k + 1)) ?_
   simp only [smul_add, ← descPochhammer_eq_factorial_smul_choose]
   rw [Nat.factorial_succ, mul_smul,

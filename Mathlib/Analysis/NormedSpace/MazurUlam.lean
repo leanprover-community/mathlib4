@@ -62,7 +62,7 @@ theorem midpoint_fixed {x y : PE} :
   -- Note that `f` doubles the value of `dist (e z) z`
   have hf_dist : ∀ e, dist (f e z) z = 2 * dist (e z) z := by
     intro e
-    dsimp [f, R]
+    dsimp only [trans_apply, coe_toIsometryEquiv, f, R]
     rw [dist_pointReflection_fixed, ← e.dist_eq, e.apply_symm_apply,
       dist_pointReflection_self_real, dist_comm]
   -- Also note that `f` maps `s` to itself

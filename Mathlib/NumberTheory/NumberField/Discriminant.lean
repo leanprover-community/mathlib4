@@ -205,7 +205,7 @@ theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
     rw [_root_.le_div_iff (by positivity), ← _root_.div_le_iff' (by positivity), one_mul]
     linarith [Real.pi_gt_three]
   have h₂ : (9 : ℝ) < π ^ 2 := by
-    rw [ ← Real.sqrt_lt (by positivity) (by positivity), show Real.sqrt (9 : ℝ) = 3 from
+    rw [← Real.sqrt_lt (by positivity) (by positivity), show Real.sqrt (9 : ℝ) = 3 from
     (Real.sqrt_eq_iff_sq_eq (by positivity) (by positivity)).mpr (by norm_num)]
     exact Real.pi_gt_three
   refine Int.cast_lt.mp <| lt_of_lt_of_le ?_ (abs_discr_ge h)

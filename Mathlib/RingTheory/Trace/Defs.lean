@@ -109,10 +109,10 @@ theorem trace_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*}
   haveI := Classical.decEq κ
   cases nonempty_fintype ι
   cases nonempty_fintype κ
-  rw [trace_eq_matrix_trace (b.smul c), trace_eq_matrix_trace b, trace_eq_matrix_trace c,
+  rw [trace_eq_matrix_trace (b.smulTower c), trace_eq_matrix_trace b, trace_eq_matrix_trace c,
     Matrix.trace, Matrix.trace, Matrix.trace, ← Finset.univ_product_univ, Finset.sum_product]
   refine Finset.sum_congr rfl fun i _ ↦ ?_
-  simp only [map_sum, smul_leftMulMatrix, Finset.sum_apply, Matrix.diag,
+  simp only [map_sum, smulTower_leftMulMatrix, Finset.sum_apply, Matrix.diag,
     Finset.sum_apply i (Finset.univ : Finset κ) fun y => leftMulMatrix b (leftMulMatrix c x y y)]
 
 theorem trace_comp_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*} [Finite ι]
