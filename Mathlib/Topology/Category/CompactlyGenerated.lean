@@ -243,20 +243,20 @@ theorem continuous_compSequence {X : Type*} [TopologicalSpace X]
       exact hN _ (by simpa using hy : N < y).le
   exact isOpen_top_not_mem _ htop
 
-instance {X : Type u} [TopologicalSpace X] [SequentialSpace X] : CompactlyGeneratedSpace.{u} X := by
-  rw [compactlyGeneratedSpace_iff]
-  refine fun s ↦ ⟨fun hs _ _ _ _ f hf ↦ hs.preimage hf,
-    fun h ↦ SequentialSpace.isClosed_of_seq _ fun u p hu hup ↦ ?_⟩
+instance {X : Type*} [TopologicalSpace X] [SequentialSpace X] : CompactlyGeneratedSpace X := by
+  refine compactlyGeneratedSpace_of_continuous_maps fun f h ↦
+    continuous_iff_isClosed.2 fun s hs ↦ SequentialSpace.isClosed_of_seq _ fun u p hu hup ↦ ?_
   let _ : TopologicalSpace ENat := Preorder.topology ENat
   have : OrderTopology ENat := OrderTopology.mk rfl
-  let g : ULift.{u} ENat → X := (compSequence u p) ∘ ULift.down
-  have hg : Continuous g := (continuous_compSequence u p hup).comp continuous_uLift_down
-  change ⊤ ∈ g ⁻¹' s
+  let g : C(ULift.{u_2} ENat, X) :=
+    { toFun := (compSequence u p) ∘ ULift.down,
+      continuous_toFun := (continuous_compSequence u p hup).comp continuous_uLift_down }
+  change ⊤ ∈ (f ∘ g) ⁻¹' s
   apply IsClosed.mem_of_tendsto _ ((continuous_uLift_up.tendsto ⊤).comp ENat.tendsto_coe_atTop)
   · simp only [Set.mem_preimage, Filter.eventually_atTop, ge_iff_le]
     exact ⟨0, fun b _ ↦ hu b⟩
-  · have : CompactSpace (ULift.{u} ENat) := ULift.closedEmbedding_down.compactSpace
-    exact h g hg
+  · have : CompactSpace (ULift.{u_2} ENat) := ULift.closedEmbedding_down.compactSpace
+    exact hs.preimage <| h (CompHaus.of (ULift.{u_2} ENat)) g
 
 theorem IsClosed.isClosedMap_subtype_val {X : Type*} [TopologicalSpace X]
     {s : Set X} (hs : IsClosed s) : IsClosedMap (@Subtype.val X s) :=
