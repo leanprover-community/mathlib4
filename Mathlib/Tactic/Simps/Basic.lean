@@ -474,21 +474,30 @@ def findProjectionIndices (strName projName : Name) : MetaM (List Nat) := do
   let allProjs := pathToField ++ [fullProjName]
   return allProjs.map (env.getProjectionFnInfo? · |>.get!.i)
 
-/-- We do not consider `toFoo` to be a prefix to `toFoo_1`, as the latter is often
-a different field with an auto-generated name. -/
+/--
+A variant of `Substring.dropPrefix?` that does not consider `toFoo` to be a prefix to `toFoo_1`.
+This is checked by inspecting whether the first character of the remaining part is a digit.
+
+We use this variant because the latter is often a different field with an auto-generated name.
+-/
 private def dropPrefixIfNotNumber? (s : String) (pre : Substring) : Option Substring := do
   let ret ← Substring.dropPrefix? s pre
-  ret.toString.data.head?.elim ret
-    (fun x ↦ if 48 ≤ x.val ∧ x.val < 58 then none else return ret)
+  -- flag is true when the remaning part is nonempty and starts with a digit.
+  let flag := ret.toString.data.head?.elim false Char.isDigit
+  if flag then none else some ret
 
+/-- A variant of `String.isPrefixOf` that does not consider `toFoo` to be a prefix to `toFoo_1`. -/
 private def isPrefixOfAndNotNumber (s p : String) : Bool := (dropPrefixIfNotNumber? p s).isSome
 
+/-- A variant of `String.splitOn` that does not split `toFoo_1` into `toFoo` and `1`. -/
 private def splitOnNotNumber (s delim : String) : List String :=
   (process (s.splitOn delim).reverse "").reverse where
     process (arr : List String) (tail : String) := match arr with
       | [] => []
       | (x :: xs) =>
-        if (x.data.head?.elim false (fun x ↦ 48 ≤ x.val ∧ x.val < 58)) then
+        -- flag is true when this segment is nonempty and starts with a digit.
+        let flag := x.data.head?.elim false Char.isDigit
+        if flag then
           process xs (tail ++ delim ++ x)
         else
           List.cons (x ++ tail) (process xs "")
