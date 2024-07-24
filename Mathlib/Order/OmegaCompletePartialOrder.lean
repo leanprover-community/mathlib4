@@ -905,7 +905,7 @@ open Function
 
 /-- Iteration of a function on an initial element interpreted as a chain. -/
 def iterateChain (f : α →o α) (x : α) (h : x ≤ f x) : Chain α :=
-  ⟨fun n => f^[n] x, Monotone.monotone_iterate_of_le_map f.monotone h⟩
+  ⟨fun n => f^[n] x, f.monotone.monotone_iterate_of_le_map  h⟩
 
 variable (f : α →𝒄 α) (x : α)
 
@@ -923,17 +923,12 @@ theorem ωSup_repeat_mem_fixedPoint (h : x ≤ f x) :
     rw [← this]
     apply le_ωSup
   · apply ωSup_le
-    intro n
-    cases n
-    case a.a.zero =>
-      apply le_trans h
+    rintro (_ | n)
+    · apply le_trans h
       have : f x = ((iterateChain f x h).map f) 0 := rfl
       rw [this]
       apply le_ωSup
-    case a.a.succ n =>
-      have : iterateChain f x h (n.succ) = (iterateChain f x h).map f n := by {
-        apply Function.iterate_succ_apply'
-      }
+    · have : iterateChain f x h (n.succ) = (iterateChain f x h).map f n := Function.iterate_succ_apply' ..
       rw [this]
       apply le_ωSup
 
