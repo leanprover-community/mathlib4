@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Lean.Linter.Deprecated
+import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Init.ZeroOne
-import Mathlib.Tactic.TypeStar
-
 /-!
 # Binary representation of integers using inductive types
 
