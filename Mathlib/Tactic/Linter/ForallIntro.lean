@@ -89,25 +89,34 @@ def recombineBinders
   -- one at a time.  We will have to only move them as long as it makes sense, coordinating
   -- with the `intros` as well: this is just a test
   let first := foralls.getD 0 default
-  --dbg_trace first
+  dbg_trace first
   (haveIds.push ⟨first.raw⟩, foralls.erase first, body, value)
 
-def allStxCore : Syntax → CommandElabM (Option Syntax)
-  | `(tactic| have $id:haveId $bi1* : ∀ $bi2*, $body := $t) => do
+def allStxCore (cmd : Syntax) : Syntax → CommandElabM (Option (Syntax × Syntax))
+  | stx@`(tactic| have $id:haveId $bi1* : ∀ $bi2*, $body := $t) => do
     dbg_trace "bi1: '{bi1}'\nbi2: '{bi2}'\n"
     let (bi1', bi2', body', t') := recombineBinders bi1 bi2 body t
     --let ident := mkIdent `hyp
-    let new := ←
+    let newHave := ←
       if bi2'.isEmpty then `(tactic| have $id:haveId $[$bi1']* : $body' := $t')
       else `(tactic| have $id:haveId $[$bi1']* : ∀ $[$bi2']*, $body' := $t')
-    return some new
+    let newCmd ← cmd.replaceM fun s => do if s == stx then return some newHave else return none
+    logInfo m!"command: {cmd}\nstx: {stx}\nnewCmd: {newCmd}\n"
+    let s ← modifyGet fun st => (st, { st with messages := {} })
+    elabCommandTopLevel newCmd
+    let msgs ← modifyGet (·.messages, s)
+    if msgs.hasErrors then
+      logInfo m!"{← (msgs.unreported.filter (·.severity matches .error)).toArray.mapM (·.toString)}"
+      return none
+    else
+      return some (newCmd, newHave)
   | _ => return none
 
 partial
-def allStx (stx : Syntax) : CommandElabM Syntax := do
-  match ← allStxCore stx with
+def allStx (cmd stx : Syntax) : CommandElabM Syntax := do
+  match ← allStxCore cmd stx with
     | none => return stx
-    | some stx => allStx stx
+    | some (cmd, stx) => allStx cmd stx
 
 elab "fh " cmd:command : command => do
   elabCommand cmd
@@ -115,30 +124,52 @@ elab "fh " cmd:command : command => do
   for stx in haves do
 --  if let some stx := cmd.raw.find? (·.isOfKind ``Lean.Parser.Tactic.tacticHave_) then
     dbg_trace "found have"
-    let newHave ← allStx stx
+    let newHave ← allStx cmd stx
     --logInfo newHave
     let newCmd ← cmd.raw.replaceM fun s => do if s == stx then return some newHave else return none
-    logInfo newCmd
-    -- to make sure that we are not only producing correct `Syntax`, but actually working code,
-    -- I tried elaborating the command obtained by replacing each `have` separately with its
-    -- new form
-    elabCommand newCmd
-    logInfo "elaborated!"
+    logInfo m!"Elaborating '{newCmd}'"
 
 -- and the test is successful!
 fh
 --inspect
 example : True := by
-  have (_ : Nat) x y : x + y = 0 := by intros; sorry
-  have (_ : Nat) : ∀ x y, x + y = 0 := by intros; sorry --rfl
+  have (_ : Nat) : ∀ x y, x + y = 0 := by intros; sorry
   trivial
 
 fh
 --inspect
 example : True := by
-  have (_ : Nat) : ∀ _, ‹_› = 0 := by
+  have : ∀ (n : Nat), n = n := by
+    intro s
+    rfl
+  trivial
+
+fh
+--inspect
+example : True := by
+  have :  ∀ (k : Nat), ∀ _, ‹_› = k := by
     intros
-    sorry --rfl
+    sorry
+  trivial
+
+example : True :=
+  by
+  have (k : Nat) _ : ‹_› = k := by
+    intros
+    sorry
+  trivial
+
+example : True := by
+  have _ : ‹_› = 0 := by
+    intros
+    sorry
+  trivial
+
+example {n : Nat} : True :=
+  by
+  have {_} : ‹_› = 0 := by
+    intro x
+    sorry
   trivial
 
 example : True :=
@@ -146,7 +177,7 @@ example : True :=
   have (_ : Nat) _ : ‹_› = 0 := by
     intros
     sorry
-      --rfl
+    --rfl
   trivial
 
 
