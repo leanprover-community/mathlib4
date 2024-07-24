@@ -431,7 +431,7 @@ theorem coe_toHomeomorph_symm (h : α ≃ᵢ β) : ⇑h.toHomeomorph.symm = h.sy
 @[simp]
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] (h : α ≃ᵢ β) {f : γ → α} {s : Set γ} :
     ContinuousOn (h ∘ f) s ↔ ContinuousOn f s :=
-  h.toHomeomorph.comp_continuousOn_iff _ _
+  h.toHomeomorph.comp_continuousOn_iff
 
 @[simp]
 theorem comp_continuous_iff {γ} [TopologicalSpace γ] (h : α ≃ᵢ β) {f : γ → α} :

@@ -802,7 +802,7 @@ should really be considered the same partial equivalence. -/
 def EqOnSource (e e' : PartialHomeomorph X Y) : Prop :=
   e.source = e'.source ∧ EqOn e e' e.source
 
-theorem eqOnSource_iff {e e' : PartialHomeomorph X Y} :
+theorem eqOnSource_iff (e e' : PartialHomeomorph X Y) :
     EqOnSource e e' ↔ PartialEquiv.EqOnSource e.toPartialEquiv e'.toPartialEquiv :=
   Iff.rfl
 
