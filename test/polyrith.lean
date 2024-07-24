@@ -5,7 +5,6 @@ Authors: Dhruv Bhatia, Robert Y. Lewis, Mario Carneiro
 -/
 import Mathlib.Tactic.Polyrith
 
-
 /-!
 
 Each call to `polyrith` makes a call to the SageCell web API at
