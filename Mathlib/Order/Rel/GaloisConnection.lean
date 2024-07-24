@@ -33,8 +33,6 @@ We define `R.leftFixedPoints` (resp. `R.rightFixedPoints`) as the set of fixed p
 relation, Galois connection, induced bijection, fixed points
 -/
 
-section
-
 universe u v
 
 variable {α : Type u} {β : Type v} (R : Rel α β)
@@ -102,5 +100,3 @@ theorem leftDual_rightDual_le_of_le {I I' : Set β} (h : I' ∈ R.rightFixedPoin
   exact h₁
 
 end Rel
-
-end
