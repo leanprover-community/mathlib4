@@ -35,11 +35,9 @@ instance : GCDMonoid ℕ where
 
 theorem gcd_eq_nat_gcd (m n : ℕ) : gcd m n = Nat.gcd m n :=
   rfl
-#align gcd_eq_nat_gcd gcd_eq_nat_gcd
 
 theorem lcm_eq_nat_lcm (m n : ℕ) : lcm m n = Nat.lcm m n :=
   rfl
-#align lcm_eq_nat_lcm lcm_eq_nat_lcm
 
 instance : NormalizedGCDMonoid ℕ :=
   { (inferInstance : GCDMonoid ℕ),
@@ -66,35 +64,28 @@ theorem normUnit_eq (z : ℤ) : normUnit z = if 0 ≤ z then 1 else -1 := rfl
 
 theorem normalize_of_nonneg {z : ℤ} (h : 0 ≤ z) : normalize z = z := by
   rw [normalize_apply, normUnit_eq, if_pos h, Units.val_one, mul_one]
-#align int.normalize_of_nonneg Int.normalize_of_nonneg
 
 theorem normalize_of_nonpos {z : ℤ} (h : z ≤ 0) : normalize z = -z := by
   obtain rfl | h := h.eq_or_lt
   · simp
   · rw [normalize_apply, normUnit_eq, if_neg (not_le_of_gt h), Units.val_neg, Units.val_one,
       mul_neg_one]
-#align int.normalize_of_nonpos Int.normalize_of_nonpos
 
 theorem normalize_coe_nat (n : ℕ) : normalize (n : ℤ) = n :=
   normalize_of_nonneg (ofNat_le_ofNat_of_le <| Nat.zero_le n)
-#align int.normalize_coe_nat Int.normalize_coe_nat
 
 theorem abs_eq_normalize (z : ℤ) : |z| = normalize z := by
   cases le_total 0 z <;> simp [-normalize_apply, normalize_of_nonneg, normalize_of_nonpos, *]
-#align int.abs_eq_normalize Int.abs_eq_normalize
 
 theorem nonneg_of_normalize_eq_self {z : ℤ} (hz : normalize z = z) : 0 ≤ z :=
   abs_eq_self.1 <| by rw [abs_eq_normalize, hz]
-#align int.nonneg_of_normalize_eq_self Int.nonneg_of_normalize_eq_self
 
 theorem nonneg_iff_normalize_eq_self (z : ℤ) : normalize z = z ↔ 0 ≤ z :=
   ⟨nonneg_of_normalize_eq_self, normalize_of_nonneg⟩
-#align int.nonneg_iff_normalize_eq_self Int.nonneg_iff_normalize_eq_self
 
 theorem eq_of_associated_of_nonneg {a b : ℤ} (h : Associated a b) (ha : 0 ≤ a) (hb : 0 ≤ b) :
     a = b :=
   dvd_antisymm_of_normalize_eq (normalize_of_nonneg ha) (normalize_of_nonneg hb) h.dvd h.symm.dvd
-#align int.eq_of_associated_of_nonneg Int.eq_of_associated_of_nonneg
 
 end NormalizationMonoid
 
@@ -120,19 +111,15 @@ instance : NormalizedGCDMonoid ℤ :=
 
 theorem coe_gcd (i j : ℤ) : ↑(Int.gcd i j) = GCDMonoid.gcd i j :=
   rfl
-#align int.coe_gcd Int.coe_gcd
 
 theorem coe_lcm (i j : ℤ) : ↑(Int.lcm i j) = GCDMonoid.lcm i j :=
   rfl
-#align int.coe_lcm Int.coe_lcm
 
 theorem natAbs_gcd (i j : ℤ) : natAbs (GCDMonoid.gcd i j) = Int.gcd i j :=
   rfl
-#align int.nat_abs_gcd Int.natAbs_gcd
 
 theorem natAbs_lcm (i j : ℤ) : natAbs (GCDMonoid.lcm i j) = Int.lcm i j :=
   rfl
-#align int.nat_abs_lcm Int.natAbs_lcm
 
 end GCDMonoid
 
@@ -143,11 +130,9 @@ theorem exists_unit_of_abs (a : ℤ) : ∃ (u : ℤ) (_ : IsUnit u), (Int.natAbs
   · use -1, isUnit_one.neg
     rw [← neg_eq_iff_eq_neg.mpr h]
     simp only [neg_mul, one_mul]
-#align int.exists_unit_of_abs Int.exists_unit_of_abs
 
 theorem gcd_eq_natAbs {a b : ℤ} : Int.gcd a b = Nat.gcd a.natAbs b.natAbs :=
   rfl
-#align int.gcd_eq_nat_abs Int.gcd_eq_natAbs
 end Int
 
 /-- Maps an associate class of integers consisting of `-n, n` to `n : ℕ` -/
@@ -158,19 +143,15 @@ def associatesIntEquivNat : Associates ℤ ≃ ℕ := by
     simp [Int.abs_eq_normalize]
   · dsimp only [Associates.out_mk]
     rw [← Int.abs_eq_normalize, Int.natAbs_abs, Int.natAbs_ofNat]
-#align associates_int_equiv_nat associatesIntEquivNat
 
 theorem Int.associated_natAbs (k : ℤ) : Associated k k.natAbs :=
   associated_of_dvd_dvd (Int.dvd_natCast.mpr dvd_rfl) (Int.natAbs_dvd.mpr dvd_rfl)
-#align int.associated_nat_abs Int.associated_natAbs
 
 theorem Int.associated_iff_natAbs {a b : ℤ} : Associated a b ↔ a.natAbs = b.natAbs := by
   rw [← dvd_dvd_iff_associated, ← Int.natAbs_dvd_natAbs, ← Int.natAbs_dvd_natAbs,
     dvd_dvd_iff_associated]
   exact associated_iff_eq
-#align int.associated_iff_nat_abs Int.associated_iff_natAbs
 
 theorem Int.associated_iff {a b : ℤ} : Associated a b ↔ a = b ∨ a = -b := by
   rw [Int.associated_iff_natAbs]
   exact Int.natAbs_eq_natAbs_iff
-#align int.associated_iff Int.associated_iff
