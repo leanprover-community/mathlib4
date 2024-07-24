@@ -110,7 +110,6 @@ def mk (s : Finset ι) : (∀ i : (↑s : Set ι), β i.1) →+ ⨁ i, β i wher
 /-- `of i` is the natural inclusion map from `β i` to `⨁ i, β i`. -/
 def of (i : ι) : β i →+ ⨁ i, β i :=
   DFinsupp.singleAddHom β i
-#align direct_sum.of DirectSum.of
 
 variable {β}
 
@@ -356,7 +355,6 @@ theorem coe_of_apply {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S
   obtain rfl | h := Decidable.eq_or_ne i j
   · rw [DirectSum.of_eq_same, if_pos rfl]
   · rw [DirectSum.of_eq_of_ne _ _ _ h, if_neg h, ZeroMemClass.coe_zero, ZeroMemClass.coe_zero]
-#align direct_sum.coe_of_apply DirectSum.coe_of_apply
 
 /-- The `DirectSum` formed by a collection of additive submonoids (or subgroups, or submodules) of
 `M` is said to be internal if the canonical map `(⨁ i, A i) →+ M` is bijective.
@@ -372,6 +370,5 @@ theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddCom
     (A : ι → AddSubmonoid M) (h : IsInternal A) : iSup A = ⊤ := by
   rw [AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_top_iff_surjective]
   exact Function.Bijective.surjective h
-#align direct_sum.is_internal.add_submonoid_supr_eq_top DirectSum.IsInternal.addSubmonoid_iSup_eq_top
 
 end DirectSum
