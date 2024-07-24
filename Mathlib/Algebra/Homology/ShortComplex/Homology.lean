@@ -839,7 +839,7 @@ noncomputable def homologyι : S.homology ⟶ S.opcycles :=
   S.rightHomologyIso.inv ≫ S.rightHomologyι
 
 @[reassoc (attr := simp)]
-lemma homologyπ_comp_leftHomologyIso_inv:
+lemma homologyπ_comp_leftHomologyIso_inv :
     S.homologyπ ≫ S.leftHomologyIso.inv = S.leftHomologyπ := by
   dsimp only [homologyπ]
   simp only [assoc, Iso.hom_inv_id, comp_id]

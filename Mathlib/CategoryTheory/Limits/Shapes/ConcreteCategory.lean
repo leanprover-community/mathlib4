@@ -206,13 +206,13 @@ lemma pullbackMk_surjective (x : (forget C).obj (pullback f₁ f₂)) :
 
 @[simp]
 lemma pullbackMk_fst (x₁ : X₁) (x₂ : X₂) (h : f₁ x₁ = f₂ x₂) :
-    @pullback.fst _ _ _ _ _ f₁ f₂ _ (pullbackMk f₁ f₂ x₁ x₂ h) = x₁ :=
+    pullback.fst f₁ f₂ (pullbackMk f₁ f₂ x₁ x₂ h) = x₁ :=
   (congr_fun (PreservesPullback.iso_inv_fst (forget C) f₁ f₂) _).trans
     (congr_fun (Types.pullbackIsoPullback_inv_fst ((forget C).map f₁) ((forget C).map f₂)) _)
 
 @[simp]
 lemma pullbackMk_snd (x₁ : X₁) (x₂ : X₂) (h : f₁ x₁ = f₂ x₂) :
-    @pullback.snd _ _ _ _ _ f₁ f₂ _ (pullbackMk f₁ f₂ x₁ x₂ h) = x₂ :=
+    pullback.snd f₁ f₂ (pullbackMk f₁ f₂ x₁ x₂ h) = x₂ :=
   (congr_fun (PreservesPullback.iso_inv_snd (forget C) f₁ f₂) _).trans
     (congr_fun (Types.pullbackIsoPullback_inv_snd ((forget C).map f₁) ((forget C).map f₂)) _)
 
@@ -234,7 +234,6 @@ theorem widePullback_ext {B : C} {ι : Type w} {X : ι → C} (f : ∀ j : ι, X
   rintro (_ | j)
   · exact h₀
   · apply h
-#align category_theory.limits.concrete.wide_pullback_ext CategoryTheory.Limits.Concrete.widePullback_ext
 
 theorem widePullback_ext' {B : C} {ι : Type w} [Nonempty ι] {X : ι → C}
     (f : ∀ j : ι, X j ⟶ B) [HasWidePullback.{w} B X f]
@@ -243,7 +242,6 @@ theorem widePullback_ext' {B : C} {ι : Type w} [Nonempty ι] {X : ι → C}
   apply Concrete.widePullback_ext _ _ _ _ h
   inhabit ι
   simp only [← π_arrow f default, comp_apply, h]
-#align category_theory.limits.concrete.wide_pullback_ext' CategoryTheory.Limits.Concrete.widePullback_ext'
 
 end WidePullback
 
@@ -259,7 +257,6 @@ theorem multiequalizer_ext {I : MulticospanIndex.{w} C} [HasMultiequalizer I]
   · apply h
   · rw [← limit.w I.multicospan (WalkingMulticospan.Hom.fst b), comp_apply, comp_apply]
     simp [h]
-#align category_theory.limits.concrete.multiequalizer_ext CategoryTheory.Limits.Concrete.multiequalizer_ext
 
 /-- An auxiliary equivalence to be used in `multiequalizerEquiv` below. -/
 def multiequalizerEquivAux (I : MulticospanIndex C) :
@@ -292,7 +289,6 @@ def multiequalizerEquivAux (I : MulticospanIndex C) :
     intro x
     ext i
     rfl
-#align category_theory.limits.concrete.multiequalizer_equiv_aux CategoryTheory.Limits.Concrete.multiequalizerEquivAux
 
 /-- The equivalence between the noncomputable multiequalizer and
 the concrete multiequalizer. -/
@@ -304,14 +300,12 @@ noncomputable def multiequalizerEquiv (I : MulticospanIndex.{w} C) [HasMultiequa
   letI h2 := isLimitOfPreserves (forget C) h1
   letI E := h2.conePointUniqueUpToIso (Types.limitConeIsLimit.{w, v} _)
   Equiv.trans E.toEquiv (Concrete.multiequalizerEquivAux.{w, v} I)
-#align category_theory.limits.concrete.multiequalizer_equiv CategoryTheory.Limits.Concrete.multiequalizerEquiv
 
 @[simp]
 theorem multiequalizerEquiv_apply (I : MulticospanIndex.{w} C) [HasMultiequalizer I]
     [PreservesLimit I.multicospan (forget C)] (x : ↑(multiequalizer I)) (i : I.L) :
     ((Concrete.multiequalizerEquiv I) x : ∀ i : I.L, I.left i) i = Multiequalizer.ι I i x :=
   rfl
-#align category_theory.limits.concrete.multiequalizer_equiv_apply CategoryTheory.Limits.Concrete.multiequalizerEquiv_apply
 
 end Multiequalizer
 
@@ -333,7 +327,6 @@ theorem widePushout_exists_rep {B : C} {α : Type _} {X : α → C} (f : ∀ j :
   · right
     use j, y
     rfl
-#align category_theory.limits.concrete.wide_pushout_exists_rep CategoryTheory.Limits.Concrete.widePushout_exists_rep
 
 theorem widePushout_exists_rep' {B : C} {α : Type _} [Nonempty α] {X : α → C}
     (f : ∀ j : α, B ⟶ X j) [HasWidePushout.{v} B X f] [PreservesColimit (wideSpan B X f) (forget C)]
@@ -343,7 +336,6 @@ theorem widePushout_exists_rep' {B : C} {α : Type _} [Nonempty α] {X : α → 
     use default, f _ y
     simp only [← arrow_ι _ default, comp_apply]
   · use i, y
-#align category_theory.limits.concrete.wide_pushout_exists_rep' CategoryTheory.Limits.Concrete.widePushout_exists_rep'
 
 end WidePushout
 
@@ -353,7 +345,6 @@ theorem cokernel_funext {C : Type*} [Category C] [HasZeroMorphisms C] [ConcreteC
     (w : ∀ n : N, g (cokernel.π f n) = h (cokernel.π f n)) : g = h := by
   ext x
   simpa using w x
-#align category_theory.limits.cokernel_funext CategoryTheory.Limits.Concrete.cokernel_funext
 
 -- TODO: Add analogous lemmas about coproducts and coequalizers.
 
