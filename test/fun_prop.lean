@@ -61,8 +61,8 @@ or
 ```
 Measurable.fst : Measurable f → Measurable fun x => Prod.fst (f x)
 ```
-Tactic `fun_prop` can work with both versions and it should be sufficient to provide just one of
-them.
+The tactic `fun_prop` can work with both versions;
+it should be sufficient to provide just one of them.
 It does not hurt to provide both of them though.
 -/
 
