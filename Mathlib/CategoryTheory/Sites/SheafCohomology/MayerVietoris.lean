@@ -122,7 +122,7 @@ lemma biprod_inl_comp_biprodIso_inv_apply {X₁ X₂ Y : C} (n : ℕ)
   exact congr_fun ((forget _).congr_map (biprodIso_hom_fst X₁ X₂ Y n).symm) y
 
 lemma biprod_inr_comp_biprodIso_inv_apply {X₁ X₂ Y : C} (n : ℕ)
-      (x : ((AddCommGrp.of (Ext X₁ Y n) ⊞ AddCommGrp.of (Ext X₂ Y n)) : AddCommGrp)) :
+    (x : ((AddCommGrp.of (Ext X₁ Y n) ⊞ AddCommGrp.of (Ext X₂ Y n)) : AddCommGrp)) :
     (mk₀ biprod.inr).comp ((biprodIso X₁ X₂ Y n).inv x) (zero_add n) =
       (biprod.snd : AddCommGrp.of (Ext X₁ Y n) ⊞ AddCommGrp.of (Ext X₂ Y n) ⟶ _) x := by
   obtain ⟨y, rfl⟩ : ∃ y, x = (biprodIso X₁ X₂ Y n).hom y :=
