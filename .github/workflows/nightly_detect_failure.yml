@@ -202,13 +202,17 @@ jobs:
             payload = f"🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing, and then PR that to {bump_branch}. "
             payload += "To do so semi-automatically, run the following script from mathlib root:\n\n"
             payload += f"```bash\n./scripts/create-adaptation-pr.sh {bump_branch_suffix} {current_version}\n```\n"
-            if not messages or messages[0]['content'] != payload:
+            # Only post if the message is different
+            # We compare the first 160 characters, since that includes the date and bump version
+            if not messages or messages[0]['content'][:160] != payload[:160]:
                 # Log messages, because the bot seems to repeat itself...
                 if messages:
                     print("###### Last message:")
                     print(messages[0]['content'])
                     print("###### Current message:")
                     print(payload)
+                else:
+                    print('The strings match!')
                 # Post the reminder message
                 request = {
                     'type': 'stream',
