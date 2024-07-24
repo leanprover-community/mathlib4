@@ -403,7 +403,7 @@ private theorem norm_unitOf (a : α) : ‖unitOf a‖₊ = 1 := by
 
 set_option tactic.skipAssignedInstances false in
 private theorem mul_unitOf (a : α) : a * unitOf a = algebraMap _ _ (‖a‖₊ : ℝ)  := by
-  simp [unitOf]
+  simp only [unitOf, coe_nnnorm]
   split_ifs with h
   · simp [h]
   · rw [mul_smul_comm, mul_inv_cancel h, Algebra.algebraMap_eq_smul_one]
