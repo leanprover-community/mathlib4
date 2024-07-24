@@ -40,7 +40,7 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
 
   have splits_p : ∀ j, ((p j).map (algebraMap ℤ K)).Splits (RingHom.id K) := by
     intro j
-    refine' splits_of_splits_of_dvd _ P0'' _ _
+    refine splits_of_splits_of_dvd _ P0'' ?_ ?_
     · rw [IsScalarTower.algebraMap_eq ℤ ℚ K, ← Polynomial.map_map, splits_map_iff, RingHom.id_comp]
       exact IsSplittingField.splits _ _
     simp_rw [P, Polynomial.map_prod]
@@ -175,17 +175,17 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
         congr; funext; congr 1
         exact sum_aroots_K_eq_sum_aroots_ℂ _ (fun x ↦ q • aeval x gp - n • exp x)
       _ ≤ ‖k ^ t‖ * ∑ j, W * (((p j).aroots ℂ).map fun _ => c ^ q / ↑(q - 1)!).sum := by
-        refine' (norm_zsmul_le _ _).trans _
-        refine' mul_le_mul_of_nonneg_left _ (norm_nonneg _)
-        refine' (norm_sum_le _ _).trans _
-        refine' sum_le_sum fun j _hj => _
-        refine' (norm_zsmul_le _ _).trans _
-        refine' mul_le_mul (le_sup' (‖w' ·‖) (mem_univ j)) _ (norm_nonneg _) W0
-        refine' (norm_multiset_sum_le _).trans _
+        refine (norm_zsmul_le _ _).trans ?_
+        refine mul_le_mul_of_nonneg_left ?_ (norm_nonneg _)
+        refine (norm_sum_le _ _).trans ?_
+        refine sum_le_sum fun j _hj => ?_
+        refine (norm_zsmul_le _ _).trans ?_
+        refine mul_le_mul (le_sup' (‖w' ·‖) (mem_univ j)) ?_ (norm_nonneg _) W0
+        refine (norm_multiset_sum_le _).trans ?_
         rw [Multiset.map_map]
-        refine' Multiset.sum_map_le_sum_map _ _ fun x hx => _
+        refine Multiset.sum_map_le_sum_map _ _ fun x hx => ?_
         rw [Function.comp_apply, norm_sub_rev]
-        refine' hc _
+        refine hc ?_
         rw [mem_roots_map_of_injective (algebraMap ℤ ℂ).injective_int (p0' j)] at hx
         rw [mem_roots_map_of_injective (algebraMap ℤ ℂ).injective_int P0', ← aeval_def]
         rw [map_prod]
@@ -220,18 +220,13 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
         fun h => hn ((Int.dvd_iff_emod_eq_zero _ _).mp (Int.natCast_dvd.mpr h))⟩,
       Nat.not_dvd_of_pos_of_lt (Int.natAbs_pos.mpr w0)
         (((le_max_right _ _).trans (le_max_right _ _)).trans_lt hqN)⟩
-#align linear_independent_exp linear_independent_exp
 
 theorem Complex.isIntegral_int_i : IsIntegral ℤ I := by
-  refine' ⟨X ^ 2 + C 1, monic_X_pow_add_C _ two_ne_zero, _⟩
+  refine ⟨X ^ 2 + C 1, monic_X_pow_add_C _ two_ne_zero, ?_⟩
   rw [eval₂_add, eval₂_X_pow, eval₂_C, I_sq, eq_intCast, Int.cast_one, add_left_neg]
-set_option linter.uppercaseLean3 false in
-#align complex.is_integral_int_I Complex.isIntegral_int_i
 
 theorem Complex.isIntegral_rat_i : IsIntegral ℚ I :=
   Complex.isIntegral_int_i.tower_top
-set_option linter.uppercaseLean3 false in
-#align complex.is_integral_rat_I Complex.isIntegral_rat_i
 
 theorem transcendental_exp {a : ℂ} (a0 : a ≠ 0) (ha : IsAlgebraic ℤ a) :
     Transcendental ℤ (exp a) := by
@@ -250,7 +245,6 @@ theorem transcendental_exp {a : ℂ} (a0 : a ≠ 0) (ha : IsAlgebraic ℤ a) :
       simp only [IsEmpty.forall_iff, forall_true_left, a0, a0.symm, *]
   · intro i; dsimp; split_ifs; exacts [isIntegral_one, is_integral_expa.neg]
   simp
-#align transcendental_exp transcendental_exp
 
 theorem transcendental_e : Transcendental ℤ (exp 1) :=
   transcendental_exp one_ne_zero isAlgebraic_one
@@ -274,4 +268,3 @@ theorem transcendental_pi : Transcendental ℤ Real.pi := by
         Real.pi_ne_zero, I_ne_zero, or_false, zero_eq_mul]
   · intro i; dsimp; exact isIntegral_one
   simp
-#align transcendental_pi transcendental_pi
