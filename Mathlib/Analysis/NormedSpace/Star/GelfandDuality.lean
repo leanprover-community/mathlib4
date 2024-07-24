@@ -12,8 +12,6 @@ import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.ContinuousFunction.Ideals
 import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
 
-#align_import analysis.normed_space.star.gelfand_duality from "leanprover-community/mathlib"@"e65771194f9e923a70dfb49b6ca7be6e400d8b6f"
-
 /-!
 # Gelfand Duality
 
@@ -83,7 +81,6 @@ noncomputable def Ideal.toCharacterSpace : characterSpace ℂ A :=
     ((NormedRing.algEquivComplexOfComplete
       (letI := Quotient.field I; isUnit_iff_ne_zero (G₀ := A ⧸ I))).symm : A ⧸ I →ₐ[ℂ] ℂ).comp <|
     Quotient.mkₐ ℂ I
-#align ideal.to_character_space Ideal.toCharacterSpace
 
 theorem Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
     I.toCharacterSpace a = 0 := by
@@ -92,7 +89,6 @@ theorem Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
     Quotient.mkₐ_eq_mk, Function.comp_apply, NormedRing.algEquivComplexOfComplete_symm_apply]
   simp_rw [Quotient.eq_zero_iff_mem.mpr ha, spectrum.zero_eq]
   exact Set.eq_of_mem_singleton (Set.singleton_nonempty (0 : ℂ)).some_mem
-#align ideal.to_character_space_apply_eq_zero_of_mem Ideal.toCharacterSpace_apply_eq_zero_of_mem
 
 /-- If `a : A` is not a unit, then some character takes the value zero at `a`. This is equivalent
 to `gelfandTransform ℂ A a` takes the value zero at some character. -/
@@ -103,7 +99,6 @@ theorem WeakDual.CharacterSpace.exists_apply_eq_zero {a : A} (ha : ¬IsUnit a) :
     ⟨M.toCharacterSpace,
       M.toCharacterSpace_apply_eq_zero_of_mem
         (haM (mem_span_singleton.mpr ⟨1, (mul_one a).symm⟩))⟩
-#align weak_dual.character_space.exists_apply_eq_zero WeakDual.CharacterSpace.exists_apply_eq_zero
 
 theorem WeakDual.CharacterSpace.mem_spectrum_iff_exists {a : A} {z : ℂ} :
     z ∈ spectrum ℂ a ↔ ∃ f : characterSpace ℂ A, f a = z := by
@@ -113,7 +108,6 @@ theorem WeakDual.CharacterSpace.mem_spectrum_iff_exists {a : A} {z : ℂ} :
     exact ⟨_, hf.symm⟩
   · rintro ⟨f, rfl⟩
     exact AlgHom.apply_mem_spectrum f a
-#align weak_dual.character_space.mem_spectrum_iff_exists WeakDual.CharacterSpace.mem_spectrum_iff_exists
 
 /-- The Gelfand transform is spectrum-preserving. -/
 theorem spectrum.gelfandTransform_eq (a : A) :
@@ -121,7 +115,6 @@ theorem spectrum.gelfandTransform_eq (a : A) :
   ext z
   rw [ContinuousMap.spectrum_eq_range, WeakDual.CharacterSpace.mem_spectrum_iff_exists]
   exact Iff.rfl
-#align spectrum.gelfand_transform_eq spectrum.gelfandTransform_eq
 
 instance [Nontrivial A] : Nonempty (characterSpace ℂ A) :=
   ⟨Classical.choose <|
@@ -137,7 +130,6 @@ variable [StarRing A] [CstarRing A] [StarModule ℂ A]
 theorem gelfandTransform_map_star (a : A) :
     gelfandTransform ℂ A (star a) = star (gelfandTransform ℂ A a) :=
   ContinuousMap.ext fun φ => map_star φ a
-#align gelfand_transform_map_star gelfandTransform_map_star
 
 variable (A)
 
@@ -156,7 +148,6 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
   simp only [ENNReal.coe_inj, CstarRing.nnnorm_star_mul_self, ← sq] at this
   simpa only [Function.comp_apply, NNReal.sqrt_sq] using
     congr_arg (((↑) : ℝ≥0 → ℝ) ∘ ⇑NNReal.sqrt) this
-#align gelfand_transform_isometry gelfandTransform_isometry
 
 /-- The Gelfand transform is bijective when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A) := by
@@ -188,7 +179,6 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
   contrapose!
   exact fun h => Subtype.ext (ContinuousLinearMap.ext fun a =>
     h (gelfandTransform ℂ A a) ⟨gelfandTransform ℂ A a, ⟨a, rfl⟩, rfl⟩)
-#align gelfand_transform_bijective gelfandTransform_bijective
 
 /-- The Gelfand transform as a `StarAlgEquiv` between a commutative unital C⋆-algebra over `ℂ`
 and the continuous functions on its `characterSpace`. -/
@@ -198,7 +188,6 @@ noncomputable def gelfandStarTransform : A ≃⋆ₐ[ℂ] C(characterSpace ℂ A
     (show A →⋆ₐ[ℂ] C(characterSpace ℂ A, ℂ) from
       { gelfandTransform ℂ A with map_star' := fun x => gelfandTransform_map_star x })
     (gelfandTransform_bijective A)
-#align gelfand_star_transform gelfandStarTransform
 
 end ComplexCstarAlgebra
 
@@ -222,7 +211,6 @@ noncomputable def compContinuousMap (ψ : A →⋆ₐ[𝕜] B) :
   continuous_toFun :=
     Continuous.subtype_mk
       (continuous_of_continuous_eval fun a => map_continuous <| gelfandTransform 𝕜 B (ψ a)) _
-#align weak_dual.character_space.comp_continuous_map WeakDual.CharacterSpace.compContinuousMap
 
 variable (A)
 
@@ -231,7 +219,6 @@ variable (A)
 theorem compContinuousMap_id :
     compContinuousMap (StarAlgHom.id 𝕜 A) = ContinuousMap.id (characterSpace 𝕜 A) :=
   ContinuousMap.ext fun _a => ext fun _x => rfl
-#align weak_dual.character_space.comp_continuous_map_id WeakDual.CharacterSpace.compContinuousMap_id
 
 variable {A}
 
@@ -240,7 +227,6 @@ variable {A}
 theorem compContinuousMap_comp (ψ₂ : B →⋆ₐ[𝕜] C) (ψ₁ : A →⋆ₐ[𝕜] B) :
     compContinuousMap (ψ₂.comp ψ₁) = (compContinuousMap ψ₁).comp (compContinuousMap ψ₂) :=
   ContinuousMap.ext fun _a => ext fun _x => rfl
-#align weak_dual.character_space.comp_continuous_map_comp WeakDual.CharacterSpace.compContinuousMap_comp
 
 end CharacterSpace
 

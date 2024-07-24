@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Monad.Algebra
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
-#align_import category_theory.preadditive.eilenberg_moore from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
-
 /-!
 # Preadditive structure on algebras over a monad
 
@@ -103,10 +101,8 @@ instance Monad.algebraPreadditive : Preadditive (Monad.Algebra T) where
     intros
     ext
     apply comp_add
-#align category_theory.monad.algebra_preadditive CategoryTheory.Monad.algebraPreadditive
 
 instance Monad.forget_additive : (Monad.forget T).Additive where
-#align category_theory.monad.forget_additive CategoryTheory.Monad.forget_additive
 
 variable (U : Comonad C) [Functor.Additive (U : C ⥤ C)]
 
@@ -186,9 +182,7 @@ instance Comonad.coalgebraPreadditive : Preadditive (Comonad.Coalgebra U) where
     intros
     ext
     apply comp_add
-#align category_theory.comonad.coalgebra_preadditive CategoryTheory.Comonad.coalgebraPreadditive
 
 instance Comonad.forget_additive : (Comonad.forget U).Additive where
-#align category_theory.comonad.forget_additive CategoryTheory.Comonad.forget_additive
 
 end CategoryTheory

@@ -88,7 +88,7 @@ open TensorProduct LinearMap
 
 section Semiring
 
-variable {R : Type*} [CommSemiring R] {M N P Q: Type*}
+variable {R : Type*} [CommSemiring R] {M N P Q : Type*}
     [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
     [Module R M] [Module R N] [Module R P] [Module R Q]
     {f : M →ₗ[R] N} (g : N →ₗ[R] P)
@@ -418,6 +418,16 @@ theorem TensorProduct.map_ker :
   rw [Exact.linearMap_ker_eq (lTensor_exact P hfg' hg')]
 
 variable (M)
+
+variable (R) in
+theorem TensorProduct.mk_surjective (S) [Semiring S] [Algebra R S]
+    (h : Surjective (algebraMap R S)) :
+    Surjective (TensorProduct.mk R S M 1) := by
+  rw [← LinearMap.range_eq_top, ← top_le_iff, ← TensorProduct.span_tmul_eq_top, Submodule.span_le]
+  rintro _ ⟨x, y, rfl⟩
+  obtain ⟨x, rfl⟩ := h x
+  rw [Algebra.algebraMap_eq_smul_one, smul_tmul]
+  exact ⟨x • y, rfl⟩
 
 /-- Left tensoring a module with a quotient of the ring is the same as
 quotienting that module by the corresponding submodule. -/

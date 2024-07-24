@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 
@@ -135,3 +136,7 @@ lemma Γevaluation_naturality_apply (x : X) (a : Y.presheaf.obj (op ⊤)) :
     residueFieldMap f x (Y.Γevaluation (f.val.base x) a) =
       X.Γevaluation x (f.val.c.app (op ⊤) a) :=
   evaluation_naturality_apply f ⟨x, by simp only [Opens.map_top]; trivial⟩ a
+
+end LocallyRingedSpace
+
+end AlgebraicGeometry
