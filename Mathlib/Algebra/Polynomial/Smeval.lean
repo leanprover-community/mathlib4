@@ -5,8 +5,6 @@ Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Group.NatPowAssoc
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Induction
-import Mathlib.Algebra.Polynomial.Eval
 
 /-!
 # Scalar-multiple polynomial evaluation
@@ -30,7 +28,7 @@ is a generalization of `Algebra.Polynomial.Eval`.
 * `smeval_mul`, `smeval_comp`: multiplicativity of evaluation, given power-associativity.
 * `eval₂_eq_smeval`, `leval_eq_smeval.linearMap`, `aeval = smeval.algebraMap`, etc.: comparisons
 
-## To do
+## TODO
 
 * `smeval_neg` and `smeval_intCast` for `R` a ring and `S` an `AddCommGroup`.
 * Nonunital evaluation for polynomials with vanishing constant term for `Pow S ℕ+` (different file?)
@@ -67,7 +65,7 @@ theorem eval_eq_smeval : p.eval r = p.smeval r := by
   rfl
 
 theorem eval₂_eq_smeval (R : Type*) [Semiring R] {S : Type*} [Semiring S] (f : R →+* S) (p : R[X])
-    (x: S) : letI : Module R S := RingHom.toModule f
+    (x : S) : letI : Module R S := RingHom.toModule f
     p.eval₂ f x = p.smeval x := by
   letI : Module R S := RingHom.toModule f
   rw [smeval_eq_sum, eval₂_eq_sum]
@@ -161,6 +159,15 @@ theorem smeval_neg : (-p).smeval x = - p.smeval x := by
 theorem smeval_sub : (p - q).smeval x = p.smeval x - q.smeval x := by
   rw [sub_eq_add_neg, smeval_add, smeval_neg, sub_eq_add_neg]
 
+theorem smeval_neg_nat (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S] (q : ℕ[X])
+    (n : ℕ) : q.smeval (-(n : S)) = q.smeval (-n : ℤ) := by
+  rw [smeval_eq_sum, smeval_eq_sum]
+  simp only [Polynomial.smul_pow, sum_def, Int.cast_sum, Int.cast_mul, Int.cast_npow]
+  refine Finset.sum_congr rfl ?_
+  intro k _
+  rw [show -(n : S) = (-n : ℤ) by simp only [Int.cast_neg, Int.cast_natCast], nsmul_eq_mul,
+    ← AddGroupWithOne.intCast_ofNat, ← Int.cast_npow, ← Int.cast_mul, ← nsmul_eq_mul]
+
 end Neg
 
 section NatPowAssoc
@@ -177,7 +184,7 @@ variable (R : Type*) [Semiring R] {p : R[X]} (r : R) (p q : R[X]) {S : Type*}
   [NonAssocSemiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S] [Pow S ℕ]
   [NatPowAssoc S] (x : S)
 
-theorem smeval_at_natCast (q : ℕ[X]): ∀(n : ℕ), q.smeval (n : S) = q.smeval n := by
+theorem smeval_at_natCast (q : ℕ[X]) : ∀(n : ℕ), q.smeval (n : S) = q.smeval n := by
   induction q using Polynomial.induction_on' with
   | h_add p q ph qh =>
     intro n
@@ -283,6 +290,43 @@ theorem smeval_comp : (p.comp q).smeval x  = p.smeval (q.smeval x) := by
 
 end NatPowAssoc
 
+section Commute
+
+variable (R : Type*) [Semiring R] (p q : R[X]) {S : Type*} [Semiring S]
+  [Module R S] [IsScalarTower R S S] [SMulCommClass R S S] {x y : S}
+
+theorem smeval_commute_left (hc : Commute x y) : Commute (p.smeval x) y := by
+  induction p using Polynomial.induction_on' with
+  | h_add r s hr hs => exact (smeval_add R r s x) ▸ Commute.add_left hr hs
+  | h_monomial n a =>
+    simp only [smeval_monomial]
+    refine Commute.smul_left ?_ a
+    induction n with
+    | zero => simp only [npow_zero, Commute.one_left]
+    | succ n ih =>
+      refine (commute_iff_eq (x ^ (n + 1)) y).mpr ?_
+      rw [commute_iff_eq (x ^ n) y] at ih
+      rw [pow_succ, ← mul_assoc, ← ih]
+      exact Commute.right_comm hc (x ^ n)
+
+theorem smeval_commute (hc : Commute x y) : Commute (p.smeval x) (q.smeval y) := by
+  induction p using Polynomial.induction_on' with
+  | h_add r s hr hs => exact (smeval_add R r s x) ▸ Commute.add_left hr hs
+  | h_monomial n a =>
+    simp only [smeval_monomial]
+    refine Commute.smul_left ?_ a
+    induction n with
+    | zero => simp only [npow_zero, Commute.one_left]
+    | succ n ih =>
+      refine (commute_iff_eq (x ^ (n + 1)) (q.smeval y)).mpr ?_
+      rw [commute_iff_eq (x ^ n) (q.smeval y)] at ih
+      have hxq : x * q.smeval y = q.smeval y * x := by
+        refine (commute_iff_eq x (q.smeval y)).mp ?_
+        exact Commute.symm (smeval_commute_left R q (Commute.symm hc))
+      rw [pow_succ, ← mul_assoc, ← ih, mul_assoc, hxq, mul_assoc]
+
+end Commute
+
 section Algebra
 
 theorem aeval_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
@@ -295,3 +339,5 @@ theorem aeval_coe_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S
     (x : S) : ⇑(aeval x) = fun (p : R[X]) => p.smeval x := funext fun p => aeval_eq_smeval x p
 
 end Algebra
+
+end Polynomial

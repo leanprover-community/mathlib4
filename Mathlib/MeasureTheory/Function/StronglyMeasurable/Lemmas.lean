@@ -9,8 +9,6 @@ import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
-#align_import measure_theory.function.strongly_measurable.basic from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
-
 /-!
 # Strongly measurable and finitely strongly measurable functions
 
@@ -40,7 +38,6 @@ theorem MeasureTheory.MeasurePreserving.aestronglyMeasurable_comp_iff {β : Type
     (hf : MeasurePreserving f μa μb) (h₂ : MeasurableEmbedding f) {g : β → γ} :
     AEStronglyMeasurable (g ∘ f) μa ↔ AEStronglyMeasurable g μb := by
   rw [← hf.map_eq, h₂.aestronglyMeasurable_map_iff]
-#align measure_theory.measure_preserving.ae_strongly_measurable_comp_iff MeasureTheory.MeasurePreserving.aestronglyMeasurable_comp_iff
 
 section NormedSpace
 
@@ -50,7 +47,6 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 theorem aestronglyMeasurable_smul_const_iff {f : α → 𝕜} {c : E} (hc : c ≠ 0) :
     AEStronglyMeasurable (fun x => f x • c) μ ↔ AEStronglyMeasurable f μ :=
   (closedEmbedding_smul_left hc).toEmbedding.aestronglyMeasurable_comp_iff
-#align ae_strongly_measurable_smul_const_iff aestronglyMeasurable_smul_const_iff
 
 end NormedSpace
 
@@ -65,20 +61,17 @@ theorem StronglyMeasurable.apply_continuousLinearMap
     {_m : MeasurableSpace α} {φ : α → F →L[𝕜] E} (hφ : StronglyMeasurable φ) (v : F) :
     StronglyMeasurable fun a => φ a v :=
   (ContinuousLinearMap.apply 𝕜 E v).continuous.comp_stronglyMeasurable hφ
-#align strongly_measurable.apply_continuous_linear_map StronglyMeasurable.apply_continuousLinearMap
 
 @[measurability]
 theorem MeasureTheory.AEStronglyMeasurable.apply_continuousLinearMap {φ : α → F →L[𝕜] E}
     (hφ : AEStronglyMeasurable φ μ) (v : F) :
     AEStronglyMeasurable (fun a => φ a v) μ :=
   (ContinuousLinearMap.apply 𝕜 E v).continuous.comp_aestronglyMeasurable hφ
-#align measure_theory.ae_strongly_measurable.apply_continuous_linear_map MeasureTheory.AEStronglyMeasurable.apply_continuousLinearMap
 
 theorem ContinuousLinearMap.aestronglyMeasurable_comp₂ (L : E →L[𝕜] F →L[𝕜] G) {f : α → E}
     {g : α → F} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable (fun x => L (f x) (g x)) μ :=
   L.continuous₂.comp_aestronglyMeasurable₂ hf hg
-#align continuous_linear_map.ae_strongly_measurable_comp₂ ContinuousLinearMap.aestronglyMeasurable_comp₂
 
 end ContinuousLinearMapNontriviallyNormedField
 
@@ -106,4 +99,3 @@ theorem aestronglyMeasurable_withDensity_iff {E : Type*} [NormedAddCommGroup E]
     rw [← hx, smul_smul, _root_.inv_mul_cancel, one_smul]
     simp only [Ne, ENNReal.coe_eq_zero] at h'x
     simpa only [NNReal.coe_eq_zero, Ne] using h'x
-#align ae_strongly_measurable_with_density_iff aestronglyMeasurable_withDensity_iff
