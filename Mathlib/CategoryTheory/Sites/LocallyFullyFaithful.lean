@@ -36,6 +36,9 @@ variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 For a functor `G : C ⥤ D`, and a morphism `f : G.obj U ⟶ G.obj V`,
 `Functor.imageSieve G f` is the sieve of `U`
 consisting of those arrows whose composition with `f` has a lift in `G`.
+
+This is the image sieve of `f` under `yonedaMap G V` and hence the name.
+See `Functor.imageSieve_eq_imageSieve`.
 -/
 def Functor.imageSieve {U V : C} (f : G.obj U ⟶ G.obj V) : Sieve U where
   arrows Y i := ∃ l, G.map l = G.map i ≫ f
