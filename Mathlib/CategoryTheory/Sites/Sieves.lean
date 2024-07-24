@@ -762,7 +762,7 @@ lemma functorPushforward_equivalence_eq_pullback {U : C} (S : Sieve U) :
   · rintro ⟨W, g, hg, x, rfl⟩
     rw [Category.assoc]
     apply S.downward_closed
-    simpa using S.downward_closed hg _
+    simpa using hg
   · intro hf
     exact ⟨_, e.unitInv.app Z ≫ f ≫ e.unitInv.app U, S.downward_closed hf _,
       e.unit.app Z ≫ e.unit.app _, by simp⟩
