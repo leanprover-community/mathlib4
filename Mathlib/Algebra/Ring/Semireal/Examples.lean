@@ -70,4 +70,4 @@ evaluation morphism `P ↦ P 0`). In particular, if `F` is a linearly ordered fi
 
 -- WIP
 
-#lint
+-- #lint
