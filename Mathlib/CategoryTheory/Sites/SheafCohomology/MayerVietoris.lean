@@ -7,7 +7,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
 
-/-
+/-!
 # The Mayer-Vietoris exact sequence in sheaf cohomology
 
 Let `C` be a category equipped with a Grothendieck topology `J`.
