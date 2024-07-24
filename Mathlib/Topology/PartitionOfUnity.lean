@@ -562,3 +562,4 @@ theorem exists_isSubordinate [NormalSpace X] [ParacompactSpace X] (hs : IsClosed
   ⟨f.toPartitionOfUnity, hf.toPartitionOfUnity⟩
 
 end PartitionOfUnity
+#lint only explicitVarsOfIff

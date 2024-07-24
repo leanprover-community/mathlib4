@@ -276,7 +276,7 @@ variable [PartialOrder α] [TopologicalSpace α] [IsLower α]
 -- see Note [lower instance priority]
 /-- The lower topology on a partial order is T₀. -/
 instance (priority := 90) t0Space : T0Space α :=
-  (t0Space_iff_inseparable α).2 fun x y h =>
+  t0Space_iff_inseparable.2 fun x y h =>
     Ici_injective <| by simpa only [inseparable_iff_closure_eq, closure_singleton] using h
 
 end PartialOrder

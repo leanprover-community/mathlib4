@@ -515,3 +515,4 @@ open NNReal in
 instance NNReal.instTietzeExtension : TietzeExtension ℝ≥0 :=
   .of_retract ⟨((↑) : ℝ≥0 → ℝ), by continuity⟩ ⟨Real.toNNReal, continuous_real_toNNReal⟩ <| by
     ext; simp
+#lint only explicitVarsOfIff
