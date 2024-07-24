@@ -4,13 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Set.Pointwise.Basic
-import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Index
-import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Order.Interval.Set.Infinite
 
 /-!

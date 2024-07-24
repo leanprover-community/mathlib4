@@ -1,10 +1,11 @@
 import Mathlib.Tactic.Linter.MinImports
-import Mathlib.Tactic.ExtractGoal
-import Mathlib.Tactic.Lemma
-import Mathlib.Data.Nat.Notation
-import Mathlib.Data.Int.Notation
 import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.FunProp
+import Mathlib.Tactic.FunProp.Attr
+
+open Lean.Elab.Command Mathlib.Command.MinImports in
+run_cmd liftTermElabM do
+  guard ([`A, `A.B.C_3, `A.B.C_2, `A.B.C_1, `A.B.C_0, `A.B.C].map previousInstName
+      == [`A, `A.B.C_2, `A.B.C_1, `A.B.C,   `A.B.C,   `A.B.C])
 
 open Lean.Elab.Command Mathlib.Command.MinImports in
 run_cmd liftTermElabM do
@@ -32,6 +33,11 @@ instance : Semiring Nat := inferInstance
 #guard_msgs in
 #min_imports in
 instance withName : Semiring Nat := inferInstance
+
+/-- info: import Mathlib.Algebra.Ring.Nat -/
+#guard_msgs in
+#min_imports in
+noncomputable instance : Semiring Nat := inferInstance
 
 /--
 warning: Imports increased to
@@ -123,7 +129,6 @@ set_option linter.minImports true in
 #guard (0 : ℤ) = 0
 
 set_option linter.minImports false in
-
 #reset_min_imports
 
 /--
@@ -135,3 +140,26 @@ note: this linter can be disabled with `set_option linter.minImports false`
 -- again, the imports pick-up, after the reset
 set_option linter.minImports true in
 #guard (0 : ℤ) = 0
+
+-- finally, we leave the linter "on", to give it a chance to parse `eoi`
+-- and to silence it, we make sure to put in a command for each import
+
+set_option linter.minImports true
+
+/--
+warning: Imports increased to
+[Mathlib.Tactic.Linter.MinImports]
+note: this linter can be disabled with `set_option linter.minImports false`
+-/
+#guard_msgs in
+#reset_min_imports
+
+/--
+warning: Imports increased to
+[Mathlib.Tactic.FunProp.Attr, Mathlib.Tactic.Linter.MinImports, Mathlib.Tactic.NormNum.Basic]
+note: this linter can be disabled with `set_option linter.minImports false`
+-/
+#guard_msgs in
+run_cmd
+  let _ ← `(declModifiers|@[fun_prop])
+  let _ ← `(tactic|apply @Mathlib.Meta.NormNum.evalNatDvd <;> extract_goal)

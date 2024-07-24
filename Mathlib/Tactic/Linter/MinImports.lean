@@ -14,8 +14,8 @@ computed so far, it emits a warning mentioning the bigger minimal imports.
 
 Unlike the related `#min_imports` command, the linter takes into account notation and tactic
 information.
-It also works incrementally, providing information that it better suited, for instance, to split
-files.
+It also works incrementally, accumulating increasing import information.
+This is better suited, for instance, to split files.
 -/
 
 open Lean Elab Command
@@ -62,40 +62,41 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx => do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    let prevImports ← minImportsRef.get
-    if stx.isOfKind ``Parser.Command.eoi then
-      let impsInFile : NameSet :=
+    if stx == (← `(command| set_option $(mkIdent `linter.minImports) true)) then return
+    let importsSoFar ← minImportsRef.get
+    -- when the linter reaches the end of the file or `#exit`, it gives a report
+    if #[``Parser.Command.eoi, ``Lean.Parser.Command.exit].contains stx.getKind  then
+      let explicitImportsInFile : NameSet :=
         .fromArray (((← getEnv).imports.map (·.module)).erase `Init) Name.quickCmp
-      let newImps := prevImports.diff impsInFile
-      let redundImps := impsInFile.diff prevImports
-      let fil ← IO.FS.readFile (← getFileName)
-      for i in redundImps do
-        match fil.splitOn (" " ++ i.toString) with
-          | a::_::_ =>
-            let al := a.length
-            let impPos : Syntax := .ofRange ⟨⟨al + 1⟩, ⟨al + i.toString.length + 1⟩⟩
-            logWarningAt impPos m!"unneeded import '{i}'"
-          | _ => dbg_trace f!"'{i}' not found"
+      let newImps := importsSoFar.diff explicitImportsInFile
+      let currentlyUnneededImports := explicitImportsInFile.diff importsSoFar
+      -- we read the current file, to do a custom parsing of the imports:
+      -- this is a hack to obtain some `Syntax` information for the `import X` commands
+      let fname ← getFileName
+      let contents ← IO.FS.readFile fname
+      -- `impMods` is the syntax for the modules imported in the current file
+      let (impMods, _) ← Parser.parseHeader (Parser.mkInputContext contents fname)
+      for i in currentlyUnneededImports do
+        match impMods.find? (·.getId == i) with
+          | some impPos => logWarningAt impPos m!"unneeded import '{i}'"
+          | _ => dbg_trace f!"'{i}' not found"  -- this should be unreachable
+      -- if the linter found new imports that should be added (likely to *reduce* the dependencies)
       if !newImps.isEmpty then
+        -- format the imports prepending `import ` to each module name
         let withImport := (newImps.toArray.qsort Name.lt).map (s!"import {·}")
-        let firstImport : Syntax := match fil.splitOn "\nimport " with
-          | a::_::_ => .ofRange ⟨⟨a.length+1⟩, ⟨a.length + "import".length + 1⟩⟩
-          | _ => .ofRange ⟨⟨0⟩, ⟨19⟩⟩
-        logWarningAt firstImport m!"-- missing imports\n{"\n".intercalate withImport.toList}"
-      --let currImps := (((← getEnv).imports.map (·.module)).qsort Name.lt).erase `Init
-      --if prevImports.toArray.qsort Name.lt != currImps then
-      --  logInfo m!"{currImps}"
+        -- log a warning at the first `import`, if there is one.
+        logWarningAt ((impMods.find? (·.isOfKind `import)).getD default)
+          m!"-- missing imports\n{"\n".intercalate withImport.toList}"
     let id ← getId stx
-    --if id != default then dbg_trace "using {id}"
     let newImports := getIrredundantImports (← getEnv) (← getAllImports stx id)
-    let tot := (newImports.append prevImports) --.erase `Lean.Parser.Command
+    let tot := (newImports.append importsSoFar)
     let redundant := (← getEnv).findRedundantImports tot.toArray
     let currImports := tot.diff redundant
     let currImpArray := currImports.toArray.qsort Name.lt
     if currImpArray != #[] &&
-       currImpArray ≠ prevImports.toArray.qsort Name.lt then
+       currImpArray ≠ importsSoFar.toArray.qsort Name.lt then
       minImportsRef.modify fun _ => currImports
-      --Linter.logLint linter.minImports stx m!"Imports increased to\n{currImpArray}"
+      Linter.logLint linter.minImports stx m!"Imports increased to\n{currImpArray}"
 
 initialize addLinter minImportsLinter
 
