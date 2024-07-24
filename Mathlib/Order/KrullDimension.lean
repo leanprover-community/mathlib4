@@ -136,7 +136,7 @@ lemma mem_maximals_of_krullDim_eq_zero (h : krullDim α = 0) (a : α) :
   let x : LTSeries α := ⟨1, ![a, b], (by simpa [Unique.forall_iff] using lt_of_le_not_le hab hba)⟩
   simpa using WithBot.one_le_coe.mp (x.length_le_krullDim.trans_eq h)
 
-lemma krullDim_eq_zero_iff_mem_maximals_of_nonempty [Nonempty α] :
+lemma krullDim_eq_zero_iff_forall_mem_maximals_of_nonempty [Nonempty α] :
     krullDim α = 0 ↔ ∀ a : α, a ∈ maximals (· ≤ ·) Set.univ := by
   refine ⟨mem_maximals_of_krullDim_eq_zero, fun h ↦ ?_⟩
   simp only [maximals, Set.mem_univ, true_implies, true_and] at h
@@ -150,9 +150,9 @@ lemma mem_minimals_of_krullDim_eq_zero (h : krullDim α = 0) (a : α) :
     a ∈ minimals (· ≤ ·) Set.univ :=
   mem_maximals_of_krullDim_eq_zero (krullDim_orderDual.trans h) a
 
-lemma krullDim_eq_zero_iff_mem_minimals_of_nonempty [Nonempty α] :
+lemma krullDim_eq_zero_iff_forall_mem_minimals_of_nonempty [Nonempty α] :
     krullDim α = 0 ↔ ∀ a : α, a ∈ minimals (· ≤ ·) Set.univ := by
-  rw [← krullDim_orderDual, krullDim_eq_zero_iff_mem_maximals_of_nonempty]
+  rw [← krullDim_orderDual, krullDim_eq_zero_iff_forall_mem_maximals_of_nonempty]
   rfl
 
 end krullDim

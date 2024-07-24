@@ -75,7 +75,7 @@ theorem Ideal.IsPrime.isMaximal_of_ringKrullDim_eq_zero
 
 theorem ringKrullDim_eq_zero_iff_forall_isMaximal [Nontrivial R] :
     ringKrullDim R = 0 ↔ ∀ (I : Ideal R), I.IsPrime → I.IsMaximal := by
-  refine krullDim_eq_zero_iff_mem_maximals_of_nonempty.trans ?_
+  refine krullDim_eq_zero_iff_forall_mem_maximals_of_nonempty.trans ?_
   simp_rw [← PrimeSpectrum.isMaximal_iff]
   exact ⟨(· ⟨·, ·⟩), (· _ <| PrimeSpectrum.isPrime ·)⟩
 
@@ -86,7 +86,7 @@ theorem Ideal.IsPrime.mem_minimalPrimes_of_ringKrullDim_eq_zero
 
 theorem ringKrullDim_eq_zero_iff_forall_mem_minimalPrimes [Nontrivial R] :
     ringKrullDim R = 0 ↔ ∀ (I : Ideal R), I.IsPrime → I ∈ minimalPrimes R := by
-  refine krullDim_eq_zero_iff_mem_minimals_of_nonempty.trans ?_
+  refine krullDim_eq_zero_iff_forall_mem_minimals_of_nonempty.trans ?_
   simp_rw [← PrimeSpectrum.mem_minimalPrimes_iff]
   exact ⟨(· ⟨·, ·⟩), (· _ <| PrimeSpectrum.isPrime ·)⟩
 
