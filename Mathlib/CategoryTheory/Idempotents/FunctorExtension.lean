@@ -59,7 +59,7 @@ def map {F G : C ⥤ Karoubi D} (φ : F ⟶ G) : obj F ⟶ obj G where
         have h' := F.congr_map P.idem
         simp only [hom_ext_iff, Karoubi.comp_f, F.map_comp] at h h'
         simp only [obj_obj_p, assoc, ← h]
-        slice_rhs 1 3 => rw [h', h'] }
+        slice_rhs 1 3 => rw [h']; erw [h'] }
   naturality _ _ f := by
     ext
     dsimp [obj]
@@ -90,7 +90,7 @@ def functorExtension₁ : (C ⥤ Karoubi D) ⥤ Karoubi C ⥤ Karoubi D where
     have h' := F.congr_map P.idem
     simp only [hom_ext_iff, comp_f, F.map_comp] at h h'
     slice_rhs 2 3 => rw [← h]
-    slice_rhs 1 2 => rw [h']
+    slice_rhs 1 2 => erw [h']
     simp only [assoc]
 
 /-- The natural isomorphism expressing that functors `Karoubi C ⥤ Karoubi D` obtained

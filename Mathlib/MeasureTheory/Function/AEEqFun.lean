@@ -147,7 +147,7 @@ theorem mk_eq_mk {f g : α → β} {hf hg} : (mk f hf : α →ₘ[μ] β) = mk g
 
 @[simp]
 theorem mk_coeFn (f : α →ₘ[μ] β) : mk f f.aestronglyMeasurable = f := by
-  conv_rhs => rw [← Quotient.out_eq' f]
+  conv_rhs => erw [← Quotient.out_eq' f]
   set g : { f : α → β // AEStronglyMeasurable f μ } := Quotient.out' f
   have : g = ⟨g.1, g.2⟩ := Subtype.eq rfl
   rw [this, ← mk, mk_eq_mk]

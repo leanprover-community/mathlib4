@@ -404,7 +404,7 @@ def gluedIsLimit : IsLimit (PullbackCone.mk _ _ (p_comm 𝒰 f g)) := by
     (pullbackRightPullbackFstIso (p1 𝒰 f g) (𝒰.map i) m ≪≫ pullback.congrHom h₁ rfl).hom,
     Iso.trans_hom, Category.assoc, pullback.congrHom_hom, pullback.lift_fst_assoc,
     Category.comp_id, pullbackRightPullbackFstIso_hom_fst_assoc, pullback.condition]
-  conv_lhs => rhs; rw [← pullbackP1Iso_hom_ι]
+  conv_lhs => rhs; erw [← pullbackP1Iso_hom_ι]
   simp_rw [← Category.assoc]
   congr 1
   apply pullback.hom_ext

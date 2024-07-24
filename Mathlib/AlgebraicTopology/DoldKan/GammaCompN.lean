@@ -123,7 +123,7 @@ lemma N₂Γ₂ToKaroubiIso_hom_app (X : ChainComplex C ℕ) :
   dsimp [N₂Γ₂ToKaroubiIso]
   simp only [comp_id, assoc, PInfty_f_idem]
   conv_rhs =>
-    rw [← PInfty_f_idem]
+    erw [← PInfty_f_idem]
   congr 1
   apply (Γ₀.splitting X).hom_ext'
   intro A
