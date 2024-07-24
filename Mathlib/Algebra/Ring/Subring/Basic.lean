@@ -478,6 +478,9 @@ theorem map_id : s.map (RingHom.id R) = s :=
 theorem map_map (g : S →+* T) (f : R →+* S) : (s.map f).map g = s.map (g.comp f) :=
   SetLike.coe_injective <| Set.image_image _ _ _
 
+theorem map_toSubsemiring (f : R →+* S) (s : Subring R) :
+    (s.map f).toSubsemiring = s.toSubsemiring.map f := rfl
+
 theorem map_le_iff_le_comap {f : R →+* S} {s : Subring R} {t : Subring S} :
     s.map f ≤ t ↔ s ≤ t.comap f :=
   Set.image_subset_iff
@@ -586,6 +589,12 @@ theorem coe_iInf {ι : Sort*} {S : ι → Subring R} : (↑(⨅ i, S i) : Set R)
 
 theorem mem_iInf {ι : Sort*} {S : ι → Subring R} {x : R} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
+
+theorem iInf_toSubsemiring {ι : Sort*} (s : ι → Subring R) :
+    (iInf s).toSubsemiring = ⨅ i, (s i).toSubsemiring := by
+  ext
+  rw [mem_toSubsemiring, mem_iInf, iInf, Subsemiring.mem_sInf]
+  simp
 
 @[simp]
 theorem sInf_toSubmonoid (s : Set (Subring R)) :
@@ -891,6 +900,17 @@ theorem map_sup (s t : Subring R) (f : R →+* S) : (s ⊔ t).map f = s.map f �
 theorem map_iSup {ι : Sort*} (f : R →+* S) (s : ι → Subring R) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
+
+theorem map_inf (s t : Subring R) (f : R →+* S) (hf : Function.Injective f) :
+    (s ⊓ t).map f = s.map f ⊓ t.map f := by
+  apply toSubsemiring_injective
+  exact Subsemiring.map_inf s.toSubsemiring t.toSubsemiring f hf
+
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : R →+* S) (hf : Function.Injective f)
+    (s : ι → Subring R) : (iInf s).map f = ⨅ i, (s i).map f := by
+  apply toSubsemiring_injective
+  rw [iInf_toSubsemiring, map_toSubsemiring, iInf_toSubsemiring]
+  exact Subsemiring.map_iInf f hf (toSubsemiring ∘ s)
 
 theorem comap_inf (s t : Subring S) (f : R →+* S) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
   (gc_map_comap f).u_inf

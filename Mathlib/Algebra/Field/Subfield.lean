@@ -199,6 +199,9 @@ theorem mk_le_mk {S S' : Subring K} (h h') : (⟨S, h⟩ : Subfield K) ≤ (⟨S
 theorem ext {S T : Subfield K} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
 
+theorem toSubring_injective : Function.Injective (toSubring : Subfield K → _)
+  | _, _, h => ext (SetLike.ext_iff.mp h : _)
+
 /-- Copy of a subfield with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (S : Subfield K) (s : Set K) (hs : s = ↑S) : Subfield K :=
@@ -458,6 +461,9 @@ theorem mem_map {f : K →+* L} {s : Subfield K} {y : L} : y ∈ s.map f ↔ ∃
 theorem map_map (g : L →+* M) (f : K →+* L) : (s.map f).map g = s.map (g.comp f) :=
   SetLike.ext' <| Set.image_image _ _ _
 
+theorem map_toSubring (f : K →+* L) (s : Subfield K) :
+    (s.map f).toSubring = s.toSubring.map f := rfl
+
 theorem map_le_iff_le_comap {f : K →+* L} {s : Subfield K} {t : Subfield L} :
     s.map f ≤ t ↔ s ≤ t.comap f :=
   Set.image_subset_iff
@@ -559,6 +565,11 @@ theorem sInf_toSubring (s : Set (Subfield K)) :
             ⟨fun hx => Subring.mem_sInf.mp hx _ ⟨hp, rfl⟩, fun hx =>
               Subring.mem_sInf.mpr fun p' ⟨_, p'_eq⟩ => p'_eq ▸ hx⟩⟩⟩
 
+@[simp]
+theorem iInf_toSubring {ι : Sort*} (s : ι → Subfield K) :
+    (iInf s).toSubring = ⨅ i, (s i).toSubring := by
+  rw [iInf, sInf_toSubring, iInf_range]
+
 theorem isGLB_sInf (S : Set (Subfield K)) : IsGLB S (sInf S) := by
   have : ∀ {s t : Subfield K}, (s : Set K) ≤ t ↔ s ≤ t := by simp [SetLike.coe_subset_coe]
   refine IsGLB.of_image this ?_
@@ -658,6 +669,16 @@ theorem map_sup (s t : Subfield K) (f : K →+* L) : (s ⊔ t).map f = s.map f �
 theorem map_iSup {ι : Sort*} (f : K →+* L) (s : ι → Subfield K) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
+
+theorem map_inf (s t : Subfield K) (f : K →+* L) : (s ⊓ t).map f = s.map f ⊓ t.map f := by
+  apply toSubring_injective
+  exact Subring.map_inf s.toSubring t.toSubring f f.injective
+
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : K →+* L) (s : ι → Subfield K) :
+    (iInf s).map f = ⨅ i, (s i).map f := by
+  apply toSubring_injective
+  rw [iInf_toSubring, map_toSubring, iInf_toSubring]
+  exact Subring.map_iInf f f.injective (toSubring ∘ s)
 
 theorem comap_inf (s t : Subfield L) (f : K →+* L) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
   (gc_map_comap f).u_inf

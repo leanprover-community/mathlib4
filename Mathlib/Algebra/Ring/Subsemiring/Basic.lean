@@ -835,6 +835,29 @@ theorem map_iSup {ι : Sort*} (f : R →+* S) (s : ι → Subsemiring R) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 
+theorem map_inf (s t : Subsemiring R) (f : R →+* S) (hf : Function.Injective f) :
+    (s ⊓ t).map f = s.map f ⊓ t.map f := by
+  ext
+  simp only [mem_map, mem_inf]
+  constructor
+  · rintro ⟨a, ⟨ha, hb⟩, rfl⟩
+    exact ⟨⟨a, ha, rfl⟩, ⟨a, hb, rfl⟩⟩
+  · rintro ⟨⟨a, ha⟩, ⟨b, hb⟩⟩
+    exact ⟨a, ⟨ha.1, hf (show f a = f b by rw [ha.2, hb.2]) ▸ hb.1⟩, ha.2⟩
+
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : R →+* S) (hf : Function.Injective f)
+    (s : ι → Subsemiring R) : (iInf s).map f = ⨅ i, (s i).map f := by
+  ext
+  simp only [iInf, mem_map, mem_sInf, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+  refine ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨a, ha, rfl⟩ i
+    exact ⟨a, ha i, rfl⟩
+  · obtain ⟨b⟩ := ‹Nonempty ι›
+    obtain ⟨y, -, rfl⟩ := h b
+    refine ⟨y, fun a ↦ ?_, rfl⟩
+    obtain ⟨z, h1, h2⟩ := h a
+    exact hf h2 ▸ h1
+
 theorem comap_inf (s t : Subsemiring S) (f : R →+* S) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
   (gc_map_comap f).u_inf
 
