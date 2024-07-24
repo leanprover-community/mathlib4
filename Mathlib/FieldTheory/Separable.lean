@@ -590,8 +590,7 @@ theorem IsSeparable.of_finite (x : K) : IsSeparable F x :=
 
 -- See note [lower instance priority]
 /-- A finite field extension in characteristic 0 is separable. -/
-protected instance (priority := 100) Algebra.IsSeparable.of_finite (F K : Type*) [Field F] [Field K]
-    [Algebra F K] [FiniteDimensional F K] [CharZero F] : Algebra.IsSeparable F K :=
+protected instance (priority := 100) Algebra.IsSeparable.of_finite : Algebra.IsSeparable F K :=
   ⟨fun _ => _root_.IsSeparable.of_finite _ _⟩
 #align is_separable.of_finite Algebra.IsSeparable.of_finite
 
