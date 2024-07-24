@@ -107,6 +107,8 @@ import Mathlib.Algebra.Category.ModuleCat.Presheaf.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.ChangeOfRings
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.OverColimitsRing
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.OverColimitsRing'
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafify
@@ -2641,6 +2643,7 @@ import Mathlib.Geometry.RingedSpace.Basic
 import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
 import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField
+import Mathlib.Geometry.RingedSpace.Module
 import Mathlib.Geometry.RingedSpace.OpenImmersion
 import Mathlib.Geometry.RingedSpace.PresheafedSpace
 import Mathlib.Geometry.RingedSpace.PresheafedSpace.Gluing
