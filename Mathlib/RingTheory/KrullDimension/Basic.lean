@@ -7,7 +7,7 @@ import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.PrimeSpectrum
-import Mathlib.Topology.KrullDimension
+import Mathlib.Order.KrullDimension
 
 /-!
 # Krull dimensions of (commutative) rings
