@@ -220,8 +220,7 @@ lemma mk₀_f_comp_biprodIso_inv_apply
       S.fromBiprod F n x := by
   obtain ⟨y, rfl⟩ : ∃ y, x = (Ext.biprodIso _ _ _ _).hom y :=
     ⟨(Ext.biprodIso _ _ _ _).inv x, by erw [← comp_apply]; simp⟩
-  erw [← comp_apply]
-  erw [← comp_apply, Iso.hom_inv_id, id_apply]
+  erw [← comp_apply, ← comp_apply, Iso.hom_inv_id, id_apply]
   exact congr_fun ((forget _).congr_map (S.biprodIso_hom_fromBiprod F n)).symm y
 
 /-- Comparison isomorphisms from the Mayer-Vietoris sequence and the
