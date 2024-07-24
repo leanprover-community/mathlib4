@@ -87,17 +87,15 @@ def equivFixedPoints : R.leftFixedPoints ≃ R.rightFixedPoints where
   left_inv J := by cases' J with J hJ; simp; rw [hJ]
   right_inv I := by cases' I with I hI; simp; rw [hI]
 
-theorem rightDual_leftDual_le_of_le {J J' : Set α} (h : J' ∈ R.leftFixedPoints) :
-    J ≤ J' → R.rightDual (R.leftDual J) ≤ J' := by
-  intro h₁
+theorem rightDual_leftDual_le_of_le {J J' : Set α} (h : J' ∈ R.leftFixedPoints) (h₁ : J ≤ J'):
+    R.rightDual (R.leftDual J) ≤ J' := by
   rw [← h]
   apply R.gc_leftDual_rightDual.monotone_u
   apply R.gc_leftDual_rightDual.monotone_l
   exact h₁
 
-theorem ge_leftDual_rightDual_of_ge {I I' : Set β} (h : I' ∈ R.rightFixedPoints) :
-    I' ≥ I → I' ≥ R.leftDual (R.rightDual I) := by
-  intro h₁
+theorem leftDual_rightDual_le_of_le {I I' : Set β} (h : I' ∈ R.rightFixedPoints) (h₁ : I ≤ I') :
+    R.leftDual (R.rightDual I) ≤ I' := by
   rw [← h]
   apply R.gc_leftDual_rightDual.monotone_l
   apply R.gc_leftDual_rightDual.monotone_u
