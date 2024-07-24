@@ -21,12 +21,10 @@ variable {R A : Type*} [CommRing R] [IsDomain R] [CommRing A] [IsDomain A] [Alge
 theorem DifferentiableAt.real_of_complex {e : ℂ → ℂ} {z : ℝ} (h : DifferentiableAt ℂ e ↑z) :
     DifferentiableAt ℝ (fun x : ℝ => e ↑x) z :=
   (h.restrictScalars ℝ).comp z ofRealCLM.differentiable.differentiableAt
-#align differentiable_at.real_of_complex DifferentiableAt.real_of_complex
 
 theorem Differentiable.real_of_complex {e : ℂ → ℂ} (h : Differentiable ℂ e) :
     Differentiable ℝ fun x : ℝ => e ↑x :=
   (h.restrictScalars ℝ).comp ofRealCLM.differentiable
-#align differentiable.real_of_complex Differentiable.real_of_complex
 
 theorem deriv_eq_f (p : ℂ[X]) (s : ℂ) :
     (deriv fun x ↦ -(cexp (-(x • s)) * p.sumIderiv.eval (x • s))) =
@@ -61,7 +59,6 @@ theorem deriv_eq_f (p : ℂ[X]) (s : ℂ) :
       | apply Differentiable.neg
       | apply Differentiable.cexp
       | apply Differentiable.mul_const
-#align deriv_eq_f deriv_eq_f
 
 theorem integral_f_eq (p : ℂ[X]) (s : ℂ) :
     s * ∫ x in (0)..1, exp (-(x • s)) * p.eval (x • s) =
@@ -77,21 +74,18 @@ theorem integral_f_eq (p : ℂ[X]) (s : ℂ) :
   · simp_rw [zero_smul, neg_zero, Complex.exp_zero, one_mul]
   · intro x _; apply (Differentiable.mul _ _).neg.differentiableAt
     apply @Differentiable.real_of_complex fun c : ℂ => exp (-(c * s))
-    refine' (differentiable_id.mul_const _).neg.cexp
+    refine (differentiable_id.mul_const _).neg.cexp
     change Differentiable ℝ ((fun y : ℂ => p.sumIderiv.eval y) ∘ fun x : ℝ => x • s)
     apply Differentiable.comp
     apply @Differentiable.restrictScalars ℝ _ ℂ; exact Polynomial.differentiable _
     exact differentiable_id'.smul_const _
-  · refine'
-      (continuous_const.mul ((continuous_id'.smul continuous_const).neg.cexp.mul _)).continuousOn
+  · refine
+      (continuous_const.mul ((continuous_id'.smul continuous_const).neg.cexp.mul ?_)).continuousOn
     change Continuous ((fun y : ℂ => p.eval y) ∘ fun x : ℝ => x • s)
     exact p.continuous_aeval.comp (continuous_id'.smul continuous_const)
-#align integral_f_eq integral_f_eq
 
 def P (p : ℂ[X]) (s : ℂ) :=
   exp s * p.sumIderiv.eval 0 - p.sumIderiv.eval s
-set_option linter.uppercaseLean3 false in
-#align P P
 
 theorem P_le' (p : ℕ → ℂ[X]) (s : ℂ)
     (h :
@@ -115,12 +109,10 @@ theorem P_le' (p : ℕ → ℂ[X]) (s : ℂ)
   · rw [Real.volume_Ioc, sub_zero, ENNReal.toReal_ofReal zero_le_one]
   · rw [Real.volume_Ioc, sub_zero]; exact ENNReal.ofReal_lt_top
   · exact measurableSet_Ioc
-  intro x hx; rw [norm_mul]; refine' mul_le_mul _ (hc q x hx) (norm_nonneg _) (Real.exp_pos _).le
+  intro x hx; rw [norm_mul]; refine mul_le_mul ?_ (hc q x hx) (norm_nonneg _) (Real.exp_pos _).le
   rw [norm_eq_abs, abs_exp, Real.exp_le_exp]; apply (re_le_abs _).trans;
   rw [← norm_eq_abs, norm_neg, norm_smul, norm_eq_abs, Real.norm_of_nonneg hx.1.le]
   exact mul_le_of_le_one_left (Complex.abs.nonneg _) hx.2
-set_option linter.uppercaseLean3 false in
-#align P_le' P_le'
 
 theorem P_le (p : ℕ → ℂ[X]) (s : ℂ)
     (h :
@@ -134,17 +126,15 @@ theorem P_le (p : ℕ → ℂ[X]) (s : ℂ)
   let c₃ := max (Complex.abs s) 1; have h₃ : 0 ≤ (Complex.abs s) := Complex.abs.nonneg _
   have hc : ∀ {x : ℝ}, 0 ≤ max x 1 := fun {x} => zero_le_one.trans (le_max_right _ _)
   use c₁ * (c₂ * c' * c₃), mul_nonneg hc (mul_nonneg (mul_nonneg hc hc') hc)
-  intro q hq; refine' (h' q).trans _; simp_rw [mul_pow]
+  intro q hq; refine (h' q).trans ?_; simp_rw [mul_pow]
   have hcq : ∀ {x : ℝ}, 0 ≤ max x 1 ^ q := fun {x} => pow_nonneg hc q
   have hcq' := pow_nonneg hc' q
   have le_max_one_pow : ∀ {x : ℝ}, x ≤ max x 1 ^ q := fun {x} =>
     (max_cases x 1).elim (fun h => h.1.symm ▸ le_self_pow h.2 (zero_lt_one.trans_le hq).ne')
       fun h => by rw [h.1, one_pow]; exact h.2.le
-  refine' mul_le_mul le_max_one_pow _ (mul_nonneg (mul_nonneg h₂ hcq') h₃) hcq
-  refine' mul_le_mul _ le_max_one_pow h₃ (mul_nonneg hcq hcq')
-  refine' mul_le_mul le_max_one_pow le_rfl hcq' hcq
-set_option linter.uppercaseLean3 false in
-#align P_le P_le
+  refine mul_le_mul le_max_one_pow ?_ (mul_nonneg (mul_nonneg h₂ hcq') h₃) hcq
+  refine mul_le_mul ?_ le_max_one_pow h₃ (mul_nonneg hcq hcq')
+  exact mul_le_mul le_max_one_pow le_rfl hcq' hcq
 
 open Polynomial
 
@@ -166,16 +156,16 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
         (fun x : ℝ => max (x * abs s) 1 * Complex.abs (aeval (↑x * s) p)) '' Set.Ioc 0 1 ⊆
           (fun x : ℝ => max (x * abs s) 1 * Complex.abs (aeval (↑x * s) p)) '' Set.Icc 0 1 :=
         Set.image_subset _ Set.Ioc_subset_Icc_self
-      refine' (IsCompact.image isCompact_Icc _).isBounded.subset h
-      · refine' ((continuous_id.mul continuous_const).max continuous_const).mul _
-        refine' Complex.continuous_abs.comp (p.continuous_aeval.comp _)
+      refine (IsCompact.image isCompact_Icc ?_).isBounded.subset h
+      · refine ((continuous_id.mul continuous_const).max continuous_const).mul ?_
+        refine Complex.continuous_abs.comp (p.continuous_aeval.comp ?_)
         exact continuous_ofReal.mul continuous_const
     cases' this.exists_norm_le with c h
     use c; intro q x hx
     specialize h (max (x * abs s) 1 * Complex.abs (aeval (↑x * s) p)) (Set.mem_image_of_mem _ hx)
-    refine' le_trans _ (pow_le_pow_left (norm_nonneg _) h _)
+    refine le_trans ?_ (pow_le_pow_left (norm_nonneg _) h _)
     simp_rw [norm_mul, Real.norm_eq_abs, Complex.abs_abs, mul_pow, abs_of_pos hx.1]
-    refine' mul_le_mul_of_nonneg_right _ (pow_nonneg (Complex.abs.nonneg _) _)
+    refine mul_le_mul_of_nonneg_right ?_ (pow_nonneg (Complex.abs.nonneg _) _)
     rw [max_def]; split_ifs with hx1
     · rw [_root_.abs_one, one_pow, ← mul_pow]
       exact pow_le_one _ (mul_nonneg hx.1.le (Complex.abs.nonneg _)) hx1
@@ -189,7 +179,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     intro x hx; dsimp only [c]
     split_ifs with h
     · apply Finset.le_max'; rw [Multiset.mem_toFinset]
-      refine' Multiset.mem_map_of_mem _ hx
+      refine Multiset.mem_map_of_mem _ hx
     · rw [Finset.nonempty_iff_ne_empty, Ne, Multiset.toFinset_eq_empty,
         Multiset.eq_zero_iff_forall_not_mem] at h
       push_neg at h
@@ -214,8 +204,8 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     replace h := Nat.le_of_dvd (Int.natAbs_pos.mpr p0) h
     revert h; rwa [imp_false, not_le]
   obtain ⟨gp, gp'_le, h⟩ := sumIderiv_sl ℂ (X ^ (q - 1) * p ^ q) q
-  refine' ⟨gp, _, _⟩
-  · refine' gp'_le.trans ((tsub_le_tsub_right natDegree_mul_le q).trans _)
+  refine ⟨gp, ?_, ?_⟩
+  · refine gp'_le.trans ((tsub_le_tsub_right natDegree_mul_le q).trans ?_)
     rw [natDegree_X_pow, natDegree_pow, tsub_add_eq_add_tsub (Nat.one_le_of_lt q0),
       tsub_right_comm]
     apply tsub_le_tsub_right; rw [add_tsub_cancel_left]
@@ -242,4 +232,3 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     eval₂_at_zero, ← eq_intCast (algebraMap ℤ ℂ), ← IsScalarTower.algebraMap_apply, ←
     eval₂_at_zero, aeval_def, eval₂_eq_eval_map, eval₂_eq_eval_map, mul_comm, ← sumIderiv_map, ← P]
   exact (Pp'_le r q (Nat.one_le_of_lt q0)).trans (pow_le_pow_left (c'0 r) (hc r hr) _)
-#align exp_polynomial_approx exp_polynomial_approx

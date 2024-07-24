@@ -26,18 +26,12 @@ variable (p : ℚ[X])
 
 abbrev K' : IntermediateField ℚ ℂ :=
   IntermediateField.adjoin ℚ (p.rootSet ℂ)
-set_option linter.uppercaseLean3 false in
-#align aux.K' AuxInstances.K'
 
 instance K'.isSplittingField : IsSplittingField ℚ (K' p) p :=
   IntermediateField.adjoin_rootSet_isSplittingField (IsAlgClosed.splits_codomain p)
-set_option linter.uppercaseLean3 false in
-#align aux.K'.is_splitting_field AuxInstances.K'.isSplittingField
 
 abbrev K : Type _ :=
   p.SplittingField
-set_option linter.uppercaseLean3 false in
-#align aux.K AuxInstances.K
 
 instance : CharZero (K p) :=
   charZero_of_injective_algebraMap (algebraMap ℚ (K p)).injective
@@ -46,13 +40,9 @@ instance : IsGalois ℚ (K p) where
 
 abbrev Lift : K' p ≃ₐ[ℚ] K p :=
   IsSplittingField.algEquiv (K' p) p
-set_option linter.uppercaseLean3 false in
-#align aux.Lift AuxInstances.Lift
 
 instance algebraKℂ : Algebra (K p) ℂ :=
   ((K' p).val.comp (Lift p).symm.toAlgHom).toRingHom.toAlgebra
-set_option linter.uppercaseLean3 false in
-#align aux.algebra_K_ℂ AuxInstances.algebraKℂ
 
 instance : Algebra ℚ (K p) :=
   inferInstance
@@ -62,13 +52,9 @@ instance : SMul ℚ (K p) :=
 
 instance cache_ℚ_K_ℂ : IsScalarTower ℚ (K p) ℂ :=
   inferInstance
-set_option linter.uppercaseLean3 false in
-#align aux.cache_ℚ_K_ℂ AuxInstances.cache_ℚ_K_ℂ
 
 instance cache_ℤ_K_ℂ : IsScalarTower ℤ (K p) ℂ :=
   inferInstance
-set_option linter.uppercaseLean3 false in
-#align aux.cache_ℤ_K_ℂ AuxInstances.cache_ℤ_K_ℂ
 
 end AuxInstances
 
@@ -77,16 +63,14 @@ namespace Quot
 @[reducible] --, elab_as_elim]
 protected def liftFinsupp {α : Type*} {r : α → α → Prop} {β : Type*} [Zero β] (f : α →₀ β)
     (h : ∀ a b, r a b → f a = f b) : Quot r →₀ β := by
-  refine' ⟨image (mk r) f.support, Quot.lift f h, fun a => ⟨_, _⟩⟩
+  refine ⟨image (mk r) f.support, Quot.lift f h, fun a => ⟨?_, ?_⟩⟩
   · rw [mem_image]; rintro ⟨b, hb, rfl⟩; exact Finsupp.mem_support_iff.mp hb
   · induction a using Quot.ind
-    rw [lift_mk _ h]; refine' fun hb => mem_image_of_mem _ (Finsupp.mem_support_iff.mpr hb)
-#align quot.lift_finsupp Quot.liftFinsupp
+    rw [lift_mk _ h]; refine fun hb => mem_image_of_mem _ (Finsupp.mem_support_iff.mpr hb)
 
 theorem liftFinsupp_mk {α : Type*} {r : α → α → Prop} {γ : Type*} [Zero γ] (f : α →₀ γ)
     (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) (a : α) : Quot.liftFinsupp f h (Quot.mk r a) = f a :=
   rfl
-#align quot.lift_finsupp_mk Quot.liftFinsupp_mk
 
 end Quot
 
@@ -96,13 +80,11 @@ namespace Quotient
 protected def liftFinsupp {α : Type*} {β : Type*} [s : Setoid α] [Zero β] (f : α →₀ β) :
     (∀ a b, a ≈ b → f a = f b) → Quotient s →₀ β :=
   Quot.liftFinsupp f
-#align quotient.lift_finsupp Quotient.liftFinsupp
 
 @[simp]
 theorem liftFinsupp_mk' {α : Type*} {β : Type*} [Setoid α] [Zero β] (f : α →₀ β)
     (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) : Quotient.liftFinsupp f h (Quotient.mk' x) = f x :=
   rfl
-#align quotient.lift_finsupp_mk Quotient.liftFinsupp_mk'
 
 end Quotient
 
@@ -113,55 +95,40 @@ variable (s : Finset ℂ)
 namespace Transcendental -- Conflict with Mathlib.NumberTheory.Dioph
 abbrev Poly : ℚ[X] :=
   ∏ x in s, minpoly ℚ x
-set_option linter.uppercaseLean3 false in
-#align Poly Transcendental.Poly
 end Transcendental
 
 open Transcendental
 
 abbrev K' : IntermediateField ℚ ℂ :=
   IntermediateField.adjoin ℚ ((Poly s).rootSet ℂ)
-set_option linter.uppercaseLean3 false in
-#align K' K'
 
 abbrev K : Type _ :=
   (Poly s).SplittingField
-set_option linter.uppercaseLean3 false in
-#align K K
 
 abbrev Gal : Type _ :=
   (Poly s).Gal
-set_option linter.uppercaseLean3 false in
-#align Gal Gal
 
 abbrev Lift : K' s ≃ₐ[ℚ] K s :=
   IsSplittingField.algEquiv (K' s) (Poly s)
-set_option linter.uppercaseLean3 false in
-#align Lift Lift
 
 
 theorem algebraMap_K_apply (x) : algebraMap (K s) ℂ x = ((Lift s).symm x : ℂ) :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align algebra_map_K_apply algebraMap_K_apply
 
 theorem poly_ne_zero (hs : ∀ x ∈ s, IsIntegral ℚ x) : Poly s ≠ 0 :=
   prod_ne_zero_iff.mpr fun x hx => minpoly.ne_zero (hs x hx)
-set_option linter.uppercaseLean3 false in
-#align Poly_ne_zero poly_ne_zero
 
 noncomputable def ratCoeff : Subalgebra ℚ (AddMonoidAlgebra (K s) (K s))
     where
   carrier := {x | ∀ i : K s, x i ∈ (⊥ : IntermediateField ℚ (K s))}
   mul_mem' {a b} ha hb i := by
     rw [AddMonoidAlgebra.mul_apply]
-    refine' sum_mem fun c _ => sum_mem fun d _ => _
+    refine sum_mem fun c _ => sum_mem fun d _ => ?_
     dsimp only; split_ifs; exacts [mul_mem (ha c) (hb d), zero_mem _]
   add_mem' {a b} ha hb i := by rw [Finsupp.add_apply]; exact add_mem (ha i) (hb i)
   algebraMap_mem' r hr := by
     rw [AddMonoidAlgebra.coe_algebraMap, Function.comp_apply, Finsupp.single_apply]
     split_ifs; exacts [IntermediateField.algebraMap_mem _ _, zero_mem _]
-#align rat_coeff ratCoeff
 
 --cache
 instance : ZeroMemClass (IntermediateField ℚ (K s)) (K s) :=
@@ -195,7 +162,7 @@ def RatCoeffEquiv.aux : ratCoeff s ≃ₐ[ℚ] AddMonoidAlgebra (⊥ : Intermedi
     ext
     change (x * y : AddMonoidAlgebra (K s) (K s)) a = _
     simp_rw [AddMonoidAlgebra.mul_apply, Finsupp.sum, AddSubmonoidClass.coe_finset_sum]
-    refine' sum_congr rfl fun i _ => sum_congr rfl fun j _ => _
+    refine sum_congr rfl fun i _ => sum_congr rfl fun j _ => ?_
     split_ifs <;> rfl
   map_add' x y := by
     refine Finsupp.ext fun a => ?_
@@ -213,25 +180,21 @@ def RatCoeffEquiv.aux : ratCoeff s ≃ₐ[ℚ] AddMonoidAlgebra (⊥ : Intermedi
     change (x • Finsupp.single 0 (1 : K s)) a = _
     simp_rw [Finsupp.smul_single, Finsupp.single_apply]
     split_ifs <;> rfl
-#align rat_coeff_equiv.aux RatCoeffEquiv.aux
 
 @[simps! apply]
 def ratCoeffEquiv : ratCoeff s ≃ₐ[ℚ] AddMonoidAlgebra ℚ (K s) :=
   (RatCoeffEquiv.aux s).trans
     (AddMonoidAlgebra.mapRangeAlgEquiv (IntermediateField.botEquiv ℚ (K s)))
-#align rat_coeff_equiv ratCoeffEquiv
 
 theorem ratCoeffEquiv_apply_apply (x : ratCoeff s) (i : K s) :
     ratCoeffEquiv s x i =
       (IntermediateField.botEquiv ℚ (K s)) ⟨(x : AddMonoidAlgebra (K s) (K s)) i, x.2 i⟩ := by
   rw [ratCoeffEquiv_apply]; rfl
 
-#align rat_coeff_equiv_apply_apply ratCoeffEquiv_apply_apply
 
 theorem support_ratCoeffEquiv (x : ratCoeff s) :
     (ratCoeffEquiv s x).support = (x : AddMonoidAlgebra (K s) (K s)).support := by
   simp [Finsupp.support_mapRange_of_injective _ _ (AlgEquiv.injective _)]
-#align support_rat_coeff_equiv support_ratCoeffEquiv
 
 section
 
@@ -244,8 +207,7 @@ noncomputable def mapDomainFixed : Subalgebra F (AddMonoidAlgebra F (K s)) where
   algebraMap_mem' r f := by
     change Finsupp.equivMapDomain f.toEquiv (Finsupp.single _ _) = Finsupp.single _ _
     rw [Finsupp.equivMapDomain_single]
-    change Finsupp.single (f 0) _ = _; rw [AlgEquiv.map_zero]
-#align map_domain_fixed mapDomainFixed
+    change Finsupp.single (f 0) _ = _; rw [map_zero]
 
 instance : CoeFun (mapDomainFixed s F) fun _ => (K s) → F where
   coe f := f.1
@@ -254,14 +216,13 @@ theorem mem_mapDomainFixed_iff (x : AddMonoidAlgebra F (K s)) :
     x ∈ mapDomainFixed s F ↔ ∀ i j, i ∈ MulAction.orbit (Gal s) j → x i = x j := by
   simp_rw [MulAction.mem_orbit_iff]
   change (∀ f : Gal s, Finsupp.equivMapDomain (↑(AlgEquiv.toAddEquiv f)) x = x) ↔ _
-  refine' ⟨fun h i j hij => _, fun h f => _⟩
+  refine ⟨fun h i j hij => ?_, fun h f => ?_⟩
   · obtain ⟨f, rfl⟩ := hij
     rw [AlgEquiv.smul_def, ← DFunLike.congr_fun (h f) (f j)]
     change x (f.symm (f j)) = _; rw [AlgEquiv.symm_apply_apply]
   · ext i; change x (f.symm i) = x i
-    refine' (h i ((AlgEquiv.symm f) i) ⟨f, _⟩).symm
+    refine (h i ((AlgEquiv.symm f) i) ⟨f, ?_⟩).symm
     rw [AlgEquiv.smul_def, AlgEquiv.apply_symm_apply]
-#align mem_map_domain_fixed_iff mem_mapDomainFixed_iff
 
 noncomputable def mapDomainFixedEquivSubtype :
     mapDomainFixed s F ≃
@@ -271,7 +232,6 @@ noncomputable def mapDomainFixedEquivSubtype :
   invFun f := ⟨f, (mem_mapDomainFixed_iff s F f).mpr f.2⟩
   left_inv _ := rfl
   right_inv _ := rfl
-#align map_domain_fixed_equiv_subtype mapDomainFixedEquivSubtype
 
 end
 
@@ -282,50 +242,44 @@ variable (F : Type*) [Field F] [Algebra ℚ F]
 open GalConjClasses
 
 def toConjEquiv : mapDomainFixed s F ≃ (GalConjClasses ℚ (K s) →₀ F) := by
-  refine' (mapDomainFixedEquivSubtype s F).trans _
+  refine (mapDomainFixedEquivSubtype s F).trans ?_
   let f'
       (f : { f : AddMonoidAlgebra F (K s) // MulAction.orbitRel (Gal s) (K s) ≤ Setoid.ker ↑f }) :=
     @Quotient.liftFinsupp _ _ (IsGalConj.setoid _ _) _ (f : AddMonoidAlgebra F (K s)) f.2
-  refine'
+  refine
     { toFun := f'
-      invFun := fun f => ⟨_, _⟩
-      left_inv := _
-      right_inv := _ }
-  · refine' ⟨f.support.biUnion fun i => i.orbit.toFinset, fun x => f (GalConjClasses.mk ℚ x),
-      fun i => _⟩
+      invFun := fun f => ⟨?_, ?_⟩
+      left_inv := ?_
+      right_inv := ?_ }
+  · refine ⟨f.support.biUnion fun i => i.orbit.toFinset, fun x => f (GalConjClasses.mk ℚ x),
+      fun i => ?_⟩
     simp_rw [mem_biUnion, Set.mem_toFinset, mem_orbit, Finsupp.mem_support_iff, exists_eq_right']
   · change ∀ i j, i ∈ MulAction.orbit (Gal s) j → f (Quotient.mk'' i) = f (Quotient.mk'' j)
     exact fun i j h => congr_arg f (Quotient.sound' h)
   · exact fun _ => Subtype.eq <| Finsupp.ext fun x => rfl
-  · refine' fun f => Finsupp.ext fun x => Quotient.inductionOn' x fun i => rfl
-#align to_conj_equiv toConjEquiv
+  · refine fun f => Finsupp.ext fun x => Quotient.inductionOn' x fun i => rfl
 
 @[simp 1001] -- LHS simplifies
 theorem toConjEquiv_apply_apply_mk (f : mapDomainFixed s F) (i : K s) :
     toConjEquiv s F f (mk ℚ i) = f i :=
   rfl
-#align to_conj_equiv_apply_apply_mk toConjEquiv_apply_apply_mk
 
 @[simp]
 theorem toConjEquiv_symm_apply_apply (f : GalConjClasses ℚ (K s) →₀ F) (i : K s) :
     (toConjEquiv s F).symm f i = f (mk ℚ i) :=
   rfl
-#align to_conj_equiv_symm_apply_apply toConjEquiv_symm_apply_apply
 
 @[simp]
 theorem toConjEquiv_apply_apply (f : mapDomainFixed s F) (i : GalConjClasses ℚ (K s)) :
     toConjEquiv s F f i = f i.out := by rw [← i.out_eq, toConjEquiv_apply_apply_mk, i.out_eq]
-#align to_conj_equiv_apply_apply toConjEquiv_apply_apply
 
 @[simp 1001] -- LHS simplifies
 theorem toConjEquiv_apply_zero_eq (f : mapDomainFixed s F) : toConjEquiv s F f 0 = f 0 := by
   rw [toConjEquiv_apply_apply, GalConjClasses.zero_out]
-#align to_conj_equiv_apply_zero_eq toConjEquiv_apply_zero_eq
 
 @[simp 1001] -- LHS simplifies
 theorem toConjEquiv_symm_apply_zero_eq (f : GalConjClasses ℚ (K s) →₀ F) :
     (toConjEquiv s F).symm f 0 = f 0 := by rw [toConjEquiv_symm_apply_apply]; rfl
-#align to_conj_equiv_symm_apply_zero_eq toConjEquiv_symm_apply_zero_eq
 
 instance : AddCommMonoid (mapDomainFixed s F) :=
   letI : AddCommGroup (mapDomainFixed s F) := NonUnitalNonAssocRing.toAddCommGroup
@@ -345,7 +299,6 @@ def toConjLinearEquiv : mapDomainFixed s F ≃ₗ[F] GalConjClasses ℚ (K s) �
       rw [Finsupp.coe_smul, Pi.smul_apply]
       rw [Pi.smul_apply]
       rw [toConjEquiv_apply_apply] }
-#align to_conj_linear_equiv toConjLinearEquiv
 
 namespace Finsupp.GalConjClasses
 
@@ -354,7 +307,6 @@ instance : One (GalConjClasses ℚ (K s) →₀ F) where
 
 theorem one_def : (1 : GalConjClasses ℚ (K s) →₀ F) = toConjLinearEquiv s F 1 :=
   rfl
-#align finsupp.gal_conj_classes.one_def Finsupp.GalConjClasses.one_def
 
 instance : Mul (GalConjClasses ℚ (K s) →₀ F) where
   mul x y :=
@@ -364,7 +316,6 @@ theorem mul_def (x y : GalConjClasses ℚ (K s) →₀ F) :
     x * y =
       toConjLinearEquiv s F ((toConjLinearEquiv s F).symm x * (toConjLinearEquiv s F).symm y) :=
   rfl
-#align finsupp.gal_conj_classes.mul_def Finsupp.GalConjClasses.mul_def
 
 instance : CommSemigroup (GalConjClasses ℚ (K s) →₀ F) where
   mul_assoc a b c := by
@@ -444,13 +395,11 @@ theorem one_eq_single : (1 : GalConjClasses ℚ (K s) →₀ F) = Finsupp.single
   simp_rw [AddMonoidAlgebra.one_def, Finsupp.single_apply]
   change (ite (0 = i.out) 1 0 : F) = ite (0 = i) 1 0
   simp_rw [@eq_comm _ _ i.out, @eq_comm _ _ i, GalConjClasses.out_eq_zero_iff]
-#align finsupp.gal_conj_classes.one_eq_single Finsupp.GalConjClasses.one_eq_single
 
 theorem algebraMap_eq_single (x : F) :
     algebraMap F (GalConjClasses ℚ (K s) →₀ F) x = Finsupp.single 0 x := by
   change x • (1 : GalConjClasses ℚ (K s) →₀ F) = Finsupp.single 0 x
   rw [one_eq_single, Finsupp.smul_single, smul_eq_mul, mul_one]
-#align finsupp.gal_conj_classes.algebra_map_eq_single Finsupp.GalConjClasses.algebraMap_eq_single
 
 end Finsupp.GalConjClasses
 
@@ -468,7 +417,6 @@ def toConjAlgEquiv : mapDomainFixed s F ≃ₐ[F] GalConjClasses ℚ (K s) →�
       simp_rw [Finsupp.single_apply]
       change ite (0 = i.out) r 0 = ite (0 = i) r 0
       simp_rw [@eq_comm _ _ i.out, @eq_comm _ _ i, out_eq_zero_iff] }
-#align to_conj_alg_equiv toConjAlgEquiv
 
 theorem ToConjEquivSymmSingle.aux (x : GalConjClasses ℚ (K s)) (a : F) :
     (Finsupp.indicator x.orbit.toFinset fun _ _ => a) ∈ mapDomainFixed s F := by
@@ -478,7 +426,6 @@ theorem ToConjEquivSymmSingle.aux (x : GalConjClasses ℚ (K s)) (a : F) :
   simp_rw [mem_orbit, eq_iff_iff]
   apply Eq.congr_left
   rwa [GalConjClasses.eq]
-#align to_conj_equiv_symm_single.aux ToConjEquivSymmSingle.aux
 
 theorem toConjEquiv_symm_single (x : GalConjClasses ℚ (K s)) (a : F) :
     (toConjEquiv s F).symm (Finsupp.single x a) =
@@ -488,7 +435,6 @@ theorem toConjEquiv_symm_single (x : GalConjClasses ℚ (K s)) (a : F) :
   change Finsupp.single x a i = Finsupp.indicator x.orbit.toFinset (fun _ _ => a) i.out
   rw [Finsupp.single_apply, Finsupp.indicator_apply]; dsimp; congr 1
   rw [Set.mem_toFinset, mem_orbit, out_eq, @eq_comm _ i]
-#align to_conj_equiv_symm_single toConjEquiv_symm_single
 
 theorem single_prod_apply_zero_ne_zero_iff (x : GalConjClasses ℚ (K s)) {a : F} (ha : a ≠ 0)
     (y : GalConjClasses ℚ (K s)) {b : F} (hb : b ≠ 0) :
@@ -510,13 +456,11 @@ theorem single_prod_apply_zero_ne_zero_iff (x : GalConjClasses ℚ (K s)) {a : F
   push_neg
   simp_rw [Prod.exists, mem_product, Set.mem_toFinset]
   exact GalConjClasses.exist_mem_orbit_add_eq_zero x y
-#align single_prod_apply_zero_ne_zero_iff single_prod_apply_zero_ne_zero_iff
 
 theorem single_prod_apply_zero_eq_zero_iff (x : GalConjClasses ℚ (K s)) {a : F} (ha : a ≠ 0)
     (y : GalConjClasses ℚ (K s)) {b : F} (hb : b ≠ 0) :
     (Finsupp.single x a * Finsupp.single y b) 0 = 0 ↔ x ≠ -y :=
   (single_prod_apply_zero_ne_zero_iff s F x ha y hb).not_right
-#align single_prod_apply_zero_eq_zero_iff single_prod_apply_zero_eq_zero_iff
 
 end toConjEquiv
 
@@ -524,30 +468,25 @@ open Complex
 
 section Eval
 
-set_option linter.uppercaseLean3 false
-
 variable (F : Type*) [Field F] [Algebra F ℂ]
 
 def Eval : AddMonoidAlgebra F (K s) →ₐ[F] ℂ :=
   AddMonoidAlgebra.lift F (K s) ℂ
     (expMonoidHom.comp (AddMonoidHom.toMultiplicative (algebraMap (K s) ℂ).toAddMonoidHom))
-#align Eval Eval
 
 theorem Eval_apply (x : AddMonoidAlgebra F (K s)) :
     Eval s F x = x.sum fun a c => c • exp (algebraMap (K s) ℂ a) := by
   rw [Eval, AddMonoidAlgebra.lift_apply]; rfl
-#align Eval_apply Eval_apply
 
 theorem Eval_ratCoeff (x : ratCoeff s) : Eval s (K s) x = Eval s ℚ (ratCoeffEquiv s x) := by
   simp_rw [Eval_apply, Finsupp.sum, support_ratCoeffEquiv, ratCoeffEquiv_apply_apply]
-  refine' sum_congr rfl fun i _ => _
+  refine sum_congr rfl fun i _ => ?_
   simp_rw [Algebra.smul_def, IsScalarTower.algebraMap_eq ℚ (K s) ℂ, RingHom.comp_apply]
   congr 2
   simp_rw [IsScalarTower.algebraMap_apply ℚ (⊥ : IntermediateField ℚ (K s)) (K s),
     ← IntermediateField.botEquiv_symm]
   rw [AlgEquiv.symm_apply_apply]
   rfl
-#align Eval_rat_coeff Eval_ratCoeff
 
 theorem Eval_toConjAlgEquiv_symm (x : GalConjClasses ℚ (K s) →₀ ℚ) :
     Eval s ℚ ((toConjAlgEquiv s ℚ).symm x) =
@@ -562,7 +501,6 @@ theorem Eval_toConjAlgEquiv_symm (x : GalConjClasses ℚ (K s) →₀ ℚ) :
     fun s' b => Finsupp.sum_indicator_index _ fun i _ => by rw [zero_smul]
   simp_rw [toConjEquiv_symm_single, AddSubmonoidClass.coe_finset_sum, map_sum,
     Eval_apply, this, smul_sum]
-#align Eval_to_conj_alg_equiv_symm Eval_toConjAlgEquiv_symm
 
 end Eval
 
@@ -602,7 +540,7 @@ theorem linear_independent_exp_aux2 (s : Finset ℂ) (x : AddMonoidAlgebra ℚ (
   have V''0 : V'' ≠ 0 := by
     have : NoZeroDivisors (GalConjClasses ℚ (K s) →₀ ℚ) := IsDomain.to_noZeroDivisors _
     rw [V''_def]
-    refine' mul_ne_zero V'0 fun h => _
+    refine mul_ne_zero V'0 fun h => ?_
     rw [Finsupp.single_eq_zero] at h
     exact one_ne_zero h
   have hV'' : V'' 0 ≠ 0 := by
@@ -612,7 +550,7 @@ theorem linear_independent_exp_aux2 (s : Finset ℂ) (x : AddMonoidAlgebra ℚ (
       ((Finsupp.single i (V' i) * Finsupp.single (-i) 1 : GalConjClasses ℚ (K s) →₀ ℚ) 0 + 0) ≠ 0
     · congr 1
       rw [Finsupp.finset_sum_apply]
-      refine' sum_eq_zero fun j hj => _
+      refine sum_eq_zero fun j hj => ?_
       rw [mem_erase, Finsupp.mem_support_iff] at hj
       rw [single_prod_apply_zero_eq_zero_iff _ _ _ hj.2]
       · rw [neg_neg]; exact hj.1
@@ -632,7 +570,6 @@ theorem linear_independent_exp_aux2 (s : Finset ℂ) (x : AddMonoidAlgebra ℚ (
   congr 1
   simp_rw [GalConjClasses.orbit_zero, Set.toFinset_singleton, sum_singleton, map_zero, exp_zero,
     Rat.smul_one_eq_cast]
-#align linear_independent_exp_aux2 linear_independent_exp_aux2
 
 instance : AddZeroClass { x // x ∈ ratCoeff s } := inferInstance
 
@@ -679,7 +616,6 @@ theorem linear_independent_exp_aux1 (s : Finset ℂ) (x : AddMonoidAlgebra (K s)
     rw [RingHom.mem_ker, ← Eval_ratCoeff]
     rwa [RingHom.mem_ker] at U_ker
   exact linear_independent_exp_aux2 s U' U'0 U'_ker
-#align linear_independent_exp_aux1 linear_independent_exp_aux1
 
 end
 
@@ -689,8 +625,6 @@ variable {ι : Type*} [Fintype ι]
 
 abbrev range (u : ι → ℂ) (v : ι → ℂ) : Finset ℂ :=
   univ.image u ∪ univ.image v
-set_option linter.uppercaseLean3 false in
-#align Range range
 
 theorem linear_independent_exp_aux_rat (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
@@ -754,7 +688,6 @@ theorem linear_independent_exp_aux_rat (u : ι → ℂ) (hu : ∀ i, IsIntegral 
     exact absurd rfl h
   rw [← AlgHom.coe_toRingHom, ← RingHom.mem_ker] at hf
   exact linear_independent_exp_aux1 s f f0 hf
-#align linear_independent_exp_aux_rat linear_independent_exp_aux_rat
 
 theorem linear_independent_exp_aux'' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
@@ -766,7 +699,7 @@ theorem linear_independent_exp_aux'' (u : ι → ℂ) (hu : ∀ i, IsIntegral �
   obtain ⟨w, w0, q, hq, w', h⟩ := linear_independent_exp_aux_rat u hu u_inj v hv v0 h
   let N := w.den * ∏ c in q, (w' c).den
   have wN0 : (w * N).num ≠ 0 := by
-    refine' Rat.num_ne_zero.mpr (mul_ne_zero w0 _); dsimp only
+    refine Rat.num_ne_zero.mpr (mul_ne_zero w0 ?_); dsimp only
     rw [Nat.cast_ne_zero, mul_ne_zero_iff, prod_ne_zero_iff]
     exact ⟨Rat.den_nz _, fun c _hc => Rat.den_nz _⟩
   use (w * N).num, wN0, q, hq, fun c => (w' c * N).num
@@ -784,11 +717,10 @@ theorem linear_independent_exp_aux'' (u : ι → ℂ) (hu : ∀ i, IsIntegral �
       = 0
   · congr 1
     · norm_cast
-    · refine' sum_congr rfl fun i hi => _
+    · refine sum_congr rfl fun i hi => ?_
       rw [← hw' i hi, Rat.num_intCast, ← zsmul_eq_smul_cast]
   · simp_rw [mul_comm _ (N : ℂ), mul_comm _ (N : ℚ), ← smul_smul, ← smul_sum, ← nsmul_eq_mul,
       ← nsmul_eq_smul_cast, ← smul_add, h, nsmul_zero]
-#align linear_independent_exp_aux'' linear_independent_exp_aux''
 
 theorem linear_independent_exp_aux' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
@@ -799,7 +731,7 @@ theorem linear_independent_exp_aux' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ
   obtain ⟨w, w0, q, hq, w', h⟩ := linear_independent_exp_aux'' u hu u_inj v hv v0 h
   let c : Fin q.card → GalConjClasses ℚ (K (range u v)) := fun j => q.equivFin.symm j
   have hc : ∀ j, c j ∈ q := fun j => Finset.coe_mem _
-  refine' ⟨w, w0, q.card, fun j => (c j).minpoly, _, fun j => w' (c j), _⟩
+  refine ⟨w, w0, q.card, fun j => (c j).minpoly, ?_, fun j => w' (c j), ?_⟩
   · intro j; specialize hc j
     suffices ((c j).minpoly.map (algebraMap ℚ (K (range u v)))).eval
         (algebraMap ℚ (K (range u v)) 0) ≠ 0 by
@@ -816,14 +748,13 @@ theorem linear_independent_exp_aux' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ
   rw [Equiv.sum_comp q.equivFin.symm
     ((fun c ↦ w' c • ((c.minpoly.aroots ℂ).map exp).sum) ·),
     sum_coe_sort _ (fun c ↦ w' c • ((c.minpoly.aroots ℂ).map exp).sum)]
-  refine' sum_congr rfl fun c _hc => _
+  refine sum_congr rfl fun c _hc => ?_
   have : c.minpoly.aroots ℂ =
       (c.minpoly.aroots (K (range u v))).map (algebraMap (K (range u v)) ℂ) := by
     change roots _ = _
     rw [← roots_map, Polynomial.map_map, IsScalarTower.algebraMap_eq ℚ (K (range u v)) ℂ]
     rw [splits_map_iff, RingHom.id_comp]; exact c.splits_minpoly
   rw [this, c.aroots_minpoly_eq_orbit_val, Multiset.map_map, sum_eq_multiset_sum]; rfl
-#align linear_independent_exp_aux' linear_independent_exp_aux'
 
 theorem linear_independent_exp_aux (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)
@@ -834,8 +765,8 @@ theorem linear_independent_exp_aux (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ 
   obtain ⟨w, w0, n, p, hp, w', h⟩ := linear_independent_exp_aux' u hu u_inj v hv v0 h
   choose b hb using
     fun j ↦ IsLocalization.integerNormalization_map_to_map (nonZeroDivisors ℤ) (p j)
-  refine'
-    ⟨w, w0, n, fun i => IsLocalization.integerNormalization (nonZeroDivisors ℤ) (p i), _, w', _⟩
+  refine
+    ⟨w, w0, n, fun i => IsLocalization.integerNormalization (nonZeroDivisors ℤ) (p i), ?_, w', ?_⟩
   · intro j
     suffices
       aeval (algebraMap ℤ ℚ 0) (IsLocalization.integerNormalization (nonZeroDivisors ℤ) (p j)) ≠ 0
@@ -843,10 +774,9 @@ theorem linear_independent_exp_aux (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ 
     rw [map_zero, aeval_def, eval₂_eq_eval_map, hb, eval_smul, smul_ne_zero_iff]
     exact ⟨nonZeroDivisors.coe_ne_zero _, hp j⟩
   rw [← h, add_right_inj]
-  refine' sum_congr rfl fun j _hj => congr_arg _ (congr_arg _ (Multiset.map_congr _ fun _ _ => rfl))
+  refine sum_congr rfl fun j _hj => congr_arg _ (congr_arg _ (Multiset.map_congr ?_ fun _ _ => rfl))
   change roots _ = roots _
   rw [IsScalarTower.algebraMap_eq ℤ ℚ ℂ, ← Polynomial.map_map, hb,
     zsmul_eq_mul, ← C_eq_intCast, Polynomial.map_mul, map_C, roots_C_mul]
   rw [map_ne_zero_iff _ (algebraMap ℚ ℂ).injective, Int.cast_ne_zero]
   exact nonZeroDivisors.coe_ne_zero _
-#align linear_independent_exp_aux linear_independent_exp_aux
