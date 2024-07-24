@@ -337,33 +337,45 @@ lemma stalkMap_comp {X Y Z : LocallyRingedSpace.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
     (f ≫ g : X ⟶ Z).stalkMap x = g.stalkMap (f.val.base x) ≫ f.stalkMap x :=
   PresheafedSpace.stalkMap.comp f.val g.val x
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma stalkSpecializes_stalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x x' : X)
+    (h : x ⤳ x') : Y.presheaf.stalkSpecializes (f.val.base.map_specializes h) ≫ f.stalkMap x =
+      f.stalkMap x' ≫ X.presheaf.stalkSpecializes h :=
+  PresheafedSpace.stalkMap.stalkSpecializes_stalkMap f.val h
+
 @[reassoc]
 lemma stalkMap_congr {X Y : LocallyRingedSpace.{u}} (f g : X ⟶ Y) (hfg : f = g) (x x' : X)
-    (hxx' : x = x') : f.stalkMap x ≫ eqToHom (by rw [hxx']) =
-      eqToHom (by rw [hfg, hxx']) ≫ g.stalkMap x' :=
-  PresheafedSpace.stalkMap.congr f.val g.val (by rw [hfg]) x x' hxx'
+    (hxx' : x = x') : f.stalkMap x ≫ X.presheaf.stalkSpecializes (specializes_of_eq hxx'.symm) =
+      Y.presheaf.stalkSpecializes (specializes_of_eq <| hfg ▸ hxx' ▸ rfl) ≫ g.stalkMap x' := by
+  subst hfg
+  subst hxx'
+  simp
 
 @[reassoc]
 lemma stalkMap_congr_hom {X Y : LocallyRingedSpace.{u}} (f g : X ⟶ Y) (hfg : f = g) (x : X) :
-    f.stalkMap x =
-      eqToHom (by rw [hfg]) ≫ g.stalkMap x :=
-  PresheafedSpace.stalkMap.congr_hom f.val g.val (by rw [hfg]) x
+    f.stalkMap x = Y.presheaf.stalkSpecializes (specializes_of_eq <| hfg ▸ rfl) ≫
+      g.stalkMap x := by
+  subst hfg
+  simp
 
 @[reassoc]
 lemma stalkMap_congr_point {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x x' : X) (hxx' : x = x') :
-    f.stalkMap x ≫ eqToHom (by rw [hxx']) =
-      eqToHom (by rw [hxx']) ≫ f.stalkMap x' :=
-  PresheafedSpace.stalkMap.congr_point f.val x x' hxx'
+    f.stalkMap x ≫ X.presheaf.stalkSpecializes (specializes_of_eq hxx'.symm) =
+      Y.presheaf.stalkSpecializes (specializes_of_eq <| hxx' ▸ rfl) ≫ f.stalkMap x' := by
+  subst hxx'
+  simp
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma stalkMap_hom_inv {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) (y : Y) :
-    e.hom.stalkMap (e.inv.val.base y) ≫ e.inv.stalkMap y = eqToHom (by simp) := by
+    e.hom.stalkMap (e.inv.val.base y) ≫ e.inv.stalkMap y =
+      Y.presheaf.stalkSpecializes (specializes_of_eq <| by simp) := by
   rw [← stalkMap_comp, LocallyRingedSpace.stalkMap_congr_hom (e.inv ≫ e.hom) (𝟙 _) (by simp)]
   simp
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma stalkMap_inv_hom {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) (x : X) :
-    e.inv.stalkMap (e.hom.val.base x) ≫ e.hom.stalkMap x = eqToHom (by simp) := by
+    e.inv.stalkMap (e.hom.val.base x) ≫ e.hom.stalkMap x =
+      X.presheaf.stalkSpecializes (specializes_of_eq <| by simp) := by
   rw [← stalkMap_comp, LocallyRingedSpace.stalkMap_congr_hom (e.hom ≫ e.inv) (𝟙 _) (by simp)]
   simp
 
