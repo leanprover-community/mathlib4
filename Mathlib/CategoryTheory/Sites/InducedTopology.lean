@@ -76,7 +76,7 @@ def inducedTopology : GrothendieckTopology C where
     rw [Sieve.pullback_comp]
     apply K.pullback_stable
     clear iZU Z
-    apply K.transitive (G.functorPushforward_hasLift_mem _ iUW)
+    apply K.transitive (G.functorPushforward_imageSieve_mem _ iUW)
     rintro Z _ ⟨U₁, iU₁U, iZU₁, ⟨iU₁W, e₂⟩, rfl⟩
     rw [Sieve.pullback_comp]
     apply K.pullback_stable

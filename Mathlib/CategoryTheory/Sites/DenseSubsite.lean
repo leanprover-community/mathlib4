@@ -129,7 +129,7 @@ theorem functorPullback_pushforward_covering [G.IsLocallyFull K] {X : C}
   apply K.transitive (G.is_cover_of_isCoverDense _ _) _
   rintro W _ ⟨Z, iWZ, iZY, rfl⟩
   rw [Sieve.pullback_comp]; apply K.pullback_stable; clear W iWZ
-  apply K.superset_covering ?_ (G.functorPushforward_hasLift_mem _ (iZY ≫ iYX))
+  apply K.superset_covering ?_ (G.functorPushforward_imageSieve_mem _ (iZY ≫ iYX))
   rintro W _ ⟨V, iVZ, iWV, ⟨iVX, e⟩, rfl⟩
   exact ⟨_, iVX, iWV, by simpa [e] using T.1.downward_closed hiYX (G.map iVZ ≫ iZY), by simp [e]⟩
 
@@ -550,7 +550,7 @@ instance faithful_sheafPushforwardContinuous [G.IsDenseSubsite J K] :
 lemma hasLift_mem [G.IsDenseSubsite J K] {U V} (f : G.obj U ⟶ G.obj V) :
     Sieve.hasLift G f ∈ J _ :=
   letI := IsDenseSubsite.isLocallyFull J K G
-  IsDenseSubsite.functorPushforward_mem_iff.mp (G.functorPushforward_hasLift_mem K f)
+  IsDenseSubsite.functorPushforward_mem_iff.mp (G.functorPushforward_imageSieve_mem K f)
 
 lemma equalizer_mem [G.IsDenseSubsite J K] {U V} (f₁ f₂ : U ⟶ V) (e : G.map f₁ = G.map f₂) :
     Sieve.equalizer f₁ f₂ ∈ J _ :=
