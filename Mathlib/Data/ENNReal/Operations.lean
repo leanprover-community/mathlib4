@@ -334,12 +334,6 @@ protected theorem add_sub_cancel_left (ha : a ≠ ∞) : a + b - a = b :=
 protected theorem add_sub_cancel_right (hb : b ≠ ∞) : a + b - b = a :=
   (cancel_of_ne hb).add_tsub_cancel_right
 
-protected theorem sub_add_eq_add_sub (hab : b ≤ a) (b_ne_top : b ≠ ∞) (c_ne_top : c ≠ ∞) :
-    a - b + c = a + c - b := by
-  refine (sub_eq_of_add_eq b_ne_top ?_).symm
-  simp only [add_assoc, add_comm c b]
-  simpa only [← add_assoc] using (add_left_inj c_ne_top).mpr <| tsub_add_cancel_of_le hab
-
 protected theorem lt_add_of_sub_lt_left (h : a ≠ ∞ ∨ b ≠ ∞) : a - b < c → a < b + c := by
   obtain rfl | hb := eq_or_ne b ∞
   · rw [top_add, lt_top_iff_ne_top]
