@@ -474,6 +474,25 @@ def findProjectionIndices (strName projName : Name) : MetaM (List Nat) := do
   let allProjs := pathToField ++ [fullProjName]
   return allProjs.map (env.getProjectionFnInfo? · |>.get!.i)
 
+/-- We do not consider `toFoo` to be a prefix to `toFoo_1`, as the latter is often
+a different field with an auto-generated name. -/
+private def dropPrefixIfNotNumber? (s : String) (pre : Substring) : Option Substring := do
+  let ret ← Substring.dropPrefix? s pre
+  ret.toString.data.head?.elim ret
+    (fun x ↦ if 48 ≤ x.val ∧ x.val < 58 then none else return ret)
+
+private def isPrefixOfAndNotNumber (s p : String) : Bool := (dropPrefixIfNotNumber? p s).isSome
+
+private def splitOnNotNumber (s delim : String) : List String :=
+  (process (s.splitOn delim).reverse "").reverse where
+    process (arr : List String) (tail : String) := match arr with
+      | [] => []
+      | (x :: xs) =>
+        if (x.data.head?.elim false (fun x ↦ 48 ≤ x.val ∧ x.val < 58)) then
+          process xs (tail ++ delim ++ x)
+        else
+          List.cons (x ++ tail) (process xs "")
+
 /-- Auxiliary function of `getCompositeOfProjections`. -/
 partial def getCompositeOfProjectionsAux (proj : String) (e : Expr) (pos : Array Nat)
     (args : Array Expr) : MetaM (Expr × Array Nat) := do
@@ -482,7 +501,7 @@ partial def getCompositeOfProjectionsAux (proj : String) (e : Expr) (pos : Array
     throwError "{e} doesn't have a structure as type"
   let projs := getStructureFieldsFlattened env structName
   let projInfo := projs.toList.map fun p ↦ do
-    ((← proj.dropPrefix? (p.lastComponentAsString ++ "_")).toString, p)
+    ((← dropPrefixIfNotNumber? proj (p.lastComponentAsString ++ "_")).toString, p)
   let some (projRest, projName) := projInfo.reduceOption.getLast? |
     throwError "Failed to find constructor {proj.dropRight 1} in structure {structName}."
   let newE ← mkProjection e projName
@@ -1023,7 +1042,8 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
     if !todoNext.isEmpty && str ∉ cfg.notRecursive then
       let firstTodo := todoNext.head!.1
       throwError "Invalid simp lemma {nm.appendAfter firstTodo}.\nProjection \
-        {(firstTodo.splitOn "_")[1]!} doesn't exist, because target {str} is not a structure."
+        {(splitOnNotNumber firstTodo "_")[1]!} doesn't exist, \
+        because target {str} is not a structure."
     if cfg.fullyApplied then
       addProjection stxProj univs nm tgt lhsAp rhsAp newArgs cfg
     else
@@ -1106,9 +1126,9 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
   trace[simps.debug] "Next todo: {todoNext}"
   -- check whether all elements in `todo` have a projection as prefix
   if let some (x, _) := todo.find? fun (x, _) ↦ projs.all
-    fun proj ↦ !(proj.lastComponentAsString ++ "_").isPrefixOf x then
+    fun proj ↦ !isPrefixOfAndNotNumber (proj.lastComponentAsString ++ "_") x then
     let simpLemma := nm.appendAfter x
-    let neededProj := (x.splitOn "_")[0]!
+    let neededProj := (splitOnNotNumber x "_")[0]!
     throwError "Invalid simp lemma {simpLemma}. \
       Structure {str} does not have projection {neededProj}.\n\
       The known projections are:\
@@ -1120,7 +1140,8 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
   let nms ← projInfo.concatMapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ ↦ do
     let newType ← inferType newRhs
     let newTodo := todo.filterMap
-      fun (x, stx) ↦ (x.dropPrefix? (proj.lastComponentAsString ++ "_")).map (·.toString, stx)
+      fun (x, stx) ↦ (dropPrefixIfNotNumber? x (proj.lastComponentAsString ++ "_")).map
+        (·.toString, stx)
     -- we only continue with this field if it is default or mentioned in todo
     if !(isDefault && todo.isEmpty) && newTodo.isEmpty then return #[]
     let newLhs := projExpr.instantiateLambdasOrApps #[lhsAp]

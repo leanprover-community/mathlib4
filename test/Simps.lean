@@ -1183,3 +1183,15 @@ class Artificial (n : Nat) where
   one : Nat
 
 initialize_simps_projections Artificial
+
+/-!
+We do not consider `field` to be a prefix to `field_1`, as the latter is often
+a different field with an auto-generated name.
+-/
+
+structure Foo where
+  field : Nat
+  field_1 : Nat × Nat
+
+@[simps field field_1 field_1_fst]
+def myFoo : Foo := ⟨1, ⟨1, 1⟩⟩
