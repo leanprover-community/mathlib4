@@ -1,6 +1,24 @@
+/-
+Copyright (c) 2024 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
 import Mathlib.Topology.CompactOpen
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Measure.Regular
+
+/-!
+# Continuity of the preimage of a set under a measure preserving continuous function
+
+In this file we prove that the preimage of a null measurable set `s : Set Y`
+under a measure preserving continuous function `f : C(X, Y)` is continuous in `f`
+in the sense that `μ ((f a ⁻¹' s) ∆ (g ⁻¹' s))` tends to zero as `f a` tends to `g`.
+
+As a corollary, we show that
+for a continuous family of continuous maps `f z : C(X, Y)`,
+a null measurable set `s`, and a null measurable set `t` of finite measure,
+the set of parameters `z` such that `f z ⁻¹' t` is a.e. equal to `s` is a closed set.
+-/
 
 open Filter Set
 open scoped ENNReal symmDiff Topology
@@ -83,8 +101,8 @@ Then for any `s`, the set of parameters `z`
 such that the preimage of `t` under `f_z` is a.e. equal to `s`
 is a closed set.
 
-In particular, if `X = Y` and `s = t`, then we see that the a.e. stabilizer of a set
-is a closed set. -/
+In particular, if `X = Y` and `s = t`,
+then we see that the a.e. stabilizer of a set is a closed set. -/
 theorem isClosed_setOf_preimage_ae_eq {f : Z → C(X, Y)} (hf : Continuous f)
     (hfm : ∀ z, MeasurePreserving (f z) μ ν) (s : Set X)
     {t : Set Y} (htm : NullMeasurableSet t ν) (ht : ν t ≠ ∞) :
