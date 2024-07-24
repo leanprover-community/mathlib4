@@ -238,11 +238,11 @@ theorem comp_coeBase {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
 
 -- Porting note: removed elementwise attribute, as generated lemmas were trivial.
 @[reassoc]
-theorem comp.base {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
+theorem comp_base {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).base = f.base ≫ g.base :=
   rfl
 
-theorem comp.base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+theorem comp_base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g).base x = g.base (f.base x) := by
   simp
 

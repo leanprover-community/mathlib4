@@ -944,7 +944,7 @@ instance comp (g : Z ⟶ Y) [LocallyRingedSpace.IsOpenImmersion g] :
   PresheafedSpace.IsOpenImmersion.comp f.1 g.1
 
 instance mono : Mono f :=
-  LocallyRingedSpace.forgetToSheafedSpace.mono_of_mono_map (show Mono f.1 by infer_instance)
+  LocallyRingedSpace.forgetToSheafedSpace.mono_of_mono_map (show Mono f.val by infer_instance)
 
 instance : SheafedSpace.IsOpenImmersion (LocallyRingedSpace.forgetToSheafedSpace.map f) :=
   H
@@ -961,7 +961,7 @@ def pullbackConeOfLeft : PullbackCone f g := by
     rw [← IsIso.eq_inv_comp] at this
     rw [this]
     infer_instance
-  · exact LocallyRingedSpace.Hom.ext _ _
+  · exact LocallyRingedSpace.Hom.ext' _ _
         (PresheafedSpace.IsOpenImmersion.pullback_cone_of_left_condition _ _)
 
 instance : LocallyRingedSpace.IsOpenImmersion (pullbackConeOfLeft f g).snd :=
@@ -972,9 +972,9 @@ def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
   PullbackCone.isLimitAux' _ fun s => by
     refine ⟨LocallyRingedSpace.Hom.mk (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift
         f.1 g.1 (PullbackCone.mk _ _ (congr_arg LocallyRingedSpace.Hom.val s.condition))) ?_,
-      LocallyRingedSpace.Hom.ext _ _
+      LocallyRingedSpace.Hom.ext' _ _
         (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_fst f.1 g.1 _),
-      LocallyRingedSpace.Hom.ext _ _
+      LocallyRingedSpace.Hom.ext' _ _
           (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_snd f.1 g.1 _), ?_⟩
     · intro x
       have :=
@@ -988,7 +988,7 @@ def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
       infer_instance
     · intro m _ h₂
       rw [← cancel_mono (pullbackConeOfLeft f g).snd]
-      exact h₂.trans <| LocallyRingedSpace.Hom.ext _ _
+      exact h₂.trans <| LocallyRingedSpace.Hom.ext' _ _
         (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_snd f.1 g.1 <|
           PullbackCone.mk s.fst.1 s.snd.1 <| congr_arg LocallyRingedSpace.Hom.val s.condition).symm
 
@@ -1118,7 +1118,7 @@ theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
   have : _ = (pullback.fst f g).val.base :=
     PreservesPullback.iso_hom_fst
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _) f g
-  erw [LocallyRingedSpace.comp_val, SheafedSpace.comp_base, ← this, ← Category.assoc, coe_comp]
+  erw [SheafedSpace.comp_base, ← this, ← Category.assoc, coe_comp]
    -- now `erw` after #13170
   rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
   -- Porting note (#11224): change `rw` to `erw` on this lemma
