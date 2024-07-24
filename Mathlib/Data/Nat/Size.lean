@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Nat.Bits
-import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Order.Lattice
 
 /-! Lemmas about `size`. -/
