@@ -400,7 +400,7 @@ lemma _root_.MeasureTheory.Measure.compProd_fst_condKernel
 
 set_option linter.unusedVariables false in
 /-- Auxiliary lemma for `condKernel_apply_of_ne_zero`. -/
-@[deprecated Measure.IsCondKernel.apply_of_ne_zero (since := "2024-07-24")]
+@[deprecated Measure.IsCondKernel.apply_of_ne_zero (since := "2024-07-24"), nolint unusedArguments]
 lemma _root_.MeasureTheory.Measure.condKernel_apply_of_ne_zero_of_measurableSet
     [MeasurableSingletonClass α] {x : α} (hx : ρ.fst {x} ≠ 0) {s : Set Ω} (hs : MeasurableSet s) :
     ρ.condKernel x s = (ρ.fst {x})⁻¹ * ρ ({x} ×ˢ s) :=

@@ -156,7 +156,7 @@ variable [CountableOrCountablyGenerated α β] {ρ : Measure (β × Ω)} [IsFini
 
 lemma lintegral_condKernel_mem {s : Set (β × Ω)} (hs : MeasurableSet s) :
     ∫⁻ x, ρ.condKernel x {y | (x, y) ∈ s} ∂ρ.fst = ρ s := by
-  conv_rhs => rw [← compProd_fst_condKernel ρ]
+  conv_rhs => rw [← ρ.disintegrate ρ.condKernel]
   simp_rw [compProd_apply hs]
   rfl
 
@@ -164,7 +164,7 @@ lemma setLIntegral_condKernel_eq_measure_prod {s : Set β} (hs : MeasurableSet s
     (ht : MeasurableSet t) :
     ∫⁻ b in s, ρ.condKernel b t ∂ρ.fst = ρ (s ×ˢ t) := by
   have : ρ (s ×ˢ t) = (ρ.fst ⊗ₘ ρ.condKernel) (s ×ˢ t) := by
-    congr; exact (compProd_fst_condKernel ρ).symm
+    congr; exact (ρ.disintegrate _).symm
   rw [this, compProd_apply (hs.prod ht)]
   classical
   have : ∀ b, ρ.condKernel b (Prod.mk b ⁻¹' s ×ˢ t)
@@ -179,14 +179,14 @@ alias set_lintegral_condKernel_eq_measure_prod := setLIntegral_condKernel_eq_mea
 
 lemma lintegral_condKernel (hf : Measurable f) :
     ∫⁻ b, ∫⁻ ω, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst = ∫⁻ x, f x ∂ρ := by
-  conv_rhs => rw [← compProd_fst_condKernel ρ]
+  conv_rhs => rw [← ρ.disintegrate ρ.condKernel]
   rw [lintegral_compProd hf]
 
 lemma setLIntegral_condKernel (hf : Measurable f) {s : Set β}
     (hs : MeasurableSet s) {t : Set Ω} (ht : MeasurableSet t) :
     ∫⁻ b in s, ∫⁻ ω in t, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst
       = ∫⁻ x in s ×ˢ t, f x ∂ρ := by
-  conv_rhs => rw [← compProd_fst_condKernel ρ]
+  conv_rhs => rw [← ρ.disintegrate ρ.condKernel]
   rw [setLIntegral_compProd  hf hs ht]
 
 @[deprecated (since := "2024-06-29")]
@@ -220,20 +220,20 @@ variable {ρ : Measure (β × Ω)} [IsFiniteMeasure ρ]
 lemma _root_.MeasureTheory.AEStronglyMeasurable.integral_condKernel
     (hf : AEStronglyMeasurable f ρ) :
     AEStronglyMeasurable (fun x ↦ ∫ y, f (x, y) ∂ρ.condKernel x) ρ.fst := by
-  rw [← ρ.compProd_fst_condKernel] at hf
+  rw [← ρ.disintegrate ρ.condKernel] at hf
   exact AEStronglyMeasurable.integral_kernel_compProd hf
 
 lemma integral_condKernel (hf : Integrable f ρ) :
     ∫ b, ∫ ω, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst = ∫ x, f x ∂ρ := by
-  conv_rhs => rw [← compProd_fst_condKernel ρ]
-  rw [← compProd_fst_condKernel ρ] at hf
+  conv_rhs => rw [← ρ.disintegrate ρ.condKernel]
+  rw [← ρ.disintegrate ρ.condKernel] at hf
   rw [integral_compProd hf]
 
 lemma setIntegral_condKernel {s : Set β} (hs : MeasurableSet s)
     {t : Set Ω} (ht : MeasurableSet t) (hf : IntegrableOn f (s ×ˢ t) ρ) :
     ∫ b in s, ∫ ω in t, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst = ∫ x in s ×ˢ t, f x ∂ρ := by
-  conv_rhs => rw [← compProd_fst_condKernel ρ]
-  rw [← compProd_fst_condKernel ρ] at hf
+  conv_rhs => rw [← ρ.disintegrate ρ.condKernel]
+  rw [← ρ.disintegrate ρ.condKernel] at hf
   rw [setIntegral_compProd hs ht hf]
 
 @[deprecated (since := "2024-04-17")]
@@ -275,8 +275,8 @@ theorem AEStronglyMeasurable.ae_integrable_condKernel_iff {f : α × Ω → F}
     (hf : AEStronglyMeasurable f ρ) :
     (∀ᵐ a ∂ρ.fst, Integrable (fun ω ↦ f (a, ω)) (ρ.condKernel a)) ∧
       Integrable (fun a ↦ ∫ ω, ‖f (a, ω)‖ ∂ρ.condKernel a) ρ.fst ↔ Integrable f ρ := by
-  rw [← ρ.compProd_fst_condKernel] at hf
-  conv_rhs => rw [← ρ.compProd_fst_condKernel]
+  rw [← ρ.disintegrate ρ.condKernel] at hf
+  conv_rhs => rw [← ρ.disintegrate ρ.condKernel]
   rw [Measure.integrable_compProd_iff hf]
 
 theorem Integrable.condKernel_ae {f : α × Ω → F} (hf_int : Integrable f ρ) :

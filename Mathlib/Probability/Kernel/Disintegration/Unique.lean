@@ -115,7 +115,7 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : Kernel α Ω) [IsFiniteKernel
     filter_upwards [heq] with x hx s hs
     rw [← hx, Kernel.map_apply, Measure.map_apply hf.measurable hs]
   ext s hs
-  conv_lhs => rw [← ρ.compProd_fst_condKernel]
+  conv_lhs => rw [← ρ.disintegrate ρ.condKernel]
   rw [Measure.compProd_apply hs, Measure.map_apply (measurable_id.prod_map hf.measurable) hs,
     Measure.compProd_apply]
   · congr with a
