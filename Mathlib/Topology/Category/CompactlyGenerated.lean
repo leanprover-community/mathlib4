@@ -194,7 +194,7 @@ theorem lol' (s : Set ENat) (h : ⊤ ∈ s) :
     · apply lol
       simp [h]
 
-instance {X : Type} [TopologicalSpace X] [SequentialSpace X] : CompactlyGeneratedSpace.{0} X := by
+instance {X : Type u} [TopologicalSpace X] [SequentialSpace X] : CompactlyGeneratedSpace.{u} X := by
   rw [compactlyGeneratedSpace_iff]
   refine fun s ↦ ⟨fun hs _ _ _ _ f hf ↦ hs.preimage hf,
     fun h ↦ SequentialSpace.isClosed_of_seq _ fun u p hu hup ↦ ?_⟩
@@ -227,8 +227,6 @@ instance {X : Type} [TopologicalSpace X] [SequentialSpace X] : CompactlyGenerate
         simp at hx
         exact hx.le
     exact lol _ hmm
-  rw [show p = f ⊤ by rfl]
-  change ⊤ ∈ f ⁻¹' s
   have omg : Filter.Tendsto (fun n ↦ n : ℕ → ENat) Filter.atTop (𝓝 ⊤) := by
     rw [tendsto_atTop_nhds]
     intro U mem_U hU
@@ -239,12 +237,20 @@ instance {X : Type} [TopologicalSpace X] [SequentialSpace X] : CompactlyGenerate
     apply hv
     simp only [Set.mem_Ioi, Nat.cast_lt]
     omega
+  have omg : Filter.Tendsto (fun n ↦ n : ℕ → ULift.{u} ENat) Filter.atTop (𝓝 ⊤) := by
+    apply (continuous_uLift_up.tendsto ⊤).comp
+    exact omg
+  let g : ULift.{u} ENat → X := f ∘ ULift.down
+  have hg : Continuous g := hf.comp continuous_uLift_down
+  rw [show p = g ⊤ by rfl]
+  change ⊤ ∈ g ⁻¹' s
   apply IsClosed.mem_of_tendsto _ omg
   · simp
     use 0
     rintro b -
     exact hu b
-  · apply h f hf
+  · have : CompactSpace (ULift.{u} ENat) := ULift.closedEmbedding_down.compactSpace
+    apply h g hg
 
 theorem IsClosed.isClosedMap_subtype_val {X : Type*} [TopologicalSpace X]
     {s : Set X} (hs : IsClosed s) :
