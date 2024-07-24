@@ -408,27 +408,27 @@ instance : IsSymm PGame (· ≡ ·) := ⟨fun _ _ ↦ Identical.symm⟩
 instance : IsTrans PGame (· ≡ ·) := ⟨fun _ _ _ ↦ Identical.trans⟩
 instance : IsEquiv PGame (· ≡ ·) := { }
 
-/-- A left move of `x` is identical to some left move of `y`. -/
+/-- If `x` and `y` are identical, then a left move of `x` is identical to some left move of `y`. -/
 lemma Identical.moveLeft : ∀ {x y}, x ≡ y →
     ∀ i, ∃ j, x.moveLeft i ≡ y.moveLeft j
   | mk _ _ _ _, mk _ _ _ _, ⟨hl, _⟩, i => hl.1 i
 
-/-- A left move of `y` is identical to some left move of `x`. -/
+/-- If `x` and `y` are identical, then a left move of `y` is identical to some left move of `x`. -/
 lemma Identical.moveLeft_symm : ∀ {x y}, x ≡ y →
     ∀ i, ∃ j, x.moveLeft j ≡ y.moveLeft i
   | mk _ _ _ _, mk _ _ _ _, ⟨hl, _⟩, i => hl.2 i
 
-/-- A right move of `x` is identical to some right move of `y`. -/
+/-- If `x` and `y` are identical, then a right move of `x` is identical to some right move of `y`.
+-/
 lemma Identical.moveRight : ∀ {x y}, x ≡ y →
     ∀ i, ∃ j, x.moveRight i ≡ y.moveRight j
   | mk _ _ _ _, mk _ _ _ _, ⟨_, hr⟩, i => hr.1 i
 
-/-- A right move of `y` is identical to some right move of `x`. -/
+/-- If `x` and `y` are identical, then a right move of `y` is identical to some right move of `x`.
+-/
 lemma Identical.moveRight_symm : ∀ {x y}, x ≡ y →
     ∀ i, ∃ j, x.moveRight j ≡ y.moveRight i
   | mk _ _ _ _, mk _ _ _ _, ⟨_, hr⟩, i => hr.2 i
-
-lemma Identical.trans_eq {x y z} (h₁ : x ≡ y) (h₂ : y = z) : x ≡ z := h₁.trans (of_eq h₂)
 
 theorem identical_iff' : ∀ {x y : PGame}, x ≡ y ↔
     ((∀ i, x.moveLeft i ∈ₗ y) ∧ (∀ j, y.moveLeft j ∈ₗ x)) ∧
