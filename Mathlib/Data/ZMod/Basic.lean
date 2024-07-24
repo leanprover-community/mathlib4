@@ -1368,7 +1368,6 @@ end ZMod
 section AddGroup
 variable {α : Type*} [AddGroup α] {n : ℕ}
 
---TODO: Additivise
 @[simp]
 lemma nsmul_zmod_val_inv_nsmul (hn : (Nat.card α).Coprime n) (a : α) :
     n • (n⁻¹ : ZMod (Nat.card α)).val • a = a := by
@@ -1385,7 +1384,7 @@ end AddGroup
 section Group
 variable {α : Type*} [Group α] {n : ℕ}
 
---TODO: Fix additivisation
+-- TODO: Without the `existing`, `to_additive` chokes on `Inv (ZMod n)`.
 @[to_additive (attr := simp) existing nsmul_zmod_val_inv_nsmul]
 lemma pow_zmod_val_inv_pow (hn : (Nat.card α).Coprime n) (a : α) :
     (a ^ (n⁻¹ : ZMod (Nat.card α)).val) ^ n = a := by
