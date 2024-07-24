@@ -8,8 +8,6 @@ import Mathlib.Lean.Meta
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
-#align_import category_theory.monoidal.coherence from "leanprover-community/mathlib"@"f187f1074fa1857c94589cc653c786cadc4c35ff"
-
 /-!
 # A `coherence` tactic for monoidal categories
 
@@ -24,8 +22,6 @@ in a monoidal category which are built out of associators and unitors
 are equal.
 
 -/
-
-set_option autoImplicit true
 
 -- Porting note: restore when ported
 -- import Mathlib.CategoryTheory.Bicategory.CoherenceTactic
@@ -103,7 +99,8 @@ end lifting
 open Lean Meta Elab Tactic
 
 /-- Helper function for throwing exceptions. -/
-def exception (g : MVarId) (msg : MessageData) : MetaM α := throwTacticEx `monoidal_coherence g msg
+def exception {α : Type} (g : MVarId) (msg : MessageData) : MetaM α :=
+  throwTacticEx `monoidal_coherence g msg
 
 /-- Helper function for throwing exceptions with respect to the main goal. -/
 def exception' (msg : MessageData) : TacticM Unit := do
@@ -289,9 +286,14 @@ elab_rules : tactic
 | `(tactic| coherence) => do
   evalTactic (← `(tactic|
     (simp (config := {failIfUnchanged := false}) only [bicategoricalComp,
-      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
-      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom',
+      BicategoricalCoherence.hom,
       monoidalComp]);
     whisker_simps (config := {failIfUnchanged := false});
     monoidal_simps (config := {failIfUnchanged := false})))
   coherence_loop
+
+end Coherence
+
+end Tactic
+
+end Mathlib

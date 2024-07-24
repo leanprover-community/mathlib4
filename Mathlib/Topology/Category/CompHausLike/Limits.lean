@@ -257,7 +257,7 @@ def pullback.isLimit : Limits.IsLimit (pullback.cone f g) :=
     (fun _ ↦ pullback.lift_snd _ _ _ _ _)
     (fun _ _ hm ↦ pullback.hom_ext _ _ _ _ (hm .left) (hm .right))
 
-instance: HasLimit (cospan f g) where
+instance : HasLimit (cospan f g) where
   exists_limit := ⟨⟨pullback.cone f g, pullback.isLimit f g⟩⟩
 
 /-- The functor to `TopCat` creates pullbacks if they exist. -/

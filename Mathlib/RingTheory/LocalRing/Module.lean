@@ -6,9 +6,10 @@ Authors: Andrew Yang
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Nakayama
 import Mathlib.Algebra.Module.FinitePresentation
+import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.Flat.Basic
-import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 # Finite modules over local rings
@@ -268,3 +269,5 @@ theorem LocalRing.split_injective_iff_lTensor_residueField_injective
     have := (Exact.split_tfae l.exact_map_mkQ_range this (Submodule.mkQ_surjective _)).out 0 1
     rw [← this]
     exact Module.projective_lifting_property _ _ (Submodule.mkQ_surjective _)
+
+end

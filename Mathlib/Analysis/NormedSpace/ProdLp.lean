@@ -370,7 +370,7 @@ abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
           ← PseudoMetricSpace.edist_dist]
         exact le_sup_right
       · refine ENNReal.toReal_le_of_le_ofReal ?_ ?_
-        · simp only [ge_iff_le, le_sup_iff, dist_nonneg, or_self]
+        · simp only [le_sup_iff, dist_nonneg, or_self]
         · simp [edist, PseudoMetricSpace.edist_dist, ENNReal.ofReal_le_ofReal]
     · have h1 : edist f.fst g.fst ^ p.toReal ≠ ⊤ :=
         ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)
@@ -388,7 +388,7 @@ theorem prod_lipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace
   · simp [edist]
   · have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel₀ 1 (zero_lt_one.trans_le h).ne'
     rw [prod_edist_eq_add (zero_lt_one.trans_le h)]
-    simp only [edist, forall_prop_of_true, one_mul, ENNReal.coe_one, ge_iff_le, sup_le_iff]
+    simp only [edist, forall_prop_of_true, one_mul, ENNReal.coe_one, sup_le_iff]
     constructor
     · calc
         edist x.fst y.fst ≤ (edist x.fst y.fst ^ p.toReal) ^ (1 / p.toReal) := by
@@ -743,8 +743,8 @@ instance instProdBoundedSMul : BoundedSMul 𝕜 (WithLp p (α × β)) :=
       exact norm_smul_le _ _
     · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
       have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
-      rw [prod_nnnorm_eq_add hpt, prod_nnnorm_eq_add hpt, NNReal.rpow_one_div_le_iff hp0,
-        NNReal.mul_rpow, ← NNReal.rpow_mul, div_mul_cancel₀ 1 hp0.ne', NNReal.rpow_one, mul_add,
+      rw [prod_nnnorm_eq_add hpt, prod_nnnorm_eq_add hpt, one_div, NNReal.rpow_inv_le_iff hp0,
+        NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel hp0.ne', NNReal.rpow_one, mul_add,
         ← NNReal.mul_rpow, ← NNReal.mul_rpow]
       exact add_le_add
         (NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le)
