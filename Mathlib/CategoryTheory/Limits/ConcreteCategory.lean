@@ -101,19 +101,19 @@ theorem colimit_exists_rep [HasColimit F] (x : ↑(colimit F)) :
 
 /-- if `x` is an element of `colimit F`, we arbitrarily choose an index `j` so that some element of
 `F j` represents `x`.-/
-noncomputable def Concrete.indexRepColimit [HasColimit F] (x : ↑(colimit F)) : J :=
+noncomputable def indexRepColimit [HasColimit F] (x : ↑(colimit F)) : J :=
   (Concrete.colimit_exists_rep F x).choose
 
 /--if `x` is an element of `colimit F`, we arbitrarily choose some element representing `x`.-/
-noncomputable def Concrete.repColimit [HasColimit F] (x : ↑(colimit F)) :
+noncomputable def repColimit [HasColimit F] (x : ↑(colimit F)) :
     F.obj (Concrete.indexRepColimit F x) :=
   (Concrete.colimit_exists_rep F x).choose_spec.choose
 
-theorem Concrete.ι_repColimit_eq [HasColimit F] (x : ↑(colimit F)) :
+theorem ι_repColimit_eq [HasColimit F] (x : ↑(colimit F)) :
     colimit.ι F (Concrete.indexRepColimit F x) (Concrete.repColimit F x) = x :=
   (Concrete.colimit_exists_rep F x).choose_spec.choose_spec
 
-theorem Concrete.isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (x : F.obj i) (y : F.obj j)
+theorem isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (x : F.obj i) (y : F.obj j)
     (h : ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y) :
     D.ι.app i x = D.ι.app j y := by
   let E := (forget C).mapCocone D
