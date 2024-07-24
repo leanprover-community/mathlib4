@@ -5,6 +5,7 @@ Authors: Floris van Doorn
 -/
 import Lean.Linter.Util
 import Batteries.Data.Array.Basic
+import Batteries.Data.String.Matcher
 import Batteries.Tactic.Lint
 
 /-!
@@ -218,7 +219,8 @@ initialize addLinter cdotLinter
 
 end CDotLinter
 
-/-- The "longLine" linter emits a warning on lines longer than 100 characters. -/
+/-- The "longLine" linter emits a warning on lines longer than 100 characters.
+We allows lines containing URLs to be longer, though. -/
 register_option linter.longLine : Bool := {
   defValue := true
   descr := "enable the longLine linter"
@@ -230,17 +232,15 @@ namespace LongLine
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.longLine o
 
 @[inherit_doc Mathlib.Linter.linter.longLine]
-def longLineLinter : Linter where
-  run := withSetOptionIn fun stx => do
+def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless getLinterHash (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
     let sstr := stx.getSubstring?
-    let longLines := ((sstr.getD default).splitOn "\n").filter
-      (100 < ·.toString.length)
+    let longLines := ((sstr.getD default).splitOn "\n").filter (100 < ·.toString.length)
     for line in longLines do
-      if (line.splitOn "http").length == 1 then
+      if !(line.containsSubstr "http") then
         Linter.logLint linter.longLine (.ofRange ⟨line.startPos, line.stopPos⟩)
           m!"This line exceeds the 100 character limit, please shorten it!"
 

@@ -96,8 +96,7 @@ note: this linter can be disabled with `set_option linter.longLine false`
 set_option linter.longLine true in
 /-!                                                                                                -/
 
-set_option linter.longLine false
 #guard_msgs in
--- lines with more than 100 characters containing `http` are allowed
+-- Lines with more than 100 characters containing URLs are allowed.
 set_option linter.longLine true in
 /-!  http                                                                                          -/
