@@ -156,7 +156,7 @@ variable [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 `t` is bounded with respect to `t'`. -/
 theorem IsVonNBounded.of_topologicalSpace_le {t t' : TopologicalSpace E} (h : t ≤ t') {s : Set E}
     (hs : @IsVonNBounded 𝕜 E _ _ _ t s) : @IsVonNBounded 𝕜 E _ _ _ t' s := fun _ hV =>
-  hs <| (le_iff_nhds t t').mp h 0 hV
+  hs <| le_iff_nhds.mp h 0 hV
 
 end MultipleTopologies
 
