@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.Ab
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
 import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 import Mathlib.CategoryTheory.Triangulated.Opposite
 
@@ -53,6 +54,18 @@ lemma preadditiveCoyoneda_homologySequenceδ_apply
     (preadditiveCoyoneda.obj A).homologySequenceδ T n₀ n₁ h x =
       x ≫ T.mor₃⟦n₀⟧' ≫ (shiftFunctorAdd' C 1 n₀ n₁ (by omega)).inv.app _ := by
   apply Category.assoc
+
+noncomputable instance (B : C) : (preadditiveYoneda.obj B).ShiftSequence ℤ where
+  sequence n := preadditiveYoneda.obj (B⟦n⟧)
+  isoZero := preadditiveYoneda.mapIso ((shiftFunctorZero C ℤ).app B)
+  shiftIso n a a' h := NatIso.ofComponents (fun A ↦ AddEquiv.toAddCommGrpIso
+    { toEquiv := Quiver.Hom.opEquiv.trans (ShiftedHom.opEquiv' n a a' h).symm
+      map_add' := fun _ _ ↦ ShiftedHom.opEquiv'_symm_add _ _ _ h })
+        (by intros; ext; apply ShiftedHom.opEquiv'_symm_comp _ _ _ h)
+  shiftIso_zero a := by ext; apply ShiftedHom.opEquiv'_zero_add_symm
+  shiftIso_add n m a a' a'' ha' ha'' := by
+    ext _ x
+    exact ShiftedHom.opEquiv'_add_symm n m a a' a'' ha' ha'' x.op
 
 end Pretriangulated
 
