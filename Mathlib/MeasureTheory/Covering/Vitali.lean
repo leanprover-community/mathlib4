@@ -154,13 +154,13 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
 #align vitali.exists_disjoint_subfamily_covering_enlargment Vitali.exists_disjoint_subfamily_covering_enlargment
 
 /-- Vitali covering theorem, closed balls version: given a family `t` of closed balls, one can
-extract a disjoint subfamily `u ⊆ t` so that all balls in `t` are covered by the 5-times
-dilations of balls in `u`. -/
+extract a disjoint subfamily `u ⊆ t` so that all balls in `t` are covered by the τ-times
+dilations of balls in `u`, for some `τ > 3`. -/
 theorem exists_disjoint_subfamily_covering_enlargment_closedBall [MetricSpace α] (t : Set ι)
-    (x : ι → α) (r : ι → ℝ) (R : ℝ) (hr : ∀ a ∈ t, r a ≤ R) :
+    (x : ι → α) (r : ι → ℝ) (R : ℝ) (hr : ∀ a ∈ t, r a ≤ R) (τ : ℝ) (hτ : 3 < τ) :
     ∃ u ⊆ t,
       (u.PairwiseDisjoint fun a => closedBall (x a) (r a)) ∧
-        ∀ a ∈ t, ∃ b ∈ u, closedBall (x a) (r a) ⊆ closedBall (x b) (5 * r b) := by
+        ∀ a ∈ t, ∃ b ∈ u, closedBall (x a) (r a) ⊆ closedBall (x b) (τ * r b) := by
   rcases eq_empty_or_nonempty t with (rfl | _)
   · exact ⟨∅, Subset.refl _, pairwiseDisjoint_empty, by simp⟩
   by_cases ht : ∀ a ∈ t, r a < 0
@@ -174,11 +174,11 @@ theorem exists_disjoint_subfamily_covering_enlargment_closedBall [MetricSpace α
       fun a ha => ⟨a, ha, by simp only [closedBall_eq_empty.2 (ht a ha), empty_subset]⟩⟩
   push_neg at ht
   let t' := { a ∈ t | 0 ≤ r a }
-  rcases exists_disjoint_subfamily_covering_enlargment (fun a => closedBall (x a) (r a)) t' r 2
-      one_lt_two (fun a ha => ha.2) R (fun a ha => hr a ha.1) fun a ha =>
+  rcases exists_disjoint_subfamily_covering_enlargment (fun a => closedBall (x a) (r a)) t' r
+      ((τ - 1) / 2) (by linarith) (fun a ha => ha.2) R (fun a ha => hr a ha.1) fun a ha =>
       ⟨x a, mem_closedBall_self ha.2⟩ with
     ⟨u, ut', u_disj, hu⟩
-  have A : ∀ a ∈ t', ∃ b ∈ u, closedBall (x a) (r a) ⊆ closedBall (x b) (5 * r b) := by
+  have A : ∀ a ∈ t', ∃ b ∈ u, closedBall (x a) (r a) ⊆ closedBall (x b) (τ * r b) := by
     intro a ha
     rcases hu a ha with ⟨b, bu, hb, rb⟩
     refine ⟨b, bu, ?_⟩
