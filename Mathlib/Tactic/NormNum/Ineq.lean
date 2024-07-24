@@ -51,8 +51,8 @@ theorem isRat_le_true [LinearOrderedRing α] : {a b : α} → {na nb : ℤ} → 
     have ha : 0 ≤ ⅟(da : α) := invOf_nonneg.mpr <| Nat.cast_nonneg da
     have hb : 0 ≤ ⅟(db : α) := invOf_nonneg.mpr <| Nat.cast_nonneg db
     have h := (mul_le_mul_of_nonneg_left · hb) <| mul_le_mul_of_nonneg_right h ha
-    rw [← mul_assoc, Int.commute_cast] at h
-    simp at h; rwa [Int.commute_cast] at h
+    erw [← mul_assoc, Int.commute_cast] at h
+    simp at h; erw [Int.commute_cast] at h; assumption
 
 theorem isRat_lt_true [LinearOrderedRing α] [Nontrivial α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → decide (na * db < nb * da) → a < b
@@ -61,9 +61,9 @@ theorem isRat_lt_true [LinearOrderedRing α] [Nontrivial α] : {a b : α} → {n
     have ha : 0 < ⅟(da : α) := pos_invOf_of_invertible_cast da
     have hb : 0 < ⅟(db : α) := pos_invOf_of_invertible_cast db
     have h := (mul_lt_mul_of_pos_left · hb) <| mul_lt_mul_of_pos_right h ha
-    rw [← mul_assoc, Int.commute_cast] at h
+    erw [← mul_assoc, Int.commute_cast] at h
     simp? at h says simp only [Int.cast_mul, Int.cast_natCast, mul_mul_invOf_self_cancel'] at h
-    rwa [Int.commute_cast] at h
+    erw [Int.commute_cast] at h; assumption
 
 theorem isRat_le_false [LinearOrderedRing α] [Nontrivial α] {a b : α} {na nb : ℤ} {da db : ℕ}
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da < na * db)) : ¬a ≤ b :=

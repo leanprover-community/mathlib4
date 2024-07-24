@@ -39,7 +39,7 @@ lemma isNilpotent_C_mul_pow_X_of_isNilpotent (n : ℕ) (hnil : IsNilpotent r) :
 
 lemma isNilpotent_pow_X_mul_C_of_isNilpotent (n : ℕ) (hnil : IsNilpotent r) :
     IsNilpotent (X ^ n * (C r)) := by
-  rw [commute_X_pow]
+  erw [commute_X_pow]
   exact isNilpotent_C_mul_pow_X_of_isNilpotent n hnil
 
 @[simp] lemma isNilpotent_monomial_iff {n : ℕ} :
@@ -59,7 +59,7 @@ lemma isNilpotent_pow_X_mul_C_of_isNilpotent (n : ℕ) (hnil : IsNilpotent r) :
 
 @[simp] lemma isNilpotent_mul_X_iff :
     IsNilpotent (P * X) ↔ IsNilpotent P := by
-  rw [← commute_X P]
+  erw [← commute_X P]
   exact isNilpotent_X_mul_iff
 
 end Semiring

@@ -74,13 +74,15 @@ theorem aemeasurable {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s �
       Set.univ_inter, smul_eq_mul, ENNReal.inv_mul_cancel hns hnt]
 
 theorem absolutelyContinuous {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) : map X ℙ ≪ μ := by
-  rw [hu]; exact ProbabilityTheory.cond_absolutelyContinuous
+  erw [hu]; exact ProbabilityTheory.cond_absolutelyContinuous
 
 theorem measure_preimage {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
     (hu : IsUniform X s ℙ μ) {A : Set E} (hA : MeasurableSet A) :
     ℙ (X ⁻¹' A) = μ (s ∩ A) / μ s := by
-  rwa [← map_apply_of_aemeasurable (hu.aemeasurable hns hnt) hA, hu, ProbabilityTheory.cond_apply',
+  rw [← map_apply_of_aemeasurable (hu.aemeasurable hns hnt) hA]
+  erw [hu, ProbabilityTheory.cond_apply',
     ENNReal.div_eq_inv_mul]
+  assumption
 
 theorem isProbabilityMeasure {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
     (hu : IsUniform X s ℙ μ) : IsProbabilityMeasure ℙ :=
@@ -104,7 +106,7 @@ theorem hasPDF {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞
   let t := toMeasurable μ s
   apply hasPDF_of_map_eq_withDensity (hu.aemeasurable hns hnt) (t.indicator ((μ t)⁻¹ • 1)) <|
     (measurable_one.aemeasurable.const_smul (μ t)⁻¹).indicator (measurableSet_toMeasurable μ s)
-  rw [hu, withDensity_indicator (measurableSet_toMeasurable μ s), withDensity_smul _ measurable_one,
+  erw [hu, withDensity_indicator (measurableSet_toMeasurable μ s), withDensity_smul _ measurable_one,
     withDensity_one, restrict_toMeasurable hnt, measure_toMeasurable, ProbabilityTheory.cond]
 
 theorem pdf_eq_zero_of_measure_eq_zero_or_top {X : Ω → E} {s : Set E}
@@ -127,7 +129,7 @@ theorem pdf_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
   have : HasPDF X ℙ μ := hasPDF hns hnt hu
   have : IsProbabilityMeasure ℙ := isProbabilityMeasure hns hnt hu
   apply (eq_of_map_eq_withDensity _ _).mp
-  · rw [hu, withDensity_indicator hms, withDensity_smul _ measurable_one, withDensity_one,
+  · erw [hu, withDensity_indicator hms, withDensity_smul _ measurable_one, withDensity_one,
       ProbabilityTheory.cond]
   · exact (measurable_one.aemeasurable.const_smul (μ s)⁻¹).indicator hms
 

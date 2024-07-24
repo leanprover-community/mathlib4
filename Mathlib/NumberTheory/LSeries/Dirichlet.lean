@@ -161,7 +161,7 @@ lemma not_LSeriesSummable_at_one {N : ℕ} (hN : N ≠ 0) (χ : DirichletCharact
   rw [norm_term_eq, one_re, Real.rpow_one, Set.indicator]
   split_ifs with h₁ h₂
   · rw [h₂, cast_zero, div_zero]
-  · rw [h₁, χ.map_one, norm_one]
+  · erw [h₁, χ.map_one, norm_one]
   all_goals positivity
 
 /-- The L-series of a Dirichlet character converges absolutely at `s` if `re s > 1`. -/

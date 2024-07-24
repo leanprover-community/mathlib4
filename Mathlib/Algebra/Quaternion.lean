@@ -1103,7 +1103,7 @@ theorem normSq_neg : normSq (-a) = normSq a := by simp only [normSq_def, star_ne
 
 theorem self_mul_star : a * star a = normSq a := by rw [mul_star_eq_coe, normSq_def]
 
-theorem star_mul_self : star a * a = normSq a := by rw [star_comm_self, self_mul_star]
+theorem star_mul_self : star a * a = normSq a := by erw [star_comm_self, self_mul_star]
 
 theorem im_sq : a.im ^ 2 = -normSq a.im := by
   simp_rw [sq, ← star_mul_self, im_star, neg_mul, neg_neg]

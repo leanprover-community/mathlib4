@@ -175,7 +175,7 @@ def invertibleOfMul {α} [Semiring α] (k : ℕ) (b : α) :
     ∀ (a : α) [Invertible a], a = k * b → Invertible b
   | _, ⟨c, hc1, hc2⟩, rfl => by
     rw [← mul_assoc] at hc1
-    rw [Nat.cast_commute k, mul_assoc, Nat.cast_commute k] at hc2
+    erw [Nat.cast_commute k, mul_assoc, Nat.cast_commute k] at hc2
     exact ⟨_, hc1, hc2⟩
 
 /-- If `b` divides `a` and `a` is invertible, then `b` is invertible. -/
@@ -199,7 +199,7 @@ theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
     add_mul, mul_mul_invOf_self_cancel] at h₁
   have h₂ := congr_arg (↑nc * ↑· * (⅟↑da * ⅟↑db * ⅟↑dc : α)) h₂
   simp only [H, mul_mul_invOf_self_cancel', Nat.cast_mul, ← mul_assoc] at h₁ h₂
-  rw [h₁, h₂, Nat.cast_commute]
+  rw [h₁, h₂]; erw [Nat.cast_commute]
   simp only [mul_mul_invOf_self_cancel,
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
@@ -382,7 +382,7 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   simp only [← mul_assoc, (Nat.cast_commute (α := α) da nb).invOf_left.right_comm, h₁]
   have h₂ := congr_arg (↑nc * ↑· * (⅟↑da * ⅟↑db * ⅟↑dc : α)) h₂
   simp only [Nat.cast_mul, ← mul_assoc] at h₂; rw [H] at h₂
-  simp only [mul_mul_invOf_self_cancel'] at h₂; rw [h₂, Nat.cast_commute]
+  simp only [mul_mul_invOf_self_cancel'] at h₂; rw [h₂]; erw [Nat.cast_commute]
   simp only [mul_mul_invOf_self_cancel,
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]

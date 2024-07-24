@@ -263,7 +263,9 @@ def Derivation.liftKaehlerDifferential (D : Derivation R S M) : Ω[S⁄R] →ₗ
     · rintro x hx y -
       rw [RingHom.mem_ker] at hx
       dsimp
-      rw [Derivation.tensorProductTo_mul, hx, y.prop, zero_smul, zero_smul, zero_add]
+      rw [Derivation.tensorProductTo_mul, hx]
+      erw [y.prop]
+      rw [zero_smul, zero_smul, zero_add]
     · intro x y ex ey; rw [map_add, ex, ey, zero_add]
 
 theorem Derivation.liftKaehlerDifferential_apply (D : Derivation R S M) (x) :

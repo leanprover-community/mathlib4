@@ -99,7 +99,7 @@ theorem IsHermitian.fromBlocks {A : Matrix m m α} {B : Matrix m n α} {C : Matr
     (A.fromBlocks B C D).IsHermitian := by
   have hCB : Cᴴ = B := by rw [← hBC, conjTranspose_conjTranspose]
   unfold Matrix.IsHermitian
-  rw [fromBlocks_conjTranspose, hBC, hCB, hA, hD]
+  rw [fromBlocks_conjTranspose, hBC, hCB]; erw [hA, hD]
 
 /-- This is the `iff` version of `Matrix.IsHermitian.fromBlocks`. -/
 theorem isHermitian_fromBlocks_iff {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n m α}
@@ -234,7 +234,7 @@ theorem IsHermitian.adjugate [Fintype m] [DecidableEq m] {A : Matrix m m α} (hA
 theorem IsHermitian.zpow [Fintype m] [DecidableEq m] {A : Matrix m m α} (h : A.IsHermitian)
     (k : ℤ) :
     (A ^ k).IsHermitian := by
-  rw [IsHermitian, conjTranspose_zpow, h]
+  rw [IsHermitian, conjTranspose_zpow]; erw [h]
 
 end CommRing
 

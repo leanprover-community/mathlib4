@@ -3,7 +3,6 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Star.Order
 
 /-!
@@ -27,7 +26,7 @@ type class assumptions to be satisfied without a `CommSemiring` intance already 
 it is impossible, only that it shouldn't occur in practice. -/
 example {R : Type*} [OrderedSemiring R] [StarRing R] [StarOrderedRing R] {x y : R} (hx : 0 ≤ x)
     (hy : 0 ≤ y) : x * y = y * x := by
-  rw [← IsSelfAdjoint.of_nonneg (mul_nonneg hy hx), star_mul, IsSelfAdjoint.of_nonneg hx,
+  erw [← IsSelfAdjoint.of_nonneg (mul_nonneg hy hx), star_mul, IsSelfAdjoint.of_nonneg hx,
     IsSelfAdjoint.of_nonneg hy]
 
 /- This will be implied by the instance below, we only prove it to avoid duplicating the

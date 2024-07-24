@@ -20,7 +20,7 @@ variable (M)
 
 @[simp]
 theorem natCast_mem_center [NonAssocSemiring M] (n : ℕ) : (n : M) ∈ Set.center M where
-  comm _ := by rw [Nat.commute_cast]
+  comm _ := Nat.cast_comm n _
   left_assoc _ _ := by
     induction n with
     | zero => rw [Nat.cast_zero, zero_mul, zero_mul, zero_mul]
@@ -42,7 +42,7 @@ theorem ofNat_mem_center [NonAssocSemiring M] (n : ℕ) [n.AtLeastTwo] :
 
 @[simp]
 theorem intCast_mem_center [NonAssocRing M] (n : ℤ) : (n : M) ∈ Set.center M where
-  comm _ := by rw [Int.commute_cast]
+  comm _ := Int.cast_comm n _
   left_assoc _ _ := match n with
     | (n : ℕ) => by rw [Int.cast_natCast, (natCast_mem_center _ n).left_assoc _ _]
     | Int.negSucc n => by

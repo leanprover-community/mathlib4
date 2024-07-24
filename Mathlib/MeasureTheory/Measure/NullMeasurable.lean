@@ -270,7 +270,7 @@ theorem measure_union_add_inter₀' (hs : NullMeasurableSet s μ) (t : Set α) :
   rw [union_comm, inter_comm, measure_union_add_inter₀ t hs, add_comm]
 
 theorem measure_union₀ (ht : NullMeasurableSet t μ) (hd : AEDisjoint μ s t) :
-    μ (s ∪ t) = μ s + μ t := by rw [← measure_union_add_inter₀ s ht, hd, add_zero]
+    μ (s ∪ t) = μ s + μ t := by rw [← measure_union_add_inter₀ s ht]; erw [hd, add_zero]
 
 theorem measure_union₀' (hs : NullMeasurableSet s μ) (hd : AEDisjoint μ s t) :
     μ (s ∪ t) = μ s + μ t := by rw [union_comm, measure_union₀ hs (AEDisjoint.symm hd), add_comm]

@@ -276,7 +276,7 @@ theorem conjTranspose_zpow [StarRing R] (A : M) : ∀ n : ℤ, (A ^ n)ᴴ = Aᴴ
 
 theorem IsSymm.zpow {A : M} (h : A.IsSymm) (k : ℤ) :
     (A ^ k).IsSymm := by
-  rw [IsSymm, transpose_zpow, h]
+  rw [IsSymm, transpose_zpow]; erw [h]
 
 end ZPow
 

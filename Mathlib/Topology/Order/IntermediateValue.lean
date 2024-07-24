@@ -287,7 +287,7 @@ theorem setOf_isPreconnected_subset_of_ordered :
       -- unbounded intervals and `univ`
       (range Ici ∪ range Ioi ∪ range Iic ∪ range Iio ∪ {univ, ∅}) := by
   intro s hs
-  rcases hs.mem_intervals with (hs | hs | hs | hs | hs | hs | hs | hs | hs | hs) <;> rw [hs] <;>
+  rcases hs.mem_intervals with (hs | hs | hs | hs | hs | hs | hs | hs | hs | hs) <;> erw [hs] <;>
     simp only [union_insert, union_singleton, mem_insert_iff, mem_union, mem_range, Prod.exists,
       uncurry_apply_pair, exists_apply_eq_apply, true_or, or_true, exists_apply_eq_apply2]
 

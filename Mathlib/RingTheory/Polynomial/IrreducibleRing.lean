@@ -54,7 +54,8 @@ theorem Polynomial.Monic.irreducible_of_irreducible_map_of_isPrime_nilradical
   refine .inr <| isUnit_of_coeff_isUnit_isNilpotent (isUnit_of_mul_isUnit_right
     (x := a.coeff f.natDegree) <| (IsUnit.neg_iff _).1 ?_) hn
   have hc : f.leadingCoeff = _ := congr(coeff $h f.natDegree)
-  rw [hm, coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun i j ↦ a.coeff i * b.coeff j,
+  erw [hm] at hc
+  rw [coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun i j ↦ a.coeff i * b.coeff j,
     Finset.sum_range_succ, ← sub_eq_iff_eq_add, Nat.sub_self] at hc
   rw [← add_sub_cancel_left 1 (-(_ * _)), ← sub_eq_add_neg, hc]
   exact IsNilpotent.isUnit_sub_one <| show _ ∈ nilradical R from sum_mem fun i hi ↦

@@ -86,11 +86,11 @@ def SemilatticeSup.mk' {α : Type*} [Sup α] (sup_comm : ∀ a b : α, a ⊔ b =
   sup := (· ⊔ ·)
   le a b := a ⊔ b = b
   le_refl := sup_idem
-  le_trans a b c hab hbc := by dsimp; rw [← hbc, ← sup_assoc, hab]
-  le_antisymm a b hab hba := by rwa [← hba, sup_comm]
+  le_trans a b c hab hbc := by dsimp; erw [← hbc]; rw [← sup_assoc]; erw [hab]
+  le_antisymm a b hab hba := by erw [← hba]; rwa [sup_comm]
   le_sup_left a b := by dsimp; rw [← sup_assoc, sup_idem]
   le_sup_right a b := by dsimp; rw [sup_comm, sup_assoc, sup_idem]
-  sup_le a b c hac hbc := by dsimp; rwa [sup_assoc, hbc]
+  sup_le a b c hac hbc := by dsimp; rw [sup_assoc]; erw [hbc]; assumption
 
 instance OrderDual.instSup (α : Type*) [Inf α] : Sup αᵒᵈ :=
   ⟨((· ⊓ ·) : α → α → α)⟩

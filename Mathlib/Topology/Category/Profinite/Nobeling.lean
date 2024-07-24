@@ -1288,7 +1288,7 @@ theorem C1_projOrd {x : I → Bool} (hx : x ∈ C1 C ho) : SwapTrue o (Proj (ord
   dsimp [SwapTrue, Proj]
   split_ifs with hi h
   · rw [ord_term ho] at hi
-    rw [← hx.2, hi]
+    erw [← hx.2, hi]
   · rfl
   · simp only [not_lt] at h
     have h' : o < ord I i := lt_of_le_of_ne h (Ne.symm hi)

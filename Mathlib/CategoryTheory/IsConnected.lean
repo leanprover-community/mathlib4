@@ -191,7 +191,7 @@ theorem IsConnected.of_induct {j₀ : J}
       change F j₁ = F j₀ ↔ F j₂ = F j₀
       simp [a f])
     intro j j'
-    rw [w j, w j']
+    erw [w j, w j']
 
 /-- Lifting the universe level of morphisms and objects preserves connectedness. -/
 instance [hc : IsConnected J] : IsConnected (ULiftHom.{v₂} (ULift.{u₂} J)) := by

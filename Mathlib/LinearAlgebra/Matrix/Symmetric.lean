@@ -73,7 +73,7 @@ theorem isSymm_one [DecidableEq n] [Zero α] [One α] : (1 : Matrix n n α).IsSy
 theorem IsSymm.pow [CommSemiring α] [Fintype n] [DecidableEq n] {A : Matrix n n α} (h : A.IsSymm)
     (k : ℕ) :
     (A ^ k).IsSymm := by
-  rw [IsSymm, transpose_pow, h]
+  rw [IsSymm, transpose_pow]; erw [h]
 
 @[simp]
 theorem IsSymm.map {A : Matrix n n α} (h : A.IsSymm) (f : α → β) : (A.map f).IsSymm :=
@@ -121,7 +121,7 @@ theorem IsSymm.fromBlocks {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n 
     rw [← hBC]
     simp
   unfold Matrix.IsSymm
-  rw [fromBlocks_transpose, hA, hCB, hBC, hD]
+  rw [fromBlocks_transpose]; erw [hA, hCB, hBC, hD]
 
 /-- This is the `iff` version of `Matrix.isSymm.fromBlocks`. -/
 theorem isSymm_fromBlocks_iff {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n m α}

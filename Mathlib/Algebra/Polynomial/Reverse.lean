@@ -310,7 +310,7 @@ theorem coeff_one_reverse (f : R[X]) : coeff (reverse f) 1 = nextCoeff f := by
   · simp [reverse, hp]
 
 @[simp] lemma reverse_X_mul (p : R[X]) : reverse (X * p) = reverse p := by
-  rw [commute_X p, reverse_mul_X]
+  erw [commute_X p, reverse_mul_X]
 
 @[simp] lemma reverse_mul_X_pow (p : R[X]) (n : ℕ) : reverse (p * X ^ n) = reverse p := by
   induction' n with n ih
@@ -318,7 +318,7 @@ theorem coeff_one_reverse (f : R[X]) : coeff (reverse f) 1 = nextCoeff f := by
   rw [pow_succ, ← mul_assoc, reverse_mul_X, ih]
 
 @[simp] lemma reverse_X_pow_mul (p : R[X]) (n : ℕ) : reverse (X ^ n * p) = reverse p := by
-  rw [commute_X_pow p, reverse_mul_X_pow]
+  erw [commute_X_pow p, reverse_mul_X_pow]
 
 @[simp] lemma reverse_add_C (p : R[X]) (t : R) :
     reverse (p + C t) = reverse p + C t * X ^ p.natDegree := by

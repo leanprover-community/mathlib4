@@ -339,7 +339,7 @@ respectively, then `p + q` lifts `x + y`.
 lemma lifts_add {x y : ⨂[R] i, s i} {p q : FreeAddMonoid (R × Π i, s i)}
     (hp : p ∈ lifts x) (hq : q ∈ lifts y) : p + q ∈ lifts (x + y) := by
   simp only [lifts, Set.mem_setOf_eq, AddCon.coe_add]
-  rw [hp, hq]
+  erw [hp, hq]
 
 /-- If an element `p` of `FreeAddMonoid (R × Π i, s i)` lifts an element `x` of `⨂[R] i, s i`,
 and if `a` is an element of `R`, then the list obtained by multiplying the first entry of each

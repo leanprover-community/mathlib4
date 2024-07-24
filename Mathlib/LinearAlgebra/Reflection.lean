@@ -194,7 +194,7 @@ lemma eq_of_mapsTo_reflection_of_mem [NoZeroSMulDivisors ℤ M] {Φ : Set M} (h�
         map_zsmul, hgx, smul_neg, smul_add, Nat.cast_succ, mul_add, mul_one, add_smul, sxy]
       abel
   set f' : ℕ → Φ := fun n ↦ ⟨(sxy^[n]) y, by
-    rw [← IsFixedPt.image_iterate hb.image_eq n]; exact mem_image_of_mem _ hyΦ⟩
+    erw [← IsFixedPt.image_iterate hb.image_eq n]; exact mem_image_of_mem _ hyΦ⟩
   have : ¬ Injective f' := not_injective_infinite_finite f'
   contrapose! this
   intros n m hnm

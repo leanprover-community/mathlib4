@@ -67,7 +67,7 @@ lemma mul_def (x y : ⨂[R] i, A i) : x * y = mul x y := rfl
 theorem _root_.SemiconjBy.tprod {a₁ a₂ a₃ : Π i, A i}
     (ha : SemiconjBy a₁ a₂ a₃) :
     SemiconjBy (tprod R a₁) (tprod R a₂) (tprod R a₃) := by
-  rw [SemiconjBy, tprod_mul_tprod, tprod_mul_tprod, ha]
+  rw [SemiconjBy, tprod_mul_tprod, tprod_mul_tprod]; erw [ha]
 
 nonrec theorem _root_.Commute.tprod {a₁ a₂ : Π i, A i} (ha : Commute a₁ a₂) :
     Commute (tprod R a₁) (tprod R a₂) :=

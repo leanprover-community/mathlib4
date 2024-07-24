@@ -185,7 +185,7 @@ theorem lfpApprox_le_of_mem_fixedPoints {a : α}
     cases h_y with
     | inl h_y =>
       let ⟨j, h_j_lt, h_j⟩ := h_y
-      rw [← h_j, ← h_a]
+      erw [← h_j, ← h_a]
       apply f.monotone'
       exact IH j h_j_lt
     | inr h_y =>

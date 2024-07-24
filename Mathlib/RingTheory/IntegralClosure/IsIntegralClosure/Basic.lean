@@ -669,7 +669,8 @@ theorem isField_of_isIntegral_of_isField {R S : Type*} [CommRing R] [CommRing S]
   -- and `q` be `p` with coefficients reversed (so `q(a) = q'(a) * a + 1`).
   -- We have `q(a) = 0`, so `-q'(a)` is the inverse of `a`.
   use -p.reverse.divX.eval a -- -q'(a)
-  nth_rewrite 1 [mul_neg, ← eval_X (x := a), ← eval_mul, ← p_monic, ← coeff_zero_reverse,
+  nth_rewrite 1 [mul_neg, ← eval_X (x := a), ← eval_mul]
+  erw [← p_monic, ← coeff_zero_reverse,
     ← add_eq_zero_iff_neg_eq, ← eval_C (a := p.reverse.coeff 0), ← eval_add, X_mul_divX_add,
     ← (injective_iff_map_eq_zero' _).mp hRS, ← aeval_algebraMap_apply_eq_algebraMap_eval]
   rwa [← eval₂_reverse_eq_zero_iff] at hp

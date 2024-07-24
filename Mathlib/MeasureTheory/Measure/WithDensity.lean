@@ -253,8 +253,8 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
       apply withDensity_absolutelyContinuous
       filter_upwards [hfg] with a ha
       rw [eq_iff_iff]
-      exact ⟨fun h ↦ by rw [h] at ha; exact ha.symm,
-             fun h ↦ by rw [h] at ha; exact ha⟩
+      exact ⟨fun h ↦ by erw [h] at ha; exact ha.symm,
+             fun h ↦ by erw [h] at ha; exact ha⟩
     rw [measure_congr t, withDensity_congr_ae hfg]
     have M : MeasurableSet { x : α | g x = 0 } := hg (measurableSet_singleton _)
     rw [withDensity_apply _ M, lintegral_eq_zero_iff hg]

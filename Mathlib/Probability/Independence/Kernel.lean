@@ -283,7 +283,7 @@ theorem iIndepSets_singleton_iff {s : ι → Set Ω} {_mΩ : MeasurableSpace Ω}
       ∀ S : Finset ι, ∀ᵐ a ∂μ, κ a (⋂ i ∈ S, s i) = ∏ i ∈ S, κ a (s i) := by
   refine ⟨fun h S ↦ h S (fun i _ ↦ rfl), fun h S f hf ↦ ?_⟩
   filter_upwards [h S] with a ha
-  have : ∀ i ∈ S, κ a (f i) = κ a (s i) := fun i hi ↦ by rw [hf i hi]
+  have : ∀ i ∈ S, κ a (f i) = κ a (s i) := fun i hi ↦ by erw [hf i hi]
   rwa [Finset.prod_congr rfl this, Set.iInter₂_congr hf]
 
 theorem indepSets_singleton_iff {s t : Set Ω} {_mΩ : MeasurableSpace Ω}

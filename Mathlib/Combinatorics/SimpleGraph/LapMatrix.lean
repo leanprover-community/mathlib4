@@ -90,7 +90,7 @@ theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
 theorem posSemidef_lapMatrix [LinearOrderedField R] [StarRing R]
     [TrivialStar R] : PosSemidef (G.lapMatrix R) := by
   constructor
-  · rw [IsHermitian, conjTranspose_eq_transpose_of_trivial, isSymm_lapMatrix]
+  · rw [IsHermitian, conjTranspose_eq_transpose_of_trivial]; erw [isSymm_lapMatrix]
   · intro x
     rw [star_trivial, ← toLinearMap₂'_apply', lapMatrix_toLinearMap₂']
     positivity

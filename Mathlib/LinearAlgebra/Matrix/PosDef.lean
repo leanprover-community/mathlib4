@@ -194,7 +194,7 @@ lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B 
         add_sub, sub_add_cancel, pow_two, pow_two]
     _ = t * (star v ⬝ᵥ A *ᵥ v) + (star v) ᵥ* (A - B)ᴴ ⬝ᵥ B *ᵥ v := by
       rw [hv', mulVec_smul, dotProduct_smul, RCLike.real_smul_eq_coe_mul,
-        dotProduct_mulVec _ (A - B), hA.1.sub hB.1]
+        dotProduct_mulVec _ (A - B)]; erw [hA.1.sub hB.1]
     _ = t * (star v ⬝ᵥ A *ᵥ v + star v ⬝ᵥ B *ᵥ v) := by
       simp_rw [← star_mulVec, hv', mul_add, ← RCLike.real_smul_eq_coe_mul, ← smul_dotProduct]
       congr 2 with i
@@ -254,7 +254,7 @@ lemma posSemidef_iff_eq_transpose_mul_self {A : Matrix n n 𝕜} :
   classical
   refine ⟨fun hA ↦ ⟨hA.sqrt, ?_⟩, fun ⟨B, hB⟩ ↦ (hB ▸ posSemidef_conjTranspose_mul_self B)⟩
   simp_rw [← PosSemidef.sq_sqrt hA, pow_two]
-  rw [hA.posSemidef_sqrt.1]
+  erw [hA.posSemidef_sqrt.1]
 
 lemma IsHermitian.posSemidef_of_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : IsHermitian A) (h : ∀ i : n, 0 ≤ hA.eigenvalues i) : PosSemidef A := by

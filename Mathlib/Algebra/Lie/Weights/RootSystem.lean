@@ -339,7 +339,7 @@ lemma eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul (k : K) (h : (β : H → K) = k
 lemma eq_neg_or_eq_of_eq_smul (hβ : β.IsNonZero) (k : K) (h : (β : H → K) = k • α) :
     β = -α ∨ β = α := by
   by_cases hα : α.IsZero
-  · rw [hα, smul_zero] at h; cases hβ h
+  · erw [hα, smul_zero] at h; cases hβ h
   rcases eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul α β hα k h with (rfl | rfl | rfl)
   · exact .inl (by ext; rw [h, neg_one_smul]; rfl)
   · cases hβ (by rwa [zero_smul] at h)

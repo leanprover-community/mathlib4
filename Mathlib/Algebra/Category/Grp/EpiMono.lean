@@ -283,7 +283,7 @@ theorem comp_eq : (f ≫ show B ⟶ Grp.of SX' from g) = f ≫ show B ⟶ Grp.of
   have : f a ∈ { b | h b = g b } := by
     rw [← agree]
     use a
-  rw [this]
+  erw [this]
 
 theorem g_ne_h (x : B) (hx : x ∉ f.range) : g ≠ h := by
   intro r

@@ -318,7 +318,7 @@ lemma Perm.prod_eq' (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) : l₁.prod =
   · intros; rfl
   · apply hc.imp
     intro a b h z
-    rw [mul_assoc z, mul_assoc z, h]
+    rw [mul_assoc z, mul_assoc z]; erw [h]
 
 end Monoid
 

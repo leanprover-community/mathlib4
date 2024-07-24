@@ -746,7 +746,7 @@ theorem mem_eval {σ} {f : σ → Option σ} {a b} : b ∈ eval f a ↔ Reaches 
       rw [h₂]
       apply Part.mem_some
     · refine PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, IH⟩)
-      rw [h]
+      erw [h]
       apply Part.mem_some
 
 theorem eval_maximal₁ {σ} {f : σ → Option σ} {a b} (h : b ∈ eval f a) (c) : ¬Reaches₁ f b c

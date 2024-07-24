@@ -127,7 +127,7 @@ theorem inseparable_iff_ker_uniformity {x y : α} : Inseparable x y ↔ (x, y) �
 
 protected theorem Inseparable.nhds_le_uniformity {x y : α} (h : Inseparable x y) :
     𝓝 (x, y) ≤ 𝓤 α := by
-  rw [h.prod rfl]
+  erw [h.prod rfl]
   apply nhds_le_uniformity
 
 theorem inseparable_iff_clusterPt_uniformity {x y : α} :

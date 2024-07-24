@@ -95,7 +95,7 @@ variable (α) in
 @[to_additive]
 theorem fixedBy_mul (m₁ m₂ : M) : fixedBy α m₁ ∩ fixedBy α m₂ ⊆ fixedBy α (m₁ * m₂) := by
   intro a ⟨h₁, h₂⟩
-  rw [mem_fixedBy, mul_smul, h₂, h₁]
+  rw [mem_fixedBy, mul_smul]; erw [h₂, h₁]
 
 variable (α) in
 @[to_additive]
@@ -145,7 +145,8 @@ theorem set_mem_fixedBy_of_subset_fixedBy {s : Set α} {g : G} (s_ss_fixedBy : s
   rw [Set.mem_inv_smul_set_iff]
   refine ⟨fun gxs => ?xs, fun xs => (s_ss_fixedBy xs).symm ▸ xs⟩
   rw [← fixedBy_inv] at s_ss_fixedBy
-  rwa [← s_ss_fixedBy gxs, inv_smul_smul] at gxs
+  erw [← s_ss_fixedBy gxs, inv_smul_smul] at gxs
+  assumption
 
 theorem smul_subset_of_set_mem_fixedBy {s t : Set α} {g : G} (t_ss_s : t ⊆ s)
     (s_in_fixedBy : s ∈ fixedBy (Set α) g) : g • t ⊆ s :=
@@ -165,7 +166,7 @@ theorem set_mem_fixedBy_of_movedBy_subset {s : Set α} {g : G} (s_subset : (fixe
   rw [Set.mem_inv_smul_set_iff]
   by_cases a ∈ fixedBy α g
   case pos a_fixed =>
-    rw [a_fixed]
+    erw [a_fixed]
   case neg a_moved =>
     constructor <;> (intro; apply s_subset)
     · exact a_moved
@@ -195,7 +196,7 @@ This is equivalent to say that the set `fixedBy α g` is fixed by `h`.
 theorem fixedBy_mem_fixedBy_of_commute {g h : G} (comm : Commute g h) :
     (fixedBy α g) ∈ fixedBy (Set α) h := by
   ext x
-  rw [Set.mem_smul_set_iff_inv_smul_mem, mem_fixedBy, ← mul_smul, comm.inv_right, mul_smul,
+  erw [Set.mem_smul_set_iff_inv_smul_mem, mem_fixedBy, ← mul_smul, comm.inv_right, mul_smul,
     smul_left_cancel_iff, mem_fixedBy]
 
 /--
@@ -214,7 +215,7 @@ This is equivalent to say that the set `(fixedBy α g)ᶜ` is fixed by `h`.
 This is equivalent to say that the set `(fixedBy α g)ᶜ` is fixed by `h`."]
 theorem movedBy_mem_fixedBy_of_commute {g h : G} (comm : Commute g h) :
     (fixedBy α g)ᶜ ∈ fixedBy (Set α) h := by
-  rw [mem_fixedBy, Set.smul_set_compl, fixedBy_mem_fixedBy_of_commute comm]
+  erw [mem_fixedBy, Set.smul_set_compl, fixedBy_mem_fixedBy_of_commute comm]
 
 /--
 If `g` and `h` commute, then `g` moves `h ^ j • x` iff `g` moves `x`.
@@ -248,8 +249,9 @@ is disjoint from `(fixedBy α g)ᶜ`, then `g` and `h` cannot commute."]
 theorem not_commute_of_disjoint_movedBy_preimage {g h : G} (ne_one : g ≠ 1)
     (disjoint : Disjoint (fixedBy α g)ᶜ (h • (fixedBy α g)ᶜ)) : ¬Commute g h := by
   contrapose! ne_one with comm
-  rwa [movedBy_mem_fixedBy_of_commute comm, disjoint_self, Set.bot_eq_empty, ← Set.compl_univ,
+  erw [movedBy_mem_fixedBy_of_commute comm, disjoint_self, Set.bot_eq_empty, ← Set.compl_univ,
     compl_inj_iff, fixedBy_eq_univ_iff_eq_one] at disjoint
+  assumption
 
 end Faithful
 

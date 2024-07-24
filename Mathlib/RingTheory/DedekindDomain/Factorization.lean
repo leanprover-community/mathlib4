@@ -479,7 +479,7 @@ theorem count_finprod (exps : HeightOneSpectrum R → ℤ)
   · rfl
   · rw [Finite.coe_toFinset]
     intro v hv h
-    rw [mem_mulSupport, h, zpow_zero] at hv
+    erw [mem_mulSupport, h, zpow_zero] at hv
     exact hv (Eq.refl 1)
 
 theorem count_coe {J : Ideal R} (hJ : J ≠ 0) :

@@ -179,7 +179,7 @@ def lift (φ : G →* M) (HN : N ≤ φ.ker) : Q →* M :=
     rw [Con.ker_rel]
     calc
       φ x = φ (y * (x⁻¹ * y)⁻¹) := by rw [mul_inv_rev, inv_inv, mul_inv_cancel_left]
-      _ = φ y := by rw [φ.map_mul, HN (N.inv_mem h), mul_one]
+      _ = φ y := by erw [φ.map_mul, HN (N.inv_mem h), mul_one]
 
 @[to_additive (attr := simp)]
 theorem lift_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (g : Q) = φ g :=

@@ -409,7 +409,7 @@ theorem IsBlock.stabilizer_le {B : Set X} (hB : IsBlock G B) {a : X} (ha : a ∈
   apply Or.resolve_right (hB.smul_eq_or_disjoint g)
   rw [Set.not_disjoint_iff]
   refine ⟨a, ?_, ha⟩
-  rw [← hg, Set.smul_mem_smul_set_iff]
+  erw [← hg, Set.smul_mem_smul_set_iff]
   exact ha
 
 /-- A block containing `a` is the orbit of `a` under its stabilizer -/
@@ -420,7 +420,7 @@ theorem IsBlock.orbit_stabilizer_eq
   constructor
   · rintro ⟨⟨k, k_mem⟩, rfl⟩
     simp only [Submonoid.mk_smul]
-    rw [← k_mem, Set.smul_mem_smul_set_iff]
+    erw [← k_mem, Set.smul_mem_smul_set_iff]
     exact ha
   · intro hx
     obtain ⟨k, rfl⟩ := exists_smul_eq G a x

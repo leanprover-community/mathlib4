@@ -300,7 +300,7 @@ theorem encard_le_one_iff : s.encard ≤ 1 ↔ ∀ a b, a ∈ s → b ∈ s → 
   refine ⟨fun h a b has hbs ↦ ?_,
     fun h ⟨x, hx⟩ ↦ ⟨x, ((singleton_subset_iff.2 hx).antisymm' (fun y hy ↦ h _ _ hy hx))⟩⟩
   obtain ⟨x, rfl⟩ := h ⟨_, has⟩
-  rw [(has : a = x), (hbs : b = x)]
+  erw [(has : a = x), (hbs : b = x)]
 
 theorem one_lt_encard_iff : 1 < s.encard ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
   rw [← not_iff_not, not_exists, not_lt, encard_le_one_iff]; aesop

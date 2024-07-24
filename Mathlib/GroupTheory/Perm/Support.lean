@@ -318,7 +318,7 @@ theorem apply_mem_support {x : α} : f x ∈ f.support ↔ x ∈ f.support := by
 @[simp]
 theorem apply_pow_apply_eq_iff (f : Perm α) (n : ℕ) {x : α} :
     f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
-  rw [← mul_apply, Commute.self_pow f, mul_apply, apply_eq_iff_eq]
+  erw [← mul_apply, Commute.self_pow f, mul_apply, apply_eq_iff_eq]
 
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
@@ -327,7 +327,7 @@ theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x
 @[simp]
 theorem apply_zpow_apply_eq_iff (f : Perm α) (n : ℤ) {x : α} :
     f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
-  rw [← mul_apply, Commute.self_zpow f, mul_apply, apply_eq_iff_eq]
+  erw [← mul_apply, Commute.self_zpow f, mul_apply, apply_eq_iff_eq]
 
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem zpow_apply_mem_support {n : ℤ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by

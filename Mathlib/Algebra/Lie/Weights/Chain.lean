@@ -329,7 +329,7 @@ lemma chainTop_isNonZero' (hα' : weightSpace M α ≠ ⊥) :
     (chainTop α β).IsNonZero := by
   by_contra e
   apply hα'
-  rw [← add_zero (α : L → R), ← e, weightSpace_add_chainTop _ _ hα]
+  rw [← add_zero (α : L → R)]; erw [← e, weightSpace_add_chainTop _ _ hα]
 
 lemma chainTop_isNonZero (α β : Weight R L M) (hα : α.IsNonZero) :
     (chainTop α β).IsNonZero :=

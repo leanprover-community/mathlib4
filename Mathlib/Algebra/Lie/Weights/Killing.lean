@@ -565,18 +565,18 @@ variable {α : Weight K H L}
 instance : InvolutiveNeg (Weight K H L) where
   neg α := ⟨-α, by
     by_cases hα : α.IsZero
-    · convert α.weightSpace_ne_bot; rw [hα, neg_zero]
+    · convert α.weightSpace_ne_bot; erw [hα, neg_zero]
     · intro e
       obtain ⟨x, hx, x_ne0⟩ := α.exists_ne_zero
       have := mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg K L H hx
-        (fun y hy ↦ by rw [rootSpace, e] at hy; rw [hy, map_zero])
+        (fun y hy ↦ by rw [rootSpace, e] at hy; erw [hy, map_zero])
       rw [ker_killingForm_eq_bot] at this
       exact x_ne0 this⟩
   neg_neg α := by ext; simp
 
 @[simp] lemma coe_neg : ((-α : Weight K H L) : H → K) = -α := rfl
 
-lemma IsZero.neg (h : α.IsZero) : (-α).IsZero := by ext; rw [coe_neg, h, neg_zero]
+lemma IsZero.neg (h : α.IsZero) : (-α).IsZero := by ext; erw [coe_neg, h, neg_zero]
 
 @[simp] lemma isZero_neg : (-α).IsZero ↔ α.IsZero := ⟨fun h ↦ neg_neg α ▸ h.neg, fun h ↦ h.neg⟩
 

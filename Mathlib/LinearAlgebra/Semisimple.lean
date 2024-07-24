@@ -201,7 +201,7 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
   · simpa only [RingHom.mem_ker, eval₂AlgHom'_apply, eval₂_map, AlgHom.comp_algebraMap_of_tower]
       using minpoly.aeval K g
   have : Algebra.adjoin K {f, g} ≤ φ.range := Algebra.adjoin_le fun x ↦ by
-    rintro (hx | hx) <;> rw [hx]
+    rintro (hx | hx) <;> erw [hx]
     · exact ⟨AdjoinRoot.of _ (AdjoinRoot.root _), (eval₂_C _ _).trans (aeval_X f)⟩
     · exact ⟨AdjoinRoot.root _, eval₂_X _ _⟩
   obtain ⟨p, rfl⟩ := (AlgHom.mem_range _).mp (this ha)
