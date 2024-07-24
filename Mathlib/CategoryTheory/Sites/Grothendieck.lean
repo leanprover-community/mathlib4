@@ -121,6 +121,14 @@ theorem top_mem (X : C) : ⊤ ∈ J X :=
 theorem pullback_stable (f : Y ⟶ X) (hS : S ∈ J X) : S.pullback f ∈ J Y :=
   J.pullback_stable' f hS
 
+variable {J} in
+@[simp]
+lemma pullback_mem_iff_of_isIso {i : X ⟶ Y} [IsIso i] {S : Sieve Y} :
+    S.pullback i ∈ J _ ↔ S ∈ J _ := by
+  refine ⟨fun H ↦ ?_, J.pullback_stable i⟩
+  convert J.pullback_stable (inv i) H
+  rw [← Sieve.pullback_comp, IsIso.inv_hom_id, Sieve.pullback_id]
+
 theorem transitive (hS : S ∈ J X) (R : Sieve X) (h : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → R.pullback f ∈ J Y) :
     R ∈ J X :=
   J.transitive' hS R h
