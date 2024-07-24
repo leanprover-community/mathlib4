@@ -40,6 +40,9 @@ preprocessing of the coherence tactic.
 
 namespace CategoryTheory
 
+-- All current violations were audited, and are of the form `simp [...]; coherence`.
+set_option linter.flexible false
+
 namespace Bicategory
 
 open Category

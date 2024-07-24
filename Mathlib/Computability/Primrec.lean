@@ -34,6 +34,9 @@ open Denumerable Encodable Function
 
 namespace Nat
 
+-- All current violations were audited, and need more effort to fix.
+set_option linter.flexible false
+
 -- Porting note: elim is no longer required because lean 4 is better
 -- at inferring motive types (I think this is the reason)
 -- and worst case, we can always explicitly write (motive := fun _ => C)
