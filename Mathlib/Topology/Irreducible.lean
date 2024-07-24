@@ -155,7 +155,7 @@ theorem IrreducibleSpace.isIrreducible_univ (X : Type*) [TopologicalSpace X] [Ir
     IsIrreducible (univ : Set X) :=
   ⟨univ_nonempty, PreirreducibleSpace.isPreirreducible_univ⟩
 
-theorem irreducibleSpace_def (X : Type*) [TopologicalSpace X] :
+theorem irreducibleSpace_def {X : Type*} [TopologicalSpace X] :
     IrreducibleSpace X ↔ IsIrreducible (⊤ : Set X) :=
   ⟨@IrreducibleSpace.isIrreducible_univ X _, fun h =>
     haveI : PreirreducibleSpace X := ⟨h.2⟩

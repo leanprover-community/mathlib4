@@ -148,6 +148,7 @@ theorem left_inv {x : X} (h : x ∈ e.source) : e.symm (e x) = x :=
 theorem right_inv {x : Y} (h : x ∈ e.target) : e (e.symm x) = x :=
   e.right_inv' h
 
+variable {e} in
 theorem eq_symm_apply {x : X} {y : Y} (hx : x ∈ e.source) (hy : y ∈ e.target) :
     x = e.symm y ↔ e x = y :=
   e.toPartialEquiv.eq_symm_apply hx hy
@@ -348,24 +349,27 @@ theorem map_nhdsWithin_preimage_eq {x} (hx : x ∈ e.source) (s : Set Y) :
   rw [e.map_nhdsWithin_eq hx, e.image_source_inter_eq', e.target_inter_inv_preimage_preimage,
     e.nhdsWithin_target_inter (e.map_source hx)]
 
-theorem eventually_nhds {x : X} (p : Y → Prop) (hx : x ∈ e.source) :
+variable {e} in
+theorem eventually_nhds {x : X} {p : Y → Prop} (hx : x ∈ e.source) :
     (∀ᶠ y in 𝓝 (e x), p y) ↔ ∀ᶠ x in 𝓝 x, p (e x) :=
   Iff.trans (by rw [e.map_nhds_eq hx]) eventually_map
 
-theorem eventually_nhds' {x : X} (p : X → Prop) (hx : x ∈ e.source) :
+variable {e} in
+theorem eventually_nhds' {x : X} {p : X → Prop} (hx : x ∈ e.source) :
     (∀ᶠ y in 𝓝 (e x), p (e.symm y)) ↔ ∀ᶠ x in 𝓝 x, p x := by
-  rw [e.eventually_nhds _ hx]
+  rw [e.eventually_nhds hx]
   refine eventually_congr ((e.eventually_left_inverse hx).mono fun y hy => ?_)
   rw [hy]
 
-theorem eventually_nhdsWithin {x : X} (p : Y → Prop) {s : Set X}
+variable {e} in
+theorem eventually_nhdsWithin {x : X} {p : Y → Prop} {s : Set X}
     (hx : x ∈ e.source) : (∀ᶠ y in 𝓝[e.symm ⁻¹' s] e x, p y) ↔ ∀ᶠ x in 𝓝[s] x, p (e x) := by
   refine Iff.trans ?_ eventually_map
   rw [e.map_nhdsWithin_eq hx, e.image_source_inter_eq', e.nhdsWithin_target_inter (e.mapsTo hx)]
 
-theorem eventually_nhdsWithin' {x : X} (p : X → Prop) {s : Set X}
+theorem eventually_nhdsWithin' {x : X} {p : X → Prop} {s : Set X}
     (hx : x ∈ e.source) : (∀ᶠ y in 𝓝[e.symm ⁻¹' s] e x, p (e.symm y)) ↔ ∀ᶠ x in 𝓝[s] x, p x := by
-  rw [e.eventually_nhdsWithin _ hx]
+  rw [e.eventually_nhdsWithin hx]
   refine eventually_congr <|
     (eventually_nhdsWithin_of_eventually_nhds <| e.eventually_left_inverse hx).mono fun y hy => ?_
   rw [hy]
@@ -377,7 +381,7 @@ theorem preimage_eventuallyEq_target_inter_preimage_inter {e : PartialHomeomorph
     {t : Set Z} {x : X} {f : X → Z} (hf : ContinuousWithinAt f s x) (hxe : x ∈ e.source)
     (ht : t ∈ 𝓝 (f x)) :
     e.symm ⁻¹' s =ᶠ[𝓝 (e x)] (e.target ∩ e.symm ⁻¹' (s ∩ f ⁻¹' t) : Set Y) := by
-  rw [eventuallyEq_set, e.eventually_nhds _ hxe]
+  rw [eventuallyEq_set, e.eventually_nhds hxe]
   filter_upwards [e.open_source.mem_nhds hxe,
     mem_nhdsWithin_iff_eventually.mp (hf.preimage_mem_nhdsWithin ht)]
   intro y hy hyu
@@ -798,7 +802,7 @@ should really be considered the same partial equivalence. -/
 def EqOnSource (e e' : PartialHomeomorph X Y) : Prop :=
   e.source = e'.source ∧ EqOn e e' e.source
 
-theorem eqOnSource_iff (e e' : PartialHomeomorph X Y) :
+theorem eqOnSource_iff {e e' : PartialHomeomorph X Y} :
     EqOnSource e e' ↔ PartialEquiv.EqOnSource e.toPartialEquiv e'.toPartialEquiv :=
   Iff.rfl
 
@@ -1304,7 +1308,7 @@ theorem subtypeRestr_symm_trans_subtypeRestr (f f' : PartialHomeomorph X Y) :
 theorem subtypeRestr_symm_eqOn {U : Opens X} (hU : Nonempty U) :
     EqOn e.symm (Subtype.val ∘ (e.subtypeRestr hU).symm) (e.subtypeRestr hU).target := by
   intro y hy
-  rw [eq_comm, eq_symm_apply _ _ hy.1]
+  rw [eq_comm, eq_symm_apply _ hy.1]
   · change restrict _ e _ = _
     rw [← subtypeRestr_coe, (e.subtypeRestr hU).right_inv hy]
   · have := map_target _ hy; rwa [subtypeRestr_source] at this

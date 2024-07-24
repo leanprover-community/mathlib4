@@ -33,7 +33,7 @@ open Filter Topology
 
 variable {α : Type*} {A : Set α}
 variable {β : Type*} [Zero β] [TopologicalSpace β]
-variable {ι : Type*} (L : Filter ι) {As : ι → Set α}
+variable {ι : Type*} {L : Filter ι} {As : ι → Set α}
 
 lemma tendsto_ite {β : Type*} {p : ι → Prop} [DecidablePred p] {q : Prop} [Decidable q]
     {a b : β} {F G : Filter β}
@@ -85,15 +85,15 @@ lemma tendsto_indicator_const_iff_forall_eventually'
       ↔ ∀ x, ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A) := by
   simp_rw [tendsto_pi_nhds]
   apply forall_congr'
-  exact tendsto_indicator_const_apply_iff_eventually' L b nhd_b nhd_o
+  exact tendsto_indicator_const_apply_iff_eventually' b nhd_b nhd_o
 
 /-- The indicator functions of `Asᵢ` evaluated at `x` tend to the indicator function of `A`
 evaluated at `x` if and only if we eventually have the equivalence `x ∈ Asᵢ ↔ x ∈ A`. -/
 @[simp] lemma tendsto_indicator_const_apply_iff_eventually [T1Space β] (b : β) [NeZero b]
-    (x : α) :
+    {x : α} :
     Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b) x) L (𝓝 (A.indicator (fun (_ : α) ↦ b) x))
       ↔ ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A) := by
-  apply tendsto_indicator_const_apply_iff_eventually' _ b
+  apply tendsto_indicator_const_apply_iff_eventually' b
   · simp only [compl_singleton_mem_nhds_iff, ne_eq, NeZero.ne, not_false_eq_true]
   · simp only [compl_singleton_mem_nhds_iff, ne_eq, (NeZero.ne b).symm, not_false_eq_true]
 
@@ -102,7 +102,7 @@ for every `x`, we eventually have the equivalence `x ∈ Asᵢ ↔ x ∈ A`. -/
 @[simp] lemma tendsto_indicator_const_iff_forall_eventually [T1Space β] (b : β) [NeZero b] :
     Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b)) L (𝓝 (A.indicator (fun (_ : α) ↦ b)))
       ↔ ∀ x, ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A) := by
-  apply tendsto_indicator_const_iff_forall_eventually' _ b
+  apply tendsto_indicator_const_iff_forall_eventually' b
   · simp only [compl_singleton_mem_nhds_iff, ne_eq, NeZero.ne, not_false_eq_true]
   · simp only [compl_singleton_mem_nhds_iff, ne_eq, (NeZero.ne b).symm, not_false_eq_true]
 
@@ -110,13 +110,13 @@ lemma tendsto_indicator_const_iff_tendsto_pi_pure'
     (b : β) (nhd_b : {0}ᶜ ∈ 𝓝 b) (nhd_o : {b}ᶜ ∈ 𝓝 0) :
     Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b)) L (𝓝 (A.indicator (fun (_ : α) ↦ b)))
       ↔ (Tendsto As L <| Filter.pi (pure <| · ∈ A)) := by
-  rw [tendsto_indicator_const_iff_forall_eventually' _ b nhd_b nhd_o, tendsto_pi]
+  rw [tendsto_indicator_const_iff_forall_eventually' b nhd_b nhd_o, tendsto_pi]
   simp_rw [tendsto_pure]
   aesop
 
 lemma tendsto_indicator_const_iff_tendsto_pi_pure [T1Space β] (b : β) [NeZero b] :
     Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b)) L (𝓝 (A.indicator (fun (_ : α) ↦ b)))
       ↔ (Tendsto As L <| Filter.pi (pure <| · ∈ A)) := by
-  rw [tendsto_indicator_const_iff_forall_eventually _ b, tendsto_pi]
+  rw [tendsto_indicator_const_iff_forall_eventually b, tendsto_pi]
   simp_rw [tendsto_pure]
   aesop

@@ -154,7 +154,7 @@ theorem Inducing.specializes_iff (hf : Inducing f) : f x ⤳ f y ↔ x ⤳ y := 
   simp only [specializes_iff_mem_closure, hf.closure_eq_preimage_closure_image, image_singleton,
     mem_preimage]
 
-theorem subtype_specializes_iff {p : X → Prop} (x y : Subtype p) : x ⤳ y ↔ (x : X) ⤳ y :=
+theorem subtype_specializes_iff {p : X → Prop} {x y : Subtype p} : x ⤳ y ↔ (x : X) ⤳ y :=
   inducing_subtype_val.specializes_iff.symm
 
 @[simp]
@@ -439,7 +439,7 @@ theorem inseparable_of_nhdsWithin_eq (hx : x ∈ s) (hy : y ∈ s) (h : 𝓝[s] 
 theorem Inducing.inseparable_iff (hf : Inducing f) : (f x ~ᵢ f y) ↔ (x ~ᵢ y) := by
   simp only [inseparable_iff_specializes_and, hf.specializes_iff]
 
-theorem subtype_inseparable_iff {p : X → Prop} (x y : Subtype p) : (x ~ᵢ y) ↔ ((x : X) ~ᵢ y) :=
+theorem subtype_inseparable_iff {p : X → Prop} {x y : Subtype p} : (x ~ᵢ y) ↔ ((x : X) ~ᵢ y) :=
   inducing_subtype_val.inseparable_iff.symm
 
 @[simp] theorem inseparable_prod {x₁ x₂ : X} {y₁ y₂ : Y} :

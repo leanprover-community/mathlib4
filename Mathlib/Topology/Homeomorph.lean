@@ -414,7 +414,7 @@ def homeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpe
   toEquiv := e
 
 @[simp]
-theorem comp_continuousOn_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) :
+theorem comp_continuousOn_iff (h : X ≃ₜ Y) {f : Z → X} {s : Set Z} :
     ContinuousOn (h ∘ f) s ↔ ContinuousOn f s :=
   h.inducing.continuousOn_iff.symm
 
@@ -426,15 +426,15 @@ theorem comp_continuous_iff (h : X ≃ₜ Y) {f : Z → X} : Continuous (h ∘ f
 theorem comp_continuous_iff' (h : X ≃ₜ Y) {f : Y → Z} : Continuous (f ∘ h) ↔ Continuous f :=
   h.quotientMap.continuous_iff.symm
 
-theorem comp_continuousAt_iff (h : X ≃ₜ Y) (f : Z → X) (z : Z) :
+theorem comp_continuousAt_iff (h : X ≃ₜ Y) {f : Z → X} {z : Z} :
     ContinuousAt (h ∘ f) z ↔ ContinuousAt f z :=
   h.inducing.continuousAt_iff.symm
 
-theorem comp_continuousAt_iff' (h : X ≃ₜ Y) (f : Y → Z) (x : X) :
+theorem comp_continuousAt_iff' {h : X ≃ₜ Y} {f : Y → Z} {x : X} :
     ContinuousAt (f ∘ h) x ↔ ContinuousAt f (h x) :=
   h.inducing.continuousAt_iff' (by simp)
 
-theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (z : Z) :
+theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) {f : Z → X} {s : Set Z} {z : Z} :
     ContinuousWithinAt f s z ↔ ContinuousWithinAt (h ∘ f) s z :=
   h.inducing.continuousWithinAt_iff
 

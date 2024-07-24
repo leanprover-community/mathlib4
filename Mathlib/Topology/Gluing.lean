@@ -96,7 +96,8 @@ local notation "𝖣" => D.toGlueData
 theorem π_surjective : Function.Surjective 𝖣.π :=
   (TopCat.epi_iff_surjective 𝖣.π).mp inferInstance
 
-theorem isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i ⁻¹' U) := by
+variable {D} in
+theorem isOpen_iff {U : Set 𝖣.glued} : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i ⁻¹' U) := by
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ 𝖣.diagram]
   rw [← (homeoOfIso (Multicoequalizer.isoCoequalizer 𝖣.diagram).symm).isOpen_preimage]
@@ -188,7 +189,8 @@ theorem eqvGen_of_π_eq
     types_id_apply] at this
   exact Quot.eq.1 this
 
-theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
+variable {D} in
+theorem ι_eq_iff_rel {i j : D.J} {x : D.U i} {y : D.U j} :
     𝖣.ι i x = 𝖣.ι j y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
   constructor
   · delta GlueData.ι
@@ -221,7 +223,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
 
 theorem ι_injective (i : D.J) : Function.Injective (𝖣.ι i) := by
   intro x y h
-  rcases (D.ι_eq_iff_rel _ _ _ _).mp h with (⟨⟨⟩⟩ | ⟨_, e₁, e₂⟩)
+  rcases (D.ι_eq_iff_rel).mp h with (⟨⟨⟩⟩ | ⟨_, e₁, e₂⟩)
   · rfl
   · dsimp only at *
     -- Porting note: there were `cases e₁` and `cases e₂`, instead of the `rw`
@@ -236,7 +238,7 @@ theorem image_inter (i j : D.J) :
   ext x
   constructor
   · rintro ⟨⟨x₁, eq₁⟩, ⟨x₂, eq₂⟩⟩
-    obtain ⟨⟨⟩⟩ | ⟨y, e₁, -⟩ := (D.ι_eq_iff_rel _ _ _ _).mp (eq₁.trans eq₂.symm)
+    obtain ⟨⟨⟩⟩ | ⟨y, e₁, -⟩ := (D.ι_eq_iff_rel).mp (eq₁.trans eq₂.symm)
     · exact ⟨inv (D.f i i) x₁, by
         -- porting note (#10745): was `simp [eq₁]`
         -- See https://github.com/leanprover-community/mathlib4/issues/5026

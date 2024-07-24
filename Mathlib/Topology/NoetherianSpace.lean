@@ -47,27 +47,28 @@ namespace TopologicalSpace
 class NoetherianSpace : Prop where
   wellFounded_opens : WellFounded ((· > ·) : Opens α → Opens α → Prop)
 
+variable {α} in
 theorem noetherianSpace_iff_opens : NoetherianSpace α ↔ ∀ s : Opens α, IsCompact (s : Set α) := by
   rw [noetherianSpace_iff, CompleteLattice.wellFounded_iff_isSupFiniteCompact,
     CompleteLattice.isSupFiniteCompact_iff_all_elements_compact]
   exact forall_congr' Opens.isCompactElement_iff
 
 instance (priority := 100) NoetherianSpace.compactSpace [h : NoetherianSpace α] : CompactSpace α :=
-  ⟨(noetherianSpace_iff_opens α).mp h ⊤⟩
+  ⟨(noetherianSpace_iff_opens).mp h ⊤⟩
 
 variable {α β}
 
 /-- In a Noetherian space, all sets are compact. -/
 protected theorem NoetherianSpace.isCompact [NoetherianSpace α] (s : Set α) : IsCompact s := by
   refine isCompact_iff_finite_subcover.2 fun U hUo hs => ?_
-  rcases ((noetherianSpace_iff_opens α).mp ‹_› ⟨⋃ i, U i, isOpen_iUnion hUo⟩).elim_finite_subcover U
+  rcases (noetherianSpace_iff_opens.mp ‹_› ⟨⋃ i, U i, isOpen_iUnion hUo⟩).elim_finite_subcover U
     hUo Set.Subset.rfl with ⟨t, ht⟩
   exact ⟨t, hs.trans ht⟩
 
 -- Porting note: fixed NS
 protected theorem _root_.Inducing.noetherianSpace [NoetherianSpace α] {i : β → α}
     (hi : Inducing i) : NoetherianSpace β :=
-  (noetherianSpace_iff_opens _).2 fun _ => hi.isCompact_iff.2 (NoetherianSpace.isCompact _)
+  noetherianSpace_iff_opens.2 fun _ => hi.isCompact_iff.2 (NoetherianSpace.isCompact _)
 
 /-- [Stacks: Lemma 0052 (1)](https://stacks.math.columbia.edu/tag/0052)-/
 instance NoetherianSpace.set [NoetherianSpace α] (s : Set α) : NoetherianSpace s :=
@@ -85,7 +86,7 @@ theorem noetherianSpace_TFAE :
   · refine (noetherianSpace_iff α).trans (Opens.compl_bijective.2.wellFounded_iff ?_)
     exact (@OrderIso.compl (Set α)).lt_iff_lt.symm
   tfae_have 1 ↔ 4
-  · exact noetherianSpace_iff_opens α
+  · exact noetherianSpace_iff_opens
   tfae_have 1 → 3
   · exact @NoetherianSpace.isCompact α _
   tfae_have 3 → 4
@@ -124,7 +125,7 @@ theorem NoetherianSpace.range [NoetherianSpace α] (f : α → β) (hf : Continu
   noetherianSpace_of_surjective (Set.rangeFactorization f) (hf.subtype_mk _)
     Set.surjective_onto_range
 
-theorem noetherianSpace_set_iff (s : Set α) :
+theorem noetherianSpace_set_iff {s : Set α} :
     NoetherianSpace s ↔ ∀ t, t ⊆ s → IsCompact t := by
   simp only [noetherianSpace_iff_isCompact, embedding_subtype_val.isCompact_iff,
     Subtype.forall_set_subtype]

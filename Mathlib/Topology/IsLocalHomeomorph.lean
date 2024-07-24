@@ -39,6 +39,7 @@ the source of some `e : PartialHomeomorph X Y` with `f = e`. -/
 def IsLocalHomeomorphOn :=
   ∀ x ∈ s, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ f = e
 
+variable {s} in
 theorem isLocalHomeomorphOn_iff_openEmbedding_restrict {f : X → Y} :
     IsLocalHomeomorphOn f s ↔ ∀ x ∈ s, ∃ U ∈ 𝓝 x, OpenEmbedding (U.restrict f) := by
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩

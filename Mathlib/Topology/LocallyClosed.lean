@@ -207,7 +207,7 @@ open TopologicalSpace
 
 variable {ι : Type*} {U : ι → Opens Y} (hU : iSup U = ⊤)
 
-theorem isLocallyClosed_iff_coe_preimage_of_iSup_eq_top (s : Set Y) :
+theorem isLocallyClosed_iff_coe_preimage_of_iSup_eq_top {s : Set Y} :
     IsLocallyClosed s ↔ ∀ i, IsLocallyClosed ((↑) ⁻¹' s : Set (U i)) := by
   simp_rw [isLocallyClosed_iff_isOpen_coborder]
   rw [isOpen_iff_coe_preimage_of_iSup_eq_top hU]
