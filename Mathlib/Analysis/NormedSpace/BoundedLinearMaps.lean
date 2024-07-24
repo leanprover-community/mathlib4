@@ -8,8 +8,6 @@ import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
 
-
-
 /-!
 # Bounded linear maps
 

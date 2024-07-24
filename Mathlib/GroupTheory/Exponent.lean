@@ -7,7 +7,6 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Peel
 
 /-!
