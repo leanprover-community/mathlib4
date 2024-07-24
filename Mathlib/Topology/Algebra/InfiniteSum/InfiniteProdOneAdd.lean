@@ -796,25 +796,27 @@ lemma prodd (x : ℂ) (h0 : x ≠ 0) :
   sorry
   sorry
 
+lemma summable_iff_abs_summable  {α : Type} (f : α → ℂ) :
+    Summable f ↔ Summable (fun (n: α) => Complex.abs (f n)) := by
+  apply summable_norm_iff.symm
+
 lemma log_of_summable (f : ℕ → ℂ) (hf : Summable f) :
     Summable (fun n : ℕ => Complex.log (1 + f n)) := by
-  -- summable_norm_iff
-  --rw [← summable_abs_iff ] at hf
-  --apply Summable.of_norm
-/-   have hff : Summable (fun n => fun x => Complex.abs (f n x)) := by
-    --apply summable_abs_iff.mpr hf
-    sorry
-  have := Summable.of_norm_bounded (E := ℂ) (fun n => fun x => Complex.abs (f n x)) hff
- -/
-  have hff : Summable (fun n => Complex.abs (f n)) := by
-    sorry
-  apply  Summable.of_norm_bounded (fun n => Complex.abs (f n)) hff
-  intro n
+  have hfc : Summable (fun n => Complex.abs (f n)) := by
+    rw [← summable_norm_iff] at hf
+    apply hf
+  have hff : Summable (fun n => (3/2) * Complex.abs (f n)) := by
+    apply Summable.const_smul ((3 : ℝ)/2) hfc
+  have := Summable.tendsto_atTop_zero hfc
+  rw [Metric.tendsto_atTop] at this
+  simp at this
+  apply Summable.of_norm_bounded_eventually_nat (fun n => (3/2) * Complex.abs (f n)) hff
   simp
-  --have := Complex.norm_log_one_add_sub_self_le
-
-
-  sorry
+  obtain ⟨n, hn⟩ := this (1/2) (one_half_pos)
+  use n
+  intro m hm
+  apply logbound
+  exact (hn m hm).le
 
 
 
