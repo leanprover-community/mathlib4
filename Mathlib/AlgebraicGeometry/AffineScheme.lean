@@ -656,7 +656,8 @@ open ConcreteCategory
 
 /-- If `X` is affine, the image of the zero locus of global sections of `X` under `toΓSpecFun`
 is the zero locus in terms of the prime spectrum of `Γ(X, ⊤)`. -/
-lemma Scheme.toΓSpec_image_zeroLocus_eq_of_isAffine {X : Scheme.{u}} [IsAffine X] (s : Set Γ(X, ⊤)) :
+lemma Scheme.toΓSpec_image_zeroLocus_eq_of_isAffine {X : Scheme.{u}} [IsAffine X]
+    (s : Set Γ(X, ⊤)) :
     X.isoSpec.hom.val.base '' X.zeroLocus s = PrimeSpectrum.zeroLocus s := by
   erw [← X.toΓSpec_preimage_zeroLocus_eq, Set.image_preimage_eq]
   exact (bijective_of_isIso X.isoSpec.hom.val.base).surjective
