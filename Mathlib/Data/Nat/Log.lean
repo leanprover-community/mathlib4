@@ -204,7 +204,7 @@ lemma log2_eq_log_two {n : ℕ} : Nat.log2 n = Nat.log 2 n := by
     by_cases h : n = 0
     · simp [h]
     · congr
-      simp
+      simp only [ge_iff_le, lt_succ_self, and_true]
       exact ih (n/2) (Nat.div_lt_self (Nat.pos_of_ne_zero h) (by simp))
 
 lemma log_two_le_self {n : ℕ} : Nat.log 2 n ≤ n := by
