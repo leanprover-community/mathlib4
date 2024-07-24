@@ -1012,17 +1012,6 @@ theorem Equiv.ext' {x y : PGame}
   · exact ⟨i, Equiv.trans h hi.equiv⟩
   · exact ⟨i, Equiv.trans hi.symm.equiv h⟩
 
-theorem Equiv.ext'' {x y : PGame}
-    (hl : Relator.BiTotal fun (a : {a // a ∈ₗ x}) (b : {b // b ∈ₗ y}) ↦ a.1 ≈ b.1)
-    (hr : Relator.BiTotal fun (a : {a // a ∈ᵣ x}) (b : {b // b ∈ᵣ y}) ↦ a.1 ≈ b.1) :
-    x ≈ y := by
-  refine Equiv.ext (hl.imp (fun h i ↦ ?_) (fun h i ↦ ?_)) (hr.imp (fun h i ↦ ?_) (fun h i ↦ ?_)) <;>
-    obtain ⟨⟨_, i, hi⟩, h⟩ := h ⟨_, ⟨i, refl _⟩⟩
-  · exact ⟨i, Equiv.trans h hi.equiv⟩
-  · exact ⟨i, Equiv.trans hi.symm.equiv h⟩
-  · exact ⟨i, Equiv.trans h hi.equiv⟩
-  · exact ⟨i, Equiv.trans hi.symm.equiv h⟩
-
 /-- The fuzzy, confused, or incomparable relation on pre-games.
 
 If `x ‖ 0`, then the first player can always win `x`. -/
