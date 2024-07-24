@@ -228,14 +228,14 @@ theorem EquicontinuousOn.comap_uniformOnFun_eq {𝔖 : Set (Set X)} (𝔖_compac
   -- goal is the uniform structure induced by the maps `K.restrict ∘ F : ι → (K → α)` for `K ∈ 𝔖`.
   have H2 : (Pi.uniformSpace _).comap ((⋃₀ 𝔖).restrict ∘ F) =
       ⨅ (K ∈ 𝔖), (Pi.uniformSpace _).comap (K.restrict ∘ F) := by
-    simp_rw [UniformSpace.comap_comap, Pi.uniformSpace_comap_restrict_sUnion (fun _ ↦ α) 𝔖,
+    simp_rw [UniformSpace.comap_comap, Pi.uniformSpace_comap_restrict_sUnion 𝔖,
       UniformSpace.comap_iInf]
   -- But, for `K ∈ 𝔖` fixed, we know that the uniform structures of `K →ᵤ α` and `K → α`
   -- induce, via the equicontinuous family `K.restrict ∘ F`, the same uniform structure on `ι`.
   have H3 : ∀ K ∈ 𝔖, (UniformFun.uniformSpace K α).comap (K.restrict ∘ F) =
       (Pi.uniformSpace _).comap (K.restrict ∘ F) := fun K hK ↦ by
     have : CompactSpace K := isCompact_iff_compactSpace.mp (𝔖_compact K hK)
-    exact (equicontinuous_restrict_iff _ |>.mpr <| F_eqcont K hK).comap_uniformFun_eq
+    exact (equicontinuous_restrict_iff |>.mpr <| F_eqcont K hK).comap_uniformFun_eq
   -- Combining these three facts completes the proof.
   simp_rw [H1, H2, iInf_congr fun K ↦ iInf_congr fun hK ↦ H3 K hK]
 
@@ -341,7 +341,7 @@ theorem EquicontinuousOn.tendsto_uniformOnFun_iff_pi'
     _root_.nhds_iInf, nhds_induced, tendsto_iInf, tendsto_comap_iff]
   congrm ∀ K (hK : K ∈ 𝔖), ?_
   have : CompactSpace K := isCompact_iff_compactSpace.mp (𝔖_compact K hK)
-  rw [← (equicontinuous_restrict_iff _ |>.mpr <| F_eqcont K hK).tendsto_uniformFun_iff_pi]
+  rw [← (equicontinuous_restrict_iff |>.mpr <| F_eqcont K hK).tendsto_uniformFun_iff_pi]
   rfl
 
 /-- Let `X` be a topological space, `𝔖` a covering of `X` by compact subsets,
