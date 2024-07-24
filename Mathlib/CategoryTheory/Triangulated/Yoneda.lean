@@ -20,7 +20,7 @@ functors `preadditiveCoyoneda.obj A : C ⥤ AddCommGrp` for `A : Cᵒᵖ` and
 
 namespace CategoryTheory
 
-open Limits Pretriangulated.Opposite
+open Limits Opposite Pretriangulated.Opposite
 
 namespace Pretriangulated
 
@@ -66,6 +66,23 @@ noncomputable instance (B : C) : (preadditiveYoneda.obj B).ShiftSequence ℤ whe
   shiftIso_add n m a a' a'' ha' ha'' := by
     ext _ x
     exact ShiftedHom.opEquiv'_add_symm n m a a' a'' ha' ha'' x.op
+
+lemma preadditiveYoneda_homologySequenceδ_apply
+    (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) {A : C} (x : T.obj₁ ⟶ A⟦n₀⟧) :
+    (preadditiveYoneda.obj A).homologySequenceδ
+      ((triangleOpEquivalence _).functor.obj (op T)) n₀ n₁ h x =
+      T.mor₃ ≫ x⟦(1 : ℤ)⟧' ≫ (shiftFunctorAdd' C n₀ 1 n₁ h).inv.app A := by
+  let a := (shiftFunctorCompIsoId C _ _ (neg_add_self (1 : ℤ))).inv.app T.obj₃
+  let b := ((shiftFunctorOpIso C _ _ (add_right_neg 1)).hom.app (op T.obj₃)).unop⟦(1 : ℤ)⟧'
+  let c := ((shiftFunctor Cᵒᵖ (1 : ℤ)).map T.mor₃.op).unop
+  let d := (opShiftFunctorEquivalence C 1).counitIso.inv.app (op T.obj₁)
+  let e := (shiftFunctorAdd' C n₀ 1 n₁ h).inv.app A
+  change ((a ≫ b) ≫ ((c ≫ _) ≫ x)⟦(1 : ℤ)⟧') ≫ _ = _
+  simp only [← Category.assoc, Functor.map_comp]
+  congr 2
+  dsimp [a, b, c]
+  simp only [Category.assoc]
+  sorry
 
 end Pretriangulated
 

@@ -157,6 +157,22 @@ section ContravariantSequence
 
 variable {S : ShortComplex C} (hS : S.ShortExact) (Y : C)
 
+lemma singleFunctor_map_comp_hom [HasDerivedCategory.{w'} C]
+    {X Y Z : C} (f : X ⟶ Y) {n : ℕ} (x : Ext Y Z n) :
+    (DerivedCategory.singleFunctor C 0).map f ≫ x.hom =
+      ((mk₀ f).comp x (zero_add n)).hom := by
+  simp only [comp_hom, mk₀_hom, ShiftedHom.mk₀_comp]
+
+lemma preadditiveYoneda_homologySequenceδ_singleTriangle_apply
+    [HasDerivedCategory.{w'} C] {Y : C} {n₀ : ℕ} (x : Ext S.X₁ Y n₀)
+    {n₁ : ℕ} (h : 1 + n₀ = n₁) :
+    (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequenceδ
+      ((triangleOpEquivalence _).functor.obj (op hS.singleTriangle)) n₀ n₁ (by omega) x.hom =
+      (hS.extClass.comp x h).hom := by
+  rw [preadditiveYoneda_homologySequenceδ_apply,
+    comp_hom, hS.extClass_hom, ShiftedHom.comp]
+  rfl
+
 lemma contravariant_sequence_exact₂' (n : ℕ) :
     (ShortComplex.mk (AddCommGrp.ofHom ((mk₀ S.g).precomp Y (zero_add n)))
       (AddCommGrp.ofHom ((mk₀ S.f).precomp Y (zero_add n))) (by
@@ -164,18 +180,13 @@ lemma contravariant_sequence_exact₂' (n : ℕ) :
         dsimp [AddCommGrp.ofHom]
         simp only [mk₀_comp_mk₀_assoc, ShortComplex.zero, mk₀_zero, zero_comp]
         rfl)).Exact := by
-  have := hS
   letI := HasDerivedCategory.standard C
   have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₂ _
     (op_distinguished _ hS.singleTriangle_distinguished) n
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
   apply Function.Exact.of_ladder_addEquiv_of_exact' (e₁ := Ext.homAddEquiv)
     (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (H := this)
-  · ext x
-    dsimp
-    sorry
-  · sorry
-  --all_goals ext x; apply hom_comp_singleFunctor_map_shift (C := C)
+  all_goals ext; apply singleFunctor_map_comp_hom (C := C)
 
 section
 
@@ -188,8 +199,14 @@ lemma contravariant_sequence_exact₁' :
         dsimp [AddCommGrp.ofHom]
         simp only [ShortComplex.ShortExact.extClass_comp_assoc]
         rfl)).Exact := by
-  have := hS
-  sorry
+  letI := HasDerivedCategory.standard C
+  have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₃ _
+    (op_distinguished _ hS.singleTriangle_distinguished) n₀ n₁ (by omega)
+  rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
+  apply Function.Exact.of_ladder_addEquiv_of_exact' (e₁ := Ext.homAddEquiv)
+    (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (H := this)
+  · ext; apply singleFunctor_map_comp_hom (C := C)
+  · ext; dsimp; apply preadditiveYoneda_homologySequenceδ_singleTriangle_apply
 
 lemma contravariant_sequence_exact₃' :
     (ShortComplex.mk (AddCommGrp.ofHom (hS.extClass.precomp Y h))
@@ -198,8 +215,14 @@ lemma contravariant_sequence_exact₃' :
         dsimp [AddCommGrp.ofHom]
         simp only [ShortComplex.ShortExact.comp_extClass_assoc]
         rfl)).Exact := by
-  have := hS
-  sorry
+  letI := HasDerivedCategory.standard C
+  have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₁ _
+    (op_distinguished _ hS.singleTriangle_distinguished) n₀ n₁ (by omega)
+  rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
+  apply Function.Exact.of_ladder_addEquiv_of_exact' (e₁ := Ext.homAddEquiv)
+    (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (H := this)
+  · ext; dsimp; apply preadditiveYoneda_homologySequenceδ_singleTriangle_apply
+  · ext; apply singleFunctor_map_comp_hom (C := C)
 
 open ComposableArrows
 
