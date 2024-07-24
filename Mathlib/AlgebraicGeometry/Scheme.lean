@@ -182,7 +182,7 @@ noncomputable def homeomorph [IsIso (C := Scheme) f] : X ≃ₜ Y :=
 protected lemma ext {f g : X ⟶ Y} (h_base : f.base = g.base)
     (h_app : ∀ U, f.app U ≫ X.presheaf.map
       (eqToHom congr((Opens.map $h_base.symm).obj U)).op = g.app U) : f = g :=
-  LocallyRingedSpace.Hom.ext' _ _ <| SheafedSpace.ext _ _ h_base
+  LocallyRingedSpace.Hom.ext' _ _ <| SheafedSpace.ext h_base
     (TopCat.Presheaf.ext fun U ↦ by simpa using h_app U)
 
 lemma preimage_iSup {ι} (U : ι → Opens Y) : f ⁻¹ᵁ iSup U = ⨆ i, f ⁻¹ᵁ U i :=
