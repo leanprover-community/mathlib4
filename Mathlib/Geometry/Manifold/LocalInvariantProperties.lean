@@ -240,7 +240,7 @@ theorem liftPropWithinAt_indep_chart_source_aux (g : M → H') (he : e ∈ G.max
       simp_rw [e'.left_inv xe', xe]
     simp_rw [mem_preimage, PartialHomeomorph.coe_trans_symm, PartialHomeomorph.symm_symm,
       Function.comp_apply, e.left_inv hy]
-  · refine ((e'.eventually_nhds' _ xe').mpr <| e.eventually_left_inverse xe).mono fun y hy ↦ ?_
+  · refine ((e'.eventually_nhds' xe').mpr <| e.eventually_left_inverse xe).mono fun y hy ↦ ?_
     simp only [mfld_simps]
     rw [hy]
 
