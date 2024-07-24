@@ -928,7 +928,8 @@ theorem ωSup_repeat_mem_fixedPoint (h : x ≤ f x) :
       have : f x = ((iterateChain f x h).map f) 0 := rfl
       rw [this]
       apply le_ωSup
-    · have : iterateChain f x h (n.succ) = (iterateChain f x h).map f n := Function.iterate_succ_apply' ..
+    · have : iterateChain f x h (n.succ) = (iterateChain f x h).map f n :=
+        Function.iterate_succ_apply' ..
       rw [this]
       apply le_ωSup
 
