@@ -532,7 +532,7 @@ theorem decomposition.decompose'_apply (φ : MvPolynomial σ R) (i : ℕ) :
 
 theorem decomposition.decompose'_eq :
     decomposition.decompose' = fun φ : MvPolynomial σ R =>
-      DirectSum.mk (fun i : ℕ => ↥(homogeneousSubmodule σ R i)) (Finset.image Finsupp.degree φ.support)
+      DirectSum.mk (fun i : ℕ => ↥(homogeneousSubmodule σ R i)) (φ.support.image Finsupp.degree)
         fun m => ⟨homogeneousComponent m φ, homogeneousComponent_mem m φ⟩ := by
   rw [degree_eq_weight_one]
   rfl
