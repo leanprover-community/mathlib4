@@ -58,7 +58,8 @@ theorem gc_leftDual_rightDual : GaloisConnection (toDual ∘ R.leftDual) (R.righ
 /-- `leftFixedPoints` is the set of elements `J : Set α` satisfying `rightDual (leftDual J) = J`. -/
 def leftFixedPoints := {J : Set α | R.rightDual (R.leftDual J) = J}
 
-/-- `rightFixedPoints` is the set of elements `I : Set β` satisfying `leftDual (rightDual I) = I`. -/
+/-- `rightFixedPoints` is the set of elements `I : Set β` satisfying `leftDual (rightDual I) = I`.
+-/
 def rightFixedPoints := {I : Set β | R.leftDual (R.rightDual I) = I}
 
 open GaloisConnection
