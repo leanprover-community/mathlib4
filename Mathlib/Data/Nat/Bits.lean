@@ -114,6 +114,9 @@ lemma bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
     · simp
     · simp; omega
 
+lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
+  (bit_val _ _).trans <| (Nat.add_comm _ _).trans <| bodd_add_div2 _
+
 lemma bit_zero : bit false 0 = 0 :=
   rfl
 
