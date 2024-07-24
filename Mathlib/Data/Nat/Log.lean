@@ -197,6 +197,29 @@ theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / 
     succ_pred_eq_of_pos (by omega)]
   exact Nat.add_le_mul hn hb
 
+lemma log2_eq_log_two {n : ℕ} : Nat.log2 n = Nat.log 2 n := by
+  induction n using Nat.strongRec
+  next n ih =>
+    unfold Nat.log2 Nat.log
+    by_cases h : n = 0
+    · simp [h]
+    · congr
+      simp
+      exact ih (n/2) (Nat.div_lt_self (Nat.pos_of_ne_zero h) (by simp))
+
+lemma log_two_le_self {n : ℕ} : Nat.log 2 n ≤ n := by
+  rw [← Nat.log2_eq_log_two]
+  exact log2_le_self n
+
+lemma log_le_self {b n : ℕ} : b.log n ≤ n := by
+  induction b with
+  | zero => simp
+  | succ m ih =>
+    by_cases h : 1 < m
+    · exact le_trans (Nat.log_anti_left h (by omega)) ih
+    · simp [Nat.le_one_iff_eq_zero_or_eq_one] at h
+      obtain rfl | rfl := h <;> simp [Nat.log_two_le_self]
+
 /-! ### Ceil logarithm -/
 
 
