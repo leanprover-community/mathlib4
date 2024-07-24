@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Yaël Dillies, Kin Yau James Wong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Kin Yau James Wong
+Authors: Yaël Dillies, Kin Yau James Wong, Rémy Degenne
 -/
 import Mathlib.Probability.Kernel.MeasureCompProd
 
@@ -24,13 +24,13 @@ A kernel `ρ : Kernel α (β × Ω)` is disintegrated by a kernel `κCond : Kern
 * `ProbabilityTheory.Kernel.IsCondKernel κ κCond`: Predicate for the kernel `κ Cond` to disintegrate
   the kernel `κ`.
 
-Further, if `κ` is a semifinite kernel from a countable `α` such that each measure `κ a` is
+Further, if `κ` is an s-finite kernel from a countable `α` such that each measure `κ a` is
 disintegrated by some kernel, then `κ` itself is disintegrated by a kernel, namely
 `ProbabilityTheory.Kernel.condKernelCountable`.
 
 ## See also
 
-`Mathlib.Probability.Kernel.Disintegration.Basic` for a **construction** of disintegrating kernels.
+`Mathlib.Probability.Kernel.Disintegration.StandardBorel` for a **construction** of disintegrating kernels.
 -/
 
 open MeasureTheory Set Filter MeasurableSpace ProbabilityTheory
