@@ -53,30 +53,25 @@ lemma opEquiv_symm_apply_comp
   dsimp
   simp only [assoc, Functor.map_comp]
 
--- this proof needs some cleaning up...
 lemma opEquiv_symm_comp {a b : ℤ}
     (f : ShiftedHom (Opposite.op Z) (Opposite.op Y) a)
     (g : ShiftedHom (Opposite.op Y) (Opposite.op X) b)
     {c : ℤ} (h : b + a = c) :
     (opEquiv _).symm (f.comp g h) =
       ((opEquiv _).symm g).comp ((opEquiv _).symm f) (by omega) := by
-  rw [opEquiv_symm_apply, opEquiv_symm_apply]
+  rw [opEquiv_symm_apply, opEquiv_symm_apply,
+    opShiftFunctorEquivalence_unitIso_inv_app_eq_add' _ _ _ _
+    (show a + b = c by omega), comp, comp]
   dsimp
-  rw [opShiftFunctorEquivalence_unitIso_inv_app_eq_add' _ _ _ _
-    (show a + b = c by omega)]
-  simp [comp]
-  simp only [← Functor.map_comp_assoc, ← unop_comp]
-  simp only [assoc, Iso.inv_hom_id_app, Functor.comp_obj, comp_id, Functor.map_comp]
-  erw [← NatTrans.naturality_assoc, ← NatTrans.naturality]
+  rw [assoc, assoc, assoc, assoc, ← Functor.map_comp, ← unop_comp_assoc,
+    Iso.inv_hom_id_app]
   dsimp
-  simp only [← Functor.map_comp_assoc]
-  rw [opEquiv_symm_apply]
-  congr 3
+  rw [assoc, id_comp, Functor.map_comp, ← NatTrans.naturality_assoc,
+    ← NatTrans.naturality, opEquiv_symm_apply]
   dsimp
-  simp only [← Category.assoc]
-  congr 1
-  apply Quiver.Hom.op_inj
-  dsimp
+  rw [← Functor.map_comp_assoc, ← Functor.map_comp_assoc,
+    ← Functor.map_comp_assoc]
+  rw [← unop_comp_assoc]
   erw [← NatTrans.naturality]
   rfl
 
