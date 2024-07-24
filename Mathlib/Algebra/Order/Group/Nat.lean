@@ -8,8 +8,6 @@ import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Data.Nat.Defs
 
-#align_import data.nat.order.basic from "leanprover-community/mathlib"@"3ed3f98a1e836241990d3d308f1577e434977130"
-
 /-!
 # The naturals form a linear ordered monoid
 
@@ -52,10 +50,8 @@ variable {α : Type*} {n : ℕ} {f : α → ℕ}
 /-- See also `pow_left_strictMonoOn`. -/
 protected lemma pow_left_strictMono (hn : n ≠ 0) : StrictMono (· ^ n : ℕ → ℕ) :=
   fun _ _ h ↦ Nat.pow_lt_pow_left h hn
-#align nat.pow_left_strict_mono Nat.pow_left_strictMono
 
 lemma _root_.StrictMono.nat_pow [Preorder α] (hn : n ≠ 0) (hf : StrictMono f) :
     StrictMono (f · ^ n) := (Nat.pow_left_strictMono hn).comp hf
-#align strict_mono.nat_pow StrictMono.nat_pow
 
 end Nat
