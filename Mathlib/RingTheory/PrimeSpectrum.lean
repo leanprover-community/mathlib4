@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
 import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Noetherian
@@ -394,6 +395,33 @@ instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
   uniq x := PrimeSpectrum.ext _ _ ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
 
 end Order
+
+section Maximal
+
+theorem isMaximal_iff (p : PrimeSpectrum R) :
+    p.asIdeal.IsMaximal ↔ p ∈ maximals (· ≤ ·) Set.univ := by
+  constructor
+  · intro h
+    simp only [maximals, Set.top_eq_univ, Set.mem_univ, true_implies, true_and]
+    intro b hpb
+    exact le_of_eq <| (PrimeSpectrum.ext_iff b p).mpr <| Eq.symm <|
+      Ideal.IsMaximal.eq_of_le h b.isPrime.ne_top' hpb
+  · intro h
+    simp only [maximals, Set.top_eq_univ, Set.mem_univ, true_implies, true_and] at h
+    constructor; constructor
+    · exact Ideal.IsPrime.ne_top'
+    · intro b hpb; by_contra hb
+      obtain ⟨M, hM1, hM2⟩ := Ideal.exists_le_maximal b hb
+      have := h <| show _ ≤ ⟨M, hM1.isPrime⟩ by exact (le_of_lt <| lt_of_lt_of_le hpb hM2 : _ ≤ _)
+      exact (lt_self_iff_false _).1 <| lt_of_lt_of_le (lt_of_le_of_lt (by exact this) hpb) hM2
+
+theorem mem_minimalPrimes_iff (p : PrimeSpectrum R) :
+    p.asIdeal ∈ minimalPrimes R ↔ p ∈ minimals (· ≤ ·) Set.univ :=
+  have : asIdeal '' Set.univ = { p : Ideal R | p.IsPrime ∧ ⊥ ≤ p } := by
+    ext x; simpa using ⟨fun H ↦ H.choose_spec ▸ H.choose.2, fun H ↦ ⟨⟨_, H⟩, rfl⟩⟩
+  Iff.trans (this ▸ Iff.rfl) (map_mem_minimals_iff (s := LE.le) (f := asIdeal) (by simp) (by simp))
+
+end Maximal
 
 section Noetherian
 

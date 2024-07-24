@@ -3,11 +3,8 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.PrimeSpectrum
-import Mathlib.Topology.Irreducible
-import Mathlib.Topology.Sets.Closeds
+import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.Topology.Sober
-import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
@@ -622,29 +619,6 @@ lemma zeroLocus_minimalPrimes :
 
 variable {R}
 
-lemma isMaximal_iff (p : PrimeSpectrum R) :
-    p.asIdeal.IsMaximal ↔ p ∈ maximals (· ≤ ·) Set.univ := by
-  constructor
-  · intro h
-    simp only [maximals, Set.top_eq_univ, Set.mem_univ, true_implies, true_and]
-    intro b hpb
-    exact le_of_eq <| (PrimeSpectrum.ext_iff b p).mpr <| Eq.symm <|
-      Ideal.IsMaximal.eq_of_le h b.isPrime.ne_top' hpb
-  · intro h
-    simp only [maximals, Set.top_eq_univ, Set.mem_univ, true_implies, true_and] at h
-    constructor; constructor
-    · exact Ideal.IsPrime.ne_top'
-    · intro b hpb; by_contra hb
-      obtain ⟨M, hM1, hM2⟩ := Ideal.exists_le_maximal b hb
-      have := h <| show _ ≤ ⟨M, hM1.isPrime⟩ by exact (le_of_lt <| lt_of_lt_of_le hpb hM2 : _ ≤ _)
-      exact (lt_self_iff_false _).1 <| lt_of_lt_of_le (lt_of_le_of_lt (by exact this) hpb) hM2
-
-lemma mem_minimalPrimes_iff (p : PrimeSpectrum R) :
-    p.asIdeal ∈ minimalPrimes R ↔ p ∈ minimals (· ≤ ·) Set.univ :=
-  have : asIdeal '' Set.univ = { p : Ideal R | p.IsPrime ∧ ⊥ ≤ p } := by
-    ext x; simpa using ⟨fun H ↦ H.choose_spec ▸ H.choose.2, fun H ↦ ⟨⟨_, H⟩, rfl⟩⟩
-  Iff.trans (this ▸ Iff.rfl) (map_mem_minimals_iff (s := LE.le) (f := asIdeal) (by simp) (by simp))
-
 lemma vanishingIdeal_mem_minimalPrimes {s : Set (PrimeSpectrum R)} :
     vanishingIdeal s ∈ minimalPrimes R ↔ closure s ∈ irreducibleComponents (PrimeSpectrum R) := by
   constructor
@@ -704,3 +678,12 @@ theorem PrimeSpectrum.comap_residue (T : Type u) [CommRing T] [LocalRing T]
   exact Ideal.mk_ker
 
 end LocalRing
+
+section KrullDimension
+
+theorem PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim [CommRing R] :
+    topologicalKrullDim (PrimeSpectrum R) = ringKrullDim R :=
+  krullDim_orderDual.symm.trans <| krullDim_eq_of_orderIso
+  (PrimeSpectrum.pointsEquivIrreducibleCloseds R).symm
+
+end KrullDimension

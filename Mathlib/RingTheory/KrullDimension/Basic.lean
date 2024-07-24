@@ -3,7 +3,10 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li, Jujian Zhang
 -/
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.PrimeSpectrum
 import Mathlib.Topology.KrullDimension
 
 /-!
@@ -31,16 +34,13 @@ lemma ringKrullDim_nonneg_of_nontrivial [Nontrivial R] :
     0 ≤ ringKrullDim R :=
   krullDim_nonneg_of_nonempty
 
-theorem ringKrullDim_eq_topologicalKrullDim :
-    ringKrullDim R = topologicalKrullDim (PrimeSpectrum R) :=
-  Eq.symm <| krullDim_orderDual.symm.trans <| krullDim_eq_of_orderIso
-  (PrimeSpectrum.pointsEquivIrreducibleCloseds R).symm
-
 /-- If `f : R →+* S` is surjective, then `ringKrullDim S ≤ ringKrullDim R`. -/
 theorem ringKrullDim_le_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
     ringKrullDim S ≤ ringKrullDim R :=
-  krullDim_le_of_strictMono (PrimeSpectrum.comap f) (Monotone.strictMono_of_injective
-    (fun _ _ hab ↦ Ideal.comap_mono hab) (PrimeSpectrum.comap_injective_of_surjective f hf))
+  krullDim_le_of_strictMono (fun I ↦ ⟨Ideal.comap f I.asIdeal, inferInstance⟩)
+    (Monotone.strictMono_of_injective (fun _ _ hab ↦ Ideal.comap_mono hab)
+      (fun _ _ h => PrimeSpectrum.ext _ _ (Ideal.comap_injective_of_surjective f hf
+        (congr_arg PrimeSpectrum.asIdeal h))))
 
 /-- If `I` is an ideal of `R`, then `ringKrullDim (R ⧸ I) ≤ ringKrullDim R`. -/
 theorem ringKrullDim_quotient_le (I : Ideal R) :
