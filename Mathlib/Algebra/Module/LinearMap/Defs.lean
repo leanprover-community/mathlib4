@@ -528,7 +528,7 @@ variable {f g} {f' : M₂ →ₛₗ[σ₂₃] M₃} {g' : M₁ →ₛₗ[σ₁�
 /-- The linear map version of `Function.Surjective.injective_comp_right` -/
 lemma _root_.Function.Surjective.injective_linearMapComp_right (hg : Surjective g) :
     Injective fun f : M₂ →ₛₗ[σ₂₃] M₃ ↦ f.comp g :=
-  fun _ _ h ↦ ext <| hg.forall.2 (ext_iff.1 h)
+  fun _ _ h ↦ ext <| hg.forall.2 (LinearMap.ext_iff.1 h)
 
 @[simp]
 theorem cancel_right (hg : Surjective g) : f.comp g = f'.comp g ↔ f = f' :=

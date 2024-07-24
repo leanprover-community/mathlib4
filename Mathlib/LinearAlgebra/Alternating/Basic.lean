@@ -505,7 +505,8 @@ theorem compLinearMap_id (f : M [⋀^ι]→ₗ[R] N) : f.compLinearMap LinearMap
 /-- Composing with a surjective linear map is injective. -/
 theorem compLinearMap_injective (f : M₂ →ₗ[R] M) (hf : Function.Surjective f) :
     Function.Injective fun g : M [⋀^ι]→ₗ[R] N => g.compLinearMap f := fun g₁ g₂ h =>
-  ext fun x => by simpa [Function.surjInv_eq hf] using ext_iff.mp h (Function.surjInv hf ∘ x)
+  ext fun x => by
+    simpa [Function.surjInv_eq hf] using AlternatingMap.ext_iff.mp h (Function.surjInv hf ∘ x)
 
 theorem compLinearMap_inj (f : M₂ →ₗ[R] M) (hf : Function.Surjective f)
     (g₁ g₂ : M [⋀^ι]→ₗ[R] N) : g₁.compLinearMap f = g₂.compLinearMap f ↔ g₁ = g₂ :=
