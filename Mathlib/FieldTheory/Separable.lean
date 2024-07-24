@@ -574,8 +574,7 @@ theorem isSeparable_algebraMap (x : F) : IsSeparable F (algebraMap F K x) :=
 
 variable (F) in
 instance Algebra.isSeparable_self : Algebra.IsSeparable F F :=
-  ⟨fun _ => isSeparable_algebraMap⟩
-#align is_separable_self Algebra.isSeparable_self
+  ⟨fun _ => isSeparable_algebraMap _⟩
 
 end
 
@@ -590,10 +589,8 @@ theorem IsSeparable.of_finite (x : K) : IsSeparable F x :=
 
 -- See note [lower instance priority]
 /-- A finite field extension in characteristic 0 is separable. -/
-protected instance (priority := 100) Algebra.IsSeparable.of_finite (F K : Type*) [Field F] [Field K]
-    [Algebra F K] [FiniteDimensional F K] [CharZero F] : Algebra.IsSeparable F K :=
+protected instance (priority := 100) Algebra.IsSeparable.of_finite : Algebra.IsSeparable F K :=
   ⟨fun _ => _root_.IsSeparable.of_finite _ _⟩
-#align is_separable.of_finite Algebra.IsSeparable.of_finite
 
 end
 
@@ -614,7 +611,6 @@ theorem IsSeparable.tower_top
 theorem Algebra.isSeparable_tower_top_of_isSeparable [Algebra.IsSeparable F E] :
     Algebra.IsSeparable K E :=
   ⟨fun x ↦ IsSeparable.tower_top _ (Algebra.IsSeparable.isSeparable F x)⟩
-#align is_separable_tower_top_of_is_separable Algebra.isSeparable_tower_top_of_isSeparable
 
 end
 
@@ -635,7 +631,6 @@ theorem IsSeparable.tower_bot {x : K} (h : IsSeparable F (algebraMap K E x)) : I
 theorem Algebra.isSeparable_tower_bot_of_isSeparable [h : Algebra.IsSeparable F E] :
     Algebra.IsSeparable F K :=
   ⟨fun _ ↦ IsSeparable.tower_bot (h.isSeparable _)⟩
-#align is_separable_tower_bot_of_is_separable Algebra.isSeparable_tower_bot_of_isSeparable
 
 end
 
@@ -652,7 +647,6 @@ theorem IsSeparable.of_algHom {x : E} (h : IsSeparable F (f x)) : IsSeparable F 
 variable (F E')
 theorem Algebra.IsSeparable.of_algHom : Algebra.IsSeparable F E :=
   ⟨fun x => (Algebra.IsSeparable.isSeparable F (f x)).of_algHom⟩
-#align is_separable.of_alg_hom Algebra.IsSeparable.of_algHom
 
 end
 
