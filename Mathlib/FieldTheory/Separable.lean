@@ -568,7 +568,7 @@ section
 
 variable {F K : Type*} [Field F] [Ring K] [Algebra F K]
 
-theorem isSeparable_algebraMap {x : F} : IsSeparable F (algebraMap F K x) :=
+theorem isSeparable_algebraMap (x : F) : IsSeparable F (algebraMap F K x) :=
   Polynomial.Separable.of_dvd (Polynomial.separable_X_sub_C (x := x))
     (minpoly.dvd F (algebraMap F K x) (by simp only [map_sub, aeval_X, aeval_C, sub_self]))
 
