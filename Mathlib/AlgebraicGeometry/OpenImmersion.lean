@@ -298,11 +298,6 @@ instance IsOpenImmersion.ofRestrict : IsOpenImmersion (X.ofRestrict h) :=
   show PresheafedSpace.IsOpenImmersion (X.toPresheafedSpace.ofRestrict h) by infer_instance
 
 @[simp]
-lemma Scheme.ofRestrict_invApp (V) :
-    (X.ofRestrict h).invApp V = 𝟙 _ :=
-  PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ _ _
-
-@[simp]
 lemma Scheme.ofRestrict_appLE (V W e) :
     (X.ofRestrict h).appLE V W e = X.presheaf.map
       (homOfLE (show X.ofRestrict h ''ᵁ _ ≤ _ by exact Set.image_subset_iff.mpr e)).op := by
