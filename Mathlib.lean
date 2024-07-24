@@ -4376,7 +4376,6 @@ import Mathlib.Topology.DiscreteSubset
 import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.Topology.ENat
 import Mathlib.Topology.ExtendFrom
 import Mathlib.Topology.ExtremallyDisconnected
 import Mathlib.Topology.FiberBundle.Basic
@@ -4402,6 +4401,7 @@ import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Instances.CantorSet
 import Mathlib.Topology.Instances.Complex
 import Mathlib.Topology.Instances.Discrete
+import Mathlib.Topology.Instances.ENat
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.Instances.EReal
 import Mathlib.Topology.Instances.Int
