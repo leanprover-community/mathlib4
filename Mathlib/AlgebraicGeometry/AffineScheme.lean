@@ -482,8 +482,8 @@ theorem isLocalization_of_eq_basicOpen {V : X.Opens} (i : V ⟶ U) (e : V = X.ba
   subst e; convert isLocalization_basicOpen hU f using 3
 
 instance _root_.AlgebraicGeometry.Γ_restrict_isLocalization
-    (X : Scheme.{u}) [IsAffine X] (r : Scheme.Γ.obj (op X)) :
-    IsLocalization.Away r (Scheme.Γ.obj (op (X.basicOpen r).toScheme)) :=
+    (X : Scheme.{u}) [IsAffine X] (r : Γ(X, ⊤)) :
+    IsLocalization.Away r Γ(X.basicOpen r, ⊤) :=
   (isAffineOpen_top X).isLocalization_of_eq_basicOpen r _ (Opens.openEmbedding_obj_top _)
 
 theorem basicOpen_basicOpen_is_basicOpen (g : Γ(X, X.basicOpen f)) :
