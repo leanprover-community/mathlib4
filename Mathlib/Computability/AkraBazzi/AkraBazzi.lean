@@ -1227,7 +1227,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
             · if ri_lt_n₀ : r i n < n₀ then
                 exact h_base _ <| by
                   simp_all only [gt_iff_lt, Nat.ofNat_pos, div_pos_iff_of_pos_right,
-                    eventually_atTop, ge_iff_le, sub_pos, one_div, mem_Ico, and_imp,
+                    eventually_atTop, sub_pos, one_div, mem_Ico, and_imp,
                     forall_true_left, mem_univ, and_self, b', C, base_max]
               else
                 push_neg at ri_lt_n₀

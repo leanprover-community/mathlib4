@@ -106,11 +106,17 @@ class IsTruncGE extends e.IsRelIff : Prop where
   mem_next {j : ι} {k' : ι'} (h : c'.Rel (e.f j) k') :
     ∃ k, e.f k = k'
 
+lemma mem_next [e.IsTruncGE] {j : ι} {k' : ι'} (h : c'.Rel (e.f j) k') : ∃ k, e.f k = k' :=
+  IsTruncGE.mem_next h
+
 /-- The condition that the image of the map `e.f` of an embedding of
 complex shapes `e : Embedding c c'` is stable by `c'.prev`. -/
 class IsTruncLE extends e.IsRelIff : Prop where
   mem_prev {i' : ι'} {j : ι} (h : c'.Rel i' (e.f j)) :
     ∃ i, e.f i = i'
+
+lemma mem_prev [e.IsTruncLE] {i' : ι'} {j : ι} (h : c'.Rel i' (e.f j)) : ∃ i, e.f i = i' :=
+  IsTruncLE.mem_prev h
 
 open Classical in
 /-- The map `ι' → Option ι` which sends `e.f i` to `some i` and the other elements to `none`. -/

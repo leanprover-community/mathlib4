@@ -8,8 +8,6 @@ import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Nakayama
 
-#align_import ring_theory.discrete_valuation_ring.tfae from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
-
 /-!
 
 # Equivalent conditions for DVR
@@ -87,7 +85,6 @@ theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [LocalRing 
     exact (H _).mpr (dvd_refl _)
   · rw [hx, Ideal.span_singleton_pow, Ideal.span_le, Set.singleton_subset_iff]
     exact Nat.find_spec this
-#align exists_maximal_ideal_pow_eq_of_principal exists_maximalIdeal_pow_eq_of_principal
 
 theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
     [IsDedekindDomain R] : (maximalIdeal R).IsPrincipal := by
@@ -148,7 +145,6 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
     · intro m hm; obtain ⟨k, hk⟩ := hb₃ m hm; rw [← hy₂, mul_comm, mul_assoc] at hk
       rw [← mul_left_cancel₀ hb₄ hk, mul_comm]; exact Ideal.mem_span_singleton'.mpr ⟨_, rfl⟩
     · rwa [Submodule.span_le, Set.singleton_subset_iff]
-#align maximal_ideal_is_principal_of_is_dedekind_domain maximalIdeal_isPrincipal_of_isDedekindDomain
 
 /--
 Let `(R, m, k)` be a noetherian local domain (possibly a field).
@@ -233,7 +229,6 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
   · exact ⟨fun _ ↦ inferInstance, fun h ↦ { h with not_a_field' := this }⟩
   · exact ⟨fun h P h₁ h₂ ↦ h.unique ⟨h₁, h₂⟩ ⟨this, inferInstance⟩,
       fun H ↦ ⟨_, ⟨this, inferInstance⟩, fun P hP ↦ H P hP.1 hP.2⟩⟩
-#align discrete_valuation_ring.tfae DiscreteValuationRing.TFAE
 
 variable {R}
 

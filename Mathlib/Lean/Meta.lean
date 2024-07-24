@@ -7,10 +7,9 @@ import Lean.Elab.Term
 import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
+import Batteries.CodeAction -- to enable the hole code action
 
 /-! ## Additional utilities in `Lean.MVarId` -/
-
-set_option autoImplicit true
 
 open Lean Meta
 
@@ -65,6 +64,8 @@ namespace Lean.Elab.Tactic
 -- but that is taken in core by a function that lifts a `tac : MVarId → MetaM (Option MVarId)`.
 def liftMetaTactic' (tac : MVarId → MetaM MVarId) : TacticM Unit :=
   liftMetaTactic fun g => do pure [← tac g]
+
+variable {α : Type}
 
 @[inline] private def TacticM.runCore (x : TacticM α) (ctx : Context) (s : State) :
     TermElabM (α × State) :=
