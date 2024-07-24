@@ -7,8 +7,6 @@ import Mathlib.Topology.Algebra.Module.CharacterSpace
 import Mathlib.Analysis.NormedSpace.WeakDual
 import Mathlib.Analysis.NormedSpace.Spectrum
 
-#align_import analysis.normed_space.algebra from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
-
 /-!
 # Normed algebras
 
@@ -40,7 +38,6 @@ variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [C
 theorem norm_le_norm_one (φ : characterSpace 𝕜 A) : ‖toNormedDual (φ : WeakDual 𝕜 A)‖ ≤ ‖(1 : A)‖ :=
   ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg (1 : A)) fun a =>
     mul_comm ‖a‖ ‖(1 : A)‖ ▸ spectrum.norm_le_norm_mul_of_mem (apply_mem_spectrum φ a)
-#align weak_dual.character_space.norm_le_norm_one WeakDual.CharacterSpace.norm_le_norm_one
 
 instance [ProperSpace 𝕜] : CompactSpace (characterSpace 𝕜 A) := by
   rw [← isCompact_iff_compactSpace]

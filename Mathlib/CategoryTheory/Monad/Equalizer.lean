@@ -17,7 +17,8 @@ In `C`, this fork diagram is a split equalizer (in particular, it is still an eq
 This split equalizer is known as the Beck equalizer (as it features heavily in Beck's
 comonadicity theorem).
 
-This file is adapted from `CategoryTheory.Monad.Coequalizer`. Please try to keep them in sync.
+This file is adapted from `Mathlib.CategoryTheory.Monad.Coequalizer`.
+Please try to keep them in sync.
 
 -/
 
@@ -46,7 +47,8 @@ def CofreeEqualizer.topMap :  (Comonad.cofree T).obj X.A ⟶ (Comonad.cofree T).
 
 /-- The bottom map in the equalizer diagram we will construct. -/
 @[simps]
-def CofreeEqualizer.bottomMap : (Comonad.cofree T).obj X.A ⟶ (Comonad.cofree T).obj (T.obj X.A) where
+def CofreeEqualizer.bottomMap :
+    (Comonad.cofree T).obj X.A ⟶ (Comonad.cofree T).obj (T.obj X.A) where
   f := T.δ.app X.A
   h := T.coassoc X.A
 

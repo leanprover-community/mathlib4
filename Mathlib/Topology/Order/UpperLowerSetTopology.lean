@@ -369,7 +369,7 @@ def map (f : α →o β) : C(WithUpperSet α, WithUpperSet β) where
   continuous_toFun := continuous_def.2 fun _s hs ↦ IsUpperSet.preimage hs f.monotone
 
 @[simp] lemma map_id : map (OrderHom.id : α →o α) = ContinuousMap.id _ := rfl
-@[simp] lemma map_comp (g : β →o γ) (f : α →o β): map (g.comp f) = (map g).comp (map f) := rfl
+@[simp] lemma map_comp (g : β →o γ) (f : α →o β) : map (g.comp f) = (map g).comp (map f) := rfl
 
 @[simp] lemma toUpperSet_specializes_toUpperSet {a b : α} :
     toUpperSet a ⤳ toUpperSet b ↔ b ≤ a := by
@@ -397,7 +397,7 @@ def map (f : α →o β) : C(WithLowerSet α, WithLowerSet β) where
   continuous_toFun := continuous_def.2 fun _s hs ↦ IsLowerSet.preimage hs f.monotone
 
 @[simp] lemma map_id : map (OrderHom.id : α →o α) = ContinuousMap.id _ := rfl
-@[simp] lemma map_comp (g : β →o γ) (f : α →o β): map (g.comp f) = (map g).comp (map f) := rfl
+@[simp] lemma map_comp (g : β →o γ) (f : α →o β) : map (g.comp f) = (map g).comp (map f) := rfl
 
 @[simp] lemma toLowerSet_specializes_toLowerSet {a b : α} :
   toLowerSet a ⤳ toLowerSet b ↔ a ≤ b := by
