@@ -86,7 +86,21 @@ theorem unif_prod_bound2 (F : ι → α → ℂ)
   apply le_trans (HB s x)
   rfl
 
-
+theorem unif_prod_boundr (F : ι → ℂ)
+    (hs :  Summable fun n : ι => Complex.abs (F n )) (s : Finset ι) :
+        ∏ i in s, (1 + Complex.abs (F i)) ≤ Real.exp (∑' n : ι, Complex.abs (F n)) := by
+  have HB :
+    ∀ (s : Finset ι), ∑ i in s, Complex.abs (F i) ≤ ∑' n : ι, Complex.abs (F n ) :=
+    by
+    intro n
+    apply sum_le_tsum
+    intro b _
+    apply Complex.abs.nonneg
+    apply hs
+  apply le_trans (prod_be_exp _ _)
+  simp
+  apply le_trans (HB s )
+  rfl
 
 
 
@@ -647,7 +661,7 @@ lemma A33 (f : ℕ → ℂ → ℂ) (g : ℂ → ℂ) (K : Set ℂ) (T : ℝ) (h
   have hN2 := hN n hn x hx
   simp [dist_eq_norm] at hN2
   rw [AbsoluteValue.map_sub] at hN2
-  have := Complex.abs_re_le_abs ((f n x) - g x)
+  have := Complex.abs_re_le_abs ((f n x)- g x)
   have h3 := le_of_abs_le this
   have h4 := le_trans h3 hN2.le
   simp at h4
@@ -786,15 +800,17 @@ theorem euler_sin_prod' (x : ℂ) (h0 : x ≠ 0) :
   exact h0
 
 
-lemma prodd (x : ℂ) (h0 : x ≠ 0) :
-  ( ∏' i : ℕ, (1 + -x ^ 2 / (↑i + 1) ^ 2)) = (((fun t : ℂ => sin (↑π * t) / (↑π * t)) x)) := by
-  rw [← Multipliable.hasProd_iff]
-  rw [Multipliable.hasProd_iff_tendsto_nat]
-  have := euler_sin_prod' x h0
-  simp at this
-  apply this
-  sorry
-  sorry
+
+
+lemma multipliable_iff_cauchySeq_finset2 (f : ι → ℂ) :
+    Multipliable (fun n : ι => (f n)) ↔ CauchySeq (fun n : Finset ι => ∏ i in n , (f i)) := by
+  rw [Multipliable]
+  --rw [Metric.cauchySeq_iff]
+  simp [HasProd]
+  rw [cauchy_map_iff_exists_tendsto.symm]
+  exact Eq.to_iff rfl
+
+
 
 lemma summable_iff_abs_summable  {α : Type} (f : α → ℂ) :
     Summable f ↔ Summable (fun (n: α) => Complex.abs (f n)) := by
@@ -819,19 +835,82 @@ lemma log_of_summable (f : ℕ → ℂ) (hf : Summable f) :
   exact (hn m hm).le
 
 
+lemma summable_multipliable (f : ℕ → ℂ) (hf : Summable f) (hff : ∀ n : ℕ, 1 + f n  ≠ 0) :
+    Multipliable (fun n : ℕ => (1 + f n)) := by
+  have := log_of_summable f hf
+  rw [Summable] at this
+  simp_rw [HasSum] at this
+  obtain ⟨a, ha⟩ := this
+  have := Filter.Tendsto.cexp ha
+  have h1 : (fun n : Finset ℕ ↦ cexp (∑ x ∈ n, Complex.log (1 + f x))) =
+     (fun n : Finset ℕ ↦ (∏ x ∈ n,  (1 + f x))) := by
+    ext y
+    rw [Complex.exp_sum]
+    congr
+    ext r
+    rw [Complex.exp_log]
+    apply hff r
+  rw [h1] at this
+  rw [Multipliable]
+  simp_rw [HasProd]
+  use exp a
+
+
+-- wtf multipliable_iff_cauchySeq_finset
+lemma prodd (x : ℂ) (h0 : x ≠ 0) :
+  (∏' i : ℕ, (1 + -x ^ 2 / (↑i + 1) ^ 2)) = (((fun t : ℂ => sin (↑π * t) / (↑π * t)) x)) := by
+
+  by_cases H : ∀ n : ℕ, 1 + -x ^ 2 / (↑n + 1) ^ 2 ≠ 0
+
+  rw [← Multipliable.hasProd_iff]
+  rw [Multipliable.hasProd_iff_tendsto_nat]
+  have := euler_sin_prod' x h0
+  simp at this
+  apply this
+
+
+
+  apply summable_multipliable
+  · sorry
+  apply H
+
+  sorry
+  simp at H
+
 
 local notation "ℍ'" => {z : ℂ | 0 < Complex.im z}
+
+
+lemma ttun (f : ℕ → ℂ → ℂ) (K : Set ℂ) (u : ℕ → ℝ) (hu : Summable u)
+    (h : ∀ n x, (Complex.abs (f n x)) ≤ u n) :
+   TendstoUniformlyOn (fun n : ℕ => fun a : ℂ =>
+  ∑ i in Finset.range n,  (Complex.log (1 + f i a))) (fun a => ∑' i : ℕ, Complex.log (1 + f i a)) atTop K := by
+  apply tendstoUniformlyOn_tsum_nat hu
+
+
+  sorry
+
+
 
 theorem tendsto_locally_uniformly_euler_sin_prod' (z : ℍ') (r : ℝ) (hr : 0 < r) :
     TendstoUniformlyOn (fun n : ℕ => fun z : ℂ => ∏ j in Finset.range n, (1 + -z ^ 2 / (j + 1) ^ 2))
       (fun x => ( ∏' i : ℕ, (1 + -x ^ 2 / (↑i + 1) ^ 2))) atTop (Metric.ball z r ∩ ℍ') := by
   apply A3w
-
+  --have := tendstoUniformlyOn_tsum
   sorry
   sorry
   sorry
   sorry
 
+theorem tendsto_locally_uniformly_euler_sin_prod'' (z : ℍ') (r : ℝ) (hr : 0 < r) :
+    TendstoUniformlyOn (fun n : ℕ => fun z : ℂ => ∏ j in Finset.range n, (1 + -z ^ 2 / (j + 1) ^ 2))
+      (fun x => ((fun t : ℂ => sin (↑π * t) / (↑π * t)) x)) atTop (Metric.ball z r ∩ ℍ') := by
+  have := tendsto_locally_uniformly_euler_sin_prod' z r hr
+  apply TendstoUniformlyOn.congr_right this
+  intro x hx
+  simp
+  rw [prodd x]
+  sorry
 
 /- lemma fin0 (f : ℕ → ℂ → ℂ) (g : ℂ → ℂ) (K : Set ℂ) (hf :
     TendstoUniformlyOn (fun n : ℕ => fun a : ℂ => ∑ i in Finset.range n, (f i a))
@@ -863,3 +942,18 @@ lemma fin (f : ℕ → ℂ → ℂ) (g : ℂ → ℂ) (K : Set ℂ) (hf :
 
     sorry
  -/
+
+
+
+theorem tendstoUniformlyOn_tsum_nat2 {f : ℕ → β → F} {u : ℕ → ℝ} (hu : Summable u) {s : Set β}
+    (hfu : ∃ N : ℕ,  ∀ n : ℕ, n ≤ N → ∀ x, x ∈ s → ‖f n x‖ ≤ u n) :
+   TendstoUniformlyOn (fun N => fun x => ∑ n ∈ Finset.range N, f n x) (fun x => ∑' n, f n x) atTop
+      s:= by
+      rw [tendstoUniformlyOn_iff]
+      intro ε ε_pos
+      simp
+
+
+
+
+      sorry
