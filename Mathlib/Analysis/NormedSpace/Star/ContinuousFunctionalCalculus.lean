@@ -131,9 +131,6 @@ theorem elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal (h : IsUnit a) :
   simp only [u, Units.coe_map, Units.val_inv_eq_inv_val, RingHom.toMonoidHom_eq_coe, Units.val_mk0,
     Units.coe_map_inv, MonoidHom.coe_coe, norm_algebraMap', norm_inv, Complex.norm_eq_abs,
     Complex.abs_ofReal, abs_norm, inv_inv]
-    --RingHom.coe_monoidHom,
-    -- Complex.abs_ofReal, map_inv₀,
-  --rw [norm_algebraMap', inv_inv, Complex.norm_eq_abs, abs_norm]I-
   /- Since `a` is invertible, by `spectrum_star_mul_self_of_isStarNormal`, the spectrum (in `A`)
     of `star a * a` is contained in the half-open interval `(0, ‖star a * a‖]`. Therefore, by basic
     spectral mapping properties, the spectrum of `‖star a * a‖ • 1 - star a * a` is contained in

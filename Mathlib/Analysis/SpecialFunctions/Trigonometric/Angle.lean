@@ -156,7 +156,6 @@ theorem nsmul_eq_iff {ψ θ : Angle} {n : ℕ} (hz : n ≠ 0) :
   QuotientAddGroup.zmultiples_nsmul_eq_nsmul_iff hz
 
 theorem two_zsmul_eq_iff {ψ θ : Angle} : (2 : ℤ) • ψ = (2 : ℤ) • θ ↔ ψ = θ ∨ ψ = θ + ↑π := by
-  -- Porting note: no `Int.natAbs_bit0` anymore
   have : Int.natAbs 2 = 2 := rfl
   rw [zsmul_eq_iff two_ne_zero, this, Fin.exists_fin_two, Fin.val_zero,
     Fin.val_one, zero_smul, add_zero, one_smul, Int.cast_two,
