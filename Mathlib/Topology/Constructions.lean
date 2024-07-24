@@ -204,7 +204,7 @@ The 𝓝 filter and the subspace topology.
 -/
 theorem mem_nhds_subtype {s : Set X} {x : { x // x ∈ s }} {t : Set { x // x ∈ s }} :
     t ∈ 𝓝 x ↔ ∃ u ∈ 𝓝 (x : X), Subtype.val ⁻¹' u ⊆ t :=
-  mem_nhds_induced _ x t
+  mem_nhds_induced (a := x)
 
 theorem nhds_subtype (s : Set X) (x : { x // x ∈ s }) : 𝓝 x = comap (↑) (𝓝 (x : X)) :=
   nhds_induced _ x
