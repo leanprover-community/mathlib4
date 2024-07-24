@@ -66,14 +66,12 @@ theorem AccPt.nhds_inter {x : α} {U : Set α} (h_acc : AccPt x (𝓟 C)) (hU : 
     exact mem_nhdsWithin_of_mem_nhds hU
   rw [AccPt, ← inf_principal, ← inf_assoc, inf_of_le_left this]
   exact h_acc
-#align acc_pt.nhds_inter AccPt.nhds_inter
 
 /-- A set `C` is preperfect if all of its points are accumulation points of itself.
 If `C` is nonempty and `α` is a T1 space, this is equivalent to the closure of `C` being perfect.
 See `preperfect_iff_perfect_closure`. -/
 def Preperfect (C : Set α) : Prop :=
   ∀ x ∈ C, AccPt x (𝓟 C)
-#align preperfect Preperfect
 
 /-- A set `C` is called perfect if it is closed and all of its
 points are accumulation points of itself.
@@ -82,11 +80,9 @@ Note that we do not require `C` to be nonempty. -/
 structure Perfect (C : Set α) : Prop where
   closed : IsClosed C
   acc : Preperfect C
-#align perfect Perfect
 
 theorem preperfect_iff_nhds : Preperfect C ↔ ∀ x ∈ C, ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
   simp only [Preperfect, accPt_iff_nhds]
-#align preperfect_iff_nhds preperfect_iff_nhds
 
 section PerfectSpace
 
@@ -113,7 +109,6 @@ theorem Preperfect.open_inter {U : Set α} (hC : Preperfect C) (hU : IsOpen U) :
   rintro x ⟨xU, xC⟩
   apply (hC _ xC).nhds_inter
   exact hU.mem_nhds xU
-#align preperfect.open_inter Preperfect.open_inter
 
 /-- The closure of a preperfect set is perfect.
 For a converse, see `preperfect_iff_perfect_closure`. -/
@@ -126,7 +121,6 @@ theorem Preperfect.perfect_closure (hC : Preperfect C) : Perfect (closure C) := 
   rw [AccPt, nhdsWithin, inf_assoc, inf_principal, this]
   rw [closure_eq_cluster_pts] at hx
   exact hx
-#align preperfect.perfect_closure Preperfect.perfect_closure
 
 /-- In a T1 space, being preperfect is equivalent to having perfect closure. -/
 theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect C ↔ Perfect (closure C) := by
@@ -142,7 +136,6 @@ theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect C ↔ Perfect (
     exact yC
   rw [← frequently_frequently_nhds]
   exact H.mono this
-#align preperfect_iff_perfect_closure preperfect_iff_perfect_closure
 
 theorem Perfect.closure_nhds_inter {U : Set α} (hC : Perfect C) (x : α) (xC : x ∈ C) (xU : x ∈ U)
     (Uop : IsOpen U) : Perfect (closure (U ∩ C)) ∧ (closure (U ∩ C)).Nonempty := by
@@ -151,7 +144,6 @@ theorem Perfect.closure_nhds_inter {U : Set α} (hC : Perfect C) (x : α) (xC : 
     exact hC.acc.open_inter Uop
   apply Nonempty.closure
   exact ⟨x, ⟨xU, xC⟩⟩
-#align perfect.closure_nhds_inter Perfect.closure_nhds_inter
 
 /-- Given a perfect nonempty set in a T2.5 space, we can find two disjoint perfect subsets.
 This is the main inductive step in the proof of the Cantor-Bendixson Theorem. -/
@@ -175,7 +167,6 @@ theorem Perfect.splitting [T25Space α] (hC : Perfect C) (hnonempty : C.Nonempty
     rw [hC.closed.closure_subset_iff]
     exact inter_subset_right
   apply Disjoint.mono _ _ hUV <;> apply closure_mono <;> exact inter_subset_left
-#align perfect.splitting Perfect.splitting
 
 end Preperfect
 
@@ -216,7 +207,6 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
     by_contra! h
     exact absurd (Countable.mono h (Set.countable_singleton _)) this
   · rw [inter_comm, inter_union_diff]
-#align exists_countable_union_perfect_of_is_closed exists_countable_union_perfect_of_isClosed
 
 /-- Any uncountable closed set in a second countable space contains a nonempty perfect subset. -/
 theorem exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTopology α]
@@ -231,7 +221,6 @@ theorem exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTop
     contradiction
   rw [VD]
   exact subset_union_right
-#align exists_perfect_nonempty_of_is_closed_of_not_countable exists_perfect_nonempty_of_isClosed_of_not_countable
 
 end Kernel
 
