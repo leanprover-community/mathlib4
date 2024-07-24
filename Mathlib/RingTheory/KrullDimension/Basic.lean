@@ -12,17 +12,6 @@ import Mathlib.Topology.KrullDimension
 Given a commutative ring, its ring theoretic Krull dimension is the order theoretic Krull dimension
 of its prime spectrum. Unfolding this definition, it is the length of the longest sequence(s) of
 prime ideals ordered by strict inclusion.
-
-
-## Main definitions and results
-
-* `ringKrullDim`: The ring theoretic Krull dimension of a commutative ring.
-
-* `ringKrullDim_eq_topologicalKrullDim`: The ring theoretic Krull dimension of a commutative ring
-is equal to the topological Krull dimension of its prime spectrum.
-
-* `ringKrullDim_eq_zero_iff_isField_of_isDomain`: The Krull dimension of an integral domain is zero
-if and only if it is a field.
 -/
 
 /--
@@ -91,26 +80,6 @@ theorem ringKrullDim_eq_zero_iff_forall_mem_minimalPrimes [Nontrivial R] :
   exact ⟨(· ⟨·, ·⟩), (· _ <| PrimeSpectrum.isPrime ·)⟩
 
 end DimensionZero
-
-section Field
-
-@[simp]
-theorem ringKrullDim_eq_zero_of_field (F : Type*) [Field F] : ringKrullDim F = 0 :=
-  krullDim_eq_zero_of_unique
-
-theorem ringKrullDim_eq_zero_of_isField {F : Type*} [CommRing F] (hF : IsField F) :
-    ringKrullDim F = 0 :=
-  @krullDim_eq_zero_of_unique _ _ <| @PrimeSpectrum.instUnique _ hF.toField
-
-attribute [local instance] Ideal.bot_prime
-
-theorem ringKrullDim_eq_zero_iff_isField_of_isDomain [IsDomain R] :
-    ringKrullDim R = 0 ↔ IsField R := by
-  simp only [ringKrullDim_eq_zero_iff_forall_mem_minimalPrimes, minimalPrimes,
-    Ideal.minimalPrimes_eq_subsingleton_self, Set.mem_singleton_iff,
-    ← not_iff_comm.mp Ring.not_isField_iff_exists_prime, ne_eq, not_exists, not_and, not_imp_not]
-
-end Field
 
 proof_wanted Polynomial.ringKrullDim_le :
     ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1
