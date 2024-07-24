@@ -219,15 +219,14 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
         | inr h2 => right; exact ⟨h2.1, h2.2⟩
       | inr hr =>
         obtain ⟨i, hi⟩ := (toSubgraph_adj_iff _).mp hr
-        use (i + 1)
+        use i + 1
         simp only [cons_getVert_succ]
         constructor
         · exact hi.1
         · simp only [Walk.length_cons, add_lt_add_iff_right, Nat.add_lt_add_right hi.2 1]
   · rintro ⟨i, hi⟩
-    have := toSubgraph_adj_getVert _ hi.2
     rw [← Subgraph.mem_edgeSet, ← hi.1, Subgraph.mem_edgeSet]
-    exact this
+    exact toSubgraph_adj_getVert _ hi.2
 
 end Walk
 

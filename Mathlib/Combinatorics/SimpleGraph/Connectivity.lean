@@ -832,7 +832,7 @@ variable {x y : V} -- TODO: rename to u, v, w instead?
 
 @[simp]
 lemma tail_cons {t u v} (p : G.Walk u v) (h : G.Adj t u) :
-    (p.cons h).tail (Walk.not_nil_cons) = p := by
+    (p.cons h).tail Walk.not_nil_cons = p := by
   unfold Walk.tail; simp only [notNilRec_cons]
 
 lemma tail_support_eq_support_tail (p : G.Walk u v) (hnp : ¬p.Nil) :
