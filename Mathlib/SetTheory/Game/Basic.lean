@@ -1015,14 +1015,13 @@ theorem inv'_zero_equiv : inv' 0 ≈ 1 :=
   inv'Zero.equiv
 
 /-- `inv' 1` has exactly the same moves as `1`. -/
-lemma inv'_one : inv'.{u} 1 ≡ 1 := by
-  have : IsEmpty {_i : PUnit.{u+1} // (0 : PGame.{u}) < 0} := by
-    rw [lt_self_iff_false]
-    infer_instance
-  refine ⟨?_, ?_⟩ <;> dsimp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal]
-  · simp_rw [Unique.forall_iff, Unique.exists_iff, PGame.invVal_isEmpty, and_self]
-    exact identical_zero _
-  · simp
+lemma inv'_one : inv' 1 ≡ 1 := by
+  rw [Identical.ext_iff]
+  constructor
+  · unfold memₗ
+    simp [inv']
+  · unfold memᵣ
+    simp [inv']
 
 /-- `inv' 1` has exactly the same moves as `1`. -/
 def inv'One : inv' 1 ≡r (1 : PGame.{u}) := by

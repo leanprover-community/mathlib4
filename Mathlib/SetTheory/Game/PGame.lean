@@ -357,7 +357,7 @@ instance isEmpty_one_rightMoves : IsEmpty (RightMoves 1) :=
 /-- Two pre-games are identical if their left and right sets are identical.
 That is, `Identical x y` if every left move of `x` is identical to some left move of `y`,
 every right move of `x` is identical to some right move of `y`, and vice versa. -/
-def Identical : ∀ (_ _ : PGame), Prop
+def Identical : ∀ (_ _ : PGame.{u}), Prop
   | mk _ _ xL xR, mk _ _ yL yR =>
     Relator.BiTotal (fun i j ↦ Identical (xL i) (yL j)) ∧
       Relator.BiTotal (fun i j ↦ Identical (xR i) (yR j))
@@ -1801,7 +1801,6 @@ theorem sub_zero_eq_add_zero (x : PGame) : x - 0 = x + 0 :=
 protected lemma sub_zero (x : PGame) : x - 0 ≡ x :=
   _root_.trans (of_eq x.sub_zero_eq_add_zero) x.add_zero
 
-/-- Use the same name convention as global lemmas. -/
 protected lemma neg_sub' (x y : PGame) : -(x - y) = -x - -y := PGame.neg_add _ _
 
 /-- If `w` has the same moves as `x` and `y` has the same moves as `z`,
