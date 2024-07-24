@@ -335,6 +335,40 @@ noncomputable abbrev precomp (α : Ext X Y n) (Z : C) {a b : ℕ} (h : n + a = b
 
 end Ext
 
+/-- Auxiliary definition for `extFunctor`. -/
+@[simps]
+noncomputable def extFunctorObj (X : C) (n : ℕ) : C ⥤ AddCommGrp.{w} where
+  obj Y := AddCommGrp.of (Ext X Y n)
+  map f := AddCommGrp.ofHom ((Ext.mk₀ f).postcomp _ (add_zero n))
+  map_comp f f' := by
+    ext α
+    dsimp [AddCommGrp.ofHom]
+    rw [← Ext.mk₀_comp_mk₀]
+    symm
+    apply Ext.comp_assoc
+    omega
+
+/-- The functor `Cᵒᵖ ⥤ C ⥤ AddCommGrp` which sends `X : C` and `Y : C`
+to `Ext X Y n`. -/
+@[simps]
+noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{w} where
+  obj X := extFunctorObj X.unop n
+  map {X₁ X₂} f :=
+    { app := fun Y ↦ AddCommGrp.ofHom (AddMonoidHom.mk'
+        (fun α ↦ (Ext.mk₀ f.unop).comp α (zero_add _)) (by simp))
+      naturality := fun {Y₁ Y₂} g ↦ by
+        ext α
+        dsimp
+        symm
+        apply Ext.comp_assoc
+        all_goals omega }
+  map_comp {X₁ X₂ X₃} f f'  := by
+    ext Y α
+    dsimp
+    rw [← Ext.mk₀_comp_mk₀]
+    apply Ext.comp_assoc
+    all_goals omega
+
 end Abelian
 
 end CategoryTheory
