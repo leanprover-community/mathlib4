@@ -1599,7 +1599,7 @@ namespace Filter
 
 /-- For nontrivial filters in linear orders, coboundedness for `≤` implies frequent boundedness
 from below. -/
-lemma IsCobounded.frequently_ge [NeBot F] (cobdd : IsCobounded (· ≤ ·) F) :
+lemma IsCobounded.frequently_ge [NeBot F] (cobdd : IsCobounded (· ≤ ·) F := by isBoundedDefault) :
     ∃ l, ∃ᶠ x in F, l ≤ x := by
   obtain ⟨t, ht⟩ := cobdd
   by_cases tbot : IsBot t
@@ -1614,7 +1614,7 @@ lemma IsCobounded.frequently_ge [NeBot F] (cobdd : IsCobounded (· ≤ ·) F) :
 
 /-- For nontrivial filters in linear orders, coboundedness for `≥` implies frequent boundedness
 from above. -/
-lemma IsCobounded.frequently_le [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
+lemma IsCobounded.frequently_le [NeBot F] (cobdd : IsCobounded (· ≥ ·) F := by isBoundedDefault) :
     ∃ u, ∃ᶠ x in F, x ≤ u :=
   cobdd.frequently_ge (R := Rᵒᵈ)
 
@@ -1676,23 +1676,23 @@ lemma Antitone.frequently_ge_map_of_frequently_le {f : R → S} (f_decr : Antito
   Monotone.frequently_le_map_of_frequently_le (S := Sᵒᵈ) f_decr frbdd
 
 lemma Monotone.isCoboundedUnder_le_of_isCobounded {f : R → S} (f_incr : Monotone f)
-    [NeBot F] (cobdd : IsCobounded (· ≤ ·) F) :
+    [NeBot F] (cobdd : IsCobounded (· ≤ ·) F := by isBoundedDefault) :
     F.IsCoboundedUnder (· ≤ ·) f := by
   obtain ⟨l, hl⟩ := IsCobounded.frequently_ge cobdd
   exact IsCobounded.of_frequently_ge <| f_incr.frequently_ge_map_of_frequently_ge hl
 
 lemma Monotone.isCoboundedUnder_ge_of_isCobounded {f : R → S} (f_incr : Monotone f)
-    [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
+    [NeBot F] (cobdd : IsCobounded (· ≥ ·) F := by isBoundedDefault) :
     F.IsCoboundedUnder (· ≥ ·) f :=
   Monotone.isCoboundedUnder_le_of_isCobounded (R := Rᵒᵈ) (S := Sᵒᵈ) f_incr.dual cobdd
 
 lemma Antitone.isCoboundedUnder_le_of_isCobounded {f : R → S} (f_decr : Antitone f)
-    [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
+    [NeBot F] (cobdd : IsCobounded (· ≥ ·) F := by isBoundedDefault) :
     F.IsCoboundedUnder (· ≤ ·) f :=
   Monotone.isCoboundedUnder_le_of_isCobounded (R := Rᵒᵈ) f_decr.dual cobdd
 
 lemma Antitone.isCoboundedUnder_ge_of_isCobounded {f : R → S} (f_decr : Antitone f)
-    [NeBot F] (cobdd : IsCobounded (· ≤ ·) F) :
+    [NeBot F] (cobdd : IsCobounded (· ≤ ·) F := by isBoundedDefault) :
     F.IsCoboundedUnder (· ≥ ·) f :=
   Monotone.isCoboundedUnder_le_of_isCobounded (S := Sᵒᵈ) f_decr cobdd
 
