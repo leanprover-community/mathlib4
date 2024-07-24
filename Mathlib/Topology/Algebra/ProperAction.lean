@@ -135,7 +135,8 @@ theorem t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
   rw [← this.isClosed_preimage]
   convert ProperSMul.isProperMap_smul_pair.isClosedMap.isClosed_range
   · ext ⟨x₁, x₂⟩
-    simp
+    simp only [mem_preimage, map_apply, mem_diagonal_iff, mem_range, Prod.mk.injEq, Prod.exists,
+      exists_eq_right]
     rw [Quotient.eq_rel, MulAction.orbitRel_apply, MulAction.mem_orbit_iff]
   all_goals infer_instance
 
