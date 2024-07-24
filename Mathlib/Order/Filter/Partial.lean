@@ -119,9 +119,9 @@ theorem rtendsto_iff_le_rcomap (r : Rel α β) (l₁ : Filter α) (l₂ : Filter
     RTendsto r l₁ l₂ ↔ l₁ ≤ l₂.rcomap r := by
   rw [rtendsto_def]
   simp_rw [← l₂.mem_sets]
-  simp [Filter.le_def, rcomap, Rel.mem_image]; constructor
-  · exact fun h s t tl₂ => mem_of_superset (h t tl₂)
-  · exact fun h t tl₂ => h _ t tl₂ Set.Subset.rfl
+  constructor
+  · simpa [Filter.le_def, rcomap, Rel.mem_image] using fun h s t tl₂ => mem_of_superset (h t tl₂)
+  · simpa [Filter.le_def, rcomap, Rel.mem_image] using fun h t tl₂ => h _ t tl₂ Set.Subset.rfl
 
 -- Interestingly, there does not seem to be a way to express this relation using a forward map.
 -- Given a filter `f` on `α`, we want a filter `f'` on `β` such that `r.preimage s ∈ f` if
@@ -168,9 +168,9 @@ def RTendsto' (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :=
 
 theorem rtendsto'_def (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :
     RTendsto' r l₁ l₂ ↔ ∀ s ∈ l₂, r.preimage s ∈ l₁ := by
-  unfold RTendsto' rcomap'; simp [le_def, Rel.mem_image]; constructor
-  · exact fun h s hs => h _ _ hs Set.Subset.rfl
-  · exact fun h s t ht => mem_of_superset (h t ht)
+  unfold RTendsto' rcomap'; constructor
+  · simpa [le_def, Rel.mem_image] using fun h s hs => h _ _ hs Set.Subset.rfl
+  · simpa [le_def, Rel.mem_image] using fun h s t ht => mem_of_superset (h t ht)
 
 theorem tendsto_iff_rtendsto (l₁ : Filter α) (l₂ : Filter β) (f : α → β) :
     Tendsto f l₁ l₂ ↔ RTendsto (Function.graph f) l₁ l₂ := by
