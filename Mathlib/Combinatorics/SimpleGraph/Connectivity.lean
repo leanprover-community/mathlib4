@@ -2079,7 +2079,8 @@ lemma pairwise_disjoint_supp :
 
 end ConnectedComponent
 
-lemma iUnion_supp (G : SimpleGraph V): ⋃ c : G.ConnectedComponent, c.supp = Set.univ := by
+lemma iUnion_connectedComponentSupp (G : SimpleGraph V) :
+    ⋃ c : G.ConnectedComponent, c.supp = Set.univ := by
   refine Set.eq_univ_of_forall fun v ↦ ⟨G.connectedComponentMk v, ?_⟩
   simp only [Set.mem_range, SetLike.mem_coe]
   exact ⟨by use G.connectedComponentMk v; exact rfl, rfl⟩
