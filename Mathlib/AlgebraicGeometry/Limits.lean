@@ -89,8 +89,8 @@ instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ 
 
 instance (priority := 100) isIso_of_isEmpty {X Y : Scheme} (f : X ⟶ Y) [IsEmpty Y] :
     IsIso f := by
-  haveI : IsEmpty X := f.1.base.1.isEmpty
-  have : Epi f.1.base := by
+  haveI : IsEmpty X := f.base.1.isEmpty
+  have : Epi f.base := by
     rw [TopCat.epi_iff_surjective]; rintro (x : Y)
     exact isEmptyElim x
   apply IsOpenImmersion.to_iso
@@ -110,7 +110,7 @@ instance : HasInitial Scheme.{u} :=
   hasInitial_of_unique ∅
 
 instance initial_isEmpty : IsEmpty (⊥_ Scheme) :=
-  ⟨fun x => ((initial.to Scheme.empty : _).1.base x).elim⟩
+  ⟨fun x => ((initial.to Scheme.empty : _).base x).elim⟩
 
 theorem isAffineOpen_bot (X : Scheme) : IsAffineOpen (⊥ : X.Opens) :=
   @isAffine_of_isEmpty _ (inferInstanceAs (IsEmpty (∅ : Set X)))
@@ -245,7 +245,7 @@ instance (i) : IsOpenImmersion (Sigma.ι f i) := by
   infer_instance
 
 lemma sigmaι_eq_iff (i j : ι) (x y) :
-    (Sigma.ι f i).1.base x = (Sigma.ι f j).1.base y ↔
+    (Sigma.ι f i).base x = (Sigma.ι f j).base y ↔
       (Sigma.mk i x : Σ i, f i) = Sigma.mk j y := by
   constructor
   · intro H
@@ -272,8 +272,8 @@ lemma disjoint_opensRange_sigmaι (i j : ι) (h : i ≠ j) :
   obtain ⟨rfl⟩ := (sigmaι_eq_iff _ _ _ _ _).mp hy
   cases h rfl
 
-lemma exists_sigmaι_eq (x : (∐ f : _)) : ∃ i y, (Sigma.ι f i).1.base y = x := by
-  obtain ⟨i, y, e⟩ := (disjointGlueData f).ι_jointly_surjective ((sigmaIsoGlued f).hom.1.base x)
+lemma exists_sigmaι_eq (x : (∐ f : _)) : ∃ i y, (Sigma.ι f i).base y = x := by
+  obtain ⟨i, y, e⟩ := (disjointGlueData f).ι_jointly_surjective ((sigmaIsoGlued f).hom.base x)
   refine ⟨i, y, (sigmaIsoGlued f).hom.openEmbedding.inj ?_⟩
   rwa [← Scheme.comp_val_base_apply, ι_sigmaIsoGlued_hom]
 
@@ -298,7 +298,7 @@ def sigmaMk : (Σ i, f i) ≃ₜ (∐ f : _) :=
 
 @[simp]
 lemma sigmaMk_mk (i) (x : f i) :
-    sigmaMk f (.mk i x) = (Sigma.ι f i).1.base x := by
+    sigmaMk f (.mk i x) = (Sigma.ι f i).base x := by
   show ((TopCat.sigmaCofan (fun x ↦ (f x).toTopCat)).inj i ≫
     (colimit.isoColimitCocone ⟨_, TopCat.sigmaCofanIsColimit _⟩).inv ≫ _) x =
       Scheme.forgetToTop.map (Sigma.ι f i) x

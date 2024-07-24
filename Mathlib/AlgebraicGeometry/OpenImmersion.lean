@@ -45,7 +45,7 @@ protected def scheme (X : LocallyRingedSpace.{u})
     (h :
       ∀ x : X,
         ∃ (R : CommRingCat) (f : Spec.toLocallyRingedSpace.obj (op R) ⟶ X),
-          (x ∈ Set.range f.1.base : _) ∧ LocallyRingedSpace.IsOpenImmersion f) :
+          (x ∈ Set.range f.base : _) ∧ LocallyRingedSpace.IsOpenImmersion f) :
     Scheme where
   toLocallyRingedSpace := X
   local_affine := by
@@ -61,7 +61,7 @@ protected def scheme (X : LocallyRingedSpace.{u})
 end LocallyRingedSpace.IsOpenImmersion
 
 theorem IsOpenImmersion.isOpen_range {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpenImmersion f] :
-    IsOpen (Set.range f.1.base) :=
+    IsOpen (Set.range f.base) :=
   H.base_open.isOpen_range
 
 @[deprecated (since := "2024-03-17")]
@@ -71,7 +71,7 @@ namespace Scheme.Hom
 
 variable {X Y : Scheme.{u}} (f : Scheme.Hom X Y) [H : IsOpenImmersion f]
 
-theorem openEmbedding : OpenEmbedding f.1.base :=
+theorem openEmbedding : OpenEmbedding f.base :=
   H.base_open
 
 /-- The image of an open immersion as an open set. -/
@@ -88,7 +88,7 @@ scoped[AlgebraicGeometry] notation3:90 f:91 " ''ᵁ " U:90 => (Scheme.Hom.opensF
 
 lemma image_le_image_of_le {U V : X.Opens} (e : U ≤ V) : f ''ᵁ U ≤ f ''ᵁ V := by
   rintro a ⟨u, hu, rfl⟩
-  exact Set.mem_image_of_mem (⇑f.val.base) (e hu)
+  exact Set.mem_image_of_mem (⇑f.base) (e hu)
 
 @[simp]
 lemma opensFunctor_map_homOfLE {U V : X.Opens} (e : U ≤ V) :
@@ -131,7 +131,7 @@ theorem appIso_hom' (U) :
 @[reassoc (attr := simp)]
 theorem app_appIso_inv (U) :
     f.app U ≫ (f.appIso (f ⁻¹ᵁ U)).inv =
-      Y.presheaf.map (homOfLE (Set.image_preimage_subset f.1.base U.1)).op :=
+      Y.presheaf.map (homOfLE (Set.image_preimage_subset f.base U.1)).op :=
   PresheafedSpace.IsOpenImmersion.app_invApp _ _
 
 /-- A variant of `app_invApp` that gives an `eqToHom` instead of `homOfLE`. -/
@@ -207,10 +207,10 @@ lemma IsOpenImmersion.of_isLocalization {R S} [CommRing R] [CommRing S]
 theorem exists_affine_mem_range_and_range_subset
     {X : Scheme.{u}} {x : X} {U : X.Opens} (hxU : x ∈ U) :
     ∃ (R : CommRingCat) (f : Spec R ⟶ X),
-      IsOpenImmersion f ∧ x ∈ Set.range f.1.base ∧ Set.range f.1.base ⊆ U := by
+      IsOpenImmersion f ∧ x ∈ Set.range f.base ∧ Set.range f.base ⊆ U := by
   obtain ⟨⟨V, hxV⟩, R, ⟨e⟩⟩ := X.2 x
-  have : e.hom.1.base ⟨x, hxV⟩ ∈ (Opens.map (e.inv.1.base ≫ V.inclusion)).obj U :=
-    show ((e.hom ≫ e.inv).1.base ⟨x, hxV⟩).1 ∈ U from e.hom_inv_id ▸ hxU
+  have : e.hom.base ⟨x, hxV⟩ ∈ (Opens.map (e.inv.base ≫ V.inclusion)).obj U :=
+    show ((e.hom ≫ e.inv).base ⟨x, hxV⟩).1 ∈ U from e.hom_inv_id ▸ hxU
   obtain ⟨_, ⟨_, ⟨r : R, rfl⟩, rfl⟩, hr, hr'⟩ :=
     PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open this (Opens.is_open' _)
   let f : Spec (CommRingCat.of (Localization.Away r)) ⟶ X :=
@@ -219,7 +219,7 @@ theorem exists_affine_mem_range_and_range_subset
   rw [Scheme.comp_val_base, LocallyRingedSpace.comp_val, SheafedSpace.comp_base, TopCat.coe_comp,
     Set.range_comp]
   erw [PrimeSpectrum.localization_away_comap_range (Localization.Away r) r]
-  exact ⟨⟨_, hr, congr(($(e.hom_inv_id).1.base ⟨x, hxV⟩).1)⟩, Set.image_subset_iff.mpr hr'⟩
+  exact ⟨⟨_, hr, congr(($(e.hom_inv_id).base ⟨x, hxV⟩).1)⟩, Set.image_subset_iff.mpr hr'⟩
 
 end Scheme
 
@@ -327,26 +327,26 @@ instance (priority := 100) of_isIso [IsIso g] : IsOpenImmersion g :=
   @LocallyRingedSpace.IsOpenImmersion.of_isIso _ _ _
     (show IsIso ((inducedFunctor _).map g) by infer_instance)
 
-theorem to_iso {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsOpenImmersion f] [Epi f.1.base] : IsIso f :=
+theorem to_iso {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsOpenImmersion f] [Epi f.base] : IsIso f :=
   @isIso_of_reflects_iso _ _ _ _ _ _ f
     (Scheme.forgetToLocallyRingedSpace ⋙
       LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace)
     (@PresheafedSpace.IsOpenImmersion.to_iso _ _ _ _ f.1 h _) _
 
-theorem of_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : OpenEmbedding f.1.base)
+theorem of_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : OpenEmbedding f.base)
     [∀ x, IsIso (PresheafedSpace.stalkMap f.1 x)] : IsOpenImmersion f :=
   SheafedSpace.IsOpenImmersion.of_stalk_iso f.1 hf
 
 theorem iff_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    IsOpenImmersion f ↔ OpenEmbedding f.1.base ∧ ∀ x, IsIso (PresheafedSpace.stalkMap f.1 x) :=
+    IsOpenImmersion f ↔ OpenEmbedding f.base ∧ ∀ x, IsIso (PresheafedSpace.stalkMap f.1 x) :=
   ⟨fun H => ⟨H.1, inferInstance⟩, fun ⟨h₁, h₂⟩ => @IsOpenImmersion.of_stalk_iso _ _ f h₁ h₂⟩
 
 theorem _root_.AlgebraicGeometry.isIso_iff_isOpenImmersion {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    IsIso f ↔ IsOpenImmersion f ∧ Epi f.1.base :=
+    IsIso f ↔ IsOpenImmersion f ∧ Epi f.base :=
   ⟨fun _ => ⟨inferInstance, inferInstance⟩, fun ⟨h₁, h₂⟩ => @IsOpenImmersion.to_iso _ _ f h₁ h₂⟩
 
 theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    IsIso f ↔ IsIso f.1.base ∧ ∀ x, IsIso (PresheafedSpace.stalkMap f.1 x) := by
+    IsIso f ↔ IsIso f.base ∧ ∀ x, IsIso (PresheafedSpace.stalkMap f.1 x) := by
   rw [isIso_iff_isOpenImmersion, IsOpenImmersion.iff_stalk_iso, and_comm, ← and_assoc]
   refine and_congr ⟨?_, ?_⟩ Iff.rfl
   · rintro ⟨h₁, h₂⟩
@@ -357,7 +357,7 @@ theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X �
               (Equiv.ofBijective _ ⟨h₂.inj, (TopCat.epi_iff_surjective _).mp h₁⟩) h₂.continuous
               h₂.isOpenMap)).hom
     infer_instance
-  · intro H; exact ⟨inferInstance, (TopCat.homeoOfIso (asIso f.1.base)).openEmbedding⟩
+  · intro H; exact ⟨inferInstance, (TopCat.homeoOfIso (asIso f.base)).openEmbedding⟩
 
 /-- An open immersion induces an isomorphism from the domain onto the image -/
 def isoRestrict : X ≅ (Z.restrict H.base_open : _) where
@@ -448,10 +448,10 @@ instance forgetToTopPreservesOfRight : PreservesLimit (cospan g f) Scheme.forget
   preservesPullbackSymmetry _ _ _
 
 theorem range_pullback_snd_of_left :
-    Set.range (pullback.snd f g).1.base = (g ⁻¹ᵁ f.opensRange).1 := by
-  rw [← show _ = (pullback.snd f g).1.base from
+    Set.range (pullback.snd f g).base = (g ⁻¹ᵁ f.opensRange).1 := by
+  rw [← show _ = (pullback.snd f g).base from
     PreservesPullback.iso_hom_snd Scheme.forgetToTop f g, TopCat.coe_comp, Set.range_comp,
-    Set.range_iff_surjective.mpr, ← @Set.preimage_univ _ _ (pullback.fst f.1.base g.1.base)]
+    Set.range_iff_surjective.mpr, ← @Set.preimage_univ _ _ (pullback.fst f.base g.base)]
   -- Porting note (#10691): was `rw`
   · erw [TopCat.pullback_snd_image_fst_preimage]
     rw [Set.image_univ]
@@ -464,11 +464,11 @@ theorem opensRange_pullback_snd_of_left :
   Opens.ext (range_pullback_snd_of_left f g)
 
 theorem range_pullback_fst_of_right :
-    Set.range (pullback.fst g f).1.base =
-      ((Opens.map g.1.base).obj ⟨Set.range f.1.base, H.base_open.isOpen_range⟩).1 := by
-  rw [← show _ = (pullback.fst g f).1.base from
+    Set.range (pullback.fst g f).base =
+      ((Opens.map g.base).obj ⟨Set.range f.base, H.base_open.isOpen_range⟩).1 := by
+  rw [← show _ = (pullback.fst g f).base from
     PreservesPullback.iso_hom_fst Scheme.forgetToTop g f, TopCat.coe_comp, Set.range_comp,
-    Set.range_iff_surjective.mpr, ← @Set.preimage_univ _ _ (pullback.snd g.1.base f.1.base)]
+    Set.range_iff_surjective.mpr, ← @Set.preimage_univ _ _ (pullback.snd g.base f.base)]
   -- Porting note (#10691): was `rw`
   · erw [TopCat.pullback_fst_image_snd_preimage]
     rw [Set.image_univ]
@@ -481,15 +481,15 @@ theorem opensRange_pullback_fst_of_right :
   Opens.ext (range_pullback_fst_of_right f g)
 
 theorem range_pullback_to_base_of_left :
-    Set.range (pullback.fst f g ≫ f).1.base =
-      Set.range f.1.base ∩ Set.range g.1.base := by
+    Set.range (pullback.fst f g ≫ f).base =
+      Set.range f.base ∩ Set.range g.base := by
   rw [pullback.condition, Scheme.comp_val_base, TopCat.coe_comp, Set.range_comp,
     range_pullback_snd_of_left, Opens.carrier_eq_coe, Opens.map_obj, Opens.coe_mk,
     Set.image_preimage_eq_inter_range, Opens.carrier_eq_coe, Scheme.Hom.opensRange_coe]
 
 theorem range_pullback_to_base_of_right :
-    Set.range (pullback.fst g f ≫ g).1.base =
-      Set.range g.1.base ∩ Set.range f.1.base := by
+    Set.range (pullback.fst g f ≫ g).base =
+      Set.range g.base ∩ Set.range f.base := by
   rw [Scheme.comp_val_base, TopCat.coe_comp, Set.range_comp, range_pullback_fst_of_right,
     Opens.map_obj, Opens.carrier_eq_coe, Opens.coe_mk, Set.image_preimage_eq_inter_range,
     Set.inter_comm]
@@ -499,19 +499,19 @@ For an open immersion `f : X ⟶ Z`, given any morphism of schemes `g : Y ⟶ Z`
 image is contained in the image of `f`, we can lift this morphism to a unique `Y ⟶ X` that
 commutes with these maps.
 -/
-def lift (H' : Set.range g.1.base ⊆ Set.range f.1.base) : Y ⟶ X :=
+def lift (H' : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
   LocallyRingedSpace.IsOpenImmersion.lift f g H'
 
 @[simp, reassoc]
-theorem lift_fac (H' : Set.range g.1.base ⊆ Set.range f.1.base) : lift f g H' ≫ f = g :=
+theorem lift_fac (H' : Set.range g.base ⊆ Set.range f.base) : lift f g H' ≫ f = g :=
   LocallyRingedSpace.IsOpenImmersion.lift_fac f g H'
 
-theorem lift_uniq (H' : Set.range g.1.base ⊆ Set.range f.1.base) (l : Y ⟶ X) (hl : l ≫ f = g) :
+theorem lift_uniq (H' : Set.range g.base ⊆ Set.range f.base) (l : Y ⟶ X) (hl : l ≫ f = g) :
     l = lift f g H' :=
   LocallyRingedSpace.IsOpenImmersion.lift_uniq f g H' l hl
 
 /-- Two open immersions with equal range are isomorphic. -/
-def isoOfRangeEq [IsOpenImmersion g] (e : Set.range f.1.base = Set.range g.1.base) : X ≅ Y where
+def isoOfRangeEq [IsOpenImmersion g] (e : Set.range f.base = Set.range g.base) : X ≅ Y where
   hom := lift g f (le_of_eq e)
   inv := lift f g (le_of_eq e.symm)
   hom_inv_id := by rw [← cancel_mono f]; simp
@@ -519,13 +519,13 @@ def isoOfRangeEq [IsOpenImmersion g] (e : Set.range f.1.base = Set.range g.1.bas
 
 @[simp, reassoc]
 lemma isoOfRangeEq_hom_fac {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
-    [IsOpenImmersion f] [IsOpenImmersion g] (e : Set.range f.1.base = Set.range g.1.base) :
+    [IsOpenImmersion f] [IsOpenImmersion g] (e : Set.range f.base = Set.range g.base) :
     (isoOfRangeEq f g e).hom ≫ g = f :=
   lift_fac _ _ (le_of_eq e)
 
 @[simp, reassoc]
 lemma isoOfRangeEq_inv_fac {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
-    [IsOpenImmersion f] [IsOpenImmersion g] (e : Set.range f.1.base = Set.range g.1.base) :
+    [IsOpenImmersion f] [IsOpenImmersion g] (e : Set.range f.base = Set.range g.base) :
     (isoOfRangeEq f g e).inv ≫ f = g :=
   lift_fac _ _ (le_of_eq e.symm)
 

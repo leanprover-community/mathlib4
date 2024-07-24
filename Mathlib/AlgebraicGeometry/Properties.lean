@@ -41,7 +41,7 @@ instance : T0Space X := by
 
 instance : QuasiSober X := by
   apply (config := { allowSynthFailures := true })
-    quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.map x).1.base)
+    quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.map x).base)
   · rintro ⟨_, i, rfl⟩; exact (X.affineCover.IsOpen i).base_open.isOpen_range
   · rintro ⟨_, i, rfl⟩
     exact @OpenEmbedding.quasiSober _ _ _ _ _ (Homeomorph.ofEmbedding _
@@ -117,7 +117,7 @@ theorem reduce_to_affine_global (P : ∀ {X : Scheme} (_ : X.Opens), Prop)
     (h₁ : ∀ (X : Scheme) (U : X.Opens),
       (∀ x : U, ∃ (V : _) (_ : x.1 ∈ V) (_ : V ⟶ U), P V) → P U)
     (h₂ : ∀ (X Y) (f : X ⟶ Y) [hf : IsOpenImmersion f],
-      ∃ (U : Set X) (V : Set Y) (hU : U = ⊤) (hV : V = Set.range f.1.base),
+      ∃ (U : Set X) (V : Set Y) (hU : U = ⊤) (hV : V = Set.range f.base),
         P ⟨U, hU.symm ▸ isOpen_univ⟩ → P ⟨V, hV.symm ▸ hf.base_open.isOpen_range⟩)
     (h₃ : ∀ R : CommRingCat, P (X := Spec R) ⊤) : P U := by
   apply h₁
@@ -133,7 +133,7 @@ theorem reduce_to_affine_global (P : ∀ {X : Scheme} (_ : X.Opens), Prop)
 
 theorem reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X), Prop)
     (h₁ : ∀ R x, P (Spec R) x)
-    (h₂ : ∀ {X Y} (f : X ⟶ Y) [IsOpenImmersion f] (x : X), P X x → P Y (f.1.base x)) :
+    (h₂ : ∀ {X Y} (f : X ⟶ Y) [IsOpenImmersion f] (x : X), P X x → P Y (f.base x)) :
     ∀ (X : Scheme) (x : X), P X x := by
   intro X x
   obtain ⟨y, e⟩ := X.affineCover.covers x
@@ -156,7 +156,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens
     erw [TopCat.Presheaf.germ_res_apply] at H
     exact H
   | h₂ X Y f =>
-    have e : f.val.base ⁻¹' Set.range ↑f.val.base = Set.univ := by
+    have e : f.base ⁻¹' Set.range ↑f.base = Set.univ := by
       rw [← Set.image_univ, Set.preimage_image_eq _ ‹IsOpenImmersion f›.base_open.inj]
     refine ⟨_, _, e, rfl, ?_⟩
     rintro H hX s hs ⟨_, x, rfl⟩

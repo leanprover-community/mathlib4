@@ -48,7 +48,7 @@ theorem universallyClosed_stableUnderBaseChange : StableUnderBaseChange @Univers
 
 instance isClosedMap_isStableUnderComposition :
     IsStableUnderComposition (topologically @IsClosedMap) where
-  comp_mem f g hf hg := IsClosedMap.comp (f := f.1.base) (g := g.1.base) hg hf
+  comp_mem f g hf hg := IsClosedMap.comp (f := f.base) (g := g.base) hg hf
 
 instance universallyClosed_isStableUnderComposition :
     IsStableUnderComposition @UniversallyClosed := by

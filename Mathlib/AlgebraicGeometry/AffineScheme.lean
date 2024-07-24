@@ -263,7 +263,7 @@ instance isOpenImmersion_fromSpec :
 
 @[simp]
 theorem range_fromSpec :
-    Set.range hU.fromSpec.1.base = (U : Set X) := by
+    Set.range hU.fromSpec.base = (U : Set X) := by
   delta IsAffineOpen.fromSpec; dsimp
   rw [Function.comp.assoc, Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
   · exact Subtype.range_coe
@@ -286,7 +286,7 @@ theorem map_fromSpec {V : X.Opens} (hV : IsAffineOpen V) (f : op U ⟶ op V) :
 
 protected theorem isCompact :
     IsCompact (U : Set X) := by
-  convert @IsCompact.image _ _ _ _ Set.univ hU.fromSpec.1.base PrimeSpectrum.compactSpace.1
+  convert @IsCompact.image _ _ _ _ Set.univ hU.fromSpec.base PrimeSpectrum.compactSpace.1
     (by fun_prop)
   convert hU.range_fromSpec.symm
   exact Set.image_univ
@@ -381,7 +381,7 @@ theorem fromSpec_image_basicOpen :
     hU.fromSpec ''ᵁ (PrimeSpectrum.basicOpen f) = X.basicOpen f := by
   rw [← hU.fromSpec_preimage_basicOpen]
   ext1
-  change hU.fromSpec.val.base '' (hU.fromSpec.val.base ⁻¹' (X.basicOpen f : Set X)) = _
+  change hU.fromSpec.base '' (hU.fromSpec.base ⁻¹' (X.basicOpen f : Set X)) = _
   rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left, hU.range_fromSpec]
   exact Scheme.basicOpen_le _ _
 
@@ -516,10 +516,10 @@ theorem _root_.AlgebraicGeometry.exists_basicOpen_le_affine_inter
 noncomputable def primeIdealOf (x : U) :
     PrimeSpectrum Γ(X, U) :=
   ((@Scheme.isoSpec U hU).hom ≫
-    Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op)).1.base x
+    Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op)).base x
 
 theorem fromSpec_primeIdealOf (x : U) :
-    hU.fromSpec.val.base (hU.primeIdealOf x) = x.1 := by
+    hU.fromSpec.base (hU.primeIdealOf x) = x.1 := by
   dsimp only [IsAffineOpen.fromSpec, Subtype.coe_mk, IsAffineOpen.primeIdealOf]
   -- Porting note: in the porting note of `Scheme.comp_val_base`, it says that `elementwise` is
   -- unnecessary, indeed, the linter did not like it, so I just use `elementwise_of%` instead of
@@ -530,15 +530,15 @@ theorem fromSpec_primeIdealOf (x : U) :
     CategoryTheory.Functor.map_id, Spec.map_id, Category.id_comp, Iso.hom_inv_id_assoc]
   rfl -- `rfl` was not needed before #13170
 
-theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.1.base y ∈ U) :
+theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.base y ∈ U) :
     @IsLocalization.AtPrime
       (R := Γ(X, U))
-      (S := X.presheaf.stalk <| hU.fromSpec.1.base y) _ _
+      (S := X.presheaf.stalk <| hU.fromSpec.base y) _ _
       ((TopCat.Presheaf.algebra_section_stalk X.presheaf _)) y.asIdeal _ := by
   apply
     (@IsLocalization.isLocalization_iff_of_ringEquiv (R := Γ(X, U))
-      (S := X.presheaf.stalk (hU.fromSpec.1.base y)) _ y.asIdeal.primeCompl _
-      (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨hU.fromSpec.1.base y, hy⟩) _ _
+      (S := X.presheaf.stalk (hU.fromSpec.base y)) _ y.asIdeal.primeCompl _
+      (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨hU.fromSpec.base y, hy⟩) _ _
       (asIso <| PresheafedSpace.stalkMap hU.fromSpec.1 y).commRingCatIsoToRingEquiv).mpr
   -- Porting note: need to know what the ring is and after convert, instead of equality
   -- we get an `iff`.
@@ -556,7 +556,7 @@ theorem isLocalization_stalk (x : U) :
     IsLocalization.AtPrime (X.presheaf.stalk x) (hU.primeIdealOf x).asIdeal := by
   rcases x with ⟨x, hx⟩
   set y := hU.primeIdealOf ⟨x, hx⟩ with hy
-  have : hU.fromSpec.val.base y = x := hy ▸ hU.fromSpec_primeIdealOf ⟨x, hx⟩
+  have : hU.fromSpec.base y = x := hy ▸ hU.fromSpec_primeIdealOf ⟨x, hx⟩
   clear_value y
   subst this
   exact hU.isLocalization_stalk' y hx
@@ -571,11 +571,11 @@ theorem basicOpen_union_eq_self_iff (s : Set Γ(X, U)) :
     ⨆ f : s, X.basicOpen (f : Γ(X, U)) = U ↔ Ideal.span s = ⊤ := by
   trans ⋃ i : s, (PrimeSpectrum.basicOpen i.1).1 = Set.univ
   · trans
-      hU.fromSpec.1.base ⁻¹' (⨆ f : s, X.basicOpen (f : Γ(X, U))).1 =
-        hU.fromSpec.1.base ⁻¹' U.1
+      hU.fromSpec.base ⁻¹' (⨆ f : s, X.basicOpen (f : Γ(X, U))).1 =
+        hU.fromSpec.base ⁻¹' U.1
     · refine ⟨fun h => by rw [h], ?_⟩
       intro h
-      apply_fun Set.image hU.fromSpec.1.base at h
+      apply_fun Set.image hU.fromSpec.base at h
       rw [Set.image_preimage_eq_inter_range, Set.image_preimage_eq_inter_range, hU.range_fromSpec]
         at h
       simp only [Set.inter_self, Opens.carrier_eq_coe, Set.inter_eq_right] at h
@@ -649,7 +649,7 @@ section ZeroLocus
 /-- On a locally ringed space `X`, the preimage of the zero locus of the prime spectrum
 of `Γ(X, ⊤)` under `toΓSpecFun` agrees with the associated zero locus on `X`. -/
 lemma Scheme.toΓSpec_preimage_zeroLocus_eq {X : Scheme.{u}} (s : Set Γ(X, ⊤)) :
-    (ΓSpec.adjunction.unit.app X).val.base ⁻¹' PrimeSpectrum.zeroLocus s = X.zeroLocus s :=
+    (ΓSpec.adjunction.unit.app X).base ⁻¹' PrimeSpectrum.zeroLocus s = X.zeroLocus s :=
   LocallyRingedSpace.toΓSpec_preimage_zeroLocus_eq s
 
 open ConcreteCategory
@@ -658,9 +658,9 @@ open ConcreteCategory
 is the zero locus in terms of the prime spectrum of `Γ(X, ⊤)`. -/
 lemma Scheme.toΓSpec_image_zeroLocus_eq_of_isAffine {X : Scheme.{u}} [IsAffine X]
     (s : Set Γ(X, ⊤)) :
-    X.isoSpec.hom.val.base '' X.zeroLocus s = PrimeSpectrum.zeroLocus s := by
+    X.isoSpec.hom.base '' X.zeroLocus s = PrimeSpectrum.zeroLocus s := by
   erw [← X.toΓSpec_preimage_zeroLocus_eq, Set.image_preimage_eq]
-  exact (bijective_of_isIso X.isoSpec.hom.val.base).surjective
+  exact (bijective_of_isIso X.isoSpec.hom.base).surjective
 
 /-- If `X` is an affine scheme, every closed set of `X` is the zero locus
 of a set of global sections. -/
@@ -672,7 +672,7 @@ lemma Scheme.eq_zeroLocus_of_isClosed_of_isAffine (X : Scheme.{u}) [IsAffine X] 
     obtain ⟨I, (hI : Z = _)⟩ := (PrimeSpectrum.isClosed_iff_zeroLocus_ideal _).mp hZ
     use I
     simp only [← Scheme.toΓSpec_preimage_zeroLocus_eq, ← hI, Z]
-    erw [Set.preimage_image_eq _ (bijective_of_isIso X.isoSpec.hom.val.base).injective]
+    erw [Set.preimage_image_eq _ (bijective_of_isIso X.isoSpec.hom.base).injective]
   · rintro ⟨I, rfl⟩
     exact zeroLocus_isClosed X I.carrier
 

@@ -66,14 +66,14 @@ def ΓToStalk (x : X) : Γ.obj (op X) ⟶ X.presheaf.stalk x :=
   X.presheaf.germ (⟨x, trivial⟩ : (⊤ : Opens X))
 
 lemma ΓToStalk_stalkMap {X Y : LocallyRingedSpace} (f : X ⟶ Y) (x : X) :
-    Y.ΓToStalk (f.val.base x) ≫ PresheafedSpace.stalkMap f.val x =
+    Y.ΓToStalk (f.base x) ≫ PresheafedSpace.stalkMap f.val x =
       f.val.c.app (op ⊤) ≫ X.ΓToStalk x := by
   dsimp only [LocallyRingedSpace.ΓToStalk]
   rw [PresheafedSpace.stalkMap_germ']
 
 lemma ΓToStalk_stalkMap_apply {X Y : LocallyRingedSpace} (f : X ⟶ Y) (x : X)
     (a : Y.presheaf.obj (op ⊤)) :
-    PresheafedSpace.stalkMap f.val x (Y.ΓToStalk (f.val.base x) a) =
+    PresheafedSpace.stalkMap f.val x (Y.ΓToStalk (f.base x) a) =
       X.ΓToStalk x (f.val.c.app (op ⊤) a) := by
   simpa using congrFun (congrArg DFunLike.coe <| ΓToStalk_stalkMap f x) a
 
@@ -237,11 +237,11 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
 of `Γ(X, ⊤)` under `toΓSpec` agrees with the associated zero locus on `X`. -/
 lemma toΓSpec_preimage_zeroLocus_eq {X : LocallyRingedSpace.{u}}
     (s : Set (X.presheaf.obj (op ⊤))) :
-    X.toΓSpec.val.base ⁻¹' PrimeSpectrum.zeroLocus s = X.toRingedSpace.zeroLocus s := by
+    X.toΓSpec.base ⁻¹' PrimeSpectrum.zeroLocus s = X.toRingedSpace.zeroLocus s := by
   simp only [RingedSpace.zeroLocus]
   have (i : LocallyRingedSpace.Γ.obj (op X)) (_ : i ∈ s) :
       ((X.toRingedSpace.basicOpen i).carrier)ᶜ =
-        X.toΓSpec.val.base ⁻¹' (PrimeSpectrum.basicOpen i).carrierᶜ := by
+        X.toΓSpec.base ⁻¹' (PrimeSpectrum.basicOpen i).carrierᶜ := by
     symm
     erw [Set.preimage_compl, X.toΓSpec_preimage_basicOpen_eq i]
   erw [Set.iInter₂_congr this]
@@ -252,10 +252,10 @@ lemma toΓSpec_preimage_zeroLocus_eq {X : LocallyRingedSpace.{u}}
 
 theorem comp_ring_hom_ext {X : LocallyRingedSpace.{u}} {R : CommRingCat.{u}} {f : R ⟶ Γ.obj (op X)}
     {β : X ⟶ Spec.locallyRingedSpaceObj R}
-    (w : X.toΓSpec.1.base ≫ (Spec.locallyRingedSpaceMap f).1.base = β.1.base)
+    (w : X.toΓSpec.base ≫ (Spec.locallyRingedSpaceMap f).base = β.base)
     (h :
       ∀ r : R,
-        f ≫ X.presheaf.map (homOfLE le_top : (Opens.map β.1.base).obj (basicOpen r) ⟶ _).op =
+        f ≫ X.presheaf.map (homOfLE le_top : (Opens.map β.base).obj (basicOpen r) ⟶ _).op =
           toOpen R (basicOpen r) ≫ β.1.c.app (op (basicOpen r))) :
     X.toΓSpec ≫ Spec.locallyRingedSpaceMap f = β := by
   ext1
@@ -292,8 +292,8 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
       dsimp [toΓSpecBase]
       -- The next six lines were `rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]` before
       -- leanprover/lean4#2644
-      have : (ContinuousMap.mk (toΓSpecFun Y) (toΓSpec_continuous _)) (f.val.base x)
-        = toΓSpecFun Y (f.val.base x) := by rw [ContinuousMap.coe_mk]
+      have : (ContinuousMap.mk (toΓSpecFun Y) (toΓSpec_continuous _)) (f.base x)
+        = toΓSpecFun Y (f.base x) := by rw [ContinuousMap.coe_mk]
       erw [this]
       have : (ContinuousMap.mk (toΓSpecFun X) (toΓSpec_continuous _)) x
         = toΓSpecFun X x := by rw [ContinuousMap.coe_mk]

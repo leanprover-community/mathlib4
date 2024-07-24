@@ -39,13 +39,13 @@ namespace AlgebraicGeometry
 topological map is a closed embedding and the induced stalk maps are surjective. -/
 @[mk_iff]
 class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
-  base_closed : ClosedEmbedding f.1.base
+  base_closed : ClosedEmbedding f.base
   surj_on_stalks : ∀ x, Function.Surjective (PresheafedSpace.stalkMap f.1 x)
 
 namespace IsClosedImmersion
 
 lemma closedEmbedding {X Y : Scheme} (f : X ⟶ Y)
-    [IsClosedImmersion f] : ClosedEmbedding f.1.base :=
+    [IsClosedImmersion f] : ClosedEmbedding f.base :=
   IsClosedImmersion.base_closed
 
 lemma surjective_stalkMap {X Y : Scheme} (f : X ⟶ Y)
@@ -60,7 +60,7 @@ lemma eq_inf : @IsClosedImmersion = (topologically ClosedEmbedding) ⊓
 
 /-- Isomorphisms are closed immersions. -/
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsClosedImmersion f where
-  base_closed := Homeomorph.closedEmbedding <| TopCat.homeoOfIso (asIso f.1.base)
+  base_closed := Homeomorph.closedEmbedding <| TopCat.homeoOfIso (asIso f.base)
   surj_on_stalks := fun _ ↦ (ConcreteCategory.bijective_of_isIso _).2
 
 instance : MorphismProperty.IsMultiplicative @IsClosedImmersion where

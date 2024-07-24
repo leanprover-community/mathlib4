@@ -51,12 +51,12 @@ variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 /-- A morphism of schemes is surjective if the underlying map is. -/
 @[mk_iff]
 class Surjective : Prop where
-  surj : Function.Surjective f.1.base
+  surj : Function.Surjective f.base
 
 lemma surjective_eq_topologically :
     @Surjective = topologically Function.Surjective := by ext; exact surjective_iff _
 
-lemma Scheme.Hom.surjective (f : X.Hom Y) [Surjective f] : Function.Surjective f.1.base :=
+lemma Scheme.Hom.surjective (f : X.Hom Y) [Surjective f] : Function.Surjective f.base :=
   Surjective.surj
 
 instance (priority := 100) [IsIso f] : Surjective f := ⟨f.homeomorph.surjective⟩
@@ -64,7 +64,7 @@ instance (priority := 100) [IsIso f] : Surjective f := ⟨f.homeomorph.surjectiv
 instance [Surjective f] [Surjective g] : Surjective (f ≫ g) := ⟨g.surjective.comp f.surjective⟩
 
 lemma Surjective.of_comp [Surjective (f ≫ g)] : Surjective g where
-  surj := Function.Surjective.of_comp (g := f.1.base) (f ≫ g).surjective
+  surj := Function.Surjective.of_comp (g := f.base) (f ≫ g).surjective
 
 lemma Surjective.comp_iff [Surjective f] : Surjective (f ≫ g) ↔ Surjective g :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩

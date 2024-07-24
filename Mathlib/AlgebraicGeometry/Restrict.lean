@@ -81,7 +81,7 @@ lemma opensRange_ι : U.ι.opensRange = U :=
   Opens.ext Subtype.range_val
 
 @[simp]
-lemma range_ι : Set.range U.ι.val.base = U :=
+lemma range_ι : Set.range U.ι.base = U :=
   Subtype.range_val
 
 lemma ι_image_top : U.ι ''ᵁ ⊤ = U :=
@@ -210,9 +210,9 @@ theorem Scheme.restrictFunctor_map_ofRestrict {U V : X.Opens} (i : U ⟶ V) :
   IsOpenImmersion.lift_fac _ _ (by simpa using i.le)
 
 theorem Scheme.restrictFunctor_map_base {U V : X.Opens} (i : U ⟶ V) :
-    (X.restrictFunctor.map i).1.val.base = (Opens.toTopCat _).map i := by
+    (X.restrictFunctor.map i).base = (Opens.toTopCat _).map i := by
   ext a; refine Subtype.ext ?_ -- Porting note: `ext` did not pick up `Subtype.ext`
-  exact (congr_arg (fun f : X.restrict U.openEmbedding ⟶ X => f.val.base a)
+  exact (congr_arg (fun f : X.restrict U.openEmbedding ⟶ X => f.base a)
         (X.restrictFunctor_map_ofRestrict i))
 
 theorem Scheme.restrictFunctor_map_app_aux {U V : X.Opens} (i : U ⟶ V) (W : Opens V) :
@@ -285,7 +285,7 @@ noncomputable abbrev Scheme.restrictMapIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsI
   apply IsOpenImmersion.isoOfRangeEq (f := (f ⁻¹ᵁ U).ι ≫ f) U.ι _
   dsimp
   rw [Set.range_comp, Opens.range_ι, Opens.range_ι]
-  refine @Set.image_preimage_eq _ _ f.val.base U.1 f.homeomorph.surjective
+  refine @Set.image_preimage_eq _ _ f.base U.1 f.homeomorph.surjective
 
 section MorphismRestrict
 
@@ -355,12 +355,12 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] (U : Y.Opens) : IsIso (f ∣
   delta morphismRestrict; infer_instance
 
 theorem morphismRestrict_base_coe {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (x) :
-    @Coe.coe U Y (⟨fun x => x.1⟩) ((f ∣_ U).val.base x) = f.val.base x.1 :=
+    @Coe.coe U Y (⟨fun x => x.1⟩) ((f ∣_ U).base x) = f.base x.1 :=
   congr_arg (fun f => PresheafedSpace.Hom.base (LocallyRingedSpace.Hom.val f) x)
     (morphismRestrict_ι f U)
 
 theorem morphismRestrict_val_base {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
-    ⇑(f ∣_ U).val.base = U.1.restrictPreimage f.val.base :=
+    ⇑(f ∣_ U).base = U.1.restrictPreimage f.base :=
   funext fun x => Subtype.ext (morphismRestrict_base_coe f U x)
 
 theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V : Opens U) :
@@ -368,7 +368,7 @@ theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.
   ext1
   ext x
   constructor
-  · rintro ⟨⟨x, hx⟩, hx' : (f ∣_ U).val.base _ ∈ V, rfl⟩
+  · rintro ⟨⟨x, hx⟩, hx' : (f ∣_ U).base _ ∈ V, rfl⟩
     refine ⟨⟨_, hx⟩, ?_, rfl⟩
     -- Porting note: this rewrite was not necessary
     rw [SetLike.mem_coe]
@@ -377,7 +377,7 @@ theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.
     refine Subtype.ext ?_
     exact (morphismRestrict_base_coe f U ⟨x, hx⟩).symm
   · rintro ⟨⟨x, hx⟩, hx' : _ ∈ V.1, rfl : x = _⟩
-    refine ⟨⟨_, hx⟩, (?_ : (f ∣_ U).val.base ⟨x, hx⟩ ∈ V.1), rfl⟩
+    refine ⟨⟨_, hx⟩, (?_ : (f ∣_ U).base ⟨x, hx⟩ ∈ V.1), rfl⟩
     convert hx'
     -- Porting note: `ext1` is compiling
     refine Subtype.ext ?_
