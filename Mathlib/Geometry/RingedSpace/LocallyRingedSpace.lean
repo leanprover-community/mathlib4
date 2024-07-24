@@ -337,7 +337,7 @@ lemma stalkMap_comp {X Y Z : LocallyRingedSpace.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
     (f ≫ g : X ⟶ Z).stalkMap x = g.stalkMap (f.val.base x) ≫ f.stalkMap x :=
   PresheafedSpace.stalkMap.comp f.val g.val x
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+@[reassoc, elementwise]
 lemma stalkSpecializes_stalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x x' : X)
     (h : x ⤳ x') : Y.presheaf.stalkSpecializes (f.val.base.map_specializes h) ≫ f.stalkMap x =
       f.stalkMap x' ≫ X.presheaf.stalkSpecializes h :=
