@@ -58,26 +58,6 @@ lemma isUltrametricDist_of_isNonarchimedean_nnnorm
     (h : IsNonarchimedean ((↑) ∘ (nnnorm : S → ℝ≥0))) : IsUltrametricDist S :=
   isUltrametricDist_of_forall_nnnorm_add_le_max_nnnorm h
 
-lemma _root_.Set.finite_range_iSup_mem {ι X : Type*} [ConditionallyCompleteLattice X]
-    {s : Set ι} (hs : s.Finite) (f : ι → X) :
-    Set.Finite (Set.range fun i ↦ ⨆ (_ : i ∈ s), f i) := by
-  classical
-  simp_rw [ciSup_eq_ite]
-  refine ((hs.image f).union (Set.finite_singleton (sSup (∅ : Set X)))).subset ?_
-  intro
-  simp only [dite_eq_ite, Set.mem_range, Set.union_singleton, Set.mem_insert_iff,
-    forall_exists_index]
-  rintro x rfl
-  split_ifs with hx
-  · exact Or.inr ⟨x, hx, rfl⟩
-  · simp
-
-lemma _root_.Real.toNNReal_iSup {ι : Sort*} {s : ι → ℝ} (hs : ∀ i, 0 ≤ s i) :
-    (⨆ i, s i).toNNReal = ⨆ i, (s i).toNNReal := by
-  refine le_antisymm ?_ ?_
-  · simp [Real.toNNReal_le_iff_le_coe, coe_iSup, hs]
-  · simp [Real.le_toNNReal_iff_coe_le (Real.iSup_nonneg hs), hs]
-
 lemma _root_.List.nnnorm_sum_le_iSup_nnnorm (l : List S) :
     ‖l.sum‖₊ ≤ ⨆ x ∈ l, ‖x‖₊ := by
   rw [le_ciSup_iff']
