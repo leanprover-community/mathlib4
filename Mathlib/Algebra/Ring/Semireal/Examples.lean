@@ -1,18 +1,21 @@
 /-
 Copyright (c) 2024 Matematiflo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Florent Schaffhauser.
+Authors: Florent Schaffhauser
 -/
 
 import Mathlib.Algebra.Ring.Semireal.Defs
 import Mathlib.Algebra.Ring.Hom.Defs
 
-/-
-## A method to construct examples
+/-!
+We construct instances of semireal rings. One method to show that a commutative ring `R` is semireal
+is to construct a ring homomorphism `f : R →+* S` to a semireal ring `S` (see theorem
+`maps_to_semireal_implies_semireal`).
 
-We construct instances of semireal rings. One method to show that a commutative ring `R` is semireal is to construct a ring homomorphism `f : R →+* S` to a semireal ring `S` (see theorem `maps_to_semireal_implies_semireal`).
-
-In that case, `R` is non-trivial because `f (1 : R) = (1 : S) ≠ (0 : S)`, so `(1 : R) ≠ (0 : R)` (see lemma `maps_to_nonzero_implies_non_zero`). And `(-1 : R)` is not a sum of squares in `R`, because the image under `f` of a sum of squares in `R` is a sum of squares in `S` and `f (-1 : R) = (-1 : S)` but `(-1 : S)` is not a sum of squares in `S` (see lemma `is_SumSq_mapsto_isSumSq`).
+In that case, `R` is non-trivial because `f (1 : R) = (1 : S) ≠ (0 : S)`, so `(1 : R) ≠ (0 : R)`
+(see lemma `maps_to_nonzero_implies_non_zero`). And `(-1 : R)` is not a sum of squares in `R`,
+because the image under `f` of a sum of squares in `R` is a sum of squares in `S` and `f (-1 : R) =
+(-1 : S)` but `(-1 : S)` is not a sum of squares in `S` (see lemma `is_SumSq_mapsto_isSumSq`).
 -/
 
 theorem maps_to_nonzero_implies_non_zero {R S : Type} [Semiring R] [Semiring S] :
@@ -54,12 +57,15 @@ theorem maps_to_semireal_implies_semireal (R S : Type) [CommRing R] [CommRing S]
     exact hS.neg_one_not_SumSq
 
 /-
-## Examples of semireal rings
+We now use theorem `maps_to_semireal_implies_semireal` to construct new instances of semireal
+*rings*. Namely:
 
-We now use theorem `maps_to_semireal_implies_semireal` to construct new instances of semireal *rings*. Namely:
-
-- If `R` is a commutative ring whose total ring of fraction `qf R` is semireal, then `R` is semireal (because there is a ring homomorphism `R →+* qf R`). This happens for instance if `R` is a domain and `qf R` is a linearly ordered field (e.g. for `R = ℤ`).
-- If `R` is a semireal ring, then the polynomial ring `R[X]` is semireal (using for instance the evaluation morphism `P ↦ P 0`). In particular, if `F` is a linearly ordered field, then the ring `F[X]` is semireal.
+- If `R` is a commutative ring whose total ring of fraction `qf R` is semireal, then `R` is semireal
+(because there is a ring homomorphism `R →+* qf R`). This happens for instance if `R` is a domain
+and `qf R` is a linearly ordered field (e.g. for `R = ℤ`).
+- If `R` is a semireal ring, then the polynomial ring `R[X]` is semireal (using for instance the
+evaluation morphism `P ↦ P 0`). In particular, if `F` is a linearly ordered field, then the ring
+`F[X]` is semireal.
 -/
 
 -- WIP
