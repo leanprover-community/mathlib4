@@ -161,7 +161,7 @@ instance localizedModule [Module.Flat R M] (S : Submonoid R) : Module.Flat (Loca
   rw [← isLocalizedModule_iff_isBaseChange S]
   exact localizedModuleIsLocalizedModule S
 
-theorem IsLocalizedModule_ofFlat [Module.Flat R M] (S : Submonoid R) [IsLocalization S Rp]
+theorem of_isLocalizedModule [Module.Flat R M] (S : Submonoid R) [IsLocalization S Rp]
     (f : M →ₗ[R] Mp) (h: IsLocalizedModule S f): Module.Flat Rp Mp := by
   fapply Module.Flat.isBaseChange (R:=R) (M:=M) (S:=Rp) (N:=Mp)
   exact (isLocalizedModule_iff_isBaseChange S Rp f).mp h
