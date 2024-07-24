@@ -273,7 +273,7 @@ theorem tendsto_compactOpen_restrict {ι : Type*} {l : Filter ι} {F : ι → C(
     Tendsto (fun i => (F i).restrict s) l (𝓝 (f.restrict s)) :=
   (continuous_restrict s).continuousAt.tendsto.comp hFf
 
-theorem tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} (F : ι → C(X, Y)) (f : C(X, Y)) :
+theorem tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} {F : ι → C(X, Y)} {f : C(X, Y)} :
     Tendsto F l (𝓝 f) ↔
       ∀ K, IsCompact K → Tendsto (fun i => (F i).restrict K) l (𝓝 (f.restrict K)) := by
   rw [compactOpen_eq_iInf_induced]
@@ -282,7 +282,7 @@ theorem tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} (F : ι → 
 /-- A family `F` of functions in `C(X, Y)` converges in the compact-open topology, if and only if
 it converges in the compact-open topology on each compact subset of `X`. -/
 theorem exists_tendsto_compactOpen_iff_forall [WeaklyLocallyCompactSpace X] [T2Space Y]
-    {ι : Type*} {l : Filter ι} [Filter.NeBot l] (F : ι → C(X, Y)) :
+    {ι : Type*} {l : Filter ι} [Filter.NeBot l] {F : ι → C(X, Y)} :
     (∃ f, Filter.Tendsto F l (𝓝 f)) ↔
       ∀ s : Set X, IsCompact s → ∃ f, Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 f) := by
   constructor
