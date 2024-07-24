@@ -216,7 +216,7 @@ lemma shiftFunctorOpIso_add_neg_self (p : ℤ) :
 lemma shiftFunctor_op (p : ℤ) :
     shiftFunctor Cᵒᵖ p = (shiftFunctor C (-p)).op := rfl
 
-lemma opShiftFunctorEquivalence_add'_unitIso_inv_app (X : Cᵒᵖ) (m n p : ℤ) (h : m + n = p) :
+lemma opShiftFunctorEquivalence_unitIso_inv_app_eq_add' (X : Cᵒᵖ) (m n p : ℤ) (h : m + n = p) :
     (opShiftFunctorEquivalence C p).unitIso.inv.app X =
       (((shiftFunctorAdd' Cᵒᵖ n m p (by omega)).hom.app X).unop⟦p⟧').op ≫
         ((shiftFunctorAdd' C m n p h).inv.app _).op ≫

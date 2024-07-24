@@ -41,6 +41,45 @@ lemma opEquiv_symm_apply {n : ℤ} (f : ShiftedHom (Opposite.op Y) (Opposite.op 
       ((opShiftFunctorEquivalence C n).unitIso.inv.app (Opposite.op X)).unop ≫ f.unop⟦n⟧' := by
   rfl
 
+lemma opEquiv_symm_apply_comp
+    {X Y : C} {a : ℤ}
+    (f : ShiftedHom (Opposite.op X) (Opposite.op Y) a) {b : ℤ} {Z : C}
+    (z : ShiftedHom X Z b) {c : ℤ} (h : b + a = c) :
+    ((ShiftedHom.opEquiv a).symm f).comp z h =
+      (ShiftedHom.opEquiv a).symm (z.op ≫ f) ≫
+        (shiftFunctorAdd' C b a c h).inv.app Z := by
+  rw [ShiftedHom.opEquiv_symm_apply, ShiftedHom.opEquiv_symm_apply,
+    ShiftedHom.comp]
+  dsimp
+  simp only [assoc, Functor.map_comp]
+
+-- this proof needs some cleaning up...
+lemma opEquiv_symm_comp {a b : ℤ}
+    (f : ShiftedHom (Opposite.op Z) (Opposite.op Y) a)
+    (g : ShiftedHom (Opposite.op Y) (Opposite.op X) b)
+    {c : ℤ} (h : b + a = c) :
+    (opEquiv _).symm (f.comp g h) =
+      ((opEquiv _).symm g).comp ((opEquiv _).symm f) (by omega) := by
+  rw [opEquiv_symm_apply, opEquiv_symm_apply]
+  dsimp
+  rw [opShiftFunctorEquivalence_unitIso_inv_app_eq_add' _ _ _ _
+    (show a + b = c by omega)]
+  simp [comp]
+  simp only [← Functor.map_comp_assoc, ← unop_comp]
+  simp only [assoc, Iso.inv_hom_id_app, Functor.comp_obj, comp_id, Functor.map_comp]
+  erw [← NatTrans.naturality_assoc, ← NatTrans.naturality]
+  dsimp
+  simp only [← Functor.map_comp_assoc]
+  rw [opEquiv_symm_apply]
+  congr 3
+  dsimp
+  simp only [← Category.assoc]
+  congr 1
+  apply Quiver.Hom.op_inj
+  dsimp
+  erw [← NatTrans.naturality]
+  rfl
+
 /-- The bijection `ShiftedHom X Y a' ≃ (Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦n⟧)`
 when integers `n`, `a` and `a'` satisfy `n + a = a'`, and `X` and `Y` are objects
 of a category equipped with a shift by `ℤ`. -/
@@ -89,7 +128,7 @@ lemma opEquiv'_add_symm (n m a a' a'' : ℤ) (ha' : n + a = a') (ha'' : m + a' =
       (opEquiv' m a' a'' ha'').symm ((opEquiv' n a a' ha').symm
         (x ≫ (shiftFunctorAdd Cᵒᵖ m n).hom.app _)).op := by
   simp only [opEquiv'_symm_apply, opEquiv_symm_apply,
-    opShiftFunctorEquivalence_add'_unitIso_inv_app _ _ _ _ (add_comm n m)]
+    opShiftFunctorEquivalence_unitIso_inv_app_eq_add' _ _ _ _ (add_comm n m)]
   dsimp
   simp only [assoc, Functor.map_comp, ← shiftFunctorAdd'_eq_shiftFunctorAdd,
     ← NatTrans.naturality_assoc,

@@ -55,7 +55,7 @@ lemma preadditiveCoyoneda_homologySequenceδ_apply
       x ≫ T.mor₃⟦n₀⟧' ≫ (shiftFunctorAdd' C 1 n₀ n₁ (by omega)).inv.app _ := by
   apply Category.assoc
 
-noncomputable instance (B : C) : (preadditiveYoneda.obj B).ShiftSequence ℤ where
+noncomputable instance blah (B : C) : (preadditiveYoneda.obj B).ShiftSequence ℤ where
   sequence n := preadditiveYoneda.obj (B⟦n⟧)
   isoZero := preadditiveYoneda.mapIso ((shiftFunctorZero C ℤ).app B)
   shiftIso n a a' h := NatIso.ofComponents (fun A ↦ AddEquiv.toAddCommGrpIso
@@ -67,22 +67,24 @@ noncomputable instance (B : C) : (preadditiveYoneda.obj B).ShiftSequence ℤ whe
     ext _ x
     exact ShiftedHom.opEquiv'_add_symm n m a a' a'' ha' ha'' x.op
 
+lemma preadditiveYoneda_shiftMap_apply (B : C) {X Y : Cᵒᵖ} (n : ℤ) (f : X ⟶ Y⟦n⟧)
+    (a a' : ℤ) (h : n + a = a') (z : X.unop ⟶ B⟦a⟧) :
+    (preadditiveYoneda.obj B).shiftMap f a a' h z =
+      ((ShiftedHom.opEquiv _).symm f).comp z (show a + n = a' by omega) := by
+  symm
+  apply ShiftedHom.opEquiv_symm_apply_comp
+
 lemma preadditiveYoneda_homologySequenceδ_apply
-    (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) {A : C} (x : T.obj₁ ⟶ A⟦n₀⟧) :
-    (preadditiveYoneda.obj A).homologySequenceδ
+    (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) {B : C} (x : T.obj₁ ⟶ B⟦n₀⟧) :
+    (preadditiveYoneda.obj B).homologySequenceδ
       ((triangleOpEquivalence _).functor.obj (op T)) n₀ n₁ h x =
-      T.mor₃ ≫ x⟦(1 : ℤ)⟧' ≫ (shiftFunctorAdd' C n₀ 1 n₁ h).inv.app A := by
-  let a := (shiftFunctorCompIsoId C _ _ (neg_add_self (1 : ℤ))).inv.app T.obj₃
-  let b := ((shiftFunctorOpIso C _ _ (add_right_neg 1)).hom.app (op T.obj₃)).unop⟦(1 : ℤ)⟧'
-  let c := ((shiftFunctor Cᵒᵖ (1 : ℤ)).map T.mor₃.op).unop
-  let d := (opShiftFunctorEquivalence C 1).counitIso.inv.app (op T.obj₁)
-  let e := (shiftFunctorAdd' C n₀ 1 n₁ h).inv.app A
-  change ((a ≫ b) ≫ ((c ≫ _) ≫ x)⟦(1 : ℤ)⟧') ≫ _ = _
-  simp only [← Category.assoc, Functor.map_comp]
+      T.mor₃ ≫ x⟦(1 : ℤ)⟧' ≫ (shiftFunctorAdd' C n₀ 1 n₁ h).inv.app B := by
+  simp only [Functor.homologySequenceδ, preadditiveYoneda_shiftMap_apply,
+    ShiftedHom.comp, ← Category.assoc]
   congr 2
-  dsimp [a, b, c]
-  simp only [Category.assoc]
-  sorry
+  apply (ShiftedHom.opEquiv _).injective
+  rw [Equiv.apply_symm_apply]
+  rfl
 
 end Pretriangulated
 
