@@ -19,7 +19,7 @@ if either of the following equivalent conditions hold:
   provided that it is continuous on each `s ∈ S`.
 
 We use the first condition as the definition
-(see `RestrictGenTopology` in `Topology/Defs/Induced.lean`),
+(see `RestrictGenTopology` in `Mathlib/Topology/Defs/Induced.lean`),
 and provide the others as corollaries.
 
 ## Main results
