@@ -161,7 +161,7 @@ lemma Equicontinuous.inducing_uniformFun_iff_pi [TopologicalSpace ι] [CompactSp
 equicontinuous family, and `ℱ` a filter on `ι`. Then, `F` tends *uniformly* to `f : X → α` along
 `ℱ` iff it tends to `f` *pointwise* along `ℱ`. -/
 theorem Equicontinuous.tendsto_uniformFun_iff_pi [CompactSpace X]
-    (F_eqcont : Equicontinuous F) (ℱ : Filter ι) (f : X → α) :
+    (F_eqcont : Equicontinuous F) {ℱ : Filter ι} {f : X → α} :
     Tendsto (UniformFun.ofFun ∘ F) ℱ (𝓝 <| UniformFun.ofFun f) ↔
     Tendsto F ℱ (𝓝 f) := by
   -- Assume `ℱ` is non trivial.
@@ -326,7 +326,7 @@ on `ι`. Then, `F` tends to `f : X → α` along `ℱ` *uniformly on each `K ∈
 *pointwise on `⋃₀ 𝔖`* along `ℱ`. -/
 theorem EquicontinuousOn.tendsto_uniformOnFun_iff_pi'
     {𝔖 : Set (Set X)} (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K)
-    (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K) (ℱ : Filter ι) (f : X → α) :
+    (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K) {ℱ : Filter ι} {f : X → α} :
     Tendsto (UniformOnFun.ofFun 𝔖 ∘ F) ℱ (𝓝 <| UniformOnFun.ofFun 𝔖 f) ↔
     Tendsto ((⋃₀ 𝔖).restrict ∘ F) ℱ (𝓝 <| (⋃₀ 𝔖).restrict f) := by
   -- Recall that the uniform structure on `X →ᵤ[𝔖] α` is the one induced by all the maps
@@ -353,7 +353,7 @@ This is a specialization of `EquicontinuousOn.tendsto_uniformOnFun_iff_pi'` to t
 where `𝔖` covers `X`. -/
 theorem EquicontinuousOn.tendsto_uniformOnFun_iff_pi
     {𝔖 : Set (Set X)} (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K) (𝔖_covers : ⋃₀ 𝔖 = univ)
-    (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K) (ℱ : Filter ι) (f : X → α) :
+    (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K) {ℱ : Filter ι} {f : X → α} :
     Tendsto (UniformOnFun.ofFun 𝔖 ∘ F) ℱ (𝓝 <| UniformOnFun.ofFun 𝔖 f) ↔
     Tendsto F ℱ (𝓝 f) := by
   rw [eq_univ_iff_forall] at 𝔖_covers

@@ -31,6 +31,7 @@ theorem uniformity :
   simp_rw [Pi.uniformity, Filter.comap_iInf, Filter.comap_comap]
   rfl
 
+variable {𝕜 m n} in
 theorem uniformContinuous {β : Type*} [UniformSpace β] {f : β → Matrix m n 𝕜} :
     UniformContinuous f ↔ ∀ i j, UniformContinuous fun x => f x i j := by
   simp only [UniformContinuous, Matrix.uniformity, Filter.tendsto_iInf, Filter.tendsto_comap_iff]

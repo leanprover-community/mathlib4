@@ -159,11 +159,11 @@ lemma EquicontinuousWithinAt.mono {F : ι → X → α} {x₀ : X} {S T : Set X}
     (H : EquicontinuousWithinAt F T x₀) (hST : S ⊆ T) : EquicontinuousWithinAt F S x₀ :=
   fun U hU ↦ (H U hU).filter_mono <| nhdsWithin_mono x₀ hST
 
-@[simp] lemma equicontinuousWithinAt_univ (F : ι → X → α) (x₀ : X) :
+@[simp] lemma equicontinuousWithinAt_univ {F : ι → X → α} {x₀ : X} :
     EquicontinuousWithinAt F univ x₀ ↔ EquicontinuousAt F x₀ := by
   rw [EquicontinuousWithinAt, EquicontinuousAt, nhdsWithin_univ]
 
-lemma equicontinuousAt_restrict_iff (F : ι → X → α) {S : Set X} (x₀ : S) :
+lemma equicontinuousAt_restrict_iff {F : ι → X → α} {S : Set X} {x₀ : S} :
     EquicontinuousAt (S.restrict ∘ F) x₀ ↔ EquicontinuousWithinAt F S x₀ := by
   simp [EquicontinuousWithinAt, EquicontinuousAt,
     ← eventually_nhds_subtype_iff]
@@ -176,11 +176,11 @@ lemma EquicontinuousOn.mono {F : ι → X → α} {S T : Set X}
     (H : EquicontinuousOn F T) (hST : S ⊆ T) : EquicontinuousOn F S :=
   fun x hx ↦ (H x (hST hx)).mono hST
 
-lemma equicontinuousOn_univ (F : ι → X → α) :
+lemma equicontinuousOn_univ {F : ι → X → α} :
     EquicontinuousOn F univ ↔ Equicontinuous F := by
   simp [EquicontinuousOn, Equicontinuous]
 
-lemma equicontinuous_restrict_iff (F : ι → X → α) {S : Set X} :
+lemma equicontinuous_restrict_iff {F : ι → X → α} {S : Set X} :
     Equicontinuous (S.restrict ∘ F) ↔ EquicontinuousOn F S := by
   simp [Equicontinuous, EquicontinuousOn, equicontinuousAt_restrict_iff]
 
@@ -192,11 +192,11 @@ lemma UniformEquicontinuousOn.mono {F : ι → β → α} {S T : Set β}
     (H : UniformEquicontinuousOn F T) (hST : S ⊆ T) : UniformEquicontinuousOn F S :=
   fun U hU ↦ (H U hU).filter_mono <| by gcongr
 
-lemma uniformEquicontinuousOn_univ (F : ι → β → α) :
+lemma uniformEquicontinuousOn_univ {F : ι → β → α} :
     UniformEquicontinuousOn F univ ↔ UniformEquicontinuous F := by
   simp [UniformEquicontinuousOn, UniformEquicontinuous]
 
-lemma uniformEquicontinuous_restrict_iff (F : ι → β → α) {S : Set β} :
+lemma uniformEquicontinuous_restrict_iff {F : ι → β → α} {S : Set β} :
     UniformEquicontinuous (S.restrict ∘ F) ↔ UniformEquicontinuousOn F S := by
   rw [UniformEquicontinuous, UniformEquicontinuousOn]
   conv in _ ⊓ _ => rw [← Subtype.range_val (s := S), ← range_prod_map, ← map_comap]

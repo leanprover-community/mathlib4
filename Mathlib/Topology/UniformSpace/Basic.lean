@@ -1494,7 +1494,7 @@ local notation f " ∘₂ " g => Function.bicompr f g
 def UniformContinuous₂ (f : α → β → γ) :=
   UniformContinuous (uncurry f)
 
-theorem uniformContinuous₂_def (f : α → β → γ) :
+theorem uniformContinuous₂_def {f : α → β → γ} :
     UniformContinuous₂ f ↔ UniformContinuous (uncurry f) :=
   Iff.rfl
 
@@ -1502,7 +1502,7 @@ theorem UniformContinuous₂.uniformContinuous {f : α → β → γ} (h : Unifo
     UniformContinuous (uncurry f) :=
   h
 
-theorem uniformContinuous₂_curry (f : α × β → γ) :
+theorem uniformContinuous₂_curry {f : α × β → γ} :
     UniformContinuous₂ (Function.curry f) ↔ UniformContinuous f := by
   rw [UniformContinuous₂, uncurry_curry]
 

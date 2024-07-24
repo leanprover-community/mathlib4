@@ -568,8 +568,9 @@ protected def TotalSpace :=
 def trivChange (i j : ι) : PartialHomeomorph (B × F) (B × F) :=
   Z.toFiberBundleCore.trivChange i j
 
+variable {Z} in
 @[simp, mfld_simps]
-theorem mem_trivChange_source (i j : ι) (p : B × F) :
+theorem mem_trivChange_source {i j : ι} {p : B × F} :
     p ∈ (Z.trivChange i j).source ↔ p.1 ∈ Z.baseSet i ∩ Z.baseSet j :=
   Z.toFiberBundleCore.mem_trivChange_source i j p
 
@@ -603,16 +604,18 @@ instance localTriv.isLinear (i : ι) : (Z.localTriv i).IsLinear R where
 
 variable (i j : ι)
 
+variable {Z i} in
 @[simp, mfld_simps]
-theorem mem_localTriv_source (p : Z.TotalSpace) : p ∈ (Z.localTriv i).source ↔ p.1 ∈ Z.baseSet i :=
+theorem mem_localTriv_source {p : Z.TotalSpace} : p ∈ (Z.localTriv i).source ↔ p.1 ∈ Z.baseSet i :=
   Iff.rfl
 
 @[simp, mfld_simps]
 theorem baseSet_at : Z.baseSet i = (Z.localTriv i).baseSet :=
   rfl
 
+variable {Z i} in
 @[simp, mfld_simps]
-theorem mem_localTriv_target (p : B × F) :
+theorem mem_localTriv_target {p : B × F} :
     p ∈ (Z.localTriv i).target ↔ p.1 ∈ (Z.localTriv i).baseSet :=
   Z.toFiberBundleCore.mem_localTriv_target i p
 

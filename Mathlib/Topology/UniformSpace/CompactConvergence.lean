@@ -189,7 +189,7 @@ theorem hasBasis_compactConvergenceUniformity :
       { fg : C(α, β) × C(α, β) | ∀ x ∈ p.1, (fg.1 x, fg.2 x) ∈ p.2 } :=
   (basis_sets _).compactConvergenceUniformity
 
-theorem mem_compactConvergence_entourage_iff (X : Set (C(α, β) × C(α, β))) :
+theorem mem_compactConvergence_entourage_iff {X : Set (C(α, β) × C(α, β))} :
     X ∈ 𝓤 C(α, β) ↔
       ∃ (K : Set α) (V : Set (β × β)), IsCompact K ∧ V ∈ 𝓤 β ∧
         { fg : C(α, β) × C(α, β) | ∀ x ∈ K, (fg.1 x, fg.2 x) ∈ V } ⊆ X := by
