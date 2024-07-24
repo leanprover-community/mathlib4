@@ -77,24 +77,43 @@ instance : MonoidalClosed SSet := FunctorToTypes.monoidalClosed
 
 /- p : X ⟶ Y is a trivial Kan fibration if it has the right lifting property wrt
   every boundary inclusion  ∂Δ[n] ⟶ Δ[n] -/
-class trivialKanFibration {X Y : SSet} (p : X ⟶ Y) where
+class trivialKanFibration {X Y : SSet} (p : X ⟶ Y) : Prop where
   has_rlp (n : ℕ) : HasLiftingProperty (boundaryInclusion n) p
 
-/- equivalent definition of trivial Kan fibration by 006Y -/
+/- equivalent definition of trivial Kan fibration by `006Y` -/
 class rlp_mono {X Y : SSet} (p : X ⟶ Y) where
   has_rlp {A B : SSet} (i : A ⟶ B) [Mono i] : HasLiftingProperty i p
 
 /- RLP wrt all monomorphisms implies trivial Kan fib -/
-instance tkf_of_rlp_mono {X Y : SSet} (p : X ⟶ Y) [rlp_mono p] :
-    trivialKanFibration p := sorry
+instance tkf_iff_rlp_mono {X Y : SSet} (p : X ⟶ Y) : trivialKanFibration p ↔
+    ∀ {A B : SSet} (i : A ⟶ B) [Mono i], HasLiftingProperty i p := sorry
 
-/- trivial Kan fib implies RLP wrt all monomorphisms -/
-instance rlp_mono_of_tkf {X Y : SSet} (p : X ⟶ Y) [trivialKanFibration p] :
-    rlp_mono p := sorry
+/- inner fibration if RLP wrt all inner horn inclusions -/
+class innerFibration {X Y : SSet} (p : X ⟶ Y) where
+  has_rlp ⦃n : ℕ⦄ ⦃i : Fin (n+3)⦄ (_h0 : 0 < i) (_hn : i < Fin.last (n+2)) :
+    HasLiftingProperty (hornInclusion (n+2) i) p
+
+class innerAnodyne {A B : SSet} (i : A ⟶ B) where
+  has_llp {X Y : SSet} (p : X ⟶ Y) [innerFibration p] : HasLiftingProperty i p
+
+/- inner horn inclusions are inner anodyne -/
+instance innerAnodyne_of_innerHorn ⦃n : ℕ⦄ ⦃i : Fin (n+3)⦄ (_h0 : 0 < i) (_hn : i < Fin.last (n+2)) :
+    innerAnodyne (hornInclusion (n+2) i) where
+  has_llp _ h := h.has_rlp _h0 _hn
+
+-- `007E`, if extension property wrt every inner anodyne, then quasicat
+-- to prove converse, need (?) that class of inner anodyne morphisms is generated
+-- by inner horn inclusions
+instance {S : SSet}
+    (h : ∀ {A B} (i : A ⟶ B) [innerAnodyne i] (f₀ : A ⟶ S), ∃ (f : B ⟶ S), f₀ = i ≫ f) :
+    Quasicategory S where
+  hornFilling' n i σ₀ _h0 _hn := by
+    letI _ : innerAnodyne (hornInclusion (n + 2) i) := innerAnodyne_of_innerHorn _h0 _hn
+    exact h (hornInclusion (n + 2) i) σ₀
 
 open MonoidalCategory
 
-section
+section ihom_stuff
 
 open MonoidalClosed
 
@@ -102,36 +121,15 @@ noncomputable
 abbrev Fun : SSetᵒᵖ ⥤ SSet ⥤ SSet := MonoidalClosed.internalHom
 
 open SSet standardSimplex in
-def ihom_simplices (X Y : SSet) (n : ℕ) : (ihom X).obj Y _[n] ≅ Δ[n] ⊗ X ⟶ Y where
+def ihom_simplices (X Y : SSet) (n : ℕ) : (ihom X).obj Y _[n] ≅ X ⊗ Δ[n] ⟶ Y where
   hom a := {
-    app := fun k ⟨d, x⟩ ↦ a.app k (objEquiv _ _ d).op x
+    app := fun k ⟨x, d⟩ ↦ a.app k (objEquiv _ _ d).op x
     naturality := fun m l f ↦ by
-      ext ⟨d, x⟩
-      exact congr_fun (a.naturality f (objEquiv _ _ d).op) x
-  }
+      ext ⟨x, d⟩; exact congr_fun (a.naturality f (objEquiv _ _ d).op) x }
   inv a := {
-    app := fun k d x ↦ a.app k ((objEquiv _ _).symm d.unop, x)
+    app := fun k d x ↦ a.app k (x, (objEquiv _ _).symm d.unop)
     naturality := fun f d ↦ by
-      ext x
-      exact congr_fun (a.naturality f) ((objEquiv _ _).symm d.unop, x)
-  }
-
-/-
-noncomputable
-def ihom_equiv'_aux (X Y Z : SSet) (n : ℕ) (f : Δ[n] ⊗ X ⟶ (ihom Y).obj Z) :
-    Δ[n] ⊗ Y ⟶ (ihom X).obj Z :=
-  curry ((α_ X Δ[n] Y).inv ≫ (β_ X Δ[n]).hom ▷ Y ≫ (β_ (Δ[n] ⊗ X) Y).hom ≫ (uncurry f))
-
-noncomputable
-def ihom_equiv' (X Y Z : SSet) (n : ℕ) :
-    (Δ[n] ⊗ X ⟶ (ihom Y).obj Z) ≅ (Δ[n] ⊗ Y ⟶ (ihom X).obj Z) where
-  hom f := ihom_equiv'_aux X Y Z n f
-  inv f := ihom_equiv'_aux Y X Z n f
-  hom_inv_id := by
-    ext f m ⟨d, Xm⟩
-    sorry
-  inv_hom_id := sorry
--/
+      ext x; exact congr_fun (a.naturality f) (x, (objEquiv _ _).symm d.unop) }
 
 noncomputable
 def temp1 (X Y Z : SSet) : (ihom X).obj ((ihom Y).obj Z) ⟶ (ihom (X ⊗ Y)).obj Z where
@@ -170,16 +168,21 @@ def temp2 (X Y Z : SSet) : (ihom (X ⊗ Y)).obj Z ⟶ (ihom X).obj ((ihom Y).obj
       ext Xm
       simp [ihom, Closed.rightAdj, FunctorToTypes.rightAdj, Functor.ihom, Functor.hom₂Functor]
 
-variable (X Y Z : SSet) (n : SimplexCategoryᵒᵖ)
+@[ext]
+lemma need_ext (X Y Z : SSet) (n : SimplexCategoryᵒᵖ)
+    (a b : ((ihom X).obj ((ihom Y).obj Z)).obj n) : a.app = b.app → a = b := sorry
+
+@[ext]
+lemma need_ext' (Y Z : SSet) (m : SimplexCategoryᵒᵖ)
+    (a b : ((ihom Y).obj Z).obj m) : a.app = b.app → a = b := sorry
 
 noncomputable
 def temp (X Y Z : SSet) : (ihom X).obj ((ihom Y).obj Z) ≅ (ihom (X ⊗ Y)).obj Z where
   hom := temp1 X Y Z
   inv := temp2 X Y Z
   hom_inv_id := by
-    ext n x
-    change (X.temp2 Y Z).app n ((X.temp1 Y Z).app n x) = _
-    simp [temp1, temp2]
+    ext n x m f Xm l g Yl
+    change (x.app l (f ≫ g) (X.map g Xm)).app l (𝟙 l) Yl = (x.app m f Xm).app l g Yl
     sorry
   inv_hom_id := sorry
 
@@ -190,60 +193,25 @@ def ihom_equiv (X Y Z : SSet) : (ihom X).obj ((ihom Y).obj Z) ≅ (ihom Y).obj (
   hom_inv_id := sorry
   inv_hom_id := sorry
 
-noncomputable
-def FunctorToTypes.homEquiv' (X Y Z : SSet) : (X ⊗ Y ⟶ Z) ≃ (X ⟶ Y.ihom Z) :=
-  ((β_ X Y).homFromEquiv).trans (FunctorToTypes.homEquiv Y X Z)
+end ihom_stuff
 
-end
+-- `0079`, hard to show
+/- B is a quasicat iff Fun(Δ[2], B) ⟶ Fun(Λ[2, 1], B) is a trivial Kan fib -/
+instance horn_tkf_iff_quasicat (B : SSet) : Quasicategory B ↔
+  trivialKanFibration ((Fun.map (hornInclusion 2 1).op).app B) := sorry
 
--- `0079`
-/- if B is a quasicat, then Fun(Δ[2], B) ⟶ Fun(Λ[2, 1], B) is a trivial Kan fib -/
-instance horn_tkf_of_quasicat (B : SSet) [Quasicategory B] :
-    trivialKanFibration ((Fun.map (hornInclusion 2 1).op).app B) := sorry
-
--- `0079`
-/- if Fun(Δ[2], B) ⟶ Fun(Λ[2, 1], B) is a trivial Kan fib, then B is a quasicat -/
-instance quasicat_of_horn_tkf (B : SSet)
-    [trivialKanFibration ((Fun.map (hornInclusion 2 1).op).app B)] :
-    Quasicategory B := sorry
-
-instance (B : SSet) (n : ℕ) : Mono ((boundaryInclusion n) ▷ B) where
-  right_cancellation := sorry
+-- need that B ⊗ ∂Δ[n] ⟶ B ⊗ Δ[n] is a monomorphism for next lemma
+instance (B : SSet) (n : ℕ) : Mono (B ◁ (boundaryInclusion n)) := by
+  sorry
 
 /- changing the square to apply the lifting property of p
-   on the monomorphism `(boundaryInclusion n ▷ B)` -/
+   on the monomorphism `(B ◁ boundaryInclusion n)` -/
 lemma induced_tkf_aux (B X Y : SSet) (p : X ⟶ Y)
-    [trivialKanFibration p] (n : ℕ) [h : HasLiftingProperty (boundaryInclusion n ▷ B) p] :
+    [trivialKanFibration p] (n : ℕ) [h : HasLiftingProperty (B ◁ boundaryInclusion n) p] :
     HasLiftingProperty (boundaryInclusion n) ((Fun.obj (Opposite.op B)).map p) where
-  sq_hasLift {f g sq} := by
-    dsimp at f g sq
-    let map := (yonedaEquiv ((ihom B).obj Y) [n]).trans (ihom_simplices B Y n).toEquiv
-    let g' := map g
-    let δ := (boundaryInclusion n ▷ B)
-    let homEquiv := (FunctorToTypes.homEquiv' ∂Δ[n] B X)
-    let f' := homEquiv.symm f
-    have w' : f' ≫ p = δ ≫ g':= by
-      ext m ⟨d, Bm⟩
-      have := (congr_fun (congr_app sq.w m) d)
-      simp [ihom, Closed.rightAdj] at this
-      simp [δ, f', g', map, homEquiv, FunctorToTypes.homEquiv', FunctorToTypes.homEquiv]
-      change (FunctorToTypes.homEquiv_invFun f ≫ p).app m ((β_ ∂Δ[n] B).hom.app m (d, Bm)) =
-        ((B.ihom_simplices Y n).hom ((((ihom B).obj Y).yonedaEquiv [n]) g)).app m ((boundaryInclusion n ▷ B).app m (d, Bm))
-      simp [FunctorToTypes.homEquiv_invFun, ihom_simplices, standardSimplex.objEquiv, Equiv.ulift,
-        ihom, Closed.rightAdj, FunctorToTypes.rightAdj, Functor.ihom,
-        yonedaEquiv, yonedaCompUliftFunctorEquiv]
-      change ((FunctorToTypes.rightAdj B).map p).app m (f.app m d) =
-        g.app m ((boundaryInclusion n).app m d) at this
-      simp [FunctorToTypes.rightAdj, FunctorToTypes.rightAdj_map] at this
-      apply_fun (fun f ↦ f.app m (𝟙 m) Bm) at this
-      simp at this
-      change  p.app m ((f.app m d).app m (𝟙 m) Bm) = _
-      rw [this]
-      sorry
-    have newSq := CommSq.mk w'
-    letI _ : HasLiftingProperty δ p := sorry
-    have newSq_hasLift := h.sq_hasLift newSq
-    sorry
+  sq_hasLift sq :=
+    (CommSq.left_adjoint_hasLift_iff sq (FunctorToTypes.adj B)).1
+      (h.sq_hasLift (sq.left_adjoint (Closed.adj)))
 
 -- `0071` (special case of `0070`)
 /- if p : X ⟶ Y is a trivial Kan fib, then Fun(B,X) ⟶ Fun(B, Y) is -/
@@ -251,7 +219,7 @@ noncomputable
 instance induced_tkf (B X Y : SSet) (p : X ⟶ Y) [trivialKanFibration p] :
     trivialKanFibration ((Fun.obj (.op B)).map p) where
   has_rlp n := by
-    have := (rlp_mono_of_tkf p).has_rlp ((boundaryInclusion n) ▷ B)
+    have := (tkf_iff_rlp_mono p).1 (by infer_instance) (B ◁ (boundaryInclusion n))
     apply induced_tkf_aux
 
 -- uses `0071` and `0079`
@@ -264,6 +232,7 @@ instance fun_quasicat_aux (S D : SSet) [Quasicategory D] :
   has_rlp n := by
     -- since Fun[Δ[n], D] ⟶ Fun[Λ[2,1], D] is a TKF by `0079`,
     -- get Fun(S, Fun(Δ[n], D)) ⟶ Fun(S, (Λ[2,1], D)) is a TKF by `0071`
+    have := (horn_tkf_iff_quasicat D).1 (by infer_instance)
     have := (induced_tkf S _ _ ((Fun.map (hornInclusion 2 1).op).app D)).has_rlp n
     dsimp at this
     have H : Arrow.mk ((ihom S).map ((MonoidalClosed.pre (hornInclusion 2 1)).app D)) ≅
@@ -274,7 +243,7 @@ instance fun_quasicat_aux (S D : SSet) [Quasicategory D] :
 -- `0066`
 /- if D is a quasicat, then Fun(S, D) is -/
 instance fun_quasicat (S D : SSet) [Quasicategory D] : Quasicategory ((Fun.obj (.op S)).obj D) :=
-  quasicat_of_horn_tkf ((Fun.obj (.op S)).obj D) -- instance inferred by `fun_quasicat_aux`
+  (horn_tkf_iff_quasicat ((Fun.obj (.op S)).obj D)).2 (by infer_instance) -- instance inferred by `fun_quasicat_aux`
 
 end
 
