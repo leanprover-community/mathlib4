@@ -36,7 +36,7 @@ sufficiently small limits in the sheaf category on the essentially small site.
 
 -/
 
-universe v₁ v₂ v₃ u₁ u₂ u₃ w
+universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ w
 
 namespace CategoryTheory
 
@@ -84,13 +84,42 @@ variable [e.TransportsGrothendieckTopology J K]
 theorem eq_inducedTopology_of_transports : K = e.inverse.inducedTopology J :=
   TransportsGrothendieckTopology.eq_inducedTopology
 
-instance : IsContinuous e.functor J K := by
-  rw [e.eq_inducedTopology_of_transports J K]
-  exact IsCoverDense.isContinuous _ _ _ (e.coverPreserving J)
+instance : e.symm.TransportsGrothendieckTopology K J where
+  eq_inducedTopology := by
+    rw [e.eq_inducedTopology_of_transports J K]
+    ext X S
+    change _ ↔ _ ∈ J.sieves _
+    simp only [symm_inverse]
+    constructor
+    · intro h
+      convert J.pullback_stable (e.unitInv.app X) h
+      exact Sieve.functorPushforward_equivalence_eq_pullback e S
+    · intro h
+      convert J.pullback_stable (e.unit.app X) h
+      exact (Sieve.pullback_functorPushforward_equivalence_eq e S).symm
 
-instance : IsContinuous e.inverse K J := by
-  rw [eq_inducedTopology_of_transports J K e]
-  infer_instance
+theorem coverPreserving : CoverPreserving J K e.functor := by
+  rw [e.eq_inducedTopology_of_transports J K]
+  exact e.coverPreserving' J
+
+theorem coverPreserving_symm : CoverPreserving K J e.inverse := by
+  rw [e.symm.eq_inducedTopology_of_transports K J]
+  exact e.symm.coverPreserving' K
+
+instance : IsContinuous e.functor J K := by
+  have : IsCoverDense e.functor K := by rw [e.eq_inducedTopology_of_transports J K]; infer_instance
+  exact IsCoverDense.isContinuous _ _ _ (e.coverPreserving J K)
+
+instance : IsCocontinuous e.functor J K := by
+  rw [e.symm.eq_inducedTopology_of_transports K J]
+  exact (e.symm.locallyCoverDense _).inducedTopology_isCocontinuous
+
+instance : IsContinuous e.inverse K J :=
+  IsCoverDense.isContinuous _ _ _ (e.coverPreserving_symm J K)
+
+instance : IsCocontinuous e.inverse K J := by
+  rw [e.eq_inducedTopology_of_transports J K]
+  exact (e.locallyCoverDense _).inducedTopology_isCocontinuous
 
 /-- The functor in the equivalence of sheaf categories. -/
 @[simps!]
@@ -181,12 +210,15 @@ theorem hasSheafCompose : J.HasSheafCompose F where
       e.functor.op_comp_isSheaf _ _ ⟨_, hP'⟩
     exact (Presheaf.isSheaf_of_iso_iff ((isoWhiskerRight e.op.unitIso.symm (P ⋙ F)))).mp hP'
 
+variable [ConcreteCategory.{w} A]
+variable {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G)
+
 end Equivalence
 
 variable [EssentiallySmall.{w} C]
-variable (B : Type*) [Category B] (F : A ⥤ B)
-variable [HasSheafify ((equivSmallModel C).inverse.inducedTopology J) A]
-variable [((equivSmallModel C).inverse.inducedTopology J).HasSheafCompose F]
+variable (B : Type u₄) [Category.{v₄} B] (F : A ⥤ B)
+variable [HasSheafify ((equivSmallModel C).locallyCoverDense J).inducedTopology A]
+variable [((equivSmallModel C).locallyCoverDense J).inducedTopology.HasSheafCompose F]
 
 /-- Transport to a small model and sheafify there. -/
 noncomputable
@@ -222,8 +254,8 @@ instance hasColimitsEssentiallySmallSite
 namespace GrothendieckTopology
 
 variable {A}
-variable [G.IsCoverDense J] [Functor.IsContinuous G K J] [G.Full]
-  [(G.sheafPushforwardContinuous A K J).EssSurj]
+variable [G.IsCoverDense J] [Functor.IsContinuous.{v₃} G K J]
+  [G.Full] [(G.sheafPushforwardContinuous A K J).EssSurj]
 
 open Localization
 
@@ -263,6 +295,16 @@ lemma W_whiskerLeft_iff {P Q : Cᵒᵖ ⥤ A} (f : P ⟶ Q) :
   rw [← W_inverseImage_whiskeringLeft J K G]
   rfl
 
+variable [Functor.IsContinuous.{v₄} G K J] [Functor.IsContinuous.{v₃} G K J]
+
+lemma PreservesSheafification.transport [(G.sheafPushforwardContinuous B K J).EssSurj]
+    [K.PreservesSheafification F] : J.PreservesSheafification F where
+  le P Q f hf := by
+    rw [← J.W_whiskerLeft_iff (G := G) (K := K)] at hf
+    have := K.W_of_preservesSheafification F (whiskerLeft G.op f) hf
+    rwa [whiskerRight_left,
+      K.W_whiskerLeft_iff (G := G) (J := J) (f := whiskerRight f F)] at this
+
 variable [G.IsCocontinuous K J] (hG : CoverPreserving K J G) [ConcreteCategory A]
   [K.WEqualsLocallyBijective A]
 
@@ -270,6 +312,21 @@ lemma WEqualsLocallyBijective.transport : J.WEqualsLocallyBijective A where
   iff f := by
     rw [← W_whiskerLeft_iff J K G f, ← Presheaf.isLocallyInjective_whisker_iff K J G f hG,
       ← Presheaf.isLocallySurjective_whisker_iff K J G f hG, W_iff_isLocallyBijective]
+
+variable [∀ (X : Cᵒᵖ), HasLimitsOfShape (StructuredArrow X (equivSmallModel C).inverse.op) A]
+
+instance [((equivSmallModel C).locallyCoverDense J).inducedTopology.WEqualsLocallyBijective A] :
+    J.WEqualsLocallyBijective A :=
+  WEqualsLocallyBijective.transport J ((equivSmallModel C).locallyCoverDense J).inducedTopology
+    (equivSmallModel C).inverse ((equivSmallModel C).coverPreserving_symm J
+      ((equivSmallModel C).locallyCoverDense J).inducedTopology)
+
+variable [∀ (X : Cᵒᵖ), HasLimitsOfShape (StructuredArrow X (equivSmallModel C).inverse.op) B]
+variable [PreservesSheafification ((equivSmallModel C).locallyCoverDense J).inducedTopology F]
+
+instance : PreservesSheafification J F :=
+  PreservesSheafification.transport (A := A) J
+    ((equivSmallModel C).locallyCoverDense J).inducedTopology (equivSmallModel C).inverse B F
 
 end GrothendieckTopology
 

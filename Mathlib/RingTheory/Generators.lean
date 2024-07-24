@@ -392,13 +392,11 @@ instance Cotangent.module : Module S P.Cotangent where
   smul_add := fun r x y ↦ ext (smul_add (P.σ r) x.val y.val)
   add_smul := fun r s x ↦ by
     have := smul_eq_zero_of_mem (P.σ (r + s) - (P.σ r + P.σ s) : P.Ring) (by simp ) x
-    simp only [sub_smul, add_smul, sub_eq_zero] at this
-    exact this
+    simpa only [sub_smul, add_smul, sub_eq_zero]
   zero_smul := fun x ↦ smul_eq_zero_of_mem (P.σ 0 : P.Ring) (by simp) x
   one_smul := fun x ↦ by
     have := smul_eq_zero_of_mem (P.σ 1 - 1 : P.Ring) (by simp) x
-    simp [sub_eq_zero, sub_smul] at this
-    exact this
+    simpa [sub_eq_zero, sub_smul]
   mul_smul := fun r s x ↦ by
     have := smul_eq_zero_of_mem (P.σ (r * s) - (P.σ r * P.σ s) : P.Ring) (by simp) x
     simpa only [sub_smul, mul_smul, sub_eq_zero] using this
