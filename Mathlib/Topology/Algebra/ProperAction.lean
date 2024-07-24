@@ -55,7 +55,6 @@ open Filter Topology Set Prod
 
 /-- Proper group action in the sense of Bourbaki:
 the map `G × X → X × X` is a proper map (see `isProperMap`). -/
-@[mk_iff]
 class ProperVAdd (G X : Type*) [TopologicalSpace G] [TopologicalSpace X] [AddGroup G]
     [AddAction G X] : Prop where
   /-- Proper group action in the sense of Bourbaki:
@@ -64,7 +63,7 @@ class ProperVAdd (G X : Type*) [TopologicalSpace G] [TopologicalSpace X] [AddGro
 
 /-- Proper group action in the sense of Bourbaki:
 the map `G × X → X × X` is a proper map (see `isProperMap`). -/
-@[to_additive existing, mk_iff]
+@[to_additive existing (attr := mk_iff)]
 class ProperSMul (G X : Type*) [TopologicalSpace G] [TopologicalSpace X] [Group G]
     [MulAction G X] : Prop where
   /-- Proper group action in the sense of Bourbaki:
