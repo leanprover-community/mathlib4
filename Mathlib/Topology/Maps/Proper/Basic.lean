@@ -351,7 +351,8 @@ theorem isProperMap_iff_isCompact_preimage [T2Space Y] [CompactlyGeneratedSpace 
     fun _ ↦ h isCompact_singleton⟩
 
 /-- A locally compact space is compactly generated. -/
-instance [T2Space X] [WeaklyLocallyCompactSpace X] := by
+theorem compactlyGenerated_of_weaklyLocallyCompactSpace [T2Space X] [WeaklyLocallyCompactSpace X]
+    {s : Set X} : IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
   refine ⟨fun hs K hK ↦ hs.inter hK.isClosed, fun h ↦ ?_⟩
   rw [isClosed_iff_forall_filter]
   intro x ℱ hℱ₁ hℱ₂ hℱ₃

@@ -105,36 +105,6 @@ theorem compactlyGeneratedSpace_iff {X : Type u} [TopologicalSpace X] :
     intro K _ _ _ g hg
     exact ht.preimage (h2 (CompHaus.of K) { toFun := g, continuous_toFun := hg })
 
-theorem CompactlyGeneratedSpace.isClosed_iff {X : Type u} [TopologicalSpace X]
-    [CompactlyGeneratedSpace.{w} X] (s : Set X) :
-    IsClosed s ↔
-      (∀ {K : Type (max u w)} [TopologicalSpace K], [CompactSpace K] → [T2Space K] →
-        ∀ (f : K → X), Continuous f → IsClosed (f ⁻¹' s)) where
-  mp hs _ _ _ _ f hf := hs.preimage hf
-  mpr h := by
-    rw [eq_compactlyGenerated (X := X), TopologicalSpace.compactlyGenerated, isClosed_coinduced,
-      isClosed_sigma_iff]
-    rintro ⟨K, f⟩
-    change IsClosed (((f ∘ ULift.down) ∘ ULift.up) ⁻¹' s)
-    rw [Set.preimage_comp]
-    have : CompactSpace (ULift.{u, w} ↑K.toTop) := ULift.closedEmbedding_down.compactSpace
-    exact (h _ (f.continuous.comp continuous_uLift_down)).preimage continuous_uLift_up
-
-theorem CompactlyGeneratedSpace.isOpen_iff {X : Type u} [TopologicalSpace X]
-    [CompactlyGeneratedSpace.{w} X] (s : Set X) :
-    IsOpen s ↔
-      (∀ {K : Type (max u w)} [TopologicalSpace K], [CompactSpace K] → [T2Space K] →
-        ∀ (f : K → X), Continuous f → IsOpen (f ⁻¹' s)) where
-  mp hs _ _ _ _ f hf := hs.preimage hf
-  mpr h := by
-    rw [eq_compactlyGenerated (X := X), TopologicalSpace.compactlyGenerated, isOpen_coinduced,
-      isOpen_sigma_iff]
-    rintro ⟨K, f⟩
-    change IsOpen (((f ∘ ULift.down) ∘ ULift.up) ⁻¹' s)
-    rw [Set.preimage_comp]
-    have : CompactSpace (ULift.{u, w} ↑K.toTop) := ULift.closedEmbedding_down.compactSpace
-    exact (h _ (f.continuous.comp continuous_uLift_down)).preimage continuous_uLift_up
-
 theorem isOpenSingleton (n : ℕ) : @IsOpen ENat (Preorder.topology ENat) {↑n} := by
   let _ := Preorder.topology ENat
   have _ : OrderTopology ENat := OrderTopology.mk rfl
@@ -143,7 +113,7 @@ theorem isOpenSingleton (n : ℕ) : @IsOpen ENat (Preorder.topology ENat) {↑n}
     constructor
     refine ⟨1, Or.inr ?_⟩
     ext x
-    simp
+    simp only [CharP.cast_eq_zero, Set.mem_singleton_iff, Set.mem_setOf_eq]
     exact ENat.lt_one_iff_eq_zero.symm
   | succ k =>
     have : {@Nat.cast ENat _ (k + 1)} = (Set.Iio ↑(k + 2)) ∩ (Set.Ioi ↑k) := by
@@ -243,20 +213,20 @@ theorem continuous_compSequence {X : Type*} [TopologicalSpace X]
       exact hN _ (by simpa using hy : N < y).le
   exact isOpen_top_not_mem _ htop
 
-instance {X : Type*} [TopologicalSpace X] [SequentialSpace X] : CompactlyGeneratedSpace X := by
+instance {X : Type u} [TopologicalSpace X] [SequentialSpace X] : CompactlyGeneratedSpace.{w} X := by
   refine compactlyGeneratedSpace_of_continuous_maps fun f h ↦
     continuous_iff_isClosed.2 fun s hs ↦ SequentialSpace.isClosed_of_seq _ fun u p hu hup ↦ ?_
   let _ : TopologicalSpace ENat := Preorder.topology ENat
   have : OrderTopology ENat := OrderTopology.mk rfl
-  let g : C(ULift.{u_2} ENat, X) :=
+  let g : C(ULift.{w} ENat, X) :=
     { toFun := (compSequence u p) ∘ ULift.down,
       continuous_toFun := (continuous_compSequence u p hup).comp continuous_uLift_down }
   change ⊤ ∈ (f ∘ g) ⁻¹' s
   apply IsClosed.mem_of_tendsto _ ((continuous_uLift_up.tendsto ⊤).comp ENat.tendsto_coe_atTop)
   · simp only [Set.mem_preimage, Filter.eventually_atTop, ge_iff_le]
     exact ⟨0, fun b _ ↦ hu b⟩
-  · have : CompactSpace (ULift.{u_2} ENat) := ULift.closedEmbedding_down.compactSpace
-    exact hs.preimage <| h (CompHaus.of (ULift.{u_2} ENat)) g
+  · have : CompactSpace (ULift.{w} ENat) := ULift.closedEmbedding_down.compactSpace
+    exact hs.preimage <| h (CompHaus.of (ULift.{w} ENat)) g
 
 theorem IsClosed.isClosedMap_subtype_val {X : Type*} [TopologicalSpace X]
     {s : Set X} (hs : IsClosed s) : IsClosedMap (@Subtype.val X s) :=
@@ -264,15 +234,34 @@ theorem IsClosed.isClosedMap_subtype_val {X : Type*} [TopologicalSpace X]
 
 theorem compactlyGeneratedSpace_iff_of_t2 {X : Type u} [TopologicalSpace X] [T2Space X] :
     CompactlyGeneratedSpace.{u} X ↔
-      (∀ s, IsClosed s ↔ ∀ (K : Set X), IsCompact K → IsClosed (s ∩ K)) := by
-  rw [compactlyGeneratedSpace_iff]
-  congrm (∀ s, IsClosed s ↔ ?_)
-  refine ⟨fun h K hK ↦ ?_, fun h K _ _ _ f hf ↦ ?_⟩
-  · rw [Set.inter_comm, ← Subtype.image_preimage_coe]
-    refine IsClosed.isClosedMap_subtype_val hK.isClosed _ ?_
-    exact @h _ _ (isCompact_iff_compactSpace.1 hK) _ _ continuous_subtype_val
-  · rw [← Set.preimage_inter_range]
-    exact (h _ (isCompact_range hf)).preimage hf
+      (∀ s, IsClosed s ↔ ∀ (K : Set X), IsCompact K → IsClosed (s ∩ K)) where
+  mp _ s := by
+    refine ⟨fun hs K hK ↦ hs.inter hK.isClosed, fun h ↦ ?_⟩
+    rw [eq_compactlyGenerated (X := X), TopologicalSpace.compactlyGenerated, isClosed_coinduced,
+      isClosed_sigma_iff]
+    rintro ⟨K, f⟩
+    change IsClosed (f ⁻¹' s)
+    rw [← Set.preimage_inter_range]
+    exact (h _ (isCompact_range f.continuous)).preimage f.continuous
+  mpr h1 := by
+    refine compactlyGeneratedSpace_of_continuous_maps fun f h2 ↦
+      continuous_iff_isClosed.2 fun s hs ↦ (h1 _).2 fun K hK ↦ ?_
+    rw [Set.inter_comm, ← Subtype.image_preimage_coe]
+    apply hK.isClosed.isClosedMap_subtype_val
+    rw [← Set.preimage_comp]
+    apply hs.preimage
+    have : CompactSpace ↑K := isCompact_iff_compactSpace.1 hK
+    exact h2 (CompHaus.of ↑K) { toFun := Subtype.val, continuous_toFun := continuous_subtype_val }
+
+instance {X : Type u} [TopologicalSpace X] [WeaklyLocallyCompactSpace X] [T2Space X] :
+    CompactlyGeneratedSpace.{u} X := by
+  refine compactlyGeneratedSpace_iff_of_t2.2 fun s ↦
+    ⟨fun hs K hK ↦ hs.inter hK.isClosed, fun h ↦ ?_⟩
+  rw [isClosed_iff_forall_filter]
+  intro x ℱ hℱ₁ hℱ₂ hℱ₃
+  rcases exists_compact_mem_nhds x with ⟨K, hK, K_mem⟩
+  exact Set.mem_of_mem_inter_left <| isClosed_iff_forall_filter.1 (h _ hK) x ℱ hℱ₁
+    (Filter.inf_principal ▸ le_inf hℱ₂ (le_trans hℱ₃ <| Filter.le_principal_iff.2 K_mem)) hℱ₃
 
 /-- The type of `u`-compactly generated `w`-small topological spaces. -/
 structure CompactlyGenerated where
