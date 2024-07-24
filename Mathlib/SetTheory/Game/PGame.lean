@@ -365,10 +365,10 @@ def Identical : ∀ (_ _ : PGame), Prop
 @[inherit_doc] scoped infix:50 " ≡ " => PGame.Identical
 
 /-- `x ∈ₗ y` if `x` is identical to some left move of `y`. -/
-def memₗ (x y : PGame.{u}) : Prop := ∃ b, x ≡ (y.moveLeft b)
+def memₗ (x y : PGame.{u}) : Prop := ∃ b, x ≡ y.moveLeft b
 
 /-- `x ∈ᵣ y` if `x` is identical to some right move of `y`. -/
-def memᵣ (x y : PGame.{u}) : Prop := ∃ b, x ≡ (y.moveRight b)
+def memᵣ (x y : PGame.{u}) : Prop := ∃ b, x ≡ y.moveRight b
 
 @[inherit_doc] scoped infix:50 " ∈ₗ " => PGame.memₗ
 @[inherit_doc] scoped infix:50 " ∈ᵣ " => PGame.memᵣ
@@ -408,29 +408,25 @@ instance : IsSymm PGame (· ≡ ·) := ⟨fun _ _ ↦ Identical.symm⟩
 instance : IsTrans PGame (· ≡ ·) := ⟨fun _ _ _ ↦ Identical.trans⟩
 instance : IsEquiv PGame (· ≡ ·) := { }
 
-set_option linter.unusedVariables false in
 /-- A left move of `x` is identical to some left move of `y`. -/
-lemma Identical.moveLeft : ∀ {x y} (r : x ≡ y) (i : x.LeftMoves),
-    ∃ j, x.moveLeft i ≡ y.moveLeft j
-  | mk _ _ _ _, mk _ _ _ _, ⟨hl, hr⟩, i => hl.1 i
+lemma Identical.moveLeft : ∀ {x y}, x ≡ y →
+    ∀ i, ∃ j, x.moveLeft i ≡ y.moveLeft j
+  | mk _ _ _ _, mk _ _ _ _, ⟨hl, _⟩, i => hl.1 i
 
-set_option linter.unusedVariables false in
 /-- A left move of `y` is identical to some left move of `x`. -/
-lemma Identical.moveLeft_symm : ∀ {x y} (r : x ≡ y) (i : y.LeftMoves),
-    ∃ j, x.moveLeft j ≡ y.moveLeft i
-  | mk _ _ _ _, mk _ _ _ _, ⟨hl, hr⟩, i => hl.2 i
+lemma Identical.moveLeft_symm : ∀ {x y}, x ≡ y →
+    ∀ i, ∃ j, x.moveLeft j ≡ y.moveLeft i
+  | mk _ _ _ _, mk _ _ _ _, ⟨hl, _⟩, i => hl.2 i
 
-set_option linter.unusedVariables false in
 /-- A right move of `x` is identical to some right move of `y`. -/
-lemma Identical.moveRight : ∀ {x y} (r : x ≡ y) (i : x.RightMoves),
-    ∃ j, x.moveRight i ≡ y.moveRight j
-  | mk _ _ _ _, mk _ _ _ _, ⟨hl, hr⟩, i => hr.1 i
+lemma Identical.moveRight : ∀ {x y}, x ≡ y →
+    ∀ i, ∃ j, x.moveRight i ≡ y.moveRight j
+  | mk _ _ _ _, mk _ _ _ _, ⟨_, hr⟩, i => hr.1 i
 
-set_option linter.unusedVariables false in
 /-- A right move of `y` is identical to some right move of `x`. -/
-lemma Identical.moveRight_symm : ∀ {x y} (r : x ≡ y) (i : y.RightMoves),
-    ∃ j, x.moveRight j ≡ y.moveRight i
-  | mk _ _ _ _, mk _ _ _ _, ⟨hl, hr⟩, i => hr.2 i
+lemma Identical.moveRight_symm : ∀ {x y}, x ≡ y →
+    ∀ i, ∃ j, x.moveRight j ≡ y.moveRight i
+  | mk _ _ _ _, mk _ _ _ _, ⟨_, hr⟩, i => hr.2 i
 
 lemma Identical.trans_eq {x y z} (h₁ : x ≡ y) (h₂ : y = z) : x ≡ z := h₁.trans (of_eq h₂)
 
@@ -443,33 +439,28 @@ theorem identical_iff' : ∀ {x y : PGame}, x ≡ y ↔
     congr! <;>
     exact exists_congr <| fun _ ↦ identical_comm
 
-set_option linter.unusedVariables false in
 theorem memₗ.congr_right : ∀ {x y : PGame},
     x ≡ y → (∀ {w : PGame}, w ∈ₗ x ↔ w ∈ₗ y)
-  | mk xl xr xL xR, mk yl yr yL yR, ⟨⟨h₁, h₂⟩, _⟩, _w =>
+  | mk _ _ _ _, mk _ _ _ _, ⟨⟨h₁, h₂⟩, _⟩, _w =>
     ⟨fun ⟨i, hi⟩ ↦ (h₁ i).imp (fun _ ↦ hi.trans),
       fun ⟨j, hj⟩ ↦ (h₂ j).imp (fun _ hi ↦ hj.trans hi.symm)⟩
 
-set_option linter.unusedVariables false in
 theorem memᵣ.congr_right : ∀ {x y : PGame},
     x ≡ y → (∀ {w : PGame}, w ∈ᵣ x ↔ w ∈ᵣ y)
-  | mk xl xr xL xR, mk yl yt yL yR, ⟨_, ⟨h₁, h₂⟩⟩, _w =>
+  | mk _ _ _ _, mk _ _ _ _, ⟨_, ⟨h₁, h₂⟩⟩, _w =>
     ⟨fun ⟨i, hi⟩ ↦ (h₁ i).imp (fun _ ↦ hi.trans),
       fun ⟨j, hj⟩ ↦ (h₂ j).imp (fun _ hi ↦ hj.trans hi.symm)⟩
 
-set_option linter.unusedVariables false in
 theorem memₗ.congr_left : ∀ {x y : PGame},
     x ≡ y → (∀ {w : PGame}, x ∈ₗ w ↔ y ∈ₗ w)
-  | x, y, h, mk l r L R => ⟨fun ⟨i, hi⟩ ↦ ⟨i, h.symm.trans hi⟩, fun ⟨i, hi⟩ ↦ ⟨i, h.trans hi⟩⟩
+  | _, _, h, mk _ _ _ _ => ⟨fun ⟨i, hi⟩ ↦ ⟨i, h.symm.trans hi⟩, fun ⟨i, hi⟩ ↦ ⟨i, h.trans hi⟩⟩
 
-set_option linter.unusedVariables false in
 theorem memᵣ.congr_left : ∀ {x y : PGame},
     x ≡ y → (∀ {w : PGame}, x ∈ᵣ w ↔ y ∈ᵣ w)
-  | x, y, h, mk l r L R => ⟨fun ⟨i, hi⟩ ↦ ⟨i, h.symm.trans hi⟩, fun ⟨i, hi⟩ ↦ ⟨i, h.trans hi⟩⟩
+  | _, _, h, mk _ _ _ _ => ⟨fun ⟨i, hi⟩ ↦ ⟨i, h.symm.trans hi⟩, fun ⟨i, hi⟩ ↦ ⟨i, h.trans hi⟩⟩
 
-set_option linter.unusedVariables false in
-lemma Identical.ext : ∀ {x y} (hl : ∀ z, z ∈ₗ x ↔ z ∈ₗ y) (hr : ∀ z, z ∈ᵣ x ↔ z ∈ᵣ y), x ≡ y
-  | mk xl xr xL xR, mk yl yr yL yR, hl, hr => identical_iff'.mpr
+lemma Identical.ext : ∀ {x y}, (∀ z, z ∈ₗ x ↔ z ∈ₗ y) → (∀ z, z ∈ᵣ x ↔ z ∈ᵣ y) → x ≡ y
+  | mk _ _ _ _, mk _ _ _ _, hl, hr => identical_iff'.mpr
     ⟨⟨fun i ↦ (hl _).mp ⟨i, refl _⟩, fun j ↦ (hl _).mpr ⟨j, refl _⟩⟩,
       ⟨fun i ↦ (hr _).mp ⟨i, refl _⟩, fun j ↦ (hr _).mpr ⟨j, refl _⟩⟩⟩
 
@@ -631,9 +622,8 @@ instance : Preorder PGame :=
           le_trans_aux (fun {i} => (IHzl i).1) fun {j} => (IHyr j).2.1⟩
     lt := fun x y => x ≤ y ∧ x ⧏ y }
 
-set_option linter.unusedVariables false in
 lemma Identical.le : ∀ {x y}, x ≡ y → x ≤ y
-  | mk xl xr xL xR, mk yl yr yL yR, ⟨hL, hR⟩ => le_of_forall_lf
+  | mk _ _ _ _, mk _ _ _ _, ⟨hL, hR⟩ => le_of_forall_lf
     (fun i ↦ let ⟨_, hj⟩ := hL.1 i; lf_of_le_moveLeft hj.le)
     (fun i ↦ let ⟨_, hj⟩ := hR.2 i; lf_of_moveRight_le hj.le)
 
@@ -1385,29 +1375,25 @@ lemma memᵣ_neg_iff : ∀ {x y : PGame},
     x ∈ᵣ -y ↔ ∃ i, x ≡ -y.moveLeft i
   | mk _ _ _ _, mk _ _ _ _ => Iff.rfl
 
-set_option linter.unusedVariables false in
 /-- If `x` has the same moves as `y`, then `-x` has the sames moves as `-y`. -/
-lemma Identical.neg : ∀ {x₁ x₂ : PGame} (hx : x₁ ≡ x₂), -x₁ ≡ -x₂
-  | mk x₁l x₁r x₁L x₁R, mk x₂l x₂r x₂L x₂R, ⟨⟨hL₁, hL₂⟩, ⟨hR₁, hR₂⟩⟩ =>
+lemma Identical.neg : ∀ {x₁ x₂ : PGame}, x₁ ≡ x₂ → -x₁ ≡ -x₂
+  | mk _ _ _ _, mk _ _ _ _, ⟨⟨hL₁, hL₂⟩, ⟨hR₁, hR₂⟩⟩ =>
     ⟨⟨fun i ↦ (hR₁ i).imp (fun _ ↦ Identical.neg), fun j ↦ (hR₂ j).imp (fun _ ↦ Identical.neg)⟩,
       ⟨fun i ↦ (hL₁ i).imp (fun _ ↦ Identical.neg), fun j ↦ (hL₂ j).imp (fun _ ↦ Identical.neg)⟩⟩
 
-set_option linter.unusedVariables false in
 /-- If `-x` has the same moves as `-y`, then `x` has the sames moves as `y`. -/
-lemma Identical.of_neg : ∀ {x₁ x₂ : PGame} (hx : -x₁ ≡ -x₂), x₁ ≡ x₂
+lemma Identical.of_neg : ∀ {x₁ x₂ : PGame}, -x₁ ≡ -x₂ → x₁ ≡ x₂
   | mk x₁l x₁r x₁L x₁R, mk x₂l x₂r x₂L x₂R => by
     simpa using Identical.neg (x₁ := mk _ _ (-x₁R ·) (-x₁L ·)) (x₂ := mk _ _ (-x₂R ·) (-x₂L ·))
 
-set_option linter.unusedVariables false in
 lemma memₗ_neg_iff' : ∀ {x y : PGame},
     x ∈ₗ -y ↔ ∃ z ∈ᵣ y, x ≡ -z
-  | mk xl xr xL xR, mk yl yr yL yR => memₗ_neg_iff.trans
+  | mk _ _ _ _, mk _ _ _ _ => memₗ_neg_iff.trans
     ⟨fun ⟨_i, hi⟩ ↦ ⟨_, ⟨_, refl _⟩, hi⟩, fun ⟨_, ⟨i, hi⟩, h⟩ ↦ ⟨i, h.trans hi.neg⟩⟩
 
-set_option linter.unusedVariables false in
 lemma memᵣ_neg_iff' : ∀ {x y : PGame},
     x ∈ᵣ -y ↔ ∃ z ∈ₗ y, x ≡ -z
-  | mk xl xr xL xR, mk yl yr yL yR => memᵣ_neg_iff.trans
+  | mk _ _ _ _, mk _ _ _ _ => memᵣ_neg_iff.trans
     ⟨fun ⟨_i, hi⟩ ↦ ⟨_, ⟨_, refl _⟩, hi⟩, fun ⟨_, ⟨i, hi⟩, h⟩ ↦ ⟨i, h.trans hi.neg⟩⟩
 
 /-- If `x` has the same moves as `y`, then `-x` has the same moves as `-y`. -/
@@ -1790,19 +1776,17 @@ then `w + y` has the same moves as `x + z`. -/
 lemma Identical.add {x₁ x₂ y₁ y₂ : PGame.{u}} (hx : x₁ ≡ x₂) (hy : y₁ ≡ y₂) : x₁ + y₁ ≡ x₂ + y₂ :=
   hx.add_right.trans hy.add_left
 
-set_option linter.unusedVariables false in
 lemma memₗ_add_iff' : ∀ {x y₁ y₂ : PGame},
     x ∈ₗ y₁ + y₂ ↔ (∃ z ∈ₗ y₁, x ≡ z + y₂) ∨ (∃ z ∈ₗ y₂, x ≡ y₁ + z)
-  | mk x₁l x₁r x₁L x₁R, mk x₂l x₂r x₂L x₂R, mk yl yr yL yR => memₗ_add_iff.trans <| or_congr
-    ⟨fun ⟨i, hi⟩ ↦ ⟨_, ⟨_, refl _⟩, hi⟩, fun ⟨_, ⟨i, hi⟩, h⟩ ↦ ⟨i, h.trans hi.add_right⟩⟩
-    ⟨fun ⟨i, hi⟩ ↦ ⟨_, ⟨_, refl _⟩, hi⟩, fun ⟨_, ⟨i, hi⟩, h⟩ ↦ ⟨i, h.trans hi.add_left⟩⟩
+  | mk _ _ _ _, mk _ _ _ _, mk _ _ _ _ => memₗ_add_iff.trans <| or_congr
+    ⟨fun ⟨_, hi⟩ ↦ ⟨_, ⟨_, refl _⟩, hi⟩, fun ⟨_, ⟨i, hi⟩, h⟩ ↦ ⟨i, h.trans hi.add_right⟩⟩
+    ⟨fun ⟨_, hi⟩ ↦ ⟨_, ⟨_, refl _⟩, hi⟩, fun ⟨_, ⟨i, hi⟩, h⟩ ↦ ⟨i, h.trans hi.add_left⟩⟩
 
-set_option linter.unusedVariables false in
 lemma memᵣ_add_iff' : ∀ {x y₁ y₂ : PGame},
     x ∈ᵣ y₁ + y₂ ↔ (∃ z ∈ᵣ y₁, x ≡ z + y₂) ∨ (∃ z ∈ᵣ y₂, x ≡ y₁ + z)
-  | mk x₁l x₁r x₁L x₁R, mk x₂l x₂r x₂L x₂R, mk yl yr yL yR => memᵣ_add_iff.trans <| or_congr
-    ⟨fun ⟨i, hi⟩ ↦ ⟨_, ⟨_, refl _⟩, hi⟩, fun ⟨_, ⟨i, hi⟩, h⟩ ↦ ⟨i, h.trans hi.add_right⟩⟩
-    ⟨fun ⟨i, hi⟩ ↦ ⟨_, ⟨_, refl _⟩, hi⟩, fun ⟨_, ⟨i, hi⟩, h⟩ ↦ ⟨i, h.trans hi.add_left⟩⟩
+  | mk _ _ _ _, mk _ _ _ _, mk _ _ _ _ => memᵣ_add_iff.trans <| or_congr
+    ⟨fun ⟨_, hi⟩ ↦ ⟨_, ⟨_, refl _⟩, hi⟩, fun ⟨_, ⟨i, hi⟩, h⟩ ↦ ⟨i, h.trans hi.add_right⟩⟩
+    ⟨fun ⟨_, hi⟩ ↦ ⟨_, ⟨_, refl _⟩, hi⟩, fun ⟨_, ⟨i, hi⟩, h⟩ ↦ ⟨i, h.trans hi.add_left⟩⟩
 
 /-- If `w` has the same moves as `x` and `y` has the same moves as `z`,
 then `w + y` has the same moves as `x + z`. -/
