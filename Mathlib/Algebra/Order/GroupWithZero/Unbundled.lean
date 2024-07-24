@@ -245,14 +245,14 @@ alias mul_le_mul_iff_of_pos_right := mul_le_mul_right
 alias mul_lt_mul_iff_of_pos_left := mul_lt_mul_left
 alias mul_lt_mul_iff_of_pos_right := mul_lt_mul_right
 
-theorem mul_le_mul_of_le_of_le_of_nonneg_of_nonneg [PosMulMono α] [MulPosMono α]
+theorem mul_le_mul_of_nonneg [PosMulMono α] [MulPosMono α]
     (h₁ : a ≤ b) (h₂ : c ≤ d) (a0 : 0 ≤ a) (d0 : 0 ≤ d) : a * c ≤ b * d :=
   (mul_le_mul_of_nonneg_left h₂ a0).trans (mul_le_mul_of_nonneg_right h₁ d0)
 
 @[deprecated (since := "2024-07-13")]
-alias mul_le_mul_of_le_of_le := mul_le_mul_of_le_of_le_of_nonneg_of_nonneg
+alias mul_le_mul_of_le_of_le := mul_le_mul_of_nonneg
 
-theorem mul_le_mul_of_le_of_le_of_nonneg_of_nonneg' [PosMulMono α] [MulPosMono α]
+theorem mul_le_mul_of_nonneg' [PosMulMono α] [MulPosMono α]
     (h₁ : a ≤ b) (h₂ : c ≤ d) (c0 : 0 ≤ c) (b0 : 0 ≤ b) : a * c ≤ b * d :=
   (mul_le_mul_of_nonneg_right h₁ c0).trans (mul_le_mul_of_nonneg_left h₂ b0)
 
@@ -284,21 +284,21 @@ theorem mul_lt_mul_of_lt_of_le_of_pos_of_nonneg [PosMulMono α] [MulPosStrictMon
 @[deprecated (since := "2024-07-13")]
 alias mul_lt_mul_of_le_of_lt' := mul_lt_mul_of_lt_of_le_of_pos_of_nonneg
 
-theorem mul_lt_mul_of_lt_of_lt_of_pos_of_pos [PosMulStrictMono α] [MulPosStrictMono α]
+theorem mul_lt_mul_of_pos [PosMulStrictMono α] [MulPosStrictMono α]
     (h₁ : a < b) (h₂ : c < d) (a0 : 0 < a) (d0 : 0 < d) : a * c < b * d :=
   (mul_lt_mul_of_pos_left h₂ a0).trans (mul_lt_mul_of_pos_right h₁ d0)
 
 @[deprecated (since := "2024-07-13")]
-alias mul_lt_mul_of_pos_of_pos := mul_lt_mul_of_lt_of_lt_of_pos_of_pos
+alias mul_lt_mul_of_pos_of_pos := mul_lt_mul_of_pos
 
-theorem mul_lt_mul_of_lt_of_lt_of_pos_of_pos' [PosMulStrictMono α] [MulPosStrictMono α]
+theorem mul_lt_mul_of_pos' [PosMulStrictMono α] [MulPosStrictMono α]
     (h₁ : a < b) (h₂ : c < d) (c0 : 0 < c) (b0 : 0 < b) : a * c < b * d :=
   (mul_lt_mul_of_pos_right h₁ c0).trans (mul_lt_mul_of_pos_left h₂ b0)
 
 @[deprecated (since := "2024-07-13")]
-alias mul_lt_mul_of_lt_of_lt' := mul_lt_mul_of_lt_of_lt_of_pos_of_pos'
+alias mul_lt_mul_of_lt_of_lt' := mul_lt_mul_of_pos'
 
-alias mul_le_mul := mul_le_mul_of_le_of_le_of_nonneg_of_nonneg'
+alias mul_le_mul := mul_le_mul_of_nonneg'
 attribute [gcongr] mul_le_mul
 
 alias mul_lt_mul := mul_lt_mul_of_lt_of_le_of_pos_of_nonneg
@@ -450,18 +450,18 @@ theorem pos_iff_pos_of_mul_pos [PosMulReflectLT α] [MulPosReflectLT α] (hab : 
   ⟨pos_of_mul_pos_right hab ∘ le_of_lt, pos_of_mul_pos_left hab ∘ le_of_lt⟩
 
 /-- Assumes left strict covariance. -/
-theorem Left.mul_lt_mul_of_lt_of_lt_of_nonneg_of_nonneg [PosMulStrictMono α] [MulPosMono α]
+theorem Left.mul_lt_mul_of_nonneg [PosMulStrictMono α] [MulPosMono α]
     (h₁ : a < b) (h₂ : c < d) (a0 : 0 ≤ a) (c0 : 0 ≤ c) : a * c < b * d :=
   mul_lt_mul_of_le_of_lt_of_nonneg_of_pos h₁.le h₂ c0 (a0.trans_lt h₁)
 
 /-- Assumes right strict covariance. -/
-theorem Right.mul_lt_mul_of_lt_of_lt_of_nonneg_of_nonneg [PosMulMono α] [MulPosStrictMono α]
+theorem Right.mul_lt_mul_of_nonneg [PosMulMono α] [MulPosStrictMono α]
     (h₁ : a < b) (h₂ : c < d) (a0 : 0 ≤ a) (c0 : 0 ≤ c) : a * c < b * d :=
   mul_lt_mul_of_lt_of_le_of_nonneg_of_pos h₁ h₂.le a0 (c0.trans_lt h₂)
 
-alias mul_lt_mul_of_lt_of_lt_of_nonneg_of_nonneg := Left.mul_lt_mul_of_lt_of_lt_of_nonneg_of_nonneg
+alias mul_lt_mul_of_nonneg := Left.mul_lt_mul_of_nonneg
 
-alias mul_lt_mul'' := Left.mul_lt_mul_of_lt_of_lt_of_nonneg_of_nonneg
+alias mul_lt_mul'' := Left.mul_lt_mul_of_nonneg
 attribute [gcongr] mul_lt_mul''
 
 theorem mul_self_le_mul_self [PosMulMono α] [MulPosMono α] (ha : 0 ≤ a) (hab : a ≤ b) :
