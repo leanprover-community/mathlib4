@@ -3,8 +3,8 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
+import Mathlib.Algebra.Group.Submonoid.DistribMulAction
 import Mathlib.RingTheory.OreLocalization.OreSet
-import Mathlib.Algebra.Group.Submonoid.Operations
 
 /-!
 

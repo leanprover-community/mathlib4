@@ -91,15 +91,15 @@ def Measure : MeasCat ⥤ MeasCat where
 /-- The Giry monad, i.e. the monadic structure associated with `Measure`. -/
 def Giry : CategoryTheory.Monad MeasCat where
   toFunctor := Measure
-  η' :=
+  η :=
     { app := fun X => ⟨@Measure.dirac X.1 X.2, Measure.measurable_dirac⟩
       naturality := fun _ _ ⟨_, hf⟩ => Subtype.eq <| funext fun a => (Measure.map_dirac hf a).symm }
-  μ' :=
+  μ :=
     { app := fun X => ⟨@Measure.join X.1 X.2, Measure.measurable_join⟩
       naturality := fun _ _ ⟨_, hf⟩ => Subtype.eq <| funext fun μ => Measure.join_map_map hf μ }
-  assoc' _ := Subtype.eq <| funext fun _ => Measure.join_map_join _
-  left_unit' _ := Subtype.eq <| funext fun _ => Measure.join_dirac _
-  right_unit' _ := Subtype.eq <| funext fun _ => Measure.join_map_dirac _
+  assoc _ := Subtype.eq <| funext fun _ => Measure.join_map_join _
+  left_unit _ := Subtype.eq <| funext fun _ => Measure.join_dirac _
+  right_unit _ := Subtype.eq <| funext fun _ => Measure.join_map_dirac _
 
 /-- An example for an algebra on `Measure`: the nonnegative Lebesgue integral is a hom, behaving
 nicely under the monad operations. -/
