@@ -53,6 +53,7 @@ info: Unfolds for 5 / 3:
 #guard_msgs in
 #unfold? 5 / 3
 
+set_option linter.longLine false in
 /--
 info: Unfolds for 1 + 1:
 · Ordinal.type (Sum.Lex EmptyRelation EmptyRelation)

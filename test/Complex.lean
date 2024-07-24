@@ -3,6 +3,8 @@ import Mathlib.Algebra.DualNumber
 
 open DualNumber
 
+set_option linter.longLine false
+
 /--
 info: Real.ofCauchy (sorry /- 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ... -/) + Real.ofCauchy (sorry /- 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ... -/)*I
 -/

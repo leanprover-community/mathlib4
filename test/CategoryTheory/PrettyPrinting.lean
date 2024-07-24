@@ -23,6 +23,7 @@ section
 
 open CategoryTheory
 
+set_option linter.longLine false in
 /--
 info: CategoryTheory.Functor.map_id.{v₁, v₂, u₁, u₂} {C : Type u₁} [Category.{v₁, u₁} C] {D : Type u₂} [Category.{v₂, u₂} D]
   (self : C ⥤ D) (X : C) : self.map (𝟙 X) = 𝟙 (self.obj X)

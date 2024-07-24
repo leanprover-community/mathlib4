@@ -7,6 +7,7 @@ example {α : Type _} (R : α → α → Prop) (a : α) (al : List α) :
       al = List.nil ∨ ∃ (b : α) (l : List α), R a b ∧ List.Chain R b l ∧ al = b :: l :=
   test.chain_iff R a al
 
+set_option linter.longLine false in
 -- check that the statement prints nicely
 /--
 info: test.chain_iff.{u_1} {α : Type u_1} (R : α → α → Prop) :
