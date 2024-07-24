@@ -35,7 +35,7 @@ relation, Galois connection, induced bijection, fixed points
 
 universe u v
 
-variable {α : Type u} {β : Type v} (R : Rel α β)
+variable {α β : Type*} (R : Rel α β)
 
 namespace Rel
 
