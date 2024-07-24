@@ -287,8 +287,12 @@ theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none := by
   simp only [decodeSum, div2_val]; cases bodd n <;> simp [e]
 
 noncomputable instance _root_.Prop.encodable : Encodable Prop :=
+  ofEquiv Bool Equiv.propEquivBool
 
 section Sigma
+
+variable {γ : α → Type*} [Encodable α] [∀ a, Encodable (γ a)]
+
 /-- Explicit encoding function for `Sigma γ` -/
 def encodeSigma : Sigma γ → ℕ
   | ⟨a, b⟩ => pair (encode a) (encode b)
