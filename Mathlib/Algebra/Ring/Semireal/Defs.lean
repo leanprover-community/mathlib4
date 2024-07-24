@@ -35,7 +35,7 @@ squares. Note that `-1` does not make sense in a semiring. Below we define the c
 for all additive monoid `R` equipped with a multiplication, a multiplicative unit and a negation.
 -/
 @[mk_iff]
-class isSemireal [AddMonoid R] [Mul R] [One R] [Neg R] : Prop where
+class isSemireal [SubNegMonoid R] [Mul R] [One R] : Prop where
   non_trivial        : (0 : R) ≠ 1
   neg_one_not_SumSq  : ¬isSumSq (-1 : R)
 
