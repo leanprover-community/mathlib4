@@ -103,7 +103,7 @@ theorem isPWO_support_smulAntidiagonal {hs : s.IsPWO} {ht : t.IsPWO} :
 end
 
 @[to_additive]
-theorem SMulAntidiagonal_min_smul_min [LinearOrder G] [LinearOrder P] [SMul G P]
+theorem smulAntidiagonal_min_smul_min [LinearOrder G] [LinearOrder P] [SMul G P]
     [IsOrderedCancelSMul G P] {s : Set G} {t : Set P} (hs : s.IsWF) (ht : t.IsWF) (hns : s.Nonempty)
     (hnt : t.Nonempty) :
     SMulAntidiagonal hs.isPWO ht.isPWO (hs.min hns • ht.min hnt) = {(hs.min hns, ht.min hnt)} := by

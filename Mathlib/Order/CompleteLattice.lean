@@ -47,6 +47,12 @@ open Function OrderDual Set
 
 variable {α β β₂ γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
 
+@[simp] lemma iSup_ulift {ι : Type*} [SupSet α] (f : ULift ι → α) :
+    ⨆ i : ULift ι, f i = ⨆ i, f (.up i) := by simp [iSup]; congr with x; simp
+
+@[simp] lemma iInf_ulift {ι : Type*} [InfSet α] (f : ULift ι → α) :
+    ⨅ i : ULift ι, f i = ⨅ i, f (.up i) := by simp [iInf]; congr with x; simp
+
 instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
   ⟨(sInf : Set α → α)⟩
 
@@ -837,6 +843,12 @@ theorem iSup_const [Nonempty ι] : ⨆ _ : ι, a = a := by rw [iSup, range_const
 
 theorem iInf_const [Nonempty ι] : ⨅ _ : ι, a = a :=
   @iSup_const αᵒᵈ _ _ a _
+
+lemma iSup_unique [Unique ι] (f : ι → α) : ⨆ i, f i = f default := by
+  simp only [congr_arg f (Unique.eq_default _), iSup_const]
+
+lemma iInf_unique [Unique ι] (f : ι → α) : ⨅ i, f i = f default := by
+  simp only [congr_arg f (Unique.eq_default _), iInf_const]
 
 @[simp]
 theorem iSup_bot : (⨆ _ : ι, ⊥ : α) = ⊥ :=
