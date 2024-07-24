@@ -502,7 +502,8 @@ theorem preimage_specComap_zeroLocus_aux (f : R →+* S) (s : Set R) :
 variable (f : R →+* S)
 
 @[simp]
-theorem specComap_asIdeal (y : PrimeSpectrum S) : (f.specComap y).asIdeal = Ideal.comap f y.asIdeal :=
+theorem specComap_asIdeal (y : PrimeSpectrum S) :
+    (f.specComap y).asIdeal = Ideal.comap f y.asIdeal :=
   rfl
 
 @[simp]
@@ -520,7 +521,8 @@ theorem specComap_comp_apply (f : R →+* S) (g : S →+* S') (x : PrimeSpectrum
   rfl
 
 @[simp]
-theorem preimage_specComap_zeroLocus (s : Set R) : f.specComap ⁻¹' zeroLocus s = zeroLocus (f '' s) :=
+theorem preimage_specComap_zeroLocus (s : Set R) :
+    f.specComap ⁻¹' zeroLocus s = zeroLocus (f '' s) :=
   preimage_specComap_zeroLocus_aux f s
 
 theorem specComap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
