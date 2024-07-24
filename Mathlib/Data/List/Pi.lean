@@ -18,7 +18,7 @@ namespace List
 namespace Pi
 variable {ι : Type*} [DecidableEq ι] {α : ι → Sort*}
 
-/-- Given `α : ι → Sort*`, `pi.nil α` is the trivial dependent function out of the empty list. -/
+/-- Given `α : ι → Sort*`, `Pi.nil α` is the trivial dependent function out of the empty list. -/
 def nil (α : ι → Sort*) : (∀ i ∈ ([] : List ι), α i) :=
   nofun
 
