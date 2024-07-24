@@ -3,10 +3,9 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Analysis.LocallyConvex.Barrelled
-
-#align_import analysis.normed_space.banach_steinhaus from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
+import Mathlib.Topology.Baire.CompleteMetrizable
 
 /-!
 # The Banach-Steinhaus theorem: Uniform Boundedness Principle
@@ -34,8 +33,7 @@ theorem banach_steinhaus {ι : Type*} [CompleteSpace E] {g : ι → E →SL[σ�
     (h : ∀ x, ∃ C, ∀ i, ‖g i x‖ ≤ C) : ∃ C', ∀ i, ‖g i‖ ≤ C' := by
   rw [show (∃ C, ∀ i, ‖g i‖ ≤ C) ↔ _ from (NormedSpace.equicontinuous_TFAE g).out 5 2]
   refine (norm_withSeminorms 𝕜₂ F).banach_steinhaus (fun _ x ↦ ?_)
-  simpa [bddAbove_def, forall_range_iff] using h x
-#align banach_steinhaus banach_steinhaus
+  simpa [bddAbove_def, forall_mem_range] using h x
 
 open ENNReal
 
@@ -48,7 +46,6 @@ theorem banach_steinhaus_iSup_nnnorm {ι : Type*} [CompleteSpace E] {g : ι → 
   rw [show ((⨆ i, ↑‖g i‖₊) < ∞) ↔ _ from (NormedSpace.equicontinuous_TFAE g).out 8 2]
   refine (norm_withSeminorms 𝕜₂ F).banach_steinhaus (fun _ x ↦ ?_)
   simpa [← NNReal.bddAbove_coe, ← Set.range_comp] using ENNReal.iSup_coe_lt_top.1 (h x)
-#align banach_steinhaus_supr_nnnorm banach_steinhaus_iSup_nnnorm
 
 open Topology
 
@@ -62,4 +59,3 @@ abbrev continuousLinearMapOfTendsto {α : Type*} [CompleteSpace E] [T2Space F] {
     (h : Tendsto (fun n x ↦ g n x) l (𝓝 f)) :
     E →SL[σ₁₂] F :=
   (norm_withSeminorms 𝕜₂ F).continuousLinearMapOfTendsto g h
-#align continuous_linear_map_of_tendsto continuousLinearMapOfTendsto

@@ -3,7 +3,8 @@ Copyright (c) 2023 Richard M. Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Richard M. Hill
 -/
-import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.RingTheory.PowerSeries.Trunc
+import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.Derivation.Basic
 
 /-!
@@ -35,7 +36,7 @@ The formal derivative of a power series in one variable.
 This is defined here as a function, but will be packaged as a
 derivation `derivative` on `R⟦X⟧`.
 -/
-noncomputable def derivativeFun (f : R⟦X⟧) : R⟦X⟧ := mk λ n ↦ coeff R (n + 1) f * (n + 1)
+noncomputable def derivativeFun (f : R⟦X⟧) : R⟦X⟧ := mk fun n ↦ coeff R (n + 1) f * (n + 1)
 
 theorem coeff_derivativeFun (f : R⟦X⟧) (n : ℕ) :
     coeff R n f.derivativeFun = coeff R (n + 1) f * (n + 1) := by
@@ -53,7 +54,8 @@ theorem derivativeFun_add (f g : R⟦X⟧) :
 
 theorem derivativeFun_C (r : R) : derivativeFun (C R r) = 0 := by
   ext n
-  rw [coeff_derivativeFun, coeff_succ_C, zero_mul, map_zero]
+  -- Note that `map_zero` didn't get picked up, apparently due to a missing `FunLike.coe`
+  rw [coeff_derivativeFun, coeff_succ_C, zero_mul, (coeff R n).map_zero]
 
 theorem trunc_derivativeFun (f : R⟦X⟧) (n : ℕ) :
     trunc n f.derivativeFun = derivative (trunc (n + 1) f) := by
@@ -68,36 +70,37 @@ theorem trunc_derivativeFun (f : R⟦X⟧) (n : ℕ) :
 --A special case of `derivativeFun_mul`, used in its proof.
 private theorem derivativeFun_coe_mul_coe (f g : R[X]) : derivativeFun (f * g : R⟦X⟧) =
     f * derivative g + g * derivative f  := by
-  rw [←coe_mul, derivativeFun_coe, derivative_mul,
-    add_comm, mul_comm _ g, ←coe_mul, ←coe_mul, Polynomial.coe_add]
+  rw [← coe_mul, derivativeFun_coe, derivative_mul,
+    add_comm, mul_comm _ g, ← coe_mul, ← coe_mul, Polynomial.coe_add]
 
-/-- Leibniz rule for formal power series.-/
+/-- **Leibniz rule for formal power series**. -/
 theorem derivativeFun_mul (f g : R⟦X⟧) :
     derivativeFun (f * g) = f • g.derivativeFun + g • f.derivativeFun := by
   ext n
   have h₁ : n < n + 1 := lt_succ_self n
-  have h₂ : n < n + 1 + 1 := Nat.lt_add_right _ _ _ h₁
+  have h₂ : n < n + 1 + 1 := Nat.lt_add_right _ h₁
   rw [coeff_derivativeFun, map_add, coeff_mul_eq_coeff_trunc_mul_trunc _ _ (lt_succ_self _),
     smul_eq_mul, smul_eq_mul, coeff_mul_eq_coeff_trunc_mul_trunc₂ g f.derivativeFun h₂ h₁,
     coeff_mul_eq_coeff_trunc_mul_trunc₂ f g.derivativeFun h₂ h₁, trunc_derivativeFun,
-    trunc_derivativeFun, ←map_add, ←derivativeFun_coe_mul_coe, coeff_derivativeFun]
+    trunc_derivativeFun, ← map_add, ← derivativeFun_coe_mul_coe, coeff_derivativeFun]
 
 theorem derivativeFun_one : derivativeFun (1 : R⟦X⟧) = 0 := by
-  rw [←map_one (C R), derivativeFun_C (1 : R)]
+  rw [← map_one (C R), derivativeFun_C (1 : R)]
 
 theorem derivativeFun_smul (r : R) (f : R⟦X⟧) : derivativeFun (r • f) = r • derivativeFun f := by
   rw [smul_eq_C_mul, smul_eq_C_mul, derivativeFun_mul, derivativeFun_C, smul_zero, add_zero,
     smul_eq_mul]
 
 variable (R)
-/--The formal derivative of a formal power series.-/
+
+/-- The formal derivative of a formal power series -/
 noncomputable def derivative : Derivation R R⟦X⟧ R⟦X⟧ where
   toFun             := derivativeFun
   map_add'          := derivativeFun_add
   map_smul'         := derivativeFun_smul
   map_one_eq_zero'  := derivativeFun_one
   leibniz'          := derivativeFun_mul
-/--Abbreviation of `PowerSeries.derivative`, the formal derivative on `R⟦X⟧`.-/
+/-- Abbreviation of `PowerSeries.derivative`, the formal derivative on `R⟦X⟧` -/
 scoped notation "d⁄dX" => derivative
 
 variable {R}
@@ -131,11 +134,11 @@ theorem trunc_derivative' (f : R⟦X⟧) (n : ℕ) :
 
 end CommutativeSemiring
 
-/-In the next lemma, we use `smul_right_inj`, which requires not only `NoZeroSMulDivisors ℕ R`, but
+/- In the next lemma, we use `smul_right_inj`, which requires not only `NoZeroSMulDivisors ℕ R`, but
 also cancellation of addition in `R`. For this reason, the next lemma is stated in the case that `R`
-is a `CommRing`.-/
+is a `CommRing`. -/
 
-/-- If `f` and `g` have the same constant term and derivative, then they are equal.-/
+/-- If `f` and `g` have the same constant term and derivative, then they are equal. -/
 theorem derivative.ext {R} [CommRing R] [NoZeroSMulDivisors ℕ R] {f g} (hD : d⁄dX R f = d⁄dX R g)
     (hc : constantCoeff R f = constantCoeff R g) : f = g := by
   ext n
@@ -144,8 +147,8 @@ theorem derivative.ext {R} [CommRing R] [NoZeroSMulDivisors ℕ R] {f g} (hD : d
     rw [coeff_zero_eq_constantCoeff, hc]
   | succ n =>
     have equ : coeff R n (d⁄dX R f) = coeff R n (d⁄dX R g) := by rw [hD]
-    rwa [coeff_derivative, coeff_derivative, ←cast_succ, mul_comm, ←nsmul_eq_mul,
-      mul_comm, ←nsmul_eq_mul, smul_right_inj n.succ_ne_zero] at equ
+    rwa [coeff_derivative, coeff_derivative, ← cast_succ, mul_comm, ← nsmul_eq_mul,
+      mul_comm, ← nsmul_eq_mul, smul_right_inj n.succ_ne_zero] at equ
 
 @[simp] theorem derivative_inv {R} [CommRing R] (f : R⟦X⟧ˣ) :
     d⁄dX R ↑f⁻¹ = -(↑f⁻¹ : R⟦X⟧) ^ 2 * d⁄dX R f := by
@@ -161,7 +164,7 @@ The following theorem is stated only in the case that `R` is a field. This is be
 there is currently no instance of `Inv R⟦X⟧` for more general base rings `R`.
 -/
 @[simp] theorem derivative_inv' {R} [Field R] (f : R⟦X⟧) : d⁄dX R f⁻¹ = -f⁻¹ ^ 2 * d⁄dX R f := by
-  by_cases constantCoeff R f = 0
+  by_cases h : constantCoeff R f = 0
   · suffices f⁻¹ = 0 by
       rw [this, pow_two, zero_mul, neg_zero, zero_mul, map_zero]
     rwa [MvPowerSeries.inv_eq_zero]

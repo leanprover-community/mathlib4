@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Archive.Examples.IfNormalization.Statement
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Data.List.AList
 import Mathlib.Tactic.Recall
 
@@ -26,22 +28,7 @@ We add some local simp lemmas so we can unfold the definitions of the normalizat
 attribute [local simp] normalized hasNestedIf hasConstantIf hasRedundantIf disjoint vars
   List.disjoint
 
-/-!
-Adding these lemmas to the simp set allows Lean to handle the termination proof automatically.
--/
-attribute [local simp] Nat.lt_add_one_iff le_add_of_le_right
-
-/-!
-Some further simp lemmas for handling if-then-else statements.
--/
 attribute [local simp] apply_ite ite_eq_iff'
-
--- A copy of Lean's `decide_eq_true_eq` which unifies the `Decidable` instance
--- rather than finding it by typeclass search.
--- See https://github.com/leanprover/lean4/pull/2816
-@[simp] theorem decide_eq_true_eq {i : Decidable p} : (@decide p i = true) = p :=
-  _root_.decide_eq_true_eq
-
 
 /-!
 Simp lemmas for `eval`.
@@ -86,7 +73,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
       ⟨if t' = e' then t' else .ite (var v) t' e', by
         refine ⟨fun f => ?_, ?_, fun w b => ?_⟩
         · -- eval = eval
-          simp
+          simp? says simp only [apply_ite, eval_ite_var, ite_eq_iff']
           cases hfv : f v
           · simp_all
             congr
@@ -99,14 +86,14 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
         · -- normalized
           have := ht₃ v
           have := he₃ v
-          ◾
+          split <;> ◾
         · -- lookup = none
           have := ht₃ w
           have := he₃ w
           by_cases w = v <;> ◾⟩
     | some b =>
       have i' := normalize l (.ite (lit b) t e); ⟨i'.1, ◾⟩
-  termination_by normalize e => e.normSize
+  termination_by e => e.normSize
 
 /-
 We recall the statement of the if-normalization problem.
@@ -119,3 +106,5 @@ recall IfNormalization :=
 
 example : IfNormalization :=
   ⟨_, fun e => ⟨(IfExpr.normalize ∅ e).2.2.1, by simp [(IfExpr.normalize ∅ e).2.1]⟩⟩
+
+end IfExpr

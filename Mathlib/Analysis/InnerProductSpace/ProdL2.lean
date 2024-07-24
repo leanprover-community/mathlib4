@@ -3,8 +3,7 @@ Copyright (c) 2023 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-
-import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.NormedSpace.ProdLp
 
 /-!
@@ -17,11 +16,13 @@ $$
 This is recorded in this file as an inner product space instance on `WithLp 2 (E × F)`.
 -/
 
+variable {𝕜 ι₁ ι₂ E F : Type*}
+variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
+  [InnerProductSpace 𝕜 F]
+
 namespace WithLp
 
-variable {𝕜 : Type*} (E F : Type*)
-variable [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
-  [InnerProductSpace 𝕜 F]
+variable (E F)
 
 noncomputable instance instProdInnerProductSpace :
     InnerProductSpace 𝕜 (WithLp 2 (E × F)) where
@@ -42,3 +43,37 @@ variable {E F}
 @[simp]
 theorem prod_inner_apply (x y : WithLp 2 (E × F)) :
     inner (𝕜 := 𝕜) x y = inner x.fst y.fst + inner x.snd y.snd := rfl
+
+end WithLp
+
+noncomputable section
+namespace OrthonormalBasis
+
+variable [Fintype ι₁] [Fintype ι₂]
+
+/-- The product of two orthonormal bases is a basis for the L2-product. -/
+def prod (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F) :
+    OrthonormalBasis (ι₁ ⊕ ι₂) 𝕜 (WithLp 2 (E × F)) :=
+  ((v.toBasis.prod w.toBasis).map (WithLp.linearEquiv 2 𝕜 (E × F)).symm).toOrthonormalBasis
+  (by
+    constructor
+    · simp only [Sum.forall, norm_eq_sqrt_inner (𝕜 := 𝕜), Real.sqrt_eq_one]
+      simp [← Real.sqrt_eq_one, ← norm_eq_sqrt_inner (𝕜 := 𝕜), v.orthonormal.1, w.orthonormal.1]
+    · unfold Pairwise
+      simp only [ne_eq, Basis.map_apply, Basis.prod_apply, LinearMap.coe_inl,
+        OrthonormalBasis.coe_toBasis, LinearMap.coe_inr, WithLp.linearEquiv_symm_apply,
+        WithLp.prod_inner_apply, WithLp.equiv_symm_fst, WithLp.equiv_symm_snd, Sum.forall,
+        Sum.elim_inl, Function.comp_apply, inner_zero_right, add_zero, Sum.elim_inr, zero_add,
+        Sum.inl.injEq, not_false_eq_true, inner_zero_left, forall_true_left, implies_true, and_true,
+        Sum.inr.injEq, true_and]
+      exact ⟨v.orthonormal.2, w.orthonormal.2⟩)
+
+@[simp] theorem prod_apply (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F) :
+    ∀ i : ι₁ ⊕ ι₂, v.prod w i =
+      Sum.elim ((LinearMap.inl 𝕜 E F) ∘ v) ((LinearMap.inr 𝕜 E F) ∘ w) i := by
+  rw [Sum.forall]
+  unfold OrthonormalBasis.prod
+  aesop
+
+end OrthonormalBasis
+end

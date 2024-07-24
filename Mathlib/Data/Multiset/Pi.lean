@@ -3,9 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Multiset.Nodup
-
-#align_import data.multiset.pi from "leanprover-community/mathlib"@"b2c89893177f66a48daf993b7ba5ef7cddeff8c9"
+import Mathlib.Data.Multiset.Bind
 
 /-!
 # The cartesian product of multisets
@@ -24,8 +22,7 @@ variable {ι : Type*} [DecidableEq ι] {α : ι → Sort*}
 /-- Given `α : ι → Type*`, `Pi.empty α` is the trivial dependent function out of the empty
 multiset. -/
 def empty {ι : Type*} (α : ι → Sort*) : ∀ a ∈ (0 : Multiset ι), α a :=
-  fun.
-#align multiset.pi.empty Multiset.Pi.empty
+  nofun
 
 variable (m : Multiset ι) (i : ι)
 
@@ -33,33 +30,29 @@ variable (m : Multiset ι) (i : ι)
 function `f` such that `f j : α j` for all `j` in `m`, `Pi.cons a f` is a function `g` such
 that `g k : α k` for all `k` in `i ::ₘ m`. -/
 def cons (a : α i) (f : ∀ j ∈ m, α j) : ∀ j ∈ (i ::ₘ m), α j :=
-  fun j hj ↦ if h : j = i then h.symm.rec a else f j <| (mem_cons.1 hj).resolve_left h
-#align multiset.pi.cons Multiset.Pi.cons
+  fun j hj ↦ if h : j = i then h.symm.ndrec a else f j <| (mem_cons.1 hj).resolve_left h
 
 variable {m i}
 
 lemma cons_same {a : α i} {f : ∀ j ∈ m, α j} (h : i ∈ i ::ₘ m) :
     Pi.cons m i a f i h = a :=
   dif_pos rfl
-#align multiset.pi.cons_same Multiset.Pi.cons_same
 
 lemma cons_ne {a : α i} {f : ∀ j ∈ m, α j} {j : ι} (hj : j ∈ i ::ₘ m) (h : j ≠ i) :
     cons m i a f j hj = f j ((mem_cons.1 hj).resolve_left h) :=
   dif_neg h
-#align multiset.pi.cons_ne Multiset.Pi.cons_ne
 
 lemma cons_swap {i i' : ι} {a : α i} {a' : α i'} {f : ∀ j ∈ m, α j} (h : i ≠ i') :
     HEq (cons _ _ a (cons _ _ a' f)) (cons _ _ a' (cons _ _ a f)) := by
   apply hfunext rfl
   simp only [heq_iff_eq]
   rintro j _ rfl
-  refine' hfunext (by rw [Multiset.cons_swap]) (fun ha₁ ha₂ _ ↦ _)
+  refine' hfunext (by rw [Multiset.cons_swap]) fun ha₁ ha₂ _ ↦ ?_
   rcases ne_or_eq j i with h₁ | rfl
-  rcases eq_or_ne j i' with rfl | h₂
-  all_goals { simp [*, Pi.cons_same, Pi.cons_ne] }
-#align multiset.pi.cons_swap Multiset.Pi.cons_swap
+  on_goal 1 => rcases eq_or_ne a'' a' with (rfl | h₂)
+  all_goals simp [*, Pi.cons_same, Pi.cons_ne]
 
-@[simp, nolint simpNF] --Porting note: false positive, this lemma can prove itself
+@[simp, nolint simpNF] -- Porting note: false positive, this lemma can prove itself
 lemma cons_eta (f : ∀ j ∈ i ::ₘ m, α j) :
     cons _ _ (f i (mem_cons_self _ _)) (fun j hj ↦ f j (mem_cons_of_mem hj)) = f := by
   ext j hj
@@ -68,7 +61,6 @@ lemma cons_eta (f : ∀ j ∈ i ::ₘ m, α j) :
   · cases H
     rfl
   · rfl
-#align multiset.pi.cons_eta Multiset.Pi.cons_eta
 
 lemma cons_map (a : α i) (f : ∀ j ∈ m, α j)
     {α' : ι → Sort*} (φ : ∀ ⦃j⦄, α j → α' j) :
@@ -98,7 +90,6 @@ lemma cons_injective {i : ι} {a : α i} {s : Multiset ι} (hs : i ∉ s) :
         f₁ j h' = Pi.cons _ _ a f₁ j this := by rw [Pi.cons_ne this ne.symm]
               _ = Pi.cons _ _ a f₂ j this := by rw [eq]
               _ = f₂ j h' := by rw [Pi.cons_ne this ne.symm]
-#align multiset.pi.cons_injective Multiset.Pi.cons_injective
 
 end Pi
 
@@ -113,7 +104,7 @@ def pi (m : Multiset α) (t : ∀ a, Multiset (β a)) : Multiset (∀ a ∈ m, �
       intro a a' m n
       by_cases eq : a = a'
       · subst eq; rfl
-      · simp [map_bind, bind_bind (t a') (t a)]
+      · simp only [map_bind, map_map, comp_apply, bind_bind (t a') (t a)]
         apply bind_hcongr
         · rw [cons_swap a a']
         intro b _
@@ -124,42 +115,37 @@ def pi (m : Multiset α) (t : ∀ a, Multiset (β a)) : Multiset (∀ a ∈ m, �
         · rw [cons_swap a a']
         intro f _
         exact Pi.cons_swap eq)
-#align multiset.pi Multiset.pi
 
 @[simp]
 theorem pi_zero (t : ∀ a, Multiset (β a)) : pi 0 t = {Pi.empty β} :=
   rfl
-#align multiset.pi_zero Multiset.pi_zero
 
 @[simp]
 theorem pi_cons (m : Multiset α) (t : ∀ a, Multiset (β a)) (a : α) :
     pi (a ::ₘ m) t = (t a).bind fun b => (pi m t).map <| Pi.cons _ _ b :=
   recOn_cons a m
-#align multiset.pi_cons Multiset.pi_cons
 
 theorem card_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
     card (pi m t) = prod (m.map fun a => card (t a)) :=
   Multiset.induction_on m (by simp) (by simp (config := { contextual := true }) [mul_comm])
-#align multiset.card_pi Multiset.card_pi
 
 protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
     Nodup s → (∀ a ∈ s, Nodup (t a)) → Nodup (pi s t) :=
   Multiset.induction_on s (fun _ _ => nodup_singleton _)
     (by
       intro a s ih hs ht
-      have has : a ∉ s := by simp at hs; exact hs.1
-      have hs : Nodup s := by simp at hs; exact hs.2
+      have has : a ∉ s := by simp only [nodup_cons] at hs; exact hs.1
+      have hs : Nodup s := by simp only [nodup_cons] at hs; exact hs.2
       simp only [pi_cons, nodup_bind]
-      refine'
+      refine
         ⟨fun b _ => ((ih hs) fun a' h' => ht a' <| mem_cons_of_mem h').map (Pi.cons_injective has),
-          _⟩
-      refine' (ht a <| mem_cons_self _ _).pairwise _
+          ?_⟩
+      refine (ht a <| mem_cons_self _ _).pairwise ?_
       exact fun b₁ _ b₂ _ neb =>
         disjoint_map_map.2 fun f _ g _ eq =>
           have : Pi.cons _ _ b₁ f a (mem_cons_self _ _) = Pi.cons _ _ b₂ g a (mem_cons_self _ _) :=
             by rw [eq]
           neb <| show b₁ = b₂ by rwa [Pi.cons_same, Pi.cons_same] at this)
-#align multiset.nodup.pi Multiset.Nodup.pi
 
 theorem mem_pi {m : Multiset α} {t : ∀ a, Multiset (β a)} {f : ∀ a ∈ m, β a} :
     f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a := by
@@ -176,9 +162,8 @@ theorem mem_pi {m : Multiset α} {t : ∀ a, Multiset (β a)} {f : ∀ a ∈ m, 
     · rw [Pi.cons_ne _ h]
       apply hf'
   · intro hf
-    refine' ⟨_, hf a (mem_cons_self _ _), _, fun a ha => hf a (mem_cons_of_mem ha), _⟩
+    refine ⟨_, hf a (mem_cons_self _ _), _, fun a ha => hf a (mem_cons_of_mem ha), ?_⟩
     rw [Pi.cons_eta]
-#align multiset.mem_pi Multiset.mem_pi
 
 end
 

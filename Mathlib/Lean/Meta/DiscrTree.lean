@@ -4,14 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Lean.Meta.DiscrTree
-import Std.Lean.Meta.DiscrTree
-import Mathlib.Lean.Expr.Traverse
 
 /-!
 # Additions to `Lean.Meta.DiscrTree`
 -/
-
-set_option autoImplicit true
 
 namespace Lean.Meta.DiscrTree
 
@@ -26,8 +22,8 @@ Implementation: we reverse the results from `getMatch`,
 so that we return lemmas matching larger subexpressions first,
 and amongst those we return more specific lemmas first.
 -/
-partial def getSubexpressionMatches (d : DiscrTree α) (e : Expr) (config : WhnfCoreConfig) :
-    MetaM (Array α) := do
+partial def getSubexpressionMatches {α : Type}
+    (d : DiscrTree α) (e : Expr) (config : WhnfCoreConfig) : MetaM (Array α) := do
   match e with
   | .bvar _ => return #[]
   | .forallE _ _ _ _ => forallTelescope e (fun args body => do
@@ -42,5 +38,12 @@ partial def getSubexpressionMatches (d : DiscrTree α) (e : Expr) (config : Whnf
   | _ =>
     e.foldlM (fun a f => do
       pure <| a ++ (← d.getSubexpressionMatches f config)) (← d.getMatch e config).reverse
+
+/--
+Check if a `keys : Array DiscTree.Key` is "specific",
+i.e. something other than `[*]` or `[=, *, *, *]`.
+-/
+def keysSpecific (keys : Array DiscrTree.Key) : Bool :=
+  keys != #[Key.star] && keys != #[Key.const `Eq 3, Key.star, Key.star, Key.star]
 
 end Lean.Meta.DiscrTree
