@@ -7,6 +7,7 @@ import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Localization.BaseChange
+import Mathlib.Algebra.Module.LocalizedModule
 
 /-!
 # Flatness is stable under composition and base change
@@ -149,9 +150,9 @@ end BaseChange
 
 section Localization
 
-variable (R : Type u) (S : Type v) (M : Type w)
-  [CommRing R] [CommRing S] [Algebra R S]
-  [AddCommGroup M] [Module R M]
+variable (R : Type u) (S : Type v) (M Mp: Type w) (Rp : Type v)
+  [CommRing R] [AddCommGroup M] [Module R M]  [CommRing Rp] [Module R M] [Algebra R Rp]
+  [AddCommGroup Mp] [Module R Mp] [Module Rp Mp] [IsScalarTower R Rp Mp] (f : M →ₗ[R] Mp)
 
 theorem isLocalizedModule_ofFlat [Module.Flat R M] (S : Submonoid R) : Module.Flat (Localization S)
     (LocalizedModule S M) := by
@@ -159,6 +160,11 @@ theorem isLocalizedModule_ofFlat [Module.Flat R M] (S : Submonoid R) : Module.Fl
   exact LocalizedModule.mkLinearMap S M
   rw [← isLocalizedModule_iff_isBaseChange S]
   exact localizedModuleIsLocalizedModule S
+
+theorem IsLocalizedModule_ofFlat [Module.Flat R M] (S : Submonoid R) [IsLocalization S Rp]
+    (f : M →ₗ[R] Mp) (h: IsLocalizedModule S f): Module.Flat Rp Mp := by
+  fapply Module.Flat.isBaseChange (R:=R) (M:=M) (S:=Rp) (N:=Mp)
+  exact (isLocalizedModule_iff_isBaseChange S Rp f).mp h
 
 end Localization
 
