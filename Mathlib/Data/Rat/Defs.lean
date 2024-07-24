@@ -319,6 +319,12 @@ instance nontrivial : Nontrivial ℚ where exists_pair_ne := ⟨1, 0, by decide�
 
 /-! ### The rational numbers are a group -/
 
+instance instZero : Zero ℚ where
+  zero := 0
+
+instance instOne : One ℚ where
+  one := 1
+
 instance addCommGroup : AddCommGroup ℚ where
   zero := 0
   add := (· + ·)

@@ -36,3 +36,13 @@ instance instOne : One Nat where
   one := 1
 
 end Nat
+
+namespace Int
+
+instance instZero : Zero Int where
+  zero := 0
+
+instance instOne : One Int where
+  one := 1
+
+end Int
