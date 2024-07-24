@@ -228,6 +228,39 @@ def fromCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : (CostructuredArrow yoneda F
       erw [Category.id_comp]⟩
 #align category_theory.category_of_elements.from_costructured_arrow CategoryTheory.CategoryOfElements.fromCostructuredArrow
 
+/-- The forward direction of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)`,
+given by `CategoryTheory.yonedaEquiv`.
+-/
+@[simps]
+def toCostructuredArrowULift (F : Cᵒᵖ ⥤ Type (max v w)) :
+    F.Elementsᵒᵖ ⥤ CostructuredArrow (yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor) F where
+  obj X := CostructuredArrow.mk ((yonedaCompUliftFunctorEquiv _ _).symm (unop X).2)
+  map f := by
+    fapply CostructuredArrow.homMk
+    · exact f.unop.val.unop
+    · sorry
+      -- ext Z y
+      -- dsimp [yonedaEquiv]
+      -- simp only [FunctorToTypes.map_comp_apply, ← f.unop.2]
+
+/-- The reverse direction of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)`,
+given by `CategoryTheory.yonedaEquiv`.
+-/
+@[simps]
+def fromCostructuredArrowULift (F : Cᵒᵖ ⥤ Type (max v w)) :
+    (CostructuredArrow (yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor) F)ᵒᵖ ⥤ F.Elements where
+  obj X := sorry--⟨op (unop X).1, yonedaEquiv.1 (unop X).3⟩
+  map {X Y} f := sorry
+    -- ⟨f.unop.1.op, by
+    --   convert (congr_fun ((unop X).hom.naturality f.unop.left.op) (𝟙 _)).symm
+    --   simp only [Equiv.toFun_as_coe, Quiver.Hom.unop_op, yonedaEquiv_apply, types_comp_apply,
+    --     Category.comp_id, yoneda_obj_map]
+    --   have : yoneda.map f.unop.left ≫ (unop X).hom = (unop Y).hom := by
+    --     convert f.unop.3
+    --   erw [← this]
+    --   simp only [yoneda_map_app, FunctorToTypes.comp]
+    --   erw [Category.id_comp]⟩
+
 @[simp]
 theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoneda.obj X ⟶ F) :
     (fromCostructuredArrow F).obj (op (CostructuredArrow.mk f)) = ⟨op X, yonedaEquiv.1 f⟩ :=
@@ -272,6 +305,13 @@ def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
   Equivalence.mk (toCostructuredArrow F) (fromCostructuredArrow F).rightOp
     (NatIso.op (eqToIso (from_toCostructuredArrow_eq F))) (eqToIso <| to_fromCostructuredArrow_eq F)
 #align category_theory.category_of_elements.costructured_arrow_yoneda_equivalence CategoryTheory.CategoryOfElements.costructuredArrowYonedaEquivalence
+
+/-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
+def costructuredArrowYonedaEquivalenceULift (F : Cᵒᵖ ⥤ Type (max v w)) :
+    F.Elementsᵒᵖ ≌ CostructuredArrow (yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{w, v}) F :=
+  sorry
+  -- Equivalence.mk (toCostructuredArrow F) (fromCostructuredArrow F).rightOp
+  --   (NatIso.op (eqToIso (from_toCostructuredArrow_eq F))) (eqToIso <| to_fromCostructuredArrow_eq F)
 
 -- Porting note:
 -- Running `@[simps! unitIso_hom]` is mysteriously slow.
