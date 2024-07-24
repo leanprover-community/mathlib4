@@ -431,7 +431,6 @@ and `DirectSum.algebra`. -/
 instance HomogeneousSubmodule.gcommSemiring : SetLike.GradedMonoid (homogeneousSubmodule σ R) where
   one_mem := isHomogeneous_one σ R
   mul_mem _ _ _ _ := IsHomogeneous.mul
-#align mv_polynomial.is_homogeneous.homogeneous_submodule.gcomm_semiring MvPolynomial.IsHomogeneous.HomogeneousSubmodule.gcommSemiring
 
 end IsHomogeneous
 

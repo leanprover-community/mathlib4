@@ -277,7 +277,6 @@ theorem weighted_total_degree [SemilatticeSup M] {w : σ → M} (hφ : IsWeighte
     simp only [← hφ hd, Finsupp.sum]
     replace hd := Finsupp.mem_support_iff.mpr hd
     apply Finset.le_sup hd
-#align mv_polynomial.is_weighted_homogeneous.weighted_total_degree MvPolynomial.IsWeightedHomogeneous.weighted_total_degree
 
 end IsWeightedHomogeneous
 
@@ -288,7 +287,6 @@ lemma WeightedHomogeneousSubmodule.gradedMonoid {w : σ → M} :
     SetLike.GradedMonoid (weightedHomogeneousSubmodule R w) where
   one_mem := isWeightedHomogeneous_one R w
   mul_mem _ _ _ _ := IsWeightedHomogeneous.mul
-#align mv_polynomial.is_weighted_homogeneous.weighted_homogeneous_submodule.gcomm_monoid MvPolynomial.WeightedHomogeneousSubmodule.gradedMonoid
 
 /-- `weightedHomogeneousComponent w n φ` is the part of `φ` that is weighted homogeneous of
   weighted degree `n`, with respect to the weights `w`.
@@ -433,7 +431,6 @@ theorem weightedHomogeneousComponent_of_mem [DecidableEq M] {m n : M}
     split_ifs with h1
     · rfl
     · simp only [coeff_zero]
-#align mv_polynomial.weighted_homogeneous_component_weighted_homogeneous_polynomial MvPolynomial.weightedHomogeneousComponent_of_mem
 
 theorem weightedHomogeneousComponent_of_isWeightedHomogeneous_same
     {m : M} {p : MvPolynomial σ R} (hp : IsWeightedHomogeneous w p m) :
