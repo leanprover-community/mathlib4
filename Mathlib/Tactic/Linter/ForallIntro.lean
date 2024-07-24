@@ -4,21 +4,6 @@ import Mathlib.adomaniLeanUtils.inspect_syntax
 import Batteries.Data.Array.Basic
 import Mathlib.Tactic
 
-section long_lines
-
-open Lean Elab Command in
-def findLongLines : CommandElabM Unit := do
-  let fil ← IO.FS.lines (← getFileName)
-  let longLines := (List.range fil.size).filterMap fun l =>
-    if 100 < fil[l]!.length then some (l + 1) else none
-  let fm ← getFileMap
-  for l_idx in longLines do
-    let longLineStart := fm.ofPosition ⟨l_idx, 0⟩
-    let longLineEnd := fm.ofPosition ⟨l_idx, fil[l_idx-1]!.length⟩
-    logWarningAt (.ofRange ⟨longLineStart, longLineEnd⟩) "too long"
-
-end long_lines
-
 namespace Lean.Syntax
 /-!
 # `Syntax` filters
