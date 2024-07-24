@@ -214,8 +214,8 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
                 (Partrec.nat_iff.1 <| eval_part.comp (const cf) Computable.id)
                 (Partrec.nat_iff.1 <| eval_part.comp (const cg) Computable.id) ((hC _).1 fC),
         fun h => by {
-          obtain rfl | rfl := h <;> simp [ComputablePred, Set.mem_empty_iff_false] <;>
-            exact ⟨by infer_instance, Computable.const _⟩ }⟩
+          obtain rfl | rfl := h <;> simpa [ComputablePred, Set.mem_empty_iff_false] using
+            ⟨by infer_instance, Computable.const _⟩ }⟩
 
 /-- The Halting problem is recursively enumerable -/
 theorem halting_problem_re (n) : RePred fun c => (eval c n).Dom :=
@@ -310,7 +310,7 @@ protected theorem bind {n f g} (hf : @Partrec' n f) (hg : @Partrec' (n + 1) g) :
 
 protected theorem map {n f} {g : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' n f)
     (hg : @Partrec' (n + 1) g) : @Partrec' n fun v => (f v).map fun a => g (a ::ᵥ v) := by
-  simp [(Part.bind_some_eq_map _ _).symm]; exact hf.bind hg
+  simpa [(Part.bind_some_eq_map _ _).symm] using hf.bind hg
 
 /-- Analogous to `Nat.Partrec'` for `ℕ`-valued functions, a predicate for partial recursive
   vector-valued functions. -/
