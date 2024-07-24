@@ -116,7 +116,7 @@ theorem A_fibre_over_contestant_card (c : C) :
   apply Finset.card_image_of_injOn
   unfold Set.InjOn
   rintro ⟨a, p⟩ h ⟨a', p'⟩ h' rfl
-  aesop
+  aesop (add simp AgreedTriple.contestant)
 
 theorem A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
     agreedContestants r p = ((A r).filter fun a : AgreedTriple C J => a.judgePair = p).image

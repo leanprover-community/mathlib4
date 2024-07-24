@@ -658,8 +658,7 @@ theorem algHom_ext' {φ ψ : Unitization R A →ₐ[R] C}
 
 /- porting note: this was extracted from `Unitization.lift` below, where it had previously
 been inlined. Unfortunately, `Unitization.lift` was relatively slow in Lean 3, but in Lean 4 it
-just times out. Note that this doesn't require a backport because this file is a leaf in the
-import hierarchy. -/
+just times out. -/
 /-- A non-unital algebra homomorphism from `A` into a unital `R`-algebra `C` lifts to a unital
 algebra homomorphism from the unitization into `C`. This is extended to an `Equiv` in
 `Unitization.lift` and that should be used instead. This declaration only exists for performance
