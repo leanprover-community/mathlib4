@@ -167,16 +167,18 @@ def mapDifferentialObject (F : C ⥤ D)
       d := F.map X.d ≫ η.app X.obj
       d_squared := by
         rw [Functor.map_comp, ← Functor.comp_map F (shiftFunctor D (1 : S))]
-        slice_lhs 2 3 => rw [← η.naturality X.d]
+        slice_lhs 2 3 => erw [← η.naturality X.d]
         rw [Functor.comp_map]
-        slice_lhs 1 2 => rw [← F.map_comp, X.d_squared, hF]
+        slice_lhs 1 2 => erw [← F.map_comp, X.d_squared, hF]
         rw [zero_comp, zero_comp] }
   map f :=
     { f := F.map f.f
       comm := by
         dsimp
-        slice_lhs 2 3 => rw [← Functor.comp_map F (shiftFunctor D (1 : S)), ← η.naturality f.f]
-        slice_lhs 1 2 => rw [Functor.comp_map, ← F.map_comp, f.comm, F.map_comp]
+        slice_lhs 2 3 =>
+          rw [← Functor.comp_map F (shiftFunctor D (1 : S))]
+          erw [← η.naturality f.f]
+        slice_lhs 1 2 => erw [Functor.comp_map, ← F.map_comp, f.comm, F.map_comp]
         rw [Category.assoc] }
   map_id := by intros; ext; simp [autoParam]
   map_comp := by intros; ext; simp [autoParam]

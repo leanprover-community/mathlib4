@@ -70,7 +70,7 @@ instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F := .ofTensorH
     slice_lhs 1 2 =>
       rw [← comp_tensor_id, limit.lift_π]
       dsimp
-    slice_lhs 1 2 => rw [tensor_id_comp_id_tensor]
+    slice_lhs 1 2 => erw [tensor_id_comp_id_tensor]
     conv_lhs => rw [associator_naturality]
     conv_rhs => rw [← id_tensor_comp_tensor_id (limit.π (Y ⊗ Z) j)]
     slice_rhs 2 3 =>

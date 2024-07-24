@@ -169,7 +169,7 @@ theorem unit_inverse_comp (e : C ≌ D) (Y : D) :
   slice_lhs 2 3 => erw [e.unit.naturality]
   slice_lhs 1 2 => erw [e.unit.naturality]
   slice_lhs 4 4 =>
-    rw [← Iso.hom_inv_id_assoc (e.inverse.mapIso (e.counitIso.app _)) (e.unitInv.app _)]
+    erw [← Iso.hom_inv_id_assoc (e.inverse.mapIso (e.counitIso.app _)) (e.unitInv.app _)]
   slice_lhs 3 4 =>
     erw [← map_comp e.inverse, e.counit.naturality]
     erw [(e.counitIso.app _).hom_inv_id, map_id]

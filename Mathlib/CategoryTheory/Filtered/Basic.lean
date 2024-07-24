@@ -427,8 +427,8 @@ theorem coeq₃_condition₁ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
 theorem coeq₃_condition₂ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
     g ≫ coeq₃Hom f g h = h ≫ coeq₃Hom f g h := by
   dsimp [coeq₃Hom]
-  slice_lhs 2 4 => rw [← Category.assoc, coeq_condition _ _]
-  slice_rhs 2 4 => rw [← Category.assoc, coeq_condition _ _]
+  slice_lhs 2 4 => erw [← Category.assoc, coeq_condition _ _]
+  slice_rhs 2 4 => erw [← Category.assoc, coeq_condition _ _]
   slice_lhs 1 3 => rw [← Category.assoc, coeq_condition _ _]
   simp only [Category.assoc]
 

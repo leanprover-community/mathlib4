@@ -305,7 +305,7 @@ def transport {F : C ⥤ C} (T : Monad C) (i : (T : C ⥤ C) ≅ F) : Monad C wh
   left_unit X := by
     simp only [Functor.id_obj, NatTrans.comp_app, comp_obj, NatTrans.hcomp_app, Category.assoc,
       hom_inv_id_app_assoc]
-    slice_lhs 1 2 => rw [← T.η.naturality (i.inv.app X), ]
+    slice_lhs 1 2 => erw [← T.η.naturality (i.inv.app X), ]
     simp
   right_unit X := by
     simp only [id_obj, NatTrans.comp_app, Functor.map_comp, comp_obj, NatTrans.hcomp_app,

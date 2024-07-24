@@ -148,7 +148,7 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
   rw [F.map_comp, assoc, assoc, prodComparison_natural]
   slice_lhs 2 3 =>
     {
-      rw [← prodComparison_comp]
+      erw [← prodComparison_comp]
     }
   rw [← assoc]
   unfold prodComparison

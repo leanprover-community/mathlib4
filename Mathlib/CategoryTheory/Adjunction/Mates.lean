@@ -168,12 +168,12 @@ theorem mateEquiv_vcomp
     whiskerRight_twice]
   slice_rhs 1 4 =>
     {
-      rw [← assoc, ← assoc, ← unit_naturality (adj₃)]
+      rw [← assoc, ← assoc]; erw [← unit_naturality (adj₃)]
     }
   rw [L₃.map_comp, R₃.map_comp]
   slice_rhs 2 4 =>
     {
-      rw [← R₃.map_comp, ← R₃.map_comp, ← assoc, ← L₃.map_comp, ← G₂.map_comp, ← G₂.map_comp]
+      erw [← R₃.map_comp, ← R₃.map_comp, ← assoc, ← L₃.map_comp, ← G₂.map_comp, ← G₂.map_comp]
       rw [← Functor.comp_map G₂ L₃, β.naturality]
     }
   rw [(L₂ ⋙ H₂).map_comp, R₃.map_comp, R₃.map_comp]
@@ -280,7 +280,7 @@ theorem leftAdjointSquare.comp_hvcomp
   simp only [comp_obj, comp_app, map_comp, assoc]
   slice_rhs 2 3 =>
     {
-      rw [← Functor.comp_map _ L₆, δ.naturality]
+      erw [← Functor.comp_map _ L₆, δ.naturality]
     }
   simp only [comp_obj, Functor.comp_map, assoc]
 
@@ -311,7 +311,7 @@ theorem rightAdjointSquare.comp_hvcomp
   simp only [comp_obj, comp_app, map_comp, assoc]
   slice_rhs 2 3 =>
     {
-      rw [← Functor.comp_map _ R₅, ← γ.naturality]
+      erw [← Functor.comp_map _ R₅, ← γ.naturality]
     }
   simp only [comp_obj, Functor.comp_map, assoc]
 
