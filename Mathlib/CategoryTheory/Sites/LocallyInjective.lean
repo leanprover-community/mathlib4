@@ -65,6 +65,7 @@ variable {F₁ F₂ F₃ : Cᵒᵖ ⥤ D} (φ : F₁ ⟶ F₂) (ψ : F₂ ⟶ F�
 is locally injective for a Grothendieck topology `J` on `C` if
 whenever two sections of `F₁` are sent to the same section of `F₂`, then these two
 sections coincide locally. -/
+@[mk_iff]
 class IsLocallyInjective : Prop where
   equalizerSieve_mem {X : Cᵒᵖ} (x y : F₁.obj X) (h : φ.app X x = φ.app X y) :
     equalizerSieve x y ∈ J X.unop
