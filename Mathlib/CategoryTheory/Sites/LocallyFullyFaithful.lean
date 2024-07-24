@@ -3,7 +3,6 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
@@ -26,13 +25,12 @@ import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 -/
 
-universe w v u
+universe w vC vD uC uD
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category E] (G : C ⥤ D)
+variable {C : Type uC} [Category.{vC} C] {D : Type uD} [Category.{vD} D] (G : C ⥤ D)
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-variable {L : GrothendieckTopology E}
 
 /--
 For a functor `G : C ⥤ D`, and a morphism `f : G.obj U ⟶ G.obj V`,
@@ -63,13 +61,9 @@ lemma Sieve.equalizer_self {U V : C} (f : U ⟶ V) : equalizer f f = ⊤ := by e
 lemma Sieve.equalizer_eq_equalizerSieve {U V : C} (f₁ f₂ : U ⟶ V) :
     Sieve.equalizer f₁ f₂ = Presheaf.equalizerSieve (F := yoneda.obj _) f₁ f₂ := rfl
 
-lemma Functor.imageSieve_eq_imageSieve {U V : C} (f : G.obj U ⟶ G.obj V) :
-    G.imageSieve f = Presheaf.imageSieve (yonedaMap G V) f := by
-  ext Y g
-  show Exists _ ↔ Exists _
-  dsimp [yonedaMap, yoneda, yonedaEquiv]
-  simp
-  rfl
+lemma Functor.imageSieve_eq_imageSieve {D : Type uD} [Category.{vC} D] (G : C ⥤ D) {U V : C}
+    (f : G.obj U ⟶ G.obj V) :
+    G.imageSieve f = Presheaf.imageSieve (yonedaMap G V) f := rfl
 
 open Presieve Opposite
 
@@ -80,7 +74,6 @@ A functor `G : C ⥤ D` is locally full wrt a topology on `D` if for every `f : 
 the set of `G.map fᵢ : G.obj Wᵢ ⟶ G.obj U` such that `G.map fᵢ ≫ f` is
 in the image of `G` is a coverage of the topology on `D`.
 -/
-@[mk_iff]
 class IsLocallyFull : Prop where
   functorPushforward_imageSieve_mem : ∀ {U V} (f : G.obj U ⟶ G.obj V),
     (G.imageSieve f).functorPushforward G ∈ K _
@@ -102,9 +95,6 @@ lemma functorPushforward_equalizer_mem
     [G.IsLocallyFaithful K] {U V} (f₁ f₂ : U ⟶ V) (e : G.map f₁ = G.map f₂) :
       (Sieve.equalizer f₁ f₂).functorPushforward G ∈ K _ :=
   Functor.IsLocallyFaithful.functorPushforward_equalizer_mem _ _ e
-
-lemma isLocallyFull_iff_isLocallySurjective :
-  G.IsLocallyFull
 
 variable {K}
 variable {A : Type*} [Category A] (G : C ⥤ D)

@@ -80,7 +80,6 @@ lemma app_localPreimage {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : Cᵒᵖ} (s : G
 
 /-- A morphism of presheaves `f : F ⟶ G` is locally surjective with respect to a grothendieck
 topology if every section of `G` is locally in the image of `f`. -/
-@[mk_iff]
 class IsLocallySurjective {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) : Prop where
   imageSieve_mem {U : C} (s : G.obj (op U)) : imageSieve f s ∈ J U
 
