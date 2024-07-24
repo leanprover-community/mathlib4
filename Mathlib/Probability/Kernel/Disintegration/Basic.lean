@@ -99,8 +99,10 @@ end MeasureTheory.Measure
 /-!
 ### Disintegration of kernels
 
-This section provides a predicate for a kernel to disintegrate a kernel, and proves that such a
-disintegrating kernel exists for a countable space if we have disintegrating.
+This section provides a predicate for a kernel to disintegrate a kernel. It also proves that if `κ`
+is an s-finite kernel from a countable `α` such that each measure `κ a` is disintegrated by some
+kernel, then `κ` itself is disintegrated by a kernel, namely
+`ProbabilityTheory.Kernel.condKernelCountable`..
 -/
 
 namespace ProbabilityTheory.Kernel
