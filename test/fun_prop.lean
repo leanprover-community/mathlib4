@@ -46,7 +46,7 @@ attribute [fun_prop]
 
 /-!
 Measurability also behaves nicely with respect to taking products.
-Let's mark the product constructor
+Let's mark the product constructor.
 -/
 
 attribute [fun_prop]
