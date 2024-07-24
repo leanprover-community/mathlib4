@@ -58,19 +58,46 @@ abbrev Opens (X : Scheme) : Type* := TopologicalSpace.Opens X
 
 /-- A morphism between schemes is a morphism between the underlying locally ringed spaces. -/
 -- @[nolint has_nonempty_instance] -- Porting note(#5171): linter not ported yet
-def Hom (X Y : Scheme) : Type* :=
-  X.toLocallyRingedSpace ⟶ Y.toLocallyRingedSpace
+structure Hom (X Y : Scheme) extends X.toLocallyRingedSpace.Hom Y.toLocallyRingedSpace where
+
+/-- See Note [custom simps projection] -/
+def Hom.val {X Y : Scheme.{u}} (f : X.Hom Y) :
+    X.toLocallyRingedSpace ⟶ Y.toLocallyRingedSpace :=
+  f.toHom_1
+
+/-- See Note [custom simps projection] -/
+def Hom.Simps.val {X Y : Scheme.{u}} (f : X.Hom Y) :
+    X.toLocallyRingedSpace ⟶ Y.toLocallyRingedSpace :=
+  f.val
+
+open Lean Elab Parser Command in
+open Meta hiding Config in
+open Elab.Term hiding mkConst in
+open Lean.Meta in
+open Tactic Simp in
+/-- Auxiliary function of `getCompositeOfProjections`. -/
+partial def getCompositeOfProjectionsAux (proj : String) (structName : Name) : MetaM (List (Option (String × Name))) := do
+  let env ← getEnv
+  let projs := getStructureFieldsFlattened env structName
+  let projInfo : List (Option (String × Name)) := projs.toList.map fun p ↦ do
+    ((← proj.dropPrefix? (p.lastComponentAsString ++ "_").toSubstring).toString, p)
+  return projInfo
+
+#eval do let a ← getCompositeOfProjectionsAux "toHom_1_" `AlgebraicGeometry.Scheme.Hom; return a
+
+initialize_simps_projections Hom
 
 /-- Schemes are a full subcategory of locally ringed spaces.
 -/
-instance : Category Scheme :=
-  { InducedCategory.category Scheme.toLocallyRingedSpace with Hom := Hom }
+instance : Category Scheme where
+  id X := Hom.mk (𝟙 X.toLocallyRingedSpace)
+  comp f g := Hom.mk (f.val ≫ g.val)
 
-/-- `f ⁻¹ᵁ U` is notation for `(Opens.map f.1.base).obj U`,
+/-- `f ⁻¹ᵁ U` is notation for `(Opens.map f.base).obj U`,
   the preimage of an open set `U` under `f`. -/
 scoped[AlgebraicGeometry] notation3:90 f:91 " ⁻¹ᵁ " U:90 =>
   @Prefunctor.obj (Scheme.Opens _) _ (Scheme.Opens _) _
-    (Opens.map (f : LocallyRingedSpace.Hom _ _).val.base).toPrefunctor U
+    (Opens.map (f : Scheme.Hom _ _).base).toPrefunctor U
 
 /-- `Γ(X, U)` is notation for `X.presheaf.obj (op U)`. -/
 scoped[AlgebraicGeometry] notation3 "Γ(" X ", " U ")" =>
@@ -82,7 +109,7 @@ instance {X : Scheme.{u}} : Subsingleton Γ(X, ⊥) :=
   CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
 
 @[continuity, fun_prop]
-lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f.1.base := f.1.base.2
+lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f.base := f.base.2
 
 /-- The structure sheaf of a scheme. -/
 protected abbrev sheaf (X : Scheme) :=
@@ -99,7 +126,7 @@ abbrev app (U : Y.Opens) : Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U) :=
 
 @[reassoc]
 lemma naturality (i : op U' ⟶ op U) :
-    Y.presheaf.map i ≫ f.app U = f.app U' ≫ X.presheaf.map ((Opens.map f.1.base).map i.unop).op :=
+    Y.presheaf.map i ≫ f.app U = f.app U' ≫ X.presheaf.map ((Opens.map f.base).map i.unop).op :=
   f.1.c.naturality i
 
 /-- Given a morphism of schemes `f : X ⟶ Y`, and open sets `U ⊆ Y`, `V ⊆ f ⁻¹' U`,
@@ -121,7 +148,7 @@ lemma appLE_map' (e : V ≤ f ⁻¹ᵁ U) (i : V = V') :
 @[reassoc (attr := simp)]
 lemma map_appLE (e : V ≤ f ⁻¹ᵁ U) (i : op U' ⟶ op U) :
     Y.presheaf.map i ≫ f.appLE U V e =
-      f.appLE U' V (e.trans ((Opens.map f.1.base).map i.unop).le) := by
+      f.appLE U' V (e.trans ((Opens.map f.base).map i.unop).le) := by
   rw [Hom.appLE, f.naturality_assoc, ← Functor.map_comp]
   rfl
 
@@ -144,14 +171,18 @@ lemma appLE_congr (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V')
   subst e₁; subst e₂; rfl
 
 /-- An isomorphism of schemes induces a homeomorphism of the underlying topological spaces. -/
-noncomputable def homeomorph [IsIso f] : X ≃ₜ Y :=
-  TopCat.homeoOfIso (asIso <| f.val.base)
+noncomputable def _root_.AlgebraicGeometry.Scheme.homeomorphOfIso (e : X ≅ Y) : X ≃ₜ Y :=
+  TopCat.homeoOfIso (asIso <| f.base)
+
+/-- An isomorphism of schemes induces a homeomorphism of the underlying topological spaces. -/
+noncomputable def homeomorph [IsIso (C := Scheme) f] : X ≃ₜ Y :=
+  TopCat.homeoOfIso (asIso <| f.base)
 
 @[ext]
-protected lemma ext {f g : X ⟶ Y} (h_base : f.1.base = g.1.base)
+protected lemma ext {f g : X ⟶ Y} (h_base : f.base = g.base)
     (h_app : ∀ U, f.app U ≫ X.presheaf.map
       (eqToHom congr((Opens.map $h_base.symm).obj U)).op = g.app U) : f = g :=
-  LocallyRingedSpace.Hom.ext _ _ <| SheafedSpace.ext _ _ h_base
+  LocallyRingedSpace.Hom.ext' _ _ <| SheafedSpace.ext _ _ h_base
     (TopCat.Presheaf.ext fun U ↦ by simpa using h_app U)
 
 lemma preimage_iSup {ι} (U : ι → Opens Y) : f ⁻¹ᵁ iSup U = ⨆ i, f ⁻¹ᵁ U i :=
@@ -168,15 +199,15 @@ lemma preimage_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
 
 /-- The forgetful functor from `Scheme` to `LocallyRingedSpace`. -/
 @[simps!]
-def forgetToLocallyRingedSpace : Scheme ⥤ LocallyRingedSpace :=
-  inducedFunctor _
--- deriving Full, Faithful -- Porting note: no delta derive handler, see https://github.com/leanprover-community/mathlib4/issues/5020
+def forgetToLocallyRingedSpace : Scheme ⥤ LocallyRingedSpace where
+  obj := toLocallyRingedSpace
+  map := Hom.val
 
 /-- The forget functor `Scheme ⥤ LocallyRingedSpace` is fully faithful. -/
-@[simps!]
+@[simps! preimage_val]
 def fullyFaithfulForgetToLocallyRingedSpace :
-    forgetToLocallyRingedSpace.FullyFaithful :=
-  fullyFaithfulInducedFunctor _
+    forgetToLocallyRingedSpace.FullyFaithful where
+  preimage := Hom.mk
 
 instance : forgetToLocallyRingedSpace.Full :=
   InducedCategory.full _
@@ -199,7 +230,7 @@ unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢
   forgetToTop.obj X ≟ (X : TopCat)
 
 @[simp]
-theorem id_val_base (X : Scheme) : (𝟙 X : _).1.base = 𝟙 _ :=
+theorem id.base (X : Scheme) : (𝟙 X : _).base = 𝟙 _ :=
   rfl
 
 @[simp]
@@ -212,17 +243,17 @@ theorem comp_val {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).val = 
 
 @[simp, reassoc] -- reassoc lemma does not need `simp`
 theorem comp_coeBase {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).val.base = f.val.base ≫ g.val.base :=
+    (f ≫ g).base = f.base ≫ g.base :=
   rfl
 
 -- Porting note: removed elementwise attribute, as generated lemmas were trivial.
 @[reassoc]
-theorem comp_val_base {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).val.base = f.val.base ≫ g.val.base :=
+theorem comp.base {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).base = f.base ≫ g.base :=
   rfl
 
-theorem comp_val_base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-    (f ≫ g).val.base x = g.val.base (f.val.base x) := by
+theorem comp.base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g).base x = g.base (f.base x) := by
   simp
 
 @[simp, reassoc] -- reassoc lemma does not need `simp`
@@ -235,7 +266,7 @@ theorem comp_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
 
 theorem appLE_comp_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V W e₁ e₂) :
     g.appLE U V e₁ ≫ f.appLE V W e₂ =
-      (f ≫ g).appLE U W (e₂.trans ((Opens.map f.1.base).map (homOfLE e₁)).le) := by
+      (f ≫ g).appLE U W (e₂.trans ((Opens.map f.base).map (homOfLE e₁)).le) := by
   dsimp [Hom.appLE]
   rw [Category.assoc, f.naturality_assoc, ← Functor.map_comp]
   rfl
@@ -253,7 +284,7 @@ theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Y.Opens} (e : U = V) :
     f.app U =
       Y.presheaf.map (eqToHom e.symm).op ≫
         f.app V ≫
-          X.presheaf.map (eqToHom (congr_arg (Opens.map f.val.base).obj e)).op := by
+          X.presheaf.map (eqToHom (congr_arg (Opens.map f.base).obj e)).op := by
   rw [← IsIso.inv_comp_eq, ← Functor.map_inv, f.val.c.naturality]
   cases e
   rfl
@@ -271,7 +302,7 @@ instance is_locallyRingedSpace_iso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     @IsIso LocallyRingedSpace _ _ _ f :=
   forgetToLocallyRingedSpace.map_isIso f
 
-instance val_base_isIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.1.base :=
+instance.base_isIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.base :=
   Scheme.forgetToTop.map_isIso f
 
 -- Porting note: need an extra instance here.
@@ -349,7 +380,7 @@ variable {R S : CommRingCat.{u}} (f : R ⟶ S)
 lemma Spec_carrier (R : CommRingCat.{u}) : (Spec R).carrier = PrimeSpectrum R := rfl
 lemma Spec_sheaf (R : CommRingCat.{u}) : (Spec R).sheaf = Spec.structureSheaf R := rfl
 lemma Spec_presheaf (R : CommRingCat.{u}) : (Spec R).presheaf = (Spec.structureSheaf R).1 := rfl
-lemma Spec.map_base : (Spec.map f).1.base = PrimeSpectrum.comap f := rfl
+lemma Spec.map_base : (Spec.map f).base = PrimeSpectrum.comap f := rfl
 
 lemma Spec.map_app (U) :
     (Spec.map f).app U = StructureSheaf.comap f U (Spec.map f ⁻¹ᵁ U) le_rfl := rfl
