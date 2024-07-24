@@ -3,8 +3,7 @@ Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Group.Lattice
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
 
 /-!
 # Positive & negative parts

@@ -565,6 +565,7 @@ import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.Algebra.Order.Group.Prod
 import Mathlib.Algebra.Order.Group.Synonym
 import Mathlib.Algebra.Order.Group.TypeTags
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
@@ -734,6 +735,7 @@ import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Ring.Rat
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
+import Mathlib.Algebra.Ring.Semireal.Defs
 import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Algebra.Ring.Subring.MulOpposite
 import Mathlib.Algebra.Ring.Subring.Order
@@ -743,6 +745,7 @@ import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
 import Mathlib.Algebra.Ring.Subsemiring.Order
 import Mathlib.Algebra.Ring.Subsemiring.Pointwise
+import Mathlib.Algebra.Ring.SumsOfSquares
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.Ring.WithZero
@@ -1770,6 +1773,7 @@ import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.CategoryTheory.Sites.Limits
 import Mathlib.CategoryTheory.Sites.Localization
 import Mathlib.CategoryTheory.Sites.LocallyBijective
+import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
 import Mathlib.CategoryTheory.Sites.LocallyInjective
 import Mathlib.CategoryTheory.Sites.LocallySurjective
 import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
@@ -1783,6 +1787,7 @@ import Mathlib.CategoryTheory.Sites.PreservesSheafification
 import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.CategoryTheory.Sites.Pullback
 import Mathlib.CategoryTheory.Sites.Sheaf
+import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 import Mathlib.CategoryTheory.Sites.SheafHom
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.CategoryTheory.Sites.Sheafification
@@ -2280,6 +2285,7 @@ import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.Nat.Choose.Factorization
+import Mathlib.Data.Nat.Choose.Lucas
 import Mathlib.Data.Nat.Choose.Multinomial
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Choose.Vandermonde
@@ -3349,7 +3355,9 @@ import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 import Mathlib.NumberTheory.NumberField.ClassNumber
 import Mathlib.NumberTheory.NumberField.Discriminant
 import Mathlib.NumberTheory.NumberField.Embeddings
+import Mathlib.NumberTheory.NumberField.EquivReindex
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
+import Mathlib.NumberTheory.NumberField.House
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.NumberTheory.NumberField.Units.Basic
 import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
@@ -3865,6 +3873,7 @@ import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Regular.IsSMulRegular
 import Mathlib.RingTheory.Regular.RegularSequence
 import Mathlib.RingTheory.RingHom.Finite
+import Mathlib.RingTheory.RingHom.FinitePresentation
 import Mathlib.RingTheory.RingHom.FiniteType
 import Mathlib.RingTheory.RingHom.Integral
 import Mathlib.RingTheory.RingHom.Surjective
