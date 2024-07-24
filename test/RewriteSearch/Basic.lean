@@ -1,6 +1,7 @@
 import Mathlib.Tactic.RewriteSearch
 
 set_option autoImplicit true
+set_option linter.longLine false
 
 -- You can enable tracing of the `rw_search` algorithm using
 -- set_option trace.rw_search true
