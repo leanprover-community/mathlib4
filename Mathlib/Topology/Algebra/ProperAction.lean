@@ -25,8 +25,8 @@ the first variable (see `ContinuousConstSMul`) and proper in the sense defined h
 
 ## Main statements
 
-* `t2Space_of_ProperSMul`: If a group `G` acts properly on a topological space `X`,
-  then the quotient space is Hausdorff (T2).
+* `t2Space_quotient_mulAction_of_properSMul`: If a group `G` acts properly
+  on a topological space `X`, then the quotient space is Hausdorff (T2).
 * `t2Space_of_properSMul_of_t2Group`: If a T2 group acts properly on a topological space,
   then this topological space is T2.
 * `ProperlyDiscontinuousSMul_iff_ProperSMul`: If a discrete group acts on a T2 space `X` such that
@@ -125,41 +125,19 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto_t2 [T2Space X] :
 @[to_additive "If `G` acts properly on `X`, then the quotient space is Hausdorff (T2)."]
 theorem t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
     T2Space (Quotient (MulAction.orbitRel G X)) := by
-  rw [t2_iff_isClosed_diagonal] -- T2 if the diagonal is closed
-  set R := MulAction.orbitRel G X -- the orbit relation
-  set XmodG := Quotient R -- the quotient
-  set π : X → XmodG := Quotient.mk' -- the projection
-  have hpiopen: IsOpenMap π := -- the projection is open
-    isOpenMap_quotient_mk'_mul
-  have picont : Continuous π := continuous_quotient_mk' -- π is continuous
-  have pisurj : Function.Surjective π := by apply surjective_quotient_mk' -- π is surjective
-  set pipi := Prod.map π π
-  have pipiopen : IsOpenMap pipi := IsOpenMap.prod hpiopen hpiopen -- π × π open
-  have pipisurj : (Function.Surjective (pipi) ) :=  -- π × π surj
-    Function.Surjective.prodMap pisurj pisurj
-  have pipipquotient := -- π × π is a QuotientMap because open, continuous and surj
-    IsOpenMap.to_quotientMap pipiopen (Continuous.prod_map picont picont) pipisurj
-  rw [<-QuotientMap.isClosed_preimage pipipquotient] -- closed iff preimage closed
-  set gr' := pipi ⁻¹' diagonal (Quotient R) -- preimage of the diag
-  set m : G × X → X × X := fun (g,x) => (g • x, x)
-  set gr := range m -- graph of the orbit relation
-  have r_eq_r' : gr' = gr := by -- the preimage of the diag is the graph of the relation
-    ext ⟨x,y⟩
-    conv_lhs => -- we work only on the left hand side for now
-      rw [mem_preimage]
-      rw [mem_diagonal_iff]
-      change (π x = π y)  -- ↔ (x, y) ∈ gr
-      rw [Quotient.eq']
-      change ((MulAction.orbitRel G X).Rel x y) -- ↔ (x, y) ∈ gr
-      rw [MulAction.orbitRel_apply]
-      rw [MulAction.orbit]
-      change (∃ g : G, g • y = x)
-    conv_rhs =>
-      rw [mem_range]
-      simp
-    simp [m]
-  rw [r_eq_r']
-  exact ProperSMul.isProperMap_smul_pair.isClosedMap.isClosed_range
+  rw [t2_iff_isClosed_diagonal]
+  set R := MulAction.orbitRel G X
+  let π : X → Quotient R := Quotient.mk'
+  have : QuotientMap (Prod.map π π) :=
+    (isOpenMap_quotient_mk'_mul.prod isOpenMap_quotient_mk'_mul).to_quotientMap
+      (continuous_quotient_mk'.prod_map continuous_quotient_mk')
+      ((surjective_quotient_mk' _).prodMap (surjective_quotient_mk' _))
+  rw [← this.isClosed_preimage]
+  convert ProperSMul.isProperMap_smul_pair.isClosedMap.isClosed_range
+  · ext ⟨x₁, x₂⟩
+    simp
+    rw [Quotient.eq_rel, MulAction.orbitRel_apply, MulAction.mem_orbit_iff]
+  all_goals infer_instance
 
 /-- If a T2 group acts properly on a topological space, then this topological space is T2. -/
 @[to_additive "If a T2 group acts properly on a topological space,
