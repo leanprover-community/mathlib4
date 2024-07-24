@@ -24,7 +24,7 @@ theorem exists_sum_map_aroot_smul_eq {R S : Type*} [CommRing R] [Field S] [Algeb
         fun x => p.leadingCoeff • x := by
     funext x; rw [Function.comp_apply]
     simp_rw [map_sum, aeval_eq_sum_range' (Nat.lt_add_one_iff.mpr he), aeval_monomial, smul_sum]
-    refine' sum_congr rfl fun i hi => _
+    refine sum_congr rfl fun i hi => ?_
     rw [← Algebra.smul_def, smul_pow, smul_smul, smul_smul, mul_comm (_ * _) (_ ^ _), ← mul_assoc,
       ← mul_assoc, ← mul_pow, ← pow_add,
       add_tsub_cancel_of_le (Nat.lt_add_one_iff.mp (mem_range.mp hi))]
@@ -38,4 +38,3 @@ theorem exists_sum_map_aroot_smul_eq {R S : Type*} [CommRing R] [Field S] [Algeb
   · exact inj
   · rw [Fintype.card_fin]; exact (card_roots' _).trans (natDegree_map_le _ _)
   · exact card_aroots
-#align exists_sum_map_aroot_smul_eq exists_sum_map_aroot_smul_eq
