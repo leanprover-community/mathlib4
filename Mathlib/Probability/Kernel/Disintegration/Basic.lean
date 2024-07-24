@@ -97,7 +97,7 @@ lemma IsCondKernel.isMarkovKernel_iff_isSFiniteKernel [MeasurableSingletonClass 
 end MeasureTheory.Measure
 
 /-!
-### Disintegration of measures
+### Disintegration of kernels
 
 This section provides a predicate for a kernel to disintegrate a kernel, and proves that such a
 disintegrating kernel exists for a countable space if we have disintegrating.
@@ -108,8 +108,8 @@ variable (κ : Kernel α (β × Ω)) [IsFiniteKernel κ] (κCond : Kernel (α ×
 
 /-! #### Predicate for a kernel to disintegrate a kernel -/
 
-/-- A kernel `ρCond` is a conditional kernel for a measure `ρ` if it disintegrates it in the sense
-that `ρ.fst ⊗ₘ ρCond = ρ`. -/
+/-- A kernel `κCond` is a conditional kernel for a kernel `κ` if it disintegrates it in the sense
+that `κ.fst ⊗ₖ κCond = κ`. -/
 class IsCondKernel : Prop where
   disintegrate' : κ.fst ⊗ₖ κCond = κ
 
