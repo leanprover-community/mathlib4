@@ -31,18 +31,14 @@ variable (R : Type*)
 
 /--
 A semireal ring is a non-trivial commutative ring (with unit) in which `-1` is *not* a sum of
-squares. Note that `-1` does not make sense in a semiring.
+squares. Note that `-1` does not make sense in a semiring. Below we define the class `isSemiReal R`
+for all additive monoid `R` equipped with a multiplication, a multiplicative unit and a negation.
 -/
-
-@[class, mk_iff]
-structure isSemireal [CommRing R] : Prop where
+@[mk_iff]
+class isSemireal [AddMonoid R] [Mul R] [One R] [Neg R] : Prop where
   non_trivial        : (0 : R) ≠ 1
   neg_one_not_SumSq  : ¬isSumSq (-1 : R)
 
 instance [LinearOrderedField R] : isSemireal R where
   non_trivial := zero_ne_one
-  neg_one_not_SumSq := by
-    intro h
-    apply absurd h.nonneg
-    apply not_le.mpr
-    exact neg_one_lt_zero
+  neg_one_not_SumSq := fun h ↦ (not_le (α := R)).2 neg_one_lt_zero h.nonneg
