@@ -67,7 +67,7 @@ theorem nhdsBasis_Ioc (h : a ≠ 0) : (𝓝 a).HasBasis (· < a) (Set.Ioc · a) 
 
 -- todo: generalize to a `SuccOrder`
 theorem nhds_eq_pure : 𝓝 a = pure a ↔ ¬IsLimit a :=
-  (isOpen_singleton_iff_nhds_eq_pure _).symm.trans isOpen_singleton_iff
+  isOpen_singleton_iff_nhds_eq_pure.symm.trans isOpen_singleton_iff
 
 -- todo: generalize `Ordinal.IsLimit` and this lemma to a `SuccOrder`
 theorem isOpen_iff : IsOpen s ↔ ∀ o ∈ s, IsLimit o → ∃ a < o, Set.Ioo a o ⊆ s := by
@@ -171,7 +171,7 @@ theorem isLimit_of_mem_frontier (ha : a ∈ frontier s) : IsLimit a := by
   subst hb; subst hc
   exact hc' hb'
 
-theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u}) :
+theorem isNormal_iff_strictMono_and_continuous {f : Ordinal.{u} → Ordinal.{u}} :
     IsNormal f ↔ StrictMono f ∧ Continuous f := by
   refine ⟨fun h => ⟨h.strictMono, ?_⟩, ?_⟩
   · rw [continuous_def]
