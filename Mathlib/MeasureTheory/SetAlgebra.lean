@@ -218,8 +218,8 @@ theorem countable_generateSetAlgebra (h : 𝒜.Countable) :
   have count_ℬ : ℬ.Countable := by
     apply h.union
     have : compl '' 𝒜 = {s | sᶜ ∈ 𝒜} := by
-      ext s; simp
-      exact ⟨fun ⟨x, x_mem, hx⟩ ↦ by simp [← hx, x_mem], fun hs ↦ ⟨sᶜ, hs, by simp⟩⟩
+      ext s
+      simpa using ⟨fun ⟨x, x_mem, hx⟩ ↦ by simp [← hx, x_mem], fun hs ↦ ⟨sᶜ, hs, by simp⟩⟩
     exact this ▸ h.image compl
   let f : Set (Set (Set α)) → Set α := fun A ↦ ⋃ a ∈ A, ⋂ t ∈ a, t
   let 𝒞 := {a | a.Finite ∧ a ⊆ ℬ}
