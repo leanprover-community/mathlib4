@@ -161,7 +161,7 @@ lemma Scheme.descResidueField_fromSpecResidueField {K : Type*} [Field K] (X : Sc
 
 lemma Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField
     (K : Type u) [Field K] (X : Scheme.{u}) (f : Spec (.of K) ⟶ X) :
-  Spec.map (X.descResidueField (Scheme.stalkClosedPointTo _ f))
+  Spec.map (X.descResidueField (Scheme.stalkClosedPointTo f))
     ≫ X.fromSpecResidueField (f.1.base (closedPoint K)) = f := sorry -- by def
 
 lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}
@@ -171,8 +171,8 @@ lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}
 def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :
     (Spec (.of K) ⟶ X) ≃ Σ x, X.residueField x ⟶ .of K where
   toFun f :=
-    letI : IsLocalRingHom (Scheme.stalkClosedPointTo (.of K) f) := inferInstance -- why??
-    ⟨_, X.descResidueField (Scheme.stalkClosedPointTo (.of K) f)⟩
+    letI : IsLocalRingHom (Scheme.stalkClosedPointTo f) := inferInstance -- why??
+    ⟨_, X.descResidueField (Scheme.stalkClosedPointTo f)⟩
   invFun xf := Spec.map xf.2 ≫ X.fromSpecResidueField xf.1
   left_inv := Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField K X
   right_inv := sorry

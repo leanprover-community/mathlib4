@@ -9,9 +9,56 @@ universe u
 
 variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
+class IsClosedPoint {R : Type*} [CommSemiring R] [LocalRing R] (x : PrimeSpectrum R) where
+  is_cls_pt : x = LocalRing.closedPoint R
+
+lemma specialize_to_cls_pt {R : Type*} [CommSemiring R] [LocalRing R] (x : PrimeSpectrum R) [hx : IsClosedPoint x] :
+  x ⤳ LocalRing.closedPoint R := Inseparable.specializes <| congrArg nhds hx.is_cls_pt
+
+lemma cls_pt_specialize_to {R : Type*} [CommSemiring R] [LocalRing R] (x : PrimeSpectrum R) [hx : IsClosedPoint x] :
+  LocalRing.closedPoint R ⤳ x := Inseparable.specializes <| congrArg nhds hx.is_cls_pt.symm
+
+noncomputable def stalk_cls_pt_to {R : Type*} [CommRing R] [LocalRing R]
+    (x : PrimeSpectrum R) [IsClosedPoint x] :
+      (Spec <| CommRingCat.of R).stalk (LocalRing.closedPoint R) ⟶ (Spec <| CommRingCat.of R).stalk x :=
+  TopCat.Presheaf.stalkSpecializes _ <| specialize_to_cls_pt x
+
+noncomputable def to_stalk_cls_pt {R : Type*} [CommRing R] [LocalRing R]
+    (x : PrimeSpectrum R) [IsClosedPoint x] :
+      (Spec <| CommRingCat.of R).stalk x ⟶ (Spec <| CommRingCat.of R).stalk (LocalRing.closedPoint R) :=
+  TopCat.Presheaf.stalkSpecializes _ <| cls_pt_specialize_to x
+
+lemma stalk_cls_pt_to_fromSpecStalk {R : Type*} [CommRing R] [LocalRing R]
+    (x : PrimeSpectrum R) [IsClosedPoint x] :
+      Spec.map (stalk_cls_pt_to x) ≫ (Spec <| .of R).fromSpecStalk (LocalRing.closedPoint R) =
+        (Spec <| .of R).fromSpecStalk x := sorry
+
+lemma to_stalk_cls_pt_fromSpecStalk {R : Type*} [CommRing R] [LocalRing R]
+    (x : PrimeSpectrum R) [IsClosedPoint x] :
+      Spec.map (to_stalk_cls_pt x) ≫ (Spec <| .of R).fromSpecStalk x =
+        (Spec <| .of R).fromSpecStalk (LocalRing.closedPoint R) := sorry
+
+lemma same_image_cls_pt {R : Type*} [CommRing R] [LocalRing R]
+    (x : PrimeSpectrum R) [hx : IsClosedPoint x]
+      {X : Scheme} (f : Spec (.of R) ⟶ X) :
+        f.1.base x = f.1.base (LocalRing.closedPoint R) :=
+  congrArg (⇑f.val.base) hx.is_cls_pt
+
+noncomputable def stalk_image_cls_pt_to {R : Type*} [CommRing R] [LocalRing R]
+    {X : Scheme} (f : Spec (.of R) ⟶ X)
+      (x : PrimeSpectrum R) [IsClosedPoint x]:
+        X.presheaf.stalk (f.1.base (LocalRing.closedPoint R))
+          ⟶ X.presheaf.stalk (f.1.base x) := sorry
+
+noncomputable def to_stalk_image_cls_pt {R : Type*} [CommRing R] [LocalRing R]
+    {X : Scheme} (f : Spec (.of R) ⟶ X)
+      (x : PrimeSpectrum R) [IsClosedPoint x]:
+        X.presheaf.stalk (f.1.base x)
+          ⟶ X.presheaf.stalk (f.1.base (LocalRing.closedPoint R)) := sorry
+
 -- by def
 @[reassoc]
-lemma Scheme.stalkSpecializes_fromSpecStalk {X : Scheme} {x y : X.carrier} (h : x ⤳ y) :
+lemma Scheme.stalkSpecializes_fromSpecStalk {X : Scheme} {x y : X} (h : x ⤳ y) :
     Spec.map (X.presheaf.stalkSpecializes h) ≫ X.fromSpecStalk y = X.fromSpecStalk x := sorry
 
 -- not sure if `hU` is necessary. More or less by def of `fromSpecStalk`.
@@ -58,13 +105,42 @@ def stalkClosedPointIso (R : CommRingCat) [LocalRing R] :
   StructureSheaf.stalkIso _ _ ≪≫ (IsLocalization.atUnits R
       (closedPoint R).asIdeal.primeCompl fun _ ↦ not_not.mp).toRingEquiv.toCommRingCatIso.symm
 
+lemma stalkClosedPointIso_fromSpecStalk (R : CommRingCat) [LocalRing R] :
+    Spec.map (stalkClosedPointIso R).inv =
+      (Spec <| CommRingCat.of R).fromSpecStalk (closedPoint R) := sorry
+
 noncomputable
-def Scheme.stalkClosedPointTo (R : CommRingCat) [LocalRing R] (f : Spec R ⟶ X) :
+def stalkClosedPointIso' {R : CommRingCat} [LocalRing R]
+    (x : PrimeSpectrum R) [IsClosedPoint x] :
+      (Spec R).presheaf.stalk x ≅ R where
+  hom := to_stalk_cls_pt x ≫ (stalkClosedPointIso R).hom
+  inv := (stalkClosedPointIso R).inv ≫ stalk_cls_pt_to x
+  hom_inv_id := sorry
+  inv_hom_id := sorry
+
+lemma stalkClosedPointIso_fromSpecStalk' (R : CommRingCat) [LocalRing R]
+    (x : PrimeSpectrum R) [IsClosedPoint x] :
+      Spec.map (stalkClosedPointIso' x).inv =
+        (Spec <| CommRingCat.of R).fromSpecStalk x := sorry
+
+-- def stalkClosedPointIso_compat (R : CommRingCat) [LocalRing R]
+--     (x : PrimeSpectrum R) [IsClosedPoint x]:
+--       (Spec R).presheaf.stalk x ≅ R :=
+--   sorry
+
+noncomputable
+def Scheme.stalkClosedPointTo {R : CommRingCat} [LocalRing R] (f : Spec R ⟶ X) :
     X.presheaf.stalk (f.1.base (closedPoint R)) ⟶ R :=
   PresheafedSpace.stalkMap f.1 (closedPoint R) ≫ (stalkClosedPointIso R).hom
 
-instance isLocalRingHom_stalkClosedPointTo (R : CommRingCat) [LocalRing R] (f : Spec R ⟶ X) :
-    IsLocalRingHom (Scheme.stalkClosedPointTo R f) := sorry
+noncomputable
+def Scheme.stalkClosedPointTo' {R : CommRingCat} [LocalRing R] (f : Spec R ⟶ X)
+    (x : PrimeSpectrum R) [IsClosedPoint x] :
+      X.presheaf.stalk (f.1.base x) ⟶ R :=
+  to_stalk_image_cls_pt f x ≫ stalkClosedPointTo f
+
+instance isLocalRingHom_stalkClosedPointTo {R : CommRingCat} [LocalRing R] (f : Spec R ⟶ X) :
+    IsLocalRingHom (Scheme.stalkClosedPointTo f) := sorry
 
 -- move me
 lemma LocalRing.closed_point_mem_iff {R : Type*} [CommRing R] [LocalRing R]
@@ -76,17 +152,23 @@ lemma preimage_eq_top_of_closedPoint_mem {R : CommRingCat} [LocalRing R] {f : Sp
 
 -- by def
 @[reassoc]
-lemma Scheme.germ_stalkClosedPointTo_toOpen (R : CommRingCat) [LocalRing R] (f : Spec R ⟶ X)
+lemma Scheme.germ_stalkClosedPointTo_toOpen {R : CommRingCat} [LocalRing R] (f : Spec R ⟶ X)
     (U : Opens X) (hU : f.1.base (closedPoint R) ∈ U) :
-    X.presheaf.germ ⟨_, hU⟩ ≫ stalkClosedPointTo R f = f.app U ≫
+    X.presheaf.germ ⟨_, hU⟩ ≫ stalkClosedPointTo f = f.app U ≫
       ((Spec R).presheaf.mapIso (eqToIso (preimage_eq_top_of_closedPoint_mem hU).symm).op ≪≫
         Scheme.ΓSpecIso R).hom := sorry
 
 -- by def & `germ_stalkClosedPointTo_toOpen`
 @[reassoc]
 lemma Scheme.Spec_stalkClosedPointTo_fromSpecStalk
-    (R : CommRingCat) [LocalRing R] (f : Spec R ⟶ X) :
-    Spec.map (stalkClosedPointTo R f) ≫ X.fromSpecStalk _ = f := sorry
+    {R : CommRingCat} [LocalRing R] (f : Spec R ⟶ X) :
+    Spec.map (stalkClosedPointTo f) ≫ X.fromSpecStalk _ = f := sorry
+
+@[reassoc]
+lemma Scheme.Spec_stalkClosedPointTo_fromSpecStalk'
+    {R : CommRingCat} [LocalRing R] (f : Spec R ⟶ X)
+      (x : PrimeSpectrum R) [IsClosedPoint x] :
+        Spec.map (stalkClosedPointTo' f x) ≫ X.fromSpecStalk _ = f := sorry
 
 -- useful lemma for applications of `SpecToEquivOfLocalRing`
 lemma SpecToEquivOfLocalRing_eq_iff (R : CommRingCat) [LocalRing R] (X : Scheme)
@@ -95,16 +177,16 @@ lemma SpecToEquivOfLocalRing_eq_iff (R : CommRingCat) [LocalRing R] (X : Scheme)
       (X.presheaf.stalkCongr (by rw [h₁]; rfl)).hom ≫ f₂.2.1 := by sorry
 
 noncomputable
-def SpecToEquivOfLocalRing (R : CommRingCat) [LocalRing R] (X : Scheme) :
+def SpecToEquivOfLocalRing {R : CommRingCat} [LocalRing R] (X : Scheme) :
     (Spec R ⟶ X) ≃ Σ x, { f : X.presheaf.stalk x ⟶ R // IsLocalRingHom f } where
-  toFun f := ⟨f.1.base (closedPoint R), Scheme.stalkClosedPointTo R f, inferInstance⟩
+  toFun f := ⟨f.1.base (closedPoint R), Scheme.stalkClosedPointTo f, inferInstance⟩
   invFun xf := Spec.map xf.2.1 ≫ X.fromSpecStalk xf.1
-  left_inv := Scheme.Spec_stalkClosedPointTo_fromSpecStalk R
+  left_inv := Scheme.Spec_stalkClosedPointTo_fromSpecStalk
   right_inv xf := sorry -- by `SpecToEquivOfLocalRing_eq_iff`, faithful-ness of `Spec` and `Spec_stalkClosedPointTo_fromSpecStalk`
 
 -- by `SpecToEquivOfLocalRing`
 lemma Scheme.stalkClosedPointTo_fromSpecStalk {X : Scheme} (x : X.carrier) :
-    stalkClosedPointTo (X.presheaf.stalk x) (X.fromSpecStalk x) =
+    stalkClosedPointTo (X.fromSpecStalk x) =
       (X.presheaf.stalkCongr (by erw [fromSpecStalk_closedPoint]; rfl)).hom := sorry
 
 end AlgebraicGeometry
