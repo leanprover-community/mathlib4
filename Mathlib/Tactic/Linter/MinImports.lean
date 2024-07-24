@@ -72,10 +72,10 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx => do
       let currentlyUnneededImports := explicitImportsInFile.diff importsSoFar
       -- we read the current file, to do a custom parsing of the imports:
       -- this is a hack to obtain some `Syntax` information for the `import X` commands
-      let filePath ← getFileName
-      let fil ← IO.FS.readFile filePath
+      let fname ← getFileName
+      let contents ← IO.FS.readFile fname
       -- `impMods` is the syntax for the modules imported in the current file
-      let (impMods, _) ← Parser.parseHeader (Parser.mkInputContext fil filePath)
+      let (impMods, _) ← Parser.parseHeader (Parser.mkInputContext contents fname)
       for i in currentlyUnneededImports do
         match impMods.find? (·.getId == i) with
           | some impPos => logWarningAt impPos m!"unneeded import '{i}'"
