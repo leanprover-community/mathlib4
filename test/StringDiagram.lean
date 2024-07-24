@@ -1,4 +1,5 @@
 import Mathlib.Tactic.Widget.StringDiagram
+import ProofWidgets.Component.Panel.SelectionPanel
 
 /-! ## Example use of string diagram widgets -/
 
@@ -18,10 +19,13 @@ lemma left_triangle {X Y : C} (η : 𝟙_ _ ⟶ X ⊗ Y) (ε : Y ⊗ X ⟶ 𝟙_
   /- Displays string diagrams for the both sides of the goal. -/
   with_panel_widgets [StringDiagram]
     /- Place the cursor here to see the string diagrams. -/
-    exact w.elim
+    /- You can also see the string diagram of any 2-morphism in the goal or hyperthesis. -/
+    with_panel_widgets [SelectionPanel]
+      /- Place the cursor here and shift-click the 2-morphisms in the tactic state. -/
+      exact w.elim
 
 /- Instead of writing `with_panel_widgets` everywhere, you can also use this command.  -/
-show_panel_widgets [local StringDiagram]
+show_panel_widgets [local StringDiagram, SelectionPanel]
 
 lemma yang_baxter {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ V₁) (w : False) :
     R V₁ V₂ ▷ V₃ ≫ (α_ _ ..).hom ≫ _ ◁ R _ _ ≫ (α_ _ ..).inv ≫ R _ _ ▷ _ ≫ (α_ _ ..).hom =

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
 import ProofWidgets.Component.PenroseDiagram
+import ProofWidgets.Presentation.Expr
 import Mathlib.Tactic.CategoryTheory.Monoidal
 
 /-!
@@ -275,38 +276,73 @@ def fromExpr (e : Expr) : MonoidalM Html := do
     | some html => return html
     | none => return <span>No non-structural morphisms found.</span>
 
+/-- Given a 2-morphism, return a string diagram. Otherwise `none`. -/
+def stringM? (e : Expr) : MetaM (Option Html) := do
+  let e ← instantiateMVars e
+  let some ctx ← mkContext? e | return none
+  return some <| ← MonoidalM.run ctx <| fromExpr e
+
+open scoped Jsx in
+/-- Help function for displaying two string diagrams in an equality. -/
+def mkEqHtml (lhs rhs : Html) : Html :=
+  <div className="flex">
+    <div className="w-50">
+      <details «open»={true}>
+        <summary className="mv2 pointer">String diagram for LHS</summary> {lhs}
+      </details>
+    </div>
+    <div className="w-50">
+      <details «open»={true}>
+        <summary className="mv2 pointer">String diagram for RHS</summary> {rhs}
+      </details>
+    </div>
+  </div>
+
+/-- Given an equality between 2-morphisms, return a string diagram of the LHS and RHS.
+Otherwise `none`. -/
+def stringEqM? (e : Expr) : MetaM (Option Html) := do
+  let e ← instantiateMVars e
+  let some (_, lhs, rhs) := e.eq? | return none
+  let some lhs ← stringM? lhs | return none
+  let some rhs ← stringM? rhs | return none
+  return some <| mkEqHtml lhs rhs
+
+/-- Given an 2-morphism or equality between 2-morphisms, return a string diagram.
+Otherwise `none`. -/
+def stringMorOrEqM? (e : Expr) : MetaM (Option Html) := do
+  if let some html ← stringM? e then
+    return some html
+  else if let some html ← stringEqM? e then
+    return some html
+  else
+    return none
+
+/-- The `Expr` presenter for displaying string diagrams. -/
+@[expr_presenter]
+def stringPresenter : ExprPresenter where
+  userName := "String diagram"
+  layoutKind := .block
+  present type := do
+    if let some html ← stringMorOrEqM? type then
+      return html
+    throwError "Couldn't find a 2-morphism to display a string diagram."
+
 open scoped Jsx in
 /-- The RPC method for displaying string diagrams. -/
 @[server_rpc_method]
 def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
   RequestM.asTask do
-    let inner : Option (Html × Html) ← (do
+    let html : Option Html ← (do
       if props.goals.isEmpty then
         return none
       let some g := props.goals[0]? | unreachable!
-
       g.ctx.val.runMetaM {} do
         g.mvarId.withContext do
-          let e : Expr ← g.mvarId.getType
-          let some (_, lhs, rhs) := e.eq? | return none
-          let some ctx ← mkContext? lhs | return none
-          MonoidalM.run ctx do
-            return some ⟨← fromExpr lhs, ← fromExpr rhs⟩)
-    match inner with
+          let type ← g.mvarId.getType
+          stringEqM? type)
+    match html with
     | none => return <span>No String Diagram.</span>
-    | some (lhs, rhs) =>
-      return <div className="flex">
-        <div className="w-50">
-          <details «open»={true}>
-            <summary className="mv2 pointer">String diagram for LHS</summary> {lhs}
-          </details>
-        </div>
-        <div className="w-50">
-          <details «open»={true}>
-            <summary className="mv2 pointer">String diagram for RHS</summary> {rhs}
-          </details>
-        </div>
-      </div>
+    | some inner => return inner
 
 end StringDiagram
 
