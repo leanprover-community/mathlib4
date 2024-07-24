@@ -82,10 +82,6 @@ instance : Quiver LocallyRingedSpace :=
 @[ext] lemma Hom.ext' (X Y : LocallyRingedSpace.{u}) {f g : X ⟶ Y} (h : f.val = g.val) : f = g :=
   Hom.ext _ _ h
 
--- Porting note (#10754): added this instance to help Lean realize stalks are local
--- (so that `0 ≠ 1` works below)
-instance stalkLocal (x : X) : LocalRing <| X.presheaf.stalk x := X.localRing x
-
 /-- A morphism of locally ringed spaces `f : X ⟶ Y` induces
 a local ring homomorphism from `Y.stalk (f x)` to `X.stalk x` for any `x : X`.
 -/

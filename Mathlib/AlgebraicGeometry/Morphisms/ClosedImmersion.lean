@@ -86,14 +86,13 @@ theorem spec_of_surjective {R S : CommRingCat} (f : R ⟶ S) (h : Function.Surje
     IsClosedImmersion (Spec.map f) where
   base_closed := PrimeSpectrum.closedEmbedding_comap_of_surjective _ _ h
   surj_on_stalks x := by
-    rw [← Scheme.localRingHom_comp_stalkIso]
-    erw [CommRingCat.coe_comp, CommRingCat.coe_comp]
-    apply Function.Surjective.comp (Function.Surjective.comp _ _) _
-    · exact (ConcreteCategory.bijective_of_isIso (StructureSheaf.stalkIso S x).inv).2
-    · exact surjective_localRingHom_of_surjective f h x.asIdeal
-    · let g := (StructureSheaf.stalkIso ((CommRingCat.of R))
-        ((PrimeSpectrum.comap (CommRingCat.ofHom f)) x)).hom
-      exact (ConcreteCategory.bijective_of_isIso g).2
+    haveI : (RingHom.toMorphismProperty (fun f ↦ Function.Surjective f)).RespectsIso := by
+      rw [← RingHom.toMorphismProperty_respectsIso_iff]
+      exact surjective_respectsIso
+    apply (MorphismProperty.arrow_mk_iso_iff
+      (RingHom.toMorphismProperty (fun f ↦ Function.Surjective f))
+      (Scheme.arrowStalkMapSpecIso f x)).mpr
+    exact surjective_localRingHom_of_surjective f h x.asIdeal
 
 /-- For any ideal `I` in a commutative ring `R`, the quotient map `specObj R ⟶ specObj (R ⧸ I)`
 is a closed immersion. -/

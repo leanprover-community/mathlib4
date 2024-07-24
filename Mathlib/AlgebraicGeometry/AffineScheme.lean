@@ -696,11 +696,20 @@ section Stalks
 @[elementwise]
 lemma Scheme.localRingHom_comp_stalkIso {R S : CommRingCat} (f : R ⟶ S) (p : PrimeSpectrum S) :
     (StructureSheaf.stalkIso R (PrimeSpectrum.comap f p)).hom ≫
-      CategoryStruct.comp (Y := CommRingCat.of (Localization.AtPrime p.asIdeal))
-        (Localization.localRingHom (PrimeSpectrum.comap f p).asIdeal p.asIdeal f rfl)
-        (StructureSheaf.stalkIso S p).inv =
-    (Spec.map f).stalkMap p :=
+      (CommRingCat.ofHom <| Localization.localRingHom
+        (PrimeSpectrum.comap f p).asIdeal p.asIdeal f rfl) ≫
+      (StructureSheaf.stalkIso S p).inv = (Spec.map f).stalkMap p :=
   AlgebraicGeometry.localRingHom_comp_stalkIso f p
+
+/-- Given a morphism of rings `f : R ⟶ S`, the stalk map of `Spec S ⟶ Spec R` at
+a prime of `S` is isomorphic to the localized ring homomorphism. -/
+def Scheme.arrowStalkMapSpecIso {R S : CommRingCat} (f : R ⟶ S) (p : PrimeSpectrum S) :
+    Arrow.mk ((Spec.map f).stalkMap p) ≅ Arrow.mk (CommRingCat.ofHom <| Localization.localRingHom
+      (PrimeSpectrum.comap f p).asIdeal p.asIdeal f rfl) := Arrow.isoMk
+  (StructureSheaf.stalkIso R (PrimeSpectrum.comap f p))
+  (StructureSheaf.stalkIso S p) <| by
+    rw [← Scheme.localRingHom_comp_stalkIso]
+    simp
 
 end Stalks
 
