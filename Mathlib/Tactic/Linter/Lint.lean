@@ -220,7 +220,7 @@ initialize addLinter cdotLinter
 end CDotLinter
 
 /-- The "longLine" linter emits a warning on lines longer than 100 characters.
-We allows lines containing URLs to be longer, though. -/
+We allow lines containing URLs to be longer, though. -/
 register_option linter.longLine : Bool := {
   defValue := true
   descr := "enable the longLine linter"
