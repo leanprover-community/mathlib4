@@ -1204,7 +1204,7 @@ theorem isPreconnected_of_forall_constant {s : Set α}
   rcases this with ⟨u, v, u_op, v_op, hsuv, ⟨x, x_in_s, x_in_u⟩, ⟨y, y_in_s, y_in_v⟩, H⟩
   have hy : y ∉ u := fun y_in_u => eq_empty_iff_forall_not_mem.mp H y ⟨y_in_s, ⟨y_in_u, y_in_v⟩⟩
   have : ContinuousOn u.boolIndicator s := by
-    apply (continuousOn_boolIndicator_iff_isClopen _ _).mpr ⟨_, _⟩
+    apply continuousOn_boolIndicator_iff_isClopen.mpr ⟨_, _⟩
     · rw [preimage_subtype_coe_eq_compl hsuv H]
       exact (v_op.preimage continuous_subtype_val).isClosed_compl
     · exact u_op.preimage continuous_subtype_val
