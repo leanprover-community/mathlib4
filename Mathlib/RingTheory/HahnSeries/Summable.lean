@@ -410,7 +410,7 @@ def powers (x : HahnSeries Γ R) (hx : 0 < x.orderTop) : SummableFamily Γ R ℕ
     · obtain ⟨hi, _, rfl⟩ := mem_addAntidiagonal.1 (mem_coe.1 hij)
       rw [← zero_add ij.snd, ← add_assoc, add_zero]
       exact
-        add_lt_add_right (WithTop.coe_lt_coe.1 (lt_of_lt_of_le hx (orderTop_le_of_coeff_ne_zero hi)))
+        add_lt_add_right (WithTop.coe_lt_coe.1 (hx.trans_le (orderTop_le_of_coeff_ne_zero hi)))
           _
     · rintro (_ | n) hn
       · exact Set.mem_union_right _ (Set.mem_singleton 0)

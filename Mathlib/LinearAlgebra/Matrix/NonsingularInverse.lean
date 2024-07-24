@@ -298,6 +298,10 @@ theorem mul_inv_eq_iff_eq_mul_of_invertible (A B C : Matrix n n α) [Invertible 
   ⟨fun h => by rw [← h, inv_mul_cancel_right_of_invertible],
    fun h => by rw [h, mul_inv_cancel_right_of_invertible]⟩
 
+lemma inv_mulVec_eq_vec {A : Matrix n n α} [Invertible A]
+    {u v : n → α} (hM : u = A.mulVec v) : A⁻¹.mulVec u = v := by
+  rw [hM, Matrix.mulVec_mulVec, Matrix.inv_mul_of_invertible, Matrix.one_mulVec]
+
 lemma mul_right_injective_of_invertible [Invertible A] :
     Function.Injective (fun (x : Matrix n m α) => A * x) :=
   fun _ _ h => by simpa only [inv_mul_cancel_left_of_invertible] using congr_arg (A⁻¹ * ·) h
