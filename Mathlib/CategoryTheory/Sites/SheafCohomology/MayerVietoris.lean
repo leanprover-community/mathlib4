@@ -112,7 +112,7 @@ lemma biprodIso_hom_snd (X₁ X₂ Y : C) (n : ℕ) :
   rw [← Functor.map_comp, biprodOpIso_hom_snd]
 
 lemma biprod_inl_comp_biprodIso_inv_apply {X₁ X₂ Y : C} (n : ℕ)
-      (x : ((AddCommGrp.of (Ext X₁ Y n) ⊞ AddCommGrp.of (Ext X₂ Y n)) : AddCommGrp)) :
+    (x : ((AddCommGrp.of (Ext X₁ Y n) ⊞ AddCommGrp.of (Ext X₂ Y n)) : AddCommGrp)) :
     (mk₀ biprod.inl).comp ((biprodIso X₁ X₂ Y n).inv x) (zero_add n) =
       (biprod.fst : AddCommGrp.of (Ext X₁ Y n) ⊞ AddCommGrp.of (Ext X₂ Y n) ⟶ _) x := by
   obtain ⟨y, rfl⟩ : ∃ y, x = (biprodIso X₁ X₂ Y n).hom y :=
