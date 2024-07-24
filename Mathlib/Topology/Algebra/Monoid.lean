@@ -485,10 +485,10 @@ theorem continuousOn_list_prod {f : ι → X → M} (l : List ι) {t : Set X}
     (h : ∀ i ∈ l, ContinuousOn (f i) t) :
     ContinuousOn (fun a => (l.map fun i => f i a).prod) t := by
   intro x hx
-  rw [continuousWithinAt_iff_continuousAt_restrict _ hx]
+  rw [continuousWithinAt_iff_continuousAt_restrict hx]
   refine tendsto_list_prod _ fun i hi => ?_
   specialize h i hi x hx
-  rw [continuousWithinAt_iff_continuousAt_restrict _ hx] at h
+  rw [continuousWithinAt_iff_continuousAt_restrict hx] at h
   exact h
 
 @[to_additive (attr := continuity)]
