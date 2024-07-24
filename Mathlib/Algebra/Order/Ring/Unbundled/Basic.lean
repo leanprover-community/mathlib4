@@ -351,10 +351,15 @@ theorem strictMonoOn_mul_self : StrictMonoOn (fun x : α => x * x) { x | 0 ≤ x
 protected theorem Decidable.mul_lt_mul'' [@DecidableRel α (· ≤ ·)] (h1 : a < c) (h2 : b < d)
     (h3 : 0 ≤ a) (h4 : 0 ≤ b) : a * b < c * d :=
   h4.lt_or_eq_dec.elim (fun b0 => mul_lt_mul h1 h2.le b0 <| h3.trans h1.le) fun b0 => by
-    rw [← b0, mul_zero]; exact mul_pos (h3.trans_lt h1) (h4.trans_lt h2)
-
-theorem lt_mul_left (hn : 0 < a) (hm : 1 < b) : a < b * a := by
+    rw [← b0, mul_zero]; exact mul_pos (h3.trans_lt h1) (h4.trans_lt h2)theorem lt_mul_left (hn : 0 < a) (hm : 1 < b) : a < b * a := by
   convert mul_lt_mul_of_pos_right hm hn
+  rw [one_mul]
+
+theorem lt_mul_right (hn : 0 < a) (hm : 1 < b) : a < a * b := by
+  convert mul_lt_mul_of_pos_left hm hn
+  rw [mul_one]
+
+theorem lt_mul_self (hn : 1 < a) : a < a * a :=
   lt_mul_left (hn.trans_le' zero_le_one) hn
 
 section Monotone
