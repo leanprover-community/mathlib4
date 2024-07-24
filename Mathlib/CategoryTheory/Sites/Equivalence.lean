@@ -115,7 +115,15 @@ instance : e.symm.TransportsGrothendieckTopology K J where
       exact Sieve.functorPushforward_equivalence_eq_pullback e S
     · intro h
       convert J.pullback_stable (e.unit.app X) h
-      exact (e.pullback_functorPushforward_eq S).symm
+      exact (Sieve.pullback_functorPushforward_equivalence_eq e S).symm
+
+theorem coverPreserving : CoverPreserving J K e.functor := by
+  rw [e.eq_inducedTopology_of_transports J K]
+  exact e.coverPreserving' J
+
+theorem coverPreserving_symm : CoverPreserving K J e.inverse := by
+  rw [e.symm.eq_inducedTopology_of_transports K J]
+  exact e.symm.coverPreserving' K
 
 instance : IsContinuous e.functor J K := by
   have : IsCoverDense e.functor K := by rw [e.eq_inducedTopology_of_transports J K]; infer_instance
