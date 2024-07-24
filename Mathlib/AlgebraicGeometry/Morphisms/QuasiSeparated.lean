@@ -57,16 +57,14 @@ theorem quasiSeparatedSpace_iff_affine (X : Scheme) :
         IsCompact (U ⊓ V).1
       by intro U V hU hU' hV hV'; exact this ⟨U, hU⟩ hU' ⟨V, hV⟩ hV'
     intro U hU V hV
-    -- Porting note: it complains "unable to find motive", but telling Lean that motive is
-    -- underscore is actually sufficient, weird
-    apply compact_open_induction_on (P := _) V hV
+    refine compact_open_induction_on V hV ?_ ?_
     · simp
     · intro S _ V hV
       change IsCompact (U.1 ∩ (S.1 ∪ V.1))
       rw [Set.inter_union_distrib_left]
       apply hV.union
       clear hV
-      apply compact_open_induction_on (P := _) U hU
+      refine compact_open_induction_on U hU ?_ ?_
       · simp
       · intro S _ W hW
         change IsCompact ((S.1 ∪ W.1) ∩ V.1)
@@ -244,9 +242,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     ∃ (n : ℕ) (y : Γ(X, U)), y |_ X.basicOpen f = (f |_ X.basicOpen f) ^ n * x := by
   delta TopCat.Presheaf.restrictOpen TopCat.Presheaf.restrict
   revert hU' f x
-  -- Porting note: complains `expected type is not available`, but tell Lean that it is underscore
-  -- is sufficient
-  apply compact_open_induction_on (P := _) U hU
+  refine compact_open_induction_on U hU ?_ ?_
   · intro _ f x
     use 0, f
     refine @Subsingleton.elim _
