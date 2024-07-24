@@ -18,6 +18,20 @@ namespace CategoryTheory
 
 open Category Opposite Limits Abelian
 
+-- to be moved
+namespace Limits
+
+variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C] (X Y : C)
+  [HasBinaryBiproduct X Y] [HasBinaryBiproduct (op X) (op Y)]
+
+noncomputable def biprodOpIso  : op (X ⊞ Y) ≅ op X ⊞ op Y where
+  hom := biprod.lift biprod.inl.op biprod.inr.op
+  inv := biprod.desc biprod.fst.op biprod.snd.op
+  hom_inv_id := sorry
+  inv_hom_id := by ext <;> simp [← op_comp]
+
+end Limits
+
 namespace Abelian
 
 -- to be moved
@@ -25,20 +39,21 @@ namespace Ext
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
 
+instance (n : ℕ) : (extFunctor (C := C) n).Additive where
+
+instance (X : Cᵒᵖ) (n : ℕ) : ((extFunctor n).obj X).Additive where
+
+instance (Y : C) (n : ℕ) : ((extFunctor n).flip.obj Y).Additive where
+
+attribute [local instance] preservesBinaryBiproductsOfPreservesBiproducts
+
 /-- Commutation of `Ext`-groups with the binary biproduct on
 the source. -/
 noncomputable def biprodIso (X₁ X₂ Y : C) (n : ℕ) :
     AddCommGrp.of (Ext (X₁ ⊞ X₂) Y n) ≅
-      AddCommGrp.of (Ext X₁ Y n) ⊞ AddCommGrp.of (Ext X₂ Y n) where
-  hom := biprod.lift (((extFunctor n).map biprod.inl.op).app Y)
-    (((extFunctor n).map biprod.inr.op).app Y)
-  inv := biprod.desc (((extFunctor n).map biprod.fst.op).app Y)
-    (((extFunctor n).map biprod.snd.op).app Y)
-  hom_inv_id := by
-    sorry
-  inv_hom_id := by
-    apply biprod.hom_ext' <;> apply biprod.hom_ext <;> ext <;>
-      simp [AddCommGrp.ofHom] <;> rfl
+      AddCommGrp.of (Ext X₁ Y n) ⊞ AddCommGrp.of (Ext X₂ Y n) :=
+  (((extFunctor n).flip.obj Y).mapIso (biprodOpIso _ _)).trans
+    (((extFunctor n).flip.obj Y).mapBiprod _ _)
 
 end Ext
 

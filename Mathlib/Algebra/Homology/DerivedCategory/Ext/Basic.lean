@@ -252,6 +252,11 @@ variable (X Y) in
 lemma mk₀_zero : mk₀ (0 : X ⟶ Y) = 0 := by
   letI := HasDerivedCategory.standard C; ext; simp [zero_hom']
 
+@[simp]
+lemma mk₀_add (f g : X ⟶ Y) :
+    mk₀ (f + g) = mk₀ f + mk₀ g := by
+  letI := HasDerivedCategory.standard C; ext; simp [add_hom']
+
 section
 
 variable [HasDerivedCategory.{w'} C]
