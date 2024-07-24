@@ -7,6 +7,10 @@ import Mathlib.Data.Multiset.Bind
 
 /-!
 # The cartesian product of multisets
+
+## Main definitions
+
+* `Multiset.pi`: Cartesian product of multisets indexed by a multiset.
 -/
 
 
@@ -39,19 +43,19 @@ theorem cons_same {b : δ a} {f : ∀ a ∈ m, δ a} (h : a ∈ a ::ₘ m) :
   dif_pos rfl
 
 theorem cons_ne {a a' : α} {b : δ a} {f : ∀ a ∈ m, δ a} (h' : a' ∈ a ::ₘ m)
-    (h : a' ≠ a) : cons m a b f a' h' = f a' ((mem_cons.1 h').resolve_left h) :=
+    (h : a' ≠ a) : Pi.cons m a b f a' h' = f a' ((mem_cons.1 h').resolve_left h) :=
   dif_neg h
 
 theorem cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : ∀ a ∈ m, δ a}
-    (h : a ≠ a') : HEq (cons (a' ::ₘ m) a b (cons m a' b' f))
-      (cons (a ::ₘ m) a' b' (cons m a b f)) := by
+    (h : a ≠ a') : HEq (Pi.cons (a' ::ₘ m) a b (Pi.cons m a' b' f))
+      (Pi.cons (a ::ₘ m) a' b' (Pi.cons m a b f)) := by
   apply hfunext rfl
   simp only [heq_iff_eq]
   rintro a'' _ rfl
   refine hfunext (by rw [Multiset.cons_swap]) fun ha₁ ha₂ _ => ?_
   rcases ne_or_eq a'' a with (h₁ | rfl)
   on_goal 1 => rcases eq_or_ne a'' a' with (rfl | h₂)
-  all_goals simp [*, cons_same, cons_ne]
+  all_goals simp [*, Pi.cons_same, Pi.cons_ne]
 
 @[simp, nolint simpNF] -- Porting note: false positive, this lemma can prove itself
 theorem cons_eta {m : Multiset α} {a : α} (f : ∀ a' ∈ a ::ₘ m, δ a') :
@@ -64,13 +68,13 @@ theorem cons_eta {m : Multiset α} {a : α} (f : ∀ a' ∈ a ::ₘ m, δ a') :
 
 theorem cons_map (b : δ a) (f : ∀ a' ∈ m, δ a')
     {δ' : α → Sort*} (φ : ∀ ⦃a'⦄, δ a' → δ' a') :
-    cons _ _ (φ b) (fun a' ha' ↦ φ (f a' ha')) = (fun a' ha' ↦ φ ((cons _ _ b f) a' ha')) := by
+    Pi.cons _ _ (φ b) (fun a' ha' ↦ φ (f a' ha')) = (fun a' ha' ↦ φ ((cons _ _ b f) a' ha')) := by
   ext a' ha'
   refine (congrArg₂ _ ?_ rfl).trans (apply_dite (@φ _) (a' = a) _ _).symm
   ext rfl
   rfl
 
-lemma forall_rel_cons_ext {r : ∀ ⦃a⦄, δ a → δ a → Prop} {b₁ b₂ : δ a} {f₁ f₂ : ∀ a' ∈ m, δ a'}
+theorem forall_rel_cons_ext {r : ∀ ⦃a⦄, δ a → δ a → Prop} {b₁ b₂ : δ a} {f₁ f₂ : ∀ a' ∈ m, δ a'}
     (hb : r b₁ b₂) (hf : ∀ (a : α) (ha : a ∈ m), r (f₁ a ha) (f₂ a ha)) :
     ∀ a ha, r (cons _ _ b₁ f₁ a ha) (cons _ _ b₂ f₂ a ha) := by
   intro a ha
@@ -80,7 +84,7 @@ lemma forall_rel_cons_ext {r : ∀ ⦃a⦄, δ a → δ a → Prop} {b₁ b₂ :
     exact hb
   · exact hf _ _
 
-lemma cons_injective {a : α} {b : δ a} {s : Multiset α} (hs : a ∉ s) :
+theorem cons_injective {a : α} {b : δ a} {s : Multiset α} (hs : a ∉ s) :
     Function.Injective (Pi.cons s a b) := fun f₁ f₂ eq =>
   funext fun a' =>
     funext fun h' =>

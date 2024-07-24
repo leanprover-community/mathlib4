@@ -7,6 +7,10 @@ import Mathlib.Data.Multiset.Pi
 
 /-!
 # The cartesian product of lists
+
+## Main definitions
+
+* `List.pi`: Cartesian product of lists indexed by a list.
 -/
 
 namespace List
@@ -35,7 +39,7 @@ variable (i l)
 function `f` such that `f j : α j` for all `j` in `l`, `Pi.cons a f` is a function `g` such
 that `g k : α k` for all `k` in `i :: l`. -/
 def cons (a : α i) (f : ∀ j ∈ l, α j) : ∀ j ∈ (i :: l), α j :=
-  Multiset.Pi.cons (ι := ι) l _ a f
+  Multiset.Pi.cons (α := ι) l _ a f
 
 variable {i l}
 
@@ -49,7 +53,7 @@ lemma cons_def (a : α i) (f : ∀ j ∈ l, α j) : cons _ _ a f =
 
 @[simp] lemma cons_eta (f : ∀ j ∈ i :: l, α j) :
     cons _ _ (head f) (tail f) = f :=
-  Multiset.Pi.cons_eta (ι := ι) (m := l) f
+  Multiset.Pi.cons_eta (α := ι) (m := l) f
 
 lemma cons_map (a : α i) (f : ∀ j ∈ l, α j)
     {α' : ι → Sort*} (φ : ∀ ⦃j⦄, α j → α' j) :
@@ -59,7 +63,7 @@ lemma cons_map (a : α i) (f : ∀ j ∈ l, α j)
 lemma forall_rel_cons_ext {r : ∀ ⦃i⦄, α i → α i → Prop} {a₁ a₂ : α i} {f₁ f₂ : ∀ j ∈ l, α j}
     (ha : r a₁ a₂) (hf : ∀ (i : ι) (hi : i ∈ l), r (f₁ i hi) (f₂ i hi)) :
     ∀ j hj, r (cons _ _ a₁ f₁ j hj) (cons _ _ a₂ f₂ j hj) :=
-  Multiset.Pi.forall_rel_cons_ext (ι := ι) (m := l) ha hf
+  Multiset.Pi.forall_rel_cons_ext (α := ι) (m := l) ha hf
 
 end Pi
 

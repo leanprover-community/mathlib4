@@ -8,6 +8,10 @@ import Mathlib.Data.Multiset.Pi
 
 /-!
 # The cartesian product of finsets
+
+## Main definitions
+
+* `Finset.pi`: Cartesian product of finsets indexed by a finset.
 -/
 
 open Function
