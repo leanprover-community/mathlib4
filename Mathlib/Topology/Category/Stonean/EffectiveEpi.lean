@@ -6,7 +6,6 @@ Authors: Dagur Asgeirsson, Boris Bolvig Kjær, Jon Eugster, Sina Hazratpour, Nim
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.Limits
-import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 
 /-!
 # Effective epimorphic families in `Stonean`

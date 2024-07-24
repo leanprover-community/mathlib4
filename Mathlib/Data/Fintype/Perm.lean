@@ -7,8 +7,6 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Tactic.Ring
 
-#align_import data.fintype.perm from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
-
 /-!
 # `Fintype` instances for `Equiv` and `Perm`
 
@@ -33,7 +31,6 @@ variable [DecidableEq α] [DecidableEq β]
 def permsOfList : List α → List (Perm α)
   | [] => [1]
   | a :: l => permsOfList l ++ l.bind fun b => (permsOfList l).map fun f => Equiv.swap a b * f
-#align perms_of_list permsOfList
 
 theorem length_permsOfList : ∀ l : List α, length (permsOfList l) = l.length !
   | [] => rfl
@@ -42,7 +39,6 @@ theorem length_permsOfList : ∀ l : List α, length (permsOfList l) = l.length 
     simp only [permsOfList, length_append, length_permsOfList, length_bind, comp,
      length_map, map_const', sum_replicate, smul_eq_mul, succ_mul]
     ring
-#align length_perms_of_list length_permsOfList
 
 theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x → x ∈ l) :
     f ∈ permsOfList l := by
@@ -72,7 +68,6 @@ theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x
   refine or_iff_not_imp_left.2 fun _hfl => ⟨f a, ?_, Equiv.swap a (f a) * f, IH this, ?_⟩
   · exact mem_of_ne_of_mem hfa (h _ hfa')
   · rw [← mul_assoc, mul_def (swap a (f a)) (swap a (f a)), swap_swap, ← Perm.one_def, one_mul]
-#align mem_perms_of_list_of_mem mem_permsOfList_of_mem
 
 theorem mem_of_mem_permsOfList :
     -- Porting note: was `∀ {x}` but need to capture the `x`
@@ -92,12 +87,10 @@ theorem mem_of_mem_permsOfList :
         else mem_cons_of_mem a <| mem_of_mem_permsOfList hg₁ _ <| by
               rw [eq_inv_mul_iff_mul_eq.2 hg₂, mul_apply, swap_inv, swap_apply_def]
               split_ifs <;> [exact Ne.symm hxy; exact Ne.symm hxa; exact hx]
-#align mem_of_mem_perms_of_list mem_of_mem_permsOfList
 
 theorem mem_permsOfList_iff {l : List α} {f : Perm α} :
     f ∈ permsOfList l ↔ ∀ {x}, f x ≠ x → x ∈ l :=
   ⟨mem_of_mem_permsOfList, mem_permsOfList_of_mem⟩
-#align mem_perms_of_list_iff mem_permsOfList_iff
 
 theorem nodup_permsOfList : ∀ {l : List α}, l.Nodup → (permsOfList l).Nodup
   | [], _ => by simp [permsOfList]
@@ -126,7 +119,6 @@ theorem nodup_permsOfList : ∀ {l : List α}, l.Nodup → (permsOfList l).Nodup
       have hxa : x ≠ a := fun h => (List.nodup_cons.1 hl).1 (h ▸ hx)
       exact (List.nodup_cons.1 hl).1 <|
           hgxa ▸ mem_of_mem_permsOfList hg.1 _ (by rwa [apply_inv_self, hgxa])
-#align nodup_perms_of_list nodup_permsOfList
 
 /-- Given a finset, produce the finset of all permutations of its elements. -/
 def permsOfFinset (s : Finset α) : Finset (Perm α) :=
@@ -135,21 +127,17 @@ def permsOfFinset (s : Finset α) : Finset (Perm α) :=
       hfunext (congr_arg _ (Quotient.sound hab)) fun ha hb _ =>
         heq_of_eq <| Finset.ext <| by simp [mem_permsOfList_iff, hab.mem_iff])
     s.2
-#align perms_of_finset permsOfFinset
 
 theorem mem_perms_of_finset_iff :
     ∀ {s : Finset α} {f : Perm α}, f ∈ permsOfFinset s ↔ ∀ {x}, f x ≠ x → x ∈ s := by
   rintro ⟨⟨l⟩, hs⟩ f; exact mem_permsOfList_iff
-#align mem_perms_of_finset_iff mem_perms_of_finset_iff
 
 theorem card_perms_of_finset : ∀ s : Finset α, (permsOfFinset s).card = s.card ! := by
   rintro ⟨⟨l⟩, hs⟩; exact length_permsOfList l
-#align card_perms_of_finset card_perms_of_finset
 
 /-- The collection of permutations of a fintype is a fintype. -/
 def fintypePerm [Fintype α] : Fintype (Perm α) :=
   ⟨permsOfFinset (@Finset.univ α _), by simp [mem_perms_of_finset_iff]⟩
-#align fintype_perm fintypePerm
 
 instance equivFintype [Fintype α] [Fintype β] : Fintype (α ≃ β) :=
   if h : Fintype.card β = Fintype.card α then
@@ -161,9 +149,7 @@ instance equivFintype [Fintype α] [Fintype β] : Fintype (α ≃ β) :=
 
 theorem Fintype.card_perm [Fintype α] : Fintype.card (Perm α) = (Fintype.card α)! :=
   Subsingleton.elim (@fintypePerm α _ _) (@equivFintype α α _ _ _ _) ▸ card_perms_of_finset _
-#align fintype.card_perm Fintype.card_perm
 
 theorem Fintype.card_equiv [Fintype α] [Fintype β] (e : α ≃ β) :
     Fintype.card (α ≃ β) = (Fintype.card α)! :=
   Fintype.card_congr (equivCongr (Equiv.refl α) e) ▸ Fintype.card_perm
-#align fintype.card_equiv Fintype.card_equiv

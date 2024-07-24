@@ -54,7 +54,6 @@ namespace EReal
 
 lemma exp_nmul (x : EReal) (n : ℕ) : exp (n * x) = (exp x) ^ n := by
   simp_rw [← log_eq_iff, log_pow, log_exp]
-  norm_cast
 
 lemma exp_mul (x : EReal) (y : ℝ) : exp (x * y) = (exp x) ^ y := by
   rw [← log_eq_iff, log_rpow, log_exp, log_exp, mul_comm]

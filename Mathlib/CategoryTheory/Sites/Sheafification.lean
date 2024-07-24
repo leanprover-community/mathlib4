@@ -211,16 +211,13 @@ noncomputable def sheafificationIso (P : Sheaf J D) : P ≅ (presheafToSheaf J D
   inv_hom_id := by
     ext1
     apply (isoSheafify J P.2).inv_hom_id
-#align category_theory.sheafification_iso CategoryTheory.sheafificationIso
 
 instance isIso_sheafificationAdjunction_counit (P : Sheaf J D) :
     IsIso ((sheafificationAdjunction J D).counit.app P) :=
   isIso_of_fully_faithful (sheafToPresheaf J D) _
-#align category_theory.is_iso_sheafification_adjunction_counit CategoryTheory.isIso_sheafificationAdjunction_counit
 
 instance sheafification_reflective : IsIso (sheafificationAdjunction J D).counit :=
   NatIso.isIso_of_isIso_app _
-#align category_theory.sheafification_reflective CategoryTheory.sheafification_reflective
 
 variable (J D)
 
