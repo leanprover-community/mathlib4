@@ -7,8 +7,8 @@ import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.Data.Finsupp.Weight
+import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Weighted homogeneous polynomials
@@ -581,7 +581,7 @@ section GradedAlgebra
 variable (w : σ → M) [AddCommMonoid M]
 
 theorem weightedHomogeneousComponent_eq_zero_of_not_mem [DecidableEq M]
-    (φ : MvPolynomial σ R) (i : M) (hi : i ∉ Finset.image (weightedDegree w) φ.support) :
+    (φ : MvPolynomial σ R) (i : M) (hi : i ∉ Finset.image (weight w) φ.support) :
     weightedHomogeneousComponent w i φ = 0 := by
   apply weightedHomogeneousComponent_eq_zero'
   simp only [Finset.mem_image, mem_support_iff, ne_eq, exists_prop, not_exists, not_and] at hi
@@ -592,13 +592,13 @@ variable (R)
 /-- The `decompose'` argument of `weightedDecomposition`.  -/
 def decompose' [DecidableEq M] := fun φ : MvPolynomial σ R =>
   DirectSum.mk (fun i : M => ↥(weightedHomogeneousSubmodule R w i))
-    (Finset.image (weightedDegree w) φ.support) fun m =>
+    (Finset.image (weight w) φ.support) fun m =>
       ⟨weightedHomogeneousComponent w m φ, weightedHomogeneousComponent_mem w φ m⟩
 
 theorem decompose'_apply [DecidableEq M] (φ : MvPolynomial σ R) (m : M) :
     (decompose' R w φ m : MvPolynomial σ R) = weightedHomogeneousComponent w m φ := by
   rw [decompose']
-  by_cases hm : m ∈ Finset.image (weightedDegree w) φ.support
+  by_cases hm : m ∈ Finset.image (weight w) φ.support
   · simp only [DirectSum.mk_apply_of_mem hm, Subtype.coe_mk]
   · rw [DirectSum.mk_apply_of_not_mem hm, Submodule.coe_zero,
       weightedHomogeneousComponent_eq_zero_of_not_mem w φ m hm]
@@ -637,7 +637,7 @@ def weightedGradedAlgebra [DecidableEq M] :
 theorem weightedDecomposition.decompose'_eq [DecidableEq M] :
     (weightedDecomposition R w).decompose' = fun φ : MvPolynomial σ R =>
       DirectSum.mk (fun i : M => ↥(weightedHomogeneousSubmodule R w i))
-        (Finset.image (weightedDegree w) φ.support) fun m =>
+        (Finset.image (weight w) φ.support) fun m =>
           ⟨weightedHomogeneousComponent w m φ, weightedHomogeneousComponent_mem w φ m⟩ := rfl
 
 theorem weightedDecomposition.decompose'_apply [DecidableEq M]

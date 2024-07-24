@@ -495,9 +495,10 @@ theorem sum_homogeneousComponent :
     simpa [coeff_sum, coeff_homogeneousComponent]
   exact fun h => (coeff_eq_zero_of_totalDegree_lt h).symm
 
-theorem homogeneousComponent_homogeneous_polynomial (m n : ℕ) (p : MvPolynomial σ R)
-    (h : p ∈ homogeneousSubmodule σ R n) : homogeneousComponent m p = if m = n then p else 0 := by
-  convert weightedHomogeneousComponent_weighted_homogeneous_polynomial m n p h
+theorem homogeneousComponent_of_mem {m n : ℕ} {p : MvPolynomial σ R}
+    (h : p ∈ homogeneousSubmodule σ R n) :
+    homogeneousComponent m p = if m = n then p else 0 :=
+  weightedHomogeneousComponent_of_mem h
 
 end HomogeneousComponent
 
@@ -531,12 +532,9 @@ theorem decomposition.decompose'_apply (φ : MvPolynomial σ R) (i : ℕ) :
 
 theorem decomposition.decompose'_eq :
     decomposition.decompose' = fun φ : MvPolynomial σ R =>
-      DirectSum.mk (fun i : ℕ => ↥(homogeneousSubmodule σ R i)) (Finset.image degree φ.support)
+      DirectSum.mk (fun i : ℕ => ↥(homogeneousSubmodule σ R i)) (Finset.image Finsupp.degree φ.support)
         fun m => ⟨homogeneousComponent m φ, homogeneousComponent_mem m φ⟩ := by
-  have hw : degree = (weightedDegree 1 : (σ →₀ ℕ) → ℕ) := by
-    ext d
-    simp [weightedDegree, degree, Finsupp.total, Finsupp.sum]
-  rw [hw]
+  rw [degree_eq_weight_one]
   rfl
 
 end GradedAlgebra
