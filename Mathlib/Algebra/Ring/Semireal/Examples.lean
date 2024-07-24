@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Matematiflo. All rights reserved.
+Copyright (c) 2024 Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Florent Schaffhauser
 -/
@@ -23,7 +23,7 @@ theorem maps_to_nonzero_implies_non_zero {R S : Type} [Semiring R] [Semiring S] 
   intro f
   apply mt
   intro one_R_eq_zero
-  rewrite [←f.map_zero, ←f.map_one]
+  rw [← f.map_zero, ← f.map_one]
   apply congrArg f
   exact one_R_eq_zero
 
@@ -53,7 +53,7 @@ theorem maps_to_semireal_implies_semireal (R S : Type) [CommRing R] [CommRing S]
       calc
         f (-1 : R) = -(f 1) := RingHom.map_neg f 1
         _          = -1     := by rw [f.map_one]
-    rewrite [aux]
+    rw [aux]
     exact hS.neg_one_not_SumSq
 
 /-
