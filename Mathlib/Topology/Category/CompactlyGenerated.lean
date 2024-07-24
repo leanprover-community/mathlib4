@@ -143,50 +143,56 @@ theorem lol (s : Set ENat) (h : ⊤ ∉ s) : @IsOpen ENat (Preorder.topology ENa
   exact isOpenSingleton x
 
 theorem lol' (s : Set ENat) (h : ⊤ ∈ s) :
-    @IsOpen ENat (Preorder.topology ENat) s ↔ ∃ x, x < ⊤ ∧ Set.Ioi x ⊆ s where
+    @IsOpen ENat (Preorder.topology ENat) s ↔ ∃ x : ℕ, Set.Ioi ↑x ⊆ s where
   mp hs := by
     induction hs with
     | basic t ht =>
       rcases ht with ⟨a, h' | h'⟩
-      · use a
+      · rw [h'] at h
+        simp only [Set.mem_setOf_eq] at h
+        lift a to ℕ using h.ne
+        use a
         rw [h']
-        refine ⟨?_, subset_refl _⟩
-        rw [h'] at h
-        exact h
+        rfl
       · exfalso
         rw [h'] at h
         simp only [Set.mem_setOf_eq, not_top_lt] at h
-    | univ => exact ⟨0, by norm_num, Set.subset_univ _⟩
+    | univ => exact ⟨0, Set.subset_univ _⟩
     | inter t u ht hu ht' hu' =>
       rcases ht' (Set.mem_of_mem_inter_left h) with ⟨a, ha⟩
       rcases hu' (Set.mem_of_mem_inter_right h) with ⟨b, hb⟩
-      refine ⟨max a b, ?_, ?_⟩
-      · apply max_lt
-        exact ha.1
-        exact hb.1
-      · apply Set.subset_inter
-        · refine subset_trans ?_ ha.2
-          exact Set.Ioi_subset_Ioi (le_max_left _ _)
-        · refine subset_trans ?_ hb.2
-          exact Set.Ioi_subset_Ioi (le_max_right _ _)
+      refine ⟨max a b, ?_⟩
+      have : @Nat.cast ENat _ (max a b) = max ↑a ↑b := by
+        apply eq_max
+        · rw [Nat.cast_le]
+          exact le_max_left _ _
+        · rw [Nat.cast_le]
+          exact le_max_right _ _
+        · intro d h1 h2
+          rcases max_choice a b with h | h <;> rwa [h]
+      rw [this]
+      apply Set.subset_inter
+      · refine subset_trans ?_ ha
+        exact Set.Ioi_subset_Ioi (le_max_left _ _)
+      · refine subset_trans ?_ hb
+        exact Set.Ioi_subset_Ioi (le_max_right _ _)
     | sUnion S hS hS' =>
       simp at h
       rcases h with ⟨t, ht1, ht2⟩
       rcases hS' t ht1 ht2 with ⟨a, ha⟩
-      use a, ha.1
-      apply Set.subset_sUnion_of_subset _ _ ha.2 ht1
+      use a
+      apply Set.subset_sUnion_of_subset _ _ ha ht1
   mpr := by
     let _ := Preorder.topology ENat
     have _ : OrderTopology ENat := OrderTopology.mk rfl
     rintro ⟨a, ha⟩
     rw [← Set.inter_union_compl s (Set.Ioi a)]
     apply IsOpen.union
-    · rw [Set.inter_eq_self_of_subset_right ha.2, isOpen_iff_generate_intervals]
+    · rw [Set.inter_eq_self_of_subset_right ha, isOpen_iff_generate_intervals]
       constructor
       exact ⟨a, Or.inl rfl⟩
     · apply lol
       simp [h]
-      exact ha.1.ne
 
 instance {X : Type} [TopologicalSpace X] [SequentialSpace X] : CompactlyGeneratedSpace.{0} X := by
   rw [compactlyGeneratedSpace_iff]
@@ -212,44 +218,22 @@ instance {X : Type} [TopologicalSpace X] [SequentialSpace X] : CompactlyGenerate
       rw [tendsto_atTop_nhds] at this
       rcases this s aux hs with ⟨N, hN⟩
       use N
-      constructor
-      · apply Ne.lt_top
-        exact (ENat.top_ne_coe _).symm
-      · intro x hx
-        rcases eq_or_ne x ⊤ with y | z
-        · rw [y]
-          exact aux
-        · lift x to ℕ using z
-          apply hN
-          simp at hx
-          exact hx.le
+      intro x hx
+      rcases eq_or_ne x ⊤ with y | z
+      · rw [y]
+        exact aux
+      · lift x to ℕ using z
+        apply hN
+        simp at hx
+        exact hx.le
     exact lol _ hmm
-  have : Set.range f = insert p (Set.range u) := by
-    ext x
-    constructor
-    · rintro ⟨n, rfl⟩
-      rcases eq_or_ne n ⊤ with hn | hn
-      · rw [hn]
-        exact Set.mem_insert _ _
-      · lift n to ℕ using hn
-        apply Set.mem_insert_of_mem
-        use n
-        rfl
-    · intro h
-      simp at h
-      rcases h with rfl | h'
-      · use ⊤
-      · rcases h' with ⟨y, rfl⟩
-        use y
-        rfl
   rw [show p = f ⊤ by rfl]
   change ⊤ ∈ f ⁻¹' s
   have omg : Filter.Tendsto (fun n ↦ n : ℕ → ENat) Filter.atTop (𝓝 ⊤) := by
     rw [tendsto_atTop_nhds]
     intro U mem_U hU
     rw [lol' _ mem_U] at hU
-    rcases hU with ⟨x, hx, hv⟩
-    lift x to ℕ using hx.ne
+    rcases hU with ⟨x, hv⟩
     use x + 1
     intro n hn
     apply hv
