@@ -286,9 +286,7 @@ def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
       let some g := props.goals[0]? | unreachable!
 
       g.ctx.val.runMetaM {} do
-        let md ← g.mvarId.getDecl
-        let lctx := md.lctx
-        Meta.withLCtx lctx md.localInstances do
+        g.mvarId.withContext do
           let e : Expr ← g.mvarId.getType
           let some (_, lhs, rhs) := e.eq? | return none
           let some ctx ← mkContext? lhs | return none
