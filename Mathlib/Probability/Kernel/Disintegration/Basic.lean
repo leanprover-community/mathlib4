@@ -4,9 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kin Yau James Wong
 -/
 import Mathlib.Probability.Kernel.MeasureCompProd
-import Mathlib.Probability.Kernel.Disintegration.CondCdf
-import Mathlib.Probability.Kernel.Disintegration.Density
-import Mathlib.Probability.Kernel.Disintegration.CdfToKernel
 
 /-!
 # Disintegration of measures and kernels
