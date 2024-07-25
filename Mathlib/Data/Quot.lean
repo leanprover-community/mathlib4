@@ -757,10 +757,10 @@ lemma Equivalence.quot_mk_eq_iff {α : Type*} {r : α → α → Prop} (h : Equi
   · exact Quot.sound
 
 lemma congr_liftFun {α β : Type} [HasEquiv α] [HasEquiv β] {f : α → β}
- (h : ∀ x y, x ≈ y → f x ≈ f y) : ((· ≈ ·) ⇒ (· ≈ ·)) f f :=
-  by intro x y hxy; exact h x y hxy
+    (h : ∀ x y, x ≈ y → f x ≈ f y) : ((· ≈ ·) ⇒ (· ≈ ·)) f f := by
+  intro x y hxy; exact h x y hxy
 
 lemma congr_liftFun₂ {α β γ : Type} [HasEquiv α] [HasEquiv β] [HasEquiv γ] {f : α → β → γ}
- (h : ∀ (x₁ x₂ : α) (y₁ y₂ : β), x₁ ≈ x₂ → y₁ ≈ y₂ → f x₁ y₁ ≈ f x₂ y₂) :
- ((· ≈ ·) ⇒ (· ≈ ·) ⇒ (· ≈ ·)) f f :=
-  by intro x₁ x₂ hx y₁ y₂ hy; exact h x₁ x₂ y₁ y₂ hx hy
+    (h : ∀ (x₁ x₂ : α) (y₁ y₂ : β), x₁ ≈ x₂ → y₁ ≈ y₂ → f x₁ y₁ ≈ f x₂ y₂) :
+ ((· ≈ ·) ⇒ (· ≈ ·) ⇒ (· ≈ ·)) f f := by
+  intro x₁ x₂ hx y₁ y₂ hy; exact h x₁ x₂ y₁ y₂ hx hy
