@@ -210,4 +210,3 @@ theorem iff_isSeparable [EssFiniteType K L] :
   ⟨fun _ ↦ isSeparable K L, fun _ ↦ of_isSeparable K L⟩
 
 end Algebra.FormallyUnramified
-#min_imports
