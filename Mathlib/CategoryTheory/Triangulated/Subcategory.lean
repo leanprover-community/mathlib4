@@ -789,7 +789,7 @@ instance [F.Faithful] : (S.lift F hF).Faithful :=
   Functor.Faithful.of_comp_iso (S.liftCompInclusion F hF)
 
 instance [F.Full] : (S.lift F hF).Full :=
-  Functor.Full.ofCompFaithfulIso (S.liftCompInclusion F hF)
+  Functor.Full.of_comp_faithful_iso (S.liftCompInclusion F hF)
 
 -- should be generalized
 instance [Preadditive D] [F.Additive] : (S.lift F hF).Additive where
@@ -829,7 +829,7 @@ lemma mem_inverseImage_iff (X : D) :
     (S.inverseImage F).P X ↔ S.P (F.obj X) := by rfl
 
 instance : ClosedUnderIsomorphisms (S.inverseImage F).P where
-  mem_of_iso {X Y} e hX := by
+  of_iso {X Y} e hX := by
     rw [mem_inverseImage_iff] at hX ⊢
     exact mem_of_iso _ (F.mapIso e) hX
 
@@ -866,7 +866,7 @@ def ofNatTrans : Subcategory C :=
       infer_instance)
     (fun T hT h₁ h₃ => by
       exact Pretriangulated.isIso₂_of_isIso₁₃ (by
-        refine' (Pretriangulated.Triangle.homMk _ _ (τ.app _) (τ.app _) (τ.app _) (by simp) (by simp)
+        refine (Pretriangulated.Triangle.homMk _ _ (τ.app _) (τ.app _) (τ.app _) (by simp) (by simp)
           (by simp [NatTrans.CommShift.comm_app τ])))
         (F.map_distinguished _ hT) (G.map_distinguished _ hT) (by exact h₁) (by exact h₃))
 

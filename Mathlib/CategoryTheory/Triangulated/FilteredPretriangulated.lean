@@ -356,8 +356,6 @@ lemma mem_core_iff (X : C) :
   · rintro ⟨h₁, h₂⟩
     exact ⟨mem_of_isLE _ _, mem_of_isGE _ _⟩
 
-variable (C)
-
 def tCore : Triangulated.Subcategory C where
   P := core
   zero' := by
@@ -377,17 +375,15 @@ def tCore : Triangulated.Subcategory C where
     · have := hT₁.2; have := hT₃.2
       exact GE_ext₂  T dT 0
 
-variable {C}
-
 lemma mem_tCore_iff (X : C) :
-    (tCore C).P X ↔ IsLE X 0 ∧ IsGE X 0 := by
+    tCore.P X ↔ IsLE X 0 ∧ IsGE X 0 := by
   constructor
   · rintro ⟨h₁, h₂⟩
     exact ⟨⟨h₁⟩, ⟨h₂⟩⟩
   · rintro ⟨h₁, h₂⟩
     exact ⟨mem_of_isLE _ _, mem_of_isGE _ _⟩
 
-instance : ClosedUnderIsomorphisms (tCore C).P where
+instance : ClosedUnderIsomorphisms (tCore (C := C)).P where
   of_iso {X Y} e hX := by
     rw [mem_tCore_iff] at hX ⊢
     have := hX.1
@@ -396,23 +392,23 @@ instance : ClosedUnderIsomorphisms (tCore C).P where
     · exact isLE_of_iso e 0
     · exact isGE_of_iso e 0
 
-abbrev Core' := (tCore C).category
+abbrev Core' := (tCore (C := C)).category
 
-abbrev ιCore' : Core' ⥤ C := fullSubcategoryInclusion _
+abbrev ιCore' : Core' (C := C) ⥤ C := fullSubcategoryInclusion _
 
-instance : Functor.Additive ιCore' := sorry
+instance : Functor.Additive (ιCore' (C := C)) := sorry
 
-instance : Functor.Full ιCore' := sorry
+instance : Functor.Full (ιCore' (C := C)) := sorry
 
-instance : Functor.Faithful ιCore' := sorry
+instance : Functor.Faithful (ιCore' (C := C)) := sorry
 
 
-instance (X : Core') : IsLE (ιCore'.obj X) 0 := ⟨X.2.1⟩
-instance (X : Core') : IsGE (ιCore'.obj X) 0 := ⟨X.2.2⟩
-instance (X : Core') : IsLE X.1 0 := ⟨X.2.1⟩
-instance (X : Core') : IsGE X.1 0 := ⟨X.2.2⟩
+instance (X : Core') : IsLE (C := C) (ιCore'.obj X) 0 := ⟨X.2.1⟩
+instance (X : Core') : IsGE (C := C) (ιCore'.obj X) 0 := ⟨X.2.2⟩
+instance (X : Core') : IsLE X.1 0 (C := C) := ⟨X.2.1⟩
+instance (X : Core') : IsGE X.1 0 (C := C) := ⟨X.2.2⟩
 
-lemma ιCore_obj_mem_core (X : Core') : core (ιCore'.obj X) := X.2
+lemma ιCore_obj_mem_core (X : Core') : core (C := C) (ιCore'.obj X) := X.2
 
 /-
 def ιHeartDegree (n : ℤ) : t.Heart' ⥤ C :=
@@ -424,6 +420,8 @@ noncomputable def ιHeartDegreeCompShiftIso (n : ℤ) : t.ιHeartDegree n ⋙ sh
     Functor.rightUnitor _
 -/
 
+variable (C)
+
 class HasCore where
   H : Type*
   [cat : Category H]
@@ -434,7 +432,9 @@ class HasCore where
   faithful_ι : ι.Faithful := by infer_instance
   hι : ι.essImage = setOf tCore.P := by simp
 
-def hasCoreFullSubcategory : HasCore where
+variable {C}
+
+def hasCoreFullSubcategory : HasCore C where
   H := Core'
   ι := ιCore'
   hι := by
@@ -448,30 +448,30 @@ def hasCoreFullSubcategory : HasCore where
       change (fullSubcategoryInclusion core).obj ⟨X, h⟩ ∈ _
       exact Functor.obj_mem_essImage _ _
 
-variable [ht : HasCore]
+variable [ht : HasCore C]
 
 def Core := ht.H
 
-instance : Category Core := ht.cat
+instance : Category (Core (C := C)) := ht.cat
 
-def ιCore : Core ⥤ C := ht.ι
+def ιCore : Core (C := C) ⥤ C := ht.ι
 
-instance : Preadditive Core := ht.preadditive
-instance : ιCore.Full := ht.fullι
-instance : ιCore.Faithful := ht.faithful_ι
-instance : ιCore.Additive := ht.additive_ι
+instance : Preadditive (Core (C := C)) := ht.preadditive
+instance : (ιCore (C := C)).Full := ht.fullι
+instance : (ιCore (C := C)).Faithful := ht.faithful_ι
+instance : (ιCore (C := C)).Additive := ht.additive_ι
 
 -- Add instances saying that the core is triangulated and the inclusion is a triangulated functor.
 
-lemma ιCore_obj_mem (X : Core) : tCore.P (ιCore.obj X) := by
+lemma ιCore_obj_mem (X : Core (C := C)) : tCore.P (ιCore.obj X) := by
   change (ιCore.obj X) ∈ setOf tCore.P
   rw [← ht.hι]
   exact ιCore.obj_mem_essImage X
 
-instance (X : Core) : IsLE (ιCore.obj X) 0 :=
+instance (X : Core) : IsLE (C := C) (ιCore.obj X) 0 :=
   ⟨(ιCore_obj_mem X).1⟩
 
-instance (X : Core) : IsGE (ιCore.obj X) 0 :=
+instance (X : Core) : IsGE (C := C) (ιCore.obj X) 0 :=
   ⟨(ιCore_obj_mem X).2⟩
 
 lemma mem_essImage_ιCore_iff (X : C) :
@@ -479,7 +479,7 @@ lemma mem_essImage_ιCore_iff (X : C) :
   dsimp [ιCore]
   rw [ht.hι, Set.mem_setOf_eq]
 
-noncomputable def coreMk (X : C) (hX : tCore.P X) : Core :=
+noncomputable def coreMk (X : C) (hX : tCore.P X) : Core (C := C) :=
   Functor.essImage.witness ((mem_essImage_ιCore_iff X).2 hX)
 
 noncomputable def ιCoreObjCoreMkIso (X : C) (hX : tCore.P X) :
@@ -489,7 +489,7 @@ noncomputable def ιCoreObjCoreMkIso (X : C) (hX : tCore.P X) :
 @[simps obj]
 noncomputable def liftCore {D : Type*} [Category D]
     (G : D ⥤ C) (hF : ∀ (X : D), tCore.P (G.obj X)) :
-    D ⥤ Core where
+    D ⥤ Core (C := C) where
   obj X := coreMk (G.obj X) (hF X)
   map {X Y} f := ιCore.preimage ((ιCoreObjCoreMkIso _ (hF X)).hom ≫ G.map f ≫
       (ιCoreObjCoreMkIso _ (hF Y)).inv)
@@ -509,7 +509,7 @@ noncomputable def liftCoreιCore {D : Type*} [Category D]
     liftCore G hF ⋙ ιCore ≅ G :=
   NatIso.ofComponents (fun X => ιCoreObjCoreMkIso _ (hF X)) (by aesop_cat)
 
-end FilteredTriangulated
+end FilteredPretriangulated
 
 #exit
 
