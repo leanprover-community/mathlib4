@@ -49,7 +49,7 @@ variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAd
 section UnifTight
 
 /- This follows closely the `UnifIntegrable` section
-from `MeasureTheory.Functions.UniformIntegrable`.-/
+from `Mathlib.MeasureTheory.Functions.UniformIntegrable`.-/
 
 variable {f g : ι → α → β} {p : ℝ≥0∞}
 
@@ -65,7 +65,7 @@ theorem unifTight_iff_ennreal {_ : MeasurableSpace α} (f : ι → α → β) (p
       μ s ≠ ∞ ∧ ∀ i, snorm (sᶜ.indicator (f i)) p μ ≤ ε := by
   simp only [ENNReal.forall_ennreal, ENNReal.coe_pos]
   refine (and_iff_left ?_).symm
-  simp [-ne_eq, zero_lt_top, le_top]
+  simp only [zero_lt_top, le_top, implies_true, and_true, true_implies]
   use ∅; simpa only [measure_empty] using zero_ne_top
 
 theorem unifTight_iff_real {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
@@ -187,13 +187,11 @@ private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α �
     · simp only [Fin.coe_eq_castSucc, Fin.castSucc_mk, g]
   · rw [(_ : i = n)]
     · rw [compl_union, inter_comm, ← indicator_indicator]
-      apply (snorm_indicator_le _).trans
-      convert hfε.le
+      exact (snorm_indicator_le _).trans hfε.le
     · have hi' := Fin.is_lt i
       rw [Nat.lt_succ_iff] at hi'
       rw [not_lt] at hi
-      -- Porting note: Original proof was `simp [← le_antisymm hi' hi]`
-      ext; symm; rw [Fin.coe_ofNat_eq_mod, le_antisymm hi' hi, Nat.mod_succ_eq_iff_lt, Nat.lt_succ]
+      simp [← le_antisymm hi' hi]
 
 /-- A finite sequence of Lp functions is uniformly tight. -/
 theorem unifTight_finite [Finite ι] (hp_top : p ≠ ∞) {f : ι → α → β}

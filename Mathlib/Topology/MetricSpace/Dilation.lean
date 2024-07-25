@@ -101,10 +101,10 @@ theorem toFun_eq_coe {f : α →ᵈ β} : f.toFun = (f : α → β) :=
 theorem coe_mk (f : α → β) (h) : ⇑(⟨f, h⟩ : α →ᵈ β) = f :=
   rfl
 
-theorem congr_fun {f g : α →ᵈ β} (h : f = g) (x : α) : f x = g x :=
+protected theorem congr_fun {f g : α →ᵈ β} (h : f = g) (x : α) : f x = g x :=
   DFunLike.congr_fun h x
 
-theorem congr_arg (f : α →ᵈ β) {x y : α} (h : x = y) : f x = f y :=
+protected theorem congr_arg (f : α →ᵈ β) {x y : α} (h : x = y) : f x = f y :=
   DFunLike.congr_arg f h
 
 @[ext]

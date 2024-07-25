@@ -77,7 +77,7 @@ theorem prod_primeFactorsList : ∀ {n}, n ≠ 0 → List.prod (primeFactorsList
         Nat.mul_div_cancel' (minFac_dvd _)]
 
 theorem primeFactorsList_prime {p : ℕ} (hp : Nat.Prime p) : p.primeFactorsList = [p] := by
-  have : p = p - 2 + 2 := (tsub_eq_iff_eq_add_of_le hp.two_le).mp rfl
+  have : p = p - 2 + 2 := (Nat.sub_add_cancel hp.two_le).symm
   rw [this, primeFactorsList]
   simp only [Eq.symm this]
   have : Nat.minFac p = p := (Nat.prime_def_minFac.mp hp).2

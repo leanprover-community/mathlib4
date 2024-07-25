@@ -454,6 +454,7 @@ theorem setOf_false : { _a : α | False } = ∅ :=
 theorem empty_subset (s : Set α) : ∅ ⊆ s :=
   nofun
 
+@[simp]
 theorem subset_empty_iff {s : Set α} : s ⊆ ∅ ↔ s = ∅ :=
   (Subset.antisymm_iff.trans <| and_iff_left (empty_subset _)).symm
 

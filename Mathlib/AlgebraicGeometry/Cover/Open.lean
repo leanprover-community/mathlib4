@@ -263,21 +263,6 @@ def OpenCover.inter {X : Scheme.{u}} (𝒰₁ : Scheme.OpenCover.{v₁} X)
     exact ⟨𝒰₁.covers x, 𝒰₂.covers x⟩
   IsOpen x := inferInstance
 
-/-- If `U` is a family of open sets that covers `X`, then `X.restrict U` forms an `X.open_cover`. -/
-@[simps! J obj map]
-def openCoverOfSuprEqTop {s : Type*} (X : Scheme.{u}) (U : s → Opens X)
-    (hU : ⨆ i, U i = ⊤) : X.OpenCover where
-  J := s
-  obj i := X.restrict (U i).openEmbedding
-  map i := X.ofRestrict (U i).openEmbedding
-  f x :=
-    haveI : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : Opens X) by trivial
-    (Opens.mem_iSup.mp this).choose
-  covers x := by
-    erw [Subtype.range_coe]
-    have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : Opens X) by trivial
-    exact (Opens.mem_iSup.mp this).choose_spec
-
 /--
 An affine open cover of `X` consists of a family of open immersions into `X` from
 spectra of rings.
@@ -428,7 +413,7 @@ def OpenCover.fromAffineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) :
 
 /-- If two global sections agree after restriction to each member of an open cover, then
 they agree globally. -/
-lemma OpenCover.ext_elem {X : Scheme.{u}} {U : Opens X} (f g : Γ(X, U)) (𝒰 : X.OpenCover)
+lemma OpenCover.ext_elem {X : Scheme.{u}} {U : X.Opens} (f g : Γ(X, U)) (𝒰 : X.OpenCover)
     (h : ∀ i : 𝒰.J, (𝒰.map i).app U f = (𝒰.map i).app U g) : f = g := by
   fapply TopCat.Sheaf.eq_of_locally_eq' X.sheaf
     (fun i ↦ (𝒰.map (𝒰.f i)).opensRange ⊓ U) _ (fun _ ↦ homOfLE inf_le_right)
@@ -444,13 +429,13 @@ lemma OpenCover.ext_elem {X : Scheme.{u}} {U : Opens X} (f g : Γ(X, U)) (𝒰 :
 
 /-- If the restriction of a global section to each member of an open cover is zero, then it is
 globally zero. -/
-lemma zero_of_zero_cover {X : Scheme.{u}} {U : Opens X} (s : Γ(X, U)) (𝒰 : X.OpenCover)
+lemma zero_of_zero_cover {X : Scheme.{u}} {U : X.Opens} (s : Γ(X, U)) (𝒰 : X.OpenCover)
     (h : ∀ i : 𝒰.J, (𝒰.map i).app U s = 0) : s = 0 :=
   𝒰.ext_elem s 0 (fun i ↦ by rw [map_zero]; exact h i)
 
 /-- If a global section is nilpotent on each member of a finite open cover, then `f` is
 nilpotent. -/
-lemma isNilpotent_of_isNilpotent_cover {X : Scheme.{u}} {U : Opens X} (s : Γ(X, U))
+lemma isNilpotent_of_isNilpotent_cover {X : Scheme.{u}} {U : X.Opens} (s : Γ(X, U))
     (𝒰 : X.OpenCover) [Finite 𝒰.J] (h : ∀ i : 𝒰.J, IsNilpotent ((𝒰.map i).app U s)) :
     IsNilpotent s := by
   choose fn hfn using h

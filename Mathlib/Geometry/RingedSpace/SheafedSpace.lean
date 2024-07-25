@@ -80,8 +80,8 @@ instance : Category (SheafedSpace C) :=
     infer_instance
 
 -- Porting note (#5229): adding an `ext` lemma.
-@[ext (iff := false)]
-theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
+@[ext]
+theorem ext {X Y : SheafedSpace C} {α β : X ⟶ Y} (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=
   PresheafedSpace.ext α β w h
 

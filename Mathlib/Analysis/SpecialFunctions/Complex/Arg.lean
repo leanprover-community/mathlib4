@@ -563,16 +563,12 @@ theorem tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re
       (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 (-π)) by
     refine H.congr' ?_
     have : ∀ᶠ x : ℂ in 𝓝 z, x.re < 0 := continuous_re.tendsto z (gt_mem_nhds hre)
-    -- Porting note: need to specify the `nhdsWithin` set
-    filter_upwards [self_mem_nhdsWithin (s := { z : ℂ | z.im < 0 }),
-      mem_nhdsWithin_of_mem_nhds this] with _ him hre
+    filter_upwards [self_mem_nhdsWithin, mem_nhdsWithin_of_mem_nhds this] with _ him hre
     rw [arg, if_neg hre.not_le, if_neg him.not_le]
   convert (Real.continuousAt_arcsin.comp_continuousWithinAt
-          ((continuous_im.continuousAt.comp_continuousWithinAt continuousWithinAt_neg).div
-            -- Porting note: added type hint to assist in goal state below
-            continuous_abs.continuousWithinAt (s := { z : ℂ | z.im < 0 }) (_ : abs z ≠ 0))
-          -- Porting note: specify constant precisely to assist in goal below
-          ).sub_const π using 1
+    ((continuous_im.continuousAt.comp_continuousWithinAt continuousWithinAt_neg).div
+      continuous_abs.continuousWithinAt _)
+    ).sub_const π using 1
   · simp [him]
   · lift z to ℝ using him
     simpa using hre.ne
