@@ -442,10 +442,10 @@ section
 
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} (f : α →+* β) {x y : α}
 
-theorem congr_fun {f g : α →+* β} (h : f = g) (x : α) : f x = g x :=
+protected theorem congr_fun {f g : α →+* β} (h : f = g) (x : α) : f x = g x :=
   DFunLike.congr_fun h x
 
-theorem congr_arg (f : α →+* β) {x y : α} (h : x = y) : f x = f y :=
+protected theorem congr_arg (f : α →+* β) {x y : α} (h : x = y) : f x = f y :=
   DFunLike.congr_arg f h
 
 theorem coe_inj ⦃f g : α →+* β⦄ (h : (f : α → β) = g) : f = g :=

@@ -7,8 +7,6 @@ import Mathlib.Data.TypeMax
 import Mathlib.Logic.UnivLE
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 
-
-
 /-!
 # Limits in the category of types.
 

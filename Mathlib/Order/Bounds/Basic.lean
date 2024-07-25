@@ -974,7 +974,7 @@ theorem mem_lowerBounds_image (Has : a ∈ lowerBounds s) (Hat : a ∈ t) :
 theorem mem_lowerBounds_image_self : a ∈ lowerBounds t → a ∈ t → f a ∈ lowerBounds (f '' t) :=
   Hf.mem_lowerBounds_image subset_rfl
 
-theorem image_upperBounds_subset_upperBounds_image (Hst : s ⊆ t) :
+theorem image_upperBounds_subset_upperBounds_image (Hf : MonotoneOn f t) (Hst : s ⊆ t) :
     f '' (upperBounds s ∩ t) ⊆ upperBounds (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩
   exact Hf.mem_upperBounds_image Hst ha.1 ha.2
@@ -1056,7 +1056,8 @@ theorem mem_upperBounds_image (Ha : a ∈ upperBounds s) : f a ∈ upperBounds (
 theorem mem_lowerBounds_image (Ha : a ∈ lowerBounds s) : f a ∈ lowerBounds (f '' s) :=
   forall_mem_image.2 fun _ H => Hf (Ha H)
 
-theorem image_upperBounds_subset_upperBounds_image : f '' upperBounds s ⊆ upperBounds (f '' s) := by
+theorem image_upperBounds_subset_upperBounds_image (Hf : Monotone f) :
+    f '' upperBounds s ⊆ upperBounds (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩
   exact Hf.mem_upperBounds_image ha
 
@@ -1143,12 +1144,14 @@ theorem image2_lowerBounds_lowerBounds_subset :
   image2_subset_iff.2 fun _ ha _ hb ↦ mem_lowerBounds_image2 h₀ h₁ ha hb
 
 /-- See also `Monotone.map_bddAbove`. -/
-protected theorem BddAbove.image2 : BddAbove s → BddAbove t → BddAbove (image2 f s t) := by
+protected theorem BddAbove.image2 (h₀ : ∀ b, Monotone (swap f b)) (h₁ : ∀ a, Monotone (f a)) :
+    BddAbove s → BddAbove t → BddAbove (image2 f s t) := by
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   exact ⟨f a b, mem_upperBounds_image2 h₀ h₁ ha hb⟩
 
 /-- See also `Monotone.map_bddBelow`. -/
-protected theorem BddBelow.image2 : BddBelow s → BddBelow t → BddBelow (image2 f s t) := by
+protected theorem BddBelow.image2 (h₀ : ∀ b, Monotone (swap f b)) (h₁ : ∀ a, Monotone (f a)) :
+    BddBelow s → BddBelow t → BddBelow (image2 f s t) := by
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   exact ⟨f a b, mem_lowerBounds_image2 h₀ h₁ ha hb⟩
 

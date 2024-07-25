@@ -271,14 +271,18 @@
   "Mathlib.Tactic.CategoryTheory.Reassoc":
   ["Mathlib.CategoryTheory.Functor.Basic"],
   "Mathlib.Tactic.CategoryTheory.Coherence":
-  ["Mathlib.Tactic.CategoryTheory.MonoidalComp"],
+  ["Mathlib.CategoryTheory.Monoidal.Free.Coherence",
+   "Mathlib.Tactic.CategoryTheory.MonoidalComp"],
   "Mathlib.Tactic.CategoryTheory.BicategoryCoherence":
-  ["Mathlib.Tactic.CategoryTheory.BicategoricalComp"],
+  ["Mathlib.CategoryTheory.Bicategory.Coherence",
+   "Mathlib.Tactic.CategoryTheory.BicategoricalComp"],
   "Mathlib.Tactic.CC.Addition":
   ["Mathlib.Logic.Basic", "Mathlib.Tactic.CC.Lemmas"],
   "Mathlib.Tactic.Basic": ["Mathlib.Tactic.Linter.OldObtain"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
+  "Mathlib.RingTheory.PowerSeries.Basic":
+  ["Mathlib.Algebra.CharP.Defs", "Mathlib.Tactic.MoveAdd"],
   "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
   ["Mathlib.Algebra.DirectSum.Internal"],

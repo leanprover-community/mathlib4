@@ -856,7 +856,7 @@ theorem Subsingleton.finite {s : Set α} (h : s.Subsingleton) : s.Finite :=
 theorem Infinite.nontrivial {s : Set α} (hs : s.Infinite) : s.Nontrivial :=
   not_subsingleton_iff.1 <| mt Subsingleton.finite hs
 
-theorem finite_preimage_inl_and_inr {s : Set (Sum α β)} :
+theorem finite_preimage_inl_and_inr {s : Set (α ⊕ β)} :
     (Sum.inl ⁻¹' s).Finite ∧ (Sum.inr ⁻¹' s).Finite ↔ s.Finite :=
   ⟨fun h => image_preimage_inl_union_image_preimage_inr s ▸ (h.1.image _).union (h.2.image _),
     fun h => ⟨h.preimage Sum.inl_injective.injOn, h.preimage Sum.inr_injective.injOn⟩⟩
