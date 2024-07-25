@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Shift.Opposite
 import Mathlib.CategoryTheory.Shift.Pullback
-import Mathlib.CategoryTheory.Triangulated.Pretriangulated
+import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -255,7 +255,7 @@ equivalence `triangleOpEquivalence C : (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` 
 @[simps!]
 noncomputable def counitIso : inverse C ⋙ functor C ≅ 𝟭 _ :=
   NatIso.ofComponents (fun T => by
-    refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) _ _ _
+    refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) ?_ ?_ ?_
     · aesop_cat
     · aesop_cat
     · dsimp
@@ -418,5 +418,20 @@ lemma unop_distinguished (T : Triangle Cᵒᵖ) (hT : T ∈ distTriang Cᵒᵖ) 
     ((triangleOpEquivalence C).inverse.obj T).unop ∈ distTriang C := hT
 
 end Pretriangulated
+
+namespace Functor
+
+open Pretriangulated.Opposite Pretriangulated
+
+variable {C}
+
+lemma map_distinguished_op_exact [HasShift C ℤ] [HasZeroObject C] [Preadditive C]
+    [∀ (n : ℤ), (shiftFunctor C n).Additive]
+    [Pretriangulated C]{A : Type*} [Category A] [Abelian A] (F : Cᵒᵖ ⥤ A)
+    [F.IsHomological] (T : Triangle C) (hT : T ∈ distTriang C) :
+    ((shortComplexOfDistTriangle T hT).op.map F).Exact :=
+  F.map_distinguished_exact _ (op_distinguished T hT)
+
+end Functor
 
 end CategoryTheory

@@ -6,8 +6,6 @@ Authors: Anne Baanen
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.DedekindDomain.Ideal
 
-#align_import ring_theory.dedekind_domain.pid from "leanprover-community/mathlib"@"6010cf523816335f7bae7f8584cb2edaace73940"
-
 /-!
 # Criteria under which a Dedekind domain is a PID
 
@@ -72,7 +70,6 @@ theorem Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne {P : Id
           hQp
             (isPrime_of_prime
               (irreducible_iff_prime.mp (irreducible_of_normalized_factor _ hQi)))).le
-#align ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne
 
 -- Porting note: replaced three implicit coercions of `I` with explicit `(I : Submodule R A)`
 theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {R A : Type*}
@@ -95,12 +92,11 @@ theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {
   obtain ⟨w, hw, hvw⟩ := Submodule.mem_mul_span_singleton.1 this
   refine ⟨⟨w, ?_⟩⟩
   rw [← FractionalIdeal.coe_spanSingleton S, ← inv_inv I, eq_comm]
-  refine' congr_arg (↑) (Units.eq_inv_of_mul_eq_one_left (le_antisymm _ _))
+  refine congr_arg coeToSubmodule (Units.eq_inv_of_mul_eq_one_left (le_antisymm ?_ ?_))
   · conv_rhs => rw [← hinv, mul_comm]
     apply FractionalIdeal.mul_le_mul_left (FractionalIdeal.spanSingleton_le_iff_mem.mpr hw)
   · rw [FractionalIdeal.one_le, ← hvw, mul_comm]
     exact FractionalIdeal.mul_mem_mul hv (FractionalIdeal.mem_spanSingleton_self _ _)
-#align fractional_ideal.is_principal_of_unit_of_comap_mul_span_singleton_eq_top FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top
 
 /--
 An invertible fractional ideal of a commutative ring with finitely many maximal ideals is principal.
@@ -127,14 +123,14 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
       SetLike.exists_of_lt
         ((IsLocalization.coeSubmodule_strictMono hS (hf.mem_toFinset.1 hM).ne_top.lt_top).trans_eq
           hinv.symm)
-    refine' hxM (Submodule.map₂_le.2 _ hx); exact h
+    exact hxM (Submodule.map₂_le.2 h hx)
   choose! a ha b hb hm using this
   choose! u hu hum using fun M hM => SetLike.not_le_iff_exists.1 (nle M hM)
   let v := ∑ M ∈ s, u M • b M
   have hv : v ∈ I' := Submodule.sum_mem _ fun M hM => Submodule.smul_mem _ _ <| hb M hM
-  refine'
+  refine
     FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top
-      (Units.mkOfMulEqOne I I' hinv') hv (of_not_not fun h => _)
+      (Units.mkOfMulEqOne I I' hinv') hv (of_not_not fun h => ?_)
   obtain ⟨M, hM, hJM⟩ := Ideal.exists_le_maximal _ h
   replace hM := hf.mem_toFinset.2 hM
   have : ∀ a ∈ I, ∀ b ∈ I', ∃ c, algebraMap R _ c = a * b := by
@@ -143,12 +139,12 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     exact ⟨c, hc⟩
   have hmem : a M * v ∈ IsLocalization.coeSubmodule A M := by
     obtain ⟨c, hc⟩ := this _ (ha M hM) v hv
-    refine' IsLocalization.coeSubmodule_mono _ hJM ⟨c, _, hc⟩
+    refine IsLocalization.coeSubmodule_mono _ hJM ⟨c, ?_, hc⟩
     have := Submodule.mul_mem_mul (ha M hM) (Submodule.mem_span_singleton_self v)
     rwa [← hc] at this
   simp_rw [v, Finset.mul_sum, mul_smul_comm] at hmem
   rw [← s.add_sum_erase _ hM, Submodule.add_mem_iff_left] at hmem
-  · refine' hm M hM _
+  · refine hm M hM ?_
     obtain ⟨c, hc : algebraMap R A c = a M * b M⟩ := this _ (ha M hM) _ (hb M hM)
     rw [← hc] at hmem ⊢
     rw [Algebra.smul_def, ← _root_.map_mul] at hmem
@@ -157,7 +153,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     -- Note: #8386 had to specify the value of `f`
     exact Submodule.mem_map_of_mem (f := Algebra.linearMap _ _)
         (((hf.mem_toFinset.1 hM).isPrime.mem_or_mem hdM).resolve_left <| hum M hM)
-  · refine' Submodule.sum_mem _ fun M' hM' => _
+  · refine Submodule.sum_mem _ fun M' hM' => ?_
     rw [Finset.mem_erase] at hM'
     obtain ⟨c, hc⟩ := this _ (ha M hM) _ (hb M' hM'.2)
     rw [← hc, Algebra.smul_def, ← _root_.map_mul]
@@ -166,7 +162,6 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     -- Note: #8386 had to specify the value of `f`
     exact Submodule.mem_map_of_mem (f := Algebra.linearMap _ _)
       (M.mul_mem_right _ <| hu M ⟨hM'.1.symm, hM⟩)
-#align fractional_ideal.is_principal.of_finite_maximals_of_inv FractionalIdeal.isPrincipal.of_finite_maximals_of_inv
 
 /-- An invertible ideal in a commutative ring with finitely many maximal ideals is principal.
 
@@ -176,7 +171,6 @@ theorem Ideal.IsPrincipal.of_finite_maximals_of_isUnit (hf : {I : Ideal R | I.Is
   (IsLocalization.coeSubmodule_isPrincipal _ le_rfl).mp
     (FractionalIdeal.isPrincipal.of_finite_maximals_of_inv le_rfl hf I
       (↑hI.unit⁻¹ : FractionalIdeal R⁰ (FractionRing R)) hI.unit.mul_inv)
-#align ideal.is_principal.of_finite_maximals_of_is_unit Ideal.IsPrincipal.of_finite_maximals_of_isUnit
 
 /-- A Dedekind domain is a PID if its set of primes is finite. -/
 theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]
@@ -187,7 +181,6 @@ theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]
     apply Ideal.IsPrincipal.of_finite_maximals_of_isUnit
     · apply h.subset; exact @Ideal.IsMaximal.isPrime _ _
     · exact isUnit_of_mul_eq_one _ _ (FractionalIdeal.coe_ideal_mul_inv I hI)⟩
-#align is_principal_ideal_ring.of_finite_primes IsPrincipalIdealRing.of_finite_primes
 
 variable [IsDedekindDomain R]
 variable (S : Type*) [CommRing S]
@@ -241,7 +234,6 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
     rw [IsScalarTower.algebraMap_eq R S Sₚ]
     exact
       (IsLocalization.injective Sₚ non_zero_div).comp (NoZeroSMulDivisors.algebraMap_injective _ _)
-#align is_localization.over_prime.mem_normalized_factors_of_is_prime IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime
 
 /-- Let `p` be a prime in the Dedekind domain `R` and `S` be an integral extension of `R`,
 then the localization `Sₚ` of `S` at `p` is a PID. -/
@@ -260,4 +252,3 @@ theorem IsDedekindDomain.isPrincipalIdealRing_localization_over_prime [IsDomain 
   exact
     and_iff_right_of_imp fun hP =>
       or_iff_not_imp_left.mpr (IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime S p hp0 hP)
-#align is_dedekind_domain.is_principal_ideal_ring_localization_over_prime IsDedekindDomain.isPrincipalIdealRing_localization_over_prime

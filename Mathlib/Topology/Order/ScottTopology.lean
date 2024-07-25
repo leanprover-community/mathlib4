@@ -90,8 +90,8 @@ alias ⟨DirSupInacc.of_compl, DirSupClosed.compl⟩ := dirSupInacc_compl
 alias ⟨DirSupClosed.of_compl, DirSupInacc.compl⟩ := dirSupClosed_compl
 
 lemma DirSupClosed.inter (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupClosed (s ∩ t) :=
-  fun _d hd hd' _a ha hds ↦ ⟨hs hd hd' ha <| hds.trans <| inter_subset_left _ _,
-    ht hd hd' ha <| hds.trans <| inter_subset_right _ _⟩
+  fun _d hd hd' _a ha hds ↦ ⟨hs hd hd' ha <| hds.trans inter_subset_left,
+    ht hd hd' ha <| hds.trans inter_subset_right⟩
 
 lemma DirSupInacc.union (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∪ t) := by
   rw [← dirSupClosed_compl, compl_union]; exact hs.compl.inter ht.compl
@@ -224,7 +224,7 @@ lemma isOpen_iff_isUpperSet_and_dirSupInacc : IsOpen s ↔ IsUpperSet s ∧ DirS
     ⟨@IsScottHausdorff.dirSupInacc_of_isOpen _ _ (scottHausdorff α) _ _,
       fun h' d d₁ d₂ _ d₃ ha ↦ ?_⟩
   obtain ⟨b, hbd, hbu⟩ := h' d₁ d₂ d₃ ha
-  exact ⟨b, hbd, Subset.trans (inter_subset_left (Ici b) d) (h.Ici_subset hbu)⟩
+  exact ⟨b, hbd, Subset.trans inter_subset_left (h.Ici_subset hbu)⟩
 
 lemma isClosed_iff_isLowerSet_and_dirSupClosed : IsClosed s ↔ IsLowerSet s ∧ DirSupClosed s := by
   rw [← isOpen_compl_iff, isOpen_iff_isUpperSet_and_dirSupInacc, isUpperSet_compl,
@@ -235,6 +235,9 @@ lemma isUpperSet_of_isOpen : IsOpen s → IsUpperSet s := fun h ↦
 
 lemma isLowerSet_of_isClosed : IsClosed s → IsLowerSet s := fun h ↦
   (isClosed_iff_isLowerSet_and_dirSupClosed.mp h).left
+
+lemma dirSupClosed_of_isClosed : IsClosed s → DirSupClosed s := fun h ↦
+  (isClosed_iff_isLowerSet_and_dirSupClosed.mp h).right
 
 lemma lowerClosure_subset_closure : ↑(lowerClosure s) ⊆ closure s := by
   convert closure.mono (@upperSet_le_scott α _)
@@ -291,6 +294,30 @@ instance (priority := 90) : T0Space α :=
     simpa only [inseparable_iff_closure_eq, IsScott.closure_singleton] using h
 
 end PartialOrder
+
+section CompleteLinearOrder
+
+variable [CompleteLinearOrder α] [TopologicalSpace α] [Topology.IsScott α]
+
+lemma isOpen_iff_Iic_compl_or_univ (U : Set α) :
+    IsOpen U ↔ (∃ (a : α), U = (Iic a)ᶜ) ∨ U = univ := by
+  constructor
+  · intro hU
+    rcases eq_empty_or_nonempty Uᶜ with eUc | neUc
+    · exact Or.inr (compl_empty_iff.mp eUc)
+    · apply Or.inl
+      use sSup Uᶜ
+      rw [eq_compl_comm, le_antisymm_iff]
+      exact ⟨(isLowerSet_of_isClosed hU.isClosed_compl).Iic_subset
+        (dirSupClosed_iff_forall_sSup.mp (dirSupClosed_of_isClosed  hU.isClosed_compl)
+        neUc (isChain_of_trichotomous Uᶜ).directedOn le_rfl),
+        fun  _ ha ↦ le_sSup ha⟩
+  · rintro (⟨a,rfl⟩ | rfl)
+    · exact isClosed_Iic.isOpen_compl
+    · exact isOpen_univ
+
+end CompleteLinearOrder
+
 end IsScott
 
 /--
@@ -317,7 +344,8 @@ lemma toScott_inj {a b : α} : toScott a = toScott b ↔ a = b := Iff.rfl
 @[simp, nolint simpNF]
 lemma ofScott_inj {a b : WithScott α} : ofScott a = ofScott b ↔ a = b := Iff.rfl
 
-/-- A recursor for `WithScott`. Use as `induction x using WithScott.rec`. -/
+/-- A recursor for `WithScott`. Use as `induction x`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : WithScott α → Sort _}
     (h : ∀ a, β (toScott a)) : ∀ a, β a := fun a ↦ h (ofScott a)
 
