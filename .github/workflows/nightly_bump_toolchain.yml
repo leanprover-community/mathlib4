@@ -1,6 +1,7 @@
 name: Bump lean-toolchain on nightly-testing
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 10 * * *'  # 11AM CET/2AM PT, 3 hours after lean4 starts building the nightly.
 
