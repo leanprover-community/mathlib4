@@ -70,6 +70,7 @@ theorem algebraMapCLM_coe : ⇑(algebraMapCLM R A) = algebraMap R A :=
 theorem algebraMapCLM_toLinearMap : (algebraMapCLM R A).toLinearMap = Algebra.linearMap R A :=
   rfl
 
+-- JL : This belongs to Topology.Algebra.MulAction
 /-- If `R` is a discrete topological ring, then any topological ring `S` which is an `R`-algebra
 is also a topological `R`-algebra. -/
 instance DiscreteTopology.continuousSMul [TopologicalSemiring A] [DiscreteTopology R] :
@@ -78,13 +79,7 @@ instance DiscreteTopology.continuousSMul [TopologicalSemiring A] [DiscreteTopolo
 end TopologicalAlgebra
 
 section TopologicalAlgebra
-section
 
-variable {R : Type*} [CommSemiring R]
-variable {A : Type u} [TopologicalSpace A]
-variable [Semiring A] [Algebra R A]
-
-end
 section
 
 variable (R : Type*) [CommSemiring R] [TopologicalSpace R] [TopologicalSemiring R]
@@ -98,17 +93,6 @@ structure ContinuousAlgHom (R : Type*) [CommSemiring R] (A : Type*) [Semiring A]
     extends A →ₐ[R] B where
   cont : Continuous toFun := by continuity
 
-/-
-/-- `ContinuousAlgHomClass F R A B` asserts `F` is a type of bundled continuous `R`-agebra
-homomorphisms `A → B`. -/
-class ContinuousAlgHomClass (F : Type*) (R : outParam (Type*)) [CommSemiring R]
-    (A : outParam (Type*)) [Semiring A] [TopologicalSpace A]
-    (B : outParam (Type*)) [Semiring B] [TopologicalSpace B][Algebra R A]
-    [Algebra R B] [FunLike F A B]
-    extends AlgHomClass F R A B, ContinuousMapClass F A B : Prop
-attribute [inherit_doc ContinuousAlgHom] ContinuousAlgHom.cont
--/
-
 @[inherit_doc]
 notation:25 A " →A[" R "] " B => ContinuousAlgHom R A B
 
@@ -121,19 +105,12 @@ variable [TopologicalSpace R] [TopologicalSemiring R]
 
 variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
 
-attribute [coe] ContinuousAlgHom.toAlgHom
-/-- Coerce continuous algebra morphisms to algebra morphisms. -/
-instance AlgHom.coe : Coe (A →A[R] B) (A →ₐ[R] B) := ⟨toAlgHom⟩
-
-theorem coe_injective : Function.Injective ((↑) : (A →A[R] B) → A →ₐ[R] B) := by
-  intro f g H
-  cases f
-  cases g
-  congr
-
 instance funLike : FunLike (A →A[R] B) A B where
   coe f := f.toAlgHom
-  coe_injective'  _ _ h  := coe_injective (DFunLike.coe_injective h)
+  coe_injective'  f g h  := by
+    cases f; cases g
+    simp only [mk.injEq]
+    exact AlgHom.ext (congrFun h)
 
 instance algHomClass : AlgHomClass (A →A[R] B) R A B where
   map_mul f x y    := map_mul f.toAlgHom x y
@@ -142,22 +119,17 @@ instance algHomClass : AlgHomClass (A →A[R] B) R A B where
   map_zero f       := map_zero f.toAlgHom
   commutes f r     := f.toAlgHom.commutes r
 
-instance continuousMapClass : ContinuousMapClass (A →A[R] B) A B where
-  map_continuous f := f.2
-
-/- instance continuousAlgHomClass :
-    ContinuousAlgHomClass (A →A[R] B) R A B where
-  map_mul f x y    := map_mul f.toAlgHom x y
-  map_one f        := map_one f.toAlgHom
-  map_add f        := map_add f.toAlgHom
-  map_zero f       := map_zero f.toAlgHom
-  commutes f r     := f.toAlgHom.commutes r
-  map_continuous f := f.2 -/
+@[simp, norm_cast]
+theorem toAlgHom_inj {f g : A →A[R] B} : (f : A →ₐ[R] B) = g ↔ f = g :=   by
+  cases f; cases g; simp only [mk.injEq]; exact Eq.congr_right rfl
 
 theorem coe_mk (f : A →ₐ[R] B) (h) : (mk f h : A →ₐ[R] B) = f := rfl
 
 @[simp]
 theorem coe_mk' (f : A →ₐ[R] B) (h) : (mk f h : A → B) = f := rfl
+
+instance continuousMapClass : ContinuousMapClass (A →A[R] B) A B where
+  map_continuous f := f.2
 
 @[continuity]
 protected theorem continuous (f : A →A[R] B) : Continuous f := f.2
@@ -166,11 +138,6 @@ protected theorem uniformContinuous {E₁ E₂ : Type*} [UniformSpace E₁] [Uni
     [Ring E₁] [Ring E₂] [Algebra R E₁] [Algebra R E₂] [UniformAddGroup E₁]
     [UniformAddGroup E₂] (f : E₁ →A[R] E₂) : UniformContinuous f :=
   uniformContinuous_addMonoidHom_of_continuous f.continuous
-
-@[simp, norm_cast]
-theorem coe_inj {f g : A →A[R] B} : (f : A →ₐ[R] B) = g ↔ f = g := coe_injective.eq_iff
-
-theorem coeFn_injective : @Function.Injective (A →A[R] B) (A → B) (↑) := DFunLike.coe_injective
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
 because it is a composition of multiple projections. -/
@@ -222,9 +189,8 @@ protected theorem map_sum {ι : Type*} (f : A →A[R] B) (s : Finset ι) (g : ι
 theorem coe_coe (f : A →A[R] B) : ⇑(f : A →ₐ[R] B) = f := rfl
 
 @[ext]
-theorem ext_ring [TopologicalSpace R] {f g : R →A[R] A} : f = g := by
-  apply coe_inj.1
-  apply Algebra.ext_id
+theorem ext_ring [TopologicalSpace R] {f g : R →A[R] A} : f = g :=
+  toAlgHom_inj.mp (ext_id _ _ _)
 
 theorem ext_ring_iff [TopologicalSpace R] {f g : R →A[R] A} : f = g ↔ f 1 = g 1 :=
   ⟨fun h => h ▸ rfl, fun _ => ext_ring ⟩
@@ -281,7 +247,7 @@ theorem coe_id' : ⇑(id R A ) = _root_.id := rfl
 
 @[simp, norm_cast]
 theorem coe_eq_id {f : A →A[R] A} : (f : A →ₐ[R] A) = AlgHom.id R A ↔ f = id R A:= by
-  rw [← coe_id, coe_inj]
+  rw [← coe_id, toAlgHom_inj]
 
 @[simp]
 theorem one_apply (x : A) : (1 : A →A[R] A) x = x := rfl
@@ -326,7 +292,7 @@ theorem coe_mul (f g : A →A[R] A) : ⇑(f * g) = f ∘ g := rfl
 
 theorem mul_apply (f g : A →A[R] A) (x : A) : (f * g) x = f (g x) := rfl
 
-instance monoidWithZero : Monoid (A →A[R] A) where
+instance : Monoid (A →A[R] A) where
   mul_one _ := ext fun _ => rfl
   one_mul _ := ext fun _ => rfl
   mul_assoc _ _ _ := ext fun _ => rfl
@@ -334,10 +300,10 @@ instance monoidWithZero : Monoid (A →A[R] A) where
 theorem coe_pow (f : A →A[R] A) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
-/-- `ContinuousAlgHom.toAlgHom` as a `RingHom`. -/
+/-- coercion from `ContinuousAlgHom` to `AlgHom` as a `RingHom`. -/
 @[simps]
 def toAlgHomMonoidHom : (A →A[R] A) →* A →ₐ[R] A where
-  toFun        := toAlgHom
+  toFun        := (↑)
   map_one'     := rfl
   map_mul' _ _ := rfl
 
@@ -370,7 +336,7 @@ instance completeSpace_eqLocus {D : Type*} [UniformSpace D] [CompleteSpace D]
     [Semiring D] [Algebra R D] [T2Space B]
     [FunLike F D B] [AlgHomClass F R D B] [ContinuousMapClass F D B]
     (f g : F) : CompleteSpace (LinearMap.eqLocus f g) :=
-  IsClosed.completeSpace_coe <| isClosed_eq (map_continuous f) (map_continuous g)
+  isClosed_eq (map_continuous f) (map_continuous g) |>.completeSpace_coe
 
 variable (R A B)
 
