@@ -237,6 +237,10 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     if (← MonadState.get).messages.hasErrors then
       return
+    -- The linter ignores the `#guard_msgs` command, in particular its doc-string.
+    -- The linter still lints the message guarded by `#guard_msgs`.
+    if stx.isOfKind ``Lean.guardMsgsCmd then
+      return
     let sstr := stx.getSubstring?
     let longLines := ((sstr.getD default).splitOn "\n").filter (100 < ·.toString.length)
     for line in longLines do

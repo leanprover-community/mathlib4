@@ -78,7 +78,6 @@ class C (α : Type) [A α] [B α]
 #guard_msgs in
 variable? [C α]
 
-set_option linter.longLine false in
 /--
 info: Try this: variable? [(α : Type) → C α] => [(α : Type) → A α] [(α : Type) → B α] [(α : Type) → C α]
 -/
@@ -91,7 +90,6 @@ section
 -- Example of some bad instances (TODO?)
 -- There are two different add operations on `A`.
 -- See also the next test.
-set_option linter.longLine false in
 /--
 info: Try this: variable? [Module R A] [Algebra S A] => [Semiring R] [AddCommMonoid A] [Module R A] [CommSemiring S]
   [Semiring A] [Algebra S A]
@@ -102,7 +100,6 @@ end
 
 section
 -- Similar to the previous test, but this time there is only a single add operation on `A`.
-set_option linter.longLine false in
 /--
 info: Try this: variable? [Algebra S A] [Module R A] => [CommSemiring S] [Semiring A] [Algebra S A] [Semiring R] [Module R A]
 -/
@@ -121,7 +118,6 @@ example : ∀ i, AddCommMonoid (f i) := inferInstance
 end
 
 section
-set_option linter.longLine false in
 /--
 warning: Instance argument can be inferred from earlier arguments.
 f : ℕ → Type
@@ -163,7 +159,6 @@ example : Module R M := inferInstance
 end
 
 section
-set_option linter.longLine false
 /--
 info: Try this: variable? [VectorSpace k V] [Algebra k V] => [Field k] [AddCommGroup V] [Module k V] [Semiring V]
   [Algebra k V]
@@ -191,7 +186,6 @@ structure Rep (k A V : Type _)
   [DistribMulAction A V] [SMulCommClass k A V]
 
 section
-set_option linter.longLine false in
 /--
 info: Try this: variable? [Rep k A V] => [Field k] [AddCommGroup A] [Ring A] [Algebra k A] [AddCommGroup V] [Module k V]
   [DistribMulAction A V] [SMulCommClass k A V]
@@ -201,7 +195,6 @@ variable? [Rep k A V]
 end
 
 section
-set_option linter.longLine false in
 /--
 info: Try this: variable? [VectorSpace k A] [Rep k A V] => [Field k] [AddCommGroup A] [Module k A] [Ring A] [Algebra k A]
   [AddCommGroup V] [Module k V] [DistribMulAction A V] [SMulCommClass k A V]
@@ -220,7 +213,6 @@ structure UniqueFactorizationDomain (R : Type _)
   [CommRing R] [IsDomain R] [UniqueFactorizationMonoid R]
 
 section
-set_option linter.longLine false in
 /--
 info: Try this: variable? [UniqueFactorizationDomain R] => [CommRing R] [IsDomain R] [UniqueFactorizationMonoid R]
 -/
