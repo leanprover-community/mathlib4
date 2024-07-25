@@ -242,7 +242,9 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     if stx.isOfKind ``Lean.guardMsgsCmd then
       return
     let sstr := stx.getSubstring?
-    let longLines := ((sstr.getD default).splitOn "\n").filter (100 < ·.toString.length)
+    let fm ← getFileMap
+    let longLines := ((sstr.getD default).splitOn "\n").filter fun line =>
+      (100 < (fm.toPosition line.stopPos).column)
     for line in longLines do
       if !(line.containsSubstr "http") then
         Linter.logLint linter.longLine (.ofRange ⟨line.startPos, line.stopPos⟩)

@@ -102,6 +102,13 @@ set_option linter.longLine true in
 /-!  http                                                                                          -/
 
 set_option linter.longLine true
+-- check that the *argument* of `#guard_msgs` is *not* exempt from the linter
+/--
+warning: This line exceeds the 100 character limit, please shorten it!
+note: this linter can be disabled with `set_option linter.longLine false`
+-/
+#guard_msgs in                                                                            #guard true
+
 -- check that the doc-string of `#guard_msgs` is exempt from the linter
 /--
 info: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
