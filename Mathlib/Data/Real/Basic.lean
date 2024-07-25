@@ -506,7 +506,7 @@ noncomputable instance instDivInvMonoid : DivInvMonoid ℝ where
 
 lemma ofCauchy_div (f g) : (⟨f / g⟩ : ℝ) = (⟨f⟩ : ℝ) / (⟨g⟩ : ℝ) := by
   simp_rw [div_eq_mul_inv, ofCauchy_mul, ofCauchy_inv]
-#check ofCauchy_nnratCast
+
 noncomputable instance instLinearOrderedField : LinearOrderedField ℝ where
   toLinearOrderedCommRing := linearOrderedCommRing
   mul_inv_cancel := by
