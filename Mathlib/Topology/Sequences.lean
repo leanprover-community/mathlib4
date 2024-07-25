@@ -294,8 +294,7 @@ theorem IsSeqCompact.image (f_cont : SeqContinuous f) {K : Set X} (K_cpt : IsSeq
 compact. -/
 theorem IsSeqCompact.range [SeqCompactSpace X] (f_cont : SeqContinuous f) :
     IsSeqCompact (Set.range f) := by
-  rw [← Set.image_univ]
-  exact IsSeqCompact.image f_cont ((seqCompactSpace_iff X).mp ‹SeqCompactSpace X›)
+  simpa using isSeqCompact_univ.image f_cont
 
 end Image
 
