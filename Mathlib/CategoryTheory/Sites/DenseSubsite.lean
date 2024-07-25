@@ -635,11 +635,11 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
 
 instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.app Y) := by
   apply (config := { allowSynthFailures := true })
-  ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
-  apply (config := { allowSynthFailures := true }) NatIso.isIso_of_isIso_app
+    ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
+  rw [NatTrans.isIso_iff_isIso_app]
   intro ⟨U⟩
   apply (config := { allowSynthFailures := true }) ReflectsIsomorphisms.reflects yoneda
-  apply (config := { allowSynthFailures := true }) NatIso.isIso_of_isIso_app
+  rw [NatTrans.isIso_iff_isIso_app]
   intro ⟨X⟩
   simp only [comp_obj, sheafToPresheaf_obj, sheafPushforwardContinuous_obj_val_obj, yoneda_obj_obj,
     id_obj, sheafToPresheaf_map, sheafAdjunctionCocontinuous_counit_app_val, ranAdjunction_counit]
