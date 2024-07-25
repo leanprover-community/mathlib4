@@ -765,38 +765,60 @@ lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → S
     motive (q.cons h) Walk.not_nil_cons) (h' : G.Adj u v) (q' : G.Walk v w) :
     @Walk.notNilRec _ _ _ _ _ cons _ _ = cons h' q' := by rfl
 
-/-- The second vertex along a non-nil walk. -/
-def sndOfNotNil (p : G.Walk v w) (hp : ¬ p.Nil) : V :=
-  p.notNilRec (@fun _ u _ _ _ => u) hp
 
-@[simp] lemma adj_sndOfNotNil {p : G.Walk v w} (hp : ¬ p.Nil) :
-    G.Adj v (p.sndOfNotNil hp) :=
-  p.notNilRec (fun h _ => h) hp
+@[simp] lemma adj_getVert_one {p : G.Walk v w} (hp : ¬ p.Nil) :
+    G.Adj v (p.getVert 1) := by
+  have := adj_getVert_succ p (by
+    rw [SimpleGraph.Walk.nil_iff_length_eq] at hp
+    push_neg at hp
+    exact Nat.zero_lt_of_ne_zero hp)
+  rw [@getVert_zero] at this
+  exact this
+
+/-- The walk obtained by removing the first n darts of a walk. -/
+def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
+  match p, n with
+  | .nil, _ => .nil
+  | p, 0 => p.copy (getVert_zero p).symm rfl
+  | .cons h q, (n + 1) => (q.drop n).copy (cons_getVert_succ _ h).symm rfl
 
 /-- The walk obtained by removing the first dart of a non-nil walk. -/
-def tail (p : G.Walk u v) (hp : ¬ p.Nil) : G.Walk (p.sndOfNotNil hp) v :=
-  p.notNilRec (fun _ q => q) hp
+def tail (p : G.Walk u v) : G.Walk (p.getVert 1) v := p.drop 1
+
+@[simp]
+lemma cons_nil_tail_eq (h : G.Adj u v) : (Walk.cons h .nil).tail = .nil := by rfl
+
+@[simp]
+lemma tail_cons_eq (h : G.Adj u v) (p : G.Walk v w) : (p.cons h).tail = p.copy (getVert_zero p).symm rfl := by
+  match p with
+  | .nil => rfl
+  | .cons h q => rfl
+
 
 /-- The first dart of a walk. -/
 @[simps]
 def firstDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
   fst := v
-  snd := p.sndOfNotNil hp
-  adj := p.adj_sndOfNotNil hp
+  snd := p.getVert 1
+  adj := p.adj_getVert_one hp
 
 lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
-    (p.firstDart hp).edge = s(v, p.sndOfNotNil hp) := rfl
+    (p.firstDart hp).edge = s(v, p.getVert 1) := rfl
 
 variable {x y : V} -- TODO: rename to u, v, w instead?
 
 @[simp] lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
-    cons (p.adj_sndOfNotNil hp) (p.tail hp) = p :=
-  p.notNilRec (fun _ _ => rfl) hp
+    cons (p.adj_getVert_one hp) p.tail = p := by
+  cases p with
+  | nil => simp only [nil_nil, not_true_eq_false] at hp
+  | cons h q =>
+    simp only [cons_getVert_succ, tail_cons_eq, cons_copy, copy_rfl_rfl]
+
 
 @[simp] lemma cons_support_tail (p : G.Walk x y) (hp : ¬p.Nil) :
-    x :: (p.tail hp).support = p.support := by
-  rw [← support_cons, cons_tail_eq]
-
+    x :: p.tail.support = p.support := by
+  rw [← support_cons, cons_tail_eq _ hp]
+  
 @[simp] lemma length_tail_add_one {p : G.Walk x y} (hp : ¬ p.Nil) :
     (p.tail hp).length + 1 = p.length := by
   rw [← length_cons, cons_tail_eq]
