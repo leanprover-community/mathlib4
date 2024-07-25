@@ -681,7 +681,7 @@ section Stalks
 
 /-- Variant of `AlgebraicGeometry.localRingHom_comp_stalkIso` for `Spec.map`. -/
 @[elementwise]
-lemma Scheme.localRingHom_comp_stalkIso {R S : CommRingCat} (f : R ⟶ S) (p : PrimeSpectrum S) :
+lemma Scheme.localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S) :
     (StructureSheaf.stalkIso R (PrimeSpectrum.comap f p)).hom ≫
       (CommRingCat.ofHom <| Localization.localRingHom
         (PrimeSpectrum.comap f p).asIdeal p.asIdeal f rfl) ≫
@@ -690,7 +690,7 @@ lemma Scheme.localRingHom_comp_stalkIso {R S : CommRingCat} (f : R ⟶ S) (p : P
 
 /-- Given a morphism of rings `f : R ⟶ S`, the stalk map of `Spec S ⟶ Spec R` at
 a prime of `S` is isomorphic to the localized ring homomorphism. -/
-def Scheme.arrowStalkMapSpecIso {R S : CommRingCat} (f : R ⟶ S) (p : PrimeSpectrum S) :
+def Scheme.arrowStalkMapSpecIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S) :
     Arrow.mk ((Spec.map f).stalkMap p) ≅ Arrow.mk (CommRingCat.ofHom <| Localization.localRingHom
       (PrimeSpectrum.comap f p).asIdeal p.asIdeal f rfl) := Arrow.isoMk
   (StructureSheaf.stalkIso R (PrimeSpectrum.comap f p))
