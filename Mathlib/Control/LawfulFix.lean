@@ -161,7 +161,7 @@ theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ 
 variable {f}
 
 theorem fix_eq (hc : ωScottContinuous f) : Part.fix f = f (Part.fix f) := by
-  rw [fix_eq_ωSup f, hc]
+  rw [fix_eq_ωSup f, hc.monotone_map_ωSup.2]
   apply le_antisymm
   · apply ωSup_le_ωSup_of_le _
     intro i
