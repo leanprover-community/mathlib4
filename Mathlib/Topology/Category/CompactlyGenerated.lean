@@ -128,15 +128,15 @@ theorem CompactlyGeneratedSpace.isOpen {X : Type u} [TopologicalSpace X]
   rw [← Set.preimage_inter_range]
   exact (hs (isCompact_range f.continuous)).preimage f.continuous
 
-instance {X : Type u} [TopologicalSpace X] [SequentialSpace X] : CompactlyGeneratedSpace.{w} X := by
+instance {X : Type*} [TopologicalSpace X] [SequentialSpace X] : CompactlyGeneratedSpace X := by
   refine compactlyGeneratedSpace_of_isClosed fun s h ↦
     SequentialSpace.isClosed_of_seq _ fun u p hu hup ↦ ?_
-  let g : ULift.{w} ENat → X := (compactSequence u p) ∘ ULift.down
+  let g : ULift.{u_2} ENat → X := (compactSequence u p) ∘ ULift.down
   change ⊤ ∈ g ⁻¹' s
   apply IsClosed.mem_of_tendsto _ ((continuous_uLift_up.tendsto ⊤).comp ENat.tendsto_coe_atTop)
   · simp only [Set.mem_preimage, Filter.eventually_atTop, ge_iff_le]
     exact ⟨0, fun b _ ↦ hu b⟩
-  · have : CompactSpace (ULift.{w} ENat) := ULift.closedEmbedding_down.compactSpace
+  · have : CompactSpace (ULift.{u_2} ENat) := ULift.closedEmbedding_down.compactSpace
     exact h g ((continuous_compactSequence u p hup).comp continuous_uLift_down)
 
 theorem IsClosed.isClosedMap_subtype_val {X : Type*} [TopologicalSpace X]
