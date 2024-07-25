@@ -141,7 +141,6 @@ theorem inverse_add_nth_order (x : Rˣ) (n : ℕ) :
   rw [ht]
 
 theorem inverse_oneSub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t => 1 : R → ℝ) := by
-
   simp only [IsBigO, IsBigOWith, Metric.eventually_nhds_iff]
   refine ⟨‖(1 : R)‖ + 1, (2 : ℝ)⁻¹, by norm_num, fun t ht ↦ ?_⟩
   rw [dist_zero_right] at ht
