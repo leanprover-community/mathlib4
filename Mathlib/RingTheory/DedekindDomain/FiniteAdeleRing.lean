@@ -375,6 +375,7 @@ instance : CoeFun (FiniteAdeleRing R K)
   coe a v := a.1 v
 
 open scoped algebraMap in
+variable {R K} in
 lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : R_hat R K,
     a = c) ↔ ∀ (v : HeightOneSpectrum R), a v ∈ adicCompletionIntegers K v :=
   ⟨by rintro ⟨c, rfl⟩ v; exact (c v).2, fun h ↦ ⟨fun v ↦ ⟨a v, h v⟩, rfl⟩⟩
@@ -387,10 +388,10 @@ open scoped algebraMap -- coercion from R to FiniteAdeleRing R K
 open scoped DiscreteValuation
 
 variable {R K} in
-lemma clear_denominator (a : FiniteAdeleRing R K) :
+lemma mul_nonZeroDivisor_mem_finiteIntegralAdeles (a : FiniteAdeleRing R K) :
     ∃ (b : R⁰) (c : R_hat R K), a * ((b : R) : FiniteAdeleRing R K) = c := by
   let S := {v | a v ∉ adicCompletionIntegers K v}
-  choose b hb h using clear_local_denominator (R := R) (K := K)
+  choose b hb h using adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (R := R) (K := K)
   let p := ∏ᶠ v ∈ S, b v (a v)
   have hp : p ∈ R⁰ := finprod_mem_induction (· ∈ R⁰) (one_mem _) (fun _ _ => mul_mem) <|
     fun _ _ ↦ hb _ _
@@ -399,11 +400,10 @@ lemma clear_denominator (a : FiniteAdeleRing R K) :
   intro v
   by_cases hv : a v ∈ adicCompletionIntegers K v
   · exact mul_mem hv <| coe_mem_adicCompletionIntegers _ _
-  · change v ∈ S at hv
-    dsimp only
+  · dsimp only
     have pprod : p = b v (a v) * ∏ᶠ w ∈ S \ {v}, b w (a w) := by
       rw [← finprod_mem_singleton (a := v) (f := fun v ↦ b v (a v)),
-        finprod_mem_mul_diff (singleton_subset_iff.2 hv) a.2]
+        finprod_mem_mul_diff (singleton_subset_iff.2 ‹v ∈ S›) a.2]
     rw [pprod]
     push_cast
     rw [← mul_assoc]
@@ -418,7 +418,7 @@ theorem submodulesRingBasis : SubmodulesRingBasis
     simp only [le_inf_iff, Submodule.span_singleton_le_iff_mem, Submodule.mem_span_singleton]
     exact ⟨⟨((j : R) : R_hat R K), by rw [mul_comm]; rfl⟩, ⟨((i : R) : R_hat R K), rfl⟩⟩⟩
   leftMul a r := by
-    rcases clear_denominator a with ⟨b, c, h⟩
+    rcases mul_nonZeroDivisor_mem_finiteIntegralAdeles a with ⟨b, c, h⟩
     use r * b
     rintro x ⟨m, hm, rfl⟩
     simp only [Submonoid.coe_mul, SetLike.mem_coe] at hm

@@ -292,7 +292,7 @@ theorem valuation_of_algebraMap (r : R) : v.valuation (algebraMap R K r) = v.int
 
 open scoped algebraMap in
 lemma valuation_eq_intValuationDef (r : R) : v.valuation (r : K) = v.intValuationDef r :=
-  Valuation.extendToLocalization_apply_map_apply _ _ _ _
+  Valuation.extendToLocalization_apply_map_apply ..
 
 /-- The `v`-adic valuation on `R` is bounded above by 1. -/
 theorem valuation_le_one (r : R) : v.valuation (algebraMap R K r) ≤ 1 := by
@@ -509,7 +509,7 @@ end AlgebraInstances
 
 open nonZeroDivisors algebraMap in
 variable {R K} in
-lemma clear_local_denominator (v : HeightOneSpectrum R)
+lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOneSpectrum R)
     (a : v.adicCompletion K) : ∃ b ∈ R⁰, a * b ∈ v.adicCompletionIntegers K := by
   by_cases ha : a ∈ v.adicCompletionIntegers K
   · use 1
