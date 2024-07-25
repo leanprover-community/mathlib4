@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.TotalComplex
 
-#align_import algebra.homology.flip from "leanprover-community/mathlib"@"ff511590476ef357b6132a45816adc120d5d7b1d"
-
 /-!
 # Tricomplexes
 

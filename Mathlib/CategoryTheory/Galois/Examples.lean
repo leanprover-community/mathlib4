@@ -108,7 +108,7 @@ theorem Action.pretransitive_of_isConnected (X : Action FintypeCat (MonCat.of G)
     connectedness, the orbit equals `X.V`. -/
     let T : Set X.V := MulAction.orbit G x
     have : Fintype T := Fintype.ofFinite T
-    letI : MulAction G (FintypeCat.of T) := MulAction.instMulActionElemOrbit
+    letI : MulAction G (FintypeCat.of T) := inferInstanceAs <| MulAction G ↑(MulAction.orbit G x)
     let T' : Action FintypeCat (MonCat.of G) := Action.FintypeCat.ofMulAction G (FintypeCat.of T)
     let i : T' ⟶ X := ⟨Subtype.val, fun _ ↦ rfl⟩
     have : Mono i := ConcreteCategory.mono_of_injective _ (Subtype.val_injective)
