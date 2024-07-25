@@ -86,3 +86,33 @@ note: this linter can be disabled with `set_option linter.cdot false`
 #guard_msgs in
 set_option linter.cdot true in
 example : Add Nat where add := (. + ·)
+
+set_option linter.longLine false
+/--
+warning: This line exceeds the 100 character limit, please shorten it!
+note: this linter can be disabled with `set_option linter.longLine false`
+-/
+#guard_msgs in
+set_option linter.longLine true in
+/-!                                                                                                -/
+
+#guard_msgs in
+-- Lines with more than 100 characters containing URLs are allowed.
+set_option linter.longLine true in
+/-!  http                                                                                          -/
+
+set_option linter.longLine true
+-- The *argument* of `#guard_msgs` is *not* exempt from the linter.
+/--
+warning: This line exceeds the 100 character limit, please shorten it!
+note: this linter can be disabled with `set_option linter.longLine false`
+-/
+#guard_msgs in                                                                            #guard true
+
+-- However, the *doc-string* of #guard_msgs is exempt from the linter:
+-- these are automatically generated, hence linting them is not helpful.
+/--
+info: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+-/
+#guard_msgs in
+#eval List.range 27
