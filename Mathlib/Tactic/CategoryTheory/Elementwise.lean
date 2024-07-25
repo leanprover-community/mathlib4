@@ -76,7 +76,7 @@ for the first universe parameter to `ConcreteCategory`.
 The `simpSides` option controls whether to simplify both sides of the equality, for simpNF
 purposes.
 -/
-def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
+def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := false) :
     MetaM (Expr × Option Level) := do
   let type := (← instantiateMVars type).cleanupAnnotations
   forallTelescope type fun fvars type' => do
@@ -180,18 +180,18 @@ The name of the produced lemma can be specified with `@[elementwise other_lemma_
 If `simp` is added first, the generated lemma will also have the `simp` attribute.
  -/
 syntax (name := elementwise) "elementwise"
-  " nosimp"? (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
+  " reduce"? (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
 
 initialize registerBuiltinAttribute {
   name := `elementwise
   descr := ""
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
-  | `(attr| elementwise $[nosimp%$nosimp?]? $[(attr := $stx?,*)]?) => MetaM.run' do
+  | `(attr| elementwise $[reduce%$reduce?]? $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`elementwise` can only be used as a global attribute"
     addRelatedDecl src "_apply" ref stx? fun type value levels => do
-      let (newValue, level?) ← elementwiseExpr src type value (simpSides := nosimp?.isNone)
+      let (newValue, level?) ← elementwiseExpr src type value (simpSides := reduce?.isSome)
       let newLevels ← if let some level := level? then do
         let w := mkUnusedName levels `w
         unless ← isLevelDefEq level (mkLevelParam w) do

@@ -204,7 +204,7 @@ theorem stalkMap_toStalk {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectru
 /-- Under the isomorphisms `stalkIso`, the map `stalkMap (Spec.sheafedSpaceMap f) p` corresponds
 to the induced local ring homomorphism `Localization.localRingHom`.
 -/
-@[elementwise]
+@[elementwise reduce]
 theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S) :
     (stalkIso R (PrimeSpectrum.comap f p)).hom ≫
         @CategoryStruct.comp _ _
