@@ -174,32 +174,19 @@ instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v 
 
 lemma odd_card_odd_components (ho : Odd (Nat.card V)) :
     Odd (Nat.card ({(c : ConnectedComponent G) | Odd (Nat.card c.supp)})) := by
-  simp_rw [Nat.odd_iff_not_even]
   by_contra! hc
-  simp_rw [← Nat.odd_iff_not_even] at hc
-
-  rw [@Nat.card_eq_fintype_card,
+  rw [Nat.card_eq_fintype_card,
     ← (set_fintype_card_eq_univ_iff _).mpr G.iUnion_connectedComponentSupp,
     ← Set.toFinset_card, Nat.odd_iff_not_even] at ho
   apply ho
-  have : Set.toFinset (⋃ (x : ConnectedComponent G), ConnectedComponent.supp x) =
-      Finset.biUnion (Finset.univ : Finset (ConnectedComponent G))
-      (fun x => (ConnectedComponent.supp x).toFinset) := by
-    ext v
-    simp only [Set.mem_toFinset, Set.mem_iUnion, ConnectedComponent.mem_supp_iff, exists_eq',
-      Finset.mem_biUnion, Finset.mem_univ, true_and, true_iff]
-  rw [this, Finset.card_biUnion (fun x _ y _ hxy ↦
-    Set.disjoint_toFinset.mpr (pairwise_disjoint_supp_connectedComponent _ hxy))]
-
-  simp only [Set.toFinset_card]
-  simp_rw [Fintype.card_eq_nat_card]
-  have : Even (Finset.filter (fun x : ConnectedComponent G ↦ Odd (Nat.card ↑x.supp))
-      Finset.univ).card := by
-    simp only [Finset.subtype_univ, Finset.card_univ, Nat.card_eq_fintype_card]
-    simp only [Nat.card_eq_fintype_card] at hc
-    rw [Fintype.card_ofFinset] at hc
-    exact hc
-  exact (Finset.even_sum_iff_even_card_odd _).mpr this
+  rw [Nat.even_iff_not_odd, Set.toFinset_iUnion ConnectedComponent.supp,Finset.card_biUnion
+    (fun x _ y _ hxy ↦ Set.disjoint_toFinset.mpr (pairwise_disjoint_supp_connectedComponent _ hxy))]
+  simp_rw [Set.toFinset_card, Fintype.card_eq_nat_card]
+  simp only [Finset.odd_sum_iff_odd_card_odd, Finset.subtype_univ, Finset.card_univ,
+    Nat.card_eq_fintype_card]
+  simp only [Nat.card_eq_fintype_card] at hc
+  rw [Fintype.card_ofFinset] at hc
+  exact hc
 
 end Finite
 
