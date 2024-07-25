@@ -70,8 +70,6 @@ theorem algebraMapCLM_coe : ⇑(algebraMapCLM R A) = algebraMap R A :=
 theorem algebraMapCLM_toLinearMap : (algebraMapCLM R A).toLinearMap = Algebra.linearMap R A :=
   rfl
 
--- JL : This belongs to Topology.Algebra.MulAction
--- ACL : some more work is needed
 /-- If `R` is a discrete topological ring, then any topological ring `S` which is an `R`-algebra
 is also a topological `R`-algebra. -/
 instance DiscreteTopology.continuousSMul [TopologicalSemiring A] [DiscreteTopology R] :
