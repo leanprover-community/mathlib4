@@ -121,21 +121,22 @@ def stalkIso {X : Scheme.{u}} (U : X.Opens) (x : U) :
 
 @[reassoc (attr := simp)]
 lemma germ_stalkIso_hom {X : Scheme.{u}} (U : X.Opens)
-    {V : TopologicalSpace.Opens U} (x : V) :
+    {V : U.toScheme.Opens} (x : V) :
       U.toScheme.presheaf.germ x ≫ (U.stalkIso x.1).hom =
         X.presheaf.germ ⟨x.1.1, show x.1.1 ∈ U.ι ''ᵁ V from ⟨x.1, x.2, rfl⟩⟩ :=
     PresheafedSpace.restrictStalkIso_hom_eq_germ _ _ _ _ _
 
-@[elementwise, reassoc]
-lemma toScheme_hom_eq_germ {X : Scheme.{u}} (U : X.Opens) (V : U.toScheme.Opens) (x : U)
-    (hx : x ∈ V) : U.toScheme.presheaf.germ ⟨x, hx⟩ ≫ (X.restrictStalkIso U.openEmbedding x).hom =
-      X.presheaf.germ ⟨x.val, show x.val ∈ U.ι ''ᵁ V from ⟨x, hx, rfl⟩⟩ :=
-  PresheafedSpace.restrictStalkIso_hom_eq_germ X.toPresheafedSpace U.openEmbedding V x hx
+@[reassoc (attr := simp)]
+lemma germ_stalkIso_hom' {X : Scheme.{u}} (U : X.Opens)
+    {V : TopologicalSpace.Opens U} (x : U) (hx : x ∈ V) :
+      U.toScheme.presheaf.germ ⟨x, hx⟩ ≫ (U.stalkIso x).hom =
+        X.presheaf.germ ⟨x.1, show x.1 ∈ U.ι ''ᵁ V from ⟨x, hx, rfl⟩⟩ :=
+    PresheafedSpace.restrictStalkIso_hom_eq_germ _ _ _ _ _
 
-@[elementwise, reassoc]
-lemma toScheme_inv_eq_germ {X : Scheme.{u}} (U : X.Opens) (V : U.toScheme.Opens) (x : U)
+@[simp, reassoc]
+lemma germ_stalkIso_inv {X : Scheme.{u}} (U : X.Opens) (V : U.toScheme.Opens) (x : U)
     (hx : x ∈ V) : X.presheaf.germ ⟨x.val, show x.val ∈ U.ι ''ᵁ V from ⟨x, hx, rfl⟩⟩ ≫
-      (X.restrictStalkIso U.openEmbedding x).inv = U.toScheme.presheaf.germ ⟨x, hx⟩ :=
+      (U.stalkIso x).inv = U.toScheme.presheaf.germ ⟨x, hx⟩ :=
   PresheafedSpace.restrictStalkIso_inv_eq_germ X.toPresheafedSpace U.openEmbedding V x hx
 
 end Scheme.Opens
@@ -498,14 +499,13 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Op
 -/
 def morphismRestrictStalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (x) :
     Arrow.mk ((f ∣_ U).stalkMap x) ≅ Arrow.mk (f.stalkMap x.1) := Arrow.isoMk' _ _
-  (Y.restrictStalkIso U.openEmbedding ((f ∣_ U).1.1 x) ≪≫
+  (U.stalkIso ((f ∣_ U).1.base x) ≪≫
     (TopCat.Presheaf.stalkCongr _ <| Inseparable.of_eq <| morphismRestrict_base_coe f U x))
-  (X.restrictStalkIso (Opens.openEmbedding _) _) <| by
+  ((f ⁻¹ᵁ U).stalkIso x) <| by
     apply TopCat.Presheaf.stalk_hom_ext
     intro V hxV
     change ↑(f ⁻¹ᵁ U) at x
-    simp [Scheme.stalkMap_germ'_assoc, Scheme.Opens.toScheme_hom_eq_germ,
-      Scheme.Opens.toScheme_hom_eq_germ_assoc, Scheme.Hom.appLE]
+    simp [Scheme.stalkMap_germ'_assoc, Scheme.Hom.appLE]
 
 instance {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) [IsOpenImmersion f] :
     IsOpenImmersion (f ∣_ U) := by
