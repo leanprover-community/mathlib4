@@ -124,14 +124,14 @@ lemma germ_stalkIso_hom {X : Scheme.{u}} (U : X.Opens)
     {V : U.toScheme.Opens} (x : V) :
       U.toScheme.presheaf.germ x ≫ (U.stalkIso x.1).hom =
         X.presheaf.germ ⟨x.1.1, show x.1.1 ∈ U.ι ''ᵁ V from ⟨x.1, x.2, rfl⟩⟩ :=
-    PresheafedSpace.restrictStalkIso_hom_eq_germ _ _ _ _ _
+    PresheafedSpace.restrictStalkIso_hom_eq_germ _ U.openEmbedding _ _ _
 
 @[reassoc (attr := simp)]
 lemma germ_stalkIso_hom' {X : Scheme.{u}} (U : X.Opens)
     {V : TopologicalSpace.Opens U} (x : U) (hx : x ∈ V) :
       U.toScheme.presheaf.germ ⟨x, hx⟩ ≫ (U.stalkIso x).hom =
         X.presheaf.germ ⟨x.1, show x.1 ∈ U.ι ''ᵁ V from ⟨x, hx, rfl⟩⟩ :=
-    PresheafedSpace.restrictStalkIso_hom_eq_germ _ _ _ _ _
+    PresheafedSpace.restrictStalkIso_hom_eq_germ _ U.openEmbedding _ _ _
 
 @[simp, reassoc]
 lemma germ_stalkIso_inv {X : Scheme.{u}} (U : X.Opens) (V : U.toScheme.Opens) (x : U)
