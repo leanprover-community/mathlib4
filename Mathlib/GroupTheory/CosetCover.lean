@@ -60,15 +60,13 @@ theorem exists_leftTransversal_of_FiniteIndex
   have hf : t.Finite := (MemLeftTransversals.finite_iff ht.1).mpr inferInstance
   refine ⟨hf.toFinset, hf.coe_toFinset.symm ▸ ht.1, ?_⟩
   ext x
-  simp only [Set.Finite.mem_toFinset, Set.mem_iUnion, exists_prop,
-    Subtype.exists, exists_and_right, SetLike.mem_coe]
+  suffices (∃ y ∈ t, ∃ d ∈ D, y * d = x) ↔ x ∈ H by simpa using this
   constructor
-  · rintro ⟨y, ⟨hy, -⟩, d, h, rfl⟩
+  · rintro ⟨⟨y, hy⟩, -, d, h, rfl⟩
     exact H.mul_mem hy (hD_le_H h)
   · intro hx
-    rw [mem_leftTransversals_iff_existsUnique_inv_mul_mem] at ht
-    have ⟨y, hy⟩ := ht.1 ⟨x, hx⟩
-    exact ⟨y, ⟨y.1.2, y.2⟩, Set.mem_smul_set_iff_inv_smul_mem.mpr hy.1⟩
+    exact ⟨_, (MemLeftTransversals.toFun ht.1 ⟨x, hx⟩).2, _,
+      MemLeftTransversals.inv_toFun_mul_mem ht.1 ⟨x, hx⟩, mul_inv_cancel_left _ _⟩
 
 variable {ι : Type*} {s : Finset ι} {H : Subgroup G} {g : ι → G}
 
@@ -97,28 +95,23 @@ theorem index_le_of_leftCoset_cover_const : H.index ≤ s.card := by
     exact (Nat.card_le_card_of_surjective _ hcovers).trans_eq (Nat.card_eq_finsetCard _)
 
 @[to_additive]
-theorem pairwiseDisjoint_leftCoset_cover_const_of_index_eq
-    (hind : H.index = s.card) :
-    Set.PairwiseDisjoint s (fun i ↦ g i • (H : Set G)) := by
-  cases H.index.eq_zero_or_pos with
-  | inl h =>
-    rw [h, eq_comm, Finset.card_eq_zero] at hind
-    rw [hind, ← Finset.set_biUnion_coe, Finset.coe_empty, Set.biUnion_empty] at hcovers
-    exact Not.elim Set.empty_ne_univ hcovers
-  | inr h =>
-    have : Fintype (G ⧸ H) :=
-      fintypeOfIndexNeZero (Nat.not_eq_zero_of_lt h)
-    suffices Function.Bijective (fun (i : s) ↦ (g i : G ⧸ H)) by
-      intro i hi j hj h' c hi' hj' x hx
-      specialize hi' hx
-      specialize hj' hx
-      rw [mem_leftCoset_iff, SetLike.mem_coe, ← QuotientGroup.eq] at hi' hj'
-      rw [ne_eq, ← Subtype.mk.injEq (p := (· ∈ (s : Set ι))) i hi j hj] at h'
-      exact h' <| this.injective <| by simp only [hi', hj']
-    rw [Fintype.bijective_iff_surjective_and_card]
-    constructor
-    · rwa [leftCoset_cover_const_iff_surjOn, Set.surjOn_iff_surjective] at hcovers
-    · simp only [Fintype.card_coe, ← hind, index_eq_card]
+theorem pairwiseDisjoint_leftCoset_cover_const_of_index_eq (hind : H.index = s.card) :
+    Set.PairwiseDisjoint s (g · • (H : Set G)) := by
+  have : Fintype (G ⧸ H) := fintypeOfIndexNeZero fun h => by
+    rw [hind, Finset.card_eq_zero] at h
+    rw [h, ← Finset.set_biUnion_coe, Finset.coe_empty, Set.biUnion_empty] at hcovers
+    exact Set.empty_ne_univ hcovers
+  suffices Function.Bijective (g · : s → G ⧸ H) by
+    intro i hi j hj h' c hi' hj' x hx
+    specialize hi' hx
+    specialize hj' hx
+    rw [mem_leftCoset_iff, SetLike.mem_coe, ← QuotientGroup.eq] at hi' hj'
+    rw [ne_eq, ← Subtype.mk.injEq (p := (· ∈ (s : Set ι))) i hi j hj] at h'
+    exact h' <| this.injective <| by simp only [hi', hj']
+  rw [Fintype.bijective_iff_surjective_and_card]
+  constructor
+  · rwa [leftCoset_cover_const_iff_surjOn, Set.surjOn_iff_surjective] at hcovers
+  · simp only [Fintype.card_coe, ← hind, index_eq_card]
 
 end leftCoset_cover_const
 
@@ -176,8 +169,8 @@ theorem exists_finiteIndex_of_leftCoset_cover_aux [DecidableEq (Subgroup G)]
         exact ⟨⟨⟨i, hi⟩, none⟩, Finset.mem_univ _, hy⟩
     -- Let `H k` be one of the subgroups in this covering.
     have ⟨k⟩ : Nonempty κ := not_isEmpty_iff.mp fun hempty => by
-      rw [Set.iUnion_of_empty, eq_comm, Set.univ_eq_empty_iff, ← not_nonempty_iff] at hcovers
-      exact hcovers ⟨1⟩
+      rw [Set.iUnion_of_empty] at hcovers
+      exact Set.empty_ne_univ hcovers
     -- If `G` is the union of the cosets of `H k` in the new covering, we are done.
     by_cases hcovers' : ⋃ i ∈ Finset.filter (K · = K k) Finset.univ, f i • (K i : Set G) = Set.univ
     · rw [Set.iUnion₂_congr fun i hi => by rw [(Finset.mem_filter.mp hi).right]] at hcovers'
@@ -198,9 +191,8 @@ Then at least one subgroup `H i` has finite index in `G`. -/
 theorem exists_finiteIndex_of_leftCoset_cover : ∃ k ∈ s, (H k).FiniteIndex := by
   classical
   have ⟨j, hj⟩ : s.Nonempty := Finset.nonempty_iff_ne_empty.mpr fun hempty => by
-    rw [hempty, ← Finset.set_biUnion_coe, Finset.coe_empty, Set.biUnion_empty,
-      eq_comm, Set.univ_eq_empty_iff, isEmpty_iff] at hcovers
-    exact hcovers 1
+    rw [hempty, ← Finset.set_biUnion_coe, Finset.coe_empty, Set.biUnion_empty] at hcovers
+    exact Set.empty_ne_univ hcovers
   by_cases hcovers' : ⋃ i ∈ s.filter (H · = H j), g i • (H i : Set G) = Set.univ
   · rw [Set.iUnion₂_congr fun i hi => by rw [(Finset.mem_filter.mp hi).right]] at hcovers'
     exact ⟨j, hj, finiteIndex_of_leftCoset_cover_const hcovers'⟩
@@ -323,7 +315,7 @@ theorem one_le_sum_inv_index_of_leftCoset_cover :
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 If the sum of the inverses of the indexes of the subgroups `H i` is equal to 1,
-then the cosets of the subgroups of finite index are pairwise disjoint -/
+then the cosets of the subgroups of finite index are pairwise disjoint. -/
 @[to_additive]
 theorem pairwiseDisjoint_leftCoset_cover_of_sum_inv_index_eq_one
     [DecidablePred (FiniteIndex : Subgroup G → Prop)] :
@@ -338,7 +330,6 @@ of these subgroups has index not exceeding the number of cosets. -/
 @[to_additive]
 theorem exists_index_le_card_of_leftCoset_cover :
     ∃ i ∈ s, (H i).FiniteIndex ∧ (H i).index ≤ s.card := by
-  classical
   by_contra! h
   apply (one_le_sum_inv_index_of_leftCoset_cover hcovers).not_lt
   by_cases hs : s = ∅
@@ -346,14 +337,13 @@ theorem exists_index_le_card_of_leftCoset_cover :
   rw [← ne_eq, ← Finset.nonempty_iff_ne_empty] at hs
   have hs' : 0 < s.card := Nat.pos_of_ne_zero (Finset.card_ne_zero.mpr hs)
   have hlt : ∀ i ∈ s, ((H i).index : ℚ)⁻¹ < (s.card : ℚ)⁻¹ := fun i hi ↦ by
-    cases (H i).index.eq_zero_or_pos with
+    cases eq_or_ne (H i).index 0 with
     | inl hindex =>
       rwa [hindex, Nat.cast_zero, inv_zero, inv_pos, Nat.cast_pos]
     | inr hindex =>
-      exact inv_lt_inv_of_lt (by exact_mod_cast hs') (by exact_mod_cast h i hi ⟨hindex.ne'⟩)
+      exact inv_lt_inv_of_lt (by exact_mod_cast hs') (by exact_mod_cast h i hi ⟨hindex⟩)
   apply (Finset.sum_lt_sum_of_nonempty hs hlt).trans_eq
-  rw [Finset.sum_const, nsmul_eq_mul,
-    mul_inv_eq_iff_eq_mul₀ (Nat.cast_ne_zero.mpr hs'.ne'), one_mul]
+  rw [Finset.sum_const, nsmul_eq_mul, mul_inv_cancel (Nat.cast_ne_zero.mpr hs'.ne')]
 
 end
 
