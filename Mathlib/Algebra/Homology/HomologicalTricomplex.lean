@@ -13,6 +13,9 @@ Given a category `C` with zero morphisms and three complex shapes
 the type of tricomplexes `HomologicalComplex₃ C c₁ c₂ c₃` as an
 abbreviation for `HomologicalComplex (HomologicalComplex₂ C c₂ c₃) c₁`.
 
+We show that under suitable assumptions, the two ways to construct the
+total complex of a tricomplex are isomorphic.
+
 -/
 
 open CategoryTheory Category Limits
@@ -42,8 +45,14 @@ section
 
 variable (c₂₃ : ComplexShape I₂₃) [DecidableEq I₂₃] [TotalComplexShape c₂ c₃ c₂₃]
 
+/-- Given a tricomplex `K : HomologicalComplex₃ C c₁ c₂ c₃` and a complex shape `c₂₃`
+with `TotalComplexShape c₂ c₃ c₂₃`, this is the condition that allows to
+"integrate" `K` in order to get a bicomplex in `HomologicalComplex₂ C c₁ c₂₃`. -/
 abbrev HasInt₂₃ := ∀ (i₁ : I₁), (K.X i₁).HasTotal c₂₃
 
+/-- Given a tricomplex `K : HomologicalComplex₃ C c₁ c₂ c₃` and a  complex shape `c₂₃`
+with `TotalComplexShape c₂ c₃ c₂₃`, this is the bicomplex in `HomologicalComplex₂ C c₁ c₂₃`
+whose column indexed by `i₁` is `(K.X i₁).total c₂₃`. -/
 @[simps]
 noncomputable def int₂₃ [K.HasInt₂₃ c₂₃] : HomologicalComplex₂ C c₁ c₂₃ where
   X i₁ := (K.X i₁).total c₂₃
@@ -60,6 +69,8 @@ end
 
 section
 
+/-- Given a tricomplex `K : HomologicalComplex₃ C c₁ c₂ c₃`,
+this is the bicomplex in `HomologicalComplex₂ C c₁ c₂` obtained for a fixed `i₃ : I₃`. -/
 @[simps!]
 def X' (i₃ : I₃) : HomologicalComplex₂ C c₁ c₂ where
   X i₁ :=
@@ -68,6 +79,8 @@ def X' (i₃ : I₃) : HomologicalComplex₂ C c₁ c₂ where
   d i₁ i₁' :=
     { f := fun i₂ => ((K.d i₁ i₁').f i₂).f i₃ }
 
+/-- The third differential of a tricomplex, considered as
+a morphism `K.X' i₃ ⟶ K.X' i₃'` between bicomplexes. -/
 @[simps]
 def d' (i₃ i₃' : I₃) : K.X' i₃ ⟶ K.X' i₃' where
   f i₁ :=
@@ -84,8 +97,14 @@ lemma d'_comp_d' (i₃ i₃' i₃'' : I₃) : K.d' i₃ i₃' ≫ K.d' i₃' i�
 
 variable (c₁₂ : ComplexShape I₁₂) [DecidableEq I₁₂] [TotalComplexShape c₁ c₂ c₁₂]
 
+/-- Given a tricomplex `K : HomologicalComplex₃ C c₁ c₂ c₃` and a complex shape `c₁₂`
+with `TotalComplexShape c₁ c₂ c₁₂`, this is the condition that allows to
+"integrate" `K` in order to get a bicomplex in `HomologicalComplex₂ C c₁₂ c₃`. -/
 abbrev HasInt₁₂ := ∀ (i₃ : I₃), (K.X' i₃).HasTotal c₁₂
 
+/-- Given a tricomplex `K : HomologicalComplex₃ C c₁ c₂ c₃` and a  complex shape `c₁₂`
+with `TotalComplexShape c₁ c₂ c₁₂`, this is the bicomplex in `HomologicalComplex₂ C c₃ c₁₂`
+whose column indexed by `i₃` is `(K.X' i₃).total c₁₂`. -/
 @[simps]
 noncomputable def int₁₂' [K.HasInt₁₂ c₁₂] : HomologicalComplex₂ C c₃ c₁₂ where
   X i₃ := (K.X' i₃).total c₁₂
@@ -98,6 +117,9 @@ noncomputable def int₁₂' [K.HasInt₁₂ c₁₂] : HomologicalComplex₂ C 
     rw [← HomologicalComplex₂.total.map_comp, K.d'_comp_d',
       HomologicalComplex₂.total.map_zero]
 
+/-- Given a tricomplex `K : HomologicalComplex₃ C c₁ c₂ c₃` and a  complex shape `c₁₂`
+with `TotalComplexShape c₁ c₂ c₁₂`, this is the bicomplex in `HomologicalComplex₂ C c₃ c₁₂`
+whose row indexed by `i₃` is `(K.X' i₃).total c₁₂`. -/
 @[simps!]
 noncomputable def int₁₂ [K.HasInt₁₂ c₁₂] : HomologicalComplex₂ C c₁₂ c₃ := (K.int₁₂' c₁₂).flip
 
@@ -114,16 +136,22 @@ section
 
 variable [K.HasInt₁₂ c₁₂]
 
+/-- The condition that one may obtain a total complex
+of a tricomplex `K : HomologicalComplex₃ C c₁ c₂ c₃` in two steps by
+taking the total complex of the bicomplex `K.int₁₂ c₁₂ : HomologicalComplex₂ C c₁₂ c₃`. -/
 abbrev HasTotal₁₂ := (K.int₁₂ c₁₂).HasTotal c
 
 variable [K.HasTotal₁₂ c₁₂ c]
 
+/-- The total complex of a tricomplex `K : HomologicalComplex₃ C c₁ c₂ c₃` as the
+total complex of the bicomplex `K.int₁₂ c₁₂ : HomologicalComplex₂ C c₁₂ c₃`. -/
 noncomputable def total₁₂ : HomologicalComplex C c := (K.int₁₂ c₁₂).total c
 
 section
 
 variable (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
 
+/-- The inclusion of a summand in the total complex `K.total₁₂ c₁₂ c` of a tricomplex. -/
 noncomputable def ιTotal₁₂
     (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) = j) :
     ((K.X i₁).X i₂).X i₃ ⟶ (K.total₁₂ c₁₂ c).X j :=
@@ -139,6 +167,8 @@ lemma ιTotal₁₂_eq
   subst h'
   rfl
 
+/-- The inclusion of a summand in the total complex `K.total₁₂ c₁₂ c` of a tricomplex,
+or zero. -/
 noncomputable def ιTotal₁₂OrZero :
     ((K.X i₁).X i₂).X i₃ ⟶ (K.total₁₂ c₁₂ c).X j :=
   if h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) = j then
@@ -161,16 +191,19 @@ variable (i₁ i₁' : I₁) (h₁ : c₁.Rel i₁ i₁')
   (i₂ i₂' : I₂) (h₂ : c₂.Rel i₂ i₂')
   (i₃ i₃' : I₃) (h₃ : c₃.Rel i₃ i₃') (j : J)
 
+/-- The first differential on a summand of the total complex `K.total₁₂ c₁₂ c` of a tricomplex. -/
 noncomputable def d₁ : ((K.X i₁).X i₂).X i₃ ⟶ (K.total₁₂ c₁₂ c).X j :=
   (ComplexShape.ε₁ c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) *
     ComplexShape.ε₁ c₁ c₂ c₁₂ (i₁, i₂)) •
       ((K.d i₁ (c₁.next i₁)).f i₂).f i₃ ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _
 
+/-- The second differential on a summand of the total complex `K.total₁₂ c₁₂ c` of a tricomplex. -/
 noncomputable def d₂ : ((K.X i₁).X i₂).X i₃ ⟶ (K.total₁₂ c₁₂ c).X j :=
   (ComplexShape.ε₁ c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) *
     ComplexShape.ε₂ c₁ c₂ c₁₂ (i₁, i₂)) •
   ((K.X i₁).d i₂ (c₂.next i₂)).f i₃ ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _
 
+/-- The third differential on a summand of the total complex `K.total₁₂ c₁₂ c` of a tricomplex. -/
 noncomputable def d₃ : ((K.X i₁).X i₂).X i₃ ⟶ (K.total₁₂ c₁₂ c).X j :=
   ComplexShape.ε₂ c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃) •
     ((K.X i₁).X i₂).d i₃ (c₃.next i₃) ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _
@@ -271,6 +304,8 @@ variable {A : C} {j : J} (f : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃)
     (_ : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) = j),
       ((K.X i₁).X i₂).X i₃ ⟶ A)
 
+/-- Constructor for morphisms from one of the object constituting
+the total complex `K.total₁₂ c₁₂ c` of a tricomplex. -/
 noncomputable def total₁₂Desc : (K.total₁₂ c₁₂ c).X j ⟶ A :=
   (K.int₁₂ c₁₂).totalDesc (fun i₁₂ i₃ h => (K.X' i₃).totalDesc
     (fun i₁ i₂ h' => f i₁ i₂ i₃ (by rw [h', h])))
@@ -295,12 +330,15 @@ lemma total₁₂.hom_ext {A : C} {j : J} {f g : (K.total₁₂ c₁₂ c).X j �
       simpa only [← ιTotal₁₂_eq_assoc _ c₁₂ c i₁ i₂ i₃ j
         (by rw [h', h]) i₁₂ h'] using hfg i₁ i₂ i₃ (by rw [h', h])))
 
+/-- The first differential on the total complex `K.total₁₂ c₁₂ c` of a tricomplex. -/
 noncomputable def D₁ (j j' : J) : (K.total₁₂ c₁₂ c).X j ⟶ (K.total₁₂ c₁₂ c).X j' :=
   K.total₁₂Desc (fun _ _ _ _ => K.d₁ _ _ _ _ _ _)
 
+/-- The second differential on the total complex `K.total₁₂ c₁₂ c` of a tricomplex. -/
 noncomputable def D₂ (j j' : J) : (K.total₁₂ c₁₂ c).X j ⟶ (K.total₁₂ c₁₂ c).X j' :=
   K.total₁₂Desc (fun _ _ _ _ => K.d₂ _ _ _ _ _ _)
 
+/-- The third differential on the total complex `K.total₁₂ c₁₂ c` of a tricomplex. -/
 noncomputable def D₃ (j j' : J) : (K.total₁₂ c₁₂ c).X j ⟶ (K.total₁₂ c₁₂ c).X j' :=
   K.total₁₂Desc (fun _ _ _ _ => K.d₃ _ _ _ _ _ _)
 
@@ -426,10 +464,15 @@ section
 
 variable [K.HasInt₂₃ c₂₃]
 
+/-- The condition that one may obtain a total complex
+of a tricomplex `K : HomologicalComplex₃ C c₁ c₂ c₃` in two steps by
+taking the total complex of the bicomplex `K.int₂₃ c₂₃ : HomologicalComplex₂ C c₁ c₂₃`. -/
 abbrev HasTotal₂₃ := (K.int₂₃ c₂₃).HasTotal c
 
 variable [K.HasTotal₂₃ c₂₃ c]
 
+/-- The total complex of a tricomplex `K : HomologicalComplex₃ C c₁ c₂ c₃` as the
+total complex of the bicomplex `K.int₂₃ c₂₃ : HomologicalComplex₂ C c₁ c₂₃`. -/
 noncomputable def total₂₃ : HomologicalComplex C c :=
   (K.int₂₃ c₂₃).total c
 
@@ -437,6 +480,7 @@ section
 
 variable (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
 
+/-- The inclusion of a summand in the total complex `K.total₂₃ c₂₃ c` of a tricomplex. -/
 noncomputable def ιTotal₂₃
     (h : ComplexShape.π c₁ c₂₃ c (i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) = j) :
     ((K.X i₁).X i₂).X i₃ ⟶ (K.total₂₃ c₂₃ c).X j :=
@@ -452,6 +496,8 @@ lemma ιTotal₂₃_eq
   subst h'
   rfl
 
+/-- The inclusion of a summand in the total complex `K.total₂₃ c₂₃ c` of a tricomplex,
+or zero. -/
 noncomputable def ιTotal₂₃OrZero :
     ((K.X i₁).X i₂).X i₃ ⟶ (K.total₂₃ c₂₃ c).X j :=
   if h : ComplexShape.π c₁ c₂₃ c (i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) = j then
@@ -474,15 +520,18 @@ variable (i₁ i₁' : I₁) (h₁ : c₁.Rel i₁ i₁')
   (i₂ i₂' : I₂) (h₂ : c₂.Rel i₂ i₂')
   (i₃ i₃' : I₃) (h₃ : c₃.Rel i₃ i₃') (j : J)
 
+/-- The first differential on a summand of the total complex `K.total₂₃ c₂₃ c` of a tricomplex. -/
 noncomputable def d₁' : ((K.X i₁).X i₂).X i₃ ⟶ (K.total₂₃ c₂₃ c).X j :=
     ComplexShape.ε₁ c₁ c₂₃ c (i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) •
       ((K.d i₁ (c₁.next i₁)).f i₂).f i₃ ≫ K.ιTotal₂₃OrZero c₂₃ c _ _ _ _
 
+/-- The second differential on a summand of the total complex `K.total₂₃ c₂₃ c` of a tricomplex. -/
 noncomputable def d₂' : ((K.X i₁).X i₂).X i₃ ⟶ (K.total₂₃ c₂₃ c).X j :=
     (ComplexShape.ε₂ c₁ c₂₃ c (i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) *
       ComplexShape.ε₁ c₂ c₃ c₂₃ (i₂, i₃)) •
   ((K.X i₁).d i₂ (c₂.next i₂)).f i₃ ≫ K.ιTotal₂₃OrZero c₂₃ c _ _ _ _
 
+/-- The third differential on a summand of the total complex `K.total₂₃ c₂₃ c` of a tricomplex. -/
 noncomputable def d₃' : ((K.X i₁).X i₂).X i₃ ⟶ (K.total₂₃ c₂₃ c).X j :=
     (ComplexShape.ε₂ c₁ c₂₃ c (i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) *
       ComplexShape.ε₂ c₂ c₃ c₂₃ (i₂, i₃)) •
@@ -583,6 +632,8 @@ variable {A : C} {j : J} (f : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃)
     (_ : ComplexShape.π c₁ c₂₃ c ⟨i₁, ComplexShape.π c₂ c₃ c₂₃ ⟨i₂, i₃⟩⟩ = j),
       ((K.X i₁).X i₂).X i₃ ⟶ A)
 
+/-- Constructor for morphisms from one of the object constituting
+the total complex `K.total₂₃ c₂₃ c` of a tricomplex. -/
 noncomputable def total₂₃Desc : (K.total₂₃ c₂₃ c).X j ⟶ A :=
   (K.int₂₃ c₂₃).totalDesc (fun i₁ i₂₃ h => (K.X i₁).totalDesc
     (fun i₂ i₃ h' => f i₁ i₂ i₃ (by rw [h', h])))
@@ -607,12 +658,15 @@ lemma total₂₃.hom_ext {A : C} {j : J} {f g : (K.total₂₃ c₂₃ c).X j �
       simpa only [← ιTotal₂₃_eq_assoc _ c₂₃ c i₁ i₂ i₃ j
         (by rw [h', h]) i₂₃ h'] using hfg i₁ i₂ i₃ (by rw [h', h])))
 
+/-- The first differential on the total complex `K.total₂₃ c₂₃ c` of a tricomplex. -/
 noncomputable def D₁' (j j' : J) : (K.total₂₃ c₂₃ c).X j ⟶ (K.total₂₃ c₂₃ c).X j' :=
   K.total₂₃Desc (fun _ _ _ _ => K.d₁' _ _ _ _ _ _)
 
+/-- The second differential on the total complex `K.total₂₃ c₂₃ c` of a tricomplex. -/
 noncomputable def D₂' (j j' : J) : (K.total₂₃ c₂₃ c).X j ⟶ (K.total₂₃ c₂₃ c).X j' :=
   K.total₂₃Desc (fun _ _ _ _ => K.d₂' _ _ _ _ _ _)
 
+/-- The third differential on the total complex `K.total₂₃ c₂₃ c` of a tricomplex. -/
 noncomputable def D₃' (j j' : J) : (K.total₂₃ c₂₃ c).X j ⟶ (K.total₂₃ c₂₃ c).X j' :=
   K.total₂₃Desc (fun _ _ _ _ => K.d₃' _ _ _ _ _ _)
 
@@ -736,6 +790,8 @@ end
 variable [K.HasInt₁₂ c₁₂] [K.HasInt₂₃ c₂₃] [K.HasTotal₁₂ c₁₂ c] [K.HasTotal₂₃ c₂₃ c]
   [ComplexShape.Associator c₁ c₂ c₃ c₁₂ c₂₃ c]
 
+/-- The associator isomorphism `K.total₁₂ c₁₂ c ≅ K.total₂₃ c₂₃ c` between
+the two ways to obtain the total complex of a tricomplex, in each degree. -/
 noncomputable def totalAssociatorX (j : J) : (K.total₁₂ c₁₂ c).X j ≅ (K.total₂₃ c₂₃ c).X j where
   hom := K.total₁₂Desc (fun i₁ i₂ i₃ h => K.ιTotal₂₃ c₂₃ c i₁ i₂ i₃ j
     (by rw [← h, ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c]))
@@ -816,6 +872,8 @@ lemma totalAssociatorX_hom_d (j j' : J) :
   simp only [total₂₃_d, Preadditive.comp_add, total₁₂_d, Preadditive.add_comp,
     D₁_totalAssociatorX_hom, D₂_totalAssociatorX_hom, D₃_totalAssociatorX_hom]
 
+/-- The associator isomorphism `K.total₁₂ c₁₂ c ≅ K.total₂₃ c₂₃ c` between
+the two ways to obtain the total complex of a tricomplex. -/
 noncomputable def totalAssociator : K.total₁₂ c₁₂ c ≅ K.total₂₃ c₂₃ c :=
   HomologicalComplex.Hom.isoOfComponents (K.totalAssociatorX c₁₂ c₂₃ c)
     (fun j j' _ => K.totalAssociatorX_hom_d c₁₂ c₂₃ c j j')
