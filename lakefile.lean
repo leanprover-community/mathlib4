@@ -8,6 +8,7 @@ package mathlib where
     ⟨`autoImplicit, false⟩,
     ⟨`relaxedAutoImplicit, false⟩
     , ⟨`debug.byAsSorry, true⟩
+    -- , ⟨`linter.unreachableTactic, false⟩
   ]
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
