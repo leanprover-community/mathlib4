@@ -316,10 +316,9 @@ instance completeLattice : CompleteLattice (fixedPoints f) where
   le_top x := f.le_gfp x.2.ge
   bot_le x := f.lfp_le x.2.le
 
-
 open OmegaCompletePartialOrder fixedPoints
 
-/-- **Kleenes fixed point Theorem**: The least fixed point in a complete lattice is
+/-- **Kleene's fixed point Theorem**: The least fixed point in a complete lattice is
 the supremum of iterating a function on bottom arbitrary often. -/
 theorem lfp_eq_sSup_iterate (h : Continuous f) :
     lfp f = ⨆ n, f^[n] ⊥ := by
