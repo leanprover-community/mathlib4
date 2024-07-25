@@ -15,7 +15,6 @@ first-price and second-price auctions, as well as several fundamental results an
 
 ## Main Definitions
 
-- `Auction`: Defines an auction with bidders and their valuations.
 - `maxBid`: Function that computes the highest bid given a bidding function.
 - `winner`: Identifies the winner of the auction as the bidder with the highest bid.
 - `maxBidExcluding`: Function that computes the highest bid excluding a given participant.
