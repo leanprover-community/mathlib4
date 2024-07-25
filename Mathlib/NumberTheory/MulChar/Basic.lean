@@ -7,7 +7,6 @@ import Mathlib.Algebra.CharP.Basic
 import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.OrderOfElement
 
-
 /-!
 # Multiplicative characters of finite rings and fields
 

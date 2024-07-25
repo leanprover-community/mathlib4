@@ -8,7 +8,6 @@ import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Sym.Sym2
 
-
 /-!
 # Simple graphs
 

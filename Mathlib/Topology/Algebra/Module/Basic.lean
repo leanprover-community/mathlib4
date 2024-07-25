@@ -14,7 +14,6 @@ import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Finsupp
 
-
 /-!
 # Theory of topological modules and continuous linear maps.
 

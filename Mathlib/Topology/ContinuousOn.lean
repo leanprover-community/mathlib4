@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.Constructions
 
-
 /-!
 # Neighborhoods and continuity relative to a subset
 

@@ -8,7 +8,6 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.DiophantineApproximation
 import Mathlib.NumberTheory.Zsqrtd.Basic
 
-
 /-!
 # Pell's Equation
 

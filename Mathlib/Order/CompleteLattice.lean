@@ -11,7 +11,6 @@ import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Hom.Set
 import Mathlib.Order.SetNotation
 
-
 /-!
 # Theory of complete lattices
 

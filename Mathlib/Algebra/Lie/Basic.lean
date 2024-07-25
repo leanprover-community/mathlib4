@@ -8,7 +8,6 @@ import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Data.Bracket
 import Mathlib.Tactic.Abel
 
-
 /-!
 # Lie algebras
 

@@ -7,7 +7,6 @@ import Mathlib.Geometry.Euclidean.Sphere.Basic
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.Tactic.DeriveFintype
 
-
 /-!
 # Circumcenter and circumradius
 

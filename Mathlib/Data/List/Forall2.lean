@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Data.List.Basic
 
-
 /-!
 # Double universal quantification on a list
 
@@ -24,7 +23,6 @@ variable {α β γ δ : Type*} {R S : α → β → Prop} {P : γ → δ → Pro
 open Relator
 
 mk_iff_of_inductive_prop List.Forall₂ List.forall₂_iff
-
 
 theorem Forall₂.imp (H : ∀ a b, R a b → S a b) {l₁ l₂} (h : Forall₂ R l₁ l₂) : Forall₂ S l₁ l₂ := by
   induction h <;> constructor <;> solve_by_elim

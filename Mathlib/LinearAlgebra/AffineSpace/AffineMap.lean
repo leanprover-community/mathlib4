@@ -10,7 +10,6 @@ import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.Tactic.Abel
 
-
 /-!
 # Affine maps
 

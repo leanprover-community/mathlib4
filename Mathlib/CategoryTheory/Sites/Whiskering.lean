@@ -5,7 +5,6 @@ Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Sites.Sheaf
 
-
 /-!
 
 In this file we construct the functor `Sheaf J A ⥤ Sheaf J B` between sheaf categories

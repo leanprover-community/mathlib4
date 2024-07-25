@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Topology.Sets.Opens
 
-
 /-!
 # Partial homeomorphisms
 
@@ -1110,7 +1109,6 @@ The converse is also true; see `OpenEmbedding.toPartialHomeomorph`. -/
 theorem to_openEmbedding (h : e.source = Set.univ) : OpenEmbedding e :=
   e.openEmbedding_restrict.comp
     ((Homeomorph.setCongr h).trans <| Homeomorph.Set.univ X).symm.openEmbedding
-
 
 end PartialHomeomorph
 

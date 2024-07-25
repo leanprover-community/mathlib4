@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 import Mathlib.Data.Set.Finite
 
-
 /-!
 # Theory of filters on sets
 

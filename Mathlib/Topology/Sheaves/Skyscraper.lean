@@ -7,7 +7,6 @@ import Mathlib.Topology.Sheaves.PUnit
 import Mathlib.Topology.Sheaves.Stalks
 import Mathlib.Topology.Sheaves.Functors
 
-
 /-!
 # Skyscraper (pre)sheaves
 

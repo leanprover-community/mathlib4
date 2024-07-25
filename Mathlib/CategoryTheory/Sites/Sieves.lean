@@ -9,7 +9,6 @@ import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.CompleteLattice
 
-
 /-!
 # Theory of sieves
 

@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Data.Setoid.Basic
 
-
 /-!
 # Congruence relations
 

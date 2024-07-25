@@ -6,7 +6,6 @@ Authors: David Kurniadi Angdinata
 import Mathlib.RingTheory.PrimeSpectrum
 import Mathlib.RingTheory.Localization.AsSubring
 
-
 /-!
 # Maximal spectrum of a commutative ring
 

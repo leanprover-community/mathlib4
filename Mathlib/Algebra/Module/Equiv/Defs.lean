@@ -6,7 +6,6 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 -/
 import Mathlib.Algebra.Module.LinearMap.Defs
 
-
 /-!
 # (Semi)linear equivalences
 

@@ -7,7 +7,6 @@ import Mathlib.Data.Option.Basic
 import Mathlib.Data.Set.Basic
 import Batteries.Tactic.Congr
 
-
 /-!
 
 # Partial Equivalences

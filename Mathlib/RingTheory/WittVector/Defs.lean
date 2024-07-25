@@ -5,7 +5,6 @@ Authors: Johan Commelin, Robert Y. Lewis
 -/
 import Mathlib.RingTheory.WittVector.StructurePolynomial
 
-
 /-!
 # Witt vectors
 

@@ -8,7 +8,6 @@ import Mathlib.Order.Disjointed
 import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.Measurability
 
-
 /-!
 # Measurable spaces and measurable functions
 
@@ -111,7 +110,6 @@ protected theorem MeasurableSet.iUnion [Countable ι] ⦃f : ι → Set α⦄
   · rcases exists_surjective_nat ι with ⟨e, he⟩
     rw [← iUnion_congr_of_surjective _ he (fun _ => rfl)]
     exact m.measurableSet_iUnion _ fun _ => h _
-
 
 protected theorem MeasurableSet.biUnion {f : β → Set α} {s : Set β} (hs : s.Countable)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋃ b ∈ s, f b) := by

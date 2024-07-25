@@ -7,7 +7,6 @@ import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Nat.Cast.Order.Ring
 
-
 /-!
 # Nonnegative rationals
 

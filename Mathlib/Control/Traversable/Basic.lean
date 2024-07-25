@@ -7,7 +7,6 @@ import Mathlib.Data.Option.Defs
 import Mathlib.Control.Functor
 import Batteries.Data.List.Basic
 
-
 /-!
 # Traversable type class
 

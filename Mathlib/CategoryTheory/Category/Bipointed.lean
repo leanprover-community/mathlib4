@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.CategoryTheory.Category.Pointed
 
-
 /-!
 # The category of bipointed types
 

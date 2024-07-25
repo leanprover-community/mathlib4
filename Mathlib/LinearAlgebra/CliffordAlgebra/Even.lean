@@ -6,7 +6,6 @@ Authors: Eric Wieser
 import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
 import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
 
-
 /-!
 # The universal property of the even subalgebra
 

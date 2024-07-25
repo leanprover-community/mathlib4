@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.RingTheory.OreLocalization.Basic
 
-
 /-!
 # Localizations of commutative monoids
 

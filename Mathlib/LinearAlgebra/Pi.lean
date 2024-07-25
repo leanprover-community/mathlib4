@@ -11,7 +11,6 @@ import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.Logic.Equiv.Fin
 
-
 /-!
 # Pi types of modules
 

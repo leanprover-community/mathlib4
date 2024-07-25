@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.List.Basic
 
-
 /-!
 # Lists from functions
 

@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.CategoryTheory.Category.Bipointed
 import Mathlib.Data.TwoPointing
 
-
 /-!
 # The category of two-pointed types
 

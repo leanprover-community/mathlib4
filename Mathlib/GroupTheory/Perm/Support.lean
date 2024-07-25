@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Perm.Basic
 
-
 /-!
 # support of a permutation
 

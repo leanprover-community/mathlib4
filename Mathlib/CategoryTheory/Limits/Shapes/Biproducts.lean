@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
-
 /-!
 # Biproducts and binary biproducts
 

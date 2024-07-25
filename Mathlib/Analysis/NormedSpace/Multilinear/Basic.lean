@@ -8,7 +8,6 @@ import Mathlib.Logic.Embedding.Basic
 import Mathlib.Data.Fintype.CardEmbedding
 import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 
-
 /-!
 # Operator norm on the space of continuous multilinear maps
 

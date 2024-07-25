@@ -6,7 +6,6 @@ Authors: Andrew Yang
 import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.AlgebraicGeometry.AffineScheme
 
-
 /-!
 # (Co)Limits of Schemes
 

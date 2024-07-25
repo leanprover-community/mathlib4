@@ -9,7 +9,6 @@ import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Data.Set.Pointwise.SMul
 
-
 /-!
 # The coproduct (a.k.a. the free product) of groups or monoids
 

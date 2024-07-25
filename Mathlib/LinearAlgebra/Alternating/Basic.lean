@@ -7,7 +7,6 @@ import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.Data.Fintype.Perm
 import Mathlib.LinearAlgebra.Multilinear.Basis
 
-
 /-!
 # Alternating Maps
 

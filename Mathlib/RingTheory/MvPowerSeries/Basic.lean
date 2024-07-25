@@ -11,7 +11,6 @@ import Mathlib.Data.Finsupp.Weight
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.Tactic.Linarith
 
-
 /-!
 # Formal (multivariate) power series
 
