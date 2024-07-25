@@ -243,7 +243,7 @@ theorem IsSeqCompact.subseq_of_frequently_in {s : Set X} (hs : IsSeqCompact s) {
 
 theorem SeqCompactSpace.tendsto_subseq [SeqCompactSpace X] (x : ℕ → X) :
     ∃ (a : X) (φ : ℕ → ℕ), StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
-  let ⟨a, _, φ, mono, h⟩ := seq_compact_univ fun n => mem_univ (x n)
+  let ⟨a, _, φ, mono, h⟩ := isSeqCompact_univ fun n => mem_univ (x n)
   ⟨a, φ, mono, h⟩
 
 section FirstCountableTopology
