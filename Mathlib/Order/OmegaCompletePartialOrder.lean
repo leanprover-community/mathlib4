@@ -3,8 +3,8 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Ira Fesefeldt
 -/
-import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Control.Monad.Basic
+import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Order.Chain
 import Mathlib.Order.Hom.Order
 import Mathlib.Order.Iterate
