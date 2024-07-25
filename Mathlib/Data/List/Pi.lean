@@ -25,12 +25,12 @@ def nil (α : ι → Sort*) : (∀ i ∈ ([] : List ι), α i) :=
 variable {i : ι} {l : List ι}
 
 /-- Given `f` a function whose domain is `i :: l`, get its value at `i`.  -/
-def head (f : ∀ j ∈ (i :: l), α j) : α i :=
+def head (f : ∀ j ∈ i :: l, α j) : α i :=
   f i (mem_cons_self _ _)
 
 /-- Given `f` a function whose domain is `i :: l`, produce a function whose domain
 is restricted to `l`.  -/
-def tail (f : ∀ j ∈ (i :: l), α j) : ∀ j ∈ l, α j :=
+def tail (f : ∀ j ∈ i :: l, α j) : ∀ j ∈ l, α j :=
   fun j hj ↦ f j (mem_cons_of_mem _ hj)
 
 variable (i l)
@@ -38,7 +38,7 @@ variable (i l)
 /-- Given `α : ι → Sort*`, a list `l` and a term `i`, as well as a term `a : α i` and a
 function `f` such that `f j : α j` for all `j` in `l`, `Pi.cons a f` is a function `g` such
 that `g k : α k` for all `k` in `i :: l`. -/
-def cons (a : α i) (f : ∀ j ∈ l, α j) : ∀ j ∈ (i :: l), α j :=
+def cons (a : α i) (f : ∀ j ∈ l, α j) : ∀ j ∈ i :: l, α j :=
   Multiset.Pi.cons (α := ι) l _ a f
 
 variable {i l}
