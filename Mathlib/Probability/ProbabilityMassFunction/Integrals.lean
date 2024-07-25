@@ -18,7 +18,7 @@ It also provides the expected value for specific probability mass functions.
 
 namespace PMF
 
-open MeasureTheory BigOperators ENNReal TopologicalSpace
+open MeasureTheory ENNReal TopologicalSpace
 
 section General
 
@@ -50,3 +50,5 @@ end General
 
 theorem bernoulli_expectation {p : ℝ≥0∞} (h : p ≤ 1) :
     ∫ b, cond b 1 0 ∂((bernoulli p h).toMeasure) = p.toReal := by simp [integral_eq_sum]
+
+end PMF

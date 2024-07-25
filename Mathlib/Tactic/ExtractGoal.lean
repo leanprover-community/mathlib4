@@ -6,7 +6,7 @@ Authors: Simon Hudon, Kyle Miller, Damiano Testa
 import Lean.Elab.Tactic.ElabTerm
 import Lean.Meta.Tactic.Cleanup
 import Lean.PrettyPrinter
-import Std.Lean.Meta.Inaccessible
+import Batteries.Lean.Meta.Inaccessible
 
 /-!
 #  `extract_goal`: Format the current goal as a stand-alone example
@@ -47,10 +47,10 @@ example {z : Int} : ∃ n : Nat, ↑n = z := by
   apply int_eq_nat  -- works
 ```
 
-However, importing `Std.Classes.Cast`, makes `extract_goal` produce a different theorem
+However, importing `Batteries.Classes.Cast`, makes `extract_goal` produce a different theorem
 
 ```lean
-import Std.Classes.Cast
+import Batteries.Classes.Cast
 
 -- `theorem extracted_1` is the output of the `extract_goal` from the example below
 -- the type ascription is erased and the `↑` is untouched:
@@ -163,10 +163,7 @@ elab_rules : tactic
           levelParams := levels
           isUnsafe := false
           type := ty }
-      let sig ← addMessageContext <| MessageData.ofPPFormat { pp := fun
-                  | some ctx => ctx.runMetaM <| PrettyPrinter.ppSignature name
-                  | none     => unreachable!
-                }
+      let sig ← addMessageContext <| MessageData.signature name
       let cmd := if ← Meta.isProp ty then "theorem" else "def"
       pure m!"{cmd} {sig} := sorry"
     logInfo msg

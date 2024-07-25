@@ -4,6 +4,7 @@ import Mathlib.Tactic.Rename
 import Mathlib.Tactic.Set
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.Basic
+import Mathlib.Data.Nat.Defs
 
 set_option autoImplicit true
 example (a b : ℕ) (foo : False)  : a < b := by

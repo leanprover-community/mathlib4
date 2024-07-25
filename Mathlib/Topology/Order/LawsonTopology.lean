@@ -97,7 +97,7 @@ protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (laws
   erw [@topology_eq_lawson α _ _ _]
   rw [lawson]
   apply (congrArg₂ Inf.inf _) _
-  letI _ := lower α; exact @IsLower.withLowerHomeomorph α ‹_› (lower α) ⟨rfl⟩ |>.inducing.induced
+  · letI _ := lower α; exact @IsLower.withLowerHomeomorph α ‹_› (lower α) ⟨rfl⟩ |>.inducing.induced
   letI _ := scott α; exact @IsScott.withScottHomeomorph α _ (scott α) ⟨rfl⟩ |>.inducing.induced
 
 end Preorder
@@ -127,7 +127,8 @@ lemma toLawson_inj {a b : α} : toLawson a = toLawson b ↔ a = b := Iff.rfl
 @[simp, nolint simpNF]
 lemma ofLawson_inj {a b : WithLawson α} : ofLawson a = ofLawson b ↔ a = b := Iff.rfl
 
-/-- A recursor for `WithLawson`. Use as `induction' x using WithLawson.rec`. -/
+/-- A recursor for `WithLawson`. Use as `induction' x`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : WithLawson α → Sort*}
     (h : ∀ a, β (toLawson a)) : ∀ a, β a := fun a => h (ofLawson a)
 
@@ -223,7 +224,7 @@ lemma singleton_isClosed (a : α) : IsClosed ({a} : Set α) := by
     ← WithLawson.isClosed_preimage_ofLawson]
   apply IsClosed.inter
     (lawsonClosed_of_lowerClosed _ (IsLower.isClosed_upperClosure (finite_singleton a)))
-  rw [ lowerClosure_singleton, LowerSet.coe_Iic, ← WithLawson.isClosed_preimage_ofLawson]
+  rw [lowerClosure_singleton, LowerSet.coe_Iic, ← WithLawson.isClosed_preimage_ofLawson]
   apply lawsonClosed_of_scottClosed
   exact IsScott.isClosed_Iic
 
@@ -237,3 +238,5 @@ instance (priority := 90) t0Space : T0Space α :=
 end PartialOrder
 
 end IsLawson
+
+end Topology

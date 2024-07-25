@@ -103,8 +103,8 @@ lemma regularityReduced_edges_card_aux [Nonempty α] (hε : 0 < ε) (hP : P.IsEq
     _ = ↑((univ ×ˢ univ).filter fun (x, y) ↦
         G.Adj x y ∧ ¬(G.regularityReduced P (ε / 8) (ε /4)).Adj x y).card := by
       rw [univ_product_univ, mul_sub, filter_and_not, cast_card_sdiff]
-      norm_cast
-      rw [two_mul_card_edgeFinset, two_mul_card_edgeFinset]
+      · norm_cast
+        rw [two_mul_card_edgeFinset, two_mul_card_edgeFinset]
       · exact monotone_filter_right _ fun xy hxy ↦ regularityReduced_le hxy
     _ ≤ ((A ∪ B ∪ C).card : ℝ) := by gcongr; exact unreduced_edges_subset
     _ ≤ ((A ∪ B).card + C.card : ℝ) := mod_cast (card_union_le _ _)
