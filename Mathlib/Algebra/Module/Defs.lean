@@ -459,6 +459,7 @@ section Module
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 section Nat
+set_option debug.byAsSorry false
 
 variable [NoZeroSMulDivisors R M] [CharZero R]
 variable (R) (M)
@@ -509,6 +510,7 @@ theorem smul_right_inj [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) {x y : M}
 end SMulInjective
 
 section Nat
+set_option debug.byAsSorry false
 
 variable [NoZeroSMulDivisors R M] [CharZero R]
 variable (R M)
