@@ -414,7 +414,7 @@ theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b <
   (or_iff_right fun h' => (h.asymm h').elim).1 <| xor_trichotomy h.ne
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
-  cases b <;> simp [bit0, bit1] <;> omega
+  cases b <;> simp <;> omega
 
 /-- If `x` and `y` fit within `n` bits, then the result of any bitwise operation on `x` and `y` also
 fits within `n` bits -/
