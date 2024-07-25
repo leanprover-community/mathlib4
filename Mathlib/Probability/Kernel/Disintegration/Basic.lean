@@ -57,10 +57,14 @@ variable [ρ.IsCondKernel ρCond]
 
 lemma disintegrate : ρ.fst ⊗ₘ ρCond = ρ := IsCondKernel.disintegrate'
 
+lemma IsCondKernel.isSFiniteKernel (hρ : ρ ≠ 0) : IsSFiniteKernel ρCond := by
+  contrapose! hρ; rwa [← ρ.disintegrate ρCond, Measure.compProd_of_not_isSFiniteKernel]
+
 /-- Auxiliary lemma for `IsCondKernel.apply_of_ne_zero`. -/
-private lemma IsCondKernel.apply_of_ne_zero_of_measurableSet [MeasurableSingletonClass α]
-    [IsSFiniteKernel ρCond] {x : α} (hx : ρ.fst {x} ≠ 0) {s : Set Ω} (hs : MeasurableSet s) :
+private lemma IsCondKernel.apply_of_ne_zero_of_measurableSet [MeasurableSingletonClass α] {x : α}
+    (hx : ρ.fst {x} ≠ 0) {s : Set Ω} (hs : MeasurableSet s) :
     ρCond x s = (ρ.fst {x})⁻¹ * ρ ({x} ×ˢ s) := by
+  have := isSFiniteKernel ρ ρCond (by rintro rfl; simp at hx)
   nth_rewrite 2 [← ρ.disintegrate ρCond]
   rw [Measure.compProd_apply (measurableSet_prod.mpr (Or.inl ⟨measurableSet_singleton x, hs⟩))]
   classical
@@ -79,7 +83,7 @@ private lemma IsCondKernel.apply_of_ne_zero_of_measurableSet [MeasurableSingleto
 
 /-- If the singleton `{x}` has non-zero mass for `ρ.fst`, then for all `s : Set Ω`,
 `ρCond x s = (ρ.fst {x})⁻¹ * ρ ({x} ×ˢ s)` . -/
-lemma IsCondKernel.apply_of_ne_zero [MeasurableSingletonClass α] [IsSFiniteKernel ρCond] {x : α}
+lemma IsCondKernel.apply_of_ne_zero [MeasurableSingletonClass α] {x : α}
     (hx : ρ.fst {x} ≠ 0) (s : Set Ω) : ρCond x s = (ρ.fst {x})⁻¹ * ρ ({x} ×ˢ s) := by
   have : ρCond x s = ((ρ.fst {x})⁻¹ • ρ).comap (fun (y : Ω) ↦ (x, y)) s := by
     congr 2 with s hs
@@ -87,13 +91,14 @@ lemma IsCondKernel.apply_of_ne_zero [MeasurableSingletonClass α] [IsSFiniteKern
       (measurableEmbedding_prod_mk_left x).comap_apply]
   simp [this, (measurableEmbedding_prod_mk_left x).comap_apply, hx]
 
--- TODO: Can we generalise away from `MeasurableSingletonClass`, using eg `measurableAtom a` instead
--- of `{a}`?
-lemma IsCondKernel.isMarkovKernel_iff_isSFiniteKernel [MeasurableSingletonClass α]
-    (hρ : ∀ a, ρ.fst {a} ≠ 0) : IsMarkovKernel ρCond ↔ IsSFiniteKernel ρCond := by
-  refine ⟨fun _ ↦ inferInstance, fun _ ↦ ⟨fun a ↦ ⟨?_⟩⟩⟩
-  rw [IsCondKernel.apply_of_ne_zero _ _ (hρ _), prod_univ, ← Measure.fst_apply
-    (measurableSet_singleton _), ENNReal.inv_mul_cancel (hρ _) (measure_ne_top _ _)]
+lemma IsCondKernel.isProbabilityMeasure [MeasurableSingletonClass α] {a : α} (ha : ρ.fst {a} ≠ 0) :
+    IsProbabilityMeasure (ρCond a) := by
+  constructor
+  rw [IsCondKernel.apply_of_ne_zero _ _ ha, prod_univ, ← Measure.fst_apply
+    (measurableSet_singleton _), ENNReal.inv_mul_cancel ha (measure_ne_top _ _)]
+
+lemma IsCondKernel.isMarkovKernel [MeasurableSingletonClass α] (hρ : ∀ a, ρ.fst {a} ≠ 0) :
+    IsMarkovKernel ρCond := ⟨fun _ ↦ isProbabilityMeasure _ _ (hρ _)⟩
 
 end MeasureTheory.Measure
 
@@ -107,7 +112,7 @@ kernel, then `κ` itself is disintegrated by a kernel, namely
 -/
 
 namespace ProbabilityTheory.Kernel
-variable (κ : Kernel α (β × Ω)) [IsFiniteKernel κ] (κCond : Kernel (α × β) Ω)
+variable (κ : Kernel α (β × Ω)) (κCond : Kernel (α × β) Ω)
 
 /-! #### Predicate for a kernel to disintegrate a kernel -/
 
@@ -115,6 +120,9 @@ variable (κ : Kernel α (β × Ω)) [IsFiniteKernel κ] (κCond : Kernel (α ×
 that `κ.fst ⊗ₖ κCond = κ`. -/
 class IsCondKernel : Prop where
   disintegrate' : κ.fst ⊗ₖ κCond = κ
+
+instance instIsCondKernel_zero (κCond : Kernel (α × β) Ω) : IsCondKernel 0 κCond where
+  disintegrate' := by simp
 
 variable [κ.IsCondKernel κCond]
 

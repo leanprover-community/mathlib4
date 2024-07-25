@@ -302,7 +302,8 @@ instance isFiniteKernel_seq (κ : Kernel α β) [h : IsSFiniteKernel κ] (n : �
     IsFiniteKernel (Kernel.seq κ n) :=
   h.tsum_finite.choose_spec.1 n
 
-instance IsSFiniteKernel.sFinite [IsSFiniteKernel κ] (a : α) : SFinite (κ a) :=
+instance _root_.ProbabilityTheory.IsSFiniteKernel.sFinite [IsSFiniteKernel κ] (a : α) :
+    SFinite (κ a) :=
   ⟨⟨fun n ↦ seq κ n a, inferInstance, (measure_sum_seq κ a).symm⟩⟩
 
 instance IsSFiniteKernel.add (κ η : Kernel α β) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
@@ -451,17 +452,21 @@ lemma sum_const [Countable ι] (μ : ι → Measure β) :
   rw [const_apply, Measure.sum_apply _ hs, Kernel.sum_apply' _ _ hs]
   simp only [const_apply]
 
-instance isFiniteKernel_const {μβ : Measure β} [IsFiniteMeasure μβ] :
+instance const.instIsFiniteKernel {μβ : Measure β} [IsFiniteMeasure μβ] :
     IsFiniteKernel (const α μβ) :=
   ⟨⟨μβ Set.univ, measure_lt_top _ _, fun _ => le_rfl⟩⟩
 
-instance isSFiniteKernel_const {μβ : Measure β} [SFinite μβ] :
+instance const.instIsSFiniteKernel {μβ : Measure β} [SFinite μβ] :
     IsSFiniteKernel (const α μβ) :=
   ⟨fun n ↦ const α (sFiniteSeq μβ n), fun n ↦ inferInstance, by rw [sum_const, sum_sFiniteSeq]⟩
 
-instance isMarkovKernel_const {μβ : Measure β} [hμβ : IsProbabilityMeasure μβ] :
+instance const.instIsMarkovKernel {μβ : Measure β} [hμβ : IsProbabilityMeasure μβ] :
     IsMarkovKernel (const α μβ) :=
   ⟨fun _ => hμβ⟩
+
+lemma isSFiniteKernel_const [Nonempty α] {μβ : Measure β} :
+    IsSFiniteKernel (const α μβ) ↔ SFinite μβ :=
+  ⟨fun h ↦ h.sFinite (Classical.arbitrary α), fun _ ↦ inferInstance⟩
 
 @[simp]
 theorem lintegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} :
