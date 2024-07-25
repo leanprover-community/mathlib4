@@ -781,7 +781,7 @@ def notNilRec {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → So
   | .cons h q => fun _ => cons h q
 
 @[simp]
-lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → Sort*}
+lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → Sort*}
     (cons : {u v w : V} → (h : G.Adj u v) → (q : G.Walk v w) →
     motive (q.cons h) Walk.not_nil_cons) (h' : G.Adj u v) (q' : G.Walk v w) :
     @Walk.notNilRec _ _ _ _ _ cons _ _ = cons h' q' := by rfl
@@ -832,7 +832,7 @@ variable {x y : V} -- TODO: rename to u, v, w instead?
 
 @[simp]
 lemma tail_cons {t u v} (p : G.Walk u v) (h : G.Adj t u) :
-    (p.cons h).tail Walk.not_nil_cons = p := by
+    (p.cons h).tail not_nil_cons = p := by
   unfold Walk.tail; simp only [notNilRec_cons]
 
 lemma tail_support_eq_support_tail (p : G.Walk u v) (hnp : ¬p.Nil) :
@@ -1243,7 +1243,7 @@ lemma getVert_tail {u v n} (p : G.Walk u v) (hnp: ¬ p.Nil) :
 
 @[simp]
 lemma cons_sndOfNotNil (q : G.Walk v w) (hadj : G.Adj u v) :
-    (q.cons hadj).sndOfNotNil (not_nil_cons) = v := by
+    (q.cons hadj).sndOfNotNil not_nil_cons = v := by
   unfold sndOfNotNil; simp only [notNilRec_cons]
 
 lemma getVert_one (p : G.Walk u v) (hnp : ¬ p.Nil) : p.getVert 1 = p.sndOfNotNil hnp :=
