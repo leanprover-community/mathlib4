@@ -8,6 +8,7 @@ import Mathlib.AlgebraicTopology.KanComplex
 import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 import Mathlib.CategoryTheory.Closed.FunctorToTypes
 import Mathlib.CategoryTheory.LiftingProperties.Basic
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Quasicategories
@@ -73,6 +74,16 @@ lemma quasicategory_of_filler (S : SSet)
 
 section
 
+-- need to define weakly saturated MorphismProperty
+-- need to define stability under retracts and transfinite composition
+-- already have `CategoryTheory.MorphismProperty.StableUnderCobaseChange` for pushouts
+
+-- probably want to define LLP/RLP wrt a `MorphismProperty`
+
+end
+
+section
+
 instance : MonoidalClosed SSet := FunctorToTypes.monoidalClosed
 
 /- p : X ⟶ Y is a trivial Kan fibration if it has the right lifting property wrt
@@ -122,6 +133,18 @@ open MonoidalClosed
 
 abbrev Fun : SSetᵒᵖ ⥤ SSet ⥤ SSet := internalHom
 
+@[ext]
+lemma ihom_ext (Y Z : SSet) (n : SimplexCategoryᵒᵖ)
+    (a b : (((ihom Y).obj Z)).obj n) : a.app = b.app → a = b := fun h ↦ by
+  apply Functor.ihom_ext
+  intro m f; exact congr_fun (congr_fun h m) f
+
+@[ext]
+lemma ihom_ihom_ext (X Y Z : SSet) (n : SimplexCategoryᵒᵖ)
+    (a b : ((ihom X).obj ((ihom Y).obj Z)).obj n) : a.app = b.app → a = b := fun h ↦ by
+  apply Functor.ihom_ext
+  intro m f; exact congr_fun (congr_fun h m) f
+
 def ihom_iso_hom (X Y Z : SSet) : (ihom X).obj ((ihom Y).obj Z) ⟶ (ihom (X ⊗ Y)).obj Z where
   app := fun n x ↦ by
     refine ⟨fun m f ⟨Xm, Ym⟩ ↦ (x.app m f Xm).app m (𝟙 m) Ym, ?_⟩
@@ -146,21 +169,8 @@ def ihom_iso_inv (X Y Z : SSet) : (ihom (X ⊗ Y)).obj Z ⟶ (ihom X).obj ((ihom
         simp at this ⊢
         exact this
     · intro m l f g
-      ext Xm
-      apply Functor.ihom_ext
+      ext
       simp [ihom, Closed.rightAdj, FunctorToTypes.rightAdj, Functor.ihom, Functor.hom₂Functor]
-
-@[ext]
-lemma ihom_ext (Y Z : SSet) (n : SimplexCategoryᵒᵖ)
-    (a b : (((ihom Y).obj Z)).obj n) : a.app = b.app → a = b := fun h ↦ by
-  apply Functor.ihom_ext
-  intro m f; exact congr_fun (congr_fun h m) f
-
-@[ext]
-lemma ihom_ihom_ext (X Y Z : SSet) (n : SimplexCategoryᵒᵖ)
-    (a b : ((ihom X).obj ((ihom Y).obj Z)).obj n) : a.app = b.app → a = b := fun h ↦ by
-  apply Functor.ihom_ext
-  intro m f; exact congr_fun (congr_fun h m) f
 
 /- [X, [Y, Z]] ≅ [X ⊗ Y, Z] -/
 def ihom_iso (X Y Z : SSet) : (ihom X).obj ((ihom Y).obj Z) ≅ (ihom (X ⊗ Y)).obj Z where
@@ -180,86 +190,45 @@ def ihom_iso (X Y Z : SSet) : (ihom X).obj ((ihom Y).obj Z) ≅ (ihom (X ⊗ Y))
       x.app m f (Xm, Ym)
     simp [ihom_iso_hom, ihom_iso_inv]
 
-def ihom_braid_hom (X Y : SSet) {Z : SSet} {n : SimplexCategoryᵒᵖ}
-    (a : ((ihom (Y ⊗ X)).obj Z).obj n) : ((ihom (X ⊗ Y)).obj Z).obj n where
-  app m f := (β_ X Y).hom.app m ≫ a.app m f
-  naturality f g:= by
-    ext ⟨Xm, Ym⟩; exact congr_fun (a.naturality f g) (Ym, Xm)
-
-lemma ihom_braid_hom_eq {X Y Z : SSet} {n : SimplexCategoryᵒᵖ}
+@[simp]
+lemma ihom_braid_hom_eq {X Y Z : SSet} {n m : SimplexCategoryᵒᵖ} {f : n ⟶ m}
     (a : ((ihom (Y ⊗ X)).obj Z).obj n) :
-    ((MonoidalClosed.pre (β_ X Y).hom).app Z).app n a = ihom_braid_hom X Y a := by
-  apply Functor.ihom_ext
-  intro m f
-  dsimp [ihom_braid_hom]
+    (((MonoidalClosed.pre (β_ X Y).hom).app Z).app n a).app m f =
+      (β_ X Y).hom.app m ≫ a.app m f := by
   ext ⟨Xm, Ym⟩
-  --simp [MonoidalClosed.pre, conjugateEquiv]
   change (((Y ⊗ X).ihom Z).map f a).app m (𝟙 m) (Ym, Xm) = a.app m f (Ym, Xm)
   simp [Functor.ihom]
-  /-
-  change
-    (((ihom (X ⊗ Y)).map ((ihom.ev (Y ⊗ X)).app Z)).app n
-      (((ihom (X ⊗ Y)).map ((β_ X Y).hom ▷ (ihom (Y ⊗ X)).obj Z)).app n
-        (((ihom.coev (X ⊗ Y)).app ((ihom (Y ⊗ X)).obj Z)).app n a))).app m f (Xm, Ym) =
-    a.app m f (Ym, Xm)
-  simp [ihom, Closed.rightAdj, FunctorToTypes.rightAdj,
-    FunctorToTypes.rightAdj_map]
-  have : ihom.coev (X ⊗ Y) = (FunctorToTypes.adj (X ⊗ Y)).unit := by rfl
-  let H := ((((FunctorToTypes.adj (X ⊗ Y)).unit.app (Functor.ihom (Y ⊗ X) Z)).app n a).app m f (Xm, Ym))
-  let H' := ((((FunctorToTypes.adj (Y ⊗ X)).unit.app (Functor.ihom (X ⊗ Y) Z)).app n (temp3' a)).app m f (Ym, Xm))
-  change ((FunctorToTypes.adj (Y ⊗ X)).counit.app Z).app m (H'.1, H.2) = _
-  simp [H', H, FunctorToTypes.adj, FunctorToTypes.homEquiv_invFun,
-    FunctorToTypes.homEquiv_toFun, FunctorToTypes.homEquiv_toFun_app]
-  simp [Functor.ihom]
-  -/
 
-def ihom_braid_inv {X Y Z : SSet} {n : SimplexCategoryᵒᵖ} (a : ((ihom (X ⊗ Y)).obj Z).obj n) :
-    ((ihom (Y ⊗ X)).obj Z).obj n where
-  app m f := (β_ X Y).inv.app m ≫ a.app m f
-  naturality f g := by
-    ext ⟨Ym, Xm⟩; exact congr_fun (a.naturality f g) (Xm, Ym)
-
-lemma ihom_braid_inv_eq {X Y Z : SSet} {n : SimplexCategoryᵒᵖ} (a : ((ihom (X ⊗ Y)).obj Z).obj n) :
-    ((MonoidalClosed.pre (β_ X Y).inv).app Z).app n a = ihom_braid_inv a := by
-  apply Functor.ihom_ext
-  intro m f
-  dsimp [ihom_braid_hom_eq]
+@[simp]
+lemma ihom_braid_inv_eq {X Y Z : SSet} {n m : SimplexCategoryᵒᵖ} {f : n ⟶ m}
+    (a : ((ihom (X ⊗ Y)).obj Z).obj n) :
+    (((MonoidalClosed.pre (β_ X Y).inv).app Z).app n a).app m f = (β_ X Y).inv.app m ≫ a.app m f := by
   ext ⟨Ym, Xm⟩
   change (((X ⊗ Y).ihom Z).map f a).app m (𝟙 m) (Xm, Ym) = a.app m f (Xm, Ym)
   simp [Functor.ihom]
 
-/- [X, [Y, Z]] ≅ [X ⊗ Y, Z] ≅ [Y ⊗ X, Z] ≅ [Y, [X, Z]] -/
-def ihom_iso' (X Y Z : SSet) : (ihom X).obj ((ihom Y).obj Z) ≅ (ihom Y).obj ((ihom X).obj Z) where
-  hom := (ihom_iso X Y Z).hom ≫ (pre (β_ X Y).inv).app Z ≫ (ihom_iso Y X Z).inv
-  inv := (ihom_iso Y X Z).hom ≫ (pre (β_ X Y).hom).app Z ≫ (ihom_iso X Y Z).inv
+/- [X ⊗ Y, Z] ≅ [Y ⊗ X, Z] -/
+def ihom_braid_iso (X Y Z : SSet) : (ihom (X ⊗ Y)).obj Z ≅ (ihom (Y ⊗ X)).obj Z where
+  hom := (MonoidalClosed.pre (β_ X Y).inv).app Z
+  inv := (MonoidalClosed.pre (β_ X Y).hom).app Z
   hom_inv_id := by
-    ext n x m f Xm l g Yl
-    simp
-    change ((((X.ihom_iso Y Z).inv).app n (((MonoidalClosed.pre (β_ X Y).hom).app Z).app n
-      (((MonoidalClosed.pre (β_ X Y).inv).app Z).app n
-      ((X.ihom_iso Y Z).hom.app n x)))).app m f Xm).app l g Yl
-      = (x.app m f Xm).app l g Yl
-    simp [ihom_iso, ihom_iso_hom, ihom_iso_inv, ihom_braid_hom, ihom_braid_hom_eq,
-      ihom_braid_inv_eq, ihom_braid_inv]
-    have := congr_fun (x.naturality g f) Xm
-    dsimp [ihom, Closed.rightAdj, FunctorToTypes.rightAdj, Functor.ihom,
-      Functor.hom₂Functor] at this
-    rw [this]
-    aesop
+    ext n x m f ⟨Xm, Ym⟩
+    change ((
+      (MonoidalClosed.pre (β_ X Y).hom).app Z).app n
+      (((MonoidalClosed.pre (β_ X Y).inv).app Z).app n x)).app m f (Xm, Ym) = _
+    rw [ihom_braid_hom_eq, ihom_braid_inv_eq]
+    rfl
   inv_hom_id := by
-    ext n x m f Ym l g Xl
-    simp
-    change ((((Y.ihom_iso X Z).inv).app n (((MonoidalClosed.pre (β_ X Y).inv).app Z).app n
-      (((MonoidalClosed.pre (β_ X Y).hom).app Z).app n
-      ((Y.ihom_iso X Z).hom.app n x)))).app m f Ym).app l g Xl
-      = (x.app m f Ym).app l g Xl
-    simp [ihom_iso, ihom_iso_hom, ihom_iso_inv, ihom_braid_hom, ihom_braid_hom_eq,
-      ihom_braid_inv_eq, ihom_braid_inv]
-    have := congr_fun (x.naturality g f) Ym
-    dsimp [ihom, Closed.rightAdj, FunctorToTypes.rightAdj, Functor.ihom,
-      Functor.hom₂Functor] at this
-    rw [this]
-    aesop
+    ext n x m f ⟨Ym, Xm⟩
+    change ((
+      (MonoidalClosed.pre (β_ X Y).inv).app Z).app n
+      (((MonoidalClosed.pre (β_ X Y).hom).app Z).app n x)).app m f (Ym, Xm) = _
+    rw [ihom_braid_inv_eq, ihom_braid_hom_eq]
+    rfl
+
+/- [X, [Y, Z]] ≅ [X ⊗ Y, Z] ≅ [Y ⊗ X, Z] ≅ [Y, [X, Z]] -/
+def ihom_iso' (X Y Z : SSet) : (ihom X).obj ((ihom Y).obj Z) ≅ (ihom Y).obj ((ihom X).obj Z) :=
+  (ihom_iso X Y Z) ≪≫ (ihom_braid_iso X Y Z) ≪≫ (ihom_iso Y X Z).symm
 
 end ihom_stuff
 
@@ -268,9 +237,22 @@ end ihom_stuff
 instance horn_tkf_iff_quasicat (B : SSet) : Quasicategory B ↔
   trivialKanFibration ((Fun.map (hornInclusion 2 1).op).app B) := sorry
 
+-- ∂Δ[n] ⟶ Δ[n] is a monomorphism
+instance (n : ℕ) : Mono (boundaryInclusion n) where
+  right_cancellation := by
+    intro Z f g H
+    ext m Zm
+    have := congr_fun (congr_app H m) Zm
+    change (boundaryInclusion n).app m (f.app m Zm) = (boundaryInclusion n).app m (g.app m Zm) at this
+    simp [boundaryInclusion] at this
+    sorry
+
+example (X Y B : SSet) (f : X ⟶ Y) (n : SimplexCategoryᵒᵖ) (b : B.obj n) (x : X.obj n) :
+  (B ◁ f).app n (b, x) = (b, f.app n x) := rfl
+
 -- need that B ⊗ ∂Δ[n] ⟶ B ⊗ Δ[n] is a monomorphism for next lemma
-instance (B : SSet) (n : ℕ) : Mono (B ◁ (boundaryInclusion n)) := by
-  sorry
+instance (B : SSet) (n : ℕ) : Mono (B ◁ (boundaryInclusion n)) where
+  right_cancellation := sorry
 
 /- changing the square to apply the lifting property of p
    on the monomorphism `(B ◁ boundaryInclusion n)` -/
