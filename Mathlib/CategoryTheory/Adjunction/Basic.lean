@@ -460,7 +460,6 @@ section ConstructLeft
 -- constructed from this data.
 variable {F_obj : C → D}
 variable (e : ∀ X Y, (F_obj X ⟶ Y) ≃ (X ⟶ G.obj Y))
-variable (he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.map g)
 
 private theorem he' {X Y Y'} (f g) : (e X Y').symm (f ≫ G.map g) = (e X Y).symm f ≫ g := by
   rw [Equiv.symm_apply_eq, he]; simp
@@ -470,7 +469,7 @@ a bijection `e` between `F_obj X ⟶ Y` and `X ⟶ G.obj Y` satisfying a natural
 `he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.map g`.
 Dual to `rightAdjointOfEquiv`. -/
 @[simps!]
-def leftAdjointOfEquiv : C ⥤ D where
+def leftAdjointOfEquiv (he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.map g) : C ⥤ D where
   obj := F_obj
   map {X} {X'} f := (e X (F_obj X')).symm (f ≫ e X' (F_obj X') (𝟙 _))
   map_comp := fun f f' => by
@@ -479,6 +478,8 @@ def leftAdjointOfEquiv : C ⥤ D where
       rhs
       rw [assoc, ← he, id_comp, Equiv.apply_symm_apply]
     simp
+
+variable (he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.map g)
 
 /-- Show that the functor given by `leftAdjointOfEquiv` is indeed left adjoint to `G`. Dual
 to `adjunctionOfRightEquiv`. -/
@@ -502,7 +503,6 @@ section ConstructRight
 -- Construction of a right adjoint, analogous to the above.
 variable {G_obj : D → C}
 variable (e : ∀ X Y, (F.obj X ⟶ Y) ≃ (X ⟶ G_obj Y))
-variable (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g)
 
 private theorem he'' {X' X Y} (f g) : F.map f ≫ (e X Y).symm g = (e X' Y).symm (f ≫ g) := by
   rw [Equiv.eq_symm_apply, he]; simp
@@ -512,7 +512,7 @@ a bijection `e` between `F.obj X ⟶ Y` and `X ⟶ G_obj Y` satisfying a natural
 `he : ∀ X Y Y' g h, e X' Y (F.map f ≫ g) = f ≫ e X Y g`.
 Dual to `leftAdjointOfEquiv`. -/
 @[simps!]
-def rightAdjointOfEquiv : D ⥤ C where
+def rightAdjointOfEquiv (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g) : D ⥤ C where
   obj := G_obj
   map {Y} {Y'} g := (e (G_obj Y) Y') ((e (G_obj Y) Y).symm (𝟙 _) ≫ g)
   map_comp := fun {Y} {Y'} {Y''} g g' => by
@@ -521,6 +521,8 @@ def rightAdjointOfEquiv : D ⥤ C where
       rhs
       rw [← assoc, he'' e he, comp_id, Equiv.symm_apply_apply]
     simp
+
+variable (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g)
 
 /-- Show that the functor given by `rightAdjointOfEquiv` is indeed right adjoint to `F`. Dual
 to `adjunctionOfEquivRight`. -/
