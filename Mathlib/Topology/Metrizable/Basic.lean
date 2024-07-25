@@ -49,11 +49,6 @@ theorem _root_.Inducing.pseudoMetrizableSpace [PseudoMetrizableSpace Y] {f : X �
   letI : PseudoMetricSpace Y := pseudoMetrizableSpacePseudoMetric Y
   ⟨⟨hf.comapPseudoMetricSpace, rfl⟩⟩
 
-theorem Inducing.metrizableSpace [MetrizableSpace Y] {f : X → Y}
-    (hf : Inducing f) (inj : Function.Injective f) : MetrizableSpace X :=
-  letI : MetricSpace Y := metrizableSpaceMetric 
-  ⟨@Inducing.comapMetricSpace X Y _ _ f hf inj, rfl⟩
-
 /-- Every pseudo-metrizable space is first countable. -/
 instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
     [h : PseudoMetrizableSpace X] : FirstCountableTopology X := by
