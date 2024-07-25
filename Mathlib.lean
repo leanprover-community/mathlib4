@@ -3547,6 +3547,7 @@ import Mathlib.Order.PrimeIdeal
 import Mathlib.Order.PrimeSeparator
 import Mathlib.Order.PropInstances
 import Mathlib.Order.Radical
+import Mathlib.Order.Rel.GaloisConnection
 import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.RelIso.Group
@@ -3596,12 +3597,12 @@ import Mathlib.Probability.Kernel.Basic
 import Mathlib.Probability.Kernel.Composition
 import Mathlib.Probability.Kernel.CondDistrib
 import Mathlib.Probability.Kernel.Condexp
-import Mathlib.Probability.Kernel.Disintegration.Basic
 import Mathlib.Probability.Kernel.Disintegration.CdfToKernel
 import Mathlib.Probability.Kernel.Disintegration.CondCdf
 import Mathlib.Probability.Kernel.Disintegration.Density
 import Mathlib.Probability.Kernel.Disintegration.Integral
 import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
+import Mathlib.Probability.Kernel.Disintegration.StandardBorel
 import Mathlib.Probability.Kernel.Disintegration.Unique
 import Mathlib.Probability.Kernel.IntegralCompProd
 import Mathlib.Probability.Kernel.Invariance
@@ -3745,6 +3746,7 @@ import Mathlib.RingTheory.Ideal.Pointwise
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Idempotents
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs

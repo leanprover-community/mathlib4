@@ -392,9 +392,7 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
   · exact fun i j hij b => lintegral_mono fun c => h_mono hij _
   congr
   ext1 n
-  -- Porting note: Added `(P := _)`
-  refine SimpleFunc.induction (P := fun f => (∫⁻ (a : β × γ), f a ∂(κ ⊗ₖ η) a =
-      ∫⁻ (a_1 : β), ∫⁻ (c : γ), f (a_1, c) ∂η (a, a_1) ∂κ a)) ?_ ?_ (F n)
+  refine SimpleFunc.induction ?_ ?_ (F n)
   · intro c s hs
     classical -- Porting note: Added `classical` for `Set.piecewise_eq_indicator`
     simp (config := { unfoldPartialApp := true }) only [SimpleFunc.const_zero,
