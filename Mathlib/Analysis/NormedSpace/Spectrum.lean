@@ -245,7 +245,7 @@ theorem eventually_isUnit_resolvent (a : A) : ∀ᶠ z in cobounded 𝕜, IsUnit
 theorem resolvent_isBigO_inv (a : A) : resolvent a =O[cobounded 𝕜] Inv.inv :=
   have h : (fun z ↦ resolvent (z⁻¹ • a) (1 : 𝕜)) =O[cobounded 𝕜] (fun _ ↦ (1 : ℝ)) := by
     simpa [Function.comp_def, resolvent] using
-      (NormedRing.inverse_one_sub_norm (R := A)).comp_tendsto
+      (NormedRing.inverse_oneSub_norm (R := A)).comp_tendsto
         (by simpa using (tendsto_inv₀_cobounded (α := 𝕜)).smul_const a)
   calc
     resolvent a =ᶠ[cobounded 𝕜] fun z ↦ z⁻¹ • resolvent (z⁻¹ • a) (1 : 𝕜) := by
@@ -298,7 +298,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
           rwa [← coe_nnnorm, ← Real.lt_toNNReal_iff_coe_lt, Real.toNNReal_one, nnnorm_smul,
             ← NNReal.lt_inv_iff_mul_lt h]
       simpa [← smul_pow, (NormedRing.summable_geometric_of_norm_lt_one _ norm_lt).hasSum_iff] using
-        (NormedRing.inverse_one_sub _ norm_lt).symm }
+        (NormedRing.inverse_oneSub _ norm_lt).symm }
 
 variable {𝕜}
 
