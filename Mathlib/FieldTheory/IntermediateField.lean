@@ -605,11 +605,63 @@ example {F : IntermediateField K L} {E : IntermediateField F L} : Algebra K E :=
 
 section ExtendScalars
 
+section Subfield
+
+open Subfield
+
+variable {F E E' : Subfield L} (h : F ≤ E) (h' : F ≤ E') {x : L}
+
+/-- If `F ≤ E` are two subfields of `L`, then `E` is also an intermediate field of
+`L / F`. It can be viewed as an inverse to `IntermediateField.toSubfield`. -/
+def _root_.Subfield.extendScalars : IntermediateField F L :=
+  E.toIntermediateField fun ⟨_, hf⟩ ↦ h hf
+
+@[simp]
+theorem _root_.Subfield.coe_extendScalars : (extendScalars h : Set L) = (E : Set L) := rfl
+
+@[simp]
+theorem _root_.Subfield.extendScalars_toSubfield : (extendScalars h).toSubfield = E :=
+  SetLike.coe_injective rfl
+
+@[simp]
+theorem _root_.Subfield.mem_extendScalars : x ∈ extendScalars h ↔ x ∈ E := Iff.rfl
+
+theorem _root_.Subfield.extendScalars_le_extendScalars_iff :
+    extendScalars h ≤ extendScalars h' ↔ E ≤ E' := Iff.rfl
+
+theorem _root_.Subfield.extendScalars_le_iff (E' : IntermediateField F L) :
+    extendScalars h ≤ E' ↔ E ≤ E'.toSubfield := Iff.rfl
+
+theorem _root_.Subfield.le_extendScalars_iff (E' : IntermediateField F L) :
+    E' ≤ extendScalars h ↔ E'.toSubfield ≤ E := Iff.rfl
+
+variable (F)
+
+/-- `Subfield.extendScalars` is an order isomorphism from
+`{ E : Subfield L // F ≤ E }` to `IntermediateField F L`. Its inverse is
+`IntermediateField.toSubfield`. -/
+def _root_.Subfield.extendScalars.orderIso :
+    { E : Subfield L // F ≤ E } ≃o IntermediateField F L where
+  toFun E := extendScalars E.2
+  invFun E := ⟨E.toSubfield, fun x hx ↦ E.algebraMap_mem ⟨x, hx⟩⟩
+  left_inv E := rfl
+  right_inv E := rfl
+  map_rel_iff' {E E'} := by
+    simp only [Equiv.coe_fn_mk]
+    exact extendScalars_le_extendScalars_iff _ _
+
+theorem _root_.Subfield.extendScalars_injective :
+    Function.Injective fun E : { E : Subfield L // F ≤ E } ↦ extendScalars E.2 :=
+  (extendScalars.orderIso F).injective
+
+end Subfield
+
 variable {F E E' : IntermediateField K L} (h : F ≤ E) (h' : F ≤ E') {x : L}
 
 /-- If `F ≤ E` are two intermediate fields of `L / K`, then `E` is also an intermediate field of
 `L / F`. It can be viewed as an inverse to `IntermediateField.restrictScalars`. -/
-def extendScalars : IntermediateField F L := E.toSubfield.toIntermediateField fun ⟨_, hf⟩ ↦ h hf
+def extendScalars : IntermediateField F L :=
+  Subfield.extendScalars (show F.toSubfield ≤ E.toSubfield from h)
 
 @[simp]
 theorem coe_extendScalars : (extendScalars h : Set L) = (E : Set L) := rfl
