@@ -824,12 +824,12 @@ theorem le_of_le_mul_of_le_one_of_nonneg_right [MulPosMono α] (h : a ≤ b * c)
 /-! Lemmas of the form `a ≤ 1 → b ≤ 1 → a * b ≤ 1`. -/
 
 /-- Assumes left covariance. -/
-theorem mul_le_one_of_le_of_le_left [PosMulMono α]
+theorem mul_le_one_left [PosMulMono α]
     (ha : a ≤ 1) (hb : b ≤ 1) (a0 : 0 ≤ a) : a * b ≤ 1 :=
   (mul_le_of_le_one_right a0 hb).trans ha
 
 @[deprecated (since := "2024-07-13")]
-alias Left.mul_le_one_of_le_of_le := mul_le_one_of_le_of_le_left
+alias Left.mul_le_one_of_le_of_le := mul_le_one_left
 
 /-- Assumes left covariance. -/
 theorem mul_lt_one_of_le_of_lt_left [PosMulStrictMono α]
@@ -848,17 +848,17 @@ theorem mul_lt_one_of_lt_of_le_left [PosMulMono α]
 alias Left.mul_lt_of_lt_of_le_one_of_nonneg := mul_lt_one_of_lt_of_le_left
 
 /-- Assumes left covariance. -/
-theorem mul_lt_one_of_lt_of_lt_left [PosMulStrictMono α]
+theorem mul_lt_one_left [PosMulStrictMono α]
     (ha : a < 1) (hb : b < 1) (a0 : 0 < a) : a * b < 1 :=
   (mul_lt_of_lt_one_right a0 hb).trans ha
 
 /-- Assumes right covariance. -/
-theorem mul_le_one_of_le_of_le_right [MulPosMono α]
+theorem mul_le_one_right [MulPosMono α]
     (ha : a ≤ 1) (hb : b ≤ 1) (b0 : 0 ≤ b) : a * b ≤ 1 :=
   (mul_le_of_le_one_left b0 ha).trans hb
 
 @[deprecated (since := "2024-07-13")]
-alias Right.mul_le_one_of_le_of_le := mul_le_one_of_le_of_le_right
+alias Right.mul_le_one_of_le_of_le := mul_le_one_right
 
 /-- Assumes right covariance. -/
 theorem mul_lt_one_of_lt_of_le_right [MulPosStrictMono α]
@@ -877,12 +877,12 @@ theorem mul_lt_one_of_le_of_lt_right [MulPosMono α]
 alias Right.mul_lt_one_of_le_of_lt_of_nonneg := mul_lt_one_of_lt_of_le_right
 
 /-- Assumes right covariance. -/
-theorem mul_lt_one_of_lt_of_lt_right [MulPosStrictMono α]
+theorem mul_lt_one_right [MulPosStrictMono α]
     (ha : a < 1) (hb : b < 1) (b0 : 0 < b) : a * b < 1 :=
   (mul_lt_of_lt_one_left b0 ha).trans hb
 
 theorem mul_le_one [MulPosMono α] (ha : a ≤ 1) (hb' : 0 ≤ b) (hb : b ≤ 1) : a * b ≤ 1 :=
-  mul_le_one_of_le_of_le_right ha hb hb'
+  mul_le_one_right ha hb hb'
 
 theorem mul_lt_one_of_nonneg_of_lt_one_left [PosMulMono α]
     (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) : a * b < 1 :=
@@ -895,7 +895,7 @@ theorem mul_lt_one_of_nonneg_of_lt_one_right [MulPosMono α]
 /-! Lemmas of the form `1 ≤ a → 1 ≤ b → 1 ≤ a * b`. -/
 
 /-- Assumes left covariance. -/
-theorem Left.one_le_mul_of_le_of_le [PosMulMono α] [ZeroLEOneClass α]
+theorem Left.one_le_mul₀ [PosMulMono α] [ZeroLEOneClass α]
     (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ a * b :=
   ha.trans (le_mul_of_one_le_right (zero_le_one.trans ha) hb)
 
@@ -908,12 +908,12 @@ theorem Left.one_lt_mul_of_lt_of_le₀ [PosMulMono α] [ZeroLEOneClass α]
   ha.trans_le (le_mul_of_one_le_right (zero_le_one.trans ha.le) hb)
 
 /-- Assumes left covariance. -/
-theorem Left.one_lt_mul_of_lt_of_lt [PosMulStrictMono α] [ZeroLEOneClass α]
+theorem Left.one_lt_mul₀ [PosMulStrictMono α] [ZeroLEOneClass α]
     (ha : 1 < a) (hb : 1 < b) : 1 < a * b :=
   ha.trans (lt_mul_of_one_lt_right (zero_le_one.trans_lt ha) hb)
 
 /-- Assumes right covariance. -/
-theorem Right.one_le_mul_of_le_of_le [MulPosMono α] [ZeroLEOneClass α]
+theorem Right.one_le_mul₀ [MulPosMono α] [ZeroLEOneClass α]
     (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ a * b :=
   hb.trans (le_mul_of_one_le_left (zero_le_one.trans hb) ha)
 
@@ -926,14 +926,14 @@ theorem Right.one_lt_mul_of_le_of_lt₀ [MulPosMono α] [ZeroLEOneClass α]
   hb.trans_le (le_mul_of_one_le_left (zero_le_one.trans hb.le) ha)
 
 /-- Assumes right covariance. -/
-theorem Right.one_lt_mul_of_lt_of_lt [MulPosStrictMono α] [ZeroLEOneClass α]
+theorem Right.one_lt_mul₀ [MulPosStrictMono α] [ZeroLEOneClass α]
     (ha : 1 < a) (hb : 1 < b) : 1 < a * b :=
   hb.trans (lt_mul_of_one_lt_left (zero_le_one.trans_lt hb) ha)
 
-alias one_le_mul_of_le_of_le := Left.one_le_mul_of_le_of_le
+alias one_le_mul_of_le_of_le := Left.one_le_mul₀
 alias one_lt_mul_of_le_of_lt := Right.one_lt_mul_of_le_of_lt₀
 alias one_lt_mul_of_lt_of_le := Left.one_lt_mul_of_lt_of_le₀
-alias one_lt_mul_of_lt_of_lt := Left.one_lt_mul_of_lt_of_lt
+alias one_lt_mul_of_lt_of_lt := Left.one_lt_mul₀
 
 alias one_le_mul_of_one_le_of_one_le := one_le_mul_of_le_of_le
 alias one_lt_mul := one_lt_mul_of_le_of_lt
