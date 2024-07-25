@@ -703,7 +703,7 @@ instance (n : ℤ) : (shiftFunctor S.category n).Additive := by
 instance : HasZeroObject S.category where
   zero := by
     obtain ⟨Z, hZ, mem⟩ := S.zero'
-    refine' ⟨⟨Z, mem⟩, _⟩
+    refine ⟨⟨Z, mem⟩, ?_⟩
     rw [IsZero.iff_id_eq_zero]
     apply hZ.eq_of_src
 
@@ -712,16 +712,16 @@ instance : Pretriangulated S.category where
   isomorphic_distinguished := fun T₁ hT₁ T₂ e =>
     isomorphic_distinguished _ hT₁ _ (S.ι.mapTriangle.mapIso e)
   contractible_distinguished X := by
-    refine' isomorphic_distinguished _ (contractible_distinguished (S.ι.obj X)) _ _
+    refine isomorphic_distinguished _ (contractible_distinguished (S.ι.obj X)) _ ?_
     exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) S.ι.mapZeroObject
       (by aesop_cat) (by aesop_cat) (by aesop_cat)
   distinguished_cocone_triangle {X Y} f := by
     obtain ⟨Z', g', h', mem⟩ := distinguished_cocone_triangle (S.ι.map f)
     obtain ⟨Z'', hZ'', ⟨e⟩⟩ := S.ext₃' _ mem X.2 Y.2
     let Z : S.category := ⟨Z'', hZ''⟩
-    refine' ⟨Z, S.ι.preimage (g' ≫ e.hom),
+    refine ⟨Z, S.ι.preimage (g' ≫ e.hom),
       S.ι.preimage (e.inv ≫ h' ≫ (S.ι.commShiftIso (1 : ℤ)).inv.app X),
-      isomorphic_distinguished _ mem _ _⟩
+      isomorphic_distinguished _ mem _ ?_⟩
     exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm
       (by aesop_cat) (by aesop_cat) (by aesop_cat)
   rotate_distinguished_triangle T :=
