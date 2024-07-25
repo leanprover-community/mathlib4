@@ -19,20 +19,6 @@ import Mathlib.RingTheory.Smooth.Basic
 
 universe u v
 
-@[simps!]
-def Pi.algHom {R : Type*} {I} {f : I → Type*} [CommSemiring R] [s : ∀ i, Semiring (f i)]
-     [∀ i, Algebra R (f i)] {A} [Semiring A] [Algebra R A] (g : ∀ i, A →ₐ[R] f i) :
-      A →ₐ[R] ∀ i, f i where
-  __ := Pi.ringHom fun i ↦ (g i).toRingHom
-  commutes' r := by ext; simp
-
-lemma Ideal.ker_quotientMap_mk {R} [CommRing R] {I J : Ideal R} :
-    RingHom.ker (Ideal.quotientMap (J.map (Ideal.Quotient.mk I))
-      (Ideal.Quotient.mk _) Ideal.le_comap_map) = I.map (Ideal.Quotient.mk J) := by
-  rw [Ideal.quotientMap, Ideal.ker_quotient_lift, ← RingHom.comap_ker, Ideal.mk_ker,
-    Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective,
-    ← RingHom.ker_eq_comap_bot, Ideal.mk_ker, Ideal.map_sup, Ideal.map_quotient_self, bot_sup_eq]
-
 namespace Algebra.FormallySmooth
 
 variable {R : Type (max u v)} {I : Type u} (A : I → Type (max u v))
