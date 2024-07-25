@@ -109,7 +109,8 @@ note: this linter can be disabled with `set_option linter.longLine false`
 -/
 #guard_msgs in                                                                            #guard true
 
--- check that the doc-string of `#guard_msgs` is exempt from the linter
+-- However, the *doc-string* of #guard_msgs is exempt from the linter:
+-- these are automatically generated, hence linting them is not helpful.
 /--
 info: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
 -/
