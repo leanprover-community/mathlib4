@@ -905,7 +905,7 @@ open Function
 
 /-- Iteration of a function on an initial element interpreted as a chain. -/
 def iterateChain (f : α →o α) (x : α) (h : x ≤ f x) : Chain α :=
-  ⟨fun n => f^[n] x, f.monotone.monotone_iterate_of_le_map  h⟩
+  ⟨fun n => f^[n] x, f.monotone.monotone_iterate_of_le_map h⟩
 
 variable (f : α →𝒄 α) (x : α)
 
