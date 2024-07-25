@@ -570,4 +570,24 @@ theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : X.Opens} (h : U
   refine (Scheme.congr_app this _).trans ?_
   simp [eqToHom_map]
 
+@[reassoc (attr := simp)]
+lemma Scheme.iso_hom_val_base_inv_val_base {X Y : Scheme.{u}} (e : X ≅ Y) :
+    e.hom.val.base ≫ e.inv.val.base = 𝟙 _ :=
+  show forgetToTop.map (e.hom ≫ e.inv) = 𝟙 _ by rw [e.hom_inv_id, CategoryTheory.Functor.map_id]
+
+@[simp]
+lemma Scheme.iso_hom_val_base_inv_val_base_apply {X Y : Scheme.{u}} (e : X ≅ Y) (x : X) :
+    (e.inv.val.base (e.hom.val.base x)) = x :=
+  congr($(Scheme.iso_hom_val_base_inv_val_base e) x)
+
+@[reassoc (attr := simp)]
+lemma Scheme.iso_inv_val_base_hom_val_base {X Y : Scheme.{u}} (e : X ≅ Y) :
+    e.inv.val.base ≫ e.hom.val.base = 𝟙 _ :=
+  show forgetToTop.map (e.inv ≫ e.hom) = 𝟙 _ by rw [e.inv_hom_id, CategoryTheory.Functor.map_id]
+
+@[simp]
+lemma Scheme.iso_inv_val_base_hom_val_base_apply {X Y : Scheme.{u}} (e : X ≅ Y) (y : Y) :
+    (e.hom.val.base (e.inv.val.base y)) = y :=
+  congr($(Scheme.iso_inv_val_base_hom_val_base e) y)
+
 end AlgebraicGeometry

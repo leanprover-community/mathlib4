@@ -313,6 +313,30 @@ instance component_nontrivial (X : LocallyRingedSpace.{u}) (U : Opens X.carrier)
     Nontrivial (X.presheaf.obj <| op U) :=
   (X.presheaf.germ hU.some).domain_nontrivial
 
+@[reassoc (attr := simp)]
+lemma iso_hom_val_base_inv_val_base {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) :
+    e.hom.val.base ≫ e.inv.val.base = 𝟙 _ := by
+  rw [← SheafedSpace.comp_base, ← LocallyRingedSpace.comp_val]
+  simp
+
+@[simp]
+lemma iso_hom_val_base_inv_val_base_apply {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) (x : X) :
+    (e.inv.val.base (e.hom.val.base x)) = x := by
+  show (e.hom.val.base ≫ e.inv.val.base) x = 𝟙 X.toPresheafedSpace x
+  simp
+
+@[reassoc (attr := simp)]
+lemma iso_inv_val_base_hom_val_base {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) :
+    e.inv.val.base ≫ e.hom.val.base = 𝟙 _ := by
+  rw [← SheafedSpace.comp_base, ← LocallyRingedSpace.comp_val]
+  simp
+
+@[simp]
+lemma iso_inv_val_base_hom_val_base_apply {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) (y : Y) :
+    (e.hom.val.base (e.inv.val.base y)) = y := by
+  show (e.inv.val.base ≫ e.hom.val.base) y = 𝟙 Y.toPresheafedSpace y
+  simp
+
 end LocallyRingedSpace
 
 end AlgebraicGeometry
