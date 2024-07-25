@@ -48,6 +48,7 @@ def parallel.aux1 :
 def parallel (S : WSeq (Computation α)) : Computation α :=
   corec parallel.aux1 ([], S)
 
+set_option linter.flexible false in -- harder to remove
 theorem terminates_parallel.aux :
     ∀ {l : List (Computation α)} {S c},
       c ∈ l → Terminates c → Terminates (corec parallel.aux1 (l, S)) := by
@@ -178,6 +179,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
         rw [D]
         cases' o with c <;> simp [parallel.aux1, TT]
 
+set_option linter.flexible false in -- needs more thought
 theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parallel S) :
     ∃ c ∈ S, a ∈ c := by
   suffices
@@ -257,6 +259,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
         rw [Seq.destruct_eq_cons e]
         exact Seq.mem_cons_of_mem _ dS'
 
+set_option linter.flexible false in -- needs more thought
 theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map (map f)) := by
   refine
     eq_of_bisim

@@ -24,7 +24,7 @@ Various operations (addition, subtraction, multiplication, power function)
 are defined on `ONote` and `NONote`.
 -/
 
-
+set_option linter.flexible false
 
 open Ordinal Order
 
