@@ -75,10 +75,10 @@ structure Hom (X Y : LocallyRingedSpace.{u})
   /-- the underlying morphism induces a local ring homomorphism on stalks -/
   prop : ∀ x, IsLocalRingHom (PresheafedSpace.stalkMap toHom x)
 
+/-- A morphism of locally ringed spaces as a morphism of sheafed spaces. -/
 abbrev Hom.val {X Y : LocallyRingedSpace.{u}} (f : X.Hom Y) :
   X.toSheafedSpace ⟶ Y.toSheafedSpace := f.1
 
-@[simp]
 lemma Hom.val_mk {X Y : LocallyRingedSpace.{u}}
     (f : X.toPresheafedSpace.Hom Y.toPresheafedSpace) (hf) :
   Hom.val ⟨f, hf⟩ = f := rfl
