@@ -910,7 +910,7 @@ def iterateChain (f : α →o α) (x : α) (h : x ≤ f x) : Chain α :=
 variable (f : α →𝒄 α) (x : α)
 
 /-- The supremum of iterating a function on x arbitrary often is a fixed point -/
-theorem ωSup_repeat_mem_fixedPoint (h : x ≤ f x) :
+theorem ωSup_iterate_mem_fixedPoint (h : x ≤ f x) :
     ωSup (iterateChain f x h) ∈ fixedPoints f := by
   rw [mem_fixedPoints, IsFixedPt, f.continuous]
   apply le_antisymm
@@ -932,7 +932,7 @@ theorem ωSup_repeat_mem_fixedPoint (h : x ≤ f x) :
       apply le_ωSup
 
 /-- The supremum of iterating a function on x arbitrary often is smaller than any prefixed point-/
-theorem ωSup_repeat_le_prefixedPoint (h : x ≤ f x) {a : α}
+theorem ωSup_iterate_le_prefixedPoint (h : x ≤ f x) {a : α}
     (h_a : f a ≤ a) (h_x_le_a : x ≤ a) :
     ωSup (iterateChain f x h) ≤ a := by
   apply ωSup_le
@@ -946,12 +946,12 @@ theorem ωSup_repeat_le_prefixedPoint (h : x ≤ f x) {a : α}
     exact le_trans (f.monotone h_ind) h_a
 
 /-- The supremum of iterating a function on x arbitrary often is smaller than any fixed point-/
-theorem ωSup_repeat_le_fixedPoint (h : x ≤ f x) {a : α}
+theorem ωSup_iterate_le_fixedPoint (h : x ≤ f x) {a : α}
     (h_a : a ∈ fixedPoints f) (h_x_le_a : x ≤ a) :
     ωSup (iterateChain f x h) ≤ a := by
   rw [mem_fixedPoints] at h_a
   obtain h_a := Eq.le h_a
-  exact ωSup_repeat_le_prefixedPoint f x h h_a h_x_le_a
+  exact ωSup_iterate_le_prefixedPoint f x h h_a h_x_le_a
 
 end fixedPoints
 

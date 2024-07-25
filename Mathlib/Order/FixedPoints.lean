@@ -325,10 +325,10 @@ theorem lfp_eq_sSup_iterate (h : Continuous f) :
     lfp f = ⨆ n, f^[n] ⊥ := by
   apply le_antisymm
   · apply lfp_le_fixed
-    exact Function.mem_fixedPoints.mp (ωSup_repeat_mem_fixedPoint ⟨f, h⟩ ⊥ bot_le)
+    exact Function.mem_fixedPoints.mp (ωSup_iterate_mem_fixedPoint ⟨f, h⟩ ⊥ bot_le)
   · apply le_lfp
     intro a h_a
-    exact ωSup_repeat_le_prefixedPoint ⟨f, h⟩ ⊥ bot_le h_a bot_le
+    exact ωSup_iterate_le_prefixedPoint ⟨f, h⟩ ⊥ bot_le h_a bot_le
 
 theorem gfp_eq_sInf_iterate (h : Continuous (OrderHom.dual f)) :
     gfp f = ⨅ n, f^[n] ⊤ :=
