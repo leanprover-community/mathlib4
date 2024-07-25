@@ -480,7 +480,7 @@ theorem Sigma.isPreconnected_iff [hι : Nonempty ι] [∀ i, TopologicalSpace (�
   · rintro ⟨a, t, ht, rfl⟩
     exact ht.image _ continuous_sigmaMk.continuousOn
 
-theorem Sum.isConnected_iff [TopologicalSpace β] {s : Set (Sum α β)} :
+theorem Sum.isConnected_iff [TopologicalSpace β] {s : Set (α ⊕ β)} :
     IsConnected s ↔
       (∃ t, IsConnected t ∧ s = Sum.inl '' t) ∨ ∃ t, IsConnected t ∧ s = Sum.inr '' t := by
   refine ⟨fun hs => ?_, ?_⟩
@@ -499,7 +499,7 @@ theorem Sum.isConnected_iff [TopologicalSpace β] {s : Set (Sum α β)} :
     · exact ht.image _ continuous_inl.continuousOn
     · exact ht.image _ continuous_inr.continuousOn
 
-theorem Sum.isPreconnected_iff [TopologicalSpace β] {s : Set (Sum α β)} :
+theorem Sum.isPreconnected_iff [TopologicalSpace β] {s : Set (α ⊕ β)} :
     IsPreconnected s ↔
       (∃ t, IsPreconnected t ∧ s = Sum.inl '' t) ∨ ∃ t, IsPreconnected t ∧ s = Sum.inr '' t := by
   refine ⟨fun hs => ?_, ?_⟩
