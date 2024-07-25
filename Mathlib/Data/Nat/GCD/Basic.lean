@@ -3,9 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
+import Mathlib.Order.Lattice
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Tactic.NthRewrite
+import Mathlib.Algebra.Ring.Nat
+import Mathlib.Init.Data.Nat.Lemmas
 
 /-!
 # Definitions and properties of `Nat.gcd`, `Nat.lcm`, and `Nat.coprime`
@@ -109,7 +110,7 @@ theorem lcm_dvd_iff {m n k : ℕ} : lcm m n ∣ k ↔ m ∣ k ∧ n ∣ k :=
   ⟨fun h => ⟨(dvd_lcm_left _ _).trans h, (dvd_lcm_right _ _).trans h⟩, and_imp.2 lcm_dvd⟩
 
 theorem lcm_pos {m n : ℕ} : 0 < m → 0 < n → 0 < m.lcm n := by
-  simp_rw [pos_iff_ne_zero]
+  simp_rw [Nat.pos_iff_ne_zero]
   exact lcm_ne_zero
 
 theorem lcm_mul_left {m n k : ℕ} : (m * n).lcm (m * k) = m * n.lcm k := by
@@ -269,7 +270,7 @@ theorem pow_dvd_pow_iff {a b n : ℕ} (n0 : n ≠ 0) : a ^ n ∣ b ^ n ↔ a ∣
   · simp [eq_zero_of_gcd_eq_zero_right g0]
   rcases exists_coprime' g0 with ⟨g, a', b', g0', co, rfl, rfl⟩
   rw [mul_pow, mul_pow] at h
-  replace h := Nat.dvd_of_mul_dvd_mul_right (pow_pos g0' _) h
+  replace h := Nat.dvd_of_mul_dvd_mul_right (Nat.pos_pow_of_pos _ g0') h
   have := pow_dvd_pow a' <| Nat.pos_of_ne_zero n0
   rw [pow_one, (co.pow n n).eq_one_of_dvd h] at this
   simp [eq_one_of_dvd_one this]
