@@ -899,6 +899,8 @@ theorem Left.one_le_mul₀ [PosMulMono α] [ZeroLEOneClass α]
     (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ a * b :=
   ha.trans (le_mul_of_one_le_right (zero_le_one.trans ha) hb)
 
+@[deprecated (since := "2024-07-25")] alias Left.one_le_mul_of_le_of_le := Left.one_le_mul₀
+
 -- See `Left.one_lt_mul_of_le_of_lt₀` for `1 ≤ a → 1 < b → 1 < a * b`
 -- It's not here because we do not have `ZeroLTOneClass`. We need `PartialOrder` to show `0 < 1`.
 
@@ -917,6 +919,8 @@ theorem Right.one_le_mul₀ [MulPosMono α] [ZeroLEOneClass α]
     (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ a * b :=
   hb.trans (le_mul_of_one_le_left (zero_le_one.trans hb) ha)
 
+@[deprecated (since := "2024-07-25")] alias Right.one_le_mul_of_le_of_le := Right.one_le_mul₀
+
 -- See `Right.one_lt_mul_of_lt_of_le₀` for `1 < a → 1 ≤ b → 1 < a * b`
 -- It's not here because we do not have `ZeroLTOneClass`. We need `PartialOrder` to show `0 < 1`.
 
@@ -929,6 +933,8 @@ theorem Right.one_lt_mul_of_le_of_lt₀ [MulPosMono α] [ZeroLEOneClass α]
 theorem Right.one_lt_mul₀ [MulPosStrictMono α] [ZeroLEOneClass α]
     (ha : 1 < a) (hb : 1 < b) : 1 < a * b :=
   hb.trans (lt_mul_of_one_lt_left (zero_le_one.trans_lt hb) ha)
+
+@[deprecated (since := "2024-07-25")] alias Right.one_lt_mul_of_lt_of_lt := Right.one_lt_mul₀
 
 alias one_le_mul_of_le_of_le := Left.one_le_mul₀
 alias one_lt_mul_of_le_of_lt := Right.one_lt_mul_of_le_of_lt₀
