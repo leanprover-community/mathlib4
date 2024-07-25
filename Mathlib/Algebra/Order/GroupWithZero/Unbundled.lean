@@ -215,11 +215,8 @@ theorem le_of_mul_le_mul_right [MulPosReflectLE α] (bc : b * a ≤ c * a) (a0 :
   @ContravariantClass.elim α>0 α (fun x y => y * x) (· ≤ ·) _ ⟨a, a0⟩ _ _ bc
 
 alias lt_of_mul_lt_mul_of_nonneg_left := lt_of_mul_lt_mul_left
-
 alias lt_of_mul_lt_mul_of_nonneg_right := lt_of_mul_lt_mul_right
-
 alias le_of_mul_le_mul_of_pos_left := le_of_mul_le_mul_left
-
 alias le_of_mul_le_mul_of_pos_right := le_of_mul_le_mul_right
 
 @[simp]
@@ -260,12 +257,13 @@ theorem mul_lt_mul_of_le_of_lt_of_pos_of_nonneg [PosMulStrictMono α] [MulPosMon
     (h₁ : a ≤ b) (h₂ : c < d) (a0 : 0 < a) (d0 : 0 ≤ d) : a * c < b * d :=
   (mul_lt_mul_of_pos_left h₂ a0).trans_le (mul_le_mul_of_nonneg_right h₁ d0)
 
-@[deprecated (since := "2024-07-13")]
 alias mul_lt_mul_of_pos_of_nonneg := mul_lt_mul_of_le_of_lt_of_pos_of_nonneg
 
 theorem mul_lt_mul_of_le_of_lt_of_nonneg_of_pos [PosMulStrictMono α] [MulPosMono α]
     (h₁ : a ≤ b) (h₂ : c < d) (c0 : 0 ≤ c) (b0 : 0 < b) : a * c < b * d :=
   (mul_le_mul_of_nonneg_right h₁ c0).trans_lt (mul_lt_mul_of_pos_left h₂ b0)
+
+alias mul_lt_mul_of_nonneg_of_pos' := mul_lt_mul_of_le_of_lt_of_nonneg_of_pos
 
 @[deprecated (since := "2024-07-13")]
 alias mul_lt_mul_of_le_of_le' := mul_lt_mul_of_le_of_lt_of_nonneg_of_pos
@@ -274,12 +272,13 @@ theorem mul_lt_mul_of_lt_of_le_of_nonneg_of_pos [PosMulMono α] [MulPosStrictMon
     (h₁ : a < b) (h₂ : c ≤ d) (a0 : 0 ≤ a) (d0 : 0 < d) : a * c < b * d :=
   (mul_le_mul_of_nonneg_left h₂ a0).trans_lt (mul_lt_mul_of_pos_right h₁ d0)
 
-@[deprecated (since := "2024-07-13")]
 alias mul_lt_mul_of_nonneg_of_pos := mul_lt_mul_of_lt_of_le_of_nonneg_of_pos
 
 theorem mul_lt_mul_of_lt_of_le_of_pos_of_nonneg [PosMulMono α] [MulPosStrictMono α]
     (h₁ : a < b) (h₂ : c ≤ d) (c0 : 0 < c) (b0 : 0 ≤ b) : a * c < b * d :=
   (mul_lt_mul_of_pos_right h₁ c0).trans_le (mul_le_mul_of_nonneg_left h₂ b0)
+
+alias mul_lt_mul_of_pos_of_nonneg' := mul_lt_mul_of_lt_of_le_of_pos_of_nonneg
 
 @[deprecated (since := "2024-07-13")]
 alias mul_lt_mul_of_le_of_lt' := mul_lt_mul_of_lt_of_le_of_pos_of_nonneg
@@ -301,9 +300,9 @@ alias mul_lt_mul_of_lt_of_lt' := mul_lt_mul_of_pos'
 alias mul_le_mul := mul_le_mul_of_nonneg'
 attribute [gcongr] mul_le_mul
 
-alias mul_lt_mul := mul_lt_mul_of_lt_of_le_of_pos_of_nonneg
+alias mul_lt_mul := mul_lt_mul_of_pos_of_nonneg'
 
-alias mul_lt_mul' := mul_lt_mul_of_le_of_lt_of_nonneg_of_pos
+alias mul_lt_mul' := mul_lt_mul_of_nonneg_of_pos'
 
 theorem mul_le_of_mul_le_of_nonneg_left [PosMulMono α] (h : a * b ≤ c) (hle : d ≤ b) (a0 : 0 ≤ a) :
     a * d ≤ c :=
