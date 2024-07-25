@@ -69,23 +69,20 @@ theorem algebraMapCLM_coe : ⇑(algebraMapCLM R A) = algebraMap R A :=
 
 theorem algebraMapCLM_toLinearMap : (algebraMapCLM R A).toLinearMap = Algebra.linearMap R A :=
   rfl
-#align algebra_map_clm_to_linear_map algebraMapCLM_toLinearMap
 
 /-- If `R` is a discrete topological ring, then any topological ring `S` which is an `R`-algebra
-  is also a topological `R`-algebra. -/
+is also a topological `R`-algebra. -/
 instance DiscreteTopology.continuousSMul [TopologicalSemiring A] [DiscreteTopology R] :
     ContinuousSMul R A := continuousSMul_of_algebraMap _ _ continuous_of_discreteTopology
 
 end TopologicalAlgebra
 
-section TopologicalAlgebra --
+section TopologicalAlgebra
 section
 
 variable {R : Type*} [CommSemiring R]
 variable {A : Type u} [TopologicalSpace A]
 variable [Semiring A] [Algebra R A]
-
-#align subalgebra.has_continuous_smul SMulMemClass.continuousSMul
 
 end
 section
@@ -94,21 +91,23 @@ variable (R : Type*) [CommSemiring R] [TopologicalSpace R] [TopologicalSemiring 
   (A : Type*) [Semiring A] [TopologicalSpace A] [TopologicalSemiring A]
 
 /-- Continuous algebra homomorphisms between algebras. We only put the type classes that are
-  necessary for the definition, although in applications `M` and `B` will be topological algebras
-  over the topological ring `R`. -/
+necessary for the definition, although in applications `M` and `B` will be topological algebras
+over the topological ring `R`. -/
 structure ContinuousAlgHom (R : Type*) [CommSemiring R] (A : Type*) [Semiring A]
     [TopologicalSpace A] (B : Type*) [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
     extends A →ₐ[R] B where
   cont : Continuous toFun := by continuity
 
+/-
 /-- `ContinuousAlgHomClass F R A B` asserts `F` is a type of bundled continuous `R`-agebra
-  homomorphisms `A → B`. -/
+homomorphisms `A → B`. -/
 class ContinuousAlgHomClass (F : Type*) (R : outParam (Type*)) [CommSemiring R]
     (A : outParam (Type*)) [Semiring A] [TopologicalSpace A]
     (B : outParam (Type*)) [Semiring B] [TopologicalSpace B][Algebra R A]
     [Algebra R B] [FunLike F A B]
     extends AlgHomClass F R A B, ContinuousMapClass F A B : Prop
 attribute [inherit_doc ContinuousAlgHom] ContinuousAlgHom.cont
+-/
 
 @[inherit_doc]
 notation:25 A " →A[" R "] " B => ContinuousAlgHom R A B
@@ -136,14 +135,24 @@ instance funLike : FunLike (A →A[R] B) A B where
   coe f := f.toAlgHom
   coe_injective'  _ _ h  := coe_injective (DFunLike.coe_injective h)
 
-instance continuousAlgHomClass :
+instance algHomClass : AlgHomClass (A →A[R] B) R A B where
+  map_mul f x y    := map_mul f.toAlgHom x y
+  map_one f        := map_one f.toAlgHom
+  map_add f        := map_add f.toAlgHom
+  map_zero f       := map_zero f.toAlgHom
+  commutes f r     := f.toAlgHom.commutes r
+
+instance continuousMapClass : ContinuousMapClass (A →A[R] B) A B where
+  map_continuous f := f.2
+
+/- instance continuousAlgHomClass :
     ContinuousAlgHomClass (A →A[R] B) R A B where
   map_mul f x y    := map_mul f.toAlgHom x y
   map_one f        := map_one f.toAlgHom
   map_add f        := map_add f.toAlgHom
   map_zero f       := map_zero f.toAlgHom
   commutes f r     := f.toAlgHom.commutes r
-  map_continuous f := f.2
+  map_continuous f := f.2 -/
 
 theorem coe_mk (f : A →ₐ[R] B) (h) : (mk f h : A →ₐ[R] B) = f := rfl
 
@@ -164,7 +173,7 @@ theorem coe_inj {f g : A →A[R] B} : (f : A →ₐ[R] B) = g ↔ f = g := coe_i
 theorem coeFn_injective : @Function.Injective (A →A[R] B) (A → B) (↑) := DFunLike.coe_injective
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+because it is a composition of multiple projections. -/
 def Simps.apply (h : A →A[R] B) : A → B := h
 
 /-- See Note [custom simps projection]. -/
@@ -359,7 +368,7 @@ variable {F : Type*}
 
 instance completeSpace_eqLocus {D : Type*} [UniformSpace D] [CompleteSpace D]
     [Semiring D] [Algebra R D] [T2Space B]
-    [FunLike F D B] [ContinuousAlgHomClass F R D B]
+    [FunLike F D B] [AlgHomClass F R D B] [ContinuousMapClass F D B]
     (f g : F) : CompleteSpace (LinearMap.eqLocus f g) :=
   IsClosed.completeSpace_coe <| isClosed_eq (map_continuous f) (map_continuous g)
 
@@ -478,8 +487,6 @@ theorem _root_.Subalgebra.coe_valA (p : Subalgebra R A) :
 @[simp]
 theorem _root_.Subalgebra.coe_valA' (p : Subalgebra R A) : ⇑p.valA = p.subtype :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align Subalgebra.coe_valA' Subalgebra.coe_valA'
 
 @[simp] -- @[norm_cast] -- Porting note: A theorem with this can't have a rhs starting with `↑`.
 theorem _root_.Subalgebra.valA_apply (p : Subalgebra R A) (x : p) : p.valA x = x :=
@@ -512,7 +519,7 @@ variable {S : Type*} [CommSemiring S] [Algebra R S] {B : Type*} [Ring B] [Topolo
   [Algebra R C] [Algebra S C] [IsScalarTower R S C]
 
 /-- If `A` is an `R`-algebra, then a continuous `A`-algebra morphism can be interpreted as a
-  continuous `R`-algebra morphism. -/
+continuous `R`-algebra morphism. -/
 def restrictScalars (f : B →A[S] C) : B →A[R] C :=
   ⟨(f : B →ₐ[S] C).restrictScalars R, f.continuous⟩
 
