@@ -5,8 +5,6 @@ Authors: Kyle Miller
 -/
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
-import Mathlib.Data.Fintype.Card
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 
@@ -2069,15 +2067,11 @@ end ConnectedComponent
 
 lemma pairwise_disjoint_supp_connectedComponent (G : SimpleGraph V) :
     Pairwise fun c c' : ConnectedComponent G ↦ Disjoint c.supp c'.supp := by
-  intro _ _ h s hsx hsy
-  simp only [Set.toFinset_card, Finset.mem_univ, ne_eq, Set.le_eq_subset,
-    Set.bot_eq_empty, Set.subset_empty_iff, Set.eq_empty_iff_forall_not_mem] at *
-  intro v hv
-  have hsxv := hsx hv
-  have hsyv := hsy hv
-  rw [ConnectedComponent.mem_supp_iff] at *
-  rw [hsxv] at hsyv
-  exact h hsyv
+  simp_rw [Set.disjoint_left]
+  intro _ _ h a hsx hsy
+  rw [ConnectedComponent.mem_supp_iff] at hsx hsy
+  rw [hsx] at hsy
+  exact h hsy
 
 lemma iUnion_connectedComponentSupp (G : SimpleGraph V) :
     ⋃ c : G.ConnectedComponent, c.supp = Set.univ := by
