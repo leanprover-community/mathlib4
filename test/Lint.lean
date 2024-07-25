@@ -102,7 +102,7 @@ set_option linter.longLine true in
 /-!  http                                                                                          -/
 
 set_option linter.longLine true
--- check that the *argument* of `#guard_msgs` is *not* exempt from the linter
+-- The *argument* of `#guard_msgs` is *not* exempt from the linter.
 /--
 warning: This line exceeds the 100 character limit, please shorten it!
 note: this linter can be disabled with `set_option linter.longLine false`
