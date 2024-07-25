@@ -215,7 +215,7 @@ all `x` and `y`.  -/
 def seminorm (x : E) (y : F⋆) : Seminorm 𝕜 (E →WOT[𝕜] F) where
   toFun A := ‖y (A x)‖
   map_zero' := by simp
-  add_le' A B := by simp; exact norm_add_le _ _
+  add_le' A B := by simpa using norm_add_le _ _
   neg' A := by simp
   smul' r A := by simp
 
@@ -228,7 +228,7 @@ def seminormFamily : SeminormFamily 𝕜 (E →WOT[𝕜] F) (E × F⋆) :=
 lemma hasBasis_seminorms : (𝓝 (0 : E →WOT[𝕜] F)).HasBasis (seminormFamily 𝕜 E F).basisSets id := by
   let p := seminormFamily 𝕜 E F
   rw [nhds_induced, nhds_pi]
-  simp [map_zero, zero_apply]
+  simp only [map_zero, Pi.zero_apply]
   have h := Filter.hasBasis_pi (fun _ : (E × F⋆) ↦ Metric.nhds_basis_ball (x := 0)) |>.comap
     (inducingFn 𝕜 E F)
   refine h.to_hasBasis' ?_ ?_
