@@ -642,6 +642,8 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
   · rw [Vector.traverse_def, ih]
     simp [functor_norm, (· ∘ ·)]
 
+-- Needs thought: longer, more complicated proof
+set_option linter.flexible false in
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
     ∀ x : Vector α n, x.traverse ((pure : _ → Id _) ∘ f) = (pure : _ → Id _) (map f x) := by
   rintro ⟨x, rfl⟩; simp!; induction x <;> simp! [*, functor_norm] <;> rfl

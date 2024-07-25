@@ -130,6 +130,8 @@ theorem not_step_nil : ¬Step [] L := by
   cases' h with L₁ L₂
   simp [List.nil_eq_append] at h'
 
+-- Needs thought: more complicated proof
+set_option linter.flexible false in
 @[to_additive]
 theorem Step.cons_left_iff {a : α} {b : Bool} :
     Step ((a, b) :: L₁) L₂ ↔ (∃ L, Step L₁ L ∧ L₂ = (a, b) :: L) ∨ L₁ = (a, ! b) :: L₂ := by
@@ -280,6 +282,8 @@ theorem cons_nil_iff_singleton {x b} : Red ((x, b) :: L) [] ↔ Red L [(x, not b
       assumption)
     fun h => (cons_cons h).tail Step.cons_not
 
+-- Needs thought: squeezing produces medium-long list of lemmas
+set_option linter.flexible false in
 @[to_additive]
 theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
     Red [(x1, !b1), (x2, b2)] L ↔ L = [(x1, !b1), (x2, b2)] := by

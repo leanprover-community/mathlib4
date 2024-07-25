@@ -104,6 +104,8 @@ theorem right_le_pair (a b : ℕ) : b ≤ pair a b := by
 theorem unpair_right_le (n : ℕ) : (unpair n).2 ≤ n := by
   simpa using right_le_pair n.unpair.1 n.unpair.2
 
+-- Needs some thought: simp applies to both cases.
+set_option linter.flexible false in
 theorem pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair a₂ b := by
   by_cases h₁ : a₁ < b <;> simp [pair, h₁, Nat.add_assoc]
   · by_cases h₂ : a₂ < b <;> simp [pair, h₂, h]
@@ -117,6 +119,8 @@ theorem pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair
     · exact Nat.mul_self_lt_mul_self h
     · apply Nat.add_lt_add_right; assumption
 
+-- Needs some thought: simp applies to both cases.
+set_option linter.flexible false in
 theorem pair_lt_pair_right (a) {b₁ b₂} (h : b₁ < b₂) : pair a b₁ < pair a b₂ := by
   by_cases h₁ : a < b₁
   · simpa [pair, h₁, Nat.add_assoc, lt_trans h₁ h, h] using mul_self_lt_mul_self h

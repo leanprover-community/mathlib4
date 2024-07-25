@@ -125,6 +125,8 @@ theorem second_contAux_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
     g.contsAux 2 = ⟨gp.b * g.h + gp.a, gp.b⟩ := by
   simp [zeroth_s_eq, contsAux, nextConts, nextDen, nextNum]
 
+-- Needs thought: simp followed by convert
+set_option linter.flexible false in
 theorem first_cont_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
     g.conts 1 = ⟨gp.b * g.h + gp.a, gp.b⟩ := by
   simp [nth_cont_eq_succ_nth_contAux]

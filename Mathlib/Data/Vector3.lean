@@ -164,6 +164,8 @@ def insert (a : α) (v : Vector3 α n) (i : Fin2 (n + 1)) : Vector3 α (n + 1) :
 theorem insert_fz (a : α) (v : Vector3 α n) : insert a v fz = a :: v := by
   refine funext fun j => j.cases' ?_ ?_ <;> intros <;> rfl
 
+-- Needs thought: simp applies to both cases, solves one; more complex proof
+set_option linter.flexible false in
 @[simp]
 theorem insert_fs (a : α) (b : α) (v : Vector3 α n) (i : Fin2 (n + 1)) :
     insert a (b :: v) (fs i) = b :: insert a v i :=

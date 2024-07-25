@@ -801,6 +801,8 @@ theorem orElse_think (c₁ c₂ : Computation α) : (think c₁ <|> think c₂) 
     unfold_projs
     simp [orElse]
 
+-- Needs thought: simp followed by rw, which cannot be combined
+set_option linter.flexible false in
 @[simp]
 theorem empty_orElse (c) : (empty α <|> c) = c := by
   apply eq_of_bisim (fun c₁ c₂ => (empty α <|> c₂) = c₁) _ rfl
@@ -808,6 +810,8 @@ theorem empty_orElse (c) : (empty α <|> c) = c := by
   apply recOn s <;> intro s <;> rw [think_empty] <;> simp
   rw [← think_empty]
 
+-- Needs thought: simp followed by rw, which cannot be combined
+set_option linter.flexible false in
 @[simp]
 theorem orElse_empty (c : Computation α) : (c <|> empty α) = c := by
   apply eq_of_bisim (fun c₁ c₂ => (c₂ <|> empty α) = c₁) _ rfl

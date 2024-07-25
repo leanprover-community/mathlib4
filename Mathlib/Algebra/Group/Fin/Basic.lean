@@ -97,6 +97,8 @@ lemma lt_sub_one_iff {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
   simp [lt_iff_val_lt_val, ext_iff, Fin.coe_sub, this,
     mod_eq_of_lt ((lt_succ_self _).trans hk)]
 
+-- Needs more thought: in the second case, adding the `rw` calls to the simp errors
+set_option linter.flexible false in
 @[simp] lemma le_sub_one_iff {k : Fin (n + 1)} : k ≤ k - 1 ↔ k = 0 := by
   cases n
   · simp [fin_one_eq_zero k]

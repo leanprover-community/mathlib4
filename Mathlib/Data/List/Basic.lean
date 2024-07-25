@@ -2137,6 +2137,8 @@ theorem filterMap_congr {f g : α → Option β} {l : List α}
   · have : g a = some b := Eq.symm (by simpa [hfa] using h a (by simp))
     simp [this]
 
+-- Needs more thought: simply squeezing the simp produces quite long lists.
+set_option linter.flexible false in
 theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → β} {l : List α} :
     l.filterMap f = l.map g ↔ ∀ x ∈ l, f x = some (g x) where
   mp := by
@@ -2289,6 +2291,8 @@ theorem takeWhile_eq_nil_iff : takeWhile p l = [] ↔ ∀ hl : 0 < l.length, ¬p
     simp at h
   · by_cases hp : p x <;> simp [hp, takeWhile_cons, IH, nthLe_cons]
 
+-- Needs thought: simp applies to both cases at once
+set_option linter.flexible false in
 theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
   induction l with simp [takeWhile] at hx
   | cons hd tl IH =>

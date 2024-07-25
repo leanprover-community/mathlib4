@@ -596,6 +596,8 @@ theorem cast_pos [LinearOrderedSemiring α] (n : PosNum) : 0 < (n : α) :=
 theorem cast_mul [Semiring α] (m n) : ((m * n : PosNum) : α) = m * n := by
   rw [← cast_to_nat, mul_to_nat, Nat.cast_mul, cast_to_nat, cast_to_nat]
 
+-- Needs thought: more complex proof
+set_option linter.flexible false in
 @[simp]
 theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
@@ -737,6 +739,8 @@ theorem ppred_to_nat : ∀ n : Num, (↑) <$> ppred n = Nat.ppred n
 theorem cmp_swap (m n) : (cmp m n).swap = cmp n m := by
   cases m <;> cases n <;> try { rfl }; apply PosNum.cmp_swap
 
+-- Needs thought: more complex proof
+set_option linter.flexible false in
 theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
   -- Porting note: `cases` didn't rewrite at `this`, so `revert` & `intro` are required.
@@ -1396,6 +1400,8 @@ theorem divMod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * ((q
     · rwa [two_mul, add_comm _ 1, mul_add, mul_one, ← add_assoc, ← this]
     · rwa [this, two_mul, add_lt_add_iff_right] at h₂
 
+-- Needs thought: simp and rw cannot be combined
+set_option linter.flexible false in
 theorem divMod_to_nat (d n : PosNum) :
     (n / d : ℕ) = (divMod d n).1 ∧ (n % d : ℕ) = (divMod d n).2 := by
   rw [Nat.div_mod_unique (PosNum.cast_pos _)]

@@ -804,6 +804,8 @@ theorem mem_think (s : WSeq α) (a) : a ∈ think s ↔ a ∈ s := by
     injections
   · apply Stream'.mem_cons_of_mem _ h
 
+-- Needs thought: longer, more subtle proof
+set_option linter.flexible false in
 theorem eq_or_mem_iff_mem {s : WSeq α} {a a' s'} :
     some (a', s') ∈ destruct s → (a ∈ s ↔ a = a' ∨ a ∈ s') := by
   generalize e : destruct s = c; intro h
@@ -836,6 +838,8 @@ theorem mem_cons_of_mem {s : WSeq α} (b) {a} (h : a ∈ s) : a ∈ cons b s :=
 theorem mem_cons (s : WSeq α) (a) : a ∈ cons a s :=
   (mem_cons_iff _ _).2 (Or.inl rfl)
 
+-- Needs thought: simp applies to six goals at once; more complicated proof
+set_option linter.flexible false in
 theorem mem_of_mem_tail {s : WSeq α} {a} : a ∈ tail s → a ∈ s := by
   intro h; have := h; cases' h with n e; revert s; simp only [Stream'.get]
   induction' n with n IH <;> intro s <;> induction' s using WSeq.recOn with x s s <;>
@@ -1068,6 +1072,8 @@ theorem Equiv.ext {s t : WSeq α} (h : ∀ n, get? s n ~ get? t n) : s ~ʷ t :=
         rw [get?_tail, get?_tail]
         apply h⟩
 
+-- Needs thought: simp applies to both cases
+set_option linter.flexible false in
 theorem length_eq_map (s : WSeq α) : length s = Computation.map List.length (toList s) := by
   refine
     Computation.eq_of_bisim
@@ -1134,6 +1140,8 @@ theorem toList'_think (l : List α) (s : WSeq α) :
         | some (some a, s') => Sum.inr (a::l, s')) (l, s)).think :=
   destruct_eq_think <| by simp [toList, think]
 
+-- Needs thought: simp applies to both cases
+set_option linter.flexible false in
 theorem toList'_map (l : List α) (s : WSeq α) :
     Computation.corec (fun ⟨l, s⟩ =>
       match Seq.destruct s with
@@ -1173,6 +1181,7 @@ theorem toList_cons (a : α) (s) : toList (cons a s) = (List.cons a <$> toList s
 theorem toList_nil : toList (nil : WSeq α) = Computation.pure [] :=
   destruct_eq_pure rfl
 
+set_option linter.flexible false in
 theorem toList_ofList (l : List α) : l ∈ toList (ofList l) := by
   induction' l with a l IH
   · simp [ret_mem]
@@ -1254,6 +1263,8 @@ theorem map_comp (f : α → β) (g : β → γ) (s : WSeq α) : map (g ∘ f) s
 theorem mem_map (f : α → β) {a : α} {s : WSeq α} : a ∈ s → f a ∈ map f s :=
   Seq.mem_map (Option.map f)
 
+-- Needs thought: some complicated proof
+set_option linter.flexible false in
 -- The converse is not true without additional assumptions
 theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S → ∃ s, s ∈ S ∧ a ∈ s := by
   suffices
@@ -1296,6 +1307,8 @@ theorem exists_of_mem_bind {s : WSeq α} {f : α → WSeq β} {b} (h : b ∈ bin
   let ⟨a, as, e⟩ := exists_of_mem_map tm
   ⟨a, as, by rwa [e]⟩
 
+-- Needs thought: simp applies to three goals, only the last one is stained
+set_option linter.flexible false in
 theorem destruct_map (f : α → β) (s : WSeq α) :
     destruct (map f s) = Computation.map (Option.map (Prod.map f (map f))) (destruct s) := by
   apply
@@ -1310,6 +1323,8 @@ theorem destruct_map (f : α → β) (s : WSeq α) :
     exact ⟨s, rfl, rfl⟩
   · exact ⟨s, rfl, rfl⟩
 
+-- Needs thought: simp applies to four goals, only the last one is stained
+set_option linter.flexible false in
 theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 : WSeq α} {s2 : WSeq β}
     {f1 : α → γ} {f2 : β → δ} (h1 : LiftRel R s1 s2) (h2 : ∀ {a b}, R a b → S (f1 a) (f2 b)) :
     LiftRel S (map f1 s1) (map f2 s2) :=
@@ -1336,6 +1351,8 @@ def destruct_append.aux (t : WSeq α) : Option (α × WSeq α) → Computation (
   | none => destruct t
   | some (a, s) => Computation.pure (some (a, append s t))
 
+-- Needs thought: simp applies to two cases at once
+set_option linter.flexible false in
 theorem destruct_append (s t : WSeq α) :
     destruct (append s t) = (destruct s).bind (destruct_append.aux t) := by
   apply
@@ -1355,6 +1372,8 @@ def destruct_join.aux : Option (WSeq α × WSeq (WSeq α)) → Computation (Opti
   | none => Computation.pure none
   | some (s, S) => (destruct (append s (join S))).think
 
+-- Needs thought: simp applies to two cases at once
+set_option linter.flexible false in
 theorem destruct_join (S : WSeq (WSeq α)) :
     destruct (join S) = (destruct S).bind destruct_join.aux := by
   apply
@@ -1508,6 +1527,8 @@ theorem join_map_ret (s : WSeq α) : join (map ret s) ~ʷ s := by
           simp (config := { unfoldPartialApp := true }) [ret, ret_mem, this, Option.exists]
   · exact ⟨s, rfl, rfl⟩
 
+-- Needs thought: simp applies to both cases at once; more complex proof
+set_option linter.flexible false in
 @[simp]
 theorem join_append (S T : WSeq (WSeq α)) : join (append S T) ~ʷ append (join S) (join T) := by
   refine
@@ -1544,6 +1565,8 @@ theorem bind_ret (f : α → β) (s) : bind s (ret ∘ f) ~ʷ map f s := by
 @[simp]
 theorem ret_bind (a : α) (f : α → WSeq β) : bind (ret a) f ~ʷ f a := by simp [bind]
 
+-- Needs thought: simp applies to both cases at once; more complex proof
+set_option linter.flexible false in
 @[simp]
 theorem map_join (f : α → β) (S) : map f (join S) = join (map (map f) S) := by
   apply
@@ -1561,6 +1584,8 @@ theorem map_join (f : α → β) (S) : map f (join S) = join (map (map f) S) := 
         · exact ⟨_, _, rfl, rfl⟩
   · refine ⟨nil, S, ?_, ?_⟩ <;> simp
 
+-- Needs thought: simp applies to both cases at once; more complex proof
+set_option linter.flexible false in
 @[simp]
 theorem join_join (SS : WSeq (WSeq (WSeq α))) : join (join SS) ~ʷ join (map join SS) := by
   refine
