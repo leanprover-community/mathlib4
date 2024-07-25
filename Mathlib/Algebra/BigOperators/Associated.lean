@@ -38,7 +38,8 @@ theorem exists_mem_multiset_map_dvd (hp : Prime p) {s : Multiset β} {f : β →
   simpa only [exists_prop, Multiset.mem_map, exists_exists_and_eq_and] using
     hp.exists_mem_multiset_dvd h
 
-theorem exists_mem_finset_dvd (hp : Prime p) {s : Finset β} {f : β → α} : p ∣ s.prod f → ∃ i ∈ s, p ∣ f i :=
+theorem exists_mem_finset_dvd (hp : Prime p) {s : Finset β} {f : β → α} :
+    p ∣ s.prod f → ∃ i ∈ s, p ∣ f i :=
   hp.exists_mem_multiset_map_dvd
 
 end Prime

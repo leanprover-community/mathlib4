@@ -38,8 +38,8 @@ section Semiring
 
 variable [Semiring R]
 
-lemma pow_dvd_add_pow_of_pow_eq_zero_right (hp : n + m ≤ p + 1) (h_comm : Commute x y) (hy : y ^ n = 0) :
-    x ^ m ∣ (x + y) ^ p := by
+lemma pow_dvd_add_pow_of_pow_eq_zero_right (hp : n + m ≤ p + 1) (h_comm : Commute x y)
+    (hy : y ^ n = 0) : x ^ m ∣ (x + y) ^ p := by
   rw [h_comm.add_pow']
   refine Finset.dvd_sum fun ⟨i, j⟩ hij ↦ ?_
   replace hij : i + j = p := by simpa using hij
@@ -117,3 +117,4 @@ lemma dvd_mul_sub_mul_mul_gcd_of_dvd {p a b c d x y : R} [IsDomain R] [GCDMonoid
     dvd_mul_sub_mul_mul_right_of_dvd h1 h2⟩
 
 end CommRing
+#lint
