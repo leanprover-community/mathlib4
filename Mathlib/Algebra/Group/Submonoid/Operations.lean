@@ -276,28 +276,13 @@ theorem map_iSup {ι : Sort*} (f : F) (s : ι → Submonoid M) : (iSup s).map f 
 
 @[to_additive]
 theorem map_inf (S T : Submonoid M) (f : F) (hf : Function.Injective f) :
-    (S ⊓ T).map f = S.map f ⊓ T.map f := by
-  ext
-  simp only [mem_map, mem_inf]
-  constructor
-  · rintro ⟨a, ⟨ha, hb⟩, rfl⟩
-    exact ⟨⟨a, ha, rfl⟩, ⟨a, hb, rfl⟩⟩
-  · rintro ⟨⟨a, ha⟩, ⟨b, hb⟩⟩
-    exact ⟨a, ⟨ha.1, hf (show f a = f b by rw [ha.2, hb.2]) ▸ hb.1⟩, ha.2⟩
+    (S ⊓ T).map f = S.map f ⊓ T.map f := SetLike.coe_injective (Set.image_inter hf)
 
 @[to_additive]
 theorem map_iInf {ι : Sort*} [Nonempty ι] (f : F) (hf : Function.Injective f)
     (s : ι → Submonoid M) : (iInf s).map f = ⨅ i, (s i).map f := by
-  ext
-  simp only [mem_map, mem_iInf]
-  refine ⟨?_, fun h ↦ ?_⟩
-  · rintro ⟨a, ha, rfl⟩ i
-    exact ⟨a, ha i, rfl⟩
-  · obtain ⟨b⟩ := ‹Nonempty ι›
-    obtain ⟨y, -, rfl⟩ := h b
-    refine ⟨y, fun a ↦ ?_, rfl⟩
-    obtain ⟨z, h1, h2⟩ := h a
-    exact hf h2 ▸ h1
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
 
 @[to_additive]
 theorem comap_inf (S T : Submonoid N) (f : F) : (S ⊓ T).comap f = S.comap f ⊓ T.comap f :=

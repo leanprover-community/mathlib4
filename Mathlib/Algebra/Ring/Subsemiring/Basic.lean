@@ -406,9 +406,6 @@ theorem map_id : s.map (RingHom.id R) = s :=
 theorem map_map (g : S →+* T) (f : R →+* S) : (s.map f).map g = s.map (g.comp f) :=
   SetLike.coe_injective <| Set.image_image _ _ _
 
-theorem map_toSubmonoid (f : R →+* S) (s : Subsemiring R) :
-    (s.map f).toSubmonoid = s.toSubmonoid.map f := rfl
-
 theorem map_le_iff_le_comap {f : R →+* S} {s : Subsemiring R} {t : Subsemiring S} :
     s.map f ≤ t ↔ s ≤ t.comap f :=
   Set.image_subset_iff
@@ -503,25 +500,22 @@ theorem coe_sInf (S : Set (Subsemiring R)) : ((sInf S : Subsemiring R) : Set R) 
 theorem mem_sInf {S : Set (Subsemiring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
+@[simp, norm_cast]
+theorem coe_iInf {ι : Sort*} {S : ι → Subsemiring R} : (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
+  simp only [iInf, coe_sInf, Set.biInter_range]
+
+theorem mem_iInf {ι : Sort*} {S : ι → Subsemiring R} {x : R} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+  simp only [iInf, mem_sInf, Set.forall_mem_range]
+
 @[simp]
 theorem sInf_toSubmonoid (s : Set (Subsemiring R)) :
     (sInf s).toSubmonoid = ⨅ t ∈ s, Subsemiring.toSubmonoid t :=
   mk'_toSubmonoid _ _
 
 @[simp]
-theorem iInf_toSubmonoid {ι : Sort*} (s : ι → Subsemiring R) :
-    (iInf s).toSubmonoid = ⨅ i, (s i).toSubmonoid := by
-  rw [iInf, sInf_toSubmonoid, iInf_range]
-
-@[simp]
 theorem sInf_toAddSubmonoid (s : Set (Subsemiring R)) :
     (sInf s).toAddSubmonoid = ⨅ t ∈ s, Subsemiring.toAddSubmonoid t :=
   mk'_toAddSubmonoid _ _
-
-@[simp]
-theorem iInf_toAddSubmonoid {ι : Sort*} (s : ι → Subsemiring R) :
-    (iInf s).toAddSubmonoid = ⨅ i, (s i).toAddSubmonoid := by
-  rw [iInf, sInf_toAddSubmonoid, iInf_range]
 
 /-- Subsemirings of a semiring form a complete lattice. -/
 instance : CompleteLattice (Subsemiring R) :=
@@ -849,15 +843,12 @@ theorem map_iSup {ι : Sort*} (f : R →+* S) (s : ι → Subsemiring R) :
   (gc_map_comap f).l_iSup
 
 theorem map_inf (s t : Subsemiring R) (f : R →+* S) (hf : Function.Injective f) :
-    (s ⊓ t).map f = s.map f ⊓ t.map f := by
-  apply toSubmonoid_injective
-  exact Submonoid.map_inf s.toSubmonoid t.toSubmonoid f hf
+    (s ⊓ t).map f = s.map f ⊓ t.map f := SetLike.coe_injective (Set.image_inter hf)
 
 theorem map_iInf {ι : Sort*} [Nonempty ι] (f : R →+* S) (hf : Function.Injective f)
     (s : ι → Subsemiring R) : (iInf s).map f = ⨅ i, (s i).map f := by
-  apply toSubmonoid_injective
-  rw [iInf_toSubmonoid, map_toSubmonoid, iInf_toSubmonoid]
-  exact Submonoid.map_iInf f hf (toSubmonoid ∘ s)
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
 
 theorem comap_inf (s t : Subsemiring S) (f : R →+* S) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
   (gc_map_comap f).u_inf

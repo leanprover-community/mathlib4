@@ -773,18 +773,6 @@ theorem mem_iInf {ι : Sort*} {S : ι → Subgroup G} {x : G} : (x ∈ ⨅ i, S 
 theorem coe_iInf {ι : Sort*} {S : ι → Subgroup G} : (↑(⨅ i, S i) : Set G) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 
-@[to_additive (attr := simp)]
-theorem sInf_toSubmonoid (s : Set (Subgroup G)) :
-    (sInf s).toSubmonoid = ⨅ t ∈ s, t.toSubmonoid := by
-  ext
-  change (_ ∈ (_ : Set G)) ↔ (_ ∈ (_ : Set G))
-  simp
-
-@[to_additive (attr := simp)]
-theorem iInf_toSubmonoid {ι : Sort*} (s : ι → Subgroup G) :
-    (iInf s).toSubmonoid = ⨅ i, (s i).toSubmonoid := by
-  rw [iInf, sInf_toSubmonoid, iInf_range]
-
 /-- Subgroups of a group form a complete lattice. -/
 @[to_additive "The `AddSubgroup`s of an `AddGroup` form a complete lattice."]
 instance : CompleteLattice (Subgroup G) :=
@@ -1134,10 +1122,6 @@ theorem map_id : K.map (MonoidHom.id G) = K :=
 theorem map_map (g : N →* P) (f : G →* N) : (K.map f).map g = K.map (g.comp f) :=
   SetLike.coe_injective <| image_image _ _ _
 
-@[to_additive]
-theorem map_toSubmonoid (f : G →* N) (s : Subgroup G) :
-    (s.map f).toSubmonoid = s.toSubmonoid.map f := rfl
-
 @[to_additive (attr := simp)]
 theorem map_one_eq_bot : K.map (1 : G →* N) = ⊥ :=
   eq_bot_iff.mpr <| by
@@ -1206,16 +1190,13 @@ theorem map_iSup {ι : Sort*} (f : G →* N) (s : ι → Subgroup G) :
 
 @[to_additive]
 theorem map_inf (H K : Subgroup G) (f : G →* N) (hf : Function.Injective f) :
-    (H ⊓ K).map f = H.map f ⊓ K.map f := by
-  apply toSubmonoid_injective
-  exact Submonoid.map_inf H.toSubmonoid K.toSubmonoid f hf
+    (H ⊓ K).map f = H.map f ⊓ K.map f := SetLike.coe_injective (Set.image_inter hf)
 
 @[to_additive]
 theorem map_iInf {ι : Sort*} [Nonempty ι] (f : G →* N) (hf : Function.Injective f)
     (s : ι → Subgroup G) : (iInf s).map f = ⨅ i, (s i).map f := by
-  apply toSubmonoid_injective
-  rw [iInf_toSubmonoid, map_toSubmonoid, iInf_toSubmonoid]
-  exact Submonoid.map_iInf f hf (toSubmonoid ∘ s)
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
 
 @[to_additive]
 theorem comap_sup_comap_le (H K : Subgroup N) (f : G →* N) :

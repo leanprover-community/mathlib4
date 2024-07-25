@@ -254,15 +254,12 @@ theorem map_iSup {ι : Sort*} (f : E →ₐ[F] K) (s : ι → IntermediateField 
   (gc_map_comap f).l_iSup
 
 theorem map_inf (s t : IntermediateField F E) (f : E →ₐ[F] K) :
-    (s ⊓ t).map f = s.map f ⊓ t.map f := by
-  apply toSubalgebra_injective
-  exact Algebra.map_inf f f.injective s.toSubalgebra t.toSubalgebra
+    (s ⊓ t).map f = s.map f ⊓ t.map f := SetLike.coe_injective (Set.image_inter f.injective)
 
 theorem map_iInf {ι : Sort*} [Nonempty ι] (f : E →ₐ[F] K) (s : ι → IntermediateField F E) :
     (iInf s).map f = ⨅ i, (s i).map f := by
-  apply toSubalgebra_injective
-  rw [iInf_toSubalgebra, toSubalgebra_map, iInf_toSubalgebra]
-  exact Algebra.map_iInf f f.injective (toSubalgebra ∘ s)
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective f.injective).image_iInter_eq (s := SetLike.coe ∘ s)
 
 theorem _root_.AlgHom.fieldRange_eq_map (f : E →ₐ[F] K) :
     f.fieldRange = IntermediateField.map f ⊤ :=
