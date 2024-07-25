@@ -101,6 +101,8 @@ open Asymptotics Filter Metric Finset Ring
 theorem inverse_oneSub (t : R) (h : ‖t‖ < 1) : inverse (1 - t) = ↑(Units.oneSub t h)⁻¹ := by
   rw [← inverse_unit (Units.oneSub t h), Units.val_oneSub]
 
+@[deprecated (since := "2024-07-25")] alias inverse_one_sub := inverse_oneSub
+
 /-- The formula `Ring.inverse (x + t) = Ring.inverse (1 + x⁻¹ * t) * x⁻¹` holds for `t` sufficiently
 small. -/
 theorem inverse_add (x : Rˣ) :
@@ -120,11 +122,14 @@ theorem inverse_oneSub_nth_order' (n : ℕ) {t : R} (ht : ‖t‖ < 1) :
     _ = (∑ i ∈ range n, t ^ i) + t ^ n * inverse (1 - t) := by
       simp only [inverse_oneSub t ht, add_comm _ n, pow_add, this.tsum_mul_left]; rfl
 
+@[deprecated (since := "2024-07-25")] alias inverse_one_sub_nth_order' := inverse_oneSub_nth_order'
+
 theorem inverse_oneSub_nth_order (n : ℕ) :
     ∀ᶠ t in 𝓝 0, inverse ((1 : R) - t) = (∑ i ∈ range n, t ^ i) + t ^ n * inverse (1 - t) :=
   Metric.eventually_nhds_iff.2 ⟨1, one_pos, fun t ht ↦ inverse_oneSub_nth_order' n <| by
     rwa [← dist_zero_right]⟩
 
+@[deprecated (since := "2024-07-25")] alias inverse_one_sub_nth_order := inverse_oneSub_nth_order
 
 /-- The formula
 `Ring.inverse (x + t) =
@@ -156,6 +161,8 @@ theorem inverse_oneSub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t 
     have : (2 : ℝ)⁻¹ + (2 : ℝ)⁻¹ = 1 := by ring
     linarith
   linarith
+
+@[deprecated (since := "2024-07-25")] alias inverse_one_sub_norm := inverse_oneSub_norm
 
 /-- The function `fun t ↦ inverse (x + t)` is O(1) as `t → 0`. -/
 theorem inverse_add_norm (x : Rˣ) : (fun t : R => inverse (↑x + t)) =O[𝓝 0] fun _t => (1 : ℝ) := by
