@@ -160,9 +160,9 @@ lemma IsPointwiseLeftKanExtension.hasLeftKanExtension :
   HasLeftKanExtension.mk E.right E.hom
 
 lemma IsPointwiseLeftKanExtension.isIso_hom [L.Full] [L.Faithful] :
-    IsIso (E.hom) := by
+    IsIso (E.hom) :=
   have := fun X => (h (L.obj X)).isIso_hom_app
-  apply NatIso.isIso_of_isIso_app
+  NatIso.isIso_of_isIso_app ..
 
 end LeftExtension
 
@@ -270,9 +270,9 @@ lemma IsPointwiseRightKanExtension.hasRightKanExtension :
   HasRightKanExtension.mk E.left E.hom
 
 lemma IsPointwiseRightKanExtension.isIso_hom [L.Full] [L.Faithful] :
-    IsIso (E.hom) := by
+    IsIso (E.hom) :=
   have := fun X => (h (L.obj X)).isIso_hom_app
-  apply NatIso.isIso_of_isIso_app
+  NatIso.isIso_of_isIso_app ..
 
 end RightExtension
 
