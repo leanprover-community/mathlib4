@@ -49,6 +49,9 @@ lemma continuous_from_compactlyGenerated {X : Type w} [TopologicalSpace X]
 A topological space `X` is compactly generated if its topology is finer than (and thus equal to)
 the compactly generated topology, i.e. it is coinduced by the continuous maps from compact
 Hausdorff spaces to `X`.
+
+Note: this definition should be used with an explicit universe parameter `u` for the size of the
+compact Hausdorff spaces mapping to `X`.
 -/
 class CompactlyGeneratedSpace (X : Type w) [t : TopologicalSpace X] : Prop where
   /-- The topology of `X` is finer than the compactly generated topology. -/
