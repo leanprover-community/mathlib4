@@ -264,6 +264,7 @@ lemma faithful_whiskeringLeft : ((whiskeringLeft C D E).obj L).Faithful :=
 
 variable {E}
 
+set_option debug.byAsSorry false in
 theorem natTrans_ext {F₁ F₂ : D ⥤ E} (τ τ' : F₁ ⟶ F₂)
     (h : ∀ X : C, τ.app (L.obj X) = τ'.app (L.obj X)) : τ = τ' := by
   haveI := essSurj L W

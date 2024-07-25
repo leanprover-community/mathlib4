@@ -278,6 +278,7 @@ theorem IsAntichain.maximals_lowerClosure (hs : IsAntichain (· ≤ ·) s) :
   hs.to_dual.minimals_upperClosure
 
 section Image
+set_option debug.byAsSorry false
 
 variable {f : α → β} {r : α → α → Prop} {s : β → β → Prop}
 
