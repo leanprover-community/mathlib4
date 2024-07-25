@@ -6,8 +6,6 @@ Authors: Mario Carneiro, Yuyang Zhao
 import Mathlib.Data.List.Pi
 import Mathlib.Data.Fintype.Basic
 
-#align_import data.fintype.quotient from "leanprover-community/mathlib"@"d78597269638367c3863d40d45108f52207e03cf"
-
 /-!
 # Quotients of families indexed by a finite type
 
@@ -106,7 +104,6 @@ def finChoice (q : ∀ i, Quotient (S i)) :
   intro _ _ _
   refine fin_ind (fun a ↦ ?_) q
   simp_rw [listChoice_mk, Quotient.map_mk]
-#align quotient.fin_choice Quotient.finChoice
 
 theorem finChoice_eq (a : ∀ i, α i) :
     finChoice (⟦a ·⟧) = ⟦a⟧ := by
@@ -114,7 +111,6 @@ theorem finChoice_eq (a : ∀ i, α i) :
   obtain ⟨l, hl⟩ := (Finset.univ.val : Multiset ι).exists_rep
   simp_rw [← hl, Equiv.subtypeQuotientEquivQuotientSubtype, listChoice_mk]
   rfl
-#align quotient.fin_choice_eq Quotient.finChoice_eq
 
 lemma proj_finChoice [S : ∀ i, Setoid (α i)]
     (f : ∀ i, Quotient (S i)) :

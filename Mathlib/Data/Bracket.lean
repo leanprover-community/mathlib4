@@ -3,10 +3,7 @@ Copyright (c) 2021 Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Lutz, Oliver Nash
 -/
-import Mathlib.Mathport.Rename
-import Mathlib.Tactic.Basic
-
-#align_import data.bracket from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Bracket Notation
@@ -36,6 +33,5 @@ class Bracket (L M : Type*) where
   /-- `⁅x, y⁆` is the result of a bracket operation on elements `x` and `y`.
   It is supported by the `Bracket` typeclass. -/
   bracket : L → M → M
-#align has_bracket Bracket
 
 @[inherit_doc] notation "⁅" x ", " y "⁆" => Bracket.bracket x y

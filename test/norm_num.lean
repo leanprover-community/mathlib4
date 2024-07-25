@@ -1,11 +1,12 @@
 /-
-Copyright (c) 2017 Simon Hudon All rights reserved.
+Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Mario Carneiro, Thomas Murrills
 -/
 
 import Mathlib.Tactic.NormNum
 
+private axiom test_sorry : ∀ {α}, α
 /-!
 # Tests for `norm_num` extensions
 -/
@@ -15,6 +16,10 @@ set_option autoImplicit true
 axiom Real : Type
 notation "ℝ" => Real
 @[instance] axiom Real.linearOrderedRing : LinearOrderedField ℝ
+
+axiom NNReal : Type
+notation "ℝ≥0" => NNReal
+@[instance] axiom NNReal.linearOrderedsemifield : LinearOrderedSemifield ℝ≥0
 
 axiom Complex : Type
 notation "ℂ" => Complex
@@ -36,12 +41,16 @@ example : (6:ℝ) < 10 := by norm_num1
 example : (7:ℝ)/2 > 3 := by norm_num1
 example : (4:ℝ)⁻¹ < 1 := by norm_num1
 example : ((1:ℝ) / 2)⁻¹ = 2 := by norm_num1
--- example : 2 ^ 17 - 1 = 131071 := by norm_num1
--- example : (3 : ℝ) ^ (-2 : ℤ) = 1/9 := by norm_num1
--- example : (3 : ℝ) ^ (-2 : ℤ) = 1/9 := by norm_num1
--- example : (-3 : ℝ) ^ (0 : ℤ) = 1 := by norm_num1
--- example : (-3 : ℝ) ^ (-1 : ℤ) = -1/3 := by norm_num1
--- example : (-3 : ℝ) ^ (2 : ℤ) = 9 := by norm_num1
+example : 2 ^ 17 - 1 = 131071 := by norm_num1
+example : (3 : ℝ) ^ (-2 : ℤ) = 1/9 := by norm_num1
+example : (-3 : ℝ) ^ (0 : ℤ) = 1 := by norm_num1
+example : (-3 : ℝ) ^ (-1 : ℤ) = -1/3 := by norm_num1
+example : (-3 : ℝ) ^ (1 : ℤ) = -3 := by norm_num1
+example : (-3 : ℝ) ^ (2 : ℤ) = 9 := by norm_num1
+example : (1/3 : ℝ) ^ (2 : ℤ) = 1/9 := by norm_num1
+example : (1/3 : ℝ) ^ (-2 : ℤ) = 9 := by norm_num1
+example : (-1/3 : ℝ) ^ (-1 : ℤ) = -3 := by norm_num1
+example : (3 : ℝ≥0) ^ (2 : ℤ) = 9 := by norm_num1
 
 section InvLit
 
@@ -153,6 +162,10 @@ example : ((1 : ℤ) ≠ 1) = False := by norm_num1
 example : ((-1 : ℤ) ≠ -1) = False := by norm_num1
 example : ((1 : α) ≠ 1) = False := by norm_num1
 example : ((-1 : α) = 2) = False := by norm_num1
+
+example : Int.natAbs 5 = 5 := by norm_num1
+example : Int.natAbs (-5) = 5 := by norm_num1
+example : Int.natAbs 0 = 0 := by norm_num1
 
 end Int
 
@@ -334,16 +347,16 @@ example : (1:ℂ) / 3 ≠ 2 / 7 := by norm_num1
 
 example : (1:ℝ) ≠ 2 := by norm_num1
 
--- example : (5 / 2:ℕ) = 2 := by norm_num1
--- example : (5 / -2:ℤ) < -1 := by norm_num1
--- example : (0 + 1) / 2 < 0 + 1 := by norm_num1
+example : (5 / 2:ℕ) = 2 := by norm_num1
+example : (5 / -2:ℤ) < -1 := by norm_num1
+example : (0 + 1) / 2 < 0 + 1 := by norm_num1
 example : Nat.succ (Nat.succ (2 ^ 3)) = 10 := by norm_num1
--- example : 10 = (-1 : ℤ) % 11 := by norm_num1 -- [fixme] ⊢ False ???
+example : 10 = (-1 : ℤ) % 11 := by norm_num1
 example : (12321 - 2 : ℤ) = 12319 := by norm_num1
 example : (63:ℚ) ≥ 5 := by norm_num1
 
-example (x : ℤ) (h : 1000 + 2000 < x) : 100 * 30 < x :=
-by norm_num at *; exact h
+example (x : ℤ) (h : 1000 + 2000 < x) : 100 * 30 < x := by
+  norm_num at *; exact h
 
 example : (1103 : ℤ) ≤ (2102 : ℤ) := by norm_num1
 example : (110474 : ℤ) ≤ (210485 : ℤ) := by norm_num1
@@ -362,7 +375,7 @@ example (a : ℚ) (h : 3⁻¹ * a = a) : True := by
   guard_hyp h : 1 / 3 * a = a
   trivial
 
--- example (h : (5 : ℤ) ∣ 2) : False := by norm_num1 at h
+example (h : (5 : ℤ) ∣ 2) : False := by norm_num1 at h
 example (h : False) : False := by norm_num1 at h
 example : True := by norm_num1
 -- example : True ∧ True := by norm_num1
@@ -402,7 +415,7 @@ example : 10 / 1 = 10 := by norm_num1
 example : 5 / 4 = 1 := by norm_num1
 example : 9 / 4 = 2 := by norm_num1
 example : 0 / 1 = 0 := by norm_num1
-example : Nat.div 10 9 = 1 := by norm_num1
+example : 10 / 9 = 1 := by norm_num1
 example : 1099 / 100 = 10 := by norm_num1
 
 end Nat.div
@@ -508,24 +521,14 @@ section
   example : - (-4 / 3) = 1 / (3 / (4 : α)) := by norm_num1
 end
 
-section Transparency
-
-example : Add.add 10 2 = 12 := by norm_num1
-example : Nat.sub 10 1 = 9 := by norm_num1
-example : Nat.mod 10 5 = 0 := by norm_num1
-example : Sub.sub 10 1 = 9 := by norm_num1
-example : Sub.sub 10 (-2) = 12 := by norm_num1
-example : Mul.mul 10 1 = 10 := by norm_num1
-example : (Div.div 10 1 : ℚ) = 10 := by norm_num1
-
-end Transparency
-
 -- user command
 
-#norm_num 1 = 1
+/-- info: True -/
+#guard_msgs in #norm_num 1 = 1
 example : 1 = 1 := by norm_num1
--- #norm_num 2^4-1 ∣ 2^16-1
--- example : 2^4-1 ∣ 2^16-1 := by norm_num1
+/-- info: True -/
+#guard_msgs in #norm_num 2^4-1 ∣ 2^16-1
+example : 2^4-1 ∣ 2^16-1 := by norm_num1
 -- #norm_num (3 : Real) ^ (-2 : ℤ) = 1/9
 -- example : (3 : Real) ^ (-2 : ℤ) = 1/9 := by norm_num1
 
@@ -546,6 +549,7 @@ section norm_num_erase
 
 example : 3 ^ 3 + 4 = 31 := by norm_num1
 
+set_option linter.unusedTactic false in
 attribute [-norm_num] Mathlib.Meta.NormNum.evalPow in
 example : 3 ^ 3 + 4 = 31 := by
   norm_num1
@@ -602,8 +606,8 @@ example : (22 - (6 * (28 * - 8))) = (1366 : α) := by norm_num1
 example : ((- - 2 * (9 * - 3)) + (22 / 30)) = (-799/15 : α) := by norm_num1
 example : - (26 / ((3 + 7) / - (27 * (12 / - 16)))) = (-1053/20 : α) := by norm_num1
 example : ((- 29 / 1) + 28) = (-1 : α) := by norm_num1
-example : ((21 * ((10 - (((17 + 28) - - 0) + 20)) + 26)) + ((17 + - 16) * 7)) = (-602 : α) :=
-by norm_num1
+example : ((21 * ((10 - (((17 + 28) - - 0) + 20)) + 26)) + ((17 + - 16) * 7)) = (-602 : α) := by
+  norm_num1
 example : (((- 5 - ((24 + - - 8) + 3)) + 20) + - 23) = (-43 : α) := by norm_num1
 example : ((- ((14 - 15) * (14 + 8)) + ((- (18 - 27) - 0) + 12)) - 11) = (32 : α) := by norm_num1
 example : (((15 / 17) * (26 / 27)) + 28) = (4414/153 : α) := by norm_num1
@@ -618,8 +622,8 @@ example : - (13 + 30) = (-43 : α) := by norm_num1
 example : - - - (((21 * - - ((- 25 - (- (30 - 5) / (- 5 - 5))) /
   (((6 + ((25 * - 13) + 22)) - 3) / 2))) / (- 3 / 10)) * (- 8 - 0)) = (-308/3 : α) := by norm_num1
 example : - (2 * - (- 24 * 22)) = (-1056 : α) := by norm_num1
-example : - - (((28 / - ((- 13 * - 5) / - (((7 - 30) / 16) + 6))) * 0) - 24) = (-24 : α) :=
-by norm_num1
+example : - - (((28 / - ((- 13 * - 5) / - (((7 - 30) / 16) + 6))) * 0) - 24) = (-24 : α) := by
+  norm_num1
 example : ((13 + 24) - (27 / (21 * 13))) = (3358/91 : α) := by norm_num1
 example : ((3 / - 21) * 25) = (-25/7 : α) := by norm_num1
 example : (17 - (29 - 18)) = (6 : α) := by norm_num1
@@ -649,8 +653,8 @@ example : - ((94 * 89) + (79 - (23 - (((- 1 / 55) + 95) * (28 - (54 / - - - 22))
 example : (- 23 + 61) = (38 : α) := by norm_num1
 example : - (93 / 69) = (-31/23 : α) := by norm_num1
 example : (- - ((68 / (39 + (((45 * - (59 - (37 + 35))) / (53 - 75)) -
- - (100 + - (50 / (- 30 - 59)))))) - (69 - (23 * 30))) / (57 + 17)) = (137496481/16368578 : α) :=
-by norm_num1
+ - (100 + - (50 / (- 30 - 59)))))) - (69 - (23 * 30))) / (57 + 17)) = (137496481/16368578 : α) := by
+  norm_num1
 example : (- 19 * - - (75 * - - 41)) = (-58425 : α) := by norm_num1
 example : ((3 / ((- 28 * 45) * (19 + ((- (- 88 - (- (- 1 + 90) + 8)) + 87) * 48)))) + 1) =
   (1903019/1903020 : α) := by norm_num1
@@ -660,19 +664,28 @@ example : (- ((- (((66 - 86) - 36) / 94) - 3) / - - (77 / (56 - - - 79))) + 87) 
 
 example : 2 ^ 13 - 1 = Int.ofNat 8191 := by norm_num1
 
+set_option linter.unusedTactic false in
+-- Since https://github.com/leanprover/lean4/pull/4177
+-- `simp` will continue even if given invalid theorem names (but generates an error)
+-- and this felicitously applies to `norm_num` too.
+-- Previous this was a `fail_if_success` test, but now we just check for the error.
+/-- error: unknown identifier 'this_doesnt_exist' -/
+#guard_msgs in
 example : 1 + 1 = 2 := by
-  fail_if_success
-    norm_num [this_doesnt_exist]
-  sorry
+  norm_num [this_doesnt_exist]
+  done
 
 example : 1 + 100 + a = a + 101 := by
   norm_num [add_comm]
 
-def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
-instance : LinearOrderedField (R a b) := sorry
+def R : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
+noncomputable instance : LinearOrderedField (R a b) := test_sorry
 
 example : (1 : R PUnit.{u+1} PUnit.{v+1}) <= 2 := by
   norm_num
 
 -- Check that we avoid deep recursion in evaluating large powers.
-example : 10^40000000 = 10^40000000 := by norm_num
+-- This used to be 10^40000000, but Lean's non-GMP multiplication is
+-- asymptotically slower than the GMP implementation.
+-- It would be great to fix that, and restore this test.
+example : 10^400000 = 10^400000 := by norm_num

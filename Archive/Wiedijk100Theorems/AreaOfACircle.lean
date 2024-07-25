@@ -8,8 +8,6 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
-#align_import wiedijk_100_theorems.area_of_a_circle from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
-
 /-!
 # Freek № 9: The Area of a Circle
 
@@ -43,9 +41,6 @@ to the n-ball.
 -/
 
 
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Set Real MeasureTheory intervalIntegral
 
 open scoped Real NNReal
@@ -60,7 +55,6 @@ namespace Theorems100
   See the module docstring for an explanation of why we don't define the disc in Euclidean space. -/
 def disc (r : ℝ) :=
   {p : ℝ × ℝ | p.1 ^ 2 + p.2 ^ 2 < r ^ 2}
-#align theorems_100.disc Theorems100.disc
 
 variable (r : ℝ≥0)
 
@@ -79,12 +73,10 @@ theorem disc_eq_regionBetween :
       exact ⟨⟨left, right.le⟩, sq_lt.mp h⟩
   · rw [add_comm, ← lt_sub_iff_add_lt]
     exact sq_lt.mpr h.2
-#align theorems_100.disc_eq_region_between Theorems100.disc_eq_regionBetween
 
 /-- The disc is a `MeasurableSet`. -/
 theorem measurableSet_disc : MeasurableSet (disc r) := by
   apply measurableSet_lt <;> apply Continuous.measurable <;> continuity
-#align theorems_100.measurable_set_disc Theorems100.measurableSet_disc
 
 /-- **Area of a Circle**: The area of a disc with radius `r` is `π * r ^ 2`. -/
 theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
@@ -99,7 +91,8 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
       _ = ENNReal.ofReal (∫ x in Ioc (-r : ℝ) r, (f - Neg.neg ∘ f) x) :=
         (volume_regionBetween_eq_integral h.neg h measurableSet_Ioc fun x _ =>
           neg_le_self (sqrt_nonneg _))
-      _ = ENNReal.ofReal (∫ x in (-r : ℝ)..r, 2 * f x) := by simp [two_mul, integral_of_le]
+      _ = ENNReal.ofReal (∫ x in (-r : ℝ)..r, 2 * f x) := by
+        rw [integral_of_le] <;> simp [two_mul, neg_le_self]
       _ = NNReal.pi * r ^ 2 := by rw_mod_cast [this, ← ENNReal.coe_nnreal_eq]
   have hle := NNReal.coe_nonneg r
   obtain heq | hlt := hle.eq_or_lt; · simp [← heq]
@@ -133,7 +126,6 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
       integral_eq_sub_of_hasDerivAt_of_le (neg_le_self r.2) hcont hderiv
         (continuous_const.mul hf).continuousOn.intervalIntegrable
     _ = NNReal.pi * (r : ℝ) ^ 2 := by
-      norm_num [inv_mul_cancel hlt.ne', ← mul_div_assoc, mul_comm π]
-#align theorems_100.area_disc Theorems100.area_disc
+      norm_num [F, inv_mul_cancel hlt.ne', ← mul_div_assoc, mul_comm π]
 
 end Theorems100
