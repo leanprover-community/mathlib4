@@ -2673,6 +2673,23 @@ theorem dropSlice_eq (xs : List α) (n m : ℕ) : dropSlice n m xs = xs.take n +
   · cases xs <;> simp [dropSlice]
   · cases xs <;> simp [dropSlice, *, Nat.succ_add]
 
+@[simp]
+theorem length_dropSlice (i j : ℕ) (xs : List α) :
+    (List.dropSlice i j xs).length = xs.length - min j (xs.length - i) := by
+  induction xs generalizing i j with
+  | nil => simp
+  | cons x xs xs_ih =>
+    cases i <;> simp only [List.dropSlice]
+    · cases j with
+      | zero => simp
+      | succ n => simp_all [xs_ih]; omega
+    · simp [xs_ih]; omega
+
+theorem length_dropSlice_lt (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :
+    (List.dropSlice i j xs).length < xs.length := by
+  simp; omega
+
+@[deprecated (since := "2024-07-25")]
 theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :
     SizeOf.sizeOf (List.dropSlice i j xs) < SizeOf.sizeOf xs := by
   induction xs generalizing i j hj with
