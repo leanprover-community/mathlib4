@@ -113,8 +113,8 @@ variable [StrictOrderedSemiring R] {a x y : R} {n m : ℕ}
 theorem pow_lt_pow_left (h : x < y) (hx : 0 ≤ x) : ∀ {n : ℕ}, n ≠ 0 → x ^ n < y ^ n
   | 0, hn => by contradiction
   | n + 1, _ => by
-    simpa only [pow_succ] using
-      mul_lt_mul_of_le_of_le' (pow_le_pow_left hx h.le _) h (pow_pos (hx.trans_lt h) _) hx
+    simpa only [pow_succ] using mul_lt_mul_of_le_of_lt_of_nonneg_of_pos
+      (pow_le_pow_left hx h.le _) h hx (pow_pos (hx.trans_lt h) _)
 
 /-- See also `pow_left_strictMono` and `Nat.pow_left_strictMono`. -/
 lemma pow_left_strictMonoOn (hn : n ≠ 0) : StrictMonoOn (· ^ n : R → R) {a | 0 ≤ a} :=
