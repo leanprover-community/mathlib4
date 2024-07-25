@@ -28,7 +28,7 @@ example : ∀ C [Category C] (X : C) (f g h : X ⟶ X) (_ : g ≫ h = h ≫ g) [
     (x : X), h (g (f x)) = g (h (f x)) := @ex2_apply
 
 -- Need nosimp on the following `elementwise` since the lemma can be proved by simp anyway.
-@[elementwise nosimp]
+@[elementwise]
 theorem ex3 [Category C] {X Y : C} (f : X ≅ Y) : f.hom ≫ f.inv = 𝟙 X :=
   Iso.hom_inv_id _
 
