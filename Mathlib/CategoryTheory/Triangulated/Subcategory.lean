@@ -735,7 +735,7 @@ instance : Pretriangulated S.category where
     dsimp at hc₁ hc₂
     rw [hc'] at hc₁
     rw [hc', assoc, ← Functor.commShiftIso_hom_naturality] at hc₂
-    refine' ⟨c', ⟨S.ι.map_injective _, S.ι.map_injective _⟩⟩
+    refine ⟨c', ⟨S.ι.map_injective ?_, S.ι.map_injective ?_⟩⟩
     · simpa using hc₁
     · rw [← cancel_mono ((Functor.commShiftIso (ι S) (1 : ℤ)).hom.app T₂.obj₁),
         S.ι.map_comp, S.ι.map_comp, assoc, assoc, hc₂]
@@ -744,7 +744,6 @@ instance : S.ι.IsTriangulated := ⟨fun _ hT => hT⟩
 
 instance [IsTriangulated C] : IsTriangulated S.category :=
   IsTriangulated.of_fully_faithful_triangulated_functor S.ι
-
 
 section
 
