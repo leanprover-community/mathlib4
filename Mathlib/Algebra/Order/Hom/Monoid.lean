@@ -182,14 +182,17 @@ end OrderedZero
 section OrderedAddCommGroup
 
 variable [OrderedAddCommGroup α] [OrderedAddCommMonoid β] [i : FunLike F α β]
-variable [iamhc : AddMonoidHomClass F α β] (f : F)
+variable (f : F)
 
-theorem monotone_iff_map_nonneg : Monotone (f : α → β) ↔ ∀ a, 0 ≤ a → 0 ≤ f a :=
+theorem monotone_iff_map_nonneg [iamhc : AddMonoidHomClass F α β] :
+    Monotone (f : α → β) ↔ ∀ a, 0 ≤ a → 0 ≤ f a :=
   ⟨fun h a => by
     rw [← map_zero f]
     apply h, fun h a b hl => by
     rw [← sub_add_cancel b a, map_add f]
     exact le_add_of_nonneg_left (h _ <| sub_nonneg.2 hl)⟩
+
+variable [iamhc : AddMonoidHomClass F α β]
 
 theorem antitone_iff_map_nonpos : Antitone (f : α → β) ↔ ∀ a, 0 ≤ a → f a ≤ 0 :=
   monotone_toDual_comp_iff.symm.trans <| monotone_iff_map_nonneg (β := βᵒᵈ) (iamhc := iamhc) _
@@ -202,7 +205,8 @@ theorem antitone_iff_map_nonneg : Antitone (f : α → β) ↔ ∀ a ≤ 0, 0 �
 
 variable [CovariantClass β β (· + ·) (· < ·)]
 
-theorem strictMono_iff_map_pos : StrictMono (f : α → β) ↔ ∀ a, 0 < a → 0 < f a := by
+theorem strictMono_iff_map_pos [iamhc : AddMonoidHomClass F α β]  :
+    StrictMono (f : α → β) ↔ ∀ a, 0 < a → 0 < f a := by
   refine ⟨fun h a => ?_, fun h a b hl => ?_⟩
   · rw [← map_zero f]
     apply h
