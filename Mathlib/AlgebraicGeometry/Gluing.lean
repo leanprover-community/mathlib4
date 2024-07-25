@@ -123,9 +123,7 @@ def gluedScheme : Scheme := by
     D.toLocallyRingedSpaceGlueData.toGlueData.glued
   intro x
   obtain ⟨i, y, rfl⟩ := D.toLocallyRingedSpaceGlueData.ι_jointly_surjective x
-  refine ⟨?_, ?_ ≫ D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
-  swap
-  · exact (D.U i).affineCover.map y
+  refine ⟨_, ((D.U i).affineCover.map y).val ≫ D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
   constructor
   · erw [TopCat.coe_comp, Set.range_comp] -- now `erw` after #13170
     refine Set.mem_image_of_mem _ ?_
@@ -157,11 +155,11 @@ abbrev isoLocallyRingedSpace :
   𝖣.gluedIso forgetToLocallyRingedSpace
 
 theorem ι_isoLocallyRingedSpace_inv (i : D.J) :
-    D.toLocallyRingedSpaceGlueData.toGlueData.ι i ≫ D.isoLocallyRingedSpace.inv = 𝖣.ι i :=
+    D.toLocallyRingedSpaceGlueData.toGlueData.ι i ≫ D.isoLocallyRingedSpace.inv = (𝖣.ι i).val :=
   𝖣.ι_gluedIso_inv forgetToLocallyRingedSpace i
 
 instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
-  rw [← D.ι_isoLocallyRingedSpace_inv]; infer_instance
+  rw [IsOpenImmersion, ← D.ι_isoLocallyRingedSpace_inv]; infer_instance
 
 theorem ι_jointly_surjective (x : 𝖣.glued.carrier) :
     ∃ (i : D.J) (y : (D.U i).carrier), (D.ι i).base y = x :=
@@ -210,7 +208,7 @@ theorem ι_isoCarrier_inv (i : D.J) :
   delta isoCarrier
   rw [Iso.trans_inv, GlueData.ι_gluedIso_inv_assoc, Functor.mapIso_inv, Iso.trans_inv,
     Functor.mapIso_inv, Iso.trans_inv, SheafedSpace.forgetToPresheafedSpace_map, forget_map,
-    forget_map, ← comp_base, ← Category.assoc,
+    forget_map, ← PresheafedSpace.comp_base, ← Category.assoc,
     D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.ι_isoPresheafedSpace_inv i]
   erw [← Category.assoc, D.toLocallyRingedSpaceGlueData.ι_isoSheafedSpace_inv i]
   change (_ ≫ D.isoLocallyRingedSpace.inv).base = _
@@ -343,8 +341,8 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.base := by
   obtain ⟨i, x, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective x
   obtain ⟨j, y, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective y
   erw [← comp_apply, ← comp_apply] at h -- now `erw` after #13170
-  simp_rw [← SheafedSpace.comp_base, ← LocallyRingedSpace.comp_val] at h
-  erw [ι_fromGlued, ι_fromGlued] at h
+  simp_rw [← Scheme.comp_base] at h
+  rw [ι_fromGlued, ι_fromGlued] at h
   let e :=
     (TopCat.pullbackConeIsLimit _ _).conePointUniqueUpToIso
       (isLimitOfHasPullbackOfPreservesLimit Scheme.forgetToTop (𝒰.map i) (𝒰.map j))
@@ -358,11 +356,11 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.base := by
     rfl
 
 instance fromGlued_stalk_iso (x : 𝒰.gluedCover.glued.carrier) :
-    IsIso (PresheafedSpace.stalkMap 𝒰.fromGlued.val x) := by
+    IsIso (PresheafedSpace.stalkMap 𝒰.fromGlued.toHom x) := by
   obtain ⟨i, x, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective x
   have :=
     PresheafedSpace.stalkMap.congr_hom _ _
-      (congr_arg LocallyRingedSpace.Hom.val <| 𝒰.ι_fromGlued i) x
+      (congr_arg (fun f ↦ (Scheme.Hom.val f).toHom) <| 𝒰.ι_fromGlued i) x
   erw [PresheafedSpace.stalkMap.comp] at this
   rw [← IsIso.eq_comp_inv] at this
   rw [this]
@@ -404,7 +402,7 @@ instance : IsIso 𝒰.fromGlued :=
   let F := Scheme.forgetToLocallyRingedSpace ⋙ LocallyRingedSpace.forgetToSheafedSpace ⋙
     SheafedSpace.forgetToPresheafedSpace
   have : IsIso (F.map (fromGlued 𝒰)) := by
-    change @IsIso (PresheafedSpace _) _ _ _ 𝒰.fromGlued.val
+    change @IsIso (PresheafedSpace _) _ _ _ 𝒰.fromGlued.toHom
     apply PresheafedSpace.IsOpenImmersion.to_iso
   isIso_of_reflects_iso _ F
 

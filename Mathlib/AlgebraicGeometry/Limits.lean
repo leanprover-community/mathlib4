@@ -58,8 +58,7 @@ def Scheme.emptyTo (X : Scheme.{u}) : ∅ ⟶ X :=
 @[ext]
 theorem Scheme.empty_ext {X : Scheme.{u}} (f g : ∅ ⟶ X) : f = g :=
   -- Porting note (#11041): `ext` regression
-  LocallyRingedSpace.Hom.ext _ _ <| PresheafedSpace.ext _ _ (by ext a; exact PEmpty.elim a) <|
-    NatTrans.ext _ _ <| funext fun a => by aesop_cat
+  Scheme.Hom.ext' (Subsingleton.elim (α := ∅ ⟶ _) _ _)
 
 theorem Scheme.eq_emptyTo {X : Scheme.{u}} (f : ∅ ⟶ X) : f = Scheme.emptyTo X :=
   Scheme.empty_ext f (Scheme.emptyTo X)
@@ -275,7 +274,7 @@ lemma disjoint_opensRange_sigmaι (i j : ι) (h : i ≠ j) :
 lemma exists_sigmaι_eq (x : (∐ f : _)) : ∃ i y, (Sigma.ι f i).base y = x := by
   obtain ⟨i, y, e⟩ := (disjointGlueData f).ι_jointly_surjective ((sigmaIsoGlued f).hom.base x)
   refine ⟨i, y, (sigmaIsoGlued f).hom.openEmbedding.inj ?_⟩
-  rwa [← Scheme.comp_val_base_apply, ι_sigmaIsoGlued_hom]
+  rwa [← Scheme.comp_base_apply, ι_sigmaIsoGlued_hom]
 
 lemma iSup_opensRange_sigmaι : ⨆ i, (Sigma.ι f i).opensRange = ⊤ :=
   eq_top_iff.mpr fun x ↦ by simpa using exists_sigmaι_eq f x

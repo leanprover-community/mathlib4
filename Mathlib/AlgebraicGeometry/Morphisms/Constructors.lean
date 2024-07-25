@@ -242,7 +242,7 @@ end Topologically
 /-- `stalkwise P` holds for a morphism if all stalks satisfy `P`. -/
 def stalkwise (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) :
     MorphismProperty Scheme.{u} :=
-  fun _ _ f => ∀ x, P (PresheafedSpace.stalkMap f.val x)
+  fun _ _ f => ∀ x, P (PresheafedSpace.stalkMap f.toHom x)
 
 section Stalkwise
 

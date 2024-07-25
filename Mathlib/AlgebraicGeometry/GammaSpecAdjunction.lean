@@ -212,7 +212,7 @@ theorem toStalk_stalkMap_toΓSpec (x : X) :
 /-- The canonical morphism from `X` to the spectrum of its global sections. -/
 @[simps! val_base]
 def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
-  val := X.toΓSpecSheafedSpace
+  __ := X.toΓSpecSheafedSpace
   prop := by
     intro x
     let p : PrimeSpectrum (Γ.obj (op X)) := X.toΓSpecFun x
@@ -393,25 +393,25 @@ lemma toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `Scheme`. -/
 def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec.{u} where
-  homEquiv X Y := locallyRingedSpaceAdjunction.{u}.homEquiv X.toLocallyRingedSpace Y
+  homEquiv X Y :=
+    (locallyRingedSpaceAdjunction.{u}.homEquiv X.toLocallyRingedSpace Y).trans
+      (Scheme.fullyFaithfulForgetToLocallyRingedSpace.homEquiv (X := X) (Y := Spec _)).symm
   unit :=
-  { app := fun X ↦ locallyRingedSpaceAdjunction.{u}.unit.app X.toLocallyRingedSpace
-    naturality := fun _ _ f ↦ locallyRingedSpaceAdjunction.{u}.unit.naturality f }
+  { app := fun X ↦ ⟨locallyRingedSpaceAdjunction.{u}.unit.app X.toLocallyRingedSpace⟩
+    naturality := fun _ _ f ↦
+      Scheme.Hom.ext' (locallyRingedSpaceAdjunction.{u}.unit.naturality f.val) }
   counit := (NatIso.op Scheme.SpecΓIdentity.{u}).inv
   homEquiv_unit := rfl
   homEquiv_counit := rfl
 
 theorem adjunction_homEquiv_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : (op <| Scheme.Γ.obj <| op X) ⟶ R) :
-    ΓSpec.adjunction.homEquiv X R f = locallyRingedSpaceAdjunction.homEquiv X.1 R f := rfl
-
-theorem adjunction_homEquiv (X : Scheme) (R : CommRingCatᵒᵖ) :
-    ΓSpec.adjunction.homEquiv X R = locallyRingedSpaceAdjunction.homEquiv X.1 R := rfl
+    ΓSpec.adjunction.homEquiv X R f = ⟨locallyRingedSpaceAdjunction.homEquiv X.1 R f⟩ := rfl
 
 theorem adjunction_homEquiv_symm_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : X ⟶ Scheme.Spec.obj R) :
     (ΓSpec.adjunction.homEquiv X R).symm f =
-      (locallyRingedSpaceAdjunction.homEquiv X.1 R).symm f := rfl
+      (locallyRingedSpaceAdjunction.homEquiv X.1 R).symm f.val := rfl
 
 theorem adjunction_counit_app' {R : CommRingCatᵒᵖ} :
     ΓSpec.adjunction.counit.app R = locallyRingedSpaceAdjunction.counit.app R := rfl
@@ -422,7 +422,7 @@ theorem adjunction_counit_app {R : CommRingCatᵒᵖ} :
 
 -- This is not a simp lemma to respect the abstraction
 theorem adjunction_unit_app {X : Scheme} :
-    ΓSpec.adjunction.unit.app X = locallyRingedSpaceAdjunction.unit.app X.1 := rfl
+    ΓSpec.adjunction.unit.app X = ⟨locallyRingedSpaceAdjunction.unit.app X.1⟩ := rfl
 
 @[reassoc (attr := simp)]
 theorem adjunction_unit_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :

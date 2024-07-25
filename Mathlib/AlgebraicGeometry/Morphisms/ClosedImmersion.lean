@@ -40,7 +40,7 @@ topological map is a closed embedding and the induced stalk maps are surjective.
 @[mk_iff]
 class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
   base_closed : ClosedEmbedding f.base
-  surj_on_stalks : ∀ x, Function.Surjective (PresheafedSpace.stalkMap f.1 x)
+  surj_on_stalks : ∀ x, Function.Surjective (PresheafedSpace.stalkMap f.toHom x)
 
 namespace IsClosedImmersion
 
@@ -49,7 +49,7 @@ lemma closedEmbedding {X Y : Scheme} (f : X ⟶ Y)
   IsClosedImmersion.base_closed
 
 lemma surjective_stalkMap {X Y : Scheme} (f : X ⟶ Y)
-    [IsClosedImmersion f] (x : X) : Function.Surjective (PresheafedSpace.stalkMap f.1 x) :=
+    [IsClosedImmersion f] (x : X) : Function.Surjective (PresheafedSpace.stalkMap f.toHom x) :=
   IsClosedImmersion.surj_on_stalks x
 
 lemma eq_inf : @IsClosedImmersion = (topologically ClosedEmbedding) ⊓
@@ -68,7 +68,7 @@ instance : MorphismProperty.IsMultiplicative @IsClosedImmersion where
   comp_mem {X Y Z} f g hf hg := by
     refine ⟨hg.base_closed.comp hf.base_closed, fun x ↦ ?_⟩
     erw [PresheafedSpace.stalkMap.comp]
-    exact (hf.surj_on_stalks x).comp (hg.surj_on_stalks (f.1.1 x))
+    exact (hf.surj_on_stalks x).comp (hg.surj_on_stalks (f.base x))
 
 /-- Composition of closed immersions is a closed immersion. -/
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion f]
@@ -113,7 +113,7 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion 
     [IsClosedImmersion (f ≫ g)] : IsClosedImmersion f where
   base_closed := by
     have h := closedEmbedding (f ≫ g)
-    rw [Scheme.comp_val_base] at h
+    rw [Scheme.comp_base] at h
     apply closedEmbedding_of_continuous_injective_closed (Scheme.Hom.continuous f)
     · exact Function.Injective.of_comp h.inj
     · intro Z hZ
@@ -122,7 +122,7 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion 
       exact ClosedEmbedding.isClosedMap h _ hZ
   surj_on_stalks x := by
     have h := surjective_stalkMap (f ≫ g) x
-    erw [Scheme.comp_val, PresheafedSpace.stalkMap.comp] at h
+    erw [PresheafedSpace.stalkMap.comp] at h
     exact Function.Surjective.of_comp h
 
 instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f where

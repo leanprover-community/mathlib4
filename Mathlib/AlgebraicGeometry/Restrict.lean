@@ -206,17 +206,17 @@ def Scheme.restrictFunctor : X.Opens ⥤ Over X where
 -- Porting note: the `by ...` used to be automatically done by unification magic
 @[reassoc]
 theorem Scheme.restrictFunctor_map_ofRestrict {U V : X.Opens} (i : U ⟶ V) :
-    (X.restrictFunctor.map i).1 ≫ V.ι = U.ι :=
+    (X.restrictFunctor.map i).left ≫ V.ι = U.ι :=
   IsOpenImmersion.lift_fac _ _ (by simpa using i.le)
 
 theorem Scheme.restrictFunctor_map_base {U V : X.Opens} (i : U ⟶ V) :
-    (X.restrictFunctor.map i).base = (Opens.toTopCat _).map i := by
+    (X.restrictFunctor.map i).left.base = (Opens.toTopCat _).map i := by
   ext a; refine Subtype.ext ?_ -- Porting note: `ext` did not pick up `Subtype.ext`
   exact (congr_arg (fun f : X.restrict U.openEmbedding ⟶ X => f.base a)
         (X.restrictFunctor_map_ofRestrict i))
 
 theorem Scheme.restrictFunctor_map_app_aux {U V : X.Opens} (i : U ⟶ V) (W : Opens V) :
-    U.ι ''ᵁ ((X.restrictFunctor.map i).1 ⁻¹ᵁ W) ≤ V.ι ''ᵁ W := by
+    U.ι ''ᵁ ((X.restrictFunctor.map i).left ⁻¹ᵁ W) ≤ V.ι ''ᵁ W := by
   simp only [← SetLike.coe_subset_coe, IsOpenMap.functor_obj_coe, Set.image_subset_iff,
     Scheme.restrictFunctor_map_base, Opens.map_coe, Opens.inclusion_apply]
   rintro _ h
@@ -356,7 +356,7 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] (U : Y.Opens) : IsIso (f ∣
 
 theorem morphismRestrict_base_coe {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (x) :
     @Coe.coe U Y (⟨fun x => x.1⟩) ((f ∣_ U).base x) = f.base x.1 :=
-  congr_arg (fun f => PresheafedSpace.Hom.base (LocallyRingedSpace.Hom.val f) x)
+  congr_arg (fun f => (Scheme.Hom.val f).base x)
     (morphismRestrict_ι f U)
 
 theorem morphismRestrict_val_base {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
@@ -485,10 +485,10 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Op
 /-- The stalk map of a restriction of a morphism is isomorphic to the stalk map of the original map.
 -/
 def morphismRestrictStalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (x) :
-    Arrow.mk (PresheafedSpace.stalkMap (f ∣_ U).1 x) ≅
-      Arrow.mk (PresheafedSpace.stalkMap f.1 x.1) := by
+    Arrow.mk (PresheafedSpace.stalkMap (f ∣_ U).toHom x) ≅
+      Arrow.mk (PresheafedSpace.stalkMap f.toHom x.1) := by
   fapply Arrow.isoMk'
-  · refine U.stalkIso ((f ∣_ U).1.1 x) ≪≫ TopCat.Presheaf.stalkCongr _ ?_
+  · refine U.stalkIso ((f ∣_ U).base x) ≪≫ TopCat.Presheaf.stalkCongr _ ?_
     apply Inseparable.of_eq
     exact morphismRestrict_base_coe f U x
   · exact Scheme.Opens.stalkIso _ _

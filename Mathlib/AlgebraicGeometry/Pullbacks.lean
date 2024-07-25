@@ -512,18 +512,11 @@ def openCoverOfLeftRight (𝒰X : X.OpenCover) (𝒰Y : Y.OpenCover) (f : X ⟶ 
 def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover (pullback f g) := by
   apply (openCoverOfLeft (𝒰.pullbackCover f) f g).bind
   intro i
-  let Xᵢ := pullback f (𝒰.map i)
-  let Yᵢ := pullback g (𝒰.map i)
-  let W := pullback (pullback.snd _ _ : Yᵢ ⟶ _) (pullback.snd _ _ : Xᵢ ⟶ _)
-  have :=
-    bigSquareIsPullback (pullback.fst _ _ : W ⟶ _) (pullback.fst _ _ : Yᵢ ⟶ _)
-      (pullback.snd _ _ : Xᵢ ⟶ _) (𝒰.map i) (pullback.snd _ _) (pullback.snd _ _) g
-      pullback.condition.symm pullback.condition.symm
-      (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
-      (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
+  haveI := ((IsPullback.of_hasPullback (pullback.snd g (𝒰.map i))
+    (pullback.snd f (𝒰.map i))).paste_horiz (IsPullback.of_hasPullback _ _)).flip
   refine
     @openCoverOfIsIso
-      (f := (pullbackSymmetry _ _).hom ≫ (limit.isoLimitCone ⟨_, this⟩).inv ≫
+      (f := (pullbackSymmetry _ _).hom ≫ this.isoPullback.hom ≫
         pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) ?_ ?_) ?_
   · simp [← pullback.condition]
   · simp only [Category.comp_id, Category.id_comp]
@@ -544,11 +537,11 @@ def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
       ((Equiv.prodPUnit 𝒰.J).symm.trans (Equiv.sigmaEquivProd 𝒰.J PUnit).symm) fun _ => Iso.refl _
   intro i
   rw [Iso.refl_hom, Category.id_comp, openCoverOfBase'_map]
-  apply pullback.hom_ext <;> dsimp <;>
+  apply pullback.hom_ext <;>
   · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.assoc,
-      limit.lift_π_assoc, cospan_left, Category.comp_id, limit.isoLimitCone_inv_π,
-      limit.isoLimitCone_inv_π_assoc, pullbackSymmetry_hom_comp_fst_assoc,
-      pullbackSymmetry_hom_comp_snd_assoc]
+      limit.lift_π_assoc, cospan_left, Category.comp_id, IsPullback.isoPullback_hom_fst_assoc,
+      pullbackSymmetry_hom_comp_snd_assoc,
+      IsPullback.isoPullback_hom_snd, pullbackSymmetry_hom_comp_fst_assoc]
     rfl
 
 end Pullback

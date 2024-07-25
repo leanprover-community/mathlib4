@@ -309,7 +309,7 @@ theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
   refine ⟨fun hU => @isAffine_of_isIso _ _
     (IsOpenImmersion.isoOfRangeEq (X.ofRestrict U.openEmbedding ≫ f) (Y.ofRestrict _) ?_).hom ?_ hU,
     fun hU => hU.image_of_isOpenImmersion f⟩
-  · erw [Scheme.comp_val_base, coe_comp, Set.range_comp] -- now `erw` after #13170
+  · erw [Scheme.comp_base, coe_comp, Set.range_comp] -- now `erw` after #13170
     dsimp [Opens.coe_inclusion, Scheme.restrict]
     erw [Subtype.range_coe, Subtype.range_coe] -- now `erw` after #13170
     rfl
@@ -521,10 +521,10 @@ noncomputable def primeIdealOf (x : U) :
 theorem fromSpec_primeIdealOf (x : U) :
     hU.fromSpec.base (hU.primeIdealOf x) = x.1 := by
   dsimp only [IsAffineOpen.fromSpec, Subtype.coe_mk, IsAffineOpen.primeIdealOf]
-  -- Porting note: in the porting note of `Scheme.comp_val_base`, it says that `elementwise` is
+  -- Porting note: in the porting note of `Scheme.comp_base`, it says that `elementwise` is
   -- unnecessary, indeed, the linter did not like it, so I just use `elementwise_of%` instead of
   -- adding the corresponding lemma in `Scheme.lean` file
-  erw [← elementwise_of% Scheme.comp_val_base] -- now `erw` after #13170
+  erw [← elementwise_of% Scheme.comp_base] -- now `erw` after #13170
   simp only [Scheme.Opens.toScheme_presheaf_obj, Category.assoc, ← Spec.map_comp_assoc,
     ← Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl, op_id,
     CategoryTheory.Functor.map_id, Spec.map_id, Category.id_comp, Iso.hom_inv_id_assoc]
@@ -539,7 +539,7 @@ theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.bas
     (@IsLocalization.isLocalization_iff_of_ringEquiv (R := Γ(X, U))
       (S := X.presheaf.stalk (hU.fromSpec.base y)) _ y.asIdeal.primeCompl _
       (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨hU.fromSpec.base y, hy⟩) _ _
-      (asIso <| PresheafedSpace.stalkMap hU.fromSpec.1 y).commRingCatIsoToRingEquiv).mpr
+      (asIso <| PresheafedSpace.stalkMap hU.fromSpec.toHom y).commRingCatIsoToRingEquiv).mpr
   -- Porting note: need to know what the ring is and after convert, instead of equality
   -- we get an `iff`.
   convert StructureSheaf.IsLocalization.to_stalk Γ(X, U) y using 1
@@ -547,7 +547,7 @@ theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.bas
   rw [iff_iff_eq]
   congr 2
   rw [RingHom.algebraMap_toAlgebra]
-  refine (PresheafedSpace.stalkMap_germ hU.fromSpec.1 _ ⟨_, hy⟩).trans ?_
+  refine (PresheafedSpace.stalkMap_germ hU.fromSpec.toHom _ ⟨_, hy⟩).trans ?_
   rw [← Scheme.Hom.app, IsAffineOpen.fromSpec_app_self, Category.assoc, TopCat.Presheaf.germ_res]
   rfl
 

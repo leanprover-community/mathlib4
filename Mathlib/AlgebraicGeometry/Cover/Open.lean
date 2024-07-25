@@ -65,7 +65,7 @@ def affineCover (X : Scheme.{u}) : OpenCover X where
   J := X
   obj x := Spec (X.local_affine x).choose_spec.choose
   map x :=
-    ((X.local_affine x).choose_spec.choose_spec.some.inv ≫ X.toLocallyRingedSpace.ofRestrict _ : _)
+    ⟨(X.local_affine x).choose_spec.choose_spec.some.inv ≫ X.toLocallyRingedSpace.ofRestrict _⟩
   f x := x
   covers := by
     intro x
@@ -133,7 +133,7 @@ def OpenCover.copy {X : Scheme.{u}} (𝒰 : OpenCover X) (J : Type*) (obj : J �
   { J, obj, map
     f := fun x => e₁.symm (𝒰.f x)
     covers := fun x => by
-      rw [e₂, Scheme.comp_val_base, TopCat.coe_comp, Set.range_comp, Set.range_iff_surjective.mpr,
+      rw [e₂, Scheme.comp_base, TopCat.coe_comp, Set.range_comp, Set.range_iff_surjective.mpr,
         Set.image_univ, e₁.rightInverse_symm]
       · exact 𝒰.covers x
       · erw [← TopCat.epi_iff_surjective]; infer_instance -- now `erw` after #13170

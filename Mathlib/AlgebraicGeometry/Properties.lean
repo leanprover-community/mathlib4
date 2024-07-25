@@ -163,8 +163,8 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens
     haveI := isReduced_of_isOpenImmersion f
     specialize H (f.app _ s) _ ⟨x, by rw [Opens.mem_mk, e]; trivial⟩
     · rw [← Scheme.preimage_basicOpen, hs]; ext1; simp [Opens.map]
-    · erw [← PresheafedSpace.stalkMap_germ_apply f.1 ⟨_, _⟩ ⟨x, _⟩] at H
-      apply_fun inv <| PresheafedSpace.stalkMap f.val x at H
+    · erw [← PresheafedSpace.stalkMap_germ_apply f.toHom ⟨_, _⟩ ⟨x, _⟩] at H
+      apply_fun inv <| PresheafedSpace.stalkMap f.toHom x at H
       erw [CategoryTheory.IsIso.hom_inv_id_apply, map_zero] at H
       exact H
   | h₃ R =>
