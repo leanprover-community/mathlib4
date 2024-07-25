@@ -150,6 +150,8 @@ namespace FilteredPretriangulated
 
 attribute [instance] LE_closedUnderIsomorphisms GE_closedUnderIsomorphisms
 
+variable {C}
+
 variable [∀ p : ℤ × ℤ, Functor.Additive (CategoryTheory.shiftFunctor C p)]
   [hC : Pretriangulated C] [hP : FilteredPretriangulated C]
 
@@ -168,6 +170,7 @@ lemma exists_triangle (A : C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     all_goals dsimp; simp [T]
   exact ⟨_, _, GE_shift _ _ _ (by omega) _ hX, LE_shift _ _ _ (by omega) _ hY, _, _, _, hT'⟩
 
+/- Are the following two lemmas even useful?-/
 lemma predicateShift_LE (n n' a : ℤ) (hn' : n = n') :
     (PredicateShift (LE n).P a) = (hP.LE n').P := by
   ext X; sorry
@@ -175,12 +178,13 @@ lemma predicateShift_LE (n n' a : ℤ) (hn' : n = n') :
 -- might need to add lemmas from jriou_lozalization
 
 lemma predicateShift_GE (a n n' : ℤ) (hn' : n = n') :
-    (PredicateShift (F.GE n).P a) = (F.GE n').P := by
-  ext X
-  simp only [PredicateShift, hn', Triangulated.Subcategory.shift_iff]
+    (PredicateShift (GE n).P a) = (hP.GE n').P := by
+  ext X; sorry
+--  simp only [PredicateShift, hn', Triangulated.Subcategory.shift_iff]
+-- might need to add lemmas from jriou_lozalization
 
-lemma LE_monotone : Monotone (fun n ↦ (F.LE n).P) := by
-  let H := fun (a : ℕ) => ∀ (n : ℤ), (F.LE n).P ≤ (F.LE (n + a)).P
+lemma LE_monotone : Monotone (fun n ↦ (hP.LE n).P) := by
+  let H := fun (a : ℕ) => ∀ (n : ℤ), (LE n).P ≤ (hP.LE (n + a)).P
   suffices ∀ (a : ℕ), H a by
     intro n₀ n₁ h
     obtain ⟨a, ha⟩ := Int.nonneg_def.1 h
@@ -190,9 +194,9 @@ lemma LE_monotone : Monotone (fun n ↦ (F.LE n).P) := by
     simp only [Nat.cast_zero, add_zero]
     rfl
   have H_one : H 1 := fun n X hX =>
-    (F.LE_closedUnderIsomorphisms (n + 1)).of_iso ((@shiftEquiv' C _ _ _ {shift := F.s}
-    (-n) n (by rw [add_left_neg])).unitIso.symm.app X) (F.LE_shift 1 n (n + 1) rfl _
-    (F.LE_zero_le _ (F.LE_shift n (-n) 0 (by rw [add_left_neg]) X hX)))
+    (LE_closedUnderIsomorphisms (n + 1)).of_iso ((@shiftEquiv' C _ _ _ Shift₂
+    (-n) n (by rw [add_left_neg])).unitIso.symm.app X) (LE_shift 1 n (n + 1) rfl _
+    (LE_zero_le _ (LE_shift n (-n) 0 (by rw [add_left_neg]) X hX)))
   have H_add : ∀ (a b c : ℕ) (_ : a + b = c) (_ : H a) (_ : H b), H c := by
     intro a b c h ha hb n
     rw [← h, Nat.cast_add, ← add_assoc]
@@ -202,8 +206,8 @@ lemma LE_monotone : Monotone (fun n ↦ (F.LE n).P) := by
   · exact H_zero
   · exact H_add a 1 _ rfl ha H_one
 
-lemma GE_antitone : Antitone (fun n ↦ (F.GE n).P) := by
-  let H := fun (a : ℕ) => ∀ (n : ℤ), (F.GE (n + a)).P ≤ (F.GE n).P
+lemma GE_antitone : Antitone (fun n ↦ (hP.GE n).P) := by
+  let H := fun (a : ℕ) => ∀ (n : ℤ), (GE (n + a)).P ≤ (hP.GE n).P
   suffices ∀ (a : ℕ), H a by
     intro n₀ n₁ h
     obtain ⟨a, ha⟩ := Int.nonneg_def.1 h
@@ -213,9 +217,9 @@ lemma GE_antitone : Antitone (fun n ↦ (F.GE n).P) := by
     simp only [Nat.cast_zero, add_zero]
     rfl
   have H_one : H 1 := fun n X hX =>
-    (F.GE_closedUnderIsomorphisms n).of_iso ((@shiftEquiv' C _ _ _ {shift := F.s}
-    (-n) n (by rw [add_left_neg])).unitIso.symm.app X) (F.GE_shift 0 n n (by rw [add_zero]) _
-    (F.GE_one_le _ (F.GE_shift (n + 1) (-n) 1 (by rw [neg_add_cancel_left]) X hX)))
+    (GE_closedUnderIsomorphisms n).of_iso ((@shiftEquiv' C _ _ _ Shift₂
+    (-n) n (by rw [add_left_neg])).unitIso.symm.app X) (GE_shift 0 n n (by rw [add_zero]) _
+    (GE_one_le _ (GE_shift (n + 1) (-n) 1 (by rw [neg_add_cancel_left]) X hX)))
   have H_add : ∀ (a b c : ℕ) (_ : a + b = c) (_ : H a) (_ : H b), H c := by
     intro a b c h ha hb n
     rw [← h, Nat.cast_add, ← add_assoc ]
@@ -225,135 +229,137 @@ lemma GE_antitone : Antitone (fun n ↦ (F.GE n).P) := by
   · exact H_zero
   · exact H_add a 1 _ rfl ha H_one
 
-/-- Given a filtration `F` on a pretriangulated category `C`, the property `F.IsLE X n`
+/-- Given a filtration `F` on a pretriangulated category `C`, the property `IsLE X n`
 holds if `X : C` is `≤ n` for the filtration. -/
 class IsLE (X : C) (n : ℤ) : Prop where
-  le : (F.LE n).P X
+  le : (hP.LE n).P X
 
-/-- Given a filtration `F` on a pretriangulated category `C`, the property `F.IsGE X n`
+/-- Given a filtration `F` on a pretriangulated category `C`, the property `IsGE X n`
 holds if `X : C` is `≥ n` for the filtration. -/
 class IsGE (X : C) (n : ℤ) : Prop where
-  ge : (F.GE n).P X
+  ge : (hP.GE n).P X
 
-lemma mem_of_isLE (X : C) (n : ℤ) [F.IsLE X n] : (F.LE n).P X := IsLE.le
+lemma mem_of_isLE (X : C) (n : ℤ) [IsLE X n] : (LE n).P X := IsLE.le
 
-lemma mem_of_isGE (X : C) (n : ℤ) [F.IsGE X n] : (F.GE n).P X := IsGE.ge
+lemma mem_of_isGE (X : C) (n : ℤ) [IsGE X n] : (GE n).P X := IsGE.ge
 
 -- Should the following be instances or lemmas? Let's make them instances and see what happens.
-instance zero_isLE (n : ℤ) : F.IsLE 0 n := {le := (F.LE n).zero}
+instance zero_isLE (n : ℤ) : IsLE (0 : C) n := {le := (LE n).zero}
 
-instance zero_isGE (n : ℤ) : F.IsGE 0 n := {ge := (F.GE n).zero}
+instance zero_isGE (n : ℤ) : IsGE (0 : C) n := {ge := (GE n).zero}
 
-instance shift_isLE_of_isLE (X : C) (n a : ℤ) [F.IsLE X n] : F.IsLE (X⟦a⟧) n :=
-  {le := (F.LE n).shift X a (F.mem_of_isLE X n)}
+instance shift_isLE_of_isLE (X : C) (n a : ℤ) [IsLE X n] : IsLE (X⟦a⟧) n :=
+  {le := (LE n).shift X a (mem_of_isLE X n)}
 
-instance shift_isGE_of_isGE (X : C) (n a : ℤ) [F.IsGE X n] : F.IsGE (X⟦a⟧) n :=
-  {ge := (F.GE n).shift X a (F.mem_of_isGE X n)}
+instance shift_isGE_of_isGE (X : C) (n a : ℤ) [IsGE X n] : IsGE (X⟦a⟧) n :=
+  {ge := (GE n).shift X a (mem_of_isGE X n)}
 
-instance LE_ext₁ (T : Triangle C) (hT : T ∈ distinguishedTriangles) (n : ℤ) [F.IsLE T.obj₂ n]
-    [F.IsLE T.obj₃ n] : F.IsLE T.obj₁ n :=
-  {le := (F.LE n).ext₁ T hT (F.mem_of_isLE T.obj₂ n) (F.mem_of_isLE T.obj₃ n)}
+instance LE_ext₁ (T : Triangle C) (hT : T ∈ distinguishedTriangles) (n : ℤ) [IsLE T.obj₂ n]
+    [IsLE T.obj₃ n] : IsLE T.obj₁ n :=
+  {le := (LE n).ext₁ T hT (mem_of_isLE T.obj₂ n) (mem_of_isLE T.obj₃ n)}
 
-instance LE_ext₂ (T : Triangle C) (hT : T ∈ distinguishedTriangles) (n : ℤ) [F.IsLE T.obj₁ n]
-    [F.IsLE T.obj₃ n] : F.IsLE T.obj₂ n :=
-  {le := (F.LE n).ext₂ T hT (F.mem_of_isLE T.obj₁ n) (F.mem_of_isLE T.obj₃ n)}
+instance LE_ext₂ (T : Triangle C) (hT : T ∈ distinguishedTriangles) (n : ℤ) [IsLE T.obj₁ n]
+    [IsLE T.obj₃ n] : IsLE T.obj₂ n :=
+  {le := (LE n).ext₂ T hT (mem_of_isLE T.obj₁ n) (mem_of_isLE T.obj₃ n)}
 
-instance LE_ext₃ (T : Triangle C) (hT : T ∈ distinguishedTriangles) (n : ℤ) [F.IsLE T.obj₁ n]
-    [F.IsLE T.obj₂ n] : F.IsLE T.obj₃ n :=
-  {le := (F.LE n).ext₃ T hT (F.mem_of_isLE T.obj₁ n) (F.mem_of_isLE T.obj₂ n)}
+instance LE_ext₃ (T : Triangle C) (hT : T ∈ distinguishedTriangles) (n : ℤ) [IsLE T.obj₁ n]
+    [IsLE T.obj₂ n] : IsLE T.obj₃ n :=
+  {le := (LE n).ext₃ T hT (mem_of_isLE T.obj₁ n) (mem_of_isLE T.obj₂ n)}
 
-instance GE_ext₁ (T : Triangle C) (hT : T ∈ distinguishedTriangles) (n : ℤ) [F.IsGE T.obj₂ n]
-    [F.IsGE T.obj₃ n] : F.IsGE T.obj₁ n :=
-  {ge := (F.GE n).ext₁ T hT (F.mem_of_isGE T.obj₂ n) (F.mem_of_isGE T.obj₃ n)}
+instance GE_ext₁ (T : Triangle C) (hT : T ∈ distinguishedTriangles) (n : ℤ) [IsGE T.obj₂ n]
+    [IsGE T.obj₃ n] : IsGE T.obj₁ n :=
+  {ge := (GE n).ext₁ T hT (mem_of_isGE T.obj₂ n) (mem_of_isGE T.obj₃ n)}
 
-instance GE_ext₂ (T : Triangle C) (hT : T ∈ distinguishedTriangles) (n : ℤ) [F.IsGE T.obj₁ n]
-    [F.IsGE T.obj₃ n] : F.IsGE T.obj₂ n :=
-  {ge := (F.GE n).ext₂ T hT (F.mem_of_isGE T.obj₁ n) (F.mem_of_isGE T.obj₃ n)}
+instance GE_ext₂ (T : Triangle C) (hT : T ∈ distinguishedTriangles) (n : ℤ) [IsGE T.obj₁ n]
+    [IsGE T.obj₃ n] : IsGE T.obj₂ n :=
+  {ge := (GE n).ext₂ T hT (mem_of_isGE T.obj₁ n) (mem_of_isGE T.obj₃ n)}
 
-instance GE_ext₃ (T : Triangle C) (hT : T ∈ distinguishedTriangles) (n : ℤ) [F.IsGE T.obj₁ n]
-    [F.IsGE T.obj₂ n] : F.IsGE T.obj₃ n :=
-  {ge := (F.GE n).ext₃ T hT (F.mem_of_isGE T.obj₁ n) (F.mem_of_isGE T.obj₂ n)}
+instance GE_ext₃ (T : Triangle C) (hT : T ∈ distinguishedTriangles) (n : ℤ) [IsGE T.obj₁ n]
+    [IsGE T.obj₂ n] : IsGE T.obj₃ n :=
+  {ge := (GE n).ext₃ T hT (mem_of_isGE T.obj₁ n) (mem_of_isGE T.obj₂ n)}
 
-lemma isLE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [F.IsLE X n] : F.IsLE Y n where
-  le := mem_of_iso (F.LE n).P e (F.mem_of_isLE X n)
+lemma isLE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [IsLE X n] : IsLE Y n where
+  le := mem_of_iso (LE n).P e (mem_of_isLE X n)
 
-lemma isGE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [F.IsGE X n] : F.IsGE Y n where
-  ge := mem_of_iso (F.GE n).P e (F.mem_of_isGE X n)
+lemma isGE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [IsGE X n] : IsGE Y n where
+  ge := mem_of_iso (GE n).P e (mem_of_isGE X n)
 
-lemma isLE_of_LE (X : C) (p q : ℤ) (hpq : p ≤ q) [F.IsLE X p] : F.IsLE X q where
-  le := LE_monotone F hpq _ (F.mem_of_isLE X p)
+lemma isLE_of_LE (X : C) (p q : ℤ) (hpq : p ≤ q) [IsLE X p] : IsLE X q where
+  le := LE_monotone hpq _ (mem_of_isLE X p)
 
-lemma isGE_of_GE (X : C) (p q : ℤ) (hpq : p ≤ q) [F.IsGE X q] : F.IsGE X p where
-  ge := GE_antitone F hpq _ (F.mem_of_isGE X q)
+lemma isGE_of_GE (X : C) (p q : ℤ) (hpq : p ≤ q) [IsGE X q] : IsGE X p where
+  ge := GE_antitone hpq _ (mem_of_isGE X q)
 
-lemma isLE_shift (X : C) (n a n' : ℤ) (hn' : a + n = n') [F.IsLE X n] :
-    F.IsLE (X⟪a⟫) n' :=
-  ⟨F.LE_shift n a n' hn' X (F.mem_of_isLE X n)⟩
+lemma isLE_shift (X : C) (n a n' : ℤ) (hn' : a + n = n') [IsLE X n] :
+    IsLE (X⟪a⟫) n' :=
+  ⟨LE_shift n a n' hn' X (mem_of_isLE X n)⟩
 
-lemma isGE_shift (X : C) (n a n' : ℤ) (hn' : a + n = n') [F.IsGE X n] :
-    F.IsGE (X⟪a⟫) n' :=
-  ⟨F.GE_shift n a n' hn' X (F.mem_of_isGE X n)⟩
+lemma isGE_shift (X : C) (n a n' : ℤ) (hn' : a + n = n') [IsGE X n] :
+    IsGE (X⟪a⟫) n' :=
+  ⟨GE_shift n a n' hn' X (mem_of_isGE X n)⟩
 
-lemma isLE_of_shift (X : C) (n a n' : ℤ) (hn' : a + n = n') [F.IsLE (X⟪a⟫) n'] :
-    F.IsLE X n := by
-  have h := F.isLE_shift (X⟪a⟫) n' (-a) n (by linarith)
-  exact F.isLE_of_iso (show ((X⟪a⟫)⟪-a⟫) ≅ X from
-  (@shiftEquiv C _ _ _ {shift := F.s} a).unitIso.symm.app X) n
+lemma isLE_of_shift (X : C) (n a n' : ℤ) (hn' : a + n = n') [IsLE (X⟪a⟫) n'] :
+    IsLE X n := by
+  have h := isLE_shift (X⟪a⟫) n' (-a) n (by linarith)
+  exact isLE_of_iso (show ((X⟪a⟫)⟪-a⟫) ≅ X from
+  (@shiftEquiv C _ _ _ Shift₂ a).unitIso.symm.app X) n
 
-lemma isGE_of_shift (X : C) (n a n' : ℤ) (hn' : a + n = n') [F.IsGE (X⟪a⟫) n'] :
-    F.IsGE X n := by
-  have h := F.isGE_shift (X⟪a⟫) n' (-a) n (by linarith)
-  exact F.isGE_of_iso (show ((X⟪a⟫)⟪-a⟫) ≅ X from
-  (@shiftEquiv C _ _ _ {shift := F.s} a).unitIso.symm.app X) n
+lemma isGE_of_shift (X : C) (n a n' : ℤ) (hn' : a + n = n') [IsGE (X⟪a⟫) n'] :
+    IsGE X n := by
+  have h := isGE_shift (X⟪a⟫) n' (-a) n (by linarith)
+  exact isGE_of_iso (show ((X⟪a⟫)⟪-a⟫) ≅ X from
+  (@shiftEquiv C _ _ _ Shift₂ a).unitIso.symm.app X) n
 
 lemma isLE_shift_iff (X : C) (n a n' : ℤ) (hn' : a + n = n') :
-    F.IsLE (X⟪a⟫) n' ↔ F.IsLE X n := by
+    IsLE (X⟪a⟫) n' ↔ IsLE X n := by
   constructor
   · intro
-    exact F.isLE_of_shift X n a n' hn'
+    exact isLE_of_shift X n a n' hn'
   · intro
-    exact F.isLE_shift X n a n' hn'
+    exact isLE_shift X n a n' hn'
 
 lemma isGE_shift_iff (X : C) (n a n' : ℤ) (hn' : a + n = n') :
-    F.IsGE (X⟪a⟫) n' ↔ F.IsGE X n := by
+    IsGE (X⟪a⟫) n' ↔ IsGE X n := by
   constructor
   · intro
-    exact F.isGE_of_shift X n a n' hn'
+    exact isGE_of_shift X n a n' hn'
   · intro
-    exact F.isGE_shift X n a n' hn'
+    exact isGE_shift X n a n' hn'
 
 lemma zero {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
-    [F.IsGE X n₁] [F.IsLE Y n₀] : f = 0 := by
-  have := F.isLE_shift Y n₀ (-n₀) 0 (by simp only [add_left_neg])
-  have := F.isGE_shift X n₁ (-n₀) (n₁-n₀) (by linarith)
-  have := F.isGE_of_GE (X⟪-n₀⟫) 1 (n₁-n₀) (by linarith)
-  apply (@shiftFunctor C _ _ _ {shift := F.s} (-n₀)).map_injective
+    [IsGE X n₁] [IsLE Y n₀] : f = 0 := by
+  have := isLE_shift Y n₀ (-n₀) 0 (by simp only [add_left_neg])
+  have := isGE_shift X n₁ (-n₀) (n₁-n₀) (by linarith)
+  have := isGE_of_GE (X⟪-n₀⟫) 1 (n₁-n₀) (by linarith)
+  apply (@shiftFunctor C _ _ _ Shift₂ (-n₀)).map_injective
   simp only [Functor.map_zero]
-  apply F.zero'
-  · apply F.mem_of_isGE
-  · apply F.mem_of_isLE
+  apply zero'
+  · apply mem_of_isGE
+  · apply mem_of_isLE
 
 lemma zero_of_isGE_of_isLE {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
-    (_ : F.IsGE X n₁) (_ : F.IsLE Y n₀) : f = 0 :=
-  F.zero f n₀ n₁ h
+    (_ : IsGE X n₁) (_ : IsLE Y n₀) : f = 0 :=
+  zero f n₀ n₁ h
 
 lemma isZero (X : C) (n₀ n₁ : ℤ) (h : n₀ < n₁)
-    [F.IsGE X n₁] [F.IsLE X n₀] : IsZero X := by
+    [IsGE X n₁] [IsLE X n₀] : IsZero X := by
   rw [IsZero.iff_id_eq_zero]
-  exact F.zero _ n₀ n₁ h
+  exact zero _ n₀ n₁ h
 
-def core (X : C) : Prop := (F.LE 0).P X ∧ (F.GE 0).P X
+def core (X : C) : Prop := (LE 0).P X ∧ (GE 0).P X
 
 lemma mem_core_iff (X : C) :
-    F.core X ↔ F.IsLE X 0 ∧ F.IsGE X 0 := by
+    core X ↔ IsLE X 0 ∧ IsGE X 0 := by
   constructor
   · rintro ⟨h₁, h₂⟩
     exact ⟨⟨h₁⟩, ⟨h₂⟩⟩
   · rintro ⟨h₁, h₂⟩
-    exact ⟨F.mem_of_isLE _ _, F.mem_of_isGE _ _⟩
+    exact ⟨mem_of_isLE _ _, mem_of_isGE _ _⟩
+
+variable (C)
 
 def tCore : Triangulated.Subcategory C where
-  P := F.core
+  P := core
   zero' := by
     existsi 0, isZero_zero C
     rw [mem_core_iff]
@@ -366,43 +372,47 @@ def tCore : Triangulated.Subcategory C where
     apply le_isoClosure
     rw [mem_core_iff] at hT₁ hT₃ ⊢
     constructor
-    · exact @LE_ext₂ _ _ _ _ _ _ _ F T dT 0 hT₁.1 hT₃.1
-    · exact @GE_ext₂ _ _ _ _ _ _ _ F T dT 0 hT₁.2 hT₃.2
+    · have := hT₁.1; have := hT₃.1
+      exact LE_ext₂ T dT 0
+    · have := hT₁.2; have := hT₃.2
+      exact GE_ext₂  T dT 0
+
+variable {C}
 
 lemma mem_tCore_iff (X : C) :
-    F.tCore.P X ↔ F.IsLE X 0 ∧ F.IsGE X 0 := by
+    (tCore C).P X ↔ IsLE X 0 ∧ IsGE X 0 := by
   constructor
   · rintro ⟨h₁, h₂⟩
     exact ⟨⟨h₁⟩, ⟨h₂⟩⟩
   · rintro ⟨h₁, h₂⟩
-    exact ⟨F.mem_of_isLE _ _, F.mem_of_isGE _ _⟩
+    exact ⟨mem_of_isLE _ _, mem_of_isGE _ _⟩
 
-instance : ClosedUnderIsomorphisms F.tCore.P where
+instance : ClosedUnderIsomorphisms (tCore C).P where
   of_iso {X Y} e hX := by
     rw [mem_tCore_iff] at hX ⊢
     have := hX.1
     have := hX.2
     constructor
-    · exact F.isLE_of_iso e 0
-    · exact F.isGE_of_iso e 0
+    · exact isLE_of_iso e 0
+    · exact isGE_of_iso e 0
 
-abbrev Core' := F.tCore.category
+abbrev Core' := (tCore C).category
 
-abbrev ιCore' : F.Core' ⥤ C := fullSubcategoryInclusion _
+abbrev ιCore' : Core' ⥤ C := fullSubcategoryInclusion _
 
-instance : Functor.Additive F.ιCore' := sorry
+instance : Functor.Additive ιCore' := sorry
 
-instance : Functor.Full F.ιCore' := sorry
+instance : Functor.Full ιCore' := sorry
 
-instance : Functor.Faithful F.ιCore' := sorry
+instance : Functor.Faithful ιCore' := sorry
 
 
-instance (X : F.Core') : F.IsLE (F.ιCore'.obj X) 0 := ⟨X.2.1⟩
-instance (X : F.Core') : F.IsGE (F.ιCore'.obj X) 0 := ⟨X.2.2⟩
-instance (X : F.Core') : F.IsLE X.1 0 := ⟨X.2.1⟩
-instance (X : F.Core') : F.IsGE X.1 0 := ⟨X.2.2⟩
+instance (X : Core') : IsLE (ιCore'.obj X) 0 := ⟨X.2.1⟩
+instance (X : Core') : IsGE (ιCore'.obj X) 0 := ⟨X.2.2⟩
+instance (X : Core') : IsLE X.1 0 := ⟨X.2.1⟩
+instance (X : Core') : IsGE X.1 0 := ⟨X.2.2⟩
 
-lemma ιCore_obj_mem_core (X : F.Core') : F.core (F.ιCore'.obj X) := X.2
+lemma ιCore_obj_mem_core (X : Core') : core (ιCore'.obj X) := X.2
 
 /-
 def ιHeartDegree (n : ℤ) : t.Heart' ⥤ C :=
@@ -422,11 +432,11 @@ class HasCore where
   additive_ι : ι.Additive := by infer_instance
   fullι : ι.Full := by infer_instance
   faithful_ι : ι.Faithful := by infer_instance
-  hι : ι.essImage = setOf F.tCore.P := by simp
+  hι : ι.essImage = setOf tCore.P := by simp
 
-def hasCoreFullSubcategory : F.HasCore where
-  H := F.Core'
-  ι := F.ιCore'
+def hasCoreFullSubcategory : HasCore where
+  H := Core'
+  ι := ιCore'
   hι := by
     ext X
     simp only [Set.mem_setOf_eq]
@@ -435,69 +445,69 @@ def hasCoreFullSubcategory : F.HasCore where
       refine ClosedUnderIsomorphisms.of_iso (Functor.essImage.getIso h ) ?_
       exact (Functor.essImage.witness h).2
     · intro h
-      change (fullSubcategoryInclusion F.core).obj ⟨X, h⟩ ∈ _
+      change (fullSubcategoryInclusion core).obj ⟨X, h⟩ ∈ _
       exact Functor.obj_mem_essImage _ _
 
-variable [ht : F.HasCore]
+variable [ht : HasCore]
 
 def Core := ht.H
 
-instance : Category F.Core := ht.cat
+instance : Category Core := ht.cat
 
-def ιCore : F.Core ⥤ C := ht.ι
+def ιCore : Core ⥤ C := ht.ι
 
-instance : Preadditive F.Core := ht.preadditive
-instance : F.ιCore.Full := ht.fullι
-instance : F.ιCore.Faithful := ht.faithful_ι
-instance : F.ιCore.Additive := ht.additive_ι
+instance : Preadditive Core := ht.preadditive
+instance : ιCore.Full := ht.fullι
+instance : ιCore.Faithful := ht.faithful_ι
+instance : ιCore.Additive := ht.additive_ι
 
 -- Add instances saying that the core is triangulated and the inclusion is a triangulated functor.
 
-lemma ιCore_obj_mem (X : F.Core) : F.tCore.P (F.ιCore.obj X) := by
-  change (F.ιCore.obj X) ∈ setOf F.tCore.P
+lemma ιCore_obj_mem (X : Core) : tCore.P (ιCore.obj X) := by
+  change (ιCore.obj X) ∈ setOf tCore.P
   rw [← ht.hι]
-  exact F.ιCore.obj_mem_essImage X
+  exact ιCore.obj_mem_essImage X
 
-instance (X : F.Core) : F.IsLE (F.ιCore.obj X) 0 :=
-  ⟨(F.ιCore_obj_mem X).1⟩
+instance (X : Core) : IsLE (ιCore.obj X) 0 :=
+  ⟨(ιCore_obj_mem X).1⟩
 
-instance (X : F.Core) : F.IsGE (F.ιCore.obj X) 0 :=
-  ⟨(F.ιCore_obj_mem X).2⟩
+instance (X : Core) : IsGE (ιCore.obj X) 0 :=
+  ⟨(ιCore_obj_mem X).2⟩
 
 lemma mem_essImage_ιCore_iff (X : C) :
-    X ∈ F.ιCore.essImage ↔ F.tCore.P X := by
+    X ∈ ιCore.essImage ↔ tCore.P X := by
   dsimp [ιCore]
   rw [ht.hι, Set.mem_setOf_eq]
 
-noncomputable def coreMk (X : C) (hX : F.tCore.P X) : F.Core :=
-  Functor.essImage.witness ((F.mem_essImage_ιCore_iff X).2 hX)
+noncomputable def coreMk (X : C) (hX : tCore.P X) : Core :=
+  Functor.essImage.witness ((mem_essImage_ιCore_iff X).2 hX)
 
-noncomputable def ιCoreObjCoreMkIso (X : C) (hX : F.tCore.P X) :
-    F.ιCore.obj (F.coreMk X hX) ≅ X :=
-  Functor.essImage.getIso ((F.mem_essImage_ιCore_iff X).2 hX)
+noncomputable def ιCoreObjCoreMkIso (X : C) (hX : tCore.P X) :
+    ιCore.obj (coreMk X hX) ≅ X :=
+  Functor.essImage.getIso ((mem_essImage_ιCore_iff X).2 hX)
 
 @[simps obj]
 noncomputable def liftCore {D : Type*} [Category D]
-    (G : D ⥤ C) (hF : ∀ (X : D), F.tCore.P (G.obj X)) :
-    D ⥤ F.Core where
-  obj X := F.coreMk (G.obj X) (hF X)
-  map {X Y} f := F.ιCore.preimage ((F.ιCoreObjCoreMkIso _ (hF X)).hom ≫ G.map f ≫
-      (F.ιCoreObjCoreMkIso _ (hF Y)).inv)
-  map_id X := F.ιCore.map_injective (by simp)
-  map_comp f g := F.ιCore.map_injective (by simp)
+    (G : D ⥤ C) (hF : ∀ (X : D), tCore.P (G.obj X)) :
+    D ⥤ Core where
+  obj X := coreMk (G.obj X) (hF X)
+  map {X Y} f := ιCore.preimage ((ιCoreObjCoreMkIso _ (hF X)).hom ≫ G.map f ≫
+      (ιCoreObjCoreMkIso _ (hF Y)).inv)
+  map_id X := ιCore.map_injective (by simp)
+  map_comp f g := ιCore.map_injective (by simp)
 
 @[simp, reassoc]
 lemma ιCore_map_liftCore_map {D : Type*} [Category D]
-    (G : D ⥤ C) (hF : ∀ (X : D), F.tCore.P (G.obj X)) {X Y : D} (f : X ⟶ Y) :
-    F.ιCore.map ((F.liftCore G hF).map f) =
-      (F.ιCoreObjCoreMkIso _ (hF X)).hom ≫ G.map f ≫
-        (F.ιCoreObjCoreMkIso _ (hF Y)).inv := by
+    (G : D ⥤ C) (hF : ∀ (X : D), tCore.P (G.obj X)) {X Y : D} (f : X ⟶ Y) :
+    ιCore.map ((liftCore G hF).map f) =
+      (ιCoreObjCoreMkIso _ (hF X)).hom ≫ G.map f ≫
+        (ιCoreObjCoreMkIso _ (hF Y)).inv := by
   simp [liftCore]
 
 noncomputable def liftCoreιCore {D : Type*} [Category D]
-    (G : D ⥤ C) (hF : ∀ (X : D), F.tCore.P (G.obj X)) :
-    F.liftCore G hF ⋙ F.ιCore ≅ G :=
-  NatIso.ofComponents (fun X => F.ιCoreObjCoreMkIso _ (hF X)) (by aesop_cat)
+    (G : D ⥤ C) (hF : ∀ (X : D), tCore.P (G.obj X)) :
+    liftCore G hF ⋙ ιCore ≅ G :=
+  NatIso.ofComponents (fun X => ιCoreObjCoreMkIso _ (hF X)) (by aesop_cat)
 
 end FilteredTriangulated
 
