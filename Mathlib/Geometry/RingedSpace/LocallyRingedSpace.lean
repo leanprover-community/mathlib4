@@ -79,6 +79,7 @@ structure Hom (X Y : LocallyRingedSpace.{u})
 abbrev Hom.val {X Y : LocallyRingedSpace.{u}} (f : X.Hom Y) :
   X.toSheafedSpace ⟶ Y.toSheafedSpace := f.1
 
+@[simp, nolint simpVarHead]
 lemma Hom.val_mk {X Y : LocallyRingedSpace.{u}}
     (f : X.toPresheafedSpace.Hom Y.toPresheafedSpace) (hf) :
   Hom.val ⟨f, hf⟩ = f := rfl
