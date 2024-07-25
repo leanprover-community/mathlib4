@@ -117,4 +117,3 @@ lemma dvd_mul_sub_mul_mul_gcd_of_dvd {p a b c d x y : R} [IsDomain R] [GCDMonoid
     dvd_mul_sub_mul_mul_right_of_dvd h1 h2⟩
 
 end CommRing
-#lint
