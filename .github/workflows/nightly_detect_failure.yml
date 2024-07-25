@@ -22,7 +22,7 @@ jobs:
         type: 'stream'
         topic: 'Mathlib status updates'
         content: |
-          ❌ The latest CI for Mathlib's branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}).
+          ❌ The latest CI for Mathlib's branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})).
 
   handle_success:
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'nightly-testing' }}
@@ -50,6 +50,7 @@ jobs:
               git tag "nightly-testing-${version}"
               git push origin "nightly-testing-${version}"
               hash="$(git rev-parse "nightly-testing-${version}")"
+              printf 'SHA=%s\n' "${hash}" >> "${GITHUB_ENV}"
               curl -X POST "http://speed.lean-fro.org/mathlib4/api/queue/commit/e7b27246-a3e6-496a-b552-ff4b45c7236e/$hash" -u "admin:${{ secrets.SPEED }}"
           fi
         else
@@ -97,13 +98,13 @@ jobs:
         }
         response = client.get_messages(request)
         messages = response['messages']
-        if not messages or messages[0]['content'] != "✅ The latest CI for Mathlib's branch#nightly-testing has succeeded!":
+        if not messages or messages[0]['content'] != f"✅ The latest CI for Mathlib's branch#nightly-testing has succeeded! ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }}))":
             # Post the success message
             request = {
                 'type': 'stream',
                 'to': 'nightly-testing',
                 'topic': 'Mathlib status updates',
-                'content': "✅ The latest CI for Mathlib's branch#nightly-testing has succeeded!"
+                'content': f"✅ The latest CI for Mathlib's branch#nightly-testing has succeeded! ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }}))"
             }
             result = client.send_message(request)
             print(result)
@@ -176,6 +177,7 @@ jobs:
       env:
         BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
         BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
+        SHA: ${{ env.SHA }}
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
       shell: python
       run: |
@@ -185,7 +187,8 @@ jobs:
         current_version = os.getenv('NIGHTLY')
         bump_version = os.getenv('BUMP_VERSION')
         bump_branch = os.getenv('BUMP_BRANCH')
-        print(f'Current version: {current_version}, Bump version: {bump_version}')
+        sha = os.getenv('SHA')
+        print(f'Current version: {current_version}, Bump version: {bump_version}, SHA: {sha}')
         if current_version > bump_version:
             print('Lean toolchain in `nightly-testing` is ahead of the bump branch.')
             # Get the last message in the 'Mathlib bump branch reminders' topic
@@ -199,7 +202,7 @@ jobs:
             response = client.get_messages(request)
             messages = response['messages']
             bump_branch_suffix = bump_branch.replace('bump/', '')
-            payload = f"🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing, and then PR that to {bump_branch}. "
+            payload = f"🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing (specifically {sha}), and then PR that to {bump_branch}. "
             payload += "To do so semi-automatically, run the following script from mathlib root:\n\n"
             payload += f"```bash\n./scripts/create-adaptation-pr.sh {bump_branch_suffix} {current_version}\n```\n"
             # Only post if the message is different
