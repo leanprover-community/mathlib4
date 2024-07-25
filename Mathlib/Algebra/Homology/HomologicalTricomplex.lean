@@ -757,8 +757,7 @@ lemma ιTotal₁₂OrZero_totalAssociatorX_hom :
   · rw [K.ιTotal₁₂OrZero_eq_zero c₁₂ c i₁ i₂ i₃ j h, zero_comp,
       K.ιTotal₂₃OrZero_eq_zero c₂₃ c i₁ i₂ i₃ j]
     intro h'
-    refine' h _
-    rw [ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c, h']
+    exact h (by rw [ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c, h'])
 
 @[reassoc (attr := simp)]
 lemma totalAssociatorX_hom_d₁' :
