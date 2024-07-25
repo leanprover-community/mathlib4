@@ -406,6 +406,9 @@ theorem map_id : s.map (RingHom.id R) = s :=
 theorem map_map (g : S →+* T) (f : R →+* S) : (s.map f).map g = s.map (g.comp f) :=
   SetLike.coe_injective <| Set.image_image _ _ _
 
+theorem map_toSubmonoid (f : R →+* S) (s : Subsemiring R) :
+    (s.map f).toSubmonoid = s.toSubmonoid.map f := rfl
+
 theorem map_le_iff_le_comap {f : R →+* S} {s : Subsemiring R} {t : Subsemiring S} :
     s.map f ≤ t ↔ s ≤ t.comap f :=
   Set.image_subset_iff
@@ -506,9 +509,19 @@ theorem sInf_toSubmonoid (s : Set (Subsemiring R)) :
   mk'_toSubmonoid _ _
 
 @[simp]
+theorem iInf_toSubmonoid {ι : Sort*} (s : ι → Subsemiring R) :
+    (iInf s).toSubmonoid = ⨅ i, (s i).toSubmonoid := by
+  rw [iInf, sInf_toSubmonoid, iInf_range]
+
+@[simp]
 theorem sInf_toAddSubmonoid (s : Set (Subsemiring R)) :
     (sInf s).toAddSubmonoid = ⨅ t ∈ s, Subsemiring.toAddSubmonoid t :=
   mk'_toAddSubmonoid _ _
+
+@[simp]
+theorem iInf_toAddSubmonoid {ι : Sort*} (s : ι → Subsemiring R) :
+    (iInf s).toAddSubmonoid = ⨅ i, (s i).toAddSubmonoid := by
+  rw [iInf, sInf_toAddSubmonoid, iInf_range]
 
 /-- Subsemirings of a semiring form a complete lattice. -/
 instance : CompleteLattice (Subsemiring R) :=
@@ -837,26 +850,14 @@ theorem map_iSup {ι : Sort*} (f : R →+* S) (s : ι → Subsemiring R) :
 
 theorem map_inf (s t : Subsemiring R) (f : R →+* S) (hf : Function.Injective f) :
     (s ⊓ t).map f = s.map f ⊓ t.map f := by
-  ext
-  simp only [mem_map, mem_inf]
-  constructor
-  · rintro ⟨a, ⟨ha, hb⟩, rfl⟩
-    exact ⟨⟨a, ha, rfl⟩, ⟨a, hb, rfl⟩⟩
-  · rintro ⟨⟨a, ha⟩, ⟨b, hb⟩⟩
-    exact ⟨a, ⟨ha.1, hf (show f a = f b by rw [ha.2, hb.2]) ▸ hb.1⟩, ha.2⟩
+  apply toSubmonoid_injective
+  exact Submonoid.map_inf s.toSubmonoid t.toSubmonoid f hf
 
 theorem map_iInf {ι : Sort*} [Nonempty ι] (f : R →+* S) (hf : Function.Injective f)
     (s : ι → Subsemiring R) : (iInf s).map f = ⨅ i, (s i).map f := by
-  ext
-  simp only [iInf, mem_map, mem_sInf, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-  refine ⟨?_, fun h ↦ ?_⟩
-  · rintro ⟨a, ha, rfl⟩ i
-    exact ⟨a, ha i, rfl⟩
-  · obtain ⟨b⟩ := ‹Nonempty ι›
-    obtain ⟨y, -, rfl⟩ := h b
-    refine ⟨y, fun a ↦ ?_, rfl⟩
-    obtain ⟨z, h1, h2⟩ := h a
-    exact hf h2 ▸ h1
+  apply toSubmonoid_injective
+  rw [iInf_toSubmonoid, map_toSubmonoid, iInf_toSubmonoid]
+  exact Submonoid.map_iInf f hf (toSubmonoid ∘ s)
 
 theorem comap_inf (s t : Subsemiring S) (f : R →+* S) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
   (gc_map_comap f).u_inf
