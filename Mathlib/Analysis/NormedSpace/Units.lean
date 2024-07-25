@@ -98,7 +98,7 @@ open scoped Classical
 
 open Asymptotics Filter Metric Finset Ring
 
-theorem inverse_one_sub (t : R) (h : ‖t‖ < 1) : inverse (1 - t) = ↑(Units.oneSub t h)⁻¹ := by
+theorem inverse_oneSub (t : R) (h : ‖t‖ < 1) : inverse (1 - t) = ↑(Units.oneSub t h)⁻¹ := by
   rw [← inverse_unit (Units.oneSub t h), Units.val_oneSub]
 
 /-- The formula `Ring.inverse (x + t) = Ring.inverse (1 + x⁻¹ * t) * x⁻¹` holds for `t` sufficiently
@@ -112,17 +112,17 @@ theorem inverse_add (x : Rˣ) :
   rw [← x.val_add t ht, inverse_unit, Units.add, Units.copy_eq, mul_inv_rev, Units.val_mul,
     ← inverse_unit, Units.val_oneSub, sub_neg_eq_add]
 
-theorem inverse_one_sub_nth_order' (n : ℕ) {t : R} (ht : ‖t‖ < 1) :
+theorem inverse_oneSub_nth_order' (n : ℕ) {t : R} (ht : ‖t‖ < 1) :
     inverse ((1 : R) - t) = (∑ i ∈ range n, t ^ i) + t ^ n * inverse (1 - t) :=
   have := NormedRing.summable_geometric_of_norm_lt_one t ht
-  calc inverse (1 - t) = ∑' i : ℕ, t ^ i := inverse_one_sub t ht
+  calc inverse (1 - t) = ∑' i : ℕ, t ^ i := inverse_oneSub t ht
     _ = ∑ i ∈ range n, t ^ i + ∑' i : ℕ, t ^ (i + n) := (sum_add_tsum_nat_add _ this).symm
     _ = (∑ i ∈ range n, t ^ i) + t ^ n * inverse (1 - t) := by
-      simp only [inverse_one_sub t ht, add_comm _ n, pow_add, this.tsum_mul_left]; rfl
+      simp only [inverse_oneSub t ht, add_comm _ n, pow_add, this.tsum_mul_left]; rfl
 
-theorem inverse_one_sub_nth_order (n : ℕ) :
+theorem inverse_oneSub_nth_order (n : ℕ) :
     ∀ᶠ t in 𝓝 0, inverse ((1 : R) - t) = (∑ i ∈ range n, t ^ i) + t ^ n * inverse (1 - t) :=
-  Metric.eventually_nhds_iff.2 ⟨1, one_pos, fun t ht ↦ inverse_one_sub_nth_order' n <| by
+  Metric.eventually_nhds_iff.2 ⟨1, one_pos, fun t ht ↦ inverse_oneSub_nth_order' n <| by
     rwa [← dist_zero_right]⟩
 
 
@@ -135,19 +135,20 @@ theorem inverse_add_nth_order (x : Rˣ) (n : ℕ) :
       (∑ i ∈ range n, (-↑x⁻¹ * t) ^ i) * ↑x⁻¹ + (-↑x⁻¹ * t) ^ n * inverse (x + t) := by
   have hzero : Tendsto (-(↑x⁻¹ : R) * ·) (𝓝 0) (𝓝 0) :=
     (mulLeft_continuous _).tendsto' _ _ <| mul_zero _
-  filter_upwards [inverse_add x, hzero.eventually (inverse_one_sub_nth_order n)] with t ht ht'
+  filter_upwards [inverse_add x, hzero.eventually (inverse_oneSub_nth_order n)] with t ht ht'
   rw [neg_mul, sub_neg_eq_add] at ht'
   conv_lhs => rw [ht, ht', add_mul, ← neg_mul, mul_assoc]
   rw [ht]
 
-theorem inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t => 1 : R → ℝ) := by
+theorem inverse_oneSub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t => 1 : R → ℝ) := by
+
   simp only [IsBigO, IsBigOWith, Metric.eventually_nhds_iff]
   refine ⟨‖(1 : R)‖ + 1, (2 : ℝ)⁻¹, by norm_num, fun t ht ↦ ?_⟩
   rw [dist_zero_right] at ht
   have ht' : ‖t‖ < 1 := by
     have : (2 : ℝ)⁻¹ < 1 := by cancel_denoms
     linarith
-  simp only [inverse_one_sub t ht', norm_one, mul_one, Set.mem_setOf_eq]
+  simp only [inverse_oneSub t ht', norm_one, mul_one, Set.mem_setOf_eq]
   change ‖∑' n : ℕ, t ^ n‖ ≤ _
   have := NormedRing.tsum_geometric_of_norm_lt_one t ht'
   have : (1 - ‖t‖)⁻¹ ≤ 2 := by
@@ -163,7 +164,7 @@ theorem inverse_add_norm (x : Rˣ) : (fun t : R => inverse (↑x + t)) =O[𝓝 0
   simp only [← sub_neg_eq_add, ← neg_mul]
   have hzero : Tendsto (-(↑x⁻¹ : R) * ·) (𝓝 0) (𝓝 0) :=
     (mulLeft_continuous _).tendsto' _ _ <| mul_zero _
-  exact (inverse_one_sub_norm.comp_tendsto hzero).mul (isBigO_const_const _ one_ne_zero _)
+  exact (inverse_oneSub_norm.comp_tendsto hzero).mul (isBigO_const_const _ one_ne_zero _)
 
 /-- The function
 `fun t ↦ Ring.inverse (x + t) - (∑ i ∈ Finset.range n, (- x⁻¹ * t) ^ i) * x⁻¹`
