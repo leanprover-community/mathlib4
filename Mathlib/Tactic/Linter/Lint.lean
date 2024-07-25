@@ -248,7 +248,6 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
         let contents ← IO.FS.readFile fname
         -- `impMods` is the syntax for the modules imported in the current file
         let (impMods, _) ← Parser.parseHeader (Parser.mkInputContext contents fname)
-        logInfoAt stx m!"parsed imports\n{impMods}"
         return impMods
       else return stx
     let sstr := stx.getSubstring?
