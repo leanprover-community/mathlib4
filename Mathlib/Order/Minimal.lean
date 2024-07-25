@@ -282,7 +282,6 @@ section Image
 variable {f : α → β} {r : α → α → Prop} {s : β → β → Prop}
 
 section
-set_option debug.byAsSorry false
 
 variable {x : Set α} (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) {a : α}
 

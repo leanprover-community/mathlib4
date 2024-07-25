@@ -461,9 +461,6 @@ section ConstructLeft
 variable {F_obj : C → D}
 variable (e : ∀ X Y, (F_obj X ⟶ Y) ≃ (X ⟶ G.obj Y))
 
-private theorem he' {X Y Y'} (f g) : (e X Y').symm (f ≫ G.map g) = (e X Y).symm f ≫ g := by
-  rw [Equiv.symm_apply_eq, he]; simp
-
 /-- Construct a left adjoint functor to `G`, given the functor's value on objects `F_obj` and
 a bijection `e` between `F_obj X ⟶ Y` and `X ⟶ G.obj Y` satisfying a naturality law
 `he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.map g`.
@@ -488,7 +485,9 @@ def adjunctionOfEquivLeft : leftAdjointOfEquiv e he ⊣ G :=
   mkOfHomEquiv
     { homEquiv := e
       homEquiv_naturality_left_symm := fun {X'} {X} {Y} f g => by
-        have := @he' C _ D _ G F_obj e he
+        have {X : C} {Y Y' : D} (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
+            (e X Y').symm (f ≫ G.map g) = (e X Y).symm f ≫ g := by
+          rw [Equiv.symm_apply_eq, he]; simp
         erw [← this, ← Equiv.apply_eq_iff_eq (e X' Y)]
         simp only [leftAdjointOfEquiv_obj, Equiv.apply_symm_apply, assoc]
         congr
@@ -504,7 +503,8 @@ section ConstructRight
 variable {G_obj : D → C}
 variable (e : ∀ X Y, (F.obj X ⟶ Y) ≃ (X ⟶ G_obj Y))
 
-private theorem he'' {X' X Y} (f g) : F.map f ≫ (e X Y).symm g = (e X' Y).symm (f ≫ g) := by
+private theorem he'' (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g)
+    {X' X Y} (f g) : F.map f ≫ (e X Y).symm g = (e X' Y).symm (f ≫ g) := by
   rw [Equiv.eq_symm_apply, he]; simp
 
 /-- Construct a right adjoint functor to `F`, given the functor's value on objects `G_obj` and
@@ -522,12 +522,11 @@ def rightAdjointOfEquiv (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X
       rw [← assoc, he'' e he, comp_id, Equiv.symm_apply_apply]
     simp
 
-variable (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g)
-
 /-- Show that the functor given by `rightAdjointOfEquiv` is indeed right adjoint to `F`. Dual
 to `adjunctionOfEquivRight`. -/
 @[simps!]
-def adjunctionOfEquivRight : F ⊣ (rightAdjointOfEquiv e he) :=
+def adjunctionOfEquivRight (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g) :
+    F ⊣ (rightAdjointOfEquiv e he) :=
   mkOfHomEquiv
     { homEquiv := e
       homEquiv_naturality_left_symm := by
