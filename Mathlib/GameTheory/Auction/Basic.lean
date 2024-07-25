@@ -61,12 +61,12 @@ auction, game theory, economics, bidding, valuation
 
 open Classical
 
-/- The Auction structure for participants `I` -/
+/- `v` is the valuation for participants `I` -/
 variable {I : Type*} [Fintype I] [Nontrivial I] (v : I → ℝ)
-
 
 namespace Auction
 
+/- `b` is the bidding function that maps participant to a real number bid. -/
 variable (b : I → ℝ)
 
 /-!### Helper Functions and Definitions -/
