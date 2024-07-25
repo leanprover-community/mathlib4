@@ -119,6 +119,9 @@ instance algHomClass : AlgHomClass (A →A[R] B) R A B where
   map_zero f       := map_zero f.toAlgHom
   commutes f r     := f.toAlgHom.commutes r
 
+@[simp]
+theorem toAlgHom_mk (f : A →A[R] B) : f.toAlgHom = f := rfl
+
 @[simp, norm_cast]
 theorem toAlgHom_inj {f g : A →A[R] B} : (f : A →ₐ[R] B) = g ↔ f = g :=   by
   cases f; cases g; simp only [mk.injEq]; exact Eq.congr_right rfl
@@ -454,7 +457,7 @@ theorem _root_.Subalgebra.coe_valA (p : Subalgebra R A) :
 theorem _root_.Subalgebra.coe_valA' (p : Subalgebra R A) : ⇑p.valA = p.subtype :=
   rfl
 
-@[simp] -- @[norm_cast] -- Porting note: A theorem with this can't have a rhs starting with `↑`.
+@[simp]
 theorem _root_.Subalgebra.valA_apply (p : Subalgebra R A) (x : p) : p.valA x = x :=
   rfl
 
