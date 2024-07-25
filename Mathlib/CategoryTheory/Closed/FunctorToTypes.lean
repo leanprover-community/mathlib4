@@ -38,17 +38,54 @@ structure Hom₂ (F G : C ⥤ D) (A : C ⥤ Type w) where
   naturality {c d : C} (f : c ⟶ d) (a : A.obj c) :
     F.map f ≫ app d (A.map f a) = app c a ≫ G.map f := by aesop_cat
 
+namespace Hom₂
+
+variable (F G : C ⥤ D)
+
+attribute [reassoc (attr := simp)] naturality
+
+variable {F G} in
+lemma congr_app {A : C ⥤ Type w} {f g : Hom₂ F G A} (h : f = g) (X : C)
+    (a : A.obj X) : f.app X a = g.app X a := by subst h; rfl
+
+@[simps]
+def id (A : C ⥤ Type w) : Hom₂ F F A where
+  app _ _ := 𝟙 _
+
+variable {F G}
+
+variable {A : C ⥤ Type w}
+
+@[simps]
+def comp {M : C ⥤ D} (f : Hom₂ F G A) (g : Hom₂ G M A) : Hom₂ F M A where
+  app X a := f.app X a ≫ g.app X a
+
+/-- -/
+@[simps]
+def map (x : Hom₂ F G A) {A' : C ⥤ Type w} (f : A' ⟶ A) : Hom₂ F G A' where
+  app Δ a := x.app Δ (f.app Δ a)
+  naturality {Δ Δ'} φ a := by
+    dsimp
+    rw [← x.naturality φ (f.app Δ a), FunctorToTypes.naturality _ _ f φ a]
+
+@[simps]
+def ofNatTrans (f : F ⟶ G) : Hom₂ F G A where
+  app X _ := f.app X
+
+end Hom₂
+
+@[simps!]
 def hom₂Functor (F G : C ⥤ D) : (C ⥤ Type w)ᵒᵖ ⥤ Type max w v' u where
   obj A := Hom₂ F G A.unop
-  map {A A'} f x :=
-    { app := fun X a ↦ x.app X (f.unop.app _ a)
-      naturality := fun {X Y} φ a ↦ by
-        dsimp
-        rw [← Hom₂.naturality]
-        congr 2
-        exact congr_fun (f.unop.naturality φ) a }
+  map f x := x.map f.unop
 
 def ihom (F G : C ⥤ D) : C ⥤ Type max u v v' := coyoneda.rightOp ⋙ hom₂Functor.{v} F G
+
+variable {F G} in
+@[ext]
+lemma ihom_ext {X : C} {x y : (ihom F G).obj X}
+    (h : ∀ (Y : C) (f : X ⟶ Y), x.app Y f = (@Hom₂.app C _ D _ F G _ y Y f)) : x = y :=
+  Hom₂.ext _ _ (by ext; apply h)
 
 end Functor
 
