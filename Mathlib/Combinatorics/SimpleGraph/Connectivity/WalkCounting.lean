@@ -172,21 +172,17 @@ instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v 
   c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) $ by simp)
     (fun _ _ _ _ ↦ Subsingleton.elim _ _)
 
-lemma odd_card_odd_components (ho : Odd (Nat.card V)) :
+lemma odd_card_iff_odd_components : Odd (Nat.card V) ↔
     Odd (Nat.card ({(c : ConnectedComponent G) | Odd (Nat.card c.supp)})) := by
-  by_contra! hc
-  rw [Nat.card_eq_fintype_card,
-    ← (set_fintype_card_eq_univ_iff _).mpr G.iUnion_connectedComponentSupp,
-    ← Set.toFinset_card, Nat.odd_iff_not_even] at ho
-  apply ho
-  rw [Nat.even_iff_not_odd, Set.toFinset_iUnion ConnectedComponent.supp,Finset.card_biUnion
+  rw [Nat.card_eq_fintype_card]
+  simp only [← (set_fintype_card_eq_univ_iff _).mpr G.iUnion_connectedComponentSupp,
+    ConnectedComponent.mem_supp_iff, Fintype.card_subtype_compl,
+    ← Set.toFinset_card, Set.toFinset_iUnion ConnectedComponent.supp]
+  rw [Finset.card_biUnion
     (fun x _ y _ hxy ↦ Set.disjoint_toFinset.mpr (pairwise_disjoint_supp_connectedComponent _ hxy))]
-  simp_rw [Set.toFinset_card, Fintype.card_eq_nat_card]
-  simp only [Finset.odd_sum_iff_odd_card_odd, Finset.subtype_univ, Finset.card_univ,
-    Nat.card_eq_fintype_card]
-  simp only [Nat.card_eq_fintype_card] at hc
-  rw [Fintype.card_ofFinset] at hc
-  exact hc
+  simp_rw [Set.toFinset_card, ← Nat.card_eq_fintype_card]
+  rw [Nat.card_eq_fintype_card, Fintype.card_ofFinset]
+  exact (Finset.odd_sum_iff_odd_card_odd (fun x : G.ConnectedComponent ↦ Nat.card x.supp))
 
 end Finite
 

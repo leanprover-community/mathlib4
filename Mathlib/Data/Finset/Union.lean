@@ -233,6 +233,5 @@ lemma disjoint_biUnion_right (s : Finset β) (t : Finset α) (f : α → Finset 
     Disjoint s (t.biUnion f) ↔ ∀ i ∈ t, Disjoint s (f i) := by
   simpa only [_root_.disjoint_comm] using disjoint_biUnion_left t f s
 
-
 end BUnion
 end Finset
