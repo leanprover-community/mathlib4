@@ -241,6 +241,16 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- The linter still lints the message guarded by `#guard_msgs`.
     if stx.isOfKind ``Lean.guardMsgsCmd then
       return
+    -- if the linter reached the end of the file, then we scan the `import` syntax instead
+    let stx := ← do
+      if stx.isOfKind ``Lean.Parser.Command.eoi then
+        let fname ← getFileName
+        let contents ← IO.FS.readFile fname
+        -- `impMods` is the syntax for the modules imported in the current file
+        let (impMods, _) ← Parser.parseHeader (Parser.mkInputContext contents fname)
+        logInfoAt stx m!"parsed imports\n{impMods}"
+        return impMods
+      else return stx
     let sstr := stx.getSubstring?
     let fm ← getFileMap
     let longLines := ((sstr.getD default).splitOn "\n").filter fun line =>
