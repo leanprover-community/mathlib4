@@ -352,16 +352,6 @@ def NormalExpr.rightUnitor (f : Mor₁) : NormalExpr :=
 def NormalExpr.rightUnitorInv (f : Mor₁) : NormalExpr :=
   .nil <| .atom <| .rightUnitorInv f
 
-/-- Return `η` for `η ▷ g₁ ▷ ... ▷ gₙ`. -/
-def WhiskerRightExpr.atom : WhiskerRightExpr → Atom
-  | WhiskerRightExpr.of η => η
-  | WhiskerRightExpr.whisker η _ => η.atom
-
-/-- Return `η` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
-def WhiskerLeftExpr.atom : WhiskerLeftExpr → Atom
-  | WhiskerLeftExpr.of η => η.atom
-  | WhiskerLeftExpr.whisker _ η => η.atom
-
 /-- Construct a `NormalExpr` expression from a `WhiskerLeftExpr` expression. -/
 def NormalExpr.of (η : WhiskerLeftExpr) : MetaM NormalExpr := do
   return .cons (.id (← η.src)) η (.nil (.id (← η.tgt)))
@@ -525,9 +515,9 @@ theorem evalWhiskerRightExprAux_of (η : g ⟶ h) (f : C) :
     η ▷ f = 𝟙 _ ≫ η ▷ f ≫ 𝟙 _ := by
   simp
 
-theorem evalWhiskerRightExprAux_cons {η : g ⟶ h} {ηs : h ⟶ i}
-    {ηs' : h ⊗ f ⟶ i ⊗ f} {η₁ : g ⊗ (h ⊗ f) ⟶ h ⊗ (i ⊗ f)}
-    {η₂ : g ⊗ (h ⊗ f) ⟶ (h ⊗ i) ⊗ f} {η₃ : (g ⊗ h) ⊗ f ⟶ (h ⊗ i) ⊗ f}
+theorem evalWhiskerRightExprAux_cons {η : g ⟶ h} {ηs : i ⟶ j}
+    {ηs' : i ⊗ f ⟶ j ⊗ f} {η₁ : g ⊗ (i ⊗ f) ⟶ h ⊗ (j ⊗ f)}
+    {η₂ : g ⊗ (i ⊗ f) ⟶ (h ⊗ j) ⊗ f} {η₃ : (g ⊗ i) ⊗ f ⟶ (h ⊗ j) ⊗ f}
     (pf_ηs' : ηs ▷ f = ηs') (pf_η₁ : (𝟙 _ ≫ η ≫ 𝟙 _) ⊗ ηs' = η₁)
     (pf_η₂ : η₁ ≫ (α_ _ _ _).inv = η₂) (pf_η₃ : (α_ _ _ _).hom ≫ η₂ = η₃) :
     (η ⊗ ηs) ▷ f = η₃ := by
