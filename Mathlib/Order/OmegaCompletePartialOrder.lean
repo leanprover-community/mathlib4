@@ -931,7 +931,7 @@ theorem ωSup_iterate_mem_fixedPoint (h : x ≤ f x) :
       rw [this]
       apply le_ωSup
 
-/-- The supremum of iterating a function on x arbitrary often is smaller than any prefixed point-/
+/-- The supremum of iterating a function on x arbitrary often is smaller than any prefixed point. A prefixed point is a value a with f a ≤ a.-/
 theorem ωSup_iterate_le_prefixedPoint (h : x ≤ f x) {a : α}
     (h_a : f a ≤ a) (h_x_le_a : x ≤ a) :
     ωSup (iterateChain f x h) ≤ a := by
