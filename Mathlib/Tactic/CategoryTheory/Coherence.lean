@@ -3,12 +3,10 @@ Copyright (c) 2022. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
-import Mathlib.CategoryTheory.Monoidal.Free.Basic
+import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.Lean.Meta
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
-
-#align_import category_theory.monoidal.coherence from "leanprover-community/mathlib"@"f187f1074fa1857c94589cc653c786cadc4c35ff"
 
 /-!
 # A `coherence` tactic for monoidal categories
@@ -24,11 +22,6 @@ in a monoidal category which are built out of associators and unitors
 are equal.
 
 -/
-
-set_option autoImplicit true
-
--- Porting note: restore when ported
--- import Mathlib.CategoryTheory.Bicategory.CoherenceTactic
 
 universe v u
 
@@ -103,7 +96,8 @@ end lifting
 open Lean Meta Elab Tactic
 
 /-- Helper function for throwing exceptions. -/
-def exception (g : MVarId) (msg : MessageData) : MetaM α := throwTacticEx `monoidal_coherence g msg
+def exception {α : Type} (g : MVarId) (msg : MessageData) : MetaM α :=
+  throwTacticEx `monoidal_coherence g msg
 
 /-- Helper function for throwing exceptions with respect to the main goal. -/
 def exception' (msg : MessageData) : TacticM Unit := do
@@ -125,8 +119,8 @@ def mkProjectMapExpr (e : Expr) : TermElabM Expr := do
 def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 512 (synthInstance.maxSize.get opts))) do
-  -- TODO: is this `dsimp only` step necessary? It doesn't appear to be in the tests below.
-  let (ty, _) ← dsimp (← g.getType) (← Simp.Context.ofNames [] true)
+  let (ty, _) ← dsimp (← g.getType)
+    { simpTheorems := #[.addDeclToUnfoldCore {} ``MonoidalCoherence.hom] }
   let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
   let projectMap_lhs ← mkProjectMapExpr lhs
   let projectMap_rhs ← mkProjectMapExpr rhs
@@ -188,7 +182,7 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
     (max 256 (synthInstance.maxSize.get opts))) do
   evalTactic (← `(tactic|
     (simp (config := {failIfUnchanged := false}) only
-      [monoidalComp, Category.assoc, MonoidalCoherence.hom]) <;>
+      [monoidalComp, Category.assoc, MonoidalCoherence.hom, BicategoricalCoherence.hom]) <;>
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
     (simp (config := {failIfUnchanged := false}) only
       [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂])))
@@ -288,10 +282,7 @@ syntax (name := coherence) "coherence" : tactic
 elab_rules : tactic
 | `(tactic| coherence) => do
   evalTactic (← `(tactic|
-    (simp (config := {failIfUnchanged := false}) only [bicategoricalComp,
-      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
-      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom',
-      monoidalComp]);
+    (simp (config := {failIfUnchanged := false}) only [bicategoricalComp, monoidalComp]);
     whisker_simps (config := {failIfUnchanged := false});
     monoidal_simps (config := {failIfUnchanged := false})))
   coherence_loop

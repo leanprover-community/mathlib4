@@ -53,11 +53,11 @@ and `pf` is a proof that `e = e'`.
 
 -/
 
-namespace Mathlib.Tactic.Monoidal
-
 open Lean Meta Elab
 open CategoryTheory
 open Mathlib.Tactic.Coherence
+
+namespace Mathlib.Tactic.Monoidal
 
 /-- The context for evaluating expressions. -/
 structure Context where
@@ -149,6 +149,8 @@ inductive StructuralAtom : Type
   | rightUnitor (f : Mor₁) : StructuralAtom
   /-- The expression for the inverse of the right unitor `(ρ_ f).inv`. -/
   | rightUnitorInv (f : Mor₁) : StructuralAtom
+  /-- Expressions for `α` in the monoidal composition `η ⊗≫ θ := η ≫ α ≫ θ`. -/
+  | monoidalCoherence (f g : Mor₁) (e : Expr) : StructuralAtom
   deriving Inhabited
 
 /-- Construct a `StructuralAtom` expression from a Lean expression. -/
@@ -172,7 +174,11 @@ def structuralAtom? (e : Expr) : MetaM (Option StructuralAtom) := do
     | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) =>
       return some <| .rightUnitorInv (← toMor₁ f)
     | _ => return none
-  | _ => return none
+  | _ =>
+    match (← whnfR e).getAppFnArgs with
+    | (``MonoidalCoherence.hom, #[_, _, f, g, inst]) =>
+      return some <| .monoidalCoherence (← toMor₁ f) (← toMor₁ g) inst
+    | _ => return none
 
 /-- Expressions for atomic non-structural 2-morphisms. -/
 structure Atom where
@@ -216,8 +222,6 @@ inductive Structural : Type
   | whiskerRight (η : Structural) (f : Mor₁) : Structural
   /-- Expressions for the tensor `α ⊗ β`. -/
   | tensorHom (α β : Structural) : Structural
-  /-- Expressions for `α` in the monoidal composition `η ⊗≫ θ := η ≫ α ≫ θ`. -/
-  | monoidalCoherence (f g : Mor₁) (e : Expr) : Structural
   deriving Inhabited
 
 /-- Normalized expressions for 2-morphisms. -/
@@ -284,6 +288,7 @@ def StructuralAtom.src : StructuralAtom → Mor₁
   | .leftUnitorInv f => f
   | .rightUnitor f => f.comp Mor₁.id
   | .rightUnitorInv f => f
+  | .monoidalCoherence f _ _ => f
 
 /-- The codomain of a 2-morphism. -/
 def StructuralAtom.tgt : StructuralAtom → Mor₁
@@ -293,6 +298,7 @@ def StructuralAtom.tgt : StructuralAtom → Mor₁
   | .leftUnitorInv f => Mor₁.id.comp f
   | .rightUnitor f => f
   | .rightUnitorInv f => f.comp Mor₁.id
+  | .monoidalCoherence _ g _ => g
 
 /-- The domain of a 2-morphism. -/
 def Structural.src : Structural → Mor₁
@@ -302,7 +308,6 @@ def Structural.src : Structural → Mor₁
   | .whiskerLeft f η => f.comp η.src
   | .whiskerRight η f => η.src.comp f
   | .tensorHom α β => α.src.comp β.src
-  | .monoidalCoherence f _ _ => f
 
 /-- The codomain of a 2-morphism. -/
 def Structural.tgt : Structural → Mor₁
@@ -312,7 +317,6 @@ def Structural.tgt : Structural → Mor₁
   | .whiskerLeft f η => f.comp η.tgt
   | .whiskerRight η f => η.tgt.comp f
   | .tensorHom α β => α.tgt.comp β.tgt
-  | .monoidalCoherence _ g _ => g
 
 /-- The domain of a 2-morphism. -/
 def NormalExpr.src : NormalExpr → Mor₁
@@ -348,21 +352,15 @@ def NormalExpr.rightUnitor (f : Mor₁) : NormalExpr :=
 def NormalExpr.rightUnitorInv (f : Mor₁) : NormalExpr :=
   .nil <| .atom <| .rightUnitorInv f
 
-/-- Construct a `Structural` expression from a Lean expression for a structural 2-morphism. -/
-partial def structural? (e : Expr) : MetaM Structural := do
-  match (← whnfR e).getAppFnArgs with
-  | (``CategoryStruct.comp, #[_, _, _, α, β]) =>
-    return .comp (← structural? α) (← structural? β)
-  | (``CategoryStruct.id, #[_, f]) => return .id (← toMor₁ f)
-  | (``MonoidalCategoryStruct.whiskerLeft, #[f, η]) =>
-    return .whiskerLeft (← toMor₁ f) (← structural? η)
-  | (``MonoidalCategoryStruct.whiskerRight, #[η, f]) =>
-    return .whiskerRight (← structural? η) (← toMor₁ f)
-  | (``MonoidalCoherence.hom, #[_, _, f, g, inst]) =>
-    return .monoidalCoherence (← toMor₁ f) (← toMor₁ g) inst
-  | _ => match ← structuralAtom? e with
-    | some η => return .atom η
-    | none => throwError "not a structural 2-morphism"
+/-- Return `η` for `η ▷ g₁ ▷ ... ▷ gₙ`. -/
+def WhiskerRightExpr.atom : WhiskerRightExpr → Atom
+  | WhiskerRightExpr.of η => η
+  | WhiskerRightExpr.whisker η _ => η.atom
+
+/-- Return `η` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
+def WhiskerLeftExpr.atom : WhiskerLeftExpr → Atom
+  | WhiskerLeftExpr.of η => η.atom
+  | WhiskerLeftExpr.whisker _ η => η.atom
 
 /-- Construct a `NormalExpr` expression from a `WhiskerLeftExpr` expression. -/
 def NormalExpr.of (η : WhiskerLeftExpr) : MetaM NormalExpr := do
@@ -390,7 +388,9 @@ def structuralOfMonoidalComp (C e : Expr) : MetaM Structural := do
   let αg := mkAppN (.const ``CategoryStruct.comp [v, u]) #[C, instC, X, Y, Z, α₀, g]
   let fαg := mkAppN (.const ``CategoryStruct.comp [v, u]) #[C, instC, W, X, Z, f, αg]
   _ ← isDefEq e fαg
-  structural? α₀
+  match ← structuralAtom? α₀ with
+  | some η => return .atom η
+  | none => throwError "not a structural 2-morphism"
 
 section
 
@@ -627,6 +627,8 @@ def StructuralAtom.e : StructuralAtom → MonoidalM Expr
     mkAppM ``Iso.hom #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
   | .rightUnitorInv f => do
     mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
+  | .monoidalCoherence _ _ e => do
+    mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, e]
 
 /-- Extract a Lean expression from a `Structural` expression. -/
 partial def Structural.e : Structural → MonoidalM Expr
@@ -636,8 +638,6 @@ partial def Structural.e : Structural → MonoidalM Expr
   | .whiskerLeft f η => do mkAppM ``MonoidalCategoryStruct.whiskerLeft #[← f.e, ← η.e]
   | .whiskerRight η f => do mkAppM ``MonoidalCategoryStruct.whiskerRight #[← η.e, ← f.e]
   | .tensorHom α β => do mkAppM ``MonoidalCategoryStruct.tensorHom #[← α.e, ← β.e]
-  | .monoidalCoherence _ _ e => do
-    mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, e]
 
 /-- Extract a Lean expression from a `WhiskerRightExpr` expression. -/
 def WhiskerRightExpr.e : WhiskerRightExpr → MonoidalM Expr
@@ -878,7 +878,7 @@ open Mathlib.Tactic.Monoidal
 elab "normalize% " t:term:51 : term => do
   let e ← Lean.Elab.Term.elabTerm t none
   let some ctx ← mkContext? e
-    | throwError "not a morphism"
+    | throwError "{← ppExpr e} is not a morphism"
   MonoidalM.run ctx do (← eval e).expr.e
 
 theorem mk_eq {α : Type _} (a b a' b' : α) (ha : a = a') (hb : b = b') (h : a' = b') : a = b := by
