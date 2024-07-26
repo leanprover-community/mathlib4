@@ -6,7 +6,7 @@ Authors: Jireh Loreaux
 import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.Topology.ContinuousFunction.Compact
 import Mathlib.Topology.ContinuousFunction.ContinuousMapZero
-import Mathlib.Topology.ContinuousFunction.FunctionalCalculus
+import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unital
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-!
@@ -14,10 +14,11 @@ import Mathlib.Topology.UniformSpace.CompactConvergence
 
 This file defines a generic API for the *continuous functional calculus* in *non-unital* algebras
 which is suitable in a wide range of settings. The design is intended to match as closely as
-possible that for unital algebras in `Mathlib.Topology.ContinuousFunction.FunctionalCalculus`.
-Changes to either file should be mirrored in its counterpart whenever possible. The underlying
-reasons for the design decisions in the unital case apply equally in the non-unital case. See the
-module documentation in that file for more information.
+possible that for unital algebras in
+`Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unital`.  Changes to either file should
+be mirrored in its counterpart whenever possible. The underlying reasons for the design decisions in
+the unital case apply equally in the non-unital case. See the module documentation in that file for
+more information.
 
 A continuous functional calculus for an element `a : A` in a non-unital topological `R`-algebra is
 a continuous extension of the polynomial functional calculus (i.e., `Polynomial.aeval`) for
@@ -181,7 +182,7 @@ junk value `0`.
 
 This is the primary declaration intended for widespread use of the continuous functional calculus
 for non-unital algebras, and all the API applies to this declaration. For more information, see the
-module documentation for `Topology.ContinuousFunction.FunctionalCalculus`. -/
+module documentation for `Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unital`. -/
 noncomputable irreducible_def cfcₙ (f : R → R) (a : A) : A :=
   if h : p a ∧ ContinuousOn f (σₙ R a) ∧ f 0 = 0
     then cfcₙHom h.1 ⟨⟨_, h.2.1.restrict⟩, h.2.2⟩
