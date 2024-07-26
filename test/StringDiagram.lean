@@ -25,7 +25,7 @@ lemma left_triangle {X Y : C} (η : 𝟙_ _ ⟶ X ⊗ Y) (ε : Y ⊗ X ⟶ 𝟙_
       exact w.elim
 
 /- Instead of writing `with_panel_widgets` everywhere, you can also use this command.  -/
-show_panel_widgets [local StringDiagram, SelectionPanel]
+show_panel_widgets [local StringDiagram, local SelectionPanel]
 
 lemma yang_baxter {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ V₁) (w : False) :
     R V₁ V₂ ▷ V₃ ≫ (α_ _ ..).hom ≫ _ ◁ R _ _ ≫ (α_ _ ..).inv ≫ R _ _ ▷ _ ≫ (α_ _ ..).hom =
