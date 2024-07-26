@@ -179,8 +179,7 @@ theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformContinuous  :
   have hn_ne : ∀ s, Set.Nonempty {n : ℕ | (a s) ^ n.succ ∈ I} := fun s ↦ by
     rcases hpow' s with ⟨n, hn⟩
     use n
-    simp only [Set.mem_setOf_eq]
-    refine hn n.succ (Nat.le_succ n)
+    simp only [Set.mem_setOf_eq, hn n.succ (Nat.le_succ n)]
   have hn : Set.Finite (n.support) := by
     apply @Finite.Set.subset  _ _ _ tendsto_zero
     intro s
@@ -242,18 +241,28 @@ theorem _root_.MvPolynomial.coeToMvPowerSeries_denseInducing :
     coeToMvPowerSeries_denseRange
 
 variable (φ a)
-/-- Evaluation of power series at adequate elements -/
-noncomputable def eval₂ : MvPowerSeries σ R → S :=
-  DenseInducing.extend coeToMvPowerSeries_denseInducing (MvPolynomial.eval₂ φ a)
-
-/-- Evaluation of power series at adequate elements,
-alternate definition that coincides with evaluation on MvPolynomial  -/
-noncomputable def eval₂' (f : MvPowerSeries σ R) :
-    S := by
+/-- Evaluation of power series. Meaningful on adequate elements or on `MvPolynomial`)  -/
+noncomputable def eval₂ (f : MvPowerSeries σ R) : S := by
   let hp := fun (p : MvPolynomial σ R) ↦ p = f
   classical
   exact if (Classical.epsilon hp = f) then (MvPolynomial.eval₂ φ a (Classical.epsilon hp))
     else DenseInducing.extend coeToMvPowerSeries_denseInducing (MvPolynomial.eval₂ φ a) f
+
+theorem eval₂_coe (f : MvPolynomial σ R) :
+    MvPowerSeries.eval₂ φ a f = MvPolynomial.eval₂ φ a f := by
+  have hf := Classical.epsilon_spec
+    (p := fun (p : MvPolynomial σ R) ↦ p = (f : MvPowerSeries σ R)) ⟨f, rfl⟩
+  rw [eval₂, if_pos hf]
+  apply congr_arg
+  rw [← MvPolynomial.coe_inj, hf]
+
+theorem eval₂_C (r : R) :
+    eval₂ φ a (C σ R r) = φ r := by
+  rw [← coe_C, eval₂_coe, MvPolynomial.eval₂_C]
+
+theorem eval₂_X (s : σ) :
+    eval₂ φ a (X s) = a s := by
+  rw [← coe_X, eval₂_coe, MvPolynomial.eval₂_X]
 
 variable {φ a}
 /-- Evaluation of power series at adequate elements, as a `RingHom` -/
@@ -264,13 +273,26 @@ noncomputable def eval₂Hom :
     coeToMvPowerSeries_denseRange
     (coeToMvPowerSeries_uniformContinuous hφ ha)
 
-theorem coe_eval₂Hom :
-    ⇑(eval₂Hom hφ ha) = eval₂ φ a := by
+theorem eval₂Hom_apply (f : MvPowerSeries σ R) :
+    eval₂Hom hφ ha f = DenseInducing.extend coeToMvPowerSeries_denseInducing (MvPolynomial.eval₂ φ a) f :=
   rfl
 
+theorem coe_eval₂Hom :
+    ⇑(eval₂Hom hφ ha) = eval₂ φ a := by
+  ext f
+  let hf :=  fun (p : MvPolynomial σ R) ↦ p = f
+  simp only [eval₂Hom_apply, eval₂]
+  split_ifs with h
+  · conv_lhs => rw [← h]
+    simpa only [MvPolynomial.coe_eval₂Hom, coeToMvPowerSeries.ringHom_apply]
+      using DenseInducing.extend_eq coeToMvPowerSeries_denseInducing
+        (coeToMvPowerSeries_uniformContinuous hφ ha).continuous (Classical.epsilon hf)
+  · rfl
+
 theorem uniformContinuous_eval₂ :
-    UniformContinuous (eval₂ φ a) :=
-  uniformContinuous_uniformly_extend
+    UniformContinuous (eval₂ φ a) := by
+  rw [← coe_eval₂Hom hφ ha]
+  exact uniformContinuous_uniformly_extend
     coeToMvPowerSeries_uniformInducing
     coeToMvPowerSeries_denseRange
     (coeToMvPowerSeries_uniformContinuous hφ ha)
@@ -279,47 +301,13 @@ theorem continuous_eval₂ :
     Continuous (eval₂ φ a : MvPowerSeries σ R → S) :=
   (uniformContinuous_eval₂ hφ ha).continuous
 
-theorem eval₂_coe (p : MvPolynomial σ R) :
-    MvPowerSeries.eval₂ φ a p = MvPolynomial.eval₂ φ a p := by
-  simp only [eval₂]
-  apply DenseInducing.extend_eq
-    coeToMvPowerSeries_denseInducing
-    (coeToMvPowerSeries_uniformContinuous hφ ha).continuous
-
-theorem eval₂'_coe (f : MvPolynomial σ R) :
-    MvPowerSeries.eval₂' φ a f = MvPolynomial.eval₂ φ a f := by
-  have hf : (Classical.epsilon fun (p : MvPolynomial σ R) ↦ p = (f : MvPowerSeries σ R)) =
-      (f : MvPowerSeries σ R) := by
-    apply Classical.epsilon_spec (p := fun (p : MvPolynomial σ R) ↦
-      p = (f : MvPowerSeries σ R))
-    use f
-  simp only [eval₂']
-  rw [if_pos hf]
-  apply congr_arg
-  rw [← MvPolynomial.coe_inj, hf]
-
-theorem eval₂_C (r : R) :
-    eval₂ φ a (C σ R r) = φ r := by
-  rw [← coe_C, eval₂_coe hφ ha, MvPolynomial.eval₂_C]
-
-theorem eval₂'_C (r : R)  :
-    eval₂' φ a (C σ R r) = φ r := by
-  rw [← coe_C, eval₂'_coe, MvPolynomial.eval₂_C]
-
-theorem eval₂_X (s : σ) :
-    eval₂ φ a (X s) = a s := by
-  rw [← coe_X, eval₂_coe hφ ha, MvPolynomial.eval₂_X]
-
-theorem eval₂'_X (s : σ) :
-    eval₂' φ a (X s) = a s := by
-  rw [← coe_X, eval₂'_coe, MvPolynomial.eval₂_X]
-
 variable (f : MvPowerSeries σ R) (d : σ →₀ ℕ)
 
 theorem hasSum_eval₂ (f : MvPowerSeries σ R) :
     HasSum
     (fun (d : σ →₀ ℕ) ↦ φ (coeff R d f) * (d.prod fun s e => (a s) ^ e))
     (MvPowerSeries.eval₂ φ a f) := by
+  rw [← coe_eval₂Hom hφ ha] -- eval₂Hom_apply hφ ha]
   convert (hasSum_of_monomials_self f).map (eval₂Hom hφ ha) (continuous_eval₂ hφ ha) with d
   simp only [Function.comp_apply, coe_eval₂Hom, ← MvPolynomial.coe_monomial,
     eval₂_coe hφ ha, eval₂_monomial]
