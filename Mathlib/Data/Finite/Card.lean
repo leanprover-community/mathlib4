@@ -188,13 +188,15 @@ theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + 
 
 namespace Finite
 
-variable {s t : Set α} (ht : t.Finite)
+variable {s t : Set α}
 
-theorem card_lt_card (hsub : s ⊂ t) : Nat.card s < Nat.card t := by
+theorem card_lt_card (ht : t.Finite) (hsub : s ⊂ t) : Nat.card s < Nat.card t := by
   have : Fintype t := Finite.fintype ht
   have : Fintype s := Finite.fintype (subset ht (subset_of_ssubset hsub))
   simp only [Nat.card_eq_fintype_card]
   exact Set.card_lt_card hsub
+
+variable (ht : t.Finite)
 
 theorem eq_of_subset_of_card_le (hsub : s ⊆ t) (hcard : Nat.card t ≤ Nat.card s) : s = t :=
   (eq_or_ssubset_of_subset hsub).elim id fun h ↦ absurd hcard <| not_le_of_lt <| ht.card_lt_card h
