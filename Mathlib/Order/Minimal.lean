@@ -395,17 +395,19 @@ theorem IsAntichain.maximal_mem_iff (hs : IsAntichain (· ≤ ·) s) : Maximal (
 
 /-- If `t` is an antichain shadowing and including the set of maximal elements of `s`,
 then `t` *is* the set of maximal elements of `s`. -/
-theorem IsAntichain.eq_maximals (ht : IsAntichain (· ≤ ·) t) (h : ∀ x, Maximal (· ∈ s) x → x ∈ t)
-    (hs : ∀ a ∈ t, ∃ b, b ≤ a ∧ Maximal (· ∈ s) b) : {x | Maximal (· ∈ s) x} = t := by
+theorem IsAntichain.eq_setOf_maximal (ht : IsAntichain (· ≤ ·) t)
+    (h : ∀ x, Maximal (· ∈ s) x → x ∈ t) (hs : ∀ a ∈ t, ∃ b, b ≤ a ∧ Maximal (· ∈ s) b) :
+    {x | Maximal (· ∈ s) x} = t := by
   refine Set.ext fun x ↦ ⟨h _, fun hx ↦ ?_⟩
   obtain ⟨y, hyx, hy⟩ := hs x hx
   rwa [← ht.eq (h y hy) hx hyx]
 
 /-- If `t` is an antichain shadowed by and including the set of minimal elements of `s`,
 then `t` *is* the set of minimal elements of `s`. -/
-theorem IsAntichain.eq_minimals (ht : IsAntichain (· ≤ ·) t) (h : ∀ x, Minimal (· ∈ s) x → x ∈ t)
-    (hs : ∀ a ∈ t, ∃ b, a ≤ b ∧ Minimal (· ∈ s) b) : {x | Minimal (· ∈ s) x} = t :=
-  ht.to_dual.eq_maximals h hs
+theorem IsAntichain.eq_setOf_minimal (ht : IsAntichain (· ≤ ·) t)
+    (h : ∀ x, Minimal (· ∈ s) x → x ∈ t) (hs : ∀ a ∈ t, ∃ b, a ≤ b ∧ Minimal (· ∈ s) b) :
+    {x | Minimal (· ∈ s) x} = t :=
+  ht.to_dual.eq_setOf_maximal h hs
 
 end Preorder
 
