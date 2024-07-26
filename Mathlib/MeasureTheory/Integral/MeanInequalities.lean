@@ -79,8 +79,8 @@ theorem lintegral_mul_le_one_of_lintegral_rpow_eq_one {p q : ℝ} (hpq : p.IsCon
 def funMulInvSnorm (f : α → ℝ≥0∞) (p : ℝ) (μ : Measure α) : α → ℝ≥0∞ := fun a =>
   f a * ((∫⁻ c, f c ^ p ∂μ) ^ (1 / p))⁻¹
 
-theorem fun_eq_funMulInvSnorm_mul_snorm {p : ℝ} (f : α → ℝ≥0∞) (hf_nonzero : (∫⁻ a, f a ^ p ∂μ) ≠ 0)
-    (hf_top : (∫⁻ a, f a ^ p ∂μ) ≠ ⊤) {a : α} :
+theorem fun_eq_funMulInvSnorm_mul_eLpNorm {p : ℝ} (f : α → ℝ≥0∞)
+    (hf_nonzero : (∫⁻ a, f a ^ p ∂μ) ≠ 0) (hf_top : (∫⁻ a, f a ^ p ∂μ) ≠ ⊤) {a : α} :
     f a = funMulInvSnorm f p μ a * (∫⁻ c, f c ^ p ∂μ) ^ (1 / p) := by
   simp [funMulInvSnorm, mul_assoc, ENNReal.inv_mul_cancel, hf_nonzero, hf_top]
 
@@ -110,8 +110,8 @@ theorem lintegral_mul_le_Lp_mul_Lq_of_ne_zero_of_ne_top {p q : ℝ} (hpq : p.IsC
     (∫⁻ a : α, (f * g) a ∂μ) =
         ∫⁻ a : α, (funMulInvSnorm f p μ * funMulInvSnorm g q μ) a * (npf * nqg) ∂μ := by
       refine lintegral_congr fun a => ?_
-      rw [Pi.mul_apply, fun_eq_funMulInvSnorm_mul_snorm f hf_nonzero hf_nontop,
-        fun_eq_funMulInvSnorm_mul_snorm g hg_nonzero hg_nontop, Pi.mul_apply]
+      rw [Pi.mul_apply, fun_eq_funMulInvSnorm_mul_eLpNorm f hf_nonzero hf_nontop,
+        fun_eq_funMulInvSnorm_mul_eLpNorm g hg_nonzero hg_nontop, Pi.mul_apply]
       ring
     _ ≤ npf * nqg := by
       rw [lintegral_mul_const' (npf * nqg) _
@@ -348,7 +348,7 @@ theorem lintegral_mul_rpow_le_lintegral_rpow_mul_lintegral_rpow {p q : ℝ}
   ext1 a
   rw [← ENNReal.rpow_mul, hpq.sub_one_mul_conj]
 
-theorem lintegral_rpow_add_le_add_snorm_mul_lintegral_rpow_add {p q : ℝ}
+theorem lintegral_rpow_add_le_add_eLpNorm_mul_lintegral_rpow_add {p q : ℝ}
     (hpq : p.IsConjExponent q) {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
     (hf_top : (∫⁻ a, f a ^ p ∂μ) ≠ ⊤) (hg : AEMeasurable g μ) (hg_top : (∫⁻ a, g a ^ p ∂μ) ≠ ⊤) :
     (∫⁻ a, (f + g) a ^ p ∂μ) ≤
@@ -405,7 +405,7 @@ private theorem lintegral_Lp_add_le_aux {p q : ℝ} (hpq : p.IsConjExponent q) {
     (∫⁻ a : α, (f + g) a ^ p ∂μ) ≤
       ((∫⁻ a : α, f a ^ p ∂μ) ^ (1 / p) + (∫⁻ a : α, g a ^ p ∂μ) ^ (1 / p)) *
         (∫⁻ a : α, (f + g) a ^ p ∂μ) ^ (1 / q) :=
-    lintegral_rpow_add_le_add_snorm_mul_lintegral_rpow_add hpq hf hf_top hg hg_top
+    lintegral_rpow_add_le_add_eLpNorm_mul_lintegral_rpow_add hpq hf hf_top hg hg_top
   have h_one_div_q : 1 / q = 1 - 1 / p := by
     nth_rw 2 [← hpq.inv_add_inv_conj]
     ring
