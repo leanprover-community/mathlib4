@@ -111,7 +111,7 @@ theorem pairwiseDisjoint_leftCoset_cover_const_of_index_eq (hind : H.index = s.c
   rw [Fintype.bijective_iff_surjective_and_card]
   constructor
   · rwa [leftCoset_cover_const_iff_surjOn, Set.surjOn_iff_surjective] at hcovers
-  · simp only [Fintype.card_coe, ← hind, index_eq_card]
+  · simp only [Fintype.card_coe, ← hind, index_eq_card, Nat.card_eq_fintype_card]
 
 end leftCoset_cover_const
 
