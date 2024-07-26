@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Topology.Algebra.Module.CharacterSpace
 import Mathlib.Analysis.NormedSpace.WeakDual
-import Mathlib.Analysis.NormedSpace.Spectrum
+import Mathlib.Analysis.Normed.Algebra.Spectrum
 
 /-!
 # Normed algebras

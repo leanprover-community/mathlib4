@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.DualNumber
-import Mathlib.Analysis.NormedSpace.TrivSqZeroExt
+import Mathlib.Analysis.Normed.Algebra.TrivSqZeroExt
 
 /-!
 # Results on `DualNumber R` related to the norm
