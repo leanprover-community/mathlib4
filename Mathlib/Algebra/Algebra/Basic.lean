@@ -476,12 +476,12 @@ end algebraMap
 section surjective
 
 variable {R S} [CommSemiring R] [Semiring S] [Algebra R S]
-variable (h : Function.Surjective (algebraMap R S))
 variable {M N} [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S M] [IsScalarTower R S M]
 variable [Module R N] [Module S N] [IsScalarTower R S N]
 
 /-- If `R →+* S` is surjective, then `S`-linear maps between modules are exactly `R`-linear maps. -/
-def LinearMap.extendScalarsOfSurjectiveEquiv : (M →ₗ[R] N) ≃ₗ[R] (M →ₗ[S] N) where
+def LinearMap.extendScalarsOfSurjectiveEquiv (h : Function.Surjective (algebraMap R S)) :
+    (M →ₗ[R] N) ≃ₗ[R] (M →ₗ[S] N) where
   toFun f := { __ := f, map_smul' := fun r x ↦ by obtain ⟨r, rfl⟩ := h r; simp }
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -490,17 +490,21 @@ def LinearMap.extendScalarsOfSurjectiveEquiv : (M →ₗ[R] N) ≃ₗ[R] (M →�
   right_inv f := rfl
 
 /-- If `R →+* S` is surjective, then `R`-linear maps are also `S`-linear. -/
-abbrev LinearMap.extendScalarsOfSurjective (l : M →ₗ[R] N) : M →ₗ[S] N :=
+abbrev LinearMap.extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (l : M →ₗ[R] N) : M →ₗ[S] N :=
   extendScalarsOfSurjectiveEquiv h l
+
+/-- If `R →+* S` is surjective, then `R`-linear isomorphisms are also `S`-linear. -/
+def LinearEquiv.extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (f : M ≃ₗ[R] N) : M ≃ₗ[S] N where
+  __ := f
+  map_smul' r x := by obtain ⟨r, rfl⟩ := h r; simp
+
+variable (h : Function.Surjective (algebraMap R S))
 
 @[simp]
 lemma LinearMap.extendScalarsOfSurjective_apply (l : M →ₗ[R] N) (x) :
     l.extendScalarsOfSurjective h x = l x := rfl
-
-/-- If `R →+* S` is surjective, then `R`-linear isomorphisms are also `S`-linear. -/
-def LinearEquiv.extendScalarsOfSurjective (f : M ≃ₗ[R] N) : M ≃ₗ[S] N where
-  __ := f
-  map_smul' r x := by obtain ⟨r, rfl⟩ := h r; simp
 
 @[simp]
 lemma LinearEquiv.extendScalarsOfSurjective_apply (f : M ≃ₗ[R] N) (x) :

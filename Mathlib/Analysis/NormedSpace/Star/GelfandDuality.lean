@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.NormedSpace.Star.Spectrum
 import Mathlib.Analysis.Normed.Group.Quotient
-import Mathlib.Analysis.NormedSpace.Algebra
+import Mathlib.Analysis.Normed.Algebra.Basic
 import Mathlib.Topology.ContinuousFunction.Units
 import Mathlib.Topology.ContinuousFunction.Compact
 import Mathlib.Topology.Algebra.Algebra
