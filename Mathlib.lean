@@ -49,6 +49,7 @@ import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.BigOperators.Ring.Multiset
+import Mathlib.Algebra.BigOperators.Ring.Nat
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.BigOperators.WithTop
 import Mathlib.Algebra.Bounds
@@ -334,6 +335,7 @@ import Mathlib.Algebra.Homology.Embedding.Boundary
 import Mathlib.Algebra.Homology.Embedding.Extend
 import Mathlib.Algebra.Homology.Embedding.IsSupported
 import Mathlib.Algebra.Homology.Embedding.Restriction
+import Mathlib.Algebra.Homology.Embedding.TruncGE
 import Mathlib.Algebra.Homology.ExactSequence
 import Mathlib.Algebra.Homology.Factorizations.Basic
 import Mathlib.Algebra.Homology.Functor
@@ -794,6 +796,7 @@ import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.AlgebraicGeometry.Modules.Presheaf
 import Mathlib.AlgebraicGeometry.Modules.Sheaf
 import Mathlib.AlgebraicGeometry.Modules.Tilde
+import Mathlib.AlgebraicGeometry.Morphisms.Affine
 import Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.Constructors
@@ -813,6 +816,7 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.IsOpenComapC
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Maximal
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Module
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
+import Mathlib.AlgebraicGeometry.PrimeSpectrum.TensorProduct
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
@@ -1106,6 +1110,11 @@ import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.MeanInequalitiesPow
 import Mathlib.Analysis.MellinInversion
 import Mathlib.Analysis.MellinTransform
+import Mathlib.Analysis.Normed.Algebra.Basic
+import Mathlib.Analysis.Normed.Algebra.Spectrum
+import Mathlib.Analysis.Normed.Algebra.TrivSqZeroExt
+import Mathlib.Analysis.Normed.Algebra.Unitization
+import Mathlib.Analysis.Normed.Algebra.UnitizationL1
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Analysis.Normed.Field.UnitBall
@@ -1144,7 +1153,6 @@ import Mathlib.Analysis.Normed.Ring.SeminormFromBounded
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.AddTorsorBases
 import Mathlib.Analysis.NormedSpace.AffineIsometry
-import Mathlib.Analysis.NormedSpace.Algebra
 import Mathlib.Analysis.NormedSpace.BallAction
 import Mathlib.Analysis.NormedSpace.Banach
 import Mathlib.Analysis.NormedSpace.BanachSteinhaus
@@ -1197,7 +1205,6 @@ import Mathlib.Analysis.NormedSpace.Ray
 import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.NormedSpace.Span
-import Mathlib.Analysis.NormedSpace.Spectrum
 import Mathlib.Analysis.NormedSpace.SphereNormEquiv
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus
@@ -1211,9 +1218,6 @@ import Mathlib.Analysis.NormedSpace.Star.Matrix
 import Mathlib.Analysis.NormedSpace.Star.Multiplier
 import Mathlib.Analysis.NormedSpace.Star.Spectrum
 import Mathlib.Analysis.NormedSpace.Star.Unitization
-import Mathlib.Analysis.NormedSpace.TrivSqZeroExt
-import Mathlib.Analysis.NormedSpace.Unitization
-import Mathlib.Analysis.NormedSpace.UnitizationL1
 import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Analysis.NormedSpace.WeakDual
 import Mathlib.Analysis.NormedSpace.WeakOperatorTopology
@@ -2193,6 +2197,7 @@ import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Palindrome
 import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Permutation
+import Mathlib.Data.List.Pi
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
@@ -2660,6 +2665,7 @@ import Mathlib.GroupTheory.Congruence.Opposite
 import Mathlib.GroupTheory.Coprod.Basic
 import Mathlib.GroupTheory.CoprodI
 import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.CosetCover
 import Mathlib.GroupTheory.Coxeter.Basic
 import Mathlib.GroupTheory.Coxeter.Inversion
 import Mathlib.GroupTheory.Coxeter.Length
@@ -3886,6 +3892,7 @@ import Mathlib.RingTheory.SimpleModule
 import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.RingTheory.Smooth.StandardSmooth
 import Mathlib.RingTheory.Support
+import Mathlib.RingTheory.SurjectiveOnStalks
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.TensorProduct.MvPolynomial
 import Mathlib.RingTheory.Trace.Basic
@@ -4345,6 +4352,7 @@ import Mathlib.Topology.Compactness.PseudometrizableLindelof
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.CompletelyRegular
 import Mathlib.Topology.Connected.Basic
+import Mathlib.Topology.Connected.Clopen
 import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Connected.Separation
