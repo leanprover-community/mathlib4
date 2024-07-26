@@ -49,7 +49,10 @@ def checkAsSorryLinter : Linter where run := withSetOptionIn fun stx ↦ do
       if let some (newCmd, id) ← toExample stx then
         let declName ← resolveGlobalConstNoOverload id
         let refType := (((← getEnv).find? declName).getD default).type
-        withScope (fun _ => { sc with currNamespace := ns }) do
+        let newScope := { sc with
+          currNamespace := ns
+          openDecls := (.simple sc.currNamespace [])::sc.openDecls }
+        withScope (fun _ => newScope) do
           let s ← modifyGet fun st => (st, { st with messages := {} })
           elabCommand newCmd
           let _ ← modifyGet fun st => (s, { st with messages := s.messages })
