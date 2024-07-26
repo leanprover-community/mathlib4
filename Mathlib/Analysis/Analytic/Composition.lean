@@ -98,7 +98,7 @@ possible compositions of `n`.
 /-- Given a formal multilinear series `p`, a composition `c` of `n` and the index `i` of a
 block of `c`, we may define a function on `Fin n → E` by picking the variables in the `i`-th block
 of `n`, and applying the corresponding coefficient of `p` to these variables. This function is
-called `p.apply_composition c v i` for `v : Fin n → E` and `i : Fin c.length`. -/
+called `p.applyComposition c v i` for `v : Fin n → E` and `i : Fin c.length`. -/
 def applyComposition (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (c : Composition n) :
     (Fin n → E) → Fin c.length → F := fun v i => p (c.blocksFun i) (v ∘ c.embedding i)
 #align formal_multilinear_series.apply_composition FormalMultilinearSeries.applyComposition
@@ -134,8 +134,8 @@ theorem removeZero_applyComposition (p : FormalMultilinearSeries 𝕜 E F) {n : 
   simp [applyComposition, zero_lt_one.trans_le (c.one_le_blocksFun i), removeZero_of_pos]
 #align formal_multilinear_series.remove_zero_apply_composition FormalMultilinearSeries.removeZero_applyComposition
 
-/-- Technical lemma stating how `p.apply_composition` commutes with updating variables. This
-will be the key point to show that functions constructed from `apply_composition` retain
+/-- Technical lemma stating how `p.applyComposition` commutes with updating variables. This
+will be the key point to show that functions constructed from `applyComposition` retain
 multilinearity. -/
 theorem applyComposition_update (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (c : Composition n)
     (j : Fin n) (v : Fin n → E) (z : E) :
@@ -880,28 +880,28 @@ By definition,
 ```
 (r.comp q).comp p n v
 = ∑_{i₁ + ... + iₖ = n} (r.comp q)ₖ (p_{i₁} (v₀, ..., v_{i₁ -1}), p_{i₂} (...), ..., p_{iₖ}(...))
-= ∑_{a : Composition n} (r.comp q) a.length (apply_composition p a v)
+= ∑_{a : Composition n} (r.comp q) a.length (applyComposition p a v)
 ```
 decomposing `r.comp q` in the same way, we get
 ```
 (r.comp q).comp p n v
 = ∑_{a : Composition n} ∑_{b : Composition a.length}
-  r b.length (apply_composition q b (apply_composition p a v))
+  r b.length (applyComposition q b (applyComposition p a v))
 ```
 On the other hand,
 ```
-r.comp (q.comp p) n v = ∑_{c : Composition n} r c.length (apply_composition (q.comp p) c v)
+r.comp (q.comp p) n v = ∑_{c : Composition n} r c.length (applyComposition (q.comp p) c v)
 ```
-Here, `apply_composition (q.comp p) c v` is a vector of length `c.length`, whose `i`-th term is
+Here, `applyComposition (q.comp p) c v` is a vector of length `c.length`, whose `i`-th term is
 given by `(q.comp p) (c.blocks_fun i) (v_l, v_{l+1}, ..., v_{m-1})` where `{l, ..., m-1}` is the
 `i`-th block in the composition `c`, of length `c.blocks_fun i` by definition. To compute this term,
-we expand it as `∑_{dᵢ : Composition (c.blocks_fun i)} q dᵢ.length (apply_composition p dᵢ v')`,
+we expand it as `∑_{dᵢ : Composition (c.blocks_fun i)} q dᵢ.length (applyComposition p dᵢ v')`,
 where `v' = (v_l, v_{l+1}, ..., v_{m-1})`. Therefore, we get
 ```
 r.comp (q.comp p) n v =
 ∑_{c : Composition n} ∑_{d₀ : Composition (c.blocks_fun 0),
   ..., d_{c.length - 1} : Composition (c.blocks_fun (c.length - 1))}
-  r c.length (λ i, q dᵢ.length (apply_composition p dᵢ v'ᵢ))
+  r c.length (λ i, q dᵢ.length (applyComposition p dᵢ v'ᵢ))
 ```
 To show that these terms coincide, we need to explain how to reindex the sums to put them in
 bijection (and then the terms we are summing will correspond to each other). Suppose we have a
