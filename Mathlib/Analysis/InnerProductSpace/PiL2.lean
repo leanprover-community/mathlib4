@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Sébastien Gouëzel, Heather Macbeth
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
-import Mathlib.Analysis.NormedSpace.PiLp
+import Mathlib.Analysis.Normed.Lp.PiLp
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.UnitaryGroup
 

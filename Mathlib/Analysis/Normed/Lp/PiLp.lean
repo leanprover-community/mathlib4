@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel, Jireh Loreaux
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Data.Fintype.Order
 import Mathlib.LinearAlgebra.Matrix.Basis
-import Mathlib.Analysis.NormedSpace.WithLp
+import Mathlib.Analysis.Normed.Lp.WithLp
 
 /-!
 # `L^p` distance on finite products of metric spaces
