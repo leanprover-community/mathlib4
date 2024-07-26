@@ -458,12 +458,7 @@ instance instIsMarkovKernelCondKernel : IsMarkovKernel (condKernel κ) := by
   split_ifs <;> infer_instance
 
 instance condKernel.instIsCondKernel : κ.IsCondKernel κ.condKernel where
-  disintegrate := by
-    rw [condKernel_def]
-    split_ifs with hα
-    · exact κ.disintegrate _
-    · have := h.countableOrCountablyGenerated.resolve_left hα
-      exact disintegrate _ _
+  disintegrate := by rw [condKernel_def]; split_ifs with hα <;> exact disintegrate _ _
 
 /-- **Disintegration** of finite kernels.
 The composition-product of `fst κ` and `condKernel κ` is equal to `κ`. -/
