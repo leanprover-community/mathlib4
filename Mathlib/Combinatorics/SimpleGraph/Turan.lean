@@ -126,10 +126,11 @@ end Defs
 
 namespace IsTuranMaximal
 
-variable {s t u : V} (h : G.IsTuranMaximal r)
+variable {s t u : V}
 
 /-- In a Turán-maximal graph, non-adjacent vertices have the same degree. -/
-lemma degree_eq_of_not_adj (hn : ¬G.Adj s t) : G.degree s = G.degree t := by
+lemma degree_eq_of_not_adj (h : G.IsTuranMaximal r) (hn : ¬G.Adj s t) :
+    G.degree s = G.degree t := by
   rw [IsTuranMaximal] at h; contrapose! h; intro cf
   wlog hd : G.degree t < G.degree s generalizing G t s
   · replace hd : G.degree s < G.degree t := lt_of_le_of_ne (le_of_not_lt hd) h
@@ -139,7 +140,8 @@ lemma degree_eq_of_not_adj (hn : ¬G.Adj s t) : G.degree s = G.degree t := by
   omega
 
 /-- In a Turán-maximal graph, non-adjacency is transitive. -/
-lemma not_adj_trans (hts : ¬G.Adj t s) (hsu : ¬G.Adj s u) : ¬G.Adj t u := by
+lemma not_adj_trans (h : G.IsTuranMaximal r) (hts : ¬G.Adj t s) (hsu : ¬G.Adj s u) :
+    ¬G.Adj t u := by
   have hst : ¬G.Adj s t := fun a ↦ hts a.symm
   have dst := h.degree_eq_of_not_adj hst
   have dsu := h.degree_eq_of_not_adj hsu
@@ -164,6 +166,8 @@ lemma not_adj_trans (hts : ¬G.Adj t s) (hsu : ¬G.Adj s u) : ¬G.Adj t u := by
     split_ifs <;> simp_all [adj_comm]
   have l3 : 0 < G.degree u := by rw [G.degree_pos_iff_exists_adj u]; use t, h.symm
   omega
+
+variable (h : G.IsTuranMaximal r)
 
 /-- In a Turán-maximal graph, non-adjacency is an equivalence relation. -/
 theorem equivalence_not_adj : Equivalence (¬G.Adj · ·) where
@@ -255,7 +259,8 @@ theorem card_parts : h.finpartition.parts.card = min (Fintype.card V) r := by
 /-- **Turán's theorem**, forward direction.
 
 Any `r + 1`-cliquefree Turán-maximal graph on `n` vertices is isomorphic to `turanGraph n r`. -/
-theorem nonempty_iso_turanGraph : Nonempty (G ≃g turanGraph (Fintype.card V) r) := by
+theorem nonempty_iso_turanGraph (h : G.IsTuranMaximal r) :
+    Nonempty (G ≃g turanGraph (Fintype.card V) r) := by
   obtain ⟨zm, zp⟩ := h.isEquipartition.exists_partPreservingEquiv
   use (Equiv.subtypeUnivEquiv mem_univ).symm.trans zm
   intro a b
