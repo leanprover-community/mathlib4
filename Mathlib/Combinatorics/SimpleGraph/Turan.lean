@@ -129,7 +129,8 @@ namespace IsTuranMaximal
 variable {s t u : V}
 
 /-- In a Turán-maximal graph, non-adjacent vertices have the same degree. -/
-lemma degree_eq_of_not_adj (hn : ¬G.Adj s t) : G.degree s = G.degree t := by
+lemma degree_eq_of_not_adj (h : G.IsTuranMaximal r) (hn : ¬G.Adj s t) :
+    G.degree s = G.degree t := by
   rw [IsTuranMaximal] at h; contrapose! h; intro cf
   wlog hd : G.degree t < G.degree s generalizing G t s
   · replace hd : G.degree s < G.degree t := lt_of_le_of_ne (le_of_not_lt hd) h
