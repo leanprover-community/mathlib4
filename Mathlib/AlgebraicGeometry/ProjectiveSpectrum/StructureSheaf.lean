@@ -11,7 +11,7 @@ import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 #align_import algebraic_geometry.projective_spectrum.structure_sheaf from "leanprover-community/mathlib"@"486cb2f3bda4a67557c6285f5bd0c3348c1eea81"
 
 /-!
-# The structure sheaf on `projective_spectrum 𝒜`.
+# The structure sheaf on `ProjectiveSpectrum 𝒜`.
 
 In `Mathlib.AlgebraicGeometry.Topology`, we have given a topology on `ProjectiveSpectrum 𝒜`; in
 this file we will construct a sheaf on `ProjectiveSpectrum 𝒜`.
