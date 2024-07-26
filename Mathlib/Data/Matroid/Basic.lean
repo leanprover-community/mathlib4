@@ -460,7 +460,7 @@ theorem eq_of_base_iff_base_forall {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.
 
 theorem base_compl_iff_maximal_disjoint_base (hB : B ⊆ M.E := by aesop_mat) :
     M.Base (M.E \ B) ↔ Maximal (fun I ↦ I ⊆ M.E ∧ ∃ B, M.Base B ∧ Disjoint I B) B := by
-  simp_rw [maximal_iff, and_iff_right hB,  and_imp, forall_exists_index]
+  simp_rw [maximal_iff, and_iff_right hB, and_imp, forall_exists_index]
   refine ⟨fun h ↦ ⟨⟨_, h, disjoint_sdiff_right⟩,
     fun I hI B' ⟨hB', hIB'⟩ hBI ↦ hBI.antisymm ?_⟩, fun ⟨⟨B', hB', hBB'⟩,h⟩ ↦ ?_⟩
   · rw [hB'.eq_of_subset_base h, ← subset_compl_iff_disjoint_right, diff_eq, compl_inter,
