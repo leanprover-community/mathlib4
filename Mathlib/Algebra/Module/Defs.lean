@@ -375,6 +375,8 @@ lemma intCast_smul_eq_zsmul (n : ℤ) (b : M) : (n : R) • b = n • b :=
     simp
   DFunLike.congr_fun this n
 
+@[deprecated (since := "2024-07-23")] alias intCast_smul := intCast_smul_eq_zsmul
+
 /-- `zsmul` is equal to any other module structure via a cast. -/
 @[deprecated intCast_smul_eq_zsmul (since := "2024-07-23")]
 theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b := (intCast_smul_eq_zsmul ..).symm

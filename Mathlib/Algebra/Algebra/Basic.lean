@@ -330,13 +330,6 @@ theorem algebra_compatible_smul (r : R) (m : M) : r • m = (algebraMap R A) r �
 theorem algebraMap_smul (r : R) (m : M) : (algebraMap R A) r • m = r • m :=
   (algebra_compatible_smul A r m).symm
 
-lemma natCast_smul {k V : Type*} [Semiring k] [AddCommMonoid V] [Module k V] (n : ℕ) (x : V) :
-    (n : k) • x = n • x := algebraMap_smul k n x
-
-theorem intCast_smul {k V : Type*} [Ring k] [AddCommGroup V] [Module k V] (r : ℤ) (x : V) :
-    (r : k) • x = r • x :=
-  algebraMap_smul k r x
-
 theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
     [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M] [NoZeroSMulDivisors R A]
     [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M := by
