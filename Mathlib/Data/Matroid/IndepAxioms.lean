@@ -97,7 +97,7 @@ structure IndepMatroid (α : Type*) where
   (Indep : Set α → Prop)
   (indep_empty : Indep ∅)
   (indep_subset : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
-  (indep_aug : ∀⦃I B⦄, Indep I → ¬ Maximal Indep I →
+  (indep_aug : ∀ ⦃I B⦄, Indep I → ¬ Maximal Indep I →
     Maximal Indep B → ∃ x ∈ B \ I, Indep (insert x I))
   (indep_maximal : ∀ X, X ⊆ E → ExistsMaximalSubsetProperty Indep X)
   (subset_ground : ∀ I, Indep I → I ⊆ E)
