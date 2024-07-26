@@ -656,8 +656,7 @@ noncomputable def sheafEquiv : Sheaf J A ≌ Sheaf K A :=
   (G.sheafAdjunctionCocontinuous A J K).toEquivalence.symm
 
 instance : (G.sheafPushforwardContinuous A J K).IsEquivalence :=
-  inferInstanceAs (Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting
-      G _ _ _).inverse.IsEquivalence
+  inferInstanceAs (IsDenseSubsite.sheafEquiv G _ _ _).inverse.IsEquivalence
 
 variable [HasWeakSheafify J A] [HasWeakSheafify K A]
 
