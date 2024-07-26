@@ -127,7 +127,7 @@ instance {S : SSet}
 
 open MonoidalCategory
 
-noncomputable section ihom_stuff
+noncomputable section ihom
 
 open MonoidalClosed
 
@@ -230,7 +230,7 @@ def ihom_braid_iso (X Y Z : SSet) : (ihom (X ⊗ Y)).obj Z ≅ (ihom (Y ⊗ X)).
 def ihom_iso' (X Y Z : SSet) : (ihom X).obj ((ihom Y).obj Z) ≅ (ihom Y).obj ((ihom X).obj Z) :=
   (ihom_iso X Y Z) ≪≫ (ihom_braid_iso X Y Z) ≪≫ (ihom_iso Y X Z).symm
 
-end ihom_stuff
+end ihom
 
 -- `0079`, hard to show
 /- B is a quasicat iff Fun(Δ[2], B) ⟶ Fun(Λ[2, 1], B) is a trivial Kan fib -/
