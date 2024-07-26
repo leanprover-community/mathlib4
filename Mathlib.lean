@@ -1165,6 +1165,7 @@ import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.Normed.Order.UpperLower
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.Normed.Ring.SeminormFromBounded
+import Mathlib.Analysis.Normed.Ring.Units
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.AddTorsorBases
 import Mathlib.Analysis.NormedSpace.AffineIsometry
@@ -1221,7 +1222,6 @@ import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.NormedSpace.Span
 import Mathlib.Analysis.NormedSpace.SphereNormEquiv
-import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Analysis.NormedSpace.WeakDual
 import Mathlib.Analysis.NormedSpace.WeakOperatorTopology
 import Mathlib.Analysis.NormedSpace.WithLp
@@ -2331,7 +2331,6 @@ import Mathlib.Data.Nat.Periodic
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Nat.PrimeFin
-import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Squarefree
@@ -3240,7 +3239,6 @@ import Mathlib.MeasureTheory.OuterMeasure.Operations
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.MeasureTheory.SetAlgebra
 import Mathlib.MeasureTheory.SetSemiring
-import Mathlib.MeasureTheory.Tactic
 import Mathlib.ModelTheory.Algebra.Field.Basic
 import Mathlib.ModelTheory.Algebra.Field.CharP
 import Mathlib.ModelTheory.Algebra.Ring.Basic
@@ -3606,6 +3604,7 @@ import Mathlib.Probability.Kernel.Basic
 import Mathlib.Probability.Kernel.Composition
 import Mathlib.Probability.Kernel.CondDistrib
 import Mathlib.Probability.Kernel.Condexp
+import Mathlib.Probability.Kernel.Disintegration.Basic
 import Mathlib.Probability.Kernel.Disintegration.CdfToKernel
 import Mathlib.Probability.Kernel.Disintegration.CondCdf
 import Mathlib.Probability.Kernel.Disintegration.Density
@@ -4563,7 +4562,6 @@ import Mathlib.Topology.Specialization
 import Mathlib.Topology.Spectral.Hom
 import Mathlib.Topology.StoneCech
 import Mathlib.Topology.Support
-import Mathlib.Topology.Tactic
 import Mathlib.Topology.TietzeExtension
 import Mathlib.Topology.UniformSpace.AbsoluteValue
 import Mathlib.Topology.UniformSpace.AbstractCompletion

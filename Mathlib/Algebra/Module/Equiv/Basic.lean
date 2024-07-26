@@ -49,7 +49,7 @@ def restrictScalars (f : M ≃ₗ[S] M₂) : M ≃ₗ[R] M₂ :=
     right_inv := f.right_inv }
 
 theorem restrictScalars_injective :
-    Function.Injective (restrictScalars R : (M ≃ₗ[S] M₂) → M ≃ₗ[R] M₂) := fun _ _ h =>
+    Function.Injective (restrictScalars R : (M ≃ₗ[S] M₂) → M ≃ₗ[R] M₂) := fun _ _ h ↦
   ext (LinearEquiv.congr_fun h : _)
 
 @[simp]
@@ -61,12 +61,12 @@ end RestrictScalars
 
 theorem _root_.Module.End_isUnit_iff [Module R M] (f : Module.End R M) :
     IsUnit f ↔ Function.Bijective f :=
-  ⟨fun h =>
+  ⟨fun h ↦
     Function.bijective_iff_has_inverse.mpr <|
       ⟨h.unit.inv,
         ⟨Module.End_isUnit_inv_apply_apply_of_isUnit h,
         Module.End_isUnit_apply_inv_apply_of_isUnit h⟩⟩,
-    fun H =>
+    fun H ↦
     let e : M ≃ₗ[R] M := { f, Equiv.ofBijective f H with }
     ⟨⟨_, e.symm, LinearMap.ext e.right_inv, LinearMap.ext e.left_inv⟩, rfl⟩⟩
 
@@ -79,8 +79,8 @@ instance automorphismGroup : Group (M ≃ₗ[R] M) where
   one := LinearEquiv.refl R M
   inv f := f.symm
   mul_assoc f g h := rfl
-  mul_one f := ext fun x => rfl
-  one_mul f := ext fun x => rfl
+  mul_one f := ext fun x ↦ rfl
+  one_mul f := ext fun x ↦ rfl
   mul_left_inv f := ext <| f.left_inv
 
 @[simp]
@@ -91,7 +91,7 @@ lemma coe_toLinearMap_one : (↑(1 : M ≃ₗ[R] M) : M →ₗ[R] M) = LinearMap
 
 @[simp]
 lemma coe_toLinearMap_mul {e₁ e₂ : M ≃ₗ[R] M} :
-    (↑(e₁ * e₂) : M →ₗ[R] M) = (e₁ : M →ₗ[R] M) * (e₂ : M →ₗ[R] M) := by
+    (↑(e₁ * e₂) : M →ₗ[R] M) = (e₁ : M →ₗ[R] M) * (e₂ : M →ₗ[R] M) :=
   rfl
 
 theorem coe_pow (e : M ≃ₗ[R] M) (n : ℕ) : ⇑(e ^ n) = e^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
@@ -122,7 +122,7 @@ protected theorem smul_def (f : M ≃ₗ[R] M) (a : M) : f • a = f a :=
 
 /-- `LinearEquiv.applyDistribMulAction` is faithful. -/
 instance apply_faithfulSMul : FaithfulSMul (M ≃ₗ[R] M) M :=
-  ⟨@fun _ _ => LinearEquiv.ext⟩
+  ⟨@fun _ _ ↦ LinearEquiv.ext⟩
 
 instance apply_smulCommClass : SMulCommClass R (M ≃ₗ[R] M) M where
   smul_comm r e m := (e.map_smul r m).symm
@@ -141,10 +141,10 @@ variable [Module R M] [Module R M₂] [Subsingleton M] [Subsingleton M₂]
 @[simps]
 def ofSubsingleton : M ≃ₗ[R] M₂ :=
   { (0 : M →ₗ[R] M₂) with
-    toFun := fun _ => 0
-    invFun := fun _ => 0
-    left_inv := fun _ => Subsingleton.elim _ _
-    right_inv := fun _ => Subsingleton.elim _ _ }
+    toFun := fun _ ↦ 0
+    invFun := fun _ ↦ 0
+    left_inv := fun _ ↦ Subsingleton.elim _ _
+    right_inv := fun _ ↦ Subsingleton.elim _ _ }
 
 @[simp]
 theorem ofSubsingleton_self : ofSubsingleton M M = refl R M := by
@@ -217,15 +217,14 @@ theorem coe_toLinearEquiv_symm (h : ∀ (c : R) (x), e (c • x) = c • e x) :
 /-- An additive equivalence between commutative additive monoids is a linear equivalence between
 ℕ-modules -/
 def toNatLinearEquiv : M ≃ₗ[ℕ] M₂ :=
-  e.toLinearEquiv fun c a => by rw [map_nsmul]
+  e.toLinearEquiv fun c a ↦ by rw [map_nsmul]
 
 @[simp]
 theorem coe_toNatLinearEquiv : ⇑e.toNatLinearEquiv = e :=
   rfl
 
 @[simp]
-theorem toNatLinearEquiv_toAddEquiv : ↑e.toNatLinearEquiv = e := by
-  ext
+theorem toNatLinearEquiv_toAddEquiv : ↑e.toNatLinearEquiv = e :=
   rfl
 
 @[simp]
@@ -256,7 +255,7 @@ variable (e : M ≃+ M₂)
 /-- An additive equivalence between commutative additive groups is a linear
 equivalence between ℤ-modules -/
 def toIntLinearEquiv : M ≃ₗ[ℤ] M₂ :=
-  e.toLinearEquiv fun c a => e.toAddMonoidHom.map_zsmul a c
+  e.toLinearEquiv fun c a ↦ e.toAddMonoidHom.map_zsmul a c
 
 @[simp]
 theorem coe_toIntLinearEquiv : ⇑e.toIntLinearEquiv = e :=
@@ -305,12 +304,12 @@ See note [bundled maps over different rings].
 @[simps]
 def ringLmapEquivSelf [Module S M] [SMulCommClass R S M] : (R →ₗ[R] M) ≃ₗ[S] M :=
   { applyₗ' S (1 : R) with
-    toFun := fun f => f 1
+    toFun := fun f ↦ f 1
     invFun := smulRight (1 : R →ₗ[R] R)
-    left_inv := fun f => by
+    left_inv := fun f ↦ by
       ext
       simp only [coe_smulRight, one_apply, smul_eq_mul, ← map_smul f, mul_one]
-    right_inv := fun x => by simp }
+    right_inv := fun x ↦ by simp }
 
 end LinearMap
 
@@ -323,10 +322,10 @@ def addMonoidHomLequivNat {A B : Type*} (R : Type*) [Semiring R] [AddCommMonoid 
     where
   toFun := AddMonoidHom.toNatLinearMap
   invFun := LinearMap.toAddMonoidHom
-  map_add' := by intros; ext; rfl
-  map_smul' := by intros; ext; rfl
-  left_inv := by intro f; ext; rfl
-  right_inv := by intro f; ext; rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /--
 The `R`-linear equivalence between additive morphisms `A →+ B` and `ℤ`-linear morphisms `A →ₗ[ℤ] B`.
@@ -337,17 +336,17 @@ def addMonoidHomLequivInt {A B : Type*} (R : Type*) [Semiring R] [AddCommGroup A
     where
   toFun := AddMonoidHom.toIntLinearMap
   invFun := LinearMap.toAddMonoidHom
-  map_add' := by intros; ext; rfl
-  map_smul' := by intros; ext; rfl
-  left_inv := by intro f; ext; rfl
-  right_inv := by intro f; ext; rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- Ring equivalence between additive group endomorphisms of an `AddCommGroup` `A` and
 `ℤ`-module endomorphisms of `A.` -/
 @[simps] def addMonoidEndRingEquivInt (A : Type*) [AddCommGroup A] :
     AddMonoid.End A ≃+* Module.End ℤ A :=
   { addMonoidHomLequivInt (B := A) ℤ with
-    map_mul' := fun _ _ => rfl }
+    map_mul' := fun _ _ ↦ rfl }
 
 namespace LinearEquiv
 
@@ -391,7 +390,6 @@ instance : Unique (M ≃ₛₗ[σ₁₂] M₂) where
   uniq _ := toLinearMap_injective (Subsingleton.elim _ _)
   default := 0
 
-
 end Module
 
 instance uniqueOfSubsingleton [Subsingleton R] [Subsingleton R₂] : Unique (M ≃ₛₗ[σ₁₂] M₂) := by
@@ -411,12 +409,8 @@ variable (V V₂ R)
   Differs from `TensorProduct.curry`. -/
 protected def curry : (V × V₂ → R) ≃ₗ[R] V → V₂ → R :=
   { Equiv.curry _ _ _ with
-    map_add' := fun _ _ => by
-      ext
-      rfl
-    map_smul' := fun _ _ => by
-      ext
-      rfl }
+    map_add' := fun _ _ ↦ rfl
+    map_smul' := fun _ _ ↦ rfl }
 
 @[simp]
 theorem coe_curry : ⇑(LinearEquiv.curry R V V₂) = curry :=
@@ -501,7 +495,7 @@ linear isomorphism between the two function spaces. -/
 def arrowCongr {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
     [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂] [Module R M₂₁]
     [Module R M₂₂] (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) : (M₁ →ₗ[R] M₂₁) ≃ₗ[R] M₂ →ₗ[R] M₂₂ where
-  toFun := fun f : M₁ →ₗ[R] M₂₁ => (e₂ : M₂₁ →ₗ[R] M₂₂).comp <| f.comp (e₁.symm : M₂ →ₗ[R] M₁)
+  toFun := fun f : M₁ →ₗ[R] M₂₁ ↦ (e₂ : M₂₁ →ₗ[R] M₂₂).comp <| f.comp (e₁.symm : M₂ →ₗ[R] M₁)
   invFun f := (e₂.symm : M₂₂ →ₗ[R] M₂₁).comp <| f.comp (e₁ : M₁ →ₗ[R] M₂)
   left_inv f := by
     ext x
@@ -571,8 +565,7 @@ theorem conj_comp (e : M ≃ₗ[R] M₂) (f g : Module.End R M) :
   arrowCongr_comp e e e f g
 
 theorem conj_trans (e₁ : M ≃ₗ[R] M₂) (e₂ : M₂ ≃ₗ[R] M₃) :
-    e₁.conj.trans e₂.conj = (e₁.trans e₂).conj := by
-  ext f x
+    e₁.conj.trans e₂.conj = (e₁.trans e₂).conj :=
   rfl
 
 @[simp]
@@ -652,7 +645,7 @@ theorem funLeft_surjective_of_injective (f : m → n) (hf : Injective f) :
     Surjective (funLeft R M f) := by
   classical
     intro g
-    refine ⟨fun x => if h : ∃ y, f y = x then g h.choose else 0, ?_⟩
+    refine ⟨fun x ↦ if h : ∃ y, f y = x then g h.choose else 0, ?_⟩
     ext
     dsimp only [funLeft_apply]
     split_ifs with w
@@ -677,10 +670,10 @@ open LinearMap
 construct a linear equivalence `(n → M) ≃ₗ[R] (m → M)` -/
 def funCongrLeft (e : m ≃ n) : (n → M) ≃ₗ[R] m → M :=
   LinearEquiv.ofLinear (funLeft R M e) (funLeft R M e.symm)
-    (LinearMap.ext fun x =>
-      funext fun i => by rw [id_apply, ← funLeft_comp, Equiv.symm_comp_self, LinearMap.funLeft_id])
-    (LinearMap.ext fun x =>
-      funext fun i => by rw [id_apply, ← funLeft_comp, Equiv.self_comp_symm, LinearMap.funLeft_id])
+    (LinearMap.ext fun x ↦
+      funext fun i ↦ by rw [id_apply, ← funLeft_comp, Equiv.symm_comp_self, LinearMap.funLeft_id])
+    (LinearMap.ext fun x ↦
+      funext fun i ↦ by rw [id_apply, ← funLeft_comp, Equiv.self_comp_symm, LinearMap.funLeft_id])
 
 @[simp]
 theorem funCongrLeft_apply (e : m ≃ n) (x : n → M) : funCongrLeft R M e x = funLeft R M e x :=
