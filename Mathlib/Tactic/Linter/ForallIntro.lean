@@ -77,6 +77,92 @@ example : True := by
   trivial
 #check Lean.Parser.Term.letIdBinder
 
+def getIntroVars : Syntax → Option (Array Syntax)
+  | `(by $first; $_*) =>
+    if introTacs.contains first.raw.getKind then
+      some (first.raw.filter (·.isOfKind `ident))
+    else
+      none
+  | _ => none
+
+inspect
+example : ∀ a b c d : Nat, a + b = c + d := by
+  skip
+  intro a b
+  intros c
+  intro
+  sorry
+
+/-
+|-node Lean.Parser.Tactic.intro, none
+|   |-atom original: ⟨⟩⟨ ⟩-- 'intro'
+|   |-node null, none
+|   |   |-ident original: ⟨⟩⟨ ⟩-- (a,a)
+|   |   |-ident original: ⟨⟩⟨\n  ⟩-- (b,b)
+
+|-node Lean.Parser.Tactic.intros, none
+|   |-atom original: ⟨⟩⟨ ⟩-- 'intros'
+|   |-node null, none
+|   |   |-ident original: ⟨⟩⟨\n  ⟩-- (c,c)
+-/
+
+def dropIntroVars : Syntax → Option Syntax
+  | stx@(.node s1 k #[intr, .node s2 `null vars]) =>
+    let varsDropFirst := vars.erase (vars.getD 0 .missing)
+    let skipStx := mkNode ``Lean.Parser.Tactic.skip #[mkAtom "skip"]
+    let newIntro : Syntax :=  -- recreate `intro [one fewer variable]`, even if input is `intros`
+      .node s1 ``Lean.Parser.Tactic.intro #[mkAtomFrom intr "intro", .node s2 `null varsDropFirst]
+    match k, vars.size with
+      | ``Lean.Parser.Tactic.intros, 0 =>
+        stx -- `intros` stays `intros`
+      | ``Lean.Parser.Tactic.intros, 1 =>
+        some skipStx -- `intros x` converts to `skip`
+      | ``Lean.Parser.Tactic.intros, _ =>
+        some newIntro -- `intros x ...` converts to `intro ...`
+      | ``Lean.Parser.Tactic.intro, 0 | ``Lean.Parser.Tactic.intro, 1 =>
+        some skipStx -- `intro` and `intro x` convert to `skip`
+      | ``Lean.Parser.Tactic.intro, _ =>
+        some newIntro -- `intro x y ...` converts to `intro y ...`
+      | _, _ => none
+  | _ => none
+
+elab "fin " cmd:command : command => do
+  elabCommand cmd
+  let haves := cmd.raw.filter fun s => (introTacs.contains (s.getKind))
+  for h in haves do
+    logInfo m!"'{h}': '{dropIntroVars h}'"
+
+
+
+
+
+example : ∀ a : Nat, (h : a = 0) → a = 0 := by
+  introv
+  intro h
+  exact h
+
+example : ∀ a : Nat, (h : a = 0) → a = 0 := by
+  intros
+  assumption
+
+example : ∀ a : Nat, (h : a = 0) → a = 0 := by
+  intro
+  intro
+  assumption
+
+
+fin
+--inspect
+example : ∀ a b c d  e : Nat, a + b = c + d + e := by
+  skip
+  intro
+  intro a b
+  intros c
+  intro
+  intros
+  sorry
+
+
 def recombineBinders
     (haveIds : TSyntaxArray `Lean.Parser.Term.letIdBinder)
     (foralls : TSyntaxArray [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder])
@@ -97,6 +183,20 @@ def allStxCore (cmd : Syntax) : Syntax → CommandElabM (Option (Syntax × Synta
     dbg_trace "bi1: '{bi1}'\nbi2: '{bi2}'\n"
     let (bi1', bi2', body', t') := recombineBinders bi1 bi2 body t
     --let ident := mkIdent `hyp
+    let t := ← match t with
+              | `(by $first; $ts*) => do
+                if introTacs.contains first.raw.getKind then
+                  return first.raw.filter (·.isOfKind `ident)
+                else
+                  return #[]
+--                Meta.inspect first
+--                match first with
+--                  | `(tactic| intros $vs) =>
+--                    dbg_trace "variables found: {vs}"
+--                    return first
+--                  | _ => dbg_trace "no vars found"; return first
+              | _ => return default
+    dbg_trace "variables found: {t}"
     let newHave := ←
       if bi2'.isEmpty then `(tactic| have $id:haveId $[$bi1']* : $body' := $t')
       else `(tactic| have $id:haveId $[$bi1']* : ∀ $[$bi2']*, $body' := $t')
@@ -133,7 +233,9 @@ elab "fh " cmd:command : command => do
 fh
 --inspect
 example : True := by
-  have (_ : Nat) : ∀ x y, x + y = 0 := by intros; sorry
+  have (_ : Nat) : ∀ x y, x + y = 0 := by
+    intros s t
+    sorry
   trivial
 
 fh
