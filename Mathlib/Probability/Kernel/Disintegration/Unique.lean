@@ -146,7 +146,7 @@ is equal to the conditional kernel of the measure `κ a` applied to `b`. -/
 lemma Kernel.condKernel_apply_eq_condKernel [CountableOrCountablyGenerated α β]
     (κ : Kernel α (β × Ω)) [IsFiniteKernel κ] (a : α) :
     (fun b ↦ Kernel.condKernel κ (a, b)) =ᵐ[Kernel.fst κ a] (κ a).condKernel :=
-  Kernel.apply_eq_measure_condKernel_of_compProd_eq (compProd_fst_condKernel κ) a
+  Kernel.apply_eq_measure_condKernel_of_compProd_eq (κ.disintegrate _) a
 
 lemma condKernel_const [CountableOrCountablyGenerated α β] (ρ : Measure (β × Ω)) [IsFiniteMeasure ρ]
     (a : α) :
