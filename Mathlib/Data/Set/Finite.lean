@@ -761,6 +761,11 @@ theorem Finite.of_preimage (h : (f ⁻¹' s).Finite) (hf : Surjective f) : s.Fin
 theorem Finite.preimage (I : Set.InjOn f (f ⁻¹' s)) (h : s.Finite) : (f ⁻¹' s).Finite :=
   (h.subset (image_preimage_subset f s)).of_finite_image I
 
+theorem Finite.preimage'  (h : s.Finite) (hf : ∀ b ∈ s, (f ⁻¹' {b}).Finite) :
+    (f ⁻¹' s).Finite := by
+  rw [← Set.biUnion_preimage_singleton]
+  exact Set.Finite.biUnion h hf
+
 protected lemma Infinite.preimage (hs : s.Infinite) (hf : s ⊆ range f) : (f ⁻¹' s).Infinite :=
   fun h ↦ hs <| finite_of_finite_preimage h hf
 
