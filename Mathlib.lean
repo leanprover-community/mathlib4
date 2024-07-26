@@ -1144,6 +1144,11 @@ import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.Analysis.Normed.Group.Tannery
 import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Analysis.Normed.Group.ZeroAtInfty
+import Mathlib.Analysis.Normed.Lp.LpEquiv
+import Mathlib.Analysis.Normed.Lp.PiLp
+import Mathlib.Analysis.Normed.Lp.ProdLp
+import Mathlib.Analysis.Normed.Lp.WithLp
+import Mathlib.Analysis.Normed.Lp.lpSpace
 import Mathlib.Analysis.Normed.MulAction
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Analysis.Normed.Order.Lattice
@@ -1180,7 +1185,6 @@ import Mathlib.Analysis.NormedSpace.HomeomorphBall
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
 import Mathlib.Analysis.NormedSpace.Int
 import Mathlib.Analysis.NormedSpace.LinearIsometry
-import Mathlib.Analysis.NormedSpace.LpEquiv
 import Mathlib.Analysis.NormedSpace.MStructure
 import Mathlib.Analysis.NormedSpace.MatrixExponential
 import Mathlib.Analysis.NormedSpace.MazurUlam
@@ -1194,11 +1198,9 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NNNorm
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
-import Mathlib.Analysis.NormedSpace.PiLp
 import Mathlib.Analysis.NormedSpace.PiTensorProduct.InjectiveSeminorm
 import Mathlib.Analysis.NormedSpace.PiTensorProduct.ProjectiveSeminorm
 import Mathlib.Analysis.NormedSpace.Pointwise
-import Mathlib.Analysis.NormedSpace.ProdLp
 import Mathlib.Analysis.NormedSpace.QuaternionExponential
 import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Analysis.NormedSpace.Ray
@@ -1221,8 +1223,6 @@ import Mathlib.Analysis.NormedSpace.Star.Unitization
 import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Analysis.NormedSpace.WeakDual
 import Mathlib.Analysis.NormedSpace.WeakOperatorTopology
-import Mathlib.Analysis.NormedSpace.WithLp
-import Mathlib.Analysis.NormedSpace.lpSpace
 import Mathlib.Analysis.ODE.Gronwall
 import Mathlib.Analysis.ODE.PicardLindelof
 import Mathlib.Analysis.Oscillation
