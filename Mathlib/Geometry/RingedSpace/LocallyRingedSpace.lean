@@ -422,45 +422,44 @@ lemma stalkMap_inv_hom_apply (e : X ≅ Y) (x : X) (y) :
 --       X.presheaf.germ (U := (Opens.map f.val.base).obj U) ⟨x, hx⟩ (f.val.c.app (op U) y) :=
 --   PresheafedSpace.stalkMap_germ_apply f.val U ⟨x, hx⟩ y
 
--- variable {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat} (h : OpenEmbedding f)
---   (V : Opens U) (x : U) (hx : x ∈ V)
+variable {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat} (h : OpenEmbedding f)
+  (V : Opens U) (x : U) (hx : x ∈ V)
 
--- /-- For an open embedding `f : U ⟶ X` and a point `x : U`,
--- we get an isomorphism between the stalk
--- of `X` at `f x` and the stalk of the restriction of `X` along `f` at t `x`. -/
--- noncomputable
--- def restrictStalkIso : (X.restrict h).presheaf.stalk x ≅ X.presheaf.stalk (f x) :=
---   X.toPresheafedSpace.restrictStalkIso h x
+/-- For an open embedding `f : U ⟶ X` and a point `x : U`, we get an isomorphism between the stalk
+of `X` at `f x` and the stalk of the restriction of `X` along `f` at t `x`. -/
+noncomputable
+def restrictStalkIso : (X.restrict h).presheaf.stalk x ≅ X.presheaf.stalk (f x) :=
+  X.toPresheafedSpace.restrictStalkIso h x
 
--- @[reassoc (attr := simp)]
--- lemma restrictStalkIso_hom_eq_germ :
---     (X.restrict h).presheaf.germ ⟨x, hx⟩ ≫ (X.restrictStalkIso h x).hom =
---       X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ :=
---   PresheafedSpace.restrictStalkIso_hom_eq_germ X.toPresheafedSpace h V x hx
+@[reassoc (attr := simp)]
+lemma restrictStalkIso_hom_eq_germ :
+    (X.restrict h).presheaf.germ ⟨x, hx⟩ ≫ (X.restrictStalkIso h x).hom =
+      X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ :=
+  PresheafedSpace.restrictStalkIso_hom_eq_germ X.toPresheafedSpace h V x hx
 
--- lemma restrictStalkIso_hom_eq_germ_apply (y) :
---     (X.restrictStalkIso h x).hom ((X.restrict h).presheaf.germ ⟨x, hx⟩ y) =
---       X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ y :=
---   PresheafedSpace.restrictStalkIso_hom_eq_germ_apply X.toPresheafedSpace h V x hx y
+lemma restrictStalkIso_hom_eq_germ_apply (y) :
+    (X.restrictStalkIso h x).hom ((X.restrict h).presheaf.germ ⟨x, hx⟩ y) =
+      X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ y :=
+  PresheafedSpace.restrictStalkIso_hom_eq_germ_apply X.toPresheafedSpace h V x hx y
 
--- @[reassoc (attr := simp)]
--- lemma restrictStalkIso_inv_eq_germ :
---     X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ ≫
---       (X.restrictStalkIso h x).inv = (X.restrict h).presheaf.germ ⟨x, hx⟩ :=
---   PresheafedSpace.restrictStalkIso_inv_eq_germ X.toPresheafedSpace h V x hx
+@[reassoc (attr := simp)]
+lemma restrictStalkIso_inv_eq_germ :
+    X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ ≫
+      (X.restrictStalkIso h x).inv = (X.restrict h).presheaf.germ ⟨x, hx⟩ :=
+  PresheafedSpace.restrictStalkIso_inv_eq_germ X.toPresheafedSpace h V x hx
 
--- lemma restrictStalkIso_inv_eq_germ_apply (y) :
---     (X.restrictStalkIso h x).inv
---       (X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ y) =
---         (X.restrict h).presheaf.germ ⟨x, hx⟩ y :=
---   PresheafedSpace.restrictStalkIso_inv_eq_germ_apply X.toPresheafedSpace h V x hx y
+lemma restrictStalkIso_inv_eq_germ_apply (y) :
+    (X.restrictStalkIso h x).inv
+      (X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ y) =
+        (X.restrict h).presheaf.germ ⟨x, hx⟩ y :=
+  PresheafedSpace.restrictStalkIso_inv_eq_germ_apply X.toPresheafedSpace h V x hx y
 
--- lemma restrictStalkIso_inv_eq_ofRestrict :
---     (X.restrictStalkIso h x).inv = (X.ofRestrict h).stalkMap x :=
---   PresheafedSpace.restrictStalkIso_inv_eq_ofRestrict X.toPresheafedSpace h x
+lemma restrictStalkIso_inv_eq_ofRestrict :
+    (X.restrictStalkIso h x).inv = (X.ofRestrict h).stalkMap x :=
+  PresheafedSpace.restrictStalkIso_inv_eq_ofRestrict X.toPresheafedSpace h x
 
--- instance ofRestrict_stalkMap_isIso : IsIso ((X.ofRestrict h).stalkMap x) :=
---   PresheafedSpace.ofRestrict_stalkMap_isIso X.toPresheafedSpace h x
+instance ofRestrict_stalkMap_isIso : IsIso ((X.ofRestrict h).stalkMap x) :=
+  PresheafedSpace.ofRestrict_stalkMap_isIso X.toPresheafedSpace h x
 
 end Stalks
 
