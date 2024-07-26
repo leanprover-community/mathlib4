@@ -62,25 +62,30 @@ instance concreteCategoryFintype : ConcreteCategory FintypeCat :=
 /- Help typeclass inference infer fullness of forgetful functor. -/
 instance : (forget FintypeCat).Full := inferInstanceAs <| FintypeCat.incl.Full
 
+attribute [local instance] ConcreteCategory.instFunLike
+
 @[simp]
-theorem id_apply (X : FintypeCat) (x : X) : (𝟙 X : X → X) x = x :=
+theorem id_apply (X : FintypeCat) (x : X) :
+    (𝟙 X) x = x :=
   rfl
 
 @[simp]
-theorem comp_apply {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
+theorem comp_apply {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g) x = g (f x) :=
   rfl
 
 @[simp]
-lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
-  congr_fun f.hom_inv_id x
+lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x := by
+  rw [← comp_apply, f.hom_inv_id, id_apply]
 
 @[simp]
-lemma inv_hom_id_apply {X Y : FintypeCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
-  congr_fun f.inv_hom_id y
+lemma inv_hom_id_apply {X Y : FintypeCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y := by
+  rw [← comp_apply, f.inv_hom_id, id_apply]
 
 -- Porting note (#10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
+  apply InducedCategory.hom_ext
   funext
   apply h
 
@@ -88,14 +93,12 @@ lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g 
 /-- Equivalences between finite types are the same as isomorphisms in `FintypeCat`. -/
 @[simps]
 def equivEquivIso {A B : FintypeCat} : A ≃ B ≃ (A ≅ B) where
-  toFun e :=
-    { hom := e
-      inv := e.symm }
+  toFun e := InducedCategory.isoMk e.toIso
   invFun i :=
     { toFun := i.hom
       invFun := i.inv
-      left_inv := congr_fun i.hom_inv_id
-      right_inv := congr_fun i.inv_hom_id }
+      left_inv := by aesop_cat
+      right_inv := by aesop_cat }
   left_inv := by aesop_cat
   right_inv := by aesop_cat
 
@@ -157,19 +160,20 @@ theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
 /-- The canonical fully faithful embedding of `Fintype.Skeleton` into `FintypeCat`. -/
 def incl : Skeleton.{u} ⥤ FintypeCat.{u} where
   obj X := FintypeCat.of (ULift (Fin X.len))
-  map f := f
+  map f := { hom := f }
 
-instance : incl.Full where map_surjective f := ⟨f, rfl⟩
+def fullyFaithfulIncl : incl.FullyFaithful where
+  preimage f := f.hom
 
-instance : incl.Faithful where
+instance : incl.Full := fullyFaithfulIncl.full
+
+instance : incl.Faithful := fullyFaithfulIncl.faithful
 
 instance : incl.EssSurj :=
   Functor.EssSurj.mk fun X =>
     let F := Fintype.equivFin X
     ⟨mk (Fintype.card X),
-      Nonempty.intro
-        { hom := F.symm ∘ ULift.down
-          inv := ULift.up ∘ F }⟩
+      Nonempty.intro (equivEquivIso (Equiv.ulift.trans F.symm))⟩
 
 noncomputable instance : incl.IsEquivalence where
 

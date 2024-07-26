@@ -80,6 +80,12 @@ lemma hom_ext {X Y : InducedCategory D F} {f g : X ⟶ Y} (h : f.hom = g.hom) :
     f = g :=
   Hom.ext _ _ h
 
+/-- Constructor for isomorphisms in the category `InducedCategory D F`. -/
+@[simps]
+def isoMk {X Y : InducedCategory D F} (e : F X ≅ F Y) : X ≅ Y where
+  hom := { hom := e.hom }
+  inv := { hom := e.inv }
+
 end InducedCategory
 
 /-- The forgetful functor from an induced category to the original category,
@@ -140,10 +146,9 @@ lemma FullSubcategory.comp_hom {X Y Z : FullSubcategory Z} (f : X ⟶ Y) (g : Y 
     (f ≫ g).hom = f.hom ≫ g.hom := rfl
 
 /-- Constructor for isomorphisms in the category `FullSubcategory Z`. -/
-@[simps]
-def FullSubcategory.isoMk {X Y : FullSubcategory Z} (e : X.obj ≅ Y.obj) : X ≅ Y where
-  hom := { hom := e.hom }
-  inv := { hom := e.inv }
+@[simps!]
+def FullSubcategory.isoMk {X Y : FullSubcategory Z} (e : X.obj ≅ Y.obj) : X ≅ Y :=
+  InducedCategory.isoMk e
 
 variable (Z)
 
