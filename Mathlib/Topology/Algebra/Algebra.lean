@@ -72,7 +72,7 @@ theorem algebraMapCLM_toLinearMap : (algebraMapCLM R A).toLinearMap = Algebra.li
 
 /-- If `R` is a discrete topological ring, then any topological ring `S` which is an `R`-algebra
 is also a topological `R`-algebra. -/
-instance DiscreteTopology.continuousSMul [TopologicalSemiring A] [DiscreteTopology R] :
+instance [TopologicalSemiring A] [DiscreteTopology R] :
     ContinuousSMul R A := continuousSMul_of_algebraMap _ _ continuous_of_discreteTopology
 
 end TopologicalAlgebra
@@ -104,14 +104,14 @@ variable [TopologicalSpace R] [TopologicalSemiring R]
 
 variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
 
-instance funLike : FunLike (A →A[R] B) A B where
+instance : FunLike (A →A[R] B) A B where
   coe f := f.toAlgHom
   coe_injective'  f g h  := by
     cases f; cases g
     simp only [mk.injEq]
     exact AlgHom.ext (congrFun h)
 
-instance algHomClass : AlgHomClass (A →A[R] B) R A B where
+instance : AlgHomClass (A →A[R] B) R A B where
   map_mul f x y    := map_mul f.toAlgHom x y
   map_one f        := map_one f.toAlgHom
   map_add f        := map_add f.toAlgHom
@@ -125,15 +125,19 @@ theorem toAlgHom_mk (f : A →A[R] B) : f.toAlgHom = f := rfl
 theorem toAlgHom_inj {f g : A →A[R] B} : (f : A →ₐ[R] B) = g ↔ f = g :=   by
   cases f; cases g; simp only [mk.injEq]; exact Eq.congr_right rfl
 
+@[simp]
 theorem coe_mk (f : A →ₐ[R] B) (h) : (mk f h : A →ₐ[R] B) = f := rfl
 
 @[simp]
 theorem coe_mk' (f : A →ₐ[R] B) (h) : (mk f h : A → B) = f := rfl
 
+@[simp, norm_cast]
+theorem coe_coe (f : A →A[R] B) : ⇑(f : A →ₐ[R] B) = f := rfl
+
 instance continuousMapClass : ContinuousMapClass (A →A[R] B) A B where
   map_continuous f := f.2
 
-@[continuity]
+@[fun_prop]
 protected theorem continuous (f : A →A[R] B) : Continuous f := f.2
 
 protected theorem uniformContinuous {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
@@ -175,20 +179,17 @@ protected theorem map_zero (f : A →A[R] B) : f (0 : A) = 0 := map_zero f
 protected theorem map_add (f : A →A[R] B) (x y : A) : f (x + y) = f x + f y := map_add f x y
 
 protected theorem map_smul (f : A →A[R] B) (c : R) (x : A) :
-    f (c • x) = c • f x := map_smul _ _ _
+    f (c • x) = c • f x :=
+  map_smul ..
 
 theorem map_smul_of_tower {R S : Type*} [CommSemiring S] [SMul R A] [Algebra S A] [SMul R B]
     [Algebra S B] [MulActionHomClass (A →A[S] B) R A B] (f : A →A[S] B) (c : R) (x : A) :
     f (c • x) = c • f x :=
   map_smul f c x
 
-@[deprecated _root_.map_sum (since := "2023-09-16")]
 protected theorem map_sum {ι : Type*} (f : A →A[R] B) (s : Finset ι) (g : ι → A) :
     f (∑ i in s, g i) = ∑ i in s, f (g i) :=
   map_sum ..
-
-@[simp, norm_cast]
-theorem coe_coe (f : A →A[R] B) : ⇑(f : A →ₐ[R] B) = f := rfl
 
 @[ext]
 theorem ext_ring [TopologicalSpace R] {f g : R →A[R] A} : f = g :=
@@ -233,22 +234,23 @@ section id
 variable [Algebra R A]
 
 /-- The identity map as a continuous algebra homomorphism. -/
-def id : A →A[R] A := ⟨AlgHom.id R A, continuous_id⟩
+protected def id : A →A[R] A := ⟨AlgHom.id R A, continuous_id⟩
 
-instance one : One (A →A[R] A) := ⟨id R A⟩
+instance : One (A →A[R] A) := ⟨ContinuousAlgHom.id R A⟩
 
-theorem one_def : (1 : A →A[R] A) = id R A := rfl
+theorem one_def : (1 : A →A[R] A) = ContinuousAlgHom.id R A := rfl
 
-theorem id_apply (x : A) : id R A x = x := rfl
-
-@[simp, norm_cast]
-theorem coe_id : ((id R A) : A →ₐ[R] A) = AlgHom.id R A:= rfl
+theorem id_apply (x : A) : ContinuousAlgHom.id R A x = x := rfl
 
 @[simp, norm_cast]
-theorem coe_id' : ⇑(id R A ) = _root_.id := rfl
+theorem coe_id : ((ContinuousAlgHom.id R A) : A →ₐ[R] A) = AlgHom.id R A:= rfl
 
 @[simp, norm_cast]
-theorem coe_eq_id {f : A →A[R] A} : (f : A →ₐ[R] A) = AlgHom.id R A ↔ f = id R A:= by
+theorem coe_id' : ⇑(ContinuousAlgHom.id R A ) = _root_.id := rfl
+
+@[simp, norm_cast]
+theorem coe_eq_id {f : A →A[R] A} :
+    (f : A →ₐ[R] A) = AlgHom.id R A ↔ f = ContinuousAlgHom.id R A:= by
   rw [← coe_id, toAlgHom_inj]
 
 @[simp]
@@ -276,16 +278,18 @@ theorem coe_comp' (h : B →A[R] C) (f : A →A[R] B) : ⇑(h.comp f) = h ∘ f 
 theorem comp_apply (g : B →A[R] C) (f : A →A[R] B) (x : A) : (g.comp f) x = g (f x) := rfl
 
 @[simp]
-theorem comp_id (f : A →A[R] B) : f.comp (id R A) = f := ext fun _x => rfl
+theorem comp_id (f : A →A[R] B) : f.comp (ContinuousAlgHom.id R A) = f :=
+  ext fun _x => rfl
 
 @[simp]
-theorem id_comp (f : A →A[R] B) : (id R B).comp f = f := ext fun _x => rfl
+theorem id_comp (f : A →A[R] B) : (ContinuousAlgHom.id R B).comp f = f :=
+  ext fun _x => rfl
 
 theorem comp_assoc {D : Type*} [Semiring D] [Algebra R D] [TopologicalSpace D] (h : C →A[R] D)
     (g : B →A[R] C) (f : A →A[R] B) : (h.comp g).comp f = h.comp (g.comp f) :=
   rfl
 
-instance instMul : Mul (A →A[R] A) := ⟨comp⟩
+instance : Mul (A →A[R] A) := ⟨comp⟩
 
 theorem mul_def (f g : A →A[R] A) : f * g = f.comp g := rfl
 
@@ -371,7 +375,7 @@ theorem coe_snd' : ⇑(snd R A B) = Prod.snd :=
   rfl
 
 @[simp]
-theorem fst_prod_snd  : (fst R A B).prod (snd R A B) = id R (A × B) :=
+theorem fst_prod_snd  : (fst R A B).prod (snd R A B) = ContinuousAlgHom.id R (A × B) :=
   ext fun ⟨_x, _y⟩ => rfl
 
 @[simp]
