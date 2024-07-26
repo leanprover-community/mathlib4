@@ -1,7 +1,7 @@
 import Mathlib.Analysis.NormedSpace.AffineIsometry
 import Mathlib.Order.Partition.Finpartition
 
-/-
+/-!
 Definition of Equidecomposability
 -/
 open Function
@@ -10,7 +10,7 @@ variable (𝕜 : Type*) {V: Type*}(P: Type*)
   [NormedField 𝕜]
   [SeminormedAddCommGroup V] [NormedSpace 𝕜 V] [PseudoMetricSpace P] [NormedAddTorsor V P]
 
-/-
+/--
 Two subsets B₁ B₂ of a pseudometric space P are equidecomposable if B₁ and B₂ can be divided into
 finitely many affinely isometric parts.
 -/
