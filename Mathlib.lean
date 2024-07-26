@@ -1108,6 +1108,11 @@ import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.MeanInequalitiesPow
 import Mathlib.Analysis.MellinInversion
 import Mathlib.Analysis.MellinTransform
+import Mathlib.Analysis.Normed.Algebra.Basic
+import Mathlib.Analysis.Normed.Algebra.Spectrum
+import Mathlib.Analysis.Normed.Algebra.TrivSqZeroExt
+import Mathlib.Analysis.Normed.Algebra.Unitization
+import Mathlib.Analysis.Normed.Algebra.UnitizationL1
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Analysis.Normed.Field.UnitBall
@@ -1146,7 +1151,6 @@ import Mathlib.Analysis.Normed.Ring.SeminormFromBounded
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.AddTorsorBases
 import Mathlib.Analysis.NormedSpace.AffineIsometry
-import Mathlib.Analysis.NormedSpace.Algebra
 import Mathlib.Analysis.NormedSpace.BallAction
 import Mathlib.Analysis.NormedSpace.Banach
 import Mathlib.Analysis.NormedSpace.BanachSteinhaus
@@ -1199,7 +1203,6 @@ import Mathlib.Analysis.NormedSpace.Ray
 import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.NormedSpace.Span
-import Mathlib.Analysis.NormedSpace.Spectrum
 import Mathlib.Analysis.NormedSpace.SphereNormEquiv
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus
@@ -1213,9 +1216,6 @@ import Mathlib.Analysis.NormedSpace.Star.Matrix
 import Mathlib.Analysis.NormedSpace.Star.Multiplier
 import Mathlib.Analysis.NormedSpace.Star.Spectrum
 import Mathlib.Analysis.NormedSpace.Star.Unitization
-import Mathlib.Analysis.NormedSpace.TrivSqZeroExt
-import Mathlib.Analysis.NormedSpace.Unitization
-import Mathlib.Analysis.NormedSpace.UnitizationL1
 import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Analysis.NormedSpace.WeakDual
 import Mathlib.Analysis.NormedSpace.WeakOperatorTopology
