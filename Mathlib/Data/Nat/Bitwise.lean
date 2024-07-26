@@ -136,11 +136,11 @@ attribute [simp] testBit_xor
 end
 
 @[simp]
-theorem bit_false : bit false = (2 * ·) :=
+theorem bit_false {n : ℕ} : bit false n = 2 * n :=
   rfl
 
 @[simp]
-theorem bit_true : bit true = (2 * · + 1) :=
+theorem bit_true {n : ℕ} : bit true n = 2 * n + 1 :=
   rfl
 
 @[simp]
