@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Star.Order
-import Mathlib.Analysis.Analysis.CstarAlgebra.Basic
+import Mathlib.Analysis.CstarAlgebra.Basic
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Data.Real.Sqrt

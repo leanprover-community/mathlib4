@@ -3,10 +3,10 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Restrict
-import Mathlib.Analysis.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Basic
-import Mathlib.Analysis.Analysis.CstarAlgebra.Spectrum
-import Mathlib.Analysis.Analysis.CstarAlgebra.Unitization
+import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Restrict
+import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Basic
+import Mathlib.Analysis.CstarAlgebra.Spectrum
+import Mathlib.Analysis.CstarAlgebra.Unitization
 import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unique
 
 /-! # Instances of the continuous functional calculus
