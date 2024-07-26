@@ -62,7 +62,7 @@ lemma quasicategory_of_filler (S : SSet)
     Quasicategory S where
   hornFilling' n i σ₀ h₀ hₙ := by
     obtain ⟨σ, h⟩ := filler σ₀ h₀ hₙ
-    refine' ⟨(S.yonedaEquiv _).symm σ, _⟩
+    refine ⟨(S.yonedaEquiv _).symm σ, ?_⟩
     apply horn.hom_ext
     intro j hj
     rw [← h j hj, NatTrans.comp_app]

@@ -3,12 +3,11 @@ Copyright (c) 2024 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import Std.Data.RBMap.Alter
-
 import Mathlib.Tactic.FunProp.Decl
 import Mathlib.Tactic.FunProp.Types
 import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Tactic.FunProp.RefinedDiscrTree
+import Batteries.Data.RBMap.Alter
 
 /-!
 ## `fun_prop` environment extensions storing theorems for `fun_prop`
@@ -182,7 +181,7 @@ structure FunctionTheorem where
   /-- function name -/
   funOrigin   : Origin
   /-- array of argument indices about which this theorem is about -/
-  mainArgs  : Array Nat
+  mainArgs    : Array Nat
   /-- total number of arguments applied to the function  -/
   appliedArgs : Nat
   /-- priority  -/
@@ -196,7 +195,8 @@ private local instance : Ord Name := ⟨Name.quickCmp⟩
 /-- -/
 structure FunctionTheorems where
   /-- map: function name → function property → function theorem -/
-  theorems : Std.RBMap Name (Std.RBMap Name (Array FunctionTheorem) compare) compare := {}
+  theorems :
+    Batteries.RBMap Name (Batteries.RBMap Name (Array FunctionTheorem) compare) compare := {}
   deriving Inhabited
 
 
@@ -330,7 +330,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       | throwError "unrecognized function property `{← ppExpr b}`"
     let funPropName := decl.funPropName
 
-    let fData? ← getFunctionData? f defaultUnfoldPred {zeta:=false}
+    let fData? ← getFunctionData? f defaultUnfoldPred {zeta := false}
 
     if let .some thmArgs ← detectLambdaTheoremArgs (← fData?.get) xs then
       return .lam {

@@ -5,9 +5,9 @@ Authors: Floris van Doorn
 -/
 
 import Lean.Elab.Exception
-import Std.Lean.NameMapAttribute
-import Std.Lean.Expr
-import Std.Tactic.Lint
+import Batteries.Lean.NameMapAttribute
+import Batteries.Lean.Expr
+import Batteries.Tactic.Lint
 
 /-!
 # `@[notation_class]` attribute for `@[simps]`
