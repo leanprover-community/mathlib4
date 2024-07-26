@@ -1091,7 +1091,7 @@ variable [Algebra Rₘ Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ] [IsSca
 variable (S Rₘ Sₘ)
 
 theorem IsLocalization.map_units_map_submonoid
-    [i: IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ] (y : M) :
+    [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ] (y : M) :
     IsUnit (algebraMap R Sₘ y) := by
   rw [IsScalarTower.algebraMap_apply _ S]
   exact IsLocalization.map_units Sₘ ⟨algebraMap R S y, Algebra.mem_algebraMapSubmonoid_of_mem y⟩
