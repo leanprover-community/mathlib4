@@ -569,6 +569,7 @@ theorem span_image' [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂
     span R₂ (f '' s) = map f (span R s) :=
   span_image _
 
+set_option debug.byAsSorry false in
 theorem apply_mem_span_image_of_mem_span [RingHomSurjective σ₁₂] (f : F) {x : M}
     {s : Set M} (h : x ∈ Submodule.span R s) : f x ∈ Submodule.span R₂ (f '' s) := by
   rw [Submodule.span_image]
