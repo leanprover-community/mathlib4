@@ -418,7 +418,7 @@ lemma stalkMap_germ' (U : Opens Y) (x : X) (hx : f.val.base x ∈ U) :
 
 @[simp]
 lemma stalkMap_germ'_apply (U : Opens Y) (x : X) (hx : f.val.base x ∈ U) (y) :
-    f.stalkMap x (Y.presheaf.germ ⟨f.val.base x, hx⟩ y) =
+    f.stalkMap x (Y.presheaf.germ (U := U) ⟨f.val.base x, hx⟩ y) =
       X.presheaf.germ (U := (Opens.map f.val.base).obj U) ⟨x, hx⟩ (f.val.c.app (op U) y) :=
   PresheafedSpace.stalkMap_germ_apply f.val U ⟨x, hx⟩ y
 
