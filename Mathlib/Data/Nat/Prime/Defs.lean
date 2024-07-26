@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Associated.Basic
+import Mathlib.Algebra.Ring.Parity
 import Mathlib.Data.Nat.GCD.Basic
 
 /-!
@@ -54,7 +55,7 @@ theorem Prime.pos {p : ℕ} (pp : Prime p) : 0 < p :=
 theorem Prime.two_le : ∀ {p : ℕ}, Prime p → 2 ≤ p
   | 0, h => (not_prime_zero h).elim
   | 1, h => (not_prime_one h).elim
-  | _ + 2, _ => le_add_self
+  | _ + 2, _ => le_add_left 2 _
 
 theorem Prime.one_lt {p : ℕ} : Prime p → 1 < p :=
   Prime.two_le
@@ -79,12 +80,12 @@ theorem Prime.eq_one_or_self_of_dvd {p : ℕ} (pp : p.Prime) (m : ℕ) (hm : m �
 theorem prime_def_lt'' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m = 1 ∨ m = p := by
   refine ⟨fun h => ⟨h.two_le, h.eq_one_or_self_of_dvd⟩, fun h => ?_⟩
   -- Porting note: needed to make ℕ explicit
-  have h1 := (@one_lt_two ℕ ..).trans_le h.1
+  have h1 := (Nat.one_lt_two).trans_le h.1
   refine ⟨mt Nat.isUnit_iff.mp h1.ne', fun a b hab => ?_⟩
   simp only [Nat.isUnit_iff]
   apply Or.imp_right _ (h.2 a _)
   · rintro rfl
-    rw [← mul_right_inj' (pos_of_gt h1).ne', ← hab, mul_one]
+    rw [← mul_right_inj' (not_eq_zero_of_lt h1), ← hab, mul_one]
   · rw [hab]
     exact dvd_mul_right _ _
 
@@ -105,7 +106,7 @@ theorem prime_def_lt' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m <
             revert p2
             decide
           · rfl
-          · exact (h le_add_self l).elim d⟩
+          · exact (h (le_add_left 2 m) l).elim d⟩
 
 theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m ≤ sqrt p → ¬m ∣ p :=
   prime_def_lt'.trans <|
@@ -117,7 +118,7 @@ theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m →
         rcases le_total m k with mk | km
         · exact this mk m2 e
         · rw [mul_comm] at e
-          refine this km (lt_of_mul_lt_mul_right ?_ (zero_le m)) e
+          refine this km (Nat.lt_of_mul_lt_mul_right (a := m) ?_) e
           rwa [one_mul, ← e]⟩
 
 theorem prime_of_coprime (n : ℕ) (h1 : 1 < n) (h : ∀ m < n, m ≠ 0 → n.Coprime m) : Prime n := by
@@ -188,7 +189,7 @@ theorem Prime.eq_two_or_odd' {p : ℕ} (hp : Prime p) : p = 2 ∨ Odd p :=
 section MinFac
 
 theorem minFac_lemma (n k : ℕ) (h : ¬n < k * k) : sqrt n - k < sqrt n + 2 - k :=
-  (tsub_lt_tsub_iff_right <| le_sqrt.2 <| le_of_not_gt h).2 <| Nat.lt_add_of_pos_right (by decide)
+  (Nat.sub_lt_sub_iff_right <| le_sqrt.2 <| le_of_not_gt h).2 <| Nat.lt_add_of_pos_right (by decide)
 
 /--
 If `n < k * k`, then `minFacAux n k = n`, if `k | n`, then `minFacAux n k = k`.
@@ -381,7 +382,7 @@ theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
     have := le_antisymm (Nat.succ_le_of_lt lb) (Nat.lt_succ_iff.mp h')
     rw [eq_comm, Nat.minFac_eq_one_iff] at this
     subst this
-    exact not_lt_of_le (le_of_dvd zero_lt_one h) one_lt_two
+    exact not_lt_of_le (le_of_dvd Nat.zero_lt_one h) Nat.one_lt_two
 
 theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
   div_lt_self (Nat.zero_lt_succ _) (minFac_prime (by
