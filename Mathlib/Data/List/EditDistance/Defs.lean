@@ -246,7 +246,7 @@ theorem suffixLevenshtein_cons₁_fst (x : α) (xs ys) :
 
 theorem suffixLevenshtein_cons_cons_fst_get_zero
     (x : α) (xs y ys) (w : 0 < (suffixLevenshtein C (x :: xs) (y :: ys)).val.length) :
-    (suffixLevenshtein C (x :: xs) (y :: ys)).1[0] =
+    (suffixLevenshtein C (x :: xs) (y :: ys)).1[0]'w =
       let ⟨dx, _⟩ := suffixLevenshtein C xs (y :: ys)
       let ⟨dy, _⟩ := suffixLevenshtein C (x :: xs) ys
       let ⟨dxy, _⟩ := suffixLevenshtein C xs ys
@@ -296,4 +296,4 @@ theorem levenshtein_cons_cons
       min (C.delete x + levenshtein C xs (y :: ys))
         (min (C.insert y + levenshtein C (x :: xs) ys)
           (C.substitute x y + levenshtein C xs ys)) :=
-  suffixLevenshtein_cons_cons_fst_get_zero _ _ _ _ _
+  suffixLevenshtein_cons_cons_fst_get_zero ..

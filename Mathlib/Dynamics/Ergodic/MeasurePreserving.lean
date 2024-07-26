@@ -120,6 +120,10 @@ theorem measure_preimage_emb {f : α → β} (hf : MeasurePreserving f μa μb)
     (hfe : MeasurableEmbedding f) (s : Set β) : μa (f ⁻¹' s) = μb s := by
   rw [← hf.map_eq, hfe.map_apply]
 
+theorem measure_preimage_equiv {f : α ≃ᵐ β} (hf : MeasurePreserving f μa μb) (s : Set β) :
+    μa (f ⁻¹' s) = μb s :=
+  measure_preimage_emb hf f.measurableEmbedding s
+
 protected theorem iterate {f : α → α} (hf : MeasurePreserving f μa μa) :
     ∀ n, MeasurePreserving f^[n] μa μa
   | 0 => MeasurePreserving.id μa
@@ -147,7 +151,8 @@ theorem exists_mem_iterate_mem_of_volume_lt_mul_volume (hf : MeasurePreserving f
   have : μ (univ : Set α) < ∑ m ∈ Finset.range n, μ (f^[m] ⁻¹' s) := by simpa [B]
   obtain ⟨i, hi, j, hj, hij, x, hxi : f^[i] x ∈ s, hxj : f^[j] x ∈ s⟩ :
       ∃ i < n, ∃ j < n, i ≠ j ∧ (f^[i] ⁻¹' s ∩ f^[j] ⁻¹' s).Nonempty := by
-    simpa using exists_nonempty_inter_of_measure_univ_lt_sum_measure μ (fun m _ ↦ A m) this
+    simpa using exists_nonempty_inter_of_measure_univ_lt_sum_measure μ
+      (fun m _ ↦ (A m).nullMeasurableSet) this
   wlog hlt : i < j generalizing i j
   · exact this j hj i hi hij.symm hxj hxi (hij.lt_or_lt.resolve_left hlt)
   refine ⟨f^[i] x, hxi, j - i, ⟨tsub_pos_of_lt hlt, lt_of_le_of_lt (j.sub_le i) hj⟩, ?_⟩

@@ -401,6 +401,10 @@ def ofStream (s : Stream' α) : Seq α :=
 instance coeStream : Coe (Stream' α) (Seq α) :=
   ⟨ofStream⟩
 
+section LazyList
+
+set_option linter.deprecated false
+
 /-- Embed a `LazyList α` as a sequence. Note that even though this
   is non-meta, it will produce infinite sequences if used with
   cyclic `LazyList`s created by meta constructions. -/
@@ -420,6 +424,8 @@ unsafe def toLazyList : Seq α → MLList Id α
     match destruct s with
     | none => .nil
     | some (a, s') => .cons a (toLazyList s')
+
+end LazyList
 
 /-- Translate a sequence to a list. This function will run forever if
   run on an infinite sequence. -/

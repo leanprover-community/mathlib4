@@ -63,7 +63,7 @@ Use `aesop_graph?` to pass along a `Try this` suggestion when using `aesop_graph
 -/
 macro (name := aesop_graph?) "aesop_graph?" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
-    aesop $c*
+    aesop? $c*
       (config := { introsTransparency? := some .default, terminal := true })
       (rule_sets := [$(Lean.mkIdent `SimpleGraph):ident]))
 

@@ -250,9 +250,8 @@ theorem preimage_comap_zeroLocus (s : Set R) : comap f ⁻¹' zeroLocus s = zero
 
 theorem comap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
     Function.Injective (comap f) := fun x y h =>
-  PrimeSpectrum.ext
-    (Ideal.comap_injective_of_surjective f hf
-      (congr_arg PrimeSpectrum.asIdeal h : (comap f x).asIdeal = (comap f y).asIdeal))
+  PrimeSpectrum.ext (Ideal.comap_injective_of_surjective f hf
+    (congr_arg PrimeSpectrum.asIdeal h : (comap f x).asIdeal = (comap f y).asIdeal))
 
 variable (S)
 
@@ -521,19 +520,8 @@ section Order
 ## The specialization order
 
 We endow `PrimeSpectrum R` with a partial order, where `x ≤ y` if and only if `y ∈ closure {x}`.
+This instance was defined in `RingTheory/PrimeSpectrum/Basic`.
 -/
-
-
-instance : PartialOrder (PrimeSpectrum R) :=
-  PartialOrder.lift asIdeal (fun _ _ => PrimeSpectrum.ext)
-
-@[simp]
-theorem asIdeal_le_asIdeal (x y : PrimeSpectrum R) : x.asIdeal ≤ y.asIdeal ↔ x ≤ y :=
-  Iff.rfl
-
-@[simp]
-theorem asIdeal_lt_asIdeal (x y : PrimeSpectrum R) : x.asIdeal < y.asIdeal ↔ x < y :=
-  Iff.rfl
 
 theorem le_iff_mem_closure (x y : PrimeSpectrum R) :
     x ≤ y ↔ y ∈ closure ({x} : Set (PrimeSpectrum R)) := by
@@ -550,14 +538,6 @@ def nhdsOrderEmbedding : PrimeSpectrum R ↪o Filter (PrimeSpectrum R) :=
 
 instance : T0Space (PrimeSpectrum R) :=
   ⟨nhdsOrderEmbedding.inj'⟩
-
-instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
-  bot := ⟨⊥, Ideal.bot_prime⟩
-  bot_le I := @bot_le _ _ _ I.asIdeal
-
-instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
-  default := ⊥
-  uniq x := PrimeSpectrum.ext ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
 
 end Order
 

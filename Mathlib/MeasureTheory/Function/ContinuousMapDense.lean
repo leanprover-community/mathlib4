@@ -61,7 +61,8 @@ open scoped ENNReal NNReal Topology BoundedContinuousFunction
 
 open MeasureTheory TopologicalSpace ContinuousMap Set Bornology
 
-variable {α : Type*} [MeasurableSpace α] [TopologicalSpace α] [T4Space α] [BorelSpace α]
+variable {α : Type*} [TopologicalSpace α] [NormalSpace α] [R1Space α]
+  [MeasurableSpace α] [BorelSpace α]
 variable {E : Type*} [NormedAddCommGroup E] {μ : Measure α} {p : ℝ≥0∞}
 
 namespace MeasureTheory
@@ -159,23 +160,23 @@ theorem Memℒp.exists_hasCompactSupport_snorm_sub_le [WeaklyLocallyCompactSpace
       ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η → snorm (s.indicator fun _x => c) p μ ≤ δ :=
     exists_snorm_indicator_le hp c δpos.ne'
   have hη_pos' : (0 : ℝ≥0∞) < η := ENNReal.coe_pos.2 ηpos
-  obtain ⟨s, st, s_compact, μs⟩ : ∃ s, s ⊆ t ∧ IsCompact s ∧ μ (t \ s) < η :=
-    ht.exists_isCompact_diff_lt htμ.ne hη_pos'.ne'
+  obtain ⟨s, st, s_compact, s_closed, μs⟩ :
+      ∃ s, s ⊆ t ∧ IsCompact s ∧ IsClosed s ∧ μ (t \ s) < η :=
+    ht.exists_isCompact_isClosed_diff_lt htμ.ne hη_pos'.ne'
   have hsμ : μ s < ∞ := (measure_mono st).trans_lt htμ
   have I1 : snorm ((s.indicator fun _y => c) - t.indicator fun _y => c) p μ ≤ δ := by
     rw [← snorm_neg, neg_sub, ← indicator_diff st]
     exact hη _ μs.le
   obtain ⟨k, k_compact, sk⟩ : ∃ k : Set α, IsCompact k ∧ s ⊆ interior k :=
     exists_compact_superset s_compact
-  rcases exists_continuous_snorm_sub_le_of_closed hp s_compact.isClosed isOpen_interior sk hsμ.ne c
-      δpos.ne' with
-    ⟨f, f_cont, I2, _f_bound, f_support, f_mem⟩
+  rcases exists_continuous_snorm_sub_le_of_closed hp s_closed isOpen_interior sk hsμ.ne c δpos.ne'
+    with ⟨f, f_cont, I2, _f_bound, f_support, f_mem⟩
   have I3 : snorm (f - t.indicator fun _y => c) p μ ≤ ε := by
     convert
       (hδ _ _
           (f_mem.aestronglyMeasurable.sub
-            (aestronglyMeasurable_const.indicator s_compact.measurableSet))
-          ((aestronglyMeasurable_const.indicator s_compact.measurableSet).sub
+            (aestronglyMeasurable_const.indicator s_closed.measurableSet))
+          ((aestronglyMeasurable_const.indicator s_closed.measurableSet).sub
             (aestronglyMeasurable_const.indicator ht))
           I2 I1).le using 2
     simp only [sub_add_sub_cancel]
