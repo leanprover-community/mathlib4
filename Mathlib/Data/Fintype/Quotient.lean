@@ -29,25 +29,24 @@ by a finite type.
 namespace Quotient
 
 section List
-variable {ι : Type _} [DecidableEq ι] {α : ι → Sort _} [S : ∀ i, Setoid (α i)] {β : Sort _}
+variable {ι : Type*} [DecidableEq ι] {α : ι → Sort*} [S : ∀ i, Setoid (α i)] {β : Sort*}
 
 /-- Given a collection of setoids indexed by a type `ι`, a list `l` of indices, and a function that
   for each `i ∈ l` gives a term of the corresponding quotient type, then there is a corresponding
   term in the quotient of the product of the setoids indexed by `l`. -/
 def listChoice {l : List ι} (q : ∀ i ∈ l, Quotient (S i)) : @Quotient (∀ i ∈ l, α i) piSetoid :=
   match l with
-  |     [] => ⟦fun.⟧
+  |     [] => ⟦nofun⟧
   | i :: _ => Quotient.liftOn₂ (List.Pi.head (i := i) q)
     (listChoice (List.Pi.tail q))
-    (⟦List.Pi.cons · ·⟧)
+    (⟦List.Pi.cons _ _ · ·⟧)
     (fun _ _ _ _ ha hl ↦ Quotient.sound (List.Pi.forall_rel_cons_ext ha hl))
 
 theorem listChoice_mk {l : List ι} (a : ∀ i ∈ l, α i) : listChoice (⟦a · ·⟧) = ⟦a⟧ :=
   match l with
-  |     [] => Quotient.sound fun.
+  |     [] => Quotient.sound nofun
   | i :: l => by
-    rw [listChoice]
-    dsimp [List.Pi.tail]
+    unfold listChoice List.Pi.tail
     rw [listChoice_mk]
     exact congrArg (⟦·⟧) (List.Pi.cons_eta a)
 
@@ -56,11 +55,11 @@ theorem listChoice_mk {l : List ι} (a : ∀ i ∈ l, α i) : listChoice (⟦a �
 lemma list_ind {l : List ι} {C : (∀ i ∈ l, Quotient (S i)) → Prop}
     (f : ∀ a : ∀ i ∈ l, α i, C (⟦a · ·⟧)) (q : ∀ i ∈ l, Quotient (S i)) : C q :=
   match l with
-  |     [] => cast (congr_arg _ (funext₂ fun.)) (f fun.)
+  |     [] => cast (congr_arg _ (funext₂ nofun)) (f nofun)
   | i :: l => by
     rw [← List.Pi.cons_eta q]
     induction' List.Pi.head q using Quotient.ind with a
-    refine @list_ind _ (fun q ↦ C (List.Pi.cons ⟦a⟧ q)) ?_ (List.Pi.tail q)
+    refine @list_ind _ (fun q ↦ C (List.Pi.cons _ _ ⟦a⟧ q)) ?_ (List.Pi.tail q)
     intro as
     rw [List.Pi.cons_map a as (fun i ↦ Quotient.mk (S i))]
     exact f _
@@ -68,8 +67,7 @@ lemma list_ind {l : List ι} {C : (∀ i ∈ l, Quotient (S i)) → Prop}
 end List
 
 section Fintype
-variable {ι : Type _} [Fintype ι] [DecidableEq ι] {α : ι → Sort _} [S : ∀ i, Setoid (α i)]
-  {β : Sort _}
+variable {ι : Type*} [Fintype ι] [DecidableEq ι] {α : ι → Sort*} [S : ∀ i, Setoid (α i)] {β : Sort*}
 
 /-- Choice-free induction principle for quotients indexed by a finite type.
   See `Quotient.induction_on_pi` for the general version assuming `Classical.choice`. -/
@@ -77,8 +75,8 @@ variable {ι : Type _} [Fintype ι] [DecidableEq ι] {α : ι → Sort _} [S : �
 lemma fin_ind {C : (∀ i, Quotient (S i)) → Prop}
     (f : ∀ a : ∀ i, α i, C (⟦a ·⟧)) (q : ∀ i, Quotient (S i)) : C q := by
   have : ∀ {m : Multiset ι} (C : (∀ i ∈ m, Quotient (S i)) → Prop)
-    (_ : ∀ a : ∀ i ∈ m, α i, C (⟦a · ·⟧)) (q : ∀ i ∈ m, Quotient (S i)), C q
-  · intro m C
+      (_ : ∀ a : ∀ i ∈ m, α i, C (⟦a · ·⟧)) (q : ∀ i ∈ m, Quotient (S i)), C q := by
+    intro m C
     induction m using Quotient.ind
     exact list_ind (S := S)
   exact this (fun q ↦ C (q · (Finset.mem_univ _))) (fun _ ↦ f _) (fun i _ ↦ q i)
@@ -112,9 +110,9 @@ theorem finChoice_eq (a : ∀ i, α i) :
   simp_rw [← hl, Equiv.subtypeQuotientEquivQuotientSubtype, listChoice_mk]
   rfl
 
-lemma proj_finChoice [S : ∀ i, Setoid (α i)]
+lemma eval_finChoice [S : ∀ i, Setoid (α i)]
     (f : ∀ i, Quotient (S i)) :
-    proj (finChoice f) = f :=
+    eval (finChoice f) = f :=
   fin_induction_on f (fun a ↦ by rw [finChoice_eq]; rfl)
 
 /-- Lift a function on `∀ i, α i` to a function on `∀ i, Quotient (S i)`. -/
@@ -143,7 +141,7 @@ lemma finLiftOn_mk (a : ∀ i, α i) :
 def finChoiceEquiv :
     (∀ i, Quotient (S i)) ≃ @Quotient (∀ i, α i) piSetoid where
   toFun := finChoice
-  invFun q i := q.map (· i) (fun _ _ ha ↦ ha i : _)
+  invFun := eval
   left_inv q := by
     refine fin_induction_on q (fun a ↦ ?_)
     rw [finChoice_eq]
@@ -154,16 +152,16 @@ def finChoiceEquiv :
 
 /-- Recursion principle for quotients indexed by a finite type. -/
 @[elab_as_elim]
-def finHRecOn {C : (∀ i, Quotient (S i)) → Sort _}
+def finHRecOn {C : (∀ i, Quotient (S i)) → Sort*}
     (q : ∀ i, Quotient (S i))
     (f : ∀ a : ∀ i, α i, C (⟦a ·⟧))
     (h : ∀ (a b : ∀ i, α i), (∀ i, a i ≈ b i) → HEq (f a) (f b)) :
     C q :=
-  proj_finChoice q ▸ (finChoice q).hrecOn f h
+  eval_finChoice q ▸ (finChoice q).hrecOn f h
 
 /-- Recursion principle for quotients indexed by a finite type. -/
 @[elab_as_elim]
-def finRecOn {C : (∀ i, Quotient (S i)) → Sort _}
+def finRecOn {C : (∀ i, Quotient (S i)) → Sort*}
     (q : ∀ i, Quotient (S i))
     (f : ∀ a : ∀ i, α i, C (⟦a ·⟧))
     (h : ∀ (a b : ∀ i, α i) (h : ∀ i, a i ≈ b i),
@@ -172,7 +170,7 @@ def finRecOn {C : (∀ i, Quotient (S i)) → Sort _}
   finHRecOn q f (heq_of_eq_rec_left _ <| h · · ·)
 
 @[simp]
-lemma finHRecOn_mk {C : (∀ i, Quotient (S i)) → Sort _}
+lemma finHRecOn_mk {C : (∀ i, Quotient (S i)) → Sort*}
     (a : ∀ i, α i) :
     finHRecOn (C := C) (⟦a ·⟧) = fun f _ ↦ f a := by
   ext f h
@@ -181,10 +179,11 @@ lemma finHRecOn_mk {C : (∀ i, Quotient (S i)) → Sort _}
   rfl
 
 @[simp]
-lemma finRecOn_mk {C : (∀ i, Quotient (S i)) → Sort _}
+lemma finRecOn_mk {C : (∀ i, Quotient (S i)) → Sort*}
     (a : ∀ i, α i) :
     finRecOn (C := C) (⟦a ·⟧) = fun f _ ↦ f a := by
-  simp [finRecOn]
+  unfold finRecOn
+  simp
 
 end Fintype
 
