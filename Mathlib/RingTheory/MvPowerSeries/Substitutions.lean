@@ -7,8 +7,9 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Data.Set.Finite
 import Mathlib.RingTheory.MvPowerSeries.Evaluation
+import Mathlib.RingTheory.MvPowerSeries.LinearTopology
 import Mathlib.RingTheory.MvPowerSeries.Trunc
-import Mathlib.RingTheory.PowerSeries.Topology
+import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Topology.Algebra.Algebra
 
 /- # Substitutions in power series
@@ -236,10 +237,10 @@ theorem constantCoeff_smul {R : Type*} [Semiring R] {S : Type*} [Semiring S] [Mo
     constantCoeff σ S (a • φ) = a • constantCoeff σ S φ :=
   rfl
 
-theorem substDomain_mul (b : σ → MvPowerSeries τ S) {a : σ → MvPowerSeries τ S} (ha : SubstDomain a) :
+theorem substDomain_mul (b : σ → MvPowerSeries τ S)
+    {a : σ → MvPowerSeries τ S} (ha : SubstDomain a) :
     SubstDomain (b * a) :=
   letI : UniformSpace S := ⊥
-  letI : LinearTopology (MvPowerSeries τ S) := sorry
   { const_coeff := fun s ↦ by
       simp only [Pi.mul_apply, map_mul]
       exact Commute.isNilpotent_mul_right (Commute.all _ _) (ha.const_coeff _)
@@ -289,6 +290,9 @@ noncomputable def substAlgHom : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ S 
 -- NOTE : Could there be a tactic that introduces these local instances?
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
+  letI : ContinuousSMul R (MvPowerSeries τ S) := by
+    apply?
+    sorry
   exact MvPowerSeries.aeval ha.evalDomain
 
 theorem coe_substAlgHom :
