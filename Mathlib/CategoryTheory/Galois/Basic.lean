@@ -209,6 +209,8 @@ noncomputable def fiberEqualizerEquiv {X Y : C} (f g : X ⟶ Y) :
   (PreservesEqualizer.iso (F ⋙ FintypeCat.incl) f g ≪≫
   Types.equalizerIso (F.map f) (F.map g)).toEquiv
 
+-- Needs more thought: simp-set is medium large
+set_option linter.flexible false in
 @[simp]
 lemma fiberEqualizerEquiv_symm_ι_apply {X Y : C} {f g : X ⟶ Y} (x : F.obj X)
     (h : F.map f x = F.map g x) :
@@ -223,6 +225,8 @@ noncomputable def fiberPullbackEquiv {X A B : C} (f : A ⟶ X) (g : B ⟶ X) :
   (PreservesPullback.iso (F ⋙ FintypeCat.incl) f g ≪≫
   Types.pullbackIsoPullback (F.map f) (F.map g)).toEquiv
 
+-- Needs more thought: simp-set is medium large
+set_option linter.flexible false in
 @[simp]
 lemma fiberPullbackEquiv_symm_fst_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
     (a : F.obj A) (b : F.obj B) (h : F.map f a = F.map g b) :
@@ -232,6 +236,8 @@ lemma fiberPullbackEquiv_symm_fst_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
     (F ⋙ FintypeCat.incl).map (pullback.fst f g)) _ = _
   erw [PreservesPullback.iso_inv_fst, Types.pullbackIsoPullback_inv_fst]
 
+-- Needs more thought: simp-set is medium large
+set_option linter.flexible false in
 @[simp]
 lemma fiberPullbackEquiv_symm_snd_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
     (a : F.obj A) (b : F.obj B) (h : F.map f a = F.map g b) :

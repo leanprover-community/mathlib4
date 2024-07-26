@@ -252,6 +252,8 @@ theorem rfind_prim : Primrec rfind' :=
           encode_iff.2 <| Primrec.ofNat Code)
         (const 4)
 
+-- Needs more thought: simp lemma set is medium-long
+set_option linter.flexible false in
 theorem rec_prim' {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (hc : Primrec c) {z : α → σ}
     (hz : Primrec z) {s : α → σ} (hs : Primrec s) {l : α → σ} (hl : Primrec l) {r : α → σ}
     (hr : Primrec r) {pr : α → Code × Code × σ × σ → σ} (hpr : Primrec₂ pr)
@@ -360,6 +362,8 @@ section
 
 open Computable
 
+-- Needs more thought: simp-set is medium long
+set_option linter.flexible false in
 /-- Recursion on `Nat.Partrec.Code` is computable. -/
 theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (hc : Computable c)
     {z : α → σ} (hz : Computable z) {s : α → σ} (hs : Computable s) {l : α → σ} (hl : Computable l)
@@ -609,6 +613,8 @@ theorem evaln_bound : ∀ {k c n x}, x ∈ evaln k c n → n < k
       cases c <;> rw [evaln] at h <;> exact this h
     simpa [Option.bind_eq_some] using Nat.lt_succ_of_le
 
+-- Needs more thought: complicated proof; simp acts on two goals
+set_option linter.flexible false in
 theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c n → x ∈ evaln k₂ c n
   | 0, k₂, c, n, x, _, h => by simp [evaln] at h
   | k + 1, k₂ + 1, c, n, x, hl, h => by
@@ -648,6 +654,8 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
       by_cases x0 : x = 0 <;> simp [x0]
       exact evaln_mono hl'
 
+-- Needs more thought: complicated proof; simp acts on two goals
+set_option linter.flexible false in
 theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
   | 0, _, n, x, h => by simp [evaln] at h
   | k + 1, c, n, x, h => by
@@ -686,6 +694,8 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
         · rcases hy₂ (Nat.lt_of_succ_lt_succ im) with ⟨z, hz, z0⟩
           exact ⟨z, by simpa [add_comm, add_left_comm] using hz, z0⟩
 
+-- Needs more thought: complicated proof; simp acts on two goals
+set_option linter.flexible false in
 theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := by
   refine ⟨fun h => ?_, fun ⟨k, h⟩ => evaln_sound h⟩
   rsuffices ⟨k, h⟩ : ∃ k, x ∈ evaln (k + 1) c n
@@ -912,6 +922,8 @@ private theorem evaln_map (k c n) :
       exact kn.elim (evaln_bound e)
     simpa using kn
 
+-- Needs more thought: complicated proof; simp acts on multiple goals
+set_option linter.flexible false in
 /-- The `Nat.Partrec.Code.evaln` function is primitive recursive. -/
 theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a.2 :=
   have :

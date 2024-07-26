@@ -234,6 +234,8 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
       ← union_inter_distrib_right, union_sdiff_of_subset (powerset_mono.2 <| subset_insert _ _),
       inter_eq_right.2 h𝒜]
 
+-- Needs more thought: simp acts on multiple goals; simp-sets are medium large
+set_option linter.flexible false in
 /-- The **Four Functions Theorem** on a powerset algebra. See `four_functions_theorem` for the
 finite distributive lattice generalisation. -/
 protected lemma Finset.four_functions_theorem (u : Finset α)

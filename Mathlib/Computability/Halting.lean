@@ -24,6 +24,8 @@ namespace Nat.Partrec
 
 open Computable Part
 
+-- Needs more thought: simp acts on two goals with different lemma sets
+set_option linter.flexible false in
 theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
     ∃ h, Nat.Partrec h ∧
       ∀ a, (∀ x ∈ h a, x ∈ f a ∨ x ∈ g a) ∧ ((h a).Dom ↔ (f a).Dom ∨ (g a).Dom) := by
@@ -297,10 +299,14 @@ theorem of_prim {n} {f : Vector ℕ n → ℕ} (hf : Primrec f) : @Partrec' n f 
 theorem head {n : ℕ} : @Partrec' n.succ (@head ℕ n) :=
   prim Nat.Primrec'.head
 
+-- Needs more thought: complex proof
+set_option linter.flexible false in
 theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ fun v => f v.tail :=
   (hf.comp _ fun i => @prim _ _ <| Nat.Primrec'.get i.succ).of_eq fun v => by
     simp; rw [← ofFn_get v.tail]; congr; funext i; simp
 
+-- Needs more thought: simp acts on two goals; proof is complex
+set_option linter.flexible false in
 protected theorem bind {n f g} (hf : @Partrec' n f) (hg : @Partrec' (n + 1) g) :
     @Partrec' n fun v => (f v).bind fun a => g (a ::ᵥ v) :=
   (@comp n (n + 1) g (fun i => Fin.cases f (fun i v => some (v.get i)) i) hg fun i => by

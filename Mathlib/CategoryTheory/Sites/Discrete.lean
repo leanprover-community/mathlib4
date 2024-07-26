@@ -183,6 +183,8 @@ lemma sheafComposeNatIso_app_counit (P : Sheaf J A) :
   apply sheafify_hom_ext _ _ _ ((sheafCompose J U).obj P).cond
   simp [← whiskerRight_comp]
 
+-- Needs more thought: simp-set is medium large; complicated proof
+set_option linter.flexible false in
 lemma constantCommuteComposeApp_comp_counit (F : Sheaf J A) :
     ((constantCommuteCompose J U).app _).hom ≫
       (constantSheafAdj J B ht).counit.app ((sheafCompose J U).obj F) =

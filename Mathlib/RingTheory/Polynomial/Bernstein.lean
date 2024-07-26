@@ -201,6 +201,8 @@ theorem iterate_derivative_at_1_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
   rw [flip' _ _ _ (tsub_pos_iff_lt.mp (pos_of_gt w)).le]
   simp [Polynomial.eval_comp, iterate_derivative_at_0_eq_zero_of_lt R n w]
 
+-- Needs more thought: simp-set is medium large
+set_option linter.flexible false in
 @[simp]
 theorem iterate_derivative_at_1 (n ν : ℕ) (h : ν ≤ n) :
     (Polynomial.derivative^[n - ν] (bernsteinPolynomial R n ν)).eval 1 =

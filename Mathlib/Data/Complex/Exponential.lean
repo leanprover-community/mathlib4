@@ -1196,6 +1196,8 @@ noncomputable def expNear (n : ℕ) (x r : ℝ) : ℝ :=
 @[simp]
 theorem expNear_zero (x r) : expNear 0 x r = r := by simp [expNear]
 
+-- Needs more thought: simp-set is quite large
+set_option linter.flexible false in
 @[simp]
 theorem expNear_succ (n x r) : expNear (n + 1) x r = expNear n x (1 + x / (n + 1) * r) := by
   simp [expNear, range_succ, mul_add, add_left_comm, add_assoc, pow_succ, div_eq_mul_inv,
@@ -1213,6 +1215,8 @@ theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) 
   · field_simp [mul_comm]
   · omega
 
+-- Needs more thought: simp-set is quite large
+set_option linter.flexible false in
 theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a₂ b₂ : ℝ)
     (e : |1 + x / m * a₂ - a₁| ≤ b₁ - |x| / m * b₂)
     (h : |exp x - expNear m x a₂| ≤ |x| ^ m / m.factorial * b₂) :

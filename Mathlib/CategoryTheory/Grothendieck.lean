@@ -192,6 +192,8 @@ theorem map_map {α : F ⟶ G} {X Y : Grothendieck F} {f : X ⟶ Y} :
 theorem functor_comp_forget {α : F ⟶ G} :
     Grothendieck.map α ⋙ Grothendieck.forget G = Grothendieck.forget F := rfl
 
+-- Needs more thought: simp-set is medium large
+set_option linter.flexible false in
 theorem map_id_eq : map (𝟙 F) = 𝟙 (Cat.of <| Grothendieck <| F) := by
   fapply Functor.ext
   · intro X

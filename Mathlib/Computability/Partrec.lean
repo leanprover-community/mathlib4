@@ -189,6 +189,8 @@ theorem prec' {f g h} (hf : Partrec f) (hg : Partrec g) (hh : Partrec h) :
   ((prec hg hh).comp (pair Partrec.some hf)).of_eq fun a =>
     ext fun s => by simp [Seq.seq]
 
+-- Needs more thought: more complicated proof; simp acts on two goals
+set_option linter.flexible false in
 theorem ppred : Partrec fun n => ppred n :=
   have : Primrec₂ fun n m => if n = Nat.succ m then 0 else 1 :=
     (Primrec.ite
@@ -394,6 +396,8 @@ theorem map {f : α →. β} {g : α → β → σ} (hf : Partrec f) (hg : Compu
 theorem to₂ {f : α × β →. σ} (hf : Partrec f) : Partrec₂ fun a b => f (a, b) :=
   hf.of_eq fun ⟨_, _⟩ => rfl
 
+-- Needs more thought: more complicated proof; simp acts on two goals
+set_option linter.flexible false in
 theorem nat_rec {f : α → ℕ} {g : α →. σ} {h : α → ℕ × σ →. σ} (hf : Computable f) (hg : Partrec g)
     (hh : Partrec₂ h) : Partrec fun a => (f a).rec (g a) fun y IH => IH.bind fun i => h a (y, i) :=
   (Nat.Partrec.prec' hf hg hh).of_eq fun n => by
@@ -475,6 +479,8 @@ variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 open Computable
 
+-- Needs more thought: more complicated proof; simp acts on two goals
+set_option linter.flexible false in
 theorem rfind {p : α → ℕ →. Bool} (hp : Partrec₂ p) : Partrec fun a => Nat.rfind (p a) :=
   (Nat.Partrec.rfind <|
         hp.map ((Primrec.dom_bool fun b => cond b 0 1).comp Primrec.snd).to₂.to_comp).of_eq
@@ -489,6 +495,8 @@ theorem rfindOpt {f : α → ℕ → Option σ} (hf : Computable₂ f) :
     Partrec fun a => Nat.rfindOpt (f a) :=
   (rfind (Primrec.option_isSome.to_comp.comp hf).partrec.to₂).bind (ofOption hf)
 
+-- Needs more thought: more complicated proof; simp acts on two goals
+set_option linter.flexible false in
 theorem nat_casesOn_right {f : α → ℕ} {g : α → σ} {h : α → ℕ →. σ} (hf : Computable f)
     (hg : Computable g) (hh : Partrec₂ h) : Partrec fun a => (f a).casesOn (some (g a)) (h a) :=
   (nat_rec hf hg (hh.comp fst (pred.comp <| hf.comp fst)).to₂).of_eq fun a => by
@@ -696,6 +704,8 @@ theorem sum_casesOn_left {f : α → β ⊕ γ} {g : α → β →. σ} {h : α 
   (sum_casesOn_right (sum_casesOn hf (sum_inr.comp snd).to₂ (sum_inl.comp snd).to₂) hh hg).of_eq
     fun a => by cases f a <;> simp
 
+-- Needs more thought: complicated proof; simp acts on two goals (twice)
+set_option linter.flexible false in
 theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
     let F : α → ℕ →. σ ⊕ α := fun a n =>
       n.rec (some (Sum.inr a)) fun _ IH => IH.bind fun s => Sum.casesOn s (fun _ => Part.some s) f

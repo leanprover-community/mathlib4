@@ -259,6 +259,8 @@ theorem exists_code.comp {m n} {f : Vector ℕ n →. ℕ} {g : Fin n → Vector
         simp [Vector.mOfFn, hg₁, map_bind, seq_bind_eq, bind_assoc, (· ∘ ·), hl]
         rfl⟩
 
+-- Needs more thought: complicated proofs; simp chains are medium-long.
+set_option linter.flexible false in
 theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     ∃ c : Code, ∀ v : Vector ℕ n, c.eval v.1 = pure <$> f v := by
   induction hf with
@@ -1501,6 +1503,8 @@ theorem trNormal_respects (c k v s) :
       exact ⟨_, h₁, h.trans h₂⟩
   | fix f IH => apply IH
 
+-- Needs more thought: simp-set is medium-long
+set_option linter.flexible false in
 theorem tr_ret_respects (k v s) : ∃ b₂,
     TrCfg (stepRet k v) b₂ ∧
       Reaches₁ (TM2.step tr)
@@ -1569,6 +1573,8 @@ theorem tr_init (c v) :
     ∃ b, TrCfg (stepNormal c Cont.halt v) b ∧ Reaches₁ (TM2.step tr) (init c v) b :=
   trNormal_respects _ _ _ _
 
+-- Needs more thought: simp-set is medium-long
+set_option linter.flexible false in
 theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v := by
   obtain ⟨i, h₁, h₂⟩ := tr_init c v
   refine Part.ext fun x => ?_
@@ -1596,6 +1602,8 @@ def trStmts₁ : Λ' → Finset Λ'
   | Q@(Λ'.pred q₁ q₂) => insert Q <| trStmts₁ q₁ ∪ insert (unrev q₂) (trStmts₁ q₂)
   | Q@(Λ'.ret _) => {Q}
 
+-- Needs more thought: simp set is medium-long resp. simp acts on two goals
+set_option linter.flexible false in
 theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trStmts₁ q := by
   induction' q with _ _ _ q q_ih _ _ q q_ih q q_ih _ _ q q_ih q q_ih q q_ih q₁ q₂ q₁_ih q₂_ih _ <;>
     simp (config := { contextual := true }) only [trStmts₁, Finset.mem_insert, Finset.mem_union,
@@ -1788,6 +1796,8 @@ theorem ret_supports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (�
     · refine H₁ (R _ <| L _ <| R _ <| R _ <| L _ W)
     · exact H₁ (R _ <| L _ <| R _ <| R _ <| R _ <| Finset.mem_singleton_self _)
 
+-- Needs more thought: acts on two goals; proof is complex
+set_option linter.flexible false in
 theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts₁ q ⊆ S) :
     Supports (trStmts₁ q) S := by
   have W := fun {q} => trStmts₁_self q
@@ -1818,6 +1828,8 @@ theorem trStmts₁_supports' {S q K} (H₁ : (q : Λ').Supports S) (H₂ : trStm
   simp only [Finset.union_subset_iff] at H₂
   exact supports_union.2 ⟨trStmts₁_supports H₁ H₂.1, H₃ H₂.2⟩
 
+-- Needs more thought: acts on all goals; proof is complex
+set_option linter.flexible false in
 theorem trNormal_supports {S c k} (Hk : codeSupp c k ⊆ S) : (trNormal c k).Supports S := by
   induction c generalizing k with simp [Λ'.Supports, head]
   | zero' => exact Finset.union_subset_right Hk

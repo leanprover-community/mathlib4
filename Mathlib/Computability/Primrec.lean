@@ -813,6 +813,8 @@ instance sum : Primcodable (α ⊕ β) :=
           · cases @decode α _ n.div2 <;> rfl
           · cases @decode β _ n.div2 <;> rfl⟩
 
+-- Needs more thought: simp-set is medium large
+set_option linter.flexible false in
 instance list : Primcodable (List α) :=
   ⟨letI H := @Primcodable.prim (List ℕ) _
     have : Primrec₂ fun (a : α) (o : Option (List ℕ)) => o.map (List.cons (encode a)) :=
@@ -1009,6 +1011,8 @@ theorem listLookup [DecidableEq α] : Primrec₂ (List.lookup : α → List (α 
   induction' ps with p ps ih <;> simp [List.lookup, *]
   cases ha : a == p.1 <;> simp [ha]
 
+-- Needs more thought: simp acts on two goals resp. simp-set is medium long
+set_option linter.flexible false in
 theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g : β → List σ → Option σ}
     (hm : Primrec m) (hl : Primrec l) (hg : Primrec₂ g)
     (Ord : ∀ b, ∀ b' ∈ l b, m b' < m b)
@@ -1337,6 +1341,8 @@ theorem sub : @Primrec' 2 fun v => v.head - v.tail.head := by
     simp; induction v.head <;> simp [*, Nat.sub_add_eq]
   simpa using comp₂ (fun a b => b - a) this (tail head) head
 
+-- Needs more thought: simp set is medium large
+set_option linter.flexible false in
 theorem mul : @Primrec' 2 fun v => v.head * v.tail.head :=
   (prec (const 0) (tail (add.comp₂ _ (tail head) head))).of_eq fun v => by
     simp; induction v.head <;> simp [*, Nat.succ_mul]; rw [add_comm]
