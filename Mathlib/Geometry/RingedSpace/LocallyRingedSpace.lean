@@ -459,8 +459,8 @@ lemma stalkMap_inv_hom_apply (e : X ≅ Y) (x : X) (y) :
 --     (X.restrictStalkIso h x).inv = (X.ofRestrict h).stalkMap x :=
 --   PresheafedSpace.restrictStalkIso_inv_eq_ofRestrict X.toPresheafedSpace h x
 
-instance ofRestrict_stalkMap_isIso : IsIso ((X.ofRestrict h).stalkMap x) :=
-  PresheafedSpace.ofRestrict_stalkMap_isIso X.toPresheafedSpace h x
+-- instance ofRestrict_stalkMap_isIso : IsIso ((X.ofRestrict h).stalkMap x) :=
+--   PresheafedSpace.ofRestrict_stalkMap_isIso X.toPresheafedSpace h x
 
 end Stalks
 
