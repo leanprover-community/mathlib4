@@ -180,7 +180,8 @@ theorem uniformContinuous_component :
   exact WithPiTopology.t2Space σ α
 
 /-- The ring of multivariate power series is a uniform topological ring -/
-@[scoped instance] theorem uniform_topologicalRing [Ring α] [UniformAddGroup α] [TopologicalRing α] :
+@[scoped instance]
+theorem uniform_topologicalRing [Ring α] [UniformAddGroup α] [TopologicalRing α] :
     TopologicalRing (MvPowerSeries σ α) :=
   { uniformAddGroup σ α with
     continuous_add :=  (@uniformContinuous_add _ _ _ (uniformAddGroup σ α)).continuous

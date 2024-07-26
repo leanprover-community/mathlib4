@@ -1,14 +1,15 @@
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Algebra.MvPolynomial.CommRing
-import DividedPowers.ForMathlib.RingTheory.MvPowerSeries.Trunc
-import DividedPowers.ForMathlib.MvPowerSeries.Evaluation
-import DividedPowers.ForMathlib.Topology.LinearTopology
-import DividedPowers.ForMathlib.MvPowerSeries.LinearTopology
-import DividedPowers.ForMathlib.PowerSeries.Topology
-import DividedPowers.ForMathlib.Topology.Algebra.Algebra.Basic
-import Mathlib.Data.Set.Finite
+/-
+Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernández. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
+-/
 
---import Mathlib.Topology.UniformSpace.CompleteSeparated
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Data.Set.Finite
+import Mathlib.RingTheory.MvPowerSeries.Evaluation
+import Mathlib.RingTheory.MvPowerSeries.Trunc
+import Mathlib.RingTheory.PowerSeries.Topology
+import Mathlib.Topology.Algebra.Algebra
 
 /- # Substitutions in power series
 
@@ -77,16 +78,18 @@ theorem IsNilpotent.finset_sum {α : Type*} [CommSemiring α] {β : Type*} {f : 
       exact hf b (s.mem_insert_self b)
       exact hs (fun b hb ↦ hf b (by exact Finset.mem_insert_of_mem hb))
 
-theorem IsNilpotent.finsum {α : Type*} [CommSemiring α] {β : Type*} (f : β → α)
-  (hf : ∀ b, IsNilpotent (f b)) : IsNilpotent (finsum f) := by
+theorem IsNilpotent.finsum {α : Type*} [CommSemiring α] {β : Type*} {f : β → α}
+    (hf : ∀ b, IsNilpotent (f b)) :
+    IsNilpotent (finsum f) := by
   classical
   by_cases h : Set.Finite f.support
   · rw [finsum_def, dif_pos h]
     exact IsNilpotent.finset_sum _ (fun b _ ↦ hf b)
   · simp only [finsum_def, dif_neg h, IsNilpotent.zero]
 
-def MvPowerSeries.mapAlgHom (σ : Type*) {R : Type*} [CommSemiring R] {S : Type*}
-    [Semiring S] [Algebra R S] {T : Type*} [Semiring T] [Algebra R T] (φ : S →ₐ[R] T) :
+def MvPowerSeries.mapAlgHom {σ : Type*} {R : Type*} [CommSemiring R] {S : Type*}
+    [Semiring S] [Algebra R S] {T : Type*} [Semiring T] [Algebra R T]
+    (φ : S →ₐ[R] T) :
     MvPowerSeries σ S →ₐ[R] MvPowerSeries σ T where
   toRingHom   := MvPowerSeries.map σ φ
   commutes' r := by
@@ -94,13 +97,15 @@ def MvPowerSeries.mapAlgHom (σ : Type*) {R : Type*} [CommSemiring R] {S : Type*
       MonoidHom.coe_coe, MvPowerSeries.algebraMap_apply, map_C, RingHom.coe_coe, AlgHom.commutes]
 
 def PowerSeries.mapAlgHom {R : Type*} [CommSemiring R]
-  {S : Type*} [Semiring S] [Algebra R S] {T : Type*} [Semiring T] [Algebra R T]
-  (φ : S →ₐ[R] T) :
-  PowerSeries S →ₐ[R] PowerSeries T := MvPowerSeries.mapAlgHom Unit φ
+    {S : Type*} [Semiring S] [Algebra R S] {T : Type*} [Semiring T] [Algebra R T]
+    (φ : S →ₐ[R] T) :
+    PowerSeries S →ₐ[R] PowerSeries T :=
+  MvPowerSeries.mapAlgHom φ
 
 theorem MvPowerSeries.monomial_one_eq {σ : Type*} {R : Type*} [CommSemiring R] (e : σ →₀ ℕ) :
     MvPowerSeries.monomial R e 1 = e.prod fun s n ↦ (X s : MvPowerSeries σ R) ^ n := by
-  simp only [← MvPolynomial.coe_X, ← MvPolynomial.coe_pow, ← MvPolynomial.coe_monomial, MvPolynomial.monomial_eq, map_one, one_mul]
+  simp only [← MvPolynomial.coe_X, ← MvPolynomial.coe_pow, ← MvPolynomial.coe_monomial,
+    MvPolynomial.monomial_eq, map_one, one_mul]
   simp only [← MvPolynomial.coeToMvPowerSeries.ringHom_apply, ← map_finsupp_prod]
 
 theorem MvPowerSeries.prod_smul_X_eq_smul_monomial_one {σ : Type*}
@@ -108,11 +113,12 @@ theorem MvPowerSeries.prod_smul_X_eq_smul_monomial_one {σ : Type*}
     (e : σ →₀ ℕ) (a : σ → A)  :
     e.prod (fun s n ↦ ((a s • X s : MvPowerSeries σ R) ^ n))
       = (e.prod fun s n ↦ (a s) ^ n) • monomial R e 1 := by
-  rw [Finsupp.prod_congr (g2 := fun s n ↦ ((C σ R (algebraMap A R (a s)) * (X s : MvPowerSeries σ R)) ^ n))]
-  simp only [mul_pow, Finsupp.prod_mul]
-  simp only [← map_pow, ← map_finsupp_prod]
-  rw [← monomial_one_eq]
-  rw [← smul_eq_C_mul, ← algebra_compatible_smul]
+  rw [Finsupp.prod_congr
+    (g2 := fun s n ↦ ((C σ R (algebraMap A R (a s)) * (X s : MvPowerSeries σ R)) ^ n))]
+  · have (a : A) (f : MvPowerSeries σ R) : a • f = (C σ R) ((algebraMap A R) a) * f := by
+      rw [← smul_eq_C_mul, IsScalarTower.algebraMap_smul]
+    simp only [mul_pow, Finsupp.prod_mul, ← map_pow , ← monomial_one_eq, this]
+    simp only [map_finsupp_prod, map_pow]
   · intro x _
     rw [algebra_compatible_smul R, smul_eq_C_mul]
 
@@ -162,23 +168,24 @@ instance bot_uniformAddGroup {R : Type*} [AddGroup R]
       rintro ⟨rfl⟩ ⟨rfl⟩
       exact mem_uniformity_of_eq hs rfl }
 
-instance discreteUniformity_complete (α : Type*) [UniformSpace α] [DiscreteUniformity α] : CompleteSpace α :=
-  { complete := fun {f} hf ↦ by
-      simp [cauchy_iff, bot_uniformity] at hf
-      rcases hf with ⟨f_NeBot, hf⟩
-      let d := (fun (a : α) ↦ (a, a)) '' Set.univ
-      obtain ⟨t, ht, ht'⟩ := hf d (by
-        simp only [DiscreteUniformity.eq_principal_idRel, Filter.mem_principal, idRel_subset]
-        exact (fun a ↦ Set.mem_image_of_mem (fun a => (a, a)) (Set.mem_univ a)))
-      obtain ⟨x, hx⟩ := f_NeBot.nonempty_of_mem ht
-      use x
-      intro s hs
-      apply f.sets_of_superset ht
-      intro y hy
-      convert mem_of_mem_nhds hs
-      apply symm
-      simpa only [d, Set.image_univ, Set.range_diag, Set.mem_diagonal_iff] using ht' (Set.mk_mem_prod hx hy)
-      }
+instance discreteUniformity_complete (α : Type*) [UniformSpace α] [DiscreteUniformity α] :
+    CompleteSpace α where
+  complete {f} hf := by
+    simp [cauchy_iff, bot_uniformity] at hf
+    rcases hf with ⟨f_NeBot, hf⟩
+    let d := (fun (a : α) ↦ (a, a)) '' Set.univ
+    obtain ⟨t, ht, ht'⟩ := hf d (by
+      simp only [DiscreteUniformity.eq_principal_idRel, Filter.mem_principal, idRel_subset]
+      exact (fun a ↦ Set.mem_image_of_mem (fun a => (a, a)) (Set.mem_univ a)))
+    obtain ⟨x, hx⟩ := f_NeBot.nonempty_of_mem ht
+    use x
+    intro s hs
+    apply f.sets_of_superset ht
+    intro y hy
+    convert mem_of_mem_nhds hs
+    apply symm
+    simpa only [d, Set.image_univ, Set.range_diag, Set.mem_diagonal_iff]
+      using ht' (Set.mk_mem_prod hx hy)
 
 end DiscreteUniformity
 
@@ -224,13 +231,15 @@ theorem substDomain_add {a b : σ → MvPowerSeries τ S}
     rw [add_zero]
 
 @[simp]
-theorem constantCoeff_smul {R : Type*} [Semiring R] {S : Type*} [Semiring S] [Module R S] (φ : MvPowerSeries σ S) (a : R) :
-    constantCoeff σ S (a • φ) = a • constantCoeff σ S φ := by
+theorem constantCoeff_smul {R : Type*} [Semiring R] {S : Type*} [Semiring S] [Module R S]
+    (φ : MvPowerSeries σ S) (a : R) :
+    constantCoeff σ S (a • φ) = a • constantCoeff σ S φ :=
   rfl
 
 theorem substDomain_mul (b : σ → MvPowerSeries τ S) {a : σ → MvPowerSeries τ S} (ha : SubstDomain a) :
     SubstDomain (b * a) :=
   letI : UniformSpace S := ⊥
+  letI : LinearTopology (MvPowerSeries τ S) := sorry
   { const_coeff := fun s ↦ by
       simp only [Pi.mul_apply, map_mul]
       exact Commute.isNilpotent_mul_right (Commute.all _ _) (ha.const_coeff _)
