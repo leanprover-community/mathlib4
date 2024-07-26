@@ -13,27 +13,13 @@ import Mathlib.RingTheory.LocalRing.Basic
 /-!
 # Differential Fields
 
-This file defines differential fields, which are fields which are also `CommDifferentialRing`s,
-the logarithmic derivative `logd`, and Liouville field extensions, as a preparation for
-Liouville's theorem.
+This file defines the logarithmic derivative `logd` and Liouville field extensions,
+as a preparation for Liouville's theorem.
 -/
 
 open DifferentialRing algebraMap
 
-/--
-A differential field is a `Field` which is also a `CommDifferentialRing`
--/
-class DifferentialField (R : Type*) extends Field R, CommDifferentialRing R
-
-/--
-Transfer a `DifferentialField` instance across a ring homomorphism.
--/
-def DifferentialField.equiv {R R2 : Type*} [Field R] [CommDifferentialRing R2] (h : R ≃+* R2) :
-    DifferentialField R :=
-  letI := CommDifferentialRing.equiv h
-  DifferentialField.mk this.deriv
-
-variable {R : Type*} [DifferentialField R] (a b : R)
+variable {R : Type*} [Field R] [Differential R] (a b : R)
 
 /--
 The logarithmic derivative of a is a′ / a.
@@ -93,14 +79,15 @@ lemma logd_sum_zero (ι : Type*) (s : Finset ι) (f : ι → R) (h : ∀ x ∈ s
   unfold logd
   simp_all
 
-lemma logd_algebraMap {F K : Type*} [DifferentialField F] [DifferentialField K]
-    [DifferentialAlgebra F K]
+lemma logd_algebraMap {F K : Type*} [Field F] [Field K] [Differential F] [Differential K]
+    [Algebra F K] [DifferentialAlgebra F K]
     (a : F) : logd (algebraMap F K a) = algebraMap F K (logd a) := by
   unfold logd
   simp [deriv_algebraMap]
 
 @[norm_cast]
-lemma algebraMap.coe_logd {F K : Type*} [DifferentialField F] [DifferentialField K]
+lemma algebraMap.coe_logd {F K : Type*} [Field F] [Field K] [Differential F] [Differential K]
+    [Algebra F K] [DifferentialAlgebra F K]
     [DifferentialAlgebra F K]
     (a : F) : logd a = logd (a : K) := (logd_algebraMap a).symm
 
@@ -111,8 +98,8 @@ A field extension `K / F` is Liouville if, whenever an element a ∈ F can be wr
 `a = v + ∑ cᵢ * logd uᵢ` for `v, cᵢ, uᵢ ∈ K` and `cᵢ` constant, it can also be written in that
 way with `v, cᵢ, uᵢ ∈ F`.
 -/
-class IsLiouville (F : Type u) (K : Type*) [DifferentialField F]
-    [DifferentialField K] [DifferentialAlgebra F K] : Prop where
+class IsLiouville (F : Type u) (K : Type*) [Field F] [Field K] [Differential F] [Differential K]
+    [Algebra F K] [DifferentialAlgebra F K] : Prop where
   is_liouville (a : F) (ι : Type u) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
     (u : ι → K) (v : K) (h : a = ∑ x, c x * logd (u x) + v′) :
     ∃ (ι' : Type u) (_ : Fintype ι') (c' : ι' → F) (_ : ∀ x, (c' x)′ = 0)
@@ -123,9 +110,11 @@ instance IsLiouville.rfl (F : Type u) [DifferentialField F] : IsLiouville F F wh
       (u : ι → F) (v : F) (h : a = ∑ x, c x * logd (u x) + v′) :=
     ⟨ι, _, c, hc, u, v, h⟩
 
-lemma IsLiouville.trans {F : Type u} {K : Type v} {A : Type*} [DifferentialField F]
-    [DifferentialField K] [DifferentialField A] [DifferentialAlgebra F K] [DifferentialAlgebra K A]
-    [DifferentialAlgebra F A] [IsScalarTower F K A] [CommDifferentialRing.ContainConstants F K]
+lemma IsLiouville.trans {F : Type u} {K : Type v} {A : Type*} [Field F]
+    [Field K] [Field A] [Algebra F K] [Algebra K A] [Algebra F A]
+    [Differential F] [Differential K] [Differential A]
+    [DifferentialAlgebra F K] [DifferentialAlgebra K A] [DifferentialAlgebra F A]
+    [IsScalarTower F K A] [Differential.ContainConstants F K]
     (inst1 : IsLiouville F K) (inst2 : IsLiouville K A) : IsLiouville F A where
   is_liouville (a : F) (ι : Type u) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
       (u : ι → A) (v : A) (h : a = ∑ x, c x * logd (u x) + v′) := by
