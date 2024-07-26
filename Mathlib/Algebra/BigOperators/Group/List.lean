@@ -463,7 +463,7 @@ theorem prod_set' (L : List G) (n : ℕ) (a : G) :
   split_ifs with hn
   · rw [mul_comm _ a, mul_assoc a, prod_drop_succ L n hn, mul_comm _ (drop n L).prod, ←
       mul_assoc (take n L).prod, prod_take_mul_prod_drop, mul_comm a, mul_assoc]
-  · simp only [take_all_of_le (le_of_not_lt hn), prod_nil, mul_one,
+  · simp only [take_of_length_le (le_of_not_lt hn), prod_nil, mul_one,
       drop_eq_nil_of_le ((le_of_not_lt hn).trans n.le_succ)]
 
 @[to_additive]
@@ -630,10 +630,6 @@ lemma ranges_join (l : List ℕ) : l.ranges.join = range l.sum := by simp [range
 lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by simp [mem_mem_ranges_iff_lt_natSum]
 
-@[simp]
-theorem length_join (L : List (List α)) : length (join L) = sum (map length L) := by
-  induction L <;> [rfl; simp only [*, join, map, sum_cons, length_append]]
-
 lemma countP_join (p : α → Bool) : ∀ L : List (List α), countP p L.join = (L.map (countP p)).sum
   | [] => rfl
   | a :: l => by rw [join, countP_append, map_cons, sum_cons, countP_join _ l]
@@ -643,7 +639,8 @@ lemma count_join [BEq α] (L : List (List α)) (a : α) : L.join.count a = (L.ma
 
 @[simp]
 theorem length_bind (l : List α) (f : α → List β) :
-    length (List.bind l f) = sum (map (length ∘ f) l) := by rw [List.bind, length_join, map_map]
+    length (List.bind l f) = sum (map (length ∘ f) l) := by
+  rw [List.bind, length_join, map_map, Nat.sum_eq_listSum]
 
 lemma countP_bind (p : β → Bool) (l : List α) (f : α → List β) :
     countP p (l.bind f) = sum (map (countP p ∘ f) l) := by rw [List.bind, countP_join, map_map]
