@@ -7,8 +7,6 @@ import Mathlib.Order.Antichain
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.Interval.Set.Basic
 
-#align_import order.minimal from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
-
 /-!
 # Minimality and Maximality
 
@@ -39,7 +37,7 @@ sets rather than predicates, and with an unbundled order relation rather than a 
 
 open Set OrderDual
 
-variable {α : Type*} {r r₁ r₂ : α → α → Prop} {P Q : α → Prop} {a x y : α}
+variable {α : Type*} {P Q : α → Prop} {a x y : α}
 
 section LE
 
