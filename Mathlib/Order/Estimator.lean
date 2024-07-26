@@ -138,8 +138,7 @@ theorem Estimator.improveUntilAux_spec (a : Thunk α) (p : α → Bool)
       exact Bool.bool_eq_false h
     | some e', _ =>
       exact Estimator.improveUntilAux_spec a p e' true
--- https://github.com/leanprover/lean4/issues/4804
--- termination_by (⟨_, mem_range_self e⟩ : range (bound a))
+termination_by (⟨_, mem_range_self e⟩ : range (bound a))
 
 /--
 If `Estimator.improveUntil a p e` returns `some e'`, then `bound a e'` satisfies `p`.

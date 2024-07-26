@@ -418,8 +418,7 @@ theorem perm_mergeSort : ∀ l : List α, mergeSort r l ~ l
     apply (perm_merge (r · ·) _ _).trans
     exact
       ((perm_mergeSort l₁).append (perm_mergeSort l₂)).trans (perm_split e).symm
-  -- https://github.com/leanprover/lean4/issues/4804
-  -- termination_by l => length l
+  termination_by l => length l
 
 @[simp]
 theorem length_mergeSort (l : List α) : (mergeSort r l).length = l.length :=
@@ -466,8 +465,7 @@ theorem sorted_mergeSort : ∀ l : List α, Sorted r (mergeSort r l)
     cases' length_split_lt e with h₁ h₂
     rw [mergeSort_cons_cons r e]
     exact (sorted_mergeSort l₁).merge (sorted_mergeSort l₂)
-  -- https://github.com/leanprover/lean4/issues/4804
-  -- termination_by l => length l
+  termination_by l => length l
 
 theorem mergeSort_eq_self [IsAntisymm α r] {l : List α} : Sorted r l → mergeSort r l = l :=
   eq_of_perm_of_sorted (perm_mergeSort _ _) (sorted_mergeSort _ _)

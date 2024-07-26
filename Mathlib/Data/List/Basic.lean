@@ -565,7 +565,8 @@ theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail =
 
 theorem getElem_eq_getElem? (l : List α) (i : Nat) (h : i < l.length) :
     l[i] = l[i]?.get (by simp [getElem?_eq_getElem, h]) := by
-  simp [getElem_eq_iff]
+  rw [getElem_eq_iff (h := h)]
+  simp
 
 theorem get_eq_get? (l : List α) (i : Fin l.length) :
     l.get i = (l.get? i).get (by simp [getElem?_eq_getElem]) := by
