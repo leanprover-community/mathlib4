@@ -125,6 +125,14 @@ def leftSquareIsPullback (H : IsLimit t₂) (H' : IsLimit (t₂.pasteHoriz t₁ 
     · simpa [hm₁] using hl.symm
     · simpa [← hm₂] using hl'.symm
 
+/-- Given that the right square is a pullback, the pasted square is a pullback iff the left
+square is. -/
+def pasteHorizIsPullbackEquiv (H : IsLimit t₂) : IsLimit (t₂.pasteHoriz t₁ hi₂) ≃ IsLimit t₁ :=
+  { toFun := fun H' ↦ leftSquareIsPullback t₁ _ H H'
+    invFun := fun H' ↦ pasteHorizIsPullback _ H H'
+    left_inv := fun _ ↦Subsingleton.elim _ _
+    right_inv := fun _ ↦Subsingleton.elim _ _ }
+
 end PastePullbackHoriz
 
 section PastePullbackVert
@@ -186,6 +194,8 @@ def pasteVertIsPullback (H₁ : IsLimit t₁) (H₂ : IsLimit t₂) : IsLimit (t
   apply PullbackCone.isLimitOfFlip <| IsLimit.ofIsoLimit _ (t₁.pasteVertFlip t₂ hi₂).symm
   exact pasteHorizIsPullback hi₂ (PullbackCone.flipIsLimit H₁) (PullbackCone.flipIsLimit H₂)
 
+variable (t₂)
+
 /-- Given
 ```
 Y₃ - i₃ -> X₃
@@ -203,6 +213,14 @@ The top square is a pullback if the bottom square and the big square are.
 def topSquareIsPullback (H₁ : IsLimit t₁) (H₂ : IsLimit (t₁.pasteVert t₂ hi₂)) : IsLimit t₂ :=
   PullbackCone.isLimitOfFlip
     (leftSquareIsPullback _ hi₂ (PullbackCone.flipIsLimit H₁) (PullbackCone.flipIsLimit H₂))
+
+/-- Given that the bottom square is a pullback, the pasted square is a pullback iff the top
+square is. -/
+def pasteVertIsPullbackEquiv (H : IsLimit t₁) : IsLimit (t₁.pasteVert t₂ hi₂) ≃ IsLimit t₂ :=
+  { toFun := fun H' ↦ topSquareIsPullback t₂ _ H H'
+    invFun := fun H' ↦ pasteVertIsPullback _ H H'
+    left_inv := fun _ ↦Subsingleton.elim _ _
+    right_inv := fun _ ↦Subsingleton.elim _ _ }
 
 end PastePullbackVert
 
@@ -293,6 +311,14 @@ def rightSquareIsPushout (H : IsColimit t₁) (H' : IsColimit (t₁.pasteHoriz t
     · simpa [← hm₁] using hl.symm
     · simpa [← hm₂] using hl'.symm
 
+/-- Given that the left square is a pushout, the pasted square is a pushout iff the right square is.
+-/
+def pasteHorizIsPushoutEquiv (H : IsColimit t₁) : IsColimit (t₁.pasteHoriz t₂ hi₂) ≃ IsColimit t₂ :=
+  { toFun := fun H' ↦ rightSquareIsPushout t₂ _ H H'
+    invFun := fun H' ↦ pasteHorizIsPushout _ H H'
+    left_inv := fun _ ↦Subsingleton.elim _ _
+    right_inv := fun _ ↦Subsingleton.elim _ _ }
+
 end PastePushoutHoriz
 
 section PastePushoutVert
@@ -354,6 +380,8 @@ def pasteVertIsPushout (H₁ : IsColimit t₁) (H₂ : IsColimit t₂) :
   apply PushoutCocone.isColimitOfFlip <| IsColimit.ofIsoColimit _ (t₁.pasteVertFlip t₂ hi₂).symm
   exact pasteHorizIsPushout hi₂ (PushoutCocone.flipIsColimit H₁) (PushoutCocone.flipIsColimit H₂)
 
+variable (t₂)
+
 /-- Given
 ```
 Y₃ - i₃ -> X₃
@@ -371,6 +399,14 @@ The bottom square is a pushout if the top square and the big square are.
 def botSquareIsPushout (H₁ : IsColimit t₁) (H₂ : IsColimit (t₁.pasteVert t₂ hi₂)) : IsColimit t₂ :=
   PushoutCocone.isColimitOfFlip
     (rightSquareIsPushout _ hi₂ (PushoutCocone.flipIsColimit H₁) (PushoutCocone.flipIsColimit H₂))
+
+/-- Given that the top square is a pushout, the pasted square is a pushout iff the bottom square is.
+-/
+def pasteVertIsPushoutEquiv (H : IsColimit t₁) : IsColimit (t₁.pasteVert t₂ hi₂) ≃ IsColimit t₂ :=
+  { toFun := fun H' ↦ botSquareIsPushout t₂ _ H H'
+    invFun := fun H' ↦ pasteVertIsPushout _ H H'
+    left_inv := fun _ ↦Subsingleton.elim _ _
+    right_inv := fun _ ↦Subsingleton.elim _ _ }
 
 end PastePushoutVert
 
