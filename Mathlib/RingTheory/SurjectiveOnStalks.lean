@@ -30,7 +30,7 @@ A ring homomorphism `R →+* S` is surjective on stalks if `R_p →+* S_q` is su
 of primes `p = f⁻¹(q)`.
 -/
 def SurjectiveOnStalks (f : R →+* S) : Prop :=
-  ∀ (I : Ideal S) (_ : I.IsPrime), Function.Surjective (Localization.localRingHom _ I f rfl)
+  ∀ (P : Ideal S) (_ : P.IsPrime), Function.Surjective (Localization.localRingHom _ P f rfl)
 
 /--
 `R_p →+* S_q` is surjective if and only if
@@ -122,7 +122,7 @@ open TensorProduct
 
 /--
 If `R → T` is surjective on stalks, and `J` is some prime of `T`,
-then every element `x` in `S ⊗[R] T` satisfies `(1 ⊗ r • t)x = a ⊗ t` for some
+then every element `x` in `S ⊗[R] T` satisfies `(1 ⊗ r • t) * x = a ⊗ t` for some
 `r : R`, `a : S`, and `t : T` such that `r • t ∉ J`.
 -/
 lemma SurjectiveOnStalks.exists_mul_eq_tmul

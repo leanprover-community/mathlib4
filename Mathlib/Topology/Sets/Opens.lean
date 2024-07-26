@@ -307,7 +307,7 @@ theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type*} (b : ι → Ope
   · exact hb'
 
 lemma IsBasis.le_iff {α} {t₁ t₂ : TopologicalSpace α}
-    {Us : Set (Opens α)} (hUs : IsBasis Us) : -- basis for t₂
+    {Us : Set (Opens α)} (hUs : @IsBasis α t₂ Us) :
     t₁ ≤ t₂ ↔ ∀ U ∈ Us, IsOpen[t₁] U := by
   conv_lhs => rw [hUs.eq_generateFrom]
   simp [Set.subset_def, le_generateFrom_iff_subset_isOpen]
