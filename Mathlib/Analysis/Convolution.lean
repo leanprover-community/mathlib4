@@ -51,7 +51,7 @@ This generality has several advantages
   `smul` to multiply the functions, that would be an asymmetric definition.
 
 # Main Definitions
-* `convolution f g L μ x = (f ⋆[L, μ] g) x = ∫ t, L (f t) (g (x - t)) ∂μ` is the convolution of
+* `MeasureTheory.convolution f g L μ x = (f ⋆[L, μ] g) x = ∫ t, L (f t) (g (x - t)) ∂μ` is the convolution of
   `f` and `g` w.r.t. the continuous bilinear map `L` and measure `μ`.
 * `ConvolutionExistsAt f g x L μ` states that the convolution `(f ⋆[L, μ] g) x` is well-defined
   (i.e. the integral exists).
@@ -783,7 +783,7 @@ variable [BorelSpace G] [SecondCountableTopology G]
 variable [IsAddLeftInvariant μ] [SFinite μ]
 
 /-- Approximate `(f ⋆ g) x₀` if the support of the `f` is bounded within a ball, and `g` is near
-`g x₀` on a ball with the same radius around `x₀`. See `dist_convolution_le` for a special case.
+`g x₀` on a ball with the same radius around `x₀`. See `MeasureTheory.dist_convolution_le` for a special case.
 
 We can simplify the second argument of `dist` further if we add some extra type-classes on `E`
 and `𝕜` or if `L` is scalar multiplication. -/
@@ -830,7 +830,7 @@ variable [NormedSpace ℝ E] [NormedSpace ℝ E'] [CompleteSpace E']
 /-- Approximate `f ⋆ g` if the support of the `f` is bounded within a ball, and `g` is near `g x₀`
 on a ball with the same radius around `x₀`.
 
-This is a special case of `dist_convolution_le'` where `L` is `(•)`, `f` has integral 1 and `f` is
+This is a special case of `MeasureTheory.dist_convolution_le'` where `L` is `(•)`, `f` has integral 1 and `f` is
 nonnegative. -/
 theorem dist_convolution_le {f : G → ℝ} {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε)
     (hf : support f ⊆ ball (0 : G) R) (hnf : ∀ x, 0 ≤ f x) (hintf : ∫ x, f x ∂μ = 1)
@@ -921,7 +921,7 @@ theorem integral_convolution [MeasurableAdd₂ G] [MeasurableNeg G] [NormedSpace
 variable [MeasurableAdd₂ G] [IsAddRightInvariant ν] [MeasurableNeg G]
 
 /-- Convolution is associative. This has a weak but inconvenient integrability condition.
-See also `convolution_assoc`. -/
+See also `MeasureTheory.convolution_assoc`. -/
 theorem convolution_assoc' (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z = L₃ x (L₄ y z))
     {x₀ : G} (hfg : ∀ᵐ y ∂μ, ConvolutionExistsAt f g y L ν)
     (hgk : ∀ᵐ x ∂ν, ConvolutionExistsAt g k x L₄ μ)
@@ -1482,7 +1482,7 @@ theorem integrable_posConvolution {f : ℝ → E} {g : ℝ → E'} {μ ν : Meas
 #align integrable_pos_convolution MeasureTheory.integrable_posConvolution
 
 /-- The integral over `Ioi 0` of a forward convolution of two functions is equal to the product
-of their integrals over this set. (Compare `integral_convolution` for the two-sided convolution.) -/
+of their integrals over this set. (Compare `MeasureTheory.integral_convolution` for the two-sided convolution.) -/
 theorem integral_posConvolution [CompleteSpace E] [CompleteSpace E'] {μ ν : Measure ℝ}
     [SFinite μ] [SFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] {f : ℝ → E} {g : ℝ → E'}
     (hf : IntegrableOn f (Ioi 0) ν) (hg : IntegrableOn g (Ioi 0) μ) (L : E →L[ℝ] E' →L[ℝ] F) :
