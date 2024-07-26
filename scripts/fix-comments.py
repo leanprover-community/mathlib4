@@ -170,9 +170,9 @@ blob_sha = subprocess.run(
 tree_sha = mktree(path, blob_sha, tree=False)
 
 print(f"The script will now interactively suggest changes to {leanfile}.\n")
-s = input("Type y to continue. ")
-if s != 'y':
-    sys.exit(1)
+# s = input("Type y to continue. ")
+# if s != 'y':
+#     sys.exit(1)
 
 subprocess.run(['git', 'restore', '--patch', '--source=' + tree_sha, '--', leanfile], check=True)
 
