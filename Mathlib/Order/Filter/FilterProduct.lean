@@ -46,11 +46,13 @@ instance instDivisionSemiring [DivisionSemiring β] : DivisionSemiring β* where
   toSemiring := instSemiring
   __ := instGroupWithZero
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
 
 instance instDivisionRing [DivisionRing β] : DivisionRing β* where
   __ := instRing
   __ := instDivisionSemiring
   qsmul := _
+  qsmul_def := fun q a => rfl
 
 instance instSemifield [Semifield β] : Semifield β* where
   __ := instCommSemiring
