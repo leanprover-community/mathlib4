@@ -8,10 +8,17 @@ import ProofWidgets.Presentation.Expr
 import Mathlib.Tactic.CategoryTheory.Monoidal
 
 /-!
-# String Diagrams
+# String Diagram Widget
 
-This file provides tactic/meta infrastructure for displaying string diagrams for morphisms
-in monoidal categories in the infoview.
+This file provides meta infrastructure for displaying string diagrams for morphisms in monoidal
+categories in the infoview. To enable the string diagram widget, you need to import this file and
+inserting `with_panel_widgets [Mathlib.Tactic.Widget.StringDiagram]` at the beginning of the
+proof. Alternatively, you can also write
+```lean
+open Mathlib.Tactic.Widget
+show_panel_widgets [local StringDiagram]
+```
+to enable the string diagram widget in the current section.
 
 String diagrams are graphical representations of morphisms in monoidal categories, which are
 useful for rewriting computations. More precisely, objects in a monoidal category is represented
