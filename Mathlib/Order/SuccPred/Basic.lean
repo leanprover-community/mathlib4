@@ -1298,11 +1298,11 @@ theorem exists_pred_iterate_iff_le : (∃ n, pred^[n] b = a) ↔ a ≤ b :=
 @[elab_as_elim]
 theorem Pred.rec {P : α → Prop} {m : α} (h0 : P m) (h1 : ∀ n, n ≤ m → P n → P (pred n)) ⦃n : α⦄
     (hmn : n ≤ m) : P n :=
-  @Succ.rec αᵒᵈ _ _ _ _ _ h0 h1 _ hmn
+  Succ.rec (α := αᵒᵈ) (P := P) h0 h1 hmn
 
 theorem Pred.rec_iff {p : α → Prop} (hsucc : ∀ a, p a ↔ p (pred a)) {a b : α} (h : a ≤ b) :
     p a ↔ p b :=
-  (@Succ.rec_iff αᵒᵈ _ _ _ _ hsucc _ _ h).symm
+  (Succ.rec_iff (α := αᵒᵈ) hsucc h).symm
 
 end PredOrder
 

@@ -62,7 +62,7 @@ variable {C : Type u} [Category.{v} C] {I : Type w} {A B : I → C} (f : ∀ i, 
 
 section
 
-variable {S : C} {X Y Z : C} (πX : X ⟶ S) (πY : Y ⟶ S) (φ : X ⟶ Y) (hφ : φ ≫ πY = πX)
+variable {S : C} {X Y Z : C} (πX : X ⟶ S) (πY : Y ⟶ S) (φ : X ⟶ Y)
 
 /-- Given a family of morphisms `f i : A i ⟶ B i` and a morphism `πX : X ⟶ S`,
 this type parametrizes the commutative squares with a morphism `f i` on the left
@@ -143,9 +143,11 @@ lemma ιFunctorObj_πFunctorObj : ιFunctorObj f πX ≫ πFunctorObj f πX = π
 
 /-- The canonical morphism `∐ (functorObjSrcFamily f πX) ⟶ ∐ (functorObjSrcFamily f πY)`
 induced by a morphism in `φ : X ⟶ Y` such that `φ ≫ πX = πY`. -/
-noncomputable def functorMapSrc :
+noncomputable def functorMapSrc  (hφ : φ ≫ πY = πX) :
     ∐ (functorObjSrcFamily f πX) ⟶ ∐ functorObjSrcFamily f πY :=
   Sigma.map' (fun x => FunctorObjIndex.mk x.i (x.t ≫ φ) x.b (by simp [hφ])) (fun _ => 𝟙 _)
+
+variable (hφ : φ ≫ πY = πX)
 
 @[reassoc]
 lemma ι_functorMapSrc (i : I) (t : A i ⟶ X) (b : B i ⟶ S) (w : t ≫ πX = f i ≫ b)
@@ -164,7 +166,7 @@ lemma functorMapSrc_functorObjTop :
 
 /-- The canonical morphism `∐ functorObjTgtFamily f πX ⟶ ∐ functorObjTgtFamily f πY`
 induced by a morphism in `φ : X ⟶ Y` such that `φ ≫ πX = πY`. -/
-noncomputable def functorMapTgt :
+noncomputable def functorMapTgt  (hφ : φ ≫ πY = πX) :
     ∐ functorObjTgtFamily f πX ⟶ ∐ functorObjTgtFamily f πY :=
   Sigma.map' (fun x => FunctorObjIndex.mk x.i (x.t ≫ φ) x.b (by simp [hφ])) (fun _ => 𝟙 _)
 
