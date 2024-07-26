@@ -376,10 +376,7 @@ We work in a category `C` equipped with a shift.
 -/
 variable {C : Type u} [Category.{v} C] [HasShift C ℤ]
 
-
 section
-
-variable [HasZeroObject C] [HasZeroMorphisms C]
 
 open ZeroObject
 
@@ -402,7 +399,6 @@ instance : Zero (T₁ ⟶ T₂) where
     { hom₁ := 0
       hom₂ := 0
       hom₃ := 0 }
-
 
 @[simp] lemma Triangle.zero_hom₁ : (0 : T₁ ⟶ T₂).hom₁ = 0 := rfl
 @[simp] lemma Triangle.zero_hom₂ : (0 : T₁ ⟶ T₂).hom₂ = 0 := rfl
@@ -465,7 +461,7 @@ instance  :
 end
 
 instance instAddCommGroupTriangleHom : AddCommGroup (T₁ ⟶ T₂) where
-  zero_add f := by ext; all_goals (simp);
+  zero_add f := by ext <;> apply zero_add
   add_assoc f g h := by ext <;> apply add_assoc
   add_zero f := by ext <;> apply add_zero
   add_comm f g := by ext <;> apply add_comm
@@ -503,104 +499,7 @@ instance : Linear R (Triangle C) where
 
 end Linear
 
-section
-
-variable {J : Type*} (T : J → Triangle C)
-  [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
-  [HasProduct (fun j => (T j).obj₃)] [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)]
-
-/-- The product of a family of triangles. -/
-@[simps!]
-def productTriangle : Triangle C :=
-  Triangle.mk (Pi.map (fun j => (T j).mor₁))
-    (Pi.map (fun j => (T j).mor₂))
-    (Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
-
-/-- A projection from the product of a family of triangles. -/
-@[simps]
-def productTriangle.π (j : J) :
-    productTriangle T ⟶ T j where
-  hom₁ := Pi.π _ j
-  hom₂ := Pi.π _ j
-  hom₃ := Pi.π _ j
-  comm₃ := by
-    dsimp
-    rw [← piComparison_comp_π, assoc, IsIso.inv_hom_id_assoc]
-    simp only [limMap_π, Discrete.natTrans_app]
-
-/-- The fan given by `productTriangle T`. -/
-@[simp]
-def productTriangle.fan : Fan T := Fan.mk (productTriangle T) (productTriangle.π T)
-
-/-- A family of morphisms `T' ⟶ T j` lifts to a morphism `T' ⟶ productTriangle T`. -/
-@[simps]
-def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
-    T' ⟶ productTriangle T where
-  hom₁ := Pi.lift (fun j => (φ j).hom₁)
-  hom₂ := Pi.lift (fun j => (φ j).hom₂)
-  hom₃ := Pi.lift (fun j => (φ j).hom₃)
-  comm₃ := by
-    dsimp
-    rw [← cancel_mono (piComparison _ _), assoc, assoc, assoc, IsIso.inv_hom_id, comp_id]
-    aesop_cat
-
-/-- The triangle `productTriangle T` satisfies the universal property of the categorical
-product of the triangles `T`. -/
-def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
-  mkFanLimit _ (fun s => productTriangle.lift T s.proj) (fun s j => by aesop_cat) (by
-    intro s m hm
-    ext1
-    all_goals
-    · dsimp
-      ext1 j
-      dsimp
-      simp [← hm])
-
-lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
-    (h : ∀ j, (T j).mor₃ ≫ (T j).mor₁⟦(1 : ℤ)⟧' = 0) :
-    (productTriangle T).mor₃ ≫ (productTriangle T).mor₁⟦1⟧' = 0 := by
-  have : HasProduct (fun j => (T j).obj₂⟦(1 : ℤ)⟧) :=
-    ⟨_, isLimitFanMkObjOfIsLimit (shiftFunctor C (1 : ℤ)) _ _
-      (productIsProduct (fun j => (T j).obj₂))⟩
-  dsimp
-  change _ ≫ (Pi.lift (fun j => Pi.π _ j ≫ (T j).mor₁))⟦(1 : ℤ)⟧' = 0
-  rw [assoc, ← cancel_mono (piComparison _ _), zero_comp, assoc, assoc]
-  ext j
-  simp only [map_lift_piComparison, assoc, limit.lift_π, Fan.mk_π_app, zero_comp,
-    Functor.map_comp, ← piComparison_comp_π_assoc, IsIso.inv_hom_id_assoc,
-    limMap_π_assoc, Discrete.natTrans_app, h j, comp_zero]
-
-end
-
-variable (C) in
-/-- The functor `C ⥤ Triangle C` which sends `X` to `contractibleTriangle X`. -/
-@[simps]
-def contractibleTriangleFunctor [HasZeroObject C] [HasZeroMorphisms C] : C ⥤ Triangle C where
-  obj X := contractibleTriangle X
-  map f :=
-    { hom₁ := f
-      hom₂ := f
-      hom₃ := 0 }
-
 namespace Triangle
-
-/-- The first projection `Triangle C ⥤ C`. -/
-@[simps]
-def π₁ : Triangle C ⥤ C where
-  obj T := T.obj₁
-  map f := f.hom₁
-
-/-- The second projection `Triangle C ⥤ C`. -/
-@[simps]
-def π₂ : Triangle C ⥤ C where
-  obj T := T.obj₂
-  map f := f.hom₂
-
-/-- The third projection `Triangle C ⥤ C`. -/
-@[simps]
-def π₃ : Triangle C ⥤ C where
-  obj T := T.obj₃
-  map f := f.hom₃
 
 @[simps]
 def π₁Toπ₂ : (π₁ : Triangle C ⥤ C) ⟶ Triangle.π₂ where
@@ -704,4 +603,8 @@ def functorIsoMk'
 
 end Triangle
 
+end
+
 end CategoryTheory.Pretriangulated
+
+end

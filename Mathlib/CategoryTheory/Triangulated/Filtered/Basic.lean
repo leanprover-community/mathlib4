@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Triangulated.Subcategory
 import Mathlib.CategoryTheory.Shift.Predicate
 
 /-!
-# Filtered Pretriangulated Categories
+# Filtered Triangulated Categories
 
 -/
 
@@ -112,12 +112,13 @@ set_option quotPrecheck false in
 /-- shifting a morphism `f` by `(0, n)` is obtained by the notation `f⟪n⟫'` -/
 notation f "⟪" n "⟫'" => (@shiftFunctor C _ _ _ Shift₂ n).map f
 
+namespace Triangulated
 
 variable (C)
 
 /-- Definition of a filtered pretriangulated category.
 -/
-class FilteredPretriangulated [∀ p : ℤ × ℤ, Functor.Additive (shiftFunctor C p)]
+class FilteredTriangulated [∀ p : ℤ × ℤ, Functor.Additive (shiftFunctor C p)]
   [hC : Pretriangulated C]
 where
   /-- the second shift acts by triangulated functors -/
@@ -146,14 +147,14 @@ where
     (f : A ⟶ X) (g : X ⟶ B) (h : B ⟶ A⟦1⟧),
     Triangle.mk f g h ∈ distinguishedTriangles
 
-namespace FilteredPretriangulated
+namespace FilteredTriangulated
 
 attribute [instance] LE_closedUnderIsomorphisms GE_closedUnderIsomorphisms
 
 variable {C}
 
 variable [∀ p : ℤ × ℤ, Functor.Additive (CategoryTheory.shiftFunctor C p)]
-  [hC : Pretriangulated C] [hP : FilteredPretriangulated C]
+  [hC : Pretriangulated C] [hP : FilteredTriangulated C]
 
 lemma exists_triangle (A : C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     ∃ (X Y : C) (_ : (GE n₁).P X) (_ : (LE n₀).P Y) (f : X ⟶ A) (g : A ⟶ Y)
@@ -509,7 +510,9 @@ noncomputable def liftCoreιCore {D : Type*} [Category D]
     liftCore G hF ⋙ ιCore ≅ G :=
   NatIso.ofComponents (fun X => ιCoreObjCoreMkIso _ (hF X)) (by aesop_cat)
 
-end FilteredPretriangulated
+end FilteredTriangulated
+
+end Triangulated
 
 #exit
 
