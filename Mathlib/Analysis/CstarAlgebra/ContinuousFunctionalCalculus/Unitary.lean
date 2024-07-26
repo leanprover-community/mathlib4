@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Tactic.Peel
-import Mathlib.Topology.ContinuousFunction.FunctionalCalculus
+import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unital
 
 /-! # Conditions on unitary elements imposed by the continuous functional calculus
 

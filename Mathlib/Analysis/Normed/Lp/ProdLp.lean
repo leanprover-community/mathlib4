@@ -5,7 +5,7 @@ Authors: Moritz Doll, Sébastien Gouëzel, Jireh Loreaux
 -/
 
 import Mathlib.Analysis.MeanInequalities
-import Mathlib.Analysis.NormedSpace.WithLp
+import Mathlib.Analysis.Normed.Lp.WithLp
 
 /-!
 # `L^p` distance on products of two metric spaces
@@ -32,7 +32,7 @@ statements for the coordinate functions, for instance.
 
 # Implementation notes
 
-This file is a straight-forward adaptation of `Mathlib.Analysis.NormedSpace.PiLp`.
+This file is a straight-forward adaptation of `Mathlib.Analysis.Normed.Lp.PiLp`.
 
 -/
 
