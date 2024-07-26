@@ -11,8 +11,6 @@ import Mathlib.Algebra.Module.LinearMap.End
 import Mathlib.Algebra.Module.Pi
 import Mathlib.GroupTheory.GroupAction.Group
 
-#align_import algebra.module.equiv from "leanprover-community/mathlib"@"ea94d7cd54ad9ca6b7710032868abb7c6a104c9c"
-
 /-!
 # Further results on (semi)linear equivalences.
 -/
@@ -49,20 +47,15 @@ def restrictScalars (f : M ≃ₗ[S] M₂) : M ≃ₗ[R] M₂ :=
     invFun := f.symm
     left_inv := f.left_inv
     right_inv := f.right_inv }
-#align linear_equiv.restrict_scalars LinearEquiv.restrictScalars
-#align linear_equiv.restrict_scalars_apply LinearEquiv.restrictScalars_apply
-#align linear_equiv.restrict_scalars_symm_apply LinearEquiv.restrictScalars_symm_apply
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (M ≃ₗ[S] M₂) → M ≃ₗ[R] M₂) := fun _ _ h =>
   ext (LinearEquiv.congr_fun h : _)
-#align linear_equiv.restrict_scalars_injective LinearEquiv.restrictScalars_injective
 
 @[simp]
 theorem restrictScalars_inj (f g : M ≃ₗ[S] M₂) :
     f.restrictScalars R = g.restrictScalars R ↔ f = g :=
   (restrictScalars_injective R).eq_iff
-#align linear_equiv.restrict_scalars_inj LinearEquiv.restrictScalars_inj
 
 end RestrictScalars
 
@@ -76,7 +69,6 @@ theorem _root_.Module.End_isUnit_iff [Module R M] (f : Module.End R M) :
     fun H =>
     let e : M ≃ₗ[R] M := { f, Equiv.ofBijective f H with }
     ⟨⟨_, e.symm, LinearMap.ext e.right_inv, LinearMap.ext e.left_inv⟩, rfl⟩⟩
-#align module.End_is_unit_iff Module.End_isUnit_iff
 
 section Automorphisms
 
@@ -90,7 +82,6 @@ instance automorphismGroup : Group (M ≃ₗ[R] M) where
   mul_one f := ext fun x => rfl
   one_mul f := ext fun x => rfl
   mul_left_inv f := ext <| f.left_inv
-#align linear_equiv.automorphism_group LinearEquiv.automorphismGroup
 
 @[simp]
 lemma coe_one : ↑(1 : M ≃ₗ[R] M) = id := rfl
@@ -114,8 +105,6 @@ def automorphismGroup.toLinearMapMonoidHom : (M ≃ₗ[R] M) →* M →ₗ[R] M 
   toFun e := e.toLinearMap
   map_one' := rfl
   map_mul' _ _ := rfl
-#align linear_equiv.automorphism_group.to_linear_map_monoid_hom LinearEquiv.automorphismGroup.toLinearMapMonoidHom
-#align linear_equiv.automorphism_group.to_linear_map_monoid_hom_apply LinearEquiv.automorphismGroup.toLinearMapMonoidHom_apply
 
 /-- The tautological action by `M ≃ₗ[R] M` on `M`.
 
@@ -126,25 +115,20 @@ instance applyDistribMulAction : DistribMulAction (M ≃ₗ[R] M) M where
   smul_add := LinearEquiv.map_add
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
-#align linear_equiv.apply_distrib_mul_action LinearEquiv.applyDistribMulAction
 
 @[simp]
 protected theorem smul_def (f : M ≃ₗ[R] M) (a : M) : f • a = f a :=
   rfl
-#align linear_equiv.smul_def LinearEquiv.smul_def
 
 /-- `LinearEquiv.applyDistribMulAction` is faithful. -/
 instance apply_faithfulSMul : FaithfulSMul (M ≃ₗ[R] M) M :=
   ⟨@fun _ _ => LinearEquiv.ext⟩
-#align linear_equiv.apply_has_faithful_smul LinearEquiv.apply_faithfulSMul
 
 instance apply_smulCommClass : SMulCommClass R (M ≃ₗ[R] M) M where
   smul_comm r e m := (e.map_smul r m).symm
-#align linear_equiv.apply_smul_comm_class LinearEquiv.apply_smulCommClass
 
 instance apply_smulCommClass' : SMulCommClass (M ≃ₗ[R] M) R M where
   smul_comm := LinearEquiv.map_smul
-#align linear_equiv.apply_smul_comm_class' LinearEquiv.apply_smulCommClass'
 
 end Automorphisms
 
@@ -161,14 +145,11 @@ def ofSubsingleton : M ≃ₗ[R] M₂ :=
     invFun := fun _ => 0
     left_inv := fun _ => Subsingleton.elim _ _
     right_inv := fun _ => Subsingleton.elim _ _ }
-#align linear_equiv.of_subsingleton LinearEquiv.ofSubsingleton
-#align linear_equiv.of_subsingleton_symm_apply LinearEquiv.ofSubsingleton_symm_apply
 
 @[simp]
 theorem ofSubsingleton_self : ofSubsingleton M M = refl R M := by
   ext
   simp [eq_iff_true_of_subsingleton]
-#align linear_equiv.of_subsingleton_self LinearEquiv.ofSubsingleton_self
 
 end OfSubsingleton
 
@@ -186,8 +167,6 @@ def compHom.toLinearEquiv {R S : Type*} [Semiring R] [Semiring S] (g : R ≃+* S
     toFun := (g : R → S)
     invFun := (g.symm : S → R)
     map_smul' := g.map_mul }
-#align module.comp_hom.to_linear_equiv Module.compHom.toLinearEquiv
-#align module.comp_hom.to_linear_equiv_symm_apply Module.compHom.toLinearEquiv_symm_apply
 
 end Module
 
@@ -202,9 +181,6 @@ This is a stronger version of `DistribMulAction.toAddEquiv`. -/
 @[simps!]
 def toLinearEquiv (s : S) : M ≃ₗ[R] M :=
   { toAddEquiv M s, toLinearMap R M s with }
-#align distrib_mul_action.to_linear_equiv DistribMulAction.toLinearEquiv
-#align distrib_mul_action.to_linear_equiv_apply DistribMulAction.toLinearEquiv_apply
-#align distrib_mul_action.to_linear_equiv_symm_apply DistribMulAction.toLinearEquiv_symm_apply
 
 /-- Each element of the group defines a module automorphism.
 
@@ -214,8 +190,6 @@ def toModuleAut : S →* M ≃ₗ[R] M where
   toFun := toLinearEquiv R M
   map_one' := LinearEquiv.ext <| one_smul _
   map_mul' _ _ := LinearEquiv.ext <| mul_smul _ _
-#align distrib_mul_action.to_module_aut DistribMulAction.toModuleAut
-#align distrib_mul_action.to_module_aut_apply DistribMulAction.toModuleAut_apply
 
 end DistribMulAction
 
@@ -230,57 +204,47 @@ variable (e : M ≃+ M₂)
 /-- An additive equivalence whose underlying function preserves `smul` is a linear equivalence. -/
 def toLinearEquiv (h : ∀ (c : R) (x), e (c • x) = c • e x) : M ≃ₗ[R] M₂ :=
   { e with map_smul' := h }
-#align add_equiv.to_linear_equiv AddEquiv.toLinearEquiv
 
 @[simp]
 theorem coe_toLinearEquiv (h : ∀ (c : R) (x), e (c • x) = c • e x) : ⇑(e.toLinearEquiv h) = e :=
   rfl
-#align add_equiv.coe_to_linear_equiv AddEquiv.coe_toLinearEquiv
 
 @[simp]
 theorem coe_toLinearEquiv_symm (h : ∀ (c : R) (x), e (c • x) = c • e x) :
     ⇑(e.toLinearEquiv h).symm = e.symm :=
   rfl
-#align add_equiv.coe_to_linear_equiv_symm AddEquiv.coe_toLinearEquiv_symm
 
 /-- An additive equivalence between commutative additive monoids is a linear equivalence between
 ℕ-modules -/
 def toNatLinearEquiv : M ≃ₗ[ℕ] M₂ :=
   e.toLinearEquiv fun c a => by rw [map_nsmul]
-#align add_equiv.to_nat_linear_equiv AddEquiv.toNatLinearEquiv
 
 @[simp]
 theorem coe_toNatLinearEquiv : ⇑e.toNatLinearEquiv = e :=
   rfl
-#align add_equiv.coe_to_nat_linear_equiv AddEquiv.coe_toNatLinearEquiv
 
 @[simp]
 theorem toNatLinearEquiv_toAddEquiv : ↑e.toNatLinearEquiv = e := by
   ext
   rfl
-#align add_equiv.to_nat_linear_equiv_to_add_equiv AddEquiv.toNatLinearEquiv_toAddEquiv
 
 @[simp]
 theorem _root_.LinearEquiv.toAddEquiv_toNatLinearEquiv (e : M ≃ₗ[ℕ] M₂) :
     AddEquiv.toNatLinearEquiv ↑e = e :=
   DFunLike.coe_injective rfl
-#align linear_equiv.to_add_equiv_to_nat_linear_equiv LinearEquiv.toAddEquiv_toNatLinearEquiv
 
 @[simp]
 theorem toNatLinearEquiv_symm : e.toNatLinearEquiv.symm = e.symm.toNatLinearEquiv :=
   rfl
-#align add_equiv.to_nat_linear_equiv_symm AddEquiv.toNatLinearEquiv_symm
 
 @[simp]
 theorem toNatLinearEquiv_refl : (AddEquiv.refl M).toNatLinearEquiv = LinearEquiv.refl ℕ M :=
   rfl
-#align add_equiv.to_nat_linear_equiv_refl AddEquiv.toNatLinearEquiv_refl
 
 @[simp]
 theorem toNatLinearEquiv_trans (e₂ : M₂ ≃+ M₃) :
     e.toNatLinearEquiv.trans e₂.toNatLinearEquiv = (e.trans e₂).toNatLinearEquiv :=
   rfl
-#align add_equiv.to_nat_linear_equiv_trans AddEquiv.toNatLinearEquiv_trans
 
 end AddCommMonoid
 
@@ -293,40 +257,33 @@ variable (e : M ≃+ M₂)
 equivalence between ℤ-modules -/
 def toIntLinearEquiv : M ≃ₗ[ℤ] M₂ :=
   e.toLinearEquiv fun c a => e.toAddMonoidHom.map_zsmul a c
-#align add_equiv.to_int_linear_equiv AddEquiv.toIntLinearEquiv
 
 @[simp]
 theorem coe_toIntLinearEquiv : ⇑e.toIntLinearEquiv = e :=
   rfl
-#align add_equiv.coe_to_int_linear_equiv AddEquiv.coe_toIntLinearEquiv
 
 @[simp]
 theorem toIntLinearEquiv_toAddEquiv : ↑e.toIntLinearEquiv = e := by
   ext
   rfl
-#align add_equiv.to_int_linear_equiv_to_add_equiv AddEquiv.toIntLinearEquiv_toAddEquiv
 
 @[simp]
 theorem _root_.LinearEquiv.toAddEquiv_toIntLinearEquiv (e : M ≃ₗ[ℤ] M₂) :
     AddEquiv.toIntLinearEquiv (e : M ≃+ M₂) = e :=
   DFunLike.coe_injective rfl
-#align linear_equiv.to_add_equiv_to_int_linear_equiv LinearEquiv.toAddEquiv_toIntLinearEquiv
 
 @[simp]
 theorem toIntLinearEquiv_symm : e.toIntLinearEquiv.symm = e.symm.toIntLinearEquiv :=
   rfl
-#align add_equiv.to_int_linear_equiv_symm AddEquiv.toIntLinearEquiv_symm
 
 @[simp]
 theorem toIntLinearEquiv_refl : (AddEquiv.refl M).toIntLinearEquiv = LinearEquiv.refl ℤ M :=
   rfl
-#align add_equiv.to_int_linear_equiv_refl AddEquiv.toIntLinearEquiv_refl
 
 @[simp]
 theorem toIntLinearEquiv_trans (e₂ : M₂ ≃+ M₃) :
     e.toIntLinearEquiv.trans e₂.toIntLinearEquiv = (e.trans e₂).toIntLinearEquiv :=
   rfl
-#align add_equiv.to_int_linear_equiv_trans AddEquiv.toIntLinearEquiv_trans
 
 end AddCommGroup
 
@@ -354,7 +311,6 @@ def ringLmapEquivSelf [Module S M] [SMulCommClass R S M] : (R →ₗ[R] M) ≃�
       ext
       simp only [coe_smulRight, one_apply, smul_eq_mul, ← map_smul f, mul_one]
     right_inv := fun x => by simp }
-#align linear_map.ring_lmap_equiv_self LinearMap.ringLmapEquivSelf
 
 end LinearMap
 
@@ -371,7 +327,6 @@ def addMonoidHomLequivNat {A B : Type*} (R : Type*) [Semiring R] [AddCommMonoid 
   map_smul' := by intros; ext; rfl
   left_inv := by intro f; ext; rfl
   right_inv := by intro f; ext; rfl
-#align add_monoid_hom_lequiv_nat addMonoidHomLequivNat
 
 /--
 The `R`-linear equivalence between additive morphisms `A →+ B` and `ℤ`-linear morphisms `A →ₗ[ℤ] B`.
@@ -386,7 +341,6 @@ def addMonoidHomLequivInt {A B : Type*} (R : Type*) [Semiring R] [AddCommGroup A
   map_smul' := by intros; ext; rfl
   left_inv := by intro f; ext; rfl
   right_inv := by intro f; ext; rfl
-#align add_monoid_hom_lequiv_int addMonoidHomLequivInt
 
 /-- Ring equivalence between additive group endomorphisms of an `AddCommGroup` `A` and
 `ℤ`-module endomorphisms of `A.` -/
@@ -424,16 +378,13 @@ instance : Zero (M ≃ₛₗ[σ₁₂] M₂) :=
 @[simp]
 theorem zero_symm : (0 : M ≃ₛₗ[σ₁₂] M₂).symm = 0 :=
   rfl
-#align linear_equiv.zero_symm LinearEquiv.zero_symm
 
 @[simp]
 theorem coe_zero : ⇑(0 : M ≃ₛₗ[σ₁₂] M₂) = 0 :=
   rfl
-#align linear_equiv.coe_zero LinearEquiv.coe_zero
 
 theorem zero_apply (x : M) : (0 : M ≃ₛₗ[σ₁₂] M₂) x = 0 :=
   rfl
-#align linear_equiv.zero_apply LinearEquiv.zero_apply
 
 /-- Between two zero modules, the zero map is the only equivalence. -/
 instance : Unique (M ≃ₛₗ[σ₁₂] M₂) where
@@ -447,7 +398,6 @@ instance uniqueOfSubsingleton [Subsingleton R] [Subsingleton R₂] : Unique (M �
   haveI := Module.subsingleton R M
   haveI := Module.subsingleton R₂ M₂
   infer_instance
-#align linear_equiv.unique_of_subsingleton LinearEquiv.uniqueOfSubsingleton
 
 end Subsingleton
 
@@ -467,17 +417,14 @@ protected def curry : (V × V₂ → R) ≃ₗ[R] V → V₂ → R :=
     map_smul' := fun _ _ => by
       ext
       rfl }
-#align linear_equiv.curry LinearEquiv.curry
 
 @[simp]
 theorem coe_curry : ⇑(LinearEquiv.curry R V V₂) = curry :=
   rfl
-#align linear_equiv.coe_curry LinearEquiv.coe_curry
 
 @[simp]
 theorem coe_curry_symm : ⇑(LinearEquiv.curry R V V₂).symm = uncurry :=
   rfl
-#align linear_equiv.coe_curry_symm LinearEquiv.coe_curry_symm
 
 end Uncurry
 
@@ -497,17 +444,14 @@ def ofLinear (h₁ : f.comp g = LinearMap.id) (h₂ : g.comp f = LinearMap.id) :
     invFun := g
     left_inv := LinearMap.ext_iff.1 h₂
     right_inv := LinearMap.ext_iff.1 h₁ }
-#align linear_equiv.of_linear LinearEquiv.ofLinear
 
 @[simp]
 theorem ofLinear_apply {h₁ h₂} (x : M) : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) x = f x :=
   rfl
-#align linear_equiv.of_linear_apply LinearEquiv.ofLinear_apply
 
 @[simp]
 theorem ofLinear_symm_apply {h₁ h₂} (x : M₂) : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm x = g x :=
   rfl
-#align linear_equiv.of_linear_symm_apply LinearEquiv.ofLinear_symm_apply
 
 @[simp]
 theorem ofLinear_toLinearMap {h₁ h₂} : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) = f := rfl
@@ -526,22 +470,18 @@ variable (R) [Semiring R] [AddCommGroup M] [Module R M]
 /-- `x ↦ -x` as a `LinearEquiv` -/
 def neg : M ≃ₗ[R] M :=
   { Equiv.neg M, (-LinearMap.id : M →ₗ[R] M) with }
-#align linear_equiv.neg LinearEquiv.neg
 
 variable {R}
 
 @[simp]
 theorem coe_neg : ⇑(neg R : M ≃ₗ[R] M) = -id :=
   rfl
-#align linear_equiv.coe_neg LinearEquiv.coe_neg
 
 theorem neg_apply (x : M) : neg R x = -x := by simp
-#align linear_equiv.neg_apply LinearEquiv.neg_apply
 
 @[simp]
 theorem symm_neg : (neg R : M ≃ₗ[R] M).symm = neg R :=
   rfl
-#align linear_equiv.symm_neg LinearEquiv.symm_neg
 
 end Neg
 
@@ -555,7 +495,6 @@ open LinearMap
 /-- Multiplying by a unit `a` of the ring `R` is a linear equivalence. -/
 def smulOfUnit (a : Rˣ) : M ≃ₗ[R] M :=
   DistribMulAction.toLinearEquiv R M a
-#align linear_equiv.smul_of_unit LinearEquiv.smulOfUnit
 
 /-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
 linear isomorphism between the two function spaces. -/
@@ -576,7 +515,6 @@ def arrowCongr {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommM
   map_smul' c f := by
     ext x
     simp only [smul_apply, Function.comp_apply, coe_comp, map_smulₛₗ e₂, coe_coe]
-#align linear_equiv.arrow_congr LinearEquiv.arrowCongr
 
 @[simp]
 theorem arrowCongr_apply {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁]
@@ -584,7 +522,6 @@ theorem arrowCongr_apply {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R]
     [Module R M₂₁] [Module R M₂₂] (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) (f : M₁ →ₗ[R] M₂₁)
     (x : M₂) : arrowCongr e₁ e₂ f x = e₂ (f (e₁.symm x)) :=
   rfl
-#align linear_equiv.arrow_congr_apply LinearEquiv.arrowCongr_apply
 
 @[simp]
 theorem arrowCongr_symm_apply {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁]
@@ -592,7 +529,6 @@ theorem arrowCongr_symm_apply {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiri
     [Module R M₂₁] [Module R M₂₂] (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) (f : M₂ →ₗ[R] M₂₂)
     (x : M₁) : (arrowCongr e₁ e₂).symm f x = e₂.symm (f (e₁ x)) :=
   rfl
-#align linear_equiv.arrow_congr_symm_apply LinearEquiv.arrowCongr_symm_apply
 
 theorem arrowCongr_comp {N N₂ N₃ : Sort _} [AddCommMonoid N] [AddCommMonoid N₂] [AddCommMonoid N₃]
     [Module R N] [Module R N₂] [Module R N₃] (e₁ : M ≃ₗ[R] N) (e₂ : M₂ ≃ₗ[R] N₂) (e₃ : M₃ ≃ₗ[R] N₃)
@@ -600,7 +536,6 @@ theorem arrowCongr_comp {N N₂ N₃ : Sort _} [AddCommMonoid N] [AddCommMonoid 
     arrowCongr e₁ e₃ (g.comp f) = (arrowCongr e₂ e₃ g).comp (arrowCongr e₁ e₂ f) := by
   ext
   simp only [symm_apply_apply, arrowCongr_apply, LinearMap.comp_apply]
-#align linear_equiv.arrow_congr_comp LinearEquiv.arrowCongr_comp
 
 theorem arrowCongr_trans {M₁ M₂ M₃ N₁ N₂ N₃ : Sort _} [AddCommMonoid M₁] [Module R M₁]
     [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] [Module R M₃] [AddCommMonoid N₁]
@@ -608,51 +543,42 @@ theorem arrowCongr_trans {M₁ M₂ M₃ N₁ N₂ N₃ : Sort _} [AddCommMonoid
     (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : N₁ ≃ₗ[R] N₂) (e₃ : M₂ ≃ₗ[R] M₃) (e₄ : N₂ ≃ₗ[R] N₃) :
     (arrowCongr e₁ e₂).trans (arrowCongr e₃ e₄) = arrowCongr (e₁.trans e₃) (e₂.trans e₄) :=
   rfl
-#align linear_equiv.arrow_congr_trans LinearEquiv.arrowCongr_trans
 
 /-- If `M₂` and `M₃` are linearly isomorphic then the two spaces of linear maps from `M` into `M₂`
 and `M` into `M₃` are linearly isomorphic. -/
 def congrRight (f : M₂ ≃ₗ[R] M₃) : (M →ₗ[R] M₂) ≃ₗ[R] M →ₗ[R] M₃ :=
   arrowCongr (LinearEquiv.refl R M) f
-#align linear_equiv.congr_right LinearEquiv.congrRight
 
 /-- If `M` and `M₂` are linearly isomorphic then the two spaces of linear maps from `M` and `M₂` to
 themselves are linearly isomorphic. -/
 def conj (e : M ≃ₗ[R] M₂) : Module.End R M ≃ₗ[R] Module.End R M₂ :=
   arrowCongr e e
-#align linear_equiv.conj LinearEquiv.conj
 
 theorem conj_apply (e : M ≃ₗ[R] M₂) (f : Module.End R M) :
     e.conj f = ((↑e : M →ₗ[R] M₂).comp f).comp (e.symm : M₂ →ₗ[R] M) :=
   rfl
-#align linear_equiv.conj_apply LinearEquiv.conj_apply
 
 theorem conj_apply_apply (e : M ≃ₗ[R] M₂) (f : Module.End R M) (x : M₂) :
     e.conj f x = e (f (e.symm x)) :=
   rfl
-#align linear_equiv.conj_apply_apply LinearEquiv.conj_apply_apply
 
 theorem symm_conj_apply (e : M ≃ₗ[R] M₂) (f : Module.End R M₂) :
     e.symm.conj f = ((↑e.symm : M₂ →ₗ[R] M).comp f).comp (e : M →ₗ[R] M₂) :=
   rfl
-#align linear_equiv.symm_conj_apply LinearEquiv.symm_conj_apply
 
 theorem conj_comp (e : M ≃ₗ[R] M₂) (f g : Module.End R M) :
     e.conj (g.comp f) = (e.conj g).comp (e.conj f) :=
   arrowCongr_comp e e e f g
-#align linear_equiv.conj_comp LinearEquiv.conj_comp
 
 theorem conj_trans (e₁ : M ≃ₗ[R] M₂) (e₂ : M₂ ≃ₗ[R] M₃) :
     e₁.conj.trans e₂.conj = (e₁.trans e₂).conj := by
   ext f x
   rfl
-#align linear_equiv.conj_trans LinearEquiv.conj_trans
 
 @[simp]
 theorem conj_id (e : M ≃ₗ[R] M₂) : e.conj LinearMap.id = LinearMap.id := by
   ext
   simp [conj_apply]
-#align linear_equiv.conj_id LinearEquiv.conj_id
 
 variable (M) in
 /-- An `R`-linear isomorphism between two `R`-modules `M₂` and `M₃` induces an `S`-linear
@@ -681,7 +607,6 @@ open LinearMap
 @[simps!]
 def smulOfNeZero (a : K) (ha : a ≠ 0) : M ≃ₗ[K] M :=
   smulOfUnit <| Units.mk0 a ha
-#align linear_equiv.smul_of_ne_zero LinearEquiv.smulOfNeZero
 
 end Field
 
@@ -694,7 +619,6 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂] [Modul
 /-- An equivalence whose underlying function is linear is a linear equivalence. -/
 def toLinearEquiv (e : M ≃ M₂) (h : IsLinearMap R (e : M → M₂)) : M ≃ₗ[R] M₂ :=
   { e, h.mk' e with }
-#align equiv.to_linear_equiv Equiv.toLinearEquiv
 
 end Equiv
 
@@ -711,22 +635,18 @@ def funLeft (f : m → n) : (n → M) →ₗ[R] m → M where
   toFun := (· ∘ f)
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-#align linear_map.fun_left LinearMap.funLeft
 
 @[simp]
 theorem funLeft_apply (f : m → n) (g : n → M) (i : m) : funLeft R M f g i = g (f i) :=
   rfl
-#align linear_map.fun_left_apply LinearMap.funLeft_apply
 
 @[simp]
 theorem funLeft_id (g : n → M) : funLeft R M _root_.id g = g :=
   rfl
-#align linear_map.fun_left_id LinearMap.funLeft_id
 
 theorem funLeft_comp (f₁ : n → p) (f₂ : m → n) :
     funLeft R M (f₁ ∘ f₂) = (funLeft R M f₂).comp (funLeft R M f₁) :=
   rfl
-#align linear_map.fun_left_comp LinearMap.funLeft_comp
 
 theorem funLeft_surjective_of_injective (f : m → n) (hf : Injective f) :
     Surjective (funLeft R M f) := by
@@ -739,7 +659,6 @@ theorem funLeft_surjective_of_injective (f : m → n) (hf : Injective f) :
     · congr
       exact hf w.choose_spec
     · simp only [not_true, exists_apply_eq_apply] at w
-#align linear_map.fun_left_surjective_of_injective LinearMap.funLeft_surjective_of_injective
 
 theorem funLeft_injective_of_surjective (f : m → n) (hf : Surjective f) :
     Injective (funLeft R M f) := by
@@ -747,7 +666,6 @@ theorem funLeft_injective_of_surjective (f : m → n) (hf : Surjective f) :
   suffices LeftInverse (funLeft R M g) (funLeft R M f) by exact this.injective
   intro x
   rw [← LinearMap.comp_apply, ← funLeft_comp, hg.id, funLeft_id]
-#align linear_map.fun_left_injective_of_surjective LinearMap.funLeft_injective_of_surjective
 
 end LinearMap
 
@@ -763,29 +681,24 @@ def funCongrLeft (e : m ≃ n) : (n → M) ≃ₗ[R] m → M :=
       funext fun i => by rw [id_apply, ← funLeft_comp, Equiv.symm_comp_self, LinearMap.funLeft_id])
     (LinearMap.ext fun x =>
       funext fun i => by rw [id_apply, ← funLeft_comp, Equiv.self_comp_symm, LinearMap.funLeft_id])
-#align linear_equiv.fun_congr_left LinearEquiv.funCongrLeft
 
 @[simp]
 theorem funCongrLeft_apply (e : m ≃ n) (x : n → M) : funCongrLeft R M e x = funLeft R M e x :=
   rfl
-#align linear_equiv.fun_congr_left_apply LinearEquiv.funCongrLeft_apply
 
 @[simp]
 theorem funCongrLeft_id : funCongrLeft R M (Equiv.refl n) = LinearEquiv.refl R (n → M) :=
   rfl
-#align linear_equiv.fun_congr_left_id LinearEquiv.funCongrLeft_id
 
 @[simp]
 theorem funCongrLeft_comp (e₁ : m ≃ n) (e₂ : n ≃ p) :
     funCongrLeft R M (Equiv.trans e₁ e₂) =
       LinearEquiv.trans (funCongrLeft R M e₂) (funCongrLeft R M e₁) :=
   rfl
-#align linear_equiv.fun_congr_left_comp LinearEquiv.funCongrLeft_comp
 
 @[simp]
 theorem funCongrLeft_symm (e : m ≃ n) : (funCongrLeft R M e).symm = funCongrLeft R M e.symm :=
   rfl
-#align linear_equiv.fun_congr_left_symm LinearEquiv.funCongrLeft_symm
 
 end LinearEquiv
 

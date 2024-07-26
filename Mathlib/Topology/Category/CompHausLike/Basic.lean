@@ -208,4 +208,3 @@ def isoEquivHomeo {X Y : CompHausLike.{u} P} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   right_inv _ := rfl
 
 end CompHausLike
-
