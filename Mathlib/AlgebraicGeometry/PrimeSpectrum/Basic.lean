@@ -513,6 +513,20 @@ lemma comap_basicOpen (f : R →+* S) (x : R) :
     TopologicalSpace.Opens.comap (comap f) (basicOpen x) = basicOpen (f x) :=
   rfl
 
+open TopologicalSpace in
+lemma iSup_basicOpen_eq_top_iff {ι : Type*} {f : ι → R} :
+    (⨆ i : ι, PrimeSpectrum.basicOpen (f i)) = ⊤ ↔ Ideal.span (Set.range f) = ⊤ := by
+  rw [SetLike.ext'_iff, Opens.coe_iSup]
+  simp only [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, Opens.coe_top, ← Set.compl_iInter,
+    ← PrimeSpectrum.zeroLocus_iUnion]
+  rw [← PrimeSpectrum.zeroLocus_empty_iff_eq_top, compl_involutive.eq_iff]
+  simp only [Set.iUnion_singleton_eq_range,  Set.compl_univ, PrimeSpectrum.zeroLocus_span]
+
+lemma iSup_basicOpen_eq_top_iff' {s : Set R} :
+    (⨆ i ∈ s, PrimeSpectrum.basicOpen i) = ⊤ ↔ Ideal.span s = ⊤ := by
+  conv_rhs => rw [← Subtype.range_val (s := s), ← iSup_basicOpen_eq_top_iff]
+  simp
+
 end BasicOpen
 
 section Order
