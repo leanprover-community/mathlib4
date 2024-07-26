@@ -55,8 +55,7 @@ universe u
 
 variable {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M]
 
-open Classical DirectSum LinearMap TensorProduct Finsupp
-open scoped BigOperators
+open Classical LinearMap TensorProduct Finsupp
 
 namespace Module
 
@@ -264,7 +263,7 @@ theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type u}
   have (K' : Submodule R K) (hK' : K'.FG) : ∃ (κ : Type u) (_ : Fintype κ) (a : N →ₗ[R] (κ →₀ R))
       (y : (κ →₀ R) →ₗ[R] M), x = y ∘ₗ a ∧ K' ≤ LinearMap.ker (a ∘ₗ f) := by
     revert N
-    apply Submodule.fg_induction (P := _) (N := K') (hN := hK')
+    apply Submodule.fg_induction (N := K') (hN := hK')
     · intro k N _ _ _ _ f x hfx
       have : x (f k) = 0 := by simpa using LinearMap.congr_fun hfx k
       simpa using exists_factorization_of_apply_eq_zero_of_free this

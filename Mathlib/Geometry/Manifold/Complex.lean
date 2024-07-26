@@ -8,8 +8,6 @@ import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Topology.LocallyConstant.Basic
 
-#align_import geometry.manifold.complex from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-! # Holomorphic functions on complex manifolds
 
 Thanks to the rigidity of complex-differentiability compared to real-differentiability, there are
@@ -156,19 +154,16 @@ protected theorem isLocallyConstant {f : M → F} (hf : MDifferentiable I 𝓘(�
   IsLocallyConstant.of_constant_on_preconnected_clopens fun _ hpc hclo _a ha _b hb ↦
     hf.mdifferentiableOn.apply_eq_of_isPreconnected_isCompact_isOpen hpc
       hclo.isClosed.isCompact hclo.isOpen hb ha
-#align mdifferentiable.is_locally_constant MDifferentiable.isLocallyConstant
 
 /-- A holomorphic function on a compact connected complex manifold is constant. -/
 theorem apply_eq_of_compactSpace [PreconnectedSpace M] {f : M → F}
     (hf : MDifferentiable I 𝓘(ℂ, F) f) (a b : M) : f a = f b :=
   hf.isLocallyConstant.apply_eq_of_preconnectedSpace _ _
-#align mdifferentiable.apply_eq_of_compact_space MDifferentiable.apply_eq_of_compactSpace
 
 /-- A holomorphic function on a compact connected complex manifold is the constant function `f ≡ v`,
 for some value `v`. -/
 theorem exists_eq_const_of_compactSpace [PreconnectedSpace M] {f : M → F}
     (hf : MDifferentiable I 𝓘(ℂ, F) f) : ∃ v : F, f = Function.const M v :=
   hf.isLocallyConstant.exists_eq_const
-#align mdifferentiable.exists_eq_const_of_compact_space MDifferentiable.exists_eq_const_of_compactSpace
 
 end MDifferentiable
