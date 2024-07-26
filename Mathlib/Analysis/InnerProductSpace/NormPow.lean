@@ -29,7 +29,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
     HasFDerivAt (fun x : E ↦ ‖x‖ ^ p) ((p * ‖x‖ ^ (p - 2)) • innerSL ℝ x) x := by
   by_cases hx : x = 0
-  · simp [hx]
+  · simp only [hx, norm_zero, map_zero, smul_zero]
     have h2p : 0 < p - 1 := sub_pos.mpr hp
     rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO]
     calc (fun x : E ↦ ‖x‖ ^ p - ‖(0 : E)‖ ^ p - 0)

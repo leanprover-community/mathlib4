@@ -665,7 +665,9 @@ instance instField : Field (center K) where
   inv_zero := Subtype.ext inv_zero
   -- TODO: use a nicer defeq
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun q x => rfl
 
 @[simp]
 theorem center.coe_inv (a : center K) : ((a⁻¹ : center K) : K) = (a : K)⁻¹ :=
