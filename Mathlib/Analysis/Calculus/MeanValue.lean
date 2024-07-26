@@ -747,6 +747,65 @@ theorem exists_deriv_eq_slope : ∃ c ∈ Ioo a b, deriv f c = (f b - f a) / (b 
   exists_hasDerivAt_eq_slope f (deriv f) hab hfc fun x hx =>
     ((hfd x hx).differentiableAt <| IsOpen.mem_nhds isOpen_Ioo hx).hasDerivAt
 
+/-- Lagrange's **Mean Value Theorem**, `deriv` version. -/
+theorem exists_deriv_eq_slope' : ∃ c ∈ Ioo a b, deriv f c = slope f a b := by
+  rw [slope_def_field]
+  exact exists_deriv_eq_slope f hab hfc hfd
+
+/-- A real function whose derivative tends to infinity from the right at a point is not
+differentiable at that point -/
+theorem not_differentiableAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) {a : ℝ}
+    (hf : Tendsto (deriv f) (𝓝[>] a) atTop) : ¬ DifferentiableAt ℝ f a := by
+  by_cases hcont_at_a : ¬ ContinuousWithinAt f (Ici a) a
+  · exact fun hcontra => hcont_at_a <| hcontra.continuousAt.continuousWithinAt
+  · push_neg at hcont_at_a
+    intro hdiff
+    have hdiff₂ := hdiff.hasDerivAt
+    rw [hasDerivAt_iff_tendsto_slope] at hdiff₂
+    replace hdiff₂ : Tendsto (slope f a) (𝓝[>] a) (𝓝 (deriv f a)) :=
+      hdiff₂.mono_left <| nhds_right'_le_nhds_ne a
+    have h₀ : ∀ᶠ b in (𝓝[>] a), ∀ x ∈ Ioc a b, max (deriv f a + 1) 0 < deriv f x := by
+      let C := max (deriv f a + 1) 0
+      rw [(nhdsWithin_Ioi_basis a).eventually_iff]
+      rw [(nhdsWithin_Ioi_basis a).tendsto_left_iff] at hf
+      obtain ⟨b, hab, hb⟩ := hf (Ioi C) (Ioi_mem_atTop _)
+      refine ⟨b, hab, fun x hx z hz => ?_⟩
+      simp only [MapsTo, mem_Ioo, mem_Ioi, and_imp] at hb
+      exact hb hz.1 <| hz.2.trans_lt hx.2
+    have h₁ : ∀ᶠ b in (𝓝[>] a), slope f a b < (deriv f a) + (1 : ℝ) := by
+      rw [(nhds_basis_Ioo _).tendsto_right_iff] at hdiff₂
+      specialize hdiff₂ ⟨deriv f a - 1, deriv f a + 1⟩ <| by simp
+      filter_upwards [hdiff₂] with z hz using hz.2
+    have hcontra : ∀ᶠ _ in (𝓝[>] a), False := by
+      filter_upwards [h₀, h₁, eventually_mem_nhdsWithin] with
+        b hb hslope (hab : a < b)
+      have hdiff' : DifferentiableOn ℝ f (Ioc a b) := fun z hz => by
+        have : deriv f z ≠ 0 := Ne.symm <| ne_of_lt <| by
+          simp_all only [mem_Ioo, and_imp, mem_Ioc, max_lt_iff]
+        exact DifferentiableAt.differentiableWithinAt <| differentiableAt_of_deriv_ne_zero this
+      have hcont : ContinuousOn f (Icc a b) := by
+        intro z hz
+        by_cases hz' : z = a
+        · rw [hz']
+          exact hcont_at_a.mono Icc_subset_Ici_self
+        · have hz'' : z ∈ Ioc a b := ⟨lt_of_le_of_ne hz.1 (Ne.symm hz'), hz.2⟩
+          refine (hdiff'.continuousOn z hz'').mono_nhdsWithin ?_
+          by_cases hz''' : z = b
+          · rw [hz''', nhdsWithin_Ioc_eq_nhdsWithin_Iic hab, nhdsWithin_Icc_eq_nhdsWithin_Iic hab]
+          · have hfinal₁ : 𝓝[Ioc a b] z = 𝓝 z := by
+              rw [nhdsWithin_eq_nhds]
+              refine Ioc_mem_nhds ?_ (lt_of_le_of_ne hz.2 hz''')
+              simp_all only [mem_Ioc, and_imp, mem_Icc, and_true]
+            have hfinal₂ : 𝓝[Icc a b] z = 𝓝 z := by
+              rw [nhdsWithin_eq_nhds]
+              exact Icc_mem_nhds (lt_of_le_of_ne hz.1 (ne_of_lt hz''.1)) (lt_of_le_of_ne hz.2 hz''')
+            rw [hfinal₁, hfinal₂]
+      obtain ⟨x, hx₁, hx₂⟩ := exists_deriv_eq_slope' f hab hcont (hdiff'.mono Ioo_subset_Ioc_self)
+      specialize hb x (mem_Ioc_of_Ioo hx₁)
+      rw [hx₂, max_lt_iff] at hb
+      linarith
+    simp [Filter.eventually_false_iff_eq_bot, ← not_mem_closure_iff_nhdsWithin_eq_bot] at hcontra
+
 end Interval
 
 /-- Let `f` be a function continuous on a convex (or, equivalently, connected) subset `D`
