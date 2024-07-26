@@ -278,7 +278,7 @@ noncomputable def subst (a : σ → MvPowerSeries τ S) (f : MvPowerSeries σ R)
 variable {a : σ → MvPowerSeries τ S} (ha : SubstDomain a)
 
 def SubstDomain.evalDomain :
-  @EvalDomain σ (MvPowerSeries τ S) _ (@topologicalSpace τ S ⊥) a :=
+    @EvalDomain σ (MvPowerSeries τ S) _ (@topologicalSpace τ S ⊥) a :=
   letI : UniformSpace S := ⊥
   { hpow := fun s ↦ (tendsto_pow_of_constantCoeff_nilpotent_iff (a s)).mpr (ha.const_coeff s)
     tendsto_zero := ha.tendsto_zero }
