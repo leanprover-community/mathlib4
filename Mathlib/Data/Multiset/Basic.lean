@@ -416,9 +416,7 @@ theorem coe_toList (s : Multiset α) : (s.toList : Multiset α) = s :=
 theorem toList_eq_nil {s : Multiset α} : s.toList = [] ↔ s = 0 := by
   rw [← coe_eq_zero, coe_toList]
 
-@[simp]
-theorem empty_toList {s : Multiset α} : s.toList.isEmpty ↔ s = 0 :=
-  isEmpty_iff_eq_nil.trans toList_eq_nil
+theorem empty_toList {s : Multiset α} : s.toList.isEmpty ↔ s = 0 := by simp
 
 @[simp]
 theorem toList_zero : (Multiset.toList 0 : List α) = [] :=
