@@ -551,7 +551,7 @@ def PseudoEMetricSpace.ofSeminormedAddCommGroupCore {𝕜 E : Type*} [NormedFiel
 /-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedAddCommGroup.Core` on a type that
 already has an existing uniform space structure. This requires a proof that the uniformity induced
 by the norm is equal to the preexisting uniformity. -/
-def PseudoMetricSpace.ofSeminormedAddCommGroupCore_replaceUniformity {𝕜 E : Type*} [NormedField 𝕜]
+def PseudoMetricSpace.ofSeminormedAddCommGroupCoreReplaceUniformity {𝕜 E : Type*} [NormedField 𝕜]
     [AddCommGroup E] [Norm E] [Module 𝕜 E] [U : UniformSpace E]
     (core : SeminormedAddCommGroup.Core 𝕜 E)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace
@@ -564,7 +564,7 @@ open Bornology in
 already has a preexisting uniform space structure and a preexisting bornology. This requires proofs
 that the uniformity induced by the norm is equal to the preexisting uniformity, and likewise for
 the bornology. -/
-abbrev PseudoMetricSpace.ofSeminormedAddCommGroupCore_replaceAll {𝕜 E : Type*} [NormedField 𝕜]
+abbrev PseudoMetricSpace.ofSeminormedAddCommGroupCoreReplaceAll {𝕜 E : Type*} [NormedField 𝕜]
     [AddCommGroup E] [Norm E] [Module 𝕜 E] [U : UniformSpace E] [B : Bornology E]
     (core : SeminormedAddCommGroup.Core 𝕜 E)
     (HU : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace
@@ -584,20 +584,20 @@ def SeminormedAddCommGroup.ofCore {𝕜 : Type*} {E : Type*} [NormedField 𝕜] 
 /-- Produces a `SeminormedAddCommGroup E` instance from a `SeminormedAddCommGroup.Core` on a type
 that already has an existing uniform space structure. This requires a proof that the uniformity
 induced by the norm is equal to the preexisting uniformity. -/
-def SeminormedAddCommGroup.ofCore_replaceUniformity {𝕜 : Type*} {E : Type*} [NormedField 𝕜]
+def SeminormedAddCommGroup.ofCoreReplaceUniformity {𝕜 : Type*} {E : Type*} [NormedField 𝕜]
     [AddCommGroup E] [Norm E] [Module 𝕜 E] [U : UniformSpace E]
     (core : SeminormedAddCommGroup.Core 𝕜 E)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace
       (self := PseudoEMetricSpace.ofSeminormedAddCommGroupCore core)]) :
     SeminormedAddCommGroup E :=
-  { PseudoMetricSpace.ofSeminormedAddCommGroupCore_replaceUniformity core H with }
+  { PseudoMetricSpace.ofSeminormedAddCommGroupCoreReplaceUniformity core H with }
 
 open Bornology in
 /-- Produces a `SeminormedAddCommGroup E` instance from a `SeminormedAddCommGroup.Core` on a type
 that already has a preexisting uniform space structure and a preexisting bornology. This requires
 proofs that the uniformity induced by the norm is equal to the preexisting uniformity, and likewise
 for the bornology. -/
-def SeminormedAddCommGroup.ofCore_replaceAll {𝕜 : Type*} {E : Type*} [NormedField 𝕜]
+def SeminormedAddCommGroup.ofCoreReplaceAll {𝕜 : Type*} {E : Type*} [NormedField 𝕜]
     [AddCommGroup E] [Norm E] [Module 𝕜 E] [U : UniformSpace E] [B : Bornology E]
     (core : SeminormedAddCommGroup.Core 𝕜 E)
     (HU : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace
@@ -605,7 +605,7 @@ def SeminormedAddCommGroup.ofCore_replaceAll {𝕜 : Type*} {E : Type*} [NormedF
     (HB : ∀ s : Set E, @IsBounded _ B s
       ↔ @IsBounded _ (PseudoMetricSpace.ofSeminormedAddCommGroupCore core).toBornology s) :
     SeminormedAddCommGroup E :=
-  { PseudoMetricSpace.ofSeminormedAddCommGroupCore_replaceAll core HU HB with }
+  { PseudoMetricSpace.ofSeminormedAddCommGroupCoreReplaceAll core HU HB with }
 
 /-- A structure encapsulating minimal axioms needed to defined a normed vector space, as found
 in textbooks. This is meant to be used to easily define `NormedAddCommGroup E` and `NormedSpace E`
@@ -629,11 +629,11 @@ def NormedAddCommGroup.ofCore (core : NormedSpace.Core 𝕜 E) : NormedAddCommGr
 /-- Produces a `NormedAddCommGroup E` instance from a `NormedAddCommGroup.Core` on a type
 that already has an existing uniform space structure. This requires a proof that the uniformity
 induced by the norm is equal to the preexisting uniformity. -/
-def NormedAddCommGroup.ofCore_replaceUniformity [U : UniformSpace E] (core : NormedSpace.Core 𝕜 E)
+def NormedAddCommGroup.ofCoreReplaceUniformity [U : UniformSpace E] (core : NormedSpace.Core 𝕜 E)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace
       (self := PseudoEMetricSpace.ofSeminormedAddCommGroupCore core.toCore)]) :
     NormedAddCommGroup E :=
-  { SeminormedAddCommGroup.ofCore_replaceUniformity core.toCore H with
+  { SeminormedAddCommGroup.ofCoreReplaceUniformity core.toCore H with
     eq_of_dist_eq_zero := by
       intro x y h
       rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
@@ -644,14 +644,14 @@ open Bornology in
 that already has a preexisting uniform space structure and a preexisting bornology. This requires
 proofs that the uniformity induced by the norm is equal to the preexisting uniformity, and likewise
 for the bornology. -/
-def NormedAddCommGroup.ofCore_replaceAll [U : UniformSpace E] [B : Bornology E]
+def NormedAddCommGroup.ofCoreReplaceAll [U : UniformSpace E] [B : Bornology E]
     (core : NormedSpace.Core 𝕜 E)
     (HU : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace
       (self := PseudoEMetricSpace.ofSeminormedAddCommGroupCore core.toCore)])
     (HB : ∀ s : Set E, @IsBounded _ B s
       ↔ @IsBounded _ (PseudoMetricSpace.ofSeminormedAddCommGroupCore core.toCore).toBornology s) :
     NormedAddCommGroup E :=
-  { SeminormedAddCommGroup.ofCore_replaceAll core.toCore HU HB with
+  { SeminormedAddCommGroup.ofCoreReplaceAll core.toCore HU HB with
     eq_of_dist_eq_zero := by
       intro x y h
       rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
