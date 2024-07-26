@@ -17,7 +17,7 @@ This file defines the logarithmic derivative `logd` and Liouville field extensio
 as a preparation for Liouville's theorem.
 -/
 
-open DifferentialRing algebraMap
+open Differential algebraMap
 
 variable {R : Type*} [Field R] [Differential R] (a b : R)
 
