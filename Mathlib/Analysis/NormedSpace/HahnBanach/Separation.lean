@@ -259,6 +259,15 @@ def RCLinearMapDual : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[ℝ] 𝕜) where
     exact
       add_sub_add_comm ((algebraMap ℝ 𝕜) (f x)) ((algebraMap ℝ 𝕜) (g x))
         (I * (algebraMap ℝ 𝕜) (f (I • x))) (I * (algebraMap ℝ 𝕜) (g (I • x)))
-  map_smul' := sorry
+  map_smul' := by
+    intro m f
+    simp only [LinearMap.smul_apply, ContinuousLinearMap.coe_coe, smul_eq_mul, map_mul,
+      RingHom.id_apply]
+    ext x
+    simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk,
+      ContinuousLinearMap.coe_smul', Pi.smul_apply]
+    rw [smul_sub]
+    simp only [smul_eq_mul, real_smul_ofReal, sub_right_inj]
+    rw [← real_smul_eq_coe_mul, Algebra.mul_smul_comm]
 
 end RCLike
