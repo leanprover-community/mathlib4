@@ -398,17 +398,17 @@ lemma stalkMap_inv_hom_apply (e : X ≅ Y) (x : X) (y) :
       X.presheaf.stalkSpecializes (specializes_of_eq <| by simp) y :=
   DFunLike.congr_fun (stalkMap_inv_hom e x) y
 
--- @[reassoc]
--- lemma stalkMap_germ (U : Opens Y)
---     (x : (Opens.map f.val.base).obj U) :
---     Y.presheaf.germ ⟨f.val.base x.val, x.property⟩ ≫ f.stalkMap x.val =
---       f.val.c.app (op U) ≫ X.presheaf.germ x :=
---   PresheafedSpace.stalkMap_germ f.val U x
+@[reassoc]
+lemma stalkMap_germ (U : Opens Y)
+    (x : (Opens.map f.val.base).obj U) :
+    Y.presheaf.germ ⟨f.val.base x.val, x.property⟩ ≫ f.stalkMap x.val =
+      f.val.c.app (op U) ≫ X.presheaf.germ x :=
+  PresheafedSpace.stalkMap_germ f.val U x
 
--- lemma stalkMap_germ_apply (U : Opens Y) (x : (Opens.map f.val.base).obj U) (y) :
---     f.stalkMap x.val (Y.presheaf.germ ⟨f.val.base x.val, x.property⟩ y) =
---       X.presheaf.germ x (f.val.c.app (op U) y) :=
---   PresheafedSpace.stalkMap_germ_apply f.val U x y
+lemma stalkMap_germ_apply (U : Opens Y) (x : (Opens.map f.val.base).obj U) (y) :
+    f.stalkMap x.val (Y.presheaf.germ ⟨f.val.base x.val, x.property⟩ y) =
+      X.presheaf.germ x (f.val.c.app (op U) y) :=
+  PresheafedSpace.stalkMap_germ_apply f.val U x y
 
 -- @[reassoc (attr := simp)]
 -- lemma stalkMap_germ' (U : Opens Y) (x : X) (hx : f.val.base x ∈ U) :
