@@ -263,4 +263,61 @@ initialize addLinter longLineLinter
 
 end LongLine
 
+/-!
+#  The "introsVar" linter
+
+The "introsVar" linter flags uses of `intros <at least one variable>`.
+-/
+
+open Lean Elab
+
+namespace Mathlib.Linter
+
+/-- The "introsVar" linter flags uses of `intros <at least one variable>`.
+It suggests to use `intro` instead. -/
+register_option linter.introsVar : Bool := {
+  defValue := true
+  descr := "enable the introsVar linter"
+}
+
+namespace IntrosVar
+
+/-!
+# `Syntax` filters
+-/
+
+partial
+def _root_.Lean.Syntax.filterMapM {m : Type → Type} [Monad m] (stx : Syntax)
+    (f : Syntax → m (Option Syntax)) :
+    m (Array Syntax) := do
+  let nargs := (← stx.getArgs.mapM (·.filterMapM f)).flatten
+  match ← f stx with
+    | some new => return nargs.push new
+    | none => return nargs
+
+def _root_.Lean.Syntax.filterMap (stx : Syntax) (f : Syntax → Option Syntax) : Array Syntax :=
+  stx.filterMapM (m := Id) f
+
+def _root_.Lean.Syntax.filter (stx : Syntax) (f : Syntax → Bool) : Array Syntax :=
+  stx.filterMap (fun s => if f s then some s else none)
+
+/-- Gets the value of the `linter.introsVar` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.introsVar o
+
+@[inherit_doc Mathlib.Linter.linter.introsVar]
+def introsVarLinter : Linter where run := withSetOptionIn fun stx ↦ do
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    for i in stx.filter fun s =>
+         (s.isOfKind ``Lean.Parser.Tactic.intros) && (s.find? (·.isOfKind `ident)).isSome do
+      Linter.logLint linter.introsVar i (m!"use 'intro' instead.")
+
+initialize addLinter introsVarLinter
+
+end IntrosVar
+
+end Mathlib.Linter
+
 end Mathlib.Linter
