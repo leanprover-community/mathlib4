@@ -1172,10 +1172,10 @@ theorem Infinite.exists_subset_card_eq {s : Set α} (hs : s.Infinite) (n : ℕ) 
   ⟨((Finset.range n).map (hs.natEmbedding _)).map (Embedding.subtype _), by simp⟩
 
 theorem infinite_of_finite_compl [Infinite α] {s : Set α} (hs : sᶜ.Finite) : s.Infinite := fun h =>
-  Set.infinite_univ (by simpa using hs.union h)
+  Set.infinite_univ (α := α) (by simpa using hs.union h)
 
 theorem Finite.infinite_compl [Infinite α] {s : Set α} (hs : s.Finite) : sᶜ.Infinite := fun h =>
-  Set.infinite_univ (by simpa using hs.union h)
+  Set.infinite_univ (α := α) (by simpa using hs.union h)
 
 theorem Infinite.diff {s t : Set α} (hs : s.Infinite) (ht : t.Finite) : (s \ t).Infinite := fun h =>
   hs <| h.of_diff ht
