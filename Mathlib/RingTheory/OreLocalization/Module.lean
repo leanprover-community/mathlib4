@@ -6,8 +6,6 @@ Authors: Andrew Yang, Jujian Zhang
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.OreLocalization.Ring
 
-#align_import algebra.module.localized_module from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
-
 /-!
 # Localized Module
 
@@ -52,7 +50,6 @@ for some (u : S), u * (s2 • m1 - s1 • m2) = 0-/
 /- Porting note: We use small letter `r` since `R` is used for a ring. -/
 def r (a b : M × S) : Prop :=
   ∃ u : S, u • b.2 • a.1 = u • a.2 • b.1
-#align localized_module.r LocalizedModule.r
 
 lemma oreEqv_iff_r : (OreLocalization.oreEqv S M).r = r S M := by
   ext a b
@@ -77,12 +74,10 @@ theorem r.isEquiv : IsEquiv _ (r S M) :=
       simp only [← mul_smul, smul_assoc, mul_assoc, mul_comm, mul_left_comm] at hu1' hu2' ⊢
       rw [hu2', hu1']
     symm := fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => ⟨u, hu.symm⟩ }
-#align localized_module.r.is_equiv LocalizedModule.r.isEquiv
 
 instance r.setoid : Setoid (M × S) where
   r := r S M
   iseqv := ⟨(r.isEquiv S M).refl, (r.isEquiv S M).symm _ _, (r.isEquiv S M).trans _ _ _⟩
-#align localized_module.r.setoid LocalizedModule.r.setoid
 
 -- TODO: change `Localization` to use `r'` instead of `r` so that the two types are also defeq,
 -- `Localization S = LocalizedModule S R`.
@@ -95,7 +90,6 @@ we can localize `M` by `S`.
 -- Porting note(#5171): @[nolint has_nonempty_instance]
 abbrev _root_.LocalizedModule : Type max u v :=
   OreLocalization S M
-#align localized_module LocalizedModule
 
 section
 
@@ -103,28 +97,24 @@ variable {M S}
 
 /-- The canonical map sending `(m, s) ↦ m/s`-/
 def mk (m : M) (s : S) : LocalizedModule S M := m /ₒ s
-#align localized_module.mk LocalizedModule.mk
 
 theorem mk_eq {m m' : M} {s s' : S} : mk m s = mk m' s' ↔ ∃ u : S, u • s' • m = u • s • m' := by
   rw [mk, mk, OreLocalization.oreDiv_eq_iff]
   show _ ↔ r S M (m, s) (m', s')
   rw [← oreEqv_iff_r]
   rfl
-#align localized_module.mk_eq LocalizedModule.mk_eq
 
 @[elab_as_elim]
 theorem induction_on {β : LocalizedModule S M → Prop} (h : ∀ (m : M) (s : S), β (mk m s)) :
     ∀ x : LocalizedModule S M, β x := by
   rintro ⟨⟨m, s⟩⟩
   exact h m s
-#align localized_module.induction_on LocalizedModule.induction_on
 
 @[elab_as_elim]
 theorem induction_on₂ {β : LocalizedModule S M → LocalizedModule S M → Prop}
     (h : ∀ (m m' : M) (s s' : S), β (mk m s) (mk m' s')) : ∀ x y, β x y := by
   rintro ⟨⟨m, s⟩⟩ ⟨⟨m', s'⟩⟩
   exact h m m' s s'
-#align localized_module.induction_on₂ LocalizedModule.induction_on₂
 
 /-- If `f : M × S → α` respects the equivalence relation `LocalizedModule.r`, then
 `f` descents to a map `LocalizedModule M S → α`.
@@ -132,11 +122,9 @@ theorem induction_on₂ {β : LocalizedModule S M → LocalizedModule S M → Pr
 def liftOn {α : Type*} (x : LocalizedModule S M) (f : M × S → α)
     (wd : ∀ (p p' : M × S), r S M p p' → f p = f p') : α :=
   Quotient.liftOn x f (by simpa only [← oreEqv_iff_r S M] using wd)
-#align localized_module.lift_on LocalizedModule.liftOn
 
 theorem liftOn_mk {α : Type*} {f : M × S → α} (wd : ∀ (p p' : M × S), p ≈ p' → f p = f p')
     (m : M) (s : S) : liftOn (mk m s) f wd = f ⟨m, s⟩ := by convert Quotient.liftOn_mk f wd ⟨m, s⟩
-#align localized_module.lift_on_mk LocalizedModule.liftOn_mk
 
 /-- If `f : M × S → M × S → α` respects the equivalence relation `LocalizedModule.r`, then
 `f` descents to a map `LocalizedModule M S → LocalizedModule M S → α`.
@@ -144,13 +132,11 @@ theorem liftOn_mk {α : Type*} {f : M × S → α} (wd : ∀ (p p' : M × S), p 
 def liftOn₂ {α : Type*} (x y : LocalizedModule S M) (f : M × S → M × S → α)
     (wd : ∀ (p q p' q' : M × S), r S M p p' → r S M q q' → f p q = f p' q') : α :=
   Quotient.liftOn₂ x y f (by simpa only [← oreEqv_iff_r S M] using wd)
-#align localized_module.lift_on₂ LocalizedModule.liftOn₂
 
 theorem liftOn₂_mk {α : Type*} (f : M × S → M × S → α)
     (wd : ∀ (p q p' q' : M × S), p ≈ p' → q ≈ q' → f p q = f p' q') (m m' : M)
     (s s' : S) : liftOn₂ (mk m s) (mk m' s') f wd = f ⟨m, s⟩ ⟨m', s'⟩ := by
   convert Quotient.liftOn₂_mk f wd _ _
-#align localized_module.lift_on₂_mk LocalizedModule.liftOn₂_mk
 
 /-- If `S` contains `0` then the localization at `S` is trivial. -/
 theorem subsingleton (h : 0 ∈ S) : Subsingleton (LocalizedModule S M) := by
@@ -161,18 +147,15 @@ theorem subsingleton (h : 0 ∈ S) : Subsingleton (LocalizedModule S M) := by
 @[simp]
 theorem zero_mk (s : S) : mk (0 : M) s = 0 :=
   OreLocalization.zero_oreDiv _
-#align localized_module.zero_mk LocalizedModule.zero_mk
 
 theorem mk_add_mk' {m1 m2 : M} {s1 s2 : S} :
     mk m1 s1 + mk m2 s2 = mk (s2 • m1 + s1 • m2) (s2 * s1) := by with_unfolding_all rfl
 
 theorem mk_add_mk {m1 m2 : M} {s1 s2 : S} :
     mk m1 s1 + mk m2 s2 = mk (s2 • m1 + s1 • m2) (s1 * s2) := by rw [mk_add_mk', mul_comm]
-#align localized_module.mk_add_mk LocalizedModule.mk_add_mk
 
 theorem mk_neg {M : Type*} [AddCommGroup M] [Module R M] {m : M} {s : S} : mk (-m) s = -mk m s := by
   with_unfolding_all rfl
-#align localized_module.mk_neg LocalizedModule.mk_neg
 
 /--
 The multiplication on the localized module. Note that this gives a diamond with the instance on
@@ -218,7 +201,6 @@ theorem mk_mul_mk' {A : Type*} [Semiring A] [Algebra R A] {a₁ a₂ : A} {s₁ 
 
 theorem mk_mul_mk {A : Type*} [Semiring A] [Algebra R A] {a₁ a₂ : A} {s₁ s₂ : S} :
     mk a₁ s₁ * mk a₂ s₂ = mk (a₁ * a₂) (s₁ * s₂) := by rw [mk_mul_mk', mul_comm s₁ s₂]
-#align localized_module.mk_mul_mk LocalizedModule.mk_mul_mk
 
 instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
     Semiring (LocalizedModule S A) where
@@ -266,7 +248,6 @@ instance {A : Type*} [CommRing A] [Algebra R A] {S : Submonoid R} :
 theorem mk_smul_mk (r : R) (m : M) (s t : S) :
     Localization.mk r s • mk m t = mk (r • m) (s * t) :=
   (OreLocalization.oreDiv_smul_char _ _ _ _ _ _ (mul_comm _ _)).trans (by rw [mul_comm]; rfl)
-#align localized_module.mk_smul_mk LocalizedModule.mk_smul_mk
 
 @[simp]
 theorem mk_cancel_common_left (s' s : S) (m : M) : mk (s' • m) (s' * s) = mk m s :=
@@ -274,17 +255,14 @@ theorem mk_cancel_common_left (s' s : S) (m : M) : mk (s' • m) (s' * s) = mk m
     ⟨1, by
       simp only [mul_smul, one_smul]
       rw [smul_comm]⟩
-#align localized_module.mk_cancel_common_left LocalizedModule.mk_cancel_common_left
 
 @[simp]
 theorem mk_cancel (s : S) (m : M) : mk (s • m) s = mk m 1 :=
   mk_eq.mpr ⟨1, by simp⟩
-#align localized_module.mk_cancel LocalizedModule.mk_cancel
 
 @[simp]
 theorem mk_cancel_common_right (s s' : S) (m : M) : mk (s' • m) (s * s') = mk m s :=
   mk_eq.mpr ⟨1, by simp [mul_smul]⟩
-#align localized_module.mk_cancel_common_right LocalizedModule.mk_cancel_common_right
 
 variable {R₀} [SMul R₀ R] [IsScalarTower R₀ R R] [SMul R₀ M] [IsScalarTower R₀ R M]
 
@@ -293,7 +271,6 @@ theorem smul'_mk (r : R₀) (s : S) (m : M) : r • mk m s = mk (r • m) s := b
   show (r • 1 : R) • m /ₒ s = _
   rw [smul_assoc, one_smul]
   rfl
-#align localized_module.smul'_mk LocalizedModule.smul'_mk
 
 theorem smul'_mul {A : Type*} [Semiring A] [Algebra R A]
     [SMul R₀ A] [IsScalarTower R₀ R A] [IsScalarTower R₀ A A]
@@ -344,7 +321,6 @@ def divBy (s : S) : LocalizedModule S M →ₗ[R] LocalizedModule S M where
     rw [smul'_mk]
     change liftOn (mk _ _) _ _ = r • (liftOn (mk _ _) _ _)
     simp_rw [liftOn_mk, smul'_mk]
-#align localized_module.div_by LocalizedModule.divBy
 
 theorem divBy_mul_by (s : S) (p : LocalizedModule S M) :
     divBy s (algebraMap R (Module.End R (LocalizedModule S M)) s p) = p :=
@@ -352,14 +328,12 @@ theorem divBy_mul_by (s : S) (p : LocalizedModule S M) :
     rw [Module.algebraMap_end_apply, divBy_apply, smul'_mk]
     rw [LocalizedModule.liftOn_mk]
     exact mk_cancel_common_right _ _ _
-#align localized_module.div_by_mul_by LocalizedModule.divBy_mul_by
 
 theorem mul_by_divBy (s : S) (p : LocalizedModule S M) :
     algebraMap R (Module.End R (LocalizedModule S M)) s (divBy s p) = p :=
   p.induction_on fun m t => by
     rw [divBy_apply, Module.algebraMap_end_apply, LocalizedModule.liftOn_mk, smul'_mk,
       ← Submonoid.smul_def, mk_cancel_common_right _ s]
-#align localized_module.mul_by_div_by LocalizedModule.mul_by_divBy
 
 end
 
@@ -403,13 +377,11 @@ noncomputable def lift' (g : M →ₗ[R] M'')
     symm
     rw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, ← g.map_smul, ← g.map_smul, ← g.map_smul, ←
       g.map_smul, eq1]
-#align localized_module.lift' LocalizedModule.lift'
 
 theorem lift'_mk (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x))
     (m : M) (s : S) :
     LocalizedModule.lift' S g h (LocalizedModule.mk m s) = (h s).unit⁻¹.val (g m) :=
   rfl
-#align localized_module.lift'_mk LocalizedModule.lift'_mk
 
 theorem lift'_add (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x))
     (x y) :
@@ -429,7 +401,6 @@ theorem lift'_add (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (M
         erw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, mul_comm, mul_smul, ← map_smul]
         rfl)
     x y
-#align localized_module.lift'_add LocalizedModule.lift'_add
 
 theorem lift'_smul (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x))
     (r : R) (m) : r • LocalizedModule.lift' S g h m = LocalizedModule.lift' S g h (r • m) :=
@@ -437,7 +408,6 @@ theorem lift'_smul (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (
     rw [LocalizedModule.lift'_mk, LocalizedModule.smul'_mk, LocalizedModule.lift'_mk]
     -- Porting note: We remove `generalize_proofs h1 h2`. This does nothing here.
     rw [← map_smul, ← g.map_smul]
-#align localized_module.lift'_smul LocalizedModule.lift'_smul
 
 /--
 If `g` is a linear map `M → M''` such that all scalar multiplication by `s : S` is invertible, then
@@ -449,7 +419,6 @@ noncomputable def lift (g : M →ₗ[R] M'')
   toFun := LocalizedModule.lift' S g h
   map_add' := LocalizedModule.lift'_add S g h
   map_smul' r x := by rw [LocalizedModule.lift'_smul, RingHom.id_apply]
-#align localized_module.lift LocalizedModule.lift
 
 /--
 If `g` is a linear map `M → M''` such that all scalar multiplication by `s : S` is invertible, then
@@ -459,7 +428,6 @@ theorem lift_mk
     (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit (algebraMap R (Module.End R M'') x)) (m : M) (s : S) :
     LocalizedModule.lift S g h (LocalizedModule.mk m s) = (h s).unit⁻¹.val (g m) :=
   rfl
-#align localized_module.lift_mk LocalizedModule.lift_mk
 
 /--
 If `g` is a linear map `M → M''` such that all scalar multiplication by `s : S` is invertible, then
@@ -469,7 +437,6 @@ theorem lift_comp (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (M
     (lift S g h).comp (mkLinearMap S M) = g := by
   ext x; dsimp; rw [LocalizedModule.lift_mk]
   erw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, one_smul]
-#align localized_module.lift_comp LocalizedModule.lift_comp
 
 /--
 If `g` is a linear map `M → M''` such that all scalar multiplication by `s : S` is invertible and
@@ -484,7 +451,6 @@ theorem lift_unique (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R 
   rw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, ← hl, LinearMap.coe_comp,
     Function.comp_apply, LocalizedModule.mkLinearMap_apply, ← l.map_smul, LocalizedModule.smul'_mk]
   congr 1; rw [LocalizedModule.mk_eq]
-  refine' ⟨1, _⟩; simp only [one_smul, Submonoid.smul_def]
-#align localized_module.lift_unique LocalizedModule.lift_unique
+  refine ⟨1, ?_⟩; simp only [one_smul, Submonoid.smul_def]
 
 end LocalizedModule
