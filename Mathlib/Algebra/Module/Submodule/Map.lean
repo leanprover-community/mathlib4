@@ -247,7 +247,7 @@ theorem le_comap_map [RingHomSurjective σ₁₂] (f : F) (p : Submodule R M) : 
 
 section GaloisInsertion
 
-variable {f : F}
+variable [RingHomSurjective σ₁₂] {f : F}
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
 def giMapComap (hf : Surjective f) : GaloisInsertion (map f) (comap f) :=
@@ -293,7 +293,7 @@ end GaloisInsertion
 
 section GaloisCoinsertion
 
-variable {f : F}
+variable [RingHomSurjective σ₁₂] {f : F}
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
 def gciMapComap (hf : Injective f) : GaloisCoinsertion (map f) (comap f) :=
