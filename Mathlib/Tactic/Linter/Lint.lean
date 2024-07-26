@@ -5,6 +5,7 @@ Authors: Floris van Doorn
 -/
 import Lean.Linter.Util
 import Batteries.Tactic.Lint
+import Batteries.Data.String.Matcher
 
 /-!
 # Linters for Mathlib
