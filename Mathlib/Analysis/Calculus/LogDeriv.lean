@@ -27,92 +27,79 @@ at `x` if `f` is not DifferentiableAt `x`. -/
 def logDeriv (f : 𝕜 → 𝕜') :=
   deriv f / f
 
+theorem logDeriv_apply (f : 𝕜 → 𝕜') (x : 𝕜) : logDeriv f x = deriv f x / f x := rfl
+
 lemma logDeriv_eq_zero_of_not_differentiableAt (f : 𝕜 → 𝕜') (x : 𝕜) (h : ¬DifferentiableAt 𝕜 f x) :
     logDeriv f x = 0 := by
-  simp only [logDeriv, Pi.div_apply, deriv_zero_of_not_differentiableAt h, zero_div]
+  simp only [logDeriv_apply, deriv_zero_of_not_differentiableAt h, zero_div]
 
 @[simp]
 theorem logDeriv_id (x : 𝕜) : logDeriv id x = 1 / x := by
-  rw [logDeriv]
-  simp only [deriv_id', Pi.div_apply, id_eq, one_div]
+  simp [logDeriv_apply]
+
+@[simp] theorem logDeriv_id' (x : 𝕜) : logDeriv (·) x = 1 / x := logDeriv_id x
 
 @[simp]
 theorem logDeriv_const (a : 𝕜') : logDeriv (fun _ : 𝕜 ↦ a) = 0 := by
-  rw [logDeriv]
-  ext1 x
-  simp only [deriv_const', Pi.div_apply, zero_div, Pi.zero_apply]
+  ext
+  simp [logDeriv_apply]
 
 theorem logDeriv_mul {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g x ≠ 0)
     (hdf : DifferentiableAt 𝕜 f x) (hdg : DifferentiableAt 𝕜 g x) :
       logDeriv (fun z => f z * g z) x = logDeriv f x + logDeriv g x := by
-  simp only [logDeriv, Pi.div_apply, deriv_mul hdf hdg]
-  field_simp [hf, hg , mul_comm]
+  simp only [logDeriv_apply, deriv_mul hdf hdg]
+  field_simp [mul_comm]
 
 theorem logDeriv_mul_const {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a ≠ 0):
     logDeriv (fun z => f z * a) x = logDeriv f x := by
-  simp only [logDeriv, deriv_mul_const_field', Pi.div_apply]
-  rw [mul_div_mul_right (deriv (fun x ↦ f x) x) (f x) ha]
+  simp only [logDeriv_apply, deriv_mul_const_field, mul_div_mul_right _ _ ha]
 
 theorem logDeriv_const_mul {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a ≠ 0):
     logDeriv (fun z => a * f z) x = logDeriv f x := by
-  simp only [logDeriv, deriv_const_mul_field', Pi.div_apply]
-  rw [mul_div_mul_left (deriv (fun x ↦ f x) x) (f x) ha]
+  simp only [logDeriv_apply, deriv_const_mul_field, mul_div_mul_left _ _ ha]
 
 /-- The logarithmic derivative of a finite product is the sum of the logarithmic derivatives. -/
-theorem logDeriv_prod {α : Type*} (s : Finset α) (f : α → 𝕜 → 𝕜') (t : 𝕜) (hf : ∀ x ∈ s, f x t ≠ 0)
-    (hd : ∀ x ∈ s, DifferentiableAt 𝕜 (f x) t) :
-    logDeriv (∏ i in s, f i) t = ∑ i in s, logDeriv (f i) t := by
-  induction' s using Finset.cons_induction_on with a s ha ih
-  · simp only [Finset.prod_empty, Finset.sum_empty]
-    exact congrFun (logDeriv_const (1 : 𝕜')) t
-  · rw [Finset.forall_mem_cons] at hf
-    rw [Finset.cons_eq_insert _ _ ha, Finset.prod_insert ha, Finset.sum_insert ha]
-    have := logDeriv_mul (f := f a) (g := ∏ i in s, f i) t ?_ ?_ ?_ ?_
-    · simp only [ne_eq, Finset.cons_eq_insert, Finset.mem_insert, forall_eq_or_imp,
-        Finset.prod_apply] at *
-      rw [ih hf.2 (fun _ hx ↦ hd.2 _ hx)] at this
-      rw [← this]
-      congr
-      exact Finset.prod_fn s fun c ↦ f c
+theorem logDeriv_prod {ι : Type*} (s : Finset ι) (f : ι → 𝕜 → 𝕜') (x : 𝕜) (hf : ∀ i ∈ s, f i x ≠ 0)
+    (hd : ∀ i ∈ s, DifferentiableAt 𝕜 (f i) x) :
+    logDeriv (∏ i ∈ s, f i ·) x = ∑ i ∈ s, logDeriv (f i) x := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha ih =>
+    rw [Finset.forall_mem_cons] at hf hd
+    simp_rw [Finset.prod_cons, Finset.sum_cons]
+    rw [logDeriv_mul, ih hf.2 hd.2]
     · exact hf.1
-    · simp only [Finset.prod_apply, Finset.prod_ne_zero_iff]
-      exact hf.2
-    · apply hd
-      simp only [Finset.cons_eq_insert, Finset.mem_insert, eq_self_iff_true, true_or_iff]
-    · rw [Finset.prod_fn]
-      apply DifferentiableAt.finset_prod
-      intro r hr
-      apply hd
-      simp only [Finset.cons_eq_insert, Finset.mem_insert, hr, or_true]
+    · simpa [Finset.prod_eq_zero_iff] using hf.2
+    · exact hd.1
+    · exact .finset_prod hd.2
 
-lemma logDeriv_pow {x : 𝕜} {n : ℕ} (hn : n ≠ 0) (hx : x ≠ 0) :
-    logDeriv (fun z => z ^ n) x = n * logDeriv id x := by
-  simp only [logDeriv, deriv_pow', Pi.div_apply, deriv_id', id_eq, one_div]
-  field_simp [hx, mul_assoc, pow_sub_one_mul hn x]
+lemma logDeriv_fun_zpow {f : 𝕜 → 𝕜'} {x : 𝕜} (hdf : DifferentiableAt 𝕜 f x) (n : ℤ) :
+    logDeriv (f · ^ n) x = n * logDeriv f x := by
+  rcases eq_or_ne n 0 with rfl | hn; · simp
+  rcases eq_or_ne (f x) 0 with hf | hf
+  · simp [logDeriv_apply, zero_zpow, *]
+  · rw [logDeriv_apply, ← comp_def (·^n), deriv.comp _ (differentiableAt_zpow.2 <| .inl hf) hdf,
+      deriv_zpow, logDeriv_apply]
+    field_simp [zpow_ne_zero, zpow_sub_one₀ hf]
+    ring
 
-lemma logDeriv_zpow {x : 𝕜} {n : ℤ} (hx : x ≠ 0) :
-    logDeriv (fun z => z ^ n) x = n * logDeriv id x := by
-  simp only [logDeriv, deriv_zpow', Pi.div_apply, zpow_sub_one₀ hx, deriv_id', id_eq, one_div]
-  field_simp [hx, mul_assoc, mul_comm (x^n) x]
-  simpa only [one_mul, div_one] using
-    (mul_div_mul_right (n : 𝕜) 1 (mul_ne_zero hx (zpow_ne_zero n hx)))
+lemma logDeriv_fun_pow {f : 𝕜 → 𝕜'} {x : 𝕜} (hdf : DifferentiableAt 𝕜 f x) (n : ℕ) :
+    logDeriv (f · ^ n) x = n * logDeriv f x :=
+  mod_cast logDeriv_fun_zpow hdf n
 
-theorem logDeriv_comp {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : DifferentiableAt 𝕜 f (g x))
-    (hg : DifferentiableAt 𝕜 g x) : logDeriv (f ∘ g) x = (logDeriv f) (g x) * deriv g x := by
+@[simp]
+lemma logDeriv_zpow (x : 𝕜) (n : ℤ) : logDeriv (· ^ n) x = n / x := by
+  rw [logDeriv_fun_zpow (by fun_prop), logDeriv_id', mul_one_div]
+
+@[simp]
+lemma logDeriv_pow (x : 𝕜) (n : ℕ) : logDeriv (· ^ n) x = n / x :=
+  mod_cast logDeriv_zpow x n
+
+@[simp] lemma logDeriv_inv (x : 𝕜) : logDeriv (·⁻¹) x = -1 / x := by
+  simpa using logDeriv_zpow x (-1)
+
+theorem logDeriv_comp {f : 𝕜' → 𝕜'} {g : 𝕜 → 𝕜'} {x : 𝕜} (hf : DifferentiableAt 𝕜' f (g x))
+    (hg : DifferentiableAt 𝕜 g x) : logDeriv (f ∘ g) x = logDeriv f (g x) * deriv g x := by
   simp only [logDeriv, Pi.div_apply, deriv.comp _ hf hg, comp_apply]
   ring
 
-lemma logDeriv_fun_pow {f : 𝕜 → 𝕜} {x : 𝕜} {n : ℕ} (hn : n ≠ 0) (hf : f x ≠ 0)
-    (hdf : DifferentiableAt 𝕜 f x) :  logDeriv (fun z => (f z) ^ n) x = n * logDeriv f x := by
-  rw [← comp_def (fun z => z^n) f,
-    logDeriv_comp (f := fun z => z^n) (g := f) (differentiableAt_pow n) hdf, logDeriv_pow hn hf]
-  simp only [logDeriv, deriv_id', Pi.div_apply, id_eq, one_div]
-  ring
-
-lemma logDeriv_fun_zpow {f : 𝕜 → 𝕜} {x : 𝕜} {n : ℤ} (hf : f x ≠ 0) (hdf : DifferentiableAt 𝕜 f x) :
-    logDeriv (fun z => (f z) ^ n) x = n * logDeriv f x := by
-  rw [show (fun z => (f z)^n) = (fun z => z^n) ∘ f by rfl,
-    logDeriv_comp (f := fun z => z^n) (g := f) ?_ hdf, logDeriv_zpow hf]
-  · simp only [logDeriv, deriv_id', Pi.div_apply, id_eq, one_div]
-    ring
-  · simp only [differentiableAt_zpow, ne_eq, hf, not_false_eq_true, true_or]
