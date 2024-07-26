@@ -105,7 +105,7 @@ structure PartitionOfUnity (ι X : Type*) [TopologicalSpace X] (s : Set X := uni
   nonneg' : 0 ≤ toFun
   /-- the functions sum up to one on `s` -/
   sum_eq_one' : ∀ x ∈ s, ∑ᶠ i, toFun i x = 1
-  /-- the functions sum up at most one, globally -/
+  /-- the functions sum up to at most one, globally -/
   sum_le_one' : ∀ x, ∑ᶠ i, toFun i x ≤ 1
 
 /-- A `BumpCovering ι X s` is an indexed family of functions `f i`, `i : ι`, such that
@@ -130,7 +130,7 @@ structure BumpCovering (ι X : Type*) [TopologicalSpace X] (s : Set X := univ) w
   locallyFinite' : LocallyFinite fun i => support (toFun i)
   /-- the functions are non-negative -/
   nonneg' : 0 ≤ toFun
-  /-- the functions sum up to at most one -/
+  /-- the functions are each at most one -/
   le_one' : toFun ≤ 1
   /-- Each point `x ∈ s` belongs to the interior of `{x | f i x = 1}` for some `i`. -/
   eventuallyEq_one' : ∀ x ∈ s, ∃ i, toFun i =ᶠ[𝓝 x] 1
