@@ -998,7 +998,7 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
                 option_map (hg.comp (fst.comp fst) snd)
                   (to₂ <| list_concat.comp (snd.comp fst) snd))).of_eq
       fun a n => by
-      simp; induction' n with n IH; · rfl
+      induction' n with n IH; · rfl
       simp [IH, H, List.range_succ]
 
 theorem listLookup [DecidableEq α] : Primrec₂ (List.lookup : α → List (α × β) → Option β) :=
