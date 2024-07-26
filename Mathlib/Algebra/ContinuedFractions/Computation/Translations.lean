@@ -270,8 +270,8 @@ theorem of_s_of_int (a : ℤ) : (of (a : K)).s = Stream'.Seq.nil :=
 
 variable {K} (v)
 
-/-- Recurrence for the `GenContFract.of` an element `v` of `K` in terms of that of the inverse of the
-fractional part of `v`.
+/-- Recurrence for the `GenContFract.of` an element `v` of `K` in terms of that of the inverse of
+the fractional part of `v`.
 -/
 theorem of_s_succ (n : ℕ) : (of v).s.get? (n + 1) = (of (fract v)⁻¹).s.get? n := by
   rcases eq_or_ne (fract v) 0 with h | h

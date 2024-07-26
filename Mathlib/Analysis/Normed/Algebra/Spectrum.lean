@@ -10,7 +10,7 @@ import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Topology.Algebra.Module.CharacterSpace
 import Mathlib.Analysis.NormedSpace.Exponential
-import Mathlib.Analysis.NormedSpace.UnitizationL1
+import Mathlib.Analysis.Normed.Algebra.UnitizationL1
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!

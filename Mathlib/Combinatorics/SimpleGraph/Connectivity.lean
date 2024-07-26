@@ -2056,15 +2056,29 @@ def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
 
 lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.coe}
     (hv : v ∈ (↑) '' (c : Set H.verts)) (hw : w ∈ H.verts)
-    (hadj : H.Adj v w) : w ∈ (↑) '' (c : Set H.verts) := by
-  rw [Set.mem_image]
-  obtain ⟨v', hv'⟩ := hv
+    (hadj : H.Adj v w) : w ∈ (↑) '' (c : Set H.verts):= by
+  obtain ⟨_, h⟩ := hv
   use ⟨w, hw⟩
-  refine ⟨?_, rfl⟩
-  rw [← (ConnectedComponent.mem_supp_iff ..).mp hv'.1]
-  exact ConnectedComponent.connectedComponentMk_eq_of_adj ((hv'.2 ▸ hadj.symm).coe)
+  rw [← (mem_supp_iff _ _).mp h.1]
+  exact ⟨connectedComponentMk_eq_of_adj <| Subgraph.Adj.coe <| h.2 ▸ hadj.symm, rfl⟩
 
 end ConnectedComponent
+
+-- TODO: Extract as lemma about general equivalence relation
+lemma pairwise_disjoint_supp_connectedComponent (G : SimpleGraph V) :
+    Pairwise fun c c' : ConnectedComponent G ↦ Disjoint c.supp c'.supp := by
+  simp_rw [Set.disjoint_left]
+  intro _ _ h a hsx hsy
+  rw [ConnectedComponent.mem_supp_iff] at hsx hsy
+  rw [hsx] at hsy
+  exact h hsy
+
+-- TODO: Extract as lemma about general equivalence relation
+lemma iUnion_connectedComponentSupp (G : SimpleGraph V) :
+    ⋃ c : G.ConnectedComponent, c.supp = Set.univ := by
+  refine Set.eq_univ_of_forall fun v ↦ ⟨G.connectedComponentMk v, ?_⟩
+  simp only [Set.mem_range, SetLike.mem_coe]
+  exact ⟨by use G.connectedComponentMk v; exact rfl, rfl⟩
 
 theorem Preconnected.set_univ_walk_nonempty (hconn : G.Preconnected) (u v : V) :
     (Set.univ : Set (G.Walk u v)).Nonempty := by

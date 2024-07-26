@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Data.Set.Basic
-import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.Coset
 
 /-!
