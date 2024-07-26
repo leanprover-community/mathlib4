@@ -92,6 +92,34 @@ def ofSums (n : ℕ) (l : Multiset ℕ) (hl : l.sum = n) : Partition n where
 @[simps!]
 def ofMultiset (l : Multiset ℕ) : Partition l.sum := ofSums _ l rfl
 
+/-- An element `s` of `Sym σ n` induces a partition given by its multiplicities. -/
+def ofSym {n : ℕ} {σ : Type*} (s : Sym σ n) [DecidableEq σ] : n.Partition where
+  parts := s.1.dedup.map s.1.count
+  parts_pos := by simp [Multiset.count_pos]
+  parts_sum := by
+    show ∑ a ∈ s.1.toFinset, count a s.1 = n
+    rw [toFinset_sum_count_eq]
+    exact s.2
+
+variable {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ]
+
+@[simp] lemma ofSym_map (e : σ ≃ τ) (s : Sym σ n) :
+    ofSym (s.map e) = ofSym s := by
+  simp only [ofSym, Sym.val_eq_coe, Sym.coe_map, toFinset_val, mk.injEq]
+  rw [Multiset.dedup_map_of_injective e.injective]
+  simp only [map_map, Function.comp_apply]
+  congr; funext i
+  rw [← Multiset.count_map_eq_count' e _ e.injective]
+
+/-- An equivalence between `σ` and `τ` induces an equivalence between the subtypes of `Sym σ n` and
+`Sym τ n` corresponding to a given partition. -/
+def ofSymShapeEquiv (μ : Partition n) (e : σ ≃ τ) :
+    {x : Sym σ n // ofSym x = μ} ≃ {x : Sym τ n // ofSym x = μ} where
+  toFun := fun x => ⟨Sym.equivCongr e x, by simp [ofSym_map, x.2]⟩
+  invFun := fun x => ⟨Sym.equivCongr e.symm x, by simp [ofSym_map, x.2]⟩
+  left_inv := by intro x; simp
+  right_inv := by intro x; simp
+
 /-- The partition of exactly one part. -/
 def indiscrete (n : ℕ) : Partition n := ofSums n {n} rfl
 
@@ -114,6 +142,9 @@ instance UniquePartitionZero : Unique (Partition 0) where
 
 instance UniquePartitionOne : Unique (Partition 1) where
   uniq _ := Partition.ext _ _ <| by simp
+
+@[simp] lemma ofSym_one (s : Sym σ 1) : ofSym s = indiscrete 1 := by
+  ext; simp
 
 /-- The number of times a positive integer `i` appears in the partition `ofSums n l hl` is the same
 as the number of times it appears in the multiset `l`.
