@@ -324,9 +324,6 @@ theorem reverse_bijective : Bijective (@reverse α) :=
 theorem reverse_inj {l₁ l₂ : List α} : reverse l₁ = reverse l₂ ↔ l₁ = l₂ :=
   reverse_injective.eq_iff
 
-theorem reverse_eq_iff {l l' : List α} : l.reverse = l' ↔ l = l'.reverse :=
-  reverse_involutive.eq_iff
-
 theorem concat_eq_reverse_cons (a : α) (l : List α) : concat l a = reverse (a :: reverse l) := by
   simp only [concat_eq_append, reverse_cons, reverse_reverse]
 
@@ -353,12 +350,12 @@ theorem getLast_cons {a : α} {l : List α} :
   · rfl
 
 theorem getLast_append_singleton {a : α} (l : List α) :
-    getLast (l ++ [a]) (append_ne_nil_of_ne_nil_right l (cons_ne_nil a _)) = a := by
+    getLast (l ++ [a]) (append_ne_nil_of_right_ne_nil l (cons_ne_nil a _)) = a := by
   simp [getLast_append]
 
 -- Porting note: name should be fixed upstream
 theorem getLast_append' (l₁ l₂ : List α) (h : l₂ ≠ []) :
-    getLast (l₁ ++ l₂) (append_ne_nil_of_ne_nil_right l₁ h) = getLast l₂ h := by
+    getLast (l₁ ++ l₂) (append_ne_nil_of_right_ne_nil l₁ h) = getLast l₂ h := by
   induction' l₁ with _ _ ih
   · simp
   · simp only [cons_append]
@@ -732,7 +729,7 @@ theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ 
 
 theorem tail_sublist : ∀ l : List α, tail l <+ l
   | [] => .slnil
-  | a::l => sublist_cons a l
+  | a::l => sublist_cons_self a l
 
 @[gcongr] protected theorem Sublist.tail : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → tail l₁ <+ tail l₂
   | _, _, slnil => .slnil
@@ -1094,8 +1091,6 @@ theorem get_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
 
 @[deprecated (since := "2024-06-21")] alias map_congr := map_congr_left
 
-@[deprecated (since := "2024-06-21")] alias map_eq_map_iff := map_inj_left
-
 theorem bind_pure_eq_map (f : α → β) (l : List α) : l.bind (pure ∘ f) = map f l :=
   .symm <| map_eq_bind ..
 
@@ -1321,18 +1316,6 @@ theorem foldl_fixed {a : α} : ∀ l : List β, foldl (fun a _ => a) a l = a :=
 @[simp]
 theorem foldr_fixed {b : β} : ∀ l : List α, foldr (fun _ b => b) b l = b :=
   foldr_fixed' fun _ => rfl
-
-@[simp]
-theorem foldl_join (f : α → β → α) :
-    ∀ (a : α) (L : List (List β)), foldl f a (join L) = foldl (foldl f) a L
-  | a, [] => rfl
-  | a, l :: L => by simp only [join, foldl_append, foldl_cons, foldl_join f (foldl f a l) L]
-
-@[simp]
-theorem foldr_join (f : α → β → β) :
-    ∀ (b : β) (L : List (List α)), foldr f b (join L) = foldr (fun l b => foldr f b l) b L
-  | a, [] => rfl
-  | a, l :: L => by simp only [join, foldr_append, foldr_join f a L, foldr_cons]
 
 -- Porting note (#10618): simp can prove this
 -- @[simp]
@@ -1814,7 +1797,7 @@ theorem modifyLast.go_append_one (f : α → α) (a : α) (tl : List α) (r : Ar
   | cons hd tl =>
     simp only [cons_append]
     rw [modifyLast.go, modifyLast.go]
-    case x_3 | x_3 => exact append_ne_nil_of_ne_nil_right tl (cons_ne_nil a [])
+    case x_3 | x_3 => exact append_ne_nil_of_right_ne_nil tl (cons_ne_nil a [])
     rw [modifyLast.go_append_one _ _ tl _, modifyLast.go_append_one _ _ tl (Array.push #[] hd)]
     simp only [Array.toListAppend_eq, Array.push_data, Array.data_toArray, nil_append, append_assoc]
 
@@ -1826,7 +1809,7 @@ theorem modifyLast_append_one (f : α → α) (a : α) (l : List α) :
   | cons _ tl =>
     simp only [cons_append, modifyLast]
     rw [modifyLast.go]
-    case x_3 => exact append_ne_nil_of_ne_nil_right tl (cons_ne_nil a [])
+    case x_3 => exact append_ne_nil_of_right_ne_nil tl (cons_ne_nil a [])
     rw [modifyLast.go_append_one, Array.toListAppend_eq, Array.push_data, Array.data_toArray,
       nil_append, cons_append, nil_append, cons_inj_right]
     exact modifyLast_append_one _ _ tl
@@ -2150,14 +2133,19 @@ theorem filter_eq_foldr (p : α → Bool) (l : List α) :
     filter p l = foldr (fun a out => bif p a then a :: out else out) [] l := by
   induction l <;> simp [*, filter]; rfl
 
+#adaptation_note
+/--
+This has to be temporarily renamed to avoid an unintentional collision.
+The prime should be removed at nightly-2024-07-27.
+-/
 @[simp]
-theorem filter_subset (l : List α) : filter p l ⊆ l :=
+theorem filter_subset' (l : List α) : filter p l ⊆ l :=
   (filter_sublist l).subset
 
 theorem of_mem_filter {a : α} {l} (h : a ∈ filter p l) : p a := (mem_filter.1 h).2
 
 theorem mem_of_mem_filter {a : α} {l} (h : a ∈ filter p l) : a ∈ l :=
-  filter_subset l h
+  filter_subset' l h
 
 theorem mem_filter_of_mem {a : α} {l} (h₁ : a ∈ l) (h₂ : p a) : a ∈ filter p l :=
   mem_filter.2 ⟨h₁, h₂⟩
@@ -2690,6 +2678,7 @@ theorem length_dropSlice_lt (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs
     (List.dropSlice i j xs).length < xs.length := by
   simp; omega
 
+set_option linter.deprecated false in
 @[deprecated (since := "2024-07-25")]
 theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :
     SizeOf.sizeOf (List.dropSlice i j xs) < SizeOf.sizeOf xs := by
