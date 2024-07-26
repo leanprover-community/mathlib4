@@ -122,22 +122,26 @@ open TensorProduct
 
 /--
 If `R → T` is surjective on stalks, and `J` is some prime of `T`,
-then every element `x` in `S ⊗[R] T` satisfies `(1 ⊗ rt)x = a ⊗ t` for some `r : R` and `rt ∉ J`.
+then every element `x` in `S ⊗[R] T` satisfies `(1 ⊗ r • t)x = a ⊗ t` for some
+`r : R`, `a : S`, and `t : T` such that `r • t ∉ J`.
 -/
 lemma SurjectiveOnStalks.exists_mul_eq_tmul
     (hf₂ : (algebraMap R T).SurjectiveOnStalks)
     (x : S ⊗[R] T) (J : Ideal T) (hJ : J.IsPrime) :
     ∃ (t : T) (r : R) (a : S), (r • t ∉ J) ∧
       (1 : S) ⊗ₜ[R] (r • t) * x = a ⊗ₜ[R] t := by
-  induction' x using TensorProduct.induction_on with x₁ x₂ x₁ x₂ hx₁ hx₂
-  · exact ⟨1, 1, 0, by rw [one_smul]; exact J.primeCompl.one_mem,
+  induction x with
+  | zero =>
+    exact ⟨1, 1, 0, by rw [one_smul]; exact J.primeCompl.one_mem,
       by rw [mul_zero, TensorProduct.zero_tmul]⟩
-  · obtain ⟨y, s, c, hs, hc, e⟩ := (surjective_localRingHom_iff _).mp (hf₂ J hJ) x₂
+  | tmul x₁ x₂ =>
+    obtain ⟨y, s, c, hs, hc, e⟩ := (surjective_localRingHom_iff _).mp (hf₂ J hJ) x₂
     simp_rw [Algebra.smul_def]
     refine ⟨c, s, y • x₁, J.primeCompl.mul_mem hc hs, ?_⟩
     rw [Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_comm _ c, e,
       TensorProduct.smul_tmul, Algebra.smul_def, mul_comm]
-  · obtain ⟨t₁, r₁, a₁, hr₁, e₁⟩ := hx₁
+  | add x₁ x₂ hx₁ hx₂ =>
+    obtain ⟨t₁, r₁, a₁, hr₁, e₁⟩ := hx₁
     obtain ⟨t₂, r₂, a₂, hr₂, e₂⟩ := hx₂
     have : (r₁ * r₂) • (t₁ * t₂) = (r₁ • t₁) * (r₂ • t₂) := by
       simp_rw [← smul_eq_mul]; rw [smul_smul_smul_comm]
