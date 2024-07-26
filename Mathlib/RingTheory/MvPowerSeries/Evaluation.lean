@@ -285,7 +285,8 @@ noncomputable def eval₂Hom :
     (coeToMvPowerSeries_uniformContinuous hφ ha)
 
 theorem eval₂Hom_apply (f : MvPowerSeries σ R) :
-    eval₂Hom hφ ha f = DenseInducing.extend coeToMvPowerSeries_denseInducing (MvPolynomial.eval₂ φ a) f :=
+    eval₂Hom hφ ha f =
+      coeToMvPowerSeries_denseInducing.extend (MvPolynomial.eval₂ φ a) f :=
   rfl
 
 theorem coe_eval₂Hom :
@@ -336,8 +337,8 @@ theorem eval₂_unique
   rw [← coe_eval₂Hom hφ ha]
   exact (MvPolynomial.coeToMvPowerSeries_denseInducing.extend_unique h hε).symm
 
-theorem comp_eval₂
-    {T : Type*} [CommRing T] [UniformSpace T] [LinearTopology T] [CompleteSpace T] [T2Space T] [UniformAddGroup T] [TopologicalRing T]
+theorem comp_eval₂ {T : Type*} [CommRing T] [UniformSpace T] [LinearTopology T]
+    [CompleteSpace T] [T2Space T] [UniformAddGroup T] [TopologicalRing T]
     {ε : S →+* T} (hε : Continuous ε) :
     ε ∘ eval₂ φ a = eval₂ (ε.comp φ) (ε ∘ a) := by
   rw [← coe_eval₂Hom hφ ha, ← RingHom.coe_comp]
