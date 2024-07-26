@@ -572,7 +572,7 @@ noncomputable def scale_MonoidHom : (σ → A) →* MvPowerSeries σ R →ₐ[R]
     rw [← scale_algHom_comp, AlgHom.End_toSemigroup_toMul_mul]
 
 theorem scale_zero_apply (f : MvPowerSeries σ R) :
-  (scale (Function.const σ (0 : A))) f = MvPowerSeries.C σ R (constantCoeff σ R f) := by
+    (scale (Function.const σ (0 : A))) f = MvPowerSeries.C σ R (constantCoeff σ R f) := by
   ext d
   simp only [coeff_scale, coeff_C]
   by_cases hd : d = 0
