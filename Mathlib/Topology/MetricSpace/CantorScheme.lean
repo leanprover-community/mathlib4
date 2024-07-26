@@ -5,8 +5,6 @@ Authors: Felix Weilacher
 -/
 import Mathlib.Topology.MetricSpace.PiNat
 
-#align_import topology.metric_space.cantor_scheme from "leanprover-community/mathlib"@"49b7f94aab3a3bdca1f9f34c5d818afb253b3993"
-
 /-!
 # (Topological) Schemes and their induced maps
 
@@ -56,25 +54,21 @@ branch corresponding to `x`, if it exists.
 We call this the map induced by the scheme. -/
 noncomputable def inducedMap : Σs : Set (ℕ → β), s → α :=
   ⟨fun x => Set.Nonempty (⋂ n : ℕ, A (res x n)), fun x => x.property.some⟩
-#align cantor_scheme.induced_map CantorScheme.inducedMap
 
 section Topology
 
 /-- A scheme is antitone if each set contains its children. -/
 protected def Antitone : Prop :=
   ∀ l : List β, ∀ a : β, A (a :: l) ⊆ A l
-#align cantor_scheme.antitone CantorScheme.Antitone
 
 /-- A useful strengthening of being antitone is to require that each set contains
 the closure of each of its children. -/
 def ClosureAntitone [TopologicalSpace α] : Prop :=
   ∀ l : List β, ∀ a : β, closure (A (a :: l)) ⊆ A l
-#align cantor_scheme.closure_antitone CantorScheme.ClosureAntitone
 
 /-- A scheme is disjoint if the children of each set of pairwise disjoint. -/
 protected def Disjoint : Prop :=
   ∀ l : List β, Pairwise fun a b => Disjoint (A (a :: l)) (A (b :: l))
-#align cantor_scheme.disjoint CantorScheme.Disjoint
 
 variable {A}
 
@@ -84,16 +78,13 @@ theorem map_mem (x : (inducedMap A).1) (n : ℕ) : (inducedMap A).2 x ∈ A (res
   have := x.property.some_mem
   rw [mem_iInter] at this
   exact this n
-#align cantor_scheme.map_mem CantorScheme.map_mem
 
 protected theorem ClosureAntitone.antitone [TopologicalSpace α] (hA : ClosureAntitone A) :
     CantorScheme.Antitone A := fun l a => subset_closure.trans (hA l a)
-#align cantor_scheme.closure_antitone.antitone CantorScheme.ClosureAntitone.antitone
 
 protected theorem Antitone.closureAntitone [TopologicalSpace α] (hanti : CantorScheme.Antitone A)
     (hclosed : ∀ l, IsClosed (A l)) : ClosureAntitone A := fun _ _ =>
   (hclosed _).closure_eq.subset.trans (hanti _ _)
-#align cantor_scheme.antitone.closure_antitone CantorScheme.Antitone.closureAntitone
 
 /-- A scheme where the children of each set are pairwise disjoint induces an injective map. -/
 theorem Disjoint.map_injective (hA : CantorScheme.Disjoint A) : Injective (inducedMap A).2 := by
@@ -113,7 +104,6 @@ theorem Disjoint.map_injective (hA : CantorScheme.Disjoint A) : Injective (induc
     apply map_mem
   rw [hxy, ih, ← res_succ]
   apply map_mem
-#align cantor_scheme.disjoint.map_injective CantorScheme.Disjoint.map_injective
 
 end Topology
 
@@ -124,7 +114,6 @@ variable [PseudoMetricSpace α]
 /-- A scheme on a metric space has vanishing diameter if diameter approaches 0 along each branch. -/
 def VanishingDiam : Prop :=
   ∀ x : ℕ → β, Tendsto (fun n : ℕ => EMetric.diam (A (res x n))) atTop (𝓝 0)
-#align cantor_scheme.vanishing_diam CantorScheme.VanishingDiam
 
 variable {A}
 
@@ -142,7 +131,6 @@ theorem VanishingDiam.dist_lt (hA : VanishingDiam A) (ε : ℝ) (ε_pos : 0 < ε
   apply lt_of_le_of_lt (hn _ (le_refl _))
   rw [ENNReal.ofReal_lt_ofReal_iff ε_pos]
   linarith
-#align cantor_scheme.vanishing_diam.dist_lt CantorScheme.VanishingDiam.dist_lt
 
 /-- A scheme with vanishing diameter along each branch induces a continuous map. -/
 theorem VanishingDiam.map_continuous [TopologicalSpace β] [DiscreteTopology β]
@@ -160,7 +148,6 @@ theorem VanishingDiam.map_continuous [TopologicalSpace β] [DiscreteTopology β]
     apply map_mem
   apply continuous_subtype_val.isOpen_preimage
   apply isOpen_cylinder
-#align cantor_scheme.vanishing_diam.map_continuous CantorScheme.VanishingDiam.map_continuous
 
 /-- A scheme on a complete space with vanishing diameter
 such that each set contains the closure of its children
@@ -192,7 +179,6 @@ theorem ClosureAntitone.map_of_vanishingDiam [CompleteSpace α] (hdiam : Vanishi
   apply mem_closure_of_tendsto hy
   rw [eventually_atTop]
   exact ⟨n.succ, umem _⟩
-#align cantor_scheme.closure_antitone.map_of_vanishing_diam CantorScheme.ClosureAntitone.map_of_vanishingDiam
 
 end Metric
 
