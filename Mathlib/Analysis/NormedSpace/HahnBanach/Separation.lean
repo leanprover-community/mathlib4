@@ -242,7 +242,8 @@ def RCLinearMapDual : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[ℝ] 𝕜) where
         simp only [LinearMapClass.map_smul, map_mul, RingHom.id_apply, smul_sub, smul_eq_mul,
           real_smul_ofReal, sub_right_inj]
         rw [smul_comm, LinearMapClass.map_smul]
-        sorry
+        simp only [smul_eq_mul, map_mul, real_smul_ofReal, real_smul_eq_coe_mul]
+        exact Algebra.left_comm I m ((algebraMap ℝ 𝕜) (toLinearMap (I • x)))
       cont := {
         isOpen_preimage := by
           intro s hs
