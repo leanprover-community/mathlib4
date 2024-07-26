@@ -13,8 +13,8 @@ import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 # The Yoneda embedding for `R`-linear categories
 
 The Yoneda embedding for `R`-linear categories `C`,
-sends an object `X : C` to the `Module R`-valued presheaf on `C`,
-with value on `Y : Cᵒᵖ` given by `Module.of R (unop Y ⟶ X)`.
+sends an object `X : C` to the `ModuleCat R`-valued presheaf on `C`,
+with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`.
 
 TODO: `linearYoneda R C` is `R`-linear.
 TODO: In fact, `linearYoneda` itself is additive and `R`-linear.
@@ -34,8 +34,8 @@ variable (C)
 -- and similarly in `linearCoyoneda`, otherwise many simp lemmas are not triggered automatically.
 -- Eventually, doing so allows more proofs to be automatic!
 /-- The Yoneda embedding for `R`-linear categories `C`,
-sending an object `X : C` to the `Module R`-valued presheaf on `C`,
-with value on `Y : Cᵒᵖ` given by `Module.of R (unop Y ⟶ X)`. -/
+sending an object `X : C` to the `ModuleCat R`-valued presheaf on `C`,
+with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`. -/
 @[simps]
 def linearYoneda : C ⥤ Cᵒᵖ ⥤ ModuleCat R where
   obj X :=
@@ -47,8 +47,8 @@ def linearYoneda : C ⥤ Cᵒᵖ ⥤ ModuleCat R where
 #align category_theory.linear_yoneda CategoryTheory.linearYoneda
 
 /-- The Yoneda embedding for `R`-linear categories `C`,
-sending an object `Y : Cᵒᵖ` to the `Module R`-valued copresheaf on `C`,
-with value on `X : C` given by `Module.of R (unop Y ⟶ X)`. -/
+sending an object `Y : Cᵒᵖ` to the `ModuleCat R`-valued copresheaf on `C`,
+with value on `X : C` given by `ModuleCat.of R (unop Y ⟶ X)`. -/
 @[simps]
 def linearCoyoneda : Cᵒᵖ ⥤ C ⥤ ModuleCat R where
   obj Y :=
