@@ -604,8 +604,7 @@ def _root_.MeasureTheory.Measure.integrablePower (μ : Measure D) : ℕ :=
 lemma integrable_pow_neg_integrablePower
     (μ : Measure D) [h : μ.HasTemperateGrowth] :
     Integrable (fun x ↦ (1 + ‖x‖) ^ (- (μ.integrablePower : ℝ))) μ := by
-  simp [Measure.integrablePower, h]
-  exact h.exists_integrable.choose_spec
+  simpa [Measure.integrablePower, h] using h.exists_integrable.choose_spec
 
 instance _root_.MeasureTheory.Measure.IsFiniteMeasure.instHasTemperateGrowth {μ : Measure D}
     [h : IsFiniteMeasure μ] : μ.HasTemperateGrowth := ⟨⟨0, by simp⟩⟩

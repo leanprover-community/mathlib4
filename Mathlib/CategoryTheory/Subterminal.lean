@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Subobject.MonoOver
 
-
 /-!
 # Subterminal objects
 

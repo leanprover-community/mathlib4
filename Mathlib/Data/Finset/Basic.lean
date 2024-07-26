@@ -305,7 +305,6 @@ theorem subset_def : s ⊆ t ↔ s.1 ⊆ t.1 :=
 theorem ssubset_def : s ⊂ t ↔ s ⊆ t ∧ ¬t ⊆ s :=
   Iff.rfl
 
-@[simp]
 theorem Subset.refl (s : Finset α) : s ⊆ s :=
   Multiset.Subset.refl _
 
@@ -2374,7 +2373,6 @@ open scoped Classical
 -- theorem sep_def {α : Type*} (s : Finset α) (p : α → Prop) : { x ∈ s | p x } = s.filter p := by
 --   ext
 --   simp
--- #align finset.sep_def Finset.sep_def
 
 end Classical
 
@@ -2427,6 +2425,8 @@ theorem filter_union_filter_neg_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
   filter_union_filter_of_codisjoint _ _ _ <| @codisjoint_hnot_right _ _ p
 
 lemma filter_inj : s.filter p = t.filter p ↔ ∀ ⦃a⦄, p a → (a ∈ s ↔ a ∈ t) := by simp [ext_iff]
+
+lemma filter_inj' : s.filter p = s.filter q ↔ ∀ ⦃a⦄, a ∈ s → (p a ↔ q a) := by simp [ext_iff]
 
 end Filter
 
@@ -2656,7 +2656,6 @@ theorem toFinset_dedup (m : Multiset α) : m.dedup.toFinset = m.toFinset := by
 -- @[simp]
 -- theorem toFinset_bind_dedup [DecidableEq β] (m : Multiset α) (f : α → Multiset β) :
 --     (m.dedup.bind f).toFinset = (m.bind f).toFinset := by simp_rw [toFinset, dedup_bind_dedup]
--- #align multiset.to_finset_bind_dedup Multiset.toFinset_bind_dedup
 
 @[simp]
 theorem toFinset_filter (s : Multiset α) (p : α → Prop) [DecidablePred p] :
