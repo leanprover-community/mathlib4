@@ -287,8 +287,26 @@ theorem mul_smul' {A : Type*} [Semiring A] [Algebra R A]
   rw [smul'_mk, mk_mul_mk, mk_mul_mk, smul'_mk, mul_smul_comm]
 
 instance {R₀ A : Type*} [CommSemiring R₀] [Algebra R₀ R] [Semiring A] [Algebra R A]
-    [Algebra R₀ A] [IsScalarTower R₀ R A] : Algebra R₀ (LocalizedModule S A) :=
-  Algebra.ofModule smul'_mul mul_smul'
+    [Algebra R₀ A] [IsScalarTower R₀ R A] : Algebra R₀ (LocalizedModule S A) where
+  __ := inferInstanceAs (Module R₀ (LocalizedModule S A))
+  __ := (((OreLocalization.mkLinearMap S A).restrictScalars R₀).comp
+    (Algebra.linearMap R₀ A)).toAddMonoidHom
+  map_one' := by with_unfolding_all dsimp; simp only [map_one]; rfl
+  map_mul' x y := by refine Eq.trans ?_ mk_mul_mk.symm; dsimp; simp only [map_mul, mul_one]; rfl
+  commutes' r x := by
+    induction x using induction_on with | _ a s => _
+    dsimp
+    refine mk_mul_mk.trans (Eq.trans ?_ mk_mul_mk.symm)
+    simp only [Algebra.commutes, one_mul, mul_one]
+  smul_def' r x := by
+    induction x using induction_on with | _ a s => _
+    refine ((OreLocalization.smul_oreDiv _ _ _).trans ?_).trans mk_mul_mk.symm
+    show (r • 1) • _ /ₒ s = (algebraMap _ _ r * a) /ₒ (1 * s)
+    simp only [Algebra.smul_def, mul_one, ← IsScalarTower.algebraMap_apply, one_mul]
+
+example {R₀ : Type*} [CommSemiring R₀] [Algebra R₀ R] :
+    (LocalizedModule.instAlgebraOfIsScalarTower : Algebra R₀ (LocalizedModule S R)) =
+      OreLocalization.instAlgebra := rfl
 
 section
 
