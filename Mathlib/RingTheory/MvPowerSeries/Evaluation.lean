@@ -92,6 +92,18 @@ def EvalDomain_ideal [LinearTopology S] : Ideal (σ → S) where
       exact LinearTopology.tendsto_zero_mul _ _ _ (hx.hpow s)
     tendsto_zero := LinearTopology.tendsto_zero_mul _ _ _ hx.tendsto_zero }
 
+theorem EvalDomain.comp {a : σ → R} (ha : EvalDomain a) {ε : R →+* S} (hε : Continuous ε) :
+    EvalDomain (ε ∘ a) := by
+  apply EvalDomain.mk
+  · intro s
+    unfold IsTopologicallyNilpotent
+    convert Filter.Tendsto.comp (Continuous.tendsto' hε 0 (ε 0) rfl) (ha.hpow s)
+    · ext n; simp only [Function.comp_apply, map_pow]
+    · rw [map_zero]
+  · apply Filter.Tendsto.comp _ ha.tendsto_zero
+    rw [← map_zero ε]
+    exact Continuous.tendsto' hε 0 (ε 0) rfl
+
 /-- Bourbaki, Algèbre, chap. 4, §4, n°3, Prop. 4 (i) (a & b) -/
 theorem EvalDomain.map {a : σ → R} (ha : EvalDomain a) :
     EvalDomain (fun s ↦ φ (a s)) where
@@ -143,7 +155,6 @@ variable {R : Type*} [CommRing R] [UniformSpace R] [UniformAddGroup R] [Topologi
 variable {S : Type*} [CommRing S] [UniformSpace S] [UniformAddGroup S]
   [TopologicalRing S] [T2Space S] [CompleteSpace S]
 variable {φ : R →+* S} (hφ : Continuous φ)
-
 
 -- We endow MvPowerSeries σ R with the product uniform structure
 open WithPiUniformity
@@ -307,10 +318,11 @@ theorem hasSum_eval₂ (f : MvPowerSeries σ R) :
     HasSum
     (fun (d : σ →₀ ℕ) ↦ φ (coeff R d f) * (d.prod fun s e => (a s) ^ e))
     (MvPowerSeries.eval₂ φ a f) := by
-  rw [← coe_eval₂Hom hφ ha] -- eval₂Hom_apply hφ ha]
-  convert (hasSum_of_monomials_self f).map (eval₂Hom hφ ha) (continuous_eval₂ hφ ha) with d
-  simp only [Function.comp_apply, coe_eval₂Hom, ← MvPolynomial.coe_monomial,
-    eval₂_coe hφ ha, eval₂_monomial]
+  rw [← coe_eval₂Hom hφ ha, eval₂Hom_apply hφ ha]
+  convert (hasSum_of_monomials_self f).map (eval₂Hom hφ ha) (?_) with d
+  · simp only [Function.comp_apply, coe_eval₂Hom, ← MvPolynomial.coe_monomial,
+    eval₂_coe, eval₂_monomial]
+  · rw [coe_eval₂Hom]; exact continuous_eval₂ hφ ha
 
 theorem eval₂_eq_sum (f : MvPowerSeries σ R) :
     MvPowerSeries.eval₂ φ a f =
@@ -320,22 +332,24 @@ theorem eval₂_eq_sum (f : MvPowerSeries σ R) :
 theorem eval₂_unique
     {ε : MvPowerSeries σ R →+* S} (hε : Continuous ε)
     (h : ∀ p : MvPolynomial σ R, ε p = MvPolynomial.eval₂ φ a p) :
-    ε = eval₂ φ a :=
-  (DenseInducing.extend_unique _ h hε).symm
+    ε = eval₂ φ a := by
+  rw [← coe_eval₂Hom hφ ha]
+  exact (MvPolynomial.coeToMvPowerSeries_denseInducing.extend_unique h hε).symm
 
 theorem comp_eval₂
-    {T : Type*} [CommRing T] [UniformSpace T] [T2Space T]
+    {T : Type*} [CommRing T] [UniformSpace T] [LinearTopology T] [CompleteSpace T] [T2Space T] [UniformAddGroup T] [TopologicalRing T]
     {ε : S →+* T} (hε : Continuous ε) :
     ε ∘ eval₂ φ a = eval₂ (ε.comp φ) (ε ∘ a) := by
   rw [← coe_eval₂Hom hφ ha, ← RingHom.coe_comp]
-  apply eval₂_unique
-  simp only [RingHom.coe_comp]
-  exact Continuous.comp hε (continuous_eval₂ hφ ha)
-  intro p
-  simp only [RingHom.coe_comp, Function.comp_apply, eval₂_coe]
-  rw [coe_eval₂Hom hφ ha, eval₂_coe hφ ha, ← MvPolynomial.coe_eval₂Hom]
-  rw [← RingHom.comp_apply, MvPolynomial.comp_eval₂Hom]
-  rfl
+  apply eval₂_unique _ (ha.comp hε)
+  · simp only [RingHom.coe_comp, coe_eval₂Hom hφ ha]
+    exact Continuous.comp hε (continuous_eval₂ hφ ha)
+  · intro p
+    simp only [RingHom.coe_comp, Function.comp_apply, eval₂_coe]
+    rw [coe_eval₂Hom hφ ha, eval₂_coe φ a, ← MvPolynomial.coe_eval₂Hom]
+    rw [← RingHom.comp_apply, MvPolynomial.comp_eval₂Hom]
+    rfl
+  · simp only [RingHom.coe_comp, Continuous.comp hε hφ]
 
 variable [Algebra R S] [ContinuousSMul R S]
 
@@ -345,38 +359,39 @@ noncomputable def aeval : MvPowerSeries σ R →ₐ[R] S where
   commutes' := fun r ↦ by
     simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
       MonoidHom.coe_coe]
-    rw [← c_eq_algebraMap, coe_eval₂Hom]
-    exact eval₂_C (continuous_algebraMap R S) ha r
+    rw [← c_eq_algebraMap, coe_eval₂Hom, eval₂_C]
 
 theorem coe_aeval :
-    ⇑(MvPowerSeries.aeval ha) = MvPowerSeries.eval₂ (algebraMap R S) a :=
-  rfl
+    ⇑(MvPowerSeries.aeval ha) = MvPowerSeries.eval₂ (algebraMap R S) a := by
+  simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom]
 
-theorem continuous_aeval : Continuous (aeval ha : MvPowerSeries σ R → S) :=
-  continuous_eval₂ (continuous_algebraMap R S) ha
+theorem continuous_aeval : Continuous (aeval ha : MvPowerSeries σ R → S) := by
+  rw [coe_aeval]
+  exact continuous_eval₂ (continuous_algebraMap R S) ha
 
 theorem aeval_coe (p : MvPolynomial σ R) :
     MvPowerSeries.aeval ha (p : MvPowerSeries σ R) = MvPolynomial.aeval a p := by
-  simp only [coe_aeval, eval₂_coe (continuous_algebraMap R S) ha, aeval_def]
+  rw [coe_aeval, aeval_def, eval₂_coe]
 
 theorem aeval_unique {ε : MvPowerSeries σ R →ₐ[R] S} (hε : Continuous ε) :
     ε = aeval (EvalDomain.evalDomain_X.map hε) := by
   apply DFunLike.ext'
   rw [coe_aeval]
-  apply eval₂_unique hε
-  intro p
-  induction p using MvPolynomial.induction_on with
-  | h_C r =>
-    simp only [AlgHom.toRingHom_eq_coe, coe_C, RingHom.coe_coe, MvPolynomial.eval₂_C]
-    rw [c_eq_algebraMap, AlgHom.commutes]
-  | h_add p q hp hq =>
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe] at hp hq
-    simp only [AlgHom.toRingHom_eq_coe, coe_add, map_add,
-      RingHom.coe_coe, eval₂_add, hp, hq]
-  | h_X p s h =>
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe] at h
-    simp only [AlgHom.toRingHom_eq_coe, coe_mul, coe_X, map_mul,
-      RingHom.coe_coe, eval₂_mul, MvPolynomial.eval₂_X, h]
+  apply eval₂_unique (continuous_algebraMap R S) _ hε
+  · intro p
+    induction p using MvPolynomial.induction_on with
+    | h_C r =>
+      simp only [AlgHom.toRingHom_eq_coe, coe_C, RingHom.coe_coe, MvPolynomial.eval₂_C]
+      rw [c_eq_algebraMap, AlgHom.commutes]
+    | h_add p q hp hq =>
+      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe] at hp hq
+      simp only [AlgHom.toRingHom_eq_coe, coe_add, map_add,
+        RingHom.coe_coe, eval₂_add, hp, hq]
+    | h_X p s h =>
+      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe] at h
+      simp only [AlgHom.toRingHom_eq_coe, coe_mul, coe_X, map_mul,
+        RingHom.coe_coe, eval₂_mul, MvPolynomial.eval₂_X, h]
+  · exact EvalDomain.evalDomain_X.comp hε
 
 theorem hasSum_aeval (f : MvPowerSeries σ R) :
     HasSum (fun (d : σ →₀ ℕ) ↦ (coeff R d f) • (d.prod fun s e => (a s) ^ e))
@@ -400,7 +415,7 @@ theorem comp_aeval
   apply DFunLike.coe_injective
   simp only [AlgHom.coe_comp, -- AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
     coe_aeval ha]
-  erw [comp_eval₂ (continuous_algebraMap R S) ha hε]
+  erw [comp_eval₂ (continuous_algebraMap R S) ha hε, coe_aeval]
   apply congr_arg₂
   simp only [AlgHom.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower]
   simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe]
