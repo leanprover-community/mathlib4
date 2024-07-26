@@ -46,11 +46,15 @@ open Fin Function
 
 namespace Finset
 
-/-- `∏ x ∈ s, f x` is the product of `f x`
-as `x` ranges over the elements of the finite set `s`.
--/
+/-- `∏ x ∈ s, f x` is the product of `f x` as `x` ranges over the elements of the finite set `s`.
+
+When the index type is a `Fintype`, the notation `∏ x, f x`, is a shorthand for
+`∏ x ∈ Finset.univ, f x`. -/
 @[to_additive "`∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements
-of the finite set `s`."]
+of the finite set `s`.
+
+When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for
+`∑ x ∈ Finset.univ, f x`."]
 protected def prod [CommMonoid β] (s : Finset α) (f : α → β) : β :=
   (s.1.map f).prod
 

@@ -80,7 +80,7 @@ protected lemma mul_lt_mul_of_lt_of_lt [PosMulStrictMono α] (hab : a < b) (hcd 
   obtain rfl | hc := eq_zero_or_pos c
   · rw [mul_zero]
     exact mul_pos ((zero_le _).trans_lt hab) hcd
-  · exact mul_lt_mul_of_lt_of_lt' hab hcd ((zero_le _).trans_lt hab) hc
+  · exact mul_lt_mul_of_pos' hab hcd hc ((zero_le _).trans_lt hab)
 
 end CanonicallyOrderedCommSemiring
 end CanonicallyOrderedCommSemiring

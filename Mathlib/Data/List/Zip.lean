@@ -264,7 +264,7 @@ theorem nthLe_zipWith {f : α → β → γ} {l : List α} {l' : List β} {i : �
 theorem getElem_zip {l : List α} {l' : List β} {i : Nat} {h : i < (zip l l').length} :
     (zip l l')[i] =
       (l[i]'(lt_length_left_of_zip h), l'[i]'(lt_length_right_of_zip h)) :=
-  getElem_zipWith
+  getElem_zipWith (h := h)
 
 @[deprecated getElem_zip (since := "2024-06-12")]
 theorem get_zip {l : List α} {l' : List β} {i : Fin (zip l l').length} :

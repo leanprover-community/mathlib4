@@ -252,7 +252,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       apply (HasSubset.Subset.eventuallyLE this).congr EventuallyEq.rfl
       exact blimsup_thickening_mul_ae_eq μ (fun n => 0 < n ∧ p∤n) (fun n => {y | addOrderOf y = n})
         (Nat.cast_pos.mpr hp.pos) _ hδ
-    refine (SupHom.apply_blimsup_le (sSupHom.setImage f)).trans (mono_blimsup fun n hn => ?_)
+    refine (sSupHom.setImage f).apply_blimsup_le.trans (mono_blimsup fun n hn => ?_)
     replace hn := Nat.coprime_comm.mp (hp.coprime_iff_not_dvd.2 hn.2)
     exact approxAddOrderOf.image_nsmul_subset_of_coprime (δ n) hp.pos hn
   have hB : ∀ p : Nat.Primes, B p =ᵐ[μ] (∅ : Set 𝕊) ∨ B p =ᵐ[μ] univ := by
@@ -265,7 +265,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       apply (HasSubset.Subset.eventuallyLE this).congr EventuallyEq.rfl
       exact blimsup_thickening_mul_ae_eq μ (fun n => 0 < n ∧ p∣∣n) (fun n => {y | addOrderOf y = n})
         (Nat.cast_pos.mpr hp.pos) _ hδ
-    refine (SupHom.apply_blimsup_le (sSupHom.setImage f)).trans (mono_blimsup ?_)
+    refine (sSupHom.setImage f).apply_blimsup_le.trans (mono_blimsup ?_)
     rintro n ⟨hn, h_div, h_ndiv⟩
     have h_cop : (addOrderOf x).Coprime (n / p) := by
       obtain ⟨q, rfl⟩ := h_div
