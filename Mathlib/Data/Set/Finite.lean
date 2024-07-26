@@ -1172,10 +1172,10 @@ theorem Infinite.exists_subset_card_eq {s : Set α} (hs : s.Infinite) (n : ℕ) 
   ⟨((Finset.range n).map (hs.natEmbedding _)).map (Embedding.subtype _), by simp⟩
 
 theorem infinite_of_finite_compl [Infinite α] {s : Set α} (hs : sᶜ.Finite) : s.Infinite := fun h =>
-  Set.infinite_univ (by simpa using hs.union h)
+  Set.infinite_univ (α := α) (by simpa using hs.union h)
 
 theorem Finite.infinite_compl [Infinite α] {s : Set α} (hs : s.Finite) : sᶜ.Infinite := fun h =>
-  Set.infinite_univ (by simpa using hs.union h)
+  Set.infinite_univ (α := α) (by simpa using hs.union h)
 
 theorem Infinite.diff {s t : Set α} (hs : s.Infinite) (ht : t.Finite) : (s \ t).Infinite := fun h =>
   hs <| h.of_diff ht
@@ -1271,7 +1271,7 @@ theorem infinite_of_forall_exists_gt (h : ∀ a, ∃ b ∈ s, a < b) : s.Infinit
     (strictMono_nat_of_lt_succ fun n => (h _).choose_spec.2).injective hf
 
 theorem infinite_of_forall_exists_lt (h : ∀ a, ∃ b ∈ s, b < a) : s.Infinite :=
-  @infinite_of_forall_exists_gt αᵒᵈ _ _ _ h
+  infinite_of_forall_exists_gt (α := αᵒᵈ) h
 
 end Preorder
 
@@ -1461,12 +1461,12 @@ variable [Preorder α] [IsDirected α (· ≥ ·)] [Nonempty α] {s : Set α}
 
 /-- A finite set is bounded below. -/
 protected theorem Finite.bddBelow (hs : s.Finite) : BddBelow s :=
-  @Finite.bddAbove αᵒᵈ _ _ _ _ hs
+  Finite.bddAbove (α := αᵒᵈ) hs
 
 /-- A finite union of sets which are all bounded below is still bounded below. -/
 theorem Finite.bddBelow_biUnion {I : Set β} {S : β → Set α} (H : I.Finite) :
     BddBelow (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddBelow (S i) :=
-  @Finite.bddAbove_biUnion αᵒᵈ _ _ _ _ _ _ H
+  Finite.bddAbove_biUnion (α := αᵒᵈ) H
 
 theorem infinite_of_not_bddBelow : ¬BddBelow s → s.Infinite := mt Finite.bddBelow
 
