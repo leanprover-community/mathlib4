@@ -62,7 +62,7 @@ theorem pi_iff [Finite I] :
         fun _ ↦ Ideal.Quotient.mk_surjective _
     replace he' : ∀ i, Ideal.Quotient.mk J (e i) = g (Pi.single i 1) := congr_fun he'
     let iso : B ≃ₐ[R] ∀ i, B ⧸ Ideal.span {1 - e i} :=
-      { __ := Pi.algHom fun i ↦ Ideal.Quotient.mkₐ R _
+      { __ := Pi.algHom _ _ fun i ↦ Ideal.Quotient.mkₐ R _
         __ := Equiv.ofBijective _ he.bijective_pi }
     let J' := fun i ↦ J.map (Ideal.Quotient.mk (Ideal.span {1 - e i}))
     let ι : ∀ i, (B ⧸ J →ₐ[R] (B ⧸ _) ⧸ J' i) := fun i ↦ Ideal.quotientMapₐ _
@@ -87,7 +87,7 @@ theorem pi_iff [Finite I] :
         (by rw [← Ideal.map_pow, hJ, Ideal.map_bot]) g'
       exact ⟨a, AlgHom.congr_fun ha⟩
     choose a ha using this
-    use iso.symm.toAlgHom.comp (Pi.algHom fun i ↦ (a i).comp (Pi.evalAlgHom R A i))
+    use iso.symm.toAlgHom.comp (Pi.algHom _ _ fun i ↦ (a i).comp (Pi.evalAlgHom R A i))
     ext x; rw [← AlgHom.toLinearMap_apply, ← AlgHom.toLinearMap_apply]; congr 1
     ext i x
     simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.comp_toLinearMap, AlgEquiv.toAlgHom_toLinearMap,
