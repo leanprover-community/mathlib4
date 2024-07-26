@@ -830,7 +830,7 @@ theorem Basis.not_basis_of_ssubset (hI : M.Basis I X) (hJI : J ⊂ I) : ¬ M.Bas
 theorem Indep.subset_basis_of_subset (hI : M.Indep I) (hIX : I ⊆ X) (hX : X ⊆ M.E := by aesop_mat) :
     ∃ J, M.Basis J X ∧ I ⊆ J := by
   obtain ⟨J, hJ, hJmax⟩ := M.maximality X hX I hI hIX
-  exact ⟨J, ⟨⟨hJmax, hX⟩, hJ⟩⟩
+  exact ⟨J, ⟨hJmax, hX⟩, hJ⟩
 
 theorem Indep.subset_basis'_of_subset (hI : M.Indep I) (hIX : I ⊆ X) :
     ∃ J, M.Basis' J X ∧ I ⊆ J := by
