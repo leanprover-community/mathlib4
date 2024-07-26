@@ -97,15 +97,15 @@ theorem apply_eval_eq (x : A) (p : A[X]) :
 
 end Derivation
 
-namespace DifferentialRing
+namespace Differential
 
-variable {A : Type*} [CommDifferentialRing A]
+variable {A : Type*} [CommRing A] [Differential A]
 
 /--
 A specialization of `Derivation.mapCoeffs` for the case of a differential ring.
 -/
 def mapCoeffs : Derivation ℤ A[X] A[X] :=
-  PolynomialModule.equivPolynomialSelf.compDer CommDifferentialRing.deriv.mapCoeffs
+  PolynomialModule.equivPolynomialSelf.compDer Differential.deriv.mapCoeffs
 
 @[simp]
 lemma mapCoeffs_apply (p : A[X]) (i) :
@@ -124,7 +124,7 @@ lemma mapCoeffs_X :
 lemma mapCoeffs_C (x : A) :
     mapCoeffs (C x) = C x′ := by simp [← monomial_zero_left]
 
-variable {K : Type*} [CommDifferentialRing K] [DifferentialAlgebra A K]
+variable {K : Type*} [CommRing K] [Differential K] [Algebra A K] [DifferentialAlgebra A K]
 
 theorem deriv_aeval_eq (x : K) (p : A[X]) :
     (aeval x p)′ = aeval x (mapCoeffs p) + aeval x (derivative p) * x′ := by
@@ -132,4 +132,4 @@ theorem deriv_aeval_eq (x : K) (p : A[X]) :
   · simp [mapCoeffs]
   · simp [deriv_algebraMap]
 
-end DifferentialRing
+end Differential
