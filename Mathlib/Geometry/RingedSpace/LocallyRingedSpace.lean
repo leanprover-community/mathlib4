@@ -416,11 +416,11 @@ lemma stalkMap_germ' (U : Opens Y) (x : X) (hx : f.val.base x ∈ U) :
       f.val.c.app (op U) ≫ X.presheaf.germ (U := (Opens.map f.val.base).obj U) ⟨x, hx⟩ :=
   PresheafedSpace.stalkMap_germ' f.val U x hx
 
--- @[simp]
--- lemma stalkMap_germ'_apply (U : Opens Y) (x : X) (hx : f.val.base x ∈ U) (y) :
---     f.stalkMap x (Y.presheaf.germ ⟨f.val.base x, hx⟩ y) =
---       X.presheaf.germ (U := (Opens.map f.val.base).obj U) ⟨x, hx⟩ (f.val.c.app (op U) y) :=
---   PresheafedSpace.stalkMap_germ_apply f.val U ⟨x, hx⟩ y
+@[simp]
+lemma stalkMap_germ'_apply (U : Opens Y) (x : X) (hx : f.val.base x ∈ U) (y) :
+    f.stalkMap x (Y.presheaf.germ ⟨f.val.base x, hx⟩ y) =
+      X.presheaf.germ (U := (Opens.map f.val.base).obj U) ⟨x, hx⟩ (f.val.c.app (op U) y) :=
+  PresheafedSpace.stalkMap_germ_apply f.val U ⟨x, hx⟩ y
 
 variable {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat} (h : OpenEmbedding f)
   (V : Opens U) (x : U) (hx : x ∈ V)
