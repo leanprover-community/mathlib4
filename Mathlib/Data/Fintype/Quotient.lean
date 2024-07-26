@@ -188,3 +188,55 @@ lemma finRecOn_mk {C : (∀ i, Quotient (S i)) → Sort*}
 end Fintype
 
 end Quotient
+
+namespace Trunc
+variable {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → Sort*} {β : Sort*}
+
+/-- Given a function that for each `i : ι` gives a term of the corresponding
+truncation type, then there is corresponding term in the truncation of the product. -/
+def finChoice (q : ∀ i, Trunc (α i)) : Trunc (∀ i, α i) :=
+  Quotient.map' id (fun _ _ _ => trivial)
+    (Quotient.finChoice q (S := fun _ => trueSetoid))
+
+theorem finChoice_eq (f : ∀ i, α i) : (Trunc.finChoice fun i => Trunc.mk (f i)) = Trunc.mk f :=
+  Subsingleton.elim _ _
+
+/-- Lift a function on `∀ i, α i` to a function on `∀ i, Trunc (α i)`. -/
+def finLiftOn (q : ∀ i, Trunc (α i)) (f : (∀ i, α i) → β) (h : ∀ (a b : ∀ i, α i), f a = f b) : β :=
+  Quotient.finLiftOn (S := fun _ ↦ trueSetoid) q f (fun _ _ _ ↦ h _ _)
+
+@[simp]
+lemma finLiftOn_empty [e : IsEmpty ι] (q : ∀ i, Trunc (α i)) :
+    @finLiftOn _ _ _ _ β q = fun f _ ↦ f e.elim :=
+  funext₂ fun _ _ ↦ congrFun₂ (Quotient.finLiftOn_empty (S := fun _ ↦ trueSetoid) q) _ _
+
+@[simp]
+lemma finLiftOn_mk (a : ∀ i, α i) :
+    @finLiftOn _ _ _ _ β (⟦a ·⟧) = fun f _ ↦ f a :=
+  funext₂ fun _ _ ↦ congrFun₂ (Quotient.finLiftOn_mk (S := fun _ ↦ trueSetoid) a) _ _
+
+/-- `finChoice` as an equivalence. -/
+@[simps]
+def finChoiceEquiv : (∀ i, Trunc (α i)) ≃ Trunc (∀ i, α i) where
+  toFun := finChoice
+  invFun q i := q.map (· i)
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := Subsingleton.elim _ _
+
+/-- Recursion principle for quotients indexed by a finite type. -/
+@[elab_as_elim]
+def finRecOn {C : (∀ i, Trunc (α i)) → Sort*}
+    (q : ∀ i, Trunc (α i))
+    (f : ∀ a : ∀ i, α i, C (mk <| a ·))
+    (h : ∀ (a b : ∀ i, α i), (Eq.ndrec (f a) (funext fun _ ↦ Trunc.eq _ _)) = f b) :
+    C q :=
+  Quotient.finRecOn (C := C) (S := fun _ ↦ trueSetoid) q (f ·) (fun _ _ _ ↦ h _ _)
+
+@[simp]
+lemma finRecOn_mk {C : (∀ i, Trunc (α i)) → Sort*}
+    (a : ∀ i, α i) :
+    finRecOn (C := C) (⟦a ·⟧) = fun f _ ↦ f a := by
+  unfold finRecOn
+  simp
+
+end Trunc
