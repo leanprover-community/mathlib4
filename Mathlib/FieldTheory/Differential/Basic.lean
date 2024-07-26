@@ -88,7 +88,6 @@ lemma logd_algebraMap {F K : Type*} [Field F] [Field K] [Differential F] [Differ
 @[norm_cast]
 lemma algebraMap.coe_logd {F K : Type*} [Field F] [Field K] [Differential F] [Differential K]
     [Algebra F K] [DifferentialAlgebra F K]
-    [DifferentialAlgebra F K]
     (a : F) : logd a = logd (a : K) := (logd_algebraMap a).symm
 
 universe u v
