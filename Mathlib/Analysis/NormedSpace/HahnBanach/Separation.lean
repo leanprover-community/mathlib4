@@ -207,26 +207,10 @@ section RCLike
 open RCLike
 
 variable [RCLike 𝕜] [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
-  [Module 𝕜 E] [Module ℝ E] [ContinuousSMul 𝕜 E] [IsScalarTower ℝ 𝕜 E] {s t : Set E} {x y : E} (a : ℝ)
+  [Module 𝕜 E] [Module ℝ E] [ContinuousSMul 𝕜 E] [IsScalarTower ℝ 𝕜 E]
+  {s t : Set E} {x y : E} (a : ℝ)
 
-/-
-This is interesting. We want a linear map from ℝ-linear functionals to 𝕜-linear functionals.
-How does one map an ℝ-linear functional to a 𝕜-linear functional?
-
-We want a "lift", here. But maybe not the lift tactic right away.
-
-We want this to have the property that the real functional below is essentially the real
-part of the functional above. Does this require knowing something about the structure of
-RCLike fields? I don't know. The original idea I had was to take φ and map it to ofReal ∘ φ.
-That would work as a function. Does this even make sense?
-
-If x, y are in E, then φ(x + y)= φ(x) + φ(y) by the linearity, and the addition is in 𝕜 on
-the right. What about smul? In this case, we have φ(m • x)= m * φ(x) because φ is linear.
-the goal is then to pass this through the ofReal...and I do NOT see how that is going to work.
-
-In fact, I don't believe it will.
--/
-def RCLinearMapDual : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[ℝ] 𝕜) where
+def RCLikeLinearMap : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[ℝ] 𝕜) where
   toFun := fun
     | .mk toLinearMap cont => {
       toFun := fun x ↦ ofReal (toLinearMap x) - (I : 𝕜) * ofReal (toLinearMap ((I : 𝕜) • x))
@@ -244,11 +228,20 @@ def RCLinearMapDual : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[ℝ] 𝕜) where
         rw [smul_comm, LinearMapClass.map_smul]
         simp only [smul_eq_mul, map_mul, real_smul_ofReal, real_smul_eq_coe_mul]
         exact Algebra.left_comm I m ((algebraMap ℝ 𝕜) (toLinearMap (I • x)))
-      cont := {
-        isOpen_preimage := by
-          intro s hs
-          sorry
-      }
+      cont := by
+        have : Continuous (HSMul.hSMul (α := 𝕜) (β := 𝕜) I) := continuous_const_smul I
+        simp_all only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
+        apply Continuous.sub
+        · apply Continuous.comp'
+          · apply continuous_algebraMap
+          · simp_all only
+        · apply Continuous.comp'
+          · exact this
+          · apply Continuous.comp'
+            · apply continuous_algebraMap
+            · apply Continuous.comp'
+              · simp_all only
+              · exact continuous_const_smul I
     }
   map_add' := by
     intro f g
