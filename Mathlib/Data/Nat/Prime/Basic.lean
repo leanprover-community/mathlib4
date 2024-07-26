@@ -3,11 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Ring.Int
+import Mathlib.Order.Bounds.Basic
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Order.Bounds.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
 /-!
 ## Notable Theorems
@@ -113,8 +113,7 @@ theorem Prime.mod_two_eq_one_iff_ne_two {p : ℕ} [Fact p.Prime] : p % 2 = 1 ↔
   simp at h
 
 theorem coprime_of_dvd' {m n : ℕ} (H : ∀ k, Prime k → k ∣ m → k ∣ n → k ∣ 1) : Coprime m n :=
-  coprime_of_dvd fun k kp km kn =>
-    not_le_of_gt kp.one_lt <| le_of_dvd Nat.zero_lt_one <| H k kp km kn
+  coprime_of_dvd fun k kp km kn => not_le_of_gt kp.one_lt <| le_of_dvd Nat.one_pos <| H k kp km kn
 
 theorem Prime.dvd_iff_not_coprime {p n : ℕ} (pp : Prime p) : p ∣ n ↔ ¬Coprime p n :=
   iff_not_comm.2 pp.coprime_iff_not_dvd

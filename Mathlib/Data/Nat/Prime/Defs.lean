@@ -23,7 +23,6 @@ This file deals with prime numbers: natural numbers `p ≥ 2` whose only divisor
 
 -/
 
-
 open Bool Subtype
 
 open Nat
@@ -79,8 +78,7 @@ theorem Prime.eq_one_or_self_of_dvd {p : ℕ} (pp : p.Prime) (m : ℕ) (hm : m �
 
 theorem prime_def_lt'' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m = 1 ∨ m = p := by
   refine ⟨fun h => ⟨h.two_le, h.eq_one_or_self_of_dvd⟩, fun h => ?_⟩
-  -- Porting note: needed to make ℕ explicit
-  have h1 := (Nat.one_lt_two).trans_le h.1
+  have h1 := Nat.one_lt_two.trans_le h.1
   refine ⟨mt Nat.isUnit_iff.mp h1.ne', fun a b hab => ?_⟩
   simp only [Nat.isUnit_iff]
   apply Or.imp_right _ (h.2 a _)
@@ -189,7 +187,7 @@ theorem Prime.eq_two_or_odd' {p : ℕ} (hp : Prime p) : p = 2 ∨ Odd p :=
 section MinFac
 
 theorem minFac_lemma (n k : ℕ) (h : ¬n < k * k) : sqrt n - k < sqrt n + 2 - k :=
-  (Nat.sub_lt_sub_iff_right <| le_sqrt.2 <| le_of_not_gt h).2 <| Nat.lt_add_of_pos_right (by decide)
+  (Nat.sub_lt_sub_right <| le_sqrt.2 <| le_of_not_gt h) <| Nat.lt_add_of_pos_right (by decide)
 
 /--
 If `n < k * k`, then `minFacAux n k = n`, if `k | n`, then `minFacAux n k = k`.
@@ -382,7 +380,7 @@ theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
     have := le_antisymm (Nat.succ_le_of_lt lb) (Nat.lt_succ_iff.mp h')
     rw [eq_comm, Nat.minFac_eq_one_iff] at this
     subst this
-    exact not_lt_of_le (le_of_dvd Nat.zero_lt_one h) Nat.one_lt_two
+    exact not_lt_of_le (le_of_dvd lb h) h'
 
 theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
   div_lt_self (Nat.zero_lt_succ _) (minFac_prime (by

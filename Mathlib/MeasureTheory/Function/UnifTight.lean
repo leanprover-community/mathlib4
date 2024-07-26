@@ -65,7 +65,7 @@ theorem unifTight_iff_ennreal {_ : MeasurableSpace α} (f : ι → α → β) (p
       μ s ≠ ∞ ∧ ∀ i, snorm (sᶜ.indicator (f i)) p μ ≤ ε := by
   simp only [ENNReal.forall_ennreal, ENNReal.coe_pos]
   refine (and_iff_left ?_).symm
-  simp [-ne_eq, zero_lt_top, le_top]
+  simp only [zero_lt_top, le_top, implies_true, and_true, true_implies]
   use ∅; simpa only [measure_empty] using zero_ne_top
 
 theorem unifTight_iff_real {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :

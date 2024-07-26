@@ -735,6 +735,7 @@ import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Ring.Rat
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
+import Mathlib.Algebra.Ring.Semireal.Defs
 import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Algebra.Ring.Subring.MulOpposite
 import Mathlib.Algebra.Ring.Subring.Order
@@ -744,6 +745,7 @@ import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
 import Mathlib.Algebra.Ring.Subsemiring.Order
 import Mathlib.Algebra.Ring.Subsemiring.Pointwise
+import Mathlib.Algebra.Ring.SumsOfSquares
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.Ring.WithZero
@@ -793,6 +795,7 @@ import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.AlgebraicGeometry.Modules.Presheaf
 import Mathlib.AlgebraicGeometry.Modules.Sheaf
 import Mathlib.AlgebraicGeometry.Modules.Tilde
+import Mathlib.AlgebraicGeometry.Morphisms.Affine
 import Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.Constructors
@@ -1770,6 +1773,7 @@ import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.CategoryTheory.Sites.Limits
 import Mathlib.CategoryTheory.Sites.Localization
 import Mathlib.CategoryTheory.Sites.LocallyBijective
+import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
 import Mathlib.CategoryTheory.Sites.LocallyInjective
 import Mathlib.CategoryTheory.Sites.LocallySurjective
 import Mathlib.CategoryTheory.Sites.NonabelianCohomology.H1
@@ -1782,6 +1786,7 @@ import Mathlib.CategoryTheory.Sites.PreservesSheafification
 import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.CategoryTheory.Sites.Pullback
 import Mathlib.CategoryTheory.Sites.Sheaf
+import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 import Mathlib.CategoryTheory.Sites.SheafHom
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.CategoryTheory.Sites.Sheafification
@@ -2190,6 +2195,7 @@ import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Palindrome
 import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Permutation
+import Mathlib.Data.List.Pi
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
@@ -3544,6 +3550,7 @@ import Mathlib.Order.PrimeIdeal
 import Mathlib.Order.PrimeSeparator
 import Mathlib.Order.PropInstances
 import Mathlib.Order.Radical
+import Mathlib.Order.Rel.GaloisConnection
 import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.RelIso.Group
@@ -3593,12 +3600,12 @@ import Mathlib.Probability.Kernel.Basic
 import Mathlib.Probability.Kernel.Composition
 import Mathlib.Probability.Kernel.CondDistrib
 import Mathlib.Probability.Kernel.Condexp
-import Mathlib.Probability.Kernel.Disintegration.Basic
 import Mathlib.Probability.Kernel.Disintegration.CdfToKernel
 import Mathlib.Probability.Kernel.Disintegration.CondCdf
 import Mathlib.Probability.Kernel.Disintegration.Density
 import Mathlib.Probability.Kernel.Disintegration.Integral
 import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
+import Mathlib.Probability.Kernel.Disintegration.StandardBorel
 import Mathlib.Probability.Kernel.Disintegration.Unique
 import Mathlib.Probability.Kernel.IntegralCompProd
 import Mathlib.Probability.Kernel.Invariance
@@ -3742,6 +3749,7 @@ import Mathlib.RingTheory.Ideal.Pointwise
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Idempotents
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
@@ -3867,6 +3875,7 @@ import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Regular.IsSMulRegular
 import Mathlib.RingTheory.Regular.RegularSequence
 import Mathlib.RingTheory.RingHom.Finite
+import Mathlib.RingTheory.RingHom.FinitePresentation
 import Mathlib.RingTheory.RingHom.FiniteType
 import Mathlib.RingTheory.RingHom.Integral
 import Mathlib.RingTheory.RingHom.Surjective
@@ -4339,6 +4348,7 @@ import Mathlib.Topology.Compactness.PseudometrizableLindelof
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.CompletelyRegular
 import Mathlib.Topology.Connected.Basic
+import Mathlib.Topology.Connected.Clopen
 import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Connected.Separation

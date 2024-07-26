@@ -147,7 +147,8 @@ def comap (N : Matroid β) (f : α → β) : Matroid α :=
       obtain ⟨J, hJ⟩ := (N ↾ range f).existsMaximalSubsetProperty_indep (f '' X) (by simp)
         (f '' I) (by simpa) (image_subset _ hIX)
 
-      simp only [restrict_indep_iff, image_subset_iff, mem_maximals_iff, mem_setOf_eq, and_imp] at hJ
+      simp only [restrict_indep_iff, image_subset_iff, mem_maximals_iff, mem_setOf_eq,
+        and_imp] at hJ
 
       obtain ⟨J₀, hIJ₀, hJ₀X, hbj⟩ := hIinj.bijOn_image.exists_extend_of_subset hIX
         (image_subset f hJ.1.2.1) (image_subset_iff.2 <| preimage_mono hJ.1.2.2)
