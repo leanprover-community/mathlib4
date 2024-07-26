@@ -1331,7 +1331,7 @@ theorem trNat_natEnd (n) : ∀ x ∈ trNat n, natEnd x = false :=
 
 theorem trList_ne_consₗ : ∀ (l), ∀ x ∈ trList l, x ≠ Γ'.consₗ
   | a :: l, x, h => by
-    simp [trList] at h
+    simp only [trList, List.mem_append, List.mem_cons] at h
     obtain h | rfl | h := h
     · rintro rfl
       cases trNat_natEnd _ _ h
@@ -1434,7 +1434,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
   simp only [TM2.step, trList, trNat.eq_1, trNum, Nat.cast_succ, Num.add_one, Num.succ,
     List.tail_cons, List.headI_cons]
   cases' (n : Num) with a
-  · simp [trPosNum, trNum, show Num.zero.succ' = PosNum.one from rfl]
+  · simp only [trPosNum, List.singleton_append, List.nil_append]
     refine TransGen.head rfl ?_
     simp only [Option.mem_def, TM2.stepAux, elim_main, List.head?_cons, Option.some.injEq,
       decide_False, List.tail_cons, elim_update_main, ne_eq, Function.update_noteq, elim_rev,

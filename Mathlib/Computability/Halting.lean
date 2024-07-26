@@ -84,7 +84,7 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
     simp only [k', exists_prop, mem_coe, mem_bind_iff, Option.mem_def] at h'
     obtain ⟨n, hn, hx⟩ := h'
     have := (H _).1 _ hn
-    simp [mem_decode₂, encode_injective.eq_iff] at this
+    simp only [decode₂_encode, coe_some, bind_some, mem_map_iff] at this
     obtain ⟨a', ha, rfl⟩ | ⟨a', ha, rfl⟩ := this <;> simp only [encodek, Option.some_inj] at hx <;>
       rw [hx] at ha
     · exact Or.inl ha
@@ -304,8 +304,8 @@ theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ fun v => f v.tail :=
 protected theorem bind {n f g} (hf : @Partrec' n f) (hg : @Partrec' (n + 1) g) :
     @Partrec' n fun v => (f v).bind fun a => g (a ::ᵥ v) :=
   (@comp n (n + 1) g (fun i => Fin.cases f (fun i v => some (v.get i)) i) hg fun i => by
-        refine Fin.cases ?_ (fun i => ?_) i <;> simp [*]
-        exact prim (Nat.Primrec'.get _)).of_eq
+      refine Fin.cases ?_ (fun i => ?_) i <;> simp [*]
+      exact prim (Nat.Primrec'.get _)).of_eq
     fun v => by simp [mOfFn, Part.bind_assoc, pure]
 
 protected theorem map {n f} {g : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' n f)
