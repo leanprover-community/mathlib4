@@ -759,7 +759,7 @@ lemma Equivalence.quot_mk_eq_iff {α : Type*} {r : α → α → Prop} (h : Equi
 lemma congr_liftFun {α β : Type} {R : α → α → Prop} {S : β → β → Prop} {f : α → β}
     (h : ∀ x y, R x y → S (f x) (f y)) : ((R · ·) ⇒ (S · ·)) f f := h
 
-lemma equiv_liftFun₂ {α β γ : Type} {R : α → α → Prop} {S : β → β → Prop}
+lemma congr_liftFun₂ {α β γ : Type} {R : α → α → Prop} {S : β → β → Prop}
   {T : γ → γ → Prop} {f : α → β → γ}
   (h : ∀ (x₁ x₂ : α) (y₁ y₂ : β), R x₁ x₂ → S y₁ y₂ → T (f x₁ y₁)  (f x₂ y₂)) :
     ((R · ·) ⇒ (S · ·) ⇒ (T · ·)) f f := by
