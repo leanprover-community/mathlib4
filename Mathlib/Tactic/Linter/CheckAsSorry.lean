@@ -30,7 +30,7 @@ def toExample {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] :
   | _ => return none
 
 namespace CheckAsSorry
-#check Parser.Command.declaration
+
 /-- Gets the value of the `linter.checkAsSorry` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.checkAsSorry o
 
@@ -40,8 +40,9 @@ def checkAsSorryLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    if let some stx := stx.find? ([`lemma, ``Lean.Parser.Command.declaration].contains ·.getKind) then
-      --dbg_trace "found declaration"
+    if let some stx :=
+      stx.find? ([`lemma, ``Lean.Parser.Command.declaration].contains ·.getKind)
+    then
       let nm ← liftCoreM do mkFreshUserName `asSorry
       let sc ← getScope
       let ns := sc.currNamespace ++ nm
@@ -50,11 +51,8 @@ def checkAsSorryLinter : Linter where run := withSetOptionIn fun stx ↦ do
         let refType := (((← getEnv).find? declName).getD default).type
         withScope (fun _ => { sc with currNamespace := ns }) do
           let s ← modifyGet fun st => (st, { st with messages := {} })
-          --elabCommandTopLevel newCmd
           elabCommand newCmd
           let _ ← modifyGet fun st => (s, { st with messages := s.messages })
-
-
 
           match (← getEnv).find? (ns ++ id.getId) with
             | none => logWarningAt id "could not find the 'asSorried' declaration"
@@ -62,20 +60,18 @@ def checkAsSorryLinter : Linter where run := withSetOptionIn fun stx ↦ do
               if refType == decl.type then
                 return --logInfoAt id m!"'{declName}' works"
               else
+                let types := m!"actual type:      '{refType}'\n\
+                                'asSorry'ed type: '{decl.type}'"
                 let defEq? := ← liftCoreM do
                   let (a, _b) ← Meta.MetaM.run do Meta.isDefEq refType decl.type
                   return a
                 if defEq? then
                   Linter.logLint linter.checkAsSorry id
-                    m!"'{declName}' is not equal but is defeq to its 'asSorry'ed version.\n\
-                        actual type:      '{refType}'\n\
-                        'asSorry'ed type: '{decl.type}'"
+                    m!"'{declName}' is not equal but is defeq to its 'asSorry'ed version.\n{types}"
                 else
                   logErrorAt stx ""
                   Linter.logLint linter.checkAsSorry id
-                    m!"'{declName}' is not defeq to its 'asSorry'ed version\n\
-                        actual type:      '{refType}'\n\
-                        'asSorry'ed type: '{decl.type}'"
+                    m!"'{declName}' is not defeq to its 'asSorry'ed version\n{types}"
 
 initialize addLinter checkAsSorryLinter
 
