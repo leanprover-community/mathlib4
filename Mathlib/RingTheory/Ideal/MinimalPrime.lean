@@ -36,7 +36,7 @@ variable {R S : Type*} [CommSemiring R] [CommSemiring S] (I J : Ideal R)
 
 /-- `I.minimalPrimes` is the set of ideals that are minimal primes over `I`. -/
 protected def Ideal.minimalPrimes : Set (Ideal R) :=
-  {p | Minimal (fun p ↦ p.IsPrime ∧ I ≤ p) p}
+  {p | Minimal (fun q ↦ q.IsPrime ∧ I ≤ q) p}
 
 variable (R) in
 /-- `minimalPrimes R` is the set of minimal primes of `R`.
