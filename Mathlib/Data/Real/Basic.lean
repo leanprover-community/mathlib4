@@ -517,7 +517,9 @@ noncomputable instance instLinearOrderedField : LinearOrderedField ℝ where
     exact CauSeq.Completion.inv_mul_cancel h
   inv_zero := by simp [← ofCauchy_zero, ← ofCauchy_inv]
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun q a => rfl
   nnratCast_def q := by
     rw [← ofCauchy_nnratCast, NNRat.cast_def, ofCauchy_div, ofCauchy_natCast, ofCauchy_natCast]
   ratCast_def q := by

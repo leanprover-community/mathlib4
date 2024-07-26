@@ -58,7 +58,7 @@ theorem pi_univ_Ioi_subset : (pi univ fun i ↦ Ioi (x i)) ⊆ Ioi x := fun z hz
     (Nonempty.elim ‹Nonempty ι›) fun i ↦ not_lt_of_le (h i) (hz i trivial)⟩
 
 theorem pi_univ_Iio_subset : (pi univ fun i ↦ Iio (x i)) ⊆ Iio x :=
-  @pi_univ_Ioi_subset ι (fun i ↦ (α i)ᵒᵈ) _ x _
+  pi_univ_Ioi_subset (α := fun i ↦ (α i)ᵒᵈ) x
 
 theorem pi_univ_Ioo_subset : (pi univ fun i ↦ Ioo (x i) (y i)) ⊆ Ioo x y := fun _ hx ↦
   ⟨(pi_univ_Ioi_subset _) fun i hi ↦ (hx i hi).1, (pi_univ_Iio_subset _) fun i hi ↦ (hx i hi).2⟩
