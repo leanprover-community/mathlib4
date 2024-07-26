@@ -227,6 +227,18 @@ def forget : Cat.{v, u} ⥤ ReflQuiv.{v, u} where
   obj C := ReflQuiv.of C
   map F := F.toReflPrefunctor
 
+theorem forget_faithful {C D : Cat.{v, u}} (F G : C ⥤ D)
+    (hyp : forget.map F = forget.map G) : F = G := by
+  cases F
+  cases G
+  cases hyp
+  rfl
+
+theorem forget.Faithful : Functor.Faithful (forget) where
+  map_injective := by
+    intro V W f g hyp
+    exact forget_faithful _ _ hyp
+
 /-- The forgetful functor from categories to quivers. -/
 @[simps]
 def forgetToQuiv : ReflQuiv.{v, u} ⥤ Quiv.{v, u} where
@@ -989,17 +1001,42 @@ def nerve₂Adj.counit : nerveFunctor₂ ⋙ TruncSSet.hoFunctor₂ ⟶ (𝟭 Ca
     simp only [comp_obj, id_obj, Functor.comp_map, Functor.id_map]
     exact nerve₂Adj.counit.naturality
 
-/-- ER: The underlying refl Quiver of this functor is essentially the unit of ReflQuiver.adj composed with the quotient functor. Then we just have to check that this preserves composition.-/
+/-- ER: The underlying refl Quiver of this functor is essentially the unit of ReflQuiver.adj composed with the quotient functor. Then we just have to check that this preserves composition. Note universe error. -/
+def nerve₂Adj.counit.app.inv.reflPrefunctor (C : Cat.{0}) : C ⥤rq TruncSSet.hoFunctor₂.obj (nerveFunctor₂.obj C) :=
+  ReflQuiv.adj.unit.app (ReflQuiv.of C) ⋙rq
+    (Cat.freeRefl.map (nerve₂Adj.NatIso.inv.app C)).toReflPrefunctor ⋙rq
+    (TruncSSet.hoFunctor₂Obj.quotientFunctor (nerveFunctor₂.obj C)).toReflPrefunctor
+
+/-- ER: Use f and g to build a 2-simplex in the nerve of C and use the corresponding HoRel₂. -/
 def nerve₂Adj.counit.app.inv (C : Cat) : C ⥤ TruncSSet.hoFunctor₂.obj (nerveFunctor₂.obj C) where
-  __ := (sorry : C ⥤rq TruncSSet.hoFunctor₂.obj (nerveFunctor₂.obj C) )
-  map_comp := sorry
+  __ := (nerve₂Adj.counit.app.inv.reflPrefunctor C : C ⥤rq TruncSSet.hoFunctor₂.obj (nerveFunctor₂.obj C) )
+  map_comp := by
+    intros X Y Z f g
+    dsimp
+    unfold inv.reflPrefunctor
+    apply Quotient.sound
+    sorry
+
+theorem nerve₂Adj.counit.app.inv_reflPrefunctor (C : Cat) : ReflQuiv.forget.map (nerve₂Adj.counit.app.inv C) =
+  ReflQuiv.adj.unit.app (ReflQuiv.of C) ⋙rq (Cat.freeRefl.map (nerve₂Adj.NatIso.inv.app C)).toReflPrefunctor ⋙rq (TruncSSet.hoFunctor₂Obj.quotientFunctor (nerveFunctor₂.obj C)).toReflPrefunctor := rfl
 
 /-- ER: Killed universes to avoid universe error. -/
 def nerve₂Adj.counit.app.iso (C : Cat.{0,0}) : TruncSSet.hoFunctor₂.obj (nerveFunctor₂.obj C) ≅ C where
   hom := nerve₂Adj.counit.app _
   inv := nerve₂Adj.counit.app.inv _
   hom_inv_id := sorry
-  inv_hom_id := sorry
+  inv_hom_id := by
+    apply ReflQuiv.forget_faithful
+    rw [Functor.map_comp]
+    rw [nerve₂Adj.counit.app.inv_reflPrefunctor C]
+    rw [ReflQuiv.comp_eq_comp, ReflPrefunctor.comp_assoc]
+    rw [← ReflQuiv.forget_map]
+    show _ ⋙rq _ ⋙rq (ReflQuiv.forget.map _ ≫ ReflQuiv.forget.map (app C)) = _
+    rw [← Functor.map_comp]
+    have eq := nerve₂Adj.counit.app_eq C
+    rw [← Functor.comp_eq_comp _ (app C)] at eq
+    unfold nerve₂ at eq
+    sorry -- ER: Should be able to rewrite at the eq.
 
 
 /-- ER: Universe error is why this is for u u.-/
@@ -1122,6 +1159,10 @@ def nerveAdjunction : SSet.hoFunctor ⊣ nerveFunctor :=
     ((coskeletonAdj 2).comp nerve₂Adj) Nerve.nerve2coskIso.symm
 
 
+/-- ER: TODO: Refactor all of the above to just prove the nerve is fully faithful since its
+naturally isomorphic to the composite of two fully faithful functors.-/
+
+
 def reflectiveOfCounitIso {C D} [Category C] [Category D] (R : D ⥤ C) (L : C ⥤ D) (adj : L ⊣ R)
   (h : IsIso adj.counit) : Reflective R where
   L := L
@@ -1145,12 +1186,6 @@ def nerveCounitIso (C : Type u) [Category.{u} C] :
   inv := sorry
   hom_inv_id := sorry
   inv_hom_id := sorry
-
-        -- naturality := by
-        --   intro C D F
-        --   apply Quotient.lift_unique'
-        --   unfold adj.counit.app
-        --   exact (Quiv.adj.counit.naturality F)
 
 
 theorem nerveCounit.naturality {C D : Type u} [Category C] [Category D] (F : C ⥤ D) :
