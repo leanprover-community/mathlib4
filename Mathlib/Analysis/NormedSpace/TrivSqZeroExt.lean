@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Analysis.NormedSpace.Exponential
 import Mathlib.Analysis.NormedSpace.ProdLp
 import Mathlib.Topology.Instances.TrivSqZeroExt
+import Mathlib.MeasureTheory.Integral.IntervalIntegral
 
 /-!
 # Results on `TrivSqZeroExt R M` related to the norm
@@ -180,6 +181,102 @@ theorem eq_smul_exp_of_ne_zero (x : tsze R M) (hx : x.fst ≠ 0) :
 end Field
 
 end Topology
+
+
+open scoped BigOperators
+
+-- mathlib4#10427
+@[simp]
+theorem List.toFinset_range (n) : List.toFinset (List.range n) = Finset.range n := by ext; simp
+
+-- https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/Triangular.20infinite.20sums/near/411499166
+/-- An infinite triangular sum can be transposed. -/
+theorem HasSum_sum_range_iff {α} [TopologicalSpace α] [AddCommMonoid α] [ContinuousAdd α]
+    (f : ℕ → ℕ → α) (a : α):
+    HasSum (fun n => ∑ k in .range (n + 1), f n k) a ↔ HasSum (fun nk : ℕ × ℕ => f (nk.1 + nk.2) nk.2) a :=
+  sorry
+open unitInterval
+
+-- mathlib4#10452
+noncomputable instance : MeasureTheory.MeasureSpace I where
+  volume := MeasureTheory.MeasureSpace.volume.comap Subtype.val
+
+open Nat in
+theorem beta_aux (a b : ℕ) :
+    ((a + b + 1)! : ℝ)⁻¹ =
+      ∫ x : I, ((a ! : ℝ)⁻¹ • (x.val : ℝ) ^ a) * (b ! : ℝ)⁻¹ • (1 - x.val : ℝ)^ b :=
+  sorry
+
+open scoped RightActions in
+set_option maxHeartbeats 400000 in
+/-- If `exp R x.fst` converges to `e` then `(exp R x).snd` converges to `e • x.snd`. -/
+theorem hasSum_snd_expSeries' {R M} [NormedRing R] [NormedAddCommGroup M]
+    [NormedAlgebra ℝ R] [NormOneClass R] [Module R M] [BoundedSMul R M] [Module Rᵐᵒᵖ M]
+    [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] [NormedSpace ℝ M]
+    [IsScalarTower ℝ R M] [IsScalarTower ℝ Rᵐᵒᵖ M]
+    [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] [CompleteSpace M]
+    [FiniteDimensional ℝ M] (x : tsze R M)
+    {e : Set.Icc 0 (1 : ℝ) → R}
+    (h : ∀ t, HasSum (fun n => expSeries ℝ R n fun _ => t.val • x.fst) (e t)) :
+    HasSum (fun n => snd (expSeries ℝ (tsze R M) n fun _ => x))
+      (∫ t : I, e t •> (x.snd <• e (unitInterval.symm t))) := by
+  have h2 : ∀ t : I, HasSum _ _ := fun t =>
+    (h t).smul ((h (unitInterval.symm t)).op.smul_const x.snd) sorry
+  simp_rw [expSeries_apply_eq] at *
+  conv =>
+    congr
+    ext n
+    rw [snd_smul, snd_pow_eq_sum, ← List.sum_toFinset _ (List.nodup_range n), List.toFinset_range,
+      Finset.smul_sum]
+  rw [← hasSum_nat_add_iff' 1]
+  rw [Finset.range_one, Finset.sum_singleton, Finset.range_zero, Finset.sum_empty,
+    sub_zero]
+  simp_rw [Nat.pred_succ]
+  rw [HasSum_sum_range_iff]
+  simp only [add_tsub_cancel_right]
+  simp_rw [beta_aux, ← integral_smul_const, mul_smul, smul_comm (_ • (1 - _)^_ : ℝ) (_ : R),
+    ← smul_assoc, ← MulOpposite.op_smul, smul_assoc _ (_ ^ _), ← smul_pow]
+  apply MeasureTheory.hasSum_integral_of_dominated_convergence
+  case bound =>
+    intro ⟨m, n⟩ a
+    exact ((Nat.factorial m : ℝ)⁻¹ * (‖a.val‖ ^ m * ‖fst x‖ ^ m)) *
+        (((Nat.factorial n : ℝ)⁻¹ * (‖1 - a.val‖ ^ n * ‖fst x‖ ^ n)) * ‖snd x‖)
+  case h_lim =>
+    filter_upwards
+    exact h2
+  · intro n
+    refine .smul (.const_smul (.pow (.smul_const ?_ _) _) _) (.smul ?_ ?_)
+    · measurability
+    · refine (MulOpposite.continuous_op).comp_aestronglyMeasurable
+        (.const_smul (.pow (.smul_const ?_ _) _) _)
+      measurability
+    · exact MeasureTheory.stronglyMeasurable_const.aestronglyMeasurable
+  · intro ⟨m, n⟩
+    dsimp
+    filter_upwards with a
+    refine le_trans (norm_smul_le _ _) ?_
+    gcongr
+    · refine (_root_.norm_smul_le _ _).trans ?_
+      gcongr
+      · simp
+      · refine (norm_pow_le _ _).trans ?_
+        rw [← mul_pow]
+        gcongr
+        refine (_root_.norm_smul_le _ _).trans ?_
+        simp
+    · refine (_root_.norm_smul_le _ _).trans ?_
+      gcongr
+      refine (_root_.norm_smul_le _ _).trans ?_
+      gcongr
+      · simp
+      · refine (norm_pow_le _ _).trans ?_
+        rw [← mul_pow]
+        gcongr
+        refine (_root_.norm_smul_le _ _).trans ?_
+        gcongr
+        rw [MulOpposite.norm_op]
+  · sorry
+  · sorry
 
 /-!
 ### The $ℓ^1$ norm on the trivial square zero extension
