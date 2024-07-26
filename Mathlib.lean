@@ -1150,6 +1150,7 @@ import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.Normed.Order.UpperLower
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.Normed.Ring.SeminormFromBounded
+import Mathlib.Analysis.Normed.Ring.Units
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.AddTorsorBases
 import Mathlib.Analysis.NormedSpace.AffineIsometry
@@ -1218,7 +1219,6 @@ import Mathlib.Analysis.NormedSpace.Star.Matrix
 import Mathlib.Analysis.NormedSpace.Star.Multiplier
 import Mathlib.Analysis.NormedSpace.Star.Spectrum
 import Mathlib.Analysis.NormedSpace.Star.Unitization
-import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Analysis.NormedSpace.WeakDual
 import Mathlib.Analysis.NormedSpace.WeakOperatorTopology
 import Mathlib.Analysis.NormedSpace.WithLp
