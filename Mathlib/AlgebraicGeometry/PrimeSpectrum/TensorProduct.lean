@@ -17,7 +17,7 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
   (where `Spec S × Spec T` is the cartesian product with the product topology).
 -/
 
-variable (R S T) [CommRing R] [CommRing S] [Algebra R S]
+variable (R S T : Type*) [CommRing R] [CommRing S] [Algebra R S]
 variable [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 open TensorProduct

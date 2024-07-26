@@ -19,8 +19,8 @@ that surjections and localizations satisfy this.
 
 -/
 
-variable {R} [CommRing R] (M : Submonoid R) {S} [CommRing S] [Algebra R S]
-variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S] [Algebra R S]
+variable {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 variable {g : S →+* T} {f : R →+* S}
 
 namespace RingHom
