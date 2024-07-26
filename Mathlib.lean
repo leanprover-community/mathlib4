@@ -49,6 +49,7 @@ import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.BigOperators.Ring.Multiset
+import Mathlib.Algebra.BigOperators.Ring.Nat
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.BigOperators.WithTop
 import Mathlib.Algebra.Bounds
