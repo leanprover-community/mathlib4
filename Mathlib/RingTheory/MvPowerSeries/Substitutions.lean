@@ -292,7 +292,7 @@ noncomputable def substAlgHom : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ S 
   exact MvPowerSeries.aeval ha.evalDomain
 
 theorem coe_substAlgHom :
-  ⇑(substAlgHom ha) = subst (R := R) a := rfl
+    ⇑(substAlgHom ha) = subst (R := R) a := rfl
 
 theorem subst_add (f g : MvPowerSeries σ R) :
     subst a (f + g) = subst a f + subst a g := by
