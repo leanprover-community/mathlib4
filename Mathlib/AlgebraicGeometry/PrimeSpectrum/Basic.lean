@@ -250,9 +250,8 @@ theorem preimage_comap_zeroLocus (s : Set R) : comap f ⁻¹' zeroLocus s = zero
 
 theorem comap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
     Function.Injective (comap f) := fun x y h =>
-  PrimeSpectrum.ext
-    (Ideal.comap_injective_of_surjective f hf
-      (congr_arg PrimeSpectrum.asIdeal h : (comap f x).asIdeal = (comap f y).asIdeal))
+  PrimeSpectrum.ext (Ideal.comap_injective_of_surjective f hf
+    (congr_arg PrimeSpectrum.asIdeal h : (comap f x).asIdeal = (comap f y).asIdeal))
 
 variable (S)
 
