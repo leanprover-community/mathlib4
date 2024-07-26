@@ -691,7 +691,7 @@ noncomputable def substAlgHom  : PowerSeries R →ₐ[R] MvPowerSeries τ S :=
   MvPowerSeries.substAlgHom ha.const
 
 theorem coe_substAlgHom :
-  ⇑(substAlgHom ha) = subst (R := R) a := rfl
+    ⇑(substAlgHom ha) = subst (R := R) a := rfl
 
 theorem subst_add (f g : PowerSeries R) :
     subst a (f + g) = subst a f + subst a g := by
