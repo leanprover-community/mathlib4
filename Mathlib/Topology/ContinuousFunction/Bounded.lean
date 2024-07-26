@@ -7,7 +7,7 @@ import Mathlib.Algebra.Module.MinimalAxioms
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
-import Mathlib.Analysis.NormedSpace.Star.Basic
+import Mathlib.Analysis.Analysis.CstarAlgebra.Basic
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 import Mathlib.Topology.Bornology.BoundedOperation
 

@@ -195,8 +195,8 @@
   "Mathlib.Topology.Order.LeftRightNhds": ["Mathlib.Data.Set.Pointwise.Basic"],
   "Mathlib.Topology.Germ": ["Mathlib.Analysis.NormedSpace.Basic"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
-  "Mathlib.Topology.ContinuousFunction.NonUnitalFunctionalCalculus":
-  ["Mathlib.Topology.ContinuousFunction.FunctionalCalculus"],
+  "Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.NonUnital":
+  ["Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unital"],
   "Mathlib.Topology.Category.UniformSpace":
   ["Mathlib.CategoryTheory.Monad.Limits"],
   "Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology":

@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 
-import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus.Instances
+import Mathlib.Analysis.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Instances
 import Mathlib.Topology.ContinuousFunction.StarOrdered
-import Mathlib.Analysis.NormedSpace.Star.Unitization
+import Mathlib.Analysis.Analysis.CstarAlgebra.Unitization
 
 /-! # Facts about star-ordered rings that depend on the continuous functional calculus
 
