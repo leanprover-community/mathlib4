@@ -124,12 +124,12 @@ structure FullSubcategory where
 instance FullSubcategory.category : Category.{v} (FullSubcategory Z) :=
   InducedCategory.category FullSubcategory.obj
 
+variable {Z}
+
 @[ext]
 lemma FullSubcategory.hom_ext {X Y : FullSubcategory Z} {f g : X ⟶ Y} (h : f.hom = g.hom) :
     f = g :=
   InducedCategory.hom_ext h
-
-variable {Z}
 
 @[simp]
 lemma FullSubcategory.id_hom (X : FullSubcategory Z) :

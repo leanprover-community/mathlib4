@@ -68,12 +68,22 @@ noncomputable instance concreteCategory : ConcreteCategory TwoP :=
 noncomputable instance hasForgetToBipointed : HasForget₂ TwoP Bipointed :=
   InducedCategory.hasForget₂ toBipointed
 
+@[ext]
+lemma hom_ext {X Y : TwoP} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g :=
+  InducedCategory.hom_ext h
+
+@[simp]
+lemma id_hom (X : TwoP) : InducedCategory.Hom.hom (𝟙 X) = 𝟙 _ := rfl
+
+@[simp, reassoc]
+lemma comp_hom {X Y Z : TwoP} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom = f.hom ≫ g.hom := rfl
 
 /-- Swaps the pointed elements of a two-pointed type. `TwoPointing.swap` as a functor. -/
 @[simps]
 noncomputable def swap : TwoP ⥤ TwoP where
   obj X := ⟨X, X.toTwoPointing.swap⟩
-  map f := ⟨f.toFun, f.map_snd, f.map_fst⟩
+  map f := ⟨f.hom.toFun, f.hom.map_snd, f.hom.map_fst⟩
 
 /-- The equivalence between `TwoP` and itself induced by `Prod.swap` both ways. -/
 @[simps!]
@@ -102,16 +112,16 @@ theorem TwoP_swap_comp_forget_to_Bipointed :
 noncomputable def pointedToTwoPFst : Pointed.{u} ⥤ TwoP where
   obj X := ⟨Option X, ⟨X.point, none⟩, some_ne_none _⟩
   map f := ⟨Option.map f.toFun, congr_arg _ f.map_point, rfl⟩
-  map_id _ := Bipointed.Hom.ext _ _ Option.map_id
-  map_comp f g := Bipointed.Hom.ext _ _ (Option.map_comp_map f.1 g.1).symm
+  map_id _ := by ext1; exact Bipointed.Hom.ext _ _ Option.map_id
+  map_comp f g := by ext1; exact Bipointed.Hom.ext _ _ (Option.map_comp_map f.1 g.1).symm
 
 /-- The functor from `Pointed` to `TwoP` which adds a first point. -/
 @[simps]
 noncomputable def pointedToTwoPSnd : Pointed.{u} ⥤ TwoP where
   obj X := ⟨Option X, ⟨none, X.point⟩, (some_ne_none _).symm⟩
   map f := ⟨Option.map f.toFun, rfl, congr_arg _ f.map_point⟩
-  map_id _ := Bipointed.Hom.ext _ _ Option.map_id
-  map_comp f g := Bipointed.Hom.ext _ _ (Option.map_comp_map f.1 g.1).symm
+  map_id _ := by ext1; exact Bipointed.Hom.ext _ _ Option.map_id
+  map_comp f g := by ext1; exact Bipointed.Hom.ext _ _ (Option.map_comp_map f.1 g.1).symm
 
 @[simp]
 theorem pointedToTwoPFst_comp_swap : pointedToTwoPFst ⋙ TwoP.swap = pointedToTwoPSnd :=
@@ -136,16 +146,18 @@ noncomputable def pointedToTwoPFstForgetCompBipointedToPointedFstAdjunction :
     pointedToTwoPFst ⊣ forget₂ TwoP Bipointed ⋙ bipointedToPointedFst :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>
-        { toFun := fun f => ⟨f.toFun ∘ Option.some, f.map_fst⟩
+        { toFun := fun f => ⟨f.hom.toFun ∘ Option.some, f.hom.map_fst⟩
           invFun := fun f => ⟨fun o => o.elim Y.toTwoPointing.toProd.2 f.toFun, f.map_point, rfl⟩
           left_inv := fun f => by
+            ext1
             apply Bipointed.Hom.ext
             funext x
             cases x
-            · exact f.map_snd.symm
+            · exact f.hom.map_snd.symm
             · rfl
           right_inv := fun f => Pointed.Hom.ext _ _ rfl }
       homEquiv_naturality_left_symm := fun f g => by
+        ext1
         apply Bipointed.Hom.ext
         funext x
         cases x <;> rfl }
@@ -155,16 +167,18 @@ noncomputable def pointedToTwoPSndForgetCompBipointedToPointedSndAdjunction :
     pointedToTwoPSnd ⊣ forget₂ TwoP Bipointed ⋙ bipointedToPointedSnd :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>
-        { toFun := fun f => ⟨f.toFun ∘ Option.some, f.map_snd⟩
+        { toFun := fun f => ⟨f.hom.toFun ∘ Option.some, f.hom.map_snd⟩
           invFun := fun f => ⟨fun o => o.elim Y.toTwoPointing.toProd.1 f.toFun, rfl, f.map_point⟩
           left_inv := fun f => by
+            ext1
             apply Bipointed.Hom.ext
             funext x
             cases x
-            · exact f.map_fst.symm
+            · exact f.hom.map_fst.symm
             · rfl
           right_inv := fun f => Pointed.Hom.ext _ _ rfl }
       homEquiv_naturality_left_symm := fun f g => by
+        ext1
         apply Bipointed.Hom.ext
         funext x
         cases x <;> rfl }
