@@ -5,8 +5,6 @@ Authors: Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
-#align_import geometry.manifold.vector_bundle.fiberwise_linear from "leanprover-community/mathlib"@"be2c24f56783935652cefffb4bfca7e4b25d167e"
-
 /-! # The groupoid of smooth, fiberwise-linear maps
 
 This file contains preliminaries for the definition of a smooth vector bundle: an associated
@@ -53,7 +51,6 @@ def partialHomeomorph (φ : B → F ≃L[𝕜] F) (hU : IsOpen U)
     haveI : ContinuousOn (fun p : B × F => (((φ p.1).symm : F →L[𝕜] F), p.2)) (U ×ˢ univ) :=
       h2φ.prod_map continuousOn_id
     continuousOn_fst.prod (isBoundedBilinearMap_apply.continuous.comp_continuousOn this)
-#align fiberwise_linear.local_homeomorph FiberwiseLinear.partialHomeomorph
 
 /-- Compute the composition of two partial homeomorphisms induced by fiberwise linear
 equivalences. -/
@@ -67,7 +64,6 @@ theorem trans_partialHomeomorph_apply (hU : IsOpen U)
         ⟨b, v⟩ =
       ⟨b, φ' b (φ b v)⟩ :=
   rfl
-#align fiberwise_linear.trans_local_homeomorph_apply FiberwiseLinear.trans_partialHomeomorph_apply
 
 /-- Compute the source of the composition of two partial homeomorphisms induced by fiberwise linear
 equivalences. -/
@@ -80,7 +76,6 @@ theorem source_trans_partialHomeomorph (hU : IsOpen U)
           FiberwiseLinear.partialHomeomorph φ' hU' hφ' h2φ').source =
       (U ∩ U') ×ˢ univ := by
   dsimp only [FiberwiseLinear.partialHomeomorph]; mfld_set_tac
-#align fiberwise_linear.source_trans_local_homeomorph FiberwiseLinear.source_trans_partialHomeomorph
 
 /-- Compute the target of the composition of two partial homeomorphisms induced by fiberwise linear
 equivalences. -/
@@ -93,7 +88,6 @@ theorem target_trans_partialHomeomorph (hU : IsOpen U)
           FiberwiseLinear.partialHomeomorph φ' hU' hφ' h2φ').target =
       (U ∩ U') ×ˢ univ := by
   dsimp only [FiberwiseLinear.partialHomeomorph]; mfld_set_tac
-#align fiberwise_linear.target_trans_local_homeomorph FiberwiseLinear.target_trans_partialHomeomorph
 
 end FiberwiseLinear
 
@@ -145,7 +139,6 @@ theorem SmoothFiberwiseLinear.locality_aux₁ (e : PartialHomeomorph (B × F) (B
   refine ⟨φ ⟨p, hp⟩, u ⟨p, hp⟩, hu ⟨p, hp⟩, ?_, hu' _, hφ ⟨p, hp⟩, h2φ ⟨p, hp⟩, ?_⟩
   · intro y hy; exact ⟨(y, 0), heu ⟨p, hp⟩ ⟨_, _⟩ hy, rfl⟩
   · rw [← hesu, e.restr_source_inter]; exact heφ ⟨p, hp⟩
-#align smooth_fiberwise_linear.locality_aux₁ SmoothFiberwiseLinear.locality_aux₁
 
 /-- Let `e` be a partial homeomorphism of `B × F` whose source is `U ×ˢ univ`, for some set `U` in
 `B`, and which, at any point `x` in `U`, admits a neighbourhood `u` of `x` such that `e` is equal
@@ -219,7 +212,6 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
   congrm (_, ?_)
   rw [hΦφ]
   apply hux
-#align smooth_fiberwise_linear.locality_aux₂ SmoothFiberwiseLinear.locality_aux₂
 
 variable (F B IB)
 
@@ -289,7 +281,6 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
     simp only [mem_aux]
     rintro e e' ⟨φ, U, hU, hφ, h2φ, heφ⟩ hee'
     exact ⟨φ, U, hU, hφ, h2φ, Setoid.trans hee' heφ⟩
-#align smooth_fiberwise_linear smoothFiberwiseLinear
 
 @[simp]
 theorem mem_smoothFiberwiseLinear_iff (e : PartialHomeomorph (B × F) (B × F)) :
@@ -299,4 +290,3 @@ theorem mem_smoothFiberwiseLinear_iff (e : PartialHomeomorph (B × F) (B × F)) 
         SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => (φ x).symm : B → F →L[𝕜] F) U),
         e.EqOnSource (FiberwiseLinear.partialHomeomorph φ hU hφ.continuousOn h2φ.continuousOn) :=
   mem_aux
-#align mem_smooth_fiberwise_linear_iff mem_smoothFiberwiseLinear_iff
