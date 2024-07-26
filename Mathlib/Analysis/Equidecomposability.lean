@@ -1,7 +1,9 @@
 import Mathlib.Analysis.NormedSpace.AffineIsometry
 import Mathlib.Order.Partition.Finpartition
 
-
+/-
+Definition of Equidecomposability
+-/
 open Function
 
 variable (𝕜 : Type*) {V: Type*}(P: Type*)
