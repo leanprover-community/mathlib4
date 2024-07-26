@@ -65,9 +65,11 @@ variable {F}
 /-- A morphism in `InducedCategory D F` consists of a morphism `F X ⟶ F Y`. -/
 @[ext]
 structure Hom (X Y : InducedCategory D F) where
+  /-- the underlying morphism in the target category -/
   hom : F X ⟶ F Y
 
 variable (F) in
+@[simps]
 instance category : Category.{v} (InducedCategory D F) where
   Hom := Hom
   id X := { hom := 𝟙 _ }
