@@ -47,6 +47,31 @@ for f in align_files.stdout.splitlines():
             n3, n4, *_ = p.split(maxsplit=2)
             name_map[n3] = n4
 
+# Remove false positives: the following names are both Lean 3 and Lean 4 names,
+# so do not replace these.
+same = {
+    'succ_nsmul', 'CommGroup', 'and_comm', 'Set.mem_singleton', "succ_nsmul'", 'Set.ext_iff',
+    'not_ball', "mul_nsmul'", 'mul_nsmul', 'Set.mem_powerset', 'div_mul_cancel', 'Set.mem_sep',
+    'or_assoc', 'Set.mem_insert_iff', 'and_assoc', 'Ring', 'AddSemigroup', 'add_sub_cancel',
+    'Algebra', 'Set.mem_sInter', 'mul_div_cancel', 'Set.sUnion_empty', 'Set.ext', 'or_comm',
+    'Set.range', 'Set.sUnion_pair', 'Set.mem_sUnion_of_mem', 'Set.sInter_empty', 'Set.mem_image',
+    'Set.mem_insert_of_mem', "forall_apply_eq_imp_iff'", 'Group', 'AddCommGroup',
+    'mul_div_cancel_left', 'Set.empty_subset', 'Fintype', 'Set.mem_union', 'pow_succ', 'Set.mem_prod',
+    'Set.sUnion_singleton', 'forall_apply_eq_imp_iff', 'Cauchy', 'Module', "or_congr_left'",
+    'Set.not_nonempty_empty', 'Set.mem_range', 'Set.mem_diff', 'Set.powerset', 'Set.not_mem_empty',
+    'Set.mem_inter', "or_congr_right'", 'forall_eq_apply_imp_iff', 'UniformSpace', 'lim',
+    'Set.singleton_injective', 'Set.mem_sUnion', 'GroupWithZero', 'xor', 'or_congr_left',
+    'Set.sInter', "pow_succ'", 'or_congr_right', "measurable_quotient_mk'", 'Set.insert_nonempty',
+    'forall_congr', 'Top', 'Set.nonempty_def', 'Set.mem_insert', 'Set.nonempty_of_mem',
+    'Set.eq_empty_or_nonempty', 'Set.subset_def', 'CommRing', 'Set.sUnion', 'Set.image', 'Set.prod',
+    'Semigroup', 'not_or', "forall_eq_apply_imp_iff'", 'Set.sInter_singleton', 'Set',
+    'Set.singleton_nonempty', 'AddGroup'
+}
+
+for s in same:
+    del name_map[s]
+
+
 def replace_names(s):
     # Terrible hack to treat `.` as a word character
     # (to match qualified names)
