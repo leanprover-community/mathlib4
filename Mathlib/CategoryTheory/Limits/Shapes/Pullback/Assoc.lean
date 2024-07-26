@@ -121,7 +121,7 @@ theorem hasPullback_assoc [HasPullback (g₂ ≫ f₃) f₄] : HasPullback f₁ 
 /-- `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)` is the pullback `(X₁ ×[Y₁] X₂) ×[X₂] (X₂ ×[Y₂] X₃)`. -/
 def pullbackPullbackRightIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
     IsLimit (PullbackCone.mk l₁' l₂' (show l₁' ≫ g₂ = l₂' ≫ g₃ from pullback.lift_snd _ _ _)) := by
-  apply topSquareIsPullback rfl (pullbackIsPullback f₁ f₂)
+  apply topSquareIsPullback _ rfl (pullbackIsPullback f₁ f₂)
   simpa [PullbackCone.pasteVert] using PullbackCone.mkSelfIsLimit (pullbackIsPullback _ _)
 
 /-- `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)` is the pullback `(X₁ ×[Y₁] X₂) ×[Y₂] X₃`. -/
@@ -277,7 +277,7 @@ local notation "l₂'" =>
 def pushoutPushoutLeftIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
     IsColimit
       (PushoutCocone.mk l₁' l₂' (show f₂ ≫ l₁' = f₃ ≫ l₂' from (pushout.inl_desc _ _ _).symm)) := by
-  apply botSquareIsPushout rfl (pushoutIsPushout _ g₄)
+  apply botSquareIsPushout _ rfl (pushoutIsPushout _ g₄)
   simpa [PushoutCocone.pasteVert] using
     PushoutCocone.mkSelfIsColimit (pushoutIsPushout (g₃ ≫ f₂) g₄)
 
