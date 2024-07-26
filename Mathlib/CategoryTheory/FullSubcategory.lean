@@ -122,6 +122,7 @@ structure FullSubcategory where
 instance FullSubcategory.category : Category.{v} (FullSubcategory Z) :=
   InducedCategory.category FullSubcategory.obj
 
+@[ext]
 lemma FullSubcategory.hom_ext {X Y : FullSubcategory Z} {f g : X ⟶ Y} (h : f.hom = g.hom) :
     f = g :=
   InducedCategory.hom_ext h
@@ -135,6 +136,12 @@ lemma FullSubcategory.id_hom (X : FullSubcategory Z) :
 @[simp]
 lemma FullSubcategory.comp_hom {X Y Z : FullSubcategory Z} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = f.hom ≫ g.hom := rfl
+
+/-- Constructor for isomorphisms in the category `FullSubcategory Z`. -/
+@[simps]
+def FullSubcategory.isoMk {X Y : FullSubcategory Z} (e : X.obj ≅ Y.obj) : X ≅ Y where
+  hom := { hom := e.hom }
+  inv := { hom := e.inv }
 
 variable (Z)
 

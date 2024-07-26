@@ -115,7 +115,7 @@ class EssSurj (F : C ⥤ D) : Prop where
 
 instance EssSurj.toEssImage : EssSurj F.toEssImage where
   mem_essImage := fun ⟨_, hY⟩ =>
-    ⟨_, ⟨⟨_, _, hY.getIso.hom_inv_id, hY.getIso.inv_hom_id⟩⟩⟩
+    ⟨_, ⟨FullSubcategory.isoMk (essImage.getIso hY)⟩⟩
 
 variable (F)
 variable [F.EssSurj]
