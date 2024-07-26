@@ -340,6 +340,13 @@ instance fintypeBiUnion' [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] 
     [∀ i, Fintype (t i)] : Fintype (⋃ x ∈ s, t x) :=
   Fintype.ofFinset (s.toFinset.biUnion fun x => (t x).toFinset) <| by simp
 
+lemma toFinset_iUnion [Fintype β] [DecidableEq α] (f : β → Set α)
+    [∀ w, Fintype (f w)] :
+    Set.toFinset (⋃ (x : β), f x) =
+    Finset.biUnion (Finset.univ : Finset β) (fun x => (f x).toFinset) := by
+  ext v
+  simp only [mem_toFinset, mem_iUnion, Finset.mem_biUnion, Finset.mem_univ, true_and]
+
 section monad
 attribute [local instance] Set.monad
 
