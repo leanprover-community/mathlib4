@@ -310,9 +310,13 @@ def introsVarLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    for i in stx.filter fun s =>
-         (s.isOfKind ``Lean.Parser.Tactic.intros) && (s.find? (·.isOfKind `ident)).isSome do
-      Linter.logLint linter.introsVar i (m!"use 'intro' instead.")
+    let introsVars := stx.filter fun s =>
+         (s.isOfKind ``Lean.Parser.Tactic.intros) && (s.find? (·.isOfKind `ident)).isSome
+    for i in introsVars do
+      let vars := i.filter (·.isOfKind `ident)
+      let newIntro : Syntax :=  -- recreate `intro [one fewer variable]`
+        .node i.getHeadInfo ``Lean.Parser.Tactic.intro #[mkAtom "intro", .node default `null vars]
+      Linter.logLint linter.introsVar i (m!"use '{newIntro}' instead.")
 
 initialize addLinter introsVarLinter
 
@@ -321,3 +325,12 @@ end IntrosVar
 end Mathlib.Linter
 
 end Mathlib.Linter
+/-
+
+stx@(.node s1 k #[intr, .node s2 `null vars]) =>
+    let varsDropFirst := vars.erase (vars.getD 0 .missing)
+    let skipStx := mkNode ``Lean.Parser.Tactic.skip #[mkAtom "skip"]
+    let newIntro : Syntax :=  -- recreate `intro [one fewer variable]`, even if input is `intros`
+      .node s1 ``Lean.Parser.Tactic.intro #[mkAtomFrom intr "intro", .node s2 `null varsDropFirst]
+
+-/

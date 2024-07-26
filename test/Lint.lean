@@ -116,3 +116,16 @@ info: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 -/
 #guard_msgs in
 #eval List.range 27
+
+set_option linter.introsVar false
+
+/--
+warning: use 'intro a' instead.
+note: this linter can be disabled with `set_option linter.introsVar false`
+-/
+#guard_msgs in
+set_option linter.introsVar true in
+example : ∀ a b c : Nat, a + b = c → a + b = c := by
+  intros a
+  intro b c
+  exact id
