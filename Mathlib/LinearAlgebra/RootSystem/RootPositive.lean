@@ -76,16 +76,14 @@ lemma pairing_pos_iff : 0 < P.pairing i j ↔ 0 < B (P.root i) (P.root j) := by
   · have hB : 0 < 2 * B (P.root i) (P.root j) := by
       rw [two_mul_inner_product]
       exact mul_pos h (root_positive P B j)
-    rw [two_mul] at hB
-    exact pos_add_self_iff.mp hB
+    exact (mul_pos_iff_of_pos_left zero_lt_two).mp hB
   · have hB := mul_pos zero_lt_two h
     rw [two_mul_inner_product] at hB
     exact (mul_pos_iff_of_pos_right (root_positive P B j)).mp hB
 
 lemma pairing_pos_of_pairing_symm_pos (h : 0 < P.pairing i j) : 0 < P.pairing j i := by
-  have hB := mul_pos zero_lt_two ((pairing_pos_iff B i j).mp h)
-  rw [symmetric P B, two_mul_inner_product] at hB
-  exact (mul_pos_iff_of_pos_right (root_positive P B i)).mp hB
+  rw [pairing_pos_iff B, symmetric P B, ← pairing_pos_iff]
+  exact h
 
 lemma coxeter_weight_non_neg : 0 ≤ P.coxeterWeight i j := by
   dsimp [coxeterWeight]
