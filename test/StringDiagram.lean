@@ -56,4 +56,8 @@ example {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : f �
   rw [MonoidalCategory.whisker_exchange]
   rw [MonoidalCategory.tensorHom_def]
 
+example {X₁ Y₁ X₂ Y₂ X₃ Y₃ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) (h : X₃ ⟶ Y₃) :
+    (f ⊗ g) ⊗ h = 𝟙 _ ⊗≫ (f ⊗ (g ⊗ h)) ⊗≫ 𝟙 _ := by
+  simp [monoidalComp]
+
 end MonoidalCategory

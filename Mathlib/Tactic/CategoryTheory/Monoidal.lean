@@ -538,7 +538,7 @@ theorem evalTensorHomAux_of (η : f ⟶ g) (θ : h ⟶ i) :
 theorem evalTensorHomAux_cons {η : f ⟶ g} {ηs : f' ⟶ g'} {θ : h ⟶ i}
     {ηθ : f' ⊗ h ⟶ g' ⊗ i} {η₁ : f ⊗ (f' ⊗ h) ⟶ g ⊗ (g' ⊗ i)}
     {ηθ₁ : f ⊗ (f' ⊗ h) ⟶ (g ⊗ g') ⊗ i} {ηθ₂ : (f ⊗ f') ⊗ h ⟶ (g ⊗ g') ⊗ i}
-    (pf_ηθ : ηs ⊗ θ = ηθ) (pf_η₁ : η ⊗ ηθ = η₁)
+    (pf_ηθ : ηs ⊗ θ = ηθ) (pf_η₁ : (𝟙 _ ≫ η ≫ 𝟙 _) ⊗ ηθ = η₁)
     (pf_ηθ₁ : η₁ ≫ (α_ _ _ _).inv = ηθ₁) (pf_ηθ₂ : (α_ _ _ _).hom ≫ ηθ₁ = ηθ₂) :
     (η ⊗ ηs) ⊗ θ = ηθ₂ := by
   simp_all
