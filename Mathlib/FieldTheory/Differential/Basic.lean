@@ -105,7 +105,7 @@ class IsLiouville (F : Type u) (K : Type*) [Field F] [Field K] [Differential F] 
     ∃ (ι' : Type u) (_ : Fintype ι') (c' : ι' → F) (_ : ∀ x, (c' x)′ = 0)
       (u' : ι' → F) (v' : F), a = ∑ x, c' x * logd (u' x) + v'′
 
-instance IsLiouville.rfl (F : Type u) [DifferentialField F] : IsLiouville F F where
+instance IsLiouville.rfl (F : Type u) [Field F] [Differential F] : IsLiouville F F where
   is_liouville (a : F) (ι : Type u) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
       (u : ι → F) (v : F) (h : a = ∑ x, c x * logd (u x) + v′) :=
     ⟨ι, _, c, hc, u, v, h⟩
