@@ -26,6 +26,7 @@ topological space `X` and prove some properties inherited from `X`.
 * The connectedness of `OnePoint X` for a noncompact, preconnected `X`
 * `OnePoint X` is `T₀` for a T₀ space `X`
 * `OnePoint X` is `T₁` for a T₁ space `X`
+* `OnePoint X` is `T₂` for a locally compact T₂ space `X`
 * `OnePoint X` is normal if `X` is a locally compact Hausdorff space
 
 ## Tags
@@ -152,6 +153,10 @@ theorem infty_not_mem_image_coe {s : Set X} : ∞ ∉ ((↑) : X → OnePoint X)
 theorem coe_preimage_infty : ((↑) : X → OnePoint X) ⁻¹' {∞} = ∅ := by
   ext
   simp
+
+theorem preimage_image_union_infty (s : Set X) :
+    (↑) ⁻¹' (((↑) '' s : Set (OnePoint X)) ∪ {∞}) = s := by
+  rw [preimage_union, coe_preimage_infty, union_empty, preimage_image_eq _ (coe_injective)]
 
 /-!
 ### Topological space structure on `OnePoint X`
@@ -481,6 +486,41 @@ instance [T1Space X] : T1Space (OnePoint X) where
     · exact isClosed_infty
     · rw [← image_singleton, isClosed_image_coe]
       exact ⟨isClosed_singleton, isCompact_singleton⟩
+
+/-- The one point compactification if a `WeaklyLocallCompactSpace` and `T2Space` is a `T2Space`. -/
+instance [T2Space X] [WeaklyLocallyCompactSpace X] : T2Space (OnePoint X) where
+  t2 := by
+    suffices ∀ (x y : OnePoint X), x ≠ y → x ≠ ∞ →
+        ∃ u v, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v by
+      intro x y hxy
+      rcases eq_or_ne x ∞ with rfl | hx <;> rcases eq_or_ne y ∞ with rfl | hy
+      · exact (hxy rfl).elim
+      · rcases this y ∞ hxy.symm hy with ⟨v, u, vo, uo, yv, topu, hvu⟩
+        exact ⟨u, v, uo, vo, topu, yv, hvu.symm⟩
+      · exact this x ∞ hxy hx
+      · exact this x y hxy hx
+    intro x y hxy hx
+    lift x to X using hx
+    induction y using OnePoint.rec with
+    | h₁ =>
+      rcases exists_compact_mem_nhds x with ⟨K, hK, hx⟩
+      rcases mem_nhds_iff.1 hx with ⟨u, hu, u_op, hxu⟩
+      refine ⟨(↑) '' u, ((↑) '' Kᶜ) ∪ {∞}, isOpen_image_coe.2 u_op, ?_, ⟨x, hxu, rfl⟩,
+        mem_union_right _ <| mem_singleton _, ?_⟩
+      · rw [isOpen_iff_of_mem, preimage_image_union_infty, compl_compl]
+        · exact ⟨hK.isClosed, hK⟩
+        · exact mem_union_right _ <| mem_singleton _
+      · rw [Set.disjoint_union_right, Set.disjoint_iff, ← image_inter coe_injective]
+        refine ⟨?_, by simp⟩
+        rw [← image_empty (some : X → OnePoint X), ← inter_compl_self K,
+          image_subset_image_iff coe_injective]
+        exact inter_subset_inter_left _ hu
+    | h₂ y =>
+      have : x ≠ y := fun a ↦ hxy (congrArg some a)
+      rcases t2_separation this with ⟨u, v, uop, vop, xu, yv, huv⟩
+      refine ⟨(↑) '' u, (↑) '' v, isOpen_image_coe.2 uop, isOpen_image_coe.2 vop,
+        ⟨x, xu, rfl⟩, ⟨y, yv, rfl⟩,
+        Disjoint.image huv coe_injective.injOn (subset_univ _) (subset_univ _)⟩
 
 /-- The one point compactification of a locally compact R₁ space is a normal topological space. -/
 instance [LocallyCompactSpace X] [R1Space X] : NormalSpace (OnePoint X) := by
