@@ -32,7 +32,7 @@ variable (l) [DecidableEq l] (R) [CommRing R]
 section JMatrixLemmas
 
 /-- The matrix defining the canonical skew-symmetric bilinear form. -/
-def J : Matrix (Sum l l) (Sum l l) R :=
+def J : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 0 (-1) 1 0
 
 @[simp]
@@ -67,7 +67,7 @@ end JMatrixLemmas
 variable [Fintype l]
 
 /-- The group of symplectic matrices over a ring `R`. -/
-def symplecticGroup : Submonoid (Matrix (Sum l l) (Sum l l) R) where
+def symplecticGroup : Submonoid (Matrix (l ⊕ l) (l ⊕ l) R) where
   carrier := { A | A * J l R * Aᵀ = J l R }
   mul_mem' {a b} ha hb := by
     simp only [Set.mem_setOf_eq, transpose_mul] at *
@@ -83,11 +83,11 @@ variable [DecidableEq l] [Fintype l] [CommRing R]
 
 open Matrix
 
-theorem mem_iff {A : Matrix (Sum l l) (Sum l l) R} :
+theorem mem_iff {A : Matrix (l ⊕ l) (l ⊕ l) R} :
     A ∈ symplecticGroup l R ↔ A * J l R * Aᵀ = J l R := by simp [symplecticGroup]
 
 -- Porting note: Previous proof was `by infer_instance`
-instance coeMatrix : Coe (symplecticGroup l R) (Matrix (Sum l l) (Sum l l) R) :=
+instance coeMatrix : Coe (symplecticGroup l R) (Matrix (l ⊕ l) (l ⊕ l) R) :=
   ⟨Subtype.val⟩
 
 section SymplecticJ
@@ -109,7 +109,7 @@ theorem coe_J : ↑(symJ l R) = J l R := rfl
 
 end SymplecticJ
 
-variable {A : Matrix (Sum l l) (Sum l l) R}
+variable {A : Matrix (l ⊕ l) (l ⊕ l) R}
 
 theorem neg_mem (h : A ∈ symplecticGroup l R) : -A ∈ symplecticGroup l R := by
   rw [mem_iff] at h ⊢
@@ -152,7 +152,7 @@ theorem mem_iff' : A ∈ symplecticGroup l R ↔ Aᵀ * J l R * A = J l R := by
   rw [← transpose_mem_iff, mem_iff, transpose_transpose]
 
 instance hasInv : Inv (symplecticGroup l R) where
-  inv A := ⟨(-J l R) * (A : Matrix (Sum l l) (Sum l l) R)ᵀ * J l R,
+  inv A := ⟨(-J l R) * (A : Matrix (l ⊕ l) (l ⊕ l) R)ᵀ * J l R,
       mul_mem (mul_mem (neg_mem <| J_mem _ _) <| transpose_mem A.2) <| J_mem _ _⟩
 
 theorem coe_inv (A : symplecticGroup l R) : (↑A⁻¹ : Matrix _ _ _) = (-J l R) * (↑A)ᵀ * J l R := rfl
@@ -168,11 +168,11 @@ theorem inv_left_mul_aux (hA : A ∈ symplecticGroup l R) : -(J l R * Aᵀ * J l
     _ = (-1 : R) • (-1 : Matrix _ _ _) := by rw [J_squared]
     _ = 1 := by simp only [neg_smul_neg, one_smul]
 
-theorem coe_inv' (A : symplecticGroup l R) : (↑A⁻¹ : Matrix (Sum l l) (Sum l l) R) = (↑A)⁻¹ := by
+theorem coe_inv' (A : symplecticGroup l R) : (↑A⁻¹ : Matrix (l ⊕ l) (l ⊕ l) R) = (↑A)⁻¹ := by
   refine (coe_inv A).trans (inv_eq_left_inv ?_).symm
   simp [inv_left_mul_aux, coe_inv]
 
-theorem inv_eq_symplectic_inv (A : Matrix (Sum l l) (Sum l l) R) (hA : A ∈ symplecticGroup l R) :
+theorem inv_eq_symplectic_inv (A : Matrix (l ⊕ l) (l ⊕ l) R) (hA : A ∈ symplecticGroup l R) :
     A⁻¹ = (-J l R) * Aᵀ * J l R :=
   inv_eq_left_inv (by simp only [Matrix.neg_mul, inv_left_mul_aux hA])
 

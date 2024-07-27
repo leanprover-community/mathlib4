@@ -6,8 +6,8 @@ Authors: Johan Commelin, Kenny Lau
 
 import Mathlib.Algebra.Group.Units
 import Mathlib.RingTheory.MvPowerSeries.Basic
-import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
 # Formal (multivariate) power series - Inverses
@@ -145,7 +145,7 @@ theorem isUnit_iff_constantCoeff {φ : MvPowerSeries σ R} :
   constructor
   · exact IsUnit.map _
   · intro ⟨u, hu⟩
-    use ⟨_, φ.invOfUnit u, mul_invOfUnit φ u hu.symm,  invOfUnit_mul φ u hu.symm⟩
+    exact ⟨⟨_, φ.invOfUnit u, mul_invOfUnit φ u hu.symm, invOfUnit_mul φ u hu.symm⟩, rfl⟩
 
 end Ring
 

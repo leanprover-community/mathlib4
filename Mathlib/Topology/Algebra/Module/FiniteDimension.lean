@@ -7,7 +7,7 @@ import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Module.Determinant
-import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Finite dimensional topological vector spaces over complete fields

@@ -8,8 +8,6 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Set.Subsingleton
 
-
-
 /-!
 # Compositions
 

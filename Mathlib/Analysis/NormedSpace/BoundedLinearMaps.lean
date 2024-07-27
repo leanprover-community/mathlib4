@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
-import Mathlib.Analysis.NormedSpace.Units
+import Mathlib.Analysis.Normed.Ring.Units
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
-
-
 
 /-!
 # Bounded linear maps

@@ -795,7 +795,7 @@ variable [Primcodable α] [Primcodable β]
 
 open Primrec
 
-instance sum : Primcodable (Sum α β) :=
+instance sum : Primcodable (α ⊕ β) :=
   ⟨Primrec.nat_iff.1 <|
       (encode_iff.2
             (cond nat_bodd
@@ -849,7 +849,7 @@ theorem sum_inl : Primrec (@Sum.inl α β) :=
 theorem sum_inr : Primrec (@Sum.inr α β) :=
   encode_iff.1 <| nat_double_succ.comp Primrec.encode
 
-theorem sum_casesOn {f : α → Sum β γ} {g : α → β → σ} {h : α → γ → σ} (hf : Primrec f)
+theorem sum_casesOn {f : α → β ⊕ γ} {g : α → β → σ} {h : α → γ → σ} (hf : Primrec f)
     (hg : Primrec₂ g) (hh : Primrec₂ h) : @Primrec _ σ _ _ fun a => Sum.casesOn (f a) (g a) (h a) :=
   option_some_iff.1 <|
     (cond (nat_bodd.comp <| encode_iff.2 hf)
@@ -905,8 +905,8 @@ theorem list_rec {f : α → List β} {g : α → σ} {h : α → β × List β 
 theorem list_get? : Primrec₂ (@List.get? α) :=
   let F (l : List α) (n : ℕ) :=
     l.foldl
-      (fun (s : Sum ℕ α) (a : α) =>
-        Sum.casesOn s (@Nat.casesOn (fun _ => Sum ℕ α) · (Sum.inr a) Sum.inl) Sum.inr)
+      (fun (s : ℕ ⊕ α) (a : α) =>
+        Sum.casesOn s (@Nat.casesOn (fun _ => ℕ ⊕ α) · (Sum.inr a) Sum.inl) Sum.inr)
       (Sum.inl n)
   have hF : Primrec₂ F :=
     (list_foldl fst (sum_inl.comp snd)
@@ -1110,7 +1110,6 @@ instance finArrow {n} : Primcodable (Fin n → α) :=
 -- Porting note: Equiv.arrayEquivFin is not ported yet
 -- instance array {n} : Primcodable (Array' n α) :=
 --   ofEquiv _ (Equiv.arrayEquivFin _ _)
--- #align primcodable.array Primcodable.array
 
 section ULower
 

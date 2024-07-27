@@ -50,19 +50,20 @@ theorem cosZeta_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
     cosZeta x (2 * k) = (-1) ^ (k + 1) * (2 * π) ^ (2 * k) / 2 / (2 * k)! *
       ((Polynomial.bernoulli (2 * k)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
   rw [← (hasSum_nat_cosZeta x (?_ : 1 < re (2 * k))).tsum_eq]
-  refine Eq.trans ?_ <| (congr_arg ofReal' (hasSum_one_div_nat_pow_mul_cos hk hx).tsum_eq).trans ?_
-  · rw [ofReal_tsum]
-    refine tsum_congr fun n ↦ ?_
-    rw [mul_comm (1 / _), mul_one_div, ofReal_div, mul_assoc (2 * π), mul_comm x n, ← mul_assoc,
-      ← Nat.cast_ofNat (R := ℂ), ← Nat.cast_mul, cpow_natCast, ofReal_pow, ofReal_natCast]
-  · simp only [ofReal_mul, ofReal_div, ofReal_pow, ofReal_natCast, ofReal_ofNat,
-      ofReal_neg, ofReal_one]
-    congr 1
-    have : (Polynomial.bernoulli (2 * k)).map (algebraMap ℚ ℂ) = _ :=
-      (Polynomial.map_map (algebraMap ℚ ℝ) ofReal _).symm
-    rw [this, ← ofReal_eq_coe, ← ofReal_eq_coe]
-    apply Polynomial.map_aeval_eq_aeval_map
-    simp only [Algebra.id.map_eq_id, RingHomCompTriple.comp_eq]
+  · refine Eq.trans ?_ <|
+      (congr_arg ofReal' (hasSum_one_div_nat_pow_mul_cos hk hx).tsum_eq).trans ?_
+    · rw [ofReal_tsum]
+      refine tsum_congr fun n ↦ ?_
+      rw [mul_comm (1 / _), mul_one_div, ofReal_div, mul_assoc (2 * π), mul_comm x n, ← mul_assoc,
+        ← Nat.cast_ofNat (R := ℂ), ← Nat.cast_mul, cpow_natCast, ofReal_pow, ofReal_natCast]
+    · simp only [ofReal_mul, ofReal_div, ofReal_pow, ofReal_natCast, ofReal_ofNat,
+        ofReal_neg, ofReal_one]
+      congr 1
+      have : (Polynomial.bernoulli (2 * k)).map (algebraMap ℚ ℂ) = _ :=
+        (Polynomial.map_map (algebraMap ℚ ℝ) ofReal _).symm
+      rw [this, ← ofReal_eq_coe, ← ofReal_eq_coe]
+      apply Polynomial.map_aeval_eq_aeval_map
+      simp only [Algebra.id.map_eq_id, RingHomCompTriple.comp_eq]
   · rw [← Nat.cast_ofNat, ← Nat.cast_one, ← Nat.cast_mul, natCast_re, Nat.cast_lt]
     omega
 
@@ -77,21 +78,22 @@ theorem sinZeta_two_mul_nat_add_one (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
     sinZeta x (2 * k + 1) = (-1) ^ (k + 1) * (2 * π) ^ (2 * k + 1) / 2 / (2 * k + 1)! *
       ((Polynomial.bernoulli (2 * k + 1)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
   rw [← (hasSum_nat_sinZeta x (?_ : 1 < re (2 * k + 1))).tsum_eq]
-  refine Eq.trans ?_ <| (congr_arg ofReal' (hasSum_one_div_nat_pow_mul_sin hk hx).tsum_eq).trans ?_
-  · rw [ofReal_tsum]
-    refine tsum_congr fun n ↦ ?_
-    rw [mul_comm (1 / _), mul_one_div, ofReal_div, mul_assoc (2 * π), mul_comm x n, ← mul_assoc]
-    congr 1
-    rw [← Nat.cast_ofNat, ← Nat.cast_mul, ← Nat.cast_add_one, cpow_natCast, ofReal_pow,
-      ofReal_natCast]
-  · simp only [ofReal_mul, ofReal_div, ofReal_pow, ofReal_natCast, ofReal_ofNat,
-      ofReal_neg, ofReal_one]
-    congr 1
-    have : (Polynomial.bernoulli (2 * k + 1)).map (algebraMap ℚ ℂ) = _ :=
-      (Polynomial.map_map (algebraMap ℚ ℝ) ofReal _).symm
-    rw [this, ← ofReal_eq_coe, ← ofReal_eq_coe]
-    apply Polynomial.map_aeval_eq_aeval_map
-    simp only [Algebra.id.map_eq_id, RingHomCompTriple.comp_eq]
+  · refine Eq.trans ?_ <|
+      (congr_arg ofReal' (hasSum_one_div_nat_pow_mul_sin hk hx).tsum_eq).trans ?_
+    · rw [ofReal_tsum]
+      refine tsum_congr fun n ↦ ?_
+      rw [mul_comm (1 / _), mul_one_div, ofReal_div, mul_assoc (2 * π), mul_comm x n, ← mul_assoc]
+      congr 1
+      rw [← Nat.cast_ofNat, ← Nat.cast_mul, ← Nat.cast_add_one, cpow_natCast, ofReal_pow,
+        ofReal_natCast]
+    · simp only [ofReal_mul, ofReal_div, ofReal_pow, ofReal_natCast, ofReal_ofNat,
+        ofReal_neg, ofReal_one]
+      congr 1
+      have : (Polynomial.bernoulli (2 * k + 1)).map (algebraMap ℚ ℂ) = _ :=
+        (Polynomial.map_map (algebraMap ℚ ℝ) ofReal _).symm
+      rw [this, ← ofReal_eq_coe, ← ofReal_eq_coe]
+      apply Polynomial.map_aeval_eq_aeval_map
+      simp only [Algebra.id.map_eq_id, RingHomCompTriple.comp_eq]
   · rw [← Nat.cast_ofNat, ← Nat.cast_one, ← Nat.cast_mul, ← Nat.cast_add_one, natCast_re,
       Nat.cast_lt, lt_add_iff_pos_left]
     exact mul_pos two_pos (Nat.pos_of_ne_zero hk)

@@ -28,8 +28,10 @@ def GaloisConnection.adjunction {l : X → Y} {u : Y → X} (gc : GaloisConnecti
     gc.monotone_l.functor ⊣ gc.monotone_u.functor :=
   CategoryTheory.Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>
-        ⟨fun f => CategoryTheory.homOfLE (gc.le_u f.le),
-         fun f => CategoryTheory.homOfLE (gc.l_le f.le), _, _⟩ }
+        { toFun := fun f => CategoryTheory.homOfLE (gc.le_u f.le)
+          invFun := fun f => CategoryTheory.homOfLE (gc.l_le f.le)
+          left_inv := by aesop_cat
+          right_inv := by aesop_cat } }
 
 end
 

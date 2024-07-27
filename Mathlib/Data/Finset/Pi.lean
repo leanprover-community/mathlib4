@@ -3,13 +3,18 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Finset.Image
+import Mathlib.Data.Finset.Card
 import Mathlib.Data.Multiset.Pi
 
 /-!
 # The cartesian product of finsets
+
+## Main definitions
+
+* `Finset.pi`: Cartesian product of finsets indexed by a finset.
 -/
 
+open Function
 
 namespace Finset
 
@@ -123,6 +128,18 @@ theorem pi_disjoint_of_disjoint {δ : α → Type*} {s : Finset α} (t₁ t₂ :
     disjoint_iff_ne.1 h (f₁ a ha) (mem_pi.mp hf₁ a ha) (f₂ a ha) (mem_pi.mp hf₂ a ha) <|
       congr_fun (congr_fun eq₁₂ a) ha
 
-end Pi
+/-! ### Diagonal -/
 
+variable {ι : Type*} [DecidableEq (ι → α)] {s : Finset α} {f : ι → α}
+
+/-- The diagonal of a finset `s : Finset α` as a finset of functions `ι → α`, namely the set of
+constant functions valued in `s`. -/
+def piDiag (s : Finset α) (ι : Type*) [DecidableEq (ι → α)] : Finset (ι → α) := s.image (const ι)
+
+@[simp] lemma mem_piDiag : f ∈ s.piDiag ι ↔ ∃ a ∈ s, const ι a = f := mem_image
+
+@[simp] lemma card_piDiag (s : Finset α) (ι : Type*) [DecidableEq (ι → α)] [Nonempty ι] :
+    (s.piDiag ι).card = s.card := by rw [piDiag, card_image_of_injective _ const_injective]
+
+end Pi
 end Finset

@@ -47,6 +47,12 @@ open Function OrderDual Set
 
 variable {α β β₂ γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
 
+@[simp] lemma iSup_ulift {ι : Type*} [SupSet α] (f : ULift ι → α) :
+    ⨆ i : ULift ι, f i = ⨆ i, f (.up i) := by simp [iSup]; congr with x; simp
+
+@[simp] lemma iInf_ulift {ι : Type*} [InfSet α] (f : ULift ι → α) :
+    ⨅ i : ULift ι, f i = ⨅ i, f (.up i) := by simp [iInf]; congr with x; simp
+
 instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
   ⟨(sInf : Set α → α)⟩
 
@@ -838,6 +844,12 @@ theorem iSup_const [Nonempty ι] : ⨆ _ : ι, a = a := by rw [iSup, range_const
 theorem iInf_const [Nonempty ι] : ⨅ _ : ι, a = a :=
   @iSup_const αᵒᵈ _ _ a _
 
+lemma iSup_unique [Unique ι] (f : ι → α) : ⨆ i, f i = f default := by
+  simp only [congr_arg f (Unique.eq_default _), iSup_const]
+
+lemma iInf_unique [Unique ι] (f : ι → α) : ⨅ i, f i = f default := by
+  simp only [congr_arg f (Unique.eq_default _), iInf_const]
+
 @[simp]
 theorem iSup_bot : (⨆ _ : ι, ⊥ : α) = ⊥ :=
   bot_unique iSup_const_le
@@ -1289,10 +1301,10 @@ theorem biInf_prod {f : β × γ → α} {s : Set β} {t : Set γ} :
     ⨅ x ∈ s ×ˢ t, f x = ⨅ (a ∈ s) (b ∈ t), f (a, b) :=
   @biSup_prod αᵒᵈ _ _ _ _ _ _
 
-theorem iSup_sum {f : Sum β γ → α} : ⨆ x, f x = (⨆ i, f (Sum.inl i)) ⊔ ⨆ j, f (Sum.inr j) :=
+theorem iSup_sum {f : β ⊕ γ → α} : ⨆ x, f x = (⨆ i, f (Sum.inl i)) ⊔ ⨆ j, f (Sum.inr j) :=
   eq_of_forall_ge_iff fun c => by simp only [sup_le_iff, iSup_le_iff, Sum.forall]
 
-theorem iInf_sum {f : Sum β γ → α} : ⨅ x, f x = (⨅ i, f (Sum.inl i)) ⊓ ⨅ j, f (Sum.inr j) :=
+theorem iInf_sum {f : β ⊕ γ → α} : ⨅ x, f x = (⨅ i, f (Sum.inl i)) ⊓ ⨅ j, f (Sum.inr j) :=
   @iSup_sum αᵒᵈ _ _ _ _
 
 theorem iSup_option (f : Option β → α) : ⨆ o, f o = f none ⊔ ⨆ b, f (Option.some b) :=
@@ -1692,11 +1704,18 @@ end ULift
 
 namespace PUnit
 
-instance instCompleteLinearOrder : CompleteLinearOrder PUnit := by
-  refine'
-    { instBooleanAlgebra, instLinearOrder with
-      sSup := fun _ => unit
-      sInf := fun _ => unit
-      .. } <;> intros <;> trivial
+instance instCompleteLinearOrder : CompleteLinearOrder PUnit where
+  __ := instBooleanAlgebra
+  __ := instLinearOrder
+  sSup := fun _ => unit
+  sInf := fun _ => unit
+  le_sSup := by intros; trivial
+  sSup_le := by intros; trivial
+  sInf_le := by intros; trivial
+  le_sInf := by intros; trivial
+  le_himp_iff := by intros; trivial
+  himp_bot := by intros; trivial
+  sdiff_le_iff := by intros; trivial
+  top_sdiff := by intros; trivial
 
 end PUnit

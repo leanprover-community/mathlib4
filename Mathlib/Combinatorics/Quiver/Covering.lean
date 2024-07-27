@@ -122,13 +122,13 @@ theorem Prefunctor.IsCovering.of_comp_left (hφ : φ.IsCovering) (hφψ : (φ �
 /-- The star of the symmetrification of a quiver at a vertex `u` is equivalent to the sum of the
 star and the costar at `u` in the original quiver. -/
 def Quiver.symmetrifyStar (u : U) :
-    Quiver.Star (Symmetrify.of.obj u) ≃ Sum (Quiver.Star u) (Quiver.Costar u) :=
+    Quiver.Star (Symmetrify.of.obj u) ≃ Quiver.Star u ⊕ Quiver.Costar u :=
   Equiv.sigmaSumDistrib _ _
 
 /-- The costar of the symmetrification of a quiver at a vertex `u` is equivalent to the sum of the
 costar and the star at `u` in the original quiver. -/
 def Quiver.symmetrifyCostar (u : U) :
-    Quiver.Costar (Symmetrify.of.obj u) ≃ Sum (Quiver.Costar u) (Quiver.Star u) :=
+    Quiver.Costar (Symmetrify.of.obj u) ≃ Quiver.Costar u ⊕ Quiver.Star u :=
   Equiv.sigmaSumDistrib _ _
 
 theorem Prefunctor.symmetrifyStar (u : U) :
