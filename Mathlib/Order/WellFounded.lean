@@ -122,9 +122,10 @@ protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {
 
 section LinearOrder
 
-variable [LinearOrder β] (h : WellFounded ((· < ·) : β → β → Prop)) [PartialOrder γ]
+variable [LinearOrder β] [PartialOrder γ]
 
-theorem min_le {x : β} {s : Set β} (hx : x ∈ s) (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
+theorem min_le (h : WellFounded ((· < ·) : β → β → Prop)) {x : β} {s : Set β} (hx : x ∈ s)
+    (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
   not_lt.1 <| h.not_lt_min _ _ hx
 
 private theorem eq_strictMono_iff_eq_range_aux {f g : β → γ} (hf : StrictMono f)
@@ -140,7 +141,8 @@ private theorem eq_strictMono_iff_eq_range_aux {f g : β → γ} (hf : StrictMon
   · rw [← hc]
     exact hf.monotone hbc
 
-theorem eq_strictMono_iff_eq_range {f g : β → γ} (hf : StrictMono f) (hg : StrictMono g) :
+theorem eq_strictMono_iff_eq_range (h : WellFounded ((· < ·) : β → β → Prop)) {f g : β → γ}
+    (hf : StrictMono f) (hg : StrictMono g) :
     Set.range f = Set.range g ↔ f = g :=
   ⟨fun hfg => by
     funext a
@@ -150,7 +152,8 @@ theorem eq_strictMono_iff_eq_range {f g : β → γ} (hf : StrictMono f) (hg : S
         (eq_strictMono_iff_eq_range_aux hg hf hfg.symm fun a hab => (H a hab).symm),
     congr_arg _⟩
 
-theorem self_le_of_strictMono {f : β → β} (hf : StrictMono f) : ∀ n, n ≤ f n := by
+theorem self_le_of_strictMono (h : WellFounded ((· < ·) : β → β → Prop)) {f : β → β}
+    (hf : StrictMono f) : ∀ n, n ≤ f n := by
   by_contra! h₁
   have h₂ := h.min_mem _ h₁
   exact h.not_lt_min _ h₁ (hf h₂) h₂
