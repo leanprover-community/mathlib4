@@ -162,7 +162,7 @@ printf $'<details>
 ## more verbose report:
 ./scripts/declarations_diff.sh long <optional_commit>
 ```
-The doc-module for `script/declarations_diff.sh` contain some details about this script.
+The doc-module for `script/declarations_diff.sh` contains some details about this script.
 </details>'
  : <<ReferenceTest
 theorem oh hello
