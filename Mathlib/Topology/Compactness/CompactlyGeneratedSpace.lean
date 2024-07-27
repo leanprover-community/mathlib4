@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
 import Mathlib.Topology.Category.CompactlyGenerated
+import Mathlib.Topology.Compactification.OnePoint
 
 /-!
 # Compactly generated topological spaces
