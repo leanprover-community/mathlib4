@@ -674,6 +674,13 @@ theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y :=
 -- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem algEquiv_symm_mk' (x : R) (y : M) : (algEquiv M S Q).symm (mk' Q x y) = mk' S x y := by simp
 
+variable (M) in
+protected lemma bijective (f : S →+* Q) (hf : f.comp (algebraMap R S) = algebraMap R Q) :
+    Function.Bijective f :=
+  (show f = IsLocalization.algEquiv M S Q by
+    apply IsLocalization.ringHom_ext M; rw [hf]; ext; simp) ▸
+    (IsLocalization.algEquiv M S Q).toEquiv.bijective
+
 end AlgEquiv
 
 section at_units
