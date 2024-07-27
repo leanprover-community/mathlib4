@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.NormedSpace.Basic
-import Mathlib.Analysis.Normed.Module.LinearIsometry
+import Mathlib.Analysis.Normed.Operator.LinearIsometry
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.Unitary
