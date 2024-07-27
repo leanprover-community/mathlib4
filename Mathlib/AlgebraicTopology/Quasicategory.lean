@@ -9,6 +9,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 import Mathlib.CategoryTheory.Closed.FunctorToTypes
 import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.AlgebraicTopology.Temp
 
 /-!
 # Quasicategories
@@ -235,7 +236,11 @@ end ihom
 -- `0079`, hard to show
 /- B is a quasicat iff Fun(Δ[2], B) ⟶ Fun(Λ[2, 1], B) is a trivial Kan fib -/
 instance horn_tkf_iff_quasicat (B : SSet) : Quasicategory B ↔
-  trivialKanFibration ((Fun.map (hornInclusion 2 1).op).app B) := sorry
+    trivialKanFibration ((Fun.map (hornInclusion 2 1).op).app B) := by
+  dsimp
+  let p := (MonoidalClosed.pre (hornInclusion 2 1)).app B
+  --have := @Limits.PushoutCocone.mk SSet _ ((hornInclusion 2 1) ▷ Δ[m])
+  sorry
 
 -- ∂Δ[n] ⟶ Δ[n] is a monomorphism
 instance (n : ℕ) : Mono (boundaryInclusion n) where

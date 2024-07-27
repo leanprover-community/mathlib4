@@ -68,12 +68,26 @@ instance (T : MorphismProperty C) : StableUnderCobaseChange (llp_wrt T) := by
     rw [← Category.assoc, ← P.toCommSq.w, Category.assoc, Category.assoc, sq.w]
   have newSq := CommSq.mk ω
   obtain ⟨lift⟩ := ((L hg).sq_hasLift (newSq)).exists_lift
-  have fac_left : s ≫ u = f ≫ lift.l := by rw [lift.fac_left]
+  let fac_left : s ≫ u = f ≫ lift.l := by rw [lift.fac_left]
   refine ⟨IsColimit.desc P.isColimit u lift.l fac_left,
     IsColimit.inl_desc P.isColimit u lift.l fac_left, ?_⟩
-  have := @IsColimit.inr_desc _ _ _ _ _ _ _ _ P.isColimit
-  dsimp at this
+  let vcoc := mk (f' ≫ v) (t ≫ v) (by
+    have := P.w; apply_fun (fun f ↦ f ≫ v) at this; aesop)
+  refine (P.isColimit.uniq vcoc (IsColimit.desc P.isColimit u lift.l fac_left ≫ g) ?_).trans
+    (P.isColimit.uniq vcoc v ?_).symm
   sorry
+  sorry
+
+def StableUnderTransfiniteComposition (P : MorphismProperty C) : Prop := sorry
+
+instance (T : MorphismProperty C) : StableUnderTransfiniteComposition (llp_wrt T) := sorry
+
+class WeaklySaturated (P : MorphismProperty C) where
+  pushouts := StableUnderCobaseChange P
+  retracts := StableUnderRetracts P
+  comp := StableUnderTransfiniteComposition P
+
+instance (T : MorphismProperty C) : WeaklySaturated (llp_wrt T) where
 
 end MorphismProperty
 
