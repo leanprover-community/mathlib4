@@ -24,9 +24,9 @@ open Algebra
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 variable (S : Subalgebra R A)
 
-variable {ι : Type*} [Nonempty ι] {K : ι → Subalgebra R A} (dir : Directed (· ≤ ·) K)
+variable {ι : Type*} [Nonempty ι] {K : ι → Subalgebra R A}
 
-theorem coe_iSup_of_directed : ↑(iSup K) = ⋃ i, (K i : Set A) :=
+theorem coe_iSup_of_directed (dir : Directed (· ≤ ·) K) : ↑(iSup K) = ⋃ i, (K i : Set A) :=
   let s : Subalgebra R A :=
     { __ := Subsemiring.copy _ _ (Subsemiring.coe_iSup_of_directed dir).symm
       algebraMap_mem' := fun _ ↦ Set.mem_iUnion.2
@@ -36,6 +36,7 @@ theorem coe_iSup_of_directed : ↑(iSup K) = ⋃ i, (K i : Set A) :=
   this.symm ▸ rfl
 
 variable (K)
+variable (dir : Directed (· ≤ ·) K)
 variable (f : ∀ i, K i →ₐ[R] B) (hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h))
   (T : Subalgebra R A) (hT : T = iSup K)
 
