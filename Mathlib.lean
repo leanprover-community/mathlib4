@@ -1125,6 +1125,11 @@ import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.MeanInequalitiesPow
 import Mathlib.Analysis.MellinInversion
 import Mathlib.Analysis.MellinTransform
+import Mathlib.Analysis.Normed.Affine.AddTorsor
+import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
+import Mathlib.Analysis.Normed.Affine.Isometry
+import Mathlib.Analysis.Normed.Affine.MazurUlam
 import Mathlib.Analysis.Normed.Algebra.Basic
 import Mathlib.Analysis.Normed.Algebra.Spectrum
 import Mathlib.Analysis.Normed.Algebra.TrivSqZeroExt
@@ -1171,9 +1176,6 @@ import Mathlib.Analysis.Normed.Order.UpperLower
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.Normed.Ring.SeminormFromBounded
 import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Analysis.NormedSpace.AddTorsor
-import Mathlib.Analysis.NormedSpace.AddTorsorBases
-import Mathlib.Analysis.NormedSpace.AffineIsometry
 import Mathlib.Analysis.NormedSpace.BallAction
 import Mathlib.Analysis.NormedSpace.Banach
 import Mathlib.Analysis.NormedSpace.BanachSteinhaus
@@ -1184,7 +1186,6 @@ import Mathlib.Analysis.NormedSpace.Complemented
 import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 import Mathlib.Analysis.NormedSpace.Connected
-import Mathlib.Analysis.NormedSpace.ContinuousAffineMap
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 import Mathlib.Analysis.NormedSpace.Dual
 import Mathlib.Analysis.NormedSpace.DualNumber
@@ -1203,7 +1204,6 @@ import Mathlib.Analysis.NormedSpace.Int
 import Mathlib.Analysis.NormedSpace.LinearIsometry
 import Mathlib.Analysis.NormedSpace.MStructure
 import Mathlib.Analysis.NormedSpace.MatrixExponential
-import Mathlib.Analysis.NormedSpace.MazurUlam
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 import Mathlib.Analysis.NormedSpace.Multilinear.Curry
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Asymptotics

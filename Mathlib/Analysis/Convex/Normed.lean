@@ -7,7 +7,7 @@ import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Group.Pointwise
-import Mathlib.Analysis.NormedSpace.AddTorsor
+import Mathlib.Analysis.Normed.Affine.AddTorsor
 
 /-!
 # Topological and metric properties of convex sets in normed spaces

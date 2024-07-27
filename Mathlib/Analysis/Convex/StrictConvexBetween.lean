@@ -5,7 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.StrictConvexSpace
-import Mathlib.Analysis.NormedSpace.AffineIsometry
+import Mathlib.Analysis.Normed.Affine.Isometry
 
 /-!
 # Betweenness in affine spaces for strictly convex spaces
