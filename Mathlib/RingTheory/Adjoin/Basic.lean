@@ -428,7 +428,7 @@ theorem map_adjoin_singleton (e : A →ₐ[R] B) (x : A) :
   rw [map_adjoin, Set.image_singleton]
 
 theorem adjoin_le_equalizer (φ₁ φ₂ : A →ₐ[R] B) {s : Set A} (h : s.EqOn φ₁ φ₂) :
-    adjoin R s ≤ φ₁.equalizer φ₂ :=
+    adjoin R s ≤ equalizer φ₁ φ₂ :=
   adjoin_le h
 
 theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃φ₁ φ₂ : A →ₐ[R] B⦄
