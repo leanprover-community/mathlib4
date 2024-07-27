@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Edward van de Meent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Edward van de Meent.
+Author: Edward van de Meent
 -/
 import Mathlib.Data.Real.ENatENNReal
 import Mathlib.Data.Set.Card
