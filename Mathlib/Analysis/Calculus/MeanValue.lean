@@ -819,6 +819,51 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
       linarith
     simp [Filter.eventually_false_iff_eq_bot, ← not_mem_closure_iff_nhdsWithin_eq_bot] at hcontra
 
+/-- A real function whose derivative tends to minus infinity from the right at a point is not
+differentiable on the right at that point -/
+theorem not_differentiableWithinAt_of_deriv_tendsto_atBot_Ioi (f : ℝ → ℝ) {a : ℝ}
+    (hf : Tendsto (deriv f) (𝓝[>] a) atBot) : ¬ DifferentiableWithinAt ℝ f (Ioi a) a := by
+  intro h
+  have hf' : Tendsto (deriv (-f)) (𝓝[>] a) atTop := by
+    have : deriv (-f) = -deriv f := by
+      ext x
+      change deriv (fun y => -f y) x = -deriv f x
+      rw [deriv.neg']
+    rw [this]
+    exact Tendsto.comp (g := Neg.neg) (f := deriv f) (y := atBot) tendsto_neg_atBot_atTop hf
+  exact not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (-f) hf' h.neg
+
+/-- A real function whose derivative tends to infinity from the left at a point is not
+differentiable on the right at that point -/
+theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Iio (f : ℝ → ℝ) {a : ℝ}
+    (hf : Tendsto (deriv f) (𝓝[<] a) atBot) : ¬ DifferentiableWithinAt ℝ f (Iio a) a := by
+  let f' x := f (-x)
+  have hderiv : deriv f' =ᶠ[𝓝[>] (-a)] -(deriv f ∘ Neg.neg) := by
+    refine eventually_nhdsWithin_of_forall fun x hx => ?_
+    simp only [Pi.neg_apply, Function.comp_apply]
+    sorry
+  have hmain : ¬ DifferentiableWithinAt ℝ f' (Ioi (-a)) (-a) := by
+    refine not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi f' ?_
+    refine Tendsto.congr' hderiv.symm ?_
+    refine Tendsto.comp (g := -deriv f) (f := Neg.neg) (y := 𝓝[<] a) ?_ ?_
+    · sorry
+    · exact tendsto_neg_nhdsWithin_Ioi_neg
+  intro h
+  have : DifferentiableWithinAt ℝ f' (Ioi (-a)) (-a) := by
+    refine DifferentiableWithinAt.comp (g := f) (f := Neg.neg) (t := Iio a) (-a) ?_ ?_ ?_
+    · simp [h]
+    · fun_prop
+    · intro x (hx : -a < x)
+      simp only [mem_Iio]
+      linarith
+  exact hmain this
+
+/-- A real function whose derivative tends to infinity from the left at a point is not
+differentiable on the right at that point -/
+theorem not_differentiableWithinAt_of_deriv_tendsto_atBot_Iio (f : ℝ → ℝ) {a : ℝ}
+    (hf : Tendsto (deriv f) (𝓝[<] a) atBot) : ¬ DifferentiableWithinAt ℝ f (Iio a) a := by
+  sorry
+
 end Interval
 
 /-- Let `f` be a function continuous on a convex (or, equivalently, connected) subset `D`
