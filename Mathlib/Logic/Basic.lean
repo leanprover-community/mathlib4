@@ -37,9 +37,9 @@ section Miscellany
 --   And.decidable Or.decidable Decidable.false Xor.decidable Iff.decidable Decidable.true
 --   Implies.decidable Not.decidable Ne.decidable Bool.decidableEq Decidable.toBool
 
-attribute [simp] cast_eq cast_heq imp_false
+attribute [simp] cast_heq
 
--- This can be removed on Lean v4.11
+-- This can be removed once we move to Lean v4.11
 attribute [simp] insert_emptyc_eq
 
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
