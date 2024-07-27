@@ -3052,10 +3052,7 @@ import Mathlib.Logic.Small.Ring
 import Mathlib.Logic.Small.Set
 import Mathlib.Logic.Unique
 import Mathlib.Logic.UnivLE
-import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Notation
-import Mathlib.Mathport.Rename
-import Mathlib.Mathport.Syntax
 import Mathlib.MeasureTheory.Category.MeasCat
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
