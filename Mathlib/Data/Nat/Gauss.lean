@@ -512,9 +512,9 @@ noncomputable def truc (a : V) : V ≃ₗ[K] (V ⧸ span K {a}) ×  span K {a} :
     left_inv := sorry
     right_inv := sorry-/
 
-variable {K : Type u} {W : Type v}
+variable {W : Type v}
 
-variable [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W] [Module K W]
+variable [AddCommGroup W] [Module K W]
 
 /-def subspacesBijection' : {X : Submodule K (V × W) | Submodule.snd K V W ≤ X} ≃
   {X : Submodule K (V × W) | ∀ x ∈ X, x.2 = 0 } where
@@ -674,7 +674,7 @@ FiniteDimensional.finrank K X = FiniteDimensional.finrank K (subspacesBijection 
 lemma subspacesDimBijection' (X : {X : Submodule K (V × W) | ∀ x ∈ X, x.2 = 0 }) :
 FiniteDimensional.finrank K (subspacesBijection.invFun X) = FiniteDimensional.finrank K X + FiniteDimensional.finrank K W := by
   rw [subspacesDimBijection]
-  have h2 := (@subspacesBijection V K W).right_inv X
+  have h2 := (@subspacesBijection K V).right_inv X
   simp at h2
   simp
   rw [h2]
@@ -738,11 +738,49 @@ def subspacesBijection' : {X : Submodule K (V × W) | Submodule.map (LinearMap.i
       simp only [mem_map, LinearMap.mem_range, LinearMap.coe_inr, LinearMap.fst_apply,
         exists_exists_eq_and, exists_const, add_zero, and_self]
 
-noncomputable def isoThing (r : {X : Submodule K (V × K) | ¬ Submodule.map (LinearMap.inr K V K) ⊤ ≤ X}) :
-  r ≃ₗ[K] Submodule.map (LinearMap.fst K V K) r := by
-  apply Equiv.toLinearEquiv (Equiv.ofBijective ((LinearMap.fst K V K).restrict (λ x (hx : x ∈ r.1) =>
-    Submodule.mem_map_of_mem hx)) ⟨?_, ?_⟩)
-  apply IsLinearMap.mk (λ x y => rfl) (λ c x => rfl)
+def submoduleMapThing {W₁ : Type*} [AddCommGroup W₁] [Module K W₁] {W₂ : Type*} [AddCommGroup W₂]
+[Module K W₂] (f : W₁ →ₗ[K] W₂) (r : Submodule K W₁) :
+  Submodule.map (LinearMap.domRestrict f r) ⊤ = Submodule.map f r := by
+  refine (Submodule.ext ?h).symm
+  intros X
+  simp only [Submodule.mem_map, Submodule.map_top, LinearMap.mem_range, LinearMap.domRestrict_apply,
+    Subtype.exists, exists_prop]
+
+def reconstructMap : (X : Submodule K V) × (X →ₗ[K] K) ↪ Submodule K (V × K) where
+  toFun sφ := Submodule.map (LinearMap.prod sφ.1.subtype sφ.2) ⊤
+  inj' := fun Sφ Rφ h => by
+    obtain ⟨SX, Sφ⟩ := Sφ
+    obtain ⟨RX, Rφ⟩ := Rφ
+    have : SX = RX := by
+      simp only [Submodule.map_top] at h
+      ext x
+      refine ⟨fun hx => ?_, fun hx => ?_⟩
+      have h2 := LinearMap.mem_range_self (LinearMap.prod (Submodule.subtype SX) Sφ) ⟨x, hx⟩
+      rw [h] at h2
+      simp only [LinearMap.prod_apply, Pi.prod, coeSubtype, LinearMap.mem_range, Prod.mk.injEq,
+        Subtype.exists, exists_and_left, exists_eq_left] at h2
+      obtain ⟨hxR, _⟩ := h2
+      apply hxR
+      have h2 := LinearMap.mem_range_self (LinearMap.prod (Submodule.subtype RX) Rφ) ⟨x, hx⟩
+      rw [← h] at h2
+      simp only [LinearMap.prod_apply, Pi.prod, coeSubtype, LinearMap.mem_range, Prod.mk.injEq,
+        Subtype.exists, exists_and_left, exists_eq_left] at h2
+      obtain ⟨hxS, _⟩ := h2
+      apply hxS
+    subst this
+    simp only [Sigma.mk.inj_iff, heq_eq_eq, true_and]
+    apply LinearMap.ext (fun x => ?_)
+    simp at h
+    have h2 : ⟨x, Sφ x⟩ ∈ LinearMap.range (LinearMap.prod (Submodule.subtype SX) Sφ) := by
+      simp only [LinearMap.mem_range, LinearMap.prod_apply, Pi.prod, coeSubtype, Prod.mk.injEq,
+        SetLike.coe_eq_coe, exists_eq_left]
+    rw [h] at h2
+    simp only [LinearMap.mem_range, LinearMap.prod_apply, Pi.prod, coeSubtype, Prod.mk.injEq,
+      SetLike.coe_eq_coe, exists_eq_left] at h2
+    rw [h2]
+
+lemma injMap (r : {X : Submodule K (V × K) | ¬ Submodule.map (LinearMap.inr K V K) ⊤ ≤ X}) :
+Function.Injective ⇑(LinearMap.domRestrict (LinearMap.fst K V K) ↑r) := by
   intros x y hxy
   by_contra hxy2
   simp [LinearMap.restrict_apply] at hxy
@@ -765,21 +803,121 @@ noncomputable def isoThing (r : {X : Submodule K (V × K) | ¬ Submodule.map (Li
   have h5 := Submodule.smul_mem r a h4
   simp at h5
   apply h5
-  intros b
-  obtain ⟨y, hy⟩ := (Submodule.mem_map.1 b.2)
-  refine ⟨⟨y, hy.1⟩, ?_⟩
-  rw [LinearMap.restrict_apply (λ x (hx : x ∈ r.1) => Submodule.mem_map_of_mem hx) ⟨y, hy.1⟩]
-  simp
-  simp at hy
-  simp [hy.2]
 
-example {V : Type u} [Field K] [AddCommGroup V] [Module K V] [Module K W] :
+noncomputable def isoThing (r : {X : Submodule K (V × K) | ¬ Submodule.map (LinearMap.inr K V K) ⊤ ≤ X}) :
+  r ≃ₗ[K] Submodule.map (LinearMap.fst K V K) r := by
+  have h2 := LinearEquiv.ofInjective ((LinearMap.fst K V K).domRestrict r.1) (injMap r)
+  rw [LinearMap.range_eq_map, submoduleMapThing (LinearMap.fst K V K) r] at h2
+  apply h2
+
+lemma memRangeReconstructIff (X : Submodule K (V × K)) : X ∈ Set.range reconstructMap ↔
+  ¬ Submodule.map (LinearMap.inr K V K) ⊤ ≤ X := by
+  refine ⟨fun hR => ?_, fun hM => ?_⟩
+  · by_contra h2
+    rw [reconstructMap] at hR
+    simp at hR
+    obtain ⟨S, ⟨Sφ, hSφ⟩⟩ := hR
+    rw [← hSφ] at h2
+    obtain ⟨a, ha⟩ := (nontrivial_iff_exists_ne (0 : K)).1 Field.toNontrivial
+    have h3 : ⟨0, a⟩ ∈ map (LinearMap.inr K V K) ⊤ :=
+      by simp only [Submodule.map_top, LinearMap.mem_range, LinearMap.coe_inr, Prod.mk.injEq,
+        true_and, exists_eq]
+    have h4 := Set.mem_of_subset_of_mem h2.subset h3
+    simp only [SetLike.mem_coe, LinearMap.mem_range, LinearMap.prod_apply, Pi.prod, coeSubtype,
+      Prod.mk.injEq, ZeroMemClass.coe_eq_zero, exists_eq_left, _root_.map_zero] at h4
+    apply ha
+    rw [h4]
+
+  simp only [Set.mem_range, Sigma.exists]
+  refine ⟨Submodule.map (LinearMap.fst K V K) X, ?_⟩
+  have h2 := LinearEquiv.ofInjective ((LinearMap.fst K V K).domRestrict X) (injMap ⟨X, hM⟩)
+  rw [LinearMap.range_eq_map, submoduleMapThing (LinearMap.fst K V K) X] at h2
+  rw [← submoduleMapThing (LinearMap.fst K V K) X, ← LinearMap.range_eq_map]
+  refine ⟨((LinearMap.snd K V K).comp
+        (Submodule.subtype X)).comp (LinearEquiv.ofInjective ((LinearMap.fst K V K).domRestrict X)
+        (injMap ⟨X, hM⟩)).symm.toLinearMap, ?_⟩
+  simp only [reconstructMap._eq_1, Submodule.map_top, Function.Embedding.coeFn_mk, Set.mem_setOf_eq]
+
+  ext x;
+  simp only [Set.mem_setOf_eq, LinearMap.mem_range, LinearMap.prod_apply, Pi.prod, coeSubtype,
+    LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, LinearMap.snd_apply,
+    Subtype.exists, LinearMap.domRestrict_apply, LinearMap.fst_apply, exists_prop, Prod.exists,
+    exists_and_right, exists_eq_right]
+  refine ⟨fun ha => ?_, fun hx => ⟨x.1, ⟨⟨x.2, hx⟩, ?_⟩⟩⟩
+  · obtain ⟨a, ⟨⟨b, hab⟩, ha2⟩⟩ := ha
+    have ha3 := @LinearEquiv.ofInjective_apply _ _ _ _ _ _ _ _ _ _ _ _
+      ((LinearMap.fst K V K).domRestrict X) _ _ (injMap ⟨X, hM⟩) ⟨(a, b), hab⟩
+    have ha : a ∈ LinearMap.range ((LinearMap.fst K V K).domRestrict X) := by
+      simp only [LinearMap.mem_range, LinearMap.domRestrict_apply, LinearMap.fst_apply,
+        Subtype.exists, exists_prop, Prod.exists, exists_and_right, exists_eq_right]
+      refine ⟨b, hab⟩
+    have hd : ((((LinearEquiv.ofInjective ((LinearMap.fst K V K).domRestrict X) (injMap ⟨X, hM⟩))
+      ⟨(a, b), hab⟩)) : V) = (⟨a, ha⟩ : LinearMap.range ((LinearMap.fst K V K).domRestrict X)) := by
+      rw [ha3]
+      simp only [LinearMap.domRestrict_apply, LinearMap.fst_apply]
+    rw [Subtype.val_inj] at hd
+    simp only [← ha2, ← hd, LinearEquiv.symm_apply_apply]
+    apply hab
+  have ha3 := @LinearEquiv.ofInjective_apply _ _ _ _ _ _ _ _ _ _ _ _
+      ((LinearMap.fst K V K).domRestrict X) _ _ (injMap ⟨X, hM⟩) ⟨x, hx⟩
+  have hx1 : x.1 ∈ LinearMap.range ((LinearMap.fst K V K).domRestrict X) := by
+      simp only [LinearMap.mem_range, LinearMap.domRestrict_apply, LinearMap.fst_apply,
+        Subtype.exists, exists_prop, Prod.exists, exists_and_right, exists_eq_right]
+      refine ⟨x.2, hx⟩
+  have hd : ((((LinearEquiv.ofInjective ((LinearMap.fst K V K).domRestrict X) (injMap ⟨X, hM⟩))
+      ⟨x, hx⟩)) : V) = (⟨x.1, hx1⟩ : LinearMap.range ((LinearMap.fst K V K).domRestrict X)) := by
+      rw [ha3]
+      simp only [LinearMap.domRestrict_apply, LinearMap.fst_apply]
+  rw [Subtype.val_inj] at hd
+  simp only [← hd, LinearEquiv.symm_apply_apply, Prod.mk.eta]
+
+
+  /-fun
+    | .mk fst snd => by
+        simp
+        intros s f
+
+        sorry-/
+
+
+/-lemma injMap (r : {X : Submodule K (V × K) | ¬ Submodule.map (LinearMap.inr K V K) ⊤ ≤ X}) :
+Function.Injective ⇑(LinearMap.domRestrict (LinearMap.fst K V K) ↑r) := by
+  intros x y hxy
+  by_contra hxy2
+  simp [LinearMap.restrict_apply] at hxy
+  have h2 : x.1.2 ≠ y.1.2 := by
+    by_contra hxy3
+    apply hxy2 (Subtype.val_inj.1 (Prod.eq_iff_fst_eq_snd_eq.2 ⟨hxy, hxy3⟩))
+  apply r.2
+  intros z hz
+  simp only [Submodule.map_top, LinearMap.mem_range, LinearMap.coe_inr] at hz
+  obtain ⟨a, rfl⟩ := hz
+  have h3 : ⟨0, x.1.2 - y.1.2⟩ ∈ r.1 := by
+    rw [← sub_self (y.1.1)]
+    nth_rewrite 1 [← hxy]
+    rw [← Prod.mk_sub_mk]
+    apply Submodule.sub_mem _ x.2 y.2
+  rw [← sub_ne_zero] at h2
+  have h4 := Submodule.smul_mem r (x.1.2 - y.1.2)⁻¹ h3
+  simp at h4
+  rw [inv_mul_cancel h2] at h4
+  have h5 := Submodule.smul_mem r a h4
+  simp at h5
+  apply h5-/
+
+-- use linearequiv.ofinjective, it will give linear map if you use linear map as argument
+/-noncomputable def isoThing (r : {X : Submodule K (V × K) | ¬ Submodule.map (LinearMap.inr K V K) ⊤ ≤ X}) :
+  r ≃ₗ[K] Submodule.map (LinearMap.fst K V K) r := by
+  have h2 := LinearEquiv.ofInjective ((LinearMap.fst K V K).domRestrict r.1) (injMap r)
+  rw [LinearMap.range_eq_map, submoduleMapThing (LinearMap.fst K V K) r] at h2
+  apply h2-/
+
+/-example :
     {X : Submodule K (V × K) | ¬ Submodule.map (LinearMap.inr K V K) ⊤ ≤ X}
     ≃ (X : Submodule K V) × (X →ₗ[K] K) where
-      toFun := λ r => ⟨Submodule.map (LinearMap.fst K V K) r, by
-
-          sorry ⟩
-      invFun := λ sφ => by
+      toFun := fun r => ⟨Submodule.map (LinearMap.fst K V K) r, ((LinearMap.snd K V K).comp
+        (Submodule.subtype r.1)).comp (isoThing r).symm.toLinearMap ⟩
+      invFun := fun sφ => by
           refine ⟨Submodule.map (LinearMap.prod sφ.1.subtype sφ.2) ⊤, ?_⟩
           obtain ⟨a, ha⟩ := (nontrivial_iff_exists_ne (0 : K)).1 Field.toNontrivial
           simp only [Set.mem_setOf_eq]
@@ -793,8 +931,63 @@ example {V : Type u} [Field K] [AddCommGroup V] [Module K V] [Module K W] :
             _root_.map_zero] at hx
           apply ha
           rw [hx]
-      left_inv := _
-      right_inv := _
+      left_inv := fun r => by
+        simp only [Set.coe_setOf, Set.mem_setOf_eq, Submodule.map_top]
+        ext x;
+        refine ⟨fun hx => ?_, fun hx => ?_⟩
+        simp [-Subtype.exists] at hx
+        obtain ⟨⟨a,ha⟩, h', rfl⟩ := hx
+        have h3 := injMap r
+        simp
+        simp at ha
+        obtain ⟨b, hb⟩ := ha
+        have h4 := (isoThing r).symm.injective
+        have h5 := ((isoThing r).symm ⟨a, ha⟩).2
+        convert h5 using 1
+        rw [Prod.eq_iff_fst_eq_snd_eq]
+        simp
+        rfl
+        --rw [← LinearMap.fst_apply ((isoThing r).symm ⟨a, ha⟩).2]
+        --have h6 := mem_prod
+
+        --rw [Set.mem_univ]
+        --rw [← @Function.InjOn.mem_set_image _ _ (isoThing r) _ (@Set.univ r) _]
+        --rw [← (injMap r).mem_set_image]
+        -- suffices : (LinearMap.fst K V K) (↑{ val := a, property := ha },
+        --   (↑((LinearEquiv.symm (isoThing r)) { val := a, property := ha })).2)
+        --   ∈ map (LinearMap.fst K V K) ↑r by sorry
+
+        -- simp only [Set.mem_setOf_eq]
+        -- simp only [Set.coe_setOf,  Set.mem_setOf_eq, LinearMap.mem_range, LinearMap.prod_apply,
+        --   Pi.prod, coeSubtype, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+        --   LinearMap.snd_apply, mem_map, LinearMap.fst_apply, Prod.exists,
+        --   exists_and_right, exists_eq_right] at hx
+        -- obtain ⟨a, ⟨⟨b, hab⟩, hab2⟩⟩ := hx
+
+        --convert hab using 1
+        --apply (isoThing r).injective
+
+        --by_contra
+        /-simp only [Prod.mk.injEq, true_and]
+        have h5 : (isoThing r) ((isoThing r).symm ⟨a, sorry⟩) = a := by
+          sorry
+        /-by_contra hb
+        simp at hb-/
+        have h3 : (isoThing r) ⟨(a, b), hab⟩ = a := by
+          simp
+
+          sorry-/
+        sorry
+        simp only [Set.coe_setOf, Set.mem_setOf_eq, LinearMap.mem_range, LinearMap.prod_apply,
+          Pi.prod, coeSubtype, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+          LinearMap.snd_apply, Subtype.exists, mem_map, LinearMap.fst_apply, Prod.exists,
+          exists_and_right, exists_eq_right]
+        refine ⟨x.1, ⟨⟨x.2, hx⟩, ?_⟩⟩
+
+        sorry
+      right_inv := fun sφ => by
+        simp
+        sorry -/
 
 
 -- -- the second one is dependent on the first

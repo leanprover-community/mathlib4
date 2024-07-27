@@ -6,11 +6,21 @@ universe u v
 
 variable {V : Type v} {K : Type u} [Field K] [AddCommGroup V] [Module K V]
 
-noncomputable def isoThing (r : {X : Submodule K (V × K) | ¬ Submodule.map (LinearMap.inr K V K) ⊤ ≤ X}) :
+def submoduleMapThing {W₁ : Type*} [AddCommGroup W₁] [Module K W₁] {W₂ : Type*} [AddCommGroup W₂]
+[Module K W₂] (f : W₁ →ₗ[K] W₂) (r : Submodule K W₁) :
+  Submodule.map (LinearMap.domRestrict f r) ⊤ = Submodule.map f r := by
+  refine (Submodule.ext ?h).symm
+  intros X
+  simp only [Submodule.mem_map, Submodule.map_top, LinearMap.mem_range, LinearMap.domRestrict_apply,
+    Subtype.exists, exists_prop]
+
+-- use linearequiv.ofinjective, it will give linear map if you use linear map as argument
+noncomputable def isoThing'' (r : {X : Submodule K (V × K) | ¬ Submodule.map (LinearMap.inr K V K) ⊤ ≤ X}) :
   r ≃ₗ[K] Submodule.map (LinearMap.fst K V K) r := by
-  apply Equiv.toLinearEquiv (Equiv.ofBijective ((LinearMap.fst K V K).restrict (λ x (hx : x ∈ r.1) =>
-    Submodule.mem_map_of_mem hx)) ⟨?_, ?_⟩)
-  apply IsLinearMap.mk (λ x y => rfl) (λ c x => rfl)
+  have h2 := LinearEquiv.ofInjective ((LinearMap.fst K V K).domRestrict r.1) ?_
+  rw [LinearMap.range_eq_map, submoduleMapThing (LinearMap.fst K V K) r] at h2
+  apply h2
+
   intros x y hxy
   by_contra hxy2
   simp [LinearMap.restrict_apply] at hxy
@@ -33,10 +43,3 @@ noncomputable def isoThing (r : {X : Submodule K (V × K) | ¬ Submodule.map (Li
   have h5 := Submodule.smul_mem r a h4
   simp at h5
   apply h5
-  intros b
-  obtain ⟨y, hy⟩ := (Submodule.mem_map.1 b.2)
-  refine ⟨⟨y, hy.1⟩, ?_⟩
-  rw [LinearMap.restrict_apply (λ x (hx : x ∈ r.1) => Submodule.mem_map_of_mem hx) ⟨y, hy.1⟩]
-  simp
-  simp at hy
-  simp [hy.2]
