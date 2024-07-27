@@ -92,15 +92,6 @@ open Lean.Elab.Tactic (liftMetaTactic liftMetaTactic' TacticM getMainGoal)
 namespace Bound
 
 /-!
-### Extra lemmas for `bound`
--/
-
-/-- Possibly this one should be deleted, but we'd need to add support for `ℕ ≠ 0` goals -/
-lemma le_self_pow_of_pos {R : Type} [OrderedSemiring R] {a : R} {m : ℕ} (ha : 1 ≤ a) (h : 0 < m) :
-    a ≤ a ^ m :=
-  le_self_pow ha h.ne'
-
-/-!
 ### `.mpr` lemmas of iff statements for use as Aesop apply rules
 
 Once Aesop can do general terms directly, we can remove these:
@@ -141,17 +132,16 @@ attribute [bound] sq_nonneg Nat.cast_nonneg abs_nonneg Nat.zero_lt_succ pow_pos 
   mul_nonneg div_pos div_nonneg add_nonneg
 
 -- 1 ≤, ≤ 1
-attribute [bound] Nat.one_le_cast_of_le one_le_pow_of_one_le pow_le_one
-  one_le_mul_of_one_le_of_one_le
+attribute [bound] Nat.one_le_cast_of_le one_le_mul_of_one_le_of_one_le
 
 -- ≤
-attribute [bound] le_abs_self neg_abs_le neg_le_neg tsub_le_tsub_right pow_le_pow_left
-  mul_le_mul_of_nonneg_left mul_le_mul_of_nonneg_right le_add_of_nonneg_right le_add_of_nonneg_left
-  le_self_pow_of_pos le_mul_of_one_le_right mul_le_of_le_one_right sub_le_sub add_le_add mul_le_mul
+attribute [bound] le_abs_self neg_abs_le neg_le_neg tsub_le_tsub_right mul_le_mul_of_nonneg_left
+  mul_le_mul_of_nonneg_right le_add_of_nonneg_right le_add_of_nonneg_left le_mul_of_one_le_right
+  mul_le_of_le_one_right sub_le_sub add_le_add mul_le_mul
 
 -- <
 attribute [bound] Nat.cast_pos_of_pos neg_lt_neg sub_lt_sub_left sub_lt_sub_right add_lt_add_left
-  add_lt_add_right mul_lt_mul_left_of_pos_of_lt mul_lt_mul_right_of_pos_of_lt pow_lt_pow_left
+  add_lt_add_right mul_lt_mul_left_of_pos_of_lt mul_lt_mul_right_of_pos_of_lt
 
 -- min and max
 attribute [bound] min_le_right min_le_left le_max_left le_max_right le_min max_le lt_min max_lt
@@ -180,13 +170,6 @@ lemma lt_max_of_lt_left_or_lt_right : a < b ∨ a < c → a < max b c := lt_max_
 lemma min_le_of_left_le_or_right_le : a ≤ c ∨ b ≤ c → min a b ≤ c := min_le_iff.mpr
 lemma min_lt_of_left_lt_or_right_lt : a < c ∨ b < c → min a b < c := min_lt_iff.mpr
 
-/-- Branch on `1 ≤ a ∨ a ≤ 1` for `a ^ n` -/
-lemma pow_le_pow_right_of_le_one_or_one_le {R : Type} [OrderedSemiring R] {a : R} {n m : ℕ}
-    (h : 1 ≤ a ∧ n ≤ m ∨ 0 ≤ a ∧ a ≤ 1 ∧ m ≤ n) : a ^ n ≤ a ^ m := by
-  rcases h with ⟨a1, nm⟩ | ⟨a0, a1, mn⟩
-  · exact pow_le_pow_right a1 nm
-  · exact pow_le_pow_of_le_one a0 a1 mn
-
 -- Register guessing rules
 attribute [bound]
   -- Which side of the `max` should we use as the lower bound?
@@ -195,8 +178,6 @@ attribute [bound]
   -- Which side of the `min` should we use as the upper bound?
   min_le_of_left_le_or_right_le
   min_lt_of_left_lt_or_right_lt
-  -- Given `a^m ≤ a^n`, is `1 ≤ a` or `a ≤ 1`?
-  pow_le_pow_right_of_le_one_or_one_le
 
 end Guessing
 
