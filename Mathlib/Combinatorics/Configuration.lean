@@ -8,10 +8,15 @@ import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.CrossProduct
+import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Dimension.Constructions
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.LinearAlgebra.Matrix.DotProduct
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Projectivization.Basic
 import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.GroupTheory.SchurZassenhaus
+import Mathlib.FieldTheory.Adjoin
 
 /-!
 # Configurations of Points and lines
@@ -467,106 +472,194 @@ theorem card_points [Fintype P] [Finite L] : Fintype.card P = order P L ^ 2 + or
 theorem card_lines [Finite P] [Fintype L] : Fintype.card L = order P L ^ 2 + order P L + 1 :=
   (card_points (Dual L) (Dual P)).trans (congr_arg (fun n => n ^ 2 + n + 1) (Dual.order P L))
 
-namespace ofField
+end ProjectivePlane
+
+end Configuration
+
+namespace Projectivization
 
 open scoped LinearAlgebra.Projectivization
 
-open Matrix
-
 variable {K : Type*} [Field K] {m : Type*} [Fintype m]
 
+/-- Orthogonality on the projective plane. -/
 def orthogonal : ℙ K (m → K) → ℙ K (m → K) → Prop :=
-  Quotient.lift₂ (fun v w ↦ dotProduct v.1 w.1 = 0) (fun _ _ _ _ ⟨_, h1⟩ ⟨_, h2⟩ ↦ by
-    simp_rw [← h1, ← h2, dotProduct_smul, smul_dotProduct, smul_smul, smul_eq_zero_iff_eq])
+  Quotient.lift₂ (fun v w ↦ Matrix.dotProduct v.1 w.1 = 0) (fun _ _ _ _ ⟨_, h1⟩ ⟨_, h2⟩ ↦ by
+    simp_rw [← h1, ← h2, Matrix.dotProduct_smul, Matrix.smul_dotProduct, smul_smul,
+      smul_eq_zero_iff_eq])
 
-def orthogonal_mk (v w : m → K) (hv : v ≠ 0) (hw : w ≠ 0) :
-    orthogonal (Projectivization.mk K v hv) (Projectivization.mk K w hw) ↔ dotProduct v w = 0 :=
+lemma orthogonal_mk {v w : m → K} (hv : v ≠ 0) (hw : w ≠ 0) :
+    orthogonal (mk K v hv) (mk K w hw) ↔ Matrix.dotProduct v w = 0 :=
   Iff.rfl
 
-#check crossProduct
-
-lemma orthogonal_comm (v w : ℙ K (m → K)) : orthogonal v w ↔ orthogonal w v := by
+lemma orthogonal_comm {v w : ℙ K (m → K)} : orthogonal v w ↔ orthogonal w v := by
   induction' v with v hv
   induction' w with w hw
-  rw [orthogonal_mk, orthogonal_mk, dotProduct_comm]
+  rw [orthogonal_mk hv hw, orthogonal_mk hw hv, Matrix.dotProduct_comm]
+
+lemma exists_not_self_orthogonal (v : ℙ K (m → K)) : ∃ w, ¬ orthogonal v w := by
+  induction' v with v hv
+  rw [ne_eq, ← Matrix.dotProduct_eq_zero_iff, not_forall] at hv
+  obtain ⟨w, hw⟩ := hv
+  exact ⟨mk K w fun h ↦ hw (by rw [h, Matrix.dotProduct_zero]), hw⟩
+
+lemma exists_not_orthogonal_self (v : ℙ K (m → K)) : ∃ w, ¬ orthogonal w v := by
+  simp only [orthogonal_comm]
+  exact exists_not_self_orthogonal v
+
+variable [DecidableEq K]
+
+/-- Cross product on the projective plane. -/
+def cross : ℙ K (Fin 3 → K) → ℙ K (Fin 3 → K) → ℙ K (Fin 3 → K) :=
+  Quotient.map₂' (fun v w ↦ if h : crossProduct v.1 w.1 = 0 then v else ⟨crossProduct v.1 w.1, h⟩)
+    (fun _ _ ⟨a, ha⟩ _ _ ⟨b, hb⟩ ↦ by
+      simp_rw [← ha, ← hb, LinearMap.map_smul_of_tower, LinearMap.smul_apply, smul_smul,
+        mul_comm b a, smul_eq_zero_iff_eq]
+      split_ifs
+      · use a
+      · use a * b)
+
+lemma cross_mk {v w : Fin 3 → K} (hv : v ≠ 0) (hw : w ≠ 0) :
+    cross (mk K v hv) (mk K w hw) =
+      if h : crossProduct v w = 0 then mk K v hv else mk K (crossProduct v w) h := by
+  change Quotient.mk'' _ = _
+  split_ifs with h <;> simp only [h] <;> rfl
+
+lemma cross_mk_of_cross_eq_zero {v w : Fin 3 → K} (hv : v ≠ 0) (hw : w ≠ 0)
+    (h : crossProduct v w = 0) :
+    cross (mk K v hv) (mk K w hw) = mk K v hv := by
+  rw [cross_mk, dif_pos h]
+
+lemma cross_mk_of_cross_ne_zero {v w : Fin 3 → K} (hv : v ≠ 0) (hw : w ≠ 0)
+    (h : crossProduct v w ≠ 0) :
+    cross (mk K v hv) (mk K w hw) = mk K (crossProduct v w) h := by
+  rw [cross_mk, dif_neg h]
+
+lemma cross_self (v : ℙ K (Fin 3 → K)) : cross v v = v := by
+  induction' v with v hv
+  exact cross_mk_of_cross_eq_zero hv hv (_root_.cross_self v)
+
+lemma crossProduct_ne_zero_iff_linearIndependent {v w : Fin 3 → K} :
+    crossProduct v w ≠ 0 ↔ LinearIndependent K ![v, w] := by
+  simp_rw [ne_eq, ← Matrix.dotProduct_eq_zero_iff, not_forall, ← ne_eq, Matrix.dotProduct_comm,
+    triple_product_eq_det, ← isUnit_iff_ne_zero, ← Matrix.isUnit_iff_isUnit_det,
+    ← Matrix.linearIndependent_rows_iff_isUnit]
+  refine (exists_congr fun x ↦ linearIndependent_fin_cons).trans ?_
+  rw [exists_and_left, and_iff_left]
+  rw [← not_forall, ← Submodule.eq_top_iff', Matrix.range_cons, Matrix.range_cons,
+    Matrix.range_empty, Set.union_empty, Set.singleton_union]
+  intro h
+  replace h : FiniteDimensional.finrank K (Submodule.span K {v, w}) = 3 := by
+    rw [h, finrank_top, FiniteDimensional.finrank_fin_fun]
+  have h' : FiniteDimensional.finrank K (Submodule.span K {v, w}) ≤ 2 := by
+    apply (finrank_span_le_card {v, w}).trans
+    rw [Set.toFinset_insert, Set.toFinset_singleton]
+    apply Finset.card_insert_le
+  rw [h] at h'
+  contradiction
+
+lemma crossProduct_eq_zero_iff_not_linearIndependent {v w : Fin 3 → K} :
+    crossProduct v w = 0 ↔ ¬ LinearIndependent K ![v, w] := by
+  rw [← crossProduct_ne_zero_iff_linearIndependent, ne_eq, not_not]
+
+lemma mk_eq_mk_iff_crossProduct_eq_zero {v w : Fin 3 → K} (hv : v ≠ 0) (hw : w ≠ 0) :
+    mk K v hv = mk K w hw ↔ crossProduct v w = 0 := by
+  rw [← not_iff_not, mk_eq_mk_iff', not_exists, ← LinearIndependent.pair_iff' hw,
+    ← crossProduct_ne_zero_iff_linearIndependent, ← cross_anticomm, neg_ne_zero]
+
+lemma cross_mk_of_ne {v w : Fin 3 → K} (hv : v ≠ 0) (hw : w ≠ 0) (h : mk K v hv ≠ mk K w hw) :
+    cross (mk K v hv) (mk K w hw) = mk K (crossProduct v w)
+      (mt (mk_eq_mk_iff_crossProduct_eq_zero hv hw).mpr h) := by
+  rw [cross_mk_of_cross_ne_zero]
+
+lemma cross_comm (v w : ℙ K (Fin 3 → K)) : cross v w = cross w v := by
+  rcases eq_or_ne v w with rfl | h
+  · rfl
+  · induction' v with v hv
+    induction' w with w hw
+    rw [cross_mk_of_ne hv hw h, cross_mk_of_ne hw hv h.symm, mk_eq_mk_iff_crossProduct_eq_zero,
+      ← cross_anticomm v w, map_neg, _root_.cross_self, neg_zero]
+
+noncomputable def cross_orthogonal_left {v w : ℙ K (Fin 3 → K)} (h : v ≠ w) :
+    (cross v w).orthogonal v := by
+  induction' v with v hv
+  induction' w with w hw
+  rw [cross_mk_of_ne hv hw h, orthogonal_mk, Matrix.dotProduct_comm, dot_self_cross]
+
+noncomputable def cross_orthogonal_right {v w : ℙ K (Fin 3 → K)} (h : v ≠ w) :
+    (cross v w).orthogonal w := by
+  rw [cross_comm]
+  exact cross_orthogonal_left h.symm
+
+noncomputable def orthogonal_cross_left {v w : ℙ K (Fin 3 → K)} (h : v ≠ w) :
+    v.orthogonal (cross v w) := by
+  rw [orthogonal_comm]
+  exact cross_orthogonal_left h
+
+noncomputable def orthogonal_cross_right {v w : ℙ K (Fin 3 → K)} (h : v ≠ w) :
+    w.orthogonal (cross v w) := by
+  rw [orthogonal_comm]
+  exact cross_orthogonal_right h
+
+end Projectivization
+
+-- if z is orthogonal to both v and w, then z x (v x w) = 0 ?
+
+namespace Configuration
+
+namespace ofField
+
+variable {K : Type*} [Field K] [DecidableEq K]
+
+open scoped LinearAlgebra.Projectivization
+
+open LinearAlgebra.Projectivization
 
 instance : Membership (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
-  ⟨orthogonal⟩
+  ⟨Projectivization.orthogonal⟩
 
-lemma mem_iff (v w : ℙ K (Fin 3 → K)) : v ∈ w ↔ orthogonal v w :=
+lemma mem_iff (v w : ℙ K (Fin 3 → K)) : v ∈ w ↔ Projectivization.orthogonal v w :=
   Iff.rfl
 
 instance : Nondegenerate (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
-  { exists_point := by
-      sorry
-    exists_line := by
-      sorry
+  { exists_point := Projectivization.exists_not_orthogonal_self
+    exists_line := Projectivization.exists_not_self_orthogonal
     eq_or_eq := by
       intro p₁ p₂ l₁ l₂ h₁₁ h₂₁ h₁₂ h₂₂
       induction' p₁ with p₁ hp₁
       induction' p₂ with p₂ hp₂
       induction' l₁ with l₁ hl₁
       induction' l₂ with l₂ hl₂
-      rw [mem_iff, orthogonal_mk] at h₁₁ h₂₁ h₁₂ h₂₂
+      rw [mem_iff, Projectivization.orthogonal_mk] at h₁₁ h₂₁ h₁₂ h₂₂
+      rw [Projectivization.mk_eq_mk_iff_crossProduct_eq_zero,
+          Projectivization.mk_eq_mk_iff_crossProduct_eq_zero,
+          Projectivization.crossProduct_eq_zero_iff_not_linearIndependent,
+          Projectivization.crossProduct_eq_zero_iff_not_linearIndependent,
+          ← not_and_or]
+      intro h
       sorry
        }
 
-instance : HasPoints (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
+noncomputable instance : ProjectivePlane (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
   { mkPoint := by
-      intro v w h
-      refine' Projectivization.mk K (crossProduct v.rep w.rep) ?_
-    mkPoint_ax := sorry }
-
-instance : HasLines (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) := sorry
-
-instance : ProjectivePlane (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) := sorry
+      intro v w _
+      exact Projectivization.cross v w
+    mkPoint_ax := fun h ↦
+      ⟨Projectivization.cross_orthogonal_left h, Projectivization.cross_orthogonal_right h⟩
+    mkLine := by
+      intro v w _
+      exact Projectivization.cross v w
+    mkLine_ax := fun h ↦
+      ⟨Projectivization.orthogonal_cross_left h, Projectivization.orthogonal_cross_right h⟩
+    exists_config := by
+      use Projectivization.mk K ![0, 1, 1] (by simp)
+      use Projectivization.mk K ![1, 0, 0] (by simp)
+      use Projectivization.mk K ![1, 0, 1] (by simp)
+      use Projectivization.mk K ![1, 0, 0] (by simp)
+      use Projectivization.mk K ![0, 1, 0] (by simp)
+      use Projectivization.mk K ![0, 0, 1] (by simp)
+      simp [mem_iff, Projectivization.orthogonal_mk] }
 
 end ofField
-
--- namespace ofField
-
--- def points (k : Type*) [Field k] :=
---   {M : Submodule k (Fin 3 → k) | FiniteDimensional.finrank k M = 1}
-
--- def lines (k : Type*) [Field k] :=
---   {M : Submodule k (Fin 3 → k) | FiniteDimensional.finrank k M = 2}
-
--- instance (k : Type*) [Field k] : Membership (points k) (lines k) :=
---   ⟨fun p l ↦ p.1 ≤ l.1⟩
-
--- instance (k : Type*) [Field k] : Nondegenerate (points k) (lines k) :=
---   { exists_point := by
---       intro l
---       have key : l.1 ≠ ⊤ := by
---         intro h
---         have key := h ▸ l.2
---         rw [lines, Set.mem_setOf_eq, finrank_top, FiniteDimensional.finrank_fin_fun] at key
---         norm_num at key
---       rw [Ne, eq_top_iff, SetLike.not_le_iff_exists] at key
---       obtain ⟨x, -, hx⟩ := key
---       refine ⟨⟨Submodule.span k {x}, ?_⟩, fun h ↦ hx (h (Submodule.mem_span_singleton_self x))⟩
---       change FiniteDimensional.finrank k (Submodule.span k {x}) = 1
---       apply finrank_span_singleton
---       contrapose! hx
---       rw [hx]
---       exact Submodule.zero_mem l.1
---     exists_line := by
---       intro p
---     eq_or_eq := sorry }
-
--- instance (k : Type*) [Field k] : HasPoints (points k) (lines k) :=
---   { mkPoint := sorry
---     mkPoint_ax := sorry }
-
--- instance (k : Type*) [Field k] : HasLines (points k) (lines k) :=
---   { mkLine := sorry
---     mkLine_ax := sorry }
-
--- instance (k : Type*) [Field k] : ProjectivePlane (points k) (lines k) :=
---   { exists_config := sorry }
-
--- end ofField
-
-end ProjectivePlane
 
 end Configuration
