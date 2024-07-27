@@ -1213,7 +1213,7 @@ lemma integral_eq_sub_of_hasFDerivAt
   -- Step 1: Define the path from a to b
   let γ : ℝ → X := fun t ↦ a + t • (b - a)
   have γ_continuous (t : ℝ) : ContinuousWithinAt γ (Icc 0 1) t := by
-    dsimp only [γ]
+    simp [γ]
     apply ContinuousWithinAt.add
     · exact continuousWithinAt_const
     · apply ContinuousWithinAt.smul
@@ -1224,7 +1224,7 @@ lemma integral_eq_sub_of_hasFDerivAt
     apply ContinuousOn.intervalIntegrable
     simp only [γ]
     apply ContinuousOn.clm_apply
-    · simp only [zero_le_one, uIcc_of_le]
+    · simp
       exact hcont
     · exact continuousOn_const
   have hderiv' : ∀ t ∈ Set.uIcc (0 : ℝ) 1,
