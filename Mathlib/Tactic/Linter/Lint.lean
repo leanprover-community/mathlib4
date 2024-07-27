@@ -244,6 +244,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let stx := ← do
       if stx.isOfKind ``Lean.Parser.Command.eoi then
         let fname ← getFileName
+        if !(← System.FilePath.pathExists fname) then return default
         let contents ← IO.FS.readFile fname
         -- `impMods` is the syntax for the modules imported in the current file
         let (impMods, _) ← Parser.parseHeader (Parser.mkInputContext contents fname)
