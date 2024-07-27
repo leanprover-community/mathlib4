@@ -250,24 +250,31 @@ theorem rank_transpose_mul_self (A : Matrix m n R) : (Aᵀ * A).rank = A.rank :=
   · rw [ker_mulVecLin_transpose_mul_self]
   · simp only [LinearMap.finrank_range_add_finrank_ker]
 
+end LinearOrderedField
+
+section Field
+
+variable [Fintype m] [Field R]
+
 /-- TODO: prove this in greater generality. -/
 @[simp]
-theorem rank_transpose (A : Matrix m n R) : Aᵀ.rank = A.rank :=
-  le_antisymm ((rank_transpose_mul_self _).symm.trans_le <| rank_mul_le_left _ _)
-    ((rank_transpose_mul_self _).symm.trans_le <| rank_mul_le_left _ _)
+theorem rank_transpose (A : Matrix m n R) : Aᵀ.rank = A.rank := by
+  classical
+  rw [M.transpose.rank_eq_finrank_range_toLin (Pi.basisFun K n).dualBasis (Pi.basisFun K m).dualBasis,
+      Matrix.toLin_transpose, ← LinearMap.dualMap_def,
+      LinearMap.finrank_range_dualMap_eq_finrank_range, Matrix.toLin_eq_toLin',
+      Matrix.toLin'_apply', Matrix.rank]
 
 @[simp]
 theorem rank_self_mul_transpose (A : Matrix m n R) : (A * Aᵀ).rank = A.rank := by
   simpa only [rank_transpose, transpose_transpose] using rank_transpose_mul_self Aᵀ
 
-end LinearOrderedField
-
-/-- The rank of a matrix is the rank of the space spanned by its rows.
-
-TODO: prove this in a generality that works for `ℂ` too, not just `ℚ` and `ℝ`. -/
-theorem rank_eq_finrank_span_row [LinearOrderedField R] [Finite m] (A : Matrix m n R) :
+/-- The rank of a matrix is the rank of the space spanned by its rows. -/
+theorem rank_eq_finrank_span_row [Finite m] (A : Matrix m n R) :
     A.rank = finrank R (Submodule.span R (Set.range A)) := by
   cases nonempty_fintype m
   rw [← rank_transpose, rank_eq_finrank_span_cols, transpose_transpose]
+
+end Field
 
 end Matrix
