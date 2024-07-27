@@ -142,7 +142,7 @@ theorem jacobi_cross (u v w : Fin 3 → R) : u ×₃ (v ×₃ w) + v ×₃ (w ×
 
 end LeibnizProperties
 
--- thisi can also be proved via `Matrix.dotProduct_eq_zero_iff` and `triple_product_eq_det`, but
+-- this can also be proved via `Matrix.dotProduct_eq_zero_iff` and `triple_product_eq_det`, but
 -- that would require much heavier imports.
 lemma crossProduct_ne_zero_iff_linearIndependent {F : Type*} [Field F] {v w : Fin 3 → F} :
     crossProduct v w ≠ 0 ↔ LinearIndependent F ![v, w] := by
