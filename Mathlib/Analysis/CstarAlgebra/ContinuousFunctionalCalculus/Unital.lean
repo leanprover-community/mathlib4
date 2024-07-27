@@ -837,7 +837,7 @@ lemma algebraMap_le_of_le_spectrum {r : R} {a : A} (h : ∀ x ∈ spectrum R a, 
   exact algebraMap_le_cfc id r a h
 
 lemma cfc_le_one (f : R → R) (a : A) (h : ∀ x ∈ spectrum R a, f x ≤ 1) : cfc f a ≤ 1 := by
-  apply cfc_cases (· ≤ 1) _ _ (by simpa using star_mul_self_nonneg (1 : A)) fun hf ha ↦ ?_
+  apply cfc_cases (· ≤ 1) _ _ (by simp) fun hf ha ↦ ?_
   rw [← map_one (cfcHom ha (R := R))]
   apply cfcHom_mono ha
   simpa [ContinuousMap.le_def] using h
