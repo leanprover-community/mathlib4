@@ -229,7 +229,7 @@ theorem _root_.Subalgebra.topologicalClosure_map
 
 @[simp]
 theorem _root_.Subalgebra.topologicalClosure_coe
-  (s : Subalgebra R A) :
+    (s : Subalgebra R A) :
   (s.topologicalClosure : Set A) = closure ↑s := rfl
 
 /-- Under a dense continuous algebra map, a subalgebra
