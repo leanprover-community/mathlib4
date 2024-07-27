@@ -352,7 +352,7 @@
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback",
    "Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.CategoryTheory.Limits.IsLimit": ["Batteries.Tactic.Congr"],
-  "Mathlib.Analysis.NormedSpace.LinearIsometry": ["Mathlib.Algebra.Star.Basic"],
+  "Mathlib.Analysis.Normed.Operator.LinearIsometry": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Analysis.InnerProductSpace.Basic":
   ["Mathlib.Algebra.Module.LinearMap.Basic"],
   "Mathlib.Analysis.Distribution.SchwartzSpace": ["Mathlib.Tactic.MoveAdd"],
