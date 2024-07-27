@@ -288,7 +288,7 @@
    "Mathlib.Tactic.Bound.Attribute",
    "Mathlib.Tactic.Bound.Init"],
   "Mathlib.Tactic.Bound.Attribute":
-  ["Mathlib.Init.ZeroOne",
+  ["Mathlib.Algebra.Group.ZeroOne",
   "Mathlib.Tactic.Bound.Init"],
   "Mathlib.Tactic.Bound.Init": ["Aesop.Frontend.Command"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
