@@ -287,6 +287,13 @@ instance instSMul : SMul G (AffineBasis ι k V) where
 
 @[simp, norm_cast] lemma coe_smul (a : G) (b : AffineBasis ι k V) : ⇑(a • b) = a • ⇑b := rfl
 
+@[simp] lemma basisOf_smul (a : G) (b : AffineBasis ι k V) (i : ι) :
+    (a • b).basisOf i = a • b.basisOf i := by ext j; simp [smul_sub]
+
+@[simp] lemma coord_smul (a : G) (b : AffineBasis ι k V) (i : ι) :
+    (a • b).coord i = (b.coord i).comp (DistribMulAction.toLinearEquiv _ _ a).symm.toAffineMap := by
+  ext v; simp [coord]
+
 instance instMulAction : MulAction G (AffineBasis ι k V) :=
   DFunLike.coe_injective.mulAction _ coe_smul
 
