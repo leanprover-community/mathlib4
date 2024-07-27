@@ -154,7 +154,7 @@ warning: Please use
 ---
 example : True :=
   by
-  have (_ : Nat) x y : x + y = 0 := by
+  have (_ : Nat) {x} z (y : Nat) : x + y = z := by
     refine ?_
     sorry
   trivial
@@ -164,7 +164,31 @@ example : True :=
 fh
 --inspect
 example : True := by
-  have (_ : Nat) : ∀ x y, x + y = 0 := by
+  have (_ : Nat) : ∀ {x} z (y : Nat), x + y = z := by
+    intros s t u
+    refine ?_
+    sorry
+  trivial
+
+/--
+warning: declaration uses 'sorry'
+---
+warning: Please use
+---
+example : True :=
+  by
+  have (_ : Nat) x y z w : (x + y : Nat) = z + w := by
+    refine ?_
+    sorry
+  trivial
+---
+-/
+#guard_msgs in
+fh
+--inspect
+example : True := by
+  have (_ : Nat) : ∀ x y, ∀ z w, (x + y : Nat) = z + w := by
+    intros s t
     intros s t
     refine ?_
     sorry
