@@ -43,8 +43,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   have hν : ∀ s, ν s ≠ ∞ := measure_ne_top ν
   have to_nnreal_μ : ∀ s, ((μ s).toNNReal : ℝ≥0∞) = μ s := fun s => ENNReal.coe_toNNReal <| hμ _
   have to_nnreal_ν : ∀ s, ((ν s).toNNReal : ℝ≥0∞) = ν s := fun s => ENNReal.coe_toNNReal <| hν _
-  have d_split s t (_hs : MeasurableSet s) (ht : MeasurableSet t) :
-      d s = d (s \ t) + d (s ∩ t) := by
+  have d_split s t (ht : MeasurableSet t) : d s = d (s \ t) + d (s ∩ t) := by
     dsimp only [d]
     rw [← measure_inter_add_diff s ht, ← measure_inter_add_diff s ht,
       ENNReal.toNNReal_add (hμ _) (hμ _), ENNReal.toNNReal_add (hν _) (hν _), NNReal.coe_add,
@@ -106,11 +105,10 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
             simp only [sub_eq_add_neg]; abel
           _ ≤ d (e (n + 1)) + d (f m n) := add_le_add (le_of_lt <| he₂ _) ih
           _ ≤ d (e (n + 1)) + d (f m n \ e (n + 1)) + d (f m (n + 1)) := by
-            rw [f_succ _ _ hmn, d_split (f m n) (e (n + 1)) (hf _ _) (he₁ _), add_assoc]
+            rw [f_succ _ _ hmn, d_split (f m n) (e (n + 1)) (he₁ _), add_assoc]
           _ = d (e (n + 1) ∪ f m n) + d (f m (n + 1)) := by
             rw [d_split (e (n + 1) ∪ f m n) (e (n + 1)), union_diff_left, union_inter_cancel_left]
             · abel
-            · exact (he₁ _).union (hf _ _)
             · exact he₁ _
           _ ≤ γ + d (f m (n + 1)) := add_le_add_right (d_le_γ _ <| (he₁ _).union (hf _ _)) _
       exact (add_le_add_iff_left γ).1 this
@@ -146,7 +144,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
       (add_le_add_iff_left γ).1 <|
         calc
           γ + 0 ≤ d s := by rw [add_zero]; exact γ_le_d_s
-          _ = d (s \ t) + d t := by rw [d_split _ _ hs ht, inter_eq_self_of_subset_right hts]
+          _ = d (s \ t) + d t := by rw [d_split s _ ht, inter_eq_self_of_subset_right hts]
           _ ≤ γ + d t := add_le_add (d_le_γ _ (hs.diff ht)) le_rfl
 
     rw [← to_nnreal_μ, ← to_nnreal_ν, ENNReal.coe_le_coe, ← NNReal.coe_le_coe]
@@ -157,7 +155,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
         calc
           γ + d t ≤ d s + d t := by gcongr
           _ = d (s ∪ t) := by
-            rw [d_split _ _ (hs.union ht) ht, union_diff_right, union_inter_cancel_right,
+            rw [d_split (s ∪ t) _ ht, union_diff_right, union_inter_cancel_right,
               (subset_compl_iff_disjoint_left.1 hts).sdiff_eq_left]
           _ ≤ γ + 0 := by rw [add_zero]; exact d_le_γ _ (hs.union ht)
 
