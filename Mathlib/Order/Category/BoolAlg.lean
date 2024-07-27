@@ -70,7 +70,8 @@ instance hasForgetToHeytAlg : HasForget₂ BoolAlg HeytAlg where
       -- Porting note: was `fun {X Y} f => show BoundedLatticeHom X Y from f`
       -- which already looks like a hack, but I don't understand why this hack works now and
       -- the old one didn't
-      map := fun {X Y} (f : BoundedLatticeHom X Y) => show HeytingHom X Y from f }
+      map := fun {X Y} f ↦
+        show HeytingHom X Y from (show BoundedLatticeHom X Y from f.hom.hom) }
 
 end
 
