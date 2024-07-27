@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 -/
 import Mathlib.Data.List.Basic
-import Batteries.Data.Nat.Lemmas
 
 /-!
 # Join of a list of lists
