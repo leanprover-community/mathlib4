@@ -6,7 +6,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.Module.StrongTopology
-import Mathlib.Analysis.NormedSpace.LinearIsometry
+import Mathlib.Analysis.Normed.Module.LinearIsometry
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 import Mathlib.Tactic.SuppressCompilation
 

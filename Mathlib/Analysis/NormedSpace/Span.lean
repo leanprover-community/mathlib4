@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 
-import Mathlib.Analysis.NormedSpace.LinearIsometry
+import Mathlib.Analysis.Normed.Module.LinearIsometry
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 import Mathlib.Analysis.NormedSpace.Basic
 
