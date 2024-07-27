@@ -21,28 +21,9 @@ We first establish results about arbitrary index types, `ι` and `ι'`, and then
 
 variable {R : Type*} {ι : Type*} {ι' : Type*} [NormedRing R]
 
-open Filter Finset
-
-lemma tendsto_finset_prod_atTop :
-    Tendsto (fun (p : Finset ι × Finset ι') ↦ p.1 ×ˢ p.2) (atTop ×ˢ atTop) atTop := by
-  classical
-  simp only [tendsto_atTop]
-  intro c
-  have : {a : Finset ι | image Prod.fst c ⊆ a} ×ˢ {b : Finset ι' | image Prod.snd c ⊆ b}
-    ∈ atTop ×ˢ atTop := prod_mem_prod (mem_atTop _) (mem_atTop _)
-  filter_upwards [this]
-  rintro ⟨d1, d2⟩ ⟨hd1, hd2⟩
-  simp only [Set.mem_setOf_eq] at hd1 hd2
-  rintro ⟨u, v⟩ huv
-  simp only [mem_product]
-  exact ⟨hd1 (mem_image_of_mem Prod.fst huv), hd2 (mem_image_of_mem Prod.snd huv)⟩
-
-#find_home tendsto_finset_prod_atTop
-
-
 open scoped Topology
 
-open Finset
+open Finset Filter
 
 /-! ### Arbitrary index types -/
 
@@ -62,9 +43,6 @@ theorem summable_mul_of_summable_norm [CompleteSpace R] {f : ι → R} {g : ι' 
     Summable fun x : ι × ι' => f x.1 * g x.2 :=
   (hf.mul_norm hg).of_norm
 
-open Filter
-
-
 theorem summable_mul_of_summable_norm' {f : ι → R} {g : ι' → R}
     (hf : Summable fun x => ‖f x‖) (h'f : Summable f)
     (hg : Summable fun x => ‖g x‖) (h'g : Summable g) :
@@ -79,12 +57,6 @@ theorem summable_mul_of_summable_norm' {f : ι → R} {g : ι' → R}
   convert ((continuous_mul (M := R)).continuousAt
       (x := (∑' (i : ι), f i, ∑' (j : ι'), g j))).tendsto.comp this with p
   simp [s, sum_product, ← mul_sum, ← sum_mul]
-
-
-
-
-#exit
-
 
 /-- Product of two infinite sums indexed by arbitrary types.
     See also `tsum_mul_tsum` if `f` and `g` are *not* absolutely summable. -/
