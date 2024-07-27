@@ -1,8 +1,5 @@
-import Mathlib.Data.Nat.Notation
-import Mathlib.Data.Int.Defs
-import Mathlib.adomaniLeanUtils.inspect_syntax
-import Batteries.Data.Array.Basic
-import Mathlib.Tactic
+import Lean.Elab.Command
+import Lean.Linter.Util
 
 namespace Lean.Syntax
 /-!

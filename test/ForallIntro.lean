@@ -1,4 +1,5 @@
 import Mathlib.Tactic.Linter.ForallIntro
+import Mathlib.Logic.Function.Defs
 
 set_option linter.forallIntro false
 
