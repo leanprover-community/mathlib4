@@ -6,7 +6,7 @@ Authors: Jireh Loreaux
 import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 import Mathlib.Analysis.Complex.Liouville
-import Mathlib.Analysis.Complex.Polynomial
+import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Topology.Algebra.Module.CharacterSpace
 import Mathlib.Analysis.Normed.Algebra.Exponential
