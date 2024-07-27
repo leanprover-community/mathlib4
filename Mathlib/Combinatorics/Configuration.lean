@@ -641,6 +641,7 @@ lemma rank_add_rank_le_card_of_mul_eq_zero {l m n : Type*} [Fintype l] [Fintype 
   apply Submodule.finrank_mono
   rw [LinearMap.range_le_ker_iff, ← Matrix.toLin_mul, hAB, map_zero]
 
+-- PRed
 theorem _root_.Matrix.rank_transpose' {m n : Type*} [Fintype m] [Fintype n] (M : Matrix m n K) :
   M.transpose.rank = M.rank := by
   classical
@@ -649,21 +650,22 @@ theorem _root_.Matrix.rank_transpose' {m n : Type*} [Fintype m] [Fintype n] (M :
       LinearMap.finrank_range_dualMap_eq_finrank_range, Matrix.toLin_eq_toLin',
       Matrix.toLin'_apply', Matrix.rank]
 
+-- PRed
+theorem _root_.Matrix.rank_eq_finrank_span_row' {R m n : Type*} [Field R] [Finite m] [Fintype n] (A : Matrix m n R) :
+    A.rank = FiniteDimensional.finrank R (Submodule.span R (Set.range A)) := by
+  cases nonempty_fintype m
+  rw [← Matrix.rank_transpose', Matrix.rank_eq_finrank_span_cols, Matrix.transpose_transpose]
+
 theorem _root_.LinearIndependent.rank_matrix {m n : Type*} [Fintype m] [Fintype n]
   {M : Matrix m n K} (h : LinearIndependent K M) : M.rank = Fintype.card m := by
-  rw [← M.rank_transpose', Matrix.rank_eq_finrank_span_cols, Matrix.transpose_transpose,
-      linearIndependent_iff_card_eq_finrank_span.mp h, Set.finrank]
+  rw [M.rank_eq_finrank_span_row', linearIndependent_iff_card_eq_finrank_span.mp h, Set.finrank]
 
 lemma crossProduct_eq_zero_of_dotProduct_eq_zero' {m n : Type*} [Fintype m] [Fintype n]
     {A B : Matrix m n K} (hA : LinearIndependent K A) (hB : LinearIndependent K B)
     (hAB : A * B.transpose = 0) : 2 * Fintype.card m ≤ Fintype.card n := by
-  rw [two_mul]
-  have key1 : A.rank = Fintype.card m := hA.rank_matrix
-  have key2 : B.transpose.rank = Fintype.card m := by rw [B.rank_transpose', hB.rank_matrix]
-  have key := rank_add_rank_le_card_of_mul_eq_zero hAB
-  rwa [key1, key2] at key
+  refine le_of_eq_of_le ?_ (rank_add_rank_le_card_of_mul_eq_zero hAB)
+  rw [hA.rank_matrix, B.rank_transpose', hB.rank_matrix, two_mul]
 
--- probably best to prove this in generality
 lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : (Fin 3 → K)}
     (hac : Matrix.dotProduct a c = 0) (hbc : Matrix.dotProduct b c = 0)
     (had : Matrix.dotProduct a d = 0) (hbd : Matrix.dotProduct b d = 0) :
