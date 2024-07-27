@@ -1228,6 +1228,8 @@ theorem tendsto_ae_map {f : α → β} (hf : AEMeasurable f μ) : Tendsto f (ae 
 /-- Pullback of a `Measure` as a linear map. If `f` sends each measurable set to a measurable
 set, then for each measurable set `s` we have `comapₗ f μ s = μ (f '' s)`.
 
+Note that if `f` is not injective, this definition assigns `Set.univ` measure zero.
+
 If the linearity is not needed, please use `comap` instead, which works for a larger class of
 functions. -/
 def comapₗ [MeasurableSpace α] (f : α → β) : Measure β →ₗ[ℝ≥0∞] Measure α :=
