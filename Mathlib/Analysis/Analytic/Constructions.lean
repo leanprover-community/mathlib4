@@ -6,6 +6,7 @@ Authors: David Loeffler, Geoffrey Irving
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
+import Mathlib.Analysis.NormedSpace.Units
 
 /-!
 # Various ways to combine analytic functions
@@ -197,43 +198,108 @@ lemma AnalyticOn.pow {f : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (n : �
 section Geometric
 
 variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
-  [NormOneClass A]
 
 /-- The geometric series `1 + x + x ^ 2 + ...` as a `FormalMultilinearSeries`. -/
 def formalMultilinearSeries_geometric : FormalMultilinearSeries 𝕜 A A :=
   fun n ↦ ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n A
 
-lemma formalMultilinearSeries_geometric_apply_norm (n : ℕ) :
+lemma formalMultilinearSeries_geometric_apply_norm_le (n : ℕ) :
+    ‖formalMultilinearSeries_geometric 𝕜 A n‖ ≤ max 1 ‖(1 : A)‖ :=
+  ContinuousMultilinearMap.norm_mkPiAlgebraFin_le
+
+lemma formalMultilinearSeries_geometric_apply_norm [NormOneClass A] (n : ℕ) :
     ‖formalMultilinearSeries_geometric 𝕜 A n‖ = 1 :=
   ContinuousMultilinearMap.norm_mkPiAlgebraFin
 
 end Geometric
 
-lemma formalMultilinearSeries_geometric_radius (𝕜) [NontriviallyNormedField 𝕜]
+lemma one_le_formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+    (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] :
+    1 ≤ (formalMultilinearSeries_geometric 𝕜 A).radius := by
+  refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
+  rw [← Nat.cast_one, ENNReal.coe_lt_natCast, Nat.cast_one] at hr
+  apply FormalMultilinearSeries.le_radius_of_isBigO
+  apply isBigO_of_le' (c := max 1 ‖(1 : A)‖) atTop (fun n ↦ ?_)
+  simp only [norm_mul, norm_norm, norm_pow, Real.norm_eq_abs, NNReal.abs_eq, norm_one, mul_one,
+    abs_norm]
+  apply le_trans ?_ (formalMultilinearSeries_geometric_apply_norm_le 𝕜 A n)
+  conv_rhs => rw [← mul_one (‖formalMultilinearSeries_geometric 𝕜 A n‖)]
+  gcongr
+  exact pow_le_one _ (coe_nonneg r) hr.le
+
+lemma formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     (A : Type*) [NormedRing A] [NormOneClass A] [NormedAlgebra 𝕜 A] :
     (formalMultilinearSeries_geometric 𝕜 A).radius = 1 := by
-  apply le_antisymm
-  · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [← ENNReal.coe_one, ENNReal.coe_le_coe]
-    have := FormalMultilinearSeries.isLittleO_one_of_lt_radius _ hr
-    simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul] at this
-    contrapose! this
-    simp_rw [IsLittleO, IsBigOWith, not_forall, norm_one, mul_one,
-      not_eventually]
-    refine ⟨1, one_pos, ?_⟩
-    refine ((eventually_ne_atTop 0).mp (eventually_of_forall ?_)).frequently
-    intro n hn
-    push_neg
-    rwa [norm_pow, one_lt_pow_iff_of_nonneg (norm_nonneg _) hn,
-      Real.norm_of_nonneg (NNReal.coe_nonneg _), ← NNReal.coe_one,
-      NNReal.coe_lt_coe]
-  · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [← Nat.cast_one, ENNReal.coe_lt_natCast, Nat.cast_one] at hr
-    apply FormalMultilinearSeries.le_radius_of_isBigO
-    simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul]
-    refine isBigO_of_le atTop (fun n ↦ ?_)
-    rw [norm_one, Real.norm_of_nonneg (pow_nonneg (coe_nonneg r) _)]
-    exact pow_le_one _ (coe_nonneg r) hr.le
+  apply le_antisymm ?_  (one_le_formalMultilinearSeries_geometric_radius 𝕜 A)
+  refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
+  rw [← ENNReal.coe_one, ENNReal.coe_le_coe]
+  have := FormalMultilinearSeries.isLittleO_one_of_lt_radius _ hr
+  simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul] at this
+  contrapose! this
+  simp_rw [IsLittleO, IsBigOWith, not_forall, norm_one, mul_one,
+    not_eventually]
+  refine ⟨1, one_pos, ?_⟩
+  refine ((eventually_ne_atTop 0).mp (eventually_of_forall ?_)).frequently
+  intro n hn
+  push_neg
+  rwa [norm_pow, one_lt_pow_iff_of_nonneg (norm_nonneg _) hn,
+    Real.norm_of_nonneg (NNReal.coe_nonneg _), ← NNReal.coe_one,
+    NNReal.coe_lt_coe]
+
+lemma hasFPowerSeriesOnBall_inverse_one_sub
+    (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+    (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] :
+    HasFPowerSeriesOnBall (fun x : A ↦ Ring.inverse (1 - x))
+      (formalMultilinearSeries_geometric 𝕜 A) 0 1 := by
+  constructor
+  · exact one_le_formalMultilinearSeries_geometric_radius 𝕜 A
+  · exact one_pos
+  · intro y hy
+    simp only [EMetric.mem_ball, edist_dist, dist_zero_right, ofReal_lt_one] at hy
+    simp only [zero_add, NormedRing.inverse_one_sub _ hy, Units.oneSub, Units.inv_mk,
+      formalMultilinearSeries_geometric, ContinuousMultilinearMap.mkPiAlgebraFin_apply,
+      List.ofFn_const, List.prod_replicate]
+    exact (NormedRing.summable_geometric_of_norm_lt_one _ hy).hasSum
+
+lemma analyticAt_inverse_one_sub (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+    (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] :
+    AnalyticAt 𝕜 (fun x : A ↦ Ring.inverse (1 - x)) 0 :=
+  ⟨_, ⟨_, hasFPowerSeriesOnBall_inverse_one_sub 𝕜 A⟩⟩
+
+--lemma foo (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+--    (A : Type*) [NormedAddCommGroup A] [NormedSpace 𝕜 A] [Subsingleton A]
+
+
+/-- If `A` is a complete normed algebra over `𝕜`, then inversion on `A` is analytic at any unit. -/
+lemma analyticAt_inverse (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+    (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] {z : Aˣ} :
+    AnalyticAt 𝕜 Ring.inverse (z : A) := by
+  rcases subsingleton_or_nontrivial A with hA|hA
+  · sorry
+  · let f1 : A → A := fun a ↦ a * z.inv
+    let f2 : A → A := fun b ↦ Ring.inverse (1 - b)
+    let f3 : A → A := fun c ↦ 1 - z.inv * c
+    have feq : ∀ᶠ y in 𝓝 (z : A), (f1 ∘ f2 ∘ f3) y = Ring.inverse y := by
+      have : Metric.ball (z : A) (‖(↑z⁻¹ : A)‖⁻¹) ∈ 𝓝 (z : A) := by
+        apply Metric.ball_mem_nhds
+        simp
+      filter_upwards [this] with y hy
+      simp only [Metric.mem_ball, dist_eq_norm] at hy
+      have : y = Units.ofNearby z y hy := rfl
+      rw [this, Eq.comm]
+      simp only [Ring.inverse_unit, Function.comp_apply]
+      simp [Units.ofNearby, f1, f2, f3, Units.add, _root_.mul_sub]
+      rw [← Ring.inverse_unit]
+      congr
+      simp
+    apply AnalyticAt.congr _ feq
+    apply ((analyticAt_id 𝕜 _).mul analyticAt_const).comp
+    apply AnalyticAt.comp
+    · simp only [Units.inv_eq_val_inv, Units.inv_mul, sub_self, f2, f3]
+      exact analyticAt_inverse_one_sub 𝕜 A
+    · exact analyticAt_const.sub (analyticAt_const.mul (analyticAt_id _ _))
+
+
 
 lemma hasFPowerSeriesOnBall_inv_one_sub
     (𝕜 𝕝 : Type*) [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :

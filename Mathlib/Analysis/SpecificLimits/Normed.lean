@@ -260,6 +260,27 @@ alias tendsto_pow_atTop_nhds_0_of_abs_lt_1 := tendsto_pow_atTop_nhds_zero_of_abs
 
 /-! ### Geometric series-/
 
+class HasSummableGeomSeries (K : Type*) [NormedRing K] : Prop :=
+  summable_geometric_of_norm_lt_one : ∀ {ξ : K}, ‖ξ‖ < 1 → Summable (fun n ↦ ξ ^ n)
+
+export HasSummableGeomSeries (summable_geometric_of_norm_lt_one)
+
+def geomInv {K : Type*} [NormedRing K] (x : K) : K := ∑' n, x ^ n
+
+lemma tsum_eq_geomInv {K : Type*} [NormedRing K] (x : K) :
+    ∑' n, x ^ n = geomInv x := rfl
+
+lemma hasSum_geomInv {K : Type*} [NormedRing K] [HasSummableGeomSeries K] {x : K} (h : ‖x‖ < 1) :
+    HasSum (fun n ↦ x ^ n) (geomInv x) :=
+  (summable_geometric_of_norm_lt_one h).hasSum
+
+
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version. -/
+theorem hasSum_coe_mul_geometric_of_norm_lt_one {K : Type*} [NormedRing K] [HasSummableGeomSeries K]
+    {x : K} (h : ‖x‖ < 1) : HasSum (fun n ↦ n * x ^ n : ℕ → K) (x * (geomInv x) ^ 2) := by
+  sorry
+
+#exit
 
 section Geometric
 
@@ -278,14 +299,17 @@ theorem hasSum_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : HasSum (fun n : ℕ
 @[deprecated (since := "2024-01-31")]
 alias hasSum_geometric_of_norm_lt_1 := hasSum_geometric_of_norm_lt_one
 
-theorem summable_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : Summable fun n : ℕ ↦ ξ ^ n :=
-  ⟨_, hasSum_geometric_of_norm_lt_one h⟩
+instance : HasSummableGeomSeries K :=
+  ⟨fun h ↦ (hasSum_geometric_of_norm_lt_one h).summable⟩
 
 @[deprecated (since := "2024-01-31")]
 alias summable_geometric_of_norm_lt_1 := summable_geometric_of_norm_lt_one
 
 theorem tsum_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : ∑' n : ℕ, ξ ^ n = (1 - ξ)⁻¹ :=
   (hasSum_geometric_of_norm_lt_one h).tsum_eq
+
+theorem geomInv_eq_inv (h : ‖ξ‖ < 1) : geomInv ξ = (1 - ξ)⁻¹ := by
+  rw [← tsum_eq_geomInv, tsum_geometric_of_norm_lt_one h]
 
 @[deprecated (since := "2024-01-31")]
 alias tsum_geometric_of_norm_lt_1 := tsum_geometric_of_norm_lt_one
