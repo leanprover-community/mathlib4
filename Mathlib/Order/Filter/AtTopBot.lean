@@ -1325,8 +1325,8 @@ lemma tendsto_finset_prod_atTop :
   rintro ⟨d1, d2⟩ ⟨hd1, hd2⟩
   simp only [Set.mem_setOf_eq] at hd1 hd2
   rintro ⟨u, v⟩ huv
-  simp only [mem_product]
-  exact ⟨hd1 (mem_image_of_mem Prod.fst huv), hd2 (mem_image_of_mem Prod.snd huv)⟩
+  simp only [Finset.mem_product]
+  exact ⟨hd1 (Finset.mem_image_of_mem Prod.fst huv), hd2 (Finset.mem_image_of_mem Prod.snd huv)⟩
 
 -- Porting note: generalized from `SemilatticeSup` to `Preorder`
 theorem prod_atTop_atTop_eq [Preorder α] [Preorder β] :
