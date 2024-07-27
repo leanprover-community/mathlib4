@@ -3,6 +3,7 @@ import Mathlib.CategoryTheory.Category.Quiv
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Monad.Limits
+import Mathlib.CategoryTheory.Opposites
 
 noncomputable section
 
@@ -473,23 +474,35 @@ def Δ.ι (k) : Δ k ⥤ SimplexCategory := fullSubcategoryInclusion _
 
 def Δ.ι_fullyFaithful (k) : (Δ.ι k).FullyFaithful := fullyFaithfulFullSubcategoryInclusion _
 
+instance Δ.ι_full (k) : (Δ.ι k).Full := FullyFaithful.full (ι_fullyFaithful k)
+
+instance Δ.ι_faithful (k) : (Δ.ι k).Faithful := FullyFaithful.faithful (ι_fullyFaithful k)
+
+instance Δ.ι.op_full (k) : (Δ.ι k).op.Full := by infer_instance
+
+instance Δ.ι.op_faithful (k) : (Δ.ι k).op.Faithful := by infer_instance
+
 def truncation (k) : SSet ⥤ TruncSSet k := (whiskeringLeft _ _ _).obj (Δ.ι k).op
 
 def skeletonAdj (k) : lan (Δ.ι k).op ⊣ truncation k := Lan.adjunction _ _
 def coskeletonAdj (k) : truncation k ⊣ ran (Δ.ι k).op := Ran.adjunction _ _
 
+theorem coskeleton.reflective (k) : IsIso ((coskeletonAdj k).counit) :=
+  Ran.reflective Type (Δ.ι k).op
+
+theorem skeleton.reflective (k) : IsIso ((skeletonAdj k).unit) :=
+  Lan.coreflective Type (Δ.ι k).op
+
+-- ER: Error I don't understand.
+-- instance coskeleton.reflective (k) : Reflective (D := Cat.of (Type u)) (ran (Δ.ι k).op) := by sorry
+
 end SimplexCategory
 
 -- open SimplexCategory -- ER: Is this a good idea?
 
-/- ER: Should these generalize to arbitrary k?-/
-def cosk₂ : SSet ⥤ SSet :=
-  SimplexCategory.truncation 2 ⋙ ran (SimplexCategory.Δ.ι 2).op
-
 def nerveFunctor₂ : Cat ⥤ TruncSSet 2 := nerveFunctor ⋙ SimplexCategory.truncation 2
 
 def nerve₂ (C : Type*) [Category C] : TruncSSet 2 := nerveFunctor₂.obj (Cat.of C)
-
 
 namespace Nerve
 
