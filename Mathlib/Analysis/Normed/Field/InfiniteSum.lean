@@ -125,6 +125,13 @@ theorem summable_norm_sum_mul_range_of_summable_norm {f g : ℕ → R} (hf : Sum
   simp_rw [← sum_antidiagonal_eq_sum_range_succ fun k l => f k * g l]
   exact summable_norm_sum_mul_antidiagonal_of_summable_norm hf hg
 
+theorem summable_sum_mul_range_of_summable_norm' {f g : ℕ → R}
+    (hf : Summable fun x => ‖f x‖) (h'f : Summable f)
+    (hg : Summable fun x => ‖g x‖) (h'g : Summable g) :
+    Summable fun n => ∑ k ∈ range (n + 1), f k * g (n - k) := by
+  simp_rw [← sum_antidiagonal_eq_sum_range_succ fun k l => f k * g l]
+  exact summable_sum_mul_antidiagonal_of_summable_norm' hf h'f hg h'g
+
 /-- The Cauchy product formula for the product of two infinite sums indexed by `ℕ`,
     expressed by summing on `Finset.range`.
     See also `tsum_mul_tsum_eq_tsum_sum_range` if `f` and `g` are
@@ -136,11 +143,24 @@ theorem tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm [CompleteSpace R] {f g 
   simp_rw [← sum_antidiagonal_eq_sum_range_succ fun k l => f k * g l]
   exact tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm hf hg
 
+theorem hasSum_sum_range_mul_of_summable_norm [CompleteSpace R] {f g : ℕ → R}
+    (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :
+    HasSum (fun n ↦ ∑ k ∈ range (n + 1), f k * g (n - k)) ((∑' n, f n) * ∑' n, g n) := by
+  convert (summable_norm_sum_mul_range_of_summable_norm hf hg).of_norm.hasSum
+  exact tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm hf hg
+
 theorem tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm' {f g : ℕ → R}
     (hf : Summable fun x => ‖f x‖) (h'f : Summable f)
     (hg : Summable fun x => ‖g x‖) (h'g : Summable g) :
     ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ k ∈ range (n + 1), f k * g (n - k) := by
   simp_rw [← sum_antidiagonal_eq_sum_range_succ fun k l => f k * g l]
   exact tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm' hf h'f hg h'g
+
+theorem hasSum_sum_range_mul_of_summable_norm' {f g : ℕ → R}
+    (hf : Summable fun x => ‖f x‖) (h'f : Summable f)
+    (hg : Summable fun x => ‖g x‖) (h'g : Summable g) :
+    HasSum (fun n ↦ ∑ k ∈ range (n + 1), f k * g (n - k)) ((∑' n, f n) * ∑' n, g n) := by
+  convert (summable_sum_mul_range_of_summable_norm' hf h'f hg h'g).hasSum
+  exact tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm' hf h'f hg h'g
 
 end Nat

@@ -10,6 +10,7 @@ import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
 import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Normed.Field.InfiniteSum
 
 /-!
 # A collection of specific limit computations
@@ -334,18 +335,10 @@ theorem geom_series_eq_inverse (x : R) (h : ‖x‖ < 1) :
   change u ⁻¹ = Ring.inverse (1 - x)
   rw [← Ring.inverse_unit]
 
-theorem summable_pow_mul_geometric_of_norm_lt_one
-    (k : ℕ) {r : R} (hr : ‖r‖ < 1) : Summable (fun n ↦ (n : R) ^ k * r ^ n : ℕ → R) := by
-  induction k with
-  | zero => simpa using summable_geometric_of_norm_lt_one hr
-  | succ k ih =>
-      have : Summable (fun (n : ℕ) ↦ ‖(n : R) ^ k * r ^ n‖) := sorry
-      have : Summable (fun (n : ℕ) ↦ ‖r ^ n‖) := sorry
-      have : Summable (fun (n : ℕ) ↦ r ^ n) := sorry
-      sorry
-
-#exit
-
+theorem hasSum_geom_series_inverse (x : R) (h : ‖x‖ < 1) :
+    HasSum (fun i ↦ x ^ i) (Ring.inverse (1 - x)) := by
+  convert (summable_geometric_of_norm_lt_one h).hasSum
+  exact (geom_series_eq_inverse x h).symm
 
 end HasSummableGeometricSeries
 
@@ -428,6 +421,110 @@ alias summable_geometric_iff_norm_lt_1 := summable_geometric_iff_norm_lt_one
 end Geometric
 
 section MulGeometric
+
+variable {R : Type*} [NormedRing R] [HasSummableGeomSeries R]
+
+lemma sum_range_add_choose (k n : ℕ) :
+    ∑ x ∈ Finset.range (n + 1), (x + k).choose k = (n + (k + 1)).choose (k + 1) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+      have : n + 1 + (k + 1) = (n + (k + 1)) + 1 := by omega
+      rw [this, choose_succ_succ', sum_range_succ, ← ih, add_comm]
+      congr 2
+      omega
+
+theorem summable_norm_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R] {k : ℕ} {r : R}
+    (hr : ‖r‖ < 1) {u : ℕ → ℕ} (hu : (fun n ↦ (u n : ℝ)) =O[atTop] (fun n ↦ (↑(n ^ k) : ℝ))) :
+    Summable fun n : ℕ ↦ ‖(u n * r ^ n : R)‖ := by
+  rcases exists_between hr with ⟨r', hrr', h⟩
+  rw [← norm_norm] at hrr'
+  apply summable_of_isBigO_nat (summable_geometric_of_lt_one ((norm_nonneg _).trans hrr'.le) h)
+  calc
+  fun n ↦ ‖↑(u n) * r ^ n‖
+  _ =O[atTop] fun n ↦ u n * ‖r‖ ^ n := by
+      apply (IsBigOWith.of_bound (c := ‖(1 : R)‖) ?_).isBigO
+      filter_upwards [eventually_norm_pow_le r] with n hn
+      simp only [norm_norm, norm_mul, Real.norm_eq_abs, abs_cast, norm_pow, abs_norm]
+      apply (norm_mul_le _ _).trans
+      have : ‖(u n : R)‖ * ‖r ^ n‖ ≤ (u n * ‖(1 : R)‖) * ‖r‖ ^ n := by
+        gcongr; exact norm_cast_le (u n)
+      exact this.trans (le_of_eq (by ring))
+  _ =O[atTop] fun n ↦ ↑(n ^ k) * ‖r‖ ^ n := hu.mul (isBigO_refl _ _)
+  _ =O[atTop] fun n ↦ r' ^ n := by
+      simp only [cast_pow]
+      exact (isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt k hrr').isBigO
+
+theorem summable_norm_pow_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R] (k : ℕ) {r : R}
+    (hr : ‖r‖ < 1) : Summable fun n : ℕ ↦ ‖((n : R) ^ k * r ^ n : R)‖ := by
+  simp [← cast_pow]
+  exact summable_norm_mul_geometric_of_norm_lt_one (k := k) (u := fun n ↦ n ^ k) hr
+    (isBigO_refl _ _)
+
+theorem summable_norm_geometric_of_norm_lt_one {R : Type*} [NormedRing R] {r : R}
+    (hr : ‖r‖ < 1) : Summable fun n : ℕ ↦ ‖(r ^ n : R)‖ := by
+  simpa using summable_norm_pow_mul_geometric_of_norm_lt_one 0 hr
+
+lemma choose_le_descFactorial (n k : ℕ) : n.choose k ≤ n.descFactorial k := by
+  rw [choose_eq_descFactorial_div_factorial]
+  exact Nat.div_le_self _ _
+
+lemma choose_le_pow (n k : ℕ) : n.choose k ≤ n ^ k :=
+  (choose_le_descFactorial n k).trans (descFactorial_le_pow n k)
+
+lemma hasSum_choose_mul_geometric_of_norm_lt_one
+    (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
+    HasSum (fun n ↦ Nat.choose (n + k) k * r ^ n : ℕ → R) ((Ring.inverse (1 - r)) ^ (k + 1)) := by
+  induction k with
+  | zero => simpa using hasSum_geom_series_inverse r hr
+  | succ k ih =>
+      have I1 : Summable (fun (n : ℕ) ↦ ‖(n + k).choose k * r ^ n‖) := by
+        apply summable_norm_mul_geometric_of_norm_lt_one (k := k) hr
+        apply isBigO_iff.2 ⟨2 ^ k, ?_⟩
+        filter_upwards [Ioi_mem_atTop k] with n (hn : k < n)
+        simp only [Real.norm_eq_abs, abs_cast, cast_pow, norm_pow]
+        norm_cast
+        calc (n + k).choose k
+          _ ≤ (2 * n).choose k := choose_le_choose k (by omega)
+          _ ≤ (2 * n) ^ k := choose_le_pow _ _
+          _ = 2 ^ k * n ^ k := Nat.mul_pow 2 n k
+      convert summable_sum_mul_range_of_summable_norm' I1 ih
+        (summable_norm_geometric_of_norm_lt_one hr) (summable_geometric_of_norm_lt_one hr) with n
+      have : ∑ i ∈ Finset.range (n + 1), ↑((i + k).choose k) * r ^ i * r ^ (n - i) =
+          ∑ i ∈ Finset.range (n + 1), ↑((i + k).choose k) * r ^ n := by
+        apply Finset.sum_congr rfl (fun i hi ↦ ?_)
+        simp only [Finset.mem_range] at hi
+        rw [mul_assoc, ← pow_add, show i + (n - i) = n by omega]
+      simp only [this, ← sum_mul, ← Nat.cast_sum, sum_range_add_choose k n]
+
+
+theorem summable_choose_mul_geometric_of_norm_lt_one
+    (k : ℕ) {r : R} (hr : ‖r‖ < 1) : Summable (fun n ↦ Nat.choose (n + k) k * r ^ n : ℕ → R) := by
+  induction k with
+  | zero => simpa using summable_geometric_of_norm_lt_one hr
+  | succ k ih =>
+      have I1 : Summable (fun (n : ℕ) ↦ ‖(n + k).choose k * r ^ n‖) := by
+        apply summable_norm_mul_geometric_of_norm_lt_one (k := k) hr
+        apply isBigO_iff.2 ⟨2 ^ k, ?_⟩
+        filter_upwards [Ioi_mem_atTop k] with n (hn : k < n)
+        simp only [Real.norm_eq_abs, abs_cast, cast_pow, norm_pow]
+        norm_cast
+        calc (n + k).choose k
+          _ ≤ (2 * n).choose k := choose_le_choose k (by omega)
+          _ ≤ (2 * n) ^ k := choose_le_pow _ _
+          _ = 2 ^ k * n ^ k := Nat.mul_pow 2 n k
+      convert summable_sum_mul_range_of_summable_norm' I1 ih
+        (summable_norm_geometric_of_norm_lt_one hr) (summable_geometric_of_norm_lt_one hr) with n
+      have : ∑ i ∈ Finset.range (n + 1), ↑((i + k).choose k) * r ^ i * r ^ (n - i) =
+          ∑ i ∈ Finset.range (n + 1), ↑((i + k).choose k) * r ^ n := by
+        apply Finset.sum_congr rfl (fun i hi ↦ ?_)
+        simp only [Finset.mem_range] at hi
+        rw [mul_assoc, ← pow_add, show i + (n - i) = n by omega]
+      simp only [this, ← sum_mul, ← Nat.cast_sum, sum_range_add_choose k n]
+
+
+#exit
+
 
 theorem summable_norm_pow_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R] (k : ℕ) {r : R}
     (hr : ‖r‖ < 1) : Summable fun n : ℕ ↦ ‖((n : R) ^ k * r ^ n : R)‖ := by
