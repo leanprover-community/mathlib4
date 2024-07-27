@@ -867,7 +867,6 @@ inductive Λ'
   | pred (q₁ q₂ : Λ')
   | ret (k : Cont')
 
--- Porting note: `Turing.PartrecToTM2.Λ'.rec` is noncomputable in Lean4, so we make it computable.
 compile_inductive% Code
 compile_inductive% Cont'
 compile_inductive% K'
