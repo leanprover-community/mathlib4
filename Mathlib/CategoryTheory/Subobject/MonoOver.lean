@@ -107,17 +107,18 @@ which makes defining its skeleton easy. -/
 instance isThin {X : C} : Quiver.IsThin (MonoOver X) := fun f g =>
   ⟨by
     intro h₁ h₂
+    apply FullSubcategory.hom_ext
     apply Over.OverMorphism.ext
-    erw [← cancel_mono g.arrow, Over.w h₁, Over.w h₂]⟩
+    erw [← cancel_mono g.arrow, Over.w h₁.hom, Over.w h₂.hom]⟩
 
 @[reassoc]
-theorem w {f g : MonoOver X} (k : f ⟶ g) : k.left ≫ g.arrow = f.arrow :=
+theorem w {f g : MonoOver X} (k : f ⟶ g) : k.hom.left ≫ g.arrow = f.arrow :=
   Over.w _
 
 /-- Convenience constructor for a morphism in monomorphisms over `X`. -/
 abbrev homMk {f g : MonoOver X} (h : f.obj.left ⟶ g.obj.left)
-    (w : h ≫ g.arrow = f.arrow := by aesop_cat) : f ⟶ g :=
-  Over.homMk h w
+    (w : h ≫ g.arrow = f.arrow := by aesop_cat) : f ⟶ g where
+  hom := Over.homMk h w
 
 /-- Convenience constructor for an isomorphism in monomorphisms over `X`. -/
 @[simps]
@@ -140,7 +141,7 @@ def lift {Y : D} (F : Over Y ⥤ Over X)
     (h : ∀ f : MonoOver Y, Mono (F.obj ((MonoOver.forget Y).obj f)).hom) :
     MonoOver Y ⥤ MonoOver X where
   obj f := ⟨_, h f⟩
-  map k := (MonoOver.forget Y ⋙ F).map k
+  map k := { hom := (MonoOver.forget Y ⋙ F).map k }
 
 /-- Isomorphic functors `Over Y ⥤ Over X` lift to isomorphic functors `MonoOver Y ⥤ MonoOver X`.
 -/
@@ -249,7 +250,7 @@ theorem map_obj_arrow (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g).
 
 instance full_map (f : X ⟶ Y) [Mono f] : Functor.Full (map f) where
   map_surjective {g h} e := by
-    refine ⟨homMk e.left ?_, rfl⟩
+    refine ⟨homMk e.hom.left ?_, rfl⟩
     · rw [← cancel_mono f, assoc]
       apply w e
 
@@ -344,12 +345,12 @@ def imageForgetAdj : image ⊣ forget X :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun f g =>
         { toFun := fun k => by
-            apply Over.homMk (factorThruImage f.hom ≫ k.left) _
-            change (factorThruImage f.hom ≫ k.left) ≫ _ = f.hom
-            rw [assoc, Over.w k]
+            apply Over.homMk (factorThruImage f.hom ≫ k.hom.left) _
+            change (factorThruImage f.hom ≫ k.hom.left) ≫ _ = f.hom
+            rw [assoc, Over.w k.hom]
             apply image.fac
           invFun := fun k => by
-            refine Over.homMk ?_ ?_
+            refine { hom := Over.homMk ?_ ?_ }
             · exact
                 image.lift
                   { I := g.obj.left
