@@ -1245,8 +1245,8 @@ lemma integral_eq_sub_of_hasFDerivAt
       dsimp [γ] at hderiv'
       dsimp [γ]
       have hx' : x ∈ uIcc 0 1 := by
-        simp
-        simp at hx
+        simp only [zero_le_one, uIcc_of_le, mem_Icc]
+        simp only [mem_Ioo] at hx
         constructor
         · linarith [hx.left]
         · linarith [hx.right]
