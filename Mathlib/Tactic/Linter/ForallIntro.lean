@@ -161,42 +161,53 @@ def Term.dropOneIntro {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation
       return none
   | _ => return default
 
-def recombineBinders
-    (haveIds : TSyntaxArray `Lean.Parser.Term.letIdBinder)
-    (foralls : TSyntaxArray [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder]) :
-    TSyntaxArray `Lean.Parser.Term.letIdBinder ×
-    TSyntaxArray [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder] :=
-  -- I decided that to test this, I was going to move every entry of `foralls` to `haveIds`
-  -- one at a time.  We will have to only move them as long as it makes sense, coordinating
-  -- with the `intros` as well: this is just a test
-  let first := foralls.getD 0 default
-  --dbg_trace first
-  (haveIds.push ⟨first.raw⟩, foralls.erase first)
+/--
+`recombineBinders ts1 ts2` takes as input two `TSyntaxArray`s and removes the first entry of the
+second array and pushes it to the last array.
+Implicitly, it forces an update of the `SyntaxNodeKinds` with no check on type correctness:
+we leave this check to the elaboration of the produced syntax in a later step.
+
+In the intended application of `recombineBinders`, the `SyntaxNodeKinds` are
+* ``ks1 = `Lean.Parser.Term.letIdBinder``,
+* ``ks2 = [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder]``.
+
+The corresponding `TSyntaxArray`s are
+* the identifiers `id₁ id₂ ...` appearing in a `have this id₁ id₂ ...` tactic, and
+* the variables bound in a `∀` quantifiers.
+-/
+def recombineBinders {ks1 ks2 : SyntaxNodeKinds} (ts1 : TSyntaxArray ks1) (ts2 : TSyntaxArray ks2) :
+    Option (TSyntaxArray ks1 × TSyntaxArray ks2) :=
+  if h : 0 < ts2.size then
+    let first := ts2[0]
+    (ts1.push ⟨first.raw⟩, ts2.erase first)
+  else
+    none
 
 def allStxCore (cmd : Syntax) : Syntax → CommandElabM (Option (Syntax × Syntax))
   | stx@`(tactic| have $id:haveId $bi1* : ∀ $bi2*, $body := $t) => do
-    --dbg_trace "bi1: '{bi1}'\nbi2: '{bi2}'\n"
-    let (bi1', bi2') := recombineBinders bi1 bi2
-    --let ident := mkIdent `hyp
-    let newTerm? := ← Term.dropOneIntro t
-    --logInfo m!"new term: {newTerm?}"
-    match newTerm? with
-      | none => return none
-      | some t' =>
-        let newHave := ←
-          if bi2'.isEmpty then `(tactic| have $id:haveId $[$bi1']* : $body := $(⟨t'⟩))
-          else `(tactic| have $id:haveId $[$bi1']* : ∀ $[$bi2']*, $body := $(⟨t'⟩))
-        let newCmd ← cmd.replaceM fun s => do if s == stx then return some newHave else return none
-        --logInfo m!"command: {cmd}\nstx: {stx}\nnewCmd: {newCmd}\n"
-        let s ← modifyGet fun st => (st, { st with messages := {} })
-        elabCommandTopLevel newCmd
-        let msgs ← modifyGet (·.messages, s)
-        if msgs.hasErrors then
-          logInfo
-            m!"{← (msgs.unreported.filter (·.severity matches .error)).toArray.mapM (·.toString)}"
-          return none
-        else
-          return some (newCmd, newHave)
+    match recombineBinders bi1 bi2 with
+      | none => return none  -- if we ran out of `∀`, then we are done
+      | some (bi1', bi2') =>
+        let newTerm? := ← Term.dropOneIntro t
+        match newTerm? with
+          | none => return none  -- if we ran out of `intro(s)`, then we are done
+          | some t' =>
+            let newHave := ←
+              if bi2'.isEmpty then
+                `(tactic| have $id:haveId $[$bi1']* : $body := $(⟨t'⟩))
+              else
+                `(tactic| have $id:haveId $[$bi1']* : ∀ $[$bi2']*, $body := $(⟨t'⟩))
+            let newCmd ← cmd.replaceM fun s => do
+              if s == stx then return some newHave else return none
+            let s ← modifyGet fun st => (st, { st with messages := {} })
+            elabCommandTopLevel newCmd
+            let msgs ← modifyGet (·.messages, s)
+            if msgs.hasErrors then
+              let errs := msgs.unreported.filter (·.severity matches .error)
+              logInfo m!"{← errs.toArray.mapM (·.toString)}"
+              return none
+            else
+              return some (newCmd, newHave)
   | _ => return none
 
 partial
