@@ -186,6 +186,9 @@ lemma eLpNorm_densityProcess_le (hκν : fst κ ≤ ν) (n : ℕ) (a : α) (s : 
       densityProcess_le_one hκν n a x s]
   · simp
 
+@[deprecated (since := "2024-07-27")]
+alias snorm_densityProcess_le := eLpNorm_densityProcess_le
+
 lemma integrable_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν] (n : ℕ)
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x ↦ densityProcess κ ν n a x s) (ν a) := by
@@ -436,6 +439,10 @@ lemma tendsto_eLpNorm_one_densityProcess_limitProcess (hκν : fst κ ≤ ν) [I
         exact mod_cast (densityProcess_le_one hκν _ _ _ _)
       · simp
 
+@[deprecated (since := "2024-07-27")]
+alias tendsto_snorm_one_densityProcess_limitProcess :=
+  tendsto_eLpNorm_one_densityProcess_limitProcess
+
 lemma tendsto_eLpNorm_one_restrict_densityProcess_limitProcess [IsFiniteKernel ν]
     (hκν : fst κ ≤ ν) (a : α) {s : Set β} (hs : MeasurableSet s) (A : Set γ) :
     Tendsto (fun n ↦ eLpNorm ((fun x ↦ densityProcess κ ν n a x s)
@@ -444,6 +451,10 @@ lemma tendsto_eLpNorm_one_restrict_densityProcess_limitProcess [IsFiniteKernel �
   tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
     (tendsto_eLpNorm_one_densityProcess_limitProcess hκν a hs) (fun _ ↦ zero_le')
     (fun _ ↦ eLpNorm_restrict_le _ _ _ _)
+
+@[deprecated (since := "2024-07-27")]
+alias tendsto_snorm_one_restrict_densityProcess_limitProcess :=
+  tendsto_eLpNorm_one_restrict_densityProcess_limitProcess
 
 end DensityProcess
 
@@ -514,6 +525,9 @@ lemma eLpNorm_density_le (hκν : fst κ ≤ ν) (a : α) (s : Set β) :
   · simp only [Real.norm_eq_abs, abs_of_nonneg (density_nonneg hκν a t s),
       density_le_one hκν a t s]
   · simp
+
+@[deprecated (since := "2024-07-27")]
+alias snorm_density_le := eLpNorm_density_le
 
 lemma integrable_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :

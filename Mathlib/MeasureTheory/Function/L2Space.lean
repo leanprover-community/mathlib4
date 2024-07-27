@@ -109,6 +109,9 @@ theorem eLpNorm_rpow_two_norm_lt_top (f : Lp F 2 μ) :
   rw [eLpNorm_norm_rpow f zero_lt_two, one_mul, h_two]
   exact ENNReal.rpow_lt_top_of_nonneg zero_le_two (Lp.eLpNorm_ne_top f)
 
+@[deprecated (since := "2024-07-27")]
+alias snorm_rpow_two_norm_lt_top := eLpNorm_rpow_two_norm_lt_top
+
 theorem eLpNorm_inner_lt_top (f g : α →₂[μ] E) : eLpNorm (fun x : α => ⟪f x, g x⟫) 1 μ < ∞ := by
   have h : ∀ x, ‖⟪f x, g x⟫‖ ≤ ‖‖f x‖ ^ (2 : ℝ) + ‖g x‖ ^ (2 : ℝ)‖ := by
     intro x
@@ -120,6 +123,9 @@ theorem eLpNorm_inner_lt_top (f g : α →₂[μ] E) : eLpNorm (fun x : α => �
           (norm_nonneg _))
       -- TODO(kmill): the type ascription is getting around an elaboration error
       _ ≤ ‖(‖f x‖ ^ 2 + ‖g x‖ ^ 2 : ℝ)‖ := (two_mul_le_add_sq _ _).trans (le_abs_self _)
+
+@[deprecated (since := "2024-07-27")]
+alias snorm_inner_lt_top := eLpNorm_inner_lt_top
 
   refine (eLpNorm_mono_ae (ae_of_all _ h)).trans_lt ((eLpNorm_add_le ?_ ?_ le_rfl).trans_lt ?_)
   · exact ((Lp.aestronglyMeasurable f).norm.aemeasurable.pow_const _).aestronglyMeasurable
@@ -151,6 +157,9 @@ theorem integral_inner_eq_sq_eLpNorm (f : α →₂[μ] E) :
   rw [← Real.rpow_natCast _ 2, ← h_two, ←
     ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) zero_le_two, ofReal_norm_eq_coe_nnnorm]
   norm_cast
+
+@[deprecated (since := "2024-07-27")]
+alias integral_inner_eq_sq_snorm := integral_inner_eq_sq_eLpNorm
 
 private theorem norm_sq_eq_inner' (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.re ⟪f, f⟫ := by
   have h_two : (2 : ℝ≥0∞).toReal = 2 := by simp

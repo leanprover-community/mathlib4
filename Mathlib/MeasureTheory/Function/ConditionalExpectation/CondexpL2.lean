@@ -100,6 +100,9 @@ theorem eLpNorm_condexpL2_le (hm : m ≤ m0) (f : α →₂[μ] E) :
     Lp.norm_def, ← Lp.norm_def, Submodule.norm_coe]
   exact norm_condexpL2_le hm f
 
+@[deprecated (since := "2024-07-27")]
+alias snorm_condexpL2_le := eLpNorm_condexpL2_le
+
 theorem norm_condexpL2_coe_le (hm : m ≤ m0) (f : α →₂[μ] E) :
     ‖(condexpL2 E 𝕜 hm f : α →₂[μ] E)‖ ≤ ‖f‖ := by
   rw [Lp.norm_def, Lp.norm_def, ← lpMeas_coe]

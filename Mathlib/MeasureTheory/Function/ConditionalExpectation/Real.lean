@@ -85,6 +85,9 @@ theorem eLpNorm_one_condexp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f|m]) 1 μ
       filter_upwards [this] with x hx
       exact abs_eq_self.2 hx
 
+@[deprecated (since := "2024-07-27")]
+alias snorm_one_condexp_le_snorm := eLpNorm_one_condexp_le_eLpNorm
+
 theorem integral_abs_condexp_le (f : α → ℝ) : ∫ x, |(μ[f|m]) x| ∂μ ≤ ∫ x, |f x| ∂μ := by
   by_cases hm : m ≤ m0
   swap

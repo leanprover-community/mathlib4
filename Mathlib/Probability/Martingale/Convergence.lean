@@ -314,6 +314,9 @@ theorem Submartingale.tendsto_eLpNorm_one_limitProcess (hf : Submartingale f ℱ
     (memℒp_limitProcess_of_eLpNorm_bdd hmeas hR) hunif.2.1
     (tendstoInMeasure_of_tendsto_ae hmeas <| hf.ae_tendsto_limitProcess hR)
 
+@[deprecated (since := "2024-07-27")]
+alias Submartingale.tendsto_snorm_one_limitProcess := Submartingale.tendsto_eLpNorm_one_limitProcess
+
 theorem Submartingale.ae_tendsto_limitProcess_of_uniformIntegrable (hf : Submartingale f ℱ μ)
     (hunif : UniformIntegrable f 1 μ) :
     ∀ᵐ ω ∂μ, Tendsto (fun n => f n ω) atTop (𝓝 (ℱ.limitProcess f μ ω)) :=
@@ -336,6 +339,9 @@ theorem Martingale.eq_condexp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Marting
     filter_upwards [hf.2 n m hm] with x hx
     simp only [hx, Pi.sub_apply]
   exact tendsto_nhds_unique (tendsto_atTop_of_eventually_const hev) ht
+
+@[deprecated (since := "2024-07-27")]
+alias Martingale.eq_condexp_of_tendsto_snorm := Martingale.eq_condexp_of_tendsto_eLpNorm
 
 /-- Part b of the **L¹ martingale convergence theorem**: if `f` is a uniformly integrable martingale
 adapted to the filtration `ℱ`, then for all `n`, `f n` is almost everywhere equal to the conditional
@@ -416,6 +422,9 @@ theorem Integrable.tendsto_eLpNorm_condexp (hg : Integrable g μ)
       (fun n => (stronglyMeasurable_condexp.mono (ℱ.le n)).aestronglyMeasurable)
       (hg.tendsto_ae_condexp hgmeas))
 
+@[deprecated (since := "2024-07-27")]
+alias Integrable.tendsto_snorm_condexp := Integrable.tendsto_eLpNorm_condexp
+
 /-- **Lévy's upward theorem**, almost everywhere version: given a function `g` and a filtration
 `ℱ`, the sequence defined by `𝔼[g | ℱ n]` converges almost everywhere to `𝔼[g | ⨆ n, ℱ n]`. -/
 theorem tendsto_ae_condexp (g : Ω → ℝ) :
@@ -439,6 +448,9 @@ theorem tendsto_eLpNorm_condexp (g : Ω → ℝ) :
   refine ht.congr fun n => eLpNorm_congr_ae ?_
   filter_upwards [heq n] with x hxeq
   simp only [hxeq, Pi.sub_apply]
+
+@[deprecated (since := "2024-07-27")]
+alias tendsto_snorm_condexp := tendsto_eLpNorm_condexp
 
 end L1Convergence
 
