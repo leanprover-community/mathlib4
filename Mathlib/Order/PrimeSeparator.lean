@@ -7,7 +7,6 @@ Authors: Sam van Gool
 import Mathlib.Order.PrimeIdeal
 import Mathlib.Order.Zorn
 
-
 /-!
 # Separating prime filters and ideals
 
@@ -54,7 +53,7 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
     refine ⟨Order.Ideal.isIdeal I, by trivial⟩
 
   -- ...and S contains upper bounds for any non-empty chains.
-  have chainub : ∀ c ⊆ S, IsChain (· ⊆ ·) c → c.Nonempty →  ∃ ub ∈ S, ∀ s ∈ c, s ⊆ ub := by
+  have chainub : ∀ c ⊆ S, IsChain (· ⊆ ·) c → c.Nonempty → ∃ ub ∈ S, ∀ s ∈ c, s ⊆ ub := by
     intros c hcS hcC hcNe
     use sUnion c
     refine ⟨?_, fun s hs ↦ le_sSup hs⟩
@@ -145,3 +144,5 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
 -- TODO: Define prime filters in Mathlib so that the following corollary can be stated and proved.
 -- theorem prime_filter_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : Set α)) :
 --     ∃ G : PFilter α, (IsPrime G) ∧ F ≤ G ∧ Disjoint (G : Set α) I := by sorry
+
+end DistribLattice

@@ -141,8 +141,8 @@ lemma connected_component_unique {X A B : C} [IsConnected A] [IsConnected B] (a 
   /- We consider the fiber product of A and B over X. This is a non-empty (because of `h`)
   subobject of `A` and `B` and hence isomorphic to `A` and `B` by connectedness. -/
   let Y : C := pullback i j
-  let u : Y ⟶ A := pullback.fst
-  let v : Y ⟶ B := pullback.snd
+  let u : Y ⟶ A := pullback.fst i j
+  let v : Y ⟶ B := pullback.snd i j
   let G := F ⋙ FintypeCat.incl
   let e : F.obj Y ≃ { p : F.obj A × F.obj B // F.map i p.1 = F.map j p.2 } :=
     fiberPullbackEquiv F i j
@@ -154,11 +154,11 @@ lemma connected_component_unique {X A B : C} [IsConnected A] [IsConnected B] (a 
   have hu : G.map u y = a := by
     simp only [y, e, ← PreservesPullback.iso_hom_fst G, fiberPullbackEquiv, Iso.toEquiv_comp,
       Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply, inv_hom_id_apply]
-    rw [Types.pullbackIsoPullback_inv_fst_apply (F.map i) (F.map j)]
+    erw [Types.pullbackIsoPullback_inv_fst_apply (F.map i) (F.map j)]
   have hv : G.map v y = b := by
     simp only [y, e, ← PreservesPullback.iso_hom_snd G, fiberPullbackEquiv, Iso.toEquiv_comp,
       Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply, inv_hom_id_apply]
-    rw [Types.pullbackIsoPullback_inv_snd_apply (F.map i) (F.map j)]
+    erw [Types.pullbackIsoPullback_inv_snd_apply (F.map i) (F.map j)]
   rw [← hu, ← hv]
   show (F.toPrefunctor.map u ≫ F.toPrefunctor.map _) y = F.toPrefunctor.map v y
   simp only [← F.map_comp, Iso.trans_hom, Iso.symm_hom, asIso_inv, asIso_hom,
@@ -174,7 +174,7 @@ If `X` is any object, then its fiber is represented by some Galois object: There
 a Galois object `A` and an element `a` in the fiber of `A` such that the
 evaluation at `a` from `A ⟶ X` to `F.obj X` is bijective.
 
-To show this we consider the product `∏ (fun _ : F.obj X ↦ X)` and let `A`
+To show this we consider the product `∏ᶜ (fun _ : F.obj X ↦ X)` and let `A`
 be the connected component whose fiber contains the element `a` in the fiber of the self product
 that has at each index `x : F.obj X` the element `x`.
 
@@ -192,7 +192,7 @@ variable (X : C)
 
 /-- The self product of `X` indexed by its fiber. -/
 @[simp]
-private noncomputable def selfProd : C := ∏ (fun _ : F.obj X ↦ X)
+private noncomputable def selfProd : C := ∏ᶜ (fun _ : F.obj X ↦ X)
 
 /-- For `g : F.obj X → F.obj X`, this is the element in the fiber of the self product,
 which has at index `x : F.obj X` the element `g x`. -/

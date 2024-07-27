@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.CommSq
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
 
 /-!
@@ -138,7 +138,7 @@ theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x 
   apply_fun F.map ((opCoproductIsoProduct' hc (productIsProduct _)).hom) using injective_of_mono _
   simp only [← FunctorToTypes.map_comp_apply, Iso.op, Category.assoc]
   rw [ht₂ (F.map ((opCoproductIsoProduct' hc (productIsProduct _)).hom) y) (by simp [← hy])]
-  change (𝟙 (F.obj (∏ fun x ↦ op (X x)))) t = _
+  change (𝟙 (F.obj (∏ᶜ fun x ↦ op (X x)))) t = _
   rw [← Functor.map_id]
   refine congrFun ?_ t
   congr

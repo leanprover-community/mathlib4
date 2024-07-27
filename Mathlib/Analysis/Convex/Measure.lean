@@ -7,8 +7,6 @@ import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.NormedSpace.AddTorsorBases
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
-#align_import analysis.convex.measure from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
-
 /-!
 # Convex sets are null-measurable
 
@@ -46,7 +44,7 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
     let B : ℕ → Set E := fun n => ball x (n + 1)
     have : μ (⋃ n : ℕ, frontier (s ∩ B n)) = 0 := by
       refine measure_iUnion_null fun n =>
-        H _ (hs.inter (convex_ball _ _)) ?_ (isBounded_ball.subset (inter_subset_right _ _))
+        H _ (hs.inter (convex_ball _ _)) ?_ (isBounded_ball.subset inter_subset_right)
       rw [interior_inter, isOpen_ball.interior_eq]
       exact ⟨hx, mem_ball_self (add_pos_of_nonneg_of_pos n.cast_nonneg zero_lt_one)⟩
     refine measure_mono_null (fun y hy => ?_) this; clear this
@@ -78,12 +76,10 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
   refine (((ENNReal.continuous_mul_const hb).comp
     (ENNReal.continuous_coe.comp (continuous_pow d))).tendsto' _ _ ?_).mono_left nhdsWithin_le_nhds
   simp
-#align convex.add_haar_frontier Convex.addHaar_frontier
 
 /-- A convex set in a finite dimensional real vector space is null measurable with respect to an
 additive Haar measure on this space. -/
 protected theorem nullMeasurableSet (hs : Convex ℝ s) : NullMeasurableSet s μ :=
   nullMeasurableSet_of_null_frontier (hs.addHaar_frontier μ)
-#align convex.null_measurable_set Convex.nullMeasurableSet
 
 end Convex

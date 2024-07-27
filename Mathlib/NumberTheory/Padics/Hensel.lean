@@ -9,8 +9,6 @@ import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.MetricSpace.CauSeqFilter
 
-#align_import number_theory.padics.hensel from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # Hensel's lemma on ℤ_p
 
@@ -48,8 +46,6 @@ theorem padic_polynomial_dist {p : ℕ} [Fact p.Prime] (F : Polynomial ℤ_[p]) 
     _ ≤ 1 * ‖x - y‖ := by gcongr; apply PadicInt.norm_le_one
     _ = ‖x - y‖ := by simp
 
-#align padic_polynomial_dist padic_polynomial_dist
-
 open Filter Metric
 
 private theorem comp_tendsto_lim {p : ℕ} [Fact p.Prime] {F : Polynomial ℤ_[p]}
@@ -86,7 +82,6 @@ private theorem tendsto_zero_of_norm_tendsto_zero : Tendsto (fun i => F.eval (nc
 
 theorem limit_zero_of_norm_tendsto_zero : F.eval ncs.lim = 0 :=
   tendsto_nhds_unique (comp_tendsto_lim _) (tendsto_zero_of_norm_tendsto_zero hnorm)
-#align limit_zero_of_norm_tendsto_zero limit_zero_of_norm_tendsto_zero
 
 end
 
@@ -188,8 +183,7 @@ private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n 
   have : F.derivative.eval z * -z1 = -F.eval z := by
     calc
       F.derivative.eval z * -z1 =
-          F.derivative.eval z * -⟨↑(F.eval z) / ↑(F.derivative.eval z), h1⟩ :=
-        by rw [hzeq]
+          F.derivative.eval z * -⟨↑(F.eval z) / ↑(F.derivative.eval z), h1⟩ := by rw [hzeq]
       _ = -(F.derivative.eval z * ⟨↑(F.eval z) / ↑(F.derivative.eval z), h1⟩) := mul_neg _ _
       _ = -⟨F.derivative.eval z * (F.eval z / (F.derivative.eval z : ℤ_[p]) : ℚ_[p]), this⟩ :=
         (Subtype.ext <| by simp only [PadicInt.coe_neg, PadicInt.coe_mul, Subtype.coe_mk])
@@ -331,13 +325,13 @@ private theorem newton_seq_dist_to_a :
   | 1, _h => by simp [sub_eq_add_neg, add_assoc, newton_seq_gen, newton_seq_aux, ih_n]
   | k + 2, _h =>
     have hlt : ‖newton_seq (k + 2) - newton_seq (k + 1)‖ < ‖newton_seq (k + 1) - a‖ := by
-      rw [newton_seq_dist_to_a (k + 1) (succ_pos _)]; apply newton_seq_succ_dist_weak;
-        assumption
+      rw [newton_seq_dist_to_a (k + 1) (succ_pos _)]; apply newton_seq_succ_dist_weak
+      assumption
     have hne' : ‖newton_seq (k + 2) - newton_seq (k + 1)‖ ≠ ‖newton_seq (k + 1) - a‖ := ne_of_lt hlt
     calc
       ‖newton_seq (k + 2) - a‖ =
-          ‖newton_seq (k + 2) - newton_seq (k + 1) + (newton_seq (k + 1) - a)‖ :=
-        by rw [← sub_add_sub_cancel]
+          ‖newton_seq (k + 2) - newton_seq (k + 1) + (newton_seq (k + 1) - a)‖ := by
+        rw [← sub_add_sub_cancel]
       _ = max ‖newton_seq (k + 2) - newton_seq (k + 1)‖ ‖newton_seq (k + 1) - a‖ :=
         (PadicInt.norm_add_eq_max_of_ne hne')
       _ = ‖newton_seq (k + 1) - a‖ := max_eq_right_of_lt hlt
@@ -485,4 +479,3 @@ theorem hensels_lemma :
   else by
     exact ⟨soln_gen hnorm, eval_soln hnorm,
       soln_dist_to_a_lt_deriv hnorm ha, soln_deriv_norm hnorm, fun z => soln_unique hnorm ha z⟩
-#align hensels_lemma hensels_lemma

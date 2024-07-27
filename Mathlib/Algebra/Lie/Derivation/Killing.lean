@@ -75,7 +75,7 @@ variable [LieAlgebra.IsKilling R L]
 
 @[simp] lemma ad_apply_eq_zero_iff (x : L) : ad R L x = 0 ↔ x = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
-  rwa [← LieHom.mem_ker, ad_ker_eq_center, LieAlgebra.center_eq_bot_of_hasTrivialRadical,
+  rwa [← LieHom.mem_ker, ad_ker_eq_center, LieAlgebra.HasTrivialRadical.center_eq_bot,
     LieSubmodule.mem_bot] at h
 
 instance instIsKilling_range_ad : LieAlgebra.IsKilling R 𝕀 :=
@@ -103,3 +103,7 @@ lemma exists_eq_ad (D : 𝔻) : ∃ x, ad R L x = D := by
   exact Submodule.mem_top
 
 end
+
+end IsKilling
+
+end LieDerivation

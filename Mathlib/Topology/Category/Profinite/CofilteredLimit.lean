@@ -9,8 +9,6 @@ import Mathlib.Topology.DiscreteQuotient
 import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
 import Mathlib.Topology.Category.TopCat.Limits.Konig
 
-#align_import topology.category.Profinite.cofiltered_limit from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
-
 /-!
 # Cofiltered limits of profinite sets.
 
@@ -31,6 +29,9 @@ open scoped Classical
 open CategoryTheory
 
 open CategoryTheory.Limits
+
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] ConcreteCategory.instFunLike
 
 universe u v
 
@@ -99,16 +100,14 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
       simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion]
       obtain ⟨_, ⟨s, rfl⟩, _, ⟨hs, rfl⟩, hh⟩ := hG hx
       refine ⟨s, hs, ?_⟩
-      rwa [dif_pos hs, ← Set.preimage_comp, ← Profinite.coe_comp, ← Functor.map_comp, C.w]
+      rwa [dif_pos hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, ← Functor.map_comp, C.w]
     · intro hx
       simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion] at hx
       obtain ⟨s, hs, hx⟩ := hx
       rw [h]
       refine ⟨s.1, s.2, ?_⟩
       rw [(hV s).2]
-      rwa [dif_pos hs, ← Set.preimage_comp, ← Profinite.coe_comp, ← Functor.map_comp, C.w] at hx
-set_option linter.uppercaseLean3 false in
-#align Profinite.exists_clopen_of_cofiltered Profinite.exists_isClopen_of_cofiltered
+      rwa [dif_pos hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, ← Functor.map_comp, C.w] at hx
 
 theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.pt (Fin 2)) :
     ∃ (j : J) (g : LocallyConstant (F.obj j) (Fin 2)), f = g.comap (C.π.app _) := by
@@ -121,8 +120,6 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
     LocallyConstant.ofIsClopen_fiber_zero]
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [← h]
-set_option linter.uppercaseLean3 false in
-#align Profinite.exists_locally_constant_fin_two Profinite.exists_locallyConstant_fin_two
 
 theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit C)
     (f : LocallyConstant C.pt α) : ∃ (j : J) (g : LocallyConstant (F.obj j) (α → Fin 2)),
@@ -145,8 +142,8 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
   rw [this]; clear this
   have :
     LocallyConstant.comap (C.π.app j0) ggg =
-      LocallyConstant.unflip (LocallyConstant.comap (C.π.app j0) ggg).flip :=
-    by simp
+      LocallyConstant.unflip (LocallyConstant.comap (C.π.app j0) ggg).flip := by
+    simp
   rw [this]; clear this
   congr 1
   ext1 a
@@ -156,8 +153,6 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
   ext1 x
   change _ = (g a) ((C.π.app j0 ≫ F.map (fs a)) x)
   rw [C.w]; rfl
-set_option linter.uppercaseLean3 false in
-#align Profinite.exists_locally_constant_finite_aux Profinite.exists_locallyConstant_finite_aux
 
 theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempty α]
     (hC : IsLimit C) (f : LocallyConstant C.pt α) :
@@ -189,8 +184,6 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
     split_ifs at hhh with hh1
     · exact hh1.symm
     · exact False.elim (bot_ne_top hhh)
-set_option linter.uppercaseLean3 false in
-#align Profinite.exists_locally_constant_finite_nonempty Profinite.exists_locallyConstant_finite_nonempty
 
 /-- Any locally constant function from a cofiltered limit of profinite sets factors through
 one of the components. -/
@@ -230,7 +223,5 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
     dsimp at hj ⊢
     rw [← hj]
     rfl
-set_option linter.uppercaseLean3 false in
-#align Profinite.exists_locally_constant Profinite.exists_locallyConstant
 
 end Profinite

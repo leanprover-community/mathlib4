@@ -9,8 +9,6 @@ import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Data.Real.Irrational
 import Mathlib.Topology.Algebra.Polynomial
 
-#align_import number_theory.liouville.basic from "leanprover-community/mathlib"@"04e80bb7e8510958cd9aacd32fe2dc147af0b9f1"
-
 /-!
 
 # Liouville's theorem
@@ -32,7 +30,6 @@ In the implementation, the condition `x ≠ a/b` replaces the traditional equiva
 -/
 def Liouville (x : ℝ) :=
   ∀ n : ℕ, ∃ a b : ℤ, 1 < b ∧ x ≠ a / b ∧ |x - a / b| < 1 / (b : ℝ) ^ n
-#align liouville Liouville
 
 namespace Liouville
 
@@ -41,7 +38,7 @@ protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x := by
   rintro ⟨⟨a, b, bN0, cop⟩, rfl⟩
   -- clear up the mess of constructions of rationals
   rw [Rat.cast_mk'] at h
-  -- Since `a / b` is a Liouville number, there are `p, q ∈ ℤ`, with `q1 : 1 < q`,
+  -- Since `a / b` is a Liouville number, there are `p, q ∈ ℤ`, with `q1 : 1 < q`,∈
   -- `a0 : a / b ≠ p / q` and `a1 : |a / b - p / q| < 1 / q ^ (b + 1)`
   rcases h (b + 1) with ⟨p, q, q1, a0, a1⟩
   -- A few useful inequalities
@@ -63,13 +60,12 @@ protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x := by
   -- least one away from zero.  The gain here is what gets the proof going.
   have ap : 0 < |a * ↑q - ↑b * p| := abs_pos.mpr a0
   -- Actually, the absolute value of an integer is a natural number
+  -- FIXME: This `lift` call duplicates the hypotheses `a1` and `ap`
   lift |a * ↑q - ↑b * p| to ℕ using abs_nonneg (a * ↑q - ↑b * p) with e he
-  -- At a1, revert to natural numbers
-  rw [← Int.ofNat_mul, ← Int.coe_nat_pow, ← Int.ofNat_mul, Int.ofNat_lt] at a1
+  norm_cast at a1 ap q1
   -- Recall this is by contradiction: we obtained the inequality `b * q ≤ x * q ^ (b + 1)`, so
   -- we are done.
-  exact not_le.mpr a1 (Nat.mul_lt_mul_pow_succ (Int.natCast_pos.mp ap) (Int.ofNat_lt.mp q1)).le
-#align liouville.irrational Liouville.irrational
+  exact not_le.mpr a1 (Nat.mul_lt_mul_pow_succ ap q1).le
 
 open Polynomial Metric Set Real RingHom
 
@@ -118,7 +114,6 @@ theorem exists_one_le_pow_mul_dist {Z N R : Type*} [PseudoMetricSpace R] {d : N 
     -- remove a common factor and use the Lipschitz assumption `B`
     refine mul_le_mul_of_nonneg_left ((B this).trans ?_) (zero_le_one.trans (d0 a))
     exact mul_le_mul_of_nonneg_left (le_max_right _ M) dist_nonneg
-#align liouville.exists_one_le_pow_mul_dist Liouville.exists_one_le_pow_mul_dist
 
 theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : ℤ[X]} (f0 : f ≠ 0)
     (fa : eval α (map (algebraMap ℤ ℝ) f) = 0) :
@@ -136,7 +131,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
   -- Since the polynomial `fR` has finitely many roots, there is a closed interval centered at `α`
   -- such that `α` is the only root of `fR` in the interval.
   obtain ⟨ζ, z0, U⟩ : ∃ ζ > 0, closedBall α ζ ∩ fR.roots.toFinset = {α} :=
-    @exists_closedBall_inter_eq_singleton_of_discrete _ _ _ discrete_of_t1_of_finite _ ar
+    @exists_closedBall_inter_eq_singleton_of_discrete _ _ _ Finite.instDiscreteTopology _ ar
   -- Since `fR` is continuous, it is bounded on the interval above.
   obtain ⟨xm, -, hM⟩ : ∃ xm : ℝ, xm ∈ Icc (α - ζ) (α + ζ) ∧
       IsMaxOn (|fR.derivative.eval ·|) (Icc (α - ζ) (α + ζ)) xm :=
@@ -171,7 +166,6 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
     refine U.subset ?_
     refine ⟨hq, Finset.mem_coe.mp (Multiset.mem_toFinset.mpr ?_)⟩
     exact (mem_roots fR0).mpr (IsRoot.def.mpr hy)
-#align liouville.exists_pos_real_of_irrational_root Liouville.exists_pos_real_of_irrational_root
 
 /-- **Liouville's Theorem** -/
 protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental ℤ x := by
@@ -215,6 +209,5 @@ protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental �
     rwa [← Nat.cast_succ, Nat.succ_pred_eq_of_pos (zero_lt_one.trans _), ← mul_assoc, ←
       div_le_iff hA] at h
     exact Int.ofNat_lt.mp b1
-#align liouville.transcendental Liouville.transcendental
 
 end Liouville

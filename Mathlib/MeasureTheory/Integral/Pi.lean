@@ -15,7 +15,7 @@ that its integral is the product of the individual integrals,
 in `MeasureTheory.integral_fintype_prod_eq_prod`.
 -/
 
-open BigOperators Fintype MeasureTheory MeasureTheory.Measure
+open Fintype MeasureTheory MeasureTheory.Measure
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 
@@ -33,8 +33,7 @@ theorem Integrable.fin_nat_prod {n : ℕ} {E : Fin n → Type*}
   | succ n n_ih =>
       have := ((measurePreserving_piFinSuccAbove (fun i => (volume : Measure (E i))) 0).symm)
       rw [volume_pi, ← this.integrable_comp_emb (MeasurableEquiv.measurableEmbedding _)]
-      simp_rw [MeasurableEquiv.piFinSuccAbove_symm_apply,
-        Fin.prod_univ_succ, Fin.insertNth_zero]
+      simp_rw [MeasurableEquiv.piFinSuccAbove_symm_apply, Fin.prod_univ_succ, Fin.insertNth_zero]
       simp only [Fin.zero_succAbove, cast_eq, Function.comp_def, Fin.cons_zero, Fin.cons_succ]
       have : Integrable (fun (x : (j : Fin n) → E (Fin.succ j)) ↦ ∏ j, f (Fin.succ j) (x j)) :=
         n_ih (fun i ↦ hf _)
@@ -77,11 +76,11 @@ theorem integral_fin_nat_prod_eq_prod {n : ℕ} {E : Fin n → Type*}
           rw [volume_pi, ← ((measurePreserving_piFinSuccAbove
             (fun i => (volume : Measure (E i))) 0).symm).integral_comp']
           simp_rw [MeasurableEquiv.piFinSuccAbove_symm_apply,
-            Fin.prod_univ_succ, Fin.insertNth_zero, Fin.cons_succ]
-          rfl
-        _ = (∫ x, f 0 x) *  ∏ i : Fin n, ∫ (x : E (Fin.succ i)), f (Fin.succ i) x := by
+            Fin.prod_univ_succ, Fin.insertNth_zero, Fin.cons_succ, volume_eq_prod, volume_pi,
+            Fin.zero_succAbove, cast_eq, Fin.cons_zero]
+        _ = (∫ x, f 0 x) * ∏ i : Fin n, ∫ (x : E (Fin.succ i)), f (Fin.succ i) x := by
           rw [← n_ih, ← integral_prod_mul, volume_eq_prod]
-        _ =  ∏ i, ∫ x, f i x := by rw [Fin.prod_univ_succ]
+        _ = ∏ i, ∫ x, f i x := by rw [Fin.prod_univ_succ]
 
 /-- A version of **Fubini's theorem** with the variables indexed by a general finite type. -/
 theorem integral_fintype_prod_eq_prod (ι : Type*) [Fintype ι] {E : ι → Type*}
