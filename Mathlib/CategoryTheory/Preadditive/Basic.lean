@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Module.Defs
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
 # Preadditive categories
@@ -93,16 +94,14 @@ universe u'
 variable {D : Type u'} (F : D → C)
 
 instance inducedCategory : Preadditive.{v} (InducedCategory C F) where
-  homGroup P Q := @Preadditive.homGroup C _ _ (F P) (F Q)
-  add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
-  comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
+  homGroup P Q := (fullyFaithfulInducedFunctor _).homEquiv.addCommGroup
+  add_comp := by intros; ext; apply add_comp
+  comp_add := by intros; ext; apply comp_add
 
 end InducedCategory
 
-instance fullSubcategory (Z : C → Prop) : Preadditive.{v} (FullSubcategory Z) where
-  homGroup P Q := @Preadditive.homGroup C _ _ P.obj Q.obj
-  add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
-  comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
+instance fullSubcategory (Z : C → Prop) : Preadditive.{v} (FullSubcategory Z) :=
+  inducedCategory _
 
 instance (X : C) : AddCommGroup (End X) := by
   dsimp [End]
