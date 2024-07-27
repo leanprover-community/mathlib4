@@ -76,26 +76,25 @@ theorem isClosed_sInter_of_isClosed (hS : S.Nonempty) (h : ∀ C ∈ S, IsClosed
 
 /-- Given less than `o.cof` unbounded sets in `o` and some `q < o`, there is a `q < p < o`
   such that `Ioo q p` contains an element of every unbounded set. -/
-theorem exists_above_of_lt_cof {p : Ordinal} (hp : p < o) (hSemp : Nonempty S)
+theorem exists_above_of_lt_cof (p : Iio o) (hSemp : Nonempty S) --change!
     (hSunb : ∀ U ∈ S, IsUnbounded U o) (hScard : #S < Cardinal.lift.{u + 1, u} o.cof) :
-    ∃ q, q < o ∧ p < q ∧ (∀ U ∈ S, (U ∩ Ioo p q).Nonempty) := by
+    ∃ q : Iio o, p < q ∧ (∀ U ∈ S, (U ∩ Ioo p q).Nonempty) := by
   rw [lift_cof] at hScard
   have oLim : IsLimit o := hSemp.casesOn fun ⟨T, hT⟩ ↦ isLimit_of_isUnbounded
-    (hSunb T hT) (pos_of_gt hp).ne.symm
+    (hSunb T hT) (pos_of_gt p.2).ne.symm
   let f : ↑S → Ordinal := fun U ↦ lift.{u + 1, u} (sInf (U ∩ (Ioo p o)))
-  have infMem : ∀ U : S, sInf (↑U ∩ Ioo p o) ∈ ↑U ∩ Ioo p o := fun U ↦
-    csInf_mem (inter_suffix_of_isUnbounded (hSunb U.1 U.2) hp : (↑U ∩ Ioo p o).Nonempty)
+  have infMem : ∀ U : S, sInf (↑U ∩ Ioo p.1 o) ∈ ↑U ∩ Ioo p.1 o := fun U ↦
+    csInf_mem (inter_suffix_of_isUnbounded (hSunb U.1 U.2) p.2 : (↑U ∩ Ioo p.1 o).Nonempty)
   have flto : ∀ U : S, f U < lift.{u + 1, u} o := fun U ↦ by
     simp_all only [mem_inter_iff, mem_Ioo, lift_lt, f]
   set q := (Ordinal.sup.{u + 1, u} f) + 1 with qdef
   have qlto : q < lift.{u + 1, u} o :=
     ((lift_isLimit.{u + 1, u} o).mpr oLim).2 (sup.{u + 1, u} f) (sup_lt_ord hScard flto)
   rcases lift_down qlto.le with ⟨q', hq'⟩
-  use q'
+  use ⟨q', lift_lt.mp (hq' ▸ qlto)⟩
   have fltq : ∀ U, f U < q := fun U ↦
     lt_of_le_of_lt (le_sup.{u + 1, u} f U) (qdef ▸ lt_add_one (sup f))
   constructor <;> try constructor
-  · exact lift_lt.mp (hq' ▸ qlto)
   · rcases hSemp with ⟨U, hU⟩
     have pltf : lift.{u + 1, u} p < f ⟨U, hU⟩ :=
       lift_lt.mpr (mem_of_mem_inter_right (infMem ⟨U, hU⟩)).1
@@ -112,28 +111,32 @@ theorem exists_above_of_lt_cof {p : Ordinal} (hp : p < o) (hSemp : Nonempty S)
   · simp_all only [lift_inj, mem_inter_iff, f]
   · constructor
     exact lift_lt.mp <| fUlift ▸ (this.1)
-    exact lift_lt.mp <| hq' ▸ (fUlift ▸ this).2
+    exact lift_lt.mp (hq'.symm ▸ (fUlift ▸ this).2)
 
-theorem monotone_of_succ_lt_omega (f : Π p < ω, Iio o)
-    (hf : ∀ i, (hi : i < ω) → f i hi < f (i + 1) (omega_isLimit.2 i hi)) :
-    ∀ (i j hi hj), i < j → f i hi < f j hj := fun i j hi hj iltj ↦ by
-  have : (hj : j < ω) → ∀ k, (kltj : k < j) → f k (kltj.trans hj) < f j hj := Ordinal.limitRecOn j
+-- TODO: improve
+theorem monotone_of_succ_lt_omega (f : Iio ω → Iio o)
+    (hf : ∀ i, f i < f ⟨i + 1, omega_isLimit.2 i i.2⟩) : -- ask about linter
+    ∀ i j, i < j → f i < f j := fun i j iltj ↦ by
+  have : ∀ n, ∀ k, (kltj : k < n) → f k < f n := Ordinal.boundedLimitRec omega_isLimit
+      (C := fun n ↦ ∀ k : Iio ω, (kltj : k < n) → f k < f n)
     (by
-      intro _ _ h
-      cases (Ordinal.zero_le _).not_lt h)
+      intro k hk
+      cases (Ordinal.zero_le k).not_lt hk)
     (by
-      intro i ih hj k hk
-      cases (lt_succ_iff.mp hk).lt_or_eq with
+      intro j ih k hk
+      change k.1 < j.1 + 1 at hk -- succOrder
+      have := (lt_succ_iff.mp (hk : k.1 < j.1 + 1)).lt_or_eq
+      cases this with
       | inl h =>
-          specialize ih ((lt_succ i).trans hj) k h
-          exact ih.trans <| hf i ((lt_succ i).trans hj)
+          exact (ih k h).trans (hf j)
       | inr h =>
-          simp_rw [h]
-          exact hf i ((lt_succ i).trans hj))
+          have := trivial
+          simp_rw [← h]
+          exact hf k)
     (by
-      intro _ h _ h'
-      cases (omega_le_of_isLimit h).not_lt h')
-  exact this hj i iltj
+      intro o h _ _
+      cases (omega_le_of_isLimit h).not_lt o.2)
+  exact this j i iltj
 
 /--
 Given a limit ordinal `o` and a property on pairs of ordinals `P`, such that
@@ -142,78 +145,66 @@ an increasing `ω`-sequence below `o` that satisfies `P` between every 2 consecu
 Additionaly, the sequence can begin arbitrarily high in `o`. That is, above any `r < o`.
 -/
 theorem exists_omega_seq_succ_prop (opos : 0 < o) {P : Ordinal → Ordinal → Prop}
-    (hP : ∀ p < o, ∃ q < o, (p < q ∧ P p q)) {r} (rlto : r < o) : ∃ f : Π p < ω, (Iio o),
-    (∀ i : Ordinal.{u}, (hi : i < ω) → P (f i hi) (f (i + 1) (omega_isLimit.2 i hi)))
-    ∧ (∀ i j, (hi : i < ω) → (hj : j < ω) → (i < j) → f i hi < f j hj)
-    ∧ r < f 0 omega_pos := by
-  have oLim : o.IsLimit := ⟨opos.ne.symm, fun a alto ↦ (hP a alto).casesOn fun r hr ↦
-    lt_of_le_of_lt (succ_le_iff.mpr hr.2.1) hr.1⟩
-  let H₂ : (p : Ordinal) → p < ω → (Iio o) → (Iio o) := fun p _ fp ↦ by
-    let C := choose (hP fp fp.2)
-    have hC := (choose_spec (hP fp fp.2)).1
-    exact ⟨C, hC⟩
-  let H₃ : (w : Ordinal) → w < ω → w.IsLimit → ((o' : Ordinal) → o' < w → (Iio o)) → (Iio o) :=
-    fun w _ _ _ ↦ ⟨0, oLim.pos⟩
-  let f : Π p < ω, Iio o := @boundedLimitRec' (α := Iio o) ω omega_isLimit
-    ⟨r + 1, oLim.succ_lt rlto⟩ H₂ H₃
+    (hP : ∀ p : Iio o, ∃ q : Iio o, (p < q ∧ P p q)) (r : Iio o) : ∃ f : (Iio ω : Set Ordinal.{0}) → Iio o,
+    (∀ i, P (f i) (f ⟨i + 1, omega_isLimit.2 i i.2⟩)) ∧ (∀ i j, (i < j) → f i < f j)
+    ∧ r < f ⟨0, omega_pos⟩ := by
+  have oLim : o.IsLimit := ⟨opos.ne.symm, fun a alto ↦ (hP ⟨a, alto⟩).casesOn fun r hr ↦
+    lt_of_le_of_lt (succ_le_of_lt hr.1) r.2⟩
+  let H₂ : (p : Iio ω) → (Iio o) → (Iio o) := λ _ fp ↦ choose (hP fp)
+  let H₃ : (w : Iio ω) → IsLimit w → ((o' : Iio ω) → o' < w → (Iio o)) → (Iio o) :=
+    fun w _ _ ↦ ⟨0, oLim.pos⟩
+  let f : Iio ω → Iio o := @boundedLimitRec' (α := Iio o) ω omega_isLimit
+    ⟨r + 1, oLim.succ_lt r.2⟩ H₂ H₃
   use f
   constructor <;> try constructor
-  · intro n hn
-    simp [f]
+  · intro n
+    simp [f, H₂]
     generalize_proofs _ pf
-    exact (choose_spec pf).2.2
-  · have aux : ∀ i : Ordinal.{u}, (hi : i < ω) → f i hi < f (i + 1) (omega_isLimit.2 i hi) := by
-      intro i hi
+    exact (choose_spec pf).2
+  · have aux : ∀ i, f i < f ⟨i + 1, omega_isLimit.2 i i.2⟩ := fun i ↦ by
       simp [f, H₂]
-      generalize_proofs _ _ _ pf
-      exact (choose_spec pf).casesOn fun _ x ↦ x.casesOn fun x _ ↦ x
+      generalize_proofs _ pf
+      exact (choose_spec pf).casesOn fun h _ ↦ h
     exact monotone_of_succ_lt_omega f aux
   simp [f]
+  exact lt_succ r.1
 
 theorem exists_omega_seq_succ_prop_pos (onelto : 1 < o) {P : Ordinal → Ordinal → Prop}
-    (hP : ∀ p < o, 0 < p → ∃ q < o, (p < q ∧ P p q)) {r} (rlto : r < o) : ∃ f : Π p < ω, (Iio o),
-    (∀ i : Ordinal.{u}, (hi : i < ω) → P (f i hi) (f (i + 1) (omega_isLimit.2 i hi)))
-    ∧ (∀ i j, (hi : i < ω) → (hj : j < ω) → (i < j) → f i hi < f j hj)
-    ∧ r < f 0 omega_pos := by
-  have oLim : o.IsLimit := ⟨(zero_lt_one.trans onelto).ne.symm, fun a alto ↦ by
-    by_cases h : a = 0
-    · exact h ▸ succ_zero ▸ onelto
-    rcases hP a alto (Ordinal.pos_iff_ne_zero.mpr h) with ⟨w, hw⟩
-    exact lt_of_le_of_lt (succ_le_iff.mpr hw.2.1) hw.1⟩
+    (hP : ∀ p : Iio o, 0 < p.1 → ∃ q : Iio o, (p < q ∧ P p q)) (r : Iio o) :
+    ∃ f : (Iio ω : Set Ordinal.{0}) → (Iio o), (∀ i, P (f i) (f ⟨i + 1, omega_isLimit.2 i i.2⟩))
+    ∧ (∀ i j, (i < j) → f i < f j) ∧ r < f ⟨0, omega_pos⟩ := by
   let P' : Ordinal → Ordinal → Prop := fun p q ↦ p = 0 ∨ P p q
-  have hP' : ∀ p < o, ∃ q < o, (p < q ∧ P' p q) := fun p plto ↦ by
-    by_cases h : p = 0
-    · use 1; use succ_zero ▸ (oLim.succ_lt oLim.pos); use h ▸ zero_lt_one; exact Or.inl h
-    convert hP p plto (Ordinal.pos_iff_ne_zero.mpr h) using 1
+  have hP' : ∀ p : Iio o, ∃ q : Iio o, (p < q ∧ P' p q) := fun p ↦ by
+    by_cases h : p.1 = 0
+    · use ⟨1, onelto⟩
+      use (by change p.1 < 1; exact h ▸ zero_lt_one)
+      exact Or.inl h
+    convert hP p (Ordinal.pos_iff_ne_zero.mpr h) using 1
     simp_all only [false_or, P']
-  rcases exists_omega_seq_succ_prop (zero_lt_one.trans onelto) hP' rlto with ⟨f, hf⟩
+  rcases exists_omega_seq_succ_prop (zero_lt_one.trans onelto) hP' r with ⟨f, hf⟩
   use f
-  refine' ⟨fun i hi ↦ _, hf.2⟩
-  have := hf.1 i hi
+  refine' ⟨fun i ↦ _, hf.2⟩
+  have := hf.1 i
   have rltf0 := hf.2.2
-  by_cases hi' : i = 0
-  · subst hi'
-    exact this.resolve_left (pos_of_gt rltf0).ne.symm
-  · have rltfi := rltf0.trans <| hf.2.1 0 i omega_pos hi (Ordinal.pos_iff_ne_zero.mpr hi')
-    exact this.resolve_left (pos_of_gt rltfi).ne.symm
+  by_cases hi' : i.1 = 0
+  · exact this.resolve_left (by convert ((pos_of_gt rltf0).ne.symm))
+  · have aux := (pos_of_gt (hf.2.1 ⟨0, omega_pos⟩ i (Ordinal.pos_iff_ne_zero.mpr hi'))).ne
+    exact this.resolve_left (by convert aux.symm)
 
 /-- If between every 2 consecutive elements of an increasing `δ`-sequence
   there is an element of `C`, and `δ` is a limit ordinal,
   then the supremum of the sequence is an accumulation point of `C`. -/
 theorem isAcc_bsup_of_between {δ : Ordinal} (C : Set Ordinal) (δLim : δ.IsLimit)
-    (s : Π o < δ, Ordinal) (sInc : ∀ o, (h : o < δ) → s o h < s (o + 1) (δLim.succ_lt h))
-    (h : ∀ o, (h : o < δ) → (C ∩ Ioo (s o h) (s (o + 1) (δLim.succ_lt h))).Nonempty) :
-    IsAcc (bsup δ s) C := by
-  use (by
-    apply (lt_bsup s).mpr
-    exact ⟨0 + 1, δLim.nat_lt (0 + 1), pos_of_gt (sInc 0 δLim.pos)⟩)
+    (s : Iio δ → Ordinal) (sInc : ∀ o, s o < s ⟨o.1 + 1, δLim.succ_lt o.2⟩)
+    (h : ∀ o, (C ∩ Ioo (s o) (s ⟨o + 1, δLim.succ_lt o.2⟩)).Nonempty) : IsAcc (sup s) C := by
+  use lt_sup.mpr ⟨⟨0 + 1, δLim.nat_lt (0 + 1)⟩, pos_of_gt (sInc ⟨0, δLim.pos⟩)⟩
   intro p pltsup
-  rw [lt_bsup] at pltsup
-  rcases pltsup with ⟨i, hi, plt⟩
-  rcases h i hi with ⟨q, qmemC, qmemIoo⟩
+  rw [lt_sup] at pltsup
+  rcases pltsup with ⟨i, plt⟩
+  rcases h i with ⟨q, qmemC, qmemIoo⟩
   use q; use qmemC
-  exact ⟨lt_of_lt_of_le qmemIoo.2 (le_bsup _ _ _), plt.trans qmemIoo.1⟩
-
+  exact ⟨lt_of_lt_of_le qmemIoo.2 (le_sup _ _), plt.trans qmemIoo.1⟩
+#check Ordinal.bsup
 /--
 The intersection of less than `o.cof` clubs in `o` is a club in `o`.
 -/
@@ -225,19 +216,26 @@ theorem isClub_sInter (hCof : ℵ₀ < o.cof) (hS : ∀ C ∈ S, IsClub C o) (hS
   have oLim : IsLimit o := aleph0_le_cof.mp hCof.le
   have nonemptyS : Nonempty S := Nonempty.to_subtype hSemp
   let P : Ordinal → Ordinal → Prop := fun p q ↦ ∀ C ∈ S, (C ∩ Ioo p q).Nonempty
-  have auxP : ∀ p < o, ∃ q < o, p < q ∧ P p q := fun p plto ↦
-    exists_above_of_lt_cof plto nonemptyS (fun U hU ↦ (hS U hU).2) Scard
-  rcases exists_omega_seq_succ_prop oLim.pos auxP qlto with ⟨f, hf⟩
-  let g := fun p pltω ↦ (f p pltω).1
-  have gInc : ∀ o h, g o h < g (o + 1) (omega_isLimit.succ_lt h) := fun o h ↦
-    hf.2.1 o (o + 1) h (omega_isLimit.succ_lt h) (lt_succ o)
-  have bsuplt : bsup ω g < o := (bsup_lt_ord hCof) (fun i hi ↦ (f i hi).2)
-  use bsup ω g
+  have auxP : ∀ p : Iio o, ∃ q : Iio o, p < q ∧ P p q := fun p ↦
+    exists_above_of_lt_cof p nonemptyS (fun U h ↦ (hS U h).2) Scard
+  rcases exists_omega_seq_succ_prop oLim.pos auxP ⟨q, qlto⟩ with ⟨f, hf⟩
+  let g := fun p ↦ lift.{1, u} (f p).1 -- have to lift to use `sup`
+  have := hf.2.1
+  have gInc : ∀ o, g o < g ⟨o + 1, omega_isLimit.succ_lt o.2⟩ := fun o ↦
+    lift_lt.mpr (hf.2.1 o ⟨o + 1, omega_isLimit.succ_lt o.2⟩ (lt_succ o.1))
+
+  have suplt : sup g < lift o := by
+    sorry
+    --apply sup_lt_ord hCof
+    --(sup_lt_ord hCof) sorry
+  sorry
+  /-
+  use sup g
   constructor
   · apply mem_sInter.mpr
     intro C CmemS
     have := isAcc_bsup_of_between C omega_isLimit g gInc (fun i hi ↦ (hf.1 i hi) C CmemS)
-    exact (hS C CmemS).1.2 ((bsup ω g)) bsuplt this
-  exact (lt_bsup g).mpr ⟨0, omega_pos, hf.2.2⟩
+    exact (hS C CmemS).1.2 ((bsup ω g)) suplt this
+  exact (lt_bsup g).mpr ⟨0, omega_pos, hf.2.2⟩-/
 
 end ClubIntersection
