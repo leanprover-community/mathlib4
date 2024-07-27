@@ -5,7 +5,7 @@ Authors: Yourong Zang
 -/
 import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
-import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Data.Complex.FiniteDimensional
 
 /-!
