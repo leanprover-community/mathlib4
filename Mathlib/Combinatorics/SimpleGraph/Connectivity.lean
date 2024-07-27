@@ -1138,20 +1138,20 @@ theorem length_dropUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
 
 protected theorem IsTrail.takeUntil {u v w : V} {p : G.Walk v w} (hc : p.IsTrail)
     (h : u ∈ p.support) : (p.takeUntil u h).IsTrail :=
-  IsTrail.of_append_left (by rwa [← take_spec _ h] at hc)
+  IsTrail.of_append_left (q := p.dropUntil u h) (by rwa [← take_spec _ h] at hc)
 
 protected theorem IsTrail.dropUntil {u v w : V} {p : G.Walk v w} (hc : p.IsTrail)
     (h : u ∈ p.support) : (p.dropUntil u h).IsTrail :=
-  IsTrail.of_append_right (by rwa [← take_spec _ h] at hc)
+  IsTrail.of_append_right (p := p.takeUntil u h) (by rwa [← take_spec _ h] at hc)
 
 protected theorem IsPath.takeUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
     (h : u ∈ p.support) : (p.takeUntil u h).IsPath :=
-  IsPath.of_append_left (by rwa [← take_spec _ h] at hc)
+  IsPath.of_append_left (q := p.dropUntil u h) (by rwa [← take_spec _ h] at hc)
 
 -- Porting note: p was previously accidentally an explicit argument
 protected theorem IsPath.dropUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
     (h : u ∈ p.support) : (p.dropUntil u h).IsPath :=
-  IsPath.of_append_right (by rwa [← take_spec _ h] at hc)
+  IsPath.of_append_right (p := p.takeUntil u h) (by rwa [← take_spec _ h] at hc)
 
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
 def rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) : G.Walk u u :=
