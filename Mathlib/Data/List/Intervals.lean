@@ -6,7 +6,6 @@ Authors: Scott Morrison
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Range
 import Mathlib.Data.Bool.Basic
-import Mathlib.Init.Data.Nat.Lemmas
 /-!
 # Intervals in ℕ
 
