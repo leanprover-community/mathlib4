@@ -54,11 +54,11 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
   have Ia : c - x = a := by
     simp only [c, x, smul_add, smul_sub]
     abel_nf
-    simp [zsmul_eq_smul_cast ℝ 2]
+    simp [← Int.cast_smul_eq_nsmul ℝ 2]
   have Ib : c + x = b := by
     simp only [c, x, smul_add, smul_sub]
     abel_nf
-    simp [zsmul_eq_smul_cast ℝ 2]
+    simp [← Int.cast_smul_eq_nsmul ℝ 2]
   have x_ne_zero : x ≠ 0 := by simpa [x] using sub_ne_zero.2 hab.symm
   obtain ⟨y, hy⟩ : ∃ y, LinearIndependent ℝ ![x, y] :=
     exists_linearIndependent_pair_of_one_lt_rank h x_ne_zero

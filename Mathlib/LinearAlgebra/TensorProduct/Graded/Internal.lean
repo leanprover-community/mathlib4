@@ -189,8 +189,8 @@ theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a�
   simp_rw [lof_eq_of R]
   rw [LinearEquiv.symm_symm]
   -- Note: #8386 had to specialize `map_smul` to `LinearEquiv.map_smul`
-  rw [@Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, LinearEquiv.map_smul, map_smul,
-    ← zsmul_eq_smul_cast R, ← @Units.smul_def _ _ (_) (_)]
+  rw [@Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_nsmul R, LinearEquiv.map_smul, map_smul,
+    Int.cast_smul_eq_nsmul R, ← @Units.smul_def _ _ (_) (_)]
   rw [congr_symm_tmul]
   dsimp
   simp_rw [decompose_symm_mul, decompose_symm_of, Equiv.symm_apply_apply]
@@ -315,8 +315,8 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
       ext a₂ b₂ : 2
       dsimp
       rw [tmul_coe_mul_coe_tmul]
-      rw [@Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, map_smul, map_smul, map_smul]
-      rw [← zsmul_eq_smul_cast R, ← @Units.smul_def _ _ (_) (_)]
+      rw [@Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_nsmul R, map_smul, map_smul, map_smul]
+      rw [Int.cast_smul_eq_nsmul R, ← @Units.smul_def _ _ (_) (_)]
       rw [of_symm_of, map_tmul, LinearMap.mul'_apply]
       simp_rw [AlgHom.toLinearMap_apply, _root_.map_mul]
       simp_rw [mul_assoc (f a₁), ← mul_assoc _ _ (g b₂), h_anti_commutes, mul_smul_comm,
@@ -376,7 +376,7 @@ lemma auxEquiv_comm (x : 𝒜 ᵍ⊗[R] ℬ) :
     comm 𝒜 ℬ (a ᵍ⊗ₜ b) = (-1 : ℤˣ)^(j * i) • (b ᵍ⊗ₜ a : ℬ ᵍ⊗[R] 𝒜) :=
   (auxEquiv R ℬ 𝒜).injective <| by
     simp_rw [auxEquiv_comm, auxEquiv_tmul, decompose_coe, ← lof_eq_of R, gradedComm_of_tmul_of,
-      @Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R]
+      @Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_nsmul R]
     -- Qualified `map_smul` to avoid a TC timeout #8386
     erw [LinearMap.map_smul, auxEquiv_tmul]
     simp_rw [decompose_coe, lof_eq_of]

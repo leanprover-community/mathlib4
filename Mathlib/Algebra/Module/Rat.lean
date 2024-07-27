@@ -60,6 +60,6 @@ instance SMulCommClass.rat' {R : Type u} {M : Type v} [Semiring R] [AddCommGroup
 instance (priority := 100) RatModule.noZeroSMulDivisors [AddCommGroup M] [Module ℚ M] :
     NoZeroSMulDivisors ℤ M :=
   ⟨fun {k} {x : M} h => by
-    simpa only [zsmul_eq_smul_cast ℚ k x, smul_eq_zero, Rat.zero_iff_num_zero] using h⟩
+    simpa only [← Int.cast_smul_eq_nsmul ℚ k x, smul_eq_zero, Rat.zero_iff_num_zero] using h⟩
   -- Porting note: old proof was:
   --⟨fun {k x} h => by simpa [zsmul_eq_smul_cast ℚ k x] using h⟩

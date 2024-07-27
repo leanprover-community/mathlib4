@@ -69,7 +69,7 @@ example : Int.instUnitsPow = DivInvMonoid.Pow := rfl
 
 @[norm_cast] lemma uzpow_natCast (u : ℤˣ) (n : ℕ) : u ^ (n : R) = u ^ n := by
   change Additive.toMul ((n : R) • Additive.ofMul u) = _
-  rw [← nsmul_eq_smul_cast, toMul_nsmul, toMul_ofMul]
+  rw [Nat.cast_smul_eq_nsmul, toMul_nsmul, toMul_ofMul]
 
 -- See note [no_index around OfNat.ofNat]
 lemma uzpow_coe_nat (s : ℤˣ) (n : ℕ) [n.AtLeastTwo] :
@@ -107,6 +107,6 @@ lemma uzpow_neg (s : ℤˣ) (x : R) : s ^ (-x) = (s ^ x)⁻¹ :=
 
 @[norm_cast] lemma uzpow_intCast (u : ℤˣ) (z : ℤ) : u ^ (z : R) = u ^ z := by
   change Additive.toMul ((z : R) • Additive.ofMul u) = _
-  rw [← zsmul_eq_smul_cast, toMul_zsmul, toMul_ofMul]
+  rw [Int.cast_smul_eq_nsmul, toMul_zsmul, toMul_ofMul]
 
 end CommRing
