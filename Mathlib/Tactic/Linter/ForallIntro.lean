@@ -109,18 +109,18 @@ example : ∀ a b c d : Nat, a + b = c + d := by
 def dropIntroVars : Syntax → Option Syntax
   | stx@(.node s1 k #[intr, .node s2 `null vars]) =>
     let varsDropFirst := vars.erase (vars.getD 0 .missing)
-    let skipStx := mkNode ``Lean.Parser.Tactic.skip #[mkAtom "skip"]
+    let skipStx := none --some <| mkNode ``Lean.Parser.Tactic.skip #[mkAtom "skip"]
     let newIntro : Syntax :=  -- recreate `intro [one fewer variable]`, even if input is `intros`
       .node s1 ``Lean.Parser.Tactic.intro #[mkAtomFrom intr "intro", .node s2 `null varsDropFirst]
     match k, vars.size with
       | ``Lean.Parser.Tactic.intros, 0 =>
         stx -- `intros` stays `intros`
       | ``Lean.Parser.Tactic.intros, 1 =>
-        some skipStx -- `intros x` converts to `skip`
+        skipStx -- `intros x` converts to `skip`
       | ``Lean.Parser.Tactic.intros, _ =>
         some newIntro -- `intros x ...` converts to `intro ...`
       | ``Lean.Parser.Tactic.intro, 0 | ``Lean.Parser.Tactic.intro, 1 =>
-        some skipStx -- `intro` and `intro x` convert to `skip`
+        skipStx -- `intro` and `intro x` convert to `skip`
       | ``Lean.Parser.Tactic.intro, _ =>
         some newIntro -- `intro x y ...` converts to `intro y ...`
       | _, _ => none
@@ -131,25 +131,6 @@ elab "fin " cmd:command : command => do
   let haves := cmd.raw.filter fun s => (introTacs.contains (s.getKind))
   for h in haves do
     logInfo m!"'{h}': '{dropIntroVars h}'"
-
-
-
-
-
-example : ∀ a : Nat, (h : a = 0) → a = 0 := by
-  introv
-  intro h
-  exact h
-
-example : ∀ a : Nat, (h : a = 0) → a = 0 := by
-  intros
-  assumption
-
-example : ∀ a : Nat, (h : a = 0) → a = 0 := by
-  intro
-  intro
-  assumption
-
 
 fin
 --inspect
@@ -162,6 +143,23 @@ example : ∀ a b c d  e : Nat, a + b = c + d + e := by
   intros
   sorry
 
+def Term.dropOneIntro {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] :
+    Syntax → m (Option Syntax)
+  | `(by $first; $ts*) => do
+    if introTacs.contains first.raw.getKind then
+      match dropIntroVars first with
+        | some newIntro =>
+          let newtacs : Syntax.TSepArray `tactic "" :=
+            { ts with elemsAndSeps := #[newIntro, mkNullNode] ++ ts.elemsAndSeps }
+          let tacSeq ← `(tacticSeq| $[$newtacs]*)
+          --logInfo m!"shortened '{first}': '{← `(term| by $tacSeq)}'"
+          return some (← `(term| by $tacSeq))
+        | none =>
+          --logInfo m!"shortened '{first}': '{← `(term| by $[$ts]*)}'"
+          return some (← `(term| by $[$ts]*))
+    else
+      return none
+  | _ => return default
 
 def recombineBinders
     (haveIds : TSyntaxArray `Lean.Parser.Term.letIdBinder)
@@ -183,33 +181,25 @@ def allStxCore (cmd : Syntax) : Syntax → CommandElabM (Option (Syntax × Synta
     dbg_trace "bi1: '{bi1}'\nbi2: '{bi2}'\n"
     let (bi1', bi2', body', t') := recombineBinders bi1 bi2 body t
     --let ident := mkIdent `hyp
-    let t := ← match t with
-              | `(by $first; $ts*) => do
-                if introTacs.contains first.raw.getKind then
-                  return first.raw.filter (·.isOfKind `ident)
-                else
-                  return #[]
---                Meta.inspect first
---                match first with
---                  | `(tactic| intros $vs) =>
---                    dbg_trace "variables found: {vs}"
---                    return first
---                  | _ => dbg_trace "no vars found"; return first
-              | _ => return default
-    dbg_trace "variables found: {t}"
-    let newHave := ←
-      if bi2'.isEmpty then `(tactic| have $id:haveId $[$bi1']* : $body' := $t')
-      else `(tactic| have $id:haveId $[$bi1']* : ∀ $[$bi2']*, $body' := $t')
-    let newCmd ← cmd.replaceM fun s => do if s == stx then return some newHave else return none
-    logInfo m!"command: {cmd}\nstx: {stx}\nnewCmd: {newCmd}\n"
-    let s ← modifyGet fun st => (st, { st with messages := {} })
-    elabCommandTopLevel newCmd
-    let msgs ← modifyGet (·.messages, s)
-    if msgs.hasErrors then
-      logInfo m!"{← (msgs.unreported.filter (·.severity matches .error)).toArray.mapM (·.toString)}"
-      return none
-    else
-      return some (newCmd, newHave)
+    let newTerm? := ← Term.dropOneIntro t
+    --logInfo m!"new term: {newTerm?}"
+    match newTerm? with
+      | none => return none
+      | some t' =>
+        let newHave := ←
+          if bi2'.isEmpty then `(tactic| have $id:haveId $[$bi1']* : $body' := $(⟨t'⟩))
+          else `(tactic| have $id:haveId $[$bi1']* : ∀ $[$bi2']*, $body' := $(⟨t'⟩))
+        let newCmd ← cmd.replaceM fun s => do if s == stx then return some newHave else return none
+        --logInfo m!"command: {cmd}\nstx: {stx}\nnewCmd: {newCmd}\n"
+        let s ← modifyGet fun st => (st, { st with messages := {} })
+        elabCommandTopLevel newCmd
+        let msgs ← modifyGet (·.messages, s)
+        if msgs.hasErrors then
+          logInfo
+            m!"{← (msgs.unreported.filter (·.severity matches .error)).toArray.mapM (·.toString)}"
+          return none
+        else
+          return some (newCmd, newHave)
   | _ => return none
 
 partial
@@ -227,7 +217,10 @@ elab "fh " cmd:command : command => do
     let newHave ← allStx cmd stx
     --logInfo newHave
     let newCmd ← cmd.raw.replaceM fun s => do if s == stx then return some newHave else return none
-    logInfo m!"Elaborating '{newCmd}'"
+    if cmd == newCmd then
+      logInfo m!"No change needed"
+    else
+      logWarning m!"Please use\n---\n{newCmd}\n---"
 
 -- and the test is successful!
 fh
@@ -235,6 +228,7 @@ fh
 example : True := by
   have (_ : Nat) : ∀ x y, x + y = 0 := by
     intros s t
+    refine ?_
     sorry
   trivial
 
@@ -261,16 +255,18 @@ example : True :=
     sorry
   trivial
 
+/- broken syntax
 example : True := by
   have _ : ‹_› = 0 := by
     intros
     sorry
   trivial
+-/
 
 example {n : Nat} : True :=
   by
   have {_} : ‹_› = 0 := by
-    intro x
+    --intro x
     sorry
   trivial
 
