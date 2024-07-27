@@ -358,7 +358,7 @@ variable {F : Type*}
 instance {D : Type*} [UniformSpace D] [CompleteSpace D]
     [Semiring D] [Algebra R D] [T2Space B]
     [FunLike F D B] [AlgHomClass F R D B] [ContinuousMapClass F D B]
-    (f g : F) : CompleteSpace (LinearMap.eqLocus f g) :=
+    (f g : F) : CompleteSpace (AlgHom.eqLocus f g) :=
   isClosed_eq (map_continuous f) (map_continuous g) |>.completeSpace_coe
 
 variable (R A B)
