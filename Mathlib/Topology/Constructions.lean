@@ -971,6 +971,10 @@ nonrec theorem IsClosed.closedEmbedding_subtype_val {s : Set X} (hs : IsClosed s
     ClosedEmbedding ((↑) : s → X) :=
   closedEmbedding_subtype_val hs
 
+theorem IsClosed.isClosedMap_subtype_val {s : Set X} (hs : IsClosed s) :
+    IsClosedMap ((↑) : s → X) :=
+  hs.closedEmbedding_subtype_val.isClosedMap
+
 @[continuity, fun_prop]
 theorem Continuous.subtype_mk {f : Y → X} (h : Continuous f) (hp : ∀ x, p (f x)) :
     Continuous fun x => (⟨f x, hp x⟩ : Subtype p) :=
