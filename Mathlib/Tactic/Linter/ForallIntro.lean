@@ -59,6 +59,8 @@ def dropIntroVars : Syntax → Option Syntax
       | _, _ => none
   | _ => none
 
+/-- if the input syntax is not `by intro(s); ...`, then it returns `none`.
+Otherwise, it removes one identifier introduced by `intro(s)` and returns the resulting syntax. -/
 def Term.dropOneIntro {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] :
     Syntax → m (Option Syntax)
   | `(by $first; $ts*) => do
@@ -68,14 +70,12 @@ def Term.dropOneIntro {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation
           let newtacs : Syntax.TSepArray `tactic "" :=
             { ts with elemsAndSeps := #[newIntro, mkNullNode] ++ ts.elemsAndSeps }
           let tacSeq ← `(tacticSeq| $[$newtacs]*)
-          --logInfo m!"shortened '{first}': '{← `(term| by $tacSeq)}'"
           return some (← `(term| by $tacSeq))
         | none =>
-          --logInfo m!"shortened '{first}': '{← `(term| by $[$ts]*)}'"
           return some (← `(term| by $[$ts]*))
     else
       return none
-  | _ => return default
+  | _ => return none
 
 /--
 `recombineBinders ts1 ts2` takes as input two `TSyntaxArray`s and removes the first entry of the
@@ -99,6 +99,18 @@ def recombineBinders {ks1 ks2 : SyntaxNodeKinds} (ts1 : TSyntaxArray ks1) (ts2 :
   else
     none
 
+/--
+`allStxCore cmd stx` takes two `Syntax` inputs `cmd` and `stx`.
+If `stx` is not a `have` tactic whose type does not begin with a `∀` binder, or whose
+proof does not start with `:= by intro(s)`, then it returns none.
+Otherwise, it moves one variable bound by `∀` "to the left of `:`", it removes one variable
+bound by `intro(s)`.
+Next, it replaces `stx` inside `cmd` with the cleaned up `have` statement and elaborates
+the resulting syntax.
+If the result does not elaborate, then it returns none.
+If the result elaborates successfully, then it returns the pair consisting of
+* the replaced `cmd` and the new `stx`.
+-/
 def allStxCore (cmd : Syntax) : Syntax → CommandElabM (Option (Syntax × Syntax))
   | stx@`(tactic| have $id:haveId $bi1* : ∀ $bi2*, $body := $t) => do
     match recombineBinders bi1 bi2 with
@@ -126,6 +138,9 @@ def allStxCore (cmd : Syntax) : Syntax → CommandElabM (Option (Syntax × Synta
               return some (newCmd, newHave)
   | _ => return none
 
+/-- `allStx cmd stx` repeatedly applies `allStxCore`, until it returns `none`.
+When that happens, `allStx` returns the "new `have` syntax" that was produced by `allStxCore`
+on the step prior to returning `none`. -/
 partial
 def allStx (cmd stx : Syntax) : CommandElabM Syntax := do
   match ← allStxCore cmd stx with
@@ -190,6 +205,29 @@ example : True := by
   have (_ : Nat) : ∀ x y, ∀ z w, (x + y : Nat) = z + w := by
     intros s t
     intros s t
+    refine ?_
+    sorry
+  trivial
+
+/--
+warning: declaration uses 'sorry'
+---
+warning: Please use
+---
+example : True :=
+  by
+  have (_ : Nat) {x y : Nat} z w : x + y = z + w := by
+    intros
+    refine ?_
+    sorry
+  trivial
+---
+-/
+#guard_msgs in
+fh
+example : True := by
+  have (_ : Nat) : ∀ {x y : Nat}, ∀ z w, x + y = z + w := by
+    intros
     refine ?_
     sorry
   trivial
