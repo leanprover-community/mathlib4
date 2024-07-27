@@ -1015,7 +1015,7 @@ theorem neg_val' {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = (n - a.val) % n 
   calc
     (-a).val = val (-a) % n := by rw [Nat.mod_eq_of_lt (-a).val_lt]
     _ = (n - val a) % n :=
-      Nat.ModEq.add_right_cancel' _
+      Nat.ModEq.add_right_cancel' (val a)
         (by
           rw [Nat.ModEq, ← val_add, add_left_neg, tsub_add_cancel_of_le a.val_le, Nat.mod_self,
             val_zero])
@@ -1266,7 +1266,9 @@ instance instField : Field (ZMod p) where
   mul_inv_cancel := mul_inv_cancel_aux p
   inv_zero := inv_zero p
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun a x => rfl
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
 instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by
