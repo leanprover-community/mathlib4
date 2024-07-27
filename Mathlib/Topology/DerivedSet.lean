@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
 import Mathlib.Topology.Perfect
+import Mathlib.Tactic.Peel
 
 /-!
 # Derived set
@@ -41,21 +42,20 @@ lemma derivedSet_union (A B : Set X) : derivedSet (A ∪ B) = derivedSet A ∪ d
 lemma derivedSet_mono (A B : Set X) (h : A ⊆ B) : derivedSet A ⊆ derivedSet B :=
   fun _ hx ↦ hx.mono <| le_principal_iff.mpr <| mem_principal.mpr h
 
-theorem image_derivedSet_subset {β : Type*} [TopologicalSpace β] {A : Set X} {f : X → β}
+theorem Continuous.image_derivedSet {β : Type*} [TopologicalSpace β] {A : Set X} {f : X → β}
     (hf1 : Continuous f) (hf2 : Function.Injective f) :
     f '' derivedSet A ⊆ derivedSet (f '' A) := by
   intro x hx
-  simp [Set.mem_image, mem_derivedSet] at hx
+  simp only [Set.mem_image, mem_derivedSet] at hx
   obtain ⟨y, hy1, rfl⟩ := hx
   convert hy1.map hf1.continuousAt hf2
   simp
 
+lemma derivedSet_subset_closure (A : Set X) : derivedSet A ⊆ closure A :=
+  fun _ hx ↦ mem_closure_iff_clusterPt.mpr hx.clusterPt
+
 lemma isClosed_iff_derivedSet_subset (A : Set X) : IsClosed A ↔ derivedSet A ⊆ A where
-  mp h := by
-    rw [isClosed_iff_clusterPt] at h
-    intro x hx
-    apply h
-    apply hx.clusterPt
+  mp h := derivedSet_subset_closure A |>.trans h.closure_subset
   mpr h := by
     rw [isClosed_iff_clusterPt]
     intro a ha
@@ -64,18 +64,25 @@ lemma isClosed_iff_derivedSet_subset (A : Set X) : IsClosed A ↔ derivedSet A �
     rw [this, ← acc_principal_iff_cluster] at ha
     exact nh (h ha)
 
+/-- In a `T1Space`, the `derivedSet` of the closure of a set is equal to the derived set of the
+set itself.
+
+Note: this doesn't hold in a space with the indiscrete topology. For example, if `X` is a type with
+two elements, `x` and `y`, and `A := {x}`, then `closure A = Set.univ` and `derivedSet A = {y}`,
+but `derivedSet Set.univ = Set.univ`. -/
+lemma derivedSet_closure [T1Space X] (A : Set X) : derivedSet (closure A) = derivedSet A := by
+  refine le_antisymm (fun x hx => ?_) (derivedSet_mono _ _ subset_closure)
+  rw [mem_derivedSet, AccPt, (nhdsWithin_basis_open x {x}ᶜ).inf_principal_neBot_iff] at hx ⊢
+  peel hx with u hu _
+  obtain ⟨-, hu_open⟩ := hu
+  exact mem_closure_iff.mp this.some_mem.2 (u ∩ {x}ᶜ) (hu_open.inter isOpen_compl_singleton)
+    this.some_mem.1
+
 @[simp]
 lemma isClosed_derivedSet [T1Space X] (A : Set X) : IsClosed (derivedSet A) := by
-  rw [isClosed_iff_derivedSet_subset]
-  intro x hx
-  rw [derivedSet, Set.mem_setOf, accPt_iff_frequently, frequently_nhds_iff] at hx ⊢
-  intro U hu1 hu2
-  obtain ⟨y, hy, ⟨hy1, hy2⟩⟩ := hx U hu1 hu2
-  rw [derivedSet, Set.mem_setOf, accPt_iff_frequently, frequently_nhds_iff] at hy2
-  obtain ⟨z, hz⟩ := hy2 (U \ {x}) (by simp [hy1, hy]) (IsOpen.sdiff hu2 isClosed_singleton)
-  simp at hz
-  use z
-  simp [hz]
+  rw [← derivedSet_closure, isClosed_iff_derivedSet_subset]
+  apply derivedSet_mono
+  simp [← isClosed_iff_derivedSet_subset]
 
 lemma preperfect_iff_subset_derivedSet {U : Set X} : Preperfect U ↔ U ⊆ derivedSet U :=
   Iff.rfl
