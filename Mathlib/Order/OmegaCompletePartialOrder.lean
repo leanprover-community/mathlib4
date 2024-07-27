@@ -245,7 +245,8 @@ variable [OmegaCompletePartialOrder β]
 variable [OmegaCompletePartialOrder γ]
 variable {f : α → β} {g : β → γ}
 
-/-- ωScottContinuous - Scott Continuous over Chains-/
+/-- A function `f` between `ω`-complete partial orders is `ωScottContinuous` if it is
+Scott continuous over chains. -/
 def ωScottContinuous (f : α → β) : Prop :=
     ScottContinuousOn (Set.range fun c : Chain α => Set.range c) f
 
