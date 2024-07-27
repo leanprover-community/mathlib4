@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang
 -/
 import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.NormedSpace.LinearIsometry
+import Mathlib.Analysis.Normed.Operator.LinearIsometry
 
 /-!
 # Conformal Linear Maps
