@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 
 -/
-
-import Batteries.Data.Nat.Gcd
 import Mathlib.Data.Nat.Notation
 
 /-!
@@ -18,9 +16,6 @@ Contributions assisting with this are appreciated.
 
 # Definitions and properties of gcd, lcm, and coprime
 -/
-
-
-open WellFounded
 
 namespace Nat
 

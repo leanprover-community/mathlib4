@@ -63,7 +63,7 @@ lemma root_X_pow_sub_C_ne_zero {n : ℕ} (hn : 1 < n) (a : K) :
 lemma root_X_pow_sub_C_ne_zero' {n : ℕ} {a : K} (hn : 0 < n) (ha : a ≠ 0) :
     (AdjoinRoot.root (X ^ n - C a)) ≠ 0 := by
   obtain (rfl|hn) := (Nat.succ_le_iff.mpr hn).eq_or_lt
-  · rw [← Nat.one_eq_succ_zero, pow_one]
+  · rw [pow_one]
     intro e
     refine mk_ne_zero_of_natDegree_lt (monic_X_sub_C a) (C_ne_zero.mpr ha) (by simp) ?_
     trans AdjoinRoot.mk (X - C a) (X - (X - C a))

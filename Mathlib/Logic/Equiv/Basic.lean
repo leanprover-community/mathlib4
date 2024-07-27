@@ -9,7 +9,6 @@ import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
-import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Tactic.Coe

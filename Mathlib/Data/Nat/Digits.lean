@@ -544,8 +544,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
             Ico_zero_eq_range, mul_add, mul_add, ih, range_one, sum_singleton, List.drop, ofDigits,
             mul_zero, add_zero, ← Nat.add_sub_assoc <| sum_le_ofDigits _ <| Nat.le_of_lt h]
         nth_rw 2 [← one_mul <| ofDigits p tl]
-        rw [← add_mul, one_eq_succ_zero, Nat.sub_add_cancel <| zero_lt_of_lt h,
-           Nat.add_sub_add_left]
+        rw [← add_mul, Nat.sub_add_cancel (one_le_of_lt h), Nat.add_sub_add_left]
   · simp [ofDigits_one]
   · simp [lt_one_iff.mp h]
     cases L

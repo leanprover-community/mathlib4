@@ -29,14 +29,29 @@ variable {α β γ δ ε ζ : Type*}
 instance [DecidableEq α] : SDiff (List α) :=
   ⟨List.diff⟩
 
--- mathlib3 `array` is not ported.
--- Porting note: see
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/List.2Ehead/near/313204716
--- for the fooI naming convention.
 /-- "Inhabited" `get` function: returns `default` instead of `none` in the case
   that the index is out of bounds. -/
 def getI [Inhabited α] (l : List α) (n : Nat) : α :=
   getD l n default
+
+/-- The head of a list, or the default element of the type is the list is `nil`. -/
+def headI [Inhabited α] : List α → α
+  | []       => default
+  | (a :: _) => a
+
+@[simp] theorem headI_nil [Inhabited α] : ([] : List α).headI = default := rfl
+@[simp] theorem headI_cons [Inhabited α] {h : α} {t : List α} : (h :: t).headI = h := rfl
+
+/-- The last element of a list, with the default if list empty -/
+def getLastI [Inhabited α] : List α → α
+  | [] => default
+  | [a] => a
+  | [_, b] => b
+  | _ :: _ :: l => getLastI l
+
+/-- List with a single given element. -/
+@[inline, deprecated List.pure (since := "2024-03-24")]
+protected def ret {α : Type u} (a : α) : List α := [a]
 
 /-- "Inhabited" `take` function: Take `n` elements from a list `l`. If `l` has less than `n`
   elements, append `n - length l` elements `default`. -/

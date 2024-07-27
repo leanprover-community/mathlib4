@@ -26,9 +26,9 @@ theorem eq_of_veq : i.val = j.val → i = j := eq_of_val_eq
 @[deprecated val_eq_of_eq (since := "2024-02-15")]
 theorem veq_of_eq : i = j → i.val = j.val := val_eq_of_eq
 
--- These two aren't deprecated because `ne_of_val_ne` and `val_ne_of_ne`
--- use `¬a = b` instead of `a ≠ b`. TODO: fix or rename in Lean core.
+@[deprecated ne_of_val_ne (since := "2024-07-27")]
 theorem ne_of_vne (h : i.val ≠ j.val) : i ≠ j := ne_of_val_ne h
+@[deprecated val_ne_of_ne (since := "2024-07-27")]
 theorem vne_of_ne (h : i ≠ j) : i.val ≠ j.val := val_ne_of_ne h
 
 end Fin

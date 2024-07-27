@@ -340,8 +340,7 @@ instance nontrivial {n : ℕ} : Nontrivial (Fin (n + 2)) where
 
 theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
   rcases n with (_ | _ | n) <;>
-  simp [← Nat.one_eq_succ_zero, Fin.nontrivial, not_nontrivial, Nat.succ_le_iff]
--- Porting note: here and in the next lemma, had to use `← Nat.one_eq_succ_zero`.
+  simp [Fin.nontrivial, not_nontrivial, Nat.succ_le_iff]
 
 section Monoid
 
