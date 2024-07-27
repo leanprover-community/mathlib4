@@ -7,16 +7,21 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Rank
 import Mathlib.LinearAlgebra.CrossProduct
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.DotProduct
+import Mathlib.LinearAlgebra.Matrix.Dual
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Projectivization.Basic
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.GroupTheory.SchurZassenhaus
 import Mathlib.FieldTheory.Adjoin
+import Mathlib.Tactic.Polyrith
 
 /-!
 # Configurations of Points and lines
@@ -621,24 +626,84 @@ instance : Membership (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
 lemma mem_iff (v w : ℙ K (Fin 3 → K)) : v ∈ w ↔ Projectivization.orthogonal v w :=
   Iff.rfl
 
+lemma rank_add_rank_le_card_of_mul_eq_zero {l m n : Type*} [Fintype l] [Fintype m] [Fintype n]
+    {A : Matrix l m K} {B : Matrix m n K} (hAB : A * B = 0) :
+    A.rank + B.rank ≤ Fintype.card m := by
+  classical
+  let el : Basis l K (l → K) := Pi.basisFun K l
+  let em : Basis m K (m → K) := Pi.basisFun K m
+  let en : Basis n K (n → K) := Pi.basisFun K n
+  rw [Matrix.rank_eq_finrank_range_toLin A el em,
+      Matrix.rank_eq_finrank_range_toLin B em en,
+      ← FiniteDimensional.finrank_fintype_fun_eq_card K,
+      ← LinearMap.finrank_range_add_finrank_ker (Matrix.toLin em el A),
+      add_le_add_iff_left]
+  apply Submodule.finrank_mono
+  rw [LinearMap.range_le_ker_iff, ← Matrix.toLin_mul, hAB, map_zero]
+
+theorem _root_.Matrix.rank_transpose' {m n : Type*} [Fintype m] [Fintype n] (M : Matrix m n K) :
+  M.transpose.rank = M.rank := by
+  classical
+  rw [M.transpose.rank_eq_finrank_range_toLin (Pi.basisFun K n).dualBasis (Pi.basisFun K m).dualBasis,
+      Matrix.toLin_transpose, ← LinearMap.dualMap_def,
+      LinearMap.finrank_range_dualMap_eq_finrank_range, Matrix.toLin_eq_toLin',
+      Matrix.toLin'_apply', Matrix.rank]
+
+theorem _root_.LinearIndependent.rank_matrix {m n : Type*} [Fintype m] [Fintype n]
+  {M : Matrix m n K} (h : LinearIndependent K M) : M.rank = Fintype.card m := by
+  rw [← M.rank_transpose', Matrix.rank_eq_finrank_span_cols, Matrix.transpose_transpose,
+      linearIndependent_iff_card_eq_finrank_span.mp h, Set.finrank]
+
+lemma crossProduct_eq_zero_of_dotProduct_eq_zero' {m n : Type*} [Fintype m] [Fintype n]
+    {A B : Matrix m n K} (hA : LinearIndependent K A) (hB : LinearIndependent K B)
+    (hAB : A * B.transpose = 0) : 2 * Fintype.card m ≤ Fintype.card n := by
+  rw [two_mul]
+  have key1 : A.rank = Fintype.card m := hA.rank_matrix
+  have key2 : B.transpose.rank = Fintype.card m := by rw [B.rank_transpose', hB.rank_matrix]
+  have key := rank_add_rank_le_card_of_mul_eq_zero hAB
+  rwa [key1, key2] at key
+
+-- probably best to prove this in generality
+lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : (Fin 3 → K)}
+    (hac : Matrix.dotProduct a c = 0) (hbc : Matrix.dotProduct b c = 0)
+    (had : Matrix.dotProduct a d = 0) (hbd : Matrix.dotProduct b d = 0) :
+    crossProduct a b = 0 ∨ crossProduct c d = 0 := by
+  by_contra h
+  rw [not_or, ← ne_eq, ← ne_eq,
+    Projectivization.crossProduct_ne_zero_iff_linearIndependent,
+    Projectivization.crossProduct_ne_zero_iff_linearIndependent] at h
+  let key1 : Matrix (Fin 2) (Fin 3) K := ![a, b]
+  let key2 : Matrix (Fin 2) (Fin 3) K := ![c, d]
+  let key3 := key1 * key2.transpose
+  have key' : key3 = ![![Matrix.dotProduct a c, Matrix.dotProduct a d],
+    ![Matrix.dotProduct b c, Matrix.dotProduct b d]] := by
+    ext i j
+    simp only [key3, key1, key2, Matrix.mul_apply', Matrix.transpose_apply]
+    fin_cases i <;> fin_cases j <;> rfl
+  have key : key3 = 0 := by
+    rw [key', hac, hbc, had, hbd]
+    ext i j; fin_cases i <;> fin_cases j <;> rfl
+  have key := crossProduct_eq_zero_of_dotProduct_eq_zero' h.1 h.2 key
+  rw [Fintype.card_fin] at key
+  rw [Fintype.card_fin] at key
+  contradiction
+
+lemma eq_or_eq_of_orthogonal {a b c d : ℙ K (Fin 3 → K)}
+    (hac : a.orthogonal c) (hbc : b.orthogonal c)
+    (had : a.orthogonal d) (hbd : b.orthogonal d) :
+    a = b ∨ c = d := by
+  induction' a with a ha
+  induction' b with b hb
+  induction' c with c hc
+  induction' d with d hd
+  rw [Projectivization.mk_eq_mk_iff_crossProduct_eq_zero,
+    Projectivization.mk_eq_mk_iff_crossProduct_eq_zero]
+  exact crossProduct_eq_zero_of_dotProduct_eq_zero hac hbc had hbd
+
 instance : Nondegenerate (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
   { exists_point := Projectivization.exists_not_orthogonal_self
     exists_line := Projectivization.exists_not_self_orthogonal
-    eq_or_eq := by
-      intro p₁ p₂ l₁ l₂ h₁₁ h₂₁ h₁₂ h₂₂
-      induction' p₁ with p₁ hp₁
-      induction' p₂ with p₂ hp₂
-      induction' l₁ with l₁ hl₁
-      induction' l₂ with l₂ hl₂
-      rw [mem_iff, Projectivization.orthogonal_mk] at h₁₁ h₂₁ h₁₂ h₂₂
-      rw [Projectivization.mk_eq_mk_iff_crossProduct_eq_zero,
-          Projectivization.mk_eq_mk_iff_crossProduct_eq_zero,
-          Projectivization.crossProduct_eq_zero_iff_not_linearIndependent,
-          Projectivization.crossProduct_eq_zero_iff_not_linearIndependent,
-          ← not_and_or]
-      intro h
-      sorry
-       }
+    eq_or_eq := eq_or_eq_of_orthogonal }
 
 noncomputable instance : ProjectivePlane (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
   { mkPoint := by
