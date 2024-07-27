@@ -138,7 +138,7 @@ instance {ι : Type u} {X : ι → Type v} [∀ i, TopologicalSpace (X i)]
   exact (h g hg).preimage continuous_uLift_up
 
 open OnePoint in
-instance [SequentialSpace X] : CompactlyGeneratedSpace X := by
+instance (priority := 100) [SequentialSpace X] : CompactlyGeneratedSpace X := by
   refine compactlyGeneratedSpace_of_isClosed fun s h ↦
     SequentialSpace.isClosed_of_seq _ fun u p hu hup ↦ ?_
   let g : ULift.{u} (OnePoint ℕ) → X := (continuousMapMkNat u p hup) ∘ ULift.down
@@ -167,7 +167,8 @@ theorem compactlyGeneratedSpace_of_isOpen_of_t2 [T2Space X]
   have : CompactSpace ↑K := isCompact_iff_compactSpace.1 hK
   exact hs Subtype.val continuous_subtype_val
 
-instance [WeaklyLocallyCompactSpace X] [T2Space X] : CompactlyGeneratedSpace X := by
+instance (priority := 100) [WeaklyLocallyCompactSpace X] [T2Space X] :
+    CompactlyGeneratedSpace X := by
   refine compactlyGeneratedSpace_of_isClosed_of_t2 fun s h ↦ ?_
   rw [isClosed_iff_forall_filter]
   intro x ℱ hℱ₁ hℱ₂ hℱ₃
