@@ -5,7 +5,7 @@ Authors: Moritz Doll
 -/
 
 import Mathlib.Analysis.Normed.Operator.LinearIsometry
-import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
+import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 import Mathlib.Analysis.NormedSpace.Basic
 
 /-!
