@@ -9,7 +9,7 @@ import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 /-!
 # Topological space structure on `Mᵈᵐᵃ` and `Mᵃᵐᵃ`
 
-In this file we define `TopologicalSpace` structure on `Mᵈᵐᵃ` and `Mᵃᵐᵃ`
+In this file we define `TopologicalSpace` structure on `Mᵈᵐᵃ` and `Mᵈᵃᵃ`
 and prove basic theorems about these topologies.
 The topologies on `Mᵈᵐᵃ` and `Mᵃᵐᵃ` are the same as the topology on `M`.
 Formally, they are induced by `DomMulAct.mk.symm` and `DomAddAct.mk.symm`,
@@ -27,9 +27,8 @@ namespace DomMulAct
 
 variable {M : Type*} [TopologicalSpace M]
 
-/-- Put the same topological space structure on `DomMulAct M` as on the original space. -/
-@[to_additive "Put the same topological space structure on `DomAddAct M`
-as on the original space."]
+/-- Put the same topological space structure on `Mᵈᵐᵃ` as on the original space. -/
+@[to_additive "Put the same topological space structure on `Mᵈᵃᵃ` as on the original space."]
 instance instTopologicalSpace : TopologicalSpace Mᵈᵐᵃ := .induced mk.symm  ‹_›
 
 @[to_additive (attr := continuity, fun_prop)]
