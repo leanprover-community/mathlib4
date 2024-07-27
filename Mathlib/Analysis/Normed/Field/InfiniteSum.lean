@@ -98,6 +98,12 @@ theorem summable_norm_sum_mul_antidiagonal_of_summable_norm {f g : ℕ → R}
       norm_sum_le _ _
     _ ≤ ∑ kl ∈ antidiagonal n, ‖f kl.1‖ * ‖g kl.2‖ := by gcongr; apply norm_mul_le
 
+theorem summable_sum_mul_antidiagonal_of_summable_norm' {f g : ℕ → R}
+    (hf : Summable fun x => ‖f x‖) (h'f : Summable f)
+    (hg : Summable fun x => ‖g x‖) (h'g : Summable g) :
+    Summable fun n => ∑ kl ∈ antidiagonal n, f kl.1 * g kl.2 :=
+  summable_sum_mul_antidiagonal_of_summable_mul (summable_mul_of_summable_norm' hf h'f hg h'g)
+
 /-- The Cauchy product formula for the product of two infinite sums indexed by `ℕ`,
     expressed by summing on `Finset.antidiagonal`.
     See also `tsum_mul_tsum_eq_tsum_sum_antidiagonal` if `f` and `g` are
