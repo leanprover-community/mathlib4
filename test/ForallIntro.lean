@@ -5,15 +5,15 @@ set_option linter.forallIntro false
 /--
 warning: declaration uses 'sorry'
 ---
-warning: Please use
----
-example : True :=
-  by
+warning: replace
+  have (_ : Nat) : ∀ {x} z (y : Nat), x + y = z := by
+    intros s t u
+    refine ?_
+    sorry
+with
   have (_ : Nat) {x} z (y : Nat) : x + y = z := by
     refine ?_
     sorry
-  trivial
----
 note: this linter can be disabled with `set_option linter.forallIntro false`
 -/
 #guard_msgs in
@@ -28,15 +28,15 @@ example : True := by
 /--
 warning: declaration uses 'sorry'
 ---
-warning: Please use
----
-theorem hhh : True :=
-  by
+warning: replace
+  have (_ : Nat) : ∀ {x} z (y : Nat), x + y = z := by
+    intros s t u
+    refine ?_
+    sorry
+with
   have (_ : Nat) {x} z (y : Nat) : x + y = z := by
     refine ?_
     sorry
-  trivial
----
 note: this linter can be disabled with `set_option linter.forallIntro false`
 -/
 #guard_msgs in
@@ -60,23 +60,25 @@ example : True := by
 /--
 warning: declaration uses 'sorry'
 ---
-warning: Please use
----
-example : True :=
-  by
+warning: replace
+  have (_ : Nat) : ∀ x y, ∀ z w, (x + y : Nat) = z + w :=
+    by
+    intros s t u
+    intros s
+    refine ?_
+    sorry
+with
   have (_ : Nat) x y z w : (x + y : Nat) = z + w := by
     refine ?_
     sorry
-  trivial
----
 note: this linter can be disabled with `set_option linter.forallIntro false`
 -/
 #guard_msgs in
 set_option linter.forallIntro true in
 example : True := by
   have (_ : Nat) : ∀ x y, ∀ z w, (x + y : Nat) = z + w := by
-    intros s t
-    intros s t
+    intros s t u
+    intros s
     refine ?_
     sorry
   trivial
@@ -84,16 +86,17 @@ example : True := by
 /--
 warning: declaration uses 'sorry'
 ---
-warning: Please use
----
-example : True :=
-  by
+warning: replace
+  have (_ : Nat) : ∀ {x y : Nat}, ∀ z w, x + y = z + w :=
+    by
+    intros
+    refine ?_
+    sorry
+with
   have (_ : Nat) {x y : Nat} z w : x + y = z + w := by
     intros
     refine ?_
     sorry
-  trivial
----
 note: this linter can be disabled with `set_option linter.forallIntro false`
 -/
 #guard_msgs in
@@ -127,12 +130,12 @@ example : True := by
   trivial
 
 /--
-warning: Please use
----
-example : True := by
+warning: replace
+  have : ∀ (n : Nat), n = n := by
+    intro s
+    rfl
+with
   have (n : Nat) : n = n := by rfl
-  trivial
----
 note: this linter can be disabled with `set_option linter.forallIntro false`
 -/
 #guard_msgs in
@@ -144,17 +147,31 @@ example : True := by
   trivial
 
 /--
+info: /home/damiano/Matematica/Lean4/mathlib4/test/ForallIntro.lean:161:20: error: unknown identifier 's'
+---
+warning: rename 'n' to 's'...
+---
+warning: ... or rename 's' to 'n'?
+-/
+#guard_msgs in
+set_option linter.forallIntro true in
+example : True := by
+  have : ∀ (n : Nat), n = n := by
+    intro s
+    exact rfl (a := s)
+  trivial
+
+/--
 warning: declaration uses 'sorry'
 ---
-warning: Please use
----
-example : True :=
-  by
+warning: replace
+  have : ∀ (k : Nat), ∀ _, ‹_› = k := by
+    intros
+    sorry
+with
   have (k : Nat) _ : ‹_› = k := by
     intros
     sorry
-  trivial
----
 note: this linter can be disabled with `set_option linter.forallIntro false`
 -/
 #guard_msgs in

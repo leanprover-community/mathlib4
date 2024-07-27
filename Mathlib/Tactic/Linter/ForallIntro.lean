@@ -40,9 +40,9 @@ register_option linter.forallIntro : Bool := {
 /-- the `SyntaxNodeKind`s of `intro` and `intros`. -/
 abbrev introTacs := #[``Lean.Parser.Tactic.intros, ``Lean.Parser.Tactic.intro]
 
-/-- `dropIntroVars stx` takes as input the `Syntax` `stx`.
+/-- `dropFirstIntroVar stx` takes as input the `Syntax` `stx`.
 If `stx` is not the tactic `intros ...` or `intro ...`, then it returns `none`.
-Otherwise, `dropIntroVars` "removes the left-most variable from `stx`", with the following
+Otherwise, `dropFirstIntroVar` "removes the left-most variable from `stx`", with the following
 replacements:
 · `intros`        ↦ `some intros`;
 · `intros x`      ↦ `none`;
@@ -52,37 +52,38 @@ replacements:
 · `intro x y ...` ↦ `intro y ...`.
 
 Note that only `intros` with no variable stays `intros`.
-All remaining used of `intros` convert to `none` or some use of `intro`.
+All remaining uses of `intros` convert to `none` or some use of `intro`.
 -/
-def dropIntroVars : Syntax → Option Syntax
+def dropFirstIntroVar : Syntax → Option Syntax × Syntax
   | stx@(.node s1 k #[intr, .node s2 `null vars]) =>
-    let varsDropFirst := vars.erase (vars.getD 0 .missing)
+    let first := vars.getD 0 .missing
+    let varsDropFirst := vars.erase first
     let newIntro : Syntax :=  -- recreate `intro [one fewer variable]`, even if input is `intros`
       .node s1 ``Lean.Parser.Tactic.intro #[mkAtomFrom intr "intro", .node s2 `null varsDropFirst]
     match k, vars.size with
-      | ``Lean.Parser.Tactic.intros, 0  => stx
-      | ``Lean.Parser.Tactic.intros, 1  => none
-      | ``Lean.Parser.Tactic.intros, _  => some newIntro
+      | ``Lean.Parser.Tactic.intros, 0  => (some stx, first)
+      | ``Lean.Parser.Tactic.intros, 1  => (none, first)
+      | ``Lean.Parser.Tactic.intros, _  => (some newIntro, first)
       | ``Lean.Parser.Tactic.intro, 0 |
-        ``Lean.Parser.Tactic.intro, 1   => none
-      | ``Lean.Parser.Tactic.intro, _   => some newIntro
-      | _, _ => none
-  | _ => none
+        ``Lean.Parser.Tactic.intro, 1   => (none, first)
+      | ``Lean.Parser.Tactic.intro, _   => (some newIntro, first)
+      | _, _ => (none, first)
+  | _ => (none, .missing)
 
 /-- if the input syntax is not `by intro(s); ...`, then it returns `none`.
 Otherwise, it removes one identifier introduced by `intro(s)` and returns the resulting syntax. -/
 def Term.dropOneIntro {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] :
-    Syntax → m (Option Syntax)
+    Syntax → m (Option (Syntax × Syntax))
   | `(by $first; $ts*) => do
     if introTacs.contains first.raw.getKind then
-      match dropIntroVars first with
-        | some newIntro =>
+      match dropFirstIntroVar first with
+        | (some newIntro, var) =>
           let newtacs : Syntax.TSepArray `tactic "" :=
             { ts with elemsAndSeps := #[newIntro, mkNullNode] ++ ts.elemsAndSeps }
           let tacSeq ← `(tacticSeq| $[$newtacs]*)
-          return some (← `(term| by $tacSeq))
-        | none =>
-          return some (← `(term| by $[$ts]*))
+          return some (← `(term| by $tacSeq), var)
+        | (none, var) =>
+          return some (← `(term| by $[$ts]*), var)
     else
       return none
   | _ => return none
@@ -102,10 +103,10 @@ The corresponding `TSyntaxArray`s are
 * the variables bound in a `∀` quantifiers.
 -/
 def recombineBinders {ks1 ks2 : SyntaxNodeKinds} (ts1 : TSyntaxArray ks1) (ts2 : TSyntaxArray ks2) :
-    Option (TSyntaxArray ks1 × TSyntaxArray ks2) :=
+    Option (TSyntaxArray ks1 × TSyntaxArray ks2 × Syntax) :=
   if h : 0 < ts2.size then
     let first := ts2[0]
-    (ts1.push ⟨first.raw⟩, ts2.erase first)
+    (ts1.push ⟨first.raw⟩, ts2.erase first, first.raw)
   else
     none
 
@@ -125,11 +126,11 @@ def allStxCore (cmd : Syntax) : Syntax → CommandElabM (Option (Syntax × Synta
   | stx@`(tactic| have $id:haveId $bi1* : ∀ $bi2*, $body := $t) => do
     match recombineBinders bi1 bi2 with
       | none => return none  -- if we ran out of `∀`, then we are done
-      | some (bi1', bi2') =>
-        let newTerm? := ← Term.dropOneIntro t
-        match newTerm? with
+      | some (bi1', bi2', forallVar) =>
+        match ← Term.dropOneIntro t with
           | none => return none  -- if we ran out of `intro(s)`, then we are done
-          | some t' =>
+          | some (t', introVar) =>
+            --dbg_trace "forallVar: {forallVar}\nintroVar: {introVar}\n"
             let newHave := ←
               if bi2'.isEmpty then
                 `(tactic| have $id:haveId $[$bi1']* : $body := $(⟨t'⟩))
@@ -148,6 +149,12 @@ def allStxCore (cmd : Syntax) : Syntax → CommandElabM (Option (Syntax × Synta
               let errs := msgs.unreported.filter (·.severity matches .error)
               for err in errs.toArray do
                 logInfo m!"{← err.toString}"
+              let ids := [forallVar, introVar].map (·.filter (·.isOfKind `ident))
+              let i0 := ids[0]!.getD 0 default
+              let i1 := ids[1]!.getD 0 default
+              if i0 != i1 then
+                logWarningAt i0 m!"rename '{i0}' to '{i1}'..."
+                logWarningAt i1  m!"... or rename '{i1}' to '{i0}'?"
               return none
             else
               return some (newCmd, newHave)
@@ -178,12 +185,14 @@ def forallIntroLinter : Linter where run := withSetOptionIn fun cmd ↦ do
 --  if let some stx := cmd.raw.find? (·.isOfKind ``Lean.Parser.Tactic.tacticHave_) then
     --dbg_trace "found have"
     let newHave ← allStx cmd stx
+    if stx != newHave then
+      Linter.logLint linter.forallIntro stx m!"replace{indentD stx}\nwith{indentD newHave}"
     --logInfo newHave
-    let newCmd ← cmd.replaceM fun s => do if s == stx then return some newHave else return none
-    if cmd != newCmd then
+--    let newCmd ← cmd.replaceM fun s => do if s == stx then return some newHave else return none
+--    if cmd != newCmd then
 --      logInfo m!"No change needed"
 --    else
-      Linter.logLint linter.forallIntro stx m!"Please use\n---\n{newCmd}\n---"
+--      Linter.logLint linter.forallIntro stx m!"Please use\n---\n{newCmd}\n---"
 
 initialize addLinter forallIntroLinter
 
