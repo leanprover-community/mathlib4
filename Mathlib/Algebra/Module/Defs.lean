@@ -326,7 +326,7 @@ section
 variable (R)
 
 /-- `nsmul` is equal to any other module structure via a cast. -/
-lemma natCast_smul_eq_nsmul (n : ℕ) (b : M) : (n : R) • b = n • b := by
+lemma Nat.cast_smul_eq_nsmul (n : ℕ) (b : M) : (n : R) • b = n • b := by
   induction' n with n ih
   · rw [Nat.cast_zero, zero_smul, zero_smul]
   · rw [Nat.cast_succ, add_smul, add_smul, one_smul, ih, one_smul]
@@ -334,11 +334,11 @@ lemma natCast_smul_eq_nsmul (n : ℕ) (b : M) : (n : R) • b = n • b := by
 /-- `nsmul` is equal to any other module structure via a cast. -/
 -- See note [no_index around OfNat.ofNat]
 lemma ofNat_smul_eq_nsmul (n : ℕ) [n.AtLeastTwo] (b : M) :
-    (no_index OfNat.ofNat n : R) • b = OfNat.ofNat n • b := natCast_smul_eq_nsmul ..
+    (no_index OfNat.ofNat n : R) • b = OfNat.ofNat n • b := Nat.cast_smul_eq_nsmul ..
 
 /-- `nsmul` is equal to any other module structure via a cast. -/
-@[deprecated natCast_smul_eq_nsmul (since := "2024-07-23")]
-lemma nsmul_eq_smul_cast (n : ℕ) (b : M) : n • b = (n : R) • b := (natCast_smul_eq_nsmul ..).symm
+@[deprecated Nat.cast_smul_eq_nsmul (since := "2024-07-23")]
+lemma nsmul_eq_smul_cast (n : ℕ) (b : M) : n • b = (n : R) • b := (Nat.cast_smul_eq_nsmul ..).symm
 
 end
 
@@ -346,7 +346,7 @@ end
 mathlib all `AddCommMonoid`s should normally have exactly one `ℕ`-module structure by design.
 -/
 theorem nat_smul_eq_nsmul (h : Module ℕ M) (n : ℕ) (x : M) : @SMul.smul ℕ M h.toSMul n x = n • x :=
-  natCast_smul_eq_nsmul ..
+  Nat.cast_smul_eq_nsmul ..
 
 /-- All `ℕ`-module structures are equal. Not an instance since in mathlib all `AddCommMonoid`
 should normally have exactly one `ℕ`-module structure by design. -/
@@ -370,24 +370,24 @@ section
 variable (R)
 
 /-- `zsmul` is equal to any other module structure via a cast. -/
-lemma intCast_smul_eq_zsmul (n : ℤ) (b : M) : (n : R) • b = n • b :=
+lemma Int.cast_smul_eq_nsmul (n : ℤ) (b : M) : (n : R) • b = n • b :=
   have : ((smulAddHom R M).flip b).comp (Int.castAddHom R) = (smulAddHom ℤ M).flip b := by
     apply AddMonoidHom.ext_int
     simp
   DFunLike.congr_fun this n
 
-@[deprecated (since := "2024-07-23")] alias intCast_smul := intCast_smul_eq_zsmul
+@[deprecated (since := "2024-07-23")] alias intCast_smul := Int.cast_smul_eq_nsmul
 
 /-- `zsmul` is equal to any other module structure via a cast. -/
-@[deprecated intCast_smul_eq_zsmul (since := "2024-07-23")]
-theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b := (intCast_smul_eq_zsmul ..).symm
+@[deprecated Int.cast_smul_eq_nsmul (since := "2024-07-23")]
+theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b := (Int.cast_smul_eq_nsmul ..).symm
 
 end
 
 /-- Convert back any exotic `ℤ`-smul to the canonical instance. This should not be needed since in
 mathlib all `AddCommGroup`s should normally have exactly one `ℤ`-module structure by design. -/
 theorem int_smul_eq_zsmul (h : Module ℤ M) (n : ℤ) (x : M) : @SMul.smul ℤ M h.toSMul n x = n • x :=
-  intCast_smul_eq_zsmul ..
+  Int.cast_smul_eq_nsmul ..
 
 /-- All `ℤ`-module structures are equal. Not an instance since in mathlib all `AddCommGroup`
 should normally have exactly one `ℤ`-module structure by design. -/
@@ -400,12 +400,12 @@ end AddCommGroup
 theorem map_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Ring R] [Ring S] [Module R M] [Module S M₂]
     (x : ℤ) (a : M) :
-    f ((x : R) • a) = (x : S) • f a := by simp only [intCast_smul_eq_zsmul, map_zsmul]
+    f ((x : R) • a) = (x : S) • f a := by simp only [Int.cast_smul_eq_nsmul, map_zsmul]
 
 theorem map_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Semiring R] [Semiring S] [Module R M]
     [Module S M₂] (x : ℕ) (a : M) : f ((x : R) • a) = (x : S) • f a := by
-  simp only [natCast_smul_eq_nsmul, AddMonoidHom.map_nsmul, map_nsmul]
+  simp only [Nat.cast_smul_eq_nsmul, AddMonoidHom.map_nsmul, map_nsmul]
 
 instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
     [Module R M] : IsScalarTower ℤ R M where
@@ -479,7 +479,7 @@ variable [NoZeroSMulDivisors R M] [CharZero R]
 variable (R) (M)
 
 theorem Nat.noZeroSMulDivisors : NoZeroSMulDivisors ℕ M where
-  eq_zero_or_eq_zero_of_smul_eq_zero {c x} := by rw [← natCast_smul_eq_nsmul R, smul_eq_zero]; simp
+  eq_zero_or_eq_zero_of_smul_eq_zero {c x} := by rw [← Nat.cast_smul_eq_nsmul R, smul_eq_zero]; simp
 
 -- Porting note: left-hand side never simplifies when using simp on itself
 --@[simp]
@@ -495,7 +495,7 @@ variable (R M)
 zero as well. Usually `M` is an `R`-algebra. -/
 theorem CharZero.of_module (M) [AddCommMonoidWithOne M] [CharZero M] [Module R M] : CharZero R := by
   refine ⟨fun m n h => @Nat.cast_injective M _ _ _ _ ?_⟩
-  rw [← nsmul_one, ← nsmul_one, ← natCast_smul_eq_nsmul R, ← natCast_smul_eq_nsmul R, h]
+  rw [← nsmul_one, ← nsmul_one, ← Nat.cast_smul_eq_nsmul R, ← Nat.cast_smul_eq_nsmul R, h]
 
 end Module
 
@@ -561,7 +561,7 @@ theorem smul_left_injective {x : M} (hx : x ≠ 0) : Function.Injective fun c : 
 end SMulInjective
 
 instance [NoZeroSMulDivisors ℤ M] : NoZeroSMulDivisors ℕ M :=
-  ⟨fun {c x} hcx ↦ by rwa [← natCast_smul_eq_nsmul ℤ, smul_eq_zero, Nat.cast_eq_zero] at hcx⟩
+  ⟨fun {c x} hcx ↦ by rwa [← Nat.cast_smul_eq_nsmul ℤ, smul_eq_zero, Nat.cast_eq_zero] at hcx⟩
 
 variable (R M)
 
@@ -573,7 +573,7 @@ scalar torsion. -/
 theorem CharZero.of_noZeroSMulDivisors [Nontrivial M] [NoZeroSMulDivisors ℤ M] : CharZero R := by
   refine ⟨fun {n m h} ↦ ?_⟩
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
-  replace h : (n : ℤ) • x = (m : ℤ) • x := by simp [← natCast_smul_eq_nsmul R, h]
+  replace h : (n : ℤ) • x = (m : ℤ) • x := by simp [← Nat.cast_smul_eq_nsmul R, h]
   simpa using smul_left_injective ℤ hx h
 
 end Module

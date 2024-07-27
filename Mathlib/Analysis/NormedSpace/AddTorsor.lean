@@ -194,7 +194,7 @@ end invertibleTwo
 variable (𝕜) in
 theorem dist_pointReflection_right (p q : P) :
     dist (Equiv.pointReflection p q) q = ‖(2 : 𝕜)‖ * dist p q := by
-  simp [dist_eq_norm_vsub V, Equiv.pointReflection_vsub_right (G := V), ← natCast_smul_eq_nsmul 𝕜,
+  simp [dist_eq_norm_vsub V, Equiv.pointReflection_vsub_right (G := V), ← Nat.cast_smul_eq_nsmul 𝕜,
     norm_smul]
 
 variable (𝕜) in

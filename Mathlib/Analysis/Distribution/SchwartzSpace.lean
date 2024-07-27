@@ -257,13 +257,13 @@ instance instNSMul : SMul ℕ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
       smooth' := (f.smooth _).const_smul c
-      decay' := by simpa [← natCast_smul_eq_nsmul ℝ] using ((c : ℝ) • f).decay' }⟩
+      decay' := by simpa [← Nat.cast_smul_eq_nsmul ℝ] using ((c : ℝ) • f).decay' }⟩
 
 instance instZSMul : SMul ℤ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
       smooth' := (f.smooth _).const_smul c
-      decay' := by simpa [← intCast_smul_eq_zsmul ℝ] using ((c : ℝ) • f).decay' }⟩
+      decay' := by simpa [← Int.cast_smul_eq_nsmul ℝ] using ((c : ℝ) • f).decay' }⟩
 
 end SMul
 
