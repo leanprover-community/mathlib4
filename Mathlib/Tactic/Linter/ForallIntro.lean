@@ -30,28 +30,32 @@ open Lean Elab Command
 /-- the `SyntaxNodeKind`s of `intro` and `intros`. -/
 abbrev introTacs := #[``Lean.Parser.Tactic.intros, ``Lean.Parser.Tactic.intro]
 
-/-- if the input is `have .. : ∀ ids : typs, ... := by intro(s)...`, then
-it returns `(#[ids, typs], #[intro(s)])`, otherwise it returns `(#[], #[])`.
-Note that `typs` could be `null`.
--/
+/-- `dropIntroVars stx` takes as input the `Syntax` `stx`.
+If `stx` is not the tactic `intros ...` or `intro ...`, then it returns `none`.
+Otherwise, `dropIntroVars` "removes the left-most variable from `stx`", with the following
+replacements:
+· `intros`        ↦ `some intros`;
+· `intros x`      ↦ `none`;
+· `intros x ...`  ↦ `intro ...`;
+· `intro`         ↦ `none`;
+· `intro x`       ↦ `none`;
+· `intro x y ...` ↦ `intro y ...`.
 
+Note that only `intros` with no variable stays `intros`.
+All remaining used of `intros` convert to `none` or some use of `intro`.
+-/
 def dropIntroVars : Syntax → Option Syntax
   | stx@(.node s1 k #[intr, .node s2 `null vars]) =>
     let varsDropFirst := vars.erase (vars.getD 0 .missing)
-    let skipStx := none --some <| mkNode ``Lean.Parser.Tactic.skip #[mkAtom "skip"]
     let newIntro : Syntax :=  -- recreate `intro [one fewer variable]`, even if input is `intros`
       .node s1 ``Lean.Parser.Tactic.intro #[mkAtomFrom intr "intro", .node s2 `null varsDropFirst]
     match k, vars.size with
-      | ``Lean.Parser.Tactic.intros, 0 =>
-        stx -- `intros` stays `intros`
-      | ``Lean.Parser.Tactic.intros, 1 =>
-        skipStx -- `intros x` converts to `skip`
-      | ``Lean.Parser.Tactic.intros, _ =>
-        some newIntro -- `intros x ...` converts to `intro ...`
-      | ``Lean.Parser.Tactic.intro, 0 | ``Lean.Parser.Tactic.intro, 1 =>
-        skipStx -- `intro` and `intro x` convert to `skip`
-      | ``Lean.Parser.Tactic.intro, _ =>
-        some newIntro -- `intro x y ...` converts to `intro y ...`
+      | ``Lean.Parser.Tactic.intros, 0  => stx
+      | ``Lean.Parser.Tactic.intros, 1  => none
+      | ``Lean.Parser.Tactic.intros, _  => some newIntro
+      | ``Lean.Parser.Tactic.intro, 0 |
+        ``Lean.Parser.Tactic.intro, 1   => none
+      | ``Lean.Parser.Tactic.intro, _   => some newIntro
       | _, _ => none
   | _ => none
 
