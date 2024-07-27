@@ -202,7 +202,9 @@ protected noncomputable abbrev field (I : Ideal R) [hI : I.IsMaximal] : Field (R
   __ := commRing _
   __ := Quotient.groupWithZero _
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun q x => rfl
 
 /-- If the quotient by an ideal is a field, then the ideal is maximal. -/
 theorem maximal_of_isField (I : Ideal R) (hqf : IsField (R ⧸ I)) : I.IsMaximal := by

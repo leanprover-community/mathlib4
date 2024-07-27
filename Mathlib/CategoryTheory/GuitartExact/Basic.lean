@@ -116,17 +116,19 @@ abbrev CostructuredArrowDownwards :=
 section
 
 variable (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃)
-  (comm : R.map a ≫ w.app X₁ ≫ B.map b = g)
 
 /-- Constructor for objects in `w.StructuredArrowRightwards g`. -/
-abbrev StructuredArrowRightwards.mk : w.StructuredArrowRightwards g :=
+abbrev StructuredArrowRightwards.mk (comm : R.map a ≫ w.app X₁ ≫ B.map b = g) :
+    w.StructuredArrowRightwards g :=
   StructuredArrow.mk (Y := CostructuredArrow.mk b) (CostructuredArrow.homMk a comm)
 
 /-- Constructor for objects in `w.CostructuredArrowDownwards g`. -/
-abbrev CostructuredArrowDownwards.mk : w.CostructuredArrowDownwards g :=
+abbrev CostructuredArrowDownwards.mk (comm : R.map a ≫ w.app X₁ ≫ B.map b = g) :
+    w.CostructuredArrowDownwards g :=
   CostructuredArrow.mk (Y := StructuredArrow.mk a)
     (StructuredArrow.homMk b (by simpa using comm))
 
+variable (comm : R.map a ≫ w.app X₁ ≫ B.map b = g)
 variable {w g}
 
 lemma StructuredArrowRightwards.mk_surjective
