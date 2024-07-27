@@ -83,29 +83,26 @@ def eLpNorm {_ : MeasurableSpace α} (f : α → F) (p : ℝ≥0∞) (μ : Measu
 theorem eLpNorm_eq_eLpNorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → F} :
     eLpNorm f p μ = eLpNorm' f (ENNReal.toReal p) μ := by simp [eLpNorm, hp_ne_zero, hp_ne_top]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_nnreal_eq_snorm' := eLpNorm_eq_eLpNorm'
+@[deprecated (since := "2024-07-27")] alias snorm_eq_snorm' := eLpNorm_eq_eLpNorm'
 
 lemma eLpNorm_nnreal_eq_eLpNorm' {f : α → F} {p : ℝ≥0} (hp : p ≠ 0) :
     eLpNorm f p μ = eLpNorm' f p μ :=
   eLpNorm_eq_eLpNorm' (by exact_mod_cast hp) ENNReal.coe_ne_top
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_eq_lintegral_rpow_nnnorm := eLpNorm_nnreal_eq_eLpNorm'
+@[deprecated (since := "2024-07-27")] alias snorm_nnreal_eq_snorm' := eLpNorm_nnreal_eq_eLpNorm'
 
 theorem eLpNorm_eq_lintegral_rpow_nnnorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → F} :
     eLpNorm f p μ = (∫⁻ x, (‖f x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
   rw [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top, eLpNorm']
 
 @[deprecated (since := "2024-07-27")]
-alias snorm_nnreal_eq_lintegral := eLpNorm_eq_lintegral_rpow_nnnorm
+alias snorm_eq_lintegral_rpow_nnnorm := eLpNorm_eq_lintegral_rpow_nnnorm
 
 lemma eLpNorm_nnreal_eq_lintegral {f : α → F} {p : ℝ≥0} (hp : p ≠ 0) :
     eLpNorm f p μ = (∫⁻ x, ‖f x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) :=
   eLpNorm_nnreal_eq_eLpNorm' hp
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_one_eq_lintegral_nnnorm := eLpNorm_nnreal_eq_lintegral
+@[deprecated (since := "2024-07-27")] alias snorm_nnreal_eq_lintegral := eLpNorm_nnreal_eq_lintegral
 
 theorem eLpNorm_one_eq_lintegral_nnnorm {f : α → F} : eLpNorm f 1 μ = ∫⁻ x, ‖f x‖₊ ∂μ := by
   simp_rw [eLpNorm_eq_lintegral_rpow_nnnorm one_ne_zero ENNReal.coe_ne_top, ENNReal.one_toReal,
