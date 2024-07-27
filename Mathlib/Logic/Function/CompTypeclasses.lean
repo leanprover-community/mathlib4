@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.Init.Function
+import Mathlib.Logic.Function.Defs
 
 /-!
 # Propositional typeclasses on several maps
