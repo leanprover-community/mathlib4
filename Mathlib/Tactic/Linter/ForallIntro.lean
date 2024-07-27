@@ -25,8 +25,21 @@ def filter (stx : Syntax) (f : Syntax → Bool) : Array Syntax :=
 
 end Lean.Syntax
 
+/-!
+#  The "forallIntro" linter
+
+The "forallIntro" linter emits a warnings when it sees `have : ∀ ... := by intro(s) ...`.
+-/
+
 open Lean Elab Command
 
+namespace Mathlib.Linter
+
+/-- The "forallIntro" linter emits a warnings when it sees `have : ∀ ... := by intro(s) ...`. -/
+register_option linter.forallIntro : Bool := {
+  defValue := true
+  descr := "enable the forallIntro linter"
+}
 /-- the `SyntaxNodeKind`s of `intro` and `intros`. -/
 abbrev introTacs := #[``Lean.Parser.Tactic.intros, ``Lean.Parser.Tactic.intro]
 
@@ -147,140 +160,31 @@ def allStx (cmd stx : Syntax) : CommandElabM Syntax := do
     | none => return stx
     | some (cmd, stx) => allStx cmd stx
 
-elab "fh " cmd:command : command => do
-  elabCommand cmd
-  let haves := cmd.raw.filter (·.isOfKind ``Lean.Parser.Tactic.tacticHave_)
+namespace ForallIntro
+
+/-- Gets the value of the `linter.forallIntro` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.forallIntro o
+
+@[inherit_doc Mathlib.Linter.linter.forallIntro]
+def forallIntroLinter : Linter where run := withSetOptionIn fun cmd ↦ do
+  unless getLinterHash (← getOptions) do
+    return
+  if (← MonadState.get).messages.hasErrors then
+    return
+  let haves := cmd.filter (·.isOfKind ``Lean.Parser.Tactic.tacticHave_)
   for stx in haves do
 --  if let some stx := cmd.raw.find? (·.isOfKind ``Lean.Parser.Tactic.tacticHave_) then
     --dbg_trace "found have"
     let newHave ← allStx cmd stx
     --logInfo newHave
-    let newCmd ← cmd.raw.replaceM fun s => do if s == stx then return some newHave else return none
-    if cmd == newCmd then
-      logInfo m!"No change needed"
-    else
-      logWarning m!"Please use\n---\n{newCmd}\n---"
+    let newCmd ← cmd.replaceM fun s => do if s == stx then return some newHave else return none
+    if cmd != newCmd then
+--      logInfo m!"No change needed"
+--    else
+      Linter.logLint linter.forallIntro stx m!"Please use\n---\n{newCmd}\n---"
 
--- and the test is successful!
-/--
-warning: declaration uses 'sorry'
----
-warning: Please use
----
-example : True :=
-  by
-  have (_ : Nat) {x} z (y : Nat) : x + y = z := by
-    refine ?_
-    sorry
-  trivial
----
--/
-#guard_msgs in
-fh
---inspect
-example : True := by
-  have (_ : Nat) : ∀ {x} z (y : Nat), x + y = z := by
-    intros s t u
-    refine ?_
-    sorry
-  trivial
+initialize addLinter forallIntroLinter
 
-/--
-warning: declaration uses 'sorry'
----
-warning: Please use
----
-example : True :=
-  by
-  have (_ : Nat) x y z w : (x + y : Nat) = z + w := by
-    refine ?_
-    sorry
-  trivial
----
--/
-#guard_msgs in
-fh
---inspect
-example : True := by
-  have (_ : Nat) : ∀ x y, ∀ z w, (x + y : Nat) = z + w := by
-    intros s t
-    intros s t
-    refine ?_
-    sorry
-  trivial
+end ForallIntro
 
-/--
-warning: declaration uses 'sorry'
----
-warning: Please use
----
-example : True :=
-  by
-  have (_ : Nat) {x y : Nat} z w : x + y = z + w := by
-    intros
-    refine ?_
-    sorry
-  trivial
----
--/
-#guard_msgs in
-fh
-example : True := by
-  have (_ : Nat) : ∀ {x y : Nat}, ∀ z w, x + y = z + w := by
-    intros
-    refine ?_
-    sorry
-  trivial
-
-/--
-warning: declaration uses 'sorry'
----
-info: No change needed
--/
-#guard_msgs in
-fh
---inspect
-example : True := by
-  have (_ : Nat) : ∀ x y, x + y = 0 := by
-    refine ?_
-    sorry
-  trivial
-
-/--
-warning: Please use
----
-example : True := by
-  have (n : Nat) : n = n := by rfl
-  trivial
----
--/
-#guard_msgs in
-fh
---inspect
-example : True := by
-  have : ∀ (n : Nat), n = n := by
-    intro s
-    rfl
-  trivial
-
-/--
-warning: declaration uses 'sorry'
----
-warning: Please use
----
-example : True :=
-  by
-  have (k : Nat) _ : ‹_› = k := by
-    intros
-    sorry
-  trivial
----
--/
-#guard_msgs in
-fh
---inspect
-example : True := by
-  have :  ∀ (k : Nat), ∀ _, ‹_› = k := by
-    intros
-    sorry
-  trivial
+end Mathlib.Linter
