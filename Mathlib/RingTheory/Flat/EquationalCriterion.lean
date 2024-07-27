@@ -55,8 +55,7 @@ universe u
 
 variable {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M]
 
-open Classical DirectSum LinearMap TensorProduct Finsupp
-open scoped BigOperators
+open Classical LinearMap TensorProduct Finsupp
 
 namespace Module
 
@@ -160,8 +159,8 @@ theorem tfae_equational_criterion : List.TFAE [
     have : x' f' = 0 := by simpa [x', f', total_apply, sum_fintype] using hfx
     obtain ⟨κ, hκ, a', y', ha'y', ha'⟩ := h₅ this
     refine ⟨κ, hκ, fun i ↦ a' (single i 1), fun j ↦ y' (single j 1), fun i ↦ ?_, fun j ↦ ?_⟩
-    · simpa [x', ← map_smul, ← map_sum, ← smul_single]
-        using LinearMap.congr_fun ha'y' (Finsupp.single i 1)
+    · simpa [x', ← map_smul, ← map_sum, smul_single] using
+        LinearMap.congr_fun ha'y' (Finsupp.single i 1)
     · simp_rw [← smul_eq_mul, ← Finsupp.smul_apply, ← map_smul, ← finset_sum_apply, ← map_sum,
         smul_single, smul_eq_mul, mul_one,
         ← (fun _ ↦ equivFunOnFinite_symm_apply_toFun _ _ : ∀ x, f' x = f x), univ_sum_single]
@@ -264,7 +263,7 @@ theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type u}
   have (K' : Submodule R K) (hK' : K'.FG) : ∃ (κ : Type u) (_ : Fintype κ) (a : N →ₗ[R] (κ →₀ R))
       (y : (κ →₀ R) →ₗ[R] M), x = y ∘ₗ a ∧ K' ≤ LinearMap.ker (a ∘ₗ f) := by
     revert N
-    apply Submodule.fg_induction (P := _) (N := K') (hN := hK')
+    apply Submodule.fg_induction (N := K') (hN := hK')
     · intro k N _ _ _ _ f x hfx
       have : x (f k) = 0 := by simpa using LinearMap.congr_fun hfx k
       simpa using exists_factorization_of_apply_eq_zero_of_free this

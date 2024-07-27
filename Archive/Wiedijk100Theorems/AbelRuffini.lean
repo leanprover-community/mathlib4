@@ -6,8 +6,6 @@ Authors: Thomas Browning
 import Mathlib.FieldTheory.AbelRuffini
 import Mathlib.RingTheory.Polynomial.Selmer
 
-#align_import wiedijk_100_theorems.abel_ruffini from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
-
 /-!
 # Construction of an algebraic number that is not solvable by radicals.
 
