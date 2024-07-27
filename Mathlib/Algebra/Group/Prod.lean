@@ -99,7 +99,7 @@ theorem swap_one [One M] [One N] : (1 : M × N).swap = 1 :=
 
 @[to_additive]
 theorem fst_mul_snd [MulOneClass M] [MulOneClass N] (p : M × N) : (p.fst, 1) * (1, p.snd) = p :=
-  ext (mul_one p.1) (one_mul p.2)
+  Prod.ext (mul_one p.1) (one_mul p.2)
 
 @[to_additive]
 instance instInv [Inv M] [Inv N] : Inv (M × N) :=
@@ -123,7 +123,7 @@ theorem swap_inv [Inv G] [Inv H] (p : G × H) : p⁻¹.swap = p.swap⁻¹ :=
 
 @[to_additive]
 instance [InvolutiveInv M] [InvolutiveInv N] : InvolutiveInv (M × N) :=
-  { inv_inv := fun _ => ext (inv_inv _) (inv_inv _) }
+  { inv_inv := fun _ => Prod.ext (inv_inv _) (inv_inv _) }
 
 @[to_additive]
 instance instDiv [Div M] [Div N] : Div (M × N) :=
@@ -162,8 +162,8 @@ instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) 
 @[to_additive]
 instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
   { npow := fun z a => ⟨Monoid.npow z a.1, Monoid.npow z a.2⟩,
-    npow_zero := fun z => ext (Monoid.npow_zero _) (Monoid.npow_zero _),
-    npow_succ := fun z a => ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
+    npow_zero := fun z => Prod.ext (Monoid.npow_zero _) (Monoid.npow_zero _),
+    npow_succ := fun z a => Prod.ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
     one_mul := by simp,
     mul_one := by simp }
 
@@ -171,15 +171,15 @@ instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
 instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) :=
   { div_eq_mul_inv := fun _ _ => mk.inj_iff.mpr ⟨div_eq_mul_inv _ _, div_eq_mul_inv _ _⟩,
     zpow := fun z a => ⟨DivInvMonoid.zpow z a.1, DivInvMonoid.zpow z a.2⟩,
-    zpow_zero' := fun _ => ext (DivInvMonoid.zpow_zero' _) (DivInvMonoid.zpow_zero' _),
-    zpow_succ' := fun _ _ => ext (DivInvMonoid.zpow_succ' _ _) (DivInvMonoid.zpow_succ' _ _),
-    zpow_neg' := fun _ _ => ext (DivInvMonoid.zpow_neg' _ _) (DivInvMonoid.zpow_neg' _ _) }
+    zpow_zero' := fun _ => Prod.ext (DivInvMonoid.zpow_zero' _) (DivInvMonoid.zpow_zero' _),
+    zpow_succ' := fun _ _ => Prod.ext (DivInvMonoid.zpow_succ' _ _) (DivInvMonoid.zpow_succ' _ _),
+    zpow_neg' := fun _ _ => Prod.ext (DivInvMonoid.zpow_neg' _ _) (DivInvMonoid.zpow_neg' _ _) }
 
 @[to_additive]
 instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=
-  { mul_inv_rev := fun a b => ext (mul_inv_rev _ _) (mul_inv_rev _ _),
+  { mul_inv_rev := fun a b => Prod.ext (mul_inv_rev _ _) (mul_inv_rev _ _),
     inv_eq_of_mul := fun a b h =>
-      ext (inv_eq_of_mul_eq_one_right <| congr_arg fst h)
+      Prod.ext (inv_eq_of_mul_eq_one_right <| congr_arg fst h)
         (inv_eq_of_mul_eq_one_right <| congr_arg snd h),
     inv_inv := by simp }
 
@@ -250,7 +250,7 @@ theorem SemiconjBy.prod {x y z : M × N}
 
 @[to_additive]
 theorem Prod.semiconjBy_iff {x y z : M × N} :
-    SemiconjBy x y z ↔ SemiconjBy x.1 y.1 z.1 ∧ SemiconjBy x.2 y.2 z.2 := ext_iff
+    SemiconjBy x y z ↔ SemiconjBy x.1 y.1 z.1 ∧ SemiconjBy x.2 y.2 z.2 := Prod.ext_iff
 
 @[to_additive AddCommute.prod]
 theorem Commute.prod {x y : M × N} (hm : Commute x.1 y.1) (hn : Commute x.2 y.2) : Commute x y :=

@@ -258,7 +258,7 @@ lemma biprod_ext {X₁ X₂ : C} {α β : Ext (X₁ ⊞ X₂) Y n}
     (h₂ : (mk₀ biprod.inr).comp α (zero_add n) = (mk₀ biprod.inr).comp β (zero_add n)) :
     α = β := by
   letI := HasDerivedCategory.standard C
-  rw [ext_iff] at h₁ h₂ ⊢
+  rw [Ext.ext_iff] at h₁ h₂ ⊢
   simp only [comp_hom, mk₀_hom, ShiftedHom.mk₀_comp] at h₁ h₂
   apply BinaryCofan.IsColimit.hom_ext
     (isBinaryBilimitOfPreserves (DerivedCategory.singleFunctor C 0)

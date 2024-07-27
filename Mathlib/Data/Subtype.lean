@@ -71,13 +71,13 @@ lemma heq_iff_coe_heq {α β : Sort _} {p : α → Prop} {q : β → Prop} {a : 
     {b : {y // q y}} (h : α = β) (h' : HEq p q) : HEq a b ↔ HEq (a : α) (b : β) := by
   subst h
   subst h'
-  rw [heq_iff_eq, heq_iff_eq, ext_iff]
+  rw [heq_iff_eq, heq_iff_eq, Subtype.ext_iff]
 
 theorem ext_val {a1 a2 : { x // p x }} : a1.1 = a2.1 → a1 = a2 :=
   Subtype.ext
 
 theorem ext_iff_val {a1 a2 : { x // p x }} : a1 = a2 ↔ a1.1 = a2.1 :=
-  ext_iff
+  Subtype.ext_iff
 
 @[simp]
 theorem coe_eta (a : { a // p a }) (h : p a) : mk (↑a) h = a :=
@@ -91,7 +91,7 @@ theorem coe_mk (a h) : (@mk α p a h : α) = a :=
 -- built-in reduction doesn't always work
 -- @[simp, nolint simp_nf]
 theorem mk_eq_mk {a h a' h'} : @mk α p a h = @mk α p a' h' ↔ a = a' :=
-  ext_iff
+  Subtype.ext_iff
 
 theorem coe_eq_of_eq_mk {a : { a // p a }} {b : α} (h : ↑a = b) : a = ⟨b, h ▸ a.2⟩ :=
   Subtype.ext h

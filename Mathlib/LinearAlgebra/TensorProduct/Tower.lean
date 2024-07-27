@@ -112,7 +112,7 @@ nonrec def lift (f : M →ₗ[A] N →ₗ[R] P) : M ⊗[R] N →ₗ[A] P :=
           (lift (f.restrictScalars R)).comp (lsmul R R _ c) x =
             (lsmul R R _ c).comp (lift (f.restrictScalars R)) x
         from
-        ext_iff.1 <|
+        LinearMap.ext_iff.1 <|
           TensorProduct.ext' fun x y => by
             simp only [comp_apply, Algebra.lsmul_coe, smul_tmul', lift.tmul,
               coe_restrictScalars, f.map_smul, smul_apply] }

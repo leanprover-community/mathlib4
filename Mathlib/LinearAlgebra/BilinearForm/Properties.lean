@@ -122,7 +122,7 @@ theorem isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
 
 variable (R₂) in
 theorem isSymm_iff_flip : B.IsSymm ↔ flipHom B = B :=
-  (forall₂_congr fun _ _ => by exact eq_comm).trans ext_iff.symm
+  (forall₂_congr fun _ _ => by exact eq_comm).trans BilinForm.ext_iff.symm
 
 /-- The proposition that a bilinear form is alternating -/
 def IsAlt (B : BilinForm R M) : Prop := LinearMap.IsAlt B

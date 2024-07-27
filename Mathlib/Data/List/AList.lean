@@ -64,7 +64,7 @@ theorem ext_iff {s t : AList β} : s = t ↔ s.entries = t.entries :=
   ⟨congr_arg _, ext⟩
 
 instance [DecidableEq α] [∀ a, DecidableEq (β a)] : DecidableEq (AList β) := fun xs ys => by
-  rw [ext_iff]; infer_instance
+  rw [AList.ext_iff]; infer_instance
 
 /-! ### keys -/
 
