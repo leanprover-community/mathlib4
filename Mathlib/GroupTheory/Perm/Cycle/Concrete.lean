@@ -101,11 +101,13 @@ theorem cycleType_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) :
   rw [← length_attach] at hn
   rw [← nodup_attach] at hl
   rw [cycleType_eq [l.attach.formPerm]]
-  · simp only [map, Function.comp_apply]
-    rw [support_formPerm_of_nodup _ hl, card_toFinset, dedup_eq_self.mpr hl]
-    · simp
-    · intro x h
+  · simp only [map, Function.comp_apply, supportCard_compute,
+    Multiset.coe_singleton, Multiset.singleton_inj]
+    have H : ∀ (x : { x // x ∈ l }), l.attach ≠ [x] := by
+      intros x h
       simp [h, Nat.succ_le_succ_iff] at hn
+    simp_rw [support_formPerm_of_nodup _ hl H, Finset.toFinset_coe, List.card_toFinset,
+    dedup_eq_self.mpr hl, List.length_attach]
   · simp
   · simpa using isCycle_formPerm hl hn
   · simp
@@ -150,7 +152,7 @@ theorem isCycle_formPerm (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) :
   induction s using Quot.inductionOn
   exact List.isCycle_formPerm h (length_nontrivial hn)
 
-theorem support_formPerm [Fintype α] (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) :
+theorem support_formPerm (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) :
     support (formPerm s h) = s.toFinset := by
   induction' s using Quot.inductionOn with s
   refine support_formPerm_of_nodup s h ?_
@@ -197,23 +199,26 @@ variable [Fintype α] [DecidableEq α] (p : Equiv.Perm α) (x : α)
 until looping. That means when `f x = x`, `toList f x = []`.
 -/
 def toList : List α :=
-  (List.range (cycleOf p x).support.card).map fun k => (p ^ k) x
+  (List.range (cycleOf p x).support.toFinset.card).map fun k => (p ^ k) x
 
 @[simp]
 theorem toList_one : toList (1 : Perm α) x = [] := by simp [toList, cycleOf_one]
 
 @[simp]
-theorem toList_eq_nil_iff {p : Perm α} {x} : toList p x = [] ↔ x ∉ p.support := by simp [toList]
+theorem toList_eq_nil_iff {p : Perm α} {x} : toList p x = [] ↔ x ∉ p.support := by
+  simp_rw [toList, ← supportCard_compute, not_mem_support, map_eq_nil, range_eq_nil,
+  supportCard_eq_zero, cycleOf_eq_one_iff]
 
 @[simp]
-theorem length_toList : length (toList p x) = (cycleOf p x).support.card := by simp [toList]
+theorem length_toList : length (toList p x) = (cycleOf p x).supportCard := by
+  simp_rw [toList, ← supportCard_compute, length_map, length_range]
 
 theorem toList_ne_singleton (y : α) : toList p x ≠ [y] := by
   intro H
-  simpa [card_support_ne_one] using congr_arg length H
+  simpa [supportCard_ne_one] using congr_arg length H
 
 theorem two_le_length_toList_iff_mem_support {p : Perm α} {x : α} :
-    2 ≤ length (toList p x) ↔ x ∈ p.support := by simp
+    2 ≤ length (toList p x) ↔ x ∈ p.support := by simp [mem_support]
 
 theorem length_toList_pos_of_mem_support (h : x ∈ p.support) : 0 < length (toList p x) :=
   zero_lt_two.trans_le (two_le_length_toList_iff_mem_support.mpr h)
@@ -245,6 +250,7 @@ theorem mem_toList_iff {y : α} : y ∈ toList p x ↔ SameCycle p x y ∧ x ∈
     rw [← support_cycleOf_eq_nil_iff] at hx
     simp [hx]
   · rintro ⟨h, hx⟩
+    rw [← supportCard_compute]
     simpa using h.exists_pow_eq_of_mem_support hx
 
 set_option linter.deprecated false in
@@ -328,11 +334,13 @@ theorem toList_formPerm_nontrivial (l : List α) (hl : 2 ≤ l.length) (hn : Nod
     refine support_formPerm_of_nodup _ hn ?_
     rintro _ rfl
     simp [Nat.succ_le_succ_iff] at hl
-  rw [toList, hc.cycleOf_eq (mem_support.mp _), hs, card_toFinset, dedup_eq_self.mpr hn]
+  have H : l.formPerm.cycleOf (l.get (⟨0, zero_lt_two.trans_le hl⟩)) =
+    l.formPerm := hc.cycleOf_eq (mem_support.mp (hs ▸ by
+      simp only [get_eq_getElem, coe_toFinset, Set.mem_setOf_eq, getElem_mem]))
+  simp_rw [toList, H, hs, Finset.toFinset_coe, card_toFinset, dedup_eq_self.mpr hn]
   · refine ext_getElem (by simp) fun k hk hk' => ?_
     simp only [get_eq_getElem, formPerm_pow_apply_getElem _ hn, zero_add, getElem_map,
       getElem_range, Nat.mod_eq_of_lt hk']
-  · simpa [hs] using get_mem _ _ _
 
 theorem toList_formPerm_isRotated_self (l : List α) (hl : 2 ≤ l.length) (hn : Nodup l) (x : α)
     (hx : x ∈ l) : toList (formPerm l) x ~r l := by

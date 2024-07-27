@@ -74,22 +74,23 @@ theorem mem_or_mem_of_zipWith_swap_prod_ne : ∀ {l l' : List α} {x : α},
      (mem_or_mem_of_zipWith_swap_prod_ne h).imp (.tail _) (.tail _)
 
 theorem zipWith_swap_prod_support' (l l' : List α) :
-    { x | (zipWith swap l l').prod x ≠ x } ≤ l.toFinset ⊔ l'.toFinset := fun _ h ↦ by
+    (zipWith swap l l').prod.support ≤ {x | x ∈ l ∪ l'} := fun _ h ↦ by
   simpa using mem_or_mem_of_zipWith_swap_prod_ne h
 
-theorem zipWith_swap_prod_support [Fintype α] (l l' : List α) :
+theorem zipWith_swap_prod_support (l l' : List α) :
     (zipWith swap l l').prod.support ≤ l.toFinset ⊔ l'.toFinset := by
   intro x hx
-  have hx' : x ∈ { x | (zipWith swap l l').prod x ≠ x } := by simpa using hx
+  have hx' : x ∈ (zipWith swap l l').prod.support := by simpa using hx
   simpa using zipWith_swap_prod_support' _ _ hx'
 
-theorem support_formPerm_le' : { x | formPerm l x ≠ x } ≤ l.toFinset := by
+theorem support_formPerm_le' : support (formPerm l) ≤ {x | x ∈ l} := by
   refine (zipWith_swap_prod_support' l l.tail).trans ?_
-  simpa [Finset.subset_iff] using tail_subset l
+  simp_rw [mem_union_iff, Set.le_eq_subset, Set.setOf_subset_setOf]
+  exact fun _ hx => hx.by_cases id mem_of_mem_tail
 
-theorem support_formPerm_le [Fintype α] : support (formPerm l) ≤ l.toFinset := by
+theorem support_formPerm_le : support (formPerm l) ≤ l.toFinset := by
   intro x hx
-  have hx' : x ∈ { x | formPerm l x ≠ x } := by simpa using hx
+  have hx' : x ∈ (formPerm l).support := by simpa using hx
   simpa using support_formPerm_le' _ hx'
 
 variable {l} {x : α}
@@ -229,13 +230,13 @@ theorem formPerm_apply_nthLe (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n < x
   apply formPerm_apply_get _ h
 
 theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α, l ≠ [x]) :
-    { x | formPerm l x ≠ x } = l.toFinset := by
+    (formPerm l).support = {x | x ∈ l} := by
   apply _root_.le_antisymm
   · exact support_formPerm_le' l
   · intro x hx
-    simp only [Finset.mem_coe, mem_toFinset] at hx
+    simp only [Set.mem_setOf_eq] at hx
     obtain ⟨⟨n, hn⟩, rfl⟩ := get_of_mem hx
-    rw [Set.mem_setOf_eq, formPerm_apply_get _ h]
+    rw [mem_support, formPerm_apply_get _ h]
     intro H
     rw [nodup_iff_injective_get, Function.Injective] at h
     specialize h H
@@ -245,11 +246,10 @@ theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α,
       rw [← length_eq_one, ← hn', (Fin.mk.inj_iff.mp h).symm]
     · simp [Nat.mod_eq_of_lt hn'] at h
 
-theorem support_formPerm_of_nodup [Fintype α] (l : List α) (h : Nodup l) (h' : ∀ x : α, l ≠ [x]) :
+theorem support_formPerm_of_nodup (l : List α) (h : Nodup l) (h' : ∀ x : α, l ≠ [x]) :
     support (formPerm l) = l.toFinset := by
-  rw [← Finset.coe_inj]
+  rw [coe_toFinset]
   convert support_formPerm_of_nodup' _ h h'
-  simp [Set.ext_iff]
 
 theorem formPerm_rotate_one (l : List α) (h : Nodup l) : formPerm (l.rotate 1) = formPerm l := by
   have h' : Nodup (l.rotate 1) := by simpa using h
@@ -329,9 +329,9 @@ theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :
   have hl : (x :: y :: l).length = (x' :: y' :: l').length := by
     rw [← dedup_eq_self.mpr hd, ← dedup_eq_self.mpr hd', ← card_toFinset, ← card_toFinset]
     refine congr_arg Finset.card ?_
-    rw [← Finset.coe_inj, ← support_formPerm_of_nodup' _ hd (by simp), ←
-      support_formPerm_of_nodup' _ hd' (by simp)]
-    simp only [h]
+    simp_rw [← Finset.coe_inj, coe_toFinset, ← support_formPerm_of_nodup' _ hd (by simp),
+    ← support_formPerm_of_nodup' _ hd' (by simp), Set.ext_iff, mem_support]
+    simp only [h, implies_true]
   use n
   apply List.ext_get
   · rw [length_rotate, hl]
@@ -368,10 +368,9 @@ theorem formPerm_apply_mem_ne_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :
   exact ⟨Nat.succ_le_of_lt, Nat.lt_of_succ_le⟩
 
 theorem mem_of_formPerm_ne_self (l : List α) (x : α) (h : formPerm l x ≠ x) : x ∈ l := by
-  suffices x ∈ { y | formPerm l y ≠ y } by
-    rw [← mem_toFinset]
+  suffices x ∈ (formPerm l).support by
     exact support_formPerm_le' _ this
-  simpa using h
+  exact h
 
 theorem formPerm_eq_self_of_not_mem (l : List α) (x : α) (h : x ∉ l) : formPerm l x = x :=
   by_contra fun H => h <| mem_of_formPerm_ne_self _ _ H
@@ -411,22 +410,18 @@ theorem form_perm_zpow_apply_mem_imp_mem (l : List α) (x : α) (hx : x ∈ l) (
     (formPerm l ^ n) x ∈ l := by
   by_cases h : (l.formPerm ^ n) x = x
   · simpa [h] using hx
-  · have h : x ∈ { x | (l.formPerm ^ n) x ≠ x } := h
-    rw [← set_support_apply_mem] at h
-    replace h := set_support_zpow_subset _ _ h
-    simpa using support_formPerm_le' _ h
+  · have h : x ∈ (l.formPerm ^ n).support := h
+    rw [← apply_mem_support] at h
+    exact support_formPerm_le' _ (mem_support_of_mem_zpow_support h)
 
 theorem formPerm_pow_length_eq_one_of_nodup (hl : Nodup l) : formPerm l ^ length l = 1 := by
   ext x
   by_cases hx : x ∈ l
   · obtain ⟨k, hk, rfl⟩ := getElem_of_mem hx
     simp [formPerm_pow_apply_getElem _ hl, Nat.mod_eq_of_lt hk]
-  · have : x ∉ { x | (l.formPerm ^ l.length) x ≠ x } := by
-      intro H
-      refine hx ?_
-      replace H := set_support_zpow_subset l.formPerm l.length H
-      simpa using support_formPerm_le' _ H
-    simpa using this
+  · have : x ∉ (l.formPerm ^ l.length).support :=
+      fun H => hx (support_formPerm_le' _ (support_pow_le _ _ H))
+    simpa only [coe_one, id_eq, not_mem_support] using this
 
 end FormPerm
 

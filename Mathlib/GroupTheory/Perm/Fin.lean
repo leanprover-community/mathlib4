@@ -97,11 +97,11 @@ theorem sign_finRotate (n : ℕ) : Perm.sign (finRotate (n + 1)) = (-1) ^ n := b
     simp [ih, pow_succ]
 
 @[simp]
-theorem support_finRotate {n : ℕ} : support (finRotate (n + 2)) = Finset.univ := by
+theorem support_finRotate {n : ℕ} : support (finRotate (n + 2)) = Set.univ := by
   ext
-  simp
+  simp [mem_support]
 
-theorem support_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : support (finRotate n) = Finset.univ := by
+theorem support_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : support (finRotate n) = Set.univ := by
   obtain ⟨m, rfl⟩ := exists_add_of_le h
   rw [add_comm, support_finRotate]
 
@@ -122,8 +122,9 @@ theorem isCycle_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : IsCycle (finRotate n) 
 
 @[simp]
 theorem cycleType_finRotate {n : ℕ} : cycleType (finRotate (n + 2)) = {n + 2} := by
-  rw [isCycle_finRotate.cycleType, support_finRotate, ← Fintype.card, Fintype.card_fin]
-  rfl
+  simp_rw [isCycle_finRotate.cycleType, supportCard_def, support_finRotate]
+  simp only [Set.Finite.toFinset_setOf, Finset.filter_True, Finset.card_univ, Fintype.card_fin,
+    Multiset.coe_singleton]
 
 theorem cycleType_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : cycleType (finRotate n) = {n} := by
   obtain ⟨m, rfl⟩ := exists_add_of_le h

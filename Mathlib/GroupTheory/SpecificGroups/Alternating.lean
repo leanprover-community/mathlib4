@@ -100,7 +100,7 @@ instance normal : (alternatingGroup α).Normal :=
   sign.normal_ker
 
 theorem isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ : Perm α))
-    (hσ : (σ : Perm α).support.card + 2 ≤ Fintype.card α) : IsConj σ τ := by
+    (hσ : (σ : Perm α).supportCard + 2 ≤ Fintype.card α) : IsConj σ τ := by
   obtain ⟨σ, hσ⟩ := σ
   obtain ⟨τ, hτ⟩ := τ
   obtain ⟨π, hπ⟩ := isConj_iff.1 hc
@@ -109,17 +109,18 @@ theorem isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ 
   · rw [isConj_iff]
     refine ⟨⟨π, mem_alternatingGroup.mp h⟩, Subtype.val_injective ?_⟩
     simpa only [Subtype.val, Subgroup.coe_mul, coe_inv, coe_mk] using hπ
-  · have h2 : 2 ≤ σ.supportᶜ.card := by
-      rw [Finset.card_compl, le_tsub_iff_left σ.support.card_le_univ]
+  · have h2 : 2 ≤ σ.supportᶜ.toFinset.card := by
+      rw [Set.toFinset_compl, Finset.card_compl, ← supportCard_compute,
+      le_tsub_iff_left σ.supportCard_le_univ]
       exact hσ
     obtain ⟨a, ha, b, hb, ab⟩ := Finset.one_lt_card.1 h2
+    simp only [Set.toFinset_compl, Finset.mem_compl, Set.mem_toFinset] at ha hb
     refine isConj_iff.2 ⟨⟨π * swap a b, ?_⟩, Subtype.val_injective ?_⟩
     · rw [mem_alternatingGroup, MonoidHom.map_mul, h, sign_swap ab, Int.units_mul_self]
     · simp only [← hπ, coe_mk, Subgroup.coe_mul, Subtype.val]
       have hd : Disjoint (swap a b) σ := by
-        rw [disjoint_iff_disjoint_support, support_swap ab, Finset.disjoint_insert_left,
-          Finset.disjoint_singleton_left]
-        exact ⟨Finset.mem_compl.1 ha, Finset.mem_compl.1 hb⟩
+        rw [disjoint_iff_support_inter_le_empty, support_swap_of_ne ab,
+        Set.insert_inter_of_not_mem ha, Set.singleton_inter_eq_empty.mpr hb]
       rw [mul_assoc π _ σ, hd.commute.eq, coe_inv, coe_mk]
       simp [mul_assoc]
 
@@ -192,8 +193,8 @@ theorem isThreeCycle_sq_of_three_mem_cycleType_five {g : Perm (Fin 5)} (h : 3 �
   intro n hn
   rw [le_antisymm (two_le_of_mem_cycleType hn) (le_trans (le_card_support_of_mem_cycleType hn) _)]
   apply le_of_add_le_add_left
-  rw [← hd.card_support_mul, h3]
-  exact (c * g').support.card_le_univ
+  rw [← hd.supportCard_mul, h3]
+  exact (c * g').supportCard_le_univ
 
 end Equiv.Perm
 
@@ -222,7 +223,7 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
     (by
       have h3 :
         IsThreeCycle (Fin.cycleRange 2 * finRotate 5 * (Fin.cycleRange 2)⁻¹ * (finRotate 5)⁻¹) :=
-        card_support_eq_three_iff.1 (by decide)
+        card_support_eq_three_iff.1 (by rw [supportCard_compute]; decide)
       rw [← h3.alternating_normalClosure (by rw [card_fin])]
       refine normalClosure_le_normal ?_
       rw [Set.singleton_subset_iff, SetLike.mem_coe]
@@ -262,7 +263,7 @@ theorem normalClosure_swap_mul_swap_five :
 theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alternatingGroup (Fin 5))
     (h1 : g ≠ 1) (h2 : ∀ n, n ∈ cycleType (g : Perm (Fin 5)) → n = 2) :
     IsConj (swap 0 4 * swap 1 3) g := by
-  have h := g.support.card_le_univ
+  have h := g.supportCard_le_univ
   rw [← Multiset.eq_replicate_card] at h2
   rw [← sum_cycleType, h2, Multiset.sum_replicate, smul_eq_mul] at h
   have h : Multiset.card g.cycleType ≤ 3 :=
@@ -278,9 +279,10 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
   · have h04 : (0 : Fin 5) ≠ 4 := by decide
     have h13 : (1 : Fin 5) ≠ 3 := by decide
     rw [Disjoint.cycleType, (isCycle_swap h04).cycleType, (isCycle_swap h13).cycleType,
-      card_support_swap h04, card_support_swap h13]
+      supportCard_swap h04, supportCard_swap h13]
     · rfl
-    · rw [disjoint_iff_disjoint_support, support_swap h04, support_swap h13]
+    · rw [disjoint_iff_support_inter_le_empty, support_swap_of_ne h04, support_swap_of_ne h13,
+      ← Set.toFinset_subset_toFinset]
       decide
   · contradiction
 
@@ -308,7 +310,7 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
     obtain ⟨n, ng, n2⟩ : ∃ n : ℕ, n ∈ g.cycleType ∧ n ≠ 2 := h2
     -- `n` is the size of a non-swap cycle in the decomposition of `g`.
     have n2' : 2 < n := lt_of_le_of_ne (two_le_of_mem_cycleType ng) n2.symm
-    have n5 : n ≤ 5 := le_trans ?_ g.support.card_le_univ
+    have n5 : n ≤ 5 := le_trans ?_ g.supportCard_le_univ
     -- We check that `2 < n ≤ 5`, so that `interval_cases` has a precise range to check.
     swap
     · obtain ⟨m, hm⟩ := Multiset.exists_cons_of_mem ng
