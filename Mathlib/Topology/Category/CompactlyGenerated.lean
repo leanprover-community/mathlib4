@@ -5,8 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.CategoryTheory.Elementwise
-import Mathlib.Topology.Compactification.OnePoint
-import Mathlib.Topology.AlexandrovDiscrete
 /-!
 
 # Compactly generated topological spaces
