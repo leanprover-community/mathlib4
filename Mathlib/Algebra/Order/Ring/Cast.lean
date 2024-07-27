@@ -24,15 +24,17 @@ open Function Nat
 variable {R : Type*}
 
 namespace Int
-section OrderedRing
-variable [OrderedRing R]
+section OrderedAddCommGroupWithOne
+
+variable [AddCommGroupWithOne R] [PartialOrder R] [CovariantClass R R (· + ·) (· ≤ ·)]
+variable [ZeroLEOneClass R] [NeZero (1 : R)]
 
 lemma cast_mono : Monotone (Int.cast : ℤ → R) := by
   intro m n h
   rw [← sub_nonneg] at h
   lift n - m to ℕ using h with k hk
   rw [← sub_nonneg, ← cast_sub, ← hk, cast_natCast]
-  exact k.cast_nonneg
+  exact k.cast_nonneg'
 
 variable [Nontrivial R] {m n : ℤ}
 
@@ -56,7 +58,7 @@ lemma cast_strictMono : StrictMono (fun x : ℤ => (x : R)) :=
 
 @[simp] lemma cast_lt_zero : (n : R) < 0 ↔ n < 0 := by rw [← cast_zero, cast_lt]
 
-end OrderedRing
+end OrderedAddCommGroupWithOne
 
 section LinearOrderedRing
 variable [LinearOrderedRing R] {a b n : ℤ} {x : R}
