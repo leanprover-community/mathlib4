@@ -200,16 +200,6 @@ theorem ext_ring [TopologicalSpace R] {f g : R →A[R] A} : f = g :=
 theorem ext_ring_iff [TopologicalSpace R] {f g : R →A[R] A} : f = g ↔ f 1 = g 1 :=
   ⟨fun h => h ▸ rfl, fun _ => ext_ring ⟩
 
-example  [T2Space B] {s : Set A} {f g : A →L[R] B} (h : Set.EqOn f g s) :
-    Set.EqOn f g (closure (Submodule.span R s : Set A)) := by
-  exact ContinuousLinearMap.eqOn_closure_span h
-
-/-- Two algebra morphisms are equal on `Algebra.span s`iff they are equal on s -/
-theorem eqOn_adjoin_iff {φ ψ : A →ₐ[R] B} {s : Set A}  :
-    Set.EqOn φ ψ (adjoin R s) ↔ Set.EqOn φ ψ s := by
-  have (S : Set A) : S ≤ AlgHom.equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
-  simp only [← this, Set.le_eq_subset, SetLike.coe_subset_coe, adjoin_le_iff]
-
 /-- If two continuous algebra maps are equal on a set `s`, then they are equal on the closure
 of the `Algebra.adjoin` of this set. -/
 theorem eqOn_closure_adjoin [T2Space B] {s : Set A} {f g : A →A[R] B} (h : Set.EqOn f g s) :
