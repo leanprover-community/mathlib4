@@ -1141,7 +1141,7 @@ theorem map_const (s : Multiset α) (b : β) : map (const α b) s = replicate (c
 
 theorem eq_of_mem_map_const {b₁ b₂ : β} {l : List α} (h : b₁ ∈ map (Function.const α b₂) l) :
     b₁ = b₂ :=
-  eq_of_mem_replicate <| by rwa [map_const] at h
+  eq_of_mem_replicate (n := card (l : Multiset α)) <| by rwa [map_const] at h
 
 @[simp]
 theorem map_le_map {f : α → β} {s t : Multiset α} (h : s ≤ t) : map f s ≤ map f t :=
@@ -1650,7 +1650,8 @@ theorem sub_add_inter (s t : Multiset α) : s - t + s ∩ t = s := by
   · rw [cons_inter_of_neg _ h, sub_cons, erase_of_not_mem h, IH]
 
 theorem sub_inter (s t : Multiset α) : s - s ∩ t = s - t :=
-  add_right_cancel <| by rw [sub_add_inter s t, tsub_add_cancel_of_le (inter_le_left s t)]
+  add_right_cancel (b := s ∩ t) <| by
+    rw [sub_add_inter s t, tsub_add_cancel_of_le (inter_le_left s t)]
 
 end
 

@@ -430,7 +430,7 @@ category of functors `(b ⟶ c) ⥤ (a ⟶ c)`. -/
 @[simps]
 def precomposing (a b c : B) : (a ⟶ b) ⥤ (b ⟶ c) ⥤ (a ⟶ c) where
   obj f := precomp c f
-  map η := ⟨(η ▷ ·), _⟩
+  map η := { app := (η ▷ ·) }
 
 /-- Postcomposition of a 1-morphism as a functor. -/
 @[simps]
@@ -443,7 +443,7 @@ category of functors `(a ⟶ b) ⥤ (a ⟶ c)`. -/
 @[simps]
 def postcomposing (a b c : B) : (b ⟶ c) ⥤ (a ⟶ b) ⥤ (a ⟶ c) where
   obj f := postcomp a f
-  map η := ⟨(· ◁ η), _⟩
+  map η := { app := (· ◁ η) }
 
 /-- Left component of the associator as a natural isomorphism. -/
 @[simps!]

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.NormedSpace.Completion
+import Mathlib.Analysis.Normed.Module.Completion
 import Mathlib.Analysis.NormedSpace.Extr
 import Mathlib.Topology.Order.ExtrClosure
 
