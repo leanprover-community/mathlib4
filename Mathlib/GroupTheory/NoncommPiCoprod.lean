@@ -175,7 +175,7 @@ namespace MonoidHom
 -- The subgroup version of `MonoidHom.noncommPiCoprod_mrange`
 @[to_additive]
 theorem noncommPiCoprod_range
-    {hcomm : Pairwise fun i j : ι => ∀ (x : H i) (y : H j), Commute (ϕ i x) (ϕ j y)}:
+    {hcomm : Pairwise fun i j : ι => ∀ (x : H i) (y : H j), Commute (ϕ i x) (ϕ j y)} :
     (noncommPiCoprod ϕ hcomm).range = ⨆ i : ι, (ϕ i).range := by
   letI := Classical.decEq ι
   apply le_antisymm

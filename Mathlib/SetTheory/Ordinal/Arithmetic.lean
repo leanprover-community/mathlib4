@@ -246,7 +246,7 @@ theorem lt_limit {o} (h : IsLimit o) {a} : a < o ↔ ∃ x < o, a < x := by
   simpa only [not_forall₂, not_le, bex_def] using not_congr (@limit_le _ h a)
 
 @[simp]
-theorem lift_isLimit (o:Ordinal.{v}) : IsLimit (lift.{u,v} o) ↔ IsLimit o :=
+theorem lift_isLimit (o : Ordinal.{v}) : IsLimit (lift.{u,v} o) ↔ IsLimit o :=
   and_congr (not_congr <| by simpa only [lift_zero] using @lift_inj o 0)
     ⟨fun H a h => (lift_lt.{u,v}).1 <|
       by simpa only [lift_succ] using H _ (lift_lt.2 h), fun H a h => by
