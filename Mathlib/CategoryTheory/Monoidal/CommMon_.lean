@@ -42,28 +42,28 @@ instance : Category (CommMon_ C) :=
   InducedCategory.category CommMon_.toMon_
 
 @[simp]
-theorem id_hom (A : CommMon_ C) : Mon_.Hom.hom (𝟙 A) = 𝟙 A.X :=
+theorem id_hom_hom (A : CommMon_ C) : Mon_.Hom.hom (InducedCategory.Hom.hom (𝟙 A)) = 𝟙 A.X :=
   rfl
 
 @[simp]
-theorem comp_hom {R S T : CommMon_ C} (f : R ⟶ S) (g : S ⟶ T) :
-    Mon_.Hom.hom (f ≫ g) = f.hom ≫ g.hom :=
+theorem comp_hom_hom {R S T : CommMon_ C} (f : R ⟶ S) (g : S ⟶ T) :
+    Mon_.Hom.hom (f ≫ g).hom = f.hom.hom ≫ g.hom.hom :=
   rfl
 
 -- Porting note (#5229): added because `Mon_.Hom.ext` is not triggered automatically
 -- for morphisms in `CommMon_ C`
 @[ext]
-lemma hom_ext {A B : CommMon_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
-  Mon_.Hom.ext _ _ h
+lemma hom_ext {A B : CommMon_ C} (f g : A ⟶ B) (h : f.hom.hom = g.hom.hom) : f = g :=
+  InducedCategory.hom_ext (Mon_.Hom.ext _ _ h)
 
 -- Porting note (#10688): the following two lemmas `id'` and `comp'`
 -- have been added to ease automation;
 @[simp]
-lemma id' (A : CommMon_ C) : (𝟙 A : A.toMon_ ⟶ A.toMon_) = 𝟙 (A.toMon_) := rfl
+lemma id' (A : CommMon_ C) : InducedCategory.Hom.hom (𝟙 A) = 𝟙 A.toMon_ := rfl
 
 @[simp]
 lemma comp' {A₁ A₂ A₃ : CommMon_ C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
-    ((f ≫ g : A₁ ⟶ A₃) : A₁.toMon_ ⟶ A₃.toMon_) = @CategoryStruct.comp (Mon_ C) _ _ _ _ f g := rfl
+    (f ≫ g : A₁ ⟶ A₃).hom = f.hom ≫ g.hom := rfl
 
 section
 
@@ -86,7 +86,8 @@ theorem forget₂_Mon_obj_mul (A : CommMon_ C) : ((forget₂Mon_ C).obj A).mul =
   rfl
 
 @[simp]
-theorem forget₂_Mon_map_hom {A B : CommMon_ C} (f : A ⟶ B) : ((forget₂Mon_ C).map f).hom = f.hom :=
+theorem forget₂_Mon_map_hom {A B : CommMon_ C} (f : A ⟶ B) :
+    ((forget₂Mon_ C).map f).hom = f.hom.hom :=
   rfl
 
 end
