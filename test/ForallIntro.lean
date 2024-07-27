@@ -49,6 +49,15 @@ theorem hhh : True := by
     sorry
   trivial
 
+#guard_msgs in
+-- should this trigger the linter and add parentheses around `x : Nat`?
+set_option linter.forallIntro true in
+example : True := by
+  have : ∀ x : Nat, x = x := by
+    intro x
+    rfl
+  trivial
+
 /--
 warning: declaration uses 'sorry'
 ---
