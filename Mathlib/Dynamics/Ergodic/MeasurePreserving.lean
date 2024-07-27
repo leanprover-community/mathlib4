@@ -120,6 +120,10 @@ theorem measure_preimage_emb {f : α → β} (hf : MeasurePreserving f μa μb)
     (hfe : MeasurableEmbedding f) (s : Set β) : μa (f ⁻¹' s) = μb s := by
   rw [← hf.map_eq, hfe.map_apply]
 
+theorem measure_preimage_equiv {f : α ≃ᵐ β} (hf : MeasurePreserving f μa μb) (s : Set β) :
+    μa (f ⁻¹' s) = μb s :=
+  measure_preimage_emb hf f.measurableEmbedding s
+
 protected theorem iterate {f : α → α} (hf : MeasurePreserving f μa μa) :
     ∀ n, MeasurePreserving f^[n] μa μa
   | 0 => MeasurePreserving.id μa
