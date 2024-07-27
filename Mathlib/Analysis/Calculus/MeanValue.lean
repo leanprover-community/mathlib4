@@ -833,23 +833,29 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atBot_Ioi (f : ℝ → ℝ) 
     exact Tendsto.comp (g := Neg.neg) (f := deriv f) (y := atBot) tendsto_neg_atBot_atTop hf
   exact not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (-f) hf' h.neg
 
-/-- A real function whose derivative tends to infinity from the left at a point is not
-differentiable on the right at that point -/
+/-- A real function whose derivative tends to minus infinity from the left at a point is not
+differentiable on the left at that point -/
 theorem not_differentiableWithinAt_of_deriv_tendsto_atBot_Iio (f : ℝ → ℝ) {a : ℝ}
     (hf : Tendsto (deriv f) (𝓝[<] a) atBot) : ¬ DifferentiableWithinAt ℝ f (Iio a) a := by
   let f' := f ∘ Neg.neg
   have hderiv : deriv f' =ᶠ[𝓝[>] (-a)] -(deriv f ∘ Neg.neg) := by
-    refine eventually_nhdsWithin_of_forall fun x hx => ?_
+    rw [atBot_basis.tendsto_right_iff] at hf
+    specialize hf (-1) trivial
+    rw [(nhdsWithin_Iio_basis a).eventually_iff] at hf
+    rw [EventuallyEq, (nhdsWithin_Ioi_basis (-a)).eventually_iff]
+    obtain ⟨b, hb₁, hb₂⟩ := hf
+    refine ⟨-b, by linarith, fun x hx => ?_⟩
     simp only [Pi.neg_apply, Function.comp_apply]
     suffices deriv f' x = deriv f (-x) * deriv (Neg.neg : ℝ → ℝ) x by simpa using this
-    refine deriv.comp (h₂ := f) (h := Neg.neg) x ?_ (by fun_prop)
-    sorry
+    refine deriv.comp x (differentiableAt_of_deriv_ne_zero ?_) (by fun_prop)
+    rw [mem_Ioo] at hx
+    have h₁ : -x ∈ Ioo b a := ⟨by linarith, by linarith⟩
+    have h₂ : deriv f (-x) ≤ -1 := hb₂ h₁
+    exact ne_of_lt (by linarith)
   have hmain : ¬ DifferentiableWithinAt ℝ f' (Ioi (-a)) (-a) := by
-    refine not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi f' ?_
-    refine Tendsto.congr' hderiv.symm ?_
-    refine Tendsto.comp (g := -deriv f) (f := Neg.neg) (y := 𝓝[<] a) ?_ ?_
-    · exact Tendsto.comp (g := Neg.neg) (f := deriv f) (y := atBot) tendsto_neg_atBot_atTop hf
-    · exact tendsto_neg_nhdsWithin_Ioi_neg
+    refine not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi f' <| Tendsto.congr' hderiv.symm ?_
+    refine Tendsto.comp (g := -deriv f) ?_ tendsto_neg_nhdsWithin_Ioi_neg
+    exact Tendsto.comp (g := Neg.neg) tendsto_neg_atBot_atTop hf
   intro h
   have : DifferentiableWithinAt ℝ f' (Ioi (-a)) (-a) := by
     refine DifferentiableWithinAt.comp (g := f) (f := Neg.neg) (t := Iio a) (-a) ?_ ?_ ?_
@@ -861,10 +867,18 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atBot_Iio (f : ℝ → ℝ) 
   exact hmain this
 
 /-- A real function whose derivative tends to infinity from the left at a point is not
-differentiable on the right at that point -/
+differentiable on the left at that point -/
 theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Iio (f : ℝ → ℝ) {a : ℝ}
-    (hf : Tendsto (deriv f) (𝓝[<] a) atBot) : ¬ DifferentiableWithinAt ℝ f (Iio a) a := by
-  sorry
+    (hf : Tendsto (deriv f) (𝓝[<] a) atTop) : ¬ DifferentiableWithinAt ℝ f (Iio a) a := by
+  intro h
+  have hf' : Tendsto (deriv (-f)) (𝓝[<] a) atBot := by
+    have : deriv (-f) = -deriv f := by
+      ext x
+      change deriv (fun y => -f y) x = -deriv f x
+      rw [deriv.neg']
+    rw [this]
+    exact Tendsto.comp (g := Neg.neg) tendsto_neg_atTop_atBot hf
+  exact not_differentiableWithinAt_of_deriv_tendsto_atBot_Iio (-f) hf' h.neg
 
 end Interval
 
