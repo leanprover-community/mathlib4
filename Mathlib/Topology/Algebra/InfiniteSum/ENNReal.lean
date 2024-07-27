@@ -7,7 +7,15 @@ import Mathlib.Data.Real.ENatENNReal
 import Mathlib.Data.Set.Card
 import Mathlib.Topology.Instances.ENNReal
 
+/-!
+# Infinite sums of ENNReal and Set.encard
+
+This file provides lemmas relating sums of constants to the cardinality of the domain of these sums.
+
+-/
+
 open Set Function
+
 namespace ENNReal
 
 lemma tsum_one_eq' {α : Type*} (s : Set α) : ∑' (_:s), (1 : ℝ≥0∞) = s.encard := by
