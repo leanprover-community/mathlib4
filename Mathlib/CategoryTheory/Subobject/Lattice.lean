@@ -131,7 +131,7 @@ def inf {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A where
   map k :=
     { app := fun g => by
         apply homMk _ _
-        · apply pullback.lift (pullback.fst _ _) (pullback.snd _ _ ≫ k.left) _
+        · apply pullback.lift (pullback.fst _ _) (pullback.snd _ _ ≫ k.hom.left) _
           rw [pullback.condition, assoc, w k]
         dsimp
         rw [pullback.lift_snd_assoc, assoc, w k] }
@@ -147,7 +147,7 @@ def infLERight {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ g :=
 /-- A morphism version of the `le_inf` axiom. -/
 def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf.obj f).obj g) := by
   intro k₁ k₂
-  refine homMk (pullback.lift k₂.left k₁.left ?_) ?_
+  refine homMk (pullback.lift k₂.hom.left k₁.hom.left ?_) ?_
   · rw [w k₁, w k₂]
   · erw [pullback.lift_snd_assoc, w k₁]
 
@@ -179,7 +179,7 @@ def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
 def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f).obj g ⟶ h) := by
   intro k₁ k₂
   refine homMk ?_ ?_
-  · apply image.lift ⟨_, h.arrow, coprod.desc k₁.left k₂.left, _⟩
+  · apply image.lift ⟨_, h.arrow, coprod.desc k₁.hom.left k₂.hom.left, _⟩
     ext
     · simp [w k₁]
     · simp [w k₂]
