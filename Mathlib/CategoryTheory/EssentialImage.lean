@@ -81,13 +81,17 @@ instance : Category (EssImageSubcategory F) :=
 def essImageInclusion (F : C ⥤ D) : F.EssImageSubcategory ⥤ D :=
   fullSubcategoryInclusion _
 
+/-- The inclusion of the essential image of a functor is fully faithful. -/
+def fullyFaithfulEssImageInclusion (F : C ⥤ D) : F.essImageInclusion.FullyFaithful :=
+  fullyFaithfulFullSubcategoryInclusion _
+
 -- Porting note: `deriving Full` is not able to derive this instance
 instance : Full (essImageInclusion F) :=
-  (inferInstance : Full (fullSubcategoryInclusion _))
+  F.fullyFaithfulEssImageInclusion.full
 
 -- Porting note: `deriving Faithful` is not able to derive this instance
 instance : Faithful (essImageInclusion F) :=
-  (inferInstance : Faithful (fullSubcategoryInclusion _))
+  F.fullyFaithfulEssImageInclusion.faithful
 
 /--
 Given a functor `F : C ⥤ D`, we have an (essentially surjective) functor from `C` to the essential

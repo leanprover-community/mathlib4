@@ -158,20 +158,14 @@ Functor.essImage.unit_isIso X.property
 /-- The counit isomorphism of the equivalence `D ≌ i.EssImageSubcategory` given
 by `equivEssImageOfReflective` when the functor `i` is reflective. -/
 def equivEssImageOfReflective_counitIso_app [Reflective i] (X : Functor.EssImageSubcategory i) :
-    ((Functor.essImageInclusion i ⋙ reflector i) ⋙ Functor.toEssImage i).obj X ≅ X := by
-  refine Iso.symm (@asIso _ _ X _ ((reflectorAdjunction i).unit.app X.obj) ?_)
-  refine @isIso_of_reflects_iso _ _ _ _ _ _ _ i.essImageInclusion ?_ _
-  dsimp
-  exact inferInstance
+    ((Functor.essImageInclusion i ⋙ reflector i) ⋙ Functor.toEssImage i).obj X ≅ X :=
+  i.fullyFaithfulEssImageInclusion.preimageIso
+    (asIso ((reflectorAdjunction i).unit.app X.obj)).symm
 
 lemma equivEssImageOfReflective_map_counitIso_app_hom [Reflective i]
     (X : Functor.EssImageSubcategory i) :
   (Functor.essImageInclusion i).map (equivEssImageOfReflective_counitIso_app X).hom =
-    inv (NatTrans.app (reflectorAdjunction i).unit X.obj) := by
-    simp only [Functor.comp_obj, Functor.essImageInclusion_obj, Functor.toEssImage_obj_obj,
-      equivEssImageOfReflective_counitIso_app, asIso, Iso.symm_mk, Functor.essImageInclusion_map,
-      Functor.id_obj]
-    rfl
+    inv (NatTrans.app (reflectorAdjunction i).unit X.obj) := rfl
 
 lemma equivEssImageOfReflective_map_counitIso_app_inv [Reflective i]
     (X : Functor.EssImageSubcategory i) :
@@ -196,7 +190,7 @@ def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory where
       (by
         intro X Y f
         apply (Functor.essImageInclusion i).map_injective
-        have h := ((reflectorAdjunction i).unit.naturality f).symm
+        have h := ((reflectorAdjunction i).unit.naturality f.hom).symm
         rw [Functor.id_map] at h
         erw [Functor.map_comp, Functor.map_comp,
           equivEssImageOfReflective_map_counitIso_app_hom,
@@ -206,7 +200,9 @@ def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory where
     -- Porting note: this proof was automatically handled by the automation in mathlib
     apply (Functor.essImageInclusion i).map_injective
     erw [Functor.map_comp, equivEssImageOfReflective_map_counitIso_app_hom]
-    aesop_cat
+    dsimp
+    simp
+    rfl
 
 /--
 A functor is *coreflective*, or *a coreflective inclusion*, if it is fully faithful and left
