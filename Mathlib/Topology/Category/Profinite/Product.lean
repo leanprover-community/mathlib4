@@ -76,7 +76,9 @@ theorem eq_of_forall_π_app_eq (a b : C)
 
 end IndexFunctor
 
-variable [∀ i, T2Space (X i)] [∀ i, TotallyDisconnectedSpace (X i)] {C} (hC : IsCompact C)
+variable [∀ i, T2Space (X i)] [∀ i, TotallyDisconnectedSpace (X i)]
+variable {C}
+variable (hC : IsCompact C)
 
 open CategoryTheory Limits Opposite IndexFunctor
 
@@ -96,7 +98,7 @@ def indexCone : Cone (indexFunctor hC) where
 instance isIso_indexCone_lift :
     IsIso ((limitConeIsLimit.{u, u} (indexFunctor hC)).lift (indexCone hC)) :=
   haveI : CompactSpace C := by rwa [← isCompact_iff_compactSpace]
-  isIso_of_bijective _
+  CompHausLike.isIso_of_bijective _
     (by
       refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
       · refine eq_of_forall_π_app_eq a b (fun J ↦ ?_)
@@ -122,7 +124,7 @@ instance isIso_indexCone_lift :
           rfl
         obtain ⟨x, hx⟩ :
             Set.Nonempty (⋂ (J : Finset ι), π_app C (· ∈ J) ⁻¹' {a.val (op J)}) :=
-          IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
+          IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
             (fun J : Finset ι => π_app C (· ∈ J) ⁻¹' {a.val (op J)}) (directed_of_isDirected_le H₁)
             (fun J => (Set.singleton_nonempty _).preimage (surjective_π_app _))
             (fun J => (hc J (a.val (op J))).isCompact) fun J => hc J (a.val (op J))

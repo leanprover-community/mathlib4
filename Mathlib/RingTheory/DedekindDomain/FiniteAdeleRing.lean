@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
-
-#align_import ring_theory.dedekind_domain.finite_adele_ring from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
+import Mathlib.RingTheory.DedekindDomain.Factorization
+import Mathlib.Algebra.Order.GroupWithZero.WithZero
 
 /-!
 # The finite adèle ring of a Dedekind domain
@@ -17,7 +17,7 @@ We define the ring of finite adèles of a Dedekind domain `R`.
 - `DedekindDomain.ProdAdicCompletions` : the product of `adicCompletion`, where `v` runs over
   all maximal ideals of `R`.
 - `DedekindDomain.finiteAdeleRing` : The finite adèle ring of `R`, defined as the
-  restricted product `Π'_v K_v`.
+  restricted product `Π'_v K_v`. We give this ring a `K`-algebra structure.
 
 ## Implementation notes
 We are only interested on Dedekind domains of Krull dimension 1 (i.e., not fields). If `R` is a
@@ -37,14 +37,13 @@ open Function Set IsDedekindDomain IsDedekindDomain.HeightOneSpectrum
 
 namespace DedekindDomain
 
-variable (R K : Type*) [CommRing R] [IsDomain R] [IsDedekindDomain R] [Field K] [Algebra R K]
+variable (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K] [Algebra R K]
   [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 /-- The product of all `adicCompletionIntegers`, where `v` runs over the maximal ideals of `R`. -/
 def FiniteIntegralAdeles : Type _ :=
   ∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K
 -- deriving CommRing, TopologicalSpace, Inhabited
-#align dedekind_domain.finite_integral_adeles DedekindDomain.FiniteIntegralAdeles
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
 section DerivedInstances
@@ -54,6 +53,9 @@ instance : CommRing (FiniteIntegralAdeles R K) :=
 
 instance : TopologicalSpace (FiniteIntegralAdeles R K) :=
   inferInstanceAs (TopologicalSpace (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
+
+instance : TopologicalRing (FiniteIntegralAdeles R K) :=
+  inferInstanceAs (TopologicalRing (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
 
 instance : Inhabited (FiniteIntegralAdeles R K) :=
   inferInstanceAs (Inhabited (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
@@ -66,7 +68,6 @@ local notation "R_hat" => FiniteIntegralAdeles
 def ProdAdicCompletions :=
   ∀ v : HeightOneSpectrum R, v.adicCompletion K
 -- deriving NonUnitalNonAssocRing, TopologicalSpace, TopologicalRing, CommRing, Inhabited
-#align dedekind_domain.prod_adic_completions DedekindDomain.ProdAdicCompletions
 
 section DerivedInstances
 
@@ -95,7 +96,6 @@ noncomputable instance : Coe (R_hat R K) (K_hat R K) where coe x v := x v
 
 theorem coe_apply (x : R_hat R K) (v : HeightOneSpectrum R) : (x : K_hat R K) v = ↑(x v) :=
   rfl
-#align dedekind_domain.finite_integral_adeles.coe_apply DedekindDomain.FiniteIntegralAdeles.coe_apply
 
 /-- The inclusion of `R_hat` in `K_hat` as a homomorphism of additive monoids. -/
 @[simps]
@@ -108,7 +108,6 @@ def Coe.addMonoidHom : AddMonoidHom (R_hat R K) (K_hat R K) where
     simp only [coe_apply, Pi.add_apply, Subring.coe_add]
     -- Porting note: added
     erw [Pi.add_apply, Pi.add_apply, Subring.coe_add]
-#align dedekind_domain.finite_integral_adeles.coe.add_monoid_hom DedekindDomain.FiniteIntegralAdeles.Coe.addMonoidHom
 
 /-- The inclusion of `R_hat` in `K_hat` as a ring homomorphism. -/
 @[simps]
@@ -122,7 +121,6 @@ def Coe.ringHom : RingHom (R_hat R K) (K_hat R K) :=
       simp only [Pi.mul_apply, Subring.coe_mul]
       -- Porting note: added
       erw [Pi.mul_apply, Pi.mul_apply, Subring.coe_mul] }
-#align dedekind_domain.finite_integral_adeles.coe.ring_hom DedekindDomain.FiniteIntegralAdeles.Coe.ringHom
 
 end FiniteIntegralAdeles
 
@@ -131,9 +129,16 @@ section AlgebraInstances
 instance : Algebra K (K_hat R K) :=
   (by infer_instance : Algebra K <| ∀ v : HeightOneSpectrum R, v.adicCompletion K)
 
+@[simp]
+lemma ProdAdicCompletions.algebraMap_apply' (k : K) :
+    algebraMap K (K_hat R K) k v = (k : v.adicCompletion K) := rfl
+
 instance ProdAdicCompletions.algebra' : Algebra R (K_hat R K) :=
   (by infer_instance : Algebra R <| ∀ v : HeightOneSpectrum R, v.adicCompletion K)
-#align dedekind_domain.prod_adic_completions.algebra' DedekindDomain.ProdAdicCompletions.algebra'
+
+@[simp]
+lemma ProdAdicCompletions.algebraMap_apply (r : R) :
+    algebraMap R (K_hat R K) r v = (algebraMap R K r : v.adicCompletion K) := rfl
 
 instance : IsScalarTower R K (K_hat R K) :=
   (by infer_instance : IsScalarTower R K <| ∀ v : HeightOneSpectrum R, v.adicCompletion K)
@@ -143,13 +148,11 @@ instance : Algebra R (R_hat R K) :=
 
 instance ProdAdicCompletions.algebraCompletions : Algebra (R_hat R K) (K_hat R K) :=
   (FiniteIntegralAdeles.Coe.ringHom R K).toAlgebra
-#align dedekind_domain.prod_adic_completions.algebra_completions DedekindDomain.ProdAdicCompletions.algebraCompletions
 
 instance ProdAdicCompletions.isScalarTower_completions : IsScalarTower R (R_hat R K) (K_hat R K) :=
   (by infer_instance :
     IsScalarTower R (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K) <|
       ∀ v : HeightOneSpectrum R, v.adicCompletion K)
-#align dedekind_domain.prod_adic_completions.is_scalar_tower_completions DedekindDomain.ProdAdicCompletions.isScalarTower_completions
 
 end AlgebraInstances
 
@@ -160,11 +163,9 @@ def Coe.algHom : AlgHom R (R_hat R K) (K_hat R K) :=
   { Coe.ringHom R K with
     toFun := (↑)
     commutes' := fun _ => rfl }
-#align dedekind_domain.finite_integral_adeles.coe.alg_hom DedekindDomain.FiniteIntegralAdeles.Coe.algHom
 
 theorem Coe.algHom_apply (x : R_hat R K) (v : HeightOneSpectrum R) : (Coe.algHom R K) x v = x v :=
   rfl
-#align dedekind_domain.finite_integral_adeles.coe.alg_hom_apply DedekindDomain.FiniteIntegralAdeles.Coe.algHom_apply
 
 end FiniteIntegralAdeles
 
@@ -182,7 +183,10 @@ variable {R K}
   `v`, the component `x v` is a `v`-adic integer. -/
 def IsFiniteAdele (x : K_hat R K) :=
   ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite, x v ∈ v.adicCompletionIntegers K
-#align dedekind_domain.prod_adic_completions.is_finite_adele DedekindDomain.ProdAdicCompletions.IsFiniteAdele
+
+@[simp]
+lemma isFiniteAdele_iff (x : K_hat R K) :
+    x.IsFiniteAdele ↔ {v | x v ∉ adicCompletionIntegers K v}.Finite := Iff.rfl
 
 namespace IsFiniteAdele
 
@@ -202,7 +206,6 @@ theorem add {x y : K_hat R K} (hx : x.IsFiniteAdele) (hy : y.IsFiniteAdele) :
     rw [mem_adicCompletionIntegers, Pi.add_apply]
     exact le_trans (Valued.v.map_add_le_max' (x v) (y v)) hv
   exact (hx.union hy).subset h_subset
-#align dedekind_domain.prod_adic_completions.is_finite_adele.add DedekindDomain.ProdAdicCompletions.IsFiniteAdele.add
 
 /-- The tuple `(0)_v` is a finite adèle. -/
 theorem zero : (0 : K_hat R K).IsFiniteAdele := by
@@ -216,7 +219,6 @@ theorem zero : (0 : K_hat R K).IsFiniteAdele := by
     rw [h_zero]; exact zero_le_one' _
   -- Porting note: was `exact`, but `OfNat` got in the way.
   convert finite_empty
-#align dedekind_domain.prod_adic_completions.is_finite_adele.zero DedekindDomain.ProdAdicCompletions.IsFiniteAdele.zero
 
 /-- The negative of a finite adèle is a finite adèle. -/
 theorem neg {x : K_hat R K} (hx : x.IsFiniteAdele) : (-x).IsFiniteAdele := by
@@ -229,7 +231,6 @@ theorem neg {x : K_hat R K} (hx : x.IsFiniteAdele) : (-x).IsFiniteAdele := by
   -- Porting note: was `simpa only [Pi.neg_apply, h] using hx` but `Pi.neg_apply` no longer works
   convert hx using 2 with v
   convert h v
-#align dedekind_domain.prod_adic_completions.is_finite_adele.neg DedekindDomain.ProdAdicCompletions.IsFiniteAdele.neg
 
 /-- The product of two finite adèles is a finite adèle. -/
 theorem mul {x y : K_hat R K} (hx : x.IsFiniteAdele) (hy : y.IsFiniteAdele) :
@@ -249,7 +250,6 @@ theorem mul {x y : K_hat R K} (hx : x.IsFiniteAdele) (hy : y.IsFiniteAdele) :
     rw [mem_adicCompletionIntegers, Pi.mul_apply, h_mul]
     exact mul_le_one' hv.left hv.right
   exact (hx.union hy).subset h_subset
-#align dedekind_domain.prod_adic_completions.is_finite_adele.mul DedekindDomain.ProdAdicCompletions.IsFiniteAdele.mul
 
 /-- The tuple `(1)_v` is a finite adèle. -/
 theorem one : (1 : K_hat R K).IsFiniteAdele := by
@@ -261,7 +261,35 @@ theorem one : (1 : K_hat R K).IsFiniteAdele := by
     exact le_of_eq Valued.v.map_one'
   -- Porting note: was `exact`, but `OfNat` got in the way.
   convert finite_empty
-#align dedekind_domain.prod_adic_completions.is_finite_adele.one DedekindDomain.ProdAdicCompletions.IsFiniteAdele.one
+
+open scoped DiscreteValuation
+
+theorem algebraMap' (k : K) : (_root_.algebraMap K (K_hat R K) k).IsFiniteAdele := by
+  rw [IsFiniteAdele, Filter.eventually_cofinite]
+  simp_rw [mem_adicCompletionIntegers, ProdAdicCompletions.algebraMap_apply',
+    Valued.valuedCompletion_apply, not_le]
+  change {v : HeightOneSpectrum R | 1 < v.valuation k}.Finite
+  -- The goal currently: if k ∈ K = field of fractions of a Dedekind domain R,
+  -- then v(k)>1 for only finitely many v.
+  -- We now write k=n/d and go via R to solve this goal. Do we need to do this?
+  obtain ⟨⟨n, ⟨d, hd⟩⟩, hk⟩ := IsLocalization.surj (nonZeroDivisors R) k
+  have hd' : d ≠ 0 := nonZeroDivisors.ne_zero hd
+  suffices {v : HeightOneSpectrum R | v.valuation (_root_.algebraMap R K d : K) < 1}.Finite by
+    apply Finite.subset this
+    intro v hv
+    apply_fun v.valuation at hk
+    simp only [Valuation.map_mul, valuation_of_algebraMap] at hk
+    rw [mem_setOf_eq, valuation_of_algebraMap]
+    have := intValuation_le_one v n
+    contrapose! this
+    change 1 < v.intValuation n
+    rw [← hk, mul_comm]
+    exact lt_mul_of_le_of_one_lt' this hv (by simp) (by simp)
+  simp_rw [valuation_of_algebraMap]
+  change {v : HeightOneSpectrum R | v.intValuationDef d < 1}.Finite
+  simp_rw [intValuation_lt_one_iff_dvd]
+  apply Ideal.finite_factors
+  simpa only [Submodule.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot]
 
 end IsFiniteAdele
 
@@ -270,21 +298,56 @@ end ProdAdicCompletions
 open ProdAdicCompletions.IsFiniteAdele
 
 /-- The finite adèle ring of `R` is the restricted product over all maximal ideals `v` of `R`
-of `adicCompletion` with respect to `adicCompletionIntegers`. -/
-noncomputable def finiteAdeleRing : Subring (K_hat R K) where
+of `adicCompletion`, with respect to `adicCompletionIntegers`.
+
+Note that we make this a `Type` rather than a `Subtype` (e.g., a `subalgebra`) since we wish
+to endow it with a finer topology than that of the subspace topology. -/
+def FiniteAdeleRing : Type _ := {x : K_hat R K // x.IsFiniteAdele}
+
+namespace FiniteAdeleRing
+
+/-- The finite adèle ring of `R`, regarded as a `K`-subalgebra of the
+product of the local completions of `K`.
+
+Note that this definition exists to streamline the proof that the finite adèles are an algebra
+over `K`, rather than to express their relationship to `K_hat R K` which is essentially a
+detail of their construction.
+-/
+def subalgebra : Subalgebra K (K_hat R K) where
   carrier := {x : K_hat R K | x.IsFiniteAdele}
-  mul_mem' hx hy := mul hx hy
+  mul_mem' := mul
   one_mem' := one
-  add_mem' hx hy := add hx hy
+  add_mem' := add
   zero_mem' := zero
-  neg_mem' hx := neg hx
-#align dedekind_domain.finite_adele_ring DedekindDomain.finiteAdeleRing
+  algebraMap_mem' := algebraMap'
 
-variable {R K}
+instance : CommRing (FiniteAdeleRing R K) :=
+  Subalgebra.toCommRing (subalgebra R K)
 
-@[simp]
-theorem mem_finiteAdeleRing_iff (x : K_hat R K) : x ∈ finiteAdeleRing R K ↔ x.IsFiniteAdele :=
-  Iff.rfl
-#align dedekind_domain.mem_finite_adele_ring_iff DedekindDomain.mem_finiteAdeleRing_iff
+instance : Algebra K (FiniteAdeleRing R K) :=
+  Subalgebra.algebra (subalgebra R K)
+
+instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
+  coe := fun x ↦ x.1
+
+@[ext]
+lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : (a₁ : K_hat R K) = a₂) : a₁ = a₂ :=
+  Subtype.ext h
+
+/-- The finite adele ring is an algebra over the finite integral adeles. -/
+instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
+  smul rhat fadele := ⟨fun v ↦ rhat v * fadele.1 v, Finite.subset fadele.2 <| fun v hv ↦ by
+    simp only [mem_adicCompletionIntegers, mem_compl_iff, mem_setOf_eq, map_mul] at hv ⊢
+    exact mt (mul_le_one₀ (rhat v).2) hv
+    ⟩
+  toFun r := ⟨r, by simp_all⟩
+  map_one' := by ext; rfl
+  map_mul' _ _ := by ext; rfl
+  map_zero' := by ext; rfl
+  map_add' _ _ := by ext; rfl
+  commutes' _ _ := mul_comm _ _
+  smul_def' r x := rfl
+
+end FiniteAdeleRing
 
 end DedekindDomain

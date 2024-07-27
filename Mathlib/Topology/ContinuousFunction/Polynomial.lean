@@ -8,8 +8,6 @@ import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.UnitInterval
 import Mathlib.Algebra.Star.Subalgebra
 
-#align_import topology.continuous_function.polynomial from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
-
 /-!
 # Constructions relating polynomial functions and continuous functions.
 
@@ -40,8 +38,11 @@ Every polynomial with coefficients in a topological semiring gives a (bundled) c
 -/
 @[simps]
 def toContinuousMap (p : R[X]) : C(R, R) :=
-  ⟨fun x : R => p.eval x, by continuity⟩
-#align polynomial.to_continuous_map Polynomial.toContinuousMap
+  ⟨fun x : R => p.eval x, by fun_prop⟩
+
+open ContinuousMap in
+lemma toContinuousMap_X_eq_id : X.toContinuousMap = .id R := by
+  ext; simp
 
 /-- A polynomial as a continuous function,
 with domain restricted to some subset of the semiring of coefficients.
@@ -50,9 +51,13 @@ with domain restricted to some subset of the semiring of coefficients.
 -/
 @[simps]
 def toContinuousMapOn (p : R[X]) (X : Set R) : C(X, R) :=
-  -- Porting note: Old proof was `⟨fun x : X => p.toContinuousMap x, by continuity⟩`
-  ⟨fun x : X => p.toContinuousMap x, Continuous.comp (by continuity) (by continuity)⟩
-#align polynomial.to_continuous_map_on Polynomial.toContinuousMapOn
+  ⟨fun x : X => p.toContinuousMap x, by fun_prop⟩
+
+open ContinuousMap in
+lemma toContinuousMapOn_X_eq_restrict_id (s : Set R) :
+    X.toContinuousMapOn s = restrict s (.id R) := by
+  ext; simp
+
 
 -- TODO some lemmas about when `toContinuousMapOn` is injective?
 end
@@ -65,12 +70,11 @@ variable {α : Type*} [TopologicalSpace α] [CommSemiring R] [TopologicalSpace R
 @[simp]
 theorem aeval_continuousMap_apply (g : R[X]) (f : C(α, R)) (x : α) :
     ((Polynomial.aeval f) g) x = g.eval (f x) := by
-  refine' Polynomial.induction_on' g _ _
+  refine Polynomial.induction_on' g ?_ ?_
   · intro p q hp hq
     simp [hp, hq]
   · intro n a
     simp [Pi.pow_apply]
-#align polynomial.aeval_continuous_map_apply Polynomial.aeval_continuousMap_apply
 
 end
 
@@ -98,7 +102,6 @@ def toContinuousMapAlgHom : R[X] →ₐ[R] C(R, R) where
   commutes' _ := by
     ext
     simp [Algebra.algebraMap_eq_smul_one]
-#align polynomial.to_continuous_map_alg_hom Polynomial.toContinuousMapAlgHom
 
 /-- The algebra map from `R[X]` to continuous functions `C(X, R)`, for any subset `X` of `R`.
 -/
@@ -120,7 +123,6 @@ def toContinuousMapOnAlgHom (X : Set R) : R[X] →ₐ[R] C(X, R) where
   commutes' _ := by
     ext
     simp [Algebra.algebraMap_eq_smul_one]
-#align polynomial.to_continuous_map_on_alg_hom Polynomial.toContinuousMapOnAlgHom
 
 end
 
@@ -137,14 +139,12 @@ The subalgebra of polynomial functions in `C(X, R)`, for `X` a subset of some to
 noncomputable -- Porting note: added noncomputable
 def polynomialFunctions (X : Set R) : Subalgebra R C(X, R) :=
   (⊤ : Subalgebra R R[X]).map (Polynomial.toContinuousMapOnAlgHom X)
-#align polynomial_functions polynomialFunctions
 
 @[simp]
 theorem polynomialFunctions_coe (X : Set R) :
     (polynomialFunctions X : Set C(X, R)) = Set.range (Polynomial.toContinuousMapOnAlgHom X) := by
   ext
   simp [polynomialFunctions]
-#align polynomial_functions_coe polynomialFunctions_coe
 
 -- TODO:
 -- if `f : R → R` is an affine equivalence, then pulling back along `f`
@@ -153,10 +153,9 @@ theorem polynomialFunctions_coe (X : Set R) :
 theorem polynomialFunctions_separatesPoints (X : Set R) : (polynomialFunctions X).SeparatesPoints :=
   fun x y h => by
   -- We use `Polynomial.X`, then clean up.
-  refine' ⟨_, ⟨⟨_, ⟨⟨Polynomial.X, ⟨Algebra.mem_top, rfl⟩⟩, rfl⟩⟩, _⟩⟩
+  refine ⟨_, ⟨⟨_, ⟨⟨Polynomial.X, ⟨Algebra.mem_top, rfl⟩⟩, rfl⟩⟩, ?_⟩⟩
   dsimp; simp only [Polynomial.eval_X]
   exact fun h' => h (Subtype.ext h')
-#align polynomial_functions_separates_points polynomialFunctions_separatesPoints
 
 open unitInterval
 
@@ -173,12 +172,12 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
     rw [DFunLike.ext_iff] at w
     dsimp at w
     let q := p.comp ((b - a)⁻¹ • Polynomial.X + Polynomial.C (-a * (b - a)⁻¹))
-    refine' ⟨q, ⟨_, _⟩⟩
+    refine ⟨q, ⟨?_, ?_⟩⟩
     · simp
     · ext x
-      simp only [neg_mul, RingHom.map_neg, RingHom.map_mul, AlgHom.coe_toRingHom, Polynomial.eval_X,
-        Polynomial.eval_neg, Polynomial.eval_C, Polynomial.eval_smul, smul_eq_mul,
-        Polynomial.eval_mul, Polynomial.eval_add, Polynomial.coe_aeval_eq_eval,
+      simp only [q, neg_mul, RingHom.map_neg, RingHom.map_mul, AlgHom.coe_toRingHom,
+        Polynomial.eval_X, Polynomial.eval_neg, Polynomial.eval_C, Polynomial.eval_smul,
+        smul_eq_mul, Polynomial.eval_mul, Polynomial.eval_add, Polynomial.coe_aeval_eq_eval,
         Polynomial.eval_comp, Polynomial.toContinuousMapOnAlgHom_apply,
         Polynomial.toContinuousMapOn_apply, Polynomial.toContinuousMap_apply]
       convert w ⟨_, _⟩
@@ -199,12 +198,10 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
           exact w₃
   · rintro ⟨p, ⟨-, rfl⟩⟩
     let q := p.comp ((b - a) • Polynomial.X + Polynomial.C a)
-    refine' ⟨q, ⟨_, _⟩⟩
+    refine ⟨q, ⟨?_, ?_⟩⟩
     · simp
     · ext x
-      simp [mul_comm]
-set_option linter.uppercaseLean3 false in
-#align polynomial_functions.comap_comp_right_alg_hom_Icc_homeo_I polynomialFunctions.comap_compRightAlgHom_iccHomeoI
+      simp [q, mul_comm]
 
 theorem polynomialFunctions.eq_adjoin_X (s : Set R) :
     polynomialFunctions s = Algebra.adjoin R {toContinuousMapOnAlgHom s X} := by
@@ -217,7 +214,7 @@ theorem polynomialFunctions.eq_adjoin_X (s : Set R) :
     exact Subalgebra.algebraMap_mem _ r
   · rw [map_add]
     exact add_mem hf hg
-  · rw [pow_succ', ← mul_assoc, map_mul]
+  · rw [pow_succ, ← mul_assoc, map_mul]
     exact mul_mem hn (Algebra.subset_adjoin <| Set.mem_singleton _)
 
 theorem polynomialFunctions.le_equalizer {A : Type*} [Semiring A] [Algebra R A] (s : Set R)
@@ -227,7 +224,7 @@ theorem polynomialFunctions.le_equalizer {A : Type*} [Semiring A] [Algebra R A] 
   rw [polynomialFunctions.eq_adjoin_X s]
   exact φ.adjoin_le_equalizer ψ fun x hx => (Set.mem_singleton_iff.1 hx).symm ▸ h
 
-open StarSubalgebra
+open StarAlgebra
 
 theorem polynomialFunctions.starClosure_eq_adjoin_X [StarRing R] [ContinuousStar R] (s : Set R) :
     (polynomialFunctions s).starClosure = adjoin R {toContinuousMapOnAlgHom s X} := by

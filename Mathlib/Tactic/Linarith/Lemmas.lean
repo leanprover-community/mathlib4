@@ -3,13 +3,12 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Std.Tactic.Simpa
-import Std.Tactic.Lint.Basic
+import Batteries.Tactic.Lint.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Order.Monoid.Lemmas
-import Mathlib.Init.Data.Int.Order
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.Nat.Cast.Order
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Init.Data.Int.Order
 
 /-!
 # Lemmas for `linarith`.
@@ -19,10 +18,9 @@ Those in the `Linarith` namespace should stay here.
 Those outside the `Linarith` namespace may be deleted as they are ported to mathlib4.
 -/
 
-set_option autoImplicit true
-
 namespace Linarith
 
+universe u
 theorem lt_irrefl {α : Type u} [Preorder α] {a : α} : ¬a < a := _root_.lt_irrefl a
 
 theorem eq_of_eq_of_eq {α} [OrderedSemiring α] {a b : α} (ha : a = 0) (hb : b = 0) : a + b = 0 := by
@@ -68,7 +66,10 @@ lemma zero_mul_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (h : a 
     a * b = 0 := by
   simp [h]
 
-lemma nat_cast_nonneg (α : Type u) [OrderedSemiring α] (n : ℕ) : (0 : α) ≤ n := Nat.cast_nonneg n
+lemma natCast_nonneg (α : Type u) [OrderedSemiring α] (n : ℕ) : (0 : α) ≤ n := Nat.cast_nonneg n
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_nonneg := natCast_nonneg
 
 end Linarith
 
@@ -76,6 +77,8 @@ section
 open Function
 -- These lemmas can be removed when their originals are ported.
 
-theorem lt_zero_of_zero_gt [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
+theorem lt_zero_of_zero_gt {α : Type*} [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
 
-theorem le_zero_of_zero_ge [Zero α] [LE α] {a : α} (h : 0 ≥ a) : a ≤ 0 := h
+theorem le_zero_of_zero_ge {α : Type*} [Zero α] [LE α] {a : α} (h : 0 ≥ a) : a ≤ 0 := h
+
+end

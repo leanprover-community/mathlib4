@@ -25,7 +25,7 @@ noncomputable def arctan (z : ℂ) : ℂ := -I / 2 * log ((1 + z * I) / (1 - z *
 
 theorem tan_arctan {z : ℂ} (h₁ : z ≠ I) (h₂ : z ≠ -I) : tan (arctan z) = z := by
   unfold tan sin cos
-  rw [div_div_eq_mul_div, div_mul_cancel _ two_ne_zero, ← div_mul_eq_mul_div,
+  rw [div_div_eq_mul_div, div_mul_cancel₀ _ two_ne_zero, ← div_mul_eq_mul_div,
     -- multiply top and bottom by `exp (arctan z * I)`
     ← mul_div_mul_right _ _ (exp_ne_zero (arctan z * I)), sub_mul, add_mul,
     ← exp_add, neg_mul, add_left_neg, exp_zero, ← exp_add, ← two_mul]
@@ -42,14 +42,14 @@ theorem tan_arctan {z : ℂ} (h₁ : z ≠ I) (h₂ : z ≠ -I) : tan (arctan z)
       show 2 * (I * (-I / 2)) = 1 by field_simp, one_mul, exp_log]
     · exact div_ne_zero z₁ z₂
   -- multiply top and bottom by `1 - z * I`
-  rw [key, ← mul_div_mul_right _ _ z₂, sub_mul, add_mul, div_mul_cancel _ z₂, one_mul,
+  rw [key, ← mul_div_mul_right _ _ z₂, sub_mul, add_mul, div_mul_cancel₀ _ z₂, one_mul,
     show _ / _ * I = -(I * I) * z by ring, I_mul_I, neg_neg, one_mul]
 
 /-- `cos z` is nonzero when the bounds in `arctan_tan` are met (`z` lies in the vertical strip
 `-π / 2 < z.re < π / 2` and `z ≠ π / 2`). -/
 lemma cos_ne_zero_of_arctan_bounds {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re)
     (h₂ : z.re ≤ π / 2) : cos z ≠ 0 := by
-  refine' cos_ne_zero_iff.mpr (fun k ↦ _)
+  refine cos_ne_zero_iff.mpr (fun k ↦ ?_)
   rw [ne_eq, ext_iff, not_and_or] at h₀ ⊢
   norm_cast at h₀ ⊢
   cases' h₀ with nr ni
@@ -66,7 +66,7 @@ theorem arctan_tan {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re) (h�
   have h := cos_ne_zero_of_arctan_bounds h₀ h₁ h₂
   unfold arctan tan
   -- multiply top and bottom by `cos z`
-  rw [← mul_div_mul_right (1 + _) _ h, add_mul, sub_mul, one_mul, ← mul_rotate, mul_div_cancel' _ h]
+  rw [← mul_div_mul_right (1 + _) _ h, add_mul, sub_mul, one_mul, ← mul_rotate, mul_div_cancel₀ _ h]
   conv_lhs =>
     enter [2, 1, 2]
     rw [sub_eq_add_neg, ← neg_mul, ← sin_neg, ← cos_neg]
@@ -120,7 +120,7 @@ theorem hasSum_arctan {z : ℂ} (hz : ‖z‖ < 1) :
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
   dsimp [Function.comp_def] at this
   simp_rw [← mul_comm 2 _] at this
-  refine' this.prod_fiberwise fun k => _
+  refine this.prod_fiberwise fun k => ?_
   dsimp only
   convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
   rw [Fin.sum_univ_two, Fin.val_zero, Fin.val_one, Odd.neg_one_pow (n := 2 * k + 0 + 1) (by simp),
