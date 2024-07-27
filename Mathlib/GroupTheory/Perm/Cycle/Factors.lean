@@ -117,7 +117,7 @@ theorem IsCycle.cycleOf_eq (hf : IsCycle f) (hx : f x ≠ x) : cycleOf f x = f :
 
 @[simp]
 theorem cycleOf_eq_one_iff (f : Perm α) [DecidableRel f.SameCycle] : cycleOf f x = 1 ↔ f x = x := by
-  simp_rw [ext_iff, cycleOf_apply, one_apply]
+  simp_rw [Perm.ext_iff, cycleOf_apply, one_apply]
   refine ⟨fun h => (if_pos (SameCycle.refl f x)).symm.trans (h x), fun h y => ?_⟩
   by_cases hy : f y = y
   · rw [hy, ite_self]

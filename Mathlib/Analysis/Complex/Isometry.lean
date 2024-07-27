@@ -79,7 +79,7 @@ theorem rotation_injective : Function.Injective rotation :=
 
 theorem LinearIsometry.re_apply_eq_re_of_add_conj_eq (f : ℂ →ₗᵢ[ℝ] ℂ)
     (h₃ : ∀ z, z + conj z = f z + conj (f z)) (z : ℂ) : (f z).re = z.re := by
-  simpa [ext_iff, add_re, add_im, conj_re, conj_im, ← two_mul,
+  simpa [Complex.ext_iff, add_re, add_im, conj_re, conj_im, ← two_mul,
     show (2 : ℝ) ≠ 0 by simp [two_ne_zero]] using (h₃ z).symm
 
 theorem LinearIsometry.im_apply_eq_im_or_neg_of_re_apply_eq_re {f : ℂ →ₗᵢ[ℝ] ℂ}
@@ -111,7 +111,7 @@ theorem LinearIsometry.re_apply_eq_re {f : ℂ →ₗᵢ[ℝ] ℂ} (h : f 1 = 1)
 theorem linear_isometry_complex_aux {f : ℂ ≃ₗᵢ[ℝ] ℂ} (h : f 1 = 1) :
     f = LinearIsometryEquiv.refl ℝ ℂ ∨ f = conjLIE := by
   have h0 : f I = I ∨ f I = -I := by
-    simp only [ext_iff, ← and_or_left, neg_re, I_re, neg_im, neg_zero]
+    simp only [Complex.ext_iff, ← and_or_left, neg_re, I_re, neg_im, neg_zero]
     constructor
     · rw [← I_re]
       exact @LinearIsometry.re_apply_eq_re f.toLinearIsometry h I
