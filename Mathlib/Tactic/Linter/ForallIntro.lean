@@ -56,8 +56,8 @@ def getVarsAndInfos : Syntax → (Array Syntax × Array Syntax)
               ]
             ]
           ] =>
-          dbg_trace "{Syntax.node s1 k1 #[.node s2 ``Lean.Parser.Term.typeSpec #[colon, body]]}"
-          dbg_trace "{Syntax.node s1 k1 #[.node s2 ``Lean.Parser.Term.typeSpec #[colon, body]]}"
+          --dbg_trace "{Syntax.node s1 k1 #[.node s2 ``Lean.Parser.Term.typeSpec #[colon, body]]}"
+          --dbg_trace "{Syntax.node s1 k1 #[.node s2 ``Lean.Parser.Term.typeSpec #[colon, body]]}"
           #[ids, ts]
         | _ => #[]
       let intros? := match intro? with
@@ -163,23 +163,20 @@ def Term.dropOneIntro {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation
 
 def recombineBinders
     (haveIds : TSyntaxArray `Lean.Parser.Term.letIdBinder)
-    (foralls : TSyntaxArray [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder])
-    (body value : TSyntax `term) :
+    (foralls : TSyntaxArray [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder]) :
     TSyntaxArray `Lean.Parser.Term.letIdBinder ×
-    TSyntaxArray [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder] ×
-    TSyntax `term ×
-    TSyntax `term :=
+    TSyntaxArray [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder] :=
   -- I decided that to test this, I was going to move every entry of `foralls` to `haveIds`
   -- one at a time.  We will have to only move them as long as it makes sense, coordinating
   -- with the `intros` as well: this is just a test
   let first := foralls.getD 0 default
-  dbg_trace first
-  (haveIds.push ⟨first.raw⟩, foralls.erase first, body, value)
+  --dbg_trace first
+  (haveIds.push ⟨first.raw⟩, foralls.erase first)
 
 def allStxCore (cmd : Syntax) : Syntax → CommandElabM (Option (Syntax × Syntax))
   | stx@`(tactic| have $id:haveId $bi1* : ∀ $bi2*, $body := $t) => do
-    dbg_trace "bi1: '{bi1}'\nbi2: '{bi2}'\n"
-    let (bi1', bi2', body', t') := recombineBinders bi1 bi2 body t
+    --dbg_trace "bi1: '{bi1}'\nbi2: '{bi2}'\n"
+    let (bi1', bi2') := recombineBinders bi1 bi2
     --let ident := mkIdent `hyp
     let newTerm? := ← Term.dropOneIntro t
     --logInfo m!"new term: {newTerm?}"
@@ -187,8 +184,8 @@ def allStxCore (cmd : Syntax) : Syntax → CommandElabM (Option (Syntax × Synta
       | none => return none
       | some t' =>
         let newHave := ←
-          if bi2'.isEmpty then `(tactic| have $id:haveId $[$bi1']* : $body' := $(⟨t'⟩))
-          else `(tactic| have $id:haveId $[$bi1']* : ∀ $[$bi2']*, $body' := $(⟨t'⟩))
+          if bi2'.isEmpty then `(tactic| have $id:haveId $[$bi1']* : $body := $(⟨t'⟩))
+          else `(tactic| have $id:haveId $[$bi1']* : ∀ $[$bi2']*, $body := $(⟨t'⟩))
         let newCmd ← cmd.replaceM fun s => do if s == stx then return some newHave else return none
         --logInfo m!"command: {cmd}\nstx: {stx}\nnewCmd: {newCmd}\n"
         let s ← modifyGet fun st => (st, { st with messages := {} })
@@ -213,7 +210,7 @@ elab "fh " cmd:command : command => do
   let haves := cmd.raw.filter (·.isOfKind ``Lean.Parser.Tactic.tacticHave_)
   for stx in haves do
 --  if let some stx := cmd.raw.find? (·.isOfKind ``Lean.Parser.Tactic.tacticHave_) then
-    dbg_trace "found have"
+    --dbg_trace "found have"
     let newHave ← allStx cmd stx
     --logInfo newHave
     let newCmd ← cmd.raw.replaceM fun s => do if s == stx then return some newHave else return none
@@ -223,6 +220,20 @@ elab "fh " cmd:command : command => do
       logWarning m!"Please use\n---\n{newCmd}\n---"
 
 -- and the test is successful!
+/--
+warning: declaration uses 'sorry'
+---
+warning: Please use
+---
+example : True :=
+  by
+  have (_ : Nat) x y : x + y = 0 := by
+    refine ?_
+    sorry
+  trivial
+---
+-/
+#guard_msgs in
 fh
 --inspect
 example : True := by
@@ -232,6 +243,29 @@ example : True := by
     sorry
   trivial
 
+/--
+warning: declaration uses 'sorry'
+---
+info: No change needed
+-/
+#guard_msgs in
+fh
+--inspect
+example : True := by
+  have (_ : Nat) : ∀ x y, x + y = 0 := by
+    refine ?_
+    sorry
+  trivial
+
+/--
+warning: Please use
+---
+example : True := by
+  have (n : Nat) : n = n := by rfl
+  trivial
+---
+-/
+#guard_msgs in
 fh
 --inspect
 example : True := by
@@ -240,6 +274,20 @@ example : True := by
     rfl
   trivial
 
+/--
+warning: declaration uses 'sorry'
+---
+warning: Please use
+---
+example : True :=
+  by
+  have (k : Nat) _ : ‹_› = k := by
+    intros
+    sorry
+  trivial
+---
+-/
+#guard_msgs in
 fh
 --inspect
 example : True := by
@@ -250,9 +298,9 @@ example : True := by
 
 example : True :=
   by
-  have (k : Nat) _ : ‹_› = k := by
-    intros
-    sorry
+--  have (k : Nat) _ : ‹_› = k := by
+--    intros
+--    sorry
   trivial
 
 /- broken syntax
@@ -263,19 +311,19 @@ example : True := by
   trivial
 -/
 
-example {n : Nat} : True :=
+example {_n : Nat} : True :=
   by
-  have {_} : ‹_› = 0 := by
-    --intro x
-    sorry
+--  have {_} : ‹_› = 0 := by
+--    --intro x
+--    sorry
   trivial
 
 example : True :=
   by
-  have (_ : Nat) _ : ‹_› = 0 := by
-    intros
-    sorry
-    --rfl
+--  have (_ : Nat) _ : ‹_› = 0 := by
+--    intros
+--    sorry
+--    --rfl
   trivial
 
 
