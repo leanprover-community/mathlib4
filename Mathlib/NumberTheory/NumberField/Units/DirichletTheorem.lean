@@ -155,6 +155,7 @@ noncomputable def _root_.NumberField.Units.unitLattice :
     AddSubgroup ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
   AddSubgroup.map (logEmbedding K) ⊤
 
+open scoped Int in
 theorem unitLattice_inter_ball_finite (r : ℝ) :
     ((unitLattice K : Set ({ w : InfinitePlace K // w ≠ w₀} → ℝ)) ∩
       Metric.closedBall 0 r).Finite := by
@@ -239,6 +240,7 @@ def seq : ℕ → { x : 𝓞 K // x ≠ 0 }
 theorem seq_ne_zero (n : ℕ) : algebraMap (𝓞 K) K (seq K w₁ hB n) ≠ 0 :=
   RingOfIntegers.coe_ne_zero_iff.mpr (seq K w₁ hB n).prop
 
+open scoped Int in
 /-- The terms of the sequence have nonzero norm. -/
 theorem seq_norm_ne_zero (n : ℕ) : Algebra.norm ℤ (seq K w₁ hB n : 𝓞 K) ≠ 0 :=
   Algebra.norm_ne_zero_iff.mpr (Subtype.coe_ne_coe.1 (seq_ne_zero K w₁ hB n))
@@ -259,6 +261,7 @@ theorem seq_decreasing {n m : ℕ} (h : n < m) (w : InfinitePlace K) (hw : w ≠
           refine lt_trans ?_ (m_ih hr)
           exact (seq_next K w₁ hB (seq K w₁ hB m).prop).choose_spec.2.1 w hw
 
+open scoped Int in
 /-- The terms of the sequence have norm bounded by `B`. -/
 theorem seq_norm_le (n : ℕ) :
     Int.natAbs (Algebra.norm ℤ (seq K w₁ hB n : 𝓞 K)) ≤ B := by

@@ -26,6 +26,8 @@ open Finset NumberField Algebra FiniteDimensional
 
 section Rat
 
+open scoped Int
+
 variable {K : Type*} [Field K] [NumberField K] (x : 𝓞 K)
 
 theorem Algebra.coe_norm_int : (Algebra.norm ℤ x : ℚ) = Algebra.norm ℚ (x : K) :=
@@ -40,6 +42,7 @@ namespace RingOfIntegers
 
 variable {L : Type*} (K : Type*) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 
+open scoped Int in
 /-- `Algebra.norm` as a morphism betwen the rings of integers. -/
 noncomputable def norm [Algebra.IsSeparable K L] : 𝓞 L →* 𝓞 K :=
   RingOfIntegers.restrict_monoidHom
@@ -63,6 +66,7 @@ theorem norm_algebraMap [Algebra.IsSeparable K L] (x : 𝓞 K) :
     RingOfIntegers.algebraMap_norm_algebraMap, Algebra.norm_algebraMap,
     RingOfIntegers.coe_eq_algebraMap, map_pow]
 
+open scoped Int in
 theorem isUnit_norm_of_isGalois [IsGalois K L] {x : 𝓞 L} : IsUnit (norm K x) ↔ IsUnit x := by
   classical
   refine ⟨fun hx => ?_, IsUnit.map _⟩
@@ -78,6 +82,7 @@ theorem isUnit_norm_of_isGalois [IsGalois K L] {x : 𝓞 L} : IsUnit (norm K x) 
       RingOfIntegers.map_mk]
   · rw [prod_sdiff <| subset_univ _, ← norm_eq_prod_automorphisms, coe_algebraMap_norm]
 
+open scoped Int in
 /-- If `L/K` is a finite Galois extension of fields, then, for all `(x : 𝓞 L)` we have that
 `x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x)`. -/
 theorem dvd_norm [IsGalois K L] (x : 𝓞 L) : x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x) := by

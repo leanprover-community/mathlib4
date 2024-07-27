@@ -73,6 +73,7 @@ def verschiebungPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 theorem verschiebungPoly_zero : verschiebungPoly 0 = 0 :=
   rfl
 
+open scoped Int in
 theorem aeval_verschiebung_poly' (x : 𝕎 R) (n : ℕ) :
     aeval x.coeff (verschiebungPoly n) = (verschiebungFun x).coeff n := by
   cases' n with n
@@ -149,6 +150,7 @@ theorem verschiebung_coeff_add_one (x : 𝕎 R) (n : ℕ) :
 theorem verschiebung_coeff_succ (x : 𝕎 R) (n : ℕ) : (verschiebung x).coeff n.succ = x.coeff n :=
   rfl
 
+open scoped Int in
 theorem aeval_verschiebungPoly (x : 𝕎 R) (n : ℕ) :
     aeval x.coeff (verschiebungPoly n) = (verschiebung x).coeff n :=
   aeval_verschiebung_poly' x n

@@ -44,6 +44,7 @@ noncomputable def wittMulN : ℕ → ℕ → MvPolynomial ℕ ℤ
 
 variable {p}
 
+open scoped Int in
 theorem mulN_coeff (n : ℕ) (x : 𝕎 R) (k : ℕ) :
     (x * n).coeff k = aeval x.coeff (wittMulN p n k) := by
   induction' n with n ih generalizing k

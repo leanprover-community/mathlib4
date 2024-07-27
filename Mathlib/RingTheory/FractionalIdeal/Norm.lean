@@ -28,7 +28,7 @@ ideal of `R` and `I.den` an element of `R⁰` such that `I.den • I = I.num`.
 
 namespace FractionalIdeal
 
-open scoped Pointwise nonZeroDivisors
+open scoped Int Pointwise nonZeroDivisors
 
 variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R]
 variable {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]

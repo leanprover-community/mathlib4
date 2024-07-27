@@ -33,7 +33,7 @@ namespace NumberField
 
 open FiniteDimensional NumberField NumberField.InfinitePlace Matrix
 
-open scoped Classical Real nonZeroDivisors
+open scoped Int Classical Real nonZeroDivisors
 
 variable (K : Type*) [Field K] [NumberField K]
 
@@ -438,6 +438,8 @@ namespace Rat
 
 open NumberField
 
+open scoped Int
+
 /-- The absolute discriminant of the number field `ℚ` is 1. -/
 @[simp]
 theorem numberField_discr : discr ℚ = 1 := by
@@ -460,6 +462,7 @@ end Rat
 
 variable {ι ι'} (K) [Field K] [DecidableEq ι] [DecidableEq ι'] [Fintype ι] [Fintype ι']
 
+open scoped Int in
 /-- If `b` and `b'` are `ℚ`-bases of a number field `K` such that
 `∀ i j, IsIntegral ℤ (b.toMatrix b' i j)` and `∀ i j, IsIntegral ℤ (b'.toMatrix b i j)` then
 `discr ℚ b = discr ℚ b'`. -/

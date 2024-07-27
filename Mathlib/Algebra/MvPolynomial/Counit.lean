@@ -27,6 +27,8 @@ namespace MvPolynomial
 
 open Function
 
+open scoped Nat Int
+
 variable (A B R : Type*) [CommSemiring A] [CommSemiring B] [CommRing R] [Algebra A B]
 
 /-- `MvPolynomial.ACounit A B` is the natural surjective algebra homomorphism

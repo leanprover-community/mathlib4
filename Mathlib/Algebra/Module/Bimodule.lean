@@ -118,6 +118,8 @@ end Algebra
 
 section Ring
 
+open scoped Nat Int
+
 variable (R S M : Type*) [Ring R] [Ring S]
 variable [AddCommGroup M] [Module R M] [Module S M] [SMulCommClass R S M]
 

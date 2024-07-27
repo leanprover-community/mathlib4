@@ -420,6 +420,7 @@ namespace RingHom
 
 variable {R S : Type*}
 
+open scoped Nat in
 /-- Reinterpret a `RingHom` as an `ℕ`-algebra homomorphism. -/
 def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
   { f with

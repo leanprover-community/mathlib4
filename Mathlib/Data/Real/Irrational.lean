@@ -438,7 +438,7 @@ theorem of_pow : ∀ n : ℕ, Irrational (x ^ n) → Irrational x
     rw [pow_succ] at h
     exact h.mul_cases.elim (of_pow n) id
 
-open Int in
+open scoped Int in
 theorem of_zpow : ∀ m : ℤ, Irrational (x ^ m) → Irrational x
   | (n : ℕ) => fun h => by
     rw [zpow_natCast] at h
@@ -457,6 +457,7 @@ open Polynomial
 
 variable (x : ℝ) (p : ℤ[X])
 
+open Int in
 theorem one_lt_natDegree_of_irrational_root (hx : Irrational x) (p_nonzero : p ≠ 0)
     (x_is_root : aeval x p = 0) : 1 < p.natDegree := by
   by_contra rid

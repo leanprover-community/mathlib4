@@ -28,8 +28,9 @@ given by `t ↦ (t, 2 * t)` and `y : ℚ ⟶ ℚ ⊞ ℚ` given by `t ↦ (t, t)
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 -/
 
-
 open CategoryTheory.Abelian CategoryTheory CategoryTheory.Limits ModuleCat LinearMap
+
+open scoped Int
 
 namespace Counterexample
 
