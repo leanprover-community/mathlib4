@@ -244,9 +244,10 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- if the linter reached the end of the file, then we scan the `import` syntax instead
     let stx := ← do
       if stx.isOfKind ``Lean.Parser.Command.eoi then
-        let contents := (← read).fileMap.source
+        let fileMap ← getFileMap
         -- `impMods` is the syntax for the modules imported in the current file
-        let (impMods, _) ← Parser.parseHeader (Parser.mkInputContext contents (← getFileName))
+        let (impMods, _) ← Parser.parseHeader
+          { input := fileMap.source, fileName := ← getFileName, fileMap := fileMap }
         return impMods
       else return stx
     let sstr := stx.getSubstring?
