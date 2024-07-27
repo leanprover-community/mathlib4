@@ -123,15 +123,14 @@ theorem eLpNorm_inner_lt_top (f g : α →₂[μ] E) : eLpNorm (fun x : α => �
           (norm_nonneg _))
       -- TODO(kmill): the type ascription is getting around an elaboration error
       _ ≤ ‖(‖f x‖ ^ 2 + ‖g x‖ ^ 2 : ℝ)‖ := (two_mul_le_add_sq _ _).trans (le_abs_self _)
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_inner_lt_top := eLpNorm_inner_lt_top
-
   refine (eLpNorm_mono_ae (ae_of_all _ h)).trans_lt ((eLpNorm_add_le ?_ ?_ le_rfl).trans_lt ?_)
   · exact ((Lp.aestronglyMeasurable f).norm.aemeasurable.pow_const _).aestronglyMeasurable
   · exact ((Lp.aestronglyMeasurable g).norm.aemeasurable.pow_const _).aestronglyMeasurable
   rw [ENNReal.add_lt_top]
   exact ⟨eLpNorm_rpow_two_norm_lt_top f, eLpNorm_rpow_two_norm_lt_top g⟩
+
+@[deprecated (since := "2024-07-27")]
+alias snorm_inner_lt_top := eLpNorm_inner_lt_top
 
 section InnerProductSpace
 

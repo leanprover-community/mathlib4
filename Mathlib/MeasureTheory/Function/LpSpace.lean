@@ -179,15 +179,9 @@ protected theorem antitone [IsFiniteMeasure μ] {p q : ℝ≥0∞} (hpq : p ≤ 
 theorem coeFn_mk {f : α →ₘ[μ] E} (hf : eLpNorm f p μ < ∞) : ((⟨f, hf⟩ : Lp E p μ) : α → E) = f :=
   rfl
 
-@[deprecated (since := "2024-07-27")]
-alias coeFn_mk := coeFn_mk
-
 -- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem coe_mk {f : α →ₘ[μ] E} (hf : eLpNorm f p μ < ∞) : ((⟨f, hf⟩ : Lp E p μ) : α →ₘ[μ] E) = f :=
   rfl
-
-@[deprecated (since := "2024-07-27")]
-alias coe_mk := coe_mk
 
 @[simp]
 theorem toLp_coeFn (f : Lp E p μ) (hf : Memℒp f p μ) : hf.toLp f = f := by
@@ -250,14 +244,8 @@ instance instEDist : EDist (Lp E p μ) where edist f g := eLpNorm (⇑f - ⇑g) 
 theorem norm_def (f : Lp E p μ) : ‖f‖ = ENNReal.toReal (eLpNorm f p μ) :=
   rfl
 
-@[deprecated (since := "2024-07-27")]
-alias norm_def := norm_def
-
 theorem nnnorm_def (f : Lp E p μ) : ‖f‖₊ = ENNReal.toNNReal (eLpNorm f p μ) :=
   rfl
-
-@[deprecated (since := "2024-07-27")]
-alias nnnorm_def := nnnorm_def
 
 @[simp, norm_cast]
 protected theorem coe_nnnorm (f : Lp E p μ) : (‖f‖₊ : ℝ) = ‖f‖ :=
@@ -267,15 +255,9 @@ protected theorem coe_nnnorm (f : Lp E p μ) : (‖f‖₊ : ℝ) = ‖f‖ :=
 theorem nnnorm_coe_ennreal (f : Lp E p μ) : (‖f‖₊ : ℝ≥0∞) = eLpNorm f p μ :=
   ENNReal.coe_toNNReal <| Lp.eLpNorm_ne_top f
 
-@[deprecated (since := "2024-07-27")]
-alias nnnorm_coe_ennreal := nnnorm_coe_ennreal
-
 @[simp]
 lemma norm_toLp (f : α → E) (hf : Memℒp f p μ) : ‖hf.toLp f‖ = ENNReal.toReal (eLpNorm f p μ) := by
   erw [norm_def, eLpNorm_congr_ae (Memℒp.coeFn_toLp hf)]
-
-@[deprecated (since := "2024-07-27")]
-alias norm_toLp := norm_toLp
 
 @[simp]
 theorem nnnorm_toLp (f : α → E) (hf : Memℒp f p μ) :
@@ -285,22 +267,13 @@ theorem nnnorm_toLp (f : α → E) (hf : Memℒp f p μ) :
 theorem coe_nnnorm_toLp {f : α → E} (hf : Memℒp f p μ) : (‖hf.toLp f‖₊ : ℝ≥0∞) = eLpNorm f p μ := by
   rw [nnnorm_toLp f hf, ENNReal.coe_toNNReal hf.2.ne]
 
-@[deprecated (since := "2024-07-27")]
-alias coe_nnnorm_toLp := coe_nnnorm_toLp
-
 theorem dist_def (f g : Lp E p μ) : dist f g = (eLpNorm (⇑f - ⇑g) p μ).toReal := by
   simp_rw [dist, norm_def]
   refine congr_arg _ ?_
   apply eLpNorm_congr_ae (coeFn_sub _ _)
 
-@[deprecated (since := "2024-07-27")]
-alias dist_def := dist_def
-
 theorem edist_def (f g : Lp E p μ) : edist f g = eLpNorm (⇑f - ⇑g) p μ :=
   rfl
-
-@[deprecated (since := "2024-07-27")]
-alias edist_def := edist_def
 
 protected theorem edist_dist (f g : Lp E p μ) : edist f g = .ofReal (dist f g) := by
   rw [edist_def, dist_def, ← eLpNorm_congr_ae (coeFn_sub _ _),
@@ -321,9 +294,6 @@ theorem edist_toLp_toLp (f g : α → E) (hf : Memℒp f p μ) (hg : Memℒp g p
 theorem edist_toLp_zero (f : α → E) (hf : Memℒp f p μ) : edist (hf.toLp f) 0 = eLpNorm f p μ := by
   convert edist_toLp_toLp f 0 hf zero_memℒp
   simp
-
-@[deprecated (since := "2024-07-27")]
-alias edist_toLp_zero := edist_toLp_zero
 
 @[simp]
 theorem nnnorm_zero : ‖(0 : Lp E p μ)‖₊ = 0 := by
