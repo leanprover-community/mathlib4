@@ -7,17 +7,11 @@ import Mathlib.Topology.Homeomorph
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
-# Topological space structure on `Mᵈᵐᵃ` and `Mᵃᵐᵃ`
+# Topological structure on `DomMulAct _`
 
-In this file we define `TopologicalSpace` structure on `Mᵈᵐᵃ` and `Mᵈᵃᵃ`
-and prove basic theorems about these topologies.
-The topologies on `Mᵈᵐᵃ` and `Mᵃᵐᵃ` are the same as the topology on `M`.
-Formally, they are induced by `DomMulAct.mk.symm` and `DomAddAct.mk.symm`,
-since the types aren't definitionally equal.
-
-## Tags
-
-topological space, group action, domain action
+In this file we define topology on `DomMulAct _` and prove basic facts about this topology.
+The topology on `Mᵈᵐᵃ` is the same as the topology on `M`
+(formally, it is induced by `DomMulAct.mk.symm`, since the types aren't definitionally equal).
 -/
 
 open Filter TopologicalSpace
@@ -27,8 +21,7 @@ namespace DomMulAct
 
 variable {M : Type*} [TopologicalSpace M]
 
-/-- Put the same topological space structure on `Mᵈᵐᵃ` as on the original space. -/
-@[to_additive "Put the same topological space structure on `Mᵈᵃᵃ` as on the original space."]
+@[to_additive]
 instance instTopologicalSpace : TopologicalSpace Mᵈᵐᵃ := .induced mk.symm  ‹_›
 
 @[to_additive (attr := continuity, fun_prop)]
@@ -38,7 +31,7 @@ theorem continuous_mk : Continuous (@mk M) := continuous_induced_rng.2 continuou
 theorem continuous_mk_symm : Continuous (@mk M).symm := continuous_induced_dom
 
 /-- `DomMulAct.mk` as a homeomorphism. -/
-@[to_additive (attr := simps toEquiv) "`DomAddAct.mk` as a homeomorphism."]
+@[to_additive (attr := simps toEquiv) "`DomAddAct.mk` as a homeomorphism"]
 def mkHomeomorph : M ≃ₜ Mᵈᵐᵃ where
   toEquiv := mk
 
