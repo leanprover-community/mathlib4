@@ -51,22 +51,20 @@ theorem piecewise_mem_Icc' {s : Set ι} [∀ j, Decidable (j ∈ s)] {f₁ f₂ 
 
 section Nonempty
 
-variable [Nonempty ι]
-
-theorem pi_univ_Ioi_subset : (pi univ fun i ↦ Ioi (x i)) ⊆ Ioi x := fun z hz ↦
+theorem pi_univ_Ioi_subset [Nonempty ι]: (pi univ fun i ↦ Ioi (x i)) ⊆ Ioi x := fun z hz ↦
   ⟨fun i ↦ le_of_lt <| hz i trivial, fun h ↦
-    (Nonempty.elim ‹Nonempty ι›) fun i ↦ not_lt_of_le (h i) (hz i trivial)⟩
+    (‹Nonempty ι›.elim) fun i ↦ not_lt_of_le (h i) (hz i trivial)⟩
 
-theorem pi_univ_Iio_subset : (pi univ fun i ↦ Iio (x i)) ⊆ Iio x :=
-  @pi_univ_Ioi_subset ι (fun i ↦ (α i)ᵒᵈ) _ x _
+theorem pi_univ_Iio_subset [Nonempty ι]: (pi univ fun i ↦ Iio (x i)) ⊆ Iio x :=
+  pi_univ_Ioi_subset (α := fun i ↦ (α i)ᵒᵈ) x
 
-theorem pi_univ_Ioo_subset : (pi univ fun i ↦ Ioo (x i) (y i)) ⊆ Ioo x y := fun _ hx ↦
+theorem pi_univ_Ioo_subset [Nonempty ι]: (pi univ fun i ↦ Ioo (x i) (y i)) ⊆ Ioo x y := fun _ hx ↦
   ⟨(pi_univ_Ioi_subset _) fun i hi ↦ (hx i hi).1, (pi_univ_Iio_subset _) fun i hi ↦ (hx i hi).2⟩
 
-theorem pi_univ_Ioc_subset : (pi univ fun i ↦ Ioc (x i) (y i)) ⊆ Ioc x y := fun _ hx ↦
+theorem pi_univ_Ioc_subset [Nonempty ι]: (pi univ fun i ↦ Ioc (x i) (y i)) ⊆ Ioc x y := fun _ hx ↦
   ⟨(pi_univ_Ioi_subset _) fun i hi ↦ (hx i hi).1, fun i ↦ (hx i trivial).2⟩
 
-theorem pi_univ_Ico_subset : (pi univ fun i ↦ Ico (x i) (y i)) ⊆ Ico x y := fun _ hx ↦
+theorem pi_univ_Ico_subset [Nonempty ι]: (pi univ fun i ↦ Ico (x i) (y i)) ⊆ Ico x y := fun _ hx ↦
   ⟨fun i ↦ (hx i trivial).1, (pi_univ_Iio_subset _) fun i hi ↦ (hx i hi).2⟩
 
 end Nonempty

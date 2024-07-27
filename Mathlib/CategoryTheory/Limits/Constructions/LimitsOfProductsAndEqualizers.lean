@@ -46,15 +46,16 @@ namespace HasLimitOfHasProductsOfHasEqualizers
 
 variable {F : J ⥤ C} {c₁ : Fan F.obj} {c₂ : Fan fun f : Σp : J × J, p.1 ⟶ p.2 => F.obj f.1.2}
   (s t : c₁.pt ⟶ c₂.pt)
-  (hs : ∀ f : Σp : J × J, p.1 ⟶ p.2, s ≫ c₂.π.app ⟨f⟩ = c₁.π.app ⟨f.1.1⟩ ≫ F.map f.2)
-  (ht : ∀ f : Σp : J × J, p.1 ⟶ p.2, t ≫ c₂.π.app ⟨f⟩ = c₁.π.app ⟨f.1.2⟩) (i : Fork s t)
 
 /--
 (Implementation) Given the appropriate product and equalizer cones, build the cone for `F` which is
 limiting if the given cones are also.
 -/
 @[simps]
-def buildLimit : Cone F where
+def buildLimit
+    (hs : ∀ f : Σp : J × J, p.1 ⟶ p.2, s ≫ c₂.π.app ⟨f⟩ = c₁.π.app ⟨f.1.1⟩ ≫ F.map f.2)
+    (ht : ∀ f : Σp : J × J, p.1 ⟶ p.2, t ≫ c₂.π.app ⟨f⟩ = c₁.π.app ⟨f.1.2⟩)
+    (i : Fork s t) : Cone F where
   pt := i.pt
   π :=
     { app := fun j => i.ι ≫ c₁.π.app ⟨_⟩
@@ -62,7 +63,10 @@ def buildLimit : Cone F where
         dsimp
         rw [Category.id_comp, Category.assoc, ← hs ⟨⟨_, _⟩, f⟩, i.condition_assoc, ht] }
 
-variable {i}
+variable
+  (hs : ∀ f : Σp : J × J, p.1 ⟶ p.2, s ≫ c₂.π.app ⟨f⟩ = c₁.π.app ⟨f.1.1⟩ ≫ F.map f.2)
+  (ht : ∀ f : Σp : J × J, p.1 ⟶ p.2, t ≫ c₂.π.app ⟨f⟩ = c₁.π.app ⟨f.1.2⟩)
+  {i : Fork s t}
 
 /--
 (Implementation) Show the cone constructed in `buildLimit` is limiting, provided the cones used in
@@ -252,14 +256,15 @@ namespace HasColimitOfHasCoproductsOfHasCoequalizers
 
 variable {F : J ⥤ C} {c₁ : Cofan fun f : Σp : J × J, p.1 ⟶ p.2 => F.obj f.1.1} {c₂ : Cofan F.obj}
   (s t : c₁.pt ⟶ c₂.pt)
-  (hs : ∀ f : Σp : J × J, p.1 ⟶ p.2, c₁.ι.app ⟨f⟩ ≫ s = F.map f.2 ≫ c₂.ι.app ⟨f.1.2⟩)
-  (ht : ∀ f : Σp : J × J, p.1 ⟶ p.2, c₁.ι.app ⟨f⟩ ≫ t = c₂.ι.app ⟨f.1.1⟩) (i : Cofork s t)
 
 /-- (Implementation) Given the appropriate coproduct and coequalizer cocones,
 build the cocone for `F` which is colimiting if the given cocones are also.
 -/
 @[simps]
-def buildColimit : Cocone F where
+def buildColimit
+    (hs : ∀ f : Σp : J × J, p.1 ⟶ p.2, c₁.ι.app ⟨f⟩ ≫ s = F.map f.2 ≫ c₂.ι.app ⟨f.1.2⟩)
+    (ht : ∀ f : Σp : J × J, p.1 ⟶ p.2, c₁.ι.app ⟨f⟩ ≫ t = c₂.ι.app ⟨f.1.1⟩)
+    (i : Cofork s t) : Cocone F where
   pt := i.pt
   ι :=
     { app := fun j => c₂.ι.app ⟨_⟩ ≫ i.π
@@ -270,7 +275,10 @@ def buildColimit : Cocone F where
             simp only [← Category.assoc, eq_whisker (hs f)]
         rw [Category.comp_id, ← reassoced ⟨⟨_, _⟩, f⟩, i.condition, ← Category.assoc, ht] }
 
-variable {i}
+variable
+  (hs : ∀ f : Σp : J × J, p.1 ⟶ p.2, c₁.ι.app ⟨f⟩ ≫ s = F.map f.2 ≫ c₂.ι.app ⟨f.1.2⟩)
+  (ht : ∀ f : Σp : J × J, p.1 ⟶ p.2, c₁.ι.app ⟨f⟩ ≫ t = c₂.ι.app ⟨f.1.1⟩)
+  {i : Cofork s t}
 
 /-- (Implementation) Show the cocone constructed in `buildColimit` is colimiting,
 provided the cocones used in its construction are.

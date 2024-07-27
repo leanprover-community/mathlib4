@@ -112,6 +112,24 @@ def getAttrs (env : Environment) (stx : Syntax) : NameSet :=
       | .error .. => pure ()
   return new
 
+/-- `previousInstName nm` takes as input a name `nm`, assuming that it is the name of an
+auto-generated "nameless" `instance`.
+If `nm` ends in `..._n`, where `n` is a number, it returns the same name, but with `_n` replaced
+by `_(n-1)`, unless `n ≤ 1`, in which case it simply removes the `_n` suffix.
+-/
+def previousInstName : Name → Name
+  | nm@(.str init tail) =>
+    let last := tail.takeRightWhile (· != '_')
+    let newTail := match last.toNat? with
+                    | some (n + 2) => s!"_{n + 1}"
+                    | _ => ""
+    let newTailPrefix := tail.dropRightWhile (· != '_')
+    if newTailPrefix.isEmpty then nm else
+    let newTail :=
+      (if newTailPrefix.back == '_' then newTailPrefix.dropRight 1 else newTailPrefix) ++ newTail
+    .str init newTail
+  | nm => nm
+
 /--`getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 module names that are implied by
 * the `SyntaxNodeKinds`,
@@ -127,7 +145,14 @@ def getAllImports (cmd id : Syntax) (dbg? : Bool := false) :
   let env ← getEnv
   let id1 ← getId cmd
   let ns ← getCurrNamespace
-  let nm ← liftCoreM do (realizeGlobalConstNoOverload id1 <|> return ns ++ id1.getId)
+  let id2 := mkIdentFrom id1 (previousInstName id1.getId)
+  let nm ← liftCoreM do (
+    -- try the visible name or the current "nameless" `instance` name
+    realizeGlobalConstNoOverload id1 <|>
+    -- otherwise, guess what the previous "nameless" `instance` name was
+    realizeGlobalConstNoOverload id2 <|>
+    -- failing everything, use the current namespace followed by the visible name
+    return ns ++ id1.getId)
   -- We collect the implied declaration names, the `SyntaxNodeKinds` and the attributes.
   let ts := getVisited env nm
               |>.append (getVisited env id.getId)
