@@ -58,8 +58,11 @@ theorem coe_of (X : Type u) [Fintype X] [TopologicalSpace X] :
   rfl
 
 /-- The forgetful functor to `FintypeCat`. -/
-instance : HasForget₂ FinTopCat FintypeCat :=
-  HasForget₂.mk' (fun X ↦ FintypeCat.of X) (fun _ ↦ rfl) (fun f ↦ f.toFun) HEq.rfl
+instance : HasForget₂ FinTopCat FintypeCat where
+  forget₂ :=
+    { obj := fun X ↦ FintypeCat.of X
+      map := fun f ↦ { hom := f.hom.toFun } }
+  forget_comp := rfl
 
 instance (X : FinTopCat) : TopologicalSpace ((forget₂ FinTopCat FintypeCat).obj X) :=
   inferInstanceAs <| TopologicalSpace X
