@@ -706,8 +706,10 @@ protected theorem monotone (f : α →𝒄 β) : Monotone f :=
 theorem apply_mono {f g : α →𝒄 β} {x y : α} (h₁ : f ≤ g) (h₂ : x ≤ y) : f x ≤ g y :=
   OrderHom.apply_mono (show (f : α →o β) ≤ g from h₁) h₂
 
-theorem ite_ωScottContinuous {p : Prop} [hp : Decidable p] (f g : α → β) (hf : ωScottContinuous f)
-    (hg : ωScottContinuous g) : ωScottContinuous fun x => if p then f x else g x := by
+set_option linter.deprecated false
+
+theorem ite_continuous' {p : Prop} [hp : Decidable p] (f g : α → β) (hf : Continuous' f)
+    (hg : Continuous' g) : Continuous' fun x => if p then f x else g x := by
   split_ifs <;> simp [*]
 
 theorem ωSup_bind {β γ : Type v} (c : Chain α) (f : α →o Part β) (g : α →o β → Part γ) :
