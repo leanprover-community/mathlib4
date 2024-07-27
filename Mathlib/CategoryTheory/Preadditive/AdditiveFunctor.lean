@@ -71,18 +71,18 @@ instance {E : Type*} [Category E] [Preadditive E] (G : D ⥤ E) [Functor.Additiv
 
 @[simp]
 theorem map_neg {X Y : C} {f : X ⟶ Y} : F.map (-f) = -F.map f :=
-  (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_neg _
+  F.mapAddHom.map_neg _
 
 @[simp]
 theorem map_sub {X Y : C} {f g : X ⟶ Y} : F.map (f - g) = F.map f - F.map g :=
-  (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_sub _ _
+  F.mapAddHom.map_sub _ _
 
 theorem map_nsmul {X Y : C} {f : X ⟶ Y} {n : ℕ} : F.map (n • f) = n • F.map f :=
-  (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_nsmul _ _
+  F.mapAddHom.map_nsmul _ _
 
 -- You can alternatively just use `Functor.map_smul` here, with an explicit `(r : ℤ)` argument.
 theorem map_zsmul {X Y : C} {f : X ⟶ Y} {r : ℤ} : F.map (r • f) = r • F.map f :=
-  (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_zsmul _ _
+  F.mapAddHom.map_zsmul _ _
 
 @[simp]
 nonrec theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
@@ -232,7 +232,7 @@ theorem AdditiveFunctor.forget_obj_of (F : C ⥤ D) [F.Additive] :
 
 @[simp]
 theorem AdditiveFunctor.forget_map (F G : C ⥤+ D) (α : F ⟶ G) :
-    (AdditiveFunctor.forget C D).map α = α :=
+    (AdditiveFunctor.forget C D).map α = α.hom :=
   rfl
 
 instance : Functor.Additive (AdditiveFunctor.forget C D) where map_add := rfl
@@ -299,18 +299,18 @@ theorem AdditiveFunctor.ofExact_obj_fst (F : C ⥤ₑ D) :
   rfl
 
 @[simp]
-theorem AdditiveFunctor.ofLeftExact_map {F G : C ⥤ₗ D} (α : F ⟶ G) :
-    (AdditiveFunctor.ofLeftExact C D).map α = α :=
+theorem AdditiveFunctor.ofLeftExact_map_hom {F G : C ⥤ₗ D} (α : F ⟶ G) :
+    ((AdditiveFunctor.ofLeftExact C D).map α).hom = α.hom :=
   rfl
 
 @[simp]
-theorem AdditiveFunctor.ofRightExact_map {F G : C ⥤ᵣ D} (α : F ⟶ G) :
-    (AdditiveFunctor.ofRightExact C D).map α = α :=
+theorem AdditiveFunctor.ofRightExact_map_hom {F G : C ⥤ᵣ D} (α : F ⟶ G) :
+    ((AdditiveFunctor.ofRightExact C D).map α).hom = α.hom :=
   rfl
 
 @[simp]
-theorem AdditiveFunctor.ofExact_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
-    (AdditiveFunctor.ofExact C D).map α = α :=
+theorem AdditiveFunctor.ofExact_map_hom {F G : C ⥤ₑ D} (α : F ⟶ G) :
+    ((AdditiveFunctor.ofExact C D).map α).hom = α.hom :=
   rfl
 
 end Exact

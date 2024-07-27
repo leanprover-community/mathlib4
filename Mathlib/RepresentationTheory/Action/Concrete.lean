@@ -68,11 +68,27 @@ def diagonalOneIsoLeftRegular (G : Type u) [Monoid G] : diagonal G 1 ≅ leftReg
 
 namespace FintypeCat
 
+/-- The multiplicative equivalence `Function.End X ≃* End X` for `X : FintypeCat`.-/
+@[simps]
+def equivEnd {X : FintypeCat.{u}} : Function.End X ≃* End X where
+  toFun f := { hom := f }
+  invFun f := f.hom
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_mul' _ _ := rfl
+
 /-- Bundles a finite type `H` with a multiplicative action of `G` as an `Action`. -/
 def ofMulAction (G : Type u) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
     Action FintypeCat (MonCat.of G) where
   V := H
-  ρ := @MulAction.toEndHom _ _ _ (by assumption)
+  ρ := MonCat.ofHom (equivEnd.toMonoidHom.comp MulAction.toEndHom)
+
+instance instFunLikeEnd {X : FintypeCat.{u}} : FunLike (End X) X X where
+  coe f x := f.hom x
+  coe_injective' _ _ h := InducedCategory.hom_ext h
+
+instance instFunLikeEnd' {X : FintypeCat.{u}} : FunLike (MonCat.of (End X)) X X :=
+  instFunLikeEnd
 
 @[simp]
 theorem ofMulAction_apply {G : Type u} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]

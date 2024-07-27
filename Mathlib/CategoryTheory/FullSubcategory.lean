@@ -21,6 +21,11 @@ image of `F`.
 
 ## Implementation notes
 
+The type of morphisms in the induced category (or the full subcategory)
+is 1-field structure so as to avoid defeq abuse (which may sometimes
+confuse Lean about whether we consider a morphism in `D` or
+a morphism in the induced category by `F`).
+
 It looks odd to make `D` an explicit argument of `InducedCategory`,
 when it is determined by the argument `F` anyways. The reason to make `D`
 explicit is in order to control its syntactic form, so that instances
