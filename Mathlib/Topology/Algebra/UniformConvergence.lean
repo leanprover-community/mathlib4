@@ -255,8 +255,7 @@ protected theorem UniformOnFun.hasBasis_nhds_one_of_basis (𝔖 : Set <| Set α)
     (h : (𝓝 1 : Filter G).HasBasis p b) :
     (𝓝 1 : Filter (α →ᵤ[𝔖] G)).HasBasis (fun Si : Set α × ι => Si.1 ∈ 𝔖 ∧ p Si.2) fun Si =>
       { f : α →ᵤ[𝔖] G | ∀ x ∈ Si.1, toFun 𝔖 f x ∈ b Si.2 } := by
-  have := h.comap fun p : G × G => p.1 / p.2
-  rw [← uniformity_eq_comap_nhds_one_swapped] at this
+  have := h.uniformity_of_nhds_one_swapped
   convert UniformOnFun.hasBasis_nhds_of_basis α _ 𝔖 (1 : α →ᵤ[𝔖] G) h𝔖₁ h𝔖₂ this
   -- Porting note: removed `ext i f` here, as it has already been done by `convert`.
   simp [UniformOnFun.gen]
