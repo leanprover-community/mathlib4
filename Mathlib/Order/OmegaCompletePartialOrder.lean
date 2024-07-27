@@ -306,8 +306,8 @@ def Continuous' (f : α → β) : Prop :=
 
 @[deprecated ωScottContinuous.isLUB (since := "2024-05-29")]
 lemma isLUB_of_scottContinuous {c : Chain α} {f : α → β} (hf : ScottContinuous f) :
-    IsLUB (Set.range (Chain.map c ⟨f, (ScottContinuous.monotone hf)⟩)) (f (ωSup c)) := by
-  exact ωScottContinuous.isLUB hf.scottContinuousOn
+    IsLUB (Set.range (Chain.map c ⟨f, (ScottContinuous.monotone hf)⟩)) (f (ωSup c)) :=
+  ωScottContinuous.isLUB hf.scottContinuousOn
 
 @[deprecated ScottContinuous.ωScottContinuous (since := "2024-05-29")]
 lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) : Continuous' f := by
