@@ -135,7 +135,7 @@ protected def lift {α : Sort*} {X : C} (F : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mono
         i.hom ≫ g = f → F f = F g) :
     Subobject X → α := fun P =>
   Quotient.liftOn' P (fun m => F m.arrow) fun m n ⟨i⟩ =>
-    h m.arrow n.arrow ((MonoOver.forget X ⋙ Over.forget X).mapIso i) (Over.w i.hom)
+    h m.arrow n.arrow ((MonoOver.forget X ⋙ Over.forget X).mapIso i) (Over.w i.hom.hom)
 
 @[simp]
 protected theorem lift_mk {α : Sort*} {X : C} (F : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mono f], α) {h A}
@@ -207,7 +207,7 @@ theorem representative_arrow (Y : Subobject X) : (representative.obj Y).arrow = 
 @[reassoc (attr := simp)]
 theorem underlying_arrow {X : C} {Y Z : Subobject X} (f : Y ⟶ Z) :
     underlying.map f ≫ arrow Z = arrow Y :=
-  Over.w (representative.map f)
+  Over.w (representative.map f).hom
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem underlyingIso_arrow {X Y : C} (f : X ⟶ Y) [Mono f] :
