@@ -137,12 +137,17 @@ def allStxCore (cmd : Syntax) : Syntax → CommandElabM (Option (Syntax × Synta
                 `(tactic| have $id:haveId $[$bi1']* : ∀ $[$bi2']*, $body := $(⟨t'⟩))
             let newCmd ← cmd.replaceM fun s => do
               if s == stx then return some newHave else return none
+            let newCmd ← newCmd.replaceM fun s => do
+              if s.isOfKind ``Lean.Parser.Command.declId then
+                let x ← liftTermElabM mkFreshId
+                return some (← `(declId | $(mkIdent x))) else return none
             let s ← modifyGet fun st => (st, { st with messages := {} })
-            elabCommandTopLevel newCmd
+            withoutModifyingEnv do elabCommandTopLevel newCmd
             let msgs ← modifyGet (·.messages, s)
             if msgs.hasErrors then
               let errs := msgs.unreported.filter (·.severity matches .error)
-              logInfo m!"{← errs.toArray.mapM (·.toString)}"
+              for err in errs.toArray do
+                logInfo m!"{← err.toString}"
               return none
             else
               return some (newCmd, newHave)

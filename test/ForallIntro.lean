@@ -31,6 +31,29 @@ warning: declaration uses 'sorry'
 ---
 warning: Please use
 ---
+theorem hhh : True :=
+  by
+  have (_ : Nat) {x} z (y : Nat) : x + y = z := by
+    refine ?_
+    sorry
+  trivial
+---
+note: this linter can be disabled with `set_option linter.forallIntro false`
+-/
+#guard_msgs in
+set_option linter.forallIntro true in
+theorem hhh : True := by
+  have (_ : Nat) : ∀ {x} z (y : Nat), x + y = z := by
+    intros s t u
+    refine ?_
+    sorry
+  trivial
+
+/--
+warning: declaration uses 'sorry'
+---
+warning: Please use
+---
 example : True :=
   by
   have (_ : Nat) x y z w : (x + y : Nat) = z + w := by
