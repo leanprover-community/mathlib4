@@ -4,10 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Lean.Parser.Term
-import Std.Classes.SetNotation
-import Mathlib.Mathport.Rename
+import Batteries.Util.ExtendedBinder
 
 /-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
 
 # Sets
 
@@ -34,7 +39,10 @@ This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean
 
 -/
 
-set_option autoImplicit true
+open Batteries.ExtendedBinder
+
+universe u
+variable {α : Type u}
 
 /-- A set is a collection of elements of some type `α`.
 
@@ -43,12 +51,10 @@ relied on. Instead, `setOf` and membership of a set (`∈`) should be used to co
 and predicates.
 -/
 def Set (α : Type u) := α → Prop
-#align set Set
 
 /-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
 def setOf {α : Type u} (p : α → Prop) : Set α :=
   p
-#align set_of setOf
 
 namespace Set
 
@@ -78,9 +84,8 @@ instance : HasSubset (Set α) :=
   ⟨(· ≤ ·)⟩
 
 instance : EmptyCollection (Set α) :=
-  ⟨λ _ => False⟩
+  ⟨fun _ ↦ False⟩
 
-open Std.ExtendedBinder in
 syntax "{" extBinder " | " term "}" : term
 
 macro_rules
@@ -95,7 +100,7 @@ def setOf.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun ($x:ident : $ty:term) ↦ $p) => `({ $x:ident : $ty:term | $p })
   | _ => throw ()
 
-open Std.ExtendedBinder in
+open Batteries.ExtendedBinder in
 /--
 `{ f x y | (x : X) (y : Y) }` is notation for the set of elements `f x y` constructed from the
 binders `x` and `y`, equivalent to `{z : Z | ∃ x y, f x y = z}`.
@@ -150,7 +155,6 @@ This is conceptually the "same as" `α` (in set theory, it is actually the same)
 makes the distinction that `α` is a type while `Set.univ` is a term of type `Set α`. `Set.univ` can
 itself be coerced to a type `↥Set.univ` which is in bijection with (but distinct from) `α`. -/
 def univ : Set α := {_a | True}
-#align set.univ Set.univ
 
 /-- `Set.insert a s` is the set `{a} ∪ s`.
 
@@ -198,17 +202,18 @@ def powerset (s : Set α) : Set (Set α) := {t | t ⊆ s}
 
 @[inherit_doc] prefix:100 "𝒫" => powerset
 
+universe v in
 /-- The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that
 `f a = b` for some `a ∈ s`. -/
-def image (f : α → β) (s : Set α) : Set β := {f a | a ∈ s}
+def image {β : Type v} (f : α → β) (s : Set α) : Set β := {f a | a ∈ s}
 
 instance : Functor Set where map := @Set.image
 
 instance : LawfulFunctor Set where
-  id_map _ := funext fun _ ↦ propext ⟨λ ⟨_, sb, rfl⟩ => sb, λ sb => ⟨_, sb, rfl⟩⟩
-  comp_map g h _ := funext <| λ c => propext
-    ⟨λ ⟨a, ⟨h₁, h₂⟩⟩ => ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
-     λ ⟨_, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
+  id_map _ := funext fun _ ↦ propext ⟨fun ⟨_, sb, rfl⟩ ↦ sb, fun sb ↦ ⟨_, sb, rfl⟩⟩
+  comp_map g h _ := funext <| fun c ↦ propext
+    ⟨fun ⟨a, ⟨h₁, h₂⟩⟩ ↦ ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
+     fun ⟨_, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ ↦ ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
   map_const := rfl
 
 /-- The property `s.Nonempty` expresses the fact that the set `s` is not empty. It should be used
@@ -216,6 +221,5 @@ in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives ac
 to the dot notation. -/
 protected def Nonempty (s : Set α) : Prop :=
   ∃ x, x ∈ s
-#align set.nonempty Set.Nonempty
 
 end Set

@@ -1,6 +1,4 @@
 import Mathlib.Algebra.Group.Defs
-import Std.Tactic.NormCast
-import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Util.Time
 import Qq.MetaM
@@ -127,14 +125,6 @@ example [Group α] (x : α) : foo17 x = x := by simp
 example [AddGroup α] (x : α) : bar17 x = 0 + x := by simp
 example [AddGroup α] (x : α) : bar17 x = x := by simp
 
-run_cmd do
-  let mul1 := `test.toAdditive._auxLemma |>.mkNum 1
-  let mul2 := `test.toAdditive._auxLemma |>.mkNum 2
-  let add1 := `test.toAdditive._auxLemma |>.mkNum 3
-  let add2 := `test.toAdditive._auxLemma |>.mkNum 4
-  unless findTranslation? (← getEnv) mul1 == some add1 do throwError "1"
-  unless findTranslation? (← getEnv) mul2 == some add2 do throwError "2"
-
 /- Testing nested to_additive calls -/
 @[to_additive (attr := simp, to_additive baz19) bar19]
 def foo19 := 1
@@ -224,7 +214,7 @@ run_cmd do liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namesp
 section
 
 set_option linter.unusedVariables false
--- porting note : not sure what the tests do, but the linter complains.
+-- Porting note: not sure what the tests do, but the linter complains.
 
 def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f i)]
   [Add I] [Mul L] : true := by trivial
@@ -271,7 +261,7 @@ class FooClass (α) : Prop where
   refle : ∀ a : α, a = a
 
 @[to_additive]
-instance FooClass_one [One α] : FooClass α := ⟨λ _ => rfl⟩
+instance FooClass_one [One α] : FooClass α := ⟨fun _ ↦ rfl⟩
 
 lemma one_fooClass [One α] : FooClass α := by infer_instance
 
@@ -281,13 +271,13 @@ end instances
 
 /- Test that we can rewrite with definitions with the `@[to_additive]` attribute. -/
 @[to_additive]
-lemma npowRec_zero [One M] [Mul M] (x : M) : npowRec 0 x = 1 :=
-  by rw [npowRec]
+lemma npowRec_zero [One M] [Mul M] (x : M) : npowRec 0 x = 1 := by
+  rw [npowRec]
 
 /- Test that we can rewrite with definitions without the `@[to_additive]` attribute. -/
 @[to_additive addoptiontest]
-lemma optiontest (x : Option α) : x.elim .none Option.some = x :=
-  by cases x <;> rw [Option.elim]
+lemma optiontest (x : Option α) : x.elim .none Option.some = x := by
+  cases x <;> rw [Option.elim]
 
 /- Check that `to_additive` works if a `_match` aux declaration is created. -/
 @[to_additive]

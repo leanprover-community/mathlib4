@@ -5,7 +5,6 @@ Authors: Yury Kudryashov, Floris van Doorn
 -/
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Order.Filter.Subsingleton
-import Mathlib.Algebra.Function.Indicator
 /-!
 # Functions that are eventually constant along a filter
 
@@ -32,7 +31,7 @@ def EventuallyConst (f : α → β) (l : Filter α) : Prop := (map f l).Subsingl
 
 theorem HasBasis.eventuallyConst_iff {ι : Sort*} {p : ι → Prop} {s : ι → Set α}
     (h : l.HasBasis p s) : EventuallyConst f l ↔ ∃ i, p i ∧ ∀ x ∈ s i, ∀ y ∈ s i, f x = f y :=
-  (h.map f).subsingleton_iff.trans <| by simp only [Set.Subsingleton, ball_image_iff]
+  (h.map f).subsingleton_iff.trans <| by simp only [Set.Subsingleton, forall_mem_image]
 
 theorem HasBasis.eventuallyConst_iff' {ι : Sort*} {p : ι → Prop} {s : ι → Set α}
     {x : ι → α} (h : l.HasBasis p s) (hx : ∀ i, p i → x i ∈ s i) :
@@ -70,6 +69,10 @@ theorem eventuallyConst_set' {s : Set α} :
 theorem eventuallyConst_set {s : Set α} :
     EventuallyConst s l ↔ (∀ᶠ x in l, x ∈ s) ∨ (∀ᶠ x in l, x ∉ s) :=
   eventuallyConst_pred
+
+theorem eventuallyConst_preimage {s : Set β} {f : α → β} :
+    EventuallyConst (f ⁻¹' s) l ↔ EventuallyConst s (map f l) :=
+  .rfl
 
 theorem EventuallyEq.eventuallyConst_iff {g : α → β} (h : f =ᶠ[l] g) :
     EventuallyConst f l ↔ EventuallyConst g l := by
@@ -162,3 +165,5 @@ lemma eventuallyConst_atTop_nat {f : ℕ → α} :
   · induction m, hm using Nat.le_induction with
     | base => rfl
     | succ m hm ihm => exact (h m hm).trans ihm
+
+end Filter

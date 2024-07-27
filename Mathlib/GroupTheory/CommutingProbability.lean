@@ -3,17 +3,10 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.GroupTheory.Abelianization
-import Mathlib.GroupTheory.GroupAction.ConjAct
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
-import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Qify
-
-#align_import group_theory.commuting_probability from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Commuting Probability
@@ -22,17 +15,13 @@ This file introduces the commuting probability of finite groups.
 ## Main definitions
 * `commProb`: The commuting probability of a finite type with a multiplication operation.
 
-## Todo
+## TODO
 * Neumann's theorem.
 -/
 
-set_option autoImplicit true
-
 noncomputable section
 
-open Classical
-
-open BigOperators
+open scoped Classical
 
 open Fintype
 
@@ -41,12 +30,10 @@ variable (M : Type*) [Mul M]
 /-- The commuting probability of a finite type with a multiplication operation. -/
 def commProb : ℚ :=
   Nat.card { p : M × M // Commute p.1 p.2 } / (Nat.card M : ℚ) ^ 2
-#align comm_prob commProb
 
 theorem commProb_def :
     commProb M = Nat.card { p : M × M // Commute p.1 p.2 } / (Nat.card M : ℚ) ^ 2 :=
   rfl
-#align comm_prob_def commProb_def
 
 theorem commProb_prod (M' : Type*) [Mul M'] : commProb (M × M') = commProb M * commProb M' := by
   simp_rw [commProb_def, div_mul_div_comm, Nat.card_prod, Nat.cast_mul, mul_pow, ← Nat.cast_mul,
@@ -55,7 +42,7 @@ theorem commProb_prod (M' : Type*) [Mul M'] : commProb (M × M') = commProb M * 
   exact Nat.card_congr ⟨fun x => ⟨⟨⟨x.1.1.1, x.1.2.1⟩, x.2.1⟩, ⟨⟨x.1.1.2, x.1.2.2⟩, x.2.2⟩⟩,
     fun x => ⟨⟨⟨x.1.1.1, x.2.1.1⟩, ⟨x.1.1.2, x.2.1.2⟩⟩, ⟨x.1.2, x.2.2⟩⟩, fun x => rfl, fun x => rfl⟩
 
-theorem commProb_pi (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
+theorem commProb_pi {α : Type*} (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
     commProb (∀ a, i a) = ∏ a, commProb (i a) := by
   simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ← Nat.cast_prod,
     ← Nat.card_pi, Commute, SemiconjBy, Function.funext_iff]
@@ -63,7 +50,7 @@ theorem commProb_pi (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
   exact Nat.card_congr ⟨fun x a => ⟨⟨x.1.1 a, x.1.2 a⟩, x.2 a⟩, fun x => ⟨⟨fun a => (x a).1.1,
     fun a => (x a).1.2⟩, fun a => (x a).2⟩, fun x => rfl, fun x => rfl⟩
 
-theorem commProb_function [Fintype α] [Mul β] :
+theorem commProb_function {α β : Type*} [Fintype α] [Mul β] :
     commProb (α → β) = (commProb β) ^ Fintype.card α := by
   rw [commProb_pi, Finset.prod_const, Finset.card_univ]
 
@@ -77,13 +64,11 @@ theorem commProb_pos [h : Nonempty M] : 0 < commProb M :=
   h.elim fun x ↦
     div_pos (Nat.cast_pos.mpr (Finite.card_pos_iff.mpr ⟨⟨(x, x), rfl⟩⟩))
       (pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2)
-#align comm_prob_pos commProb_pos
 
 theorem commProb_le_one : commProb M ≤ 1 := by
-  refine' div_le_one_of_le _ (sq_nonneg (Nat.card M : ℚ))
+  refine div_le_one_of_le ?_ (sq_nonneg (Nat.card M : ℚ))
   rw [← Nat.cast_pow, Nat.cast_le, sq, ← Nat.card_prod]
   apply Finite.card_subtype_le
-#align comm_prob_le_one commProb_le_one
 
 variable {M}
 
@@ -95,7 +80,6 @@ theorem commProb_eq_one_iff [h : Nonempty M] :
     set_fintype_card_eq_univ_iff, Set.eq_univ_iff_forall]
   · exact ⟨fun h x y ↦ h (x, y), fun h x ↦ h x.1 x.2⟩
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr card_ne_zero)
-#align comm_prob_eq_one_iff commProb_eq_one_iff
 
 variable (G : Type*) [Group G]
 
@@ -104,7 +88,6 @@ theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
   by_cases h : (Nat.card G : ℚ) = 0
   · rw [h, zero_mul, div_zero, div_zero]
   · exact mul_div_mul_right _ _ h
-#align comm_prob_def' commProb_def'
 
 variable {G}
 variable [Finite G] (H : Subgroup G)
@@ -113,24 +96,22 @@ theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : �
   /- After rewriting with `commProb_def`, we reduce to showing that `G` has at least as many
       commuting pairs as `H`. -/
   rw [commProb_def, commProb_def, div_le_iff, mul_assoc, ← mul_pow, ← Nat.cast_mul,
-    mul_comm H.index, H.card_mul_index, div_mul_cancel, Nat.cast_le]
-  · refine' Finite.card_le_of_injective (fun p ↦ ⟨⟨p.1.1, p.1.2⟩, Subtype.ext_iff.mp p.2⟩) _
+    mul_comm H.index, H.card_mul_index, div_mul_cancel₀, Nat.cast_le]
+  · refine Finite.card_le_of_injective (fun p ↦ ⟨⟨p.1.1, p.1.2⟩, Subtype.ext_iff.mp p.2⟩) ?_
     exact fun p q h ↦ by simpa only [Subtype.ext_iff, Prod.ext_iff] using h
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr Finite.card_pos.ne')
   · exact pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2
-#align subgroup.comm_prob_subgroup_le Subgroup.commProb_subgroup_le
 
 theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commProb G * Nat.card H := by
   /- After rewriting with `commProb_def'`, we reduce to showing that `G` has at least as many
       conjugacy classes as `G ⧸ H`. -/
   rw [commProb_def', commProb_def', div_le_iff, mul_assoc, ← Nat.cast_mul, ← Subgroup.index,
-    H.card_mul_index, div_mul_cancel, Nat.cast_le]
+    H.card_mul_index, div_mul_cancel₀, Nat.cast_le]
   · apply Finite.card_le_of_surjective
     show Function.Surjective (ConjClasses.map (QuotientGroup.mk' H))
     exact ConjClasses.map_surjective Quotient.surjective_Quotient_mk''
   · exact Nat.cast_ne_zero.mpr Finite.card_pos.ne'
   · exact Nat.cast_pos.mpr Finite.card_pos
-#align subgroup.comm_prob_quotient_le Subgroup.commProb_quotient_le
 
 variable (G)
 
@@ -138,7 +119,6 @@ theorem inv_card_commutator_le_commProb : (↑(Nat.card (commutator G)))⁻¹ �
   (inv_pos_le_iff_one_le_mul (Nat.cast_pos.mpr Finite.card_pos)).mpr
     (le_trans (ge_of_eq (commProb_eq_one_iff.mpr (Abelianization.commGroup G).mul_comm))
       (commutator G).commProb_quotient_le)
-#align inv_card_commutator_le_comm_prob inv_card_commutator_le_commProb
 
 -- Construction of group with commuting probability 1/n
 namespace DihedralGroup
@@ -146,7 +126,7 @@ namespace DihedralGroup
 lemma commProb_odd {n : ℕ} (hn : Odd n) :
     commProb (DihedralGroup n) = (n + 3) / (4 * n) := by
   rw [commProb_def', DihedralGroup.card_conjClasses_odd hn, nat_card]
-  qify [show 2 ∣ n + 3 by rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, Nat.odd_iff.mp hn]; rfl]
+  qify [show 2 ∣ n + 3 by rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, Nat.odd_iff.mp hn]]
   rw [div_div, ← mul_assoc]
   congr
 
@@ -155,7 +135,7 @@ private lemma div_two_lt {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
 
 private lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
   | 0 | 1 | 2 | 3 => by decide
-  | n + 4 => by intros; linarith [n.add_div_right four_pos, n.div_le_self 4]
+  | n + 4 => by omega
 
 /-- A list of Dihedral groups whose product will have commuting probability `1 / n`. -/
 def reciprocalFactors (n : ℕ) : List ℕ :=
@@ -165,23 +145,24 @@ def reciprocalFactors (n : ℕ) : List ℕ :=
     3 :: reciprocalFactors (n / 2)
   else
     n % 4 * n :: reciprocalFactors (n / 4 + 1)
-decreasing_by all_goals { simp_wf; omega }
 
-@[simp] lemma reciprocalFactors_zero : reciprocalFactors 0 = [0] := rfl
+@[simp] lemma reciprocalFactors_zero : reciprocalFactors 0 = [0] := by
+  unfold reciprocalFactors; rfl
 
-@[simp] lemma reciprocalFactors_one : reciprocalFactors 1 = [] := rfl
+@[simp] lemma reciprocalFactors_one : reciprocalFactors 1 = [] := by
+  unfold reciprocalFactors; rfl
 
 lemma reciprocalFactors_even {n : ℕ} (h0 : n ≠ 0) (h2 : Even n) :
     reciprocalFactors n = 3 :: reciprocalFactors (n / 2) := by
-  have h1 : n ≠ 1
-  · rintro rfl
+  have h1 : n ≠ 1 := by
+    rintro rfl
     norm_num at h2
   rw [reciprocalFactors, dif_neg h0, dif_neg h1, if_pos h2]
 
 lemma reciprocalFactors_odd {n : ℕ} (h1 : n ≠ 1) (h2 : Odd n) :
     reciprocalFactors n = n % 4 * n :: reciprocalFactors (n / 4 + 1) := by
-  have h0 : n ≠ 0
-  · rintro rfl
+  have h0 : n ≠ 0 := by
+    rintro rfl
     norm_num at h2
   rw [reciprocalFactors, dif_neg h0, dif_neg h1, if_neg (Nat.odd_iff_not_even.mp h2)]
 

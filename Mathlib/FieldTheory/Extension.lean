@@ -26,7 +26,6 @@ structure Lifts where
   carrier : IntermediateField F E
   /-- The lifted RingHom, expressed as an AlgHom. -/
   emb : carrier →ₐ[F] K
-#align intermediate_field.lifts IntermediateField.Lifts
 
 variable {F E K}
 
@@ -68,7 +67,6 @@ theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ �
          inclusion_inclusion, inclusion_self, AlgHom.id_apply x]
   · dsimp only [AlgHom.comp_apply]
     exact Subalgebra.iSupLift_inclusion (K := t') (i := ⟨L, hL⟩) x (le_iSup t' ⟨L, hL⟩)
-#align intermediate_field.lifts.exists_upper_bound IntermediateField.Lifts.exists_upper_bound
 
 /-- Given a lift `x` and an integral element `s : E` over `x.carrier` whose conjugates over
 `x.carrier` are all in `K`, we can extend the lift to a lift whose carrier contains `s`. -/
@@ -93,7 +91,6 @@ theorem Lifts.exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F
     (h2 : (minpoly F s).Splits (algebraMap F K)) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
   Lifts.exists_lift_of_splits' x h1.tower_top <| h1.minpoly_splits_tower_top' <| by
     rwa [← x.emb.comp_algebraMap] at h2
-#align intermediate_field.lifts.exists_lift_of_splits IntermediateField.Lifts.exists_lift_of_splits
 
 section
 
@@ -122,8 +119,10 @@ theorem exists_algHom_adjoin_of_splits' :
   · obtain ⟨φ, hφ⟩ := this; refine ⟨φ.comp <|
       inclusion (?_ : (adjoin L S).restrictScalars F ≤ (adjoin L' S).restrictScalars F), ?_⟩
     · simp_rw [← SetLike.coe_subset_coe, coe_restrictScalars, adjoin_subset_adjoin_iff]
-      refine ⟨subset_adjoin_of_subset_left S (F := L'.toSubfield) le_rfl, subset_adjoin _ _⟩
-    · ext x; exact congr($hφ _).trans (congr_arg f <| AlgEquiv.symm_apply_apply _ _)
+      exact ⟨subset_adjoin_of_subset_left S (F := L'.toSubfield) le_rfl, subset_adjoin _ _⟩
+    · ext x
+      rw [AlgHom.comp_assoc]
+      exact congr($hφ _).trans (congr_arg f <| AlgEquiv.symm_apply_apply _ _)
   letI : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingEquiv.toRingHom.toAlgebra
   have : IsScalarTower L L' E := IsScalarTower.of_algebraMap_eq' rfl
   refine ⟨(hK s hs).1.tower_top, (hK s hs).1.minpoly_splits_tower_top' ?_⟩
@@ -156,7 +155,6 @@ theorem exists_algHom_adjoin_of_splits : ∃ φ : adjoin F S →ₐ[F] K, φ.com
 
 theorem nonempty_algHom_adjoin_of_splits : Nonempty (adjoin F S →ₐ[F] K) :=
   have ⟨φ, _⟩ := exists_algHom_adjoin_of_splits hK (⊥ : Lifts F E K).emb bot_le; ⟨φ⟩
-#align intermediate_field.alg_hom_mk_adjoin_splits IntermediateField.nonempty_algHom_adjoin_of_splits
 
 variable (hS : adjoin F S = ⊤)
 
@@ -166,12 +164,12 @@ theorem exists_algHom_of_adjoin_splits : ∃ φ : E →ₐ[F] K, φ.comp L.val =
 
 theorem nonempty_algHom_of_adjoin_splits : Nonempty (E →ₐ[F] K) :=
   have ⟨φ, _⟩ := exists_algHom_of_adjoin_splits hK (⊥ : Lifts F E K).emb hS; ⟨φ⟩
-#align intermediate_field.alg_hom_mk_adjoin_splits' IntermediateField.nonempty_algHom_of_adjoin_splits
 
 variable {x : E} (hx : x ∈ adjoin F S) {y : K} (hy : aeval y (minpoly F x) = 0)
 
 theorem exists_algHom_adjoin_of_splits_of_aeval : ∃ φ : adjoin F S →ₐ[F] K, φ ⟨x, hx⟩ = y := by
-  have ix := isAlgebraic_adjoin (fun s hs ↦ (hK s hs).1) ⟨x, hx⟩
+  have := isAlgebraic_adjoin (fun s hs ↦ (hK s hs).1)
+  have ix : IsAlgebraic F _ := Algebra.IsAlgebraic.isAlgebraic (⟨x, hx⟩ : adjoin F S)
   rw [isAlgebraic_iff_isIntegral, isIntegral_iff] at ix
   obtain ⟨φ, hφ⟩ := exists_algHom_adjoin_of_splits hK ((algHomAdjoinIntegralEquiv F ix).symm
     ⟨y, mem_aroots.mpr ⟨minpoly.ne_zero ix, hy⟩⟩) (adjoin_simple_le_iff.mpr hx)
@@ -205,12 +203,12 @@ of `x` over `F`. -/
 theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly_of_splits {F K : Type*} (L : Type*)
     [Field F] [Field K] [Field L] [Algebra F L] [Algebra F K]
     (hA : ∀ x : K, (minpoly F x).Splits (algebraMap F L))
-    (hK : Algebra.IsAlgebraic F K) (x : K) :
+    [Algebra.IsAlgebraic F K] (x : K) :
     (Set.range fun (ψ : K →ₐ[F] L) => ψ x) = (minpoly F x).rootSet L := by
   ext a
-  rw [mem_rootSet_of_ne (minpoly.ne_zero (hK.isIntegral x))]
+  rw [mem_rootSet_of_ne (minpoly.ne_zero (Algebra.IsIntegral.isIntegral x))]
   refine ⟨fun ⟨ψ, hψ⟩ ↦ ?_, fun ha ↦ IntermediateField.exists_algHom_of_splits_of_aeval
-    (fun x ↦ ⟨hK.isIntegral x, hA x⟩) ha⟩
+    (fun x ↦ ⟨Algebra.IsIntegral.isIntegral x, hA x⟩) ha⟩
   rw [← hψ, Polynomial.aeval_algHom_apply ψ x, minpoly.aeval, map_zero]
 
 end Algebra.IsAlgebraic

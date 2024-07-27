@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Simon Hudon, Thomas Murrills, Mario Carneiro
 -/
 import Qq
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Notation
 import Mathlib.Util.AtomM
 import Mathlib.Data.List.TFAE
 
@@ -165,7 +165,7 @@ def mkTFAEHypName (i j : TSyntax `num) (arr : TSyntax ``impArrow) : MetaM Name :
   | `(impArrow| → ) => pure "to"
   | `(impArrow| ↔ ) => pure "iff"
   | _ => throwErrorAt arr "expected '←', '→', or '↔'"
-  return String.intercalate "_" ["tfae", s!"{i.getNat}", arr, s!"{j.getNat}"]
+  return .mkSimple <| String.intercalate "_" ["tfae", s!"{i.getNat}", arr, s!"{j.getNat}"]
 
 open Elab in
 /-- The core of `tfae_have`, which behaves like `haveLetCore` in `Mathlib.Tactic.Have`. -/

@@ -3,7 +3,7 @@ Copyright (c) 2023 Kim Liesinger. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Liesinger
 -/
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Group.Defs
 
 /-!
 # Levenshtein distances
@@ -116,8 +116,8 @@ theorem impl_cons (w' : 0 < List.length ds) :
 
 -- Note this lemma has two unspecified proofs: `h` appears on the left-hand-side
 -- and should be found by matching, but `w'` will become an extra goal when rewriting.
-theorem impl_cons_fst_zero (h) (w' : 0 < List.length ds) :
-    (impl C (x :: xs) y ⟨d :: ds, w⟩).1[0] =
+theorem impl_cons_fst_zero (h : 0 < (impl C (x :: xs) y ⟨d :: ds, w⟩).val.length)
+    (w' : 0 < List.length ds) : (impl C (x :: xs) y ⟨d :: ds, w⟩).1[0] =
       let ⟨r, w⟩ := impl C xs y ⟨ds, w'⟩
       min (C.delete x + r[0]) (min (C.insert y + d) (C.substitute x y + ds[0])) :=
   match ds, w' with | _ :: _, _ => rfl
@@ -205,7 +205,7 @@ theorem suffixLevenshtein_nil_nil : (suffixLevenshtein C [] []).1 = [0] := by
 
 -- Not sure if this belongs in the main `List` API, or can stay local.
 theorem List.eq_of_length_one (x : List α) (w : x.length = 1) :
-    have : 0 < x.length := (lt_of_lt_of_eq Nat.zero_lt_one w.symm)
+    have : 0 < x.length := lt_of_lt_of_eq Nat.zero_lt_one w.symm
     x = [x[0]] := by
   match x, w with
   | [r], _ => rfl
@@ -245,8 +245,8 @@ theorem suffixLevenshtein_cons₁_fst (x : α) (xs ys) :
   simp [suffixLevenshtein_cons₁]
 
 theorem suffixLevenshtein_cons_cons_fst_get_zero
-    (x : α) (xs y ys) (w) :
-    (suffixLevenshtein C (x :: xs) (y :: ys)).1[0] =
+    (x : α) (xs y ys) (w : 0 < (suffixLevenshtein C (x :: xs) (y :: ys)).val.length) :
+    (suffixLevenshtein C (x :: xs) (y :: ys)).1[0]'w =
       let ⟨dx, _⟩ := suffixLevenshtein C xs (y :: ys)
       let ⟨dy, _⟩ := suffixLevenshtein C (x :: xs) ys
       let ⟨dxy, _⟩ := suffixLevenshtein C xs ys
@@ -296,12 +296,4 @@ theorem levenshtein_cons_cons
       min (C.delete x + levenshtein C xs (y :: ys))
         (min (C.insert y + levenshtein C (x :: xs) ys)
           (C.substitute x y + levenshtein C xs ys)) :=
-  suffixLevenshtein_cons_cons_fst_get_zero _ _ _ _ _
-
-#guard
-  (suffixLevenshtein Levenshtein.defaultCost "kitten".toList "sitting".toList).1 =
-    [3, 3, 4, 5, 6, 6, 7]
-
-#guard levenshtein Levenshtein.defaultCost
-  "but our fish said, 'no! no!'".toList
-  "'put me down!' said the fish.".toList = 21
+  suffixLevenshtein_cons_cons_fst_get_zero ..
