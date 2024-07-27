@@ -473,7 +473,7 @@ lemma Identical.congr_right {x y z} (h : x ≡ y) : z ≡ x ↔ z ≡ y :=
 lemma Identical.congr_left {x y z} (h : x ≡ y) : x ≡ z ↔ y ≡ z :=
   ⟨fun hz ↦ h.symm.trans hz, fun hz ↦ h.trans hz⟩
 
-/-- Show `x ≡ y` by giving the translation functions between the moves of `x` and `y`. -/
+/-- Show `x ≡ y` by giving an explicit correspondence between the moves of `x` and `y`. -/
 lemma Identical.of_fn {x y : PGame}
     (l : x.LeftMoves → y.LeftMoves) (il : y.LeftMoves → x.LeftMoves)
     (r : x.RightMoves → y.RightMoves) (ir : y.RightMoves → x.RightMoves)
@@ -986,7 +986,7 @@ theorem Equiv.ext {x y : PGame}
   · exact ⟨fun i ↦ .inl <| (hl.2 i).imp (fun _ ↦ (·.2)),
       fun j ↦ .inr <| (hr.1 j).imp (fun _ ↦ (·.2))⟩
 
-/-- Show `x ≈ y` by giving the translation functions between the moves of `x` and `y`. -/
+/-- Show `x ≈ y` by giving an explicit correspondence between the moves of `x` and `y`. -/
 lemma Equiv.of_fn {x y : PGame}
     (l : x.LeftMoves → y.LeftMoves) (il : y.LeftMoves → x.LeftMoves)
     (r : x.RightMoves → y.RightMoves) (ir : y.RightMoves → x.RightMoves)
