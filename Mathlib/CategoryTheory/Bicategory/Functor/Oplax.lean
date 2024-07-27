@@ -58,7 +58,7 @@ and do not need to strictly preserve the identity. Instead, there are specified 
 associator, the left unitor, and the right unitor modulo some adjustments of domains and codomains
 of 2-morphisms.
 -/
-structure OplaxFunctor (B: Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂)
+structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂)
   [Bicategory.{w₂, v₂} C] extends PrelaxFunctor B C where
   mapId (a : B) : map (𝟙 a) ⟶ 𝟙 (obj a)
   mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : map (f ≫ g) ⟶ map f ≫ map g
