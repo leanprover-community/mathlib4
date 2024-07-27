@@ -2064,6 +2064,22 @@ lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.c
 
 end ConnectedComponent
 
+-- TODO: Extract as lemma about general equivalence relation
+lemma pairwise_disjoint_supp_connectedComponent (G : SimpleGraph V) :
+    Pairwise fun c c' : ConnectedComponent G ↦ Disjoint c.supp c'.supp := by
+  simp_rw [Set.disjoint_left]
+  intro _ _ h a hsx hsy
+  rw [ConnectedComponent.mem_supp_iff] at hsx hsy
+  rw [hsx] at hsy
+  exact h hsy
+
+-- TODO: Extract as lemma about general equivalence relation
+lemma iUnion_connectedComponentSupp (G : SimpleGraph V) :
+    ⋃ c : G.ConnectedComponent, c.supp = Set.univ := by
+  refine Set.eq_univ_of_forall fun v ↦ ⟨G.connectedComponentMk v, ?_⟩
+  simp only [Set.mem_range, SetLike.mem_coe]
+  exact ⟨by use G.connectedComponentMk v; exact rfl, rfl⟩
+
 theorem Preconnected.set_univ_walk_nonempty (hconn : G.Preconnected) (u v : V) :
     (Set.univ : Set (G.Walk u v)).Nonempty := by
   rw [← Set.nonempty_iff_univ_nonempty]
