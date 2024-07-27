@@ -50,7 +50,7 @@ theorem tan_arctan {z : ℂ} (h₁ : z ≠ I) (h₂ : z ≠ -I) : tan (arctan z)
 lemma cos_ne_zero_of_arctan_bounds {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re)
     (h₂ : z.re ≤ π / 2) : cos z ≠ 0 := by
   refine cos_ne_zero_iff.mpr (fun k ↦ ?_)
-  rw [ne_eq, ext_iff, not_and_or] at h₀ ⊢
+  rw [ne_eq, Complex.ext_iff, not_and_or] at h₀ ⊢
   norm_cast at h₀ ⊢
   cases' h₀ with nr ni
   · left; contrapose! nr

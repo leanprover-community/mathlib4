@@ -314,7 +314,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
     ((ae_restrict_iff' measurableSet_Ioi).mpr (ae_of_all _ f_tends)) using 1
   -- limit of f is the integrand we want
   · ext1 n
-    rw [integral_indicator (measurableSet_Ioc : MeasurableSet (Ioc (_ : ℝ) _)),
+    rw [MeasureTheory.integral_indicator (measurableSet_Ioc : MeasurableSet (Ioc (_ : ℝ) _)),
       intervalIntegral.integral_of_le (by positivity : 0 ≤ (n : ℝ)),
       Measure.restrict_restrict_of_subset Ioc_subset_Ioi_self]
   -- f is uniformly bounded by the Gamma integrand

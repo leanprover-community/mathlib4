@@ -43,7 +43,7 @@ theorem iUnion_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C
     apply H0
   | some b => by
     convert H1 b
-    simp [ext_iff]
+    simp [Set.ext_iff]
 
 theorem iUnion_decode₂_disjoint_on {f : β → Set α} (hd : Pairwise (Disjoint on f)) :
     Pairwise (Disjoint on fun i => ⋃ b ∈ decode₂ β i, f b) := by

@@ -1010,7 +1010,7 @@ theorem eq_insert_of_ncard_eq_succ {n : ℕ} (h : s.ncard = n + 1) :
   obtain ⟨a, t, hat, hts, rfl⟩ := h
   simp only [Finset.ext_iff, Finset.mem_insert, Finite.mem_toFinset] at hts
   refine ⟨a, t, hat, ?_, ?_⟩
-  · simp only [Finset.mem_coe, ext_iff, mem_insert_iff]
+  · simp only [Finset.mem_coe, Set.ext_iff, mem_insert_iff]
     tauto
   simp
 

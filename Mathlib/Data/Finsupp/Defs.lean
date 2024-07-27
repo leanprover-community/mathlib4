@@ -365,7 +365,8 @@ theorem unique_single [Unique α] (x : α →₀ M) : x = single default (x defa
 
 @[simp]
 theorem unique_single_eq_iff [Unique α] {b' : M} : single a b = single a' b' ↔ b = b' := by
-  rw [unique_ext_iff, Unique.eq_default a, Unique.eq_default a', single_eq_same, single_eq_same]
+  rw [Finsupp.unique_ext_iff, Unique.eq_default a, Unique.eq_default a', single_eq_same,
+    single_eq_same]
 
 lemma apply_single [AddCommMonoid N] [AddCommMonoid P]
     {F : Type*} [FunLike F N P] [AddMonoidHomClass F N P] (e : F)

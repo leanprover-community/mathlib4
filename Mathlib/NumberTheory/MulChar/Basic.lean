@@ -390,7 +390,7 @@ section nontrivial
 variable {R : Type*} [CommMonoid R] {R' : Type*} [CommMonoidWithZero R']
 
 lemma eq_one_iff {χ : MulChar R R'} : χ = 1 ↔ ∀ a : Rˣ, χ a = 1 := by
-  simp only [ext_iff, one_apply_coe]
+  simp only [MulChar.ext_iff, one_apply_coe]
 
 lemma ne_one_iff {χ : MulChar R R'} : χ ≠ 1 ↔ ∃ a : Rˣ, χ a ≠ 1 := by
   simp only [Ne, eq_one_iff, not_forall]
@@ -404,7 +404,7 @@ set_option linter.deprecated false in
 /-- A multiplicative character is nontrivial iff it is not the trivial character. -/
 @[deprecated (since := "2024-06-16")]
 theorem isNontrivial_iff (χ : MulChar R R') : χ.IsNontrivial ↔ χ ≠ 1 := by
-  simp only [IsNontrivial, Ne, ext_iff, not_forall, one_apply_coe]
+  simp only [IsNontrivial, Ne, MulChar.ext_iff, not_forall, one_apply_coe]
 
 end nontrivial
 
@@ -453,7 +453,8 @@ lemma ringHomComp_pow (χ : MulChar R R') (f : R' →+* R'') (n : ℕ) :
 
 lemma injective_ringHomComp {f : R' →+* R''} (hf : Function.Injective f) :
     Function.Injective (ringHomComp (R := R) · f) := by
-  simpa only [Function.Injective, ext_iff, ringHomComp, coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+  simpa
+    only [Function.Injective, MulChar.ext_iff, ringHomComp, coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
     using fun χ χ' h a ↦ hf (h a)
 
 lemma ringHomComp_eq_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :

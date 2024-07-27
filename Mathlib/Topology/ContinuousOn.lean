@@ -1139,7 +1139,7 @@ theorem IsOpen.ite' {s s' t : Set α} (hs : IsOpen s) (hs' : IsOpen s')
 
 theorem IsOpen.ite {s s' t : Set α} (hs : IsOpen s) (hs' : IsOpen s')
     (ht : s ∩ frontier t = s' ∩ frontier t) : IsOpen (t.ite s s') :=
-  hs.ite' hs' fun x hx => by simpa [hx] using ext_iff.1 ht x
+  hs.ite' hs' fun x hx => by simpa [hx] using Set.ext_iff.1 ht x
 
 theorem ite_inter_closure_eq_of_inter_frontier_eq {s s' t : Set α}
     (ht : s ∩ frontier t = s' ∩ frontier t) : t.ite s s' ∩ closure t = s ∩ closure t := by
