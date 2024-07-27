@@ -7,6 +7,7 @@ import Lean.Linter.Util
 import Batteries.Data.Array.Basic
 import Batteries.Data.String.Matcher
 import Batteries.Tactic.Lint
+import Batteries.Data.String.Matcher
 
 /-!
 # Linters for Mathlib
