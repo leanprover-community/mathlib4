@@ -7,7 +7,7 @@ import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Convex.Uniform
-import Mathlib.Analysis.NormedSpace.Completion
+import Mathlib.Analysis.Normed.Module.Completion
 import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
