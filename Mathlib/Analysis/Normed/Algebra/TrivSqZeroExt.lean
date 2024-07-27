@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Analysis.NormedSpace.Exponential
-import Mathlib.Analysis.NormedSpace.ProdLp
+import Mathlib.Analysis.Normed.Lp.ProdLp
 import Mathlib.Topology.Instances.TrivSqZeroExt
 
 /-!
