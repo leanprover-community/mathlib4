@@ -45,7 +45,7 @@ theorem one_le_pow_of_one_le' {a : M} (H : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
 
 @[to_additive nsmul_nonpos]
 theorem pow_le_one' {a : M} (H : a ≤ 1) (n : ℕ) : a ^ n ≤ 1 :=
-  @one_le_pow_of_one_le' Mᵒᵈ _ _ _ _ H n
+  one_le_pow_of_one_le' (M := Mᵒᵈ) H n
 
 @[to_additive (attr := gcongr) nsmul_le_nsmul_left]
 theorem pow_le_pow_right' {a : M} {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m :=
@@ -69,7 +69,7 @@ theorem one_lt_pow' {a : M} (ha : 1 < a) {k : ℕ} (hk : k ≠ 0) : 1 < a ^ k :=
 
 @[to_additive nsmul_neg]
 theorem pow_lt_one' {a : M} (ha : a < 1) {k : ℕ} (hk : k ≠ 0) : a ^ k < 1 :=
-  @one_lt_pow' Mᵒᵈ _ _ _ _ ha k hk
+  one_lt_pow' (M := Mᵒᵈ) ha hk
 
 @[to_additive (attr := gcongr) nsmul_lt_nsmul_left]
 theorem pow_lt_pow_right' [CovariantClass M M (· * ·) (· < ·)] {a : M} {n m : ℕ} (ha : 1 < a)
@@ -192,7 +192,7 @@ theorem one_le_pow_iff {x : M} {n : ℕ} (hn : n ≠ 0) : 1 ≤ x ^ n ↔ 1 ≤ 
 
 @[to_additive]
 theorem pow_le_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n ≤ 1 ↔ x ≤ 1 :=
-  @one_le_pow_iff Mᵒᵈ _ _ _ _ _ hn
+  one_le_pow_iff (M := Mᵒᵈ) hn
 
 @[to_additive nsmul_pos_iff]
 theorem one_lt_pow_iff {x : M} {n : ℕ} (hn : n ≠ 0) : 1 < x ^ n ↔ 1 < x :=

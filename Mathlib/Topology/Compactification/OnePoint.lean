@@ -292,7 +292,7 @@ instance (priority := 900) nhdsWithin_compl_neBot [∀ x : X, NeBot (𝓝[≠] x
 theorem nhds_infty_eq : 𝓝 (∞ : OnePoint X) = map (↑) (coclosedCompact X) ⊔ pure ∞ := by
   rw [← nhdsWithin_compl_infty_eq, nhdsWithin_compl_singleton_sup_pure]
 
-theorem tendsto_coe_nhds_infty : Tendsto (↑) (coclosedCompact X) (𝓝 (∞ : OnePoint X)) := by
+theorem tendsto_coe_infty : Tendsto (↑) (coclosedCompact X) (𝓝 (∞ : OnePoint X)) := by
   rw [nhds_infty_eq]
   exact Filter.Tendsto.mono_right tendsto_map le_sup_left
 
