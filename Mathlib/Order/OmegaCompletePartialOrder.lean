@@ -246,7 +246,7 @@ variable [OmegaCompletePartialOrder γ]
 variable {f : α → β} {g : β → γ}
 
 /-- ωScottContinuous - Scott Continuous over Chains-/
-def ωScottContinuous (f : α → β) := ScottContinuousOn (Set.range fun c : Chain α => Set.range c) f
+def ωScottContinuous (f : α → β) : Prop := ScottContinuousOn (Set.range fun c : Chain α => Set.range c) f
 
 lemma _root_.ScottContinuous.ωScottContinuous (hf : ScottContinuous f) : ωScottContinuous f :=
   hf.scottContinuousOn
