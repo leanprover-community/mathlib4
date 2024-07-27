@@ -567,6 +567,10 @@ def _root_.AlgebraicGeometry.Scheme.affineBasicOpen
     (X : Scheme) {U : X.affineOpens} (f : Γ(X, U)) : X.affineOpens :=
   ⟨X.basicOpen f, U.prop.basicOpen f⟩
 
+/--
+In an affine open set `U`, a family of basic open covers `U` iff the sections span `Γ(X, U)`.
+See `iSup_basicOpen_of_span_eq_top` for the inverse direction without the affine-ness assuption.
+-/
 theorem basicOpen_union_eq_self_iff (s : Set Γ(X, U)) :
     ⨆ f : s, X.basicOpen (f : Γ(X, U)) = U ↔ Ideal.span s = ⊤ := by
   trans ⋃ i : s, (PrimeSpectrum.basicOpen i.1).1 = Set.univ
@@ -604,6 +608,26 @@ theorem self_le_basicOpen_union_iff (s : Set Γ(X, U)) :
   exact X.basicOpen_le x
 
 end IsAffineOpen
+
+/--
+Given a spanning set of `Γ(X, U)`, the corresponding basic open sets cover `U`.
+See `IsAffineOpen.basicOpen_union_eq_self_iff` for the inverse direction for affine open sets.
+-/
+lemma iSup_basicOpen_of_span_eq_top {X : Scheme} (U) (s : Set Γ(X, U))
+    (hs : Ideal.span s = ⊤) : (⨆ i ∈ s, X.basicOpen i) = U := by
+  apply le_antisymm
+  · rw [iSup₂_le_iff]
+    exact fun i _ ↦ X.basicOpen_le i
+  · intro x hx
+    obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := (isBasis_affine_open X).exists_subset_of_mem_open hx U.2
+    refine SetLike.mem_of_subset ?_ hxV
+    rw [← (hV.basicOpen_union_eq_self_iff (X.presheaf.map (homOfLE hVU).op '' s)).mpr
+      (by rw [← Ideal.map_span, hs, Ideal.map_top])]
+    simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Set.iUnion_coe_set, Set.mem_image,
+      Set.iUnion_exists, Set.biUnion_and', Set.iUnion_iUnion_eq_right, Scheme.basicOpen_res,
+      Opens.coe_inf, Opens.coe_mk, Set.iUnion_subset_iff]
+    exact fun i hi ↦ (Set.inter_subset_right.trans
+      (Set.subset_iUnion₂ (s := fun x _ ↦ (X.basicOpen x : Set X)) i hi))
 
 /-- Let `P` be a predicate on the affine open sets of `X` satisfying
 1. If `P` holds on `U`, then `P` holds on the basic open set of every section on `U`.
@@ -656,7 +680,8 @@ open ConcreteCategory
 
 /-- If `X` is affine, the image of the zero locus of global sections of `X` under `toΓSpecFun`
 is the zero locus in terms of the prime spectrum of `Γ(X, ⊤)`. -/
-lemma Scheme.toΓSpec_image_zeroLocus_eq_of_isAffine {X : Scheme.{u}} [IsAffine X] (s : Set Γ(X, ⊤)) :
+lemma Scheme.toΓSpec_image_zeroLocus_eq_of_isAffine {X : Scheme.{u}} [IsAffine X]
+    (s : Set Γ(X, ⊤)) :
     X.isoSpec.hom.val.base '' X.zeroLocus s = PrimeSpectrum.zeroLocus s := by
   erw [← X.toΓSpec_preimage_zeroLocus_eq, Set.image_preimage_eq]
   exact (bijective_of_isIso X.isoSpec.hom.val.base).surjective

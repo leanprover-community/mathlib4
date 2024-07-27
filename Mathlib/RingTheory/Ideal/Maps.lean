@@ -296,14 +296,12 @@ end Surjective
 
 section Injective
 
-variable (hf : Function.Injective f)
-
-theorem comap_bot_le_of_injective : comap f ⊥ ≤ I := by
+theorem comap_bot_le_of_injective (hf : Function.Injective f) : comap f ⊥ ≤ I := by
   refine le_trans (fun x hx => ?_) bot_le
   rw [mem_comap, Submodule.mem_bot, ← map_zero f] at hx
   exact Eq.symm (hf hx) ▸ Submodule.zero_mem ⊥
 
-theorem comap_bot_of_injective : Ideal.comap f ⊥ = ⊥ :=
+theorem comap_bot_of_injective (hf : Function.Injective f) : Ideal.comap f ⊥ = ⊥ :=
   le_bot_iff.mp (Ideal.comap_bot_le_of_injective f hf)
 
 end Injective
@@ -409,10 +407,8 @@ end Surjective
 
 section Bijective
 
-variable (hf : Function.Bijective f)
-
 /-- Special case of the correspondence theorem for isomorphic rings -/
-def relIsoOfBijective : Ideal S ≃o Ideal R where
+def relIsoOfBijective (hf : Function.Bijective f) : Ideal S ≃o Ideal R where
   toFun := comap f
   invFun := map f
   left_inv := (relIsoOfSurjective f hf.right).left_inv
@@ -421,11 +417,13 @@ def relIsoOfBijective : Ideal S ≃o Ideal R where
       ((relIsoOfSurjective f hf.right).right_inv ⟨J, comap_bot_le_of_injective f hf.left⟩)
   map_rel_iff' {_ _} := (relIsoOfSurjective f hf.right).map_rel_iff'
 
-theorem comap_le_iff_le_map {I : Ideal R} {K : Ideal S} : comap f K ≤ I ↔ K ≤ map f I :=
+theorem comap_le_iff_le_map (hf : Function.Bijective f) {I : Ideal R} {K : Ideal S} :
+    comap f K ≤ I ↔ K ≤ map f I :=
   ⟨fun h => le_map_of_comap_le_of_surjective f hf.right h, fun h =>
     (relIsoOfBijective f hf).right_inv I ▸ comap_mono h⟩
 
-theorem map.isMaximal {I : Ideal R} (H : IsMaximal I) : IsMaximal (map f I) := by
+theorem map.isMaximal (hf : Function.Bijective f) {I : Ideal R} (H : IsMaximal I) :
+    IsMaximal (map f I) := by
   refine
     or_iff_not_imp_left.1 (map_eq_top_or_isMaximal_of_surjective f hf.right H) fun h => H.1.1 ?_
   calc
