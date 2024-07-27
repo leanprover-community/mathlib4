@@ -11,11 +11,9 @@ import Lean.Elab.ElabRules
 Allows setting undeclared options.
 -/
 
-set_option autoImplicit true
-
 open Lean Elab
 
-private def setOption [Monad m] [MonadError m]
+private def setOption {m : Type → Type} [Monad m] [MonadError m]
     (name val : Syntax) (opts : Options) : m Options := do
   let val ← match val with
     | Syntax.ident _ _ `true _  => pure <| DataValue.ofBool true
