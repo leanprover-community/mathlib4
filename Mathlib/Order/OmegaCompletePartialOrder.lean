@@ -706,8 +706,8 @@ protected theorem monotone (f : α →𝒄 β) : Monotone f :=
 theorem apply_mono {f g : α →𝒄 β} {x y : α} (h₁ : f ≤ g) (h₂ : x ≤ y) : f x ≤ g y :=
   OrderHom.apply_mono (show (f : α →o β) ≤ g from h₁) h₂
 
-set_option linter.deprecated false
-
+set_option linter.deprecated false in
+@[deprecated (since := "2024-07-27")]
 theorem ite_continuous' {p : Prop} [hp : Decidable p] (f g : α → β) (hf : Continuous' f)
     (hg : Continuous' g) : Continuous' fun x => if p then f x else g x := by
   split_ifs <;> simp [*]
@@ -749,12 +749,12 @@ lemma ωScottContinuous.bind {β γ} {f : α → Part β} {g : α → β → Par
 lemma ωScottContinuous.map {β γ} {f : β → γ} {g : α → Part β} (hg : ωScottContinuous g) :
     ωScottContinuous fun x ↦ f <$> g x := by
   simpa only [map_eq_bind_pure_comp] using ωScottContinuous.bind hg ωScottContinuous.const
-set_option linter.deprecated false
 
 lemma ωScottContinuous.seq {β γ} {f : α → Part (β → γ)} {g : α → Part β} (hf : ωScottContinuous f)
     (hg : ωScottContinuous g) : ωScottContinuous fun x ↦ f x <*> g x := by
   simp only [seq_eq_bind_map]
   exact ωScottContinuous.bind hf $ ωScottContinuous.of_apply₂ fun _ ↦ ωScottContinuous.map hg
+
 set_option linter.deprecated false
 
 @[deprecated ωScottContinuous.bind (since := "2024-05-29")]
@@ -780,6 +780,8 @@ theorem seq_continuous' {β γ : Type v} (f : α → Part (β → γ)) (g : α �
 
 theorem continuous (F : α →𝒄 β) (C : Chain α) : F (ωSup C) = ωSup (C.map F) :=
   F.ωScottContinuous.map_ωSup _
+
+set_option linter.deprecated true
 
 /-- Construct a continuous function from a bare function, a continuous function, and a proof that
 they are equal. -/
