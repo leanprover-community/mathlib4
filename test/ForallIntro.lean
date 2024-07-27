@@ -1,5 +1,4 @@
 import Mathlib.Tactic.Linter.ForallIntro
-import Mathlib.Logic.Function.Defs
 
 set_option linter.forallIntro false
 
@@ -116,13 +115,15 @@ example : True := by
     rfl
   trivial
 
+/-- `test_rfl` simply "hides" a `∀` quantifier from `linter.forallIntro` -/
+abbrev test_rfl : Prop := ∀ x y, (x + y : Nat) = x + y
 -- the linter does not flag `intro(s)` with no matching `∀`
 #guard_msgs in
 set_option linter.forallIntro true in
 example : True := by
-  have : Function.Injective (id (α := Nat)) := by
+  have : test_rfl := by
     intros x y
-    exact id
+    rfl
   trivial
 
 /--
