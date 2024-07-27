@@ -162,8 +162,9 @@ printf $'<details>
 ## more verbose report:
 ./scripts/declarations_diff.sh long <optional_commit>
 ```
-The doc-module for `script/declarations_diff.sh` contains some details about this script.
-</details>'
+</details>
+The doc-module for `script/declarations_diff.sh` contains some details about this script.'
+
  : <<ReferenceTest
 theorem oh hello
 inductive triggers the count even if it is not lean code
