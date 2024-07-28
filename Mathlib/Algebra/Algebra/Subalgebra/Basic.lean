@@ -695,6 +695,16 @@ theorem inf_toSubsemiring (S T : Subalgebra R A) :
     (S ⊓ T).toSubsemiring = S.toSubsemiring ⊓ T.toSubsemiring :=
   rfl
 
+@[simp]
+theorem sup_toSubsemiring (S T : Subalgebra R A) :
+    (S ⊔ T).toSubsemiring = S.toSubsemiring ⊔ T.toSubsemiring := by
+  rw [← S.toSubsemiring.closure_eq, ← T.toSubsemiring.closure_eq, ← Subsemiring.closure_union]
+  change Subsemiring.closure (Set.range (algebraMap R A) ∪ (S ∪ T)) = Subsemiring.closure (S ∪ T)
+  congr 1
+  rw [Set.union_eq_right]
+  rintro _ ⟨x, rfl⟩
+  exact Or.inl (algebraMap_mem S x)
+
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (Subalgebra R A)) : (↑(sInf S) : Set A) = ⋂ s ∈ S, ↑s :=
   sInf_image
@@ -712,6 +722,24 @@ theorem sInf_toSubsemiring (S : Set (Subalgebra R A)) :
     (sInf S).toSubsemiring = sInf (Subalgebra.toSubsemiring '' S) :=
   SetLike.coe_injective <| by simp
 
+open Subalgebra in
+@[simp]
+theorem sSup_toSubsemiring (S : Set (Subalgebra R A)) (hS : S.Nonempty) :
+    (sSup S).toSubsemiring = sSup (toSubsemiring '' S) := by
+  have h : toSubsemiring '' S = Subsemiring.closure '' (SetLike.coe '' S) := by
+    rw [Set.image_image]
+    congr! with x
+    exact x.toSubsemiring.closure_eq.symm
+  rw [h, sSup_image, ← Subsemiring.closure_sUnion]
+  change Subsemiring.closure (Set.range (algebraMap R A) ∪ ⋃₀ (SetLike.coe '' S)) =
+    Subsemiring.closure (⋃₀ (SetLike.coe '' S))
+  congr 1
+  rw [Set.union_eq_right]
+  rintro _ ⟨x, rfl⟩
+  obtain ⟨y, hy⟩ := hS
+  simp only [Set.mem_sUnion, Set.mem_image, exists_exists_and_eq_and, SetLike.mem_coe]
+  exact ⟨y, hy, algebraMap_mem y x⟩
+
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} {S : ι → Subalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
   simp [iInf]
@@ -724,6 +752,18 @@ open Subalgebra in
 theorem iInf_toSubmodule {ι : Sort*} (S : ι → Subalgebra R A) :
     toSubmodule (⨅ i, S i) = ⨅ i, toSubmodule (S i) :=
   SetLike.coe_injective <| by simp
+
+@[simp]
+theorem iInf_toSubsemiring {ι : Sort*} (S : ι → Subalgebra R A) :
+    (iInf S).toSubsemiring = ⨅ i, (S i).toSubsemiring := by
+  simp only [iInf, sInf_toSubsemiring, ← Set.range_comp]
+  rfl
+
+@[simp]
+theorem iSup_toSubsemiring {ι : Sort*} [Nonempty ι] (S : ι → Subalgebra R A) :
+    (iSup S).toSubsemiring = ⨆ i, (S i).toSubsemiring := by
+  simp only [iSup, Set.range_nonempty, sSup_toSubsemiring, ← Set.range_comp]
+  rfl
 
 instance : Inhabited (Subalgebra R A) := ⟨⊥⟩
 
