@@ -446,7 +446,7 @@ theorem splits_X_pow_sub_one [H : IsCyclotomicExtension S K L] (hS : n ∈ S) :
 set_option linter.uppercaseLean3 false in
 #align is_cyclotomic_extension.splits_X_pow_sub_one IsCyclotomicExtension.splits_X_pow_sub_one
 
-/-- A cyclotomic extension splits `cyclotomic n K` if `n ∈ S` and `ne_zero (n : K)`. -/
+/-- A cyclotomic extension splits `cyclotomic n K` if `n ∈ S`. -/
 theorem splits_cyclotomic [IsCyclotomicExtension S K L] (hS : n ∈ S) :
     Splits (algebraMap K L) (cyclotomic n K) := by
   refine splits_of_splits_of_dvd _ (X_pow_sub_C_ne_zero n.pos _) (splits_X_pow_sub_one K L hS) ?_
