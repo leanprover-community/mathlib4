@@ -1,10 +1,11 @@
 import Mathlib.CategoryTheory.Triangulated.Triangulated
+import Mathlib.CategoryTheory.Shift.CommShift
 
 universe u v
 
 namespace CategoryTheory
 
-open Limits Category
+open Limits Category Functor
 
 namespace Triangulated
 
@@ -133,5 +134,63 @@ lemma NineGrid {X₁ X₂ Y₁ Y₂ : C} (u₁ : X₁ ⟶ Y₁) (u₂ : X₂ ⟶
   exact ⟨dT_X, dT_Y, dT_Z, dT₁, dT₂, dT₃, comm_XY, comm_YZ, comm₁, comm₂, comm₃⟩
 
 end Triangulated
+
+namespace Pretriangulated
+
+variable {C : Type u} [Category.{v,u} C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
+  [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
+
+noncomputable instance : (Triangle.π₁ (C := C)).CommShift ℤ where
+  iso n := by
+    refine NatIso.ofComponents (fun X ↦ Iso.refl _) ?_
+    intro _ _ _
+    simp only [Triangle.shiftFunctor_eq, comp_obj, Triangle.shiftFunctor_obj, Triangle.π₁_obj,
+      Triangle.mk_obj₁, Functor.comp_map, Triangle.π₁_map, Triangle.shiftFunctor_map_hom₁,
+      Iso.refl_hom, comp_id, id_comp]
+  zero := by aesop_cat
+  add n m := by
+    apply Iso.ext; apply NatTrans.ext; ext T
+    simp only [Triangle.shiftFunctor_eq, comp_obj, Triangle.shiftFunctor_obj, Triangle.π₁_obj,
+      Triangle.mk_obj₁, NatIso.ofComponents_hom_app, Iso.refl_hom, CommShift.isoAdd_hom_app,
+      Triangle.mk_obj₂, Triangle.mk_obj₃, Triangle.mk_mor₁, Triangle.mk_mor₂, Triangle.mk_mor₃,
+      Triangle.shiftFunctorAdd_eq, Triangle.π₁_map, Triangle.shiftFunctorAdd'_hom_app_hom₁, map_id,
+      id_comp]
+    rw [shiftFunctorAdd'_eq_shiftFunctorAdd, Iso.hom_inv_id_app]
+
+noncomputable instance : (Triangle.π₂ (C := C)).CommShift ℤ where
+  iso n := by
+    refine NatIso.ofComponents (fun X ↦ Iso.refl _) ?_
+    intro _ _ _
+    simp only [Triangle.shiftFunctor_eq, comp_obj, Triangle.shiftFunctor_obj, Triangle.π₂_obj,
+      Triangle.mk_obj₂, Functor.comp_map, Triangle.π₂_map, Triangle.shiftFunctor_map_hom₂,
+      Iso.refl_hom, comp_id, id_comp]
+  zero := by aesop_cat
+  add n m := by
+    apply Iso.ext; apply NatTrans.ext; ext T
+    simp only [Triangle.shiftFunctor_eq, comp_obj, Triangle.shiftFunctor_obj, Triangle.π₂_obj,
+      Triangle.mk_obj₂, NatIso.ofComponents_hom_app, Iso.refl_hom, CommShift.isoAdd_hom_app,
+      Triangle.mk_obj₁, Triangle.mk_obj₃, Triangle.mk_mor₁, Triangle.mk_mor₂, Triangle.mk_mor₃,
+      Triangle.shiftFunctorAdd_eq, Triangle.π₂_map, Triangle.shiftFunctorAdd'_hom_app_hom₂, map_id,
+      id_comp]
+    rw [shiftFunctorAdd'_eq_shiftFunctorAdd, Iso.hom_inv_id_app]
+
+noncomputable instance : (Triangle.π₃ (C := C)).CommShift ℤ where
+  iso n := by
+    refine NatIso.ofComponents (fun X ↦ Iso.refl _) ?_
+    intro _ _ _
+    simp only [Triangle.shiftFunctor_eq, comp_obj, Triangle.shiftFunctor_obj, Triangle.π₃_obj,
+      Triangle.mk_obj₃, Functor.comp_map, Triangle.π₃_map, Triangle.shiftFunctor_map_hom₃,
+      Iso.refl_hom, comp_id, id_comp]
+  zero := by aesop_cat
+  add n m := by
+    apply Iso.ext; apply NatTrans.ext; ext T
+    simp only [Triangle.shiftFunctor_eq, comp_obj, Triangle.shiftFunctor_obj, Triangle.π₃_obj,
+      Triangle.mk_obj₃, NatIso.ofComponents_hom_app, Iso.refl_hom, CommShift.isoAdd_hom_app,
+      Triangle.mk_obj₁, Triangle.mk_obj₂, Triangle.mk_mor₁, Triangle.mk_mor₂, Triangle.mk_mor₃,
+      Triangle.shiftFunctorAdd_eq, Triangle.π₃_map, Triangle.shiftFunctorAdd'_hom_app_hom₃, map_id,
+      id_comp]
+    rw [shiftFunctorAdd'_eq_shiftFunctorAdd, Iso.hom_inv_id_app]
+
+end Pretriangulated
 
 end CategoryTheory

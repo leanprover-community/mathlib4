@@ -269,6 +269,8 @@ noncomputable instance : (triangleFunctor (hP := hP) n).CommShift ℤ where
       rw [shiftFunctorAdd'_eq_shiftFunctorAdd]
       simp only [Iso.hom_inv_id_app]
 
+#synth (triangleFunctor n).CommShift ℤ (C := C)
+
 end TruncAux
 
 noncomputable def truncLT (n : ℤ) : C ⥤ C :=
@@ -280,9 +282,7 @@ instance (n : ℤ) : (truncLT (hP := hP) n).Additive where
     rw [Functor.map_add]
     rfl
 
--- Need also the fact that truncLT and truncGE are triangulated functors.
-
-#synth Functor.CommShift (Pretriangulated.Triangle.π₁ (C := C)) ℤ 
+noncomputable instance (n : ℤ) : (truncLT (hP := hP) n).CommShift ℤ := Functor.CommShift.comp _ _
 
 noncomputable def truncLTπ (n : ℤ) : 𝟭 _ ⟶ truncLT (hP := hP) n:=
   whiskerLeft (TruncAux.triangleFunctor n) Triangle.π₂Toπ₃
@@ -295,6 +295,8 @@ instance (n : ℤ) : (truncGE (hP := hP) n).Additive where
     dsimp only [truncGE, Functor.comp_map]
     rw [Functor.map_add]
     rfl
+
+noncomputable instance (n : ℤ) : (truncGE (hP := hP) n).CommShift ℤ := Functor.CommShift.comp _ _
 
 noncomputable def truncGEι (n : ℤ) : truncGE (hP := hP) n ⟶ 𝟭 _ :=
   whiskerLeft (TruncAux.triangleFunctor n) Triangle.π₁Toπ₂
@@ -463,6 +465,10 @@ instance (n : ℤ) : (truncLE (hP := hP) n).Additive := by
   dsimp only [truncLE]
   infer_instance
 
+noncomputable instance (n : ℤ) : (truncLE (hP := hP) n).CommShift ℤ := by
+  dsimp only [truncLE]
+  infer_instance
+
 instance (n : ℤ) (X : C) : hP.IsLE ((truncLE n).obj X) n := by
   have : hP.IsLE ((truncLE n).obj X) (n+1-1) := by
     dsimp [truncLE]
@@ -472,6 +478,10 @@ instance (n : ℤ) (X : C) : hP.IsLE ((truncLE n).obj X) n := by
 noncomputable def truncGT (n : ℤ) : C ⥤ C := truncGE (n+1)
 
 instance (n : ℤ) : (truncGT (hP := hP) n).Additive := by
+  dsimp only [truncGT]
+  infer_instance
+
+noncomputable instance (n : ℤ) : (truncGT (hP := hP) n).CommShift ℤ := by
   dsimp only [truncGT]
   infer_instance
 
@@ -585,6 +595,184 @@ lemma triangleGTLE_distinguished (n : ℤ) (X : C) :
     (triangleGTLE n).obj X ∈ distTriang C :=
   isomorphic_distinguished _ (triangleGELE_distinguished n (n+1) rfl X) _
     ((triangleGTLEIsoTriangleGELE n (n+1) rfl).app X)
+
+variable (n : ℤ)
+#synth (truncLE n).CommShift ℤ (C := C)
+
+@[simp]
+lemma truncLECommShift.comm (X : C) (n a : ℤ) :
+    ((hP.truncLEπ n).app X)⟦a⟧' = (truncLEπ n).app (X⟦a⟧) ≫
+    ((truncLE n).commShiftIso a).hom.app X := by
+  set ex := TruncAux.triangleFunctorIsoShift_exists n X a
+  set e := ex.choose
+  set e' := e.inv.hom₃
+  simp only [Triangle.shiftFunctor_eq, Triangle.shiftFunctor_obj, TruncAux.triangleFunctor_obj_obj₂,
+    Functor.comp_obj, Triangle.mk_obj₃] at e'
+  have : ((truncLE n).commShiftIso a).hom.app X = e' := sorry
+
+-- TODO: similar lemmas for LT, GE, GT
+
+lemma to_truncGE_obj_ext (n : ℤ) (X : C) {Y : C}
+    (f₁ f₂ : X ⟶ (hP.truncGE n).obj Y) (h : f₁ ≫ (hP.truncGEι n).app Y =
+    f₂ ≫ (hP.truncGEι n).app Y) [hP.IsGE X n] :
+    f₁ = f₂ := by
+  suffices ∀ (f : X ⟶ (hP.truncGE n).obj Y) (_ : f ≫ (hP.truncGEι n).app Y = 0), f = 0 by
+    rw [← sub_eq_zero, this (f₁ - f₂) (by rw [sub_comp, sub_eq_zero, h])]
+  intro f hf
+  obtain ⟨g, hg⟩ := Triangle.coyoneda_exact₂ _ (inv_rot_of_distTriang _
+    (hP.triangleGELT_distinguished n Y)) f hf
+  have hg' := zero_of_isGE_of_isLE g (n-1) n (by linarith) inferInstance
+    (by simp only [Triangle.invRotate_obj₁, Int.reduceNeg, triangleGELT_obj_obj₃]
+        exact shift_isLE_of_isLE _ _ _)
+  rw [hg, hg', zero_comp]
+
+lemma to_truncGT_obj_ext (n : ℤ) (X : C) {Y : C}
+    (f₁ f₂ : X ⟶ (hP.truncGT n).obj Y) (h : f₁ ≫ (hP.truncGTι n).app Y =
+    f₂ ≫ (hP.truncGTι n).app Y) [hP.IsGE X (n+1)] :
+    f₁ = f₂ := by
+  rw [← cancel_mono ((hP.truncGTIsoTruncGE n (n+1) (by linarith)).hom.app Y)]
+  apply to_truncGE_obj_ext
+  simpa only [Functor.id_obj, assoc, truncGTIsoTruncGE_hom_ι_app] using h
+
+lemma from_truncLE_obj_ext (n : ℤ) (Y : C) {X : C}
+    (f₁ f₂ : (hP.truncLE n).obj X ⟶ Y) (h : (hP.truncLEπ n).app X ≫ f₁ =
+    (hP.truncLEπ n).app X ≫ f₂) [hP.IsLE Y n] :
+    f₁ = f₂ := by
+  suffices ∀ (f : (hP.truncLE n).obj X ⟶ Y) (_ : (hP.truncLEπ n).app X ≫ f = 0), f = 0 by
+    rw [← sub_eq_zero, this (f₁ - f₂) (by rw [comp_sub, sub_eq_zero, h])]
+  intro f hf
+  obtain ⟨g, hg⟩ := Triangle.yoneda_exact₃ _ (hP.triangleGTLE_distinguished n X) f hf
+  have hg' := hP.zero_of_isGE_of_isLE g n (n+1) (by linarith)
+    (by simp only [triangleGTLE_obj_obj₁]; exact shift_isGE_of_isGE _ _ _) inferInstance
+  rw [hg, hg', comp_zero]
+
+lemma from_truncLT_obj_ext (n : ℤ) (Y : C) {X : C}
+    (f₁ f₂ : (hP.truncLT n).obj X ⟶ Y) (h : (hP.truncLTπ n).app X ≫ f₁ =
+    (hP.truncLTπ n).app X ≫ f₂) [hP.IsLE Y (n-1)] :
+    f₁ = f₂ := by
+  rw [← cancel_epi ((hP.truncLEIsoTruncLT (n-1) n (by linarith)).hom.app X)]
+  apply from_truncLE_obj_ext
+  simpa only [Functor.id_obj, π_truncLEIsoTruncLT_hom_app_assoc] using h
+
+lemma liftTruncGE' {X Y : C} (f : X ⟶ Y) (n : ℤ) [hP.IsGE X n] :
+    ∃ (f' : X ⟶ (hP.truncGE n).obj Y), f = f' ≫ (hP.truncGEι n).app Y :=
+  Triangle.coyoneda_exact₂ _ (hP.triangleGELT_distinguished n Y) f
+    (hP.zero_of_isGE_of_isLE  _ (n - 1) n (by linarith)
+    inferInstance (by dsimp; infer_instance))
+
+noncomputable def liftTruncGE {X Y : C} (f : X ⟶ Y) (n : ℤ) [hP.IsGE X n] :
+    X ⟶ (hP.truncGE n).obj Y := (hP.liftTruncGE' f n).choose
+
+@[reassoc (attr := simp)]
+lemma liftTruncGE_ι {X Y : C} (f : X ⟶ Y) (n : ℤ) [hP.IsGE X n] :
+    hP.liftTruncGE f n ≫ (hP.truncGEι n).app Y = f :=
+  (hP.liftTruncGE' f n).choose_spec.symm
+
+noncomputable def liftTruncGT {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₁ + 1 = n₀) [hP.IsGE X n₀] :
+    X ⟶ (hP.truncGT n₁).obj Y :=
+  hP.liftTruncGE f n₀ ≫ (hP.truncGTIsoTruncGE _ _ h).inv.app Y
+
+@[reassoc (attr := simp)]
+lemma liftTruncGT_ι {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₁ + 1 = n₀) [hP.IsGE X n₀] :
+    hP.liftTruncGT f n₀ n₁ h ≫ (hP.truncGTι n₁).app Y = f := by
+  dsimp only [liftTruncGT]
+  simp only [Functor.id_obj, assoc, truncGTIsoTruncGE_inv_ι_app, liftTruncGE_ι]
+
+lemma descTruncLE' {X Y : C} (f : X ⟶ Y) (n : ℤ) [hP.IsLE Y n] :
+  ∃ (f' : (hP.truncLE n).obj X ⟶ Y), f = (hP.truncLEπ n).app X ≫ f' :=
+  Triangle.yoneda_exact₂ _ (hP.triangleGTLE_distinguished n X) f
+    (hP.zero_of_isGE_of_isLE _ n (n + 1) (by linarith) (by dsimp; infer_instance) inferInstance)
+
+noncomputable def descTruncLE {X Y : C} (f : X ⟶ Y) (n : ℤ) [hP.IsLE Y n] :
+    (hP.truncLE n).obj X ⟶ Y := (hP.descTruncLE' f n).choose
+
+@[reassoc (attr := simp)]
+lemma π_descTruncLE {X Y : C} (f : X ⟶ Y) (n : ℤ) [hP.IsLE Y n] :
+    (hP.truncLEπ n).app X ≫ hP.descTruncLE f n  = f :=
+  (hP.descTruncLE' f n).choose_spec.symm
+
+noncomputable def descTruncLT {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) [hP.IsLE Y n₀] :
+    (hP.truncLT n₁).obj X ⟶ Y := (hP.truncLEIsoTruncLT _ _ h).inv.app X ≫ hP.descTruncLE f n₀
+
+@[reassoc (attr := simp)]
+lemma π_descTruncLT {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) [hP.IsLE Y n₀] :
+    (hP.truncLTπ n₁).app X ≫ hP.descTruncLT f n₀ n₁ h  = f := by
+  dsimp only [descTruncLT]
+  simp only [Functor.id_obj, π_truncLEIsoTruncLT_inv_app_assoc, π_descTruncLE]
+
+variable [IsTriangulated C]
+
+noncomputable instance (n : ℤ) : (hP.truncLE n).IsTriangulated where
+  map_distinguished T hT := by
+    obtain ⟨Z₁, Z₃, f, g, h, v₁, w₁, u₃, v₃, w₃, hZ, hGT, hLE, comm₁₂, comm₂₃, _, comm₃₁₂,
+      _⟩ := NineGrid' (hP.triangleGTLE_distinguished n T.obj₁) (hP.triangleGTLE_distinguished n
+      T.obj₂) ((hP.truncGT n).map T.mor₁) T.mor₁ (by simp only [triangleGTLE_obj_obj₁,
+      triangleGTLE_obj_obj₂, triangleGTLE_obj_mor₁, NatTrans.naturality, Functor.id_obj,
+      Functor.id_map]) T.mor₂ T.mor₃ hT
+    have ex := triangle_iso_exists n (n + 1) (by linarith) _ _ hZ
+      (hP.triangleGTLE_distinguished n T.obj₃) (Iso.refl _)
+      (by simp only [Triangle.mk_obj₁]
+          refine hP.isGE₃ _ hGT ?_ ?_ (n := n + 1)
+          simp only [triangleGTLE_obj_obj₁, Triangle.mk_obj₁]; infer_instance
+          simp only [triangleGTLE_obj_obj₁, Triangle.mk_obj₂]; infer_instance)
+      (by simp only [Triangle.mk_obj₃]
+          refine hP.isLE₃ _ hLE ?_ ?_ (n := n)
+          simp only [triangleGTLE_obj_obj₃, Triangle.mk_obj₁]; infer_instance
+          simp only [triangleGTLE_obj_obj₃, Triangle.mk_obj₂]; infer_instance)
+      (by simp only [triangleGTLE_obj_obj₁]; infer_instance)
+      (by simp only [triangleGTLE_obj_obj₃]; infer_instance)
+    set eZ := ex.choose
+    set e : Triangle.mk u₃ v₃ w₃ ≅ (truncLE n).mapTriangle.obj T := by
+      refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Triangle.π₃.mapIso eZ) ?_ ?_ ?_
+      · simp only [triangleGTLE_obj_obj₃, Triangle.mk_obj₁, Functor.mapTriangle_obj,
+        Triangle.mk_obj₂, Triangle.mk_mor₁, Iso.refl_hom, comp_id, id_comp]
+        have : IsLE ((triangleGTLE n).obj T.obj₂).obj₃ n := by
+          simp only [triangleGTLE_obj_obj₃]; infer_instance
+        refine from_truncLE_obj_ext n _ _ _ ?_
+        simp only [Functor.id_obj, triangleGTLE_obj_obj₃]
+        have := comm₁₂.2.1
+        simp only [triangleGTLE_obj_obj₂, triangleGTLE_obj_obj₃, triangleGTLE_obj_mor₂] at this
+        rw [this]
+        exact (truncLEπ n).naturality T.mor₁
+      · simp only [triangleGTLE_obj_obj₃, Triangle.mk_obj₂, Functor.mapTriangle_obj,
+        Triangle.mk_obj₃, Triangle.mk_mor₂, Functor.mapIso_hom, Triangle.π₃_map, Iso.refl_hom,
+        id_comp]
+        refine from_truncLE_obj_ext n _ _ _ ?_
+        have := comm₂₃.2.1
+        simp only [triangleGTLE_obj_obj₂, Triangle.mk_obj₃, triangleGTLE_obj_obj₃,
+        triangleGTLE_obj_mor₂, Triangle.mk_obj₂, Triangle.mk_mor₂] at this
+        rw [← assoc, this]
+        have := eZ.hom.comm₂
+        simp only [Triangle.mk_obj₂, triangleGTLE_obj_obj₃, Triangle.mk_obj₃, Triangle.mk_mor₂,
+        triangleGTLE_obj_obj₂, triangleGTLE_obj_mor₂] at this
+        rw [assoc, this]
+        have := (truncLEπ n).naturality T.mor₂
+        simp only [Functor.id_obj, Functor.id_map] at this
+        rw [← this, ex.choose_spec]
+        simp only [Functor.id_obj, Triangle.mk_obj₂, triangleGTLE_obj_obj₂, Iso.refl_hom, id_comp]
+      · simp only [triangleGTLE_obj_obj₃, Triangle.mk_obj₃, Functor.mapTriangle_obj,
+        Triangle.mk_obj₁, Triangle.mk_mor₃, Iso.refl_hom, Functor.map_id, comp_id, Functor.mapIso_hom,
+        Triangle.π₃_map]
+        rw [← cancel_epi eZ.inv.hom₃]
+        have : IsLE ((((triangleGTLE n).obj T.obj₁).obj₃)⟦(1 : ℤ)⟧) n := by
+          simp only [triangleGTLE_obj_obj₃]
+          exact shift_isLE_of_isLE _ _ _
+        refine from_truncLE_obj_ext n _ _ _ ?_
+        have := eZ.inv.comm₂
+        simp only [triangleGTLE_obj_obj₂, Triangle.mk_obj₃, triangleGTLE_obj_obj₃,
+        triangleGTLE_obj_mor₂, Triangle.mk_obj₂, Triangle.mk_mor₂] at this
+        rw [← assoc, this]
+        rw [← cancel_epi eZ.hom.hom₂]
+        conv_rhs => rw [ex.choose_spec]
+        simp only [Triangle.mk_obj₂, triangleGTLE_obj_obj₃, triangleGTLE_obj_obj₂, Functor.id_obj,
+        Triangle.mk_obj₃, assoc, Iso.hom_inv_id_triangle_hom₂_assoc, Iso.refl_hom,
+        Iso.inv_hom_id_triangle_hom₃_assoc, id_comp]
+        have := (truncLEπ n).naturality T.mor₃
+        simp only [Functor.id_obj, Functor.id_map] at this
+        rw [← assoc, ← this, ← comm₃₁₂]
+        simp only [triangleGTLE_obj_obj₂, triangleGTLE_obj_obj₃, triangleGTLE_obj_mor₂, assoc]
+        rw [truncLECommShift.comm]
+    exact isomorphic_distinguished _ hLE _ e.symm
 
 #exit
 

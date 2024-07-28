@@ -348,6 +348,30 @@ lemma isZero (X : C) (n₀ n₁ : ℤ) (h : n₀ < n₁)
   rw [IsZero.iff_id_eq_zero]
   exact zero _ n₀ n₁ h
 
+lemma isLE₁ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : hP.IsLE T.obj₂ n)
+    (h₃ : hP.IsLE T.obj₃ n) : hP.IsLE T.obj₁ n where
+  le := (hP.LE n).ext₁ T hT h₁.le h₃.le
+
+lemma isLE₂ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : hP.IsLE T.obj₁ n)
+    (h₃ : hP.IsLE T.obj₃ n) : hP.IsLE T.obj₂ n where
+  le := (hP.LE n).ext₂ T hT h₁.le h₃.le
+
+lemma isLE₃ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : hP.IsLE T.obj₁ n)
+    (h₃ : hP.IsLE T.obj₂ n) : hP.IsLE T.obj₃ n where
+  le := (hP.LE n).ext₃ T hT h₁.le h₃.le
+
+lemma isGE₁ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : hP.IsGE T.obj₂ n)
+    (h₃ : hP.IsGE T.obj₃ n) : hP.IsGE T.obj₁ n where
+  ge := (hP.GE n).ext₁ T hT h₁.ge h₃.ge
+
+lemma isGE₂ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : hP.IsGE T.obj₁ n)
+    (h₃ : hP.IsGE T.obj₃ n) : hP.IsGE T.obj₂ n where
+  ge := (hP.GE n).ext₂ T hT h₁.ge h₃.ge
+
+lemma isGE₃ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : hP.IsGE T.obj₁ n)
+    (h₃ : hP.IsGE T.obj₂ n) : hP.IsGE T.obj₃ n where
+  ge := (hP.GE n).ext₃ T hT h₁.ge h₃.ge
+
 def core (X : C) : Prop := (LE 0).P X ∧ (GE 0).P X
 
 lemma mem_core_iff (X : C) :
