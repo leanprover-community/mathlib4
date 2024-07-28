@@ -128,7 +128,7 @@ theorem decompose_of_mem_same {x : M} {i : ι} (hx : x ∈ ℳ i) : (decompose �
 
 theorem decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j) :
     (decompose ℳ x j : M) = 0 := by
-  rw [decompose_of_mem _ hx, DirectSum.of_eq_of_ne _ _ _ _ hij, ZeroMemClass.coe_zero]
+  rw [decompose_of_mem _ hx, DirectSum.of_eq_of_ne _ _ _ hij, ZeroMemClass.coe_zero]
 
 theorem degree_eq_of_mem_mem {x : M} {i j : ι} (hxi : x ∈ ℳ i) (hxj : x ∈ ℳ j) (hx : x ≠ 0) :
     i = j := by
@@ -178,7 +178,7 @@ theorem decompose_symm_sum {ι'} (s : Finset ι') (f : ι' → ⨁ i, ℳ i) :
 theorem sum_support_decompose [∀ (i) (x : ℳ i), Decidable (x ≠ 0)] (r : M) :
     (∑ i ∈ (decompose ℳ r).support, (decompose ℳ r i : M)) = r := by
   conv_rhs =>
-    rw [← (decompose ℳ).symm_apply_apply r, ← sum_support_of (fun i ↦ ℳ i) (decompose ℳ r)]
+    rw [← (decompose ℳ).symm_apply_apply r, ← sum_support_of (decompose ℳ r)]
   rw [decompose_symm_sum]
   simp_rw [decompose_symm_of]
 
