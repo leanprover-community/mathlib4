@@ -37,10 +37,11 @@ the first variable (see `ContinuousConstSMul`) and proper in the sense defined h
 ## Implementation notes
 
 Concerning `ProperlyDiscontinuousSMul_iff_ProperSMul`, this result should be the only one needed
-to link properly discontinuous and proper actions, however the notion of compactly generated space
-is not yet in Mathlib so it is used as an intermediate result to prove
+to link properly discontinuous and proper actions.
+
+TODO: Replace the compactly generated hypothesis by a typeclass instance such that
 `WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage` and
-`SequentialSpace.isProperMap_iff_isCompact_preimage`.
+`SequentialSpace.isProperMap_iff_isCompact_preimage` are inferred by typeclass inference.
 
 ## References
 
