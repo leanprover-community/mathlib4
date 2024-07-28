@@ -218,13 +218,14 @@ including the copy year and holder, the license and main author(s) of the file (
 -/
 def copyrightHeaderLinter : TextbasedLinter := fun lines ↦ Id.run do
   -- Unlike the Python script, we just emit one warning.
-  let start := lines.extract 0 4
+  let start := lines.extract 0 5
   -- The header should start and end with blank comments.
-  let _ := match (start.get? 0, start.get? 4) with
+  let headerErrors := match (start.get? 0, start.get? 4) with
   | (some "/-", some "-/") => none
-  | (some "/-", _) => return #[(StyleError.copyright none, 4)]
-  | _ => return #[(StyleError.copyright none, 0)]
-
+  | (some "/-", _) => some (StyleError.copyright none, 4)
+  | _ => some (StyleError.copyright none, 0)
+  if let some err := headerErrors then
+    return #[err]
   -- If this is given, we go over the individual lines one by one,
   -- and provide some context on what is mis-formatted (if anything).
   let mut output := Array.mkEmpty 0
