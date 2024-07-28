@@ -55,6 +55,7 @@ theorem swap_snd : p.swap.snd = p.fst := rfl
 @[simp]
 theorem swap_swap : p.swap.swap = p := rfl
 
+include p in
 theorem to_nontrivial : Nontrivial α :=
   ⟨⟨p.fst, p.snd, p.fst_ne_snd⟩⟩
 
