@@ -237,6 +237,8 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     if (← MonadState.get).messages.hasErrors then
       return
+    unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
+      return
     -- The linter ignores the `#guard_msgs` command, in particular its doc-string.
     -- The linter still lints the message guarded by `#guard_msgs`.
     if stx.isOfKind ``Lean.guardMsgsCmd then
