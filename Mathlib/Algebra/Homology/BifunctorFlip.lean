@@ -6,6 +6,17 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.BifunctorHomotopy
 import Mathlib.Algebra.Homology.TotalComplexSymmetry
 
+/-!
+# Action of the flip of a bifunctor on homological complexes
+
+Given `K₁ : HomologicalComplex C₁ c₁`, `K₂ : HomologicalComplex C₂ c₂`,
+a bifunctor `F : C₁ ⥤ C₂ ⥤ D`, and a complex shape `c` with
+`[TotalComplexShape c₁ c₂ c]` and `[TotalComplexShape c₂ c₁ c]`, we define
+an isomorphism `mapBifunctor K₂ K₁ F.flip c ≅ mapBifunctor K₁ K₂ F c`
+under the additional assumption `[TotalComplexShapeSymmetry c₁ c₂ c]`.
+
+-/
+
 open CategoryTheory Limits
 
 variable {C₁ C₂ D : Type*} [Category C₁] [Category C₂] [Category D]
