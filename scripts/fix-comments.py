@@ -70,7 +70,8 @@ same = {
 
 for s in same:
     del name_map[s]
-del name_map["infer_instance"]
+for s in ["infer_instance", "true", "false", "set"]:
+    del name_map[s]
 
 
 def replace_names(s):
