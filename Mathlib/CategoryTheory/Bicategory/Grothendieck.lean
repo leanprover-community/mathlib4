@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Paul Lezeau, Calle Sönne
+Authors: Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
@@ -24,22 +24,13 @@ The projection functor `F.toFibered ⥤ 𝒮` is then given by projecting to the
 * On objects, it sends `(S, a)` to `S`
 * On morphisms, it sends `(f, h)` to `f`
 
-We also provide a `HasFibers` instance `F.toFibered`, such that the fiber over `S` is the category `F(S)`.
+We also provide a `HasFibers` instance `F.toFibered`, such that the fiber over `S` is the category
+`F(S)`.
 
 ## References
 [Vistoli2008] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
 Angelo Vistoli
 
--/
-
-/-
-TODO:
-- Fix "↑F.toPrelaxFunctor.obj" instead of "F.obj"
-- Fix naming
-- (Later) splittings & functoriality
-- Make `presheaf.lean` a special instance of the above
-  - Isomorphism between the overcategory and fibered category associated to the corresponding
-  presheaf?
 -/
 
 namespace CategoryTheory
@@ -93,7 +84,7 @@ protected lemma id_comp : 𝟙 a ≫ f = f := by
   ext
   · simp
   dsimp
-  rw [F.mapComp_id_right_ofStrict_inv f.1.op.toLoc]
+  rw [F.mapComp_id_right_inv f.1.op.toLoc]
   rw [← (F.mapId ⟨op a.1⟩).inv.naturality_assoc f.2]
   slice_lhs 2 3 =>
     rw [← Cat.whiskerLeft_app, ← NatTrans.comp_app, ← assoc]
@@ -105,7 +96,7 @@ protected lemma comp_id : f ≫ 𝟙 b = f := by
   · simp
   dsimp
   rw [← Cat.whiskerRight_app, ← NatTrans.comp_app]
-  rw [F.mapComp_id_left_ofStrict_inv f.1.op.toLoc]
+  rw [F.mapComp_id_left_inv]
   nth_rw 1 [← assoc]
   rw [← Bicategory.comp_whiskerRight, Iso.inv_hom_id]
   simp
@@ -120,13 +111,14 @@ protected lemma assoc {a b c d : F.toFibered} (f : a ⟶ b) (g : b ⟶ c) (h : c
   slice_lhs 3 5 =>
     rw [← (F.mapComp g.1.op.toLoc f.1.op.toLoc).inv.naturality_assoc h.2]
     rw [← Cat.whiskerLeft_app, ← NatTrans.comp_app]
-    rw [F.map₂_associator_ofStrict_inv h.1.op.toLoc g.1.op.toLoc f.1.op.toLoc]
-    rw [NatTrans.comp_app, NatTrans.comp_app, eqToHom_app, eqToHom_app, eqToHom_refl, id_comp]
+    rw [F.mapComp_assoc_right_inv h.1.op.toLoc g.1.op.toLoc f.1.op.toLoc]
+    simp only [Strict.associator_eqToIso, eqToIso_refl, Iso.refl_inv, eqToIso.hom]
+    repeat rw [NatTrans.comp_app]
+    rw [F.map₂_eqToHom, NatTrans.id_app]
   simp only [Cat.comp_obj, Cat.comp_map, map_comp, assoc]
   congr 3
-  rw [← Cat.whiskerRight_app, NatTrans.comp_app]
-  simp only [Cat.comp_obj, assoc]
-
+  rw [← Cat.whiskerRight_app, eqToHom_app]
+  simp only [Cat.whiskerRight_app, Cat.comp_obj, id_comp]
 
 /-- The category structure on the fibered category associated to a presheaf valued in types. -/
 instance : Category (F.toFibered) where
