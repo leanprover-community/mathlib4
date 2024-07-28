@@ -8,6 +8,7 @@ import Mathlib.Probability.Kernel.Disintegration.Basic
 import Mathlib.Probability.Kernel.Disintegration.CondCdf
 import Mathlib.Probability.Kernel.Disintegration.Density
 import Mathlib.Probability.Kernel.Disintegration.CdfToKernel
+import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 
 /-!
 # Existence of disintegration of measures and kernels for standard Borel spaces
