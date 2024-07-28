@@ -7,29 +7,20 @@ import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 
 /-!
-# Prod instances for additive and multiplicative actions
-This file defines instances for binary product of additive and multiplicative actions and provides
-scalar multiplication as a homomorphism from `α × β` to `β`.
-## Main declarations
-* `smulMulHom`/`smulMonoidHom`: Scalar multiplication bundled as a multiplicative/monoid
-  homomorphism.
+# Prod instances for multiplicative actions with zero
+
+This file defines instances for `MulActionWithZero` and related structures on `α × β`
+
 ## See also
-* `Mathlib.GroupTheory.GroupAction.Option`
-* `Mathlib.GroupTheory.GroupAction.Pi`
-* `Mathlib.GroupTheory.GroupAction.Sigma`
-* `Mathlib.GroupTheory.GroupAction.Sum`
 
-# Porting notes
-The `to_additive` attribute can be used to generate both the `smul` and `vadd` lemmas
-from the corresponding `pow` lemmas, as explained on zulip here:
-https://leanprover.zulipchat.com/#narrow/near/316087838
-
-This was not done as part of the port in order to stay as close as possible to the mathlib3 code.
+* `Algebra.GroupWithZero.Action.Opposite`
+* `Algebra.GroupWithZero.Action.Pi`
+* `Algebra.GroupWithZero.Action.Units`
 -/
 
 assert_not_exists MonoidWithZero
 
-variable {M N P E α β : Type*}
+variable {M N α β : Type*}
 
 namespace Prod
 
