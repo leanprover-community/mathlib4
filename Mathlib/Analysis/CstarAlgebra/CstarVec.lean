@@ -42,6 +42,7 @@ variable {n R A : Type*} (v w : CstarVec n A)
 instance [Inhabited A] : Inhabited (CstarVec n A) :=
   ⟨fun _ => default⟩
 
+/-- The equivalence between `n → A` and `CstarVec n A`. -/
 def ofFun : (n → A) ≃ CstarVec n A := Equiv.refl _
 
 @[simp] lemma ofFun_symm_apply {i : n} : ofFun.symm v i = v i := rfl
@@ -60,9 +61,6 @@ instance instZero [Zero A] : Zero (CstarVec n A) :=
 
 instance instNeg [Neg A] : Neg (CstarVec n A) :=
   Pi.instNeg
-
---instance instStar [Star A] : Star (CstarVec n A) :=
---  Pi.instStarForall
 
 instance instAdd [Add A] : Add (CstarVec n A) :=
   Pi.instAdd
@@ -95,10 +93,6 @@ instance instSMul [SMul R A] : SMul R (CstarVec n A) :=
 instance instModule [Semiring R] [AddCommMonoid A] [Module R A] : Module R (CstarVec n A) :=
   { instSMul R, Pi.module n (fun _ => A) R with }
 
-variable (n) (R) (A) in
-def equiv [Semiring R] [AddCommMonoid A] [Module R A] :
-  CstarVec n A ≃ₗ[R] (n → A) := LinearEquiv.refl R (n → A)
-
 @[simp] theorem zero_apply [Zero A] {i : n} : (0 : CstarVec n A) i = 0 := rfl
 
 @[simp] theorem add_apply [Add A] {i : n} : (v + w) i = v i + w i := rfl
@@ -108,8 +102,6 @@ def equiv [Semiring R] [AddCommMonoid A] [Module R A] :
 @[simp] theorem smul_apply (c : R) [SMul R A] {i : n} : (c • v) i = c • v i := rfl
 
 @[simp] theorem neg_apply [Neg A] {i : n} : (-v) i = -v i := rfl
-
---@[simp] theorem star_apply [Star A] {i : n} : (star v) i = star (v i) := rfl
 
 theorem finset_sum_fn {ι : Type*} {s : Finset ι} [AddCommMonoid A] {f : ι → CstarVec n A} :
     ∑ i ∈ s, ofFun (f i) = (fun j => ∑ i ∈ s, f i j) := by
