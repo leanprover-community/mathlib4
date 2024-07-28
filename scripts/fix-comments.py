@@ -70,6 +70,7 @@ same = {
 
 for s in same:
     del name_map[s]
+del name_map["infer_instance"]
 
 
 def replace_names(s):
