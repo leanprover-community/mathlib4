@@ -424,16 +424,6 @@ section MulGeometric
 
 variable {R : Type*} [NormedRing R] [HasSummableGeomSeries R]
 
-lemma sum_range_add_choose (k n : ℕ) :
-    ∑ x ∈ Finset.range (n + 1), (x + k).choose k = (n + (k + 1)).choose (k + 1) := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-      have : n + 1 + (k + 1) = (n + (k + 1)) + 1 := by omega
-      rw [this, choose_succ_succ', sum_range_succ, ← ih, add_comm]
-      congr 2
-      omega
-
 theorem summable_norm_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R] {k : ℕ} {r : R}
     (hr : ‖r‖ < 1) {u : ℕ → ℕ} (hu : (fun n ↦ (u n : ℝ)) =O[atTop] (fun n ↦ (↑(n ^ k) : ℝ))) :
     Summable fun n : ℕ ↦ ‖(u n * r ^ n : R)‖ := by
@@ -465,16 +455,9 @@ theorem summable_norm_geometric_of_norm_lt_one {R : Type*} [NormedRing R] {r : R
     (hr : ‖r‖ < 1) : Summable fun n : ℕ ↦ ‖(r ^ n : R)‖ := by
   simpa using summable_norm_pow_mul_geometric_of_norm_lt_one 0 hr
 
-lemma choose_le_descFactorial (n k : ℕ) : n.choose k ≤ n.descFactorial k := by
-  rw [choose_eq_descFactorial_div_factorial]
-  exact Nat.div_le_self _ _
-
-lemma choose_le_pow (n k : ℕ) : n.choose k ≤ n ^ k :=
-  (choose_le_descFactorial n k).trans (descFactorial_le_pow n k)
-
 lemma hasSum_choose_mul_geometric_of_norm_lt_one
     (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
-    HasSum (fun n ↦ Nat.choose (n + k) k * r ^ n : ℕ → R) ((Ring.inverse (1 - r)) ^ (k + 1)) := by
+    HasSum (fun n ↦ (n + k).choose k * r ^ n) ((Ring.inverse (1 - r)) ^ (k + 1)) := by
   induction k with
   | zero => simpa using hasSum_geom_series_inverse r hr
   | succ k ih =>
@@ -488,7 +471,7 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one
           _ ≤ (2 * n).choose k := choose_le_choose k (by omega)
           _ ≤ (2 * n) ^ k := choose_le_pow _ _
           _ = 2 ^ k * n ^ k := Nat.mul_pow 2 n k
-      convert summable_sum_mul_range_of_summable_norm' I1 ih
+      convert hasSum_sum_range_mul_of_summable_norm' I1 ih.summable
         (summable_norm_geometric_of_norm_lt_one hr) (summable_geometric_of_norm_lt_one hr) with n
       have : ∑ i ∈ Finset.range (n + 1), ↑((i + k).choose k) * r ^ i * r ^ (n - i) =
           ∑ i ∈ Finset.range (n + 1), ↑((i + k).choose k) * r ^ n := by
@@ -496,31 +479,44 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one
         simp only [Finset.mem_range] at hi
         rw [mul_assoc, ← pow_add, show i + (n - i) = n by omega]
       simp only [this, ← sum_mul, ← Nat.cast_sum, sum_range_add_choose k n]
+      rw [ih.tsum_eq, (hasSum_geom_series_inverse r hr).tsum_eq, pow_succ]
 
+lemma summable_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
+    Summable (fun n ↦ (n + k).choose k * r ^ n) :=
+  (hasSum_choose_mul_geometric_of_norm_lt_one k hr).summable
 
-theorem summable_choose_mul_geometric_of_norm_lt_one
-    (k : ℕ) {r : R} (hr : ‖r‖ < 1) : Summable (fun n ↦ Nat.choose (n + k) k * r ^ n : ℕ → R) := by
+lemma tsum_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
+    ∑' n, (n + k).choose k * r ^ n = (Ring.inverse (1 - r)) ^ (k + 1) :=
+  (hasSum_choose_mul_geometric_of_norm_lt_one k hr).tsum_eq
+
+lemma summable_descFactorial_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
+    Summable (fun n ↦ (n + k).descFactorial k * r ^ n) := by
+  convert (summable_choose_mul_geometric_of_norm_lt_one k hr).mul_left (k.factorial : R)
+    using 2 with n
+  simp [← mul_assoc, descFactorial_eq_factorial_mul_choose (n + k) k]
+
+lemma foo (k : ℕ) : ∃ (a : Fin k → ℕ), ∀ n,
+    (n + k).descFactorial k = n ^ k + ∑ i, a i * n ^ (i : ℕ) := by
   induction k with
-  | zero => simpa using summable_geometric_of_norm_lt_one hr
+  | zero => simp
   | succ k ih =>
-      have I1 : Summable (fun (n : ℕ) ↦ ‖(n + k).choose k * r ^ n‖) := by
-        apply summable_norm_mul_geometric_of_norm_lt_one (k := k) hr
-        apply isBigO_iff.2 ⟨2 ^ k, ?_⟩
-        filter_upwards [Ioi_mem_atTop k] with n (hn : k < n)
-        simp only [Real.norm_eq_abs, abs_cast, cast_pow, norm_pow]
-        norm_cast
-        calc (n + k).choose k
-          _ ≤ (2 * n).choose k := choose_le_choose k (by omega)
-          _ ≤ (2 * n) ^ k := choose_le_pow _ _
-          _ = 2 ^ k * n ^ k := Nat.mul_pow 2 n k
-      convert summable_sum_mul_range_of_summable_norm' I1 ih
-        (summable_norm_geometric_of_norm_lt_one hr) (summable_geometric_of_norm_lt_one hr) with n
-      have : ∑ i ∈ Finset.range (n + 1), ↑((i + k).choose k) * r ^ i * r ^ (n - i) =
-          ∑ i ∈ Finset.range (n + 1), ↑((i + k).choose k) * r ^ n := by
-        apply Finset.sum_congr rfl (fun i hi ↦ ?_)
-        simp only [Finset.mem_range] at hi
-        rw [mul_assoc, ← pow_add, show i + (n - i) = n by omega]
-      simp only [this, ← sum_mul, ← Nat.cast_sum, sum_range_add_choose k n]
+      rcases ih with ⟨a, ha⟩
+      let b : Fin (k + 1) → ℕ := Fin.cons 0 a
+      let c : Fin (k + 1) → ℕ := Fin.snoc (fun i ↦ (k + 1) * a i) (k + 1)
+      refine ⟨b + c, fun n ↦ ?_⟩
+      calc (n + (k + 1)).descFactorial (k + 1)
+      _ = (n + k + 1) * (n + k).descFactorial k := succ_descFactorial_succ (n.add k) k
+      _ = (n + (k + 1)) * (n ^ k + ∑ i, a i * n ^ (i : ℕ)) := by rw [add_assoc, ha n]
+      _ = n ^ (k + 1) + ∑ i, a i * n ^ ((i : ℕ) + 1)
+          + ((k + 1) * n ^ k + ∑ i, (k + 1) * a i * n ^ (i : ℕ)) := by
+        rw [add_mul, mul_add, mul_add, _root_.pow_succ', mul_sum, mul_sum]
+        congr 3 with i
+        · ring
+        · ring
+      _ = n ^ (k + 1) + ∑ i, b i * n ^ ((i : ℕ)) + ∑ i, c i * n ^ (i : ℕ) := by
+        congr 2
+        · simp [b]
+          rw [sum_succ]
 
 
 #exit
