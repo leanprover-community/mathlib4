@@ -182,6 +182,9 @@ noncomputable instance : (Triangle.π₂ (C := C)).CommShift ℤ where
 lemma Triangle_π₂_commShiftIso (a : ℤ) (T : Triangle C) :
     ((Triangle.π₂ (C := C)).commShiftIso a).app T = Iso.refl _ := rfl
 
+lemma Triangle_π₂_commShiftIso_hom (a : ℤ) (T : Triangle C) :
+    ((Triangle.π₂ (C := C)).commShiftIso a).hom.app T = 𝟙 _ := rfl
+
 noncomputable instance : (Triangle.π₃ (C := C)).CommShift ℤ where
   iso n := by
     refine NatIso.ofComponents (fun X ↦ Iso.refl _) ?_
@@ -201,6 +204,9 @@ noncomputable instance : (Triangle.π₃ (C := C)).CommShift ℤ where
 
 lemma Triangle_π₃_commShiftIso (a : ℤ) (T : Triangle C) :
     ((Triangle.π₃ (C := C)).commShiftIso a).app T = Iso.refl _ := rfl
+
+lemma Triangle_π₃_commShiftIso_hom (a : ℤ) (T : Triangle C) :
+    ((Triangle.π₃ (C := C)).commShiftIso a).hom.app T = 𝟙 _ := rfl
 
 end Pretriangulated
 

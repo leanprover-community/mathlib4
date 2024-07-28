@@ -290,8 +290,21 @@ instance (n : ℤ) : (truncLT (hP := hP) n).Additive where
 
 noncomputable instance (n : ℤ) : (truncLT (hP := hP) n).CommShift ℤ := Functor.CommShift.comp _ _
 
+lemma truncLT_commShiftIso_hom_app (n a : ℤ) (X : C) :
+    ((hP.truncLT n).commShiftIso a).hom.app X =
+    (TruncAux.triangleFunctorIsoShift_exists n X a).choose.hom.hom₃ := by
+  erw [Functor.commShiftIso_comp_hom_app (TruncAux.triangleFunctor n) Triangle.π₃ a X]
+  rw [TruncAux.triangleFunctor_commShiftIso_hom_eq, Triangle_π₃_commShiftIso_hom]
+  erw [comp_id]
+  simp only [Functor.comp_obj, Triangle.shiftFunctor_eq, Triangle.shiftFunctor_obj,
+    TruncAux.triangleFunctor_obj_obj₂, Triangle.mk_obj₂, Iso.refl_hom, Triangle.π₃_map]
+
 noncomputable def truncLTπ (n : ℤ) : 𝟭 _ ⟶ truncLT (hP := hP) n:=
   whiskerLeft (TruncAux.triangleFunctor n) Triangle.π₂Toπ₃
+
+lemma truncLTπ_app (n : ℤ) (X : C) :
+    (truncLTπ n).app X = ((TruncAux.triangleFunctor n).obj X).mor₂ := by
+  dsimp [truncLTπ]
 
 noncomputable def truncGE (n : ℤ) : C ⥤ C :=
   TruncAux.triangleFunctor n ⋙ Triangle.π₁
@@ -484,6 +497,11 @@ noncomputable instance (n : ℤ) : (truncLE (hP := hP) n).CommShift ℤ := by
   dsimp only [truncLE]
   infer_instance
 
+lemma truncLE_commShiftIso_hom_app (n a : ℤ) (X : C) :
+    ((hP.truncLE n).commShiftIso a).hom.app X =
+    ((hP.truncLT (n + 1)).commShiftIso a).hom.app X := by
+  dsimp [truncLE]
+
 instance (n : ℤ) (X : C) : hP.IsLE ((truncLE n).obj X) n := by
   have : hP.IsLE ((truncLE n).obj X) (n+1-1) := by
     dsimp [truncLE]
@@ -504,6 +522,11 @@ instance (n : ℤ) (X : C) : hP.IsGE ((truncGT n).obj X) (n+1) := by
   dsimp [truncGT]
   infer_instance
 
+lemma truncGT_commShiftIso_hom_app (n a : ℤ) (X : C) :
+    ((hP.truncGT n).commShiftIso a).hom.app X =
+    ((hP.truncGE (n + 1)).commShiftIso a).hom.app X := by
+  dsimp [truncGT]
+
 instance (n : ℤ) (X : C) : hP.IsGE ((truncGT (n-1)).obj X) n :=
   hP.isGE_of_GE _ n (n-1+1) (by linarith)
 
@@ -514,6 +537,10 @@ noncomputable def truncGTIsoTruncGE (a b : ℤ) (h : a + 1 = b) : hP.truncGT a �
   eqToIso (congr_arg truncGE h)
 
 noncomputable def truncLEπ (n : ℤ) : 𝟭 C ⟶ truncLE n:= truncLTπ (n + 1)
+
+lemma truncLEπ_app (n : ℤ) (X : C) :
+    (truncLEπ n).app X = (truncLTπ (n + 1)).app X := by
+  dsimp [truncLEπ]
 
 @[reassoc (attr := simp)]
 lemma π_truncLEIsoTruncLT_hom (a b : ℤ) (h : a + 1 = b) :
@@ -612,15 +639,24 @@ lemma triangleGTLE_distinguished (n : ℤ) (X : C) :
     ((triangleGTLEIsoTriangleGELE n (n+1) rfl).app X)
 
 @[simp]
-lemma truncLECommShift.comm (X : C) (n a : ℤ) :
+lemma truncLECommShift_comm (X : C) (n a : ℤ) :
     ((hP.truncLEπ n).app X)⟦a⟧' = (truncLEπ n).app (X⟦a⟧) ≫
     ((truncLE n).commShiftIso a).hom.app X := by
-  set ex := TruncAux.triangleFunctorIsoShift_exists n X a
-  set e := ex.choose
-  set e' := e.hom.hom₃
-  simp only [Triangle.shiftFunctor_eq, Triangle.shiftFunctor_obj, TruncAux.triangleFunctor_obj_obj₂,
-    Functor.comp_obj, Triangle.mk_obj₃] at e'
-  have : ((truncLE n).commShiftIso a).hom.app X = e' := sorry
+  rw [truncLE_commShiftIso_hom_app]
+  have := (TruncAux.triangleFunctorIsoShift_exists (n + 1) X a).choose.hom.comm₂
+  --rw [(TruncAux.triangleFunctorIsoShift_exists (n + 1) X a).choose_spec] at this
+  --conv_rhs at this => rw [Iso.refl_hom, id_comp]
+  conv_lhs at this => rw [← truncLTπ_app, ← truncLEπ_app, ← truncLT_commShiftIso_hom_app]
+  simp only [TruncAux.triangleFunctor_obj_obj₂, Triangle.shiftFunctor_eq, Triangle.shiftFunctor_obj,
+    Functor.comp_obj, Triangle.mk_obj₃, Triangle.mk_obj₂, Iso.refl_hom, Triangle.mk_mor₂,
+    Linear.comp_units_smul] at this
+  simp only [Functor.id_obj, Functor.comp_obj]
+  conv_rhs => erw [this]
+
+
+
+
+
 
 -- TODO: similar lemmas for LT, GE, GT
 
