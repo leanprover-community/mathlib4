@@ -665,7 +665,10 @@ lemma surjective_π_app_zero_of_surjective_map_aux :
 /--
 Given surjections `⋯ ⟶ Xₙ₊₁ ⟶ Xₙ ⟶ ⋯ ⟶ X₀`, the projection map `lim Xₙ ⟶ X₀` is surjective.
 -/
-lemma surjective_π_app_zero_of_surjective_map : Function.Surjective (c.π.app ⟨0⟩) := by
+lemma surjective_π_app_zero_of_surjective_map
+    (hc : IsLimit c)
+    (hF : ∀ n, Function.Surjective (F.map (homOfLE (Nat.le_succ n)).op)) :
+    Function.Surjective (c.π.app ⟨0⟩) := by
   let i := hc.conePointUniqueUpToIso (limitConeIsLimit F)
   have : c.π.app ⟨0⟩ = i.hom ≫ (limitCone F).π.app ⟨0⟩ := by simp [i]
   rw [this]
