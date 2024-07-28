@@ -181,7 +181,7 @@ theorem mk_mem' [htGX : IsPretransitive G X] (a : X)
     obtain ⟨b, hb⟩ := h
     obtain ⟨g, hg⟩ := exists_smul_eq G b a
     rw [← IsTrivialBlock.smul_iff g]
-    refine' H (g • B) _ (hB.translate g)
+    refine H (g • B) ?_ (hB.translate g)
     use b
 
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
