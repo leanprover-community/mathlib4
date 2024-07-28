@@ -55,20 +55,20 @@ Hausdorff, group action, proper action
 open Filter Topology Set Prod
 
 /-- Proper group action in the sense of Bourbaki:
-the map `G × X → X × X` is a proper map (see `isProperMap`). -/
+the map `G × X → X × X` is a proper map (see `IsProperMap`). -/
 class ProperVAdd (G X : Type*) [TopologicalSpace G] [TopologicalSpace X] [AddGroup G]
     [AddAction G X] : Prop where
   /-- Proper group action in the sense of Bourbaki:
-  the map `G × X → X × X` is a proper map (see `isProperMap`). -/
+  the map `G × X → X × X` is a proper map (see `IsProperMap`). -/
   isProperMap_vadd_pair : IsProperMap (fun gx ↦ (gx.1 +ᵥ gx.2, gx.2) : G × X → X × X)
 
 /-- Proper group action in the sense of Bourbaki:
-the map `G × X → X × X` is a proper map (see `isProperMap`). -/
+the map `G × X → X × X` is a proper map (see `IsProperMap`). -/
 @[to_additive existing (attr := mk_iff)]
 class ProperSMul (G X : Type*) [TopologicalSpace G] [TopologicalSpace X] [Group G]
     [MulAction G X] : Prop where
   /-- Proper group action in the sense of Bourbaki:
-  the map `G × X → X × X` is a proper map (see `isProperMap`). -/
+  the map `G × X → X × X` is a proper map (see `IsProperMap`). -/
   isProperMap_smul_pair : IsProperMap (fun gx ↦ (gx.1 • gx.2, gx.2) : G × X → X × X)
 
 attribute [to_additive existing] properSMul_iff
