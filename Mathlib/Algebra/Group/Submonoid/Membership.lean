@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
+
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Group.Submonoid.Operations
