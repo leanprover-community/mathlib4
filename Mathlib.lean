@@ -1841,6 +1841,7 @@ import Mathlib.Combinatorics.Additive.Corner.Roth
 import Mathlib.Combinatorics.Additive.Dissociation
 import Mathlib.Combinatorics.Additive.ETransform
 import Mathlib.Combinatorics.Additive.Energy
+import Mathlib.Combinatorics.Additive.ErdosGinzburgZiv
 import Mathlib.Combinatorics.Additive.FreimanHom
 import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 import Mathlib.Combinatorics.Additive.RuzsaCovering

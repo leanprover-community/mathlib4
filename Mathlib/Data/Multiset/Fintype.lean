@@ -103,6 +103,37 @@ theorem Multiset.mem_toEnumFinset (m : Multiset α) (p : α × ℕ) :
 theorem Multiset.mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1 ∈ m :=
   have := (m.mem_toEnumFinset p).mp h; Multiset.count_pos.mp (by omega)
 
+namespace Multiset
+
+@[simp] lemma toEnumFinset_filter_eq (m : Multiset α) (a : α) :
+    m.toEnumFinset.filter (·.1 = a) = {a} ×ˢ Finset.range (m.count a) := by aesop
+
+@[simp] lemma map_toEnumFinset_fst (m : Multiset α) : m.toEnumFinset.val.map Prod.fst = m := by
+  ext a; simp [count_map, ← Finset.filter_val, eq_comm (a := a)]
+
+@[simp] lemma image_toEnumFinset_fst (m : Multiset α) :
+    m.toEnumFinset.image Prod.fst = m.toFinset := by
+  rw [Finset.image, Multiset.map_toEnumFinset_fst]
+
+@[simp] lemma map_fst_le_of_subset_toEnumFinset {s : Finset (α × ℕ)} (hsm : s ⊆ m.toEnumFinset) :
+    s.1.map Prod.fst ≤ m := by
+  simp_rw [le_iff_count, count_map]
+  rintro a
+  obtain ha | ha := (s.1.filter fun x ↦ a = x.1).card.eq_zero_or_pos
+  · rw [ha]
+    exact Nat.zero_le _
+  obtain ⟨n, han, hn⟩ : ∃ n ≥ card (s.1.filter fun x ↦ a = x.1) - 1, (a, n) ∈ s := by
+    by_contra! h
+    replace h : s.filter (·.1 = a) ⊆ {a} ×ˢ .range (card (s.1.filter fun x ↦ a = x.1) - 1) := by
+      simpa (config := { contextual := true }) [forall_swap (β := _ = a), Finset.subset_iff,
+        imp_not_comm, not_le, Nat.lt_sub_iff_add_lt] using h
+    have : card (s.1.filter fun x ↦ a = x.1) ≤ card (s.1.filter fun x ↦ a = x.1) - 1 := by
+      simpa [Finset.card, eq_comm] using Finset.card_mono h
+    omega
+  exact Nat.le_of_pred_lt (han.trans_lt $ by simpa using hsm hn)
+
+end Multiset
+
 @[mono]
 theorem Multiset.toEnumFinset_mono {m₁ m₂ : Multiset α} (h : m₁ ≤ m₂) :
     m₁.toEnumFinset ⊆ m₂.toEnumFinset := by
@@ -112,17 +143,8 @@ theorem Multiset.toEnumFinset_mono {m₁ m₂ : Multiset α} (h : m₁ ≤ m₂)
 
 @[simp]
 theorem Multiset.toEnumFinset_subset_iff {m₁ m₂ : Multiset α} :
-    m₁.toEnumFinset ⊆ m₂.toEnumFinset ↔ m₁ ≤ m₂ := by
-  refine ⟨fun h ↦ ?_, Multiset.toEnumFinset_mono⟩
-  rw [Multiset.le_iff_count]
-  intro x
-  by_cases hx : x ∈ m₁
-  · apply Nat.le_of_pred_lt
-    have : (x, m₁.count x - 1) ∈ m₁.toEnumFinset := by
-      rw [Multiset.mem_toEnumFinset]
-      exact Nat.pred_lt (ne_of_gt (Multiset.count_pos.mpr hx))
-    simpa only [Multiset.mem_toEnumFinset] using h this
-  · simp [hx]
+    m₁.toEnumFinset ⊆ m₂.toEnumFinset ↔ m₁ ≤ m₂ :=
+  ⟨fun h ↦ by simpa using map_fst_le_of_subset_toEnumFinset h, Multiset.toEnumFinset_mono⟩
 
 /-- The embedding from a multiset into `α × ℕ` where the second coordinate enumerates repeats.
 If you are looking for the function `m → α`, that would be plain `(↑)`. -/
@@ -168,27 +190,6 @@ theorem Multiset.map_univ_coeEmbedding (m : Multiset α) :
     Prod.mk.inj_iff, exists_true_left, Multiset.exists_coe, Multiset.coe_mk, Fin.val_mk,
     exists_prop, exists_eq_right_right, exists_eq_right, Multiset.mem_toEnumFinset, iff_self_iff,
     true_and_iff]
-
-theorem Multiset.toEnumFinset_filter_eq (m : Multiset α) (x : α) :
-    (m.toEnumFinset.filter fun p ↦ x = p.1) =
-      (Finset.range (m.count x)).map ⟨Prod.mk x, Prod.mk.inj_left x⟩ := by
-  ext ⟨y, i⟩
-  simp only [eq_comm, Finset.mem_filter, Multiset.mem_toEnumFinset, Finset.mem_map,
-    Finset.mem_range, Function.Embedding.coeFn_mk, Prod.mk.inj_iff, exists_prop,
-    exists_eq_right_right', and_congr_left_iff]
-  rintro rfl
-  rfl
-
-@[simp]
-theorem Multiset.map_toEnumFinset_fst (m : Multiset α) : m.toEnumFinset.val.map Prod.fst = m := by
-  ext x
-  simp only [Multiset.count_map, ← Finset.filter_val, Multiset.toEnumFinset_filter_eq,
-    Finset.map_val, Finset.range_val, Multiset.card_map, Multiset.card_range]
-
-@[simp]
-theorem Multiset.image_toEnumFinset_fst (m : Multiset α) :
-    m.toEnumFinset.image Prod.fst = m.toFinset := by
-  rw [Finset.image, Multiset.map_toEnumFinset_fst]
 
 @[simp]
 theorem Multiset.map_univ_coe (m : Multiset α) :
