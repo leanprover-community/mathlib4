@@ -226,14 +226,16 @@ instance ideal_powers_initial [hR : IsNoetherian R R] :
   out J' := by
     apply (config := {allowSynthFailures := true }) zigzag_isConnected
     · obtain ⟨k, hk⟩ := Ideal.exists_pow_le_of_le_radical_of_fG J'.2 (isNoetherian_def.mp hR _)
-      exact ⟨CostructuredArrow.mk (⟨⟨hk⟩⟩ : (idealPowersToSelfLERadical J).obj (op k) ⟶ J')⟩
+      exact ⟨CostructuredArrow.mk (⟨⟨⟨hk⟩⟩⟩ : (idealPowersToSelfLERadical J).obj (op k) ⟶ J')⟩
     · intro j1 j2
       apply Relation.ReflTransGen.single
       -- The inclusions `J^n1 ≤ J'` and `J^n2 ≤ J'` always form a triangle, based on
       -- which exponent is larger.
       rcases le_total (unop j1.left) (unop j2.left) with h | h
-      · right; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
-      · left; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
+      · right; exact ⟨CostructuredArrow.homMk (homOfLE h).op
+          (InducedCategory.hom_ext (AsTrue.get trivial))⟩
+      · left; exact ⟨CostructuredArrow.homMk (homOfLE h).op
+          (InducedCategory.hom_ext (AsTrue.get trivial))⟩
 
 example : HasColimitsOfSize.{0, 0, u, u + 1} (ModuleCat.{u, u} R) := inferInstance
 /-- Local cohomology (defined in terms of powers of `J`) agrees with local
