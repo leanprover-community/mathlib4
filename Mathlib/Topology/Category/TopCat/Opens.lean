@@ -68,7 +68,7 @@ noncomputable def infLERight (U V : Opens X) : U ⊓ V ⟶ V :=
   inf_le_right.hom
 #align topological_space.opens.inf_le_right TopologicalSpace.Opens.infLERight
 
-/-- The inclusion `U i ⟶ supr U` as a morphism in the category of open sets.
+/-- The inclusion `U i ⟶ iSup U` as a morphism in the category of open sets.
 -/
 noncomputable def leSupr {ι : Type*} (U : ι → Opens X) (i : ι) : U i ⟶ iSup U :=
   (le_iSup U i).hom

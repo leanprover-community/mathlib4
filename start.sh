@@ -1,17 +1,3 @@
-./scripts/fix-comments.py Mathlib/RingTheory/WittVector/Frobenius.lean
-./scripts/fix-comments.py Mathlib/RingTheory/WittVector/FrobeniusFractionField.lean
-./scripts/fix-comments.py Mathlib/RingTheory/WittVector/Identities.lean
-./scripts/fix-comments.py Mathlib/RingTheory/WittVector/InitTail.lean
-./scripts/fix-comments.py Mathlib/RingTheory/WittVector/IsPoly.lean
-./scripts/fix-comments.py Mathlib/RingTheory/WittVector/Isocrystal.lean
-./scripts/fix-comments.py Mathlib/RingTheory/WittVector/MulCoeff.lean
-./scripts/fix-comments.py Mathlib/RingTheory/WittVector/MulP.lean
-./scripts/fix-comments.py Mathlib/RingTheory/WittVector/StructurePolynomial.lean
-./scripts/fix-comments.py Mathlib/RingTheory/WittVector/Teichmuller.lean
-./scripts/fix-comments.py Mathlib/RingTheory/WittVector/Truncated.lean
-./scripts/fix-comments.py Mathlib/RingTheory/WittVector/Verschiebung.lean
-./scripts/fix-comments.py Mathlib/RingTheory/WittVector/WittPolynomial.lean
-./scripts/fix-comments.py Mathlib/RingTheory/ZMod.lean
 ./scripts/fix-comments.py Mathlib/SetTheory/Cardinal/Basic.lean
 ./scripts/fix-comments.py Mathlib/SetTheory/Cardinal/Cofinality.lean
 ./scripts/fix-comments.py Mathlib/SetTheory/Cardinal/Continuum.lean

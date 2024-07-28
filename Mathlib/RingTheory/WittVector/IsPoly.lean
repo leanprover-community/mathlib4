@@ -9,7 +9,7 @@ import Mathlib.RingTheory.WittVector.Basic
 
 #align_import ring_theory.witt_vector.is_poly from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 /-!
-# The `is_poly` predicate
+# The `IsPoly` predicate
 
 `WittVector.IsPoly` is a (type-valued) predicate on functions `f : Π R, 𝕎 R → 𝕎 R`.
 It asserts that there is a family of polynomials `φ : ℕ → MvPolynomial ℕ ℤ`,
