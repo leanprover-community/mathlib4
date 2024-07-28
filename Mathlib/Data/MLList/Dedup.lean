@@ -10,13 +10,11 @@ import Batteries.Data.HashMap.Basic
 # Lazy deduplication of lazy lists
 -/
 
-set_option autoImplicit true
-
 open Batteries
 
 namespace MLList
 
-variable [Monad m] [BEq β] [Hashable β]
+variable {α β : Type} {m : Type → Type} [Monad m] [BEq β] [Hashable β]
 
 /-- Lazily deduplicate a lazy list, using a stored `HashMap`. -/
 -- We choose `HashMap` here instead of `RBSet` as the initial application is `Expr`.

@@ -14,8 +14,8 @@ In this file we establish functorial properties of the adic completion.
 
 ## Main definitions
 
-- `LinearMap.adicCauchy I f`: the linear map on `I`-adic cauchy sequences induced by `f`
-- `LinearMap.adicCompletion I f`: the linear map on `I`-adic completions induced by `f`
+- `AdicCauchySequence.map I f`: the linear map on `I`-adic cauchy sequences induced by `f`
+- `AdicCompletion.map I f`: the linear map on `I`-adic completions induced by `f`
 
 ## Main results
 
@@ -23,6 +23,8 @@ In this file we establish functorial properties of the adic completion.
 - `piEquivOfFintype`: adic completion commutes with finite products
 
 -/
+
+suppress_compilation
 
 variable {R : Type*} [CommRing R] (I : Ideal R)
 variable {M : Type*} [AddCommGroup M] [Module R M]
@@ -56,8 +58,8 @@ def reduceModIdeal (f : M →ₗ[R] N) :
     refine Quotient.inductionOn' r (fun r ↦ ?_)
     refine Quotient.inductionOn' x (fun x ↦ ?_)
     simp only [Submodule.Quotient.mk''_eq_mk, Ideal.Quotient.mk_eq_mk, Module.Quotient.mk_smul_mk,
-      Submodule.Quotient.mk_smul, LinearMapClass.map_smul, reduceModIdealAux_apply]
-    rfl
+      Submodule.Quotient.mk_smul, LinearMapClass.map_smul, reduceModIdealAux_apply,
+      RingHomCompTriple.comp_apply]
 
 @[simp]
 theorem reduceModIdeal_apply (f : M →ₗ[R] N) (x : M) :
@@ -102,6 +104,10 @@ theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
 
 theorem map_comp_apply (f : M →ₗ[R] N) (g : N →ₗ[R] P) (a : AdicCauchySequence I M) :
     map I g (map I f a) = map I (g ∘ₗ f) a :=
+  rfl
+
+@[simp]
+theorem map_zero : map I (0 : M →ₗ[R] N) = 0 :=
   rfl
 
 end AdicCauchySequence
@@ -183,10 +189,9 @@ theorem map_mk (f : M →ₗ[R] N) (a : AdicCauchySequence I M) :
   rfl
 
 @[simp]
-theorem val_sum {α : Type*} (s : Finset α) (f : α → AdicCompletion I M) (n : ℕ) :
-    (Finset.sum s f).val n = Finset.sum s (fun a ↦ (f a).val n) := by
-  change (Submodule.subtype (AdicCompletion.submodule I M) _) n = _
-  rw [map_sum, Finset.sum_apply, Submodule.coeSubtype]
+theorem map_zero : map I (0 : M →ₗ[R] N) = 0 := by
+  ext
+  simp
 
 /-- A linear equiv induces a linear equiv on adic completions. -/
 def congr (f : M ≃ₗ[R] N) :
@@ -294,7 +299,7 @@ theorem sum_comp_sumInv : sum I M ∘ₗ sumInv I M = LinearMap.id := by
   ext f n
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq, mk_apply_coe,
     Submodule.mkQ_apply]
-  rw [← DirectSum.sum_univ_of _ (((sumInv I M) ((AdicCompletion.mk I (⨁ (j : ι), M j)) f)))]
+  rw [← DirectSum.sum_univ_of (((sumInv I M) ((AdicCompletion.mk I (⨁ (j : ι), M j)) f)))]
   simp only [sumInv_apply, map_mk, map_sum, sum_of, val_sum, mk_apply_coe,
     AdicCauchySequence.map_apply_coe, Submodule.mkQ_apply]
   simp only [← Submodule.mkQ_apply, ← map_sum]

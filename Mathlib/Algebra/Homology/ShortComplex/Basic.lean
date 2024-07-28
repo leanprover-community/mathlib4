@@ -12,11 +12,6 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 This file defines the category `ShortComplex C` of diagrams
 `X₁ ⟶ X₂ ⟶ X₃` such that the composition is zero.
 
-TODO: A homology API for these objects shall be developed
-in the folder `Algebra.Homology.ShortComplex` and eventually
-the homology of objects in `HomologicalComplex C c` shall be
-redefined using this.
-
 Note: This structure `ShortComplex C` was first introduced in
 the Liquid Tensor Experiment.
 
