@@ -533,12 +533,10 @@ variable [OmegaCompletePartialOrder α] [CompleteLattice β] {f g : α → β}
 
 lemma ωScottContinuous.prodMk (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
     ωScottContinuous fun x => (f x, g x) := by
-  refine ωScottContinuous.of_monotone_map_ωSup
-    ⟨fun _ _ hab => Prod.mk_le_mk.mp ⟨hf.monotone hab, hg.monotone hab⟩,
-      fun c ↦ eq_of_forall_ge_iff fun a ↦ ?_⟩
-  simp only [ωSup_le_iff, Chain.map_coe, OrderHom.coe_mk, Function.comp_apply, hf.map_ωSup c,
-    hg.map_ωSup c]
-  aesop
+  apply ScottContinuousOn.prodMk _ hf hg
+  intro a b hab
+  rw [← Chain.range_pair a b hab]
+  exact Set.mem_range_self (Chain.pair a b hab)
 
 lemma ωScottContinuous.iSup {f : ι → α → β} (hf : ∀ i, ωScottContinuous (f i)) :
     ωScottContinuous (⨆ i, f i) := by

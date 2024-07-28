@@ -45,6 +45,30 @@ protected theorem ScottContinuousOn.monotone (D : Set (Set α)) (hD : ∀ a b : 
 
 @[simp] lemma ScottContinuousOn.id : ScottContinuousOn D (id : α → α) := by simp [ScottContinuousOn]
 
+variable {g : α → β}
+
+lemma ScottContinuousOn.prodMk (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
+    (hf : ScottContinuousOn D f) (hg : ScottContinuousOn D g) :
+    ScottContinuousOn D fun x => (f x, g x) := fun d hd₁ hd₂ hd₃ a hda => by
+  rw [IsLUB, IsLeast, upperBounds]
+  constructor
+  · simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq,
+    Prod.mk_le_mk]
+    intro b hb
+    exact ⟨hf.monotone D hD (hda.1 hb), hg.monotone D hD (hda.1 hb)⟩
+  · intro ⟨p₁, p₂⟩ hp
+    simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq,
+      Prod.mk_le_mk] at hp
+    constructor
+    · rw [isLUB_le_iff (hf hd₁ hd₂ hd₃ hda), upperBounds]
+      simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq]
+      intro _ hb
+      exact (hp _ hb).1
+    · rw [isLUB_le_iff (hg hd₁ hd₂ hd₃ hda), upperBounds]
+      simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq]
+      intro _ hb
+      exact (hp _ hb).2
+
 /-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
 sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
 Scott topology.
@@ -63,27 +87,6 @@ protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f 
 
 @[simp] lemma ScottContinuous.id : ScottContinuous (id : α → α) := by simp [ScottContinuous]
 
-variable {g : α → β}
 
-lemma ScottContinuous.prodMk (hf : ScottContinuous f) (hg : ScottContinuous g) :
-    ScottContinuous fun x => (f x, g x) := fun d hd₁ hd₂ a hda => by
-  rw [IsLUB, IsLeast, upperBounds]
-  constructor
-  · simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq,
-    Prod.mk_le_mk]
-    intro b hb
-    exact ⟨hf.monotone (hda.1 hb), hg.monotone (hda.1 hb)⟩
-  · intro ⟨p₁, p₂⟩ hp
-    simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq,
-      Prod.mk_le_mk] at hp
-    constructor
-    · rw [isLUB_le_iff (hf hd₁ hd₂ hda), upperBounds]
-      simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq]
-      intro _ hb
-      exact (hp _ hb).1
-    · rw [isLUB_le_iff (hg hd₁ hd₂ hda), upperBounds]
-      simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq]
-      intro _ hb
-      exact (hp _ hb).2
 
 end ScottContinuous
