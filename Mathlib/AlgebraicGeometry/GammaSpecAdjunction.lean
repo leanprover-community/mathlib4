@@ -439,6 +439,10 @@ instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
   rw [adjunction_counit_app]
   infer_instance
 
+theorem adjunction_unit_apply (X : Scheme.{u}) (x) :
+    (ΓSpec.adjunction.unit.app X).1.base x =
+      (Spec.map (X.presheaf.germ (U := ⊤) ⟨x, trivial⟩)).1.base (LocalRing.closedPoint _) := rfl
+
 @[simp]
 theorem adjunction_unit_app_app_top (X : Scheme.{u}) :
     (ΓSpec.adjunction.unit.app X).app ⊤ = (Scheme.ΓSpecIso Γ(X, ⊤)).hom := by
