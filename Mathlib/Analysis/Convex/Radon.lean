@@ -30,7 +30,7 @@ open Fintype Finset Set
 
 namespace Convex
 
-variable {ι 𝕜 E : Type*} [DecidableEq ι] [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable {ι 𝕜 E : Type*} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 /-- **Radon's theorem on convex sets**.
 
@@ -67,7 +67,7 @@ open FiniteDimensional
 variable [FiniteDimensional 𝕜 E]
 
 /-- Corner case for `helly_theorem'`. -/
-private lemma helly_theorem_corner {F : ι → Set E} {s : Finset ι} [DecidableEq ι]
+private lemma helly_theorem_corner {F : ι → Set E} {s : Finset ι}
     (h_card_small : s.card ≤ finrank 𝕜 E + 1)
     (h_inter : ∀ I ⊆ s, I.card ≤ finrank 𝕜 E + 1 → (⋂ i ∈ I, F i).Nonempty) :
     (⋂ i ∈ s, F i).Nonempty := h_inter s (by simp) h_card_small
@@ -80,6 +80,7 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
     (h_convex : ∀ i ∈ s, Convex 𝕜 (F i))
     (h_inter : ∀ I ⊆ s, I.card ≤ finrank 𝕜 E + 1 → (⋂ i ∈ I, F i).Nonempty) :
     (⋂ i ∈ s, F i).Nonempty := by
+  classical
   obtain h_card | h_card := lt_or_le s.card (finrank 𝕜 E + 1)
   · exact helly_theorem_corner (le_of_lt h_card) h_inter
   generalize hn : s.card = n
@@ -88,7 +89,7 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
   · exact helly_theorem_corner (le_of_eq hn) h_inter
   /- Construct a family of vectors indexed by `ι` such that the vector corresponding to `i : ι`
   is an arbitrary element of the intersection of all `F j` except `F i`. -/
-  let a (i : s) : E := Set.Nonempty.some (s := ⋂ j ∈ (s.erase i), F j) <| by
+  let a (i : s) : E := Set.Nonempty.some (s := ⋂ j ∈ s.erase i, F j) <| by
     apply hk (s := s.erase i)
     · exact fun i hi ↦ h_convex i (mem_of_mem_erase hi)
     · intro J hJ_ss hJ_card
@@ -186,6 +187,7 @@ theorem helly_theorem_compact' [TopologicalSpace E] [T2Space E] {F : ι → Set 
     (h_convex : ∀ i, Convex 𝕜 (F i)) (h_compact : ∀ i, IsCompact (F i))
     (h_inter : ∀ I : Finset ι, I.card ≤ finrank 𝕜 E + 1 → (⋂ i ∈ I, F i).Nonempty) :
     (⋂ i, F i).Nonempty := by
+  classical
   /- If `ι` is empty the statement is trivial. -/
   cases' isEmpty_or_nonempty ι with _ h_nonempty
   · simp only [iInter_of_empty, Set.univ_nonempty]
