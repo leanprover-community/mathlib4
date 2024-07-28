@@ -711,6 +711,8 @@ end ExtendScalars
 
 namespace IntermediateField
 
+variable {S}
+
 section Tower
 
 section Restrict
