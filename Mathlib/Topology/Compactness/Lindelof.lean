@@ -6,7 +6,6 @@ Authors: Josha Dekker
 import Mathlib.Topology.Bases
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.Compactness.SigmaCompact
-import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Lindelöf sets and Lindelöf spaces
@@ -83,11 +82,11 @@ theorem IsLindelof.inter_right (hs : IsLindelof s) (ht : IsClosed t) : IsLindelo
   have hxt : x ∈ t := ht.mem_of_nhdsWithin_neBot <| hx.mono hstf.2
   exact ⟨x, ⟨hsx, hxt⟩, hx⟩
 
-  /-- The intersection of a closed set and a Lindelöf set is a Lindelöf set. -/
+/-- The intersection of a closed set and a Lindelöf set is a Lindelöf set. -/
 theorem IsLindelof.inter_left (ht : IsLindelof t) (hs : IsClosed s) : IsLindelof (s ∩ t) :=
   inter_comm t s ▸ ht.inter_right hs
 
-  /-- The set difference of a Lindelöf set and an open set is a Lindelöf set. -/
+/-- The set difference of a Lindelöf set and an open set is a Lindelöf set. -/
 theorem IsLindelof.diff (hs : IsLindelof s) (ht : IsOpen t) : IsLindelof (s \ t) :=
   hs.inter_right (isClosed_compl_iff.mpr ht)
 
@@ -176,6 +175,20 @@ theorem IsLindelof.elim_nhds_subcover (hs : IsLindelof s) (U : X → Set X)
     tauto
   · have : ⋃ x ∈ t, U ↑x = ⋃ x ∈ Subtype.val '' t, U x := biUnion_image.symm
     rwa [← this]
+
+/-- For every nonempty open cover of a Lindelöf set, there exists a subcover indexed by ℕ. -/
+theorem IsLindelof.indexed_countable_subcover {ι : Type v} [Nonempty ι]
+    (hs : IsLindelof s) (U : ι → Set X) (hUo : ∀ i, IsOpen (U i)) (hsU : s ⊆ ⋃ i, U i) :
+    ∃ f : ℕ → ι, s ⊆ ⋃ n, U (f n) := by
+  obtain ⟨c, ⟨c_count, c_cov⟩⟩ := hs.elim_countable_subcover U hUo hsU
+  rcases c.eq_empty_or_nonempty with rfl | c_nonempty
+  · simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty] at c_cov
+    simp only [subset_eq_empty c_cov rfl, empty_subset, exists_const]
+  obtain ⟨f, f_surj⟩ := (Set.countable_iff_exists_surjective c_nonempty).mp c_count
+  refine ⟨fun x ↦ f x, c_cov.trans <| iUnion₂_subset_iff.mpr (?_ : ∀ i ∈ c, U i ⊆ ⋃ n, U (f n))⟩
+  intro x hx
+  obtain ⟨n, hn⟩ := f_surj ⟨x, hx⟩
+  exact subset_iUnion_of_subset n <| subset_of_eq (by rw [hn])
 
 /-- The neighborhood filter of a Lindelöf set is disjoint with a filter `l` with the countable
 intersection property if and only if the neighborhood filter of each point of this set
@@ -400,8 +413,8 @@ def Filter.coLindelof (X : Type*) [TopologicalSpace X] : Filter X :=
 theorem hasBasis_coLindelof : (coLindelof X).HasBasis IsLindelof compl :=
   hasBasis_biInf_principal'
     (fun s hs t ht =>
-      ⟨s ∪ t, hs.union ht, compl_subset_compl.2 (subset_union_left s t),
-        compl_subset_compl.2 (subset_union_right s t)⟩)
+      ⟨s ∪ t, hs.union ht, compl_subset_compl.2 subset_union_left,
+        compl_subset_compl.2 subset_union_right⟩)
     ⟨∅, isLindelof_empty⟩
 
 theorem mem_coLindelof : s ∈ coLindelof X ↔ ∃ t, IsLindelof t ∧ tᶜ ⊆ s :=
@@ -443,8 +456,8 @@ theorem hasBasis_coclosedLindelof :
   simp only [Filter.coclosedLindelof, iInf_and']
   refine hasBasis_biInf_principal' ?_ ⟨∅, isClosed_empty, isLindelof_empty⟩
   rintro s ⟨hs₁, hs₂⟩ t ⟨ht₁, ht₂⟩
-  exact ⟨s ∪ t, ⟨⟨hs₁.union ht₁, hs₂.union ht₂⟩, compl_subset_compl.2 (subset_union_left _ _),
-    compl_subset_compl.2 (subset_union_right _ _)⟩⟩
+  exact ⟨s ∪ t, ⟨⟨hs₁.union ht₁, hs₂.union ht₂⟩, compl_subset_compl.2 subset_union_left,
+    compl_subset_compl.2 subset_union_right⟩⟩
 
 theorem mem_coclosedLindelof : s ∈ coclosedLindelof X ↔
     ∃ t, IsClosed t ∧ IsLindelof t ∧ tᶜ ⊆ s := by
@@ -694,7 +707,7 @@ instance (priority := 100) HereditarilyLindelof.to_Lindelof [HereditarilyLindelo
     LindelofSpace X where
   isLindelof_univ := HereditarilyLindelofSpace.isHereditarilyLindelof_univ.isLindelof
 
-theorem HereditarilyLindelof_LindelofSets [HereditarilyLindelofSpace X] (s : Set X):
+theorem HereditarilyLindelof_LindelofSets [HereditarilyLindelofSpace X] (s : Set X) :
     IsLindelof s := by
   apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
   exact subset_univ s
@@ -709,25 +722,6 @@ instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     use t, htc
     exact subset_of_subset_of_eq hcover (id htu.symm)
 
-instance SecondCountableTopology.ofPseudoMetrizableSpaceLindelofSpace [PseudoMetrizableSpace X]
-    [LindelofSpace X] : SecondCountableTopology X := by
-  letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
-  have h_dense : ∀ ε > 0, ∃ s : Set X, s.Countable ∧ ∀ x, ∃ y ∈ s, dist x y ≤ ε := by
-    intro ε hpos
-    let U := fun (z : X) ↦ Metric.ball z ε
-    have hU : ∀ z, U z ∈ 𝓝 z := by
-      intro z
-      have : IsOpen (U z) := Metric.isOpen_ball
-      refine IsOpen.mem_nhds this ?hx
-      simp only [U, Metric.mem_ball, dist_self, hpos]
-    have ⟨t, hct, huniv⟩ := LindelofSpace.elim_nhds_subcover U hU
-    refine ⟨t, hct, ?_⟩
-    intro z
-    have ⟨y, ht, hzy⟩ : ∃ y ∈ t, z ∈ U y := exists_set_mem_of_union_eq_top t (fun i ↦ U i) huniv z
-    simp only [Metric.mem_ball, U] at hzy
-    exact ⟨y, ht, hzy.le⟩
-  exact Metric.secondCountable_of_almost_dense_set h_dense
-
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
     (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i∈t, U i = ⋃ i, U i := by
   have : IsLindelof (⋃ i, U i) := HereditarilyLindelof_LindelofSets (⋃ i, U i)
@@ -739,3 +733,5 @@ instance HereditarilyLindelof.lindelofSpace_subtype [HereditarilyLindelofSpace X
     LindelofSpace {x // p x} := by
   apply isLindelof_iff_LindelofSpace.mp
   exact HereditarilyLindelof_LindelofSets fun x ↦ p x
+
+end Lindelof

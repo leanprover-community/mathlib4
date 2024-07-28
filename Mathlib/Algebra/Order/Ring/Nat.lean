@@ -7,8 +7,8 @@ import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Ring.Nat
-
-#align_import data.nat.order.basic from "leanprover-community/mathlib"@"3ed3f98a1e836241990d3d308f1577e434977130"
+import Mathlib.Data.Set.Basic
+import Mathlib.Init.Data.Nat.Lemmas
 
 /-!
 # The natural numbers form an ordered semiring
@@ -55,5 +55,10 @@ instance instStrictOrderedCommSemiring : StrictOrderedCommSemiring ℕ := inferI
 instance instOrderedSemiring : OrderedSemiring ℕ := StrictOrderedSemiring.toOrderedSemiring'
 instance instOrderedCommSemiring : OrderedCommSemiring ℕ :=
   StrictOrderedCommSemiring.toOrderedCommSemiring'
+
+/-! ### Miscellaneous lemmas -/
+
+lemma isCompl_even_odd : IsCompl { n : ℕ | Even n } { n | Odd n } := by
+  simp only [← Set.compl_setOf, isCompl_compl, odd_iff_not_even]
 
 end Nat
