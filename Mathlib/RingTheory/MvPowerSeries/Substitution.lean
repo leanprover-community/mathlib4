@@ -258,7 +258,8 @@ theorem substDomain_mul (b : σ → MvPowerSeries τ S)
 theorem substDomain_smul (r : MvPowerSeries τ S) {a : σ → MvPowerSeries τ S} (ha : SubstDomain a) :
     SubstDomain (r • a) := by convert substDomain_mul _ ha
 
-noncomputable def substDomain.submodule : Ideal (σ → MvPowerSeries τ S) :=
+/-- Families of mv power series that can be substituted, as an `Ideal` -/
+noncomputable def substDomain.ideal : Ideal (σ → MvPowerSeries τ S) :=
   letI : UniformSpace S := ⊥
   { carrier := setOf SubstDomain
     add_mem' := substDomain_add
@@ -520,6 +521,7 @@ theorem comp_substAlgHom
 
 section scale
 
+/-- Scale multivariate power series -/
 noncomputable def scale (a : σ → A) (f : MvPowerSeries σ R) :
     MvPowerSeries σ R :=
   subst (a • X) f
@@ -538,6 +540,7 @@ theorem substDomain_scale (a : σ → A) :
   rw [algebra_compatible_smul (MvPowerSeries σ R), smul_eq_mul]
 
 variable (R) in
+/-- Scale multivariate power series, as an `AlgHom` -/
 noncomputable def scale_algHom (a : σ → A) :
     MvPowerSeries σ R →ₐ[R] MvPowerSeries σ  R :=
   substAlgHom (substDomain_scale R a)
@@ -588,6 +591,7 @@ theorem scale_algHom_one :
   intro f
   simp only [Function.const_one, coe_scale_algHom, AlgHom.coe_id, id_eq, scale_one]
 
+/-- Scale mv power series, as a `MonoidHom` in the scaling parameters -/
 noncomputable def scale_MonoidHom : (σ → A) →* MvPowerSeries σ R →ₐ[R] MvPowerSeries σ R where
   toFun := scale_algHom R
   map_one' := scale_algHom_one
@@ -874,6 +878,7 @@ theorem subst_comp_subst_apply (f : PowerSeries R) :
 section scale
 
 -- oops, it exists as PowerSeries.rescale
+/-- Scale power series` -/
 noncomputable def scale (a : A) (f : R⟦X⟧) : R⟦X⟧ :=
     MvPowerSeries.scale (Function.const Unit a) f
 
@@ -885,6 +890,7 @@ theorem substDomain_scale (a : A) : SubstDomain (a • (X : R⟦X⟧)) :=
   (substDomain_iff _).mpr (MvPowerSeries.substDomain_scale R _)
 
 variable (R) in
+/-- Scale power series, as an `AlgHom` -/
 noncomputable def scale_algHom (a : A) :
     R⟦X⟧ →ₐ[R] R⟦X⟧ :=
   MvPowerSeries.scale_algHom R (Function.const Unit a)
@@ -919,6 +925,7 @@ theorem scale_algHom_one :
     scale_algHom R (1 : A) = AlgHom.id R R⟦X⟧ :=
   MvPowerSeries.scale_algHom_one
 
+/-- Scale power series, as a `MonoidHom` in the scaling variable -/
 noncomputable def scale_MonoidHom : A →* R⟦X⟧ →ₐ[R] R⟦X⟧ where
   toFun := scale_algHom R
   map_one' := scale_algHom_one
