@@ -484,21 +484,22 @@ variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
 variable {module_M₁ : Module R₁ M₁} {module_M₂ : Module R₂ M₂} {module_M₃ : Module R₃ M₃}
 variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃}
-variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-variable (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂)
 
 /-- Composition of two linear maps is a linear map -/
-def comp : M₁ →ₛₗ[σ₁₃] M₃ where
+def comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂) :
+    M₁ →ₛₗ[σ₁₃] M₃ where
   toFun := f ∘ g
   map_add' := by simp only [map_add, forall_const, Function.comp_apply]
   -- Note that #8386 changed `map_smulₛₗ` to `map_smulₛₗ _`
   map_smul' r x := by simp only [Function.comp_apply, map_smulₛₗ _, RingHomCompTriple.comp_apply]
 
+variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+variable (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂)
+
 /-- `∘ₗ` is notation for composition of two linear (not semilinear!) maps into a linear map.
 This is useful when Lean is struggling to infer the `RingHomCompTriple` instance. -/
 notation3:80 (name := compNotation) f:81 " ∘ₗ " g:80 =>
-  @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _)
-    RingHomCompTriple.ids f g
+  LinearMap.comp (σ₁₂ := RingHom.id _) (σ₂₃ := RingHom.id _) (σ₁₃ := RingHom.id _) f g
 
 theorem comp_apply (x : M₁) : f.comp g x = f (g x) :=
   rfl
@@ -528,7 +529,7 @@ variable {f g} {f' : M₂ →ₛₗ[σ₂₃] M₃} {g' : M₁ →ₛₗ[σ₁�
 /-- The linear map version of `Function.Surjective.injective_comp_right` -/
 lemma _root_.Function.Surjective.injective_linearMapComp_right (hg : Surjective g) :
     Injective fun f : M₂ →ₛₗ[σ₂₃] M₃ ↦ f.comp g :=
-  fun _ _ h ↦ ext <| hg.forall.2 (ext_iff.1 h)
+  fun _ _ h ↦ ext <| hg.forall.2 (LinearMap.ext_iff.1 h)
 
 @[simp]
 theorem cancel_right (hg : Surjective g) : f.comp g = f'.comp g ↔ f = f' :=

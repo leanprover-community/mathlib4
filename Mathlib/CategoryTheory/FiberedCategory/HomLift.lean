@@ -71,13 +71,15 @@ protected lemma id {p : 𝒳 ⥤ 𝒮} {R : 𝒮} {a : 𝒳} (ha : p.obj a = R) 
 
 section
 
-variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ]
+variable {R S : 𝒮} {a b : 𝒳}
 
-lemma domain_eq : p.obj a = R := by
+lemma domain_eq (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ] : p.obj a = R := by
   subst_hom_lift p f φ; rfl
 
-lemma codomain_eq : p.obj b = S := by
+lemma codomain_eq (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ] : p.obj b = S := by
   subst_hom_lift p f φ; rfl
+
+variable (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ]
 
 lemma fac : f = eqToHom (domain_eq p f φ).symm ≫ p.map φ ≫ eqToHom (codomain_eq p f φ) := by
   subst_hom_lift p f φ; simp
