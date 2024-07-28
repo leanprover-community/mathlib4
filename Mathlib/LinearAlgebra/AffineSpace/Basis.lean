@@ -51,7 +51,7 @@ structure AffineBasis (ι : Type u₁) (k : Type u₂) {V : Type u₃} (P : Type
   protected ind' : AffineIndependent k toFun
   protected tot' : affineSpan k (range toFun) = ⊤
 
-variable {ι ι' G k V P : Type*} [AddCommGroup V] [AffineSpace V P]
+variable {ι ι' G G' k V P : Type*} [AddCommGroup V] [AffineSpace V P]
 
 namespace AffineBasis
 
@@ -274,8 +274,14 @@ instance instAddAction : AddAction V (AffineBasis ι k P) :=
   rw [vadd_vsub_assoc, neg_add_eq_sub, vsub_vadd_eq_vsub_sub]
 
 section SMul
-variable [Group G] [SMul G k] [DistribMulAction G V] [SMulCommClass G k V]
+variable [Group G] [Group G']
+variable [DistribMulAction G V] [DistribMulAction G' V]
+variable [SMulCommClass G k V] [SMulCommClass G' k V]
 
+/-- In an affine space that is also a vector space, an `AffineBasis` can be scaled.
+
+TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineBasis ι k P)`, which acts on `V` with a `VAdd`
+version of a `DistribMulAction`. -/
 instance instSMul : SMul G (AffineBasis ι k V) where
   smul a b :=
     { toFun := a • ⇑b,
@@ -286,8 +292,18 @@ instance instSMul : SMul G (AffineBasis ι k V) where
 
 @[simp, norm_cast] lemma coe_smul (a : G) (b : AffineBasis ι k V) : ⇑(a • b) = a • ⇑b := rfl
 
+instance [SMulCommClass G G' V] : SMulCommClass G G' (AffineBasis ι k V) where
+  smul_comm _g _g' _b := DFunLike.ext _ _ fun _ => smul_comm _ _ _
+
+instance [SMul G G'] [IsScalarTower G G' V] : IsScalarTower G G' (AffineBasis ι k V) where
+  smul_assoc _g _g' _b := DFunLike.ext _ _ fun _ => smul_assoc _ _ _
+
 @[simp] lemma basisOf_smul (a : G) (b : AffineBasis ι k V) (i : ι) :
     (a • b).basisOf i = a • b.basisOf i := by ext j; simp [smul_sub]
+
+@[simp] lemma reindex_smul (a : G) (b : AffineBasis ι k V) (e : ι ≃ ι') :
+    (a • b).reindex e = a • b.reindex e :=
+  rfl
 
 @[simp] lemma coord_smul (a : G) (b : AffineBasis ι k V) (i : ι) :
     (a • b).coord i = (b.coord i).comp (DistribMulAction.toLinearEquiv _ _ a).symm.toAffineMap := by
