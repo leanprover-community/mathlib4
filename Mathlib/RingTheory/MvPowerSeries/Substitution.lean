@@ -13,7 +13,7 @@ import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.Topology.Algebra.Algebra
 
-/- # Substitutions in power series
+/-! # Substitutions in power series
 
 Here we define the substitution of power series into other power series.
 We follow Bourbaki, Algèbre, chap. 4, §4, n° 3.
