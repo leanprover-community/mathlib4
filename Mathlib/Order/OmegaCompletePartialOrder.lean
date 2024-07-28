@@ -531,7 +531,7 @@ instance (priority := 100) [CompleteLattice α] : OmegaCompletePartialOrder α w
 
 variable [OmegaCompletePartialOrder α] [CompleteLattice β] {f g : α → β}
 
-lemma ωScottContinuous.mediatingMorphism (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
+lemma ωScottContinuous.prodMk (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
     ωScottContinuous fun x => (f x, g x) := by
   refine ωScottContinuous.of_monotone_map_ωSup
     ⟨fun _ _ hab => Prod.mk_le_mk.mp ⟨hf.monotone hab, hg.monotone hab⟩,
