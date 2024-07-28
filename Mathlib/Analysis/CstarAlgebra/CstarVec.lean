@@ -315,6 +315,8 @@ instance : UniformSpace (CstarVec n A) := Pi.uniformSpace _
 
 instance : Bornology (CstarVec n A) := Pi.instBornology
 
+instance : CompleteSpace (CstarVec n A) := Pi.complete _
+
 noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (CstarVec n A) :=
   NormedAddCommGroup.ofCoreReplaceAll HilbertCstarModule.normedSpaceCore
     uniformity_eq_aux.symm fun _ => Filter.ext_iff.1 cobounded_eq_aux.symm _
