@@ -3,11 +3,9 @@ Copyright (c) 2021 Jordan Brown, Thomas Browning, Patrick Lutz. All rights reser
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
-import Mathlib.Data.Fin.VecNotation
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Perm.ViaEmbedding
 import Mathlib.GroupTheory.Subgroup.Simple
-import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Solvable Groups

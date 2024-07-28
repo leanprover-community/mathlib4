@@ -183,15 +183,17 @@ instance NonemptyInterval.hasNSMul [AddMonoid α] [Preorder α] [CovariantClass 
 
 section Pow
 
-variable [Monoid α] [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)]
-  [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [Monoid α] [Preorder α]
 
 @[to_additive existing]
-instance NonemptyInterval.hasPow : Pow (NonemptyInterval α) ℕ :=
+instance NonemptyInterval.hasPow
+  [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
+  Pow (NonemptyInterval α) ℕ :=
   ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_left' s.fst_le_snd _⟩⟩
 
 namespace NonemptyInterval
 
+variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
 variable (s : NonemptyInterval α) (a : α) (n : ℕ)
 
 @[to_additive (attr := simp) toProd_nsmul]

@@ -43,7 +43,23 @@ lemma coe_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) 
 @[norm_cast] lemma coe_iInf [Nonempty ι] : ↑(⨅ i, f i) = ⨅ i, (f i : ℕ∞) :=
   WithTop.coe_iInf (OrderBot.bddBelow _)
 
-variable {s : Set ℕ∞}
+@[simp]
+lemma iInf_eq_top_of_isEmpty [IsEmpty ι] : ⨅ i, (f i : ℕ∞) = ⊤ :=
+  iInf_coe_eq_top.mpr ‹_›
+
+lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
+  cases isEmpty_or_nonempty ι
+  · simp
+  · norm_cast
+
+lemma iInf_eq_zero : ⨅ i, (f i : ℕ∞) = 0 ↔ ∃ i, f i = 0 := by
+  cases isEmpty_or_nonempty ι
+  · simp
+  · norm_cast
+    rw [iInf, Nat.sInf_eq_zero]
+    exact ⟨fun h ↦ by simp_all, .inl⟩
+
+variable {f : ι → ℕ∞} {s : Set ℕ∞}
 
 lemma sSup_eq_zero : sSup s = 0 ↔ ∀ a ∈ s, a = 0 :=
   sSup_eq_bot
