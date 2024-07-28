@@ -183,7 +183,7 @@ section PowerBasis
 variable {K}
 
 lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
-    [FiniteDimensional K L] [IsSeparable K L]
+    [FiniteDimensional K L] [Algebra.IsSeparable K L]
     {x : L} (hxL : Algebra.adjoin K {x} = ⊤) {r : ℕ} (hr : r < finrank K L) :
     ∑ σ : L →ₐ[K] E, ((x ^ r / aeval x (derivative <| minpoly K x)) •
       minpolyDiv K x).map σ = (X ^ r : E[X]) := by
@@ -198,7 +198,7 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
       Finset.sum_ite_eq', Finset.mem_univ, ite_true, eval_pow, eval_X]
     rw [sub_eq_zero, div_mul_cancel₀]
     rw [ne_eq, map_eq_zero_iff σ σ.toRingHom.injective]
-    exact (IsSeparable.separable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
+    exact (Algebra.IsSeparable.isSeparable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
   · refine (Polynomial.natDegree_sub_le _ _).trans_lt
       (max_lt ((Polynomial.natDegree_sum_le _ _).trans_lt ?_) ?_)
     · simp only [AlgEquiv.toAlgHom_eq_coe, Polynomial.map_smul,

@@ -5,9 +5,14 @@ Authors: Leonardo de Moura
 -/
 import Lean.Parser.Term
 import Batteries.Util.ExtendedBinder
-import Mathlib.Mathport.Rename
 
 /-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
 
 # Sets
 
@@ -36,7 +41,8 @@ This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean
 
 open Batteries.ExtendedBinder
 
-set_option autoImplicit true
+universe u
+variable {α : Type u}
 
 /-- A set is a collection of elements of some type `α`.
 
@@ -45,12 +51,10 @@ relied on. Instead, `setOf` and membership of a set (`∈`) should be used to co
 and predicates.
 -/
 def Set (α : Type u) := α → Prop
-#align set Set
 
 /-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
 def setOf {α : Type u} (p : α → Prop) : Set α :=
   p
-#align set_of setOf
 
 namespace Set
 
@@ -151,7 +155,6 @@ This is conceptually the "same as" `α` (in set theory, it is actually the same)
 makes the distinction that `α` is a type while `Set.univ` is a term of type `Set α`. `Set.univ` can
 itself be coerced to a type `↥Set.univ` which is in bijection with (but distinct from) `α`. -/
 def univ : Set α := {_a | True}
-#align set.univ Set.univ
 
 /-- `Set.insert a s` is the set `{a} ∪ s`.
 
@@ -199,9 +202,10 @@ def powerset (s : Set α) : Set (Set α) := {t | t ⊆ s}
 
 @[inherit_doc] prefix:100 "𝒫" => powerset
 
+universe v in
 /-- The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that
 `f a = b` for some `a ∈ s`. -/
-def image (f : α → β) (s : Set α) : Set β := {f a | a ∈ s}
+def image {β : Type v} (f : α → β) (s : Set α) : Set β := {f a | a ∈ s}
 
 instance : Functor Set where map := @Set.image
 
@@ -217,6 +221,5 @@ in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives ac
 to the dot notation. -/
 protected def Nonempty (s : Set α) : Prop :=
   ∃ x, x ∈ s
-#align set.nonempty Set.Nonempty
 
 end Set
