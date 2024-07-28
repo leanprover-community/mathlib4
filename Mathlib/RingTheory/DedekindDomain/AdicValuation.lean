@@ -490,7 +490,7 @@ open scoped algebraMap in -- to make the coercion from `R` fire
 lemma coe_mem_adicCompletionIntegers (r : R) :
     (r : adicCompletion K v) ∈ adicCompletionIntegers K v := by
   rw [mem_adicCompletionIntegers, valuedAdicCompletion_eq_valuation, valuation_eq_intValuationDef]
-  exact int_valuation_le_one v r
+  exact intValuation_le_one v r
 
 @[simp]
 theorem coe_smul_adicCompletionIntegers (r : R) (x : v.adicCompletionIntegers K) :
@@ -525,7 +525,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
       Option.ne_none_iff_exists'.mp <| (lt_trans zero_lt_one ha).ne'
     rw [hd, WithZero.one_lt_coe, ← ofAdd_zero, ofAdd_lt] at ha
     -- let ϖ be a uniformiser
-    obtain ⟨ϖ, hϖ⟩ := int_valuation_exists_uniformizer v
+    obtain ⟨ϖ, hϖ⟩ := intValuation_exists_uniformizer v
     have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp at hϖ
     -- use ϖ^d
     refine ⟨ϖ^d.natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _, ?_⟩
