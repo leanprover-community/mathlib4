@@ -27,8 +27,8 @@ open Pointwise
 namespace Set
 
 @[to_additive]
-theorem IsPWO.smul [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P] {s : Set G}
-    {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s • t) := by
+theorem IsPWO.smul [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P]
+    {s : Set G} {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s • t) := by
   rw [← @image_smul_prod]
   exact (hs.prod ht).image_of_monotone (monotone_fst.smul monotone_snd)
 
