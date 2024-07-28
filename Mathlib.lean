@@ -1069,6 +1069,7 @@ import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Restrict
 import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unital
 import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unitary
+import Mathlib.Analysis.CstarAlgebra.CstarVec
 import Mathlib.Analysis.CstarAlgebra.Exponential
 import Mathlib.Analysis.CstarAlgebra.GelfandDuality
 import Mathlib.Analysis.CstarAlgebra.Matrix
