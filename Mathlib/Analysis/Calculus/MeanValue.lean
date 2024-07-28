@@ -761,12 +761,14 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
     filter_upwards [eventually_mem_nhdsWithin] with x hx
     have : Ioi a ∈ 𝓝 x := by simp [← mem_interior_iff_mem_nhds, hx]
     exact (derivWithin_of_mem_nhds this).symm
-  by_cases hcont_at_a : ¬ ContinuousWithinAt f (Ici a) a
-  · exact fun hcontra => by
-      have := hcontra.continuousWithinAt
-      rw [← ContinuousWithinAt.diff_iff this] at hcont_at_a
-      simp at hcont_at_a
-  · push_neg at hcont_at_a
+  by_cases hcont_at_a : ContinuousWithinAt f (Ici a) a
+  case neg =>
+    intro hcontra
+    have := hcontra.continuousWithinAt
+    rw [← ContinuousWithinAt.diff_iff this] at hcont_at_a
+    simp at hcont_at_a
+  case pos =>
+    push_neg at hcont_at_a
     intro hdiff
     replace hdiff := hdiff.hasDerivWithinAt
     rw [hasDerivWithinAt_iff_tendsto_slope] at hdiff
@@ -775,7 +777,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
         apply le_of_eq
         congr
         exact (Set.diff_singleton_eq_self not_mem_Ioi_self).symm
-    have h₀ : ∀ᶠ b in (𝓝[>] a),
+    have h₀ : ∀ᶠ b in 𝓝[>] a,
         ∀ x ∈ Ioc a b, max (derivWithin f (Ioi a) a + 1) 0 < derivWithin f (Ioi a) x := by
       rw [(nhdsWithin_Ioi_basis a).eventually_iff]
       rw [(nhdsWithin_Ioi_basis a).tendsto_left_iff] at hf
@@ -783,15 +785,15 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
       refine ⟨b, hab, fun x hx z hz => ?_⟩
       simp only [MapsTo, mem_Ioo, mem_Ioi, and_imp] at hb
       exact hb hz.1 <| hz.2.trans_lt hx.2
-    have h₁ : ∀ᶠ b in (𝓝[>] a), slope f a b < (derivWithin f (Ioi a) a) + (1 : ℝ) := by
+    have h₁ : ∀ᶠ b in 𝓝[>] a, slope f a b < derivWithin f (Ioi a) a + 1 := by
       rw [(nhds_basis_Ioo _).tendsto_right_iff] at hdiff
       specialize hdiff ⟨derivWithin f (Ioi a) a - 1, derivWithin f (Ioi a) a + 1⟩ <| by simp
       filter_upwards [hdiff] with z hz using hz.2
-    have hcontra : ∀ᶠ _ in (𝓝[>] a), False := by
+    have hcontra : ∀ᶠ _ in 𝓝[>] a, False := by
       filter_upwards [h₀, h₁, eventually_mem_nhdsWithin] with b hb hslope (hab : a < b)
       have hdiff' : DifferentiableOn ℝ f (Ioc a b) := fun z hz => by
         refine DifferentiableWithinAt.mono (t := Ioi a) ?_ Ioc_subset_Ioi_self
-        have : derivWithin f (Ioi a) z ≠ 0 := Ne.symm <| ne_of_lt <| by
+        have : derivWithin f (Ioi a) z ≠ 0 := ne_of_gt <| by
           simp_all only [mem_Ioo, and_imp, mem_Ioc, max_lt_iff]
         exact differentiableWithinAt_of_derivWithin_ne_zero this
       have hcont_Ioc : ∀ z ∈ Ioc a b, ContinuousWithinAt f (Icc a b) z := by
@@ -825,12 +827,8 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atBot_Ioi (f : ℝ → ℝ) 
     (hf : Tendsto (deriv f) (𝓝[>] a) atBot) : ¬ DifferentiableWithinAt ℝ f (Ioi a) a := by
   intro h
   have hf' : Tendsto (deriv (-f)) (𝓝[>] a) atTop := by
-    have : deriv (-f) = -deriv f := by
-      ext x
-      change deriv (fun y => -f y) x = -deriv f x
-      rw [deriv.neg']
-    rw [this]
-    exact Tendsto.comp (g := Neg.neg) (f := deriv f) (y := atBot) tendsto_neg_atBot_atTop hf
+    rw [Pi.neg_def, deriv.neg']
+    exact tendsto_neg_atBot_atTop.comp hf
   exact not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (-f) hf' h.neg
 
 /-- A real function whose derivative tends to minus infinity from the left at a point is not
@@ -861,9 +859,8 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atBot_Iio (f : ℝ → ℝ) 
     refine DifferentiableWithinAt.comp (g := f) (f := Neg.neg) (t := Iio a) (-a) ?_ ?_ ?_
     · simp [h]
     · fun_prop
-    · intro x (hx : -a < x)
-      simp only [mem_Iio]
-      linarith
+    · intro x
+      simp [neg_lt]
   exact hmain this
 
 /-- A real function whose derivative tends to infinity from the left at a point is not
@@ -872,12 +869,8 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Iio (f : ℝ → ℝ) 
     (hf : Tendsto (deriv f) (𝓝[<] a) atTop) : ¬ DifferentiableWithinAt ℝ f (Iio a) a := by
   intro h
   have hf' : Tendsto (deriv (-f)) (𝓝[<] a) atBot := by
-    have : deriv (-f) = -deriv f := by
-      ext x
-      change deriv (fun y => -f y) x = -deriv f x
-      rw [deriv.neg']
-    rw [this]
-    exact Tendsto.comp (g := Neg.neg) tendsto_neg_atTop_atBot hf
+    rw [Pi.neg_def, deriv.neg']
+    exact tendsto_neg_atTop_atBot.comp hf
   exact not_differentiableWithinAt_of_deriv_tendsto_atBot_Iio (-f) hf' h.neg
 
 end Interval
