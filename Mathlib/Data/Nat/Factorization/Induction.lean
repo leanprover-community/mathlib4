@@ -92,6 +92,8 @@ lemma prime_composite_induction {P : ℕ → Prop} (zero : P 0) (one : P 1)
   · simpa using prime _ hp
   · exact composite _ hp.two_le (prime _ hp) _ a.one_lt_succ_succ ha
 
+/-! ## Lemmas on multiplicative functions -/
+
 /-- For any multiplicative function `f` with `f 1 = 1` and any `n ≠ 0`,
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/
 theorem multiplicative_factorization {β : Type*} [CommMonoid β] (f : ℕ → β)
