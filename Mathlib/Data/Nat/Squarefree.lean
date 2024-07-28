@@ -449,7 +449,7 @@ namespace Tactic
 
 namespace NormNum
 
-/-- A predicate representing partial progress in a proof of `squarefree`. -/
+/-- A predicate representing partial progress in a proof of `Squarefree`. -/
 def SquarefreeHelper (n k : ℕ) : Prop :=
   0 < k → (∀ m, Nat.Prime m → m ∣ bit1 n → bit1 k ≤ m) → Squarefree (bit1 n)
 #align tactic.norm_num.squarefree_helper Tactic.NormNum.SquarefreeHelper
@@ -543,7 +543,7 @@ theorem not_squarefree_mul (a aa b n : ℕ) (ha : a * a = aa) (hb : aa * b = n) 
   exact fun H => ne_of_gt h₁ (Nat.isUnit_iff.1 <| H _ ⟨_, rfl⟩)
 #align tactic.norm_num.not_squarefree_mul Tactic.NormNum.not_squarefree_mul
 
-/-- Given `e` a natural numeral and `a : nat` with `a^2 ∣ n`, return `⊢ ¬ squarefree e`. -/
+/-- Given `e` a natural numeral and `a : Nat` with `a^2 ∣ n`, return `⊢ ¬ Squarefree e`. -/
 unsafe def prove_non_squarefree (e : expr) (n a : ℕ) : tactic expr := do
   let ea := reflect a
   let eaa := reflect (a * a)
@@ -592,7 +592,7 @@ unsafe def prove_squarefree_aux :
             pure <| q(squarefreeHelper_2).mk_app [en, ek, ek', ec, p₁, pc, p₀, p₂]
 #align tactic.norm_num.prove_squarefree_aux tactic.norm_num.prove_squarefree_aux
 
-/-- Given `n > 0` a squarefree natural numeral, returns `⊢ squarefree n`. -/
+/-- Given `n > 0` a squarefree natural numeral, returns `⊢ Squarefree n`. -/
 unsafe def prove_squarefree (en : expr) (n : ℕ) : tactic expr :=
   match match_numeral en with
   | match_numeral_result.one => pure q(@squarefree_one ℕ _)
@@ -611,7 +611,7 @@ unsafe def prove_squarefree (en : expr) (n : ℕ) : tactic expr :=
   | _ => failed
 #align tactic.norm_num.prove_squarefree tactic.norm_num.prove_squarefree
 
-/-- Evaluates the `squarefree` predicate on naturals. -/
+/-- Evaluates the `Squarefree` predicate on naturals. -/
 @[norm_num]
 unsafe def eval_squarefree : expr → tactic (expr × expr)
   | q(@Squarefree ℕ $(inst) $(e)) => do
