@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Xavier Roblot
 -/
 import Mathlib.Algebra.Algebra.Hom.Rat
-import Mathlib.Analysis.Complex.Polynomial
+import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Norm.Basic

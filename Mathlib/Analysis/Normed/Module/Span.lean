@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 
-import Mathlib.Analysis.NormedSpace.LinearIsometry
-import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Normed.Operator.LinearIsometry
+import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # The span of a single vector
