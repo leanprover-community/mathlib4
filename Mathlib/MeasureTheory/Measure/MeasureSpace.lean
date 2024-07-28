@@ -1228,8 +1228,10 @@ theorem tendsto_ae_map {f : α → β} (hf : AEMeasurable f μ) : Tendsto f (ae 
 /-- Pullback of a `Measure` as a linear map. If `f` sends each measurable set to a measurable
 set, then for each measurable set `s` we have `comapₗ f μ s = μ (f '' s)`.
 
+Note that if `f` is not injective, this definition assigns `Set.univ` measure zero.
+
 If the linearity is not needed, please use `comap` instead, which works for a larger class of
-functions. -/
+functions. `comapₗ` is an auxiliary definition and most lemmas deal with comap. -/
 def comapₗ [MeasurableSpace α] (f : α → β) : Measure β →ₗ[ℝ≥0∞] Measure α :=
   if hf : Injective f ∧ ∀ s, MeasurableSet s → MeasurableSet (f '' s) then
     liftLinear (OuterMeasure.comap f) fun μ s hs t => by
@@ -1245,7 +1247,9 @@ theorem comapₗ_apply {β} [MeasurableSpace α] {mβ : MeasurableSpace β} (f :
   exact ⟨hfi, hf⟩
 
 /-- Pullback of a `Measure`. If `f` sends each measurable set to a null-measurable set,
-then for each measurable set `s` we have `comap f μ s = μ (f '' s)`. -/
+then for each measurable set `s` we have `comap f μ s = μ (f '' s)`.
+
+Note that if `f` is not injective, this definition assigns `Set.univ` measure zero. -/
 def comap [MeasurableSpace α] (f : α → β) (μ : Measure β) : Measure α :=
   if hf : Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ then
     (OuterMeasure.comap f μ.toOuterMeasure).toMeasure fun s hs t => by
