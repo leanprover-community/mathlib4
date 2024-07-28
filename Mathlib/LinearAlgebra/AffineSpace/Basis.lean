@@ -292,9 +292,13 @@ instance instSMul : SMul G (AffineBasis ι k V) where
 
 @[simp, norm_cast] lemma coe_smul (a : G) (b : AffineBasis ι k V) : ⇑(a • b) = a • ⇑b := rfl
 
+/-- TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineBasis ι k P)`, which acts on `P` with a
+`VAdd` version of a `DistribMulAction`. -/
 instance [SMulCommClass G G' V] : SMulCommClass G G' (AffineBasis ι k V) where
   smul_comm _g _g' _b := DFunLike.ext _ _ fun _ => smul_comm _ _ _
 
+/-- TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineBasis ι k P)`, which acts on `P` with a
+`VAdd` version of a `DistribMulAction`. -/
 instance [SMul G G'] [IsScalarTower G G' V] : IsScalarTower G G' (AffineBasis ι k V) where
   smul_assoc _g _g' _b := DFunLike.ext _ _ fun _ => smul_assoc _ _ _
 
@@ -309,6 +313,8 @@ instance [SMul G G'] [IsScalarTower G G' V] : IsScalarTower G G' (AffineBasis ι
     (a • b).coord i = (b.coord i).comp (DistribMulAction.toLinearEquiv _ _ a).symm.toAffineMap := by
   ext v; simp [coord]
 
+/-- TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineBasis ι k P)`, which acts on `P` with a
+`VAdd` version of a `DistribMulAction`. -/
 instance instMulAction : MulAction G (AffineBasis ι k V) :=
   DFunLike.coe_injective.mulAction _ coe_smul
 

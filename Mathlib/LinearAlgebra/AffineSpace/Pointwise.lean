@@ -80,7 +80,10 @@ variable [Monoid M] [DistribMulAction M V] [SMulCommClass M k V] {a : M}
 /-- The multiplicative action on an affine subspace corresponding to applying the action to every
 element.
 
-This is available as an instance in the `Pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale.
+
+TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineSubspace k P)`, which acts on `P` with a
+`VAdd` version of a `DistribMulAction`. -/
 protected def pointwiseSMul : SMul M (AffineSubspace k V) where
   smul a s := s.map (DistribMulAction.toLinearMap k _ a).toAffineMap
 
@@ -92,7 +95,10 @@ lemma coe_smul (a : M) (s : AffineSubspace k V) : ↑(a • s) = a • (s : Set 
 /-- The multiplicative action on an affine subspace corresponding to applying the action to every
 element.
 
-This is available as an instance in the `Pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale.
+
+TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineSubspace k P)`, which acts on `P` with a
+`VAdd` version of a `DistribMulAction`. -/
 protected def mulAction : MulAction M (AffineSubspace k V) :=
   SetLike.coe_injective.mulAction _ coe_smul
 
@@ -118,7 +124,8 @@ end Ring
 section Field
 variable [Field k] [AddCommGroup V] [Module k V] {a : k}
 
-lemma smul_direction (ha : a ≠ 0) (s : AffineSubspace k V) : (a • s).direction = s.direction := by
+@[simp]
+lemma direction_smul (ha : a ≠ 0) (s : AffineSubspace k V) : (a • s).direction = s.direction := by
   rw [smul_eq_map, map_direction]
   change Submodule.map (a • LinearMap.id) _ = _
   simp [Submodule.map_smul, ha]
