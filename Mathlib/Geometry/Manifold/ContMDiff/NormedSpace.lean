@@ -145,8 +145,8 @@ theorem ContMDiffWithinAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → 
     (hg : ContMDiffWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n g s x)
     (hf : ContMDiffWithinAt I 𝓘(𝕜, F₁) n f s x) :
     ContMDiffWithinAt I 𝓘(𝕜, F₂) n (fun x => g x (f x)) s x :=
-  @ContDiffWithinAt.comp_contMDiffWithinAt _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-    (fun x : (F₁ →L[𝕜] F₂) × F₁ => x.1 x.2) (fun x => (g x, f x)) s _ x
+  ContDiffWithinAt.comp_contMDiffWithinAt
+    (g := fun x : (F₁ →L[𝕜] F₂) × F₁ => x.1 x.2) (f := fun x => (g x, f x))
     (by apply ContDiff.contDiffAt; exact contDiff_fst.clm_apply contDiff_snd) (hg.prod_mk_space hf)
     (by simp_rw [preimage_univ, subset_univ])
 
