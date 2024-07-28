@@ -11,6 +11,7 @@ import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.Normed.Field.InfiniteSum
+import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # A collection of specific limit computations

@@ -305,7 +305,6 @@ theorem subset_def : s ⊆ t ↔ s.1 ⊆ t.1 :=
 theorem ssubset_def : s ⊂ t ↔ s ⊆ t ∧ ¬t ⊆ s :=
   Iff.rfl
 
-@[simp]
 theorem Subset.refl (s : Finset α) : s ⊆ s :=
   Multiset.Subset.refl _
 

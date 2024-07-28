@@ -1498,23 +1498,21 @@ instance (priority := 100) normal_of_comm {G : Type*} [CommGroup G] (H : Subgrou
 
 namespace Normal
 
-variable (nH : H.Normal)
-
 @[to_additive]
-theorem conj_mem' (n : G) (hn : n ∈ H) (g : G) :
+theorem conj_mem' (nH : H.Normal) (n : G) (hn : n ∈ H) (g : G) :
     g⁻¹ * n * g ∈ H := by
   convert nH.conj_mem n hn g⁻¹
   rw [inv_inv]
 
 @[to_additive]
-theorem mem_comm {a b : G} (h : a * b ∈ H) : b * a ∈ H := by
+theorem mem_comm (nH : H.Normal) {a b : G} (h : a * b ∈ H) : b * a ∈ H := by
   have : a⁻¹ * (a * b) * a⁻¹⁻¹ ∈ H := nH.conj_mem (a * b) h a⁻¹
   -- Porting note: Previous code was:
   -- simpa
   simp_all only [inv_mul_cancel_left, inv_inv]
 
 @[to_additive]
-theorem mem_comm_iff {a b : G} : a * b ∈ H ↔ b * a ∈ H :=
+theorem mem_comm_iff (nH : H.Normal) {a b : G} : a * b ∈ H ↔ b * a ∈ H :=
   ⟨nH.mem_comm, nH.mem_comm⟩
 
 end Normal
