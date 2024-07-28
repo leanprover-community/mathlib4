@@ -88,14 +88,13 @@ lemma apply_root_root_zero_iff : B (P.root i) (P.root j) = 0 ↔ P.pairing i j =
   · have h2 : 2 * B (P.root i) (P.root j) = 0 := by rw [two_mul_apply_root_root, hP, zero_mul]
     simp_all only [mul_eq_zero, OfNat.ofNat_ne_zero, false_or]
 
-lemma pairing_zero_of_pairing_symm_zero (h : P.pairing i j = 0) : P.pairing j i = 0 := by
+lemma pairing_zero_iff : P.pairing i j = 0 ↔ P.pairing j i = 0 := by
   rw [← apply_root_root_zero_iff B, IsRootPositive.symm P, apply_root_root_zero_iff B]
-  exact h
 
 lemma orthogonal_of_coxeter_weight_zero (h : P.coxeterWeight i j = 0) : P.IsOrthogonal i j := by
   rw [coxeterWeight, mul_eq_zero] at h
   cases h <;> rename_i h
-  · exact ⟨h, pairing_zero_of_pairing_symm_zero B i j h⟩
-  · exact ⟨pairing_zero_of_pairing_symm_zero B j i h, h⟩
+  · exact ⟨h, (pairing_zero_iff B i j).mp h⟩
+  · exact ⟨(pairing_zero_iff B j i).mp h, h⟩
 
 end RootPairing
