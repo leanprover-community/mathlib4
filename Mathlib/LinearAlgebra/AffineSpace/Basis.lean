@@ -274,8 +274,7 @@ instance instAddAction : AddAction V (AffineBasis ι k P) :=
   rw [vadd_vsub_assoc, neg_add_eq_sub, vsub_vadd_eq_vsub_sub]
 
 section SMul
-variable [Group G] [SMul G k] [DistribMulAction G V] [SMulCommClass G k V] (b : AffineBasis ι k P)
-  {s : Finset ι} {i j : ι} (e : ι ≃ ι')
+variable [Group G] [SMul G k] [DistribMulAction G V] [SMulCommClass G k V]
 
 instance instSMul : SMul G (AffineBasis ι k V) where
   smul a b :=
