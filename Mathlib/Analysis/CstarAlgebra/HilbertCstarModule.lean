@@ -38,7 +38,8 @@ these instances themselves on a particular type.
 
 ## References
 
-+ FIXME
++ Erin Wittlich. *Formalizing Hilbert Modules in C⋆-algebras with the Lean Proof Assistant*,
+  December 2022. Master's thesis, Southern Illinois University Edwardsville.
 -/
 
 open scoped ComplexOrder RightActions
@@ -221,6 +222,7 @@ lemma inner_mul_inner_swap_le [CompleteSpace A] {x y : E} : ⟪y, x⟫ * ⟪x, y
     simp only [star_inner, sub_self, zero_sub, le_neg_add_iff_add_le, add_zero] at h₁
     rwa [smul_le_smul_iff_of_pos_left (pow_pos (HilbertCstarModule.norm_pos h) _)] at h₁
 
+variable (E) in
 /-- The Cauchy-Schwarz inequality for Hilbert C⋆-modules. -/
 lemma norm_inner_le [CompleteSpace A] {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
   have := calc ‖⟪x, y⟫‖ ^ 2 = ‖⟪y, x⟫ * ⟪x, y⟫‖ := by
@@ -243,7 +245,7 @@ protected lemma norm_triangle [CompleteSpace A] (x y : E) : ‖x + y‖ ≤ ‖x
             norm_nonneg, Real.sq_sqrt]
           exact norm_add₃_le _ _ _
       _ ≤ ‖⟪x, x⟫‖ + ‖⟪y, x⟫‖ + ‖⟪x, y⟫‖ + ‖⟪y, y⟫‖ := by gcongr; exact norm_add_le _ _
-      _ ≤ ‖⟪x, x⟫‖ + ‖y‖ * ‖x‖ + ‖x‖ * ‖y‖ + ‖⟪y, y⟫‖ := by gcongr <;> exact norm_inner_le
+      _ ≤ ‖⟪x, x⟫‖ + ‖y‖ * ‖x‖ + ‖x‖ * ‖y‖ + ‖⟪y, y⟫‖ := by gcongr <;> exact norm_inner_le E
       _ = ‖x‖ ^ 2 + ‖y‖ * ‖x‖ + ‖x‖ * ‖y‖ + ‖y‖ ^ 2 := by
           simp [norm_eq_sqrt_norm_inner_self]
       _ = (‖x‖ + ‖y‖) ^ 2 := by simp only [add_pow_two, add_left_inj]; ring
@@ -257,6 +259,37 @@ lemma normedSpaceCore [CompleteSpace A] : NormedSpace.Core ℂ E where
   norm_eq_zero_iff x := norm_zero_iff x
   norm_smul c x := by simp [norm_eq_sqrt_norm_inner_self, norm_smul, ← mul_assoc]
   norm_triangle x y := HilbertCstarModule.norm_triangle x y
+
+lemma norm_eq_csSup [CompleteSpace A] (v : E) :
+    ‖v‖ = sSup { ‖⟪w, v⟫_A‖ | (w : E) (_ : ‖w‖ ≤ 1) } := by
+  let instNACG : NormedAddCommGroup E := NormedAddCommGroup.ofCore normedSpaceCore
+  apply Eq.symm
+  refine IsLUB.csSup_eq ⟨?mem_upperBounds, ?mem_lowerBounds⟩
+    ⟨0, ⟨0, by simp [HilbertCstarModule.inner_zero_left]⟩⟩
+  case mem_upperBounds =>
+    rw [mem_upperBounds]
+    intro x hx
+    obtain ⟨w, hw₁, hw₂⟩ := hx
+    rw [← hw₂]
+    calc _ ≤ ‖w‖ * ‖v‖ := norm_inner_le E
+      _ ≤ 1 * ‖v‖ := by gcongr
+      _ = ‖v‖ := by simp
+  case mem_lowerBounds =>
+    rw [mem_lowerBounds]
+    intro x hx
+    rw [mem_upperBounds] at hx
+    have hmain : ‖v‖ ∈ { ‖⟪w, v⟫_A‖ | (w : E) (_ : ‖w‖ ≤ 1) } := by
+      refine ⟨‖v‖⁻¹ • v, ⟨?_, ?_⟩⟩
+      · simp [HilbertCstarModule.norm_smul (x := v)]
+        by_cases hv : v = 0
+        · simp [hv]
+        · have hv' : ‖v‖ ≠ 0 := by
+            intro hv''
+            rw [HilbertCstarModule.norm_zero_iff] at hv''
+            exact hv hv''
+          rw [inv_mul_cancel hv']
+      · simp [norm_smul, HilbertCstarModule.inner_self_eq_norm_sq, pow_two, ← mul_assoc]
+    exact hx ‖v‖ hmain
 
 end norm
 
