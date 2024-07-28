@@ -10,18 +10,6 @@ open CategoryTheory Limits
 
 variable {C₁ C₂ D : Type*} [Category C₁] [Category C₂] [Category D]
 
-section
-
-instance (F : C₁ ⥤ C₂ ⥤ D) [HasZeroMorphisms C₂] [HasZeroMorphisms D]
-    [∀ X₁, (F.obj X₁).PreservesZeroMorphisms] :
-    F.flip.PreservesZeroMorphisms where
-
-instance (F : C₁ ⥤ C₂ ⥤ D) [HasZeroMorphisms C₁] [HasZeroMorphisms D]
-    [F.PreservesZeroMorphisms] (X₂ : C₂) :
-    (F.flip.obj X₂).PreservesZeroMorphisms where
-
-end
-
 namespace HomologicalComplex
 
 variable {I₁ I₂ J : Type*} {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂}
