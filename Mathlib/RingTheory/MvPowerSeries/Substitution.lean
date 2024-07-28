@@ -127,14 +127,14 @@ theorem MvPowerSeries.prod_smul_X_eq_smul_monomial_one {σ : Type*}
     rw [algebra_compatible_smul R, smul_eq_C_mul]
 
 theorem MvPowerSeries.monomial_eq'
-    {σ : Type*} [DecidableEq σ] {R : Type*} [CommSemiring R]
+    {σ : Type*} {R : Type*} [CommSemiring R]
     (e : σ →₀ ℕ) (r : σ → R) :
     MvPowerSeries.monomial R e (e.prod (fun s n => r s ^  n))
       = (Finsupp.prod e fun s e => (r s • MvPowerSeries.X s) ^ e) := by
   rw [prod_smul_X_eq_smul_monomial_one, ← map_smul, smul_eq_mul, mul_one]
 
 theorem MvPowerSeries.monomial_smul_const
-    {σ : Type*} [DecidableEq σ] {R : Type*} [CommSemiring R]
+    {σ : Type*} {R : Type*} [CommSemiring R]
     (e : σ →₀ ℕ) (r : R) :
     MvPowerSeries.monomial R e (r ^ (Finsupp.sum e fun _ n => n))
       = (Finsupp.prod e fun s e => (r • MvPowerSeries.X s) ^ e) := by
@@ -940,7 +940,7 @@ theorem scale_zero_apply (f : R⟦X⟧) :
 /-- When p is linear, substitution of p and then a scalar homothety
   is substitution of the homothety then p -/
 lemma subst_linear_subst_scalar_comm (a : A)
-    {σ : Type*} [DecidableEq σ] [Finite σ] (p : MvPowerSeries σ R)
+    {σ : Type*} [DecidableEq σ] (p : MvPowerSeries σ R)
     (hp_lin : ∀ (d : σ →₀ ℕ), (d.sum (fun _ n ↦ n) ≠ 1) → MvPowerSeries.coeff R d p = 0)
     (f : PowerSeries R) :
     subst p (scale a f)
