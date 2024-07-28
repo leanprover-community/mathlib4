@@ -230,10 +230,10 @@ theorem toFun_eq_coe (f : LocallyConstant X Y) : f.toFun = f :=
 theorem coe_mk (f : X → Y) (h) : ⇑(⟨f, h⟩ : LocallyConstant X Y) = f :=
   rfl
 
-theorem congr_fun {f g : LocallyConstant X Y} (h : f = g) (x : X) : f x = g x :=
+protected theorem congr_fun {f g : LocallyConstant X Y} (h : f = g) (x : X) : f x = g x :=
   DFunLike.congr_fun h x
 
-theorem congr_arg (f : LocallyConstant X Y) {x y : X} (h : x = y) : f x = f y :=
+protected theorem congr_arg (f : LocallyConstant X Y) {x y : X} (h : x = y) : f x = f y :=
   DFunLike.congr_arg f h
 
 theorem coe_injective : @Function.Injective (LocallyConstant X Y) (X → Y) (↑) := fun _ _ =>

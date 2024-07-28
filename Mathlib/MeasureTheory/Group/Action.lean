@@ -8,6 +8,7 @@ import Mathlib.Dynamics.Minimal
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.MeasureTheory.Group.MeasurableEquiv
 import Mathlib.MeasureTheory.Measure.Regular
+import Mathlib.Order.Filter.EventuallyConst
 
 /-!
 # Measures invariant under group actions
@@ -19,7 +20,8 @@ some basic properties of such measures.
 -/
 
 
-open ENNReal NNReal Pointwise Topology MeasureTheory MeasureTheory.Measure Set Function
+open scoped ENNReal NNReal Pointwise Topology
+open MeasureTheory.Measure Set Function Filter
 
 namespace MeasureTheory
 
@@ -131,7 +133,12 @@ theorem smul_mem_ae (c : G) {s : Set α} : c • s ∈ ae μ ↔ s ∈ ae μ := 
 @[to_additive (attr := simp)]
 theorem smul_ae (c : G) : c • ae μ = ae μ := by
   ext s
-  simp only [Filter.mem_smul_filter, preimage_smul, smul_mem_ae]
+  simp only [mem_smul_filter, preimage_smul, smul_mem_ae]
+
+@[to_additive (attr := simp)]
+theorem eventuallyConst_smul_set_ae (c : G) {s : Set α} :
+    EventuallyConst (c • s : Set α) (ae μ) ↔ EventuallyConst s (ae μ) := by
+  rw [← preimage_smul_inv, eventuallyConst_preimage, Filter.map_smul, smul_ae]
 
 @[to_additive (attr := simp)]
 theorem smul_set_ae_le (c : G) {s t : Set α} : c • s ≤ᵐ[μ] c • t ↔ s ≤ᵐ[μ] t := by

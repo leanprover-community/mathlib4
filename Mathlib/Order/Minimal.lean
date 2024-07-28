@@ -86,9 +86,9 @@ theorem mem_maximals_setOf_iff {P : α → Prop} :
     x ∈ maximals r (setOf P) ↔ P x ∧ ∀ ⦃y⦄, P y → r x y → x = y :=
   mem_maximals_iff
 
-theorem mem_minimals_iff : x ∈ minimals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r y x → x = y := by
-  haveI := IsAntisymm.swap r
-  exact mem_maximals_iff
+theorem mem_minimals_iff : x ∈ minimals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r y x → x = y :=
+  have := IsAntisymm.swap r
+  mem_maximals_iff
 
 theorem mem_minimals_setOf_iff {P : α → Prop} :
     x ∈ minimals r (setOf P) ↔ P x ∧ ∀ ⦃y⦄, P y → r y x → x = y :=
@@ -118,7 +118,9 @@ theorem minimals_eq_minimals_of_subset_of_forall [IsTrans α r] (hts : t ⊆ s)
 
 theorem maximals_eq_maximals_of_subset_of_forall [IsTrans α r] (hts : t ⊆ s)
     (h : ∀ x ∈ s, ∃ y ∈ t, r x y) : maximals r s = maximals r t :=
-  @minimals_eq_minimals_of_subset_of_forall _ _ _ _ (IsAntisymm.swap r) (IsTrans.swap r) hts h
+  have := IsTrans.swap r
+  have := IsAntisymm.swap r
+  minimals_eq_minimals_of_subset_of_forall hts h
 
 variable (r s)
 
@@ -126,7 +128,7 @@ theorem maximals_antichain : IsAntichain r (maximals r s) := fun _a ha _b hb hab
   hab <| eq_of_mem_maximals ha hb.1 h
 
 theorem minimals_antichain : IsAntichain r (minimals r s) :=
-  haveI := IsAntisymm.swap r
+  have := IsAntisymm.swap r
   (maximals_antichain _ _).swap
 
 end IsAntisymm
@@ -280,6 +282,7 @@ section Image
 variable {f : α → β} {r : α → α → Prop} {s : β → β → Prop}
 
 section
+
 variable {x : Set α} (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) {a : α}
 
 theorem map_mem_minimals (ha : a ∈ minimals r x) : f a ∈ minimals s (f '' x) :=
