@@ -233,15 +233,24 @@ def ihom_iso' (X Y Z : SSet) : (ihom X).obj ((ihom Y).obj Z) ≅ (ihom Y).obj ((
 
 end ihom
 
+noncomputable
+def temp (m : ℕ) :
+    Limits.PushoutCocone (Λ[2, 1] ◁ boundaryInclusion m) (hornInclusion 2 1 ▷ ∂Δ[m]) := by
+  refine Limits.PushoutCocone.mk (hornInclusion 2 1 ▷ Δ[m]) (Δ[2] ◁ boundaryInclusion m) ?_
+  aesop
+
 -- `0079`, hard to show
 /- B is a quasicat iff Fun(Δ[2], B) ⟶ Fun(Λ[2, 1], B) is a trivial Kan fib -/
 instance horn_tkf_iff_quasicat (B : SSet) : Quasicategory B ↔
     trivialKanFibration ((Fun.map (hornInclusion 2 1).op).app B) := by
-  dsimp
+  refine ⟨?_, ?_⟩
+  swap
+  rintro ⟨h⟩
+  refine ⟨fun m i σ₀ _h0 _hm ↦ ?_⟩
   let p := (MonoidalClosed.pre (hornInclusion 2 1)).app B
-  --have := @Limits.PushoutCocone.mk SSet _ ((hornInclusion 2 1) ▷ Δ[m])
+  have := temp m
   sorry
-
+--  (Δ[2] ⊗ Δ[m])
 -- ∂Δ[n] ⟶ Δ[n] is a monomorphism
 instance (n : ℕ) : Mono (boundaryInclusion n) where
   right_cancellation := by
