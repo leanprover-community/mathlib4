@@ -94,8 +94,8 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
       _ ≤ limsup (f · x) atTop := hx
   -- This exactly means that the `s n` containing `x` have all their finite intersection non-null.
   · refine ⟨{n | x ∈ s n}, fun hxs ↦ ?_, fun u hux hu ↦ ?_⟩
-    -- This next block proves that a set of strictly positive natural density is infinite, mixed with
-    -- the fact that `{n | x ∈ s n}` has strictly positive natural density.
+    -- This next block proves that a set of strictly positive natural density is infinite, mixed
+    -- with the fact that `{n | x ∈ s n}` has strictly positive natural density.
     -- TODO: Separate it out to a lemma once we have a natural density API.
     · refine ENNReal.div_ne_zero.2 ⟨hr₀, measure_ne_top _ _⟩ $ eq_bot_mono hx $ Tendsto.limsup_eq $
         tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
