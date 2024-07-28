@@ -339,6 +339,7 @@ x : α
 ⊢ inst1 = inst2
 -/
 #guard_msgs in
-example {α : Type} (inst1 : BEq α) [LawfulBEq α] (inst2 : BEq α) [LawfulBEq α] (xs : List α) (x : α) :
+example
+    {α : Type} (inst1 : BEq α) [LawfulBEq α] (inst2 : BEq α) [LawfulBEq α] (xs : List α) (x : α) :
     @List.erase _ inst1 xs x = @List.erase _ inst2 xs x := by
   congr! (config := { beqEq := false })
