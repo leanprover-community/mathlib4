@@ -89,6 +89,7 @@ theorem IsNilpotent.finsum {α : Type*} [CommSemiring α] {β : Type*} {f : β �
     exact IsNilpotent.finset_sum _ (fun b _ ↦ hf b)
   · simp only [finsum_def, dif_neg h, IsNilpotent.zero]
 
+/-- Change of coefficients in mv power series, as an `AlgHom` -/
 def MvPowerSeries.mapAlgHom {σ : Type*} {R : Type*} [CommSemiring R] {S : Type*}
     [Semiring S] [Algebra R S] {T : Type*} [Semiring T] [Algebra R T]
     (φ : S →ₐ[R] T) :
@@ -98,6 +99,7 @@ def MvPowerSeries.mapAlgHom {σ : Type*} {R : Type*} [CommSemiring R] {S : Type*
     simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
       MonoidHom.coe_coe, MvPowerSeries.algebraMap_apply, map_C, RingHom.coe_coe, AlgHom.commutes]
 
+/-- Change of coefficients in power series, as an `AlgHom` -/
 def PowerSeries.mapAlgHom {R : Type*} [CommSemiring R]
     {S : Type*} [Semiring S] [Algebra R S] {T : Type*} [Semiring T] [Algebra R T]
     (φ : S →ₐ[R] T) :
@@ -141,36 +143,42 @@ theorem MvPowerSeries.monomial_smul_const
 
 section DiscreteUniformity
 
+/-- The discrete university -/
 class DiscreteUniformity (α : Type*) [u : UniformSpace α] : Prop where
   eq_principal_idRel : uniformity α = Filter.principal idRel
 
-instance discreteUniformity_bot (α : Type*) : @DiscreteUniformity α ⊥ := by
+/-- The bot uniformity is the discrete uniformity -/
+instance (α : Type*) : @DiscreteUniformity α ⊥ := by
   apply @DiscreteUniformity.mk α ⊥ rfl
 
-instance discreteTopology_of_discreteUniformity (α : Type*)
-    [UniformSpace α] [DiscreteUniformity α] : DiscreteTopology α := by
-    rw [discreteTopology_iff_singleton_mem_nhds]
-    intro a
-    rw [UniformSpace.mem_nhds_iff]
-    simp only [Set.subset_singleton_iff, DiscreteUniformity.eq_principal_idRel]
-    simp only [Filter.mem_principal, idRel_subset]
-    use Set.diagonal α
-    simp only [Set.mem_diagonal_iff, implies_true, true_and]
-    intro x
-    simp only [UniformSpace.ball, Set.mem_preimage, Set.mem_diagonal_iff]
-    exact fun a => a.symm
+/-- The discrete uniformity induces the discrete topology  -/
+instance (α : Type*) [UniformSpace α] [DiscreteUniformity α] :
+    DiscreteTopology α := by
+  rw [discreteTopology_iff_singleton_mem_nhds]
+  intro a
+  rw [UniformSpace.mem_nhds_iff]
+  simp only [Set.subset_singleton_iff, DiscreteUniformity.eq_principal_idRel]
+  simp only [Filter.mem_principal, idRel_subset]
+  use Set.diagonal α
+  simp only [Set.mem_diagonal_iff, implies_true, true_and]
+  intro x
+  simp only [UniformSpace.ball, Set.mem_preimage, Set.mem_diagonal_iff]
+  exact fun a => a.symm
 
-instance bot_uniformAddGroup {R : Type*} [AddGroup R]
-    [UniformSpace R] [DiscreteUniformity R] : UniformAddGroup R :=
-  { uniformContinuous_sub := fun s hs ↦ by
-      simp only [uniformity_prod, DiscreteUniformity.eq_principal_idRel, Filter.comap_principal,
-        Filter.inf_principal, Filter.map_principal, Filter.mem_principal, Set.image_subset_iff]
-      rintro ⟨⟨x, y⟩, z, t⟩
-      simp only [Set.mem_inter_iff, Set.mem_preimage, mem_idRel, and_imp]
-      rintro ⟨rfl⟩ ⟨rfl⟩
-      exact mem_uniformity_of_eq hs rfl }
+/-- The discrete uniformity makes a group a `UniformGroup -/
+@[to_additive "The discrete uniformity makes an additive group a `UniformAddGroup`"]
+instance {R : Type*} [Group R] [UniformSpace R] [DiscreteUniformity R] :
+    UniformGroup R where
+  uniformContinuous_div := fun s hs ↦ by
+    simp only [uniformity_prod, DiscreteUniformity.eq_principal_idRel, Filter.comap_principal,
+      Filter.inf_principal, Filter.map_principal, Filter.mem_principal, Set.image_subset_iff]
+    rintro ⟨⟨x, y⟩, z, t⟩
+    simp only [Set.mem_inter_iff, Set.mem_preimage, mem_idRel, and_imp]
+    rintro ⟨rfl⟩ ⟨rfl⟩
+    exact mem_uniformity_of_eq hs rfl
 
-instance discreteUniformity_complete (α : Type*) [UniformSpace α] [DiscreteUniformity α] :
+/-- The discrete uniformity makes a space complete -/
+instance (α : Type*) [UniformSpace α] [DiscreteUniformity α] :
     CompleteSpace α where
   complete {f} hf := by
     simp [cauchy_iff, bot_uniformity] at hf
@@ -258,14 +266,14 @@ noncomputable def substDomain.submodule : Ideal (σ → MvPowerSeries τ S) :=
     smul_mem' := substDomain_mul }
 
 /-- If σ is finite, then the nilpotent condition is enough for SubstDomain -/
-def substDomain_of_constantCoeff_nilpotent [Finite σ]
+theorem substDomain_of_constantCoeff_nilpotent [Finite σ]
     {a : σ → MvPowerSeries τ S} (ha : ∀ s, IsNilpotent (constantCoeff τ S (a s))) :
     SubstDomain a where
   const_coeff := ha
   tendsto_zero := by simp only [Filter.cofinite_eq_bot, Filter.tendsto_bot]
 
 /-- If σ is finite, then having zero constant coefficient is enough for SubstDomain -/
-def substDomain_of_constantCoeff_zero [Finite σ]
+theorem substDomain_of_constantCoeff_zero [Finite σ]
     {a : σ → MvPowerSeries τ S} (ha : ∀ s, constantCoeff τ S (a s) = 0) :
     SubstDomain a :=
   substDomain_of_constantCoeff_nilpotent (fun s ↦ by simp only [ha s, IsNilpotent.zero])
@@ -279,7 +287,7 @@ noncomputable def subst (a : σ → MvPowerSeries τ S) (f : MvPowerSeries σ R)
 
 variable {a : σ → MvPowerSeries τ S} (ha : SubstDomain a)
 
-def SubstDomain.evalDomain :
+theorem SubstDomain.evalDomain :
     @EvalDomain σ (MvPowerSeries τ S) _ (@topologicalSpace τ S ⊥) a :=
   letI : UniformSpace S := ⊥
   { hpow := fun s ↦ (tendsto_pow_of_constantCoeff_nilpotent_iff (a s)).mpr (ha.const_coeff s)
@@ -469,7 +477,7 @@ theorem IsNilpotent_subst
       simp only [Finsupp.filter_apply, if_neg ht', ne_eq, not_true_eq_false] at htt'
     · exact fun _ ↦ by rw [pow_zero]
 
-def SubstDomain.comp : SubstDomain (fun s ↦ substAlgHom hb (a s)) where
+theorem SubstDomain.comp : SubstDomain (fun s ↦ substAlgHom hb (a s)) where
   const_coeff s := IsNilpotent_subst hb (ha.const_coeff s)
   tendsto_zero := by
     letI : TopologicalSpace S := ⊥
@@ -660,7 +668,7 @@ local instance : CompleteSpace (MvPowerSeries τ S) := by refine completeSpace �
 structure SubstDomain (a : MvPowerSeries τ S) : Prop where
   const_coeff : IsNilpotent (MvPowerSeries.constantCoeff τ S a)
 
-def substDomain_of_constantCoeff_nilpotent
+theorem substDomain_of_constantCoeff_nilpotent
     {a : MvPowerSeries τ S}
     (ha : IsNilpotent (MvPowerSeries.constantCoeff τ S a)) :
     SubstDomain a where
@@ -672,7 +680,7 @@ theorem substDomain_iff (a : MvPowerSeries τ S) :
     (Function.const Unit ha.const_coeff),
    fun ha  ↦ substDomain_of_constantCoeff_nilpotent (ha.const_coeff ())⟩
 
-def substDomain_of_constantCoeff_zero
+theorem substDomain_of_constantCoeff_zero
     {a : MvPowerSeries τ S}
     (ha : MvPowerSeries.constantCoeff τ S a = 0) :
     SubstDomain a where
@@ -699,7 +707,7 @@ noncomputable def subst (a : MvPowerSeries τ S) (f : PowerSeries R) :
 
 variable {a : MvPowerSeries τ S} (ha : SubstDomain a)
 
-def SubstDomain.const : MvPowerSeries.SubstDomain (fun (_ : Unit) ↦ a) where
+theorem SubstDomain.const : MvPowerSeries.SubstDomain (fun (_ : Unit) ↦ a) where
   const_coeff  := fun _ ↦ ha.const_coeff
   tendsto_zero := by simp only [Filter.cofinite_eq_bot, Filter.tendsto_bot]
 
@@ -831,7 +839,7 @@ theorem comp_substAlgHom
   MvPowerSeries.comp_substAlgHom ha.const ε
 -/
 
-def SubstDomain.comp {a : PowerSeries S} (ha : SubstDomain a)
+theorem SubstDomain.comp {a : PowerSeries S} (ha : SubstDomain a)
     {b : MvPowerSeries υ T} (hb : SubstDomain b):
     SubstDomain (substAlgHom hb a) where
   const_coeff := MvPowerSeries.IsNilpotent_subst hb.const (ha.const_coeff)
