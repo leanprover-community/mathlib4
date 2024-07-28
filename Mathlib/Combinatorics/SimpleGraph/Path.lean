@@ -28,18 +28,15 @@ counterparts in [Chou1994].
 
 ## Main definitions
 
-* `SimpleGraph.Walk` (with accompanying pattern definitions
-  `SimpleGraph.Walk.nil'` and `SimpleGraph.Walk.cons'`)
-
 * `SimpleGraph.Walk.IsTrail`, `SimpleGraph.Walk.IsPath`, and `SimpleGraph.Walk.IsCycle`.
 
 * `SimpleGraph.Path`
 
-* `SimpleGraph.Walk.map` and `SimpleGraph.Path.map` for the induced map on walks,
+* `SimpleGraph.Path.map` for the induced map on paths,
   given an (injective) graph homomorphism.
 
 ## Tags
-walks, trails, paths, circuits, cycles
+trails, paths, circuits, cycles
 
 -/
 
@@ -452,12 +449,14 @@ theorem darts_toPath_subset {u v : V} (p : G.Walk u v) : (p.toPath : G.Walk u v)
 theorem edges_toPath_subset {u v : V} (p : G.Walk u v) : (p.toPath : G.Walk u v).edges ⊆ p.edges :=
   edges_bypass_subset _
 
+end Walk
+
 /-! ### Mapping paths -/
 
-variable {G' G''}
+namespace Walk
 
+variable {G G' G''}
 variable (f : G →g G') (f' : G' →g G'') {u v u' v' : V} (p : G.Walk u v)
-
 variable {p f}
 
 theorem map_isPath_of_injective (hinj : Function.Injective f) (hp : p.IsPath) :

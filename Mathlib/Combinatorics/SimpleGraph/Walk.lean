@@ -9,17 +9,8 @@ import Mathlib.Combinatorics.SimpleGraph.Maps
 
 # Walk
 
-In a simple graph,
-
-* A *walk* is a finite sequence of adjacent vertices, and can be
-  thought of equally well as a sequence of directed edges.
-
-* A *trail* is a walk whose edges each appear no more than once.
-
-* A *path* is a trail whose vertices appear no more than once.
-
-* A *cycle* is a nonempty trail whose first and last vertices are the
-  same and whose vertices except for the first appear no more than once.
+In a simple graph, a *walk* is a finite sequence of adjacent vertices, and can be
+thought of equally well as a sequence of directed edges.
 
 **Warning:** graph theorists mean something different by "path" than
 do homotopy theorists.  A "walk" in graph theory is a "path" in
@@ -34,11 +25,7 @@ counterparts in [Chou1994].
 * `SimpleGraph.Walk` (with accompanying pattern definitions
   `SimpleGraph.Walk.nil'` and `SimpleGraph.Walk.cons'`)
 
-* `SimpleGraph.Walk.IsTrail`, `SimpleGraph.Walk.IsPath`, and `SimpleGraph.Walk.IsCycle`.
-
-* `SimpleGraph.Path`
-
-* `SimpleGraph.Walk.map` and `SimpleGraph.Path.map` for the induced map on walks,
+* `SimpleGraph.Walk.map` for the induced map on walks,
   given an (injective) graph homomorphism.
 
 ## Tags
