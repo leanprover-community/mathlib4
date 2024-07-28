@@ -191,18 +191,18 @@ def forallIntroLinter : Linter where run := withSetOptionIn fun cmd ↦ do
   if (← MonadState.get).messages.hasErrors then
     return
   let haves := cmd.filter (·.isOfKind ``Lean.Parser.Tactic.tacticHave_)
-  for stx in haves do
---  if let some stx := cmd.raw.find? (·.isOfKind ``Lean.Parser.Tactic.tacticHave_) then
+  for haveStx in haves do
+--  if let some haveStx := cmd.raw.find? (·.isOfKind ``Lean.Parser.Tactic.tacticHave_) then
     --dbg_trace "found have"
-    let newHave ← allStx cmd stx
-    if stx != newHave then
-      Linter.logLint linter.forallIntro stx m!"replace{indentD stx}\nwith{indentD newHave}"
+    let newHave ← allStx cmd haveStx
+    if haveStx != newHave then
+      Linter.logLint linter.forallIntro haveStx m!"replace{indentD haveStx}\nwith{indentD newHave}"
     --logInfo newHave
---    let newCmd ← cmd.replaceM fun s => do if s == stx then return some newHave else return none
+--    let newCmd ← cmd.replaceM fun s => do if s == haveStx then return some newHave else return none
 --    if cmd != newCmd then
 --      logInfo m!"No change needed"
 --    else
---      Linter.logLint linter.forallIntro stx m!"Please use\n---\n{newCmd}\n---"
+--      Linter.logLint linter.forallIntro haveStx m!"Please use\n---\n{newCmd}\n---"
 
 initialize addLinter forallIntroLinter
 
