@@ -24,7 +24,7 @@ and is almost everywhere strongly measurable.
 
 * `snorm' f p μ` : `(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `f : α → F` and `p : ℝ`, where `α` is a measurable
   space and `F` is a normed group.
-* `snormEssSup f μ` : seminorm in `ℒ∞`, equal to the essential supremum `ess_sup ‖f‖ μ`.
+* `snormEssSup f μ` : seminorm in `ℒ∞`, equal to the essential supremum `essSup ‖f‖ μ`.
 * `snorm f p μ` : for `p : ℝ≥0∞`, seminorm in `ℒp`, equal to `0` for `p=0`, to `snorm' f p μ`
   for `0 < p < ∞` and to `snormEssSup f μ` for `p = ∞`.
 
