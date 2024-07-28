@@ -297,12 +297,14 @@ theorem map_id (S : Submonoid M) : S.map (MonoidHom.id M) = S :=
 
 section GaloisCoinsertion
 
-variable {ι : Type*} {f : F} (hf : Function.Injective f)
+variable {ι : Type*} {f : F}
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
 @[to_additive " `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. "]
-def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
+def gciMapComap (hf : Function.Injective f) : GaloisCoinsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
+
+variable (hf : Function.Injective f)
 
 @[to_additive]
 theorem comap_map_eq_of_injective (S : Submonoid M) : (S.map f).comap f = S :=
@@ -999,7 +1001,7 @@ theorem eq_bot_iff_forall : S = ⊥ ↔ ∀ x ∈ S, x = (1 : M) :=
 theorem eq_bot_of_subsingleton [Subsingleton S] : S = ⊥ := by
   rw [eq_bot_iff_forall]
   intro y hy
-  simpa using _root_.congr_arg ((↑) : S → M) <| Subsingleton.elim (⟨y, hy⟩ : S) 1
+  simpa using congr_arg ((↑) : S → M) <| Subsingleton.elim (⟨y, hy⟩ : S) 1
 
 @[to_additive]
 theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x ∈ S, x ≠ (1 : M) :=
