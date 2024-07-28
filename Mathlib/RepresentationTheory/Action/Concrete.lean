@@ -72,7 +72,7 @@ def diagonal (G : Type u) [Monoid G] (n : ℕ) : Action (Type u) (MonCat.of G) :
 set_option linter.uppercaseLean3 false in
 #align Action.diagonal Action.diagonal
 
-/-- We have `fin 1 → G ≅ G` as `G`-sets, with `G` acting by left multiplication. -/
+/-- We have `Fin 1 → G ≅ G` as `G`-sets, with `G` acting by left multiplication. -/
 def diagonalOneIsoLeftRegular (G : Type u) [Monoid G] : diagonal G 1 ≅ leftRegular G :=
   Action.mkIso (Equiv.funUnique _ _).toIso fun _ => rfl
 set_option linter.uppercaseLean3 false in
