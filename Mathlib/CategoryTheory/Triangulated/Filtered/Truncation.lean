@@ -269,7 +269,13 @@ noncomputable instance : (triangleFunctor (hP := hP) n).CommShift ℤ where
       rw [shiftFunctorAdd'_eq_shiftFunctorAdd]
       simp only [Iso.hom_inv_id_app]
 
-#synth (triangleFunctor n).CommShift ℤ (C := C)
+lemma triangleFunctor_commShiftIso_eq (n a : ℤ) (X : C) :
+    ((triangleFunctor (hP := hP) n).commShiftIso a).app X =
+    (triangleFunctorIsoShift_exists n X a).choose := rfl
+
+lemma triangleFunctor_commShiftIso_hom_eq (n a : ℤ) (X : C) :
+    ((triangleFunctor (hP := hP) n).commShiftIso a).hom.app X =
+    (triangleFunctorIsoShift_exists n X a).choose.hom := rfl
 
 end TruncAux
 
@@ -297,6 +303,15 @@ instance (n : ℤ) : (truncGE (hP := hP) n).Additive where
     rfl
 
 noncomputable instance (n : ℤ) : (truncGE (hP := hP) n).CommShift ℤ := Functor.CommShift.comp _ _
+
+lemma truncGE_commShiftIso_hom_app (n a : ℤ) (X : C) :
+    ((hP.truncGE n).commShiftIso a).hom.app X =
+    (TruncAux.triangleFunctorIsoShift_exists n X a).choose.hom.hom₁ := by
+  erw [Functor.commShiftIso_comp_hom_app (TruncAux.triangleFunctor n) Triangle.π₁ a X]
+  rw [TruncAux.triangleFunctor_commShiftIso_hom_eq, Triangle_π₁_commShiftIso_hom]
+  erw [comp_id]
+  simp only [Functor.comp_obj, Triangle.shiftFunctor_eq, Triangle.shiftFunctor_obj,
+    TruncAux.triangleFunctor_obj_obj₂, Triangle.mk_obj₂, Iso.refl_hom, Triangle.π₁_map]
 
 noncomputable def truncGEι (n : ℤ) : truncGE (hP := hP) n ⟶ 𝟭 _ :=
   whiskerLeft (TruncAux.triangleFunctor n) Triangle.π₁Toπ₂
@@ -596,16 +611,13 @@ lemma triangleGTLE_distinguished (n : ℤ) (X : C) :
   isomorphic_distinguished _ (triangleGELE_distinguished n (n+1) rfl X) _
     ((triangleGTLEIsoTriangleGELE n (n+1) rfl).app X)
 
-variable (n : ℤ)
-#synth (truncLE n).CommShift ℤ (C := C)
-
 @[simp]
 lemma truncLECommShift.comm (X : C) (n a : ℤ) :
     ((hP.truncLEπ n).app X)⟦a⟧' = (truncLEπ n).app (X⟦a⟧) ≫
     ((truncLE n).commShiftIso a).hom.app X := by
   set ex := TruncAux.triangleFunctorIsoShift_exists n X a
   set e := ex.choose
-  set e' := e.inv.hom₃
+  set e' := e.hom.hom₃
   simp only [Triangle.shiftFunctor_eq, Triangle.shiftFunctor_obj, TruncAux.triangleFunctor_obj_obj₂,
     Functor.comp_obj, Triangle.mk_obj₃] at e'
   have : ((truncLE n).commShiftIso a).hom.app X = e' := sorry

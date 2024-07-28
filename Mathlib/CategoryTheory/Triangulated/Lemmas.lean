@@ -1,18 +1,17 @@
 import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Shift.CommShift
+import Mathlib.CategoryTheory.Triangulated.Basic
 
 universe u v
 
 namespace CategoryTheory
 
-open Limits Category Functor
+open Limits Category Functor Pretriangulated
 
 namespace Triangulated
 
 variable {C : Type u} [Category.{v,u} C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C] [IsTriangulated C]
-
-open Pretriangulated
 
 abbrev IsTriangleMorphism (T T' : Triangle C) (u : T.obj₁ ⟶ T'.obj₁) (v : T.obj₂ ⟶ T'.obj₂)
     (w : T.obj₃ ⟶ T'.obj₃) :=
@@ -157,6 +156,12 @@ noncomputable instance : (Triangle.π₁ (C := C)).CommShift ℤ where
       id_comp]
     rw [shiftFunctorAdd'_eq_shiftFunctorAdd, Iso.hom_inv_id_app]
 
+lemma Triangle_π₁_commShiftIso (a : ℤ) (T : Triangle C) :
+    ((Triangle.π₁ (C := C)).commShiftIso a).app T = Iso.refl _ := rfl
+
+lemma Triangle_π₁_commShiftIso_hom (a : ℤ) (T : Triangle C) :
+    ((Triangle.π₁ (C := C)).commShiftIso a).hom.app T = 𝟙 _ := rfl
+
 noncomputable instance : (Triangle.π₂ (C := C)).CommShift ℤ where
   iso n := by
     refine NatIso.ofComponents (fun X ↦ Iso.refl _) ?_
@@ -174,6 +179,9 @@ noncomputable instance : (Triangle.π₂ (C := C)).CommShift ℤ where
       id_comp]
     rw [shiftFunctorAdd'_eq_shiftFunctorAdd, Iso.hom_inv_id_app]
 
+lemma Triangle_π₂_commShiftIso (a : ℤ) (T : Triangle C) :
+    ((Triangle.π₂ (C := C)).commShiftIso a).app T = Iso.refl _ := rfl
+
 noncomputable instance : (Triangle.π₃ (C := C)).CommShift ℤ where
   iso n := by
     refine NatIso.ofComponents (fun X ↦ Iso.refl _) ?_
@@ -190,6 +198,9 @@ noncomputable instance : (Triangle.π₃ (C := C)).CommShift ℤ where
       Triangle.shiftFunctorAdd_eq, Triangle.π₃_map, Triangle.shiftFunctorAdd'_hom_app_hom₃, map_id,
       id_comp]
     rw [shiftFunctorAdd'_eq_shiftFunctorAdd, Iso.hom_inv_id_app]
+
+lemma Triangle_π₃_commShiftIso (a : ℤ) (T : Triangle C) :
+    ((Triangle.π₃ (C := C)).commShiftIso a).app T = Iso.refl _ := rfl
 
 end Pretriangulated
 
