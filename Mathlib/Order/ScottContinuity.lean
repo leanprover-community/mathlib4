@@ -11,11 +11,11 @@ import Mathlib.Order.Bounds.Basic
 
 open Set
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 section ScottContinuous
-variable [Preorder α] [Preorder β] [Preorder γ] {D D₁ D₂ : Set (Set α)} {E : Set (Set β)}
-  {f : α → β} {g : β → γ} {a : α}
+variable [Preorder α] [Preorder β] {D D₁ D₂ : Set (Set α)} {E : Set (Set β)}
+  {f : α → β} {a : α}
 
 /-- A function between preorders is said to be Scott continuous on a set `D` of directed sets if it
 preserves `IsLUB` on elements of `D`.
