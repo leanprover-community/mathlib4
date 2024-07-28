@@ -219,7 +219,7 @@ lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
   simp only [sum_map, Function.Embedding.coeFn_mk, Pi.add_apply, multinomial_cons,
     Pi.add_apply, eq_self_iff_true, if_true, Nat.cast_mul, noncommProd_cons, eq_self_iff_true,
     if_true, sum_add_distrib, sum_ite_eq', has, if_false, add_zero,
-      addLeftEmbedding_eq_addRightEmbedding, addRightEmbedding_apply]
+    addLeftEmbedding_eq_addRightEmbedding, addRightEmbedding_apply]
   suffices ∀ p : ℕ × ℕ, p ∈ antidiagonal n →
     ∑ g in piAntidiag s p.2, ((g a + p.1 + s.sum g).choose (g a + p.1) : R) *
       multinomial s (g + fun i ↦ ite (i = a) p.1 0) *
