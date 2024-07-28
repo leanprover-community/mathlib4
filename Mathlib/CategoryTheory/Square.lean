@@ -35,13 +35,13 @@ maps (`arrowArrowEquivalence'`).
 
 -/
 
-universe v u
+universe v v' u u'
 
 namespace CategoryTheory
 
 open Category
 
-variable (C : Type u) [Category.{v} C]
+variable (C : Type u) [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 /-- The category of commutative squares in a category. -/
 structure Square where
@@ -265,6 +265,33 @@ def evaluation₄ : Square C ⥤ C where
   obj sq := sq.X₄
   map φ := φ.τ₄
 
+/-- The image of a commutative square by a functor. -/
+@[simps]
+def map (sq : Square C) (F : C ⥤ D) : Square D where
+  f₁₂ := F.map sq.f₁₂
+  f₁₃ := F.map sq.f₁₃
+  f₂₄ := F.map sq.f₂₄
+  f₃₄ := F.map sq.f₃₄
+  fac := by simpa using F.congr_map sq.fac
+
 end Square
+
+namespace Functor
+
+/-- The functor `Square C ⥤ Square D` induced by a functor `C ⥤ D`. -/
+@[simps]
+def mapSquare (F : C ⥤ D) : Square C ⥤ Square D where
+  obj sq := sq.map F
+  map φ :=
+    { τ₁ := F.map φ.τ₁
+      τ₂ := F.map φ.τ₂
+      τ₃ := F.map φ.τ₃
+      τ₄ := F.map φ.τ₄
+      comm₁₂ := by simpa only [Functor.map_comp] using F.congr_map φ.comm₁₂
+      comm₁₃ := by simpa only [Functor.map_comp] using F.congr_map φ.comm₁₃
+      comm₂₄ := by simpa only [Functor.map_comp] using F.congr_map φ.comm₂₄
+      comm₃₄ := by simpa only [Functor.map_comp] using F.congr_map φ.comm₃₄ }
+
+end Functor
 
 end CategoryTheory
