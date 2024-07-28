@@ -107,4 +107,6 @@ lemma orthogonal_of_coxeter_weight_zero (h : P.coxeterWeight i j = 0) : P.IsOrth
   · exact ⟨h, pairing_zero_of_pairing_symm_zero B i j h⟩
   · exact ⟨pairing_zero_of_pairing_symm_zero B j i h, h⟩
 
+-- Get infinitely many roots if Coxeter weight is more than 4.
+
 end RootPairing

@@ -172,7 +172,6 @@ theorem mapsTo_reflection_root : MapsTo (P.reflection i) (range P.root) (range P
   rintro - ⟨j, rfl⟩
   exact P.root_reflection_perm i j ▸ mem_range_self (P.reflection_perm i j)
 
-
 lemma reflection_apply (x : M) :
     P.reflection i x = x - (P.toLin x (P.coroot i)) • P.root i :=
   rfl
@@ -333,6 +332,22 @@ the fundamental reflections.-/
 def WeylGroup : Subgroup (M ≃ₗ[R] M) :=
   Subgroup.closure ({reflection P i | i : ι })
 
+lemma reflection_in_weyl : P.reflection i ∈ P.WeylGroup := by
+  dsimp [WeylGroup]
+  refine Subgroup.mem_closure.mpr ?_
+  intro K hK
+  rw [@setOf_exists] at hK
+  simp_all only [setOf_eq_eq_singleton', iUnion_singleton_eq_range]
+  rw [@range_subset_iff] at hK
+  exact hK i
+
+--lemma exists_refl_perm_hom : Do I want to define the hom using choice?
+
+-- show that left-multiplication by reflection is "the same as" left composition with refl-perm.
+
+--define refl_perm : P.WeylGroup →* Equiv.Perm ι where -- use some kind of recursion?
+
+
 section pairs
 
 variable (j : ι)
@@ -358,34 +373,6 @@ lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.r
   simp only [LinearEquiv.coe_coe, reflection_apply, map_sub, map_smul, root_coroot_eq_pairing,
     zero_smul, sub_zero, h]
   abel
-
-/-- A pair of roots is nonsymmetrizable if the existence of a Weyl-invariant form on their span is
-obstructed.  When `R` has no zero divisors, this happens when exactly one root is fixed by the
-other's reflection. -/
-def IsNonSymmetrizable : Prop := coxeterWeight P i j = 0 ∧ ¬ IsOrthogonal P i j
-
-/-- Two roots are parallel if their Coxeter weight is exactly 4.  A linearly independent pair of
-parallel roots generates an infinite dihedral group of reflections on their span, and their span
-has an invariant singular line. -/
-def IsParallel : Prop := coxeterWeight P i j = 4
-
-variable [LT R]
-
-/-- An imaginary pair is one whose Coxeter weight is negative.  Any symmetrization yields an
-invariant form where one of the roots has negative norm and the other has positive norm. Root
-systems with imaginary pairs are not often considered, since the geometry of reflection is
-cumbersome. -/
-def IsImaginary : Prop := coxeterWeight P i j < 0
-
-/-- A pair of roots is definite if there is a unique (up to scalars) definite reflection-invariant
-form on their span. This happens precisely when the Coxeter weight is strictly between `0` and `4`.
--/
-def IsDefinite : Prop := 0 < coxeterWeight P i j ∧ coxeterWeight P i j < 4
-
-/-- A pair of roots is ultraparallel if its Coxeter weight is strictly greater than 4.
-Symmetrization induces a nondegenerate indefinite form on the span, and reflections generate an
-infinite dihedral group. -/
-def IsUltraParallel : Prop := 4 < coxeterWeight P i j
 
 end pairs
 

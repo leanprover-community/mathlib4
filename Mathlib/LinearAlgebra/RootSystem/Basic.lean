@@ -113,8 +113,35 @@ lemma linearDependent_of_eq_reflection (h : P.reflection i = P.reflection j) (h�
     simp [two_root_eq_pairing_root P i j h]
   specialize h' h₂
   apply h₁ h'.left
-
 /-!
+lemma reflection_root_plus_pairing_smul_root (hc : P.coxeterWeight i j = 4) (n : ℕ) :
+    P.reflection j ((2 * n + 1) • P.root i + n • (P.pairing i j) • P.root j) =
+      (2 * n + 1) • P.root i - (3 * n + 1) • (P.pairing i j) • P.root j := by
+  simp only [map_add, map_nsmul, reflection_apply_root, smul_sub, map_smul, reflection_apply_self,
+    smul_neg, pairing_same]
+  have hmul : n • P.pairing i j • (2 : R) • P.root j = (2 * n) • P.pairing i j •  P.root j := by
+    rw [Nat.two_mul, two_smul, add_nsmul, ← nsmul_add, DistribMulAction.smul_add]
+  rw [hmul, ]
+
+  sorry
+
+lemma reflection_reflection_root_plus_pairing_smul_root (hc : P.coxeterWeight i j = 4) (n : ℕ) :
+    P.reflection i (P.reflection j ((2 * n + 1) • P.root i + n • (P.pairing i j) • P.root j)) =
+      (2 * (n + 1) + 1) • P.root i + (n + 1) • (P.pairing i j) • P.root j := by
+  simp only [map_add, map_nsmul, reflection_apply_root, smul_sub, LinearMapClass.map_smul,
+    reflection_apply_self, smul_neg, map_sub, smul_smul, map_neg, neg_sub, pairing_same]
+  rw [← coxeterWeight, hc]
+  simp only [← sub_sub, ← sub_add, add_sub, ← add_assoc]
+
+  sorry
+
+lemma infinite_of_linearly_independent_parallel (hl : LinearIndependent R ![P.root i, P.root j])
+    (hc : P.coxeterWeight i j = 4) : Infinite ι := by
+
+  sorry
+
+
+
 lemma coxeterWeight_one_order (h: coxeterWeight P i j = 1) :
     orderOf (P.reflection i * P.reflection j) = 3 := by
   sorry
