@@ -91,7 +91,7 @@ theorem covering_of_generatedTopology_iff {X : C} (S : Sieve X) :
                                       intro Xi f p
                                       cases Exists.choose_spec (hS' p)
                                       simpa
-                                    · rw [sets_iff_generate (P.bind Q) S]
+                                    · rw [generate_le_iff (P.bind Q) S]
                                       intro Z h Hh
                                       obtain ⟨Xi, g, f, hf, hg, eq⟩ := Hh
                                       rw [<- eq]
