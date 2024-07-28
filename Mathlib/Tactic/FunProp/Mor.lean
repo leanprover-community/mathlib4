@@ -5,8 +5,7 @@ Authors: Tomas Skrivan
 -/
 import Lean
 import Mathlib.Data.FunLike.Basic
-import Mathlib.Tactic.FunProp.ToStd
-
+import Mathlib.Tactic.FunProp.ToBatteries
 
 /-!
 ## `funProp` Meta programming functions like in Lean.Expr.* but for working with bundled morphisms.

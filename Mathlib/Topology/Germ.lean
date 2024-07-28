@@ -3,10 +3,10 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Order.Filter.Germ
+import Mathlib.Order.Filter.Germ.Basic
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Normed.Module.Basic
 
 /-! # Germs of functions between topological spaces
 
@@ -173,8 +173,7 @@ lemma eq_of_germ_isConstant_on {s : Set X} (h : ∀ x ∈ s, (f : Germ (𝓝 x) 
   have : PreconnectedSpace s := Subtype.preconnectedSpace hs
   exact eq_of_germ_isConstant (fun y ↦ Germ.isConstant_comp_subtype (h y y.2)) _ _
 
-open scoped BigOperators in
 @[to_additive (attr := simp)]
 theorem Germ.coe_prod {α : Type*} (l : Filter α) (R : Type*) [CommMonoid R] {ι} (f : ι → α → R)
-    (s : Finset ι) : ((∏ i in s, f i : α → R) : Germ l R) = ∏ i in s, (f i : Germ l R) :=
+    (s : Finset ι) : ((∏ i ∈ s, f i : α → R) : Germ l R) = ∏ i ∈ s, (f i : Germ l R) :=
   map_prod (Germ.coeMulHom l : (α → R) →* Germ l R) f s

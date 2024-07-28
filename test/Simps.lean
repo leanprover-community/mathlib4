@@ -123,15 +123,15 @@ example (n : ℕ) : foo.rfl.toFun n = n := by rw [foo.rfl_toFun, id]
 example (n : ℕ) : foo.rfl.invFun n = n := by rw [foo.rfl_invFun]
 
 /- the declarations are `simp` lemmas -/
-@[simps] def foo : ℕ × ℤ := (1, 2)
+@[simps] def bar : ℕ × ℤ := (1, 2)
 
 -- note: in Lean 4 the first test succeeds without `@[simps]`, however, the remaining tests don't
-example : foo.1 = 1 := by simp
-example {a : ℕ} {h : 1 = a} : foo.1 = a := by rw [foo_fst, h]
-example {a : ℕ} {h : 1 = a} : foo.1 = a := by simp; rw [h]
-example {a : ℤ} {h : 2 = a} : foo.2 = a := by simp; rw [h]
-example {a : ℕ} {h : 1 = a} : foo.1 = a := by dsimp; rw [h] -- check that dsimp also unfolds
-example {a : ℤ} {h : 2 = a} : foo.2 = a := by dsimp; rw [h]
+example : bar.1 = 1 := by simp
+example {a : ℕ} {h : 1 = a} : bar.1 = a := by rw [bar_fst, h]
+example {a : ℕ} {h : 1 = a} : bar.1 = a := by simp; rw [h]
+example {a : ℤ} {h : 2 = a} : bar.2 = a := by simp; rw [h]
+example {a : ℕ} {h : 1 = a} : bar.1 = a := by dsimp; rw [h] -- check that dsimp also unfolds
+example {a : ℤ} {h : 2 = a} : bar.2 = a := by dsimp; rw [h]
 example {α} (x y : α) (h : x = y) : foo.rfl.toFun x = y := by simp; rw [h]
 example {α} (x y : α) (h : x = y) : foo.rfl.invFun x = y := by simp; rw [h]
 -- example {α} (x y : α) (h : x = y) : foo.rfl.toFun = @id α := by { successIfFail {simp}, rfl }
@@ -202,7 +202,8 @@ run_cmd liftTermElabM <| do
     #[`CountNested.nested2_fst, `CountNested.nested2_snd]
   -- todo: test that another attribute can be added (not working yet)
   guard <| hasSimpAttribute env `CountNested.nested1_fst -- simp attribute is global
-  guard <| not <| hasSimpAttribute env `CountNested.nested2_fst -- lemmas_only doesn't add simp lemma
+  guard <| not <| hasSimpAttribute env `CountNested.nested2_fst
+    -- `lemmasOnly` doesn't add simp lemma
   -- todo: maybe test that there are no other lemmas generated
   -- guard <| 7 = env.fold 0
   --   (fun d n ↦ n + if d.to_name.components.init.ilast = `CountNested then 1 else 0)
@@ -728,12 +729,12 @@ run_cmd liftTermElabM <| do
 protected def Equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β)⟩
 
-example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : α) {z} (h : e₂ (e₁ x) = z) : (e₁.trans e₂) x = z :=
-by simp only [Equiv.trans_apply]; rw [h]
+example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : α) {z} (h : e₂ (e₁ x) = z) : (e₁.trans e₂) x = z := by
+  simp only [Equiv.trans_apply]; rw [h]
 
 example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : γ) {z} (h : e₁.symm (e₂.symm x) = z) :
-  (e₁.trans e₂).symm x = z :=
-by simp only [Equiv.trans_symm_apply]; rw [h]
+    (e₁.trans e₂).symm x = z := by
+  simp only [Equiv.trans_symm_apply]; rw [h]
 
 -- the new projection names are parsed correctly (the old projection names won't work anymore)
 @[simps apply symm_apply] protected def Equiv.trans2 (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
@@ -764,7 +765,8 @@ run_cmd liftTermElabM <| do
   guard <| data.2.map (·.name) = #[`coe, `symm_apply]
   guard <| data.2.map (·.isPrefix) = #[true, false]
 
-@[simps (config := {simpRhs := true})] protected def Equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
+@[simps (config := {simpRhs := true})]
+protected def Equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β)⟩
 
 example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : α) {z} (h : e₂ (e₁ x) = z) : (e₁.trans e₂) x = z := by
@@ -893,7 +895,7 @@ example (x : Bool) {z} (h : id x = z) : myRingHom x = z := by
 -- set_option trace.simps.debug true
 
 @[to_additive (attr := simps) instAddProd]
-instance {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨fun p q ↦ ⟨p.1 * q.1, p.2 * q.2⟩⟩
+instance instMulProd {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨fun p q ↦ ⟨p.1 * q.1, p.2 * q.2⟩⟩
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
@@ -1183,3 +1185,32 @@ class Artificial (n : Nat) where
   one : Nat
 
 initialize_simps_projections Artificial
+
+
+namespace UnderScoreDigit
+
+/-!
+We do not consider `field` to be a prefix of `field_1`, as the latter is often
+a different field with an auto-generated name.
+-/
+
+structure Foo where
+  field : Nat
+  field_9 : Nat × Nat
+  field_2 : Nat
+
+@[simps field field_2 field_9_fst]
+def myFoo : Foo := ⟨1, ⟨1, 1⟩, 1⟩
+
+structure Prod (X Y : Type _) extends Prod X Y
+
+structure Prod2 (X Y : Type _) extends Prod X Y
+
+initialize_simps_projections Prod2 (toProd → myName, toProd_1 → myOtherName)
+
+structure Prod3 (X Y : Type _) extends Prod X Y
+
+@[simps] def foo : Prod3 Nat Nat := { fst := 1, snd := 3 }
+@[simps toProd_1] def foo' : Prod3 Nat Nat := { fst := 1, snd := 3 }
+
+end UnderScoreDigit

@@ -86,6 +86,7 @@ lemma measurable_memPartitionSet (ht : ∀ n, MeasurableSet (t n)) (n : ℕ) :
 lemma iSup_partitionFiltration_eq_generateFrom_range (ht : ∀ n, MeasurableSet (t n)) :
     ⨆ n, partitionFiltration ht n = generateFrom (Set.range t) := by
   conv_rhs => rw [← generateFrom_iUnion_memPartition t, ← iSup_generateFrom]
+  rfl
 
 lemma iSup_partitionFiltration (ht : ∀ n, MeasurableSet (t n))
     (ht_range : generateFrom (Set.range t) = m) :
@@ -136,6 +137,7 @@ lemma measurable_countablePartitionSet (α : Type*) [MeasurableSpace α] [Counta
 lemma iSup_countableFiltration (α : Type*) [m : MeasurableSpace α] [CountablyGenerated α] :
     ⨆ n, countableFiltration α n = m := by
   conv_rhs => rw [← generateFrom_iUnion_countablePartition α, ← iSup_generateFrom]
+  rfl
 
 end CountableFiltration
 
