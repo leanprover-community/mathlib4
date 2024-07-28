@@ -316,6 +316,42 @@ theorem coe_map : (b.map f : ι → M') = f ∘ b :=
 
 end Map
 
+section SMul
+variable {G G'}
+variable [Group G] [Group G']
+variable [DistribMulAction G M] [DistribMulAction G' M]
+variable [SMulCommClass G R M] [SMulCommClass G' R M]
+
+/-- The action on a `Basis` by acting on each element.
+
+See also `Basis.unitsSMul` and `Basis.groupSMul`, for the cases when a different action is applied
+to each basis element. -/
+instance : SMul G (Basis ι R M) where
+  smul g b := b.map <| DistribMulAction.toLinearEquiv _ _ g
+
+@[simp]
+theorem smul_apply (g : G) (b : Basis ι R M) (i : ι) : (g • b) i = g • b i := rfl
+
+@[norm_cast] theorem coe_smul (g : G) (b : Basis ι R M) : ⇑(g • b) = g • ⇑b := rfl
+
+/-- When the group in question is the automorphisms, `•` coincides with `Basis.map`. -/
+@[simp]
+theorem smul_eq_map (g : M ≃ₗ[R] M) (b : Basis ι R M) : g • b = b.map g := rfl
+
+@[simp] theorem repr_smul (g : G) (b : Basis ι R M) :
+    (g • b).repr = (DistribMulAction.toLinearEquiv _ _ g).symm.trans b.repr := rfl
+
+instance : MulAction G (Basis ι R M) :=
+  Function.Injective.mulAction _ DFunLike.coe_injective coe_smul
+
+instance [SMulCommClass G G' M] : SMulCommClass G G' (Basis ι R M) where
+  smul_comm _g _g' _b := DFunLike.ext _ _ fun _ => smul_comm _ _ _
+
+instance [SMul G G'] [IsScalarTower G G' M] : IsScalarTower G G' (Basis ι R M) where
+  smul_assoc _g _g' _b := DFunLike.ext _ _ fun _ => smul_assoc _ _ _
+
+end SMul
+
 section MapCoeffs
 
 variable {R' : Type*} [Semiring R'] [Module R' M] (f : R ≃+* R')
@@ -622,7 +658,7 @@ variable (b' : Basis ι' R M')
 /-- `Basis.prod` maps an `ι`-indexed basis for `M` and an `ι'`-indexed basis for `M'`
 to an `ι ⊕ ι'`-index basis for `M × M'`.
 For the specific case of `R × R`, see also `Basis.finTwoProd`. -/
-protected def prod : Basis (Sum ι ι') R (M × M') :=
+protected def prod : Basis (ι ⊕ ι') R (M × M') :=
   ofRepr ((b.repr.prod b'.repr).trans (Finsupp.sumFinsuppLEquivProdFinsupp R).symm)
 
 @[simp]

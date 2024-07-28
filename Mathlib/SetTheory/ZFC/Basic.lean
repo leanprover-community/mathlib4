@@ -695,7 +695,7 @@ theorem nonempty_mk_iff {x : PSet} : (mk x).Nonempty ↔ x.Nonempty := by
   exact ⟨_, h⟩
 
 theorem eq_empty (x : ZFSet.{u}) : x = ∅ ↔ ∀ y : ZFSet.{u}, y ∉ x := by
-  rw [ext_iff]
+  rw [ZFSet.ext_iff]
   simp
 
 theorem eq_empty_or_nonempty (u : ZFSet) : u = ∅ ∨ u.Nonempty := by
@@ -1092,7 +1092,7 @@ theorem mem_pairSep {p} {x y z : ZFSet.{u}} :
   · rintro (rfl | rfl) <;> [left; right] <;> assumption
 
 theorem pair_injective : Function.Injective2 pair := fun x x' y y' H => by
-  have ae := ext_iff.1 H
+  have ae := ZFSet.ext_iff.1 H
   simp only [pair, mem_pair] at ae
   obtain rfl : x = x' := by
     cases' (ae {x}).1 (by simp) with h h
@@ -1104,11 +1104,11 @@ theorem pair_injective : Function.Injective2 pair := fun x x' y y' H => by
     cases' (ae {x, y'}).2 (by simp only [eq_self_iff_true, or_true_iff]) with xy'x xy'xx
     · rw [eq_comm, ← mem_singleton, ← xy'x, mem_pair]
       exact Or.inr rfl
-    · simpa [eq_comm] using (ext_iff.1 xy'xx y').1 (by simp)
+    · simpa [eq_comm] using (ZFSet.ext_iff.1 xy'xx y').1 (by simp)
   obtain xyx | xyy' := (ae {x, y}).1 (by simp)
-  · obtain rfl := mem_singleton.mp ((ext_iff.1 xyx y).1 <| by simp)
+  · obtain rfl := mem_singleton.mp ((ZFSet.ext_iff.1 xyx y).1 <| by simp)
     simp [he rfl]
-  · obtain rfl | yy' := mem_pair.mp ((ext_iff.1 xyy' y).1 <| by simp)
+  · obtain rfl | yy' := mem_pair.mp ((ZFSet.ext_iff.1 xyy' y).1 <| by simp)
     · simp [he rfl]
     · simp [yy']
 

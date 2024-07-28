@@ -125,7 +125,9 @@ noncomputable abbrev toField : Field K where
   mul_inv_cancel := IsFractionRing.mul_inv_cancel A
   inv_zero := show IsFractionRing.inv A (0 : K) = 0 by rw [IsFractionRing.inv]; exact dif_pos rfl
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun a x => rfl
 
 lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where
   mp h := (RingEquiv.ofBijective (algebraMap R K)
@@ -215,7 +217,7 @@ noncomputable def map {A B K L : Type*} [CommRing A] [CommRing B] [IsDomain B] [
 fields of fractions `K ≃+* L`. -/
 noncomputable def fieldEquivOfRingEquiv [Algebra B L] [IsFractionRing B L] (h : A ≃+* B) :
     K ≃+* L :=
-  ringEquivOfRingEquiv K L h
+  ringEquivOfRingEquiv (M := nonZeroDivisors A) K (T := nonZeroDivisors B) L h
     (by
       ext b
       show b ∈ h.toEquiv '' _ ↔ _
