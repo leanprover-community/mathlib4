@@ -29,14 +29,14 @@ the first variable (see `ContinuousConstSMul`) and proper in the sense defined h
   on a topological space `X`, then the quotient space is Hausdorff (T2).
 * `t2Space_of_properSMul_of_t2Group`: If a T2 group acts properly on a topological space,
   then this topological space is T2.
-* `ProperlyDiscontinuousSMul_iff_ProperSMul`: If a discrete group acts on a T2 space `X` such that
+* `properlyDiscontinuousSMul_iff_properSMul`: If a discrete group acts on a T2 space `X` such that
   `X × X` is compactly generated, then the action is properly discontinuous if and only if it is
   continuous in the second variable and proper. This in particular true if `X` is locally compact
   or first-countable.
 
 ## Implementation notes
 
-Concerning `ProperlyDiscontinuousSMul_iff_ProperSMul`, this result should be the only one needed
+Concerning `properlyDiscontinuousSMul_iff_properSMul`, this result should be the only one needed
 to link properly discontinuous and proper actions.
 
 TODO: Replace the compactly generated hypothesis by a typeclass instance such that
