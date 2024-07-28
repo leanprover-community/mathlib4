@@ -942,7 +942,7 @@ variable {m n : Type*}
 
 namespace Matrix
 
-variable [Fintype m] [Fintype n] [DecidableEq n]
+variable [Fintype n] [DecidableEq n]
 
 /-- `Matrix.toLin'` adapted for `EuclideanSpace 𝕜 _`. -/
 def toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] EuclideanSpace 𝕜 n →ₗ[𝕜] EuclideanSpace 𝕜 m :=
@@ -976,13 +976,13 @@ theorem toEuclideanLin_apply_piLp_equiv_symm (M : Matrix m n 𝕜) (v : n → �
   rfl
 
 -- `Matrix.toEuclideanLin` is the same as `Matrix.toLin` applied to `PiLp.basisFun`,
-theorem toEuclideanLin_eq_toLin :
+theorem toEuclideanLin_eq_toLin [Finite m] :
     (toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] _) =
       Matrix.toLin (PiLp.basisFun _ _ _) (PiLp.basisFun _ _ _) :=
   rfl
 
 open EuclideanSpace in
-lemma toEuclideanLin_eq_toLin_orthonormal :
+lemma toEuclideanLin_eq_toLin_orthonormal [Fintype m] :
     toEuclideanLin = toLin (basisFun n 𝕜).toBasis (basisFun m 𝕜).toBasis :=
   rfl
 
