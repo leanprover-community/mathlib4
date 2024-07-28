@@ -6,7 +6,6 @@ Authors: Leonardo de Moura, Jeremy Avigad
 import Batteries.Data.Nat.Lemmas
 import Batteries.WF
 import Mathlib.Util.AssertExists
-import Mathlib.Mathport.Rename
 import Mathlib.Data.Nat.Notation
 
 /-!
@@ -16,7 +15,6 @@ The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
 
 We intend to move all the content of these files out into the main `Mathlib` directory structure.
 Contributions assisting with this are appreciated.
-
 -/
 
 assert_not_exists Preorder

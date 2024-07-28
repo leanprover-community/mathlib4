@@ -70,7 +70,7 @@ theorem one_div_nonneg : 0 ≤ 1 / p := le_of_lt h.one_div_pos
 
 theorem one_div_ne_zero : 1 / p ≠ 0 := ne_of_gt h.one_div_pos
 
-theorem conj_eq : q = p / (p - 1) := by
+theorem conj_eq (h : p.IsConjExponent q) : q = p / (p - 1) := by
   have := h.inv_add_inv_conj
   rw [← eq_sub_iff_add_eq', inv_eq_iff_eq_inv] at this
   field_simp [this, h.ne_zero]
@@ -86,7 +86,7 @@ theorem sub_one_mul_conj : (p - 1) * q = p :=
 theorem mul_eq_add : p * q = p + q := by
   simpa only [sub_mul, sub_eq_iff_eq_add, one_mul] using h.sub_one_mul_conj
 
-@[symm] protected lemma symm : q.IsConjExponent p where
+@[symm] protected lemma symm (h : p.IsConjExponent q) : q.IsConjExponent p where
   one_lt := by simpa only [h.conj_eq] using (one_lt_div h.sub_one_pos).mpr (sub_one_lt p)
   inv_add_inv_conj := by simpa [add_comm] using h.inv_add_inv_conj
 
@@ -159,7 +159,7 @@ lemma inv_ne_zero : p⁻¹ ≠ 0 := h.inv_pos.ne'
 
 lemma one_sub_inv : 1 - p⁻¹ = q⁻¹ := tsub_eq_of_eq_add_rev h.inv_add_inv_conj.symm
 
-lemma conj_eq : q = p / (p - 1) := by
+lemma conj_eq (h : p.IsConjExponent q) : q = p / (p - 1) := by
   simpa only [← coe_one, ← NNReal.coe_sub h.one_le, ← NNReal.coe_div, coe_inj] using h.coe.conj_eq
 
 lemma conjExponent_eq : conjExponent p = q := h.conj_eq.symm
@@ -171,7 +171,7 @@ lemma mul_eq_add : p * q = p + q := by
   simpa only [← NNReal.coe_mul, ← NNReal.coe_add, NNReal.coe_inj] using h.coe.mul_eq_add
 
 @[symm]
-protected lemma symm : q.IsConjExponent p where
+protected lemma symm (h : p.IsConjExponent q) : q.IsConjExponent p where
   one_lt := by
     rw [h.conj_eq]
     exact (one_lt_div h.sub_one_pos).mpr (tsub_lt_self h.pos zero_lt_one)

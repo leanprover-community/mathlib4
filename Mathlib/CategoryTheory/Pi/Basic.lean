@@ -120,7 +120,7 @@ section
 variable {J : Type w₀} {D : J → Type u₁} [∀ j, Category.{v₁} (D j)]
 
 /- Porting note: maybe mixing up universes -/
-instance sumElimCategory : ∀ s : Sum I J, Category.{v₁} (Sum.elim C D s)
+instance sumElimCategory : ∀ s : I ⊕ J, Category.{v₁} (Sum.elim C D s)
   | Sum.inl i => by
     dsimp
     infer_instance
@@ -135,7 +135,7 @@ current state of code generation -/
 to obtain an `I ⊕ J`-indexed family of objects.
 -/
 @[simps]
-def sum : (∀ i, C i) ⥤ (∀ j, D j) ⥤ ∀ s : Sum I J, Sum.elim C D s where
+def sum : (∀ i, C i) ⥤ (∀ j, D j) ⥤ ∀ s : I ⊕ J, Sum.elim C D s where
   obj X :=
     { obj := fun Y s =>
         match s with

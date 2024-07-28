@@ -1572,8 +1572,7 @@ theorem contDiffAt_ring_inverse [CompleteSpace R] (x : Rˣ) :
   induction' n using ENat.nat_induction with n IH Itop
   · intro m hm
     refine ⟨{ y : R | IsUnit y }, ?_, ?_⟩
-    · simp [nhdsWithin_univ]
-      exact x.nhds
+    · simpa [nhdsWithin_univ] using x.nhds
     · use ftaylorSeriesWithin 𝕜 inverse univ
       rw [le_antisymm hm bot_le, hasFTaylorSeriesUpToOn_zero_iff]
       constructor

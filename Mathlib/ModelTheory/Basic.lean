@@ -111,7 +111,7 @@ instance : Inhabited Language :=
 
 /-- The sum of two languages consists of the disjoint union of their symbols. -/
 protected def sum (L : Language.{u, v}) (L' : Language.{u', v'}) : Language :=
-  ⟨fun n => Sum (L.Functions n) (L'.Functions n), fun n => Sum (L.Relations n) (L'.Relations n)⟩
+  ⟨fun n => L.Functions n ⊕ L'.Functions n, fun n => L.Relations n ⊕ L'.Relations n⟩
 
 variable (L : Language.{u, v})
 
@@ -130,7 +130,7 @@ theorem constants_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
 -- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 def Symbols :=
-  Sum (Σl, L.Functions l) (Σl, L.Relations l)
+  (Σ l, L.Functions l) ⊕ (Σ l, L.Relations l)
 
 /-- The cardinality of a language is the cardinality of its type of symbols. -/
 def card : Cardinal :=

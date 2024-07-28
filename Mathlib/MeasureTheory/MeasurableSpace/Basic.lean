@@ -1260,9 +1260,16 @@ protected theorem inf_eq_inter (s t : {s : Set α // MeasurableSet s}) : s ⊓ t
 instance Subtype.instSDiff : SDiff (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => ⟨x \ y, x.prop.diff y.prop⟩⟩
 
+-- TODO: Why does it complain that `x ⇨ y` is noncomputable?
+noncomputable instance Subtype.instHImp : HImp (Subtype (MeasurableSet : Set α → Prop)) where
+  himp x y := ⟨x ⇨ y, x.prop.himp y.prop⟩
+
 @[simp]
 theorem coe_sdiff (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s \ t) = (s : Set α) \ t :=
   rfl
+
+@[simp]
+lemma coe_himp (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ⇨ t) = (s ⇨ t : Set α) := rfl
 
 instance Subtype.instBot : Bot (Subtype (MeasurableSet : Set α → Prop)) := ⟨∅⟩
 
@@ -1277,10 +1284,10 @@ instance Subtype.instTop : Top (Subtype (MeasurableSet : Set α → Prop)) :=
 theorem coe_top : ↑(⊤ : Subtype (MeasurableSet : Set α → Prop)) = (⊤ : Set α) :=
   rfl
 
-instance Subtype.instBooleanAlgebra :
+noncomputable instance Subtype.instBooleanAlgebra :
     BooleanAlgebra (Subtype (MeasurableSet : Set α → Prop)) :=
-  Subtype.coe_injective.booleanAlgebra _ (fun _ _ => rfl) (fun _ _ => rfl) rfl rfl (fun _ => rfl)
-    fun _ _ => rfl
+  Subtype.coe_injective.booleanAlgebra _ coe_union coe_inter coe_top coe_bot coe_compl coe_sdiff
+    coe_himp
 
 @[measurability]
 theorem measurableSet_blimsup {s : ℕ → Set α} {p : ℕ → Prop} (h : ∀ n, p n → MeasurableSet (s n)) :
