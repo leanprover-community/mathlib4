@@ -103,11 +103,11 @@ theorem exists_smul_mem_of_mem_localizedAtPrime {x : K} (hx : x ∈ I.localizedA
 -- `I.localizedAtPrime P` is actually the localization of `I` at `P`.
 instance : IsLocalizedModule P.primeCompl (I.localizedAtPrime_inclusion P) where
   map_units s := by
-    refine (End_isUnit_iff _).2 ⟨fun ⟨_, _⟩ ⟨_, _⟩ h ↦ ?_, fun x ↦ ⟨(mk 1 s) • x, ?_⟩⟩
-    · rw [Subtype.ext_iff_val]
-      have s0 : (s : A) ≠ 0 := fun hs ↦ (hs ▸ Subtype.coe_prop s) P.zero_mem
-      apply smul_right_injective (R := A) K s0
-      simpa only [algebraMap_end_apply, SetLike.mk_smul_of_tower_mk, Subtype.mk.injEq] using h
+    refine (End_isUnit_iff _).mpr ⟨fun ⟨_, _⟩ ⟨_, _⟩ h ↦ ?_, fun x ↦ ⟨(mk 1 s) • x, ?_⟩⟩
+    · have s0 : (s : A) ≠ 0 := fun hs ↦ (hs ▸ Subtype.coe_prop s) P.zero_mem
+      rw [algebraMap_end_apply, algebraMap_end_apply, SetLike.mk_smul_of_tower_mk,
+        Subtype.mk.injEq] at h
+      exact Subtype.ext_iff_val.mpr <| smul_right_injective K s0 h
     · rw [algebraMap_end_apply, ← smul_assoc, smul_mk]
       simp
   surj' x :=
