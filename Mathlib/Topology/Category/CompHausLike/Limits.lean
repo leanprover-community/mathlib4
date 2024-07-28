@@ -49,8 +49,9 @@ def finiteCoproduct : CompHausLike P := CompHausLike.of P (Σ (a : α), X a)
 The inclusion of one of the factors into the explicit finite coproduct.
 -/
 def finiteCoproduct.ι (a : α) : X a ⟶ finiteCoproduct X where
-  toFun := fun x ↦ ⟨a, x⟩
-  continuous_toFun := continuous_sigmaMk (σ := fun a ↦ X a)
+  hom :=
+    { toFun := fun x ↦ ⟨a, x⟩
+      continuous_toFun := continuous_sigmaMk (σ := fun a ↦ X a) }
 
 /--
 To construct a morphism from the explicit finite coproduct, it suffices to
@@ -59,10 +60,11 @@ This is essentially the universal property of the coproduct.
 -/
 def finiteCoproduct.desc {B : CompHausLike P} (e : (a : α) → (X a ⟶ B)) :
     finiteCoproduct X ⟶ B where
-  toFun := fun ⟨a, x⟩ ↦ e a x
-  continuous_toFun := by
-    apply continuous_sigma
-    intro a; exact (e a).continuous
+  hom :=
+    { toFun := fun ⟨a, x⟩ ↦ e a x
+      continuous_toFun := by
+        apply continuous_sigma
+        intro a; exact (e a).hom.continuous }
 
 @[reassoc (attr := simp)]
 lemma finiteCoproduct.ι_desc {B : CompHausLike P} (e : (a : α) → (X a ⟶ B)) (a : α) :
@@ -156,7 +158,7 @@ instance (P) [HasExplicitFiniteCoproducts.{0} P] :
   suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) (compHausLikeToTop P) from
     preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
   apply preservesColimitOfPreservesColimitCocone (CompHausLike.finiteCoproduct.isColimit _)
-  exact TopCat.sigmaCofanIsColimit _
+  exact (isColimitMapCoconeCofanMkEquiv _ _ _).2 (TopCat.sigmaCofanIsColimit _)
 
 /-- The functor to another `CompHausLike` preserves finite coproducts if they exist. -/
 noncomputable instance {P' : TopCat.{u} → Prop}
@@ -186,23 +188,25 @@ pairs `(x,y)` such that `f x = g y`, with the topology induced by the product.
 def pullback : CompHausLike P :=
   letI set := { xy : X × Y | f xy.fst = g xy.snd }
   haveI : CompactSpace set :=
-    isCompact_iff_compactSpace.mp (isClosed_eq (f.continuous.comp continuous_fst)
-      (g.continuous.comp continuous_snd)).isCompact
+    isCompact_iff_compactSpace.mp (isClosed_eq (f.hom.continuous.comp continuous_fst)
+      (g.hom.continuous.comp continuous_snd)).isCompact
   CompHausLike.of P set
 
 /--
 The projection from the pullback to the first component.
 -/
 def pullback.fst : pullback f g ⟶ X where
-  toFun := fun ⟨⟨x, _⟩, _⟩ ↦ x
-  continuous_toFun := Continuous.comp continuous_fst continuous_subtype_val
+  hom :=
+    { toFun := fun ⟨⟨x, _⟩, _⟩ ↦ x
+      continuous_toFun := Continuous.comp continuous_fst continuous_subtype_val }
 
 /--
 The projection from the pullback to the second component.
 -/
 def pullback.snd : pullback f g ⟶ Y where
-  toFun := fun ⟨⟨_,y⟩,_⟩ ↦ y
-  continuous_toFun := Continuous.comp continuous_snd continuous_subtype_val
+  hom :=
+    { toFun := fun ⟨⟨_,y⟩,_⟩ ↦ y
+      continuous_toFun := Continuous.comp continuous_snd continuous_subtype_val }
 
 @[reassoc]
 lemma pullback.condition : pullback.fst f g ≫ f = pullback.snd f g ≫ g := by
@@ -215,11 +219,12 @@ This is essentially the universal property of the pullback.
 -/
 def pullback.lift {Z : CompHausLike P} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
     Z ⟶ pullback f g where
-  toFun := fun z ↦ ⟨⟨a z, b z⟩, by apply_fun (fun q ↦ q z) at w; exact w⟩
-  continuous_toFun := by
-    apply Continuous.subtype_mk
-    rw [continuous_prod_mk]
-    exact ⟨a.continuous, b.continuous⟩
+  hom :=
+    { toFun := fun z ↦ ⟨⟨a z, b z⟩, by apply_fun (fun q ↦ q z) at w; exact w⟩
+      continuous_toFun := by
+        apply Continuous.subtype_mk
+        rw [continuous_prod_mk]
+        exact ⟨a.hom.continuous, b.hom.continuous⟩ }
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_fst {Z : CompHausLike P} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
@@ -263,7 +268,7 @@ instance : HasLimit (cospan f g) where
 /-- The functor to `TopCat` creates pullbacks if they exist. -/
 noncomputable instance : CreatesLimit (cospan f g) (compHausLikeToTop P) := by
   refine createsLimitOfFullyFaithfulOfIso (pullback f g)
-    (((TopCat.pullbackConeIsLimit f g).conePointUniqueUpToIso
+    (((TopCat.pullbackConeIsLimit f.hom g.hom).conePointUniqueUpToIso
         (limit.isLimit _)) ≪≫ Limits.lim.mapIso (?_ ≪≫ (diagramIsoCospan _).symm))
   exact Iso.refl _
 
