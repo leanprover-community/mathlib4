@@ -1,10 +1,9 @@
 /-
 Copyright (c) 2018 Kevin Buzzard, Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Patrick Massot
-
-This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
+Authors: Kevin Buzzard, Johannes Hölzl, Patrick Massot
 -/
+
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.GroupTheory.Congruence.Basic
