@@ -63,4 +63,27 @@ protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f 
 
 @[simp] lemma ScottContinuous.id : ScottContinuous (id : α → α) := by simp [ScottContinuous]
 
+variable {g : α → β}
+
+lemma ScottContinuous.mediatingMorphism (hf : ScottContinuous f) (hg : ScottContinuous g) :
+    ScottContinuous fun x => (f x, g x) := fun d hd₁ hd₂ a hda => by
+  rw [IsLUB, IsLeast, upperBounds]
+  constructor
+  · simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq,
+    Prod.mk_le_mk]
+    intro b hb
+    exact ⟨hf.monotone (hda.1 hb), hg.monotone (hda.1 hb)⟩
+  · intro ⟨p₁, p₂⟩ hp
+    simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq,
+      Prod.mk_le_mk] at hp
+    constructor
+    · rw [isLUB_le_iff (hf hd₁ hd₂ hda), upperBounds]
+      simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq]
+      intro _ hb
+      exact (hp _ hb).1
+    · rw [isLUB_le_iff (hg hd₁ hd₂ hda), upperBounds]
+      simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq]
+      intro _ hb
+      exact (hp _ hb).2
+
 end ScottContinuous
