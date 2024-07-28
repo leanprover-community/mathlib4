@@ -6,6 +6,7 @@ Authors: Luke Kershaw, Joël Riou
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Triangulated.Subcategory
 import Mathlib.CategoryTheory.Shift.Predicate
+import Mathlib.CategoryTheory.Triangulated.Lemmas
 
 /-!
 # Filtered Triangulated Categories
