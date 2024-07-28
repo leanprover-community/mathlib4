@@ -280,7 +280,7 @@ variable [SMulCommClass G k V] [SMulCommClass G' k V]
 
 /-- In an affine space that is also a vector space, an `AffineBasis` can be scaled.
 
-TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineBasis ι k P)`, which acts on `V` with a `VAdd`
+TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineBasis ι k P)`, which acts on `P` with a `VAdd`
 version of a `DistribMulAction`. -/
 instance instSMul : SMul G (AffineBasis ι k V) where
   smul a b :=
