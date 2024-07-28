@@ -486,8 +486,9 @@ namespace Subspace
 /-- The **multidimensional Hales-Jewett theorem**, aka **extended Hales-Jewett theorem**: For any
 finite types `η`, `α` and `κ`, there exists a finite type `ι` such that whenever the hypercube
 `ι → α` is `κ`-colored, there is a monochromatic combinatorial subspace of dimension `η`. -/
-theorem exists_mono_in_high_dimension (α κ η) [Fintype α] [Fintype κ] [Fintype η] :
+theorem exists_mono_in_high_dimension (α κ η) [Finite α] [Finite κ] [Finite η] :
     ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Subspace η α ι, l.IsMono C := by
+  cases nonempty_fintype η
   obtain ⟨ι, _, hι⟩ := Line.exists_mono_in_high_dimension (Shrink.{0} η → α) κ
   refine ⟨ι × Shrink η, inferInstance, fun C ↦ ?_⟩
   obtain ⟨l, hl⟩ := hι fun x ↦ C fun (i, e) ↦ x i e
