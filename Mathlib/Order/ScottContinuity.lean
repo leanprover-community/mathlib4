@@ -65,7 +65,7 @@ protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f 
 
 variable {g : α → β}
 
-lemma ScottContinuous.mediatingMorphism (hf : ScottContinuous f) (hg : ScottContinuous g) :
+lemma ScottContinuous.prodMk (hf : ScottContinuous f) (hg : ScottContinuous g) :
     ScottContinuous fun x => (f x, g x) := fun d hd₁ hd₂ a hda => by
   rw [IsLUB, IsLeast, upperBounds]
   constructor
