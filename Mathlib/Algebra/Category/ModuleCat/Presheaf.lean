@@ -172,7 +172,7 @@ instance : Neg (P ⟶ Q) := ⟨fun f => mk (-f.hom) (by
     map_smul, smul_neg])⟩
 
 @[simp]
-lemma neg_app (f : P ⟶ Q) (X : Cᵒᵖ): (-f).app X = -f.app X := rfl
+lemma neg_app (f : P ⟶ Q) (X : Cᵒᵖ) : (-f).app X = -f.app X := rfl
 
 instance : AddCommGroup (P ⟶ Q) where
   add_assoc := by intros; ext1; simp only [add_app, add_assoc]
@@ -496,5 +496,75 @@ def unitHomEquiv (M : PresheafOfModules R) :
   right_inv s := by
     ext X
     exact (LinearMap.ringLmapEquivSelf (R.obj X) ℤ (M.obj X)).apply_symm_apply (s.val X)
+
+section module_over_initial
+
+/-!
+## `PresheafOfModules R ⥤ Cᵒᵖ ⥤ ModuleCat (R.obj X)` when `X` is initial
+
+When `X` is initial, we have `Module (R.obj X) (M.obj c)` for any `c : Cᵒᵖ`.
+
+-/
+
+/--
+Implementation of the functor `PresheafOfModules R ⥤ Cᵒᵖ ⥤ ModuleCat (R.obj X)`
+when `X` is initial.
+
+The functor is implemented as, on object level `M ↦ (c ↦ M(c))` where the `R(X)`-module structure
+on `M(c)` is given by restriction of scalars along the unique morphism `R(c) ⟶ R(X)`; and on
+morphism level `(f : M ⟶ N) ↦ (c ↦ f(c))`.
+-/
+@[simps]
+noncomputable def forgetToPresheafModuleCatObj
+    (X : Cᵒᵖ) (hX : Limits.IsInitial X) (M : PresheafOfModules.{v} R) :
+    Cᵒᵖ ⥤ ModuleCat (R.1.obj X) where
+  obj c :=
+    ModuleCat.restrictScalars (R.1.map (hX.to c)) |>.obj <| M.obj c
+  map := fun {c₁ c₂} f =>
+    { toFun := fun x => M.presheaf.map f x
+      map_add' := M.presheaf.map f |>.map_add
+      map_smul' := fun r (m :  ModuleCat.restrictScalars _ |>.obj _) => by
+        simp only [ModuleCat.restrictScalars.smul_def, RingHom.id_apply, M.map_smul]
+        rw [← CategoryTheory.comp_apply, ← R.map_comp]
+        congr
+        apply hX.hom_ext }
+  map_id := fun c => by ext; simp_rw [M.presheaf.map_id]; rfl
+  map_comp := fun {c₁ c₂ c₃} f g => by
+      ext x; simp_rw [M.presheaf.map_comp]; rfl
+
+/--
+Implementation of the functor `PresheafOfModules R ⥤ Cᵒᵖ ⥤ ModuleCat (R.obj X)`
+when `X` is initial.
+
+The functor is implemented as, on object level `M ↦ (c ↦ M(c))` where the `R(X)`-module structure
+on `M(c)` is given by restriction of scalars along the unique morphism `R(c) ⟶ R(X)`; and on
+morphism level `(f : M ⟶ N) ↦ (c ↦ f(c))`.
+-/
+noncomputable def forgetToPresheafModuleCatMap
+    (X : Cᵒᵖ) (hX : Limits.IsInitial X) {M N : PresheafOfModules.{v} R}
+    (f : M ⟶ N) :
+    forgetToPresheafModuleCatObj X hX M ⟶
+    forgetToPresheafModuleCatObj X hX N :=
+  { app := fun c =>
+    { toFun := f.app c
+      map_add' := (f.app c).map_add
+      map_smul' := fun r (m : M.presheaf.obj c) => (f.app c).map_smul (R.1.map (hX.to c) _) m }
+    naturality := fun {c₁ c₂} i => by ext x; exact congr($(f.hom.naturality i) x) }
+
+/--
+The forgetful functor from presheaves of modules over a presheaf of rings `R` to presheaves of
+`R(X)`-modules where `X` is an initial object.
+
+The functor is implemented as, on object level `M ↦ (c ↦ M(c))` where the `R(X)`-module structure
+on `M(c)` is given by restriction of scalars along the unique morphism `R(c) ⟶ R(X)`; and on
+morphism level `(f : M ⟶ N) ↦ (c ↦ f(c))`.
+-/
+@[simps]
+noncomputable def forgetToPresheafModuleCat (X : Cᵒᵖ) (hX : Limits.IsInitial X) :
+    PresheafOfModules.{v} R ⥤ Cᵒᵖ ⥤ ModuleCat (R.1.obj X) where
+  obj M := forgetToPresheafModuleCatObj X hX M
+  map f := forgetToPresheafModuleCatMap X hX f
+
+end module_over_initial
 
 end PresheafOfModules
