@@ -290,4 +290,3 @@ end BoundedFormula
 end Language
 
 end FirstOrder
-#lint
