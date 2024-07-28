@@ -135,15 +135,14 @@ lemma inner_sum_left {ι : Type*} [DecidableEq ι] {s : Finset ι} {x : ι → E
     ⟪∑ i ∈ s, x i, y⟫ = ∑ i ∈ s, ⟪x i, y⟫ := by rw [← star_inner y]; simp
 
 @[simp]
-lemma isSelfAdjoint_inner_self {x : E} : IsSelfAdjoint ⟪x, x⟫_A := star_inner _ _
+lemma isSelfAdjoint_inner_self {x : E} : IsSelfAdjoint ⟪x, x⟫ := star_inner _ _
 
 end general
 
 section norm
 
 variable {A E : Type*} [NonUnitalNormedRing A] [StarRing A] [CstarRing A] [PartialOrder A]
-  [CompleteSpace A] [StarOrderedRing A] [AddCommGroup E] [NormedSpace ℂ A]
-  [Module ℂ E] [SMul Aᵐᵒᵖ E] [Norm E]
+  [StarOrderedRing A] [AddCommGroup E] [NormedSpace ℂ A] [Module ℂ E] [SMul Aᵐᵒᵖ E] [Norm E]
   [StarModule ℂ A] [HilbertCstarModule A E] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
 
 local notation "⟪" x ", " y "⟫" => inner (𝕜 := A) x y
@@ -195,7 +194,7 @@ protected lemma norm_smul {r : ℝ} {x : E} : ‖r • x‖ = ‖r‖ * ‖x‖ 
   exact Real.sqrt_mul_self (by positivity)
 
 /-- A version of the Cauchy-Schwarz inequality for Hilbert C⋆-modules. -/
-lemma inner_mul_inner_swap_le {x y : E} : ⟪y, x⟫ * ⟪x, y⟫ ≤ ‖x‖ ^ 2 • ⟪y, y⟫ := by
+lemma inner_mul_inner_swap_le [CompleteSpace A] {x y : E} : ⟪y, x⟫ * ⟪x, y⟫ ≤ ‖x‖ ^ 2 • ⟪y, y⟫ := by
   rcases eq_or_ne x 0 with h|h
   · simp [h]
   · have h₁ : ∀ (a : A),
@@ -223,7 +222,7 @@ lemma inner_mul_inner_swap_le {x y : E} : ⟪y, x⟫ * ⟪x, y⟫ ≤ ‖x‖ ^ 
     rwa [smul_le_smul_iff_of_pos_left (pow_pos (HilbertCstarModule.norm_pos h) _)] at h₁
 
 /-- The Cauchy-Schwarz inequality for Hilbert C⋆-modules. -/
-lemma norm_inner_le {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
+lemma norm_inner_le [CompleteSpace A] {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
   have := calc ‖⟪x, y⟫‖ ^ 2 = ‖⟪y, x⟫ * ⟪x, y⟫‖ := by
                 rw [← star_inner x, CstarRing.norm_star_mul_self, pow_two]
     _ ≤ ‖‖x‖^ 2 • ⟪y, y⟫‖ := by
@@ -237,7 +236,7 @@ lemma norm_inner_le {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
   refine (pow_le_pow_iff_left (R := ℝ) (norm_nonneg ⟪x, y⟫_A) ?_ (by norm_num)).mp this
   exact mul_nonneg HilbertCstarModule.norm_nonneg HilbertCstarModule.norm_nonneg
 
-protected lemma norm_triangle (x y : E) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ := by
+protected lemma norm_triangle [CompleteSpace A] (x y : E) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ := by
   have h : ‖x + y‖ ^ 2 ≤ (‖x‖ + ‖y‖) ^ 2 := by
     calc _ ≤ ‖⟪x, x⟫ + ⟪y, x⟫‖ + ‖⟪x, y⟫‖ + ‖⟪y, y⟫‖ := by
           simp only [norm_eq_sqrt_norm_inner_self, inner_add_right, inner_add_left, ← add_assoc,
@@ -253,7 +252,7 @@ protected lemma norm_triangle (x y : E) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ := b
 
 /-- This allows us to get `NormedAddCommGroup` and `NormedSpace` instances on `E` via
 `NormedAddCommGroup.ofCore` and `NormedSpace.ofCore`. -/
-lemma normedSpaceCore : NormedSpace.Core ℂ E where
+lemma normedSpaceCore [CompleteSpace A] : NormedSpace.Core ℂ E where
   norm_nonneg x := HilbertCstarModule.norm_nonneg
   norm_eq_zero_iff x := norm_zero_iff x
   norm_smul c x := by simp [norm_eq_sqrt_norm_inner_self, norm_smul, ← mul_assoc]
