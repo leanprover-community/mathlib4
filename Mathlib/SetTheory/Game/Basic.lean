@@ -994,13 +994,6 @@ theorem zero_lf_inv' : ∀ x : PGame, 0 ⧏ inv' x
     rfl
 
 /-- `inv' 0` has exactly the same moves as `1`. -/
-lemma inv'_zero : inv' 0 ≡ (1 : PGame) := by
-  refine ⟨?_, ?_⟩ <;> dsimp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal]
-  · simp_rw [Unique.forall_iff, Unique.exists_iff, and_self, PGame.invVal_isEmpty]
-    exact identical_zero _
-  · simp
-
-/-- `inv' 0` has exactly the same moves as `1`. -/
 def inv'Zero : inv' 0 ≡r 1 := by
   change mk _ _ _ _ ≡r 1
   refine ⟨?_, ?_, fun i => ?_, IsEmpty.elim ?_⟩
