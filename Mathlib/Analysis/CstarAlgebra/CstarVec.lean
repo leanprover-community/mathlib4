@@ -9,14 +9,28 @@ import Mathlib.Analysis.CstarAlgebra.HilbertCstarModule
 /-!
 # Vectors with entries in a C⋆-algebra
 
+This file creates a type copy of `n → A` meant for vectors with entries in a C⋆-algebra `A`. It is
+endowed with a Hilbert C⋆-module structure, which in particular comes with an `A`-valued
+"inner product" `⟪w, v⟫ = ∑ i, star (w i) * v i` and a norm `‖v‖ = √‖⟪v, v⟫‖`.
+
 ## Main declarations
 
++ `CstarVec n A`: the type copy
++ `instHilbertCstarModule`: the Hilbert C⋆-module instance
+
 ## Implementation notes
+
+The norm on this type induces the product uniformity and bornology, but these are not defeq to
+`Pi.uniformSpace` and `Pi.instBornology`. Hence, we prove the equality to the Pi instances and
+replace the uniformity and bornology by the Pi ones when registering the
+`NormedAddCommGroup (CstarVec n A)` instance. See the docstring of the `TopologyAux` section below
+for more details.
 
 -/
 
 open scoped ComplexOrder RightActions Topology Uniformity Bornology
 
+/-- A vector with entries in a C⋆-algebra and a Hilbert C⋆-module structure. -/
 def CstarVec (n : Type*) (A : Type*) := n → A
 
 namespace CstarVec
@@ -47,8 +61,8 @@ instance instZero [Zero A] : Zero (CstarVec n A) :=
 instance instNeg [Neg A] : Neg (CstarVec n A) :=
   Pi.instNeg
 
-instance instStar [Star A] : Star (CstarVec n A) :=
-  Pi.instStarForall
+--instance instStar [Star A] : Star (CstarVec n A) :=
+--  Pi.instStarForall
 
 instance instAdd [Add A] : Add (CstarVec n A) :=
   Pi.instAdd
@@ -95,7 +109,7 @@ def equiv [Semiring R] [AddCommMonoid A] [Module R A] :
 
 @[simp] theorem neg_apply [Neg A] {i : n} : (-v) i = -v i := rfl
 
-@[simp] theorem star_apply [Star A] {i : n} : (star v) i = star (v i) := rfl
+--@[simp] theorem star_apply [Star A] {i : n} : (star v) i = star (v i) := rfl
 
 theorem finset_sum_fn {ι : Type*} {s : Finset ι} [AddCommMonoid A] {f : ι → CstarVec n A} :
     ∑ i ∈ s, ofFun (f i) = (fun j => ∑ i ∈ s, f i j) := by
@@ -293,12 +307,6 @@ private lemma cobounded_eq_aux : cobounded (CstarVec n A) = @cobounded _ Pi.inst
     · exact lipschitzWith_ofFun_symm_aux.comap_cobounded_le
   exact this.trans Filter.comap_id
 
---open Bornology in
---lemma isBounded_iff_aux :
---    ∀ s : Set (CstarVec n A), @IsBounded _ Pi.instBornology s ↔ IsBounded s :=
---  fun _ => Filter.ext_iff.1 cobounded_eq_aux.symm _
-
-
 end TopologyAux
 
 section NormedSpace
@@ -322,20 +330,6 @@ noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (CstarVec n A
 instance instNormedSpace : NormedSpace ℂ (CstarVec n A) :=
   NormedSpace.ofCore HilbertCstarModule.normedSpaceCore
 
--- Sanity check: the uniformities are indeed the same
-example : UniformInducing (ofFun : (n → A) → CstarVec n A) := uniformInducing_id
-
 end NormedSpace
-
---instance [TopologicalSpace A] : TopologicalSpace (CstarVec n A) := Pi.topologicalSpace
---
---instance [TopologicalSpace A] [UniformSpace A] : UniformSpace (CstarVec n A) := Pi.uniformSpace _
---
---instance [Bornology A] : Bornology (CstarVec n A) := Pi.instBornology
---
---variable [NormedAddCommGroup A] [Fintype n]
---
---lemma uniformInducing_toFun : UniformInducing (toFun (n := n) (A := A)) := uniformInducing_id
---
 
 end CstarVec
