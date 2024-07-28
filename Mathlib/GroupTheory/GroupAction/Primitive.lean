@@ -164,8 +164,7 @@ theorem mk_mem' [htGX : IsPretransitive G X] (a : X)
     obtain ⟨b, hb⟩ := h
     obtain ⟨g, hg⟩ := exists_smul_eq G b a
     rw [← IsTrivialBlock.smul_iff g]
-    refine' H (g • B) _ (hB.translate g)
-    use b
+    refine H (g • B) ⟨b, hb, hg⟩ (hB.translate g)
 
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic) (based condition) -/
@@ -435,8 +434,7 @@ theorem _root_.Setoid.IsPartition.ncard_eq_finsum
   simp only [finsum_eq_sum_of_fintype, Nat.card_eq_fintype_card, ← Set.Nat.card_coe_set_eq]
   rw [← Fintype.card_sigma]
   apply symm
-  refine' Fintype.card_congr (Equiv.ofBijective _ _)
-  exact fun ⟨⟨t, ht⟩, ⟨x, hx⟩⟩ ↦ ⟨x, hx.1⟩
+  refine Fintype.card_congr (Equiv.ofBijective (fun ⟨⟨t, ht⟩, ⟨x, hx⟩⟩ ↦ ⟨x, hx.1⟩) ?_)
   constructor
   · rintro ⟨⟨t, ht⟩, ⟨x, hx⟩⟩ ⟨⟨t', ht'⟩, ⟨y, hy⟩⟩ h
     simp only [Subtype.mk.injEq] at h

@@ -486,13 +486,13 @@ end Stabilizer
 
 section Finite
 
-theorem _root_.Setoid.nat_sum {α : Type _} [Finite α] {c : Set (Set α)} (hc : Setoid.IsPartition c) :
+theorem _root_.Setoid.nat_sum {α : Type*} [Finite α] {c : Set (Set α)} (hc : Setoid.IsPartition c) :
     (finsum fun x : c => Set.ncard (x : Set α)) = Nat.card α := by
   classical
   have := Fintype.ofFinite α
   simp only [finsum_eq_sum_of_fintype, Nat.card_eq_fintype_card, ← Set.Nat.card_coe_set_eq]
   rw [← Fintype.card_sigma]
-  refine' Fintype.card_congr (Equiv.ofBijective (fun x => x.snd : (Σ a : ↥c, a) → α) _)
+  refine Fintype.card_congr (Equiv.ofBijective (fun x => x.snd : (Σ a : ↥c, a) → α) ?_)
   constructor
   · -- injectivity
     rintro ⟨⟨x, hx⟩, ⟨a, ha : a ∈ x⟩⟩ ⟨⟨y, hy⟩, ⟨b, hb : b ∈ y⟩⟩ hab
