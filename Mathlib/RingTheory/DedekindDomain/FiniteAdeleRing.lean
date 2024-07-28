@@ -327,6 +327,12 @@ instance : CommRing (FiniteAdeleRing R K) :=
 instance : Algebra K (FiniteAdeleRing R K) :=
   Subalgebra.algebra (subalgebra R K)
 
+instance : Algebra R (FiniteAdeleRing R K) :=
+  ((algebraMap K (FiniteAdeleRing R K)).comp (algebraMap R K)).toAlgebra
+
+instance : IsScalarTower R K (FiniteAdeleRing R K) :=
+  IsScalarTower.of_algebraMap_eq' rfl
+
 instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
   coe := fun x ↦ x.1
 
@@ -347,6 +353,86 @@ instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
   map_add' _ _ := by ext; rfl
   commutes' _ _ := mul_comm _ _
   smul_def' r x := rfl
+
+instance : CoeFun (FiniteAdeleRing R K)
+    (fun _ ↦ ∀ (v : HeightOneSpectrum R), adicCompletion K v) where
+  coe a v := a.1 v
+
+open scoped algebraMap in
+variable {R K} in
+lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : R_hat R K,
+    a = c) ↔ ∀ (v : HeightOneSpectrum R), a v ∈ adicCompletionIntegers K v :=
+  ⟨by rintro ⟨c, rfl⟩ v; exact (c v).2, fun h ↦ ⟨fun v ↦ ⟨a v, h v⟩, rfl⟩⟩
+
+section Topology
+
+open Classical nonZeroDivisors Multiplicative Additive IsDedekindDomain.HeightOneSpectrum
+
+open scoped algebraMap -- coercion from R to FiniteAdeleRing R K
+open scoped DiscreteValuation
+
+variable {R K} in
+lemma mul_nonZeroDivisor_mem_finiteIntegralAdeles (a : FiniteAdeleRing R K) :
+    ∃ (b : R⁰) (c : R_hat R K), a * ((b : R) : FiniteAdeleRing R K) = c := by
+  let S := {v | a v ∉ adicCompletionIntegers K v}
+  choose b hb h using adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (R := R) (K := K)
+  let p := ∏ᶠ v ∈ S, b v (a v)
+  have hp : p ∈ R⁰ := finprod_mem_induction (· ∈ R⁰) (one_mem _) (fun _ _ => mul_mem) <|
+    fun _ _ ↦ hb _ _
+  use ⟨p, hp⟩
+  rw [exists_finiteIntegralAdele_iff]
+  intro v
+  by_cases hv : a v ∈ adicCompletionIntegers K v
+  · exact mul_mem hv <| coe_mem_adicCompletionIntegers _ _
+  · dsimp only
+    have pprod : p = b v (a v) * ∏ᶠ w ∈ S \ {v}, b w (a w) := by
+      rw [← finprod_mem_singleton (a := v) (f := fun v ↦ b v (a v)),
+        finprod_mem_mul_diff (singleton_subset_iff.2 ‹v ∈ S›) a.2]
+    rw [pprod]
+    push_cast
+    rw [← mul_assoc]
+    exact mul_mem (h v (a v)) <| coe_mem_adicCompletionIntegers _ _
+
+open scoped Pointwise
+
+theorem submodulesRingBasis : SubmodulesRingBasis
+    (fun (r : R⁰) ↦ Submodule.span (R_hat R K) {((r : R) : FiniteAdeleRing R K)}) where
+  inter i j := ⟨i * j, by
+    push_cast
+    simp only [le_inf_iff, Submodule.span_singleton_le_iff_mem, Submodule.mem_span_singleton]
+    exact ⟨⟨((j : R) : R_hat R K), by rw [mul_comm]; rfl⟩, ⟨((i : R) : R_hat R K), rfl⟩⟩⟩
+  leftMul a r := by
+    rcases mul_nonZeroDivisor_mem_finiteIntegralAdeles a with ⟨b, c, h⟩
+    use r * b
+    rintro x ⟨m, hm, rfl⟩
+    simp only [Submonoid.coe_mul, SetLike.mem_coe] at hm
+    rw [Submodule.mem_span_singleton] at hm ⊢
+    rcases hm with ⟨n, rfl⟩
+    simp only [LinearMapClass.map_smul, DistribMulAction.toLinearMap_apply, smul_eq_mul]
+    use n * c
+    push_cast
+    rw [mul_left_comm, h, mul_comm _ (c : FiniteAdeleRing R K),
+      Algebra.smul_def', Algebra.smul_def', ← mul_assoc]
+    rfl
+  mul r := ⟨r, by
+    intro x hx
+    rw [mem_mul] at hx
+    rcases hx with ⟨a, ha, b, hb, rfl⟩
+    simp only [SetLike.mem_coe, Submodule.mem_span_singleton] at ha hb ⊢
+    rcases ha with ⟨m, rfl⟩
+    rcases hb with ⟨n, rfl⟩
+    use m * n * (r : R)
+    simp only [Algebra.smul_def', map_mul]
+    rw [mul_mul_mul_comm, mul_assoc]
+    rfl⟩
+
+instance : TopologicalSpace (FiniteAdeleRing R K) :=
+  SubmodulesRingBasis.topology (submodulesRingBasis R K)
+
+-- the point of the above: this now works
+example : TopologicalRing (FiniteAdeleRing R K) := inferInstance
+
+end Topology
 
 end FiniteAdeleRing
 

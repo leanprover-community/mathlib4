@@ -83,6 +83,10 @@ def intValuationDef (r : R) : ℤₘ₀ :=
 theorem intValuationDef_if_pos {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
   if_pos hr
 
+@[simp]
+theorem intValuationDef_zero : v.intValuationDef 0 = 0 :=
+  if_pos rfl
+
 theorem intValuationDef_if_neg {r : R} (hr : r ≠ 0) :
     v.intValuationDef r =
       Multiplicative.ofAdd
@@ -312,6 +316,10 @@ theorem valuation_of_mk' {r : R} {s : nonZeroDivisors R} :
 theorem valuation_of_algebraMap (r : R) : v.valuation (algebraMap R K r) = v.intValuation r := by
   rw [valuation_def, Valuation.extendToLocalization_apply_map_apply]
 
+open scoped algebraMap in
+lemma valuation_eq_intValuationDef (r : R) : v.valuation (r : K) = v.intValuationDef r :=
+  Valuation.extendToLocalization_apply_map_apply ..
+
 /-- The `v`-adic valuation on `R` is bounded above by 1. -/
 theorem valuation_le_one (r : R) : v.valuation (algebraMap R K r) ≤ 1 := by
   rw [valuation_of_algebraMap]; exact v.intValuation_le_one r
@@ -394,6 +402,11 @@ theorem mem_adicCompletionIntegers {x : v.adicCompletion K} :
     x ∈ v.adicCompletionIntegers K ↔ (Valued.v x : ℤₘ₀) ≤ 1 :=
   Iff.rfl
 
+theorem not_mem_adicCompletionIntegers {x : v.adicCompletion K} :
+    x ∉ v.adicCompletionIntegers K ↔ 1 < (Valued.v x : ℤₘ₀) := by
+  rw [not_congr <| mem_adicCompletionIntegers R K v]
+  exact not_le
+
 section AlgebraInstances
 
 instance (priority := 100) adicValued.has_uniform_continuous_const_smul' :
@@ -457,6 +470,28 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     simp only [Subring.coe_mul, Algebra.smul_def]
     rfl
 
+variable {R K} in
+open scoped algebraMap in -- to make the coercions from `R` fire
+/-- The valuation on the completion agrees with the global valuation on elements of the
+integer ring. -/
+theorem valuedAdicCompletion_eq_valuation (r : R) :
+    Valued.v (r : v.adicCompletion K) = v.valuation (r : K) := by
+  convert Valued.valuedCompletion_apply (r : K)
+
+variable {R K} in
+/-- The valuation on the completion agrees with the global valuation on elements of the field. -/
+theorem valuedAdicCompletion_eq_valuation' (k : K) :
+    Valued.v (k : v.adicCompletion K) = v.valuation k := by
+  convert Valued.valuedCompletion_apply k
+
+variable {R K} in
+open scoped algebraMap in -- to make the coercion from `R` fire
+/-- A global integer is in the local integers. -/
+lemma coe_mem_adicCompletionIntegers (r : R) :
+    (r : adicCompletion K v) ∈ adicCompletionIntegers K v := by
+  rw [mem_adicCompletionIntegers, valuedAdicCompletion_eq_valuation, valuation_eq_intValuationDef]
+  exact intValuation_le_one v r
+
 @[simp]
 theorem coe_smul_adicCompletionIntegers (r : R) (x : v.adicCompletionIntegers K) :
     (↑(r • x) : v.adicCompletion K) = r • (x : v.adicCompletion K) :=
@@ -476,5 +511,33 @@ instance adicCompletion.instIsScalarTower' :
   smul_assoc x y z := by simp only [Algebra.smul_def]; apply mul_assoc
 
 end AlgebraInstances
+
+open nonZeroDivisors algebraMap in
+variable {R K} in
+lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOneSpectrum R)
+    (a : v.adicCompletion K) : ∃ b ∈ R⁰, a * b ∈ v.adicCompletionIntegers K := by
+  by_cases ha : a ∈ v.adicCompletionIntegers K
+  · use 1
+    simp [ha, Submonoid.one_mem]
+  · rw [not_mem_adicCompletionIntegers] at ha
+    -- Let the additive valuation of a be -d with d>0
+    obtain ⟨d, hd⟩ : ∃ d : ℤ, Valued.v a = ofAdd d :=
+      Option.ne_none_iff_exists'.mp <| (lt_trans zero_lt_one ha).ne'
+    rw [hd, WithZero.one_lt_coe, ← ofAdd_zero, ofAdd_lt] at ha
+    -- let ϖ be a uniformiser
+    obtain ⟨ϖ, hϖ⟩ := intValuation_exists_uniformizer v
+    have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp at hϖ
+    -- use ϖ^d
+    refine ⟨ϖ^d.natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _, ?_⟩
+    -- now manually translate the goal (an inequality in ℤₘ₀) to an inequality in ℤ
+    rw [mem_adicCompletionIntegers, algebraMap.coe_pow, map_mul, hd, map_pow,
+      valuedAdicCompletion_eq_valuation, valuation_eq_intValuationDef, hϖ, ← WithZero.coe_pow,
+      ← WithZero.coe_mul, WithZero.coe_le_one, ← toAdd_le, toAdd_mul, toAdd_ofAdd, toAdd_pow,
+      toAdd_ofAdd, toAdd_one,
+      show d.natAbs • (-1) = (d.natAbs : ℤ) • (-1) by simp only [nsmul_eq_mul,
+        Int.natCast_natAbs, smul_eq_mul],
+      ← Int.eq_natAbs_of_zero_le ha.le, smul_eq_mul]
+    -- and now it's easy
+    linarith
 
 end IsDedekindDomain.HeightOneSpectrum
