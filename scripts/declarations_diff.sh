@@ -20,8 +20,8 @@ Among the remaining unmatched lines, the script tries to extract the declaration
 find exact matches among those.
 No effort is made to keep track of namespaces: if the declaration is `theorem abc ...`, then
 `abc` is extracted, even if this happens inside `namespace xyz`.
-If a declaration id is added once and removed once, then they are again considered paired and are
-not shown.
+If a declaration id is added exactly once *and* removed exactly once,
+then they are again considered paired and are not shown.
 
 If a declaration id is either only added or removed or it is added or removed more than once, then
 the script will return a count such as
@@ -32,7 +32,7 @@ This means that a declaration `thmName` was added 3 times and removed twice: thi
 with namespacing, e.g. you could see it with `++-- map_zero`.
 
 The script uses some heuristics to guide this process.
-* It assumes that the keyword (as above) appear on the same line as the corresponding
+* It assumes that each keyword (as above) appears on the same line as the corresponding
   declaration id -- a line break between `theorem` and `riemannHypothesis` fools the script.
 * It deals with declaration modifiers (such as `noncomputable`, `nonrec`, `protected`) and
   attributes.
