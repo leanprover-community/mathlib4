@@ -171,9 +171,6 @@ protected lemma norm_pos {x : E} (hx : x ≠ 0) : 0 < ‖x‖ := by
   rw [inner_self] at H
   exact hx H
 
-@[simp]
-protected lemma norm_neg {x : E} : ‖-x‖ = ‖x‖ := by simp [norm_eq_sqrt_norm_inner_self]
-
 lemma norm_sq_eq {x : E} : ‖x‖ ^ 2 = ‖⟪x, x⟫‖ := by simp [norm_eq_sqrt_norm_inner_self]
 
 protected lemma smul_nonneg_iff {a : A} {r : ℝ} (hr : 0 < r) : 0 ≤ a ↔ 0 ≤ r • a := by
@@ -185,14 +182,6 @@ protected lemma smul_nonneg_iff {a : A} {r : ℝ} (hr : 0 < r) : 0 ≤ a ↔ 0 �
   rw [this]
   refine smul_nonneg ?_ hra
   positivity
-
-@[simp]
-protected lemma norm_smul {r : ℝ} {x : E} : ‖r • x‖ = ‖r‖ * ‖x‖ := by
-  rw [norm_eq_sqrt_norm_inner_self, norm_eq_sqrt_norm_inner_self x]
-  simp only [inner_smul_left_real, inner_smul_right_real, norm_smul, ← mul_assoc]
-  rw [Real.sqrt_mul (by positivity)]
-  congr
-  exact Real.sqrt_mul_self (by positivity)
 
 /-- A version of the Cauchy-Schwarz inequality for Hilbert C⋆-modules. -/
 lemma inner_mul_inner_swap_le [CompleteSpace A] {x y : E} : ⟪y, x⟫ * ⟪x, y⟫ ≤ ‖x‖ ^ 2 • ⟪y, y⟫ := by
@@ -263,6 +252,7 @@ lemma normedSpaceCore [CompleteSpace A] : NormedSpace.Core ℂ E where
 lemma norm_eq_csSup [CompleteSpace A] (v : E) :
     ‖v‖ = sSup { ‖⟪w, v⟫_A‖ | (w : E) (_ : ‖w‖ ≤ 1) } := by
   let instNACG : NormedAddCommGroup E := NormedAddCommGroup.ofCore normedSpaceCore
+  let instNS : NormedSpace ℂ E := .ofCore normedSpaceCore
   apply Eq.symm
   refine IsLUB.csSup_eq ⟨?mem_upperBounds, ?mem_lowerBounds⟩
     ⟨0, ⟨0, by simp [HilbertCstarModule.inner_zero_left]⟩⟩
@@ -280,7 +270,7 @@ lemma norm_eq_csSup [CompleteSpace A] (v : E) :
     rw [mem_upperBounds] at hx
     have hmain : ‖v‖ ∈ { ‖⟪w, v⟫_A‖ | (w : E) (_ : ‖w‖ ≤ 1) } := by
       refine ⟨‖v‖⁻¹ • v, ⟨?_, ?_⟩⟩
-      · simp [HilbertCstarModule.norm_smul (x := v)]
+      · simp [norm_smul]
         by_cases hv : v = 0
         · simp [hv]
         · have hv' : ‖v‖ ≠ 0 := by
