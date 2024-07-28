@@ -33,7 +33,7 @@ with namespacing, e.g. you could see it with `++-- map_zero`.
 
 The script uses some heuristics to guide this process.
 * It assumes that the keyword (as above) appear on the same line as the corresponding
-  declaration id -- a line break between `theorem` and `riemannHypothesis` fools the script.
+  declaration id --- a line break between `theorem` and `riemannHypothesis` fools the script.
 * It deals with declaration modifiers (such as `noncomputable`, `nonrec`, `protected`) and
   attributes.
 * It is "aware" of "nameless" `instance`s and, rather than looking for a declaration id,
