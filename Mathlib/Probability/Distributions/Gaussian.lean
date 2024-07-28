@@ -46,7 +46,7 @@ def gaussianPDFReal (μ : ℝ) (v : ℝ≥0) (x : ℝ) : ℝ :=
 
 lemma gaussianPDFReal_def (μ : ℝ) (v : ℝ≥0) :
     gaussianPDFReal μ v =
-      fun x ↦ (Real.sqrt (2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v)) := rfl
+      fun x ↦ (√(2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v)) := rfl
 
 @[simp]
 lemma gaussianPDFReal_zero_var (m : ℝ) : gaussianPDFReal m 0 = 0 := by
@@ -133,20 +133,14 @@ lemma gaussianPDFReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) 
     gaussianPDFReal μ v (c⁻¹ * x) = |c| * gaussianPDFReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) x := by
   simp only [gaussianPDFReal.eq_1, zero_lt_two, mul_nonneg_iff_of_pos_left, NNReal.zero_le_coe,
     Real.sqrt_mul', one_div, mul_inv_rev, NNReal.coe_mul, NNReal.coe_mk, NNReal.coe_pos]
-  rw [← mul_assoc]
-  refine congr_arg₂ _ ?_ ?_
-  · field_simp
-    rw [Real.sqrt_sq_eq_abs]
-    ring_nf
-    calc (Real.sqrt ↑v)⁻¹ * (Real.sqrt 2)⁻¹ * (Real.sqrt π)⁻¹
-      = (Real.sqrt ↑v)⁻¹ * (Real.sqrt 2)⁻¹ * (Real.sqrt π)⁻¹ * (|c| * |c|⁻¹) := by
-          rw [mul_inv_cancel, mul_one]
-          simp only [ne_eq, abs_eq_zero, hc, not_false_eq_true]
-    _ = (Real.sqrt ↑v)⁻¹ * (Real.sqrt 2)⁻¹ * (Real.sqrt π)⁻¹ * |c| * |c|⁻¹ := by ring
-  · congr 1
-    field_simp
-    congr 1
-    ring
+  rcases eq_or_ne v 0 with rfl | hv
+  · simp
+  · rw [← mul_assoc]
+    refine congr_arg₂ _ ?_ ?_
+    · field_simp [Real.sqrt_sq_eq_abs]
+      ac_rfl
+    · congr 1
+      field_simp [mul_left_comm]
 
 lemma gaussianPDFReal_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
     gaussianPDFReal μ v (c * x)

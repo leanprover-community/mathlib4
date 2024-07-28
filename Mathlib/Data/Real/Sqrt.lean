@@ -3,6 +3,7 @@ Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 -/
+import Mathlib.Algebra.NthRoot
 import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.Order.MonotoneContinuity
 
@@ -105,13 +106,12 @@ namespace Real
 
 /-- The square root of a real number. This returns 0 for negative inputs.
 
-This has notation `√x`. Note that `√x⁻¹` is parsed as `√(x⁻¹)`. -/
-noncomputable def sqrt (x : ℝ) : ℝ :=
-  NNReal.sqrt (Real.toNNReal x)
+By default, `√n` will assume that the user is working with real numbers, as this is a
+`default_instance`. -/
+@[default_instance]
+noncomputable instance : NthRoot ℝ 2 := ⟨fun x ↦ NNReal.sqrt (Real.toNNReal x)⟩
 
--- TODO: replace this with a typeclass
-@[inherit_doc]
-prefix:max "√" => Real.sqrt
+lemma sqrt_def (x : ℝ) : √x = NNReal.sqrt x.toNNReal := rfl
 
 /- quotient.lift_on x
   (λ f, mk ⟨sqrt_aux f, (sqrt_aux_converges f).fst⟩)
@@ -126,20 +126,23 @@ variable {x y : ℝ}
 
 @[simp, norm_cast]
 theorem coe_sqrt {x : ℝ≥0} : (NNReal.sqrt x : ℝ) = √(x : ℝ) := by
-  rw [Real.sqrt, Real.toNNReal_coe]
+  rw [sqrt_def, Real.toNNReal_coe]
 
 @[continuity]
 theorem continuous_sqrt : Continuous (√· : ℝ → ℝ) :=
   NNReal.continuous_coe.comp <| NNReal.continuous_sqrt.comp continuous_real_toNNReal
 
-theorem sqrt_eq_zero_of_nonpos (h : x ≤ 0) : sqrt x = 0 := by simp [sqrt, Real.toNNReal_eq_zero.2 h]
+theorem sqrt_eq_zero' : √x = 0 ↔ x ≤ 0 := by
+  rw [sqrt_def, NNReal.coe_eq_zero, NNReal.sqrt_eq_zero, Real.toNNReal_eq_zero]
+
+theorem sqrt_eq_zero_of_nonpos (h : x ≤ 0) : √x = 0 := sqrt_eq_zero'.2 h
 
 theorem sqrt_nonneg (x : ℝ) : 0 ≤ √x :=
   NNReal.coe_nonneg _
 
 @[simp]
 theorem mul_self_sqrt (h : 0 ≤ x) : √x * √x = x := by
-  rw [Real.sqrt, ← NNReal.coe_mul, NNReal.mul_self_sqrt, Real.coe_toNNReal _ h]
+  rw [sqrt_def, ← NNReal.coe_mul, NNReal.mul_self_sqrt, Real.coe_toNNReal _ h]
 
 @[simp]
 theorem sqrt_mul_self (h : 0 ≤ x) : √(x * x) = x :=
@@ -181,25 +184,25 @@ theorem sqrt_mul_self_eq_abs (x : ℝ) : √(x * x) = |x| := by
 theorem sqrt_sq_eq_abs (x : ℝ) : √(x ^ 2) = |x| := by rw [sq, sqrt_mul_self_eq_abs]
 
 @[simp]
-theorem sqrt_zero : √0 = 0 := by simp [Real.sqrt]
+theorem sqrt_zero : √(0 : ℝ) = 0 := by simp [sqrt_def]
 
 @[simp]
-theorem sqrt_one : √1 = 1 := by simp [Real.sqrt]
+theorem sqrt_one : √(1 : ℝ) = 1 := by simp [sqrt_def]
 
 @[simp]
 theorem sqrt_le_sqrt_iff (hy : 0 ≤ y) : √x ≤ √y ↔ x ≤ y := by
-  rw [Real.sqrt, Real.sqrt, NNReal.coe_le_coe, NNReal.sqrt_le_sqrt, toNNReal_le_toNNReal_iff hy]
+  rw [sqrt_def, sqrt_def, NNReal.coe_le_coe, NNReal.sqrt_le_sqrt, toNNReal_le_toNNReal_iff hy]
 
 @[simp]
 theorem sqrt_lt_sqrt_iff (hx : 0 ≤ x) : √x < √y ↔ x < y :=
   lt_iff_lt_of_le_iff_le (sqrt_le_sqrt_iff hx)
 
 theorem sqrt_lt_sqrt_iff_of_pos (hy : 0 < y) : √x < √y ↔ x < y := by
-  rw [Real.sqrt, Real.sqrt, NNReal.coe_lt_coe, NNReal.sqrt_lt_sqrt, toNNReal_lt_toNNReal_iff hy]
+  rw [sqrt_def, sqrt_def, NNReal.coe_lt_coe, NNReal.sqrt_lt_sqrt, toNNReal_lt_toNNReal_iff hy]
 
 @[gcongr]
 theorem sqrt_le_sqrt (h : x ≤ y) : √x ≤ √y := by
-  rw [Real.sqrt, Real.sqrt, NNReal.coe_le_coe, NNReal.sqrt_le_sqrt]
+  rw [sqrt_def, sqrt_def, NNReal.coe_le_coe, NNReal.sqrt_le_sqrt]
   exact toNNReal_le_toNNReal h
 
 @[gcongr]
@@ -207,8 +210,8 @@ theorem sqrt_lt_sqrt (hx : 0 ≤ x) (h : x < y) : √x < √y :=
   (sqrt_lt_sqrt_iff hx).2 h
 
 theorem sqrt_le_left (hy : 0 ≤ y) : √x ≤ y ↔ x ≤ y ^ 2 := by
-  rw [sqrt, ← Real.le_toNNReal_iff_coe_le hy, NNReal.sqrt_le_iff_le_sq, sq, ← Real.toNNReal_mul hy,
-    Real.toNNReal_le_toNNReal_iff (mul_self_nonneg y), sq]
+  rw [sqrt_def, ← Real.le_toNNReal_iff_coe_le hy, NNReal.sqrt_le_iff_le_sq, sq,
+    ← Real.toNNReal_mul hy, Real.toNNReal_le_toNNReal_iff (mul_self_nonneg y), sq]
 
 theorem sqrt_le_iff : √x ≤ y ↔ 0 ≤ y ∧ x ≤ y ^ 2 := by
   rw [← and_iff_right_of_imp fun h => (sqrt_nonneg x).trans h, and_congr_right_iff]
@@ -249,9 +252,6 @@ theorem sqrt_inj (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = √y ↔ x = y := by
 
 @[simp]
 theorem sqrt_eq_zero (h : 0 ≤ x) : √x = 0 ↔ x = 0 := by simpa using sqrt_inj h le_rfl
-
-theorem sqrt_eq_zero' : √x = 0 ↔ x ≤ 0 := by
-  rw [sqrt, NNReal.coe_eq_zero, NNReal.sqrt_eq_zero, Real.toNNReal_eq_zero]
 
 theorem sqrt_ne_zero (h : 0 ≤ x) : √x ≠ 0 ↔ x ≠ 0 := by rw [not_iff_not, sqrt_eq_zero h]
 
@@ -314,8 +314,8 @@ namespace Real
 variable {x y : ℝ}
 
 @[simp]
-theorem sqrt_mul {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : √(x * y) = √x * √y := by
-  simp_rw [Real.sqrt, ← NNReal.coe_mul, NNReal.coe_inj, Real.toNNReal_mul hx, NNReal.sqrt_mul]
+theorem sqrt_mul (hx : 0 ≤ x) (y : ℝ) : √(x * y) = √x * √y := by
+  simp_rw [sqrt_def, ← NNReal.coe_mul, NNReal.coe_inj, Real.toNNReal_mul hx, NNReal.sqrt_mul]
 
 @[simp]
 theorem sqrt_mul' (x) {y : ℝ} (hy : 0 ≤ y) : √(x * y) = √x * √y := by
@@ -323,7 +323,7 @@ theorem sqrt_mul' (x) {y : ℝ} (hy : 0 ≤ y) : √(x * y) = √x * √y := by
 
 @[simp]
 theorem sqrt_inv (x : ℝ) : √x⁻¹ = (√x)⁻¹ := by
-  rw [Real.sqrt, Real.toNNReal_inv, NNReal.sqrt_inv, NNReal.coe_inv, Real.sqrt]
+  rw [sqrt_def, Real.toNNReal_inv, NNReal.sqrt_inv, NNReal.coe_inv, sqrt_def]
 
 @[simp]
 theorem sqrt_div {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : √(x / y) = √x / √y := by
