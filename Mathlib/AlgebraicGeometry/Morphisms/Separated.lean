@@ -54,10 +54,9 @@ theorem isSeparated_eq_diagonal_isClosedImmersion :
 /-- Monomorphisms are separated. -/
 instance (priority := 900) isSeparated_of_mono [Mono f] : IsSeparated f where
 
-theorem respectsIso : MorphismProperty.RespectsIso @IsSeparated := by
+instance : MorphismProperty.RespectsIso @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
-  apply MorphismProperty.RespectsIso.diagonal
-  exact IsClosedImmersion.respectsIso
+  infer_instance
 
 instance (priority := 900) [IsSeparated f] : QuasiSeparated f where
 

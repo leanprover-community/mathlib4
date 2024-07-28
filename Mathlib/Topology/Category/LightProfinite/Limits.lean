@@ -121,12 +121,12 @@ def pullbackHomeoPullback : (LightProfinite.pullback f g).toCompHaus ≃ₜ
   LightProfinite.homeoOfIso (pullbackIsoPullback f g)
 
 theorem pullback_fst_eq :
-    LightProfinite.pullback.fst f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.fst := by
+    LightProfinite.pullback.fst f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.fst f g := by
   dsimp [pullbackIsoPullback]
   simp only [Limits.limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt, pullback.cone_π]
 
 theorem pullback_snd_eq :
-    LightProfinite.pullback.snd f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.snd := by
+    LightProfinite.pullback.snd f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.snd f g := by
   dsimp [pullbackIsoPullback]
   simp only [Limits.limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt, pullback.cone_π]
 

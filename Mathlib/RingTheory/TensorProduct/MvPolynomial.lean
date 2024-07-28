@@ -100,15 +100,15 @@ lemma scalarRTensor_apply_tmul (p : MvPolynomial σ R) (n : N) :
     scalarRTensor (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m • n)) :=
   TensorProduct.finsuppScalarLeft_apply_tmul p n
 
-lemma scalarRTensor_apply_tmul_apply (p : MvPolynomial σ R) (n : N) (d : σ →₀ ℕ):
+lemma scalarRTensor_apply_tmul_apply (p : MvPolynomial σ R) (n : N) (d : σ →₀ ℕ) :
     scalarRTensor (p ⊗ₜ[R] n) d = coeff d p • n :=
   TensorProduct.finsuppScalarLeft_apply_tmul_apply p n d
 
-lemma scalarRTensor_apply_monomial_tmul (e : σ →₀ ℕ) (r : R) (n : N) (d : σ →₀ ℕ):
+lemma scalarRTensor_apply_monomial_tmul (e : σ →₀ ℕ) (r : R) (n : N) (d : σ →₀ ℕ) :
     scalarRTensor (monomial e r ⊗ₜ[R] n) d = if e = d then r • n else 0 := by
   rw [scalarRTensor_apply_tmul_apply, coeff_monomial, ite_smul, zero_smul]
 
- lemma scalarRTensor_apply_X_tmul_apply (s : σ) (n : N) (d : σ →₀ ℕ):
+lemma scalarRTensor_apply_X_tmul_apply (s : σ) (n : N) (d : σ →₀ ℕ) :
     scalarRTensor (X s ⊗ₜ[R] n) d = if Finsupp.single s 1 = d then n else 0 := by
   rw [scalarRTensor_apply_tmul_apply, coeff_X', ite_smul, one_smul, zero_smul]
 
@@ -203,8 +203,7 @@ noncomputable def algebraTensorAlgEquiv :
 @[simp]
 lemma algebraTensorAlgEquiv_tmul (a : A) (p : MvPolynomial σ R) :
     algebraTensorAlgEquiv R A (a ⊗ₜ p) = a • MvPolynomial.map (algebraMap R A) p := by
-  simp [algebraTensorAlgEquiv]
-  rw [Algebra.smul_def]
+  simp [algebraTensorAlgEquiv, Algebra.smul_def]
   rfl
 
 @[simp]
