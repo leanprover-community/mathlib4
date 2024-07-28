@@ -220,10 +220,11 @@ Let $M$ be a flat module. Let $R^\iota$ be a finite free module, let $f \in R^{\
 element, and let $x \colon R^{\iota} \to M$ be a homomorphism such that $x(f) = 0$. Then there
 exist a finite free module $R^\kappa$ and homomorphisms $a \colon R^{\iota} \to R^{\kappa}$ and
 $y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and $a(f) = 0$. -/
-theorem exists_factorization_of_apply_eq_zero [Flat R M] {ι : Type u} [Fintype ι]
+theorem exists_factorization_of_apply_eq_zero [Flat R M] {ι : Type u} [_root_.Finite ι]
     {f : ι →₀ R} {x : (ι →₀ R) →ₗ[R] M} (h : x f = 0) :
     ∃ (κ : Type u) (_ : Fintype κ) (a : (ι →₀ R) →ₗ[R] (κ →₀ R)) (y : (κ →₀ R) →ₗ[R] M),
-      x = y ∘ₗ a ∧ a f = 0 := iff_forall_exists_factorization.mp ‹Flat R M› h
+      x = y ∘ₗ a ∧ a f = 0 :=
+  let ⟨_⟩ := nonempty_fintype ι; iff_forall_exists_factorization.mp ‹Flat R M› h
 
 /-- **Equational criterion for flatness**
 [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK), backward direction, alternate form.

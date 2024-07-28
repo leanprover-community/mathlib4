@@ -103,7 +103,7 @@ theorem exists_isIdempotentElem_eq_of_ker_isNilpotent (h : ∀ x ∈ RingHom.ker
     ∃ e' : R, IsIdempotentElem e' ∧ f e' = e := by
   simpa using exists_isIdempotentElem_mul_eq_zero_of_ker_isNilpotent f h e he he' 0 .zero (by simp)
 
-variable {I : Type*} [Fintype I] (e : I → R)
+variable {I : Type*} (e : I → R)
 
 /-- A family `{ eᵢ }` of idempotent elements is orthogonal if `eᵢ * eⱼ = 0` for all `i ≠ j`. -/
 @[mk_iff]
@@ -124,7 +124,7 @@ lemma OrthogonalIdempotents.iff_mul_eq [DecidableEq I] :
     OrthogonalIdempotents e ↔ ∀ i j, e i * e j = if i = j then e i else 0 :=
   ⟨mul_eq, fun H ↦ ⟨fun i ↦ by simpa using H i i, fun i j e ↦ by simpa [e] using H i j⟩⟩
 
-lemma OrthogonalIdempotents.isIdempotentElem_sum : IsIdempotentElem (∑ i, e i) := by
+lemma OrthogonalIdempotents.isIdempotentElem_sum [Fintype I] : IsIdempotentElem (∑ i, e i) := by
   classical
   simp [IsIdempotentElem, Finset.sum_mul, Finset.mul_sum, he.mul_eq]
 
@@ -152,7 +152,7 @@ lemma OrthogonalIdempotents.unique [Unique I] :
     OrthogonalIdempotents e ↔ IsIdempotentElem (e default) := by
   simp [orthogonalIdempotents_iff, Unique.forall_iff]
 
-lemma OrthogonalIdempotents.option (x)
+lemma OrthogonalIdempotents.option [Fintype I] (x)
     (hx : IsIdempotentElem x) (hx₁ : x * ∑ i, e i = 0) (hx₂ : (∑ i, e i) * x = 0) :
     OrthogonalIdempotents (Option.elim · x e) where
   idem i := i.rec hx he.idem
@@ -183,14 +183,17 @@ lemma OrthogonalIdempotents.lift_of_isNilpotent_ker_aux
     obtain ⟨_ | i, rfl⟩ := (finSuccEquiv n).symm.surjective i <;> simp [*]
 
 /-- A family of orthogonal idempotents lift along nil ideals. -/
-lemma OrthogonalIdempotents.lift_of_isNilpotent_ker
+lemma OrthogonalIdempotents.lift_of_isNilpotent_ker [Finite I]
     (h : ∀ x ∈ RingHom.ker f, IsNilpotent x)
     {e : I → S} (he : OrthogonalIdempotents e) (he' : ∀ i, e i ∈ f.range) :
     ∃ e' : I → R, OrthogonalIdempotents e' ∧ f ∘ e' = e := by
+  cases nonempty_fintype I
   obtain ⟨e', h₁, h₂⟩ := lift_of_isNilpotent_ker_aux f h
     (he.embedding (Fintype.equivFin I).symm.toEmbedding) (fun _ ↦ he' _)
   refine ⟨_, h₁.embedding (Fintype.equivFin I).toEmbedding,
     by ext x; simpa using congr_fun h₂ (Fintype.equivFin I x)⟩
+
+variable [Fintype I]
 
 /--
 A family `{ eᵢ }` of idempotent elements is complete orthogonal if
@@ -329,7 +332,7 @@ end Ring
 
 section CommRing
 
-variable {R S : Type*} [CommRing R] [Ring S] (f : R →+* S) {I} [Fintype I] {e : I → R}
+variable {R S : Type*} [CommRing R] [Ring S] (f : R →+* S)
 
 theorem eq_of_isNilpotent_sub_of_isIdempotentElem {e₁ e₂ : R}
     (he₁ : IsIdempotentElem e₁) (he₂ : IsIdempotentElem e₂) (H : IsNilpotent (e₁ - e₂)) :
@@ -343,6 +346,21 @@ theorem existsUnique_isIdempotentElem_eq_of_ker_isNilpotent (h : ∀ x ∈ RingH
   exact ⟨e', ⟨he₂, rfl⟩, fun x ⟨hx, hx'⟩ ↦
     eq_of_isNilpotent_sub_of_isIdempotentElem hx he₂
       (h _ (by rw [RingHom.mem_ker, map_sub, hx', sub_self]))⟩
+
+/-- A family of orthogonal idempotents induces an surjection `R ≃+* ∏ R ⧸ ⟨1 - eᵢ⟩` -/
+lemma OrthogonalIdempotents.surjective_pi {I : Type*} [Finite I] {e : I → R}
+    (he : OrthogonalIdempotents e) :
+    Function.Surjective (Pi.ringHom fun i ↦ Ideal.Quotient.mk (Ideal.span {1 - e i})) := by
+  suffices Pairwise fun i j ↦ IsCoprime (Ideal.span {1 - e i}) (Ideal.span {1 - e j}) by
+    intro x
+    obtain ⟨x, rfl⟩ := Ideal.quotientInfToPiQuotient_surj this x
+    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+    exact ⟨x, by ext i; simp [Ideal.quotientInfToPiQuotient]⟩
+  intros i j hij
+  rw [Ideal.isCoprime_span_singleton_iff]
+  exact ⟨1, e i, by simp [mul_sub, sub_mul, he.ortho i j hij]⟩
+
+variable {I : Type*} [Fintype I] {e : I → R}
 
 theorem CompleteOrthogonalIdempotents.of_ker_isNilpotent (h : ∀ x ∈ RingHom.ker f, IsNilpotent x)
     (he : ∀ i, IsIdempotentElem (e i))
@@ -371,18 +389,6 @@ lemma CompleteOrthogonalIdempotents.of_prod_one_sub
     CompleteOrthogonalIdempotents e where
   __ := he
   complete := by rwa [he.prod_one_sub, sub_eq_zero, eq_comm] at he'
-
-/-- A family of orthogonal idempotents induces an surjection `R ≃+* ∏ R ⧸ ⟨1 - eᵢ⟩` -/
-lemma OrthogonalIdempotents.surjective_pi (he : OrthogonalIdempotents e) :
-    Function.Surjective (Pi.ringHom fun i ↦ Ideal.Quotient.mk (Ideal.span {1 - e i})) := by
-  suffices Pairwise fun i j ↦ IsCoprime (Ideal.span {1 - e i}) (Ideal.span {1 - e j}) by
-    intro x
-    obtain ⟨x, rfl⟩ := Ideal.quotientInfToPiQuotient_surj this x
-    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    exact ⟨x, by ext i; simp [Ideal.quotientInfToPiQuotient]⟩
-  intros i j hij
-  rw [Ideal.isCoprime_span_singleton_iff]
-  exact ⟨1, e i, by simp [mul_sub, sub_mul, he.ortho i j hij]⟩
 
 /-- A family of complete orthogonal idempotents induces an isomorphism `R ≃+* ∏ R ⧸ ⟨1 - eᵢ⟩` -/
 lemma CompleteOrthogonalIdempotents.bijective_pi (he : CompleteOrthogonalIdempotents e) :
