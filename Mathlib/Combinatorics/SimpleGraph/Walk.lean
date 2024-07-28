@@ -788,11 +788,11 @@ def tail (p : G.Walk u v) : G.Walk (p.getVert 1) v := p.drop 1
 @[simp]
 lemma cons_nil_tail_eq (h : G.Adj u v) : (Walk.cons h .nil).tail = .nil := by rfl
 
-lemma tail_cons_eq (h : G.Adj u v) (p : G.Walk v w) : (p.cons h).tail = p.copy (getVert_zero p).symm rfl := by
+lemma tail_cons_eq (h : G.Adj u v) (p : G.Walk v w) : (p.cons h).tail =
+    p.copy (getVert_zero p).symm rfl := by
   match p with
   | .nil => rfl
   | .cons h q => rfl
-
 
 /-- The first dart of a walk. -/
 @[simps]
