@@ -93,7 +93,7 @@ section SemilatticeSup
 
 variable [Preorder α] [SemilatticeSup β]
 
-lemma ScottContinuous.sup : ScottContinuous fun (a, b) => (a ⊔ b : β) := by
+lemma ScottContinuous.sup₂ : ScottContinuous fun (a, b) => (a ⊔ b : β) := by
   simp only
   intro d _ _ ⟨p₁, p₂⟩ hdp
   rw [IsLUB, IsLeast, upperBounds] at hdp
