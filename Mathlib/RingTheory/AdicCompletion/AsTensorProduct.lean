@@ -89,7 +89,11 @@ section PiFintype
 In this section we show that `ofTensorProduct` is an isomorphism if `M = R^n`.
 -/
 
-variable (ι : Type*) [Fintype ι] [DecidableEq ι]
+variable (ι : Type*)
+
+section DecidableEq
+
+variable [Fintype ι] [DecidableEq ι]
 
 private lemma piEquivOfFintype_comp_ofTensorProduct_eq :
     piEquivOfFintype I (fun _ : ι ↦ R) ∘ₗ ofTensorProduct I (ι → R) =
@@ -134,10 +138,14 @@ def ofTensorProductEquivOfPiFintype :
     (ofTensorProduct_comp_ofTensorProductInvOfPiFintype I ι)
     (ofTensorProductInvOfPiFintype_comp_ofTensorProduct I ι)
 
+end DecidableEq
+
 /-- If `M = R^ι`, `ofTensorProduct` is bijective. -/
-lemma ofTensorProduct_bijective_of_pi_of_fintype :
-    Function.Bijective (ofTensorProduct I (ι → R)) :=
-  EquivLike.bijective (ofTensorProductEquivOfPiFintype I ι)
+lemma ofTensorProduct_bijective_of_pi_of_fintype [Finite ι] :
+    Function.Bijective (ofTensorProduct I (ι → R)) := by
+  classical
+  cases nonempty_fintype ι
+  exact EquivLike.bijective (ofTensorProductEquivOfPiFintype I ι)
 
 end PiFintype
 
