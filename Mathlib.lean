@@ -4277,6 +4277,7 @@ import Mathlib.Topology.Algebra.Order.Rolle
 import Mathlib.Topology.Algebra.Order.UpperLower
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.Algebra.PontryaginDual
+import Mathlib.Topology.Algebra.ProperAction
 import Mathlib.Topology.Algebra.ProperConstSMul
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Ring.Ideal
