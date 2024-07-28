@@ -237,6 +237,8 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     if (← MonadState.get).messages.hasErrors then
       return
+    -- TODO: once per-project settings are available,
+    -- revert this hack to make it only apply on `Mathlib`
     unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
       return
     -- The linter ignores the `#guard_msgs` command, in particular its doc-string.
