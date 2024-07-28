@@ -103,14 +103,117 @@ instance :
 variable [H₁₂ : HasGoodTrifunctor₁₂Obj F₁₂ G K₁ K₂ K₃ c₁₂ c₄]
   [H₂₃ : HasGoodTrifunctor₂₃Obj F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄]
 
+noncomputable def mapBifunctorAssociatorX (j : ι₄) :
+    (mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄).X j ≅
+      (mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄).X j :=
+  (GradedObject.eval j).mapIso
+    (GradedObject.mapBifunctorAssociator (associator := associator)
+      (H₁₂ := H₁₂) (H₂₃ := H₂₃))
+
+namespace mapBifunctor₁₂
+
+variable (F₁₂ G)
+variable (j j' : ι₄)
+
+/-- The first differential on `mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄`. -/
+noncomputable def D₁ :
+    (mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄).X j ⟶
+      (mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄).X j' :=
+  -- we need a `mapBifunctor₁₂Desc`
+  mapBifunctorDesc (fun i₁₂ i₃ h ↦ by
+    sorry)
+
+/-- The second differential on `mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄`. -/
+def D₂ :
+    (mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄).X j ⟶
+      (mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄).X j' := by
+  sorry
+
+/-- The third differential on `mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄`. -/
+noncomputable def D₃ :
+    (mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄).X j ⟶
+      (mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄).X j' :=
+  mapBifunctor.D₂ _ _ _ _ _ _
+
+lemma d_eq :
+    (mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄).d j j' =
+      D₁ F₁₂ G K₁ K₂ K₃ c₁₂ c₄ j j' + D₂ F₁₂ G K₁ K₂ K₃ c₁₂ c₄ j j' +
+        D₃ F₁₂ G K₁ K₂ K₃ c₁₂ c₄ j j' := by
+  rw [mapBifunctor.d_eq]
+  congr 1
+  ext
+  simp
+  sorry
+
+
+#exit
+
+end mapBifunctor₁₂
+
+namespace mapBifunctor₂₃
+
+variable (F G₂₃)
+variable (j j' : ι₄)
+
+/-- The first differential on `mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄`. -/
+noncomputable def D₁ :
+    (mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄).X j ⟶
+      (mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄).X j' :=
+  mapBifunctor.D₁ _ _ _ _ _ _
+
+/-- The second differential on `mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄`. -/
+def D₂ :
+    (mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄).X j ⟶
+      (mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄).X j' := by
+  sorry
+
+/-- The third differential on `mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄`. -/
+def D₃ :
+    (mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄).X j ⟶
+      (mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄).X j' := by
+  sorry
+
+lemma d_eq :
+    (mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄).d j j' =
+      D₁ F G₂₃ K₁ K₂ K₃ c₂₃ c₄ j j' + D₂ F G₂₃ K₁ K₂ K₃ c₂₃ c₄ j j' +
+      D₃ F G₂₃ K₁ K₂ K₃ c₂₃ c₄ j j' := by
+  sorry
+
+end mapBifunctor₂₃
+
+@[reassoc]
+lemma mapBifunctorAssociatorX_hom_D₁ (j j' : ι₄) :
+    (mapBifunctorAssociatorX associator K₁ K₂ K₃ c₁₂ c₂₃ c₄ j).hom ≫
+      mapBifunctor₂₃.D₁ F G₂₃ K₁ K₂ K₃ c₂₃ c₄ j j' =
+        mapBifunctor₁₂.D₁ F₁₂ G K₁ K₂ K₃ c₁₂ c₄ j j' ≫
+        (mapBifunctorAssociatorX associator K₁ K₂ K₃ c₁₂ c₂₃ c₄ j').hom :=
+  sorry
+
+@[reassoc]
+lemma mapBifunctorAssociatorX_hom_D₂ (j j' : ι₄) :
+    (mapBifunctorAssociatorX associator K₁ K₂ K₃ c₁₂ c₂₃ c₄ j).hom ≫
+      mapBifunctor₂₃.D₂ F G₂₃ K₁ K₂ K₃ c₂₃ c₄ j j' =
+        mapBifunctor₁₂.D₂ F₁₂ G K₁ K₂ K₃ c₁₂ c₄ j j' ≫
+        (mapBifunctorAssociatorX associator K₁ K₂ K₃ c₁₂ c₂₃ c₄ j').hom :=
+  sorry
+@[reassoc]
+lemma mapBifunctorAssociatorX_hom_D₃ (j j' : ι₄) :
+    (mapBifunctorAssociatorX associator K₁ K₂ K₃ c₁₂ c₂₃ c₄ j).hom ≫
+      mapBifunctor₂₃.D₃ F G₂₃ K₁ K₂ K₃ c₂₃ c₄ j j' =
+        mapBifunctor₁₂.D₃ F₁₂ G K₁ K₂ K₃ c₁₂ c₄ j j' ≫
+        (mapBifunctorAssociatorX associator K₁ K₂ K₃ c₁₂ c₂₃ c₄ j').hom :=
+  sorry
+
 /-- The associator isomorphism for the action of bifunctors
 on homological complexes. -/
 noncomputable def mapBifunctorAssociator :
     mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄ ≅
       mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄ :=
-  isoOfGradedObjectIso
-    (GradedObject.mapBifunctorAssociator (associator := associator)
-      (H₁₂ := H₁₂) (H₂₃ := H₂₃)) (by
-        sorry)
+  Hom.isoOfComponents (mapBifunctorAssociatorX associator K₁ K₂ K₃ c₁₂ c₂₃ c₄) (by
+    intro j j' _
+    simp only [mapBifunctor₁₂.d_eq, mapBifunctor₂₃.d_eq,
+      Preadditive.comp_add, Preadditive.add_comp,
+      mapBifunctorAssociatorX_hom_D₁, mapBifunctorAssociatorX_hom_D₂,
+      mapBifunctorAssociatorX_hom_D₃])
 
 end HomologicalComplex

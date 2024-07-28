@@ -602,14 +602,6 @@ theorem sqTo_right (f : Hom C₁ C₂) (j : ι) : (f.sqTo j).right = f.f j :=
 
 end Hom
 
-/-- The isomorphism of homological complexes that is constructed from
-an isomorphism between the underlying graded objects, under the
-assumption that it commutes with the differentials. -/
-@[simps!]
-def isoOfGradedObjectIso {K L : HomologicalComplex V c} (e : K.X ≅ L.X)
-    (he : ∀ (i j : ι) (_ : c.Rel i j), e.hom i ≫ L.d i j = K.d i j ≫ e.hom j) : K ≅ L :=
-  Hom.isoOfComponents (fun n ↦ (GradedObject.eval n).mapIso e) he
-
 end
 
 end HomologicalComplex
