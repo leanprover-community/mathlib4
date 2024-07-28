@@ -7,7 +7,7 @@
 The `declarations_diff` script is a text-based script that attempts to find which declarations
 have been removed and which declarations have been added in the current PR with respect to `master`.
 
-In essence, it looks at the output of `git diff origin/master...HEAD`, it extracts the lines that
+In essence, it looks at the output of `git diff origin/master...HEAD`, extracts the lines that
 contain one of the keywords
 
 `theorem` `lemma` `inductive` `structure` `def` `class` `instance` `alias`
@@ -26,7 +26,7 @@ the script will return a count such as
 
 ++--+ thmName
 
-This means that the declaration `thmName` was added 3 times and removed twice: this can happen
+This means that a declaration `thmName` was added 3 times and removed twice: this can happen
 with namespacing, e.g. you could see it with `++-- map_zero`.
 
 The script uses some heuristics to guide this process.
