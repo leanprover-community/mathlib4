@@ -5,13 +5,13 @@ Authors: Johannes Hölzl, Kenny Lau
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.GroupWithZero.Action.Pi
+import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Fintype.Quotient
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.GroupAction.BigOperators
-import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-!
 # Dependent functions with finite support
