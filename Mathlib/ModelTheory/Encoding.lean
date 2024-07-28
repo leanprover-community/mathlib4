@@ -183,6 +183,7 @@ lemma sigmaImp_apply {n} {φ ψ : L.BoundedFormula α n} :
     sigmaImp ⟨n, φ⟩ ⟨n, ψ⟩ = ⟨n, φ.imp ψ⟩ := by
   simp only [sigmaImp, ↓reduceDIte, eq_mp_eq_cast, cast_eq]
 
+/-- Decodes a list of symbols as a list of formulas. -/
 def listDecode :
     List ((Σk, L.Term (α ⊕ Fin k)) ⊕ ((Σn, L.Relations n) ⊕ ℕ)) → List (Σn, L.BoundedFormula α n)
   | Sum.inr (Sum.inr (n + 2))::l => ⟨n, falsum⟩::(listDecode l)
@@ -289,3 +290,4 @@ end BoundedFormula
 end Language
 
 end FirstOrder
+#lint
