@@ -289,6 +289,7 @@ theorem eval₂Hom_apply (f : MvPowerSeries σ R) :
       coeToMvPowerSeries_denseInducing.extend (MvPolynomial.eval₂ φ a) f :=
   rfl
 
+@[simp]
 theorem coe_eval₂Hom :
     ⇑(eval₂Hom hφ ha) = eval₂ φ a := by
   ext f
