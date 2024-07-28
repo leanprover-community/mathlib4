@@ -93,9 +93,10 @@ section SemilatticeSup
 
 variable [Preorder α] [SemilatticeSup β]
 
-lemma ScottContinuous.sup₂ : ScottContinuous fun (a, b) => (a ⊔ b : β) := by
+lemma ScottContinuousOn.sup₂ {D : Set (Set (β × β))} :
+    ScottContinuousOn D fun (a, b) => (a ⊔ b : β) := by
   simp only
-  intro d _ _ ⟨p₁, p₂⟩ hdp
+  intro d _ _ _ ⟨p₁, p₂⟩ hdp
   rw [IsLUB, IsLeast, upperBounds] at hdp
   simp only [Prod.forall, mem_setOf_eq, Prod.mk_le_mk] at hdp
   rw [IsLUB, IsLeast, upperBounds]
