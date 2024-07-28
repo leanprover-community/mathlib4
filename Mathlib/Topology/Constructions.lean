@@ -971,6 +971,10 @@ nonrec theorem IsClosed.closedEmbedding_subtype_val {s : Set X} (hs : IsClosed s
     ClosedEmbedding ((↑) : s → X) :=
   closedEmbedding_subtype_val hs
 
+theorem IsClosed.isClosedMap_subtype_val {s : Set X} (hs : IsClosed s) :
+    IsClosedMap ((↑) : s → X) :=
+  hs.closedEmbedding_subtype_val.isClosedMap
+
 @[continuity, fun_prop]
 theorem Continuous.subtype_mk {f : Y → X} (h : Continuous f) (hp : ∀ x, p (f x)) :
     Continuous fun x => (⟨f x, hp x⟩ : Subtype p) :=
@@ -1479,7 +1483,7 @@ theorem inducing_sigma {f : Sigma σ → X} :
   refine ⟨fun h ↦ ⟨fun i ↦ h.comp embedding_sigmaMk.1, fun i ↦ ?_⟩, ?_⟩
   · rcases h.isOpen_iff.1 (isOpen_range_sigmaMk (i := i)) with ⟨U, hUo, hU⟩
     refine ⟨U, hUo, ?_⟩
-    simpa [ext_iff] using hU
+    simpa [Set.ext_iff] using hU
   · refine fun ⟨h₁, h₂⟩ ↦ inducing_iff_nhds.2 fun ⟨i, x⟩ ↦ ?_
     rw [Sigma.nhds_mk, (h₁ i).nhds_eq_comap, comp_apply, ← comap_comap, map_comap_of_mem]
     rcases h₂ i with ⟨U, hUo, hU⟩
