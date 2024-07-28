@@ -806,7 +806,7 @@ lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
 
 variable {x y : V} -- TODO: rename to u, v, w instead?
 
-@[simp] lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
+lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
     cons (p.adj_getVert_one hp) p.tail = p := by
   cases p with
   | nil => simp only [nil_nil, not_true_eq_false] at hp
