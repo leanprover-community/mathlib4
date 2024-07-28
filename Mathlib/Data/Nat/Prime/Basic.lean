@@ -3,11 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Ring.Int
+import Mathlib.Order.Bounds.Basic
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Order.Bounds.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
 /-!
 ## Notable Theorems
@@ -39,7 +39,7 @@ theorem Prime.five_le_of_ne_two_of_ne_three {p : ℕ} (hp : p.Prime) (h_two : p 
   | 2 => decide
   | 3 => decide
   | 4 => decide
-  | n + 5 => exact (h.not_le le_add_self).elim
+  | n + 5 => exact (h.not_le <| le_add_left ..).elim
 
 end
 
@@ -113,7 +113,7 @@ theorem Prime.mod_two_eq_one_iff_ne_two {p : ℕ} [Fact p.Prime] : p % 2 = 1 ↔
   simp at h
 
 theorem coprime_of_dvd' {m n : ℕ} (H : ∀ k, Prime k → k ∣ m → k ∣ n → k ∣ 1) : Coprime m n :=
-  coprime_of_dvd fun k kp km kn => not_le_of_gt kp.one_lt <| le_of_dvd zero_lt_one <| H k kp km kn
+  coprime_of_dvd fun k kp km kn => not_le_of_gt kp.one_lt <| le_of_dvd Nat.one_pos <| H k kp km kn
 
 theorem Prime.dvd_iff_not_coprime {p n : ℕ} (pp : Prime p) : p ∣ n ↔ ¬Coprime p n :=
   iff_not_comm.2 pp.coprime_iff_not_dvd
@@ -294,7 +294,7 @@ theorem exists_pow_lt_factorial (c : ℕ) : ∃ n0 > 1, ∀ n ≥ n0, c ^ n < (n
   obtain ⟨d, rfl⟩ := Nat.exists_eq_add_of_le hn
   obtain (rfl | c0) := c.eq_zero_or_pos
   · simp [Nat.factorial_pos]
-  refine (Nat.le_mul_of_pos_right _ (pow_pos c0 d)).trans_lt ?_
+  refine (Nat.le_mul_of_pos_right _ (Nat.pow_pos (n := d) c0)).trans_lt ?_
   convert_to (c ^ 2) ^ (c ^ 2 + d + 1) < (c ^ 2 + (c ^ 2 + d + 1))!
   · rw [← pow_mul, ← pow_add]
     congr 1
