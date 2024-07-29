@@ -322,7 +322,6 @@ theorem opensRange_fromSpec : Scheme.Hom.opensRange hU.fromSpec = U := Opens.ext
 @[reassoc (attr := simp)]
 theorem map_fromSpec {V : X.Opens} (hV : IsAffineOpen V) (f : op U ⟶ op V) :
     Spec.map (X.presheaf.map f) ≫ hU.fromSpec = hV.fromSpec := by
-  -- obtain ⟨f, rfl⟩ : ∃ f' : V ⟶ U, f'.op = f := ⟨f.unop, rfl⟩
   have : IsAffine (X.restrictFunctor.obj U).left := hU
   haveI : IsAffine _ := hV
   conv_rhs =>
@@ -337,18 +336,16 @@ lemma map_appLE_fromSpec (f : X ⟶ Y) {V : X.Opens} {U : Y.Opens}
     (hU : IsAffineOpen U) (hV : IsAffineOpen V) (i : V ≤ f ⁻¹ᵁ U) :
     Spec.map (f.appLE U V i) ≫ hU.fromSpec = hV.fromSpec ≫ f := by
   have : IsAffine U := hU
-  have : IsAffine V := hV
   simp only [IsAffineOpen.fromSpec, Category.assoc, isoSpec_inv]
   rw [← Scheme.restrictFunctor_map_ofRestrict (homOfLE i), Category.assoc, ← morphismRestrict_ι,
-    ← Category.assoc _ (f ∣_ U) U.ι, ← Scheme.isoSpec_inv_naturality_assoc,
+    ← Category.assoc _ (f ∣_ U) U.ι, ← @Scheme.isoSpec_inv_naturality_assoc,
     ← Spec.map_comp_assoc, ← Spec.map_comp_assoc, Scheme.comp_app, morphismRestrict_app,
     Scheme.restrictFunctor_map_app, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map,
     Scheme.Hom.appLE_map, Scheme.Hom.appLE_map, Scheme.Hom.map_appLE]
 
 lemma fromSpec_top [IsAffine X] : (isAffineOpen_top X).fromSpec = X.isoSpec.inv := by
-  have : IsAffine _ := isAffineOpen_top X
-  rw [fromSpec, isoSpec_inv, Category.assoc, ← Scheme.isoSpec_inv_naturality, ← Spec.map_comp_assoc,
-    Scheme.Opens.ι_app, ← X.presheaf.map_comp, ← op_comp, eqToHom_comp_homOfLE,
+  rw [fromSpec, isoSpec_inv, Category.assoc, ← @Scheme.isoSpec_inv_naturality, Scheme.Opens.ι_app,
+    ← Spec.map_comp_assoc, ← X.presheaf.map_comp, ← op_comp, eqToHom_comp_homOfLE,
     ← eqToHom_eq_homOfLE rfl, eqToHom_refl, op_id, X.presheaf.map_id, Spec.map_id, Category.id_comp]
 
 lemma fromSpec_app_of_le (V : X.Opens) (h : U ≤ V) :
@@ -427,10 +424,9 @@ theorem fromSpec_preimage_self :
   rw [Opens.map_coe, Opens.coe_top, ← hU.range_fromSpec, ← Set.image_univ]
   exact Set.preimage_image_eq _ PresheafedSpace.IsOpenImmersion.base_open.inj
 
-theorem SpecΓIdentity_hom_app_fromSpec :
+theorem ΓSpecIso_hom_fromSpec_app :
     (Scheme.ΓSpecIso Γ(X, U)).hom ≫ hU.fromSpec.app U =
       (Spec Γ(X, U)).presheaf.map (eqToHom hU.fromSpec_preimage_self).op := by
-  have : U.ι ⁻¹ᵁ U = ⊤ := U.ι_preimage_self
   simp only [fromSpec, Scheme.comp_coeBase, Opens.map_comp_obj, Scheme.comp_app,
     Scheme.Opens.ι_app_self, eqToHom_op, Scheme.app_eq _ U.ι_preimage_self,
     Scheme.Opens.toScheme_presheaf_map, eqToHom_unop, eqToHom_map U.ι.opensFunctor, Opens.map_top,
@@ -441,7 +437,7 @@ theorem SpecΓIdentity_hom_app_fromSpec :
 theorem fromSpec_app_self :
     hU.fromSpec.app U = (Scheme.ΓSpecIso Γ(X, U)).inv ≫
       (Spec Γ(X, U)).presheaf.map (eqToHom hU.fromSpec_preimage_self).op := by
-  rw [← hU.SpecΓIdentity_hom_app_fromSpec, Iso.inv_hom_id_assoc]
+  rw [← hU.ΓSpecIso_hom_fromSpec_app, Iso.inv_hom_id_assoc]
 
 theorem fromSpec_preimage_basicOpen' :
     hU.fromSpec ⁻¹ᵁ X.basicOpen f = (Spec Γ(X, U)).basicOpen ((Scheme.ΓSpecIso Γ(X, U)).inv f) := by
