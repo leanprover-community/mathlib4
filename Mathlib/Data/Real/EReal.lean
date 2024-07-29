@@ -933,8 +933,7 @@ lemma neg_sub {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊥) (h2 : x ≠ ⊤ ∨ y
 
 lemma le_iff_le_forall_real_gt (x y : EReal) : (∀ z : ℝ, x < z → y ≤ z) ↔ y ≤ x := by
   symm
-  refine ⟨fun h z x_lt_z ↦ le_trans h (le_of_lt x_lt_z), ?_⟩
-  intro h
+  refine ⟨fun h z x_lt_z ↦ le_trans h (le_of_lt x_lt_z), fun h ↦ ?_⟩
   induction x
   · refine le_of_eq ((eq_bot_iff_forall_lt y).2 fun z ↦ ?_)
     apply lt_of_le_of_lt (h (z-1) (bot_lt_coe (z-1)))
@@ -978,21 +977,18 @@ private lemma add_le_of_forall_lt_add_top {a b : EReal} (h : ∀ c < ⊤, ∀ d 
   induction a with
   | h_bot => exact add_bot ⊤ ▸ bot_le
   | h_real a =>
-    rw [top_add_coe a]
-    refine (le_iff_le_forall_real_gt _ _).1 fun c b_c ↦ ?_
+    refine top_add_coe a ▸ (le_iff_le_forall_real_gt _ _).1 fun c b_c ↦ ?_
     specialize h (c - a + 1) (coe_lt_top (c - a + 1)) (a - 1)
     rw [← coe_one, ← coe_sub, ← coe_sub, ← coe_add, ← coe_add, add_add_sub_cancel, sub_add_cancel,
       EReal.coe_lt_coe_iff] at h
     exact (not_le_of_lt b_c (h (sub_one_lt a))).rec
   | h_top =>
-    rw [top_add_top]
-    refine (le_iff_le_forall_real_gt _ _).1 fun c b_c ↦ ?_
+    refine top_add_top ▸ (le_iff_le_forall_real_gt _ _).1 fun c b_c ↦ ?_
     specialize h c (coe_lt_top c) 0 zero_lt_top
     rw [add_zero] at h
     exact (not_le_of_lt b_c h).rec
 
-lemma add_le_of_forall_lt_add {a b c : EReal} (h : ∀ d < a, ∀ e < b, d + e ≤ c) :
-    a + b ≤ c := by
+lemma add_le_of_forall_lt_add {a b c : EReal} (h : ∀ d < a, ∀ e < b, d + e ≤ c) : a + b ≤ c := by
   induction a with
   | h_bot => exact bot_add b ▸ bot_le
   | h_real a => induction b with
