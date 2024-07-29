@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.LinearAlgebra.Dual
-import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
+import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
 # Spaces with separating dual

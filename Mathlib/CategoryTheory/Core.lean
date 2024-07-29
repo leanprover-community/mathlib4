@@ -72,7 +72,7 @@ variable {C} {G : Type u₂} [Groupoid.{v₂} G]
 /-- A functor from a groupoid to a category C factors through the core of C. -/
 def functorToCore (F : G ⥤ C) : G ⥤ Core C where
   obj X := F.obj X
-  map f := ⟨F.map f, F.map (Groupoid.inv f), _, _⟩
+  map f := { hom := F.map f, inv := F.map (Groupoid.inv f) }
 
 /-- We can functorially associate to any functor from a groupoid to the core of a category `C`,
 a functor from the groupoid to `C`, simply by composing with the embedding `Core C ⥤ C`.

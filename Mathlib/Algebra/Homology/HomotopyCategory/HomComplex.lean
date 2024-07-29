@@ -686,7 +686,7 @@ lemma ofHom_homOf_eq_self (z : Cocycle F G 0) : ofHom (homOf z) = z := by aesop_
 @[simp]
 lemma cochain_ofHom_homOf_eq_coe (z : Cocycle F G 0) :
     Cochain.ofHom (homOf z) = (z : Cochain F G 0) := by
-  simpa only [ext_iff] using ofHom_homOf_eq_self z
+  simpa only [Cocycle.ext_iff] using ofHom_homOf_eq_self z
 
 variable (F G)
 

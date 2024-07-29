@@ -90,10 +90,8 @@ theorem _root_.Measurable.lmarginal (hf : Measurable f) : Measurable (∫⋯∫�
   refine hf.comp ?_
   rw [measurable_pi_iff]; intro i
   by_cases hi : i ∈ s
-  · simp [hi, updateFinset]
-    exact measurable_pi_iff.1 measurable_snd _
-  · simp [hi, updateFinset]
-    exact measurable_pi_iff.1 measurable_fst _
+  · simpa [hi, updateFinset] using measurable_pi_iff.1 measurable_snd _
+  · simpa [hi, updateFinset] using measurable_pi_iff.1 measurable_fst _
 
 @[simp] theorem lmarginal_empty (f : (∀ i, π i) → ℝ≥0∞) : ∫⋯∫⁻_∅, f ∂μ = f := by
   ext1 x
