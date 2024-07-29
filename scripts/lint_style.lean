@@ -22,11 +22,14 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
     | (true, _) => ErrorFormat.github
     | (false, true) => ErrorFormat.exceptionsFile
     | (false, false) => ErrorFormat.humanReadable
-  let mut numberErrorFiles : UInt32 := 0
+  -- Read all module names to lint.
+  let mut allModules := #[]
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    let n ← lintAllFiles (System.mkFilePath [s]) errorStyle
-    numberErrorFiles := numberErrorFiles + n
-  return numberErrorFiles
+    allModules := allModules.append ((← IO.FS.lines s).map (·.stripPrefix "import "))
+  let numberErrorFiles ← lintModules allModules errorStyle
+  -- Make sure to return an exit code of at most 125, so this return value can be used further
+  -- in shell scripts.
+  return min numberErrorFiles 125
 
 /-- Setting up command line options and help text for `lake exe lint_style`. -/
 -- so far, no help options or so: perhaps that is fine?
