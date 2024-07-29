@@ -180,49 +180,41 @@ lemma limsup_neg : limsup (- v) f = - liminf v f :=
   EReal.negOrderIso.liminf_apply.symm
 
 lemma add_liminf_le_liminf_add : (liminf u f) + (liminf v f) ≤ liminf (u + v) f := by
-  refine add_le_of_forall_lt_add fun a a_u b b_v ↦ ?_
-  refine (le_liminf_iff).2 fun c c_ab ↦ ?_
+  refine add_le_of_forall_lt_add fun a a_u b b_v ↦ (le_liminf_iff).2 fun c c_ab ↦ ?_
   filter_upwards [eventually_lt_of_lt_liminf a_u, eventually_lt_of_lt_liminf b_v] with x a_x b_x
   exact lt_trans c_ab (add_lt_add a_x b_x)
 
 lemma limsup_add_le_add_limsup (h : limsup u f ≠ ⊥ ∨ limsup v f ≠ ⊤)
     (h' : limsup u f ≠ ⊤ ∨ limsup v f ≠ ⊥) :
     limsup (u + v) f ≤ (limsup u f) + (limsup v f) := by
-  refine le_add_of_forall_gt_add h h' fun a a_u b b_v ↦ ?_
-  refine (limsup_le_iff).2 fun c c_ab ↦ ?_
+  refine le_add_of_forall_gt_add h h' fun a a_u b b_v ↦ (limsup_le_iff).2 fun c c_ab ↦ ?_
   filter_upwards [eventually_lt_of_limsup_lt a_u, eventually_lt_of_limsup_lt b_v] with x a_x b_x
   exact lt_trans (add_lt_add a_x b_x) c_ab
 
-lemma limsup_add_liminf_le_limsup_add : (limsup u f) + (liminf v f) ≤ limsup (u + v) f := by
-  refine add_le_of_forall_lt_add fun a a_u b b_v ↦ ?_
-  refine (le_limsup_iff).2 fun c c_ab ↦ ?_
-  refine Frequently.mono (Frequently.and_eventually ((frequently_lt_of_lt_limsup) a_u)
-    ((eventually_lt_of_lt_liminf) b_v)) fun x ab_x ↦ ?_
-  exact lt_trans c_ab (add_lt_add ab_x.1 ab_x.2)
+lemma limsup_add_liminf_le_limsup_add : (limsup u f) + (liminf v f) ≤ limsup (u + v) f :=
+  add_le_of_forall_lt_add fun a a_u b b_v ↦ (le_limsup_iff).2 fun c c_ab ↦
+    Frequently.mono (Frequently.and_eventually ((frequently_lt_of_lt_limsup) a_u)
+      ((eventually_lt_of_lt_liminf) b_v)) fun x ab_x ↦ lt_trans c_ab (add_lt_add ab_x.1 ab_x.2)
 
 lemma liminf_add_le_limsup_add_liminf (h : limsup u f ≠ ⊥ ∨ liminf v f ≠ ⊤)
     (h' : limsup u f ≠ ⊤ ∨ liminf v f ≠ ⊥) :
-    liminf (u + v) f ≤ (limsup u f) + (liminf v f) := by
-  refine le_add_of_forall_gt_add h h' fun a a_u b b_v ↦ ?_
-  refine (liminf_le_iff).2 fun c c_ab ↦ ?_
-  refine Frequently.mono (Frequently.and_eventually ((frequently_lt_of_liminf_lt) b_v)
-    ((eventually_lt_of_limsup_lt) a_u)) fun x ab_x ↦ ?_
-  exact lt_trans (add_lt_add ab_x.2 ab_x.1) c_ab
+    liminf (u + v) f ≤ (limsup u f) + (liminf v f) :=
+  le_add_of_forall_gt_add h h' fun a a_u b b_v ↦ (liminf_le_iff).2 fun c c_ab ↦
+    Frequently.mono (Frequently.and_eventually ((frequently_lt_of_liminf_lt) b_v)
+     ((eventually_lt_of_limsup_lt) a_u)) fun x ab_x ↦ lt_trans (add_lt_add ab_x.2 ab_x.1) c_ab
 
 variable {a b : EReal}
 
 lemma limsup_add_bot_of_ne_top (h : limsup u f = ⊥) (h' : limsup v f ≠ ⊤) :
     limsup (u + v) f = ⊥ := by
   apply le_bot_iff.1 (le_trans (limsup_add_le_add_limsup (Or.inr h') _) _)
-  · rw [h]
-    exact Or.inl bot_ne_top
+  · rw [h]; exact Or.inl bot_ne_top
   · rw [h, bot_add]
 
 lemma limsup_add_le_of_le (ha : limsup u f < a) (hb : limsup v f ≤ b) :
     limsup (u + v) f ≤ a + b := by
   rcases eq_top_or_lt_top b with (rfl | h)
-  · rw [add_top_of_ne_bot ha.ne_bot]
-    exact le_top
+  · rw [add_top_of_ne_bot ha.ne_bot]; exact le_top
   · exact le_trans (limsup_add_le_add_limsup (Or.inr (lt_of_le_of_lt hb h).ne) (Or.inl ha.ne_top))
       (add_le_add ha.le hb)
 
