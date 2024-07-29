@@ -7,7 +7,7 @@ import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.AlgebraicGeometry.Cover.Open
 import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.RingTheory.Localization.InvSubmonoid
+import Mathlib.RingTheory.Localization.InvSubmonoidf
 
 /-!
 # Affine schemes
@@ -322,7 +322,6 @@ theorem opensRange_fromSpec : Scheme.Hom.opensRange hU.fromSpec = U := Opens.ext
 @[reassoc (attr := simp)]
 theorem map_fromSpec {V : X.Opens} (hV : IsAffineOpen V) (f : op U ⟶ op V) :
     Spec.map (X.presheaf.map f) ≫ hU.fromSpec = hV.fromSpec := by
-  -- obtain ⟨f, rfl⟩ : ∃ f' : V ⟶ U, f'.op = f := ⟨f.unop, rfl⟩
   have : IsAffine (X.restrictFunctor.obj U).left := hU
   haveI : IsAffine _ := hV
   conv_rhs =>
