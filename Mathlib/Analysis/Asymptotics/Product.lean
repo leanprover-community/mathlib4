@@ -10,7 +10,7 @@ import Mathlib.Analysis.Asymptotics.Theta
 # Uniform Asymptotics
 
 For a family of functions `f : ι × α → E` and `g : α → E`, we can think of
-`f =O[𝓟 s ×ˢ l] fun (i, x) ↦ g x` as expressing that `f i` is O(g) uniformly on `s`.
+`f =O[𝓟 s ×ˢ l] fun (i, x) ↦ g x` as expressing that `f i` is `O(g)` uniformly on `s`.
 
 This file provides methods for constructing `=O[𝓟 s ×ˢ l]` relations (similarly `Θ`)
 and deriving their consequences.
@@ -28,8 +28,7 @@ section Basic
 
 variable [Norm E] [Norm F] {f : ι × α → E} {g : α → F} {l : Filter α}
 
-/-- If f = O(g) uniformly on `s`, then f_i = O(g) for any `i ∈ s`.` -/
-theorem isBigO_of_isBigOUniformly (h : f =O[𝓟 s ×ˢ l] (g ∘ Prod.snd)) {i : ι} (hi : i ∈ s) :
+theorem isBigO_of_isBigO_prod (h : f =O[𝓟 s ×ˢ l] (g ∘ Prod.snd)) {i : ι} (hi : i ∈ s) :
     (fun x ↦ f (i, x)) =O[l] g := by
   obtain ⟨C, hC⟩ := h.bound
   obtain ⟨t, htl, ht⟩ := hC.exists_mem
