@@ -11,6 +11,8 @@ import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
 import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Data.Nat.Choose.Bounds
+import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # A collection of specific limit computations
@@ -469,7 +471,7 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one
         norm_cast
         calc (n + k).choose k
           _ ≤ (2 * n).choose k := choose_le_choose k (by omega)
-          _ ≤ (2 * n) ^ k := choose_le_pow _ _
+          _ ≤ (2 * n) ^ k := Nat.choose_le_pow _ _
           _ = 2 ^ k * n ^ k := Nat.mul_pow 2 n k
       convert hasSum_sum_range_mul_of_summable_norm' I1 ih.summable
         (summable_norm_geometric_of_norm_lt_one hr) (summable_geometric_of_norm_lt_one hr) with n
@@ -495,7 +497,7 @@ lemma summable_descFactorial_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr 
     using 2 with n
   simp [← mul_assoc, descFactorial_eq_factorial_mul_choose (n + k) k]
 
-lemma foo (k : ℕ) : ∃ (a : Fin k → ℕ), ∀ n,
+lemma exists_descFactorial_eq_polynomial (k : ℕ) : ∃ (a : Fin k → ℕ), ∀ n,
     (n + k).descFactorial k = n ^ k + ∑ i, a i * n ^ (i : ℕ) := by
   induction k with
   | zero => simp
@@ -513,14 +515,40 @@ lemma foo (k : ℕ) : ∃ (a : Fin k → ℕ), ∀ n,
         congr 3 with i
         · ring
         · ring
-      _ = n ^ (k + 1) + ∑ i, b i * n ^ ((i : ℕ)) + ∑ i, c i * n ^ (i : ℕ) := by
+      _ = n ^ (k + 1) + ∑ i, b i * n ^ (i : ℕ) + ∑ i, c i * n ^ (i : ℕ) := by
         congr 2
-        · simp [b]
-          rw [sum_succ]
+        · simp only [b]
+          have I : ∀ (i : Fin (k + 1)), (Fin.cons (α := fun _ ↦ ℕ) (0 : ℕ) a i) * n ^ (i : ℕ)
+              = Fin.cons (α := fun _ ↦ ℕ) (0 : ℕ) (fun j ↦ a j * n ^ ((j : ℕ) + 1)) i := by
+            apply Fin.cases <;> simp
+          simp_rw [I]
+          simp [Fin.sum_cons]
+        · simp only [c]
+          have I : ∀ (i : Fin (k + 1)),
+              Fin.snoc (α := fun _ ↦ ℕ) (fun j ↦ (k + 1) * a j) (k + 1) i * n ^ (i : ℕ) =
+              Fin.snoc (α := fun _ ↦ ℕ) (fun j ↦ (k + 1) * a j * n ^ (j : ℕ))
+                ((k + 1) * n ^ k) i := by
+            apply Fin.lastCases <;> simp
+          simp_rw [I]
+          simp only [Fin.sum_snoc, add_comm]
+      _ = n ^ (k + 1) + ∑ i, (b i + c i) * n ^ (i : ℕ) := by
+        rw [add_assoc, ← sum_add_distrib]
+        congr with i
+        rw [add_mul]
+
+theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
+    Summable (fun n ↦ (n : R) ^ k * r ^ n : ℕ → R) := by
+  refine Nat.strong_induction_on k fun k hk => ?_
+  obtain ⟨a, ha⟩ : ∃ (a : Fin k → ℕ), ∀ n, (n + k).descFactorial k =
+    n ^ k + ∑ i, a i * n ^ (i : ℕ) := exists_descFactorial_eq_polynomial (k : ℕ)
+  have : Summable (fun n ↦ (n + k).descFactorial k * r ^ n - ∑ i, a i * n ^ (i : ℕ) * r ^ n) := by
+    apply (summable_descFactorial_mul_geometric_of_norm_lt_one k hr).sub
+    apply summable_sum (fun i hi ↦ ?_)
+
+
 
 
 #exit
-
 
 theorem summable_norm_pow_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R] (k : ℕ) {r : R}
     (hr : ‖r‖ < 1) : Summable fun n : ℕ ↦ ‖((n : R) ^ k * r ^ n : R)‖ := by
@@ -534,9 +562,6 @@ alias summable_norm_pow_mul_geometric_of_norm_lt_1 := summable_norm_pow_mul_geom
 
 
 
-theorem summable_pow_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R] [CompleteSpace R]
-    (k : ℕ) {r : R} (hr : ‖r‖ < 1) : Summable (fun n ↦ (n : R) ^ k * r ^ n : ℕ → R) :=
-  .of_norm <| summable_norm_pow_mul_geometric_of_norm_lt_one _ hr
 
 #exit
 
