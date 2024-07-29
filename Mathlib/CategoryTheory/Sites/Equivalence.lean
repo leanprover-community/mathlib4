@@ -101,12 +101,6 @@ instance : e.symm.TransportsGrothendieckTopology K J where
 
 instance : e.inverse.IsDenseSubsite K J := inferInstanceAs (e.symm.functor.IsDenseSubsite _ _)
 
-theorem coverPreserving : CoverPreserving J K e.functor :=
-  IsDenseSubsite.coverPreserving _ _ _
-
-theorem coverPreserving_symm : CoverPreserving K J e.inverse :=
-  IsDenseSubsite.coverPreserving _ _ _
-
 /-- The functor in the equivalence of sheaf categories. -/
 @[simps!]
 def sheafCongr.functor : Sheaf J A ⥤ Sheaf K A where
@@ -304,8 +298,7 @@ variable [∀ (X : Cᵒᵖ), HasLimitsOfShape (StructuredArrow X (equivSmallMode
 instance [((equivSmallModel C).inverse.inducedTopology J).WEqualsLocallyBijective A] :
     J.WEqualsLocallyBijective A :=
   WEqualsLocallyBijective.transport J ((equivSmallModel C).inverse.inducedTopology J)
-    (equivSmallModel C).inverse ((equivSmallModel C).coverPreserving_symm J
-      ((equivSmallModel C).inverse.inducedTopology J))
+    (equivSmallModel C).inverse (IsDenseSubsite.coverPreserving _ _ _)
 
 variable [∀ (X : Cᵒᵖ), HasLimitsOfShape (StructuredArrow X (equivSmallModel C).inverse.op) B]
 variable [PreservesSheafification ((equivSmallModel C).inverse.inducedTopology J) F]
