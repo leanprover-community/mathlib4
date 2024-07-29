@@ -326,6 +326,8 @@ theorem le_weightedOrder_mul [DecidableEq σ] (f g : MvPowerSeries σ R) :
       apply ne_of_lt (lt_of_lt_of_le hd <| add_le_add hi hj)
       rw [← hij, map_add, Nat.cast_add]
 
+alias weightedOrder_mul_ge := le_weightedOrder_mul
+
 theorem coeff_mul_left_one_sub_of_lt_weightedOrder [DecidableEq σ] {R : Type*} [Ring R]
     {f g : MvPowerSeries σ R} (d : σ →₀ ℕ) (h : ↑(weight w d) < g.weightedOrder w) :
     coeff R d (f * (1 - g)) = coeff R d f := by
@@ -457,8 +459,10 @@ theorem order_add_of_order_ne {f g : MvPowerSeries σ R} (h : f.order ≠ g.orde
 
 /-- The order of the product of two formal power series
  is at least the sum of their orders.-/
-theorem order_mul_ge [DecidableEq σ] (f g : MvPowerSeries σ R) : f.order + g.order ≤ order (f * g) :=
+theorem le_order_mul [DecidableEq σ] (f g : MvPowerSeries σ R) : f.order + g.order ≤ order (f * g) :=
   le_weightedOrder_mul _ f g
+
+alias order_mul_ge := le_order_mul
 
 theorem coeff_mul_left_one_sub_of_lt_order [DecidableEq σ] {R : Type*} [Ring R]
     {f g : MvPowerSeries σ R} (d : σ →₀ ℕ) (h : ↑(degree d) < g.order) :
