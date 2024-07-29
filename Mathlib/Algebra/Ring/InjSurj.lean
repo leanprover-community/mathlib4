@@ -11,11 +11,12 @@ import Mathlib.Algebra.GroupWithZero.InjSurj
 # Pulling back rings along injective maps, and pushing them forward along surjective maps
 -/
 
-variable {α β : Type*} [Zero β] [One β] [Add β] [Mul β] [Neg β] [Sub β] [SMul ℕ β] [SMul ℤ β]
-  [Pow β ℕ] [NatCast β] [IntCast β]
+variable {α β : Type*}
 
 namespace Function.Injective
 variable (f : β → α) (hf : Injective f)
+
+variable [Add β] [Mul β]
 
 /-- Pullback a `LeftDistribClass` instance along an injective function. -/
 theorem leftDistribClass [Mul α] [Add α] [LeftDistribClass α] (add : ∀ x y, f (x + y) = f x + f y)
@@ -26,6 +27,9 @@ theorem leftDistribClass [Mul α] [Add α] [LeftDistribClass α] (add : ∀ x y,
 theorem rightDistribClass [Mul α] [Add α] [RightDistribClass α] (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) : RightDistribClass β where
   right_distrib x y z := hf <| by simp only [*, right_distrib]
+
+variable [Zero β] [One β] [Neg β] [Sub β] [SMul ℕ β] [SMul ℤ β]
+  [Pow β ℕ] [NatCast β] [IntCast β]
 
 /-- Pullback a `Distrib` instance along an injective function. -/
 -- See note [reducible non-instances]
@@ -191,6 +195,8 @@ end Function.Injective
 namespace Function.Surjective
 variable (f : α → β) (hf : Surjective f)
 
+variable [Add β] [Mul β]
+
 /-- Pushforward a `LeftDistribClass` instance along a surjective function. -/
 theorem leftDistribClass [Mul α] [Add α] [LeftDistribClass α] (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) : LeftDistribClass β where
@@ -207,6 +213,9 @@ protected abbrev distrib [Distrib α] (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) : Distrib β where
   __ := hf.leftDistribClass f add mul
   __ := hf.rightDistribClass f add mul
+
+variable [Zero β] [One β] [Neg β] [Sub β] [SMul ℕ β] [SMul ℤ β]
+  [Pow β ℕ] [NatCast β] [IntCast β]
 
 /-- A type endowed with `-` and `*` has distributive negation, if it admits a surjective map that
 preserves `-` and `*` from a type which has distributive negation. -/
