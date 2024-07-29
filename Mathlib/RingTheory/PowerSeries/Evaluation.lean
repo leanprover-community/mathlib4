@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
 
 import Mathlib.RingTheory.MvPowerSeries.Evaluation
-import Mathlib.RingTheory.PowerSeries.Topology
+import Mathlib.RingTheory.PowerSeries.PiTopology
 
 /-! # Evaluation of power series
 
