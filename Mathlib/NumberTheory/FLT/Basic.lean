@@ -39,8 +39,10 @@ example `FermatLastTheoremFor 1` is false because `2^1 + 2^1 = 4^1`.
 ## History
 
 Fermat's Last Theorem was an open problem in number theory for hundreds of years, until it was
-finally solved by Andrew Wiles, assisted by Richard Taylor, in 1994. An ongoing Lean formalisation
-of the proof, using mathlib as a dependency, is taking place at
+finally solved by Andrew Wiles, assisted by Richard Taylor, in 1994 (see
+[A. Wiles, *Modular elliptic curves and Fermat's last theorem*][Wiles-FLT] and
+[R. Taylor and A. Wiles, *Ring-theoretic properties of certain Hecke algebras*][Taylor-Wiles-FLT]).
+An ongoing Lean formalisation of the proof, using mathlib as a dependency, is taking place at
 https://github.com/ImperialCollegeLondon/FLT .
 
 -/
