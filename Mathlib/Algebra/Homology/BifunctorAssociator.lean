@@ -112,6 +112,33 @@ noncomputable def mapBifunctorAssociatorX (j : ι₄) :
 
 namespace mapBifunctor₁₂
 
+section
+
+variable {K₁ K₂ K₃ c₁₂ c₄}
+variable {j : ι₄} {A : C₄}
+  (f : ∀ (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (_ : ComplexShape.r c₁ c₂ c₃ c₁₂ c₄ (i₁, i₂, i₃) = j),
+        (G.obj ((F₁₂.obj (K₁.X i₁)).obj (K₂.X i₂))).obj (K₃.X i₃) ⟶ A)
+
+noncomputable def mapBifunctor₁₂Desc :
+    (mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄).X j ⟶ A :=
+  GradedObject.mapBifunctor₁₂BifunctorDesc (ρ₁₂ := ComplexShape.ρ₁₂ c₁ c₂ c₃ c₁₂ c₄) f
+
+variable (K₁ K₂ K₃ c₁₂ c₄ F₁₂ G) in
+noncomputable def ι (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃)
+    (h : ComplexShape.r c₁ c₂ c₃ c₁₂ c₄ (i₁, i₂, i₃) = j) :
+    (G.obj ((F₁₂.obj (K₁.X i₁)).obj (K₂.X i₂))).obj (K₃.X i₃) ⟶
+      (mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄).X j :=
+  GradedObject.ιMapBifunctor₁₂BifunctorMapObj _ _ (ComplexShape.ρ₁₂ c₁ c₂ c₃ c₁₂ c₄) _ _ _ _ _ _ _ h
+
+@[reassoc (attr := simp)]
+lemma ι_mapBifunctor₁₂Desc (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃)
+    (h : ComplexShape.r c₁ c₂ c₃ c₁₂ c₄ (i₁, i₂, i₃) = j) :
+    ι F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ i₂ i₃ h ≫ mapBifunctor₁₂Desc f =
+      f i₁ i₂ i₃ h := by
+  apply GradedObject.ι_mapBifunctor₁₂BifunctorDesc
+
+end
+
 variable (F₁₂ G)
 variable (j j' : ι₄)
 
@@ -120,8 +147,7 @@ noncomputable def D₁ :
     (mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄).X j ⟶
       (mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄).X j' :=
   -- we need a `mapBifunctor₁₂Desc`
-  mapBifunctorDesc (fun i₁₂ i₃ h ↦ by
-    sorry)
+  mapBifunctor₁₂Desc sorry
 
 /-- The second differential on `mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄`. -/
 def D₂ :
