@@ -42,11 +42,11 @@ namespace RootPairing
 
 variable [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
-/-- A Prop-valued class for a bilinear form to be compatible with a root system. -/
+/-- A Prop-valued class for a bilinear form to be compatible with a root pairing. -/
 class IsRootPositive (P : RootPairing ι R M N) (B : M →ₗ[R] M →ₗ[R] R) : Prop where
-  zero_lt_apply_root : ∀ i : ι, 0 < B (P.root i) (P.root i)
-  symm : ∀ x y : M, B x y = B y x
-  apply_reflection_eq : ∀ (i : ι) (x y : M), B (P.reflection i x) (P.reflection i y) = B x y
+  zero_lt_apply_root : ∀ i, 0 < B (P.root i) (P.root i)
+  symm : ∀ x y, B x y = B y x
+  apply_reflection_eq : ∀ i x y, B (P.reflection i x) (P.reflection i y) = B x y
 
 variable {P : RootPairing ι R M N} (B : M →ₗ[R] M →ₗ[R] R) [IsRootPositive P B] (i j : ι)
 
@@ -70,7 +70,7 @@ lemma zero_lt_apply_root_root_iff : 0 < B (P.root i) (P.root j) ↔ 0 < P.pairin
 lemma zero_lt_pairing_iff : 0 < P.pairing i j ↔ 0 < P.pairing j i := by
   rw [← zero_lt_apply_root_root_iff B, IsRootPositive.symm P, zero_lt_apply_root_root_iff]
 
-lemma coxeter_weight_non_neg : 0 ≤ P.coxeterWeight i j := by
+lemma coxeterWeight_non_neg : 0 ≤ P.coxeterWeight i j := by
   dsimp [coxeterWeight]
   by_cases h : 0 < P.pairing i j
   · exact le_of_lt <| mul_pos h ((zero_lt_pairing_iff B i j).mp h)
@@ -80,20 +80,21 @@ lemma coxeter_weight_non_neg : 0 ≤ P.coxeterWeight i j := by
 
 @[simp]
 lemma apply_root_root_zero_iff : B (P.root i) (P.root j) = 0 ↔ P.pairing i j = 0 := by
-  refine { mp := fun hB => ?_, mpr := fun hP => ?_ }
+  refine ⟨fun hB => ?_, fun hP => ?_⟩
   · have h2 : 2 * (B (P.root i)) (P.root j) = 0 := mul_eq_zero_of_right 2 hB
     rw [two_mul_apply_root_root] at h2
-    exact eq_zero_of_ne_zero_of_mul_right_eq_zero
-      (Ne.symm (ne_of_lt (IsRootPositive.zero_lt_apply_root j))) h2
+    exact eq_zero_of_ne_zero_of_mul_right_eq_zero (IsRootPositive.zero_lt_apply_root j).ne' h2
   · have h2 : 2 * B (P.root i) (P.root j) = 0 := by rw [two_mul_apply_root_root, hP, zero_mul]
-    simp_all only [mul_eq_zero, OfNat.ofNat_ne_zero, false_or]
+    exact (mul_eq_zero.mp h2).resolve_left two_ne_zero
 
 lemma pairing_zero_iff : P.pairing i j = 0 ↔ P.pairing j i = 0 := by
   rw [← apply_root_root_zero_iff B, IsRootPositive.symm P, apply_root_root_zero_iff B]
 
-lemma orthogonal_of_coxeter_weight_zero (h : P.coxeterWeight i j = 0) : P.IsOrthogonal i j := by
-  rw [coxeterWeight, mul_eq_zero] at h
-  cases h <;> rename_i h
+@[simp]
+lemma coxeterWeight_zero_iff_isOrthogonal : P.coxeterWeight i j = 0 ↔ P.IsOrthogonal i j := by
+  rw [coxeterWeight, mul_eq_zero]
+  refine ⟨fun h => ?_, fun h => Or.inl h.1⟩
+  rcases h with h | h
   · exact ⟨h, (pairing_zero_iff B i j).mp h⟩
   · exact ⟨(pairing_zero_iff B j i).mp h, h⟩
 
