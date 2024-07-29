@@ -388,7 +388,7 @@ theorem CompleteOrthogonalIdempotents.of_ker_isNilpotent (h : ∀ x ∈ RingHom.
     (fun _ ↦ Semigroup.mem_center_iff.mpr (mul_comm · _)) he'
 
 lemma CompleteOrthogonalIdempotents.prod_one_sub
-      (he : CompleteOrthogonalIdempotents e) :
+    (he : CompleteOrthogonalIdempotents e) :
     ∏ i, (1 - e i) = 0 := by
   rw [he.1.prod_one_sub, he.complete, sub_self]
 
