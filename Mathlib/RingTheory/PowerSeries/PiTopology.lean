@@ -59,17 +59,17 @@ variable (R)
 
 /-- The semiring topology on PowerSeries of a topological semiring -/
 @[scoped instance]
-theorem topologicalSemiring [Semiring R] [TopologicalSemiring R] :
+theorem instTopologicalSemiring [Semiring R] [TopologicalSemiring R] :
     TopologicalSemiring (PowerSeries R) := MvPowerSeries.WithPiTopology.topologicalSemiring Unit R
 
 /-- The ring topology on PowerSeries of a topological ring -/
 @[scoped instance]
-theorem topologicalRing [Ring R] [TopologicalRing R] :
+theorem instTopologicalRing [Ring R] [TopologicalRing R] :
     TopologicalRing (PowerSeries R) := MvPowerSeries.WithPiTopology.topologicalRing Unit R
 
 /-- PowerSeries on a T2Space form a T2Space -/
 @[scoped instance]
-theorem t2Space [T2Space R] : T2Space (PowerSeries R) :=
+theorem instT2Space [T2Space R] : T2Space (PowerSeries R) :=
   MvPowerSeries.WithPiTopology.t2Space Unit R
 
 end WithPiTopology
@@ -85,36 +85,36 @@ open WithPiTopology
 variable [UniformSpace R]
 
 /-- The componentwise uniformity on PowerSeries -/
-scoped instance uniformSpace : UniformSpace (PowerSeries R) :=
-  MvPowerSeries.WithPiUniformity.uniformSpace Unit R
+scoped instance : UniformSpace (PowerSeries R) :=
+  MvPowerSeries.WithPiUniformity.instUniformSpace Unit R
 
-/-- Components are uniformly continuous -/
-theorem uniformContinuous_component :
-    ∀ d : Unit →₀ ℕ, UniformContinuous fun a : PowerSeries R => a d :=
+/-- Coefficients are uniformly continuous -/
+theorem uniformContinuous_coeff :
+    ∀ d : ℕ, UniformContinuous fun f : PowerSeries R ↦ coeff R f d :=
   uniformContinuous_pi.mp uniformContinuous_id
 
 /-- The uniform_add_group structure on PowerSeries of a uniform_add_group -/
 @[scoped instance]
-theorem uniformAddGroup [AddGroup R] [UniformAddGroup R] :
+theorem instUniformAddGroup [AddGroup R] [UniformAddGroup R] :
     UniformAddGroup (PowerSeries R) :=
-  MvPowerSeries.WithPiUniformity.uniformAddGroup Unit R
+  MvPowerSeries.WithPiUniformity.instUniformAddGroup Unit R
 
 /-- Completeness of the uniform structure on PowerSeries -/
 @[scoped instance]
-theorem completeSpace [AddGroup R] [CompleteSpace R] :
+theorem instCompleteSpace [AddGroup R] [CompleteSpace R] :
     CompleteSpace (PowerSeries R) :=
-  MvPowerSeries.WithPiUniformity.completeSpace Unit R
+  MvPowerSeries.WithPiUniformity.instCompleteSpace Unit R
 
 /-- Separation of the uniform structure on PowerSeries -/
 @[scoped instance]
-theorem t0Space [T0Space R] : T0Space (PowerSeries R) :=
-  MvPowerSeries.WithPiUniformity.t0Space Unit R
+theorem instT0Space [T0Space R] : T0Space (PowerSeries R) :=
+  MvPowerSeries.WithPiUniformity.instT0Space Unit R
 
 /-- the topological ring structure on Power Series` -/
 @[scoped instance]
-theorem uniform_topologicalRing [Ring R] [UniformAddGroup R] [TopologicalRing R] :
+theorem instTopologicalRing [Ring R] [UniformAddGroup R] [TopologicalRing R] :
     TopologicalRing (PowerSeries R) :=
-  MvPowerSeries.WithPiUniformity.uniform_topologicalRing Unit R
+  MvPowerSeries.WithPiUniformity.instTopologicalRing Unit R
 
 end WithPiUniformity
 
