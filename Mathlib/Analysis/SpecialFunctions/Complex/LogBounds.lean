@@ -115,7 +115,7 @@ lemma norm_one_add_mul_inv_le {t : ℝ} (ht : t ∈ Set.Icc 0 1) {z : ℂ} (hz :
     _ ≤ 1 - t * ‖z‖ := by
       nlinarith [norm_nonneg z]
     _ = 1 - ‖t * z‖ := by
-      rw [norm_mul, norm_eq_abs (t :ℂ), abs_of_nonneg ht.1]
+      rw [norm_mul, norm_eq_abs (t : ℂ), abs_of_nonneg ht.1]
     _ ≤ ‖1 + t * z‖ := by
       rw [← norm_neg (t * z), ← sub_neg_eq_add]
       convert norm_sub_norm_le 1 (-(t * z))

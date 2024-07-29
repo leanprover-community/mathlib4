@@ -1018,3 +1018,5 @@ theorem finite_setOf_matroid' {E : Set α} (hE : E.Finite) : {M : Matroid α | M
   (finite_setOf_matroid hE).subset (fun M ↦ by rintro rfl; exact rfl.subset)
 
 end Finite
+
+end Matroid

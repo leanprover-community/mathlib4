@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.EqToHom
 
-#align_import category_theory.comma from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
-
 /-!
 # Comma categories
 
@@ -64,7 +62,6 @@ structure Comma (L : A ⥤ T) (R : B ⥤ T) : Type max u₁ u₂ v₃ where
   left : A
   right : B
   hom : L.obj left ⟶ R.obj right
-#align category_theory.comma CategoryTheory.Comma
 
 -- Satisfying the inhabited linter
 instance Comma.inhabited [Inhabited T] : Inhabited (Comma (𝟭 T) (𝟭 T)) where
@@ -72,7 +69,6 @@ instance Comma.inhabited [Inhabited T] : Inhabited (Comma (𝟭 T) (𝟭 T)) whe
     { left := default
       right := default
       hom := 𝟙 default }
-#align category_theory.comma.inhabited CategoryTheory.Comma.inhabited
 
 variable {L : A ⥤ T} {R : B ⥤ T}
 
@@ -84,13 +80,11 @@ structure CommaMorphism (X Y : Comma L R) where
   left : X.left ⟶ Y.left
   right : X.right ⟶ Y.right
   w : L.map left ≫ Y.hom = X.hom ≫ R.map right := by aesop_cat
-#align category_theory.comma_morphism CategoryTheory.CommaMorphism
 
 -- Satisfying the inhabited linter
 instance CommaMorphism.inhabited [Inhabited (Comma L R)] :
     Inhabited (CommaMorphism (default : Comma L R) default) :=
     ⟨{ left := 𝟙 _, right := 𝟙 _}⟩
-#align category_theory.comma_morphism.inhabited CategoryTheory.CommaMorphism.inhabited
 
 attribute [reassoc (attr := simp)] CommaMorphism.w
 
@@ -102,7 +96,6 @@ instance commaCategory : Category (Comma L R) where
   comp f g :=
     { left := f.left ≫ g.left
       right := f.right ≫ g.right }
-#align category_theory.comma_category CategoryTheory.commaCategory
 
 namespace Comma
 
@@ -119,22 +112,18 @@ lemma hom_ext (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right
 @[simp]
 theorem id_left : (𝟙 X : CommaMorphism X X).left = 𝟙 X.left :=
   rfl
-#align category_theory.comma.id_left CategoryTheory.Comma.id_left
 
 @[simp]
 theorem id_right : (𝟙 X : CommaMorphism X X).right = 𝟙 X.right :=
   rfl
-#align category_theory.comma.id_right CategoryTheory.Comma.id_right
 
 @[simp]
 theorem comp_left : (f ≫ g).left = f.left ≫ g.left :=
   rfl
-#align category_theory.comma.comp_left CategoryTheory.Comma.comp_left
 
 @[simp]
 theorem comp_right : (f ≫ g).right = f.right ≫ g.right :=
   rfl
-#align category_theory.comma.comp_right CategoryTheory.Comma.comp_right
 
 end
 
@@ -145,14 +134,12 @@ variable (L) (R)
 def fst : Comma L R ⥤ A where
   obj X := X.left
   map f := f.left
-#align category_theory.comma.fst CategoryTheory.Comma.fst
 
 /-- The functor sending an object `X` in the comma category to `X.right`. -/
 @[simps]
 def snd : Comma L R ⥤ B where
   obj X := X.right
   map f := f.right
-#align category_theory.comma.snd CategoryTheory.Comma.snd
 
 /-- We can interpret the commutative square constituting a morphism in the comma category as a
     natural transformation between the functors `fst ⋙ L` and `snd ⋙ R` from the comma category
@@ -160,21 +147,18 @@ def snd : Comma L R ⥤ B where
     category. -/
 @[simps]
 def natTrans : fst L R ⋙ L ⟶ snd L R ⋙ R where app X := X.hom
-#align category_theory.comma.nat_trans CategoryTheory.Comma.natTrans
 
 @[simp]
 theorem eqToHom_left (X Y : Comma L R) (H : X = Y) :
     CommaMorphism.left (eqToHom H) = eqToHom (by cases H; rfl) := by
   cases H
   rfl
-#align category_theory.comma.eq_to_hom_left CategoryTheory.Comma.eqToHom_left
 
 @[simp]
 theorem eqToHom_right (X Y : Comma L R) (H : X = Y) :
     CommaMorphism.right (eqToHom H) = eqToHom (by cases H; rfl) := by
   cases H
   rfl
-#align category_theory.comma.eq_to_hom_right CategoryTheory.Comma.eqToHom_right
 
 section
 
@@ -205,7 +189,6 @@ def isoMk {X Y : Comma L₁ R₁} (l : X.left ≅ Y.left) (r : X.right ≅ Y.rig
         rw [← L₁.mapIso_inv l, Iso.inv_comp_eq, L₁.mapIso_hom, ← Category.assoc, h,
           Category.assoc, ← R₁.map_comp]
         simp }
-#align category_theory.comma.iso_mk CategoryTheory.Comma.isoMk
 
 section
 
@@ -279,14 +262,12 @@ def mapLeft (l : L₁ ⟶ L₂) : Comma L₂ R ⥤ Comma L₁ R where
   map f :=
     { left := f.left
       right := f.right }
-#align category_theory.comma.map_left CategoryTheory.Comma.mapLeft
 
 /-- The functor `Comma L R ⥤ Comma L R` induced by the identity natural transformation on `L` is
     naturally isomorphic to the identity functor. -/
 @[simps!]
 def mapLeftId : mapLeft R (𝟙 L) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
-#align category_theory.comma.map_left_id CategoryTheory.Comma.mapLeftId
 
 /-- The functor `Comma L₁ R ⥤ Comma L₃ R` induced by the composition of two natural transformations
     `l : L₁ ⟶ L₂` and `l' : L₂ ⟶ L₃` is naturally isomorphic to the composition of the two functors
@@ -295,7 +276,6 @@ def mapLeftId : mapLeft R (𝟙 L) ≅ 𝟭 _ :=
 def mapLeftComp (l : L₁ ⟶ L₂) (l' : L₂ ⟶ L₃) :
     mapLeft R (l ≫ l') ≅ mapLeft R l' ⋙ mapLeft R l :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
-#align category_theory.comma.map_left_comp CategoryTheory.Comma.mapLeftComp
 
 /-- Two equal natural transformations `L₁ ⟶ L₂` yield naturally isomorphic functors
     `Comma L₁ R ⥤ Comma L₂ R`. -/
@@ -321,14 +301,12 @@ def mapRight (r : R₁ ⟶ R₂) : Comma L R₁ ⥤ Comma L R₂ where
   map f :=
     { left := f.left
       right := f.right }
-#align category_theory.comma.map_right CategoryTheory.Comma.mapRight
 
 /-- The functor `Comma L R ⥤ Comma L R` induced by the identity natural transformation on `R` is
     naturally isomorphic to the identity functor. -/
 @[simps!]
 def mapRightId : mapRight L (𝟙 R) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
-#align category_theory.comma.map_right_id CategoryTheory.Comma.mapRightId
 
 /-- The functor `Comma L R₁ ⥤ Comma L R₃` induced by the composition of the natural transformations
     `r : R₁ ⟶ R₂` and `r' : R₂ ⟶ R₃` is naturally isomorphic to the composition of the functors
@@ -337,7 +315,6 @@ def mapRightId : mapRight L (𝟙 R) ≅ 𝟭 _ :=
 def mapRightComp (r : R₁ ⟶ R₂) (r' : R₂ ⟶ R₃) :
     mapRight L (r ≫ r') ≅ mapRight L r ⋙ mapRight L r' :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
-#align category_theory.comma.map_right_comp CategoryTheory.Comma.mapRightComp
 
 /-- Two equal natural transformations `R₁ ⟶ R₂` yield naturally isomorphic functors
     `Comma L R₁ ⥤ Comma L R₂`. -/
@@ -370,7 +347,6 @@ def preLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) : Comma (F ⋙ L) R ⥤ Co
     { left := F.map f.left
       right := f.right
       w := by simpa using f.w }
-#align category_theory.comma.pre_left CategoryTheory.Comma.preLeft
 
 /-- `Comma.preLeft` is a particular case of `Comma.map`,
 but with better definitional properties. -/
@@ -401,7 +377,6 @@ def preRight (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) : Comma L (F ⋙ R) ⥤ C
   map f :=
     { left := f.left
       right := F.map f.right }
-#align category_theory.comma.pre_right CategoryTheory.Comma.preRight
 
 /-- `Comma.preRight` is a particular case of `Comma.map`,
 but with better definitional properties. -/
@@ -433,7 +408,6 @@ def post (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) : Comma L R ⥤ Comma (L ⋙ 
     { left := f.left
       right := f.right
       w := by simp only [Functor.comp_map, ← F.map_comp, f.w] }
-#align category_theory.comma.post CategoryTheory.Comma.post
 
 end
 

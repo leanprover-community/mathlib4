@@ -10,8 +10,6 @@ import Mathlib.NumberTheory.PrimesCongruentOne
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 import Mathlib.Tactic.LinearCombination
 
-#align_import imo.imo2008_q3 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
-
 /-!
 # IMO 2008 Q3
 Prove that there exist infinitely many positive integers `n` such that `n^2 + 1` has a prime
@@ -69,7 +67,6 @@ theorem p_lemma (p : ℕ) (hpp : Nat.Prime p) (hp_mod_4_eq_1 : p ≡ 1 [MOD 4]) 
     rw [sq_sqrt (mul_nonneg zero_le_two n.cast_nonneg)]
     linarith only [hreal₁, hreal₃, hreal₅]
   exact ⟨n, hnat₁, by linarith only [hreal₆, hreal₁]⟩
-#align imo2008_q3.p_lemma Imo2008Q3.p_lemma
 
 end Imo2008Q3
 
@@ -84,4 +81,3 @@ theorem imo2008_q3 : ∀ N : ℕ, ∃ n : ℕ, n ≥ N ∧
   have hineq₃ : n * n ≥ N * N := by linarith [hineq₁, hineq₂]
   have hn_ge_N : n ≥ N := Nat.mul_self_le_mul_self_iff.1 hineq₃
   exact ⟨n, hn_ge_N, p, hpp, hnat, hreal⟩
-#align imo2008_q3 imo2008_q3
