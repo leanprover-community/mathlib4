@@ -477,13 +477,13 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one'
           _ = 2 ^ k * n ^ k := Nat.mul_pow 2 n k
       convert hasSum_sum_range_mul_of_summable_norm' I1 ih.summable
         (summable_norm_geometric_of_norm_lt_one hr) (summable_geometric_of_norm_lt_one hr) with n
-      have : ∑ i ∈ Finset.range (n + 1), ↑((i + k).choose k) * r ^ i * r ^ (n - i) =
-          ∑ i ∈ Finset.range (n + 1), ↑((i + k).choose k) * r ^ n := by
-        apply Finset.sum_congr rfl (fun i hi ↦ ?_)
-        simp only [Finset.mem_range] at hi
-        rw [mul_assoc, ← pow_add, show i + (n - i) = n by omega]
-      simp only [this, ← sum_mul, ← Nat.cast_sum, sum_range_add_choose k n]
-      rw [ih.tsum_eq, (hasSum_geom_series_inverse r hr).tsum_eq, pow_succ]
+      · have : ∑ i ∈ Finset.range (n + 1), ↑((i + k).choose k) * r ^ i * r ^ (n - i) =
+            ∑ i ∈ Finset.range (n + 1), ↑((i + k).choose k) * r ^ n := by
+          apply Finset.sum_congr rfl (fun i hi ↦ ?_)
+          simp only [Finset.mem_range] at hi
+          rw [mul_assoc, ← pow_add, show i + (n - i) = n by omega]
+        simp only [this, ← sum_mul, ← Nat.cast_sum, sum_range_add_choose k n]
+      · rw [ih.tsum_eq, (hasSum_geom_series_inverse r hr).tsum_eq, pow_succ]
 
 lemma summable_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
     Summable (fun n ↦ (n + k).choose k * r ^ n) :=
