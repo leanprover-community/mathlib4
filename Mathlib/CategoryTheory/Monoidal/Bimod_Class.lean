@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Oleksandr Manzyuk
 -/
 import Mathlib.CategoryTheory.Bicategory.Basic
-import Mathlib.CategoryTheory.Monoidal.Mod_
+import Mathlib.CategoryTheory.Monoidal.Mod_Class
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 
 /-!
