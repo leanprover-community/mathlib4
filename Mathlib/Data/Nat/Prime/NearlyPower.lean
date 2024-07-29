@@ -13,9 +13,9 @@ import Mathlib.Data.Nat.Factorization.Basic
 open Nat
 
 /-- Prime `a ^ n + 1` implies `n` is a power of two. -/
-theorem pow_of_pow_add_prime {a n : ℕ} (ha : 1 < a) (hn : 1 < n) (hP : (a ^ n + 1).Prime) :
+theorem pow_of_pow_add_prime {a n : ℕ} (ha : 1 < a) (hn : n ≠ 0) (hP : (a ^ n + 1).Prime) :
     ∃ m : ℕ, n = 2 ^ m := by
-  obtain ⟨k, m, hm, rfl⟩ := exists_eq_two_pow_mul_odd (one_pos.trans hn).ne'
+  obtain ⟨k, m, hm, rfl⟩ := exists_eq_two_pow_mul_odd hn
   rw [pow_mul] at hP
   use k
   replace ha : 1 < a ^ 2 ^ k := one_lt_pow (pow_ne_zero k two_ne_zero) ha
