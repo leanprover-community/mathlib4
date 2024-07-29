@@ -322,7 +322,7 @@ protected theorem congr_arg {x x' : M} : x = x' → f x = f x' :=
 protected theorem congr_fun (h : f = g) (x : M) : f x = g x :=
   DFunLike.congr_fun h x
 
-theorem ext_iff : f = g ↔ ∀ x, f x = g x :=
+protected theorem ext_iff : f = g ↔ ∀ x, f x = g x :=
   DFunLike.ext_iff
 
 @[simp]
