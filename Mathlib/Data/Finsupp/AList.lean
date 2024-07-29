@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Violeta Hernández. All rights reserved.
+Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Violeta Hernández
+Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.List.AList

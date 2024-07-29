@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Robert Y. Lewis, Yury G. Kudryashov
+Authors: Jeremy Avigad, Robert Y. Lewis, Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
