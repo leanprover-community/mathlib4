@@ -12,7 +12,6 @@ import Mathlib.Data.List.TFAE
 import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Nat.Choose.Bounds
-import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Tactic.NoncommRing
 
 /-!
@@ -331,28 +330,28 @@ theorem geom_series_mul_one_add (x : R) (h : ‖x‖ < 1) :
     (1 + x) * ∑' i : ℕ, x ^ i = 2 * ∑' i : ℕ, x ^ i - 1 := by
   rw [add_mul, one_mul, geom_series_mul_shift x h, geom_series_succ x h, two_mul, add_sub_assoc]
 
+/-- In a normed ring with summable geometric series, a perturbation of `1` by an element `t`
+of distance less than `1` from `1` is a unit.  Here we construct its `Units` structure.  -/
+@[simps val]
+def Units.oneSub (t : R) (h : ‖t‖ < 1) : Rˣ where
+  val := 1 - t
+  inv := ∑' n : ℕ, t ^ n
+  val_inv := mul_neg_geom_series t h
+  inv_val := geom_series_mul_neg t h
+
 theorem geom_series_eq_inverse (x : R) (h : ‖x‖ < 1) :
     ∑' i, x ^ i = Ring.inverse (1 - x) := by
-  let u : Units R :=
-  { val := 1 - x
-    inv := ∑' n : ℕ, x ^ n
-    val_inv := mul_neg_geom_series x h
-    inv_val := geom_series_mul_neg x h }
-  change u ⁻¹ = Ring.inverse (1 - x)
+  change (Units.oneSub x h) ⁻¹ = Ring.inverse (1 - x)
   rw [← Ring.inverse_unit]
+  rfl
 
 theorem hasSum_geom_series_inverse (x : R) (h : ‖x‖ < 1) :
     HasSum (fun i ↦ x ^ i) (Ring.inverse (1 - x)) := by
   convert (summable_geometric_of_norm_lt_one h).hasSum
   exact (geom_series_eq_inverse x h).symm
 
-lemma isUnit_one_sub_of_norm_lt_one {x : R} (h : ‖x‖ < 1) : IsUnit (1 - x) := by
-  let u : Units R :=
-  { val := 1 - x
-    inv := ∑' n : ℕ, x ^ n
-    val_inv := mul_neg_geom_series x h
-    inv_val := geom_series_mul_neg x h }
-  exact ⟨u, rfl⟩
+lemma isUnit_one_sub_of_norm_lt_one {x : R} (h : ‖x‖ < 1) : IsUnit (1 - x) :=
+  ⟨Units.oneSub x h, rfl⟩
 
 end HasSummableGeometricSeries
 
@@ -512,45 +511,6 @@ lemma summable_descFactorial_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr 
   convert (summable_choose_mul_geometric_of_norm_lt_one k hr).mul_left (k.factorial : R)
     using 2 with n
   simp [← mul_assoc, descFactorial_eq_factorial_mul_choose (n + k) k]
-
-lemma exists_descFactorial_eq_polynomial (k : ℕ) : ∃ (a : Fin k → ℕ), ∀ n,
-    (n + k).descFactorial k = n ^ k + ∑ i, a i * n ^ (i : ℕ) := by
-  induction k with
-  | zero => simp
-  | succ k ih =>
-      rcases ih with ⟨a, ha⟩
-      let b : Fin (k + 1) → ℕ := Fin.cons 0 a
-      let c : Fin (k + 1) → ℕ := Fin.snoc (fun i ↦ (k + 1) * a i) (k + 1)
-      refine ⟨b + c, fun n ↦ ?_⟩
-      calc (n + (k + 1)).descFactorial (k + 1)
-      _ = (n + k + 1) * (n + k).descFactorial k := succ_descFactorial_succ (n.add k) k
-      _ = (n + (k + 1)) * (n ^ k + ∑ i, a i * n ^ (i : ℕ)) := by rw [add_assoc, ha n]
-      _ = n ^ (k + 1) + ∑ i, a i * n ^ ((i : ℕ) + 1)
-          + ((k + 1) * n ^ k + ∑ i, (k + 1) * a i * n ^ (i : ℕ)) := by
-        rw [add_mul, mul_add, mul_add, _root_.pow_succ', mul_sum, mul_sum]
-        congr 3 with i
-        · ring
-        · ring
-      _ = n ^ (k + 1) + ∑ i, b i * n ^ (i : ℕ) + ∑ i, c i * n ^ (i : ℕ) := by
-        congr 2
-        · simp only [b]
-          have I : ∀ (i : Fin (k + 1)), (Fin.cons (α := fun _ ↦ ℕ) (0 : ℕ) a i) * n ^ (i : ℕ)
-              = Fin.cons (α := fun _ ↦ ℕ) (0 : ℕ) (fun j ↦ a j * n ^ ((j : ℕ) + 1)) i := by
-            apply Fin.cases <;> simp
-          simp_rw [I]
-          simp [Fin.sum_cons]
-        · simp only [c]
-          have I : ∀ (i : Fin (k + 1)),
-              Fin.snoc (α := fun _ ↦ ℕ) (fun j ↦ (k + 1) * a j) (k + 1) i * n ^ (i : ℕ) =
-              Fin.snoc (α := fun _ ↦ ℕ) (fun j ↦ (k + 1) * a j * n ^ (j : ℕ))
-                ((k + 1) * n ^ k) i := by
-            apply Fin.lastCases <;> simp
-          simp_rw [I]
-          simp only [Fin.sum_snoc, add_comm]
-      _ = n ^ (k + 1) + ∑ i, (b i + c i) * n ^ (i : ℕ) := by
-        rw [add_assoc, ← sum_add_distrib]
-        congr with i
-        rw [add_mul]
 
 theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
     Summable (fun n ↦ (n : R) ^ k * r ^ n : ℕ → R) := by

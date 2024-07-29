@@ -14,12 +14,12 @@ normed ring (Banach algebras being a notable special case).
 
 ## Main results
 
-The constructions `Units.oneSub`, `Units.add`, and `Units.ofNearby` state, in varying forms, that
-perturbations of a unit are units. The latter two are not stated in their optimal form; more precise
-versions would use the spectral radius.
+The constructions `Units.add` and `Units.ofNearby` (based on `Units.oneSub` defined elsewhere)
+state, in varying forms, that perturbations of a unit are units. They are not stated
+in their optimal form; more precise versions would use the spectral radius.
 
-The first main result is `Units.isOpen`: the group of units of a complete normed ring is an open
-subset of the ring.
+The first main result is `Units.isOpen`: the group of units of a normed ring with summable
+geometric series is an open subset of the ring.
 
 The function `Ring.inverse` (defined elsewhere), for a ring `R`, sends `a : R` to `a⁻¹` if `a` is a
 unit and `0` if not.  The other major results of this file (notably `NormedRing.inverse_add`,
@@ -34,15 +34,6 @@ open Topology
 variable {R : Type*} [NormedRing R] [HasSummableGeomSeries R]
 
 namespace Units
-
-/-- In a complete normed ring, a perturbation of `1` by an element `t` of distance less than `1`
-from `1` is a unit.  Here we construct its `Units` structure.  -/
-@[simps val]
-def oneSub (t : R) (h : ‖t‖ < 1) : Rˣ where
-  val := 1 - t
-  inv := ∑' n : ℕ, t ^ n
-  val_inv := mul_neg_geom_series t h
-  inv_val := geom_series_mul_neg t h
 
 /-- In a normed ring with summable geometric series, a perturbation of a unit `x` by an
 element `t` of distance less than `‖x⁻¹‖⁻¹` from `x` is a unit.
@@ -116,7 +107,7 @@ theorem inverse_add (x : Rˣ) :
 
 theorem inverse_one_sub_nth_order' (n : ℕ) {t : R} (ht : ‖t‖ < 1) :
     inverse ((1 : R) - t) = (∑ i ∈ range n, t ^ i) + t ^ n * inverse (1 - t) :=
-  have := NormedRing.summable_geometric_of_norm_lt_one t ht
+  have := HasSummableGeomSeries.summable_geometric_of_norm_lt_one ht
   calc inverse (1 - t) = ∑' i : ℕ, t ^ i := inverse_one_sub t ht
     _ = ∑ i ∈ range n, t ^ i + ∑' i : ℕ, t ^ (i + n) := (sum_add_tsum_nat_add _ this).symm
     _ = (∑ i ∈ range n, t ^ i) + t ^ n * inverse (1 - t) := by
@@ -151,7 +142,7 @@ theorem inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t
     linarith
   simp only [inverse_one_sub t ht', norm_one, mul_one, Set.mem_setOf_eq]
   change ‖∑' n : ℕ, t ^ n‖ ≤ _
-  have := tsum_geometric_of_norm_lt_one ht'
+  have := tsum_geometric_le_of_norm_lt_one t ht'
   have : (1 - ‖t‖)⁻¹ ≤ 2 := by
     rw [← inv_inv (2 : ℝ)]
     refine inv_le_inv_of_le (by norm_num) ?_
