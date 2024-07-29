@@ -201,6 +201,7 @@ theorem continuous_C [Ring R] [TopologicalRing R] :
   · convert continuousAt_id
     rw [hd, coeff_zero_C, id_eq]
   · convert continuousAt_const
+    classical
     rw [coeff_C, if_neg hd]
 
 theorem variables_tendsto_zero [Semiring R] :
@@ -238,13 +239,13 @@ theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommSemiring R]
   exact fun d =>  tendsto_atTop_of_eventually_const fun n hn =>
     coeff_eq_zero_of_constantCoeff_nilpotent hm hn
 
-theorem tendsto_pow_zero_of_constantCoeff_zero {f} (hf : constantCoeff σ α f = 0) :
+theorem tendsto_pow_zero_of_constantCoeff_zero [CommSemiring R] {f} (hf : constantCoeff σ R f = 0) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) :=
   tendsto_pow_zero_of_constantCoeff_nilpotent (hf ▸ IsNilpotent.zero)
 
 /-- The powers of a `MvPowerSeries` converge to 0 iff its constant coefficient is nilpotent.
 N. Bourbaki, *Algebra II*, [bourbaki1981] (chap. 4, §4, n°2, corollaire de la prop. 3) -/
-theorem tendsto_pow_of_constantCoeff_nilpotent_iff [CommRing R] [DiscreteTopology R] (f) :
+theorem tendsto_pow_of_constantCoeff_nilpotent_iff [CommSemiring R] [DiscreteTopology R] (f) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔
       IsNilpotent (constantCoeff σ R f) := by
   refine ⟨?_, tendsto_pow_zero_of_constantCoeff_nilpotent ⟩
