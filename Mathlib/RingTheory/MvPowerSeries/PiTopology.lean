@@ -49,17 +49,11 @@ TODO: add the similar result for the series of homogeneous components
 -/
 
 
-theorem Finset.prod_one_add {ι R : Type _} [DecidableEq ι] [CommRing R] {f : ι → R} (s : Finset ι) :
-    (s.prod fun i => 1 + f i) = s.powerset.sum fun t => t.prod f := by
-  simp_rw [add_comm, Finset.prod_add]
-  congr
-  ext t
-  convert mul_one (Finset.prod t fun a => f a)
-  exact Finset.prod_eq_one (fun i _ => rfl)
-
-theorem MvPowerSeries.coeff_eq_apply {σ R : Type _} [Semiring R] (f : MvPowerSeries σ R)
-    (d : σ →₀ ℕ) : MvPowerSeries.coeff R d f = f d :=
+theorem MvPowerSeries.apply_eq_coeff {σ R : Type _} [Semiring R] (f : MvPowerSeries σ R)
+    (d : σ →₀ ℕ) : f d = MvPowerSeries.coeff R d f :=
   rfl
+
+#find_home! MvPowerSeries.apply_eq_coeff
 
 namespace MvPowerSeries
 
@@ -174,7 +168,8 @@ theorem uniformContinuous_component :
   exact WithPiTopology.t2Space σ R
 
 /-- The ring of multivariate power series is a uniform topological ring -/
-@[scoped instance] theorem uniform_topologicalRing [Ring R] [UniformAddGroup R] [TopologicalRing R] :
+@[scoped instance]
+theorem uniform_topologicalRing [Ring R] [UniformAddGroup R] [TopologicalRing R] :
     TopologicalRing (MvPowerSeries σ R) :=
   { uniformAddGroup σ R with
     continuous_add :=  (@uniformContinuous_add _ _ _ (uniformAddGroup σ R)).continuous
@@ -217,7 +212,7 @@ theorem variables_tendsto_zero [Semiring R] :
     rw [Set.mem_preimage, Set.mem_compl_iff, Set.mem_singleton_iff, not_imp_comm]
     intro hx
     convert mem_of_mem_nhds hs
-    rw [← coeff_eq_apply (X x) (Finsupp.single i 1), coeff_X, if_neg]
+    rw [apply_eq_coeff (X x) (Finsupp.single i 1), coeff_X, if_neg]
     rfl
     · simp only [Finsupp.single_eq_single_iff, Ne.symm hx, and_true, one_ne_zero, and_self,
       or_self, not_false_eq_true]
@@ -226,7 +221,7 @@ theorem variables_tendsto_zero [Semiring R] :
     intro x
     rw [Set.mem_preimage, Set.not_mem_compl_iff]
     convert mem_of_mem_nhds hs using 1
-    rw [← coeff_eq_apply (X x) d, coeff_X, if_neg]
+    rw [apply_eq_coeff (X x) d, coeff_X, if_neg]
     rfl
     · intro h'
       apply h

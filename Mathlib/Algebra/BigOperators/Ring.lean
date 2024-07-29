@@ -176,6 +176,14 @@ theorem prod_add (f g : ι → α) (s : Finset ι) :
           simp only [mem_filter, mem_sdiff, not_and, not_exists, and_congr_right_iff]
           tauto)
 
+theorem prod_one_add {f : ι → α} (s : Finset ι) :
+    (s.prod fun i => 1 + f i) = s.powerset.sum fun t => t.prod f := by
+  simp_rw [add_comm, Finset.prod_add]
+  congr
+  ext t
+  convert mul_one (Finset.prod t fun a => f a)
+  exact Finset.prod_eq_one (fun i _ => rfl)
+
 end DecidableEq
 
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
