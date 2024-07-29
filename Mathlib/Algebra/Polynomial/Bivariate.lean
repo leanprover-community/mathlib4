@@ -54,8 +54,7 @@ lemma evalEval_one (x y : R) : (1 : R[X][Y]).evalEval x y = 1 := by
   simp only [evalEval, eval_one]
 
 @[simp]
-lemma evalEval_ofNat (x y : R) (n : ℕ) [n.AtLeastTwo] :
-    (OfNat.ofNat n : R[X][Y]).evalEval x y = OfNat.ofNat n := by
+lemma evalEval_ofNat (x y : R) (n : ℕ) [n.AtLeastTwo] : (n : R[X][Y]).evalEval x y = n := by
   simp only [evalEval, eval_ofNat]
 
 @[simp]
