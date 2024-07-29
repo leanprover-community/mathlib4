@@ -72,6 +72,7 @@ jobs:
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
+        continue-on-error: true
         run: lake exe mk_all
 
       - name: suggester / import list
