@@ -9,7 +9,7 @@ import Mathlib.Topology.Maps.Proper.Basic
 /-!
 # A map is proper iff preimage of compact sets are compact
 
-This file proves that if `Y` is a Hausdorff an compactly generated space, a continuous map
+This file proves that if `Y` is a Hausdorff and compactly generated space, a continuous map
 `f : X → Y` is proper if and only if preimage of compact sets are compact.
 -/
 
