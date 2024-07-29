@@ -30,7 +30,7 @@ topological space `X` and prove some properties inherited from `X`.
 
 ## Tags
 
-one-point compactification, Alexandroff extension, compactness
+one-point compactification, Alexandroff compactification, compactness
 -/
 
 
