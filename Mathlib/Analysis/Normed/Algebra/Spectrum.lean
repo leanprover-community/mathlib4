@@ -272,7 +272,7 @@ variable (𝕜)
 /-- In a Banach algebra `A` over a nontrivially normed field `𝕜`, for any `a : A` the
 power series with coefficients `a ^ n` represents the function `(1 - z • a)⁻¹` in a disk of
 radius `‖a‖₊⁻¹`. -/
-theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
+theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a : A) :
     HasFPowerSeriesOnBall (fun z : 𝕜 => Ring.inverse (1 - z • a))
       (fun n => ContinuousMultilinearMap.mkPiRing 𝕜 (Fin n) (a ^ n)) 0 ‖a‖₊⁻¹ :=
   { r_le := by
@@ -297,7 +297,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
             simpa only [← coe_inv h, mem_ball_zero_iff, Metric.emetric_ball_nnreal] using hy
           rwa [← coe_nnnorm, ← Real.lt_toNNReal_iff_coe_lt, Real.toNNReal_one, nnnorm_smul,
             ← NNReal.lt_inv_iff_mul_lt h]
-      simpa [← smul_pow, (NormedRing.summable_geometric_of_norm_lt_one _ norm_lt).hasSum_iff] using
+      simpa [← smul_pow, (summable_geometric_of_norm_lt_one norm_lt).hasSum_iff] using
         (NormedRing.inverse_one_sub _ norm_lt).symm }
 
 variable {𝕜}
@@ -316,7 +316,7 @@ theorem isUnit_one_sub_smul_of_lt_inv_radius {a : A} {z : 𝕜} (h : ↑‖z‖�
 
 /-- In a Banach algebra `A` over `𝕜`, for `a : A` the function `fun z ↦ (1 - z • a)⁻¹` is
 differentiable on any closed ball centered at zero of radius `r < (spectralRadius 𝕜 a)⁻¹`. -/
-theorem differentiableOn_inverse_one_sub_smul [CompleteSpace A] {a : A} {r : ℝ≥0}
+theorem differentiableOn_inverse_one_sub_smul {a : A} {r : ℝ≥0}
     (hr : (r : ℝ≥0∞) < (spectralRadius 𝕜 a)⁻¹) :
     DifferentiableOn 𝕜 (fun z : 𝕜 => Ring.inverse (1 - z • a)) (Metric.closedBall 0 r) := by
   intro z z_mem

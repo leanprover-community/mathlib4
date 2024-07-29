@@ -262,9 +262,11 @@ alias tendsto_pow_atTop_nhds_0_of_abs_lt_1 := tendsto_pow_atTop_nhds_zero_of_abs
 `∑ ξ ^ n` converges. This holds both in complete normed rings and in normed fields, providing a
 convenient abstraction of these two classes to avoid repeating the same proofs. -/
 class HasSummableGeomSeries (K : Type*) [NormedRing K] : Prop :=
-  summable_geometric_of_norm_lt_one : ∀ {ξ : K}, ‖ξ‖ < 1 → Summable (fun n ↦ ξ ^ n)
+  summable_geometric_of_norm_lt_one : ∀ (ξ : K), ‖ξ‖ < 1 → Summable (fun n ↦ ξ ^ n)
 
-export HasSummableGeomSeries (summable_geometric_of_norm_lt_one)
+lemma summable_geometric_of_norm_lt_one {K : Type*} [NormedRing K] [HasSummableGeomSeries K]
+    {x : K} (h : ‖x‖ < 1) : Summable (fun n ↦ x ^ n) :=
+  HasSummableGeomSeries.summable_geometric_of_norm_lt_one x h
 
 instance {R : Type*} [NormedRing R] [CompleteSpace R] : HasSummableGeomSeries R := by
   constructor

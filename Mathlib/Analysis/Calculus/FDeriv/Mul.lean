@@ -776,7 +776,7 @@ end Prod
 
 section AlgebraInverse
 
-variable {R : Type*} [NormedRing R] [NormedAlgebra 𝕜 R] [CompleteSpace R]
+variable {R : Type*} [NormedRing R] [HasSummableGeomSeries R] [NormedAlgebra 𝕜 R]
 
 open NormedRing ContinuousLinearMap Ring
 
@@ -784,8 +784,8 @@ open NormedRing ContinuousLinearMap Ring
 operation is the linear map `fun t ↦ - x⁻¹ * t * x⁻¹`.
 
 TODO: prove that `Ring.inverse` is analytic and use it to prove a `HasStrictFDerivAt` lemma.
-TODO (low prio): prove a version without assumption `[CompleteSpace R]` but within the set of
-units. -/
+TODO (low prio): prove a version without assumption `[HasSummableGeomSeries R]` but within the set
+of units. -/
 @[fun_prop]
 theorem hasFDerivAt_ring_inverse (x : Rˣ) :
     HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x :=
@@ -834,13 +834,14 @@ end AlgebraInverse
 
 /-! ### Derivative of the inverse in a division ring
 
-Note these lemmas are primed as they need `CompleteSpace R`, whereas the other lemmas in
-`Mathlib/Analysis/Calculus/Deriv/Inv.lean` do not, but instead need `NontriviallyNormedField R`.
+Note that some lemmas are primed as they are expressed without commutativity, whereas their
+counterparts in commutative fields involve simpler expressions, and are given in
+`Mathlib/Analysis/Calculus/Deriv/Inv.lean`.
 -/
 
 section DivisionRingInverse
 
-variable {R : Type*} [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [CompleteSpace R]
+variable {R : Type*} [NormedDivisionRing R] [NormedAlgebra 𝕜 R]
 
 open NormedRing ContinuousLinearMap Ring
 
@@ -852,17 +853,17 @@ theorem hasFDerivAt_inv' {x : R} (hx : x ≠ 0) :
   simpa using hasFDerivAt_ring_inverse (Units.mk0 _ hx)
 
 @[fun_prop]
-theorem differentiableAt_inv' {x : R} (hx : x ≠ 0) : DifferentiableAt 𝕜 Inv.inv x :=
+theorem differentiableAt_inv {x : R} (hx : x ≠ 0) : DifferentiableAt 𝕜 Inv.inv x :=
   (hasFDerivAt_inv' hx).differentiableAt
 
 @[fun_prop]
-theorem differentiableWithinAt_inv' {x : R} (hx : x ≠ 0) (s : Set R) :
+theorem differentiableWithinAt_inv {x : R} (hx : x ≠ 0) (s : Set R) :
     DifferentiableWithinAt 𝕜 (fun x => x⁻¹) s x :=
-  (differentiableAt_inv' hx).differentiableWithinAt
+  (differentiableAt_inv hx).differentiableWithinAt
 
 @[fun_prop]
-theorem differentiableOn_inv' : DifferentiableOn 𝕜 (fun x : R => x⁻¹) {x | x ≠ 0} := fun _x hx =>
-  differentiableWithinAt_inv' hx _
+theorem differentiableOn_inv : DifferentiableOn 𝕜 (fun x : R => x⁻¹) {x | x ≠ 0} := fun _x hx =>
+  differentiableWithinAt_inv hx _
 
 /-- Non-commutative version of `fderiv_inv` -/
 theorem fderiv_inv' {x : R} (hx : x ≠ 0) : fderiv 𝕜 Inv.inv x = -mulLeftRight 𝕜 R x⁻¹ x⁻¹ :=
@@ -871,28 +872,28 @@ theorem fderiv_inv' {x : R} (hx : x ≠ 0) : fderiv 𝕜 Inv.inv x = -mulLeftRig
 /-- Non-commutative version of `fderivWithin_inv` -/
 theorem fderivWithin_inv' {s : Set R} {x : R} (hx : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun x => x⁻¹) s x = -mulLeftRight 𝕜 R x⁻¹ x⁻¹ := by
-  rw [DifferentiableAt.fderivWithin (differentiableAt_inv' hx) hxs]
+  rw [DifferentiableAt.fderivWithin (differentiableAt_inv hx) hxs]
   exact fderiv_inv' hx
 
 variable {h : E → R} {z : E} {S : Set E}
 
 @[fun_prop]
-theorem DifferentiableWithinAt.inv' (hf : DifferentiableWithinAt 𝕜 h S z) (hz : h z ≠ 0) :
+theorem DifferentiableWithinAt.inv (hf : DifferentiableWithinAt 𝕜 h S z) (hz : h z ≠ 0) :
     DifferentiableWithinAt 𝕜 (fun x => (h x)⁻¹) S z :=
-  (differentiableAt_inv' hz).comp_differentiableWithinAt z hf
+  (differentiableAt_inv hz).comp_differentiableWithinAt z hf
 
 @[simp, fun_prop]
-theorem DifferentiableAt.inv' (hf : DifferentiableAt 𝕜 h z) (hz : h z ≠ 0) :
+theorem DifferentiableAt.inv (hf : DifferentiableAt 𝕜 h z) (hz : h z ≠ 0) :
     DifferentiableAt 𝕜 (fun x => (h x)⁻¹) z :=
-  (differentiableAt_inv' hz).comp z hf
+  (differentiableAt_inv hz).comp z hf
 
 @[fun_prop]
-theorem DifferentiableOn.inv' (hf : DifferentiableOn 𝕜 h S) (hz : ∀ x ∈ S, h x ≠ 0) :
-    DifferentiableOn 𝕜 (fun x => (h x)⁻¹) S := fun x h => (hf x h).inv' (hz x h)
+theorem DifferentiableOn.inv (hf : DifferentiableOn 𝕜 h S) (hz : ∀ x ∈ S, h x ≠ 0) :
+    DifferentiableOn 𝕜 (fun x => (h x)⁻¹) S := fun x h => (hf x h).inv (hz x h)
 
 @[simp, fun_prop]
-theorem Differentiable.inv' (hf : Differentiable 𝕜 h) (hz : ∀ x, h x ≠ 0) :
-    Differentiable 𝕜 fun x => (h x)⁻¹ := fun x => (hf x).inv' (hz x)
+theorem Differentiable.inv (hf : Differentiable 𝕜 h) (hz : ∀ x, h x ≠ 0) :
+    Differentiable 𝕜 fun x => (h x)⁻¹ := fun x => (hf x).inv (hz x)
 
 end DivisionRingInverse
 
