@@ -181,3 +181,24 @@ example : True := by
     intros
     sorry
   trivial
+
+/--
+warning: declaration uses 'sorry'
+---
+warning: replace
+  have : ∀ (a b c d e : Nat) {f g h i : Nat}, a + b + c + d + e = f + g + h + i :=
+    by
+    intro a b c d e
+    sorry
+with
+  have (a : Nat) (b : Nat) (c : Nat) (d : Nat) (e : Nat) :
+    ∀ {f : Nat} {g : Nat} {h : Nat} {i : Nat}, a + b + c + d + e = f + g + h + i := by sorry
+note: this linter can be disabled with `set_option linter.forallIntro false`
+-/
+#guard_msgs in
+set_option linter.forallIntro true in
+example : True := by
+  have :  ∀ (a b c d e : Nat) {f g h i : Nat}, a + b + c + d + e = f + g + h + i := by
+    intro a b c d e --f --g h i
+    sorry
+  trivial

@@ -50,35 +50,42 @@ register_option linter.forallIntro : Bool := {
 /-- the `SyntaxNodeKind`s of `intro` and `intros`. -/
 abbrev introTacs := #[``Lean.Parser.Tactic.intros, ``Lean.Parser.Tactic.intro]
 
-/-- `dropFirstIntroVar stx` takes as input the `Syntax` `stx`.
-If `stx` is not the tactic `intros ...` or `intro ...`, then it returns `none`.
-Otherwise, `dropFirstIntroVar` "removes the left-most variable from `stx`", with the following
+/-- `dropNIntroVar n stx` takes as input a natural number `n` and the `Syntax` `stx`.
+If `stx` is not the tactic `intros ...` or `intro ...`, then it returns `(none, #[])`.
+Otherwise, `dropNIntroVar` "removes the left-most `n` variable from `stx`", with the following
 replacements:
-· `intros`        ↦ `some intros`;
-· `intros x`      ↦ `none`;
-· `intros x ...`  ↦ `intro ...`;
-· `intro`         ↦ `none`;
-· `intro x`       ↦ `none`;
-· `intro x y ...` ↦ `intro y ...`.
+· `0, anything`                  ↦ `(some anything,       #[])`;
+· `n, intros`                    ↦ `(some intros,         #[])`;
+· `n, intro`                     ↦ `(none,                #[])`;
+· `n, intro x`                   ↦ `(none,                #[x])`;
+· `n, intro(s) x₁ ... xₙ`        ↦ `(none,                #[x₁, ..., xₙ])`;
+· `n, intro(s) x₁ ... xₙ y₁ ...` ↦ `(some (intro y₁ ...), #[x₁, ..., xₙ])`;
 
 Note that only `intros` with no variable stays `intros`.
 All remaining uses of `intros` convert to `none` or some use of `intro`.
 -/
-def dropFirstIntroVar : Syntax → Option Syntax × Syntax
-  | stx@(.node s1 k #[intr, .node s2 `null vars]) =>
-    let first := vars.getD 0 .missing
-    let varsDropFirst := vars.erase first
-    let newIntro : Syntax :=  -- recreate `intro [one fewer variable]`, even if input is `intros`
-      .node s1 ``Lean.Parser.Tactic.intro #[mkAtomFrom intr "intro", .node s2 `null varsDropFirst]
-    match k, vars.size with
-      | ``Lean.Parser.Tactic.intros, 0  => (some stx, first)
-      | ``Lean.Parser.Tactic.intros, 1  => (none, first)
-      | ``Lean.Parser.Tactic.intros, _  => (some newIntro, first)
-      | ``Lean.Parser.Tactic.intro, 0 |
-        ``Lean.Parser.Tactic.intro, 1   => (none, first)
-      | ``Lean.Parser.Tactic.intro, _   => (some newIntro, first)
+def dropNIntroVar : Nat → Syntax → Option Syntax × Array Syntax
+  | n, stx@(.node s1 k #[intr, .node s2 `null vars]) =>
+    if k == ``Lean.Parser.Tactic.intros && vars.isEmpty then (some stx, #[]) else
+    if k == ``Lean.Parser.Tactic.intro  && vars.isEmpty && n == 1 then (none, #[.missing]) else
+    let first := vars.extract 0 n
+    let varsExtractN := vars.extract n vars.size
+    let newIntro : Syntax :=  -- recreate `intro [n fewer variables]`, even if input is `intros`
+      .node s1 ``Lean.Parser.Tactic.intro #[mkAtomFrom intr "intro", .node s2 `null varsExtractN]
+    match k, (n + 1 ≤ vars.size : Bool) with
+      | ``Lean.Parser.Tactic.intros, true => (some newIntro, first)
+      | ``Lean.Parser.Tactic.intro,  true => (some newIntro, first)
       | _, _ => (none, first)
-  | _ => (none, .missing)
+  | _, _ => (none, #[])
+
+/-- `dropFirstIntroVar stx` is the specialization of `dropNIntroVar` to the case of dropping
+just one variable.
+The second `Array` component is an `Array` with at most one element and the function returns
+either the unique entry there or `.missing`. -/
+def dropFirstIntroVar (stx : Syntax) : Option Syntax × Syntax :=
+  match dropNIntroVar 1 stx with
+    | (intr, #[var]) => (intr, var)
+    | (intr, _) => (intr, .missing)
 
 def splitBinders {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] :
     Syntax → m (Array Syntax)
@@ -162,7 +169,7 @@ def allStxCore (cmd : Syntax) : Syntax → CommandElabM (Option (Syntax × Synta
                 let x ← liftTermElabM mkFreshId
                 return some (← `(declId | $(mkIdent x))) else return none
             let s ← modifyGet fun st => (st, { st with messages := {} })
-            withoutModifyingEnv do elabCommandTopLevel newCmd
+            withoutModifyingEnv do elabCommand newCmd
             let msgs ← modifyGet (·.messages, s)
             if msgs.hasErrors then
               let errs := msgs.unreported.filter (·.severity matches .error)
@@ -183,10 +190,10 @@ def allStxCore (cmd : Syntax) : Syntax → CommandElabM (Option (Syntax × Synta
 When that happens, `allStx` returns the "new `have` syntax" that was produced by `allStxCore`
 on the step prior to returning `none`. -/
 partial
-def allStx (cmd stx : Syntax) : CommandElabM Syntax := do
+def allStx (cmd stx : Syntax) (count : Nat) : CommandElabM (Syntax × Nat) := do
   match ← allStxCore cmd stx with
-    | none => return stx
-    | some (cmd, stx) => allStx cmd stx
+    | none => return (stx, count)
+    | some (cmd, stx) => allStx cmd stx (count + 1)
 
 namespace ForallIntro
 
@@ -203,7 +210,8 @@ def forallIntroLinter : Linter where run := withSetOptionIn fun cmd ↦ do
   for haveStx in haves do
 --  if let some haveStx := cmd.raw.find? (·.isOfKind ``Lean.Parser.Tactic.tacticHave_) then
     --dbg_trace "found have"
-    let newHave ← allStx cmd haveStx
+    let (newHave, _count) ← allStx cmd haveStx 0
+    --dbg_trace "extracted {count} binders"
     if haveStx != newHave then
       Linter.logLint linter.forallIntro haveStx m!"replace{indentD haveStx}\nwith{indentD newHave}"
     --logInfo newHave
