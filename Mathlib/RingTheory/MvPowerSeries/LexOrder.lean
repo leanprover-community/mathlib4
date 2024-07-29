@@ -112,9 +112,9 @@ theorem le_lexOrder_iff {φ : MvPowerSeries σ R} {w : WithTop (Lex (σ →₀ �
     refine coeff_ne_zero_of_lexOrder hd.symm (h d ?_)
     exact (lt_of_eq_of_lt hd.symm h')
 
-theorem lexOrder_add_ge {φ ψ : MvPowerSeries σ R} :
-    lexOrder (φ + ψ) ≥ min (lexOrder φ) (lexOrder ψ) := by
-  rw [ge_iff_le, le_lexOrder_iff]
+theorem min_lexOrder_le {φ ψ : MvPowerSeries σ R} :
+    min (lexOrder φ) (lexOrder ψ) ≤ lexOrder (φ + ψ)  := by
+  rw [le_lexOrder_iff]
   intro d hd
   simp only [lt_min_iff] at hd
   rw [map_add, coeff_eq_zero_of_lt_lexOrder hd.1, coeff_eq_zero_of_lt_lexOrder hd.2, add_zero]
@@ -149,9 +149,9 @@ theorem coeff_mul_of_add_lexOrder {φ ψ : MvPowerSeries σ R}
   · intro h
     simp only [Finset.mem_antidiagonal, not_true_eq_false] at h
 
-theorem lexOrder_mul_ge (φ ψ : MvPowerSeries σ R) :
-    lexOrder (φ * ψ) ≥ lexOrder φ + lexOrder ψ := by
-  rw [ge_iff_le, le_lexOrder_iff]
+theorem le_lexOrder_mul (φ ψ : MvPowerSeries σ R) :
+    lexOrder φ + lexOrder ψ ≤ lexOrder (φ * ψ) := by
+  rw [le_lexOrder_iff]
   intro d hd
   rw [coeff_mul]
   apply Finset.sum_eq_zero
@@ -167,6 +167,8 @@ theorem lexOrder_mul_ge (φ ψ : MvPowerSeries σ R) :
   rw [← not_le] at hd
   apply hd
   simp only [← h, toLex_add, WithTop.coe_add, add_le_add hu hv]
+
+alias lexOrder_mul_ge := le_lexOrder_mul
 
 theorem lexOrder_mul [NoZeroDivisors R] (φ ψ : MvPowerSeries σ R) :
     lexOrder (φ * ψ) = lexOrder φ + lexOrder ψ := by
