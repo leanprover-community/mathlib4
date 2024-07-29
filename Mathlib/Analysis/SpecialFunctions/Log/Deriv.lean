@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
 import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Analysis.Calculus.LogDeriv
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Tactic.AdaptationNote
@@ -108,6 +109,13 @@ theorem derivWithin.log (hf : DifferentiableWithinAt ℝ f s x) (hx : f x ≠ 0)
 theorem deriv.log (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
     deriv (fun x => log (f x)) x = deriv f x / f x :=
   (hf.hasDerivAt.log hx).deriv
+
+/-- The derivative of `log ∘ f` is the logarithmic derivative provided `f` is differentiable and
+`f x  ≠ 0`. -/
+lemma Real.deriv_log_comp_eq_logDeriv {f : ℝ → ℝ} {x : ℝ} (h₁ : DifferentiableAt ℝ f x)
+    (h₂ : f x ≠ 0) : deriv (log ∘ f) x = logDeriv f x := by
+  simp only [ne_eq, logDeriv, Pi.div_apply, ← deriv.log h₁ h₂]
+  rfl
 
 end deriv
 
