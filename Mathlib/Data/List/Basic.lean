@@ -664,6 +664,7 @@ theorem bidirectionalRec_nil {motive : List α → Sort*}
     (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) :
     bidirectionalRec nil singleton cons_append [] = nil := bidirectionalRec.eq_1 ..
 
+
 @[simp]
 theorem bidirectionalRec_singleton {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
@@ -1993,19 +1994,14 @@ theorem filter_eq_foldr (p : α → Bool) (l : List α) :
     filter p l = foldr (fun a out => bif p a then a :: out else out) [] l := by
   induction l <;> simp [*, filter]; rfl
 
-#adaptation_note
-/--
-This has to be temporarily renamed to avoid an unintentional collision.
-The prime should be removed at nightly-2024-07-27.
--/
 @[simp]
-theorem filter_subset' (l : List α) : filter p l ⊆ l :=
+theorem filter_subset (l : List α) : filter p l ⊆ l :=
   (filter_sublist l).subset
 
 theorem of_mem_filter {a : α} {l} (h : a ∈ filter p l) : p a := (mem_filter.1 h).2
 
 theorem mem_of_mem_filter {a : α} {l} (h : a ∈ filter p l) : a ∈ l :=
-  filter_subset' l h
+  filter_subset l h
 
 theorem mem_filter_of_mem {a : α} {l} (h₁ : a ∈ l) (h₂ : p a) : a ∈ filter p l :=
   mem_filter.2 ⟨h₁, h₂⟩
@@ -2190,6 +2186,7 @@ theorem length_eraseIdx_add_one {l : List ι} {i : ℕ} (h : i < l.length) :
   _ = i + (l.length - (i + 1)) + 1                    := by rw [length_drop]
   _ = (i + 1) + (l.length - (i + 1))                  := by omega
   _ = l.length                                        := Nat.add_sub_cancel' (succ_le_of_lt h)
+
 
 end Erase
 

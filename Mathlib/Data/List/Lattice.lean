@@ -122,7 +122,7 @@ theorem mem_inter_of_mem_of_mem (h₁ : a ∈ l₁) (h₂ : a ∈ l₂) : a ∈ 
   mem_filter_of_mem h₁ <| by simpa using h₂
 
 theorem inter_subset_left {l₁ l₂ : List α} : l₁ ∩ l₂ ⊆ l₁ :=
-  filter_subset' _
+  filter_subset _
 
 theorem inter_subset_right {l₁ l₂ : List α} : l₁ ∩ l₂ ⊆ l₂ := fun _ => mem_of_mem_inter_right
 
