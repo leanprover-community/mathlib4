@@ -176,9 +176,7 @@ theorem ennreal_coeFn_eq_coeFn_toMeasure (ν : ProbabilityMeasure Ω) (s : Set �
 theorem null_iff_toMeasure_null (ν : ProbabilityMeasure Ω) (s : Set Ω) :
     ν s = 0 ↔ (ν : Measure Ω) s = 0 :=
   ⟨fun h ↦ by rw [← ennreal_coeFn_eq_coeFn_toMeasure, h, ENNReal.coe_zero],
-   fun h ↦ by
-    rw [← ennreal_coeFn_eq_coeFn_toMeasure] at h
-    apply NNReal.coe_eq_zero.mp (by exact_mod_cast h)⟩
+   fun h ↦ congrArg ENNReal.toNNReal h⟩
 
 theorem apply_mono (μ : ProbabilityMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ := by
   rw [← coeFn_comp_toFiniteMeasure_eq_coeFn]
