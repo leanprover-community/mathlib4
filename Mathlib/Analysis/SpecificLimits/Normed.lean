@@ -13,6 +13,7 @@ import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Nat.Choose.Bounds
 import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Tactic.NoncommRing
 
 /-!
 # A collection of specific limit computations
@@ -263,6 +264,9 @@ alias tendsto_pow_atTop_nhds_0_of_abs_lt_1 := tendsto_pow_atTop_nhds_zero_of_abs
 
 /-! ### Geometric series-/
 
+/-- A normed ring has summable geometric series if, for all `ξ` of norm `< 1`, the geometric series
+`∑ ξ ^ n` converges. This holds both in complete normed rings and in normed fields, providing a
+convenient abstraction of these two classes to avoid repeating the same proofs. -/
 class HasSummableGeomSeries (K : Type*) [NormedRing K] : Prop :=
   summable_geometric_of_norm_lt_one : ∀ {ξ : K}, ‖ξ‖ < 1 → Summable (fun n ↦ ξ ^ n)
 
@@ -307,7 +311,7 @@ theorem geom_series_mul_neg (x : R) (h : ‖x‖ < 1) : (∑' i : ℕ, x ^ i) * 
   convert← this
   rw [← geom_sum_mul_neg, Finset.sum_mul]
 
-theorem mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : ((1 - x) * ∑' i : ℕ, x ^ i) = 1 := by
+theorem mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : (1 - x) * ∑' i : ℕ, x ^ i = 1 := by
   have := (summable_geometric_of_norm_lt_one h).hasSum.mul_left (1 - x)
   refine tendsto_nhds_unique this.tendsto_sum_nat ?_
   have : Tendsto (fun n : ℕ ↦ 1 - x ^ n) atTop (𝓝 1) := by
@@ -341,6 +345,14 @@ theorem hasSum_geom_series_inverse (x : R) (h : ‖x‖ < 1) :
     HasSum (fun i ↦ x ^ i) (Ring.inverse (1 - x)) := by
   convert (summable_geometric_of_norm_lt_one h).hasSum
   exact (geom_series_eq_inverse x h).symm
+
+lemma isUnit_one_sub_of_norm_lt_one {x : R} (h : ‖x‖ < 1) : IsUnit (1 - x) := by
+  let u : Units R :=
+  { val := 1 - x
+    inv := ∑' n : ℕ, x ^ n
+    val_inv := mul_neg_geom_series x h
+    inv_val := geom_series_mul_neg x h }
+  exact ⟨u, rfl⟩
 
 end HasSummableGeometricSeries
 
@@ -416,9 +428,9 @@ end Geometric
 
 section MulGeometric
 
-variable {R : Type*} [NormedRing R] [HasSummableGeomSeries R]
+variable {R : Type*} [NormedRing R] {𝕜 : Type*} [NormedDivisionRing 𝕜]
 
-theorem summable_norm_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R] {k : ℕ} {r : R}
+theorem summable_norm_mul_geometric_of_norm_lt_one {k : ℕ} {r : R}
     (hr : ‖r‖ < 1) {u : ℕ → ℕ} (hu : (fun n ↦ (u n : ℝ)) =O[atTop] (fun n ↦ (↑(n ^ k) : ℝ))) :
     Summable fun n : ℕ ↦ ‖(u n * r ^ n : R)‖ := by
   rcases exists_between hr with ⟨r', hrr', h⟩
@@ -439,19 +451,21 @@ theorem summable_norm_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R] {k
       simp only [cast_pow]
       exact (isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt k hrr').isBigO
 
-theorem summable_norm_pow_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R] (k : ℕ) {r : R}
+theorem summable_norm_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R}
     (hr : ‖r‖ < 1) : Summable fun n : ℕ ↦ ‖((n : R) ^ k * r ^ n : R)‖ := by
   simp [← cast_pow]
   exact summable_norm_mul_geometric_of_norm_lt_one (k := k) (u := fun n ↦ n ^ k) hr
     (isBigO_refl _ _)
 
-theorem summable_norm_geometric_of_norm_lt_one {R : Type*} [NormedRing R] {r : R}
+theorem summable_norm_geometric_of_norm_lt_one {r : R}
     (hr : ‖r‖ < 1) : Summable fun n : ℕ ↦ ‖(r ^ n : R)‖ := by
   simpa using summable_norm_pow_mul_geometric_of_norm_lt_one 0 hr
 
-lemma hasSum_choose_mul_geometric_of_norm_lt_one
+variable [HasSummableGeomSeries R]
+
+lemma hasSum_choose_mul_geometric_of_norm_lt_one'
     (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
-    HasSum (fun n ↦ (n + k).choose k * r ^ n) ((Ring.inverse (1 - r)) ^ (k + 1)) := by
+    HasSum (fun n ↦ (n + k).choose k * r ^ n) (Ring.inverse (1 - r) ^ (k + 1)) := by
   induction k with
   | zero => simpa using hasSum_geom_series_inverse r hr
   | succ k ih =>
@@ -477,10 +491,20 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one
 
 lemma summable_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
     Summable (fun n ↦ (n + k).choose k * r ^ n) :=
-  (hasSum_choose_mul_geometric_of_norm_lt_one k hr).summable
+  (hasSum_choose_mul_geometric_of_norm_lt_one' k hr).summable
 
-lemma tsum_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
+lemma tsum_choose_mul_geometric_of_norm_lt_one' (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
     ∑' n, (n + k).choose k * r ^ n = (Ring.inverse (1 - r)) ^ (k + 1) :=
+  (hasSum_choose_mul_geometric_of_norm_lt_one' k hr).tsum_eq
+
+lemma hasSum_choose_mul_geometric_of_norm_lt_one
+    (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
+    HasSum (fun n ↦ (n + k).choose k * r ^ n) (1 / (1 - r) ^ (k + 1)) := by
+  convert hasSum_choose_mul_geometric_of_norm_lt_one' k hr
+  simp
+
+lemma tsum_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
+    ∑' n, (n + k).choose k * r ^ n = 1/ (1 - r) ^ (k + 1) :=
   (hasSum_choose_mul_geometric_of_norm_lt_one k hr).tsum_eq
 
 lemma summable_descFactorial_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
@@ -548,45 +572,42 @@ alias summable_norm_pow_mul_geometric_of_norm_lt_1 := summable_norm_pow_mul_geom
 @[deprecated (since := "2024-01-31")]
 alias summable_pow_mul_geometric_of_norm_lt_1 := summable_pow_mul_geometric_of_norm_lt_one
 
-/-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version. -/
-theorem hasSum_coe_mul_geometric_of_norm_lt_one {K : Type*} [NormedRing K] [HasSummableGeomSeries K]
-    {x : K} (h : ‖x‖ < 1) :
-    HasSum (fun n ↦ n * x ^ n : ℕ → K) (x * (Ring.inverse (1 - x)) ^ 2) := by
-  sorry
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version in a general ring
+with summable geometric series. -/
+theorem hasSum_coe_mul_geometric_of_norm_lt_one'
+    {x : R} (h : ‖x‖ < 1) :
+    HasSum (fun n ↦ n * x ^ n : ℕ → R) (x * (Ring.inverse (1 - x)) ^ 2) := by
+  have A : HasSum (fun (n : ℕ) ↦ (n + 1) * x ^ n) (Ring.inverse (1 - x) ^ 2) := by
+    convert hasSum_choose_mul_geometric_of_norm_lt_one' 1 h with n
+    simp
+  have B : HasSum (fun (n : ℕ) ↦ x ^ n) (Ring.inverse (1 - x)) := hasSum_geom_series_inverse x h
+  convert A.sub B using 1
+  · ext n
+    simp [add_mul]
+  · symm
+    calc Ring.inverse (1 - x) ^ 2 - Ring.inverse (1 - x)
+    _ = Ring.inverse (1 - x) ^ 2 - ((1 - x) * Ring.inverse (1 - x)) * Ring.inverse (1 - x) := by
+      simp [Ring.mul_inverse_cancel (1 - x) (isUnit_one_sub_of_norm_lt_one h)]
+    _ = x * Ring.inverse (1 - x) ^ 2 := by noncomm_ring
+
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, version in a general ring with
+summable geometric series. -/
+theorem tsum_coe_mul_geometric_of_norm_lt_one'
+    {r : 𝕜} (hr : ‖r‖ < 1) : (∑' n : ℕ, n * r ^ n : 𝕜) = r * Ring.inverse (1 - r) ^ 2 :=
+  (hasSum_coe_mul_geometric_of_norm_lt_one' hr).tsum_eq
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version. -/
-theorem hasSum_coe_mul_geometric_of_norm_lt_one {𝕜 : Type*} [NormedDivisionRing 𝕜] [CompleteSpace 𝕜]
-    {r : 𝕜} (hr : ‖r‖ < 1) : HasSum (fun n ↦ n * r ^ n : ℕ → 𝕜) (r / (1 - r) ^ 2) := by
-  have A : Summable (fun n ↦ (n : 𝕜) * r ^ n : ℕ → 𝕜) := by
-    simpa only [pow_one] using summable_pow_mul_geometric_of_norm_lt_one 1 hr
-  have B : HasSum (r ^ · : ℕ → 𝕜) (1 - r)⁻¹ := hasSum_geometric_of_norm_lt_one hr
-  refine A.hasSum_iff.2 ?_
-  have hr' : r ≠ 1 := by
-    rintro rfl
-    simp [lt_irrefl] at hr
-  set s : 𝕜 := ∑' n : ℕ, n * r ^ n
-  have : Commute (1 - r) s :=
-    .tsum_right _ fun _ =>
-      .sub_left (.one_left _) (.mul_right (Nat.commute_cast _ _) (.pow_right (.refl _) _))
-  calc
-    s = s * (1 - r) / (1 - r) := (mul_div_cancel_right₀ _ (sub_ne_zero.2 hr'.symm)).symm
-    _ = (1 - r) * s / (1 - r) := by rw [this.eq]
-    _ = (s - r * s) / (1 - r) := by rw [_root_.sub_mul, one_mul]
-    _ = (((0 : ℕ) * r ^ 0 + ∑' n : ℕ, (n + 1 : ℕ) * r ^ (n + 1)) - r * s) / (1 - r) := by
-      rw [← tsum_eq_zero_add A]
-    _ = ((r * ∑' n : ℕ, ↑(n + 1) * r ^ n) - r * s) / (1 - r) := by
-      simp only [cast_zero, pow_zero, mul_one, _root_.pow_succ', (Nat.cast_commute _ r).left_comm,
-        _root_.tsum_mul_left, zero_add]
-    _ = r / (1 - r) ^ 2 := by
-      simp [add_mul, tsum_add A B.summable, mul_add, B.tsum_eq, ← div_eq_mul_inv, sq,
-        div_mul_eq_div_div_swap]
+theorem hasSum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
+    HasSum (fun n ↦ n * r ^ n : ℕ → 𝕜) (r / (1 - r) ^ 2) := by
+  convert hasSum_coe_mul_geometric_of_norm_lt_one' hr using 1
+  simp [div_eq_mul_inv]
 
 @[deprecated (since := "2024-01-31")]
 alias hasSum_coe_mul_geometric_of_norm_lt_1 := hasSum_coe_mul_geometric_of_norm_lt_one
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`. -/
-theorem tsum_coe_mul_geometric_of_norm_lt_one {𝕜 : Type*} [NormedDivisionRing 𝕜] [CompleteSpace 𝕜]
-    {r : 𝕜} (hr : ‖r‖ < 1) : (∑' n : ℕ, n * r ^ n : 𝕜) = r / (1 - r) ^ 2 :=
+theorem tsum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
+    (∑' n : ℕ, n * r ^ n : 𝕜) = r / (1 - r) ^ 2 :=
   (hasSum_coe_mul_geometric_of_norm_lt_one hr).tsum_eq
 
 @[deprecated (since := "2024-01-31")]
