@@ -8,7 +8,6 @@ import Mathlib.Analysis.Calculus.LogDeriv
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
-
 /-!
 # Differentiability of the complex `log` function
 
