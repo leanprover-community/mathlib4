@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 
-import Mathlib.Analysis.CstarAlgebra.HilbertCstarModule
+import Mathlib.Analysis.CstarAlgebra.Module
 
 /-!
 # Vectors with entries in a C⋆-algebra
@@ -16,7 +16,7 @@ endowed with a Hilbert C⋆-module structure, which in particular comes with an 
 ## Main declarations
 
 + `CstarVec n A`: the type copy
-+ `instHilbertCstarModule`: the Hilbert C⋆-module instance
++ `instCstarModule`: the Hilbert C⋆-module instance
 
 ## Implementation notes
 
@@ -139,7 +139,7 @@ lemma inner_single_eq_entry [DecidableEq n] {v : CstarVec n A} {i : n} {a : A} :
 @[simp] lemma norm_single {i : n} {a : A} [DecidableEq n] : ‖ofFun (Pi.single i a)‖ = ‖a‖ := by
   simp [norm_eq_sum, Pi.single_apply, CstarRing.norm_star_mul_self]
 
-instance instHilbertCstarModule : HilbertCstarModule A (CstarVec n A) where
+instance instCstarModule : CstarModule A (CstarVec n A) where
   inner_add_right {v} {w₁} {w₂} := by
     simp only [inner_eq_sum, add_apply, mul_add, Finset.sum_add_distrib]
   inner_self_nonneg {x} := by
@@ -171,13 +171,13 @@ lemma norm_entry_le_norm [DecidableEq n] [CompleteSpace A] {v : CstarVec n A} {i
   · have hmain := calc ‖v i‖ * ‖v i‖ = ‖star (v i) * v i‖  := CstarRing.norm_star_mul_self.symm
       _ = ‖⟪ofFun (Pi.single i (v i)), v⟫_A‖ := by rw [inner_single_eq_entry]
       _ ≤ ‖ofFun (Pi.single i (v i))‖ * ‖v‖ :=
-            HilbertCstarModule.norm_inner_le (E := CstarVec n A)
+            CstarModule.norm_inner_le (E := CstarVec n A)
       _ = ‖v i‖ * ‖v‖ := by rw [norm_single]
     rwa [mul_le_mul_left htriv] at hmain
   · push_neg at htriv
     simp only [norm_le_zero_iff] at htriv
     simp only [htriv, _root_.norm_zero]
-    exact HilbertCstarModule.norm_nonneg
+    exact CstarModule.norm_nonneg
 
 end inner
 
@@ -206,13 +206,13 @@ variable {n : Type*} [Fintype n]
 /-- A temporary "bad" instance of `NormedAddCommGroup` that induces a uniformity that is not
 defeq with the product uniformity. -/
 private noncomputable abbrev normedAddCommGroupAux : NormedAddCommGroup (CstarVec n A) :=
-  NormedAddCommGroup.ofCore HilbertCstarModule.normedSpaceCore
+  NormedAddCommGroup.ofCore CstarModule.normedSpaceCore
 
 attribute [local instance] normedAddCommGroupAux
 
 /-- A temporary "bad" instance of `NormedSpace`. -/
 private noncomputable abbrev normedSpaceAux : NormedSpace ℂ (CstarVec n A) :=
-  .ofCore HilbertCstarModule.normedSpaceCore
+  .ofCore CstarModule.normedSpaceCore
 
 attribute [local instance] normedSpaceAux
 
@@ -226,7 +226,7 @@ private lemma lipschitzWith_ofFun_symm_aux :
   by_cases hn : Nonempty n
   · obtain ⟨i, ⟨hi_univ, hi⟩⟩ := exists_mem_eq_sup univ univ_nonempty fun i => ‖d i‖₊
     simp only [dist_eq_norm, Pi.norm_def, Pi.sub_apply, ofFun_symm_apply, hi, coe_nnnorm,
-      NNReal.coe_one, HilbertCstarModule.norm_eq_sqrt_norm_inner_self, inner, sub_apply, star_sub,
+      NNReal.coe_one, CstarModule.norm_eq_sqrt_norm_inner_self, inner, sub_apply, star_sub,
       one_mul]
     rw [Finset.sum_eq_add_sum_diff_singleton hi_univ]
     have h₁ : ‖d i‖ = Real.sqrt ‖star (d i) * d i‖ := by
@@ -238,7 +238,7 @@ private lemma lipschitzWith_ofFun_symm_aux :
       _ ≤ _ := by gcongr with j; exact star_mul_self_nonneg (d j)
   · simp only [not_nonempty_iff] at hn
     simp [dist_eq_norm, Pi.norm_def, Pi.sub_apply, ofFun_symm_apply, coe_nnnorm, NNReal.coe_one,
-      HilbertCstarModule.norm_eq_sqrt_norm_inner_self, inner, sub_apply, star_sub, one_mul]
+      CstarModule.norm_eq_sqrt_norm_inner_self, inner, sub_apply, star_sub, one_mul]
 
 open Finset Classical in
 private lemma antilipschitzWith_ofFun_symm_aux :
@@ -251,7 +251,7 @@ private lemma antilipschitzWith_ofFun_symm_aux :
   by_cases hn : Nonempty n
   · obtain ⟨i, ⟨_, hi⟩⟩ := exists_mem_eq_sup univ univ_nonempty fun i => ‖d i‖₊
     simp only [dist_eq_norm, Pi.norm_def, Pi.sub_apply, ofFun_symm_apply, hi, coe_nnnorm,
-      NNReal.coe_one, HilbertCstarModule.norm_eq_sqrt_norm_inner_self, inner, sub_apply, star_sub,
+      NNReal.coe_one, CstarModule.norm_eq_sqrt_norm_inner_self, inner, sub_apply, star_sub,
       one_mul]
     have h₀ : ∀ j, ‖star (d j) * d j‖ ≤ ‖star (d i) * d i‖ := fun j => by
       simp only [CstarRing.norm_star_mul_self]
@@ -279,7 +279,7 @@ private lemma antilipschitzWith_ofFun_symm_aux :
     simp only [CstarRing.norm_star_mul_self, norm_nonneg, Real.sqrt_mul_self, le_refl]
   · simp only [not_nonempty_iff] at hn
     simp [dist_eq_norm, Pi.norm_def, Pi.sub_apply, ofFun_symm_apply, coe_nnnorm, NNReal.coe_one,
-      HilbertCstarModule.norm_eq_sqrt_norm_inner_self, inner, sub_apply, star_sub, one_mul]
+      CstarModule.norm_eq_sqrt_norm_inner_self, inner, sub_apply, star_sub, one_mul]
 
 private lemma uniformInducing_ofFun_symm_aux :
     UniformInducing (CstarVec.ofFun.symm : CstarVec n A → n → A) :=
@@ -318,11 +318,11 @@ instance : Bornology (CstarVec n A) := Pi.instBornology
 instance : CompleteSpace (CstarVec n A) := Pi.complete _
 
 noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (CstarVec n A) :=
-  NormedAddCommGroup.ofCoreReplaceAll HilbertCstarModule.normedSpaceCore
+  NormedAddCommGroup.ofCoreReplaceAll CstarModule.normedSpaceCore
     uniformity_eq_aux.symm fun _ => Filter.ext_iff.1 cobounded_eq_aux.symm _
 
 instance instNormedSpace : NormedSpace ℂ (CstarVec n A) :=
-  NormedSpace.ofCore HilbertCstarModule.normedSpaceCore
+  NormedSpace.ofCore CstarModule.normedSpaceCore
 
 end NormedSpace
 
