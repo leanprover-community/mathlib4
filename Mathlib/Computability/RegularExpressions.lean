@@ -238,7 +238,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
       subst hu
       repeat rw [rmatch] at h₂
       simp [h₂]
-  · rw [rmatch]; simp [deriv]
+  · rw [rmatch]; simp only [deriv]
     split_ifs with hepsilon
     · rw [add_rmatch_iff, ih]
       constructor

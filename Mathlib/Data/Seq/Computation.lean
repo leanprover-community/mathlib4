@@ -623,8 +623,9 @@ theorem bind_pure (f : α → β) (s) : bind s (pure ∘ f) = map f s := by
     match c₁, c₂, h with
     | _, c₂, Or.inl (Eq.refl _) => cases' destruct c₂ with b cb <;> simp
     | _, _, Or.inr ⟨s, rfl, rfl⟩ =>
-      apply recOn s <;> intro s <;> simp
-      exact Or.inr ⟨s, rfl, rfl⟩
+      apply recOn s <;> intro s
+      · simp
+      · simpa using Or.inr ⟨s, rfl, rfl⟩
   · exact Or.inr ⟨s, rfl, rfl⟩
 
 -- Porting note: used to use `rw [bind_pure]`
@@ -648,11 +649,11 @@ theorem bind_assoc (s : Computation α) (f : α → Computation β) (g : β → 
     match c₁, c₂, h with
     | _, c₂, Or.inl (Eq.refl _) => cases' destruct c₂ with b cb <;> simp
     | _, _, Or.inr ⟨s, rfl, rfl⟩ =>
-      apply recOn s <;> intro s <;> simp
-      · generalize f s = fs
+      apply recOn s <;> intro s
+      · simp only [BisimO, ret_bind]; generalize f s = fs
         apply recOn fs <;> intro t <;> simp
         · cases' destruct (g t) with b cb <;> simp
-      · exact Or.inr ⟨s, rfl, rfl⟩
+      · simpa  [BisimO] using Or.inr ⟨s, rfl, rfl⟩
   · exact Or.inr ⟨s, rfl, rfl⟩
 
 theorem results_bind {s : Computation α} {f : α → Computation β} {a b m n} (h1 : Results s a m)
@@ -1095,8 +1096,9 @@ theorem LiftRelRec.lem {R : α → β → Prop} (C : Computation α → Computat
     simp [h]
   · simp only [liftRel_think_left]
     revert h
-    apply cb.recOn (fun b => _) fun cb' => _ <;> intros _ h <;> simp at h <;> simp [h]
-    exact IH _ h
+    apply cb.recOn (fun b => _) fun cb' => _ <;> intros _ h
+    · simpa using h
+    · simpa [h] using IH _ h
 
 theorem liftRel_rec {R : α → β → Prop} (C : Computation α → Computation β → Prop)
     (H : ∀ {ca cb}, C ca cb → LiftRelAux R C (destruct ca) (destruct cb)) (ca cb) (Hc : C ca cb) :
