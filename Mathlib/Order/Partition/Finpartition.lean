@@ -586,6 +586,24 @@ theorem mem_part_ofSetoid_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
   simp only [← hc, mem_univ, mem_filter, true_and] at this ⊢
   exact ⟨s.trans (s.symm this), s.trans this⟩
 
+section Two
+
+/-- A bipartition defined by one part, the other part being its complement.
+Both parts must be non-empty. -/
+def bipartition (h1 : s ≠ ∅) (h2 : s ≠ univ) : Finpartition (univ : Finset α) where
+  parts := {s, sᶜ}
+  supIndep := by
+    let x := (nonempty_iff_ne_empty.mpr h1).choose
+    haveI : Nontrivial (Finset α) := ⟨{x}, ∅, singleton_ne_empty x⟩
+    exact (supIndep_pair ne_compl_self).mpr disjoint_compl_right
+  sup_parts := by simp
+  not_bot_mem := by
+    rw [mem_insert, mem_singleton, bot_eq_empty]
+    push_neg
+    exact ⟨h1.symm, ((compl_eq_empty_iff s).ne.symm.mp h2).symm⟩
+
+end Two
+
 section Atomise
 
 /-- Cuts `s` along the finsets in `F`: Two elements of `s` will be in the same part if they are
