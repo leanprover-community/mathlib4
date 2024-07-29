@@ -865,7 +865,7 @@ end BoundedQuantifiers
 
 section ite
 
-variable {α : Sort*} {σ : α → Sort*} {P Q R : Prop} [Decidable P]
+variable {α : Sort*} {σ : α → Sort*} {P Q R : Prop} [Decidable P] [Decidable Q]
   {a b c : α} {A : P → α} {B : ¬P → α}
 
 theorem dite_eq_iff : dite P A B = c ↔ (∃ h, A h = c) ∨ ∃ h, B h = c := by
@@ -951,6 +951,9 @@ either branch to `a`. -/
 theorem ite_apply (f g : ∀ a, σ a) (a : α) : (ite P f g) a = ite P (f a) (g a) :=
   dite_apply P (fun _ ↦ f) (fun _ ↦ g) a
 
+section
+variable [Decidable Q]
+
 theorem ite_and : ite (P ∧ Q) a b = ite P (ite Q a b) b := by
   by_cases hp : P <;> by_cases hq : Q <;> simp [hp, hq]
 
@@ -966,12 +969,14 @@ theorem ite_ite_comm (h : P → ¬Q) :
      if Q then b else if P then a else c :=
   dite_dite_comm P Q h
 
+end
+
 variable {P Q}
 
 theorem ite_prop_iff_or : (if P then Q else R) ↔ (P ∧ Q ∨ ¬ P ∧ R) := by
   by_cases p : P <;> simp [p]
 
-theorem dite_prop_iff_or {Q : P → Prop} {R : ¬P → Prop} :
+theorem dite_prop_iff_or {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
     dite P Q R ↔ (∃ p, Q p) ∨ (∃ p, R p) := by
   by_cases h : P <;> simp [h, exists_prop_of_false, exists_prop_of_true]
 
@@ -979,7 +984,7 @@ theorem dite_prop_iff_or {Q : P → Prop} {R : ¬P → Prop} :
 theorem ite_prop_iff_and : (if P then Q else R) ↔ ((P → Q) ∧ (¬ P → R)) := by
   by_cases p : P <;> simp [p]
 
-theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} :
+theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
     dite P Q R ↔ (∀ h, Q h) ∧ (∀ h, R h) := by
   by_cases h : P <;> simp [h, forall_prop_of_false, forall_prop_of_true]
 
