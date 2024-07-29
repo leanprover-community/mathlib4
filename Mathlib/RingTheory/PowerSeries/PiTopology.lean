@@ -30,16 +30,15 @@ namespace WithPiTopology
 scoped instance : TopologicalSpace (PowerSeries R) :=
   Pi.topologicalSpace
 
-variable {σ R}
-
 variable [Semiring R]
 
 /-- coeff are continuous -/
 theorem continuous_coeff (d : ℕ) : Continuous (PowerSeries.coeff R d) :=
-  continuous_pi_iff.mp continuous_id d
+  continuous_pi_iff.mp continuous_id (Finsupp.single () d)
 
 /-- constant_coeff is continuous -/
-theorem continuous_constantCoeff : Continuous (constantCoeff R) := continuous_coeff R 0
+theorem continuous_constantCoeff : Continuous (constantCoeff R) :=
+  coeff_zero_eq_constantCoeff (R := R) ▸ continuous_coeff R 0
 
 /-- A family of power series converges iff it converges coefficientwise -/
 theorem tendsto_iff_coeff_tendsto {ι : Type*}
@@ -55,22 +54,22 @@ theorem tendsto_iff_coeff_tendsto {ι : Type*}
   congr; ext i; congr;
   all_goals { ext; simp }
 
-variable (R)
-
 /-- The semiring topology on PowerSeries of a topological semiring -/
 @[scoped instance]
 theorem instTopologicalSemiring [Semiring R] [TopologicalSemiring R] :
-    TopologicalSemiring (PowerSeries R) := MvPowerSeries.WithPiTopology.topologicalSemiring Unit R
+    TopologicalSemiring (PowerSeries R) :=
+  MvPowerSeries.WithPiTopology.instTopologicalSemiring Unit R
 
 /-- The ring topology on PowerSeries of a topological ring -/
 @[scoped instance]
 theorem instTopologicalRing [Ring R] [TopologicalRing R] :
-    TopologicalRing (PowerSeries R) := MvPowerSeries.WithPiTopology.topologicalRing Unit R
+    TopologicalRing (PowerSeries R) :=
+  MvPowerSeries.WithPiTopology.instTopologicalRing Unit R
 
 /-- PowerSeries on a T2Space form a T2Space -/
 @[scoped instance]
 theorem instT2Space [T2Space R] : T2Space (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.t2Space Unit R
+  MvPowerSeries.WithPiTopology.instT2Space Unit R
 
 end WithPiTopology
 
@@ -89,19 +88,21 @@ scoped instance : UniformSpace (PowerSeries R) :=
   MvPowerSeries.WithPiUniformity.instUniformSpace Unit R
 
 /-- Coefficients are uniformly continuous -/
-theorem uniformContinuous_coeff :
-    ∀ d : ℕ, UniformContinuous fun f : PowerSeries R ↦ coeff R f d :=
-  uniformContinuous_pi.mp uniformContinuous_id
+theorem uniformContinuous_coeff [Semiring R] (d : ℕ) :
+    UniformContinuous fun f : PowerSeries R ↦ coeff R d f :=
+  uniformContinuous_pi.mp uniformContinuous_id (Finsupp.single () d)
+
+variable [Ring R]
 
 /-- The uniform_add_group structure on PowerSeries of a uniform_add_group -/
 @[scoped instance]
-theorem instUniformAddGroup [AddGroup R] [UniformAddGroup R] :
+theorem instUniformAddGroup [UniformAddGroup R] :
     UniformAddGroup (PowerSeries R) :=
   MvPowerSeries.WithPiUniformity.instUniformAddGroup Unit R
 
 /-- Completeness of the uniform structure on PowerSeries -/
 @[scoped instance]
-theorem instCompleteSpace [AddGroup R] [CompleteSpace R] :
+theorem instCompleteSpace [CompleteSpace R] :
     CompleteSpace (PowerSeries R) :=
   MvPowerSeries.WithPiUniformity.instCompleteSpace Unit R
 
@@ -112,7 +113,7 @@ theorem instT0Space [T0Space R] : T0Space (PowerSeries R) :=
 
 /-- the topological ring structure on Power Series` -/
 @[scoped instance]
-theorem instTopologicalRing [Ring R] [UniformAddGroup R] [TopologicalRing R] :
+theorem instTopologicalRing [UniformAddGroup R] [TopologicalRing R] :
     TopologicalRing (PowerSeries R) :=
   MvPowerSeries.WithPiUniformity.instTopologicalRing Unit R
 
@@ -124,23 +125,25 @@ section
 
 variable {R}
 
-variable [TopologicalSpace R] [CommRing R] [TopologicalRing R]
+variable [TopologicalSpace R]
 
 open WithPiTopology WithPiUniformity
 
-theorem continuous_C : Continuous (C R) := MvPowerSeries.continuous_C
+theorem continuous_C [Ring R] [TopologicalRing R] : Continuous (C R) := MvPowerSeries.continuous_C
 
-theorem tendsto_pow_zero_of_constantCoeff_nilpotent {f : PowerSeries R}
-    (hf : IsNilpotent (constantCoeff R f)) :
+theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommSemiring R]
+    {f : PowerSeries R} (hf : IsNilpotent (constantCoeff R f)) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) :=
   MvPowerSeries.tendsto_pow_zero_of_constantCoeff_nilpotent hf
 
-theorem tendsto_pow_zero_of_constantCoeff_zero {f : PowerSeries R} (hf : constantCoeff R f = 0) :
+theorem tendsto_pow_zero_of_constantCoeff_zero [CommSemiring R]
+    {f : PowerSeries R} (hf : constantCoeff R f = 0) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) :=
   MvPowerSeries.tendsto_pow_zero_of_constantCoeff_zero hf
 
 /-- Bourbaki, Algèbre, chap. 4, §4, n°2, corollaire de la prop. 3 -/
-theorem tendsto_pow_of_constantCoeff_nilpotent_iff [DiscreteTopology R] (f : PowerSeries R) :
+theorem tendsto_pow_of_constantCoeff_nilpotent_iff
+    [CommSemiring R] [DiscreteTopology R] (f : PowerSeries R) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔
       IsNilpotent (constantCoeff R f) :=
   MvPowerSeries.tendsto_pow_of_constantCoeff_nilpotent_iff f
