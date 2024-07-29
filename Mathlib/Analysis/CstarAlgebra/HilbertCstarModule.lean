@@ -253,33 +253,13 @@ lemma norm_eq_csSup [CompleteSpace A] (v : E) :
     ‖v‖ = sSup { ‖⟪w, v⟫_A‖ | (w : E) (_ : ‖w‖ ≤ 1) } := by
   let instNACG : NormedAddCommGroup E := NormedAddCommGroup.ofCore normedSpaceCore
   let instNS : NormedSpace ℂ E := .ofCore normedSpaceCore
-  apply Eq.symm
-  refine IsLUB.csSup_eq ⟨?mem_upperBounds, ?mem_lowerBounds⟩
-    ⟨0, ⟨0, by simp [HilbertCstarModule.inner_zero_left]⟩⟩
-  case mem_upperBounds =>
-    rw [mem_upperBounds]
-    intro x hx
-    obtain ⟨w, hw₁, hw₂⟩ := hx
-    rw [← hw₂]
+  refine Eq.symm <| IsGreatest.csSup_eq ⟨⟨‖v‖⁻¹ • v, ?_, ?_⟩, ?_⟩
+  · simpa only [norm_smul, norm_inv, norm_norm] using inv_mul_le_one_of_le le_rfl (by positivity)
+  · simp [norm_smul, HilbertCstarModule.inner_self_eq_norm_sq, pow_two, ← mul_assoc]
+  · rintro - ⟨w, hw, rfl⟩
     calc _ ≤ ‖w‖ * ‖v‖ := norm_inner_le E
       _ ≤ 1 * ‖v‖ := by gcongr
       _ = ‖v‖ := by simp
-  case mem_lowerBounds =>
-    rw [mem_lowerBounds]
-    intro x hx
-    rw [mem_upperBounds] at hx
-    have hmain : ‖v‖ ∈ { ‖⟪w, v⟫_A‖ | (w : E) (_ : ‖w‖ ≤ 1) } := by
-      refine ⟨‖v‖⁻¹ • v, ⟨?_, ?_⟩⟩
-      · simp [norm_smul]
-        by_cases hv : v = 0
-        · simp [hv]
-        · have hv' : ‖v‖ ≠ 0 := by
-            intro hv''
-            rw [HilbertCstarModule.norm_zero_iff] at hv''
-            exact hv hv''
-          rw [inv_mul_cancel hv']
-      · simp [norm_smul, HilbertCstarModule.inner_self_eq_norm_sq, pow_two, ← mul_assoc]
-    exact hx ‖v‖ hmain
 
 end norm
 
