@@ -7,6 +7,7 @@ Authors: Jon Bannon, Jack Cheverton, Samyak Dhar Tuladhar
 import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Order.CompleteLattice
+import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-! # Simultaneous eigenspaces of a commuting pair of symmetric operators
 
@@ -55,36 +56,13 @@ theorem eigenspace_invariant_of_commute (α : 𝕜) :
 /--The inf of an eigenspace of an operator with another invariant subspace
 agrees with the corresponding eigenspace of the restriction of that operator to the
 invariant subspace-/
-theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
-    (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : (eigenspace S μ) ⊓ F =
-    Submodule.map (Submodule.subtype F)
-    (eigenspace (S.restrict (hInv)) μ) := by
-  ext v
-  constructor
-  · intro h
-    simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
-      exists_eq_right, mem_eigenspace_iff]; use h.2
-    exact Eq.symm (SetCoe.ext (_root_.id (Eq.symm (mem_eigenspace_iff.mp h.1))))
-  · intro h
-    simp only [Submodule.mem_inf]
-    constructor
-    · simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
-      exists_eq_right, mem_eigenspace_iff, SetLike.mk_smul_mk, restrict_apply,
-      Subtype.mk.injEq] at h
-      obtain ⟨_, hy⟩ := h
-      simpa [mem_eigenspace_iff]
-    · simp only [Submodule.coeSubtype] at h
-      obtain ⟨_, hy⟩ := h
-      simp only [← hy.2, Submodule.coeSubtype, SetLike.coe_mem]
-
-/--Auxiliary: function version of `invariant_subspace_inf_eigenspace_eq_restrict` -/
-theorem invariant_subspace_inf_eigenspace_eq_restrict' : (fun (γ : 𝕜) ↦
+theorem eigenspace_restrict_eigenspace_eq_inf : (fun (γ : 𝕜) ↦
     Submodule.map (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict
     (eigenspace_invariant_of_commute hAB α)) γ))
-    = (fun (γ : 𝕜) ↦ (eigenspace B γ ⊓ eigenspace A α)) := by
+    = (fun (γ : 𝕜) ↦ (eigenspace A α ⊓ eigenspace B γ)) := by
   funext γ
-  exact Eq.symm (invariant_subspace_inf_eigenspace_eq_restrict B γ
-    (eigenspace_invariant_of_commute hAB α))
+  exact Eq.symm (Submodule.inf_genEigenspace B (eigenspace A α)
+    (eigenspace_invariant_of_commute hAB α) (μ := γ) (k := 1))
 
 /-- If A and B are commuting symmetric operators on a finite dimensional inner product space
 then the eigenspaces of the restriction of B to any eigenspace of A exhaust that eigenspace.-/
@@ -96,37 +74,37 @@ theorem iSup_inf_eq_top: (⨆ γ , (eigenspace (LinearMap.restrict B
 
 /--If A and B are commuting symmetric operators acting on a finite dimensional inner product space,
 then the simultaneous eigenspaces of A and B exhaust the space. -/
-theorem iSup_simultaneous_eigenspaces_eq_top :
-    (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α))) = ⊤ := by
+theorem iSup_iSup_eigenspace_inf_eigenspace_eq_top :
+    (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace A α ⊓ eigenspace B γ))) = ⊤ := by
   have : (fun (α : 𝕜) ↦  eigenspace A α)  = fun (α : 𝕜) ↦
-      (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) := by
+      (⨆ (γ : 𝕜), (eigenspace A α ⊓ eigenspace B γ)) := by
     funext γ
-    rw [← invariant_subspace_inf_eigenspace_eq_restrict' hAB, ← Submodule.map_iSup,
+    rw [← eigenspace_restrict_eigenspace_eq_inf hAB, ← Submodule.map_iSup,
       iSup_inf_eq_top hB hAB, Submodule.map_top, Submodule.range_subtype]
   rw [← Submodule.orthogonal_eq_bot_iff.mp (hA.orthogonalComplement_iSup_eigenspaces_eq_bot), this]
 
 /--The simultaneous eigenspaces of a pair of commuting symmetric operators form an
 `OrthogonalFamily`.-/
-theorem orthogonality_of_simultaneous_eigenspaces_of_commuting_symmetric_pair :
-    OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) => (eigenspace B i.1 ⊓ eigenspace A i.2 : Submodule 𝕜 E))
-    (fun i => (eigenspace B i.1 ⊓ eigenspace A i.2).subtypeₗᵢ) := by
+theorem orthogonalFamily_eigenspace_inf_eigenspace :
+    OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) => (eigenspace A i.2 ⊓ eigenspace B i.1 : Submodule 𝕜 E))
+    (fun i => (eigenspace A i.2 ⊓ eigenspace B i.1).subtypeₗᵢ) := by
   refine orthogonalFamily_iff_pairwise.mpr ?_
   intro i j hij v ⟨hv1 , hv2⟩
   have H:=  (Iff.not (Iff.symm Prod.ext_iff)).mpr hij
   push_neg at H
   by_cases C: i.1 = j.1
   <;> intro w ⟨hw1, hw2⟩
-  · exact orthogonalFamily_iff_pairwise.mp hA.orthogonalFamily_eigenspaces (H C) hv2 w hw2
-  · exact orthogonalFamily_iff_pairwise.mp hB.orthogonalFamily_eigenspaces C hv1 w hw1
+  · exact orthogonalFamily_iff_pairwise.mp hA.orthogonalFamily_eigenspaces (H C) hv1 w hw1
+  · exact orthogonalFamily_iff_pairwise.mp hB.orthogonalFamily_eigenspaces C hv2 w hw2
 
 /-- Given a commuting pair of symmetric linear operators on a finite dimensional inner product space
 , the space decomposes as an internal direct sum of simultaneous eigenspaces of these operators. -/
 theorem DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_pair:
-    DirectSum.IsInternal (fun (i : 𝕜 × 𝕜) ↦ (eigenspace B i.1 ⊓ eigenspace A i.2)):= by
+    DirectSum.IsInternal (fun (i : 𝕜 × 𝕜) ↦ (eigenspace A i.2 ⊓ eigenspace B i.1)):= by
   apply (OrthogonalFamily.isInternal_iff
-    (orthogonality_of_simultaneous_eigenspaces_of_commuting_symmetric_pair hA hB)).mpr
+    (orthogonalFamily_eigenspace_inf_eigenspace hA hB)).mpr
   rw [Submodule.orthogonal_eq_bot_iff, iSup_prod, iSup_comm]
-  exact iSup_simultaneous_eigenspaces_eq_top hA hB hAB
+  exact iSup_iSup_eigenspace_inf_eigenspace_eq_top hA hB hAB
 
 end Pair
 
