@@ -140,6 +140,7 @@ private theorem eq_strictMono_iff_eq_range_aux {f g : β → γ} (hf : StrictMon
   · rw [← hc]
     exact hf.monotone hbc
 
+include h in
 theorem eq_strictMono_iff_eq_range {f g : β → γ} (hf : StrictMono f) (hg : StrictMono g) :
     Set.range f = Set.range g ↔ f = g :=
   ⟨fun hfg => by
@@ -150,6 +151,7 @@ theorem eq_strictMono_iff_eq_range {f g : β → γ} (hf : StrictMono f) (hg : S
         (eq_strictMono_iff_eq_range_aux hg hf hfg.symm fun a hab => (H a hab).symm),
     congr_arg _⟩
 
+include h in
 theorem self_le_of_strictMono {f : β → β} (hf : StrictMono f) : ∀ n, n ≤ f n := by
   by_contra! h₁
   have h₂ := h.min_mem _ h₁
