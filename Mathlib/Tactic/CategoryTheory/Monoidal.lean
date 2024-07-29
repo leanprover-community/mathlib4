@@ -51,19 +51,13 @@ but it might not be immediate. If anyone is interested, I would be happy to disc
 category, this function returns a pair of `⟨e', pf⟩` where `e'` is the normalized expression of `e`
 and `pf` is a proof that `e = e'`.
 
-## Implementation notes
-The function `Tactic.Monoidal.eval` fails to produce a proof term when the environment cannot
-find the necessary `MonoidalCategory C` instance. This occurs when running the string diagram
-widget, and the error makes it impossible for the string diagram widget to generate the diagram.
-To work around the widget failure, if the proof generation fails when `eval` running, it returns a
-meaningless term `mkConst ``True` in place of the proof term.
 -/
-
-namespace Mathlib.Tactic.Monoidal
 
 open Lean Meta Elab
 open CategoryTheory
 open Mathlib.Tactic.Coherence
+
+namespace Mathlib.Tactic.Monoidal
 
 /-- The context for evaluating expressions. -/
 structure Context where
@@ -71,12 +65,12 @@ structure Context where
   C : Expr
 
 /-- Populate a `context` object for evaluating `e`. -/
-def mkContext (e : Expr) : MetaM Context := do
+def mkContext? (e : Expr) : MetaM (Option Context) := do
   match (← inferType e).getAppFnArgs with
   | (``Quiver.Hom, #[_, _, f, _]) =>
     let C ← inferType f
-    return ⟨C⟩
-  | _ => throwError "not a morphism"
+    return some ⟨C⟩
+  | _ => return none
 
 /-- The monad for the normalization of 2-morphisms. -/
 abbrev MonoidalM := ReaderT Context MetaM
@@ -155,6 +149,8 @@ inductive StructuralAtom : Type
   | rightUnitor (f : Mor₁) : StructuralAtom
   /-- The expression for the inverse of the right unitor `(ρ_ f).inv`. -/
   | rightUnitorInv (f : Mor₁) : StructuralAtom
+  /-- Expressions for `α` in the monoidal composition `η ⊗≫ θ := η ≫ α ≫ θ`. -/
+  | monoidalCoherence (f g : Mor₁) (e : Expr) : StructuralAtom
   deriving Inhabited
 
 /-- Construct a `StructuralAtom` expression from a Lean expression. -/
@@ -178,7 +174,11 @@ def structuralAtom? (e : Expr) : MetaM (Option StructuralAtom) := do
     | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) =>
       return some <| .rightUnitorInv (← toMor₁ f)
     | _ => return none
-  | _ => return none
+  | _ =>
+    match (← whnfR e).getAppFnArgs with
+    | (``MonoidalCoherence.hom, #[_, _, f, g, inst]) =>
+      return some <| .monoidalCoherence (← toMor₁ f) (← toMor₁ g) inst
+    | _ => return none
 
 /-- Expressions for atomic non-structural 2-morphisms. -/
 structure Atom where
@@ -194,10 +194,16 @@ inductive WhiskerRightExpr : Type
   | whisker (η : WhiskerRightExpr) (f : Atom₁) : WhiskerRightExpr
   deriving Inhabited
 
+/-- Expressions of the form `η₁ ⊗ ... ⊗ ηₙ`. -/
+inductive TensorHomExpr : Type
+  | of (η : WhiskerRightExpr) : TensorHomExpr
+  | cons (head : WhiskerRightExpr) (tail : TensorHomExpr) : TensorHomExpr
+  deriving Inhabited
+
 /-- Expressions of the form `f₁ ◁ ... ◁ fₙ ◁ η`. -/
 inductive WhiskerLeftExpr : Type
   /-- Construct the expression for a right-whiskered 2-morphism. -/
-  | of (η : WhiskerRightExpr) : WhiskerLeftExpr
+  | of (η : TensorHomExpr) : WhiskerLeftExpr
   /-- Construct the expression for `f ◁ η`. -/
   | whisker (f : Atom₁) (η : WhiskerLeftExpr) : WhiskerLeftExpr
   deriving Inhabited
@@ -214,8 +220,8 @@ inductive Structural : Type
   | whiskerLeft (f : Mor₁) (η : Structural) : Structural
   /-- Expressions for the right whiskering `η ▷ f`. -/
   | whiskerRight (η : Structural) (f : Mor₁) : Structural
-  /-- Expressions for `α` in the monoidal composition `η ⊗≫ θ := η ≫ α ≫ θ`. -/
-  | monoidalCoherence (f g : Mor₁) (e : Expr) : Structural
+  /-- Expressions for the tensor `α ⊗ β`. -/
+  | tensorHom (α β : Structural) : Structural
   deriving Inhabited
 
 /-- Normalized expressions for 2-morphisms. -/
@@ -255,13 +261,23 @@ def WhiskerRightExpr.tgt : WhiskerRightExpr → MetaM Mor₁
   | WhiskerRightExpr.whisker η f => return (← WhiskerRightExpr.tgt η).comp (Mor₁.of f)
 
 /-- The domain of a 2-morphism. -/
+def TensorHomExpr.src : TensorHomExpr → MetaM Mor₁
+  | TensorHomExpr.of η => η.src
+  | TensorHomExpr.cons η ηs => return (← η.src).comp (← ηs.src)
+
+/-- The codomain of a 2-morphism. -/
+def TensorHomExpr.tgt : TensorHomExpr → MetaM Mor₁
+  | TensorHomExpr.of η => η.tgt
+  | TensorHomExpr.cons η ηs => return (← η.tgt).comp (← ηs.tgt)
+
+/-- The domain of a 2-morphism. -/
 def WhiskerLeftExpr.src : WhiskerLeftExpr → MetaM Mor₁
-  | WhiskerLeftExpr.of η => WhiskerRightExpr.src η
+  | WhiskerLeftExpr.of η => TensorHomExpr.src η
   | WhiskerLeftExpr.whisker f η => return (Mor₁.of f).comp (← WhiskerLeftExpr.src η)
 
 /-- The codomain of a 2-morphism. -/
 def WhiskerLeftExpr.tgt : WhiskerLeftExpr → MetaM Mor₁
-  | WhiskerLeftExpr.of η => WhiskerRightExpr.tgt η
+  | WhiskerLeftExpr.of η => TensorHomExpr.tgt η
   | WhiskerLeftExpr.whisker f η => return (Mor₁.of f).comp (← WhiskerLeftExpr.tgt η)
 
 /-- The domain of a 2-morphism. -/
@@ -272,6 +288,7 @@ def StructuralAtom.src : StructuralAtom → Mor₁
   | .leftUnitorInv f => f
   | .rightUnitor f => f.comp Mor₁.id
   | .rightUnitorInv f => f
+  | .monoidalCoherence f _ _ => f
 
 /-- The codomain of a 2-morphism. -/
 def StructuralAtom.tgt : StructuralAtom → Mor₁
@@ -281,6 +298,7 @@ def StructuralAtom.tgt : StructuralAtom → Mor₁
   | .leftUnitorInv f => Mor₁.id.comp f
   | .rightUnitor f => f
   | .rightUnitorInv f => f.comp Mor₁.id
+  | .monoidalCoherence _ g _ => g
 
 /-- The domain of a 2-morphism. -/
 def Structural.src : Structural → Mor₁
@@ -289,7 +307,7 @@ def Structural.src : Structural → Mor₁
   | .comp α _ => α.src
   | .whiskerLeft f η => f.comp η.src
   | .whiskerRight η f => η.src.comp f
-  | .monoidalCoherence f _ _ => f
+  | .tensorHom α β => α.src.comp β.src
 
 /-- The codomain of a 2-morphism. -/
 def Structural.tgt : Structural → Mor₁
@@ -298,7 +316,7 @@ def Structural.tgt : Structural → Mor₁
   | .comp _ β => β.tgt
   | .whiskerLeft f η => f.comp η.tgt
   | .whiskerRight η f => η.tgt.comp f
-  | .monoidalCoherence _ g _ => g
+  | .tensorHom α β => α.tgt.comp β.tgt
 
 /-- The domain of a 2-morphism. -/
 def NormalExpr.src : NormalExpr → Mor₁
@@ -334,39 +352,13 @@ def NormalExpr.rightUnitor (f : Mor₁) : NormalExpr :=
 def NormalExpr.rightUnitorInv (f : Mor₁) : NormalExpr :=
   .nil <| .atom <| .rightUnitorInv f
 
-/-- Return `η` for `η ▷ g₁ ▷ ... ▷ gₙ`. -/
-def WhiskerRightExpr.atom : WhiskerRightExpr → Atom
-  | WhiskerRightExpr.of η => η
-  | WhiskerRightExpr.whisker η _ => η.atom
-
-/-- Return `η` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
-def WhiskerLeftExpr.atom : WhiskerLeftExpr → Atom
-  | WhiskerLeftExpr.of η => η.atom
-  | WhiskerLeftExpr.whisker _ η => η.atom
-
-/-- Construct a `Structural` expression from a Lean expression for a structural 2-morphism. -/
-partial def structural? (e : Expr) : MetaM Structural := do
-  match (← whnfR e).getAppFnArgs with
-  | (``CategoryStruct.comp, #[_, _, _, α, β]) =>
-    return .comp (← structural? α) (← structural? β)
-  | (``CategoryStruct.id, #[_, f]) => return .id (← toMor₁ f)
-  | (``MonoidalCategoryStruct.whiskerLeft, #[f, η]) =>
-    return .whiskerLeft (← toMor₁ f) (← structural? η)
-  | (``MonoidalCategoryStruct.whiskerRight, #[η, f]) =>
-    return .whiskerRight (← structural? η) (← toMor₁ f)
-  | (``MonoidalCoherence.hom, #[_, _, f, g, inst]) =>
-    return .monoidalCoherence (← toMor₁ f) (← toMor₁ g) inst
-  | _ => match ← structuralAtom? e with
-    | some η => return .atom η
-    | none => throwError "not a structural 2-morphism"
-
 /-- Construct a `NormalExpr` expression from a `WhiskerLeftExpr` expression. -/
 def NormalExpr.of (η : WhiskerLeftExpr) : MetaM NormalExpr := do
   return .cons (.id (← η.src)) η (.nil (.id (← η.tgt)))
 
 /-- Construct a `NormalExpr` expression from a Lean expression for an atomic 2-morphism. -/
 def NormalExpr.ofExpr (η : Expr) : MetaM NormalExpr :=
-  NormalExpr.of <| .of <| .of ⟨η⟩
+  NormalExpr.of <| .of <| .of <| .of ⟨η⟩
 
 /-- If `e` is an expression of the form `η ⊗≫ θ := η ≫ α ≫ θ` in the monoidal category `C`,
 return the expression for `α` .-/
@@ -386,7 +378,9 @@ def structuralOfMonoidalComp (C e : Expr) : MetaM Structural := do
   let αg := mkAppN (.const ``CategoryStruct.comp [v, u]) #[C, instC, X, Y, Z, α₀, g]
   let fαg := mkAppN (.const ``CategoryStruct.comp [v, u]) #[C, instC, W, X, Z, f, αg]
   _ ← isDefEq e fαg
-  structural? α₀
+  match ← structuralAtom? α₀ with
+  | some η => return .atom η
+  | none => throwError "not a structural 2-morphism"
 
 section
 
@@ -396,7 +390,16 @@ universe v u
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
-variable {f f' g g' h i j : C}
+variable {f f' g g' h h' i i' j : C}
+
+@[nolint synTaut]
+theorem ofNormalExpr_nil (α : f ⟶ g) (β : g ⟶ h) :
+    α ≫ β = α ≫ β := by
+  simp
+
+theorem ofNormalExpr_cons (α : f ⟶ g) (β : g ⟶ h) (η : h ⟶ i) (ηs : i ⟶ j) :
+    α ≫ (β ≫ η ≫ ηs) = (α ≫ β) ≫ η ≫ ηs := by
+  simp
 
 theorem evalComp_nil_cons {f g h i j : C} (α : f ⟶ g) (β : g ⟶ h) (η : h ⟶ i) (ηs : i ⟶ j) :
     α ≫ (β ≫ η ≫ ηs) = (α ≫ β) ≫ η ≫ ηs := by
@@ -453,6 +456,12 @@ theorem eval_whiskerRight
     η ▷ h = θ := by
   simp [pf_η, pf_θ]
 
+theorem eval_tensorHom
+    {η η' : f ⟶ g} {θ θ' : h ⟶ i} {ι : f ⊗ h ⟶ g ⊗ i}
+    (pf_η : η = η') (pf_θ : θ = θ') (pf_ι : η' ⊗ θ' = ι) :
+    η ⊗ θ = ι := by
+  simp [pf_η, pf_θ, pf_ι]
+
 theorem eval_of (η : f ⟶ g) :
     η = 𝟙 _ ≫ η ≫ 𝟙 _ := by
   simp
@@ -463,10 +472,12 @@ theorem evalWhiskerRight_nil (α : f ⟶ g) (h : C) :
   simp
 
 theorem evalWhiskerRight_cons_of_of
-    (α : f ⟶ g) (η : g ⟶ h) {ηs : h ⟶ i} {θ : h ⊗ j ⟶ i ⊗ j}
-    (pf_θ : ηs ▷ j = θ) :
-    (α ≫ η ≫ ηs) ▷ j = α ▷ j ≫ η ▷ j ≫ θ := by
-  simp [pf_θ]
+    {α : f ⟶ g} {η : g ⟶ h} {ηs : h ⟶ i} {ηs₁ : h ⊗ j ⟶ i ⊗ j}
+    {η₁ : g ⊗ j ⟶ h ⊗ j} {η₂ : g ⊗ j ⟶ i ⊗ j} {η₃ : f ⊗ j ⟶ i ⊗ j}
+    (pf_ηs₁ : ηs ▷ j = ηs₁) (pf_η₁ : η ▷ j = η₁)
+    (pf_η₂ : η₁ ≫ ηs₁ = η₂) (pf_η₃ : α ▷ j ≫ η₂ = η₃) :
+    (α ≫ η ≫ ηs) ▷ j = η₃ := by
+  simp_all
 
 theorem evalWhiskerRight_cons_whisker
     {α : g ⟶ f ⊗ h} {η : h ⟶ i} {ηs : f ⊗ i ⟶ j} {k : C}
@@ -500,6 +511,87 @@ theorem eval_monoidalComp
     η ≫ α ≫ θ = ηαθ := by
   simp [pf_η, pf_θ, pf_αθ, pf_ηαθ]
 
+theorem evalWhiskerRightExprAux_of (η : g ⟶ h) (f : C) :
+    η ▷ f = 𝟙 _ ≫ η ▷ f ≫ 𝟙 _ := by
+  simp
+
+theorem evalWhiskerRightExprAux_cons {η : g ⟶ h} {ηs : i ⟶ j}
+    {ηs' : i ⊗ f ⟶ j ⊗ f} {η₁ : g ⊗ (i ⊗ f) ⟶ h ⊗ (j ⊗ f)}
+    {η₂ : g ⊗ (i ⊗ f) ⟶ (h ⊗ j) ⊗ f} {η₃ : (g ⊗ i) ⊗ f ⟶ (h ⊗ j) ⊗ f}
+    (pf_ηs' : ηs ▷ f = ηs') (pf_η₁ : (𝟙 _ ≫ η ≫ 𝟙 _) ⊗ ηs' = η₁)
+    (pf_η₂ : η₁ ≫ (α_ _ _ _).inv = η₂) (pf_η₃ : (α_ _ _ _).hom ≫ η₂ = η₃) :
+    (η ⊗ ηs) ▷ f = η₃ := by
+  simp [← pf_ηs', ← pf_η₁, ← pf_η₂, ← pf_η₃, MonoidalCategory.tensorHom_def]
+
+theorem evalWhiskerRightExpr_cons_of {α : f' ⟶ g} {η : g ⟶ h} {ηs : h ⟶ i}
+    {ηs₁ : h ⊗ f ⟶ i ⊗ f} {η₁ : g ⊗ f ⟶ h ⊗ f} {η₂ : g ⊗ f ⟶ i ⊗ f}
+    {η₃ : f' ⊗ f ⟶ i ⊗ f}
+    (pf_ηs₁ : ηs ▷ f = ηs₁) (pf_η₁ : η ▷ f = η₁)
+    (pf_η₂ : η₁ ≫ ηs₁ = η₂) (pf_η₃ : α ▷ f ≫ η₂ = η₃) :
+    (α ≫ η ≫ ηs) ▷ f = η₃ := by
+  simp [pf_ηs₁, pf_η₁, pf_η₂, pf_η₃]
+
+theorem evalTensorHomAux_of (η : f ⟶ g) (θ : h ⟶ i) :
+    η ⊗ θ = 𝟙 _ ≫ (η ⊗ θ) ≫ 𝟙 _ := by
+  simp
+
+theorem evalTensorHomAux_cons {η : f ⟶ g} {ηs : f' ⟶ g'} {θ : h ⟶ i}
+    {ηθ : f' ⊗ h ⟶ g' ⊗ i} {η₁ : f ⊗ (f' ⊗ h) ⟶ g ⊗ (g' ⊗ i)}
+    {ηθ₁ : f ⊗ (f' ⊗ h) ⟶ (g ⊗ g') ⊗ i} {ηθ₂ : (f ⊗ f') ⊗ h ⟶ (g ⊗ g') ⊗ i}
+    (pf_ηθ : ηs ⊗ θ = ηθ) (pf_η₁ : (𝟙 _ ≫ η ≫ 𝟙 _) ⊗ ηθ = η₁)
+    (pf_ηθ₁ : η₁ ≫ (α_ _ _ _).inv = ηθ₁) (pf_ηθ₂ : (α_ _ _ _).hom ≫ ηθ₁ = ηθ₂) :
+    (η ⊗ ηs) ⊗ θ = ηθ₂ := by
+  simp_all
+
+theorem evalTensorHomAux'_whisker {η : g ⟶ h} {θ : f' ⟶ g'}
+    {ηθ : g ⊗ f' ⟶ h ⊗ g'} {η₁ : f ⊗ (g ⊗ f') ⟶ f ⊗ (h ⊗ g')}
+    {η₂ :  f ⊗ (g ⊗ f') ⟶ (f ⊗ h) ⊗ g'} {η₃ : (f ⊗ g) ⊗ f' ⟶ (f ⊗ h) ⊗ g'}
+    (pf_ηθ : η ⊗ θ = ηθ) (pf_η₁ : f ◁ ηθ = η₁)
+    (pf_η₂ : η₁ ≫ (α_ _ _ _).inv = η₂) (pf_η₃ : (α_ _ _ _).hom ≫ η₂ = η₃) :
+    (f ◁ η) ⊗ θ = η₃ := by
+  simp only [← pf_ηθ, ← pf_η₁, ← pf_η₂, ← pf_η₃]
+  simp [MonoidalCategory.tensorHom_def]
+
+theorem evalTensorHomAux'_of_whisker {η : g ⟶ h} {θ : f' ⟶ g'}
+    {η₁ : g ⊗ f ⟶ h ⊗ f} {ηθ : (g ⊗ f) ⊗ f' ⟶ (h ⊗ f) ⊗ g'}
+    {ηθ₁ : (g ⊗ f) ⊗ f' ⟶ h ⊗ (f ⊗ g')}
+    {ηθ₂ : g ⊗ (f ⊗ f') ⟶ h ⊗ (f ⊗ g')}
+    (pf_η₁ : η ▷ f = η₁) (pf_ηθ : η₁ ⊗ (𝟙 _ ≫ θ ≫ 𝟙 _) = ηθ)
+    (pf_ηθ₁ : ηθ ≫ (α_ _ _ _).hom = ηθ₁) (pf_ηθ₂ : (α_ _ _ _).inv ≫ ηθ₁ = ηθ₂) :
+    η ⊗ (f ◁ θ) = ηθ₂ := by
+  simp only [← pf_η₁, ← pf_ηθ, ← pf_ηθ₁, ← pf_ηθ₂]
+  simp [MonoidalCategory.tensorHom_def]
+
+@[nolint synTaut]
+theorem evalTensorHomExpr_nil_nil (α : f ⟶ g) (β : h ⟶ i) :
+    α ⊗ β = α ⊗ β := by
+  simp
+
+theorem evalTensorHomExpr_nil_cons {α : f ⟶ g} {β : f' ⟶ g'} {η : g' ⟶ h} {ηs : h ⟶ i}
+    {η₁ : g ⊗ g' ⟶ g ⊗ h} {ηs₁ : g ⊗ h ⟶ g ⊗ i}
+    {η₂ : g ⊗ g' ⟶ g ⊗ i} {η₃ : f ⊗ f' ⟶ g ⊗ i}
+    (pf_η₁ : g ◁ (𝟙 _ ≫ η ≫ 𝟙 _) = η₁)
+    (pf_ηs₁ : g ◁ ηs = ηs₁) (pf_η₂ : η₁ ≫ ηs₁ = η₂)
+    (pf_η₃ : (α ⊗ β) ≫ η₂ = η₃) :
+    α ⊗ (β ≫ η ≫ ηs) = η₃ := by
+  simp_all [MonoidalCategory.tensorHom_def]
+
+theorem evalTensorHomExpr_cons_nil {α : f ⟶ g} {η : g ⟶ h} {ηs : h ⟶ i} {β : f' ⟶ g'}
+    {η₁ : g ⊗ g' ⟶ h ⊗ g'} {ηs₁ : h ⊗ g' ⟶ i ⊗ g'} {η₂ : g ⊗ g' ⟶ i ⊗ g'} {η₃ : f ⊗ f' ⟶ i ⊗ g'}
+    (pf_η₁ : (𝟙 _ ≫ η ≫ 𝟙 _) ▷ g' = η₁) (pf_ηs₁ : ηs ▷ g' = ηs₁)
+    (pf_η₂ : η₁ ≫ ηs₁ = η₂) (pf_η₃ : (α ⊗ β) ≫ η₂ = η₃) :
+    (α ≫ η ≫ ηs) ⊗ β = η₃ := by
+  simp_all [MonoidalCategory.tensorHom_def']
+
+theorem evalTensorHomExpr_cons_cons {α : f ⟶ g} {η : g ⟶ h} {ηs : h ⟶ i}
+    {β : f' ⟶ g'} {θ : g' ⟶ h'} {θs : h' ⟶ i'}
+    {ηθ : g ⊗ g' ⟶ h ⊗ h'} {ηθs : h ⊗ h' ⟶ i ⊗ i'}
+    {ηθ₁ : g ⊗ g' ⟶ i ⊗ i'} {ηθ₂ : f ⊗ f' ⟶ i ⊗ i'}
+    (pf_ηθ : η ⊗ θ = ηθ) (pf_ηθs : ηs ⊗ θs = ηθs)
+    (pf_ηθ₁ : ηθ ≫ ηθs = ηθ₁) (pf_ηθ₂ : (α ⊗ β) ≫ ηθ₁ = ηθ₂) :
+    (α ≫ η ≫ ηs) ⊗ (β ≫ θ ≫ θs) = ηθ₂ := by
+  simp [← pf_ηθ , ← pf_ηθs , ← pf_ηθ₁, ← pf_ηθ₂]
+
 end
 
 /-- Extract a Lean expression from a `Mor₁` expression. -/
@@ -525,23 +617,29 @@ def StructuralAtom.e : StructuralAtom → MonoidalM Expr
     mkAppM ``Iso.hom #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
   | .rightUnitorInv f => do
     mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
+  | .monoidalCoherence _ _ e => do
+    mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, e]
 
 /-- Extract a Lean expression from a `Structural` expression. -/
 partial def Structural.e : Structural → MonoidalM Expr
   | .atom η => η.e
   | .id f => do mkAppM ``CategoryStruct.id #[← f.e]
-  | .comp α β => do match α, β with
-    | _, _ => mkAppM ``CategoryStruct.comp #[← α.e, ← β.e]
+  | .comp α β => do mkAppM ``CategoryStruct.comp #[← α.e, ← β.e]
   | .whiskerLeft f η => do mkAppM ``MonoidalCategoryStruct.whiskerLeft #[← f.e, ← η.e]
   | .whiskerRight η f => do mkAppM ``MonoidalCategoryStruct.whiskerRight #[← η.e, ← f.e]
-  | .monoidalCoherence _ _ e => do
-    mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, e]
+  | .tensorHom α β => do mkAppM ``MonoidalCategoryStruct.tensorHom #[← α.e, ← β.e]
 
 /-- Extract a Lean expression from a `WhiskerRightExpr` expression. -/
 def WhiskerRightExpr.e : WhiskerRightExpr → MonoidalM Expr
   | WhiskerRightExpr.of η => return η.e
   | WhiskerRightExpr.whisker η f => do
     mkAppM ``MonoidalCategoryStruct.whiskerRight #[← η.e, f.e]
+
+/-- Extract a Lean expression from a `TensorHomExpr` expression. -/
+def TensorHomExpr.e : TensorHomExpr → MonoidalM Expr
+  | TensorHomExpr.of η => η.e
+  | TensorHomExpr.cons η ηs => do
+    mkAppM ``MonoidalCategoryStruct.tensorHom #[← η.e, ← ηs.e]
 
 /-- Extract a Lean expression from a `WhiskerLeftExpr` expression. -/
 def WhiskerLeftExpr.e : WhiskerLeftExpr → MonoidalM Expr
@@ -562,32 +660,40 @@ structure Result where
   /-- The proof that the normalized expression is equal to the original expression. -/
   proof : Expr
 
+/-- Construct a `NormalExpr` expression from another `NormalExpr` expression by adding a structural
+2-morphism at the head. -/
+def NormalExpr.ofNormalExpr (α : Structural) (e : NormalExpr) : MonoidalM Result :=
+  match e with
+  | .nil β => do
+    let αβ := .nil (α.comp β)
+    return ⟨αβ, ← mkAppM ``ofNormalExpr_nil #[← α.e, ← β.e]⟩
+  | .cons β η ηs => do
+    let αβ := .cons (α.comp β) η ηs
+    return ⟨αβ, ← mkAppM ``ofNormalExpr_cons #[← α.e, ← β.e, ← η.e, ← ηs.e]⟩
+
+mutual
+
 /-- Evaluate the expression `η ≫ θ` into a normalized form. -/
 partial def evalComp : NormalExpr → NormalExpr → MonoidalM Result
   | .nil α, .cons β η ηs => do
     let η' := .cons (α.comp β) η ηs
-    try return ⟨η', ← mkAppM ``evalComp_nil_cons #[← α.e, ← β.e, ← η.e, ← ηs.e]⟩
-    catch _ => return ⟨η', mkConst ``True⟩
+    return ⟨η', ← mkAppM ``evalComp_nil_cons #[← α.e, ← β.e, ← η.e, ← ηs.e]⟩
   | .nil α, .nil α' => do
-    try return ⟨.nil (α.comp α'), ← mkAppM ``evalComp_nil_nil #[← α.e, ← α'.e]⟩
-    catch _ => return ⟨.nil (α.comp α'), mkConst ``True⟩
+    return ⟨.nil (α.comp α'), ← mkAppM ``evalComp_nil_nil #[← α.e, ← α'.e]⟩
   | .cons α η ηs, θ => do
     let ⟨ι, pf_ι⟩ ← evalComp ηs θ
     let ι' := .cons α η ι
-    try return ⟨ι', ← mkAppM ``evalComp_cons #[← α.e, ← η.e, pf_ι]⟩
-    catch _ => return ⟨ι', mkConst ``True⟩
+    return ⟨ι', ← mkAppM ``evalComp_cons #[← α.e, ← η.e, pf_ι]⟩
 
 /-- Evaluate the expression `f ◁ η` into a normalized form. -/
 partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MonoidalM Result
   | f, .nil α => do
-    try return ⟨.nil (.whiskerLeft f α), ← mkAppM ``evalWhiskerLeft_nil #[← f.e, ← α.e]⟩
-    catch _ => return ⟨.nil (.whiskerLeft f α), mkConst ``True⟩
+    return ⟨.nil (.whiskerLeft f α), ← mkAppM ``evalWhiskerLeft_nil #[← f.e, ← α.e]⟩
   | .of f, .cons α η ηs => do
     let η' := WhiskerLeftExpr.whisker f η
     let ⟨θ, pf_θ⟩ ← evalWhiskerLeftExpr (.of f) ηs
     let η'' := .cons (.whiskerLeft (.of f) α) η' θ
-    try return ⟨η'', ← mkAppM ``evalWhiskerLeft_of_cons #[← α.e, ← η.e, pf_θ]⟩
-    catch _ => return ⟨η'', mkConst ``True⟩
+    return ⟨η'', ← mkAppM ``evalWhiskerLeft_of_cons #[← α.e, ← η.e, pf_θ]⟩
   | .comp f g, η => do
     let ⟨θ, pf_θ⟩ ← evalWhiskerLeftExpr g η
     let ⟨ι, pf_ι⟩ ← evalWhiskerLeftExpr f θ
@@ -595,26 +701,36 @@ partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MonoidalM Result
     let h' := η.tgt
     let ⟨ι', pf_ι'⟩ ← evalComp ι (NormalExpr.associatorInv f g h')
     let ⟨ι'', pf_ι''⟩ ← evalComp (NormalExpr.associator f g h) ι'
-    try return ⟨ι'', ← mkAppM ``evalWhiskerLeft_comp #[pf_θ, pf_ι, pf_ι', pf_ι'']⟩
-    catch _ => return ⟨ι'', mkConst ``True⟩
+    return ⟨ι'', ← mkAppM ``evalWhiskerLeft_comp #[pf_θ, pf_ι, pf_ι', pf_ι'']⟩
   | .id, η => do
     let f := η.src
     let g := η.tgt
     let ⟨η', pf_η'⟩ ← evalComp η (NormalExpr.leftUnitorInv g)
     let ⟨η'', pf_η''⟩ ← evalComp (NormalExpr.leftUnitor f) η'
-    try return ⟨η'', ← mkAppM ``evalWhiskerLeft_id #[pf_η', pf_η'']⟩
-    catch _ => return ⟨η'', mkConst ``True⟩
+    return ⟨η'', ← mkAppM ``evalWhiskerLeft_id #[pf_η', pf_η'']⟩
+
+/-- Evaluate the expression `η ▷ f` into a normalized form. -/
+partial def evalWhiskerRightExprAux : TensorHomExpr → Atom₁ → MonoidalM Result
+  | .of η, f => do
+    let η' ← NormalExpr.of <| .of <| .of <| .whisker η f
+    return ⟨η', ← mkAppM ``evalWhiskerRightExprAux_of #[← η.e, f.e]⟩
+  | .cons η ηs, f => do
+    let ⟨ηs', pf_ηs'⟩ ← evalWhiskerRightExprAux ηs f
+    let ⟨η₁, pf_η₁⟩ ← evalTensorHomExpr (← NormalExpr.of <| .of <| .of η) ηs'
+    let ⟨η₂, pf_η₂⟩ ← evalComp η₁ (.associatorInv (← η.tgt) (← ηs.tgt) (.of f))
+    let ⟨η₃, pf_η₃⟩ ← evalComp (.associator (← η.src) (← ηs.src) (.of f)) η₂
+    return ⟨η₃, ← mkAppM ``evalWhiskerRightExprAux_cons #[pf_ηs', pf_η₁, pf_η₂, pf_η₃]⟩
 
 /-- Evaluate the expression `η ▷ f` into a normalized form. -/
 partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MonoidalM Result
   | .nil α, h => do
-    try return ⟨.nil (.whiskerRight α h), ← mkAppM ``evalWhiskerRight_nil #[← α.e, ← h.e]⟩
-    catch _ => return ⟨.nil (.whiskerRight α h), mkConst ``True⟩
+    return ⟨.nil (.whiskerRight α h), ← mkAppM ``evalWhiskerRight_nil #[← α.e, ← h.e]⟩
   | .cons α (.of η) ηs, .of f => do
-    let ⟨θ, pf_θ⟩ ← evalWhiskerRightExpr ηs (.of f)
-    let η' := .cons (.whiskerRight α (.of f)) (.of (.whisker η f)) θ
-    try return ⟨η', ← mkAppM ``evalWhiskerRight_cons_of_of #[← α.e, ← η.e, pf_θ]⟩
-    catch _ => return ⟨η', mkConst ``True⟩
+    let ⟨ηs₁, pf_ηs₁⟩ ← evalWhiskerRightExpr ηs (.of f)
+    let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExprAux η f
+    let ⟨η₂, pf_η₂⟩ ← evalComp η₁ ηs₁
+    let ⟨η₃, pf_η₃⟩ ← NormalExpr.ofNormalExpr (.whiskerRight α (.of f)) η₂
+    return ⟨η₃, ← mkAppM ``evalWhiskerRight_cons_of_of #[pf_ηs₁, pf_η₁, pf_η₂, pf_η₃]⟩
   | .cons α (.whisker f η) ηs, h => do
     let g ← η.src
     let g' ← η.tgt
@@ -626,10 +742,8 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MonoidalM Result
     let ⟨η₃, pf_η₃⟩ ← evalComp η₂ ηs₂
     let ⟨η₄, pf_η₄⟩ ← evalComp (.associator (.of f) g h) η₃
     let ⟨η₅, pf_η₅⟩ ← evalComp (.nil α') η₄
-    try return ⟨η₅,
-      ← mkAppM ``evalWhiskerRight_cons_whisker
-        #[pf_η₁, pf_η₂, pf_ηs₁, pf_ηs₂, pf_η₃, pf_η₄, pf_η₅]⟩
-    catch _ => return ⟨η₅, mkConst ``True⟩
+    return ⟨η₅, ← mkAppM ``evalWhiskerRight_cons_whisker
+      #[pf_η₁, pf_η₂, pf_ηs₁, pf_ηs₂, pf_η₃, pf_η₄, pf_η₅]⟩
   | η, .comp g h => do
     let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExpr η g
     let ⟨η₂, pf_η₂⟩ ← evalWhiskerRightExpr η₁ h
@@ -637,42 +751,89 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MonoidalM Result
     let f' := η.tgt
     let ⟨η₃, pf_η₃⟩ ← evalComp η₂ (.associator f' g h)
     let ⟨η₄, pf_η₄⟩ ← evalComp (.associatorInv f g h) η₃
-    try return ⟨η₄, ← mkAppM ``evalWhiskerRight_comp #[pf_η₁, pf_η₂, pf_η₃, pf_η₄]⟩
-    catch _ => return ⟨η₄, mkConst ``True⟩
+    return ⟨η₄, ← mkAppM ``evalWhiskerRight_comp #[pf_η₁, pf_η₂, pf_η₃, pf_η₄]⟩
   | η, .id => do
     let f := η.src
     let g := η.tgt
     let ⟨η₁, pf_η₁⟩ ← evalComp η (.rightUnitorInv g)
     let ⟨η₂, pf_η₂⟩ ← evalComp (.rightUnitor f) η₁
-    try return ⟨η₂, ← mkAppM ``evalWhiskerRight_id #[pf_η₁, pf_η₂]⟩
-    catch _ => return ⟨η₂, mkConst ``True⟩
+    return ⟨η₂, ← mkAppM ``evalWhiskerRight_id #[pf_η₁, pf_η₂]⟩
+
+/-- Evaluate the expression `η ⊗ θ` into a normalized form. -/
+partial def evalTensorHomAux : TensorHomExpr → TensorHomExpr → MonoidalM Result
+  | .of η, θ => do
+    return ⟨← NormalExpr.of <| .of <| .cons η θ, ← mkAppM ``evalTensorHomAux_of #[← η.e, ← θ.e]⟩
+  | .cons η ηs, θ => do
+    let α := NormalExpr.associator (← η.src) (← ηs.src) (← θ.src)
+    let α' := NormalExpr.associatorInv (← η.tgt) (← ηs.tgt) (← θ.tgt)
+    let ⟨ηθ, pf_ηθ⟩ ← evalTensorHomAux ηs θ
+    let ⟨η₁, pf_η₁⟩ ← evalTensorHomExpr (← NormalExpr.of <| .of <| .of η) ηθ
+    let ⟨ηθ₁, pf_ηθ₁⟩ ← evalComp η₁ α'
+    let ⟨ηθ₂, pf_ηθ₂⟩ ← evalComp α ηθ₁
+    return ⟨ηθ₂, ← mkAppM ``evalTensorHomAux_cons #[pf_ηθ, pf_η₁, pf_ηθ₁, pf_ηθ₂]⟩
+
+/-- Evaluate the expression `η ⊗ θ` into a normalized form. -/
+partial def evalTensorHomAux' : WhiskerLeftExpr → WhiskerLeftExpr → MonoidalM Result
+  | .of η, .of θ => evalTensorHomAux η θ
+  | .whisker f η, θ => do
+    let ⟨ηθ, pf_ηθ⟩ ← evalTensorHomAux' η θ
+    let ⟨ηθ₁, pf_ηθ₁⟩ ← evalWhiskerLeftExpr (.of f) ηθ
+    let ⟨ηθ₂, pf_ηθ₂⟩ ← evalComp ηθ₁ (.associatorInv (.of f) (← η.tgt) (← θ.tgt))
+    let ⟨ηθ₃, pf_ηθ₃⟩ ← evalComp (.associator (.of f) (← η.src) (← θ.src)) ηθ₂
+    return ⟨ηθ₃, ← mkAppM ``evalTensorHomAux'_whisker #[pf_ηθ, pf_ηθ₁, pf_ηθ₂, pf_ηθ₃]⟩
+  | .of η, .whisker f θ => do
+    let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExprAux η f
+    let ⟨ηθ, pf_ηθ⟩ ← evalTensorHomExpr η₁ (← NormalExpr.of θ)
+    let ⟨ηθ₁, pf_ηθ₁⟩ ← evalComp ηθ (.associator (← η.tgt) (.of f) (← θ.tgt))
+    let ⟨ηθ₂, pf_ηθ₂⟩ ← evalComp (.associatorInv (← η.src) (.of f) (← θ.src)) ηθ₁
+    return ⟨ηθ₂, ← mkAppM ``evalTensorHomAux'_of_whisker #[pf_η₁, pf_ηθ, pf_ηθ₁, pf_ηθ₂]⟩
+
+/-- Evaluate the expression `η ⊗ θ` into a normalized form. -/
+partial def evalTensorHomExpr : NormalExpr → NormalExpr → MonoidalM Result
+  | .nil α, .nil β => do
+    return ⟨.nil <| .tensorHom α β, ← mkAppM ``evalTensorHomExpr_nil_nil #[← α.e, ← β.e]⟩
+  | .nil α, .cons β η ηs => do
+    let ⟨η₁, pf_η₁⟩ ← evalWhiskerLeftExpr α.tgt (← NormalExpr.of η)
+    let ⟨ηs₁, pf_ηs₁⟩ ← evalWhiskerLeftExpr α.tgt ηs
+    let ⟨η₂, pf_η₂⟩ ← evalComp η₁ ηs₁
+    let ⟨η₃, pf_η₃⟩ ← NormalExpr.ofNormalExpr (α.tensorHom β) η₂
+    return ⟨η₃, ← mkAppM ``evalTensorHomExpr_nil_cons #[pf_η₁, pf_ηs₁, pf_η₂, pf_η₃]⟩
+  | .cons α η ηs, .nil β => do
+    let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExpr (← NormalExpr.of η) β.tgt
+    let ⟨ηs₁, pf_ηs₁⟩ ← evalWhiskerRightExpr ηs β.tgt
+    let ⟨η₂, pf_η₂⟩ ← evalComp η₁ ηs₁
+    let ⟨η₃, pf_η₃⟩ ← NormalExpr.ofNormalExpr (α.tensorHom β) η₂
+    return ⟨η₃, ← mkAppM ``evalTensorHomExpr_cons_nil #[pf_η₁, pf_ηs₁, pf_η₂, pf_η₃]⟩
+  | .cons α η ηs, .cons β θ θs => do
+    let ⟨ηθ, pf_ηθ⟩ ← evalTensorHomAux' η θ
+    let ⟨ηθs, pf_ηθs⟩ ← evalTensorHomExpr ηs θs
+    let ⟨ηθ₁, pf_ηθ₁⟩ ← evalComp ηθ ηθs
+    let ⟨ηθ₂, pf_ηθ₂⟩ ← NormalExpr.ofNormalExpr (α.tensorHom β) ηθ₁
+    return ⟨ηθ₂, ← mkAppM ``evalTensorHomExpr_cons_cons #[pf_ηθ, pf_ηθs, pf_ηθ₁, pf_ηθ₂]⟩
+
+end
 
 /-- Evaluate the expression of a 2-morphism into a normalized form. -/
 partial def eval (e : Expr) : MonoidalM Result := do
   if let .some α ← structuralAtom? e then
-    try return ⟨.nil <| .atom α, ← mkEqRefl (← α.e)⟩
-    catch _ => return ⟨.nil <| .atom α, mkConst ``True⟩
+    return ⟨.nil <| .atom α, ← mkEqRefl (← α.e)⟩
   else
     match e.getAppFnArgs with
     | (``CategoryStruct.id, #[_, _, f]) =>
-      try return ⟨.nil (.id (← toMor₁ f)), ← mkEqRefl (← mkAppM ``CategoryStruct.id #[f])⟩
-      catch _ => return ⟨.nil (.id (← toMor₁ f)), mkConst ``True⟩
+      return ⟨.nil (.id (← toMor₁ f)), ← mkEqRefl (← mkAppM ``CategoryStruct.id #[f])⟩
     | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) =>
       let ⟨η_e, pf_η⟩ ← eval η
       let ⟨θ_e, pf_θ⟩ ← eval θ
       let ⟨ηθ, pf⟩ ← evalComp η_e θ_e
-      try return ⟨ηθ, ← mkAppM ``eval_comp #[pf_η, pf_θ, pf]⟩
-      catch _ => return ⟨ηθ, mkConst ``True⟩
+      return ⟨ηθ, ← mkAppM ``eval_comp #[pf_η, pf_θ, pf]⟩
     | (``MonoidalCategoryStruct.whiskerLeft, #[_, _, _, f, _, _, η]) =>
       let ⟨η_e, pf_η⟩ ← eval η
       let ⟨θ, pf_θ⟩ ← evalWhiskerLeftExpr (← toMor₁ f) η_e
-      try return ⟨θ, ← mkAppM ``eval_whiskerLeft #[pf_η, pf_θ]⟩
-      catch _ => return ⟨θ, mkConst ``True⟩
+      return ⟨θ, ← mkAppM ``eval_whiskerLeft #[pf_η, pf_θ]⟩
     | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, h]) =>
       let ⟨η_e, pf_η⟩ ← eval η
       let ⟨θ, pf_θ⟩ ← evalWhiskerRightExpr η_e (← toMor₁ h)
-      try return ⟨θ, ← mkAppM ``eval_whiskerRight #[pf_η, pf_θ]⟩
-      catch _ => return ⟨θ, mkConst ``True⟩
+      return ⟨θ, ← mkAppM ``eval_whiskerRight #[pf_η, pf_θ]⟩
     | (``monoidalComp, #[C, _, _, _, _, _, _, η, θ]) =>
       let ⟨η_e, pf_η⟩ ← eval η
       let α₀ ← structuralOfMonoidalComp C e
@@ -680,11 +841,14 @@ partial def eval (e : Expr) : MonoidalM Result := do
       let ⟨θ_e, pf_θ⟩ ← eval θ
       let ⟨αθ, pf_θα⟩ ← evalComp α θ_e
       let ⟨ηαθ, pf_ηαθ⟩ ← evalComp η_e αθ
-      try return ⟨ηαθ, ← mkAppM ``eval_monoidalComp #[pf_η, pf_θ, pf_θα, pf_ηαθ]⟩
-      catch _ => return ⟨ηαθ, mkConst ``True⟩
+      return ⟨ηαθ, ← mkAppM ``eval_monoidalComp #[pf_η, pf_θ, pf_θα, pf_ηαθ]⟩
+    | (``MonoidalCategoryStruct.tensorHom, #[_, _, _, _, _, _, _, η, θ]) =>
+      let ⟨η_e, pf_η⟩ ← eval η
+      let ⟨θ_e, pf_θ⟩ ← eval θ
+      let ⟨ηθ, pf⟩ ← evalTensorHomExpr η_e θ_e
+      return ⟨ηθ, ← mkAppM ``eval_tensorHom #[pf_η, pf_θ, pf]⟩
     | _ =>
-      try return ⟨← NormalExpr.ofExpr e, ← mkAppM ``eval_of #[e]⟩
-      catch _ => return ⟨← NormalExpr.ofExpr e, mkConst ``True⟩
+      return ⟨← NormalExpr.ofExpr e, ← mkAppM ``eval_of #[e]⟩
 
 /-- Convert a `NormalExpr` expression into a list of `WhiskerLeftExpr` expressions. -/
 def NormalExpr.toList : NormalExpr → List WhiskerLeftExpr
@@ -703,7 +867,9 @@ open Mathlib.Tactic.Monoidal
 -/
 elab "normalize% " t:term:51 : term => do
   let e ← Lean.Elab.Term.elabTerm t none
-  MonoidalM.run (← mkContext e) do (← eval e).expr.e
+  let some ctx ← mkContext? e
+    | throwError "{← ppExpr e} is not a morphism"
+  MonoidalM.run ctx do (← eval e).expr.e
 
 theorem mk_eq {α : Type _} (a b a' b' : α) (ha : a = a') (hb : b = b') (h : a' = b') : a = b := by
   simp [h, ha, hb]
@@ -713,7 +879,9 @@ open Lean Elab Meta Tactic in
 def mkEq (e : Expr) : MetaM Expr := do
   let some (_, e₁, e₂) := (← whnfR <| e).eq?
     | throwError "monoidal_nf requires an equality goal"
-  MonoidalM.run (← mkContext e₁) do
+  let some ctx ← mkContext? e₁
+    | throwError "the lhs and rhs must be morphisms"
+  MonoidalM.run ctx do
     let ⟨e₁', p₁⟩ ← eval e₁
     let ⟨e₂', p₂⟩ ← eval e₂
     mkAppM ``mk_eq #[e₁, e₂, ← e₁'.e, ← e₂'.e, p₁, p₂]

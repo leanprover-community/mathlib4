@@ -112,8 +112,8 @@ def mkLiftMap₂LiftExpr (e : Expr) : TermElabM Expr := do
 def bicategory_coherence (g : MVarId) : TermElabM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 256 (synthInstance.maxSize.get opts))) do
-  -- TODO: is this `dsimp only` step necessary? It doesn't appear to be in the tests below.
-  let (ty, _) ← dsimp (← g.getType) (← Simp.Context.ofNames [] true)
+  let (ty, _) ← dsimp (← g.getType)
+    { simpTheorems := #[.addDeclToUnfoldCore {} ``BicategoricalCoherence.hom] }
   let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
   let lift_lhs ← mkLiftMap₂LiftExpr lhs
   let lift_rhs ← mkLiftMap₂LiftExpr rhs
