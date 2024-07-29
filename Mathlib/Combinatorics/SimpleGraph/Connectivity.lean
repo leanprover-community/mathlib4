@@ -8,6 +8,8 @@ import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
 
+# Graph connectivity
+
 ## Main definitions
 
 * `SimpleGraph.Reachable` for the relation of whether there exists
