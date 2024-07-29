@@ -90,6 +90,10 @@ structure Hom (M N : C) [Mon_ M] [Mon_ N] where
   one_hom : η ≫ hom = η := by aesop_cat
   mul_hom : μ ≫ hom = (hom ⊗ hom) ≫ μ := by aesop_cat
 
+class HomClass {M N : C} [Mon_ M] [Mon_ N] (f : M ⟶ N) : Prop where
+  one_hom : η ≫ f = η
+  mul_hom : μ ≫ f = (f ⊗ f) ≫ μ
+
 attribute [reassoc (attr := simp)] Hom.one_hom Hom.mul_hom
 
 /-- The identity morphism on a monoid object. -/
@@ -232,7 +236,7 @@ namespace CategoryTheory.LaxMonoidalFunctor
 
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
-@[simps!]
+@[simps!?]
 instance (F : LaxMonoidalFunctor C D) {A : C} [Mon_ A] : Mon_ (F.obj A) where
   one := F.ε ≫ F.map η
   mul := F.μ _ _ ≫ F.map μ
@@ -272,6 +276,11 @@ variable (C D)
 def mapMonFunctor : LaxMonoidalFunctor C D ⥤ Mon_Cat C ⥤ Mon_Cat D where
   obj := mapMon
   map α := { app := fun A => { hom := α.app A.X } }
+
+@[simp]
+theorem mapMon_obj_one (F : LaxMonoidalFunctor C D)
+    (A : Mon_Cat C) : η = F.ε ≫ F.map (η : _ ⟶ A.X) := by
+  simp only [instMon_Obj_one]
 
 end CategoryTheory.LaxMonoidalFunctor
 
@@ -559,12 +568,14 @@ instance monMonoidal : MonoidalCategory (Mon_Cat C) where
 variable (C)
 
 /-- The forgetful functor from `Mon_Cat C` to `C` is monoidal when `C` is braided monoidal. -/
+@[simps!]
 def forgetMonoidal : MonoidalFunctor (Mon_Cat C) C :=
   { forget C with
     ε := 𝟙 _
     «μ» := fun X Y => 𝟙 _ }
 
-@[simp] theorem forgetMonoidal_toFunctor : (forgetMonoidal C).toFunctor = forget C := rfl
+-- @[simp]
+theorem forgetMonoidal_toFunctor : (forgetMonoidal C).toFunctor = forget C := rfl
 @[simp] theorem forgetMonoidal_ε : (forgetMonoidal C).ε = 𝟙 (𝟙_ C) := rfl
 @[simp] theorem forgetMonoidal_μ (X Y : Mon_Cat C) : (forgetMonoidal C).μ X Y = 𝟙 (X.X ⊗ Y.X) := rfl
 

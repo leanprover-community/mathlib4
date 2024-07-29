@@ -137,7 +137,7 @@ instance : Category.{v₁} (Comon_Cat C) where
   id M := Comon_.Hom.id M.X
   comp f g := Comon_.Hom.comp f g
 
-@[simp]
+-- @[simp]
 theorem mk_X (X : Comon_Cat C) : Comon_Cat.mk X.X = X :=
   rfl
 
@@ -325,8 +325,10 @@ variable [BraidedCategory C]
 instance (A B : C) [Comon_ A] [Comon_ B] :
   Comon_ (A ⊗ B) := Comon_Cat.isComon_ (Comon_Cat.mk ((Comon_Cat.mk A) ⊗ (Comon_Cat.mk B)).X)
 
+@[simp]
 theorem tensorObj_X (A B : Comon_Cat C) : (A ⊗ B).X = A.X ⊗ B.X := rfl
 
+@[simp]
 theorem tensorObj_counit (A B : C) [Comon_ A] [Comon_ B] :
     (ε : A ⊗ B ⟶ _) = (ε ⊗ ε) ≫ (λ_ _).hom :=
   rfl
@@ -346,6 +348,7 @@ The comultiplication on the tensor product of two comonoids is
 the tensor product of the comultiplications followed by the tensor strength
 (to shuffle the factors back into order).
 -/
+@[simp]
 theorem tensorObj_comul (A B : C) [Comon_ A] [Comon_ B] :
     (Δ : A ⊗ B ⟶ _) = (Δ ⊗ Δ) ≫ tensor_μ C (A, A) (B, B) := by
   rw [tensorObj_comul']
@@ -371,7 +374,8 @@ def forgetMonoidal : MonoidalFunctor (Comon_Cat C) C :=
     «ε» := 𝟙 _
     «μ» := fun X Y => 𝟙 _ }
 
-@[simp] theorem forgetMonoidal_toFunctor : (forgetMonoidal C).toFunctor = forget C := rfl
+@[simp low]
+theorem forgetMonoidal_toFunctor : (forgetMonoidal C).toFunctor = forget C := rfl
 @[simp] theorem forgetMonoidal_ε : (forgetMonoidal C).ε = 𝟙 (𝟙_ C) := rfl
 variable {C} in
 @[simp] theorem forgetMonoidal_μ
@@ -404,7 +408,7 @@ instance (F : OplaxMonoidalFunctor C D) {A : C} [Comon_ A] : Comon_ (F.obj A) wh
 
 That is, a oplax monoidal functor F : C ⥤ D induces a functor Comon_Cat C ⥤ Comon_ D.
 -/
-@[simps]
+@[simps?]
 def mapComon (F : OplaxMonoidalFunctor C D) : Comon_Cat C ⥤ Comon_Cat D where
   obj A := Comon_Cat.mk (F.obj A.X)
   map {A B} f := Comon_Cat.mkHom
