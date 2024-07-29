@@ -175,7 +175,10 @@ theorem ennreal_coeFn_eq_coeFn_toMeasure (ν : ProbabilityMeasure Ω) (s : Set �
 @[simp]
 theorem null_iff_toMeasure_null (ν : ProbabilityMeasure Ω) (s : Set Ω) :
     ν s = 0 ↔ (ν : Measure Ω) s = 0 :=
-  ⟨fun h ↦ by rw [← ennreal_coeFn_eq_coeFn_toMeasure, h, ENNReal.coe_zero], fun h ↦ by simp [h]⟩
+  ⟨fun h ↦ by rw [← ennreal_coeFn_eq_coeFn_toMeasure, h, ENNReal.coe_zero],
+   fun h ↦ by
+    rw [← ennreal_coeFn_eq_coeFn_toMeasure] at h
+    apply NNReal.coe_eq_zero.mp (by exact_mod_cast h)⟩
 
 theorem apply_mono (μ : ProbabilityMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ := by
   rw [← coeFn_comp_toFiniteMeasure_eq_coeFn]
@@ -209,7 +212,6 @@ theorem mass_toFiniteMeasure (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure.m
 
 theorem toFiniteMeasure_nonzero (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure ≠ 0 := by
   simp [← FiniteMeasure.mass_nonzero_iff]
-#align measure_theory.probability_measure.to_finite_measure_nonzero MeasureTheory.ProbabilityMeasure.toFiniteMeasure_nonzero
 
 section convergence_in_distribution
 
