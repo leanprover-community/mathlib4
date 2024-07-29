@@ -207,8 +207,7 @@ lemma firstReturn_pos (h : p.l ≠ []) : 0 < p.firstReturn := by
   by_contra f
   replace f : p.firstReturn = 0 := by omega
   rw [firstReturn, findIdx_eq (by rw [length_range]; exact length_pos.mpr h)] at f
-  simp only [get_range, zero_add, decide_eq_true_eq, not_lt_zero', false_implies, implies_true,
-    and_true] at f
+  simp only [get_eq_getElem, getElem_range] at f
   rw [← p.cons_tail_dropLast_concat h] at f
   simp at f
 
@@ -223,12 +222,12 @@ lemma firstReturn_lt_length (h : p.l ≠ []) : p.firstReturn < p.l.length := by
 lemma count_eq_count_of_take_firstReturn_add_one (h : p.l ≠ []) :
     (p.l.take (p.firstReturn + 1)).count U = (p.l.take (p.firstReturn + 1)).count D := by
   have := findIdx_get (w := (length_range p.l.length).symm ▸ p.firstReturn_lt_length h)
-  simpa [get_range, decide_eq_true_eq] using this
+  simpa using this
 
 lemma count_lt_count_of_lt_firstReturn (i : ℕ) (hi : i < p.firstReturn) :
     (p.l.take (i + 1)).count D < (p.l.take (i + 1)).count U := by
   have ne := not_of_lt_findIdx hi
-  rw [get_range, decide_eq_true_eq, ← ne_eq] at ne
+  rw [decide_eq_true_eq, ← ne_eq, get_eq_getElem, getElem_range] at ne
   exact lt_of_le_of_ne (p.nonneg (i + 1)) ne.symm
 
 @[simp, nolint unusedHavesSuffices]
@@ -241,7 +240,7 @@ lemma firstReturn_add : (p + q).firstReturn = if p = 0 then q.firstReturn else p
   swap
   · rw [length_range, u, length_append]
     exact Nat.lt_add_right _ (p.firstReturn_lt_length h)
-  · simp_rw [get_range, u, decide_eq_true_eq]
+  · simp_rw [get_eq_getElem, getElem_range, u, decide_eq_true_eq]
     constructor
     · rw [take_append_eq_append_take (l₂ := q.l), show p.firstReturn + 1 - p.l.length = 0 by omega,
         take_zero, append_nil, p.count_eq_count_of_take_firstReturn_add_one h]
@@ -258,7 +257,7 @@ lemma firstReturn_nest : p.nest.firstReturn = p.l.length + 1 := by
   swap
   · simp_rw [length_range, u, length_append, length_cons]
     apply Nat.lt.base
-  · simp_rw [get_range, u, decide_eq_true_eq]
+  · simp_rw [get_eq_getElem, getElem_range, u, decide_eq_true_eq]
     constructor
     · rw [take_all_of_le (by simp), ← u, p.nest.bal]
     · intro j hj
