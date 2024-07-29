@@ -352,7 +352,6 @@ instance addCommSemigroup : AddCommSemigroup ℚ := by infer_instance
 instance addSemigroup : AddSemigroup ℚ := by infer_instance
 
 instance commMonoid : CommMonoid ℚ where
-  one := 1
   mul := (· * ·)
   mul_one := Rat.mul_one
   one_mul := Rat.one_mul
