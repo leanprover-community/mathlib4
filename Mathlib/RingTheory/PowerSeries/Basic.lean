@@ -160,7 +160,7 @@ theorem ext_iff {φ ψ : R⟦X⟧} : φ = ψ ↔ ∀ n, coeff R n φ = coeff R n
   ⟨fun h n => congr_arg (coeff R n) h, ext⟩
 
 instance [Subsingleton R] : Subsingleton R⟦X⟧ := by
-  simp only [subsingleton_iff, ext_iff]
+  simp only [subsingleton_iff, PowerSeries.ext_iff]
   exact fun _ _ _ ↦ (subsingleton_iff).mp (by infer_instance) _ _
 
 /-- Constructor for formal power series. -/
@@ -236,7 +236,7 @@ theorem coeff_succ_C {a : R} {n : ℕ} : coeff R (n + 1) (C R a) = 0 :=
 
 theorem C_injective : Function.Injective (C R) := by
   intro a b H
-  have := (ext_iff (φ := C R a) (ψ := C R b)).mp H 0
+  have := (PowerSeries.ext_iff (φ := C R a) (ψ := C R b)).mp H 0
   rwa [coeff_zero_C, coeff_zero_C] at this
 
 protected theorem subsingleton_iff : Subsingleton R⟦X⟧ ↔ Subsingleton R := by

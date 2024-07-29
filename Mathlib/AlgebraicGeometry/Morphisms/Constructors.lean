@@ -77,11 +77,11 @@ theorem HasAffineProperty.diagonal_of_openCover (P) {Q} [HasAffineProperty P Q]
     ((pullbackDiagonalMapIso _ _ ((𝒰' i).map j) ((𝒰' i).map k)).inv ≫
       pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) _ _) (pullback.snd _ _)).mp _ using 1
   · simp
-  · ext <;> simp
+  · ext1 <;> simp
   · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
       Functor.const_obj_obj, cospan_one, cospan_left, cospan_right, Category.comp_id]
     convert h𝒰' i j k
-    ext <;> simp [Scheme.OpenCover.pullbackHom]
+    ext1 <;> simp [Scheme.OpenCover.pullbackHom]
 
 theorem HasAffineProperty.diagonal_of_openCover_diagonal
     (P) {Q} [HasAffineProperty P Q]
@@ -156,7 +156,7 @@ end Diagonal
 section Universally
 
 theorem universally_isLocalAtTarget (P : MorphismProperty Scheme)
-    (hP₂ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Opens Y.carrier)
+    (hP₂ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Y.Opens)
       (_ : iSup U = ⊤), (∀ i, P (f ∣_ U i)) → P f) : IsLocalAtTarget P.universally := by
   apply IsLocalAtTarget.mk'
   · exact fun {X Y} f U => P.universally_stableUnderBaseChange
@@ -173,7 +173,7 @@ theorem universally_isLocalAtTarget (P : MorphismProperty Scheme)
         · simp only [Scheme.restrictIsoOfEq, Category.assoc, morphismRestrict_ι,
             IsOpenImmersion.isoOfRangeEq_hom_fac_assoc]
           exact (isPullback_morphismRestrict f' (i₂ ⁻¹ᵁ U i)).paste_vert h
-        · rw [← cancel_mono (Scheme.ιOpens _)]
+        · rw [← cancel_mono (Scheme.Opens.ι _)]
           simp [IsOpenImmersion.isoOfRangeEq_hom_fac_assoc, Scheme.restrictIsoOfEq,
             morphismRestrict_ι_assoc, h.1.1]
 
