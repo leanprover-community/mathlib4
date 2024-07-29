@@ -11,11 +11,10 @@ import Mathlib.Lean.Thunk
 /-!
 ## Definitions on lazy lists
 
-This file contains various definitions and proofs on lazy lists.
-
-TODO: This file will soon be deprecated.
+This file is entirely deprecated, and contains various definitions and proofs on lazy lists.
 -/
 
+set_option linter.deprecated false
 
 universe u
 
@@ -24,6 +23,7 @@ namespace LazyList
 open Function
 
 /-- Isomorphism between strict and lazy lists. -/
+@[deprecated (since := "2024-07-22")]
 def listEquivLazyList (α : Type*) : List α ≃ LazyList α where
   toFun := LazyList.ofList
   invFun := LazyList.toList
@@ -38,10 +38,12 @@ def listEquivLazyList (α : Type*) : List α ≃ LazyList α where
     · simp [toList, ofList]
     · simpa [ofList, toList]
 
+@[deprecated (since := "2024-07-22")]
 instance : Traversable LazyList where
   map := @LazyList.traverse Id _
   traverse := @LazyList.traverse
 
+@[deprecated (since := "2024-07-22")]
 instance : LawfulTraversable LazyList := by
   apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> ext <;> rename_i f xs
   · induction' xs using LazyList.rec with _ _ _ _ ih
@@ -64,7 +66,8 @@ instance : LawfulTraversable LazyList := by
         Function.comp, Thunk.pure, ofList]
     · apply ih
 
-@[simp] theorem bind_singleton {α} (x : LazyList α) : x.bind singleton = x := by
+@[deprecated (since := "2024-07-22"), simp]
+theorem bind_singleton {α} (x : LazyList α) : x.bind singleton = x := by
   induction x using LazyList.rec (motive_2 := fun xs => xs.get.bind singleton = xs.get) with
   | nil => simp [LazyList.bind]
   | cons h t ih =>
@@ -73,6 +76,7 @@ instance : LawfulTraversable LazyList := by
     simp [ih]
   | mk f ih => simp_all
 
+@[deprecated (since := "2024-07-22")]
 instance : LawfulMonad LazyList := LawfulMonad.mk'
   (id_map := by
     intro α xs
@@ -97,8 +101,7 @@ instance : LawfulMonad LazyList := LawfulMonad.mk'
     | case1 =>
       simp only [Thunk.pure, LazyList.bind, LazyList.traverse, Id.pure_eq]
     | case2 _ _ ih =>
-      simp [LazyList.bind, LazyList.traverse, Seq.seq, Id.map_eq, append, Thunk.pure]
-      rw [← ih]
+      simp only [Thunk.pure, LazyList.bind, append, Thunk.get_mk, comp_apply, ← ih]
       simp only [Thunk.get, append, singleton, Thunk.pure])
 
 end LazyList
