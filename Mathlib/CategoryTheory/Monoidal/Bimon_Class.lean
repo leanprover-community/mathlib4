@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Comon_Class
+import Mathlib.Tactic.Widget.StringDiagram
 
 /-!
 # The category of bimonoids in a braided monoidal category.
@@ -31,22 +32,38 @@ universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory MonoidalCategory
 
-variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 variable [BraidedCategory C]
 
 open scoped Mon_ Comon_
 
 class Bimon_ (M : C) extends Mon_ M, Comon_ M where
-  mul_comp_comul : (μ ≫ Δ : M ⊗ M ⟶ M ⊗ M) = (Δ ⊗ Δ) ≫ μ := by aesop_cat
-  one_comp_comul : (η ≫ Δ : 𝟙_ C ⟶ M ⊗ M) = η := by aesop_cat
-  mul_comp_counit : (μ ≫ ε : M ⊗ M ⟶ 𝟙_ C) = (ε ⊗ ε) ≫ μ := by aesop_cat
-  one_comp_counit : (η : 𝟙_ C ⟶ M) ≫ ε = η := by aesop_cat
+  mul_comp_comul' : μ ≫ Δ = (Δ ⊗ Δ) ≫ tensor_μ C (M, M) (M, M) ≫ (μ ⊗ μ) := by aesop_cat
+  one_comp_comul' : (η ≫ Δ : 𝟙_ C ⟶ M ⊗ M) = η := by aesop_cat
+  mul_comp_counit' : (μ ≫ ε : M ⊗ M ⟶ 𝟙_ C) = ε := by aesop_cat
+  one_comp_counit' : (η : 𝟙_ C ⟶ M) ≫ ε = 𝟙 (𝟙_ C) := by aesop_cat
 
 namespace Bimon_
 
+show_panel_widgets [local Mathlib.Tactic.Widget.StringDiagram]
 
+variable (M : C) [Bimon_ M]
+
+@[reassoc (attr := simp)]
+theorem mul_comp_comul : μ ≫ Δ = (Δ ⊗ Δ) ≫ tensor_μ C (M, M) (M, M) ≫ (μ ⊗ μ) := mul_comp_comul'
+
+@[reassoc (attr := simp)]
+theorem one_comp_comul : (η ≫ Δ : 𝟙_ C ⟶ M ⊗ M) = η := one_comp_comul'
+
+@[reassoc (attr := simp)]
+theorem mul_comp_counit : (μ ≫ ε : M ⊗ M ⟶ 𝟙_ C) = ε := mul_comp_counit'
+
+@[reassoc (attr := simp)]
+theorem one_comp_counit : (η : 𝟙_ C ⟶ M) ≫ ε = 𝟙 (𝟙_ C) := one_comp_counit'
 
 end Bimon_
+
+variable (C)
 
 /--
 A bimonoid object in a braided category `C` is a comonoid object in the (monoidal)
@@ -54,7 +71,7 @@ category of monoid objects in `C`.
 -/
 def Bimon_Cat := Comon_Cat (Mon_Cat C)
 
-namespace Bimon_
+namespace Bimon_Cat
 
 variable {C}
 
@@ -96,14 +113,8 @@ open scoped Mon_ Comon_
 
 instance (M : Bimon_Cat C) : Comon_ M.X.X := inferInstanceAs (Comon_ (((toComon_ C).obj M).X))
 
-
-@[simp]
-example (M : Mon_Cat C) [Comon_ M] :((toComon_ C).obj (Comon_Cat.mk M)) = sorry := by
-  dsimp [toComon_]
-  dsimp [OplaxMonoidalFunctor.mapComon]
-
 instance (M : Mon_Cat C) [Comon_ M] : Comon_ M.X :=
-  inferInstanceAs (Comon_ (Bimon_.mk M : Bimon_Cat C).X.X)
+  inferInstanceAs (Comon_ (Bimon_Cat.mk M : Bimon_Cat C).X.X)
 
 @[simp]
 theorem toComon_counit (M : Mon_Cat C) [Comon_ M] :
@@ -158,9 +169,6 @@ theorem MonCatComonCatmul  (M : Comon_Cat C) [Mon_ M] :
 --     _ = 𝟙 (𝟙_ C) ≫ (η : 𝟙_ (Comon_Cat C) ⟶ M.X).hom := by simp
 --     _ = _ := rfl
 
-example (M : Mon_Cat (Comon_Cat C)) : ((Comon_Cat.forgetMonoidal C).toLaxMonoidalFunctor.mapMon.obj M) = sorry := by
-  dsimp [LaxMonoidalFunctor.mapMon]
-
 instance (M : Comon_Cat C) [Mon_ M] : Comon_ (Mon_Cat.mk M.X) where
   counit :=
   { hom := (ε : M.X ⟶ _) }
@@ -187,18 +195,18 @@ instance (M : Comon_Cat C) [Mon_ M] : Comon_ (Mon_Cat.mk M.X) where
 def ofMon_Comon_obj (M : Comon_Cat C) [Mon_ M] : Bimon_Cat C where
   X := Mon_Cat.mk M.X
 
-/-- The backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
-@[simps]
-def ofMon_Comon_ : Mon_Cat (Comon_Cat C) ⥤ Bimon_Cat C where
-  obj M := ofMon_Comon_obj C M.X
-  map f :=
-  { hom := (Comon_Cat.forgetMonoidal C).toLaxMonoidalFunctor.mapMon.map f }
+-- /-- The backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
+-- @[simps]
+-- def ofMon_Comon_ : Mon_Cat (Comon_Cat C) ⥤ Bimon_Cat C where
+--   obj M := ofMon_Comon_obj C M.X
+--   map f :=
+--   { hom := (Comon_Cat.forgetMonoidal C).toLaxMonoidalFunctor.mapMon.map f }
 
-/-- The equivalence `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
-def equivMon_Comon_ : Bimon_Cat C ≌ Mon_Cat (Comon_Cat C) where
-  functor := toMon_Comon_ C
-  inverse := ofMon_Comon_ C
-  unitIso := NatIso.ofComponents (fun _ => Comon_.mkIso (Mon_.mkIso (Iso.refl _)))
-  counitIso := NatIso.ofComponents (fun _ => Mon_.mkIso (Comon_.mkIso (Iso.refl _)))
+-- /-- The equivalence `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
+-- def equivMon_Comon_ : Bimon_Cat C ≌ Mon_Cat (Comon_Cat C) where
+--   functor := toMon_Comon_ C
+--   inverse := ofMon_Comon_ C
+--   unitIso := NatIso.ofComponents (fun _ => Comon_.mkIso (Mon_.mkIso (Iso.refl _)))
+--   counitIso := NatIso.ofComponents (fun _ => Mon_.mkIso (Comon_.mkIso (Iso.refl _)))
 
-end Bimon_
+end Bimon_Cat
