@@ -16,6 +16,8 @@ variable {α β : Type*}
 namespace Function.Injective
 variable (f : β → α) (hf : Injective f)
 
+include hf
+
 variable [Add β] [Mul β]
 
 /-- Pullback a `LeftDistribClass` instance along an injective function. -/
@@ -194,6 +196,8 @@ end Function.Injective
 
 namespace Function.Surjective
 variable (f : α → β) (hf : Surjective f)
+
+include hf
 
 variable [Add β] [Mul β]
 
