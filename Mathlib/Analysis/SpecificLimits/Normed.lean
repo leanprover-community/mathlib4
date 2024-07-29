@@ -376,7 +376,7 @@ theorem hasSum_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : HasSum (fun n : ℕ
 alias hasSum_geometric_of_norm_lt_1 := hasSum_geometric_of_norm_lt_one
 
 instance : HasSummableGeomSeries K :=
-  ⟨fun h ↦ (hasSum_geometric_of_norm_lt_one h).summable⟩
+  ⟨fun _ h ↦ (hasSum_geometric_of_norm_lt_one h).summable⟩
 
 @[deprecated (since := "2024-01-31")]
 alias summable_geometric_of_norm_lt_1 := summable_geometric_of_norm_lt_one
