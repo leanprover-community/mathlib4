@@ -12,9 +12,7 @@ This file defines derivations from a commutative ring to itself as a typeclass, 
 use the x′ notation for the derivative of x.
 -/
 
-/--
-A derivation from a ring to itself, as a typeclass.
--/
+/-- A derivation from a ring to itself, as a typeclass. -/
 class Differential (R : Type*) [CommRing R] where
   /-- The `Derivation` assosiated with the ring. -/
   deriv : Derivation ℤ R R
@@ -72,9 +70,7 @@ instance (A : Type*) [CommRing A] [Differential A] : DifferentialAlgebra A A whe
 instance (A : Type*) [CommRing A] [Differential A] : Differential.ContainConstants A A where
   mem_range_of_deriv_eq_zero {x} _ := ⟨x, rfl⟩
 
-/--
-Transfer a `Differential` instance accross a `RingEquiv`.
--/
+/-- Transfer a `Differential` instance accross a `RingEquiv`. -/
 @[reducible]
 def Differential.equiv {R R2 : Type*} [CommRing R] [CommRing R2] [Differential R2]
     (h : R ≃+* R2) : Differential R :=
