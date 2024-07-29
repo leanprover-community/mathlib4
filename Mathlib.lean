@@ -1090,6 +1090,7 @@ import Mathlib.Analysis.Fourier.PoissonSummation
 import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
 import Mathlib.Analysis.Fourier.ZMod
 import Mathlib.Analysis.FunctionalSpaces.SobolevInequality
+import Mathlib.Analysis.GodefroyLipschitz.Basic
 import Mathlib.Analysis.Hofer
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Analysis.InnerProductSpace.Basic
