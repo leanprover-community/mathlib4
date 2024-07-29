@@ -137,7 +137,7 @@ theorem mem_minimals_iff_forall_ssubset_not_mem {x : Set α} (s : Set (Set α)) 
     x ∈ minimals (· ⊆ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ⊂ x → y ∉ s :=
   mem_minimals_iff_forall_lt_not_mem' (· ⊂ ·)
 
-theorem mem_minimals_iff_forall_lt_not_mem [PartialOrder α] {x : α} {s : Set α} :
+theorem mem_minimals_iff_forall_lt_not_mem [Preorder α] {x : α} {s : Set α} :
     x ∈ minimals (· ≤ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, y < x → y ∉ s :=
   mem_minimals_iff_forall_lt_not_mem' (· < ·)
 
@@ -145,7 +145,7 @@ theorem mem_maximals_iff_forall_ssubset_not_mem {x : Set α} {s : Set (Set α)} 
     x ∈ maximals (· ⊆ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, x ⊂ y → y ∉ s :=
   mem_maximals_iff_forall_lt_not_mem' (· ⊂ ·)
 
-theorem mem_maximals_iff_forall_lt_not_mem [PartialOrder α] {x : α} {s : Set α} :
+theorem mem_maximals_iff_forall_lt_not_mem [Preorder α] {x : α} {s : Set α} :
     x ∈ maximals (· ≤ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, x < y → y ∉ s :=
   mem_maximals_iff_forall_lt_not_mem' (· < ·)
 
@@ -251,21 +251,19 @@ theorem IsAntichain.max_minimals (ht : IsAntichain r t) (h : minimals r s ⊆ t)
   obtain ⟨b, hb, hr⟩ := hs ha
   rwa [of_not_not fun hab => ht ha (h hb) hab hr]
 
-variable [PartialOrder α]
-
-theorem IsLeast.mem_minimals (h : IsLeast s a) : a ∈ minimals (· ≤ ·) s :=
+theorem IsLeast.mem_minimals [Preorder α] (h : IsLeast s a) : a ∈ minimals (· ≤ ·) s :=
   ⟨h.1, fun _b hb _ => h.2 hb⟩
 
-theorem IsGreatest.mem_maximals (h : IsGreatest s a) : a ∈ maximals (· ≤ ·) s :=
+theorem IsGreatest.mem_maximals [Preorder α] (h : IsGreatest s a) : a ∈ maximals (· ≤ ·) s :=
   ⟨h.1, fun _b hb _ => h.2 hb⟩
 
-theorem IsLeast.minimals_eq (h : IsLeast s a) : minimals (· ≤ ·) s = {a} :=
+theorem IsLeast.minimals_eq [PartialOrder α] (h : IsLeast s a) : minimals (· ≤ ·) s = {a} :=
   eq_singleton_iff_unique_mem.2 ⟨h.mem_minimals, fun _b hb => eq_of_mem_minimals hb h.1 <| h.2 hb.1⟩
 
-theorem IsGreatest.maximals_eq (h : IsGreatest s a) : maximals (· ≤ ·) s = {a} :=
+theorem IsGreatest.maximals_eq [PartialOrder α] (h : IsGreatest s a) : maximals (· ≤ ·) s = {a} :=
   eq_singleton_iff_unique_mem.2 ⟨h.mem_maximals, fun _b hb => eq_of_mem_maximals hb h.1 <| h.2 hb.1⟩
 
-theorem IsAntichain.minimals_upperClosure (hs : IsAntichain (· ≤ ·) s) :
+theorem IsAntichain.minimals_upperClosure [PartialOrder α] (hs : IsAntichain (· ≤ ·) s) :
     minimals (· ≤ ·) (upperClosure s : Set α) = s :=
   hs.max_minimals
     (fun a ⟨⟨b, hb, hba⟩, _⟩ => by rwa [eq_of_mem_minimals ‹a ∈ _› (subset_upperClosure hb) hba])
@@ -273,7 +271,7 @@ theorem IsAntichain.minimals_upperClosure (hs : IsAntichain (· ≤ ·) s) :
     ⟨a, ⟨subset_upperClosure ha, fun b ⟨c, hc, hcb⟩ hba => by rwa [hs.eq' ha hc (hcb.trans hba)]⟩,
       le_rfl⟩
 
-theorem IsAntichain.maximals_lowerClosure (hs : IsAntichain (· ≤ ·) s) :
+theorem IsAntichain.maximals_lowerClosure [PartialOrder α] (hs : IsAntichain (· ≤ ·) s) :
     maximals (· ≤ ·) (lowerClosure s : Set α) = s :=
   hs.to_dual.minimals_upperClosure
 
