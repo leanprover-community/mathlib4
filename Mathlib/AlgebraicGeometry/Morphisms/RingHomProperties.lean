@@ -265,8 +265,8 @@ theorem of_iSup_eq_top [IsAffine Y] {ι : Type*}
     (U : ι → X.affineOpens) (hU : ⨆ i, (U i : Opens X) = ⊤)
     (H : ∀ i, Q (f.appLE ⊤ (U i).1 le_top)) :
     P f := by
-  have (i) : IsAffine ((X.openCoverOfSuprEqTop _ hU).obj i) := (U i).2
-  refine of_source_openCover (X.openCoverOfSuprEqTop _ hU) fun i ↦ ?_
+  have (i) : IsAffine ((X.openCoverOfISupEqTop _ hU).obj i) := (U i).2
+  refine of_source_openCover (X.openCoverOfISupEqTop _ hU) fun i ↦ ?_
   simpa [Scheme.Hom.app_eq_appLE] using (f.appLE_congr _ rfl (by simp) Q).mp (H i)
 
 theorem iff_of_iSup_eq_top [IsAffine Y] {ι : Type*}
