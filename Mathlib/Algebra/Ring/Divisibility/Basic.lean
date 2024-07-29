@@ -20,6 +20,13 @@ variable {α β : Type*}
 
 section Semigroup
 
+#adaptation_note
+/--
+Please don't fix the following problems, they've been reported at
+https://github.com/leanprover/lean4/pull/4814#issuecomment-2254796321
+and should be resolved upstream.
+-/
+
 variable [Semigroup α] [Semigroup β] {F : Type*} [EquivLike F α β] [MulEquivClass F α β] (f : F)
 
 theorem map_dvd_iff {a b} : f a ∣ f b ↔ a ∣ b :=
