@@ -2,23 +2,24 @@
 
 set -exo pipefail
 
-# Install Homebrew
-if ! which brew > /dev/null; then
-    # Install Homebrew
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-else
-    # Update it, in case it has been ages since it's been updated
-    brew update
-fi
-
+# Install elan using the official script
 curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh
+
+# Set the default Lean version to the latest stable release
 elan toolchain install stable
 elan default stable
 
-# Install and configure VS Code
-if ! which code > /dev/null; then
-    brew install --cask visual-studio-code
-fi
+# Install the universal darwin build of VS Code
+curl -L https://update.code.visualstudio.com/latest/darwin-universal/stable -o ~/Downloads/VSCode-darwin-universal.zip
+
+# Unzip the downloaded file to the Applications folder
+unzip -o ~/Downloads/VSCode-darwin-universal.zip -d /Applications
+
+# Add the VS Code binary to the PATH to enable launching from the terminal
+cat << EOF >> ~/.zprofile
+# Add Visual Studio Code (code)
+export PATH="\$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+EOF
 
 # Install the Lean4 VS Code extension
 code --install-extension leanprover.lean4
