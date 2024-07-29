@@ -176,7 +176,7 @@ theorem tsirelson_inequality [OrderedRing R] [StarRing R] [StarOrderedRing R] [A
     A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ √2 ^ 3 • (1 : R) := by
   -- abel will create `ℤ` multiplication. We will `simp` them away to `ℝ` multiplication.
   have M : ∀ (m : ℤ) (a : ℝ) (x : R), m • a • x = ((m : ℝ) * a) • x := fun m a x => by
-    rw [zsmul_eq_smul_cast ℝ, ← mul_smul]
+    rw [← Int.cast_smul_eq_nsmul ℝ, ← mul_smul]
   let P := (√2)⁻¹ • (A₁ + A₀) - B₀
   let Q := (√2)⁻¹ • (A₁ - A₀) + B₁
   have w : √2 ^ 3 • (1 : R) - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁ = (√2)⁻¹ • (P ^ 2 + Q ^ 2) := by
