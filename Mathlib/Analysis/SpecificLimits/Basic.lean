@@ -243,6 +243,12 @@ protected theorem ENNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0∞} :
   norm_cast at h ⊢
   exact NNReal.tendsto_pow_atTop_nhds_zero_iff.mp h
 
+protected theorem ENNReal.tendsto_pow_atTop_nhds_top {r : ℝ≥0∞} (hr : 1 < r) :
+    Tendsto (fun n ↦ r^n) atTop (𝓝 ∞) := by
+  have obs := @Tendsto.inv ℝ≥0∞ ℕ _ _ _ (fun n ↦ (r⁻¹)^n) atTop 0
+  simp only [ENNReal.tendsto_pow_atTop_nhds_zero_iff, inv_zero] at obs
+  simpa [← ENNReal.inv_pow] using obs <| ENNReal.inv_lt_one.mpr hr
+
 /-! ### Geometric series-/
 
 
