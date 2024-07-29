@@ -226,7 +226,158 @@ def mkIso {M N : C} [Comon_ M] [Comon_ N] (f : M ≅ N) (f_counit : f.hom ≫ ε
       slice_rhs 1 2 => rw [f_comul]
       simp }
 
+instance uniqueHomToTrivial (A : C) [Comon_ A] : Unique (Hom A (𝟙_ C)) where
+  default :=
+    { hom := ε
+      hom_counit := by dsimp; simp
+      hom_comul := by dsimp; simp [comul_counit, unitors_inv_equal] }
+  uniq f := by
+    ext; simp
+    rw [← Category.comp_id f.hom]
+    erw [f.hom_counit]
+
+open CategoryTheory.Limits
+
+instance : HasTerminal (Comon_Cat C) :=
+  hasTerminal_of_unique (.mk (𝟙_ C))
+
+open Opposite Mon_
+
+variable (C)
+
+/--
+Turn a comonoid object into a monoid object in the opposite category.
+-/
+-- @[simps]
+instance Comon_ToMon_OpOp_obj' (A : C) [Comon_ A] : Mon_ (op A : Cᵒᵖ) where
+  one := counit.op
+  mul := comul.op
+  one_mul' := by
+    rw [← op_whiskerRight, ← op_comp, counit_comul]
+    rfl
+  mul_one' := by
+    rw [← op_whiskerLeft, ← op_comp, comul_counit]
+    rfl
+  mul_assoc' := by
+    rw [← op_inv_associator, ← op_whiskerRight, ← op_comp, ← op_whiskerLeft, ← op_comp,
+      comul_assoc_flip, op_comp, op_comp_assoc]
+    rfl
+
+-- theorem Comon_ToMon_OpOp_obj'_one (A : C) [Comon_ A] : η = (ε : A ⟶ _).op := rfl
+
+-- theorem Comon_ToMon_OpOp_obj'_mul (A : C) [Comon_ A] : μ = Δ.op
+
+/--
+The contravariant functor turning comonoid objects into monoid objects in the opposite category.
+-/
+@[simps] def Comon_ToMon_OpOp : Comon_Cat C ⥤ (Mon_Cat (Cᵒᵖ))ᵒᵖ where
+  obj A := op ⟨op A.X⟩
+  map := fun f => op <|
+    { hom := f.hom.op
+      one_hom := by apply Quiver.Hom.unop_inj; simp [Comon_ToMon_OpOp_obj']
+      mul_hom := by apply Quiver.Hom.unop_inj; simp [Comon_ToMon_OpOp_obj'] }
+
+/--
+Turn a monoid object in the opposite category into a comonoid object.
+-/
+instance Mon_OpOpToComon_obj' (A : Cᵒᵖ) [Mon_ A] : Comon_ (unop A) where
+  counit := Mon_.one.unop
+  comul := Mon_.mul.unop
+  counit_comul' := by rw [← unop_whiskerRight, ← unop_comp, Mon_.one_mul]; rfl
+  comul_counit' := by rw [← unop_whiskerLeft, ← unop_comp, Mon_.mul_one]; rfl
+  comul_assoc' := by
+    rw [← unop_whiskerRight, ← unop_whiskerLeft, ← unop_comp_assoc, ← unop_comp,
+      Mon_.mul_assoc_flip]
+    rfl
+
+-- attribute [-simp] Comon_ToMon_OpOp_obj'_one Comon_ToMon_OpOp_obj'_mul in
+/--
+The contravariant functor turning monoid objects in the opposite category into comonoid objects.
+-/
+@[simps]
+def Mon_OpOpToComon_ : (Mon_Cat (Cᵒᵖ))ᵒᵖ ⥤ Comon_Cat C where
+  obj A := ⟨unop (unop A).X⟩
+  map := fun f =>
+    { hom := f.unop.hom.unop
+      hom_counit := by apply Quiver.Hom.op_inj; simp [Mon_OpOpToComon_obj']
+      hom_comul := by apply Quiver.Hom.op_inj; simp [Mon_OpOpToComon_obj'] }
+
+/--
+Comonoid objects are contravariantly equivalent to monoid objects in the opposite category.
+-/
+@[simps]
+def Comon_EquivMon_OpOp : Comon_Cat C ≌ (Mon_Cat (Cᵒᵖ))ᵒᵖ :=
+  { functor := Comon_ToMon_OpOp C
+    inverse := Mon_OpOpToComon_ C
+    unitIso := NatIso.ofComponents (fun _ => Iso.refl _)
+    counitIso := NatIso.ofComponents (fun _ => Iso.refl _) }
+
+/--
+Comonoid objects in a braided category form a monoidal category.
+
+This definition is via transporting back and forth to monoids in the opposite category,
+-/
+instance [BraidedCategory C] : MonoidalCategory (Comon_Cat C) :=
+  Monoidal.transport (Comon_EquivMon_OpOp C).symm
+
+variable [BraidedCategory C]
+
+instance (A B : C) [Comon_ A] [Comon_ B] :
+  Comon_ (A ⊗ B) := Comon_Cat.isComon_ (Comon_Cat.mk ((Comon_Cat.mk A) ⊗ (Comon_Cat.mk B)).X)
+
+theorem tensorObj_X (A B : Comon_Cat C) : (A ⊗ B).X = A.X ⊗ B.X := rfl
+
+theorem tensorObj_counit (A B : C) [Comon_ A] [Comon_ B] :
+    (ε : A ⊗ B ⟶ _) = (ε ⊗ ε) ≫ (λ_ _).hom :=
+  rfl
+
+/--
+Preliminary statement of the comultiplication for a tensor product of comonoids.
+This version is the definitional equality provided by transport, and not quite as good as
+the version provided in `tensorObj_comul` below.
+-/
+theorem tensorObj_comul' (A B : C) [Comon_ A] [Comon_ B] :
+    (Δ : A ⊗ B ⟶ _) =
+      (Δ ⊗ Δ) ≫ (tensor_μ Cᵒᵖ (op A, op B) (op A, op B)).unop := by
+  rfl
+
+/--
+The comultiplication on the tensor product of two comonoids is
+the tensor product of the comultiplications followed by the tensor strength
+(to shuffle the factors back into order).
+-/
+theorem tensorObj_comul (A B : C) [Comon_ A] [Comon_ B] :
+    (Δ : A ⊗ B ⟶ _) = (Δ ⊗ Δ) ≫ tensor_μ C (A, A) (B, B) := by
+  rw [tensorObj_comul']
+  congr
+  simp only [tensor_μ, unop_tensorObj, unop_op]
+  apply Quiver.Hom.unop_inj
+  dsimp [op_tensorObj, op_associator]
+  rw [Category.assoc, Category.assoc, Category.assoc]
+
 end Comon_
+
+namespace Comon_Cat
+
+variable [BraidedCategory C]
+
+-- open Comon_
+
+variable (C)
+
+/-- The forgetful functor from `Comon_ C` to `C` is monoidal when `C` is braided monoidal. -/
+def forgetMonoidal : MonoidalFunctor (Comon_Cat C) C :=
+  { forget C with
+    «ε» := 𝟙 _
+    «μ» := fun X Y => 𝟙 _ }
+
+@[simp] theorem forgetMonoidal_toFunctor : (forgetMonoidal C).toFunctor = forget C := rfl
+@[simp] theorem forgetMonoidal_ε : (forgetMonoidal C).ε = 𝟙 (𝟙_ C) := rfl
+variable {C} in
+@[simp] theorem forgetMonoidal_μ
+    (X Y : Comon_Cat C) : (forgetMonoidal C).μ X Y = 𝟙 (X.X ⊗ Y.X) := rfl
+
+end Comon_Cat
 
 open Comon_
 
@@ -234,7 +385,7 @@ namespace CategoryTheory.OplaxMonoidalFunctor
 
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
-@[simps!]
+@[simps?]
 instance (F : OplaxMonoidalFunctor C D) {A : C} [Comon_ A] : Comon_ (F.obj A) where
   counit := F.map ε ≫ F.η
   comul := F.map Δ ≫ F.δ _ _

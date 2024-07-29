@@ -30,7 +30,9 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 When the monoidal category is preadditive, this is also sometimes called an "algebra object".
 -/
 class Mon_ (X : C) where
+  /-- The unit morphism of a monoid object. -/
   one : 𝟙_ C ⟶ X
+  /-- The multiplication morphism of a monoid object. -/
   mul : X ⊗ X ⟶ X
   one_mul' : (one ▷ X) ≫ mul = (λ_ X).hom := by aesop_cat
   mul_one' : (X ◁ one) ≫ mul = (ρ_ X).hom := by aesop_cat
@@ -134,10 +136,6 @@ instance : Category.{v₁} (Mon_Cat C) where
   id M := Mon_.Hom.id M.X
   comp f g := Mon_.Hom.comp f g
 
-@[simp]
-theorem mk_X (X : Mon_Cat C) : Mon_Cat.mk X.X = X :=
-  rfl
-
 def mkHom {X Y : C} [Mon_ X] [Mon_ Y] (f : Mon_.Hom X Y) :
     mk X ⟶ mk Y :=
   f
@@ -154,11 +152,6 @@ lemma Hom.ext' {X Y : Mon_Cat C} {f g : X ⟶ Y} (w : f.hom = g.hom) : f = g :=
 @[simp]
 theorem id_hom' {M : Mon_Cat C} : (𝟙 M : Hom M.X M.X).hom = 𝟙 M.X :=
   rfl
-
--- @[simp]
--- theorem coe_comp {M N K : Mon_Cat C} (f : M ⟶ N) (g : N ⟶ K) :
---     (f ≫ g : M ⟶ K) = f.comp g := by
---   rfl
 
 @[simp]
 theorem comp_hom' {M N K : Mon_Cat C} (f : M ⟶ N) (g : N ⟶ K) :
@@ -549,7 +542,7 @@ section BraidedCategory
 
 variable [BraidedCategory C]
 
-@[simps!?]
+@[simps!]
 instance monMonoidalStruct : MonoidalCategoryStruct (Mon_Cat C) where
   tensorObj := fun M N ↦ Mon_Cat.mk (M.X ⊗ N.X)
   tensorHom := tensorHom
