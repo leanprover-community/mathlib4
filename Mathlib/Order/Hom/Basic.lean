@@ -557,11 +557,11 @@ protected theorem strictMono : StrictMono f := fun _ _ => f.lt_iff_lt.2
 protected theorem acc (a : α) : Acc (· < ·) (f a) → Acc (· < ·) a :=
   f.ltEmbedding.acc a
 
-protected theorem wellFounded :
+protected theorem wellFounded (f : α ↪o β) :
     WellFounded ((· < ·) : β → β → Prop) → WellFounded ((· < ·) : α → α → Prop) :=
   f.ltEmbedding.wellFounded
 
-protected theorem isWellOrder [IsWellOrder β (· < ·)] : IsWellOrder α (· < ·) :=
+protected theorem isWellOrder [IsWellOrder β (· < ·)] (f : α ↪o β) : IsWellOrder α (· < ·) :=
   f.ltEmbedding.isWellOrder
 
 /-- An order embedding is also an order embedding between dual orders. -/
@@ -569,13 +569,13 @@ protected def dual : αᵒᵈ ↪o βᵒᵈ :=
   ⟨f.toEmbedding, f.map_rel_iff⟩
 
 /-- A preorder which embeds into a well-founded preorder is itself well-founded. -/
-protected theorem wellFoundedLT [WellFoundedLT β] : WellFoundedLT α where
+protected theorem wellFoundedLT [WellFoundedLT β] (f : α ↪o β) : WellFoundedLT α where
   wf := f.wellFounded IsWellFounded.wf
 
 /-- A preorder which embeds into a preorder in which `(· > ·)` is well-founded
 also has `(· > ·)` well-founded. -/
-protected theorem wellFoundedGT [WellFoundedGT β] : WellFoundedGT α :=
-  @OrderEmbedding.wellFoundedLT αᵒᵈ _ _ _ f.dual _
+protected theorem wellFoundedGT [WellFoundedGT β] (f : α ↪o β) : WellFoundedGT α :=
+  @OrderEmbedding.wellFoundedLT αᵒᵈ _ _ _ _ f.dual
 
 /-- A version of `WithBot.map` for order embeddings. -/
 @[simps (config := .asFn)]
@@ -1225,13 +1225,14 @@ theorem OrderIso.isCompl {x y : α} (h : IsCompl x y) : IsCompl (f x) (f y) :=
 theorem OrderIso.isCompl_iff {x y : α} : IsCompl x y ↔ IsCompl (f x) (f y) :=
   ⟨f.isCompl, fun h => f.symm_apply_apply x ▸ f.symm_apply_apply y ▸ f.symm.isCompl h⟩
 
-theorem OrderIso.complementedLattice [ComplementedLattice α] : ComplementedLattice β :=
+theorem OrderIso.complementedLattice [ComplementedLattice α] (f : α ≃o β) : ComplementedLattice β :=
   ⟨fun x => by
     obtain ⟨y, hy⟩ := exists_isCompl (f.symm x)
     rw [← f.symm_apply_apply y] at hy
     exact ⟨f y, f.symm.isCompl_iff.2 hy⟩⟩
 
-theorem OrderIso.complementedLattice_iff : ComplementedLattice α ↔ ComplementedLattice β :=
+theorem OrderIso.complementedLattice_iff (f : α ≃o β) :
+    ComplementedLattice α ↔ ComplementedLattice β :=
   ⟨by intro; exact f.complementedLattice,
    by intro; exact f.symm.complementedLattice⟩
 
