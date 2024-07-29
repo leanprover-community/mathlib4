@@ -173,16 +173,6 @@ protected lemma norm_pos {x : E} (hx : x ≠ 0) : 0 < ‖x‖ := by
 
 lemma norm_sq_eq {x : E} : ‖x‖ ^ 2 = ‖⟪x, x⟫‖ := by simp [norm_eq_sqrt_norm_inner_self]
 
-protected lemma smul_nonneg_iff {a : A} {r : ℝ} (hr : 0 < r) : 0 ≤ a ↔ 0 ≤ r • a := by
-  refine ⟨smul_nonneg (le_of_lt hr), fun hra => ?_⟩
-  have : a = r⁻¹ • (r • a) := by
-    rw [smul_smul, inv_mul_cancel]
-    exact (MulAction.one_smul a).symm
-    exact Ne.symm (ne_of_lt hr)
-  rw [this]
-  refine smul_nonneg ?_ hra
-  positivity
-
 /-- A version of the Cauchy-Schwarz inequality for Hilbert C⋆-modules. -/
 lemma inner_mul_inner_swap_le [CompleteSpace A] {x y : E} : ⟪y, x⟫ * ⟪x, y⟫ ≤ ‖x‖ ^ 2 • ⟪y, y⟫ := by
   rcases eq_or_ne x 0 with h|h
