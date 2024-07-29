@@ -30,10 +30,10 @@ attribute [to_additive_change_numeral 2] OfNat OfNat.ofNat
 namespace Nat
 
 instance instZero : Zero Nat where
-  zero := 0
+  zero := Nat.zero
 
 instance instOne : One Nat where
-  one := 1
+  one := Nat.succ Nat.zero
 
 end Nat
 
