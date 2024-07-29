@@ -51,6 +51,12 @@ export FaithfulVAdd (eq_of_vadd_eq_vadd)
 lemma smul_left_injective' [SMul M α] [FaithfulSMul M α] : Injective ((· • ·) : M → α → α) :=
   fun _ _ h ↦ FaithfulSMul.eq_of_smul_eq_smul (congr_fun h)
 
+/-- `Monoid.toOppositeMulAction` is faithful on cancellative monoids. -/
+@[to_additive "`AddMonoid.toOppositeAddAction` is faithful on cancellative monoids."]
+instance LeftCancelMonoid.toFaithfulSMul_opposite [LeftCancelMonoid α] :
+    FaithfulSMul αᵐᵒᵖ α where
+  eq_of_smul_eq_smul h := MulOpposite.unop_injective <| mul_left_cancel (h 1)
+
 /-- `Monoid.toMulAction` is faithful on cancellative monoids. -/
 @[to_additive "`AddMonoid.toAddAction` is faithful on additive cancellative monoids."]
 instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=

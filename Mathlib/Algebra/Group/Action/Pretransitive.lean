@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Action.TypeTags
 
 /-!
@@ -70,6 +71,11 @@ lemma surjective_smul (x : α) : Surjective fun c : M ↦ c • x := exists_smul
 @[to_additive "The regular action of a group on itself is transitive."]
 instance Regular.isPretransitive [Group G] : IsPretransitive G G :=
   ⟨fun x y ↦ ⟨y * x⁻¹, inv_mul_cancel_right _ _⟩⟩
+
+/-- The right regular action of a group on itself is transitive. -/
+@[to_additive "The right regular action of an additive group on itself is transitive."]
+instance OppositeRegular.isPretransitive {G : Type*} [Group G] : IsPretransitive Gᵐᵒᵖ G :=
+  ⟨fun x y => ⟨.op (x⁻¹ * y), mul_inv_cancel_left _ _⟩⟩
 
 end MulAction
 
