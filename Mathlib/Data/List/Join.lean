@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 -/
 import Mathlib.Data.List.Basic
-import Batteries.Data.Nat.Lemmas
 
 /-!
 # Join of a list of lists
@@ -42,10 +41,8 @@ theorem join_filter_not_isEmpty  :
 @[simp]
 theorem join_filter_ne_nil [DecidablePred fun l : List α => l ≠ []] {L : List (List α)} :
     join (L.filter fun l => l ≠ []) = L.join := by
-  simp [join_filter_not_isEmpty, ← isEmpty_iff_eq_nil]
-
-theorem join_join (l : List (List (List α))) : l.join.join = (l.map join).join := by
-  induction l <;> simp [*]
+  simp only [ne_eq, ← isEmpty_iff_eq_nil, Bool.not_eq_true, Bool.decide_eq_false,
+    join_filter_not_isEmpty]
 
 /-- See `List.length_join` for the corresponding statement using `List.sum`. -/
 lemma length_join' (L : List (List α)) : length (join L) = Nat.sum (map length L) := by

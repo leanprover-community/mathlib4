@@ -416,9 +416,7 @@ theorem coe_toList (s : Multiset α) : (s.toList : Multiset α) = s :=
 theorem toList_eq_nil {s : Multiset α} : s.toList = [] ↔ s = 0 := by
   rw [← coe_eq_zero, coe_toList]
 
-@[simp]
-theorem empty_toList {s : Multiset α} : s.toList.isEmpty ↔ s = 0 :=
-  isEmpty_iff_eq_nil.trans toList_eq_nil
+theorem empty_toList {s : Multiset α} : s.toList.isEmpty ↔ s = 0 := by simp
 
 @[simp]
 theorem toList_zero : (Multiset.toList 0 : List α) = [] :=
@@ -498,7 +496,8 @@ theorem le_zero : s ≤ 0 ↔ s = 0 :=
 theorem lt_cons_self (s : Multiset α) (a : α) : s < a ::ₘ s :=
   Quot.inductionOn s fun l =>
     suffices l <+~ a :: l ∧ ¬l ~ a :: l by simpa [lt_iff_le_and_ne]
-    ⟨(sublist_cons _ _).subperm, fun p => _root_.ne_of_lt (lt_succ_self (length l)) p.length_eq⟩
+    ⟨(sublist_cons_self _ _).subperm,
+      fun p => _root_.ne_of_lt (lt_succ_self (length l)) p.length_eq⟩
 
 theorem le_cons_self (s : Multiset α) (a : α) : s ≤ a ::ₘ s :=
   le_of_lt <| lt_cons_self _ _
@@ -1022,7 +1021,7 @@ theorem map_hcongr {β' : Type v} {m : Multiset α} {f : α → β} {f' : α →
 
 theorem forall_mem_map_iff {f : α → β} {p : β → Prop} {s : Multiset α} :
     (∀ y ∈ s.map f, p y) ↔ ∀ x ∈ s, p (f x) :=
-  Quotient.inductionOn' s fun _L => List.forall_mem_map_iff
+  Quotient.inductionOn' s fun _L => List.forall_mem_map
 
 @[simp, norm_cast] lemma map_coe (f : α → β) (l : List α) : map f l = l.map f := rfl
 
@@ -1717,7 +1716,7 @@ theorem filter_cons_of_neg {a : α} (s) : ¬p a → filter p (a ::ₘ s) = filte
 
 @[simp]
 theorem mem_filter {a : α} {s} : a ∈ filter p s ↔ a ∈ s ∧ p a :=
-  Quot.inductionOn s fun _l => by simpa using List.mem_filter (p := (p ·))
+  Quot.inductionOn s fun _l => by simp
 
 theorem of_mem_filter {a : α} {s} (h : a ∈ filter p s) : p a :=
   (mem_filter.1 h).2
