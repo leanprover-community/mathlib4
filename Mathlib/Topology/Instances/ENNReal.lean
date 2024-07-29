@@ -1655,8 +1655,8 @@ lemma liminf_toReal_eq {xs : ι → ℝ≥0∞} (ev_ne_top : ∀ᶠ i in F, xs i
       simp [toReal_min hi b_ne_top]
     rw [obs₁, ← liminf_toReal_eq_of_eventually_le b_ne_top (eventually_of_forall bdd),
         liminf_congr aux]
-    have obs₃ := @Monotone.map_liminf_of_continuousAt ι ℝ ℝ F _ _ _ _ _ _ _ (fun z => min z b.toReal)
-              ?_ (fun i ↦ (xs i).toReal) ?_ ?_ ⟨0, by simp⟩
+    have obs₃ := @Monotone.map_liminf_of_continuousAt ι ℝ ℝ F _ _ _ _ _ _ _
+              (fun z ↦ min z b.toReal) ?_ (fun i ↦ (xs i).toReal) ?_ ?_ ⟨0, by simp⟩
     · simp only at obs₃
       have rwr : min (liminf (fun i ↦ (xs i).toReal) F) b.toReal
                   = F.liminf (fun i ↦ (xs i).toReal) := by
