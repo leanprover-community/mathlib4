@@ -440,15 +440,29 @@ section inv
 
 open Algebra
 
+variable {R S : Type*}
+
 /-- A nonzero element in a domain integral over a field is a unit. -/
-theorem IsIntegral.isUnit {R S} [Field R] [Ring S] [IsDomain S] [Algebra R S] {x : S}
+theorem IsIntegral.isUnit [Field R] [Ring S] [IsDomain S] [Algebra R S] {x : S}
     (int : IsIntegral R x) (h0 : x ≠ 0) : IsUnit x :=
   have : FiniteDimensional R (adjoin R {x}) := ⟨(Submodule.fg_top _).mpr int.fg_adjoin_singleton⟩
   (FiniteDimensional.isUnit R (K := adjoin R {x})
     (x := ⟨x, subset_adjoin rfl⟩) <| mt Subtype.ext_iff.mp h0).map (adjoin R {x}).val
 
-theorem IsIntegral.inv_mem_adjoin {R S} [Field R] [DivisionRing S] [Algebra R S] {x : S}
-    (int : IsIntegral R x) : x⁻¹ ∈ adjoin R {x} := by
+/-- A commutative domain that is an integral algebra over a field is a field. -/
+theorem isField_of_isIntegral_of_isField' [CommRing R] [CommRing S] [IsDomain S]
+    [Algebra R S] [Algebra.IsIntegral R S] (hR : IsField R) : IsField S where
+  exists_pair_ne := ⟨0, 1, zero_ne_one⟩
+  mul_comm := mul_comm
+  mul_inv_cancel {x} hx := by
+    letI := hR.toField
+    obtain ⟨y, rfl⟩ := (Algebra.IsIntegral.isIntegral (R := R) x).isUnit hx
+    exact ⟨y.inv, y.val_inv⟩
+#align is_field_of_is_integral_of_is_field' isField_of_isIntegral_of_isField'
+
+variable [Field R] [DivisionRing S] [Algebra R S] {x : S} {A : Subalgebra R S}
+
+theorem IsIntegral.inv_mem_adjoin (int : IsIntegral R x) : x⁻¹ ∈ adjoin R {x} := by
   obtain rfl | h0 := eq_or_ne x 0
   · rw [inv_zero]; exact Subalgebra.zero_mem _
   have : FiniteDimensional R (adjoin R {x}) := ⟨(Submodule.fg_top _).mpr int.fg_adjoin_singleton⟩
@@ -458,35 +472,20 @@ theorem IsIntegral.inv_mem_adjoin {R S} [Field R] [DivisionRing S] [Algebra R S]
 
 /-- The inverse of an integral element in a subalgebra of a division ring over a field
   also lies in that subalgebra. -/
-theorem IsIntegral.inv_mem {R S} [Field R] [DivisionRing S] [Algebra R S] {x : S}
-    (int : IsIntegral R x) {A : Subalgebra R S} (hx : x ∈ A) : x⁻¹ ∈ A :=
+theorem IsIntegral.inv_mem (int : IsIntegral R x) (hx : x ∈ A) : x⁻¹ ∈ A :=
   adjoin_le_iff.mpr (Set.singleton_subset_iff.mpr hx) int.inv_mem_adjoin
 
 /-- An integral subalgebra of a division ring over a field is closed under inverses. -/
-theorem Algebra.IsIntegral.inv_mem {R S} [Field R] [DivisionRing S] [Algebra R S]
-    {A : Subalgebra R S} [Algebra.IsIntegral R A] {x : S} (hx : x ∈ A) : x⁻¹ ∈ A :=
+theorem Algebra.IsIntegral.inv_mem [Algebra.IsIntegral R A] (hx : x ∈ A) : x⁻¹ ∈ A :=
   ((isIntegral_algHom_iff A.val Subtype.val_injective).mpr <|
     Algebra.IsIntegral.isIntegral (⟨x, hx⟩ : A)).inv_mem hx
 
 /-- The inverse of an integral element in a division ring over a field is also integral. -/
-theorem IsIntegral.inv {R S} [Field R] [DivisionRing S] [Algebra R S] {x : S}
-    (int : IsIntegral R x) : IsIntegral R x⁻¹ :=
+theorem IsIntegral.inv (int : IsIntegral R x) : IsIntegral R x⁻¹ :=
   .of_mem_of_fg _ int.fg_adjoin_singleton _ int.inv_mem_adjoin
 
-theorem IsIntegral.mem_of_inv_mem {R S} [Field R] [DivisionRing S] [Algebra R S] {x : S}
-    {A : Subalgebra R S} (int : IsIntegral R x) (inv_mem : x⁻¹ ∈ A) : x ∈ A := by
+theorem IsIntegral.mem_of_inv_mem (int : IsIntegral R x) (inv_mem : x⁻¹ ∈ A) : x ∈ A := by
   rw [← inv_inv x]; exact int.inv.inv_mem inv_mem
-
-/-- A commutative domain that is an integral algebra over a field is a field. -/
-theorem isField_of_isIntegral_of_isField' {R S : Type*} [CommRing R] [CommRing S] [IsDomain S]
-    [Algebra R S] [Algebra.IsIntegral R S] (hR : IsField R) : IsField S where
-  exists_pair_ne := ⟨0, 1, zero_ne_one⟩
-  mul_comm := mul_comm
-  mul_inv_cancel {x} hx := by
-    letI := hR.toField
-    obtain ⟨y, rfl⟩ := (Algebra.IsIntegral.isIntegral (R := R) x).isUnit hx
-    exact ⟨y.inv, y.val_inv⟩
-#align is_field_of_is_integral_of_is_field' isField_of_isIntegral_of_isField'
 
 end inv
 
