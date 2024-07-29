@@ -17,73 +17,129 @@ open CategoryTheory MonoidalCategory
 variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 variable {C}
 
+open scoped Mon_
+
 /-- A module object for a monoid object, all internal to some monoidal category. -/
-structure Mod_ (A : Mon_ C) where
-  X : C
-  act : A.X ⊗ X ⟶ X
-  one_act : (A.one ▷ X) ≫ act = (λ_ X).hom := by aesop_cat
-  assoc : (A.mul ▷ X) ≫ act = (α_ A.X A.X X).hom ≫ (A.X ◁ act) ≫ act := by aesop_cat
+class Mod_ (A : C) [Mon_ A] (X : C) where
+  act : A ⊗ X ⟶ X
+  one_act : (η ▷ X) ≫ act = (λ_ X).hom := by aesop_cat
+  assoc : (μ ▷ X) ≫ act = (α_ A A X).hom ≫ (A ◁ act) ≫ act := by aesop_cat
 
 attribute [reassoc (attr := simp)] Mod_.one_act Mod_.assoc
 
 namespace Mod_
 
-variable {A : Mon_ C} (M : Mod_ A)
+scoped notation "↷" => Mod_.act
+
+variable {A M : C} [Mon_ A] [Mod_ A M]
+
 
 theorem assoc_flip :
-    (A.X ◁ M.act) ≫ M.act = (α_ A.X A.X M.X).inv ≫ (A.mul ▷ M.X) ≫ M.act := by simp
+    (A ◁ act) ≫ act = (α_ A A M).inv ≫ (μ ▷ M) ≫ act := by
+  simp
 
 /-- A morphism of module objects. -/
 @[ext]
-structure Hom (M N : Mod_ A) where
-  hom : M.X ⟶ N.X
-  act_hom : M.act ≫ hom = (A.X ◁ hom) ≫ N.act := by aesop_cat
+structure Hom (A M N : C) [Mon_ A] [Mod_ A M] [Mod_ A N] where
+  hom : M ⟶ N
+  act_hom : act ≫ hom = (A ◁ hom) ≫ act := by aesop_cat
 
 attribute [reassoc (attr := simp)] Hom.act_hom
 
 /-- The identity morphism on a module object. -/
 @[simps]
-def id (M : Mod_ A) : Hom M M where hom := 𝟙 M.X
+def id (A M : C) [Mon_ A] [Mod_ A M] : Hom A M M where hom := 𝟙 M
 
-instance homInhabited (M : Mod_ A) : Inhabited (Hom M M) :=
-  ⟨id M⟩
+instance homInhabited : Inhabited (Hom A M M) :=
+  ⟨id A M⟩
 
 /-- Composition of module object morphisms. -/
 @[simps]
-def comp {M N O : Mod_ A} (f : Hom M N) (g : Hom N O) : Hom M O where hom := f.hom ≫ g.hom
+def comp {M N O : C} [Mod_ A M] [Mod_ A N] [Mod_ A O] (f : Hom A M N) (g : Hom A N O) :
+    Hom A M O where
+  hom := f.hom ≫ g.hom
 
-instance : Category (Mod_ A) where
-  Hom M N := Hom M N
-  id := id
-  comp f g := comp f g
+end Mod_
+
+structure Mod_Cat (A : C) [Mon_ A] where
+  X : C
+  [isMod : Mod_ A X]
+
+attribute [instance] Mod_Cat.isMod
+
+-- namespace Mod_Cat
+
+variable {A : C} [Mon_ A]
+
+instance : Category (Mod_Cat A) where
+  Hom M N := Mod_.Hom A M.X N.X
+  id M := Mod_.id A M.X
+  comp f g := Mod_.comp f g
+
+namespace Mod_Cat
+
+-- namespace Mod_
+
+@[simp]
+theorem mk_X (X : C) [Mod_ A X] : (⟨X⟩ : Mod_Cat A).X = X := rfl
+
+abbrev of (A X : C) [Mon_ A] [Mod_ A X] : Mod_Cat A := .mk X
+
+theorem of_X (A X : C) [Mon_ A] [Mod_ A X] : (Mod_Cat.of A X).X = X := rfl
 
 -- Porting note (#5229): added because `Hom.ext` is not triggered automatically
 @[ext]
-lemma hom_ext {M N : Mod_ A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) : f₁ = f₂ :=
-  Hom.ext _ _ h
+lemma hom_ext {M N : Mod_Cat A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) : f₁ = f₂ :=
+  Mod_.Hom.ext _ _ h
 
 @[simp]
-theorem id_hom' (M : Mod_ A) : (𝟙 M : M ⟶ M).hom = 𝟙 M.X := by
+theorem id_hom' (M : Mod_Cat A) : (𝟙 M : M ⟶ M).hom = 𝟙 M.X := by
   rfl
 
 @[simp]
-theorem comp_hom' {M N K : Mod_ A} (f : M ⟶ N) (g : N ⟶ K) :
+theorem comp_hom' {M N K : Mod_Cat A} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl
+
+end Mod_Cat
+
+namespace Mod_
 
 variable (A)
 
 /-- A monoid object as a module over itself. -/
 @[simps]
-def regular : Mod_ A where
-  X := A.X
-  act := A.mul
+instance regular : Mod_ A A where
+  act := μ
 
-instance : Inhabited (Mod_ A) :=
+instance : Inhabited (Mod_ A A) :=
   ⟨regular A⟩
 
+@[simps]
+def comap {A B : C} [Mon_ A] [Mon_ B] (f : Mon_.Hom A B) (M : C) [Mod_ B M] :
+    Mod_ A M where
+  act := (f.hom ▷ M) ≫ act
+  one_act := by
+    slice_lhs 1 2 => rw [← comp_whiskerRight]
+    rw [f.one_hom, one_act]
+  assoc := by
+    -- oh, for homotopy.io in a widget!
+    slice_rhs 2 3 => rw [whisker_exchange]
+    simp only [whiskerRight_tensor, MonoidalCategory.whiskerLeft_comp, Category.assoc,
+      Iso.hom_inv_id_assoc]
+    slice_rhs 4 5 => rw [Mod_.assoc_flip]
+    slice_rhs 3 4 => rw [associator_inv_naturality_middle]
+    slice_rhs 2 4 => rw [Iso.hom_inv_id_assoc]
+    slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← whisker_exchange]
+    slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← tensorHom_def', ← f.mul_hom]
+    rw [comp_whiskerRight, Category.assoc]
+
+end Mod_
+
+namespace Mod_Cat
+
 /-- The forgetful functor from module objects to the ambient category. -/
-def forget : Mod_ A ⥤ C where
+def forget : Mod_Cat A ⥤ C where
   obj A := A.X
   map f := f.hom
 
@@ -93,24 +149,10 @@ open CategoryTheory.MonoidalCategory
 between the categories of module objects.
 -/
 @[simps]
-def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
+def comap {A B : C} [Mon_ A] [Mon_ B] (f : Mon_.Hom A B) : Mod_Cat B ⥤ Mod_Cat A where
   obj M :=
     { X := M.X
-      act := (f.hom ▷ M.X) ≫ M.act
-      one_act := by
-        slice_lhs 1 2 => rw [← comp_whiskerRight]
-        rw [f.one_hom, one_act]
-      assoc := by
-        -- oh, for homotopy.io in a widget!
-        slice_rhs 2 3 => rw [whisker_exchange]
-        simp only [whiskerRight_tensor, MonoidalCategory.whiskerLeft_comp, Category.assoc,
-          Iso.hom_inv_id_assoc]
-        slice_rhs 4 5 => rw [Mod_.assoc_flip]
-        slice_rhs 3 4 => rw [associator_inv_naturality_middle]
-        slice_rhs 2 4 => rw [Iso.hom_inv_id_assoc]
-        slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← whisker_exchange]
-        slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← tensorHom_def', ← f.mul_hom]
-        rw [comp_whiskerRight, Category.assoc] }
+      isMod := Mod_.comap f M.X }
   map g :=
     { hom := g.hom
       act_hom := by
@@ -121,4 +163,4 @@ def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
 
 -- Lots more could be said about `comap`, e.g. how it interacts with
 -- identities, compositions, and equalities of monoid object morphisms.
-end Mod_
+end Mod_Cat

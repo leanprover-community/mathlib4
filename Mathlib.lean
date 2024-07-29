@@ -4200,7 +4200,6 @@ import Mathlib.Tactic.Widget.GCongr
 import Mathlib.Tactic.Widget.InteractiveUnfold
 import Mathlib.Tactic.Widget.SelectInsertParamsClass
 import Mathlib.Tactic.Widget.SelectPanelUtils
-import Mathlib.Tactic.Widget.StringDiagram
 import Mathlib.Tactic.Zify
 import Mathlib.Testing.SlimCheck.Functions
 import Mathlib.Testing.SlimCheck.Gen
