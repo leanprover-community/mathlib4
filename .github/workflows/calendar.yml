@@ -25,6 +25,7 @@ jobs:
 
     - name: Post output to Zulip
       uses: zulip/github-actions-zulip/send-message@v1
+      if: "${{contains(steps.collect_msg.outputs.summary, 'eminder')}}"
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
