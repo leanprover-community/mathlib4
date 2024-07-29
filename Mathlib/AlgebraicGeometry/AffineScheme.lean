@@ -336,18 +336,16 @@ lemma map_appLE_fromSpec (f : X ⟶ Y) {V : X.Opens} {U : Y.Opens}
     (hU : IsAffineOpen U) (hV : IsAffineOpen V) (i : V ≤ f ⁻¹ᵁ U) :
     Spec.map (f.appLE U V i) ≫ hU.fromSpec = hV.fromSpec ≫ f := by
   have : IsAffine U := hU
-  have : IsAffine V := hV
   simp only [IsAffineOpen.fromSpec, Category.assoc, isoSpec_inv]
   rw [← Scheme.restrictFunctor_map_ofRestrict (homOfLE i), Category.assoc, ← morphismRestrict_ι,
-    ← Category.assoc _ (f ∣_ U) U.ι, ← Scheme.isoSpec_inv_naturality_assoc,
+    ← Category.assoc _ (f ∣_ U) U.ι, ← @Scheme.isoSpec_inv_naturality_assoc,
     ← Spec.map_comp_assoc, ← Spec.map_comp_assoc, Scheme.comp_app, morphismRestrict_app,
     Scheme.restrictFunctor_map_app, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map,
     Scheme.Hom.appLE_map, Scheme.Hom.appLE_map, Scheme.Hom.map_appLE]
 
 lemma fromSpec_top [IsAffine X] : (isAffineOpen_top X).fromSpec = X.isoSpec.inv := by
-  have : IsAffine _ := isAffineOpen_top X
-  rw [fromSpec, isoSpec_inv, Category.assoc, ← Scheme.isoSpec_inv_naturality, ← Spec.map_comp_assoc,
-    Scheme.Opens.ι_app, ← X.presheaf.map_comp, ← op_comp, eqToHom_comp_homOfLE,
+  rw [fromSpec, isoSpec_inv, Category.assoc, ← @Scheme.isoSpec_inv_naturality, Scheme.Opens.ι_app,
+    ← Spec.map_comp_assoc, ← X.presheaf.map_comp, ← op_comp, eqToHom_comp_homOfLE,
     ← eqToHom_eq_homOfLE rfl, eqToHom_refl, op_id, X.presheaf.map_id, Spec.map_id, Category.id_comp]
 
 lemma fromSpec_app_of_le (V : X.Opens) (h : U ≤ V) :
