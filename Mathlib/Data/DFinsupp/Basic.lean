@@ -1346,20 +1346,12 @@ def sigmaUncurry [∀ i j, Zero (δ i j)] [DecidableEq ι] (f : Π₀ (i) (j), �
   toFun i := f i.1 i.2
   support' :=
     f.support'.bind fun s =>
-      (Trunc.finChoice (fun i : ↥s.val.toFinset => (f i).support')).map fun fs =>
-        ⟨s.val.toFinset.attach.val.bind fun i => (fs i).val.map (Sigma.mk i.val), by
-          rintro ⟨i, a⟩
-          cases s.prop i with
-          | inl hi =>
-            cases (fs ⟨i, Multiset.mem_toFinset.mpr hi⟩).prop a with
-            | inl ha =>
-              left; rw [Multiset.mem_bind]
-              use ⟨i, Multiset.mem_toFinset.mpr hi⟩
-              constructor
-              case right => simp [ha]
-              case left => apply Multiset.mem_attach
-            | inr ha => right; simp [toFun_eq_coe (f i) ▸ ha]
-          | inr hi => right; simp [toFun_eq_coe f ▸ hi]⟩
+      Trunc.finLiftOn (fun i : {i // i ∈ s.1} ↦ (f i).support')
+        (fun ss ↦ .mk ⟨(s.1.attach.map (fun i ↦ (ss i).1.map (.mk i.1))).join, by
+          simpa [or_iff_not_imp_right] using
+            fun i j h ↦ ⟨_, ⟨i, (s.2 i).resolve_right (fun H ↦ h (DFunLike.congr_fun H j)), rfl⟩,
+              Multiset.mem_map.mpr ⟨j, ((ss ⟨i, _⟩).2 j).resolve_right h, rfl⟩⟩⟩)
+        (fun _ _ ↦ Subsingleton.elim _ _)
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
