@@ -357,10 +357,9 @@ theorem existsUnique_isIdempotentElem_eq_of_ker_isNilpotent (h : ∀ x ∈ RingH
     eq_of_isNilpotent_sub_of_isIdempotentElem hx he₂
       (h _ (by rw [RingHom.mem_ker, map_sub, hx', sub_self]))⟩
 
-variable {I : Type*} {e : I → R}
-
 /-- A family of orthogonal idempotents induces an surjection `R ≃+* ∏ R ⧸ ⟨1 - eᵢ⟩` -/
-lemma OrthogonalIdempotents.surjective_pi [Finite I] (he : OrthogonalIdempotents e) :
+lemma OrthogonalIdempotents.surjective_pi {I : Type*} [Finite I] {e : I → R}
+    (he : OrthogonalIdempotents e) :
     Function.Surjective (Pi.ringHom fun i ↦ Ideal.Quotient.mk (Ideal.span {1 - e i})) := by
   suffices Pairwise fun i j ↦ IsCoprime (Ideal.span {1 - e i}) (Ideal.span {1 - e j}) by
     intro x
@@ -371,7 +370,8 @@ lemma OrthogonalIdempotents.surjective_pi [Finite I] (he : OrthogonalIdempotents
   rw [Ideal.isCoprime_span_singleton_iff]
   exact ⟨1, e i, by simp [mul_sub, sub_mul, he.ortho hij]⟩
 
-lemma OrthogonalIdempotents.prod_one_sub (he : OrthogonalIdempotents e) (s : Finset I) :
+lemma OrthogonalIdempotents.prod_one_sub {I : Type*} {e : I → R}
+    (he : OrthogonalIdempotents e) (s : Finset I) :
     ∏ i ∈ s, (1 - e i) = 1 - ∑ i ∈ s, e i := by
   induction s using Finset.cons_induction with
   | empty => simp
