@@ -44,6 +44,67 @@ instance : CartesianClosed (Type v₁) := CartesianClosed.mk _
   (fun X => Exponentiable.mk _ _
     ((Types.binaryProductAdjunction X).ofNatIsoLeft (Types.binaryProductIsoProd.app X)))
 
+namespace Presheaf
+
+def internalHom (F : Cᵒᵖ ⥤ Type (max v₁ v₂)) :
+    (Cᵒᵖ ⥤ Type (max v₁ v₂)) ⥤ (Cᵒᵖ ⥤ Type (max v₁ v₂)) where
+  obj G := (yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{v₂}).op ⋙
+    (prod.functor.obj F).op ⋙ yoneda.obj G
+  map f :=
+    whiskerLeft ((yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{v₂}).op ⋙
+      (prod.functor.obj F).op) (yoneda.map f)
+
+@[simps]
+def prodFunctorAdjunctionUnit (F : Cᵒᵖ ⥤ Type (max v₁ v₂)) :
+    𝟭 _ ⟶ prod.functor.obj F ⋙ internalHom F where
+  app G := {
+    app := fun X x ↦ Limits.prod.map (𝟙 F) ((yonedaCompUliftFunctorEquiv _ _).symm x)
+    naturality := by
+      intros
+      simp only [yonedaCompUliftFunctorEquiv, internalHom]
+      aesop
+  }
+  naturality := by
+    intro _ _ f
+    simp only [Functor.id_obj, internalHom, Functor.comp_obj, prod.functor_obj_obj, Functor.id_map,
+      Functor.op_obj, whiskeringRight_obj_obj, Opposite.op_unop, yonedaCompUliftFunctorEquiv,
+      yoneda_obj_obj, uliftFunctor_obj, Equiv.coe_fn_symm_mk, Functor.comp_map,
+      prod.functor_obj_map]
+    ext
+    simp only [Functor.comp_obj, Functor.op_obj, whiskeringRight_obj_obj, prod.functor_obj_obj,
+      yoneda_obj_obj, FunctorToTypes.comp, whiskerLeft_app, yoneda_map_app, prod.map_map, comp_id]
+    congr
+    ext
+    simp only [Functor.comp_obj, yoneda_obj_obj, uliftFunctor_obj, types_comp_apply]
+    exact (NatTrans.naturality_apply f _ _).symm
+
+def prodFunctorAdjunctionCounit (F : Cᵒᵖ ⥤ Type (max v₁ v₂)) :
+    internalHom F ⋙ prod.functor.obj F ⟶ 𝟭 _ where
+  app G := {
+    app := fun X x ↦ yonedaCompUliftFunctorEquiv _ _ {
+      app := fun Y y ↦ by
+        apply (G.map y.1.op)
+        let x2 : ((internalHom F).obj G).obj X :=
+          (Limits.prod.snd : (F ⨯ (internalHom F).obj G ⟶ _)).app X x
+        apply x2.app X
+        simp only [Functor.op_obj, Functor.comp_obj, whiskeringRight_obj_obj, prod.functor_obj_obj]
+        let x1 : F.obj X := (Limits.prod.fst : (F ⨯ (internalHom F).obj G ⟶ _)).app X x
+        sorry -- exact ⟨x1, ⟨𝟙 _⟩⟩
+      naturality := sorry }
+    naturality := sorry
+  }
+  naturality := sorry
+
+def prodFunctorAdjunction (F : Cᵒᵖ ⥤ Type (max v₁ v₂)) : prod.functor.obj F ⊣ internalHom F :=
+  Adjunction.mkOfUnitCounit sorry
+    -- { unit := prodFunctorAdjunctionUnit F
+    --   counit := prodFunctorAdjunctionCounit F }
+
+end Presheaf
+
+instance {C : Type u₁} [Category.{v₁} C] : CartesianClosed (Cᵒᵖ ⥤ Type (max v₁ u₁)) :=
+  CartesianClosed.mk _ (fun F => Exponentiable.mk _ _ (Presheaf.prodFunctorAdjunction F))
+
 instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁) :=
   CartesianClosed.mk _
     (fun F => by
@@ -61,11 +122,13 @@ def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
         (ULift.equivalence.trans ULiftHom.equiv).functor)
   cartesianClosedOfEquiv e
 
-instance {C : Type u₁} [Category.{v₁} C] : CartesianClosed (C ⥤ Type (max u₁ v₁)) :=
+instance {C : Type u₁} [Category.{v₁} C] : CartesianClosed (C ⥤ Type (max v₁ u₁)) :=
   CartesianClosed.mk _
     (fun F => by
-      letI := FunctorCategory.prodPreservesColimits' F
-      have := Presheaf.isLeftAdjoint_of_preservesColimits (prod.functor.obj F)
+      -- letI : ∀ (X : Type (max v₁ u₁)), PreservesColimitsOfSize.{v₁} (prod.functor.obj X) := sorry
+      -- letI := FunctorCategory.prodPreservesColimits'.{v₁} F
+      have : (prod.functor.obj F).IsLeftAdjoint := sorry
+      --- have := Presheaf.isLeftAdjoint_of_preservesColimits (prod.functor.obj F)
       exact Exponentiable.mk _ _ (Adjunction.ofIsLeftAdjoint (prod.functor.obj F)))
 
 instance {C : Type u₁} [Category.{v₁} C] : CartesianClosed (C ⥤ Type (max u₁ v₁)) :=

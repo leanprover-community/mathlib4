@@ -208,39 +208,6 @@ def fromCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : (CostructuredArrow yoneda F
       simp only [yoneda_map_app, FunctorToTypes.comp]
       erw [Category.id_comp]⟩
 
-/-- The forward direction of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)`,
-given by `CategoryTheory.yonedaEquiv`.
--/
-@[simps]
-def toCostructuredArrowULift (F : Cᵒᵖ ⥤ Type (max v w)) :
-    F.Elementsᵒᵖ ⥤ CostructuredArrow (yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor) F where
-  obj X := CostructuredArrow.mk ((yonedaCompUliftFunctorEquiv _ _).symm (unop X).2)
-  map f := by
-    fapply CostructuredArrow.homMk
-    · exact f.unop.val.unop
-    · sorry
-      -- ext Z y
-      -- dsimp [yonedaEquiv]
-      -- simp only [FunctorToTypes.map_comp_apply, ← f.unop.2]
-
-/-- The reverse direction of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)`,
-given by `CategoryTheory.yonedaEquiv`.
--/
-@[simps]
-def fromCostructuredArrowULift (F : Cᵒᵖ ⥤ Type (max v w)) :
-    (CostructuredArrow (yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor) F)ᵒᵖ ⥤ F.Elements where
-  obj X := sorry--⟨op (unop X).1, yonedaEquiv.1 (unop X).3⟩
-  map {X Y} f := sorry
-    -- ⟨f.unop.1.op, by
-    --   convert (congr_fun ((unop X).hom.naturality f.unop.left.op) (𝟙 _)).symm
-    --   simp only [Equiv.toFun_as_coe, Quiver.Hom.unop_op, yonedaEquiv_apply, types_comp_apply,
-    --     Category.comp_id, yoneda_obj_map]
-    --   have : yoneda.map f.unop.left ≫ (unop X).hom = (unop Y).hom := by
-    --     convert f.unop.3
-    --   erw [← this]
-    --   simp only [yoneda_map_app, FunctorToTypes.comp]
-    --   erw [Category.id_comp]⟩
-
 @[simp]
 theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoneda.obj X ⟶ F) :
     (fromCostructuredArrow F).obj (op (CostructuredArrow.mk f)) = ⟨op X, yonedaEquiv.1 f⟩ :=
@@ -282,12 +249,85 @@ def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
   Equivalence.mk (toCostructuredArrow F) (fromCostructuredArrow F).rightOp
     (NatIso.op (eqToIso (from_toCostructuredArrow_eq F))) (eqToIso <| to_fromCostructuredArrow_eq F)
 
+/-- The forward direction of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)`,
+given by `CategoryTheory.yonedaEquiv`.
+-/
+@[simps]
+def toCostructuredArrowULift (F : Cᵒᵖ ⥤ Type (max v w)) :
+    F.Elementsᵒᵖ ⥤ CostructuredArrow (yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor) F where
+  obj X := CostructuredArrow.mk ((yonedaCompUliftFunctorEquiv _ _).symm (unop X).2)
+  map f := by
+    fapply CostructuredArrow.homMk
+    · exact f.unop.val.unop
+    · ext Z y
+      dsimp [yonedaCompUliftFunctorEquiv]
+      simp only [FunctorToTypes.map_comp_apply, ← f.unop.2]
+
+/-- The reverse direction of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)`,
+given by `CategoryTheory.yonedaEquiv`.
+-/
+@[simps]
+def fromCostructuredArrowULift (F : Cᵒᵖ ⥤ Type (max v w)) :
+    (CostructuredArrow (yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor) F)ᵒᵖ ⥤ F.Elements where
+  obj X := ⟨op (unop X).1, (yonedaCompUliftFunctorEquiv _ _).1 (unop X).3⟩
+  map {X Y} f :=
+    ⟨f.unop.1.op, by
+      convert (congr_fun ((unop X).hom.naturality f.unop.left.op) ⟨(𝟙 _)⟩).symm
+      simp only [Equiv.toFun_as_coe, Quiver.Hom.unop_op, yonedaEquiv_apply, types_comp_apply,
+        Category.comp_id, yoneda_obj_map]
+      have : (yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor).map f.unop.left ≫
+          (unop X).hom = (unop Y).hom := by
+        convert f.unop.3
+      erw [← this]
+      simp? says
+        simp only [yonedaCompUliftFunctorEquiv, yoneda_obj_obj, Functor.comp_obj, uliftFunctor_obj,
+          op_unop, whiskeringRight_obj_obj, Functor.const_obj_obj, Functor.comp_map,
+          whiskeringRight_obj_map, Equiv.coe_fn_mk, FunctorToTypes.comp, whiskerRight_app,
+          uliftFunctor_map, yoneda_map_app, Category.id_comp, yoneda_obj_map, Quiver.Hom.unop_op,
+          Category.comp_id]⟩
+
+@[simp]
+theorem fromCostructuredArrowULift_obj_mk (F : Cᵒᵖ ⥤ Type (max v w)) {X : C}
+    (f : (yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor).obj X ⟶ F) :
+    (fromCostructuredArrowULift F).obj (op (CostructuredArrow.mk f)) =
+      ⟨op X, (yonedaCompUliftFunctorEquiv _ _).1 f⟩ :=
+  rfl
+
+/-- The unit of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` is indeed iso. -/
+theorem from_toCostructuredArrowULift_eq (F : Cᵒᵖ ⥤ Type (max v w)) :
+    (toCostructuredArrowULift F).rightOp ⋙ fromCostructuredArrowULift F = 𝟭 _ := by
+  refine Functor.ext ?_ ?_
+  · intro X
+    exact Functor.Elements.ext _ _ rfl (by simp)
+  · intro X Y f
+    have : ∀ {a b : F.Elements} (H : a = b),
+        (eqToHom H).1 = eqToHom (show a.fst = b.fst by cases H; rfl) := by
+      rintro _ _ rfl
+      simp
+    ext
+    simp [this]
+
+/-- The counit of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` is indeed iso. -/
+theorem to_fromCostructuredArrowULift_eq (F : Cᵒᵖ ⥤ Type (max v w)) :
+    (fromCostructuredArrowULift F).rightOp ⋙ toCostructuredArrowULift F = 𝟭 _ := by
+  refine Functor.ext ?_ ?_
+  · intro X
+    cases' X with X_left X_right X_hom
+    cases X_right
+    simp? says
+      simp only [Functor.comp_obj, Functor.rightOp_obj, toCostructuredArrowULift_obj,
+        fromCostructuredArrowULift_obj_fst, fromCostructuredArrowULift_obj_snd, Equiv.toFun_as_coe,
+        Equiv.symm_apply_apply, Functor.id_obj]
+    congr
+  · aesop
+
 /-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
 def costructuredArrowYonedaEquivalenceULift (F : Cᵒᵖ ⥤ Type (max v w)) :
-    F.Elementsᵒᵖ ≌ CostructuredArrow (yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{w, v}) F :=
-  sorry
-  -- Equivalence.mk (toCostructuredArrow F) (fromCostructuredArrow F).rightOp
-  --   (NatIso.op (eqToIso (from_toCostructuredArrow_eq F))) (eqToIso <| to_fromCostructuredArrow_eq F)
+    F.Elementsᵒᵖ ≌
+      CostructuredArrow (yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{w, v}) F :=
+  Equivalence.mk (toCostructuredArrowULift F) (fromCostructuredArrowULift F).rightOp
+    (NatIso.op (eqToIso (from_toCostructuredArrowULift_eq F)))
+    (eqToIso <| to_fromCostructuredArrowULift_eq F)
 
 -- Porting note:
 -- Running `@[simps! unitIso_hom]` is mysteriously slow.
