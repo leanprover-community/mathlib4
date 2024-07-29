@@ -147,6 +147,11 @@ lemma appLE_congr (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V')
 noncomputable def homeomorph [IsIso f] : X ≃ₜ Y :=
   TopCat.homeoOfIso (asIso <| f.val.base)
 
+/-- A morphism of schemes `f : X ⟶ Y` induces a local ring homomorphis from `Y.presheaf.stalk (f x)`
+to `X.presheaf.stalk x` for any `x : X`. -/
+def stalkMap (x : X) : Y.presheaf.stalk (f.val.base x) ⟶ X.presheaf.stalk x :=
+  f.val.stalkMap x
+
 @[ext]
 protected lemma ext {f g : X ⟶ Y} (h_base : f.1.base = g.1.base)
     (h_app : ∀ U, f.app U ≫ X.presheaf.map
@@ -569,5 +574,122 @@ theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : X.Opens} (h : U
   cases h
   refine (Scheme.congr_app this _).trans ?_
   simp [eqToHom_map]
+
+@[reassoc (attr := simp)]
+lemma Scheme.iso_hom_val_base_inv_val_base {X Y : Scheme.{u}} (e : X ≅ Y) :
+    e.hom.val.base ≫ e.inv.val.base = 𝟙 _ :=
+  LocallyRingedSpace.iso_hom_val_base_inv_val_base (Scheme.forgetToLocallyRingedSpace.mapIso e)
+
+@[simp]
+lemma Scheme.iso_hom_val_base_inv_val_base_apply {X Y : Scheme.{u}} (e : X ≅ Y) (x : X) :
+    (e.inv.val.base (e.hom.val.base x)) = x := by
+  show (e.hom.val.base ≫ e.inv.val.base) x = 𝟙 X.toPresheafedSpace x
+  simp
+
+@[reassoc (attr := simp)]
+lemma Scheme.iso_inv_val_base_hom_val_base {X Y : Scheme.{u}} (e : X ≅ Y) :
+    e.inv.val.base ≫ e.hom.val.base = 𝟙 _ :=
+  LocallyRingedSpace.iso_inv_val_base_hom_val_base (Scheme.forgetToLocallyRingedSpace.mapIso e)
+
+@[simp]
+lemma Scheme.iso_inv_val_base_hom_val_base_apply {X Y : Scheme.{u}} (e : X ≅ Y) (y : Y) :
+    (e.hom.val.base (e.inv.val.base y)) = y := by
+  show (e.inv.val.base ≫ e.hom.val.base) y = 𝟙 Y.toPresheafedSpace y
+  simp
+
+section Stalks
+
+namespace Scheme
+
+variable {X Y : Scheme.{u}} (f : X ⟶ Y)
+
+@[simp]
+lemma stalkMap_id (X : Scheme.{u}) (x : X) :
+    (𝟙 X : X ⟶ X).stalkMap x = 𝟙 (X.presheaf.stalk x) :=
+  PresheafedSpace.stalkMap.id _ x
+
+lemma stalkMap_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g : X ⟶ Z).stalkMap x = g.stalkMap (f.val.base x) ≫ f.stalkMap x :=
+  PresheafedSpace.stalkMap.comp f.val g.val x
+
+@[reassoc]
+lemma stalkSpecializes_stalkMap (x x' : X)
+    (h : x ⤳ x') : Y.presheaf.stalkSpecializes (f.val.base.map_specializes h) ≫ f.stalkMap x =
+      f.stalkMap x' ≫ X.presheaf.stalkSpecializes h :=
+  PresheafedSpace.stalkMap.stalkSpecializes_stalkMap f.val h
+
+lemma stalkSpecializes_stalkMap_apply (x x' : X) (h : x ⤳ x') (y) :
+    f.stalkMap x (Y.presheaf.stalkSpecializes (f.val.base.map_specializes h) y) =
+      (X.presheaf.stalkSpecializes h (f.stalkMap x' y)) :=
+  DFunLike.congr_fun (stalkSpecializes_stalkMap f x x' h) y
+
+@[reassoc]
+lemma stalkMap_congr (f g : X ⟶ Y) (hfg : f = g) (x x' : X)
+    (hxx' : x = x') : f.stalkMap x ≫ X.presheaf.stalkSpecializes (specializes_of_eq hxx'.symm) =
+      Y.presheaf.stalkSpecializes (specializes_of_eq <| hfg ▸ hxx' ▸ rfl) ≫ g.stalkMap x' :=
+  LocallyRingedSpace.stalkMap_congr f g hfg x x' hxx'
+
+@[reassoc]
+lemma stalkMap_congr_hom (f g : X ⟶ Y) (hfg : f = g) (x : X) :
+    f.stalkMap x = Y.presheaf.stalkSpecializes (specializes_of_eq <| hfg ▸ rfl) ≫
+      g.stalkMap x :=
+  LocallyRingedSpace.stalkMap_congr_hom f g hfg x
+
+@[reassoc]
+lemma stalkMap_congr_point (x x' : X) (hxx' : x = x') :
+    f.stalkMap x ≫ X.presheaf.stalkSpecializes (specializes_of_eq hxx'.symm) =
+      Y.presheaf.stalkSpecializes (specializes_of_eq <| hxx' ▸ rfl) ≫ f.stalkMap x' :=
+  LocallyRingedSpace.stalkMap_congr_point f x x' hxx'
+
+@[reassoc (attr := simp)]
+lemma stalkMap_hom_inv (e : X ≅ Y) (y : Y) :
+    e.hom.stalkMap (e.inv.val.base y) ≫ e.inv.stalkMap y =
+      Y.presheaf.stalkSpecializes (specializes_of_eq <| by simp) :=
+  LocallyRingedSpace.stalkMap_hom_inv (forgetToLocallyRingedSpace.mapIso e) y
+
+@[simp]
+lemma stalkMap_hom_inv_apply (e : X ≅ Y) (y : Y) (z) :
+    e.inv.stalkMap y (e.hom.stalkMap (e.inv.val.base y) z) =
+      Y.presheaf.stalkSpecializes (specializes_of_eq <| by simp) z :=
+  DFunLike.congr_fun (stalkMap_hom_inv e y) z
+
+@[reassoc (attr := simp)]
+lemma stalkMap_inv_hom (e : X ≅ Y) (x : X) :
+    e.inv.stalkMap (e.hom.val.base x) ≫ e.hom.stalkMap x =
+      X.presheaf.stalkSpecializes (specializes_of_eq <| by simp) :=
+  LocallyRingedSpace.stalkMap_inv_hom (forgetToLocallyRingedSpace.mapIso e) x
+
+@[simp]
+lemma stalkMap_inv_hom_apply (e : X ≅ Y) (x : X) (y) :
+    e.hom.stalkMap x (e.inv.stalkMap (e.hom.val.base x) y) =
+      X.presheaf.stalkSpecializes (specializes_of_eq <| by simp) y :=
+  DFunLike.congr_fun (stalkMap_inv_hom e x) y
+
+@[reassoc]
+lemma stalkMap_germ (U : Y.Opens) (x : f ⁻¹ᵁ U) :
+    Y.presheaf.germ ⟨f.val.base x.val, x.property⟩ ≫ f.stalkMap x =
+      f.app U ≫ X.presheaf.germ x :=
+  PresheafedSpace.stalkMap_germ f.val U x
+
+lemma stalkMap_germ_apply (U : Y.Opens) (x : f ⁻¹ᵁ U) (y) :
+    f.stalkMap x.val (Y.presheaf.germ ⟨f.val.base x.val, x.property⟩ y) =
+      X.presheaf.germ x (f.val.c.app (op U) y) :=
+  PresheafedSpace.stalkMap_germ_apply f.val U x y
+
+@[reassoc (attr := simp)]
+lemma stalkMap_germ' (U : Y.Opens) (x : X) (hx : f.val.base x ∈ U) :
+    Y.presheaf.germ ⟨f.val.base x, hx⟩ ≫ f.stalkMap x =
+      f.app U ≫ X.presheaf.germ (U := f⁻¹ᵁ U) ⟨x, hx⟩ :=
+  PresheafedSpace.stalkMap_germ' f.val U x hx
+
+@[simp]
+lemma stalkMap_germ'_apply (U : Y.Opens) (x : X) (hx : f.val.base x ∈ U) (y) :
+    f.stalkMap x (Y.presheaf.germ ⟨f.val.base x, hx⟩ y) =
+      X.presheaf.germ (U := (Opens.map f.val.base).obj U) ⟨x, hx⟩ (f.val.c.app (op U) y) :=
+  PresheafedSpace.stalkMap_germ_apply f.val U ⟨x, hx⟩ y
+
+end Scheme
+
+end Stalks
 
 end AlgebraicGeometry
