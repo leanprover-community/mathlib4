@@ -7,8 +7,6 @@ import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.CategoryTheory.Monoidal.CommMon_
 import Mathlib.CategoryTheory.Monoidal.Types.Symmetric
 
-#align_import category_theory.monoidal.internal.types from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
-
 /-!
 # `Mon_ (Type u) ≌ MonCat.{u}`
 
@@ -31,8 +29,6 @@ instance monMonoid (A : Mon_ (Type u)) : Monoid A.X where
   one_mul x := by convert congr_fun A.one_mul (PUnit.unit, x)
   mul_one x := by convert congr_fun A.mul_one (x, PUnit.unit)
   mul_assoc x y z := by convert congr_fun A.mul_assoc ((x, y), z)
-set_option linter.uppercaseLean3 false in
-#align Mon_Type_equivalence_Mon.Mon_monoid MonTypeEquivalenceMon.monMonoid
 
 /-- Converting a monoid object in `Type` to a bundled monoid.
 -/
@@ -42,8 +38,6 @@ noncomputable def functor : Mon_ (Type u) ⥤ MonCat.{u} where
     { toFun := f.hom
       map_one' := congr_fun f.one_hom PUnit.unit
       map_mul' := fun x y => congr_fun f.mul_hom (x, y) }
-set_option linter.uppercaseLean3 false in
-#align Mon_Type_equivalence_Mon.functor MonTypeEquivalenceMon.functor
 
 /-- Converting a bundled monoid to a monoid object in `Type`.
 -/
@@ -56,8 +50,6 @@ noncomputable def inverse : MonCat.{u} ⥤ Mon_ (Type u) where
       mul_one := by ext ⟨_, _⟩; dsimp; simp
       mul_assoc := by ext ⟨⟨x, y⟩, z⟩; simp [mul_assoc] }
   map f := { hom := f }
-set_option linter.uppercaseLean3 false in
-#align Mon_Type_equivalence_Mon.inverse MonTypeEquivalenceMon.inverse
 
 end MonTypeEquivalenceMon
 
@@ -87,8 +79,6 @@ noncomputable def monTypeEquivalenceMon : Mon_ (Type u) ≌ MonCat.{u} where
               map_one' := rfl
               map_mul' := fun x y => rfl } })
       (by aesop_cat)
-set_option linter.uppercaseLean3 false in
-#align Mon_Type_equivalence_Mon monTypeEquivalenceMon
 
 /-- The equivalence `Mon_ (Type u) ≌ MonCat.{u}`
 is naturally compatible with the forgetful functors to `Type u`.
@@ -96,29 +86,21 @@ is naturally compatible with the forgetful functors to `Type u`.
 noncomputable def monTypeEquivalenceMonForget :
     MonTypeEquivalenceMon.functor ⋙ forget MonCat ≅ Mon_.forget (Type u) :=
   NatIso.ofComponents (fun A => Iso.refl _) (by aesop_cat)
-set_option linter.uppercaseLean3 false in
-#align Mon_Type_equivalence_Mon_forget monTypeEquivalenceMonForget
 
 noncomputable instance monTypeInhabited : Inhabited (Mon_ (Type u)) :=
   ⟨MonTypeEquivalenceMon.inverse.obj (MonCat.of PUnit)⟩
-set_option linter.uppercaseLean3 false in
-#align Mon_Type_inhabited monTypeInhabited
 
 namespace CommMonTypeEquivalenceCommMon
 
 instance commMonCommMonoid (A : CommMon_ (Type u)) : CommMonoid A.X :=
   { MonTypeEquivalenceMon.monMonoid A.toMon_ with
     mul_comm := fun x y => by convert congr_fun A.mul_comm (y, x) }
-set_option linter.uppercaseLean3 false in
-#align CommMon_Type_equivalence_CommMon.CommMon_comm_monoid CommMonTypeEquivalenceCommMon.commMonCommMonoid
 
 /-- Converting a commutative monoid object in `Type` to a bundled commutative monoid.
 -/
 noncomputable def functor : CommMon_ (Type u) ⥤ CommMonCat.{u} where
   obj A := CommMonCat.of A.X
   map f := MonTypeEquivalenceMon.functor.map f
-set_option linter.uppercaseLean3 false in
-#align CommMon_Type_equivalence_CommMon.functor CommMonTypeEquivalenceCommMon.functor
 
 /-- Converting a bundled commutative monoid to a commutative monoid object in `Type`.
 -/
@@ -129,8 +111,6 @@ noncomputable def inverse : CommMonCat.{u} ⥤ CommMon_ (Type u) where
         ext ⟨x : A, y : A⟩
         exact CommMonoid.mul_comm y x }
   map f := MonTypeEquivalenceMon.inverse.map ((forget₂ CommMonCat MonCat).map f)
-set_option linter.uppercaseLean3 false in
-#align CommMon_Type_equivalence_CommMon.inverse CommMonTypeEquivalenceCommMon.inverse
 
 end CommMonTypeEquivalenceCommMon
 
@@ -160,8 +140,6 @@ noncomputable def commMonTypeEquivalenceCommMon : CommMon_ (Type u) ≌ CommMonC
               map_one' := rfl
               map_mul' := fun x y => rfl } })
       (by aesop_cat)
-set_option linter.uppercaseLean3 false in
-#align CommMon_Type_equivalence_CommMon commMonTypeEquivalenceCommMon
 
 /-- The equivalences `Mon_ (Type u) ≌ MonCat.{u}` and `CommMon_ (Type u) ≌ CommMonCat.{u}`
 are naturally compatible with the forgetful functors to `MonCat` and `Mon_ (Type u)`.
@@ -170,10 +148,6 @@ noncomputable def commMonTypeEquivalenceCommMonForget :
     CommMonTypeEquivalenceCommMon.functor ⋙ forget₂ CommMonCat MonCat ≅
       CommMon_.forget₂Mon_ (Type u) ⋙ MonTypeEquivalenceMon.functor :=
   NatIso.ofComponents (fun A => Iso.refl _) (by aesop_cat)
-set_option linter.uppercaseLean3 false in
-#align CommMon_Type_equivalence_CommMon_forget commMonTypeEquivalenceCommMonForget
 
 noncomputable instance commMonTypeInhabited : Inhabited (CommMon_ (Type u)) :=
   ⟨CommMonTypeEquivalenceCommMon.inverse.obj (CommMonCat.of PUnit)⟩
-set_option linter.uppercaseLean3 false in
-#align CommMon_Type_inhabited commMonTypeInhabited

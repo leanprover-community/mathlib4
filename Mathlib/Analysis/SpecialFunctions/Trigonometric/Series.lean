@@ -5,8 +5,6 @@ Authors: Eric Wieser, Yaël Dillies
 -/
 import Mathlib.Analysis.SpecialFunctions.Exponential
 
-#align_import analysis.special_functions.trigonometric.series from "leanprover-community/mathlib"@"ccf84e0d918668460a34aa19d02fe2e0e2286da0"
-
 /-!
 # Trigonometric functions as sums of infinite series
 
@@ -44,7 +42,6 @@ theorem Complex.hasSum_cos' (z : ℂ) :
   simp_rw [Fin.val_zero, Fin.val_one, add_zero, pow_succ, pow_mul, mul_pow, neg_sq, ← two_mul,
     neg_mul, mul_neg, neg_div, add_right_neg, zero_div, add_zero,
     mul_div_cancel_left₀ _ (two_ne_zero : (2 : ℂ) ≠ 0)]
-#align complex.has_sum_cos' Complex.hasSum_cos'
 
 theorem Complex.hasSum_sin' (z : ℂ) :
     HasSum (fun n : ℕ => (z * Complex.I) ^ (2 * n + 1) / ↑(2 * n + 1)! / Complex.I)
@@ -62,14 +59,12 @@ theorem Complex.hasSum_sin' (z : ℂ) :
   simp_rw [Fin.val_zero, Fin.val_one, add_zero, pow_succ, pow_mul, mul_pow, neg_sq, sub_self,
     zero_mul, zero_div, zero_add, neg_mul, mul_neg, neg_div, ← neg_add', ← two_mul,
     neg_mul, neg_div, mul_assoc, mul_div_cancel_left₀ _ (two_ne_zero : (2 : ℂ) ≠ 0), Complex.div_I]
-#align complex.has_sum_sin' Complex.hasSum_sin'
 
 /-- The power series expansion of `Complex.cos`. -/
 theorem Complex.hasSum_cos (z : ℂ) :
     HasSum (fun n : ℕ => (-1) ^ n * z ^ (2 * n) / ↑(2 * n)!) (Complex.cos z) := by
   convert Complex.hasSum_cos' z using 1
   simp_rw [mul_pow, pow_mul, Complex.I_sq, mul_comm]
-#align complex.has_sum_cos Complex.hasSum_cos
 
 /-- The power series expansion of `Complex.sin`. -/
 theorem Complex.hasSum_sin (z : ℂ) :
@@ -77,48 +72,39 @@ theorem Complex.hasSum_sin (z : ℂ) :
   convert Complex.hasSum_sin' z using 1
   simp_rw [mul_pow, pow_succ, pow_mul, Complex.I_sq, ← mul_assoc, mul_div_assoc, div_right_comm,
     div_self Complex.I_ne_zero, mul_comm _ ((-1 : ℂ) ^ _), mul_one_div, mul_div_assoc, mul_assoc]
-#align complex.has_sum_sin Complex.hasSum_sin
 
 theorem Complex.cos_eq_tsum' (z : ℂ) :
     Complex.cos z = ∑' n : ℕ, (z * Complex.I) ^ (2 * n) / ↑(2 * n)! :=
   (Complex.hasSum_cos' z).tsum_eq.symm
-#align complex.cos_eq_tsum' Complex.cos_eq_tsum'
 
 theorem Complex.sin_eq_tsum' (z : ℂ) :
     Complex.sin z = ∑' n : ℕ, (z * Complex.I) ^ (2 * n + 1) / ↑(2 * n + 1)! / Complex.I :=
   (Complex.hasSum_sin' z).tsum_eq.symm
-#align complex.sin_eq_tsum' Complex.sin_eq_tsum'
 
 theorem Complex.cos_eq_tsum (z : ℂ) :
     Complex.cos z = ∑' n : ℕ, (-1) ^ n * z ^ (2 * n) / ↑(2 * n)! :=
   (Complex.hasSum_cos z).tsum_eq.symm
-#align complex.cos_eq_tsum Complex.cos_eq_tsum
 
 theorem Complex.sin_eq_tsum (z : ℂ) :
     Complex.sin z = ∑' n : ℕ, (-1) ^ n * z ^ (2 * n + 1) / ↑(2 * n + 1)! :=
   (Complex.hasSum_sin z).tsum_eq.symm
-#align complex.sin_eq_tsum Complex.sin_eq_tsum
 
 /-- The power series expansion of `Real.cos`. -/
 theorem Real.hasSum_cos (r : ℝ) :
     HasSum (fun n : ℕ => (-1) ^ n * r ^ (2 * n) / ↑(2 * n)!) (Real.cos r) :=
   mod_cast Complex.hasSum_cos r
-#align real.has_sum_cos Real.hasSum_cos
 
 /-- The power series expansion of `Real.sin`. -/
 theorem Real.hasSum_sin (r : ℝ) :
     HasSum (fun n : ℕ => (-1) ^ n * r ^ (2 * n + 1) / ↑(2 * n + 1)!) (Real.sin r) :=
   mod_cast Complex.hasSum_sin r
-#align real.has_sum_sin Real.hasSum_sin
 
 theorem Real.cos_eq_tsum (r : ℝ) : Real.cos r = ∑' n : ℕ, (-1) ^ n * r ^ (2 * n) / ↑(2 * n)! :=
   (Real.hasSum_cos r).tsum_eq.symm
-#align real.cos_eq_tsum Real.cos_eq_tsum
 
 theorem Real.sin_eq_tsum (r : ℝ) :
     Real.sin r = ∑' n : ℕ, (-1) ^ n * r ^ (2 * n + 1) / ↑(2 * n + 1)! :=
   (Real.hasSum_sin r).tsum_eq.symm
-#align real.sin_eq_tsum Real.sin_eq_tsum
 
 end SinCos
 

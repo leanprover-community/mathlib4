@@ -11,8 +11,6 @@ The `mod_cases` tactic does case disjunction on `e % n`, where `e : ℤ` or `e :
 to yield `n` new subgoals corresponding to the possible values of `e` modulo `n`.
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Tactic.ModCases
 open Lean Meta Elab Tactic Term Qq
 
@@ -62,7 +60,7 @@ and the `a ≡ b (mod n) → p` case becomes a subgoal.
 Proves an expression of the form `OnModCases n a b p` where `n` and `b` are raw nat literals
 and `b ≤ n`. Returns the list of subgoals `?gi : a ≡ i [ZMOD n] → p`.
 -/
-partial def proveOnModCases (n : Q(ℕ)) (a : Q(ℤ)) (b : Q(ℕ)) (p : Q(Sort u)) :
+partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℤ)) (b : Q(ℕ)) (p : Q(Sort u)) :
     MetaM (Q(OnModCases $n $a $b $p) × List MVarId) := do
   if n.natLit! ≤ b.natLit! then
     haveI' : $b =Q $n := ⟨⟩
@@ -138,7 +136,7 @@ and the `a ≡ b (mod n) → p` case becomes a subgoal.
 Proves an expression of the form `OnModCases n a b p` where `n` and `b` are raw nat literals
 and `b ≤ n`. Returns the list of subgoals `?gi : a ≡ i [MOD n] → p`.
 -/
-partial def proveOnModCases (n : Q(ℕ)) (a : Q(ℕ)) (b : Q(ℕ)) (p : Q(Sort u)) :
+partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℕ)) (b : Q(ℕ)) (p : Q(Sort u)) :
     MetaM (Q(OnModCases $n $a $b $p) × List MVarId) := do
   if n.natLit! ≤ b.natLit! then
     pure ((q(onModCases_stop $p $n $a) : Expr), [])
@@ -192,3 +190,9 @@ elab_rules : tactic
     | ~q(ℤ) => IntMod.modCases h e n
     | ~q(ℕ) => NatMod.modCases h e n
     | _ => throwError "mod_cases only works with Int and Nat"
+
+end ModCases
+
+end Tactic
+
+end Mathlib
