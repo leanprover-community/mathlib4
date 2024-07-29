@@ -529,13 +529,9 @@ theorem tendsto_of_forall_isOpen_le_liminf {μ : ProbabilityMeasure Ω}
   have aux : ENNReal.ofNNReal (liminf (fun i ↦ μs i G) atTop) =
           liminf (ENNReal.ofNNReal ∘ fun i ↦ μs i G) atTop := by
     refine Monotone.map_liminf_of_continuousAt (F := atTop) ENNReal.coe_mono (μs · G) ?_ ?_ ?_
-    · apply ENNReal.continuous_coe.continuousAt
-    · use 1
-      simp only [eventually_map, ProbabilityMeasure.apply_le_one, eventually_atTop, ge_iff_le,
-        implies_true, forall_const, exists_const]
-    · use 0
-      simp only [zero_le, eventually_map, eventually_atTop, ge_iff_le, implies_true, forall_const,
-        exists_const]
+    · exact ENNReal.continuous_coe.continuousAt
+    · exact IsBoundedUnder.isCoboundedUnder_ge ⟨1, by simp⟩
+    · exact ⟨0, by simp⟩
   have obs := ENNReal.coe_mono h_opens
   simp only [ne_eq, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
   convert obs
