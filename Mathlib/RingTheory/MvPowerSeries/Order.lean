@@ -273,8 +273,9 @@ theorem weightedOrder_monomial_of_ne_zero (d : σ →₀ ℕ) (a : R) (h : a ≠
 theorem min_weightedOrder_le_add (f g : MvPowerSeries σ R) :
     min (f.weightedOrder w) (g.weightedOrder w) ≤ (f + g).weightedOrder w := by
   apply le_weightedOrder w
-  simp (config := { contextual := true }) only [coeff_eq_zero_of_lt_weightedOrder w, lt_min_iff, map_add,
-    add_zero, eq_self_iff_true, imp_true_iff]
+  simp (config := { contextual := true }) only
+    [coeff_eq_zero_of_lt_weightedOrder w, lt_min_iff, map_add, add_zero,
+      eq_self_iff_true, imp_true_iff]
 
 private theorem weightedOrder_add_of_weightedOrder_lt.aux {f g : MvPowerSeries σ R}
     (H : f.weightedOrder w < g.weightedOrder w) :
