@@ -16,7 +16,7 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: two_commits
+      - name: two commits
         run: |
           printf 'today:     %s\n' "$(git log --pretty=%H --since="$(date -I -d 'today')" | tail -n -1)"
           printf 'last week: %s\n' "$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)"
