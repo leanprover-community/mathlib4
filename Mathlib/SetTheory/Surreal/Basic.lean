@@ -37,7 +37,7 @@ surreals form a linear ordered commutative ring.
 
 One can also map all the ordinals into the surreals!
 
-### Todo
+## TODO
 
 - Define the field structure on the surreals.
 

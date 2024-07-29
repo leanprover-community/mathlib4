@@ -27,7 +27,7 @@ variable {α β δ ι : Type*}
 
 namespace MeasureTheory
 
-variable {m0 : MeasurableSpace α} [MeasurableSpace β] {μ ν ν₁ ν₂: Measure α}
+variable {m0 : MeasurableSpace α} [MeasurableSpace β] {μ ν ν₁ ν₂ : Measure α}
   {s t : Set α}
 
 section IsFiniteMeasure

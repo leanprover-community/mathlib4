@@ -30,7 +30,7 @@ This plugin is noticeably less powerful than the equivalent version in Mathlib 3
 In particular, we can't use the plugin on sums containing variables.
 (See also the TODO note "To support variables".)
 
-## TODOs
+## TODO
 
  * Support intervals: `Finset.Ico`, `Finset.Icc`, ...
  * To support variables, like in Mathlib 3, turn this into a standalone tactic that unfolds
@@ -402,3 +402,9 @@ partial def evalFinsetSum : NormNumExt where eval {u β} e := do
         q(Finset.sum_cons $h)
       pure <| res.eq_trans eq)
     s
+
+end NormNum
+
+end Meta
+
+end Mathlib

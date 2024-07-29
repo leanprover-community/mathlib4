@@ -651,7 +651,7 @@ theorem update_comp_eq_of_injective {β : Sort*} (g : α' → β) {f : α → α
 theorem apply_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*} (f : ∀ i, α i → β i)
     (g : ∀ i, α i) (i : ι) (v : α i) (j : ι) :
     f j (update g i v j) = update (fun k ↦ f k (g k)) i (f i v) j := by
-  by_cases h:j = i
+  by_cases h : j = i
   · subst j
     simp
   · simp [h]
@@ -660,7 +660,7 @@ theorem apply_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*} (f : �
 theorem apply_update₂ {ι : Sort*} [DecidableEq ι] {α β γ : ι → Sort*} (f : ∀ i, α i → β i → γ i)
     (g : ∀ i, α i) (h : ∀ i, β i) (i : ι) (v : α i) (w : β i) (j : ι) :
     f j (update g i v j) (update h i w j) = update (fun k ↦ f k (g k) (h k)) i (f i v w) j := by
-  by_cases h:j = i
+  by_cases h : j = i
   · subst j
     simp
   · simp [h]

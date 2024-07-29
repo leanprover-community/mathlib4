@@ -105,3 +105,5 @@ theorem lcm_eq {x y : PUnit} : lcm x y = unit :=
 theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
   rfl
 #align punit.norm_unit_eq PUnit.norm_unit_eq
+
+end PUnit

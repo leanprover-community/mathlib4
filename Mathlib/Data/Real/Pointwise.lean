@@ -17,7 +17,7 @@ This file relates `sInf (a • s)`/`sSup (a • s)` with `a • sInf s`/`a • s
 From these, it relates `⨅ i, a • f i` / `⨆ i, a • f i` with `a • (⨅ i, f i)` / `a • (⨆ i, f i)`,
 and provides lemmas about distributing `*` over `⨅` and `⨆`.
 
-# TODO
+## TODO
 
 This is true more generally for conditionally complete linear order whose default value is `0`. We
 don't have those yet.

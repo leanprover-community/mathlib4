@@ -657,9 +657,9 @@ def equalizer (ϕ ψ : A →ₐ[R] B) : Subalgebra R A where
   zero_mem' := by simp only [Set.mem_setOf_eq, map_zero]
   one_mem' := by simp only [Set.mem_setOf_eq, map_one]
   add_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
-    rw [Set.mem_setOf_eq, ϕ.map_add, ψ.map_add, hx, hy]
+    rw [Set.mem_setOf_eq, map_add, map_add, hx, hy]
   mul_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
-    rw [Set.mem_setOf_eq, ϕ.map_mul, ψ.map_mul, hx, hy]
+    rw [Set.mem_setOf_eq, map_mul, map_mul, hx, hy]
   algebraMap_mem' x := by rw [Set.mem_setOf_eq, AlgHom.commutes, AlgHom.commutes]
 #align alg_hom.equalizer AlgHom.equalizer
 

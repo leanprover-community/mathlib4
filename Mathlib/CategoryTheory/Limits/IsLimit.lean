@@ -1022,7 +1022,7 @@ def homOfCocone (s : Cocone F) : X ⟶ s.pt :=
 
 @[simp]
 theorem coconeOfHom_homOfCocone (s : Cocone F) : coconeOfHom h (homOfCocone h s) = s := by
-  dsimp [coconeOfHom, homOfCocone];
+  dsimp [coconeOfHom, homOfCocone]
   have ⟨s_pt,s_ι⟩ := s
   congr; dsimp
   convert congrFun (congrFun (congrArg NatTrans.app h.inv_hom_id) s_pt) s_ι using 1

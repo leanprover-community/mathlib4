@@ -136,7 +136,6 @@ For a list containing more detailed information, see https://leanprover-communit
 * Gabriel Ebner (@gebner): tactics, infrastructure, core, formal languages
 * Sébastien Gouëzel (@sgouezel): topology, calculus, geometry, analysis, measure theory
 * Markus Himmel (@TwoFX): category theory
-* Chris Hughes (@ChrisHughes24): algebra
 * Yury G. Kudryashov (@urkud): analysis, topology, measure theory
 * Robert Y. Lewis (@robertylewis): tactics, documentation
 * Jireh Loreaux (@j-loreaux): analysis, topology, operator algebras
@@ -150,8 +149,9 @@ For a list containing more detailed information, see https://leanprover-communit
 * Adam Topaz (@adamtopaz): algebra, category theory, algebraic geometry
 * Eric Wieser (@eric-wieser): algebra, infrastructure
 
-## Emeritus maintainers:
+## Past maintainers:
 
 * Jeremy Avigad (@avigad): analysis
 * Johannes Hölzl (@johoelzl): measure theory, topology
 * Simon Hudon (@cipher1024): tactics
+* Chris Hughes (@ChrisHughes24): algebra

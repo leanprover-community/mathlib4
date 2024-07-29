@@ -380,7 +380,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
   rcases continuousOn_iff'.1 hf'.1 r.source r.open_source with ⟨o, o_open, ho⟩
   suffices h : ContMDiffOn I.tangent I'.tangent m (tangentMapWithin I I' f s) s'_lift by
     refine ⟨π E (TangentSpace I) ⁻¹' (o ∩ l.source), ?_, ?_, ?_⟩
-    · show IsOpen (π E (TangentSpace I) ⁻¹' (o ∩ l.source));
+    · show IsOpen (π E (TangentSpace I) ⁻¹' (o ∩ l.source))
       exact (o_open.inter l.open_source).preimage (FiberBundle.continuous_proj E _)
     · show p ∈ π E (TangentSpace I) ⁻¹' (o ∩ l.source)
       simp only [l, preimage_inter, mem_inter_iff, mem_preimage, mem_chart_source, and_true]

@@ -280,3 +280,5 @@ lemma stdAddChar_coe (j : ℤ) :
     Submonoid.coe_subtype, toCircle_intCast]
 
 lemma stdAddChar_apply (j : ZMod N) : stdAddChar j = ↑(toCircle j) := rfl
+
+end ZMod

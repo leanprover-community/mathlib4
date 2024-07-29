@@ -547,13 +547,13 @@ variable [DecidableEq ι]
 @[to_additive] lemma prod_sdiff_le_prod_sdiff :
     ∏ i ∈ s \ t, f i ≤ ∏ i ∈ t \ s, f i ↔ ∏ i ∈ s, f i ≤ ∏ i ∈ t, f i := by
   rw [← mul_le_mul_iff_right, ← prod_union (disjoint_sdiff_inter _ _), sdiff_union_inter,
-    ← prod_union, inter_comm, sdiff_union_inter];
+    ← prod_union, inter_comm, sdiff_union_inter]
   simpa only [inter_comm] using disjoint_sdiff_inter t s
 
 @[to_additive] lemma prod_sdiff_lt_prod_sdiff :
     ∏ i ∈ s \ t, f i < ∏ i ∈ t \ s, f i ↔ ∏ i ∈ s, f i < ∏ i ∈ t, f i := by
   rw [← mul_lt_mul_iff_right, ← prod_union (disjoint_sdiff_inter _ _), sdiff_union_inter,
-    ← prod_union, inter_comm, sdiff_union_inter];
+    ← prod_union, inter_comm, sdiff_union_inter]
   simpa only [inter_comm] using disjoint_sdiff_inter t s
 
 end OrderedCancelCommMonoid

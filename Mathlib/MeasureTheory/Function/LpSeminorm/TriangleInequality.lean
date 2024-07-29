@@ -199,3 +199,5 @@ theorem memℒp_finset_sum' {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀
   ext x
   simp
 #align measure_theory.mem_ℒp_finset_sum' MeasureTheory.memℒp_finset_sum'
+
+end MeasureTheory

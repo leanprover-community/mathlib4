@@ -366,3 +366,5 @@ end Presieve
 end
 
 end Equalizer
+
+end CategoryTheory

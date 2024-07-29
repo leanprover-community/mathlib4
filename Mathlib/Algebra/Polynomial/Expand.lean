@@ -63,13 +63,13 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem expand_monomial (r : R) : expand R p (monomial q r) = monomial (q * p) r := by
-  simp_rw [← smul_X_eq_monomial, AlgHom.map_smul, AlgHom.map_pow, expand_X, mul_comm, pow_mul]
+  simp_rw [← smul_X_eq_monomial, map_smul, map_pow, expand_X, mul_comm, pow_mul]
 #align polynomial.expand_monomial Polynomial.expand_monomial
 
 theorem expand_expand (f : R[X]) : expand R p (expand R q f) = expand R (p * q) f :=
   Polynomial.induction_on f (fun r => by simp_rw [expand_C])
-    (fun f g ihf ihg => by simp_rw [AlgHom.map_add, ihf, ihg]) fun n r _ => by
-    simp_rw [AlgHom.map_mul, expand_C, AlgHom.map_pow, expand_X, AlgHom.map_pow, expand_X, pow_mul]
+    (fun f g ihf ihg => by simp_rw [map_add, ihf, ihg]) fun n r _ => by
+    simp_rw [map_mul, expand_C, map_pow, expand_X, map_pow, expand_X, pow_mul]
 #align polynomial.expand_expand Polynomial.expand_expand
 
 theorem expand_mul (f : R[X]) : expand R (p * q) f = expand R p (expand R q f) :=
@@ -83,8 +83,8 @@ theorem expand_zero (f : R[X]) : expand R 0 f = C (eval 1 f) := by simp [expand]
 @[simp]
 theorem expand_one (f : R[X]) : expand R 1 f = f :=
   Polynomial.induction_on f (fun r => by rw [expand_C])
-    (fun f g ihf ihg => by rw [AlgHom.map_add, ihf, ihg]) fun n r _ => by
-    rw [AlgHom.map_mul, expand_C, AlgHom.map_pow, expand_X, pow_one]
+    (fun f g ihf ihg => by rw [map_add, ihf, ihg]) fun n r _ => by
+    rw [map_mul, expand_C, map_pow, expand_X, pow_one]
 #align polynomial.expand_one Polynomial.expand_one
 
 theorem expand_pow (f : R[X]) : expand R (p ^ q) f = (expand R p)^[q] f :=
@@ -154,7 +154,7 @@ theorem natDegree_expand (p : ℕ) (f : R[X]) : (expand R p f).natDegree = f.nat
   rcases p.eq_zero_or_pos with hp | hp
   · rw [hp, coe_expand, pow_zero, mul_zero, ← C_1, eval₂_hom, natDegree_C]
   by_cases hf : f = 0
-  · rw [hf, AlgHom.map_zero, natDegree_zero, zero_mul]
+  · rw [hf, map_zero, natDegree_zero, zero_mul]
   have hf1 : expand R p f ≠ 0 := mt (expand_eq_zero hp).1 hf
   rw [← WithBot.coe_eq_coe]
   convert (degree_eq_natDegree hf1).symm -- Porting note: was `rw [degree_eq_natDegree hf1]`
@@ -194,14 +194,14 @@ theorem map_expand {p : ℕ} {f : R →+* S} {q : R[X]} :
 @[simp]
 theorem expand_eval (p : ℕ) (P : R[X]) (r : R) : eval r (expand R p P) = eval (r ^ p) P := by
   refine Polynomial.induction_on P (fun a => by simp) (fun f g hf hg => ?_) fun n a _ => by simp
-  rw [AlgHom.map_add, eval_add, eval_add, hf, hg]
+  rw [map_add, eval_add, eval_add, hf, hg]
 #align polynomial.expand_eval Polynomial.expand_eval
 
 @[simp]
 theorem expand_aeval {A : Type*} [Semiring A] [Algebra R A] (p : ℕ) (P : R[X]) (r : A) :
     aeval r (expand R p P) = aeval (r ^ p) P := by
   refine Polynomial.induction_on P (fun a => by simp) (fun f g hf hg => ?_) fun n a _ => by simp
-  rw [AlgHom.map_add, aeval_add, aeval_add, hf, hg]
+  rw [map_add, aeval_add, aeval_add, hf, hg]
 #align polynomial.expand_aeval Polynomial.expand_aeval
 
 /-- The opposite of `expand`: sends `∑ aₙ xⁿᵖ` to `∑ aₙ xⁿ`. -/
@@ -262,7 +262,7 @@ theorem expand_contract' [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivati
 
 theorem expand_char (f : R[X]) : map (frobenius R p) (expand R p f) = f ^ p := by
   refine f.induction_on' (fun a b ha hb => ?_) fun n a => ?_
-  · rw [AlgHom.map_add, Polynomial.map_add, ha, hb, add_pow_expChar]
+  · rw [map_add, Polynomial.map_add, ha, hb, add_pow_expChar]
   · rw [expand_monomial, map_monomial, ← C_mul_X_pow_eq_monomial, ← C_mul_X_pow_eq_monomial,
       mul_pow, ← C.map_pow, frobenius_def]
     ring

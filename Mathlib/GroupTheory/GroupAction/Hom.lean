@@ -330,7 +330,7 @@ section DistribMulAction
 variable {M : Type*} [Monoid M]
 variable {N : Type*} [Monoid N]
 variable {P : Type*} [Monoid P]
-variable (φ: M →* N) (φ' : N →* M) (ψ : N →* P) (χ : M →* P)
+variable (φ : M →* N) (φ' : N →* M) (ψ : N →* P) (χ : M →* P)
 variable (A : Type*) [AddMonoid A] [DistribMulAction M A]
 variable (B : Type*) [AddMonoid B] [DistribMulAction N B]
 variable (B₁ : Type*) [AddMonoid B₁] [DistribMulAction M B₁]
@@ -850,3 +850,5 @@ def inverse {S₁ : Type*} [Semiring S₁] [MulSemiringAction M S₁]
 #align mul_semiring_action_hom.inverse MulSemiringActionHom.inverse
 
 end MulSemiringActionHom
+
+end DistribMulAction

@@ -22,7 +22,7 @@ namespace Commute
 
 section DivisionMonoid
 
-variable [DivisionMonoid G] {a b c d: G}
+variable [DivisionMonoid G] {a b c d : G}
 
 @[to_additive]
 protected theorem inv_inv : Commute a b → Commute a⁻¹ b⁻¹ :=

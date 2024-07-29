@@ -521,3 +521,9 @@ def evalNegPart : PositivityExt where eval _ _ e := do
     assertInstancesCommute
     return .nonnegative q(negPart_nonneg $a)
   | _ => throwError "not `negPart`"
+
+end Positivity
+
+end Meta
+
+end Mathlib

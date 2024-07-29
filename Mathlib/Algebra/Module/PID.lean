@@ -49,6 +49,9 @@ Then we get the general result using that a torsion free module is free (which h
 Finitely generated module, principal ideal domain, classification, structure theorem
 -/
 
+-- We shouldn't need to know about topology to prove
+-- the structure theorem for finitely generated modules over a PID.
+assert_not_exists TopologicalSpace
 
 universe u v
 

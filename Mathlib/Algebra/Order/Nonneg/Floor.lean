@@ -45,3 +45,5 @@ theorem nat_ceil_coe [OrderedSemiring α] [FloorSemiring α] (a : { r : α // 0 
     ⌈(a : α)⌉₊ = ⌈a⌉₊ :=
   rfl
 #align nonneg.nat_ceil_coe Nonneg.nat_ceil_coe
+
+end Nonneg

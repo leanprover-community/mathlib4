@@ -92,3 +92,5 @@ theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive
         aesop
     | top => apply Coverage.Saturate.top
     | transitive Y T => apply Coverage.Saturate.transitive Y T<;> [assumption; assumption]
+
+end CategoryTheory

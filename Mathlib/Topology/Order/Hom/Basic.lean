@@ -207,3 +207,5 @@ instance [PartialOrder β] : PartialOrder (α →Co β) :=
   PartialOrder.lift ((↑) : (α →Co β) → α → β) DFunLike.coe_injective
 
 end ContinuousOrderHom
+
+end

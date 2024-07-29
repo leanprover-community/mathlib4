@@ -70,3 +70,5 @@ theorem dense_or_cyclic (S : AddSubgroup G) : Dense (S : Set G) ∨ ∃ a : G, S
   rcases h with ⟨ε, ε0, hε⟩
   exact cyclic_of_isolated_zero ε0 (disjoint_left.2 hε)
 #align real.subgroup_dense_or_cyclic AddSubgroup.dense_or_cyclicₓ
+
+end AddSubgroup

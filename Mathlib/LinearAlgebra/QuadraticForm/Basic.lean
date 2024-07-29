@@ -232,13 +232,13 @@ theorem map_add_self (x : M) : Q (x + x) = 4 * Q x := by
   norm_num
 #align quadratic_form.map_add_self QuadraticForm.map_add_self
 
--- Porting note: removed @[simp] because it is superseded by `ZeroHomClass.map_zero`
-theorem map_zero : Q 0 = 0 := by
+-- not @[simp] because it is superseded by `ZeroHomClass.map_zero`
+protected theorem map_zero : Q 0 = 0 := by
   rw [← @zero_smul R _ _ _ _ (0 : M), map_smul, zero_mul, zero_mul]
 #align quadratic_form.map_zero QuadraticForm.map_zero
 
 instance zeroHomClass : ZeroHomClass (QuadraticForm R M) M R where
-  map_zero := map_zero
+  map_zero := QuadraticForm.map_zero
 #align quadratic_form.zero_hom_class QuadraticForm.zeroHomClass
 
 theorem map_smul_of_tower [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M] (a : S)

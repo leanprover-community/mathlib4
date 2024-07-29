@@ -218,3 +218,5 @@ theorem insertNth_injective (n : ℕ) (x : α) : Function.Injective (insertNth n
 #align list.insert_nth_injective List.insertNth_injective
 
 end InsertNth
+
+end List

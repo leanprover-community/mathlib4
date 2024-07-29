@@ -210,3 +210,5 @@ def prodIso : CategoryTheory.Grpd.of (πₓ A × πₓ B) ≅ πₓ (TopCat.of (
     apply this
 
 end Prod
+
+end FundamentalGroupoidFunctor

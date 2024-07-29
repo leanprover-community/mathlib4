@@ -431,7 +431,7 @@ def homotopyGroupEquivZerothHomotopyOfIsEmpty (N x) [IsEmpty N] :
   Quotient.congr (genLoopHomeoOfIsEmpty N x).toEquiv
     (by
       -- joined iff homotopic
-      intros a₁ a₂;
+      intros a₁ a₂
       constructor <;> rintro ⟨H⟩
       exacts
         [⟨{ toFun := fun t => H ⟨t, isEmptyElim⟩

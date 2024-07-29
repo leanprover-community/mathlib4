@@ -18,7 +18,7 @@ We construct various limits and colimits in the category of schemes.
 * The preceding two results imply that `Scheme` has all finite limits.
 * The empty scheme is the (strict) initial object.
 
-## Todo
+## TODO
 
 * Coproducts exists (and the forgetful functors preserve them).
 

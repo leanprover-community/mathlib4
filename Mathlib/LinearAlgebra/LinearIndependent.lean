@@ -391,7 +391,7 @@ theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Modu
     (li : LinearIndependent K v) : LinearIndependent R v := by
   refine linearIndependent_iff'.mpr fun s g hg i hi => hinj ?_
   dsimp only; rw [zero_smul]
-  refine (linearIndependent_iff'.mp li : _) _ (g · • (1:K)) ?_ i hi
+  refine (linearIndependent_iff'.mp li : _) _ (g · • (1 : K)) ?_ i hi
   simp_rw [smul_assoc, one_smul]
   exact hg
 #align linear_independent.restrict_scalars LinearIndependent.restrict_scalars
@@ -532,8 +532,8 @@ theorem linearIndependent_iUnion_of_directed {η : Type*} {s : η → Set M} (hs
 theorem linearIndependent_sUnion_of_directed {s : Set (Set M)} (hs : DirectedOn (· ⊆ ·) s)
     (h : ∀ a ∈ s, LinearIndependent R ((↑) : ((a : Set M) : Type _) → M)) :
     LinearIndependent R (fun x => x : ⋃₀ s → M) := by
-  rw [sUnion_eq_iUnion];
-    exact linearIndependent_iUnion_of_directed hs.directed_val (by simpa using h)
+  rw [sUnion_eq_iUnion]
+  exact linearIndependent_iUnion_of_directed hs.directed_val (by simpa using h)
 #align linear_independent_sUnion_of_directed linearIndependent_sUnion_of_directed
 
 theorem linearIndependent_biUnion_of_directed {η} {s : Set η} {t : η → Set M}
@@ -1123,8 +1123,8 @@ theorem linearIndependent_inl_union_inr' {v : ι → M} {v' : ι' → M'} (hv : 
 theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing L]
     [NoZeroDivisors L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
   -- Porting note: Some casts are required.
-  letI := Classical.decEq (G →* L);
-  letI : MulAction L L := DistribMulAction.toMulAction;
+  letI := Classical.decEq (G →* L)
+  letI : MulAction L L := DistribMulAction.toMulAction
   -- We prove linear independence by showing that only the trivial linear combination vanishes.
   exact linearIndependent_iff'.2
     -- To do this, we use `Finset` induction,

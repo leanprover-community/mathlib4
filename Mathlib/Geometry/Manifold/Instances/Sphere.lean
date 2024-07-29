@@ -541,7 +541,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
     exact Submodule.mem_span_singleton_self (-v : E)
   · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
     rw [Submodule.neg_mem_iff]
-    exact Submodule.mem_span_singleton_self (v:E)
+    exact Submodule.mem_span_singleton_self (v : E)
 #align range_mfderiv_coe_sphere range_mfderiv_coe_sphere
 
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous

@@ -129,7 +129,7 @@ instance : ValuationRing A where
       ext
       field_simp
     · rw [show (a / b : K)⁻¹ = b / a by field_simp] at hh
-      use ⟨b / a, hh⟩;
+      use ⟨b / a, hh⟩
       left
       ext
       field_simp

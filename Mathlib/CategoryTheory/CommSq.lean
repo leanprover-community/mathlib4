@@ -157,7 +157,7 @@ structure LiftStruct (sq : CommSq f i p g) where
   /-- The upper left triangle commutes. -/
   fac_left : i ≫ l = f
   /-- The lower right triangle commutes. -/
-  fac_right: l ≫ p = g
+  fac_right : l ≫ p = g
 #align category_theory.comm_sq.lift_struct CategoryTheory.CommSq.LiftStruct
 
 namespace LiftStruct

@@ -427,3 +427,5 @@ theorem map_top_of_surjective (f : α → β) (hf : Surjective f) : map f ⊤ = 
 end Basic
 
 end OuterMeasure
+
+end MeasureTheory

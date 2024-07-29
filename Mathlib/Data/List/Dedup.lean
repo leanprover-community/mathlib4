@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.Lattice
 
 #align_import data.list.dedup from "leanprover-community/mathlib"@"d9e96a3e3e0894e93e10aff5244f4c96655bac1c"
 
@@ -24,7 +25,7 @@ universe u
 
 namespace List
 
-variable {α : Type u} [DecidableEq α]
+variable {α β : Type*} [DecidableEq α]
 
 @[simp]
 theorem dedup_nil : dedup [] = ([] : List α) :=
@@ -131,6 +132,42 @@ theorem dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ ded
   · rw [dedup_cons_of_mem' h, insert_of_mem h]
   · rw [dedup_cons_of_not_mem' h, insert_of_not_mem h]
 #align list.dedup_append List.dedup_append
+
+theorem dedup_map_of_injective [DecidableEq β] {f : α → β} (hf : Function.Injective f)
+    (xs : List α) :
+    (xs.map f).dedup = xs.dedup.map f := by
+  induction xs with
+  | nil => simp
+  | cons x xs ih =>
+    rw [map_cons]
+    by_cases h : x ∈ xs
+    · rw [dedup_cons_of_mem h, dedup_cons_of_mem (mem_map_of_mem f h), ih]
+    · rw [dedup_cons_of_not_mem h, dedup_cons_of_not_mem <| (mem_map_of_injective hf).not.mpr h, ih,
+        map_cons]
+
+/-- Note that the weaker `List.Subset.dedup_append_left` is proved later. -/
+theorem Subset.dedup_append_right {xs ys : List α} (h : xs ⊆ ys) :
+    dedup (xs ++ ys) = dedup ys := by
+  rw [List.dedup_append, Subset.union_eq_right (h.trans <| subset_dedup _)]
+
+theorem Disjoint.union_eq {xs ys : List α} (h : Disjoint xs ys) :
+    xs ∪ ys = xs.dedup ++ ys := by
+  induction xs with
+  | nil => simp
+  | cons x xs ih =>
+    rw [cons_union]
+    rw [disjoint_cons_left] at h
+    by_cases hx : x ∈ xs
+    · rw [dedup_cons_of_mem hx, insert_of_mem (mem_union_left hx _), ih h.2]
+    · rw [dedup_cons_of_not_mem hx, insert_of_not_mem, ih h.2, cons_append]
+      rw [mem_union_iff, not_or]
+      exact ⟨hx, h.1⟩
+
+theorem Disjoint.dedup_append {xs ys : List α} (h : Disjoint xs ys) :
+    dedup (xs ++ ys) = dedup xs ++ dedup ys := by
+  rw [List.dedup_append, Disjoint.union_eq]
+  intro a hx hy
+  exact h hx (mem_dedup.mp hy)
 
 theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = [x]
   | 0, h => (h rfl).elim

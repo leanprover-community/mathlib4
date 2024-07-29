@@ -154,7 +154,7 @@ theorem _root_.TensorPower.list_prod_gradedMonoid_mk_single (n : ℕ) (x : Fin n
 
 theorem toDirectSum_tensorPower_tprod {n} (x : Fin n → M) :
     toDirectSum (tprod R M n x) = DirectSum.of _ n (PiTensorProduct.tprod R x) := by
-  rw [tprod_apply, AlgHom.map_list_prod, List.map_ofFn]
+  rw [tprod_apply, map_list_prod, List.map_ofFn]
   simp_rw [Function.comp, toDirectSum_ι]
   rw [DirectSum.list_prod_ofFn_of_eq_dProd]
   apply DirectSum.of_eq_of_gradedMonoid_eq

@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.TypesFiltered
 import Mathlib.CategoryTheory.Limits.Yoneda
-import Mathlib.Tactic.ApplyFun
 
 #align_import category_theory.limits.concrete_category from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 
@@ -27,7 +26,7 @@ attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeT
 section Limits
 
 /-- If a functor `G : J ⥤ C` to a concrete category has a limit and that `forget C`
-is corepresentable, then `G ⋙ forget C).sections` is small. -/
+is corepresentable, then `(G ⋙ forget C).sections` is small. -/
 lemma Concrete.small_sections_of_hasLimit
     {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
     [(forget C).Corepresentable] {J : Type w} [Category.{t} J] (G : J ⥤ C) [HasLimit G] :

@@ -179,7 +179,7 @@ theorem comp_apply (f : SpectralMap β γ) (g : SpectralMap α β) (a : α) : (f
 #align spectral_map.comp_apply SpectralMap.comp_apply
 
 theorem coe_comp_continuousMap (f : SpectralMap β γ) (g : SpectralMap α β) :
-    f ∘ g = (f : ContinuousMap β γ) ∘ (g: ContinuousMap α β) :=
+    f ∘ g = (f : ContinuousMap β γ) ∘ (g : ContinuousMap α β) :=
    rfl
 
 @[simp]

@@ -42,7 +42,7 @@ In this case the first condition is automatic, and in the second condition we ma
 
 https://stacks.math.columbia.edu/tag/04GE
 
-## Todo
+## TODO
 
 After a good API for etale ring homomorphisms has been developed,
 we can give more equivalent characterization of Henselian rings.

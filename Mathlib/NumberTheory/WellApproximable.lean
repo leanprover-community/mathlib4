@@ -48,7 +48,7 @@ We do *not* include a formalisation of the Koukoulopoulos-Maynard result here.
  * `NormedAddCommGroup.exists_norm_nsmul_le`: a general version of Dirichlet's approximation theorem
  * `AddCircle.exists_norm_nsmul_le`: Dirichlet's approximation theorem
 
-## TODO:
+## TODO
 
 The hypothesis `hδ` in `AddCircle.addWellApproximable_ae_empty_or_univ` can be dropped.
 An elementary (non-measure-theoretic) argument shows that if `¬ hδ` holds then

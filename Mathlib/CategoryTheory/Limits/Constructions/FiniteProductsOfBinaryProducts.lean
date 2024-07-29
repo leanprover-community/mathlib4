@@ -17,7 +17,7 @@ import Mathlib.Logic.Equiv.Fin
 If a category has binary products and a terminal object then it has finite products.
 If a functor preserves binary products and the terminal object then it preserves finite products.
 
-# TODO
+## TODO
 
 Provide the dual results.
 Show the analogous results for functors which reflect or create (co)limits.

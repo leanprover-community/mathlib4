@@ -798,3 +798,5 @@ theorem isSheafFor_arrows_iff_pullbacks : (ofArrows X π).IsSheafFor P ↔
 end Arrows
 
 end Presieve
+
+end CategoryTheory

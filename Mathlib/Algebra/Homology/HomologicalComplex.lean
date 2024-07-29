@@ -87,7 +87,7 @@ theorem ext {C₁ C₂ : HomologicalComplex V c} (h_X : C₁.X = C₂.X)
   subst h_X
   simp only [mk.injEq, heq_eq_eq, true_and]
   ext i j
-  by_cases hij: c.Rel i j
+  by_cases hij : c.Rel i j
   · simpa only [comp_id, id_comp, eqToHom_refl] using h_d i j hij
   · rw [s₁ i j hij, s₂ i j hij]
 #align homological_complex.ext HomologicalComplex.ext

@@ -111,3 +111,5 @@ theorem dvd_or_coprime (x y : α) (h : Irreducible x) :
 #align euclidean_domain.dvd_or_coprime EuclideanDomain.dvd_or_coprime
 
 end EuclideanDomain
+
+end

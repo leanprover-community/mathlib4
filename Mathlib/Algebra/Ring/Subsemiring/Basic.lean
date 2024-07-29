@@ -631,7 +631,7 @@ variable (R) [NonAssocSemiring R]
 with everything in `R` -/
 def center : Subsemiring R :=
   { NonUnitalSubsemiring.center R with
-    one_mem' := Set.one_mem_center R }
+    one_mem' := Set.one_mem_center }
 #align subsemiring.center Subsemiring.center
 
 theorem coe_center : ↑(center R) = Set.center R :=
@@ -685,7 +685,7 @@ section Centralizer
 def centralizer {R} [Semiring R] (s : Set R) : Subsemiring R :=
   { Submonoid.centralizer s with
     carrier := s.centralizer
-    zero_mem' := Set.zero_mem_centralizer _
+    zero_mem' := Set.zero_mem_centralizer
     add_mem' := Set.add_mem_centralizer }
 #align subsemiring.centralizer Subsemiring.centralizer
 

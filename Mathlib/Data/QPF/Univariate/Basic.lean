@@ -424,7 +424,7 @@ theorem Cofix.dest_corec {α : Type u} (g : α → F α) (x : α) :
     Cofix.dest (Cofix.corec g x) = Cofix.corec g <$> g x := by
   conv =>
     lhs
-    rw [Cofix.dest, Cofix.corec];
+    rw [Cofix.dest, Cofix.corec]
   dsimp
   rw [corecF_eq, abs_map, abs_repr, ← comp_map]; rfl
 #align qpf.cofix.dest_corec QPF.Cofix.dest_corec

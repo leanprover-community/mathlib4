@@ -41,7 +41,7 @@ For convenience, we work directly with finite types instead of natural numbers. 
 allows us to work directly with `α`, `Option α`, `(ι → α) → κ`, and `ι ⊕ ι'` instead of `Fin n`,
 `Fin (n+1)`, `Fin (c^(n^H))`, and `Fin (H + H')`.
 
-## Todo
+## TODO
 
 - Prove a finitary version of Van der Waerden's theorem (either by compactness or by modifying the
 current proof).

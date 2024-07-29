@@ -43,7 +43,7 @@ The core of this module is constructing the inverse system: for every finite sub
   `r : α → β → Prop` on finite types, with the Hall condition given in terms of
   `finset.univ.filter`.
 
-## Todo
+## TODO
 
 * The statement of the theorem in terms of bipartite graphs is in preparation.
 

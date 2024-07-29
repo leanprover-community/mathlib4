@@ -694,7 +694,7 @@ lemma pow_mul_le_of_le_of_pow_mul_le {C₁ C₂ : ℝ} {k l : ℕ} {x f : ℝ} (
     (h₁ : f ≤ C₁) (h₂ : x ^ (k + l) * f ≤ C₂) :
     x ^ k * f ≤ 2 ^ l * (C₁ + C₂) * (1 + x) ^ (- (l : ℝ)) := by
   have : 0 ≤ C₂ := le_trans (by positivity) h₂
-  have : 2 ^ l * (C₁ + C₂) * (1 + x) ^ (- (l : ℝ)) = ((1 + x) / 2) ^ (-(l:ℝ)) * (C₁ + C₂) := by
+  have : 2 ^ l * (C₁ + C₂) * (1 + x) ^ (- (l : ℝ)) = ((1 + x) / 2) ^ (-(l : ℝ)) * (C₁ + C₂) := by
     rw [Real.div_rpow (by linarith) zero_le_two]
     simp [div_eq_inv_mul, ← Real.rpow_neg_one, ← Real.rpow_mul]
     ring
@@ -708,10 +708,10 @@ lemma pow_mul_le_of_le_of_pow_mul_le {C₁ C₂ : ℝ} {k l : ℕ} {x f : ℝ} (
       · simp
     · linarith
   · calc
-    x ^ k * f = x ^ (-(l:ℝ)) * (x ^ (k + l) * f) := by
+    x ^ k * f = x ^ (-(l : ℝ)) * (x ^ (k + l) * f) := by
       rw [← Real.rpow_natCast, ← Real.rpow_natCast, ← mul_assoc, ← Real.rpow_add (by linarith)]
       simp
-    _ ≤ ((1 + x) / 2) ^ (-(l:ℝ)) * (C₁ + C₂) := by
+    _ ≤ ((1 + x) / 2) ^ (-(l : ℝ)) * (C₁ + C₂) := by
       apply mul_le_mul _ _ (by positivity) (by positivity)
       · exact Real.rpow_le_rpow_of_nonpos (by linarith) (by linarith) (by simp)
       · exact h₂.trans (by linarith)

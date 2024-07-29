@@ -48,7 +48,7 @@ theorem zero_pow_le_one : ∀ n : ℕ, (0 : R) ^ n ≤ 1
 
 theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y ^ n ≤ (x + y) ^ n := by
   rcases Nat.exists_eq_succ_of_ne_zero hn with ⟨k, rfl⟩
-  induction' k with k ih;
+  induction' k with k ih
   · have eqn : Nat.succ Nat.zero = 1 := rfl
     rw [eqn]
     simp only [pow_one, le_refl]

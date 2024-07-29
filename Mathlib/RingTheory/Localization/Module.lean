@@ -214,3 +214,5 @@ def LinearMap.extendScalarsOfIsLocalization (f : M →ₗ[R] N) : M →ₗ[A] N 
     f.extendScalarsOfIsLocalization S A = f := rfl
 
 end
+
+end Localization

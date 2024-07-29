@@ -451,3 +451,5 @@ alias restrictNondegenerateOrthogonalSpanSingleton :=
   restrict_nondegenerate_orthogonal_spanSingleton
 
 end BilinForm
+
+end LinearMap

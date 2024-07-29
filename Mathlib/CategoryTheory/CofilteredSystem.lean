@@ -41,7 +41,7 @@ Given a functor `F : J ⥤ Type v`:
 * `surjective_toEventualRanges` shows that if `F` is Mittag-Leffler, then `F.toEventualRanges`
   has all morphisms `F.map f` surjective.
 
-## Todo
+## TODO
 
 * Prove [Stacks: Lemma 0597](https://stacks.math.columbia.edu/tag/0597)
 

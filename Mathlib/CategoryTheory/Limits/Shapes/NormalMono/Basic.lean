@@ -87,7 +87,7 @@ instance (priority := 100) NormalMono.regularMono (f : X ⟶ Y) [I : NormalMono 
 
 /-- If `f` is a normal mono, then any map `k : W ⟶ Y` such that `k ≫ normal_mono.g = 0` induces
     a morphism `l : W ⟶ X` such that `l ≫ f = k`. -/
-def NormalMono.lift' {W : C} (f : X ⟶ Y) [hf :NormalMono f] (k : W ⟶ Y) (h : k ≫ hf.g = 0) :
+def NormalMono.lift' {W : C} (f : X ⟶ Y) [hf : NormalMono f] (k : W ⟶ Y) (h : k ≫ hf.g = 0) :
     { l : W ⟶ X // l ≫ f = k } :=
   KernelFork.IsLimit.lift' NormalMono.isLimit _ h
 #align category_theory.normal_mono.lift' CategoryTheory.NormalMono.lift'

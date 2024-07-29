@@ -466,8 +466,8 @@ theorem diophPFun_comp1 {S : Set (Option α → ℕ)} (d : Dioph S) {f} (df : Di
     Dioph {v : α → ℕ | ∃ h : f.Dom v, f.fn v h ::ₒ v ∈ S} :=
   ext (ex1_dioph (d.inter df)) fun v =>
     ⟨fun ⟨x, hS, (h : Exists _)⟩ => by
-      rw [show (x ::ₒ v) ∘ some = v from funext fun s => rfl] at h;
-        cases' h with hf h; refine ⟨hf, ?_⟩; rw [PFun.fn, h]; exact hS,
+      rw [show (x ::ₒ v) ∘ some = v from funext fun s => rfl] at h
+      cases' h with hf h; refine ⟨hf, ?_⟩; rw [PFun.fn, h]; exact hS,
     fun ⟨x, hS⟩ =>
       ⟨f.fn v x, hS, show Exists _ by
         rw [show (f.fn v x ::ₒ v) ∘ some = v from funext fun s => rfl]; exact ⟨x, rfl⟩⟩⟩
@@ -542,7 +542,7 @@ theorem diophFn_compn :
           have : Dioph {v | (v ⊗ f v::fun i : Fin2 n => fl i v) ∈ S} :=
             @diophFn_compn n (fun v => S (v ∘ inl ⊗ f (v ∘ inl)::v ∘ inr)) this _ dfl
           ext this fun v => by
-            dsimp;
+            dsimp
             -- Porting note: `congr` use to be enough here
             refine iff_of_eq (congrFun (congrArg Membership.mem ?_) S)
             ext x; obtain _ | _ | _ := x <;> rfl

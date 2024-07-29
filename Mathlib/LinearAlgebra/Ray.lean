@@ -103,7 +103,7 @@ theorem trans (hxy : SameRay R x y) (hyz : SameRay R y z) (hy : y = 0 → x = 0 
     SameRay R x z := by
   rcases eq_or_ne x 0 with (rfl | hx); · exact zero_left z
   rcases eq_or_ne z 0 with (rfl | hz); · exact zero_right x
-  rcases eq_or_ne y 0 with (rfl | hy);
+  rcases eq_or_ne y 0 with (rfl | hy)
   · exact (hy rfl).elim (fun h => (hx h).elim) fun h => (hz h).elim
   rcases hxy.exists_pos hx hy with ⟨r₁, r₂, hr₁, hr₂, h₁⟩
   rcases hyz.exists_pos hy hz with ⟨r₃, r₄, hr₃, hr₄, h₂⟩

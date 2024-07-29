@@ -220,7 +220,7 @@ def map (f : F) (S : Submonoid M) :
   carrier := f '' S
   one_mem' := ⟨1, S.one_mem, map_one f⟩
   mul_mem' := by
-    rintro _ _ ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩;
+    rintro _ _ ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩
     exact ⟨x * y, S.mul_mem hx hy, by rw [map_mul]⟩
 #align submonoid.map Submonoid.map
 #align add_submonoid.map AddSubmonoid.map

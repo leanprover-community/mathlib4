@@ -27,7 +27,7 @@ This file contains basic definitions for root systems and root data.
  * `RootPairing.IsReduced`: A root pairing is said to be reduced if it never contains the double of
    a root.
 
-## Todo
+## TODO
 
 * Put more API theorems in the Defs file.
 * Introduce the Weyl Group, and its action on the indexing set.

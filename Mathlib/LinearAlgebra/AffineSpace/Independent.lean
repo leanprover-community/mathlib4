@@ -359,7 +359,7 @@ variable {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V�
 independent, then the original family of points is also affine-independent. -/
 theorem AffineIndependent.of_comp {p : ι → P} (f : P →ᵃ[k] P₂) (hai : AffineIndependent k (f ∘ p)) :
     AffineIndependent k p := by
-  cases' isEmpty_or_nonempty ι with h h;
+  cases' isEmpty_or_nonempty ι with h h
   · haveI := h
     apply affineIndependent_of_subsingleton
   obtain ⟨i⟩ := h

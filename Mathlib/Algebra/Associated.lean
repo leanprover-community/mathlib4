@@ -1157,7 +1157,7 @@ theorem mk_dvdNotUnit_mk_iff {a b : α} :
 #align associates.mk_dvd_not_unit_mk_iff Associates.mk_dvdNotUnit_mk_iff
 
 theorem dvdNotUnit_of_lt {a b : Associates α} (hlt : a < b) : DvdNotUnit a b := by
-  constructor;
+  constructor
   · rintro rfl
     apply not_lt_of_le _ hlt
     apply dvd_zero

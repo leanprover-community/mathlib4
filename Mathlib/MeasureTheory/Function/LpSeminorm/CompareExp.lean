@@ -188,7 +188,7 @@ theorem snorm_le_snorm_top_mul_snorm (p : ℝ≥0∞) (f : α → E) {g : α →
       rw [lintegral_const_mul'']
       swap; · exact hg.nnnorm.aemeasurable.coe_nnreal_ennreal.pow aemeasurable_const
       rw [ENNReal.mul_rpow_of_nonneg]
-      swap;
+      swap
       · rw [one_div_nonneg]
         exact ENNReal.toReal_nonneg
       rw [← ENNReal.rpow_mul, one_div, mul_inv_cancel, ENNReal.rpow_one]
@@ -326,3 +326,7 @@ theorem Memℒp.smul_of_top_left {p : ℝ≥0∞} {f : α → E} {φ : α → �
   apply hf.smul hφ
   simp only [ENNReal.div_top, add_zero]
 #align measure_theory.mem_ℒp.smul_of_top_left MeasureTheory.Memℒp.smul_of_top_left
+
+end BoundedSMul
+
+end MeasureTheory

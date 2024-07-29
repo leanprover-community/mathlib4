@@ -627,7 +627,7 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Norma
     (mk' <| N.subgroupOf (H ⊔ N)).comp (inclusion le_sup_left)
   have φ_surjective : Surjective φ := fun x =>
     x.inductionOn' <| by
-      rintro ⟨y, hy : y ∈ (H ⊔ N)⟩;
+      rintro ⟨y, hy : y ∈ (H ⊔ N)⟩
       rw [← SetLike.mem_coe] at hy
       rw [mul_normal H N] at hy
       rcases hy with ⟨h, hh, n, hn, rfl⟩

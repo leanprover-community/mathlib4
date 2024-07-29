@@ -17,7 +17,7 @@ algebras, as `CliffordAlgebra.equivProd`.
 
 * `CliffordAlgebra.equivProd : CliffordAlgebra (Q₁.prod Q₂) ≃ₐ[R] (evenOdd Q₁ ᵍ⊗[R] evenOdd Q₂)`
 
-## TODO:
+## TODO
 
 Introduce morphisms and equivalences of graded algebas, and upgrade `CliffordAlgebra.equivProd` to a
 graded algebra equivalence.

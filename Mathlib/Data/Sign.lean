@@ -108,10 +108,10 @@ instance : CommGroupWithZero SignType where
   exists_pair_ne := ⟨0, 1, by rintro ⟨_⟩⟩
   inv_zero := rfl
 
-private lemma le_antisymm (a b : SignType) (_ : a ≤ b) (_: b ≤ a) : a = b := by
+private lemma le_antisymm (a b : SignType) (_ : a ≤ b) (_ : b ≤ a) : a = b := by
   cases a <;> cases b <;> trivial
 
-private lemma le_trans (a b c : SignType) (_ : a ≤ b) (_: b ≤ c) : a ≤ c := by
+private lemma le_trans (a b c : SignType) (_ : a ≤ b) (_ : b ≤ c) : a ≤ c := by
   cases a <;> cases b <;> cases c <;> tauto
 
 instance : LinearOrder SignType where

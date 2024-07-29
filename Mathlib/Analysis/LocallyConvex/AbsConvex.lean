@@ -26,7 +26,7 @@ of zero.
 * `with_gaugeSeminormFamily`: the topology of a locally convex space is induced by the family
 `gaugeSeminormFamily`.
 
-## Todo
+## TODO
 
 * Define the disked hull
 

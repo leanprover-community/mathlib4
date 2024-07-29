@@ -226,3 +226,5 @@ lemma injective_dirac [SeparatesPoints α] :
     Function.Injective (fun (x : α) ↦ dirac x) := fun x y x_ne_y ↦ by rwa [← dirac_eq_dirac_iff]
 
 end dirac_injective
+
+end MeasureTheory

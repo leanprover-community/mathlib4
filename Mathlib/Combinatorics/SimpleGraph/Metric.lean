@@ -18,7 +18,7 @@ pairs of vertices to the length of the shortest walk between them.
 
 - `SimpleGraph.dist` is the graph metric.
 
-## Todo
+## TODO
 
 - Provide an additional computable version of `SimpleGraph.dist`
   for when `G` is connected.

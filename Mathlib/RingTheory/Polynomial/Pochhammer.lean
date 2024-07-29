@@ -339,7 +339,7 @@ theorem descPochhammer_succ_comp_X_sub_one (n : ℕ) :
   ring
 
 theorem descPochhammer_eq_ascPochhammer (n : ℕ) :
-    descPochhammer ℤ n = (ascPochhammer ℤ n).comp ((X:ℤ[X])  - n + 1) := by
+    descPochhammer ℤ n = (ascPochhammer ℤ n).comp ((X : ℤ[X]) - n + 1) := by
   induction n with
   | zero => rw [descPochhammer_zero, ascPochhammer_zero, one_comp]
   | succ n ih =>

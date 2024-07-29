@@ -221,3 +221,5 @@ def isInitialPEmpty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
 def initialIsoPEmpty : ⊥_ TopCat.{u} ≅ TopCat.of PEmpty :=
   initialIsInitial.uniqueUpToIso isInitialPEmpty
 #align Top.initial_iso_pempty TopCat.initialIsoPEmpty
+
+end TopCat

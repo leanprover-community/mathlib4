@@ -37,7 +37,7 @@ open LocalRing FiniteDimensional
 theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [LocalRing R] [IsDomain R]
     (h' : (maximalIdeal R).IsPrincipal) (I : Ideal R) (hI : I ≠ ⊥) :
     ∃ n : ℕ, I = maximalIdeal R ^ n := by
-  by_cases h : IsField R;
+  by_cases h : IsField R
   · exact ⟨0, by simp [letI := h.toField; (eq_bot_or_eq_top I).resolve_left hI]⟩
   classical
   obtain ⟨x, hx : _ = Ideal.span _⟩ := h'

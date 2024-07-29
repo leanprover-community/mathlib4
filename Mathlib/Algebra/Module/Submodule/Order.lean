@@ -64,3 +64,5 @@ instance toLinearOrderedAddCommGroup [LinearOrderedAddCommGroup M] [Module R M]
 #align submodule.to_linear_ordered_add_comm_group Submodule.toLinearOrderedAddCommGroup
 
 end OrderedGroup
+
+end Submodule

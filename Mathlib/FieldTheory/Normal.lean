@@ -77,7 +77,7 @@ theorem Normal.exists_isSplittingField [h : Normal F K] [FiniteDimensional F K] 
               mt (Polynomial.map_eq_zero <| algebraMap F K).1 <|
                 Finset.prod_ne_zero_iff.2 fun x _ => ?_).2 ?_)
   · exact minpoly.ne_zero (h.isIntegral (s x))
-  rw [IsRoot.def, eval_map, ← aeval_def, AlgHom.map_prod]
+  rw [IsRoot.def, eval_map, ← aeval_def, map_prod]
   exact Finset.prod_eq_zero (Finset.mem_univ _) (minpoly.aeval _ _)
 #align normal.exists_is_splitting_field Normal.exists_isSplittingField
 
@@ -228,10 +228,10 @@ def AlgHom.restrictNormalAux [h : Normal F E] :
       simp only [AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom]
       suffices IsIntegral F _ by exact this.tower_top
       exact ((h.isIntegral z).map <| toAlgHom F E K₁).map ϕ⟩
-  map_zero' := Subtype.ext ϕ.map_zero
-  map_one' := Subtype.ext ϕ.map_one
-  map_add' x y := Subtype.ext (ϕ.map_add x y)
-  map_mul' x y := Subtype.ext (ϕ.map_mul x y)
+  map_zero' := Subtype.ext (map_zero _)
+  map_one' := Subtype.ext (map_one _)
+  map_add' x y := Subtype.ext <| by simp
+  map_mul' x y := Subtype.ext <| by simp
   commutes' x := Subtype.ext (ϕ.commutes x)
 #align alg_hom.restrict_normal_aux AlgHom.restrictNormalAux
 
@@ -332,7 +332,7 @@ noncomputable def AlgHom.liftNormal [h : Normal F E] : E →ₐ[F] E :=
         (fun x _ ↦ ⟨(h.out x).1.tower_top,
           splits_of_splits_of_dvd _ (map_ne_zero (minpoly.ne_zero (h.out x).1))
             -- Porting note: had to override typeclass inference below using `(_)`
-            (by rw [splits_map_iff, ← @IsScalarTower.algebraMap_eq _ _ _ _ _ _ (_) (_) (_)];
+            (by rw [splits_map_iff, ← @IsScalarTower.algebraMap_eq _ _ _ _ _ _ (_) (_) (_)]
                 exact (h.out x).2)
             (minpoly.dvd_map_of_isScalarTower F K₁ x)⟩)
         (IntermediateField.adjoin_univ _ _)

@@ -428,7 +428,7 @@ theorem sublists_perm_sublists' (l : List α) : sublists l ~ sublists' l := by
 theorem sublists_cons_perm_append (a : α) (l : List α) :
     sublists (a :: l) ~ sublists l ++ map (cons a) (sublists l) :=
   Perm.trans (sublists_perm_sublists' _) <| by
-  rw [sublists'_cons];
+  rw [sublists'_cons]
   exact Perm.append (sublists_perm_sublists' _).symm (Perm.map _ (sublists_perm_sublists' _).symm)
 #align list.sublists_cons_perm_append List.sublists_cons_perm_append
 

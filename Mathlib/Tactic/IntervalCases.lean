@@ -398,3 +398,7 @@ elab_rules : tactic
         catch _ => pure ()
       cont x xs[1]? subst g e lbs ubs (mustUseBounds := false)
     | _, _, _ => throwUnsupportedSyntax
+
+end Tactic
+
+end Mathlib

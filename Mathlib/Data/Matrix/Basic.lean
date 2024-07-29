@@ -1614,7 +1614,7 @@ coefficients. This is `Matrix.map` as an `AlgHom`. -/
 def mapMatrix (f : α →ₐ[R] β) : Matrix m m α →ₐ[R] Matrix m m β :=
   { f.toRingHom.mapMatrix with
     toFun := fun M => M.map f
-    commutes' := fun r => Matrix.map_algebraMap r f f.map_zero (f.commutes r) }
+    commutes' := fun r => Matrix.map_algebraMap r f (map_zero _) (f.commutes r) }
 #align alg_hom.map_matrix AlgHom.mapMatrix
 
 @[simp]

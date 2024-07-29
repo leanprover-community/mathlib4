@@ -24,7 +24,7 @@ integral over `R`. A special case of integrally closed rings are the Dedekind do
 * `isIntegrallyClosed_iff K`, where `K` is a fraction field of `R`, states `R`
   is integrally closed iff it is the integral closure of `R` in `K`
 
-## TODO: Related notions
+## TODO Related notions
 
 The following definitions are closely related, especially in their applications in Mathlib.
 

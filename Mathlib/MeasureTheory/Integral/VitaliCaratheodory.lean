@@ -481,7 +481,7 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
     convert gp_integrable.sub gm_integrable
     simp
   case intlt =>
-    show (∫ x : α, (g x).toReal ∂μ) < (∫ x : α, f x ∂μ) + ε;
+    show (∫ x : α, (g x).toReal ∂μ) < (∫ x : α, f x ∂μ) + ε
     exact
       calc
         (∫ x : α, (g x).toReal ∂μ) = ∫ x : α, EReal.toReal (gp x) - EReal.toReal (gm x) ∂μ :=

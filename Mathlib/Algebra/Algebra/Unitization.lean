@@ -715,7 +715,7 @@ algebra homomorphism from the unitization into `C`. This is extended to an `Equi
 `Unitization.lift` and that should be used instead. This declaration only exists for performance
 reasons. -/
 @[simps]
-def _root_.NonUnitalAlgHom.toAlgHom (φ :A →ₙₐ[R] C) : Unitization R A →ₐ[R] C where
+def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A →ₐ[R] C where
   toFun := fun x => algebraMap R C x.fst + φ x.snd
   map_one' := by simp only [fst_one, map_one, snd_one, φ.map_zero, add_zero]
   map_mul' := fun x y => by

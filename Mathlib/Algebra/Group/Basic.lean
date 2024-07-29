@@ -145,14 +145,14 @@ variable {M : Type u} [MulOneClass M]
 @[to_additive]
 theorem ite_mul_one {P : Prop} [Decidable P] {a b : M} :
     ite P (a * b) 1 = ite P a 1 * ite P b 1 := by
-  by_cases h:P <;> simp [h]
+  by_cases h : P <;> simp [h]
 #align ite_mul_one ite_mul_one
 #align ite_add_zero ite_add_zero
 
 @[to_additive]
 theorem ite_one_mul {P : Prop} [Decidable P] {a b : M} :
     ite P 1 (a * b) = ite P 1 a * ite P 1 b := by
-  by_cases h:P <;> simp [h]
+  by_cases h : P <;> simp [h]
 #align ite_one_mul ite_one_mul
 #align ite_zero_add ite_zero_add
 

@@ -61,8 +61,6 @@ abbrevation for `HasColimitsOfShape WalkingSpan C`
 
 (The dual results for pushouts are also available)
 
-NOTE: golfed some proofs also
-
 ## References
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
@@ -99,10 +97,18 @@ abbrev pullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :=
   limit (cospan f g)
 #align category_theory.limits.pullback CategoryTheory.Limits.pullback
 
+/-- The cone associated to the pullback of `f` and `g`-/
+abbrev pullback.cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : PullbackCone f g :=
+  limit.cone (cospan f g)
+
 /-- `pushout f g` computes the pushout of a pair of morphisms with the same source. -/
 abbrev pushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :=
   colimit (span f g)
 #align category_theory.limits.pushout CategoryTheory.Limits.pushout
+
+/-- The cocone associated to the pullback of `f` and `g` -/
+abbrev pushout.cocone {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : PushoutCocone f g :=
+  colimit.cocone (span f g)
 
 /-- The first projection of the pullback of `f` and `g`. -/
 abbrev pullback.fst {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] : pullback f g ⟶ X :=
@@ -137,6 +143,16 @@ abbrev pushout.desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (
     (w : f ≫ h = g ≫ k) : pushout f g ⟶ W :=
   colimit.desc _ (PushoutCocone.mk h k w)
 #align category_theory.limits.pushout.desc CategoryTheory.Limits.pushout.desc
+
+/-- The cone associated to a pullback is a limit cone. -/
+abbrev pullback.isLimit {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
+    IsLimit (pullback.cone f g) :=
+  limit.isLimit (cospan f g)
+
+/-- The cocone associated to a pushout is a colimit cone. -/
+abbrev pushout.isColimit {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
+    IsColimit (pushout.cocone f g) :=
+  colimit.isColimit (span f g)
 
 @[simp]
 theorem PullbackCone.fst_limit_cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasLimit (cospan f g)] :
@@ -226,7 +242,7 @@ abbrev pullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPull
     (g₂ : Z ⟶ T) [HasPullback g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T)
     (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁) (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) : pullback f₁ f₂ ⟶ pullback g₁ g₂ :=
   pullback.lift (pullback.fst ≫ i₁) (pullback.snd ≫ i₂)
-    (by simp [← eq₁, ← eq₂, pullback.condition_assoc])
+    (by simp only [Category.assoc, ← eq₁, ← eq₂, pullback.condition_assoc])
 #align category_theory.limits.pullback.map CategoryTheory.Limits.pullback.map
 
 /-- The canonical map `X ×ₛ Y ⟶ X ×ₜ Y` given `S ⟶ T`. -/
@@ -249,9 +265,7 @@ abbrev pushout.map {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPusho
     (g₂ : T ⟶ Z) [HasPushout g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T) (eq₁ : f₁ ≫ i₁ = i₃ ≫ g₁)
     (eq₂ : f₂ ≫ i₂ = i₃ ≫ g₂) : pushout f₁ f₂ ⟶ pushout g₁ g₂ :=
   pushout.desc (i₁ ≫ pushout.inl) (i₂ ≫ pushout.inr)
-    (by
-      simp only [← Category.assoc, eq₁, eq₂]
-      simp [pushout.condition])
+    (by simp only [reassoc_of% eq₁, reassoc_of% eq₂, condition])
 #align category_theory.limits.pushout.map CategoryTheory.Limits.pushout.map
 
 /-- The canonical map `X ⨿ₛ Y ⟶ X ⨿ₜ Y` given `S ⟶ T`. -/
@@ -272,8 +286,7 @@ theorem pullback.hom_ext {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f 
 /-- The pullback cone built from the pullback projections is a pullback. -/
 def pullbackIsPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     IsLimit (PullbackCone.mk (pullback.fst : pullback f g ⟶ _) pullback.snd pullback.condition) :=
-  PullbackCone.IsLimit.mk _ (fun s => pullback.lift s.fst s.snd s.condition) (by simp) (by simp)
-    (by aesop_cat)
+  PullbackCone.mkSelfIsLimit <| pullback.isLimit f g
 #align category_theory.limits.pullback_is_pullback CategoryTheory.Limits.pullbackIsPullback
 
 /-- Two morphisms out of a pushout are equal if their compositions with the pushout morphisms are
@@ -316,15 +329,7 @@ theorem pullback.congrHom_inv {X Y Z : C} {f₁ f₂ : X ⟶ Z} {g₁ g₂ : Y �
     (h₂ : g₁ = g₂) [HasPullback f₁ g₁] [HasPullback f₂ g₂] :
     (pullback.congrHom h₁ h₂).inv =
       pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂]) := by
-  ext
-  · erw [pullback.lift_fst]
-    rw [Iso.inv_comp_eq]
-    erw [pullback.lift_fst_assoc]
-    rw [Category.comp_id, Category.comp_id]
-  · erw [pullback.lift_snd]
-    rw [Iso.inv_comp_eq]
-    erw [pullback.lift_snd_assoc]
-    rw [Category.comp_id, Category.comp_id]
+  ext <;> simp [Iso.inv_comp_eq]
 #align category_theory.limits.pullback.congr_hom_inv CategoryTheory.Limits.pullback.congrHom_inv
 
 instance pushout.map_isIso {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPushout f₁ f₂]
@@ -359,15 +364,7 @@ theorem pushout.congrHom_inv {X Y Z : C} {f₁ f₂ : X ⟶ Y} {g₁ g₂ : X �
     (h₂ : g₁ = g₂) [HasPushout f₁ g₁] [HasPushout f₂ g₂] :
     (pushout.congrHom h₁ h₂).inv =
       pushout.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂]) := by
-  ext
-  · erw [pushout.inl_desc]
-    rw [Iso.comp_inv_eq, Category.id_comp]
-    erw [pushout.inl_desc]
-    rw [Category.id_comp]
-  · erw [pushout.inr_desc]
-    rw [Iso.comp_inv_eq, Category.id_comp]
-    erw [pushout.inr_desc]
-    rw [Category.id_comp]
+  ext <;> simp [Iso.comp_inv_eq]
 #align category_theory.limits.pushout.congr_hom_inv CategoryTheory.Limits.pushout.congrHom_inv
 
 theorem pushout.mapLift_comp {X Y S T S' : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S ⟶ T) (i' : S' ⟶ S)
@@ -574,18 +571,15 @@ def walkingCospanOpEquiv : WalkingCospanᵒᵖ ≌ WalkingSpan :=
 
 -- see Note [lower instance priority]
 /-- Having wide pullback at any universe level implies having binary pullbacks. -/
-instance (priority := 100) hasPullbacks_of_hasWidePullbacks (D : Type u) [h : Category.{v} D]
-    [h' : HasWidePullbacks.{w} D] : HasPullbacks.{v,u} D := by
-  haveI I := @hasWidePullbacks_shrink.{0, w} D h h'
-  infer_instance
+instance (priority := 100) hasPullbacks_of_hasWidePullbacks (D : Type u) [Category.{v} D]
+    [HasWidePullbacks.{w} D] : HasPullbacks.{v,u} D :=
+  hasWidePullbacks_shrink WalkingPair
 #align category_theory.limits.has_pullbacks_of_has_wide_pullbacks CategoryTheory.Limits.hasPullbacks_of_hasWidePullbacks
 
 -- see Note [lower instance priority]
 /-- Having wide pushout at any universe level implies having binary pushouts. -/
-instance (priority := 100) hasPushouts_of_hasWidePushouts (D : Type u) [h : Category.{v} D]
-    [h' : HasWidePushouts.{w} D] : HasPushouts.{v,u} D := by
-  haveI I := @hasWidePushouts_shrink.{0, w} D h h'
-  infer_instance
-
+instance (priority := 100) hasPushouts_of_hasWidePushouts (D : Type u) [Category.{v} D]
+    [HasWidePushouts.{w} D] : HasPushouts.{v,u} D :=
+  hasWidePushouts_shrink WalkingPair
 
 end CategoryTheory.Limits

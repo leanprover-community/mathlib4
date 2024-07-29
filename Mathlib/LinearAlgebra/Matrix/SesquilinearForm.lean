@@ -25,7 +25,7 @@ This file defines the conversion between sesquilinear forms and matrices.
  * `LinearMap.toMatrix₂`: calculate the matrix coefficients of a bilinear form
  * `LinearMap.toMatrix₂'`: calculate the matrix coefficients of a bilinear form on `n → R`
 
-## Todos
+## TODO
 
 At the moment this is quite a literal port from `Matrix.BilinearForm`. Everything should be
 generalized to fully semibilinear forms.

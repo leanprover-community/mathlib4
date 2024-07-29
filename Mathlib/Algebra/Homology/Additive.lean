@@ -3,7 +3,6 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Homology.Homology
 import Mathlib.Algebra.Homology.Single
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
@@ -107,32 +106,8 @@ def Hom.fAddMonoidHom {C₁ C₂ : HomologicalComplex V c} (i : ι) : (C₁ ⟶ 
   AddMonoidHom.mk' (fun f => Hom.f f i) fun _ _ => rfl
 #align homological_complex.hom.f_add_monoid_hom HomologicalComplex.Hom.fAddMonoidHom
 
-end HomologicalComplex
-
-namespace HomologicalComplex
-
 instance eval_additive (i : ι) : (eval V c i).Additive where
 #align homological_complex.eval_additive HomologicalComplex.eval_additive
-
-instance cycles'_additive [HasEqualizers V] : (cycles'Functor V c i).Additive where
-#align homological_complex.cycles_additive HomologicalComplex.cycles'_additive
-
-variable [HasImages V] [HasImageMaps V]
-
-instance boundaries_additive : (boundariesFunctor V c i).Additive where
-#align homological_complex.boundaries_additive HomologicalComplex.boundaries_additive
-
-variable [HasEqualizers V] [HasCokernels V]
-
-instance homology_additive : (homology'Functor V c i).Additive where
-  map_add {_ _ f g} := by
-    dsimp [homology'Functor]
-    ext
-    simp only [homology'.π_map, Preadditive.comp_add, ← Preadditive.add_comp]
-    congr
-    ext
-    simp
-#align homological_complex.homology_additive HomologicalComplex.homology_additive
 
 end HomologicalComplex
 

@@ -128,7 +128,7 @@ theorem valuation_of_unit_eq (x : Rˣ) :
     rw [map_one, map_mul] at hx
     rw [not_lt, ← hx, ← mul_one <| v.valuation _, valuation_of_algebraMap,
       mul_le_mul_left₀ <| left_ne_zero_of_mul_eq_one hx]
-    exact v.int_valuation_le_one _
+    exact v.intValuation_le_one _
 #align is_dedekind_domain.height_one_spectrum.valuation_of_unit_eq IsDedekindDomain.HeightOneSpectrum.valuation_of_unit_eq
 
 -- Porting note: invalid attribute 'semireducible', declaration is in an imported module

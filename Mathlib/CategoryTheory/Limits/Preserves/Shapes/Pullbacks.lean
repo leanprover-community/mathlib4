@@ -76,7 +76,7 @@ variable (f g) [PreservesLimit (cospan f g) G]
 morphisms of the pullback cone is a limit. -/
 def isLimitOfHasPullbackOfPreservesLimit [i : HasPullback f g] :
     have : G.map pullback.fst ≫ G.map f = G.map pullback.snd ≫ G.map g := by
-      simp only [← G.map_comp, pullback.condition];
+      simp only [← G.map_comp, pullback.condition]
     IsLimit (PullbackCone.mk (G.map (@pullback.fst _ _ _ _ _ f g i)) (G.map pullback.snd) this) :=
   isLimitPullbackConeMapOfIsLimit G _ (pullbackIsPullback f g)
 #align category_theory.limits.is_limit_of_has_pullback_of_preserves_limit CategoryTheory.Limits.isLimitOfHasPullbackOfPreservesLimit

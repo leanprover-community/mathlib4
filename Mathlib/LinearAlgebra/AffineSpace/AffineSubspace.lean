@@ -1595,7 +1595,7 @@ theorem map_direction (s : AffineSubspace k P₁) :
 #align affine_subspace.map_direction AffineSubspace.map_direction
 
 theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s) := by
-  rcases s.eq_empty_or_nonempty with (rfl | ⟨p, hp⟩);
+  rcases s.eq_empty_or_nonempty with (rfl | ⟨p, hp⟩)
   · rw [image_empty, span_empty, span_empty, map_bot]
     -- Porting note: I don't know exactly why this `simp` was broken.
   apply ext_of_direction_eq

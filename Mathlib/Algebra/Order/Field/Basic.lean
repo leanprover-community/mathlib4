@@ -757,22 +757,22 @@ theorem sub_inv_antitoneOn_Icc_left (ha : b < c) :
   · simp [hab, Set.Subsingleton.antitoneOn]
 
 theorem inv_antitoneOn_Ioi :
-    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Ioi 0) := by
+    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Ioi 0) := by
   convert sub_inv_antitoneOn_Ioi
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Iio :
-    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Iio 0) := by
+    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Iio 0) := by
   convert sub_inv_antitoneOn_Iio
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Icc_right (ha : 0 < a) :
-    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Icc a b) := by
+    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Icc a b) := by
   convert sub_inv_antitoneOn_Icc_right ha
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Icc_left (hb : b < 0) :
-    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Icc a b) := by
+    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Icc a b) := by
   convert sub_inv_antitoneOn_Icc_left hb
   exact (sub_zero _).symm
 
@@ -1065,7 +1065,7 @@ def evalInv : PositivityExt where eval {u α} zα pα e := do
   | .none => pure .none
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℤ)`. -/
-@[positivity _ ^ (0:ℤ), Pow.pow _ (0:ℤ)]
+@[positivity _ ^ (0 : ℤ), Pow.pow _ (0 : ℤ)]
 def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
   _ ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))

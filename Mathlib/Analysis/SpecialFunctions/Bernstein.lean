@@ -66,8 +66,8 @@ theorem bernstein_apply (n ν : ℕ) (x : I) :
 
 theorem bernstein_nonneg {n ν : ℕ} {x : I} : 0 ≤ bernstein n ν x := by
   simp only [bernstein_apply]
-  have h₁ : (0:ℝ) ≤ x := by unit_interval
-  have h₂ : (0:ℝ) ≤ 1 - x := by unit_interval
+  have h₁ : (0 : ℝ) ≤ x := by unit_interval
+  have h₂ : (0 : ℝ) ≤ 1 - x := by unit_interval
   positivity
 #align bernstein_nonneg bernstein_nonneg
 

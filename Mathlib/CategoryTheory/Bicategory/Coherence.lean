@@ -162,7 +162,7 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
     (preinclusion B).map ⟨p⟩ ◁ η ≫ (normalizeIso p g).hom =
       (normalizeIso p f).hom ≫
         (preinclusion B).map₂ (eqToHom (Discrete.ext _ _ (normalizeAux_congr p η))) := by
-  rcases η with ⟨η'⟩; clear η;
+  rcases η with ⟨η'⟩; clear η
   induction η' with
   | id => simp
   | vcomp η θ ihf ihg =>

@@ -284,13 +284,13 @@ variable {B}
 
 /-- Pre-compose an internal hom with an external hom. -/
 def pre (f : B ⟶ A) [Exponentiable B] : exp A ⟶ exp B :=
-  transferNatTransSelf (exp.adjunction _) (exp.adjunction _) (prod.functor.map f)
+  conjugateEquiv (exp.adjunction _) (exp.adjunction _) (prod.functor.map f)
 #align category_theory.pre CategoryTheory.pre
 
 theorem prod_map_pre_app_comp_ev (f : B ⟶ A) [Exponentiable B] (X : C) :
     Limits.prod.map (𝟙 B) ((pre f).app X) ≫ (exp.ev B).app X =
       Limits.prod.map f (𝟙 (A ⟹ X)) ≫ (exp.ev A).app X :=
-  transferNatTransSelf_counit _ _ (prod.functor.map f) X
+  conjugateEquiv_counit _ _ (prod.functor.map f) X
 #align category_theory.prod_map_pre_app_comp_ev CategoryTheory.prod_map_pre_app_comp_ev
 
 theorem uncurry_pre (f : B ⟶ A) [Exponentiable B] (X : C) :
@@ -301,7 +301,7 @@ theorem uncurry_pre (f : B ⟶ A) [Exponentiable B] (X : C) :
 theorem coev_app_comp_pre_app (f : B ⟶ A) [Exponentiable B] :
     (exp.coev A).app X ≫ (pre f).app (A ⨯ X) =
       (exp.coev B).app X ≫ (exp B).map (Limits.prod.map f (𝟙 _)) :=
-  unit_transferNatTransSelf _ _ (prod.functor.map f) X
+  unit_conjugateEquiv _ _ (prod.functor.map f) X
 #align category_theory.coev_app_comp_pre_app CategoryTheory.coev_app_comp_pre_app
 
 @[simp]
@@ -311,7 +311,7 @@ theorem pre_id (A : C) [Exponentiable A] : pre (𝟙 A) = 𝟙 _ := by simp [pre
 @[simp]
 theorem pre_map {A₁ A₂ A₃ : C} [Exponentiable A₁] [Exponentiable A₂] [Exponentiable A₃]
     (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) : pre (f ≫ g) = pre g ≫ pre f := by
-  rw [pre, pre, pre, transferNatTransSelf_comp, prod.functor.map_comp]
+  rw [pre, pre, pre, conjugateEquiv_comp, prod.functor.map_comp]
 #align category_theory.pre_map CategoryTheory.pre_map
 
 end Pre

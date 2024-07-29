@@ -232,7 +232,7 @@ instance shortNeg : ∀ (x : PGame.{u}) [Short x], Short (-x)
 
 instance shortAdd : ∀ (x y : PGame.{u}) [Short x] [Short y], Short (x + y)
   | mk xl xr xL xR, mk yl yr yL yR, _, _ => by
-    apply Short.mk;
+    apply Short.mk
     all_goals
       rintro ⟨i⟩
       · apply shortAdd
@@ -318,3 +318,5 @@ example : Decidable ((1 : PGame) ≤ 1) := by infer_instance
 -- example : (0 : PGame.{u}) ≤ 0 := by decide
 -- example : (1 : PGame.{u}) ≤ 1 := by decide
 end PGame
+
+end SetTheory

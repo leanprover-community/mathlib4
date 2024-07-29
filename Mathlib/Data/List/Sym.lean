@@ -18,7 +18,7 @@ from a given list. These are list versions of `Nat.multichoose`.
 * `List.sym2`: `xs.sym2` is a list of all unordered pairs of elements from `xs`,
   with multiplicity. The list's values are in `Sym2 α`.
 
-## Todo
+## TODO
 
 * Prove `protected theorem Perm.sym (n : ℕ) {xs ys : List α} (h : xs ~ ys) : xs.sym n ~ ys.sym n`
   and lift the result to `Multiset` and `Finset`.

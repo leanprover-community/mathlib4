@@ -231,13 +231,13 @@ theorem Coprime.gcd_mul_right_cancel (m : ℕ+) {n k : ℕ+} :
 
 theorem Coprime.gcd_mul_left_cancel_right (m : ℕ+) {n k : ℕ+} :
     k.Coprime m → m.gcd (k * n) = m.gcd n := by
-  intro h; iterate 2 rw [gcd_comm]; symm;
+  intro h; iterate 2 rw [gcd_comm]; symm
   apply Coprime.gcd_mul_left_cancel _ h
 #align pnat.coprime.gcd_mul_left_cancel_right PNat.Coprime.gcd_mul_left_cancel_right
 
 theorem Coprime.gcd_mul_right_cancel_right (m : ℕ+) {n k : ℕ+} :
     k.Coprime m → m.gcd (n * k) = m.gcd n := by
-  rw [mul_comm];
+  rw [mul_comm]
   apply Coprime.gcd_mul_left_cancel_right
 #align pnat.coprime.gcd_mul_right_cancel_right PNat.Coprime.gcd_mul_right_cancel_right
 

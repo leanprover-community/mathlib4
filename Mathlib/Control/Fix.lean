@@ -89,7 +89,7 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     intro x'
     rw [Fix.approx, WellFounded.fix_eq, fixAux]
     congr
-    ext x: 1
+    ext x : 1
     rw [assert_neg]
     · rfl
     · rw [Nat.zero_add] at _this

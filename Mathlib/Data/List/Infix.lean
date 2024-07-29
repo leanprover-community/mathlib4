@@ -381,7 +381,7 @@ theorem mem_tails : ∀ s t : List α, s ∈ tails t ↔ s <:+ t
   | s, [] => by
     simp only [tails, mem_singleton, suffix_nil]
   | s, a :: t => by
-    simp only [tails, mem_cons, mem_tails s t];
+    simp only [tails, mem_cons, mem_tails s t]
     exact
       show s = a :: t ∨ s <:+ t ↔ s <:+ a :: t from
         ⟨fun o =>

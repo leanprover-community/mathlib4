@@ -116,3 +116,5 @@ instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom]
     simp only [Iso.eq_comp_inv, assoc, hτ₂]
 
 end Functor.IsCartesian
+
+end CategoryTheory

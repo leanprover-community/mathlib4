@@ -347,7 +347,7 @@ theorem cases_head (h : ReflTransGen r a b) : a = b ∨ ∃ c, r a c ∧ ReflTra
   · left
     rfl
   · right
-    exact ⟨_, by assumption, by assumption⟩;
+    exact ⟨_, by assumption, by assumption⟩
 #align relation.refl_trans_gen.cases_head Relation.ReflTransGen.cases_head
 
 theorem cases_head_iff : ReflTransGen r a b ↔ a = b ∨ ∃ c, r a c ∧ ReflTransGen r c b := by

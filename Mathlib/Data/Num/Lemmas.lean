@@ -955,7 +955,7 @@ theorem castNum_shiftLeft (m : Num) (n : Nat) : ↑(m <<< n) = (m : ℕ) <<< (n 
 @[simp, norm_cast]
 
 theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n : ℕ)  := by
-  cases' m with m <;> dsimp only [← shiftr_eq_shiftRight, shiftr];
+  cases' m with m <;> dsimp only [← shiftr_eq_shiftRight, shiftr]
   · symm
     apply Nat.zero_shiftRight
   induction' n with n IH generalizing m

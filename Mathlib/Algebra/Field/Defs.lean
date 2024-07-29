@@ -17,7 +17,7 @@ statements about them. For a more extensive theory of fields, see the `FieldTheo
 ## Main definitions
 
 * `DivisionSemiring`: Nontrivial semiring with multiplicative inverses for nonzero elements.
-* `DivisionRing`: : Nontrivial ring with multiplicative inverses for nonzero elements.
+* `DivisionRing`: Nontrivial ring with multiplicative inverses for nonzero elements.
 * `Semifield`: Commutative division semiring.
 * `Field`: Commutative division ring.
 * `IsField`: Predicate on a (semi)ring that it is a (semi)field, i.e. that the multiplication is
