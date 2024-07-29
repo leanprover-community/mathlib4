@@ -27,7 +27,7 @@ theorem pow_of_pow_add_prime {a n : ℕ} (ha : 1 < a) (hn : 1 < n) (hP : (a ^ n 
 # Primality of `a ^ n - 1`
 -/
 
-/-- Prime `a ^ n - 1` implies either `a = 2` or prime `n`. -/
+/-- Prime `a ^ n - 1` implies `a = 2` and prime `n`. -/
 theorem prime_of_pow_sub_one_prime (a n : ℕ) (ha : 1 < a) (hn : 1 < n) (hP : (a ^ n - 1).Prime) :
     a = 2 ∧ n.Prime := by
   by_contra h₀
