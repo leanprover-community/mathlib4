@@ -547,7 +547,7 @@ lemma sum_cons' [AddCommMonoid M] [AddCommMonoid N] (n : ℕ) (σ : Fin n →₀
   congr
 
 @[to_additive]
-lemma prod_mul_eq_prod_mul_of_exists [DecidableEq α] [Zero M] [CommMonoid N]
+lemma prod_mul_eq_prod_mul_of_exists [Zero M] [CommMonoid N]
     {f : α →₀ M} {g : α → M → N} {n₁ n₂ : N}
     (a : α) (ha : a ∈ f.support)
     (h : g a (f a) * n₁ = g a (f a) * n₂) :
