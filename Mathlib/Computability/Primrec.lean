@@ -993,7 +993,7 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
                 option_map (hg.comp (fst.comp fst) snd)
                   (to₂ <| list_concat.comp (snd.comp fst) snd))).of_eq
       fun a n => by
-      simp; induction' n with n IH; · rfl
+      induction' n with n IH; · rfl
       simp [IH, H, List.range_succ]
 
 theorem listLookup [DecidableEq α] : Primrec₂ (List.lookup : α → List (α × β) → Option β) :=
@@ -1191,7 +1191,7 @@ theorem vector_toList_iff {n} {f : α → Vector β n} : (Primrec fun a => (f a)
   subtype_val_iff
 
 theorem vector_cons {n} : Primrec₂ (@Vector.cons α n) :=
-  vector_toList_iff.1 <| by simp; exact list_cons.comp fst (vector_toList_iff.2 snd)
+  vector_toList_iff.1 <| by simpa using list_cons.comp fst (vector_toList_iff.2 snd)
 
 theorem vector_length {n} : Primrec (@Vector.length α n) :=
   const _
@@ -1212,7 +1212,7 @@ theorem list_ofFn :
     ∀ {n} {f : Fin n → α → σ}, (∀ i, Primrec (f i)) → Primrec fun a => List.ofFn fun i => f i a
   | 0, _, _ => const []
   | n + 1, f, hf => by
-    simp [List.ofFn_succ]; exact list_cons.comp (hf 0) (list_ofFn fun i => hf i.succ)
+    simpa [List.ofFn_succ] using list_cons.comp (hf 0) (list_ofFn fun i => hf i.succ)
 
 theorem vector_ofFn {n} {f : Fin n → α → σ} (hf : ∀ i, Primrec (f i)) :
     Primrec fun a => Vector.ofFn fun i => f i a :=
@@ -1357,7 +1357,7 @@ protected theorem encode : ∀ {n}, @Primrec' n encode
 theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
   suffices H : ∀ n : ℕ, n.sqrt =
       n.rec 0 fun x y => if x.succ < y.succ * y.succ then y else y.succ by
-    simp [H]
+    simp only [H, succ_eq_add_one]
     have :=
       @prec' 1 _ _
         (fun v => by

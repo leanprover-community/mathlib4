@@ -197,7 +197,7 @@ theorem isPell_pellZd : ∀ n : ℕ, IsPell (pellZd a1 n)
   | 0 => rfl
   | n + 1 => by
     let o := isPell_one a1
-    simp; exact Pell.isPell_mul (isPell_pellZd n) o
+    simpa using Pell.isPell_mul (isPell_pellZd n) o
 
 @[simp]
 theorem pell_eqz (n : ℕ) : xz a1 n * xz a1 n - d a1 * yz a1 n * yz a1 n = 1 :=

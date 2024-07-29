@@ -183,8 +183,7 @@ variable [Group G]
 @[to_additive]
 theorem mem_norm_comm {s : Set G} (hs : IsNormalSubgroup s) {a b : G} (hab : a * b ∈ s) :
     b * a ∈ s := by
-  have h : a⁻¹ * (a * b) * a⁻¹⁻¹ ∈ s := hs.normal (a * b) hab a⁻¹
-  simp at h; exact h
+  simpa using (hs.normal (a * b) hab a⁻¹)
 
 @[to_additive]
 theorem mem_norm_comm_iff {s : Set G} (hs : IsNormalSubgroup s) {a b : G} : a * b ∈ s ↔ b * a ∈ s :=
@@ -379,8 +378,8 @@ theorem injective_iff_trivial_ker {f : G → H} (hf : IsGroupHom f) :
 @[to_additive]
 theorem trivial_ker_iff_eq_one {f : G → H} (hf : IsGroupHom f) :
     ker f = trivial G ↔ ∀ x, f x = 1 → x = 1 := by
-  rw [Set.ext_iff]; simp [ker]
-  exact ⟨fun h x hx => (h x).1 hx, fun h x => ⟨h x, fun hx => by rw [hx, hf.map_one]⟩⟩
+  rw [Set.ext_iff]
+  simpa [ker] using ⟨fun h x hx => (h x).1 hx, fun h x => ⟨h x, fun hx => by rw [hx, hf.map_one]⟩⟩
 
 end IsGroupHom
 

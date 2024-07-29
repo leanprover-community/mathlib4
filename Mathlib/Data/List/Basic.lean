@@ -2771,8 +2771,7 @@ lemma lookup_graph (f : α → β) {a : α} {as : List α} (h : a ∈ as) :
   · exact (List.not_mem_nil _ h).elim
   · by_cases ha : a = a'
     · simp [ha, lookup_cons]
-    · simp [lookup_cons, beq_false_of_ne ha]
-      exact ih (List.mem_of_ne_of_mem ha h)
+    · simpa [lookup_cons, beq_false_of_ne ha] using ih (List.mem_of_ne_of_mem ha h)
 
 end lookup
 

@@ -165,7 +165,7 @@ def nimOneRelabelling : nim 1 ≡r star := by
   rw [nim_def]
   refine ⟨?_, ?_, fun i => ?_, fun j => ?_⟩
   any_goals dsimp; apply Equiv.equivOfUnique
-  all_goals simp; exact nimZeroRelabelling
+  all_goals simpa using nimZeroRelabelling
 
 theorem nim_one_equiv : nim 1 ≈ star :=
   nimOneRelabelling.equiv
