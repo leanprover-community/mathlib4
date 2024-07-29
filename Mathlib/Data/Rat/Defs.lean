@@ -326,7 +326,6 @@ instance instOne : One ℚ where
   one := 1
 
 instance addCommGroup : AddCommGroup ℚ where
-  zero := 0
   add := (· + ·)
   neg := Neg.neg
   zero_add := Rat.zero_add
