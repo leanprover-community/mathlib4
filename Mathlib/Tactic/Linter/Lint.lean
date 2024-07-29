@@ -237,6 +237,10 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     if (← MonadState.get).messages.hasErrors then
       return
+    -- TODO: once per-project settings are available,
+    -- revert this hack to make it only apply on `Mathlib`
+    unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
+      return
     -- The linter ignores the `#guard_msgs` command, in particular its doc-string.
     -- The linter still lints the message guarded by `#guard_msgs`.
     if stx.isOfKind ``Lean.guardMsgsCmd then
@@ -245,6 +249,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let stx := ← do
       if stx.isOfKind ``Lean.Parser.Command.eoi then
         let fname ← getFileName
+        if !(← System.FilePath.pathExists fname) then return default
         let contents ← IO.FS.readFile fname
         -- `impMods` is the syntax for the modules imported in the current file
         let (impMods, _) ← Parser.parseHeader (Parser.mkInputContext contents fname)
