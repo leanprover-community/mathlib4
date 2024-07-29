@@ -168,6 +168,25 @@ theorem Perfect.splitting [T25Space α] (hC : Perfect C) (hnonempty : C.Nonempty
     exact inter_subset_right
   apply Disjoint.mono _ _ hUV <;> apply closure_mono <;> exact inter_subset_left
 
+lemma IsPreconnected.preperfect_of_nontrivial [T1Space α] {U : Set α} (hu : U.Nontrivial)
+    (h : IsPreconnected U) : Preperfect U := by
+  intro x hx
+  rw [isPreconnected_closed_iff] at h
+  specialize h {x} (closure (U \ {x})) isClosed_singleton isClosed_closure ?_ ?_ ?_
+  · trans {x} ∪ (U \ {x})
+    · simp
+    apply Set.union_subset_union_right
+    exact subset_closure
+  · exact Set.inter_singleton_nonempty.mpr hx
+  · obtain ⟨y, hy⟩ := Set.Nontrivial.exists_ne hu x
+    use y
+    simp only [Set.mem_inter_iff, hy, true_and]
+    apply subset_closure
+    simp [hy]
+  · apply Set.Nonempty.right at h
+    rw [Set.singleton_inter_nonempty, mem_closure_iff_clusterPt, ← acc_principal_iff_cluster] at h
+    exact h
+
 end Preperfect
 
 section Kernel
