@@ -124,13 +124,13 @@ theorem IsClopen.eq_univ [PreconnectedSpace α] {s : Set α} (h' : IsClopen s) (
 
 open Set.Notation in
 lemma isClopen_preimage_val {X : Type*} [TopologicalSpace X] {u v : Set X}
-    (hu : IsOpen u) (huv : frontier u ∩ v = ∅) : IsClopen (v ↓∩ u) := by
+    (hu : IsOpen u) (huv : Disjoint (frontier u) v) : IsClopen (v ↓∩ u) := by
   refine ⟨?_, isOpen_induced hu (f := Subtype.val)⟩
   refine isClosed_induced_iff.mpr ⟨closure u, isClosed_closure, ?_⟩
   apply image_val_injective
   simp only [Subtype.image_preimage_coe]
   rw [closure_eq_self_union_frontier, inter_union_distrib_left, inter_comm _ (frontier u),
-    huv, union_empty]
+    huv.inter_eq, union_empty]
 
 section disjoint_subsets
 
