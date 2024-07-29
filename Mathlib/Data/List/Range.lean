@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Scott Morrison
 -/
 import Mathlib.Data.List.Chain
-import Mathlib.Data.List.Enum
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Pairwise
-import Mathlib.Data.List.Zip
 import Batteries.Data.Nat.Lemmas
 
 /-!
