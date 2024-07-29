@@ -72,8 +72,8 @@ instance (A : Type*) [CommRing A] [Differential A] : Differential.ContainConstan
 
 /-- Transfer a `Differential` instance accross a `RingEquiv`. -/
 @[reducible]
-def Differential.equiv {R R2 : Type*} [CommRing R] [CommRing R2] [Differential R2]
-    (h : R ≃+* R2) : Differential R :=
+def Differential.equiv {R R₂ : Type*} [CommRing R] [CommRing R₂] [Differential R₂]
+    (h : R ≃+* R₂) : Differential R :=
   ⟨Derivation.mk' (h.symm.toAddMonoidHom.toIntLinearMap ∘ₗ
     Differential.deriv.toLinearMap ∘ₗ h.toAddMonoidHom.toIntLinearMap) (by simp)⟩
 
@@ -81,8 +81,8 @@ def Differential.equiv {R R2 : Type*} [CommRing R] [CommRing R2] [Differential R
 Transfer a `DifferentialAlgebra` instance accross a `AlgEquiv`.
 -/
 lemma DifferentialAlgebra.equiv {A : Type*} [CommRing A] [Differential A]
-    {R R2 : Type*} [CommRing R] [CommRing R2] [Differential R2] [Algebra A R]
-    [Algebra A R2] [DifferentialAlgebra A R2] (h : R ≃ₐ[A] R2) :
+    {R R₂ : Type*} [CommRing R] [CommRing R₂] [Differential R₂] [Algebra A R]
+    [Algebra A R₂] [DifferentialAlgebra A R₂] (h : R ≃ₐ[A] R₂) :
     letI := Differential.equiv h.toRingEquiv
     DifferentialAlgebra A R :=
   letI := Differential.equiv h.toRingEquiv
