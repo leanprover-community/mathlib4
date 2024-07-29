@@ -50,34 +50,34 @@ A topological space `X` is compactly generated if its topology is finer than (an
 the compactly generated topology, i.e. it is coinduced by the continuous maps from compact
 Hausdorff spaces to `X`.
 -/
-class CompactlyGeneratedSpace (X : Type w) [t : TopologicalSpace X] : Prop where
+class UCompactlyGeneratedSpace (X : Type w) [t : TopologicalSpace X] : Prop where
   /-- The topology of `X` is finer than the compactly generated topology. -/
   le_compactlyGenerated : t ≤ compactlyGenerated.{u} X
 
-lemma eq_compactlyGenerated {X : Type w} [t : TopologicalSpace X] [CompactlyGeneratedSpace.{u} X] :
+lemma eq_compactlyGenerated {X : Type w} [t : TopologicalSpace X] [UCompactlyGeneratedSpace.{u} X] :
     t = compactlyGenerated.{u} X := by
   apply le_antisymm
-  · exact CompactlyGeneratedSpace.le_compactlyGenerated
+  · exact UCompactlyGeneratedSpace.le_compactlyGenerated
   · simp only [compactlyGenerated, ← continuous_iff_coinduced_le, continuous_sigma_iff,
       Sigma.forall]
     exact fun S f ↦ f.2
 
 instance (X : Type w) [t : TopologicalSpace X] [DiscreteTopology X] :
-    CompactlyGeneratedSpace.{u} X where
+    UCompactlyGeneratedSpace.{u} X where
   le_compactlyGenerated := by
     rw [DiscreteTopology.eq_bot (t := t)]
     exact bot_le
 
-lemma continuous_from_compactlyGeneratedSpace {X : Type w} [TopologicalSpace X]
-    [CompactlyGeneratedSpace.{u} X] {Y : Type*} [TopologicalSpace Y] (f : X → Y)
+lemma continuous_from_uCompactlyGeneratedSpace {X : Type w} [TopologicalSpace X]
+    [UCompactlyGeneratedSpace.{u} X] {Y : Type*} [TopologicalSpace Y] (f : X → Y)
       (h : ∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) : Continuous f := by
-  apply continuous_le_dom CompactlyGeneratedSpace.le_compactlyGenerated
+  apply continuous_le_dom UCompactlyGeneratedSpace.le_compactlyGenerated
   exact continuous_from_compactlyGenerated f h
 
-lemma compactlyGeneratedSpace_of_continuous_maps {X : Type w} [t : TopologicalSpace X]
+lemma uCompactlyGeneratedSpace_of_continuous_maps {X : Type w} [t : TopologicalSpace X]
     (h : ∀ {Y : Type w} [tY : TopologicalSpace Y] (f : X → Y),
       (∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) → Continuous f) :
-        CompactlyGeneratedSpace.{u} X where
+        UCompactlyGeneratedSpace.{u} X where
   le_compactlyGenerated := by
     suffices Continuous[t, compactlyGenerated.{u} X] (id : X → X) by
       rwa [← continuous_id_iff_le]
@@ -94,7 +94,7 @@ structure CompactlyGenerated where
   /-- The underlying topological space of an object of `CompactlyGenerated`. -/
   toTop : TopCat.{w}
   /-- The underlying topological space is compactly generated. -/
-  [is_compactly_generated : CompactlyGeneratedSpace.{u} toTop]
+  [is_compactly_generated : UCompactlyGeneratedSpace.{u} toTop]
 
 namespace CompactlyGenerated
 
@@ -112,7 +112,7 @@ instance : Category.{w, w+1} CompactlyGenerated.{u, w} :=
 instance : ConcreteCategory.{w} CompactlyGenerated.{u, w} :=
   InducedCategory.concreteCategory _
 
-variable (X : Type w) [TopologicalSpace X] [CompactlyGeneratedSpace.{u} X]
+variable (X : Type w) [TopologicalSpace X] [UCompactlyGeneratedSpace.{u} X]
 
 /-- Constructor for objects of the category `CompactlyGenerated`. -/
 def of : CompactlyGenerated.{u, w} where

@@ -136,14 +136,14 @@ instance : topCatToCondensedSet.Faithful := topCatAdjunction.faithful_R_of_epi_c
 
 open CompactlyGenerated
 
-instance (X : CondensedSet.{u}) : CompactlyGeneratedSpace.{u, u+1} X.toTopCat := by
-  apply compactlyGeneratedSpace_of_continuous_maps
+instance (X : CondensedSet.{u}) : UCompactlyGeneratedSpace.{u, u+1} X.toTopCat := by
+  apply uCompactlyGeneratedSpace_of_continuous_maps
   intro Y _ f h
   rw [continuous_coinduced_dom, continuous_sigma_iff]
   exact fun ⟨S, s⟩ ↦ h S ⟨_, continuous_coinducingCoprod X _⟩
 
-instance (X : CondensedSet.{u}) : CompactlyGeneratedSpace.{u, u+1} (condensedSetToTopCat.obj X) :=
-  inferInstanceAs (CompactlyGeneratedSpace.{u, u+1} X.toTopCat)
+instance (X : CondensedSet.{u}) : UCompactlyGeneratedSpace.{u, u+1} (condensedSetToTopCat.obj X) :=
+  inferInstanceAs (UCompactlyGeneratedSpace.{u, u+1} X.toTopCat)
 
 /-- The functor from condensed sets to topological spaces lands in compactly generated spaces. -/
 def condensedSetToCompactlyGenerated : CondensedSet.{u} ⥤ CompactlyGenerated.{u, u+1} where
@@ -172,12 +172,12 @@ noncomputable def compactlyGeneratedAdjunction :
 The counit of the adjunction `condensedSetToCompactlyGenerated ⊣ compactlyGeneratedToCondensedSet`
 is a homeomorphism.
 -/
-def compactlyGeneratedAdjunctionCounitHomeo (X : TopCat.{u+1}) [CompactlyGeneratedSpace.{u} X] :
+def compactlyGeneratedAdjunctionCounitHomeo (X : TopCat.{u+1}) [UCompactlyGeneratedSpace.{u} X] :
     X.toCondensedSet.toTopCat ≃ₜ X where
   toEquiv := topCatAdjunctionCounitEquiv X
   continuous_toFun := (topCatAdjunctionCounit X).continuous
   continuous_invFun := by
-    apply continuous_from_compactlyGeneratedSpace
+    apply continuous_from_uCompactlyGeneratedSpace
     exact fun _ _ ↦ continuous_coinducingCoprod X.toCondensedSet _
 
 /--
