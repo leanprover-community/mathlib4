@@ -571,11 +571,11 @@ def Simps.apply (h : α →𝒄 β) : α → β :=
 
 initialize_simps_projections ContinuousHom (toFun → apply)
 
-theorem congr_fun {f g : α →𝒄 β} (h : f = g) (x : α) : f x = g x :=
+protected theorem congr_fun {f g : α →𝒄 β} (h : f = g) (x : α) : f x = g x :=
   DFunLike.congr_fun h x
 
-theorem congr_arg (f : α →𝒄 β) {x y : α} (h : x = y) : f x = f y :=
-  _root_.congr_arg f h
+protected theorem congr_arg (f : α →𝒄 β) {x y : α} (h : x = y) : f x = f y :=
+  congr_arg f h
 
 protected theorem monotone (f : α →𝒄 β) : Monotone f :=
   f.monotone'

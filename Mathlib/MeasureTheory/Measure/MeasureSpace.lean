@@ -1172,6 +1172,18 @@ theorem map_toOuterMeasure (hf : AEMeasurable f μ) :
 @[simp] lemma mapₗ_eq_zero_iff (hf : Measurable f) : Measure.mapₗ f μ = 0 ↔ μ = 0 := by
   rw [mapₗ_apply_of_measurable hf, map_eq_zero_iff hf.aemeasurable]
 
+/-- If `map f μ = μ`, then the measure of the preimage of any null measurable set `s`
+is equal to the measure of `s`.
+Note that this lemma does not assume (a.e.) measurability of `f`. -/
+lemma measure_preimage_of_map_eq_self {f : α → α} (hf : map f μ = μ)
+    {s : Set α} (hs : NullMeasurableSet s μ) : μ (f ⁻¹' s) = μ s := by
+  if hfm : AEMeasurable f μ then
+    rw [← map_apply₀ hfm, hf]
+    rwa [hf]
+  else
+    rw [map_of_not_aemeasurable hfm] at hf
+    simp [← hf]
+
 lemma map_ne_zero_iff (hf : AEMeasurable f μ) : μ.map f ≠ 0 ↔ μ ≠ 0 := (map_eq_zero_iff hf).not
 lemma mapₗ_ne_zero_iff (hf : Measurable f) : Measure.mapₗ f μ ≠ 0 ↔ μ ≠ 0 :=
   (mapₗ_eq_zero_iff hf).not
@@ -1216,8 +1228,10 @@ theorem tendsto_ae_map {f : α → β} (hf : AEMeasurable f μ) : Tendsto f (ae 
 /-- Pullback of a `Measure` as a linear map. If `f` sends each measurable set to a measurable
 set, then for each measurable set `s` we have `comapₗ f μ s = μ (f '' s)`.
 
+Note that if `f` is not injective, this definition assigns `Set.univ` measure zero.
+
 If the linearity is not needed, please use `comap` instead, which works for a larger class of
-functions. -/
+functions. `comapₗ` is an auxiliary definition and most lemmas deal with comap. -/
 def comapₗ [MeasurableSpace α] (f : α → β) : Measure β →ₗ[ℝ≥0∞] Measure α :=
   if hf : Injective f ∧ ∀ s, MeasurableSet s → MeasurableSet (f '' s) then
     liftLinear (OuterMeasure.comap f) fun μ s hs t => by
@@ -1233,7 +1247,9 @@ theorem comapₗ_apply {β} [MeasurableSpace α] {mβ : MeasurableSpace β} (f :
   exact ⟨hfi, hf⟩
 
 /-- Pullback of a `Measure`. If `f` sends each measurable set to a null-measurable set,
-then for each measurable set `s` we have `comap f μ s = μ (f '' s)`. -/
+then for each measurable set `s` we have `comap f μ s = μ (f '' s)`.
+
+Note that if `f` is not injective, this definition assigns `Set.univ` measure zero. -/
 def comap [MeasurableSpace α] (f : α → β) (μ : Measure β) : Measure α :=
   if hf : Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ then
     (OuterMeasure.comap f μ.toOuterMeasure).toMeasure fun s hs t => by

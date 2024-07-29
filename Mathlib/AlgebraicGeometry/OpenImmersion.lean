@@ -332,19 +332,25 @@ theorem to_iso {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsOpenImmersion f] [Epi f.b
     (@PresheafedSpace.IsOpenImmersion.to_iso _ _ _ _ f.toHom h _) _
 
 theorem of_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : OpenEmbedding f.base)
-    [∀ x, IsIso (PresheafedSpace.stalkMap f.toHom x)] : IsOpenImmersion f :=
+    [∀ x, IsIso (f.stalkMap x)] : IsOpenImmersion f :=
+  haveI (x : X) : IsIso (f.val.stalkMap x) := inferInstanceAs <| IsIso (f.stalkMap x)
   SheafedSpace.IsOpenImmersion.of_stalk_iso f.toHom hf
 
+instance stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (x : X) :
+    IsIso (f.stalkMap x) :=
+  inferInstanceAs <| IsIso (f.val.stalkMap x)
+
 theorem iff_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    IsOpenImmersion f ↔ OpenEmbedding f.base ∧ ∀ x, IsIso (PresheafedSpace.stalkMap f.toHom x) :=
-  ⟨fun H => ⟨H.1, inferInstance⟩, fun ⟨h₁, h₂⟩ => @IsOpenImmersion.of_stalk_iso _ _ f h₁ h₂⟩
+    IsOpenImmersion f ↔ OpenEmbedding f.base ∧ ∀ x, IsIso (f.stalkMap x) :=
+  ⟨fun H => ⟨H.1, fun x ↦ inferInstanceAs <| IsIso (f.toHom.stalkMap x)⟩,
+    fun ⟨h₁, h₂⟩ => @IsOpenImmersion.of_stalk_iso _ _ f h₁ h₂⟩
 
 theorem _root_.AlgebraicGeometry.isIso_iff_isOpenImmersion {X Y : Scheme.{u}} (f : X ⟶ Y) :
     IsIso f ↔ IsOpenImmersion f ∧ Epi f.base :=
   ⟨fun _ => ⟨inferInstance, inferInstance⟩, fun ⟨h₁, h₂⟩ => @IsOpenImmersion.to_iso _ _ f h₁ h₂⟩
 
 theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    IsIso f ↔ IsIso f.base ∧ ∀ x, IsIso (PresheafedSpace.stalkMap f.toHom x) := by
+    IsIso f ↔ IsIso f.base ∧ ∀ x, IsIso (f.stalkMap x) := by
   rw [isIso_iff_isOpenImmersion, IsOpenImmersion.iff_stalk_iso, and_comm, ← and_assoc]
   refine and_congr ⟨?_, ?_⟩ Iff.rfl
   · rintro ⟨h₁, h₂⟩
