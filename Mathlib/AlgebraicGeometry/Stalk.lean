@@ -23,7 +23,7 @@ neighborhood `U` of `x`.
 -/
 noncomputable def IsAffineOpen.fromSpecStalk
     {X : Scheme} {U : X.Opens} (hU : IsAffineOpen U) {x : X} (hxU : x ∈ U) :
-    Spec (X.stalk x) ⟶ X :=
+    Spec (X.presheaf.stalk x) ⟶ X :=
   Spec.map (X.presheaf.germ ⟨x, hxU⟩) ≫ hU.fromSpec
 
 /--
@@ -51,7 +51,7 @@ theorem IsAffineOpen.fromSpecStalk_eq {X : Scheme} (x : X) {U V : X.Opens}
 If `x` is a point of `X`, this is the canonical morphism from `Spec(O_x)` to `X`.
 -/
 noncomputable def Scheme.fromSpecStalk (X : Scheme) (x : X) :
-    Scheme.Spec.obj (op (X.stalk x)) ⟶ X :=
+    Scheme.Spec.obj (op (X.presheaf.stalk x)) ⟶ X :=
   (isAffineOpen_opensRange (X.affineOpenCover.map x)).fromSpecStalk (X.affineOpenCover.covers x)
 
 @[simp]
