@@ -44,6 +44,10 @@ lemma floor_le_of_lt_add_one (h : x < n + 1) :
 
 @[simp] lemma floor_coe_eq (n : ℕ) : floor n = n := le_antisymm (floor_le _) (le_sSup (by simp))
 
+@[simp] lemma floor_zero_eq : floor 0 = 0 := by exact_mod_cast ENNReal.floor_coe_eq 0
+
+@[simp] lemma floor_one_eq_one : floor 1 = 1 := by exact_mod_cast ENNReal.floor_coe_eq 1
+
 /-- There exists a natural number on any closed interval of length one in ℝ≥0. -/
 lemma _root_.NNReal.exists_nat_mem_Icc (x : ℝ≥0) : ∃ (n : ℕ), ↑n ∈ Set.Icc x (x+1) := by
   refine ⟨FloorSemiring.ceil x, ⟨Nat.le_ceil x, ?_⟩⟩
@@ -72,8 +76,6 @@ lemma range_nat_coe_inter_Iio_top_eq :
   rw [floor, range_nat_coe_inter_Iic_top_eq]
   obtain ⟨n, hn⟩ := exists_nat_mem_Icc x
   exact le_sSup_of_le (mem_range_self n) (by exact_mod_cast hn.1)
-
-@[simp] lemma floor_zero_eq : floor 0 = 0 := le_antisymm (sSup_le (by simp)) (zero_le _)
 
 lemma _root_.Nat.setOf_le_ENNReal_eq_Iic (x_ne_top : x ≠ ∞) :
     {n : ℕ | n ≤ x} = Iic (Nat.floor x.toNNReal) := by
@@ -121,10 +123,6 @@ lemma _root_.Nat.bddAbove_le_ennreal {x : ℝ≥0∞} (x_ne_top : x ≠ ∞) :
   have obs : m ≤ x.toNNReal := (toNNReal_le_toNNReal coe_ne_top x_ne_top).mpr hm
   exact_mod_cast obs.trans <| Nat.le_ceil x.toNNReal
 
-lemma _root_.Nat.bddAbove_lt_ennreal {x : ℝ≥0∞} (x_ne_top : x ≠ ∞) :
-    BddAbove {n : ℕ | n < x} :=
-  (Nat.bddAbove_le_ennreal x_ne_top).mono <| by simpa [setOf_subset_setOf] using fun n hn ↦ hn.le
-
 lemma floor_lt_top {x : ℝ≥0∞} (x_ne_top : x ≠ ∞) :
     x.floor < ∞ := by
   simpa [floor_eq_natFloor_toNNReal x_ne_top] using (natCast_ne_top ⌊x.toNNReal⌋₊).symm.lt_top'
@@ -137,10 +135,6 @@ lemma floor_lt_top {x : ℝ≥0∞} (x_ne_top : x ≠ ∞) :
   rw [floor_eq_natFloor_toNNReal x_top, floor_eq_natFloor_toNNReal obs]
   norm_cast
   simp [← Nat.floor_add_one (zero_le x.toNNReal), toNNReal_add x_top one_ne_top]
-
-@[simp] lemma floor_one_eq_one :
-    floor 1 = 1 := by
-  simpa using show floor (0 + 1) = 1 by rw [floor_add_one]; simp only [floor_zero_eq, zero_add]
 
 lemma le_floor_add_one (x : ℝ≥0∞) : x ≤ (x + 1).floor := by
   by_cases hx : x = ∞
