@@ -1009,7 +1009,6 @@ end MonotoneOn
 namespace AntitoneOn
 
 variable [Preorder α] [Preorder β] {f : α → β} {s t : Set α} {a : α}
-  -- (Hf : AntitoneOn f t) (Hst : s ⊆ t)
 
 theorem mem_upperBounds_image (Hf : AntitoneOn f t) (Hst : s ⊆ t) (Has : a ∈ lowerBounds s) :
     a ∈ t → f a ∈ upperBounds (f '' s) :=
