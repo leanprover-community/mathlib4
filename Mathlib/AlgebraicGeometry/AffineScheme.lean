@@ -426,10 +426,9 @@ theorem fromSpec_preimage_self :
   rw [Opens.map_coe, Opens.coe_top, ← hU.range_fromSpec, ← Set.image_univ]
   exact Set.preimage_image_eq _ PresheafedSpace.IsOpenImmersion.base_open.inj
 
-theorem SpecΓIdentity_hom_app_fromSpec :
+theorem ΓSpecIso_hom_fromSpec_app :
     (Scheme.ΓSpecIso Γ(X, U)).hom ≫ hU.fromSpec.app U =
       (Spec Γ(X, U)).presheaf.map (eqToHom hU.fromSpec_preimage_self).op := by
-  have : U.ι ⁻¹ᵁ U = ⊤ := U.ι_preimage_self
   simp only [fromSpec, Scheme.comp_coeBase, Opens.map_comp_obj, Scheme.comp_app,
     Scheme.Opens.ι_app_self, eqToHom_op, Scheme.app_eq _ U.ι_preimage_self,
     Scheme.Opens.toScheme_presheaf_map, eqToHom_unop, eqToHom_map U.ι.opensFunctor, Opens.map_top,
@@ -440,7 +439,7 @@ theorem SpecΓIdentity_hom_app_fromSpec :
 theorem fromSpec_app_self :
     hU.fromSpec.app U = (Scheme.ΓSpecIso Γ(X, U)).inv ≫
       (Spec Γ(X, U)).presheaf.map (eqToHom hU.fromSpec_preimage_self).op := by
-  rw [← hU.SpecΓIdentity_hom_app_fromSpec, Iso.inv_hom_id_assoc]
+  rw [← hU.ΓSpecIso_hom_fromSpec_app, Iso.inv_hom_id_assoc]
 
 theorem fromSpec_preimage_basicOpen' :
     hU.fromSpec ⁻¹ᵁ X.basicOpen f = (Spec Γ(X, U)).basicOpen ((Scheme.ΓSpecIso Γ(X, U)).inv f) := by
