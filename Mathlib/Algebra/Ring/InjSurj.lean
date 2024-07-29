@@ -41,7 +41,8 @@ protected abbrev distrib [Distrib α] (add : ∀ x y, f (x + y) = f x + f y)
 /-- A type endowed with `-` and `*` has distributive negation, if it admits an injective map that
 preserves `-` and `*` to a type which has distributive negation. -/
 -- -- See note [reducible non-instances]
-protected abbrev hasDistribNeg [Mul α] [HasDistribNeg α] (neg : ∀ a, f (-a) = -f a)
+protected abbrev hasDistribNeg (f : β → α) (hf : Injective f) [Mul α] [HasDistribNeg α]
+    (neg : ∀ a, f (-a) = -f a)
     (mul : ∀ a b, f (a * b) = f a * f b) : HasDistribNeg β :=
   { hf.involutiveNeg _ neg, ‹Mul β› with
     neg_mul := fun x y => hf <| by erw [neg, mul, neg, neg_mul, mul],
