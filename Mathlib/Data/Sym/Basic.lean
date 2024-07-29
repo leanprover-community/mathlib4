@@ -147,9 +147,19 @@ instance : Membership α (Sym α n) :=
 instance decidableMem [DecidableEq α] (a : α) (s : Sym α n) : Decidable (a ∈ s) :=
   s.1.decidableMem _
 
+@[simp, norm_cast] lemma coe_mk (s : Multiset α) (h : Multiset.card s = n) : mk s h = s := rfl
+
 @[simp]
 theorem mem_mk (a : α) (s : Multiset α) (h : Multiset.card s = n) : a ∈ mk s h ↔ a ∈ s :=
   Iff.rfl
+
+lemma «forall» {p : Sym α n → Prop} :
+    (∀ s : Sym α n, p s) ↔ ∀ (s : Multiset α) (hs : Multiset.card s = n), p (Sym.mk s hs) := by
+  simp [Sym]
+
+lemma «exists» {p : Sym α n → Prop} :
+    (∃ s : Sym α n, p s) ↔ ∃ (s : Multiset α) (hs : Multiset.card s = n), p (Sym.mk s hs) := by
+  simp [Sym]
 
 @[simp]
 theorem not_mem_nil (a : α) : ¬ a ∈ (nil : Sym α 0) :=
