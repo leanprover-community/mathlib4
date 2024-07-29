@@ -9,43 +9,6 @@ import Mathlib.Topology.Instances.ENNReal
 # A floor function on the extended non-negative reals
 -/
 
-
-section Nat_lemmas
-
-open Set
-
--- TODO: Add after `le_sub_one_of_lt`.
-lemma Nat.lt_iff_le_sub_one {n : ℕ} (hn : n ≠ 0) (k : ℕ) :
-    k < n ↔ k ≤ n - 1 := by
-  obtain ⟨m, n_eq_succ⟩ : ∃ (m : ℕ), n = m + 1 := Nat.exists_eq_succ_of_ne_zero hn
-  simpa [n_eq_succ] using Nat.lt_succ_iff
-
-lemma Nat.Iio_eq_Iic_sub_one {n : ℕ} (hn : n ≠ 0) : Iio n = Iic (n - 1) := by
-  ext k
-  simp [Nat.lt_iff_le_sub_one hn]
-
-lemma Nat.Ico_eq_Icc_sub_one {n m : ℕ} (h : n < m) : Ico n m = Icc n (m - 1) := by
-  ext k
-  exact ⟨fun ⟨n_le_k, k_lt_m⟩ ↦ ⟨n_le_k, le_sub_one_of_lt k_lt_m⟩,
-         fun ⟨n_le_k, k_le⟩ ↦ ⟨n_le_k, (lt_iff_le_sub_one (not_eq_zero_of_lt h) k).mpr k_le⟩⟩
-
-lemma Nat.sSup_Iic (n : ℕ) : sSup (Iic n) = n := csSup_Iic
-
-lemma Nat.sSup_Icc {n m : ℕ} (h : n ≤ m) : sSup (Icc n m) = m := csSup_Icc h
-
-lemma Nat.sSup_Ioc {n m : ℕ} (h : n < m) : sSup (Ioc n m) = m := csSup_Ioc h
-
-lemma Nat.sSup_Iio (n : ℕ) : sSup (Iio n) = n - 1 := by
-  by_cases n_zero : n = 0
-  · simp [n_zero, show Iio 0 = ∅ by aesop]
-  rw [Iio_eq_Iic_sub_one n_zero, Nat.sSup_Iic]
-
-lemma Nat.sSup_Ico {n m : ℕ} (h : n < m) : sSup (Ico n m) = m - 1 := by
-  rw [Ico_eq_Icc_sub_one h, Nat.sSup_Icc (le_sub_one_of_lt h)]
-
-end Nat_lemmas
-
-
 section ENNReal_floor
 
 open Filter BigOperators TopologicalSpace Topology Set ENNReal NNReal
