@@ -30,7 +30,7 @@ section
 
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorLeft X)]
 
-theorem id_tensor_π_preserves_coequalizer_inv_desc {W X Y Z : C} (f g : X ⟶ Y) (h : (Z ⊗ Y : C) ⟶ W)
+theorem id_tensor_π_preserves_coequalizer_inv_desc {W X Y Z : C} (f g : X ⟶ Y) (h : Z ⊗ Y ⟶ W)
     (wh : (Z ◁ f) ≫ h = (Z ◁ g) ≫ h) :
     (Z ◁ coequalizer.π f g) ≫
         (PreservesCoequalizer.iso (tensorLeft Z) f g).inv ≫ coequalizer.desc h wh =
@@ -38,7 +38,7 @@ theorem id_tensor_π_preserves_coequalizer_inv_desc {W X Y Z : C} (f g : X ⟶ Y
   map_π_preserves_coequalizer_inv_desc (tensorLeft Z) f g h wh
 
 theorem id_tensor_π_preserves_coequalizer_inv_colimMap_desc {X Y Z X' Y' Z' : C} (f g : X ⟶ Y)
-    (f' g' : X' ⟶ Y') (p : (Z ⊗ X : C) ⟶ X') (q : (Z ⊗ Y : C) ⟶ Y') (wf : (Z ◁ f) ≫ q = p ≫ f')
+    (f' g' : X' ⟶ Y') (p : Z ⊗ X ⟶ X') (q : (Z ⊗ Y : C) ⟶ Y') (wf : (Z ◁ f) ≫ q = p ≫ f')
     (wg : (Z ◁ g) ≫ q = p ≫ g') (h : Y' ⟶ Z') (wh : f' ≫ h = g' ≫ h) :
     (Z ◁ coequalizer.π f g) ≫
         (PreservesCoequalizer.iso (tensorLeft Z) f g).inv ≫
@@ -52,7 +52,7 @@ section
 
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
 
-theorem π_tensor_id_preserves_coequalizer_inv_desc {W X Y Z : C} (f g : X ⟶ Y) (h : (Y ⊗ Z : C) ⟶ W)
+theorem π_tensor_id_preserves_coequalizer_inv_desc {W X Y Z : C} (f g : X ⟶ Y) (h : Y ⊗ Z ⟶ W)
     (wh : (f ▷ Z) ≫ h = (g ▷ Z) ≫ h) :
     (coequalizer.π f g ▷ Z) ≫
         (PreservesCoequalizer.iso (tensorRight Z) f g).inv ≫ coequalizer.desc h wh =
@@ -60,7 +60,7 @@ theorem π_tensor_id_preserves_coequalizer_inv_desc {W X Y Z : C} (f g : X ⟶ Y
   map_π_preserves_coequalizer_inv_desc (tensorRight Z) f g h wh
 
 theorem π_tensor_id_preserves_coequalizer_inv_colimMap_desc {X Y Z X' Y' Z' : C} (f g : X ⟶ Y)
-    (f' g' : X' ⟶ Y') (p : (X ⊗ Z : C) ⟶ X') (q : (Y ⊗ Z : C) ⟶ Y') (wf : (f ▷ Z) ≫ q = p ≫ f')
+    (f' g' : X' ⟶ Y') (p : (X ⊗ Z : C) ⟶ X') (q : Y ⊗ Z ⟶ Y') (wf : (f ▷ Z) ≫ q = p ≫ f')
     (wg : (g ▷ Z) ≫ q = p ≫ g') (h : Y' ⟶ Z') (wh : f' ≫ h = g' ≫ h) :
     (coequalizer.π f g ▷ Z) ≫
         (PreservesCoequalizer.iso (tensorRight Z) f g).inv ≫
