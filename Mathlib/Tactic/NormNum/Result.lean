@@ -23,8 +23,8 @@ or is either `true` or `false`.
 
 -/
 
-
-set_option autoImplicit true
+universe u
+variable {α : Type u}
 
 open Lean hiding Rat mkRat
 open Lean.Meta Qq Lean.Elab Term
@@ -32,11 +32,13 @@ open Lean.Meta Qq Lean.Elab Term
 namespace Mathlib
 namespace Meta.NormNum
 
+variable {u : Level}
+
 /-- A shortcut (non)instance for `AddMonoidWithOne ℕ` to shrink generated proofs. -/
 def instAddMonoidWithOneNat : AddMonoidWithOne ℕ := inferInstance
 
 /-- A shortcut (non)instance for `AddMonoidWithOne α` from `Ring α` to shrink generated proofs. -/
-def instAddMonoidWithOne [Ring α] : AddMonoidWithOne α := inferInstance
+def instAddMonoidWithOne {α : Type u} [Ring α] : AddMonoidWithOne α := inferInstance
 
 /-- Helper function to synthesize a typed `AddMonoidWithOne α` expression. -/
 def inferAddMonoidWithOne (α : Q(Type u)) : MetaM Q(AddMonoidWithOne $α) :=
@@ -120,7 +122,7 @@ def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
       pure ⟨a', (q(Eq.refl $a') : Expr)⟩
 
 /-- Assert that an element of a semiring is equal to the coercion of some natural number. -/
-structure IsNat [AddMonoidWithOne α] (a : α) (n : ℕ) : Prop where
+structure IsNat {α : Type u} [AddMonoidWithOne α] (a : α) (n : ℕ) : Prop where
   /-- The element is equal to the coercion of the natural number. -/
   out : a = n
 
@@ -131,12 +133,12 @@ A "raw nat cast" is an expression of the form `(Nat.rawCast lit : α)` where `li
 natural number literal. These expressions are used by tactics like `ring` to decrease the number
 of typeclass arguments required in each use of a number literal at type `α`.
 -/
-@[simp] def _root_.Nat.rawCast [AddMonoidWithOne α] (n : ℕ) : α := n
+@[simp] def _root_.Nat.rawCast {α : Type u} [AddMonoidWithOne α] (n : ℕ) : α := n
 
-theorem IsNat.to_eq [AddMonoidWithOne α] {n} : {a a' : α} → IsNat a n → n = a' → a = a'
+theorem IsNat.to_eq {α : Type u} [AddMonoidWithOne α] {n} : {a a' : α} → IsNat a n → n = a' → a = a'
   | _, _, ⟨rfl⟩, rfl => rfl
 
-theorem IsNat.to_raw_eq [AddMonoidWithOne α] : IsNat (a : α) n → a = n.rawCast
+theorem IsNat.to_raw_eq {a : α} {n : ℕ} [AddMonoidWithOne α] : IsNat (a : α) n → a = n.rawCast
   | ⟨e⟩ => e
 
 theorem IsNat.of_raw (α) [AddMonoidWithOne α] (n : ℕ) : IsNat (n.rawCast : α) n := ⟨rfl⟩
@@ -168,7 +170,7 @@ theorem IsInt.to_isNat {α} [Ring α] : ∀ {a : α} {n}, IsInt a (.ofNat n) →
 theorem IsNat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsNat a n → IsInt a (.ofNat n)
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
-theorem IsInt.to_raw_eq [Ring α] : IsInt (a : α) n → a = n.rawCast
+theorem IsInt.to_raw_eq {a : α} {n : ℤ} [Ring α] : IsInt (a : α) n → a = n.rawCast
   | ⟨e⟩ => e
 
 theorem IsInt.of_raw (α) [Ring α] (n : ℤ) : IsInt (n.rawCast : α) n := ⟨rfl⟩
@@ -218,7 +220,8 @@ theorem IsRat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsRat a n (nat_lit 1) 
 theorem IsInt.to_isRat {α} [Ring α] : ∀ {a : α} {n}, IsInt a n → IsRat a n (nat_lit 1)
   | _, _, ⟨rfl⟩ => ⟨⟨1, by simp, by simp⟩, by simp⟩
 
-theorem IsRat.to_raw_eq [DivisionRing α] : ∀ {a}, IsRat (a : α) n d → a = Rat.rawCast n d
+theorem IsRat.to_raw_eq {n : ℤ} {d : ℕ} [DivisionRing α] :
+    ∀ {a}, IsRat (a : α) n d → a = Rat.rawCast n d
   | _, ⟨inv, rfl⟩ => by simp [div_eq_mul_inv]
 
 theorem IsRat.neg_to_eq {α} [DivisionRing α] {n d} :
@@ -256,7 +259,7 @@ set_option linter.unusedVariables false
 /-- The result of `norm_num` running on an expression `x` of type `α`. -/
 @[nolint unusedArguments] def Result {α : Q(Type u)} (x : Q($α)) := Result'
 
-instance : Inhabited (Result x) := inferInstanceAs (Inhabited Result')
+instance {α : Q(Type u)} {x : Q($α)} : Inhabited (Result x) := inferInstanceAs (Inhabited Result')
 
 /-- The result is `proof : x`, where `x` is a (true) proposition. -/
 @[match_pattern, inline] def Result.isTrue {x : Q(Prop)} :
@@ -308,7 +311,7 @@ def Result.isRat' {α : Q(Type u)} {x : Q($α)} (inst : Q(DivisionRing $α) := b
   else
     .isRat inst q n d proof
 
-instance : ToMessageData (Result x) where
+instance {α : Q(Type u)} {x : Q($α)} : ToMessageData (Result x) where
   toMessageData
   | .isBool true proof => m!"isTrue ({proof})"
   | .isBool false proof => m!"isFalse ({proof})"
@@ -317,7 +320,7 @@ instance : ToMessageData (Result x) where
   | .isRat _ q _ _ proof => m!"isRat {q} ({proof})"
 
 /-- Returns the rational number that is the result of `norm_num` evaluation. -/
-def Result.toRat : Result e → Option Rat
+def Result.toRat {α : Q(Type u)} {e : Q($α)} : Result e → Option Rat
   | .isBool .. => none
   | .isNat _ lit _ => some lit.natLit!
   | .isNegNat _ lit _ => some (-lit.natLit!)
@@ -325,7 +328,7 @@ def Result.toRat : Result e → Option Rat
 
 /-- Returns the rational number that is the result of `norm_num` evaluation, along with a proof
 that the denominator is nonzero in the `isRat` case. -/
-def Result.toRatNZ : Result e → Option (Rat × Option Expr)
+def Result.toRatNZ {α : Q(Type u)} {e : Q($α)} : Result e → Option (Rat × Option Expr)
   | .isBool .. => none
   | .isNat _ lit _ => some (lit.natLit!, none)
   | .isNegNat _ lit _ => some (-lit.natLit!, none)

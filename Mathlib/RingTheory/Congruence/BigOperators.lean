@@ -11,8 +11,6 @@ import Mathlib.RingTheory.Congruence.Basic
 
 -/
 
-open BigOperators
-
 namespace RingCon
 
 /-- Congruence relation of a ring preserves finite sum indexed by a list. -/

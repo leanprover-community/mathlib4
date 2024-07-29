@@ -40,16 +40,12 @@ variable {α : Type u} {ι : Sort v}
 class SupSet (α : Type*) where
   /-- Supremum of a set -/
   sSup : Set α → α
-#align has_Sup SupSet
-#align has_Sup.Sup SupSet.sSup
 
 
 /-- Class for the `sInf` operator -/
 class InfSet (α : Type*) where
   /-- Infimum of a set -/
   sInf : Set α → α
-#align has_Inf InfSet
-#align has_Inf.Inf InfSet.sInf
 
 
 export SupSet (sSup)
@@ -59,20 +55,16 @@ export InfSet (sInf)
 /-- Indexed supremum -/
 def iSup [SupSet α] (s : ι → α) : α :=
   sSup (range s)
-#align supr iSup
 
 /-- Indexed infimum -/
 def iInf [InfSet α] (s : ι → α) : α :=
   sInf (range s)
-#align infi iInf
 
 instance (priority := 50) infSet_to_nonempty (α) [InfSet α] : Nonempty α :=
   ⟨sInf ∅⟩
-#align has_Inf_to_nonempty infSet_to_nonempty
 
 instance (priority := 50) supSet_to_nonempty (α) [SupSet α] : Nonempty α :=
   ⟨sSup ∅⟩
-#align has_Sup_to_nonempty supSet_to_nonempty
 
 /-
 Porting note: the code below could replace the `notation3` command
@@ -163,7 +155,6 @@ instance : SupSet (Set α) :=
 /-- Intersection of a set of sets. -/
 def sInter (S : Set (Set α)) : Set α :=
   sInf S
-#align set.sInter Set.sInter
 
 /-- Notation for `Set.sInter` Intersection of a set of sets. -/
 prefix:110 "⋂₀ " => sInter
@@ -171,7 +162,6 @@ prefix:110 "⋂₀ " => sInter
 /-- Union of a set of sets. -/
 def sUnion (S : Set (Set α)) : Set α :=
   sSup S
-#align set.sUnion Set.sUnion
 
 /-- Notation for `Set.sUnion`. Union of a set of sets. -/
 prefix:110 "⋃₀ " => sUnion
@@ -179,22 +169,18 @@ prefix:110 "⋃₀ " => sUnion
 @[simp]
 theorem mem_sInter {x : α} {S : Set (Set α)} : x ∈ ⋂₀ S ↔ ∀ t ∈ S, x ∈ t :=
   Iff.rfl
-#align set.mem_sInter Set.mem_sInter
 
 @[simp]
 theorem mem_sUnion {x : α} {S : Set (Set α)} : x ∈ ⋃₀ S ↔ ∃ t ∈ S, x ∈ t :=
   Iff.rfl
-#align set.mem_sUnion Set.mem_sUnion
 
 /-- Indexed union of a family of sets -/
 def iUnion (s : ι → Set α) : Set α :=
   iSup s
-#align set.Union Set.iUnion
 
 /-- Indexed intersection of a family of sets -/
 def iInter (s : ι → Set α) : Set α :=
   iInf s
-#align set.Inter Set.iInter
 
 /-- Notation for `Set.iUnion`. Indexed union of a family of sets -/
 notation3 "⋃ "(...)", "r:60:(scoped f => iUnion f) => r
@@ -268,32 +254,26 @@ end delaborators
 theorem mem_iUnion {x : α} {s : ι → Set α} : (x ∈ ⋃ i, s i) ↔ ∃ i, x ∈ s i :=
   ⟨fun ⟨_, ⟨⟨a, (t_eq : s a = _)⟩, (h : x ∈ _)⟩⟩ => ⟨a, t_eq.symm ▸ h⟩, fun ⟨a, h⟩ =>
     ⟨s a, ⟨⟨a, rfl⟩, h⟩⟩⟩
-#align set.mem_Union Set.mem_iUnion
 
 @[simp]
 theorem mem_iInter {x : α} {s : ι → Set α} : (x ∈ ⋂ i, s i) ↔ ∀ i, x ∈ s i :=
   ⟨fun (h : ∀ a ∈ { a : Set α | ∃ i, s i = a }, x ∈ a) a => h (s a) ⟨a, rfl⟩,
     fun h _ ⟨a, (eq : s a = _)⟩ => eq ▸ h a⟩
-#align set.mem_Inter Set.mem_iInter
 
 @[simp]
 theorem sSup_eq_sUnion (S : Set (Set α)) : sSup S = ⋃₀S :=
   rfl
-#align set.Sup_eq_sUnion Set.sSup_eq_sUnion
 
 @[simp]
 theorem sInf_eq_sInter (S : Set (Set α)) : sInf S = ⋂₀ S :=
   rfl
-#align set.Inf_eq_sInter Set.sInf_eq_sInter
 
 @[simp]
 theorem iSup_eq_iUnion (s : ι → Set α) : iSup s = iUnion s :=
   rfl
-#align set.supr_eq_Union Set.iSup_eq_iUnion
 
 @[simp]
 theorem iInf_eq_iInter (s : ι → Set α) : iInf s = iInter s :=
   rfl
-#align set.infi_eq_Inter Set.iInf_eq_iInter
 
 end Set
