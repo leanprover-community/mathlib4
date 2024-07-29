@@ -12,6 +12,7 @@ import Mathlib.Data.List.TFAE
 import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Nat.Choose.Bounds
+import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Tactic.NoncommRing
 
 /-!
@@ -19,19 +20,13 @@ import Mathlib.Tactic.NoncommRing
 
 This file contains important specific limit computations in (semi-)normed groups/rings/spaces, as
 well as such computations in `ℝ` when the natural proof passes through a fact about normed spaces.
-
 -/
-
 
 noncomputable section
 
-open scoped Classical
-open Set Function Filter Finset Metric Asymptotics
+open Set Function Filter Finset Metric Asymptotics Topology Nat NNReal ENNReal
 
-open scoped Classical
-open Topology Nat uniformity NNReal ENNReal
-
-variable {α : Type*} {β : Type*} {ι : Type*}
+variable {α β ι : Type*}
 
 theorem tendsto_norm_atTop_atTop : Tendsto (norm : ℝ → ℝ) atTop atTop :=
   tendsto_abs_atTop_atTop
