@@ -391,8 +391,7 @@ def pullbackFstFstIso {X Y S X' Y' S' : C} (f : X ⟶ S) (g : Y ⟶ S) (f' : X' 
       · apply pullback.hom_ext
         · simp only [Category.assoc, lift_fst, lift_fst_assoc, Category.id_comp]
           rw [condition]
-        · simp [Category.assoc, lift_snd]
-          rw [condition_assoc, condition]
+        · simp [Category.assoc, lift_snd, condition_assoc, condition]
       · simp only [Category.assoc, lift_fst_assoc, lift_snd, lift_fst, Category.id_comp]
     · apply pullback.hom_ext
       · apply pullback.hom_ext

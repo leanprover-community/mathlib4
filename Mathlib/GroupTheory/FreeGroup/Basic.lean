@@ -168,9 +168,9 @@ theorem Step.diamond_aux :
   | [], _, [(x3, b3)], _, _, _, _, _, H => by injections; subst_vars; simp
   | [(x3, b3)], _, [], _, _, _, _, _, H => by injections; subst_vars; simp
   | [], _, (x3, b3) :: (x4, b4) :: tl, _, _, _, _, _, H => by
-    injections; subst_vars; simp; right; exact ⟨_, Red.Step.not, Red.Step.cons_not⟩
+    injections; subst_vars; right; exact ⟨_, Red.Step.not, Red.Step.cons_not⟩
   | (x3, b3) :: (x4, b4) :: tl, _, [], _, _, _, _, _, H => by
-    injections; subst_vars; simp; right; exact ⟨_, Red.Step.cons_not, Red.Step.not⟩
+    injections; subst_vars; right; simpa using ⟨_, Red.Step.cons_not, Red.Step.not⟩
   | (x3, b3) :: tl, _, (x4, b4) :: tl2, _, _, _, _, _, H =>
     let ⟨H1, H2⟩ := List.cons.inj H
     match Step.diamond_aux H2 with
@@ -620,8 +620,8 @@ theorem lift.of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
 theorem lift.range_le {s : Subgroup β} (H : Set.range f ⊆ s) : (lift f).range ≤ s := by
   rintro _ ⟨⟨L⟩, rfl⟩;
   exact List.recOn L s.one_mem fun ⟨x, b⟩ tl ih ↦
-    Bool.recOn b (by simp at ih ⊢; exact s.mul_mem (s.inv_mem <| H ⟨x, rfl⟩) ih)
-      (by simp at ih ⊢; exact s.mul_mem (H ⟨x, rfl⟩) ih)
+    Bool.recOn b (by simpa using s.mul_mem (s.inv_mem <| H ⟨x, rfl⟩) ih)
+      (by simpa using s.mul_mem (H ⟨x, rfl⟩) ih)
 
 @[to_additive]
 theorem lift.range_eq_closure : (lift f).range = Subgroup.closure (Set.range f) := by
