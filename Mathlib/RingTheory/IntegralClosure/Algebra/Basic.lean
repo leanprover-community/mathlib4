@@ -52,8 +52,8 @@ variable {R B}
 
 /-- If `S` is a sub-`R`-algebra of `A` and `S` is finitely-generated as an `R`-module,
   then all elements of `S` are integral over `R`. -/
-theorem IsIntegral.of_mem_of_fg {A} [Ring A] [Algebra R A] (S : Subalgebra R A)
-    (HS : S.toSubmodule.FG) (x : A) (hx : x ∈ S) : IsIntegral R x :=
+theorem IsIntegral.of_mem_of_fg (S : Subalgebra R B)
+    (HS : S.toSubmodule.FG) (x : B) (hx : x ∈ S) : IsIntegral R x :=
   have : Module.Finite R S := ⟨(fg_top _).mpr HS⟩
   (isIntegral_algHom_iff S.val Subtype.val_injective).mpr (.of_finite R (⟨x, hx⟩ : S))
 
@@ -109,13 +109,70 @@ nonrec theorem IsIntegral.mul {x y : A} (hx : IsIntegral R x) (hy : IsIntegral R
   hx.mul (algebraMap R A) hy
 
 theorem IsIntegral.smul {R} [CommSemiring R] [CommRing S] [Algebra R B] [Algebra S B] [Algebra R S]
-    [IsScalarTower R S B] {x : B} (r : R)(hx : IsIntegral S x) : IsIntegral S (r • x) :=
+    [IsScalarTower R S B] {x : B} (r : R) (hx : IsIntegral S x) : IsIntegral S (r • x) :=
   .of_mem_of_fg _ hx.fg_adjoin_singleton _ <| by
     rw [← algebraMap_smul S]; apply Subalgebra.smul_mem; exact Algebra.subset_adjoin rfl
 
+theorem IsIntegral.of_pow {x : B} {n : ℕ} (hn : 0 < n) (hx : IsIntegral R <| x ^ n) :
+    IsIntegral R x := by
+  rcases hx with ⟨p, hmonic, heval⟩
+  exact ⟨expand R n p, hmonic.expand hn, by rwa [← aeval_def, expand_aeval]⟩
+
+section inv
+
+open Algebra
+
+variable {R S : Type*}
+
+/-- A nonzero element in a domain integral over a field is a unit. -/
+theorem IsIntegral.isUnit [Field R] [Ring S] [IsDomain S] [Algebra R S] {x : S}
+    (int : IsIntegral R x) (h0 : x ≠ 0) : IsUnit x :=
+  have : FiniteDimensional R (adjoin R {x}) := ⟨(Submodule.fg_top _).mpr int.fg_adjoin_singleton⟩
+  (FiniteDimensional.isUnit R (K := adjoin R {x})
+    (x := ⟨x, subset_adjoin rfl⟩) <| mt Subtype.ext_iff.mp h0).map (adjoin R {x}).val
+
+/-- A commutative domain that is an integral algebra over a field is a field. -/
+theorem isField_of_isIntegral_of_isField' [CommRing R] [CommRing S] [IsDomain S]
+    [Algebra R S] [Algebra.IsIntegral R S] (hR : IsField R) : IsField S where
+  exists_pair_ne := ⟨0, 1, zero_ne_one⟩
+  mul_comm := mul_comm
+  mul_inv_cancel {x} hx := by
+    letI := hR.toField
+    obtain ⟨y, rfl⟩ := (Algebra.IsIntegral.isIntegral (R := R) x).isUnit hx
+    exact ⟨y.inv, y.val_inv⟩
+
+variable [Field R] [DivisionRing S] [Algebra R S] {x : S} {A : Subalgebra R S}
+
+theorem IsIntegral.inv_mem_adjoin (int : IsIntegral R x) : x⁻¹ ∈ adjoin R {x} := by
+  obtain rfl | h0 := eq_or_ne x 0
+  · rw [inv_zero]; exact Subalgebra.zero_mem _
+  have : FiniteDimensional R (adjoin R {x}) := ⟨(Submodule.fg_top _).mpr int.fg_adjoin_singleton⟩
+  obtain ⟨⟨y, hy⟩, h1⟩ := FiniteDimensional.exists_mul_eq_one R
+    (K := adjoin R {x}) (x := ⟨x, subset_adjoin rfl⟩) (mt Subtype.ext_iff.mp h0)
+  rwa [← mul_left_cancel₀ h0 ((Subtype.ext_iff.mp h1).trans (mul_inv_cancel h0).symm)]
+
+/-- The inverse of an integral element in a subalgebra of a division ring over a field
+  also lies in that subalgebra. -/
+theorem IsIntegral.inv_mem (int : IsIntegral R x) (hx : x ∈ A) : x⁻¹ ∈ A :=
+  adjoin_le_iff.mpr (Set.singleton_subset_iff.mpr hx) int.inv_mem_adjoin
+
+/-- An integral subalgebra of a division ring over a field is closed under inverses. -/
+theorem Algebra.IsIntegral.inv_mem [Algebra.IsIntegral R A] (hx : x ∈ A) : x⁻¹ ∈ A :=
+  ((isIntegral_algHom_iff A.val Subtype.val_injective).mpr <|
+    Algebra.IsIntegral.isIntegral (⟨x, hx⟩ : A)).inv_mem hx
+
+/-- The inverse of an integral element in a division ring over a field is also integral. -/
+theorem IsIntegral.inv (int : IsIntegral R x) : IsIntegral R x⁻¹ :=
+  .of_mem_of_fg _ int.fg_adjoin_singleton _ int.inv_mem_adjoin
+
+theorem IsIntegral.mem_of_inv_mem (int : IsIntegral R x) (inv_mem : x⁻¹ ∈ A) : x ∈ A := by
+  rw [← inv_inv x]; exact int.inv.inv_mem inv_mem
+
+end inv
+
 variable (R A)
 
-/-- The integral closure of `R` in an `R`-algebra `A`. -/
+/-- The integral closure of R in an R-algebra A. -/
 def integralClosure : Subalgebra R A where
   carrier := { r | IsIntegral R r }
   zero_mem' := isIntegral_zero
