@@ -158,9 +158,8 @@ theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ 
     · apply hX
 
 variable {f}
-variable (hc : Continuous f)
 
-theorem fix_eq : Part.fix f = f (Part.fix f) := by
+theorem fix_eq (hc : Continuous f) : Part.fix f = f (Part.fix f) := by
   rw [fix_eq_ωSup f, hc]
   apply le_antisymm
   · apply ωSup_le_ωSup_of_le _

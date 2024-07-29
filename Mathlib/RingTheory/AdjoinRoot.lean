@@ -280,7 +280,7 @@ theorem aeval_algHom_eq_zero (ϕ : AdjoinRoot f →ₐ[R] S) : aeval (ϕ (root f
 @[simp]
 theorem liftHom_eq_algHom (f : R[X]) (ϕ : AdjoinRoot f →ₐ[R] S) :
     liftHom f (ϕ (root f)) (aeval_algHom_eq_zero f ϕ) = ϕ := by
-  suffices ϕ.equalizer (liftHom f (ϕ (root f)) (aeval_algHom_eq_zero f ϕ)) = ⊤ by
+  suffices AlgHom.equalizer ϕ (liftHom f (ϕ (root f)) (aeval_algHom_eq_zero f ϕ)) = ⊤ by
     exact (AlgHom.ext fun x => (SetLike.ext_iff.mp this x).mpr Algebra.mem_top).symm
   rw [eq_top_iff, ← adjoinRoot_eq_top, Algebra.adjoin_le_iff, Set.singleton_subset_iff]
   exact (@lift_root _ _ _ _ _ _ _ (aeval_algHom_eq_zero f ϕ)).symm

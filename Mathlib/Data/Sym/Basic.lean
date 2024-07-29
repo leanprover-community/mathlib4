@@ -147,9 +147,19 @@ instance : Membership α (Sym α n) :=
 instance decidableMem [DecidableEq α] (a : α) (s : Sym α n) : Decidable (a ∈ s) :=
   s.1.decidableMem _
 
+@[simp, norm_cast] lemma coe_mk (s : Multiset α) (h : Multiset.card s = n) : mk s h = s := rfl
+
 @[simp]
 theorem mem_mk (a : α) (s : Multiset α) (h : Multiset.card s = n) : a ∈ mk s h ↔ a ∈ s :=
   Iff.rfl
+
+lemma «forall» {p : Sym α n → Prop} :
+    (∀ s : Sym α n, p s) ↔ ∀ (s : Multiset α) (hs : Multiset.card s = n), p (Sym.mk s hs) := by
+  simp [Sym]
+
+lemma «exists» {p : Sym α n → Prop} :
+    (∃ s : Sym α n, p s) ↔ ∃ (s : Multiset α) (hs : Multiset.card s = n), p (Sym.mk s hs) := by
+  simp [Sym]
 
 @[simp]
 theorem not_mem_nil (a : α) : ¬ a ∈ (nil : Sym α 0) :=
@@ -453,6 +463,19 @@ theorem coe_append (s : Sym α n) (s' : Sym α n') : (s.append s' : Multiset α)
 theorem mem_append_iff {s' : Sym α m} : a ∈ s.append s' ↔ a ∈ s ∨ a ∈ s' :=
   Multiset.mem_add
 
+/-- `a ↦ {a}` as an equivalence between `α` and `Sym α 1`. -/
+@[simps apply]
+def oneEquiv : α ≃ Sym α 1 where
+  toFun a := ⟨{a}, by simp⟩
+  invFun s := (Equiv.subtypeQuotientEquivQuotientSubtype
+      (·.length = 1) _ (fun l ↦ Iff.rfl) (fun l l' ↦ by rfl) s).liftOn
+    (fun l ↦ l.1.head <| List.length_pos.mp <| by simp)
+    fun ⟨_, _⟩ ⟨_, h⟩ ↦ fun perm ↦ by
+      obtain ⟨a, rfl⟩ := List.length_eq_one.mp h
+      exact List.eq_of_mem_singleton (perm.mem_iff.mp <| List.head_mem _)
+  left_inv a := by rfl
+  right_inv := by rintro ⟨⟨l⟩, h⟩; obtain ⟨a, rfl⟩ := List.length_eq_one.mp h; rfl
+
 /-- Fill a term `m : Sym α (n - i)` with `i` copies of `a` to obtain a term of `Sym α n`.
 This is a convenience wrapper for `m.append (replicate i a)` that adjusts the term using
 `Sym.cast`. -/
@@ -499,7 +522,7 @@ theorem fill_filterNe [DecidableEq α] (a : α) (m : Sym α n) :
       rw [count_add, count_filter, Sym.coe_replicate, count_replicate]
       obtain rfl | h := eq_or_ne a b
       · rw [if_pos rfl, if_neg (not_not.2 rfl), zero_add]
-      · rw [if_pos h, if_neg h.symm, add_zero])
+      · rw [if_pos h, if_neg h, add_zero])
 
 theorem filter_ne_fill [DecidableEq α] (a : α) (m : Σi : Fin (n + 1), Sym α (n - i)) (h : a ∉ m.2) :
     (m.2.fill a m.1).filterNe a = m :=

@@ -305,7 +305,6 @@ theorem subset_def : s ⊆ t ↔ s.1 ⊆ t.1 :=
 theorem ssubset_def : s ⊂ t ↔ s ⊆ t ∧ ¬t ⊆ s :=
   Iff.rfl
 
-@[simp]
 theorem Subset.refl (s : Finset α) : s ⊆ s :=
   Multiset.Subset.refl _
 
@@ -2801,9 +2800,7 @@ theorem mem_toList {a : α} {s : Finset α} : a ∈ s.toList ↔ a ∈ s :=
 theorem toList_eq_nil {s : Finset α} : s.toList = [] ↔ s = ∅ :=
   Multiset.toList_eq_nil.trans val_eq_zero
 
-@[simp]
-theorem empty_toList {s : Finset α} : s.toList.isEmpty ↔ s = ∅ :=
-  List.isEmpty_iff_eq_nil.trans toList_eq_nil
+theorem empty_toList {s : Finset α} : s.toList.isEmpty ↔ s = ∅ := by simp
 
 @[simp]
 theorem toList_empty : (∅ : Finset α).toList = [] :=

@@ -7,7 +7,6 @@ import Mathlib.Init.Order.Defs
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Data.Prod.Basic
-import Mathlib.Data.Subtype
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Unique
 

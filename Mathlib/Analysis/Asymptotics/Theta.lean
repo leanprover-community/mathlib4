@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.Asymptotics.Asymptotics
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # Asymptotic equivalence up to a constant

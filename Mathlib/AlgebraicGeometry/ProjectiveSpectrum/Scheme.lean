@@ -665,7 +665,8 @@ lemma mk_mem_toSpec_base_apply {f} (x : Proj| pbo f)
 
 lemma toSpec_preimage_basicOpen {f}
     (t : NumDenSameDeg 𝒜 (.powers f)) :
-    toSpec 𝒜 f ⁻¹ᵁ (sbo (.mk t)) = Opens.comap ⟨_, continuous_subtype_val⟩ (pbo t.num.1) :=
+    (Opens.map (toSpec 𝒜 f).1.base).obj (sbo (.mk t)) =
+      Opens.comap ⟨_, continuous_subtype_val⟩ (pbo t.num.1) :=
   Opens.ext <| Opens.map_coe _ _ ▸ by
   convert (ProjIsoSpecTopComponent.ToSpec.preimage_basicOpen f t)
   exact funext fun _ => toSpec_base_apply_eq _ _
