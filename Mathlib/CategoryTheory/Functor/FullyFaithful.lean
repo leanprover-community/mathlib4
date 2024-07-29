@@ -127,6 +127,7 @@ namespace FullyFaithful
 
 attribute [simp] map_preimage preimage_map
 
+variable (F) in
 /-- A `FullyFaithful` structure can be obtained from the assumption the `F` is both
 full and faithful. -/
 noncomputable def ofFullyFaithful [F.Full] [F.Faithful] :
