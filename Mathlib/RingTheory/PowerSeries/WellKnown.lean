@@ -9,8 +9,6 @@ import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.RingTheory.PowerSeries.Basic
 
-#align_import ring_theory.power_series.well_known from "leanprover-community/mathlib"@"8199f6717c150a7fe91c4534175f4cf99725978f"
-
 /-!
 # Definition of well-known power series
 
@@ -37,38 +35,30 @@ variable {R S : Type*} [Ring R] [Ring S]
 /-- The power series for `1 / (u - x)`. -/
 def invUnitsSub (u : Rˣ) : PowerSeries R :=
   mk fun n => 1 /ₚ u ^ (n + 1)
-#align power_series.inv_units_sub PowerSeries.invUnitsSub
 
 @[simp]
 theorem coeff_invUnitsSub (u : Rˣ) (n : ℕ) : coeff R n (invUnitsSub u) = 1 /ₚ u ^ (n + 1) :=
   coeff_mk _ _
-#align power_series.coeff_inv_units_sub PowerSeries.coeff_invUnitsSub
 
 @[simp]
 theorem constantCoeff_invUnitsSub (u : Rˣ) : constantCoeff R (invUnitsSub u) = 1 /ₚ u := by
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_invUnitsSub, zero_add, pow_one]
-#align power_series.constant_coeff_inv_units_sub PowerSeries.constantCoeff_invUnitsSub
 
 @[simp]
 theorem invUnitsSub_mul_X (u : Rˣ) : invUnitsSub u * X = invUnitsSub u * C R u - 1 := by
   ext (_ | n)
   · simp
   · simp [n.succ_ne_zero, pow_succ']
-set_option linter.uppercaseLean3 false in
-#align power_series.inv_units_sub_mul_X PowerSeries.invUnitsSub_mul_X
 
 @[simp]
 theorem invUnitsSub_mul_sub (u : Rˣ) : invUnitsSub u * (C R u - X) = 1 := by
   simp [mul_sub, sub_sub_cancel]
-#align power_series.inv_units_sub_mul_sub PowerSeries.invUnitsSub_mul_sub
 
 theorem map_invUnitsSub (f : R →+* S) (u : Rˣ) :
     map f (invUnitsSub u) = invUnitsSub (Units.map (f : R →* S) u) := by
   ext
   simp only [← map_pow, coeff_map, coeff_invUnitsSub, one_divp]
   rfl
-
-#align power_series.map_inv_units_sub PowerSeries.map_invUnitsSub
 
 end Ring
 
@@ -152,53 +142,40 @@ open Nat
 /-- Power series for the exponential function at zero. -/
 def exp : PowerSeries A :=
   mk fun n => algebraMap ℚ A (1 / n !)
-#align power_series.exp PowerSeries.exp
 
 /-- Power series for the sine function at zero. -/
 def sin : PowerSeries A :=
   mk fun n => if Even n then 0 else algebraMap ℚ A ((-1) ^ (n / 2) / n !)
-#align power_series.sin PowerSeries.sin
 
 /-- Power series for the cosine function at zero. -/
 def cos : PowerSeries A :=
   mk fun n => if Even n then algebraMap ℚ A ((-1) ^ (n / 2) / n !) else 0
-#align power_series.cos PowerSeries.cos
 
 variable {A A'} [Ring A] [Ring A'] [Algebra ℚ A] [Algebra ℚ A'] (n : ℕ) (f : A →+* A')
 
 @[simp]
 theorem coeff_exp : coeff A n (exp A) = algebraMap ℚ A (1 / n !) :=
   coeff_mk _ _
-#align power_series.coeff_exp PowerSeries.coeff_exp
 
 @[simp]
 theorem constantCoeff_exp : constantCoeff A (exp A) = 1 := by
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_exp]
   simp
-#align power_series.constant_coeff_exp PowerSeries.constantCoeff_exp
-
-#noalign power_series.coeff_sin_bit0
-#noalign power_series.coeff_sin_bit1
-#noalign power_series.coeff_cos_bit0
-#noalign power_series.coeff_cos_bit1
 
 @[simp]
 theorem map_exp : map (f : A →+* A') (exp A) = exp A' := by
   ext
   simp
-#align power_series.map_exp PowerSeries.map_exp
 
 @[simp]
 theorem map_sin : map f (sin A) = sin A' := by
   ext
   simp [sin, apply_ite f]
-#align power_series.map_sin PowerSeries.map_sin
 
 @[simp]
 theorem map_cos : map f (cos A) = cos A' := by
   ext
   simp [cos, apply_ite f]
-#align power_series.map_cos PowerSeries.map_cos
 
 end Field
 
@@ -234,12 +211,10 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
   · rintro h
     apply factorial_ne_zero n
     rw [cast_eq_zero.1 h]
-#align power_series.exp_mul_exp_eq_exp_add PowerSeries.exp_mul_exp_eq_exp_add
 
 /-- Shows that $e^{x} * e^{-x} = 1$ -/
 theorem exp_mul_exp_neg_eq_one [Algebra ℚ A] : exp A * evalNegHom (exp A) = 1 := by
   convert exp_mul_exp_eq_exp_add (1 : A) (-1) <;> simp
-#align power_series.exp_mul_exp_neg_eq_one PowerSeries.exp_mul_exp_neg_eq_one
 
 /-- Shows that $(e^{X})^k = e^{kX}$. -/
 theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (k : A) (exp A) := by
@@ -248,7 +223,6 @@ theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (
       pow_zero (exp A), coe_comp]
   · simpa only [succ_eq_add_one, cast_add, ← exp_mul_exp_eq_exp_add (k : A), ← h, cast_one,
     id_apply, rescale_one] using pow_succ (exp A) k
-#align power_series.exp_pow_eq_rescale_exp PowerSeries.exp_pow_eq_rescale_exp
 
 /-- Shows that
 $\sum_{k = 0}^{n - 1} (e^{X})^k = \sum_{p = 0}^{\infty} \sum_{k = 0}^{n - 1} \frac{k^p}{p!}X^p$. -/
@@ -260,6 +234,5 @@ theorem exp_pow_sum [Algebra ℚ A] (n : ℕ) :
   ext
   simp only [one_div, coeff_mk, cast_pow, coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
     coeff_exp, factorial, map_sum]
-#align power_series.exp_pow_sum PowerSeries.exp_pow_sum
 
 end PowerSeries
