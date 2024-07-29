@@ -28,6 +28,8 @@ We add some local simp lemmas so we can unfold the definitions of the normalizat
 attribute [local simp] normalized hasNestedIf hasConstantIf hasRedundantIf disjoint vars
   List.disjoint
 
+attribute [local simp] apply_ite ite_eq_iff'
+
 /-!
 Simp lemmas for `eval`.
 We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we know the shape of `i`.
@@ -71,7 +73,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
       ⟨if t' = e' then t' else .ite (var v) t' e', by
         refine ⟨fun f => ?_, ?_, fun w b => ?_⟩
         · -- eval = eval
-          simp only [apply_ite, eval_ite_var]
+          simp? says simp only [apply_ite, eval_ite_var, ite_eq_iff']
           cases hfv : f v
           · simp_all
             congr
@@ -104,3 +106,5 @@ recall IfNormalization :=
 
 example : IfNormalization :=
   ⟨_, fun e => ⟨(IfExpr.normalize ∅ e).2.2.1, by simp [(IfExpr.normalize ∅ e).2.1]⟩⟩
+
+end IfExpr
