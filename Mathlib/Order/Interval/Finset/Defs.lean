@@ -1031,27 +1031,29 @@ theorem subtype_Ioc_eq : Ioc a b = (Ioc (a : α) b).subtype p :=
 theorem subtype_Ioo_eq : Ioo a b = (Ioo (a : α) b).subtype p :=
   rfl
 
-variable (hp : ∀ ⦃a b x⦄, a ≤ x → x ≤ b → p a → p b → p x)
-
-theorem map_subtype_embedding_Icc : (Icc a b).map (Embedding.subtype p) = (Icc a b : Finset α) := by
+theorem map_subtype_embedding_Icc (hp : ∀ ⦃a b x⦄, a ≤ x → x ≤ b → p a → p b → p x):
+    (Icc a b).map (Embedding.subtype p) = (Icc a b : Finset α) := by
   rw [subtype_Icc_eq]
   refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Icc] at hx
   exact hp hx.1 hx.2 a.prop b.prop
 
-theorem map_subtype_embedding_Ico : (Ico a b).map (Embedding.subtype p) = (Ico a b : Finset α) := by
+theorem map_subtype_embedding_Ico (hp : ∀ ⦃a b x⦄, a ≤ x → x ≤ b → p a → p b → p x):
+    (Ico a b).map (Embedding.subtype p) = (Ico a b : Finset α) := by
   rw [subtype_Ico_eq]
   refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Ico] at hx
   exact hp hx.1 hx.2.le a.prop b.prop
 
-theorem map_subtype_embedding_Ioc : (Ioc a b).map (Embedding.subtype p) = (Ioc a b : Finset α) := by
+theorem map_subtype_embedding_Ioc (hp : ∀ ⦃a b x⦄, a ≤ x → x ≤ b → p a → p b → p x):
+    (Ioc a b).map (Embedding.subtype p) = (Ioc a b : Finset α) := by
   rw [subtype_Ioc_eq]
   refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Ioc] at hx
   exact hp hx.1.le hx.2 a.prop b.prop
 
-theorem map_subtype_embedding_Ioo : (Ioo a b).map (Embedding.subtype p) = (Ioo a b : Finset α) := by
+theorem map_subtype_embedding_Ioo (hp : ∀ ⦃a b x⦄, a ≤ x → x ≤ b → p a → p b → p x):
+    (Ioo a b).map (Embedding.subtype p) = (Ioo a b : Finset α) := by
   rw [subtype_Ioo_eq]
   refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Ioo] at hx

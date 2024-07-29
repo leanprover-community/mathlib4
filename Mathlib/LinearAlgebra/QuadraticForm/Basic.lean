@@ -226,7 +226,7 @@ theorem map_add_add_add_map (x y z : M) :
   abel
 
 theorem map_add_self (x : M) : Q (x + x) = 4 • Q x := by
-  rw [← two_smul R x, map_smul, nsmul_eq_smul_cast R]
+  rw [← two_smul R x, map_smul, ← Nat.cast_smul_eq_nsmul R]
   norm_num
 
 -- not @[simp] because it is superseded by `ZeroHomClass.map_zero`
@@ -769,7 +769,7 @@ theorem _root_.QuadraticMap.polarBilin_injective (h : IsUnit (2 : R)) :
   intro Q₁ Q₂ h₁₂
   apply h.smul_left_cancel.mp
   rw [show (2 : R) = (2 : ℕ) by rfl]
-  simp_rw [← nsmul_eq_smul_cast R, ← QuadraticMap.toQuadraticMap_polarBilin]
+  simp_rw [Nat.cast_smul_eq_nsmul R, ← QuadraticMap.toQuadraticMap_polarBilin]
   exact congrArg toQuadraticMap h₁₂
 
 section

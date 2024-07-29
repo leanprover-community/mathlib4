@@ -203,8 +203,7 @@ noncomputable def algebraTensorAlgEquiv :
 @[simp]
 lemma algebraTensorAlgEquiv_tmul (a : A) (p : MvPolynomial σ R) :
     algebraTensorAlgEquiv R A (a ⊗ₜ p) = a • MvPolynomial.map (algebraMap R A) p := by
-  simp [algebraTensorAlgEquiv]
-  rw [Algebra.smul_def]
+  simp [algebraTensorAlgEquiv, Algebra.smul_def]
   rfl
 
 @[simp]
