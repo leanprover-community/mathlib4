@@ -330,8 +330,9 @@ end
 theorem restrictDom_comp_subtype (s : Set α) [DecidablePred (· ∈ s)] :
     (restrictDom M R s).comp (Submodule.subtype _) = LinearMap.id := by
   ext l a
-  by_cases h : a ∈ s <;> simp [h]
-  exact ((mem_supported' R l.1).1 l.2 a h).symm
+  by_cases h : a ∈ s
+  · simp [h]
+  simpa [h] using ((mem_supported' R l.1).1 l.2 a h).symm
 
 theorem range_restrictDom (s : Set α) [DecidablePred (· ∈ s)] :
     LinearMap.range (restrictDom M R s) = ⊤ :=
