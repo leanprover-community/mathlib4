@@ -172,6 +172,13 @@ instance (priority := 100) Group.covconv_swap [Group N] [CovariantClass N N (swa
 
 section Trans
 
+#adaptation_note
+/--
+Please don't fix the following problems, they've been reported at
+https://github.com/leanprover/lean4/pull/4814#issuecomment-2254748514
+and should be resolved upstream.
+-/
+
 variable [IsTrans N r] (m n : M) {a b c d : N}
 
 --  Lemmas with 3 elements.
