@@ -552,6 +552,9 @@ theorem tan_zero : tan 0 = 0 := by simp [tan]
 theorem tan_eq_sin_div_cos : tan x = sin x / cos x :=
   rfl
 
+theorem cot_eq_cos_div_sin : cot x = cos x / sin x :=
+  rfl
+
 theorem tan_mul_cos {x : ℂ} (hx : cos x ≠ 0) : tan x * cos x = sin x := by
   rw [tan_eq_sin_div_cos, div_mul_cancel₀ _ hx]
 
@@ -560,13 +563,23 @@ theorem tan_neg : tan (-x) = -tan x := by simp [tan, neg_div]
 
 theorem tan_conj : tan (conj x) = conj (tan x) := by rw [tan, sin_conj, cos_conj, ← map_div₀, tan]
 
+theorem cot_conj : cot (conj x) = conj (cot x) := by rw [cot, sin_conj, cos_conj, ← map_div₀, cot]
+
 @[simp]
 theorem ofReal_tan_ofReal_re (x : ℝ) : ((tan x).re : ℂ) = tan x :=
   conj_eq_iff_re.1 <| by rw [← tan_conj, conj_ofReal]
 
+@[simp]
+theorem ofReal_cot_ofReal_re (x : ℝ) : ((cot x).re : ℂ) = cot x :=
+  conj_eq_iff_re.1 <| by rw [← cot_conj, conj_ofReal]
+
 @[simp, norm_cast]
 theorem ofReal_tan (x : ℝ) : (Real.tan x : ℂ) = tan x :=
   ofReal_tan_ofReal_re _
+
+@[simp, norm_cast]
+theorem ofReal_cot (x : ℝ) : (Real.cot x : ℂ) = cot x :=
+  ofReal_cot_ofReal_re _
 
 @[simp]
 theorem tan_ofReal_im (x : ℝ) : (tan x).im = 0 := by rw [← ofReal_tan_ofReal_re, ofReal_im]
@@ -744,7 +757,11 @@ nonrec theorem cos_add_cos : cos x + cos y = 2 * cos ((x + y) / 2) * cos ((x - y
   ofReal_injective <| by simp [cos_add_cos]
 
 nonrec theorem tan_eq_sin_div_cos : tan x = sin x / cos x :=
-  ofReal_injective <| by simp [tan_eq_sin_div_cos]
+  ofReal_injective <| by simp only [ofReal_tan, tan_eq_sin_div_cos, ofReal_div, ofReal_sin,
+    ofReal_cos]
+
+nonrec theorem cot_eq_cos_div_sin : cot x = cos x / sin x :=
+  ofReal_injective <| by simp [cot_eq_cos_div_sin]
 
 theorem tan_mul_cos {x : ℝ} (hx : cos x ≠ 0) : tan x * cos x = sin x := by
   rw [tan_eq_sin_div_cos, div_mul_cancel₀ _ hx]
