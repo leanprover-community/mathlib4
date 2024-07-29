@@ -189,7 +189,7 @@ noncomputable def functorIsoDiscreteAux' (M : ModuleCat.{u} R) :
   hom := constₗ R
   inv := evalₗ R PUnit.unit
 
-noncomputable def functorIsoDiscreteAux (M : ModuleCat R) :
+noncomputable def functorIsoDiscreteAux (M : ModuleCat.{u} R) :
     (LightCondensed.discrete _).obj M ≅ (LightCondensed.discrete _).obj
       (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u+1}) M)) :=
   (LightCondensed.discrete _).mapIso (functorIsoDiscreteAux' R M)
