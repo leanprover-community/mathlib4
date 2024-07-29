@@ -15,10 +15,12 @@ jobs:
           find . -name . -o -prune -exec rm -rf -- {} +
 
       - uses: actions/checkout@v4
+        fetch-depth: 0
 
       - name: two commits
         run: |
-          printf 'yesterday: %s\n' "$(git log --pretty=%H --since="$(date -I -d 'yesterday')" | tail -n -1)"
+          git checkout master
+          printf 'today:     %s\n' "$(git log --pretty=%H --since="$(date -I -d 'today')" | tail -n -1)"
           printf 'last week: %s\n' "$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)"
 
       - name: install Python
