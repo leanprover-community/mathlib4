@@ -16,19 +16,19 @@ vector space.
 
 ## Main declarations
 
-+ `HilbertCstarModule`: The class containing the Hilbert C⋆-module structure
-+ `HilbertCstarModule.normedSpaceCore`: The proof that a Hilbert C⋆-module is a normed vector
++ `CstarModule`: The class containing the Hilbert C⋆-module structure
++ `CstarModule.normedSpaceCore`: The proof that a Hilbert C⋆-module is a normed vector
   space. This can be used with `NormedAddCommGroup.ofCore` and `NormedSpace.ofCore` to create
   the relevant instances on a type of interest.
-+ `HilbertCstarModule.inner_mul_inner_swap_le`: The statement that
++ `CstarModule.inner_mul_inner_swap_le`: The statement that
   `⟪y, x⟫ * ⟪x, y⟫ ≤ ‖x‖ ^ 2 • ⟪y, y⟫`, which can be viewed as a version of the Cauchy-Schwarz
   inequality for Hilbert C⋆-modules.
-+ `HilbertCstarModule.norm_inner_le`, which states that `‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖`, i.e. the
++ `CstarModule.norm_inner_le`, which states that `‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖`, i.e. the
   Cauchy-Schwarz inequality.
 
 ## Implementation notes
 
-The class `HilbertCstarModule A E` requires `E` to already have a `Norm E` instance on it, but
+The class `CstarModule A E` requires `E` to already have a `Norm E` instance on it, but
 no other norm-related instances. We then include the fact that this norm agrees with the norm
 induced by the inner product among the axioms of the class. Furthermore, instead of registering
 `NormedAddCommGroup E` and `NormedSpace ℂ E` instances (which might already be present on the type,
@@ -47,7 +47,7 @@ open scoped ComplexOrder RightActions
 /-- A *Hilbert C⋆-module* is a complex module `E` endowed with a right `A`-module structure
 (where `A` is typically a C⋆-algebra) and an inner product `⟪x, y⟫_A` which satisfies the
 following properties. -/
-class HilbertCstarModule (A : outParam <| Type*) (E : Type*) [NonUnitalSemiring A] [StarRing A]
+class CstarModule (A : outParam <| Type*) (E : Type*) [NonUnitalSemiring A] [StarRing A]
     [Module ℂ A] [AddCommGroup E] [Module ℂ E] [PartialOrder A] [SMul Aᵐᵒᵖ E] [Norm A] [Norm E]
     extends Inner A E where
   inner_add_right {x} {y} {z} : inner x (y + z) = inner x y + inner x z
@@ -58,16 +58,16 @@ class HilbertCstarModule (A : outParam <| Type*) (E : Type*) [NonUnitalSemiring 
   star_inner x y : star (inner x y) = inner y x
   norm_eq_sqrt_norm_inner_self x : ‖x‖ = √‖inner x x‖
 
-attribute [simp] HilbertCstarModule.inner_add_right HilbertCstarModule.star_inner
-  HilbertCstarModule.inner_op_smul_right HilbertCstarModule.inner_smul_right_complex
+attribute [simp] CstarModule.inner_add_right CstarModule.star_inner
+  CstarModule.inner_op_smul_right CstarModule.inner_smul_right_complex
 
-namespace HilbertCstarModule
+namespace CstarModule
 
 section general
 
 variable {A E : Type*} [NonUnitalRing A] [StarRing A] [AddCommGroup E] [Module ℂ A]
   [Module ℂ E] [PartialOrder A] [SMul Aᵐᵒᵖ E] [StarModule ℂ A] [Norm A] [Norm E]
-  [HilbertCstarModule A E]
+  [CstarModule A E]
 
 local notation "⟪" x ", " y "⟫" => inner (𝕜 := A) x y
 
@@ -144,7 +144,7 @@ section norm
 
 variable {A E : Type*} [NonUnitalNormedRing A] [StarRing A] [CstarRing A] [PartialOrder A]
   [StarOrderedRing A] [AddCommGroup E] [NormedSpace ℂ A] [Module ℂ E] [SMul Aᵐᵒᵖ E] [Norm E]
-  [StarModule ℂ A] [HilbertCstarModule A E] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
+  [StarModule ℂ A] [CstarModule A E] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
 
 local notation "⟪" x ", " y "⟫" => inner (𝕜 := A) x y
 
@@ -209,7 +209,7 @@ lemma inner_mul_inner_swap_le [CompleteSpace A] {x y : E} : ⟪y, x⟫ * ⟪x, y
                         _ = ‖x‖ ^ 2 • (star a * a) := by rw [← norm_eq_sqrt_norm_inner_self]
     specialize h₁ ⟪x, y⟫
     simp only [star_inner, sub_self, zero_sub, le_neg_add_iff_add_le, add_zero] at h₁
-    rwa [smul_le_smul_iff_of_pos_left (pow_pos (HilbertCstarModule.norm_pos h) _)] at h₁
+    rwa [smul_le_smul_iff_of_pos_left (pow_pos (CstarModule.norm_pos h) _)] at h₁
 
 variable (E) in
 /-- The Cauchy-Schwarz inequality for Hilbert C⋆-modules. -/
@@ -225,7 +225,7 @@ lemma norm_inner_le [CompleteSpace A] {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ *
                 simp only [norm_eq_sqrt_norm_inner_self, norm_nonneg, Real.sq_sqrt]
     _ = (‖x‖ * ‖y‖) ^ 2 := by simp only [mul_pow]
   refine (pow_le_pow_iff_left (R := ℝ) (norm_nonneg ⟪x, y⟫_A) ?_ (by norm_num)).mp this
-  exact mul_nonneg HilbertCstarModule.norm_nonneg HilbertCstarModule.norm_nonneg
+  exact mul_nonneg CstarModule.norm_nonneg CstarModule.norm_nonneg
 
 protected lemma norm_triangle [CompleteSpace A] (x y : E) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ := by
   have h : ‖x + y‖ ^ 2 ≤ (‖x‖ + ‖y‖) ^ 2 := by
@@ -238,16 +238,16 @@ protected lemma norm_triangle [CompleteSpace A] (x y : E) : ‖x + y‖ ≤ ‖x
       _ = ‖x‖ ^ 2 + ‖y‖ * ‖x‖ + ‖x‖ * ‖y‖ + ‖y‖ ^ 2 := by
           simp [norm_eq_sqrt_norm_inner_self]
       _ = (‖x‖ + ‖y‖) ^ 2 := by simp only [add_pow_two, add_left_inj]; ring
-  refine (pow_le_pow_iff_left HilbertCstarModule.norm_nonneg ?_ (by norm_num)).mp h
-  exact add_nonneg HilbertCstarModule.norm_nonneg HilbertCstarModule.norm_nonneg
+  refine (pow_le_pow_iff_left CstarModule.norm_nonneg ?_ (by norm_num)).mp h
+  exact add_nonneg CstarModule.norm_nonneg CstarModule.norm_nonneg
 
 /-- This allows us to get `NormedAddCommGroup` and `NormedSpace` instances on `E` via
 `NormedAddCommGroup.ofCore` and `NormedSpace.ofCore`. -/
 lemma normedSpaceCore [CompleteSpace A] : NormedSpace.Core ℂ E where
-  norm_nonneg x := HilbertCstarModule.norm_nonneg
+  norm_nonneg x := CstarModule.norm_nonneg
   norm_eq_zero_iff x := norm_zero_iff x
   norm_smul c x := by simp [norm_eq_sqrt_norm_inner_self, norm_smul, ← mul_assoc]
-  norm_triangle x y := HilbertCstarModule.norm_triangle x y
+  norm_triangle x y := CstarModule.norm_triangle x y
 
 lemma norm_eq_csSup [CompleteSpace A] (v : E) :
     ‖v‖ = sSup { ‖⟪w, v⟫_A‖ | (w : E) (_ : ‖w‖ ≤ 1) } := by
@@ -255,7 +255,7 @@ lemma norm_eq_csSup [CompleteSpace A] (v : E) :
   let instNS : NormedSpace ℂ E := .ofCore normedSpaceCore
   refine Eq.symm <| IsGreatest.csSup_eq ⟨⟨‖v‖⁻¹ • v, ?_, ?_⟩, ?_⟩
   · simpa only [norm_smul, norm_inv, norm_norm] using inv_mul_le_one_of_le le_rfl (by positivity)
-  · simp [norm_smul, HilbertCstarModule.inner_self_eq_norm_sq, pow_two, ← mul_assoc]
+  · simp [norm_smul, CstarModule.inner_self_eq_norm_sq, pow_two, ← mul_assoc]
   · rintro - ⟨w, hw, rfl⟩
     calc _ ≤ ‖w‖ * ‖v‖ := norm_inner_le E
       _ ≤ 1 * ‖v‖ := by gcongr
@@ -263,4 +263,4 @@ lemma norm_eq_csSup [CompleteSpace A] (v : E) :
 
 end norm
 
-end HilbertCstarModule
+end CstarModule

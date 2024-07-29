@@ -1071,8 +1071,8 @@ import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unital
 import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unitary
 import Mathlib.Analysis.CstarAlgebra.Exponential
 import Mathlib.Analysis.CstarAlgebra.GelfandDuality
-import Mathlib.Analysis.CstarAlgebra.HilbertCstarModule
 import Mathlib.Analysis.CstarAlgebra.Matrix
+import Mathlib.Analysis.CstarAlgebra.Module
 import Mathlib.Analysis.CstarAlgebra.Multiplier
 import Mathlib.Analysis.CstarAlgebra.Spectrum
 import Mathlib.Analysis.CstarAlgebra.Unitization
