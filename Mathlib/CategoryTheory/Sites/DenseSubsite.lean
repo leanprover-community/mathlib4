@@ -655,6 +655,9 @@ it induces an equivalence of category of sheaves valued in a category with suita
 noncomputable def sheafEquiv : Sheaf J A ≌ Sheaf K A :=
   (G.sheafAdjunctionCocontinuous A J K).toEquivalence.symm
 
+instance : (G.sheafPushforwardContinuous A J K).IsEquivalence :=
+  inferInstanceAs (IsDenseSubsite.sheafEquiv G _ _ _).inverse.IsEquivalence
+
 variable [HasWeakSheafify J A] [HasWeakSheafify K A]
 
 /-- The natural isomorphism exhibiting the compatibility of
