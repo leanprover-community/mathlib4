@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Monoidal.Mon_
+import Mathlib.CategoryTheory.Monoidal.Mon_Class
 
 /-!
 # The category of commutative monoids in a braided monoidal category.

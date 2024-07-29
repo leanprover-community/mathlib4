@@ -5,7 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 import Mathlib.Algebra.Category.AlgebraCat.Basic
-import Mathlib.CategoryTheory.Monoidal.Mon_
+import Mathlib.CategoryTheory.Monoidal.Mon_Class
 
 /-!
 # `Mon_ (ModuleCat R) ≌ AlgebraCat R`
