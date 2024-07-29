@@ -26,14 +26,14 @@ namespace IsImmersion
 nonrec def coborderRange [IsImmersion f] : Opens Y :=
   ⟨coborder (Set.range f.1.base), IsImmersion.isLocallyClosed_range.isOpen_coborder⟩
 
-noncomputable
-def liftCoborder [IsImmersion f] : X ⟶ Y ∣_ᵤ coborderRange f :=
-  IsOpenImmersion.lift (Scheme.ιOpens _) f (subset_coborder.trans_eq Subtype.range_val.symm)
+-- noncomputable
+-- def liftCoborder [IsImmersion f] : X ⟶ Y ∣_ᵤ coborderRange f :=
+--   IsOpenImmersion.lift (Scheme.ιOpens _) f (subset_coborder.trans_eq Subtype.range_val.symm)
 
-instance [IsImmersion f] : IsClosedImmersion (liftCoborder f) := sorry
+-- instance [IsImmersion f] : IsClosedImmersion (liftCoborder f) := sorry
 
-lemma liftCoborder_ι [IsImmersion f] : liftCoborder f ≫ Scheme.ιOpens (coborderRange f) = f :=
-  IsOpenImmersion.lift_fac _ _ _
+-- lemma liftCoborder_ι [IsImmersion f] : liftCoborder f ≫ Scheme.ιOpens (coborderRange f) = f :=
+--   IsOpenImmersion.lift_fac _ _ _
 
 end IsImmersion
 
@@ -54,7 +54,7 @@ def diagonalCover : (pullback.diagonalObj f).OpenCover :=
 /-- The image of `𝒱 i j₁ ×_{𝒰 i} 𝒱 i j₂` in `diagonalCover` with `j₁ = j₂`  -/
 noncomputable
 def diagonalCoverDiagonal :
-    Opens (pullback.diagonalObj f).carrier :=
+    Opens (pullback.diagonalObj f) :=
 ⨆ i : Σ i, (𝒱 i).J, ((diagonalCover f 𝒰 𝒱).map ⟨i.1, i.2, i.2⟩).opensRange
 
 -- by def

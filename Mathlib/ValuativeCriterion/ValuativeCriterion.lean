@@ -5,6 +5,7 @@ import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.ValuativeCriterion.ValuationRing
 import Mathlib.ValuativeCriterion.ResidueField
 import Mathlib.ValuativeCriterion.Lemmas
+set_option maxHeartbeats 0
 
 open CategoryTheory CategoryTheory.Limits
 
@@ -133,11 +134,13 @@ lemma specializingMap (H : ValuativeCriterion.Existence f) :
         have :
             (Spec.map stalk_y_to_A).val.base (LocalRing.closedPoint A) =
               LocalRing.closedPoint (Y.stalk y) := by
-          have : LocalRing <| CommRingCat.of (Y.stalk y) := LocallyRingedSpace.stalkLocal Y.toLocallyRingedSpace y
+          have : LocalRing <| CommRingCat.of (Y.stalk y) :=
+            LocallyRingedSpace.stalkLocal Y.toLocallyRingedSpace y
           have : LocalRing <| CommRingCat.of A := ValuationSubring.localRing A
           have : IsLocalRingHom stalk_y_to_A := stalk_y_to_A_is_local
           apply LocalRing.comap_closedPoint
-        change (Y.fromSpecStalk y).val.base ((Spec.map stalk_y_to_A).val.base (LocalRing.closedPoint A)) = y
+        change (Y.fromSpecStalk y).val.base
+          ((Spec.map stalk_y_to_A).val.base (LocalRing.closedPoint A)) = y
         rw [this]
         exact Y.fromSpecStalk_closedPoint
 
@@ -150,7 +153,7 @@ Uses `bijective_rangeRestrict_comp_of_valuationRing` and `stalkClosedPointTo`
 https://stacks.math.columbia.edu/tag/01KE first half
 -/
 lemma of_specializingMap
-    (H : (MorphismProperty.topologically @SpecializingMap).universally f) :
+    (H : (AlgebraicGeometry.topologically @SpecializingMap).universally f) :
       ValuativeCriterion.Existence f := by
   intro c
   rcases c with @⟨R, commRing, domain, valuationRing, K, field, algebra, isFractionRing, i₁, i₂, commSq⟩
@@ -313,16 +316,64 @@ lemma of_specializingMap
       _ = (Spec_R_to_XR ≫ XR_to_Spec_R) ≫ i₂ := rfl
       _ = i₂ := by simp only [sec', Category.id_comp]
 
-  exact ⟨Nonempty.intro ⟨l, fac_left, fac_right⟩⟩
+  exact ⟨⟨⟨l, fac_left, fac_right⟩⟩⟩
 
 /-- by def -/
 lemma stableUnderBaseChange :
-    ValuativeCriterion.Existence.StableUnderBaseChange := sorry
+    ValuativeCriterion.Existence.StableUnderBaseChange := by
+  intros Y' X X' Y  Y'_to_Y f X'_to_X f' hP hf commSq
+
+  -- let Spec_K_to_X' := commSq.i₁
+  -- let Spec_R_to_Y' := commSq.i₂
+
+  let commSq' : ValuativeCommSq f := {
+    R := commSq.R
+    commRing := by infer_instance
+    domain := by infer_instance
+    valuationRing := by infer_instance
+    K := commSq.K
+    field := by infer_instance
+    algebra := by infer_instance
+    isFractionRing := by infer_instance
+    i₁ := commSq.i₁ ≫ X'_to_X
+    i₂ := commSq.i₂ ≫ Y'_to_Y
+    commSq := {
+      w := by
+        simp only [Category.assoc]
+        rw [hP.w]
+        rw [reassoc_of% commSq.commSq.w]
+    }
+  }
+
+  let lift := (hf commSq').exists_lift.some
+  have lift_comm₁ := lift.fac_left
+  have lift_comm₂ := lift.fac_right
+
+  have comm₁ : lift.l ≫ f = commSq.i₂ ≫ Y'_to_Y := by
+    simp_all only [commSq', lift]
+
+  let l := hP.lift lift.l commSq.i₂ comm₁
+  have fac_left :
+      Spec.map (CommRingCat.ofHom (algebraMap commSq.R commSq.K)) ≫ l = commSq.i₁ := by
+    apply hP.hom_ext
+    · aesop
+    · simp only [Category.assoc]
+      rw [hP.lift_snd]
+      rw [commSq.commSq.w]
+  have fac_right : l ≫ f' = commSq.i₂ := hP.lift_snd _ _ _
+
+  exact ⟨⟨⟨l, fac_left, fac_right⟩⟩⟩
 
 /-- by the three lemmas above -/
 lemma eq :
-    ValuativeCriterion.Existence = (MorphismProperty.topologically @SpecializingMap).universally :=
-  sorry
+    ValuativeCriterion.Existence = (AlgebraicGeometry.topologically @SpecializingMap).universally := by
+  ext
+  constructor
+  · intro _
+    apply MorphismProperty.universally_mono
+    · apply specializingMap
+    · rwa [MorphismProperty.StableUnderBaseChange.universally_eq stableUnderBaseChange]
+  · apply of_specializingMap
 
 /-- by `ValuativeCriterion.Existence.eq` and `universallyClosed_iff_specializingMap`. -/
 lemma _root_.AlgebraicGeometry.universallyClosed_of_valuativeCriterion [QuasiCompact f]
@@ -369,6 +420,7 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] :
     have hg : l ≫ g = Spec.map (CommRingCat.ofHom (algebraMap S.R S.K)) := sorry
     sorry -- Γ of rhs of hg is injective.
   · sorry -- by `IsClosedImmersion g` and `IsClosedImmersion.iff_of_isAffine`
+  sorry
 
 -- by lemmas above
 lemma IsSeparated_eq_valuativeCriterion :
