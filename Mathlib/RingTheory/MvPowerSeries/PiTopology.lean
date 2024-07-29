@@ -59,35 +59,31 @@ namespace MvPowerSeries
 
 open Function
 
-variable (σ : Type _) (R : Type _)
+variable {σ R : Type*}
 
 namespace WithPiTopology
 
 variable [TopologicalSpace R]
 
+variable (R) in
 /-- The pointwise topology on MvPowerSeries -/
-scoped instance topologicalSpace : TopologicalSpace (MvPowerSeries σ R) :=
+scoped instance : TopologicalSpace (MvPowerSeries σ R) :=
   Pi.topologicalSpace
 
-/-- Components are continuous -/
-theorem continuous_component :
-    ∀ d : σ →₀ ℕ, Continuous fun a : MvPowerSeries σ R => a d :=
-  continuous_pi_iff.mp continuous_id
+variable [Semiring R]
 
-variable {σ R}
-
+variable (R) in
 /-- coeff are continuous -/
-theorem continuous_coeff [Semiring R] (d : σ →₀ ℕ) :
-    Continuous (MvPowerSeries.coeff R d) :=
-  continuous_component σ R d
+theorem continuous_coeff (d : σ →₀ ℕ) : Continuous (MvPowerSeries.coeff R d) :=
+  continuous_pi_iff.mp continuous_id d
 
+variable (R) in
 /-- constant_coeff is continuous -/
-theorem continuous_constantCoeff [Semiring R] :
-    Continuous (constantCoeff σ R) :=
-  continuous_component σ R 0
+theorem continuous_constantCoeff : Continuous (constantCoeff σ R) :=
+  continuous_coeff R 0
 
 /-- A family of power series converges iff it converges coefficientwise -/
-theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type _}
+theorem tendsto_iff_coeff_tendsto {ι : Type*}
     (f : ι → MvPowerSeries σ R) (u : Filter ι) (g : MvPowerSeries σ R) :
     Filter.Tendsto f u (nhds g) ↔
     ∀ d : σ →₀ ℕ, Filter.Tendsto (fun i => coeff R d (f i)) u (nhds (coeff R d g)) := by
@@ -97,30 +93,33 @@ theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type _}
 variable (σ R)
 
 /-- The semiring topology on MvPowerSeries of a topological semiring -/
-@[scoped instance] theorem topologicalSemiring [Semiring R] [TopologicalSemiring R] :
+@[scoped instance]
+theorem instTopologicalSemiring [TopologicalSemiring R] :
     TopologicalSemiring (MvPowerSeries σ R) where
     continuous_add := continuous_pi fun d => Continuous.comp continuous_add
-      (Continuous.prod_mk (Continuous.fst' (continuous_component σ R d))
-        (Continuous.snd' (continuous_component σ R d)))
+      (Continuous.prod_mk (Continuous.fst' (continuous_coeff R d))
+        (Continuous.snd' (continuous_coeff R d)))
     continuous_mul := continuous_pi fun _ => continuous_finset_sum _ (fun i _ => Continuous.comp
-      continuous_mul (Continuous.prod_mk (Continuous.fst' (continuous_component σ R i.fst))
-        (Continuous.snd' (continuous_component σ R i.snd))))
+      continuous_mul (Continuous.prod_mk (Continuous.fst' (continuous_coeff R i.fst))
+        (Continuous.snd' (continuous_coeff R i.snd))))
 
 /-- The ring topology on MvPowerSeries of a topological ring -/
-@[scoped instance] theorem topologicalRing [Ring R] [TopologicalRing R] :
+@[scoped instance]
+theorem instTopologicalRing (R : Type*) [TopologicalSpace R] [Ring R] [TopologicalRing R] :
     TopologicalRing (MvPowerSeries σ R) :=
-  { topologicalSemiring σ R with
+  { instTopologicalSemiring σ R with
     continuous_neg := continuous_pi fun d ↦ Continuous.comp continuous_neg
-      (continuous_component σ R d) }
+      (continuous_coeff R d) }
 
 /-- MvPowerSeries on a T2Space form a T2Space -/
-@[scoped instance] theorem t2Space [T2Space R] : T2Space (MvPowerSeries σ R) where
+@[scoped instance]
+theorem instT2Space [T2Space R] : T2Space (MvPowerSeries σ R) where
   t2 x y h := by
     obtain ⟨d, h⟩ := Function.ne_iff.mp h
     obtain ⟨u, v, ⟨hu, hv, hx, hy, huv⟩⟩ := t2_separation h
     exact ⟨(fun x => x d) ⁻¹' u, (fun x => x d) ⁻¹' v,
-      IsOpen.preimage (continuous_component σ R d) hu,
-      IsOpen.preimage (continuous_component σ R d) hv, hx, hy,
+      IsOpen.preimage (continuous_coeff R d) hu,
+      IsOpen.preimage (continuous_coeff R d) hv, hx, hy,
       Disjoint.preimage _ huv⟩
 
 end WithPiTopology
@@ -131,26 +130,35 @@ open WithPiTopology
 
 variable [UniformSpace R]
 
+variable (σ R) in
 /-- The componentwise uniformity on MvPowerSeries -/
-scoped instance uniformSpace : UniformSpace (MvPowerSeries σ R) :=
+scoped instance : UniformSpace (MvPowerSeries σ R) :=
   Pi.uniformSpace fun _ : σ →₀ ℕ => R
 
-/-- Components are uniformly continuous -/
-theorem uniformContinuous_component :
-    ∀ d : σ →₀ ℕ, UniformContinuous fun a : MvPowerSeries σ R => a d :=
-  uniformContinuous_pi.mp uniformContinuous_id
+variable (R)
 
-/-- The uniform_add_group structure on MvPowerSeries of a uniform_add_group -/
-@[scoped instance] theorem uniformAddGroup [AddGroup R] [UniformAddGroup R] :
+/-- Coefficients are uniformly continuous -/
+theorem uniformContinuous_coeff [Semiring R] (d : σ →₀ ℕ) :
+    UniformContinuous fun f : MvPowerSeries σ R => coeff R d f :=
+  uniformContinuous_pi.mp uniformContinuous_id d
+
+variable [Ring R]
+
+variable (σ)
+
+/-- The `UniformAddGroup` structure on `MvPowerSeries` of a `UniformAddGroup` -/
+@[scoped instance]
+theorem instUniformAddGroup [UniformAddGroup R] :
     UniformAddGroup (MvPowerSeries σ R) where
   uniformContinuous_sub := uniformContinuous_pi.mpr fun _ => UniformContinuous.comp
     uniformContinuous_sub
     (UniformContinuous.prod_mk
-      (UniformContinuous.comp (uniformContinuous_component _ _ _) uniformContinuous_fst)
-      (UniformContinuous.comp (uniformContinuous_component _ _ _) uniformContinuous_snd))
+      (UniformContinuous.comp (uniformContinuous_coeff _ _) uniformContinuous_fst)
+      (UniformContinuous.comp (uniformContinuous_coeff _ _) uniformContinuous_snd))
 
 /-- Completeness of the uniform structure on MvPowerSeries -/
-@[scoped instance] theorem completeSpace [AddGroup R] [CompleteSpace R] :
+@[scoped instance]
+theorem instCompleteSpace [CompleteSpace R] :
     CompleteSpace (MvPowerSeries σ R) where
   complete := by
     intro f hf
@@ -160,29 +168,30 @@ theorem uniformContinuous_component :
       exact fun d => (this d).choose_spec
     intro d
     use lim (f.map fun a => a d)
-    exact (Cauchy.map hf (uniformContinuous_component σ R d)).le_nhds_lim
+    exact (Cauchy.map hf (uniformContinuous_coeff R d)).le_nhds_lim
 
 /-- Separation of the uniform structure on MvPowerSeries -/
-@[scoped instance] theorem t0Space [T0Space R] : T0Space (MvPowerSeries σ R) := by
+@[scoped instance]
+theorem instT0Space [T0Space R] : T0Space (MvPowerSeries σ R) := by
   suffices T2Space (MvPowerSeries σ R) by infer_instance
-  exact WithPiTopology.t2Space σ R
+  exact WithPiTopology.instT2Space σ R
 
 /-- The ring of multivariate power series is a uniform topological ring -/
 @[scoped instance]
-theorem uniform_topologicalRing [Ring R] [UniformAddGroup R] [TopologicalRing R] :
+theorem instTopologicalRing
+    [UniformSpace R] [UniformAddGroup R] [TopologicalRing R] :
     TopologicalRing (MvPowerSeries σ R) :=
-  { uniformAddGroup σ R with
-    continuous_add :=  (@uniformContinuous_add _ _ _ (uniformAddGroup σ R)).continuous
+  { instUniformAddGroup σ R with
+    continuous_add :=  (@uniformContinuous_add _ _ _ (instUniformAddGroup σ R)).continuous
     continuous_mul := continuous_pi fun _ => continuous_finset_sum _ fun i _ => Continuous.comp
-      continuous_mul (Continuous.prod_mk (Continuous.fst' (continuous_component σ R i.fst))
-        (Continuous.snd' (continuous_component σ R i.snd)))
-    continuous_neg := (@uniformContinuous_neg _ _ _ (uniformAddGroup σ R)).continuous
+      continuous_mul (Continuous.prod_mk (Continuous.fst' (continuous_coeff R i.fst))
+        (Continuous.snd' (continuous_coeff R i.snd)))
+    continuous_neg := (@uniformContinuous_neg _ _ _ (instUniformAddGroup σ R)).continuous
     }
 
 end WithPiUniformity
 
-variable {σ R} [DecidableEq σ]
-variable [TopologicalSpace R]
+variable [DecidableEq σ] [TopologicalSpace R]
 
 open WithPiTopology
 
@@ -260,14 +269,11 @@ theorem tendsto_pow_of_constantCoeff_nilpotent_iff [CommRing R] [DiscreteTopolog
     obtain ⟨m, hm⟩ := this
     use m
     apply hm m (le_refl m)
-  simp only [← @comp_apply _ R ℕ]
-  rw [← Filter.tendsto_map'_iff]
+  simp only [← @comp_apply _ R ℕ, ← Filter.tendsto_map'_iff]
   simp only [Filter.Tendsto, Filter.map_le_iff_le_comap] at h ⊢
-  apply le_trans h
-  apply Filter.comap_mono
+  refine le_trans h (Filter.comap_mono ?_)
   rw [← Filter.map_le_iff_le_comap]
-  apply continuous_constantCoeff.continuousAt
-
+  exact Continuous.continuousAt (continuous_constantCoeff R)
 
 variable [Semiring R]
 
