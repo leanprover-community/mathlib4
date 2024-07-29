@@ -8,8 +8,6 @@ import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
-
-
 /-!
 # Conditions for rank to be finite
 

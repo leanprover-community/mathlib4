@@ -178,7 +178,7 @@ theorem orbit_subgroup_one_eq_self : MulAction.orbit s (1 : α) = s :=
 
 @[to_additive eq_addCosets_of_normal]
 theorem eq_cosets_of_normal (N : s.Normal) (g : α) : g • (s : Set α) = op g • s :=
-  Set.ext fun a => by simp [mem_leftCoset_iff, mem_rightCoset_iff]; rw [N.mem_comm_iff]
+  Set.ext fun a => by simp [mem_leftCoset_iff, mem_rightCoset_iff, N.mem_comm_iff]
 
 @[to_additive normal_of_eq_addCosets]
 theorem normal_of_eq_cosets (h : ∀ g : α, g • (s : Set α) = op g • s) : s.Normal :=
