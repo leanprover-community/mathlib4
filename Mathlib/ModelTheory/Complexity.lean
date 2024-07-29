@@ -6,9 +6,8 @@ Authors: Aaron Anderson
 import Mathlib.ModelTheory.Satisfiability
 
 /-!
-# Complexity of First-Order Formulas
-This file defines first-order terms, formulas, sentences, and theories in a style inspired by the
-[Flypitch project](https://flypitch.github.io/).
+# Quantifier Complexity
+This file defines quantifier complexity of first-order formulas, and constructs prenex normal forms.
 
 ## Main Definitions
 * `FirstOrder.Language.BoundedFormula.IsAtomic` defines atomic formulas - those which are
