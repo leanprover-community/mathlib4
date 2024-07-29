@@ -45,6 +45,8 @@ inductive StyleError where
   /-- Lint against "too broad" imports, such as `Mathlib.Tactic` or any module in `Lake`
   (unless carefully measured) -/
   | broadImport (module : BroadImports)
+  /-- Line longer than 100 characters -/
+  | lineLength (actual : Int) : StyleError
   /-- The current file was too large: this error contains the current number of lines
   as well as a size limit (slightly larger). On future runs, this linter will allow this file
   to grow up to this limit. -/
@@ -77,6 +79,7 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
       "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see \
       e.g. mathlib4#13779). Please consider carefully if this import is useful and make sure to \
       benchmark it. If this is fine, feel free to allow this linter."
+  | StyleError.lineLength n => s!"Line has {n} characters, which is more than 100"
   | StyleError.fileTooLong current_size size_limit =>
     match style with
     | ErrorFormat.github =>
@@ -93,6 +96,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.authors => "ERR_AUT"
   | StyleError.adaptationNote => "ERR_ADN"
   | StyleError.broadImport _ => "ERR_IMP"
+  | StyleError.lineLength _ => "ERR_LIN"
   | StyleError.fileTooLong _ _ => "ERR_NUM_LIN"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
@@ -157,6 +161,12 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         -- Use default values for parameters which are normalised.
         -- NB: keep this in sync with `normalise` above!
         | "ERR_COP" => some (StyleError.copyright none)
+        | "ERR_LIN" =>
+          if let some n := error_message.get? 2 then
+            match String.toNat? n with
+              | some n => return StyleError.lineLength n
+              | none => none
+          else none
         | "ERR_AUT" => some (StyleError.authors)
         | "ERR_ADN" => some (StyleError.adaptationNote)
         | "ERR_IMP" =>
@@ -288,6 +298,16 @@ def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
       lineNumber := lineNumber + 1
   return errors
 
+/-- Iterates over a collection of strings, finding all lines which are longer than 101 chars.
+We allow URLs to be longer, though.
+-/
+def lineLengthLinter : TextbasedLinter := fun lines ↦ Id.run do
+  let errors := (lines.toList.enumFrom 1).filterMap (fun (line_number, line) ↦
+    if line.length > 101 && !line.containsSubstr "http" then
+      some (StyleError.lineLength line.length, line_number)
+    else none)
+  errors.toArray
+
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
 def isImportsOnlyFile (lines : Array String) : Bool :=
@@ -315,7 +335,7 @@ end
 
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
-    copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter
+    copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, lineLengthLinter
   ]
 
 /-- Read a file and apply all text-based linters. Return a list of all unexpected errors.
