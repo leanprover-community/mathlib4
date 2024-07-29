@@ -297,9 +297,10 @@ lemma prod_map_eq_pow_single [DecidableEq α] {l : List α} (a : α) (f : α →
   · rw [map_nil, prod_nil, count_nil, _root_.pow_zero]
   · specialize h a fun a' ha' hfa' => hf a' ha' (mem_cons_of_mem _ hfa')
     rw [List.map_cons, List.prod_cons, count_cons, h]
+    simp only [beq_iff_eq]
     split_ifs with ha'
     · rw [ha', _root_.pow_succ']
-    · rw [hf a' (Ne.symm ha') (List.mem_cons_self a' as), one_mul, add_zero]
+    · rw [hf a' ha' (List.mem_cons_self a' as), one_mul, add_zero]
 
 @[to_additive]
 lemma prod_eq_pow_single [DecidableEq M] (a : M) (h : ∀ a', a' ≠ a → a' ∈ l → a' = 1) :
@@ -477,9 +478,9 @@ lemma prod_map_ite_eq {A : Type*} [DecidableEq A] (l : List A) (f g : A → G) (
     rw [ih]
     clear ih
     by_cases hx : x = a
-    · simp only [hx, ite_true, div_pow, pow_add, pow_one, div_eq_mul_inv, mul_assoc, mul_comm,
-        mul_left_comm, mul_inv_cancel_left]
-    · simp only [hx, ite_false, ne_comm.mp hx, add_zero, mul_assoc, mul_comm (g x) _]
+    · simp only [hx, ↓reduceIte, div_eq_mul_inv, beq_self_eq_true, pow_add, pow_one, mul_comm,
+      mul_assoc, mul_left_comm, mul_inv_cancel_left]
+    · simp only [hx, ↓reduceIte, div_pow, mul_comm (g x) _, mul_assoc, beq_iff_eq, add_zero]
 
 end CommGroup
 
@@ -578,13 +579,14 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
         match p a with
         | true => simp only [List.map_cons, List.sum_cons, List.count_eq_zero.2 ha, zero_add]
         | false => simp only
-    · by_cases hp : p a
-      · refine _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h]) ?_
+    · simp only [beq_iff_eq]
+      by_cases hp : p a
+      · refine _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h.symm]) ?_
         simp [hp, count_dedup]
       · refine _root_.trans (List.sum_eq_zero fun n hn => ?_) (by simp [hp])
         obtain ⟨a', ha'⟩ := List.mem_map.1 hn
         split_ifs at ha' with ha
-        · simp only [ha, mem_filter, mem_dedup, find?, mem_cons, true_or, hp,
+        · simp only [ha.symm, mem_filter, mem_dedup, find?, mem_cons, true_or, hp,
             and_false, false_and] at ha'
         · exact ha'.2.symm
 

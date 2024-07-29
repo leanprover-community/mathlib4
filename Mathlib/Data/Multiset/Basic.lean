@@ -1348,7 +1348,7 @@ theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (s) :
 
 -- @[simp] -- Porting note: Left hand does not simplify
 theorem attach_map_val' (s : Multiset α) (f : α → β) : (s.attach.map fun i => f i.val) = s.map f :=
-  Quot.inductionOn s fun l => congr_arg _ <| List.attach_map_coe' l f
+  Quot.inductionOn s fun l => congr_arg _ <| List.attach_map_coe l f
 
 @[simp]
 theorem attach_map_val (s : Multiset α) : s.attach.map Subtype.val = s :=
@@ -2139,9 +2139,10 @@ theorem count_replicate_self (a : α) (n : ℕ) : count a (replicate n a) = n :=
   convert List.count_replicate_self a n
   rw [← coe_count, coe_replicate]
 
-theorem count_replicate (a b : α) (n : ℕ) : count a (replicate n b) = if a = b then n else 0 := by
+theorem count_replicate (a b : α) (n : ℕ) : count a (replicate n b) = if b = a then n else 0 := by
   convert List.count_replicate a b n
   rw [← coe_count, coe_replicate]
+  simp
 
 @[simp]
 theorem count_erase_self (a : α) (s : Multiset α) : count a (erase s a) = count a s - 1 :=
@@ -2266,7 +2267,7 @@ theorem replicate_inter (n : ℕ) (x : α) (s : Multiset α) :
     replicate n x ∩ s = replicate (min n (s.count x)) x := by
   ext y
   rw [count_inter, count_replicate, count_replicate]
-  by_cases h : y = x
+  by_cases h : x = y
   · simp only [h, if_true]
   · simp only [h, if_false, Nat.zero_min]
 
