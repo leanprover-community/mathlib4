@@ -971,7 +971,8 @@ theorem mem_lowerBounds_image (Hf : MonotoneOn f t) (Hst : s ⊆ t) (Has : a ∈
     (Hat : a ∈ t) : f a ∈ lowerBounds (f '' s) :=
   forall_mem_image.2 fun _ H => Hf Hat (Hst H) (Has H)
 
-theorem mem_lowerBounds_image_self (Hf : MonotoneOn f t) : a ∈ lowerBounds t → a ∈ t → f a ∈ lowerBounds (f '' t) :=
+theorem mem_lowerBounds_image_self (Hf : MonotoneOn f t) :
+    a ∈ lowerBounds t → a ∈ t → f a ∈ lowerBounds (f '' t) :=
   Hf.mem_lowerBounds_image subset_rfl
 
 theorem image_upperBounds_subset_upperBounds_image (Hf : MonotoneOn f t) (Hst : s ⊆ t) :
