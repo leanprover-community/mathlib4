@@ -1,15 +1,13 @@
 /-
 Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
+Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 
-import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.MvPowerSeries.Basic
+import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.UniformGroup
-import Mathlib.Topology.UniformSpace.Pi
 
 /-! # Product topology on mv power series
 
@@ -55,7 +53,7 @@ theorem MvPowerSeries.apply_eq_coeff {σ R : Type _} [Semiring R] (f : MvPowerSe
 
 namespace MvPowerSeries
 
-open Function
+open Filter Function Set
 
 variable {σ R : Type*}
 
@@ -162,7 +160,7 @@ theorem instCompleteSpace [CompleteSpace R] :
     intro f hf
     suffices ∀ d, ∃ x, (f.map fun a => a d) ≤ nhds x by
       use fun d => (this d).choose
-      rw [nhds_pi, Filter.le_pi]
+      rw [nhds_pi, le_pi]
       exact fun d => (this d).choose_spec
     intro d
     use lim (f.map fun a => a d)
@@ -189,7 +187,7 @@ theorem instTopologicalRing
 
 end WithPiUniformity
 
-variable [DecidableEq σ] [TopologicalSpace R]
+variable [TopologicalSpace R]
 
 open WithPiTopology
 
@@ -206,33 +204,30 @@ theorem continuous_C [Ring R] [TopologicalRing R] :
     rw [coeff_C, if_neg hd]
 
 theorem variables_tendsto_zero [Semiring R] :
-    Filter.Tendsto (fun s : σ => (X s : MvPowerSeries σ R)) Filter.cofinite (nhds 0) := by
+    Tendsto (fun s : σ => (X s : MvPowerSeries σ R)) cofinite (nhds 0) := by
   classical
   rw [tendsto_pi_nhds]
   intro d s hs
-  rw [Filter.mem_map, Filter.mem_cofinite, ← Set.preimage_compl]
+  rw [mem_map, mem_cofinite, ← preimage_compl]
   by_cases h : ∃ i, d = Finsupp.single i 1
   · obtain ⟨i, rfl⟩ := h
-    apply Set.Finite.subset (Set.finite_singleton i)
+    apply Finite.subset (finite_singleton i)
     intro x
     simp only [OfNat.ofNat, Zero.zero] at hs
-    rw [Set.mem_preimage, Set.mem_compl_iff, Set.mem_singleton_iff, not_imp_comm]
+    rw [mem_preimage, mem_compl_iff, mem_singleton_iff, not_imp_comm]
     intro hx
     convert mem_of_mem_nhds hs
     rw [apply_eq_coeff (X x) (Finsupp.single i 1), coeff_X, if_neg]
     rfl
     · simp only [Finsupp.single_eq_single_iff, Ne.symm hx, and_true, one_ne_zero, and_self,
       or_self, not_false_eq_true]
-  · convert Set.finite_empty
-    rw [Set.eq_empty_iff_forall_not_mem]
+  · convert finite_empty
+    rw [eq_empty_iff_forall_not_mem]
     intro x
-    rw [Set.mem_preimage, Set.not_mem_compl_iff]
+    rw [mem_preimage, not_mem_compl_iff]
     convert mem_of_mem_nhds hs using 1
-    rw [apply_eq_coeff (X x) d, coeff_X, if_neg]
+    rw [apply_eq_coeff (X x) d, coeff_X, if_neg  (fun h' ↦ h ⟨x, h'⟩)]
     rfl
-    · intro h'
-      apply h
-      exact ⟨x, h'⟩
 
 theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommSemiring R]
     {f} (hf : IsNilpotent (constantCoeff σ R f)) :
@@ -243,50 +238,46 @@ theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommSemiring R]
   exact fun d =>  tendsto_atTop_of_eventually_const fun n hn =>
     coeff_eq_zero_of_constantCoeff_nilpotent hm hn
 
-theorem tendsto_pow_zero_of_constantCoeff_zero [CommSemiring R]
-    {f} (hf : constantCoeff σ R f = 0) :
-    Filter.Tendsto (fun n : ℕ => f ^ n) Filter.atTop (nhds 0) := by
-  apply tendsto_pow_zero_of_constantCoeff_nilpotent
-  rw [hf]
-  exact IsNilpotent.zero
+theorem tendsto_pow_zero_of_constantCoeff_zero {f} (hf : constantCoeff σ α f = 0) :
+    Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) :=
+  tendsto_pow_zero_of_constantCoeff_nilpotent (hf ▸ IsNilpotent.zero)
 
 /-- The powers of a `MvPowerSeries` converge to 0 iff its constant coefficient is nilpotent.
 N. Bourbaki, *Algebra II*, [bourbaki1981] (chap. 4, §4, n°2, corollaire de la prop. 3) -/
 theorem tendsto_pow_of_constantCoeff_nilpotent_iff [CommRing R] [DiscreteTopology R] (f) :
-    Filter.Tendsto (fun n : ℕ => f ^ n) Filter.atTop (nhds 0) ↔
+    Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔
       IsNilpotent (constantCoeff σ R f) := by
   refine ⟨?_, tendsto_pow_zero_of_constantCoeff_nilpotent ⟩
   intro h
-  suffices Filter.Tendsto (fun n : ℕ => constantCoeff σ R (f ^ n)) Filter.atTop (nhds 0) by
-    simp only [Filter.tendsto_def] at this
+  suffices Tendsto (fun n : ℕ => constantCoeff σ R (f ^ n)) Filter.atTop (nhds 0) by
+    simp only [tendsto_def] at this
     specialize this {0} _
     suffices  ∀ x : R, {x} ∈ nhds x by exact this 0
     rw [← discreteTopology_iff_singleton_mem_nhds]; infer_instance
-    simp only [map_pow, Filter.mem_atTop_sets, ge_iff_le, Set.mem_preimage,
-      Set.mem_singleton_iff] at this
+    simp only [map_pow, mem_atTop_sets, ge_iff_le, mem_preimage,
+      mem_singleton_iff] at this
     obtain ⟨m, hm⟩ := this
-    use m
-    apply hm m (le_refl m)
-  simp only [← @comp_apply _ R ℕ, ← Filter.tendsto_map'_iff]
-  simp only [Filter.Tendsto, Filter.map_le_iff_le_comap] at h ⊢
-  refine le_trans h (Filter.comap_mono ?_)
-  rw [← Filter.map_le_iff_le_comap]
-  exact Continuous.continuousAt (continuous_constantCoeff R)
+    use m, hm m (le_refl m)
+  simp only [← @comp_apply _ R ℕ, ← tendsto_map'_iff]
+  simp only [Tendsto, map_le_iff_le_comap] at h ⊢
+  refine le_trans h (comap_mono ?_)
+  rw [← map_le_iff_le_comap]
+  exact (continuous_constantCoeff R).continuousAt
 
 variable [Semiring R]
 
 /-- A power series is the sum (in the sense of summable families) of its monomials -/
 theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
-    HasSum (fun d : σ →₀ ℕ => monomial R d (coeff R d f)) f := by
+    HasSum (fun d ↦ monomial R d (coeff R d f)) f := by
   rw [Pi.hasSum]
   intro d
   convert hasSum_single d ?_ using 1
-  exact (coeff_monomial_same d _).symm
-  exact fun d' h ↦ coeff_monomial_ne (Ne.symm h) _
+  · exact (coeff_monomial_same d _).symm
+  · exact fun d' h ↦ coeff_monomial_ne (Ne.symm h) _
 
 /-- If the coefficient space is T2, then the power series is `tsum` of its monomials -/
 theorem as_tsum [T2Space R] (f : MvPowerSeries σ R) :
-    f = tsum fun d : σ →₀ ℕ => monomial R d (coeff R d f) :=
+    f = tsum fun d ↦ monomial R d (coeff R d f) :=
   (HasSum.tsum_eq (hasSum_of_monomials_self _)).symm
 
 end MvPowerSeries

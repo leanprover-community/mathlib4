@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 
 import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.RingTheory.MvPowerSeries.Topology
+import Mathlib.RingTheory.MvPowerSeries.PiTopology
 import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.TopologicallyNilpotent
