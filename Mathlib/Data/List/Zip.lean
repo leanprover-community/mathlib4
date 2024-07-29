@@ -205,9 +205,13 @@ theorem getElem?_zipWith' (f : α → β → γ) (l₁ : List α) (l₂ : List �
     · simp
     · cases i <;> simp_all
 
+@[deprecated (since := "2024-07-29")] alias getElem?_zip_with := getElem?_zipWith'
+
 theorem get?_zipWith' (f : α → β → γ) (l₁ : List α) (l₂ : List β) (i : ℕ) :
     (zipWith f l₁ l₂).get? i = ((l₁.get? i).map f).bind fun g => (l₂.get? i).map g := by
   simp [getElem?_zipWith']
+
+@[deprecated (since := "2024-07-29")] alias get?_zip_with := get?_zipWith'
 
 theorem getElem?_zipWith_eq_some (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
     (zipWith f l₁ l₂)[i]? = some z ↔
@@ -216,10 +220,14 @@ theorem getElem?_zipWith_eq_some (f : α → β → γ) (l₁ : List α) (l₂ :
   · simp
   · cases l₂ <;> cases i <;> simp_all
 
+@[deprecated (since := "2024-07-29")] alias getElem?_zip_with_eq_some := getElem?_zipWith_eq_some
+
 theorem get?_zipWith_eq_some (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
     (zipWith f l₁ l₂).get? i = some z ↔
       ∃ x y, l₁.get? i = some x ∧ l₂.get? i = some y ∧ f x y = z := by
   simp [getElem?_zipWith_eq_some]
+
+@[deprecated (since := "2024-07-29")] alias get?_zip_with_eq_some := get?_zipWith_eq_some
 
 theorem getElem?_zip_eq_some (l₁ : List α) (l₂ : List β) (z : α × β) (i : ℕ) :
     (zip l₁ l₂)[i]? = some z ↔ l₁[i]? = some z.1 ∧ l₂[i]? = some z.2 := by
