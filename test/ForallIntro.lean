@@ -89,12 +89,12 @@ warning: declaration uses 'sorry'
 warning: replace
   have (_ : Nat) : ∀ {x y : Nat}, ∀ z w, x + y = z + w :=
     by
-    intros
+    intros x
     refine ?_
     sorry
 with
-  have (_ : Nat) {x y : Nat} z w : x + y = z + w := by
-    intros
+  have (_ : Nat) {x : Nat} : ∀ {y : Nat}, ∀ z w, x + y = z + w :=
+    by
     refine ?_
     sorry
 note: this linter can be disabled with `set_option linter.forallIntro false`
@@ -103,7 +103,7 @@ note: this linter can be disabled with `set_option linter.forallIntro false`
 set_option linter.forallIntro true in
 example : True := by
   have (_ : Nat) : ∀ {x y : Nat}, ∀ z w, x + y = z + w := by
-    intros
+    intros x
     refine ?_
     sorry
   trivial

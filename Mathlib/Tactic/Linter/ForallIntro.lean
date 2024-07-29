@@ -80,6 +80,13 @@ def dropFirstIntroVar : Syntax → Option Syntax × Syntax
       | _, _ => (none, first)
   | _ => (none, .missing)
 
+def splitBinders {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] :
+    Syntax → m (Array Syntax)
+  | `(bracketedBinder| ($as* : $b)) => as.mapM fun a => `(bracketedBinder| ($a : $b))
+  | `(bracketedBinder| {$as* : $b}) => as.mapM fun a => `(bracketedBinder| {$a : $b})
+  | `(bracketedBinder| ⦃$as* : $b⦄) => as.mapM fun a => `(bracketedBinder| ⦃$a : $b⦄)
+  | _ => return #[]
+
 /-- if the input syntax is not `by intro(s); ...`, then it returns `none`.
 Otherwise, it removes one identifier introduced by `intro(s)` and returns the resulting syntax. -/
 def Term.dropOneIntro {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] :
@@ -130,11 +137,13 @@ Next, it replaces `stx` inside `cmd` with the cleaned up `have` statement and el
 the resulting syntax.
 If the result does not elaborate, then it returns none.
 If the result elaborates successfully, then it returns the pair consisting of
-* the replaced `cmd` and the new `stx`.
+the replaced `cmd` and the new `stx`.
 -/
 def allStxCore (cmd : Syntax) : Syntax → CommandElabM (Option (Syntax × Syntax))
   | stx@`(tactic| have $id:haveId $bi1* : ∀ $bi2*, $body := $t) => do
-    match recombineBinders bi1 bi2 with
+    let spreadBi2 := ← bi2.mapM fun b => do
+      let spb ← splitBinders b; if spb.isEmpty then return #[b] else return spb
+    match recombineBinders bi1 (spreadBi2.flatten.map (⟨·⟩)) with
       | none => return none  -- if we ran out of `∀`, then we are done
       | some (bi1', bi2', forallVar) =>
         match ← Term.dropOneIntro t with
