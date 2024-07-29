@@ -82,7 +82,6 @@ lemma fromSpecStalk_app {x : X} (hxU : x ∈ U) :
           (Spec (X.presheaf.stalk x)).presheaf.map (homOfLE le_top).op := by
   obtain ⟨_, ⟨V : X.Opens, hV, rfl⟩, hxV, hVU⟩ := (isBasis_affine_open X).exists_subset_of_mem_open
     hxU U.2
-  have : V.ι ⁻¹ᵁ U = ⊤ := eq_top_iff.mpr fun x _ ↦ hVU x.2
   rw [← hV.fromSpecStalk_eq_fromSpecStalk hxV, IsAffineOpen.fromSpecStalk, Scheme.comp_app,
     IsAffineOpen.fromSpec_app_of_le hV _ hVU, ←  X.presheaf.germ_res (homOfLE hVU) ⟨x, hxV⟩]
   simp only [Category.assoc]

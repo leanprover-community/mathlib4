@@ -278,6 +278,32 @@ lemma stalkwiseIsLocalAtTarget_of_respectsIso (hP : RingHom.RespectsIso P) :
     exact ((RingHom.toMorphismProperty P).arrow_mk_iso_iff <|
       morphismRestrictStalkMap f (U i) ⟨x, hi⟩).mp <| hf i ⟨x, hi⟩
 
+/-- If `P` respects isos, then `stalkwise P` is local at the source. -/
+lemma stalkwise_isLocalAtSource_of_respectsIso (hP : RingHom.RespectsIso P) :
+    IsLocalAtSource (stalkwise P) := by
+  letI := stalkwise_respectsIso hP
+  apply IsLocalAtSource.mk'
+  · intro X Y f U hf x
+    erw [PresheafedSpace.stalkMap.comp, hP.cancel_right_isIso]
+    exact hf _
+  · intro X Y f ι U hU hf x
+    obtain ⟨i, hi⟩ := Opens.mem_iSup.mp (show x ∈ iSup U by rw [hU]; trivial)
+    have := hf i ⟨x, hi⟩
+    erw [PresheafedSpace.stalkMap.comp, hP.cancel_right_isIso] at this
+    exact this
+
+lemma stalkwise_iff_of_isAffine (hP : RingHom.RespectsIso P) {R S : CommRingCat.{u}} (φ : R ⟶ S) :
+    stalkwise P (Spec.map φ) ↔
+      ∀ (I : Ideal S) (_ : I.IsPrime), P (Localization.localRingHom _ I φ rfl) := by
+  let e : PrimeSpectrum S ≃ { I : Ideal S // I.IsPrime } :=
+    ⟨fun e ↦ ⟨_, e.2⟩, fun e ↦ ⟨_, e.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
+  delta stalkwise
+  refine e.forall_congr_left.trans (Subtype.forall.trans (forall₂_congr fun I hI ↦ ?_))
+  dsimp only
+  erw [← localRingHom_comp_stalkIso]
+  rw [hP.cancel_left_isIso, hP.cancel_right_isIso]
+  rfl
+
 end Stalkwise
 
 namespace AffineTargetMorphismProperty
