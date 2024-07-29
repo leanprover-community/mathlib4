@@ -5,6 +5,7 @@ import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.ValuativeCriterion.ValuationRing
 import Mathlib.ValuativeCriterion.ResidueField
 import Mathlib.ValuativeCriterion.Lemmas
+import Mathlib.ValuativeCriterion.UniversallyClosed
 set_option maxHeartbeats 0
 
 open CategoryTheory CategoryTheory.Limits
@@ -377,11 +378,27 @@ lemma eq :
 
 /-- by `ValuativeCriterion.Existence.eq` and `universallyClosed_iff_specializingMap`. -/
 lemma _root_.AlgebraicGeometry.universallyClosed_of_valuativeCriterion [QuasiCompact f]
-    (hf : ValuativeCriterion.Existence f) : UniversallyClosed f := sorry
+    (hf : ValuativeCriterion.Existence f) : UniversallyClosed f := by
+  rw [eq] at hf
+  apply (AlgebraicGeometry.universallyClosed_iff_specializingMap f).mpr
+  exact hf
 
 /-- by `ValuativeCriterion.Existence.eq` and `universallyClosed_eq_universallySpecializing`. -/
 lemma _root_.AlgebraicGeometry.universallyClosed_eq_valuativeCriterion :
-    @UniversallyClosed = ValuativeCriterion.Existence ⊓ @QuasiCompact := sorry
+    @UniversallyClosed = ValuativeCriterion.Existence ⊓ @QuasiCompact := by
+  ext X Y f
+  constructor
+  · intro hf
+    have h₁ : ValuativeCriterion.Existence f := by
+      apply of_specializingMap
+      rwa [← AlgebraicGeometry.universallyClosed_iff_specializingMap]
+    have h₂ : QuasiCompact f := by infer_instance
+    exact ⟨h₁, h₂⟩
+  · intro ⟨h₁, h₂⟩
+    rw [AlgebraicGeometry.universallyClosed_eq_universallySpecializing]
+    have : (topologically @SpecializingMap).universally f := by
+      rwa [eq] at h₁
+    exact ⟨this, h₂⟩
 
 end Existence
 

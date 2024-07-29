@@ -20,7 +20,7 @@ lemma PrimeSpectrum.isClosed_range_of_stableUnderSpecialization
 
 namespace AlgebraicGeometry
 
-open MorphismProperty (topologically)
+open AlgebraicGeometry (topologically)
 
 universe u
 
