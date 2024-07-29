@@ -703,37 +703,35 @@ variable [Balanced C]
 
 namespace Exact
 
-variable (hS : S.Exact)
-
-lemma isIso_f' (h : S.LeftHomologyData) [Mono S.f] :
+lemma isIso_f' (hS : S.Exact) (h : S.LeftHomologyData) [Mono S.f] :
     IsIso h.f' := by
   have := hS.epi_f' h
   have := mono_of_mono_fac h.f'_i
   exact isIso_of_mono_of_epi h.f'
 
-lemma isIso_toCycles [Mono S.f] [S.HasLeftHomology] :
+lemma isIso_toCycles (hS : S.Exact) [Mono S.f] [S.HasLeftHomology]:
     IsIso S.toCycles :=
   hS.isIso_f' _
 
-lemma isIso_g' (h : S.RightHomologyData) [Epi S.g] :
+lemma isIso_g' (hS : S.Exact) (h : S.RightHomologyData) [Epi S.g] :
     IsIso h.g' := by
   have := hS.mono_g' h
   have := epi_of_epi_fac h.p_g'
   exact isIso_of_mono_of_epi h.g'
 
-lemma isIso_fromOpcycles [Epi S.g] [S.HasRightHomology] :
+lemma isIso_fromOpcycles (hS : S.Exact) [Epi S.g] [S.HasRightHomology] :
     IsIso S.fromOpcycles :=
   hS.isIso_g' _
 
 /-- In a balanced category, if a short complex `S` is exact and `S.f` is a mono, then
 `S.X₁` is the kernel of `S.g`. -/
-noncomputable def fIsKernel [Mono S.f] : IsLimit (KernelFork.ofι S.f S.zero) := by
+noncomputable def fIsKernel (hS : S.Exact) [Mono S.f] : IsLimit (KernelFork.ofι S.f S.zero) := by
   have := hS.hasHomology
   have := hS.isIso_toCycles
   exact IsLimit.ofIsoLimit S.cyclesIsKernel
     (Fork.ext (asIso S.toCycles).symm (by simp))
 
-lemma map_of_mono_of_preservesKernel (F : C ⥤ D)
+lemma map_of_mono_of_preservesKernel (hS : S.Exact) (F : C ⥤ D)
     [F.PreservesZeroMorphisms] [(S.map F).HasHomology] (_ : Mono S.f)
     (_ : PreservesLimit (parallelPair S.g 0) F) :
     (S.map F).Exact :=
@@ -741,13 +739,14 @@ lemma map_of_mono_of_preservesKernel (F : C ⥤ D)
 
 /-- In a balanced category, if a short complex `S` is exact and `S.g` is an epi, then
 `S.X₃` is the cokernel of `S.g`. -/
-noncomputable def gIsCokernel [Epi S.g] : IsColimit (CokernelCofork.ofπ S.g S.zero) := by
+noncomputable def gIsCokernel (hS : S.Exact) [Epi S.g] :
+    IsColimit (CokernelCofork.ofπ S.g S.zero) := by
   have := hS.hasHomology
   have := hS.isIso_fromOpcycles
   exact IsColimit.ofIsoColimit S.opcyclesIsCokernel
     (Cofork.ext (asIso S.fromOpcycles) (by simp))
 
-lemma map_of_epi_of_preservesCokernel (F : C ⥤ D)
+lemma map_of_epi_of_preservesCokernel (hS : S.Exact) (F : C ⥤ D)
     [F.PreservesZeroMorphisms] [(S.map F).HasHomology] (_ : Epi S.g)
     (_ : PreservesColimit (parallelPair S.f 0) F) :
     (S.map F).Exact :=
@@ -755,29 +754,29 @@ lemma map_of_epi_of_preservesCokernel (F : C ⥤ D)
 
 /-- If a short complex `S` in a balanced category is exact and such that `S.f` is a mono,
 then a morphism `k : A ⟶ S.X₂` such that `k ≫ S.g = 0` lifts to a morphism `A ⟶ S.X₁`. -/
-noncomputable def lift {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) [Mono S.f] :
+noncomputable def lift (hS : S.Exact) {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) [Mono S.f] :
     A ⟶ S.X₁ := hS.fIsKernel.lift (KernelFork.ofι k hk)
 
 @[reassoc (attr := simp)]
-lemma lift_f {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) [Mono S.f] :
+lemma lift_f (hS : S.Exact) {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) [Mono S.f] :
     hS.lift k hk ≫ S.f = k :=
   Fork.IsLimit.lift_ι _
 
-lemma lift' {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) [Mono S.f] :
+lemma lift' (hS : S.Exact) {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) [Mono S.f] :
     ∃ (l : A ⟶ S.X₁), l ≫ S.f = k :=
   ⟨hS.lift k hk, by simp⟩
 
 /-- If a short complex `S` in a balanced category is exact and such that `S.g` is an epi,
 then a morphism `k : S.X₂ ⟶ A` such that `S.f ≫ k = 0` descends to a morphism `S.X₃ ⟶ A`. -/
-noncomputable def desc {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g] :
+noncomputable def desc (hS : S.Exact) {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g] :
     S.X₃ ⟶ A := hS.gIsCokernel.desc (CokernelCofork.ofπ k hk)
 
 @[reassoc (attr := simp)]
-lemma g_desc {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g] :
+lemma g_desc (hS : S.Exact) {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g] :
     S.g ≫ hS.desc k hk = k :=
   Cofork.IsColimit.π_desc (hS.gIsCokernel)
 
-lemma desc' {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g] :
+lemma desc' (hS : S.Exact) {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g] :
     ∃ (l : S.X₃ ⟶ A), S.g ≫ l = k :=
   ⟨hS.desc k hk, by simp⟩
 
