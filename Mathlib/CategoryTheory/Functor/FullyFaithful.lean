@@ -142,8 +142,6 @@ def id : (𝟭 C).FullyFaithful where
 section
 variable (hF : F.FullyFaithful)
 
-include hF
-
 /-- The equivalence `(X ⟶ Y) ≃ (F.obj X ⟶ F.obj Y)` given by `h : F.FullyFaithful`. -/
 @[simps]
 def homEquiv {X Y : C} : (X ⟶ Y) ≃ (F.obj X ⟶ F.obj Y) where
