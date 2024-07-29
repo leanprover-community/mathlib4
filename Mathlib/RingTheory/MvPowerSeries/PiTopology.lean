@@ -11,10 +11,10 @@ import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.UniformSpace.Pi
 
-/-! # Topology on power series
+/-! # Product topology on mv power series
 
-Let `R` be with Semiring R` and `TopologicalSpace R`
-In this file we the topology on `MvPowerSeries σ R`
+Let `R` be with `Semiring R` and `TopologicalSpace R`
+In this file we define the topology on `MvPowerSeries σ R`
 that corresponds to the simple convergence on its coefficients.
 It is the coarsest topology for which all coefficients maps are continuous.
 
@@ -40,9 +40,9 @@ TODO: add the similar result for the series of homogeneous components
 
 - If `R` is a topological (semi)ring, then so is `MvPowerSeries σ R`
 
-- If the topology of `R` is T2, then so is that of `MvPowerSeries σ R``
+- If the topology of `R` is T2, then so is that of `MvPowerSeries σ R`
 
-- If `R` is a `uniformAddGroup`, then so is `MvPowerSeries σ R``
+- If `R` is a `UniformAddGroup`, then so is `MvPowerSeries σ R``
 
 - If `R` is complete, then so is `MvPowerSeries σ R`
 
@@ -52,8 +52,6 @@ TODO: add the similar result for the series of homogeneous components
 theorem MvPowerSeries.apply_eq_coeff {σ R : Type _} [Semiring R] (f : MvPowerSeries σ R)
     (d : σ →₀ ℕ) : f d = MvPowerSeries.coeff R d f :=
   rfl
-
-#find_home! MvPowerSeries.apply_eq_coeff
 
 namespace MvPowerSeries
 
