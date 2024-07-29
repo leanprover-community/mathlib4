@@ -79,7 +79,10 @@ theorem map_preimage (F : C ⥤ D) [Full F] {X Y : C} (f : F.obj X ⟶ F.obj Y) 
     F.map (preimage F f) = f :=
   (F.map_surjective f).choose_spec
 
-variable {F : C ⥤ D} [Full F] [F.Faithful] {X Y Z : C}
+variable {F : C ⥤ D} {X Y Z : C}
+
+section
+variable [Full F] [F.Faithful]
 
 @[simp]
 theorem preimage_id : F.preimage (𝟙 (F.obj X)) = 𝟙 X :=
@@ -110,6 +113,9 @@ theorem preimageIso_mapIso (f : X ≅ Y) : F.preimageIso (F.mapIso f) = f := by
   ext
   simp
 
+end
+
+variable (F) in
 /-- Structure containing the data of inverse map `(F.obj X ⟶ F.obj Y) ⟶ (X ⟶ Y)` of `F.map`
 in order to express that `F` is a fully faithful functor. -/
 structure FullyFaithful where
@@ -122,13 +128,13 @@ namespace FullyFaithful
 
 attribute [simp] map_preimage preimage_map
 
+variable (F) in
 /-- A `FullyFaithful` structure can be obtained from the assumption the `F` is both
 full and faithful. -/
 noncomputable def ofFullyFaithful [F.Full] [F.Faithful] :
     F.FullyFaithful where
   preimage := F.preimage
 
-variable {F}
 variable (hF : F.FullyFaithful)
 
 /-- The equivalence `(X ⟶ Y) ≃ (F.obj X ⟶ F.obj Y)` given by `h : F.FullyFaithful`. -/
