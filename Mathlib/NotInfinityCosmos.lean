@@ -438,6 +438,17 @@ def Δ (k : ℕ) := FullSubcategory fun n : SimplexCategory => n.len ≤ k
 
 instance (k : ℕ) : Category (Δ k) := inferInstanceAs (Category (FullSubcategory ..))
 
+local notation (priority := high) "[" n "]" => SimplexCategory.mk n
+
+def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : [1] ⟶ [n] :=
+  SimplexCategory.mkHom {
+    toFun := fun | 0 => i | 1 => j
+    monotone' := fun
+      | 0, 0, _ | 1, 1, _ => le_rfl
+      | 0, 1, _ => h
+  }
+
+
 end SimplexCategory
 
 open SimplexCategory
@@ -1085,26 +1096,45 @@ def nerve₂Adj.counit : nerveFunctor₂ ⋙ TruncSSet.hoFunctor₂ ⟶ (𝟭 Ca
 
 
 def toNerve₂.mk {X : TruncSSet 2} {C : Cat}
-    (f : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
+    (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
     (hyp : (φ : X _[2]₂) →
-      f.map (φ02₂ φ) =
-        CategoryStruct.comp (obj := C) (f.map (φ01₂ φ)) (f.map (φ12₂ φ)))
+      F.map (φ02₂ φ) =
+        CategoryStruct.comp (obj := C) (F.map (φ01₂ φ)) (F.map (φ12₂ φ)))
     : X ⟶ nerveFunctor₂.obj C where
       app := by
-        intro ⟨ ⟨ n, hn⟩⟩
+        intro ⟨⟨n, hn⟩⟩
         induction' n using SimplexCategory.rec with n
         match n with
-        | 0 => sorry
-        | 1 => sorry
-        | 2 => sorry
-      naturality := sorry
+        | 0 => exact fun x => .mk₀ (F.obj x)
+        | 1 => exact fun f => .mk₁ (F.map ⟨f, rfl, rfl⟩)
+        | 2 => exact fun φ => .mk₂ (F.map (φ01₂ φ)) (F.map (φ12₂ φ))
+      naturality := by
+        rintro ⟨⟨m, hm⟩⟩ ⟨⟨n, hn⟩⟩ ⟨f⟩
+        induction' m using SimplexCategory.rec with m
+        induction' n using SimplexCategory.rec with n
+        ext x
+        dsimp at f
+        simp [SimplexCategory.rec]
 
-/-- ER: We might prefer this version where we are missing the analogue of the hypothesis hyp conjugated by the isomorphism nerve₂Adj.NatIso.app C -/
+        (match m with | 0 | 1 | 2 => ?_) <;> (match n with | 0 | 1 | 2 => ?_)
+        · sorry
+        · sorry
+        · sorry
+        · sorry
+        · sorry
+        · sorry
+        · sorry
+        · sorry
+        · sorry
+
+/-- ER: We might prefer this version where we are missing the analogue of the hypothesis hyp
+conjugated by the isomorphism nerve₂Adj.NatIso.app C -/
 def toNerve₂.mk' {X : TruncSSet.{0} 2} {C : Cat}
     (f : SSet.oneTruncation₂.obj X ⟶ SSet.oneTruncation₂.obj (nerveFunctor₂.obj C))
     (hyp : (φ : X _[2]₂) →
       (f ≫ (nerve₂Adj.NatIso.app C).hom).map (φ02₂ φ)
-      = CategoryStruct.comp (obj := C) ((f ≫ (nerve₂Adj.NatIso.app C).hom).map (φ01₂ φ)) ((f ≫ (nerve₂Adj.NatIso.app C).hom).map (φ12₂ φ)))
+      = CategoryStruct.comp (obj := C) ((f ≫ (nerve₂Adj.NatIso.app C).hom).map (φ01₂ φ))
+        ((f ≫ (nerve₂Adj.NatIso.app C).hom).map (φ12₂ φ)))
     : X ⟶ nerveFunctor₂.obj C :=
   toNerve₂.mk (f ≫ (nerve₂Adj.NatIso.app C).hom) hyp
 
@@ -1112,12 +1142,27 @@ def toNerve₂.mk' {X : TruncSSet.{0} 2} {C : Cat}
          For n = 2 this is covered by the new lemma above.-/
 theorem toNerve₂.ext {X : TruncSSet 2} {C : Cat} (f g : X ⟶ nerve₂ C)
     (hyp : SSet.oneTruncation₂.map f = SSet.oneTruncation₂.map g) : f = g := by
-  ext ⟨ ⟨ n , hn⟩⟩
+  have eq₀ x : f.app (op [0]₂) x = g.app (op [0]₂) x := congr(($hyp).obj x)
+  have eq₁ x : f.app (op [1]₂) x = g.app (op [1]₂) x := congr((($hyp).map ⟨x, rfl, rfl⟩).1)
+  ext ⟨⟨n, hn⟩⟩ x
   induction' n using SimplexCategory.rec with n
   match n with
-  | 0 => sorry
-  | 1 => sorry
-  | 2 => sorry
+  | 0 => apply eq₀
+  | 1 => apply eq₁
+  | 2 =>
+    apply Functor.hext (fun i : Fin 3 => ?_) (fun (i j : Fin 3) k => ?_)
+    · let φi : [0]₂ ⟶ [2]₂ := SimplexCategory.const _ _ i
+      refine congr(($(congr_fun (f.naturality (op φi)) x)).obj 0).symm.trans ?_
+      refine .trans ?_ congr(($(congr_fun (g.naturality (op φi)) x)).obj 0)
+      exact congr($(eq₀ _).obj 0)
+    · let φk : [1]₂ ⟶ [2]₂ := mkOfLe _ _ k.le
+      let hom := homOfLE (show (0:Fin 2) ≤ 1 by decide)
+      have := congr_fun (f.naturality (op φk)) x
+      have h1 := congr_arg_heq (fun x => x.map hom) this
+      have := congr_fun (g.naturality (op φk)) x
+      have h2 := congr_arg_heq (fun x => x.map hom) this
+      refine h1.symm.trans <| .trans ?_ h2
+      exact congr_arg_heq (fun x => x.map hom) (eq₁ _)
 
 /-- ER: Universe error is why this is for u u.-/
 -- @[simps! toPrefunctor obj map]
@@ -1316,38 +1361,3 @@ instance : Reflective nerveFunctor where
 
 instance : HasColimits Cat :=
   hasColimits_of_reflective nerveFunctor
-
-section preservesProducts
-
-open Limits
-
-/-- ER: This should be an instance of a theorem in mathlib about evaluation in functor categories preserving limits that exist. Statement has a universe level error.-/
--- def simplexBinaryProducts (X Y : SSet) (n : ℕ) : (X × Y) _[n] ≅ X _[n] × Y _[n] := by sorry
-
-def hoFunctorPreservesExplicitBinaryProduct {X Y : SSet.{u}}
-    (s : BinaryFan X Y) (hyp : IsLimit s) :
-    IsLimit (BinaryFan.mk (SSet.hoFunctor.map (BinaryFan.fst s)) (SSet.hoFunctor.map (BinaryFan.snd s))) := by
-  have := limitObjIsoLimitCompEvaluation (pair X Y) (op [0])
-  simp at this
-  refine BinaryFan.isLimitMk ?lift ?fac_left ?fac_right ?uniq
-  · sorry
-  · sorry
-  · sorry
-  · sorry
-
-
-
-def hoFunctorPreservesBinaryProduct {X Y : SSet.{u}} : PreservesLimit (pair X Y) SSet.hoFunctor where
-  preserves := by
-    intro c clim
-    sorry
-
-def hoFunctorPreservesBinaryProducts :
-    PreservesLimitsOfShape (Discrete WalkingPair) SSet.hoFunctor where
-      preservesLimit := by
-        rintro K
-        have := diagramIsoPair K
-        sorry
-
-
-end preservesProducts
