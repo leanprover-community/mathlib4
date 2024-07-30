@@ -158,7 +158,7 @@ initialize registerBuiltinAttribute {
     withReducible <| forallTelescopeReducing declTy fun xs targetTy => do
     let fail (m : MessageData) := throwError "\
       @[gcongr] attribute only applies to lemmas proving f x₁ ... xₙ ∼ f x₁' ... xₙ'.\n{m} {declTy}"
-    -- verify that conclusion of the lemma is of the form `rel (head x₁ ... xₙ) (head y₁ ... yₙ)`
+    -- verify that conclusion of the lemma is of the form `f x₁ ... xₙ ∼ f x₁' ... xₙ'`
     let .app (.app rel lhs) rhs ← whnf targetTy |
       fail "No relation with at least two arguments found"
     let some relName := rel.getAppFn.constName? | fail "No relation found"
