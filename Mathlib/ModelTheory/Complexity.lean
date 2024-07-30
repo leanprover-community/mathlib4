@@ -22,6 +22,7 @@ when it consists of a series of quantifiers applied to a quantifier-free formula
 
 
 ## Main Results
+
 * `FirstOrder.Language.BoundedFormula.realize_toPrenex` shows that the prenex normal form of a
 formula has the same realization as the original formula.
 
