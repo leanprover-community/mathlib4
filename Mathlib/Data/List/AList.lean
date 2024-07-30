@@ -64,7 +64,7 @@ theorem ext_iff {s t : AList β} : s = t ↔ s.entries = t.entries :=
   ⟨congr_arg _, ext⟩
 
 instance [DecidableEq α] [∀ a, DecidableEq (β a)] : DecidableEq (AList β) := fun xs ys => by
-  rw [ext_iff]; infer_instance
+  rw [AList.ext_iff]; infer_instance
 
 /-! ### keys -/
 
@@ -158,6 +158,8 @@ theorem perm_lookup {a : α} {s₁ s₂ : AList β} (p : s₁.entries ~ s₂.ent
 instance (a : α) (s : AList β) : Decidable (a ∈ s) :=
   decidable_of_iff _ lookup_isSome
 
+end
+
 theorem keys_subset_keys_of_entries_subset_entries
     {s₁ s₂ : AList β} (h : s₁.entries ⊆ s₂.entries) : s₁.keys ⊆ s₂.keys := by
   intro k hk
@@ -169,6 +171,8 @@ theorem keys_subset_keys_of_entries_subset_entries
 
 /-! ### replace -/
 
+section
+variable [DecidableEq α]
 
 /-- Replace a key with a given value in an association list.
   If the key is not present it does nothing. -/
