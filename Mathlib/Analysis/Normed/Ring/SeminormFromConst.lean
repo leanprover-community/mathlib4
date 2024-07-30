@@ -156,7 +156,7 @@ theorem seminormFromConst_def (x : R) :
   rfl
 
 /-- `seminormFromConst' hf1 hc hpm 1 ≤ 1`. -/
-theorem seminormFromConst_is_norm_le_one_class : seminormFromConst' hf1 hc hpm 1 ≤ 1 :=
+theorem seminormFromConst_one_le : seminormFromConst' hf1 hc hpm 1 ≤ 1 :=
   le_of_eq (seminormFromConst_one hf1 hc hpm)
 
 /-- The function `seminormFromConst' hf1 hc hpm` is nonarchimedean. -/
