@@ -862,9 +862,10 @@ theorem hφ_ker_eq_θ_range (z : Perm α) :
           exact (support_zpow_le c m) hx'
         · exact hx
 
-lemma θ_range_eq : MonoidHom.range (θ g) =
-    Subgroup.map (ConjAct.toConjAct.symm.toMonoidHom.comp
-      (Subgroup.subtype (MulAction.stabilizer (ConjAct (Perm α)) g))) (MonoidHom.ker (toPerm g)) := by
+lemma θ_range_eq : MonoidHom.range (θ g) = Subgroup.map
+    (ConjAct.toConjAct.symm.toMonoidHom.comp
+      (Subgroup.subtype (MulAction.stabilizer (ConjAct (Perm α)) g)))
+    (MonoidHom.ker (toPerm g)) := by
   ext z
   rw [← hφ_ker_eq_θ_range]
   rfl
