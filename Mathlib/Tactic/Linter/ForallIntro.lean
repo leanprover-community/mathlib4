@@ -125,6 +125,7 @@ def extractVars (stx : Syntax) (f : Array Syntax → Array Syntax) : Syntax :=
     stx.modifyArg 1 (·.modifyArgs f)
   else .missing
 
+/-
 run_cmd
   if let [a, b, c, d, N] := [`a, `b, `c, `d, `Nat].map mkIdent then
     let stx ← `(bracketedBinder| {$a $b $c $d : $N})
@@ -132,6 +133,7 @@ run_cmd
     let A := extractVars stx (·.extract 0 n)
     let B := extractVars stx (·.extract n ((getNumVars? stx).getD 0))
     logInfo m!"{← `(command| variable $(⟨A⟩) $(⟨B⟩))}"
+-/
 
 def splitVars (stx : Syntax) (n : Nat) : Array Syntax :=
   let A := extractVars stx (·.extract 0 n)
@@ -146,6 +148,7 @@ def splVars (stx : Syntax) (n : Nat) : TSyntaxArray `Lean.Parser.Term.bracketedB
   (splitVars stx n).map (⟨·⟩)
 -- TSyntaxArray `Lean.Parser.Term.bracketedBinder
 
+/-
 run_cmd
   if let [a, b, c, d, N] := [`a, `b, `c, `d, `Nat].map mkIdent then
     let stx ← `(bracketedBinder| {$a $b $c $d : $N})
@@ -158,13 +161,14 @@ run_cmd
     let A := extractVars stx (·.extract 0 n)
     let B := extractVars stx (·.extract n ((getNumVars? stx).getD 0))
     logInfo m!"{← `(command| variable $(⟨A⟩) $(⟨B⟩))}"
+-/
 
 partial
 def recombineHave {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m]
     (stx : Syntax) (n : Nat) : m (Syntax × Nat) := do
   match stx with
     | `(tactic| have $id:haveId $bi0* : ∀ $bi1 $bi2*, $body := $t) =>
-      dbg_trace "main '{bi1}'"
+      --dbg_trace "main '{bi1}'"
       let totVars := (getNumVars? bi1).getD 0 + if bi1.raw.isIdent then 1 else 0
       let n' := n - totVars
       if totVars ≤ n then
@@ -180,8 +184,7 @@ def recombineHave {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m]
           return (stx, 0)
     | _ => return (Syntax.missing, 0)
 
-
-#check Parser.Category.binderPred
+/-
 run_cmd
   if let [a, b, c, d, e, True, Nat] := [`a, `b, `c, `d, `e, `True, `Nat].map mkIdent then
     --let stx ← `(bracketedBinder| {$a $b $c $d : $N})
@@ -195,6 +198,7 @@ run_cmd
     let hav ← `(tactic| have $a x y : ∀ {$b $c : G} ($d f : H := 8), ∀ $N, True := sorry)
     logInfo m!"{← recombineHave hav 4}"
     logInfo m!"{hav}"
+-/
 
 /-- if the input syntax is not `by intro(s); ...`, then it returns `none`.
 Otherwise, it removes one identifier introduced by `intro(s)` and returns the resulting syntax. -/
@@ -253,11 +257,12 @@ def splitNBinders : Nat → Syntax → CommandElabM Syntax
     --match recombineBinders bi1 (spreadBi2.flatten.map (⟨·⟩)) with
   | _, _ => return default
 
+/-
 run_cmd
   if let [a, b, c, d, N] := [`a, `b, `c, `d, `Nat].map mkIdent then
     let stx ← `(tactic| have : ∀ {$a $d : $N} {$b} {$c}, $a + $b = $c := sorry)
     logInfo (← splitNBinders 1 stx)
-
+-/
 
 /--
 `allStxCore cmd stx` takes two `Syntax` inputs `cmd` and `stx`.
@@ -335,8 +340,8 @@ def forallIntroLinter : Linter where run := withSetOptionIn fun cmd ↦ do
   for haveStx in haves do
 --  if let some haveStx := cmd.raw.find? (·.isOfKind ``Lean.Parser.Tactic.tacticHave_) then
     --dbg_trace "found have"
-    let (newHave, count) ← allStx cmd haveStx 0
-    dbg_trace "extracted {count} binders"
+    let (newHave, _count) ← allStx cmd haveStx 0
+    --dbg_trace "extracted {count} binders"
     if haveStx != newHave then
       Linter.logLint linter.forallIntro haveStx m!"replace{indentD haveStx}\nwith{indentD newHave}"
     --logInfo newHave
