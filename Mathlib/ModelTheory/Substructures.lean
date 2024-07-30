@@ -14,22 +14,22 @@ substructures appearing in the algebra library.
 
 ## Main Definitions
 * A `FirstOrder.Language.Substructure` is defined so that `L.Substructure M` is the type of all
-substructures of the `L`-structure `M`.
+  substructures of the `L`-structure `M`.
 * `FirstOrder.Language.Substructure.closure` is defined so that if `s : Set M`, `closure L s` is
-the least substructure of `M` containing `s`.
+  the least substructure of `M` containing `s`.
 * `FirstOrder.Language.Substructure.comap` is defined so that `s.comap f` is the preimage of the
-substructure `s` under the homomorphism `f`, as a substructure.
+  substructure `s` under the homomorphism `f`, as a substructure.
 * `FirstOrder.Language.Substructure.map` is defined so that `s.map f` is the image of the
-substructure `s` under the homomorphism `f`, as a substructure.
+  substructure `s` under the homomorphism `f`, as a substructure.
 * `FirstOrder.Language.Hom.range` is defined so that `f.range` is the range of the
-homomorphism `f`, as a substructure.
+  homomorphism `f`, as a substructure.
 * `FirstOrder.Language.Hom.domRestrict` and `FirstOrder.Language.Hom.codRestrict` restrict
-the domain and codomain respectively of first-order homomorphisms to substructures.
+  the domain and codomain respectively of first-order homomorphisms to substructures.
 * `FirstOrder.Language.Embedding.domRestrict` and `FirstOrder.Language.Embedding.codRestrict`
-restrict the domain and codomain respectively of first-order embeddings to substructures.
+  restrict the domain and codomain respectively of first-order embeddings to substructures.
 * `FirstOrder.Language.Substructure.inclusion` is the inclusion embedding between substructures.
 * `FirstOrder.Language.Substructure.SubEquivalence` is defined so that `SubEquivalence L M N` is
-the type of equivalences between substructures of `M` and `N`.
+  the type of equivalences between substructures of `M` and `N`.
 
 ## Main Results
 * `L.Substructure M` forms a `CompleteLattice`.
@@ -56,7 +56,7 @@ open Set
 
 variable {n : ℕ} (f : L.Functions n) (s : Set M)
 
-/-- Indicates that a set in a given structure is a closed under a function symbol. -/
+/--Indicates that a set in a given structure is a closed under a function symbol.-/
 def ClosedUnder : Prop :=
   ∀ x : Fin n → M, (∀ i : Fin n, x i ∈ s) → funMap f x ∈ s
 
@@ -86,7 +86,7 @@ end ClosedUnder
 
 variable (L) (M)
 
-/-- A substructure of a structure `M` is a set closed under application of function symbols. -/
+/--A substructure of a structure `M` is a set closed under application of function symbols.-/
 structure Substructure where
   carrier : Set M
   fun_mem : ∀ {n}, ∀ f : L.Functions n, ClosedUnder f carrier
@@ -100,7 +100,7 @@ attribute [coe] Substructure.carrier
 instance instSetLike : SetLike (L.Substructure M) M :=
   ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr⟩
 
-/-- See Note [custom simps projection] -/
+/--See Note [custom simps projection]-/
 def Simps.coe (S : L.Substructure M) : Set M :=
   S
 
@@ -110,12 +110,12 @@ initialize_simps_projections Substructure (carrier → coe)
 theorem mem_carrier {s : L.Substructure M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
-/-- Two substructures are equal if they have the same elements. -/
+/--Two substructures are equal if they have the same elements.-/
 @[ext]
 theorem ext {S T : L.Substructure M} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
 
-/-- Copy a substructure replacing `carrier` with a set that is equal to it. -/
+/--Copy a substructure replacing `carrier` with a set that is equal to it.-/
 protected def copy (S : L.Substructure M) (s : Set M) (hs : s = S) : L.Substructure M where
   carrier := s
   fun_mem _ f := hs.symm ▸ S.fun_mem _ f
@@ -142,7 +142,7 @@ theorem copy_eq {s : Set M} (hs : s = S) : S.copy s hs = S :=
 theorem constants_mem (c : L.Constants) : (c : M) ∈ S :=
   mem_carrier.2 (S.fun_mem c _ finZeroElim)
 
-/-- The substructure `M` of the structure `M`. -/
+/--The substructure `M` of the structure `M`.-/
 instance instTop : Top (L.Substructure M) :=
   ⟨{  carrier := Set.univ
       fun_mem := fun {_} _ _ _ => Set.mem_univ _ }⟩
@@ -158,7 +158,7 @@ theorem mem_top (x : M) : x ∈ (⊤ : L.Substructure M) :=
 theorem coe_top : ((⊤ : L.Substructure M) : Set M) = Set.univ :=
   rfl
 
-/-- The inf of two substructures is their intersection. -/
+/--The inf of two substructures is their intersection.-/
 instance instInf : Inf (L.Substructure M) :=
   ⟨fun S₁ S₂ =>
     { carrier := (S₁ : Set M) ∩ (S₂ : Set M)
@@ -200,7 +200,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → L.Substructure M} :
     ((⨅ i, S i : L.Substructure M) : Set M) = ⋂ i, (S i : Set M) := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 
-/-- Substructures of a structure form a complete lattice. -/
+/--Substructures of a structure form a complete lattice.-/
 instance instCompleteLattice : CompleteLattice (L.Substructure M) :=
   { completeLatticeOfInf (L.Substructure M) fun _ =>
       IsGLB.of_image
@@ -218,7 +218,7 @@ instance instCompleteLattice : CompleteLattice (L.Substructure M) :=
 
 variable (L)
 
-/-- The `L.Substructure` generated by a set. -/
+/--The `L.Substructure` generated by a set.-/
 def closure : LowerAdjoint ((↑) : L.Substructure M → Set M) :=
   ⟨fun s => sInf { S | s ⊆ S }, fun _ _ =>
     ⟨Set.Subset.trans fun _x hx => mem_sInf.2 fun _S hS => hS hx, fun h => sInf_le h⟩⟩
@@ -228,7 +228,7 @@ variable {L} {s : Set M}
 theorem mem_closure {x : M} : x ∈ closure L s ↔ ∀ S : L.Substructure M, s ⊆ S → x ∈ S :=
   mem_sInf
 
-/-- The substructure generated by a set includes the set. -/
+/--The substructure generated by a set includes the set.-/
 @[simp]
 theorem subset_closure : s ⊆ closure L s :=
   (closure L).le_closure s
@@ -242,13 +242,13 @@ theorem closed (S : L.Substructure M) : (closure L).closed (S : Set M) :=
 
 open Set
 
-/-- A substructure `S` includes `closure L s` if and only if it includes `s`. -/
+/--A substructure `S` includes `closure L s` if and only if it includes `s`.-/
 @[simp]
 theorem closure_le : closure L s ≤ S ↔ s ⊆ S :=
   (closure L).closure_le_closed_iff_le s S.closed
 
-/-- Substructure closure of a set is monotone in its argument: if `s ⊆ t`,
-then `closure L s ≤ closure L t`. -/
+/--Substructure closure of a set is monotone in its argument: if `s ⊆ t`,
+then `closure L s ≤ closure L t`.-/
 theorem closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure L s ≤ closure L t :=
   (closure L).monotone h
 
@@ -297,16 +297,16 @@ theorem _root_.Set.Countable.substructure_closure
 
 variable {L} (S)
 
-/-- An induction principle for closure membership. If `p` holds for all elements of `s`, and
-is preserved under function symbols, then `p` holds for all elements of the closure of `s`. -/
+/--An induction principle for closure membership. If `p` holds for all elements of `s`, and
+is preserved under function symbols, then `p` holds for all elements of the closure of `s`.-/
 @[elab_as_elim]
 theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure L s) (Hs : ∀ x ∈ s, p x)
     (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f (setOf p)) : p x :=
   (@closure_le L M _ ⟨setOf p, fun {_} => Hfun⟩ _).2 Hs h
 
-/-- If `s` is a dense set in a structure `M`, `Substructure.closure L s = ⊤`, then in order to prove
+/--If `s` is a dense set in a structure `M`, `Substructure.closure L s = ⊤`, then in order to prove
 that some predicate `p` holds for all `x : M` it suffices to verify `p x` for `x ∈ s`, and verify
-that `p` is preserved under function symbols. -/
+that `p` is preserved under function symbols.-/
 @[elab_as_elim]
 theorem dense_induction {p : M → Prop} (x : M) {s : Set M} (hs : closure L s = ⊤)
     (Hs : ∀ x ∈ s, p x) (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f (setOf p)) : p x := by
@@ -315,7 +315,7 @@ theorem dense_induction {p : M → Prop} (x : M) {s : Set M} (hs : closure L s =
 
 variable (L) (M)
 
-/-- `closure` forms a Galois insertion with the coercion to set. -/
+/--`closure` forms a Galois insertion with the coercion to set.-/
 protected def gi : GaloisInsertion (@closure L M _) (↑) where
   choice s _ := closure L s
   gc := (closure L).gc
@@ -324,7 +324,7 @@ protected def gi : GaloisInsertion (@closure L M _) (↑) where
 
 variable {L} {M}
 
-/-- Closure of a substructure `S` equals `S`. -/
+/--Closure of a substructure `S` equals `S`.-/
 @[simp]
 theorem closure_eq : closure L (S : Set M) = S :=
   (Substructure.gi L M).l_u_eq S
@@ -353,7 +353,7 @@ instance small_bot : Small.{u} (⊥ : L.Substructure M) := by
 -/
 
 
-/-- The preimage of a substructure along a homomorphism is a substructure. -/
+/--The preimage of a substructure along a homomorphism is a substructure.-/
 @[simps]
 def comap (φ : M →[L] N) (S : L.Substructure N) : L.Substructure M where
   carrier := φ ⁻¹' S
@@ -373,7 +373,7 @@ theorem comap_comap (S : L.Substructure P) (g : N →[L] P) (f : M →[L] N) :
 theorem comap_id (S : L.Substructure P) : S.comap (Hom.id _ _) = S :=
   ext (by simp)
 
-/-- The image of a substructure along a homomorphism is a substructure. -/
+/--The image of a substructure along a homomorphism is a substructure.-/
 @[simps]
 def map (φ : M →[L] N) (S : L.Substructure M) : L.Substructure N where
   carrier := φ '' S
@@ -472,7 +472,7 @@ section GaloisCoinsertion
 
 variable {ι : Type*} {f : M →[L] N} (hf : Function.Injective f)
 
-/-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
+/--`map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective.-/
 def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
 
@@ -511,7 +511,7 @@ section GaloisInsertion
 
 variable {ι : Type*} {f : M →[L] N} (hf : Function.Surjective f)
 
-/-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
+/--`map f` and `comap f` form a `GaloisInsertion` when `f` is surjective.-/
 def giMapComap : GaloisInsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisInsertion fun S x h =>
     let ⟨y, hy⟩ := hf x
@@ -554,7 +554,7 @@ instance inducedStructure {S : L.Substructure M} : L.Structure S where
   funMap {_} f x := ⟨funMap f fun i => x i, S.fun_mem f (fun i => x i) fun i => (x i).2⟩
   RelMap {_} r x := RelMap r fun i => (x i : M)
 
-/-- The natural embedding of an `L.Substructure` of `M` into `M`. -/
+/--The natural embedding of an `L.Substructure` of `M` into `M`.-/
 def subtype (S : L.Substructure M) : S ↪[L] M where
   toFun := (↑)
   inj' := Subtype.coe_injective
@@ -563,7 +563,7 @@ def subtype (S : L.Substructure M) : S ↪[L] M where
 theorem coeSubtype : ⇑S.subtype = ((↑) : S → M) :=
   rfl
 
-/-- The equivalence between the maximal substructure of a structure and the structure itself. -/
+/--The equivalence between the maximal substructure of a structure and the structure itself.-/
 def topEquiv : (⊤ : L.Substructure M) ≃[L] M where
   toFun := subtype ⊤
   invFun m := ⟨m, mem_top m⟩
@@ -588,7 +588,7 @@ theorem realize_formula_top {α : Type*} {φ : L.Formula α} {v : α → (⊤ : 
   rw [← Substructure.topEquiv.realize_formula φ]
   simp
 
-/-- A dependent version of `Substructure.closure_induction`. -/
+/--A dependent version of `Substructure.closure_induction`.-/
 @[elab_as_elim]
 theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure L s → Prop}
     (Hs : ∀ (x) (h : x ∈ s), p x (subset_closure h))
@@ -606,7 +606,7 @@ open Substructure
 
 variable {L' : Language} [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M]
 
-/-- Reduces the language of a substructure along a language hom. -/
+/--Reduces the language of a substructure along a language hom.-/
 def substructureReduct : L'.Substructure M ↪o L.Substructure M where
   toFun S :=
     { carrier := S
@@ -632,7 +632,7 @@ end LHom
 
 namespace Substructure
 
-/-- Turns any substructure containing a constant set `A` into a `L[[A]]`-substructure. -/
+/--Turns any substructure containing a constant set `A` into a `L[[A]]`-substructure.-/
 def withConstants (S : L.Substructure M) {A : Set M} (h : A ⊆ S) : L[[A]].Substructure M where
   carrier := S
   fun_mem {n} f := by
@@ -679,13 +679,13 @@ namespace Hom
 
 open Substructure
 
-/-- The restriction of a first-order hom to a substructure `s ⊆ M` gives a hom `s → N`. -/
+/--The restriction of a first-order hom to a substructure `s ⊆ M` gives a hom `s → N`.-/
 @[simps!]
 def domRestrict (f : M →[L] N) (p : L.Substructure M) : p →[L] N :=
   f.comp p.subtype.toHom
 
-/-- A first-order hom `f : M → N` whose values lie in a substructure `p ⊆ N` can be restricted to a
-hom `M → p`. -/
+/--A first-order hom `f : M → N` whose values lie in a substructure `p ⊆ N` can be restricted to a
+hom `M → p`.-/
 @[simps]
 def codRestrict (p : L.Substructure N) (f : M →[L] N) (h : ∀ c, f c ∈ p) : M →[L] p where
   toFun c := ⟨f c, h c⟩
@@ -702,8 +702,8 @@ theorem subtype_comp_codRestrict (f : M →[L] N) (p : L.Substructure N) (h : �
     p.subtype.toHom.comp (codRestrict p f h) = f :=
   ext fun _ => rfl
 
-/-- The range of a first-order hom `f : M → N` is a submodule of `N`.
-See Note [range copy pattern]. -/
+/--The range of a first-order hom `f : M → N` is a submodule of `N`.
+See Note [range copy pattern].-/
 def range (f : M →[L] N) : L.Substructure N :=
   (map f ⊤).copy (Set.range f) Set.image_univ.symm
 
@@ -740,7 +740,7 @@ theorem range_le_iff_comap {f : M →[L] N} {p : L.Substructure N} : range f ≤
 theorem map_le_range {f : M →[L] N} {p : L.Substructure M} : map f p ≤ range f :=
   SetLike.coe_mono (Set.image_subset_range f p)
 
-/-- The substructure of elements `x : M` such that `f x = g x` -/
+/--The substructure of elements `x : M` such that `f x = g x`-/
 def eqLocus (f g : M →[L] N) : Substructure L M where
   carrier := { x : M | f x = g x }
   fun_mem {n} fn x hx := by
@@ -750,7 +750,7 @@ def eqLocus (f g : M →[L] N) : Substructure L M where
       apply hx
     simp [h]
 
-/-- If two `L.Hom`s are equal on a set, then they are equal on its substructure closure. -/
+/--If two `L.Hom`s are equal on a set, then they are equal on its substructure closure.-/
 theorem eqOn_closure {f g : M →[L] N} {s : Set M} (h : Set.EqOn f g s) :
     Set.EqOn f g (closure L s) :=
   show closure L s ≤ f.eqLocus g from closure_le.2 h
@@ -769,7 +769,7 @@ namespace Embedding
 
 open Substructure
 
-/-- The restriction of a first-order embedding to a substructure `s ⊆ M` gives an embedding `s → N`.
+/--The restriction of a first-order embedding to a substructure `s ⊆ M` gives an embedding `s → N`.
 -/
 def domRestrict (f : M ↪[L] N) (p : L.Substructure M) : p ↪[L] N :=
   f.comp p.subtype
@@ -778,8 +778,8 @@ def domRestrict (f : M ↪[L] N) (p : L.Substructure M) : p ↪[L] N :=
 theorem domRestrict_apply (f : M ↪[L] N) (p : L.Substructure M) (x : p) : f.domRestrict p x = f x :=
   rfl
 
-/-- A first-order embedding `f : M → N` whose values lie in a substructure `p ⊆ N` can be restricted
-to an embedding `M → p`. -/
+/--A first-order embedding `f : M → N` whose values lie in a substructure `p ⊆ N` can be restricted
+to an embedding `M → p`.-/
 def codRestrict (p : L.Substructure N) (f : M ↪[L] N) (h : ∀ c, f c ∈ p) : M ↪[L] p where
   toFun := f.toHom.codRestrict p h
   inj' a b ab := f.injective (Subtype.mk_eq_mk.1 ab)
@@ -811,8 +811,8 @@ theorem subtype_comp_codRestrict (f : M ↪[L] N) (p : L.Substructure N) (h : �
     p.subtype.comp (codRestrict p f h) = f :=
   ext fun _ => rfl
 
-/-- The equivalence between a substructure `s` and its image `s.map f.toHom`, where `f` is an
-  embedding. -/
+/--The equivalence between a substructure `s` and its image `s.map f.toHom`, where `f` is an
+  embedding.-/
 noncomputable def substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
     s ≃[L] s.map f.toHom where
   toFun := codRestrict (s.map f.toHom) (f.domRestrict s) fun ⟨m, hm⟩ => ⟨m, hm, rfl⟩
@@ -837,7 +837,7 @@ theorem subtype_substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
     (subtype _).comp (f.substructureEquivMap s).toEmbedding = f.comp (subtype _) := by
   ext; rfl
 
-/-- The equivalence between the domain and the range of an embedding `f`. -/
+/--The equivalence between the domain and the range of an embedding `f`.-/
 noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
   toFun := codRestrict f.toHom.range f f.toHom.mem_range_self
   invFun n := Classical.choose n.2
@@ -868,7 +868,7 @@ end Equiv
 
 namespace Substructure
 
-/-- The embedding associated to an inclusion of substructures. -/
+/--The embedding associated to an inclusion of substructures.-/
 def inclusion {S T : L.Substructure M} (h : S ≤ T) : S ↪[L] T :=
   S.subtype.codRestrict _ fun x => h x.2
 
@@ -889,8 +889,8 @@ theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
 
 variable (L) (M) (N)
 
-/-- An equivalence between substructures -/
-structure SubEquivalence  where
+/--An equivalence between substructures-/
+structure SubEquivalence where
   /--The substructure which is the domain of the equivalence.-/
   sub_dom : L.Substructure M
   /--The substructure which is the codomain of the equivalence.-/
@@ -909,7 +909,7 @@ variable {L} {M} {N}
 noncomputable instance instInhabited_self : Inhabited (M ≃ₚ[L] M) :=
   ⟨⊤, ⊤, Equiv.refl L (⊤ : L.Substructure M)⟩
 
-/-- Maps to the symmetric equivalence. -/
+/--Maps to the symmetric equivalence.-/
 def symm (f : M ≃ₚ[L] N) : N ≃ₚ[L] M where
   sub_dom := f.sub_cod
   sub_cod := f.sub_dom
@@ -928,7 +928,7 @@ instance : LE (M ≃ₚ[L] N) :=
     (subtype _).comp (g.equiv.toEmbedding.comp (Substructure.inclusion h)) =
       (subtype _).comp f.equiv.toEmbedding⟩
 
-theorem le_def (f g : M ≃ₚ[L] N) : f ≤ g ↔ ∃h : f.sub_dom ≤ g.sub_dom,
+theorem le_def (f g : M ≃ₚ[L] N) : f ≤ g ↔ ∃ h : f.sub_dom ≤ g.sub_dom,
     (subtype _).comp (g.equiv.toEmbedding.comp (Substructure.inclusion h)) =
       (subtype _).comp f.equiv.toEmbedding :=
   Iff.rfl
@@ -1031,7 +1031,7 @@ theorem monotone_dom : Monotone (fun f : M ≃ₚ[L] N ↦ f.sub_dom) := fun _ _
 
 theorem monotone_cod : Monotone (fun f : M ≃ₚ[L] N ↦ f.sub_cod) := fun _ _ ↦ le_cod
 
-/-- Restriction of a subequivalence to a substructure of the domain. -/
+/--Restriction of a subequivalence to a substructure of the domain.-/
 noncomputable def dom_restrict (f : M ≃ₚ[L] N) {A : L.Substructure M} (h : A ≤ f.sub_dom) :
     M ≃ₚ[L] N := by
   let g := (subtype _).comp (f.equiv.toEmbedding.comp (A.inclusion h))
@@ -1048,7 +1048,7 @@ theorem le_dom_restrict (f g : M ≃ₚ[L] N) {A : L.Substructure M} (hf : f.sub
     (hg : A ≤ g.sub_dom) (hfg : f ≤ g) : f ≤ g.dom_restrict hg :=
   ⟨hf, by rw [← (subtype_equiv_inclusion hfg)]; rfl⟩
 
-/-- Restriction of a subequivalence to a substructure of the codomain. -/
+/--Restriction of a subequivalence to a substructure of the codomain.-/
 noncomputable def cod_restrict (f : M ≃ₚ[L] N) {A : L.Substructure N} (h : A ≤ f.sub_cod) :
     M ≃ₚ[L] N :=
   (f.symm.dom_restrict h).symm
@@ -1061,8 +1061,8 @@ theorem le_cod_restrict (f g : M ≃ₚ[L] N) {A : L.Substructure N} (hf : f.sub
     (hg : A ≤ g.sub_cod) (hfg : f ≤ g) : f ≤ g.cod_restrict hg :=
   (symm_le_iff _ _).1 (le_dom_restrict f.symm g.symm hf hg (monotone_symm hfg))
 
-/-- Given a subequivalence which has the whole structure as domain,
-returns the corresponding embedding. -/
+/--Given a subequivalence which has the whole structure as domain,
+returns the corresponding embedding.-/
 noncomputable def dom_top_toEmbedding {f : M ≃ₚ[L] N} (h : f.sub_dom = ⊤) : M ↪[L] N :=
   (subtype _).comp ((h ▸ f.equiv.toEmbedding).comp Substructure.topEquiv.symm.toEmbedding)
 
@@ -1073,7 +1073,7 @@ theorem dom_top_toEmbedding_apply {f : M ≃ₚ[L] N} (h : f.sub_dom = ⊤) (m :
   cases h
   rfl
 
-/-- Given a subequivalence which has the whole structure as domain and
+/--Given a subequivalence which has the whole structure as domain and
 as codomain, returns the corresponding equivalence.-/
 noncomputable def dom_cod_top_toEquiv {f : M ≃ₚ[L] N} (h_dom : f.sub_dom = ⊤)
     (h_cod : f.sub_cod = ⊤) : M ≃[L] N :=
@@ -1088,7 +1088,7 @@ theorem dom_cod_top_toEquiv_toEmbedding {f : M ≃ₚ[L] N} (h_dom : f.sub_dom =
   cases h_cod
   rfl
 
-/-- Map of a self-subEquivalence through an embedding. -/
+/--Map of a self-subEquivalence through an embedding.-/
 noncomputable def map (f : M ↪[L] N) (g : M ≃ₚ[L] M) : N ≃ₚ[L] N where
   sub_dom := g.sub_dom.map f.toHom
   sub_cod := g.sub_cod.map f.toHom
@@ -1147,7 +1147,7 @@ end Substructure
 
 namespace Embedding
 
-/-- Given an embedding, returns the corresponding subequivalence with top as domain. -/
+/--Given an embedding, returns the corresponding subequivalence with top as domain.-/
 noncomputable def toSubEquivalence (f : M ↪[L] N) : M ≃ₚ[L] N :=
   ⟨⊤, f.toHom.range, f.equivRange.comp (Substructure.topEquiv)⟩
 
@@ -1179,3 +1179,4 @@ end Embedding
 end Language
 
 end FirstOrder
+#lint
