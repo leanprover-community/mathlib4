@@ -496,4 +496,39 @@ theorem eventuallyConst_set_of_forall_smul_ae_eq [MeasurableInv G] [μ.IsMulLeft
     hx'.eventuallyConst_iff.2 (EventuallyConst.const (x ∈ s))
   simpa using hconst
 
+-- WRONG
+-- theorem eventuallyConst_set_of_forall_smul_ae_eq' {X : Type*}
+--     [MeasurableSpace X] [MulAction G X] [MeasurableSMul₂ G X]
+--     {ν : Measure X} [SFinite ν] [SMulInvariantMeasure G X ν] {s : Set X}
+--     (hsm : MeasurableSet s) (hs : ∀ g : G, (g • s : Set X) =ᵐ[ν] s) :
+--     EventuallyConst s (ae ν) := by
+--   -- First, we discard the trivial case `μ = 0`.
+--   rcases eq_zero_or_neZero ν with rfl | hν₀; · simp
+--   -- Now consider the set `t = {(g, x) | g * x ∈ s}`.
+--   set t : Set (G × X) := {(g, x) | g • x ∈ s}
+--   have htm : MeasurableSet t := hsm.preimage (by fun_prop)
+--   -- For each `g`, the vertical section of `{x | (g, x) ∈ t} = g • s` is a.e. equal to `s`,
+--   -- hence `t` is a.e. equal to `{(g, x) | x ∈ s}`.
+--   have H₁ : t =ᵐ[μ.prod ν] (Prod.snd ⁻¹' s) := by
+--     rw [eventuallyEq_set, ae_prod_iff_ae_ae]
+--     · refine ae_of_all _ fun g ↦ ?_
+--       simpa [t, mem_smul_set_iff_inv_smul_mem] using (hs g⁻¹).mem_iff
+--     · apply Measurable.setOf
+--       exact htm.mem.iff (hsm.preimage measurable_snd).mem
+--   -- Thus for a.e. `x`, the horizontal sections of these sets are a.e. equal.
+--   -- Since `μ ≠ 0`, we can choose `x` such that these sections are a.e. equal.
+--   obtain ⟨x, hx⟩ : ∃ x, (·, x) ⁻¹' t =ᵐ[μ] (·, x) ⁻¹' (Prod.snd ⁻¹' s) := by
+--     rw [← prod_swap] at H₁
+--     exact (ae_ae_of_ae_prod (ae_of_ae_map (by measurability) H₁)).exists
+--   simp [t, preimage_preimage] at hx
+--   -- Simplifying, we see that `x • s⁻¹` is a.e. equal to the set `const G x ⁻¹' s`.
+--   have hx' := calc
+--     (x • s⁻¹ : Set G) = (·, x) ⁻¹' t := by ext; simp [t, mem_smul_set_iff_inv_smul_mem]
+--     _ =ᵐ[μ] (const G x ⁻¹' s) := hx
+--   -- The latter set is either empty or the whole group,
+--   -- hence `x • s⁻¹` is an a.e. const set.
+--   have hconst : EventuallyConst (x • s⁻¹ : Set G) (ae μ) :=
+--     hx'.eventuallyConst_iff.2 (EventuallyConst.const (x ∈ s))
+--   simpa using hconst
+
 end MeasureTheory
