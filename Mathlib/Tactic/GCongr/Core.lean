@@ -343,9 +343,12 @@ partial def _root_.Lean.MVarId.gcongr
       -- (if not, stop and report the existing goal)
       return (false, names, #[g])
     -- and also build an array of booleans according to which arguments `_ ... _` to the head
-    -- function differ between the LHS and RHS
-    (lhsArgs.zip rhsArgs).mapM fun (lhsArg, rhsArg) =>
-      return (none, !(← withReducibleAndInstances <| isDefEq lhsArg rhsArg))
+    -- function differ between the LHS and RHS. We treat always treat proofs as being the same
+    -- (even if they have differing types).
+    (lhsArgs.zip rhsArgs).mapM fun (lhsArg, rhsArg) => do
+      let isSame ← withReducibleAndInstances <|
+        return (← isDefEq lhsArg rhsArg) || ((← isProof lhsArg) && (← isProof rhsArg))
+      return (none, !isSame)
   -- Name the array of booleans `varyingArgs`: this records which arguments to the head function are
   -- supposed to vary, according to the template (if there is one), and in the absence of a template
   -- to record which arguments to the head function differ between the two sides of the goal.
