@@ -359,8 +359,7 @@ noncomputable def compYonedaIsoYonedaCompLan :
         (yonedaMap F X) (F.op.lan.obj (yoneda.obj X)) (F.op.lanUnit.app (yoneda.obj X))) _) (𝟙 _)
       have eq₃ := congr_fun (congr_app (F.op.lanUnit.naturality (yoneda.map f)) _) (𝟙 _)
       dsimp at eq₁ eq₂ eq₃
-      rw [yonedaMap_app_apply] at eq₁
-      simp only [yonedaMap_app_apply, Functor.map_id] at eq₂
+      simp only [Functor.map_id] at eq₂
       simp only [id_comp] at eq₃
       simp [yonedaEquiv, eq₁, eq₂, eq₃])
 

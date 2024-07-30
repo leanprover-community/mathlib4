@@ -984,7 +984,7 @@ theorem accPt_iff_frequently (x : X) (C : Set X) : AccPt x (𝓟 C) ↔ ∃ᶠ y
   simp [acc_principal_iff_cluster, clusterPt_principal_iff_frequently, and_comm]
 
 /-- If `x` is an accumulation point of `F` and `F ≤ G`, then
-`x` is an accumulation point of `D`. -/
+`x` is an accumulation point of `G`. -/
 theorem AccPt.mono {F G : Filter X} (h : AccPt x F) (hFG : F ≤ G) : AccPt x G :=
   NeBot.mono h (inf_le_inf_left _ hFG)
 

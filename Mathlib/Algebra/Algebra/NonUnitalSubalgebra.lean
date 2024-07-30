@@ -949,18 +949,15 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalSubalgebra R A) (d
         map_mul' := by
           dsimp
           apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· * ·))
-          on_goal 3 => rw [coe_iSup_of_directed dir]
           all_goals simp
         map_add' := by
           dsimp
           apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· + ·))
-          on_goal 3 => rw [coe_iSup_of_directed dir]
           all_goals simp
         map_smul' := fun r => by
           dsimp
           apply Set.iUnionLift_unary (coe_iSup_of_directed dir) _ (fun _ x => r • x)
             (fun _ _ => rfl)
-          on_goal 2 => rw [coe_iSup_of_directed dir]
           all_goals simp }
 
 variable [Nonempty ι] {K : ι → NonUnitalSubalgebra R A} {dir : Directed (· ≤ ·) K}
