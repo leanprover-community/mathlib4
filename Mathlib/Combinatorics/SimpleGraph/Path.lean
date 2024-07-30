@@ -458,7 +458,7 @@ theorem darts_bypass_subset {u v : V} (p : G.Walk u v) : p.bypass.darts ⊆ p.da
       exact List.cons_subset_cons _ ih
 
 theorem edges_bypass_subset {u v : V} (p : G.Walk u v) : p.bypass.edges ⊆ p.edges :=
-  List.map_subset _ p.darts_bypass_subset
+  List.Subset.map _ p.darts_bypass_subset
 
 theorem darts_toPath_subset {u v : V} (p : G.Walk u v) : (p.toPath : G.Walk u v).darts ⊆ p.darts :=
   darts_bypass_subset _
