@@ -40,6 +40,7 @@ instance : HasMapBifunctor K₂ K₁ F.flip c := by
   rw [hasMapBifunctor_flip_iff]
   infer_instance
 
+/-- The canonical isomorphism `mapBifunctor K₂ K₁ F.flip c ≅ mapBifunctor K₁ K₂ F c`. -/
 noncomputable def mapBifunctorFlipIso :
     mapBifunctor K₂ K₁ F.flip c ≅ mapBifunctor K₁ K₂ F c :=
   (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).totalFlipIso c
