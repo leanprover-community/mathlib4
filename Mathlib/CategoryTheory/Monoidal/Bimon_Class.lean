@@ -35,19 +35,19 @@ open CategoryTheory MonoidalCategory
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 variable [BraidedCategory C]
 
-open scoped Mon_ Comon_
+open scoped Mon_Class Comon_Class
 
-class Bimon_ (M : C) extends Mon_ M, Comon_ M where
+class Bimon_Class (M : C) extends Mon_Class M, Comon_Class M where
   mul_comul' : μ ≫ Δ = (Δ ⊗ Δ) ≫ tensor_μ C (M, M) (M, M) ≫ (μ ⊗ μ) := by aesop_cat
   one_comul' : (η ≫ Δ : 𝟙_ C ⟶ M ⊗ M) = η := by aesop_cat
   mul_counit' : (μ ≫ ε : M ⊗ M ⟶ 𝟙_ C) = ε := by aesop_cat
   one_counit' : (η : 𝟙_ C ⟶ M) ≫ ε = 𝟙 (𝟙_ C) := by aesop_cat
 
-namespace Bimon_
+namespace Bimon_Class
 
 show_panel_widgets [local Mathlib.Tactic.Widget.StringDiagram]
 
-variable (M : C) [Bimon_ M]
+variable (M : C) [Bimon_Class M]
 
 @[reassoc (attr := simp)]
 theorem mul_comul : μ ≫ Δ = (Δ ⊗ Δ) ≫ tensor_μ C (M, M) (M, M) ≫ (μ ⊗ μ) := mul_comul'
@@ -61,7 +61,7 @@ theorem mul_counit : (μ ≫ ε : M ⊗ M ⟶ 𝟙_ C) = ε := mul_counit'
 @[reassoc (attr := simp)]
 theorem one_counit : (η : 𝟙_ C ⟶ M) ≫ ε = 𝟙 (𝟙_ C) := one_counit'
 
-end Bimon_
+end Bimon_Class
 
 variable (C)
 
@@ -78,22 +78,22 @@ variable {C}
 instance : Category (Bimon_Cat C) := inferInstanceAs (Category (Comon_Cat (Mon_Cat C)))
 
 @[simps!]
-instance (M : C) [Bimon_ M] : Comon_ (Mon_Cat.mk M) where
+instance (M : C) [Bimon_Class M] : Comon_Class (Mon_Cat.mk M) where
   counit := { hom := (ε : M ⟶ 𝟙_ C) }
   comul := { hom := (Δ : M ⟶ M ⊗ M) }
 
 @[simps!]
-instance (M : C) [Bimon_ M] : Mon_ (Comon_Cat.mk M) where
+instance (M : C) [Bimon_Class M] : Mon_Class (Comon_Cat.mk M) where
   one := { hom := (η : 𝟙_ C ⟶ M) }
   mul := { hom := (μ : M ⊗ M ⟶ M) }
 
-def mk (M : C) [Bimon_ M] : Bimon_Cat C where
+def mk (M : C) [Bimon_Class M] : Bimon_Cat C where
   X := Mon_Cat.mk M
 
 @[ext] lemma ext {X Y : Bimon_Cat C} {f g : X ⟶ Y} (w : f.hom.hom = g.hom.hom) : f = g :=
-  Comon_.Hom.ext _ _ (Mon_.Hom.ext _ _ w)
+  Comon_Class.Hom.ext _ _ (Mon_Class.Hom.ext _ _ w)
 
-@[simp] theorem id_hom' (M : Bimon_Cat C) : Comon_.Hom.hom (𝟙 M) = 𝟙 M.X := rfl
+@[simp] theorem id_hom' (M : Bimon_Cat C) : Comon_Class.Hom.hom (𝟙 M) = 𝟙 M.X := rfl
 
 @[simp]
 theorem comp_hom' {M N K : Bimon_Cat C} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g).hom = f.hom ≫ g.hom :=
@@ -102,76 +102,76 @@ theorem comp_hom' {M N K : Bimon_Cat C} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g).
 variable (C)
 
 /-- The forgetful functor from bimonoid objects to monoid objects. -/
-abbrev toMon_ : Bimon_Cat C ⥤ Mon_Cat C := Comon_Cat.forget (Mon_Cat C)
+abbrev toMon_Class : Bimon_Cat C ⥤ Mon_Cat C := Comon_Cat.forget (Mon_Cat C)
 
 /-- The forgetful functor from bimonoid objects to the underlying category. -/
-def forget : Bimon_Cat C ⥤ C := toMon_ C ⋙ Mon_Cat.forget C
+def forget : Bimon_Cat C ⥤ C := toMon_Class C ⋙ Mon_Cat.forget C
 
 @[simp]
-theorem toMon_forget : toMon_ C ⋙ Mon_Cat.forget C = forget C := rfl
+theorem toMon_Classforget : toMon_Class C ⋙ Mon_Cat.forget C = forget C := rfl
 
 /-- The forgetful functor from bimonoid objects to comonoid objects. -/
 @[simps!?]
-def toComon_ : Bimon_Cat C ⥤ Comon_Cat C :=
+def toComon_Class : Bimon_Cat C ⥤ Comon_Cat C :=
   (Mon_Cat.forgetMonoidal C).toOplaxMonoidalFunctor.mapComon
 
--- instance (M : Bimon_Cat C) : Comon_ (toComon_ C ⋙ forget C) M := inferInstance
+-- instance (M : Bimon_Cat C) : Comon_Class (toComon_Class C ⋙ forget C) M := inferInstance
 
 @[simp]
-theorem toComon_forget : toComon_ C ⋙ Comon_Cat.forget C = forget C := rfl
+theorem toComon_Classforget : toComon_Class C ⋙ Comon_Cat.forget C = forget C := rfl
 
-open scoped Mon_ Comon_
+open scoped Mon_Class Comon_Class
 
 @[simps!?]
-instance (M : Bimon_Cat C) : Comon_ M.X.X := inferInstanceAs (Comon_ (((toComon_ C).obj M).X))
+instance (M : Bimon_Cat C) : Comon_Class M.X.X := inferInstanceAs (Comon_Class (((toComon_Class C).obj M).X))
 
 -- @[simps!?]
-instance (M : Bimon_Cat C) : Bimon_ M.X.X where
+instance (M : Bimon_Cat C) : Bimon_Class M.X.X where
 
 -- @[simp]
--- theorem toComon_counit  (M : Bimon_Cat C)  :
+-- theorem toComon_Classcounit  (M : Bimon_Cat C)  :
 --     (ε : M.X.X  ⟶ _) = (ε : M.X ⟶ _).hom := by
---   erw [OplaxMonoidalFunctor.instComon_Obj_counit]
+--   erw [OplaxMonoidalFunctor.instComon_ClassObj_counit]
 --   simp
 
 -- @[simp]
--- theorem toComon_comul (M : Bimon_Cat C)  :
+-- theorem toComon_Classcomul (M : Bimon_Cat C)  :
 --     (Δ : M.X.X ⟶ _) = (Δ : M.X ⟶ _).hom := by
---   erw [OplaxMonoidalFunctor.instComon_Obj_comul]
+--   erw [OplaxMonoidalFunctor.instComon_ClassObj_comul]
 --   simp
 
-/-- The object level part of the forward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
-def toMon_Comon_obj (M : C) [Bimon_ M] : Mon_Cat (Comon_Cat C) where
+/-- The object level part of the forward direction of `Comon_Class (Mon_Class C) ≌ Mon_Class (Comon_Class C)` -/
+def toMon_ClassComon_Classobj (M : C) [Bimon_Class M] : Mon_Cat (Comon_Cat C) where
   X := Comon_Cat.mk M
 
-attribute [simps!?] toMon_Comon_obj -- We add this after the fact to avoid a timeout.
+attribute [simps!?] toMon_ClassComon_Classobj -- We add this after the fact to avoid a timeout.
 
-/-- The forward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
+/-- The forward direction of `Comon_Class (Mon_Class C) ≌ Mon_Class (Comon_Class C)` -/
 @[simps]
-def toMon_Comon_ : Bimon_Cat C ⥤ Mon_Cat (Comon_Cat C) where
-  obj M := toMon_Comon_obj C M.X.X
+def toMon_ClassComon_Class : Bimon_Cat C ⥤ Mon_Cat (Comon_Cat C) where
+  obj M := toMon_ClassComon_Classobj C M.X.X
   map f :=
-  { hom := (toComon_ C).map f }
+  { hom := (toComon_Class C).map f }
 
--- instance (M : C) [Bimon_ M] : Mon_ M := inferInstance
---   inferInstanceAs (Mon_ ((Comon_Cat.forgetMonoidal C).obj (Comon_Cat.mk M)))
+-- instance (M : C) [Bimon_Class M] : Mon_Class M := inferInstance
+--   inferInstanceAs (Mon_Class ((Comon_Cat.forgetMonoidal C).obj (Comon_Cat.mk M)))
 
 @[simps!]
-instance (M : (Comon_Cat C)) [Mon_ M] : Mon_ M.X :=
-  inferInstanceAs (Mon_ ((Comon_Cat.forgetMonoidal C).obj M))
+instance (M : (Comon_Cat C)) [Mon_Class M] : Mon_Class M.X :=
+  inferInstanceAs (Mon_Class ((Comon_Cat.forgetMonoidal C).obj M))
 
 
 
 
 -- @[simp]
--- theorem MonCatComonCatOne (M : C) [Bimon_ M] :
+-- theorem MonCatComonCatOne (M : C) [Bimon_Class M] :
 --     (η : 𝟙_ C ⟶ M) = (η : 𝟙_ (Comon_Cat C) ⟶ (Comon_Cat.mk M)).hom := rfl
   -- calc
   --   _ = 𝟙 (𝟙_ C) ≫ (η : 𝟙_ (Comon_Cat C) ⟶ (Comon_Cat.mk M)).hom := rfl
   --   _ = _ := by simp
 
 -- @[simp]
--- theorem MonCatComonCatmul (M : C) [Bimon_ M] :
+-- theorem MonCatComonCatmul (M : C) [Bimon_Class M] :
 --     (μ : M ⊗ M ⟶ M) = (μ :  (Comon_Cat.mk M) ⊗  (Comon_Cat.mk M) ⟶  (Comon_Cat.mk M)).hom :=
 --   calc
 --     _ = 𝟙 (M ⊗ M) ≫ (μ : (Comon_Cat.mk M) ⊗  (Comon_Cat.mk M) ⟶  (Comon_Cat.mk M)).hom := rfl
@@ -184,7 +184,7 @@ instance (M : (Comon_Cat C)) [Mon_ M] : Mon_ M.X :=
 --     _ = 𝟙 (𝟙_ C) ≫ (η : 𝟙_ (Comon_Cat C) ⟶ M.X).hom := by simp
 --     _ = _ := rfl
 
--- instance (M : C) [Bimon_ M] : Comon_ (Mon_Cat.mk M.X) where
+-- instance (M : C) [Bimon_Class M] : Comon_Class (Mon_Cat.mk M.X) where
 --   counit :=
 --   { hom := (ε : M.X ⟶ _) }
 --   comul :=
@@ -192,13 +192,13 @@ instance (M : (Comon_Cat C)) [Mon_ M] : Mon_ M.X :=
 --     mul_hom := by dsimp; simp [tensor_μ] }
 
 
--- instance (M : (Comon_Cat C)) [Mon_ M] : Comon_ (Mon_Cat.mk M.X) where
+-- instance (M : (Comon_Cat C)) [Mon_Class M] : Comon_Class (Mon_Cat.mk M.X) where
 --   counit := (ε : M.X ⟶ _)
 --   comul := (Δ : M.X ⟶ _)
   -- { hom := (Δ : M.X ⟶ _),
   -- mul_hom' := by dsimp; simp [tensor_μ]
 
--- instance (M : Mon_Cat (Comon_Cat C)) : Comon_ M where
+-- instance (M : Mon_Cat (Comon_Cat C)) : Comon_Class M where
 --   counit :=
 --   { hom := (ε : M.X.X ⟶ _) }
 --   comul :=
@@ -206,7 +206,7 @@ instance (M : (Comon_Cat C)) [Mon_ M] : Mon_ M.X :=
 --     mul_hom := by dsimp; simp [tensor_μ] }
 
 -- @[simps!?]
-instance (M : Mon_Cat (Comon_Cat C)) : Bimon_ M.X.X where
+instance (M : Mon_Cat (Comon_Cat C)) : Bimon_Class M.X.X where
 
 -- @[simp]
 -- theorem XXComon_Cat_one (M : Mon_Cat (Comon_Cat C)) : η = (η : 𝟙_ (Comon_Cat C) ⟶ M.X).hom := by
@@ -217,28 +217,28 @@ instance (M : Mon_Cat (Comon_Cat C)) : Bimon_ M.X.X where
 --     (μ : M.X.X ⊗ M.X.X ⟶ M.X.X) = (μ : M.X ⊗ M.X ⟶ M.X).hom := by
 --   simp
 
-/-- The object level part of the backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
+/-- The object level part of the backward direction of `Comon_Class (Mon_Class C) ≌ Mon_Class (Comon_Class C)` -/
 @[simps]
-def ofMon_Comon_obj (M : C) [Bimon_ M] : Bimon_Cat C where
+def ofMon_ClassComon_Classobj (M : C) [Bimon_Class M] : Bimon_Cat C where
   X := Mon_Cat.mk M
 
-/-- The backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
+/-- The backward direction of `Comon_Class (Mon_Class C) ≌ Mon_Class (Comon_Class C)` -/
 @[simps]
-def ofMon_Comon_ : Mon_Cat (Comon_Cat C) ⥤ Bimon_Cat C where
-  obj M := ofMon_Comon_obj C M.X.X
+def ofMon_ClassComon_Class : Mon_Cat (Comon_Cat C) ⥤ Bimon_Cat C where
+  obj M := ofMon_ClassComon_Classobj C M.X.X
   map f :=
   { hom := (Comon_Cat.forgetMonoidal C).toLaxMonoidalFunctor.mapMon.map f }
 
-/-- The equivalence `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
-def equivMon_Comon_ : Bimon_Cat C ≌ Mon_Cat (Comon_Cat C) where
-  functor := toMon_Comon_ C
-  inverse := ofMon_Comon_ C
+/-- The equivalence `Comon_Class (Mon_Class C) ≌ Mon_Class (Comon_Class C)` -/
+def equivMon_ClassComon_Class : Bimon_Cat C ≌ Mon_Cat (Comon_Cat C) where
+  functor := toMon_ClassComon_Class C
+  inverse := ofMon_ClassComon_Class C
   unitIso := NatIso.ofComponents (fun M =>
-    Comon_Cat.mkIso (Comon_.mkIso (Mon_Cat.mkIso (Mon_.mkIso (Iso.refl M.X.X)
+    Comon_Cat.mkIso (Comon_Class.mkIso (Mon_Cat.mkIso (Mon_Class.mkIso (Iso.refl M.X.X)
       (by simp; change _ = _ ≫ _; simp) (by simp; change _ = _ ≫ _; simp)))
       (by ext; simp; change _ ≫ _ = _; simp) (by ext; simp; change _ ≫ _ = _; simp)))
   counitIso := NatIso.ofComponents (fun M =>
-    Mon_Cat.mkIso (Mon_.mkIso (Comon_Cat.mkIso (Comon_.mkIso (Iso.refl M.X.X)
+    Mon_Cat.mkIso (Mon_Class.mkIso (Comon_Cat.mkIso (Comon_Class.mkIso (Iso.refl M.X.X)
       (by simp; change _ = _ ≫ _; simp) (by simp; change _ = _ ≫ _; simp)))
       (by ext; simp; change _ ≫ _ = _; simp) (by ext; simp; change _ ≫ _ = _; simp)))
 
