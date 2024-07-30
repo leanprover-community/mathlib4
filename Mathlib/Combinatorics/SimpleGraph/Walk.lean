@@ -177,21 +177,21 @@ theorem adj_getVert_succ {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
     · simp [getVert, hxy]
     · exact ih (Nat.succ_lt_succ_iff.1 hi)
 
-lemma cons_getVert_one {u v w} (q : G.Walk v w) (hadj : G.Adj u v) :
+lemma getVert_cons_one {u v w} (q : G.Walk v w) (hadj : G.Adj u v) :
     (q.cons hadj).getVert 1 = v := by
   have : (q.cons hadj).getVert 1 = q.getVert 0 := rfl
   simpa [getVert_zero] using this
 
 @[simp]
-lemma cons_getVert_succ {u v w n} (p : G.Walk v w) (h : G.Adj u v) :
+lemma getVert_cons_succ {u v w n} (p : G.Walk v w) (h : G.Adj u v) :
     (p.cons h).getVert (n + 1) = p.getVert n := rfl
 
-lemma cons_getVert {u v w n} (p : G.Walk v w) (h : G.Adj u v) (hn : n ≠ 0) :
+lemma getVert_cons {u v w n} (p : G.Walk v w) (h : G.Adj u v) (hn : n ≠ 0) :
     (p.cons h).getVert n = p.getVert (n - 1) := by
   obtain ⟨i, hi⟩ : ∃ (i : ℕ), i.succ = n := by
     use n - 1; exact Nat.succ_pred_eq_of_ne_zero hn
   rw [← hi]
-  simp only [Nat.succ_eq_add_one, cons_getVert_succ, Nat.add_sub_cancel]
+  simp only [Nat.succ_eq_add_one, getVert_cons_succ, Nat.add_sub_cancel]
 
 @[simp]
 theorem cons_append {u v w x : V} (h : G.Adj u v) (p : G.Walk v w) (q : G.Walk w x) :
@@ -784,13 +784,13 @@ def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
   match p, n with
   | .nil, _ => .nil
   | p, 0 => p.copy (getVert_zero p).symm rfl
-  | .cons h q, (n + 1) => (q.drop n).copy (cons_getVert_succ _ h).symm rfl
+  | .cons h q, (n + 1) => (q.drop n).copy (getVert_cons_succ _ h).symm rfl
 
 /-- The walk obtained by removing the first dart of a non-nil walk. -/
 def tail (p : G.Walk u v) : G.Walk (p.getVert 1) v := p.drop 1
 
 @[simp]
-lemma cons_nil_tail_eq (h : G.Adj u v) : (Walk.cons h .nil).tail = .nil := by rfl
+lemma tail_cons_nil (h : G.Adj u v) : (Walk.cons h .nil).tail = .nil := by rfl
 
 lemma tail_cons_eq (h : G.Adj u v) (p : G.Walk v w) : (p.cons h).tail =
     p.copy (getVert_zero p).symm rfl := by
@@ -815,7 +815,7 @@ lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
   cases p with
   | nil => simp only [nil_nil, not_true_eq_false] at hp
   | cons h q =>
-    simp only [cons_getVert_succ, tail_cons_eq, cons_copy, copy_rfl_rfl]
+    simp only [getVert_cons_succ, tail_cons_eq, cons_copy, copy_rfl_rfl]
 
 
 @[simp] lemma cons_support_tail (p : G.Walk x y) (hp : ¬p.Nil) :
@@ -841,13 +841,6 @@ lemma tail_cons {t u v} (p : G.Walk u v) (h : G.Adj t u) :
   match p with
   | .nil => rfl
   | .cons h q => rfl
-
-lemma tail_support_eq_support_tail (p : G.Walk u v) (hnp : ¬p.Nil) :
-    p.tail.support = p.support.tail := by
-  match p with
-  | .nil => simp only [nil_nil, not_true_eq_false] at hnp
-  | .cons h q => simp only [tail_cons, cons_getVert_succ, support_copy, support_cons,
-                    List.tail_cons]
 
 /-! ### Walk decompositions -/
 
@@ -1033,9 +1026,9 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
   | cons hadj q =>
     by_cases hi : i = 0
     · simp only [hi, getVert_zero, h.symm]
-    · simp only [copy_cons, cons_getVert_succ]
-      rw [cons_getVert _ _ hi]
-      rw [cons_getVert _ _ hi]
+    · simp only [copy_cons, getVert_cons_succ]
+      rw [getVert_cons _ _ hi]
+      rw [getVert_cons _ _ hi]
       apply getVert_copy
 
 @[simp] lemma getVert_tail {u v n} (p : G.Walk u v) (hnp: ¬ p.Nil) :
@@ -1043,7 +1036,7 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
   match p with
   | .nil => rfl
   | .cons h q =>
-    simp only [cons_getVert_succ, tail_cons_eq, cons_getVert]
+    simp only [getVert_cons_succ, tail_cons_eq, getVert_cons]
     exact getVert_copy q n (getVert_zero q).symm rfl
 
 /-- Given a walk `w` and a node in the support, there exists a natural `n`, such that given node
