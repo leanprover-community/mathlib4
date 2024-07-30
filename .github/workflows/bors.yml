@@ -53,7 +53,7 @@ jobs:
       - name: install elan
         run: |
           set -o pipefail
-          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
@@ -114,7 +114,7 @@ jobs:
       - name: install elan
         run: |
           set -o pipefail
-          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
@@ -236,19 +236,25 @@ jobs:
       - name: check declarations in db files
         run: |
           python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
-          lake exe checkYaml
+          lake exe check-yaml
 
       - name: verify `lake exe graph` works
         run: |
           lake exe graph
           rm import_graph.dot
 
+      - name: build everything
+        # make sure everything is available for test/import_all.lean
+        run: |
+          lake build Batteries Qq Aesop ProofWidgets
+
       - name: test mathlib
         id: test
         uses: liskin/gh-problem-matcher-wrap@v3
         with:
           linters: gcc
-          run: lake test
+          run:
+            lake test
 
       - name: check for unused imports
         id: shake

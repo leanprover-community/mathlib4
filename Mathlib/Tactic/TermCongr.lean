@@ -6,7 +6,7 @@ Authors: Kyle Miller
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Logic.Basic
-import Mathlib.Tactic.Congr!
+import Mathlib.Tactic.CongrExclamation
 
 /-! # `congr(...)` congruence quotations
 
@@ -47,7 +47,7 @@ it eagerly wants to solve for instance arguments. The current version is able to
 expected LHS and RHS to fill in arguments before solving for instance arguments.
 -/
 
-set_option autoImplicit true
+universe u
 
 namespace Mathlib.Tactic.TermCongr
 open Lean Elab Meta
@@ -416,7 +416,7 @@ def CongrResult.mkDefault' (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM Con
   CongrResult.mkDefault lhs rhs
 
 /-- Throw an internal error. -/
-def throwCongrEx (lhs rhs : Expr) (msg : MessageData) : MetaM α := do
+def throwCongrEx {α : Type} (lhs rhs : Expr) (msg : MessageData) : MetaM α := do
   throwError "congr(...) failed with left-hand side{indentD lhs}\n\
     and right-hand side {indentD rhs}\n{msg}"
 

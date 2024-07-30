@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 import Mathlib.CategoryTheory.Bicategory.Strict
 
-#align_import category_theory.bicategory.locally_discrete from "leanprover-community/mathlib"@"c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e"
-
 /-!
 # Locally discrete bicategories
 
@@ -61,8 +59,8 @@ instance [Inhabited C] : Inhabited (LocallyDiscrete C) :=
   ⟨⟨default⟩⟩
 
 instance categoryStruct [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete C) where
-  Hom := fun a b => Discrete (a.as ⟶ b.as)
-  id := fun a => ⟨𝟙 a.as⟩
+  Hom a b := Discrete (a.as ⟶ b.as)
+  id a := ⟨𝟙 a.as⟩
   comp f g := ⟨f.as ≫ g.as⟩
 
 variable [CategoryStruct.{v} C]
@@ -77,7 +75,6 @@ lemma comp_as {a b c : LocallyDiscrete C} (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g
 
 instance (priority := 900) homSmallCategory (a b : LocallyDiscrete C) : SmallCategory (a ⟶ b) :=
   CategoryTheory.discreteCategory (a.as ⟶ b.as)
-#align category_theory.locally_discrete.hom_small_category CategoryTheory.LocallyDiscrete.homSmallCategory
 
 -- Porting note: Manually adding this instance (inferInstance doesn't work)
 instance subsingleton2Hom {a b : LocallyDiscrete C} (f g : a ⟶ b) : Subsingleton (f ⟶ g) :=
@@ -86,7 +83,6 @@ instance subsingleton2Hom {a b : LocallyDiscrete C} (f g : a ⟶ b) : Subsinglet
 /-- Extract the equation from a 2-morphism in a locally discrete 2-category. -/
 theorem eq_of_hom {X Y : LocallyDiscrete C} {f g : X ⟶ Y} (η : f ⟶ g) : f = g :=
   Discrete.ext _ _ η.1.1
-#align category_theory.locally_discrete.eq_of_hom CategoryTheory.LocallyDiscrete.eq_of_hom
 
 end LocallyDiscrete
 
@@ -103,14 +99,12 @@ instance locallyDiscreteBicategory : Bicategory (LocallyDiscrete C) where
   associator f g h := eqToIso <| by apply Discrete.ext; simp
   leftUnitor f := eqToIso <| by apply Discrete.ext; simp
   rightUnitor f := eqToIso <| by apply Discrete.ext; simp
-#align category_theory.locally_discrete_bicategory CategoryTheory.locallyDiscreteBicategory
 
 /-- A locally discrete bicategory is strict. -/
 instance locallyDiscreteBicategory.strict : Strict (LocallyDiscrete C) where
   id_comp f := Discrete.ext _ _ (Category.id_comp _)
   comp_id f := Discrete.ext _ _ (Category.comp_id _)
   assoc f g h := Discrete.ext _ _ (Category.assoc _ _ _)
-#align category_theory.locally_discrete_bicategory.strict CategoryTheory.locallyDiscreteBicategory.strict
 
 variable {I : Type u₁} [Category.{v₁} I] {B : Type u₂} [Bicategory.{w₂, v₂} B] [Strict B]
 
@@ -137,7 +131,6 @@ def Functor.toOplaxFunctor (F : I ⥤ B) : OplaxFunctor (LocallyDiscrete I) B wh
   map₂ η := eqToHom (congr_arg _ (LocallyDiscrete.eq_of_hom η))
   mapId i := eqToHom (F.map_id i.as)
   mapComp f g := eqToHom (F.map_comp f.as g.as)
-#align category_theory.functor.to_oplax_functor CategoryTheory.Functor.toOplaxFunctor
 
 end
 
@@ -146,9 +139,9 @@ section
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 
 @[simp]
-lemma OplaxFunctor.map₂_eqToHom (F : OplaxFunctor B C) {a b : B} {f g : a ⟶ b} (h : f = g) :
+lemma PrelaxFunctor.map₂_eqToHom (F : PrelaxFunctor B C) {a b : B} {f g : a ⟶ b} (h : f = g) :
     F.map₂ (eqToHom h) = eqToHom (F.congr_map h) := by
-  subst h; simp only [eqToHom_refl, OplaxFunctor.map₂_id]
+  subst h; simp only [eqToHom_refl, PrelaxFunctor.map₂_id]
 
 end
 
