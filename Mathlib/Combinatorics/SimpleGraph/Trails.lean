@@ -5,7 +5,6 @@ Authors: Kyle Miller
 -/
 import Mathlib.Algebra.Ring.Parity
 import Mathlib.Combinatorics.SimpleGraph.Path
-import Mathlib.Combinatorics.SimpleGraph.Finite
 
 /-!
 
