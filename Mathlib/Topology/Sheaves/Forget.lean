@@ -11,7 +11,7 @@ import Mathlib.Topology.Sheaves.Sheaf
 
 If `G : C ⥤ D` is a functor which reflects isomorphisms and preserves limits
 (we assume all limits exist in `C`),
-then checking the sheaf condition for a presheaf `F : presheaf C X`
+then checking the sheaf condition for a presheaf `F : Presheaf C X`
 is equivalent to checking the sheaf condition for `F ⋙ G`.
 
 The important special case is when
@@ -34,7 +34,7 @@ namespace TopCat.Presheaf
 
 /-- If `G : C ⥤ D` is a functor which reflects isomorphisms and preserves limits
 (we assume all limits exist in `C`),
-then checking the sheaf condition for a presheaf `F : presheaf C X`
+then checking the sheaf condition for a presheaf `F : Presheaf C X`
 is equivalent to checking the sheaf condition for `F ⋙ G`.
 
 The important special case is when
