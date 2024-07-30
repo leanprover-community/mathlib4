@@ -32,7 +32,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] {E : Type*} [Category E]
 
 namespace Functor
 
@@ -135,6 +135,13 @@ noncomputable def ofFullyFaithful [F.Full] [F.Faithful] :
     F.FullyFaithful where
   preimage := F.preimage
 
+variable (C) in
+/-- The identity functor is fully faithful. -/
+@[simps]
+def id : (𝟭 C).FullyFaithful where
+  preimage f := f
+
+section
 variable (hF : F.FullyFaithful)
 
 /-- The equivalence `(X ⟶ Y) ≃ (F.obj X ⟶ F.obj Y)` given by `h : F.FullyFaithful`. -/
@@ -183,18 +190,12 @@ def isoEquiv {X Y : C} : (X ≅ Y) ≃ (F.obj X ≅ F.obj Y) where
   left_inv := by aesop_cat
   right_inv := by aesop_cat
 
-variable (C) in
-/-- The identity functor is fully faithful. -/
-@[simps]
-def id : (𝟭 C).FullyFaithful where
-  preimage f := f
-
-variable {E : Type*} [Category E]
-
 /-- Fully faithful functors are stable by composition. -/
 @[simps]
 def comp {G : D ⥤ E} (hG : G.FullyFaithful) : (F ⋙ G).FullyFaithful where
   preimage f := hF.preimage (hG.preimage f)
+
+end
 
 /-- If `F ⋙ G` is fully faithful and `G` is faithful, then `F` is fully faithful. -/
 def ofCompFaithful {G : D ⥤ E} [G.Faithful] (hFG : (F ⋙ G).FullyFaithful) :
