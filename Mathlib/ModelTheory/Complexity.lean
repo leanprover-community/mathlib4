@@ -45,7 +45,7 @@ open FirstOrder Structure Fin
 namespace BoundedFormula
 
 /-- An atomic formula is either equality or a relation symbol applied to terms.
-  Note that `⊥` and `⊤` are not considered atomic in this convention. -/
+Note that `⊥` and `⊤` are not considered atomic in this convention. -/
 inductive IsAtomic : L.BoundedFormula α n → Prop
   | equal (t₁ t₂ : L.Term (α ⊕ (Fin n))) : IsAtomic (t₁.bdEqual t₂)
   | rel {l : ℕ} (R : L.Relations l) (ts : Fin l → L.Term (α ⊕ (Fin n))) :
