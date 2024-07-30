@@ -544,11 +544,18 @@ theorem nerve2coskNatTrans.component_isIso (C : Type 0) [Category.{0} C] (n : �
     StructuredArrow.proj_obj, Adjunction.adjunctionOfEquivRight_unit_app, nerve_obj,
     Equiv.coe_fn_symm_mk, SimplexCategory.len_mk]
   let _ : HasLimit (Ran.diagram (SimplexCategory.Δ.ι 2).op (nerveFunctor₂.obj (Cat.of C)) { unop := [n] }) := inferInstance
-  refine Iso.isIso_hom ?_
-  refine conePointUniqueUpToIso ?_ (limit.islimit _)
-  refine' IsLimit.hom_isIso _ (limit.isLimit _) _
-
-  sorry
+  let c : Cone (Ran.diagram (Δ.ι 2).op ((truncation 2).obj (nerve C)) { unop := [n] }) :=
+    { pt := ComposableArrows C n,
+      π := {
+        app := fun i ↦ (nerve C).map i.hom ≫ (𝟙 ((truncation 2).obj (nerve C)):).app i.right,
+        naturality := sorry } }
+  change IsIso (limit.lift _ c)
+  let hc : IsLimit c := sorry
+  exact inferInstanceAs (IsIso (hc.conePointUniqueUpToIso (limit.isLimit _)).hom)
+  -- refine Iso.isIso_hom ?_
+  -- refine conePointUniqueUpToIso ?_ (limit.islimit _)
+  -- refine' IsLimit.hom_isIso _ (limit.isLimit _) _
+  -- sorry
   /-
   C : Type
   inst✝ : Category.{0, 0} C
