@@ -126,8 +126,14 @@ variable (P : TopCat.{u} → Prop) (X : TopCat.{max u w})
     [CompHausLike.HasExplicitFiniteCoproducts.{0} P] [CompHausLike.HasExplicitPullbacks.{u} P]
     (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f)
 
+/--
+A generalization of `TopCat.toCondensedSet` where the defining site is of the form `CompHausLike P`
+for a more general `P : TopCat.{u} → Prop`.
 
-/-- TODO: refactor the definition of `TopCat.toCondensed` to use this construction. -/
+TODO (after the refactor of `CompHaus` is complete):
+refactor the definitions of `TopCat.toCondensedSet` and `TopCat.toLightCondSet` 
+to use this construction.
+-/
 def TopCat.toSheafCompHausLike :
     have := CompHausLike.preregular hs
     Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w)) where
@@ -141,7 +147,14 @@ def TopCat.toSheafCompHausLike :
     intro Z B π he
     apply QuotientMap.of_surjective_continuous (hs _ he) π.continuous
 
-/-- TODO: refactor the definition of `topCatToCondensed` to use this construction. -/
+/--
+A generalization of `topCatToCondensedSet` where the defining site is of the form `CompHausLike P`
+for a more general `P : TopCat.{u} → Prop`.
+
+TODO (after the refactor of `CompHaus` is complete):
+refactor the definitions of `topCatToCondensedSet` and `topCatToLightCondSet` to use this
+construction.
+-/
 noncomputable def topCatToSheafCompHausLike :
     have := CompHausLike.preregular hs
     TopCat.{max u w} ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w)) where
