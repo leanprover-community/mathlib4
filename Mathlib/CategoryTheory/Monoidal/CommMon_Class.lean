@@ -131,7 +131,7 @@ variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D] [Braide
 
 That is, a lax braided functor `F : C ⥤ D` induces a functor `CommMon_Cat C ⥤ CommMon_Class D`.
 -/
-@[simps!?]
+@[simps!]
 instance (F : LaxBraidedFunctor C D) {A : C} [CommMon_Class A] : CommMon_Class (F.obj A) where
   mul_comm' := by
     dsimp
@@ -143,10 +143,10 @@ instance (F : LaxBraidedFunctor C D) {A : C} [CommMon_Class A] : CommMon_Class (
 
 That is, a lax braided functor `F : C ⥤ D` induces a functor `CommMon_Cat C ⥤ CommMon_Class D`.
 -/
-@[simps!?]
+@[simps!]
 def mapCommMon (F : LaxBraidedFunctor C D) : CommMon_Cat C ⥤ CommMon_Cat D where
   obj A := CommMon_Cat.mk (F.obj A.X)
-  map f := Mon_Cat.mkHom <| F.toLaxMonoidalFunctor.mapMon.map f
+  map f := Mon_Cat.mkHom <| F.toLaxMonoidalFunctor.mapMonCat.map f
 
 variable (C) (D)
 
@@ -175,7 +175,7 @@ def laxBraidedToCommMon : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ⥤ CommM
   map α := ((mapCommMonFunctor (Discrete PUnit.{u+1}) C).map α).app _
 
 /-- Implementation of `CommMon_Class.equivLaxBraidedFunctorPunit`. -/
-@[simps?]
+@[simps]
 def commMonToLaxBraided : CommMon_Cat C ⥤ LaxBraidedFunctor (Discrete PUnit.{u + 1}) C where
   obj A :=
     { obj := fun _ => A.X
