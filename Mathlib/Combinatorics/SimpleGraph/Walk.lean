@@ -323,6 +323,15 @@ theorem reverse_reverse {u v : V} (p : G.Walk u v) : p.reverse.reverse = p := by
   | nil => rfl
   | cons _ _ ih => simp [ih]
 
+theorem reverse_surjective {u v : V} : Function.Surjective (reverse : G.Walk u v → _) :=
+  RightInverse.surjective reverse_reverse
+
+theorem reverse_injective {u v : V} : Function.Injective (reverse : G.Walk u v → _) :=
+  RightInverse.injective reverse_reverse
+
+theorem reverse_bijective {u v : V} : Function.Bijective (reverse : G.Walk u v → _) :=
+  And.intro reverse_injective reverse_surjective
+
 @[simp]
 theorem length_nil {u : V} : (nil : G.Walk u u).length = 0 := rfl
 
@@ -1138,20 +1147,20 @@ theorem length_dropUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
 
 protected theorem IsTrail.takeUntil {u v w : V} {p : G.Walk v w} (hc : p.IsTrail)
     (h : u ∈ p.support) : (p.takeUntil u h).IsTrail :=
-  IsTrail.of_append_left (by rwa [← take_spec _ h] at hc)
+  IsTrail.of_append_left (q := p.dropUntil u h) (by rwa [← take_spec _ h] at hc)
 
 protected theorem IsTrail.dropUntil {u v w : V} {p : G.Walk v w} (hc : p.IsTrail)
     (h : u ∈ p.support) : (p.dropUntil u h).IsTrail :=
-  IsTrail.of_append_right (by rwa [← take_spec _ h] at hc)
+  IsTrail.of_append_right (p := p.takeUntil u h) (by rwa [← take_spec _ h] at hc)
 
 protected theorem IsPath.takeUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
     (h : u ∈ p.support) : (p.takeUntil u h).IsPath :=
-  IsPath.of_append_left (by rwa [← take_spec _ h] at hc)
+  IsPath.of_append_left (q := p.dropUntil u h) (by rwa [← take_spec _ h] at hc)
 
 -- Porting note: p was previously accidentally an explicit argument
 protected theorem IsPath.dropUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
     (h : u ∈ p.support) : (p.dropUntil u h).IsPath :=
-  IsPath.of_append_right (by rwa [← take_spec _ h] at hc)
+  IsPath.of_append_right (p := p.takeUntil u h) (by rwa [← take_spec _ h] at hc)
 
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
 def rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) : G.Walk u u :=

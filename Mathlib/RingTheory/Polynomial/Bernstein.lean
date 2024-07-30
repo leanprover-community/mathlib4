@@ -247,7 +247,7 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
         rw [this]
         exact (iterate_derivative_at_1_ne_zero ℚ n k h).symm
       refine span_induction m ?_ ?_ ?_ ?_
-      · simp
+      · simp only [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
         rintro ⟨a, w⟩; simp only [Fin.val_mk]
         rw [iterate_derivative_at_1_eq_zero_of_lt ℚ n ((tsub_lt_tsub_iff_left_of_le h).mpr w)]
       · simp
