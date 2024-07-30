@@ -371,17 +371,18 @@ theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddCom
   rw [AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_top_iff_surjective]
   exact Function.Bijective.surjective h
 
-variable  {M S : Type*} [DecidableEq ι] [DecidableEq M] [AddCommMonoid M] [SetLike S M]
+variable  {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S)
 
-theorem support_subset (x : DirectSum ι fun i => A i) :
+theorem support_subset [DecidableEq M] (x : DirectSum ι fun i => A i) :
     (Function.support fun i => (x i : M)) ⊆ ↑(DFinsupp.support x) := by
   intro m
   simp only [Function.mem_support, Finset.mem_coe, DFinsupp.mem_support_toFun, not_imp_not,
     ZeroMemClass.coe_eq_zero, imp_self]
 
 theorem finite_support (x : DirectSum ι fun i => A i) :
-    (Function.support fun i => (x i : M)).Finite :=
-  Set.Finite.subset (DFinsupp.support x : Set ι).toFinite (DirectSum.support_subset _ x)
+    (Function.support fun i => (x i : M)).Finite := by
+  classical
+  exact Set.Finite.subset (DFinsupp.support x : Set ι).toFinite (DirectSum.support_subset _ x)
 
 end DirectSum
