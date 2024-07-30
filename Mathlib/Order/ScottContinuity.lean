@@ -89,6 +89,45 @@ protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f 
 
 end ScottContinuous
 
+section Products
+
+variable {γ : Type*}
+
+variable [Preorder α] [Preorder β] [Preorder γ]
+
+
+lemma monotone {f : α × β → γ} (h₂ : ∀ a, Monotone (fun b => f (a,b)))
+    (h₁ : ∀ b, Monotone (fun a => f (a,b))) : Monotone f := fun _ _ hab =>
+  le_trans (h₁ _ (Prod.mk_le_mk.mp hab).1) (h₂ _ (Prod.mk_le_mk.mp hab).2)
+
+-- theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
+--    IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
+#check isLUB_prod
+
+lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
+    {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
+    upperBounds {f p | p ∈ d} = upperBounds {f p | p ∈ (Prod.fst '' d) ×ˢ (Prod.snd '' d)} := by
+  apply le_antisymm
+  · intro u hu
+    rw [mem_upperBounds]
+    intro c hc
+    simp at hc
+    cases' hc with a₁ ha
+    cases' ha with b₁ hab
+    obtain ⟨⟨⟨b₂,hb₂⟩,⟨a₂,ha₂⟩⟩, right⟩ := hab
+    obtain ⟨⟨a₃,b₃⟩,hm⟩ := hd _ hb₂ _ ha₂
+    have e1 : (a₁,b₁) ≤ (a₃,b₃) := by
+      aesop
+    rw [← right]
+    apply le_trans (hf e1)
+    rw [mem_upperBounds] at hu
+    apply hu
+    rw [mem_setOf_eq]
+    use (a₃, b₃)
+    exact And.imp_right (fun a ↦ rfl) hm
+
+end Products
+
 section SemilatticeSup
 
 variable [Preorder α] [SemilatticeSup β]
