@@ -751,17 +751,7 @@ instance LE.isTotal [LinearOrder α] : IsTotal α (· ≤ ·) :=
 instance [LinearOrder α] : IsTotal α (· ≥ ·) :=
   IsTotal.swap _
 
--- Porting note: this was `by infer_instance` before
-@[deprecated (since := "2024-07-30")]
-instance [LinearOrder α] : IsTotalPreorder α (· ≤ ·) where
-
-@[deprecated (since := "2024-07-30")]
-instance [LinearOrder α] : IsTotalPreorder α (· ≥ ·) where
-
-@[deprecated (since := "2024-07-30")]
 instance [LinearOrder α] : IsLinearOrder α (· ≤ ·) where
-
-@[deprecated (since := "2024-07-30")]
 instance [LinearOrder α] : IsLinearOrder α (· ≥ ·) where
 
 instance [LinearOrder α] : IsTrichotomous α (· < ·) :=
