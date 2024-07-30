@@ -117,7 +117,7 @@ theorem reverse_revzip (l : List α) : reverse l.revzip = revzip l.reverse := by
 
 theorem revzip_swap (l : List α) : (revzip l).map Prod.swap = revzip l.reverse := by simp [revzip]
 
-theorem getElem?_zip_with (f : α → β → γ) (l₁ : List α) (l₂ : List β) (i : ℕ) :
+theorem getElem?_zipWith' (f : α → β → γ) (l₁ : List α) (l₂ : List β) (i : ℕ) :
     (zipWith f l₁ l₂)[i]? = (l₁[i]?.map f).bind fun g => l₂[i]?.map g := by
   induction' l₁ with head tail generalizing l₂ i
   · rw [zipWith] <;> simp
@@ -125,21 +125,29 @@ theorem getElem?_zip_with (f : α → β → γ) (l₁ : List α) (l₂ : List �
     · simp
     · cases i <;> simp_all
 
-theorem get?_zip_with (f : α → β → γ) (l₁ : List α) (l₂ : List β) (i : ℕ) :
-    (zipWith f l₁ l₂).get? i = ((l₁.get? i).map f).bind fun g => (l₂.get? i).map g := by
-  simp [getElem?_zip_with]
+@[deprecated (since := "2024-07-29")] alias getElem?_zip_with := getElem?_zipWith'
 
-theorem getElem?_zip_with_eq_some (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
+theorem get?_zipWith' (f : α → β → γ) (l₁ : List α) (l₂ : List β) (i : ℕ) :
+    (zipWith f l₁ l₂).get? i = ((l₁.get? i).map f).bind fun g => (l₂.get? i).map g := by
+  simp [getElem?_zipWith']
+
+@[deprecated (since := "2024-07-29")] alias get?_zip_with := get?_zipWith'
+
+theorem getElem?_zipWith_eq_some (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
     (zipWith f l₁ l₂)[i]? = some z ↔
       ∃ x y, l₁[i]? = some x ∧ l₂[i]? = some y ∧ f x y = z := by
   induction l₁ generalizing l₂ i
   · simp
   · cases l₂ <;> cases i <;> simp_all
 
-theorem get?_zip_with_eq_some (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
+@[deprecated (since := "2024-07-29")] alias getElem?_zip_with_eq_some := getElem?_zipWith_eq_some
+
+theorem get?_zipWith_eq_some (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
     (zipWith f l₁ l₂).get? i = some z ↔
       ∃ x y, l₁.get? i = some x ∧ l₂.get? i = some y ∧ f x y = z := by
-  simp [getElem?_zip_with_eq_some]
+  simp [getElem?_zipWith_eq_some]
+
+@[deprecated (since := "2024-07-29")] alias get?_zip_with_eq_some := get?_zipWith_eq_some
 
 theorem get?_zip_eq_some (l₁ : List α) (l₂ : List β) (z : α × β) (i : ℕ) :
     (zip l₁ l₂).get? i = some z ↔ l₁.get? i = some z.1 ∧ l₂.get? i = some z.2 := by
