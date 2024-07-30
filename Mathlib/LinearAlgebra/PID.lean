@@ -21,8 +21,6 @@ algebra import hierarchy have to depend on the theory of PIDs.
 
 -/
 
-open BigOperators
-
 namespace LinearMap
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]

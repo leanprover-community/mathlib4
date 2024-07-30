@@ -6,8 +6,6 @@ Authors: Eric Wieser, Jireh Loreaux
 import Mathlib.Algebra.Group.Center
 import Mathlib.Data.Int.Cast.Lemmas
 
-#align_import group_theory.subsemigroup.center from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
-
 /-!
 # Centers of rings
 
@@ -22,7 +20,7 @@ variable (M)
 
 @[simp]
 theorem natCast_mem_center [NonAssocSemiring M] (n : ℕ) : (n : M) ∈ Set.center M where
-  comm _:= by rw [Nat.commute_cast]
+  comm _ := by rw [Nat.commute_cast]
   left_assoc _ _ := by
     induction n with
     | zero => rw [Nat.cast_zero, zero_mul, zero_mul, zero_mul]
@@ -75,7 +73,6 @@ theorem add_mem_center [Distrib M] {a b : M} (ha : a ∈ Set.center M) (hb : b �
   left_assoc _ _ := by rw [add_mul, ha.left_assoc, hb.left_assoc, ← add_mul, ← add_mul]
   mid_assoc _ _ := by rw [mul_add, add_mul, ha.mid_assoc, hb.mid_assoc, ← mul_add, ← add_mul]
   right_assoc _ _ := by rw [mul_add, ha.right_assoc, hb.right_assoc, ← mul_add, ← mul_add]
-#align set.add_mem_center Set.add_mem_center
 
 @[simp]
 theorem neg_mem_center [NonUnitalNonAssocRing M] {a : M} (ha : a ∈ Set.center M) :
@@ -84,7 +81,6 @@ theorem neg_mem_center [NonUnitalNonAssocRing M] {a : M} (ha : a ∈ Set.center 
   left_assoc _ _ := by rw [neg_mul, ha.left_assoc, neg_mul, neg_mul]
   mid_assoc _ _ := by rw [← neg_mul_comm, ha.mid_assoc, neg_mul_comm, neg_mul]
   right_assoc _ _ := by rw [mul_neg, ha.right_assoc, mul_neg, mul_neg]
-#align set.neg_mem_center Set.neg_mem_centerₓ
 
 end Set
 
