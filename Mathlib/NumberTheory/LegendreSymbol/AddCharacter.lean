@@ -8,7 +8,6 @@ import Mathlib.FieldTheory.Finite.Trace
 import Mathlib.Algebra.Group.AddChar
 import Mathlib.Data.ZMod.Units
 import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 
 /-!
 # Additive characters of finite rings and fields
@@ -311,11 +310,5 @@ lemma FiniteField.primitiveChar_to_Complex_isPrimitive :
   exact (IsCyclotomicExtension.algEquiv nn ℂ (CyclotomicField nn ℂ) ℂ).injective
 
 end Field
-
-/-- The standard additive character `ZMod N → ℂ` is primitive. -/
-lemma isPrimitive_stdAddChar (N : ℕ) [NeZero N] :
-    IsPrimitive (ZMod.stdAddChar (N := N)) := by
-  refine zmod_char_primitive_of_eq_one_only_at_zero _ _ (fun t ht ↦ ?_)
-  rwa [← (ZMod.stdAddChar (N := N)).map_zero_eq_one, ZMod.injective_stdAddChar.eq_iff] at ht
 
 end AddChar

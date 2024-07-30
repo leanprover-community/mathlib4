@@ -3,9 +3,9 @@ Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Algebra.Group.AddChar
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
+import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 
 /-!
 # Maps on the unit circle
@@ -264,5 +264,11 @@ lemma stdAddChar_apply (j : ZMod N) : stdAddChar j = ↑(toCircle j) := rfl
 
 lemma injective_stdAddChar : Injective (stdAddChar : AddChar (ZMod N) ℂ) :=
   Subtype.coe_injective.comp injective_toCircle
+
+/-- The standard additive character `ZMod N → ℂ` is primitive. -/
+lemma isPrimitive_stdAddChar (N : ℕ) [NeZero N] :
+     (stdAddChar (N := N)).IsPrimitive := by
+  refine AddChar.zmod_char_primitive_of_eq_one_only_at_zero _ _ (fun t ht ↦ ?_)
+  rwa [← (stdAddChar (N := N)).map_zero_eq_one, injective_stdAddChar.eq_iff] at ht
 
 end ZMod
