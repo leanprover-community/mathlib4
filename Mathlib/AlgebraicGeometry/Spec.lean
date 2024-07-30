@@ -99,9 +99,6 @@ def Spec.sheafedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
         comap f (unop U) ((TopologicalSpace.Opens.map (Spec.topMap f)).obj (unop U)) fun _ => id
       naturality := fun {_ _} _ => RingHom.ext fun _ => Subtype.eq <| funext fun _ => rfl }
 
-lemma Spec.sheafedSpaceMap_apply {R S : CommRingCat.{u}} (f : R ⟶ S) (p) :
-  (Spec.sheafedSpaceMap f).base p = PrimeSpectrum.comap f p := rfl
-
 @[simp]
 theorem Spec.sheafedSpaceMap_id {R : CommRingCat.{u}} :
     Spec.sheafedSpaceMap (𝟙 R) = 𝟙 (Spec.sheafedSpaceObj R) :=
