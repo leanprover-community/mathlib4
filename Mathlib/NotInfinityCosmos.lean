@@ -544,11 +544,11 @@ theorem nerve2coskNatTrans.component_isIso (C : Type 0) [Category.{0} C] (n : �
     StructuredArrow.proj_obj, Adjunction.adjunctionOfEquivRight_unit_app, nerve_obj,
     Equiv.coe_fn_symm_mk, SimplexCategory.len_mk]
   let _ : HasLimit (Ran.diagram (SimplexCategory.Δ.ι 2).op (nerveFunctor₂.obj (Cat.of C)) { unop := [n] }) := inferInstance
-  refine Iso.isIso_hom ?_
-  refine conePointUniqueUpToIso ?_ (limit.islimit _)
-  refine' IsLimit.hom_isIso _ (limit.isLimit _) _
-
   sorry
+  -- refine Iso.isIso_hom ?_
+  -- refine conePointUniqueUpToIso ?_ (limit.islimit _)
+  -- refine' IsLimit.hom_isIso _ (limit.isLimit _) _
+
   /-
   C : Type
   inst✝ : Category.{0, 0} C
@@ -569,7 +569,20 @@ abbrev nerve2cosk.cone {C : Type 0} [Category.{0} C] (n : ℕ) : Cone (nerve2cos
   := by
   refine Ran.cone (op ([n] : SimplexCategory)) (nerve₂restrictedNerveIso C).hom
 
-theorem
+def nerve2cosk.cone_isLimit {C : Type 0} [Category.{0} C] (n : ℕ) :
+    Limits.IsLimit (nerve2cosk.cone (C := C) n) where
+      lift s x := {
+        obj := by
+          intro i
+          unfold diagram at s
+          unfold Ran.diagram at s
+          sorry
+
+        map := sorry
+      }
+
+      fac := sorry
+      uniq := sorry
 
   -- (nerve2coskNatTrans.app (Cat.of C))
 /-- ER: Since a natural transformation is a natural isomorphism iff its components are isomorphisms: -/
