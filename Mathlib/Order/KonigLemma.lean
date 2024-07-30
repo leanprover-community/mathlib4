@@ -103,7 +103,7 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Subsinglet
     le_refl := fun a ↦ ⟨rfl.le, π_refl _⟩
     le_trans := fun _ _ c h h' ↦ ⟨h.1.trans h'.1, by rw [← π_trans h.1 h'.1 c.2, h'.2, h.2]⟩
     le_antisymm := by
-      rintro ⟨i,a⟩ ⟨j,b⟩ ⟨hij : i ≤ j, hab : π hij b = a⟩ ⟨hji : j ≤ i, hba : π hji a = b⟩
+      rintro ⟨i, a⟩ ⟨j, b⟩ ⟨hij : i ≤ j, hab : π hij b = a⟩ ⟨hji : j ≤ i, hba : π hji a = b⟩
       obtain rfl := hij.antisymm hji
       rw [show a = b by rwa [π_refl] at hba] }
 
