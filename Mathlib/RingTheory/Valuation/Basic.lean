@@ -758,9 +758,7 @@ theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = @Min.min Γ₀ _
 
 theorem map_add_eq_of_lt_left {x y : R} (h : v x < v y) :
     v (x + y) = v x := by
-  rw [map_add_of_distinct_val]
-  simp [le_of_lt, h]
-  simp [ne_of_lt, h]
+  rw [map_add_of_distinct_val _ h.ne, min_eq_left h.le]
 
 theorem map_add_eq_of_lt_right {x y : R} (hx : v y < v x) :
     v (x + y) = v y := add_comm y x ▸ map_add_eq_of_lt_left v hx

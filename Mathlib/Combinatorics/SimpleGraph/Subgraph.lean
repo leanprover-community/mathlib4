@@ -397,8 +397,8 @@ instance : BoundedOrder (Subgraph G) where
   le_top x := ⟨Set.subset_univ _, fun _ _ => x.adj_sub⟩
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
 
--- Note that subgraphs do not form a Boolean algebra, because of `verts`.
-instance : CompletelyDistribLattice G.Subgraph :=
+/-- Note that subgraphs do not form a Boolean algebra, because of `verts`. -/
+def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxioms G.Subgraph :=
   { Subgraph.distribLattice with
     le := (· ≤ ·)
     sup := (· ⊔ ·)
@@ -421,6 +421,12 @@ instance : CompletelyDistribLattice G.Subgraph :=
         ⟨fun H hH => (hG' _ hH).2 hab, G'.adj_sub hab⟩⟩
     iInf_iSup_eq := fun f => Subgraph.ext _ _ (by simpa using iInf_iSup_eq)
       (by ext; simp [Classical.skolem]) }
+
+instance : CompletelyDistribLattice G.Subgraph :=
+  .ofMinimalAxioms completelyDistribLatticeMinimalAxioms
+
+@[gcongr] lemma verts_mono {H H' : G.Subgraph} (h : H ≤ H') : H.verts ⊆ H'.verts := h.1
+lemma verts_monotone : Monotone (verts : G.Subgraph → Set V) := fun _ _ h ↦ h.1
 
 @[simps]
 instance subgraphInhabited : Inhabited (Subgraph G) := ⟨⊥⟩
@@ -851,6 +857,16 @@ theorem singletonSubgraph_snd_le_subgraphOfAdj {u v : V} {h : G.Adj u v} :
     G.singletonSubgraph v ≤ G.subgraphOfAdj h := by
   simp
 
+@[simp]
+lemma support_subgraphOfAdj {u v : V} (h : G.Adj u v) :
+    (G.subgraphOfAdj h).support = {u , v} := by
+  ext
+  rw [Subgraph.mem_support]
+  simp only [subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
+  refine ⟨?_, fun h ↦ h.elim (fun hl ↦ ⟨v, .inl ⟨hl.symm, rfl⟩⟩) fun hr ↦ ⟨u, .inr ⟨rfl, hr.symm⟩⟩⟩
+  rintro ⟨_, hw⟩
+  exact hw.elim (fun h1 ↦ .inl h1.1.symm) fun hr ↦ .inr hr.2.symm
+
 end MkProperties
 
 namespace Subgraph
@@ -868,6 +884,10 @@ protected abbrev coeSubgraph {G' : G.Subgraph} : G'.coe.Subgraph → G.Subgraph 
 taking the portion of `G` that intersects `G'`. -/
 protected abbrev restrict {G' : G.Subgraph} : G.Subgraph → G'.coe.Subgraph :=
   Subgraph.comap G'.hom
+
+@[simp]
+lemma verts_coeSubgraph {G' : Subgraph G} (G'' : Subgraph G'.coe) :
+    G''.coeSubgraph.verts = (G''.verts : Set V) := rfl
 
 lemma coeSubgraph_adj {G' : G.Subgraph} (G'' : G'.coe.Subgraph) (v w : V) :
     (G'.coeSubgraph G'').Adj v w ↔

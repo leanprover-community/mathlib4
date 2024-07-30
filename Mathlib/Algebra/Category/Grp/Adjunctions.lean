@@ -3,9 +3,9 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johannes Hölzl
 -/
-import Mathlib.Algebra.Category.Grp.Basic
+import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.GroupTheory.FreeAbelianGroup
-
+import Mathlib.CategoryTheory.Limits.Shapes.Types
 
 /-!
 # Adjunctions regarding the category of (abelian) groups
@@ -36,7 +36,7 @@ noncomputable section
 
 universe u
 
-open CategoryTheory
+open CategoryTheory Limits
 
 namespace AddCommGrp
 
@@ -74,6 +74,9 @@ def adj : free ⊣ forget AddCommGrp.{u} :=
         simp only [Equiv.symm_symm]
         apply FreeAbelianGroup.lift_comp }
 
+instance : free.{u}.IsLeftAdjoint :=
+  ⟨_, ⟨adj⟩⟩
+
 instance : (forget AddCommGrp.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
@@ -85,6 +88,18 @@ the monomorphisms in `AddCommGroup` are just the injective functions.
 example {G H : AddCommGrp.{u}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
   (mono_iff_injective (f : G → H)).mp (Functor.map_mono (forget AddCommGrp) f)
 
+instance : (free.{u}).PreservesMonomorphisms where
+  preserves {X Y} f _ := by
+    by_cases hX : IsEmpty X
+    · constructor
+      intros
+      apply (IsInitial.isInitialObj free _
+        ((Types.initial_iff_empty X).2 hX).some).isZero.eq_of_tgt
+    · simp only [not_isEmpty_iff] at hX
+      have hf : Function.Injective f := by rwa [← mono_iff_injective]
+      obtain ⟨g, hg⟩ := hf.hasLeftInverse
+      have : IsSplitMono f := IsSplitMono.mk' { retraction := g }
+      infer_instance
 
 end AddCommGrp
 

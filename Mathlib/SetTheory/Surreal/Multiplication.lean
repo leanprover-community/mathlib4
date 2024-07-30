@@ -206,23 +206,25 @@ lemma ih1_neg_right : IH1 x y → IH1 x (-y) :=
 
 /-! #### Specialize `ih` to obtain specialized induction hypotheses for P1 -/
 
-variable (ih : ∀ a, ArgsRel a (Args.P1 x y) → P124 a)
 
-lemma numeric_option_mul (h : IsOption x' x) : (x' * y).Numeric :=
+lemma numeric_option_mul (ih : ∀ a, ArgsRel a (Args.P1 x y) → P124 a) (h : IsOption x' x) :
+    (x' * y).Numeric :=
   ih (Args.P1 x' y) (TransGen.single <| cutExpand_pair_left h)
 
-lemma numeric_mul_option (h : IsOption y' y) : (x * y').Numeric :=
+lemma numeric_mul_option (ih : ∀ a, ArgsRel a (Args.P1 x y) → P124 a) (h : IsOption y' y) :
+    (x * y').Numeric :=
   ih (Args.P1 x y') (TransGen.single <| cutExpand_pair_right h)
 
-lemma numeric_option_mul_option (hx : IsOption x' x) (hy : IsOption y' y) : (x' * y').Numeric :=
+lemma numeric_option_mul_option (ih : ∀ a, ArgsRel a (Args.P1 x y) → P124 a) (hx : IsOption x' x)
+    (hy : IsOption y' y) : (x' * y').Numeric :=
   ih (Args.P1 x' y') ((TransGen.single <| cutExpand_pair_right hy).tail <| cutExpand_pair_left hx)
 
-lemma ih1 : IH1 x y := by
+lemma ih1 (ih : ∀ a, ArgsRel a (Args.P1 x y) → P124 a) : IH1 x y := by
   rintro x₁ x₂ y' h₁ h₂ (rfl|hy) <;> apply ih (Args.P24 _ _ _)
   on_goal 2 => refine TransGen.tail ?_ (cutExpand_pair_right hy)
   all_goals exact TransGen.single (cutExpand_double_left h₁ h₂)
 
-lemma ih1_swap : IH1 y x := ih1 <| by
+lemma ih1_swap (ih : ∀ a, ArgsRel a (Args.P1 x y) → P124 a) : IH1 y x := ih1 <| by
   simp_rw [ArgsRel, InvImage, Args.toMultiset, Multiset.pair_comm] at ih ⊢
   exact ih
 
@@ -234,17 +236,15 @@ lemma P3_of_ih (hy : Numeric y) (ihyx : IH1 y x) (i k l) :
 lemma P24_of_ih (ihxy : IH1 x y) (i j) : P24 (x.moveLeft i) (x.moveLeft j) y :=
   ihxy (IsOption.moveLeft i) (IsOption.moveLeft j) (Or.inl rfl)
 
-variable (hx : Numeric x) (hy : Numeric y)
-
 section
 
-variable (ihxy : IH1 x y) (ihyx : IH1 y x)
-
-lemma mulOption_lt_of_lt (i j k l) (h : x.moveLeft i < x.moveLeft j) :
+lemma mulOption_lt_of_lt (hy : y.Numeric) (ihxy : IH1 x y) (ihyx : IH1 y x) (i j k l)
+    (h : x.moveLeft i < x.moveLeft j) :
     (⟦mulOption x y i k⟧ : Game) < -⟦mulOption x (-y) j l⟧ :=
   mulOption_lt_iff_P1.2 <| P1_of_lt (P3_of_ih hy ihyx j k l) <| ((P24_of_ih ihxy i j).2 h).1 k
 
-lemma mulOption_lt (i j k l) : (⟦mulOption x y i k⟧ : Game) < -⟦mulOption x (-y) j l⟧ := by
+lemma mulOption_lt (hx : x.Numeric) (hy : y.Numeric) (ihxy : IH1 x y) (ihyx : IH1 y x) (i j k l) :
+    (⟦mulOption x y i k⟧ : Game) < -⟦mulOption x (-y) j l⟧ := by
   obtain (h|h|h) := lt_or_equiv_or_gt (hx.moveLeft i) (hx.moveLeft j)
   · exact mulOption_lt_of_lt hy ihxy ihyx i j k l h
   · have ml := @IsOption.moveLeft
@@ -256,7 +256,8 @@ lemma mulOption_lt (i j k l) : (⟦mulOption x y i k⟧ : Game) < -⟦mulOption 
 end
 
 /-- P1 follows from the induction hypothesis. -/
-theorem P1_of_ih : (x * y).Numeric := by
+theorem P1_of_ih (ih : ∀ a, ArgsRel a (Args.P1 x y) → P124 a) (hx : x.Numeric) (hy : y.Numeric) :
+    (x * y).Numeric := by
   have ihxy := ih1 ih
   have ihyx := ih1_swap ih
   have ihxyn := ih1_neg_left (ih1_neg_right ihxy)
@@ -290,9 +291,7 @@ def IH4 (x₁ x₂ y : PGame) : Prop :=
 
 /-! #### Specialize `ih'` to obtain specialized induction hypotheses for P2 and P4 -/
 
-variable (ih' : ∀ a, ArgsRel a (Args.P24 x₁ x₂ y) → P124 a)
-
-lemma ih₁₂ : IH24 x₁ x₂ y := by
+lemma ih₁₂ (ih' : ∀ a, ArgsRel a (Args.P24 x₁ x₂ y) → P124 a) : IH24 x₁ x₂ y := by
   rw [IH24]
   refine fun z ↦ ⟨?_, ?_, ?_⟩ <;>
     refine fun h ↦ ih' (Args.P24 _ _ _) (TransGen.single ?_)
@@ -300,13 +299,13 @@ lemma ih₁₂ : IH24 x₁ x₂ y := by
   · exact (cutExpand_add_left {x₁}).2 (cutExpand_pair_left h)
   · exact (cutExpand_add_left {x₁}).2 (cutExpand_pair_right h)
 
-lemma ih₂₁ : IH24 x₂ x₁ y := ih₁₂ <| by
+lemma ih₂₁ (ih' : ∀ a, ArgsRel a (Args.P24 x₁ x₂ y) → P124 a) : IH24 x₂ x₁ y := ih₁₂ <| by
   simp_rw [ArgsRel, InvImage, Args.toMultiset, Multiset.pair_comm] at ih' ⊢
   suffices {x₁, y, x₂} = {x₂, y, x₁} by rwa [← this]
   dsimp only [Multiset.insert_eq_cons, ← Multiset.singleton_add] at ih' ⊢
   abel
 
-lemma ih4 : IH4 x₁ x₂ y := by
+lemma ih4 (ih' : ∀ a, ArgsRel a (Args.P24 x₁ x₂ y) → P124 a) : IH4 x₁ x₂ y := by
   refine fun z w h ↦ ⟨?_, ?_⟩
   all_goals
     intro h'
@@ -315,7 +314,8 @@ lemma ih4 : IH4 x₁ x₂ y := by
     try exact (cutExpand_add_right {w}).2 <| cutExpand_pair_left h'
     try exact (cutExpand_add_right {w}).2 <| cutExpand_pair_right h'
 
-lemma numeric_of_ih : (x₁ * y).Numeric ∧ (x₂ * y).Numeric := by
+lemma numeric_of_ih (ih' : ∀ a, ArgsRel a (Args.P24 x₁ x₂ y) → P124 a) :
+    (x₁ * y).Numeric ∧ (x₂ * y).Numeric := by
   constructor <;> refine ih' (Args.P1 _ _) (TransGen.single ?_)
   · exact (cutExpand_add_right {y}).2 <| (cutExpand_add_left {x₁}).2 cutExpand_zero
   · exact (cutExpand_add_right {x₂, y}).2 cutExpand_zero

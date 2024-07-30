@@ -959,7 +959,8 @@ theorem ext_nthLe {l₁ l₂ : List α} (hl : length l₁ = length l₂)
   ext_get hl h
 
 @[simp]
-theorem getElem_indexOf [DecidableEq α] {a : α} : ∀ {l : List α} (h), l[indexOf a l] = a
+theorem getElem_indexOf [DecidableEq α] {a : α} : ∀ {l : List α} (h : indexOf a l < l.length),
+    l[indexOf a l] = a
   | b :: l, h => by
     by_cases h' : b = a <;>
     simp [h', if_pos, if_false, getElem_indexOf]
@@ -1538,23 +1539,27 @@ theorem scanr_cons (f : α → β → β) (b : β) (a : α) (l : List α) :
 section FoldlEqFoldr
 
 -- foldl and foldr coincide when f is commutative and associative
-variable {f : α → α → α} (hcomm : Commutative f) (hassoc : Associative f)
+variable {f : α → α → α}
 
-theorem foldl1_eq_foldr1 : ∀ a b l, foldl f a (l ++ [b]) = foldr f b (a :: l)
+theorem foldl1_eq_foldr1 (hassoc : Associative f) :
+    ∀ a b l, foldl f a (l ++ [b]) = foldr f b (a :: l)
   | a, b, nil => rfl
   | a, b, c :: l => by
-    simp only [cons_append, foldl_cons, foldr_cons, foldl1_eq_foldr1 _ _ l]; rw [hassoc]
+    simp only [cons_append, foldl_cons, foldr_cons, foldl1_eq_foldr1 hassoc _ _ l]; rw [hassoc]
 
-theorem foldl_eq_of_comm_of_assoc : ∀ a b l, foldl f a (b :: l) = f b (foldl f a l)
+theorem foldl_eq_of_comm_of_assoc (hcomm : Commutative f) (hassoc : Associative f) :
+    ∀ a b l, foldl f a (b :: l) = f b (foldl f a l)
   | a, b, nil => hcomm a b
   | a, b, c :: l => by
     simp only [foldl_cons]
-    rw [← foldl_eq_of_comm_of_assoc .., right_comm _ hcomm hassoc]; rfl
+    rw [← foldl_eq_of_comm_of_assoc hcomm hassoc .., right_comm _ hcomm hassoc]; rfl
 
-theorem foldl_eq_foldr : ∀ a l, foldl f a l = foldr f a l
+theorem foldl_eq_foldr (hcomm : Commutative f) (hassoc : Associative f) :
+    ∀ a l, foldl f a l = foldr f a l
   | a, nil => rfl
   | a, b :: l => by
-    simp only [foldr_cons, foldl_eq_of_comm_of_assoc hcomm hassoc]; rw [foldl_eq_foldr a l]
+    simp only [foldr_cons, foldl_eq_of_comm_of_assoc hcomm hassoc]
+    rw [foldl_eq_foldr hcomm hassoc a l]
 
 end FoldlEqFoldr
 
@@ -2703,6 +2708,23 @@ theorem dropSlice_eq (xs : List α) (n m : ℕ) : dropSlice n m xs = xs.take n +
   · cases xs <;> simp [dropSlice]
   · cases xs <;> simp [dropSlice, *, Nat.succ_add]
 
+@[simp]
+theorem length_dropSlice (i j : ℕ) (xs : List α) :
+    (List.dropSlice i j xs).length = xs.length - min j (xs.length - i) := by
+  induction xs generalizing i j with
+  | nil => simp
+  | cons x xs xs_ih =>
+    cases i <;> simp only [List.dropSlice]
+    · cases j with
+      | zero => simp
+      | succ n => simp_all [xs_ih]; omega
+    · simp [xs_ih]; omega
+
+theorem length_dropSlice_lt (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :
+    (List.dropSlice i j xs).length < xs.length := by
+  simp; omega
+
+@[deprecated (since := "2024-07-25")]
 theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :
     SizeOf.sizeOf (List.dropSlice i j xs) < SizeOf.sizeOf xs := by
   induction xs generalizing i j hj with
@@ -2749,8 +2771,7 @@ lemma lookup_graph (f : α → β) {a : α} {as : List α} (h : a ∈ as) :
   · exact (List.not_mem_nil _ h).elim
   · by_cases ha : a = a'
     · simp [ha, lookup_cons]
-    · simp [lookup_cons, beq_false_of_ne ha]
-      exact ih (List.mem_of_ne_of_mem ha h)
+    · simpa [lookup_cons, beq_false_of_ne ha] using ih (List.mem_of_ne_of_mem ha h)
 
 end lookup
 

@@ -3,7 +3,10 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+import Mathlib.Topology.Algebra.Equicontinuity
+import Mathlib.Topology.Algebra.Group.Compact
 import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Topology.UniformSpace.Ascoli
 
 /-!
 
@@ -313,5 +316,78 @@ def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [TopologicalGroup B
   map_one' := ext fun _a => map_one f
   map_mul' g h := ext fun a => map_mul f (g a) (h a)
   continuous_toFun := f.continuous_comp_right
+
+section LocallyCompact
+
+variable {X Y : Type*} [TopologicalSpace X] [Group X] [TopologicalGroup X]
+  [UniformSpace Y] [CommGroup Y] [UniformGroup Y] [T0Space Y] [CompactSpace Y]
+
+@[to_additive]
+theorem locallyCompactSpace_of_equicontinuousAt (U : Set X) (V : Set Y)
+    (hU : IsCompact U) (hV : V ∈ nhds (1 : Y))
+    (h : EquicontinuousAt (fun f : {f : X →* Y | Set.MapsTo f U V} ↦ (f : X → Y)) 1) :
+    LocallyCompactSpace (ContinuousMonoidHom X Y) := by
+  replace h := equicontinuous_of_equicontinuousAt_one _ h
+  obtain ⟨W, hWo, hWV, hWc⟩ := local_compact_nhds hV
+  let S1 : Set (X →* Y) := {f | Set.MapsTo f U W}
+  let S2 : Set (ContinuousMonoidHom X Y) := {f | Set.MapsTo f U W}
+  let S3 : Set C(X, Y) := (↑) '' S2
+  let S4 : Set (X → Y) := (↑) '' S3
+  replace h : Equicontinuous ((↑) : S1 → X → Y) :=
+    h.comp (Subtype.map _root_.id fun f hf ↦ hf.mono_right hWV)
+  have hS4 : S4 = (↑) '' S1 := by
+    ext
+    constructor
+    · rintro ⟨-, ⟨f, hf, rfl⟩, rfl⟩
+      exact ⟨f, hf, rfl⟩
+    · rintro ⟨f, hf, rfl⟩
+      exact ⟨⟨f, h.continuous ⟨f, hf⟩⟩, ⟨⟨f, h.continuous ⟨f, hf⟩⟩, hf, rfl⟩, rfl⟩
+  replace h : Equicontinuous ((↑) : S3 → X → Y) := by
+    rw [equicontinuous_iff_range, ← Set.image_eq_range] at h ⊢
+    rwa [← hS4] at h
+  replace hS4 : S4 = Set.pi U (fun _ ↦ W) ∩ Set.range ((↑) : (X →* Y) → (X → Y)) := by
+    simp_rw [hS4, Set.ext_iff, Set.mem_image, S1, Set.mem_setOf_eq]
+    exact fun f ↦ ⟨fun ⟨g, hg, hf⟩ ↦ hf ▸ ⟨hg, g, rfl⟩, fun ⟨hg, g, hf⟩ ↦ ⟨g, hf ▸ hg, hf⟩⟩
+  replace hS4 : IsClosed S4 :=
+    hS4.symm ▸ (isClosed_set_pi (fun _ _ ↦ hWc.isClosed)).inter (MonoidHom.isClosed_range_coe X Y)
+  have hS2 : (interior S2).Nonempty := by
+    let T : Set (ContinuousMonoidHom X Y) := {f | Set.MapsTo f U (interior W)}
+    have h1 : T.Nonempty := ⟨1, fun _ _ ↦ mem_interior_iff_mem_nhds.mpr hWo⟩
+    have h2 : T ⊆ S2 := fun f hf ↦ hf.mono_right interior_subset
+    have h3 : IsOpen T := isOpen_induced (ContinuousMap.isOpen_setOf_mapsTo hU isOpen_interior)
+    exact h1.mono (interior_maximal h2 h3)
+  exact TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group
+    ⟨⟨S2, (inducing_toContinuousMap X Y).isCompact_iff.mpr
+      (ArzelaAscoli.isCompact_of_equicontinuous S3 hS4.isCompact h)⟩, hS2⟩
+
+variable [LocallyCompactSpace X]
+
+@[to_additive]
+theorem locallyCompactSpace_of_hasBasis (V : ℕ → Set Y)
+    (hV : ∀ {n x}, x ∈ V n → x * x ∈ V n → x ∈ V (n + 1))
+    (hVo : Filter.HasBasis (nhds 1) (fun _ ↦ True) V) :
+    LocallyCompactSpace (ContinuousMonoidHom X Y) := by
+  obtain ⟨U0, hU0c, hU0o⟩ := exists_compact_mem_nhds (1 : X)
+  let U_aux : ℕ → {S : Set X | S ∈ nhds 1} :=
+    Nat.rec ⟨U0, hU0o⟩ <| fun _ S ↦ let h := exists_closed_nhds_one_inv_eq_mul_subset S.2
+      ⟨Classical.choose h, (Classical.choose_spec h).1⟩
+  let U : ℕ → Set X := fun n ↦ (U_aux n).1
+  have hU1 : ∀ n, U n ∈ nhds 1 := fun n ↦ (U_aux n).2
+  have hU2 : ∀ n, U (n + 1) * U (n + 1) ⊆ U n :=
+    fun n ↦ (Classical.choose_spec (exists_closed_nhds_one_inv_eq_mul_subset (U_aux n).2)).2.2.2
+  have hU3 : ∀ n, U (n + 1) ⊆ U n :=
+    fun n x hx ↦ hU2 n (mul_one x ▸ Set.mul_mem_mul hx (mem_of_mem_nhds (hU1 (n + 1))))
+  have hU4 : ∀ f : X →* Y, Set.MapsTo f (U 0) (V 0) → ∀ n, Set.MapsTo f (U n) (V n) := by
+    intro f hf n
+    induction' n with n ih
+    · exact hf
+    · exact fun x hx ↦ hV (ih (hU3 n hx)) (map_mul f x x ▸ ih (hU2 n (Set.mul_mem_mul hx hx)))
+  apply locallyCompactSpace_of_equicontinuousAt (U 0) (V 0) hU0c (hVo.mem_of_mem trivial)
+  rw [hVo.uniformity_of_nhds_one.equicontinuousAt_iff_right]
+  refine fun n _ ↦ Filter.eventually_iff_exists_mem.mpr ⟨U n, hU1 n, fun x hx ⟨f, hf⟩ ↦ ?_⟩
+  rw [Set.mem_setOf_eq, map_one, div_one]
+  exact hU4 f hf n hx
+
+end LocallyCompact
 
 end ContinuousMonoidHom
