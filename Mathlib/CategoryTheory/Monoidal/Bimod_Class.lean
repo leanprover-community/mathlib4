@@ -97,7 +97,7 @@ class MiddleAssocClass (A B M : C) [Mon_Class A] [Mon_Class B] [Mod_Class A M] [
     (Mod_Class.act ▷ B) ≫ RightMod_Class.actRight =
       (α_ A M B).hom ≫ (A ◁ RightMod_Class.actRight) ≫ Mod_Class.act := by aesop_cat
 
-namespace Bimod
+namespace Bimod_Class
 
 variable {A B M : C} [Mon_Class A] [Mon_Class B]
 
@@ -158,63 +158,63 @@ def Hom.comp {M N O : C}
   [Mod_Class A M] [RightMod_Class B M] [Mod_Class A N] [RightMod_Class B N] [Mod_Class A O] [RightMod_Class B O]
   (f : Hom A B M N) (g : Hom A B N O) : Hom A B M O where hom := f.hom ≫ g.hom
 
-end Bimod
+end Bimod_Class
 
-structure BimodCat (A B : C) [Mon_Class A] [Mon_Class B] where
+structure Bimod_Cat (A B : C) [Mon_Class A] [Mon_Class B] where
   X : C
   [isMod : Mod_Class A X]
   [isRightMod : RightMod_Class B X]
   [isMiddleAssoc : MiddleAssocClass A B X]
 
-attribute [instance] BimodCat.isMod BimodCat.isRightMod BimodCat.isMiddleAssoc
+attribute [instance] Bimod_Cat.isMod Bimod_Cat.isRightMod Bimod_Cat.isMiddleAssoc
 
 variable {A B : C} [Mon_Class A] [Mon_Class B]
 
-instance : Category (BimodCat A B) where
-  Hom M N := Bimod.Hom A B M.X N.X
-  id M := Bimod.id A B M.X
+instance : Category (Bimod_Cat A B) where
+  Hom M N := Bimod_Class.Hom A B M.X N.X
+  id M := Bimod_Class.id A B M.X
   comp f g := f.comp g
 
-namespace BimodCat
+namespace Bimod_Cat
 
-open Bimod
+open Bimod_Class
 
 abbrev of (A : C) [Mon_Class A] (B : C) [Mon_Class B]
-  (M : C) [Mod_Class A M] [RightMod_Class B M] [MiddleAssocClass A B M] : BimodCat A B where
+  (M : C) [Mod_Class A M] [RightMod_Class B M] [MiddleAssocClass A B M] : Bimod_Cat A B where
   X := M
 
 -- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
-lemma hom_ext {M N : BimodCat A B} (f g : M ⟶ N) (h : f.hom = g.hom) : f = g :=
+lemma hom_ext {M N : Bimod_Cat A B} (f g : M ⟶ N) (h : f.hom = g.hom) : f = g :=
   Hom.ext _ _ h
 
 @[simp]
-theorem id_hom' (M : BimodCat A B) : (𝟙 M : Hom A B M.X M.X).hom = 𝟙 M.X :=
+theorem id_hom' (M : Bimod_Cat A B) : (𝟙 M : Hom A B M.X M.X).hom = 𝟙 M.X :=
   rfl
 
 @[simp]
-theorem comp_hom' {M N K : BimodCat A B} (f : M ⟶ N) (g : N ⟶ K) :
+theorem comp_hom' {M N K : Bimod_Cat A B} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : Hom A B M.X K.X).hom = f.hom ≫ g.hom :=
   rfl
 
 variable {M N : C} [Mod_Class A M] [RightMod_Class B M] [Mod_Class A N] [RightMod_Class B N]
 variable [MiddleAssocClass A B M] [MiddleAssocClass A B N]
 
-def ofHom (f : Hom A B M N) : BimodCat.of A B M ⟶ BimodCat.of A B N where
+def ofHom (f : Hom A B M N) : Bimod_Cat.of A B M ⟶ Bimod_Cat.of A B N where
   hom := f.hom
 
-def ofIso (f : Iso A B M N) : BimodCat.of A B M ≅ BimodCat.of A B N where
+def ofIso (f : Iso A B M N) : Bimod_Cat.of A B M ≅ Bimod_Cat.of A B N where
   hom := { hom := f.iso.hom }
   inv := { hom := f.iso.inv }
 
 /-- The forgetful functor from bimodule objects to the ambient category. -/
-def forget : BimodCat A B ⥤ C where
+def forget : Bimod_Cat A B ⥤ C where
   obj A := A.X
   map f := f.hom
 
-end BimodCat
+end Bimod_Cat
 
-namespace Bimod
+namespace Bimod_Class
 
 open Mod_Class RightMod_Class MiddleAssocClass
 
@@ -491,7 +491,7 @@ noncomputable def whiskerRight {X Y : C} (Z : C) [Mon_Class X] [Mon_Class Y] [Mo
 
 end
 
-namespace AssociatorBimod
+namespace AssociatorBimod_Class
 
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorLeft X)]
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
@@ -653,9 +653,9 @@ theorem inv_hom_id : inv S T P Q L ≫ hom S T P Q L = 𝟙 _ := by
   slice_rhs 2 3 => rw [Category.comp_id]
   rfl
 
-end AssociatorBimod
+end AssociatorBimod_Class
 
-namespace LeftUnitorBimod
+namespace LeftUnitorBimod_Class
 
 variable (R S : C) [Mon_Class R] [Mon_Class S] (P : C) [Mod_Class R P] [RightMod_Class S P] [MiddleAssocClass R S P]
 
@@ -708,9 +708,9 @@ theorem hom_right_act_hom' :
   slice_rhs 1 2 => rw [middle_assoc]
   simp only [Category.assoc]
 
-end LeftUnitorBimod
+end LeftUnitorBimod_Class
 
-namespace RightUnitorBimod
+namespace RightUnitorBimod_Class
 
 variable (R S : C) [Mon_Class R] [Mon_Class S] (P : C) [Mod_Class R P] [RightMod_Class S P] [MiddleAssocClass R S P]
 
@@ -762,53 +762,53 @@ theorem hom_right_act_hom' :
   slice_rhs 1 2 => rw [← comp_whiskerRight, coequalizer.π_desc]
   rw [Iso.hom_inv_id_assoc]
 
-end RightUnitorBimod
+end RightUnitorBimod_Class
 
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorLeft X)]
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
 
 /-- The associator as a bimodule isomorphism. -/
-noncomputable def associatorBimod {W X Y Z : C} [Mon_Class W] [Mon_Class X] [Mon_Class Y] [Mon_Class Z]
+noncomputable def associatorBimod_Class {W X Y Z : C} [Mon_Class W] [Mon_Class X] [Mon_Class Y] [Mon_Class Z]
     (L : C) [Mod_Class W L] [RightMod_Class X L] [MiddleAssocClass W X L]
     (M : C) [Mod_Class X M] [RightMod_Class Y M] [MiddleAssocClass X Y M]
     (N : C) [Mod_Class Y N] [RightMod_Class Z N] [MiddleAssocClass Y Z N] :
     Iso W Z ((L ⊗[X] M) ⊗[Y] N) (L ⊗[X] (M ⊗[Y] N)) :=
   isoOfIso
-    { hom := AssociatorBimod.hom _ _ L M N
-      inv := AssociatorBimod.inv _ _ L M N
-      hom_inv_id := AssociatorBimod.hom_inv_id _ _ L M N
-      inv_hom_id := AssociatorBimod.inv_hom_id _ _ L M N }
-    (AssociatorBimod.hom_left_act_hom' _ _ _ L M N)
-    (AssociatorBimod.hom_right_act_hom' _ _ _ L M N)
+    { hom := AssociatorBimod_Class.hom _ _ L M N
+      inv := AssociatorBimod_Class.inv _ _ L M N
+      hom_inv_id := AssociatorBimod_Class.hom_inv_id _ _ L M N
+      inv_hom_id := AssociatorBimod_Class.inv_hom_id _ _ L M N }
+    (AssociatorBimod_Class.hom_left_act_hom' _ _ _ L M N)
+    (AssociatorBimod_Class.hom_right_act_hom' _ _ _ L M N)
 
 /-- The left unitor as a bimodule isomorphism. -/
-noncomputable def leftUnitorBimod {X Y : C} [Mon_Class X] [Mon_Class Y]
+noncomputable def leftUnitorBimod_Class {X Y : C} [Mon_Class X] [Mon_Class Y]
     (M : C) [Mod_Class X M] [RightMod_Class Y M] [MiddleAssocClass X Y M] :
     Iso X Y (X ⊗[X] M) M :=
   isoOfIso
-    { hom := LeftUnitorBimod.hom _ M
-      inv := LeftUnitorBimod.inv _ M
-      hom_inv_id := LeftUnitorBimod.hom_inv_id _ M
-      inv_hom_id := LeftUnitorBimod.inv_hom_id _ M }
-    (LeftUnitorBimod.hom_left_act_hom' _ M)
-    (LeftUnitorBimod.hom_right_act_hom' _ _ M)
+    { hom := LeftUnitorBimod_Class.hom _ M
+      inv := LeftUnitorBimod_Class.inv _ M
+      hom_inv_id := LeftUnitorBimod_Class.hom_inv_id _ M
+      inv_hom_id := LeftUnitorBimod_Class.inv_hom_id _ M }
+    (LeftUnitorBimod_Class.hom_left_act_hom' _ M)
+    (LeftUnitorBimod_Class.hom_right_act_hom' _ _ M)
 
 /-- The right unitor as a bimodule isomorphism. -/
-noncomputable def rightUnitorBimod {X Y : C} [Mon_Class X] [Mon_Class Y]
+noncomputable def rightUnitorBimod_Class {X Y : C} [Mon_Class X] [Mon_Class Y]
     (M : C) [Mod_Class X M] [RightMod_Class Y M] [MiddleAssocClass X Y M] :
     Iso X Y (M ⊗[Y] Y) M :=
   isoOfIso
-    { hom := RightUnitorBimod.hom _ M
-      inv := RightUnitorBimod.inv _ M
-      hom_inv_id := RightUnitorBimod.hom_inv_id _ M
-      inv_hom_id := RightUnitorBimod.inv_hom_id _ M }
-    (RightUnitorBimod.hom_left_act_hom' _ _ M)
-    (RightUnitorBimod.hom_right_act_hom' _ M)
+    { hom := RightUnitorBimod_Class.hom _ M
+      inv := RightUnitorBimod_Class.inv _ M
+      hom_inv_id := RightUnitorBimod_Class.hom_inv_id _ M
+      inv_hom_id := RightUnitorBimod_Class.inv_hom_id _ M }
+    (RightUnitorBimod_Class.hom_left_act_hom' _ _ M)
+    (RightUnitorBimod_Class.hom_right_act_hom' _ M)
 
 theorem whiskerLeft_id_bimod {X Y Z : C} [Mon_Class X] [Mon_Class Y] [Mon_Class Z]
   (M : C) [Mod_Class X M] [RightMod_Class Y M] [MiddleAssocClass X Y M]
   (N : C) [Mod_Class Y N] [RightMod_Class Z N] [MiddleAssocClass Y Z N] :
-    whiskerLeft X M (Bimod.id Y Z N) = Bimod.id X Z (M ⊗[Y] N) := by
+    whiskerLeft X M (Bimod_Class.id Y Z N) = Bimod_Class.id X Z (M ⊗[Y] N) := by
   ext
   apply Limits.coequalizer.hom_ext
   dsimp only [tensor, whiskerLeft_hom, id_hom]
@@ -819,7 +819,7 @@ theorem whiskerLeft_id_bimod {X Y Z : C} [Mon_Class X] [Mon_Class Y] [Mon_Class 
 theorem id_whiskerRight_bimod {X Y Z : C} [Mon_Class X] [Mon_Class Y] [Mon_Class Z]
   (M : C) [Mod_Class X M] [RightMod_Class Y M] [MiddleAssocClass X Y M]
   (N : C) [Mod_Class Y N] [RightMod_Class Z N] [MiddleAssocClass Y Z N] :
-    whiskerRight Z (Bimod.id X Y M) N = Bimod.id X Z (M ⊗[Y] N) := by
+    whiskerRight Z (Bimod_Class.id X Y M) N = Bimod_Class.id X Z (M ⊗[Y] N) := by
   ext
   apply Limits.coequalizer.hom_ext
   dsimp only [tensor, whiskerRight_hom, id_hom]
@@ -841,15 +841,15 @@ theorem whiskerLeft_comp_bimod (X : C) {Y Z : C} [Mon_Class X] [Mon_Class Y] [Mo
 theorem id_whiskerLeft_bimod {X Y : C} [Mon_Class X] [Mon_Class Y]
   {M N : C} [Mod_Class X M] [RightMod_Class Y M] [MiddleAssocClass X Y M]
   [Mod_Class X N] [RightMod_Class Y N] [MiddleAssocClass X Y N] (f : Hom X Y M N) :
-    whiskerLeft X X f = (leftUnitorBimod M).hom.comp (f.comp (leftUnitorBimod N).inv) := by
-  dsimp [tensor, leftUnitorBimod]
+    whiskerLeft X X f = (leftUnitorBimod_Class M).hom.comp (f.comp (leftUnitorBimod_Class N).inv) := by
+  dsimp [tensor, leftUnitorBimod_Class]
   ext
   apply coequalizer.hom_ext
   dsimp
   slice_lhs 1 2 => rw [ι_colimMap, parallelPairHom_app_one]
-  dsimp [LeftUnitorBimod.hom]
+  dsimp [LeftUnitorBimod_Class.hom]
   slice_rhs 1 2 => erw [coequalizer.π_desc]
-  dsimp [LeftUnitorBimod.inv]
+  dsimp [LeftUnitorBimod_Class.inv]
   slice_rhs 1 2 => rw [Hom.left_act_hom]
   slice_rhs 2 3 => rw [leftUnitor_inv_naturality]
   slice_rhs 3 4 => rw [whisker_exchange]
@@ -869,23 +869,23 @@ theorem comp_whiskerLeft_bimod {W X Y Z : C} [Mon_Class W] [Mon_Class X] [Mon_Cl
   [Mod_Class Y P'] [RightMod_Class Z P'] [MiddleAssocClass Y Z P']
   (f : Hom Y Z P P') :
     whiskerLeft W (M ⊗[X] N) f =
-      (associatorBimod M N P).hom.comp
-        ((whiskerLeft _ M (whiskerLeft _ N f)).comp (associatorBimod M N P').inv) := by
-  dsimp [tensor, associatorBimod]
+      (associatorBimod_Class M N P).hom.comp
+        ((whiskerLeft _ M (whiskerLeft _ N f)).comp (associatorBimod_Class M N P').inv) := by
+  dsimp [tensor, associatorBimod_Class]
   ext
   apply coequalizer.hom_ext
   dsimp
   slice_lhs 1 2 => rw [ι_colimMap, parallelPairHom_app_one]
-  dsimp [tensor, AssociatorBimod.hom]
+  dsimp [tensor, AssociatorBimod_Class.hom]
   slice_rhs 1 2 => rw [coequalizer.π_desc]
-  dsimp [AssociatorBimod.homAux, AssociatorBimod.inv]
+  dsimp [AssociatorBimod_Class.homAux, AssociatorBimod_Class.inv]
   refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
   rw [tensorRight_map]
   slice_rhs 1 3 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
   slice_rhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]
   slice_rhs 2 3 => rw [← MonoidalCategory.whiskerLeft_comp, ι_colimMap, parallelPairHom_app_one]
   slice_rhs 3 4 => rw [coequalizer.π_desc]
-  dsimp [AssociatorBimod.invAux]
+  dsimp [AssociatorBimod_Class.invAux]
   slice_rhs 2 2 => rw [MonoidalCategory.whiskerLeft_comp]
   slice_rhs 3 5 => rw [id_tensor_π_preserves_coequalizer_inv_desc]
   slice_rhs 2 3 => rw [associator_inv_naturality_right]
@@ -907,15 +907,15 @@ theorem comp_whiskerRight_bimod {X Y Z : C} [Mon_Class X] [Mon_Class Y] [Mon_Cla
 theorem whiskerRight_id_bimod {X Y : C} [Mon_Class X] [Mon_Class Y]
   {M N : C} [Mod_Class X M] [RightMod_Class Y M] [MiddleAssocClass X Y M]
   [Mod_Class X N] [RightMod_Class Y N] [MiddleAssocClass X Y N] (f : Hom X Y M N) :
-    whiskerRight Y f Y = (rightUnitorBimod M).hom.comp (f.comp (rightUnitorBimod N).inv) := by
-  dsimp [tensor, regular, rightUnitorBimod]
+    whiskerRight Y f Y = (rightUnitorBimod_Class M).hom.comp (f.comp (rightUnitorBimod_Class N).inv) := by
+  dsimp [tensor, regular, rightUnitorBimod_Class]
   ext
   apply coequalizer.hom_ext
   dsimp
   slice_lhs 1 2 => rw [ι_colimMap, parallelPairHom_app_one]
-  dsimp [RightUnitorBimod.hom]
+  dsimp [RightUnitorBimod_Class.hom]
   slice_rhs 1 2 => rw [coequalizer.π_desc]
-  dsimp [RightUnitorBimod.inv]
+  dsimp [RightUnitorBimod_Class.inv]
   slice_rhs 1 2 => rw [Hom.right_act_hom]
   slice_rhs 2 3 => rw [rightUnitor_inv_naturality]
   slice_rhs 3 4 => rw [← whisker_exchange]
@@ -930,23 +930,23 @@ theorem whiskerRight_comp_bimod {W X Y Z : C} [Mon_Class W] [Mon_Class X] [Mon_C
   (f : Hom W X M M') (N : C) [Mod_Class X N] [RightMod_Class Y N] [MiddleAssocClass X Y N]
   (P : C) [Mod_Class Y P] [RightMod_Class Z P] [MiddleAssocClass Y Z P] :
     whiskerRight Z f (N ⊗[Y] P) =
-      (associatorBimod M N P).inv.comp
-        ((whiskerRight _ (whiskerRight _ f N) P).comp (associatorBimod M' N P).hom) := by
-  dsimp [tensor, associatorBimod]
+      (associatorBimod_Class M N P).inv.comp
+        ((whiskerRight _ (whiskerRight _ f N) P).comp (associatorBimod_Class M' N P).hom) := by
+  dsimp [tensor, associatorBimod_Class]
   ext
   apply coequalizer.hom_ext
   dsimp
   slice_lhs 1 2 => rw [ι_colimMap, parallelPairHom_app_one]
-  dsimp [tensor, AssociatorBimod.inv]
+  dsimp [tensor, AssociatorBimod_Class.inv]
   slice_rhs 1 2 => rw [coequalizer.π_desc]
-  dsimp [AssociatorBimod.invAux, AssociatorBimod.hom]
+  dsimp [AssociatorBimod_Class.invAux, AssociatorBimod_Class.hom]
   refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
   rw [tensorLeft_map]
   slice_rhs 1 3 => rw [id_tensor_π_preserves_coequalizer_inv_desc]
   slice_rhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]
   slice_rhs 2 3 => rw [← comp_whiskerRight, ι_colimMap, parallelPairHom_app_one]
   slice_rhs 3 4 => rw [coequalizer.π_desc]
-  dsimp [AssociatorBimod.homAux]
+  dsimp [AssociatorBimod_Class.homAux]
   slice_rhs 2 2 => rw [comp_whiskerRight]
   slice_rhs 3 5 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
   slice_rhs 2 3 => rw [associator_naturality_left]
@@ -960,25 +960,25 @@ theorem whisker_assoc_bimod {W X Y Z : C} [Mon_Class W] [Mon_Class X] [Mon_Class
   [Mod_Class X N'] [RightMod_Class Y N'] [MiddleAssocClass X Y N']
   (f : Hom X Y N N') (P : C) [Mod_Class Y P] [RightMod_Class Z P] [MiddleAssocClass Y Z P] :
     whiskerRight Z (whiskerLeft W M f) P =
-      (associatorBimod M N P).hom.comp
-        ((whiskerLeft _ M (whiskerRight _ f P)).comp (associatorBimod M N' P).inv) := by
-  dsimp [tensor, associatorBimod]
+      (associatorBimod_Class M N P).hom.comp
+        ((whiskerLeft _ M (whiskerRight _ f P)).comp (associatorBimod_Class M N' P).inv) := by
+  dsimp [tensor, associatorBimod_Class]
   ext
   apply coequalizer.hom_ext
   dsimp
   slice_lhs 1 2 => rw [ι_colimMap, parallelPairHom_app_one]
-  dsimp [AssociatorBimod.hom]
+  dsimp [AssociatorBimod_Class.hom]
   slice_rhs 1 2 => rw [coequalizer.π_desc]
-  dsimp [AssociatorBimod.homAux]
+  dsimp [AssociatorBimod_Class.homAux]
   refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
   rw [tensorRight_map]
   slice_lhs 1 2 => rw [← comp_whiskerRight, ι_colimMap, parallelPairHom_app_one]
   slice_rhs 1 3 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
   slice_rhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]
   slice_rhs 2 3 => rw [← MonoidalCategory.whiskerLeft_comp, ι_colimMap, parallelPairHom_app_one]
-  dsimp [AssociatorBimod.inv]
+  dsimp [AssociatorBimod_Class.inv]
   slice_rhs 3 4 => rw [coequalizer.π_desc]
-  dsimp [AssociatorBimod.invAux]
+  dsimp [AssociatorBimod_Class.invAux]
   slice_rhs 2 2 => rw [MonoidalCategory.whiskerLeft_comp]
   slice_rhs 3 5 => rw [id_tensor_π_preserves_coequalizer_inv_desc]
   slice_rhs 2 3 => rw [associator_inv_naturality_middle]
@@ -1010,20 +1010,20 @@ theorem pentagon_bimod {V W X Y Z : C} [Mon_Class V] [Mon_Class W] [Mon_Class X]
   (N : C) [Mod_Class W N] [RightMod_Class X N] [MiddleAssocClass W X N]
   (P : C) [Mod_Class X P] [RightMod_Class Y P] [MiddleAssocClass X Y P]
   (Q : C) [Mod_Class Y Q] [RightMod_Class Z Q] [MiddleAssocClass Y Z Q] :
-    (whiskerRight Z (associatorBimod M N P).hom Q).comp
-      ((associatorBimod M (N ⊗[X] P) Q).hom.comp
-        (whiskerLeft V M (associatorBimod N P Q).hom)) =
-      (associatorBimod (M ⊗[W] N) P Q).hom.comp
-        (associatorBimod M N (P ⊗[Y] Q)).hom := by
-  dsimp [associatorBimod]
+    (whiskerRight Z (associatorBimod_Class M N P).hom Q).comp
+      ((associatorBimod_Class M (N ⊗[X] P) Q).hom.comp
+        (whiskerLeft V M (associatorBimod_Class N P Q).hom)) =
+      (associatorBimod_Class (M ⊗[W] N) P Q).hom.comp
+        (associatorBimod_Class M N (P ⊗[Y] Q)).hom := by
+  dsimp [associatorBimod_Class]
   ext
   apply coequalizer.hom_ext
   dsimp
-  dsimp only [AssociatorBimod.hom]
+  dsimp only [AssociatorBimod_Class.hom]
   slice_lhs 1 2 => rw [ι_colimMap, parallelPairHom_app_one]
   slice_lhs 2 3 => rw [coequalizer.π_desc]
   slice_rhs 1 2 => rw [coequalizer.π_desc]
-  dsimp [AssociatorBimod.homAux]
+  dsimp [AssociatorBimod_Class.homAux]
   refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
   dsimp
   slice_lhs 1 2 => rw [← comp_whiskerRight, coequalizer.π_desc]
@@ -1052,22 +1052,22 @@ theorem pentagon_bimod {V W X Y Z : C} [Mon_Class V] [Mon_Class W] [Mon_Class X]
 theorem triangle_bimod {X Y Z : C} [Mon_Class X] [Mon_Class Y] [Mon_Class Z]
   (M : C) [Mod_Class X M] [RightMod_Class Y M] [MiddleAssocClass X Y M]
   (N : C) [Mod_Class Y N] [RightMod_Class Z N] [MiddleAssocClass Y Z N] :
-    (associatorBimod M Y N).hom.comp (whiskerLeft X M (leftUnitorBimod N).hom) =
-      whiskerRight Z (rightUnitorBimod M).hom N := by
-  dsimp [associatorBimod, leftUnitorBimod, rightUnitorBimod]
+    (associatorBimod_Class M Y N).hom.comp (whiskerLeft X M (leftUnitorBimod_Class N).hom) =
+      whiskerRight Z (rightUnitorBimod_Class M).hom N := by
+  dsimp [associatorBimod_Class, leftUnitorBimod_Class, rightUnitorBimod_Class]
   ext
   apply coequalizer.hom_ext
   dsimp
-  dsimp [AssociatorBimod.hom]
+  dsimp [AssociatorBimod_Class.hom]
   slice_lhs 1 2 => rw [coequalizer.π_desc]
-  dsimp [AssociatorBimod.homAux]
+  dsimp [AssociatorBimod_Class.homAux]
   slice_rhs 1 2 => rw [ι_colimMap, parallelPairHom_app_one]
-  dsimp [RightUnitorBimod.hom]
+  dsimp [RightUnitorBimod_Class.hom]
   refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
   dsimp [regular]
   slice_lhs 1 3 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
   slice_lhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]
-  dsimp [LeftUnitorBimod.hom]
+  dsimp [LeftUnitorBimod_Class.hom]
   slice_lhs 2 3 => rw [← MonoidalCategory.whiskerLeft_comp, coequalizer.π_desc]
   slice_rhs 1 2 => rw [← comp_whiskerRight, coequalizer.π_desc]
   slice_rhs 1 2 => rw [coequalizer.condition]
@@ -1075,15 +1075,15 @@ theorem triangle_bimod {X Y Z : C} [Mon_Class X] [Mon_Class Y] [Mon_Class Z]
 
 /-- The bicategory of algebras (monoids) and bimodules, all internal to some monoidal category. -/
 noncomputable def monBicategory : Bicategory (Mon_Cat C) where
-  Hom X Y := BimodCat X.X Y.X
-  homCategory X Y := (inferInstance : Category (BimodCat X.X Y.X))
-  id X := BimodCat.mk X.X
-  comp {_ B _} M N := BimodCat.mk (M.X ⊗[B.X] N.X)
+  Hom X Y := Bimod_Cat X.X Y.X
+  homCategory X Y := (inferInstance : Category (Bimod_Cat X.X Y.X))
+  id X := Bimod_Cat.mk X.X
+  comp {_ B _} M N := Bimod_Cat.mk (M.X ⊗[B.X] N.X)
   whiskerLeft {A _ _ } L _ _ f := whiskerLeft A.X L.X f
   whiskerRight {_ _ C} _ _ f N := whiskerRight C.X f N.X
-  associator _ _ _ := BimodCat.ofIso (associatorBimod _ _ _)
-  leftUnitor _ := BimodCat.ofIso (leftUnitorBimod _)
-  rightUnitor _ := BimodCat.ofIso (rightUnitorBimod _)
+  associator _ _ _ := Bimod_Cat.ofIso (associatorBimod_Class _ _ _)
+  leftUnitor _ := Bimod_Cat.ofIso (leftUnitorBimod_Class _)
+  rightUnitor _ := Bimod_Cat.ofIso (rightUnitorBimod_Class _)
   whiskerLeft_id _ _ := whiskerLeft_id_bimod _ _
   whiskerLeft_comp M _ _ _ f g := whiskerLeft_comp_bimod _ M.X f g
   id_whiskerLeft := id_whiskerLeft_bimod
@@ -1097,4 +1097,4 @@ noncomputable def monBicategory : Bicategory (Mon_Cat C) where
   pentagon _ _ _ _ := pentagon_bimod _ _ _ _
   triangle _ _ := triangle_bimod _ _
 
-end Bimod
+end Bimod_Class
