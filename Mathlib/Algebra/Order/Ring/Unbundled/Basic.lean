@@ -135,10 +135,6 @@ theorem add_one_le_two_mul [LE α] [Semiring α] [CovariantClass α α (· + ·)
 
 section OrderedSemiring
 
--- variable [Semiring α] [PartialOrder α] [MulPosMono α] [PosMulMono α] [ZeroLEOneClass α]
---   [CovariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (· * ·) (· ≤ ·)]
---   {a b c d : α}
-
 variable [Semiring α] [Preorder α] {a b c d : α}
 
 @[simp]
