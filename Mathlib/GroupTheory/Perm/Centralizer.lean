@@ -1085,6 +1085,10 @@ theorem _root_.Equiv.Perm.card_fixedBy (g : Equiv.Perm α) :
   simp only [MulAction.mem_fixedBy, Equiv.Perm.smul_def, Finset.mem_filter, Finset.mem_univ,
     true_and_iff, Finset.mem_compl, Equiv.Perm.mem_support, Classical.not_not]
 
+/-
+[Mathlib.GroupTheory.Perm.Cycle.Type]
+-/
+
 theorem hψ_range_card (g : Equiv.Perm α) :
     Fintype.card (θ g).range =
       (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod := by
@@ -1180,16 +1184,6 @@ theorem conj_stabilizer_card :
   apply congr_arg₂ _ _ rfl
   · rw [← hψ_range_card, hψ_range_card', Nat.card_eq_fintype_card]
 
-theorem _root_.Group.conj_class_eq_conj_orbit {G : Type*} [Group G] (g : G) :
-    {k : G | IsConj g k} = MulAction.orbit (ConjAct G) g := by
-  ext k
-  simp only [Set.mem_setOf_eq, isConj_iff, MulAction.mem_orbit_iff, ConjAct.smul_def]
-  constructor
-  rintro ⟨c, hc⟩
-  use ConjAct.toConjAct c; simp only [hc, ConjAct.ofConjAct_toConjAct]
-  rintro ⟨x, hx⟩
-  use ConjAct.ofConjAct x
-
 theorem _root_.Equiv.Perm.conj_class_card_mul_eq (g : Equiv.Perm α) :
     Fintype.card {h : Equiv.Perm α | IsConj g h} *
       (Fintype.card α - g.cycleType.sum)! *
@@ -1197,23 +1191,15 @@ theorem _root_.Equiv.Perm.conj_class_card_mul_eq (g : Equiv.Perm α) :
       (∏ n in g.cycleType.toFinset, (g.cycleType.count n)!) =
     (Fintype.card α)! := by
   classical
-  simp_rw [Group.conj_class_eq_conj_orbit g]
   simp only [mul_assoc]
   rw [mul_comm]
   simp only [← mul_assoc]
   rw [← Equiv.Perm.conj_stabilizer_card g]
   rw [mul_comm]
-  rw [MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct (Equiv.Perm α)) g]
-  rw [ConjAct.card, Fintype.card_perm]
-
-theorem _root_.Multiset.prod_pos {R : Type*} [StrictOrderedCommSemiring R] (m : Multiset R)
-    (h : ∀ a ∈ m, (0 : R) < a) : 0 < m.prod := by
-  induction' m using Multiset.induction with a m ih
-  · simp
-  · rw [Multiset.prod_cons]
-    exact
-      mul_pos (h _ <| Multiset.mem_cons_self _ _)
-        (ih fun a ha => h a <| Multiset.mem_cons_of_mem ha)
+  convert MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct (Equiv.Perm α)) g
+  · ext h
+    simp only [Set.mem_setOf_eq, ConjAct.mem_orbit_conjAct, isConj_comm]
+  · rw [ConjAct.card, Fintype.card_perm]
 
 /-- Cardinality of a conjugacy class in `Equiv.Perm α` of a given `cycleType` -/
 theorem conj_class_card (g : Equiv.Perm α) :

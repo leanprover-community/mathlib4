@@ -50,6 +50,7 @@ theorem sign_ψ
     intro c _
     simp only [MonoidHom.inr_apply, MonoidHom.coe_comp, Function.comp_apply, θ_apply_single]
 
+variable {g} in
 theorem odd_of_mem_kerφ
     (h : Subgroup.comap ConjAct.toConjAct.toMonoidHom
       (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g) ≤ alternatingGroup α) :
@@ -221,7 +222,7 @@ theorem _root_.Equiv.Perm.OnCycleFactors.count_le_one_of_kerφ_le_alternating
   push_neg at hm
   obtain ⟨c, hc, d, hd, hm, hm'⟩ := hm
   let τ : Equiv.Perm g.cycleFactorsFinset := Equiv.swap ⟨c, hc⟩ ⟨d, hd⟩
-  obtain ⟨a⟩ := g.existsBasis
+  obtain ⟨a⟩ := Equiv.Perm.Basis.nonempty g
   suffices hτ : τ ∈ Iφ g by
     set k : Equiv.Perm α := ConjAct.ofConjAct (φ' a ⟨τ, hτ⟩ : ConjAct (Equiv.Perm α))
     have hk2 : ∀ c : g.cycleFactorsFinset, ConjAct.toConjAct k • (c : Equiv.Perm α) = τ c := by

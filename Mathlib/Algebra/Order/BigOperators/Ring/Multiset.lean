@@ -28,6 +28,18 @@ lemma prod_nonneg (h : ∀ a ∈ s, 0 ≤ a) : 0 ≤ s.prod := by
 
 end OrderedCommSemiring
 
+section StrictOrderedCommSemiring
+variable [StrictOrderedCommSemiring R] {s : Multiset R}
+
+theorem prod_pos (h : ∀ a ∈ s, (0 : R) < a) : 0 < s.prod := by
+  induction' s using Multiset.induction with a m ih
+  · simp only [prod_zero, zero_lt_one]
+  · rw [Multiset.prod_cons]
+    exact mul_pos (h _ <| Multiset.mem_cons_self _ _)
+        (ih fun a ha => h a <| Multiset.mem_cons_of_mem ha)
+
+end StrictOrderedCommSemiring
+
 @[simp]
 lemma _root_.CanonicallyOrderedCommSemiring.multiset_prod_pos [CanonicallyOrderedCommSemiring R]
     [Nontrivial R] {m : Multiset R} : 0 < m.prod ↔ ∀ x ∈ m, 0 < x := by
