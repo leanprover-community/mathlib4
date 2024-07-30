@@ -1945,12 +1945,14 @@ The variables in the following lemmas are used as in this diagram:
 -/
 
 
-variable {φ : α → β} {θ : α → γ} {ψ : β → δ} {ρ : γ → δ} (H : ψ ∘ φ = ρ ∘ θ)
+variable {φ : α → β} {θ : α → γ} {ψ : β → δ} {ρ : γ → δ}
 
-theorem map_comm (F : Filter α) : map ψ (map φ F) = map ρ (map θ F) := by
+theorem map_comm (H : ψ ∘ φ = ρ ∘ θ) (F : Filter α) :
+    map ψ (map φ F) = map ρ (map θ F) := by
   rw [Filter.map_map, H, ← Filter.map_map]
 
-theorem comap_comm (G : Filter δ) : comap φ (comap ψ G) = comap θ (comap ρ G) := by
+theorem comap_comm (H : ψ ∘ φ = ρ ∘ θ) (G : Filter δ) :
+    comap φ (comap ψ G) = comap θ (comap ρ G) := by
   rw [Filter.comap_comap, H, ← Filter.comap_comap]
 
 end comm

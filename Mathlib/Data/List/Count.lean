@@ -3,7 +3,7 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.List.Basic
+import Mathlib.Data.Nat.Defs
 
 /-!
 # Counting in lists
@@ -22,21 +22,6 @@ open Nat
 variable {α : Type*} {l : List α}
 
 namespace List
-
-section CountP
-
-variable (p q : α → Bool)
-
-theorem length_filter_lt_length_iff_exists (l) :
-    length (filter p l) < length l ↔ ∃ x ∈ l, ¬p x := by
-  simpa [length_eq_countP_add_countP p l, countP_eq_length_filter] using
-  countP_pos (fun x => ¬p x) (l := l)
-
--- Porting note: `Lean.Internal.coeM` forces us to type-ascript `{x // x ∈ l}`
-lemma countP_attach (l : List α) : l.attach.countP (fun a : {x // x ∈ l} ↦ p a) = l.countP p := by
-  simp_rw [← Function.comp_apply (g := Subtype.val), ← countP_map, attach_map_val]
-
-end CountP
 
 /-! ### count -/
 

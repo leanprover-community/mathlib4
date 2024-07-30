@@ -452,8 +452,8 @@ theorem ofRowLens_to_rowLens_eq_self {μ : YoungDiagram} : ofRowLens _ (rowLens_
 /-- The right_inv direction of the equivalence -/
 theorem rowLens_ofRowLens_eq_self {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hpos : ∀ x ∈ w, 0 < x) :
     (ofRowLens w hw).rowLens = w :=
-  List.ext_get (rowLens_length_ofRowLens hpos) fun i _ h₂ =>
-    get_rowLens.trans <| rowLen_ofRowLens ⟨i, h₂⟩
+  List.ext_get (rowLens_length_ofRowLens hpos) fun i h₁ h₂ =>
+    (get_rowLens (h := h₁)).trans <| rowLen_ofRowLens ⟨i, h₂⟩
 
 /-- Equivalence between Young diagrams and weakly decreasing lists of positive natural numbers.
 A Young diagram `μ` is equivalent to a list of row lengths. -/

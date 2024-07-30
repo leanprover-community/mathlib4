@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.GroupTheory.GroupAction.Units
 
 /-!
 # Further lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.

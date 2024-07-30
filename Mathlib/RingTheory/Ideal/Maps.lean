@@ -296,14 +296,12 @@ end Surjective
 
 section Injective
 
-variable (hf : Function.Injective f)
-
-theorem comap_bot_le_of_injective : comap f ⊥ ≤ I := by
+theorem comap_bot_le_of_injective (hf : Function.Injective f) : comap f ⊥ ≤ I := by
   refine le_trans (fun x hx => ?_) bot_le
   rw [mem_comap, Submodule.mem_bot, ← map_zero f] at hx
   exact Eq.symm (hf hx) ▸ Submodule.zero_mem ⊥
 
-theorem comap_bot_of_injective : Ideal.comap f ⊥ = ⊥ :=
+theorem comap_bot_of_injective (hf : Function.Injective f) : Ideal.comap f ⊥ = ⊥ :=
   le_bot_iff.mp (Ideal.comap_bot_le_of_injective f hf)
 
 end Injective
@@ -349,9 +347,8 @@ variable [FunLike F R S] [RingHomClass F R S] (f : F) {I : Ideal R}
 
 section Surjective
 
-variable (hf : Function.Surjective f)
-
-theorem comap_map_of_surjective (I : Ideal R) : comap f (map f I) = I ⊔ comap f ⊥ :=
+theorem comap_map_of_surjective (hf : Function.Surjective f) (I : Ideal R) :
+    comap f (map f I) = I ⊔ comap f ⊥ :=
   le_antisymm
     (fun r h =>
       let ⟨s, hsi, hfsr⟩ := mem_image_of_mem_map_of_surjective f hf h
@@ -361,7 +358,8 @@ theorem comap_map_of_surjective (I : Ideal R) : comap f (map f I) = I ⊔ comap 
     (sup_le (map_le_iff_le_comap.1 le_rfl) (comap_mono bot_le))
 
 /-- Correspondence theorem -/
-def relIsoOfSurjective : Ideal S ≃o { p : Ideal R // comap f ⊥ ≤ p } where
+def relIsoOfSurjective (hf : Function.Surjective f) :
+    Ideal S ≃o { p : Ideal R // comap f ⊥ ≤ p } where
   toFun J := ⟨comap f J, comap_mono bot_le⟩
   invFun I := map f I.1
   left_inv J := map_comap_of_surjective f hf J
@@ -374,11 +372,11 @@ def relIsoOfSurjective : Ideal S ≃o { p : Ideal R // comap f ⊥ ≤ p } where
       comap_mono⟩
 
 /-- The map on ideals induced by a surjective map preserves inclusion. -/
-def orderEmbeddingOfSurjective : Ideal S ↪o Ideal R :=
+def orderEmbeddingOfSurjective (hf : Function.Surjective f) : Ideal S ↪o Ideal R :=
   (relIsoOfSurjective f hf).toRelEmbedding.trans (Subtype.relEmbedding (fun x y => x ≤ y) _)
 
-theorem map_eq_top_or_isMaximal_of_surjective {I : Ideal R} (H : IsMaximal I) :
-    map f I = ⊤ ∨ IsMaximal (map f I) := by
+theorem map_eq_top_or_isMaximal_of_surjective (hf : Function.Surjective f) {I : Ideal R}
+    (H : IsMaximal I) : map f I = ⊤ ∨ IsMaximal (map f I) := by
   refine or_iff_not_imp_left.2 fun ne_top => ⟨⟨fun h => ne_top h, fun J hJ => ?_⟩⟩
   · refine
       (relIsoOfSurjective f hf).injective
@@ -386,7 +384,8 @@ theorem map_eq_top_or_isMaximal_of_surjective {I : Ideal R} (H : IsMaximal I) :
     · exact map_le_iff_le_comap.1 (le_of_lt hJ)
     · exact fun h => hJ.right (le_map_of_comap_le_of_surjective f hf (le_of_eq h.symm))
 
-theorem comap_isMaximal_of_surjective {K : Ideal S} [H : IsMaximal K] : IsMaximal (comap f K) := by
+theorem comap_isMaximal_of_surjective (hf : Function.Surjective f) {K : Ideal S} [H : IsMaximal K]:
+    IsMaximal (comap f K) := by
   refine ⟨⟨comap_ne_top _ H.1.1, fun J hJ => ?_⟩⟩
   suffices map f J = ⊤ by
     have := congr_arg (comap f) this
@@ -400,7 +399,8 @@ theorem comap_isMaximal_of_surjective {K : Ideal S} [H : IsMaximal K] : IsMaxima
   rw [comap_map_of_surjective _ hf, sup_eq_left]
   exact le_trans (comap_mono bot_le) (le_of_lt hJ)
 
-theorem comap_le_comap_iff_of_surjective (I J : Ideal S) : comap f I ≤ comap f J ↔ I ≤ J :=
+theorem comap_le_comap_iff_of_surjective (hf : Function.Surjective f) (I J : Ideal S) :
+    comap f I ≤ comap f J ↔ I ≤ J :=
   ⟨fun h => (map_comap_of_surjective f hf I).symm.le.trans (map_le_of_le_comap h), fun h =>
     le_comap_of_map_le ((map_comap_of_surjective f hf I).le.trans h)⟩
 
@@ -409,10 +409,8 @@ end Surjective
 
 section Bijective
 
-variable (hf : Function.Bijective f)
-
 /-- Special case of the correspondence theorem for isomorphic rings -/
-def relIsoOfBijective : Ideal S ≃o Ideal R where
+def relIsoOfBijective (hf : Function.Bijective f) : Ideal S ≃o Ideal R where
   toFun := comap f
   invFun := map f
   left_inv := (relIsoOfSurjective f hf.right).left_inv
@@ -421,11 +419,13 @@ def relIsoOfBijective : Ideal S ≃o Ideal R where
       ((relIsoOfSurjective f hf.right).right_inv ⟨J, comap_bot_le_of_injective f hf.left⟩)
   map_rel_iff' {_ _} := (relIsoOfSurjective f hf.right).map_rel_iff'
 
-theorem comap_le_iff_le_map {I : Ideal R} {K : Ideal S} : comap f K ≤ I ↔ K ≤ map f I :=
+theorem comap_le_iff_le_map (hf : Function.Bijective f) {I : Ideal R} {K : Ideal S} :
+    comap f K ≤ I ↔ K ≤ map f I :=
   ⟨fun h => le_map_of_comap_le_of_surjective f hf.right h, fun h =>
     (relIsoOfBijective f hf).right_inv I ▸ comap_mono h⟩
 
-theorem map.isMaximal {I : Ideal R} (H : IsMaximal I) : IsMaximal (map f I) := by
+theorem map.isMaximal (hf : Function.Bijective f) {I : Ideal R} (H : IsMaximal I) :
+    IsMaximal (map f I) := by
   refine
     or_iff_not_imp_left.1 (map_eq_top_or_isMaximal_of_surjective f hf.right H) fun h => H.1.1 ?_
   calc
