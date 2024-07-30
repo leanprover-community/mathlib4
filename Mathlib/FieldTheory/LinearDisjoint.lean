@@ -617,7 +617,7 @@ variable (K : Type w) [Field K] [Algebra F K]
 tensor product over `F` is a field. -/
 @[mk_iff]
 protected structure LinearDisjoint : Prop where
-  isField : IsField (E ⊗[F] K)
+  is_field : IsField (E ⊗[F] K)
 
 -- set_option linter.unusedVariables false in
 -- variable {F E K} in
