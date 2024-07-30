@@ -345,6 +345,38 @@ def toLinearMap₂ (L : E →L[𝕜] F →L[𝕜] G) : E →ₗ[𝕜] F →ₗ[�
 
 end BilinearMaps
 
+section RestrictScalars
+
+variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+  (E : Type*) [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
+  (F : Type*) [AddCommGroup F] [TopologicalSpace F] [TopologicalAddGroup F] [Module 𝕜 F]
+  (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+  [Module 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
+  (𝕜'' : Type*) [Ring 𝕜'']
+  [Module 𝕜'' F] [ContinuousConstSMul 𝕜'' F] [SMulCommClass 𝕜 𝕜'' F] [SMulCommClass 𝕜' 𝕜'' F]
+
+/-- `ContinuousLinearMap.restrictScalars` as a `ContinuousLinearMap`. -/
+def restrictScalarsL : (E →L[𝕜] F) →L[𝕜''] E →L[𝕜'] F where
+  toLinearMap := restrictScalarsₗ 𝕜 E F 𝕜' 𝕜''
+  cont := by
+    rw [LinearMap.toFun_eq_coe, continuous_iff_tendsto_nhds_zero,
+     ContinuousLinearMap.hasBasis_nhds_zero.tendsto_iff ContinuousLinearMap.hasBasis_nhds_zero]
+    intro s ⟨hs, hs₀⟩
+    exact ⟨s, ⟨hs.extend_scalars _, hs₀⟩, fun _ h ↦ h⟩
+
+variable {𝕜 E F 𝕜' 𝕜''}
+
+@[simp]
+theorem coe_restrictScalarsL : (restrictScalarsL 𝕜 E F 𝕜' 𝕜'' : (E →L[𝕜] F) →ₗ[𝕜''] E →L[𝕜'] F) =
+    restrictScalarsₗ 𝕜 E F 𝕜' 𝕜'' :=
+  rfl
+
+@[simp]
+theorem coe_restrict_scalarsL' : ⇑(restrictScalarsL 𝕜 E F 𝕜' 𝕜'') = restrictScalars 𝕜' :=
+  rfl
+
+end RestrictScalars
+
 end ContinuousLinearMap
 
 open ContinuousLinearMap
@@ -357,8 +389,8 @@ section Semilinear
 
 variable {𝕜 : Type*} {𝕜₂ : Type*} {𝕜₃ : Type*} {𝕜₄ : Type*} {E : Type*} {F : Type*}
   {G : Type*} {H : Type*} [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
-  [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
-  [NontriviallyNormedField 𝕜₄] [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜₃ G] [Module 𝕜₄ H]
+  [NormedField 𝕜] [NormedField 𝕜₂] [NormedField 𝕜₃] [NormedField 𝕜₄]
+  [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜₃ G] [Module 𝕜₄ H]
   [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
   [TopologicalAddGroup G] [TopologicalAddGroup H] [ContinuousConstSMul 𝕜₃ G]
   [ContinuousConstSMul 𝕜₄ H] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃}
@@ -404,7 +436,7 @@ end Semilinear
 section Linear
 
 variable {𝕜 : Type*} {E : Type*} {F : Type*} {G : Type*} {H : Type*} [AddCommGroup E]
-  [AddCommGroup F] [AddCommGroup G] [AddCommGroup H] [NontriviallyNormedField 𝕜] [Module 𝕜 E]
+  [AddCommGroup F] [AddCommGroup G] [AddCommGroup H] [NormedField 𝕜] [Module 𝕜 E]
   [Module 𝕜 F] [Module 𝕜 G] [Module 𝕜 H] [TopologicalSpace E] [TopologicalSpace F]
   [TopologicalSpace G] [TopologicalSpace H] [TopologicalAddGroup G] [TopologicalAddGroup H]
   [ContinuousConstSMul 𝕜 G] [ContinuousConstSMul 𝕜 H]

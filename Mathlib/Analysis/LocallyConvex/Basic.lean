@@ -250,7 +250,7 @@ end NormedField
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
+variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
 
 @[deprecated Absorbent.zero_mem (since := "2024-02-02")]
 theorem Absorbent.zero_mem' (hs : Absorbent 𝕜 s) : (0 : E) ∈ s := hs.zero_mem

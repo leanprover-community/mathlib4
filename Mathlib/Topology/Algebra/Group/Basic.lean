@@ -746,6 +746,13 @@ theorem continuous_of_continuousAt_one {M hom : Type*} [MulOneClass M] [Topologi
     simpa only [ContinuousAt, ← map_mul_left_nhds_one x, tendsto_map'_iff, (· ∘ ·), map_mul,
       map_one, mul_one] using hf.tendsto.const_mul (f x)
 
+@[to_additive]
+theorem continuous_iff_tendsto_nhds_one {M hom : Type*} [MulOneClass M] [TopologicalSpace M]
+    [ContinuousMul M] [FunLike hom G M] [MonoidHomClass hom G M] {f : hom} :
+    Continuous f ↔ Tendsto f (𝓝 1) (𝓝 1) :=
+  ⟨fun h ↦ h.tendsto' _ _ (map_one f), fun h ↦
+    continuous_of_continuousAt_one f <| by rwa [ContinuousAt, map_one]⟩
+
 @[to_additive continuous_of_continuousAt_zero₂]
 theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [TopologicalSpace M]
     [ContinuousMul M] [Group H] [TopologicalSpace H] [TopologicalGroup H] (f : G →* H →* M)
