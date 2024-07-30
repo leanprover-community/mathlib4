@@ -173,7 +173,9 @@ initialize registerBuiltinAttribute {
       -- we call such a pair a "varying argument" pair if the LHS/RHS inputs are not defeq
       let isEq ← isDefEq e1 e2
       if !isEq then
-        -- verify that the "varying argument" pairs are free variables
+        let e1 := e1.eta
+        let e2 := e2.eta
+        -- verify that the "varying argument" pairs are free variables (after eta-reduction)
         unless e1.isFVar && e2.isFVar do fail
         -- add such a pair to the `pairs` array
         pairs := pairs.push (varyingArgs.size, e1, e2)
