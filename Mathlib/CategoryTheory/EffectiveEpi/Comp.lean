@@ -98,8 +98,8 @@ lemma effectiveEpi_of_effectiveEpi_epi_comp {B X Y : C} (f : X ⟶ B) (g : Y ⟶
 
 section CompIso
 
-variable {B B' : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π]
-  (i : B ⟶ B') [IsIso i]
+variable {B B' : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
+  (i : B ⟶ B')
 
 theorem effectiveEpiFamilyStructCompIso_aux
     {W : C} (e : (a : α) → X a ⟶ W)
@@ -110,6 +110,8 @@ theorem effectiveEpiFamilyStructCompIso_aux
   apply h
   rw [← Category.assoc, hg]
   simp
+
+variable [EffectiveEpiFamily X π] [IsIso i]
 
 /-- An effective epi family followed by an iso is an effective epi family. -/
 noncomputable

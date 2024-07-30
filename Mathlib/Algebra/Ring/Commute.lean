@@ -155,15 +155,15 @@ variable [Ring R] {a b : R} {n : ℕ}
 @[simp] lemma mul_neg_one_pow_eq_zero_iff : a * (-1) ^ n = 0 ↔ a = 0 := by
   obtain h | h := neg_one_pow_eq_or R n <;> simp [h]
 
+lemma neg_one_pow_eq_pow_mod_two (n : ℕ) : (-1 : R) ^ n = (-1) ^ (n % 2) := by
+  rw [← Nat.mod_add_div n 2, pow_add, pow_mul]; simp [sq]
+
 variable [NoZeroDivisors R]
 
 @[simp] lemma sq_eq_one_iff : a ^ 2 = 1 ↔ a = 1 ∨ a = -1 := by
   rw [← (Commute.one_right a).sq_eq_sq_iff_eq_or_eq_neg, one_pow]
 
 lemma sq_ne_one_iff : a ^ 2 ≠ 1 ↔ a ≠ 1 ∧ a ≠ -1 := sq_eq_one_iff.not.trans not_or
-
-lemma neg_one_pow_eq_pow_mod_two (n : ℕ) : (-1 : R) ^ n = (-1) ^ (n % 2) := by
-  rw [← Nat.mod_add_div n 2, pow_add, pow_mul]; simp [sq]
 
 end Ring
 
