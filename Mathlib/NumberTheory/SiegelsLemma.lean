@@ -38,7 +38,7 @@ open Matrix Finset
 
 namespace Int.Matrix
 
-variable {α β : Type*} [Fintype α] [Fintype β] [DecidableEq β] [DecidableEq α]
+variable {α β : Type*} [Fintype α] [Fintype β]
   (A : Matrix α β ℤ) (v : β → ℤ) (hn : Fintype.card α < Fintype.card β) (hm : 0 < Fintype.card α)
 
 -- Some definitions and relative properties
@@ -57,6 +57,8 @@ local notation3 "N" => fun i : α => ∑ j : β, B * (- negPart (A i j))
 local notation3 "S" => Finset.Icc N P
 
 section preparation
+
+variable [DecidableEq α] [DecidableEq β]
 
 /- In order to apply Pigeonhole we need:
 # Step 1: ∀ v ∈  T, A *ᵥ v ∈  S
@@ -173,6 +175,7 @@ end preparation
 
 theorem exists_ne_zero_int_vec_norm_le : ∃ t : β → ℤ, t ≠ 0 ∧
     A *ᵥ t = 0 ∧ ‖t‖ ≤ (n * max 1 ‖A‖) ^ ((m : ℝ) / (n - m)) := by
+  classical
   -- Pigeonhole
   rcases Finset.exists_ne_map_eq_of_card_lt_of_maps_to
     (card_S_lt_card_T A hn hm) (image_T_subset_S A)
