@@ -572,7 +572,7 @@ noncomputable def CondensedSet.LocallyConstant.iso :
 /-- `CondensedSet.LocallyConstant.functor` is fully faithful. -/
 noncomputable def fullyFaithfulCondensedSetLocallyConstantFunctor :
     CondensedSet.LocallyConstant.functor.FullyFaithful :=
-  (adjunction.{u+1, u} _ _).fullyFaithfulLOfIsIsoUnit
+  (adjunction.{u, u+1} _ _).fullyFaithfulLOfIsIsoUnit
 
 noncomputable instance : CondensedSet.LocallyConstant.functor.Faithful :=
   fullyFaithfulCondensedSetLocallyConstantFunctor.faithful

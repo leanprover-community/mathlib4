@@ -134,7 +134,7 @@ def lanCondensedSet' (X : Type (u+1)) : Sheaf (coherentTopology Profinite.{u}) (
   val := lanPresheaf (locallyConstantPresheaf X)
   cond := by
     rw [Presheaf.isSheaf_of_iso_iff (lanPresheaf_iso_functorToPresheaves' X)]
-    exact ((Condensed.LocallyConstant.functor.{u+1, u}
+    exact ((Condensed.LocallyConstant.functor.{u, u+1}
       (hs := fun _ _ _ ↦ ((Profinite.effectiveEpi_tfae _).out 0 2).mp)).obj X).cond
 
 def lanCondensedSet (X : Type (u+1)) : CondensedSet.{u} :=
