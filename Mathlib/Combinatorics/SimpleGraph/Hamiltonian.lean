@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer
 -/
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Combinatorics.SimpleGraph.Path
 
 /-!
 # Hamiltonian Graphs
@@ -19,7 +19,6 @@ In this file we introduce hamiltonian paths, cycles and graphs.
 -/
 
 open Finset Function
-open scoped BigOperators
 
 namespace SimpleGraph
 variable {α β : Type*} [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq β] {G : SimpleGraph α}
@@ -90,7 +89,7 @@ lemma isHamiltonianCycle_isCycle_and_isHamiltonian_tail  :
 
 lemma isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ ∀ a, (support p).tail.count a = 1 := by
-  simp only [isHamiltonianCycle_isCycle_and_isHamiltonian_tail , IsHamiltonian, support_tail,
+  simp only [isHamiltonianCycle_isCycle_and_isHamiltonian_tail, IsHamiltonian, support_tail,
     exists_prop]
 
 /-- A hamiltonian cycle visits every vertex. -/

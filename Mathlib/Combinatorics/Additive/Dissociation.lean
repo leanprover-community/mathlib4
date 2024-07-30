@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Set.Pointwise.Basic
 
@@ -19,8 +20,6 @@ independence and linear span of sets in a vector space but where the scalars are
 * `MulDissociated`/`AddDissociated`: Predicate for a set to be dissociated.
 * `Finset.mulSpan`/`Finset.addSpan`: Span of a finset.
 -/
-
-open scoped BigOperators Pointwise
 
 variable {α β : Type*} [CommGroup α] [CommGroup β]
 
@@ -73,7 +72,7 @@ lemma not_mulDissociated_iff_exists_disjoint :
 
 @[to_additive (attr := simp)] lemma MulEquiv.mulDissociated_preimage (e : β ≃* α) :
     MulDissociated (e ⁻¹' s) ↔ MulDissociated s := by
-  simp [MulDissociated, InjOn, ← e.finsetCongr.forall_congr_left, ← e.apply_eq_iff_eq,
+  simp [MulDissociated, InjOn, ← e.finsetCongr.forall_congr_right, ← e.apply_eq_iff_eq,
     (Finset.map_injective _).eq_iff]
 
 @[to_additive (attr := simp)] lemma mulDissociated_inv : MulDissociated s⁻¹ ↔ MulDissociated s :=
