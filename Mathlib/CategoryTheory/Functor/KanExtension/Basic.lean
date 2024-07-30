@@ -137,6 +137,7 @@ noncomputable def rightKanExtensionUnique
     (F'' : D ⥤ H) (α' : L ⋙ F'' ⟶ F) [F''.IsRightKanExtension α'] : F' ≅ F'' :=
   rightKanExtensionUniqueOfIso F' α (Iso.refl _) F'' α'
 
+
 lemma isRightKanExtension_iff_isIso {F' : D ⥤ H} {F'' : D ⥤ H} (φ : F'' ⟶ F')
     {L : C ⥤ D} {F : C ⥤ H} (α : L ⋙ F' ⟶ F) (α' : L ⋙ F'' ⟶ F)
     (comm : whiskerLeft L φ ≫ α = α') [F'.IsRightKanExtension α] :
