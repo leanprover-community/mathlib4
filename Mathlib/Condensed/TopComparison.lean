@@ -6,6 +6,7 @@ Authors: Dagur Asgeirsson
 import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 import Mathlib.Topology.Category.TopCat.Yoneda
 import Mathlib.Condensed.Explicit
+import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
 
 /-!
 
@@ -23,6 +24,8 @@ We apply this API to `CompHaus` and define the functor
 universe w w' v u
 
 open CategoryTheory Opposite Limits regularTopology ContinuousMap
+
+attribute [local instance] ConcreteCategory.instFunLike
 
 variable {C : Type u} [Category.{v} C] (G : C ⥤ TopCat.{w})
   (X : Type w') [TopologicalSpace X]
@@ -111,6 +114,9 @@ noncomputable def TopCat.toCondensedSet (X : TopCat.{u+1}) : CondensedSet.{u} :=
     rw [((CompHaus.effectiveEpi_tfae π).out 0 2 :)] at he
     apply QuotientMap.of_surjective_continuous he π.continuous )
 
+variable (P : TopCat.{u} → Prop) (X : TopCat.{max u w})
+    [CompHausLike.HasExplicitFiniteCoproducts.{0} P] [CompHausLike.HasExplicitPullbacks.{u} P]
+    (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f)
 
 /--
 `TopCat.toCondensedSet` yields a functor from `TopCat.{u+1}` to `CondensedSet.{u}`.
@@ -118,4 +124,26 @@ noncomputable def TopCat.toCondensedSet (X : TopCat.{u+1}) : CondensedSet.{u} :=
 @[simps]
 noncomputable def topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u} where
   obj X := X.toCondensedSet
+  map f := ⟨⟨fun _ g ↦ f.comp g, by aesop⟩⟩
+
+
+/-- TODO: refactor the definition of `TopCat.toCondensed` to use this construction. -/
+def TopCat.toSheafCompHausLike :
+    have := CompHausLike.preregular hs
+    Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w)) where
+  val := yonedaPresheaf.{u, max u w} (CompHausLike.compHausLikeToTop.{u} P) X
+  cond := by
+    have := CompHausLike.preregular hs
+    rw [Presheaf.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
+    refine ⟨⟨inferInstance⟩, ?_⟩
+    apply (config := { allowSynthFailures := true }) equalizerCondition_yonedaPresheaf
+      (CompHausLike.compHausLikeToTop.{u} P) X
+    intro Z B π he
+    apply QuotientMap.of_surjective_continuous (hs _ he) π.continuous
+
+/-- TODO: refactor the definition of `topCatToCondensed` to use this construction. -/
+noncomputable def topCatToSheafCompHausLike :
+    have := CompHausLike.preregular hs
+    TopCat.{max u w} ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w)) where
+  obj X := X.toSheafCompHausLike P hs
   map f := ⟨⟨fun _ g ↦ f.comp g, by aesop⟩⟩
