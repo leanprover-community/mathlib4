@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer
 -/
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Combinatorics.SimpleGraph.Path
 
 /-!
 # Hamiltonian Graphs
@@ -19,7 +19,6 @@ In this file we introduce hamiltonian paths, cycles and graphs.
 -/
 
 open Finset Function
-open scoped BigOperators
 
 namespace SimpleGraph
 variable {α β : Type*} [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq β] {G : SimpleGraph α}

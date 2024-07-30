@@ -49,12 +49,12 @@ Potentially also useful:
   a Hilbert space, without restrictions on its dimension.
 -/
 
-open scoped Classical BigOperators ENNReal NNReal Topology
+open scoped ENNReal NNReal
 open Set Function Finset MeasureTheory Measure Filter
 
 noncomputable section
 
-variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+variable {ι : Type*} [Fintype ι]
 
 local prefix:max "#" => Fintype.card
 
@@ -64,6 +64,10 @@ variable {A : ι → Type*} [∀ i, MeasurableSpace (A i)]
   (μ : ∀ i, Measure (A i)) [∀ i, SigmaFinite (μ i)]
 
 namespace MeasureTheory
+
+section DecidableEq
+
+variable [DecidableEq ι]
 
 namespace GridLines
 
@@ -134,7 +138,7 @@ theorem T_insert_le_T_lmarginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι)
             simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
             refine (hf.pow_const _).mul <| Finset.measurable_prod _ ?_
             exact fun _ _ ↦ hf.lmarginal μ |>.pow_const _
-    _ ≤ T μ p (∫⋯∫⁻_{i}, f ∂μ) s := lmarginal_mono (s:=s) (fun x ↦ ?_)
+    _ ≤ T μ p (∫⋯∫⁻_{i}, f ∂μ) s := lmarginal_mono (s := s) (fun x ↦ ?_)
   -- The remainder of the computation happens within an `|s|`-fold iterated integral
   simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
   set X := update x i
@@ -255,7 +259,7 @@ theorem lintegral_mul_prod_lintegral_pow_le {p : ℝ} (hp₀ : 0 ≤ p)
     ∫⁻ x, f x ^ (1 - (#ι - 1 : ℝ) * p) * ∏ i, (∫⁻ xᵢ, f (update x i xᵢ) ∂μ i) ^ p ∂.pi μ
     ≤ (∫⁻ x, f x ∂.pi μ) ^ (1 + p) := by
   cases isEmpty_or_nonempty (∀ i, A i)
-  · simp_rw [lintegral_of_isEmpty]; refine' zero_le _
+  · simp_rw [lintegral_of_isEmpty]; refine zero_le _
   inhabit ∀ i, A i
   have H : (∅ : Finset ι) ≤ Finset.univ := Finset.empty_subset _
   simpa [lmarginal_univ] using GridLines.T_lmarginal_antitone μ hp₀ hp hf H default
@@ -269,14 +273,16 @@ theorem lintegral_prod_lintegral_pow_le
     ≤ (∫⁻ x, f x ∂.pi μ) ^ p := by
   have : Nontrivial ι :=
     Fintype.one_lt_card_iff_nontrivial.mp (by exact_mod_cast hp.one_lt)
-  have h0 : (1:ℝ) < #ι := by norm_cast; exact Fintype.one_lt_card
-  have h1 : (0:ℝ) < #ι - 1 := by linarith
+  have h0 : (1 : ℝ) < #ι := by norm_cast; exact Fintype.one_lt_card
+  have h1 : (0 : ℝ) < #ι - 1 := by linarith
   have h2 : 0 ≤ ((1 : ℝ) / (#ι - 1 : ℝ)) := by positivity
   have h3 : (#ι - 1 : ℝ) * ((1 : ℝ) / (#ι - 1 : ℝ)) ≤ 1 := by field_simp
   have h4 : p = 1 + 1 / (↑#ι - 1) := by field_simp; rw [mul_comm, hp.sub_one_mul_conj]
   rw [h4]
   convert lintegral_mul_prod_lintegral_pow_le μ h2 h3 hf using 2
   field_simp
+
+end DecidableEq
 
 /-! ## The Gagliardo-Nirenberg-Sobolev inequality -/
 
@@ -294,14 +300,15 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux
     {u : (ι → ℝ) → F} (hu : ContDiff ℝ 1 u)
     (h2u : HasCompactSupport u) :
     ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ p := by
+  classical
   /- For a function `f` in one variable and `t ∈ ℝ` we have
   `|f(t)| = `|∫_{-∞}^t Df(s)∂s| ≤ ∫_ℝ |Df(s)| ∂s` where we use the fundamental theorem of calculus.
   For each `x ∈ ℝⁿ` we let `u` vary in one of the `n` coordinates and apply the inequality above.
   By taking the product over these `n` factors, raising them to the power `(n-1)⁻¹` and integrating,
   we get the inequality `∫ |u| ^ (n/(n-1)) ≤ ∫ x, ∏ i, (∫ xᵢ, |Du(update x i xᵢ)|)^(n-1)⁻¹`.
   The result then follows from the grid-lines lemma. -/
-  have : (1:ℝ) ≤ ↑#ι - 1 := by
-    have hι : (2:ℝ) ≤ #ι := by exact_mod_cast hp.one_lt
+  have : (1 : ℝ) ≤ ↑#ι - 1 := by
+    have hι : (2 : ℝ) ≤ #ι := by exact_mod_cast hp.one_lt
     linarith
   calc ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p
       = ∫⁻ x, ((‖u x‖₊ : ℝ≥0∞) ^ (1 / (#ι - 1 : ℝ))) ^ (#ι : ℝ) := by
@@ -328,7 +335,8 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux
         · exact hu.comp (by convert contDiff_update 1 x i)
         · exact h2u.comp_closedEmbedding (closedEmbedding_update x i)
     _ ≤ ∫⁻ xᵢ, (‖fderiv ℝ u (update x i xᵢ)‖₊ : ℝ≥0∞) := ?_
-  gcongr with y; swap; exact Measure.restrict_le_self
+  gcongr with y; swap
+  · exact Measure.restrict_le_self
   -- bound the derivative which appears
   calc ‖deriv (u ∘ update x i) y‖₊ = ‖fderiv ℝ u (update x i y) (deriv (update x i) y)‖₊ := by
         rw [fderiv.comp_deriv _ (hu.differentiable le_rfl).differentiableAt
@@ -476,8 +484,8 @@ theorem snorm_le_snorm_fderiv_of_eq_inner  {u : E → F'}
   have h2p : (p : ℝ) < n := by
     have : 0 < p⁻¹ - (n : ℝ)⁻¹ :=
       NNReal.coe_lt_coe.mpr (pos_iff_ne_zero.mpr (inv_ne_zero hp'0)) |>.trans_eq hp'
-    simp [sub_pos] at this
-    rwa [inv_lt_inv _ (zero_lt_one.trans_le (NNReal.coe_le_coe.mpr hp))] at this
+    rwa [NNReal.coe_inv, sub_pos,
+      inv_lt_inv _ (zero_lt_one.trans_le (NNReal.coe_le_coe.mpr hp))] at this
     exact_mod_cast hn
   have h0n : 2 ≤ n := Nat.succ_le_of_lt <| Nat.one_lt_cast.mp <| hp.trans_lt h2p
   have hn : NNReal.IsConjExponent n n' := .conjExponent (by norm_cast)
@@ -598,7 +606,7 @@ theorem snorm_le_snorm_fderiv_of_eq [FiniteDimensional ℝ F]
     {p p' : ℝ≥0} (hp : 1 ≤ p) (hn : 0 < finrank ℝ E)
     (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
     snorm u p' μ ≤ SNormLESNormFDerivOfEqConst F μ p * snorm (fderiv ℝ u) p μ := by
-  /- Here we derive the GNS-inequality with a Hilbert space as codomain to the case with a
+  /- Here we reduce the GNS-inequality with a Hilbert space as codomain to the case with a
   finite-dimensional normed space as codomain, by transferring the result along the equivalence
   `F ≃ ℝᵐ`. -/
   let F' := EuclideanSpace ℝ <| Fin <| finrank ℝ F
@@ -662,7 +670,7 @@ theorem snorm_le_snorm_fderiv_of_le [FiniteDimensional ℝ F]
     · simp
     · gcongr
   have : (q : ℝ≥0∞) ≤ p' := by
-    have H : (p':ℝ)⁻¹ ≤ (↑q)⁻¹ := trans hp' hpq
+    have H : (p' : ℝ)⁻¹ ≤ (↑q)⁻¹ := trans hp' hpq
     norm_cast at H ⊢
     rwa [inv_le_inv] at H
     · dsimp
