@@ -6,7 +6,7 @@ Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 import Mathlib.Topology.Category.TopCat.EpiMono
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Tactic.CategoryTheory.Elementwise
 
