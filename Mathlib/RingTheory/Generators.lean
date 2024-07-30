@@ -13,10 +13,13 @@ import Mathlib.RingTheory.TensorProduct.Basic
 # Generators of algebras
 
 ## Main definition
+
 - `Algebra.Generators`: A family of generators of a `R`-algebra `S` consists of
   1. `vars`: The type of variables.
   2. `val : vars → S`: The assignment of each variable to a value.
-  3. `σ`: A section of `R[X] → S`.
+  3. `σ`: A set-theoretic section of the induced `R`-algebra homomorphism `R[X] → S`, where we
+     write `R[X]` for `R[vars]`.
+
 - `Algebra.Generators.Hom`: Given a commuting square
   ```
   R --→ P = R[X] ---→ S
@@ -25,6 +28,7 @@ import Mathlib.RingTheory.TensorProduct.Basic
   R' -→ P' = R'[X'] → S
   ```
   A hom between `P` and `P'` is an assignment `X → P'` such that the arrows commute.
+
 - `Algebra.Generators.Cotangent`: The cotangent space wrt `P = R[X] → S`, i.e. the
   space `I/I²` with `I` being the kernel of the presentation.
 
@@ -388,13 +392,11 @@ instance Cotangent.module : Module S P.Cotangent where
   smul_add := fun r x y ↦ ext (smul_add (P.σ r) x.val y.val)
   add_smul := fun r s x ↦ by
     have := smul_eq_zero_of_mem (P.σ (r + s) - (P.σ r + P.σ s) : P.Ring) (by simp ) x
-    simp only [sub_smul, add_smul, sub_eq_zero] at this
-    exact this
+    simpa only [sub_smul, add_smul, sub_eq_zero]
   zero_smul := fun x ↦ smul_eq_zero_of_mem (P.σ 0 : P.Ring) (by simp) x
   one_smul := fun x ↦ by
     have := smul_eq_zero_of_mem (P.σ 1 - 1 : P.Ring) (by simp) x
-    simp [sub_eq_zero, sub_smul] at this
-    exact this
+    simpa [sub_eq_zero, sub_smul]
   mul_smul := fun r s x ↦ by
     have := smul_eq_zero_of_mem (P.σ (r * s) - (P.σ r * P.σ s) : P.Ring) (by simp) x
     simpa only [sub_smul, mul_smul, sub_eq_zero] using this
