@@ -389,7 +389,7 @@ namespace CategoryTheory.OplaxMonoidalFunctor
 
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
-@[simps?]
+@[simps]
 instance (F : OplaxMonoidalFunctor C D) {A : C} [Comon_Class A] : Comon_Class (F.obj A) where
   counit := F.map ε ≫ F.η
   comul := F.map Δ ≫ F.δ _ _
@@ -408,8 +408,8 @@ instance (F : OplaxMonoidalFunctor C D) {A : C} [Comon_Class A] : Comon_Class (F
 
 That is, a oplax monoidal functor F : C ⥤ D induces a functor Comon_Cat C ⥤ Comon_Class D.
 -/
-@[simps?]
-def mapComon (F : OplaxMonoidalFunctor C D) : Comon_Cat C ⥤ Comon_Cat D where
+@[simps]
+def mapComonCat (F : OplaxMonoidalFunctor C D) : Comon_Cat C ⥤ Comon_Cat D where
   obj A := Comon_Cat.mk (F.obj A.X)
   map {A B} f := Comon_Cat.mkHom
     { hom := F.map f.hom
@@ -419,6 +419,6 @@ def mapComon (F : OplaxMonoidalFunctor C D) : Comon_Cat C ⥤ Comon_Cat D where
         rw [Category.assoc, F.δ_natural, ← F.map_comp_assoc, ← F.map_comp_assoc, f.hom_comul] }
 
 -- TODO We haven't yet set up the category structure on `OplaxMonoidalFunctor C D`
--- and so can't state `mapComonFunctor : OplaxMonoidalFunctor C D ⥤ Comon_Class C ⥤ Comon_Class D`.
+-- and so can't state `mapComonCatFunctor : OplaxMonoidalFunctor C D ⥤ Comon_Class C ⥤ Comon_Class D`.
 
 end CategoryTheory.OplaxMonoidalFunctor

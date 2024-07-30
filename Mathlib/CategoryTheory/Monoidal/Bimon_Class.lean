@@ -111,9 +111,9 @@ def forget : Bimon_Cat C ⥤ C := toMon_Class C ⋙ Mon_Cat.forget C
 theorem toMon_Classforget : toMon_Class C ⋙ Mon_Cat.forget C = forget C := rfl
 
 /-- The forgetful functor from bimonoid objects to comonoid objects. -/
-@[simps!?]
+@[simps!]
 def toComon_Class : Bimon_Cat C ⥤ Comon_Cat C :=
-  (Mon_Cat.forgetMonoidal C).toOplaxMonoidalFunctor.mapComon
+  (Mon_Cat.forgetMonoidal C).toOplaxMonoidalFunctor.mapComonCat
 
 -- instance (M : Bimon_Cat C) : Comon_Class (toComon_Class C ⋙ forget C) M := inferInstance
 
@@ -122,7 +122,7 @@ theorem toComon_Classforget : toComon_Class C ⋙ Comon_Cat.forget C = forget C 
 
 open scoped Mon_Class Comon_Class
 
-@[simps!?]
+@[simps!]
 instance (M : Bimon_Cat C) : Comon_Class M.X.X := inferInstanceAs (Comon_Class (((toComon_Class C).obj M).X))
 
 -- @[simps!?]
@@ -144,7 +144,7 @@ instance (M : Bimon_Cat C) : Bimon_Class M.X.X where
 def toMon_ClassComon_Classobj (M : C) [Bimon_Class M] : Mon_Cat (Comon_Cat C) where
   X := Comon_Cat.mk M
 
-attribute [simps!?] toMon_ClassComon_Classobj -- We add this after the fact to avoid a timeout.
+attribute [simps!] toMon_ClassComon_Classobj -- We add this after the fact to avoid a timeout.
 
 /-- The forward direction of `Comon_Class (Mon_Class C) ≌ Mon_Class (Comon_Class C)` -/
 @[simps]
@@ -227,7 +227,7 @@ def ofMon_ClassComon_Classobj (M : C) [Bimon_Class M] : Bimon_Cat C where
 def ofMon_ClassComon_Class : Mon_Cat (Comon_Cat C) ⥤ Bimon_Cat C where
   obj M := ofMon_ClassComon_Classobj C M.X.X
   map f :=
-  { hom := (Comon_Cat.forgetMonoidal C).toLaxMonoidalFunctor.mapMon.map f }
+  { hom := (Comon_Cat.forgetMonoidal C).toLaxMonoidalFunctor.mapMonCat.map f }
 
 /-- The equivalence `Comon_Class (Mon_Class C) ≌ Mon_Class (Comon_Class C)` -/
 def equivMon_ClassComon_Class : Bimon_Cat C ≌ Mon_Cat (Comon_Cat C) where

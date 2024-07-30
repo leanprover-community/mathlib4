@@ -236,7 +236,7 @@ namespace CategoryTheory.LaxMonoidalFunctor
 
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
-@[simps!?]
+@[simps!]
 instance (F : LaxMonoidalFunctor C D) {A : C} [Mon_Class A] : Mon_Class (F.obj A) where
   one := F.ε ≫ F.map η
   mul := F.μ _ _ ≫ F.map μ
@@ -253,13 +253,13 @@ instance (F : LaxMonoidalFunctor C D) {A : C} [Mon_Class A] : Mon_Class (F.obj A
     slice_lhs 3 4 => rw [← F.toFunctor.map_comp, Mon_Class.mul_assoc]
     simp
 
--- TODO: mapMod F A : Mod A ⥤ Mod (F.mapMon A)
+-- TODO: mapMod F A : Mod A ⥤ Mod (F.mapMonCat A)
 /-- A lax monoidal functor takes monoid objects to monoid objects.
 
 That is, a lax monoidal functor `F : C ⥤ D` induces a functor `Mon_Cat C ⥤ Mon_Class D`.
 -/
 @[simps]
-def mapMon (F : LaxMonoidalFunctor C D) : Mon_Cat C ⥤ Mon_Cat D where
+def mapMonCat (F : LaxMonoidalFunctor C D) : Mon_Cat C ⥤ Mon_Cat D where
   obj A := Mon_Cat.mk (F.obj A.X)
   map {A B} f := Mon_Cat.mkHom
     { hom := F.map f.hom
@@ -271,10 +271,10 @@ def mapMon (F : LaxMonoidalFunctor C D) : Mon_Cat C ⥤ Mon_Cat D where
 
 variable (C D)
 
-/-- `mapMon` is functorial in the lax monoidal functor. -/
+/-- `mapMonCat` is functorial in the lax monoidal functor. -/
 @[simps] -- Porting note: added this, not sure how it worked previously without.
-def mapMonFunctor : LaxMonoidalFunctor C D ⥤ Mon_Cat C ⥤ Mon_Cat D where
-  obj := mapMon
+def mapMonCatFunctor : LaxMonoidalFunctor C D ⥤ Mon_Cat C ⥤ Mon_Cat D where
+  obj := mapMonCat
   map α := { app := fun A => { hom := α.app A.X } }
 
 end CategoryTheory.LaxMonoidalFunctor
@@ -290,8 +290,8 @@ variable (C)
 /-- Implementation of `Mon_.equivLaxMonoidalFunctorPUnit`. -/
 @[simps]
 def laxMonoidalToMon : LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C ⥤ Mon_Cat C where
-  obj F := (F.mapMon : Mon_Cat _ ⥤ Mon_Cat C).obj (.mk (𝟙_ (Discrete PUnit)))
-  map α := ((mapMonFunctor (Discrete PUnit) C).map α).app _
+  obj F := (F.mapMonCat : Mon_Cat _ ⥤ Mon_Cat C).obj (.mk (𝟙_ (Discrete PUnit)))
+  map α := ((mapMonCatFunctor (Discrete PUnit) C).map α).app _
 
 @[simps]
 def monToLaxMonoidalObj (A : C) [Mon_Class A] : LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C where
@@ -375,7 +375,7 @@ Its properties, stated as independent lemmas in that module,
 are used extensively in the proofs below.
 Notice that we could have followed the above plan not only conceptually
 but also as a possible implementation and
-could have constructed the tensor product of monoids via `mapMon`,
+could have constructed the tensor product of monoids via `mapMonCat`,
 but we chose to give a more explicit definition directly in terms of `tensor_μ`.
 
 To complete the definition of the monoidal category structure on the category of monoids,
