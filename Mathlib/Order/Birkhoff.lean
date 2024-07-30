@@ -247,9 +247,8 @@ variable [DecidableEq α]
   rw [birkhoffSet_inf, OrderIso.coe_toOrderEmbedding]
   simp
 
-@[simp] lemma birkhoffSet_apply (a : α) :
-    birkhoffSet a = OrderIso.lowerSetSupIrred a := by
-  have : Subsingleton (OrderBot α) := inferInstance; simp [birkhoffSet]; rfl
+@[simp] lemma birkhoffSet_apply (a : α) : birkhoffSet a = OrderIso.lowerSetSupIrred a := by
+  simp [birkhoffSet]; rfl
 
 end OrderEmbedding
 
