@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang
+-/
 import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Tactic.CategoryTheory.Elementwise
@@ -49,7 +54,6 @@ lemma colimit_no_zero_smul_divisor
   have := congr(colimit.ι F _ $(H rfl))
   all_goals try simp
   simp only [elementwise_of% (colimit.w F), map_zero] at this
-  exact this
   aesop -- **TODO** this is a workaround for a tactic bug; `exact this` should work.
 
 end module
