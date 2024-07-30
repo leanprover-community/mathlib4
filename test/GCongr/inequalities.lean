@@ -169,6 +169,12 @@ example {a b c d e : ℝ} (_h1 : 0 ≤ b) (_h2 : 0 ≤ c) (hac : a * b + 1 ≤ c
   guard_target =ₛ a * b ≤ c * d
   linarith
 
+-- test big operators
+example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ≤ g i) :
+    ∑ i ∈ s, (3 + f i ^ 2) ≤ ∑ i ∈ s, (3 + g i ^ 2) := by
+  gcongr with i hi
+  exact h i hi
+
 -- this tests templates with binders
 example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g i ^ 2 + 1) :
     ∑ i ∈ s, f i ^ 2 ≤ ∑ i ∈ s, g i ^ 2 := by
