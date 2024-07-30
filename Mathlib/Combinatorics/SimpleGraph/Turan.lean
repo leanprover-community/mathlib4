@@ -292,7 +292,7 @@ theorem isTuranMaximal_of_iso (f : G ≃g turanGraph n r) (hr : 0 < r) : G.IsTur
     fun H _ cf ↦ (f.symm.comp g).card_edgeFinset_eq ▸ j.2 H cf
 
 /-- Turán-maximality with `0 < r` transfers across graph isomorphisms. -/
-theorem IsTuranMaximal.iso {W : Type*} [Fintype W] [DecidableEq W] {H : SimpleGraph W}
+theorem IsTuranMaximal.iso {W : Type*} [Fintype W] {H : SimpleGraph W}
     [DecidableRel H.Adj] (h : G.IsTuranMaximal r) (f : G ≃g H) (hr : 0 < r) : H.IsTuranMaximal r :=
   isTuranMaximal_of_iso (h.nonempty_iso_turanGraph.some.comp f.symm) hr
 
