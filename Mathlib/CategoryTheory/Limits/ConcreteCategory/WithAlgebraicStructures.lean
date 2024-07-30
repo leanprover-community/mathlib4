@@ -69,13 +69,11 @@ lemma colimit_no_zero_smul_divisor
   obtain ⟨j', i, h⟩ := Concrete.colimit_rep_eq_zero (hx := hx)
   obtain ⟨j'', H⟩ := H
   let s : J := IsFiltered.sup {j, j', j''} { ⟨j, j', by simp, by simp, i⟩ }
-  replace H := H s (IsFiltered.toSup _ _ $ by simp) (F.map (IsFiltered.toSup _ _ $ by simp) x)
-  rw [← LinearMapClass.map_smul, ← IsFiltered.toSup_commutes, F.map_comp, comp_apply, h, map_zero,
-    ← F.map_comp, IsFiltered.toSup_commutes] at H
-  have := congr(colimit.ι F _ $(H rfl))
-  all_goals try simp
-  simp only [elementwise_of% (colimit.w F), map_zero] at this
-  aesop -- **TODO** this is a workaround for a tactic bug; `exact this` should work.
+  have eq := congr(colimit.ι F _ $(H s (IsFiltered.toSup _ _ $ by simp)
+    (F.map (IsFiltered.toSup _ _ $ by simp) x)
+    (by rw [← IsFiltered.toSup_commutes (f := i) (mY := by simp) (mf := by simp), F.map_comp,
+    comp_apply, ← map_smul, ← map_smul, h, map_zero])))
+  rwa [elementwise_of% (colimit.w F), map_zero] at eq
 
 end module
 
