@@ -988,7 +988,7 @@ private lemma add_le_of_forall_lt_add_top {a b : EReal} (h : ∀ c < ⊤, ∀ d 
     rw [add_zero] at h
     exact (not_le_of_lt b_c h).rec
 
-lemma add_le_of_forall_lt_add {a b c : EReal} (h : ∀ d < a, ∀ e < b, d + e ≤ c) : a + b ≤ c := by
+lemma add_le_of_forall_add_le {a b c : EReal} (h : ∀ d < a, ∀ e < b, d + e ≤ c) : a + b ≤ c := by
   induction a with
   | h_bot => exact bot_add b ▸ bot_le
   | h_real a => induction b with
