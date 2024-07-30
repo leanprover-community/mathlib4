@@ -26,13 +26,9 @@ in the file `RingTheory/LaurentSeries`.
 * `order x` is a minimal element of `Γ` where `x` has a nonzero coefficient if `x ≠ 0`, and is zero
   when `x = 0`.
 
-## TODO
-  * Equivalence between `HahnSeries Γ (HahnSeries Γ' R)` and `HahnSeries (Γ × Γ') R`
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
-
 -/
-
 
 open Finset Function
 open scoped Classical
@@ -205,7 +201,7 @@ instance [Nonempty Γ] [Nontrivial R] : Nontrivial (HahnSeries Γ R) :=
 
 section Order
 
-/-- An orderTop of a Hahn series `x` is a minimal element of `WithTop Γ` where `x` has a nonzero
+/-- The orderTop of a Hahn series `x` is a minimal element of `WithTop Γ` where `x` has a nonzero
   coefficient if `x ≠ 0`, and is `⊤` when `x = 0`. -/
 def orderTop (x : HahnSeries Γ R) : WithTop Γ :=
   if h : x = 0 then ⊤ else x.isWF_support.min (support_nonempty_iff.2 h)

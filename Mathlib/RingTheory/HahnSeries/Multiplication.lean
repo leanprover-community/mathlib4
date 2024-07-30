@@ -18,14 +18,14 @@ Hahn series.
 
 ## Main Definitions
   * `HahnModule` is a type alias for `HahnSeries`, which we use for defining scalar multiplication
-  of `HahnSeries Γ R` on `HahnModule Γ V` for an `R`-module `V`, where `Γ'` admits an ordered
+  of `HahnSeries Γ R` on `HahnModule Γ' R V` for an `R`-module `V`, where `Γ'` admits an ordered
   cancellative vector addition operation from `Γ`.
 
   ## Main results
   * If `R` is a (commutative) (semi-)ring, then so is `HahnSeries Γ R`.
   * If `V` is an `R`-module, then `HahnModule Γ' R V` is a `HahnSeries Γ R`-module.
 
-## To do
+## TODO
 
 * something like `IsScalarTower R S (HahnSeries Γ V)` from `IsScalarTower R S V`
 
@@ -45,7 +45,7 @@ variable {Γ Γ' R V : Type*}
 
 namespace HahnSeries
 
-variable [PartialOrder Γ] [Zero Γ]
+variable [Zero Γ] [PartialOrder Γ]
 
 instance [Zero R] [One R] : One (HahnSeries Γ R) :=
   ⟨single 0 1⟩
@@ -465,7 +465,7 @@ theorem support_mul_subset_add_support [NonUnitalNonAssocSemiring R] {x y : Hahn
 theorem mul_coeff_order_add_order {Γ} [LinearOrderedCancelAddCommMonoid Γ]
     [NonUnitalNonAssocSemiring R] (x y : HahnSeries Γ R) :
     (x * y).coeff (x.order + y.order) = x.leadingCoeff * y.leadingCoeff := by
-  simp only [← smul_eq_mul]
+  simp only [← of_symm_smul_of_eq_mul]
   exact HahnModule.smul_coeff_order_add_order x y
 
 theorem orderTop_mul_of_nonzero {Γ} [LinearOrderedCancelAddCommMonoid Γ]
@@ -473,7 +473,7 @@ theorem orderTop_mul_of_nonzero {Γ} [LinearOrderedCancelAddCommMonoid Γ]
     (x * y).orderTop = x.orderTop + y.orderTop := by
   by_cases hx : x = 0; · simp_all
   by_cases hy : y = 0; · simp_all
-  rw [← smul_eq_mul]
+  rw [← of_symm_smul_of_eq_mul]
   exact HahnModule.orderTop_smul_of_nonzero h
 
 theorem order_mul_of_nonzero {Γ} [LinearOrderedCancelAddCommMonoid Γ]
@@ -591,7 +591,7 @@ private theorem mul_smul' [Semiring R] [Module R V] (x y : HahnSeries Γ R)
   ext b
   rw [smul_coeff_left (x.isPWO_support.add y.isPWO_support)
     HahnSeries.support_mul_subset_add_support, smul_coeff_right
-    (y.isPWO_support.vadd z.isPWO_support) support_smul_subset_vadd_support']
+    (y.isPWO_support.vadd ((of R).symm z).isPWO_support) support_smul_subset_vadd_support']
   simp only [HahnSeries.mul_coeff, smul_coeff, HahnSeries.add_coeff, sum_smul, smul_sum, sum_sigma']
   apply Finset.sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l +ᵥ j), (l, j)⟩)
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>
@@ -613,11 +613,10 @@ def lof (R : Type*) [Semiring R] [Module R V] : HahnSeries Γ V ≃ₗ[R] HahnMo
 instance instModule [Semiring R] [Module R V] : Module (HahnSeries Γ R)
     (HahnModule Γ' R V) := {
   inferInstanceAs (DistribSMul (HahnSeries Γ R) (HahnModule Γ' R V)) with
-  mul_smul := fun x y z => mul_smul' x y z
+  mul_smul := mul_smul'
   one_smul := fun _ => one_smul'
   add_smul := fun _ _ _ => add_smul Module.add_smul
-  zero_smul := fun _ => zero_smul'
-  }
+  zero_smul := fun _ => zero_smul' }
 
 instance instGroupModule {V} [Ring R] [AddCommGroup V] [Module R V] : Module (HahnSeries Γ R)
     (HahnModule Γ' R V) where
@@ -637,7 +636,7 @@ instance instNoZeroSMulDivisors {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Zero
     [NoZeroSMulDivisors R V] : NoZeroSMulDivisors (HahnSeries Γ R) (HahnModule Γ R V) where
   eq_zero_or_eq_zero_of_smul_eq_zero {x y} hxy := by
     contrapose! hxy
-    simp_all only [ne_eq]
+    simp only [ne_eq]
     rw [← HahnModule.ext_iff, Function.funext_iff, not_forall]
     refine ⟨x.order + ((of R).symm y).order, ?_⟩
     rw [smul_coeff_order_add_order x y, of_symm_zero, HahnSeries.zero_coeff, smul_eq_zero]
@@ -651,7 +650,7 @@ namespace HahnSeries
 instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] :
     NoZeroDivisors (HahnSeries Γ R) where
     eq_zero_or_eq_zero_of_mul_eq_zero {x y} xy := by
-      have : NoZeroSMulDivisors (HahnSeries Γ R) (HahnSeries Γ R) :=
+      haveI : NoZeroSMulDivisors (HahnSeries Γ R) (HahnSeries Γ R) :=
         HahnModule.instNoZeroSMulDivisors
       exact eq_zero_or_eq_zero_of_smul_eq_zero xy
 
@@ -873,4 +872,3 @@ end Domain
 end Algebra
 
 end HahnSeries
-#min_imports
