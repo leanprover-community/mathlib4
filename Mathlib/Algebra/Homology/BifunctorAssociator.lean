@@ -36,6 +36,13 @@ the associator for the monoidal category structure on homological complexes (TOD
 
 open CategoryTheory Category Limits
 
+@[simp]
+theorem CategoryTheory.Functor.map_units_zsmul
+    {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
+    (F : C ⥤ D) [F.Additive]
+    {X Y : C} {f : X ⟶ Y} {r : ℤˣ} : F.map (r • f) = r • F.map f := by
+  apply Functor.map_zsmul
+
 namespace HomologicalComplex
 
 variable {C₁ C₂ C₁₂ C₂₃ C₃ C₄ : Type*}
@@ -188,19 +195,22 @@ of `mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄`. -/
 noncomputable def d₁ (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (j : ι₄) :
     (G.obj ((F₁₂.obj (K₁.X i₁)).obj (K₂.X i₂))).obj (K₃.X i₃) ⟶
       (mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄).X j :=
-  -- TODO add a sign
+  (ComplexShape.ε₁ c₁₂ c₃ c₄ (ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃) *
+    ComplexShape.ε₁ c₁ c₂ c₁₂ (i₁, i₂) ) •
   (G.map ((F₁₂.map (K₁.d i₁ (c₁.next i₁))).app (K₂.X i₂))).app (K₃.X i₃) ≫
     ιOrZero F₁₂ G K₁ K₂ K₃ c₁₂ c₄ _ i₂ i₃ j
 
 lemma d₁_eq_zero (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (j : ι₄) (h : ¬ c₁.Rel i₁ (c₁.next i₁)) :
     d₁ F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ i₂ i₃ j = 0 := by
   dsimp [d₁]
-  rw [shape _ _ _ h, Functor.map_zero, zero_app, Functor.map_zero, zero_app, zero_comp]
+  rw [shape _ _ _ h, Functor.map_zero, zero_app, Functor.map_zero, zero_app, zero_comp, smul_zero]
 
 lemma d₁_eq {i₁ i₁' : ι₁} (h₁ : c₁.Rel i₁ i₁') (i₂ : ι₂) (i₃ : ι₃) (j : ι₄) :
     d₁ F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ i₂ i₃ j =
-      (G.map ((F₁₂.map (K₁.d i₁ i₁')).app (K₂.X i₂))).app (K₃.X i₃) ≫
-        ιOrZero F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁' i₂ i₃ j := by
+    (ComplexShape.ε₁ c₁₂ c₃ c₄ (ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃) *
+      ComplexShape.ε₁ c₁ c₂ c₁₂ (i₁, i₂) ) •
+    (G.map ((F₁₂.map (K₁.d i₁ i₁')).app (K₂.X i₂))).app (K₃.X i₃) ≫
+      ιOrZero F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁' i₂ i₃ j := by
   obtain rfl := c₁.next_eq' h₁
   rfl
 
@@ -209,19 +219,20 @@ of `mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄`. -/
 noncomputable def d₂ (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (j : ι₄) :
     (G.obj ((F₁₂.obj (K₁.X i₁)).obj (K₂.X i₂))).obj (K₃.X i₃) ⟶
       (mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄).X j :=
-  -- TODO add a sign
+  (c₁₂.ε₁ c₃ c₄ (ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃) * c₁.ε₂ c₂ c₁₂ (i₁, i₂)) •
   (G.map ((F₁₂.obj (K₁.X i₁)).map (K₂.d i₂ (c₂.next i₂)))).app (K₃.X i₃) ≫
     ιOrZero F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ _ i₃ j
 
 lemma d₂_eq_zero (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (j : ι₄) (h : ¬ c₂.Rel i₂ (c₂.next i₂)) :
     d₂ F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ i₂ i₃ j = 0 := by
   dsimp [d₂]
-  rw [shape _ _ _ h, Functor.map_zero, Functor.map_zero, zero_app, zero_comp]
+  rw [shape _ _ _ h, Functor.map_zero, Functor.map_zero, zero_app, zero_comp, smul_zero]
 
 lemma d₂_eq (i₁ : ι₁) {i₂ i₂' : ι₂} (h₂ : c₂.Rel i₂ i₂') (i₃ : ι₃) (j : ι₄) :
     d₂ F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ i₂ i₃ j =
-  (G.map ((F₁₂.obj (K₁.X i₁)).map (K₂.d i₂ i₂'))).app (K₃.X i₃) ≫
-    ιOrZero F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ _ i₃ j := by
+  (c₁₂.ε₁ c₃ c₄ (ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃) * c₁.ε₂ c₂ c₁₂ (i₁, i₂)) •
+    (G.map ((F₁₂.obj (K₁.X i₁)).map (K₂.d i₂ i₂'))).app (K₃.X i₃) ≫
+      ιOrZero F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ _ i₃ j := by
   obtain rfl := c₂.next_eq' h₂
   rfl
 
@@ -315,27 +326,48 @@ lemma d_eq (j j' : ι₄):
     by_cases h₁ : c₁₂.Rel i₁₂ (c₁₂.next i₁₂)
     · by_cases h₂ : c₁₂.π c₃ c₄ (c₁₂.next i₁₂, i₃) = j'
       · rw [mapBifunctor.d₁_eq _ _ _ _ h₁ _ _ h₂]
-        dsimp
-        simp only [Functor.map_add, NatTrans.app_add, Preadditive.add_comp, smul_add,
-          Preadditive.comp_add, Linear.comp_units_smul]
+        simp only [mapBifunctor.d_eq, Functor.map_add, NatTrans.app_add, Preadditive.add_comp,
+          smul_add, Preadditive.comp_add, Linear.comp_units_smul]
         congr 1
         · rw [← NatTrans.comp_app_assoc, ← Functor.map_comp,
-            HomologicalComplex₂.ι_D₁]
-          sorry
-        · sorry
+            mapBifunctor.ι_D₁]
+          by_cases h₃ : c₁.Rel i₁ (c₁.next i₁)
+          · have h₄ := (ComplexShape.next_π₁ c₂ c₁₂ h₃ i₂).symm
+            rw [mapBifunctor.d₁_eq _ _ _ _ h₃ _ _ h₄,
+              d₁_eq _ _ _ _ _ _ _ h₃,
+              ιOrZero_eq _ _ _ _ _ _ _ _ _ _ _ (by rw [← h₂, ← h₄]; rfl),
+              ι_eq _ _ _ _ _ _ _ _ _ _ (c₁₂.next i₁₂) _ h₄ h₂,
+              Functor.map_units_zsmul, Functor.map_comp, NatTrans.app_units_zsmul,
+              NatTrans.comp_app, Linear.units_smul_comp, assoc, smul_smul]
+          · rw [d₁_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₃,
+              mapBifunctor.d₁_eq_zero _ _ _ _ _ _ _ h₃,
+              Functor.map_zero, zero_app, zero_comp, smul_zero]
+        · rw [← NatTrans.comp_app_assoc, ← Functor.map_comp,
+            mapBifunctor.ι_D₂]
+          by_cases h₃ : c₂.Rel i₂ (c₂.next i₂)
+          · have h₄ := (ComplexShape.next_π₂ c₁ c₁₂ i₁ h₃).symm
+            rw [mapBifunctor.d₂_eq _ _ _ _ _ h₃ _ h₄,
+              d₂_eq _ _ _ _ _ _ _ _ h₃,
+              ιOrZero_eq _ _ _ _ _ _ _ _ _ _ _ (by rw [← h₂, ← h₄]; rfl),
+              ι_eq _ _ _ _ _ _ _ _ _ _ (c₁₂.next i₁₂) _ h₄ h₂,
+              Functor.map_units_zsmul, Functor.map_comp, NatTrans.app_units_zsmul,
+              NatTrans.comp_app, Linear.units_smul_comp, assoc, smul_smul]
+          · rw [d₂_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₃,
+              mapBifunctor.d₂_eq_zero _ _ _ _ _ _ _ h₃,
+              Functor.map_zero, zero_app, zero_comp, smul_zero]
       · rw [mapBifunctor.d₁_eq_zero' _ _ _ _ h₁ _ _ h₂, comp_zero]
         trans 0 + 0
         · simp
         · congr 1
           · by_cases h₃ : c₁.Rel i₁ (c₁.next i₁)
-            · rw [d₁_eq _ _ _ _ _ _ _ h₃, ιOrZero_eq_zero, comp_zero]
+            · rw [d₁_eq _ _ _ _ _ _ _ h₃, ιOrZero_eq_zero, comp_zero, smul_zero]
               dsimp [ComplexShape.r]
               intro h₄
               apply h₂
               rw [← h₄, ComplexShape.next_π₁ c₂ c₁₂ h₃ i₂]
             · rw [d₁_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₃]
           · by_cases h₃ : c₂.Rel i₂ (c₂.next i₂)
-            · rw [d₂_eq _ _ _ _ _ _ _ _ h₃, ιOrZero_eq_zero, comp_zero]
+            · rw [d₂_eq _ _ _ _ _ _ _ _ h₃, ιOrZero_eq_zero, comp_zero, smul_zero]
               dsimp [ComplexShape.r]
               intro h₄
               apply h₂
@@ -416,6 +448,7 @@ lemma mapBifunctorAssociatorX_hom_D₂ (j j' : ι₄) :
         mapBifunctor₁₂.D₂ F₁₂ G K₁ K₂ K₃ c₁₂ c₄ j j' ≫
         (mapBifunctorAssociatorX associator K₁ K₂ K₃ c₁₂ c₂₃ c₄ j').hom :=
   sorry
+
 @[reassoc]
 lemma mapBifunctorAssociatorX_hom_D₃ (j j' : ι₄) :
     (mapBifunctorAssociatorX associator K₁ K₂ K₃ c₁₂ c₂₃ c₄ j).hom ≫
