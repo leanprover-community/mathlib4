@@ -200,10 +200,12 @@ theorem count_bagInter {a : α} :
     by_cases hb : b ∈ l₂
     · rw [cons_bagInter_of_pos _ hb, count_cons, count_cons, count_bagInter, count_erase,
         ← Nat.add_min_add_right]
-      by_cases ab : a = b
-      · rw [if_pos ab, Nat.sub_add_cancel]
-        rwa [succ_le_iff, count_pos_iff_mem, ab]
-      · rw [if_neg ab, Nat.sub_zero, Nat.add_zero, Nat.add_zero]
+      by_cases ba : b = a
+      · simp only [beq_iff_eq]
+        rw [if_pos ba, Nat.sub_add_cancel]
+        rwa [succ_le_iff, count_pos_iff_mem, ← ba]
+      · simp only [beq_iff_eq]
+        rw [if_neg ba, Nat.sub_zero, Nat.add_zero, Nat.add_zero]
     · rw [cons_bagInter_of_neg _ hb, count_bagInter]
       by_cases ab : a = b
       · rw [← ab] at hb

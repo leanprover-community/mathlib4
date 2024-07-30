@@ -217,8 +217,6 @@ section
 
 variable [DecidableEq α]
 
--- attribute [congr]
-
 theorem Perm.bagInter_right {l₁ l₂ : List α} (t : List α) (h : l₁ ~ l₂) :
     l₁.bagInter t ~ l₂.bagInter t := by
   induction' h with x _ _ _ _ x y _ _ _ _ _ _ ih_1 ih_2 generalizing t; · simp
@@ -247,7 +245,7 @@ theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h 
     l ~ replicate m a ++ replicate n b ↔ count a l = m ∧ count b l = n ∧ l ⊆ [a, b] := by
   rw [perm_iff_count, ← Decidable.and_forall_ne a, ← Decidable.and_forall_ne b]
   suffices l ⊆ [a, b] ↔ ∀ c, c ≠ b → c ≠ a → c ∉ l by
-    simp (config := { contextual := true }) [count_replicate, h, h.symm, this, count_eq_zero]
+    simp (config := { contextual := true }) [count_replicate, h, this, count_eq_zero, Ne.symm]
   trans ∀ c, c ∈ l → c = b ∨ c = a
   · simp [subset_def, or_comm]
   · exact forall_congr' fun _ => by rw [← and_imp, ← not_or, not_imp_not]
@@ -255,13 +253,10 @@ theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h 
 -- @[congr]
 theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup l₂ :=
   perm_iff_count.2 fun a =>
-    if h : a ∈ l₁ then by simp [nodup_dedup, h, p.subset h] else by simp [h, mt p.mem_iff.2 h]
-
--- attribute [congr]
-
--- @[congr]
-
--- @[congr]
+    if h : a ∈ l₁ then by
+      simp [nodup_dedup, h, p.subset h]
+    else by
+      simp [mem_dedup, h, not_false_eq_true, count_eq_zero_of_not_mem, mt p.mem_iff.2 h]
 
 theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
     l ∩ (t₁ ++ t₂) ~ l ∩ t₁ ++ l ∩ t₂ := by
@@ -534,7 +529,7 @@ theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     count (x :: l) (permutations'Aux x l) = length (takeWhile (x = ·) l) + 1 := by
   induction' l with y l IH generalizing x
   · simp [takeWhile, count]
-  · rw [permutations'Aux, DecEq_eq, count_cons_self]
+  · rw [permutations'Aux, count_cons_self]
     by_cases hx : x = y
     · subst hx
       simpa [takeWhile, Nat.succ_inj', DecEq_eq] using IH _

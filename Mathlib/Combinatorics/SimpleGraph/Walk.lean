@@ -1085,7 +1085,7 @@ theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.s
         simp
       · rw [edges_cons, List.count_cons]
         split_ifs with h''
-        · rw [Sym2.eq_iff] at h''
+        · simp only [beq_iff_eq, Sym2.eq, Sym2.rel_iff'] at h''
           obtain ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ := h''
           · exact (h' rfl).elim
           · cases p' <;> simp!
@@ -1127,11 +1127,11 @@ theorem darts_dropUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support
 
 theorem edges_takeUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.takeUntil u h).edges ⊆ p.edges :=
-  List.map_subset _ (p.darts_takeUntil_subset h)
+  List.Subset.map _ (p.darts_takeUntil_subset h)
 
 theorem edges_dropUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.dropUntil u h).edges ⊆ p.edges :=
-  List.map_subset _ (p.darts_dropUntil_subset h)
+  List.Subset.map _ (p.darts_dropUntil_subset h)
 
 theorem length_takeUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.takeUntil u h).length ≤ p.length := by
@@ -1378,7 +1378,7 @@ theorem darts_bypass_subset {u v : V} (p : G.Walk u v) : p.bypass.darts ⊆ p.da
       exact List.cons_subset_cons _ ih
 
 theorem edges_bypass_subset {u v : V} (p : G.Walk u v) : p.bypass.edges ⊆ p.edges :=
-  List.map_subset _ p.darts_bypass_subset
+  List.Subset.map _ p.darts_bypass_subset
 
 theorem darts_toPath_subset {u v : V} (p : G.Walk u v) : (p.toPath : G.Walk u v).darts ⊆ p.darts :=
   darts_bypass_subset _
