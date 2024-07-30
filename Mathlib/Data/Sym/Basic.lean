@@ -147,9 +147,19 @@ instance : Membership α (Sym α n) :=
 instance decidableMem [DecidableEq α] (a : α) (s : Sym α n) : Decidable (a ∈ s) :=
   s.1.decidableMem _
 
+@[simp, norm_cast] lemma coe_mk (s : Multiset α) (h : Multiset.card s = n) : mk s h = s := rfl
+
 @[simp]
 theorem mem_mk (a : α) (s : Multiset α) (h : Multiset.card s = n) : a ∈ mk s h ↔ a ∈ s :=
   Iff.rfl
+
+lemma «forall» {p : Sym α n → Prop} :
+    (∀ s : Sym α n, p s) ↔ ∀ (s : Multiset α) (hs : Multiset.card s = n), p (Sym.mk s hs) := by
+  simp [Sym]
+
+lemma «exists» {p : Sym α n → Prop} :
+    (∃ s : Sym α n, p s) ↔ ∃ (s : Multiset α) (hs : Multiset.card s = n), p (Sym.mk s hs) := by
+  simp [Sym]
 
 @[simp]
 theorem not_mem_nil (a : α) : ¬ a ∈ (nil : Sym α 0) :=
@@ -453,6 +463,19 @@ theorem coe_append (s : Sym α n) (s' : Sym α n') : (s.append s' : Multiset α)
 theorem mem_append_iff {s' : Sym α m} : a ∈ s.append s' ↔ a ∈ s ∨ a ∈ s' :=
   Multiset.mem_add
 
+/-- `a ↦ {a}` as an equivalence between `α` and `Sym α 1`. -/
+@[simps apply]
+def oneEquiv : α ≃ Sym α 1 where
+  toFun a := ⟨{a}, by simp⟩
+  invFun s := (Equiv.subtypeQuotientEquivQuotientSubtype
+      (·.length = 1) _ (fun l ↦ Iff.rfl) (fun l l' ↦ by rfl) s).liftOn
+    (fun l ↦ l.1.head <| List.length_pos.mp <| by simp)
+    fun ⟨_, _⟩ ⟨_, h⟩ ↦ fun perm ↦ by
+      obtain ⟨a, rfl⟩ := List.length_eq_one.mp h
+      exact List.eq_of_mem_singleton (perm.mem_iff.mp <| List.head_mem _)
+  left_inv a := by rfl
+  right_inv := by rintro ⟨⟨l⟩, h⟩; obtain ⟨a, rfl⟩ := List.length_eq_one.mp h; rfl
+
 /-- Fill a term `m : Sym α (n - i)` with `i` copies of `a` to obtain a term of `Sym α n`.
 This is a convenience wrapper for `m.append (replicate i a)` that adjusts the term using
 `Sym.cast`. -/
@@ -538,7 +561,7 @@ namespace SymOptionSuccEquiv
 
 /-- Function from the symmetric product over `Option` splitting on whether or not
 it contains a `none`. -/
-def encode [DecidableEq α] (s : Sym (Option α) n.succ) : Sum (Sym (Option α) n) (Sym α n.succ) :=
+def encode [DecidableEq α] (s : Sym (Option α) n.succ) : Sym (Option α) n ⊕ Sym α n.succ :=
   if h : none ∈ s then Sum.inl (s.erase none h)
   else
     Sum.inr
@@ -560,7 +583,7 @@ theorem encode_of_not_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h 
 
 /-- Inverse of `Sym_option_succ_equiv.decode`. -/
 -- @[simp] Porting note: not a nice simp lemma, applies too often in Lean4
-def decode : Sum (Sym (Option α) n) (Sym α n.succ) → Sym (Option α) n.succ
+def decode : Sym (Option α) n ⊕ Sym α n.succ → Sym (Option α) n.succ
   | Sum.inl s => none ::ₛ s
   | Sum.inr s => s.map Embedding.some
 
@@ -581,7 +604,7 @@ theorem decode_encode [DecidableEq α] (s : Sym (Option α) n.succ) : decode (en
     convert s.attach_map_coe
 
 @[simp]
-theorem encode_decode [DecidableEq α] (s : Sum (Sym (Option α) n) (Sym α n.succ)) :
+theorem encode_decode [DecidableEq α] (s : Sym (Option α) n ⊕ Sym α n.succ) :
     encode (decode s) = s := by
   obtain s | s := s
   · simp
@@ -598,7 +621,7 @@ end SymOptionSuccEquiv
 /-- The symmetric product over `Option` is a disjoint union over simpler symmetric products. -/
 --@[simps]
 def symOptionSuccEquiv [DecidableEq α] :
-    Sym (Option α) n.succ ≃ Sum (Sym (Option α) n) (Sym α n.succ) where
+    Sym (Option α) n.succ ≃ Sym (Option α) n ⊕ Sym α n.succ where
   toFun := SymOptionSuccEquiv.encode
   invFun := SymOptionSuccEquiv.decode
   left_inv := SymOptionSuccEquiv.decode_encode

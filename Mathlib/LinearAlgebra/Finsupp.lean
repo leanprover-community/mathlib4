@@ -330,8 +330,9 @@ end
 theorem restrictDom_comp_subtype (s : Set α) [DecidablePred (· ∈ s)] :
     (restrictDom M R s).comp (Submodule.subtype _) = LinearMap.id := by
   ext l a
-  by_cases h : a ∈ s <;> simp [h]
-  exact ((mem_supported' R l.1).1 l.2 a h).symm
+  by_cases h : a ∈ s
+  · simp [h]
+  simpa [h] using ((mem_supported' R l.1).1 l.2 a h).symm
 
 theorem range_restrictDom (s : Set α) [DecidablePred (· ∈ s)] :
     LinearMap.range (restrictDom M R s) = ⊤ :=
@@ -931,7 +932,7 @@ variable (R)
 
 This is the `LinearEquiv` version of `Finsupp.sumFinsuppEquivProdFinsupp`. -/
 @[simps apply symm_apply]
-def sumFinsuppLEquivProdFinsupp {α β : Type*} : (Sum α β →₀ M) ≃ₗ[R] (α →₀ M) × (β →₀ M) :=
+def sumFinsuppLEquivProdFinsupp {α β : Type*} : (α ⊕ β →₀ M) ≃ₗ[R] (α →₀ M) × (β →₀ M) :=
   { sumFinsuppAddEquivProdFinsupp with
     map_smul' := by
       intros
@@ -943,11 +944,11 @@ def sumFinsuppLEquivProdFinsupp {α β : Type*} : (Sum α β →₀ M) ≃ₗ[R]
           snd_sumFinsuppAddEquivProdFinsupp, fst_sumFinsuppAddEquivProdFinsupp,
           RingHom.id_apply] }
 
-theorem fst_sumFinsuppLEquivProdFinsupp {α β : Type*} (f : Sum α β →₀ M) (x : α) :
+theorem fst_sumFinsuppLEquivProdFinsupp {α β : Type*} (f : α ⊕ β →₀ M) (x : α) :
     (sumFinsuppLEquivProdFinsupp R f).1 x = f (Sum.inl x) :=
   rfl
 
-theorem snd_sumFinsuppLEquivProdFinsupp {α β : Type*} (f : Sum α β →₀ M) (y : β) :
+theorem snd_sumFinsuppLEquivProdFinsupp {α β : Type*} (f : α ⊕ β →₀ M) (y : β) :
     (sumFinsuppLEquivProdFinsupp R f).2 y = f (Sum.inr y) :=
   rfl
 

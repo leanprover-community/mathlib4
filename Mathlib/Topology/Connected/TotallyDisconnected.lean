@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Connected.Basic
+import Mathlib.Topology.Connected.Clopen
 
 /-!
 # Totally disconnected and totally separated topological spaces
@@ -66,7 +66,7 @@ instance Prod.totallyDisconnectedSpace [TopologicalSpace β] [TotallyDisconnecte
       (H2.subsingleton ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩)⟩
 
 instance [TopologicalSpace β] [TotallyDisconnectedSpace α] [TotallyDisconnectedSpace β] :
-    TotallyDisconnectedSpace (Sum α β) := by
+    TotallyDisconnectedSpace (α ⊕ β) := by
   refine ⟨fun s _ hs => ?_⟩
   obtain ⟨t, ht, rfl⟩ | ⟨t, ht, rfl⟩ := Sum.isPreconnected_iff.1 hs
   · exact ht.subsingleton.image _
