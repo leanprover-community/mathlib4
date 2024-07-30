@@ -157,7 +157,7 @@ theorem Concrete.colimit_rep_eq_zero
 
 /--
 if `r` has no zero smul divisors for all small-enough sections, then `r` has no zero smul divisors
-on the level of stalks.
+in the colimit.
 -/
 lemma Concrete.colimit_no_zero_smul_divisor [HasColimit F] (R : Type*) [Semiring R]
     [∀ c : C, AddCommMonoid c] [∀ c : C, Module R c] [∀ {c c' : C}, LinearMapClass (c ⟶ c') R c c']
@@ -175,7 +175,7 @@ lemma Concrete.colimit_no_zero_smul_divisor [HasColimit F] (R : Type*) [Semiring
   have := congr(colimit.ι F _ $(H rfl))
   all_goals try simp
   simp only [elementwise_of% (colimit.w F), map_zero] at this
-  aesop
+  aesop -- **TODO** this is a workaround for a tactic bug; `exact this` should work.
 
 end FilteredColimits
 
