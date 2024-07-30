@@ -31,9 +31,7 @@ Grothendieck topology, sieve, generated topology, coverage, covering families
 
 namespace CategoryTheory
 
-universe u v
-
-variable (C : Type u) [Category.{v} C]
+variable (C : Type*) [Category C]
 
 /-! ### The notion of covering families -/
 
