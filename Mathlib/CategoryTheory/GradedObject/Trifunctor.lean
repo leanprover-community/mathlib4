@@ -579,7 +579,6 @@ noncomputable def mapBifunctorBifunctor₂₃Desc :
     mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j ⟶ A :=
   Cofan.IsColimit.desc (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ j)
     (fun i ↦ f i.1.1 i.1.2.1 i.1.2.2 i.2)
-#check mapBifunctorBifunctor₂₃Desc
 
 @[reassoc (attr := simp)]
 noncomputable def ι_mapBifunctorBifunctor₂₃Desc
