@@ -901,7 +901,7 @@ theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.s
         simp
       · rw [edges_cons, List.count_cons]
         split_ifs with h''
-        · simp only [beq_iff_eq, Sym2.eq, Sym2.rel_iff'] at h''
+        · rw [Sym2.eq_iff] at h''
           obtain ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ := h''
           · exact (h' rfl).elim
           · cases p' <;> simp!
@@ -943,11 +943,11 @@ theorem darts_dropUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support
 
 theorem edges_takeUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.takeUntil u h).edges ⊆ p.edges :=
-  List.Subset.map _ (p.darts_takeUntil_subset h)
+  List.map_subset _ (p.darts_takeUntil_subset h)
 
 theorem edges_dropUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.dropUntil u h).edges ⊆ p.edges :=
-  List.Subset.map _ (p.darts_dropUntil_subset h)
+  List.map_subset _ (p.darts_dropUntil_subset h)
 
 theorem length_takeUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.takeUntil u h).length ≤ p.length := by
@@ -1042,177 +1042,7 @@ termination_by p.length
 
 end Walk
 
-
-/-! ### Type of paths -/
-
-/-- The type for paths between two vertices. -/
-abbrev Path (u v : V) := { p : G.Walk u v // p.IsPath }
-
-namespace Path
-
-variable {G G'}
-
-@[simp]
-protected theorem isPath {u v : V} (p : G.Path u v) : (p : G.Walk u v).IsPath := p.property
-
-@[simp]
-protected theorem isTrail {u v : V} (p : G.Path u v) : (p : G.Walk u v).IsTrail :=
-  p.property.isTrail
-
-/-- The length-0 path at a vertex. -/
-@[refl, simps]
-protected def nil {u : V} : G.Path u u :=
-  ⟨Walk.nil, Walk.IsPath.nil⟩
-
-/-- The length-1 path between a pair of adjacent vertices. -/
-@[simps]
-def singleton {u v : V} (h : G.Adj u v) : G.Path u v :=
-  ⟨Walk.cons h Walk.nil, by simp [h.ne]⟩
-
-theorem mk'_mem_edges_singleton {u v : V} (h : G.Adj u v) :
-    s(u, v) ∈ (singleton h : G.Walk u v).edges := by simp [singleton]
-
-/-- The reverse of a path is another path.  See also `SimpleGraph.Walk.reverse`. -/
-@[symm, simps]
-def reverse {u v : V} (p : G.Path u v) : G.Path v u :=
-  ⟨Walk.reverse p, p.property.reverse⟩
-
-theorem count_support_eq_one [DecidableEq V] {u v w : V} {p : G.Path u v}
-    (hw : w ∈ (p : G.Walk u v).support) : (p : G.Walk u v).support.count w = 1 :=
-  List.count_eq_one_of_mem p.property.support_nodup hw
-
-theorem count_edges_eq_one [DecidableEq V] {u v : V} {p : G.Path u v} (e : Sym2 V)
-    (hw : e ∈ (p : G.Walk u v).edges) : (p : G.Walk u v).edges.count e = 1 :=
-  List.count_eq_one_of_mem p.property.isTrail.edges_nodup hw
-
-@[simp]
-theorem nodup_support {u v : V} (p : G.Path u v) : (p : G.Walk u v).support.Nodup :=
-  (Walk.isPath_def _).mp p.property
-
-theorem loop_eq {v : V} (p : G.Path v v) : p = Path.nil := by
-  obtain ⟨_ | _, h⟩ := p
-  · rfl
-  · simp at h
-
-theorem not_mem_edges_of_loop {v : V} {e : Sym2 V} {p : G.Path v v} :
-    ¬e ∈ (p : G.Walk v v).edges := by simp [p.loop_eq]
-
-theorem cons_isCycle {u v : V} (p : G.Path v u) (h : G.Adj u v)
-    (he : ¬s(u, v) ∈ (p : G.Walk v u).edges) : (Walk.cons h ↑p).IsCycle := by
-  simp [Walk.isCycle_def, Walk.cons_isTrail_iff, he]
-
-end Path
-
-
-/-! ### Walks to paths -/
-
-namespace Walk
-
-variable {G} [DecidableEq V]
-
-/-- Given a walk, produces a walk from it by bypassing subwalks between repeated vertices.
-The result is a path, as shown in `SimpleGraph.Walk.bypass_isPath`.
-This is packaged up in `SimpleGraph.Walk.toPath`. -/
-def bypass {u v : V} : G.Walk u v → G.Walk u v
-  | nil => nil
-  | cons ha p =>
-    let p' := p.bypass
-    if hs : u ∈ p'.support then
-      p'.dropUntil u hs
-    else
-      cons ha p'
-
-@[simp]
-theorem bypass_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
-    (p.copy hu hv).bypass = p.bypass.copy hu hv := by
-  subst_vars
-  rfl
-
-theorem bypass_isPath {u v : V} (p : G.Walk u v) : p.bypass.IsPath := by
-  induction p with
-  | nil => simp!
-  | cons _ p' ih =>
-    simp only [bypass]
-    split_ifs with hs
-    · exact ih.dropUntil hs
-    · simp [*, cons_isPath_iff]
-
-theorem length_bypass_le {u v : V} (p : G.Walk u v) : p.bypass.length ≤ p.length := by
-  induction p with
-  | nil => rfl
-  | cons _ _ ih =>
-    simp only [bypass]
-    split_ifs
-    · trans
-      · apply length_dropUntil_le
-      rw [length_cons]
-      omega
-    · rw [length_cons, length_cons]
-      exact Nat.add_le_add_right ih 1
-
-lemma bypass_eq_self_of_length_le {u v : V} (p : G.Walk u v) (h : p.length ≤ p.bypass.length) :
-    p.bypass = p := by
-  induction p with
-  | nil => rfl
-  | cons h p ih =>
-    simp only [Walk.bypass]
-    split_ifs with hb
-    · exfalso
-      simp only [hb, Walk.bypass, Walk.length_cons, dif_pos] at h
-      apply Nat.not_succ_le_self p.length
-      calc p.length + 1
-        _ ≤ (p.bypass.dropUntil _ _).length := h
-        _ ≤ p.bypass.length := Walk.length_dropUntil_le p.bypass hb
-        _ ≤ p.length := Walk.length_bypass_le _
-    · simp only [hb, Walk.bypass, Walk.length_cons, not_false_iff, dif_neg,
-        Nat.add_le_add_iff_right] at h
-      rw [ih h]
-
-/-- Given a walk, produces a path with the same endpoints using `SimpleGraph.Walk.bypass`. -/
-def toPath {u v : V} (p : G.Walk u v) : G.Path u v :=
-  ⟨p.bypass, p.bypass_isPath⟩
-
-theorem support_bypass_subset {u v : V} (p : G.Walk u v) : p.bypass.support ⊆ p.support := by
-  induction p with
-  | nil => simp!
-  | cons _ _ ih =>
-    simp! only
-    split_ifs
-    · apply List.Subset.trans (support_dropUntil_subset _ _)
-      apply List.subset_cons_of_subset
-      assumption
-    · rw [support_cons]
-      apply List.cons_subset_cons
-      assumption
-
-theorem support_toPath_subset {u v : V} (p : G.Walk u v) :
-    (p.toPath : G.Walk u v).support ⊆ p.support :=
-  support_bypass_subset _
-
-theorem darts_bypass_subset {u v : V} (p : G.Walk u v) : p.bypass.darts ⊆ p.darts := by
-  induction p with
-  | nil => simp!
-  | cons _ _ ih =>
-    simp! only
-    split_ifs
-    · apply List.Subset.trans (darts_dropUntil_subset _ _)
-      apply List.subset_cons_of_subset _ ih
-    · rw [darts_cons]
-      exact List.cons_subset_cons _ ih
-
-theorem edges_bypass_subset {u v : V} (p : G.Walk u v) : p.bypass.edges ⊆ p.edges :=
-  List.Subset.map _ p.darts_bypass_subset
-
-theorem darts_toPath_subset {u v : V} (p : G.Walk u v) : (p.toPath : G.Walk u v).darts ⊆ p.darts :=
-  darts_bypass_subset _
-
-theorem edges_toPath_subset {u v : V} (p : G.Walk u v) : (p.toPath : G.Walk u v).edges ⊆ p.edges :=
-  edges_bypass_subset _
-
-end Walk
-
-
-/-! ### Mapping paths -/
+/-! ### Mapping walks -/
 
 namespace Walk
 
