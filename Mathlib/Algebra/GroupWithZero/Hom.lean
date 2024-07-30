@@ -140,18 +140,11 @@ definitional equalities. -/
 protected def copy (f : α →*₀ β) (f' : α → β) (h : f' = f) : α →* β :=
   { f.toZeroHom.copy f' h, f.toMonoidHom.copy f' h with }
 
-#adaptation_note
-/--
-Please don't fix the following problems, they've been reported at
-https://github.com/leanprover/lean4/pull/4814#issuecomment-2254787193
-and should be resolved upstream.
--/
-
 @[simp]
-lemma coe_copy {_ : MulZeroOneClass α} {_ : MulZeroOneClass β} (f : α →*₀ β) (f' : α → β) (h) :
+lemma coe_copy (f : α →*₀ β) (f' : α → β) (h) :
     (f.copy f' h) = f' := rfl
 
-lemma copy_eq {_ : MulZeroOneClass α} {_ : MulZeroOneClass β} (f : α →*₀ β) (f' : α → β) (h) :
+lemma copy_eq (f : α →*₀ β) (f' : α → β) (h) :
     f.copy f' h = f := DFunLike.ext' h
 
 protected lemma map_one (f : α →*₀ β) : f 1 = 1 := f.map_one'
