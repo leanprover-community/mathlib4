@@ -516,7 +516,7 @@ theorem stalkToFiberRingHom_toStalk (x : PrimeSpectrum.Top R) (f : R) :
 theorem CommRingCat.forget_obj (R : CommRingCat) : (forget _).obj R = R := rfl
 
 theorem CommRingCat.comp_apply {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) (x : R) :
-  (f ≫ g) x = g (f x) := rfl
+    (f ≫ g) x = g (f x) := rfl
 
 /-- The ring isomorphism between the stalk of the structure sheaf of `R` at a point `p`
 corresponding to a prime ideal in `R` and the localization of `R` at `p`. -/
