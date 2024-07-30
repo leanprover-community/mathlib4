@@ -54,7 +54,7 @@ open Set Function Finset MeasureTheory Measure Filter
 
 noncomputable section
 
-variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+variable {ι : Type*} [Fintype ι]
 
 local prefix:max "#" => Fintype.card
 
@@ -64,6 +64,10 @@ variable {A : ι → Type*} [∀ i, MeasurableSpace (A i)]
   (μ : ∀ i, Measure (A i)) [∀ i, SigmaFinite (μ i)]
 
 namespace MeasureTheory
+
+section DecidableEq
+
+variable [DecidableEq ι]
 
 namespace GridLines
 
@@ -278,6 +282,8 @@ theorem lintegral_prod_lintegral_pow_le
   convert lintegral_mul_prod_lintegral_pow_le μ h2 h3 hf using 2
   field_simp
 
+end DecidableEq
+
 /-! ## The Gagliardo-Nirenberg-Sobolev inequality -/
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
@@ -294,6 +300,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux
     {u : (ι → ℝ) → F} (hu : ContDiff ℝ 1 u)
     (h2u : HasCompactSupport u) :
     ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ p := by
+  classical
   /- For a function `f` in one variable and `t ∈ ℝ` we have
   `|f(t)| = `|∫_{-∞}^t Df(s)∂s| ≤ ∫_ℝ |Df(s)| ∂s` where we use the fundamental theorem of calculus.
   For each `x ∈ ℝⁿ` we let `u` vary in one of the `n` coordinates and apply the inequality above.

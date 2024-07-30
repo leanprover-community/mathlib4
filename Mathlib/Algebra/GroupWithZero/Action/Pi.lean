@@ -6,19 +6,18 @@ Authors: Simon Hudon, Patrick Massot
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Data.Set.Function
+import Mathlib.Tactic.Common
 
 /-!
-# Pi instances for multiplicative actions
+# Pi instances for multiplicative actions with zero
 
-This file defines instances for `MulAction` and related structures on `Pi` types.
+This file defines instances for `MulActionWithZero` and related structures on `Pi` types.
 
 ## See also
 
-* `GroupTheory.GroupAction.option`
-* `GroupTheory.GroupAction.prod`
-* `GroupTheory.GroupAction.sigma`
-* `GroupTheory.GroupAction.sum`
+* `Algebra.GroupWithZero.Action.Opposite`
+* `Algebra.GroupWithZero.Action.Prod`
+* `Algebra.GroupWithZero.Action.Units`
 -/
 
 
