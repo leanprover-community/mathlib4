@@ -1175,7 +1175,6 @@ theorem toSubEquivalence_toEmbedding {f :  M ≃ₚ[L] N} (h : f.sub_dom = ⊤) 
 
 end Embedding
 
-
 end Language
 
 end FirstOrder
