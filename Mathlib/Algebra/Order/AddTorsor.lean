@@ -16,8 +16,8 @@ series.  In the multiplicative case, a standard example is the action of non-neg
 an ordered field.
 
 ## Implementation notes
-
-* Beause these classes mix the algebra and order hierarchies, we write them as `Prop`-valued mixins.
+* Because these classes mix the algebra and order hierarchies, we write them as `Prop`-valued
+  mixins.
 * Despite the file name, Ordered AddTorsors are not defined as a separate class.  To implement them,
   combine `[AddTorsor G P]` with `[IsOrderedCancelVAdd G P]`
 
@@ -42,10 +42,9 @@ an ordered field.
 * IsOrderedCancelVAdd.toContravariantClassLeft
 
 ## TODO
-* definitions and finiteness results for antidiagonals
 * (lex) prod instances
 * Pi instances
-
+* WithTop (in a different file?)
 -/
 
 open Function
@@ -81,9 +80,8 @@ theorem IsOrderedSMul.smul_le_smul [Preorder G] [Preorder P] [SMul G P] [IsOrder
     {a b : G} {c d : P} (hab : a ≤ b) (hcd : c ≤ d) : a • c ≤ b • d :=
   (IsOrderedSMul.smul_le_smul_left _ _ hcd _).trans (IsOrderedSMul.smul_le_smul_right _ _ hab _)
 
-/-- The vector sum of two monotone functions is monotone. -/
 @[to_additive]
-theorem Monotone.SMul {γ : Type*} [Preorder G] [Preorder P] [Preorder γ] [SMul G P]
+theorem Monotone.smul {γ : Type*} [Preorder G] [Preorder P] [Preorder γ] [SMul G P]
     [IsOrderedSMul G P] {f : γ → G} {g : γ → P} (hf : Monotone f) (hg : Monotone g) :
     Monotone fun x => f x • g x :=
   fun _ _ hab => (IsOrderedSMul.smul_le_smul_left _ _ (hg hab) _).trans

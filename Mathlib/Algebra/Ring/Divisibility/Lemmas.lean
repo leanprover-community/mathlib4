@@ -32,14 +32,14 @@ lemma dvd_zsmul_of_dvd [NonUnitalRing R] {x y : R} (z : ℤ) (h : x ∣ y) : x �
 
 namespace Commute
 
-variable {x y : R} {n m p : ℕ} (hp : n + m ≤ p + 1)
+variable {x y : R} {n m p : ℕ}
 
 section Semiring
 
-variable [Semiring R] (h_comm : Commute x y)
+variable [Semiring R]
 
-lemma pow_dvd_add_pow_of_pow_eq_zero_right (hy : y ^ n = 0) :
-    x ^ m ∣ (x + y) ^ p := by
+lemma pow_dvd_add_pow_of_pow_eq_zero_right (hp : n + m ≤ p + 1) (h_comm : Commute x y)
+    (hy : y ^ n = 0) : x ^ m ∣ (x + y) ^ p := by
   rw [h_comm.add_pow']
   refine Finset.dvd_sum fun ⟨i, j⟩ hij ↦ ?_
   replace hij : i + j = p := by simpa using hij
@@ -48,45 +48,45 @@ lemma pow_dvd_add_pow_of_pow_eq_zero_right (hy : y ^ n = 0) :
   · exact dvd_mul_of_dvd_left (pow_dvd_pow x hi) _
   · simp [pow_eq_zero_of_le (by omega : n ≤ j) hy]
 
-lemma pow_dvd_add_pow_of_pow_eq_zero_left (hx : x ^ n = 0) :
-    y ^ m ∣ (x + y) ^ p :=
+lemma pow_dvd_add_pow_of_pow_eq_zero_left (hp : n + m ≤ p + 1) (h_comm : Commute x y)
+    (hx : x ^ n = 0) : y ^ m ∣ (x + y) ^ p :=
   add_comm x y ▸ h_comm.symm.pow_dvd_add_pow_of_pow_eq_zero_right hp hx
 
 end Semiring
 
 section Ring
 
-variable [Ring R] (h_comm : Commute x y)
+variable [Ring R]
 
-lemma pow_dvd_pow_of_sub_pow_eq_zero (h : (x - y) ^ n = 0) :
-    x ^ m ∣ y ^ p := by
+lemma pow_dvd_pow_of_sub_pow_eq_zero (hp : n + m ≤ p + 1) (h_comm : Commute x y)
+    (h : (x - y) ^ n = 0) : x ^ m ∣ y ^ p := by
   rw [← sub_add_cancel y x]
   apply (h_comm.symm.sub_left rfl).pow_dvd_add_pow_of_pow_eq_zero_left hp _
   rw [← neg_sub x y, neg_pow, h, mul_zero]
 
-lemma pow_dvd_pow_of_add_pow_eq_zero (h : (x + y) ^ n = 0) :
-    x ^ m ∣ y ^ p := by
+lemma pow_dvd_pow_of_add_pow_eq_zero (hp : n + m ≤ p + 1) (h_comm : Commute x y)
+    (h : (x + y) ^ n = 0) : x ^ m ∣ y ^ p := by
   rw [← neg_neg y, neg_pow']
   apply dvd_mul_of_dvd_left
   apply h_comm.neg_right.pow_dvd_pow_of_sub_pow_eq_zero hp
   simpa
 
-lemma pow_dvd_sub_pow_of_pow_eq_zero_right (hy : y ^ n = 0) :
-    x ^ m ∣ (x - y) ^ p :=
+lemma pow_dvd_sub_pow_of_pow_eq_zero_right (hp : n + m ≤ p + 1) (h_comm : Commute x y)
+    (hy : y ^ n = 0) : x ^ m ∣ (x - y) ^ p :=
   (sub_right rfl h_comm).pow_dvd_pow_of_sub_pow_eq_zero hp (by simpa)
 
-lemma pow_dvd_sub_pow_of_pow_eq_zero_left (hx : x ^ n = 0) :
-    y ^ m ∣ (x - y) ^ p := by
+lemma pow_dvd_sub_pow_of_pow_eq_zero_left (hp : n + m ≤ p + 1) (h_comm : Commute x y)
+    (hx : x ^ n = 0) : y ^ m ∣ (x - y) ^ p := by
   rw [← neg_sub y x, neg_pow']
   apply dvd_mul_of_dvd_left
   exact h_comm.symm.pow_dvd_sub_pow_of_pow_eq_zero_right hp hx
 
-lemma add_pow_dvd_pow_of_pow_eq_zero_right (hx : x ^ n = 0) :
-    (x + y) ^ m ∣ y ^ p :=
+lemma add_pow_dvd_pow_of_pow_eq_zero_right (hp : n + m ≤ p + 1) (h_comm : Commute x y)
+    (hx : x ^ n = 0) : (x + y) ^ m ∣ y ^ p :=
   (h_comm.add_left rfl).pow_dvd_pow_of_sub_pow_eq_zero hp (by simpa)
 
-lemma add_pow_dvd_pow_of_pow_eq_zero_left (hy : y ^ n = 0) :
-    (x + y) ^ m ∣ x ^ p :=
+lemma add_pow_dvd_pow_of_pow_eq_zero_left (hp : n + m ≤ p + 1) (h_comm : Commute x y)
+    (hy : y ^ n = 0) : (x + y) ^ m ∣ x ^ p :=
   add_comm x y ▸ h_comm.symm.add_pow_dvd_pow_of_pow_eq_zero_right hp hy
 
 end Ring

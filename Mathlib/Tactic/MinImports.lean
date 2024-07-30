@@ -13,6 +13,40 @@ If `stx` is a command, then it also elaborates `stx` and, in case it is a declar
 it also finds the imports implied by the declaration.
 
 Unlike the related `#find_home`, this command takes into account notation and tactic information.
+
+## Limitations
+
+Parsing of `attribute`s is hard and the command makes minimal effort to support them.
+Here is an example where the command fails to notice a dependency:
+```lean
+import Mathlib.Data.Sym.Sym2.Init -- the actual minimal import
+import Aesop.Frontend.Attribute   -- the import that `#min_imports in` suggests
+
+import Mathlib.Tactic.MinImports
+
+-- import Aesop.Frontend.Attribute
+#min_imports in
+@[aesop (rule_sets := [Sym2]) [safe [constructors, cases], norm]]
+inductive Rel (α : Type) : α × α → α × α → Prop
+  | refl (x y : α) : Rel _ (x, y) (x, y)
+  | swap (x y : α) : Rel _ (x, y) (y, x)
+
+-- `import Mathlib.Data.Sym.Sym2.Init` is not detected by `#min_imports in`.
+```
+
+## Todo
+
+*Examples*
+When parsing an `example`, `#min_imports in` retrieves all the information that it can from the
+`Syntax` of the `example`, but, since the `example` is not added to the environment, it fails
+to retrieve any `Expr` information about the proof term.
+It would be desirable to make `#min_imports in example ...` inspect the resulting proof and
+report imports, but this feature is missing for the moment.
+
+*Using `InfoTrees`*
+It may be more efficient (not necessarily in terms of speed, but of simplicity of code),
+to inspect the `InfoTrees` for each command and retrieve information from there.
+I have not looked into this yet.
 -/
 
 open Lean Elab Command
@@ -78,6 +112,24 @@ def getAttrs (env : Environment) (stx : Syntax) : NameSet :=
       | .error .. => pure ()
   return new
 
+/-- `previousInstName nm` takes as input a name `nm`, assuming that it is the name of an
+auto-generated "nameless" `instance`.
+If `nm` ends in `..._n`, where `n` is a number, it returns the same name, but with `_n` replaced
+by `_(n-1)`, unless `n ≤ 1`, in which case it simply removes the `_n` suffix.
+-/
+def previousInstName : Name → Name
+  | nm@(.str init tail) =>
+    let last := tail.takeRightWhile (· != '_')
+    let newTail := match last.toNat? with
+                    | some (n + 2) => s!"_{n + 1}"
+                    | _ => ""
+    let newTailPrefix := tail.dropRightWhile (· != '_')
+    if newTailPrefix.isEmpty then nm else
+    let newTail :=
+      (if newTailPrefix.back == '_' then newTailPrefix.dropRight 1 else newTailPrefix) ++ newTail
+    .str init newTail
+  | nm => nm
+
 /--`getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 module names that are implied by
 * the `SyntaxNodeKinds`,
@@ -93,7 +145,14 @@ def getAllImports (cmd id : Syntax) (dbg? : Bool := false) :
   let env ← getEnv
   let id1 ← getId cmd
   let ns ← getCurrNamespace
-  let nm ← liftCoreM do (realizeGlobalConstNoOverload id1 <|> return ns ++ id1.getId)
+  let id2 := mkIdentFrom id1 (previousInstName id1.getId)
+  let nm ← liftCoreM do (
+    -- try the visible name or the current "nameless" `instance` name
+    realizeGlobalConstNoOverload id1 <|>
+    -- otherwise, guess what the previous "nameless" `instance` name was
+    realizeGlobalConstNoOverload id2 <|>
+    -- failing everything, use the current namespace followed by the visible name
+    return ns ++ id1.getId)
   -- We collect the implied declaration names, the `SyntaxNodeKinds` and the attributes.
   let ts := getVisited env nm
               |>.append (getVisited env id.getId)
@@ -134,7 +193,6 @@ It is used to provide the internally generated name for "nameless" `instance`s.
 def minImpsCore (stx id : Syntax) : CommandElabM Unit := do
     let tot := getIrredundantImports (← getEnv) (← getAllImports stx id)
     let fileNames := tot.toArray.qsort Name.lt
-    --let fileNames := if tk.isSome then (fileNames).filter (`Mathlib).isPrefixOf else fileNames
     logInfoAt (← getRef) m!"{"\n".intercalate (fileNames.map (s!"import {·}")).toList}"
 
 /-- `#min_imports in cmd` scans the syntax `cmd` and the declaration obtained by elaborating `cmd`
