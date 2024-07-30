@@ -37,7 +37,7 @@ variable [IsScalarTower R S A]
 
 namespace MulOpposite
 
-instance MulOpposite.instAlgebra : Algebra R Aᵐᵒᵖ where
+instance instAlgebra : Algebra R Aᵐᵒᵖ where
   toRingHom := (algebraMap R A).toOpposite fun x y => Algebra.commutes _ _
   smul_def' c x := unop_injective <| by
     simp only [unop_smul, RingHom.toOpposite_apply, Function.comp_apply, unop_mul, op_mul,
@@ -48,7 +48,6 @@ instance MulOpposite.instAlgebra : Algebra R Aᵐᵒᵖ where
 @[simp]
 theorem algebraMap_apply (c : R) : algebraMap R Aᵐᵒᵖ c = op (algebraMap R A c) :=
   rfl
-#align mul_opposite.algebra_map_apply MulOpposite.algebraMap_apply
 
 end MulOpposite
 
@@ -70,7 +69,7 @@ namespace AlgHom
 /--
 An algebra homomorphism `f : A →ₐ[R] B` such that `f x` commutes with `f y` for all `x, y` defines
 an algebra homomorphism from `Aᵐᵒᵖ`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : Aᵐᵒᵖ →ₐ[R] B :=
   { f.toRingHom.fromOpposite hf with
     toFun := f ∘ unop
@@ -89,7 +88,7 @@ theorem toRingHom_fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) 
 /--
 An algebra homomorphism `f : A →ₐ[R] B` such that `f x` commutes with `f y` for all `x, y` defines
 an algebra homomorphism to `Bᵐᵒᵖ`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : A →ₐ[R] Bᵐᵒᵖ :=
   { f.toRingHom.toOpposite hf with
     toFun := op ∘ f

@@ -1,4 +1,3 @@
-import Std.Tactic.GuardMsgs
 import Mathlib.Util.Delaborators
 import Mathlib.Data.Set.Lattice
 
@@ -196,6 +195,26 @@ variable (Q : Set ℕ → Prop)
 /-- info: ∃ n k, n = k : Prop -/
 #guard_msgs in
 #check ∃ n, ∃ k, n = k
+
+section merging
+
+/-- info: ∃ (_ : True), True : Prop -/
+#guard_msgs in #check ∃ (_ : True), True
+
+/-- info: ∃ (_ : True), ∃ x, x = x : Prop -/
+#guard_msgs in #check ∃ (_ : True) (x : Nat), x = x
+
+/-- info: ∃ (_ : True), ∃ x y, x = y : Prop -/
+#guard_msgs in #check ∃ (_ : True) (x y : Nat), x = y
+
+/-- info: ∃ (_ : True) (_ : False), True : Prop -/
+#guard_msgs in #check ∃ (_ : True) (_ : False), True
+
+set_option pp.funBinderTypes true in
+/-- info: ∃ (x : ℕ) (x : ℕ), True : Prop -/
+#guard_msgs in #check ∃ (_ : Nat) (_ : Nat), True
+
+end merging
 
 end existential
 

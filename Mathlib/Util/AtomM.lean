@@ -12,8 +12,6 @@ This monad is used by tactics like `ring` and `abel` to keep uninterpreted atoms
 order, and also to allow unifying atoms up to a specified transparency mode.
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Tactic
 open Lean Meta
 
@@ -35,7 +33,7 @@ structure AtomM.State :=
 abbrev AtomM := ReaderT AtomM.Context <| StateRefT AtomM.State MetaM
 
 /-- Run a computation in the `AtomM` monad. -/
-def AtomM.run (red : TransparencyMode) (m : AtomM α)
+def AtomM.run {α : Type} (red : TransparencyMode) (m : AtomM α)
     (evalAtom : Expr → MetaM Simp.Result := fun e ↦ pure { expr := e }) :
     MetaM α :=
   (m { red, evalAtom }).run' {}
@@ -45,7 +43,6 @@ put it in the list of atoms and return the new index, otherwise. -/
 def AtomM.addAtom (e : Expr) : AtomM Nat := do
   let c ← get
   for h : i in [:c.atoms.size] do
-    have : i < c.atoms.size := h.2
     if ← withTransparency (← read).red <| isDefEq e c.atoms[i] then
       return i
   modifyGet fun c ↦ (c.atoms.size, { c with atoms := c.atoms.push e })

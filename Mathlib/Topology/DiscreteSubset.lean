@@ -44,13 +44,13 @@ section cofinite_cocompact
 lemma tendsto_cofinite_cocompact_iff :
     Tendsto f cofinite (cocompact _) ↔ ∀ K, IsCompact K → Set.Finite (f ⁻¹' K) := by
   rw [hasBasis_cocompact.tendsto_right_iff]
-  refine' forall₂_congr (fun K _ ↦ _)
+  refine forall₂_congr (fun K _ ↦ ?_)
   simp only [mem_compl_iff, eventually_cofinite, not_not, preimage]
 
 lemma Continuous.discrete_of_tendsto_cofinite_cocompact [T1Space X] [WeaklyLocallyCompactSpace Y]
     (hf' : Continuous f) (hf : Tendsto f cofinite (cocompact _)) :
     DiscreteTopology X := by
-  refine' singletons_open_iff_discrete.mp (fun x ↦ _)
+  refine singletons_open_iff_discrete.mp (fun x ↦ ?_)
   obtain ⟨K : Set Y, hK : IsCompact K, hK' : K ∈ 𝓝 (f x)⟩ := exists_compact_mem_nhds (f x)
   obtain ⟨U : Set Y, hU₁ : U ⊆ K, hU₂ : IsOpen U, hU₃ : f x ∈ U⟩ := mem_nhds_iff.mp hK'
   have hU₄ : Set.Finite (f⁻¹' U) :=
@@ -84,7 +84,7 @@ theorem isClosed_and_discrete_iff {S : Set X} :
     IsClosed S ∧ DiscreteTopology S ↔ ∀ x, Disjoint (𝓝[≠] x) (𝓟 S) := by
   rw [discreteTopology_subtype_iff, isClosed_iff_clusterPt, ← forall_and]
   congrm (∀ x, ?_)
-  rw [← not_imp_not, clusterPt_iff_not_disjoint, not_not, ←disjoint_iff]
+  rw [← not_imp_not, clusterPt_iff_not_disjoint, not_not, ← disjoint_iff]
   constructor <;> intro H
   · by_cases hx : x ∈ S
     exacts [H.2 hx, (H.1 hx).mono_left nhdsWithin_le_nhds]
@@ -97,11 +97,11 @@ def Filter.codiscrete (X : Type*) [TopologicalSpace X] : Filter X where
   univ_sets := ⟨isOpen_univ, compl_univ.symm ▸ Subsingleton.discreteTopology⟩
   sets_of_superset := by
     intro U V hU hV
-    simp_rw [←isClosed_compl_iff, isClosed_and_discrete_iff] at hU ⊢
+    simp_rw [← isClosed_compl_iff, isClosed_and_discrete_iff] at hU ⊢
     exact fun x ↦ (hU x).mono_right (principal_mono.mpr <| compl_subset_compl.mpr hV)
   inter_sets := by
     intro U V hU hV
-    simp_rw [←isClosed_compl_iff, isClosed_and_discrete_iff] at hU hV ⊢
+    simp_rw [← isClosed_compl_iff, isClosed_and_discrete_iff] at hU hV ⊢
     exact fun x ↦ compl_inter U V ▸ sup_principal ▸ disjoint_sup_right.mpr ⟨hU x, hV x⟩
 
 end codiscrete_filter

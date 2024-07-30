@@ -5,9 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Data.Matrix.Kronecker
 import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.TensorProductBasis
-
-#align_import linear_algebra.tensor_product.matrix from "leanprover-community/mathlib"@"f784cc6142443d9ee623a20788c282112c322081"
+import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 /-!
 # Connections between `TensorProduct` and `Matrix`
@@ -21,21 +19,13 @@ equivalent to taking the Kronecker product of their matrix representations.
 
 
 variable {R : Type*} {M N P M' N' : Type*} {ι κ τ ι' κ' : Type*}
-
 variable [DecidableEq ι] [DecidableEq κ] [DecidableEq τ]
-
-variable [Fintype ι] [Fintype κ] [Fintype τ] [Fintype ι'] [Fintype κ']
-
+variable [Fintype ι] [Fintype κ] [Fintype τ] [Finite ι'] [Finite κ']
 variable [CommRing R]
-
 variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
-
 variable [AddCommGroup M'] [AddCommGroup N']
-
 variable [Module R M] [Module R N] [Module R P] [Module R M'] [Module R N']
-
 variable (bM : Basis ι R M) (bN : Basis κ R N) (bP : Basis τ R P)
-
 variable (bM' : Basis ι' R M') (bN' : Basis κ' R N')
 
 open Kronecker
@@ -50,7 +40,6 @@ theorem TensorProduct.toMatrix_map (f : M →ₗ[R] M') (g : N →ₗ[R] N') :
   ext ⟨i, j⟩ ⟨i', j'⟩
   simp_rw [Matrix.kroneckerMap_apply, toMatrix_apply, Basis.tensorProduct_apply,
     TensorProduct.map_tmul, Basis.tensorProduct_repr_tmul_apply]
-#align tensor_product.to_matrix_map TensorProduct.toMatrix_map
 
 /-- The matrix built from `Matrix.kronecker` corresponds to the linear map built from
 `TensorProduct.map`. -/
@@ -59,7 +48,6 @@ theorem Matrix.toLin_kronecker (A : Matrix ι' ι R) (B : Matrix κ' κ R) :
       TensorProduct.map (toLin bM bM' A) (toLin bN bN' B) := by
   rw [← LinearEquiv.eq_symm_apply, toLin_symm, TensorProduct.toMatrix_map, toMatrix_toLin,
     toMatrix_toLin]
-#align matrix.to_lin_kronecker Matrix.toLin_kronecker
 
 /-- `TensorProduct.comm` corresponds to a permutation of the identity matrix. -/
 theorem TensorProduct.toMatrix_comm :
@@ -67,10 +55,9 @@ theorem TensorProduct.toMatrix_comm :
       (1 : Matrix (ι × κ) (ι × κ) R).submatrix Prod.swap _root_.id := by
   ext ⟨i, j⟩ ⟨i', j'⟩
   simp_rw [toMatrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_coe, TensorProduct.comm_tmul,
-    Basis.tensorProduct_repr_tmul_apply, Matrix.submatrix_apply, Prod.swap_prod_mk, id.def,
-    Basis.repr_self_apply, Matrix.one_apply, Prod.ext_iff, ite_and, @eq_comm _ i', @eq_comm _ j']
-  split_ifs <;> simp
-#align tensor_product.to_matrix_comm TensorProduct.toMatrix_comm
+    Basis.tensorProduct_repr_tmul_apply, Matrix.submatrix_apply, Basis.repr_self,
+    Finsupp.single_apply, @eq_comm _ j', @eq_comm _ i', mul_ite, mul_one, mul_zero,
+    Matrix.one_apply, Prod.swap_prod_mk, _root_.id, Prod.ext_iff, ite_and]
 
 /-- `TensorProduct.assoc` corresponds to a permutation of the identity matrix. -/
 theorem TensorProduct.toMatrix_assoc :
@@ -80,7 +67,7 @@ theorem TensorProduct.toMatrix_assoc :
   ext ⟨i, j, k⟩ ⟨⟨i', j'⟩, k'⟩
   simp_rw [toMatrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_coe,
     TensorProduct.assoc_tmul, Basis.tensorProduct_repr_tmul_apply, Matrix.submatrix_apply,
-    Equiv.prodAssoc_apply, id.def, Basis.repr_self_apply, Matrix.one_apply, Prod.ext_iff, ite_and,
-    @eq_comm _ i', @eq_comm _ j', @eq_comm _ k']
+    Basis.repr_self, Finsupp.single_apply, @eq_comm _ i', @eq_comm _ j', @eq_comm _ k',
+    mul_ite, mul_one, mul_zero, Matrix.one_apply, _root_.id, Equiv.prodAssoc_apply, Prod.ext_iff,
+    ite_and]
   split_ifs <;> simp
-#align tensor_product.to_matrix_assoc TensorProduct.toMatrix_assoc
