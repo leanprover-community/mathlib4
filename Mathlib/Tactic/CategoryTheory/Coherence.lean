@@ -107,16 +107,17 @@ def exception' (msg : MessageData) : TacticM Unit := do
     -- There might not be any goals
     throwError msg
 
+/-- Sending morphisms in `FreeMonoidalCategory C` to those in `C`. -/
+def mkProjectMapExprAux {X Y : FreeMonoidalCategory C} (f : X ⟶ Y) :=
+  FreeMonoidalCategory.projectMap id _ _ f
+
 /-- Auxiliary definition for `monoidal_coherence`. -/
--- We could construct this expression directly without using `elabTerm`,
--- but it would require preparing many implicit arguments by hand.
-def mkProjectMapExpr (e : Expr) : TermElabM Expr := do
-  Term.elabTerm
-    (← ``(FreeMonoidalCategory.projectMap _root_.id _ _ (LiftHom.lift $(← Term.exprToSyntax e))))
-    none
+def mkProjectMapExpr (e : Expr) : MetaM Expr := do
+  let f ← mkAppOptM ``LiftHom.lift #[none, none, none, none, none, none, e, none]
+  mkAppM ``mkProjectMapExprAux #[f]
 
 /-- Coherence tactic for monoidal categories. -/
-def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
+def monoidal_coherence (g : MVarId) : MetaM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 512 (synthInstance.maxSize.get opts))) do
   let (ty, _) ← dsimp (← g.getType)
