@@ -62,7 +62,7 @@ def TopologicalSpace.compactlyGenerated (X : Type w) [TopologicalSpace X] : Topo
   coinduced f inferInstance
 
 lemma continuous_from_compactlyGenerated [t : TopologicalSpace Y] (f : X → Y)
-      (h : ∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) :
+    (h : ∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) :
         Continuous[compactlyGenerated.{u} X, t] f := by
   rw [continuous_coinduced_dom]
   continuity
