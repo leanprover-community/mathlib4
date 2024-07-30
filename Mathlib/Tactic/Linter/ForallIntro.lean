@@ -145,6 +145,7 @@ def splitVars (stx : Syntax) (n : Nat) : Array Syntax :=
 def splVars (stx : Syntax) (n : Nat) : TSyntaxArray `Lean.Parser.Term.bracketedBinder :=
   (splitVars stx n).map (⟨·⟩)
 -- TSyntaxArray `Lean.Parser.Term.bracketedBinder
+
 run_cmd
   if let [a, b, c, d, N] := [`a, `b, `c, `d, `Nat].map mkIdent then
     let stx ← `(bracketedBinder| {$a $b $c $d : $N})
@@ -157,6 +158,60 @@ run_cmd
     let A := extractVars stx (·.extract 0 n)
     let B := extractVars stx (·.extract n ((getNumVars? stx).getD 0))
     logInfo m!"{← `(command| variable $(⟨A⟩) $(⟨B⟩))}"
+
+partial
+def recombineHave (stx : Syntax) (n : Nat) : CommandElabM (Syntax × Nat) := do
+  if n == 0 then return (stx, 0) else
+  match stx with
+    | `(tactic| have $id:haveId $bi0* : ∀ $bi1 $bi2 $bi3*, $body := $t) =>
+      dbg_trace "main '{bi1}'"
+      let totVars := (getNumVars? bi1).getD 0 + if bi1.raw.isIdent then 1 else 0
+      if totVars ≤ n then
+        let bi' := ⟨bi1.raw⟩
+        recombineHave (← `(tactic| have $id:haveId $bi0* $bi' : ∀ $bi2 $bi3*, $body := $t)) (n - totVars)
+      else
+        if let #[a, b] := splitVars bi1 n then
+          return (← `(tactic| have $id:haveId $bi0* $(⟨a⟩) : ∀ $(⟨b⟩) $bi2 $bi3*, $body := $t), 0)
+        else
+          return (stx, 0)
+    | `(tactic| have $id:haveId $bi0* : ∀ $bi1:ident $bi3*, $body := $t) =>
+      dbg_trace "ident '{bi1}'"
+      if 1 ≤ n then
+        let bi' := ⟨bi1.raw⟩
+        if bi3.isEmpty then
+          recombineHave (← `(tactic| have $id:haveId $bi0* $bi' : $body := $t)) (n - 1)
+        else
+          recombineHave (← `(tactic| have $id:haveId $bi0* $bi' : ∀ $bi3*, $body := $t)) (n - 1)
+      else
+        return (stx, 0)
+    | `(tactic| have $id:haveId $bi0* : ∀ $bi1, $body := $t) =>
+      let totVars := (getNumVars? bi1).getD 0
+      dbg_trace "here {totVars}"
+      if totVars ≤ n then
+        let bi' := ⟨bi1.raw⟩
+        recombineHave (← `(tactic| have $id:haveId $bi0* $bi' : $body := $t)) (n - totVars)
+      else
+        if let #[a, b] := splitVars bi1 n then
+          return (← `(tactic| have $id:haveId $bi0* $(⟨a⟩) : ∀ $(⟨b⟩), $body := $t), 0)
+        else
+          return (stx, 0)
+    | _ => return (Syntax.missing, 0)
+
+
+#check Parser.Category.binderPred
+run_cmd
+  if let [a, b, c, d, e, True] := [`a, `b, `c, `d, `e, `True].map mkIdent then
+    --let stx ← `(bracketedBinder| {$a $b $c $d : $N})
+    let hav ← `(tactic| have : ∀ $a:ident $b:ident, ∀ $c $d $e, $True := sorry)
+    logInfo m!"{← recombineHave hav 5}"
+    logInfo m!"{hav}"
+
+run_cmd
+  if let [a, b, c, d, N] := [`a, `b, `c, `d, `Nat].map mkIdent then
+    let stx ← `(bracketedBinder| {$a $b $c $d : $N})
+    let hav ← `(tactic| have $a x y : ∀ {$b $c : G} ($d f : H := 8), ∀ $N, True := sorry)
+    logInfo m!"{← recombineHave hav 4}"
+    logInfo m!"{hav}"
 
 /-- if the input syntax is not `by intro(s); ...`, then it returns `none`.
 Otherwise, it removes one identifier introduced by `intro(s)` and returns the resulting syntax. -/
