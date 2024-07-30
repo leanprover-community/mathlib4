@@ -72,7 +72,7 @@ theorem algebraMapCLM_toLinearMap : (algebraMapCLM R A).toLinearMap = Algebra.li
 
 /-- If `R` is a discrete topological ring, then any topological ring `S` which is an `R`-algebra
 is also a topological `R`-algebra. -/
-instance [TopologicalSemiring A] [DiscreteTopology R] :
+scoped instance DiscreteTopology.instContinuousSMul [TopologicalSemiring A] [DiscreteTopology R] :
     ContinuousSMul R A := continuousSMul_of_algebraMap _ _ continuous_of_discreteTopology
 
 end TopologicalAlgebra
