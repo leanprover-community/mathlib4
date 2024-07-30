@@ -5,6 +5,8 @@ Authors: Bhavik Mehta, Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Opposites
+import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
 # Preserving pullbacks
@@ -37,6 +39,30 @@ section Pullback
 
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
+
+namespace PullbackCone
+
+variable {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) (G : C ⥤ D)
+
+/-- The image of a pullback cone by a functor. -/
+abbrev map : PullbackCone (G.map f) (G.map g) :=
+  PullbackCone.mk (G.map c.fst) (G.map c.snd)
+    (by simpa using G.congr_map c.condition)
+
+/-- The map (as a cone) of a pullback cone is limit iff
+the map (as a pullback cone) is limit. -/
+def isLimitMapConeEquiv :
+    IsLimit (mapCone G c) ≃ IsLimit (c.map G) :=
+  (IsLimit.postcomposeHomEquiv (diagramIsoCospan.{v₂} _) _).symm.trans <|
+    IsLimit.equivIsoLimit <| by
+      refine PullbackCone.ext (Iso.refl _) ?_ ?_
+      · dsimp only [fst]
+        simp
+      · dsimp only [snd]
+        simp
+
+end PullbackCone
+
 variable (G : C ⥤ D)
 variable {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} {h : W ⟶ X} {k : W ⟶ Y} (comm : h ≫ f = k ≫ g)
 
@@ -47,23 +73,21 @@ def isLimitMapConePullbackConeEquiv :
       IsLimit
         (PullbackCone.mk (G.map h) (G.map k) (by simp only [← G.map_comp, comm]) :
           PullbackCone (G.map f) (G.map g)) :=
-  (IsLimit.postcomposeHomEquiv (diagramIsoCospan.{v₂} _) _).symm.trans <|
-    IsLimit.equivIsoLimit <|
-      Cones.ext (Iso.refl _) <| by
-        rintro (_ | _ | _) <;> dsimp <;> simp only [comp_id, id_comp, G.map_comp]
+  (PullbackCone.mk _ _ comm).isLimitMapConeEquiv G
 
 /-- The property of preserving pullbacks expressed in terms of binary fans. -/
 def isLimitPullbackConeMapOfIsLimit [PreservesLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk h k comm)) :
     have : G.map h ≫ G.map f = G.map k ≫ G.map g := by rw [← G.map_comp, ← G.map_comp,comm]
     IsLimit (PullbackCone.mk (G.map h) (G.map k) this) :=
-  isLimitMapConePullbackConeEquiv G comm (PreservesLimit.preserves l)
+  (PullbackCone.isLimitMapConeEquiv _ G).1 (PreservesLimit.preserves l)
 
 /-- The property of reflecting pullbacks expressed in terms of binary fans. -/
 def isLimitOfIsLimitPullbackConeMap [ReflectsLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk (G.map h) (G.map k) (show G.map h ≫ G.map f = G.map k ≫ G.map g
     from by simp only [← G.map_comp,comm]))) : IsLimit (PullbackCone.mk h k comm) :=
-  ReflectsLimit.reflects ((isLimitMapConePullbackConeEquiv G comm).symm l)
+  ReflectsLimit.reflects
+    ((PullbackCone.isLimitMapConeEquiv (PullbackCone.mk _ _ comm) G).2 l)
 
 variable (f g) [PreservesLimit (cospan f g) G]
 
@@ -71,7 +95,7 @@ variable (f g) [PreservesLimit (cospan f g) G]
 morphisms of the pullback cone is a limit. -/
 def isLimitOfHasPullbackOfPreservesLimit [HasPullback f g] :
     have : G.map (pullback.fst f g) ≫ G.map f = G.map (pullback.snd f g) ≫ G.map g := by
-      simp only [← G.map_comp, pullback.condition];
+      simp only [← G.map_comp, pullback.condition]
     IsLimit (PullbackCone.mk (G.map (pullback.fst f g)) (G.map (pullback.snd f g)) this) :=
   isLimitPullbackConeMapOfIsLimit G _ (pullbackIsPullback f g)
 
@@ -126,12 +150,42 @@ theorem PreservesPullback.iso_inv_snd :
     (PreservesPullback.iso G f g).inv ≫ G.map (pullback.snd f g) = pullback.snd _ _ := by
   simp [PreservesPullback.iso, Iso.inv_comp_eq]
 
+/-- A pullback cone in `C` is limit iff if it is so after the application
+of `coyoneda.obj X` for all `X : Cᵒᵖ`. -/
+def PullbackCone.isLimitCoyonedaEquiv (c : PullbackCone f g) :
+    IsLimit c ≃ ∀ (X : Cᵒᵖ), IsLimit (c.map (coyoneda.obj X)) :=
+  (Cone.isLimitCoyonedaEquiv c).trans
+    (Equiv.piCongrRight (fun X ↦ c.isLimitMapConeEquiv (coyoneda.obj X)))
+
 end Pullback
 
 section Pushout
 
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
+
+namespace PushoutCocone
+
+variable {W X Y : C} {f : W ⟶ X} {g : W ⟶ Y} (c : PushoutCocone f g) (G : C ⥤ D)
+
+/-- The image of a pullback cone by a functor. -/
+abbrev map : PushoutCocone (G.map f) (G.map g) :=
+  PushoutCocone.mk (G.map c.inl) (G.map c.inr) (by simpa using G.congr_map c.condition)
+
+/-- The map (as a cocone) of a pushout cocone is colimit iff
+the map (as a pushout cocone) is limit. -/
+def isColimitMapCoconeEquiv :
+    IsColimit (mapCocone G c) ≃ IsColimit (c.map G) :=
+  (IsColimit.precomposeHomEquiv (diagramIsoSpan.{v₂} _).symm _).symm.trans <|
+    IsColimit.equivIsoColimit <| by
+      refine PushoutCocone.ext (Iso.refl _) ?_ ?_
+      · dsimp only [inl]
+        simp
+      · dsimp only [inr]
+        simp
+
+end PushoutCocone
+
 variable (G : C ⥤ D)
 variable {W X Y Z : C} {h : X ⟶ Z} {k : Y ⟶ Z} {f : W ⟶ X} {g : W ⟶ Y} (comm : f ≫ h = g ≫ k)
 
@@ -271,6 +325,19 @@ variable [PreservesColimit (span f g) G]
 instance : IsIso (pushoutComparison G f g) := by
   rw [← PreservesPushout.iso_hom]
   infer_instance
+
+/-- A pushout cocone in `C` is colimit iff it becomes limit
+after the application of `yoneda.obj X` for all `X : C`. -/
+def PushoutCocone.isColimitYonedaEquiv (c : PushoutCocone f g) :
+    IsColimit c ≃ ∀ (X : C), IsLimit (c.op.map (yoneda.obj X)) :=
+  (Limits.Cocone.isColimitYonedaEquiv c).trans
+    (Equiv.piCongrRight (fun X ↦
+      (IsLimit.whiskerEquivalenceEquiv walkingSpanOpEquiv.symm).trans
+        ((IsLimit.postcomposeHomEquiv
+          (isoWhiskerRight (cospanOp f g).symm (yoneda.obj X)) _).symm.trans
+            (Equiv.trans (IsLimit.equivIsoLimit
+              (by exact Cones.ext (Iso.refl _) (by rintro (_|_|_) <;> simp)))
+                (c.op.isLimitMapConeEquiv (yoneda.obj X))))))
 
 end Pushout
 

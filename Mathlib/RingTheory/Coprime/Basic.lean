@@ -3,10 +3,10 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.Ring
 
@@ -354,10 +354,7 @@ end CommRing
 theorem sq_add_sq_ne_zero {R : Type*} [LinearOrderedCommRing R] {a b : R} (h : IsCoprime a b) :
     a ^ 2 + b ^ 2 ≠ 0 := by
   intro h'
-  obtain ⟨ha, hb⟩ := (add_eq_zero_iff'
-  --Porting TODO: replace with sq_nonneg when that file is ported
-    (by rw [pow_two]; exact mul_self_nonneg _)
-    (by rw [pow_two]; exact mul_self_nonneg _)).mp h'
+  obtain ⟨ha, hb⟩ := (add_eq_zero_iff' (sq_nonneg _) (sq_nonneg _)).mp h'
   obtain rfl := pow_eq_zero ha
   obtain rfl := pow_eq_zero hb
   exact not_isCoprime_zero_zero h
@@ -368,7 +365,7 @@ namespace IsRelPrime
 
 variable {R} [CommRing R] {x y : R} (h : IsRelPrime x y) (z : R)
 
-theorem add_mul_left_left : IsRelPrime (x + y * z) y :=
+theorem add_mul_left_left (h : IsRelPrime x y) : IsRelPrime (x + y * z) y :=
   @of_add_mul_left_left R _ _ _ (-z) <| by simpa only [mul_neg, add_neg_cancel_right] using h
 
 theorem add_mul_right_left : IsRelPrime (x + z * y) y :=

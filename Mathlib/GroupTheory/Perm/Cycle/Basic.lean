@@ -978,8 +978,7 @@ variable [Semiring α] [AddCommMonoid β] [Module α β] {s : Finset ι} {σ : P
 theorem sum_smul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f : ι → α) (g : ι → β) :
     (∑ i ∈ s, f i) • ∑ i ∈ s, g i = ∑ k ∈ range s.card, ∑ i ∈ s, f i • g ((σ ^ k) i) := by
   rw [sum_smul_sum, ← sum_product']
-  simp_rw [product_self_eq_disjiUnion_perm hσ, sum_disjiUnion, sum_map]
-  rfl
+  simp_rw [product_self_eq_disjiUnion_perm hσ, sum_disjiUnion, sum_map, Embedding.coeFn_mk]
 
 theorem sum_mul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f g : ι → α) :
     ((∑ i ∈ s, f i) * ∑ i ∈ s, g i) = ∑ k ∈ range s.card, ∑ i ∈ s, f i * g ((σ ^ k) i) :=

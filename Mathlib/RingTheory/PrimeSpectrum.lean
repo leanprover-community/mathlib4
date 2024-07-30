@@ -84,14 +84,14 @@ variable (R S)
 
 /-- The map from the direct sum of prime spectra to the prime spectrum of a direct product. -/
 @[simp]
-def primeSpectrumProdOfSum : Sum (PrimeSpectrum R) (PrimeSpectrum S) → PrimeSpectrum (R × S)
+def primeSpectrumProdOfSum : PrimeSpectrum R ⊕ PrimeSpectrum S → PrimeSpectrum (R × S)
   | Sum.inl ⟨I, _⟩ => ⟨Ideal.prod I ⊤, Ideal.isPrime_ideal_prod_top⟩
   | Sum.inr ⟨J, _⟩ => ⟨Ideal.prod ⊤ J, Ideal.isPrime_ideal_prod_top'⟩
 
 /-- The prime spectrum of `R × S` is in bijection with the disjoint unions of the prime spectrum of
 `R` and the prime spectrum of `S`. -/
 noncomputable def primeSpectrumProd :
-    PrimeSpectrum (R × S) ≃ Sum (PrimeSpectrum R) (PrimeSpectrum S) :=
+    PrimeSpectrum (R × S) ≃ PrimeSpectrum R ⊕ PrimeSpectrum S :=
   Equiv.symm <|
     Equiv.ofBijective (primeSpectrumProdOfSum R S) (by
         constructor
@@ -363,6 +363,37 @@ theorem sup_vanishingIdeal_le (t t' : Set (PrimeSpectrum R)) :
 theorem mem_compl_zeroLocus_iff_not_mem {f : R} {I : PrimeSpectrum R} :
     I ∈ (zeroLocus {f} : Set (PrimeSpectrum R))ᶜ ↔ f ∉ I.asIdeal := by
   rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
+
+section Order
+
+/-!
+## The specialization order
+
+We endow `PrimeSpectrum R` with a partial order induced from the ideal lattice.
+This is exactly the specialization order.
+See the corresponding section at `AlgebraicGeometry/PrimeSpectrum/Basic`.
+-/
+
+instance : PartialOrder (PrimeSpectrum R) :=
+  PartialOrder.lift asIdeal (PrimeSpectrum.ext)
+
+@[simp]
+theorem asIdeal_le_asIdeal (x y : PrimeSpectrum R) : x.asIdeal ≤ y.asIdeal ↔ x ≤ y :=
+  Iff.rfl
+
+@[simp]
+theorem asIdeal_lt_asIdeal (x y : PrimeSpectrum R) : x.asIdeal < y.asIdeal ↔ x < y :=
+  Iff.rfl
+
+instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
+  bot := ⟨⊥, Ideal.bot_prime⟩
+  bot_le I := @bot_le _ _ _ I.asIdeal
+
+instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
+  default := ⊥
+  uniq x := PrimeSpectrum.ext _ _ ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
+
+end Order
 
 section Noetherian
 
