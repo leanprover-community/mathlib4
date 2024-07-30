@@ -760,6 +760,7 @@ import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.CHSH
 import Mathlib.Algebra.Star.Center
+import Mathlib.Algebra.Star.CentroidHom
 import Mathlib.Algebra.Star.Free
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
@@ -1893,7 +1894,6 @@ import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
-import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 import Mathlib.Combinatorics.SimpleGraph.Dart
@@ -1914,6 +1914,7 @@ import Mathlib.Combinatorics.SimpleGraph.Matching
 import Mathlib.Combinatorics.SimpleGraph.Metric
 import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Combinatorics.SimpleGraph.Partition
+import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Prod
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Bound
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Chunk
@@ -1930,6 +1931,7 @@ import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
 import Mathlib.Combinatorics.SimpleGraph.Turan
+import Mathlib.Combinatorics.SimpleGraph.Walk
 import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
 import Mathlib.Computability.Ackermann
@@ -2981,6 +2983,7 @@ import Mathlib.LinearAlgebra.Ray
 import Mathlib.LinearAlgebra.Reflection
 import Mathlib.LinearAlgebra.RootSystem.Basic
 import Mathlib.LinearAlgebra.RootSystem.Defs
+import Mathlib.LinearAlgebra.RootSystem.RootPositive
 import Mathlib.LinearAlgebra.SModEq
 import Mathlib.LinearAlgebra.Semisimple
 import Mathlib.LinearAlgebra.SesquilinearForm
