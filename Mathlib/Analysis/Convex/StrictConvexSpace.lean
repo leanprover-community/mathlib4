@@ -8,7 +8,7 @@ import Mathlib.Analysis.Convex.Strict
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.Pointwise
-import Mathlib.Analysis.NormedSpace.Ray
+import Mathlib.Analysis.Normed.Module.Ray
 
 /-!
 # Strictly convex spaces

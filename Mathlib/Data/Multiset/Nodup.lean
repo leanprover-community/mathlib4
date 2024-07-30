@@ -3,8 +3,8 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Range
 import Mathlib.Data.Multiset.Range
+import Mathlib.Data.List.Pairwise
 
 /-!
 # The `Nodup` predicate for multisets without duplicate elements.

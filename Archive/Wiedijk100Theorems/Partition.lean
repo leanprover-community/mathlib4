@@ -235,7 +235,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       rw [← hw₂]
       exact dvd_mul_left _ _
     · intro i
-      simp_rw [Multiset.count_sum', Multiset.count_replicate, sum_ite_eq]
+      simp_rw [Multiset.count_sum', Multiset.count_replicate, sum_ite_eq']
       split_ifs with h
       · rcases hf₄ i h with ⟨w, hw₁, hw₂⟩
         rwa [← hw₂, Nat.mul_div_cancel _ (hs i h)]
@@ -245,7 +245,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       rcases hi with ⟨j, hj₁, hj₂⟩
       rwa [Multiset.eq_of_mem_replicate hj₂]
     · ext i
-      simp_rw [Multiset.count_sum', Multiset.count_replicate, sum_ite_eq]
+      simp_rw [Multiset.count_sum', Multiset.count_replicate, sum_ite_eq']
       simp only [ne_eq, Multiset.mem_toFinset, not_not, smul_eq_mul, ite_mul,
         zero_mul, Finsupp.coe_mk]
       split_ifs with h

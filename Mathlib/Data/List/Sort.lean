@@ -248,8 +248,9 @@ theorem perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
     · simpa [orderedInsert, h] using ((perm_orderedInsert a l).cons _).trans (Perm.swap _ _ _)
 
 theorem orderedInsert_count [DecidableEq α] (L : List α) (a b : α) :
-    count a (L.orderedInsert r b) = count a L + if a = b then 1 else 0 := by
+    count a (L.orderedInsert r b) = count a L + if b = a then 1 else 0 := by
   rw [(L.perm_orderedInsert r b).count_eq, count_cons]
+  simp
 
 theorem perm_insertionSort : ∀ l : List α, insertionSort r l ~ l
   | [] => Perm.nil

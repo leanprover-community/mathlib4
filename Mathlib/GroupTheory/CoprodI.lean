@@ -526,7 +526,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
       intro hm1
       split_ifs with h
       · rcases h with ⟨hnil, rfl⟩
-        simp only [List.head?_eq_head _ hnil, Option.some.injEq, ne_eq]
+        simp only [List.head?_eq_head hnil, Option.some.injEq, ne_eq]
         constructor
         · rintro rfl
           exact Or.inl ⟨_, rfl, rfl⟩
@@ -637,7 +637,7 @@ def toList : ∀ {i j} (_w : NeWord M i j), List (Σi, M i)
 theorem toList_ne_nil {i j} (w : NeWord M i j) : w.toList ≠ List.nil := by
   induction w
   · rintro ⟨rfl⟩
-  · apply List.append_ne_nil_of_ne_nil_left
+  · apply List.append_ne_nil_of_left_ne_nil
     assumption
 
 /-- The first letter of a `NeWord` -/

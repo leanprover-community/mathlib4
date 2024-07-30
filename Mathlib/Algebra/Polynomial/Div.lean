@@ -86,7 +86,7 @@ theorem div_wf_lemma (h : degree q ≤ degree p ∧ p ≠ 0) (hq : Monic q) :
   have hp : leadingCoeff p ≠ 0 := mt leadingCoeff_eq_zero.1 h.2
   have hq0 : q ≠ 0 := hq.ne_zero_of_polynomial_ne h.2
   have hlt : natDegree q ≤ natDegree p :=
-    Nat.cast_le.1
+    (Nat.cast_le (α := WithBot ℕ)).1
       (by rw [← degree_eq_natDegree h.2, ← degree_eq_natDegree hq0]; exact h.1)
   degree_sub_lt
     (by

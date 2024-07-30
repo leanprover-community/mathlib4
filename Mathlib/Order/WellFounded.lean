@@ -122,9 +122,10 @@ protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {
 
 section LinearOrder
 
-variable [LinearOrder β] (h : WellFounded ((· < ·) : β → β → Prop)) [PartialOrder γ]
+variable [LinearOrder β] [PartialOrder γ]
 
-theorem min_le {x : β} {s : Set β} (hx : x ∈ s) (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
+theorem min_le (h : WellFounded ((· < ·) : β → β → Prop)) {x : β} {s : Set β} (hx : x ∈ s)
+    (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
   not_lt.1 <| h.not_lt_min _ _ hx
 
 private theorem eq_strictMono_iff_eq_range_aux {f g : β → γ} (hf : StrictMono f)
