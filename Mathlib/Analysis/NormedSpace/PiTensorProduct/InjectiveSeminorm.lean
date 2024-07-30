@@ -146,8 +146,8 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜
     (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}, p.1 x := by
-  simp [injectiveSeminorm]
-  exact Seminorm.sSup_apply dualSeminorms_bounded
+  simpa only [injectiveSeminorm, Set.coe_setOf, Set.mem_setOf_eq]
+    using Seminorm.sSup_apply dualSeminorms_bounded
 
 theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
     ‖lift f.toMultilinearMap x‖ ≤ ‖f‖ * injectiveSeminorm x := by
