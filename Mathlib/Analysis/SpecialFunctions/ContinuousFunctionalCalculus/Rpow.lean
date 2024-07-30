@@ -39,9 +39,13 @@ variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A] [Star
   [CompleteSpace A] [NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
   [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
 
+/-- Real powers of operators, based on the non-unital continuous functional calculus. -/
 noncomputable def rpowₙ (a : A) (y : ℝ≥0) : A := cfcₙ (fun x => NNReal.rpow x y) a
 
---noncomputable def sqrt (a : A) : A := rpowₙ a 2⁻¹
+/-- Square roots of operators, based on the non-unital continuous functional calculus. -/
+noncomputable def sqrt (a : A) : A := cfcₙ NNReal.sqrt a
+
+/- ## `rpowₙ` -/
 
 @[simp]
 lemma rpowₙ_nonneg {a : A} {x : ℝ≥0} : 0 ≤ rpowₙ a x := cfcₙ_predicate _ a
@@ -117,10 +121,41 @@ lemma rpowₙ_rpowₙ {a : A} {x y : ℝ≥0} : rpowₙ (rpowₙ a x) y = rpow�
   case neg =>
     simp [rpowₙ, cfcₙ_apply_of_not_predicate a ha]
 
+/- ## `sqrt` -/
 
--- This is set at a low priority to avoid overriding the regular `Pow`
--- instance on the reals
---noncomputable def instPowNonUnital : Pow A ℝ := ⟨rpowₙ⟩
+@[simp]
+lemma sqrt_nonneg {a : A} : 0 ≤ sqrt a := cfcₙ_predicate _ a
+
+lemma sqrt_eq_rpowₙ {a : A} : sqrt a = rpowₙ a (1 / 2) := by
+  simp only [sqrt, rpowₙ, NNReal.coe_inv, NNReal.coe_ofNat, NNReal.rpow_eq_pow]
+  congr
+  ext
+  exact_mod_cast NNReal.sqrt_eq_rpow _
+
+@[simp]
+lemma sqrt_zero : sqrt (0 : A) = 0 := by simp [sqrt]
+
+@[simp]
+lemma rpowₙ_sqrt {a : A} {x : ℝ≥0} : rpowₙ (sqrt a) x = rpowₙ a (x / 2) := by
+  simp [sqrt_eq_rpowₙ, inv_mul_eq_div]
+
+lemma rpowₙ_sqrt_two {a : A} (ha : 0 ≤ a := by cfc_tac) : rpowₙ (sqrt a) 2 = a := by
+  simp only [rpowₙ_sqrt, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, div_self]
+  rw [rpowₙ_one]
+
+lemma sqrt_mul_sqrt_self {a : A} (ha : 0 ≤ a := by cfc_tac) : sqrt a * sqrt a = a := by
+  rw [← rpowₙ_two, rpowₙ_sqrt_two]
+
+@[simp]
+lemma sqrt_rpowₙ {a : A} {x : ℝ≥0} : sqrt (rpowₙ a x) = rpowₙ a (x / 2) := by
+  simp [sqrt_eq_rpowₙ, div_eq_mul_inv]
+
+lemma sqrt_rpowₙ_two {a : A} (ha : 0 ≤ a := by cfc_tac) : sqrt (rpowₙ a 2) = a := by
+  simp only [sqrt_rpowₙ, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, div_self]
+  rw [rpowₙ_one]
+
+lemma sqrt_mul_self {a : A} (ha : 0 ≤ a := by cfc_tac) : sqrt (a * a) = a := by
+  rw [← rpowₙ_two, sqrt_rpowₙ_two]
 
 end NonUnital
 
@@ -128,10 +163,18 @@ section Unital
 
 variable {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A] [StarOrderedRing A]
   [TopologicalRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
-  [UniqueContinuousFunctionalCalculus ℝ A]
+  [ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
+  --[NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
+  [UniqueContinuousFunctionalCalculus ℝ≥0 A]
+  --[UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
 
-noncomputable def rpow (a : A) (y : ℝ) : A := cfc (fun x => Real.rpow x y) a
+noncomputable def rpow (a : A) (y : ℝ) : A := cfc (fun x => NNReal.rpow x y) a
+
+@[simp]
+lemma rpow_nonneg {a : A} {y : ℝ} : 0 ≤ rpow a y := cfc_predicate _ a
+
+--lemma rpowₙ_eq_rpow {a : A} {y : ℝ≥0} : rpowₙ a y = rpow a y := by
+--  sorry
 
 lemma rpow_natCast {a : A} (n : ℕ) : rpow a n = a ^ n := by
   sorry
