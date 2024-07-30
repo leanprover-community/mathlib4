@@ -61,8 +61,8 @@ variable [LinearOrder ι]
 
 instance Lex.isStrictOrder [∀ i, PartialOrder (α i)] :
     IsStrictOrder (Lex (Π₀ i, α i)) (· < ·) where
-  irrefl := toLex.surjective.forall.2 fun _ ↦ lt_irrefl (α := Lex (∀ i, α i)) _
-  trans := toLex.surjective.forall₃.2 fun _ _ _ ↦ lt_trans (α := Lex (∀ i, α i))
+  irrefl _ := lt_irrefl (α := Lex (∀ i, α i)) _
+  trans _ _ _ := lt_trans (α := Lex (∀ i, α i))
 
 /-- The partial order on `DFinsupp`s obtained by the lexicographic ordering.
 See `DFinsupp.Lex.linearOrder` for a proof that this partial order is in fact linear. -/
