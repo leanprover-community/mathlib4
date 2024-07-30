@@ -124,7 +124,7 @@ theorem xa_mul_xa (i j : ZMod (2 * n)) : xa i * xa j = a ((n : ZMod (2 * n)) + j
 theorem one_def : (1 : QuaternionGroup n) = a 0 :=
   rfl
 
-private def fintypeHelper : Sum (ZMod (2 * n)) (ZMod (2 * n)) ≃ QuaternionGroup n where
+private def fintypeHelper : ZMod (2 * n) ⊕ ZMod (2 * n) ≃ QuaternionGroup n where
   invFun i :=
     match i with
     | a j => Sum.inl j

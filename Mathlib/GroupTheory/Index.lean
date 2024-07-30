@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
-import Mathlib.Data.Finite.Card
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.GroupAction.Quotient
 
@@ -419,6 +418,23 @@ instance : FiniteIndex (⊤ : Subgroup G) :=
 @[to_additive]
 instance [FiniteIndex H] [FiniteIndex K] : FiniteIndex (H ⊓ K) :=
   ⟨index_inf_ne_zero FiniteIndex.finiteIndex FiniteIndex.finiteIndex⟩
+
+@[to_additive]
+theorem finiteIndex_iInf {ι : Type*} [Finite ι] {f : ι → Subgroup G}
+    (hf : ∀ i, (f i).FiniteIndex) : (⨅ i, f i).FiniteIndex :=
+  ⟨index_iInf_ne_zero fun i => (hf i).finiteIndex⟩
+
+@[to_additive]
+theorem finiteIndex_iInf' {ι : Type*} {s : Finset ι}
+    (f : ι → Subgroup G) (hs : ∀ i ∈ s, (f i).FiniteIndex) :
+    (⨅ i ∈ s, f i).FiniteIndex := by
+  rw [iInf_subtype']
+  exact finiteIndex_iInf fun ⟨i, hi⟩ => hs i hi
+
+@[to_additive]
+instance instFiniteIndex_subgroupOf (H K : Subgroup G) [H.FiniteIndex] :
+    (H.subgroupOf K).FiniteIndex :=
+  ⟨fun h => H.index_ne_zero_of_finite <| H.index_eq_zero_of_relindex_eq_zero h⟩
 
 variable {H K}
 

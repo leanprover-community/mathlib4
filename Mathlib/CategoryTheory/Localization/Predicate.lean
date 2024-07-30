@@ -155,8 +155,19 @@ lemma isoOfHom_id_inv (X : C) (hX : W (𝟙 X)) :
   rw [← cancel_mono (isoOfHom L W (𝟙 X) hX).hom, Iso.inv_hom_id, id_comp,
     isoOfHom_hom, Functor.map_id]
 
+variable {W}
+
+lemma Construction.wIso_eq_isoOfHom {X Y : C} (f : X ⟶ Y) (hf : W f) :
+    Construction.wIso f hf = isoOfHom W.Q W f hf := by ext; rfl
+
+lemma Construction.wInv_eq_isoOfHom_inv {X Y : C} (f : X ⟶ Y) (hf : W f) :
+    Construction.wInv f hf = (isoOfHom W.Q W f hf).inv :=
+  congr_arg Iso.inv (wIso_eq_isoOfHom f hf)
+
 instance : (Localization.Construction.lift L (inverts L W)).IsEquivalence :=
   (inferInstance : L.IsLocalization W).isEquivalence
+
+variable (W)
 
 /-- A chosen equivalence of categories `W.Localization ≅ D` for a functor
 `L : C ⥤ D` which satisfies `L.IsLocalization W`. This shall be used in
@@ -180,7 +191,7 @@ def compEquivalenceFromModelInverseIso : L ⋙ (equivalenceFromModel L W).invers
     _ ≅ W.Q ⋙ 𝟭 _ := isoWhiskerLeft _ (equivalenceFromModel L W).unitIso.symm
     _ ≅ W.Q := Functor.rightUnitor _
 
-theorem essSurj : L.EssSurj :=
+theorem essSurj (W) [L.IsLocalization W] : L.EssSurj :=
   ⟨fun X =>
     ⟨(Construction.objEquiv W).invFun ((equivalenceFromModel L W).inverse.obj X),
       Nonempty.intro

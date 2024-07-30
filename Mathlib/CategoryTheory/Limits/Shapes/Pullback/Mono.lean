@@ -137,12 +137,11 @@ instance mono_pullback_to_prod {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z
     · simpa using congrArg (fun f => f ≫ prod.fst) h
     · simpa using congrArg (fun f => f ≫ prod.snd) h⟩
 
-
 /-- The pullback of `f, g` is also the pullback of `f ≫ i, g ≫ i` for any mono `i`. -/
 noncomputable def pullbackIsPullbackOfCompMono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mono i]
-    [HasPullback f g] : IsLimit (PullbackCone.mk (pullback.fst _ _) (pullback.snd _ _)
+    [HasPullback f g] : IsLimit (PullbackCone.mk (pullback.fst f g) (pullback.snd f g)
       -- Porting note: following used to be _
-      (show (pullback.fst _ _) ≫ f ≫ i = (pullback.snd _ _) ≫ g ≫ i from by
+      (show (pullback.fst f g) ≫ f ≫ i = (pullback.snd f g) ≫ g ≫ i from by
         simp only [← Category.assoc]; rw [cancel_mono]; apply pullback.condition)) :=
   PullbackCone.isLimitOfCompMono f g i _ (limit.isLimit (cospan f g))
 
@@ -314,8 +313,8 @@ instance epi_coprod_to_pushout {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y
 
 /-- The pushout of `f, g` is also the pullback of `h ≫ f, h ≫ g` for any epi `h`. -/
 noncomputable def pushoutIsPushoutOfEpiComp (f : X ⟶ Y) (g : X ⟶ Z) (h : W ⟶ X) [Epi h]
-    [HasPushout f g] : IsColimit (PushoutCocone.mk (pushout.inl _ _) (pushout.inr _ _)
-    (show (h ≫ f) ≫ pushout.inl _ _ = (h ≫ g) ≫ pushout.inr _ _ from by
+    [HasPushout f g] : IsColimit (PushoutCocone.mk (pushout.inl f g) (pushout.inr f g)
+    (show (h ≫ f) ≫ pushout.inl f g = (h ≫ g) ≫ pushout.inr f g from by
     simp only [Category.assoc]; rw [cancel_epi]; exact pushout.condition)) :=
   PushoutCocone.isColimitOfEpiComp f g h _ (colimit.isColimit (span f g))
 
