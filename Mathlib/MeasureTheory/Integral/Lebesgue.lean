@@ -769,6 +769,11 @@ theorem lintegral_indicator (f : α → ℝ≥0∞) {s : Set α} (hs : Measurabl
   refine ⟨⟨φ.restrict s, fun x => ?_⟩, le_rfl⟩
   simp [hφ x, hs, indicator_le_indicator]
 
+lemma setLintegral_indicator (f : α → ℝ≥0∞) {s t : Set α} (hs : MeasurableSet s)
+    (ht : MeasurableSet t) : ∫⁻ a in t, s.indicator f a ∂μ = ∫⁻ a in s ∩ t, f a ∂μ := by
+  rw [← lintegral_indicator, ← lintegral_indicator, indicator_indicator, inter_comm] <;>
+    measurability
+
 theorem lintegral_indicator₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMeasurableSet s μ) :
     ∫⁻ a, s.indicator f a ∂μ = ∫⁻ a in s, f a ∂μ := by
   rw [← lintegral_congr_ae (indicator_ae_eq_of_ae_eq_set hs.toMeasurable_ae_eq),
@@ -863,6 +868,12 @@ lemma lintegral_le_meas {s : Set α} {f : α → ℝ≥0∞} (hf : ∀ a, f a �
   by_cases hx : x ∈ s
   · simpa [hx] using hf x
   · simpa [hx] using h'f x hx
+
+lemma setLintegral_le_meas {s t : Set α} (hs : MeasurableSet s)
+    {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, f a ≤ 1)
+    (hf' : ∀ a ∈ s \ t, f a = 0) : ∫⁻ a in s, f a ∂μ ≤ μ t := by
+  rw [← lintegral_indicator _ hs]
+  exact lintegral_le_meas (fun a ↦ by by_cases a ∈ s <;> simp [*]) (by aesop)
 
 theorem lintegral_eq_top_of_measure_eq_top_ne_zero {f : α → ℝ≥0∞} (hf : AEMeasurable f μ)
     (hμf : μ {x | f x = ∞} ≠ 0) : ∫⁻ x, f x ∂μ = ∞ :=
