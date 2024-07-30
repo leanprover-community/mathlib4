@@ -1215,8 +1215,8 @@ theorem ciSup_mono' {ι'} {f : ι → α} {g : ι' → α} (hg : BddAbove (range
 theorem csInf_le_csInf' {s t : Set α} (h₁ : t.Nonempty) (h₂ : t ⊆ s) : sInf s ≤ sInf t :=
   csInf_le_csInf (OrderBot.bddBelow s) h₁ h₂
 
-lemma ciSup_or' (p q : Prop) (x : ι) (f : ι → α) :
-    ⨆ (_ : p ∨ q), f x = (⨆ (_ : p), f x) ⊔ ⨆ (_ : q), f x := by
+lemma ciSup_or' (p q : Prop) (f : p ∨ q → α) :
+    ⨆ (h : p ∨ q), f h = (⨆ h : p, f (.inl h)) ⊔ ⨆ h : q, f (.inr h) := by
   by_cases hp : p <;> by_cases hq : q
   · simp [hp, hq]
   · simp [hp, hq]
