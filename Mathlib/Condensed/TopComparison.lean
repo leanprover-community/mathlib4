@@ -114,10 +114,6 @@ noncomputable def TopCat.toCondensedSet (X : TopCat.{u+1}) : CondensedSet.{u} :=
     rw [((CompHaus.effectiveEpi_tfae π).out 0 2 :)] at he
     apply QuotientMap.of_surjective_continuous he π.continuous )
 
-variable (P : TopCat.{u} → Prop) (X : TopCat.{max u w})
-    [CompHausLike.HasExplicitFiniteCoproducts.{0} P] [CompHausLike.HasExplicitPullbacks.{u} P]
-    (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f)
-
 /--
 `TopCat.toCondensedSet` yields a functor from `TopCat.{u+1}` to `CondensedSet.{u}`.
 -/
@@ -125,6 +121,10 @@ variable (P : TopCat.{u} → Prop) (X : TopCat.{max u w})
 noncomputable def topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u} where
   obj X := X.toCondensedSet
   map f := ⟨⟨fun _ g ↦ f.comp g, by aesop⟩⟩
+
+variable (P : TopCat.{u} → Prop) (X : TopCat.{max u w})
+    [CompHausLike.HasExplicitFiniteCoproducts.{0} P] [CompHausLike.HasExplicitPullbacks.{u} P]
+    (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f)
 
 
 /-- TODO: refactor the definition of `TopCat.toCondensed` to use this construction. -/
