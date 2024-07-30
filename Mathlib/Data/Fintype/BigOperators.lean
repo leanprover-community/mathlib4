@@ -115,7 +115,7 @@ namespace Fintype
 /-- This lemma is specifically designed to be used backwards, whence the specialisation to `Fin n`
 as the indexing type doesn't matter in practice. -/
 lemma card_piFinset_const {α : Type*} (s : Finset α) (n : ℕ) :
-   (piFinset fun _ : Fin n ↦ s).card = s.card ^ n := by simp
+    (piFinset fun _ : Fin n ↦ s).card = s.card ^ n := by simp
 
 @[simp] lemma card_pi [DecidableEq ι] [∀ i, Fintype (α i)] : card (∀ i, α i) = ∏ i, card (α i) :=
   card_piFinset _
