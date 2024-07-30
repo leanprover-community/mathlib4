@@ -267,7 +267,7 @@ lemma injective_stdAddChar : Injective (stdAddChar : AddChar (ZMod N) ℂ) :=
 
 /-- The standard additive character `ZMod N → ℂ` is primitive. -/
 lemma isPrimitive_stdAddChar (N : ℕ) [NeZero N] :
-     (stdAddChar (N := N)).IsPrimitive := by
+    (stdAddChar (N := N)).IsPrimitive := by
   refine AddChar.zmod_char_primitive_of_eq_one_only_at_zero _ _ (fun t ht ↦ ?_)
   rwa [← (stdAddChar (N := N)).map_zero_eq_one, injective_stdAddChar.eq_iff] at ht
 
