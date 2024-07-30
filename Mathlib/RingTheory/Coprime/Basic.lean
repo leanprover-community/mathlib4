@@ -3,10 +3,10 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.Ring
 
@@ -365,7 +365,7 @@ namespace IsRelPrime
 
 variable {R} [CommRing R] {x y : R} (h : IsRelPrime x y) (z : R)
 
-theorem add_mul_left_left : IsRelPrime (x + y * z) y :=
+theorem add_mul_left_left (h : IsRelPrime x y) : IsRelPrime (x + y * z) y :=
   @of_add_mul_left_left R _ _ _ (-z) <| by simpa only [mul_neg, add_neg_cancel_right] using h
 
 theorem add_mul_right_left : IsRelPrime (x + z * y) y :=
