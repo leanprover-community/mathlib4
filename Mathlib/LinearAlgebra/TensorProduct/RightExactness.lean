@@ -163,20 +163,7 @@ variable {R M N P : Type*} [CommRing R]
     [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
     [Module R M] [Module R N] [Module R P]
 
-open Function LinearMap
-
--- TODO: Move this and related lemmas to another file
-lemma LinearMap.exact_subtype_mkQ (Q : Submodule R N) :
-    Exact (Submodule.subtype Q) (Submodule.mkQ Q) := by
-  rw [exact_iff, Submodule.ker_mkQ, Submodule.range_subtype Q]
-
-lemma LinearMap.exact_map_mkQ_range (f : M →ₗ[R] N) :
-    Exact f (Submodule.mkQ (range f)) :=
-  exact_iff.mpr <| Submodule.ker_mkQ _
-
-lemma LinearMap.exact_subtype_ker_map (g : N →ₗ[R] P) :
-    Exact (Submodule.subtype (ker g)) g :=
-  exact_iff.mpr <| (Submodule.range_subtype _).symm
+open Function
 
 variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
     (Q : Type*) [AddCommGroup Q] [Module R Q]
