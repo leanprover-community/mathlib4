@@ -6,6 +6,7 @@ Authors: Scott Morrison, Yuma Mizuno, Oleksandr Manzyuk
 import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.Lean.Meta
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
 /-!
