@@ -399,7 +399,7 @@ theorem linearIndependent_mul_of_flat (H : M.LinearDisjoint N)
   · exact H.linearIndependent_mul_of_flat_left hm hn
   · exact H.linearIndependent_mul_of_flat_right hm hn
 
-/-- If `{ m_i }` is an `R`-basis of `M`, if `{ n_i }` is an `R`-basis of `N`,
+/-- If `{ m_i }` is an `R`-basis of `M`, if `{ n_j }` is an `R`-basis of `N`,
 such that the family `{ m_i * n_j }` in `S` is `R`-linearly independent,
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_mul {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)
