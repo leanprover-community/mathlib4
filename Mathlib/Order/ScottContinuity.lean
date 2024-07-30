@@ -95,14 +95,13 @@ variable {γ : Type*}
 
 variable [Preorder α] [Preorder β] [Preorder γ]
 
-
 lemma monotone {f : α × β → γ} (h₂ : ∀ a, Monotone (fun b => f (a,b)))
     (h₁ : ∀ b, Monotone (fun a => f (a,b))) : Monotone f := fun _ _ hab =>
   le_trans (h₁ _ (Prod.mk_le_mk.mp hab).1) (h₂ _ (Prod.mk_le_mk.mp hab).2)
 
+-- c.f. isLUB_prod
 -- theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
 --    IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
-#check isLUB_prod
 
 lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
     {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
@@ -124,7 +123,9 @@ lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
     apply hu
     rw [mem_setOf_eq]
     use (a₃, b₃)
-    exact And.imp_right (fun a ↦ rfl) hm
+    exact And.imp_right (fun _ ↦ rfl) hm
+  · apply upperBounds_mono_set
+    aesop
 
 end Products
 
