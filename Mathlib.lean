@@ -1555,6 +1555,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 import Mathlib.CategoryTheory.Limits.Preserves.Ulift
