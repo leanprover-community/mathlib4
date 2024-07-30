@@ -6,15 +6,16 @@ Authors: Dagur Asgeirsson
 import Mathlib.Condensed.TopComparison
 /-!
 
-# The sheaf of locally constant maps on `CompHausLike`
+# The sheaf of locally constant maps on `CompHausLike P`
 
 This file proves that under suitable conditions, the functor from types to sheaves for the coherent
-topology on `CompHausLike`, given by mapping a set to the sheaf of locally constant maps to it,
+topology on `CompHausLike P`, given by mapping a set to the sheaf of locally constant maps to it,
 is left adjoint to the "underlying set" functor (evaluation at the point).
 
 ## TODO (after the refactor of `CompHaus` is complete)
 Apply this to prove that the constant sheaf functor into (light) condensed sets is isomorphic to the
-functor of sheaves of locally constant maps described above.
+functor of sheaves of locally constant maps described above. This will follow easily by uniqueness
+of adjoints.x
 -/
 
 universe u w u'
@@ -38,9 +39,9 @@ section Index
 
 # Locally constant maps and partitions
 
-A locally constant map out of a compact Hausdorff space corresponds to a finite partition of the
-space whose components are the fibers of the map. Each component is itself a compact Hausdorff
-space.
+A locally constant map out of a compact space corresponds to a finite partition of the
+space whose components are the fibers of the map. If the space is also Hausdorff, then each
+component is itself a compact Hausdorff space.
 
 In this section we define the indexing set for this partition and prove some API lemmas.
 -/
@@ -49,7 +50,7 @@ In this section we define the indexing set for this partition and prove some API
 def α : Type u := Set.range (fun (x : Set.range f) ↦ f ⁻¹' {x.val})
 
 /--
-The map from `α f`. When `f` is locally constant, `S` is the coproduct of `σ f` in `CompHaus`.
+The map from `α f`. When `f` is locally constant, `S` is the coproduct of `σ f` in `CompHausLike P`.
 -/
 def σ : α f → Type u := fun x ↦ x.val
 
@@ -217,7 +218,8 @@ end SigmaComparison
 namespace LocallyConstant
 
 /--
-The functor from the category of sets to presheaves on `CompHaus` given by locally constant maps.
+The functor from the category of sets to presheaves on `CompHausLike P` given by locally constant
+maps.
 -/
 @[simps]
 def functorToPresheaves : Type (max u w) ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w) where
@@ -241,7 +243,7 @@ def locallyConstantIsoContinuousMap (Y X : Type*) [TopologicalSpace Y] :
 section Adjunction
 /-!
 
-# The condensed set of locally constant maps is left adjoint to the forgetful functor
+# The functor of sheaves of locally constant maps is left adjoint to the forgetful functor
 
 The hard part of this adjunction is to define the counit. See `counitAppApp` for an explanation. 
 -/
@@ -254,7 +256,7 @@ open Aux
 
 variable [∀ (S : CompHausLike.{u} P) (p : S → Prop), HasProp P (Subtype p)]
 
-/-- A fiber of a locally constant map as a `CompHausLike`. -/
+/-- A fiber of a locally constant map as a `CompHausLike P`. -/
 def part {Q : CompHausLike.{u} P} {Z : Type max u w} (r : LocallyConstant Q Z) (a : α r) :
     CompHausLike.{u} P :=
   CompHausLike.of P a.val
@@ -269,7 +271,8 @@ def sigmaIncl {Q : CompHausLike.{u} P} {Z : Type max u w} (r : LocallyConstant Q
     part r a ⟶ Q :=
   CompHausLike.Aux.sigmaIncl _ a
 
-/-- The canonical map from the coproduct induced by `f` to `S` as an isomorphism in `CompHaus`. -/
+/-- The canonical map from the coproduct induced by `f` to `S` as an isomorphism in
+`CompHausLike P`. -/
 noncomputable def sigmaIso {Q : CompHausLike.{u} P} {Z : Type max u w} (r : LocallyConstant Q Z) :
     (CompHausLike.finiteCoproduct (part r)) ≅ Q :=
   CompHausLike.isoOfBijective (sigmaIsoHom r) ⟨sigmaIsoHom_inj r, sigmaIsoHom_surj r⟩
