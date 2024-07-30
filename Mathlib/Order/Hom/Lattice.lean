@@ -1017,7 +1017,8 @@ end LatticeHom
 
 namespace OrderHomClass
 
-variable (α β) [LinearOrder α] [Lattice β] [FunLike F α β] [OrderHomClass F α β]
+variable (α β)
+variable [LinearOrder α] [Lattice β] [OrderHomClass F α β]
 
 /-- An order homomorphism from a linear order is a lattice homomorphism. -/
 -- Porting note: made it an `instance` because we're no longer afraid of loops
@@ -1034,13 +1035,6 @@ instance (priority := 100) toLatticeHomClass : LatticeHomClass F α β :=
 
 /-- Reinterpret an order homomorphism to a linear order as a `LatticeHom`. -/
 def toLatticeHom (f : F) : LatticeHom α β := f
-
-#adaptation_note
-/--
-Please don't fix the following problems, they've been reported at
-https://github.com/leanprover/lean4/pull/4814#issuecomment-2254796321
-and should be resolved upstream.
--/
 
 @[simp]
 theorem coe_to_lattice_hom (f : F) : ⇑(toLatticeHom α β f) = f :=

@@ -964,13 +964,6 @@ namespace Int
 variable (α)
 variable [Nonempty α] [NoMinOrder α] [NoMaxOrder α]
 
-#adaptation_note
-/--
-Please don't fix the following problems, they've been reported at
-https://github.com/leanprover/lean4/pull/4814#issuecomment-2254766635
-and should be resolved upstream.
--/
-
 /-- If `α` is a nonempty preorder with no minimal or maximal elements, then there exists a strictly
 monotone function `f : ℤ → α`. -/
 theorem exists_strictMono : ∃ f : ℤ → α, StrictMono f := by
