@@ -644,7 +644,7 @@ theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations :
         exact nthLe_mem _ _ _
 
 -- TODO: `nodup s.permutations ↔ nodup s`
--- TODO: `count s s.permutations = (zip_with count s s.tails).prod`
+-- TODO: `count s s.permutations = (zipWith count s s.tails).prod`
 end Permutations
 
 end List
