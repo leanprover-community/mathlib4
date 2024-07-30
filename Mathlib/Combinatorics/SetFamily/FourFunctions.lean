@@ -266,6 +266,8 @@ section DistribLattice
 variable [DistribLattice α] [LinearOrderedCommSemiring β] [ExistsAddOfLE β]
   (f f₁ f₂ f₃ f₄ g μ : α → β)
 
+-- Needs thought: simp and exact don't combine into simpa using
+set_option linter.flexible false in
 /-- The **Four Functions Theorem**, aka **Ahlswede-Daykin Inequality**. -/
 lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
     (h : ∀ a b, f₁ a * f₂ b ≤ f₃ (a ⊓ b) * f₄ (a ⊔ b)) (s t : Finset α) :

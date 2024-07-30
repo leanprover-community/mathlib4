@@ -510,6 +510,8 @@ theorem equivPair_tail {i} (p : Pair M i) :
 theorem smul_eq_of_smul {i} (m : M i) (w : Word M) :
     m • w = of m • w := rfl
 
+-- Needs thought: simp followed by rw, with a medium-long simp set
+set_option linter.flexible false in
 theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
     ⟨_, m₁⟩ ∈ (of m₂ • w).toList ↔
       (¬i = j ∧ ⟨i, m₁⟩ ∈ w.toList)

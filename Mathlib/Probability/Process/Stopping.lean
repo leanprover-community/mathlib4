@@ -370,6 +370,8 @@ theorem measurableSpace_const (f : Filtration ι m) (i : ι) :
       exact f.mono hij _ h
     · simp only [hij, Set.setOf_false, Set.inter_empty, @MeasurableSet.empty _ (f.1 j)]
 
+-- Needs thought: simp followed by convert
+set_option linter.flexible false in
 theorem measurableSet_inter_eq_iff (hτ : IsStoppingTime f τ) (s : Set Ω) (i : ι) :
     MeasurableSet[hτ.measurableSpace] (s ∩ {ω | τ ω = i}) ↔
       MeasurableSet[f i] (s ∩ {ω | τ ω = i}) := by

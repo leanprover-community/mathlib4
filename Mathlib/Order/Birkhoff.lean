@@ -219,6 +219,8 @@ powerset lattice. -/
 noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
   exact birkhoffSet.trans Fintype.finsetOrderIsoSet.symm.toOrderEmbedding
 
+-- Needs thought: simp followed by rw, with medium-long simp set; related to porting note
+set_option linter.flexible false in
 @[simp] lemma coe_birkhoffFinset (a : α) : birkhoffFinset a = birkhoffSet a := by
   classical
   -- TODO: This should be a single `simp` call but `simp` refuses to use
