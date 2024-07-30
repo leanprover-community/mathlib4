@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.NumberTheory.MulChar.Basic
-import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
@@ -45,16 +44,17 @@ instance instStarMul [StarRing R'] : StarMul (MulChar R R') where
 lemma star_apply [StarRing R'] (χ : MulChar R R') (a : R) : (star χ) a = star (χ a) :=
   rfl
 
-variable [Fintype R] [DecidableEq R]
-
 /-- The values of a multiplicative character on `R` are `n`th roots of unity, where `n = #Rˣ`. -/
-lemma apply_mem_rootsOfUnity (a : Rˣ) {χ : MulChar R R'} :
+lemma apply_mem_rootsOfUnity [Fintype Rˣ] (a : Rˣ) {χ : MulChar R R'} :
     equivToUnitHom χ a ∈ rootsOfUnity ⟨Fintype.card Rˣ, Fintype.card_pos⟩ R' := by
   rw [mem_rootsOfUnity, ← map_pow, ← (equivToUnitHom χ).map_one, PNat.mk_coe, pow_card_eq_one]
+
+variable [Finite Rˣ]
 
 open Complex in
 /-- The conjugate of a multiplicative character with values in `ℂ` is its inverse. -/
 lemma star_eq_inv (χ : MulChar R ℂ) : star χ = χ⁻¹ := by
+  cases nonempty_fintype Rˣ
   ext1 a
   simp only [inv_apply_eq_inv']
   exact (inv_eq_conj <| norm_eq_one_of_mem_rootsOfUnity <| χ.apply_mem_rootsOfUnity a).symm
@@ -121,7 +121,9 @@ section FiniteField
 ### Multiplicative characters on finite fields
 -/
 
-variable (F : Type*) [Field F] [Fintype F] [DecidableEq F]
+section Fintype
+
+variable (F : Type*) [Field F] [Fintype F]
 variable {R : Type*} [CommRing R]
 
 /-- There is a character of order `n` on `F` if `#F ≡ 1 mod n` and the target contains
@@ -129,6 +131,7 @@ a primitive `n`th root of unity. -/
 lemma exists_mulChar_orderOf {n : ℕ} (h : n ∣ Fintype.card F - 1) {ζ : R}
     (hζ : IsPrimitiveRoot ζ n) :
     ∃ χ : MulChar F R, orderOf χ = n := by
+  classical
   have hn₀ : 0 < n := by
     refine Nat.pos_of_ne_zero fun hn ↦ ?_
     simp only [hn, zero_dvd_iff, Nat.sub_eq_zero_iff_le] at h
@@ -151,16 +154,21 @@ lemma exists_mulChar_orderOf {n : ℕ} (h : n ∣ Fintype.card F - 1) {ζ : R}
 
 /-- If there is a multiplicative character of order `n` on `F`, then `#F ≡ 1 mod n`. -/
 lemma orderOf_dvd_card_sub_one (χ : MulChar F R) : orderOf χ ∣ Fintype.card F - 1 := by
+  classical
   rw [← Fintype.card_units]
   exact orderOf_dvd_of_pow_eq_one χ.pow_card_eq_one
 
 /-- There is always a character on `F` of order `#F-1` with values in a ring that has
 a primitive `(#F-1)`th root of unity. -/
-lemma exists_mulChar_orderOf_eq_card_units {ζ : R} (hζ : IsPrimitiveRoot ζ (Monoid.orderUnits F)) :
+lemma exists_mulChar_orderOf_eq_card_units [DecidableEq F]
+    {ζ : R} (hζ : IsPrimitiveRoot ζ (Monoid.orderUnits F)) :
     ∃ χ : MulChar F R, orderOf χ = Fintype.card Fˣ :=
   exists_mulChar_orderOf F (by rw [Fintype.card_units]) hζ
 
-variable {F}
+end Fintype
+
+variable {F : Type*} [Field F] [Finite F]
+variable {R : Type*} [CommRing R]
 
 /- The non-zero values of a multiplicative character of order `n` are `n`th roots of unity. -/
 lemma apply_mem_rootsOfUnity_orderOf (χ : MulChar F R) {a : F} (ha : a ≠ 0) :

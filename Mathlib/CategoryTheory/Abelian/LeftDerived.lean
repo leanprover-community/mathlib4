@@ -6,8 +6,6 @@ Authors: Scott Morrison, Riccardo Brasca, Adam Topaz, Jujian Zhang, Joël Riou
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.CategoryTheory.Abelian.ProjectiveResolution
 
-#align_import category_theory.abelian.left_derived from "leanprover-community/mathlib"@"8001ea54ece3bd5c0d0932f1e4f6d0f142ea20d9"
-
 /-!
 # Left-derived functors
 
@@ -103,7 +101,6 @@ lemma ProjectiveResolution.isoLeftDerivedToHomotopyCategoryObj_hom_naturality
 /-- The left derived functors of an additive functor. -/
 noncomputable def Functor.leftDerived (F : C ⥤ D) [F.Additive] (n : ℕ) : C ⥤ D :=
   F.leftDerivedToHomotopyCategory ⋙ HomotopyCategory.homologyFunctor D _ n
-#align category_theory.functor.left_derived CategoryTheory.Functor.leftDerived
 
 /-- We can compute a left derived functor using a chosen projective resolution. -/
 noncomputable def ProjectiveResolution.isoLeftDerivedObj {X : C} (P : ProjectiveResolution X)
@@ -165,7 +162,6 @@ theorem Functor.leftDerived_map_eq (F : C ⥤ D) [F.Additive] (n : ℕ) {X Y : C
     assoc, assoc, Iso.inv_hom_id, comp_id]
   rw [← HomologicalComplex.comp_f, w, HomologicalComplex.comp_f,
     ChainComplex.single₀_map_f_zero]
-#align category_theory.functor.left_derived_map_eq CategoryTheory.Functor.leftDerived_map_eq
 
 /-- The natural transformation
 `F.leftDerivedToHomotopyCategory ⟶ G.leftDerivedToHomotopyCategory` induced by
@@ -210,7 +206,6 @@ noncomputable def NatTrans.leftDerived
     {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) (n : ℕ) :
     F.leftDerived n ⟶ G.leftDerived n :=
   whiskerRight (NatTrans.leftDerivedToHomotopyCategory α) _
-#align category_theory.nat_trans.left_derived CategoryTheory.NatTrans.leftDerived
 
 @[simp]
 theorem NatTrans.leftDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
@@ -218,14 +213,12 @@ theorem NatTrans.leftDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
   dsimp only [leftDerived]
   simp only [leftDerivedToHomotopyCategory_id, whiskerRight_id']
   rfl
-#align category_theory.nat_trans.left_derived_id CategoryTheory.NatTrans.leftDerived_id
 
 @[simp, reassoc]
 theorem NatTrans.leftDerived_comp {F G H : C ⥤ D} [F.Additive] [G.Additive] [H.Additive]
     (α : F ⟶ G) (β : G ⟶ H) (n : ℕ) :
     NatTrans.leftDerived (α ≫ β) n = NatTrans.leftDerived α n ≫ NatTrans.leftDerived β n := by
   simp [NatTrans.leftDerived]
-#align category_theory.nat_trans.left_derived_comp CategoryTheory.NatTrans.leftDerived_comp
 
 namespace ProjectiveResolution
 
