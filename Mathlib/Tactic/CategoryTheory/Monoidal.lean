@@ -3,7 +3,7 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
 /-!
 # Normalization of morphisms in monoidal categories
@@ -331,16 +331,6 @@ def NormalExpr.rightUnitor (f : Mor₁) : NormalExpr :=
 /-- The inverse of the right unitor as a term of `normalExpr`. -/
 def NormalExpr.rightUnitorInv (f : Mor₁) : NormalExpr :=
   .nil <| .atom <| .rightUnitorInv f
-
-/-- Return `η` for `η ▷ g₁ ▷ ... ▷ gₙ`. -/
-def WhiskerRightExpr.atom : WhiskerRightExpr → Atom
-  | WhiskerRightExpr.of η => η
-  | WhiskerRightExpr.whisker η _ => η.atom
-
-/-- Return `η` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
-def WhiskerLeftExpr.atom : WhiskerLeftExpr → Atom
-  | WhiskerLeftExpr.of η => η.atom
-  | WhiskerLeftExpr.whisker _ η => η.atom
 
 /-- Construct a `NormalExpr` expression from a `WhiskerLeftExpr` expression. -/
 def NormalExpr.of (η : WhiskerLeftExpr) : MetaM NormalExpr := do
