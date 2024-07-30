@@ -19,19 +19,88 @@ This file contains basics about the linearly disjoint of subalgebras.
 
 ## Main definitions
 
-- ...
+- `Subalgebra.LinearDisjoint`: two subalgebras are linearly disjoint, if they are
+  linearly disjoint as submodules (`Submodule.LinearDisjoint`).
+
+- `Subalgebra.LinearDisjoint.mulMap`: if two subalgebras `A` and `B` of `S / R` are
+  linearly disjoint, then there is `A ⊗[R] B ≃ₐ[R] A ⊔ B` induced by multiplication in `S`.
 
 ## Main results
 
-- ...
+### Equivalent characterization of linearly disjointness
+
+- `Subalgebra.LinearDisjoint.linearIndependent_left_op_of_flat`:
+  `Subalgebra.LinearDisjoint.linearIndependent_left_of_flat_of_commute`:
+  `Subalgebra.LinearDisjoint.linearIndependent_left_of_flat`:
+  if `A` and `B` are linearly disjoint, if `B` is a flat `R`-module, then for any family of
+  `R`-linearly independent elements of `A`, they are also `B`-linearly independent
+  (in the opposite ring for the first one).
+
+- `Subalgebra.LinearDisjoint.of_basis_left_op`:
+  `Subalgebra.LinearDisjoint.of_basis_left_of_commute`:
+  `Subalgebra.LinearDisjoint.of_basis_left`:
+  conversely, if a basis of `A` is also `B`-linearly independent (in the opposite ring
+  for the first one), then `A` and `B` are linearly disjoint.
+
+- `Subalgebra.LinearDisjoint.linearIndependent_right_of_flat`:
+  if `A` and `B` are linearly disjoint, if `A` is a flat `R`-module, then for any family of
+  `R`-linearly independent elements of `B`, they are also `A`-linearly independent.
+
+- `Subalgebra.LinearDisjoint.of_basis_right`:
+  conversely, if a basis of `B` is also `A`-linearly independent,
+  then `A` and `B` are linearly disjoint.
+
+- `Subalgebra.LinearDisjoint.linearIndependent_mul_of_flat`:
+  if `A` and `B` are linearly disjoint, if one of `A` and `B` is flat, then for any family of
+  `R`-linearly independent elements `{ a_i }` of `A`, and any family of
+  `R`-linearly independent elements `{ b_j }` of `B`, the family `{ a_i * b_j }` in `S` is
+  also `R`-linearly independent.
+
+- `Subalgebra.LinearDisjoint.of_basis_mul`:
+  conversely, if `{ a_i }` is an `R`-basis of `A`, if `{ b_j }` is an `R`-basis of `B`,
+  such that the family `{ a_i * b_j }` in `S` is `R`-linearly independent,
+  then `A` and `B` are linearly disjoint.
+
+### Other main results
+
+- `Subalgebra.LinearDisjoint.symm_of_commute`, `Subalgebra.linearDisjoint_symm_of_commute`:
+  linearly disjoint is symmetric under some commutative conditions.
+
+- `Subalgebra.LinearDisjoint.bot_left`, `Subalgebra.LinearDisjoint.bot_right`:
+  the image of `R` in `S` is linearly disjoint with any other subalgebras.
+
+- `Subalgebra.LinearDisjoint.sup_free_of_free`: the compositum of two linearly disjoint
+  subalgebras is a free module, if two subalgebras are also free modules.
+
+- `Subalgebra.LinearDisjoint.rank_sup_of_free`,
+  `Subalgebra.LinearDisjoint.finrank_sup_of_free`:
+  if subalgebras `A` and `B` are linearly disjoint and they are
+  free modules, then the rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`.
+
+- `Subalgebra.LinearDisjoint.of_finrank_sup_of_free`:
+  conversely, if `A` and `B` are subalgebras which are free modules of finite rank,
+  such that rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`,
+  then `A` and `B` are linearly disjoint.
+
+- `Subalgebra.LinearDisjoint.adjoin_rank_eq_rank_left`:
+  `Subalgebra.LinearDisjoint.adjoin_rank_eq_rank_right`:
+  if `A` and `B` are linearly disjoint, if `A` is free and `B` is flat (resp. `B` is free and
+  `A` is flat), then `[B[A] : B] = [A : R]` (resp. `[A[B] : A] = [B : R]`).
+  See also `Subalgebra.adjoin_rank_le`.
+
+- `Subalgebra.LinearDisjoint.of_finrank_coprime_of_free`:
+  if the rank of `A` and `B` are coprime, and they satisfy some freeness condition,
+  then `A` and `B` are linearly disjoint.
+
+- `Subalgebra.LinearDisjoint.inf_eq_bot_of_commute`, `Subalgebra.LinearDisjoint.inf_eq_bot`:
+  if `A` and `B` are linearly disjoint, under suitable technical conditions, they are disjoint.
+
+The results with name containing "of_commute" also have corresponding specified versions
+assuming `S` is commutative.
 
 ## Tags
 
 linearly disjoint, linearly independent, tensor product
-
-## TODO
-
-- ...
 
 -/
 
@@ -158,6 +227,9 @@ lemma mulLeftMap_ker_eq_bot_iff_linearIndependent_op {ι : Type*} (a : ι → A)
   exact Submodule.mulLeftMap_apply_single _ _ _
 
 variable {A B} in
+/-- If `A` and `B` are linearly disjoint, if `B` is a flat `R`-module, then for any family of
+`R`-linearly independent elements of `A`, they are also `B`-linearly independent
+in the opposite ring. -/
 theorem linearIndependent_left_op_of_flat (H : A.LinearDisjoint B) [Module.Flat R B]
     {ι : Type*} {a : ι → A} (ha : LinearIndependent R a) :
     LinearIndependent B.op (MulOpposite.op ∘ A.val ∘ a) := by
@@ -165,6 +237,8 @@ theorem linearIndependent_left_op_of_flat (H : A.LinearDisjoint B) [Module.Flat 
   have h := H.1.linearIndependent_left_of_flat ha
   rwa [mulLeftMap_ker_eq_bot_iff_linearIndependent_op] at h
 
+/-- If a basis of `A` is also `B`-linearly independent in the opposite ring,
+then `A` and `B` are linearly disjoint. -/
 theorem of_basis_left_op {ι : Type*} (a : Basis ι R A)
     (H : LinearIndependent B.op (MulOpposite.op ∘ A.val ∘ a)) :
     A.LinearDisjoint B := by
@@ -186,6 +260,8 @@ lemma mulRightMap_ker_eq_bot_iff_linearIndependent {ι : Type*} (b : ι → B) :
   exact Submodule.mulRightMap_apply_single _ _ _
 
 variable {A B} in
+/-- If `A` and `B` are linearly disjoint, if `A` is a flat `R`-module, then for any family of
+`R`-linearly independent elements of `B`, they are also `A`-linearly independent. -/
 theorem linearIndependent_right_of_flat (H : A.LinearDisjoint B) [Module.Flat R A]
     {ι : Type*} {b : ι → B} (hb : LinearIndependent R b) :
     LinearIndependent A (B.val ∘ b) := by
@@ -193,23 +269,33 @@ theorem linearIndependent_right_of_flat (H : A.LinearDisjoint B) [Module.Flat R 
   have h := H.1.linearIndependent_right_of_flat hb
   rwa [mulRightMap_ker_eq_bot_iff_linearIndependent] at h
 
+/-- If a basis of `B` is also `A`-linearly independent, then `A` and `B` are linearly disjoint. -/
 theorem of_basis_right {ι : Type*} (b : Basis ι R B)
     (H : LinearIndependent A (B.val ∘ b)) : A.LinearDisjoint B := by
   rw [← mulRightMap_ker_eq_bot_iff_linearIndependent] at H
   exact ⟨.of_basis_right _ _ b H⟩
 
 variable {A B} in
+/-- If `A` and `B` are linearly disjoint and their elements commute, if `B` is a flat `R`-module,
+then for any family of `R`-linearly independent elements of `A`,
+they are also `B`-linearly independent. -/
 theorem linearIndependent_left_of_flat_of_commute (H : A.LinearDisjoint B) [Module.Flat R B]
     {ι : Type*} {a : ι → A} (ha : LinearIndependent R a)
     (hc : ∀ (a : A) (b : B), Commute a.1 b.1) : LinearIndependent B (A.val ∘ a) :=
   (H.symm_of_commute hc).linearIndependent_right_of_flat ha
 
+/-- If a basis of `A` is also `B`-linearly independent, if elements in `A` and `B` commute,
+then `A` and `B` are linearly disjoint. -/
 theorem of_basis_left_of_commute {ι : Type*} (a : Basis ι R A)
     (H : LinearIndependent B (A.val ∘ a)) (hc : ∀ (a : A) (b : B), Commute a.1 b.1) :
     A.LinearDisjoint B :=
   (of_basis_right B A a H).symm_of_commute fun _ _ ↦ (hc _ _).symm
 
 variable {A B} in
+/-- If `A` and `B` are linearly disjoint, if `A` is flat, then for any family of
+`R`-linearly independent elements `{ a_i }` of `A`, and any family of
+`R`-linearly independent elements `{ b_j }` of `B`, the family `{ a_i * b_j }` in `S` is
+also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat_left (H : A.LinearDisjoint B) [Module.Flat R A]
     {κ ι : Type*} {a : κ → A} {b : ι → B} (ha : LinearIndependent R a)
     (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1 := by
@@ -217,6 +303,10 @@ theorem linearIndependent_mul_of_flat_left (H : A.LinearDisjoint B) [Module.Flat
   exact H.1.linearIndependent_mul_of_flat_left ha hb
 
 variable {A B} in
+/-- If `A` and `B` are linearly disjoint, if `B` is flat, then for any family of
+`R`-linearly independent elements `{ a_i }` of `A`, and any family of
+`R`-linearly independent elements `{ b_j }` of `B`, the family `{ a_i * b_j }` in `S` is
+also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat_right (H : A.LinearDisjoint B) [Module.Flat R B]
     {κ ι : Type*} {a : κ → A} {b : ι → B} (ha : LinearIndependent R a)
     (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1 := by
@@ -224,12 +314,19 @@ theorem linearIndependent_mul_of_flat_right (H : A.LinearDisjoint B) [Module.Fla
   exact H.1.linearIndependent_mul_of_flat_right ha hb
 
 variable {A B} in
+/-- If `A` and `B` are linearly disjoint, if one of `A` and `B` is flat, then for any family of
+`R`-linearly independent elements `{ a_i }` of `A`, and any family of
+`R`-linearly independent elements `{ b_j }` of `B`, the family `{ a_i * b_j }` in `S` is
+also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat (H : A.LinearDisjoint B)
     (hf : Module.Flat R A ∨ Module.Flat R B)
     {κ ι : Type*} {a : κ → A} {b : ι → B} (ha : LinearIndependent R a)
     (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1 :=
   H.1.linearIndependent_mul_of_flat hf ha hb
 
+/-- If `{ a_i }` is an `R`-basis of `A`, if `{ b_j }` is an `R`-basis of `B`,
+such that the family `{ a_i * b_j }` in `S` is `R`-linearly independent,
+then `A` and `B` are linearly disjoint. -/
 theorem of_basis_mul {κ ι : Type*} (a : Basis κ R A) (b : Basis ι R B)
     (H : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1) : A.LinearDisjoint B :=
   ⟨.of_basis_mul _ _ a b H⟩
@@ -307,10 +404,15 @@ variable [CommRing R] [CommRing S] [Algebra R S]
 variable (A B : Subalgebra R S)
 
 variable {A B} in
+/-- In a commutative ring, if `A` and `B` are linearly disjoint, if `B` is a flat `R`-module,
+then for any family of `R`-linearly independent elements of `A`,
+they are also `B`-linearly independent. -/
 theorem linearIndependent_left_of_flat (H : A.LinearDisjoint B) [Module.Flat R B]
     {ι : Type*} {a : ι → A} (ha : LinearIndependent R a) : LinearIndependent B (A.val ∘ a) :=
   H.linearIndependent_left_of_flat_of_commute ha fun _ _ ↦ mul_comm _ _
 
+/-- In a commutative ring, if a basis of `A` is also `B`-linearly independent,
+then `A` and `B` are linearly disjoint. -/
 theorem of_basis_left {ι : Type*} (a : Basis ι R A)
     (H : LinearIndependent B (A.val ∘ a)) : A.LinearDisjoint B :=
   of_basis_left_of_commute A B a H fun _ _ ↦ mul_comm _ _
@@ -335,15 +437,22 @@ theorem rank_eq_one_of_flat_of_self_of_inj (H : A.LinearDisjoint A) [Module.Flat
     (hinj : Function.Injective (algebraMap R S)) : Module.rank R A = 1 :=
   H.rank_eq_one_of_commute_of_flat_of_self_of_inj (fun _ _ ↦ mul_comm _ _) hinj
 
+/-- In a commutative ring, if subalgebras `A` and `B` are linearly disjoint and they are
+free modules, then the rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`. -/
 theorem rank_sup_of_free [Module.Free R A] [Module.Free R B] :
     Module.rank R ↥(A ⊔ B) = Module.rank R A * Module.rank R B := by
   nontriviality R
   rw [← rank_tensorProduct', H.mulMap.toLinearEquiv.rank_eq]
 
+/-- In a commutative ring, if subalgebras `A` and `B` are linearly disjoint and they are
+free modules, then the rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`. -/
 theorem finrank_sup_of_free [Module.Free R A] [Module.Free R B] :
     finrank R ↥(A ⊔ B) = finrank R A * finrank R B := by
   simpa only [map_mul] using congr(Cardinal.toNat $(H.rank_sup_of_free))
 
+/-- In a commutative ring, if `A` and `B` are subalgebras which are free modules of finite rank,
+such that rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`,
+then `A` and `B` are linearly disjoint. -/
 theorem of_finrank_sup_of_free [Module.Free R A] [Module.Free R B]
     [Module.Finite R A] [Module.Finite R B]
     (H : finrank R ↥(A ⊔ B) = finrank R A * finrank R B) : A.LinearDisjoint B := by
@@ -377,6 +486,8 @@ theorem adjoin_rank_eq_rank_right [Module.Free R B] [Module.Flat R A]
     Module.rank A (Algebra.adjoin A (B : Set S)) = Module.rank R B :=
   H.symm.adjoin_rank_eq_rank_left
 
+/-- If the rank of `A` and `B` are coprime, and they satisfy some freeness condition,
+then `A` and `B` are linearly disjoint. -/
 theorem of_finrank_coprime_of_free [Module.Free R A] [Module.Free R B]
     [Module.Free A (Algebra.adjoin A (B : Set S))] [Module.Free B (Algebra.adjoin B (A : Set S))]
     (H : (finrank R A).Coprime (finrank R B)) : A.LinearDisjoint B := by
@@ -400,6 +511,8 @@ theorem of_finrank_coprime_of_free [Module.Free R A] [Module.Free R B]
 
 variable (A B)
 
+/-- If `A/R` is integral, such that `A'` and `B` are linearly disjoint for all subalgebras `A'`
+of `A` which are finitely generated `R`-modules, then `A` and `B` are linearly disjoint. -/
 theorem of_linearDisjoint_finite_left [Algebra.IsIntegral R A]
     (H : ∀ A' : Subalgebra R S, A' ≤ A → [Module.Finite R A'] → A'.LinearDisjoint B) :
     A.LinearDisjoint B := by
@@ -427,6 +540,8 @@ theorem of_linearDisjoint_finite_left [Algebra.IsIntegral R A]
   rw [← hx', ← hy']; congr
   exact (H A' hA).1.1 (by simp [← Submodule.mulMap_comp_rTensor _ hA, hx', hy', hxy])
 
+/-- If `B/R` is integral, such that `A` and `B'` are linearly disjoint for all subalgebras `B'`
+of `B` which are finitely generated `R`-modules, then `A` and `B` are linearly disjoint. -/
 theorem of_linearDisjoint_finite_right [Algebra.IsIntegral R B]
     (H : ∀ B' : Subalgebra R S, B' ≤ B → [Module.Finite R B'] → A.LinearDisjoint B') :
     A.LinearDisjoint B :=
@@ -434,6 +549,8 @@ theorem of_linearDisjoint_finite_right [Algebra.IsIntegral R B]
 
 variable {A B}
 
+/-- If `A/R` and `B/R` are integral, such that any finite subalgebras in `A` and `B` are
+linearly disjoint, then `A` and `B` are linearly disjoint. -/
 theorem of_linearDisjoint_finite
     [Algebra.IsIntegral R A] [Algebra.IsIntegral R B]
     (H : ∀ (A' B' : Subalgebra R S), A' ≤ A → B' ≤ B →
