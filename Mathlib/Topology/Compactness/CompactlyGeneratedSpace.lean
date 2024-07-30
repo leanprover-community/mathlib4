@@ -98,7 +98,7 @@ instance (X : Type v) [t : TopologicalSpace X] [DiscreteTopology X] :
 that for every compact Hausdorff space `K` and every continuous map `g : K → X`,
 `f ∘ g` is continuous. -/
 lemma continuous_from_uCompactlyGeneratedSpace [UCompactlyGeneratedSpace.{u} X] (f : X → Y)
-      (h : ∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) : Continuous f := by
+    (h : ∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) : Continuous f := by
   apply continuous_le_dom UCompactlyGeneratedSpace.le_compactlyGenerated
   exact continuous_from_compactlyGenerated f h
 
