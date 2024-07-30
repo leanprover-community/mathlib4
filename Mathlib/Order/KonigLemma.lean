@@ -98,7 +98,7 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Subsinglet
 
   set αs := (i : ℕ) × α i
 
-  let _ : PartialOrder (αs) := {
+  let _ : PartialOrder αs := {
     le := fun a b ↦ ∃ h, π h b.2 = a.2
     le_refl := fun a ↦ ⟨rfl.le, π_refl _⟩
     le_trans := fun _ _ c h h' ↦ ⟨h.1.trans h'.1, by rw [← π_trans h.1 h'.1 c.2, h'.2, h.2]⟩
