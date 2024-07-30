@@ -129,9 +129,8 @@ theorem ext {c d : RingCon R} (H : ∀ x y, c x y ↔ d x y) : c = d :=
 /--
 Pulling back a RingCon across a ring hom.
 -/
-def comap {R R' F : Type*} [FunLike F R R']
-    [AddZeroClass R] [AddZeroClass R'] [AddMonoidHomClass F R R']
-    [MulOneClass R] [MulOneClass R'] [MonoidHomClass F R R']
+def comap {R R' F : Type*} [Add R] [Add R']
+    [FunLike F R R'] [AddHomClass F R R'] [Mul R] [Mul R'] [MulHomClass F R R']
     (J : RingCon R') (f : F) :
     RingCon R where
   __ := J.toCon.comap f (map_mul f)

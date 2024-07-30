@@ -20,9 +20,9 @@ This file defines operations on two-sided-ideals of a ring `R`.
 
 ## Main definitions and results
 - `TwoSidedIdeal.span`: the span of `s ⊆ R` is the smallest two-sided-ideal containing the set.
-- `TwoSidedIdeal.mem_span_iff_exists`: in a unital and associative ring, an element `x` is in the span of `s` if and only if it can be
-  written as a finite sum of the form `∑ i, xL i * y i * xR i` where `xL i ∈ s`, `y i ∈ R`, and
-  `xR i ∈ s`.
+- `TwoSidedIdeal.mem_span_iff_exists`: in a unital and associative ring, an element `x` is in the
+  span of `s` if and only if it can be written as a finite sum of the form `∑ i, xL i * y i * xR i`
+  where `xL i ∈ s`, `y i ∈ R`, and `xR i ∈ s`.
 
 - `TwoSidedIdeal.comap`: pullback of a two-sided-ideal; defined as the preimage of a
   two-sided-ideal.
@@ -35,7 +35,9 @@ namespace TwoSidedIdeal
 
 section NonUnitalNonAssocRing
 
-variable {R : Type*} [NonUnitalNonAssocRing R]
+variable {R S : Type*} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
+variable {F : Type*} [FunLike F R S] [AddMonoidHomClass F R S] [MulHomClass F R S]
+variable (f : F)
 
 /--
 The smallest two-sided-ideal containing a set.
@@ -64,13 +66,6 @@ lemma span_mono {s t : Set R} (h : s ⊆ t) : span s ≤ span t := by
   rw [mem_span_iff] at hx ⊢
   exact fun I hI => hx I $ h.trans hI
 
-end NonUnitalNonAssocRing
-
-section NonAssocRing
-
-variable {R S : Type*} [NonAssocRing R] [NonAssocRing S]
-variable {F : Type*} [FunLike F R S] [RingHomClass F R S] (f : F)
-
 /--
 preimage of a two-sided-ideal is still two-sided -/
 def comap (I : TwoSidedIdeal S) : TwoSidedIdeal R :=
@@ -94,20 +89,20 @@ lemma map_mono {I J : TwoSidedIdeal R} (h : I ≤ J) :
 /--
 kernel of a ring homomorphism as a two-sided-ideal.
 -/
-def ker (f : R →+* S) : TwoSidedIdeal R :=
+def ker : TwoSidedIdeal R :=
   .mk'
     {r | f r = 0} (map_zero _) (by rintro _ _ (h1 : f _ = 0) (h2 : f _ = 0); simp [h1, h2])
     (by rintro _ (h : f _ = 0); simp [h]) (by rintro _ _ (h : f _ = 0); simp [h])
     (by rintro _ _ (h : f _ = 0); simp [h])
 
-lemma mem_ker (f : R →+* S) {x : R} : x ∈ ker f ↔ f x = 0 := by
+lemma mem_ker {x : R} : x ∈ ker f ↔ f x = 0 := by
   delta ker; rw [mem_mk']; rfl
   · rintro _ _ (h1 : f _ = 0) (h2 : f _ = 0); simp [h1, h2]
   · rintro _ (h : f _ = 0); simp [h]
   · rintro _ _ (h : f _ = 0); simp [h]
   · rintro _ _ (h : f _ = 0); simp [h]
 
-end NonAssocRing
+end NonUnitalNonAssocRing
 
 section Ring
 
