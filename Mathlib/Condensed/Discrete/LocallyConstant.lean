@@ -11,6 +11,14 @@ import Mathlib.Condensed.TopComparison
 /-!
 
 # The sheaf of locally constant maps on `CompHausLike`
+
+This file proves that under suitable conditions, the functor from types to sheaves for the coherent
+topology on `CompHausLike`, given by mapping a set to the sheaf of locally constant maps to it,
+is left adjoint to the "underlying set" functor (evaluation at the point).
+
+## TODO (after the refactor of `CompHaus` is complete)
+Apply this to prove that the constant sheaf functor into (light) condensed sets is isomorphic to the
+functor of sheaves of locally constant maps described above.
 -/
 
 universe u w u'
