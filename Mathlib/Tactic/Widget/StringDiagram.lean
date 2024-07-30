@@ -53,7 +53,6 @@ namespace Mathlib.Tactic
 
 open Lean Meta Elab
 open CategoryTheory
-open Mathlib.Tactic.Coherence
 
 open Mathlib.Tactic.Monoidal
 
