@@ -1,4 +1,5 @@
 import Mathlib.GroupTheory.Sylow
+import Mathlib.Data.Set.Card
 import Mathlib.Tactic
 
 variable {p : Nat}
@@ -44,4 +45,77 @@ instance : AddAction (ZMod p) (Diag p G) where
   zero_vadd := rotate_zero
   add_vadd := rotate_rotate
 
-#check AddAction.orbitEquivQuotientStabilizer
+@[simp]
+theorem Diag.vadd_coeff (x : Diag p G) (i j : ZMod p) : (i +ᵥ x).1 j = x.1 (j + i) := rfl
+
+theorem ZMod.card_orbit (X : Type*) [AddAction (ZMod p) X] (x : X) :
+    Nat.card (AddAction.orbit (ZMod p) x) ∣ p := by
+  rw [Nat.card_congr (AddAction.orbitEquivQuotientStabilizer (ZMod p) x)]
+  simpa using AddSubgroup.card_quotient_dvd_card (AddAction.stabilizer (ZMod p) x)
+
+theorem Diag_card : Nat.card (Diag p G) = (Nat.card G) ^ (p - 1) := by
+  suffices e : Diag p G ≃ (Fin (p - 1) → G) by
+    calc Nat.card (Diag p G)
+        = Nat.card (Fin (p - 1) → G) := by exact Nat.card_congr e
+      _ = (Nat.card G) ^ (p - 1)     := by rw [Nat.card_pi, Fin.prod_const]
+  sorry
+
+instance : One (Diag p G) where
+  one := ⟨1, by simp [ZMod.prod, Function.comp]; erw [List.map_const]; simp; sorry⟩
+
+open AddAction in
+theorem Group.Cauchy [Finite G] (hp : p ∣ Nat.card G) : ∃ g : G, orderOf g = p := by
+  suffices ∃ g : G, g ≠ 1 ∧ g ^ p = 1 by
+    obtain ⟨g, hg⟩ := this
+    use g
+    rw [← orderOf_dvd_iff_pow_eq_one, Nat.dvd_prime Fact.out, orderOf_eq_one_iff] at hg
+    tauto
+  have aux : ∀ x, x ∈ fixedPoints (ZMod p) (Diag p G) ↔ x.1 = Function.const _ (x.1 0) := by
+    intro x
+    sorry
+  suffices (fixedPoints (ZMod p) (Diag p G)).Nontrivial by
+    obtain ⟨x, hx, hx1⟩ := this.exists_ne 1
+    use x.1 0
+    constructor
+    · contrapose! hx1
+      ext i
+      calc x.1 i = (i +ᵥ x).1 0 := by simp
+               _ = x.1 0        := by rw [hx]
+               _ = 1            := by exact hx1
+    · have := x.2
+      rw [aux] at hx
+      rw [ZMod.prod, hx] at this
+      simpa using this
+  have h1 : 1 ∈ fixedPoints (ZMod p) (Diag p G) := by
+    intro i; ext j
+    simp; rfl
+  /- have aux : {x : Diag p G | ∀ i j, x.1 i = x.1 j} = {x : Diag p G | Set.ncard (orbit (ZMod p) x) = 1} := by -/
+  /-   ext x -/
+  /-   simp only [Set.mem_setOf_eq, Set.ncard_eq_one] -/
+  /-   constructor -/
+  /-   · intro h -/
+  /-     use x -/
+  /-     ext y -/
+  /-     simp only [mem_orbit_iff, Set.mem_singleton_iff] -/
+  /-     constructor -/
+  /-     · rintro ⟨i, rfl⟩ -/
+  /-       ext j -/
+  /-       apply h -/
+  /-     · rintro rfl; use 0; simp -/
+  /-   · intro h i j -/
+  /-     rw [← orbit_eq_iff, ← orbit_eq_iff] -/
+  /-     exact h i j -/
+  /- suffices 1 < Set.ncard {x : Diag p G | ∀ i j, x.1 i = x.1 j} by -/
+  /-   obtain ⟨x, hx, hx1⟩ := Set.exists_ne_of_one_lt_ncard this 1 -/
+  /-   use x.1 0 -/
+  /-   constructor -/
+  /-   · contrapose! hx1 -/
+  /-     ext i -/
+  /-     rw [hx i 0, hx1] -/
+  /-     rfl -/
+  /-   · sorry -/
+  sorry
+
+
+
+
