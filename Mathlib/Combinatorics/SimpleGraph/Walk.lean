@@ -177,6 +177,11 @@ theorem adj_getVert_succ {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
     · simp [getVert, hxy]
     · exact ih (Nat.succ_lt_succ_iff.1 hi)
 
+lemma cons_getVert_one {u v w} (q : G.Walk v w) (hadj : G.Adj u v) :
+    (q.cons hadj).getVert 1 = v := by
+  have : (q.cons hadj).getVert 1 = q.getVert 0 := rfl
+  simpa [getVert_zero] using this
+
 @[simp]
 lemma cons_getVert_succ {u v w n} (p : G.Walk v w) (h : G.Adj u v) :
     (p.cons h).getVert (n + 1) = p.getVert n := rfl
@@ -765,7 +770,6 @@ lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → S
     motive (q.cons h) Walk.not_nil_cons) (h' : G.Adj u v) (q' : G.Walk v w) :
     @Walk.notNilRec _ _ _ _ _ cons _ _ = cons h' q' := by rfl
 
-
 @[simp] lemma adj_getVert_one {p : G.Walk v w} (hp : ¬ p.Nil) :
     G.Adj v (p.getVert 1) := by
   have := adj_getVert_succ p (by
@@ -1019,7 +1023,7 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
       exact ⟨d, List.Mem.tail _ hd, hcd⟩
     · exact ⟨⟨(x, y), a⟩, List.Mem.head _, uS, h⟩
 
-lemma getVert_copy  {u v w x: V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
+@[simp] lemma getVert_copy  {u v w x: V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
     (p.copy h h').getVert i = p.getVert i := by
   cases p with
   | nil =>
@@ -1034,17 +1038,13 @@ lemma getVert_copy  {u v w x: V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v 
       rw [cons_getVert _ _ hi]
       apply getVert_copy
 
-lemma getVert_tail {u v n} (p : G.Walk u v) (hnp: ¬ p.Nil) :
+@[simp] lemma getVert_tail {u v n} (p : G.Walk u v) (hnp: ¬ p.Nil) :
     p.tail.getVert n = p.getVert (n + 1) := by
   match p with
   | .nil => rfl
   | .cons h q =>
     simp only [cons_getVert_succ, tail_cons_eq, cons_getVert]
     exact getVert_copy q n (getVert_zero q).symm rfl
-
-lemma cons_getVert_one (q : G.Walk v w) (hadj : G.Adj u v) :
-    (q.cons hadj).getVert 1 = v := by
-  simp only [cons_getVert_succ, getVert_zero]
 
 /-- Given a walk `w` and a node in the support, there exists a natural `n`, such that given node
 is the `n`-th node (zero-indexed) in the walk. In addition, `n` is at most the length of the path.
