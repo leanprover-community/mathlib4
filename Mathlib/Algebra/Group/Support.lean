@@ -19,7 +19,7 @@ open Set
 
 namespace Function
 
-variable {α β A B M N P G : Type*}
+variable {α β A B M M' N P G : Type*}
 
 section One
 variable [One M] [One N] [One P]
@@ -82,7 +82,7 @@ theorem mulSupport_update_eq_ite [DecidableEq α] [DecidableEq M] (f : α → M)
   rcases eq_or_ne y 1 with rfl | hy <;> simp [mulSupport_update_one, mulSupport_update_of_ne_one, *]
 
 @[to_additive]
-theorem mulSupport_extend_one_subset {f : α → M} {g : α → N} :
+theorem mulSupport_extend_one_subset {f : α → M'} {g : α → N} :
     mulSupport (f.extend g 1) ⊆ f '' mulSupport g :=
   mulSupport_subset_iff'.mpr fun x hfg ↦ by
     by_cases hf : ∃ a, f a = x
@@ -92,7 +92,7 @@ theorem mulSupport_extend_one_subset {f : α → M} {g : α → N} :
     · rw [extend_apply' _ _ _ hf]; rfl
 
 @[to_additive]
-theorem mulSupport_extend_one {f : α → M} {g : α → N} (hf : f.Injective) :
+theorem mulSupport_extend_one {f : α → M'} {g : α → N} (hf : f.Injective) :
     mulSupport (f.extend g 1) = f '' mulSupport g :=
   mulSupport_extend_one_subset.antisymm <| by
     rintro _ ⟨x, hx, rfl⟩; rwa [mem_mulSupport, hf.extend_apply]
