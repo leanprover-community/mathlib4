@@ -342,11 +342,11 @@ theorem tendsto_exp_comp_nhds_zero {f : α → ℝ} :
 theorem openEmbedding_exp : OpenEmbedding exp :=
   isOpen_Ioi.openEmbedding_subtype_val.comp expOrderIso.toHomeomorph.openEmbedding
 
--- Porting note (#11215): TODO: backport & make `@[simp]`
+@[simp]
 theorem map_exp_nhds (x : ℝ) : map exp (𝓝 x) = 𝓝 (exp x) :=
   openEmbedding_exp.map_nhds_eq x
 
--- Porting note (#11215): TODO: backport & make `@[simp]`
+@[simp]
 theorem comap_exp_nhds_exp (x : ℝ) : comap exp (𝓝 (exp x)) = 𝓝 x :=
   (openEmbedding_exp.nhds_eq_comap x).symm
 
