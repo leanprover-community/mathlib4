@@ -972,7 +972,7 @@ lemma ge_iff_le_forall_real_lt (x y : EReal) : (∀ z : ℝ, z < y → z ≤ x) 
   | h_top => exact le_top
 
 /-- This lemma is superseded by `add_le_of_forall_lt_add_le`. -/
-private lemma add_le_of_forall_lt_add_top {a b : EReal} (h : ∀ c < ⊤, ∀ d < a, c + d ≤ b) :
+private lemma top_add_le_of_forall_add_le {a b : EReal} (h : ∀ c < ⊤, ∀ d < a, c + d ≤ b) :
     ⊤ + a ≤ b := by
   induction a with
   | h_bot => exact add_bot ⊤ ▸ bot_le
