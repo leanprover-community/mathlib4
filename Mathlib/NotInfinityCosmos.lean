@@ -576,8 +576,6 @@ abbrev nerve2cosk.cone {C : Type 0} [Category.{0} C] (n : ℕ) : Cone (nerve2cos
   := by
   refine Ran.cone (op ([n] : SimplexCategory)) (nerve₂restrictedNerveIso C).hom
 
-theorem
-
   -- (nerve2coskNatTrans.app (Cat.of C))
 /-- ER: Since a natural transformation is a natural isomorphism iff its components are isomorphisms: -/
 theorem nerve2coskNatTrans.app_isIso (C : Type 0) [Category.{0} C] : IsIso (nerve2coskNatTrans.app (Cat.of C)) := by sorry
