@@ -151,7 +151,7 @@ theorem tendsto_nhds_bot_iff_real {α : Type*} {m : α → EReal} {f : Filter α
 variable {α : Type*} {u v : α → EReal}
 
 lemma add_iInf_le_iInf_add : (⨅ x, u x) + (⨅ x, v x) ≤ ⨅ x, (u + v) x := by
-  refine add_le_of_forall_lt_add fun a a_u b b_v ↦ ?_
+  refine add_le_of_forall_add_le fun a a_u b b_v ↦ ?_
   rw [lt_iInf_iff] at a_u b_v
   rcases a_u with ⟨c, a_c, c_u⟩
   rcases b_v with ⟨d, b_d, d_v⟩
@@ -160,7 +160,7 @@ lemma add_iInf_le_iInf_add : (⨅ x, u x) + (⨅ x, v x) ≤ ⨅ x, (u + v) x :=
 
 lemma iSup_add_le_add_iSup (h : ⨆ x, u x ≠ ⊥ ∨ ⨆ x, v x ≠ ⊤) (h' : ⨆ x, u x ≠ ⊤ ∨ ⨆ x, v x ≠ ⊥) :
     ⨆ x, (u + v) x ≤ (⨆ x, u x) + (⨆ x, v x) := by
-  refine le_add_of_forall_gt_add h h' fun a a_u b b_v ↦ ?_
+  refine le_add_of_forall_le_add h h' fun a a_u b b_v ↦ ?_
   rw [gt_iff_lt, iSup_lt_iff] at a_u b_v
   rcases a_u with ⟨c, a_c, c_u⟩
   rcases b_v with ⟨d, b_d, d_v⟩
@@ -180,26 +180,26 @@ lemma limsup_neg : limsup (- v) f = - liminf v f :=
   EReal.negOrderIso.liminf_apply.symm
 
 lemma add_liminf_le_liminf_add : (liminf u f) + (liminf v f) ≤ liminf (u + v) f := by
-  refine add_le_of_forall_lt_add fun a a_u b b_v ↦ (le_liminf_iff).2 fun c c_ab ↦ ?_
+  refine add_le_of_forall_add_le fun a a_u b b_v ↦ (le_liminf_iff).2 fun c c_ab ↦ ?_
   filter_upwards [eventually_lt_of_lt_liminf a_u, eventually_lt_of_lt_liminf b_v] with x a_x b_x
   exact lt_trans c_ab (add_lt_add a_x b_x)
 
 lemma limsup_add_le_add_limsup (h : limsup u f ≠ ⊥ ∨ limsup v f ≠ ⊤)
     (h' : limsup u f ≠ ⊤ ∨ limsup v f ≠ ⊥) :
     limsup (u + v) f ≤ (limsup u f) + (limsup v f) := by
-  refine le_add_of_forall_gt_add h h' fun a a_u b b_v ↦ (limsup_le_iff).2 fun c c_ab ↦ ?_
+  refine le_add_of_forall_le_add h h' fun a a_u b b_v ↦ (limsup_le_iff).2 fun c c_ab ↦ ?_
   filter_upwards [eventually_lt_of_limsup_lt a_u, eventually_lt_of_limsup_lt b_v] with x a_x b_x
   exact lt_trans (add_lt_add a_x b_x) c_ab
 
 lemma limsup_add_liminf_le_limsup_add : (limsup u f) + (liminf v f) ≤ limsup (u + v) f :=
-  add_le_of_forall_lt_add fun a a_u b b_v ↦ (le_limsup_iff).2 fun c c_ab ↦
+  add_le_of_forall_add_le fun a a_u b b_v ↦ (le_limsup_iff).2 fun c c_ab ↦
     Frequently.mono (Frequently.and_eventually ((frequently_lt_of_lt_limsup) a_u)
       ((eventually_lt_of_lt_liminf) b_v)) fun x ab_x ↦ lt_trans c_ab (add_lt_add ab_x.1 ab_x.2)
 
 lemma liminf_add_le_limsup_add_liminf (h : limsup u f ≠ ⊥ ∨ liminf v f ≠ ⊤)
     (h' : limsup u f ≠ ⊤ ∨ liminf v f ≠ ⊥) :
     liminf (u + v) f ≤ (limsup u f) + (liminf v f) :=
-  le_add_of_forall_gt_add h h' fun a a_u b b_v ↦ (liminf_le_iff).2 fun c c_ab ↦
+  le_add_of_forall_le_add h h' fun a a_u b b_v ↦ (liminf_le_iff).2 fun c c_ab ↦
     Frequently.mono (Frequently.and_eventually ((frequently_lt_of_liminf_lt) b_v)
      ((eventually_lt_of_limsup_lt) a_u)) fun x ab_x ↦ lt_trans (add_lt_add ab_x.2 ab_x.1) c_ab
 
