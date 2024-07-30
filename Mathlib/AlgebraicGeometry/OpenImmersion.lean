@@ -333,7 +333,7 @@ theorem to_iso {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsOpenImmersion f] [Epi f.b
 
 theorem of_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : OpenEmbedding f.base)
     [∀ x, IsIso (f.stalkMap x)] : IsOpenImmersion f :=
-  haveI (x : X) : IsIso (f.val.stalkMap x) := inferInstanceAs <| IsIso (f.stalkMap x)
+  haveI (x : X) : IsIso (f.toHom.stalkMap x) := inferInstanceAs <| IsIso (f.stalkMap x)
   SheafedSpace.IsOpenImmersion.of_stalk_iso f.toHom hf
 
 instance stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (x : X) :
