@@ -77,6 +77,9 @@ instance : ContinuousStar ℝ≥0 where
   continuous_star := continuous_id
 section coe
 
+lemma isOpen_Ico_zero {x : NNReal} : IsOpen (Set.Ico 0 x) := by
+  rw [← bot_eq_zero, Ico_bot]; exact isOpen_Iio
+
 variable {α : Type*}
 
 open Filter Finset
