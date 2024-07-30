@@ -498,7 +498,7 @@ theorem exists_mono_in_high_dimension (α κ η) [Finite α] [Finite κ] [Finite
 
 /-- A variant of the **extended Hales-Jewett theorem** `exists_mono_in_high_dimension` where the
 returned type is some `Fin n` instead of a general fintype. -/
-theorem exists_mono_in_high_dimension_fin (α κ η) [Fintype α] [Fintype κ] [Fintype η] :
+theorem exists_mono_in_high_dimension_fin (α κ η) [Finite α] [Finite κ] [Finite η] :
     ∃ n, ∀ C : (Fin n → α) → κ, ∃ l : Subspace η α (Fin n), l.IsMono C := by
   obtain ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension α κ η
   refine ⟨Fintype.card ι, fun C ↦ ?_⟩
