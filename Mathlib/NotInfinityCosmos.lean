@@ -515,6 +515,9 @@ def nerveFunctor₂ : Cat ⥤ TruncSSet 2 := nerveFunctor ⋙ SimplexCategory.tr
 
 def nerve₂ (C : Type*) [Category C] : TruncSSet 2 := nerveFunctor₂.obj (Cat.of C)
 
+theorem nerve₂_restrictedNerve (C : Type*) [Category C] : (SimplexCategory.Δ.ι 2).op ⋙ (nerve C) = nerve₂ C := rfl
+
+def nerve₂restrictedNerveIso (C : Type*) [Category C] : (SimplexCategory.Δ.ι 2).op ⋙ (nerve C) ≅ nerve₂ C := Iso.refl _
 namespace Nerve
 
 /-- ER: The natural map from a nerve. -/
@@ -533,8 +536,42 @@ that this cone is a limit cone directly: showing any other cone factors uniquely
 The factorization will involve the explicit consruction of an n-simplex in the nerve of C from the
 data in the cone. UNIVERSE ERROR!-/
 theorem nerve2coskNatTrans.component_isIso (C : Type 0) [Category.{0} C] (n : ℕ) :
-    IsIso (nerve2coskNatTrans.component C n) := by sorry
+    IsIso (nerve2coskNatTrans.component C n) := by
+  unfold component nerve2coskNatTrans whiskerLeft
+  simp only [nerve_obj, SimplexCategory.len_mk, Ran.loc_obj, nerveFunctor_obj, Cat.of_α, comp_obj]
+  unfold coskeletonAdj Ran.adjunction Ran.equiv
+  simp only [whiskeringLeft_obj_obj, comp_obj, op_obj, Ran.loc_obj, Ran.cone, const_obj_obj,
+    StructuredArrow.proj_obj, Adjunction.adjunctionOfEquivRight_unit_app, nerve_obj,
+    Equiv.coe_fn_symm_mk, SimplexCategory.len_mk]
+  let _ : HasLimit (Ran.diagram (SimplexCategory.Δ.ι 2).op (nerveFunctor₂.obj (Cat.of C)) { unop := [n] }) := inferInstance
+  refine Iso.isIso_hom ?_
+  refine conePointUniqueUpToIso ?_ (limit.islimit _)
+  refine' IsLimit.hom_isIso _ (limit.isLimit _) _
 
+  sorry
+  /-
+  C : Type
+  inst✝ : Category.{0, 0} C
+  n : ℕ
+  ⊢ IsIso
+    (limit.lift (Ran.diagram (Δ.ι 2).op ((truncation 2).obj (nerve C)) { unop := [n] })
+      { pt := ComposableArrows C n,
+        π := { app := fun i ↦ (nerve C).map i.hom ≫ (𝟙 ((truncation 2).obj (nerve C))).app i.right, naturality := ⋯ } })
+  -/
+
+
+abbrev nerve2cosk.diagram {C : Type 0} [Category.{0} C] (n : ℕ) :
+    StructuredArrow { unop := [n] } (Δ.ι 2).op ⥤ Type :=
+  Ran.diagram
+    (SimplexCategory.Δ.ι 2).op (nerveFunctor₂.obj (Cat.of C)) (op ([n] : SimplexCategory))
+
+abbrev nerve2cosk.cone {C : Type 0} [Category.{0} C] (n : ℕ) : Cone (nerve2cosk.diagram (C := C) n)
+  := by
+  refine Ran.cone (op ([n] : SimplexCategory)) (nerve₂restrictedNerveIso C).hom
+
+theorem
+
+  -- (nerve2coskNatTrans.app (Cat.of C))
 /-- ER: Since a natural transformation is a natural isomorphism iff its components are isomorphisms: -/
 theorem nerve2coskNatTrans.app_isIso (C : Type 0) [Category.{0} C] : IsIso (nerve2coskNatTrans.app (Cat.of C)) := by sorry
   -- refine Iso.isIso_hom (C := SSet) ?_
@@ -1026,6 +1063,41 @@ def nerve₂Adj.counit : nerveFunctor₂ ⋙ TruncSSet.hoFunctor₂ ⟶ (𝟭 Ca
     exact nerve₂Adj.counit.naturality
 
 
+def toNerve₂.mk {X : TruncSSet 2} {C : Cat}
+    (f : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
+    (hyp : (φ : X _[2]₂) →
+      f.map (φ02₂ φ) =
+        CategoryStruct.comp (obj := C) (f.map (φ01₂ φ)) (f.map (φ12₂ φ)))
+    : X ⟶ nerveFunctor₂.obj C where
+      app := by
+        intro ⟨ ⟨ n, hn⟩⟩
+        induction' n using SimplexCategory.rec with n
+        match n with
+        | 0 => sorry
+        | 1 => sorry
+        | 2 => sorry
+      naturality := sorry
+
+/-- ER: We might prefer this version where we are missing the analogue of the hypothesis hyp conjugated by the isomorphism nerve₂Adj.NatIso.app C -/
+def toNerve₂.mk' {X : TruncSSet.{0} 2} {C : Cat}
+    (f : SSet.oneTruncation₂.obj X ⟶ SSet.oneTruncation₂.obj (nerveFunctor₂.obj C))
+    (hyp : (φ : X _[2]₂) →
+      (f ≫ (nerve₂Adj.NatIso.app C).hom).map (φ02₂ φ)
+      = CategoryStruct.comp (obj := C) ((f ≫ (nerve₂Adj.NatIso.app C).hom).map (φ01₂ φ)) ((f ≫ (nerve₂Adj.NatIso.app C).hom).map (φ12₂ φ)))
+    : X ⟶ nerveFunctor₂.obj C :=
+  toNerve₂.mk (f ≫ (nerve₂Adj.NatIso.app C).hom) hyp
+
+/-- Now do a case split. For n = 0 and n = 1 this is covered by the hypothesis.
+         For n = 2 this is covered by the new lemma above.-/
+theorem toNerve₂.ext {X : TruncSSet 2} {C : Cat} (f g : X ⟶ nerve₂ C)
+    (hyp : SSet.oneTruncation₂.map f = SSet.oneTruncation₂.map g) : f = g := by
+  ext ⟨ ⟨ n , hn⟩⟩
+  induction' n using SimplexCategory.rec with n
+  match n with
+  | 0 => sorry
+  | 1 => sorry
+  | 2 => sorry
+
 /-- ER: Universe error is why this is for u u.-/
 -- @[simps! toPrefunctor obj map]
 def nerve₂Adj.unit.app (X : TruncSSet.{u} 2) : X ⟶ nerveFunctor₂.obj (TruncSSet.hoFunctor₂.obj X) := sorry
@@ -1044,20 +1116,13 @@ theorem nerve₂Adj.unit.app_eq (X : TruncSSet.{0} 2) :
     nerve₂Adj.NatIso.inv.app (TruncSSet.hoFunctor₂.obj X) := sorry
 
 theorem nerve₂.two_simplex_property {C : Type*} [Category C] (F G : nerve₂ C _[2]₂)
-    (h₀ : (nerve₂ C).map (op ι0₂) F = (nerve₂ C).map (op ι0₂) F)
-    (h₁ : (nerve₂ C).map (op ι0₂) F = (nerve₂ C).map (op ι1₂) F)
-    (h₂ : (nerve₂ C).map (op ι0₂) F = (nerve₂ C).map (op ι2₂) F)
-    (h₀₁ : (nerve₂ C).map (op δ2₂) F = (nerve₂ C).map (op δ2₂) F)
-    (h₁₂ : (nerve₂ C).map (op δ0₂) F = (nerve₂ C).map (op δ0₂) F)
-    (h₀₂ : (nerve₂ C).map (op δ1₂) F = (nerve₂ C).map (op δ1₂) F)
+    (h₀ : (nerve₂ C).map (op ι0₂) F = (nerve₂ C).map (op ι0₂) G)
+    (h₁ : (nerve₂ C).map (op ι0₂) F = (nerve₂ C).map (op ι1₂) G)
+    (h₂ : (nerve₂ C).map (op ι0₂) F = (nerve₂ C).map (op ι2₂) G)
+    (h₀₁ : (nerve₂ C).map (op δ2₂) F = (nerve₂ C).map (op δ2₂) G)
+    (h₁₂ : (nerve₂ C).map (op δ0₂) F = (nerve₂ C).map (op δ0₂) G)
+    (h₀₂ : (nerve₂ C).map (op δ1₂) F = (nerve₂ C).map (op δ1₂) G)
   : F = G := sorry
-
-/-- Now do a case split. For n = 0 and n = 1 this is covered by the hypothesis.
-         For n = 2 this is covered by the new lemma above.-/
-theorem toNerve₂.ext {X : TruncSSet 2} {C : Cat} (f g : X ⟶ nerve₂ C)
-    (hyp : SSet.oneTruncation₂.map f = SSet.oneTruncation₂.map g) : f = g := by
-  ext
-  sorry
 
 /--
 The adjunction between forming the free category on a quiver, and forgetting a category to a quiver.
@@ -1216,12 +1281,17 @@ instance nerveFunctor.full : nerveFunctor.Full := by
     refine Full.comp nerveFunctor₂ (ran (Δ.ι 2).op)
   refine Functor.Full.of_iso Nerve.nerve2coskIso.symm
 
-instance nerveFunctor.fullyfaithful : nerveFunctor.FullyFaithful := FullyFaithful.ofFullyFaithful nerveFunctor
+instance nerveFunctor.fullyfaithful : nerveFunctor.FullyFaithful :=
+  FullyFaithful.ofFullyFaithful nerveFunctor
 
-def nerveCounitNatIso : nerveFunctor ⋙ SSet.hoFunctor ≅ 𝟭 Cat := by sorry
+instance nerveCounit_isIso : IsIso (nerveAdjunction.counit) :=
+  Adjunction.counit_isIso_of_R_fully_faithful _
 
-instance : Reflective nerveFunctor.{u} :=
-  reflectiveOfCounitIso _ _ nerveAdjunction.{u} (Iso.isIso_hom nerveCounitNatIso.{u})
+def nerveCounitNatIso : nerveFunctor ⋙ SSet.hoFunctor ≅ 𝟭 Cat := asIso (nerveAdjunction.counit)
+
+instance : Reflective nerveFunctor where
+  L := SSet.hoFunctor
+  adj := nerveAdjunction
 
 instance : HasColimits Cat :=
   hasColimits_of_reflective nerveFunctor
@@ -1260,59 +1330,3 @@ def hoFunctorPreservesBinaryProducts :
 
 
 end preservesProducts
-
--- -- nerve E c = (F c → E)
--- def Functor.nerve : E ⥤ Cᵒᵖ ⥤ Type v :=
---   .flip <| curryObj (F.homRestriction (Functor.id E))
--- end
--- namespace Something
--- variable {C : Type} {E : Type} [Category C] [Category E] (F : C ⥤ E)
-
--- variable [lkan : yoneda.HasPointwiseLeftKanExtension F]
-
--- -- (lan.right.obj (yoneda.obj c) ⟶ Y)
--- noncomputable def lan : (Cᵒᵖ ⥤ Type) ⥤ E :=
---   (LeftExtension.mk _ (yoneda.pointwiseLeftKanExtensionUnit F)).right
-
--- noncomputable def lanIso : F ≅ yoneda ⋙ lan F :=
---   have := LeftExtension.IsPointwiseLeftKanExtension.isIso_hom
---    (pointwiseLeftKanExtensionIsPointwiseLeftKanExtension yoneda F)
---   asIso (LeftExtension.mk _ (yoneda.pointwiseLeftKanExtensionUnit F)).hom
-
--- #print ColimitAdj.yonedaAdjunction
--- noncomputable def nerveIsRightAdjointRepresentable :
---     (yoneda ⋙ lan F).homRestriction (Functor.id _) ≅ yoneda.homRestriction F.nerve := by
---   have := (yoneda ⋙ lan F).homRestriction (Functor.id _)
---   have := yoneda.homRestriction F.nerve
-
---   -- have := (yoneda (C := C)).homRestriction (Functor.id (Cᵒᵖ ⥤ Type _))
---   refine .trans ?_ (isoWhiskerLeft ((Functor.id Cᵒᵖ).prod F.nerve) (yonedaLemma C)).symm
---   refine .trans (homRestriction.leftWhiskerIso (lanIso F) (𝟭 E)) ?_
---   refine .trans ?_ (isoWhiskerLeft ((𝟭 Cᵒᵖ).prod F.nerve ⋙ _) uliftFunctorTrivial)
---   have (c e) :
---       ((𝟭 Cᵒᵖ).prod F.nerve ⋙ yoneda.homRestriction (Functor.id (Cᵒᵖ ⥤ Type _))).obj (Opposite.op c, e) =
---       ULift.{0, 0} (F.obj c ⟶ e) :=
---     by simp [Functor.nerve]
---   have (c e) :
---       ((𝟭 Cᵒᵖ).prod F.nerve ⋙ yonedaEvaluation C).obj (Opposite.op c, e) =
---       ULift.{0, 0} (F.obj c ⟶ e) :=
---     rfl
-
-
---   have := yonedaPairing C
---   have := yonedaEvaluation C
---   -- #simp [yonedaPairing] => (yonedaPairing C).obj
-
--- def nerveIsRightAdjoint : lan F ⊣ F.nerve :=
---   Adjunction.mkOfHomEquiv {
---     homEquiv := _
---   }
-#print ColimitAdj.yonedaAdjunction
-
--- variable {C E : Type*} [Category C] [Category E] (F : C ⥤ E)
--- variable {D : Type*} [Category D]
-
-#print nerveFunctor
-
--- def hoFunctor : SSet ⥤ Cat :=
---   ColimitAdj.extendAlongYoneda SimplexCategory.toCat
