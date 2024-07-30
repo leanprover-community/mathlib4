@@ -18,10 +18,10 @@ This is different from the radical of an ideal.
   its prime factors.
 - `radical_eq_of_associated`: If `a` and `b` are associates, i.e. `a * u = b` for some unit `u`,
   then `radical a = radical b`.
-- `radical_unit_hMul`: Multiplying unit does not change the radical.
+- `radical_unit_mul`: Multiplying unit does not change the radical.
 - `radical_dvd_self`: `radical a` divides `a`.
 - `radical_pow`: `radical (a ^ n) = radical a` for any `n ≥ 1`
-- `radical_prime`: Radical of a prime element is equal to its normalization
+- `radical_of_prime`: Radical of a prime element is equal to its normalization
 
 ## TODO
 
@@ -69,8 +69,11 @@ theorem radical_eq_of_associated {a b : α} (h : Associated a b) : radical a = r
 theorem radical_unit_eq_one {a : α} (h : IsUnit a) : radical a = 1 :=
   (radical_eq_of_associated (associated_one_iff_isUnit.mpr h)).trans radical_one_eq
 
-theorem radical_unit_hMul {u : αˣ} {a : α} : radical ((↑u : α) * a) = radical a :=
+theorem radical_unit_mul {u : αˣ} {a : α} : radical ((↑u : α) * a) = radical a :=
   radical_eq_of_associated (associated_unit_mul_left _ _ u.isUnit)
+
+theorem radical_mul_unit {u : αˣ} {a : α} : radical (a * (↑u : α)) = radical a :=
+  radical_eq_of_associated (associated_mul_unit_left _ _ u.isUnit)
 
 theorem primeFactors_pow (a : α) {n : ℕ} (hn : 0 < n) : primeFactors (a ^ n) = primeFactors a := by
   simp_rw [primeFactors]
@@ -90,12 +93,12 @@ theorem radical_dvd_self (a : α) : radical a ∣ a := by
     rw [primeFactors, Multiset.toFinset_val]
     apply Multiset.dedup_le
 
-theorem radical_prime {a : α} (ha : Prime a) : radical a = normalize a := by
+theorem radical_of_prime {a : α} (ha : Prime a) : radical a = normalize a := by
   rw [radical, primeFactors]
   rw [normalizedFactors_irreducible ha.irreducible]
   simp only [Multiset.toFinset_singleton, id, Finset.prod_singleton]
 
-theorem radical_prime_pow {a : α} (ha : Prime a) {n : ℕ} (hn : 1 ≤ n) :
+theorem radical_pow_of_prime {a : α} (ha : Prime a) {n : ℕ} (hn : 0 < n) :
     radical (a ^ n) = normalize a := by
   rw [radical_pow a hn]
-  exact radical_prime ha
+  exact radical_of_prime ha
