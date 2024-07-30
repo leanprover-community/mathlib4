@@ -14,6 +14,8 @@ The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
 We intend to move all the content of these files out into the main `Mathlib` directory structure.
 Contributions assisting with this are appreciated.
 
+(Yaël): The only things of interest in this file now are the unbundled algebra classes
+
 # Unbundled algebra classes
 
 These classes are part of an incomplete refactor described
@@ -68,6 +70,8 @@ Mario made the following analysis of uses in mathlib3:
 * `is_strict_total_order`: looks like the only usage is in `rbmap` again
 -/
 
+set_option linter.deprecated false
+
 universe u v
 
 -- Porting note: removed `outParam`
@@ -93,6 +97,12 @@ abbrev IsLeftId (α : Sort u) (op : α → α → α) (o : outParam α) := Std.L
 @[deprecated Std.LawfulRightIdentity (since := "2024-02-02")]
 abbrev IsRightId (α : Sort u) (op : α → α → α) (o : outParam α) := Std.LawfulRightIdentity op o
 
+-- class IsLeftNull (α : Sort u) (op : α → α → α) (o : outParam α) : Prop where
+--   left_null : ∀ a, op o a = o
+
+-- class IsRightNull (α : Sort u) (op : α → α → α) (o : outParam α) : Prop where
+--   right_null : ∀ a, op a o = o
+
 class IsLeftCancel (α : Sort u) (op : α → α → α) : Prop where
   left_cancel : ∀ a b c, op a b = op a c → b = c
 
@@ -102,6 +112,192 @@ class IsRightCancel (α : Sort u) (op : α → α → α) : Prop where
 @[deprecated Std.IdempotentOp (since := "2024-02-02")]
 abbrev IsIdempotent (α : Sort u) (op : α → α → α) := Std.IdempotentOp op
 
+-- class IsLeftDistrib (α : Sort u) (op₁ : α → α → α) (op₂ : outParam <| α → α → α) : Prop where
+--   left_distrib : ∀ a b c, op₁ a (op₂ b c) = op₂ (op₁ a b) (op₁ a c)
+
+-- class IsRightDistrib (α : Sort u) (op₁ : α → α → α) (op₂ : outParam <| α → α → α) : Prop where
+--   right_distrib : ∀ a b c, op₁ (op₂ a b) c = op₂ (op₁ a c) (op₁ b c)
+
+-- class IsLeftInv (α : Sort u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α) :
+--     Prop where
+--   left_inv : ∀ a, op (inv a) a = o
+
+-- class IsRightInv (α : Sort u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α) :
+--     Prop where
+--   right_inv : ∀ a, op a (inv a) = o
+
+-- class IsCondLeftInv (α : Sort u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α)
+--     (p : outParam <| α → Prop) : Prop where
+--   left_inv : ∀ a, p a → op (inv a) a = o
+
+-- class IsCondRightInv (α : Sort u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α)
+--     (p : outParam <| α → Prop) : Prop where
+--   right_inv : ∀ a, p a → op a (inv a) = o
+
+-- class IsDistinct (α : Sort u) (a : α) (b : α) : Prop where
+--   distinct : a ≠ b
+
+/-
+-- The following type class doesn't seem very useful, a regular simp lemma should work for this.
+class is_inv (α : Sort u) (β : Sort v) (f : α → β) (g : out β → α) : Prop :=
+(inv : ∀ a, g (f a) = a)
+
+-- The following one can also be handled using a regular simp lemma
+class is_idempotent (α : Sort u) (f : α → α) : Prop :=
+(idempotent : ∀ a, f (f a) = f a)
+-/
+
 /-- The opposite of a symmetric relation is symmetric. -/
 instance (priority := 100) isSymmOp_of_isSymm (α : Sort u) (r : α → α → Prop) [IsSymm α r] :
     IsSymmOp α Prop r where symm_op a b := propext <| Iff.intro (IsSymm.symm a b) (IsSymm.symm b a)
+
+/-- `IsTotalPreorder X r` means that the binary relation `r` on `X` is total and a preorder. -/
+@[deprecated (since := "2024-07-30")]
+class IsTotalPreorder (α : Sort u) (r : α → α → Prop) extends IsTrans α r, IsTotal α r : Prop
+
+/-- Every total pre-order is a pre-order. -/
+instance (priority := 100) isTotalPreorder_isPreorder (α : Sort u) (r : α → α → Prop)
+    [s : IsTotalPreorder α r] : IsPreorder α r where
+  trans := s.trans
+  refl a := Or.elim (@IsTotal.total _ r _ a a) id id
+
+/-- `IsLinearOrder X r` means that the binary relation `r` on `X` is a linear order, that is,
+`IsPartialOrder X r` and `IsTotal X r`. -/
+@[deprecated (since := "2024-07-30")]
+class IsLinearOrder (α : Sort u) (r : α → α → Prop) extends IsPartialOrder α r, IsTotal α r : Prop
+
+-- /-- `IsPer X r` means that the binary relation `r` on `X` is a partial equivalence relation, that
+-- is, `IsSymm X r` and `IsTrans X r`. -/
+-- class IsPer (α : Sort u) (r : α → α → Prop) extends IsSymm α r, IsTrans α r : Prop
+
+/-- `IsIncompTrans X lt` means that for `lt` a binary relation on `X`, the incomparable relation
+`fun a b => ¬ lt a b ∧ ¬ lt b a` is transitive. -/
+@[deprecated (since := "2024-07-30")]
+class IsIncompTrans (α : Sort u) (lt : α → α → Prop) : Prop where
+  incomp_trans : ∀ a b c, ¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a
+
+/-- `IsStrictWeakOrder X lt` means that the binary relation `lt` on `X` is a strict weak order,
+that is, `IsStrictOrder X lt` and `IsIncompTrans X lt`. -/
+@[deprecated (since := "2024-07-30")]
+class IsStrictWeakOrder (α : Sort u) (lt : α → α → Prop) extends IsStrictOrder α lt,
+    IsIncompTrans α lt : Prop
+
+section
+
+variable {α : Sort u} {r : α → α → Prop}
+
+local infixl:50 " ≺ " => r
+
+@[deprecated (since := "2024-07-30")]
+theorem incomp_trans [IsIncompTrans α r] {a b c : α} :
+    ¬a ≺ b ∧ ¬b ≺ a → ¬b ≺ c ∧ ¬c ≺ b → ¬a ≺ c ∧ ¬c ≺ a :=
+  IsIncompTrans.incomp_trans _ _ _
+
+section ExplicitRelationVariants
+
+variable (r)
+
+@[elab_without_expected_type, deprecated (since := "2024-07-30")]
+theorem incomp_trans_of [IsIncompTrans α r] {a b c : α} :
+    ¬a ≺ b ∧ ¬b ≺ a → ¬b ≺ c ∧ ¬c ≺ b → ¬a ≺ c ∧ ¬c ≺ a :=
+  incomp_trans
+
+end ExplicitRelationVariants
+
+end
+
+namespace StrictWeakOrder
+
+section
+
+variable {α : Sort u} {r : α → α → Prop}
+
+local infixl:50 " ≺ " => r
+
+@[deprecated (since := "2024-07-30")]
+def Equiv (a b : α) : Prop :=
+  ¬a ≺ b ∧ ¬b ≺ a
+
+local infixl:50 " ≈ " => @Equiv _ r
+
+@[deprecated (since := "2024-07-30")]
+theorem esymm {a b : α} : a ≈ b → b ≈ a := fun ⟨h₁, h₂⟩ => ⟨h₂, h₁⟩
+
+@[deprecated (since := "2024-07-30")]
+theorem not_lt_of_equiv {a b : α} : a ≈ b → ¬a ≺ b := fun h => h.1
+
+@[deprecated (since := "2024-07-30")]
+theorem not_lt_of_equiv' {a b : α} : a ≈ b → ¬b ≺ a := fun h => h.2
+
+variable [IsStrictWeakOrder α r]
+
+@[deprecated (since := "2024-07-30")]
+theorem erefl (a : α) : a ≈ a :=
+  ⟨irrefl a, irrefl a⟩
+
+@[deprecated (since := "2024-07-30")]
+theorem etrans {a b c : α} : a ≈ b → b ≈ c → a ≈ c :=
+  incomp_trans
+
+@[deprecated (since := "2024-07-30")]
+instance isEquiv : IsEquiv α (@Equiv _ r) where
+  refl := erefl
+  trans _ _ _ := etrans
+  symm _ _ := esymm
+
+end
+
+/-- The equivalence relation induced by `lt` -/
+notation:50 a " ≈[" lt "]" b:50 => @Equiv _ lt a b--Equiv (r := lt) a b
+
+end StrictWeakOrder
+
+@[deprecated (since := "2024-07-30")]
+theorem isStrictWeakOrder_of_isTotalPreorder {α : Sort u} {le : α → α → Prop} {lt : α → α → Prop}
+    [DecidableRel le] [IsTotalPreorder α le] (h : ∀ a b, lt a b ↔ ¬le b a) :
+    IsStrictWeakOrder α lt :=
+  { trans := fun a b c hab hbc =>
+      have nba : ¬le b a := Iff.mp (h _ _) hab
+      have ncb : ¬le c b := Iff.mp (h _ _) hbc
+      have hab : le a b := Or.resolve_left (total_of le b a) nba
+      have nca : ¬le c a := fun hca : le c a =>
+        have hcb : le c b := trans_of le hca hab
+        absurd hcb ncb
+      Iff.mpr (h _ _) nca
+    irrefl := fun a hlt => absurd (refl_of le a) (Iff.mp (h _ _) hlt)
+    incomp_trans := fun a b c ⟨nab, nba⟩ ⟨nbc, ncb⟩ =>
+      have hba : le b a := Decidable.of_not_not (Iff.mp (not_congr (h _ _)) nab)
+      have hab : le a b := Decidable.of_not_not (Iff.mp (not_congr (h _ _)) nba)
+      have hcb : le c b := Decidable.of_not_not (Iff.mp (not_congr (h _ _)) nbc)
+      have hbc : le b c := Decidable.of_not_not (Iff.mp (not_congr (h _ _)) ncb)
+      have hac : le a c := trans_of le hab hbc
+      have hca : le c a := trans_of le hcb hba
+      And.intro (fun n => absurd hca (Iff.mp (h _ _) n)) fun n => absurd hac (Iff.mp (h _ _) n) }
+
+@[deprecated (since := "2024-07-30")]
+theorem lt_of_lt_of_incomp {α : Sort u} {lt : α → α → Prop} [IsStrictWeakOrder α lt]
+    [DecidableRel lt] : ∀ {a b c}, lt a b → ¬lt b c ∧ ¬lt c b → lt a c :=
+  @fun a b c hab ⟨nbc, ncb⟩ =>
+  have nca : ¬lt c a := fun hca => absurd (trans_of lt hca hab) ncb
+  Decidable.by_contradiction fun nac : ¬lt a c =>
+    have : ¬lt a b ∧ ¬lt b a := incomp_trans_of lt ⟨nac, nca⟩ ⟨ncb, nbc⟩
+    absurd hab this.1
+
+@[deprecated (since := "2024-07-30")]
+theorem lt_of_incomp_of_lt {α : Sort u} {lt : α → α → Prop} [IsStrictWeakOrder α lt]
+    [DecidableRel lt] : ∀ {a b c}, ¬lt a b ∧ ¬lt b a → lt b c → lt a c :=
+  @fun a b c ⟨nab, nba⟩ hbc =>
+  have nca : ¬lt c a := fun hca => absurd (trans_of lt hbc hca) nba
+  Decidable.by_contradiction fun nac : ¬lt a c =>
+    have : ¬lt b c ∧ ¬lt c b := incomp_trans_of lt ⟨nba, nab⟩ ⟨nac, nca⟩
+    absurd hbc this.1
+
+@[deprecated (since := "2024-07-30")]
+theorem eq_of_eqv_lt {α : Sort u} {lt : α → α → Prop} [IsTrichotomous α lt] {a b} :
+    a ≈[lt]b → a = b :=
+  eq_of_incomp
+
+@[deprecated (since := "2024-07-30")]
+theorem eqv_lt_iff_eq {α : Sort u} {lt : α → α → Prop} [IsTrichotomous α lt] [IsIrrefl α lt] (a b) :
+    a ≈[lt]b ↔ a = b :=
+  incomp_iff_eq a b

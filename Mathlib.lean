@@ -2788,6 +2788,7 @@ import Mathlib.Init.Data.Quot
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Init.Data.Sigma.Lex
 import Mathlib.Init.Logic
+import Mathlib.Init.Order.Defs
 import Mathlib.Init.Quot
 import Mathlib.Init.Set
 import Mathlib.Lean.CoreM
