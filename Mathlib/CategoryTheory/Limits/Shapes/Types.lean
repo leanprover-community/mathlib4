@@ -624,9 +624,12 @@ end Types
 section Pullback
 
 variable {X Y S : Type v} {f : X ⟶ S} {g : Y ⟶ S} {c : PullbackCone f g}
-  (hc : IsLimit c)
 
-namespace PullbackCone.IsLimit
+namespace PullbackCone
+
+namespace IsLimit
+
+variable (hc : IsLimit c)
 
 /-- A limit pullback cone in the category of types identifies to the explicit pullback. -/
 noncomputable def equivPullbackObj : c.pt ≃ Types.PullbackObj f g :=
@@ -657,7 +660,27 @@ lemma equivPullbackObj_symm_apply_snd (x : Types.PullbackObj f g) :
 lemma type_ext {x y : c.pt} (h₁ : c.fst x = c.fst y) (h₂ : c.snd x = c.snd y) : x = y :=
   (equivPullbackObj hc).injective (by ext <;> assumption)
 
-end PullbackCone.IsLimit
+end IsLimit
+
+variable (c)
+
+/-- Given `c : PullbackCone f g` in the category of types, this is
+the canonical map `c.pt → Types.PullbackObj f g`. -/
+@[simps coe_fst coe_snd]
+def toPullbackObj (x : c.pt) : Types.PullbackObj f g :=
+  ⟨⟨c.fst x, c.snd x⟩, congr_fun c.condition x⟩
+
+/-- A pullback cone `c` in the category of types is limit iff the
+map `c.toPullbackObj : c.pt → Types.PullbackObj f g` is a bijection. -/
+noncomputable def isLimitEquivBijective :
+    IsLimit c ≃ Function.Bijective c.toPullbackObj where
+  toFun h := (IsLimit.equivPullbackObj h).bijective
+  invFun h := IsLimit.ofIsoLimit (Types.pullbackLimitCone f g).isLimit
+    (Iso.symm (PullbackCone.ext (Equiv.ofBijective _ h).toIso))
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := rfl
+
+end PullbackCone
 
 end Pullback
 

@@ -29,10 +29,6 @@ morphism between two vertical maps (`arrowArrowEquivalence`)
 or a vertical morphism betwen two horizontal
 maps (`arrowArrowEquivalence'`).
 
-## TODO
-* define `Functor.mapSquare`
-* construct the equivalence `(Square C)ᵒᵖ ≌ Square C`
-
 -/
 
 universe v v' u u'
@@ -264,6 +260,60 @@ def evaluation₃ : Square C ⥤ C where
 def evaluation₄ : Square C ⥤ C where
   obj sq := sq.X₄
   map φ := φ.τ₄
+
+/-- The map `Square C → Square Cᵒᵖ` which switches `X₁` and `X₃`, but
+does not move `X₂` and `X₃`. -/
+@[simps]
+protected def op (sq : Square C) : Square Cᵒᵖ where
+  f₁₂ := sq.f₂₄.op
+  f₁₃ := sq.f₃₄.op
+  f₂₄ := sq.f₁₂.op
+  f₃₄ := sq.f₁₃.op
+  fac := Quiver.Hom.unop_inj sq.fac
+
+/-- The map `Square Cᵒᵖ → Square C` which switches `X₁` and `X₃`, but
+does not move `X₂` and `X₃`. -/
+@[simps]
+protected def unop (sq : Square Cᵒᵖ) : Square C where
+  f₁₂ := sq.f₂₄.unop
+  f₁₃ := sq.f₃₄.unop
+  f₂₄ := sq.f₁₂.unop
+  f₃₄ := sq.f₁₃.unop
+  fac := Quiver.Hom.op_inj sq.fac
+
+/-- The functor `(Square C)ᵒᵖ ⥤ Square Cᵒᵖ`. -/
+@[simps]
+def opFunctor : (Square C)ᵒᵖ ⥤ Square Cᵒᵖ where
+  obj sq := sq.unop.op
+  map φ :=
+    { τ₁ := φ.unop.τ₄.op
+      τ₂ := φ.unop.τ₂.op
+      τ₃ := φ.unop.τ₃.op
+      τ₄ := φ.unop.τ₁.op
+      comm₁₂ := Quiver.Hom.unop_inj (by simp)
+      comm₁₃ := Quiver.Hom.unop_inj (by simp)
+      comm₂₄ := Quiver.Hom.unop_inj (by simp)
+      comm₃₄ := Quiver.Hom.unop_inj (by simp) }
+
+/-- The functor `(Square Cᵒᵖ)ᵒᵖ ⥤ Square Cᵒᵖ`. -/
+def unopFunctor : (Square Cᵒᵖ)ᵒᵖ ⥤ Square C where
+  obj sq := sq.unop.unop
+  map φ :=
+    { τ₁ := φ.unop.τ₄.unop
+      τ₂ := φ.unop.τ₂.unop
+      τ₃ := φ.unop.τ₃.unop
+      τ₄ := φ.unop.τ₁.unop
+      comm₁₂ := Quiver.Hom.op_inj (by simp)
+      comm₁₃ := Quiver.Hom.op_inj (by simp)
+      comm₂₄ := Quiver.Hom.op_inj (by simp)
+      comm₃₄ := Quiver.Hom.op_inj (by simp) }
+
+/-- The equivalence `(Square C)ᵒᵖ ≌ Square Cᵒᵖ`. -/
+def opEquivalence : (Square C)ᵒᵖ ≌ Square Cᵒᵖ where
+  functor := opFunctor
+  inverse := unopFunctor.rightOp
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 /-- The image of a commutative square by a functor. -/
 @[simps]
