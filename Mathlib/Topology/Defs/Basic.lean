@@ -119,7 +119,7 @@ def frontier (s : Set X) : Set X :=
 /--
 The coborder is defined as the complement of `closure s \ s`,
 or the union of `s` and the complement of `∂(s)`.
-This is the largest set such that `s` is closed in, and `s` is locally closed if and only if
+This is the largest set in which `s` is closed, and `s` is locally closed if and only if
 `coborder s` is open.
 
 This is unnamed in the literature, and this name is due to the fact that `coborder s = (border sᶜ)ᶜ`
