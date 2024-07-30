@@ -355,7 +355,7 @@ end FoldIdxM
 section MapIdxM
 
 -- Porting note: `[Applicative m]` replaced by `[Monad m] [LawfulMonad m]`
-variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
+variable {m : Type u → Type v} [Monad m]
 
 /-- Specification of `mapIdxMAux`. -/
 def mapIdxMAuxSpec {β} (f : ℕ → α → m β) (start : ℕ) (as : List α) : m (List β) :=
@@ -367,7 +367,8 @@ theorem mapIdxMAuxSpec_cons {β} (f : ℕ → α → m β) (start : ℕ) (a : α
     mapIdxMAuxSpec f start (a :: as) = cons <$> f start a <*> mapIdxMAuxSpec f (start + 1) as :=
   rfl
 
-theorem mapIdxMGo_eq_mapIdxMAuxSpec {β} (f : ℕ → α → m β) (arr : Array β) (as : List α) :
+theorem mapIdxMGo_eq_mapIdxMAuxSpec
+    [LawfulMonad m] {β} (f : ℕ → α → m β) (arr : Array β) (as : List α) :
     mapIdxM.go f as arr = (arr.toList ++ ·) <$> mapIdxMAuxSpec f arr.size as := by
   generalize e : as.length = len
   revert as arr
@@ -389,7 +390,7 @@ theorem mapIdxMGo_eq_mapIdxMAuxSpec {β} (f : ℕ → α → m β) (arr : Array 
       simp only [Array.toList_eq, Array.push_data, append_assoc, singleton_append, Array.size_push,
         map_eq_pure_bind]
 
-theorem mapIdxM_eq_mmap_enum {β} (f : ℕ → α → m β) (as : List α) :
+theorem mapIdxM_eq_mmap_enum [LawfulMonad m] {β} (f : ℕ → α → m β) (as : List α) :
     as.mapIdxM f = List.traverse (uncurry f) (enum as) := by
   simp only [mapIdxM, mapIdxMGo_eq_mapIdxMAuxSpec, Array.toList_eq, Array.data_toArray,
     nil_append, mapIdxMAuxSpec, Array.size_toArray, length_nil, id_map', enum]

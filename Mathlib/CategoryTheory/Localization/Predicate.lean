@@ -191,7 +191,7 @@ def compEquivalenceFromModelInverseIso : L ⋙ (equivalenceFromModel L W).invers
     _ ≅ W.Q ⋙ 𝟭 _ := isoWhiskerLeft _ (equivalenceFromModel L W).unitIso.symm
     _ ≅ W.Q := Functor.rightUnitor _
 
-theorem essSurj : L.EssSurj :=
+theorem essSurj (W) [L.IsLocalization W] : L.EssSurj :=
   ⟨fun X =>
     ⟨(Construction.objEquiv W).invFun ((equivalenceFromModel L W).inverse.obj X),
       Nonempty.intro
