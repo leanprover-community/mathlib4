@@ -456,7 +456,7 @@ lemma coe_comp {X Y Z : CommRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X 
 
 @[simp]
 theorem comp_apply {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) (x : R) :
-  (f ≫ g) x = g (f x) := rfl
+    (f ≫ g) x = g (f x) := rfl
 
 @[simp] theorem forget_obj (R : CommRingCat) : (forget _).obj R = R := rfl
 
