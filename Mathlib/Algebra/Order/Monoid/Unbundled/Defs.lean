@@ -172,23 +172,14 @@ instance (priority := 100) Group.covconv_swap [Group N] [CovariantClass N N (swa
 
 section Trans
 
-#adaptation_note
-/--
-Please don't fix the following problems, they've been reported at
-https://github.com/leanprover/lean4/pull/4814#issuecomment-2254748514
-and should be resolved upstream.
--/
-
 variable [IsTrans N r] (m n : M) {a b c d : N}
 
 --  Lemmas with 3 elements.
 theorem act_rel_of_rel_of_act_rel (ab : r a b) (rl : r (μ m b) c) : r (μ m a) c :=
-  sorry
-  -- _root_.trans (act_rel_act_of_rel m ab) rl
+  _root_.trans (act_rel_act_of_rel m ab) rl
 
 theorem rel_act_of_rel_of_rel_act (ab : r a b) (rr : r c (μ m a)) : r c (μ m b) :=
-  sorry
-  -- _root_.trans rr (act_rel_act_of_rel _ ab)
+  _root_.trans rr (act_rel_act_of_rel _ ab)
 
 end Trans
 
@@ -201,8 +192,7 @@ variable {M N μ r} {mu : N → N → N} [IsTrans N r] [i : CovariantClass N N m
   [i' : CovariantClass N N (swap mu) r] {a b c d : N}
 
 theorem act_rel_act_of_rel_of_rel (ab : r a b) (cd : r c d) : r (mu a c) (mu b d) :=
-  sorry
-  -- _root_.trans (@act_rel_act_of_rel _ _ (swap mu) r _ c _ _ ab) (act_rel_act_of_rel b cd)
+  _root_.trans (@act_rel_act_of_rel _ _ (swap mu) r _ c _ _ ab) (act_rel_act_of_rel b cd)
 
 end MEqN
 
@@ -220,13 +210,11 @@ variable [IsTrans N r] (m n : M) {a b c d : N}
 --  Lemmas with 3 elements.
 theorem act_rel_of_act_rel_of_rel_act_rel (ab : r (μ m a) b) (rl : r (μ m b) (μ m c)) :
     r (μ m a) c :=
-  sorry
-  -- _root_.trans ab (rel_of_act_rel_act m rl)
+  _root_.trans ab (rel_of_act_rel_act m rl)
 
 theorem rel_act_of_act_rel_act_of_rel_act (ab : r (μ m a) (μ m b)) (rr : r b (μ m c)) :
     r a (μ m c) :=
-  sorry
-  -- _root_.trans (rel_of_act_rel_act m ab) rr
+  _root_.trans (rel_of_act_rel_act m ab) rr
 
 end Trans
 

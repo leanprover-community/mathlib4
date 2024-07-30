@@ -40,10 +40,6 @@ theorem count_cons' (a b : α) (l : List α) :
   simp only [count, beq_iff_eq, countP_cons, Nat.add_right_inj]
   simp only [eq_comm]
 
-@[simp]
-lemma count_attach (a : {x // x ∈ l}) : l.attach.count a = l.count ↑a :=
-  Eq.trans (countP_congr fun _ _ => by simp [Subtype.ext_iff]) <| countP_attach _ _
-
 end Count
 
 end List
