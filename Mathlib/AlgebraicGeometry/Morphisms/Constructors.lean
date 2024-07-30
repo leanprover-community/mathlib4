@@ -230,11 +230,11 @@ lemma topologically_isLocalAtTarget
     IsLocalAtTarget (topologically P) := by
   apply IsLocalAtTarget.mk'
   · intro X Y f U hf
-    simp_rw [topologically, morphismRestrict_val_base]
+    simp_rw [topologically, morphismRestrict_base]
     exact hP₂ f.base U.carrier hf
   · intro X Y f ι U hU hf
     apply hP₃ f.base U hU f.base.continuous fun i ↦ ?_
-    rw [← morphismRestrict_val_base]
+    rw [← morphismRestrict_base]
     exact hf i
 
 end Topologically

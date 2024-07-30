@@ -372,7 +372,7 @@ theorem morphismRestrict_base_coe {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens)
   congr_arg (fun f => (Scheme.Hom.val f).base x)
     (morphismRestrict_ι f U)
 
-theorem morphismRestrict_val_base {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
+theorem morphismRestrict_base {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
     ⇑(f ∣_ U).base = U.1.restrictPreimage f.base :=
   funext fun x => Subtype.ext (morphismRestrict_base_coe f U x)
 
@@ -464,7 +464,7 @@ def morphismRestrictRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V :
     (Scheme.restrictRestrict _ _ _) ?_
   · ext x
     simp only [IsOpenMap.functor_obj_coe, Opens.coe_inclusion,
-      Opens.map_coe, Set.mem_image, Set.mem_preimage, SetLike.mem_coe, morphismRestrict_val_base]
+      Opens.map_coe, Set.mem_image, Set.mem_preimage, SetLike.mem_coe, morphismRestrict_base]
     constructor
     · rintro ⟨⟨a, h₁⟩, h₂, rfl⟩
       exact ⟨_, h₂, rfl⟩

@@ -71,7 +71,7 @@ instance universallyClosed_isLocalAtTarget : IsLocalAtTarget @UniversallyClosed 
   rw [universallyClosed_eq]
   apply universally_isLocalAtTarget
   intro X Y f ι U hU H
-  simp_rw [topologically, morphismRestrict_val_base] at H
+  simp_rw [topologically, morphismRestrict_base] at H
   exact (isClosedMap_iff_isClosedMap_of_iSup_eq_top hU).mpr H
 
 end AlgebraicGeometry

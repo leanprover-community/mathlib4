@@ -951,7 +951,7 @@ instance : SheafedSpace.IsOpenImmersion (LocallyRingedSpace.forgetToSheafedSpace
 /-- An explicit pullback cone over `cospan f g` if `f` is an open immersion. -/
 def pullbackConeOfLeft : PullbackCone f g := by
   refine PullbackCone.mk ?_
-      (Y.ofRestrict (TopCat.snd_openEmbedding_of_left_openEmbedding H.base_open g.1.base)) ?_
+      (Y.ofRestrict (TopCat.snd_openEmbedding_of_left_openEmbedding H.base_open g.base)) ?_
   · use PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftFst f.1 g.1
     intro x
     have := PresheafedSpace.stalkMap.congr_hom _ _
@@ -1080,7 +1080,7 @@ instance forgetToPresheafedSpaceReflectsPullbackOfRight :
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) :=
   reflectsLimitOfReflectsIsomorphisms _ _
 
-theorem pullback_snd_isIso_of_range_subset (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
+theorem pullback_snd_isIso_of_range_subset (H' : Set.range g.base ⊆ Set.range f.base) :
     IsIso (pullback.snd f g) := by
   apply (config := {allowSynthFailures := true}) Functor.ReflectsIsomorphisms.reflects
     (F := LocallyRingedSpace.forgetToSheafedSpace)
@@ -1097,24 +1097,24 @@ For an open immersion `f : X ⟶ Z`, given any morphism of schemes `g : Y ⟶ Z`
 image is contained in the image of `f`, we can lift this morphism to a unique `Y ⟶ X` that
 commutes with these maps.
 -/
-def lift (H' : Set.range g.1.base ⊆ Set.range f.1.base) : Y ⟶ X :=
+def lift (H' : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
   -- Porting note (#10754): added instance manually
   have := pullback_snd_isIso_of_range_subset f g H'
   inv (pullback.snd f g) ≫ pullback.fst _ _
 
 @[simp, reassoc]
-theorem lift_fac (H' : Set.range g.1.base ⊆ Set.range f.1.base) : lift f g H' ≫ f = g := by
+theorem lift_fac (H' : Set.range g.base ⊆ Set.range f.base) : lift f g H' ≫ f = g := by
   erw [Category.assoc]; rw [IsIso.inv_comp_eq]; exact pullback.condition
 
-theorem lift_uniq (H' : Set.range g.1.base ⊆ Set.range f.1.base) (l : Y ⟶ X) (hl : l ≫ f = g) :
+theorem lift_uniq (H' : Set.range g.base ⊆ Set.range f.base) (l : Y ⟶ X) (hl : l ≫ f = g) :
     l = lift f g H' := by rw [← cancel_mono f, hl, lift_fac]
 
-theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
-    Set.range (lift f g H').1.base = f.1.base ⁻¹' Set.range g.1.base := by
+theorem lift_range (H' : Set.range g.base ⊆ Set.range f.base) :
+    Set.range (lift f g H').base = f.base ⁻¹' Set.range g.base := by
   -- Porting note (#10754): added instance manually
   have := pullback_snd_isIso_of_range_subset f g H'
   dsimp only [lift]
-  have : _ = (pullback.fst f g).val.base :=
+  have : _ = (pullback.fst f g).base :=
     PreservesPullback.iso_hom_fst
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _) f g
   erw [SheafedSpace.comp_base, ← this, ← Category.assoc, coe_comp]
@@ -1127,7 +1127,7 @@ theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
     · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
     · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
   · erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
-    rw [show (inv (pullback.snd f g)).val.base = _ from
+    rw [show (inv (pullback.snd f g)).base = _ from
         (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _).map_inv _]
     infer_instance
 
@@ -1153,7 +1153,7 @@ whose forgetful functor reflects isomorphisms, preserves limits and filtered col
 Then a morphism `X ⟶ Y` that is a topological open embedding
 is an open immersion iff every stalk map is an iso.
 -/
-theorem of_stalk_iso {X Y : LocallyRingedSpace} (f : X ⟶ Y) (hf : OpenEmbedding f.1.base)
+theorem of_stalk_iso {X Y : LocallyRingedSpace} (f : X ⟶ Y) (hf : OpenEmbedding f.base)
     [stalk_iso : ∀ x : X.1, IsIso (f.stalkMap x)] :
     LocallyRingedSpace.IsOpenImmersion f :=
   SheafedSpace.IsOpenImmersion.of_stalk_iso hf (H := stalk_iso)
@@ -1204,20 +1204,20 @@ attribute [elementwise] invApp_app
 
 @[reassoc (attr := simp)]
 theorem app_invApp (U : Opens Y) :
-    f.1.c.app (op U) ≫ H.invApp ((Opens.map f.1.base).obj U) =
+    f.1.c.app (op U) ≫ H.invApp ((Opens.map f.base).obj U) =
       Y.presheaf.map
-        ((homOfLE (Set.image_preimage_subset f.1.base U.1)).op :
-          op U ⟶ op (opensFunctor f |>.obj ((Opens.map f.1.base).obj U))) :=
+        ((homOfLE (Set.image_preimage_subset f.base U.1)).op :
+          op U ⟶ op (opensFunctor f |>.obj ((Opens.map f.base).obj U))) :=
   PresheafedSpace.IsOpenImmersion.app_invApp f.1 U
 
 /-- A variant of `app_inv_app` that gives an `eqToHom` instead of `homOfLe`. -/
 @[reassoc]
-theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.1.base) :
-    f.1.c.app (op U) ≫ H.invApp ((Opens.map f.1.base).obj U) =
+theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
+    f.1.c.app (op U) ≫ H.invApp ((Opens.map f.base).obj U) =
       Y.presheaf.map
         (eqToHom <|
-            le_antisymm (Set.image_preimage_subset f.1.base U.1) <|
-              (Set.image_preimage_eq_inter_range (f := f.1.base) (t := U.1)).symm ▸
+            le_antisymm (Set.image_preimage_subset f.base U.1) <|
+              (Set.image_preimage_eq_inter_range (f := f.base) (t := U.1)).symm ▸
                 Set.subset_inter_iff.mpr ⟨fun _ h => h, hU⟩).op :=
   PresheafedSpace.IsOpenImmersion.app_invApp f.1 U
 
@@ -1234,7 +1234,7 @@ theorem ofRestrict_invApp (X : LocallyRingedSpace) {Y : TopCat}
 instance stalk_iso (x : X) : IsIso (f.stalkMap x) :=
   PresheafedSpace.IsOpenImmersion.stalk_iso f.1 x
 
-theorem to_iso [h' : Epi f.1.base] : IsIso f := by
+theorem to_iso [h' : Epi f.base] : IsIso f := by
   suffices IsIso (LocallyRingedSpace.forgetToSheafedSpace.map f) from
     isIso_of_reflects_iso _ LocallyRingedSpace.forgetToSheafedSpace
   exact SheafedSpace.IsOpenImmersion.to_iso f.1
