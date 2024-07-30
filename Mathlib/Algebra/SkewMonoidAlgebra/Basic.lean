@@ -51,14 +51,18 @@ private irreducible_def add :
     SkewMonoidAlgebra k G → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
 
+private irreducible_def smul {S : Type*} [SMulZeroClass S k] :
+    S → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
+  | s, ⟨b⟩ => ⟨s • b⟩
+
 instance zero : Zero (SkewMonoidAlgebra k G) := ⟨⟨0⟩⟩
 
 instance add' : Add (SkewMonoidAlgebra k G) := ⟨add⟩
 
 instance smulZeroClass {S : Type*} [SMulZeroClass S k] :
     SMulZeroClass S (SkewMonoidAlgebra k G) where
-  smul r p := ⟨r • p.toFinsupp⟩
-  smul_zero a := congr_arg ofFinsupp (smul_zero a)
+  smul s f := smul s f
+  smul_zero a := by simp only [smul_def]; exact congr_arg ofFinsupp (smul_zero a)
 
 @[simp]
 theorem ofFinsupp_zero : (⟨0⟩ : SkewMonoidAlgebra k G) = 0 := rfl
@@ -70,7 +74,7 @@ theorem ofFinsupp_add {a b} : (⟨a + b⟩ : SkewMonoidAlgebra k G) = ⟨a⟩ + 
 @[simp]
 theorem ofFinsupp_smul {S : Type*} [SMulZeroClass S k] (a : S) (b : G →₀ k) :
     (⟨a • b⟩ : SkewMonoidAlgebra k G) = (a • ⟨b⟩ : SkewMonoidAlgebra k G) :=
-  rfl
+  show _ = smul _ _ by rw [smul_def]
 
 @[simp]
 theorem toFinsupp_zero : (0 : SkewMonoidAlgebra k G).toFinsupp = 0 := rfl
@@ -85,11 +89,15 @@ theorem toFinsupp_add (a b : SkewMonoidAlgebra k G) :
 @[simp]
 theorem toFinsupp_smul {S : Type*} [SMulZeroClass S k] (a : S) (b : SkewMonoidAlgebra k G) :
     (a • b).toFinsupp = a • b.toFinsupp :=
-  rfl
+  by
+  cases b
+  rw [← ofFinsupp_smul]
 
 theorem _root_.IsSMulRegular.skewMonoidAlgebra {S : Type*} [Monoid S] [DistribMulAction S k] {a : S}
     (ha : IsSMulRegular k a) : IsSMulRegular (SkewMonoidAlgebra k G) a
-  | ⟨_x⟩, ⟨_y⟩, h => congr_arg _ <| ha.finsupp (ofFinsupp.inj h)
+  | ⟨_x⟩, ⟨_y⟩, h => by
+    simp only [← ofFinsupp_smul] at h
+    exact congr_arg _ <| ha.finsupp (ofFinsupp.inj (h))
 
 theorem toFinsupp_injective :
     Function.Injective (toFinsupp : SkewMonoidAlgebra k G → Finsupp _ _) :=
@@ -585,12 +593,13 @@ theorem liftNC_mul {g_hom : Type*} [FunLike g_hom G R]
 
 theorem sum_smul_index {N : Type*} [AddCommMonoid N]
     {g : SkewMonoidAlgebra k G} {b : k} {h : G → k → N} (h0 : ∀ i, h i 0 = 0) :
-    (b • g).sum h = g.sum fun i a => h i (b * a) := Finsupp.sum_mapRange_index h0
+    (b • g).sum h = g.sum fun i a => h i (b * a) := by
+  simp only [toFinsupp_sum, toFinsupp_smul, Finsupp.sum_smul_index h0]
 
 theorem sum_smul_index' {N : Type*} [DistribSMul R k] [AddCommMonoid N]
     {g : SkewMonoidAlgebra k G} {b : R} {h : G → k → N} (h0 : ∀ i, h i 0 = 0) :
-    (b • g).sum h = g.sum fun i c => h i (b • c) :=
-  Finsupp.sum_mapRange_index h0
+    (b • g).sum h = g.sum fun i c => h i (b • c) := by
+  simp only [toFinsupp_sum, toFinsupp_smul, Finsupp.sum_smul_index' h0]
 
 end DistribSMul
 
@@ -716,8 +725,10 @@ instance module {S} [Semiring S] [AddCommMonoid k] [Module S k] :
 
 instance faithfulSMul {S} [AddCommMonoid k] [SMulZeroClass S k] [FaithfulSMul S k] [Nonempty G] :
     FaithfulSMul S (SkewMonoidAlgebra k G) where
-  eq_of_smul_eq_smul {_s₁ _s₂} h :=
-    eq_of_smul_eq_smul fun a : G →₀ k => congr_arg toFinsupp (h ⟨a⟩)
+  eq_of_smul_eq_smul {_s₁ _s₂} h := by
+    apply eq_of_smul_eq_smul fun a : G →₀ k => congr_arg toFinsupp _
+    intro a
+    simp_rw [ofFinsupp_smul, h]
 
 instance isScalarTower {S₁ S₂} [AddCommMonoid k] [SMul S₁ S₂] [SMulZeroClass S₁ k]
     [SMulZeroClass S₂ k] [IsScalarTower S₁ S₂ k] : IsScalarTower S₁ S₂ (SkewMonoidAlgebra k G) :=
