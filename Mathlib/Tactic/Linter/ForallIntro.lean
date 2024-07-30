@@ -50,9 +50,9 @@ register_option linter.forallIntro : Bool := {
 /-- the `SyntaxNodeKind`s of `intro` and `intros`. -/
 abbrev introTacs := #[``Lean.Parser.Tactic.intros, ``Lean.Parser.Tactic.intro]
 
-/-- `dropNIntroVar n stx` takes as input a natural number `n` and the `Syntax` `stx`.
+/-- `dropNIntroVars n stx` takes as input a natural number `n` and the `Syntax` `stx`.
 If `stx` is not the tactic `intros ...` or `intro ...`, then it returns `(none, #[])`.
-Otherwise, `dropNIntroVar` "removes the left-most `n` variable from `stx`", with the following
+Otherwise, `dropNIntroVars` "removes the left-most `n` variable from `stx`", with the following
 replacements:
 · `0, anything`                  ↦ `(some anything,       #[])`;
 · `n, intros`                    ↦ `(some intros,         #[])`;
@@ -64,7 +64,7 @@ replacements:
 Note that only `intros` with no variable stays `intros`.
 All remaining uses of `intros` convert to `none` or some use of `intro`.
 -/
-def dropNIntroVar : Nat → Syntax → Option Syntax × Array Syntax
+def dropNIntroVars : Nat → Syntax → Option Syntax × Array Syntax
   | n, stx@(.node s1 k #[intr, .node s2 `null vars]) =>
     if k == ``Lean.Parser.Tactic.intros && vars.isEmpty then (some stx, #[]) else
     if k == ``Lean.Parser.Tactic.intro  && vars.isEmpty && n == 1 then (none, #[.missing]) else
@@ -83,16 +83,80 @@ just one variable.
 The second `Array` component is an `Array` with at most one element and the function returns
 either the unique entry there or `.missing`. -/
 def dropFirstIntroVar (stx : Syntax) : Option Syntax × Syntax :=
-  match dropNIntroVar 1 stx with
+  match dropNIntroVars 1 stx with
     | (intr, #[var]) => (intr, var)
     | (intr, _) => (intr, .missing)
 
 def splitBinders {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] :
     Syntax → m (Array Syntax)
   | `(bracketedBinder| ($as* : $b)) => as.mapM fun a => `(bracketedBinder| ($a : $b))
+  | `(bracketedBinder| ($as*))      => as.mapM fun a => `(bracketedBinder| ($a))
   | `(bracketedBinder| {$as* : $b}) => as.mapM fun a => `(bracketedBinder| {$a : $b})
+  | `(bracketedBinder| {$as*})      => as.mapM fun a => `(bracketedBinder| {$a})
   | `(bracketedBinder| ⦃$as* : $b⦄) => as.mapM fun a => `(bracketedBinder| ⦃$a : $b⦄)
+  | `(bracketedBinder| ⦃$as*⦄)      => as.mapM fun a => `(bracketedBinder| ⦃$a⦄)
   | _ => return #[]
+
+/-
+|-node Lean.Parser.Term.implicitBinder, none
+|   |-atom original: ⟨⟩⟨⟩-- '{'
+|   |-node null, none
+|   |   |-ident original: ⟨⟩⟨ ⟩-- (a,a)
+|   |-node null, none
+|   |   |-atom original: ⟨⟩⟨ ⟩-- ':'
+|   |   |-node Lean.Parser.Term.hole, none
+|   |   |   |-atom original: ⟨⟩⟨⟩-- '_'
+|   |-atom original: ⟨⟩⟨⏎⏎⟩-- '}'
+-/
+
+abbrev declBinderNames :=
+  [ ``Lean.Parser.Term.implicitBinder, ``Lean.Parser.Term.explicitBinder,
+    ``Lean.Parser.Term.instBinder,     ``Lean.Parser.Term.strictImplicitBinder]
+
+def getNumVars? (stx : Syntax) : Option Nat :=
+  if declBinderNames.contains stx.getKind then
+    -- argument `1` is the node containing the variables as arguments
+    some stx[1].getNumArgs
+  else none
+
+def extractVars (stx : Syntax) (f : Array Syntax → Array Syntax) : Syntax :=
+  if declBinderNames.contains stx.getKind then
+    -- argument `1` is the node containing the variables as arguments
+    stx.modifyArg 1 (·.modifyArgs f)
+  else .missing
+
+run_cmd
+  if let [a, b, c, d, N] := [`a, `b, `c, `d, `Nat].map mkIdent then
+    let stx ← `(bracketedBinder| {$a $b $c $d : $N})
+    let n := 4
+    let A := extractVars stx (·.extract 0 n)
+    let B := extractVars stx (·.extract n ((getNumVars? stx).getD 0))
+    logInfo m!"{← `(command| variable $(⟨A⟩) $(⟨B⟩))}"
+
+def splitVars (stx : Syntax) (n : Nat) : Array Syntax :=
+  let A := extractVars stx (·.extract 0 n)
+  let B := extractVars stx (·.extract n ((getNumVars? stx).getD 0))
+  match getNumVars? A, getNumVars? B with
+    | some (_ + 1), some (_ + 1) => #[A, B]
+    | some (_ + 1), _ => #[A]
+    | _ , some (_ + 1) => #[B]
+    | _, _ => #[]
+
+def splVars (stx : Syntax) (n : Nat) : TSyntaxArray `Lean.Parser.Term.bracketedBinder :=
+  (splitVars stx n).map (⟨·⟩)
+-- TSyntaxArray `Lean.Parser.Term.bracketedBinder
+run_cmd
+  if let [a, b, c, d, N] := [`a, `b, `c, `d, `Nat].map mkIdent then
+    let stx ← `(bracketedBinder| {$a $b $c $d : $N})
+    let n := 4
+    for i in [:n+1] do
+      let vars := splitVars stx i
+      let vars := splVars stx i
+    --logInfo m!"{← vars.mapM fun s => `(command| variable $(⟨s⟩))}"
+      logInfo m!"{i}: {← `(command| variable $vars*) }"
+    let A := extractVars stx (·.extract 0 n)
+    let B := extractVars stx (·.extract n ((getNumVars? stx).getD 0))
+    logInfo m!"{← `(command| variable $(⟨A⟩) $(⟨B⟩))}"
 
 /-- if the input syntax is not `by intro(s); ...`, then it returns `none`.
 Otherwise, it removes one identifier introduced by `intro(s)` and returns the resulting syntax. -/
@@ -133,6 +197,29 @@ def recombineBinders {ks1 ks2 : SyntaxNodeKinds} (ts1 : TSyntaxArray ks1) (ts2 :
     (ts1.push ⟨first.raw⟩, ts2.erase first, first.raw)
   else
     none
+
+partial
+def splitNBinders : Nat → Syntax → CommandElabM Syntax
+  | n, `(tactic| have $id:haveId $bi1* : ∀ $bi2*, $body := $t) => do
+    --let spreadBi2 := ← bi2.mapM fun b => do
+    --  let spb ← splitBinders b; if spb.isEmpty then return #[b] else return spb
+    dbg_trace bi2.getD 0 default
+    if bi2.size ≤ n then
+      let bi2' := bi2.map (⟨·⟩)
+      splitNBinders (n - bi2.size) (← `(tactic| have $id:haveId $bi1* $bi2'* : $body := $t))
+    else
+      let first := (bi2.extract 0 n).map (⟨·⟩)
+      let last := bi2.extract n bi2.size
+      `(tactic| have $id:haveId $bi1* $first* : ∀ $last*, $body := $t)
+--      default
+    --match recombineBinders bi1 (spreadBi2.flatten.map (⟨·⟩)) with
+  | _, _ => return default
+
+run_cmd
+  if let [a, b, c, d, N] := [`a, `b, `c, `d, `Nat].map mkIdent then
+    let stx ← `(tactic| have : ∀ {$a $d : $N} {$b} {$c}, $a + $b = $c := sorry)
+    logInfo (← splitNBinders 1 stx)
+
 
 /--
 `allStxCore cmd stx` takes two `Syntax` inputs `cmd` and `stx`.
@@ -210,8 +297,8 @@ def forallIntroLinter : Linter where run := withSetOptionIn fun cmd ↦ do
   for haveStx in haves do
 --  if let some haveStx := cmd.raw.find? (·.isOfKind ``Lean.Parser.Tactic.tacticHave_) then
     --dbg_trace "found have"
-    let (newHave, _count) ← allStx cmd haveStx 0
-    --dbg_trace "extracted {count} binders"
+    let (newHave, count) ← allStx cmd haveStx 0
+    dbg_trace "extracted {count} binders"
     if haveStx != newHave then
       Linter.logLint linter.forallIntro haveStx m!"replace{indentD haveStx}\nwith{indentD newHave}"
     --logInfo newHave

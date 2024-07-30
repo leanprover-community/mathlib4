@@ -202,3 +202,29 @@ example : True := by
     intro a b c d e --f --g h i
     sorry
   trivial
+
+/--
+warning: replace
+  have : ∀ (a b), (a : Nat) = b → a = b := by
+    intro a b h
+    exact h
+with
+  have (a) (b) : (a : Nat) = b → a = b := by
+    intro h
+    exact h
+note: this linter can be disabled with `set_option linter.forallIntro false`
+-/
+#guard_msgs in
+set_option linter.forallIntro true in
+example : True := by
+  have :  ∀ (a b), (a : Nat) = b → a = b := by
+    intro a b h
+    exact h
+  trivial
+
+set_option linter.forallIntro true in
+example : True := by
+  have :  ∀ {a b c d e}, ∀ {f g h i : Nat}, a + b + c + d + e = f + g + h + i := by
+    intro a b c d e f g --h i
+    sorry
+  trivial
