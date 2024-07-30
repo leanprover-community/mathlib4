@@ -55,7 +55,6 @@ and `pf` is a proof that `e = e'`.
 
 open Lean Meta Elab
 open CategoryTheory
-open Mathlib.Tactic.Coherence
 
 namespace Mathlib.Tactic.Monoidal
 
