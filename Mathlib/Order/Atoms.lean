@@ -1001,8 +1001,8 @@ theorem isAtomic_of_isCoatomic_of_complementedLattice_of_isModular [IsCoatomic �
   isCoatomic_dual_iff_isAtomic.1 isCoatomic_of_isAtomic_of_complementedLattice_of_isModular
 
 theorem isAtomic_iff_isCoatomic : IsAtomic α ↔ IsCoatomic α :=
-  ⟨fun h => @isCoatomic_of_isAtomic_of_complementedLattice_of_isModular _ _ _ _ _ h, fun h =>
-    @isAtomic_of_isCoatomic_of_complementedLattice_of_isModular _ _ _ _ _ h⟩
+  ⟨fun _ => isCoatomic_of_isAtomic_of_complementedLattice_of_isModular,
+   fun _ => isAtomic_of_isCoatomic_of_complementedLattice_of_isModular⟩
 
 /-- A complemented modular atomic lattice is strongly atomic.
 Not an instance to prevent loops. -/

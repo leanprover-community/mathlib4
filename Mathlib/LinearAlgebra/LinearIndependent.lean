@@ -699,7 +699,7 @@ theorem LinearIndependent.total_ne_of_not_mem_support [Nontrivial R] (hv : Linea
   simp only [not_exists, not_and, mem_map] at p -- Porting note: `mem_map` isn't currently triggered
   exact p f (f.mem_supported_support R) rfl
 
-theorem linearIndependent_sum {v : Sum ι ι' → M} :
+theorem linearIndependent_sum {v : ι ⊕ ι' → M} :
     LinearIndependent R v ↔
       LinearIndependent R (v ∘ Sum.inl) ∧
         LinearIndependent R (v ∘ Sum.inr) ∧
@@ -1196,7 +1196,7 @@ open Submodule
    (instead of a data containing type class) -/
 theorem mem_span_insert_exchange :
     x ∈ span K (insert y s) → x ∉ span K s → y ∈ span K (insert x s) := by
-  simp [mem_span_insert]
+  simp only [mem_span_insert, forall_exists_index, and_imp]
   rintro a z hz rfl h
   refine ⟨a⁻¹, -a⁻¹ • z, smul_mem _ _ hz, ?_⟩
   have a0 : a ≠ 0 := by
@@ -1453,7 +1453,7 @@ theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
 theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span (ht : t.Finite)
     (hs : LinearIndependent K (fun x => x : s → V)) (hst : s ⊆ span K t) :
     ∃ h : s.Finite, h.toFinset.card ≤ ht.toFinset.card :=
-  have : s ⊆ (span K ↑ht.toFinset : Submodule K V) := by simp; assumption
+  have : s ⊆ (span K ↑ht.toFinset : Submodule K V) := by simpa
   let ⟨u, _hust, hsu, Eq⟩ := exists_of_linearIndependent_of_finite_span hs this
   have : s.Finite := u.finite_toSet.subset hsu
   ⟨this, by rw [← Eq]; exact Finset.card_le_card <| Finset.coe_subset.mp <| by simp [hsu]⟩

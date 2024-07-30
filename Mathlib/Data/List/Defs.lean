@@ -103,13 +103,6 @@ end foldIdxM
 
 section mapIdxM
 
--- Porting note: This was defined in `mathlib` with an `Applicative`
--- constraint on `m` and have been `#align`ed to the `Batteries` versions defined
--- with a `Monad` typeclass constraint.
--- Since all `Monad`s are `Applicative` this won't cause issues
--- downstream & `Monad`ic code is more performant per Mario C
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Applicative.20variants.20of.20Monadic.20functions/near/313213172
-
 variable {m : Type v → Type w} [Monad m]
 
 /-- Auxiliary definition for `mapIdxM'`. -/
