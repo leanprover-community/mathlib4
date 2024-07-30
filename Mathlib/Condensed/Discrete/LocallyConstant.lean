@@ -6,7 +6,6 @@ Authors: Dagur Asgeirsson
 import Mathlib.Data.Countable.Small
 import Mathlib.Topology.Category.CompHausLike.Limits
 import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Condensed.Discrete
 import Mathlib.Condensed.TopComparison
 /-!
 
