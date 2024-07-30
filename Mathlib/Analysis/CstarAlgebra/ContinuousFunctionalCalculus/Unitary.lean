@@ -31,6 +31,7 @@ lemma cfc_unitary_iff (f : R → R) (a : A) (ha : p a := by cfc_tac)
   exact Iff.rfl
 
 end Generic
+
 section Complex
 
 variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℂ A]
