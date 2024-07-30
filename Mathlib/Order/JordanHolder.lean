@@ -277,8 +277,8 @@ protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
     Equivalent (smash s₁ s₂ hs) (smash t₁ t₂ ht) :=
   let e : Fin (s₁.length + s₂.length) ≃ Fin (t₁.length + t₂.length) :=
     calc
-      Fin (s₁.length + s₂.length) ≃ Sum (Fin s₁.length) (Fin s₂.length) := finSumFinEquiv.symm
-      _ ≃ Sum (Fin t₁.length) (Fin t₂.length) := Equiv.sumCongr h₁.choose h₂.choose
+      Fin (s₁.length + s₂.length) ≃ (Fin s₁.length) ⊕ (Fin s₂.length) := finSumFinEquiv.symm
+      _ ≃ (Fin t₁.length) ⊕ (Fin t₂.length) := Equiv.sumCongr h₁.choose h₂.choose
       _ ≃ Fin (t₁.length + t₂.length) := finSumFinEquiv
   ⟨e, by
     intro i

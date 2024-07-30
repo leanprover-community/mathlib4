@@ -116,8 +116,8 @@ theorem impl_cons (w' : 0 < List.length ds) :
 
 -- Note this lemma has two unspecified proofs: `h` appears on the left-hand-side
 -- and should be found by matching, but `w'` will become an extra goal when rewriting.
-theorem impl_cons_fst_zero (h) (w' : 0 < List.length ds) :
-    (impl C (x :: xs) y ⟨d :: ds, w⟩).1[0] =
+theorem impl_cons_fst_zero (h : 0 < (impl C (x :: xs) y ⟨d :: ds, w⟩).val.length)
+    (w' : 0 < List.length ds) : (impl C (x :: xs) y ⟨d :: ds, w⟩).1[0] =
       let ⟨r, w⟩ := impl C xs y ⟨ds, w'⟩
       min (C.delete x + r[0]) (min (C.insert y + d) (C.substitute x y + ds[0])) :=
   match ds, w' with | _ :: _, _ => rfl
@@ -245,8 +245,8 @@ theorem suffixLevenshtein_cons₁_fst (x : α) (xs ys) :
   simp [suffixLevenshtein_cons₁]
 
 theorem suffixLevenshtein_cons_cons_fst_get_zero
-    (x : α) (xs y ys) (w) :
-    (suffixLevenshtein C (x :: xs) (y :: ys)).1[0] =
+    (x : α) (xs y ys) (w : 0 < (suffixLevenshtein C (x :: xs) (y :: ys)).val.length) :
+    (suffixLevenshtein C (x :: xs) (y :: ys)).1[0]'w =
       let ⟨dx, _⟩ := suffixLevenshtein C xs (y :: ys)
       let ⟨dy, _⟩ := suffixLevenshtein C (x :: xs) ys
       let ⟨dxy, _⟩ := suffixLevenshtein C xs ys
@@ -296,4 +296,4 @@ theorem levenshtein_cons_cons
       min (C.delete x + levenshtein C xs (y :: ys))
         (min (C.insert y + levenshtein C (x :: xs) ys)
           (C.substitute x y + levenshtein C xs ys)) :=
-  suffixLevenshtein_cons_cons_fst_get_zero _ _ _ _ _
+  suffixLevenshtein_cons_cons_fst_get_zero ..

@@ -38,7 +38,7 @@ open Matrix Finset
 
 namespace Int.Matrix
 
-variable {α β : Type _} [Fintype α] [Fintype β] [DecidableEq β] [DecidableEq α]
+variable {α β : Type*} [Fintype α] [Fintype β] [DecidableEq β] [DecidableEq α]
   (A : Matrix α β ℤ) (v : β → ℤ) (hn : Fintype.card α < Fintype.card β) (hm : 0 < Fintype.card α)
 
 -- Some definitions and relative properties
