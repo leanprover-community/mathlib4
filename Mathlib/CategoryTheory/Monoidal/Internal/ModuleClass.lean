@@ -33,7 +33,7 @@ namespace ModuleCat
 
 variable {R : Type u} [CommRing R]
 
-namespace MonModuleEquivalenceAlgebra
+namespace MonCatModuleEquivalenceAlgebra
 
 -- Porting note: in the following proof `have := ...; convert this` is to help Lean infer what the
 -- underlying rings are.
@@ -165,15 +165,15 @@ def inverse : AlgebraCat.{u} R ⥤ Mon_Cat (ModuleCat.{u} R) where
       one_hom := LinearMap.ext f.commutes
       mul_hom := TensorProduct.ext <| LinearMap.ext₂ <| map_mul f }
 
-end MonModuleEquivalenceAlgebra
+end MonCatModuleEquivalenceAlgebra
 
-open MonModuleEquivalenceAlgebra
+open MonCatModuleEquivalenceAlgebra
 
 set_option maxHeartbeats 400000 in
 /-- The category of internal monoid objects in `ModuleCat R`
 is equivalent to the category of "native" bundled `R`-algebras.
 -/
-def monModuleEquivalenceAlgebra : Mon_Cat (ModuleCat.{u} R) ≌ AlgebraCat R where
+def monCatModuleEquivalenceAlgebra : Mon_Cat (ModuleCat.{u} R) ≌ AlgebraCat R where
   functor := functor
   inverse := inverse
   unitIso :=
@@ -218,13 +218,13 @@ def monModuleEquivalenceAlgebra : Mon_Cat (ModuleCat.{u} R) ≌ AlgebraCat R whe
               commutes' := fun r => rfl } })
 
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] ModuleCat.MonModuleEquivalenceAlgebra.functor_map_apply
+attribute [nolint simpNF] ModuleCat.MonCatModuleEquivalenceAlgebra.functor_map_apply
 
 /-- The equivalence `Mon_Class (ModuleCat R) ≌ AlgebraCat R`
 is naturally compatible with the forgetful functors to `ModuleCat R`.
 -/
-def monModuleEquivalenceAlgebraForget :
-    MonModuleEquivalenceAlgebra.functor ⋙ forget₂ (AlgebraCat.{u} R) (ModuleCat.{u} R) ≅
+def monCatModuleEquivalenceAlgebraForget :
+    MonCatModuleEquivalenceAlgebra.functor ⋙ forget₂ (AlgebraCat.{u} R) (ModuleCat.{u} R) ≅
       Mon_Cat.forget (ModuleCat.{u} R) :=
   NatIso.ofComponents
     (fun A =>
