@@ -275,6 +275,10 @@ protected theorem hasBasis_nhds_zero [TopologicalSpace F] [TopologicalAddGroup F
       fun SV => { f : E →SL[σ] F | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
   ContinuousLinearMap.hasBasis_nhds_zero_of_basis (𝓝 0).basis_sets
 
+theorem uniformEmbedding_toUniformOnFun [UniformSpace F] [UniformAddGroup F] :
+    UniformEmbedding fun f : E →SL[σ] F ↦ UniformOnFun.ofFun {s | Bornology.IsVonNBounded 𝕜₁ s} f :=
+  UniformConvergenceCLM.uniformEmbedding_coeFn ..
+
 instance uniformContinuousConstSMul
     {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [UniformSpace F] [UniformAddGroup F] [UniformContinuousConstSMul M F] :
@@ -347,22 +351,50 @@ end BilinearMaps
 
 section RestrictScalars
 
-variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-  (E : Type*) [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
-  (F : Type*) [AddCommGroup F] [TopologicalSpace F] [TopologicalAddGroup F] [Module 𝕜 F]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
+  {F : Type*} [AddCommGroup F]
+
+section UniformSpace
+
+variable [UniformSpace F] [UniformAddGroup F] [Module 𝕜 F]
   (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [Module 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
-  (𝕜'' : Type*) [Ring 𝕜'']
+
+theorem uniformEmbedding_restrictScalars :
+    UniformEmbedding (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) := by
+  rw [← uniformEmbedding_toUniformOnFun.of_comp_iff]
+  convert uniformEmbedding_toUniformOnFun using 4 with s
+  exact ⟨fun h ↦ h.extend_scalars _, fun h ↦ h.restrict_scalars⟩
+
+theorem uniformContinuous_restrictScalars :
+    UniformContinuous (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) :=
+  (uniformEmbedding_restrictScalars 𝕜').uniformContinuous
+
+end UniformSpace
+
+variable [TopologicalSpace F] [TopologicalAddGroup F] [Module 𝕜 F]
+  (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+  [Module 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
+
+theorem embedding_restrictScalars :
+    Embedding (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) :=
+  letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
+  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  (uniformEmbedding_restrictScalars _).embedding
+
+@[continuity, fun_prop]
+theorem continuous_restrictScalars :
+    Continuous (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) :=
+   (embedding_restrictScalars _).continuous
+
+variable (𝕜 E F)
+variable (𝕜'' : Type*) [Ring 𝕜'']
   [Module 𝕜'' F] [ContinuousConstSMul 𝕜'' F] [SMulCommClass 𝕜 𝕜'' F] [SMulCommClass 𝕜' 𝕜'' F]
 
 /-- `ContinuousLinearMap.restrictScalars` as a `ContinuousLinearMap`. -/
-def restrictScalarsL : (E →L[𝕜] F) →L[𝕜''] E →L[𝕜'] F where
-  toLinearMap := restrictScalarsₗ 𝕜 E F 𝕜' 𝕜''
-  cont := by
-    rw [LinearMap.toFun_eq_coe, continuous_iff_tendsto_nhds_zero,
-     ContinuousLinearMap.hasBasis_nhds_zero.tendsto_iff ContinuousLinearMap.hasBasis_nhds_zero]
-    intro s ⟨hs, hs₀⟩
-    exact ⟨s, ⟨hs.extend_scalars _, hs₀⟩, fun _ h ↦ h⟩
+def restrictScalarsL : (E →L[𝕜] F) →L[𝕜''] E →L[𝕜'] F :=
+  .mk <| restrictScalarsₗ 𝕜 E F 𝕜' 𝕜''
 
 variable {𝕜 E F 𝕜' 𝕜''}
 
