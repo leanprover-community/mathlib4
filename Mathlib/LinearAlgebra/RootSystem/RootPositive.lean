@@ -109,4 +109,29 @@ lemma orthogonal_of_coxeter_weight_zero (h : P.coxeterWeight i j = 0) : P.IsOrth
 
 -- Get infinitely many roots if Coxeter weight is more than 4.
 
+/-!
+I want something flip-invariant.  One common factor in examples: a distinguished subspace on which
+the form is non-degenerate.  For finite root data, this is the span of roots.  For Kac-Moody Lie
+algebras, this is the extended Cartan (i.e., not just the span of roots.)
+So, maybe I want a class with distinguished subspaces `M'` `N'`, paired with each other, with
+nondegenerate root-positive forms that are "in correspondence".
+-/
+
+/-- Try to find a structure in common between finite root data and Kac-Moody root systems-/
+structure DualPositive (P : RootPairing ι R M N) where
+  /-- A submodule of weight space on which the bilinear form is nonsingular.-/
+  M' : Submodule R M
+  /-- A submodule of coweight space on which the bilinear form is nonsingular.-/
+  N' : Submodule R N
+  /-- A linear map to dual space. -/
+  B : M →ₗ[R] N
+  /-- A linear map to dual space. -/
+  B' : N →ₗ[R] M
+  root_in : ∀ i, P.root i ∈ M'
+  coroot_in : ∀ i, P.coroot i ∈ N'
+  root_pos : ∀ i, 0 < P.toLin (P.root i) (B (P.root i))
+  coroot_pos : ∀ i, 0 < P.toLin (B' (P.coroot i)) (P.coroot i)
+
+-- something else
+
 end RootPairing
