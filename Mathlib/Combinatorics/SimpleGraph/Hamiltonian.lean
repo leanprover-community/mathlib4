@@ -96,7 +96,7 @@ lemma isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one :
 /-- A hamiltonian cycle visits every vertex. -/
 lemma IsHamiltonianCycle.mem_support (hp : p.IsHamiltonianCycle) (b : α) :
     b ∈ p.support :=
-  List.mem_of_mem_tail <| support_tail p hp.1.not_nil ▸hp.isHamiltonian_tail.mem_support _
+  List.mem_of_mem_tail <| support_tail p hp.1.not_nil ▸ hp.isHamiltonian_tail.mem_support _
 
 /-- The length of a hamiltonian cycle is the number of vertices. -/
 lemma IsHamiltonianCycle.length_eq (hp : p.IsHamiltonianCycle) :

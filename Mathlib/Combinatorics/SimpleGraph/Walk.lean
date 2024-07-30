@@ -776,8 +776,7 @@ lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → S
     rw [SimpleGraph.Walk.nil_iff_length_eq] at hp
     push_neg at hp
     exact Nat.zero_lt_of_ne_zero hp)
-  rw [@getVert_zero] at this
-  exact this
+  rwa [getVert_zero] at this
 
 /-- The walk obtained by removing the first n darts of a walk. -/
 def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
@@ -817,7 +816,6 @@ lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
   | cons h q =>
     simp only [getVert_cons_succ, tail_cons_eq, cons_copy, copy_rfl_rfl]
 
-
 @[simp] lemma cons_support_tail (p : G.Walk x y) (hp : ¬p.Nil) :
     x :: p.tail.support = p.support := by
   rw [← support_cons, cons_tail_eq _ hp]
@@ -825,7 +823,6 @@ lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
 @[simp] lemma length_tail_add_one {p : G.Walk x y} (hp : ¬ p.Nil) :
     p.tail.length + 1 = p.length := by
   rw [← length_cons, cons_tail_eq _ hp]
-
 
 @[simp] lemma nil_copy {x' y' : V} {p : G.Walk x y} (hx : x = x') (hy : y = y') :
     (p.copy hx hy).Nil = p.Nil := by
@@ -846,8 +843,8 @@ lemma support_tail_of_not_nil (p : G.Walk u v) (hnp : ¬p.Nil) :
     p.tail.support = p.support.tail := by
   match p with
   | .nil => simp only [nil_nil, not_true_eq_false] at hnp
-  | .cons h q => simp only [tail_cons, getVert_cons_succ, support_copy, support_cons,
-                    List.tail_cons]
+  | .cons h q =>
+    simp only [tail_cons, getVert_cons_succ, support_copy, support_cons, List.tail_cons]
 
 /-! ### Walk decompositions -/
 
@@ -1023,20 +1020,15 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
       exact ⟨d, List.Mem.tail _ hd, hcd⟩
     · exact ⟨⟨(x, y), a⟩, List.Mem.head _, uS, h⟩
 
-@[simp] lemma getVert_copy  {u v w x: V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
+@[simp] lemma getVert_copy  {u v w x : V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
     (p.copy h h').getVert i = p.getVert i := by
-  cases p with
-  | nil =>
+  cases p, i with
+  | nil, _ =>
     rw [getVert_of_length_le _ (by simp only [length_nil, Nat.zero_le] : nil.length ≤ _)]
     rw [getVert_of_length_le _ (by simp only [length_copy, length_nil, Nat.zero_le])]
     exact h'.symm
-  | cons hadj q =>
-    by_cases hi : i = 0
-    · simp only [hi, getVert_zero, h.symm]
-    · simp only [copy_cons, getVert_cons_succ]
-      rw [getVert_cons _ _ hi]
-      rw [getVert_cons _ _ hi]
-      apply getVert_copy
+  | cons hadj q, 0 => simp only [hi, getVert_zero, h.symm]
+  | cons hadj q, i + 1 => simp only [copy_cons, getVert_cons_succ, getVert_copy]
 
 @[simp] lemma getVert_tail {u v n} (p : G.Walk u v) (hnp: ¬ p.Nil) :
     p.tail.getVert n = p.getVert (n + 1) := by
@@ -1077,8 +1069,7 @@ theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
       use n - 1
       simp only [Nat.sub_le_iff_le_add]
       rw [getVert_tail _ hnp, length_tail_add_one hnp]
-      have : n - 1 + 1 = n := by omega
-      rwa [this]
+      omega
 termination_by p.length
 decreasing_by
 · simp_wf
