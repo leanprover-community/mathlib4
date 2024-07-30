@@ -65,15 +65,15 @@ lemma colimit_no_zero_smul_divisor
     (x : (forget C).obj (colimit F)) (hx : r • x = 0) : x = 0 := by
   classical
   obtain ⟨j, x, rfl⟩ := Concrete.colimit_exists_rep F x
-  rw [← LinearMapClass.map_smul] at hx
+  rw [← map_smul] at hx
   obtain ⟨j', i, h⟩ := Concrete.colimit_rep_eq_zero (hx := hx)
   obtain ⟨j'', H⟩ := H
-  let s : J := IsFiltered.sup {j, j', j''} { ⟨j, j', by simp, by simp, i⟩ }
-  have eq := congr(colimit.ι F _ $(H s (IsFiltered.toSup _ _ $ by simp)
-    (F.map (IsFiltered.toSup _ _ $ by simp) x)
-    (by rw [← IsFiltered.toSup_commutes (f := i) (mY := by simp) (mf := by simp), F.map_comp,
-    comp_apply, ← map_smul, ← map_smul, h, map_zero])))
-  rwa [elementwise_of% (colimit.w F), map_zero] at eq
+  simpa [elementwise_of% (colimit.w F), map_zero] using congr(colimit.ι F _
+    $(H (IsFiltered.sup {j, j', j''} { ⟨j, j', by simp, by simp, i⟩ })
+      (IsFiltered.toSup _ _ $ by simp)
+      (F.map (IsFiltered.toSup _ _ $ by simp) x)
+      (by rw [← IsFiltered.toSup_commutes (f := i) (mY := by simp) (mf := by simp), F.map_comp,
+        comp_apply, ← map_smul, ← map_smul, h, map_zero])))
 
 end module
 
