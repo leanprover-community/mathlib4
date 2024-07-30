@@ -5,6 +5,16 @@ import Mathlib.Tactic
 variable {p : Nat}
 variable {G : Type} [Group G]
 
+lemma Set.Finite.ncard_pos_iff_nonempty {α : Type} {s : Set α} (hs : s.Finite) :
+    0 < Set.ncard s ↔ s.Nonempty := by
+  lift s to Finset α using hs
+  simp
+
+lemma Set.Finite.one_lt_ncard_iff_nontrivial {α : Type} {s : Set α} (hs : s.Finite) :
+    1 < Set.ncard s ↔ s.Nontrivial := by
+  lift s to Finset α using hs
+  simp [Finset.one_lt_card_iff_nontrivial]
+
 lemma mul_eq_one_iff_comm {a b : G} : a * b = 1 ↔ b * a = 1 := by
   rw [mul_eq_one_iff_inv_eq, mul_eq_one_iff_eq_inv, eq_comm]
 
@@ -58,10 +68,16 @@ theorem Diag_card : Nat.card (Diag p G) = (Nat.card G) ^ (p - 1) := by
     calc Nat.card (Diag p G)
         = Nat.card (Fin (p - 1) → G) := by exact Nat.card_congr e
       _ = (Nat.card G) ^ (p - 1)     := by rw [Nat.card_pi, Fin.prod_const]
+  constructor
+  case toFun => exact fun x i => x.1 i
+  case invFun =>
+    intro x
+    sorry
+  sorry
   sorry
 
 instance : One (Diag p G) where
-  one := ⟨1, by simp [ZMod.prod, Function.comp]; erw [List.map_const]; simp; sorry⟩
+  one := ⟨Function.const _ 1, by simp [ZMod.prod, - Function.const_one]⟩
 
 open AddAction in
 theorem Group.Cauchy [Finite G] (hp : p ∣ Nat.card G) : ∃ g : G, orderOf g = p := by
@@ -70,9 +86,18 @@ theorem Group.Cauchy [Finite G] (hp : p ∣ Nat.card G) : ∃ g : G, orderOf g =
     use g
     rw [← orderOf_dvd_iff_pow_eq_one, Nat.dvd_prime Fact.out, orderOf_eq_one_iff] at hg
     tauto
-  have aux : ∀ x, x ∈ fixedPoints (ZMod p) (Diag p G) ↔ x.1 = Function.const _ (x.1 0) := by
-    intro x
-    sorry
+  have aux (x) : x ∈ fixedPoints (ZMod p) (Diag p G) ↔ x.1 = Function.const _ (x.1 0) := by
+    rw [mem_fixedPoints]
+    constructor
+    · intro h
+      ext j
+      specialize h j
+      apply_fun (fun x ↦ x.1 0) at h
+      simpa using h
+    · intro h i
+      ext j
+      rw [Diag.vadd_coeff, h, h]
+      rfl
   suffices (fixedPoints (ZMod p) (Diag p G)).Nontrivial by
     obtain ⟨x, hx, hx1⟩ := this.exists_ne 1
     use x.1 0
@@ -89,31 +114,13 @@ theorem Group.Cauchy [Finite G] (hp : p ∣ Nat.card G) : ∃ g : G, orderOf g =
   have h1 : 1 ∈ fixedPoints (ZMod p) (Diag p G) := by
     intro i; ext j
     simp; rfl
-  /- have aux : {x : Diag p G | ∀ i j, x.1 i = x.1 j} = {x : Diag p G | Set.ncard (orbit (ZMod p) x) = 1} := by -/
-  /-   ext x -/
-  /-   simp only [Set.mem_setOf_eq, Set.ncard_eq_one] -/
-  /-   constructor -/
-  /-   · intro h -/
-  /-     use x -/
-  /-     ext y -/
-  /-     simp only [mem_orbit_iff, Set.mem_singleton_iff] -/
-  /-     constructor -/
-  /-     · rintro ⟨i, rfl⟩ -/
-  /-       ext j -/
-  /-       apply h -/
-  /-     · rintro rfl; use 0; simp -/
-  /-   · intro h i j -/
-  /-     rw [← orbit_eq_iff, ← orbit_eq_iff] -/
-  /-     exact h i j -/
-  /- suffices 1 < Set.ncard {x : Diag p G | ∀ i j, x.1 i = x.1 j} by -/
-  /-   obtain ⟨x, hx, hx1⟩ := Set.exists_ne_of_one_lt_ncard this 1 -/
-  /-   use x.1 0 -/
-  /-   constructor -/
-  /-   · contrapose! hx1 -/
-  /-     ext i -/
-  /-     rw [hx i 0, hx1] -/
-  /-     rfl -/
-  /-   · sorry -/
+  suffices p ∣ (fixedPoints (ZMod p) (Diag p G)).ncard by
+    rw [← (Set.toFinite _).one_lt_ncard_iff_nontrivial]
+    calc 1 < p := Nat.Prime.one_lt Fact.out
+         _ ≤ (fixedPoints (ZMod p) (Diag p G)).ncard := Nat.le_of_dvd ?_ this
+    rw [(Set.toFinite _).ncard_pos_iff_nonempty]
+    exact ⟨1, h1⟩
+  let e := AddAction.selfEquivSigmaOrbits' (ZMod p) (Diag p G)
   sorry
 
 
