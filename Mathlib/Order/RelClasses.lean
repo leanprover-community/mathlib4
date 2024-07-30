@@ -208,7 +208,6 @@ theorem IsOrderConnected.neg_trans {r : α → α → Prop} [IsOrderConnected α
     (h₁ : ¬r a b) (h₂ : ¬r b c) : ¬r a c :=
   mt (IsOrderConnected.conn a b c) <| by simp [h₁, h₂]
 
-@[deprecated (since := "2024-07-30")]
 theorem isStrictWeakOrder_of_isOrderConnected [IsAsymm α r] [IsOrderConnected α r] :
     IsStrictWeakOrder α r :=
   { @IsAsymm.isIrrefl α r _ with

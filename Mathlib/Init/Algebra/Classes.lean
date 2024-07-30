@@ -161,11 +161,6 @@ instance (priority := 100) isTotalPreorder_isPreorder (α : Sort u) (r : α → 
   trans := s.trans
   refl a := Or.elim (@IsTotal.total _ r _ a a) id id
 
-/-- `IsLinearOrder X r` means that the binary relation `r` on `X` is a linear order, that is,
-`IsPartialOrder X r` and `IsTotal X r`. -/
-@[deprecated (since := "2024-07-30")]
-class IsLinearOrder (α : Sort u) (r : α → α → Prop) extends IsPartialOrder α r, IsTotal α r : Prop
-
 -- /-- `IsPer X r` means that the binary relation `r` on `X` is a partial equivalence relation, that
 -- is, `IsSymm X r` and `IsTrans X r`. -/
 -- class IsPer (α : Sort u) (r : α → α → Prop) extends IsSymm α r, IsTrans α r : Prop
@@ -176,11 +171,9 @@ class IsLinearOrder (α : Sort u) (r : α → α → Prop) extends IsPartialOrde
 class IsIncompTrans (α : Sort u) (lt : α → α → Prop) : Prop where
   incomp_trans : ∀ a b c, ¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a
 
-/-- `IsStrictWeakOrder X lt` means that the binary relation `lt` on `X` is a strict weak order,
-that is, `IsStrictOrder X lt` and `IsIncompTrans X lt`. -/
 @[deprecated (since := "2024-07-30")]
-class IsStrictWeakOrder (α : Sort u) (lt : α → α → Prop) extends IsStrictOrder α lt,
-    IsIncompTrans α lt : Prop
+instance (priority := 100) (α : Sort u) (lt : α → α → Prop) [IsStrictWeakOrder α lt] :
+    IsIncompTrans α lt := { ‹IsStrictWeakOrder α lt› with }
 
 section
 
