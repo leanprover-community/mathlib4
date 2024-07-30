@@ -14,10 +14,6 @@ This file describes behavior of norms in ultrametric spaces.
 ## Main results
 
 * A normed additive group has an ultrametric iff the norm is nonarchimedean
-* The (nn)norm of a sum of a list/multiset/finset/fintype/finsum is less than or equal to
-  the maximum of the norm over the list/multiset/finset/fintype/finite set
-* The supremum of the (nn)norm over a list/multiset/finset/fintype/finsum is a maximum when
-  the "set" is nonempty
 
 ## Implementation details
 
@@ -89,89 +85,12 @@ lemma _root_.List.norm_sum_le_iSup_norm (l : List S) :
   simpa using this
 
 lemma _root_.List.iSup_nnnorm_mem_map_of_ne_nil {l : List S} (hl : l ≠ []) :
-    ⨆ x ∈ l, ‖x‖₊ ∈ l.map (‖·‖₊) := by
-  induction l with
-  | nil => contradiction
-  | cons y xs IH =>
-    classical
-    rcases eq_or_ne xs [] with rfl|hxs
-    · simp only [List.mem_singleton, List.map_cons, List.map_nil]
-      have : Nonempty S := ⟨y⟩
-      refine le_antisymm (ciSup_le fun _ ↦ ?_) (le_ciSup_of_le ?_ y ?_)
-      · simp only [ciSup_eq_ite, csSup_empty, bot_eq_zero', dite_eq_ite]
-        split <;>
-        simp_all
-      · exact (Set.finite_range_iSup_mem (Set.finite_singleton y) _).bddAbove
-      · simp
-    · simp only [List.mem_cons, List.map_cons, ciSup_or']
-      refine (le_total (⨆ x ∈ xs, ‖x‖₊) ‖y‖₊).imp (fun h ↦ ?_) (fun h ↦ ?_)
-      · simp only [ciSup_eq_ite, csSup_empty, bot_eq_zero', dite_eq_ite]
-        refine le_antisymm (ciSup_le fun x ↦ ?_) (le_ciSup_of_le ?_ y ?_)
-        · split_ifs
-          · simp_all
-          · simp_all
-          · refine h.trans' ?_
-            simp only [zero_le, sup_of_le_right]
-            rw [le_ciSup_iff']
-            · intro b hb
-              refine (hb x).trans' ?_
-              simp_all
-            · exact (Set.finite_range_iSup_mem xs.finite_toSet _).bddAbove
-          · simp_all
-        · refine ((((Set.finite_singleton ‖y‖₊).union (Set.finite_singleton 0)).union
-            ((xs.map (‖·‖₊))).finite_toSet).subset ?_).bddAbove
-          · intro b
-            simp only [Set.mem_range, Set.union_singleton, List.mem_map, Set.mem_union,
-              Set.mem_insert_iff, Set.mem_singleton_iff, Set.mem_setOf_eq, forall_exists_index]
-            intro
-            split_ifs
-            · simp_all
-            · simp_all
-            · simp only [zero_le, sup_of_le_right]
-              rintro rfl
-              exact Or.inr ⟨_, by assumption, rfl⟩
-            · simp_all
-        · simp
-      · obtain ⟨a, hmem, ha⟩ := List.exists_of_mem_map (IH hxs)
-        convert List.mem_map_of_mem _ hmem
-        simp only [ha, sup_eq_right]
-        refine le_antisymm (ciSup_le fun x ↦ ?_) (le_ciSup_of_le ?_ a ?_)
-        · simp only [ciSup_eq_ite]
-          split_ifs
-          · simp_all [h, ciSup_eq_ite]
-          · simp_all [h, ciSup_eq_ite]
-          · simp_all only [ne_eq, not_false_eq_true, List.mem_map, true_implies, csSup_empty,
-            bot_eq_zero', zero_le, sup_of_le_right]
-            rw [le_ciSup_iff']
-            · intro b hb
-              refine (hb x).trans' ?_
-              simp_all
-            · convert (Set.finite_range_iSup_mem xs.finite_toSet (‖·‖₊)).bddAbove using 1
-              simp [ciSup_eq_ite]
-          · simp
-        · refine ((((Set.finite_singleton ‖y‖₊).union (Set.finite_singleton 0)).union
-            ((xs.map (‖·‖₊))).finite_toSet).subset ?_).bddAbove
-          · intro b
-            simp only [Set.mem_range, Set.union_singleton, List.mem_map, Set.mem_union,
-              Set.mem_insert_iff, Set.mem_singleton_iff, Set.mem_setOf_eq, forall_exists_index]
-            intro
-            simp only [ciSup_eq_ite]
-            split_ifs
-            · simp_all
-            · simp_all
-            · simp only [csSup_empty, bot_eq_zero', zero_le, sup_of_le_right]
-              rintro rfl
-              refine Or.inr ⟨_, by assumption, rfl⟩
-            · simp_all
-        · rw [← ha]
-          simp [ciSup_eq_ite, hmem]
+    ⨆ x ∈ l, ‖x‖₊ ∈ l.map (‖·‖₊) :=
+  List.iSup_mem_map_of_ne_nil _ hl
 
 lemma _root_.List.iSup_norm_mem_map_of_ne_nil {l : List S} (hl : l ≠ []) :
-    ⨆ x ∈ l, ‖x‖ ∈ l.map (‖·‖) := by
-  obtain ⟨y, hmem, hy⟩ := List.exists_of_mem_map (l.iSup_nnnorm_mem_map_of_ne_nil hl)
-  convert List.mem_map_of_mem _ hmem
-  rw [Subtype.ext_iff] at hy
-  simpa using hy.symm
+    ⨆ x ∈ l, ‖x‖ ∈ l.map (‖·‖) :=
+  List.iSup_mem_map_of_exists_sSup_empty_le _ (by simpa using List.exists_mem_of_ne_nil _ hl)
 
 /-- All triangles are isosceles in an ultrametric normed commutative additive group. -/
 lemma norm_add_eq_max_of_norm_ne_norm
@@ -254,17 +173,13 @@ lemma _root_.Multiset.norm_sum_le_iSup_norm (s : Multiset M) :
     ‖s.sum‖ ≤ ⨆ i ∈ s, ‖i‖ :=
   Quotient.inductionOn s (by simpa using List.norm_sum_le_iSup_norm)
 
-lemma _root_.Multiset.iSup_nnnorm_mem_map_of_ne_nil {s : Multiset M} (hs : s ≠ ∅) :
-    ⨆ x ∈ s, ‖x‖₊ ∈ s.map (‖·‖₊) := by
-  induction s using Quotient.inductionOn
-  simp only [Multiset.quot_mk_to_coe, Multiset.empty_eq_zero, ne_eq, Multiset.coe_eq_zero] at hs
-  exact List.iSup_nnnorm_mem_map_of_ne_nil hs
+lemma _root_.Multiset.iSup_nnnorm_mem_map_of_ne_zero {s : Multiset M} (hs : s ≠ 0) :
+    ⨆ x ∈ s, ‖x‖₊ ∈ s.map (‖·‖₊) :=
+  Multiset.iSup_mem_map_of_ne_zero _ hs
 
-lemma _root_.Multiset.iSup_norm_mem_map_of_ne_nil {s : Multiset M} (hs : s ≠ ∅) :
-    ⨆ x ∈ s, ‖x‖ ∈ s.map (‖·‖) := by
-  induction s using Quotient.inductionOn
-  simp only [Multiset.quot_mk_to_coe, Multiset.empty_eq_zero, ne_eq, Multiset.coe_eq_zero] at hs
-  exact List.iSup_norm_mem_map_of_ne_nil hs
+lemma _root_.Multiset.iSup_norm_mem_map_of_ne_zero {s : Multiset M} (hs : s ≠ 0) :
+    ⨆ x ∈ s, ‖x‖ ∈ s.map (‖·‖) :=
+  Multiset.iSup_mem_map_of_exists_sSup_empty_le _ (by simpa using Multiset.exists_mem_of_ne_zero hs)
 
 /-- Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum. -/
 lemma _root_.Finset.nnnorm_sum_le_iSup_nnnorm (s : Finset ι) (f : ι → M) :
@@ -322,7 +237,7 @@ lemma _root_.Finset.Nonempty.norm_sum_le_sup'_norm {s : Finset ι} (hs : s.Nonem
 /-- A finset achieves its maximum under a nonarchimedean norm for some element. -/
 lemma _root_.Finset.Nonempty.iSup_nnnorm_mem_image {s : Finset ι} (hs : s.Nonempty) (f : ι → M) :
     ⨆ x ∈ s, ‖f x‖₊ ∈ s.image (‖f ·‖₊) := by
-  convert (s.1.map f).iSup_nnnorm_mem_map_of_ne_nil ?_
+  convert (s.1.map f).iSup_nnnorm_mem_map_of_ne_zero ?_
   · have : Nonempty ι := nonempty_of_exists hs
     have : Set.Nonempty (s : Set ι) := hs
     have keyl (i : M) : ⨆ (_ : i ∈ Multiset.map f s.val), ‖i‖₊ = ⨆ (_ : i ∈ f '' s), ‖i‖₊ := by
@@ -336,7 +251,7 @@ lemma _root_.Finset.Nonempty.iSup_nnnorm_mem_image {s : Finset ι} (hs : s.Nonem
 /-- A finset achieves its maximum under a nonarchimedean norm for some element. -/
 lemma _root_.Finset.Nonempty.iSup_norm_mem_image {s : Finset ι} (hs : s.Nonempty) (f : ι → M) :
     ⨆ x ∈ s, ‖f x‖ ∈ s.image (‖f ·‖) := by
-  convert (s.1.map f).iSup_norm_mem_map_of_ne_nil ?_
+  convert (s.1.map f).iSup_norm_mem_map_of_ne_zero ?_
   · have : Nonempty ι := nonempty_of_exists hs
     have : Set.Nonempty (s : Set ι) := hs
     have keyl (i : M) : ⨆ (_ : i ∈ Multiset.map f s.val), ‖i‖ = ⨆ (_ : i ∈ f '' s), ‖i‖ := by
