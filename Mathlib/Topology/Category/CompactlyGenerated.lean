@@ -92,7 +92,8 @@ lemma compactlyGeneratedSpace_of_continuous_maps {X : Type w} [t : TopologicalSp
     rw [← @continuous_sigma_iff]
     apply continuous_coinduced_rng
 
-/-- The type of `u`-compactly generated `w`-small topological spaces. -/
+/-- `CompactlyGenerated.{u, w}` is the type of `u`-compactly generated `w`-small topological spaces.
+This should always be used with explicit universe parameters. -/
 structure CompactlyGenerated where
   /-- The underlying topological space of an object of `CompactlyGenerated`. -/
   toTop : TopCat.{w}
