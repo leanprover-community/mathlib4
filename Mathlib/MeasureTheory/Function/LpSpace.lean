@@ -1199,7 +1199,7 @@ namespace Lp
 section PosPart
 
 theorem lipschitzWith_pos_part : LipschitzWith 1 fun x : ℝ => max x 0 :=
-  LipschitzWith.of_dist_le_mul fun x y => by simp [Real.dist_eq, abs_max_sub_max_le_abs]
+  LipschitzWith.id.max_const _
 
 theorem _root_.MeasureTheory.Memℒp.pos_part {f : α → ℝ} (hf : Memℒp f p μ) :
     Memℒp (fun x => max (f x) 0) p μ :=
