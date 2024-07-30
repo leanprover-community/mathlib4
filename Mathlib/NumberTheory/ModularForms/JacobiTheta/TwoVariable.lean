@@ -70,7 +70,7 @@ everywhere else.
 lemma norm_jacobiTheta₂_term (n : ℤ) (z τ : ℂ) :
     ‖jacobiTheta₂_term n z τ‖ = rexp (-π * n ^ 2 * τ.im - 2 * π * n * z.im) := by
   rw [jacobiTheta₂_term, Complex.norm_eq_abs, Complex.abs_exp, (by push_cast; ring :
-    (2 * π : ℂ) * I * n * z + π * I * n ^ 2 * τ = (π * (2 * n) :) * z * I + (π * n ^ 2 :) * τ * I),
+    (2 * π : ℂ) * I * n * z + π * I * n ^ 2 * τ = (π * (2 * n):) * z * I + (π * n ^ 2 :) * τ * I),
     add_re, mul_I_re, im_ofReal_mul, mul_I_re, im_ofReal_mul]
   ring_nf
 
@@ -342,7 +342,7 @@ lemma hasDerivAt_jacobiTheta₂_fst (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
     map_add' := by simp only [ContinuousLinearMap.add_apply, forall_const]
     map_smul' := by simp only [ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul,
       RingHom.id_apply, forall_const] }
-  have step1: HasSum (fun n ↦ (jacobiTheta₂_term_fderiv n z τ) (1, 0))
+  have step1 : HasSum (fun n ↦ (jacobiTheta₂_term_fderiv n z τ) (1, 0))
       ((jacobiTheta₂_fderiv z τ) (1, 0)) := by
     apply eval_fst_CLM.hasSum (hasSum_jacobiTheta₂_term_fderiv z hτ)
   have step2 (n : ℤ) : (jacobiTheta₂_term_fderiv n z τ) (1, 0) = jacobiTheta₂'_term n z τ := by
@@ -431,7 +431,7 @@ lemma jacobiTheta₂'_add_left' (z τ : ℂ) :
   · simp_rw [jacobiTheta₂_undef _ hτ, jacobiTheta₂'_undef _ hτ, mul_zero, sub_zero, mul_zero]
   have (n : ℤ) : jacobiTheta₂'_term n (z + τ) τ =
       cexp (-π * I * (τ + 2 * z)) * (jacobiTheta₂'_term (n + 1) z τ -
-      2 * π * I * jacobiTheta₂_term (n + 1) z τ):= by
+      2 * π * I * jacobiTheta₂_term (n + 1) z τ) := by
     simp only [jacobiTheta₂'_term, jacobiTheta₂_term]
     conv_rhs => rw [← sub_mul, mul_comm, mul_assoc, ← Complex.exp_add, Int.cast_add, Int.cast_one,
       mul_add, mul_one, add_sub_cancel_right]

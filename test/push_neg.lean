@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Alice Laroche. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
+Authors: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 -/
 
 import Mathlib.Tactic.PushNeg
