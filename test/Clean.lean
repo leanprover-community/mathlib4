@@ -1,5 +1,4 @@
 import Mathlib.Tactic.Clean
-import Std
 
 namespace Tests
 

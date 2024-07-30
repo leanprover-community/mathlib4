@@ -58,7 +58,7 @@ theorem gaugeRescale_self {s : Set E} (hsa : Absorbent ℝ s) (hsb : IsVonNBound
 theorem gauge_gaugeRescale' (s : Set E) {t : Set E} {x : E} (hx : gauge t x ≠ 0) :
     gauge t (gaugeRescale s t x) = gauge s x := by
   rw [gaugeRescale, gauge_smul_of_nonneg (div_nonneg (gauge_nonneg _) (gauge_nonneg _)),
-    smul_eq_mul, div_mul_cancel _ hx]
+    smul_eq_mul, div_mul_cancel₀ _ hx]
 
 theorem gauge_gaugeRescale (s : Set E) {t : Set E} (hta : Absorbent ℝ t) (htb : IsVonNBounded ℝ t)
     (x : E) : gauge t (gaugeRescale s t x) = gauge s x := by
@@ -182,5 +182,5 @@ theorem exists_homeomorph_image_interior_closure_frontier_eq_unitBall {s : Set E
     ∃ h : E ≃ₜ E, h '' interior s = ball 0 1 ∧ h '' closure s = closedBall 0 1 ∧
       h '' frontier s = sphere 0 1 := by
   simpa [isOpen_ball.interior_eq, closure_ball, frontier_ball]
-    using exists_homeomorph_image_eq hc hne ((NormedSpace.isVonNBounded_iff _ _ _).2 hb)
+    using exists_homeomorph_image_eq hc hne (NormedSpace.isVonNBounded_of_isBounded _ hb)
     (convex_ball 0 1) (by simp [isOpen_ball.interior_eq]) (NormedSpace.isVonNBounded_ball _ _ _)

@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Linarith
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 
 /--
 info: Try these:
@@ -21,7 +21,7 @@ info: Try these:
 • simp_all only [and_self]
 -/
 #guard_msgs in
-example {P Q R: Prop} (x : P ∧ Q ∧ R ∧ R) : Q ∧ P ∧ R := by hint
+example {P Q R : Prop} (x : P ∧ Q ∧ R ∧ R) : Q ∧ P ∧ R := by hint
 
 /--
 info: Try these:
@@ -32,7 +32,7 @@ example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
 
 /--
 info: Try these:
-• decide
+• omega
 -/
 #guard_msgs in
 example : 37^2 - 35^2 = 72 * 2 := by hint

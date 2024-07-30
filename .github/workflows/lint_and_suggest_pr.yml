@@ -14,15 +14,22 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: install Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.8
 
+      - name: install elan
+        run: |
+          set -o pipefail
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
       - name: lint
-        continue-on-error: true
+        continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
           ./scripts/lint-style.sh --fix
 
@@ -37,7 +44,7 @@ jobs:
           sudo apt-get install -y bibtool
 
       - name: lint references.bib
-        continue-on-error: true
+        continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
           ./scripts/lint-bib.sh
 
@@ -55,27 +62,18 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: update Mathlib.lean
+      - name: install elan
         run: |
-          git ls-files 'Mathlib/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
+          set -o pipefail
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      - name: update MathlibExtras.lean
-        run: |
-          git ls-files 'MathlibExtras/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > MathlibExtras.lean
-
-      - name: update Mathlib/Tactic.lean
-        run: |
-          git ls-files 'Mathlib/Tactic/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib/Tactic.lean
-
-      - name: update Counterexamples.lean
-        run: |
-          git ls-files 'Counterexamples/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Counterexamples.lean
-
-      - name: update Archive.lean
-        run: |
-          git ls-files 'Archive/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Archive.lean
+      - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
+        continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
+        run: lake exe mk_all
 
       - name: suggester / import list
         uses: reviewdog/action-suggester@v1

@@ -19,7 +19,7 @@ of any syntax that would be valid in an `obtain` block. This tactic just calls `
 on the expression, and then `rotate_left`.
 -/
 syntax (name := rsuffices) "rsuffices"
-  (ppSpace Std.Tactic.RCases.rcasesPatMed)? (" : " term)? (" := " term,+)? : tactic
+  (ppSpace Lean.Parser.Tactic.rcasesPatMed)? (" : " term)? (" := " term,+)? : tactic
 
 macro_rules
 | `(tactic| rsuffices $[$pred]? $[: $foo]? $[:= $bar]?) =>

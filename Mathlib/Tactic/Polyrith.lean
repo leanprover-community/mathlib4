@@ -3,7 +3,7 @@ Copyright (c) 2022 Dhruv Bhatia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Bhatia, Eric Wieser, Mario Carneiro
 -/
-import Mathlib.Data.Rat.Field
+import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -60,8 +60,6 @@ remember to force recompilation of any files that call `polyrith`.
 
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Tactic.Polyrith
 open Lean hiding Rat
 open Meta Ring Qq PrettyPrinter AtomM
@@ -71,7 +69,7 @@ initialize registerTraceClass `Meta.Tactic.polyrith
 
 /--
 A datatype representing the semantics of multivariable polynomials.
-Each `poly` can be converted into a string.
+Each `Poly` can be converted into a string.
 -/
 inductive Poly
   | const : ℚ → Poly
@@ -131,7 +129,7 @@ def Poly.toSyntax : Poly → Unhygienic Syntax.Term
   | .neg p => do `(-$(← p.toSyntax))
 
 /-- Reifies a ring expression of type `α` as a `Poly`. -/
-partial def parse {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+partial def parse {u : Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     (c : Ring.Cache sα) (e : Q($α)) : AtomM Poly := do
   let els := do
     try pure <| Poly.const (← (← NormNum.derive e).toRat)
@@ -244,7 +242,7 @@ def Poly.pow' : ℕ → ℕ → Poly
   | i, k => .pow (.var i) (.const k)
 
 /-- Constructs a sum from a monadic function supplying the monomials. -/
-def Poly.sumM [Monad m] (a : Array α) (f : α → m Poly) : m Poly :=
+def Poly.sumM {m : Type → Type*} {α : Type*} [Monad m] (a : Array α) (f : α → m Poly) : m Poly :=
   a.foldlM (init := .const 0) fun p a => return p.add' (← f a)
 
 instance : FromJson Poly where
@@ -400,18 +398,18 @@ Examples:
 
 ```lean
 example (x y : ℚ) (h1 : x*y + 2*x = 1) (h2 : x = y) :
-  x*y = -2*y + 1 :=
-by polyrith
+    x*y = -2*y + 1 := by
+  polyrith
 -- Try this: linear_combination h1 - 2 * h2
 
-example (x y z w : ℚ) (hzw : z = w) : x*z + 2*y*z = x*w + 2*y*w :=
-by polyrith
+example (x y z w : ℚ) (hzw : z = w) : x*z + 2*y*z = x*w + 2*y*w := by
+  polyrith
 -- Try this: linear_combination (2 * y + x) * hzw
 
 constant scary : ∀ a b : ℚ, a + b = 0
 
-example (a b c d : ℚ) (h : a + b = 0) (h2: b + c = 0) : a + b + c + d = 0 :=
-by polyrith only [scary c d, h]
+example (a b c d : ℚ) (h : a + b = 0) (h2: b + c = 0) : a + b + c + d = 0 := by
+  polyrith only [scary c d, h]
 -- Try this: linear_combination scary c d + h
 ```
 -/
@@ -422,8 +420,14 @@ elab_rules : tactic
   | `(tactic| polyrith%$tk $[only%$onlyTk]? $[[$hyps,*]]?) => do
     let hyps ← hyps.map (·.getElems) |>.getD #[] |>.mapM (elabTerm · none)
     let traceMe ← Lean.isTracingEnabledFor `Meta.Tactic.polyrith
-    match ← polyrith (← getMainGoal) tk.isNone hyps traceMe with
+    match ← polyrith (← getMainGoal) onlyTk.isSome hyps traceMe with
     | .ok stx =>
       replaceMainGoal []
-      if !traceMe then Std.Tactic.TryThis.addSuggestion tk stx
+      if !traceMe then Lean.Meta.Tactic.TryThis.addSuggestion tk stx
     | .error g => replaceMainGoal [g]
+
+end Polyrith
+
+end Tactic
+
+end Mathlib

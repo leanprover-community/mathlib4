@@ -40,6 +40,9 @@ import Archive.Imo.Imo2019Q2
 import Archive.Imo.Imo2019Q4
 import Archive.Imo.Imo2020Q2
 import Archive.Imo.Imo2021Q1
+import Archive.Imo.Imo2024Q1
+import Archive.Imo.Imo2024Q2
+import Archive.Imo.Imo2024Q6
 import Archive.MiuLanguage.Basic
 import Archive.MiuLanguage.DecisionNec
 import Archive.MiuLanguage.DecisionSuf
@@ -50,6 +53,7 @@ import Archive.Wiedijk100Theorems.AreaOfACircle
 import Archive.Wiedijk100Theorems.AscendingDescendingSequences
 import Archive.Wiedijk100Theorems.BallotProblem
 import Archive.Wiedijk100Theorems.BirthdayProblem
+import Archive.Wiedijk100Theorems.BuffonsNeedle
 import Archive.Wiedijk100Theorems.CubingACube
 import Archive.Wiedijk100Theorems.FriendshipGraphs
 import Archive.Wiedijk100Theorems.HeronsFormula
