@@ -179,8 +179,7 @@ def maxChain (r : α → α → Prop) : Set α :=
   ⋃₀ setOf (ChainClosure r)
 
 theorem chainClosure_empty : ChainClosure r ∅ := by
-  -- TODO: backport to master
-  have : ChainClosure r (⋃₀∅) := ChainClosure.union fun a h => (not_mem_empty a h).elim
+  have : ChainClosure r (⋃₀∅) := ChainClosure.union fun a h => False.rec _ h
   simpa using this
 
 theorem chainClosure_maxChain : ChainClosure r (maxChain r) :=
