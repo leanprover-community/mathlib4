@@ -51,14 +51,14 @@ section Measurable
 
 variable [MeasurableSpace α]
 
-instance instFunLike : FunLike (α →ₛ β) α fun _ => β where
+instance instFunLike : FunLike (α →ₛ β) α β where
   coe := toFun
   coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
-theorem coe_injective ⦃f g : α →ₛ β⦄ (H : (f : α → β) = g) : f = g := FunLike.ext' H
+theorem coe_injective ⦃f g : α →ₛ β⦄ (H : (f : α → β) = g) : f = g := DFunLike.ext' H
 
 @[ext]
-theorem ext {f g : α →ₛ β} (H : ∀ a, f a = g a) : f = g := FunLike.ext _ _ H
+theorem ext {f g : α →ₛ β} (H : ∀ a, f a = g a) : f = g := DFunLike.ext _ _ H
 
 theorem finite_range (f : α →ₛ β) : (Set.range f).Finite :=
   f.finite_range'
