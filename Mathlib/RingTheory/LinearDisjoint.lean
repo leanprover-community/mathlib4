@@ -5,7 +5,7 @@ Authors: Jz Pan
 -/
 import Mathlib.LinearAlgebra.LinearDisjoint
 import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
 import Mathlib.Algebra.Algebra.Subalgebra.Rank
