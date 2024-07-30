@@ -960,7 +960,8 @@ theorem toLp_compMeasurePreserving {g : β → E} (hg : Memℒp g p μb) (hf : M
 theorem indicatorConstLp_compMeasurePreserving {s : Set β} (hs : MeasurableSet s)
     (hμs : μb s ≠ ∞) (c : E) (hf : MeasurePreserving f μ μb) :
     Lp.compMeasurePreserving f hf (indicatorConstLp p hs hμs c) =
-      indicatorConstLp p (hs.preimage hf.measurable) (by rwa [hf.measure_preimage hs]) c :=
+      indicatorConstLp p (hs.preimage hf.measurable)
+        (by rwa [hf.measure_preimage hs.nullMeasurableSet]) c :=
   rfl
 
 variable (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
