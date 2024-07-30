@@ -6,6 +6,10 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Data.Rat.Cast.Order
 
+/-!
+# Monotonicity of the action by rational numbers
+-/
+
 variable {α : Type*}
 
 section LinearOrderedAddCommGroup
