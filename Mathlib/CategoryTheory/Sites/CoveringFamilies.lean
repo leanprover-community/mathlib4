@@ -68,37 +68,38 @@ theorem covering_of_generatedTopology_iff {X : C} (S : Sieve X) :
   · intro hS
     induction hS with
     | of X S hS => use S, hS
-    | top X => use Presieve.singleton (𝟙 X)
-               constructor
-               · exact cf.retraction_mem (IsSplitEpi.of_iso (𝟙 X))
-               · rw [generate_of_singleton_isSplitEpi (𝟙 X)]
-    | transitive X R S _ _ hR hS => obtain ⟨P, h1P, h2P⟩ := hR
-                                    have hS' : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, P f →
-                                      ∃ P ∈ cf.covering Y, generate P ≤ pullback f S := by
-                                        intro Y f hf
-                                        have : R.arrows f := by
-                                          apply h2P
-                                          apply le_generate
-                                          exact hf
-                                        apply hS
-                                        simpa
-                                    let Q : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, P f → Presieve Y :=
-                                      fun Y f p => Exists.choose (hS' p)
-                                    use P.bind Q
-                                    constructor
-                                    · apply multicomposition_stable
-                                      exact h1P
-                                      intro Xi f p
-                                      cases Exists.choose_spec (hS' p)
-                                      simpa
-                                    · rw [generate_le_iff (P.bind Q) S]
-                                      intro Z h Hh
-                                      obtain ⟨Xi, g, f, hf, hg, eq⟩ := Hh
-                                      rw [<- eq]
-                                      rcases (Exists.choose_spec (hS' hf)) with ⟨_, hQ⟩
-                                      apply hQ
-                                      apply le_generate
-                                      exact hg
+    | top X =>
+        use Presieve.singleton (𝟙 X)
+        constructor
+        · exact cf.retraction_mem (IsSplitEpi.of_iso (𝟙 X))
+        · rw [generate_of_singleton_isSplitEpi (𝟙 X)]
+    | transitive X R S _ _ hR hS =>
+        obtain ⟨P, h1P, h2P⟩ := hR
+        have hS' : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, P f →
+          ∃ P ∈ cf.covering Y, generate P ≤ pullback f S := by
+            intro Y f hf
+            have : R.arrows f := by
+              apply h2P
+              apply le_generate
+              exact hf
+            apply hS
+            simpa
+        let Q : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, P f → Presieve Y := fun Y f p => Exists.choose (hS' p)
+        use P.bind Q
+        constructor
+        · apply multicomposition_stable
+          exact h1P
+          intro Xi f p
+          cases Exists.choose_spec (hS' p)
+          simpa
+        · rw [generate_le_iff (P.bind Q) S]
+          intro Z h Hh
+          obtain ⟨Xi, g, f, hf, hg, eq⟩ := Hh
+          rw [<- eq]
+          rcases (Exists.choose_spec (hS' hf)) with ⟨_, hQ⟩
+          apply hQ
+          apply le_generate
+          exact hg
   · intro hS
     have : S.arrows ∈ cf.covering X := by
       apply cf.heredity
