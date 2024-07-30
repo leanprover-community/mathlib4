@@ -7,6 +7,7 @@ import Mathlib.ModelTheory.Satisfiability
 
 /-!
 # Quantifier Complexity
+
 This file defines quantifier complexity of first-order formulas, and constructs prenex normal forms.
 
 ## Main Definitions
