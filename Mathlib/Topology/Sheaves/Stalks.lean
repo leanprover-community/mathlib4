@@ -92,7 +92,7 @@ def germ (F : X.Presheaf C) (U : Opens X) (x : X) (hx : x ∈ U) : F.obj (op U) 
   colimit.ι ((OpenNhds.inclusion x).op ⋙ F) (op ⟨U, hx⟩)
 
 /-- The germ of a global section of a presheaf at a point. -/
-def Γgerm (F : X.Presheaf C) (x : X) : F.obj (op ⊤) ⟶ stalk F x :=
+abbrev Γgerm (F : X.Presheaf C) (x : X) : F.obj (op ⊤) ⟶ stalk F x :=
   F.germ ⊤ x True.intro
 
 @[reassoc]
@@ -142,12 +142,20 @@ theorem stalkFunctor_map_germ {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x
   colimit.ι_map (whiskerLeft (OpenNhds.inclusion x).op f) (op ⟨U, hx⟩)
 
 attribute [local instance] ConcreteCategory.instFunLike in
-@[simp]
 theorem stalkFunctor_map_germ_apply [ConcreteCategory C]
     {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x ∈ U) (f : F ⟶ G) (s) :
     (stalkFunctor C x).map f (F.germ U x hx s) = G.germ U x hx (f.app (op U) s) := by
   rw [← comp_apply, ← stalkFunctor_map_germ]
   exact (comp_apply _ _ _).symm
+
+-- a variant of `stalkFunctor_map_germ_apply` that makes simpNF happy.
+attribute [local instance] ConcreteCategory.instFunLike in
+@[simp]
+theorem stalkFunctor_map_germ_apply' [ConcreteCategory C]
+    {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x ∈ U) (f : F ⟶ G) (s) :
+    DFunLike.coe (F := F.stalk x ⟶ G.stalk x) ((stalkFunctor C x).map f) (F.germ U x hx s) =
+      G.germ U x hx (f.app (op U) s) :=
+  stalkFunctor_map_germ_apply U x hx f s
 
 variable (C)
 
