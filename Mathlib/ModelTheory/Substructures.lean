@@ -28,7 +28,7 @@ substructures appearing in the algebra library.
 * `FirstOrder.Language.Embedding.domRestrict` and `FirstOrder.Language.Embedding.codRestrict`
   restrict the domain and codomain respectively of first-order embeddings to substructures.
 * `FirstOrder.Language.Substructure.inclusion` is the inclusion embedding between substructures.
-* `FirstOrder.Language.Substructure.SubEquivalence` is defined so that `SubEquivalence L M N` is
+* `FirstOrder.Language.Substructure.PartialEquiv` is defined so that `PartialEquiv L M N` is
   the type of equivalences between substructures of `M` and `N`.
 
 ## Main Results
@@ -889,20 +889,20 @@ theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
 
 variable (L) (M) (N)
 
-/--An equivalence between substructures-/
-structure SubEquivalence where
+/--A partial `L`-equivalence, implemented as an equivalence between substructures.-/
+structure PartialEquiv where
   /--The substructure which is the domain of the equivalence.-/
-  sub_dom : L.Substructure M
+  source : L.Substructure M
   /--The substructure which is the codomain of the equivalence.-/
-  sub_cod : L.Substructure N
+  target : L.Substructure N
   /--The equivalence between the two subdomains.-/
-  equiv : sub_dom ≃[L] sub_cod
+  equiv : source ≃[L] target
 
 @[inherit_doc]
 scoped[FirstOrder] notation:25 M " ≃ₚ[" L "] " N =>
-  FirstOrder.Language.Substructure.SubEquivalence L M N
+  FirstOrder.Language.Substructure.PartialEquiv L M N
 
-namespace SubEquivalence
+namespace PartialEquiv
 
 variable {L} {M} {N}
 
@@ -911,8 +911,8 @@ noncomputable instance instInhabited_self : Inhabited (M ≃ₚ[L] M) :=
 
 /--Maps to the symmetric equivalence.-/
 def symm (f : M ≃ₚ[L] N) : N ≃ₚ[L] M where
-  sub_dom := f.sub_cod
-  sub_cod := f.sub_dom
+  source := f.target
+  target := f.source
   equiv := f.equiv.symm
 
 @[simp]
@@ -920,22 +920,22 @@ theorem symm_symm (f : M ≃ₚ[L] N) : f.symm.symm = f :=
   rfl
 
 @[simp]
-theorem symm_apply (f : M ≃ₚ[L] N) (x : f.sub_cod) : f.symm.equiv x = f.equiv.symm x :=
+theorem symm_apply (f : M ≃ₚ[L] N) (x : f.target) : f.symm.equiv x = f.equiv.symm x :=
   rfl
 
 instance : LE (M ≃ₚ[L] N) :=
-  ⟨fun f g ↦ ∃h : f.sub_dom ≤ g.sub_dom,
+  ⟨fun f g ↦ ∃h : f.source ≤ g.source,
     (subtype _).comp (g.equiv.toEmbedding.comp (Substructure.inclusion h)) =
       (subtype _).comp f.equiv.toEmbedding⟩
 
-theorem le_def (f g : M ≃ₚ[L] N) : f ≤ g ↔ ∃ h : f.sub_dom ≤ g.sub_dom,
+theorem le_def (f g : M ≃ₚ[L] N) : f ≤ g ↔ ∃ h : f.source ≤ g.source,
     (subtype _).comp (g.equiv.toEmbedding.comp (Substructure.inclusion h)) =
       (subtype _).comp f.equiv.toEmbedding :=
   Iff.rfl
 
-theorem le_dom {f g : M ≃ₚ[L] N} : f ≤ g → f.sub_dom ≤ g.sub_dom := fun ⟨le, _⟩ ↦ le
+theorem le_dom {f g : M ≃ₚ[L] N} : f ≤ g → f.source ≤ g.source := fun ⟨le, _⟩ ↦ le
 
-theorem le_cod {f g : M ≃ₚ[L] N} : f ≤ g → f.sub_cod ≤ g.sub_cod := by
+theorem le_cod {f g : M ≃ₚ[L] N} : f ≤ g → f.target ≤ g.target := by
   rintro ⟨_, eq_fun⟩ n hn
   let m := f.equiv.symm ⟨n, hn⟩
   have  : ((subtype _).comp f.equiv.toEmbedding) m = n := by simp only [m, Embedding.comp_apply,
@@ -955,7 +955,7 @@ theorem equiv_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) :
   rw [← (subtype _).comp_inj, subtype_equiv_inclusion h]
   rfl
 
-theorem equiv_inclusion_apply {f g : M ≃ₚ[L] N} (h : f ≤ g) (x : f.sub_dom) :
+theorem equiv_inclusion_apply {f g : M ≃ₚ[L] N} (h : f ≤ g) (x : f.source) :
     g.equiv (Substructure.inclusion (le_dom h) x) =
       Substructure.inclusion (le_cod h) (f.equiv x) := by
   apply (subtype _).injective
@@ -964,8 +964,8 @@ theorem equiv_inclusion_apply {f g : M ≃ₚ[L] N} (h : f ≤ g) (x : f.sub_dom
   rfl
 
 theorem le_iff {f g : M ≃ₚ[L] N} : f ≤ g ↔
-    ∃ le_dom : f.sub_dom ≤ g.sub_dom,
-    ∃ le_cod : f.sub_cod ≤ g.sub_cod,
+    ∃ le_dom : f.source ≤ g.source,
+    ∃ le_cod : f.target ≤ g.target,
     ∀ x, inclusion le_cod (f.equiv x) = g.equiv (inclusion le_dom x) := by
   constructor
   · exact fun h ↦ ⟨le_dom h, le_cod h,
@@ -1008,7 +1008,7 @@ theorem symm_le_iff (f : M ≃ₚ[L] N) (g : N ≃ₚ[L] M) : f.symm ≤ g ↔ f
   ⟨by intro h; rw [← f.symm_symm]; exact monotone_symm h,
     by intro h; rw  [← g.symm_symm]; exact monotone_symm h⟩
 
-theorem ext {f g : M ≃ₚ[L] N} (h_dom : f.sub_dom = g.sub_dom) : (∀ x : M, ∀ h : x ∈ f.sub_dom,
+theorem ext {f g : M ≃ₚ[L] N} (h_dom : f.source = g.source) : (∀ x : M, ∀ h : x ∈ f.source,
     subtype _ (f.equiv ⟨x, h⟩) = subtype _ (g.equiv ⟨x, (h_dom ▸ h)⟩)) → f = g := by
   intro h
   rcases f with ⟨dom_f, cod_f, equiv_f⟩
@@ -1017,8 +1017,8 @@ theorem ext {f g : M ≃ₚ[L] N} (h_dom : f.sub_dom = g.sub_dom) : (∀ x : M, 
   · exact (h x hx).symm
   · exact h x hx
 
-theorem ext_iff {f g : M ≃ₚ[L] N} : f = g ↔ ∃ h_dom : f.sub_dom = g.sub_dom,
-    ∀ x : M, ∀ h : x ∈ f.sub_dom,
+theorem ext_iff {f g : M ≃ₚ[L] N} : f = g ↔ ∃ h_dom : f.source = g.source,
+    ∀ x : M, ∀ h : x ∈ f.source,
     subtype _ (f.equiv ⟨x, h⟩) = subtype _ (g.equiv ⟨x, (h_dom ▸ h)⟩) := by
   constructor
   · intro h_eq
@@ -1027,90 +1027,90 @@ theorem ext_iff {f g : M ≃ₚ[L] N} : f = g ↔ ∃ h_dom : f.sub_dom = g.sub_
     exact ⟨rfl, fun _ _ ↦ rfl⟩
   · rintro ⟨h, H⟩; exact ext h H
 
-theorem monotone_dom : Monotone (fun f : M ≃ₚ[L] N ↦ f.sub_dom) := fun _ _ ↦ le_dom
+theorem monotone_dom : Monotone (fun f : M ≃ₚ[L] N ↦ f.source) := fun _ _ ↦ le_dom
 
-theorem monotone_cod : Monotone (fun f : M ≃ₚ[L] N ↦ f.sub_cod) := fun _ _ ↦ le_cod
+theorem monotone_cod : Monotone (fun f : M ≃ₚ[L] N ↦ f.target) := fun _ _ ↦ le_cod
 
-/--Restriction of a subequivalence to a substructure of the domain.-/
-noncomputable def dom_restrict (f : M ≃ₚ[L] N) {A : L.Substructure M} (h : A ≤ f.sub_dom) :
+/--Restriction of a partial equivalence to a substructure of the domain.-/
+noncomputable def dom_restrict (f : M ≃ₚ[L] N) {A : L.Substructure M} (h : A ≤ f.source) :
     M ≃ₚ[L] N := by
   let g := (subtype _).comp (f.equiv.toEmbedding.comp (A.inclusion h))
   exact {
-    sub_dom := A
-    sub_cod := g.toHom.range
+    source := A
+    target := g.toHom.range
     equiv := g.equivRange
   }
 
-theorem dom_restrict_le (f : M ≃ₚ[L] N) {A : L.Substructure M} (h : A ≤ f.sub_dom) :
+theorem dom_restrict_le (f : M ≃ₚ[L] N) {A : L.Substructure M} (h : A ≤ f.source) :
     f.dom_restrict h ≤ f := ⟨h, rfl⟩
 
-theorem le_dom_restrict (f g : M ≃ₚ[L] N) {A : L.Substructure M} (hf : f.sub_dom ≤ A)
-    (hg : A ≤ g.sub_dom) (hfg : f ≤ g) : f ≤ g.dom_restrict hg :=
+theorem le_dom_restrict (f g : M ≃ₚ[L] N) {A : L.Substructure M} (hf : f.source ≤ A)
+    (hg : A ≤ g.source) (hfg : f ≤ g) : f ≤ g.dom_restrict hg :=
   ⟨hf, by rw [← (subtype_equiv_inclusion hfg)]; rfl⟩
 
-/--Restriction of a subequivalence to a substructure of the codomain.-/
-noncomputable def cod_restrict (f : M ≃ₚ[L] N) {A : L.Substructure N} (h : A ≤ f.sub_cod) :
+/--Restriction of a partial equivalence to a substructure of the codomain.-/
+noncomputable def cod_restrict (f : M ≃ₚ[L] N) {A : L.Substructure N} (h : A ≤ f.target) :
     M ≃ₚ[L] N :=
   (f.symm.dom_restrict h).symm
 
-theorem cod_restrict_le (f : M ≃ₚ[L] N) {A : L.Substructure N} (h : A ≤ f.sub_cod) :
+theorem cod_restrict_le (f : M ≃ₚ[L] N) {A : L.Substructure N} (h : A ≤ f.target) :
     cod_restrict f h ≤ f :=
   (symm_le_iff _ _).2 (f.symm.dom_restrict_le h)
 
-theorem le_cod_restrict (f g : M ≃ₚ[L] N) {A : L.Substructure N} (hf : f.sub_cod ≤ A)
-    (hg : A ≤ g.sub_cod) (hfg : f ≤ g) : f ≤ g.cod_restrict hg :=
+theorem le_cod_restrict (f g : M ≃ₚ[L] N) {A : L.Substructure N} (hf : f.target ≤ A)
+    (hg : A ≤ g.target) (hfg : f ≤ g) : f ≤ g.cod_restrict hg :=
   (symm_le_iff _ _).1 (le_dom_restrict f.symm g.symm hf hg (monotone_symm hfg))
 
-/--Given a subequivalence which has the whole structure as domain,
+/--Given a partial equivalence which has the whole structure as domain,
 returns the corresponding embedding.-/
-noncomputable def dom_top_toEmbedding {f : M ≃ₚ[L] N} (h : f.sub_dom = ⊤) : M ↪[L] N :=
+noncomputable def dom_top_toEmbedding {f : M ≃ₚ[L] N} (h : f.source = ⊤) : M ↪[L] N :=
   (subtype _).comp ((h ▸ f.equiv.toEmbedding).comp Substructure.topEquiv.symm.toEmbedding)
 
 @[simp]
-theorem dom_top_toEmbedding_apply {f : M ≃ₚ[L] N} (h : f.sub_dom = ⊤) (m : M) :
+theorem dom_top_toEmbedding_apply {f : M ≃ₚ[L] N} (h : f.source = ⊤) (m : M) :
     dom_top_toEmbedding h m = f.equiv ⟨m, h.symm ▸ mem_top m⟩ := by
   rcases f with ⟨dom, cod, g⟩
   cases h
   rfl
 
-/--Given a subequivalence which has the whole structure as domain and
+/--Given a partial equivalence which has the whole structure as domain and
 as codomain, returns the corresponding equivalence.-/
-noncomputable def dom_cod_top_toEquiv {f : M ≃ₚ[L] N} (h_dom : f.sub_dom = ⊤)
-    (h_cod : f.sub_cod = ⊤) : M ≃[L] N :=
+noncomputable def dom_cod_top_toEquiv {f : M ≃ₚ[L] N} (h_dom : f.source = ⊤)
+    (h_cod : f.target = ⊤) : M ≃[L] N :=
   (topEquiv (M := N)).comp ((h_dom ▸ h_cod ▸ f.equiv).comp (topEquiv (M := M)).symm)
 
 @[simp]
-theorem dom_cod_top_toEquiv_toEmbedding {f : M ≃ₚ[L] N} (h_dom : f.sub_dom = ⊤)
-    (h_cod : f.sub_cod = ⊤) :
+theorem dom_cod_top_toEquiv_toEmbedding {f : M ≃ₚ[L] N} (h_dom : f.source = ⊤)
+    (h_cod : f.target = ⊤) :
     (dom_cod_top_toEquiv h_dom h_cod).toEmbedding = dom_top_toEmbedding h_dom := by
   rcases f with ⟨dom, cod, g⟩
   cases h_dom
   cases h_cod
   rfl
 
-/--Map of a self-subEquivalence through an embedding.-/
+/--Map of a self-partial equivalence through an embedding.-/
 noncomputable def map (f : M ↪[L] N) (g : M ≃ₚ[L] M) : N ≃ₚ[L] N where
-  sub_dom := g.sub_dom.map f.toHom
-  sub_cod := g.sub_cod.map f.toHom
-  equiv := (f.substructureEquivMap g.sub_cod).comp <|
-    g.equiv.comp (f.substructureEquivMap g.sub_dom).symm
+  source := g.source.map f.toHom
+  target := g.target.map f.toHom
+  equiv := (f.substructureEquivMap g.target).comp <|
+    g.equiv.comp (f.substructureEquivMap g.source).symm
 
 @[simp]
-theorem map_dom (f : M ↪[L] N) (g : M ≃ₚ[L] M) : (g.map f).sub_dom = g.sub_dom.map f.toHom := rfl
+theorem map_dom (f : M ↪[L] N) (g : M ≃ₚ[L] M) : (g.map f).source = g.source.map f.toHom := rfl
 
 @[simp]
-theorem map_cod (f : M ↪[L] N) (g : M ≃ₚ[L] M) : (g.map f).sub_cod = g.sub_cod.map f.toHom := rfl
+theorem map_cod (f : M ↪[L] N) (g : M ≃ₚ[L] M) : (g.map f).target = g.target.map f.toHom := rfl
 
 theorem map_commutes (f : M ↪[L] N) (g : M ≃ₚ[L] M) :
-    (g.map f).equiv.comp (f.substructureEquivMap g.sub_dom) =
-      (f.substructureEquivMap g.sub_cod).comp g.equiv := by
+    (g.map f).equiv.comp (f.substructureEquivMap g.source) =
+      (f.substructureEquivMap g.target).comp g.equiv := by
   unfold map
   ext
   simp only [Equiv.comp_apply, Equiv.symm_apply_apply, Embedding.substructureEquivMap_apply]
 
-theorem map_commutes_apply (f : M ↪[L] N) (g : M ≃ₚ[L] M) (m : g.sub_dom) :
-    (g.map f).equiv ⟨f m, g.sub_dom.apply_coe_mem_map _ _⟩ =
-      ⟨f (g.equiv m), g.sub_cod.apply_coe_mem_map _ _⟩ := by
+theorem map_commutes_apply (f : M ↪[L] N) (g : M ≃ₚ[L] M) (m : g.source) :
+    (g.map f).equiv ⟨f m, g.source.apply_coe_mem_map _ _⟩ =
+      ⟨f (g.equiv m), g.target.apply_coe_mem_map _ _⟩ := by
   exact congr_fun (congr_arg DFunLike.coe (g.map_commutes f)) m
 
 theorem map_monotone (f : M ↪[L] N) : Monotone (fun g : M ≃ₚ[L] M ↦ g.map f) := by
@@ -1126,50 +1126,48 @@ theorem map_monotone (f : M ↪[L] N) : Monotone (fun g : M ≃ₚ[L] M ↦ g.ma
   simp only [Embedding.coe_toHom, Equiv.comp_apply, coe_inclusion, map_coe, Set.coe_inclusion,
     Embedding.substructureEquivMap_apply, Set.inclusion_mk, EmbeddingLike.apply_eq_iff_eq]
   let ⟨_, _, eq⟩ := le_iff.1 h
-  have eq := congr_arg (Subtype.val) (eq ((Equiv.symm (Embedding.substructureEquivMap f g.sub_dom))
-    { val := f u, property := (g.sub_dom.mem_map).2 ⟨u, u_mem, rfl⟩}))
+  have eq := congr_arg (Subtype.val) (eq ((Equiv.symm (Embedding.substructureEquivMap f g.source))
+    { val := f u, property := (g.source.mem_map).2 ⟨u, u_mem, rfl⟩}))
   simp only [coe_inclusion, Set.coe_inclusion] at eq
   rw [← coe_inclusion] at eq
   rw [eq, Subtype.coe_inj]
   apply congr_arg g'.equiv
   apply Subtype.coe_injective
-  change subtype _ ((Equiv.symm (Embedding.substructureEquivMap f g.sub_dom))
-    (f.substructureEquivMap g.sub_dom ⟨u, u_mem⟩)) =
-    subtype _ ((Equiv.symm (Embedding.substructureEquivMap f g'.sub_dom))
-      (f.substructureEquivMap g'.sub_dom ⟨u, le_dom h u_mem⟩))
+  change subtype _ ((Equiv.symm (Embedding.substructureEquivMap f g.source))
+    (f.substructureEquivMap g.source ⟨u, u_mem⟩)) =
+    subtype _ ((Equiv.symm (Embedding.substructureEquivMap f g'.source))
+      (f.substructureEquivMap g'.source ⟨u, le_dom h u_mem⟩))
   simp only [Equiv.symm_apply_apply, coeSubtype]
 
-
-
-end SubEquivalence
+end PartialEquiv
 
 end Substructure
 
 namespace Embedding
 
-/--Given an embedding, returns the corresponding subequivalence with top as domain.-/
-noncomputable def toSubEquivalence (f : M ↪[L] N) : M ≃ₚ[L] N :=
+/--Given an embedding, returns the corresponding partial equivalence with `⊤` as domain.-/
+noncomputable def toPartialEquiv (f : M ↪[L] N) : M ≃ₚ[L] N :=
   ⟨⊤, f.toHom.range, f.equivRange.comp (Substructure.topEquiv)⟩
 
-theorem toSubEquivalence_injective :
-    Function.Injective (fun f : M ↪[L] N ↦ f.toSubEquivalence) := by
+theorem toPartialEquiv_injective :
+    Function.Injective (fun f : M ↪[L] N ↦ f.toPartialEquiv) := by
   intro _ _ h
   ext
-  rw [Substructure.SubEquivalence.ext_iff] at h
+  rw [Substructure.PartialEquiv.ext_iff] at h
   rcases h with ⟨_, H⟩
   exact H _ (Substructure.mem_top _)
 
 @[simp]
-theorem toEmbedding_toSubEquivalence (f : M ↪[L] N) :
-    Substructure.SubEquivalence.dom_top_toEmbedding (f := f.toSubEquivalence) rfl = f :=
+theorem toEmbedding_toPartialEquiv (f : M ↪[L] N) :
+    Substructure.PartialEquiv.dom_top_toEmbedding (f := f.toPartialEquiv) rfl = f :=
   rfl
 
 @[simp]
-theorem toSubEquivalence_toEmbedding {f :  M ≃ₚ[L] N} (h : f.sub_dom = ⊤) :
-    (Substructure.SubEquivalence.dom_top_toEmbedding h).toSubEquivalence = f := by
+theorem toPartialEquiv_toEmbedding {f :  M ≃ₚ[L] N} (h : f.source = ⊤) :
+    (Substructure.PartialEquiv.dom_top_toEmbedding h).toPartialEquiv = f := by
   rcases f with ⟨_, _, _⟩
   cases h
-  apply Substructure.SubEquivalence.ext
+  apply Substructure.PartialEquiv.ext
   intro _ _
   rfl; rfl
 
