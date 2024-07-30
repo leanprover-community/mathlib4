@@ -3,6 +3,7 @@ Copyright (c) 2024 Jineon Back and Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.RingTheory.UniqueFactorizationDomain
 
 /-!
@@ -40,6 +41,7 @@ variable {k : Type _} [Field k]
 -- `CancelCommMonoidWithZero` is required by `UniqueFactorizationMonoid`
 variable {α : Type _} [CancelCommMonoidWithZero α] [NormalizationMonoid α]
   [UniqueFactorizationMonoid α]
+variable {R : Type _} [CommRing R] [IsDomain R] [NormalizationMonoid R] [UniqueFactorizationMonoid R]
 
 /-- The finite set of prime factors of an element in a unique factorization monoid. -/
 def primeFactors (a : α) : Finset α :=
@@ -99,3 +101,55 @@ theorem radical_prime_pow {a : α} (ha : Prime a) {n : ℕ} (hn : 1 ≤ n) :
     radical (a ^ n) = normalize a := by
   rw [radical_pow a hn]
   exact radical_prime ha
+
+
+-- Theorems for commutative rings
+
+/-- Coprime elements have disjoint prime factors (as multisets). -/
+private theorem IsCoprime.disjoint_normalizedFactors {a b : R} (hc : IsCoprime a b) :
+    (normalizedFactors a).Disjoint (normalizedFactors b) := by
+  intro x hxa hxb
+  have x_dvd_a := dvd_of_mem_normalizedFactors hxa
+  have x_dvd_b := dvd_of_mem_normalizedFactors hxb
+  have xp := prime_of_normalized_factor x hxa
+  exact xp.not_unit (hc.isUnit_of_dvd' x_dvd_a x_dvd_b)
+
+/-- Coprime elements have disjoint prime factors (as finsets). -/
+private theorem IsCoprime.disjoint_primeFactors {a b : R} (hc : IsCoprime a b) :
+    Disjoint (primeFactors a) (primeFactors b) :=
+  Multiset.disjoint_toFinset.mpr (hc.disjoint_normalizedFactors)
+
+private theorem IsCoprime.hMul_primeFactors_disjUnion {a b : R} (ha : a ≠ 0) (hb : b ≠ 0)
+    (hc : IsCoprime a b) :
+    primeFactors (a * b) = (primeFactors a).disjUnion (primeFactors b) hc.disjoint_primeFactors := by
+  rw [Finset.disjUnion_eq_union]
+  simp_rw [primeFactors]
+  rw [normalizedFactors_mul ha hb, Multiset.toFinset_add]
+
+@[simp]
+theorem radical_neg_one : radical (-1 : R) = 1 :=
+  radical_unit_eq_one isUnit_one.neg
+
+/-- Radical is multiplicative for coprime elements. -/
+theorem radical_hMul {a b : R} (hc : IsCoprime a b) :
+    radical (a * b) = (radical a) * (radical b) := by
+  by_cases ha : a = 0
+  · subst ha; rw [isCoprime_zero_left] at hc
+    simp only [MulZeroClass.zero_mul, radical_zero_eq, one_mul, radical_unit_eq_one hc]
+  by_cases hb : b = 0
+  · subst hb; rw [isCoprime_zero_right] at hc
+    simp only [MulZeroClass.mul_zero, radical_zero_eq, mul_one, radical_unit_eq_one hc]
+  simp_rw [radical]
+  rw [hc.hMul_primeFactors_disjUnion ha hb]
+  rw [Finset.prod_disjUnion hc.disjoint_primeFactors]
+
+theorem radical_neg {a : R} : radical (-a) = radical a :=
+  neg_one_mul a ▸ (radical_eq_of_associated <| associated_unit_mul_left a (-1) isUnit_one.neg)
+
+-- TODO: This may holds for "nontrivial" monoids - do not need ring assumption.
+theorem radical_ne_zero (a : R) : radical a ≠ 0 := by
+  rw [radical, ← Finset.prod_val]
+  apply Multiset.prod_ne_zero
+  rw [primeFactors]
+  simp only [Multiset.toFinset_val, Multiset.mem_dedup]
+  exact zero_not_mem_normalizedFactors _
