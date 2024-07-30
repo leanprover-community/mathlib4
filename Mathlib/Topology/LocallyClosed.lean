@@ -3,7 +3,8 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.LocalAtTarget
+import Mathlib.Topology.Constructions
+import Mathlib.Tactic.TFAE
 
 /-!
 # Locally closed sets
@@ -29,18 +30,6 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X} {
 open scoped Topology Set.Notation
 
 open Set
-
-/--
-The coborder is defined as the complement of `closure s \ s`,
-or the union of `s` and the complement of `∂(s)`.
-This is the largest set such that `s` is closed in, and `s` is locally closed if and only if
-`coborder s` is open.
-
-This is unnamed in the literature, and this name is due to the fact that `coborder s = (border sᶜ)ᶜ`
-where `border s = s \ interior s` is the border in the sense of Hausdorff.
--/
-def coborder (s : Set X) : Set X :=
-  (closure s \ s)ᶜ
 
 lemma subset_coborder :
     s ⊆ coborder s := by
@@ -98,12 +87,6 @@ lemma OpenEmbedding.coborder_preimage (hf : OpenEmbedding f) (s : Set Y) :
 lemma isClosed_preimage_val_coborder :
     IsClosed (coborder s ↓∩ s) := by
   rw [isClosed_preimage_val, inter_eq_right.mpr subset_coborder, coborder_inter_closure]
-
-/--
-A set is locally closed if it is the intersection of some open set and some closed set.
-Also see `isLocallyClosed_tfae`.
--/
-def IsLocallyClosed (s : Set X) : Prop := ∃ (U Z : Set X), IsOpen U ∧ IsClosed Z ∧ s = U ∩ Z
 
 lemma IsOpen.isLocallyClosed (hs : IsOpen s) : IsLocallyClosed s :=
   ⟨_, _, hs, isClosed_univ, (inter_univ _).symm⟩
@@ -202,13 +185,3 @@ alias ⟨IsLocallyClosed.isOpen_coborder, _⟩ := isLocallyClosed_iff_isOpen_cob
 lemma IsLocallyClosed.isOpen_preimage_val_closure (hs : IsLocallyClosed s) :
     IsOpen (closure s ↓∩ s) :=
   ((isLocallyClosed_tfae s).out 0 4).mp hs
-
-open TopologicalSpace
-
-variable {ι : Type*} {U : ι → Opens Y} (hU : iSup U = ⊤)
-
-theorem isLocallyClosed_iff_coe_preimage_of_iSup_eq_top (s : Set Y) :
-    IsLocallyClosed s ↔ ∀ i, IsLocallyClosed ((↑) ⁻¹' s : Set (U i)) := by
-  simp_rw [isLocallyClosed_iff_isOpen_coborder]
-  rw [isOpen_iff_coe_preimage_of_iSup_eq_top hU]
-  exact forall_congr' fun i ↦ by rw [(U i).isOpen.openEmbedding_subtype_val.coborder_preimage]
