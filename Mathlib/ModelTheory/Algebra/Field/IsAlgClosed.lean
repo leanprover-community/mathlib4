@@ -70,7 +70,7 @@ noncomputable def monicPolyEquivFin [CommRing K] [Nontrivial K] (n : ℕ) :
             else if i = n then 1 else 0)
           (Set.Finite.subset (Set.finite_le_nat n) <| by
               intro i
-              simp
+              simp only [Function.mem_support, ne_eq, Set.mem_setOf_eq]
               split_ifs <;> simp_all [le_iff_lt_or_eq])
       have hpn : p.natDegree = n := by
         refine le_antisymm ?_ ?_
