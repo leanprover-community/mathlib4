@@ -34,13 +34,13 @@ topological spaces is an embedding and the induced morphisms of stalks are all s
 @[mk_iff]
 class IsPreimmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
   base_embedding : Embedding f.1.base
-  surj_on_stalks : ∀ x, Function.Surjective (PresheafedSpace.stalkMap f.1 x)
+  surj_on_stalks : ∀ x, Function.Surjective (f.stalkMap x)
 
 lemma Scheme.Hom.embedding {X Y : Scheme} (f : Hom X Y) [IsPreimmersion f] : Embedding f.1.base :=
   IsPreimmersion.base_embedding
 
 lemma Scheme.Hom.stalkMap_surjective {X Y : Scheme} (f : Hom X Y) [IsPreimmersion f] (x) :
-    Function.Surjective (PresheafedSpace.stalkMap f.1 x) :=
+    Function.Surjective (f.stalkMap x) :=
   IsPreimmersion.surj_on_stalks x
 
 lemma isPreimmersion_eq_inf :
@@ -51,7 +51,7 @@ lemma isPreimmersion_eq_inf :
 
 /-- Being surjective on stalks is local at the target. -/
 instance isSurjectiveOnStalks_isLocalAtTarget : IsLocalAtTarget
-    (stalkwise (fun f ↦ Function.Surjective f)) :=
+    (stalkwise (Function.Surjective ·)) :=
   stalkwiseIsLocalAtTarget_of_respectsIso surjective_respectsIso
 
 namespace IsPreimmersion
@@ -67,7 +67,7 @@ instance : MorphismProperty.IsMultiplicative @IsPreimmersion where
   id_mem _ := inferInstance
   comp_mem {X Y Z} f g hf hg := by
     refine ⟨hg.base_embedding.comp hf.base_embedding, fun x ↦ ?_⟩
-    erw [PresheafedSpace.stalkMap.comp]
+    rw [Scheme.stalkMap_comp]
     exact (hf.surj_on_stalks x).comp (hg.surj_on_stalks (f.1.1 x))
 
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion f]
@@ -88,7 +88,7 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion g]
     rwa [← g.embedding.of_comp_iff]
   surj_on_stalks x := by
     have h := (f ≫ g).stalkMap_surjective x
-    erw [Scheme.comp_val, PresheafedSpace.stalkMap.comp] at h
+    rw [Scheme.stalkMap_comp] at h
     exact Function.Surjective.of_comp h
 
 theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion g] :

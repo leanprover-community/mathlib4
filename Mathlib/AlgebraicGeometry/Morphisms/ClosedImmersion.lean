@@ -47,10 +47,6 @@ lemma closedEmbedding {X Y : Scheme} (f : X ⟶ Y)
     [IsClosedImmersion f] : ClosedEmbedding f.1.base :=
   IsClosedImmersion.base_closed
 
-lemma surjective_stalkMap {X Y : Scheme} (f : X ⟶ Y)
-    [IsClosedImmersion f] (x : X) : Function.Surjective (f.stalkMap x) :=
-  IsClosedImmersion.surj_on_stalks x
-
 lemma eq_inf : @IsClosedImmersion = (topologically ClosedEmbedding) ⊓
     stalkwise (fun f ↦ Function.Surjective f) := by
   ext X Y f
@@ -132,7 +128,7 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion 
         ← Set.image_comp]
       exact ClosedEmbedding.isClosedMap h _ hZ
   surj_on_stalks x := by
-    have h := surjective_stalkMap (f ≫ g) x
+    have h := (f ≫ g).stalkMap_surjective x
     simp_rw [Scheme.comp_val, Scheme.stalkMap_comp] at h
     exact Function.Surjective.of_comp h
 
