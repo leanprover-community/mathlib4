@@ -888,7 +888,7 @@ theorem Memℒp.norm_rpow_div {f : α → E} (hf : Memℒp f p μ) (q : ℝ≥0�
   by_cases q_top : q = ∞
   · simp [q_top]
   by_cases q_zero : q = 0
-  · simp [q_zero]
+  · simp only [q_zero, ENNReal.zero_toReal, Real.rpow_zero]
     by_cases p_zero : p = 0
     · simp [p_zero]
     rw [ENNReal.div_zero p_zero]
@@ -960,7 +960,8 @@ theorem toLp_compMeasurePreserving {g : β → E} (hg : Memℒp g p μb) (hf : M
 theorem indicatorConstLp_compMeasurePreserving {s : Set β} (hs : MeasurableSet s)
     (hμs : μb s ≠ ∞) (c : E) (hf : MeasurePreserving f μ μb) :
     Lp.compMeasurePreserving f hf (indicatorConstLp p hs hμs c) =
-      indicatorConstLp p (hs.preimage hf.measurable) (by rwa [hf.measure_preimage hs]) c :=
+      indicatorConstLp p (hs.preimage hf.measurable)
+        (by rwa [hf.measure_preimage hs.nullMeasurableSet]) c :=
   rfl
 
 variable (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]

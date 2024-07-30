@@ -65,7 +65,7 @@ structure Context where
   C : Expr
 
 /-- Populate a `context` object for evaluating `e`. -/
-def mkContext (e : Expr) : MetaM (Option Context) := do
+def mkContext? (e : Expr) : MetaM (Option Context) := do
   match (← inferType e).getAppFnArgs with
   | (``Quiver.Hom, #[_, _, f, _]) =>
     let C ← inferType f
@@ -666,7 +666,7 @@ open Mathlib.Tactic.Monoidal
 -/
 elab "normalize% " t:term:51 : term => do
   let e ← Lean.Elab.Term.elabTerm t none
-  let some ctx ← mkContext e
+  let some ctx ← mkContext? e
     | throwError "{← ppExpr e} is not a morphism"
   MonoidalM.run ctx do (← eval e).expr.e
 
@@ -678,7 +678,7 @@ open Lean Elab Meta Tactic in
 def mkEq (e : Expr) : MetaM Expr := do
   let some (_, e₁, e₂) := (← whnfR <| e).eq?
     | throwError "monoidal_nf requires an equality goal"
-  let some ctx ← mkContext e₁
+  let some ctx ← mkContext? e₁
     | throwError "the lhs and rhs must be morphisms"
   MonoidalM.run ctx do
     let ⟨e₁', p₁⟩ ← eval e₁
