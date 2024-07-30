@@ -67,6 +67,11 @@ structure Kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] where
 
 @[deprecated (since := "2024-07-22")] alias kernel := Kernel
 
+scoped notation "Kernel[" mα "]" α:arg β:arg => @Kernel α β mα _
+scoped notation "Kernel[" mα ", " mβ "]" α:arg β:arg => @Kernel α β mα mβ
+
+initialize_simps_projections Kernel (toFun → apply)
+
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 namespace Kernel
