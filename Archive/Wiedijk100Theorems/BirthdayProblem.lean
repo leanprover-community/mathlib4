@@ -7,8 +7,6 @@ import Mathlib.Data.Fintype.CardEmbedding
 import Mathlib.Probability.CondCount
 import Mathlib.Probability.Notation
 
-#align_import wiedijk_100_theorems.birthday_problem from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
-
 /-!
 # Birthday Problem
 
@@ -31,7 +29,6 @@ theorem birthday :
     2 * ‖Fin 23 ↪ Fin 365‖ < ‖Fin 23 → Fin 365‖ ∧ 2 * ‖Fin 22 ↪ Fin 365‖ > ‖Fin 22 → Fin 365‖ := by
   simp only [Fintype.card_fin, Fintype.card_embedding_eq, Fintype.card_fun]
   decide
-#align theorems_100.birthday Theorems100.birthday
 
 section MeasureTheory
 
@@ -64,7 +61,6 @@ instance : IsProbabilityMeasure (ℙ : Measure (Fin n → Fin (m + 1))) :=
 theorem FinFin.measure_apply {s : Set <| Fin n → Fin m} :
     ℙ s = |s.toFinite.toFinset| / ‖Fin n → Fin m‖ := by
   erw [condCount_univ, Measure.count_apply_finite]
-#align theorems_100.fin_fin.measure_apply Theorems100.FinFin.measure_apply
 
 /-- **Birthday Problem**: first probabilistic interpretation. -/
 theorem birthday_measure :
@@ -86,7 +82,6 @@ theorem birthday_measure :
   iterate 2 left; norm_num
   simp only [Fintype.card_pi]
   norm_num
-#align theorems_100.birthday_measure Theorems100.birthday_measure
 
 end MeasureTheory
 
