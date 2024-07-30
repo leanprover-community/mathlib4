@@ -3,9 +3,6 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Data.Countable.Small
-import Mathlib.Topology.Category.CompHausLike.Limits
-import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Condensed.TopComparison
 /-!
 
@@ -474,10 +471,9 @@ noncomputable def counit :
   naturality X Y g := by
     have := CompHausLike.preregular hs
     apply Sheaf.hom_ext
-    simp only [underlying, functor, id_eq, eq_mpr_eq_cast, Functor.comp_obj, Functor.flip_obj_obj,
+    simp only [functor, id_eq, eq_mpr_eq_cast, Functor.comp_obj, Functor.flip_obj_obj,
       sheafToPresheaf_obj, Functor.id_obj, Functor.comp_map, Functor.flip_obj_map,
-      sheafToPresheaf_map, Functor.id_map]
-    rw [Sheaf.instCategorySheaf_comp_val, Sheaf.instCategorySheaf_comp_val]
+      sheafToPresheaf_map, Sheaf.instCategorySheaf_comp_val, Functor.id_map]
     ext S (f : LocallyConstant _ _)
     simp only [FunctorToTypes.comp, counitApp_app]
     apply locallyConstantCondensed_ext.{u, w} (f.map (g.val.app (op
@@ -499,7 +495,7 @@ theorem locallyConstantAdjunction_left_triangle (X : Type max u w) :
       ((counit P hs).app ((functor P hs).obj X)).val =
     𝟙 (functorToPresheaves.obj X) := by
   ext ⟨S⟩ (f : LocallyConstant _ X)
-  simp only [Functor.id_obj, Functor.comp_obj, underlying_obj, FunctorToTypes.comp, NatTrans.id_app,
+  simp only [Functor.id_obj, Functor.comp_obj, FunctorToTypes.comp, NatTrans.id_app,
     functorToPresheaves_obj_obj, types_id_apply]
   simp only [counit, counitApp_app]
   have := CompHausLike.preregular hs
@@ -531,17 +527,18 @@ noncomputable def adjunction :
     counit := counit P hs
     left_triangle := by
       ext X : 2
-      simp only [id_eq, eq_mpr_eq_cast, Functor.comp_obj, Functor.id_obj, NatTrans.comp_app,
-        underlying_obj, functorToPresheaves_obj_obj, whiskerRight_app, Functor.associator_hom_app,
-        whiskerLeft_app, Category.id_comp, NatTrans.id_app']
+      simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, Functor.flip_obj_obj,
+        sheafToPresheaf_obj, functor_obj_val, functorToPresheaves_obj_obj, coe_of, whiskerRight_app,
+        Functor.associator_hom_app, whiskerLeft_app, Category.id_comp, NatTrans.id_app']
       apply Sheaf.hom_ext
       rw [Sheaf.instCategorySheaf_comp_val, Sheaf.instCategorySheaf_id_val]
       exact locallyConstantAdjunction_left_triangle P hs X
     right_triangle := by
       ext X (x : X.val.obj _)
-      simp only [Functor.comp_obj, Functor.id_obj, underlying_obj, counit, FunctorToTypes.comp,
-        whiskerLeft_app, Functor.associator_inv_app, functor_obj_val, functorToPresheaves_obj_obj,
-        types_id_apply, whiskerRight_app, underlying_map, counitApp_app, NatTrans.id_app']
+      simp only [Functor.comp_obj, Functor.id_obj, Functor.flip_obj_obj, sheafToPresheaf_obj,
+        FunctorToTypes.comp, whiskerLeft_app, unit_app, coe_of, Functor.associator_inv_app,
+        functor_obj_val, functorToPresheaves_obj_obj, types_id_apply, whiskerRight_app,
+        Functor.flip_obj_map, sheafToPresheaf_map, counit_app_val, counitApp_app, NatTrans.id_app']
       have := CompHausLike.preregular hs
       let _ : PreservesFiniteProducts
           ((sheafToPresheaf (coherentTopology (CompHausLike P)) (Type (max u w))).obj X) :=
