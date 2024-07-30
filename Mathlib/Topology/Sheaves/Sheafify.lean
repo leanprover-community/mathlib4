@@ -44,8 +44,8 @@ namespace Sheafify
 The prelocal predicate on functions into the stalks, asserting that the function is equal to a germ.
 -/
 def isGerm : PrelocalPredicate fun x => F.stalk x where
-  pred {U} f := ∃ g : F.obj (op U), ∀ x : U, f x = F.germ x g
-  res := fun i _ ⟨g, p⟩ => ⟨F.map i.op g, fun x => (p (i x)).trans (F.germ_res_apply i x g).symm⟩
+  pred {U} f := ∃ g : F.obj (op U), ∀ x : U, f x = F.germ U x.1 x.2 g
+  res := fun i _ ⟨g, p⟩ => ⟨F.map i.op g, fun x ↦ (p (i x)).trans (F.germ_res_apply i x x.2 g).symm⟩
 
 /-- The local predicate on functions into the stalks,
 asserting that the function is locally equal to a germ.
@@ -66,12 +66,12 @@ sending each section to its germs.
 (This forms the unit of the adjunction.)
 -/
 def toSheafify : F ⟶ F.sheafify.1 where
-  app U f := ⟨fun x => F.germ x f, PrelocalPredicate.sheafifyOf ⟨f, fun x => rfl⟩⟩
+  app U f := ⟨fun x => F.germ _ x x.2 f, PrelocalPredicate.sheafifyOf ⟨f, fun x => rfl⟩⟩
   naturality U U' f := by
     ext x
     apply Subtype.ext -- Porting note: Added `apply`
     ext ⟨u, m⟩
-    exact germ_res_apply F f.unop ⟨u, m⟩ x
+    exact germ_res_apply F f.unop u m x
 
 /-- The natural morphism from the stalk of the sheafification to the original stalk.
 In `sheafifyStalkIso` we show this is an isomorphism.
@@ -85,7 +85,7 @@ theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x)
   obtain ⟨U, m, s, rfl⟩ := F.germ_exist _ t
   use ⟨U, m⟩
   fconstructor
-  · exact fun y => F.germ y s
+  · exact fun y => F.germ _ _ y.2 s
   · exact ⟨PrelocalPredicate.sheafifyOf ⟨s, fun _ => rfl⟩, rfl⟩
 
 theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) := by
@@ -108,7 +108,7 @@ theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) :
     specialize wU ⟨w.1, w.2.2.1⟩
     specialize wV ⟨w.1, w.2.2.2⟩
     dsimp at wU wV ⊢
-    erw [wU, ← F.germ_res iU' ⟨w, w.2.1⟩, wV, ← F.germ_res iV' ⟨w, w.2.1⟩,
+    rw [wU, ← F.germ_res iU' w w.2.1, wV, ← F.germ_res iV' w w.2.1,
       CategoryTheory.types_comp_apply, CategoryTheory.types_comp_apply, e']
 
 /-- The isomorphism between a stalk of the sheafification and the original stalk.
