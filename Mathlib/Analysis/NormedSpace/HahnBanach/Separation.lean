@@ -254,11 +254,25 @@ noncomputable def extendTo𝕜' (fr : E →L[ℝ] ℝ) : E →L[𝕜] 𝕜 where
   cont := by
     change Continuous (fun x => (fr x : 𝕜) - (I : 𝕜) * fr ((I : 𝕜) • x)); fun_prop
 
-
-
-
-  --toFun := extendTo𝕜'' fr.1
-  --map_add' := LinearMap.map_add (extendTo𝕜'' ↑fr)
-  --map_smul' := LinearMap.CompatibleSMul.map_smul (extendTo𝕜'' ↑fr)
+noncomputable def LinTo𝕜' : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜] 𝕜) where
+  toFun := extendTo𝕜'
+  map_add' := by
+    intro f g
+    ext v
+    simp only [ContinuousLinearMap.add_apply]
+    change (fun x => ((f + g) x : 𝕜) - (I : 𝕜) * (f + g) ((I : 𝕜) • x)) v =
+     ((fun x => (f x : 𝕜) - (I : 𝕜) * f ((I : 𝕜) • x)) +
+       (fun x => (g x : 𝕜) - (I : 𝕜) * g ((I : 𝕜) • x))) v
+    simp only [ContinuousLinearMap.add_apply, map_add, Pi.add_apply]
+    ring_nf
+  map_smul' := by
+    intro m f
+    simp only [RingHom.id_apply]
+    ext v
+    change (fun x => ((m • f) x : 𝕜) - (I : 𝕜) * (m • f) ((I : 𝕜) • x)) v =
+       m • ((fun x => (f x : 𝕜) - (I : 𝕜) * f ((I : 𝕜) • x)) v)
+    simp only [ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul, map_mul,
+       @real_smul_eq_coe_mul]
+    ring_nf
 
 end RCLike
