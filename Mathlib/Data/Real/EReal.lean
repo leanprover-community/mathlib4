@@ -1006,7 +1006,7 @@ lemma add_le_of_forall_add_le {a b c : EReal} (h : ∀ d < a, ∀ e < b, d + e �
       exact add_le_of_forall_lt_add_top fun d d_top e e_a ↦ (add_comm d e ▸ h e e_a d d_top)
   | h_top => exact add_le_of_forall_lt_add_top h
 
-lemma le_add_of_forall_gt_add {a b c : EReal} (h₁ : a ≠ ⊥ ∨ b ≠ ⊤) (h₂ : a ≠ ⊤ ∨ b ≠ ⊥)
+lemma le_add_of_forall_le_add {a b c : EReal} (h₁ : a ≠ ⊥ ∨ b ≠ ⊤) (h₂ : a ≠ ⊤ ∨ b ≠ ⊥)
     (h : ∀ d > a, ∀ e > b, c ≤ d + e) :
     c ≤ a + b := by
   rw [← neg_le_neg_iff, neg_add h₁ h₂]
