@@ -20,7 +20,7 @@ This file defines operations on two-sided-ideals of a ring `R`.
 
 ## Main definitions and results
 - `TwoSidedIdeal.span`: the span of `s ⊆ R` is the smallest two-sided-ideal containing the set.
-- `TwoSidedIdeal.mem_span_iff_exists`: an element `x` is in the span of `s` if and only if it can be
+- `TwoSidedIdeal.mem_span_iff_exists`: in a unital and associative ring, an element `x` is in the span of `s` if and only if it can be
   written as a finite sum of the form `∑ i, xL i * y i * xR i` where `xL i ∈ s`, `y i ∈ R`, and
   `xR i ∈ s`.
 
