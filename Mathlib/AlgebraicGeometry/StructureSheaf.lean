@@ -512,7 +512,7 @@ theorem stalkToFiberRingHom_toStalk (x : PrimeSpectrum.Top R) (f : R) :
     -- Porting note: now `algebraMap _ _` needs to be explicitly typed
     stalkToFiberRingHom R x (toStalk R x f) = algebraMap R (Localization.AtPrime x.asIdeal) f :=
   RingHom.ext_iff.1 (toStalk_comp_stalkToFiberRingHom R x) _
-fi
+
 /-- The ring isomorphism between the stalk of the structure sheaf of `R` at a point `p`
 corresponding to a prime ideal in `R` and the localization of `R` at `p`. -/
 @[simps]
