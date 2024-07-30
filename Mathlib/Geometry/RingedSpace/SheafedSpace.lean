@@ -147,7 +147,7 @@ theorem congr_app {X Y : SheafedSpace C} {α β : X ⟶ Y} (h : α = β) (U) :
 variable (C)
 
 /-- The forgetful functor from `SheafedSpace` to `Top`. -/
-protected def forget : SheafedSpace C ⥤ TopCat where
+def forget : SheafedSpace C ⥤ TopCat where
   obj X := (X : TopCat)
   map {X Y} f := f.base
 
@@ -207,19 +207,19 @@ noncomputable instance [HasLimits C] :
 instance [HasLimits C] : HasColimits.{v} (SheafedSpace C) :=
   hasColimits_of_hasColimits_createsColimits forgetToPresheafedSpace
 
-noncomputable instance [HasLimits C] : PreservesColimits (SheafedSpace.forget C) :=
+noncomputable instance [HasLimits C] : PreservesColimits (forget C) :=
   Limits.compPreservesColimits forgetToPresheafedSpace (PresheafedSpace.forget C)
 
 section ConcreteCategory
 
-variable [ConcreteCategory.{v} C] [HasColimits C] [PreservesFilteredColimits (forget C)]
-variable [HasLimits C] [PreservesLimits (forget C)] [(forget C).ReflectsIsomorphisms]
-
-open PresheafedSpace hiding forget
+variable [ConcreteCategory.{v} C] [HasColimits C] [HasLimits C]
+variable  [PreservesLimits (CategoryTheory.forget C)]
+variable [PreservesFilteredColimits (CategoryTheory.forget C)]
+variable [(CategoryTheory.forget C).ReflectsIsomorphisms]
 
 attribute [local instance] ConcreteCategory.instFunLike in
 lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.base = g.base)
-    (h' : ∀ x, stalkMap f x = (Y.presheaf.stalkCongr (h ▸ rfl)).hom ≫ stalkMap g x) :
+    (h' : ∀ x, f.stalkMap x = (Y.presheaf.stalkCongr (h ▸ rfl)).hom ≫ g.stalkMap x) :
     f = g := by
   obtain ⟨f, fc⟩ := f
   obtain ⟨g, gc⟩ := g
@@ -232,13 +232,13 @@ lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.base = g.base)
 
 lemma mono_of_base_injective_of_stalk_epi {X Y : SheafedSpace C} (f : X ⟶ Y)
     (h₁ : Function.Injective f.base)
-    (h₂ : ∀ x, Epi (stalkMap f x)) : Mono f := by
+    (h₂ : ∀ x, Epi (f.stalkMap x)) : Mono f := by
   constructor
   intro Z ⟨g, gc⟩ ⟨h, hc⟩ e
   obtain rfl : g = h := ConcreteCategory.hom_ext _ _ fun x ↦ h₁ congr(($e).base x)
   refine SheafedSpace.hom_stalk_ext ⟨g, gc⟩ ⟨g, hc⟩ rfl fun x ↦ ?_
-  rw [← cancel_epi (stalkMap f (g x)), stalkCongr_hom, stalkSpecializes_refl, Category.id_comp,
-    ← stalkMap.comp ⟨g, gc⟩ f, ← stalkMap.comp ⟨g, hc⟩ f]
+  rw [← cancel_epi (f.stalkMap (g x)), stalkCongr_hom, stalkSpecializes_refl, Category.id_comp,
+    ← PresheafedSpace.stalkMap.comp ⟨g, gc⟩ f, ← PresheafedSpace.stalkMap.comp ⟨g, hc⟩ f]
   congr 1
 
 end ConcreteCategory
