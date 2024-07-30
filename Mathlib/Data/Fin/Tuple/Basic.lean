@@ -861,6 +861,7 @@ theorem insertNth_binop (op : ∀ j, α j → α j → α j) (i : Fin (n + 1)) (
       op j (i.insertNth x p j) (i.insertNth y q j) :=
   insertNth_eq_iff.2 <| by unfold removeNth; simp
 
+section
 variable [∀ i, Preorder (α i)]
 
 theorem insertNth_le_iff {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbove j)} {q : ∀ j, α j} :
@@ -870,6 +871,8 @@ theorem insertNth_le_iff {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbov
 theorem le_insertNth_iff {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbove j)} {q : ∀ j, α j} :
     q ≤ i.insertNth x p ↔ q i ≤ x ∧ (fun j ↦ q (i.succAbove j)) ≤ p := by
   simp [Pi.le_def, forall_iff_succAbove i]
+
+end
 
 open Set
 
