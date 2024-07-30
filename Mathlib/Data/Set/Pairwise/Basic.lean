@@ -293,6 +293,9 @@ lemma pairwiseDisjoint_range_iff {α β : Type*} {f : α → (Set β)} :
   · rintro h _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ hxy
     exact (h x y).resolve_left hxy
 
+lemma _root_.Pairwise.pairwiseDisjoint (h : Pairwise (Disjoint on f)) (s : Set ι) :
+    s.PairwiseDisjoint f := h.set_pairwise s
+
 end PartialOrderBot
 
 section SemilatticeInfBot
