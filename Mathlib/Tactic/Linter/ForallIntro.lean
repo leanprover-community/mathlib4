@@ -160,39 +160,22 @@ run_cmd
     logInfo m!"{← `(command| variable $(⟨A⟩) $(⟨B⟩))}"
 
 partial
-def recombineHave (stx : Syntax) (n : Nat) : CommandElabM (Syntax × Nat) := do
-  if n == 0 then return (stx, 0) else
+def recombineHave {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m]
+    (stx : Syntax) (n : Nat) : m (Syntax × Nat) := do
   match stx with
-    | `(tactic| have $id:haveId $bi0* : ∀ $bi1 $bi2 $bi3*, $body := $t) =>
+    | `(tactic| have $id:haveId $bi0* : ∀ $bi1 $bi2*, $body := $t) =>
       dbg_trace "main '{bi1}'"
       let totVars := (getNumVars? bi1).getD 0 + if bi1.raw.isIdent then 1 else 0
+      let n' := n - totVars
       if totVars ≤ n then
         let bi' := ⟨bi1.raw⟩
-        recombineHave (← `(tactic| have $id:haveId $bi0* $bi' : ∀ $bi2 $bi3*, $body := $t)) (n - totVars)
+        if bi2.isEmpty then
+          recombineHave (← `(tactic| have $id:haveId $bi0* $bi' : $body := $t)) n'
+        else
+          recombineHave (← `(tactic| have $id:haveId $bi0* $bi' : ∀ $bi2*, $body := $t)) n'
       else
         if let #[a, b] := splitVars bi1 n then
-          return (← `(tactic| have $id:haveId $bi0* $(⟨a⟩) : ∀ $(⟨b⟩) $bi2 $bi3*, $body := $t), 0)
-        else
-          return (stx, 0)
-    | `(tactic| have $id:haveId $bi0* : ∀ $bi1:ident $bi3*, $body := $t) =>
-      dbg_trace "ident '{bi1}'"
-      if 1 ≤ n then
-        let bi' := ⟨bi1.raw⟩
-        if bi3.isEmpty then
-          recombineHave (← `(tactic| have $id:haveId $bi0* $bi' : $body := $t)) (n - 1)
-        else
-          recombineHave (← `(tactic| have $id:haveId $bi0* $bi' : ∀ $bi3*, $body := $t)) (n - 1)
-      else
-        return (stx, 0)
-    | `(tactic| have $id:haveId $bi0* : ∀ $bi1, $body := $t) =>
-      let totVars := (getNumVars? bi1).getD 0
-      dbg_trace "here {totVars}"
-      if totVars ≤ n then
-        let bi' := ⟨bi1.raw⟩
-        recombineHave (← `(tactic| have $id:haveId $bi0* $bi' : $body := $t)) (n - totVars)
-      else
-        if let #[a, b] := splitVars bi1 n then
-          return (← `(tactic| have $id:haveId $bi0* $(⟨a⟩) : ∀ $(⟨b⟩), $body := $t), 0)
+          return (← `(tactic| have $id:haveId $bi0* $(⟨a⟩) : ∀ $(⟨b⟩) $bi2*, $body := $t), 0)
         else
           return (stx, 0)
     | _ => return (Syntax.missing, 0)
@@ -200,10 +183,10 @@ def recombineHave (stx : Syntax) (n : Nat) : CommandElabM (Syntax × Nat) := do
 
 #check Parser.Category.binderPred
 run_cmd
-  if let [a, b, c, d, e, True] := [`a, `b, `c, `d, `e, `True].map mkIdent then
+  if let [a, b, c, d, e, True, Nat] := [`a, `b, `c, `d, `e, `True, `Nat].map mkIdent then
     --let stx ← `(bracketedBinder| {$a $b $c $d : $N})
-    let hav ← `(tactic| have : ∀ $a:ident $b:ident, ∀ $c $d $e, $True := sorry)
-    logInfo m!"{← recombineHave hav 5}"
+    let hav ← `(tactic| have : ∀ {$a:ident $b:ident}, ∀ ($c $d : $Nat := 7) $e, $True := sorry)
+    logInfo m!"{← recombineHave hav 0}"
     logInfo m!"{hav}"
 
 run_cmd
