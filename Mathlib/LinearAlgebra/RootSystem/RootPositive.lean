@@ -90,7 +90,6 @@ lemma apply_root_root_zero_iff : B (P.root i) (P.root j) = 0 ↔ P.pairing i j =
 lemma pairing_zero_iff : P.pairing i j = 0 ↔ P.pairing j i = 0 := by
   rw [← apply_root_root_zero_iff B, IsRootPositive.symm P, apply_root_root_zero_iff B]
 
-@[simp]
 lemma coxeterWeight_zero_iff_isOrthogonal : P.coxeterWeight i j = 0 ↔ P.IsOrthogonal i j := by
   rw [coxeterWeight, mul_eq_zero]
   refine ⟨fun h => ?_, fun h => Or.inl h.1⟩
