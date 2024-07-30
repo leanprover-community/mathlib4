@@ -328,23 +328,6 @@ theorem exists_fg_substructure_in_Sigma (S : L.Substructure (DirectLimit G f)) (
   rw [← image_univ, image_image, image_univ, ← eq_y,
     Subtype.range_coe_subtype, Finset.setOf_mem, A_closure]
 
-theorem iSup_range_of_eq_top : ⨆ i, (of L ι G f i).toHom.range = ⊤ :=
-  eq_top_iff.2 (fun x _ ↦ DirectLimit.inductionOn x
-    (fun i _ ↦ le_iSup (fun i ↦ Hom.range (Embedding.toHom (of L ι G f i))) i (mem_range_self _)))
-
-/-- Every finitely generated substructure of the direct limit corresponds to some
-substructure in some component of the directed system. -/
-theorem exists_fg_substructure_in_Sigma (S : L.Substructure (DirectLimit G f)) (S_fg : S.FG) :
-    ∃ i, ∃ T : L.Substructure (G i), T.map (of L ι G f i).toHom = S := by
-  let ⟨A, A_closure⟩ := S_fg
-  let ⟨i, y, eq_y⟩ := exists_quotient_mk'_sigma_mk'_eq G _ (fun a : A ↦ a.1)
-  use i
-  use (Substructure.closure L (range y))
-  rw [Substructure.map_closure]
-  simp only [Embedding.coe_toHom, of_apply]
-  rw [← image_univ, image_image, image_univ, ← eq_y,
-    Subtype.range_coe_subtype, Finset.setOf_mem, A_closure]
-
 variable {P : Type u₁} [L.Structure P] (g : ∀ i, G i ↪[L] P)
 variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 variable (L ι G f)
@@ -487,64 +470,6 @@ noncomputable def Equiv_iSup :
     rw [← rangeLiftInclusion, Hom.mem_range] at hm
     rcases hm with ⟨a, _⟩; use a
     simpa only [F, Embedding.codRestrict_apply', Subtype.mk.injEq]
-  exact ⟨Equiv.ofBijective F ⟨F.injective, F_surj⟩, F.map_fun', F.map_rel'⟩
-
-theorem Equiv_isup_of_apply {i : ι} (x : S i) :
-    Equiv_iSup S (of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i x)
-    = Substructure.inclusion (le_iSup _ _) x := rfl
-
-theorem Equiv_isup_symm_inclusion_apply {i : ι} (x : S i) :
-    (Equiv_iSup S).symm (Substructure.inclusion (le_iSup _ _) x)
-    = of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i x := by
-  apply (Equiv_iSup S).injective
-  simp only [Equiv.apply_symm_apply]
-  rfl
-
-@[simp]
-theorem Equiv_isup_symm_inclusion (i : ι) :
-    (Equiv_iSup S).symm.toEmbedding.comp (Substructure.inclusion (le_iSup _ _))
-    = of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i := by
-  ext x; exact Equiv_isup_symm_inclusion_apply _ x
-
-end DirectLimit
-
-section Substructure
-
-variable [Nonempty ι] [IsDirected ι (· ≤ ·)]
-variable {M N : Type*} [L.Structure M] [L.Structure N] (S : ι →o L.Substructure M)
-
-instance : DirectedSystem (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) where
-  map_self' := fun _ _ _ ↦ rfl
-  map_map' := fun _ _ _ ↦ rfl
-
-namespace DirectLimit
-
-/-- The map from a direct limit of a system of substructures of `M` into `M`. -/
-def liftInclusion :
-    DirectLimit (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) ↪[L] M :=
-  DirectLimit.lift L ι (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h))
-    (fun _ ↦ Substructure.subtype _) (fun _ _ _ _ ↦ rfl)
-
-theorem liftInclusion_of {i : ι} (x : S i) :
-    (liftInclusion S) (of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i x)
-    = Substructure.subtype (S i) x := rfl
-
-lemma rangeLiftInclusion : (liftInclusion S).toHom.range = ⨆ i, S i := by
-  simp_rw [liftInclusion, range_lift, Substructure.range_subtype]
-
-/-- The isomorphism between a direct limit of a system of substructures and their union. -/
-noncomputable def Equiv_iSup :
-    DirectLimit (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) ≃[L]
-    (iSup S : L.Substructure M) := by
-  have liftInclusion_in_sup : ∀ x, liftInclusion S x ∈ (⨆ i, S i) := by
-    simp only [← rangeLiftInclusion, Hom.mem_range, Embedding.coe_toHom]
-    intro x; use x
-  let F := Embedding.codRestrict (⨆ i, S i) _ liftInclusion_in_sup
-  have F_surj : Function.Surjective F := by
-    rintro ⟨m, hm⟩
-    rw [← rangeLiftInclusion, Hom.mem_range] at hm
-    rcases hm with ⟨a, _⟩; use a
-    simpa only [Embedding.codRestrict_apply', Subtype.mk.injEq]
   exact ⟨Equiv.ofBijective F ⟨F.injective, F_surj⟩, F.map_fun', F.map_rel'⟩
 
 theorem Equiv_isup_of_apply {i : ι} (x : S i) :

@@ -802,11 +802,6 @@ theorem codRestrict_apply' (p : L.Substructure N) (f : M ↪[L] N) {h} (x : M) :
   rfl
 
 @[simp]
-theorem codRestrict_apply' (p : L.Substructure N) (f : M ↪[L] N) {h} (x : M) :
-    codRestrict p f h x = ⟨f x, h x⟩ :=
-  rfl
-
-@[simp]
 theorem comp_codRestrict (f : M ↪[L] N) (g : N ↪[L] P) (p : L.Substructure P) (h : ∀ b, g b ∈ p) :
     ((codRestrict p g h).comp f : M ↪[L] p) = codRestrict p (g.comp f) fun _ => h _ :=
   ext fun _ => rfl
@@ -842,11 +837,6 @@ theorem subtype_substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
     (subtype _).comp (f.substructureEquivMap s).toEmbedding = f.comp (subtype _) := by
   ext; rfl
 
-@[simp]
-theorem subtype_substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
-    (subtype _).comp (f.substructureEquivMap s).toEmbedding = f.comp (subtype _) := by
-  ext; rfl
-
 /-- The equivalence between the domain and the range of an embedding `f`. -/
 noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
   toFun := codRestrict f.toHom.range f f.toHom.mem_range_self
@@ -860,10 +850,6 @@ noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
 @[simp]
 theorem equivRange_apply (f : M ↪[L] N) (x : M) : (f.equivRange x : N) = f x :=
   rfl
-
-@[simp]
-theorem subtype_equivRange (f : M ↪[L] N) : (subtype _).comp f.equivRange.toEmbedding = f := by
-  ext; rfl
 
 @[simp]
 theorem subtype_equivRange (f : M ↪[L] N) : (subtype _).comp f.equivRange.toEmbedding = f := by
@@ -885,9 +871,6 @@ namespace Substructure
 /-- The embedding associated to an inclusion of substructures. -/
 def inclusion {S T : L.Substructure M} (h : S ≤ T) : S ↪[L] T :=
   S.subtype.codRestrict _ fun x => h x.2
-
-@[simp]
-theorem inclusion_self (S : L.Substructure M) : inclusion (le_refl S) = Embedding.refl L S := rfl
 
 @[simp]
 theorem inclusion_self (S : L.Substructure M) : inclusion (le_refl S) = Embedding.refl L S := rfl
@@ -955,7 +938,7 @@ theorem le_dom {f g : M ≃ₚ[L] N} : f ≤ g → f.sub_dom ≤ g.sub_dom := fu
 theorem le_cod {f g : M ≃ₚ[L] N} : f ≤ g → f.sub_cod ≤ g.sub_cod := by
   rintro ⟨_, eq_fun⟩ n hn
   let m := f.equiv.symm ⟨n, hn⟩
-  have  : ((subtype _).comp f.equiv.toEmbedding) m = n := by simp only [Embedding.comp_apply,
+  have  : ((subtype _).comp f.equiv.toEmbedding) m = n := by simp only [m, Embedding.comp_apply,
     Equiv.coe_toEmbedding, Equiv.apply_symm_apply, coeSubtype]
   rw [← this, ← eq_fun]
   simp only [Embedding.comp_apply, coe_inclusion, Equiv.coe_toEmbedding, coeSubtype,
