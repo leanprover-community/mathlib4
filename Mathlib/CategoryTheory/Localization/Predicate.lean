@@ -256,15 +256,17 @@ instance : (whiskeringLeftFunctor' L W E).Faithful := by
   · infer_instance
   apply InducedCategory.faithful -- why is it not found automatically ???
 
-lemma full_whiskeringLeft (W) [L.IsLocalization W] : ((whiskeringLeft C D E).obj L).Full :=
+lemma full_whiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*) [Category E] :
+    ((whiskeringLeft C D E).obj L).Full :=
   inferInstanceAs (whiskeringLeftFunctor' L W E).Full
 
-lemma faithful_whiskeringLeft (W) [L.IsLocalization W] : ((whiskeringLeft C D E).obj L).Faithful :=
+lemma faithful_whiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*) [Category E] :
+    ((whiskeringLeft C D E).obj L).Faithful :=
   inferInstanceAs (whiskeringLeftFunctor' L W E).Faithful
 
 variable {E}
 
-theorem natTrans_ext (W) [L.IsLocalization W] {F₁ F₂ : D ⥤ E} (τ τ' : F₁ ⟶ F₂)
+theorem natTrans_ext (L : C ⥤ D) (W) [L.IsLocalization W] {F₁ F₂ : D ⥤ E} (τ τ' : F₁ ⟶ F₂)
     (h : ∀ X : C, τ.app (L.obj X) = τ'.app (L.obj X)) : τ = τ' := by
   haveI := essSurj L W
   ext Y
