@@ -225,9 +225,6 @@ syntax generalizingClause := " generalizing" (ppSpace ident)+
 /- E -/ syntax (name := nthRwLHS) "nth_rw_lhs " num rwRuleSeq (location)? : tactic
 /- E -/ syntax (name := nthRwRHS) "nth_rw_rhs " num rwRuleSeq (location)? : tactic
 
-/- S -/ syntax (name := rwSearch) "rw_search" (config)? rwRuleSeq : tactic
-/- S -/ syntax (name := rwSearch?) "rw_search?" (config)? rwRuleSeq : tactic
-
 /- M -/ syntax (name := piInstanceDeriveField) "pi_instance_derive_field" : tactic
 /- M -/ syntax (name := piInstance) "pi_instance" : tactic
 
@@ -267,8 +264,6 @@ syntax generalizingClause := " generalizing" (ppSpace ident)+
 
 /- N -/ syntax (name := addTacticDoc) (docComment)? "add_tactic_doc " term : command
 
-/- M -/ syntax (name := addHintTactic) "add_hint_tactic " tactic : command
-
 /- S -/ syntax (name := listUnusedDecls) "#list_unused_decls" : command
 
 /- N -/ syntax (name := defReplacer) "def_replacer " ident Parser.Term.optType : command
@@ -281,3 +276,7 @@ syntax generalizingClause := " generalizing" (ppSpace ident)+
 
 /- E -/ syntax (name := assertInstance) "assert_instance " term : command
 /- E -/ syntax (name := assertNoInstance) "assert_no_instance " term : command
+
+end Tactic
+
+end Mathlib
