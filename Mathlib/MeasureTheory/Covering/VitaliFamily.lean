@@ -47,8 +47,7 @@ Vitali relations there)
 
 
 open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure
-
-open Filter MeasureTheory Topology
+open scoped Topology
 
 variable {α : Type*} [MetricSpace α]
 
