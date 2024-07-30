@@ -566,7 +566,8 @@ instance [NoZeroSMulDivisors ℤ M] : NoZeroSMulDivisors ℕ M :=
 
 variable (R M)
 
-theorem NoZeroSMulDivisors.int_of_charZero [CharZero R] : NoZeroSMulDivisors ℤ M :=
+theorem NoZeroSMulDivisors.int_of_charZero [NoZeroSMulDivisors R M] [CharZero R] :
+    NoZeroSMulDivisors ℤ M :=
   ⟨fun {z x} h ↦ by simpa [← smul_one_smul R z x] using h⟩
 
 /-- Only a ring of characteristic zero can can have a non-trivial module without additive or
