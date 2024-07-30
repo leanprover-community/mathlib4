@@ -59,8 +59,7 @@ def coeff (A : HVertexOperator Γ R V W) (n : Γ) : V →ₗ[R] W where
   toFun v := ((of R).symm (A v)).coeff n
   map_add' _ _ := by simp
   map_smul' _ _ := by
-    simp only [map_smul, RingHom.id_apply]
-    exact rfl
+    simp only [map_smul, RingHom.id_apply, of_symm_smul, HahnSeries.smul_coeff]
 
 @[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.coeff := coeff
 
@@ -85,12 +84,8 @@ condition, we produce a heterogeneous vertex operator. -/
 def of_coeff (f : Γ → V →ₗ[R] W)
     (hf : ∀(x : V), (Function.support (f · x)).IsPWO) : HVertexOperator Γ R V W where
   toFun x := (of R) { coeff := fun g => f g x, isPWO_support' := hf x }
-  map_add' _ _ := by
-    ext
-    simp
-  map_smul' _ _ := by
-    simp only [map_smul, RingHom.id_apply]
-    exact rfl
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
 
 @[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.HetVertexOperator.of_coeff := of_coeff
 
@@ -122,14 +117,14 @@ theorem compHahnSeries_add (u v : U) :
     compHahnSeries A B (u + v) = compHahnSeries A B u + compHahnSeries A B v := by
   ext
   simp only [compHahnSeries_coeff, map_add, coeff_apply, HahnSeries.add_coeff', Pi.add_apply]
-  rw [← @HahnSeries.add_coeff]
+  rw [← HahnSeries.add_coeff]
 
 @[simp]
 theorem compHahnSeries_smul (r : R) (u : U) :
     compHahnSeries A B (r • u) = r • compHahnSeries A B u := by
   ext
   simp only [compHahnSeries_coeff, LinearMapClass.map_smul, coeff_apply, HahnSeries.smul_coeff]
-  exact rfl
+  rw [← HahnSeries.smul_coeff]
 
 /-- The composite of two heterogeneous vertex operators, as a heterogeneous vertex operator. -/
 @[simps]
@@ -143,9 +138,8 @@ def comp : HVertexOperator (Γ' ×ₗ Γ) R U W where
   map_smul' := by
     intro r x
     ext g
-    simp only [HahnSeries.ofIterate, compHahnSeries_smul, Equiv.symm_apply_apply, RingHom.id_apply,
-      HahnSeries.smul_coeff, compHahnSeries_coeff, coeff_apply]
-    exact rfl
+    simp only [HahnSeries.ofIterate, compHahnSeries_smul, HahnSeries.smul_coeff,
+      compHahnSeries_coeff, coeff_apply, Equiv.symm_apply_apply, RingHom.id_apply, of_symm_smul]
 
 @[simp]
 theorem comp_coeff (g : Γ' ×ₗ Γ) :

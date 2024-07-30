@@ -7,8 +7,6 @@ import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Testing.SlimCheck.Gen
 
-#align_import testing.slim_check.sampleable from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
-
 /-!
 # `SampleableExt` Class
 
