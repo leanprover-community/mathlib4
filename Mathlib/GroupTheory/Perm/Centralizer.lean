@@ -1065,19 +1065,6 @@ lemma θ_range_eq : MonoidHom.range (θ g) =
   rw [← hφ_ker_eq_θ_range]
   rfl
 
-theorem hψ_range_card' (g : Equiv.Perm α) :
-    Fintype.card (MonoidHom.range (θ g)) = Fintype.card (φ g).ker := by
-  change Fintype.card (MonoidHom.range (θ g) : Set (Perm α)) = _
-  rw [← Nat.card_eq_fintype_card, Set.Nat.card_coe_set_eq, θ_range_eq, ← Subgroup.map_map]
-  rw [Subgroup.coe_map, Set.ncard_image_of_injective _ (by exact MulEquiv.injective _)]
-  rw [Subgroup.coe_map, Set.ncard_image_of_injective _ (Subgroup.subtype_injective _)]
-  rw [← Set.Nat.card_coe_set_eq, Nat.card_eq_fintype_card]
-  rfl
-
-/-
-[Mathlib.GroupTheory.Perm.Cycle.Type]
--/
-
 theorem hψ_range_card (g : Equiv.Perm α) :
     Fintype.card (θ g).range =
       (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod := by
@@ -1159,21 +1146,24 @@ section Centralizer
 open BigOperators Nat OnCycleFactors
 
 -- Should one parenthesize the product ?
-/-- Cardinality of a centralizer in `equiv.perm α` of a given `cycle_type` -/
+/-- Cardinality of the centralizer in `Equiv.Perm α` of a permutation given `cycleType` -/
 theorem conj_stabilizer_card :
     Fintype.card (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g) =
       (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod *
         (∏ n in g.cycleType.toFinset, (g.cycleType.count n)!) := by
-  rw [← Nat.card_eq_fintype_card]
-  rw [Subgroup.card_eq_card_quotient_mul_card_subgroup (φ g).ker]
-  rw [Nat.card_eq_fintype_card]
-  rw [Fintype.card_congr (QuotientGroup.quotientKerEquivRange (φ g)).toEquiv]
-  rw [hφ_range_card]
-  rw [mul_comm]
+  rw [← Nat.card_eq_fintype_card,
+    Subgroup.card_eq_card_quotient_mul_card_subgroup (φ g).ker,
+    Nat.card_eq_fintype_card,
+    Fintype.card_congr (QuotientGroup.quotientKerEquivRange (φ g)).toEquiv,
+    hφ_range_card, mul_comm]
   apply congr_arg₂ _ _ rfl
-  · rw [← hψ_range_card, hψ_range_card', Nat.card_eq_fintype_card]
+  rw [← hψ_range_card, ← Nat.card_eq_fintype_card]
+  change Nat.card (SetLike.coe (φ g).ker) = Nat.card (SetLike.coe (θ g).range)
+  simp only [Set.Nat.card_coe_set_eq, θ_range_eq]
+  rw [← Subgroup.map_map, Subgroup.coe_map, Set.ncard_image_of_injective _ (by exact MulEquiv.injective _)]
+  rw [Subgroup.coe_map, Set.ncard_image_of_injective _ (Subgroup.subtype_injective _)]
 
-theorem _root_.Equiv.Perm.conj_class_card_mul_eq (g : Equiv.Perm α) :
+theorem card_isConj_mul_eq (g : Equiv.Perm α) :
     Fintype.card {h : Equiv.Perm α | IsConj g h} *
       (Fintype.card α - g.cycleType.sum)! *
       g.cycleType.prod *
@@ -1183,26 +1173,24 @@ theorem _root_.Equiv.Perm.conj_class_card_mul_eq (g : Equiv.Perm α) :
   simp only [mul_assoc]
   rw [mul_comm]
   simp only [← mul_assoc]
-  rw [← Equiv.Perm.conj_stabilizer_card g]
-  rw [mul_comm]
+  rw [← conj_stabilizer_card g, mul_comm]
   convert MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct (Equiv.Perm α)) g
   · ext h
     simp only [Set.mem_setOf_eq, ConjAct.mem_orbit_conjAct, isConj_comm]
   · rw [ConjAct.card, Fintype.card_perm]
 
 /-- Cardinality of a conjugacy class in `Equiv.Perm α` of a given `cycleType` -/
-theorem conj_class_card (g : Equiv.Perm α) :
+theorem card_isConj_eq (g : Equiv.Perm α) :
     Fintype.card {h : Equiv.Perm α | IsConj g h} =
       (Fintype.card α)! /
         ((Fintype.card α - g.cycleType.sum)! *
           g.cycleType.prod *
           (∏ n in g.cycleType.toFinset, (g.cycleType.count n)!)) := by
-  rw [← Equiv.Perm.conj_class_card_mul_eq g]
-  rw [Nat.div_eq_of_eq_mul_left _]
-  simp only [← mul_assoc]
+  rw [← card_isConj_mul_eq g, Nat.div_eq_of_eq_mul_left _]
+  · simp only [← mul_assoc]
   -- This is the cardinal of the centralizer
-  rw [← Equiv.Perm.conj_stabilizer_card g]
-  refine' Fintype.card_pos
+  · rw [← Equiv.Perm.conj_stabilizer_card g]
+    apply Fintype.card_pos
 
 variable (α)
 
@@ -1223,13 +1211,9 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     obtain ⟨g, hg⟩ := (Equiv.Perm.exists_with_cycleType_iff α).mpr hm
     suffices (Finset.univ.filter fun h : Equiv.Perm α => h.cycleType = m) =
         Finset.univ.filter fun h : Equiv.Perm α => IsConj g h by
-      rw [this]
-      rw [← Fintype.card_coe]
-      rw [← Equiv.Perm.conj_class_card_mul_eq g]
-      simp only [Fintype.card_coe, ← Set.toFinset_card, mul_assoc]
-      rw [hg]
-      congr
-      · simp only [Finset.univ_filter_exists, Set.toFinset_setOf]
+      rw [this, ← Fintype.card_coe, ← card_isConj_mul_eq g]
+      simp only [Fintype.card_coe, ← Set.toFinset_card, mul_assoc, hg,
+        Finset.univ_filter_exists, Set.toFinset_setOf]
     simp_rw [Equiv.Perm.isConj_iff_cycleType_eq, hg]
     apply Finset.filter_congr
     simp [eq_comm]
@@ -1237,14 +1221,13 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     convert MulZeroClass.zero_mul _
     exact (Equiv.Perm.card_of_cycleType_eq_zero_iff α).mpr hm
 
-/-- Cardinality of the set of `equiv.perm α` of given `cycle_type` -/
+/-- Cardinality of the `Finset` of `Equiv.Perm α` of given `cycleType` -/
 theorem card_of_cycleType (m : Multiset ℕ) :
     (Finset.univ.filter
       fun g : Equiv.Perm α => g.cycleType = m).card =
       if m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a then
         (Fintype.card α)! /
-          ((Fintype.card α - m.sum)! * m.prod *
-            (∏ n in m.toFinset, (m.count n)!))
+          ((Fintype.card α - m.sum)! * m.prod * (∏ n in m.toFinset, (m.count n)!))
       else 0 := by
   split_ifs with hm
   · -- nonempty case
