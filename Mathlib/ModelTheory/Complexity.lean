@@ -11,6 +11,7 @@ import Mathlib.ModelTheory.Satisfiability
 This file defines quantifier complexity of first-order formulas, and constructs prenex normal forms.
 
 ## Main Definitions
+
 * `FirstOrder.Language.BoundedFormula.IsAtomic` defines atomic formulas - those which are
 constructed only from terms and relations.
 * `FirstOrder.Language.BoundedFormula.IsQF` defines quantifier-free formulas - those which are
