@@ -6,8 +6,6 @@ Authors: Praneeth Kolichala
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 
-#align_import algebraic_topology.fundamental_groupoid.punit from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # Fundamental groupoid of punit
 
@@ -36,10 +34,11 @@ instance {x y : FundamentalGroupoid PUnit} : Subsingleton (x ⟶ y) := by
 
 /-- Equivalence of groupoids between fundamental groupoid of punit and punit -/
 def punitEquivDiscretePUnit : FundamentalGroupoid PUnit.{u + 1} ≌ Discrete PUnit.{v + 1} :=
-  CategoryTheory.Equivalence.mk (Functor.star _) ((CategoryTheory.Functor.const _).obj PUnit.unit)
+  CategoryTheory.Equivalence.mk
+    (Functor.star _)
+    ((CategoryTheory.Functor.const _).obj ⟨PUnit.unit⟩)
     -- Porting note: was `by decide`
     (NatIso.ofComponents fun _ => eqToIso (by simp))
     (Functor.punitExt _ _)
-#align fundamental_groupoid.punit_equiv_discrete_punit FundamentalGroupoid.punitEquivDiscretePUnit
 
 end FundamentalGroupoid
