@@ -144,17 +144,17 @@ instance (F : LaxBraidedFunctor C D) {A : C} [CommMon_Class A] : CommMon_Class (
 That is, a lax braided functor `F : C ⥤ D` induces a functor `CommMon_Cat C ⥤ CommMon_Class D`.
 -/
 @[simps!]
-def mapCommMon (F : LaxBraidedFunctor C D) : CommMon_Cat C ⥤ CommMon_Cat D where
+def mapCommMon_Cat (F : LaxBraidedFunctor C D) : CommMon_Cat C ⥤ CommMon_Cat D where
   obj A := CommMon_Cat.mk (F.obj A.X)
   map f := Mon_Cat.mkHom <| F.toLaxMonoidalFunctor.mapMonCat.map f
 
 variable (C) (D)
 
 -- Porting note (#10688): added @[simps] to ease automation
-/-- `mapCommMon` is functorial in the lax braided functor. -/
+/-- `mapCommMon_Cat` is functorial in the lax braided functor. -/
 @[simps]
-def mapCommMonFunctor : LaxBraidedFunctor C D ⥤ CommMon_Cat C ⥤ CommMon_Cat D where
-  obj := mapCommMon
+def mapCommMon_CatFunctor : LaxBraidedFunctor C D ⥤ CommMon_Cat C ⥤ CommMon_Cat D where
+  obj := mapCommMon_Cat
   map α :=
     { app := fun A => { hom := α.app A.X } }
 
@@ -171,8 +171,8 @@ variable (C)
 /-- Implementation of `CommMon_Class.equivLaxBraidedFunctorPUnit`. -/
 @[simps]
 def laxBraidedToCommMon : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ⥤ CommMon_Cat C where
-  obj F := (F.mapCommMon : CommMon_Cat _ ⥤ CommMon_Cat C).obj (.mk (𝟙_ (Discrete PUnit.{u+1})))
-  map α := ((mapCommMonFunctor (Discrete PUnit.{u+1}) C).map α).app _
+  obj F := (F.mapCommMon_Cat : CommMon_Cat _ ⥤ CommMon_Cat C).obj (.mk (𝟙_ (Discrete PUnit.{u+1})))
+  map α := ((mapCommMon_CatFunctor (Discrete PUnit.{u+1}) C).map α).app _
 
 /-- Implementation of `CommMon_Class.equivLaxBraidedFunctorPunit`. -/
 @[simps]
