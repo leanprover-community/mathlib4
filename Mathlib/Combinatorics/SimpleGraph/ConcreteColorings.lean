@@ -5,6 +5,7 @@ Authors: Iván Renison
 -/
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Hasse
+import Mathlib.Logic.Equiv.Fin
 
 /-!
 # Concrete colorings of common graphs
@@ -63,5 +64,14 @@ theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
     Odd p.length ↔ (¬c u ↔ c v) := by
   rw [Nat.odd_iff_not_even, c.even_length_iff_congr p]
   tauto
+
+theorem Walk.three_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u : α} (p : G.Walk u u)
+    (hOdd : Odd p.length) : 3 ≤ G.chromaticNumber := Classical.by_contradiction <| by
+  intro h
+  have h' : G.chromaticNumber ≤ 2 := ENat.le_of_lt_add_one <| not_le.mp h
+  let c : G.Coloring (Fin 2) := (chromaticNumber_le_iff_colorable.mp h').some
+  let c' : G.Coloring Bool := recolorOfEquiv G finTwoEquiv c
+  have : ¬c' u ↔ c' u := (c'.odd_length_iff_not_congr p).mp hOdd
+  simp_all
 
 end SimpleGraph
