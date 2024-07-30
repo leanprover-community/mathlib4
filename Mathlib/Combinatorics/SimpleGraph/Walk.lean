@@ -1069,7 +1069,8 @@ theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
       use n - 1
       simp only [Nat.sub_le_iff_le_add]
       rw [getVert_tail _ hnp, length_tail_add_one hnp]
-      omega
+      have : (n - 1 + 1) = n:= by omega
+      rwa [this]
 termination_by p.length
 decreasing_by
 · simp_wf
