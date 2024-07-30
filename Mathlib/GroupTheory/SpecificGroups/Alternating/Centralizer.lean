@@ -78,7 +78,7 @@ theorem odd_of_mem_kerφ
 end Equiv.Perm.OnCycleFactors
 
 
-open BigOperators Nat Equiv.Perm.OnCycleFactors
+open BigOperators Nat Equiv.Perm.OnCycleFactors Equiv.Perm
 
 namespace AlternatingGroup
 
@@ -186,32 +186,26 @@ theorem card_le_of_mem_kerφ
     Fintype.card α ≤ g.cycleType.sum + 1 := by
   rw [← not_lt]
   intro hm
-  rw [Nat.lt_iff_add_one_le, add_assoc] at hm
-  change g.cycleType.sum + 2 ≤ _ at hm
-  suffices 1 < Fintype.card (MulAction.fixedBy α g) by
+  rw [Nat.lt_iff_add_one_le, add_assoc, add_comm] at hm
+  change 2 + g.cycleType.sum ≤ _ at hm
+  suffices 1 < Fintype.card (Function.fixedPoints g) by
     obtain ⟨a, b, hab⟩ := Fintype.exists_pair_of_one_lt_card this
-    suffices Equiv.Perm.sign (θ g ⟨Equiv.swap a b, 1⟩) ≠ 1 by
+    suffices sign (θ g ⟨Equiv.swap a b, 1⟩) ≠ 1 by
       apply this
       apply h
       rw [Subgroup.mem_comap, MulEquiv.coe_toMonoidHom]
       apply Subgroup.map_subtype_le
       rw [hφ_ker_eq_θ_range]
       exact Set.mem_range_self _
-    rw [θ_apply_fst]
-    simp only [Equiv.Perm.ofSubtype_swap_eq, Equiv.Perm.sign_swap', ne_eq,
-      ite_eq_left_iff, neg_units_ne_self, imp_false, not_not]
-    rw [Subtype.coe_inj]
+    simp only [θ_apply_fst, ofSubtype_swap_eq, sign_swap', Subtype.coe_inj,
+      ne_eq, ite_eq_left_iff, neg_units_ne_self, imp_false, Decidable.not_not]
     exact hab
-  · rw [Equiv.Perm.card_fixedBy g]
-    rw [add_comm] at hm
-    rw [Nat.lt_iff_add_one_le, Nat.le_sub_iff_add_le]
-    exact hm
-    rw [Equiv.Perm.sum_cycleType]
-    exact Finset.card_le_univ _
-
+  rwa [Equiv.Perm.card_fixedPoints g, Nat.lt_iff_add_one_le, Nat.le_sub_iff_add_le]
+  rw [Equiv.Perm.sum_cycleType]
+  exact Finset.card_le_univ _
 
 -- FIND A BETTER NAME
-theorem _root_.Equiv.Perm.OnCycleFactors.count_le_one_of_kerφ_le_alternating
+theorem OnCycleFactors.count_le_one_of_kerφ_le_alternating
     (h : Subgroup.comap ConjAct.toConjAct.toMonoidHom
       (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g) ≤ alternatingGroup α) :
     ∀ i, g.cycleType.count i ≤ 1 := by
@@ -417,7 +411,7 @@ theorem _root_.Equiv.Perm.OnCycleFactors.count_le_one_of_kerφ_le_alternating
     · rw [hx', Equiv.swap_apply_right]; exact hm
     · rw [Equiv.swap_apply_of_ne_of_ne hx hx']
 
-theorem _root_.Equiv.Perm.OnCycleFactors.kerφ_le_alternating_iff :
+theorem OnCycleFactors.kerφ_le_alternating_iff :
     Subgroup.comap ConjAct.toConjAct.toMonoidHom
       (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g) ≤ alternatingGroup α ↔
     (∀ i ∈ g.cycleType, Odd i) ∧ Fintype.card α ≤ g.cycleType.sum + 1 ∧
@@ -449,8 +443,7 @@ theorem _root_.Equiv.Perm.OnCycleFactors.kerφ_le_alternating_iff :
         convert Equiv.Perm.sign_one
         rw [← Equiv.Perm.card_support_le_one]
         apply le_trans (Finset.card_le_univ _)
-        change Fintype.card (MulAction.fixedBy α g) ≤ 1
-        rw [Equiv.Perm.card_fixedBy g, tsub_le_iff_left]
+        rw [card_fixedPoints g, tsub_le_iff_left]
         exact h_fixed
     -- x ∈ set.range (on_cycle_factors.ψ g)
     suffices (φ g).ker = ⊤ by
