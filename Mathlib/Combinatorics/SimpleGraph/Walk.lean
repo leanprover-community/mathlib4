@@ -842,6 +842,13 @@ lemma tail_cons {t u v} (p : G.Walk u v) (h : G.Adj t u) :
   | .nil => rfl
   | .cons h q => rfl
 
+lemma support_tail_of_not_nil (p : G.Walk u v) (hnp : ¬p.Nil) :
+    p.tail.support = p.support.tail := by
+  match p with
+  | .nil => simp only [nil_nil, not_true_eq_false] at hnp
+  | .cons h q => simp only [tail_cons, getVert_cons_succ, support_copy, support_cons,
+                    List.tail_cons]
+
 /-! ### Walk decompositions -/
 
 section WalkDecomp
@@ -1064,7 +1071,8 @@ theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
         rw [@nil_iff_length_eq]
         have : 1 ≤ p.length := by omega
         exact Nat.not_eq_zero_of_lt this
-      rw [← tail_support_eq_support_tail _ hnp]
+
+      rw [← support_tail_of_not_nil _ hnp]
       rw [mem_support_iff_exists_getVert]
       use n - 1
       simp only [Nat.sub_le_iff_le_add]
