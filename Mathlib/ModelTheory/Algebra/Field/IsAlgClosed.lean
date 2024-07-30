@@ -35,6 +35,7 @@ assumption `Field K`, `CharP K p`, `IsAlgClosed K` and `CompatibleRing K` and th
 defined saying that these assumption imply `Theory.field.Model K` and `(Theory.ACF p).Model K`
 
 ## References
+
 The first order theory of algebraically closed fields, along with the Lefschetz Principle and
 the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 [here](https://github.com/Jlh18/ModelTheoryInLean8) with the master's thesis
@@ -75,12 +76,15 @@ noncomputable def monicPolyEquivFin [CommRing K] [Nontrivial K] (n : ℕ) :
         refine le_antisymm ?_ ?_
         · refine natDegree_le_iff_coeff_eq_zero.2 ?_
           intro i hi
-          simp [not_lt_of_gt hi, ne_of_gt hi, Finsupp.ofSupportFinite]
+          simp only [Finsupp.ofSupportFinite, coeff_ofFinsupp, Finsupp.coe_mk, not_lt_of_gt hi,
+            ↓reduceDIte, ne_of_gt hi, ↓reduceIte, p]
         · refine le_natDegree_of_ne_zero ?_
-          simp [Finsupp.ofSupportFinite]
+          simp only [Finsupp.ofSupportFinite, coeff_ofFinsupp, Finsupp.coe_mk, lt_self_iff_false,
+            ↓reduceDIte, ↓reduceIte, ne_eq, one_ne_zero, not_false_eq_true, p]
       have hpm : p.Monic := by
         rw [Monic.def, leadingCoeff, hpn]
-        simp [Finsupp.ofSupportFinite]
+        simp only [Finsupp.ofSupportFinite, coeff_ofFinsupp, Finsupp.coe_mk, lt_self_iff_false,
+          ↓reduceDIte, ↓reduceIte, p]
       ⟨p, hpm, hpn⟩
     left_inv := by
       intro p
@@ -116,7 +120,7 @@ theorem realize_genericMonicPolyHasRoot [Field K] [CompatibleRing K] (n : ℕ) :
     K ⊨ genericMonicPolyHasRoot n ↔
       ∀ p : { p : K[X] // p.Monic ∧ p.natDegree = n }, ∃ x, p.1.eval x = 0 := by
   let _ := Classical.decEq K
-  rw [Equiv.forall_congr_left' (monicPolyEquivFin n)]
+  rw [Equiv.forall_congr_left (monicPolyEquivFin n)]
   simp [Sentence.Realize, genericMonicPolyHasRoot, lift_genericMonicPoly]
 
 /-- The theory of algebraically closed fields of characteristic `p` as a theory over
@@ -126,7 +130,7 @@ def _root_.FirstOrder.Language.Theory.ACF (p : ℕ) : Theory Language.ring :=
 
 instance [Language.ring.Structure K] (p : ℕ) [h : (Theory.ACF p).Model K] :
     (Theory.fieldOfChar p).Model K :=
-  Theory.Model.mono h (Set.subset_union_left _ _)
+  Theory.Model.mono h Set.subset_union_left
 
 instance [Field K] [CompatibleRing K] {p : ℕ} [CharP K p] [IsAlgClosed K] :
     (Theory.ACF p).Model K := by
@@ -141,7 +145,7 @@ instance [Field K] [CompatibleRing K] {p : ℕ} [CharP K p] [IsAlgClosed K] :
 
 theorem modelField_of_modelACF (p : ℕ) (K : Type*) [Language.ring.Structure K]
     [h : (Theory.ACF p).Model K] : Theory.field.Model K :=
-  Theory.Model.mono h (Set.subset_union_of_subset_left (Set.subset_union_left _ _) _)
+  Theory.Model.mono h (Set.subset_union_of_subset_left Set.subset_union_left _)
 
 /-- A model for the Theory of algebraically closed fields is a Field. After introducing
 this as a local instance on a particular Type, you should usually also introduce
@@ -190,7 +194,7 @@ theorem ACF_isSatisfiable {p : ℕ} (hp : p.Prime ∨ p = 0) :
 
 open Cardinal
 
-/-- The Theory `Theory.ACF p` is `κ` Categorical whenever `κ` is an uncountable cardinal.
+/-- The Theory `Theory.ACF p` is `κ`-categorical whenever `κ` is an uncountable cardinal.
 At the moment this is not as universe polymorphic as it could be,
 it currently requires `κ : Cardinal.{0}`, but it is true for any universe.    -/
 theorem ACF_categorical {p : ℕ} (κ : Cardinal.{0}) (hκ : ℵ₀ < κ) :
@@ -261,14 +265,14 @@ theorem finite_ACF_prime_not_realize_of_ACF0_realize
   let s : Finset Nat.Primes := T0.attach.biUnion (fun φ => f φ.1 (hT0 φ.2))
   have hs : ∀ (p : Nat.Primes) ψ, ψ ∈ T0 → p ∉ s → Theory.ACF p ⊨ᵇ ψ := by
     intro p ψ hψ hpψ
-    simp only [Finset.mem_biUnion, Finset.mem_attach, true_and,
+    simp only [s, Finset.mem_biUnion, Finset.mem_attach, true_and,
       Subtype.exists, not_exists] at hpψ
     exact (f ψ (hT0 hψ)).2 p (hpψ _ hψ)
   refine Set.Finite.subset (Finset.finite_toSet s) (Set.compl_subset_comm.2 ?_)
   intro p hp
   exact Theory.models_of_models_theory (fun ψ hψ => hs p ψ hψ hp) h
 
-/-- The Lefschetz principle. A first order sentence is modeled by the theory
+/-- The **Lefschetz principle**. A first order sentence is modeled by the theory
 of algebraically closed fields of characteristic zero if and only if it is modeled by
 the theory of algebraically closed fields of characteristic `p` for infinitely many `p`. -/
 theorem ACF0_realize_iff_infinite_ACF_prime_realize {φ : Language.ring.Sentence} :
