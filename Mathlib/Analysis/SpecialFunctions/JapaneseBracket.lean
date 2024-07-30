@@ -7,8 +7,6 @@ import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Integral.Layercake
 
-#align_import analysis.special_functions.japanese_bracket from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
-
 /-!
 # Japanese Bracket
 
@@ -36,7 +34,6 @@ variable {E : Type*} [NormedAddCommGroup E]
 theorem sqrt_one_add_norm_sq_le (x : E) : √((1 : ℝ) + ‖x‖ ^ 2) ≤ 1 + ‖x‖ := by
   rw [sqrt_le_left (by positivity)]
   simp [add_sq]
-#align sqrt_one_add_norm_sq_le sqrt_one_add_norm_sq_le
 
 theorem one_add_norm_le_sqrt_two_mul_sqrt (x : E) :
     (1 : ℝ) + ‖x‖ ≤ √2 * √(1 + ‖x‖ ^ 2) := by
@@ -44,7 +41,6 @@ theorem one_add_norm_le_sqrt_two_mul_sqrt (x : E) :
   have := sq_nonneg (‖x‖ - 1)
   apply le_sqrt_of_sq_le
   linarith
-#align one_add_norm_le_sqrt_two_mul_sqrt one_add_norm_le_sqrt_two_mul_sqrt
 
 theorem rpow_neg_one_add_norm_sq_le {r : ℝ} (x : E) (hr : 0 < r) :
     ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2) ≤ (2 : ℝ) ^ (r / 2) * (1 + ‖x‖) ^ (-r) :=
@@ -57,13 +53,11 @@ theorem rpow_neg_one_add_norm_sq_le {r : ℝ} (x : E) (hr : 0 < r) :
       gcongr
       apply one_add_norm_le_sqrt_two_mul_sqrt
     _ = (2 : ℝ) ^ (r / 2) * (1 + ‖x‖) ^ (-r) := by rw [rpow_neg]; positivity
-#align rpow_neg_one_add_norm_sq_le rpow_neg_one_add_norm_sq_le
 
 theorem le_rpow_one_add_norm_iff_norm_le {r t : ℝ} (hr : 0 < r) (ht : 0 < t) (x : E) :
     t ≤ (1 + ‖x‖) ^ (-r) ↔ ‖x‖ ≤ t ^ (-r⁻¹) - 1 := by
   rw [le_sub_iff_add_le', neg_inv]
   exact (Real.le_rpow_inv_iff_of_neg (by positivity) ht (neg_lt_zero.mpr hr)).symm
-#align le_rpow_one_add_norm_iff_norm_le le_rpow_one_add_norm_iff_norm_le
 
 variable (E)
 
@@ -71,7 +65,6 @@ theorem closedBall_rpow_sub_one_eq_empty_aux {r t : ℝ} (hr : 0 < r) (ht : 1 < 
     Metric.closedBall (0 : E) (t ^ (-r⁻¹) - 1) = ∅ := by
   rw [Metric.closedBall_eq_empty, sub_neg]
   exact Real.rpow_lt_one_of_one_lt_of_neg ht (by simp only [hr, Right.neg_neg_iff, inv_pos])
-#align closed_ball_rpow_sub_one_eq_empty_aux closedBall_rpow_sub_one_eq_empty_aux
 
 variable [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 variable {E}
@@ -93,7 +86,6 @@ theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ
   rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one]
   apply intervalIntegral.intervalIntegrable_rpow'
   rwa [neg_lt_neg_iff, inv_mul_lt_iff' hr, one_mul]
-#align finite_integral_rpow_sub_one_pow_aux finite_integral_rpow_sub_one_pow_aux
 
 variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [μ.IsAddHaarMeasure]
 
@@ -135,7 +127,6 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
     rw [setLIntegral_congr_fun measurableSet_Ioi (ae_of_all volume <| h_int''), lintegral_const 0,
       zero_mul]
     exact WithTop.zero_lt_top
-#align finite_integral_one_add_norm finite_integral_one_add_norm
 
 theorem integrable_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
     Integrable (fun x ↦ (1 + ‖x‖) ^ (-r)) μ := by
@@ -146,7 +137,6 @@ theorem integrable_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
     lintegral_nnnorm_eq_of_nonneg fun _ => rpow_nonneg (by positivity) _
   rw [HasFiniteIntegral, this]
   exact finite_integral_one_add_norm hnr
-#align integrable_one_add_norm integrable_one_add_norm
 
 theorem integrable_rpow_neg_one_add_norm_sq {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
     Integrable (fun x ↦ ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2)) μ := by
@@ -156,4 +146,3 @@ theorem integrable_rpow_neg_one_add_norm_sq {r : ℝ} (hnr : (finrank ℝ E : �
   · apply Measurable.aestronglyMeasurable (by fun_prop)
   refine (abs_of_pos ?_).trans_le (rpow_neg_one_add_norm_sq_le x hr)
   positivity
-#align integrable_rpow_neg_one_add_norm_sq integrable_rpow_neg_one_add_norm_sq
