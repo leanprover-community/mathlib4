@@ -6,7 +6,6 @@ Authors: Kenny Lau, Yury Kudryashov
 import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Algebra.Algebra.Defs
 
-
 /-!
 # Further basic results about `Algebra`'s over `ℚ`.
 
@@ -48,5 +47,3 @@ instance algebra_rat_subsingleton {α} [Semiring α] : Subsingleton (Algebra ℚ
   ⟨fun x y => Algebra.algebra_ext x y <| RingHom.congr_fun <| Subsingleton.elim _ _⟩
 
 end Rat
-
-

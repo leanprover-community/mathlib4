@@ -56,7 +56,6 @@ def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat) :=
 -- @[simp]
 -- theorem as_coe (X : SheafedSpace C) : X.carrier = (X : TopCat) :=
 --   rfl
--- set_option linter.uppercaseLean3 false in
 
 -- Porting note: this gives a `simpVarHead` error (`LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`).
 -- so removed @[simp]
@@ -82,7 +81,7 @@ instance : Category (SheafedSpace C) :=
 
 -- Porting note (#5229): adding an `ext` lemma.
 @[ext]
-theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
+theorem ext {X Y : SheafedSpace C} {α β : X ⟶ Y} (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=
   PresheafedSpace.ext α β w h
 

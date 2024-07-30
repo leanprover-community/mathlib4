@@ -165,6 +165,11 @@ theorem inv_ae : (ae μ)⁻¹ = ae μ := by
   nth_rewrite 1 [← inv_inv (ae μ)]
   exact Filter.map_mono (quasiMeasurePreserving_inv μ).tendsto_ae
 
+@[to_additive (attr := simp)]
+theorem eventuallyConst_inv_set_ae :
+    EventuallyConst (s⁻¹ : Set G) (ae μ) ↔ EventuallyConst s (ae μ) := by
+  rw [← inv_preimage, eventuallyConst_preimage, Filter.map_inv, inv_ae]
+
 @[to_additive]
 theorem inv_absolutelyContinuous : μ.inv ≪ μ :=
   (quasiMeasurePreserving_inv μ).absolutelyContinuous

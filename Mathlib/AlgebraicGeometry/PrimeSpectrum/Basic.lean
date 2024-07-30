@@ -10,6 +10,7 @@ import Mathlib.Topology.Sober
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
 /-!
 # The Zariski topology on the prime spectrum of a commutative (semi)ring
@@ -512,6 +513,20 @@ lemma comap_basicOpen (f : R →+* S) (x : R) :
     TopologicalSpace.Opens.comap (comap f) (basicOpen x) = basicOpen (f x) :=
   rfl
 
+open TopologicalSpace in
+lemma iSup_basicOpen_eq_top_iff {ι : Type*} {f : ι → R} :
+    (⨆ i : ι, PrimeSpectrum.basicOpen (f i)) = ⊤ ↔ Ideal.span (Set.range f) = ⊤ := by
+  rw [SetLike.ext'_iff, Opens.coe_iSup]
+  simp only [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, Opens.coe_top, ← Set.compl_iInter,
+    ← PrimeSpectrum.zeroLocus_iUnion]
+  rw [← PrimeSpectrum.zeroLocus_empty_iff_eq_top, compl_involutive.eq_iff]
+  simp only [Set.iUnion_singleton_eq_range,  Set.compl_univ, PrimeSpectrum.zeroLocus_span]
+
+lemma iSup_basicOpen_eq_top_iff' {s : Set R} :
+    (⨆ i ∈ s, PrimeSpectrum.basicOpen i) = ⊤ ↔ Ideal.span s = ⊤ := by
+  conv_rhs => rw [← Subtype.range_val (s := s), ← iSup_basicOpen_eq_top_iff]
+  simp
+
 end BasicOpen
 
 section Order
@@ -520,19 +535,8 @@ section Order
 ## The specialization order
 
 We endow `PrimeSpectrum R` with a partial order, where `x ≤ y` if and only if `y ∈ closure {x}`.
+This instance was defined in `RingTheory/PrimeSpectrum/Basic`.
 -/
-
-
-instance : PartialOrder (PrimeSpectrum R) :=
-  PartialOrder.lift asIdeal (PrimeSpectrum.ext)
-
-@[simp]
-theorem asIdeal_le_asIdeal (x y : PrimeSpectrum R) : x.asIdeal ≤ y.asIdeal ↔ x ≤ y :=
-  Iff.rfl
-
-@[simp]
-theorem asIdeal_lt_asIdeal (x y : PrimeSpectrum R) : x.asIdeal < y.asIdeal ↔ x < y :=
-  Iff.rfl
 
 theorem le_iff_mem_closure (x y : PrimeSpectrum R) :
     x ≤ y ↔ y ∈ closure ({x} : Set (PrimeSpectrum R)) := by
@@ -549,14 +553,6 @@ def nhdsOrderEmbedding : PrimeSpectrum R ↪o Filter (PrimeSpectrum R) :=
 
 instance : T0Space (PrimeSpectrum R) :=
   ⟨nhdsOrderEmbedding.inj'⟩
-
-instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
-  bot := ⟨⊥, Ideal.bot_prime⟩
-  bot_le I := @bot_le _ _ _ I.asIdeal
-
-instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
-  default := ⊥
-  uniq x := PrimeSpectrum.ext _ _ ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
 
 end Order
 

@@ -152,8 +152,6 @@ theorem mk_add_mk {m1 m2 : M} {s1 s2 : S} :
     mk m1 s1 + mk m2 s2 = mk (s2 • m1 + s1 • m2) (s1 * s2) :=
   mk_eq.mpr <| ⟨1, rfl⟩
 
-/-- Porting note: Some auxiliary lemmas are declared with `private` in the original mathlib3 file.
-We take that policy here as well, and remove the `#align` lines accordingly. -/
 private theorem add_assoc' (x y z : LocalizedModule S M) : x + y + z = x + (y + z) := by
   induction' x with mx sx
   induction' y with my sy
@@ -1157,3 +1155,33 @@ end Algebra
 end IsLocalizedModule
 
 end IsLocalizedModule
+
+section Subsingleton
+
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+
+lemma LocalizedModule.mem_ker_mkLinearMap_iff {S : Submonoid R} {m} :
+    m ∈ LinearMap.ker (LocalizedModule.mkLinearMap S M) ↔ ∃ r ∈ S, r • m = 0 := by
+  constructor
+  · intro H
+    obtain ⟨r, hr⟩ := (@LocalizedModule.mk_eq _ _ S M _ _ m 0 1 1).mp (by simpa using H)
+    exact ⟨r, r.2, by simpa using hr⟩
+  · rintro ⟨r, hr, e⟩
+    apply ((Module.End_isUnit_iff _).mp
+      (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap S M) ⟨r, hr⟩)).injective
+    simp [← IsLocalizedModule.mk_eq_mk', LocalizedModule.smul'_mk, e]
+
+lemma LocalizedModule.subsingleton_iff_ker_eq_top {S : Submonoid R} :
+    Subsingleton (LocalizedModule S M) ↔
+      LinearMap.ker (LocalizedModule.mkLinearMap S M) = ⊤ := by
+  rw [← top_le_iff]
+  refine ⟨fun H m _ ↦ Subsingleton.elim _ _, fun H ↦ (subsingleton_iff_forall_eq 0).mpr fun x ↦ ?_⟩
+  obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S (LocalizedModule.mkLinearMap S M) x
+  simpa using @H x trivial
+
+lemma LocalizedModule.subsingleton_iff {S : Submonoid R} :
+    Subsingleton (LocalizedModule S M) ↔ ∀ m : M, ∃ r ∈ S, r • m = 0 := by
+  simp_rw [subsingleton_iff_ker_eq_top, ← top_le_iff, SetLike.le_def,
+    mem_ker_mkLinearMap_iff, Submodule.mem_top, true_implies]
+
+end Subsingleton

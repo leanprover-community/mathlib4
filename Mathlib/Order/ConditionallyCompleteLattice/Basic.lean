@@ -297,6 +297,14 @@ instance (α : Type*) [ConditionallyCompleteLinearOrder α] : ConditionallyCompl
 
 end OrderDual
 
+theorem toDual_ciSup [ConditionallyCompleteLattice α] (f : ι → α) :
+    OrderDual.toDual (⨆ i, f i) = ⨅ i, (OrderDual.toDual ∘ f) i :=
+  rfl
+
+theorem toDual_ciInf [ConditionallyCompleteLattice α] (f : ι → α) :
+    OrderDual.toDual (⨅ i, f i) = ⨆ i, (OrderDual.toDual ∘ f) i :=
+  rfl
+
 /-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `sup` function
 that returns the least upper bound of a nonempty set which is bounded above. Usually this
 constructor provides poor definitional equalities.  If other fields are known explicitly, they

@@ -47,7 +47,7 @@ section OrderTop
 
 /-- An order is (noncomputably) either an `OrderTop` or a `NoTopOrder`. Use as
 `casesI topOrderOrNoTopOrder α`. -/
-noncomputable def topOrderOrNoTopOrder (α : Type*) [LE α] : PSum (OrderTop α) (NoTopOrder α) := by
+noncomputable def topOrderOrNoTopOrder (α : Type*) [LE α] : OrderTop α ⊕' NoTopOrder α := by
   by_cases H : ∀ a : α, ∃ b, ¬b ≤ a
   · exact PSum.inr ⟨H⟩
   · push_neg at H
@@ -177,7 +177,7 @@ section OrderBot
 
 /-- An order is (noncomputably) either an `OrderBot` or a `NoBotOrder`. Use as
 `casesI botOrderOrNoBotOrder α`. -/
-noncomputable def botOrderOrNoBotOrder (α : Type*) [LE α] : PSum (OrderBot α) (NoBotOrder α) := by
+noncomputable def botOrderOrNoBotOrder (α : Type*) [LE α] : OrderBot α ⊕' NoBotOrder α := by
   by_cases H : ∀ a : α, ∃ b, ¬a ≤ b
   · exact PSum.inr ⟨H⟩
   · push_neg at H
@@ -640,12 +640,12 @@ theorem coe_top [OrderTop α] [OrderTop (Subtype p)] (htop : p ⊤) : ((⊤ : Su
 @[simp]
 theorem coe_eq_bot_iff [OrderBot α] [OrderBot (Subtype p)] (hbot : p ⊥) {x : { x // p x }} :
     (x : α) = ⊥ ↔ x = ⊥ := by
-  rw [← coe_bot hbot, ext_iff]
+  rw [← coe_bot hbot, Subtype.ext_iff]
 
 @[simp]
 theorem coe_eq_top_iff [OrderTop α] [OrderTop (Subtype p)] (htop : p ⊤) {x : { x // p x }} :
     (x : α) = ⊤ ↔ x = ⊤ := by
-  rw [← coe_top htop, ext_iff]
+  rw [← coe_top htop, Subtype.ext_iff]
 
 @[simp]
 theorem mk_eq_bot_iff [OrderBot α] [OrderBot (Subtype p)] (hbot : p ⊥) {x : α} (hx : p x) :

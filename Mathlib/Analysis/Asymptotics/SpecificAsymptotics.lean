@@ -5,7 +5,7 @@ Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Analysis.Asymptotics.Asymptotics
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # A collection of specific asymptotic results
@@ -134,7 +134,7 @@ theorem Filter.Tendsto.cesaro_smul {E : Type*} [NormedAddCommGroup E] [NormedSpa
   · filter_upwards [Ici_mem_atTop 1] with n npos
     have nposℝ : (0 : ℝ) < n := Nat.cast_pos.2 npos
     simp only [smul_sub, sum_sub_distrib, sum_const, card_range, sub_right_inj]
-    rw [nsmul_eq_smul_cast ℝ, smul_smul, inv_mul_cancel nposℝ.ne', one_smul]
+    rw [← Nat.cast_smul_eq_nsmul ℝ, smul_smul, inv_mul_cancel nposℝ.ne', one_smul]
   · filter_upwards [Ici_mem_atTop 1] with n npos
     have nposℝ : (0 : ℝ) < n := Nat.cast_pos.2 npos
     rw [Algebra.id.smul_eq_mul, inv_mul_cancel nposℝ.ne']

@@ -410,7 +410,7 @@ def powers (x : HahnSeries Γ R) (hx : 0 < x.orderTop) : SummableFamily Γ R ℕ
     · obtain ⟨hi, _, rfl⟩ := mem_addAntidiagonal.1 (mem_coe.1 hij)
       rw [← zero_add ij.snd, ← add_assoc, add_zero]
       exact
-        add_lt_add_right (WithTop.coe_lt_coe.1 (lt_of_lt_of_le hx (orderTop_le_of_coeff_ne_zero hi)))
+        add_lt_add_right (WithTop.coe_lt_coe.1 (hx.trans_le (orderTop_le_of_coeff_ne_zero hi)))
           _
     · rintro (_ | n) hn
       · exact Set.mem_union_right _ (Set.mem_singleton 0)
@@ -457,37 +457,37 @@ section IsDomain
 variable [CommRing R] [IsDomain R]
 
 theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1) :
-    0 < (1 - C r * single (-x.order) 1 * x).orderTop := by
+    0 < (1 - single (-x.order) r * x).orderTop := by
   by_cases hx : x = 0; · simp_all [hx]
   have hrz : r ≠ 0 := by
     intro h
     rw [h, zero_mul] at hr
     exact (zero_ne_one' R) hr
-  refine lt_of_le_of_ne (LE.le.trans ?_ min_orderTop_le_orderTop_sub) fun h => ?_
+  refine lt_of_le_of_ne (le_trans ?_ min_orderTop_le_orderTop_sub) fun h => ?_
   · refine le_min (by rw [orderTop_one]) ?_
-    refine LE.le.trans ?_ orderTop_add_orderTop_le_orderTop_mul
+    refine le_trans ?_ orderTop_add_orderTop_le_orderTop_mul
     by_cases h : x = 0; · simp [h]
-    rw [← order_eq_orderTop_of_ne h, C_apply, single_mul_single, zero_add, mul_one,
-      orderTop_single (fun _ => by simp_all only [zero_mul, zero_ne_one]), ← @WithTop.coe_add,
+    rw [← order_eq_orderTop_of_ne h, orderTop_single
+      (fun _ => by simp_all only [zero_mul, zero_ne_one]), ← @WithTop.coe_add,
       WithTop.coe_nonneg, add_left_neg]
   · apply coeff_orderTop_ne h.symm
     simp only [C_apply, single_mul_single, zero_add, mul_one, sub_coeff', Pi.sub_apply, one_coeff,
       ↓reduceIte]
     have hrc := mul_coeff_order_add_order ((single (-x.order)) r) x
-    rw [order_single hrz, single_coeff_same, neg_add_self, ← leadingCoeff_eq, hr] at hrc
+    rw [order_single hrz, leadingCoeff_of_single, neg_add_self, hr] at hrc
     rw [hrc, sub_self]
 
-theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.coeff x.order) := by
+theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.leadingCoeff) := by
   constructor
   · rintro ⟨⟨u, i, ui, iu⟩, rfl⟩
     refine
-      isUnit_of_mul_eq_one (u.coeff u.order) (i.coeff i.order)
+      isUnit_of_mul_eq_one (u.leadingCoeff) (i.leadingCoeff)
         ((mul_coeff_order_add_order u i).symm.trans ?_)
     rw [ui, one_coeff, if_pos]
     rw [← order_mul (left_ne_zero_of_mul_eq_one ui) (right_ne_zero_of_mul_eq_one ui), ui, order_one]
   · rintro ⟨⟨u, i, ui, iu⟩, h⟩
     rw [Units.val_mk] at h
-    rw [h, ← leadingCoeff_eq] at iu
+    rw [h] at iu
     have h := SummableFamily.one_sub_self_mul_hsum_powers (unit_aux x iu)
     rw [sub_sub_cancel] at h
     exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h)
@@ -499,7 +499,7 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
   inv x :=
     if x0 : x = 0 then 0
     else
-      C (x.coeff x.order)⁻¹ * (single (-x.order)) 1 *
+      (single (-x.order)) (x.leadingCoeff)⁻¹ *
         (SummableFamily.powers _ (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mpr x0)))).hsum
   inv_zero := dif_pos rfl
   mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans $ by
@@ -507,9 +507,11 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
       SummableFamily.one_sub_self_mul_hsum_powers
         (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mpr x0)))
     rw [sub_sub_cancel] at h
-    rw [← mul_assoc, mul_comm x, ← leadingCoeff_eq, h]
+    rw [← mul_assoc, mul_comm x, h]
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun q a => rfl
 
 end Inversion
 
