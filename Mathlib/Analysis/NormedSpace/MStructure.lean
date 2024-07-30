@@ -8,7 +8,7 @@ import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Order.Basic
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Analysis.LocallyConvex.Polar
-import Mathlib.Analysis.NormedSpace.Dual
+import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.Convex.Normed
 
 /-!
