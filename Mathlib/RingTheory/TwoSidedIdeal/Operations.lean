@@ -104,6 +104,19 @@ lemma mem_ker {x : R} : x ∈ ker f ↔ f x = 0 := by
 
 end NonUnitalNonAssocRing
 
+section NonUnitalRing
+
+variable {R : Type*} [NonUnitalRing R]
+
+proof_wanted mem_span_iff_exists_nonunital {s : Set R} {z : R} :
+    z ∈ span s ↔
+    ∃ (t : Finset R) (_ : (t : Set R) ⊆ s) (n : R → ℤ)
+      (α : R → R) (β : R → R) (xy : R → R →₀ (R × R)),
+      z = ∑ r ∈ t, (n r • r + α r * r + r * β r +
+        ∑ i ∈ (xy r).support, (xy r i).1 * r * (xy r i).2)
+
+end NonUnitalRing
+
 section Ring
 
 variable {R : Type*} [Ring R]
@@ -115,7 +128,7 @@ lemma mem_span_iff_exists {s : Set R} {x} :
   let S : TwoSidedIdeal R := .mk'
     {x | ∃ (ι : Type) (fin : Fintype ι) (xL : ι → R) (xR : ι → R) (y : ι → s),
     x = ∑ i : ι, xL i * y i * xR i}
-    ⟨Empty, Fintype.instEmpty, Empty.elim, Empty.elim, Empty.elim, by simp⟩
+    ⟨Empty, inferInstance, Empty.elim, Empty.elim, Empty.elim, by simp⟩
     (by
       rintro _ _ ⟨na, fina, xLa, xRa, ya, rfl⟩ ⟨nb, finb, xLb, xRb, yb, rfl⟩
       refine ⟨na ⊕ nb, inferInstance, Sum.elim xLa xLb, Sum.elim xRa xRb, Sum.elim ya yb, by simp⟩)
