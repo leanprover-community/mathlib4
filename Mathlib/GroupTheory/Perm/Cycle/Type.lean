@@ -70,6 +70,7 @@ theorem cycleType_eq {σ : Perm α} (l : List (Perm α)) (h0 : l.prod = σ)
   · simpa [hl] using h2
   · simp [hl, h0]
 
+
 @[simp] -- Porting note: new attr
 theorem cycleType_eq_zero {σ : Perm α} : σ.cycleType = 0 ↔ σ = 1 := by
   simp [cycleType_def, cycleFactorsFinset_eq_empty_iff]
@@ -134,6 +135,11 @@ theorem sum_cycleType (σ : Perm α) : σ.cycleType.sum = σ.support.card := by
   | base_one => simp
   | base_cycles σ hσ => rw [hσ.cycleType, sum_coe, List.sum_singleton]
   | induction_disjoint σ τ hd _ hσ hτ => rw [hd.cycleType, sum_add, hσ, hτ, hd.card_support_mul]
+
+theorem card_fixedPoints (σ : Equiv.Perm α) :
+    Fintype.card (Function.fixedPoints σ) = Fintype.card α - σ.cycleType.sum := by
+  rw [Equiv.Perm.sum_cycleType, ← Finset.card_compl, Fintype.card_ofFinset]
+  congr; aesop
 
 theorem sign_of_cycleType' (σ : Perm α) :
     sign σ = (σ.cycleType.map fun n => -(-1 : ℤˣ) ^ n).prod := by

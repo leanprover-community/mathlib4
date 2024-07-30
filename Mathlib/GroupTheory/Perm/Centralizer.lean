@@ -1074,17 +1074,6 @@ theorem hψ_range_card' (g : Equiv.Perm α) :
   rw [← Set.Nat.card_coe_set_eq, Nat.card_eq_fintype_card]
   rfl
 
-theorem _root_.Equiv.Perm.card_fixedBy (g : Equiv.Perm α) :
-    Fintype.card (MulAction.fixedBy α g) =
-      Fintype.card α - g.cycleType.sum := by
-  rw [Equiv.Perm.sum_cycleType, ← Finset.card_compl]
-  simp only [Fintype.card_ofFinset, Set.mem_compl_iff, Finset.mem_coe,
-    Equiv.Perm.mem_support, Classical.not_not]
-  apply congr_arg
-  ext x
-  simp only [MulAction.mem_fixedBy, Equiv.Perm.smul_def, Finset.mem_filter, Finset.mem_univ,
-    true_and_iff, Finset.mem_compl, Equiv.Perm.mem_support, Classical.not_not]
-
 /-
 [Mathlib.GroupTheory.Perm.Cycle.Type]
 -/
@@ -1101,7 +1090,7 @@ theorem hψ_range_card (g : Equiv.Perm α) :
   apply congr_arg₂ (· * ·)
   · -- fixed points
     apply congr_arg
-    exact Equiv.Perm.card_fixedBy g
+    exact card_fixedPoints g
   · rw [Equiv.Perm.cycleType]
     simp only [Finset.univ_eq_attach, Finset.attach_val, Function.comp_apply]
     rw [Finset.prod_attach (s := g.cycleFactorsFinset)
