@@ -100,10 +100,10 @@ theorem toFun_eq_coe {f : α →ᵈ β} : f.toFun = (f : α → β) :=
 theorem coe_mk (f : α → β) (h) : ⇑(⟨f, h⟩ : α →ᵈ β) = f :=
   rfl
 
-theorem congr_fun {f g : α →ᵈ β} (h : f = g) (x : α) : f x = g x :=
+protected theorem congr_fun {f g : α →ᵈ β} (h : f = g) (x : α) : f x = g x :=
   DFunLike.congr_fun h x
 
-theorem congr_arg (f : α →ᵈ β) {x y : α} (h : x = y) : f x = f y :=
+protected theorem congr_arg (f : α →ᵈ β) {x y : α} (h : x = y) : f x = f y :=
   DFunLike.congr_arg f h
 
 @[ext]
@@ -366,7 +366,7 @@ theorem ratio_pow (f : α →ᵈ α) (n : ℕ) : ratio (f ^ n) = ratio f ^ n :=
 @[simp]
 theorem cancel_right {g₁ g₂ : β →ᵈ γ} {f : α →ᵈ β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => Dilation.ext <| hf.forall.2 (ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h => Dilation.ext <| hf.forall.2 (Dilation.ext_iff.1 h), fun h => h ▸ rfl⟩
 
 @[simp]
 theorem cancel_left {g : β →ᵈ γ} {f₁ f₂ : α →ᵈ β} (hg : Injective g) :

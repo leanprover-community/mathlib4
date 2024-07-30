@@ -64,7 +64,7 @@ theorem rfind' {f} (hf : Nat.Partrec f) :
               (Primrec₂.pair.comp (Primrec.fst.comp <| Primrec.unpair.comp Primrec.fst)
                   (Primrec.nat_add.comp Primrec.snd
                     (Primrec.snd.comp <| Primrec.unpair.comp Primrec.fst))).to_comp))
-    simp at this; exact this
+    simpa
 
 /-- Code for partial recursive functions from ℕ to ℕ.
 See `Nat.Partrec.Code.eval` for the interpretation of these constructors.
@@ -79,7 +79,6 @@ inductive Code : Type
   | prec : Code → Code → Code
   | rfind' : Code → Code
 
--- Porting note: `Nat.Partrec.Code.recOn` is noncomputable in Lean4, so we make it computable.
 compile_inductive% Code
 
 end Nat.Partrec
@@ -315,7 +314,6 @@ theorem rec_prim' {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (h
       snd.pair <| nat_div2.comp <| nat_div2.comp snd
   refine (nat_strong_rec (fun a n => F a (ofNat Code n)) this.to₂ fun a n => ?_)
     |>.comp .id (encode_iff.2 hc) |>.of_eq fun a => by simp
-  simp
   iterate 4 cases' n with n; · simp [ofNatCode_eq, ofNatCode]; rfl
   simp only [G]; rw [List.length_map, List.length_range]
   let m := n.div2.div2
@@ -426,7 +424,6 @@ theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Cod
       snd.pair <| nat_div2.comp <| nat_div2.comp snd
   refine (nat_strong_rec (fun a n => F a (ofNat Code n)) this.to₂ fun a n => ?_)
     |>.comp .id (encode_iff.2 hc) |>.of_eq fun a => by simp
-  simp
   iterate 4 cases' n with n; · simp [ofNatCode_eq, ofNatCode]; rfl
   simp only [G]; rw [List.length_map, List.length_range]
   let m := n.div2.div2

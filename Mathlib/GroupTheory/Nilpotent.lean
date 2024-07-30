@@ -3,12 +3,8 @@ Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
 -/
-import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.GroupTheory.Solvable
-import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.Sylow
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.Tactic.TFAE
 import Mathlib.Algebra.Group.Subgroup.Order
 
 /-!

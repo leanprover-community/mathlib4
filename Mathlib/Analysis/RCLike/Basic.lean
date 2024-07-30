@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Star.Order
-import Mathlib.Analysis.NormedSpace.Star.Basic
-import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.CstarAlgebra.Basic
+import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Algebra.Algebra.Field
 
@@ -581,7 +581,7 @@ theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)�
 
 variable (K) in
 lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
-  rw [nsmul_eq_smul_cast K, norm_smul, RCLike.norm_natCast, nsmul_eq_mul]
+  rw [← Nat.cast_smul_eq_nsmul K, norm_smul, RCLike.norm_natCast, nsmul_eq_mul]
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 

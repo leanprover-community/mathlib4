@@ -21,7 +21,7 @@ section real
 theorem integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 0 < p) (hq : - 1 < q) :
     ∫ x in Ioi (0 : ℝ), x ^ q * exp (- x ^ p) = (1 / p) * Gamma ((q + 1) / p) := by
   calc
-    _ = ∫ (x : ℝ) in Ioi 0,  (1 / p * x ^ (1 / p - 1)) • ((x ^ (1 / p)) ^ q * exp (-x)) := by
+    _ = ∫ (x : ℝ) in Ioi 0, (1 / p * x ^ (1 / p - 1)) • ((x ^ (1 / p)) ^ q * exp (-x)) := by
       rw [← integral_comp_rpow_Ioi _ (one_div_ne_zero (ne_of_gt hp)),
         abs_eq_self.mpr (le_of_lt (one_div_pos.mpr hp))]
       refine setIntegral_congr measurableSet_Ioi (fun _ hx => ?_)
@@ -89,7 +89,8 @@ theorem Complex.integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 1 ≤ p) (hq : 
     _ = 2 * π * ∫ x in Ioi (0 : ℝ), x ^ (q + 1) * rexp (-x ^ p) := by
       congr 1
       refine setIntegral_congr measurableSet_Ioi (fun x hx => ?_)
-      rw [abs_eq_self.mpr (le_of_lt (by exact hx)), rpow_add hx, rpow_one]
+      rw [mem_Ioi] at hx
+      rw [abs_eq_self.mpr hx.le, rpow_add hx, rpow_one]
       ring
     _ = (2 * Real.pi / p) * Real.Gamma ((q + 2) / p) := by
       rw [_root_.integral_rpow_mul_exp_neg_rpow (by linarith) (by linarith), add_assoc,
@@ -115,7 +116,8 @@ theorem Complex.integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 1 ≤ p) 
     _ = 2 * π * ∫ x in Ioi (0 : ℝ), x ^ (q + 1) * rexp (-b * x ^ p) := by
       congr 1
       refine setIntegral_congr measurableSet_Ioi (fun x hx => ?_)
-      rw [abs_eq_self.mpr (le_of_lt (by exact hx)), rpow_add hx, rpow_one]
+      rw [mem_Ioi] at hx
+      rw [abs_eq_self.mpr hx.le, rpow_add hx, rpow_one]
       ring
     _ = (2 * π / p) * b ^ (-(q + 2) / p) * Real.Gamma ((q + 2) / p) := by
       rw [_root_.integral_rpow_mul_exp_neg_mul_rpow (by linarith) (by linarith) hb, add_assoc,

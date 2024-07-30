@@ -305,7 +305,6 @@ theorem subset_def : s ⊆ t ↔ s.1 ⊆ t.1 :=
 theorem ssubset_def : s ⊂ t ↔ s ⊆ t ∧ ¬t ⊆ s :=
   Iff.rfl
 
-@[simp]
 theorem Subset.refl (s : Finset α) : s ⊆ s :=
   Multiset.Subset.refl _
 
@@ -2426,6 +2425,8 @@ theorem filter_union_filter_neg_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
   filter_union_filter_of_codisjoint _ _ _ <| @codisjoint_hnot_right _ _ p
 
 lemma filter_inj : s.filter p = t.filter p ↔ ∀ ⦃a⦄, p a → (a ∈ s ↔ a ∈ t) := by simp [ext_iff]
+
+lemma filter_inj' : s.filter p = s.filter q ↔ ∀ ⦃a⦄, a ∈ s → (p a ↔ q a) := by simp [ext_iff]
 
 end Filter
 
