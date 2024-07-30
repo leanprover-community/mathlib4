@@ -289,7 +289,7 @@ def toInductive (mvar : MVarId) (cs : List Name)
           let _ ← isDefEq t mt -- infer values for those mvars we just made
           mvar'.assign e
 
-/-- Implementation for both `mk_iff` and `mk_iff_of_inductive_prop`.y
+/-- Implementation for both `mk_iff` and `mk_iff_of_inductive_prop`.
 -/
 def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM Unit := do
   let .inductInfo inductVal ← getConstInfo ind |
@@ -351,9 +351,9 @@ structure Foo (m n : Nat) : Prop where
   sum_eq_two : m + n = 2
 ```
 
-Then `#check Foo_iff` returns:
+Then `#check foo_iff` returns:
 ```lean
-Foo_iff : ∀ (m n : Nat), Foo m n ↔ m = n ∧ m + n = 2
+foo_iff : ∀ (m n : Nat), Foo m n ↔ m = n ∧ m + n = 2
 ```
 
 You can add an optional string after `mk_iff` to change the name of the generated lemma.
