@@ -260,11 +260,13 @@ lemma interpStrip_eq_of_mem_verticalStrip (z : ℂ) (hz : z ∈ verticalStrip 0 
     · simp only [h0, ofReal_zero, zero_eq_mul, cpow_eq_zero_iff, ne_eq, true_and, ofReal_eq_zero]
       left
       rw [sub_eq_zero, eq_comm]
-      simp only [ne_eq, ext_iff, one_re, ne_of_lt hz.2, or_iff_left, false_and, not_false_eq_true]
+      simp only [ne_eq, Complex.ext_iff, one_re, ne_of_lt hz.2, or_iff_left, false_and,
+        not_false_eq_true]
     · simp only [h1, ofReal_zero, zero_eq_mul, cpow_eq_zero_iff, ofReal_eq_zero, ne_eq, true_and]
       right
       rw [eq_comm]
-      simp only [ne_eq, ext_iff, zero_re, ne_of_lt hz.1, or_iff_left, false_and, not_false_eq_true]
+      simp only [ne_eq, Complex.ext_iff, zero_re, ne_of_lt hz.1, or_iff_left, false_and,
+        not_false_eq_true]
   · push_neg at h
     replace h : (0 < sSupNormIm f 0) ∧ (0 < sSupNormIm f 1) :=
       ⟨(lt_of_le_of_ne (sSupNormIm_nonneg f 0) (ne_comm.mp h.1)),
@@ -393,7 +395,7 @@ lemma norm_le_interp_of_mem_verticalClosedStrip' (f : ℂ → E) {z : ℂ} {a b 
       rw [abs_cpow_eq_rpow_re_of_pos ((Ne.le_iff_lt h1).mp (sSupNormIm_nonneg f _)) _]
       simp only [sub_re, one_re, le_refl]
   apply (norm_le_interpStrip_of_mem_verticalClosedStrip f hz hd hB).trans (this.trans _)
-  apply mul_le_mul_of_le_of_le _ _ (Real.rpow_nonneg (sSupNormIm_nonneg f _) _)
+  apply mul_le_mul_of_nonneg _ _ (Real.rpow_nonneg (sSupNormIm_nonneg f _) _)
   · apply (Real.rpow_nonneg _ _)
     specialize hb 1
     simp only [mem_preimage, one_re, mem_singleton_iff, forall_true_left] at hb

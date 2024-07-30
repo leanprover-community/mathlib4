@@ -6,8 +6,6 @@ Authors: Scott Morrison
 import Mathlib.Analysis.SpecialFunctions.Bernstein
 import Mathlib.Topology.Algebra.Algebra
 
-#align_import topology.continuous_function.weierstrass from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
-
 /-!
 # The Weierstrass approximation theorem for continuous functions on `[a,b]`
 
@@ -42,7 +40,6 @@ theorem polynomialFunctions_closure_eq_top' : (polynomialFunctions I).topologica
   apply Subalgebra.smul_mem
   dsimp [bernstein, polynomialFunctions]
   simp
-#align polynomial_functions_closure_eq_top' polynomialFunctions_closure_eq_top'
 
 /-- The **Weierstrass Approximation Theorem**:
 polynomials functions on `[a, b] ⊆ ℝ` are dense in `C([a,b],ℝ)`
@@ -76,7 +73,6 @@ theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
     exact p
   · -- Otherwise, `b ≤ a`, and the interval is a subsingleton,
     subsingleton [(Set.subsingleton_Icc_of_ge h).coe_sort]
-#align polynomial_functions_closure_eq_top polynomialFunctions_closure_eq_top
 
 /-- An alternative statement of Weierstrass' theorem.
 
@@ -86,7 +82,6 @@ theorem continuousMap_mem_polynomialFunctions_closure (a b : ℝ) (f : C(Set.Icc
     f ∈ (polynomialFunctions (Set.Icc a b)).topologicalClosure := by
   rw [polynomialFunctions_closure_eq_top _ _]
   simp
-#align continuous_map_mem_polynomial_functions_closure continuousMap_mem_polynomialFunctions_closure
 
 open scoped Polynomial
 
@@ -102,7 +97,6 @@ theorem exists_polynomial_near_continuousMap (a b : ℝ) (f : C(Set.Icc a b, ℝ
   obtain ⟨-, H, ⟨m, ⟨-, rfl⟩⟩⟩ := w ε pos
   rw [Metric.mem_ball, dist_eq_norm] at H
   exact ⟨m, H⟩
-#align exists_polynomial_near_continuous_map exists_polynomial_near_continuousMap
 
 /-- Another alternative statement of Weierstrass's theorem,
 for those who like epsilons, but not bundled continuous functions.
@@ -119,4 +113,3 @@ theorem exists_polynomial_near_of_continuousOn (a b : ℝ) (f : ℝ → ℝ)
   rw [norm_lt_iff _ pos] at b
   intro x m
   exact b ⟨x, m⟩
-#align exists_polynomial_near_of_continuous_on exists_polynomial_near_of_continuousOn
