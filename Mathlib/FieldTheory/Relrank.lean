@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
 import Mathlib.FieldTheory.Adjoin
-import Mathlib.FieldTheory.Normal
 
 /-!
 
@@ -28,6 +27,37 @@ open IntermediateField FiniteDimensional
 
 noncomputable section
 
+--------
+
+-- #15193
+
+section Adhoc
+
+variable {K L L' : Type*} [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
+
+theorem _root_.IntermediateField.map_comap_eq (f : L →ₐ[K] L') (S : IntermediateField K L') :
+    (S.comap f).map f = S ⊓ f.fieldRange :=
+  SetLike.coe_injective Set.image_preimage_eq_inter_range
+
+theorem _root_.IntermediateField.map_comap_eq_self
+    {f : L →ₐ[K] L'} {S : IntermediateField K L'} (h : S ≤ f.fieldRange) :
+    (S.comap f).map f = S := by
+  simpa only [inf_of_le_left h] using IntermediateField.map_comap_eq f S
+
+theorem _root_.IntermediateField.map_comap_eq_self_of_surjective
+    {f : L →ₐ[K] L'} (hf : Function.Surjective f) (S : IntermediateField K L') :
+    (S.comap f).map f = S :=
+  SetLike.coe_injective (Set.image_preimage_eq _ hf)
+
+theorem _root_.IntermediateField.comap_map
+    (f : L →ₐ[K] L') (S : IntermediateField K L) :
+    (S.map f).comap f = S :=
+  SetLike.coe_injective (Set.preimage_image_eq _ f.injective)
+
+end Adhoc
+
+--------
+
 universe u v w
 
 variable {F : Type u} {E : Type v} [Field F] [Field E] [Algebra F E]
@@ -49,17 +79,26 @@ def relfinrank := finrank ↥(A ⊓ B) (extendScalars (inf_le_right : A ⊓ B �
 
 theorem relfinrank_def' : relfinrank A B = Cardinal.toNat (relrank A B) := rfl
 
-variable {A B} in
+variable {A B C}
+
+theorem relrank_eq_of_inf_eq (h : A ⊓ C = B ⊓ C) : relrank A C = relrank B C := by
+  simp_rw [relrank]
+  congr!
+
+theorem relfinrank_eq_of_inf_eq (h : A ⊓ C = B ⊓ C) : relfinrank A C = relfinrank B C :=
+  congr(Cardinal.toNat $(relrank_eq_of_inf_eq h))
+
 /-- If `A ≤ B`, then `A.relrank B` is `[B : A]` -/
 theorem relrank_eq_rank_of_le (h : A ≤ B) : relrank A B = Module.rank A (extendScalars h) := by
   rw [relrank]
   have := inf_of_le_left h
   congr!
 
-variable {A B} in
 /-- If `A ≤ B`, then `A.relfinrank B` is `[B : A]` -/
 theorem relfinrank_eq_finrank_of_le (h : A ≤ B) : relfinrank A B = finrank A (extendScalars h) :=
   congr(Cardinal.toNat $(relrank_eq_rank_of_le h))
+
+variable (A B C)
 
 theorem inf_relrank_right : relrank (A ⊓ B) B = relrank A B :=
   relrank_eq_rank_of_le (inf_le_right : A ⊓ B ≤ B)
@@ -134,6 +173,66 @@ theorem relfinrank_comap (f : L →ₐ[F] E) (B : IntermediateField F L) :
     relfinrank (A.comap f) B = relfinrank A (B.map f) := by
   simpa using congr(Cardinal.toNat $(lift_relrank_comap A f B))
 
+theorem lift_relrank_map_map (f : E →ₐ[F] L) :
+    Cardinal.lift.{v} (relrank (A.map f) (B.map f)) = Cardinal.lift.{w} (relrank A B) := by
+  rw [← lift_relrank_comap, comap_map]
+
+theorem relrank_map_map {L : Type v} [Field L] [Algebra F L] (f : E →ₐ[F] L) :
+    relrank (A.map f) (B.map f) = relrank A B := by
+  simpa only [Cardinal.lift_id] using lift_relrank_map_map A B f
+
+theorem relfinrank_map_map (f : E →ₐ[F] L) :
+    relfinrank (A.map f) (B.map f) = relfinrank A B := by
+  simpa using congr(Cardinal.toNat $(lift_relrank_map_map A B f))
+
+theorem lift_relrank_comap_comap_eq_lift_relrank_inf (f : L →ₐ[F] E) :
+    Cardinal.lift.{v} (relrank (A.comap f) (B.comap f)) =
+    Cardinal.lift.{w} (relrank A (B ⊓ f.fieldRange)) := by
+  conv_lhs => rw [← lift_relrank_map_map _ _ f, map_comap_eq, map_comap_eq]
+  congr 1
+  apply relrank_eq_of_inf_eq
+  rw [inf_assoc, inf_left_comm _ B, inf_of_le_left (le_refl _)]
+
+theorem relrank_comap_comap_eq_relrank_inf
+    {L : Type v} [Field L] [Algebra F L] (f : L →ₐ[F] E) :
+    relrank (A.comap f) (B.comap f) = relrank A (B ⊓ f.fieldRange) := by
+  simpa only [Cardinal.lift_id] using lift_relrank_comap_comap_eq_lift_relrank_inf A B f
+
+theorem relfinrank_comap_comap_eq_relfinrank_inf (f : L →ₐ[F] E) :
+    relfinrank (A.comap f) (B.comap f) = relfinrank A (B ⊓ f.fieldRange) := by
+  simpa using congr(Cardinal.toNat $(lift_relrank_comap_comap_eq_lift_relrank_inf A B f))
+
+theorem lift_relrank_comap_comap_eq_lift_relrank_of_le (f : L →ₐ[F] E) (h : B ≤ f.fieldRange) :
+    Cardinal.lift.{v} (relrank (A.comap f) (B.comap f)) =
+    Cardinal.lift.{w} (relrank A B) := by
+  simpa only [inf_of_le_left h] using lift_relrank_comap_comap_eq_lift_relrank_inf A B f
+
+theorem relrank_comap_comap_eq_relrank_of_le
+    {L : Type v} [Field L] [Algebra F L] (f : L →ₐ[F] E) (h : B ≤ f.fieldRange) :
+    relrank (A.comap f) (B.comap f) = relrank A B := by
+  simpa only [Cardinal.lift_id] using lift_relrank_comap_comap_eq_lift_relrank_of_le A B f h
+
+theorem relfinrank_comap_comap_eq_relfinrank_of_le (f : L →ₐ[F] E) (h : B ≤ f.fieldRange) :
+    relfinrank (A.comap f) (B.comap f) = relfinrank A B := by
+  simpa using congr(Cardinal.toNat $(lift_relrank_comap_comap_eq_lift_relrank_of_le A B f h))
+
+theorem lift_relrank_comap_comap_eq_lift_relrank_of_surjective
+    (f : L →ₐ[F] E) (h : Function.Surjective f) :
+    Cardinal.lift.{v} (relrank (A.comap f) (B.comap f)) =
+    Cardinal.lift.{w} (relrank A B) :=
+  lift_relrank_comap_comap_eq_lift_relrank_of_le A B f fun x _ ↦ h x
+
+theorem relrank_comap_comap_eq_relrank_of_surjective
+    {L : Type v} [Field L] [Algebra F L] (f : L →ₐ[F] E) (h : Function.Surjective f) :
+    relrank (A.comap f) (B.comap f) = relrank A B := by
+  simpa using lift_relrank_comap_comap_eq_lift_relrank_of_surjective A B f h
+
+theorem relfinrank_comap_comap_eq_relfinrank_of_surjective
+    (f : L →ₐ[F] E) (h : Function.Surjective f) :
+    relfinrank (A.comap f) (B.comap f) = relfinrank A B := by
+  simpa using congr(Cardinal.toNat
+    $(lift_relrank_comap_comap_eq_lift_relrank_of_surjective A B f h))
+
 variable {A B} in
 theorem relrank_mul_rank_top (h : A ≤ B) : relrank A B * Module.rank B E = Module.rank A E := by
   rw [relrank_eq_rank_of_le h]
@@ -169,8 +268,6 @@ theorem relrank_dvd_rank_bot : relrank A B ∣ Module.rank F B :=
 
 theorem relfinrank_dvd_finrank_bot : relfinrank A B ∣ finrank F B :=
   inf_relfinrank_right A B ▸ dvd_of_mul_left_eq _ (finrank_bot_mul_relfinrank inf_le_right)
-
--- Subgroup.relindex_subgroupOf ???
 
 variable {A B C} in
 theorem relrank_mul_relrank (h1 : A ≤ B) (h2 : B ≤ C) :
@@ -252,28 +349,5 @@ theorem relrank_dvd_of_le_left (h : A ≤ B) : B.relrank C ∣ A.relrank C :=
 variable {A B} in
 theorem relfinrank_dvd_of_le_left (h : A ≤ B) : B.relfinrank C ∣ A.relfinrank C :=
   dvd_of_mul_left_eq _ (relfinrank_inf_mul_relfinrank_of_le C h)
-
--- TODO: starting from this point, the results are not stated for `relfinrank` yet
-
-@[simp]
-theorem relrank_sup_right [Normal F B] : B.relrank (A ⊔ B) = B.relrank A := by
-  sorry
-
-@[simp]
-theorem relrank_sup_left [Normal F B] : B.relrank (B ⊔ A) = B.relrank A := by
-  rw [sup_comm, relrank_sup_right]
-
-theorem relrank_dvd_rank_top_of_normal [Normal F A] : A.relrank B ∣ Module.rank A E :=
-  relrank_sup_right B A ▸ relrank_dvd_rank_top_of_le le_sup_right
-
--- this is incorrect !!! e.g. A B are two deg 3 ext / Q, C is deg 6 ext / Q
--- need normal condition
-variable {B C} in
-theorem relrank_dvd_of_le_right (h : B ≤ C) : A.relrank B ∣ A.relrank C :=
-  -- have := dvd_of_mul_right_eq _ (relrank_mul_relrank_eq_inf_relrank A h)
-  sorry
-
--- Subgroup.relindex_inf_le
--- Subgroup.index_inf_le
 
 end IntermediateField
