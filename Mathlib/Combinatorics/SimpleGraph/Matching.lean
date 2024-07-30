@@ -194,7 +194,8 @@ section Finite
 
 variable [Fintype V] [DecidableRel G.Adj]
 
-lemma even_card_of_isPerfectMatching [DecidableEq V] (c : ConnectedComponent G) (hM : M.IsPerfectMatching) :
+lemma even_card_of_isPerfectMatching [DecidableEq V]
+    (c : ConnectedComponent G) (hM : M.IsPerfectMatching) :
     Even (Fintype.card c.supp) := by
   classical simpa using (hM.induce_connectedComponent_isMatching c).even_card
 
