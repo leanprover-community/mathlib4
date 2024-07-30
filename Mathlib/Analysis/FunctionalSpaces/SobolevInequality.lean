@@ -54,7 +54,7 @@ open Set Function Finset MeasureTheory Measure Filter
 
 noncomputable section
 
-variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+variable {ι : Type*} [Fintype ι]
 
 local prefix:max "#" => Fintype.card
 
@@ -64,6 +64,10 @@ variable {A : ι → Type*} [∀ i, MeasurableSpace (A i)]
   (μ : ∀ i, Measure (A i)) [∀ i, SigmaFinite (μ i)]
 
 namespace MeasureTheory
+
+section DecidableEq
+
+variable [DecidableEq ι]
 
 namespace GridLines
 
@@ -278,6 +282,8 @@ theorem lintegral_prod_lintegral_pow_le
   convert lintegral_mul_prod_lintegral_pow_le μ h2 h3 hf using 2
   field_simp
 
+end DecidableEq
+
 /-! ## The Gagliardo-Nirenberg-Sobolev inequality -/
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
@@ -294,6 +300,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux
     {u : (ι → ℝ) → F} (hu : ContDiff ℝ 1 u)
     (h2u : HasCompactSupport u) :
     ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ p := by
+  classical
   /- For a function `f` in one variable and `t ∈ ℝ` we have
   `|f(t)| = `|∫_{-∞}^t Df(s)∂s| ≤ ∫_ℝ |Df(s)| ∂s` where we use the fundamental theorem of calculus.
   For each `x ∈ ℝⁿ` we let `u` vary in one of the `n` coordinates and apply the inequality above.
@@ -477,8 +484,8 @@ theorem snorm_le_snorm_fderiv_of_eq_inner  {u : E → F'}
   have h2p : (p : ℝ) < n := by
     have : 0 < p⁻¹ - (n : ℝ)⁻¹ :=
       NNReal.coe_lt_coe.mpr (pos_iff_ne_zero.mpr (inv_ne_zero hp'0)) |>.trans_eq hp'
-    simp [sub_pos] at this
-    rwa [inv_lt_inv _ (zero_lt_one.trans_le (NNReal.coe_le_coe.mpr hp))] at this
+    rwa [NNReal.coe_inv, sub_pos,
+      inv_lt_inv _ (zero_lt_one.trans_le (NNReal.coe_le_coe.mpr hp))] at this
     exact_mod_cast hn
   have h0n : 2 ≤ n := Nat.succ_le_of_lt <| Nat.one_lt_cast.mp <| hp.trans_lt h2p
   have hn : NNReal.IsConjExponent n n' := .conjExponent (by norm_cast)

@@ -111,6 +111,8 @@ def mk (s : Finset ι) : (∀ i : (↑s : Set ι), β i.1) →+ ⨁ i, β i wher
 def of (i : ι) : β i →+ ⨁ i, β i :=
   DFinsupp.singleAddHom β i
 
+variable {β}
+
 @[simp]
 theorem of_eq_same (i : ι) (x : β i) : (of _ i x) i = x :=
   DFinsupp.single_eq_same
@@ -120,6 +122,16 @@ theorem of_eq_of_ne (i j : ι) (x : β i) (h : i ≠ j) : (of _ i x) j = 0 :=
 
 lemma of_apply {i : ι} (j : ι) (x : β i) : of β i x j = if h : i = j then Eq.recOn h x else 0 :=
   DFinsupp.single_apply
+
+theorem mk_apply_of_mem {s : Finset ι} {f : ∀ i : (↑s : Set ι), β i.val} {n : ι} (hn : n ∈ s) :
+    mk β s f n = f ⟨n, hn⟩ := by
+  dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk, DFinsupp.mk_apply]
+  rw [dif_pos hn]
+
+theorem mk_apply_of_not_mem {s : Finset ι} {f : ∀ i : (↑s : Set ι), β i.val} {n : ι} (hn : n ∉ s) :
+    mk β s f n = 0 := by
+  dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk, DFinsupp.mk_apply]
+  rw [dif_neg hn]
 
 @[simp]
 theorem support_zero [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] : (0 : ⨁ i, β i).support = ∅ :=
@@ -143,8 +155,6 @@ theorem sum_univ_of [Fintype ι] (x : ⨁ i, β i) :
   apply DFinsupp.ext (fun i ↦ ?_)
   rw [DFinsupp.finset_sum_apply]
   simp [of_apply]
-
-variable {β}
 
 theorem mk_injective (s : Finset ι) : Function.Injective (mk β s) :=
   DFinsupp.mk_injective s
@@ -326,6 +336,13 @@ protected def coeAddMonoidHom {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [
     [AddSubmonoidClass S M] (A : ι → S) : (⨁ i, A i) →+ M :=
   toAddMonoid fun i => AddSubmonoidClass.subtype (A i)
 
+theorem coeAddMonoidHom_eq_dfinsupp_sum {M S : Type*} [DecidableEq M] [AddCommMonoid M]
+    [SetLike S M] [AddSubmonoidClass S M] (A : ι → S) (x : DirectSum ι fun i => A i) :
+    DirectSum.coeAddMonoidHom A x = DFinsupp.sum x fun i => (fun x : A i => ↑x) := by
+  simp only [DirectSum.coeAddMonoidHom, toAddMonoid, DFinsupp.liftAddHom, AddEquiv.coe_mk,
+    Equiv.coe_fn_mk]
+  exact DFinsupp.sumAddHom_apply _ x
+
 @[simp]
 theorem coeAddMonoidHom_of {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S) (i : ι) (x : A i) :
@@ -337,7 +354,7 @@ theorem coe_of_apply {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S
     (of (fun i ↦ {x // x ∈ A i}) i x j : M) = if i = j then x else 0 := by
   obtain rfl | h := Decidable.eq_or_ne i j
   · rw [DirectSum.of_eq_same, if_pos rfl]
-  · rw [DirectSum.of_eq_of_ne _ _ _ _ h, if_neg h, ZeroMemClass.coe_zero, ZeroMemClass.coe_zero]
+  · rw [DirectSum.of_eq_of_ne _ _ _ h, if_neg h, ZeroMemClass.coe_zero, ZeroMemClass.coe_zero]
 
 /-- The `DirectSum` formed by a collection of additive submonoids (or subgroups, or submodules) of
 `M` is said to be internal if the canonical map `(⨁ i, A i) →+ M` is bijective.
@@ -353,5 +370,19 @@ theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddCom
     (A : ι → AddSubmonoid M) (h : IsInternal A) : iSup A = ⊤ := by
   rw [AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_top_iff_surjective]
   exact Function.Bijective.surjective h
+
+variable  {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
+    [AddSubmonoidClass S M] (A : ι → S)
+
+theorem support_subset [DecidableEq M] (x : DirectSum ι fun i => A i) :
+    (Function.support fun i => (x i : M)) ⊆ ↑(DFinsupp.support x) := by
+  intro m
+  simp only [Function.mem_support, Finset.mem_coe, DFinsupp.mem_support_toFun, not_imp_not,
+    ZeroMemClass.coe_eq_zero, imp_self]
+
+theorem finite_support (x : DirectSum ι fun i => A i) :
+    (Function.support fun i => (x i : M)).Finite := by
+  classical
+  exact Set.Finite.subset (DFinsupp.support x : Set ι).toFinite (DirectSum.support_subset _ x)
 
 end DirectSum
