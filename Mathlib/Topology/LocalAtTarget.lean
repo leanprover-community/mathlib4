@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Topology.Sets.Opens
+import Mathlib.Topology.LocallyClosed
 
 /-!
 # Properties of maps that are local at the target.
@@ -99,6 +100,12 @@ theorem isOpen_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
 theorem isClosed_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
     IsClosed s ↔ ∀ i, IsClosed ((↑) ⁻¹' s : Set (U i)) := by
   simpa using isOpen_iff_coe_preimage_of_iSup_eq_top hU sᶜ
+
+theorem isLocallyClosed_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
+    IsLocallyClosed s ↔ ∀ i, IsLocallyClosed ((↑) ⁻¹' s : Set (U i)) := by
+  simp_rw [isLocallyClosed_iff_isOpen_coborder]
+  rw [isOpen_iff_coe_preimage_of_iSup_eq_top hU]
+  exact forall_congr' fun i ↦ by rw [(U i).isOpen.openEmbedding_subtype_val.coborder_preimage]
 
 theorem isOpenMap_iff_isOpenMap_of_iSup_eq_top :
     IsOpenMap f ↔ ∀ i, IsOpenMap ((U i).1.restrictPreimage f) := by
