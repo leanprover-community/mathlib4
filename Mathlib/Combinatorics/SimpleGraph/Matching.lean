@@ -226,4 +226,9 @@ lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.del
 
 end Finite
 end ConnectedComponent
+
+/--
+  A graph is perfect matching free if it contains no
+-/
+def IsPerfectMatchingFree (G : SimpleGraph V) := ∀ (M : Subgraph G), ¬Subgraph.IsPerfectMatching M
 end SimpleGraph
