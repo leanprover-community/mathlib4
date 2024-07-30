@@ -116,7 +116,8 @@ lemma mk_map {V W : Type*} [ReflQuiver V] [ReflQuiver W] {obj : V → W} {map} {
     (Prefunctor.mk obj map).map f = map f := rfl
 
 @[ext]
-theorem ext {V : Type u} [ReflQuiver.{v₁} V] {W : Type u₂} [ReflQuiver.{v₂} W] {F G : ReflPrefunctor V W}
+theorem ext {V : Type u} [ReflQuiver.{v₁} V] {W : Type u₂} [ReflQuiver.{v₂} W]
+    {F G : ReflPrefunctor V W}
     (h_obj : ∀ X, F.obj X = G.obj X)
     (h_map : ∀ (X Y : V) (f : X ⟶ Y),
       F.map f = Eq.recOn (h_obj Y).symm (Eq.recOn (h_obj X).symm (G.map f))) : F = G := by
@@ -442,7 +443,8 @@ end SimplexCategory
 
 open SimplexCategory
 
-/-- ER: The category of k-truncated simplicial sets is the category of contravariant functors from `SimplexCategory` to `Type u`. -/
+/-- ER: The category of k-truncated simplicial sets is the category of contravariant functors from
+`SimplexCategory` to `Type u`. -/
 def TruncSSet (k : ℕ)  : Type (u + 1) := (Δ k)ᵒᵖ ⥤ Type u
 
 namespace TruncSSet
@@ -460,7 +462,8 @@ instance hasColimits {k : ℕ} : HasColimits (TruncSSet k) := by
   infer_instance
 
 @[ext]
-lemma hom_ext {k : ℕ} {X Y : TruncSSet k} {f g : X ⟶ Y} (hyp : ∀ (n : (Δ k)ᵒᵖ), f.app n = g.app n) : f = g := NatTrans.ext f g (funext hyp)
+lemma hom_ext {k : ℕ} {X Y : TruncSSet k} {f g : X ⟶ Y}
+    (hyp : ∀ (n : (Δ k)ᵒᵖ), f.app n = g.app n) : f = g := NatTrans.ext f g (funext hyp)
 
 /-- The ulift functor `TruncSSet.{u} ⥤ TruncSSet.{max u v}` on truncated simplicial sets. -/
 def uliftFunctor (k : ℕ) : TruncSSet.{u} k ⥤ TruncSSet.{max u v} k :=
@@ -487,24 +490,28 @@ def Δ.ι.op_fullyFaithful (k) : (Δ.ι k).op.FullyFaithful :=
 
 def truncation (k) : SSet ⥤ TruncSSet k := (whiskeringLeft _ _ _).obj (Δ.ι k).op
 
-def skeletonAdj (k) : lan (Δ.ι k).op ⊣ truncation k := Lan.adjunction _ _
-def coskeletonAdj (k) : truncation k ⊣ ran (Δ.ι k).op := Ran.adjunction _ _
+def skeletonAdj (k) : lan (Δ.ι k).op ⊣ truncation k := Functor.lanAdjunction _ _
+def coskeletonAdj (k) : truncation k ⊣ ran (Δ.ι k).op := Functor.ranAdjunction _ _
 
 instance coskeleton.reflective (k) : IsIso ((coskeletonAdj k).counit) :=
-  Ran.reflective Type (Δ.ι k).op
+  Functor.reflective' (Δ.ι k).op
+  -- TODO: change the name of `Functor.reflective'` to
+  -- Functor.ran_reflective or something like that
 
 instance skeleton.reflective (k) : IsIso ((skeletonAdj k).unit) :=
-  Lan.coreflective Type (Δ.ι k).op
+  Functor.coreflective' (Δ.ι k).op
+  -- TODO: same as above
 
-instance coskeleton.fullyfaithful (k) : (ran (D := Type) (Δ.ι k).op).FullyFaithful := by
+instance coskeleton.fullyfaithful (k) : (ran (H := Type) (Δ.ι k).op).FullyFaithful := by
   apply Adjunction.fullyFaithfulROfIsIsoCounit (coskeletonAdj k)
 
-instance coskeleton.full (k) : (ran (D := Type) (Δ.ι k).op).Full := FullyFaithful.full (coskeleton.fullyfaithful k)
+instance coskeleton.full (k) : (ran (H := Type) (Δ.ι k).op).Full :=
+  FullyFaithful.full (coskeleton.fullyfaithful k)
 
-instance coskeleton.faithful (k) : (ran (D := Type) (Δ.ι k).op).Faithful :=
+instance coskeleton.faithful (k) : (ran (H := Type) (Δ.ι k).op).Faithful :=
   FullyFaithful.faithful (coskeleton.fullyfaithful k)
 
-instance coskeletonAdj.reflective (k) : Reflective (ran (D := Type) (Δ.ι k).op) :=
+instance coskeletonAdj.reflective (k) : Reflective (ran (H := Type) (Δ.ι k).op) :=
   Reflective.mk (truncation k) (coskeletonAdj k)
 
 end SimplexCategory
@@ -515,9 +522,11 @@ def nerveFunctor₂ : Cat ⥤ TruncSSet 2 := nerveFunctor ⋙ SimplexCategory.tr
 
 def nerve₂ (C : Type*) [Category C] : TruncSSet 2 := nerveFunctor₂.obj (Cat.of C)
 
-theorem nerve₂_restrictedNerve (C : Type*) [Category C] : (SimplexCategory.Δ.ι 2).op ⋙ (nerve C) = nerve₂ C := rfl
+theorem nerve₂_restrictedNerve (C : Type*) [Category C] :
+    (SimplexCategory.Δ.ι 2).op ⋙ (nerve C) = nerve₂ C := rfl
 
-def nerve₂restrictedNerveIso (C : Type*) [Category C] : (SimplexCategory.Δ.ι 2).op ⋙ (nerve C) ≅ nerve₂ C := Iso.refl _
+def nerve₂restrictedNerveIso (C : Type*) [Category C] :
+    (SimplexCategory.Δ.ι 2).op ⋙ (nerve C) ≅ nerve₂ C := Iso.refl _
 namespace Nerve
 
 /-- ER: The natural map from a nerve. -/
