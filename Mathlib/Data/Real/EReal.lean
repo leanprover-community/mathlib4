@@ -971,7 +971,7 @@ lemma ge_iff_le_forall_real_lt (x y : EReal) : (∀ z : ℝ, z < y → z ≤ x) 
       exact not_le_of_lt (lt_add_one x) (h (x + 1) (coe_lt_top (x + 1)))
   | h_top => exact le_top
 
-/-- This lemma is superseded by `add_le_of_forall_lt_add_le`. -/
+/-- This lemma is superseded by `add_le_of_forall_add_le_le`. -/
 private lemma top_add_le_of_forall_add_le {a b : EReal} (h : ∀ c < ⊤, ∀ d < a, c + d ≤ b) :
     ⊤ + a ≤ b := by
   induction a with
@@ -1003,14 +1003,14 @@ lemma add_le_of_forall_add_le {a b c : EReal} (h : ∀ d < a, ∀ e < b, d + e �
       rw [← coe_add, ← coe_sub,  ← coe_sub, ← coe_add, sub_add_sub_cancel, add_sub_cancel_left]
     | h_top =>
       rw [add_comm (a : EReal) ⊤]
-      exact add_le_of_forall_lt_add_top fun d d_top e e_a ↦ (add_comm d e ▸ h e e_a d d_top)
-  | h_top => exact add_le_of_forall_lt_add_top h
+      exact top_add_le_of_forall_add_le fun d d_top e e_a ↦ (add_comm d e ▸ h e e_a d d_top)
+  | h_top => exact top_add_le_of_forall_add_le h
 
 lemma le_add_of_forall_le_add {a b c : EReal} (h₁ : a ≠ ⊥ ∨ b ≠ ⊤) (h₂ : a ≠ ⊤ ∨ b ≠ ⊥)
     (h : ∀ d > a, ∀ e > b, c ≤ d + e) :
     c ≤ a + b := by
   rw [← neg_le_neg_iff, neg_add h₁ h₂]
-  refine add_le_of_forall_lt_add fun d d_a e e_b ↦ ?_
+  refine add_le_of_forall_add_le fun d d_a e e_b ↦ ?_
   have h₃ : d ≠ ⊥ ∨ e ≠ ⊤ := Or.inr (ne_top_of_lt e_b)
   have h₄ : d ≠ ⊤ ∨ e ≠ ⊥ := Or.inl (ne_top_of_lt d_a)
   rw [← neg_neg d, neg_lt_iff_neg_lt, neg_neg a] at d_a
