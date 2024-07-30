@@ -8,8 +8,6 @@ import Mathlib.Algebra.Order.SMulWithTop
 import Mathlib.Data.Finset.MulAntidiagonal
 import Mathlib.Data.Finset.SMulAntidiagonal
 import Mathlib.RingTheory.HahnSeries.Addition
-import Mathlib.Data.Finset.SMulAntidiagonal
-import Mathlib.RingTheory.HahnSeries.Addition
 
 /-!
 # Multiplicative properties of Hahn series
@@ -334,7 +332,7 @@ theorem smul_coeffTop_orderTop_vAdd_orderTop {Γ Γ'} [LinearOrder Γ] [LinearOr
   simp_rw [HahnSeries.orderTop_of_ne hx, HahnSeries.orderTop_of_ne hy,
     HahnSeries.leadingCoeff_of_ne hx, HahnSeries.leadingCoeff_of_ne hy, ← WithTop.coe_vAdd,
     HahnSeries.coeffTop_eq]
-  rw [smul_coeff, Finset.VAddAntidiagonal_min_VAdd_min, Finset.sum_singleton]
+  rw [smul_coeff, Finset.vaddAntidiagonal_min_vadd_min, Finset.sum_singleton]
 
 theorem orderTop_smul_of_nonzero {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ'] [VAdd Γ Γ']
     [IsOrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {x : HahnSeries Γ R}
@@ -346,11 +344,11 @@ theorem orderTop_smul_of_nonzero {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ'] [VA
   · rw [smul_coeffTop_orderTop_vAdd_orderTop]
     exact h
   · rw [HahnSeries.orderTop_of_ne hx, HahnSeries.orderTop_of_ne hy, ← WithTop.coe_vAdd,
-      ← Set.IsWF.min_VAdd]
+      ← Set.IsWF.min_vadd]
     have hxy : (of R).symm (x • y) ≠ 0 :=
       HahnSeries.ne_zero_of_coeffTop_ne_zero (ne_of_eq_of_ne smul_coeffTop_orderTop_vAdd_orderTop h)
     rw [HahnSeries.orderTop_of_ne hxy, WithTop.coe_le_coe]
-    exact Set.IsWF.min_le_min_of_subset support_smul_subset_vAdd_support
+    exact Set.IsWF.min_le_min_of_subset support_smul_subset_vadd_support
 
 theorem leadingCoeff_smul_of_nonzero {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ'] [VAdd Γ Γ']
     [IsOrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {x : HahnSeries Γ R}
@@ -369,7 +367,7 @@ theorem smul_coeff_order_add_order {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Z
   by_cases hy : (of R).symm y = 0; · simp [hy, smul_coeff]
   rw [HahnSeries.order_of_ne hx, HahnSeries.order_of_ne hy, smul_coeff,
     HahnSeries.leadingCoeff_of_ne hx, HahnSeries.leadingCoeff_of_ne hy]
-  erw [Finset.VAddAntidiagonal_min_VAdd_min, Finset.sum_singleton]
+  erw [Finset.vaddAntidiagonal_min_vadd_min, Finset.sum_singleton]
 
 end DistribSMul
 
@@ -593,14 +591,14 @@ private theorem mul_smul' [Semiring R] [Module R V] (x y : HahnSeries Γ R)
   ext b
   rw [smul_coeff_left (x.isPWO_support.add y.isPWO_support)
     HahnSeries.support_mul_subset_add_support, smul_coeff_right
-    (y.isPWO_support.VAdd z.isPWO_support) support_smul_subset_vAdd_support']
+    (y.isPWO_support.vadd z.isPWO_support) support_smul_subset_vadd_support']
   simp only [HahnSeries.mul_coeff, smul_coeff, HahnSeries.add_coeff, sum_smul, smul_sum, sum_sigma']
   apply Finset.sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l +ᵥ j), (l, j)⟩)
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>
     aesop (add safe [Set.vadd_mem_vadd, Set.add_mem_add]) (add simp [add_vadd, mul_smul])
 
-instance instRModule [Semiring R] [Module R V] : Module R (HahnModule Γ R V) :=
-  inferInstanceAs <| Module R (HahnSeries Γ V)
+instance instBaseModule [Semiring R] [Module R V] : Module R (HahnModule Γ' R V) :=
+  inferInstanceAs <| Module R (HahnSeries Γ' V)
 
 /-- The isomorphism between HahnSeries and HahnModules, as a linear map. -/
 @[simps]
@@ -875,3 +873,4 @@ end Domain
 end Algebra
 
 end HahnSeries
+#min_imports
