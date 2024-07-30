@@ -1821,10 +1821,10 @@ theorem maximal_iff_forall_insert (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) 
     fun h t ht hst x hxt ↦ by_contra fun hxs ↦ h x hxs (hP ht (insert_subset hxt hst))⟩
 
 theorem minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
-    Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s.erase x) :=
-  ⟨fun h ↦ ⟨h.prop, fun x hxs hx ↦ by simpa using h.le_of_le hx (erase_subset _ _) hxs⟩,
-    fun h ↦ ⟨h.1, fun t ht hts x hxs ↦ by_contra fun hxt ↦
-      h.2 x hxs <| hP ht (subset_erase.2 ⟨hts, hxt⟩)⟩⟩
+    Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s.erase x) where
+  mp h := ⟨h.prop, fun x hxs hx ↦ by simpa using h.le_of_le hx (erase_subset _ _) hxs⟩
+  mpr h := ⟨h.1, fun t ht hts x hxs ↦ by_contra fun hxt ↦
+    h.2 x hxs <| hP ht (subset_erase.2 ⟨hts, hxt⟩)⟩
 
 end minimal
 
