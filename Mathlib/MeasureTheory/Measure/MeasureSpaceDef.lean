@@ -77,6 +77,7 @@ structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α wher
     toOuterMeasure (⋃ i, f i) = ∑' i, toOuterMeasure (f i)
   trim_le : toOuterMeasure.trim ≤ toOuterMeasure
 
+/-- Notation for `Measure` with respect to a non-standard σ-algebra in the domain. -/
 scoped notation "Measure[" mα "]" α:arg => @Measure α mα
 
 theorem Measure.toOuterMeasure_injective [MeasurableSpace α] :
