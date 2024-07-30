@@ -284,7 +284,8 @@ theorem leftInv_eq_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
     (h : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) : leftInv p i = rightInv p i :=
   calc
     leftInv p i = leftInv p.removeZero i := by rw [leftInv_removeZero]
-    _ = rightInv p.removeZero i := by apply leftInv_eq_rightInv_aux <;> simp; exact h
+    _ = rightInv p.removeZero i := by
+      apply leftInv_eq_rightInv_aux _ _ (by simpa using h) (by simp)
     _ = rightInv p i := by rw [rightInv_removeZero]
 
 /-!
