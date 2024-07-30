@@ -56,6 +56,11 @@ theorem piFinset_empty [Nonempty α] : piFinset (fun _ => ∅ : ∀ i, Finset (�
 lemma piFinset_nonempty : (piFinset s).Nonempty ↔ ∀ a, (s a).Nonempty := by
   simp [Finset.Nonempty, Classical.skolem]
 
+/-- This lemma is specifically designed to be used backwards, whence the specialisation to `Fin n`
+as the indexing type doesn't matter in practice. -/
+lemma _root_.Finset.Nonempty.piFinset_const {s : Finset α} (hs : s.Nonempty) {n : ℕ} :
+    (piFinset fun _ : Fin n ↦ s).Nonempty := piFinset_nonempty.2 fun _ ↦ hs
+
 @[simp]
 lemma piFinset_of_isEmpty [IsEmpty α] (s : ∀ a, Finset (γ a)) : piFinset s = univ :=
   eq_univ_of_forall fun _ ↦ by simp
