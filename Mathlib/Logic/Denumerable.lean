@@ -276,7 +276,8 @@ theorem coe_comp_ofNat_range : Set.range ((↑) ∘ ofNat s : ℕ → ℕ) = s :
 private def toFunAux (x : s) : ℕ :=
   (List.range x).countP (· ∈ s)
 
-private theorem toFunAux_eq (x : s) : toFunAux x = ((Finset.range x).filter (· ∈ s)).card := by
+private theorem toFunAux_eq {s : Set ℕ} [DecidablePred (· ∈ s)] (x : s) :
+    toFunAux x = ((Finset.range x).filter (· ∈ s)).card := by
   rw [toFunAux, List.countP_eq_length_filter]
   rfl
 

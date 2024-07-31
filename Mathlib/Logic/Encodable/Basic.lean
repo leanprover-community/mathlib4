@@ -327,7 +327,7 @@ instance Prod.encodable : Encodable (α × β) :=
   ofEquiv _ (Equiv.sigmaEquivProd α β).symm
 
 @[simp]
-theorem decode_prod_val [i : Encodable α] (n : ℕ) :
+theorem decode_prod_val (n : ℕ) :
     (@decode (α × β) _ n : Option (α × β))
       = (decode n.unpair.1).bind fun a => (decode n.unpair.2).map <| Prod.mk a := by
   simp only [decode_ofEquiv, Equiv.symm_symm, decode_sigma_val]

@@ -100,7 +100,6 @@ theorem MonoidHom.preimage_smul_setₛₗ (σ : R →* S)
 /-- `preimage_smul_setₛₗ` in the context of a `MonoidHomClass` -/
 theorem preimage_smul_setₛₗ
     {G : Type*} [FunLike G R S] [MonoidHomClass G R S] (σ : G)
-    [MulAction R M] [MulAction S N]
     {F : Type*} [FunLike F M N] [MulActionSemiHomClass F σ M N] (h : F)
     {c : R} (hc : IsUnit c) (t : Set N) :
     h ⁻¹' (σ c • t) = c • h ⁻¹' t :=
