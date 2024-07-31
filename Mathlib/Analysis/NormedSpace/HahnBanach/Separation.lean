@@ -265,8 +265,7 @@ theorem real_part_thing (g : E →L[ℝ] ℝ) : ∀ x,  re ((LinTo𝕜'' g) x : 
 theorem separate_convex_open_set_RCLike [ContinuousSMul ℝ E] {s : Set E}
     (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) {x₀ : E} (hx₀ : x₀ ∉ s) :
     ∃ f : E →L[𝕜] 𝕜, re (f x₀) = 1 ∧ ∀ x ∈ s, re (f x) < 1 := by
-  have h := separate_convex_open_set hs₀ hs₁ hs₂ hx₀
-  obtain ⟨g, hg⟩ := h
+  obtain ⟨g, hg⟩ := separate_convex_open_set hs₀ hs₁ hs₂ hx₀
   use LinTo𝕜'' g
   simp only [real_part_thing g]
   exact hg
