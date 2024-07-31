@@ -157,7 +157,8 @@ initialize registerBuiltinAttribute {
     let declTy := (← getConstInfo decl).type
     withReducible <| forallTelescopeReducing declTy fun xs targetTy => do
     let fail (m : MessageData) := throwError "\
-      @[gcongr] attribute only applies to lemmas proving f x₁ ... xₙ ∼ f x₁' ... xₙ'.\n{m} {declTy}"
+      @[gcongr] attribute only applies to lemmas proving f x₁ ... xₙ ∼ f x₁' ... xₙ'.\n \
+      {m} in the conclusion of {declTy}"
     -- verify that conclusion of the lemma is of the form `f x₁ ... xₙ ∼ f x₁' ... xₙ'`
     let .app (.app rel lhs) rhs ← whnf targetTy |
       fail "No relation with at least two arguments found"
@@ -180,7 +181,7 @@ initialize registerBuiltinAttribute {
         let e1 := e1.eta
         let e2 := e2.eta
         -- verify that the "varying argument" pairs are free variables (after eta-reduction)
-        unless e1.isFVar && e2.isFVar do fail "not all arguments are free variables"
+        unless e1.isFVar && e2.isFVar do fail "Not all arguments are free variables"
         -- add such a pair to the `pairs` array
         pairs := pairs.push (varyingArgs.size, e1, e2)
       -- record in the `varyingArgs` array a boolean (true for varying, false if LHS/RHS are defeq)
