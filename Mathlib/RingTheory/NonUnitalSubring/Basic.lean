@@ -3,7 +3,7 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.GroupTheory.Subsemigroup.Center
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
@@ -66,8 +66,6 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 non-unital subring
 -/
 
-
-open scoped BigOperators
 
 universe u v w
 
@@ -146,13 +144,11 @@ namespace NonUnitalSubring
 def toSubsemigroup (s : NonUnitalSubring R) : Subsemigroup R :=
   { s.toNonUnitalSubsemiring.toSubsemigroup with carrier := s.carrier }
 
-instance : SetLike (NonUnitalSubring R) R
-    where
+instance : SetLike (NonUnitalSubring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance : NonUnitalSubringClass (NonUnitalSubring R) R
-    where
+instance : NonUnitalSubringClass (NonUnitalSubring R) R where
   zero_mem s := s.zero_mem'
   add_mem {s} := s.add_mem'
   mul_mem {s} := s.mul_mem'
@@ -298,7 +294,7 @@ protected theorem multiset_sum_mem {R} [NonUnitalNonAssocRing R] (s : NonUnitalS
 /-- Sum of elements in a `NonUnitalSubring` of a `NonUnitalRing` indexed by a `Finset`
 is in the `NonUnitalSubring`. -/
 protected theorem sum_mem {R : Type*} [NonUnitalNonAssocRing R] (s : NonUnitalSubring R)
-    {ι : Type*} {t : Finset ι} {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∑ i in t, f i) ∈ s :=
+    {ι : Type*} {t : Finset ι} {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∑ i ∈ t, f i) ∈ s :=
   sum_mem h
 
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
@@ -694,10 +690,10 @@ theorem closure_induction' {s : Set R} {p : closure s → Prop} (a : closure s)
     (add : ∀ x y, p x → p y → p (x + y)) (neg : ∀ x, p x → p (-x))
     (mul : ∀ x y, p x → p y → p (x * y)) : p a :=
   Subtype.recOn a fun b hb => by
-    refine' Exists.elim _ fun (hb : b ∈ closure s) (hc : p ⟨b, hb⟩) => hc
-    refine'
+    refine Exists.elim ?_ fun (hb : b ∈ closure s) (hc : p ⟨b, hb⟩) => hc
+    refine
       closure_induction hb (fun x hx => ⟨subset_closure hx, mem x hx⟩)
-        ⟨zero_mem (closure s), zero⟩ _ _ _
+        ⟨zero_mem (closure s), zero⟩ ?_ ?_ ?_
     · rintro x y ⟨hx, hpx⟩ ⟨hy, hpy⟩
       exact ⟨add_mem hx hy, add _ _ hpx hpy⟩
     · rintro x ⟨hx, hpx⟩
@@ -714,8 +710,8 @@ theorem closure_induction₂ {s : Set R} {p : R → R → Prop} {a b : R} (ha : 
     (Hadd_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ + y₂))
     (Hmul_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ * x₂) y)
     (Hmul_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ * y₂)) : p a b := by
-  refine' closure_induction hb _ (H0_right _) (Hadd_right a) (Hneg_right a) (Hmul_right a)
-  refine' closure_induction ha Hs (fun x _ => H0_left x) _ _ _
+  refine closure_induction hb ?_ (H0_right _) (Hadd_right a) (Hneg_right a) (Hmul_right a)
+  refine closure_induction ha Hs (fun x _ => H0_left x) ?_ ?_ ?_
   · exact fun x y H₁ H₂ z zs => Hadd_left x y z (H₁ z zs) (H₂ z zs)
   · exact fun x hx z zs => Hneg_left x z (hx z zs)
   · exact fun x y H₁ H₂ z zs => Hmul_left x y z (H₁ z zs) (H₂ z zs)
@@ -754,7 +750,7 @@ def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
     mul_comm := fun x y => by
       ext
       simp only [NonUnitalSubring.val_mul]
-      refine'
+      refine
         closure_induction₂ x.prop y.prop hcomm
           (fun x => by simp only [mul_zero, zero_mul])
           (fun x => by simp only [mul_zero, zero_mul])
@@ -768,8 +764,7 @@ def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
 variable (R)
 
 /-- `closure` forms a Galois insertion with the coercion to set. -/
-protected def gi : GaloisInsertion (@closure R _) SetLike.coe
-    where
+protected def gi : GaloisInsertion (@closure R _) SetLike.coe where
   choice s _ := closure s
   gc _s _t := closure_le
   le_l_u _s := subset_closure
