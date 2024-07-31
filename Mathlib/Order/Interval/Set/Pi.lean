@@ -288,10 +288,9 @@ theorem Icc_diff_pi_univ_Ioo_subset (x y x' y' : ∀ i, α i) :
     (Icc x y \ pi univ fun i ↦ Ioo (x' i) (y' i)) ⊆
     (⋃ i : ι, Icc x (update y i (x' i))) ∪ ⋃ i : ι, Icc (update x i (y' i)) y := by
   rintro a ⟨⟨hxa, hay⟩, ha'⟩
-  simp at ha'
-  simp only [le_update_iff, ne_eq, not_and, not_forall, not_le, exists_prop, gt_iff_lt,
-    update_le_iff, mem_union, mem_iUnion, mem_Icc, hxa, hay _, implies_true, and_true, true_and,
-    hxa _, hay, ← exists_or]
+  simp only [mem_pi, mem_univ, mem_Ioo, true_implies, not_forall] at ha'
+  simp only [le_update_iff, update_le_iff, mem_union, mem_iUnion, mem_Icc,
+    hxa, hay _, hxa _, hay, ← exists_or]
   rcases ha' with ⟨w, hw⟩
   apply Exists.intro w
   cases lt_or_le (x' w) (a w) <;> simp_all
