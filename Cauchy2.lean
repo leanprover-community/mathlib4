@@ -60,19 +60,19 @@ theorem ZMod.card_orbit (X : Type*) [AddAction (ZMod p) X] (x : X) :
   rw [Nat.card_congr (AddAction.orbitEquivQuotientStabilizer (ZMod p) x)]
   simpa using AddSubgroup.card_quotient_dvd_card (AddAction.stabilizer (ZMod p) x)
 
+attribute [simp] Nat.card_pi
+
+def Diag_equiv : Diag (n + 1) G ≃ (Fin n → G) where
+  toFun x i := x.1 i
+  invFun f :=
+    let y := sorry
+    ⟨Fin.cons y⁻¹ f, sorry⟩
+  left_inv := sorry
+  right_inv := sorry
+
 @[simp]
-theorem Diag_card : Nat.card (Diag p G) = (Nat.card G) ^ (p - 1) := by
-  suffices e : Diag p G ≃ (Fin (p - 1) → G) by
-    calc Nat.card (Diag p G)
-        = Nat.card (Fin (p - 1) → G) := by exact Nat.card_congr e
-      _ = (Nat.card G) ^ (p - 1)     := by rw [Nat.card_pi, Fin.prod_const]
-  constructor
-  case toFun => exact fun x i => x.1 i
-  case invFun =>
-    intro x
-    sorry
-  sorry
-  sorry
+theorem Diag_card : Nat.card (Diag (n + 1) G) = (Nat.card G) ^ n := by
+  simp [Nat.card_congr Diag_equiv]
 
 instance : One (Diag p G) where
   one := ⟨Function.const _ 1, by simp [ZMod.prod, - Function.const_one]⟩
@@ -120,7 +120,3 @@ theorem Group.Cauchy [Finite G] (hp : p ∣ Nat.card G) : ∃ g : G, orderOf g =
     exact ⟨1, h1⟩
   let e := AddAction.selfEquivSigmaOrbits' (ZMod p) (Diag p G)
   sorry
-
-
-
-
