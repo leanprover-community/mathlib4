@@ -6,7 +6,7 @@ Authors: Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis, Jireh Lo
 
 import Lean.Elab.Tactic.Location
 import Mathlib.Logic.Basic
-import Mathlib.Init.Order.Defs
+import Mathlib.Order.Defs
 import Mathlib.Tactic.Conv
 import Mathlib.Init.Set
 import Lean.Elab.Tactic.Location
