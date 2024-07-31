@@ -6,8 +6,6 @@ Authors: Aaron Anderson
 import Mathlib.ModelTheory.Substructures
 import Mathlib.Order.Ideal
 
-#align_import model_theory.finitely_generated from "leanprover-community/mathlib"@"0602c59878ff3d5f71dea69c2d32ccf2e93e5398"
-
 /-!
 # Finitely Generated First-Order Structures
 This file defines what it means for a first-order (sub)structure to be finitely or countably

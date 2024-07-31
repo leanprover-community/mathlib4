@@ -369,8 +369,8 @@ theorem extend_finite_SubEquiv :
     ∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom := by
   intro f f_FG m
   let S := closure L (f.sub_dom ∪ {m})
-  have dom_le_S : f.sub_dom ≤ S :=
-    by simp only [closure_union, closure_eq, ge_iff_le, le_sup_left]
+  have dom_le_S : f.sub_dom ≤ S := by
+    simp only [closure_union, closure_eq, ge_iff_le, le_sup_left]
   have S_FG : FG L (closure L (f.sub_dom ∪ {m})) := by
     rw [← fg_iff_structure_fg, closure_union, closure_eq]
     exact Substructure.FG.sup f_FG (Substructure.fg_closure_singleton _)
