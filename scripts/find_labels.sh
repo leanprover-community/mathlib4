@@ -16,20 +16,13 @@ printf 'Dates after %s\n' "${one_month_ago}"
 
 git switch master
 
-page=1
-per_page=100
+# Retrieve merged PRs from the last month, paginated
+prs=$(gh pr list --repo "$repo_owner/$repo_name" --state merged --search "merged:>$one_month_ago" --json number,labels --limit 100)
 
-while :; do
-    # Retrieve merged PRs from the last month, paginated
-    prs=$(gh pr list --repo "$repo_owner/$repo_name" --state merged --search "merged:>$one_month_ago" --json number,labels --limit "$per_page" --page "$page")
+# Check if any PRs are found
+if [ -z "$prs" ] || [ "$prs" = "[]" ]; then
+    break
+fi
 
-    # Check if any PRs are found
-    if [ -z "$prs" ] || [ "$prs" = "[]" ]; then
-        break
-    fi
-
-    # Print PR numbers and their labels
-    echo "$prs" | jq -r '.[] | "PR #\(.number) - Labels: \((.labels | map(.name) | join(", ")) // "No labels")"'
-
-    page=$((page + 1))
-done
+# Print PR numbers and their labels
+echo "$prs" | jq -r '.[] | "PR #\(.number) - Labels: \((.labels | map(.name) | join(", ")) // "No labels")"'
