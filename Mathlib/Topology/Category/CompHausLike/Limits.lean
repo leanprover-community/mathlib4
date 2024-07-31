@@ -13,10 +13,25 @@ import Mathlib.Topology.Category.CompHausLike.Basic
 This file collects some constructions of explicit limits and colimits in `CompHausLike P`,
 which may be useful due to their definitional properties.
 
-So far, we have the following:
-- Explicit pullbacks, defined in the "usual" way as a subset of the product.
-- Explicit finite coproducts, defined as a disjoint union.
+## Main definitions
 
+* `HasExplicitFiniteCoproducts`: A typeclass describing the property that forming all finite
+  disjoint unions is stable under the property `P`.
+  - Given this property, we deduce that `CompHausLike P` has finite coproducts and the inclusion
+    functors to other `CompHausLike P'` and to `TopCat` preserve them.
+
+* `HasExplicitPullbacks`: A typeclass describing the property that forming all "explicit pullbacks"
+  is stable under the property `P`. Here, explicit pullbacks are defined as a subset of the product.
+  - Given this property, we deduce that `CompHausLike P` has pullbacks and the inclusion
+    functors to other `CompHausLike P'` and to `TopCat` preserve them.
+  - We also define a variant `HasExplicitPullbacksOfInclusions` which is says that explicit
+    pullbacks along inclusion maps into finite disjoint unions exist. `Stonean` has this property
+    but not the stronger one.
+
+## Main results
+
+* Given `[HasExplicitPullbacksOfInclusions P]` (which is implied by `[HasExplicitPullbacks P]`),
+  we provide an instance `FinitaryExtensive (CompHausLike P)`.
 -/
 
 namespace CompHausLike
