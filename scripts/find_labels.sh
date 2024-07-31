@@ -17,7 +17,7 @@ prs=$(gh pr list --repo "$repo_owner/$repo_name" --state merged --search "merged
 
 # Check if any PRs are found
 if [ -z "$prs" ]; then
-    echo "No merged pull requests found from the last month."
+    echo "No merged pull requests found from the last month!"
     exit 0
 fi
 
