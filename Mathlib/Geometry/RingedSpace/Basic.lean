@@ -8,6 +8,7 @@ import Mathlib.Geometry.RingedSpace.SheafedSpace
 import Mathlib.Topology.Sheaves.Stalks
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.Limits
+import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # Ringed spaces
@@ -42,6 +43,10 @@ namespace RingedSpace
 open SheafedSpace
 
 variable (X : RingedSpace)
+
+/-- The underlying sheaf of (possibly-non-commutative)-rings of a ringed space. -/
+abbrev ringCatSheaf : TopCat.Sheaf RingCat X :=
+  (CategoryTheory.sheafCompose _ (forget₂ CommRingCat RingCat)).obj X.sheaf
 
 -- Porting note (#10670): this was not necessary in mathlib3
 instance : CoeSort RingedSpace Type* where
