@@ -20,7 +20,7 @@ last_month_commits="$(git log --since="$one_month_ago" --pretty=oneline | wc -l)
 printf '%s commits since %s\n' "${last_month_commits}" "${one_month_ago}"
 
 # Retrieve merged PRs from the last month, paginated
-prs=$(gh pr list --repo "$repo_owner/$repo_name" --state closed --search "closed:>$one_month_ago" --json number,labels,title --limit "$last_month_commits")
+prs=$(gh pr list --repo "$repo_owner/$repo_name" --state closed --search "closed:>$one_month_ago" --json number,labels,title --limit "$((last_month_commits * 2))")
 
 # Check if any PRs are found
 if [ -z "$prs" ] || [ "$prs" = "[]" ]; then
