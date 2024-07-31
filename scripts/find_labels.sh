@@ -27,6 +27,8 @@ prs_to_print="$(echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged b
 
 echo "${prs_to_print}"
 
+echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "(#\(.number))"'
+
 echo "${prs_to_print}" | awk '{print $2}' | sort > found_by_gh.txt
 git log --pretty=oneline --since="${start_date}" --until="${end_date}" |
   sed -n 's=.*(\(#[0-9]*\))$=\1=p' | sort > found_by_git.txt
