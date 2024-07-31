@@ -21,7 +21,7 @@ https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/to
 
 open CategoryTheory
 
-namespace CWComplex
+namespace RelativeCWComplex
 
 /-- The n-dimensional sphere is the set of points in ℝⁿ⁺¹ whose norm equals 1, endowed with the
 subspace topology. -/
@@ -71,7 +71,7 @@ structure AttachCells (X X' : TopCat) (n : ℤ) where
   iso_pushout : X' ≅ Limits.pushout
     (sigmaSphereInclusion n cells) (sigmaAttachMap X n cells attach_maps)
 
-end CWComplex
+end RelativeCWComplex
 
 /-- A relative CW-complex contains an expanding sequence of subspaces `sk i`
 (called the `i`-skeleton) for `i ≥ -1`, where `sk (-1)` is an arbitrary topological space,
@@ -82,35 +82,39 @@ structure RelativeCWComplex (A : TopCat) where
   /-- `A` is isomorphic to the (-1)-skeleton. -/
   iso_sk_neg_one : A ≅ sk (-1)
   /-- The (n+1)-skeleton is obtained from the n-skeleton by attaching (n+1)-disks. -/
-  attach_cells : (n : ℤ) → CWComplex.AttachCells (sk n) (sk (n + 1)) n
+  attach_cells : (n : ℤ) → RelativeCWComplex.AttachCells (sk n) (sk (n + 1)) n
 
 /-- A CW-complex is a relative CW-complex whose (-1)-skeleton is empty. -/
 abbrev CWComplex := RelativeCWComplex (TopCat.of Empty)
 
-namespace CWComplex
+namespace RelativeCWComplex
 
 noncomputable section Topology
 
+namespace AttachCells
+
 /-- The inclusion map from `X` to `X'`, given that `X'` is obtained from `X` by attaching
 (n+1)-disks -/
-def attachCellsInclusion (X X' : TopCat) (n : ℤ) (att : AttachCells X X' n) : X ⟶ X' :=
+def inclusion (X X' : TopCat) (n : ℤ) (att : AttachCells X X' n) : X ⟶ X' :=
   @Limits.pushout.inr TopCat _ _ _ X
     (sigmaSphereInclusion n att.cells)
     (sigmaAttachMap X n att.cells att.attach_maps) _ ≫ att.iso_pushout.inv
 
+end AttachCells
+
 /-- The inclusion map from the n-skeleton to the (n+1)-skeleton of a relative CW-complex -/
-def skeletaInclusion {A : TopCat} (X : RelativeCWComplex A) (n : ℤ) : X.sk n ⟶ X.sk (n + 1) :=
-  attachCellsInclusion (X.sk n) (X.sk (n + 1)) n (X.attach_cells n)
+def inclusion {A : TopCat} (X : RelativeCWComplex A) (n : ℤ) : X.sk n ⟶ X.sk (n + 1) :=
+  RelativeCWComplex.AttachCells.inclusion (X.sk n) (X.sk (n + 1)) n (X.attach_cells n)
 
 /-- The inclusion map from the n-skeleton to the m-skeleton of a relative CW-complex -/
-def skeletaInclusion' {A : TopCat} (X : RelativeCWComplex A)
+def inclusion' {A : TopCat} (X : RelativeCWComplex A)
     (n : ℤ) (m : ℤ) (n_le_m : n ≤ m) : X.sk n ⟶ X.sk m :=
   if h : n = m then by
     subst m
     exact 𝟙 (X.sk n)
   else by
     have h' : n < m := Int.lt_iff_le_and_ne.mpr ⟨n_le_m, h⟩
-    exact skeletaInclusion X n ≫ skeletaInclusion' X (n + 1) m h'
+    exact inclusion X n ≫ inclusion' X (n + 1) m h'
   termination_by Int.toNat (m - n)
   decreasing_by
     simp_wf
@@ -120,21 +124,21 @@ def skeletaInclusion' {A : TopCat} (X : RelativeCWComplex A)
 /-- The colimit diagram in the definition of a relative CW-complex -/
 def colimitDiagram {A : TopCat} (X : RelativeCWComplex A) : ℤ ⥤ TopCat where
   obj := X.sk
-  map {n m} n_le_m := skeletaInclusion' X n m (leOfHom n_le_m)
-  map_id := by simp [skeletaInclusion']
+  map {n m} n_le_m := inclusion' X n m (leOfHom n_le_m)
+  map_id := by simp [inclusion']
   map_comp := by
     let rec p (n m l : ℤ) (n_le_m : n ≤ m) (m_le_l : m ≤ l) (n_le_l : n ≤ l) :
-        skeletaInclusion' X n l n_le_l =
-        skeletaInclusion' X n m n_le_m ≫
-        skeletaInclusion' X m l m_le_l :=
+        inclusion' X n l n_le_l =
+        inclusion' X n m n_le_m ≫
+        inclusion' X m l m_le_l :=
       if hnm : n = m then by
-        unfold skeletaInclusion'
+        unfold inclusion'
         subst hnm
         simp only [eq_mpr_eq_cast, ↓reduceDIte, cast_eq, Category.id_comp]
       else by
         have h1 : n < m := Int.lt_iff_le_and_ne.mpr ⟨n_le_m, hnm⟩
         have h2 : n < l := by linarith
-        unfold skeletaInclusion'
+        unfold inclusion'
         simp [hnm, Int.ne_of_lt h2]
         by_cases hml : m = l
         · subst hml
@@ -143,7 +147,7 @@ def colimitDiagram {A : TopCat} (X : RelativeCWComplex A) : ℤ ⥤ TopCat where
         rw [p (n + 1) m l h1 m_le_l h2]
         congr
         simp only [hml, ↓reduceDIte]
-        conv => lhs; unfold skeletaInclusion'
+        conv => lhs; unfold inclusion'
         simp only [hml, ↓reduceDIte]
       termination_by Int.toNat (l - n)
       decreasing_by
@@ -163,4 +167,4 @@ instance : Coe CWComplex TopCat where coe X := toTopCat X
 
 end Topology
 
-end CWComplex
+end RelativeCWComplex
