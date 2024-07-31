@@ -15,7 +15,7 @@ one_month_ago=$(date -d '1 month ago' +%Y-%m-%d)
 git checkout origin/master
 
 # Retrieve merged PRs from the last month
-prs=$(gh pr list --repo "$repo_owner/$repo_name" --state merged --search "merged:>$one_month_ago" --json number,labels)
+prs=$(gh pr list --repo "$repo_owner/$repo_name" --state closed --search "closed:>$one_month_ago" --json number,labels)
 
 # Check if any PRs are found
 if [ -z "$prs" ]; then
