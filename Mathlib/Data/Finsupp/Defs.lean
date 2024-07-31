@@ -79,7 +79,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 -/
 
-
 noncomputable section
 
 open Finset Function
@@ -103,7 +102,6 @@ infixr:25 " →₀ " => Finsupp
 namespace Finsupp
 
 /-! ### Basic declarations about `Finsupp` -/
-
 
 section Basic
 
@@ -215,7 +213,6 @@ theorem unique_ext [Unique α] {f g : α →₀ M} (h : f default = g default) :
 end Basic
 
 /-! ### Declarations about `single` -/
-
 
 section Single
 
@@ -427,7 +424,6 @@ end Single
 
 /-! ### Declarations about `update` -/
 
-
 section Update
 
 variable [Zero M] (f : α →₀ M) (a : α) (b : M) (i : α)
@@ -520,7 +516,6 @@ end Update
 
 /-! ### Declarations about `erase` -/
 
-
 section Erase
 
 variable [Zero M]
@@ -612,7 +607,6 @@ end Erase
 
 /-! ### Declarations about `onFinset` -/
 
-
 section OnFinset
 
 variable [Zero M]
@@ -671,7 +665,6 @@ end OfSupportFinite
 
 /-! ### Declarations about `mapRange` -/
 
-
 section MapRange
 
 variable [Zero M] [Zero N] [Zero P]
@@ -729,7 +722,6 @@ theorem support_mapRange_of_injective {e : M → N} (he0 : e 0 = 0) (f : ι →�
 end MapRange
 
 /-! ### Declarations about `embDomain` -/
-
 
 section EmbDomain
 
@@ -835,7 +827,6 @@ end EmbDomain
 
 /-! ### Declarations about `zipWith` -/
 
-
 section ZipWith
 
 variable [Zero M] [Zero N] [Zero P]
@@ -873,7 +864,6 @@ theorem zipWith_single_single (f : M → N → P) (hf : f 0 0 = 0) (a : α) (m :
 end ZipWith
 
 /-! ### Additive monoid structure on `α →₀ M` -/
-
 
 section AddZeroClass
 
