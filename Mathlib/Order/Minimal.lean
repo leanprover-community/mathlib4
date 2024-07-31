@@ -23,6 +23,13 @@ an ordered type `α`.
 This file underwent a refactor from a version where minimality and maximality were defined using
 sets rather than predicates, and with an unbundled order relation rather than a `LE` instance.
 
+A side effect is that it has become less straightforward to state that something is minimal
+with respect to a relation that is *not* defeq to the default `LE`.
+One possible way would be with a type synonym,
+and another would be with an ad hoc `LE` instance and `@` notation.
+This was not an issue in practice anywhere in mathlib at the time of the refactor,
+but it may be worth re-examining this to make it easier in the future; see the TODO below.
+
 ## TODO
 
 * In the linearly ordered case, versions of lemmas like `minimal_mem_image` will hold with
@@ -32,6 +39,8 @@ sets rather than predicates, and with an unbundled order relation rather than a 
   lemmas about covering in the case of an `IsStronglyAtomic`/`IsStronglyCoatomic` order.
 
 * `Finset` versions of the lemmas about sets.
+
+* API to allow for easily expressing min/maximality with respect to an arbitrary non-`LE` relation.
 
 -/
 
