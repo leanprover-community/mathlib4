@@ -286,29 +286,26 @@ lemma isBoundedUnder_le_add [Add R]
   simp only [eventually_map, Pi.add_apply] at hU hV ⊢
   filter_upwards [hU, hV] with a hu hv using add_le_add hu hv
 
-lemma isBoundedUnder_sum {κ : Type*} [DecidableEq κ] [AddCommMonoid R] {r : R → R → Prop}
+lemma isBoundedUnder_sum {κ : Type*} [AddCommMonoid R] {r : R → R → Prop}
     (hr : ∀ (v₁ v₂ : α → R), f.IsBoundedUnder r v₁ → f.IsBoundedUnder r v₂
       → f.IsBoundedUnder r (v₁ + v₂)) (hr₀ : r 0 0)
-    {u : κ → α → R} (s : Finset κ) :
-    (∀ k ∈ s, f.IsBoundedUnder r (u k)) →
-      f.IsBoundedUnder r (∑ k ∈ s, u k) := by
-  induction s using Finset.induction_on
+    {u : κ → α → R} (s : Finset κ) (h : ∀ k ∈ s, f.IsBoundedUnder r (u k)) :
+    f.IsBoundedUnder r (∑ k ∈ s, u k) := by
+  induction s using Finset.cons_induction
   case empty =>
-    simp only [Finset.not_mem_empty, false_implies, implies_true, Finset.sum_empty, true_implies]
-    refine ⟨0, by simp_all only [eventually_map, Pi.zero_apply, eventually_true]⟩
-  case insert k₀ s k₀_notin_s ih =>
-    simp only [Finset.mem_insert, forall_eq_or_imp, and_imp] at *
-    intro bdd_k₀ bdd_rest
-    simpa only [Finset.sum_insert k₀_notin_s] using hr _ _ bdd_k₀ (ih bdd_rest)
+    rw [Finset.sum_empty]
+    exact ⟨0, by simp_all only [eventually_map, Pi.zero_apply, eventually_true]⟩
+  case cons k₀ s k₀_notin_s ih =>
+    simp only [Finset.forall_mem_cons] at *
+    simpa only [Finset.sum_cons] using hr _ _ h.1 (ih h.2)
 
-lemma isBoundedUnder_le_sum {κ : Type*} [DecidableEq κ] [AddCommMonoid R]
+lemma isBoundedUnder_le_sum {κ : Type*} [AddCommMonoid R]
     [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
     {u : κ → α → R} (s : Finset κ) :
-    (∀ k ∈ s, f.IsBoundedUnder (· ≤ ·) (u k)) →
-      f.IsBoundedUnder (· ≤ ·) (∑ k ∈ s, u k) := by
+    (∀ k ∈ s, f.IsBoundedUnder (· ≤ ·) (u k)) → f.IsBoundedUnder (· ≤ ·) (∑ k ∈ s, u k) := by
   apply isBoundedUnder_sum (fun _ _ ↦ isBoundedUnder_le_add) le_rfl
 
-lemma isBoundedUnder_ge_sum {κ : Type*} [DecidableEq κ] [AddCommMonoid R]
+lemma isBoundedUnder_ge_sum {κ : Type*} [AddCommMonoid R]
     [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
     {u : κ → α → R} (s : Finset κ) :
     (∀ k ∈ s, f.IsBoundedUnder (· ≥ ·) (u k)) →
@@ -856,7 +853,7 @@ theorem le_limsup_of_frequently_le' {α β} [CompleteLattice β] {f : Filter α}
 /-- If `f : α → α` is a morphism of complete lattices, then the limsup of its iterates of any
 `a : α` is a fixed point. -/
 @[simp]
-theorem CompleteLatticeHom.apply_limsup_iterate (f : CompleteLatticeHom α α) (a : α) :
+theorem _root_.CompleteLatticeHom.apply_limsup_iterate (f : CompleteLatticeHom α α) (a : α) :
     f (limsup (fun n => f^[n] a) atTop) = limsup (fun n => f^[n] a) atTop := by
   rw [limsup_eq_iInf_iSup_of_nat', map_iInf]
   simp_rw [_root_.map_iSup, ← Function.comp_apply (f := f), ← Function.iterate_succ' f,
@@ -867,11 +864,17 @@ theorem CompleteLatticeHom.apply_limsup_iterate (f : CompleteLatticeHom α α) (
   simp only [zero_add, Function.comp_apply, iSup_le_iff]
   exact fun i => le_iSup (fun i => f^[i] a) (i + 1)
 
+@[deprecated (since := "2024-07-21")]
+alias CompleteLatticeHom.apply_limsup_iterate := CompleteLatticeHom.apply_limsup_iterate
+
 /-- If `f : α → α` is a morphism of complete lattices, then the liminf of its iterates of any
 `a : α` is a fixed point. -/
-theorem CompleteLatticeHom.apply_liminf_iterate (f : CompleteLatticeHom α α) (a : α) :
+theorem _root_.CompleteLatticeHom.apply_liminf_iterate (f : CompleteLatticeHom α α) (a : α) :
     f (liminf (fun n => f^[n] a) atTop) = liminf (fun n => f^[n] a) atTop :=
-  apply_limsup_iterate (CompleteLatticeHom.dual f) _
+  (CompleteLatticeHom.dual f).apply_limsup_iterate _
+
+@[deprecated (since := "2024-07-21")]
+alias CompleteLatticeHom.apply_liminf_iterate := CompleteLatticeHom.apply_liminf_iterate
 
 variable {f g : Filter β} {p q : β → Prop} {u v : β → α}
 
@@ -951,29 +954,36 @@ theorem bliminf_or_le_inf_aux_left : (bliminf u f fun x => p x ∨ q x) ≤ blim
 theorem bliminf_or_le_inf_aux_right : (bliminf u f fun x => p x ∨ q x) ≤ bliminf u f q :=
   bliminf_or_le_inf.trans inf_le_right
 
-/- Porting note: Replaced `e` with `DFunLike.coe e` to override the strange
- coercion to `↑(RelIso.toRelEmbedding e).toEmbedding`. -/
-theorem OrderIso.apply_blimsup [CompleteLattice γ] (e : α ≃o γ) :
-    DFunLike.coe e (blimsup u f p) = blimsup ((DFunLike.coe e) ∘ u) f p := by
-  simp only [blimsup_eq, map_sInf, Function.comp_apply]
-  congr
-  ext c
-  obtain ⟨a, rfl⟩ := e.surjective c
-  simp
+theorem _root_.OrderIso.apply_blimsup [CompleteLattice γ] (e : α ≃o γ) :
+    e (blimsup u f p) = blimsup (e ∘ u) f p := by
+  simp only [blimsup_eq, map_sInf, Function.comp_apply, e.image_eq_preimage,
+    Set.preimage_setOf_eq, e.le_symm_apply]
 
-theorem OrderIso.apply_bliminf [CompleteLattice γ] (e : α ≃o γ) :
+@[deprecated (since := "2024-07-21")]
+alias OrderIso.apply_blimsup := OrderIso.apply_blimsup
+
+theorem _root_.OrderIso.apply_bliminf [CompleteLattice γ] (e : α ≃o γ) :
     e (bliminf u f p) = bliminf (e ∘ u) f p :=
-  OrderIso.apply_blimsup (α := αᵒᵈ) (γ := γᵒᵈ) e.dual
+  e.dual.apply_blimsup
 
-theorem SupHom.apply_blimsup_le [CompleteLattice γ] (g : sSupHom α γ) :
+@[deprecated (since := "2024-07-21")]
+alias OrderIso.apply_bliminf := OrderIso.apply_bliminf
+
+theorem _root_.sSupHom.apply_blimsup_le [CompleteLattice γ] (g : sSupHom α γ) :
     g (blimsup u f p) ≤ blimsup (g ∘ u) f p := by
   simp only [blimsup_eq_iInf_biSup, Function.comp]
   refine ((OrderHomClass.mono g).map_iInf₂_le _).trans ?_
   simp only [_root_.map_iSup, le_refl]
 
-theorem InfHom.le_apply_bliminf [CompleteLattice γ] (g : sInfHom α γ) :
+@[deprecated (since := "2024-07-21")]
+alias SupHom.apply_blimsup_le := sSupHom.apply_blimsup_le
+
+theorem _root_.sInfHom.le_apply_bliminf [CompleteLattice γ] (g : sInfHom α γ) :
     bliminf (g ∘ u) f p ≤ g (bliminf u f p) :=
-  SupHom.apply_blimsup_le (α := αᵒᵈ) (γ := γᵒᵈ) (sInfHom.dual g)
+  (sInfHom.dual g).apply_blimsup_le
+
+@[deprecated (since := "2024-07-21")]
+alias InfHom.le_apply_bliminf := sInfHom.le_apply_bliminf
 
 end CompleteLattice
 
@@ -1577,3 +1587,102 @@ theorem liminf_finset_inf [ConditionallyCompleteLinearOrder β] [OrderTop β] {f
   limsup_finset_sup (β := βᵒᵈ) h₁ h₂
 
 end MinMax
+
+section frequently_bounded
+
+variable {R S : Type*} {F : Filter R} [LinearOrder R] [LinearOrder S]
+
+namespace Filter
+
+/-- For nontrivial filters in linear orders, coboundedness for `≤` implies frequent boundedness
+from below. -/
+lemma IsCobounded.frequently_ge [NeBot F] (cobdd : IsCobounded (· ≤ ·) F) :
+    ∃ l, ∃ᶠ x in F, l ≤ x := by
+  obtain ⟨t, ht⟩ := cobdd
+  by_cases tbot : IsBot t
+  · refine ⟨t, frequently_of_forall fun r ↦ tbot r⟩
+  obtain ⟨t', ht'⟩ : ∃ t', t' < t := by
+    by_contra!
+    exact tbot this
+  refine ⟨t', ?_⟩
+  intro ev
+  specialize ht t' (by filter_upwards [ev] with _ h using (not_le.mp h).le)
+  apply lt_irrefl t' <| lt_of_lt_of_le ht' ht
+
+/-- For nontrivial filters in linear orders, coboundedness for `≥` implies frequent boundedness
+from above. -/
+lemma IsCobounded.frequently_le [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
+    ∃ u, ∃ᶠ x in F, x ≤ u :=
+  cobdd.frequently_ge (R := Rᵒᵈ)
+
+/-- In linear orders, frequent boundedness from below implies coboundedness for `≤`. -/
+lemma IsCobounded.of_frequently_ge {l : R} (freq_ge : ∃ᶠ x in F, l ≤ x) :
+    IsCobounded (· ≤ ·) F := by
+  by_cases lbot : IsBot l
+  · refine ⟨l, fun x _ ↦ lbot x⟩
+  obtain ⟨l', hl'⟩ : ∃ l', l' < l := by
+    by_contra!
+    exact lbot this
+  refine ⟨l', ?_⟩
+  intro u hu
+  have key : ∃ᶠ x in F, l ≤ x ∧ x ≤ u := Frequently.and_eventually freq_ge hu
+  obtain ⟨w, l_le_w, w_le_u⟩ := key.exists
+  exact hl'.le.trans <| l_le_w.trans w_le_u
+
+/-- In linear orders, frequent boundedness from above implies coboundedness for `≥`. -/
+lemma IsCobounded.of_frequently_le {u : R} (freq_le : ∃ᶠ r in F, r ≤ u) :
+    IsCobounded (· ≥ ·) F :=
+  IsCobounded.of_frequently_ge (R := Rᵒᵈ) freq_le
+
+end Filter
+
+lemma Monotone.frequently_ge_map_of_frequently_ge {f : R → S} (f_incr : Monotone f)
+    {l : R} (freq_ge : ∃ᶠ x in F, l ≤ x) :
+    ∃ᶠ x' in F.map f, f l ≤ x' := by
+  refine fun ev ↦ freq_ge ?_
+  simp only [not_le, not_lt] at ev freq_ge ⊢
+  filter_upwards [ev] with z hz
+  by_contra con
+  exact lt_irrefl (f l) <| lt_of_le_of_lt (f_incr <| not_lt.mp con) hz
+
+lemma Monotone.frequently_le_map_of_frequently_le {f : R → S} (f_incr : Monotone f)
+    {u : R} (freq_le : ∃ᶠ x in F, x ≤ u) :
+    ∃ᶠ y in F.map f, y ≤ f u := by
+  refine fun ev ↦ freq_le ?_
+  simp only [not_le, not_lt] at ev freq_le ⊢
+  filter_upwards [ev] with z hz
+  by_contra con
+  apply lt_irrefl (f u) <| lt_of_lt_of_le hz <| f_incr (not_lt.mp con)
+
+lemma Antitone.frequently_le_map_of_frequently_ge {f : R → S} (f_decr : Antitone f)
+    {l : R} (frbdd : ∃ᶠ x in F, l ≤ x) :
+    ∃ᶠ y in F.map f, y ≤ f l :=
+  Monotone.frequently_ge_map_of_frequently_ge (S := Sᵒᵈ) f_decr frbdd
+
+lemma Antitone.frequently_ge_map_of_frequently_le {f : R → S} (f_decr : Antitone f)
+    {u : R} (frbdd : ∃ᶠ x in F, x ≤ u) :
+    ∃ᶠ y in F.map f, f u ≤ y :=
+  Monotone.frequently_le_map_of_frequently_le (S := Sᵒᵈ) f_decr frbdd
+
+lemma Monotone.isCoboundedUnder_le_of_isCobounded {f : R → S} (f_incr : Monotone f)
+    [NeBot F] (cobdd : IsCobounded (· ≤ ·) F) :
+    F.IsCoboundedUnder (· ≤ ·) f := by
+  obtain ⟨l, hl⟩ := IsCobounded.frequently_ge cobdd
+  exact IsCobounded.of_frequently_ge <| f_incr.frequently_ge_map_of_frequently_ge hl
+
+lemma Monotone.isCoboundedUnder_ge_of_isCobounded {f : R → S} (f_incr : Monotone f)
+    [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
+    F.IsCoboundedUnder (· ≥ ·) f :=
+  Monotone.isCoboundedUnder_le_of_isCobounded (R := Rᵒᵈ) (S := Sᵒᵈ) f_incr.dual cobdd
+
+lemma Antitone.isCoboundedUnder_le_of_isCobounded {f : R → S} (f_decr : Antitone f)
+    [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
+    F.IsCoboundedUnder (· ≤ ·) f :=
+  Monotone.isCoboundedUnder_le_of_isCobounded (R := Rᵒᵈ) f_decr.dual cobdd
+
+lemma Antitone.isCoboundedUnder_ge_of_isCobounded {f : R → S} (f_decr : Antitone f)
+    [NeBot F] (cobdd : IsCobounded (· ≤ ·) F) :
+    F.IsCoboundedUnder (· ≥ ·) f :=
+  Monotone.isCoboundedUnder_le_of_isCobounded (S := Sᵒᵈ) f_decr cobdd
+
+end frequently_bounded

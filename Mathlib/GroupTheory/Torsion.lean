@@ -3,11 +3,7 @@ Copyright (c) 2022 Julian Berman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Berman
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.GroupTheory.Exponent
-import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.PGroup
-import Mathlib.GroupTheory.QuotientGroup
 
 /-!
 # Torsion groups
@@ -142,7 +138,7 @@ theorem IsTorsion.module_of_torsion [Semiring R] [Module R M] (tR : IsTorsion R)
   fun f =>
   isOfFinAddOrder_iff_nsmul_eq_zero.mpr <| by
     obtain ⟨n, npos, hn⟩ := (tR 1).exists_nsmul_eq_zero
-    exact ⟨n, npos, by simp only [nsmul_eq_smul_cast R _ f, ← nsmul_one, hn, zero_smul]⟩
+    exact ⟨n, npos, by simp only [← Nat.cast_smul_eq_nsmul R _ f, ← nsmul_one, hn, zero_smul]⟩
 
 /-- A module with a finite ring of scalars is additively torsion. -/
 theorem IsTorsion.module_of_finite [Ring R] [Finite R] [Module R M] : IsTorsion M :=

@@ -61,9 +61,6 @@ theorem nonneg (x : ℝ) : 0 ≤ expNegInvGlue x := by
 /-!
 ### Smoothness of `expNegInvGlue`
 
-Porting note: Yury Kudryashov rewrote the proof while porting, generalizing auxiliary lemmas and
-removing some auxiliary definitions.
-
 In this section we prove that the function `f = expNegInvGlue` is infinitely smooth. To do
 this, we show that $g_p(x)=p(x^{-1})f(x)$ is infinitely smooth for any polynomial `p` with real
 coefficients. First we show that $g_p(x)$ tends to zero at zero, then we show that it is
