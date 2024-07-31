@@ -413,18 +413,15 @@ lemma coprodSpec_apply (x) :
     (coprodSpec R S).1.base x = (PrimeSpectrum.primeSpectrumProd R S).symm
       ((coprodMk (Spec (.of R)) (Spec (.of S))).symm x) := by
   rw [← coprodSpec_coprodMk, Homeomorph.apply_symm_apply]
-stop
+
 lemma isIso_stalkMap_coprodSpec (x) :
-    IsIso (PresheafedSpace.stalkMap (coprodSpec R S).1 x) := by
+    IsIso ((coprodSpec R S).stalkMap x) := by
   obtain ⟨x | x, rfl⟩ := (coprodMk _ _).surjective x
-  · have : PresheafedSpace.stalkMap (coprod.inl ≫ coprodSpec R S).1 x = _ :=
-      PresheafedSpace.stalkMap.comp (coprod.inl (C := Scheme)).1 (coprodSpec R S).1 x
-    conv_lhs at this => tactic => delta coprodSpec
-    rw [← IsIso.comp_inv_eq] at this
-    rw [PresheafedSpace.stalkMap.congr_hom _
-      (Spec.map (R := .of (R × S)) (S := .of R) (RingHom.fst R S)).1 (by simp)] at this
+  · have := Scheme.stalkMap_comp coprod.inl (coprodSpec R S) x
+    rw [← IsIso.comp_inv_eq, Scheme.stalkMap_congr_hom _
+      (Spec.map (CommRingCat.ofHom (RingHom.fst R S))) (by simp)] at this
     rw [coprodMk_inl, ← this]
-    suffices IsOpenImmersion (Spec.map (R := .of (R × S)) (S := .of R) (RingHom.fst R S)) by
+    suffices IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.fst R S))) by
       infer_instance
     letI := (RingHom.fst R S).toAlgebra
     have := IsLocalization.away_of_isIdempotentElem
@@ -436,14 +433,11 @@ lemma isIso_stalkMap_coprodSpec (x) :
       constructor
       · intro e; use x; ext <;> simp [e]
       · rintro ⟨⟨i, j⟩, rfl⟩; simp
-  · have : PresheafedSpace.stalkMap (coprod.inr ≫ coprodSpec R S).1 x = _ :=
-      PresheafedSpace.stalkMap.comp (coprod.inr (C := Scheme)).1 (coprodSpec R S).1 x
-    conv_lhs at this => tactic => delta coprodSpec
-    rw [← IsIso.comp_inv_eq] at this
-    rw [PresheafedSpace.stalkMap.congr_hom _
-      (Spec.map (R := .of (R × S)) (S := .of S) (RingHom.snd R S)).1 (by simp)] at this
+  · have := Scheme.stalkMap_comp coprod.inr (coprodSpec R S) x
+    rw [← IsIso.comp_inv_eq, Scheme.stalkMap_congr_hom _
+      (Spec.map (CommRingCat.ofHom (RingHom.snd R S))) (by simp)] at this
     rw [coprodMk_inr, ← this]
-    suffices IsOpenImmersion (Spec.map (R := .of (R × S)) (S := .of S) (RingHom.snd R S)) by
+    suffices IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.snd R S))) by
       infer_instance
     letI := (RingHom.snd R S).toAlgebra
     have := IsLocalization.away_of_isIdempotentElem
@@ -466,13 +460,12 @@ instance : IsIso (coprodSpec R S) := by
 
 instance (R S : CommRingCatᵒᵖ) : IsIso (coprodComparison Scheme.Spec R S) := by
   obtain ⟨R⟩ := R; obtain ⟨S⟩ := S
-  have : coprodComparison Scheme.Spec (.op R) (.op S) = coprodSpec R S ≫ (Scheme.Spec.map
-    (((Pi.mapIso (fun b ↦ b.rec (by exact Iso.refl _) (by exact Iso.refl _))).hom ≫
-      (limit.isoLimitCone ⟨_, CommRingCat.prodFanIsLimit R S⟩).hom).op ≫
-        (opProductIsoCoproduct _).hom)) := by
-    ext
-    · rw [coprodComparison_inl, coprodSpec, coprod.inl_desc_assoc]
-      erw [← Scheme.Spec.map_comp]
+  have : coprodComparison Scheme.Spec (.op R) (.op S) = coprodSpec R S ≫ (Spec.map
+    ((opProductIsoCoproduct _).hom.unop ≫
+      ((Pi.mapIso (fun b ↦ b.rec (by exact Iso.refl _) (by exact Iso.refl _))).hom ≫
+        (limit.isoLimitCone ⟨_, CommRingCat.prodFanIsLimit R S⟩).hom))) := by
+    ext1
+    · rw [coprodComparison_inl, coprodSpec, coprod.inl_desc_assoc, ← Spec.map_comp]
       congr 1
       apply Quiver.Hom.unop_inj
       simp only [Opposite.op_unop, CommRingCat.coe_of, CommRingCat.prodFan_pt, Functor.mapIso_hom,
@@ -484,8 +477,7 @@ instance (R S : CommRingCatᵒᵖ) : IsIso (coprodComparison Scheme.Spec R S) :=
         Discrete.natIso_hom_app, Iso.refl_hom, Category.comp_id, op_comp,
         π_comp_opProductIsoCoproduct_hom]
       rfl
-    · rw [coprodComparison_inr, coprodSpec, coprod.inr_desc_assoc]
-      erw [← Scheme.Spec.map_comp]
+    · rw [coprodComparison_inr, coprodSpec, coprod.inr_desc_assoc, ← Spec.map_comp]
       congr 1
       apply Quiver.Hom.unop_inj
       simp only [Opposite.op_unop, CommRingCat.coe_of, CommRingCat.prodFan_pt, Functor.mapIso_hom,
@@ -539,7 +531,7 @@ instance [Finite ι] (R : ι → CommRingCat) : IsIso (sigmaSpec R) := by
       (colimit.isoColimitCocone ⟨_,
         (IsColimit.precomposeHomEquiv Discrete.natIsoFunctor.symm _).symm (isColimitOfPreserves
           Scheme.Spec (Fan.IsLimit.op (CommRingCat.piFanIsLimit R)))⟩).hom := by
-    ext; simp; rfl
+    ext1; simp; rfl
   rw [this]
   infer_instance
 
