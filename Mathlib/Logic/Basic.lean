@@ -628,9 +628,6 @@ theorem Prop.exists_iff {p : Prop → Prop} : (∃ h, p h) ↔ p False ∨ p Tru
 theorem Prop.forall_iff {p : Prop → Prop} : (∀ h, p h) ↔ p False ∧ p True :=
   ⟨fun H ↦ ⟨H _, H _⟩, fun ⟨h₁, h₂⟩ h ↦ by by_cases H : h <;> simpa only [H]⟩
 
-theorem exists_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∃ h' : p, q h') ↔ q h :=
-  @exists_const (q h) p ⟨h⟩
-
 theorem exists_iff_of_forall {p : Prop} {q : p → Prop} (h : ∀ h, q h) : (∃ h, q h) ↔ p :=
   ⟨Exists.fst, fun H ↦ ⟨H, h H⟩⟩
 
@@ -640,14 +637,7 @@ theorem exists_unique_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∃! h
 theorem exists_prop_of_false {p : Prop} {q : p → Prop} : ¬p → ¬∃ h' : p, q h' :=
   mt Exists.fst
 
-@[congr]
-theorem exists_prop_congr {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h ↔ q' h) (hp : p ↔ p') :
-    Exists q ↔ ∃ h : p', q' (hp.2 h) :=
-  ⟨fun ⟨_, _⟩ ↦ ⟨hp.1 ‹_›, (hq _).1 ‹_›⟩, fun ⟨_, _⟩ ↦ ⟨_, (hq _).2 ‹_›⟩⟩
-
-/-- See `IsEmpty.exists_iff` for the `False` version. -/
-@[simp] theorem exists_true_left (p : True → Prop) : (∃ x, p x) ↔ p True.intro :=
-  exists_prop_of_true _
+/- See `IsEmpty.exists_iff` for the `False` version of `exists_true_left`. -/
 
 -- Porting note: `@[congr]` commented out for now.
 -- @[congr]

@@ -147,7 +147,6 @@ theorem get_indexOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.leng
     indexOf (get l i) l = i := by
   simp [indexOf_getElem, H]
 
-
 theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|
     forall_congr' fun a =>
@@ -303,7 +302,7 @@ theorem Nodup.sigma {σ : α → Type*} {l₂ : ∀ a , List (σ a)} (d₁ : Nod
 
 protected theorem Nodup.filterMap {f : α → Option β} (h : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') :
     Nodup l → Nodup (filterMap f l) :=
-  (Pairwise.filter_map f) @fun a a' n b bm b' bm' e => n <| h a a' b' (by rw [← e]; exact bm) bm'
+  (Pairwise.filterMap f) @fun a a' n b bm b' bm' e => n <| h a a' b' (by rw [← e]; exact bm) bm'
 
 protected theorem Nodup.concat (h : a ∉ l) (h' : l.Nodup) : (l.concat a).Nodup := by
   rw [concat_eq_append]; exact h'.append (nodup_singleton _) (disjoint_singleton.2 h)
