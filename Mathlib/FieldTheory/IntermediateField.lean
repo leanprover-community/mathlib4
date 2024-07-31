@@ -636,7 +636,8 @@ theorem le_extendScalars_iff (E' : IntermediateField F L) :
 
 variable (F)
 
-/-- `Subfield.extendScalars` is an order isomorphism from
+/-- `Subfield.extendScalars.orderIso` bundles `Subfield.extendScalars`
+into an order isomorphism from
 `{ E : Subfield L // F ≤ E }` to `IntermediateField F L`. Its inverse is
 `IntermediateField.toSubfield`. -/
 @[simps]
@@ -688,7 +689,8 @@ theorem le_extendScalars_iff (E' : IntermediateField F L) :
 
 variable (F)
 
-/-- `IntermediateField.extendScalars` is an order isomorphism from
+/-- `IntermediateField.extendScalars.orderIso` bundles `IntermediateField.extendScalars`
+into an order isomorphism from
 `{ E : IntermediateField K L // F ≤ E }` to `IntermediateField F L`. Its inverse is
 `IntermediateField.restrictScalars`. -/
 @[simps]
