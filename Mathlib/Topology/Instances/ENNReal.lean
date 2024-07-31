@@ -380,7 +380,7 @@ protected theorem continuous_div_const (c : ℝ≥0∞) (c_ne_zero : c ≠ 0) :
   ENNReal.continuous_mul_const <| ENNReal.inv_ne_top.2 c_ne_zero
 
 @[continuity, fun_prop]
-theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
+protected theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
   induction' n with n IH
   · simp [continuous_const]
   simp_rw [pow_add, pow_one, continuous_iff_continuousAt]
@@ -473,7 +473,7 @@ theorem inv_liminf {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
 instance : ContinuousInv ℝ≥0∞ := ⟨OrderIso.invENNReal.continuous⟩
 
 @[fun_prop]
-theorem continuous_zpow : ∀ n : ℤ, Continuous (· ^ n : ℝ≥0∞ → ℝ≥0∞)
+protected theorem continuous_zpow : ∀ n : ℤ, Continuous (· ^ n : ℝ≥0∞ → ℝ≥0∞)
   | (n : ℕ) => mod_cast continuous_pow n
   | .negSucc n => by simpa using (continuous_pow _).inv
 
