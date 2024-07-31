@@ -173,7 +173,7 @@ protected lemma norm_pos {x : E} (hx : x ≠ 0) : 0 < ‖x‖ := by
 
 lemma norm_sq_eq {x : E} : ‖x‖ ^ 2 = ‖⟪x, x⟫‖ := by simp [norm_eq_sqrt_norm_inner_self]
 
-/-- A version of the Cauchy-Schwarz inequality for Hilbert C⋆-modules. -/
+/-- The C⋆-algebra-valued Cauchy-Schwarz inequality for Hilbert C⋆-modules. -/
 lemma inner_mul_inner_swap_le [CompleteSpace A] {x y : E} : ⟪y, x⟫ * ⟪x, y⟫ ≤ ‖x‖ ^ 2 • ⟪y, y⟫ := by
   rcases eq_or_ne x 0 with h|h
   · simp [h]
