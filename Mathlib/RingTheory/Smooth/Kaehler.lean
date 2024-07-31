@@ -10,10 +10,10 @@ import Mathlib.RingTheory.Kaehler.Basic
 
 ## Main results
 
-- `retractionEquivSectionKerToTensor`:
+- `retractionKerToTensorEquivSection`:
   Given a surjective algebra homomorphism `f : P →ₐ[R] S` with square-zero kernel `I`,
-  there is a one-to-one correspondence between algebra homomorphism sections of `f`,
-  and `P`-linear retractions to `I →ₗ[P] S ⊗[P] Ω[P/R]`.
+  there is a one-to-one correspondence between `P`-linear retractions of `I →ₗ[P] S ⊗[P] Ω[P/R]`
+  and algebra homomorphism sections of `f`.
 
 ## Future projects
 
@@ -190,7 +190,7 @@ there is a one-to-one correspondence between `P`-linear retractions of `I →ₗ
 and algebra homomorphism sections of `f`.
 -/
 noncomputable
-def retractionEquivSectionKerToTensor :
+def retractionKerToTensorEquivSection :
     { l // l ∘ₗ (kerToTensor R P S) = LinearMap.id } ≃
       { g // (IsScalarTower.toAlgHom R P S).comp g = AlgHom.id R S } where
   toFun l := ⟨_, toAlgHom_comp_sectionOfRetractionKerToTensor hf hf' _ l.2⟩
