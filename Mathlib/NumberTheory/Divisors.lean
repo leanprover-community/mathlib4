@@ -29,8 +29,6 @@ divisors, perfect numbers
 
 -/
 
-
-open scoped Classical
 open Finset
 
 namespace Nat

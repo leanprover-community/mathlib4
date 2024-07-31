@@ -212,7 +212,7 @@ noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →�
 theorem unique_ext [Unique α] {f g : α →₀ M} (h : f default = g default) : f = g :=
   ext fun a => by rwa [Unique.eq_default a]
 
-theorem unique_ext_iff [Unique α] {f g : α →₀ M} : f = g ↔ f default = g default :=
+protected theorem unique_ext_iff [Unique α] {f g : α →₀ M} : f = g ↔ f default = g default :=
   ⟨fun h => h ▸ rfl, unique_ext⟩
 
 end Basic
