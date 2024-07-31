@@ -374,6 +374,21 @@ lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.r
     zero_smul, sub_zero, h]
   abel
 
+lemma reflection_smul_root_plus_pairing_smul_root (a b : R) :
+    P.reflection j (a • P.root i + b • (P.pairing i j) • P.root j) =
+      a • P.root i - (a + b) • (P.pairing i j) • P.root j := by
+  rw [map_add, LinearMapClass.map_smul, reflection_apply_root, smul_sub, LinearMapClass.map_smul,
+    LinearMapClass.map_smul, reflection_apply_self, smul_neg, sub_add, sub_right_inj, add_smul,
+    smul_neg, sub_neg_eq_add]
+
+lemma reflection_reflection_smul_root_plus_pairing_smul_root (a b : R) :
+    P.reflection i (P.reflection j (a • P.root i + b • (P.pairing i j) • P.root j)) =
+      ((a + b) * P.coxeterWeight i j - a) • P.root i - (a + b) • (P.pairing i j) • P.root j := by
+  rw [reflection_smul_root_plus_pairing_smul_root, map_sub, map_smul, map_smul, map_smul,
+    reflection_apply_self, reflection_apply_root, smul_sub, smul_sub, sub_smul,
+    smul_smul (P.pairing i j), ← coxeterWeight, smul_neg, mul_smul]
+  abel
+
 end pairs
 
 section BaseChange

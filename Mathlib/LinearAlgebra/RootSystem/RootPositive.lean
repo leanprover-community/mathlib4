@@ -107,31 +107,38 @@ lemma orthogonal_of_coxeter_weight_zero (h : P.coxeterWeight i j = 0) : P.IsOrth
   · exact ⟨h, pairing_zero_of_pairing_symm_zero B i j h⟩
   · exact ⟨pairing_zero_of_pairing_symm_zero B j i h, h⟩
 
--- Get infinitely many roots if Coxeter weight is more than 4.
-
 /-!
+lemma root_reflection_trans_iterate' (n : ℕ) :
+    ((P.reflection j).trans (P.reflection i))^[n] (P.root i) =
+      (2 * n + 1) • P.root i - n • P.pairing i j • P.root j := by
+  sorry
+
+-- Get infinitely many roots if Coxeter weight is strictly more than 4. (4 should go in Basic)
+
+
+
+
 I want something flip-invariant.  One common factor in examples: a distinguished subspace on which
 the form is non-degenerate.  For finite root data, this is the span of roots.  For Kac-Moody Lie
 algebras, this is the extended Cartan (i.e., not just the span of roots.)
 So, maybe I want a class with distinguished subspaces `M'` `N'`, paired with each other, with
-nondegenerate root-positive forms that are "in correspondence".
+nondegenerate root-positive forms that are "in correspondence".  Perhaps I just want the images of
+`B : M →ₗ[R] N` and `B' : N →ₗ[R] M` to be nondegenerate and root-positive.  So, just trivial
+intersection of images with kernels.
 -/
 
-/-- Try to find a structure in common between finite root data and Kac-Moody root systems-/
-structure DualPositive (P : RootPairing ι R M N) where
-  /-- A submodule of weight space on which the bilinear form is nonsingular.-/
-  M' : Submodule R M
-  /-- A submodule of coweight space on which the bilinear form is nonsingular.-/
-  N' : Submodule R N
-  /-- A linear map to dual space. -/
-  B : M →ₗ[R] N
-  /-- A linear map to dual space. -/
-  B' : N →ₗ[R] M
-  root_in : ∀ i, P.root i ∈ M'
-  coroot_in : ∀ i, P.coroot i ∈ N'
-  root_pos : ∀ i, 0 < P.toLin (P.root i) (B (P.root i))
-  coroot_pos : ∀ i, 0 < P.toLin (B' (P.coroot i)) (P.coroot i)
+/-- This seems to be the structure in common between finite root data and Kac-Moody root systems-/
+class DualPositive (P : RootPairing ι R M N) where
+  /-- A linear map from weight space to coweight space. -/
+  wcw : M →ₗ[R] N
+  /-- A linear map from coweight space to weight space. -/
+  cww : N →ₗ[R] M
+  root_in : ∀ i, P.root i ∈ LinearMap.range cww
+  coroot_in : ∀ i, P.coroot i ∈ LinearMap.range wcw
+  root_pos : IsRootPositive P (P.toPerfectPairing.toDualRight ∘ₗ wcw)
+  coroot_pos : IsRootPositive P.flip (P.toPerfectPairing.toDualLeft ∘ₗ cww)
+  weight_nondeg : ∀ x, x ∈ LinearMap.range cww → x ∈ LinearMap.ker wcw → x = 0
+  coweight_nondeg : ∀ y, y ∈ LinearMap.range wcw → y ∈ LinearMap.ker cww → y = 0
 
--- something else
 
 end RootPairing

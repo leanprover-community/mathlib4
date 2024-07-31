@@ -25,7 +25,7 @@ Weyl group.
 ## Main definitions:
 
  * `Polarization`: A distinguished linear map from the weight space to the coweight space.
- * `PolInner` : The corresponding bilinear form.
+ * `PolInner` : The bilinear form on weight space corresponding to `Polarization`.
 
 ## References:
 
@@ -34,11 +34,11 @@ Weyl group.
 
 ## Main results:
 
- * Faithfulness of Weyl group action, and finiteness of Weyl group, for finite root systems.
  * `Polarization` is strictly positive on non-zero linear combinations of roots.  That is, it is
   positive-definite when restricted to the linear span of roots.  This gives us a convenient way to
   eliminate certain Dynkin diagrams from the classification, since it suffices to produce a nonzero
   linear combination of simple roots with non-positive norm.
+ * Faithfulness of Weyl group action, and finiteness of Weyl group, for finite root systems.
 
 ## Todo
 
