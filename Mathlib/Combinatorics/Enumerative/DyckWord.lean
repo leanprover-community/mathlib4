@@ -28,7 +28,8 @@ to emphasise that the definition of a Dyck word does not depend on that underlyi
 
 ## TODO
 
-* Prove the bijection between Dyck words and rooted binary trees.
+* Prove the bijection between Dyck words and rooted binary trees
+(https://github.com/leanprover-community/mathlib4/pull/9781).
 -/
 
 open List
@@ -39,9 +40,10 @@ inductive DyckStep
   | D : DyckStep
   deriving Inhabited, DecidableEq
 
-open DyckStep
+/-- Named in analogy to `Bool.dichotomy`. -/
+lemma DyckStep.dichotomy (s : DyckStep) : s = U ∨ s = D := by cases s <;> tauto
 
-lemma dyckStep_cases (s : DyckStep) : s = U ∨ s = D := by cases' s <;> tauto
+open DyckStep
 
 /-- A Dyck word is a list of `DyckStep`s with as many `U`s as `D`s and with every prefix having
 at least as many `U`s as `D`s. -/
@@ -68,7 +70,7 @@ instance : Zero DyckWord := ⟨[], by simp, by simp⟩
 
 /-- Dyck words form an additive monoid under concatenation, with the empty word as 0. -/
 instance : AddMonoid DyckWord where
-  add_zero p := by ext1; exact append_right_eq_self.mpr rfl
+  add_zero p := by ext1; exact append_nil _
   zero_add p := by ext1; rfl
   add_assoc p q r := by ext1; apply append_assoc
   nsmul := nsmulRec
@@ -85,12 +87,12 @@ lemma head_eq_U (h : p.toList ≠ []) : p.toList.head h = U := by
   rw [head_cons]
   by_contra f
   rename_i _ nonneg
-  simpa [(dyckStep_cases _).resolve_left f] using nonneg 1
+  simpa [s.dichotomy.resolve_left f] using nonneg 1
 
 /-- The last element of a nonempty Dyck word is `D`. -/
 lemma getLast_eq_D (h : p.toList ≠ []) : p.toList.getLast h = D := by
   by_contra f; have s := p.count_U_eq_count_D
-  rw [← dropLast_append_getLast h, (dyckStep_cases _).resolve_right f] at s
+  rw [← dropLast_append_getLast h, (dichotomy _).resolve_right f] at s
   simp_rw [dropLast_eq_take, count_append, count_singleton', ite_true, ite_false] at s
   have := p.count_D_le_count_U p.toList.length.pred; omega
 
@@ -134,7 +136,7 @@ def nest : DyckWord where
     simp only [take_append_eq_append_take, count_append]
     rw [← add_rotate (count D _), ← add_rotate (count U _)]
     apply add_le_add _ (p.count_D_le_count_U _)
-    cases' i.eq_zero_or_pos with hi hi; · simp [hi]
+    rcases i.eq_zero_or_pos with hi | hi; · simp [hi]
     rw [take_all_of_le (show [U].length ≤ i by rwa [length_singleton]), count_singleton']
     simp only [ite_true, ite_false]
     rw [add_comm]
@@ -190,7 +192,7 @@ lemma semilength_eq_count_D : p.semilength = p.toList.count D := by
 lemma two_mul_semilength_eq_length : 2 * p.semilength = p.toList.length := by
   nth_rw 1 [two_mul, semilength, p.count_U_eq_count_D, semilength]
   convert (p.toList.length_eq_countP_add_countP (· == D)).symm
-  rw [count]; congr!; rename_i s; cases' s <;> tauto
+  rw [count]; congr!; rename_i s; cases s <;> tauto
 
 end Semilength
 
