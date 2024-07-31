@@ -264,11 +264,11 @@ theorem memℒp_trim_of_mem_lpMeasSubgroup (hm : m ≤ m0) (f : Lp F p μ)
   obtain ⟨hg, hfg⟩ := hf.choose_spec
   change Memℒp g p (μ.trim hm)
   refine ⟨hg.aestronglyMeasurable, ?_⟩
-  have h_snorm_fg : snorm g p (μ.trim hm) = snorm f p μ := by
-    rw [snorm_trim hm hg]
-    exact snorm_congr_ae hfg.symm
-  rw [h_snorm_fg]
-  exact Lp.snorm_lt_top f
+  have h_eLpNorm_fg : eLpNorm g p (μ.trim hm) = eLpNorm f p μ := by
+    rw [eLpNorm_trim hm hg]
+    exact eLpNorm_congr_ae hfg.symm
+  rw [h_eLpNorm_fg]
+  exact Lp.eLpNorm_lt_top f
 
 /-- If `f` belongs to `Lp` for the measure `μ.trim hm`, then it belongs to the subgroup
 `lpMeasSubgroup F m p μ`. -/
@@ -401,8 +401,8 @@ theorem lpMeasToLpTrim_smul (hm : m ≤ m0) (c : 𝕜) (f : lpMeas F 𝕜 m p μ
 /-- `lpMeasSubgroupToLpTrim` preserves the norm. -/
 theorem lpMeasSubgroupToLpTrim_norm_map [hp : Fact (1 ≤ p)] (hm : m ≤ m0)
     (f : lpMeasSubgroup F m p μ) : ‖lpMeasSubgroupToLpTrim F p μ hm f‖ = ‖f‖ := by
-  rw [Lp.norm_def, snorm_trim hm (Lp.stronglyMeasurable _),
-    snorm_congr_ae (lpMeasSubgroupToLpTrim_ae_eq hm _), lpMeasSubgroup_coe, ← Lp.norm_def]
+  rw [Lp.norm_def, eLpNorm_trim hm (Lp.stronglyMeasurable _),
+    eLpNorm_congr_ae (lpMeasSubgroupToLpTrim_ae_eq hm _), lpMeasSubgroup_coe, ← Lp.norm_def]
   congr
 
 theorem isometry_lpMeasSubgroupToLpTrim [hp : Fact (1 ≤ p)] (hm : m ≤ m0) :

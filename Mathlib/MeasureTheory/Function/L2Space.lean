@@ -103,12 +103,16 @@ variable {α E F 𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace α] {μ : Measure 
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
-theorem snorm_rpow_two_norm_lt_top (f : Lp F 2 μ) : snorm (fun x => ‖f x‖ ^ (2 : ℝ)) 1 μ < ∞ := by
+theorem eLpNorm_rpow_two_norm_lt_top (f : Lp F 2 μ) :
+    eLpNorm (fun x => ‖f x‖ ^ (2 : ℝ)) 1 μ < ∞ := by
   have h_two : ENNReal.ofReal (2 : ℝ) = 2 := by simp [zero_le_one]
-  rw [snorm_norm_rpow f zero_lt_two, one_mul, h_two]
-  exact ENNReal.rpow_lt_top_of_nonneg zero_le_two (Lp.snorm_ne_top f)
+  rw [eLpNorm_norm_rpow f zero_lt_two, one_mul, h_two]
+  exact ENNReal.rpow_lt_top_of_nonneg zero_le_two (Lp.eLpNorm_ne_top f)
 
-theorem snorm_inner_lt_top (f g : α →₂[μ] E) : snorm (fun x : α => ⟪f x, g x⟫) 1 μ < ∞ := by
+@[deprecated (since := "2024-07-27")]
+alias snorm_rpow_two_norm_lt_top := eLpNorm_rpow_two_norm_lt_top
+
+theorem eLpNorm_inner_lt_top (f g : α →₂[μ] E) : eLpNorm (fun x : α => ⟪f x, g x⟫) 1 μ < ∞ := by
   have h : ∀ x, ‖⟪f x, g x⟫‖ ≤ ‖‖f x‖ ^ (2 : ℝ) + ‖g x‖ ^ (2 : ℝ)‖ := by
     intro x
     rw [← @Nat.cast_two ℝ, Real.rpow_natCast, Real.rpow_natCast]
@@ -119,12 +123,14 @@ theorem snorm_inner_lt_top (f g : α →₂[μ] E) : snorm (fun x : α => ⟪f x
           (norm_nonneg _))
       -- TODO(kmill): the type ascription is getting around an elaboration error
       _ ≤ ‖(‖f x‖ ^ 2 + ‖g x‖ ^ 2 : ℝ)‖ := (two_mul_le_add_sq _ _).trans (le_abs_self _)
-
-  refine (snorm_mono_ae (ae_of_all _ h)).trans_lt ((snorm_add_le ?_ ?_ le_rfl).trans_lt ?_)
+  refine (eLpNorm_mono_ae (ae_of_all _ h)).trans_lt ((eLpNorm_add_le ?_ ?_ le_rfl).trans_lt ?_)
   · exact ((Lp.aestronglyMeasurable f).norm.aemeasurable.pow_const _).aestronglyMeasurable
   · exact ((Lp.aestronglyMeasurable g).norm.aemeasurable.pow_const _).aestronglyMeasurable
   rw [ENNReal.add_lt_top]
-  exact ⟨snorm_rpow_two_norm_lt_top f, snorm_rpow_two_norm_lt_top g⟩
+  exact ⟨eLpNorm_rpow_two_norm_lt_top f, eLpNorm_rpow_two_norm_lt_top g⟩
+
+@[deprecated (since := "2024-07-27")]
+alias snorm_inner_lt_top := eLpNorm_inner_lt_top
 
 section InnerProductSpace
 
@@ -136,7 +142,7 @@ instance : Inner 𝕜 (α →₂[μ] E) :=
 theorem inner_def (f g : α →₂[μ] E) : ⟪f, g⟫ = ∫ a : α, ⟪f a, g a⟫ ∂μ :=
   rfl
 
-theorem integral_inner_eq_sq_snorm (f : α →₂[μ] E) :
+theorem integral_inner_eq_sq_eLpNorm (f : α →₂[μ] E) :
     ∫ a, ⟪f a, f a⟫ ∂μ = ENNReal.toReal (∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ (2 : ℝ) ∂μ) := by
   simp_rw [inner_self_eq_norm_sq_to_K]
   norm_cast
@@ -151,22 +157,25 @@ theorem integral_inner_eq_sq_snorm (f : α →₂[μ] E) :
     ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) zero_le_two, ofReal_norm_eq_coe_nnnorm]
   norm_cast
 
+@[deprecated (since := "2024-07-27")]
+alias integral_inner_eq_sq_snorm := integral_inner_eq_sq_eLpNorm
+
 private theorem norm_sq_eq_inner' (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.re ⟪f, f⟫ := by
   have h_two : (2 : ℝ≥0∞).toReal = 2 := by simp
-  rw [inner_def, integral_inner_eq_sq_snorm, norm_def, ← ENNReal.toReal_pow, RCLike.ofReal_re,
-    ENNReal.toReal_eq_toReal (ENNReal.pow_ne_top (Lp.snorm_ne_top f)) _]
-  · rw [← ENNReal.rpow_natCast, snorm_eq_snorm' two_ne_zero ENNReal.two_ne_top, snorm', ←
+  rw [inner_def, integral_inner_eq_sq_eLpNorm, norm_def, ← ENNReal.toReal_pow, RCLike.ofReal_re,
+    ENNReal.toReal_eq_toReal (ENNReal.pow_ne_top (Lp.eLpNorm_ne_top f)) _]
+  · rw [← ENNReal.rpow_natCast, eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.two_ne_top, eLpNorm', ←
       ENNReal.rpow_mul, one_div, h_two]
     simp
-  · refine (lintegral_rpow_nnnorm_lt_top_of_snorm'_lt_top zero_lt_two ?_).ne
-    rw [← h_two, ← snorm_eq_snorm' two_ne_zero ENNReal.two_ne_top]
-    exact Lp.snorm_lt_top f
+  · refine (lintegral_rpow_nnnorm_lt_top_of_eLpNorm'_lt_top zero_lt_two ?_).ne
+    rw [← h_two, ← eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.two_ne_top]
+    exact Lp.eLpNorm_lt_top f
 
 theorem mem_L1_inner (f g : α →₂[μ] E) :
     AEEqFun.mk (fun x => ⟪f x, g x⟫)
         ((Lp.aestronglyMeasurable f).inner (Lp.aestronglyMeasurable g)) ∈
       Lp 𝕜 1 μ := by
-  simp_rw [mem_Lp_iff_snorm_lt_top, snorm_aeeqFun]; exact snorm_inner_lt_top f g
+  simp_rw [mem_Lp_iff_eLpNorm_lt_top, eLpNorm_aeeqFun]; exact eLpNorm_inner_lt_top f g
 
 theorem integrable_inner (f g : α →₂[μ] E) : Integrable (fun x : α => ⟪f x, g x⟫) μ :=
   (integrable_congr
