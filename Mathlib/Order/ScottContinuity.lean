@@ -133,6 +133,36 @@ lemma Prod.IsLub {f : α × β → γ} (hf : Monotone f)
     IsLUB (f '' d) u ↔ IsLUB (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) u := by
   rw [IsLUB, Prod.upperBounds hf hd, ← IsLUB]
 
+
+lemma test {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.fst '' d).Nonempty)
+    (hd₂ : DirectedOn (· ≤ ·) (Prod.fst '' d)) {p₁ : α} {p₂ : β} (h : IsLUB d (p₁,p₂))
+    (h₁ : ∀ b, ScottContinuous (fun a => f (a,b))) :
+    IsLUB (f '' (Prod.fst '' d) ×ˢ {p₂}) (f (p₁,p₂)) := by
+  simp only [prod_singleton]
+  have e1 : IsLUB (Prod.fst '' d) p₁ := ((isLUB_prod (p₁,p₂)).mp h).1
+  have e3 {S : Set α} : f '' ((fun a ↦ (a, p₂)) '' S) = (fun a ↦ f (a, p₂)) '' S := by
+    exact image_image f (fun a ↦ (a, p₂)) S
+  rw [e3]
+  exact h₁ p₂ hd₁ hd₂ e1
+
+
+
+
+
+
+
+
+/-
+lemma Prod.ScottContinuous {f : α × β → γ} (h₁ : ∀ b, ScottContinuous (fun a => f (a,b)))
+    (h₂ : ∀ a, ScottContinuous (fun b => f (a,b))) : ScottContinuous f := by
+    intro d hd₁ hd₂ p hdp
+    rw [Prod.IsLub (monotone (fun b ↦ ScottContinuous.monotone (h₁ b))
+      (fun a ↦ ScottContinuous.monotone (h₂ a)))]
+    rw [isLUB_prod] at hdp
+
+  --rw [ScottContinuous]
+-/
+
 end Products
 
 section SemilatticeSup
