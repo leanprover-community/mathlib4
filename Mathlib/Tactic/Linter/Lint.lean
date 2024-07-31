@@ -268,6 +268,9 @@ def badVariableLinter : Linter where
       return
     if (← MonadState.get).messages.hasErrors then
       return
+    -- TODO: the results of getScope include the variables from this command already
+    -- how can I access the scope *prior* to it? Otherwise, the linter cannot work...
+
     -- In a variable command, determine all implicit or explicit binders,
     -- and whether they are given with a type or not.
     if stx.getKind == ``Lean.Parser.Command.variable then

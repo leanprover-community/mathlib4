@@ -115,4 +115,5 @@ variable {a} (b : Type)
 variable (a) {b : Type}
 -- I guess this is also bad, changing b and adding a --- i.e., the binder order doesn't matter?!
 variable {b : Type*}
-variable {a : Type} (b)
+-- XXX: this line errors about a "redundant binder update"... which also seems fishy
+-- variable {a : Type} (b)
