@@ -794,7 +794,8 @@ theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePr
     MeasurePreserving (fun p : α × γ => (f p.1, g p.1 p.2)) (μa.prod μc) (μb.prod μd) := by
   classical
   have : Measurable fun p : α × γ => (f p.1, g p.1 p.2) := (hf.1.comp measurable_fst).prod_mk hgm
-  /- if `μa = 0`, then the lemma is trivial, otherwise we can use `hg` to deduce `SFinite μd`. -/
+  /- if `μa = 0`, then the lemma is trivial, otherwise we can use `hg`
+    to deduce `SFinite μd`. -/
   rcases eq_or_ne μa 0 with (rfl | ha)
   · rw [← hf.map_eq, zero_prod, Measure.map_zero, zero_prod]
     exact ⟨this, by simp only [Measure.map_zero]⟩
