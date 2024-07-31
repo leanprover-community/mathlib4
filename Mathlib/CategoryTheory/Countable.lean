@@ -37,6 +37,8 @@ instance : CountableCategory ℕ where
 instance countablerCategoryDiscreteOfCountable (J : Type*) [Countable J] :
     CountableCategory (Discrete J) where
 
+instance : CountableCategory ℕ where
+
 namespace CountableCategory
 
 variable (α : Type u) [Category.{v} α] [CountableCategory α]
@@ -80,6 +82,8 @@ noncomputable def homAsTypeEquiv : HomAsType α ≌ α :=
 end CountableCategory
 
 instance (α : Type*) [Category α] [FinCategory α] : CountableCategory α where
+
+instance : CountableCategory ℕ where
 
 open Opposite
 
