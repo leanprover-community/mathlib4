@@ -48,3 +48,5 @@ else
 fi
 
 printf $'\n---\n'
+
+git switch -
