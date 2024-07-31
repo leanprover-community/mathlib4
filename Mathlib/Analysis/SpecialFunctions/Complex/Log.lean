@@ -252,9 +252,9 @@ open Complex in
 
 /--The exponential of a infinite sum  of logs (which converges absolutely) is an infinite product.-/
 lemma cexp_tsum_eq_tprod  (f : ι → α → ℂ) (hfn : ∀ x n, f n x ≠ 0)
-  (hf : ∀ x : α,  Summable fun n => log ((f n x))) :
-    (cexp ∘ (fun a : α => (∑' n : ι, log ((f n a))))) =
-      (fun a : α => ∏' n : ι, ((f n a))) := by
+    (hf : ∀ x : α,  Summable fun n => log ((f n x))) :
+      (cexp ∘ (fun a : α => (∑' n : ι, log ((f n a))))) =
+        (fun a : α => ∏' n : ι, ((f n a))) := by
   ext a
   apply (HasProd.tprod_eq ?_).symm
   apply ((hf a).hasSum.cexp).congr
