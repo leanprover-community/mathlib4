@@ -29,5 +29,7 @@ if [ -z "$prs" ] || [ "$prs" = "[]" ]; then
     break
 fi
 
+echo "${prs}"
+
 # Print PR numbers and their labels
 echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "PR #\(.number) - Labels: \((.labels | map(.name) | join(", ")) // "No labels") - Title: \(.title)"'
