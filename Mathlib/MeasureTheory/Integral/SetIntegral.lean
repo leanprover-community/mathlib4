@@ -989,9 +989,10 @@ theorem Lp_toLp_restrict_smul (c : 𝕜) (f : Lp F p μ) (s : Set X) :
 `(Lp.memℒp f).restrict s).toLp f`. This map is non-expansive. -/
 theorem norm_Lp_toLp_restrict_le (s : Set X) (f : Lp E p μ) :
     ‖((Lp.memℒp f).restrict s).toLp f‖ ≤ ‖f‖ := by
-  rw [Lp.norm_def, Lp.norm_def, ENNReal.toReal_le_toReal (Lp.snorm_ne_top _) (Lp.snorm_ne_top _)]
-  apply (le_of_eq _).trans (snorm_mono_measure _ (Measure.restrict_le_self (s := s)))
-  exact snorm_congr_ae (Memℒp.coeFn_toLp _)
+  rw [Lp.norm_def, Lp.norm_def, ENNReal.toReal_le_toReal (Lp.eLpNorm_ne_top _)
+    (Lp.eLpNorm_ne_top _)]
+  apply (le_of_eq _).trans (eLpNorm_mono_measure _ (Measure.restrict_le_self (s := s)))
+  exact eLpNorm_congr_ae (Memℒp.coeFn_toLp _)
 
 variable (X F 𝕜) in
 /-- Continuous linear map sending a function of `Lp F p μ` to the same function in

@@ -390,7 +390,7 @@ def Integrable {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α :=
   AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ
 
 theorem memℒp_one_iff_integrable {f : α → β} : Memℒp f 1 μ ↔ Integrable f μ := by
-  simp_rw [Integrable, HasFiniteIntegral, Memℒp, snorm_one_eq_lintegral_nnnorm]
+  simp_rw [Integrable, HasFiniteIntegral, Memℒp, eLpNorm_one_eq_lintegral_nnnorm]
 
 theorem Integrable.aestronglyMeasurable {f : α → β} (hf : Integrable f μ) :
     AEStronglyMeasurable f μ :=
@@ -466,8 +466,8 @@ theorem Integrable.add_measure {f : α → β} (hμ : Integrable f μ) (hν : In
     Integrable f (μ + ν) := by
   simp_rw [← memℒp_one_iff_integrable] at hμ hν ⊢
   refine ⟨hμ.aestronglyMeasurable.add_measure hν.aestronglyMeasurable, ?_⟩
-  rw [snorm_one_add_measure, ENNReal.add_lt_top]
-  exact ⟨hμ.snorm_lt_top, hν.snorm_lt_top⟩
+  rw [eLpNorm_one_add_measure, ENNReal.add_lt_top]
+  exact ⟨hμ.eLpNorm_lt_top, hν.eLpNorm_lt_top⟩
 
 theorem Integrable.left_of_add_measure {f : α → β} (h : Integrable f (μ + ν)) : Integrable f μ := by
   rw [← memℒp_one_iff_integrable] at h ⊢
@@ -701,10 +701,10 @@ theorem Integrable.essSup_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace �
   rw [← memℒp_one_iff_integrable] at *
   refine ⟨g_aestronglyMeasurable.smul hf.1, ?_⟩
   have h : (1 : ℝ≥0∞) / 1 = 1 / ∞ + 1 / 1 := by norm_num
-  have hg' : snorm g ∞ μ ≠ ∞ := by rwa [snorm_exponent_top]
+  have hg' : eLpNorm g ∞ μ ≠ ∞ := by rwa [eLpNorm_exponent_top]
   calc
-    snorm (fun x : α => g x • f x) 1 μ ≤ _ := by
-      simpa using MeasureTheory.snorm_smul_le_mul_snorm hf.1 g_aestronglyMeasurable h
+    eLpNorm (fun x : α => g x • f x) 1 μ ≤ _ := by
+      simpa using MeasureTheory.eLpNorm_smul_le_mul_eLpNorm hf.1 g_aestronglyMeasurable h
     _ < ∞ := ENNReal.mul_lt_top hg' hf.2.ne
 
 /-- Hölder's inequality for integrable functions: the scalar multiplication of an integrable
@@ -717,10 +717,10 @@ theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β]
   rw [← memℒp_one_iff_integrable] at *
   refine ⟨hf.1.smul g_aestronglyMeasurable, ?_⟩
   have h : (1 : ℝ≥0∞) / 1 = 1 / 1 + 1 / ∞ := by norm_num
-  have hg' : snorm g ∞ μ ≠ ∞ := by rwa [snorm_exponent_top]
+  have hg' : eLpNorm g ∞ μ ≠ ∞ := by rwa [eLpNorm_exponent_top]
   calc
-    snorm (fun x : α => f x • g x) 1 μ ≤ _ := by
-      simpa using MeasureTheory.snorm_smul_le_mul_snorm g_aestronglyMeasurable hf.1 h
+    eLpNorm (fun x : α => f x • g x) 1 μ ≤ _ := by
+      simpa using MeasureTheory.eLpNorm_smul_le_mul_eLpNorm g_aestronglyMeasurable hf.1 h
     _ < ∞ := ENNReal.mul_lt_top hf.2.ne hg'
 
 theorem integrable_norm_iff {f : α → β} (hf : AEStronglyMeasurable f μ) :
@@ -757,13 +757,13 @@ theorem Integrable.measure_norm_ge_lt_top {f : α → β} (hf : Integrable f μ)
     μ { x | ε ≤ ‖f x‖ } < ∞ := by
   rw [show { x | ε ≤ ‖f x‖ } = { x | ENNReal.ofReal ε ≤ ‖f x‖₊ } by
       simp only [ENNReal.ofReal, Real.toNNReal_le_iff_le_coe, ENNReal.coe_le_coe, coe_nnnorm]]
-  refine (meas_ge_le_mul_pow_snorm μ one_ne_zero ENNReal.one_ne_top hf.1 ?_).trans_lt ?_
+  refine (meas_ge_le_mul_pow_eLpNorm μ one_ne_zero ENNReal.one_ne_top hf.1 ?_).trans_lt ?_
   · simpa only [Ne, ENNReal.ofReal_eq_zero, not_le] using hε
   apply ENNReal.mul_lt_top
   · simpa only [ENNReal.one_toReal, ENNReal.rpow_one, Ne, ENNReal.inv_eq_top,
       ENNReal.ofReal_eq_zero, not_le] using hε
   simpa only [ENNReal.one_toReal, ENNReal.rpow_one] using
-    (memℒp_one_iff_integrable.2 hf).snorm_ne_top
+    (memℒp_one_iff_integrable.2 hf).eLpNorm_ne_top
 
 /-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
 where `‖f x‖ > ε` is finite for all positive `ε`. -/
@@ -975,9 +975,9 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
   norm_map' := by
     intro u
     -- Porting note: Lean can't infer types of `AddHom.coe_mk`.
-    simp only [snorm, LinearMap.coe_mk,
+    simp only [eLpNorm, LinearMap.coe_mk,
       AddHom.coe_mk (M := Lp E 1 (μ.withDensity fun x => f x)) (N := Lp E 1 μ), Lp.norm_toLp,
-      one_ne_zero, ENNReal.one_ne_top, ENNReal.one_toReal, if_false, snorm', ENNReal.rpow_one,
+      one_ne_zero, ENNReal.one_ne_top, ENNReal.one_toReal, if_false, eLpNorm', ENNReal.rpow_one,
       _root_.div_one, Lp.norm_def]
     rw [lintegral_withDensity_eq_lintegral_mul_non_measurable _ f_meas.coe_nnreal_ennreal
         (Filter.eventually_of_forall fun x => ENNReal.coe_lt_top)]
@@ -999,7 +999,7 @@ end
 
 theorem mem_ℒ1_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ)
     (hfi : (∫⁻ x, f x ∂μ) ≠ ∞) : Memℒp (fun x => (f x).toReal) 1 μ := by
-  rw [Memℒp, snorm_one_eq_lintegral_nnnorm]
+  rw [Memℒp, eLpNorm_one_eq_lintegral_nnnorm]
   exact
     ⟨(AEMeasurable.ennreal_toReal hfm).aestronglyMeasurable,
       hasFiniteIntegral_toReal_of_lintegral_ne_top hfi⟩
@@ -1267,17 +1267,17 @@ theorem aemeasurable_coeFn [MeasurableSpace β] [BorelSpace β] (f : α →₁[�
   (Lp.stronglyMeasurable f).measurable.aemeasurable
 
 theorem edist_def (f g : α →₁[μ] β) : edist f g = ∫⁻ a, edist (f a) (g a) ∂μ := by
-  simp only [Lp.edist_def, snorm, one_ne_zero, snorm', Pi.sub_apply, one_toReal, ENNReal.rpow_one,
-    ne_eq, not_false_eq_true, div_self, ite_false]
+  simp only [Lp.edist_def, eLpNorm, one_ne_zero, eLpNorm', Pi.sub_apply, one_toReal,
+    ENNReal.rpow_one, ne_eq, not_false_eq_true, div_self, ite_false]
   simp [edist_eq_coe_nnnorm_sub]
 
 theorem dist_def (f g : α →₁[μ] β) : dist f g = (∫⁻ a, edist (f a) (g a) ∂μ).toReal := by
-  simp only [Lp.dist_def, snorm, one_ne_zero, snorm', Pi.sub_apply, one_toReal, ENNReal.rpow_one,
-    ne_eq, not_false_eq_true, div_self, ite_false]
+  simp only [Lp.dist_def, eLpNorm, one_ne_zero, eLpNorm', Pi.sub_apply, one_toReal,
+    ENNReal.rpow_one, ne_eq, not_false_eq_true, div_self, ite_false]
   simp [edist_eq_coe_nnnorm_sub]
 
 theorem norm_def (f : α →₁[μ] β) : ‖f‖ = (∫⁻ a, ‖f a‖₊ ∂μ).toReal := by
-  simp [Lp.norm_def, snorm, snorm']
+  simp [Lp.norm_def, eLpNorm, eLpNorm']
 
 /-- Computing the norm of a difference between two L¹-functions. Note that this is not a
   special case of `norm_def` since `(f - g) x` and `f x - g x` are not equal
@@ -1349,13 +1349,13 @@ theorem toL1_sub (f g : α → β) (hf : Integrable f μ) (hg : Integrable g μ)
 
 theorem norm_toL1 (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ENNReal.toReal (∫⁻ a, edist (f a) 0 ∂μ) := by
-  simp only [toL1, Lp.norm_toLp, snorm, one_ne_zero, snorm', one_toReal, ENNReal.rpow_one, ne_eq,
-    not_false_eq_true, div_self, ite_false]
+  simp only [toL1, Lp.norm_toLp, eLpNorm, one_ne_zero, eLpNorm', one_toReal, ENNReal.rpow_one,
+    ne_eq, not_false_eq_true, div_self, ite_false]
   simp [edist_eq_coe_nnnorm]
 
 theorem nnnorm_toL1 {f : α → β} (hf : Integrable f μ) :
     (‖hf.toL1 f‖₊ : ℝ≥0∞) = ∫⁻ a, ‖f a‖₊ ∂μ := by
-  simpa [Integrable.toL1, snorm, snorm'] using ENNReal.coe_toNNReal hf.2.ne
+  simpa [Integrable.toL1, eLpNorm, eLpNorm'] using ENNReal.coe_toNNReal hf.2.ne
 
 theorem norm_toL1_eq_lintegral_norm (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
@@ -1364,14 +1364,14 @@ theorem norm_toL1_eq_lintegral_norm (f : α → β) (hf : Integrable f μ) :
 @[simp]
 theorem edist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrable g μ) :
     edist (hf.toL1 f) (hg.toL1 g) = ∫⁻ a, edist (f a) (g a) ∂μ := by
-  simp only [toL1, Lp.edist_toLp_toLp, snorm, one_ne_zero, snorm', Pi.sub_apply, one_toReal,
+  simp only [toL1, Lp.edist_toLp_toLp, eLpNorm, one_ne_zero, eLpNorm', Pi.sub_apply, one_toReal,
     ENNReal.rpow_one, ne_eq, not_false_eq_true, div_self, ite_false]
   simp [edist_eq_coe_nnnorm_sub]
 
 @[simp]
 theorem edist_toL1_zero (f : α → β) (hf : Integrable f μ) :
     edist (hf.toL1 f) 0 = ∫⁻ a, edist (f a) 0 ∂μ := by
-  simp only [toL1, Lp.edist_toLp_zero, snorm, one_ne_zero, snorm', one_toReal, ENNReal.rpow_one,
+  simp only [toL1, Lp.edist_toLp_zero, eLpNorm, one_ne_zero, eLpNorm', one_toReal, ENNReal.rpow_one,
     ne_eq, not_false_eq_true, div_self, ite_false]
   simp [edist_eq_coe_nnnorm]
 

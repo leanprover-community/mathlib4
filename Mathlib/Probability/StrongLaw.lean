@@ -799,7 +799,7 @@ identically distributed random variables in Lᵖ, then `n⁻¹ • ∑ i ∈ ran
 converges in `Lᵖ` to `𝔼[X 0]`. -/
 theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ → Ω → E) (hℒp : Memℒp (X 0) p)
     (hindep : Pairwise fun i j => IndepFun (X i) (X j)) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
-    Tendsto (fun (n : ℕ) => snorm (fun ω => (n : ℝ) ⁻¹ • (∑ i ∈ range n, X i ω) - 𝔼[X 0]) p ℙ)
+    Tendsto (fun (n : ℕ) => eLpNorm (fun ω => (n : ℝ) ⁻¹ • (∑ i ∈ range n, X i ω) - 𝔼[X 0]) p ℙ)
       atTop (𝓝 0) := by
   have hmeas : ∀ i, AEStronglyMeasurable (X i) ℙ := fun i =>
     (hident i).aestronglyMeasurable_iff.2 hℒp.1
