@@ -222,6 +222,13 @@ lemma sylvesterMatrixVec_smul (a : R) (P : Fin (n + 1) → R) (Q : Fin (m + 1) �
   induction j using Fin.addCases <;>
     simp only [sylvesterMatrixVec, Matrix.transpose_apply, Matrix.of_apply, Fin.addCases_left, Fin.addCases_right, Pi.natCast_def, one_mul, sylvesterVec_smul, Pi.smul_apply, smul_eq_mul]
 
+@[simp]
+lemma smul_sylvesterMatrixVec (a : R) (P : Fin (n + 1) → R) (Q : Fin (m + 1) → R) :
+    sylvesterMatrixVec (a • P) Q = Matrix.of (fun (i j : Fin (m + n)) => (Fin.addCases (fun _ => a) (fun _ => 1) j) * sylvesterMatrixVec P Q i j) := by
+  ext i j
+  induction j using Fin.addCases <;>
+    simp only [sylvesterMatrixVec, Matrix.transpose_apply, Matrix.of_apply, Fin.addCases_left, Fin.addCases_right, Pi.natCast_def, one_mul, sylvesterVec_smul, Pi.smul_apply, smul_eq_mul]
+
 /-
 #eval sylvesterMatrixVec ![1, 2, 3] ![4, 5, 6]
 #eval have _ : Zero String := ⟨"0"⟩; sylvesterMatrixVec !["p4", "p3", "p2", "p1", "p0"] !["q3", "q2", "q1", "q0"]
@@ -727,6 +734,12 @@ lemma C_mul_resultant [NoZeroDivisors R] (a : R) (P Q : Polynomial R)
           reindex_apply, det_submatrix, Fin.cast_rfl, Function.comp_id]
       simp
 
+lemma C_mul_resultant' [NoZeroDivisors R] (a : R) (P Q : Polynomial R)
+    (hQ : Q.natDegree ≠ 0) (h : Q.natDegree = n) :
+    (C a * P).resultant Q = a ^ n * P.resultant Q := by
+  rw [C_mul_resultant, h]
+  · assumption
+
 lemma resultant_C_mul [NoZeroDivisors R] (a : R) (P Q : Polynomial R)
     (hP : P.natDegree ≠ 0) :
     P.resultant (C a * Q) = a ^ P.natDegree * P.resultant Q := by
@@ -734,6 +747,12 @@ lemma resultant_C_mul [NoZeroDivisors R] (a : R) (P Q : Polynomial R)
   · simp [ha, resultant_zero, hP]
   rw [resultant_swap, C_mul_resultant _ _ _ hP, resultant_swap P Q, natDegree_C_mul ha,
       mul_left_comm]
+
+lemma resultant_C_mul' [NoZeroDivisors R] (a : R) (P Q : Polynomial R)
+    (hP : P.natDegree ≠ 0) (h : m = P.natDegree) :
+    P.resultant (C a * Q) = a ^ m * P.resultant Q := by
+  rw [resultant_C_mul, h]
+  · assumption
 
 /-
 lemma X_mul_resultant [NoZeroDivisors R] (a : R) (P Q : Polynomial R)
@@ -829,6 +848,20 @@ lemma IsPolynomial.prod {m ι : Type*}
   case insert a s ha ih =>
     simp only [Finset.prod_insert ha]
     exact (h a).mul ih
+
+/-- The determinant as a multivariate polynomial in the matrix entries. -/
+noncomputable def MvPolynomial.det {ι : Type*} [DecidableEq ι] [Fintype ι] :
+    MvPolynomial (ι × ι) R :=
+  ∑ σ : Equiv.Perm ι, C (Equiv.Perm.sign σ : R) * ∏ (i : ι), X (σ i, i)
+
+lemma MvPolynomial.eval_det {ι : Type*} [DecidableEq ι] [Fintype ι] (M : Matrix ι ι R) :
+    MvPolynomial.eval (fun ij => M ij.1 ij.2) MvPolynomial.det = M.det := by
+  simp [MvPolynomial.det, Matrix.det_apply, Units.smul_def]
+
+@[simp]
+lemma MvPolynomial.eval_det' {ι : Type*} [DecidableEq ι] [Fintype ι] (M : ι × ι → R) :
+    MvPolynomial.eval M MvPolynomial.det = (Matrix.of fun i j => M (i, j)).det := by
+  simp [MvPolynomial.det, Matrix.det_apply, Units.smul_def]
 
 lemma IsPolynomial.det {m ι : Type*} [DecidableEq m] [Fintype m]
     (f : m → m → (ι → R) → R) (h : ∀ i j, IsPolynomial (f i j)) :
@@ -2200,6 +2233,27 @@ theorem MvPolynomial.isHomogeneous_iff_comp_smul_eq_pow_smul {σ : Type*} {p : M
 
 /-- A homogeneous polynomial is one where scaling the variables is equivalent to scaling the
 whole polynomial by a power of the scale. -/
+theorem MvPolynomial.isWeightedHomogeneous_iff_eval_smul_eq_pow_smul [Infinite R] [IsDomain R]
+    {σ : Type*} {w : σ → ℕ} {p : MvPolynomial σ R} :
+    IsWeightedHomogeneous w p n ↔ ∀ x (f : σ → R),
+      MvPolynomial.eval (fun i => x ^ w i * f i) p = x ^ n * eval f p := by
+  refine isWeightedHomogeneous_iff_comp_smul_eq_pow_smul.trans ⟨fun h x f => ?_, fun h => ?_⟩
+  · have h := congr_arg (eval (fun i => Option.elim i x f)) h
+    simp only [map_aeval, algebraMap_eq, _root_.map_mul, eval_X, Option.elim_none, Option.elim_some,
+        coe_eval₂Hom, map_pow, eval_rename] at h
+    rw [← eval₂_id]
+    convert h
+    ext y
+    simp
+  · apply MvPolynomial.eq_of_eval_eq
+    intro x
+    simp only [map_aeval, algebraMap_eq, _root_.map_mul, eval_X, coe_eval₂Hom, map_pow, eval_rename]
+    convert (eval₂_id _).trans (h (x none) (x ∘ some))
+    ext
+    simp
+
+/-- A homogeneous polynomial is one where scaling the variables is equivalent to scaling the
+whole polynomial by a power of the scale. -/
 theorem MvPolynomial.isHomogeneous_iff_eval_smul_eq_pow_smul [Infinite R] [IsDomain R]
     {σ : Type*} {p : MvPolynomial σ R} :
     IsHomogeneous p n ↔ ∀ x f, MvPolynomial.eval (x • f) p = x ^ n * eval f p := by
@@ -2251,6 +2305,12 @@ theorem MvPolynomial.IsHomogeneous.of_mul_right [IsDomain R] {σ : Type*} {p q :
     (pow_ne_zero _ (X_ne_zero _))
     ((map_ne_zero_iff _ (rename_injective _ (Option.some_injective _))).mpr
       hp0)) hpq
+
+theorem MvPolynomial.isHomogeneous_esymm {σ : Type*} [Fintype σ] {n : ℕ} :
+    IsHomogeneous (esymm σ R n) n :=
+  IsHomogeneous.sum _ _ _ (fun i hi => by
+    simpa [(Finset.mem_powersetCard.mp hi).2]
+      using IsHomogeneous.prod (R := R) i X 1 (fun t _ => isHomogeneous_X _ _))
 
 /-- The total degree is zero exactly for the constant polynomials. -/
 lemma MvPolynomial.weightedTotalDegree_eq_zero_iff_exists_C {σ : Type*} {P : MvPolynomial σ R}
@@ -2344,6 +2404,59 @@ lemma MvPolynomial.IsHomogeneous.exists_C_mul_eq_of_dvd [IsDomain R] {σ : Type*
     ((IsHomogeneous.of_mul_right hP (by simpa) hP0).zero_iff_exists_C hR0).mp rfl
   exact ⟨x, mul_comm _ _⟩
 
+theorem MvPolynomial.eval_bind₁ {σ τ : Type*} (f : τ → R) (g : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
+    eval f (bind₁ g φ) = eval (fun i => eval f (g i)) φ :=
+  eval₂Hom_bind₁ _ _ _ _
+
+lemma MvPolynomial.IsWeightedHomogeneous.bind₁ {σ τ : Type*} {w₁ : σ → ℕ} {w₂ : τ → ℕ}
+    {P : MvPolynomial σ R} {Q : σ → MvPolynomial τ R}
+    (hP : P.IsWeightedHomogeneous w₁ m) (hQ : ∀ i, (Q i).IsWeightedHomogeneous w₂ (w₁ i * n)) :
+    (bind₁ Q P).IsWeightedHomogeneous w₂ (m * n) := by
+  induction P using MvPolynomial.induction_on'' generalizing m
+  case h_C a =>
+    obtain (rfl | rfl) := isWeightedHomogeneous_C_iff.mp hP
+    · simpa using isWeightedHomogeneous_zero _ _ _
+    · simpa using isWeightedHomogeneous_C _ a
+  case h_add_weak a b f ha hb ih_r ih_l =>
+    simp only at *
+    rw [map_add]
+    have : Disjoint ((monomial a) b).support (support f) := by
+      classical
+      simpa [support_monomial, hb] using ha
+    exact (ih_l (isWeightedHomogeneous_left_of_add_of_disjoint hP this)).add
+      (ih_r (MvPolynomial.isWeightedHomogeneous_right_of_add_of_disjoint hP this))
+  case h_X p i ih =>
+    by_cases hp0 : p = 0
+    · simpa [hp0] using isWeightedHomogeneous_zero _ _ _
+    obtain ⟨m, hp, rfl⟩ := (isWeightedHomogeneous_mul_X_iff hp0).mp hP
+    rw [_root_.map_mul, bind₁_X_right, add_mul]
+    exact (ih hp).mul (hQ _)
+
+lemma MvPolynomial.IsWeightedHomogeneous.bind₁' {σ τ : Type*} {w₁ n : σ → ℕ} {w₂ : τ → ℕ}
+    {P : MvPolynomial σ R} {Q : σ → MvPolynomial τ R}
+    (hP : P.IsWeightedHomogeneous w₁ m) (hQ : ∀ i, (Q i).IsWeightedHomogeneous w₂ (w₁ i * n i)) :
+    (MvPolynomial.bind₁ Q P).IsWeightedHomogeneous w₂ (m * sorry) := by
+  induction P using MvPolynomial.induction_on'' generalizing m
+  case h_C a =>
+    obtain (rfl | rfl) := isWeightedHomogeneous_C_iff.mp hP
+    · simpa using isWeightedHomogeneous_zero _ _ _
+    · simpa using isWeightedHomogeneous_C (M := ℕ) _ a
+  case h_add_weak a b f ha hb ih_r ih_l =>
+    simp only at *
+    rw [map_add]
+    have : Disjoint ((monomial a) b).support (support f) := by
+      classical
+      simpa [support_monomial, hb] using ha
+    exact (ih_l (isWeightedHomogeneous_left_of_add_of_disjoint hP this)).add
+      (ih_r (MvPolynomial.isWeightedHomogeneous_right_of_add_of_disjoint hP this))
+  case h_X p i ih =>
+    by_cases hp0 : p = 0
+    · simpa [hp0] using isWeightedHomogeneous_zero _ _ _
+    obtain ⟨m, hp, rfl⟩ := (isWeightedHomogeneous_mul_X_iff hp0).mp hP
+    rw [_root_.map_mul, bind₁_X_right, add_mul]
+    exact (ih hp).mul (hQ _)
+
+/-
 /-- Two multivariate polynomials that are homogeneous of the same degree and divide each other,
 are equal up to constants. -/
 lemma MvPolynomial.IsHomogeneous.exists_C_mul_bind_eq_of_bind_dvd [IsDomain R] {σ τ : Type*}
@@ -2376,6 +2489,7 @@ lemma MvPolynomial.exists_C_mul_eq_of_dvd_of_homogeneous_left_of_homogeneous_rig
     (hQQr : ∀ t u, eval (Sum.elim t u) Q = eval (eval u ∘ w) (Qr t)) :
     ∃ c, C c * P = Q := by
   sorry
+-/
 
 lemma MvPolynomial.irreducible_X_sub_X {σ : Type*} {i j : σ} (hij : i ≠ j) :
     Irreducible (X i - X j : MvPolynomial σ R) := by
@@ -2415,10 +2529,10 @@ noncomputable def Polynomial.ofVec (v : Fin m → R) : R[X] :=
     exact hi (Fin.prop _)
 
 @[simp] lemma Polynomial.ofVec_one {v : Fin 1 → R} : ofVec v = C (v 0) := by
-    ext i
-    cases i
-    · simp
-    · simp
+  ext i
+  cases i
+  · simp
+  · simp
 
 @[simp] lemma Polynomial.natDegree_ofVec {v : Fin (m + 1) → R} (h : v (Fin.last _) ≠ 0) :
     natDegree (ofVec v) = m := by
@@ -2433,9 +2547,33 @@ noncomputable def Polynomial.ofVec (v : Fin m → R) : R[X] :=
     refine ⟨Nat.pos_iff_ne_zero.mpr hm, fun i _ => (natDegree_C_mul_X_pow_le _ _).trans_lt ?_⟩
     exact i.prop
 
-lemma isPolynomial_ofVec_snoc {x : R} (hx : x ≠ 0) (i : ℕ) :
+lemma isPolynomial_ofVec (i : ℕ) :
+    IsPolynomial (fun (v : Fin m → R) => (ofVec v).coeff i) := by
+  simp only [coeff_ofVec]
+  split_ifs with hi
+  · simpa using IsPolynomial.apply_const (R := R) (⟨i, hi⟩ : Fin m)
+  · exact IsPolynomial.const 0
+
+lemma isPolynomial_ofVec_snoc {x : R} (i : ℕ) :
     IsPolynomial (fun (v : Fin m → R) => (ofVec (Fin.snoc v x)).coeff i) := by
-  sorry
+  simp only [coeff_ofVec, Fin.snoc]
+  split_ifs with hi_succ hi
+  · simpa using IsPolynomial.apply_const (R := R) (⟨i, hi⟩ : Fin m)
+  · have hi_eq : i = m := le_antisymm (Nat.lt_succ.mp hi_succ) (le_of_not_gt hi)
+    subst hi_eq
+    exact IsPolynomial.const x
+  · exact IsPolynomial.const 0
+
+@[simp] lemma Polynomial.ofVec_smul (v : Fin m → R) (x : R) : ofVec (x • v) = x • ofVec v := by
+  ext i
+  rw [coeff_ofVec, coeff_smul, coeff_ofVec]
+  split_ifs <;> simp
+
+@[simp] lemma Polynomial.ofVec_const_mul (v : Fin m → R) (x : R) : ofVec (fun i => x * v i) =
+    C x * ofVec v := by
+  ext i
+  rw [coeff_ofVec, coeff_C_mul, coeff_ofVec]
+  split_ifs <;> simp
 
 lemma prod_eval_prod_X_sub_C {ι κ : Type*} [Fintype ι] [Fintype κ] (t : ι → K) (u : κ → K) :
     ∏ i, (∏ j, (X - C (u j))).eval (t i) = ∏ i, ∏ j, (t i - u j) :=
@@ -2444,11 +2582,20 @@ lemma prod_eval_prod_X_sub_C {ι κ : Type*} [Fintype ι] [Fintype κ] (t : ι �
 /-- We can express each coefficient of a polynomial in terms of its roots. -/
 noncomputable def coeffOfRoots {ι : Type*} [Fintype ι] (i : Fin (Fintype.card ι)) :
     MvPolynomial ι K :=
-  Classical.choose (Polynomial.coeff_isSymmPolynomial_roots 1 i)
+  (-1) ^ (Fintype.card ι - ↑i) * MvPolynomial.esymm _ _ (Fintype.card ι - i)
 
-lemma eval_coeffOfRoots {ι : Type*} [Fintype ι] (t : ι → K) (i : Fin (Fintype.card ι)) :
-    MvPolynomial.eval t (coeffOfRoots i) = coeff (∏ i, (X - C (t i))) i := by
-  convert (Classical.choose_spec (Polynomial.coeff_isSymmPolynomial_roots (1 : K) i) t).1.symm
+theorem MvPolynomial.eval_esymm_eq_multiset_esymm {σ : Type*} [Fintype σ] (f : σ → R) (n : ℕ) :
+    eval f (esymm σ R n) = (Finset.univ.val.map f).esymm n :=
+  aeval_esymm_eq_multiset_esymm _ _ _ _
+
+lemma MvPolynomial.eval_coeffOfRoots {ι : Type*} [Fintype ι] (t : ι → K) (i : Fin (Fintype.card ι)) :
+    MvPolynomial.eval t (coeffOfRoots i) = Polynomial.coeff (∏ i, (Polynomial.X - Polynomial.C (t i))) i := by
+  conv_rhs =>
+    rw [← one_mul (∏ _, _), ← _root_.map_one Polynomial.C,
+        coeff_eq_esymm_roots_of_splits (splits_C_mul_prod_X_sub_C t _ _)]
+    · rfl
+    · exact i.prop.le.trans_eq (natDegree_C_mul_prod_X_sub_C _ _ one_ne_zero).symm
+  rw [coeffOfRoots, _root_.map_mul, eval_esymm_eq_multiset_esymm]
   simp
 
 lemma ofVec_coeffOfRoots_one {ι : Type*} [Fintype ι] (t : ι → K) :
@@ -2461,7 +2608,7 @@ lemma ofVec_coeffOfRoots_one {ι : Type*} [Fintype ι] (t : ι → K) :
     case pos.refl =>
       exact (Fin.snoc_last _ _).trans (coeff_prod_X_sub_C_card t Finset.univ).symm
     case pos.step h =>
-      exact (Fin.snoc_castSucc _ _ ⟨i, h⟩).trans (eval_coeffOfRoots t ⟨i, h⟩)
+      exact (Fin.snoc_castSucc _ _ ⟨i, h⟩).trans (MvPolynomial.eval_coeffOfRoots t ⟨i, h⟩)
   · exact (coeff_eq_zero_of_natDegree_lt ((natDegree_prod_X_sub_C t _).trans_lt (lt_of_not_ge (mt Nat.lt_succ.mpr hi)))).symm
 
 lemma ofVec_coeffOfRoots_smul {ι : Type*} [Fintype ι] (x : K) (t : ι → K) :
@@ -2475,52 +2622,170 @@ lemma ofVec_coeffOfRoots_smul {ι : Type*} [Fintype ι] (x : K) (t : ι → K) :
       exact (Fin.snoc_last _ _).trans (coeff_C_mul_prod_X_sub_C_card t Finset.univ x).symm
     case pos.step h =>
       refine (Fin.snoc_castSucc _ _ ⟨i, h⟩).trans ?_
-      simp?
-      rw [(eval_coeffOfRoots t ⟨i, h⟩)]
-  · exact (coeff_eq_zero_of_natDegree_lt ((natDegree_C_mul_prod_X_sub_C t _).trans_lt (lt_of_not_ge (mt Nat.lt_succ.mpr hi)))).symm
+      simp only [MvPolynomial.smul_eval, coeff_C_mul, mul_eq_mul_left_iff]
+      rw [(MvPolynomial.eval_coeffOfRoots t ⟨i, h⟩)]
+      exact Or.inl rfl
+  · exact (coeff_eq_zero_of_natDegree_lt ((natDegree_C_mul_prod_X_sub_C_le t _ _).trans_lt
+            (lt_of_not_ge (mt Nat.lt_succ.mpr hi)))).symm
 
-/-- The resultant as a multivariate polynomial in the coefficients of two monic polynomials.
+lemma coeff_prod_X_sub_C {ι : Type*} (s : Finset ι) (t : ι → K) j :
+    (∏ i in s, (X - C (t i))).coeff j =
+      if j ≤ s.card
+      then (-1) ^ (s.card - j) * ∑ t_1 ∈ Finset.powersetCard (s.card - j) s, t_1.prod t
+      else 0 := by
+  split_ifs with hj
+  · convert coeff_eq_esymm_roots_of_splits (splits_prod_X_sub_C t _) (hj.trans_eq (natDegree_prod_X_sub_C t _).symm)
+    · simp
+    · simp [Finset.esymm_map_val]
+  · exact coeff_eq_zero_of_natDegree_lt (by rwa [natDegree_prod_X_sub_C, ← not_le])
 
-The leading coefficient is added manually.
+lemma MvPolynomial.isWeightedHomogeneous_coeffOfRoots {ι : Type*} [Fintype ι] [Infinite K] (i) :
+    IsWeightedHomogeneous (fun (_ : ι) => 1) (coeffOfRoots (K := K) i) (Fintype.card ι - (i : ℕ)) :=
+  isWeightedHomogeneous_iff_eval_smul_eq_pow_smul.mpr fun c f => by
+    simp only [eval_coeffOfRoots, coeff_prod_X_sub_C, Finset.card_univ, Fin.is_le', ↓reduceIte,
+      pow_one, Finset.prod_mul_distrib, Finset.prod_const,
+      Finset.mul_sum, mul_left_comm]
+    refine Finset.sum_congr rfl (fun s hs => ?_)
+    rw [(Finset.mem_powersetCard.mp hs).2]
+
+/-- The resultant as a multivariate polynomial in the coefficients of two polynomials.
+
+Note that this only equals the actual resultant if the leading coefficients are nonzero.
 -/
-noncomputable def resultantPolynomialCoeff : MvPolynomial (Fin m ⊕ Fin n) K :=
+noncomputable def resultantPolynomialCoeff :
+    MvPolynomial (Fin (m + 1) ⊕ Fin (n + 1)) K :=
+  MvPolynomial.bind₁
+    (fun ij => sylvesterMatrixVec (fun i => MvPolynomial.X (Sum.inr i)) (fun i => MvPolynomial.X (Sum.inl i)) ij.1 ij.2)
+    MvPolynomial.det
+  /-
   Classical.choose (IsPolynomial.resultant
     (P := fun (v : Fin m → K) => ofVec (Fin.snoc v 1))
     (Q := fun (w : Fin n → K) => ofVec (Fin.snoc w 1))
     (fun v => natDegree_ofVec (by simp))
     (fun w => natDegree_ofVec (by simp))
-    (isPolynomial_ofVec_snoc one_ne_zero)
-    (isPolynomial_ofVec_snoc one_ne_zero))
+    isPolynomial_ofVec_snoc
+    isPolynomial_ofVec_snoc)
+  -/
 
-@[simp] lemma MvPolynomial.eval_resultantPolynomialCoeff (tu : (Fin m ⊕ Fin n) → K) :
+@[simp] lemma Polynomial.toVec_ofVec (v : Fin (m + 1) → R) (h : v (Fin.last m) ≠ 0) :
+    toVec (ofVec v) = v ∘ Fin.cast (congr_arg (· + 1) (natDegree_ofVec h)) := by
+  ext ⟨i, hi⟩
+  rw [natDegree_ofVec h] at hi
+  simp [toVec, hi]
+
+@[simp] lemma MvPolynomial.aeval_sylvesterVec {ι S : Type*} [CommRing S] [Algebra R S]
+    (v : Fin (n + 1) → MvPolynomial ι R) (t : ι → S) (i : Fin m) (j) :
+    MvPolynomial.aeval t (sylvesterVec v i j) =
+      sylvesterVec (fun i => aeval t (v i)) i j := by
+  cases lt_or_ge (j : ℕ) i
+  case inl h =>
+    simp [sylvesterVec_of_lt _ _ _ h]
+  case inr h₁ =>
+    cases le_or_gt ((j : ℕ) - i) n
+    case inl h₂ =>
+      simp [sylvesterVec_of_ge_of_le _ _ _ h₁ h₂]
+    case inr h₂ =>
+      simp [sylvesterVec_of_ge_of_gt _ _ _ h₁ h₂]
+
+@[simp] lemma MvPolynomial.aeval_sylvesterMatrixVec {ι S : Type*} [CommRing S] [Algebra R S]
+    (v : Fin (m + 1) → MvPolynomial ι R) (w : Fin (n + 1) → MvPolynomial ι R)
+    (t : ι → S) (i j) :
+    MvPolynomial.aeval t (sylvesterMatrixVec v w i j) =
+      sylvesterMatrixVec (fun i => aeval t (v i)) (fun j => aeval t (w j)) i j := by
+  unfold sylvesterMatrixVec
+  refine Fin.addCases (fun j => ?_) (fun j => ?_) j
+  · simp [sylvesterMatrixVec]
+  · simp [sylvesterMatrixVec]
+
+@[simp] lemma MvPolynomial.eval_sylvesterMatrixVec {ι : Type*}
+    (v : Fin (m + 1) → MvPolynomial ι R) (w : Fin (n + 1) → MvPolynomial ι R)
+    (t : ι → R) (i j) :
+    MvPolynomial.eval t (sylvesterMatrixVec v w i j) =
+      sylvesterMatrixVec (fun i => eval t (v i)) (fun j => eval t (w j)) i j :=
+  aeval_sylvesterMatrixVec v w t i j
+
+@[simp] lemma MvPolynomial.eval_resultantPolynomialCoeff
+    (tu : (Fin (m + 1) ⊕ Fin (n + 1)) → K)
+    (hl : tu (Sum.inl (Fin.last m)) ≠ 0) (hr : tu (Sum.inr (Fin.last n)) ≠ 0) :
     MvPolynomial.eval tu resultantPolynomialCoeff =
-    (ofVec (Fin.snoc (fun i => tu (Sum.inl i)) 1)).resultant (ofVec (Fin.snoc (fun i => tu (Sum.inr i)) 1)) :=
-  (Classical.choose_spec (IsPolynomial.resultant
-      (fun v => natDegree_ofVec (by simp))
-      (fun w => natDegree_ofVec (by simp))
-      (isPolynomial_ofVec_snoc one_ne_zero)
-      (isPolynomial_ofVec_snoc one_ne_zero))
-    _).symm
+    (ofVec (fun i => tu (Sum.inl i))).resultant (ofVec (fun i => tu (Sum.inr i))) := by
+  rw [resultantPolynomialCoeff, eval_bind₁, eval_det',
+    resultant_eq_det_sylvesterMatrixVec_cast _ _ (natDegree_ofVec hl) (natDegree_ofVec hr)]
+  congr 1
+  ext i j
+  rw [toVec_ofVec _ hr, toVec_ofVec _ hl, of_apply, eval_sylvesterMatrixVec]
+  congr <;>
+  · ext
+    apply eval_X
+
+lemma MvPolynomial.isWeightedHomogeneous_resultantPolynomialCoeff [Infinite K] :
+    IsWeightedHomogeneous (Sum.elim (fun (_ : Fin (m + 1)) => (m + 1)) (fun (_ : Fin (n + 1)) => (n + 1)))
+      (resultantPolynomialCoeff (K := K)) (n * (m + 1) + m * (n + 1)) :=
+  isWeightedHomogeneous_iff_eval_smul_eq_pow_smul.mpr fun c f => by
+    -- Note that we can't quite reuse the theorem about the resultant function being homogeneous,
+    -- since we also need to care about the case where the leading coefficient is zero.
+    calc
+    _ = (of fun i j ↦ sylvesterMatrixVec (c ^ (n + 1) • fun i ↦ f (Sum.inr i)) (c ^ (m + 1) • fun j ↦ f (Sum.inl j)) i j).det := by
+      rw [resultantPolynomialCoeff, eval_bind₁, eval_det']
+      simp [-sylvesterMatrixVec_smul, -smul_sylvesterMatrixVec]
+      rfl
+    _ = c ^ ((m + 1) * n) * (c ^ ((n + 1) * m) * (of fun i j ↦ sylvesterMatrixVec (fun i ↦ f (Sum.inr i)) (fun j ↦ f (Sum.inl j)) i j).det) := by
+      rw [sylvesterMatrixVec_smul, smul_sylvesterMatrixVec]
+      simp only [of_apply]
+      convert det_mul_row _ _ using 2
+      · simp [Fin.prod_univ_add, pow_mul]
+      · convert (det_mul_row (Fin.addCases (fun _ => c ^ (n + 1)) (fun _ => 1)) _).symm using 2
+        · simp [Fin.prod_univ_add, pow_mul]
+    _ = _ := by
+      rw [resultantPolynomialCoeff, eval_bind₁, eval_det']
+      simp [mul_assoc, pow_add, mul_comm, mul_left_comm]
 
 variable {ι κ : Type*} [Fintype ι] [Fintype κ]
+
+theorem MvPolynomial.IsWeightedHomogeneous.rename {σ τ : Type*}
+    {f : σ → τ} {w₁ : σ → ℕ} {w₂ : τ → ℕ} {p : MvPolynomial σ R} (h : IsWeightedHomogeneous w₁ p n)
+    (hw : ∀ i, w₂ (f i) = w₁ i) :
+    IsWeightedHomogeneous w₂ (rename f p) n := by
+  rw [← p.support_sum_monomial_coeff, map_sum]
+  simp_rw [rename_monomial]
+  apply IsWeightedHomogeneous.sum _ _ _ fun d hd ↦ isWeightedHomogeneous_monomial _ _ _ _
+  intro d hd
+  simp [hw, h (mem_support_iff.mp hd)]
+
+@[simp] lemma MvPolynomial.eval_snoc (t : ι → R) (v : Fin m → MvPolynomial ι R) (x : MvPolynomial ι R) (i) :
+    eval t (Fin.snoc (α := fun _ => MvPolynomial ι R) v x i) =
+    Fin.snoc (α := fun _ => R) (fun i => eval t (v i)) (eval t x) i := by
+  sorry
 
 /-- The resultant as a multivariate polynomial in the roots of two monic polynomials. -/
 noncomputable def resultantPolynomialRoots : MvPolynomial (ι ⊕ κ) K :=
   MvPolynomial.bind₁ (Sum.elim
-      (fun i => MvPolynomial.rename Sum.inl (coeffOfRoots i))
-      (fun i => MvPolynomial.rename Sum.inr (coeffOfRoots i)))
+      (Fin.snoc (fun i => MvPolynomial.rename Sum.inl (coeffOfRoots i)) 1)
+      (Fin.snoc (fun i => MvPolynomial.rename Sum.inr (coeffOfRoots i)) 1))
     resultantPolynomialCoeff
-
-theorem MvPolynomial.eval_bind₁ {σ τ : Type*} (f : τ → R) (g : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
-    eval f (bind₁ g φ) = eval (fun i => eval f (g i)) φ :=
-  eval₂Hom_bind₁ _ _ _ _
 
 @[simp] lemma MvPolynomial.eval_resultantPolynomialRoots (tu : ι ⊕ κ → K) :
     MvPolynomial.eval tu resultantPolynomialRoots =
     (∏ i, (Polynomial.X - Polynomial.C (tu (Sum.inl i)))).resultant
       (∏ i, (Polynomial.X - Polynomial.C (tu (Sum.inr i)))) := by
   simp [resultantPolynomialRoots, eval_bind₁, eval_resultantPolynomialCoeff, eval_rename,
-    Function.comp, ofVec_coeffOfRoots]
+    Function.comp, ofVec_coeffOfRoots_one]
+
+lemma MvPolynomial.isWeightedHomogeneous_resultantPolynomialRoots [Infinite K] :
+    IsWeightedHomogeneous (Sum.elim (fun (i : ι) => 1) (fun (_ : κ) => 1))
+      (resultantPolynomialRoots (K := K))
+        ((Fintype.card κ * (Fintype.card ι + 1) + Fintype.card ι * (Fintype.card κ + 1)) * _) :=
+  isWeightedHomogeneous_resultantPolynomialCoeff.bind₁ fun i => by
+    obtain (i | i) := i
+    · refine Fin.lastCases ?_ (fun i => ?_) i
+      · simp only [Sum.elim_lam_const_lam_const, Sum.elim_inl, Fin.snoc_last]
+      · simp?
+        convert (isWeightedHomogeneous_coeffOfRoots (K := K) i).rename (fun _ => ?_) using 1
+        · sorry
+        · rfl
+    · refine Fin.lastCases ?_ (fun i => ?_) i
+      · simp?
+      · simp?
 
 theorem prod_root_differences_dvd_resultantPolynomialRoots [DecidableEq ι] [DecidableEq κ] [Infinite K] :
     ∏ (i : ι), ∏ (j : κ), (MvPolynomial.X (Sum.inl i) - MvPolynomial.X (Sum.inr j)) ∣
@@ -2593,15 +2858,25 @@ lemma resultant_eq_prod_roots_aux [DecidableEq ι] [DecidableEq κ]
     (x y : K)
     [Infinite K] : -- TODO: we don't need this hypothesis if we work over `ℤ`
     ∀ (t : ι → K) (u : κ → K),
-        Polynomial.resultant (C x * ∏ i, (X - C (t i))) (C y * ∏ i, (X - C (u i))) =
+        Polynomial.resultant (∏ i, (X - C (t i))) (∏ i, (X - C (u i))) =
       (-1)^(Fintype.card ι * Fintype.card κ) * ∏ i, ∏ j, (t i - u j) := by
   intro t u
 
   let m := Fintype.card ι
   let n := Fintype.card κ
 
-  refine (MvPolynomial.eval_resultantPolynomialRoots (Sum.elim t u)).symm.trans ?_
+  suffices MvPolynomial.eval (Sum.elim t u) resultantPolynomialRoots =
+      MvPolynomial.eval (Sum.elim t u) (MvPolynomial.C ((-1) ^ (Fintype.card ι * Fintype.card κ)) *
+        ∏ i : ι, ∏ j : κ, (MvPolynomial.X (Sum.inl i) - MvPolynomial.X (Sum.inr j))) by
+    simpa [MvPolynomial.eval_resultantPolynomialRoots] using this
 
+  congr
+  rw [resultantPolynomialRoots]
+
+  -- TODO: these polynomials are equal up to a constant because rescaling all the coefficients of `f` with `λ` is the same as rescaling the root with `1 / λ`
+  sorry
+
+  /-
   obtain ⟨c, hc⟩ := MvPolynomial.exists_C_mul_eq_of_dvd_of_homogeneous_left_of_homogeneous_right
     (R := K) (m := m) (n := n) (σ := ι) (τ := κ) (σ' := Fin (m + 1)) (τ' := Fin (n + 1)) _ _
     prod_root_differences_dvd_resultantPolynomialRoots
@@ -2642,6 +2917,7 @@ lemma resultant_eq_prod_roots_aux [DecidableEq ι] [DecidableEq κ]
     rw [← this, ← hc]
     simp
   sorry
+  -/
 
 /-- If P = a_n ∏ (X - t i) and Q = b_n ∏ (X - u i, then
   Res_(n,m) (P, Q) = ∏ (-1)^(n*m) * (a_n)^m * (b_m)^n (t i - u j) -/
