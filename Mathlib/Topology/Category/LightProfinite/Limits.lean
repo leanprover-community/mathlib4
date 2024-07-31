@@ -116,9 +116,9 @@ Limits.IsLimit.conePointUniqueUpToIso (pullback.isLimit f g) (Limits.limit.isLim
 
 /-- The homeomorphism from the explicit pullback to the abstract pullback. -/
 noncomputable
-def pullbackHomeoPullback : (LightProfinite.pullback f g).toCompHaus ≃ₜ
-    (Limits.pullback f g).toCompHaus :=
-  LightProfinite.homeoOfIso (pullbackIsoPullback f g)
+def pullbackHomeoPullback : (LightProfinite.pullback f g).toTop ≃ₜ
+    (Limits.pullback f g).toTop :=
+  CompHausLike.homeoOfIso (pullbackIsoPullback f g)
 
 theorem pullback_fst_eq :
     LightProfinite.pullback.fst f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.fst f g := by
@@ -206,7 +206,7 @@ theorem Sigma.ι_comp_toFiniteCoproduct (a : α) :
 /-- The homeomorphism from the explicit finite coproducts to the abstract coproduct. -/
 noncomputable
 def coproductHomeoCoproduct : finiteCoproduct X ≃ₜ (∐ X : _) :=
-  LightProfinite.homeoOfIso (coproductIsoCoproduct X)
+  CompHausLike.homeoOfIso (coproductIsoCoproduct X)
 
 end Iso
 
