@@ -6,6 +6,8 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
+git switch master
+
 rm -rf found_by_gh.txt found_by_git.txt
 
 findInRange () {
@@ -15,8 +17,6 @@ repository="${1}"
 # Get the start and end dates
 start_date="${2}"
 end_date="${3}"
-
-git switch master
 
 # find how many commits to master there have been in the last month
 commits_in_range="$(git log --since="${start_date}" --until="${end_date}" --pretty=oneline | wc -l)"
@@ -35,8 +35,6 @@ echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "(#
 # Store to file `found_by_git.txt` the PR numbers, as found by looking at the commits to `master`
 git log --pretty=oneline --since="${start_date}" --until="${end_date}" |
   sed -n 's=.*\((#[0-9]*)\)$=\1=p' | sort >> found_by_git.txt
-
-git checkout -
 }
 
 findInRange "${1}" "$(date -d '15 days ago - 1 day' +%Y-%m-%d)T00:00:00" "$(date -d 'today' +%Y-%m-%d)T23:59:59"
@@ -63,3 +61,5 @@ fi
 printf $'\n---\n'
 
 rm -rf found_by_gh.txt found_by_git.txt
+
+git checkout -
