@@ -63,12 +63,14 @@ theorem ZMod.card_orbit (X : Type*) [AddAction (ZMod p) X] (x : X) :
 attribute [simp] Nat.card_pi
 
 def Diag_equiv : Diag (n + 1) G ≃ (Fin n → G) where
-  toFun x i := x.1 i
+  toFun x := Fin.tail x.1
   invFun f :=
     let y := sorry
     ⟨Fin.cons y⁻¹ f, sorry⟩
-  left_inv := sorry
-  right_inv := sorry
+  left_inv x := by
+    dsimp
+    sorry
+  right_inv x := by simp
 
 @[simp]
 theorem Diag_card : Nat.card (Diag (n + 1) G) = (Nat.card G) ^ n := by
