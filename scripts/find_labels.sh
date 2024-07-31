@@ -45,8 +45,8 @@ commits_in_range="$(git log --since="${start_date}" --until="${end_date}" --pret
 
 printf $'\n%s commits between %s and %s\n' "${commits_in_range}" "${start_date}" "${end_date}"
 
-findInRange "${1}" "${start_date}" "${yr_mth}-15T23:59:59"
-findInRange "${1}" "${yr_mth}-16T00:00:00" "${end_date}"
+findInRange "${1}" "${start_date}" "${yr_mth}-14T23:59:59"
+findInRange "${1}" "${yr_mth}-15T00:00:00" "${end_date}"
 
 only_gh="$( comm -23 <(sort found_by_gh.txt) <(sort found_by_git.txt))"
 only_git="$(comm -13 <(sort found_by_gh.txt) <(sort found_by_git.txt))"
