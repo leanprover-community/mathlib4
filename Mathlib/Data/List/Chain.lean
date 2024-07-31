@@ -284,7 +284,7 @@ theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
   | [] => iff_of_true (by simp) (fun _ h => by simp at h)
   | [a] => iff_of_true (by simp) (fun _ h => by simp at h)
   | a :: b :: t => by
-    rw [← and_forall_succ, chain'_cons, chain'_iff_get]
+    rw [← and_forall_add_one, chain'_cons, chain'_iff_get]
     simp
 
 /-- If `l₁ l₂` and `l₃` are lists and `l₁ ++ l₂` and `l₂ ++ l₃` both satisfy
