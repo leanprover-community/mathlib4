@@ -13,12 +13,10 @@ open scoped Interval Topology BigOperators Nat Classical UpperHalfPlane
 
 variable {α  ι: Type*}
 
-lemma logbound (z : ℂ) (hz : ‖z‖ < 1) :
-    ‖(Complex.log (1 + z))‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 + ‖z‖ := by
+lemma logbound (z : ℂ) (hz : ‖z‖ < 1) : ‖log (1 + z)‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 + ‖z‖ := by
   rw [Eq.symm (sub_add_cancel (log (1 + z)) z)]
   apply le_trans (norm_add_le _ _)
   exact add_le_add_right (Complex.norm_log_one_add_sub_self_le hz) ‖z‖
-
 
 lemma logbound_half (z : ℂ) (hz : ‖z‖ ≤ 1/2) : ‖(log (1 + z))‖ ≤ (3/2) * ‖z‖ := by
   apply le_trans (logbound z (by linarith))
@@ -90,8 +88,8 @@ theorem UniformContinuousOn.comp_tendstoUniformly  {α β γ ι: Type*} [Uniform
   rw [uniformContinuousOn_iff_restrict] at hg
   apply (UniformContinuous.comp_tendstoUniformly hg h)
 
-/- theorem UniformContinuousOn.comp_tendstoUniformlyOn (s : Set ℂ) (F : ℕ → ℂ → s) (f : ℂ → s) {g : ℂ → ℂ}
-    (hg : UniformContinuousOn g s) (h : TendstoUniformlyOn F f atTop s) :
+/- theorem UniformContinuousOn.comp_tendstoUniformlyOn (s : Set ℂ) (F : ℕ → ℂ → s)
+    (f : ℂ → s) {g : ℂ → ℂ} (hg : UniformContinuousOn g s) (h : TendstoUniformlyOn F f atTop s) :
     TendstoUniformlyOn (fun i => fun x =>  g  (F i x)) (fun x => g (f x)) atTop s := by
   rw [uniformContinuousOn_iff_restrict] at hg
   apply (UniformContinuous.comp_tendstoUniformlyOn hg h)
