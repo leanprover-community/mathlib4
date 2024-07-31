@@ -51,19 +51,6 @@ lemma cexp_tsum_eq_tprod  (f : ι → α → ℂ) (hfn : ∀ x n, f n x ≠ 0)
   congr
   exact funext fun x ↦ exp_log (hfn a x)
 
-
-lemma cexp_tsum_eq_tprod2  (f : ι → α → ℂ) (hfn : ∀ x n, 1 + f n x ≠ 0)
-  (hf : ∀ x : α,  Summable fun n => log (1 + (f n x))) :
-    (cexp ∘ (fun a : α => (∑' n : ι, log (1 + (f n a))))) =
-      (fun a : α => ∏' n : ι, (1 + (f n a))) := by
-  ext a
-  apply (HasProd.tprod_eq ?_).symm
-  apply ((hf a).hasSum.cexp).congr
-  intro _
-  congr
-  exact funext fun x ↦ exp_log (hfn a x)
-
-
 lemma UniformlyContinuosOn_cexp (a : ℝ) : UniformContinuousOn cexp {x : ℂ | x.re ≤ a} := by
   have : Continuous (cexp - 1) := Continuous.sub (Continuous.cexp continuous_id') continuous_one
   rw [Metric.uniformContinuousOn_iff, Metric.continuous_iff'] at *
@@ -213,7 +200,7 @@ lemma A3wa  {α : Type*} [UniformSpace α] (f : ℕ → α → ℂ) (K : Set α)
       exact hfn ⟨x, hx⟩ y
   apply TendstoUniformlyOn.congr_right HU
   intro x hx
-  exact congrFun (cexp_tsum_eq_tprod (fun n => fun x : K => f n x) hfn h)  ⟨x, hx⟩
+  exact congrFun (cexp_tsum_eq_tprod (fun n => fun x : K => 1 + f n x) hfn h)  ⟨x, hx⟩
 
 
 open Real
