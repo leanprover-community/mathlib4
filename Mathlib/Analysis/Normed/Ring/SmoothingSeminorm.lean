@@ -197,8 +197,7 @@ theorem smoothingSeminorm'_isLimit_ne_zero (hf1 : f 1 ≤ 1) {x : R} (hx : f x �
       have h5 : 0 < (L + ε / 2) * (L + ε / 2) ^ (-(↑(n % ↑m1) / (n : ℝ))) :=
         mul_pos hL0' (rpow_pos_of_pos hL0' _)
       calc f (x ^ ((m1 : ℕ) * (n / (m1 : ℕ)) + n % m1)) ^ (1 / (n : ℝ)) =
-            f (x ^ ((m1 : ℕ) * (n / (m1 : ℕ))) * x ^ (n % m1)) ^ (1 / (n : ℝ)) :=
-          by rw [pow_add]
+            f (x ^ ((m1 : ℕ) * (n / (m1 : ℕ))) * x ^ (n % m1)) ^ (1 / (n : ℝ)) := by rw [pow_add]
         _ ≤ (f (x ^ ((m1 : ℕ) * (n / (m1 : ℕ)))) * f (x ^ (n % m1))) ^ (1 / (n : ℝ)) :=
           (rpow_le_rpow (apply_nonneg f _) (map_mul_le_mul f _ _) (one_div_cast_nonneg _))
         _ = f (x ^ ((m1 : ℕ) * (n / (m1 : ℕ)))) ^ (1 / (n : ℝ)) *
