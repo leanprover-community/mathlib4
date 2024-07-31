@@ -128,7 +128,7 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Finite (α
     rintro rfl
     refine ⟨fun h ↦ by apply_fun Sigma.fst at h; simp at h, ?_⟩
     rintro j c ⟨hij : i ≤ j, hcb : π _ c = π _ b⟩ ⟨hji : j ≤ i + 1, rfl : π hji b = c⟩ hne
-    replace hne := show i ≠ j by rintro rfl; exact hne rfl
+    replace hne := show i ≠ j by rintro rfl; contradiction
     obtain rfl := hji.antisymm (hij.lt_of_ne hne)
     rw [π_refl]
 
@@ -136,7 +136,7 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Finite (α
     simp_rw [isStronglyAtomic_iff, lt_iff_le_and_ne, hcovby]
     rintro ⟨i, a⟩ ⟨j, b⟩ ⟨⟨hij : i ≤ j, h2 : π hij b = a⟩, hne⟩
     have hle : i + 1 ≤ j := hij.lt_of_ne (by rintro rfl; simp [← h2, π_refl] at hne)
-    refine ⟨⟨_, π hle b⟩, ⟨⟨by simp, by rw [π_trans, ← h2]⟩,by simp⟩, ⟨hle, by simp⟩⟩
+    exact ⟨⟨_, π hle b⟩, ⟨⟨by simp, by rw [π_trans, ← h2]⟩, by simp⟩, ⟨hle, by simp⟩⟩
 
   obtain ⟨a₀, ha₀, ha₀inf⟩ : ∃ a₀ : αs, a₀.1 = 0 ∧ (Ici a₀).Infinite := by
     obtain ⟨a₀, ha₀⟩ := Finite.exists_infinite_fiber (fun (a : αs) ↦ π (zero_le a.1) a.2)
