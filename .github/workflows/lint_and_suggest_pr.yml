@@ -38,7 +38,7 @@ jobs:
       - name: blog report
         continue-on-error: true
         run: |
-          echo "Repository: ${{ github.repository }}"
+          printf $'Repository: %s\nBranch: %s\n' "${{ github.repository }}" "${{ github.head_ref }}"
           ./scripts/find_labels.sh "${{ github.repository }}"
 
       - name: lint
