@@ -34,10 +34,10 @@ noncomputable def disk (n : ℤ) : TopCat :=
   TopCat.of <| Metric.closedBall (0 : EuclideanSpace ℝ <| Fin <| Int.toNat n) 1
 
 /-- `𝕊 n` denotes the n-dimensional sphere. -/
-notation "𝕊 "n => sphere n
+scoped notation "𝕊 "n => sphere n
 
 /-- `𝔻 n` denotes the n-dimensional closed disk. -/
-notation "𝔻 "n => disk n
+scoped notation "𝔻 "n => disk n
 
 /-- The inclusion map from the n-sphere to the (n+1)-disk -/
 def sphereInclusion (n : ℤ) : (𝕊 n) ⟶ (𝔻 n + 1) where
