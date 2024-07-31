@@ -61,7 +61,7 @@ theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
 theorem eta : ∀ x : Σa, β a, Sigma.mk x.1 x.2 = x
   | ⟨_, _⟩ => rfl
 
-theorem ext_iff {x₀ x₁ : Sigma β} : x₀ = x₁ ↔ x₀.1 = x₁.1 ∧ HEq x₀.2 x₁.2 := by
+protected theorem ext_iff {x₀ x₁ : Sigma β} : x₀ = x₁ ↔ x₀.1 = x₁.1 ∧ HEq x₀.2 x₁.2 := by
   cases x₀; cases x₁; exact Sigma.mk.inj_iff
 
 /-- A version of `Iff.mp Sigma.ext_iff` for functions from a nonempty type to a sigma type. -/

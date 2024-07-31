@@ -155,7 +155,7 @@ variable (f : α →ₙ+* β) {x y : α}
 theorem ext ⦃f g : α →ₙ+* β⦄ : (∀ x, f x = g x) → f = g :=
   DFunLike.ext _ _
 
-theorem ext_iff {f g : α →ₙ+* β} : f = g ↔ ∀ x, f x = g x :=
+protected theorem ext_iff {f g : α →ₙ+* β} : f = g ↔ ∀ x, f x = g x :=
   DFunLike.ext_iff
 
 @[simp]
@@ -455,7 +455,7 @@ theorem coe_inj ⦃f g : α →+* β⦄ (h : (f : α → β) = g) : f = g :=
 theorem ext ⦃f g : α →+* β⦄ : (∀ x, f x = g x) → f = g :=
   DFunLike.ext _ _
 
-theorem ext_iff {f g : α →+* β} : f = g ↔ ∀ x, f x = g x :=
+protected theorem ext_iff {f g : α →+* β} : f = g ↔ ∀ x, f x = g x :=
   DFunLike.ext_iff
 
 @[simp]
