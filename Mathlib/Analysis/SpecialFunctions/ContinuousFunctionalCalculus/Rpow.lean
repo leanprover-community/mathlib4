@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 
-import Mathlib.Analysis.CstarAlgebra.Spectrum
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Instances
+import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unique
 
 /-!
 # Real powers defined via the continuous functional calculus
