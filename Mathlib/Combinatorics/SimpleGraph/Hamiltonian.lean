@@ -84,14 +84,13 @@ lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective
     exact hp.isHamiltonian_tail _
 
 lemma isHamiltonianCycle_isCycle_and_isHamiltonian_tail  :
-    p.IsHamiltonianCycle ↔ ∃ _ : p.IsCycle, p.tail.IsHamiltonian :=
+    p.IsHamiltonianCycle ↔ p.IsCycle ∧ p.tail.IsHamiltonian :=
   ⟨fun ⟨h, h'⟩ ↦ ⟨h, h'⟩, fun ⟨h, h'⟩ ↦ ⟨h, h'⟩⟩
 
 lemma isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ ∀ a, (support p).tail.count a = 1 := by
-  simp only [isHamiltonianCycle_isCycle_and_isHamiltonian_tail, IsHamiltonian,
-    exists_prop]
-  constructor <;> intro h <;> simp [support_tail _ h.1.not_nil] at h ⊢ <;> assumption
+  simp (config := { contextual := true }) [isHamiltonianCycle_isCycle_and_isHamiltonian_tail,
+    IsHamiltonian, support_tail, IsCycle.not_nil, exists_prop]
 
 /-- A hamiltonian cycle visits every vertex. -/
 lemma IsHamiltonianCycle.mem_support (hp : p.IsHamiltonianCycle) (b : α) :

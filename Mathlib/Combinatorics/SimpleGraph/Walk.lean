@@ -778,7 +778,7 @@ lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → S
     exact Nat.zero_lt_of_ne_zero hp)
   rwa [getVert_zero] at this
 
-/-- The walk obtained by removing the first n darts of a walk. -/
+/-- The walk obtained by removing the first `n` darts of a walk. -/
 def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
   match p, n with
   | .nil, _ => .nil
@@ -791,8 +791,8 @@ def tail (p : G.Walk u v) : G.Walk (p.getVert 1) v := p.drop 1
 @[simp]
 lemma tail_cons_nil (h : G.Adj u v) : (Walk.cons h .nil).tail = .nil := by rfl
 
-lemma tail_cons_eq (h : G.Adj u v) (p : G.Walk v w) : (p.cons h).tail =
-    p.copy (getVert_zero p).symm rfl := by
+lemma tail_cons_eq (h : G.Adj u v) (p : G.Walk v w) :
+    (p.cons h).tail = p.copy (getVert_zero p).symm rfl := by
   match p with
   | .nil => rfl
   | .cons h q => rfl
