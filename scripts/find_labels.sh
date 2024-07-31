@@ -40,8 +40,8 @@ git log --pretty=oneline --since="${start_date}" --until="${end_date}" |
 findInRange "${1}" '2024-07-01T00:00:00' '2024-07-15T23:59:59'
 findInRange "${1}" '2024-07-16T00:00:00' "$(date -d '2024-07-01 + 1 month - 1 day' +%Y-%m-%d)T23:59:59"
 
-only_gh="$( comm -23 found_by_gh.txt found_by_git.txt)"
-only_git="$(comm -13 found_by_gh.txt found_by_git.txt)"
+only_gh="$( comm -23 <(sort found_by_gh.txt) <(sort found_by_git.txt))"
+only_git="$(comm -13 <(sort found_by_gh.txt) <(sort found_by_git.txt))"
 
 printf $'\n---\nReports\n\n'
 
