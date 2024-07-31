@@ -22,6 +22,8 @@ universe u
 
 open CategoryTheory
 
+attribute [local instance] ConcreteCategory.instFunLike
+
 namespace Stonean
 
 /-!
@@ -105,7 +107,8 @@ lemma finiteCoproduct.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stone
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
 lemma Sigma.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stonean.{u}) (a : α) :
     OpenEmbedding (Sigma.ι Z a) := by
-  refine OpenEmbedding.of_comp _ (homeoOfIso (coproductIsoCoproduct Z).symm).openEmbedding ?_
+  refine OpenEmbedding.of_comp _
+    (CompHausLike.homeoOfIso (coproductIsoCoproduct Z).symm).openEmbedding ?_
   convert finiteCoproduct.openEmbedding_ι Z a
   ext x
   change ((Sigma.ι Z a) ≫ (coproductIsoCoproduct Z).inv) x = _
@@ -116,7 +119,8 @@ instance : PreservesFiniteCoproducts Stonean.toCompHaus := by
   suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) Stonean.toCompHaus from
     preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
   apply preservesColimitOfPreservesColimitCocone (Stonean.finiteCoproduct.isColimit _)
-  exact CompHaus.finiteCoproduct.isColimit _
+  exact IsColimit.ofIsoColimit (CompHaus.finiteCoproduct.isColimit
+    (fun j ↦ Stonean.toCompHaus.obj (F.obj ⟨j⟩))) (Iso.refl _)
 
 instance : PreservesFiniteCoproducts Stonean.toProfinite := by
   refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
@@ -143,19 +147,17 @@ The pullback of a morphism `f` and an open embedding `i` in `Stonean`, construct
 the preimage under `f`of the image of `i` with the subspace topology.
 -/
 def pullback : Stonean where
-  compHaus := {
-    toTop := TopCat.of (f ⁻¹' (Set.range i))
-    is_compact := by
-      dsimp [TopCat.of]
-      rw [← isCompact_iff_compactSpace]
-      refine IsClosed.isCompact (IsClosed.preimage f.continuous (IsCompact.isClosed ?_))
-      simp only [← Set.image_univ]
-      exact IsCompact.image isCompact_univ i.continuous
-    is_hausdorff := by
-      dsimp [TopCat.of]
-      exact inferInstance
-    prop := trivial }
-  extrDisc := by
+  toTop := TopCat.of (f ⁻¹' (Set.range i))
+  is_compact := by
+    dsimp [TopCat.of]
+    rw [← isCompact_iff_compactSpace]
+    refine IsClosed.isCompact (IsClosed.preimage f.continuous (IsCompact.isClosed ?_))
+    simp only [← Set.image_univ]
+    exact IsCompact.image isCompact_univ i.continuous
+  is_hausdorff := by
+    dsimp [TopCat.of]
+    exact inferInstance
+  prop := by
     constructor
     intro U hU
     dsimp at U
@@ -209,13 +211,21 @@ lemma pullback.condition {X Y Z : Stonean.{u}} (f : X ⟶ Z) {i : Y ⟶ Z}
   obtain ⟨y, hy⟩ := h
   simp only [fst, snd, comp_apply]
   change f x = _
+  let t : TopologicalSpace (pullback f hi) := inferInstance
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [← hy, @ContinuousMap.coe_mk _ _ (Stonean.instTopologicalSpace (pullback f hi)) _ _ _]
-  congr
-  apply_fun (Homeomorph.ofEmbedding i hi.toEmbedding)
-  simpa only [Homeomorph.ofEmbedding, Homeomorph.homeomorph_mk_coe, Equiv.ofInjective_apply,
-    Homeomorph.homeomorph_mk_coe_symm, Set.MapsTo.restrict, Subtype.map, Function.comp_apply,
-    Equiv.apply_symm_apply, Subtype.mk.injEq]
+  erw [← hy, @ContinuousMap.coe_mk _ _ t _ _ ?_]
+  · congr
+    apply_fun (Homeomorph.ofEmbedding i hi.toEmbedding)
+    simp only [Homeomorph.ofEmbedding, Homeomorph.homeomorph_mk_coe,
+      Homeomorph.homeomorph_mk_coe_symm, Set.MapsTo.restrict, Subtype.mk.injEq]
+    erw [Function.comp_apply, Subtype.map, Equiv.ofInjective_apply]
+    simpa using hy
+  · simp_all only [Set.mem_preimage, Set.mem_range, t]
+    refine Continuous.comp (Homeomorph.continuous _) ?_
+    apply ContinuousOn.restrict_mapsTo
+    apply Continuous.continuousOn
+    exact f.continuous
+-- this proof is temporarily uglified because of the refactor. It will be removed later.
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_fst {W : Stonean} (a : W ⟶ X) (b : W ⟶ Y) (w : a ≫ f = b ≫ i) :

@@ -286,29 +286,26 @@ lemma isBoundedUnder_le_add [Add R]
   simp only [eventually_map, Pi.add_apply] at hU hV ⊢
   filter_upwards [hU, hV] with a hu hv using add_le_add hu hv
 
-lemma isBoundedUnder_sum {κ : Type*} [DecidableEq κ] [AddCommMonoid R] {r : R → R → Prop}
+lemma isBoundedUnder_sum {κ : Type*} [AddCommMonoid R] {r : R → R → Prop}
     (hr : ∀ (v₁ v₂ : α → R), f.IsBoundedUnder r v₁ → f.IsBoundedUnder r v₂
       → f.IsBoundedUnder r (v₁ + v₂)) (hr₀ : r 0 0)
-    {u : κ → α → R} (s : Finset κ) :
-    (∀ k ∈ s, f.IsBoundedUnder r (u k)) →
-      f.IsBoundedUnder r (∑ k ∈ s, u k) := by
-  induction s using Finset.induction_on
+    {u : κ → α → R} (s : Finset κ) (h : ∀ k ∈ s, f.IsBoundedUnder r (u k)) :
+    f.IsBoundedUnder r (∑ k ∈ s, u k) := by
+  induction s using Finset.cons_induction
   case empty =>
-    simp only [Finset.not_mem_empty, false_implies, implies_true, Finset.sum_empty, true_implies]
-    refine ⟨0, by simp_all only [eventually_map, Pi.zero_apply, eventually_true]⟩
-  case insert k₀ s k₀_notin_s ih =>
-    simp only [Finset.mem_insert, forall_eq_or_imp, and_imp] at *
-    intro bdd_k₀ bdd_rest
-    simpa only [Finset.sum_insert k₀_notin_s] using hr _ _ bdd_k₀ (ih bdd_rest)
+    rw [Finset.sum_empty]
+    exact ⟨0, by simp_all only [eventually_map, Pi.zero_apply, eventually_true]⟩
+  case cons k₀ s k₀_notin_s ih =>
+    simp only [Finset.forall_mem_cons] at *
+    simpa only [Finset.sum_cons] using hr _ _ h.1 (ih h.2)
 
-lemma isBoundedUnder_le_sum {κ : Type*} [DecidableEq κ] [AddCommMonoid R]
+lemma isBoundedUnder_le_sum {κ : Type*} [AddCommMonoid R]
     [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
     {u : κ → α → R} (s : Finset κ) :
-    (∀ k ∈ s, f.IsBoundedUnder (· ≤ ·) (u k)) →
-      f.IsBoundedUnder (· ≤ ·) (∑ k ∈ s, u k) := by
+    (∀ k ∈ s, f.IsBoundedUnder (· ≤ ·) (u k)) → f.IsBoundedUnder (· ≤ ·) (∑ k ∈ s, u k) := by
   apply isBoundedUnder_sum (fun _ _ ↦ isBoundedUnder_le_add) le_rfl
 
-lemma isBoundedUnder_ge_sum {κ : Type*} [DecidableEq κ] [AddCommMonoid R]
+lemma isBoundedUnder_ge_sum {κ : Type*} [AddCommMonoid R]
     [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
     {u : κ → α → R} (s : Finset κ) :
     (∀ k ∈ s, f.IsBoundedUnder (· ≥ ·) (u k)) →

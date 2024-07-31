@@ -959,7 +959,7 @@ variable [Fintype α] (p : α → Prop) [DecidablePred p]
 /-- Given a fintype `α` and a predicate `p`, associate to a proof that there is a unique element of
 `α` satisfying `p` this unique element, as an element of the corresponding subtype. -/
 def chooseX (hp : ∃! a : α, p a) : { a // p a } :=
-  ⟨Finset.choose p univ (by simp; exact hp), Finset.choose_property _ _ _⟩
+  ⟨Finset.choose p univ (by simpa), Finset.choose_property _ _ _⟩
 
 /-- Given a fintype `α` and a predicate `p`, associate to a proof that there is a unique element of
 `α` satisfying `p` this unique element, as an element of `α`. -/
