@@ -936,7 +936,7 @@ lemma multipliable_iff_cauchySeq_finset2 (f : ι → ℂ) :
   exact Eq.to_iff rfl
 
 
-lemma log_of_summable (f : ℕ → ℂ) (hf : Summable f) :
+lemma log_of_summable {f : ℕ → ℂ} (hf : Summable f) :
     Summable (fun n : ℕ => Complex.log (1 + f n)) := by
   have hfc : Summable (fun n => Complex.abs (f n)) := by
     rw [← summable_norm_iff] at hf
@@ -954,10 +954,38 @@ lemma log_of_summable (f : ℕ → ℂ) (hf : Summable f) :
   apply logbound_half
   exact (hn m hm).le
 
+lemma log_of_summable_real {f : ℕ → ℝ} (hf : Summable f) :
+    Summable (fun n : ℕ => Real.log (1 + |f n|)) := by
+  have hfc : Summable (fun n => |(f n)|) := by
+    rw [← summable_norm_iff] at hf
+    apply hf
+  have := Summable.tendsto_atTop_zero hfc
+  rw [Metric.tendsto_atTop] at this
+  simp at this
+  apply Summable.of_norm_bounded_eventually_nat (fun n => |(f n)|) hfc
+  simp only [log_abs, Real.norm_eq_abs, eventually_atTop, ge_iff_le]
+  obtain ⟨n, _⟩ := this (1/2) (one_half_pos)
+  use n
+  intro m _
+  have ht : 0  < 1 + |f m| := by
+    rw [add_comm]
+    apply add_pos_of_nonneg_of_pos
+    apply abs_nonneg
+    exact Real.zero_lt_one
+  have := Real.log_le_sub_one_of_pos ht
+  simp at this
+  apply le_trans _ this
+  have habs : |Real.log (1 + |f m|)| = Real.log (1 + |f m|) := by
+    rw [@abs_eq_self]
+    apply Real.log_nonneg
+    simp
+  rw [habs]
+
+
 
 lemma summable_multipliable (f : ℕ → ℂ) (hf : Summable f) (hff : ∀ n : ℕ, 1 + f n  ≠ 0) :
     Multipliable (fun n : ℕ => (1 + f n)) := by
-  have := log_of_summable f hf
+  have := log_of_summable  hf
   rw [Summable] at this
   simp_rw [HasSum] at this
   obtain ⟨a, ha⟩ := this
@@ -1003,10 +1031,6 @@ local notation "ℤᶜ" =>  {z : ℂ | ¬ ∃ (n : ℤ), z = n}
 
 noncomputable instance : UniformSpace ℤᶜ := by infer_instance
 
-instance : ProperSpace ℤᶜ := by
-  refine ⟨fun z r => ?_⟩
-  rw [inducing_subtype_val.isCompact_iff (f := ((↑) : ℤᶜ → ℂ))]
-  apply isCompact_closedBall
 
 lemma int_comp_not_zero (x : ℂ) (hx : x ∈ {z : ℂ | ¬ ∃ (n : ℤ), z = ↑n}) : x ≠ 0 := by
   intro h
@@ -1257,7 +1281,7 @@ lemma ergf (f : ℂ → ℝ) (k s : Set ℂ) (hk : IsCompact k) (hs : IsOpen s) 
   have ht := hT.2.2
   rw [@isBounded_iff_forall_norm_le] at ht
   simp at ht
-
+  sorry
   sorry
 
 lemma vsdfgs {α : Type*} [Field α] [TopologicalSpace α] [NormedField α] [LocallyCompactSpace α] (f : α → ℝ)
@@ -1291,6 +1315,7 @@ theorem tendsto_locally_uniformly_euler_sin_prod' (z : ℍ') (r : ℝ) (hr : 0 <
   have := vsdfgs (s :=(Metric.ball z r)∩ ℍ') (f := (fun x => (∑' n : ℕ, Complex.log (1+-x ^ 2 / (n + 1) ^ 2)).re ))
   apply this
   sorry
+  sorry
 
 lemma adf (K : Set ℤᶜ) (i : ℕ) : ContinuousOn (fun x : ℤᶜ => 1+-x.1 ^ 2 / (i + 1) ^ 2) K :=
   (ContinuousOn.add continuousOn_const
@@ -1301,18 +1326,20 @@ lemma adf (K : Set ℤᶜ) (i : ℕ) : ContinuousOn (fun x : ℤᶜ => 1+-x.1 ^ 
 theorem tendsto_locally_uniformly_euler_sin_prod_comp (Z : Set ℤᶜ) (hZ : IsCompact Z) (r : ℝ) (hr : 0 < r) :
     TendstoUniformlyOn (fun n : ℕ => fun z : ℤᶜ => ∏ j in Finset.range n, (1 + -z.1 ^ 2 / (j + 1) ^ 2))
       (fun x => ( ∏' i : ℕ, (1 + -x.1 ^ 2 / (↑i + 1) ^ 2))) atTop Z := by
-  apply A3wa
-  intro x
-  apply log_of_summable
-  rw [← summable_norm_iff]
-  simpa using  summable_rie_twist x
-  --have := tendstoUniformlyOn_tsum
   have hf : ContinuousOn (fun x : ℤᶜ => ( Complex.abs (-x.1 ^ 2)) ) Z := by
     sorry
   have := IsCompact.bddAbove_image  hZ hf
   rw [@bddAbove_def] at this
   simp at *
   obtain ⟨s, hs⟩ := this
+  apply A3wa
+  intro x
+  apply log_of_summable
+  rw [← summable_norm_iff]
+  simpa using  summable_rie_twist x
+  --have := tendstoUniformlyOn_tsum
+
+
   apply ttun (u := (fun n : ℕ => Complex.abs (s / (n + 1) ^ 2)))
   apply summable_rie_twisters s
   intro n x hx
@@ -1349,6 +1376,22 @@ theorem tendsto_locally_uniformly_euler_sin_prod_comp (Z : Set ℤᶜ) (hZ : IsC
       (ContinuousOn.neg (ContinuousOn.pow (Continuous.continuousOn continuous_subtype_val) 2))
       continuousOn_const))
     exact Set.mapsTo_image (fun x ↦ 1 + -x.1 ^ 2 / ((i : ℂ) + 1) ^ 2) Z
+    /- have hf2 : ContinuousOn (fun x : ℤᶜ => ‖Real.log ( Complex.abs (1 -x.1 ^ 2/(i+1)))‖ ) Z := by
+      sorry
+    have := IsCompact.bddAbove_image  hZ hf2
+    rw [@bddAbove_def] at this
+    simp at *
+    obtain ⟨s, hs⟩ := this -/
+
+
+    sorry
+
+
+    apply summable_norm_iff.mpr (log_of_summable_real (summable_rie_twisters s))
+    intro n x hx
+    apply abs_le_abs
+    refine log_le_log ?hfu.h₀.hx ?hfu.h₀.hxy
+    sorry
 
 
     sorry
