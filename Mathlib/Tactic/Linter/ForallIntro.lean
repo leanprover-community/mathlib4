@@ -165,7 +165,7 @@ run_cmd
 
 partial
 def recombineHave {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m]
-    (stx : Syntax) (n : Nat) : m (Syntax × Nat) := do
+    (stx : Syntax) (n : Nat) : m Syntax := do
   match stx with
     | `(tactic| have $id:haveId $bi0* : ∀ $bi1 $bi2*, $body := $t) =>
       --dbg_trace "main '{bi1}'"
@@ -179,10 +179,10 @@ def recombineHave {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m]
           recombineHave (← `(tactic| have $id:haveId $bi0* $bi' : ∀ $bi2*, $body := $t)) n'
       else
         if let #[a, b] := splitVars bi1 n then
-          return (← `(tactic| have $id:haveId $bi0* $(⟨a⟩) : ∀ $(⟨b⟩) $bi2*, $body := $t), 0)
+          `(tactic| have $id:haveId $bi0* $(⟨a⟩) : ∀ $(⟨b⟩) $bi2*, $body := $t)
         else
-          return (stx, 0)
-    | _ => return (Syntax.missing, 0)
+          return stx
+    | _ => return .missing
 
 /-
 run_cmd
@@ -217,6 +217,17 @@ def Term.dropOneIntro {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation
     else
       return none
   | _ => return none
+
+/-
+run_cmd
+  let mut stx ← `(by intros a b c; intros g h; intro;)
+  let n := 6
+  for i in [:n] do
+    match ← Term.dropOneIntro stx with
+      | some (a, _b) => stx := ⟨a⟩; logInfo m!"{i}: {stx}"
+      | none => return
+-/
+
 
 /--
 `recombineBinders ts1 ts2` takes as input two `TSyntaxArray`s and removes the first entry of the
