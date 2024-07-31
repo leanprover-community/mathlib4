@@ -161,7 +161,10 @@ theorem ext {f g : Lp E p μ} (h : f =ᵐ[μ] g) : f = g := by
   simp only [Subtype.mk_eq_mk]
   exact AEEqFun.ext h
 
-theorem mem_Lp_iff_snorm_lt_top {f : α →ₘ[μ] E} : f ∈ Lp E p μ ↔ snorm f p μ < ∞ := Iff.rfl
+theorem mem_Lp_iff_eLpNorm_lt_top {f : α →ₘ[μ] E} : f ∈ Lp E p μ ↔ eLpNorm f p μ < ∞ := Iff.rfl
+
+@[deprecated (since := "2024-07-27")]
+alias mem_Lp_iff_snorm_lt_top := mem_Lp_iff_eLpNorm_lt_top
 
 theorem mem_Lp_iff_memℒp {f : α →ₘ[μ] E} : f ∈ Lp E p μ ↔ Memℒp f p μ := by
   simp [mem_Lp_iff_eLpNorm_lt_top, Memℒp, f.stronglyMeasurable.aestronglyMeasurable]
