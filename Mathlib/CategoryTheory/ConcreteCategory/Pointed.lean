@@ -60,7 +60,7 @@ namespace Pointed
 
 @[ext]
 lemma ext {A B : Pointed C} (h₁ : A.obj = B.obj)
-    (h₂ : ConcreteCategory.forget.map (eqToHom h₁) A.pt = B.pt) :
+    (h₂ : (forget C).map (eqToHom h₁) A.pt = B.pt) :
     A = B := by
   obtain ⟨X, x⟩ := A
   obtain ⟨Y, y⟩ := B
