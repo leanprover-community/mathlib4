@@ -3,9 +3,9 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Probability.Martingale.Upcrossing
+import Mathlib.MeasureTheory.Constructions.Polish.Basic
 import Mathlib.MeasureTheory.Function.UniformIntegrable
-import Mathlib.MeasureTheory.Constructions.Polish
+import Mathlib.Probability.Martingale.Upcrossing
 
 /-!
 
