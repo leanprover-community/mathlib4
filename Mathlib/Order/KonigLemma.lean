@@ -9,18 +9,23 @@ import Mathlib.Order.Grade
 /-!
 # Kőnig's infinity lemma
 
-Kőnig's infinity lemma is most often stated as a graph theory result :
+Kőnig's infinity lemma is most often stated as a graph theory result:
 every infinite, locally finite connected graph contains an infinite path.
-It has links to computability and proof theory, and is in fact a specialization
-of `nonempty_sections_of_finite_cofiltered_system`.
-It is stated and proved here with fewer dependencies.
+It has links to computability and proof theory, and it has a number of formulations.
 
 In practice, most applications are not to an abstract graph,
 but to a concrete collection of objects that are organized in a graph-like way,
 often where the graph is a rooted tree representing a graded order.
-In fact, the lemma is in fact most easily stated and proved
+In fact, the lemma is most easily stated and proved
 in terms of covers in a strongly atomic order rather than a graph;
 in this setting, the proof is almost trivial.
+
+A common formulation of Kőnig's lemma is in terms of directed systems,
+with the grading explicitly represented using an `ℕ`-indexed family of types,
+which we also provide in this module.
+This is a specialization of the much more general `nonempty_sections_of_finite_cofiltered_system`,
+which goes through topology and category theory,
+but here it is stated and proved independently with much fewer dependencies.
 
 We leave the explicitly graph-theoretic version of the statement as TODO.
 
@@ -34,8 +39,8 @@ We leave the explicitly graph-theoretic version of the statement as TODO.
 * `exists_orderEmbedding_covby_of_forall_covby_finite_of_bot` : Kőnig's lemma where the sequence
   starts at the minimum of an infinite type.
 
-* `exist_seq_forall_proj_of_forall_finite` : Kőnig's lemma applied to an order on a sigma-type
-  `(i : ℕ) × α i`.
+* `exist_seq_forall_proj_of_forall_finite` : Kőnig's lemma for inverse systems,
+  proved using the above applied to an order on a sigma-type `(i : ℕ) × α i`.
 
 ## TODO
 
@@ -82,7 +87,7 @@ end Sequence
 section Graded
 
 /-- A formulation of Kőnig's infinity lemma, useful in applications.
-Given a sequence `α 0, α 1, ...` of nonempty types with `α 0` a subsingleton,
+Given a sequence `α 0, α 1, ...` of nonempty types with `α 0` finite,
 and a well-behaved family of projections `π : α j → α i` for all `i ≤ j`,
 if each term in each `α i` is the projection of only finitely many terms in `α (i+1)`,
 then we can find a sequence `(f 0 : α 0), (f 1 : α 1), ...`
@@ -94,8 +99,8 @@ In this case, the sequence given by the lemma is essentially a function whose do
 is the limit of the `α i`.
 
 See also `nonempty_sections_of_finite_cofiltered_system`. -/
-theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Subsingleton (α 0)]
-    [∀ i, Nonempty (α i)] (π : {i j : ℕ} → (hij : i ≤ j) → α j → α i)
+theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Finite (α 0)] [∀ i, Nonempty (α i)]
+    (π : {i j : ℕ} → (hij : i ≤ j) → α j → α i)
     (π_refl : ∀ ⦃i⦄ (a : α i), π rfl.le a = a)
     (π_trans : ∀ ⦃i j k⦄ (hij : i ≤ j) (hjk : j ≤ k) a, π hij (π hjk a) = π (hij.trans hjk) a)
     (hfin : ∀ i a, {b : α (i+1) | π (Nat.le_add_right i 1) b = a}.Finite) :
@@ -127,23 +132,27 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Subsinglet
     obtain rfl := hji.antisymm (hij.lt_of_ne hne)
     rw [π_refl]
 
-  have _ : IsStronglyAtomic αs := by
+  have : IsStronglyAtomic αs := by
     simp_rw [isStronglyAtomic_iff, lt_iff_le_and_ne, hcovby]
     rintro ⟨i, a⟩ ⟨j, b⟩ ⟨⟨hij : i ≤ j, h2 : π hij b = a⟩, hne⟩
     have hle : i + 1 ≤ j := hij.lt_of_ne (by rintro rfl; simp [← h2, π_refl] at hne)
     refine ⟨⟨_, π hle b⟩, ⟨⟨by simp, by rw [π_trans, ← h2]⟩,by simp⟩, ⟨hle, by simp⟩⟩
 
-  let _ : OrderBot αs := OrderBot.mk (toBot := ⟨0, Classical.arbitrary _⟩)
-    fun _ ↦ ⟨Nat.zero_le _, Subsingleton.elim _ _⟩
+  obtain ⟨a₀, ha₀, ha₀inf⟩ : ∃ a₀ : αs, a₀.1 = 0 ∧ (Ici a₀).Infinite := by
+    obtain ⟨a₀, ha₀⟩ := Finite.exists_infinite_fiber (fun (a : αs) ↦ π (zero_le a.1) a.2)
+    refine ⟨⟨0,a₀⟩, rfl, (infinite_coe_iff.1 ha₀).mono ?_⟩
+    simp only [subset_def, mem_preimage, mem_singleton_iff, mem_Ici, Sigma.forall]
+    exact fun i x h ↦ ⟨zero_le i, h⟩
 
   have hfin : ∀ (a : αs), {x | a ⋖ x}.Finite := by
     refine fun ⟨i,a⟩ ↦ ((hfin i a).image (fun b ↦ ⟨_,b⟩)).subset ?_
     simp only [hcovby, subset_def, mem_setOf_eq, mem_image, and_imp, Sigma.forall]
     exact fun j b ⟨_, _⟩ hj ↦ ⟨π hj.le b, by rwa [π_trans], by cases hj; rw [π_refl]⟩
 
-  obtain ⟨f, hf0, hf⟩ := exists_orderEmbedding_covby_of_forall_covby_finite_of_bot hfin
+  obtain ⟨f, hf0, hf⟩ := exists_orderEmbedding_covby_of_forall_covby_finite hfin ha₀inf
+
   have hr : ∀ i, (f i).1 = i :=
-    Nat.rec (by rw [hf0]; rfl) (fun i ih ↦ by rw [← (hcovby.1 (hf i)).2, ih])
+    Nat.rec (by rw [hf0, ha₀]) (fun i ih ↦ by rw [← (hcovby.1 (hf i)).2, ih])
 
   refine ⟨fun i ↦ by rw [← hr i]; exact (f i).2, fun i j hij ↦ ?_⟩
   convert (f.monotone hij).2 <;>
