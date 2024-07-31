@@ -28,6 +28,11 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
+      - name: report
+        continue-on-error: true
+        run: |
+          ./scripts/find_labels.sh leanprover-community mathlib4
+
       - name: lint
         continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
