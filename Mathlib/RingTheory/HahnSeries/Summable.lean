@@ -364,13 +364,17 @@ theorem isPWO_iUnion_support_prod [AddCommMonoid R] [SMulWithZero R V] {s : α �
     {t : β → HahnSeries Γ' V} (hs : (⋃ a, (s a).support).IsPWO) (ht : (⋃ b, (t b).support).IsPWO) :
     (⋃ (a : α × β), ((fun a ↦ (HahnModule.of R).symm
       ((s a.1) • (HahnModule.of R) (t a.2))) a).support).IsPWO := by
-  apply (hs.VAdd ht).mono
-  have hsupp : ∀ a : α × β, support ((fun a ↦ s a.1 • (HahnModule.of R) (t a.2)) a) ⊆
-      (s a.1).support +ᵥ (t a.2).support := by
+  apply (hs.vadd ht).mono
+  have hsupp : ∀ a : α × β, support ((fun a ↦ (HahnModule.of R).symm
+      (s a.1 • (HahnModule.of R) (t a.2))) a) ⊆ (s a.1).support +ᵥ (t a.2).support := by
     intro a
-    rw [show t a.2 = (HahnModule.of R).symm ((HahnModule.of R) (t a.2)) by rfl]
-    simp only
-    exact HahnModule.support_smul_subset_vAdd_support (x := s a.1)
+    apply Set.Subset.trans (fun x hx => _) support_vaddAntidiagonal_subset_vadd
+    · exact (s a.1).isPWO_support
+    · exact (t a.2).isPWO_support
+    intro x hx
+    contrapose! hx
+    simp only [Set.mem_setOf_eq, not_nonempty_iff_eq_empty] at hx
+    rw [mem_support, not_not, HahnModule.smul_coeff, hx, sum_empty]
   refine Set.Subset.trans (Set.iUnion_mono fun a => (hsupp a)) ?_
   simp_all only [Set.iUnion_subset_iff, Prod.forall]
   exact fun a b => Set.vadd_subset_vadd (Set.subset_iUnion_of_subset a fun x y ↦ y)
@@ -388,10 +392,10 @@ theorem finite_co_support_prod [AddCommMonoid R] [SMulWithZero R V] (s : Summabl
   · exact fun a ha => by
       simp only [smul_coeff, ne_eq, Set.mem_setOf_eq] at ha
       obtain ⟨ij, hij⟩ := Finset.exists_ne_zero_of_sum_ne_zero ha
-      simp only [mem_coe, mem_VAddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq,
+      simp only [mem_coe, mem_vaddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq,
         Function.mem_support, exists_prop, Prod.exists]
       exact ⟨ij.1, ij.2, ⟨⟨a.1, left_ne_zero_of_smul hij.2⟩, ⟨a.2, right_ne_zero_of_smul hij.2⟩,
-        ((mem_VAddAntidiagonal _ _ _).mp hij.1).2.2⟩, hij.2⟩
+        ((mem_vaddAntidiagonal _ _ _).mp hij.1).2.2⟩, hij.2⟩
 
 /-- An elementwise scalar multiplication of one summable family on another. -/
 @[simps]
@@ -420,7 +424,7 @@ theorem sum_vAddAntidiagonal_eq [AddCommMonoid R] [SMulWithZero R V] (s : Summab
       (t a.2).coeff x.2 = ∑ x ∈ VAddAntidiagonal s.isPWO_iUnion_support' t.isPWO_iUnion_support' g,
       (s a.1).coeff x.1 • (t a.2).coeff x.2 := by
   refine sum_subset (fun gh hgh => ?_) fun gh hgh h => ?_
-  · simp_all only [mem_VAddAntidiagonal, Function.mem_support, Set.mem_iUnion, mem_support]
+  · simp_all only [mem_vaddAntidiagonal, Function.mem_support, Set.mem_iUnion, mem_support]
     refine ⟨Exists.intro a.1 hgh.1, Exists.intro a.2 hgh.2.1, trivial⟩
   · by_cases hs : (s a.1).coeff gh.1 = 0
     · exact smul_eq_zero_of_left hs ((t a.2).coeff gh.2)
@@ -438,7 +442,7 @@ theorem family_smul_coeff [Semiring R] [Module R V] (s : SummableFamily Γ R α)
   rw [finsum_eq_sum _ (smul_support_finite s t gh), ← sum_product_right']
   refine sum_subset (fun ab hab => ?_) (fun ab _ hab => by simp_all)
   have hsupp := smul_support_subset_prod s t gh
-  simp_all only [mem_VAddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq, Set.Finite.mem_toFinset,
+  simp_all only [mem_vaddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq, Set.Finite.mem_toFinset,
     Function.mem_support, Set.Finite.coe_toFinset, support_subset_iff, Set.mem_prod,
     Set.mem_setOf_eq, Prod.forall, coeff_support, mem_product]
   exact hsupp ab.1 ab.2 hab
@@ -450,7 +454,7 @@ theorem hsum_family_smul [Semiring R] [Module R V] (s : SummableFamily Γ R α)
   rw [family_smul_coeff, HahnModule.smul_coeff, Equiv.symm_apply_apply]
   refine Eq.symm (sum_of_injOn (fun a ↦ a) (fun _ _ _ _ h ↦ h) ?_ ?_ fun _ _ => by simp)
   · intro gh hgh
-    simp_all only [mem_coe, mem_VAddAntidiagonal, mem_support, ne_eq, Set.mem_iUnion, and_true]
+    simp_all only [mem_coe, mem_vaddAntidiagonal, mem_support, ne_eq, Set.mem_iUnion, and_true]
     constructor
     · rw [hsum_coeff_sum] at hgh
       have h' := Finset.exists_ne_zero_of_sum_ne_zero hgh.1
@@ -458,7 +462,7 @@ theorem hsum_family_smul [Semiring R] [Module R V] (s : SummableFamily Γ R α)
     · by_contra hi
       simp_all
   · intro gh _ hgh'
-    simp only [Set.image_id', mem_coe, mem_VAddAntidiagonal, mem_support, ne_eq, not_and] at hgh'
+    simp only [Set.image_id', mem_coe, mem_vaddAntidiagonal, mem_support, ne_eq, not_and] at hgh'
     by_cases h : s.hsum.coeff gh.1 = 0
     · exact smul_eq_zero_of_left h (t.hsum.coeff gh.2)
     · simp_all
