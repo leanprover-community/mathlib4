@@ -83,7 +83,7 @@ instance category : Category (Pointed C) where
   comp {X Y Z} f g := ⟨f.obj ≫ g.obj, by
     simp [f.pt, g.pt]⟩
 
-/-- Constructor for morphisms of the category pointed objects. -/
+/-- Constructor for morphisms in the category pointed objects. -/
 @[simps!]
 def homMk (A B : Pointed C) (f : A.obj ⟶ B.obj) (hf : f A.pt = B.pt) :
     A ⟶ B :=
