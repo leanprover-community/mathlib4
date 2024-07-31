@@ -565,10 +565,9 @@ theorem Finsupp.sum_apply' : g.sum k x = g.sum fun i b => k i b x :=
 
 section
 
-open scoped Classical
-
-theorem Finsupp.sum_sum_index' : (∑ x ∈ s, f x).sum t = ∑ x ∈ s, (f x).sum t :=
-  Finset.induction_on s rfl fun a s has ih => by
+theorem Finsupp.sum_sum_index' : (∑ x ∈ s, f x).sum t = ∑ x ∈ s, (f x).sum t := by
+  classical
+  exact Finset.induction_on s rfl fun a s has ih => by
     simp_rw [Finset.sum_insert has, Finsupp.sum_add_index' h0 h1, ih]
 
 end
