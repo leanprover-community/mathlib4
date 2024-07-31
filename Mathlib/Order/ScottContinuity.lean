@@ -95,8 +95,8 @@ variable {γ : Type*}
 
 variable [Preorder α] [Preorder β] [Preorder γ]
 
-lemma monotone {f : α × β → γ} (h₂ : ∀ a, Monotone (fun b => f (a,b)))
-    (h₁ : ∀ b, Monotone (fun a => f (a,b))) : Monotone f := fun _ _ hab =>
+lemma monotone {f : α × β → γ} (h₁ : ∀ b, Monotone (fun a => f (a,b)))
+    (h₂ : ∀ a, Monotone (fun b => f (a,b))) : Monotone f := fun _ _ hab =>
   le_trans (h₁ _ (Prod.mk_le_mk.mp hab).1) (h₂ _ (Prod.mk_le_mk.mp hab).2)
 
 -- c.f. isLUB_prod
@@ -105,7 +105,7 @@ lemma monotone {f : α × β → γ} (h₂ : ∀ a, Monotone (fun b => f (a,b)))
 
 lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
     {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
-    upperBounds {f p | p ∈ d} = upperBounds {f p | p ∈ (Prod.fst '' d) ×ˢ (Prod.snd '' d)} := by
+    upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := by
   apply le_antisymm
   · intro u hu
     rw [mem_upperBounds]
@@ -121,11 +121,17 @@ lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
     apply le_trans (hf e1)
     rw [mem_upperBounds] at hu
     apply hu
-    rw [mem_setOf_eq]
     use (a₃, b₃)
     exact And.imp_right (fun _ ↦ rfl) hm
   · apply upperBounds_mono_set
+    apply image_mono
+    intro _ _
     aesop
+
+lemma Prod.IsLub {f : α × β → γ} (hf : Monotone f)
+    {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) (u : γ) :
+    IsLUB (f '' d) u ↔ IsLUB (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) u := by
+  rw [IsLUB, Prod.upperBounds hf hd, ← IsLUB]
 
 end Products
 
