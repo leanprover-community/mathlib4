@@ -49,4 +49,4 @@ fi
 
 printf $'\n---\n%s\n' "${{ github.head_ref }}"
 
-git switch - || git switch "${{ github.head_ref }}"
+git checkout - || git switch "${{ github.head_ref }}"
