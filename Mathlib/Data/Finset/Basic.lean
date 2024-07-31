@@ -2221,7 +2221,7 @@ theorem filter_subset_filter {s t : Finset α} (h : s ⊆ t) : s.filter p ⊆ t.
 
 theorem monotone_filter_left : Monotone (filter p) := fun _ _ => filter_subset_filter p
 
--- TODO: `@[gcongr]` doesn't accept this lemma because of the `DecidablePred` arguments
+@[gcongr]
 theorem monotone_filter_right (s : Finset α) ⦃p q : α → Prop⦄ [DecidablePred p] [DecidablePred q]
     (h : p ≤ q) : s.filter p ⊆ s.filter q :=
   Multiset.subset_of_le (Multiset.monotone_filter_right s.val h)
