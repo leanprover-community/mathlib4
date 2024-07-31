@@ -657,6 +657,31 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
   LTSeries α := mk p.length (fun i ↦ (surjective (p i)).choose)
     (fun i j h ↦ comap (by simpa only [(surjective _).choose_spec] using p.strictMono h))
 
+/--
+Replaces the last element in a series with a (non-strictly) larger element.
+Essentially `p.eraseLast.snoc x`, but also works when `p` is a singleton.
+-/
+def replaceLast [Preorder α] (p : LTSeries α) (x : α) (h : p.last ≤ x) :
+    LTSeries α :=
+  if hlen : p.length = 0
+  then RelSeries.singleton _ x
+  else p.eraseLast.snoc x (by
+    apply lt_of_lt_of_le
+    · apply p.step ⟨p.length - 1, by omega⟩
+    · convert h
+      simp only [Fin.succ_mk, Nat.succ_eq_add_one, RelSeries.last, Fin.last]
+      congr; omega)
+
+@[simp]
+lemma last_replaceLast [Preorder α] (p : LTSeries α) (x : α) (h : p.last ≤ x) :
+    (p.replaceLast x h).last = x := by
+  unfold replaceLast; split <;> simp
+
+@[simp]
+lemma length_replaceLast [Preorder α] (p : LTSeries α) (x : α) (h : p.last ≤ x) :
+    (p.replaceLast x h).length = p.length := by
+  unfold replaceLast; split <;> (simp;omega)
+
 end LTSeries
 
 end LTSeries
