@@ -3,7 +3,6 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 import Mathlib.Topology.Category.CompHaus.Limits
 import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
 /-!
@@ -65,8 +64,7 @@ theorem effectiveEpi_tfae
 instance : Preregular CompHaus :=
   preregular fun _ _ _ ↦ ((effectiveEpi_tfae _).out 0 2).mp
 
--- Was an `example`, but that made the linter complain about unused imports
-instance : Precoherent CompHaus.{u} := inferInstance
+example : Precoherent CompHaus.{u} := inferInstance
 
 -- TODO: prove this for `Type*`
 open List in

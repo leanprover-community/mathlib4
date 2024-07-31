@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
 import Mathlib.Topology.Category.LightProfinite.Limits
-import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 /-!
 
 # Effective epimorphisms in `LightProfinite`
@@ -41,7 +40,6 @@ instance : Preregular LightProfinite := by
   intro _ _ f
   exact (effectiveEpi_iff_surjective f).mp
 
--- Was an `example`, but that made the linter complain about unused imports
-instance : Precoherent LightProfinite.{u} := inferInstance
+example : Precoherent LightProfinite.{u} := inferInstance
 
 end LightProfinite
