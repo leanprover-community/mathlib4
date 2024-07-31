@@ -511,6 +511,9 @@ class IsDenseSubsite : Prop where
   isLocallyFaithful' : G.IsLocallyFaithful K := by infer_instance
   functorPushforward_mem_iff : ∀ {X : C} {S : Sieve X}, S.functorPushforward G ∈ K _ ↔ S ∈ J _
 
+lemma functorPushforward_mem_iff {X : C} {S : Sieve X} [G.IsDenseSubsite J K]:
+    S.functorPushforward G ∈ K _ ↔ S ∈ J _ := IsDenseSubsite.functorPushforward_mem_iff
+
 namespace IsDenseSubsite
 
 variable [G.IsDenseSubsite J K]

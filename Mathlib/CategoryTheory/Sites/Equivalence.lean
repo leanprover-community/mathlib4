@@ -63,26 +63,20 @@ instance (priority := 900) [G.IsEquivalence] : IsCoverDense G J where
 instance : e.functor.IsDenseSubsite J (e.inverse.inducedTopology J) := by
   have : J = e.functor.inducedTopology (e.inverse.inducedTopology J) := by
     ext X S
-    show _ ↔ _ ∈ J.sieves _
     erw [← GrothendieckTopology.pullback_mem_iff_of_isIso (i := e.unit.app X)]
     congr!; ext Y f; simp
   nth_rw 1 [this]
   infer_instance
 
-/-- A class saying that the equivalence `e` transports the Grothendieck topology `J` to `K`. -/
-class TransportsGrothendieckTopology : Prop where
-  /-- `K` is equal to the induced topology. -/
-  eq_inducedTopology : K = e.inverse.inducedTopology J
+lemma eq_inducedTopology_of_isDenseSubsite [e.inverse.IsDenseSubsite K J] :
+    K = e.inverse.inducedTopology J := by
+  ext
+  simp [e.inverse.functorPushforward_mem_iff K J]
 
-instance : e.TransportsGrothendieckTopology J (e.inverse.inducedTopology J) := ⟨rfl⟩
-
-variable [e.TransportsGrothendieckTopology J K]
-
-theorem eq_inducedTopology_of_transports : K = e.inverse.inducedTopology J :=
-  TransportsGrothendieckTopology.eq_inducedTopology
+variable [e.inverse.IsDenseSubsite K J]
 
 instance : e.functor.IsDenseSubsite J K := by
-  rw [e.eq_inducedTopology_of_transports J K]
+  rw [e.eq_inducedTopology_of_isDenseSubsite J K]
   infer_instance
 
 instance : e.symm.TransportsGrothendieckTopology K J where
@@ -144,10 +138,6 @@ def sheafCongr : Sheaf J A ≌ Sheaf K A where
       sheafCongr.functor_obj_val_map, Quiver.Hom.unop_op, Sheaf.instCategorySheaf_id_val,
       NatTrans.id_app]
     simp [← Functor.map_comp, ← op_comp]
-
--- /-- The equivalence of sheaf categories explicitly stated for the induced topology. -/
--- abbrev sheafCongrRight : Sheaf J A ≌ Sheaf (e.locallyCoverDense J).inducedTopology A :=
---   sheafCongr e A rfl
 
 variable [HasSheafify K A]
 
