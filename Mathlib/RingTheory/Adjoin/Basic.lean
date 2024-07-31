@@ -516,3 +516,29 @@ theorem Algebra.restrictScalars_adjoin_of_algEquiv
   erw [hi, Set.range_comp, i.toEquiv.range_eq_univ, Set.image_univ]
 
 end
+
+namespace Subalgebra
+
+variable [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+
+theorem comap_map_eq (f : A →ₐ[R] B) (S : Subalgebra R A) :
+    (S.map f).comap f = S ⊔ Algebra.adjoin R (f ⁻¹' {0}) := by
+  apply le_antisymm
+  · intro x hx
+    rw [mem_comap, mem_map] at hx
+    obtain ⟨y, hy, hxy⟩ := hx
+    replace hxy : x - y ∈ f ⁻¹' {0} := by simp [hxy]
+    rw [← Algebra.adjoin_eq S, ← Algebra.adjoin_union, ← add_sub_cancel y x]
+    exact Subalgebra.add_mem _
+      (Algebra.subset_adjoin <| Or.inl hy) (Algebra.subset_adjoin <| Or.inr hxy)
+  · rw [← map_le, Algebra.map_sup, f.map_adjoin]
+    apply le_of_eq
+    rw [sup_eq_left, Algebra.adjoin_le_iff]
+    exact (Set.image_preimage_subset f {0}).trans (Set.singleton_subset_iff.2 (S.map f).zero_mem)
+
+theorem comap_map_eq_self {f : A →ₐ[R] B} {S : Subalgebra R A}
+    (h : f ⁻¹' {0} ⊆ S) : (S.map f).comap f = S := by
+  convert comap_map_eq f S
+  rwa [left_eq_sup, Algebra.adjoin_le_iff]
+
+end Subalgebra

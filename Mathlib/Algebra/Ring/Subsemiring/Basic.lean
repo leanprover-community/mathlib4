@@ -1195,3 +1195,22 @@ def closureCommSemiringOfComm {s : Set R'} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a 
 end Subsemiring
 
 end Actions
+
+namespace Subsemiring
+
+theorem map_comap_eq (f : R →+* S) (t : Subsemiring S) : (t.comap f).map f = t ⊓ f.rangeS :=
+  SetLike.coe_injective Set.image_preimage_eq_inter_range
+
+theorem map_comap_eq_self
+    {f : R →+* S} {t : Subsemiring S} (h : t ≤ f.rangeS) : (t.comap f).map f = t := by
+  simpa only [inf_of_le_left h] using map_comap_eq f t
+
+theorem map_comap_eq_self_of_surjective
+    {f : R →+* S} (hf : Function.Surjective f) (t : Subsemiring S) : (t.comap f).map f = t :=
+  map_comap_eq_self <| by simp [hf]
+
+theorem comap_map_eq_self_of_injective
+    {f : R →+* S} (hf : Function.Injective f) (s : Subsemiring R) : (s.map f).comap f = s :=
+  SetLike.coe_injective (Set.preimage_image_eq _ hf)
+
+end Subsemiring
