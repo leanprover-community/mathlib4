@@ -68,11 +68,11 @@ lemma ext {A B : Pointed C} (h₁ : A.obj = B.obj)
   aesop
 
 /-- The type of morphisms between pointed objects. A morphism of pointed objects is a morphism
-in the original category between the objects which preserve the basepoints. -/
+in the original category between the objects which preserves the basepoints. -/
 structure Hom (A B : Pointed C) where
   /-- the object morphism -/
   obj : A.obj ⟶ B.obj
-  /-- compatibility with the basedpoint -/
+  /-- compatibility with the basepoint -/
   pt : obj A.pt = B.pt := by aesop_cat
 
 /-- The category structure on the category of pointed objects. -/
