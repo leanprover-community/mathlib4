@@ -104,6 +104,7 @@ theorem iUnionLift_unary (u : T → T) (ui : ∀ i, S i → S i)
           Set.inclusion (show S i ⊆ T from hT'.symm ▸ Set.subset_iUnion S i) (ui i x))
     (uβ : β → β) (h : ∀ (i) (x : S i), f i (ui i x) = uβ (f i x)) (x : T) :
     iUnionLift S f hf T (le_of_eq hT') (u x) = uβ (iUnionLift S f hf T (le_of_eq hT') x) := by
+  clear hT -- this prevents the argument from getting inserted by accident.
   subst hT'
   cases' Set.mem_iUnion.1 x.prop with i hi
   rw [iUnionLift_of_mem x hi, ← h i]
@@ -125,6 +126,7 @@ theorem iUnionLift_binary (dir : Directed (· ≤ ·) S) (op : T → T → T) (o
     (opβ : β → β → β) (h : ∀ (i) (x y : S i), f i (opi i x y) = opβ (f i x) (f i y)) (x y : T) :
     iUnionLift S f hf T (le_of_eq hT') (op x y) =
       opβ (iUnionLift S f hf T (le_of_eq hT') x) (iUnionLift S f hf T (le_of_eq hT') y) := by
+  clear hT -- this prevents the argument from getting inserted by accident.
   subst hT'
   cases' Set.mem_iUnion.1 x.prop with i hi
   cases' Set.mem_iUnion.1 y.prop with j hj

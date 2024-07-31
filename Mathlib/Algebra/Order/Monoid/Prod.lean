@@ -33,7 +33,7 @@ instance [LE α] [LE β] [Mul α] [Mul β] [ExistsMulOfLE α] [ExistsMulOfLE β]
   ⟨fun h =>
     let ⟨c, hc⟩ := exists_mul_of_le h.1
     let ⟨d, hd⟩ := exists_mul_of_le h.2
-    ⟨(c, d), ext hc hd⟩⟩
+    ⟨(c, d), Prod.ext hc hd⟩⟩
 
 @[to_additive]
 instance [CanonicallyOrderedCommMonoid α] [CanonicallyOrderedCommMonoid β] :

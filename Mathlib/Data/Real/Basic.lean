@@ -517,7 +517,9 @@ noncomputable instance instLinearOrderedField : LinearOrderedField ℝ where
     exact CauSeq.Completion.inv_mul_cancel h
   inv_zero := by simp [← ofCauchy_zero, ← ofCauchy_inv]
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun q a => rfl
   nnratCast_def q := by
     rw [← ofCauchy_nnratCast, NNRat.cast_def, ofCauchy_div, ofCauchy_natCast, ofCauchy_natCast]
   ratCast_def q := by
@@ -575,5 +577,10 @@ end Real
 
 /-- A function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong triangle inequality
   `f (r + s) ≤ max (f r) (f s)` for all `r s : R`. -/
-def IsNonarchimedean {A : Type _} [Add A] (f : A → ℝ) : Prop :=
+def IsNonarchimedean {A : Type*} [Add A] (f : A → ℝ) : Prop :=
   ∀ r s, f (r + s) ≤ max (f r) (f s)
+
+/-- A function `f : R → ℝ` is power-multiplicative if for all `r ∈ R` and all positive `n ∈ ℕ`,
+`f (r ^ n) = (f r) ^ n`. -/
+def IsPowMul {R : Type*} [Pow R ℕ] (f : R → ℝ) :=
+  ∀ (a : R) {n : ℕ}, 1 ≤ n → f (a ^ n) = f a ^ n
