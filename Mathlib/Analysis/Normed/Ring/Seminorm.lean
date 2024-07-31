@@ -5,6 +5,7 @@ Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Data.Real.IsNonarchimedean
 
 /-!
 # Seminorms and norms on rings
@@ -147,7 +148,40 @@ theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 :
   · refine hp.antisymm ((le_mul_iff_one_le_left hp0).1 ?_)
     simpa only [one_mul] using map_mul_le_mul p (1 : R) _
 
+open Filter Nat Real
+/-- If `f` is a ring seminorm on `R` with `f 1 ≤ 1` and `s : ℕ → ℕ` is bounded by `n`, then
+  `f (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ))` is eventually bounded. -/
+theorem isBoundedUnder (hp : p 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x : R} (ψ : ℕ → ℕ) :
+    IsBoundedUnder LE.le atTop fun n : ℕ => p (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ)) := by
+  have h_le : ∀ m : ℕ, p (x ^ s (ψ m)) ^ (1 / (ψ m : ℝ)) ≤ p x ^ ((s (ψ m) : ℝ) / (ψ m : ℝ)) := by
+    intro m
+    rw [← mul_one_div (s (ψ m) : ℝ), rpow_mul (apply_nonneg p x), rpow_natCast]
+    exact rpow_le_rpow (apply_nonneg _ _) (map_pow_le_pow' hp x _)
+      (one_div_nonneg.mpr (cast_nonneg _))
+  apply isBoundedUnder_of
+  by_cases hfx : p x ≤ 1
+  · use 1, fun m => le_trans (h_le m)
+      (rpow_le_one (apply_nonneg _ _) hfx (div_nonneg (cast_nonneg _) (cast_nonneg _)))
+  · use p x
+    intro m
+    apply le_trans (h_le m)
+    conv_rhs => rw [← rpow_one (p x)]
+    exact rpow_le_rpow_of_exponent_le (le_of_lt (not_le.mp hfx))
+      (div_le_one_of_le (cast_le.mpr (hs_le _)) (cast_nonneg _))
+
 end Ring
+
+section CommRing
+
+variable [CommRing R] (p : RingSeminorm R)
+
+theorem exists_index_le (hna : IsNonarchimedean p) (x y : R) (n : ℕ) :
+    ∃ (m : ℕ) (_ : m ∈ Finset.range (n + 1)), p ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤
+      (p (x ^ m) * p (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)) := by
+  obtain ⟨m, hm_lt, hm⟩ := isNonarchimedean_add_pow hna n x y
+  exact ⟨m, hm_lt, Real.rpow_le_rpow (apply_nonneg p _) hm (Nat.one_div_cast_nonneg (n : ℕ))⟩
+
+end CommRing
 
 end RingSeminorm
 

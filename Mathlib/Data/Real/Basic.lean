@@ -573,12 +573,65 @@ theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
       sub_le_comm.1 <|
         le_mk_of_forall_le <| H.imp fun _ h j ij => sub_le_comm.1 (abs_sub_le_iff.1 <| h j ij).2⟩
 
+/-- If `u v : ℕ → ℝ` are nonnegative and bounded above, then `u * v` is bounded above. -/
+theorem range_bddAbove_mul {u v : ℕ → ℝ} (hu : BddAbove (Set.range u)) (hu0 : 0 ≤ u)
+    (hv : BddAbove (Set.range v)) (hv0 : 0 ≤ v) : BddAbove (Set.range (u * v)) := by
+  obtain ⟨bu, hbu⟩ := hu
+  obtain ⟨bv, hbv⟩ := hv
+  use bu * bv
+  simp only [mem_upperBounds, Set.mem_range, Pi.mul_apply, forall_exists_index,
+    forall_apply_eq_imp_iff] at hbu hbv ⊢
+  exact fun n ↦ mul_le_mul (hbu n) (hbv n) (hv0 n) (le_trans (hu0 n) (hbu n))
+
+/-- If `a` belongs to the interval `[0, b]`, then so does `b - a`. -/
+theorem sub_mem_Icc {a b : ℝ} (h : a ∈ Set.Icc (0 : ℝ) b) : b - a ∈ Set.Icc (0 : ℝ) b := by
+  rw [Set.mem_Icc] at h ⊢
+  rw [sub_le_self_iff]
+  exact ⟨sub_nonneg_of_le h.2, h.1⟩
+
+/-- If `x` is multiplicative with respect to `f`, then so is any `x^n`. -/
+theorem is_mul_pow_of_is_mul {R : Type _} [CommRing R] (f : R → ℝ) {x : R}
+    (hx : ∀ y : R, f (x * y) = f x * f y) : ∀ (n : ℕ) (y : R), f (x ^ n * y) = f x ^ n * f y := by
+  intro n
+  induction n with
+  | zero => intro y; rw [pow_zero, pow_zero, one_mul, one_mul]
+  | succ n hn => intro y; rw [pow_succ', pow_succ', mul_assoc, mul_assoc, hx, hn]
+
 end Real
 
-/-- A function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong triangle inequality
-  `f (r + s) ≤ max (f r) (f s)` for all `r s : R`. -/
-def IsNonarchimedean {A : Type*} [Add A] (f : A → ℝ) : Prop :=
-  ∀ r s, f (r + s) ≤ max (f r) (f s)
+namespace Nat
+
+theorem one_div_cast_pos {n : ℕ} (hn : n ≠ 0) : 0 < 1 / (n : ℝ) :=
+  one_div_pos.mpr (cast_pos.mpr (Nat.pos_of_ne_zero hn))
+
+theorem one_div_cast_nonneg (n : ℕ) : 0 ≤ 1 / (n : ℝ) := one_div_nonneg.mpr (cast_nonneg' n)
+
+theorem one_div_cast_ne_zero {n : ℕ} (hn : n ≠ 0) : 1 / (n : ℝ) ≠ 0 :=
+  _root_.ne_of_gt (one_div_cast_pos hn)
+
+end Nat
+
+-- Mathlib.Data.Real.Basic
+/-- If `f` is a ring seminorm on `a`, then `∀ {n : ℕ}, n ≠ 0 → f (a ^ n) ≤ f a ^ n`. -/
+theorem map_pow_le_pow {F α : Type*} [Ring α] [FunLike F α ℝ] [RingSeminormClass F α ℝ] (f : F)
+    (a : α) : ∀ {n : ℕ}, n ≠ 0 → f (a ^ n) ≤ f a ^ n
+  | 0, h => absurd rfl h
+  | 1, _ => by simp only [pow_one, le_refl]
+  | n + 2, _ => by
+    simp only [pow_succ _ (n + 1)];
+      exact
+        le_trans (map_mul_le_mul f _ a)
+          (mul_le_mul_of_nonneg_right (map_pow_le_pow _ _ n.succ_ne_zero) (apply_nonneg f a))
+
+-- Mathlib.Data.Real.Basic
+/-- If `f` is a ring seminorm on `a` with `f 1 ≤ `, then `∀ (n : ℕ), f (a ^ n) ≤ f a ^ n`. -/
+theorem map_pow_le_pow' {F α : Type _} [Ring α] [FunLike F α ℝ] [RingSeminormClass F α ℝ] {f : F}
+    (hf1 : f 1 ≤ 1) (a : α) : ∀ n : ℕ, f (a ^ n) ≤ f a ^ n
+  | 0 => by simp only [pow_zero, hf1]
+  | n + 1 => by
+    simp only [pow_succ _ n];
+      exact le_trans (map_mul_le_mul f _ a)
+        (mul_le_mul_of_nonneg_right (map_pow_le_pow' hf1 _ n) (apply_nonneg f a))
 
 /-- A function `f : R → ℝ` is power-multiplicative if for all `r ∈ R` and all positive `n ∈ ℕ`,
 `f (r ^ n) = (f r) ^ n`. -/

@@ -114,6 +114,47 @@ theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [Topolo
     intros
     simp_all only [comp_apply, map_inv₀, map_natCast]
 
+/-- If there exists real constants `b`and `B` such that for `n` big enough, `b ≤ f n ≤ B`, then
+  `f n / (n : ℝ)` tends to `0` as `n` tends to infinity. -/
+theorem tendsto_bdd_div_atTop_nhds_zero_nat (f : ℕ → ℝ) (b : ℝ)
+    (hb : ∀ᶠ n : ℕ in atTop, b ≤ f n) (B : ℝ) (hB : ∀ᶠ n : ℕ in atTop, f n ≤ B) :
+    Tendsto (fun n : ℕ => f n / (n : ℝ)) atTop (𝓝 0) := by
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le' (tendsto_const_div_atTop_nhds_zero_nat b)
+      (tendsto_const_div_atTop_nhds_zero_nat B) ?_ ?_
+  · simp only [eventually_atTop, ge_iff_le] at hb ⊢
+    obtain ⟨N, hN⟩ := hb
+    exact ⟨N, fun n hn ↦ div_le_div_of_nonneg_right (hN n hn) (cast_nonneg _)⟩
+  · simp only [eventually_atTop, ge_iff_le] at hB ⊢
+    obtain ⟨N, hN⟩ := hB
+    exact ⟨N, fun n hn ↦ div_le_div_of_nonneg_right (hN n hn) (cast_nonneg _)⟩
+
+/-- For any positive `m : ℕ`, `((n % m : ℕ) : ℝ) / (n : ℝ)` tends to `0` as `n` tends to `∞`. -/
+theorem tendsto_mod_div_atTop_nhds_zero_nat {m : ℕ} (hm : 0 < m) :
+    Tendsto (fun n : ℕ => ((n % m : ℕ) : ℝ) / (n : ℝ)) atTop (𝓝 0) := by
+  apply tendsto_bdd_div_atTop_nhds_zero_nat (fun n : ℕ => ((n % m : ℕ) : ℝ)) 0
+    (eventually_of_forall (fun _ ↦ cast_nonneg _)) m
+  apply eventually_of_forall
+  intro n
+  simp only [cast_le, le_of_lt (mod_lt n hm)]
+
+/-- If `u` tends to `∞` as `n` tends to `∞`, then for `n` big enough
+  `((s n : ℝ) / (u n : ℝ)) * (u n : ℝ) = (s n : ℝ)` holds. -/
+theorem div_mul_eventually_cancel (s : ℕ → ℕ) {u : ℕ → ℕ} (hu : Tendsto u atTop atTop) :
+    (fun n => (s n : ℝ) / (u n : ℝ) * (u n : ℝ)) =ᶠ[atTop] fun n => (s n : ℝ) := by
+  simp only [EventuallyEq, eventually_atTop, ge_iff_le]
+  simp only [Filter.tendsto_atTop, eventually_atTop, ge_iff_le] at hu
+  obtain ⟨n, hn⟩ := hu 1
+  use n
+  intro m hm
+  rw [div_mul_cancel₀ (s m : ℝ) (cast_ne_zero.mpr (one_le_iff_ne_zero.mp (hn m hm)))]
+
+/-- If when `n` tends to `∞`, `u` tends to `∞` and `(s n : ℝ) / (u n : ℝ))` tends to a nonzero
+  constant, then `s` tends to `∞`. -/
+theorem Tendsto.num {s u : ℕ → ℕ} (hu : Tendsto u atTop atTop) {a : ℝ} (ha : 0 < a)
+    (hlim : Tendsto (fun n : ℕ => (s n : ℝ) / (u n : ℝ)) atTop (𝓝 a)) : Tendsto s atTop atTop :=
+  tendsto_natCast_atTop_iff.mp (Tendsto.congr' (div_mul_eventually_cancel s hu)
+    (Tendsto.mul_atTop ha hlim (tendsto_natCast_atTop_iff.mpr hu)))
+
 /-! ### Powers -/
 
 
