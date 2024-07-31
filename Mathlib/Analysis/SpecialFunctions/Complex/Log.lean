@@ -243,3 +243,22 @@ theorem _root_.Continuous.clog {f : α → ℂ} (h₁ : Continuous f)
   continuous_iff_continuousAt.2 fun x => h₁.continuousAt.clog (h₂ x)
 
 end LogDeriv
+
+section tsum_tprod
+
+variable {α  ι: Type*}
+
+open Complex
+
+lemma cexp_tsum_eq_tprod  (f : ι → α → ℂ) (hfn : ∀ x n, 1 + f n x ≠ 0)
+  (hf : ∀ x : α,  Summable fun n => log (1 + (f n x))) :
+    (cexp ∘ (fun a : α => (∑' n : ι, log (1 + (f n a))))) =
+      (fun a : α => ∏' n : ι, (1 + (f n a))) := by
+  ext a
+  apply (HasProd.tprod_eq ?_).symm
+  apply ((hf a).hasSum.cexp).congr
+  intro _
+  congr
+  exact funext fun x ↦ exp_log (hfn a x)
+
+end tsum_tprod

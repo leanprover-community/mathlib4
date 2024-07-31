@@ -13,31 +13,32 @@ open scoped Interval Topology BigOperators Nat Classical UpperHalfPlane
 
 variable {α  ι: Type*}
 
-lemma logbound (z : ℂ) (hz : ‖z‖ < 1) : ‖log (1 + z)‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 + ‖z‖ := by
+lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
+    ‖log (1 + z)‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 + ‖z‖ := by
   rw [Eq.symm (sub_add_cancel (log (1 + z)) z)]
   apply le_trans (norm_add_le _ _)
   exact add_le_add_right (Complex.norm_log_one_add_sub_self_le hz) ‖z‖
 
-lemma logbound_half (z : ℂ) (hz : ‖z‖ ≤ 1/2) : ‖(log (1 + z))‖ ≤ (3/2) * ‖z‖ := by
-  apply le_trans (logbound z (by linarith))
+/--For `‖z‖ ≤ 1/2`, the complex logarithm is bounded by `(3/2) * ‖z‖`. -/
+lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1/2) : ‖(log (1 + z))‖ ≤ (3/2) * ‖z‖ := by
+  apply le_trans (norm_log_one_add_le (lt_of_le_of_lt hz one_half_lt_one))
   have hz3 : (1 - ‖z‖)⁻¹ ≤ 2 := by
     rw [inv_eq_one_div, div_le_iff]
     · linarith
     · linarith
   have hz4 : ‖z‖^2 * (1 - ‖z‖)⁻¹ / 2 ≤ ‖z‖/2 * 2 / 2 := by
     gcongr
-    rw [@inv_nonneg]
-    linarith
-    rw [@sq, show ‖z‖/2 = ‖z‖ * 1/2 by ring]
-    apply mul_le_mul (by simp only [norm_eq_abs, mul_one, le_refl])
-      (by simpa only [norm_eq_abs, one_div] using hz) (norm_nonneg z) (by simp only [norm_eq_abs,
-        mul_one, apply_nonneg])
+    · rw [inv_nonneg]
+      linarith
+    · rw [sq, div_eq_mul_one_div]
+      apply mul_le_mul (by simp only [norm_eq_abs, mul_one, le_refl])
+        (by simpa only [norm_eq_abs, one_div] using hz) (norm_nonneg z) (by simp only [norm_eq_abs,
+          mul_one, apply_nonneg])
   simp only [isUnit_iff_ne_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
     IsUnit.div_mul_cancel] at hz4
-  rw [show (3/2)*‖z‖ = ‖z‖/2 + ‖z‖ by ring]
   linarith
 
-lemma cexp_tsum_eq_tprod  (f : ι → α → ℂ) (hfn : ∀ x : α, ∀ n : ι, 1 + f n x ≠ 0)
+lemma cexp_tsum_eq_tprod  (f : ι → α → ℂ) (hfn : ∀ x n, 1 + f n x ≠ 0)
   (hf : ∀ x : α,  Summable fun n => log (1 + (f n x))) :
     (cexp ∘ (fun a : α => (∑' n : ι, log (1 + (f n a))))) =
       (fun a : α => ∏' n : ι, (1 + (f n a))) := by
@@ -268,7 +269,7 @@ lemma log_of_summable {f : ℕ → ℂ} (hf : Summable f) :
   obtain ⟨n, hn⟩ := this (1/2) (one_half_pos)
   use n
   intro m hm
-  apply logbound_half
+  apply norm_log_one_add_half_le_self
   exact (hn m hm).le
 
 lemma log_of_summable_real {f : ℕ → ℝ} (hf : Summable f) :
@@ -534,7 +535,7 @@ lemma tendstoUniformlyOn_tsum_log_one_add {α : Type*} (f : ℕ → α → ℂ) 
   use N
   intro n hn x hx
   simp
-  have := (logbound_half (f n x) ?_)
+  have := (norm_log_one_add_half_le_self  (z :=(f n x)) ?_)
   apply le_trans this
   simp
   apply h
@@ -558,7 +559,7 @@ lemma tendstoUniformlyOn_tsum_log_one_add_re {α : Type*} (f : ℕ → α → �
   use N
   intro n hn x hx
   simp
-  have := (logbound_half (f n x) ?_)
+  have := (norm_log_one_add_half_le_self (z := (f n x)) ?_)
   rw [← log_re]
   simp
   apply le_trans (abs_re_le_abs _)
