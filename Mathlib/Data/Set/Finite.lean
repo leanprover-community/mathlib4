@@ -792,14 +792,16 @@ theorem finite_le_nat (n : ℕ) : Set.Finite { i | i ≤ n } :=
 
 section MapsTo
 
-variable {s : Set α} {f : α → α} (hs : s.Finite) (hm : MapsTo f s s)
+variable {s : Set α} {f : α → α}
 
-theorem Finite.surjOn_iff_bijOn_of_mapsTo : SurjOn f s s ↔ BijOn f s s := by
+theorem Finite.surjOn_iff_bijOn_of_mapsTo (hs : s.Finite) (hm : MapsTo f s s) :
+    SurjOn f s s ↔ BijOn f s s := by
   refine ⟨fun h ↦ ⟨hm, ?_, h⟩, BijOn.surjOn⟩
   have : Finite s := finite_coe_iff.mpr hs
   exact hm.restrict_inj.mp (Finite.injective_iff_surjective.mpr <| hm.restrict_surjective_iff.mpr h)
 
-theorem Finite.injOn_iff_bijOn_of_mapsTo : InjOn f s ↔ BijOn f s s := by
+theorem Finite.injOn_iff_bijOn_of_mapsTo (hs : s.Finite) (hm : MapsTo f s s) :
+    InjOn f s ↔ BijOn f s s := by
   refine ⟨fun h ↦ ⟨hm, h, ?_⟩, BijOn.injOn⟩
   have : Finite s := finite_coe_iff.mpr hs
   exact hm.restrict_surjective_iff.mp (Finite.injective_iff_surjective.mp <| hm.restrict_inj.mpr h)
