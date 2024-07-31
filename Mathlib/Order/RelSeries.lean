@@ -642,6 +642,12 @@ can be pushed out to a strict chain of `β` by
 def map (p : LTSeries α) (f : α → β) (hf : StrictMono f) : LTSeries β :=
   LTSeries.mk p.length (f.comp p) (hf.comp p.strictMono)
 
+@[simp] lemma head_map (p : LTSeries α) (f : α → β) (hf : StrictMono f) :
+  (p.map f hf).head = f p.head := rfl
+
+@[simp] lemma last_map (p : LTSeries α) (f : α → β) (hf : StrictMono f) :
+  (p.map f hf).last = f p.last := rfl
+
 /--
 For two preorders `α, β`, if `f : α → β` is surjective and strictly comonotonic, then a
 strict series of `β` can be pulled back to a strict chain of `α` by
