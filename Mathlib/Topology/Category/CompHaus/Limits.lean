@@ -1,32 +1,19 @@
 /-
 Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz
+Authors: Adam Topaz, Dagur Asgeirsson
 -/
-
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.Category.CompHausLike.Limits
-
 /-!
 
 # Explicit limits and colimits
 
-This file collects some constructions of explicit limits and colimits in `CompHaus`,
-which may be useful due to their definitional properties.
-
-So far, we have the following:
-- Explicit pullbacks, defined in the "usual" way as a subset of the product.
-- Explicit finite coproducts, defined as a disjoint union.
-
+This file applies the general API for explicit limits and colimits in `CompHausLike P` (see
+the file `Mathlib.Topology.Category.CompHausLike.Limits`) to the special case of `CompHaus`.
 -/
 
 namespace CompHaus
-
-/-
-Previously, this had accidentally been made a global instance,
-and we now turn it on locally when convenient.
--/
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
 universe u w
 
@@ -35,10 +22,10 @@ open CategoryTheory Limits CompHausLike
 instance : HasExplicitPullbacks (fun _ ↦ True) where
   hasProp _ _ := inferInstance
 
-instance : HasExplicitFiniteCoproducts (fun _ ↦ True) where
+instance : HasExplicitFiniteCoproducts.{w, u} (fun _ ↦ True) where
   hasProp _ := inferInstance
 
-example : FinitaryExtensive CompHaus := inferInstance
+example : FinitaryExtensive CompHaus.{u} := inferInstance
 
 /-- A one-element space is terminal in `CompHaus` -/
 abbrev isTerminalPUnit : IsTerminal (CompHaus.of PUnit.{u + 1}) := CompHausLike.isTerminalPUnit

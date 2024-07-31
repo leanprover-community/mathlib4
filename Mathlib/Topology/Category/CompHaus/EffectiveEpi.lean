@@ -3,29 +3,20 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 import Mathlib.Topology.Category.CompHaus.Limits
 import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
 /-!
 
-# Effective epimorphisms and finite effective epimorphic families in `CompHaus`
+# Effective epimorphisms in `CompHaus`
 
-This file proves that `CompHaus` is `Preregular`. Together with the fact that it is
-`FinitaryPreExtensive`, this implies that `CompHaus` is `Precoherent`.
+This file proves that `EffectiveEpi`, `Epi` and `Surjective` are all equivalent in `CompHaus`.
+As a consequence we deduce from the material in
+`Mathlib.Topology.Category.CompHausLike.EffectiveEpi` that `CompHaus` is `Preregular`
+and `Precoherent`.
 
-To do this, we need to characterise effective epimorphisms in `CompHaus`. As a consequence, we also
-get a characterisation of finite effective epimorphic families.
-
-## Main results
-
-* `CompHaus.effectiveEpi_tfae`: For a morphism in `CompHaus`, the conditions surjective, epimorphic,
-  and effective epimorphic are all equivalent.
-
-* `CompHaus.effectiveEpiFamily_tfae`: For a finite family of morphisms in `CompHaus` with fixed
-  target in `CompHaus`, the conditions jointly surjective, jointly epimorphic and effective
-  epimorphic are all equivalent.
-
-As a consequence, we obtain instances that `CompHaus` is precoherent and preregular.
+We also prove that for a finite family of morphisms in `CompHaus` with fixed
+target, the conditions jointly surjective, jointly epimorphic and effective epimorphic are all
+equivalent.
 
 ## Projects
 
@@ -36,13 +27,9 @@ As a consequence, we obtain instances that `CompHaus` is precoherent and preregu
 
 universe u
 
-/-
-Previously, this had accidentally been made a global instance,
-and we now turn it on locally when convenient.
--/
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
-
 open CategoryTheory Limits CompHausLike
+
+attribute [local instance] ConcreteCategory.instFunLike
 
 namespace CompHaus
 
@@ -65,8 +52,7 @@ theorem effectiveEpi_tfae
 instance : Preregular CompHaus :=
   preregular fun _ _ _ ↦ ((effectiveEpi_tfae _).out 0 2).mp
 
--- Was an `example`, but that made the linter complain about unused imports
-instance : Precoherent CompHaus.{u} := inferInstance
+example : Precoherent CompHaus.{u} := inferInstance
 
 -- TODO: prove this for `Type*`
 open List in

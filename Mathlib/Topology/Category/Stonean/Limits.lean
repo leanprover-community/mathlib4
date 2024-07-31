@@ -6,15 +6,11 @@ Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 import Mathlib.Topology.Category.CompHausLike.Limits
 import Mathlib.Topology.Category.Stonean.Basic
 /-!
-# Explicit (co)limits in the category of Stonean spaces
 
-This file describes some explicit (co)limits in `Stonean`
+# Explicit limits and colimits
 
-## Overview
-
-We define explicit finite coproducts in `Stonean` as sigma types (disjoint unions) and explicit
-pullbacks where one of the maps is an open embedding
-
+This file applies the general API for explicit limits and colimits in `CompHausLike P` (see
+the file `Mathlib.Topology.Category.CompHausLike.Limits`) to the special case of `Stonean`.
 -/
 
 universe w u
@@ -25,18 +21,8 @@ attribute [local instance] ConcreteCategory.instFunLike
 
 namespace Stonean
 
-set_option linter.unusedVariables false in
-instance : HasExplicitFiniteCoproducts.{w}
-    (fun (Y : TopCat.{max u w}) ↦ ExtremallyDisconnected Y) where
-  hasProp _ := { hasProp := show ExtremallyDisconnected (Σ (a : _), _) from inferInstance}
-
-instance : HasExplicitFiniteCoproducts.{0} (fun (Y : TopCat.{u}) ↦ ExtremallyDisconnected Y) :=
-  inferInstance
-
-example : HasFiniteCoproducts Stonean.{u} := inferInstance
-
-example : PreservesFiniteCoproducts (CompHausLike.compHausLikeToTop _ : Stonean.{u} ⥤ _) :=
-  inferInstance
+instance : HasExplicitFiniteCoproducts.{w, u} (fun Y ↦ ExtremallyDisconnected Y) where
+  hasProp _ := { hasProp := show ExtremallyDisconnected (Σ (_a : _), _) from inferInstance}
 
 variable {X Y Z : Stonean} {f : X ⟶ Z} (i : Y ⟶ Z) (hi : OpenEmbedding f)
 
