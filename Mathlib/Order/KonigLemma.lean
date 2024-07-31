@@ -140,7 +140,7 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Finite (α
 
   obtain ⟨a₀, ha₀, ha₀inf⟩ : ∃ a₀ : αs, a₀.1 = 0 ∧ (Ici a₀).Infinite := by
     obtain ⟨a₀, ha₀⟩ := Finite.exists_infinite_fiber (fun (a : αs) ↦ π (zero_le a.1) a.2)
-    refine ⟨⟨0,a₀⟩, rfl, (infinite_coe_iff.1 ha₀).mono ?_⟩
+    refine ⟨⟨0, a₀⟩, rfl, (infinite_coe_iff.1 ha₀).mono ?_⟩
     simp only [subset_def, mem_preimage, mem_singleton_iff, mem_Ici, Sigma.forall]
     exact fun i x h ↦ ⟨zero_le i, h⟩
 
