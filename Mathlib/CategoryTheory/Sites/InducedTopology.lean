@@ -96,6 +96,11 @@ def inducedTopology : GrothendieckTopology C where
     refine ⟨Z', g' ≫ g , i', hg, ?_⟩
     simp
 
+@[simp]
+lemma mem_inducedTopology_sieves_iff {X : C} (S : Sieve X) :
+    S ∈ (G.inducedTopology K).sieves X ↔ (S.functorPushforward G) ∈ K.sieves (G.obj X) :=
+  Iff.rfl
+
 /-- `G` is cover-lifting wrt the induced topology. -/
 instance inducedTopology_isCocontinuous : G.IsCocontinuous (G.inducedTopology K) K :=
   ⟨@fun _ S hS => LocallyCoverDense.functorPushforward_functorPullback_mem ⟨S, hS⟩⟩
