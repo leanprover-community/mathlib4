@@ -29,18 +29,15 @@ variable [Fact p.Prime]
 
 lemma rotate_aux (f : Diag p G) : ∀ i, ZMod.prod (fun j ↦ f.1 (j + i)) = 1 := by
   rw [(ZMod.natCast_zmod_surjective).forall]
-  intro i
-  induction i; simp [f.2]; next n ih =>
-  have : List.range p = List.range p.pred.succ := by rw [Nat.succ_pred]; exact Ne.symm (NeZero.ne' p)
+  intro n
+  induction n; simp [f.2]; next n ih =>
+  have : List.range p = List.range p.pred.succ := by rw [Nat.succ_pred (NeZero.ne' p).symm]
   rw [ZMod.prod, this, List.range_succ, List.map_append, List.prod_append]
   apply mul_eq_one_comm
   apply Eq.trans _ ih
   rw [←List.prod_append, ←List.map_append, ZMod.prod, this, List.range_succ_eq_map,
     List.map_cons, List.prod_cons]
-  simp
-  congr 1
-  · rw [Nat.cast_sub (Nat.Prime.one_le Fact.out), Nat.cast_one, add_comm _ 1,
-      ←add_assoc, sub_add_cancel, ZMod.natCast_self p, zero_add]
+  simp [Nat.cast_sub (Nat.Prime.one_le Fact.out), Nat.cast_one]
   congr; ext j; simp; ring_nf
 
 def rotate (i : ZMod p) (f : Diag p G) : Diag p G := ⟨fun j => f.1 (j + i), rotate_aux f i⟩
@@ -63,6 +60,7 @@ theorem ZMod.card_orbit (X : Type*) [AddAction (ZMod p) X] (x : X) :
   rw [Nat.card_congr (AddAction.orbitEquivQuotientStabilizer (ZMod p) x)]
   simpa using AddSubgroup.card_quotient_dvd_card (AddAction.stabilizer (ZMod p) x)
 
+@[simp]
 theorem Diag_card : Nat.card (Diag p G) = (Nat.card G) ^ (p - 1) := by
   suffices e : Diag p G ≃ (Fin (p - 1) → G) by
     calc Nat.card (Diag p G)
