@@ -243,6 +243,23 @@ namespace BadVariable
 /-- Gets the value of the `linter.badVariable` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.badVariable o
 
+/-- Whether a new variable binder is just updating the binder type of a previous variable.
+TODO: extend this docstring
+-/
+def isBinderTypeChange (current : Name) (withType : Bool) (previousNames : Array Name) : Bool :=
+  -- If there was no previous variable of this name, we simply have a new variable.
+  if !previousNames.contains current then
+    false
+  -- If the current variable was declared before, but is now declared with a type,
+  -- it shadows a previous one: this is not a binder type change either.
+  else if withType then
+    false
+  -- Otherwise, we have a change in binder types.
+  -- TODO: currently, this treats a variable with a default value as "change"...
+  -- is this the correct way?
+  else
+    withType
+
 open Command in
 @[inherit_doc Mathlib.Linter.linter.badVariable]
 def badVariableLinter : Linter where
@@ -251,10 +268,6 @@ def badVariableLinter : Linter where
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    -- Currently, this assumes the file uses `autoImplicit false` and `relaxedAutoImplicit false`.
-    -- This means there is no need to track previously declared variables.
-    -- TODO: use the current `Scope` to make this more precise.
-
     -- In a variable command, determine all implicit or explicit binders,
     -- and whether they are given with a type or not.
     if stx.getKind == ``Lean.Parser.Command.variable then
@@ -267,17 +280,31 @@ def badVariableLinter : Linter where
       -- Whether these are implicit or explicit does not matter to us.
       let namesWithTypes : Array (Name × Bool) := (binders.map fun binder ↦
         binder[1].getArgs.map fun s ↦ (s.getId, binder[2][0] != default)).flatten
-      dbg_trace namesWithTypes
 
-      -- We error if there is an implicit or explicit binder without a type,
-      -- while there is a new binder declared with a type.
-      let withTypes := namesWithTypes.filter fun b ↦ b.2
-      let withoutTypes := namesWithTypes.filter fun b ↦ !b.2
-      if withTypes.size > 0 && withoutTypes.size > 0 then
+      -- Next, determine which of these variables existed previously:
+      -- this information is contained in the current scope.
+      let previousVariables := ((← getScope).varDecls).map fun var ↦ var.raw
+      -- Again, consider only implicit or explicit binders. Really??
+      -- TODO write a test where this fails :-)
+      let filtered := previousVariables.filter fun binder ↦
+        [``Lean.Parser.Term.implicitBinder, ``Lean.Parser.Term.explicitBinder].contains binder.getKind
+      let previousNames := (filtered.map fun binder ↦
+        binder[1].getArgs.map fun s ↦ s.getId).flatten
+
+      -- Determine all binders which are just changing a previous variable's binder.
+      let binderTypeChanged := (namesWithTypes.filter (fun nm ↦
+        isBinderTypeChange nm.1 nm.2 previousNames)).map fun nameBool ↦ nameBool.1
+
+      -- We error if this `variable` command contains both a variable whose binder type
+      -- is merely changed, and a new binder declared.
+      let newVariables := (namesWithTypes.filter (fun nm ↦
+        !isBinderTypeChange nm.1 nm.2 previousNames)).map fun nb ↦ nb.1
+
+      if newVariables.size > 0 && binderTypeChanged.size > 0 then
         Linter.logLint linter.badVariable stx -- TODO: underline the actual args!
           s!"bad variable declaration:
-          the binder types of the variable(s) {withoutTypes.map fun b ↦ b.1} are changed,
-          while the new variable(s) {withTypes.map fun b ↦ b.1} are declared\n\
+          the binder types of the variable(s) {binderTypeChanged} are changed,
+          while the new variable(s) {newVariables} are declared\n\
           please split these into separate 'variable' commands"
 
 initialize addLinter badVariableLinter
