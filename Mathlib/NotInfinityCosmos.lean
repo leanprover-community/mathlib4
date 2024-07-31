@@ -498,24 +498,24 @@ def Δ.ι.op_fullyFaithful (k) : (Δ.ι k).op.FullyFaithful :=
 
 def truncation (k) : SSet ⥤ TruncSSet k := (whiskeringLeft _ _ _).obj (Δ.ι k).op
 
-def skeletonAdj (k) : lan (Δ.ι k).op ⊣ truncation k := Lan.adjunction _ _
-def coskeletonAdj (k) : truncation k ⊣ ran (Δ.ι k).op := Ran.adjunction _ _
+def skeletonAdj (k) : lan (Δ.ι k).op ⊣ truncation k := lanAdjunction _ _
+def coskeletonAdj (k) : truncation k ⊣ ran (Δ.ι k).op := ranAdjunction _ _
 
 instance coskeleton.reflective (k) : IsIso ((coskeletonAdj k).counit) :=
-  Ran.reflective Type (Δ.ι k).op
+  reflective' (Δ.ι k).op
 
 instance skeleton.reflective (k) : IsIso ((skeletonAdj k).unit) :=
-  Lan.coreflective Type (Δ.ι k).op
+  coreflective' (Δ.ι k).op
 
-instance coskeleton.fullyfaithful (k) : (ran (D := Type) (Δ.ι k).op).FullyFaithful := by
+instance coskeleton.fullyfaithful (k) : (ran (H := Type) (Δ.ι k).op).FullyFaithful := by
   apply Adjunction.fullyFaithfulROfIsIsoCounit (coskeletonAdj k)
 
-instance coskeleton.full (k) : (ran (D := Type) (Δ.ι k).op).Full := FullyFaithful.full (coskeleton.fullyfaithful k)
+instance coskeleton.full (k) : (ran (H := Type) (Δ.ι k).op).Full := FullyFaithful.full (coskeleton.fullyfaithful k)
 
-instance coskeleton.faithful (k) : (ran (D := Type) (Δ.ι k).op).Faithful :=
+instance coskeleton.faithful (k) : (ran (H := Type) (Δ.ι k).op).Faithful :=
   FullyFaithful.faithful (coskeleton.fullyfaithful k)
 
-instance coskeletonAdj.reflective (k) : Reflective (ran (D := Type) (Δ.ι k).op) :=
+instance coskeletonAdj.reflective (k) : Reflective (ran (H := Type) (Δ.ι k).op) :=
   Reflective.mk (truncation k) (coskeletonAdj k)
 
 end SimplexCategory
@@ -537,7 +537,7 @@ def nerve2coskNatTrans : nerveFunctor ⟶ nerveFunctor₂ ⋙ ran (SimplexCatego
 
 /-- ER: A component of the above; universe error! -/
 def nerve2coskNatTrans.component (C : Type 0) [Category.{0} C] (n : ℕ) :
-    ((nerve C) _[n] ⟶ (Ran.loc (SimplexCategory.Δ.ι 2).op (nerveFunctor₂.obj (Cat.of C))) _[n]) :=
+    ((nerve C) _[n] ⟶ (nerveFunctor₂ ⋙ (Δ.ι 2).op.ran).obj (Cat.of C) _[n]) :=
   (nerve2coskNatTrans.app (Cat.of C)).app (op [n])
 
 /-- ER: The nerve is 2-coskeletal because the following map is an isomorphism making the
@@ -545,66 +545,54 @@ natural transformation a natural isomorphism. By construction this is a map from
 (nerve C) _[n] into an object defined by a limit. To prove that this is an isomorphism, we will show
 that this cone is a limit cone directly: showing any other cone factors uniquely through it.
 The factorization will involve the explicit consruction of an n-simplex in the nerve of C from the
-data in the cone. UNIVERSE ERROR!-/
-theorem nerve2coskNatTrans.component_isIso (C : Type 0) [Category.{0} C] (n : ℕ) :
-    IsIso (nerve2coskNatTrans.component C n) := by
-  unfold component nerve2coskNatTrans whiskerLeft
-  simp only [nerve_obj, SimplexCategory.len_mk, Ran.loc_obj, nerveFunctor_obj, Cat.of_α, comp_obj]
-  unfold coskeletonAdj Ran.adjunction Ran.equiv
-  simp only [whiskeringLeft_obj_obj, comp_obj, op_obj, Ran.loc_obj, Ran.cone, const_obj_obj,
-    StructuredArrow.proj_obj, Adjunction.adjunctionOfEquivRight_unit_app, nerve_obj,
-    Equiv.coe_fn_symm_mk, SimplexCategory.len_mk]
-  let _ : HasLimit (Ran.diagram (SimplexCategory.Δ.ι 2).op (nerveFunctor₂.obj (Cat.of C)) { unop := [n] }) := inferInstance
-  let c : Cone (Ran.diagram (Δ.ι 2).op ((truncation 2).obj (nerve C)) { unop := [n] }) :=
-    { pt := ComposableArrows C n,
-      π := {
-        app := fun i ↦ (nerve C).map i.hom ≫ (𝟙 ((truncation 2).obj (nerve C)):).app i.right,
-        naturality := sorry } }
-  change IsIso (limit.lift _ c)
-  let hc : IsLimit c := sorry
-  exact inferInstanceAs (IsIso (hc.conePointUniqueUpToIso (limit.isLimit _)).hom)
-  sorry
-  -- refine Iso.isIso_hom ?_
-  -- refine conePointUniqueUpToIso ?_ (limit.islimit _)
-  -- refine' IsLimit.hom_isIso _ (limit.isLimit _) _
+data in the cone. UNIVERSE ERROR!
 
-  /-
-  C : Type
-  inst✝ : Category.{0, 0} C
-  n : ℕ
-  ⊢ IsIso
-    (limit.lift (Ran.diagram (Δ.ι 2).op ((truncation 2).obj (nerve C)) { unop := [n] })
-      { pt := ComposableArrows C n,
-        π := { app := fun i ↦ (nerve C).map i.hom ≫ (𝟙 ((truncation 2).obj (nerve C))).app i.right, naturality := ⋯ } })
-  -/
+-- -- theorem nerve2coskNatTrans.component_isIso (C : Type 0) [Category.{0} C] (n : ℕ) :
+-- --     IsIso (nerve2coskNatTrans.component C n) := by
+-- --   unfold component nerve2coskNatTrans whiskerLeft
+-- --   simp only [nerve_obj, SimplexCategory.len_mk, comp_obj, nerveFunctor_obj, Cat.of_α]
+-- --   unfold coskeletonAdj ranAdjunction
+-- --   simp only [id_obj, Adjunction.mkOfHomEquiv_unit_app]
+-- --   let _ : HasLimit (Ran.diagram (SimplexCategory.Δ.ι 2).op (nerveFunctor₂.obj (Cat.of C)) { unop := [n] }) := inferInstance
+-- --   let c : Cone (Ran.diagram (Δ.ι 2).op ((truncation 2).obj (nerve C)) { unop := [n] }) :=
+-- --     { pt := ComposableArrows C n,
+-- --       π := {
+-- --         app := fun i ↦ (nerve C).map i.hom ≫ (𝟙 ((truncation 2).obj (nerve C)):).app i.right,
+-- --         naturality := sorry } }
+-- --   change IsIso (limit.lift _ c)
+-- --   let hc : IsLimit c := sorry
+-- --   exact inferInstanceAs (IsIso (hc.conePointUniqueUpToIso (limit.isLimit _)).hom)
+-- --   sorry
 
 
-abbrev nerve2cosk.diagram {C : Type 0} [Category.{0} C] (n : ℕ) :
-    StructuredArrow { unop := [n] } (Δ.ι 2).op ⥤ Type :=
-  Ran.diagram
-    (SimplexCategory.Δ.ι 2).op (nerveFunctor₂.obj (Cat.of C)) (op ([n] : SimplexCategory))
 
-abbrev nerve2cosk.cone {C : Type 0} [Category.{0} C] (n : ℕ) : Cone (nerve2cosk.diagram (C := C) n)
-  := by
-  refine Ran.cone (op ([n] : SimplexCategory)) (nerve₂restrictedNerveIso C).hom
+-- -- abbrev nerve2cosk.diagram {C : Type 0} [Category.{0} C] (n : ℕ) :
+-- --     StructuredArrow { unop := [n] } (Δ.ι 2).op ⥤ Type :=
+-- --   Ran.diagram
+-- --     (SimplexCategory.Δ.ι 2).op (nerveFunctor₂.obj (Cat.of C)) (op ([n] : SimplexCategory))
 
-def nerve2cosk.cone_isLimit {C : Type 0} [Category.{0} C] (n : ℕ) :
-    Limits.IsLimit (nerve2cosk.cone (C := C) n) where
-      lift s x := {
-        obj := by
-          intro i
-          unfold diagram at s
-          unfold Ran.diagram at s
-          sorry
+-- -- abbrev nerve2cosk.cone {C : Type 0} [Category.{0} C] (n : ℕ) : Cone (nerve2cosk.diagram (C := C) n)
+-- --   := by
+-- --   refine Ran.cone (op ([n] : SimplexCategory)) (nerve₂restrictedNerveIso C).hom
 
-        map := sorry
-      }
+-- def nerve2cosk.cone_isLimit {C : Type 0} [Category.{0} C] (n : ℕ) :
+--     Limits.IsLimit (nerve2cosk.cone (C := C) n) where
+--       lift s x := {
+--         obj := by
+--           intro i
+--           unfold diagram at s
+--           unfold Ran.diagram at s
+--           sorry
 
-      fac := sorry
-      uniq := sorry
+--         map := sorry
+--       }
+
+--       fac := sorry
+--       uniq := sorry
+
 
   -- (nerve2coskNatTrans.app (Cat.of C))
-/-- ER: Since a natural transformation is a natural isomorphism iff its components are isomorphisms: -/
+ER: Since a natural transformation is a natural isomorphism iff its components are isomorphisms: -/
 theorem nerve2coskNatTrans.app_isIso (C : Type 0) [Category.{0} C] : IsIso (nerve2coskNatTrans.app (Cat.of C)) := by sorry
   -- refine Iso.isIso_hom (C := SSet) ?_
   -- apply NatIso.ofComponents
@@ -1361,3 +1349,5 @@ instance : Reflective nerveFunctor where
 
 instance : HasColimits Cat :=
   hasColimits_of_reflective nerveFunctor
+
+end
