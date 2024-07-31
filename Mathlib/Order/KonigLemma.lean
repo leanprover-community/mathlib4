@@ -91,7 +91,9 @@ where `f i` is the projection of `f j` for all `i ≤ j`.
 In a typical application, the `α i` are function types with increasingly large domains,
 and `π hij (f : α j)` is the restriction of the domain of `f` to that of `α i`.
 In this case, the sequence given by the lemma is essentially a function whose domain
-is the limit of the `α i`. -/
+is the limit of the `α i`.
+
+See also `nonempty_sections_of_finite_cofiltered_system`. -/
 theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Subsingleton (α 0)]
     [∀ i, Nonempty (α i)] (π : {i j : ℕ} → (hij : i ≤ j) → α j → α i)
     (π_refl : ∀ ⦃i⦄ (a : α i), π rfl.le a = a)
