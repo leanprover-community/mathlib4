@@ -430,7 +430,7 @@ lemma coprodSpec_apply (x) :
     (coprodSpec R S).1.base x = (PrimeSpectrum.primeSpectrumProd R S).symm
       ((coprodMk (Spec (.of R)) (Spec (.of S))).symm x) := by
   rw [← coprodSpec_coprodMk, Homeomorph.apply_symm_apply]
-
+stop
 lemma isIso_stalkMap_coprodSpec (x) :
     IsIso (PresheafedSpace.stalkMap (coprodSpec R S).1 x) := by
   obtain ⟨x | x, rfl⟩ := (coprodMk _ _).surjective x
