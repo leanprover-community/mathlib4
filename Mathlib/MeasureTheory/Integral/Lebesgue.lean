@@ -1473,7 +1473,8 @@ section UnifTight
 /-- If `f : α → ℝ≥0∞` has finite integral, then there exists a measurable set `s` of finite measure
 such that the integral of `f` over `sᶜ` is less than a given positive number.
 
-Also used to prove an `Lᵖ`-norm version in `MeasureTheory.Memℒp.exists_snorm_indicator_compl_le`. -/
+Also used to prove an `Lᵖ`-norm version in
+`MeasureTheory.Memℒp.exists_eLpNorm_indicator_compl_le`. -/
 theorem exists_setLintegral_compl_lt {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧ ∫⁻ a in sᶜ, f a ∂μ < ε := by
