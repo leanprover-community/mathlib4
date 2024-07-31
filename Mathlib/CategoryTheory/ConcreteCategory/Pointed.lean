@@ -47,8 +47,8 @@ attribute [local instance] ConcreteCategory.instFunLike
 
 variable (C) in
 
-/-- The pointed objects of a category `C`. A pointed object in `C` is an object `X : C`
-together with a distinguished element `x` of the underlying type of `X`, often called
+/-- The pointed objects of a category `C`. A pointed object in `C` is an object `obj : C`
+together with a distinguished element `pt` of the underlying type of `obj`, often called
 the basepoint. -/
 class Pointed where
   /-- the underlying object -/
