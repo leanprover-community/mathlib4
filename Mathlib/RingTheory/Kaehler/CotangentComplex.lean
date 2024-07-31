@@ -84,12 +84,14 @@ attribute [local instance] SMulCommClass.of_commMonoid
 
 variable {P P'}
 
+namespace CotangentSpace
+
 /--
 This is the map on the cotangent space associated to a map of presentation.
 The matrix associated to this map is the Jacobian matrix. See `CotangentSpace.repr_map`.
 -/
-noncomputable
-def CotangentSpace.map (f : Hom P P') : P.CotangentSpace →ₗ[S] P'.CotangentSpace := by
+protected noncomputable
+def map (f : Hom P P') : P.CotangentSpace →ₗ[S] P'.CotangentSpace := by
   letI := ((algebraMap S S').comp (algebraMap P.Ring S)).toAlgebra
   haveI : IsScalarTower P.Ring S S' := IsScalarTower.of_algebraMap_eq' rfl
   letI := f.toAlgHom.toAlgebra
@@ -99,15 +101,15 @@ def CotangentSpace.map (f : Hom P P') : P.CotangentSpace →ₗ[S] P'.CotangentS
   refine (TensorProduct.mk _ _ _ 1).restrictScalars _ ∘ₗ KaehlerDifferential.map R R' P.Ring P'.Ring
 
 @[simp]
-lemma CotangentSpace.map_tmul (f : Hom P P') (x y) :
+lemma map_tmul (f : Hom P P') (x y) :
     CotangentSpace.map f (x ⊗ₜ .D _ _ y) = (algebraMap _ _ x) ⊗ₜ .D _ _ (f.toAlgHom y) := by
-  simp only [map, AlgHom.toRingHom_eq_coe, LinearMap.liftBaseChange_tmul, LinearMap.coe_comp,
-    LinearMap.coe_restrictScalars, Function.comp_apply, map_D, mk_apply]
+  simp only [CotangentSpace.map, AlgHom.toRingHom_eq_coe, LinearMap.liftBaseChange_tmul,
+    LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply, map_D, mk_apply]
   rw [smul_tmul', ← Algebra.algebraMap_eq_smul_one]
   rfl
 
 @[simp]
-lemma CotangentSpace.repr_map (f : Hom P P') (i j) :
+lemma repr_map (f : Hom P P') (i j) :
     P'.cotangentSpaceBasis.repr (CotangentSpace.map f (P.cotangentSpaceBasis i)) j =
       aeval P'.val (pderiv j (f.val i)) := by
   simp only [cotangentSpaceBasis_apply, map_tmul, _root_.map_one, Hom.toAlgHom_X,
@@ -116,7 +118,7 @@ lemma CotangentSpace.repr_map (f : Hom P P') (i j) :
 universe w'' u'' v''
 
 variable {R'' : Type u''} {S'' : Type v''} [CommRing R''] [CommRing S''] [Algebra R'' S'']
-variable (P'' : Generators.{w''} R'' S'')
+variable {P'' : Generators.{w''} R'' S''}
 variable [Algebra R R''] [Algebra S S''] [Algebra R S'']
   [IsScalarTower R R'' S''] [IsScalarTower R S S'']
 variable [Algebra R' R''] [Algebra S' S''] [Algebra R' S'']
@@ -124,30 +126,38 @@ variable [Algebra R' R''] [Algebra S' S''] [Algebra R' S'']
 variable [IsScalarTower R R' R''] [IsScalarTower S S' S'']
 
 @[simp]
-lemma CotangentSpace.map_id :
+lemma map_id :
     CotangentSpace.map (.id P) = LinearMap.id := by
   apply P.cotangentSpaceBasis.ext
   intro i
   simp only [cotangentSpaceBasis_apply, map_tmul, _root_.map_one, Hom.toAlgHom_X]
   rfl
 
-lemma CotangentSpace.map_comp (f : Hom P P') (g : Hom P' P'') :
-    CotangentSpace.map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by
+lemma map_comp (f : Hom P P') (g : Hom P' P'') :
+    CotangentSpace.map (g.comp f) =
+      (CotangentSpace.map g).restrictScalars S ∘ₗ CotangentSpace.map f := by
   apply P.cotangentSpaceBasis.ext
   intro i
   simp only [cotangentSpaceBasis_apply, map_tmul, _root_.map_one, Hom.toAlgHom_X, Hom.comp_val,
     LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply]
   rfl
 
-lemma CotangentSpace.map_cotangentComplex (f : Hom P P') (x) :
+lemma map_comp_apply (f : Hom P P') (g : Hom P' P'') (x) :
+    CotangentSpace.map (g.comp f) x = .map g (.map f x) :=
+  DFunLike.congr_fun (map_comp f g) x
+
+lemma map_cotangentComplex (f : Hom P P') (x) :
     CotangentSpace.map f (P.cotangentComplex x) = P'.cotangentComplex (.map f x) := by
   obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
   rw [cotangentComplex_mk, map_tmul, _root_.map_one, Cotangent.map_mk,
     cotangentComplex_mk]
 
-lemma CotangentSpace.map_comp_cotangentComplex (f : Hom P P') :
-    map f ∘ₗ P.cotangentComplex = P'.cotangentComplex.restrictScalars S ∘ₗ Cotangent.map f := by
+lemma map_comp_cotangentComplex (f : Hom P P') :
+    CotangentSpace.map f ∘ₗ P.cotangentComplex =
+      P'.cotangentComplex.restrictScalars S ∘ₗ Cotangent.map f := by
   ext x; exact map_cotangentComplex f x
+
+end CotangentSpace
 
 universe uT
 
