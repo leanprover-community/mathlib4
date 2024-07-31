@@ -15,16 +15,16 @@ one_month_ago=$(date -d '15 days ago' +%Y-%m-%d)
 
 git switch master
 
-# find how many commits to master there have been in the last month
-last_month_commits="$(git log --since="$one_month_ago" --pretty=oneline | wc -l)"
-
 start_date=$(date -d '15 days ago - 1 day' +%Y-%m-%d)
 end_date=$(date -d 'today' +%Y-%m-%d)
 
-printf '%s commits between %s and %s\n' "${last_month_commits}" "${start_date}" "${end_date}"
+# find how many commits to master there have been in the last month
+commits_in_range="$(git log --since="${start_date}" --until="${end_date}" --pretty=oneline | wc -l)"
+
+printf '%s commits between %s and %s\n' "${commits_in_range}" "${start_date}" "${end_date}"
 
 # Retrieve merged PRs from the last month, paginated
-prs=$(gh pr list --repo "$repo_owner/$repo_name" --state closed --search "closed:>$start_date closed:<$end_date" --json number,labels,title --limit "$((last_month_commits * 2))")
+prs=$(gh pr list --repo "$repo_owner/$repo_name" --state closed --search "closed:>$start_date closed:<$end_date" --json number,labels,title --limit "$((commits_in_range * 2))")
 
 # Check if any PRs are found
 if [ -z "$prs" ] || [ "$prs" = "[]" ]; then
