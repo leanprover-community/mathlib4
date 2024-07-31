@@ -6,9 +6,6 @@ name: lint and suggest
 
 jobs:
 
-  env:
-    GH_TOKEN: ${{ github.token }}
-
   style_lint:
     if: github.repository == 'leanprover-community/mathlib4' && github.event.pull_request.draft == false
     name: Lint style
@@ -31,6 +28,9 @@ jobs:
           curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      env:
+        GH_TOKEN: ${{ github.token }}
 
       - name: report
         continue-on-error: true
