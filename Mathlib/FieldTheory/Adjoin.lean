@@ -1439,13 +1439,29 @@ end IntermediateField
 
 section ExtendScalars
 
-variable (K : Type*) [Field K] {L : Type*} [Field L] [Algebra K L]
+variable {K : Type*} [Field K] {L : Type*} [Field L] [Algebra K L]
 
 namespace Subfield
 
 variable (F : Subfield L)
 
--- TODO: need #15148
+@[simp]
+theorem extendScalars_self : extendScalars (le_refl F) = ⊥ :=
+  IntermediateField.toSubfield_injective (by simp)
+
+@[simp]
+theorem extendScalars_top : extendScalars (le_top : F ≤ ⊤) = ⊤ :=
+  IntermediateField.toSubfield_injective (by simp)
+
+variable {F}
+variable {E E' : Subfield L} (h : F ≤ E) (h' : F ≤ E')
+
+theorem extendScalars_sup :
+    extendScalars h ⊔ extendScalars h' = extendScalars (le_sup_of_le_left h : F ≤ E ⊔ E') :=
+  ((extendScalars.orderIso F).map_sup ⟨_, h⟩ ⟨_, h'⟩).symm
+
+theorem extendScalars_inf : extendScalars h ⊓ extendScalars h' = extendScalars (le_inf h h') :=
+  ((extendScalars.orderIso F).map_inf ⟨_, h⟩ ⟨_, h'⟩).symm
 
 end Subfield
 
