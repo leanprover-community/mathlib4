@@ -88,21 +88,31 @@ set_option linter.cdot true in
 example : Add Nat where add := (. + ·)
 
 -- Tests for the badVariable linter.
+set_option autoImplicit false
 
 -- These are all fine.
 variable {a : Type*}
-variable (a : Type*) (b : Prop) [Zero a]
-variable [Zero a] [One b] {f : a to b}
+variable {n : ℕ} (m : ℕ := 42) (k : ℕ := by exact 0)
+variable {p q} {r s : Prop}
+variable ⦃x y : Int⦄  ⦃x y⦄
+
+variable (a : Type*) (b : Prop) [DecidableEq a]
+variable [DecidableEq a] [Inhabited b] {f : a → b}
+
 -- `a` is changed, but no new variable is declared (only typeclass instances are added):
 -- this is fine, right?
 -- That means typeclasses and instance implicits are fine for this purpose?
 -- (I can certainly write a linter ignoring these for now, and see if it yields useful results)
-variable {a} [One b]
+variable (a)
+theorem foo : True := trivial
+variable {a} [DecidableEq b]
 
 -- These should error.
+variable (a)
 
 -- Assuming autoImplicit is false, `a` must exist already, so this should error.
 variable {a} (b : Type)
 variable (a) {b : Type}
 -- I guess this is also bad, changing b and adding a --- i.e., the binder order doesn't matter?!
+variable {b : Type*}
 variable {a : Type} (b)
