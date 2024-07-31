@@ -231,7 +231,6 @@ theorem mul_lt_one_of_nonneg_of_lt_one_right [MulPosMono α]
     (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b < 1) : a * b < 1 :=
   (mul_le_of_le_one_left hb₀ ha).trans_lt hb
 
--- variable [ExistsAddOfLE α] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
 
 theorem mul_le_mul_of_nonpos_left [ExistsAddOfLE α] [PosMulMono α]
     [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
