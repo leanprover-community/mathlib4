@@ -26,7 +26,7 @@ lemma cfc_unitary_iff (f : R → R) (a : A) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
     cfc f a ∈ unitary A ↔ ∀ x ∈ spectrum R a, star (f x) * f x = 1 := by
   simp only [unitary, Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_setOf_eq]
-  rw [← IsStarNormal.cfc_map (p := p) a f |>.star_comm_self |>.eq, and_self, ← cfc_one R a,
+  rw [← IsStarNormal.cfc_map (p := p) f a |>.star_comm_self |>.eq, and_self, ← cfc_one R a,
     ← cfc_star, ← cfc_mul .., cfc_eq_cfc_iff_eqOn]
   exact Iff.rfl
 
