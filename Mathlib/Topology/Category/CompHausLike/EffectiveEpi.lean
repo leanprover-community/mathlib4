@@ -10,6 +10,11 @@ import Mathlib.Topology.Category.CompHausLike.Limits
 # Effective epimorphisms in `CompHausLike`
 
 In any category of compact Hausdorff spaces, continuous surjections are effective epimorphisms.
+
+We deduce that if the converse holds and explicit pullbacks exist, then `CompHausLike P` is
+preregular.
+
+If furthermore explicit finite coproducts exist, then `CompHausLike P` is precoherent.
 -/
 
 universe u

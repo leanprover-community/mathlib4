@@ -9,23 +9,17 @@ import Mathlib.Topology.Category.LightProfinite.Limits
 
 # Effective epimorphisms in `LightProfinite`
 
-This file proves that `EffectiveEpi`, `Epi` and `Surjective` are all equivalent in `LightProfinite`.
-As a consequence we prove that `LightProfinite` is `Preregular`.
-It follows from the constructions in `Mathlib/Topology/Category/LightProfinite/Limits.lean` that
-`LightProfinite` is `FinitaryExtensive`.
-Together this implies that it is `Precoherent`.
-
+This file proves that `EffectiveEpi` and `Surjective` are equivalent in `LightProfinite`.
+As a consequence we deduce from the material in
+`Mathlib.Topology.Category.CompHausLike.EffectiveEpi` that `LightProfinite` is `Preregular`
+and`Precoherent`.
 -/
 
 universe u
 
-/-
-Previously, this had accidentally been made a global instance,
-and we now turn it on locally when convenient.
--/
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
-
 open CategoryTheory Limits CompHausLike
+
+attribute [local instance] ConcreteCategory.instFunLike
 
 namespace LightProfinite
 
@@ -35,7 +29,7 @@ theorem effectiveEpi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
   rw [← epi_iff_surjective]
   infer_instance
 
-instance : Preregular LightProfinite := by
+instance : Preregular LightProfinite.{u} := by
   apply CompHausLike.preregular
   intro _ _ f
   exact (effectiveEpi_iff_surjective f).mp
