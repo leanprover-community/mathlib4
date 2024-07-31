@@ -52,7 +52,7 @@ lemma prod_uniq (F₁ F₂ : (W₁.Localization × W₂.Localization ⥤ E))
   simpa only [Functor.uncurry_obj_curry_obj_flip_flip] using h
 
 /-- Auxiliary definition for `prodLift`. -/
-noncomputable def prodLift₁ [W₂.ContainsIdentities] [W₂.ContainsIdentities]
+noncomputable def prodLift₁ [W₂.ContainsIdentities]
     (hF : (W₁.prod W₂).IsInvertedBy F) :
     W₁.Localization ⥤ C₂ ⥤ E :=
   Construction.lift (curry.obj F) (fun _ _ f₁ hf₁ => by
