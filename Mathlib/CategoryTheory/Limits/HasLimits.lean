@@ -358,7 +358,7 @@ theorem limit.lift_pre (c : Cone F) :
     limit.lift F c ≫ limit.pre F E = limit.lift (E ⋙ F) (c.whisker E) := by ext; simp
 
 variable {L : Type u₃} [Category.{v₃} L]
-variable (D : L ⥤ K) [HasLimit (D ⋙ E ⋙ F)]
+variable (D : L ⥤ K)
 
 @[simp]
 theorem limit.pre_pre [h : HasLimit (D ⋙ E ⋙ F)] : haveI : HasLimit ((D ⋙ E) ⋙ F) := h
@@ -876,7 +876,7 @@ theorem colimit.pre_desc (c : Cocone F) :
   ext; rw [← assoc, colimit.ι_pre]; simp
 
 variable {L : Type u₃} [Category.{v₃} L]
-variable (D : L ⥤ K) [HasColimit (D ⋙ E ⋙ F)]
+variable (D : L ⥤ K)
 
 @[simp]
 theorem colimit.pre_pre [h : HasColimit (D ⋙ E ⋙ F)] :

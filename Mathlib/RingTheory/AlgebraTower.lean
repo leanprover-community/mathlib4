@@ -124,9 +124,10 @@ theorem Basis.isScalarTower_finsupp {ι} (b : Basis ι S A) : IsScalarTower R S 
 
 variable {R}
 
-/-- `Basis.SMul (b : Basis ι R S) (c : Basis ι S A)` is the `R`-basis on `A`
+/-- `Basis.smulTower (b : Basis ι R S) (c : Basis ι S A)` is the `R`-basis on `A`
 where the `(i, j)`th basis vector is `b i • c j`. -/
-noncomputable def Basis.smul {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) :
+noncomputable
+def Basis.smulTower {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) :
     Basis (ι × ι') R A :=
   haveI := c.isScalarTower_finsupp R
   .ofRepr
@@ -136,21 +137,23 @@ noncomputable def Basis.smul {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R 
           Finsupp.lcongr (Equiv.prodComm ι' ι) (LinearEquiv.refl _ _))))
 
 @[simp]
-theorem Basis.smul_repr {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (x ij) :
-    (b.smul c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by
-  simp [Basis.smul]
+theorem Basis.smulTower_repr {ι : Type v₁} {ι' : Type w₁}
+    (b : Basis ι R S) (c : Basis ι' S A) (x ij) :
+    (b.smulTower c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by
+  simp [smulTower]
 
-theorem Basis.smul_repr_mk {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A)
-    (x i j) : (b.smul c).repr x (i, j) = b.repr (c.repr x j) i :=
-  b.smul_repr c x (i, j)
+theorem Basis.smulTower_repr_mk {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A)
+    (x i j) : (b.smulTower c).repr x (i, j) = b.repr (c.repr x j) i :=
+  b.smulTower_repr c x (i, j)
 
 @[simp]
-theorem Basis.smul_apply {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (ij) :
-    (b.smul c) ij = b ij.1 • c ij.2 := by
+theorem Basis.smulTower_apply {ι : Type v₁} {ι' : Type w₁}
+    (b : Basis ι R S) (c : Basis ι' S A) (ij) :
+    (b.smulTower c) ij = b ij.1 • c ij.2 := by
   obtain ⟨i, j⟩ := ij
   rw [Basis.apply_eq_iff]
   ext ⟨i', j'⟩
-  rw [Basis.smul_repr, LinearEquiv.map_smul, Basis.repr_self, Finsupp.smul_apply,
+  rw [Basis.smulTower_repr, LinearEquiv.map_smul, Basis.repr_self, Finsupp.smul_apply,
     Finsupp.single_apply]
   dsimp only
   split_ifs with hi

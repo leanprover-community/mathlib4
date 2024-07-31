@@ -212,7 +212,7 @@ noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →�
 theorem unique_ext [Unique α] {f g : α →₀ M} (h : f default = g default) : f = g :=
   ext fun a => by rwa [Unique.eq_default a]
 
-theorem unique_ext_iff [Unique α] {f g : α →₀ M} : f = g ↔ f default = g default :=
+protected theorem unique_ext_iff [Unique α] {f g : α →₀ M} : f = g ↔ f default = g default :=
   ⟨fun h => h ▸ rfl, unique_ext⟩
 
 end Basic
@@ -365,7 +365,8 @@ theorem unique_single [Unique α] (x : α →₀ M) : x = single default (x defa
 
 @[simp]
 theorem unique_single_eq_iff [Unique α] {b' : M} : single a b = single a' b' ↔ b = b' := by
-  rw [unique_ext_iff, Unique.eq_default a, Unique.eq_default a', single_eq_same, single_eq_same]
+  rw [Finsupp.unique_ext_iff, Unique.eq_default a, Unique.eq_default a', single_eq_same,
+    single_eq_same]
 
 lemma apply_single [AddCommMonoid N] [AddCommMonoid P]
     {F : Type*} [FunLike F N P] [AddMonoidHomClass F N P] (e : F)

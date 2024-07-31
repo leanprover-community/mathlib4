@@ -548,21 +548,6 @@ theorem rangeRestrict_surjective (f : A →ₐ[R] B) : Function.Surjective (f.ra
     let ⟨x, hx⟩ := hy
     ⟨x, SetCoe.ext hx⟩
 
-/-- The equalizer of two R-algebra homomorphisms -/
-def equalizer (ϕ ψ : A →ₐ[R] B) : Subalgebra R A where
-  carrier := { a | ϕ a = ψ a }
-  zero_mem' := by simp only [Set.mem_setOf_eq, map_zero]
-  one_mem' := by simp only [Set.mem_setOf_eq, map_one]
-  add_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
-    rw [Set.mem_setOf_eq, map_add, map_add, hx, hy]
-  mul_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
-    rw [Set.mem_setOf_eq, map_mul, map_mul, hx, hy]
-  algebraMap_mem' x := by rw [Set.mem_setOf_eq, AlgHom.commutes, AlgHom.commutes]
-
-@[simp]
-theorem mem_equalizer (ϕ ψ : A →ₐ[R] B) (x : A) : x ∈ ϕ.equalizer ψ ↔ ϕ x = ψ x :=
-  Iff.rfl
-
 /-- The range of a morphism of algebras is a fintype, if the domain is a fintype.
 
 Note that this instance can cause a diamond with `Subtype.fintype` if `B` is also a fintype. -/
@@ -1137,3 +1122,76 @@ theorem mem_subalgebraOfSubring {x : R} {S : Subring R} : x ∈ subalgebraOfSubr
   Iff.rfl
 
 end Int
+
+section Equalizer
+
+namespace AlgHom
+
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
+
+/-- The equalizer of two R-algebra homomorphisms -/
+def equalizer (ϕ ψ : F) : Subalgebra R A where
+  carrier := { a | ϕ a = ψ a }
+  zero_mem' := by simp only [Set.mem_setOf_eq, map_zero]
+  one_mem' := by simp only [Set.mem_setOf_eq, map_one]
+  add_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
+    rw [Set.mem_setOf_eq, map_add, map_add, hx, hy]
+  mul_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
+    rw [Set.mem_setOf_eq, map_mul, map_mul, hx, hy]
+  algebraMap_mem' x := by
+    simp only [Set.mem_setOf_eq, AlgHomClass.commutes]
+
+@[simp]
+theorem mem_equalizer (φ ψ : F) (x : A) : x ∈ equalizer φ ψ ↔ φ x = ψ x :=
+  Iff.rfl
+
+theorem equalizer_toSubmodule {φ ψ : F} :
+    Subalgebra.toSubmodule (equalizer φ ψ) = LinearMap.eqLocus φ ψ := rfl
+
+@[simp]
+theorem equalizer_eq_top {φ ψ : F} : equalizer φ ψ = ⊤ ↔ φ = ψ := by
+  simp [SetLike.ext_iff, DFunLike.ext_iff]
+
+@[simp]
+theorem equalizer_same (φ : F) : equalizer φ φ = ⊤ := equalizer_eq_top.2 rfl
+
+theorem le_equalizer {φ ψ : F} {S : Subalgebra R A} : S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
+
+theorem eqOn_sup {φ ψ : F} {S T : Subalgebra R A} (hS : Set.EqOn φ ψ S) (hT : Set.EqOn φ ψ T) :
+    Set.EqOn φ ψ ↑(S ⊔ T) := by
+  rw [← le_equalizer] at hS hT ⊢
+  exact sup_le hS hT
+
+theorem ext_on_codisjoint {φ ψ : F} {S T : Subalgebra R A} (hST : Codisjoint S T)
+    (hS : Set.EqOn φ ψ S) (hT : Set.EqOn φ ψ T) : φ = ψ :=
+  DFunLike.ext _ _ fun _ ↦ eqOn_sup hS hT <| hST.eq_top.symm ▸ trivial
+
+end AlgHom
+
+end Equalizer
+
+section MapComap
+
+namespace Subalgebra
+
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+
+theorem map_comap_eq (f : A →ₐ[R] B) (S : Subalgebra R B) : (S.comap f).map f = S ⊓ f.range :=
+  SetLike.coe_injective Set.image_preimage_eq_inter_range
+
+theorem map_comap_eq_self
+    {f : A →ₐ[R] B} {S : Subalgebra R B} (h : S ≤ f.range) : (S.comap f).map f = S := by
+  simpa only [inf_of_le_left h] using map_comap_eq f S
+
+theorem map_comap_eq_self_of_surjective
+    {f : A →ₐ[R] B} (hf : Function.Surjective f) (S : Subalgebra R B) : (S.comap f).map f = S :=
+  map_comap_eq_self <| by simp [(Algebra.range_top_iff_surjective f).2 hf]
+
+theorem comap_map_eq_self_of_injective
+    {f : A →ₐ[R] B} (hf : Function.Injective f) (S : Subalgebra R A) : (S.map f).comap f = S :=
+  SetLike.coe_injective (Set.preimage_image_eq _ hf)
+
+end Subalgebra
+
+end MapComap
