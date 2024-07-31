@@ -104,7 +104,7 @@ theorem coe_inj_iff : f = g ↔ (f : V₁ → V₂) = g :=
 theorem ext (H : ∀ x, f x = g x) : f = g :=
   coe_inj <| funext H
 
-theorem ext_iff : f = g ↔ ∀ x, f x = g x :=
+protected theorem ext_iff : f = g ↔ ∀ x, f x = g x :=
   ⟨by rintro rfl x; rfl, ext⟩
 
 variable (f g)
