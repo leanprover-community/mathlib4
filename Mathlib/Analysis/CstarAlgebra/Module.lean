@@ -107,16 +107,14 @@ def innerₛₗ : E →ₗ⋆[ℂ] E →ₗ[ℂ] A where
 
 lemma innerₛₗ_apply {x y : E} : innerₛₗ x y = ⟪x, y⟫ := rfl
 
-lemma inner_eq_innerₛₗ (x y : E) : ⟪x, y⟫ = innerₛₗ x y := rfl
-
-@[simp] lemma inner_zero_right {x : E} : ⟪x, 0⟫ = 0 := by simp [inner_eq_innerₛₗ]
-@[simp] lemma inner_zero_left {x : E} : ⟪0, x⟫ = 0 := by simp [inner_eq_innerₛₗ]
-@[simp] lemma inner_neg_right {x y : E} : ⟪x, -y⟫ = -⟪x, y⟫ := by simp [inner_eq_innerₛₗ]
-@[simp] lemma inner_neg_left {x y : E} : ⟪-x, y⟫ = -⟪x, y⟫ := by simp [inner_eq_innerₛₗ]
+@[simp] lemma inner_zero_right {x : E} : ⟪x, 0⟫ = 0 := by simp [← innerₛₗ_apply]
+@[simp] lemma inner_zero_left {x : E} : ⟪0, x⟫ = 0 := by simp [← innerₛₗ_apply]
+@[simp] lemma inner_neg_right {x y : E} : ⟪x, -y⟫ = -⟪x, y⟫ := by simp [← innerₛₗ_apply]
+@[simp] lemma inner_neg_left {x y : E} : ⟪-x, y⟫ = -⟪x, y⟫ := by simp [← innerₛₗ_apply]
 @[simp] lemma inner_sub_right {x y z : E} : ⟪x, y - z⟫ = ⟪x, y⟫ - ⟪x, z⟫ := by
-  simp [inner_eq_innerₛₗ]
+  simp [← innerₛₗ_apply]
 @[simp] lemma inner_sub_left {x y z : E} : ⟪x - y, z⟫ = ⟪x, z⟫ - ⟪y, z⟫ := by
-  simp [inner_eq_innerₛₗ]
+  simp [← innerₛₗ_apply]
 
 @[simp]
 lemma inner_sum_right {ι : Type*} [DecidableEq ι] {s : Finset ι} {x : E} {y : ι → E} :
@@ -262,11 +260,9 @@ noncomputable def innerSL : E →L⋆[ℂ] E →L[ℂ] A :=
 
 lemma innerSL_apply {x y : E} : innerSL x y = ⟪x, y⟫_A := rfl
 
-lemma inner_eq_innerSL (x y : E) : ⟪x, y⟫_A = innerSL x y := rfl
-
 @[continuity, fun_prop]
 lemma continuous_inner : Continuous (fun x : E × E => ⟪x.1, x.2⟫_A) := by
-  simp_rw [inner_eq_innerSL]
+  simp_rw [← innerSL_apply]
   fun_prop
 
 end NormedAddCommGroup
