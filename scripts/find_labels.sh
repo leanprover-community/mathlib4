@@ -21,7 +21,7 @@ last_month_commits="$(git log --since="$one_month_ago" --pretty=oneline | wc -l)
 start_date=$(date -d '15 days ago - 1 day' +%Y-%m-%d)
 end_date=$(date -d 'today' +%Y-%m-%d)
 
-printf '%s commits between %s and %s\n' "${start_date}" "${end_date}"
+printf '%s commits between %s and %s\n' "${last_month_commits}" "${start_date}" "${end_date}"
 
 # Retrieve merged PRs from the last month, paginated
 prs=$(gh pr list --repo "$repo_owner/$repo_name" --state closed --search "closed:>$start_date closed:<$end_date" --json number,labels,title --limit "$((last_month_commits * 2))")
