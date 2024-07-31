@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.CommSq
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 # Relation between mono/epi and pullback/pushout squares
@@ -33,9 +33,9 @@ variable {C : Type*} [Category C] {X Y : C} {f : X ⟶ Y}
 
 section Mono
 
-variable {c : PullbackCone f f} (hc : IsLimit c)
+variable {c : PullbackCone f f}
 
-lemma mono_iff_fst_eq_snd : Mono f ↔ c.fst = c.snd := by
+lemma mono_iff_fst_eq_snd (hc : IsLimit c) : Mono f ↔ c.fst = c.snd := by
   constructor
   · intro hf
     simpa only [← cancel_mono f] using c.condition
@@ -45,7 +45,7 @@ lemma mono_iff_fst_eq_snd : Mono f ↔ c.fst = c.snd := by
     obtain ⟨φ, rfl, rfl⟩ := PullbackCone.IsLimit.lift' hc g g' h
     rw [hf]
 
-lemma mono_iff_isIso_fst : Mono f ↔ IsIso c.fst := by
+lemma mono_iff_isIso_fst (hc : IsLimit c) : Mono f ↔ IsIso c.fst := by
   rw [mono_iff_fst_eq_snd hc]
   constructor
   · intro h
@@ -61,7 +61,7 @@ lemma mono_iff_isIso_fst : Mono f ↔ IsIso c.fst := by
       rw [← cancel_mono c.fst, assoc, id_comp, hφ₁, comp_id])⟩
     rw [← cancel_epi φ, hφ₁, hφ₂]
 
-lemma mono_iff_isIso_snd : Mono f ↔ IsIso c.snd :=
+lemma mono_iff_isIso_snd (hc : IsLimit c) : Mono f ↔ IsIso c.snd :=
   mono_iff_isIso_fst (PullbackCone.flipIsLimit hc)
 
 variable (f)
@@ -77,9 +77,9 @@ end Mono
 
 section Epi
 
-variable {c : PushoutCocone f f} (hc : IsColimit c)
+variable {c : PushoutCocone f f}
 
-lemma epi_iff_inl_eq_inr : Epi f ↔ c.inl = c.inr := by
+lemma epi_iff_inl_eq_inr (hc : IsColimit c) : Epi f ↔ c.inl = c.inr := by
   constructor
   · intro hf
     simpa only [← cancel_epi f] using c.condition
@@ -89,7 +89,7 @@ lemma epi_iff_inl_eq_inr : Epi f ↔ c.inl = c.inr := by
     obtain ⟨φ, rfl, rfl⟩ := PushoutCocone.IsColimit.desc' hc g g' h
     rw [hf]
 
-lemma epi_iff_isIso_inl : Epi f ↔ IsIso c.inl := by
+lemma epi_iff_isIso_inl (hc : IsColimit c) : Epi f ↔ IsIso c.inl := by
   rw [epi_iff_inl_eq_inr hc]
   constructor
   · intro h
@@ -105,7 +105,7 @@ lemma epi_iff_isIso_inl : Epi f ↔ IsIso c.inl := by
       rw [← cancel_epi c.inl, reassoc_of% hφ₁, comp_id])⟩
     rw [← cancel_mono φ, hφ₁, hφ₂]
 
-lemma epi_iff_isIso_inr : Epi f ↔ IsIso c.inr :=
+lemma epi_iff_isIso_inr (hc : IsColimit c) : Epi f ↔ IsIso c.inr :=
   epi_iff_isIso_inl (PushoutCocone.flipIsColimit hc)
 
 variable (f)

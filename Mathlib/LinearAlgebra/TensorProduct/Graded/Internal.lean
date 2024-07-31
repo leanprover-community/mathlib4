@@ -93,12 +93,10 @@ theorem of_one : of R 𝒜 ℬ 1 = 1 := rfl
 @[simp]
 theorem of_symm_one : (of R 𝒜 ℬ).symm 1 = 1 := rfl
 
--- for dsimp
-@[simp, nolint simpNF]
+@[simp]
 theorem of_symm_of (x : A ⊗[R] B) : (of R 𝒜 ℬ).symm (of R 𝒜 ℬ x) = x := rfl
 
--- for dsimp
-@[simp, nolint simpNF]
+@[simp]
 theorem symm_of_of (x : 𝒜 ᵍ⊗[R] ℬ) : of R 𝒜 ℬ ((of R 𝒜 ℬ).symm x) = x := rfl
 
 /-- Two linear maps from the graded tensor product agree if they agree on the underlying tensor
@@ -191,8 +189,8 @@ theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a�
   simp_rw [lof_eq_of R]
   rw [LinearEquiv.symm_symm]
   -- Note: #8386 had to specialize `map_smul` to `LinearEquiv.map_smul`
-  rw [@Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, LinearEquiv.map_smul, map_smul,
-    ← zsmul_eq_smul_cast R, ← @Units.smul_def _ _ (_) (_)]
+  rw [@Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_nsmul R, LinearEquiv.map_smul, map_smul,
+    Int.cast_smul_eq_nsmul R, ← @Units.smul_def _ _ (_) (_)]
   rw [congr_symm_tmul]
   dsimp
   simp_rw [decompose_symm_mul, decompose_symm_of, Equiv.symm_apply_apply]
@@ -307,12 +305,7 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
       ∘ₗ ((of R 𝒜 ℬ).symm : 𝒜 ᵍ⊗[R] ℬ →ₗ[R] A ⊗[R] B))
     (by
       dsimp [Algebra.TensorProduct.one_def]
-      -- Adaptation note: nightly-2024-03-11.
-      -- No longer works with dsimp, even though it is a rfl lemma.
-      -- This may be a Lean bug.
-      -- It would be great if someone could try to minimize this to an no imports example.
-      rw [Algebra.TensorProduct.one_def]
-      dsimp; simp only [_root_.map_one, mul_one])
+      simp only [_root_.map_one, mul_one])
     (by
       rw [LinearMap.map_mul_iff]
       ext a₁ : 3
@@ -322,8 +315,8 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
       ext a₂ b₂ : 2
       dsimp
       rw [tmul_coe_mul_coe_tmul]
-      rw [@Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, map_smul, map_smul, map_smul]
-      rw [← zsmul_eq_smul_cast R, ← @Units.smul_def _ _ (_) (_)]
+      rw [@Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_nsmul R, map_smul, map_smul, map_smul]
+      rw [Int.cast_smul_eq_nsmul R, ← @Units.smul_def _ _ (_) (_)]
       rw [of_symm_of, map_tmul, LinearMap.mul'_apply]
       simp_rw [AlgHom.toLinearMap_apply, _root_.map_mul]
       simp_rw [mul_assoc (f a₁), ← mul_assoc _ _ (g b₂), h_anti_commutes, mul_smul_comm,
@@ -345,14 +338,14 @@ def liftEquiv :
   toFun fg := lift 𝒜 ℬ _ _ fg.prop
   invFun F := ⟨(F.comp (includeLeft 𝒜 ℬ), F.comp (includeRight 𝒜 ℬ)), fun i j a b => by
     dsimp
-    rw [← F.map_mul, ← F.map_mul, tmul_coe_mul_coe_tmul, one_mul, mul_one, AlgHom.map_smul_of_tower,
-      tmul_one_mul_one_tmul, smul_smul, Int.units_mul_self, one_smul]⟩
+    rw [← _root_.map_mul, ← _root_.map_mul F, tmul_coe_mul_coe_tmul, one_mul, mul_one,
+      AlgHom.map_smul_of_tower, tmul_one_mul_one_tmul, smul_smul, Int.units_mul_self, one_smul]⟩
   left_inv fg := by ext <;> (dsimp; simp only [_root_.map_one, mul_one, one_mul])
   right_inv F := by
     apply AlgHom.toLinearMap_injective
     ext
     dsimp
-    rw [← F.map_mul, tmul_one_mul_one_tmul]
+    rw [← _root_.map_mul, tmul_one_mul_one_tmul]
 
 /-- Two algebra morphism from the graded tensor product agree if their compositions with the left
 and right inclusions agree. -/
@@ -383,7 +376,7 @@ lemma auxEquiv_comm (x : 𝒜 ᵍ⊗[R] ℬ) :
     comm 𝒜 ℬ (a ᵍ⊗ₜ b) = (-1 : ℤˣ)^(j * i) • (b ᵍ⊗ₜ a : ℬ ᵍ⊗[R] 𝒜) :=
   (auxEquiv R ℬ 𝒜).injective <| by
     simp_rw [auxEquiv_comm, auxEquiv_tmul, decompose_coe, ← lof_eq_of R, gradedComm_of_tmul_of,
-      @Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R]
+      @Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_nsmul R]
     -- Qualified `map_smul` to avoid a TC timeout #8386
     erw [LinearMap.map_smul, auxEquiv_tmul]
     simp_rw [decompose_coe, lof_eq_of]

@@ -50,7 +50,7 @@ theorem tan_arctan {z : ℂ} (h₁ : z ≠ I) (h₂ : z ≠ -I) : tan (arctan z)
 lemma cos_ne_zero_of_arctan_bounds {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re)
     (h₂ : z.re ≤ π / 2) : cos z ≠ 0 := by
   refine cos_ne_zero_iff.mpr (fun k ↦ ?_)
-  rw [ne_eq, ext_iff, not_and_or] at h₀ ⊢
+  rw [ne_eq, Complex.ext_iff, not_and_or] at h₀ ⊢
   norm_cast at h₀ ⊢
   cases' h₀ with nr ni
   · left; contrapose! nr
@@ -72,7 +72,7 @@ theorem arctan_tan {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re) (h�
     rw [sub_eq_add_neg, ← neg_mul, ← sin_neg, ← cos_neg]
   rw [← exp_mul_I, ← exp_mul_I, ← exp_sub, show z * I - -z * I = 2 * (I * z) by ring, log_exp,
     show -I / 2 * (2 * (I * z)) = -(I * I) * z by ring, I_mul_I, neg_neg, one_mul]
-  all_goals set_option tactic.skipAssignedInstances false in norm_num
+  all_goals norm_num
   · rwa [← div_lt_iff' two_pos, neg_div]
   · rwa [← le_div_iff' two_pos]
 
