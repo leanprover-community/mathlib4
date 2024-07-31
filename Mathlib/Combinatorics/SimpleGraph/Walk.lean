@@ -746,6 +746,9 @@ lemma nil_iff_support_eq {p : G.Walk v w} : p.Nil ↔ p.support = [v] := by
 lemma nil_iff_length_eq {p : G.Walk v w} : p.Nil ↔ p.length = 0 := by
   cases p <;> simp
 
+lemma not_nil_iff_lt_length {p : G.Walk v w} : ¬ p.Nil ↔ 0 < p.length := by
+  cases p <;> simp
+
 lemma not_nil_iff {p : G.Walk v w} :
     ¬ p.Nil ↔ ∃ (u : V) (h : G.Adj v u) (q : G.Walk u w), p = cons h q := by
   cases p <;> simp [*]
@@ -772,11 +775,10 @@ lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → S
 
 @[simp] lemma adj_getVert_one {p : G.Walk v w} (hp : ¬ p.Nil) :
     G.Adj v (p.getVert 1) := by
-  have := adj_getVert_succ p (by
-    rw [SimpleGraph.Walk.nil_iff_length_eq] at hp
-    push_neg at hp
-    exact Nat.zero_lt_of_ne_zero hp)
-  rwa [getVert_zero] at this
+  have := adj_getVert_succ p (by simpa [not_nil_iff_lt_length] using hp)
+  simp only [getVert_zero, zero_add] at this
+  exact this
+
 
 /-- The walk obtained by removing the first `n` darts of a walk. -/
 def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
