@@ -383,7 +383,7 @@ section StrictOrderedSemiring
 variable [Semiring α] [PartialOrder α] {a b c d : α}
 
 @[simp]
-theorem pow_pos [ZeroLEOneClass α] [NeZero 1] [PosMulStrictMono α]
+theorem pow_pos [ZeroLEOneClass α] [PosMulStrictMono α]
     (H : 0 < a) : ∀ n : ℕ, 0 < a ^ n
   | 0 => by
     nontriviality
@@ -578,7 +578,7 @@ lemma mul_add_mul_le_mul_add_mul' [ExistsAddOfLE α] [MulPosMono α]
 variable [ContravariantClass α α (· + ·) (· < ·)]
 
 /-- Binary strict **rearrangement inequality**. -/
-lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE α] [PosMulMono α] [MulPosStrictMono α]
+lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE α] [MulPosStrictMono α]
     [CovariantClass α α (· + ·) (· < ·)] [ContravariantClass α α (· + ·) (· < ·)]
     (hab : a < b) (hcd : c < d) : a * d + b * c < a * c + b * d := by
   obtain ⟨b, rfl⟩ := exists_add_of_le hab.le
@@ -692,7 +692,7 @@ theorem nonpos_of_mul_nonneg_right [MulPosStrictMono α]
 
 @[simp]
 theorem Units.inv_pos
-    [ZeroLEOneClass α] [NeZero (R := α) 1] [MulPosMono α] [PosMulStrictMono α]
+    [ZeroLEOneClass α] [NeZero (R := α) 1] [PosMulStrictMono α]
     {u : αˣ} : (0 : α) < ↑u⁻¹ ↔ (0 : α) < u :=
   have : ∀ {u : αˣ}, (0 : α) < u → (0 : α) < ↑u⁻¹ := @fun u h =>
     (mul_pos_iff_of_pos_left h).mp <| u.mul_inv.symm ▸ zero_lt_one
