@@ -124,14 +124,14 @@ instance : (forget (Pointed C)).Faithful := by
 def toCategoryOfElement :
     Pointed C ⥤ (forget C).Elements where
   obj X := ⟨X.obj, X.pt⟩
-  map {X Y} f := ⟨f.obj, f.pt⟩
+  map f := ⟨f.obj, f.pt⟩
 
 /-- The reverse direction of the equivalence `Pointed C ≌ (forget C).Elements`. -/
 @[simps map]
 def fromCategoryOfElements :
     (forget C).Elements ⥤ Pointed C where
   obj X := ⟨X.1, X.2⟩
-  map {X Y} f := ⟨f.1, f.2⟩
+  map f := ⟨f.1, f.2⟩
 
 /-- The equivalence between `Pointed C` and the category of elements of the forgetful
 functor of `C`. -/
