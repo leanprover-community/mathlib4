@@ -256,4 +256,19 @@ noncomputable def LinTo𝕜'' : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜] 𝕜
     map_add' := by intros; ext; simp [h]; ring
     map_smul' := by intros; ext; simp [h, real_smul_eq_coe_mul]; ring }
 
+theorem real_part_thing (g : E →L[ℝ] ℝ) : ∀ x,  re ((LinTo𝕜'' g) x : 𝕜) = g x := by
+  intro x
+  simp only [LinTo𝕜'', LinearMap.coe_mk, AddHom.coe_mk, ContinuousLinearMap.coe_mk', extendTo𝕜'',
+    ContinuousLinearMap.coe_coe, LinearMap.coe_mk, AddHom.coe_mk, map_sub, ofReal_re, mul_re, I_re,
+    zero_mul, ofReal_im, mul_zero, sub_self, sub_zero]
+
+theorem separate_convex_open_set_RCLike [ContinuousSMul ℝ E] {s : Set E}
+    (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) {x₀ : E} (hx₀ : x₀ ∉ s) :
+    ∃ f : E →L[𝕜] 𝕜, re (f x₀) = 1 ∧ ∀ x ∈ s, re (f x) < 1 := by
+  have h := separate_convex_open_set hs₀ hs₁ hs₂ hx₀
+  obtain ⟨g, hg⟩ := h
+  use LinTo𝕜'' g
+  simp only [real_part_thing g]
+  exact hg
+
 end RCLike
