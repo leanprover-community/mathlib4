@@ -753,37 +753,11 @@ variable (e : C ≌ D)
 
 lemma functorPushforward_equivalence_eq_pullback {U : C} (S : Sieve U) :
     Sieve.functorPushforward e.inverse (Sieve.functorPushforward e.functor S) =
-      Sieve.pullback (e.unitInv.app U) S := by
-  ext Z f
-  rw [← Sieve.functorPushforward_comp]
-  simp only [Sieve.functorPushforward_apply, Presieve.functorPushforward, exists_and_left,
-    Functor.id_obj, Functor.comp_obj, Sieve.pullback_apply]
-  constructor
-  · rintro ⟨W, g, hg, x, rfl⟩
-    rw [Category.assoc]
-    apply S.downward_closed
-    simpa using hg
-  · intro hf
-    exact ⟨_, e.unitInv.app Z ≫ f ≫ e.unitInv.app U, S.downward_closed hf _,
-      e.unit.app Z ≫ e.unit.app _, by simp⟩
+      Sieve.pullback (e.unitInv.app U) S := by ext; simp
 
 lemma pullback_functorPushforward_equivalence_eq {X : C} (S : Sieve X) :
     Sieve.pullback (e.unit.app X) (Sieve.functorPushforward e.inverse
-      (Sieve.functorPushforward e.functor S)) = S := by
-  ext Z f
-  rw [← Sieve.functorPushforward_comp]
-  simp only [Functor.id_obj, Functor.comp_obj, Sieve.pullback_apply, Sieve.functorPushforward_apply,
-    Presieve.functorPushforward, Functor.comp_map, Functor.inv_fun_map, exists_and_left]
-  constructor
-  · intro ⟨W, g, hg, x, h⟩
-    simp only [Functor.comp_obj, Functor.id_obj, Iso.app_hom, Equivalence.inv_fun_map,
-      ← Category.assoc] at h
-    change _ ≫ (e.unitIso.app _).hom = _ ≫ (e.unitIso.app _).hom  at h
-    rw [Iso.cancel_iso_hom_right] at h
-    rw [h]
-    exact S.downward_closed hg _
-  · intro hf
-    exact ⟨_, e.unitInv.app Z ≫ f, S.downward_closed hf _, e.unit.app Z ≫ e.unit.app _, by simp⟩
+      (Sieve.functorPushforward e.functor S)) = S := by ext; simp
 
 end Functor
 
