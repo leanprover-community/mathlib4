@@ -387,7 +387,7 @@ theorem ext {f g : LocalizationMap S N} (h : ∀ x, f.toMap x = g.toMap x) : f =
   exact OneHom.ext h
 
 @[to_additive]
-theorem ext_iff {f g : LocalizationMap S N} : f = g ↔ ∀ x, f.toMap x = g.toMap x :=
+protected theorem ext_iff {f g : LocalizationMap S N} : f = g ↔ ∀ x, f.toMap x = g.toMap x :=
   ⟨fun h _ ↦ h ▸ rfl, ext⟩
 
 @[to_additive]

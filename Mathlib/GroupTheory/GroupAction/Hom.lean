@@ -156,7 +156,7 @@ theorem ext {f g : X →ₑ[φ] Y} :
     (∀ x, f x = g x) → f = g :=
   DFunLike.ext f g
 
-theorem ext_iff  {f g : X →ₑ[φ] Y} :
+protected theorem ext_iff  {f g : X →ₑ[φ] Y} :
     f = g ↔ ∀ x, f x = g x :=
   DFunLike.ext_iff
 

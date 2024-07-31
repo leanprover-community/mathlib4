@@ -134,7 +134,7 @@ theorem eq_iff {a b : αˣ} : (a : α) = b ↔ a = b :=
   ext.eq_iff
 
 @[to_additive]
-theorem ext_iff {a b : αˣ} : a = b ↔ (a : α) = b :=
+protected theorem ext_iff {a b : αˣ} : a = b ↔ (a : α) = b :=
   eq_iff.symm
 
 /-- Units have decidable equality if the base `Monoid` has decidable equality. -/

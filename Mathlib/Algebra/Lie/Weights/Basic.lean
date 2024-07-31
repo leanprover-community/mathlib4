@@ -208,7 +208,7 @@ variable {M}
 @[ext] lemma ext {χ₁ χ₂ : Weight R L M} (h : ∀ x, χ₁ x = χ₂ x) : χ₁ = χ₂ := by
   cases' χ₁ with f₁ _; cases' χ₂ with f₂ _; aesop
 
-lemma ext_iff {χ₁ χ₂ : Weight R L M} : (χ₁ : L → R) = χ₂ ↔ χ₁ = χ₂ := by aesop
+protected lemma ext_iff {χ₁ χ₂ : Weight R L M} : χ₁ = χ₂ ↔ (χ₁ : L → R) = χ₂ := by aesop
 
 lemma exists_ne_zero (χ : Weight R L M) :
     ∃ x ∈ weightSpace M χ, x ≠ 0 := by
@@ -236,7 +236,7 @@ def IsZero (χ : Weight R L M) := (χ : L → R) = 0
 @[simp] lemma coe_eq_zero_iff (χ : Weight R L M) : (χ : L → R) = 0 ↔ χ.IsZero := Iff.rfl
 
 lemma isZero_iff_eq_zero [Nontrivial (weightSpace M (0 : L → R))] {χ : Weight R L M} :
-    χ.IsZero ↔ χ = 0 := ext_iff (χ₂ := 0)
+    χ.IsZero ↔ χ = 0 := Weight.ext_iff (χ₂ := 0).symm
 
 lemma isZero_zero [Nontrivial (weightSpace M (0 : L → R))] : IsZero (0 : Weight R L M) := rfl
 
