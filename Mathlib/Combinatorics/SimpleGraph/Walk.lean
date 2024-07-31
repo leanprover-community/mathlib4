@@ -943,11 +943,11 @@ theorem darts_dropUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support
 
 theorem edges_takeUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.takeUntil u h).edges ⊆ p.edges :=
-  List.Subset.map _ (p.darts_takeUntil_subset h)
+  List.map_subset _ (p.darts_takeUntil_subset h)
 
 theorem edges_dropUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.dropUntil u h).edges ⊆ p.edges :=
-  List.Subset.map _ (p.darts_dropUntil_subset h)
+  List.map_subset _ (p.darts_dropUntil_subset h)
 
 theorem length_takeUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.takeUntil u h).length ≤ p.length := by
