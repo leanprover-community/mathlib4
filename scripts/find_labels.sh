@@ -20,7 +20,7 @@ git switch master
 last_month_commits="$(git log --since="$one_month_ago" --pretty=oneline | wc -l)"
 
 # Retrieve merged PRs from the last month, paginated
-prs=$(gh pr list --repo "$repo_owner/$repo_name" --state closed --search "closed:>$one_month_ago" --json number,labels --limit "$last_month_commits")
+prs=$(gh pr list --repo "$repo_owner/$repo_name" --state closed --search "closed:>$one_month_ago" --json number,labels,title --limit "$last_month_commits")
 
 # Check if any PRs are found
 if [ -z "$prs" ] || [ "$prs" = "[]" ]; then
