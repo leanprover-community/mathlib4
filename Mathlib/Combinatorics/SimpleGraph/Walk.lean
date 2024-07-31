@@ -775,10 +775,7 @@ lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → S
 
 @[simp] lemma adj_getVert_one {p : G.Walk v w} (hp : ¬ p.Nil) :
     G.Adj v (p.getVert 1) := by
-  have := adj_getVert_succ p (by simpa [not_nil_iff_lt_length] using hp)
-  simp only [getVert_zero, zero_add] at this
-  exact this
-
+  simpa using adj_getVert_succ p (by simpa [not_nil_iff_lt_length] using hp : 0 < p.length)
 
 /-- The walk obtained by removing the first `n` darts of a walk. -/
 def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
