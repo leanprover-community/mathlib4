@@ -61,7 +61,6 @@ theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
 theorem eta : ∀ x : Σa, β a, Sigma.mk x.1 x.2 = x
   | ⟨_, _⟩ => rfl
 
-
 /-- A version of `Iff.mp Sigma.ext_iff` for functions from a nonempty type to a sigma type. -/
 theorem _root_.Function.eq_of_sigmaMk_comp {γ : Type*} [Nonempty γ]
     {a b : α} {f : γ → β a} {g : γ → β b} (h : Sigma.mk a ∘ f = Sigma.mk b ∘ g) :

@@ -511,6 +511,9 @@ class IsDenseSubsite : Prop where
   isLocallyFaithful' : G.IsLocallyFaithful K := by infer_instance
   functorPushforward_mem_iff : ∀ {X : C} {S : Sieve X}, S.functorPushforward G ∈ K _ ↔ S ∈ J _
 
+lemma functorPushforward_mem_iff {X : C} {S : Sieve X} [G.IsDenseSubsite J K]:
+    S.functorPushforward G ∈ K _ ↔ S ∈ J _ := IsDenseSubsite.functorPushforward_mem_iff
+
 namespace IsDenseSubsite
 
 variable [G.IsDenseSubsite J K]
@@ -654,6 +657,9 @@ it induces an equivalence of category of sheaves valued in a category with suita
 @[simps! functor inverse]
 noncomputable def sheafEquiv : Sheaf J A ≌ Sheaf K A :=
   (G.sheafAdjunctionCocontinuous A J K).toEquivalence.symm
+
+instance : (G.sheafPushforwardContinuous A J K).IsEquivalence :=
+  inferInstanceAs (IsDenseSubsite.sheafEquiv G _ _ _).inverse.IsEquivalence
 
 variable [HasWeakSheafify J A] [HasWeakSheafify K A]
 
