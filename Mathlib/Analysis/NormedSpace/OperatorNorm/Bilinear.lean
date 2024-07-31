@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
-import Mathlib.Analysis.NormedSpace.LinearIsometry
-import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
+import Mathlib.Analysis.Normed.Operator.LinearIsometry
+import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 
 /-!
 # Operator norm: bilinear maps
