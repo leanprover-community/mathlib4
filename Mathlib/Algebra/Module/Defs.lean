@@ -546,11 +546,12 @@ end AddCommGroup
 
 section Module
 
-variable [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
+variable [Ring R] [AddCommGroup M] [Module R M]
 
 section SMulInjective
 
 variable (R)
+variable [NoZeroSMulDivisors R M]
 
 theorem smul_left_injective {x : M} (hx : x ≠ 0) : Function.Injective fun c : R => c • x :=
   fun c d h =>

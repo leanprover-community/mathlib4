@@ -282,6 +282,11 @@ theorem univ_filter_mem_range (f : α → β) [Fintype β] [DecidablePred fun y 
 theorem coe_filter_univ (p : α → Prop) [DecidablePred p] :
     (univ.filter p : Set α) = { x | p x } := by simp
 
+end Finset
+
+namespace Finset
+variable  {s t : Finset α}
+
 @[simp] lemma subtype_eq_univ {p : α → Prop} [DecidablePred p] [Fintype {a // p a}] :
     s.subtype p = univ ↔ ∀ ⦃a⦄, p a → a ∈ s := by simp [ext_iff]
 
