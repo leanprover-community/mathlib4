@@ -87,10 +87,8 @@ instance : e.functor.IsDenseSubsite J K := by
 
 instance : e.symm.TransportsGrothendieckTopology K J where
   eq_inducedTopology := by
-    rw [e.eq_inducedTopology_of_transports J K]
-    ext X S
-    change _ ↔ _ ∈ J.sieves _
-    simp [Sieve.functorPushforward_equivalence_eq_pullback]
+    ext
+    simp [e.eq_inducedTopology_of_transports J K, Sieve.functorPushforward_equivalence_eq_pullback]
 
 instance : e.inverse.IsDenseSubsite K J := inferInstanceAs (e.symm.functor.IsDenseSubsite _ _)
 
