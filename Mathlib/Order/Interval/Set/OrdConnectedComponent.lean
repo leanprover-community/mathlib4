@@ -167,6 +167,7 @@ def ordT5Nhd (s t : Set α) : Set α :=
   ⋃ x ∈ s, ordConnectedComponent (tᶜ ∩ (ordConnectedSection <| ordSeparatingSet s t)ᶜ) x
 
 theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
+  clear x y z
   rw [disjoint_iff_inf_le]
   rintro x ⟨hx₁, hx₂⟩
   rcases mem_iUnion₂.1 hx₁ with ⟨a, has, ha⟩
@@ -175,7 +176,7 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
   clear hx₂
   rw [mem_ordConnectedComponent, subset_inter_iff] at ha hb
   wlog hab : a ≤ b with H
-  · exact H (x := x) (y := y) (z := z) b hbt hb a has ha (le_of_not_le hab)
+  · exact H b hbt hb a has ha (le_of_not_le hab)
   cases' ha with ha ha'
   cases' hb with hb hb'
   have hsub : [[a, b]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := by
