@@ -70,9 +70,8 @@ lemma rpowₙ_add {a : A} {x y : ℝ≥0} (hx : 0 < x) (hy : 0 < y) :
 
 @[simp]
 lemma rpowₙ_zero {a : A} : rpowₙ a 0 = 0 := by
-  simp only [rpowₙ, NNReal.coe_zero, NNReal.rpow_eq_pow, NNReal.rpow_zero]
-  have : (fun _ : ℝ≥0 => (1 : ℝ≥0)) 0 ≠ 0 := by simp
-  simp [cfcₙ_apply_of_not_map_zero]
+  simp only [rpowₙ, NNReal.coe_zero, NNReal.rpow_eq_pow, NNReal.rpow_zero,
+    one_ne_zero, not_false_eq_true, cfcₙ_apply_of_not_map_zero]
 
 lemma rpowₙ_one {a : A} (ha : 0 ≤ a := by cfc_tac) : rpowₙ a 1 = a := by
   simp only [rpowₙ, NNReal.coe_one, NNReal.rpow_eq_pow, NNReal.rpow_one]
@@ -192,7 +191,7 @@ noncomputable instance (priority := 100) : Pow A ℝ where
   pow a y := rpow a y
 
 @[simp]
-lemma rpow_nonneg {a : A} {y : ℝ} : 0 ≤ rpow a y := cfc_predicate _ a
+lemma rpow_nonneg {a : A} {y : ℝ} : 0 ≤ a ^ y := cfc_predicate _ a
 
 @[simp]
 lemma rpow_eq_pow {a : A} {y : ℝ} : rpow a y = a ^ y := rfl
