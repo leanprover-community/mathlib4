@@ -23,15 +23,11 @@ printf $'\n%s commits between %s and %s\n' "${commits_in_range}" "${start_date}"
 prs=$(gh pr list --repo "$repository" --state closed --base master --search "closed:${start_date}..${end_date}" --json number,labels,title --limit "$((commits_in_range * 2))")
 
 # Print PR numbers and their labels
-prs_to_print="$(echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "PR #\(.number) - Labels: \((.labels | map(.name) | join(", ")) // "No labels") - Title: \(.title)"')"
+echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "PR #\(.number) - Labels: \((.labels | map(.name) | join(", ")) // "No labels") - Title: \(.title)"'
 
-echo "${prs_to_print}"
-
-echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "(#\(.number))"'
-
-echo "${prs_to_print}" | awk '{print $2}' | sort > found_by_gh.txt
+echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "(#\(.number))"' | sort > found_by_gh.txt
 git log --pretty=oneline --since="${start_date}" --until="${end_date}" |
-  sed -n 's=.*(\(#[0-9]*\))$=\1=p' | sort > found_by_git.txt
+  sed -n 's=.*\((#[0-9]*)\)$=\1=p' | sort > found_by_git.txt
 
 only_gh="$( comm -23 found_by_gh.txt found_by_git.txt)"
 only_git="$(comm -13 found_by_gh.txt found_by_git.txt)"
