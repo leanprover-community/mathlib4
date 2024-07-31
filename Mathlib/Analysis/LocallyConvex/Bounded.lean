@@ -195,18 +195,20 @@ end Image
 
 section sequence
 
-variable {𝕝 : Type*} [NormedField 𝕜] [NontriviallyNormedField 𝕝] [AddCommGroup E] [Module 𝕜 E]
-  [Module 𝕝 E] [TopologicalSpace E] [ContinuousSMul 𝕝 E]
-
-theorem IsVonNBounded.smul_tendsto_zero {S : Set E} {ε : ι → 𝕜} {x : ι → E} {l : Filter ι}
+theorem IsVonNBounded.smul_tendsto_zero [NormedField 𝕜]
+    [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+    {S : Set E} {ε : ι → 𝕜} {x : ι → E} {l : Filter ι}
     (hS : IsVonNBounded 𝕜 S) (hxS : ∀ᶠ n in l, x n ∈ S) (hε : Tendsto ε l (𝓝 0)) :
     Tendsto (ε • x) l (𝓝 0) :=
   (hS.tendsto_smallSets_nhds.comp hε).of_smallSets <| hxS.mono fun _ ↦ smul_mem_smul_set
 
-theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [l.NeBot]
+variable [NontriviallyNormedField 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousSMul 𝕜 E]
+
+theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕜} {l : Filter ι} [l.NeBot]
     (hε : ∀ᶠ n in l, ε n ≠ 0) {S : Set E}
-    (H : ∀ x : ι → E, (∀ n, x n ∈ S) → Tendsto (ε • x) l (𝓝 0)) : IsVonNBounded 𝕝 S := by
-  rw [(nhds_basis_balanced 𝕝 E).isVonNBounded_iff]
+    (H : ∀ x : ι → E, (∀ n, x n ∈ S) → Tendsto (ε • x) l (𝓝 0)) : IsVonNBounded 𝕜 S := by
+  rw [(nhds_basis_balanced 𝕜 E).isVonNBounded_iff]
   by_contra! H'
   rcases H' with ⟨V, ⟨hV, hVb⟩, hVS⟩
   have : ∀ᶠ n in l, ∃ x : S, ε n • (x : E) ∉ V := by
@@ -227,9 +229,9 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [l
   if and only if for any sequence `x : ℕ → S`, `ε • x` tends to 0. This actually works for any
   indexing type `ι`, but in the special case `ι = ℕ` we get the important fact that convergent
   sequences fully characterize bounded sets. -/
-theorem isVonNBounded_iff_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [l.NeBot]
+theorem isVonNBounded_iff_smul_tendsto_zero {ε : ι → 𝕜} {l : Filter ι} [l.NeBot]
     (hε : Tendsto ε l (𝓝[≠] 0)) {S : Set E} :
-    IsVonNBounded 𝕝 S ↔ ∀ x : ι → E, (∀ n, x n ∈ S) → Tendsto (ε • x) l (𝓝 0) :=
+    IsVonNBounded 𝕜 S ↔ ∀ x : ι → E, (∀ n, x n ∈ S) → Tendsto (ε • x) l (𝓝 0) :=
   ⟨fun hS x hxS => hS.smul_tendsto_zero (eventually_of_forall hxS) (le_trans hε nhdsWithin_le_nhds),
     isVonNBounded_of_smul_tendsto_zero (by exact hε self_mem_nhdsWithin)⟩
 
