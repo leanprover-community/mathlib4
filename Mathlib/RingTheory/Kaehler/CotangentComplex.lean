@@ -246,7 +246,8 @@ lemma Hom.sub_tmul (f g : Hom P P') (r x) :
     Derivation.mk_coe, LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply]
 
 lemma CotangentSpace.map_sub_map (f g : Hom P P') :
-    map f - map g = P'.cotangentComplex.restrictScalars S ∘ₗ (f.sub g) := by
+    CotangentSpace.map f - CotangentSpace.map g =
+      P'.cotangentComplex.restrictScalars S ∘ₗ (f.sub g) := by
   apply P.cotangentSpaceBasis.ext
   intro i
   simp only [cotangentSpaceBasis_apply, LinearMap.sub_apply, map_tmul, _root_.map_one,
