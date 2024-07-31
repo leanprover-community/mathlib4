@@ -247,32 +247,13 @@ noncomputable def extendTo𝕜'' (fr : E →ₗ[ℝ] ℝ) : E →ₗ[𝕜] 𝕜 
 variable [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
   [Module 𝕜 E] [Module ℝ E] [ContinuousSMul 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
-noncomputable def extendTo𝕜' (fr : E →L[ℝ] ℝ) : E →L[𝕜] 𝕜 where
-  toFun := extendTo𝕜'' fr.1
-  map_add' := fun x y ↦ LinearMap.map_add (extendTo𝕜'' ↑fr) x y
-  map_smul' := fun m x ↦ LinearMap.CompatibleSMul.map_smul (extendTo𝕜'' ↑fr) m x
-  cont := by
-    change Continuous (fun x => (fr x : 𝕜) - (I : 𝕜) * fr ((I : 𝕜) • x)); fun_prop
-
-noncomputable def LinTo𝕜' : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜] 𝕜) where
-  toFun := extendTo𝕜'
-  map_add' := by
-    intro f g
-    ext v
-    simp only [ContinuousLinearMap.add_apply]
-    change (fun x => ((f + g) x : 𝕜) - (I : 𝕜) * (f + g) ((I : 𝕜) • x)) v =
-     ((fun x => (f x : 𝕜) - (I : 𝕜) * f ((I : 𝕜) • x)) +
-       (fun x => (g x : 𝕜) - (I : 𝕜) * g ((I : 𝕜) • x))) v
-    simp only [ContinuousLinearMap.add_apply, map_add, Pi.add_apply]
-    ring_nf
-  map_smul' := by
-    intro m f
-    simp only [RingHom.id_apply]
-    ext v
-    change (fun x => ((m • f) x : 𝕜) - (I : 𝕜) * (m • f) ((I : 𝕜) • x)) v =
-       m • ((fun x => (f x : 𝕜) - (I : 𝕜) * f ((I : 𝕜) • x)) v)
-    simp only [ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul, map_mul,
-       @real_smul_eq_coe_mul]
-    ring_nf
+noncomputable def LinTo𝕜'' : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜] 𝕜) :=
+  letI to𝕜 (fr : (E →L[ℝ] ℝ)) : (E →L[𝕜] 𝕜) :=
+    { toLinearMap := extendTo𝕜'' fr
+      cont := show Continuous fun x ↦ (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) by fun_prop }
+  have h fr x : to𝕜 fr x = ((fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜)) := rfl
+  { toFun := to𝕜
+    map_add' := by intros; ext; simp [h]; ring
+    map_smul' := by intros; ext; simp [h, real_smul_eq_coe_mul]; ring }
 
 end RCLike
