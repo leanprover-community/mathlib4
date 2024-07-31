@@ -31,6 +31,10 @@ instance : HasExplicitFiniteCoproducts.{w, u}
     ⟨show TotallyDisconnectedSpace (Σ (_a : _), _) from inferInstance,
       show SecondCountableTopology (Σ (_a : _), _) from inferInstance⟩ }
 
+/-- A one-element space is terminal in `Profinite` -/
+abbrev isTerminalPUnit : IsTerminal (LightProfinite.of PUnit.{u + 1}) :=
+  CompHausLike.isTerminalPUnit
+
 example : FinitaryExtensive LightProfinite.{u} := inferInstance
 
 noncomputable example : PreservesFiniteCoproducts lightProfiniteToCompHaus.{u} := inferInstance
