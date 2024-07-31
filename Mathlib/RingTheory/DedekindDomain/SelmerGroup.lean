@@ -67,7 +67,7 @@ namespace IsDedekindDomain
 
 noncomputable section
 
-open scoped Classical DiscreteValuation nonZeroDivisors
+open scoped DiscreteValuation nonZeroDivisors
 
 universe u v
 
@@ -79,6 +79,7 @@ variable {R : Type u} [CommRing R] [IsDedekindDomain R] {K : Type v} [Field K]
 
 namespace HeightOneSpectrum
 
+open Classical in
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/
 def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
   let hx := IsLocalization.sec R⁰ (x : K)
@@ -89,6 +90,7 @@ def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
 @[simp]
 theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
     (v.valuationOfNeZeroToFun x : ℤₘ₀) = v.valuation (x : K) := by
+  classical
   rw [show v.valuation (x : K) = _ * _ by rfl]
   rw [Units.val_inv_eq_inv_val]
   change _ = ite _ _ _ * (ite _ _ _)⁻¹
