@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
-import Mathlib.RingTheory.LocalProperties
-import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
+import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 
 /-!
 
@@ -48,15 +47,23 @@ lemma closedEmbedding {X Y : Scheme} (f : X ⟶ Y)
     [IsClosedImmersion f] : ClosedEmbedding f.1.base :=
   IsClosedImmersion.base_closed
 
-lemma surjective_stalkMap {X Y : Scheme} (f : X ⟶ Y)
-    [IsClosedImmersion f] (x : X) : Function.Surjective (f.stalkMap x) :=
-  IsClosedImmersion.surj_on_stalks x
-
 lemma eq_inf : @IsClosedImmersion = (topologically ClosedEmbedding) ⊓
     stalkwise (fun f ↦ Function.Surjective f) := by
   ext X Y f
   rw [isClosedImmersion_iff]
   rfl
+
+lemma iff_isPreimmersion {X Y : Scheme} {f : X ⟶ Y} :
+    IsClosedImmersion f ↔ IsPreimmersion f ∧ IsClosed (Set.range f.1.base) := by
+  rw [and_comm, isClosedImmersion_iff, isPreimmersion_iff, ← and_assoc, closedEmbedding_iff,
+    @and_comm (Embedding _)]
+
+lemma of_isPreimmersion {X Y : Scheme} (f : X ⟶ Y) [IsPreimmersion f]
+    (hf : IsClosed (Set.range f.1.base)) : IsClosedImmersion f :=
+  iff_isPreimmersion.mpr ⟨‹_›, hf⟩
+
+instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : IsPreimmersion f :=
+  (iff_isPreimmersion.mp ‹_›).1
 
 /-- Isomorphisms are closed immersions. -/
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsClosedImmersion f where
@@ -121,7 +128,7 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion 
         ← Set.image_comp]
       exact ClosedEmbedding.isClosedMap h _ hZ
   surj_on_stalks x := by
-    have h := surjective_stalkMap (f ≫ g) x
+    have h := (f ≫ g).stalkMap_surjective x
     simp_rw [Scheme.comp_val, Scheme.stalkMap_comp] at h
     exact Function.Surjective.of_comp h
 
@@ -129,11 +136,6 @@ instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f whe
   isCompact_preimage _ _ hU' := base_closed.isCompact_preimage hU'
 
 end IsClosedImmersion
-
-/-- Being surjective on stalks is local at the target. -/
-instance isSurjectiveOnStalks_isLocalAtTarget : IsLocalAtTarget
-    (stalkwise (fun f ↦ Function.Surjective f)) :=
-  stalkwiseIsLocalAtTarget_of_respectsIso surjective_respectsIso
 
 /-- Being a closed immersion is local at the target. -/
 instance IsClosedImmersion.isLocalAtTarget : IsLocalAtTarget @IsClosedImmersion :=
