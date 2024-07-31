@@ -797,7 +797,7 @@ theorem addHaar_image_le_lintegral_abs_det_fderiv_aux1 (hs : MeasurableSet s)
       simp only [m, ENNReal.ofReal, lt_add_iff_pos_right, εpos, ENNReal.coe_lt_coe]
     rcases ((addHaar_image_le_mul_of_det_lt μ A I).and self_mem_nhdsWithin).exists with ⟨δ, h, δpos⟩
     obtain ⟨δ', δ'pos, hδ'⟩ : ∃ (δ' : ℝ), 0 < δ' ∧ ∀ B, dist B A < δ' → dist B.det A.det < ↑ε :=
-      continuousAt_iff.1  (ContinuousLinearMap.continuous_det (E := E)).continuousAt ε εpos
+      continuousAt_iff.1 (ContinuousLinearMap.continuous_det (E := E)).continuousAt ε εpos
     let δ'' : ℝ≥0 := ⟨δ' / 2, (half_pos δ'pos).le⟩
     refine ⟨min δ δ'', lt_min δpos (half_pos δ'pos), ?_, ?_⟩
     · intro B hB
