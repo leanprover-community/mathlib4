@@ -9,46 +9,30 @@ import Mathlib.Topology.Category.LightProfinite.Basic
 
 # Explicit limits and colimits
 
-This file collects some constructions of explicit limits and colimits in `LightProfinite`,
-which may be useful due to their definitional properties.
-
-## Main definitions
-
-* `LightProfinite.pullback`: Explicit pullback, defined in the "usual" way as a subset of the
-  product.
-
-* `LightProfinite.finiteCoproduct`: Explicit finite coproducts, defined as a disjoint union.
-
+This file applies the general API for explicit limits and colimits in `CompHausLike P` (see
+the file `Mathlib.Topology.Category.CompHausLike.Limits`) to the special case of `LightProfinite`.
 -/
 
 namespace LightProfinite
 
 universe u w
 
-/-
-Previously, this had accidentally been made a global instance,
-and we now turn it on locally when convenient.
--/
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
-
 open CategoryTheory Limits CompHausLike
 
-set_option linter.unusedVariables false in
 instance : HasExplicitPullbacks
     (fun Y ↦ TotallyDisconnectedSpace Y ∧ SecondCountableTopology Y) where
   hasProp _ _ := {
-    hasProp := ⟨show TotallyDisconnectedSpace {xy : _ | _} from inferInstance,
-      show SecondCountableTopology {xy : _ | _} from inferInstance⟩ }
+    hasProp := ⟨show TotallyDisconnectedSpace {_xy : _ | _} from inferInstance,
+      show SecondCountableTopology {_xy : _ | _} from inferInstance⟩ }
 
-set_option linter.unusedVariables false in
-instance : HasExplicitFiniteCoproducts
+instance : HasExplicitFiniteCoproducts.{w, u}
     (fun Y ↦ TotallyDisconnectedSpace Y ∧ SecondCountableTopology Y) where
   hasProp _ := { hasProp :=
-    ⟨show TotallyDisconnectedSpace (Σ (a : _), _) from inferInstance,
-      show SecondCountableTopology (Σ (a : _), _) from inferInstance⟩ }
+    ⟨show TotallyDisconnectedSpace (Σ (_a : _), _) from inferInstance,
+      show SecondCountableTopology (Σ (_a : _), _) from inferInstance⟩ }
 
-example : FinitaryExtensive LightProfinite := inferInstance
+example : FinitaryExtensive LightProfinite.{u} := inferInstance
 
-noncomputable example : PreservesFiniteCoproducts lightProfiniteToCompHaus := inferInstance
+noncomputable example : PreservesFiniteCoproducts lightProfiniteToCompHaus.{u} := inferInstance
 
 end LightProfinite
