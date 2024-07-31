@@ -15,14 +15,14 @@ findInRange () {
 repository="${1}"
 
 # Get the start and end dates
-start_date="${2}"
-end_date="${3}"
+startDate="${2}"
+endDate="${3}"
 
 # find how many commits to master there have been in the last month
-commits_in_range="$(git log --since="${start_date}" --until="${end_date}" --pretty=oneline | wc -l)"
+commits_in_range="$(git log --since="${startDate}" --until="${endDate}" --pretty=oneline | wc -l)"
 
 # Retrieve merged PRs from the given range
-prs=$(gh pr list --repo "$repository" --state closed --base master --search "closed:${start_date}..${end_date}" --json number,labels,title --limit "$((commits_in_range * 2))")
+prs=$(gh pr list --repo "$repository" --state closed --base master --search "closed:${startDate}..${endDate}" --json number,labels,title --limit "$((commits_in_range * 2))")
 
 # Print PR numbers, their labels and their title
 echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "PR #\(.number) - Labels: \((.labels | map(.name) | join(", ")) // "No labels") - Title: \(.title)"'
@@ -31,7 +31,7 @@ echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "PR
 echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "(#\(.number))"' | sort >> found_by_gh.txt
 
 # Store to file `found_by_git.txt` the PR numbers, as found by looking at the commits to `master`
-git log --pretty=oneline --since="${start_date}" --until="${end_date}" |
+git log --pretty=oneline --since="${startDate}" --until="${endDate}" |
   sed -n 's=.*\((#[0-9]*)\)$=\1=p' | sort >> found_by_git.txt
 }
 
