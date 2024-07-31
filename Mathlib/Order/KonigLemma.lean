@@ -11,32 +11,35 @@ import Mathlib.Order.Grade
 
 Kőnig's infinity lemma is most often stated as a graph theory result :
 every infinite, locally finite connected graph contains an infinite path.
-It has links to computability and proof theory, and
-is often applied when the graph is a tree whose vertices encode some other types of object.
+It has links to computability and proof theory, and is in fact a specialization
+of `nonempty_sections_of_finite_cofiltered_system`.
+It is stated and proved here with fewer dependencies.
 
-For applications of this form, it is convenient to state the lemma
+In practice, most applications are not to an abstract graph,
+but to a concrete collection of objects that are organized in a graph-like way,
+often where the graph is a rooted tree representing a graded order.
+In fact, the lemma is in fact most easily stated and proved
 in terms of covers in a strongly atomic order rather than a graph;
 in this setting, the proof is almost trivial.
-In this file, we prove the lemma in this order-theoretic way,
-and also give a formulation that is convenient for applications in Ramsey theory.
-We defer the graph-theoretic version of the statement for future work.
+
+We leave the explicitly graph-theoretic version of the statement as TODO.
 
 ## Main Results
 
 * `exists_seq_covby_of_forall_covby_finite` : Kőnig's lemma for strongly atomic orders.
 
 * `exists_orderEmbedding_covby_of_forall_covby_finite` : Kőnig's lemma, where the sequence
-    is given as an `OrderEmbedding` instead of a function.
+  is given as an `OrderEmbedding` instead of a function.
 
 * `exists_orderEmbedding_covby_of_forall_covby_finite_of_bot` : Kőnig's lemma where the sequence
-    starts at the minimum of an infinite type.
+  starts at the minimum of an infinite type.
 
 * `exist_seq_forall_proj_of_forall_finite` : Kőnig's lemma applied to an order on a sigma-type
-  `(i : ℕ) × α i`. Useful for applications in Ramsey theory.
+  `(i : ℕ) × α i`.
 
 ## TODO
 
-Actually formulate the lemma as a statement about graphs.
+Formulate the lemma as a statement about graphs.
 
 -/
 
