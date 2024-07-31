@@ -155,6 +155,8 @@ theorem perm_lookup {a : α} {s₁ s₂ : AList β} (p : s₁.entries ~ s₂.ent
 instance (a : α) (s : AList β) : Decidable (a ∈ s) :=
   decidable_of_iff _ lookup_isSome
 
+end
+
 theorem keys_subset_keys_of_entries_subset_entries
     {s₁ s₂ : AList β} (h : s₁.entries ⊆ s₂.entries) : s₁.keys ⊆ s₂.keys := by
   intro k hk
@@ -166,6 +168,8 @@ theorem keys_subset_keys_of_entries_subset_entries
 
 /-! ### replace -/
 
+section
+variable [DecidableEq α]
 
 /-- Replace a key with a given value in an association list.
   If the key is not present it does nothing. -/
