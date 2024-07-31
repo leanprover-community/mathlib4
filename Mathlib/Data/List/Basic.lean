@@ -12,7 +12,6 @@ import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Logic.Unique
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
-import Batteries.Data.List.EraseIdx
 import Batteries.Data.List.Perm
 
 /-!
@@ -202,7 +201,7 @@ alias ⟨eq_nil_of_subset_nil, _⟩ := subset_nil
 
 theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
     map f l₁ ⊆ map f l₂ ↔ l₁ ⊆ l₂ := by
-  refine ⟨?_, Subset.map f⟩; intro h2 x hx
+  refine ⟨?_, map_subset f⟩; intro h2 x hx
   rcases mem_map.1 (h2 (mem_map_of_mem f hx)) with ⟨x', hx', hxx'⟩
   cases h hxx'; exact hx'
 
