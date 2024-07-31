@@ -47,6 +47,6 @@ else
   printf $'* PRs not found by `gh`\n\n\'%s\'\n' "${only_git}"
 fi
 
-printf $'\n---\n'
+printf $'\n---\n%s\n' "${{ github.head_ref }}"
 
-git switch -
+git switch - || git switch "${{ github.head_ref }}"
