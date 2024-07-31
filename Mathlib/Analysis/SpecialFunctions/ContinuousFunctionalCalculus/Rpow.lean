@@ -8,6 +8,7 @@ import Mathlib.Analysis.CstarAlgebra.Spectrum
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog
 import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.NonUnital
+import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Instances
 
 /-!
 # Real powers defined via the continuous functional calculus
@@ -37,7 +38,7 @@ section NonUnital
 variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A] [StarOrderedRing A]
   [TopologicalRing A] [Module ℝ≥0 A] [SMulCommClass ℝ≥0 A A] [IsScalarTower ℝ≥0 A A]
   [CompleteSpace A] [NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
-  [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
+  --[UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
 
 /-- Real powers of operators, based on the non-unital continuous functional calculus. -/
 noncomputable def rpowₙ (a : A) (y : ℝ≥0) : A := cfcₙ (fun x => NNReal.rpow x y) a
@@ -87,7 +88,8 @@ lemma rpowₙ_three {a : A} (ha : 0 ≤ a := by cfc_tac) : rpowₙ a 3 = a * a *
 lemma zero_rpowₙ {x : ℝ≥0} : rpowₙ (0 : A) x = 0 := by simp [rpowₙ]
 
 @[simp]
-lemma rpowₙ_rpowₙ {a : A} {x y : ℝ≥0} : rpowₙ (rpowₙ a x) y = rpowₙ a (x * y) := by
+lemma rpowₙ_rpowₙ [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
+    {a : A} {x y : ℝ≥0} : rpowₙ (rpowₙ a x) y = rpowₙ a (x * y) := by
   by_cases ha : 0 ≤ a
   case pos =>
     by_cases hx : 0 < x
@@ -100,7 +102,7 @@ lemma rpowₙ_rpowₙ {a : A} {x y : ℝ≥0} : rpowₙ (rpowₙ a x) y = rpow�
         replace hy : y = 0 := eq_of_le_of_not_lt (le_of_not_lt hy) not_lt_zero'
         simp [hy]
       case pos =>
-        simp [rpowₙ]
+        simp only [rpowₙ, NNReal.rpow_eq_pow, NNReal.coe_mul]
         have h₁ : ContinuousOn (fun z : ℝ≥0 => z ^ (y : ℝ))
             ((fun z : ℝ≥0 => z ^ (x : ℝ)) '' quasispectrum ℝ≥0 a) :=
           Continuous.continuousOn <| NNReal.continuous_rpow_const (le_of_lt hy)
@@ -123,6 +125,8 @@ lemma rpowₙ_rpowₙ {a : A} {x y : ℝ≥0} : rpowₙ (rpowₙ a x) y = rpow�
 
 /- ## `sqrt` -/
 
+section sqrt
+
 @[simp]
 lemma sqrt_nonneg {a : A} : 0 ≤ sqrt a := cfcₙ_predicate _ a
 
@@ -135,9 +139,11 @@ lemma sqrt_eq_rpowₙ {a : A} : sqrt a = rpowₙ a (1 / 2) := by
 @[simp]
 lemma sqrt_zero : sqrt (0 : A) = 0 := by simp [sqrt]
 
+variable [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
+
 @[simp]
 lemma rpowₙ_sqrt {a : A} {x : ℝ≥0} : rpowₙ (sqrt a) x = rpowₙ a (x / 2) := by
-  simp [sqrt_eq_rpowₙ, inv_mul_eq_div]
+  rw [sqrt_eq_rpowₙ, rpowₙ_rpowₙ, one_div_mul_eq_div 2 x]
 
 lemma rpowₙ_sqrt_two {a : A} (ha : 0 ≤ a := by cfc_tac) : rpowₙ (sqrt a) 2 = a := by
   simp only [rpowₙ_sqrt, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, div_self]
@@ -157,6 +163,8 @@ lemma sqrt_rpowₙ_two {a : A} (ha : 0 ≤ a := by cfc_tac) : sqrt (rpowₙ a 2)
 lemma sqrt_mul_self {a : A} (ha : 0 ≤ a := by cfc_tac) : sqrt (a * a) = a := by
   rw [← rpowₙ_two, sqrt_rpowₙ_two]
 
+end sqrt
+
 end NonUnital
 
 section Unital
@@ -164,40 +172,85 @@ section Unital
 variable {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A] [StarOrderedRing A]
   [TopologicalRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
   [ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
-  --[NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
-  [UniqueContinuousFunctionalCalculus ℝ≥0 A]
-  --[UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
 
 noncomputable def rpow (a : A) (y : ℝ) : A := cfc (fun x => NNReal.rpow x y) a
+
+/- ## `rpow` -/
 
 @[simp]
 lemma rpow_nonneg {a : A} {y : ℝ} : 0 ≤ rpow a y := cfc_predicate _ a
 
---lemma rpowₙ_eq_rpow {a : A} {y : ℝ≥0} : rpowₙ a y = rpow a y := by
+lemma rpow_natCast {a : A} {n : ℕ} (ha : 0 ≤ a := by cfc_tac) : rpow a n = a ^ n := by
+  have h₁ : (fun x : ℝ≥0 => NNReal.rpow x n) = fun (x : ℝ≥0) => x ^ n := by ext; simp
+  simp_rw [rpow, h₁]
+  change cfc (fun x : ℝ≥0 => (id x) ^ n) a = a ^ n
+  rw [cfc_pow (id : ℝ≥0 → ℝ≥0) n a, cfc_id ℝ≥0 a]
+
+@[simp]
+lemma rpow_algebraMap {x : ℝ≥0} {y : ℝ} :
+    rpow (algebraMap ℝ≥0 A x) y = algebraMap ℝ≥0 A (x ^ y) := by
+  simp only [rpow]
+  rw [cfc_algebraMap x (fun z : ℝ≥0 => NNReal.rpow z y)]
+  rfl
+
+lemma rpow_add_of_zero_not_mem_spectrum {a : A} {x y : ℝ} (ha : 0 ∉ spectrum ℝ≥0 a) :
+    rpow a (x + y) = rpow a x * rpow a y := by
+  simp only [rpow, NNReal.rpow_eq_pow]
+  have h : ∀ r, ContinuousOn (fun z : ℝ≥0 => z ^ (r : ℝ)) (spectrum ℝ≥0 a) := by
+    intro r z hz
+    exact ContinuousAt.continuousWithinAt <| NNReal.continuousAt_rpow_const <| Or.inl <| by aesop
+  rw [← cfc_mul _ _ a (h x) (h y)]
+  refine cfc_congr ?_
+  intro z hz
+  have : z ≠ 0 := by aesop
+  simp [NNReal.rpow_add this _ _]
+
+-- TODO: relate to a strict positivity condition
+lemma rpow_rpow_of_zero_not_mem_spectrum [UniqueContinuousFunctionalCalculus ℝ≥0 A]
+    {a : A} {x y : ℝ} (ha₁ : ∀ z ∈ spectrum ℝ≥0 a, 0 < z) (hx : x ≠ 0) (ha₂ : 0 ≤ a := by cfc_tac) :
+    rpow (rpow a x) y = rpow a (x * y) := by
+  have ha₁' : 0 ∉ spectrum ℝ≥0 a := fun h => (lt_self_iff_false 0).mp (ha₁ 0 h)
+  simp only [rpow, NNReal.rpow_eq_pow]
+  have h₁ : ContinuousOn (fun z : ℝ≥0 => z ^ (y : ℝ))
+      ((fun z : ℝ≥0 => z ^ (x : ℝ)) '' spectrum ℝ≥0 a) := by
+    intro z hz
+    exact ContinuousAt.continuousWithinAt <| NNReal.continuousAt_rpow_const <| Or.inl <| by aesop
+  have h₂ : ContinuousOn (fun z : ℝ≥0 => z ^ (x : ℝ)) (spectrum ℝ≥0 a) := by
+    intro z hz
+    exact ContinuousAt.continuousWithinAt <| NNReal.continuousAt_rpow_const <| Or.inl <| by aesop
+  rw [← cfc_comp _ _ a ha₂ h₁ h₂]
+  refine cfc_congr fun _ _ => ?_
+  simp [NNReal.rpow_mul]
+
+lemma rpow_one {a : A} (ha : 0 ≤ a := by cfc_tac) : rpow a 1 = a := by
+  simp only [rpow, NNReal.coe_one, NNReal.rpow_eq_pow, NNReal.rpow_one]
+  change cfc (id : ℝ≥0 → ℝ≥0) a = a
+  rw [cfc_id ℝ≥0 a]
+
+@[simp]
+lemma one_rpow {x : ℝ} : rpow (1 : A) x = (1 : A) := by simp [rpow]
+
+lemma rpow_zero {a : A} (ha : 0 ≤ a := by cfc_tac) : rpow a 0 = 1 := by
+  simp [rpow, cfc_const_one ℝ≥0 a]
+
+lemma zero_rpow {x : ℝ} (hx : x ≠ 0) : rpow (0 : A) x = 0 := by simp [rpow, NNReal.zero_rpow hx]
+
+section unital_vs_nonunital
+
+variable [NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
+  [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
+
+--lemma rpowₙ_eq_rpow {a : A} {x : ℝ≥0} : rpowₙ a x = rpow a x := by
+--  have hzero : NNReal.rpow 0 x = 0 := by sorry
+--  have hcont : ContinuousOn (fun z => NNReal.rpow z x) (spectrum ℝ≥0 a) := by sorry
+--  rw [rpowₙ, rpow, cfcₙ_eq_cfc hcont hzero]
 --  sorry
 
-lemma rpow_natCast {a : A} (n : ℕ) : rpow a n = a ^ n := by
-  sorry
-
-lemma rpow_algebraMap {x y : ℝ} : rpow (algebraMap ℝ A x) y = algebraMap ℝ A (x ^ y) := by sorry
-
-lemma exp_smul {a : A} {r : ℝ} : NormedSpace.exp ℂ (r • a) = rpow (NormedSpace.exp ℂ a) r := by
-  sorry
-
-lemma rpow_add {a : A} {x y : ℝ} : rpow a (x + y) = rpow a x * rpow a y := by sorry
-
-lemma rpow_rpow {a : A} {x y : ℝ} : rpow (rpow a x) y = rpow a (x * y) := by sorry
-
-lemma rpow_one {a : A} : rpow a 1 = a := by sorry
-
-lemma one_rpow {x : ℝ} : rpow (1 : A) x = (1 : A) := by sorry
-
-lemma rpow_zero {a : A} : rpow a 0 = 1 := by sorry
-
-lemma zero_rpow {x : ℝ} (hx : x ≠ 0) : rpow (0 : A) x = 0 := by sorry
-
-lemma log_rpow {a : A} {x : ℝ≥0} : log (rpow a x) = x • log a := by sorry
+end unital_vs_nonunital
 
 end Unital
+
+--lemma log_rpow {a : A} {x : ℝ≥0} : log (rpow a x) = x • log a := by sorry
+
 
 end CFC
