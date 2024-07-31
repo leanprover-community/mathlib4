@@ -58,8 +58,6 @@ theorem fg_iff_exists_fin_generating_family {N : L.Substructure M} :
 theorem fg_bot : (⊥ : L.Substructure M).FG :=
   ⟨∅, by rw [Finset.coe_empty, closure_empty]⟩
 
-theorem inhabited_finiteEquiv : Inhabited { S : L.Substructure M // S.FG } := ⟨⊥, fg_bot⟩
-
 instance instInhabited_finiteEquiv : Inhabited { S : L.Substructure M // S.FG } := ⟨⊥, fg_bot⟩
 
 theorem fg_closure {s : Set M} (hs : s.Finite) : FG (closure L s) :=
@@ -285,7 +283,7 @@ theorem Substructure.cg_iff_structure_cg (S : L.Substructure M) : S.CG ↔ Struc
     exact h
 
 theorem Substructure.SubEquivalence.fg_iff {N : Type*} [L.Structure N] (f : M ≃ₚ[L] N) :
-    f.sub_dom.FG ↔ f.sub_cod.FG := by
+    f.dom.FG ↔ f.cod.FG := by
   rw [Substructure.fg_iff_structure_fg, f.equiv.fg_iff, Substructure.fg_iff_structure_fg]
 
 theorem Substructure.countable_fg_substructures_of_countable [Countable M] :
@@ -304,27 +302,24 @@ instance Substructure.instCountable_fg_substructures_of_countable [Countable M] 
   countable_fg_substructures_of_countable
 
 theorem Substructure.countable_self_finiteEquiv_of_countable [Countable M] :
-    Countable { f : M ≃ₚ[L] M // f.sub_dom.FG } := by
-  let g : { f : M ≃ₚ[L] M // f.sub_dom.FG } →
+    Countable { f : M ≃ₚ[L] M // f.dom.FG } := by
+  let g : { f : M ≃ₚ[L] M // f.dom.FG } →
       Σ U : { S : L.Substructure M // S.FG }, U.val →[L] M :=
-    fun f ↦ ⟨⟨f.val.sub_dom, f.prop⟩, (subtype _).toHom.comp f.val.equiv.toHom⟩
+    fun f ↦ ⟨⟨f.val.dom, f.prop⟩, (subtype _).toHom.comp f.val.equiv.toHom⟩
   have g_inj : Function.Injective g := by
     intro f f' h
     ext
     let ⟨⟨dom_f, cod_f, equiv_f⟩, f_fin⟩ := f
     cases congr_arg (·.1) h
-    apply SubEquivalence.ext (by rfl)
-    simp only [Sigma.mk.inj_iff, heq_eq_eq, true_and] at h
+    apply PartialEquiv.ext (by rfl)
+    simp only [g, Sigma.mk.inj_iff, heq_eq_eq, true_and] at h
     exact fun x hx ↦ congr_fun (congr_arg (↑) h) ⟨x, hx⟩
   have : ∀ U : { S : L.Substructure M // S.FG }, Structure.FG L U.val :=
     fun U ↦ (U.val.fg_iff_structure_fg.1 U.prop)
   exact Function.Embedding.countable ⟨g, g_inj⟩
 
-theorem inhabited_self_finiteEquiv : Inhabited { f : M ≃ₚ[L] M // f.sub_dom.FG } :=
+instance inhabited_self_finiteEquiv : Inhabited { f : M ≃ₚ[L] M // f.dom.FG } :=
   ⟨⟨⟨⊥, ⊥, Equiv.refl L (⊥ : L.Substructure M)⟩, fg_bot⟩⟩
-
-noncomputable instance instInhabited_self_finiteEquiv :
-    Inhabited { f : M ≃ₚ[L] M // f.sub_dom.FG } := inhabited_self_finiteEquiv
 
 end Language
 
