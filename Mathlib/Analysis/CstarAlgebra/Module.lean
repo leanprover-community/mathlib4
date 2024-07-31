@@ -256,7 +256,7 @@ variable {A E : Type*} [NonUnitalNormedRing A] [StarRing A] [CstarRing A] [Parti
 /-- The function `⟨x, y⟩ ↦ ⟪x, y⟫` bundled as a continuous sesquilinear map. -/
 noncomputable def innerSL : E →L⋆[ℂ] E →L[ℂ] A :=
   LinearMap.mkContinuous₂ (innerₛₗ : E →ₗ⋆[ℂ] E →ₗ[ℂ] A) 1 <| fun x y => by
-    simp [← inner_eq_innerₛₗ, norm_inner_le E]
+    simp [innerₛₗ_apply, norm_inner_le E]
 
 lemma innerSL_apply {x y : E} : innerSL x y = ⟪x, y⟫_A := rfl
 
