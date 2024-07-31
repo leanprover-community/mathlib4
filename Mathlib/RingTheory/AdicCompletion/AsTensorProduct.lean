@@ -175,10 +175,12 @@ finite `R`-module `M`.
 The strategy is the following: Choose a surjection `f : (ι → R) →ₗ[R] M` and consider the following
 commutative diagram:
 
+```
  AdicCompletion I R ⊗[R] ker f -→ AdicCompletion I R ⊗[R] (ι → R) -→ AdicCompletion I R ⊗[R] M -→ 0
                |                             |                                 |                  |
                ↓                             ↓                                 ↓                  ↓
     AdicCompletion I (ker f) ------→ AdicCompletion I (ι → R) -------→ AdicCompletion I M ------→ 0
+```
 
 The vertical maps are given by `ofTensorProduct`. By the previous section we know that the second
 vertical map is an isomorphism. Since `R` is Noetherian, `ker f` is finitely-generated, so again
