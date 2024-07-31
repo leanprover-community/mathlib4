@@ -181,7 +181,7 @@ section Semilength
 its number of `U`s. -/
 def semilength : ℕ := p.toList.count U
 
-@[simp] lemma semilength_zero : semilength 0 = 0 := by rfl
+@[simp] lemma semilength_zero : semilength 0 = 0 := rfl
 @[simp] lemma semilength_add : (p + q).semilength = p.semilength + q.semilength := count_append ..
 @[simp] lemma semilength_nest : p.nest.semilength = p.semilength + 1 := by simp [semilength, nest]
 
