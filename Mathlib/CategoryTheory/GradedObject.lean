@@ -481,6 +481,7 @@ def isColimitCofanMapObjComp :
       dsimp
       rw [assoc])
 
+include hpqr in
 lemma hasMap_comp [X.HasMap p] [(X.mapObj p).HasMap q] : X.HasMap r :=
   fun k => ⟨_, isColimitCofanMapObjComp X p q r hpqr k _
     (fun j _ => X.isColimitCofanMapObj p j) _ ((X.mapObj p).isColimitCofanMapObj q k)⟩
