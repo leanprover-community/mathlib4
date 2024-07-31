@@ -50,8 +50,6 @@ variable [Lattice α]
 
 section Group
 variable [Group α] {a : α}
-  -- [CovariantClass α α (· * ·) (· ≤ ·)]
-  -- [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a : α}
 
 /-- The *positive part* of an element `a` in a lattice ordered group is `a ⊔ 1`, denoted `a⁺ᵐ`. -/
 @[to_additive
