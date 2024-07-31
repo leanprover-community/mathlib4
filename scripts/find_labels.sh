@@ -27,9 +27,12 @@ prs_to_print="$(echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged b
 
 echo "${prs_to_print}"
 
-printf $'\nPRs not corresponding to a commit\n\n\'%s\'\n' "$(comm -23 <(echo "${prs_to_print}" | awk '{print $2}' | sort) <(git log --pretty=oneline --since="${start_date}" --until="${end_date}" | sed -n 's=.*(\(#[0-9]*\))$=\1=p' | sort))"
+only_gh="$(comm -23 <(echo "${prs_to_print}" | awk '{print $2}' | sort) <(git log --pretty=oneline --since="${start_date}" --until="${end_date}" | sed -n 's=.*(\(#[0-9]*\))$=\1=p' | sort))"
 
-printf $'PRs not found by `gh`\n\n'
+only_git="$(comm -13 <(echo "${prs_to_print}" | awk '{print $2}' | sort) <(git log --pretty=oneline --since="${start_date}" --until="${end_date}" | sed -n 's=.*(\(#[0-9]*\))$=\1=p' | sort))"
 
-comm -23 <(echo "${prs_to_print}" | awk '{print $2}' | sort) <(git log --pretty=oneline --since="${start_date}" --until="${end_date}" | sed -n 's=.*(\(#[0-9]*\))$=\1=p' | sort)
+printf $'\nPRs not corresponding to a commit\n\n\'%s\'\n' "${only_gh}"
+
+printf $'PRs not found by `gh`\n\n\'%s\'\n' "${only_git}"
+
 printf $'\n---\n'
