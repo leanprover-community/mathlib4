@@ -10,7 +10,7 @@ repo_owner=$1
 repo_name=$2
 
 # Get the date for one month ago
-one_month_ago=$(date -d '1 month ago' +%Y-%m-%d)
+one_month_ago=$(date -d '1 month ago - 1 day' +%Y-%m-%d)
 
 git switch master
 
