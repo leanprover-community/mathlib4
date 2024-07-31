@@ -239,6 +239,18 @@ end PartialOrder
 
 namespace Set
 
+private lemma image_subtype_val_Ixx_Ixi {p q r : α → α → Prop} {a b : α} (c : {x // p a x ∧ q x b})
+    (h : ∀ {x}, r c x → p a x) :
+    Subtype.val '' {y : {x // p a x ∧ q x b} | r c.1 y.1} = {y : α | r c.1 y ∧ q y b} :=
+  (Subtype.image_preimage_val {x | p a x ∧ q x b} {y | r c.1 y}).trans <| by
+    ext; simp (config := { contextual := true }) [@and_comm (r _ _), h]
+
+private lemma image_subtype_val_Ixx_Iix {p q r : α → α → Prop} {a b : α} (c : {x // p a x ∧ q x b})
+    (h : ∀ {x}, r x c → q x b) :
+    Subtype.val '' {y : {x // p a x ∧ q x b} | r y.1 c.1} = {y : α | p a y ∧ r y c.1} :=
+  (Subtype.image_preimage_val {x | p a x ∧ q x b} {y | r y c.1}).trans <| by
+    ext; simp (config := { contextual := true}) [h]
+
 variable [Preorder α] {p : α → Prop}
 
 @[simp] lemma preimage_subtype_val_Ici (a : {x // p x}) : (↑) ⁻¹' (Ici a.1) = Ici a := rfl
@@ -345,18 +357,6 @@ lemma image_subtype_val_Iio_Ioi {a : α} (b : Iio a) : Subtype.val '' Ioi b = Io
 @[simp]
 lemma image_subtype_val_Iio_Iio {a : α} (b : Iio a) : Subtype.val '' Iio b = Iio b.1 :=
   image_subtype_val_Ioi_Ioi (α := αᵒᵈ) _
-
-private lemma image_subtype_val_Ixx_Ixi {p q r : α → α → Prop} {a b : α} (c : {x // p a x ∧ q x b})
-    (h : ∀ {x}, r c x → p a x) :
-    Subtype.val '' {y : {x // p a x ∧ q x b} | r c.1 y.1} = {y : α | r c.1 y ∧ q y b} :=
-  (Subtype.image_preimage_val {x | p a x ∧ q x b} {y | r c.1 y}).trans <| by
-    ext; simp (config := { contextual := true }) [@and_comm (r _ _), h]
-
-private lemma image_subtype_val_Ixx_Iix {p q r : α → α → Prop} {a b : α} (c : {x // p a x ∧ q x b})
-    (h : ∀ {x}, r x c → q x b) :
-    Subtype.val '' {y : {x // p a x ∧ q x b} | r y.1 c.1} = {y : α | p a y ∧ r y c.1} :=
-  (Subtype.image_preimage_val {x | p a x ∧ q x b} {y | r y c.1}).trans <| by
-    ext; simp (config := { contextual := true}) [h]
 
 @[simp]
 lemma image_subtype_val_Icc_Ici {a b : α} (c : Icc a b) : Subtype.val '' Ici c = Icc c.1 b :=
