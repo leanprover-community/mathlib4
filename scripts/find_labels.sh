@@ -29,9 +29,9 @@ echo "${prs_to_print}"
 
 printf $'\nPRs not corresponding to a commit\n\n'
 
-comm -23 <(echo "${prs_to_print}" | awk '{print $2}' | sort) <(git log --pretty=oneline --since="$(date -d '15 days ago - 1 day' +%Y-%m-%d)T00:00:00" --until="$(date -d 'today' +%Y-%m-%d)T23:59:59" | sed -n 's=.*(\(#[0-9]*\))$=\1=p' | sort)
+comm -23 <(echo "${prs_to_print}" | awk '{print $2}' | sort) <(git log --pretty=oneline --since="${start_date}" --until="${end_date}" | sed -n 's=.*(\(#[0-9]*\))$=\1=p' | sort)
 
 printf $'PRs not found by `gh`\n\n'
 
-comm -23 <(echo "${prs_to_print}" | awk '{print $2}' | sort) <(git log --pretty=oneline --since="$(date -d '15 days ago - 1 day' +%Y-%m-%d)T00:00:00" --until="$(date -d 'today' +%Y-%m-%d)T23:59:59" | sed -n 's=.*(\(#[0-9]*\))$=\1=p' | sort)
+comm -23 <(echo "${prs_to_print}" | awk '{print $2}' | sort) <(git log --pretty=oneline --since="${start_date}" --until="${end_date}" | sed -n 's=.*(\(#[0-9]*\))$=\1=p' | sort)
 printf $'\n---\n'
