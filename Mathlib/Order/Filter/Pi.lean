@@ -20,10 +20,7 @@ In this file we define two filters on `Π i, α i` and prove some basic properti
 -/
 
 
-open Set Function
-
-open scoped Classical
-open Filter
+open Set Function Filter
 
 namespace Filter
 
@@ -83,6 +80,7 @@ theorem mem_pi' {s : Set (∀ i, α i)} :
 
 theorem mem_of_pi_mem_pi [∀ i, NeBot (f i)] {I : Set ι} (h : I.pi s ∈ pi f) {i : ι} (hi : i ∈ I) :
     s i ∈ f i := by
+  classical
   rcases mem_pi.1 h with ⟨I', -, t, htf, hts⟩
   refine mem_of_superset (htf i) fun x hx => ?_
   have : ∀ i, (t i).Nonempty := fun i => nonempty_of_mem (htf i)
@@ -138,6 +136,7 @@ theorem pi_inf_principal_univ_pi_eq_bot :
 @[simp]
 theorem pi_inf_principal_pi_eq_bot [∀ i, NeBot (f i)] {I : Set ι} :
     pi f ⊓ 𝓟 (Set.pi I s) = ⊥ ↔ ∃ i ∈ I, f i ⊓ 𝓟 (s i) = ⊥ := by
+  classical
   rw [← univ_pi_piecewise_univ I, pi_inf_principal_univ_pi_eq_bot]
   refine exists_congr fun i => ?_
   by_cases hi : i ∈ I <;> simp [hi, NeBot.ne']

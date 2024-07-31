@@ -28,8 +28,6 @@ Cardinals are defined and further developed in the folder `SetTheory.Cardinal`.
 
 open Set Function
 
-open scoped Classical
-
 universe u v
 
 namespace Function
@@ -44,6 +42,7 @@ variable {α : Type u} {β : Type v}
 Given injections `α → β` and `β → α`, we can get a bijection `α → β`. -/
 theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injective f)
     (hg : Function.Injective g) : ∃ h : α → β, Bijective h := by
+  classical
   cases' isEmpty_or_nonempty β with hβ hβ
   · have : IsEmpty α := Function.isEmpty f
     exact ⟨_, ((Equiv.equivEmpty α).trans (Equiv.equivEmpty β).symm).bijective⟩

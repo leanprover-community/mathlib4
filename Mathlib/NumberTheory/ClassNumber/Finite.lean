@@ -317,8 +317,7 @@ theorem mkMMem_surjective [IsDedekindDomain S] [Algebra.IsAlgebraic R L] :
   obtain ⟨J, mk0_eq_mk0, J_dvd⟩ := exists_mk0_eq_mk0 L bS adm ⟨I, hI⟩
   exact ⟨⟨J, J_dvd⟩, mk0_eq_mk0.symm⟩
 
-open scoped Classical
-
+open Classical in
 /-- The **class number theorem**: the class group of an integral closure `S` of `R` in an
 algebraic extension `L` is finite if there is an admissible absolute value.
 

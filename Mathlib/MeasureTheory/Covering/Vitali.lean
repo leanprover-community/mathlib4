@@ -37,7 +37,7 @@ This version is given in `Vitali.vitaliFamily`.
 variable {α ι : Type*}
 
 open Set Metric MeasureTheory TopologicalSpace Filter
-open scoped NNReal Classical ENNReal Topology
+open scoped NNReal ENNReal Topology
 
 namespace Vitali
 
@@ -223,6 +223,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
   use the whole family `t`, but a subfamily `t'` supported on small balls (which is possible since
   the family is assumed to be fine at every point of `s`).
   -/
+  classical
   -- choose around each `x` a small ball on which the measure is finite
   have : ∀ x, ∃ R, 0 < R ∧ R ≤ 1 ∧ μ (closedBall x (20 * R)) < ∞ := fun x ↦ by
     refine ((eventually_le_nhds one_pos).and ?_).exists_gt

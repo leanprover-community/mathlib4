@@ -69,10 +69,7 @@ function space, almost everywhere equal, `L⁰`, ae_eq_fun
 
 noncomputable section
 
-open scoped Classical
-open ENNReal Topology
-
-open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
+open Topology Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
 
 variable {α β γ δ : Type*} [MeasurableSpace α] {μ ν : Measure α}
 

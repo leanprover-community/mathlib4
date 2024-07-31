@@ -33,7 +33,7 @@ outer measure
 noncomputable section
 
 open Set Function Filter
-open scoped Classical NNReal Topology ENNReal
+open scoped NNReal Topology ENNReal
 
 namespace MeasureTheory
 
@@ -229,6 +229,7 @@ then `m (⋃ n, s n) = ⨆ n, m (s n)`. -/
 theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ → Set α}
     (h_mono : ∀ n, s n ⊆ s (n + 1)) (h0 : (∑' k, m (s (k + 1) \ s k)) ≠ ∞) :
     m (⋃ n, s n) = ⨆ n, m (s n) := by
+  classical
   refine measure_iUnion_of_tendsto_zero m atTop ?_
   refine tendsto_nhds_bot_mono' (ENNReal.tendsto_sum_nat_add _ h0) fun n => ?_
   refine (m.mono ?_).trans (measure_iUnion_le _)

@@ -1254,8 +1254,7 @@ theorem gt_mem_sets_of_limsInf_gt : f.IsBounded (· ≥ ·) → b < f.limsInf �
 
 section Classical
 
-open scoped Classical
-
+open Classical in
 /-- Given an indexed family of sets `s j` over `j : Subtype p` and a function `f`, then
 `liminf_reparam j` is equal to `j` if `f` is bounded below on `s j`, and otherwise to some
 index `k` such that `f` is bounded below on `s k` (if there exists one).
@@ -1284,6 +1283,7 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
     (hv : v.HasBasis p s) {f : ι → α} (hs : ∀ (j : Subtype p), (s j).Nonempty)
     (H : ∃ (j : Subtype p), BddBelow (range (fun (i : s j) ↦ f i))) :
     liminf f v = ⨆ (j : Subtype p), ⨅ (i : s (liminf_reparam f s p j)), f i := by
+  classical
   rcases H with ⟨j0, hj0⟩
   let m : Set (Subtype p) := {j | BddBelow (range (fun (i : s j) ↦ f i))}
   have : ∀ (j : Subtype p), Nonempty (s j) := fun j ↦ Nonempty.coe_sort (hs j)
@@ -1315,6 +1315,7 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
       · exact (hZ j0 hj0).elim
   simp_rw [hv.liminf_eq_sSup_iUnion_iInter, A, B, sSup_iUnion_Iic]
 
+open Classical in
 /-- Writing a liminf as a supremum of infimum, in a (possibly non-complete) conditionally complete
 linear order. A reparametrization trick is needed to avoid taking the infimum of sets which are
 not bounded below. -/
@@ -1360,6 +1361,7 @@ theorem HasBasis.limsup_eq_ciInf_ciSup {v : Filter ι}
     limsup f v = ⨅ (j : Subtype p), ⨆ (i : s (limsup_reparam f s p j)), f i :=
   HasBasis.liminf_eq_ciSup_ciInf (α := αᵒᵈ) hv hs H
 
+open Classical in
 /-- Writing a limsup as an infimum of supremum, in a (possibly non-complete) conditionally complete
 linear order. A reparametrization trick is needed to avoid taking the supremum of sets which are
 not bounded below. -/
