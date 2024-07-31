@@ -100,6 +100,7 @@ variable [CatCommSq Φ.functor L₁ L₂ G]
   [Category.{v₄'} D₁'] [Category.{v₅'} D₂']
   (L₁' : C₁ ⥤ D₁') (L₂' : C₂ ⥤ D₂') [L₁'.IsLocalization W₁] [L₂'.IsLocalization W₂]
   (G' : D₁' ⥤ D₂') [CatCommSq Φ.functor L₁' L₂' G']
+include W₁ W₂ Φ L₁ L₂ L₁' L₂'
 
 /-- If a localizer morphism induces an equivalence on some choice of localized categories,
 it will be so for any choice of localized categoriees. -/
