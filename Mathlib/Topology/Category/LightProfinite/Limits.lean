@@ -40,8 +40,6 @@ example : FinitaryExtensive LightProfinite.{u} := inferInstance
 noncomputable example : PreservesFiniteCoproducts lightProfiniteToCompHaus.{u} := inferInstance
 
 /-- A one-element space is terminal in `LightProfinite` -/
-abbrev isTerminalPUnit : IsTerminal (LightProfinite.of PUnit.{u + 1}) :=
-  CompHausLike.isTerminalPUnit
 
 /-- The isomorphism from an arbitrary terminal object of `CompHaus` to a one-element space. -/
 noncomputable def terminalIsoPUnit : ⊤_ LightProfinite.{u} ≅ LightProfinite.of PUnit :=
