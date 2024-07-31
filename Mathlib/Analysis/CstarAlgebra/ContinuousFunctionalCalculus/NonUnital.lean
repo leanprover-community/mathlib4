@@ -595,8 +595,8 @@ section UnitalToNonUnital
 
 open ContinuousMapZero Set Uniformity ContinuousMap
 
-variable {R A : Type*} {p : A → Prop} [Field R] [StarRing R] [MetricSpace R] [CompleteSpace R]
-variable [TopologicalRing R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
+variable {R A : Type*} {p : A → Prop} [Semifield R] [StarRing R] [MetricSpace R] [CompleteSpace R]
+variable [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
 variable [Algebra R A] [ContinuousFunctionalCalculus R p]
 variable [h_cpct : ∀ a : A, CompactSpace (spectrum R a)]
 
