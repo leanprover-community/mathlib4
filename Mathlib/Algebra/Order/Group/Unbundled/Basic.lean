@@ -210,8 +210,20 @@ end TypeclassesRightLT
 
 section TypeclassesLeftRightLE
 
-variable [LE α] [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [LE α] [CovariantClass α α (· * ·) (· ≤ ·)]
   {a b c d : α}
+
+@[to_additive (attr := simp)]
+theorem div_le_self_iff (a : α) {b : α} : a / b ≤ a ↔ 1 ≤ b := by
+  simp [div_eq_mul_inv]
+
+@[to_additive (attr := simp)]
+theorem le_div_self_iff (a : α) {b : α} : a ≤ a / b ↔ b ≤ 1 := by
+  simp [div_eq_mul_inv]
+
+alias ⟨_, sub_le_self⟩ := sub_le_self_iff
+
+variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
 
 @[to_additive (attr := simp)]
 theorem inv_le_inv_iff : a⁻¹ ≤ b⁻¹ ↔ b ≤ a := by
@@ -225,22 +237,20 @@ theorem mul_inv_le_inv_mul_iff : a * b⁻¹ ≤ d⁻¹ * c ↔ d * a ≤ c * b :
   rw [← mul_le_mul_iff_left d, ← mul_le_mul_iff_right b, mul_inv_cancel_left, mul_assoc,
     inv_mul_cancel_right]
 
-@[to_additive (attr := simp)]
-theorem div_le_self_iff (a : α) {b : α} : a / b ≤ a ↔ 1 ≤ b := by
-  simp [div_eq_mul_inv]
-
-@[to_additive (attr := simp)]
-theorem le_div_self_iff (a : α) {b : α} : a ≤ a / b ↔ b ≤ 1 := by
-  simp [div_eq_mul_inv]
-
-alias ⟨_, sub_le_self⟩ := sub_le_self_iff
-
 end TypeclassesLeftRightLE
 
 section TypeclassesLeftRightLT
 
-variable [LT α] [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (swap (· * ·)) (· < ·)]
+variable [LT α] [CovariantClass α α (· * ·) (· < ·)]
   {a b c d : α}
+
+@[to_additive (attr := simp)]
+theorem div_lt_self_iff (a : α) {b : α} : a / b < a ↔ 1 < b := by
+  simp [div_eq_mul_inv]
+
+alias ⟨_, sub_lt_self⟩ := sub_lt_self_iff
+
+variable [CovariantClass α α (swap (· * ·)) (· < ·)]
 
 @[to_additive (attr := simp)]
 theorem inv_lt_inv_iff : a⁻¹ < b⁻¹ ↔ b < a := by
@@ -265,12 +275,6 @@ attribute [to_additive neg_lt_of_neg_lt] inv_lt_of_inv_lt'
 theorem mul_inv_lt_inv_mul_iff : a * b⁻¹ < d⁻¹ * c ↔ d * a < c * b := by
   rw [← mul_lt_mul_iff_left d, ← mul_lt_mul_iff_right b, mul_inv_cancel_left, mul_assoc,
     inv_mul_cancel_right]
-
-@[to_additive (attr := simp)]
-theorem div_lt_self_iff (a : α) {b : α} : a / b < a ↔ 1 < b := by
-  simp [div_eq_mul_inv]
-
-alias ⟨_, sub_lt_self⟩ := sub_lt_self_iff
 
 end TypeclassesLeftRightLT
 
@@ -796,5 +800,3 @@ theorem StrictAntiOn.inv (hf : StrictAntiOn f s) : StrictMonoOn (fun x => (f x)�
   fun _ hx _ hy hxy => inv_lt_inv_iff.2 (hf hx hy hxy)
 
 end
-
-

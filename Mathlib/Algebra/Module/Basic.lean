@@ -148,7 +148,7 @@ end Function
 
 namespace Set
 section SMulZeroClass
-variable [Zero R] [Zero M] [SMulZeroClass R M]
+variable [Zero M] [SMulZeroClass R M]
 
 lemma indicator_smul_apply (s : Set α) (r : α → R) (f : α → M) (a : α) :
     indicator s (fun a ↦ r a • f a) a = r a • indicator s f a := by
