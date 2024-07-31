@@ -62,10 +62,9 @@ namespace Pointed
 lemma ext {A B : Pointed C} (h₁ : A.obj = B.obj)
     (h₂ : (forget C).map (eqToHom h₁) A.pt = B.pt) :
     A = B := by
-  obtain ⟨X, x⟩ := A
-  obtain ⟨Y, y⟩ := B
+  cases A
+  cases B
   cases h₁
-  congr 1
   aesop
 
 /-- The type of morphisms between pointed objects. A morphism of pointed objects is a morphism
