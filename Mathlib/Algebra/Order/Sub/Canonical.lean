@@ -247,7 +247,7 @@ theorem tsub_tsub_tsub_cancel_left (h : b ≤ a) : a - c - (a - b) = b - c :=
 
 -- note: not generalized to `AddLECancellable` because `add_tsub_add_eq_tsub_left` isn't
 /-- The `tsub` version of `sub_sub_eq_add_sub`. -/
-theorem tsub_tsub_eq_add_tsub_of_le [ContravariantClass α α HAdd.hAdd LE.le]
+theorem tsub_tsub_eq_add_tsub_of_le
     (h : c ≤ b) : a - (b - c) = a + c - b := by
   obtain ⟨d, rfl⟩ := exists_add_of_le h
   rw [add_tsub_cancel_left c, add_comm a c, add_tsub_add_eq_tsub_left]
@@ -433,7 +433,7 @@ theorem tsub_add_min : a - b + min a b = a := by
   apply min_le_left
 
 -- `Odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
-lemma Even.tsub [CanonicallyLinearOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
+lemma Even.tsub
     [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) :
     Even (m - n) := by
   obtain ⟨a, rfl⟩ := hm
