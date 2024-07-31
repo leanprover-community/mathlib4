@@ -6,27 +6,18 @@ Authors: Dagur Asgeirsson, Boris Bolvig Kjær, Jon Eugster, Sina Hazratpour, Nim
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.Limits
-
 /-!
-# Effective epimorphic families in `Stonean`
 
-This file proves that `Stonean` is `Preregular`. Together with the fact that it is
-`FinitaryPreExtensive`, this implies that `Stonean` is `Precoherent`.
+# Effective epimorphisms in `Stonean`
 
-To do this, we need to characterise effective epimorphisms in `Stonean`. As a consequence, we also
-get a characterisation of finite effective epimorphic families.
+This file proves that `EffectiveEpi`, `Epi` and `Surjective` are all equivalent in `Stonean`.
+As a consequence we deduce from the material in
+`Mathlib.Topology.Category.CompHausLike.EffectiveEpi` that `Stonean` is `Preregular`
+and `Precoherent`.
 
-## Main results
-
-* `Stonean.effectiveEpi_tfae`: For a morphism in `Stonean`, the conditions surjective,
-  epimorphic, and effective epimorphic are all equivalent.
-
-* `Stonean.effectiveEpiFamily_tfae`: For a finite family of morphisms in `Stonean` with fixed
-  target in `Stonean`, the conditions jointly surjective, jointly epimorphic and effective
-  epimorphic are all equivalent.
-
-As a consequence, we obtain instances that `Stonean` is precoherent and preregular.
-
+We also prove that for a finite family of morphisms in `Stonean` with fixed
+target, the conditions jointly surjective, jointly epimorphic and effective epimorphic are all
+equivalent.
 -/
 
 universe u

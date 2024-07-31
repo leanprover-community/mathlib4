@@ -7,15 +7,14 @@ import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 import Mathlib.Topology.Category.Profinite.Limits
 import Mathlib.Topology.Category.Stonean.Basic
-
 /-!
 
 # Effective epimorphisms in `Profinite`
 
-This file proves that `EffectiveEpi`, `Epi` and `Surjective` are all equivalent in `LightProfinite`.
+This file proves that `EffectiveEpi`, `Epi` and `Surjective` are all equivalent in `Profinite`.
 As a consequence we deduce from the material in
-`Mathlib.Topology.Category.CompHausLike.EffectiveEpi` that `LightProfinite` is `Preregular`
-and`Precoherent`.
+`Mathlib.Topology.Category.CompHausLike.EffectiveEpi` that `Profinite` is `Preregular`
+and `Precoherent`.
 
 We also prove that for a finite family of morphisms in `Profinite` with fixed
 target, the conditions jointly surjective, jointly epimorphic and effective epimorphic are all
