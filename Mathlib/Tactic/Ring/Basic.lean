@@ -1156,7 +1156,7 @@ theorem of_lift {α β} [inst : CSLift α β] {a b : α} {a' b' : β}
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
 
-theorem of_eq (_ : (a : R) = c) (_ : b = c) : a = b := by subst_vars; rfl
+theorem of_eq {α} {a b c : α} (_ : (a : α) = c) (_ : b = c) : a = b := by subst_vars; rfl
 
 /--
 This is a routine which is used to clean up the unsolved subgoal

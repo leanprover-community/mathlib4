@@ -2882,7 +2882,7 @@ namespace ConjClasses
 def noncenter (G : Type*) [Monoid G] : Set (ConjClasses G) :=
   {x | x.carrier.Nontrivial}
 
-@[simp] lemma mem_noncenter [Monoid G] (g : ConjClasses G) :
+@[simp] lemma mem_noncenter {G} [Monoid G] (g : ConjClasses G) :
   g ∈ noncenter G ↔ g.carrier.Nontrivial := Iff.rfl
 
 end ConjClasses
