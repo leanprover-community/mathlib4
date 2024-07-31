@@ -5,6 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Finset.Lattice
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.SuccessIfFailWithMsg
@@ -215,3 +216,15 @@ example {x y : ℕ} (h : x ≤ y) (l) : dontUnfoldMe 14 l + x ≤ 0 + y := by
   gcongr
   guard_target = dontUnfoldMe 14 l ≤ 0
   apply test_sorry
+
+/-! Test that `gcongr` works well with proof arguments -/
+
+example {α β : Type*}  [SemilatticeSup α] (f : β → α)
+    {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) :
+    s₁.sup' h₁ f ≤ s₂.sup' (h₁.mono h) f := by
+  gcongr
+
+example {α β : Type*}  [SemilatticeSup α] (f : β → α)
+    {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty) :
+    s₁.sup' h₁ f ≤ s₂.sup' h₂ f := by
+  gcongr
