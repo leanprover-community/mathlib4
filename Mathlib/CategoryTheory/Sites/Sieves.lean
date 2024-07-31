@@ -749,6 +749,16 @@ lemma mem_functorPushforward_inverse {X : D} {S : Sieve X} {e : C ≌ D} {f : Y 
     S.functorPushforward e.inverse f ↔ S (e.functor.map f ≫ e.counit.app X) :=
   congr($(S.functorPushforward_inverse e).arrows f)
 
+variable (e : C ≌ D)
+
+lemma functorPushforward_equivalence_eq_pullback {U : C} (S : Sieve U) :
+    Sieve.functorPushforward e.inverse (Sieve.functorPushforward e.functor S) =
+      Sieve.pullback (e.unitInv.app U) S := by ext; simp
+
+lemma pullback_functorPushforward_equivalence_eq {X : C} (S : Sieve X) :
+    Sieve.pullback (e.unit.app X) (Sieve.functorPushforward e.inverse
+      (Sieve.functorPushforward e.functor S)) = S := by ext; simp
+
 end Functor
 
 /-- A sieve induces a presheaf. -/
