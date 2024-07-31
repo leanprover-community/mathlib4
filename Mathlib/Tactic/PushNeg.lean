@@ -6,10 +6,17 @@ Authors: Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis, Jireh Lo
 
 import Lean.Elab.Tactic.Location
 import Mathlib.Logic.Basic
-import Mathlib.Init.Order.Defs
+import Mathlib.Order.Defs
 import Mathlib.Tactic.Conv
 import Mathlib.Init.Set
 import Lean.Elab.Tactic.Location
+
+/-!
+# The `push_neg` tactic
+
+The `push_neg` tactic pushes negations inside expressions: it can be applied to goals as well
+as local hypotheses and also works as a `conv` tactic.
+-/
 
 namespace Mathlib.Tactic.PushNeg
 
