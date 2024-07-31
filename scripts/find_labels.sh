@@ -23,4 +23,13 @@ printf '%s commits between %s and %s\n' "${commits_in_range}" "${start_date}" "$
 prs=$(gh pr list --repo "$repository" --state closed --base master --search "closed:${start_date}..${end_date}" --json number,labels,title --limit "$((commits_in_range * 2))")
 
 # Print PR numbers and their labels
-echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "PR #\(.number) - Labels: \((.labels | map(.name) | join(", ")) // "No labels") - Title: \(.title)"'
+prs_to_print="$(echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "PR #\(.number) - Labels: \((.labels | map(.name) | join(", ")) // "No labels") - Title: \(.title)"')"
+
+echo "${prs_to_print}"
+
+echo "PRs not corresponding to a commit:"
+comm -23 <(echo "${prs_to_print}" | awk '{print $2}' mwe_outputs/prBlog.txt | sort) <(git log --pretty=oneline --since="$(date -d '15 days ago - 1 day' +%Y-%m-%d)T00:00:00" --until="$(date -d 'today' +%Y-%m-%d)T23:59:59" | sed -n 's=.*(\(#[0-9]*\))$=\1=p' | sort)
+
+echo 'PRs not found by `gh`'
+comm -23 <(echo "${prs_to_print}" | awk '{print $2}' mwe_outputs/prBlog.txt | sort) <(git log --pretty=oneline --since="$(date -d '15 days ago - 1 day' +%Y-%m-%d)T00:00:00" --until="$(date -d 'today' +%Y-%m-%d)T23:59:59" | sed -n 's=.*(\(#[0-9]*\))$=\1=p' | sort)
+printf $'\n---\n'
