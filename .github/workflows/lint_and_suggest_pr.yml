@@ -35,7 +35,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: report
+      - name: blog report
         continue-on-error: true
         run: |
           ./scripts/find_labels.sh leanprover-community mathlib4
