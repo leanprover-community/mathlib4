@@ -529,7 +529,7 @@ theorem support_mul [DecidableEq σ] (p q : MvPolynomial σ R) :
 theorem ext (p q : MvPolynomial σ R) : (∀ m, coeff m p = coeff m q) → p = q :=
   Finsupp.ext
 
-theorem ext_iff (p q : MvPolynomial σ R) : p = q ↔ ∀ m, coeff m p = coeff m q :=
+protected theorem ext_iff (p q : MvPolynomial σ R) : p = q ↔ ∀ m, coeff m p = coeff m q :=
   ⟨fun h m => by rw [h], ext p q⟩
 
 @[simp]
