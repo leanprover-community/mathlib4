@@ -28,4 +28,4 @@ if [ -z "$prs" ] || [ "$prs" = "[]" ]; then
 fi
 
 # Print PR numbers and their labels
-echo "$prs" | jq -r '.[] | "PR #\(.number) - Labels: \((.labels | map(.name) | join(", ")) // "No labels")"'
+echo "$prs" | jq -r '.[] | "PR #\(.number) - Labels: \((.labels | map(.name) | join(", ")) // "No labels") - Title: \(.title)"'
