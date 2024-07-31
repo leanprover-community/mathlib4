@@ -35,15 +35,17 @@ git log --pretty=oneline --since="${start_date}" --until="${end_date}" |
   sed -n 's=.*\((#[0-9]*)\)$=\1=p' | sort >> found_by_git.txt
 }
 
-start_date=2024-07-01T00:00:00
-end_date="$(date -d '2024-07-01 + 1 month - 1 day' +%Y-%m-%d)T23:59:59"
+yr_mth=2024-07
+
+start_date="${yr_mth}-01T00:00:00"
+end_date="$(date -d "${yr_mth}-01 + 1 month - 1 day" +%Y-%m-%d)T23:59:59"
 
 commits_in_range="$(git log --since="${start_date}" --until="${end_date}" --pretty=oneline | wc -l)"
 
 printf $'\n%s commits between %s and %s\n' "${commits_in_range}" "${start_date}" "${end_date}"
 
-findInRange "${1}" '2024-07-01T00:00:00' '2024-07-15T23:59:59'
-findInRange "${1}" '2024-07-16T00:00:00' "$(date -d '2024-07-01 + 1 month - 1 day' +%Y-%m-%d)T23:59:59"
+findInRange "${1}" "${yr_mth}-01T00:00:00" "${yr_mth}-15T23:59:59"
+findInRange "${1}" "${yr_mth}-16T00:00:00" "$(date -d "${yr_mth}-01 + 1 month - 1 day" +%Y-%m-%d)T23:59:59"
 
 only_gh="$( comm -23 <(sort found_by_gh.txt) <(sort found_by_git.txt))"
 only_git="$(comm -13 <(sort found_by_gh.txt) <(sort found_by_git.txt))"
