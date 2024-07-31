@@ -17,7 +17,7 @@ printf 'Dates after %s\n' "${one_month_ago}"
 git switch master
 
 # Retrieve merged PRs from the last month, paginated
-prs=$(gh pr list --repo "$repo_owner/$repo_name" --state merged --search "merged:>$one_month_ago" --json number,labels --limit 100)
+prs=$(gh pr list --repo "$repo_owner/$repo_name" --state closed --search "closed:>$one_month_ago" --json number,labels --limit 100)
 
 # Check if any PRs are found
 if [ -z "$prs" ] || [ "$prs" = "[]" ]; then
