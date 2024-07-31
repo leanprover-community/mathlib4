@@ -5,14 +5,10 @@
    "type": "git",
    "subDir": null,
    "scope": "leanprover-community",
-<<<<<<< HEAD
-   "rev": "7f3ebd5843f1699ff1f815c2c985ebcc6fe5249e",
-=======
-   "rev": "d8b8efd91c7fb6d771983813e5a854fe65c34497",
->>>>>>> 8ad1f5e7dc487509cd1c715fa14b4d0f199cee5c
+   "rev": "e2772c281e4db450ac334dfea0eb001754fdf01f",
    "name": "batteries",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "nightly-testing-pre-2024-07-31",
+   "inputRev": "nightly-testing",
    "inherited": false,
    "configFile": "lakefile.lean"},
   {"url": "https://github.com/leanprover-community/quote4",
