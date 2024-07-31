@@ -121,7 +121,6 @@ namespace IndepMatroid
   base_exchange B B' hB hB' e he := by
     have hnotmax : ¬ Maximal M.Indep (B \ {e}) :=
       fun h ↦ h.not_prop_of_ssubset (diff_singleton_sSubset.2 he.1) hB.prop
-
     obtain ⟨f, hf, hfB⟩ := M.indep_aug (M.indep_subset hB.prop diff_subset) hnotmax hB'
     replace hf := show f ∈ B' \ B by simpa [show f ≠ e by rintro rfl; exact he.2 hf.1] using hf
     refine ⟨f, hf, by_contra fun hnot ↦ ?_⟩
@@ -163,7 +162,6 @@ namespace IndepMatroid
     obtain ⟨e, heI, hins⟩ := exists_insert_of_not_maximal indep_subset hI hImax
     by_cases heB : e ∈ B
     · exact ⟨e, ⟨heB, heI⟩, hins⟩
-
     by_contra hcon; push_neg at hcon
 
     have heBdep := hBmax.not_prop_of_ssubset (ssubset_insert heB)

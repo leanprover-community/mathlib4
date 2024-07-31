@@ -152,7 +152,6 @@ def comap (N : Matroid β) (f : α → β) : Matroid α :=
       obtain ⟨hIJ, hJ, hJf, hJX, hJmax⟩ := hJ
       obtain ⟨J₀, hIJ₀, hJ₀X, hbj⟩ := hIinj.bijOn_image.exists_extend_of_subset hIX
         (image_subset f hIJ) (image_subset_iff.2 <| preimage_mono hJX)
-
       obtain rfl : f '' J₀ = J := by rw [← image_preimage_eq_of_subset hJf, hbj.image_eq]
       refine ⟨J₀, hIJ₀, hJ, hbj.injOn, hJ₀X, fun K hK hKinj hKX hJ₀K ↦ ?_⟩
       rw [← hKinj.image_eq_image_iff hJ₀K Subset.rfl, hJmax hK (image_subset_range _ _)
