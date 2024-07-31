@@ -154,14 +154,14 @@ theorem tendsto_partialGamma {s : ℂ} (hs : 0 < s.re) :
     Tendsto (fun X : ℝ => partialGamma s X) atTop (𝓝 <| GammaIntegral s) :=
   intervalIntegral_tendsto_integral_Ioi 0 (GammaIntegral_convergent hs) tendsto_id
 
-private theorem Gamma_integrand_interval_integrable (s : ℂ) {X : ℝ} (hs : 0 < s.re) (hX : 0 ≤ X) :
+private theorem Gamma_integrand_intervalIntegrable (s : ℂ) {X : ℝ} (hs : 0 < s.re) (hX : 0 ≤ X) :
     IntervalIntegrable (fun x => (-x).exp * x ^ (s - 1) : ℝ → ℂ) volume 0 X := by
   rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hX]
   exact IntegrableOn.mono_set (GammaIntegral_convergent hs) Ioc_subset_Ioi_self
 
 private theorem Gamma_integrand_deriv_integrable_A {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) :
     IntervalIntegrable (fun x => -((-x).exp * x ^ s) : ℝ → ℂ) volume 0 X := by
-  convert (Gamma_integrand_interval_integrable (s + 1) _ hX).neg
+  convert (Gamma_integrand_intervalIntegrable (s + 1) _ hX).neg
   · simp only [ofReal_exp, ofReal_neg, add_sub_cancel_right]; rfl
   · simp only [add_re, one_re]; linarith
 

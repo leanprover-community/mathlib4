@@ -782,7 +782,7 @@ lemma mulOption_neg_neg {x} (y) {i j} :
     mulOption x y i j = mulOption x (-(-y)) i (toLeftMovesNeg <| toRightMovesNeg j) := by
   dsimp only [mulOption]
   congr 2
-  rw [neg_neg]
+  · rw [neg_neg]
   iterate 2 rw [moveLeft_neg, moveRight_neg, neg_neg]
 
 /-- The left options of `x * y` agree with that of `y * x` up to equivalence. -/
@@ -806,7 +806,7 @@ lemma leftMoves_mul_iff {x y : PGame} (P : Game → Prop) :
     convert h (Sum.inr (i, j)) using 1
   on_goal 2 =>
     rintro (⟨i, j⟩ | ⟨i, j⟩)
-    exact h.1 i j
+    · exact h.1 i j
     convert h.2 i j using 1
   all_goals
     dsimp only [mk_mul_moveLeft_inr, quot_sub, quot_add, neg_def, mulOption, moveLeft_mk]
@@ -824,11 +824,11 @@ lemma rightMoves_mul_iff {x y : PGame} (P : Game → Prop) :
   constructor <;> intro h
   on_goal 1 =>
     constructor <;> intros i j
-    convert h (Sum.inl (i, j))
+    on_goal 1 => convert h (Sum.inl (i, j))
   on_goal 2 => convert h (Sum.inr (i, j))
   on_goal 3 =>
     rintro (⟨i, j⟩ | ⟨i, j⟩)
-    convert h.1 i j using 1
+    on_goal 1 => convert h.1 i j using 1
     on_goal 2 => convert h.2 i j using 1
   all_goals
     dsimp [mulOption]

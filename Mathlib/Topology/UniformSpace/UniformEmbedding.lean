@@ -90,12 +90,11 @@ theorem UniformInducing.uniformContinuous {f : α → β} (hf : UniformInducing 
 theorem UniformInducing.uniformContinuous_iff {f : α → β} {g : β → γ} (hg : UniformInducing g) :
     UniformContinuous f ↔ UniformContinuous (g ∘ f) := by
   dsimp only [UniformContinuous, Tendsto]
-  rw [← hg.comap_uniformity, ← map_le_iff_le_comap, Filter.map_map]; rfl
+  simp only [← hg.comap_uniformity, ← map_le_iff_le_comap, Filter.map_map, Function.comp_def]
 
 protected theorem UniformInducing.uniformInducing_comp_iff {f : α → β} {g : β → γ}
     (hg : UniformInducing g) : UniformInducing (g ∘ f) ↔ UniformInducing f := by
-  simp only [uniformInducing_iff, ← hg.comap_uniformity, comap_comap]
-  rfl
+  simp only [uniformInducing_iff, ← hg.comap_uniformity, comap_comap, Function.comp_def]
 
 theorem UniformInducing.uniformContinuousOn_iff {f : α → β} {g : β → γ} {S : Set α}
     (hg : UniformInducing g) :

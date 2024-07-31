@@ -30,7 +30,7 @@ and discover that $αβγ ≠ 0$ as an element of $K$, but $αβγ = 0$ as an el
 
 Some Zulip discussion at https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/.F0.9D.94.BD.E2.82.82.5B.CE.B1.2C.20.CE.B2.2C.20.CE.B3.5D.20.2F.20.28.CE.B1.C2.B2.2C.20.CE.B2.C2.B2.2C.20.CE.B3.C2.B2.29/near/222716333.
 
-As a bonus result, we also show `QuadraticForm.not_forall_mem_range_toQuadraticForm`: that there
+As a bonus result, we also show `BilinMap.not_forall_toQuadraticMap_surjective`: that there
 are quadratic forms that cannot be expressed via even non-symmetric bilinear forms.
 -/
 
@@ -292,10 +292,10 @@ theorem CliffordAlgebra.not_forall_algebraMap_injective.{v} :
 
 open Q60596 in
 /-- The general bonus statement: not every quadratic form is the diagonal of a bilinear form. -/
-theorem QuadraticForm.not_forall_mem_range_toQuadraticForm.{v} :
+theorem BilinMap.not_forall_toQuadraticMap_surjective.{v} :
     -- TODO: make `R` universe polymorphic
-    ¬∀ (R : Type) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M] (Q : QuadraticForm R M),
-      Q ∈ Set.range BilinMap.toQuadraticMap :=
+    ¬∀ (R : Type) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M],
+      Function.Surjective (BilinMap.toQuadraticMap : BilinForm R M → QuadraticForm R M) :=
   fun h => Q_not_in_range_toQuadraticForm <| by
     let uU := ULift.moduleEquiv (R := K) (M := L)
     obtain ⟨x, hx⟩ := h K (ULift L) (Q.comp uU)

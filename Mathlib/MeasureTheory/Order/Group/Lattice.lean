@@ -7,7 +7,6 @@ import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.MeasureTheory.Order.Lattice
 
-
 /-!
 # Measurability results on groups with a lattice structure.
 
