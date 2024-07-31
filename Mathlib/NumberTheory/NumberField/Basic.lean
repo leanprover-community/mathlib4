@@ -39,7 +39,7 @@ class NumberField (K : Type*) [Field K] : Prop where
 
 open Function Module
 
-open scoped Classical nonZeroDivisors
+open scoped nonZeroDivisors
 
 /-- `ℤ` with its usual ring structure is not a field. -/
 theorem Int.not_isField : ¬IsField ℤ := fun h =>

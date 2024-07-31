@@ -36,10 +36,7 @@ More frequently they are described as maximal consistent sets of formulas, but t
 
 universe u v w w'
 
-open Cardinal Set
-
-open scoped Classical
-open Cardinal FirstOrder
+open Cardinal Set FirstOrder
 
 namespace FirstOrder
 

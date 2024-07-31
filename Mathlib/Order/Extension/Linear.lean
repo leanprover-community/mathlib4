@@ -15,9 +15,7 @@ lemma.
 
 universe u
 
-open Set Classical
-
-open scoped Classical
+open Set
 
 /-- Any partial order can be extended to a linear order.
 -/

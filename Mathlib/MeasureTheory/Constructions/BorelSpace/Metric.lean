@@ -25,7 +25,7 @@ import Mathlib.Topology.MetricSpace.Thickening
 
 open Set Filter MeasureTheory MeasurableSpace TopologicalSpace
 
-open scoped Classical Topology NNReal ENNReal MeasureTheory
+open scoped Topology NNReal ENNReal MeasureTheory
 
 universe u v w x y
 
