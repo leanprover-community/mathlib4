@@ -772,3 +772,18 @@ def subsemigroupMap (e : M ≃* N) (S : Subsemigroup M) : S ≃* S.map (e : M �
     invFun := fun x => ⟨e.symm x, _⟩ }
 
 end MulEquiv
+
+namespace Subsemigroup
+
+variable [Mul M] [Mul N]
+
+@[to_additive]
+theorem map_comap_eq (f : M →ₙ* N) (S : Subsemigroup N) : (S.comap f).map f = S ⊓ f.srange :=
+  SetLike.coe_injective Set.image_preimage_eq_inter_range
+
+@[to_additive]
+theorem map_comap_eq_self {f : M →ₙ* N} {S : Subsemigroup N} (h : S ≤ f.srange) :
+    (S.comap f).map f = S := by
+  simpa only [inf_of_le_left h] using map_comap_eq f S
+
+end Subsemigroup
