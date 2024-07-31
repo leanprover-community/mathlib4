@@ -39,7 +39,7 @@ jobs:
         continue-on-error: true
         run: |
           echo "repository: ${{ github.repository }}"
-          ./scripts/find_labels.sh leanprover-community mathlib4
+          ./scripts/find_labels.sh "${{ github.repository }}"
 
       - name: lint
         continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
