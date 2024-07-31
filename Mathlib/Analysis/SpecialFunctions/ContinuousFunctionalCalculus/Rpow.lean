@@ -278,6 +278,7 @@ lemma rpowₙ_eq_rpow {a : A} {x : ℝ≥0} (hx : 0 < x) : rpowₙ a x = a ^ (x 
     fun _ _ => ContinuousAt.continuousWithinAt
       <| NNReal.continuousAt_rpow_const (Or.inr NNReal.zero_le_coe)
   rw [rpowₙ, rpow_def, cfcₙ_eq_cfc hcont hzero]
+  rfl
 
 lemma sqrt_eq_rpow {a : A} : sqrt a = a ^ (1 / 2 : ℝ) := by
   have : a ^ (1 / 2 : ℝ) = a ^ ((1 / 2 : ℝ≥0) : ℝ) := rfl
