@@ -64,7 +64,7 @@ private theorem no_collision : Disjoint {beattySeq r k | k} {beattySeq' s k | k}
   intro j ⟨k, h₁⟩ ⟨m, h₂⟩
   rw [beattySeq, Int.floor_eq_iff, ← div_le_iff hrs.pos, ← lt_div_iff hrs.pos] at h₁
   rw [beattySeq', sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one,
-    add_sub_cancel, ← div_lt_iff hrs.symm.pos, ← le_div_iff hrs.symm.pos] at h₂
+    add_sub_cancel_right, ← div_lt_iff hrs.symm.pos, ← le_div_iff hrs.symm.pos] at h₂
   have h₃ := add_lt_add_of_le_of_lt h₁.1 h₂.1
   have h₄ := add_lt_add_of_lt_of_le h₁.2 h₂.2
   simp_rw [div_eq_inv_mul, ← right_distrib, hrs.inv_add_inv_conj, one_mul] at h₃ h₄
@@ -105,7 +105,7 @@ private theorem hit_or_miss' (h : r > 0) :
   · refine Or.inl ⟨⌊(j + 1) / r⌋, ?_⟩
     rw [beattySeq', sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one]
     constructor
-    · rwa [add_sub_cancel]
+    · rwa [add_sub_cancel_right]
     exact sub_nonneg.1 (Int.sub_floor_div_mul_nonneg (j + 1 : ℝ) h)
 
 end Beatty
@@ -163,7 +163,7 @@ theorem Irrational.beattySeq'_pos_eq {r : ℝ} (hr : Irrational r) :
     {beattySeq' r k | k > 0} = {beattySeq r k | k > 0} := by
   dsimp only [beattySeq, beattySeq']
   congr! 4; rename_i k; rw [and_congr_right_iff]; intro hk; congr!
-  rw [sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one, add_sub_cancel]
+  rw [sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one, add_sub_cancel_right]
   refine ⟨(Int.floor_le _).lt_of_ne fun h ↦ ?_, (Int.lt_floor_add_one _).le⟩
   exact (hr.int_mul hk.ne').ne_int ⌊k * r⌋ h.symm
 

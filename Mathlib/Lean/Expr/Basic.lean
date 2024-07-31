@@ -5,10 +5,10 @@ Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lew
 Floris van Doorn, E.W.Ayers, Arthur Paulino
 -/
 import Lean.Meta.Tactic.Rewrite
-import Std.Lean.Expr
-import Std.Lean.Name
-import Std.Data.Rat.Basic
-import Std.Data.List.Basic
+import Batteries.Lean.Expr
+import Batteries.Data.Rat.Basic
+import Batteries.Data.List.Basic
+import Batteries.Logic
 
 /-!
 # Additional operations on Expr and related types
@@ -17,8 +17,6 @@ This file defines basic operations on the types expr, name, declaration, level, 
 
 This file is mostly for non-tactics.
 -/
-
-set_option autoImplicit true
 
 namespace Lean
 
@@ -64,16 +62,18 @@ def updateLast (f : String → String) : Name → Name
 
 /-- Get the last field of a name as a string.
 Doesn't raise an error when the last component is a numeric field. -/
-def getString : Name → String
+def lastComponentAsString : Name → String
   | .str _ s => s
   | .num _ n => toString n
   | .anonymous => ""
+
+@[deprecated (since := "2024-05-14")] alias getString := lastComponentAsString
 
 /-- `nm.splitAt n` splits a name `nm` in two parts, such that the *second* part has depth `n`, i.e.
   `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
   Example: ``splitAt `foo.bar.baz.back.bat 1 = (`foo.bar.baz.back, `bat)``. -/
 def splitAt (nm : Name) (n : Nat) : Name × Name :=
-  let (nm2, nm1) := (nm.componentsRev.splitAt n)
+  let (nm2, nm1) := nm.componentsRev.splitAt n
   (.fromComponents <| nm1.reverse, .fromComponents <| nm2.reverse)
 
 /-- `isPrefixOf? pre nm` returns `some post` if `nm = pre ++ post`.
@@ -187,6 +187,23 @@ def getAppApps (e : Expr) : Array Expr :=
   let nargs := e.getAppNumArgs
   getAppAppsAux e (mkArray nargs dummy) (nargs-1)
 
+/-- Erase proofs in an expression by replacing them with `sorry`s.
+
+This function replaces all proofs in the expression
+and in the types that appear in the expression
+by `sorryAx`s.
+The resulting expression has the same type as the old one.
+
+It is useful, e.g., to verify if the proof-irrelevant part of a definition depends on a variable.
+-/
+def eraseProofs (e : Expr) : MetaM Expr :=
+  Meta.transform (skipConstInApp := true) e
+    (pre := fun e => do
+      if (← Meta.isProof e) then
+        return .continue (← mkSyntheticSorry (← inferType e))
+      else
+        return .continue)
+
 /--
 Check if an expression is a "rational in normal form",
 i.e. either an integer number in normal form,
@@ -235,10 +252,10 @@ def type? : Expr → Option Level
   it does a syntactic check that the expression does not depend on `yₙ`. -/
 def isConstantApplication (e : Expr) :=
   e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
-  where
-    /-- `aux depth e n` checks whether the body of the `n`-th lambda of `e` has loose bvar
-      `depth - 1`. -/
-    aux (depth : Nat) : Expr → Nat → Bool
+where
+  /-- `aux depth e n` checks whether the body of the `n`-th lambda of `e` has loose bvar
+    `depth - 1`. -/
+  aux (depth : Nat) : Expr → Nat → Bool
     | .lam _ _ b _, n + 1  => aux depth b n
     | e, 0  => !e.hasLooseBVar (depth - 1)
     | _, _ => false
@@ -277,7 +294,7 @@ section recognizers
   - `Nat.succ x` where `isNumeral x`
   - `OfNat.ofNat _ x _` where `isNumeral x` -/
 partial def numeral? (e : Expr) : Option Nat :=
-  if let some n := e.natLit? then n
+  if let some n := e.rawNatLit? then n
   else
     let f := e.getAppFn
     if !f.isConst then none
@@ -321,7 +338,10 @@ def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
 
 end recognizers
 
-def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M Expr
+universe u
+
+def modifyAppArgM {M : Type → Type u} [Functor M] [Pure M]
+    (modifier : Expr → M Expr) : Expr → M Expr
   | app f a => mkApp f <$> modifier a
   | e => pure e
 
@@ -351,8 +371,8 @@ def getArg? (e : Expr) (i : Nat) (n := e.getAppNumArgs) : Option Expr :=
 
 /-- Given `f a₀ a₁ ... aₙ₋₁`, runs `modifier` on the `i`th argument.
 An argument `n` may be provided which says how many arguments we are expecting `e` to have. -/
-def modifyArgM [Monad M] (modifier : Expr → M Expr) (e : Expr) (i : Nat) (n := e.getAppNumArgs) :
-    M Expr := do
+def modifyArgM {M : Type → Type u} [Monad M] (modifier : Expr → M Expr)
+    (e : Expr) (i : Nat) (n := e.getAppNumArgs) : M Expr := do
   let some a := getArg? e i | return e
   let a ← modifier a
   return modifyArg (fun _ ↦ a) e i n

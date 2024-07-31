@@ -1,5 +1,4 @@
 import Mathlib.Algebra.Order.Field.Basic
-import Std.Tactic.SolveByElim
 
 set_option autoImplicit true
 open Nat

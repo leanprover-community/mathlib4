@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Localization.Predicate
+import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Localization of product categories
@@ -36,16 +38,17 @@ namespace Localization
 
 namespace StrictUniversalPropertyFixedTarget
 
-variable {E : Type u₅} [Category.{v₅} E]
-  (F : C₁ × C₂ ⥤ E) (hF : (W₁.prod W₂).IsInvertedBy F)
+variable {E : Type u₅} [Category.{v₅} E] (F : C₁ × C₂ ⥤ E)
 
 /-- Auxiliary definition for `prodLift`. -/
-noncomputable def prodLift₁ :
+noncomputable def prodLift₁ (hF : (W₁.prod W₂).IsInvertedBy F) :
     W₁.Localization ⥤ C₂ ⥤ E :=
   Construction.lift (curry.obj F) (fun _ _ f₁ hf₁ => by
     haveI : ∀ (X₂ : C₂), IsIso (((curry.obj F).map f₁).app X₂) :=
       fun X₂ => hF _ ⟨hf₁, MorphismProperty.id_mem _ _⟩
     apply NatIso.isIso_of_isIso_app)
+
+variable (hF : (W₁.prod W₂).IsInvertedBy F)
 
 lemma prod_fac₁ :
     W₁.Q ⋙ prodLift₁ F hF = curry.obj F :=
@@ -55,12 +58,12 @@ lemma prod_fac₁ :
 `W₁.Localization × W₂.Localization ⥤ E` -/
 noncomputable def prodLift :
     W₁.Localization × W₂.Localization ⥤ E := by
-  refine' uncurry.obj (Construction.lift (prodLift₁ F hF).flip _).flip
+  refine uncurry.obj (Construction.lift (prodLift₁ F hF).flip ?_).flip
   intro _ _ f₂ hf₂
   haveI : ∀ (X₁ : W₁.Localization),
       IsIso (((Functor.flip (prodLift₁ F hF)).map f₂).app X₁) := fun X₁ => by
     obtain ⟨X₁, rfl⟩ := (Construction.objEquiv W₁).surjective X₁
-    exact ((MorphismProperty.RespectsIso.isomorphisms E).arrow_mk_iso_iff
+    exact ((MorphismProperty.isomorphisms E).arrow_mk_iso_iff
       (((Functor.mapArrowFunctor _ _).mapIso
         (eqToIso (Functor.congr_obj (prod_fac₁ F hF) X₁))).app (Arrow.mk f₂))).2
           (hF _ ⟨MorphismProperty.id_mem _ _, hf₂⟩)

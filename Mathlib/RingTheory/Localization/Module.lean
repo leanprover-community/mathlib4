@@ -8,8 +8,6 @@ import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
 
-#align_import ring_theory.localization.module from "leanprover-community/mathlib"@"2e59a6de168f95d16b16d217b808a36290398c0a"
-
 /-!
 # Modules / vector spaces over localizations / fraction fields
 
@@ -27,8 +25,6 @@ This file contains some results about vector spaces over the field of fractions 
 -/
 
 
-open BigOperators
-
 open nonZeroDivisors
 
 section Localization
@@ -42,7 +38,6 @@ section AddCommMonoid
 open Submodule
 
 variable [CommSemiring Rₛ] [Algebra R Rₛ] [hT : IsLocalization S Rₛ]
-
 variable {M M' : Type*} [AddCommMonoid M] [Module R M] [Module Rₛ M] [IsScalarTower R Rₛ M]
   [AddCommMonoid M'] [Module R M'] [Module Rₛ M'] [IsScalarTower R Rₛ M'] (f : M →ₗ[R] M')
   [IsLocalizedModule S f]
@@ -61,7 +56,7 @@ theorem LinearIndependent.of_isLocalizedModule {ι : Type*} {v : ι → M}
   rw [linearIndependent_iff'] at hv ⊢
   intro t g hg i hi
   choose! a g' hg' using IsLocalization.exist_integer_multiples S t g
-  have h0 : f (∑ i in t, g' i • v i) = 0 := by
+  have h0 : f (∑ i ∈ t, g' i • v i) = 0 := by
     apply_fun ((a : R) • ·) at hg
     rw [smul_zero, Finset.smul_sum] at hg
     rw [map_sum, ← hg]
@@ -77,7 +72,6 @@ theorem LinearIndependent.localization {ι : Type*} {b : ι → M} (hli : Linear
     LinearIndependent Rₛ b := by
   have := isLocalizedModule_id S M Rₛ
   exact hli.of_isLocalizedModule Rₛ S .id
-#align linear_independent.localization LinearIndependent.localization
 
 end AddCommMonoid
 
@@ -126,15 +120,10 @@ end IsLocalizedModule
 section LocalizationLocalization
 
 variable {R : Type*} (Rₛ : Type*) [CommSemiring R] [CommRing Rₛ] [Algebra R Rₛ]
-
 variable (S : Submonoid R) [hT : IsLocalization S Rₛ]
-
 variable {A : Type*} [CommRing A] [Algebra R A]
-
 variable (Aₛ : Type*) [CommRing Aₛ] [Algebra A Aₛ]
-
 variable [Algebra Rₛ Aₛ] [Algebra R Aₛ] [IsScalarTower R Rₛ Aₛ] [IsScalarTower R A Aₛ]
-
 variable [hA : IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ]
 
 open Submodule
@@ -142,12 +131,10 @@ open Submodule
 theorem LinearIndependent.localization_localization {ι : Type*} {v : ι → A}
     (hv : LinearIndependent R v) : LinearIndependent Rₛ ((algebraMap A Aₛ) ∘ v) :=
   hv.of_isLocalizedModule Rₛ S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap
-#align linear_independent.localization_localization LinearIndependent.localization_localization
 
 theorem span_eq_top_localization_localization {v : Set A} (hv : span R v = ⊤) :
     span Rₛ (algebraMap A Aₛ '' v) = ⊤ :=
   span_eq_top_of_isLocalizedModule Rₛ S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap hv
-#align span_eq_top.localization_localization span_eq_top_localization_localization
 
 /-- If `A` has an `R`-basis, then localizing `A` at `S` has a basis over `R` localized at `S`.
 
@@ -155,19 +142,16 @@ A suitable instance for `[Algebra A Aₛ]` is `localizationAlgebra`.
 -/
 noncomputable def Basis.localizationLocalization {ι : Type*} (b : Basis ι R A) : Basis ι Rₛ Aₛ :=
   b.ofIsLocalizedModule Rₛ S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap
-#align basis.localization_localization Basis.localizationLocalization
 
 @[simp]
 theorem Basis.localizationLocalization_apply {ι : Type*} (b : Basis ι R A) (i) :
     b.localizationLocalization Rₛ S Aₛ i = algebraMap A Aₛ (b i) :=
   b.ofIsLocalizedModule_apply Rₛ S _ i
-#align basis.localization_localization_apply Basis.localizationLocalization_apply
 
 @[simp]
 theorem Basis.localizationLocalization_repr_algebraMap {ι : Type*} (b : Basis ι R A) (x i) :
     (b.localizationLocalization Rₛ S Aₛ).repr (algebraMap A Aₛ x) i =
       algebraMap R Rₛ (b.repr x i) := b.ofIsLocalizedModule_repr_apply Rₛ S _ _ i
-#align basis.localization_localization_repr_algebra_map Basis.localizationLocalization_repr_algebraMap
 
 theorem Basis.localizationLocalization_span {ι : Type*} (b : Basis ι R A) :
     Submodule.span R (Set.range (b.localizationLocalization Rₛ S Aₛ)) =
@@ -179,14 +163,12 @@ end LocalizationLocalization
 section FractionRing
 
 variable (R K : Type*) [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
-
 variable {V : Type*} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
 
 theorem LinearIndependent.iff_fractionRing {ι : Type*} {b : ι → V} :
     LinearIndependent R b ↔ LinearIndependent K b :=
   ⟨LinearIndependent.localization K R⁰,
     LinearIndependent.restrict_scalars (smul_left_injective R one_ne_zero)⟩
-#align linear_independent.iff_fraction_ring LinearIndependent.iff_fractionRing
 
 end FractionRing
 
@@ -222,4 +204,9 @@ def LinearMap.extendScalarsOfIsLocalization (f : M →ₗ[R] N) : M →ₗ[A] N 
 @[simp] lemma LinearMap.extendScalarsOfIsLocalization_apply (f : M →ₗ[A] N) :
     f.extendScalarsOfIsLocalization S A = f := rfl
 
+@[simp] lemma LinearMap.extendScalarsOfIsLocalization_apply' (f : M →ₗ[R] N) (x : M) :
+    (f.extendScalarsOfIsLocalization S A) x = f x := rfl
+
 end
+
+end Localization
