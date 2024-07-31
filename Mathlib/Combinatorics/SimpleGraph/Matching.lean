@@ -228,7 +228,33 @@ end Finite
 end ConnectedComponent
 
 /--
-  A graph is perfect matching free if it contains no
+  A graph is matching free if it has no perfect matching. It does not make much sense to
+  consider a graph being free of just matchtings, because any non-trivial graph has those.
 -/
-def IsPerfectMatchingFree (G : SimpleGraph V) := ∀ (M : Subgraph G), ¬Subgraph.IsPerfectMatching M
+def IsMatchingFree (G : SimpleGraph V) := ∀ (M : Subgraph G), ¬Subgraph.IsPerfectMatching M
+
+lemma IsMatchingFree_mono {G G' : SimpleGraph V} (h : G ≤ G') (hmf : G'.IsMatchingFree) :
+    G.IsMatchingFree := by
+  intro x
+  by_contra! hc
+  apply hmf (x.map (SimpleGraph.Hom.ofLE h))
+  refine ⟨hc.1.map_ofLE h, ?_⟩
+  intro v
+  simp only [Subgraph.map_verts, Hom.coe_ofLE, id_eq, Set.image_id']
+  exact hc.2 v
+
+lemma exists_maximal_IsMatchingFree [Fintype V] [DecidableEq V]
+    (h : G.IsMatchingFree) : ∃ Gmax : SimpleGraph V,
+    G ≤ Gmax ∧ Gmax.IsMatchingFree ∧ ∀ G', G' > Gmax → ¬ G'.IsMatchingFree := by
+  have freeGraphsFinite : {G'' : SimpleGraph V | G ≤ G'' ∧ G''.IsMatchingFree}.Finite := by
+    rw [@Set.setOf_and]
+    apply Finite.Set.finite_inter_of_left
+  have : Set.Nonempty {G'' : SimpleGraph V | G ≤ G'' ∧ G''.IsMatchingFree} := by
+    exact ⟨G, Set.mem_setOf.mpr ⟨by rfl, h⟩⟩
+  obtain ⟨Gmax, hGmax⟩ := freeGraphsFinite.exists_maximal_wrt id _ this
+  use Gmax
+  simp only [Set.mem_setOf_eq, id_eq, and_imp] at hGmax
+  exact ⟨hGmax.1.1, hGmax.1.2, fun G'' hG'' hG''imf ↦
+    (ne_of_lt hG'') <| hGmax.2 _ (le_trans hGmax.1.1 (le_of_lt hG'')) hG''imf (le_of_lt hG'')⟩
+
 end SimpleGraph
