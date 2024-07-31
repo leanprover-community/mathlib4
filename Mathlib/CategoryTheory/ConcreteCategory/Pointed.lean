@@ -103,7 +103,7 @@ theorem comp_obj {A B C : Pointed C} {f : A ⟶ B} {g : B ⟶ C} : (f ≫ g).obj
 theorem id_obj {A : Pointed C} : (𝟙 A : A ⟶ A).obj = 𝟙 A.obj := rfl
 
 @[simp]
-theorem id_pt {A B : Pointed C} (f : A ⟶ B) : f.obj A.pt = B.pt := f.pt
+theorem hom_pt {A B : Pointed C} (f : A ⟶ B) : f.obj A.pt = B.pt := f.pt
 
 instance concreteCategory : ConcreteCategory (Pointed C) where
   forget :=
