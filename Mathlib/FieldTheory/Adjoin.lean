@@ -1447,10 +1447,8 @@ variable (F : Subfield L)
 
 @[simp]
 theorem extendScalars_self : extendScalars (le_refl F) = ⊥ := by
-  apply IntermediateField.toSubfield_injective
   ext x
-  change _ ↔ _ ∈ (⊥ : IntermediateField F L)
-  rw [extendScalars_toSubfield, IntermediateField.mem_bot]
+  rw [mem_extendScalars, IntermediateField.mem_bot]
   refine ⟨fun h ↦ ⟨⟨x, h⟩, rfl⟩, ?_⟩
   rintro ⟨y, rfl⟩
   exact y.2
