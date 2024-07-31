@@ -423,7 +423,7 @@ theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ =>
 
 protected theorem Tendsto.pow {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} {n : ℕ}
     (hm : Tendsto m f (𝓝 a)) : Tendsto (fun x => m x ^ n) f (𝓝 (a ^ n)) :=
-  ((continuous_pow n).tendsto a).comp hm
+  ((ENNReal.continuous_pow n).tendsto a).comp hm
 
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0∞} (h : ∀ a < 1, a * x ≤ y) : x ≤ y := by
   have : Tendsto (· * x) (𝓝[<] 1) (𝓝 (1 * x)) :=
@@ -474,8 +474,8 @@ instance : ContinuousInv ℝ≥0∞ := ⟨OrderIso.invENNReal.continuous⟩
 
 @[fun_prop]
 protected theorem continuous_zpow : ∀ n : ℤ, Continuous (· ^ n : ℝ≥0∞ → ℝ≥0∞)
-  | (n : ℕ) => mod_cast continuous_pow n
-  | .negSucc n => by simpa using (continuous_pow _).inv
+  | (n : ℕ) => mod_cast ENNReal.continuous_pow n
+  | .negSucc n => by simpa using (ENNReal.continuous_pow _).inv
 
 @[simp] -- Porting note (#11215): TODO: generalize to `[InvolutiveInv _] [ContinuousInv _]`
 protected theorem tendsto_inv_iff {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
