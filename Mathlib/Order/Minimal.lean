@@ -67,9 +67,25 @@ theorem maximals_swap : maximals (swap r) s = minimals r s :=
 theorem minimals_swap : minimals (swap r) s = maximals r s :=
   rfl
 
+variable {r s t a b}
+variable {x : α}
+
+/-- This theorem can't be used to rewrite without specifying `rlt`, since `rlt` would have to be
+  guessed. See `mem_minimals_iff_forall_ssubset_not_mem` and `mem_minimals_iff_forall_lt_not_mem`
+  for `⊆` and `≤` versions.  -/
+theorem mem_minimals_iff_forall_lt_not_mem'
+    (rlt : α → α → Prop) [IsNonstrictStrictOrder α r rlt] :
+    x ∈ minimals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, rlt y x → y ∉ s := by
+  simp [minimals, right_iff_left_not_left_of r rlt, not_imp_not, imp.swap (a := _ ∈ _)]
+
+theorem mem_maximals_iff_forall_lt_not_mem'
+    (rlt : α → α → Prop) [IsNonstrictStrictOrder α r rlt] :
+    x ∈ maximals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, rlt x y → y ∉ s := by
+  simp [maximals, right_iff_left_not_left_of r rlt, not_imp_not, imp.swap (a := _ ∈ _)]
+
 section IsAntisymm
 
-variable {r s t a b} {x : α} [IsAntisymm α r]
+variable [IsAntisymm α r]
 
 theorem eq_of_mem_maximals (ha : a ∈ maximals r s) (hb : b ∈ s) (h : r a b) : a = b :=
   antisymm h <| ha.2 hb h
@@ -93,19 +109,6 @@ theorem mem_minimals_iff : x ∈ minimals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈
 theorem mem_minimals_setOf_iff {P : α → Prop} :
     x ∈ minimals r (setOf P) ↔ P x ∧ ∀ ⦃y⦄, P y → r y x → x = y :=
   mem_minimals_iff
-
-/-- This theorem can't be used to rewrite without specifying `rlt`, since `rlt` would have to be
-  guessed. See `mem_minimals_iff_forall_ssubset_not_mem` and `mem_minimals_iff_forall_lt_not_mem`
-  for `⊆` and `≤` versions.  -/
-theorem mem_minimals_iff_forall_lt_not_mem'
-    (rlt : α → α → Prop) [IsNonstrictStrictOrder α r rlt] :
-    x ∈ minimals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, rlt y x → y ∉ s := by
-  simp [minimals, right_iff_left_not_left_of r rlt, not_imp_not, imp.swap (a := _ ∈ _)]
-
-theorem mem_maximals_iff_forall_lt_not_mem'
-    (rlt : α → α → Prop) [IsNonstrictStrictOrder α r rlt] :
-    x ∈ maximals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, rlt x y → y ∉ s := by
-  simp [maximals, right_iff_left_not_left_of r rlt, not_imp_not, imp.swap (a := _ ∈ _)]
 
 theorem minimals_eq_minimals_of_subset_of_forall [IsTrans α r] (hts : t ⊆ s)
     (h : ∀ x ∈ s, ∃ y ∈ t, r y x) : minimals r s = minimals r t := by
@@ -173,7 +176,7 @@ theorem minimals_of_symm [IsSymm α r] : minimals r s = s :=
 theorem maximals_eq_minimals [IsSymm α r] : maximals r s = minimals r s := by
   rw [minimals_of_symm, maximals_of_symm]
 
-variable {r r₁ r₂ s t a}
+variable {r₁ r₂}
 
 -- Porting note (#11215): TODO: use `h.induction_on`
 theorem Set.Subsingleton.maximals_eq (h : s.Subsingleton) : maximals r s = s := by
