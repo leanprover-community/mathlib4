@@ -31,8 +31,20 @@ only_gh="$(comm -23 <(echo "${prs_to_print}" | awk '{print $2}' | sort) <(git lo
 
 only_git="$(comm -13 <(echo "${prs_to_print}" | awk '{print $2}' | sort) <(git log --pretty=oneline --since="${start_date}" --until="${end_date}" | sed -n 's=.*(\(#[0-9]*\))$=\1=p' | sort))"
 
-printf $'\nPRs not corresponding to a commit\n\n\'%s\'\n' "${only_gh}"
+printf $'\n\nReports\n\n---\n'
 
-printf $'PRs not found by `gh`\n\n\'%s\'\n' "${only_git}"
+if [ -z "${only_gh}" ]
+then
+  printf $'\nAll PRs are accounted for!\n'
+else
+  printf $'\nPRs not corresponding to a commit\n\n\'%s\'\n' "${only_gh}"
+fi
+
+if [ -z "${only_git}" ]
+then
+  printf $'\nAll commits are accounted for!\n'
+else
+  printf $'PRs not found by `gh`\n\n\'%s\'\n' "${only_git}"
+fi
 
 printf $'\n---\n'
