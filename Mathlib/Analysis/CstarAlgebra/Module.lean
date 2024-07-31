@@ -97,30 +97,26 @@ lemma inner_smul_right_real {z : ℝ} {x y : E} : ⟪x, z • y⟫ = z • ⟪x,
   rw [h₁, ← star_inner, inner_smul_left_complex]
   simp
 
-/-- The function `y ↦ ⟪x, y⟫` bundled as a linear map. -/
-def innerRightL (x : E) : E →ₗ[ℂ] A where
-  toFun y := ⟪x, y⟫
-  map_add' z y := by simp
-  map_smul' z y := by simp
+/-- The function `⟨x, y⟩ ↦ ⟪x, y⟫` bundled as a sesquilinear map. -/
+def innerₛₗ : E →ₗ⋆[ℂ] E →ₗ[ℂ] A where
+  toFun x := { toFun := fun y => ⟪x, y⟫
+               map_add' := fun z y => by simp
+               map_smul' := fun z y => by simp }
+  map_add' z y := by ext; simp
+  map_smul' z y := by ext; simp
 
-/-- The function `y ↦ ⟪y, x⟫` bundled as a conjugate-linear map. -/
-def innerLeftL (x : E) : E →ₗ⋆[ℂ] A where
-  toFun y := ⟪y, x⟫
-  map_add' z y := by simp
-  map_smul' z y := by simp
+lemma innerₛₗ_apply {x y : E} : innerₛₗ x y = ⟪x, y⟫ := rfl
 
-lemma inner_eq_innerRightL (x y : E) : ⟪x, y⟫ = innerRightL x y := rfl
+lemma inner_eq_innerₛₗ (x y : E) : ⟪x, y⟫ = innerₛₗ x y := rfl
 
-lemma inner_eq_innerLeftL (x y : E) : ⟪x, y⟫ = innerLeftL y x := rfl
-
-@[simp] lemma inner_zero_right {x : E} : ⟪x, 0⟫ = 0 := by simp [inner_eq_innerRightL]
-@[simp] lemma inner_zero_left {x : E} : ⟪0, x⟫ = 0 := by simp [inner_eq_innerLeftL]
-@[simp] lemma inner_neg_right {x y : E} : ⟪x, -y⟫ = -⟪x, y⟫ := by simp [inner_eq_innerRightL]
-@[simp] lemma inner_neg_left {x y : E} : ⟪-x, y⟫ = -⟪x, y⟫ := by simp [inner_eq_innerLeftL]
+@[simp] lemma inner_zero_right {x : E} : ⟪x, 0⟫ = 0 := by simp [inner_eq_innerₛₗ]
+@[simp] lemma inner_zero_left {x : E} : ⟪0, x⟫ = 0 := by simp [inner_eq_innerₛₗ]
+@[simp] lemma inner_neg_right {x y : E} : ⟪x, -y⟫ = -⟪x, y⟫ := by simp [inner_eq_innerₛₗ]
+@[simp] lemma inner_neg_left {x y : E} : ⟪-x, y⟫ = -⟪x, y⟫ := by simp [inner_eq_innerₛₗ]
 @[simp] lemma inner_sub_right {x y z : E} : ⟪x, y - z⟫ = ⟪x, y⟫ - ⟪x, z⟫ := by
-  simp [inner_eq_innerRightL]
+  simp [inner_eq_innerₛₗ]
 @[simp] lemma inner_sub_left {x y z : E} : ⟪x - y, z⟫ = ⟪x, z⟫ - ⟪y, z⟫ := by
-  simp [inner_eq_innerLeftL]
+  simp [inner_eq_innerₛₗ]
 
 @[simp]
 lemma inner_sum_right {ι : Type*} [DecidableEq ι] {s : Finset ι} {x : E} {y : ι → E} :
@@ -156,12 +152,12 @@ noncomputable def norm : Norm E where
 
 lemma inner_self_eq_norm_sq {x : E} : ‖⟪x, x⟫‖ = ‖x‖ ^ 2 := by simp [norm_eq_sqrt_norm_inner_self]
 
-@[simp]
 protected lemma norm_zero : ‖(0 : E)‖ = 0 := by simp [norm_eq_sqrt_norm_inner_self]
 
 @[simp]
 lemma norm_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0 :=
-  ⟨fun h => by simpa [norm_eq_sqrt_norm_inner_self, inner_self] using h, fun h => by simp [norm, h]⟩
+  ⟨fun h => by simpa [norm_eq_sqrt_norm_inner_self, inner_self] using h,
+    fun h => by simp [norm, h]; rw [CstarModule.norm_zero] ⟩
 
 protected lemma norm_nonneg {x : E} : 0 ≤ ‖x‖ := by simp [norm_eq_sqrt_norm_inner_self]; positivity
 
@@ -176,7 +172,7 @@ lemma norm_sq_eq {x : E} : ‖x‖ ^ 2 = ‖⟪x, x⟫‖ := by simp [norm_eq_sq
 /-- The C⋆-algebra-valued Cauchy-Schwarz inequality for Hilbert C⋆-modules. -/
 lemma inner_mul_inner_swap_le [CompleteSpace A] {x y : E} : ⟪y, x⟫ * ⟪x, y⟫ ≤ ‖x‖ ^ 2 • ⟪y, y⟫ := by
   rcases eq_or_ne x 0 with h|h
-  · simp [h]
+  · simp [h, CstarModule.norm_zero (E := E)]
   · have h₁ : ∀ (a : A),
         (0 : A) ≤ ‖x‖ ^ 2 • (star a * a) - ‖x‖ ^ 2 • (⟪y, x⟫ * a)
                   - ‖x‖ ^ 2 • (star a * ⟪x, y⟫) + ‖x‖ ^ 2 • (‖x‖ ^ 2 • ⟪y, y⟫) := fun a => by
@@ -252,5 +248,28 @@ lemma norm_eq_csSup [CompleteSpace A] (v : E) :
       _ = ‖v‖ := by simp
 
 end norm
+
+section NormedAddCommGroup
+
+variable {A E : Type*} [NonUnitalNormedRing A] [StarRing A] [CstarRing A] [PartialOrder A]
+  [StarOrderedRing A] [NormedSpace ℂ A] [SMul Aᵐᵒᵖ E] [CompleteSpace A]
+  [NormedAddCommGroup E] [NormedSpace ℂ E] [StarModule ℂ A] [CstarModule A E] [IsScalarTower ℂ A A]
+  [SMulCommClass ℂ A A]
+
+/-- The function `⟨x, y⟩ ↦ ⟪x, y⟫` bundled as a continuous sesquilinear map. -/
+noncomputable def innerSL : E →L⋆[ℂ] E →L[ℂ] A :=
+  LinearMap.mkContinuous₂ (innerₛₗ : E →ₗ⋆[ℂ] E →ₗ[ℂ] A) 1 <| fun x y => by
+    simp [← inner_eq_innerₛₗ, norm_inner_le E]
+
+lemma innerSL_apply {x y : E} : innerSL x y = ⟪x, y⟫_A := rfl
+
+lemma inner_eq_innerSL (x y : E) : ⟪x, y⟫_A = innerSL x y := rfl
+
+@[continuity, fun_prop]
+lemma continuous_inner : Continuous (fun x : E × E => ⟪x.1, x.2⟫_A) := by
+  simp_rw [inner_eq_innerSL]
+  fun_prop
+
+end NormedAddCommGroup
 
 end CstarModule
