@@ -130,7 +130,7 @@ def colimitDiagram {A : TopCat} (X : RelativeCWComplex A) : ℤ ⥤ TopCat where
       if hnm : n = m then by
         unfold skeletaInclusion'
         subst hnm
-        simp only [eq_mpr_eq_cast, ↓reduceDite, cast_eq, Category.id_comp]
+        simp only [eq_mpr_eq_cast, ↓reduceDIte, cast_eq, Category.id_comp]
       else by
         have h1 : n < m := Int.lt_iff_le_and_ne.mpr ⟨n_le_m, hnm⟩
         have h2 : n < l := by linarith
@@ -138,13 +138,13 @@ def colimitDiagram {A : TopCat} (X : RelativeCWComplex A) : ℤ ⥤ TopCat where
         simp [hnm, Int.ne_of_lt h2]
         by_cases hml : m = l
         · subst hml
-          simp only [↓reduceDite, Category.comp_id]
+          simp only [↓reduceDIte, Category.comp_id]
         congr
         rw [p (n + 1) m l h1 m_le_l h2]
         congr
-        simp only [hml, ↓reduceDite]
+        simp only [hml, ↓reduceDIte]
         conv => lhs; unfold skeletaInclusion'
-        simp only [hml, ↓reduceDite]
+        simp only [hml, ↓reduceDIte]
       termination_by Int.toNat (l - n)
       decreasing_by
         simp_wf
@@ -162,3 +162,5 @@ def toTopCat {A : TopCat} (X : RelativeCWComplex A) : TopCat :=
 instance : Coe CWComplex TopCat where coe X := toTopCat X
 
 end Topology
+
+end CWComplex
