@@ -27,6 +27,11 @@ We define two separate versions `CFC.rpowₙ` and `CFC.rpow` due to what happens
 `NNReal.rpow 0 0 = 1`, this means that this function does not map zero to zero when the exponent
 is zero, and hence `CFC.rpowₙ a 0 = 0` whereas `CFC.rpow a 0 = 1`.
 
+## Notation
+
++ We define a `Pow A ℝ` instance for `CFC.rpow`, i.e `a ^ y` with `A` an operator and `y : ℝ` works
+  as expected.
+
 ## TODO
 
 + Relate these to the log and exp functions
@@ -43,13 +48,10 @@ variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A] [Star
   [TopologicalRing A] [Module ℝ≥0 A] [SMulCommClass ℝ≥0 A A] [IsScalarTower ℝ≥0 A A]
   [CompleteSpace A] [NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
 
+/- ## `rpowₙ` -/
+
 /-- Real powers of operators, based on the non-unital continuous functional calculus. -/
 noncomputable def rpowₙ (a : A) (y : ℝ≥0) : A := cfcₙ (fun x => NNReal.rpow x y) a
-
-/-- Square roots of operators, based on the non-unital continuous functional calculus. -/
-noncomputable def sqrt (a : A) : A := cfcₙ NNReal.sqrt a
-
-/- ## `rpowₙ` -/
 
 @[simp]
 lemma rpowₙ_nonneg {a : A} {x : ℝ≥0} : 0 ≤ rpowₙ a x := cfcₙ_predicate _ a
@@ -130,6 +132,9 @@ lemma rpowₙ_rpowₙ [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
 
 section sqrt
 
+/-- Square roots of operators, based on the non-unital continuous functional calculus. -/
+noncomputable def sqrt (a : A) : A := cfcₙ NNReal.sqrt a
+
 @[simp]
 lemma sqrt_nonneg {a : A} : 0 ≤ sqrt a := cfcₙ_predicate _ a
 
@@ -176,30 +181,39 @@ variable {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A] [StarOrderedRi
   [TopologicalRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
   [ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
 
-/-- Real powers of operators, based on the unital continuous functional calculus. -/
-noncomputable def rpow (a : A) (y : ℝ) : A := cfc (fun x => NNReal.rpow x y) a
-
 /- ## `rpow` -/
+
+/-- Real powers of operators, based on the unital continuous functional calculus. -/
+noncomputable def rpow (a : A) (y : ℝ) : A := cfc (fun x : ℝ≥0 => x ^ y) a
+
+/-- Enable `a ^ y` notation for `CFC.rpow`. This is a low-priority instance to make sure it does
+not take priority over other instances when they are available. -/
+noncomputable instance (priority := 100) : Pow A ℝ where
+  pow a y := rpow a y
 
 @[simp]
 lemma rpow_nonneg {a : A} {y : ℝ} : 0 ≤ rpow a y := cfc_predicate _ a
 
-lemma rpow_natCast {a : A} {n : ℕ} (ha : 0 ≤ a := by cfc_tac) : rpow a n = a ^ n := by
-  have h₁ : (fun x : ℝ≥0 => NNReal.rpow x n) = fun (x : ℝ≥0) => x ^ n := by ext; simp
-  simp_rw [rpow, h₁]
+@[simp]
+lemma rpow_eq_pow {a : A} {y : ℝ} : rpow a y = a ^ y := rfl
+
+lemma rpow_def {a : A} {y : ℝ} : a ^ y = cfc (fun x : ℝ≥0 => x ^ y) a := rfl
+
+lemma rpow_natCast {a : A} {n : ℕ} (ha : 0 ≤ a := by cfc_tac) : a ^ (n : ℝ) = a ^ n := by
+  have h₁ : (fun x : ℝ≥0 => x ^ (n : ℝ)) = fun (x : ℝ≥0) => x ^ n := by ext; simp
+  simp_rw [rpow_def, h₁]
   change cfc (fun x : ℝ≥0 => (id x) ^ n) a = a ^ n
   rw [cfc_pow (id : ℝ≥0 → ℝ≥0) n a, cfc_id ℝ≥0 a]
 
 @[simp]
 lemma rpow_algebraMap {x : ℝ≥0} {y : ℝ} :
-    rpow (algebraMap ℝ≥0 A x) y = algebraMap ℝ≥0 A (x ^ y) := by
-  simp only [rpow]
-  rw [cfc_algebraMap x (fun z : ℝ≥0 => NNReal.rpow z y)]
-  rfl
+    (algebraMap ℝ≥0 A x) ^ y = algebraMap ℝ≥0 A (x ^ y) := by
+  simp only [rpow_def]
+  rw [cfc_algebraMap x (fun z : ℝ≥0 => z ^ y)]
 
 lemma rpow_add_of_zero_not_mem_spectrum {a : A} {x y : ℝ} (ha : 0 ∉ spectrum ℝ≥0 a) :
-    rpow a (x + y) = rpow a x * rpow a y := by
-  simp only [rpow, NNReal.rpow_eq_pow]
+    a ^ (x + y) = a ^ x * a ^ y := by
+  simp only [rpow_def, NNReal.rpow_eq_pow]
   have h : ∀ r, ContinuousOn (fun z : ℝ≥0 => z ^ (r : ℝ)) (spectrum ℝ≥0 a) := by
     intro r z hz
     exact ContinuousAt.continuousWithinAt <| NNReal.continuousAt_rpow_const <| Or.inl <| by aesop
@@ -212,9 +226,9 @@ lemma rpow_add_of_zero_not_mem_spectrum {a : A} {x y : ℝ} (ha : 0 ∉ spectrum
 -- TODO: relate to a strict positivity condition
 lemma rpow_rpow_of_spectrum_pos [UniqueContinuousFunctionalCalculus ℝ≥0 A]
     {a : A} {x y : ℝ} (ha₁ : ∀ z ∈ spectrum ℝ≥0 a, 0 < z) (hx : x ≠ 0) (ha₂ : 0 ≤ a := by cfc_tac) :
-    rpow (rpow a x) y = rpow a (x * y) := by
+    (a ^ x) ^ y = a ^ (x * y) := by
   have ha₁' : 0 ∉ spectrum ℝ≥0 a := fun h => (lt_self_iff_false 0).mp (ha₁ 0 h)
-  simp only [rpow, NNReal.rpow_eq_pow]
+  simp only [rpow_def]
   have h₁ : ContinuousOn (fun z : ℝ≥0 => z ^ (y : ℝ))
       ((fun z : ℝ≥0 => z ^ (x : ℝ)) '' spectrum ℝ≥0 a) := by
     intro z hz
@@ -227,8 +241,8 @@ lemma rpow_rpow_of_spectrum_pos [UniqueContinuousFunctionalCalculus ℝ≥0 A]
   simp [NNReal.rpow_mul]
 
 lemma rpow_rpow_of_exponent_nonneg {a : A} {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y)
-    (ha₂ : 0 ≤ a := by cfc_tac) : rpow (rpow a x) y = rpow a (x * y) := by
-  simp only [rpow, NNReal.rpow_eq_pow]
+    (ha₂ : 0 ≤ a := by cfc_tac) : (a ^ x) ^ y = a ^ (x * y) := by
+  simp only [rpow_def]
   have h₁ : ContinuousOn (fun z : ℝ≥0 => z ^ (y : ℝ))
       ((fun z : ℝ≥0 => z ^ (x : ℝ)) '' spectrum ℝ≥0 a) :=
     fun _ _ => ContinuousAt.continuousWithinAt <| NNReal.continuousAt_rpow_const (Or.inr hy)
@@ -238,16 +252,16 @@ lemma rpow_rpow_of_exponent_nonneg {a : A} {x y : ℝ} (hx : 0 ≤ x) (hy : 0 �
   refine cfc_congr fun _ _ => ?_
   simp [NNReal.rpow_mul]
 
-lemma rpow_one {a : A} (ha : 0 ≤ a := by cfc_tac) : rpow a 1 = a := by
-  simp only [rpow, NNReal.coe_one, NNReal.rpow_eq_pow, NNReal.rpow_one]
+lemma rpow_one {a : A} (ha : 0 ≤ a := by cfc_tac) : a ^ (1 : ℝ) = a := by
+  simp only [rpow_def, NNReal.coe_one, NNReal.rpow_eq_pow, NNReal.rpow_one]
   change cfc (id : ℝ≥0 → ℝ≥0) a = a
   rw [cfc_id ℝ≥0 a]
 
 @[simp]
-lemma one_rpow {x : ℝ} : rpow (1 : A) x = (1 : A) := by simp [rpow]
+lemma one_rpow {x : ℝ} : (1 : A) ^ x = (1 : A) := by simp [rpow_def]
 
-lemma rpow_zero {a : A} (ha : 0 ≤ a := by cfc_tac) : rpow a 0 = 1 := by
-  simp [rpow, cfc_const_one ℝ≥0 a]
+lemma rpow_zero {a : A} (ha : 0 ≤ a := by cfc_tac) : a ^ (0 : ℝ) = 1 := by
+  simp [rpow_def, cfc_const_one ℝ≥0 a]
 
 lemma zero_rpow {x : ℝ} (hx : x ≠ 0) : rpow (0 : A) x = 0 := by simp [rpow, NNReal.zero_rpow hx]
 
@@ -256,17 +270,17 @@ section unital_vs_nonunital
 variable [NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
   [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
 
-lemma rpowₙ_eq_rpow {a : A} {x : ℝ≥0} (hx : 0 < x) : rpowₙ a x = rpow a x := by
+lemma rpowₙ_eq_rpow {a : A} {x : ℝ≥0} (hx : 0 < x) : rpowₙ a x = a ^ (x : ℝ) := by
   have hzero : NNReal.rpow 0 x = 0 := by
     have : x ≠ 0 := ne_of_gt hx
     simp [this]
   have hcont : ContinuousOn (fun z => NNReal.rpow z x) (quasispectrum ℝ≥0 a) :=
     fun _ _ => ContinuousAt.continuousWithinAt
       <| NNReal.continuousAt_rpow_const (Or.inr NNReal.zero_le_coe)
-  rw [rpowₙ, rpow, cfcₙ_eq_cfc hcont hzero]
+  rw [rpowₙ, rpow_def, cfcₙ_eq_cfc hcont hzero]
 
-lemma sqrt_eq_rpow {a : A} : sqrt a = rpow a (1 / 2) := by
-  have : rpow a (1 / 2) = rpow a (1 / 2 : ℝ≥0) := rfl
+lemma sqrt_eq_rpow {a : A} : sqrt a = a ^ (1 / 2 : ℝ) := by
+  have : a ^ (1 / 2 : ℝ) = a ^ ((1 / 2 : ℝ≥0) : ℝ) := rfl
   rw [this, ← rpowₙ_eq_rpow (by norm_num), sqrt_eq_rpowₙ]
 
 lemma sqrt_eq_cfc {a : A} : sqrt a = cfc NNReal.sqrt a := by
@@ -287,22 +301,22 @@ lemma sqrt_one : sqrt (1 : A) = 1 := by simp [sqrt_eq_cfc]
 
 -- TODO: relate to a strict positivity condition
 lemma sqrt_rpow_of_spectrum_pos {a : A} {x : ℝ} (h : ∀ z ∈ spectrum ℝ≥0 a, 0 < z)
-    (hx : x ≠ 0) : sqrt (rpow a x) = rpow a (x / 2) := by
+    (hx : x ≠ 0) : sqrt (a ^ x) = a ^ (x / 2) := by
   by_cases hnonneg : 0 ≤ a
   case pos =>
     simp only [sqrt_eq_rpow, div_eq_mul_inv, one_mul, rpow_rpow_of_spectrum_pos h hx]
   case neg =>
-    simp [sqrt_eq_cfc, rpow, cfc_apply_of_not_predicate a hnonneg]
+    simp [sqrt_eq_cfc, rpow_def, cfc_apply_of_not_predicate a hnonneg]
 
 -- TODO: relate to a strict positivity condition
 lemma rpow_sqrt_of_spectrum_pos {a : A} {x : ℝ} (h : ∀ z ∈ spectrum ℝ≥0 a, 0 < z)
-    (ha : 0 ≤ a := by cfc_tac) : rpow (sqrt a) x = rpow a (x / 2) := by
+    (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ x = a ^ (x / 2) := by
   rw [sqrt_eq_rpow, div_eq_mul_inv, one_mul, rpow_rpow_of_spectrum_pos h (by norm_num),
       inv_mul_eq_div]
 
-lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (rpow a x) = rpow a (x / 2) := by
+lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2 : ℝ) := by
   by_cases htriv : 0 ≤ a
-  case neg => simp [sqrt_eq_cfc, rpow, cfc_apply_of_not_predicate a htriv]
+  case neg => simp [sqrt_eq_cfc, rpow_def, cfc_apply_of_not_predicate a htriv]
   case pos =>
     by_cases hx : x = 0
     case pos => simp [hx, rpow_zero htriv]
@@ -313,7 +327,7 @@ lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (rpow a x) = rpow a (x / 2) 
       rw [← rpowₙ_eq_rpow h₁, h₂, ← rpowₙ_eq_rpow h₃, sqrt_rpowₙ]
 
 lemma rpow_sqrt_nnreal {a : A} {x : ℝ≥0} (ha : 0 ≤ a := by cfc_tac) :
-    rpow (sqrt a) x = rpow a (x / 2) := by
+    (sqrt a) ^ (x : ℝ) = a ^ (x / 2 : ℝ) := by
   by_cases hx : x = 0
   case pos =>
     have ha' : 0 ≤ sqrt a := by exact sqrt_nonneg
