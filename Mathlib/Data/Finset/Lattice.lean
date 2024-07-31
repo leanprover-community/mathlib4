@@ -844,18 +844,11 @@ lemma sup'_comp_eq_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : s.N
     s.sup' hs (g ∘ f) = (s.map f).sup' (map_nonempty.2 hs) g :=
   .symm <| sup'_map _ _
 
+
+@[gcongr]
 theorem sup'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) :
     s₁.sup' h₁ f ≤ s₂.sup' (h₁.mono h) f :=
   Finset.sup'_le h₁ _ (fun _ hb => le_sup' _ (h hb))
-
-/-- A version of `Finset.sup'_mono` acceptable for `@[gcongr]`.
-Instead of deducing `s₂.Nonempty` from `s₁.Nonempty` and `s₁ ⊆ s₂`,
-this version takes it as an argument. -/
-@[gcongr]
-lemma _root_.GCongr.finset_sup'_le {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂)
-    {h₁ : s₁.Nonempty} {h₂ : s₂.Nonempty} : s₁.sup' h₁ f ≤ s₂.sup' h₂ f :=
-  sup'_mono f h h₁
-
 end Sup'
 
 section Inf'
