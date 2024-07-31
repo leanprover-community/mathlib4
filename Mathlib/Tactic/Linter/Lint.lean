@@ -218,4 +218,44 @@ initialize addLinter cdotLinter
 
 end CDotLinter
 
+/-!
+#  The "badVariable" linter
+The "badVariable" linter emits a warning when a variable command
+changes how a variable is bound and declares new variables at the same time.
+
+This is discouraged since it leads to surprising behaviour.
+-/
+
+open Lean Elab
+
+/-- The "badVariable" linter emits a warning when a variable command
+changes how a variable is bound and declares new variables at the same time.
+
+This is discouraged since it leads to surprising behaviour.
+-/
+register_option linter.badVariable : Bool := {
+  defValue := true
+  descr := "enable the badVariable linter"
+}
+
+namespace BadVariable
+
+/-- Gets the value of the `linter.badVariable` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.badVariable o
+
+open Command in
+@[inherit_doc Mathlib.Linter.linter.badVariable]
+def badVariableLinter : Linter where
+  run := withSetOptionIn fun stx => do
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    -- TODO: put main logic here!
+    if stx.isOfKind ``Lean.Parser.Command.variable then return
+
+initialize addLinter badVariableLinter
+
+end BadVariable
+
 end Mathlib.Linter

@@ -86,3 +86,23 @@ note: this linter can be disabled with `set_option linter.cdot false`
 #guard_msgs in
 set_option linter.cdot true in
 example : Add Nat where add := (. + ·)
+
+-- Tests for the badVariable linter.
+
+-- These are all fine.
+variable {a : Type*}
+variable (a : Type*) (b : Prop) [Zero a]
+variable [Zero a] [One b] {f : a to b}
+-- `a` is changed, but no new variable is declared (only typeclass instances are added):
+-- this is fine, right?
+-- That means typeclasses and instance implicits are fine for this purpose?
+-- (I can certainly write a linter ignoring these for now, and see if it yields useful results)
+variable {a} [One b]
+
+-- These should error.
+
+-- Assuming autoImplicit is false, `a` must exist already, so this should error.
+variable {a} (b : Type)
+variable (a) {b : Type}
+-- I guess this is also bad, changing b and adding a --- i.e., the binder order doesn't matter?!
+variable {a : Type} (b)
