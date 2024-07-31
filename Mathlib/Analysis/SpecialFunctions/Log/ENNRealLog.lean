@@ -168,17 +168,17 @@ theorem log_mul_add {x y : ℝ≥0∞} : log (x * y) = log x + log y := by
       rw_mod_cast [log_pos_real' xy_real, log_pos_real' y_real, ENNReal.toReal_mul]
       exact Real.log_mul (Ne.symm (ne_of_lt x_real)) (Ne.symm (ne_of_lt y_real))
 
-theorem log_pow {x : ℝ≥0∞} {n : ℕ} : log (x ^ n) = (n : ℝ≥0∞) * log x := by
+theorem log_pow {x : ℝ≥0∞} {n : ℕ} : log (x ^ n) = n * log x := by
   cases' Nat.eq_zero_or_pos n with n_zero n_pos
   · simp [n_zero, pow_zero x]
   rcases ENNReal.trichotomy x with (rfl | rfl | x_real)
-  · rw [zero_pow (Ne.symm (ne_of_lt n_pos)), log_zero, EReal.mul_bot_of_pos]; norm_cast
-  · rw [ENNReal.top_pow n_pos, log_top, EReal.mul_top_of_pos]; norm_cast
+  · rw [zero_pow (Ne.symm (ne_of_lt n_pos)), log_zero, EReal.mul_bot_of_pos (Nat.cast_pos'.2 n_pos)]
+  · rw [ENNReal.top_pow n_pos, log_top, EReal.mul_top_of_pos (Nat.cast_pos'.2 n_pos)]
   · replace x_real := ENNReal.toReal_pos_iff.1 x_real
     have x_ne_zero := Ne.symm (LT.lt.ne x_real.1)
     have x_ne_top := LT.lt.ne x_real.2
-    simp only [log, pow_eq_zero_iff', x_ne_zero, ne_eq, false_and, ↓reduceIte, pow_eq_top_iff,
-      x_ne_top, toReal_pow, Real.log_pow, EReal.coe_mul]
+    simp only [log, pow_eq_zero_iff', x_ne_zero, false_and, ↓reduceIte, pow_eq_top_iff, x_ne_top,
+      toReal_pow, Real.log_pow, EReal.coe_mul]
     rfl
 
 theorem log_rpow {x : ℝ≥0∞} {y : ℝ} : log (x ^ y) = y * log x := by
