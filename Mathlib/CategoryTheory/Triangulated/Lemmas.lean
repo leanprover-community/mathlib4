@@ -210,4 +210,27 @@ lemma Triangle_π₃_commShiftIso_hom (a : ℤ) (T : Triangle C) :
 
 end Pretriangulated
 
+namespace Pretriangulated.TriangleMorphism
+
+variable {C : Type u} [CategoryTheory.Category.{v, u} C] [CategoryTheory.HasShift C ℤ]
+  [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
+
+@[simp]
+theorem smul_iso_hom {T₁ T₂ : CategoryTheory.Pretriangulated.Triangle C} (f : T₁ ≅ T₂) (n : ℤˣ) :
+    (n • f).hom = n.1 • f.hom := sorry
+
+@[simp]
+theorem smul_hom₁ {T₁ T₂ : CategoryTheory.Pretriangulated.Triangle C} (f : T₁ ⟶ T₂) (n : ℤ) :
+    (n • f).hom₁ = n • f.hom₁ := sorry
+
+@[simp]
+theorem smul_hom₂ {T₁ T₂ : CategoryTheory.Pretriangulated.Triangle C} (f : T₁ ⟶ T₂) (n : ℤ) :
+    (n • f).hom₂ = n • f.hom₂ := sorry
+
+@[simp]
+theorem smul_hom₃ {T₁ T₂ : CategoryTheory.Pretriangulated.Triangle C} (f : T₁ ⟶ T₂) (n : ℤ) :
+    (n • f).hom₃ = n • f.hom₃ := sorry
+
+end Pretriangulated.TriangleMorphism
+
 end CategoryTheory

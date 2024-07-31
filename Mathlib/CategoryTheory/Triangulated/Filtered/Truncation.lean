@@ -6,7 +6,7 @@ open Category Limits Pretriangulated ZeroObject Preadditive
 
 namespace Triangulated
 
-variable {C : Type _} [Category C] [Preadditive C] [HasZeroObject C] [HasShift C (ℤ × ℤ)]
+variable {C : Type _} [Category C] [HasZeroObject C]  [Preadditive C] [HasShift C (ℤ × ℤ)]
   [∀ p : ℤ × ℤ, Functor.Additive (CategoryTheory.shiftFunctor C p)]
   [hC : Pretriangulated C] [hP : FilteredTriangulated C]
 
@@ -189,94 +189,6 @@ lemma triangleFunctorNatTransOfGE_refl (a : ℤ) :
 instance : (triangleFunctor (hP := hP) n).Additive where
   map_add := triangle_map_ext n  _ _ rfl
 
-noncomputable def triangleFunctorIsoShift_exists (a : ℤ) :=
-  triangle_iso_exists (n - 1) n (by linarith) _ _
-      (triangleFunctor_obj_distinguished n (A⟦a⟧))
-      (Triangle.shift_distinguished _ (triangleFunctor_obj_distinguished n A) a) (Iso.refl _)
-      inferInstance inferInstance (shift_isGE_of_isGE _ n a ) (shift_isLE_of_isLE _ (n - 1) a)
-
-set_option maxHeartbeats 500000 in
-noncomputable instance : (triangleFunctor (hP := hP) n).CommShift ℤ where
-  iso a := by
-    refine NatIso.ofComponents (fun A ↦ Classical.choose (triangleFunctorIsoShift_exists n A a)) ?_
-    intro A B f
-    refine triangle_map_ext' (n - 1) n (by linarith) _ _ ?_ ?_ ?_ ?_ ?_
-    · simp only [Functor.comp_obj]
-      exact triangleFunctor_obj_distinguished _ _
-    · simp only [Functor.comp_obj]
-      exact Triangle.shift_distinguished _ (triangleFunctor_obj_distinguished _ _) _
-    · simp only [Functor.comp_obj]
-      exact inferInstance
-    · simp only [Triangle.shiftFunctor_eq, Functor.comp_obj, Triangle.shiftFunctor_obj,
-      triangleFunctor_obj_obj₂, Triangle.mk_obj₃]
-      exact shift_isLE_of_isLE _ (n - 1) a
-    · simp only [Functor.comp_obj, triangleFunctor_obj_obj₂, Triangle.shiftFunctor_eq,
-      Triangle.shiftFunctor_obj, Triangle.mk_obj₂, Functor.comp_map, Iso.refl_hom, id_eq,
-      triangleCategory_comp, TriangleMorphism.comp_hom₂, triangleFunctor_map_hom₂,
-      Triangle.shiftFunctor_map_hom₂]
-      rw [Classical.choose_spec (triangleFunctorIsoShift_exists n A a),
-        Classical.choose_spec (triangleFunctorIsoShift_exists n B a)]
-      simp only [triangleFunctor_obj_obj₂, Triangle.shiftFunctor_eq, Triangle.shiftFunctor_obj,
-        Functor.comp_obj, Triangle.mk_obj₂, Iso.refl_hom, comp_id, id_comp]
-  zero := by
-    apply Iso.ext
-    apply NatTrans.ext
-    ext1 A
-    refine triangle_map_ext' (n - 1) n (by linarith) _ _ ?_ ?_ ?_ ?_ ?_
-    . exact triangleFunctor_obj_distinguished _ _
-    · exact Triangle.shift_distinguished _ (triangleFunctor_obj_distinguished _ _) _
-    · simp only [Functor.comp_obj]
-      exact inferInstance
-    · simp only [Triangle.shiftFunctor_eq, Functor.comp_obj, Triangle.shiftFunctor_obj,
-      triangleFunctor_obj_obj₂, Int.negOnePow_zero, one_smul, Triangle.mk_obj₃]
-      exact shift_isLE_of_isLE _ (n - 1) 0
-    · simp only [Functor.comp_obj, triangleFunctor_obj_obj₂, Triangle.shiftFunctor_eq,
-      Triangle.shiftFunctor_obj, Int.negOnePow_zero, Triangle.mk_obj₂, Iso.refl_hom,
-      NatIso.ofComponents_hom_app, Functor.CommShift.isoZero_hom_app, Triangle.shiftFunctorZero_eq,
-      triangleCategory_comp, TriangleMorphism.comp_hom₂, triangleFunctor_map_hom₂,
-      Triangle.shiftFunctorZero_inv_app_hom₂, Iso.hom_inv_id_app]
-      rw [Classical.choose_spec (triangleFunctorIsoShift_exists n A 0)]
-      simp only [triangleFunctor_obj_obj₂, Triangle.shiftFunctor_eq, Triangle.shiftFunctor_obj,
-        Int.negOnePow_zero, Functor.comp_obj, Triangle.mk_obj₂, Iso.refl_hom]
-  add a b := by
-    apply Iso.ext
-    apply NatTrans.ext
-    ext1 A
-    refine triangle_map_ext' (n - 1) n (by linarith) _ _ ?_ ?_ ?_ ?_ ?_
-    · simp only [Functor.comp_obj]
-      exact triangleFunctor_obj_distinguished _ _
-    · simp only [Functor.comp_obj]
-      exact Triangle.shift_distinguished _ (triangleFunctor_obj_distinguished _ _) _
-    · simp only [Functor.comp_obj]
-      exact inferInstance
-    · simp only [Triangle.shiftFunctor_eq, Functor.comp_obj, Triangle.shiftFunctor_obj,
-      triangleFunctor_obj_obj₂, Triangle.mk_obj₃]
-      exact shift_isLE_of_isLE _ (n - 1) _
-    · simp only [NatIso.ofComponents_hom_app, Functor.CommShift.isoAdd_hom_app]
-      rw [Classical.choose_spec (triangleFunctorIsoShift_exists n A (a + b)), Iso.refl_hom]
-      simp only [comp_hom₂]
-      conv_rhs => congr; rfl; congr
-                  rw [Classical.choose_spec (triangleFunctorIsoShift_exists n _ b), Iso.refl_hom]
-                  rfl; congr
-                  erw [Triangle.shiftFunctor_map_hom₂]
-                  rw [Classical.choose_spec (triangleFunctorIsoShift_exists n A a), Iso.refl_hom,
-                    Functor.map_id]
-      erw [id_comp, id_comp]
-      simp only [Functor.comp_obj, triangleFunctor_obj_obj₂, Triangle.shiftFunctor_eq,
-        Triangle.shiftFunctor_obj, Triangle.mk_obj₂, triangleFunctor_map_hom₂, Triangle.mk_obj₁,
-        Triangle.mk_obj₃, Triangle.mk_mor₁, Triangle.mk_mor₂, Triangle.mk_mor₃,
-        Triangle.shiftFunctorAdd_eq, Triangle.shiftFunctorAdd'_inv_app_hom₂]
-      rw [shiftFunctorAdd'_eq_shiftFunctorAdd]
-      simp only [Iso.hom_inv_id_app]
-
-lemma triangleFunctor_commShiftIso_eq (n a : ℤ) (X : C) :
-    ((triangleFunctor (hP := hP) n).commShiftIso a).app X =
-    (triangleFunctorIsoShift_exists n X a).choose := rfl
-
-lemma triangleFunctor_commShiftIso_hom_eq (n a : ℤ) (X : C) :
-    ((triangleFunctor (hP := hP) n).commShiftIso a).hom.app X =
-    (triangleFunctorIsoShift_exists n X a).choose.hom := rfl
-
 end TruncAux
 
 noncomputable def truncLT (n : ℤ) : C ⥤ C :=
@@ -287,17 +199,6 @@ instance (n : ℤ) : (truncLT (hP := hP) n).Additive where
     dsimp only [truncLT, Functor.comp_map]
     rw [Functor.map_add]
     rfl
-
-noncomputable instance (n : ℤ) : (truncLT (hP := hP) n).CommShift ℤ := Functor.CommShift.comp _ _
-
-lemma truncLT_commShiftIso_hom_app (n a : ℤ) (X : C) :
-    ((hP.truncLT n).commShiftIso a).hom.app X =
-    (TruncAux.triangleFunctorIsoShift_exists n X a).choose.hom.hom₃ := by
-  erw [Functor.commShiftIso_comp_hom_app (TruncAux.triangleFunctor n) Triangle.π₃ a X]
-  rw [TruncAux.triangleFunctor_commShiftIso_hom_eq, Triangle_π₃_commShiftIso_hom]
-  erw [comp_id]
-  simp only [Functor.comp_obj, Triangle.shiftFunctor_eq, Triangle.shiftFunctor_obj,
-    TruncAux.triangleFunctor_obj_obj₂, Triangle.mk_obj₂, Iso.refl_hom, Triangle.π₃_map]
 
 noncomputable def truncLTπ (n : ℤ) : 𝟭 _ ⟶ truncLT (hP := hP) n:=
   whiskerLeft (TruncAux.triangleFunctor n) Triangle.π₂Toπ₃
@@ -314,17 +215,6 @@ instance (n : ℤ) : (truncGE (hP := hP) n).Additive where
     dsimp only [truncGE, Functor.comp_map]
     rw [Functor.map_add]
     rfl
-
-noncomputable instance (n : ℤ) : (truncGE (hP := hP) n).CommShift ℤ := Functor.CommShift.comp _ _
-
-lemma truncGE_commShiftIso_hom_app (n a : ℤ) (X : C) :
-    ((hP.truncGE n).commShiftIso a).hom.app X =
-    (TruncAux.triangleFunctorIsoShift_exists n X a).choose.hom.hom₁ := by
-  erw [Functor.commShiftIso_comp_hom_app (TruncAux.triangleFunctor n) Triangle.π₁ a X]
-  rw [TruncAux.triangleFunctor_commShiftIso_hom_eq, Triangle_π₁_commShiftIso_hom]
-  erw [comp_id]
-  simp only [Functor.comp_obj, Triangle.shiftFunctor_eq, Triangle.shiftFunctor_obj,
-    TruncAux.triangleFunctor_obj_obj₂, Triangle.mk_obj₂, Iso.refl_hom, Triangle.π₁_map]
 
 noncomputable def truncGEι (n : ℤ) : truncGE (hP := hP) n ⟶ 𝟭 _ :=
   whiskerLeft (TruncAux.triangleFunctor n) Triangle.π₁Toπ₂
@@ -349,8 +239,22 @@ lemma triangleGELT_distinguished (n : ℤ) (X : C) :
     (triangleGELT n).obj X ∈ distTriang C :=
   TruncAux.triangleFunctor_obj_distinguished n X
 
+noncomputable def truncLT_iso_triangleGELT_comp_π₃ (n : ℤ) :
+  triangleGELT n ⋙ Triangle.π₃ ≅ truncLT (C := C) n := by
+  refine NatIso.ofComponents (fun A ↦ Iso.refl _) ?_
+  intro A B f
+  simp only [Functor.comp_obj, Triangle.π₃_obj, triangleGELT_obj_obj₃, Iso.refl_hom, comp_id,
+    Functor.comp_map, Triangle.π₃_map, triangleGELT_map_hom₃, id_comp]
+
+noncomputable def truncGE_iso_triangleGELT_comp_π₁ (n : ℤ) :
+  triangleGELT n ⋙ Triangle.π₁ ≅ truncGE (C := C) n := by
+  refine NatIso.ofComponents (fun A ↦ Iso.refl _) ?_
+  intro A B f
+  simp only [Functor.comp_obj, Triangle.π₁_obj, triangleGELT_obj_obj₁, Functor.comp_map,
+    Triangle.π₁_map, triangleGELT_map_hom₁, Iso.refl_hom, comp_id, id_comp]
+
 @[reassoc (attr := simp)]
-lemma truncGEι_comp_truncLEπ_app (n : ℤ) (X : C) :
+lemma truncGEι_comp_truncLTπ_app (n : ℤ) (X : C) :
     (truncGEι n).app X ≫ (truncLTπ n).app X = 0 :=
   comp_distTriang_mor_zero₁₂ _ ((triangleGELT_distinguished n X))
 
@@ -493,15 +397,6 @@ instance (n : ℤ) : (truncLE (hP := hP) n).Additive := by
   dsimp only [truncLE]
   infer_instance
 
-noncomputable instance (n : ℤ) : (truncLE (hP := hP) n).CommShift ℤ := by
-  dsimp only [truncLE]
-  infer_instance
-
-lemma truncLE_commShiftIso_hom_app (n a : ℤ) (X : C) :
-    ((hP.truncLE n).commShiftIso a).hom.app X =
-    ((hP.truncLT (n + 1)).commShiftIso a).hom.app X := by
-  dsimp [truncLE]
-
 instance (n : ℤ) (X : C) : hP.IsLE ((truncLE n).obj X) n := by
   have : hP.IsLE ((truncLE n).obj X) (n+1-1) := by
     dsimp [truncLE]
@@ -514,18 +409,9 @@ instance (n : ℤ) : (truncGT (hP := hP) n).Additive := by
   dsimp only [truncGT]
   infer_instance
 
-noncomputable instance (n : ℤ) : (truncGT (hP := hP) n).CommShift ℤ := by
-  dsimp only [truncGT]
-  infer_instance
-
 instance (n : ℤ) (X : C) : hP.IsGE ((truncGT n).obj X) (n+1) := by
   dsimp [truncGT]
   infer_instance
-
-lemma truncGT_commShiftIso_hom_app (n a : ℤ) (X : C) :
-    ((hP.truncGT n).commShiftIso a).hom.app X =
-    ((hP.truncGE (n + 1)).commShiftIso a).hom.app X := by
-  dsimp [truncGT]
 
 instance (n : ℤ) (X : C) : hP.IsGE ((truncGT (n-1)).obj X) n :=
   hP.isGE_of_GE _ n (n-1+1) (by linarith)
@@ -638,27 +524,183 @@ lemma triangleGTLE_distinguished (n : ℤ) (X : C) :
   isomorphic_distinguished _ (triangleGELE_distinguished n (n+1) rfl X) _
     ((triangleGTLEIsoTriangleGELE n (n+1) rfl).app X)
 
-@[simp]
+
+section CommShift
+
+variable (n : ℤ) (A : C)
+
+noncomputable def triangleGELTIsoShift_exists (a : ℤ) :=
+  triangle_iso_exists (n - 1) n (by linarith) _ _
+      (triangleGELT_distinguished n (A⟦a⟧))
+      (Triangle.shift_distinguished _ (triangleGELT_distinguished n A) a) (Iso.refl _)
+      (by dsimp; infer_instance) (by dsimp; infer_instance)
+      (by dsimp; exact shift_isGE_of_isGE _ n a)
+      (by dsimp; exact shift_isLE_of_isLE _ (n - 1) a)
+
+noncomputable def triangleGELTCommShiftIso (a : ℤ) :
+    shiftFunctor C a ⋙ triangleGELT n ≅ triangleGELT n ⋙ shiftFunctor (Triangle C) a := by
+  refine NatIso.ofComponents (fun A ↦ a.negOnePow • Classical.choose
+    (triangleGELTIsoShift_exists n A a)) ?_
+  intro A B f
+  refine triangle_map_ext' (n - 1) n (by linarith) _ _ ?_ ?_ ?_ ?_ ?_
+  · simp only [Functor.comp_obj]
+    exact triangleGELT_distinguished _ _
+  · simp only [Functor.comp_obj]
+    exact Triangle.shift_distinguished _ (triangleGELT_distinguished _ _) _
+  · simp only [Functor.comp_obj]
+    dsimp; infer_instance
+  · simp only [Triangle.shiftFunctor_eq, Functor.comp_obj, Triangle.shiftFunctor_obj,
+    triangleGELT_obj_obj₁, triangleGELT_obj_obj₂, triangleGELT_obj_obj₃, triangleGELT_obj_mor₁,
+    triangleGELT_obj_mor₂, triangleGELT_obj_mor₃, Triangle.mk_obj₃]
+    exact shift_isLE_of_isLE _ (n - 1) a
+  · dsimp
+    erw [zsmul_comp, comp_zsmul]
+    rw [Classical.choose_spec (triangleGELTIsoShift_exists n A a),
+      Classical.choose_spec (triangleGELTIsoShift_exists n B a), Iso.refl_hom, Iso.refl_hom]
+    erw [comp_id, id_comp]
+
+lemma triangleGELTCommShiftIso_zero :
+    triangleGELTCommShiftIso (C := C) n 0 = Functor.CommShift.isoZero (triangleGELT n) ℤ := by
+  apply Iso.ext; apply NatTrans.ext; ext1 A
+  refine triangle_map_ext' (n - 1) n (by linarith) _ _ ?_ ?_ ?_ ?_ ?_
+  . exact triangleGELT_distinguished _ _
+  · exact Triangle.shift_distinguished _ (triangleGELT_distinguished _ _) _
+  · dsimp; infer_instance
+  · dsimp; infer_instance
+  · dsimp; simp only [triangleGELTCommShiftIso, Triangle.shiftFunctor_eq,
+    Triangle.shiftFunctor_obj, triangleGELT_obj_obj₁, triangleGELT_obj_obj₂, triangleGELT_obj_obj₃,
+    Int.negOnePow_zero, triangleGELT_obj_mor₁, triangleGELT_obj_mor₂, Functor.comp_obj,
+    triangleGELT_obj_mor₃, Triangle.mk_obj₂, Iso.refl_hom, NatIso.ofComponents_hom_app,
+    smul_iso_hom, one_smul, Functor.CommShift.isoZero_hom_app, Triangle.shiftFunctorZero_eq,
+    triangleCategory_comp, TriangleMorphism.comp_hom₂, triangleGELT_map_hom₂,
+    Triangle.shiftFunctorZero_inv_app_hom₂, Iso.hom_inv_id_app]
+    rw [Classical.choose_spec (triangleGELTIsoShift_exists n A 0), Iso.refl_hom]; rfl
+
+lemma triangleGELTCommShiftIso_add (a b : ℤ) :
+    triangleGELTCommShiftIso (C := C) n (a + b) = Functor.CommShift.isoAdd
+    (triangleGELTCommShiftIso n a) (triangleGELTCommShiftIso n b) := by
+  apply Iso.ext; apply NatTrans.ext; ext1 A
+  refine triangle_map_ext' (n - 1) n (by linarith) _ _ ?_ ?_ ?_ ?_ ?_
+  · exact triangleGELT_distinguished _ _
+  · simp only [Functor.comp_obj]
+    exact Triangle.shift_distinguished _ (triangleGELT_distinguished _ _) _
+  · dsimp; infer_instance
+  · simp only [Triangle.shiftFunctor_eq, Functor.comp_obj, Triangle.shiftFunctor_obj,
+    triangleGELT_obj_obj₁, triangleGELT_obj_obj₂, triangleGELT_obj_obj₃, triangleGELT_obj_mor₁,
+    triangleGELT_obj_mor₂, triangleGELT_obj_mor₃, Triangle.mk_obj₃]
+    exact shift_isLE_of_isLE _ (n - 1) _
+  · simp only [NatIso.ofComponents_hom_app, Functor.CommShift.isoAdd_hom_app,
+      triangleGELTCommShiftIso]
+    rw [TriangleMorphism.smul_iso_hom, TriangleMorphism.smul_hom₂,
+      Classical.choose_spec (triangleGELTIsoShift_exists n A (a + b)), Iso.refl_hom]
+    simp only [comp_hom₂]
+    rw [TriangleMorphism.smul_iso_hom, TriangleMorphism.smul_hom₂,
+      Classical.choose_spec (triangleGELTIsoShift_exists n _ b), Iso.refl_hom, Linear.smul_comp,
+      Linear.comp_smul]
+    erw [id_comp, Triangle.shiftFunctor_map_hom₂]
+    rw [TriangleMorphism.smul_iso_hom, TriangleMorphism.smul_hom₂,
+      Classical.choose_spec (triangleGELTIsoShift_exists n A a), Iso.refl_hom,
+      Functor.map_zsmul, zsmul_comp, comp_zsmul, Functor.map_id]
+    erw [id_comp]
+    dsimp; simp only [Triangle.shiftFunctorAdd_eq, Triangle.shiftFunctorAdd'_inv_app_hom₂,
+      triangleGELT_obj_obj₂]
+    rw [shiftFunctorAdd'_eq_shiftFunctorAdd, Iso.hom_inv_id_app, Int.negOnePow_add, Units.val_mul,
+      smul_smul, mul_comm]
+
+noncomputable instance : (triangleGELT (hP := hP) n).CommShift ℤ where
+  iso := triangleGELTCommShiftIso n
+  zero := triangleGELTCommShiftIso_zero n
+  add := triangleGELTCommShiftIso_add n
+
+lemma triangleGELT_commShiftIso_hom_eq (n a : ℤ) (X : C) :
+    ((triangleGELT (hP := hP) n).commShiftIso a).hom.app X =
+    a.negOnePow.1 • (triangleGELTIsoShift_exists n X a).choose.hom := rfl
+
+noncomputable instance (n : ℤ) : (truncLT (hP := hP) n).CommShift ℤ :=
+    Functor.CommShift.ofIso (truncLT_iso_triangleGELT_comp_π₃ n) ℤ
+
+lemma truncLT_commShiftIso_hom_app (n a : ℤ) (X : C) :
+    ((hP.truncLT n).commShiftIso a).hom.app X = a.negOnePow.1 •
+    (triangleGELTIsoShift_exists n X a).choose.hom.hom₃ := by
+  have := (Functor.CommShift.ofIso_compatibility (truncLT_iso_triangleGELT_comp_π₃ n (C := C))
+    ℤ).comm' a
+  apply_fun (fun h ↦ h.app X) at this
+  simp only [Functor.comp_obj, Triangle.π₃_obj, triangleGELT_obj_obj₃,
+    truncLT_iso_triangleGELT_comp_π₃, NatTrans.comp_app, whiskerRight_app,
+    NatIso.ofComponents_hom_app, Iso.refl_hom, Functor.map_id, comp_id, whiskerLeft_app, id_comp]
+    at this
+  rw [← this, Functor.commShiftIso_comp_hom_app (triangleGELT n) Triangle.π₃ a X]
+  rw [triangleGELT_commShiftIso_hom_eq, Triangle_π₃_commShiftIso_hom]
+  erw [comp_id]
+  simp only [Functor.comp_obj, Triangle.shiftFunctor_eq, Triangle.shiftFunctor_obj,
+    triangleGELT_obj_obj₁, triangleGELT_obj_obj₂, triangleGELT_obj_obj₃, triangleGELT_obj_mor₁,
+    triangleGELT_obj_mor₂, triangleGELT_obj_mor₃, Triangle.mk_obj₂, Iso.refl_hom, Triangle.π₃_map,
+    instSMulHomTriangle_smul_hom₃, Triangle.mk_obj₃]
+
+noncomputable instance (n : ℤ) : (truncGE (hP := hP) n).CommShift ℤ :=
+    Functor.CommShift.ofIso (truncGE_iso_triangleGELT_comp_π₁ n) ℤ
+
+lemma truncGE_commShiftIso_hom_app (n a : ℤ) (X : C) :
+    ((hP.truncGE n).commShiftIso a).hom.app X = a.negOnePow.1 •
+    (triangleGELTIsoShift_exists n X a).choose.hom.hom₁ := by
+  have := (Functor.CommShift.ofIso_compatibility (truncGE_iso_triangleGELT_comp_π₁ n (C := C))
+    ℤ).comm' a
+  apply_fun (fun h ↦ h.app X) at this
+  simp only [Functor.comp_obj, Triangle.π₁_obj, triangleGELT_obj_obj₁,
+    truncGE_iso_triangleGELT_comp_π₁, NatTrans.comp_app, whiskerRight_app,
+    NatIso.ofComponents_hom_app, Iso.refl_hom, Functor.map_id, comp_id, whiskerLeft_app, id_comp]
+    at this
+  rw [← this, Functor.commShiftIso_comp_hom_app (triangleGELT n) Triangle.π₁ a X]
+  rw [triangleGELT_commShiftIso_hom_eq, Triangle_π₁_commShiftIso_hom]
+  erw [comp_id]
+  simp only [Functor.comp_obj, Triangle.shiftFunctor_eq, Triangle.shiftFunctor_obj,
+    triangleGELT_obj_obj₁, triangleGELT_obj_obj₂, triangleGELT_obj_obj₃, triangleGELT_obj_mor₁,
+    triangleGELT_obj_mor₂, triangleGELT_obj_mor₃, Triangle.mk_obj₂, Iso.refl_hom, Triangle.π₁_map,
+    instSMulHomTriangle_smul_hom₁, Triangle.mk_obj₁]
+
+noncomputable instance (n : ℤ) : (truncLE (hP := hP) n).CommShift ℤ := by
+  dsimp only [truncLE]
+  infer_instance
+
+lemma truncLE_commShiftIso_hom_app (n a : ℤ) (X : C) :
+    ((hP.truncLE n).commShiftIso a).hom.app X =
+    ((hP.truncLT (n + 1)).commShiftIso a).hom.app X := by
+  dsimp [truncLE]
+
+noncomputable instance (n : ℤ) : (truncGT (hP := hP) n).CommShift ℤ := by
+  dsimp only [truncGT]
+  infer_instance
+
+lemma truncGT_commShiftIso_hom_app (n a : ℤ) (X : C) :
+    ((hP.truncGT n).commShiftIso a).hom.app X =
+    ((hP.truncGE (n + 1)).commShiftIso a).hom.app X := by
+  dsimp [truncGT]
+
+lemma truncLTCommShift_comm (X : C) (n a : ℤ) :
+    ((hP.truncLTπ n).app X)⟦a⟧' = (truncLTπ n).app (X⟦a⟧) ≫
+    ((truncLT n).commShiftIso a).hom.app X := by
+  rw [truncLT_commShiftIso_hom_app, comp_zsmul]
+  simp only [Functor.id_obj, Functor.comp_obj, Triangle.shiftFunctor_eq, Triangle.shiftFunctor_obj,
+    triangleGELT_obj_obj₁, triangleGELT_obj_obj₂, triangleGELT_obj_obj₃, triangleGELT_obj_mor₁,
+    triangleGELT_obj_mor₂, triangleGELT_obj_mor₃, Triangle.mk_obj₂, Iso.refl_hom]
+  have := (triangleGELTIsoShift_exists n X a).choose.hom.comm₂
+  simp only [triangleGELT_obj_obj₂, Triangle.shiftFunctor_eq, Triangle.shiftFunctor_obj,
+    triangleGELT_obj_obj₁, triangleGELT_obj_obj₃, triangleGELT_obj_mor₁, triangleGELT_obj_mor₂,
+    Functor.comp_obj, triangleGELT_obj_mor₃, Triangle.mk_obj₃, Triangle.mk_obj₂, Iso.refl_hom,
+    Triangle.mk_mor₂, Linear.comp_units_smul] at this
+  rw [this, (triangleGELTIsoShift_exists n X a).choose_spec, Iso.refl_hom]
+  change _ = a.negOnePow.1 • _
+  erw [id_comp, smul_smul]; rw [← Units.val_mul, ← Int.negOnePow_sub]
+  conv_rhs => congr; congr; rw [sub_self, Int.negOnePow_zero]
+  erw [one_smul]
+
 lemma truncLECommShift_comm (X : C) (n a : ℤ) :
     ((hP.truncLEπ n).app X)⟦a⟧' = (truncLEπ n).app (X⟦a⟧) ≫
-    ((truncLE n).commShiftIso a).hom.app X := by
-  rw [truncLE_commShiftIso_hom_app]
-  have := (TruncAux.triangleFunctorIsoShift_exists (n + 1) X a).choose.hom.comm₂
-  --rw [(TruncAux.triangleFunctorIsoShift_exists (n + 1) X a).choose_spec] at this
-  --conv_rhs at this => rw [Iso.refl_hom, id_comp]
-  conv_lhs at this => rw [← truncLTπ_app, ← truncLEπ_app, ← truncLT_commShiftIso_hom_app]
-  simp only [TruncAux.triangleFunctor_obj_obj₂, Triangle.shiftFunctor_eq, Triangle.shiftFunctor_obj,
-    Functor.comp_obj, Triangle.mk_obj₃, Triangle.mk_obj₂, Iso.refl_hom, Triangle.mk_mor₂,
-    Linear.comp_units_smul] at this
-  simp only [Functor.id_obj, Functor.comp_obj]
-  conv_rhs => erw [this]
+    ((truncLE n).commShiftIso a).hom.app X := truncLTCommShift_comm _ _ _
 
+-- TODO: similar lemmas for GE, GT
 
-
-
-
-
--- TODO: similar lemmas for LT, GE, GT
+end CommShift
 
 lemma to_truncGE_obj_ext (n : ℤ) (X : C) {Y : C}
     (f₁ f₂ : X ⟶ (hP.truncGE n).obj Y) (h : f₁ ≫ (hP.truncGEι n).app Y =
@@ -753,7 +795,7 @@ variable [IsTriangulated C]
 noncomputable instance (n : ℤ) : (hP.truncLE n).IsTriangulated where
   map_distinguished T hT := by
     obtain ⟨Z₁, Z₃, f, g, h, v₁, w₁, u₃, v₃, w₃, hZ, hGT, hLE, comm₁₂, comm₂₃, _, comm₃₁₂,
-      _⟩ := NineGrid' (hP.triangleGTLE_distinguished n T.obj₁) (hP.triangleGTLE_distinguished n
+      comm₃₁₃⟩ := NineGrid' (hP.triangleGTLE_distinguished n T.obj₁) (hP.triangleGTLE_distinguished n
       T.obj₂) ((hP.truncGT n).map T.mor₁) T.mor₁ (by simp only [triangleGTLE_obj_obj₁,
       triangleGTLE_obj_obj₂, triangleGTLE_obj_mor₁, NatTrans.naturality, Functor.id_obj,
       Functor.id_map]) T.mor₂ T.mor₃ hT
@@ -819,7 +861,7 @@ noncomputable instance (n : ℤ) : (hP.truncLE n).IsTriangulated where
         simp only [Functor.id_obj, Functor.id_map] at this
         rw [← assoc, ← this, ← comm₃₁₂]
         simp only [triangleGTLE_obj_obj₂, triangleGTLE_obj_obj₃, triangleGTLE_obj_mor₂, assoc]
-        rw [truncLECommShift.comm]
+        rw [truncLECommShift_comm]
     exact isomorphic_distinguished _ hLE _ e.symm
 
 #exit
