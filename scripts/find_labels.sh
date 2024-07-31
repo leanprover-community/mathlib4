@@ -10,12 +10,14 @@ repo_owner=$1
 repo_name=$2
 
 # Get the date for one month ago
-one_month_ago=$(date -d '1 month ago - 1 day' +%Y-%m-%d)
+one_month_ago=$(date -d '1 month ago' +%Y-%m-%d)
 
 git switch master
 
 # find how many commits to master there have been in the last month
 last_month_commits="$(git log --since="$one_month_ago" --pretty=oneline | wc -l)"
+
+one_month_ago=$(date -d '1 month ago - 1 day' +%Y-%m-%d)
 
 printf '%s commits since %s\n' "${last_month_commits}" "${one_month_ago}"
 
