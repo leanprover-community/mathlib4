@@ -58,9 +58,9 @@ any remaining goals (note that in `conv` mode, every goal can be solved for by `
 then it uses the resulting `lhs = rhs` proof to rewrite the goal in the surrounding normal
 tactic mode.
 
-## Conv tactics from Lean 4, Std4, and Mathlib4
+## Conv tactics from Lean 4, Batteries, and Mathlib
 
-Unless they're annotated with "Std4" or "Mathlib", the following tactics are defined
+Unless they're annotated with "Batteries" or "Mathlib", the following tactics are defined
 in Lean 4 core.
 
 ### Control
@@ -80,7 +80,7 @@ in Lean 4 core.
 * `all_goals convSeq` runs the `conv` tactics on every `conv` goal, collecting all the produced
   subgoals (if any).
 
-* `any_goals convSeq` is like `all_goals` but succeeds if the tactic sequence succees for any
+* `any_goals convSeq` is like `all_goals` but succeeds if the tactic sequence succeeds for any
   of the goals.
 
 * `case tag => convSeq` focuses on a goal with a given tag, runs the tactic sequence, and then
@@ -157,7 +157,7 @@ in Lean 4 core.
 * `change t` changes the expression to `t` if the expression and `t` are definitionally equal.
 
 * `equals t => tacticSeq` changes the current expression, say `e`, to `t`, and asks you to prove
-   the equality `e = t`. (Std4)
+   the equality `e = t`. (Batteries)
 
 * `rw [thms...]` rewrites the expression using the given theorems. The syntax is similar to `rw`.
 
@@ -175,7 +175,7 @@ in Lean 4 core.
 * `refine e` applies `e` to the goal (which remember is `⊢ lhs = ?rhs`) using the `refine` tactic.
   Strange results may occur if the placeholders in `e` are not equalities.
 
-* `exact e` closes the goal, where `e : lhs = ?rhs`. (Std4)
+* `exact e` closes the goal, where `e : lhs = ?rhs`. (Batteries)
 
 * Mathlib provides a number of tactics as `conv` tactics:
   * `abel` and `abel_nf`
@@ -214,9 +214,10 @@ and expands all local variables).
 
 * `fail_if_success convSeq` fails if the `conv` sequence succeeds.
 
-* `guard_expr` and `guard_target` for asserting that certain expressions are equal to others. (Std4)
+* `guard_expr` and `guard_target` for asserting that certain expressions are equal to others.
+  (Batteries)
 
-* `unreachable!`, which is the same as the `unreachable!` tactic. (Std4)
+* `unreachable!`, which is the same as the `unreachable!` tactic. (Batteriess)
 
 * `run_tac doSeq` evaluates a monadic value and runs it as a tactic using `tactic'`. (Mathlib)
 

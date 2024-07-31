@@ -5,17 +5,13 @@ Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 -/
 import Lean.Elab.PreDefinition.Basic
 import Lean.Util.Paths
-import Std.Tactic.Simpa
 import Mathlib.Lean.Expr.Basic
+import Batteries.Tactic.OpenPrivate
 
 /-!
-#
-
-Generally useful tactics.
+# Generally useful tactics.
 
 -/
-
-set_option autoImplicit true
 
 open Lean.Elab.Tactic
 
@@ -63,7 +59,8 @@ def toPreDefinition (nm newNm : Name) (newType newValue : Expr) (newDoc : Option
     modifiers := mods
     declName := newNm
     type := newType
-    value := newValue }
+    value := newValue
+    termination := .none }
   return predef
 
 /-- Make `nm` protected. -/
@@ -198,7 +195,8 @@ def allGoals (tac : TacticM Unit) : TacticM Unit := do
 def andThenOnSubgoals (tac1 : TacticM Unit) (tac2 : TacticM Unit) : TacticM Unit :=
   focus do tac1; allGoals tac2
 
-variable [Monad m] [MonadExcept Exception m]
+universe u
+variable {m : Type → Type u} [Monad m] [MonadExcept Exception m]
 
 /-- Repeats a tactic at most `n` times, stopping sooner if the
 tactic fails. Always succeeds. -/

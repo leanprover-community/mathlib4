@@ -3,7 +3,7 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Int.Order.Units
 import Mathlib.Data.ZMod.Basic
 
@@ -57,7 +57,8 @@ Notably this is satisfied by `R ∈ {ℕ, ℤ, ZMod 2}`. -/
 instance Int.instUnitsPow : Pow ℤˣ R where
   pow u r := Additive.toMul (r • Additive.ofMul u)
 
--- The above instance forms no typeclass diamonds with the standard power operators
+-- The above instances form no typeclass diamonds with the standard power operators
+-- but we will need `reducible_and_instances` which currently fails #10906
 example : Int.instUnitsPow = Monoid.toNatPow := rfl
 example : Int.instUnitsPow = DivInvMonoid.Pow := rfl
 
@@ -68,10 +69,10 @@ example : Int.instUnitsPow = DivInvMonoid.Pow := rfl
 
 @[norm_cast] lemma uzpow_natCast (u : ℤˣ) (n : ℕ) : u ^ (n : R) = u ^ n := by
   change Additive.toMul ((n : R) • Additive.ofMul u) = _
-  rw [← nsmul_eq_smul_cast, toMul_nsmul, toMul_ofMul]
+  rw [Nat.cast_smul_eq_nsmul, toMul_nsmul, toMul_ofMul]
 
 -- See note [no_index around OfNat.ofNat]
-lemma uzpow_ofNat (s : ℤˣ) (n : ℕ) [n.AtLeastTwo] :
+lemma uzpow_coe_nat (s : ℤˣ) (n : ℕ) [n.AtLeastTwo] :
     s ^ (no_index (OfNat.ofNat n : R)) = s ^ (no_index (OfNat.ofNat n : ℕ)) :=
   uzpow_natCast _ _
 
@@ -106,6 +107,6 @@ lemma uzpow_neg (s : ℤˣ) (x : R) : s ^ (-x) = (s ^ x)⁻¹ :=
 
 @[norm_cast] lemma uzpow_intCast (u : ℤˣ) (z : ℤ) : u ^ (z : R) = u ^ z := by
   change Additive.toMul ((z : R) • Additive.ofMul u) = _
-  rw [← zsmul_eq_smul_cast, toMul_zsmul, toMul_ofMul]
+  rw [Int.cast_smul_eq_nsmul, toMul_zsmul, toMul_ofMul]
 
 end CommRing

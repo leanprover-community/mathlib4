@@ -7,8 +7,6 @@ import Mathlib.Algebra.CubicDiscriminant
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 
-#align_import algebraic_geometry.elliptic_curve.weierstrass from "leanprover-community/mathlib"@"e2e7f2ac359e7514e4d40061d7c08bb69487ba4e"
-
 /-!
 # Weierstrass equations of elliptic curves
 
@@ -37,7 +35,7 @@ splitting field of `R` are precisely the $X$-coordinates of the non-zero 2-torsi
  * `WeierstrassCurve.ofJ`: a Weierstrass curve whose j-invariant is neither 0 nor 1728.
  * `WeierstrassCurve.VariableChange`: a change of variables of Weierstrass curves.
  * `WeierstrassCurve.variableChange`: the Weierstrass curve induced by a change of variables.
- * `WeierstrassCurve.baseChange`: the Weierstrass curve base changed over a ring homomorphism.
+ * `WeierstrassCurve.map`: the Weierstrass curve mapped over a ring homomorphism.
  * `WeierstrassCurve.twoTorsionPolynomial`: the 2-torsion polynomial of a Weierstrass curve.
  * `EllipticCurve`: an elliptic curve over a commutative ring.
  * `EllipticCurve.j`: the j-invariant of an elliptic curve.
@@ -74,41 +72,33 @@ algebraic geometry which are not globally defined by a cubic equation valid over
 elliptic curve, weierstrass equation, j invariant
 -/
 
--- porting note: replaced `map_one`, `map_bit0`, and `map_bit1` with `map_ofNat`
 local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow])
 
-universe u v w
+universe s u v w
 
 /-! ## Weierstrass curves -/
 
 /-- A Weierstrass curve $Y^2 + a_1XY + a_3Y = X^3 + a_2X^2 + a_4X + a_6$ with parameters $a_i$. -/
 @[ext]
 structure WeierstrassCurve (R : Type u) where
-  (a₁ a₂ a₃ a₄ a₆ : R)
-#align weierstrass_curve WeierstrassCurve
+  /-- The `a₁` coefficient of a Weierstrass curve. -/
+  a₁ : R
+  /-- The `a₂` coefficient of a Weierstrass curve. -/
+  a₂ : R
+  /-- The `a₃` coefficient of a Weierstrass curve. -/
+  a₃ : R
+  /-- The `a₄` coefficient of a Weierstrass curve. -/
+  a₄ : R
+  /-- The `a₆` coefficient of a Weierstrass curve. -/
+  a₆ : R
 
 namespace WeierstrassCurve
 
-/-- The `a₁` coefficient of a Weierstrass curve. -/
-add_decl_doc a₁
 
-/-- The `a₂` coefficient of a Weierstrass curve. -/
-add_decl_doc a₂
-
-/-- The `a₃` coefficient of a Weierstrass curve. -/
-add_decl_doc a₃
-
-/-- The `a₄` coefficient of a Weierstrass curve. -/
-add_decl_doc a₄
-
-/-- The `a₆` coefficient of a Weierstrass curve. -/
-add_decl_doc a₆
-
-instance instInhabitedWeierstrassCurve {R : Type u} [Inhabited R] :
+instance instInhabited {R : Type u} [Inhabited R] :
     Inhabited <| WeierstrassCurve R :=
   ⟨⟨default, default, default, default, default⟩⟩
-#align weierstrass_curve.inhabited WeierstrassCurve.instInhabitedWeierstrassCurve
 
 variable {R : Type u} [CommRing R] (W : WeierstrassCurve R)
 
@@ -116,67 +106,51 @@ section Quantity
 
 /-! ### Standard quantities -/
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₂` coefficient of a Weierstrass curve. -/
-@[pp_dot]
 def b₂ : R :=
   W.a₁ ^ 2 + 4 * W.a₂
-#align weierstrass_curve.b₂ WeierstrassCurve.b₂
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₄` coefficient of a Weierstrass curve. -/
-@[pp_dot]
 def b₄ : R :=
   2 * W.a₄ + W.a₁ * W.a₃
-#align weierstrass_curve.b₄ WeierstrassCurve.b₄
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₆` coefficient of a Weierstrass curve. -/
-@[pp_dot]
 def b₆ : R :=
   W.a₃ ^ 2 + 4 * W.a₆
-#align weierstrass_curve.b₆ WeierstrassCurve.b₆
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₈` coefficient of a Weierstrass curve. -/
-@[pp_dot]
 def b₈ : R :=
   W.a₁ ^ 2 * W.a₆ + 4 * W.a₂ * W.a₆ - W.a₁ * W.a₃ * W.a₄ + W.a₂ * W.a₃ ^ 2 - W.a₄ ^ 2
-#align weierstrass_curve.b₈ WeierstrassCurve.b₈
 
 lemma b_relation : 4 * W.b₈ = W.b₂ * W.b₆ - W.b₄ ^ 2 := by
   simp only [b₂, b₄, b₆, b₈]
   ring1
-#align weierstrass_curve.b_relation WeierstrassCurve.b_relation
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `c₄` coefficient of a Weierstrass curve. -/
-@[pp_dot]
 def c₄ : R :=
   W.b₂ ^ 2 - 24 * W.b₄
-#align weierstrass_curve.c₄ WeierstrassCurve.c₄
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `c₆` coefficient of a Weierstrass curve. -/
-@[pp_dot]
 def c₆ : R :=
   -W.b₂ ^ 3 + 36 * W.b₂ * W.b₄ - 216 * W.b₆
-#align weierstrass_curve.c₆ WeierstrassCurve.c₆
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The discriminant `Δ` of a Weierstrass curve. If `R` is a field, then this polynomial vanishes
 if and only if the cubic curve cut out by this equation is singular. Sometimes only defined up to
 sign in the literature; we choose the sign used by the LMFDB. For more discussion, see
 [the LMFDB page on discriminants](https://www.lmfdb.org/knowledge/show/ec.discriminant). -/
-@[pp_dot]
 def Δ : R :=
   -W.b₂ ^ 2 * W.b₈ - 8 * W.b₄ ^ 3 - 27 * W.b₆ ^ 2 + 9 * W.b₂ * W.b₄ * W.b₆
-#align weierstrass_curve.Δ WeierstrassCurve.Δ
 
 lemma c_relation : 1728 * W.Δ = W.c₄ ^ 3 - W.c₆ ^ 2 := by
   simp only [b₂, b₄, b₆, b₈, c₄, c₆, Δ]
   ring1
-#align weierstrass_curve.c_relation WeierstrassCurve.c_relation
 
 end Quantity
 
@@ -189,22 +163,16 @@ a tuple $(u, r, s, t)$ for some $u \in R^\times$ and some $r, s, t \in R$. As a 
 $\begin{pmatrix} u^2 & 0 & r \cr u^2s & u^3 & t \cr 0 & 0 & 1 \end{pmatrix}$. -/
 @[ext]
 structure VariableChange (R : Type u) [CommRing R] where
-  (u : Rˣ)
-  (r s t : R)
+  /-- The `u` coefficient of an admissible linear change of variables, which must be a unit. -/
+  u : Rˣ
+  /-- The `r` coefficient of an admissible linear change of variables. -/
+  r : R
+  /-- The `s` coefficient of an admissible linear change of variables. -/
+  s : R
+  /-- The `t` coefficient of an admissible linear change of variables. -/
+  t : R
 
 namespace VariableChange
-
-/-- The `u` coefficient of an admissible linear change of variables, which must be a unit. -/
-add_decl_doc u
-
-/-- The `r` coefficient of an admissible linear change of variables. -/
-add_decl_doc r
-
-/-- The `s` coefficient of an admissible linear change of variables. -/
-add_decl_doc s
-
-/-- The `t` coefficient of an admissible linear change of variables. -/
-add_decl_doc t
 
 variable (C C' C'' : VariableChange R)
 
@@ -244,7 +212,7 @@ lemma comp_left_inv (C : VariableChange R) : comp (inv C) C = id := by
 lemma comp_assoc (C C' C'' : VariableChange R) : comp (comp C C') C'' = comp C (comp C' C'') := by
   ext <;> simp only [comp, Units.val_mul] <;> ring1
 
-instance instGroupVariableChange : Group (VariableChange R) where
+instance instGroup : Group (VariableChange R) where
   one := id
   inv := inv
   mul := comp
@@ -259,7 +227,7 @@ variable (C : VariableChange R)
 
 /-- The Weierstrass curve over `R` induced by an admissible linear change of variables
 $(X, Y) \mapsto (u^2X + r, u^3Y + u^2sX + t)$ for some $u \in R^\times$ and some $r, s, t \in R$. -/
-@[pp_dot, simps]
+@[simps]
 def variableChange : WeierstrassCurve R where
   a₁ := C.u⁻¹ * (W.a₁ + 2 * C.s)
   a₂ := C.u⁻¹ ^ 2 * (W.a₂ - C.s * W.a₁ + 3 * C.r - C.s ^ 2)
@@ -268,7 +236,6 @@ def variableChange : WeierstrassCurve R where
     - 2 * C.s * C.t)
   a₆ := C.u⁻¹ ^ 6 * (W.a₆ + C.r * W.a₄ + C.r ^ 2 * W.a₂ + C.r ^ 3 - C.t * W.a₃ - C.t ^ 2
     - C.r * C.t * W.a₁)
-#align weierstrass_curve.variable_change WeierstrassCurve.variableChange
 
 lemma variableChange_id : W.variableChange VariableChange.id = W := by
   rw [VariableChange.id, variableChange, inv_one, Units.val_one]
@@ -311,21 +278,18 @@ instance instMulActionVariableChange : MulAction (VariableChange R) (Weierstrass
 lemma variableChange_b₂ : (W.variableChange C).b₂ = C.u⁻¹ ^ 2 * (W.b₂ + 12 * C.r) := by
   simp only [b₂, variableChange_a₁, variableChange_a₂]
   ring1
-#align weierstrass_curve.variable_change_b₂ WeierstrassCurve.variableChange_b₂
 
 @[simp]
 lemma variableChange_b₄ :
     (W.variableChange C).b₄ = C.u⁻¹ ^ 4 * (W.b₄ + C.r * W.b₂ + 6 * C.r ^ 2) := by
   simp only [b₂, b₄, variableChange_a₁, variableChange_a₃, variableChange_a₄]
   ring1
-#align weierstrass_curve.variable_change_b₄ WeierstrassCurve.variableChange_b₄
 
 @[simp]
 lemma variableChange_b₆ : (W.variableChange C).b₆ =
     C.u⁻¹ ^ 6 * (W.b₆ + 2 * C.r * W.b₄ + C.r ^ 2 * W.b₂ + 4 * C.r ^ 3) := by
   simp only [b₂, b₄, b₆, variableChange_a₃, variableChange_a₆]
   ring1
-#align weierstrass_curve.variable_change_b₆ WeierstrassCurve.variableChange_b₆
 
 @[simp]
 lemma variableChange_b₈ : (W.variableChange C).b₈ = C.u⁻¹ ^ 8 *
@@ -333,93 +297,94 @@ lemma variableChange_b₈ : (W.variableChange C).b₈ = C.u⁻¹ ^ 8 *
   simp only [b₂, b₄, b₆, b₈, variableChange_a₁, variableChange_a₂, variableChange_a₃,
     variableChange_a₄, variableChange_a₆]
   ring1
-#align weierstrass_curve.variable_change_b₈ WeierstrassCurve.variableChange_b₈
 
 @[simp]
 lemma variableChange_c₄ : (W.variableChange C).c₄ = C.u⁻¹ ^ 4 * W.c₄ := by
   simp only [c₄, variableChange_b₂, variableChange_b₄]
   ring1
-#align weierstrass_curve.variable_change_c₄ WeierstrassCurve.variableChange_c₄
 
 @[simp]
 lemma variableChange_c₆ : (W.variableChange C).c₆ = C.u⁻¹ ^ 6 * W.c₆ := by
   simp only [c₆, variableChange_b₂, variableChange_b₄, variableChange_b₆]
   ring1
-#align weierstrass_curve.variable_change_c₆ WeierstrassCurve.variableChange_c₆
 
 @[simp]
 lemma variableChange_Δ : (W.variableChange C).Δ = C.u⁻¹ ^ 12 * W.Δ := by
   simp only [b₂, b₄, b₆, b₈, Δ, variableChange_a₁, variableChange_a₂, variableChange_a₃,
     variableChange_a₄, variableChange_a₆]
   ring1
-#align weierstrass_curve.variable_change_Δ WeierstrassCurve.variableChange_Δ
 
 end VariableChange
 
 section BaseChange
 
-/-! ### Base changes -/
+/-! ### Maps and base changes -/
 
-variable {A : Type v} [CommRing A] (φ : R →+* A) {B : Type w} [CommRing B] (ψ : A →+* B)
+variable {A : Type v} [CommRing A] (φ : R →+* A)
 
-/-- The Weierstrass curve base changed over a ring homomorphism `φ : R →+* A`. -/
-@[pp_dot, simps]
-def baseChange : WeierstrassCurve A :=
+/-- The Weierstrass curve mapped over a ring homomorphism `φ : R →+* A`. -/
+@[simps]
+def map : WeierstrassCurve A :=
   ⟨φ W.a₁, φ W.a₂, φ W.a₃, φ W.a₄, φ W.a₆⟩
-#align weierstrass_curve.base_change WeierstrassCurve.baseChange
+
+variable (A)
+
+/-- The Weierstrass curve base changed to an algebra `A` over `R`. -/
+abbrev baseChange [Algebra R A] : WeierstrassCurve A :=
+  W.map <| algebraMap R A
+
+variable {A}
 
 @[simp]
-lemma baseChange_b₂ : (W.baseChange φ).b₂ = φ W.b₂ := by
-  simp only [b₂, baseChange_a₁, baseChange_a₂]
+lemma map_b₂ : (W.map φ).b₂ = φ W.b₂ := by
+  simp only [b₂, map_a₁, map_a₂]
   map_simp
-#align weierstrass_curve.base_change_b₂ WeierstrassCurve.baseChange_b₂
 
 @[simp]
-lemma baseChange_b₄ : (W.baseChange φ).b₄ = φ W.b₄ := by
-  simp only [b₄, baseChange_a₁, baseChange_a₃, baseChange_a₄]
+lemma map_b₄ : (W.map φ).b₄ = φ W.b₄ := by
+  simp only [b₄, map_a₁, map_a₃, map_a₄]
   map_simp
-#align weierstrass_curve.base_change_b₄ WeierstrassCurve.baseChange_b₄
 
 @[simp]
-lemma baseChange_b₆ : (W.baseChange φ).b₆ = φ W.b₆ := by
-  simp only [b₆, baseChange_a₃, baseChange_a₆]
+lemma map_b₆ : (W.map φ).b₆ = φ W.b₆ := by
+  simp only [b₆, map_a₃, map_a₆]
   map_simp
-#align weierstrass_curve.base_change_b₆ WeierstrassCurve.baseChange_b₆
 
 @[simp]
-lemma baseChange_b₈ : (W.baseChange φ).b₈ = φ W.b₈ := by
-  simp only [b₈, baseChange_a₁, baseChange_a₂, baseChange_a₃, baseChange_a₄, baseChange_a₆]
+lemma map_b₈ : (W.map φ).b₈ = φ W.b₈ := by
+  simp only [b₈, map_a₁, map_a₂, map_a₃, map_a₄, map_a₆]
   map_simp
-#align weierstrass_curve.base_change_b₈ WeierstrassCurve.baseChange_b₈
 
 @[simp]
-lemma baseChange_c₄ : (W.baseChange φ).c₄ = φ W.c₄ := by
-  simp only [c₄, baseChange_b₂, baseChange_b₄]
+lemma map_c₄ : (W.map φ).c₄ = φ W.c₄ := by
+  simp only [c₄, map_b₂, map_b₄]
   map_simp
-#align weierstrass_curve.base_change_c₄ WeierstrassCurve.baseChange_c₄
 
 @[simp]
-lemma baseChange_c₆ : (W.baseChange φ).c₆ = φ W.c₆ := by
-  simp only [c₆, baseChange_b₂, baseChange_b₄, baseChange_b₆]
+lemma map_c₆ : (W.map φ).c₆ = φ W.c₆ := by
+  simp only [c₆, map_b₂, map_b₄, map_b₆]
   map_simp
-#align weierstrass_curve.base_change_c₆ WeierstrassCurve.baseChange_c₆
 
 @[simp]
-lemma baseChange_Δ : (W.baseChange φ).Δ = φ W.Δ := by
-  simp only [Δ, baseChange_b₂, baseChange_b₄, baseChange_b₆, baseChange_b₈]
+lemma map_Δ : (W.map φ).Δ = φ W.Δ := by
+  simp only [Δ, map_b₂, map_b₄, map_b₆, map_b₈]
   map_simp
-#align weierstrass_curve.base_change_Δ WeierstrassCurve.baseChange_Δ
 
-lemma baseChange_self : W.baseChange (RingHom.id R) = W :=
+@[simp]
+lemma map_id : W.map (RingHom.id R) = W :=
   rfl
-#align weierstrass_curve.base_change_self WeierstrassCurve.baseChange_self
 
-lemma baseChange_baseChange : (W.baseChange φ).baseChange ψ = W.baseChange (ψ.comp φ) :=
+lemma map_map {B : Type w} [CommRing B] (ψ : A →+* B) : (W.map φ).map ψ = W.map (ψ.comp φ) :=
   rfl
-#align weierstrass_curve.base_change_base_change WeierstrassCurve.baseChange_baseChange
 
-lemma baseChange_injective {φ : R →+* A} (hφ : Function.Injective φ) :
-    Function.Injective <| baseChange (φ := φ) := fun _ _ h => by
+@[simp]
+lemma map_baseChange {S : Type s} [CommRing S] [Algebra R S] {A : Type v} [CommRing A] [Algebra R A]
+    [Algebra S A] [IsScalarTower R S A] {B : Type w} [CommRing B] [Algebra R B] [Algebra S B]
+    [IsScalarTower R S B] (ψ : A →ₐ[S] B) : (W.baseChange A).map ψ = W.baseChange B :=
+  congr_arg W.map <| ψ.comp_algebraMap_of_tower R
+
+lemma map_injective {φ : R →+* A} (hφ : Function.Injective φ) :
+    Function.Injective <| map (φ := φ) := fun _ _ h => by
   rcases mk.inj h with ⟨_, _, _, _, _⟩
   ext <;> apply_fun _ using hφ <;> assumption
 
@@ -427,43 +392,58 @@ namespace VariableChange
 
 variable (C : VariableChange R)
 
-/-- The change of variables base changed over a ring homomorphism `φ : R →+* A`. -/
+/-- The change of variables mapped over a ring homomorphism `φ : R →+* A`. -/
 @[simps]
-def baseChange : VariableChange A :=
+def map : VariableChange A :=
   ⟨Units.map φ C.u, φ C.r, φ C.s, φ C.t⟩
 
-lemma baseChange_id : (id : VariableChange R).baseChange φ = id := by
-  simp only [id, baseChange]
-  ext <;> simp only [map_one, Units.val_one, map_zero]
+variable (A)
 
-lemma baseChange_comp (C' : VariableChange R) :
-    (C.comp C').baseChange φ = (C.baseChange φ).comp (C'.baseChange φ) := by
-  simp only [comp, baseChange]
-  ext <;> map_simp <;> simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe]
+/-- The change of variables base changed to an algebra `A` over `R`. -/
+abbrev baseChange [Algebra R A] : VariableChange A :=
+  C.map <| algebraMap R A
 
-/-- The base change of a change of variables over a ring homomorphism is a group homomorphism. -/
-def baseChangeMap : VariableChange R →* VariableChange A where
-  toFun := baseChange φ
-  map_one' := baseChange_id φ
-  map_mul' := baseChange_comp φ
+variable {A}
 
-lemma baseChange_self : C.baseChange (RingHom.id R) = C :=
+@[simp]
+lemma map_id : C.map (RingHom.id R) = C :=
   rfl
 
-lemma baseChange_baseChange : (C.baseChange φ).baseChange ψ = C.baseChange (ψ.comp φ) :=
+lemma map_map {A : Type v} [CommRing A] (φ : R →+* A) {B : Type w} [CommRing B] (ψ : A →+* B) :
+    (C.map φ).map ψ = C.map (ψ.comp φ) :=
   rfl
 
-lemma baseChange_injective {φ : R →+* A} (hφ : Function.Injective φ) :
-    Function.Injective <| baseChange (φ := φ) := fun _ _ h => by
+@[simp]
+lemma map_baseChange {S : Type s} [CommRing S] [Algebra R S] {A : Type v} [CommRing A] [Algebra R A]
+    [Algebra S A] [IsScalarTower R S A] {B : Type w} [CommRing B] [Algebra R B] [Algebra S B]
+    [IsScalarTower R S B] (ψ : A →ₐ[S] B) : (C.baseChange A).map ψ = C.baseChange B :=
+  congr_arg C.map <| ψ.comp_algebraMap_of_tower R
+
+lemma map_injective {φ : R →+* A} (hφ : Function.Injective φ) :
+    Function.Injective <| map (φ := φ) := fun _ _ h => by
   rcases mk.inj h with ⟨h, _, _, _⟩
   replace h := (Units.mk.inj h).left
   ext <;> apply_fun _ using hφ <;> assumption
 
+private lemma id_map : (id : VariableChange R).map φ = id := by
+  simp only [id, map]
+  ext <;> simp only [map_one, Units.val_one, map_zero]
+
+private lemma comp_map (C' : VariableChange R) : (C.comp C').map φ = (C.map φ).comp (C'.map φ) := by
+  simp only [comp, map]
+  ext <;> map_simp <;> simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe]
+
+/-- The map over a ring homomorphism of a change of variables is a group homomorphism. -/
+def mapHom : VariableChange R →* VariableChange A where
+  toFun := map φ
+  map_one' := id_map φ
+  map_mul' := comp_map φ
+
 end VariableChange
 
-lemma baseChange_variableChange (C : VariableChange R) :
-    (W.baseChange φ).variableChange (C.baseChange φ) = (W.variableChange C).baseChange φ := by
-  simp only [baseChange, variableChange, VariableChange.baseChange]
+lemma map_variableChange (C : VariableChange R) :
+    (W.map φ).variableChange (C.map φ) = (W.variableChange C).map φ := by
+  simp only [map, variableChange, VariableChange.map]
   ext <;> map_simp <;> simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe]
 
 end BaseChange
@@ -475,26 +455,21 @@ section TorsionPolynomial
 /-- A cubic polynomial whose discriminant is a multiple of the Weierstrass curve discriminant. If
 `W` is an elliptic curve over a field `R` of characteristic different from 2, then its roots over a
 splitting field of `R` are precisely the $X$-coordinates of the non-zero 2-torsion points of `W`. -/
-@[pp_dot]
 def twoTorsionPolynomial : Cubic R :=
   ⟨4, W.b₂, 2 * W.b₄, W.b₆⟩
-#align weierstrass_curve.two_torsion_polynomial WeierstrassCurve.twoTorsionPolynomial
 
 lemma twoTorsionPolynomial_disc : W.twoTorsionPolynomial.disc = 16 * W.Δ := by
   simp only [b₂, b₄, b₆, b₈, Δ, twoTorsionPolynomial, Cubic.disc]
   ring1
-#align weierstrass_curve.two_torsion_polynomial_disc WeierstrassCurve.twoTorsionPolynomial_disc
 
 lemma twoTorsionPolynomial_disc_isUnit [Invertible (2 : R)] :
     IsUnit W.twoTorsionPolynomial.disc ↔ IsUnit W.Δ := by
   rw [twoTorsionPolynomial_disc, IsUnit.mul_iff, show (16 : R) = 2 ^ 4 by norm_num1]
   exact and_iff_right <| isUnit_of_invertible <| 2 ^ 4
-#align weierstrass_curve.two_torsion_polynomial_disc_is_unit WeierstrassCurve.twoTorsionPolynomial_disc_isUnit
 
 lemma twoTorsionPolynomial_disc_ne_zero [Nontrivial R] [Invertible (2 : R)] (hΔ : IsUnit W.Δ) :
     W.twoTorsionPolynomial.disc ≠ 0 :=
   (W.twoTorsionPolynomial_disc_isUnit.mpr hΔ).ne_zero
-#align weierstrass_curve.two_torsion_polynomial_disc_ne_zero WeierstrassCurve.twoTorsionPolynomial_disc_ne_zero
 
 end TorsionPolynomial
 
@@ -553,31 +528,23 @@ end WeierstrassCurve
 accurate for certain rings whose Picard group has trivial 12-torsion, such as a field or a PID. -/
 @[ext]
 structure EllipticCurve (R : Type u) [CommRing R] extends WeierstrassCurve R where
+  /-- The discriminant `Δ'` of an elliptic curve over `R`, which is given as a unit in `R`. -/
   Δ' : Rˣ
+  /-- The discriminant of `E` is equal to the discriminant of `E` as a Weierstrass curve. -/
   coe_Δ' : Δ' = toWeierstrassCurve.Δ
-#align elliptic_curve EllipticCurve
 
 namespace EllipticCurve
 
-/-- The discriminant `Δ'` of an elliptic curve over `R`, which is given as a unit in `R`. -/
-add_decl_doc Δ'
-
-/-- The discriminant of `E` is equal to the discriminant of `E` as a Weierstrass curve. -/
-add_decl_doc coe_Δ'
-
 variable {R : Type u} [CommRing R] (E : EllipticCurve R)
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The j-invariant `j` of an elliptic curve, which is invariant under isomorphisms over `R`. -/
-@[pp_dot]
 def j : R :=
   E.Δ'⁻¹ * E.c₄ ^ 3
-#align elliptic_curve.j EllipticCurve.j
 
 lemma twoTorsionPolynomial_disc_ne_zero [Nontrivial R] [Invertible (2 : R)] :
     E.twoTorsionPolynomial.disc ≠ 0 :=
   E.toWeierstrassCurve.twoTorsionPolynomial_disc_ne_zero <| E.coe_Δ' ▸ E.Δ'.isUnit
-#align elliptic_curve.two_torsion_polynomial_disc_ne_zero EllipticCurve.twoTorsionPolynomial_disc_ne_zero
 
 section VariableChange
 
@@ -585,15 +552,14 @@ section VariableChange
 
 variable (C : WeierstrassCurve.VariableChange R)
 
--- porting note: was just `@[simps]`
+-- Porting note: was just `@[simps]`
 /-- The elliptic curve over `R` induced by an admissible linear change of variables
 $(X, Y) \mapsto (u^2X + r, u^3Y + u^2sX + t)$ for some $u \in R^\times$ and some $r, s, t \in R$.
 When `R` is a field, any two Weierstrass equations isomorphic to `E` are related by this. -/
-@[pp_dot, simps (config := { rhsMd := .default }) a₁ a₂ a₃ a₄ a₆ Δ' toWeierstrassCurve]
+@[simps (config := { rhsMd := .default }) a₁ a₂ a₃ a₄ a₆ Δ' toWeierstrassCurve]
 def variableChange : EllipticCurve R :=
   ⟨E.toWeierstrassCurve.variableChange C, C.u⁻¹ ^ 12 * E.Δ', by
     rw [Units.val_mul, Units.val_pow_eq_pow_val, coe_Δ', E.variableChange_Δ]⟩
-#align elliptic_curve.variable_change EllipticCurve.variableChange
 
 lemma variableChange_id : E.variableChange WeierstrassCurve.VariableChange.id = E := by
   simp only [variableChange, WeierstrassCurve.variableChange_id]
@@ -612,11 +578,9 @@ instance instMulActionVariableChange :
 
 lemma coe_variableChange_Δ' : (E.variableChange C).Δ' = C.u⁻¹ ^ 12 * E.Δ' :=
   rfl
-#align elliptic_curve.coe_variable_change_Δ' EllipticCurve.coe_variableChange_Δ'
 
 lemma coe_inv_variableChange_Δ' : (E.variableChange C).Δ'⁻¹ = C.u ^ 12 * E.Δ'⁻¹ := by
   rw [variableChange_Δ', mul_inv, inv_pow, inv_inv]
-#align elliptic_curve.coe_inv_variable_change_Δ' EllipticCurve.coe_inv_variableChange_Δ'
 
 @[simp]
 lemma variableChange_j : (E.variableChange C).j = E.j := by
@@ -624,41 +588,41 @@ lemma variableChange_j : (E.variableChange C).j = E.j := by
     variableChange_toWeierstrassCurve, WeierstrassCurve.variableChange_c₄]
   have hu : (C.u * C.u⁻¹ : R) ^ 12 = 1 := by rw [C.u.mul_inv, one_pow]
   linear_combination (norm := (rw [j]; ring1)) E.j * hu
-#align elliptic_curve.variable_change_j EllipticCurve.variableChange_j
 
 end VariableChange
 
 section BaseChange
 
-/-! ### Base changes -/
+/-! ### Maps and base changes -/
 
 variable {A : Type v} [CommRing A] (φ : R →+* A)
 
--- porting note: was just `@[simps]`
-/-- The elliptic curve base changed over a ring homomorphism `φ : R →+* A`. -/
-@[pp_dot, simps (config := { rhsMd := .default }) a₁ a₂ a₃ a₄ a₆ Δ' toWeierstrassCurve]
-def baseChange : EllipticCurve A :=
-  ⟨E.toWeierstrassCurve.baseChange φ, Units.map φ E.Δ',
-    by simp only [Units.coe_map, coe_Δ', E.baseChange_Δ]; rfl⟩
-#align elliptic_curve.base_change EllipticCurve.baseChange
+-- Porting note: was just `@[simps]`
+/-- The elliptic curve mapped over a ring homomorphism `φ : R →+* A`. -/
+@[simps (config := { rhsMd := .default }) a₁ a₂ a₃ a₄ a₆ Δ' toWeierstrassCurve]
+def map : EllipticCurve A :=
+  ⟨E.toWeierstrassCurve.map φ, Units.map φ E.Δ', by simp only [Units.coe_map, coe_Δ', E.map_Δ]; rfl⟩
 
-lemma coeBaseChange_Δ' : (E.baseChange φ).Δ' = φ E.Δ' :=
-  rfl
-#align elliptic_curve.coe_base_change_Δ' EllipticCurve.coeBaseChange_Δ'
+variable (A)
 
-lemma coe_inv_baseChange_Δ' : (E.baseChange φ).Δ'⁻¹ = φ ↑E.Δ'⁻¹ :=
+/-- The elliptic curve base changed to an algebra `A` over `R`. -/
+abbrev baseChange [Algebra R A] : EllipticCurve A :=
+  E.map <| algebraMap R A
+
+variable {A}
+
+lemma coe_map_Δ' : (E.map φ).Δ' = φ E.Δ' :=
   rfl
-#align elliptic_curve.coe_inv_base_change_Δ' EllipticCurve.coe_inv_baseChange_Δ'
+
+lemma coe_inv_map_Δ' : (E.map φ).Δ'⁻¹ = φ ↑E.Δ'⁻¹ :=
+  rfl
 
 @[simp]
-lemma baseChange_j : (E.baseChange φ).j = φ E.j := by
-  simp only [j, baseChange, E.baseChange_c₄]
-  map_simp
-  rfl
-#align elliptic_curve.base_change_j EllipticCurve.baseChange_j
+lemma map_j : (E.map φ).j = φ E.j := by
+  simp [j, map, E.map_c₄]
 
-lemma baseChange_injective {φ : R →+* A} (hφ : Function.Injective φ) :
-    Function.Injective <| baseChange (φ := φ) := fun _ _ h => by
+lemma map_injective {φ : R →+* A} (hφ : Function.Injective φ) :
+    Function.Injective <| map (φ := φ) := fun _ _ h => by
   rcases mk.inj h with ⟨h1, h2⟩
   replace h2 := (Units.mk.inj h2).left
   rcases WeierstrassCurve.mk.inj h1 with ⟨_, _, _, _, _⟩
@@ -782,7 +746,6 @@ lemma ofJ_j : (ofJ j).j = j := by
 
 instance instInhabitedEllipticCurve : Inhabited <| EllipticCurve F :=
   ⟨ofJ 37⟩
-#align elliptic_curve.inhabited EllipticCurve.instInhabitedEllipticCurve
 
 end ModelsWithJ
 
