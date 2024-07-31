@@ -74,15 +74,17 @@ lemma sSup_eq_zero' : sSup s = 0 ↔ s = ∅ ∨ s = {0} :=
 lemma sSup_eq_top_of_infinite (h : s.Infinite) : sSup s = ⊤ := by
   apply (sSup_eq_top ..).mpr
   intro x hx
-  cases x; simp at hx; next x =>
-  contrapose! h
-  simp only [not_infinite]
-  apply Finite.subset <| Finite.Set.finite_image {n : ℕ | n ≤ x} (fun (n : ℕ) => (n : ℕ∞))
-  intro y hy
-  specialize h y hy
-  have hxt : y < ⊤ := lt_of_le_of_lt h hx
-  use y.toNat
-  simp [toNat_le_of_le_coe h, LT.lt.ne_top hxt]
+  cases x with
+  | top => simp at hx
+  | coe x =>
+    contrapose! h
+    simp only [not_infinite]
+    apply Finite.subset <| Finite.Set.finite_image {n : ℕ | n ≤ x} (fun (n : ℕ) => (n : ℕ∞))
+    intro y hy
+    specialize h y hy
+    have hxt : y < ⊤ := lt_of_le_of_lt h hx
+    use y.toNat
+    simp [toNat_le_of_le_coe h, LT.lt.ne_top hxt]
 
 lemma finite_of_sSup_lt_top (h : sSup s < ⊤) : s.Finite := by
   contrapose! h
