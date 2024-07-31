@@ -116,8 +116,6 @@ instance concreteCategory : ConcreteCategory (Pointed C) where
     · apply forget_faithful.map_injective
     · apply Hom.ext
 
-instance : (forget (Pointed C)).Faithful := by
-  exact forget_faithful
 
 /-- The forward direction of the equivalence `Pointed C ≌ (forget C).Elements`. -/
 @[simps obj]
