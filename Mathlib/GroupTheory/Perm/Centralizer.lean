@@ -146,7 +146,7 @@ def range_toPerm : Subgroup (Perm g.cycleFactorsFinset) where
     · simp only [Finset.coe_mem]
 
 variable {g} in
-theorem mem_range_toPerm_iff {τ : Perm g.cycleFactorsFinset} :
+theorem mem_range_toPerm_iff' {τ : Perm g.cycleFactorsFinset} :
     τ ∈ range_toPerm g ↔
       ∀ c, (τ c : Perm α).support.card = (c : Perm α).support.card :=
   Iff.rfl
@@ -292,7 +292,7 @@ theorem Kf_factorsThrough
     rw [← Subtype.coe_inj, eq_cycleOf, eq_cycleOf, He]
 
 /-- Given a basis `a` of `g` and a permutation `τ` of `g.cycleFactorsFinset`,
-  `k a τ` is a permutation that acts -/
+  `k a τ` is a permutation that acts as τ -/
 noncomputable def k (τ : Perm g.cycleFactorsFinset) :=
   Function.extend (Kf a 1) (Kf a τ) id
 
@@ -461,8 +461,8 @@ noncomputable
 def ofPerm :
     range_toPerm g →* MulAction.stabilizer (ConjAct (Perm α)) g  where
   toFun τhτ :=
-    ⟨ConjAct.toConjAct (ofPerm' a (mem_range_toPerm_iff.mp τhτ.prop)),
-      ofPerm'_mem_stabilizer a (mem_range_toPerm_iff.mp τhτ.prop)⟩
+    ⟨ConjAct.toConjAct (ofPerm' a (mem_range_toPerm_iff'.mp τhτ.prop)),
+      ofPerm'_mem_stabilizer a (mem_range_toPerm_iff'.mp τhτ.prop)⟩
   map_one' := by
     simp only [OneMemClass.coe_one, Submonoid.mk_eq_one, MulEquivClass.map_eq_one_iff]
     ext x
@@ -516,21 +516,20 @@ theorem range_toPerm_eq_range : range_toPerm g = (toPerm g).range := by
   ext τ
   constructor
   · exact fun hτ ↦ ⟨(ofPerm a) ⟨τ, hτ⟩, ofPerm_rightInverse a ⟨τ, hτ⟩⟩
-  · rw [mem_range_toPerm_iff]
+  · rw [mem_range_toPerm_iff']
     exact card_eq_of_mem_toPerm_range
 
-theorem hφ_mem_range_iff {τ} : τ ∈ (toPerm g).range ↔
-    ∀ c, (τ c : Equiv.Perm α).support.card = (c : Equiv.Perm α).support.card := by
-  simp only [← range_toPerm_eq_range, mem_range_toPerm_iff, Subtype.forall, Finset.coe_sort_coe]
+theorem mem_range_toPerm_iff {τ} : τ ∈ (toPerm g).range ↔
+    ∀ c, (τ c : Perm α).support.card = (c : Perm α).support.card := by
+  simp only [← range_toPerm_eq_range, mem_range_toPerm_iff', Subtype.forall, Finset.coe_sort_coe]
 
 -- FIND A BETTER NAME
 /-- The lengths of the cycles -/
 abbrev fsc₀ (c : g.cycleFactorsFinset) : ℕ := (c : Perm α).support.card
 
 -- FIND A BETTER NAME
-lemma hlc₀ (n : ℕ) :
-    Fintype.card {c : g.cycleFactorsFinset // fsc₀ c = n } = g.cycleType.count n  := by
-  apply symm
+lemma _root_.Equiv.Perm.CycleType.count_def (n : ℕ) : g.cycleType.count n =
+    Fintype.card {c : g.cycleFactorsFinset // (c : Perm α).support.card = n } := by
   -- Rewrite the Multiset.count as a Fintype.card
   have nd := (Finset.filter (fun a ↦ n = (Finset.card ∘ Equiv.Perm.support) a)
     (Equiv.Perm.cycleFactorsFinset g)).nodup
@@ -561,16 +560,23 @@ open BigOperators Nat Equiv.Perm Equiv Subgroup
 theorem card_range_toPerm :
     Fintype.card (toPerm g).range =
       ∏ n in g.cycleType.toFinset, (g.cycleType.count n)! := by
+  let sc (c : g.cycleFactorsFinset) : ℕ := (c : Perm α).support.card
   suffices Fintype.card (toPerm g).range =
-    Fintype.card { k : Perm g.cycleFactorsFinset | fsc₀ ∘ k = fsc₀ } by
-    simp only [this, Set.coe_setOf, DomMulAct.stabilizer_card', hlc₀]
+    Fintype.card { k : Perm g.cycleFactorsFinset | sc ∘ k = sc } by
+    simp only [this, Set.coe_setOf, DomMulAct.stabilizer_card', ← CycleType.count_def]
     apply Finset.prod_congr _ (fun _ _ => rfl)
-    · ext n
-      simp only [Finset.univ_eq_attach, Finset.mem_image, Finset.mem_attach, fsc₀, true_and,
-        Subtype.exists, exists_prop, Multiset.mem_toFinset]
-      simp only [cycleType_def, Function.comp_apply, Multiset.mem_map, Finset.mem_val]
-  · simp_rw [← hφ_range'₀]
-    rfl
+    ext n
+    simp only [Finset.univ_eq_attach, Finset.mem_image, Finset.mem_attach,
+        sc, true_and, Subtype.exists, exists_prop, Multiset.mem_toFinset]
+    simp only [cycleType_def, Function.comp_apply, Multiset.mem_map, Finset.mem_val]
+  suffices ((toPerm g).range : Set (Perm (g.cycleFactorsFinset : Set (Perm α)))) =
+      {τ : Perm g.cycleFactorsFinset | sc ∘ τ = sc } by
+      simp_rw [← this]
+      rfl
+  simp_rw [← range_toPerm_eq_range]
+  ext τ
+  simp only [Finset.coe_sort_coe, SetLike.mem_coe, Function.funext_iff, Function.comp_apply,
+    Subtype.forall, Set.mem_setOf_eq, sc]
 
 /-- A permutation `z : Equiv.Perm α` belongs to the kernel of `φ g` iff
   it commutes with each cycle of `g` -/
