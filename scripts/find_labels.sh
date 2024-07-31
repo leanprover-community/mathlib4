@@ -27,9 +27,14 @@ prs_to_print="$(echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged b
 
 echo "${prs_to_print}"
 
-only_gh="$(comm -23 <(echo "${prs_to_print}" | awk '{print $2}' | sort) <(git log --pretty=oneline --since="${start_date}" --until="${end_date}" | sed -n 's=.*(\(#[0-9]*\))$=\1=p' | sort))"
+echo "${prs_to_print}" | awk '{print $2}' | sort > found_by_gh.txt
+git log --pretty=oneline --since="${start_date}" --until="${end_date}" |
+  sed -n 's=.*(\(#[0-9]*\))$=\1=p' | sort > found_by_git.txt
 
-only_git="$(comm -13 <(echo "${prs_to_print}" | awk '{print $2}' | sort) <(git log --pretty=oneline --since="${start_date}" --until="${end_date}" | sed -n 's=.*(\(#[0-9]*\))$=\1=p' | sort))"
+only_gh="$( comm -23 found_by_gh.txt found_by_git.txt)"
+only_git="$(comm -13 found_by_gh.txt found_by_git.txt)"
+
+rm -rf found_by_gh.txt found_by_git.txt
 
 printf $'\n---\nReports\n\n'
 
