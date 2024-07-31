@@ -134,7 +134,7 @@ lemma Prod.IsLub {f : α × β → γ} (hf : Monotone f)
   rw [IsLUB, Prod.upperBounds hf hd, ← IsLUB]
 
 
-lemma test {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.fst '' d).Nonempty)
+lemma step1 {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.fst '' d).Nonempty)
     (hd₂ : DirectedOn (· ≤ ·) (Prod.fst '' d)) {p₁ : α} {p₂ : β} (h : IsLUB d (p₁,p₂))
     (h₁ : ∀ b, ScottContinuous (fun a => f (a,b))) :
     IsLUB (f '' (Prod.fst '' d) ×ˢ {p₂}) (f (p₁,p₂)) := by
@@ -144,6 +144,89 @@ lemma test {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.fst '' d).N
     exact image_image f (fun a ↦ (a, p₂)) S
   rw [e3]
   exact h₁ p₂ hd₁ hd₂ e1
+
+
+/-
+-- If `a` is the least upper bound of `s` and `b` is the least upper bound of `t`,
+-- then `a ⊔ b` is the least upper bound of `s ∪ t`.
+theorem IsLUB.union [SemilatticeSup γ] {a b : γ} {s t : Set γ} (hs : IsLUB s a) (ht : IsLUB t b) :
+    IsLUB (s ∪ t) (a ⊔ b) :=
+  ⟨fun _ h =>
+    h.casesOn (fun h => le_sup_of_le_left <| hs.left h) fun h => le_sup_of_le_right <| ht.left h,
+    fun _ hc =>
+    sup_le (hs.right fun _ hd => hc <| Or.inl hd) (ht.right fun _ hd => hc <| Or.inr hd)⟩
+-/
+
+theorem IsLUB.union' {a b : γ} {s t : Set γ} (hs : IsLUB s a) (ht : IsLUB t b) (c : γ)
+    (hc : IsLUB {a,b} c) : IsLUB (s ∪ t) c := by
+  constructor
+  · intro e he
+    simp at he
+    rw [IsLUB, IsLeast] at hc
+    obtain ⟨hc₁,hc₂⟩ := hc
+    simp at hc₁
+    obtain ⟨hac,hbc⟩ := hc₁
+    rw [IsLUB, IsLeast] at hs
+    obtain ⟨hs₁,_⟩ := hs
+    obtain ⟨ht₁,_⟩ := ht
+    cases he with
+    | inl hes =>
+        exact Preorder.le_trans e a c (hs₁ hes) hac
+    | inr het =>
+        exact Preorder.le_trans e b c (ht₁ het) hbc
+  · intro e he
+    rw [upperBounds_union] at he
+    have e1 : a ≤ e := hs.2 (mem_of_mem_inter_left he)
+    have e2 : b ≤ e := ht.2 (mem_of_mem_inter_right he)
+    apply hc.2
+    aesop
+
+
+
+
+/-
+  ⟨fun _ h =>
+    h.casesOn (fun h => by
+    --    le_sup_of_le_left <| hs.left h
+      sorry
+    ) fun h => by
+      --le_sup_of_le_right <| ht.left h
+      sorry,
+    fun _ hc => by sorry
+    --sup_le (hs.right fun _ hd => hc <| Or.inl hd) (ht.right fun _ hd => hc <| Or.inr hd)
+    ⟩
+-/
+
+lemma testprod {S : Set α} {T : Set β} {u : S → α × β} (v : α × β)
+    (hS : ∀ (s : S), IsLUB ({↑s} ×ˢ T) (u s)) (h : IsLUB {u s | (s : S)} v) : IsLUB (S ×ˢ T) v := sorry
+
+lemma testprod' {S : Set α} {T : Set β} {u : S → γ} {f : α × β → γ} (v : γ)
+    (hS : ∀ (s : S), IsLUB (f '' ({↑s} ×ˢ T)) (u s)) (h : IsLUB {u s | (s : S)} v) :
+    IsLUB (f '' (S ×ˢ T)) v := sorry
+
+lemma testprod'' {S : Set α} {T : Set β} {u : T → γ} {f : α × β → γ} (v : γ)
+    (hT : ∀ (t : T), IsLUB (f '' (S ×ˢ {↑t})) (u t)) (h : IsLUB (u '' univ) v) :
+    IsLUB (f '' (S ×ˢ T)) v := sorry
+
+lemma test2 {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.fst '' d).Nonempty)
+    (hd₂ : DirectedOn (· ≤ ·) (Prod.fst '' d)) {p₁ : α} {p₂ : β} (h : IsLUB d (p₁,p₂))
+    (h₁ : ∀ b, ScottContinuous (fun a => f (a,b))) (h₂ : ∀ a, ScottContinuous (fun b => f (a,b))) :
+    IsLUB (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) (f (p₁,p₂)) := by
+  have e1 : IsLUB (Prod.fst '' d) p₁ := ((isLUB_prod (p₁,p₂)).mp h).1
+  have e2 : IsLUB (Prod.snd '' d) p₂ := ((isLUB_prod (p₁,p₂)).mp h).2
+  apply testprod' (u := fun a => f (a, p₂)) (v := (f (p₁,p₂))) (S := Prod.fst '' d) (T := Prod.snd '' d) _ _
+
+  --apply testprod'' (u := fun b => f (p₁, b)) (v := (f (p₁,p₂))) (S := Prod.fst '' d) (T := Prod.snd '' d)
+  intro a
+  apply step1 hd₁ hd₂
+  apply (h₂ p₁)
+  --apply test hd₁ hd₂ h h₁
+
+lemma stepn {f : α × β → γ} {d : Set (α × β)} {p₁ : α} {p₂ : β} (hf : Monotone f)
+    (hd : DirectedOn (· ≤ ·) d) (h : IsLUB (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) (f (p₁,p₂))) :
+    IsLUB (f '' d) (f (p₁,p₂)) := by
+  exact (Prod.IsLub hf hd (f (p₁, p₂))).mpr h
+
 
 
 
