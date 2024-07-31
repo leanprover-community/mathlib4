@@ -111,15 +111,12 @@ lemma rpowₙ_rpowₙ [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
           Continuous.continuousOn <| NNReal.continuous_rpow_const (le_of_lt hy)
         have h₂ : ContinuousOn (fun z : ℝ≥0 => z ^ (x : ℝ)) (quasispectrum ℝ≥0 a) :=
           Continuous.continuousOn <| NNReal.continuous_rpow_const (le_of_lt hx)
-        have h₀₁ : (fun z : ℝ≥0 => z ^ (y : ℝ)) 0 = 0 := by
+        have hmapzero : ∀ r : ℝ≥0, 0 < r → (fun z : ℝ≥0 => z ^ (r : ℝ)) 0 = 0 := fun r hr => by
           ext
           simp only [NNReal.coe_rpow, NNReal.coe_zero, le_refl]
-          rw [Real.zero_rpow (by exact_mod_cast ne_of_gt hy)]
-        have h₀₂ : (fun z : ℝ≥0 => z ^ (x : ℝ)) 0 = 0 := by
-          ext
-          simp only [NNReal.coe_rpow, NNReal.coe_zero, le_refl]
-          rw [Real.zero_rpow (by exact_mod_cast ne_of_gt hx)]
-        rw [← cfcₙ_comp (fun z : ℝ≥0 => z ^ (y : ℝ)) (fun z : ℝ≥0 => z ^ (x : ℝ)) a h₁ h₀₁ h₂ h₀₂]
+          rw [Real.zero_rpow (by exact_mod_cast ne_of_gt hr)]
+        rw [← cfcₙ_comp (fun z : ℝ≥0 => z ^ (y : ℝ)) (fun z : ℝ≥0 => z ^ (x : ℝ)) a h₁
+          (hmapzero y hy) h₂ (hmapzero x hx)]
         have : (fun z : ℝ≥0 => z ^ (y : ℝ)) ∘ (fun z : ℝ≥0 => z ^ (x : ℝ))
             = fun z => z ^ ((x : ℝ) * y) := by ext; simp [Real.rpow_mul]
         simp [this]
