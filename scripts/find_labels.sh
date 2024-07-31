@@ -20,7 +20,7 @@ commits_in_range="$(git log --since="${start_date}" --until="${end_date}" --pret
 printf '%s commits between %s and %s\n' "${commits_in_range}" "${start_date}" "${end_date}"
 
 # Retrieve merged PRs from the last month, paginated
-prs=$(gh pr list --repo "$repository" --state closed --search "closed:${start_date}..${end_date}" --json number,labels,title --limit "$((commits_in_range * 2))")
+prs=$(gh pr list --repo "$repository" --state closed --base master --search "closed:${start_date}..${end_date}" --json number,labels,title --limit "$((commits_in_range * 2))")
 
 # Print PR numbers and their labels
 echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "PR #\(.number) - Labels: \((.labels | map(.name) | join(", ")) // "No labels") - Title: \(.title)"'
