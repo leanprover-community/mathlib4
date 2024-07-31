@@ -20,9 +20,6 @@ Add appropriate instances for all `Set.Ixx`. This requires a refactor that will 
 default values for `sSup` and `sInf`.
 -/
 
-
-open scoped Classical
-
 open Set
 
 variable {ι : Sort*} {α : Type*} (s : Set α)
@@ -31,6 +28,7 @@ section SupSet
 
 variable [Preorder α] [SupSet α]
 
+open Classical in
 /-- `SupSet` structure on a nonempty subset `s` of a preorder with `SupSet`. This definition is
 non-canonical (it uses `default s`); it should be used only as here, as an auxiliary instance in the
 construction of the `ConditionallyCompleteLinearOrder` structure. -/
@@ -42,6 +40,7 @@ noncomputable def subsetSupSet [Inhabited s] : SupSet s where
 
 attribute [local instance] subsetSupSet
 
+open Classical in
 @[simp]
 theorem subset_sSup_def [Inhabited s] :
     @sSup s _ = fun t =>
@@ -68,6 +67,7 @@ section InfSet
 
 variable [Preorder α] [InfSet α]
 
+open Classical in
 /-- `InfSet` structure on a nonempty subset `s` of a preorder with `InfSet`. This definition is
 non-canonical (it uses `default s`); it should be used only as here, as an auxiliary instance in the
 construction of the `ConditionallyCompleteLinearOrder` structure. -/
@@ -79,6 +79,7 @@ noncomputable def subsetInfSet [Inhabited s] : InfSet s where
 
 attribute [local instance] subsetInfSet
 
+open Classical in
 @[simp]
 theorem subset_sInf_def [Inhabited s] :
     @sInf s _ = fun t =>
@@ -169,6 +170,7 @@ end OrdConnected
 
 section Icc
 
+open Classical in
 /-- Complete lattice structure on `Set.Icc` -/
 noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
     {a b : α} (h : a ≤ b) : CompleteLattice (Set.Icc a b) where

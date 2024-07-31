@@ -10,7 +10,7 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 # Lift filters along filter and set functions
 -/
 
-open Set Classical Filter Function
+open Set Filter Function
 
 namespace Filter
 

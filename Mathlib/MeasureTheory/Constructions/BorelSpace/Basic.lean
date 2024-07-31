@@ -37,7 +37,7 @@ noncomputable section
 
 open Set Filter MeasureTheory
 
-open scoped Classical Topology NNReal ENNReal MeasureTheory
+open scoped Topology NNReal ENNReal MeasureTheory
 
 universe u v w x y
 

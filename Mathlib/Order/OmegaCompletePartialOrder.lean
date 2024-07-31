@@ -55,8 +55,6 @@ assert_not_exists OrderedCommMonoid
 
 universe u v
 
-open scoped Classical
-
 namespace OmegaCompletePartialOrder
 
 /-- A chain is a monotone sequence.
@@ -310,6 +308,7 @@ theorem eq_of_chain {c : Chain (Part α)} {a b : α} (ha : some a ∈ c) (hb : s
   -- rw [eq_some_iff] at ha hb
   -- have := c.monotone h _ ha; apply mem_unique this hb
 
+open Classical in
 /-- The (noncomputable) `ωSup` definition for the `ω`-CPO structure on `Part α`. -/
 protected noncomputable def ωSup (c : Chain (Part α)) : Part α :=
   if h : ∃ a, some a ∈ c then some (Classical.choose h) else none

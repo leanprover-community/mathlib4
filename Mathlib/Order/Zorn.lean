@@ -58,8 +58,6 @@ Originally ported from Isabelle/HOL. The
 Fleuriot, Tobias Nipkow, Christian Sternagel.
 -/
 
-
-open scoped Classical
 open Set
 
 variable {α β : Type*} {r : α → α → Prop} {c : Set α}
