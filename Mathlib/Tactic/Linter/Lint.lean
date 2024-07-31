@@ -257,7 +257,7 @@ def badVariableLinter : Linter where
 
     -- In a variable command, determine all implicit or explicit binders,
     -- and whether they are given with a type or not.
-    if let Syntax.node _ ``Lean.Parser.Command.variable args := stx then
+    if stx.getKind == ``Lean.Parser.Command.variable then
       -- The inner arguments: a list of binders in the variable command.
       let binders := stx[1].getArgs
       -- Restrict to implicit or explicit binders, for now.
@@ -265,31 +265,20 @@ def badVariableLinter : Linter where
         [``Lean.Parser.Term.implicitBinder, ``Lean.Parser.Term.explicitBinder].contains binder.getKind
       -- Collect a list of identifier names and whether they are declared with a type or not.
       -- Whether these are implicit or explicit does not matter to us.
-      let namesWithTypes := (binders.map fun binder ↦
-        binder[1].getArgs.map fun s ↦ (s, binder[2][0] != default)).flatten
+      let namesWithTypes : Array (Name × Bool) := (binders.map fun binder ↦
+        binder[1].getArgs.map fun s ↦ (s.getId, binder[2][0] != default)).flatten
       dbg_trace namesWithTypes
 
-      -- All implicit or explicit binders.
-      let imex := args.filter fun arg ↦
-        arg.isOfKind ``Lean.Parser.Term.implicitBinder || arg.isOfKind ``Lean.Parser.Term.explicitBinder
-      for a in imex do
-        Linter.logLint linter.badVariable a s!"interesting binder"
-      --Linter.logLint linter.badVariable stx s!"args are {args}"
---      Linter.logLint linter.badVariable stx "test"
-      -- TODO: put main logic here!
-    -- -- TODO: extract the implicit and explicit binder names,
-    -- -- together whether each of them has a type specified or not: (binder, withAType)
-    -- let allBinders : Array (Name × Bool) := sorry
-    -- -- We error if there is an implicit or explicit binder without a type,
-    -- -- while there is a new binder declared with a type.
-    -- let withTypes := allBinders.filter fun b ↦ b.2
-    -- let withoutTypes := allBinders.filter fun b ↦ !b.2
-    -- if withTypes.size > 0 && withoutTypes.size > 0 then
-    --   Linter.logLint linter.badVariable stx -- TODO: underline the actual args!
-    --     s!"bad variable declaration:
-    --     the binder types of the variable(s) {withoutTypes.map fun b ↦ b.1} are changed,
-    --     while the new variable(s) {withTypes.map fun b ↦ b.1} are declared\n\
-    --     please split these into separate 'variable' commands"
+      -- We error if there is an implicit or explicit binder without a type,
+      -- while there is a new binder declared with a type.
+      let withTypes := namesWithTypes.filter fun b ↦ b.2
+      let withoutTypes := namesWithTypes.filter fun b ↦ !b.2
+      if withTypes.size > 0 && withoutTypes.size > 0 then
+        Linter.logLint linter.badVariable stx -- TODO: underline the actual args!
+          s!"bad variable declaration:
+          the binder types of the variable(s) {withoutTypes.map fun b ↦ b.1} are changed,
+          while the new variable(s) {withTypes.map fun b ↦ b.1} are declared\n\
+          please split these into separate 'variable' commands"
 
 initialize addLinter badVariableLinter
 
