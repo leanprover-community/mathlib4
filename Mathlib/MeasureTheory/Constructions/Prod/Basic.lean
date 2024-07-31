@@ -795,11 +795,11 @@ theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePr
   use this
   /- if `μa = 0`, then the lemma is trivial, otherwise we can use `hg`
     to deduce `SFinite μd`. -/
-  rcases eq_zero_or_neZero μa with (rfl | ha)
+  rcases eq_zero_or_neZero μa with rfl | _
   · simp [← hf.map_eq]
   have sf : SFinite μd := by
-    obtain ⟨x, hx⟩ : ∃ x, map (g x) μc = μd := hg.exists
-    rw [← hx]
+    obtain ⟨a, ha⟩ : ∃ a, map (g a) μc = μd := hg.exists
+    rw [← ha]
     infer_instance
   -- Thus we can use the integral formula for the product measure, and compute things explicitly
   ext s hs
