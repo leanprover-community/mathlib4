@@ -4,10 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
-<<<<<<< HEAD
 import Mathlib.CategoryTheory.Limits.Shapes.Types
-=======
->>>>>>> origin
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 
