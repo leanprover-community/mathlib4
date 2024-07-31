@@ -605,4 +605,3 @@ instance [T2Space A] {x : A} : CommRing (Algebra.elementalAlgebra R x) :=
     fun _ _ => mul_comm _ _
 
 end Ring
-#lint
