@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Dami
 Yuyang Zhao
 -/
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-import Mathlib.Init.Data.Ordering.Basic
+import Mathlib.Data.Ordering.Basic
 import Mathlib.Order.MinMax
 import Mathlib.Tactic.Contrapose
 
@@ -359,24 +359,24 @@ theorem mul_le_of_le_one_left' [CovariantClass α α (swap (· * ·)) (· ≤ ·
 @[to_additive]
 theorem one_le_of_le_mul_right [ContravariantClass α α (· * ·) (· ≤ ·)] {a b : α} (h : a ≤ a * b) :
     1 ≤ b :=
-  le_of_mul_le_mul_left' <| by simpa only [mul_one]
+  le_of_mul_le_mul_left' (a := a) <| by simpa only [mul_one]
 
 @[to_additive]
 theorem le_one_of_mul_le_right [ContravariantClass α α (· * ·) (· ≤ ·)] {a b : α} (h : a * b ≤ a) :
     b ≤ 1 :=
-  le_of_mul_le_mul_left' <| by simpa only [mul_one]
+  le_of_mul_le_mul_left' (a := a) <| by simpa only [mul_one]
 
 @[to_additive]
 theorem one_le_of_le_mul_left [ContravariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α}
     (h : b ≤ a * b) :
     1 ≤ a :=
-  le_of_mul_le_mul_right' <| by simpa only [one_mul]
+  le_of_mul_le_mul_right' (a := b) <| by simpa only [one_mul]
 
 @[to_additive]
 theorem le_one_of_mul_le_left [ContravariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α}
     (h : a * b ≤ b) :
     a ≤ 1 :=
-  le_of_mul_le_mul_right' <| by simpa only [one_mul]
+  le_of_mul_le_mul_right' (a := b) <| by simpa only [one_mul]
 
 @[to_additive (attr := simp) le_add_iff_nonneg_right]
 theorem le_mul_iff_one_le_right' [CovariantClass α α (· * ·) (· ≤ ·)]
@@ -441,24 +441,24 @@ theorem mul_lt_of_lt_one_left' [CovariantClass α α (swap (· * ·)) (· < ·)]
 @[to_additive]
 theorem one_lt_of_lt_mul_right [ContravariantClass α α (· * ·) (· < ·)] {a b : α} (h : a < a * b) :
     1 < b :=
-  lt_of_mul_lt_mul_left' <| by simpa only [mul_one]
+  lt_of_mul_lt_mul_left' (a := a) <| by simpa only [mul_one]
 
 @[to_additive]
 theorem lt_one_of_mul_lt_right [ContravariantClass α α (· * ·) (· < ·)] {a b : α} (h : a * b < a) :
     b < 1 :=
-  lt_of_mul_lt_mul_left' <| by simpa only [mul_one]
+  lt_of_mul_lt_mul_left' (a := a) <| by simpa only [mul_one]
 
 @[to_additive]
 theorem one_lt_of_lt_mul_left [ContravariantClass α α (swap (· * ·)) (· < ·)] {a b : α}
     (h : b < a * b) :
     1 < a :=
-  lt_of_mul_lt_mul_right' <| by simpa only [one_mul]
+  lt_of_mul_lt_mul_right' (a := b) <| by simpa only [one_mul]
 
 @[to_additive]
 theorem lt_one_of_mul_lt_left [ContravariantClass α α (swap (· * ·)) (· < ·)] {a b : α}
     (h : a * b < b) :
     a < 1 :=
-  lt_of_mul_lt_mul_right' <| by simpa only [one_mul]
+  lt_of_mul_lt_mul_right' (a := b) <| by simpa only [one_mul]
 
 @[to_additive (attr := simp) lt_add_iff_pos_right]
 theorem lt_mul_iff_one_lt_right' [CovariantClass α α (· * ·) (· < ·)]

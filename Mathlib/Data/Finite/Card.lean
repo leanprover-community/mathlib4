@@ -140,7 +140,7 @@ theorem card_eq_zero_of_injective [Nonempty α] {f : α → β} (hf : Function.I
 theorem card_eq_zero_of_embedding [Nonempty α] (f : α ↪ β) (h : Nat.card α = 0) : Nat.card β = 0 :=
   card_eq_zero_of_injective f.2 h
 
-theorem card_sum [Finite α] [Finite β] : Nat.card (Sum α β) = Nat.card α + Nat.card β := by
+theorem card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + Nat.card β := by
   haveI := Fintype.ofFinite α
   haveI := Fintype.ofFinite β
   simp only [Nat.card_eq_fintype_card, Fintype.card_sum]
@@ -188,13 +188,15 @@ theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + 
 
 namespace Finite
 
-variable {s t : Set α} (ht : t.Finite)
+variable {s t : Set α}
 
-theorem card_lt_card (hsub : s ⊂ t) : Nat.card s < Nat.card t := by
+theorem card_lt_card (ht : t.Finite) (hsub : s ⊂ t) : Nat.card s < Nat.card t := by
   have : Fintype t := Finite.fintype ht
   have : Fintype s := Finite.fintype (subset ht (subset_of_ssubset hsub))
   simp only [Nat.card_eq_fintype_card]
   exact Set.card_lt_card hsub
+
+variable (ht : t.Finite)
 
 theorem eq_of_subset_of_card_le (hsub : s ⊆ t) (hcard : Nat.card t ≤ Nat.card s) : s = t :=
   (eq_or_ssubset_of_subset hsub).elim id fun h ↦ absurd hcard <| not_le_of_lt <| ht.card_lt_card h

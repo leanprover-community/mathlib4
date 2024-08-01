@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich
 -/
 
-import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Basic
 
 /-!
@@ -56,12 +55,10 @@ variable {α β ε : Type u} {m : Type u → Type v} (x : ExceptT ε m α)
 theorem run_mk (x : m (Except ε α)) : ExceptT.run (ExceptT.mk x) = x :=
   rfl
 
-variable [Monad m]
-
 attribute [simp] run_bind
 
 @[simp]
-theorem run_monadLift {n} [MonadLiftT n m] (x : n α) :
+theorem run_monadLift {n} [Monad m] [MonadLiftT n m] (x : n α) :
     (monadLift x : ExceptT ε m α).run = Except.ok <$> (monadLift x : m α) :=
   rfl
 
@@ -116,6 +113,7 @@ variable {α β : Type u} {m : Type u → Type v} (x : OptionT m α)
 theorem run_mk (x : m (Option α)) : OptionT.run (OptionT.mk x) = x :=
   rfl
 
+section Monad
 variable [Monad m]
 
 @[simp]
@@ -142,6 +140,8 @@ theorem run_map (f : α → β) [LawfulMonad m] : (f <$> x).run = Option.map f <
 theorem run_monadLift {n} [MonadLiftT n m] (x : n α) :
     (monadLift x : OptionT m α).run = (monadLift x : m α) >>= fun a => pure (some a) :=
   rfl
+
+end Monad
 
 @[simp]
 theorem run_monadMap {n} [MonadFunctorT n m] (f : ∀ {α}, n α → n α) :
