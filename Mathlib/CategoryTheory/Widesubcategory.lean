@@ -107,7 +107,7 @@ theorem wideSubcategoryInclusion.obj {X} : (wideSubcategoryInclusion P).obj X = 
 
 @[simp]
 theorem wideSubcategoryInclusion.map {X Y} {f : X ⟶ Y} :
-    (wideSubcategoryInclusion P ).map f = f.1 :=
+    (wideSubcategoryInclusion P).map f = f.1 :=
   rfl
 
 /-- The inclusion of a wide subcategory is faithful. -/
