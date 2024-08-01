@@ -885,7 +885,6 @@ import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Analytic.Within
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Asymptotics.Asymptotics
-import Mathlib.Analysis.Asymptotics.Product
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
 import Mathlib.Analysis.Asymptotics.Theta
