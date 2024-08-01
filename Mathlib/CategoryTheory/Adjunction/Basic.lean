@@ -116,9 +116,9 @@ section
 
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
 
-lemma isLeftAdjoint : F.IsLeftAdjoint := ⟨_, ⟨adj⟩⟩
+lemma isLeftAdjoint (adj : F ⊣ G) : F.IsLeftAdjoint := ⟨_, ⟨adj⟩⟩
 
-lemma isRightAdjoint : G.IsRightAdjoint := ⟨_, ⟨adj⟩⟩
+lemma isRightAdjoint (adj : F ⊣ G) : G.IsRightAdjoint := ⟨_, ⟨adj⟩⟩
 
 instance (R : D ⥤ C) [R.IsRightAdjoint] : R.leftAdjoint.IsLeftAdjoint :=
   (ofIsRightAdjoint R).isLeftAdjoint

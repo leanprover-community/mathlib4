@@ -125,7 +125,7 @@ theorem coe_inj {f g : M [⋀^ι]→ₗ[R] N} : (f : (ι → M) → N) = g ↔ f
 theorem ext {f f' : M [⋀^ι]→ₗ[R] N} (H : ∀ x, f x = f' x) : f = f' :=
   DFunLike.ext _ _ H
 
-theorem ext_iff {f g : M [⋀^ι]→ₗ[R] N} : f = g ↔ ∀ x, f x = g x :=
+protected theorem ext_iff {f g : M [⋀^ι]→ₗ[R] N} : f = g ↔ ∀ x, f x = g x :=
   ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 
 attribute [coe] AlternatingMap.toMultilinearMap
