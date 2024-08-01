@@ -112,7 +112,7 @@ protected lemma assoc {a b c d : ∫ F} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
   rw [← Cat.whiskerRight_app, eqToHom_app]
   simp only [Cat.whiskerRight_app, Cat.comp_obj, id_comp]
 
-/-- The category structure on the fibered category associated to a presheaf valued in types. -/
+/-- The category structure on `∫ F`. -/
 instance : Category (∫ F) where
   toCategoryStruct := Pseudofunctor.Grothendieck.CategoryStruct
   id_comp := Pseudofunctor.Grothendieck.id_comp
@@ -120,7 +120,7 @@ instance : Category (∫ F) where
   assoc := Pseudofunctor.Grothendieck.assoc
 
 /-- The projection `∫ F ⥤ 𝒮` given by projecting both objects and homs to the first
-factor -/
+factor. -/
 @[simps]
 def forget (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) : ∫ F ⥤ 𝒮 where
   obj := fun X => X.1
