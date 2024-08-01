@@ -19,7 +19,7 @@ of order-boundedness (sets that are bounded above and below).
 
 open Bornology Set
 
-variable {α : Type*} [Bornology α] {s t : Set α}
+variable {α : Type*} {s t : Set α}
 
 section Lattice
 variable [Lattice α] [Nonempty α]
@@ -37,6 +37,8 @@ def orderBornology : Bornology α := .ofBounded
   simp [IsBounded, IsCobounded, -isCobounded_compl_iff]
 
 end Lattice
+
+variable [Bornology α]
 
 variable (α) [Preorder α] in
 /-- Predicate for a preorder to be equipped with its order-bornology, namely for its bounded sets
