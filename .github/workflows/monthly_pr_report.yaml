@@ -27,6 +27,12 @@ jobs:
       - name: blog report
         continue-on-error: true
         run: |
+          PR="${{ github.event.pull_request.number }}"
+          title="### Month in Mathlib summary"
+
           printf $'Repository: %s\nBranch: %s\n' "${{ github.repository }}" "${BRANCH_NAME}"
           git checkout origin/adomani/yd_find_label scripts/find_labels.sh
-          ./scripts/find_labels.sh "${{ github.repository }}"
+          message="$(./scripts/find_labels.sh "${{ github.repository }}")"
+          echo "${message}"
+
+          ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"
