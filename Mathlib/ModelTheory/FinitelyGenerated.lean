@@ -282,10 +282,6 @@ theorem Substructure.cg_iff_structure_cg (S : L.Substructure M) : S.CG ↔ Struc
     rw [← Hom.range_eq_map, range_subtype] at h
     exact h
 
-theorem Substructure.PartialEquiv.fg_iff {N : Type*} [L.Structure N] (f : M ≃ₚ[L] N) :
-    f.dom.FG ↔ f.cod.FG := by
-  rw [Substructure.fg_iff_structure_fg, f.equiv.fg_iff, Substructure.fg_iff_structure_fg]
-
 theorem Substructure.countable_fg_substructures_of_countable [Countable M] :
     Countable { S : L.Substructure M // S.FG } := by
   let g : { S : L.Substructure M // S.FG } → Finset M :=
@@ -300,6 +296,10 @@ theorem Substructure.countable_fg_substructures_of_countable [Countable M] :
 instance Substructure.instCountable_fg_substructures_of_countable [Countable M] :
     Countable { S : L.Substructure M // S.FG } :=
   countable_fg_substructures_of_countable
+
+theorem Substructure.PartialEquiv.fg_iff {N : Type*} [L.Structure N] (f : M ≃ₚ[L] N) :
+    f.dom.FG ↔ f.cod.FG := by
+  rw [Substructure.fg_iff_structure_fg, f.equiv.fg_iff, Substructure.fg_iff_structure_fg]
 
 theorem Substructure.countable_self_finiteEquiv_of_countable [Countable M] :
     Countable { f : M ≃ₚ[L] M // f.dom.FG } := by

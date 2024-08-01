@@ -1104,7 +1104,7 @@ theorem dom_cod_top_toEquiv_toEmbedding {f : M ≃ₚ[L] N} (h_dom : f.dom = ⊤
   cases h_dom
   cases h_cod
   rfl
-
+/-
 /-- Map of a self-partial equivalence through an embedding.-/
 noncomputable def map (f : M ↪[L] N) (g : M ≃ₚ[L] M) : N ≃ₚ[L] N where
   dom := g.dom.map f.toHom
@@ -1155,7 +1155,7 @@ theorem map_monotone (f : M ↪[L] N) : Monotone (fun g : M ≃ₚ[L] M ↦ g.ma
     subtype _ ((Equiv.symm (Embedding.substructureEquivMap f g'.dom))
       (f.substructureEquivMap g'.dom ⟨u, dom_le_dom h u_mem⟩))
   simp only [Equiv.symm_apply_apply, coeSubtype]
-
+-/
 end PartialEquiv
 
 end Substructure

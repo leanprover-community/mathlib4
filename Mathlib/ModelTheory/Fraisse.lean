@@ -415,6 +415,7 @@ instance [K_fraisse : IsFraisse K] : ∀ S : K, Countable S :=
 
 variable (K_fraisse : IsFraisse K)
 
+/-
 /-- An essentially surjective sequence of L.structures in a Fraisse class. -/
 noncomputable def ess_surj_sequence : ℕ → K := by
   intro n
@@ -508,7 +509,6 @@ noncomputable def system : ℕ → K :=
     · cases (Nat.le_or_eq_of_le_succ h).resolve_left h'
       rfl
 
-/-
 theorem init_system_succ (n : ℕ) :
     ((init_system K_fraisse n).2 n).2.comp
       (system_eq K_fraisse (le_refl n) ▸ Embedding.refl L _) =
