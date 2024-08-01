@@ -24,29 +24,27 @@ private def lbp (m n : ℕ) : Prop :=
 
 variable [DecidablePred p] (H : ∃ n, p n)
 
-private def wf_lbp : WellFounded (@lbp p) :=
-  ⟨let ⟨n, pn⟩ := H
-    suffices ∀ m k, n ≤ k + m → Acc lbp k from fun a => this _ _ (Nat.le_add_left _ _)
-    fun m =>
-    Nat.recOn m
-      (fun k kn =>
-        ⟨_, fun y r =>
-          match y, r with
-          | _, ⟨rfl, a⟩ => absurd pn (a _ kn)⟩)
-      fun m IH k kn =>
-      ⟨_, fun y r =>
-        match y, r with
-        | _, ⟨rfl, _a⟩ => IH _ (by rw [Nat.add_right_comm]; exact kn)⟩⟩
-
 protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
-  @WellFounded.fix _ (fun k => (∀ n < k, ¬p n) → { n // p n ∧ ∀ m < n, ¬p m }) lbp (wf_lbp H)
-    (fun m IH al =>
-      if pm : p m then ⟨m, pm, al⟩
-      else
-        have : ∀ n ≤ m, ¬p n := fun n h =>
-          Or.elim (Nat.lt_or_eq_of_le h) (al n) fun e => by rw [e]; exact pm
-        IH _ ⟨rfl, this⟩ fun n h => this n <| Nat.le_of_succ_le_succ h)
-    0 fun n h => absurd h (Nat.not_lt_zero _)
+  go H 0 (by simp)
+where
+  go (H : ∃ n, p n) (n : ℕ) (H' : ∀ n' < n, ¬ p n') : { n // p n ∧ ∀ m < n, ¬p m } :=
+    if h : p n then ⟨n, h, H'⟩
+    else
+      go H (n + 1) <| by
+        intro n' hn'
+        obtain hn' | rfl := lt_or_eq_of_le (le_of_lt_succ hn')
+        · exact H' n' hn'
+        · exact h
+  termination_by H.choose - n
+  decreasing_by
+    simp_wf
+    have : n < H.choose := by
+      by_contra hH
+      simp at hH
+      obtain hH | rfl := lt_or_eq_of_le hH
+      · exact absurd H.choose_spec (H' _ hH)
+      · exact absurd H.choose_spec h
+    omega
 
 /-- If `p` is a (decidable) predicate on `ℕ` and `hp : ∃ (n : ℕ), p n` is a proof that
 there exists some natural number satisfying `p`, then `Nat.find hp` is the
@@ -63,7 +61,7 @@ protected def find : ℕ :=
   (Nat.findX H).1
 
 protected theorem find_spec : p (Nat.find H) :=
-  (Nat.findX H).2.left
+  @(Nat.findX H).2.left
 
 protected theorem find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
   @(Nat.findX H).2.right
