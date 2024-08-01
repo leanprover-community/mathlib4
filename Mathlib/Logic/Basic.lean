@@ -951,6 +951,9 @@ either branch to `a`. -/
 theorem ite_apply (f g : ∀ a, σ a) (a : α) : (ite P f g) a = ite P (f a) (g a) :=
   dite_apply P (fun _ ↦ f) (fun _ ↦ g) a
 
+section
+variable [Decidable Q]
+
 theorem ite_and : ite (P ∧ Q) a b = ite P (ite Q a b) b := by
   by_cases hp : P <;> by_cases hq : Q <;> simp [hp, hq]
 
@@ -965,6 +968,8 @@ theorem ite_ite_comm (h : P → ¬Q) :
     (if P then a else if Q then b else c) =
      if Q then b else if P then a else c :=
   dite_dite_comm P Q h
+
+end
 
 variable {P Q}
 
