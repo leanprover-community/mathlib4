@@ -15,11 +15,11 @@ A wide subcategory of a category `C` is a subcategory containing all the objects
 
 Given a category `D`, a function `F : C → D `from a type `C` to the
 objects of `D`, a morphism property `P` on `D` which contains identities and is stable under
-composition, witnessed by `hP`, the type class `InducedWideCategory D F P hP` is a typeclass
+composition, witnessed by ``, the type class `InducedWideCategory D F P` is a typeclass
 synonym for `C` which comes equipped with a category structure with morphisms `X ⟶ Y` being the
 morphisms in `D` which have the property `P`.
 
-The instance `WideSubcategory.category` provides a category structure on `WideSubcategory P hP`
+The instance `WideSubcategory.category` provides a category structure on `WideSubcategory P`
 whose objects are the objects of `C` and morphisms are the morphisms in `C` which have the
 property `P`.
 -/
@@ -33,28 +33,26 @@ open MorphismProperty
 section Induced
 
 variable {C : Type u₁} (D : Type u₂) [Category.{v₁} D]
-variable (F : C → D) (P : MorphismProperty D)
-    (hP : IsMultiplicative P)
+variable (F : C → D) (P : MorphismProperty D) [IsMultiplicative P]
 
-/-- `InducedWideCategory D F P hP`, where `F : C → D`, is a typeclass synonym for `C`,
+/-- `InducedWideCategory D F P`, where `F : C → D`, is a typeclass synonym for `C`,
 which provides a category structure so that the morphisms `X ⟶ Y` are the morphisms
 in `D` from `F X` to `F Y`.
 -/
 -- Porting note(#5171): removed @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
-def InducedWideCategory (_F : C → D) (_P : MorphismProperty D)
-    (_hP : IsMultiplicative _P) :=
+def InducedWideCategory (_F : C → D) (_P : MorphismProperty D) [IsMultiplicative _P] :=
   C
 
 variable {D}
 
 instance InducedWideCategory.hasCoeToSort {α : Sort*} [CoeSort D α] :
-    CoeSort (InducedWideCategory D F P hP) α :=
+    CoeSort (InducedWideCategory D F P) α :=
   ⟨fun c => F c⟩
 
 @[simps!]
 instance InducedWideCategory.category :
-    Category (InducedWideCategory D F P hP) where
+    Category (InducedWideCategory D F P) where
   Hom X Y := {f : F X ⟶ F Y | P f}
   id X := ⟨𝟙 (F X), P.id_mem (F X)⟩
   comp {X Y Z} f g := ⟨f.1 ≫ g.1, P.comp_mem _ _ f.2 g.2⟩
@@ -63,13 +61,13 @@ instance InducedWideCategory.category :
 forgetting the extra data.
 -/
 @[simps]
-def wideInducedFunctor : InducedWideCategory D F P hP ⥤ D where
+def wideInducedFunctor : InducedWideCategory D F P ⥤ D where
   obj := F
   map {X Y} f := f.1
 
-/-- The induced functor `wideInducedFunctor F P hP : InducedWideCategory D F P hP ⥤ D`
+/-- The induced functor `wideInducedFunctor F P : InducedWideCategory D F P ⥤ D`
 is faithful. -/
-instance InducedWideCategory.faithful : (wideInducedFunctor F P hP).Faithful where
+instance InducedWideCategory.faithful : (wideInducedFunctor F P).Faithful where
   map_injective {X Y} f g eq := by
     cases f
     cases g
@@ -80,45 +78,43 @@ end Induced
 section WideSubcategory
 
 variable {C : Type u₁} [Category.{v₁} C]
-variable (P : MorphismProperty C)
-    (hP : IsMultiplicative P)
+variable (P : MorphismProperty C) [IsMultiplicative P]
 
 /--
 Structure for wide subcategories. Objects ignore the morphism property.
 -/
 @[ext, nolint unusedArguments]
-structure WideSubcategory (_P : MorphismProperty C)
-    (_hP : IsMultiplicative _P) where
+structure WideSubcategory (_P : MorphismProperty C) [IsMultiplicative _P] where
   /-- The category of which this is a wide subcategory-/
   obj : C
 
 @[simps!]
-instance WideSubcategory.category : Category.{v₁} (WideSubcategory P hP) :=
-  InducedWideCategory.category WideSubcategory.obj P hP
+instance WideSubcategory.category : Category.{v₁} (WideSubcategory P) :=
+  InducedWideCategory.category WideSubcategory.obj P
 
-lemma WideSubcategory.id_def (X : WideSubcategory P hP) : (CategoryStruct.id X).1 = 𝟙 X.obj := rfl
+lemma WideSubcategory.id_def (X : WideSubcategory P) : (CategoryStruct.id X).1 = 𝟙 X.obj := rfl
 
-lemma WideSubcategory.comp_def {X Y Z : WideSubcategory P hP} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma WideSubcategory.comp_def {X Y Z : WideSubcategory P} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).1 = (f.1 ≫ g.1 : X.obj ⟶ Z.obj) := rfl
 
 /-- The forgetful functor from a wide subcategory into the original category
 ("forgetting" the condition).
 -/
-def wideSubcategoryInclusion : WideSubcategory P hP ⥤ C :=
-  wideInducedFunctor WideSubcategory.obj P hP
+def wideSubcategoryInclusion : WideSubcategory P ⥤ C :=
+  wideInducedFunctor WideSubcategory.obj P
 
 @[simp]
-theorem wideSubcategoryInclusion.obj {X} : (wideSubcategoryInclusion P hP).obj X = X.obj :=
+theorem wideSubcategoryInclusion.obj {X} : (wideSubcategoryInclusion P).obj X = X.obj :=
   rfl
 
 @[simp]
 theorem wideSubcategoryInclusion.map {X Y} {f : X ⟶ Y} :
-    (wideSubcategoryInclusion P hP).map f = f.1 :=
+    (wideSubcategoryInclusion P ).map f = f.1 :=
   rfl
 
 /-- The inclusion of a wide subcategory is faithful. -/
-instance wideSubcategory.faithful : (wideSubcategoryInclusion P hP).Faithful := by
-  exact inferInstanceAs (wideInducedFunctor WideSubcategory.obj P hP).Faithful
+instance wideSubcategory.faithful : (wideSubcategoryInclusion P).Faithful := by
+  exact inferInstanceAs (wideInducedFunctor WideSubcategory.obj P).Faithful
 
 end WideSubcategory
 
