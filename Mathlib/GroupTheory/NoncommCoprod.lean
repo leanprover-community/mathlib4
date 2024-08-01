@@ -33,7 +33,7 @@ assert_not_exists MonoidWithZero
 namespace MulHom
 
 variable {M N P : Type*} [Mul M] [Mul N] [Semigroup P]
-  (f : M →ₙ* P) (g : N →ₙ* P) (comm : ∀ m n, Commute (f m) (g n))
+  (f : M →ₙ* P) (g : N →ₙ* P)
 
 /-- Coproduct of two `MulHom`s with the same codomain with `Commute` assumption:
   `f.noncommCoprod g _ (p : M × N) = f p.1 * g p.2`.
@@ -42,12 +42,13 @@ variable {M N P : Type*} [Mul M] [Mul N] [Semigroup P]
     "Coproduct of two `AddHom`s with the same codomain with `AddCommute` assumption:
     `f.noncommCoprod g _ (p : M × N) = f p.1 + g p.2`.
     (For the commutative case, use `AddHom.coprod`)"]
-def noncommCoprod : M × N →ₙ* P where
+def noncommCoprod (comm : ∀ m n, Commute (f m) (g n)) : M × N →ₙ* P where
   toFun mn := f mn.fst * g mn.snd
   map_mul' mn mn' := by simpa using (comm _ _).mul_mul_mul_comm _ _
 
 @[to_additive]
-theorem comp_noncommCoprod {Q : Type*} [Semigroup Q] (h : P →ₙ* Q) :
+theorem comp_noncommCoprod {Q : Type*} [Semigroup Q] (h : P →ₙ* Q)
+    (comm : ∀ m n, Commute (f m) (g n)) :
     h.comp (f.noncommCoprod g comm) =
       (h.comp f).noncommCoprod (h.comp g) (fun m n ↦ (comm m n).map h) :=
   ext fun _ => map_mul h _ _
