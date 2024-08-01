@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 import Mathlib.Order.Bounds.Basic
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Scott continuity
@@ -163,10 +164,9 @@ theorem IsLUB.union' {a b : γ} {s t : Set γ} (hs : IsLUB s a) (ht : IsLUB t b)
   · intro e he
     simp at he
     rw [IsLUB, IsLeast] at hc
-    obtain ⟨hc₁,hc₂⟩ := hc
+    obtain ⟨hc₁,_⟩ := hc
     simp at hc₁
     obtain ⟨hac,hbc⟩ := hc₁
-    rw [IsLUB, IsLeast] at hs
     obtain ⟨hs₁,_⟩ := hs
     obtain ⟨ht₁,_⟩ := ht
     cases he with
@@ -181,7 +181,34 @@ theorem IsLUB.union' {a b : γ} {s t : Set γ} (hs : IsLUB s a) (ht : IsLUB t b)
     apply hc.2
     aesop
 
+@[simp]
+theorem upperBounds_iUnion {ι : Sort*} {s : ι → Set γ} :
+    upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i)  := sorry
 
+/-
+  Subset.antisymm (fun _ hb => ⟨fun _ hx => hb (Or.inl hx), fun _ hx => hb (Or.inr hx)⟩)
+    fun _ hb _ hx => hx.elim (fun hs => hb.1 hs) fun ht => hb.2 ht
+-/
+
+theorem IsLUB.iUnion {ι : Sort*} {u : ι → γ}  {s : ι → Set γ} (hs : ∀ (i : ι), IsLUB (s i) (u i))
+    (c : γ) (hc : IsLUB (Set.range u ) c) : IsLUB (⋃ i, s i) c := by
+  constructor
+  · intro e he
+    simp at he
+    obtain ⟨i,hi⟩ := he
+    rw [IsLUB, IsLeast] at hc
+    obtain ⟨hc₁,hc₂⟩ := hc
+    rw [upperBounds] at hc₁
+    simp at hc₁
+    obtain ⟨hs₁,_⟩ := hs i
+    exact Preorder.le_trans e (u i) c (hs₁ hi) (hc₁ i)
+  · intro e he
+    rw [upperBounds_iUnion] at he
+    have e1 : ∀ (i : ι), u i ≤ e := fun i => (hs i).2 (he _ (mem_range_self i))
+    apply hc.2
+    rw [upperBounds]
+    simp only [mem_range, forall_exists_index, forall_apply_eq_imp_iff, mem_setOf_eq]
+    exact e1
 
 
 /-
