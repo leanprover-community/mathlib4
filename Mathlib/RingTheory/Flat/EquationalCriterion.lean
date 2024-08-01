@@ -55,7 +55,7 @@ universe u
 
 variable {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M]
 
-open Classical LinearMap TensorProduct Finsupp
+open LinearMap TensorProduct Finsupp
 
 namespace Module
 
@@ -124,6 +124,7 @@ theorem tfae_equational_criterion : List.TFAE [
       x f = 0 →
         ∃ (κ : Type u) (_ : Fintype κ) (a : N →ₗ[R] (κ →₀ R)) (y : (κ →₀ R) →ₗ[R] M),
           x = y ∘ₗ a ∧ a f = 0] := by
+  classical
   tfae_have 1 ↔ 2
   · exact iff_rTensor_injective' R M
   tfae_have 3 ↔ 2
