@@ -108,8 +108,7 @@ variable (P : TopCat.{u} → Prop) (X : TopCat.{max u w})
     (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f)
 
 /--
-A generalization of `TopCat.toCondensedSet` where the defining site is of the form `CompHausLike P`
-for a more general `P : TopCat.{u} → Prop`.
+The sheaf on `CompHausLike P` of continuous maps to a topological space.
 -/
 @[simps! val_obj val_map]
 def TopCat.toSheafCompHausLike :
@@ -126,8 +125,8 @@ def TopCat.toSheafCompHausLike :
     apply QuotientMap.of_surjective_continuous (hs _ he) π.continuous
 
 /--
-A generalization of `topCatToCondensedSet` where the defining site is of the form `CompHausLike P`
-for a more general `P : TopCat.{u} → Prop`.
+`TopCat.toSheafCompHausLike` yields a functor from `TopCat.{max u w}` to
+`Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w))`.
 -/
 @[simps]
 noncomputable def topCatToSheafCompHausLike :

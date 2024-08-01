@@ -3,14 +3,18 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Data.Countable.Small
-import Mathlib.Topology.Category.CompHausLike.Limits
-import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Condensed.Discrete.Basic
 import Mathlib.Condensed.TopComparison
 /-!
 
-# The sheaf of locally constant maps on `CompHausLike`
+# The sheaf of locally constant maps on `CompHausLike P`
+
+This file proves that under suitable conditions, the functor from types to sheaves for the coherent
+topology on `CompHausLike P`, given by mapping a set to the sheaf of locally constant maps to it,
+is left adjoint to the "underlying set" functor (evaluation at the point).
+
+We apply this to prove that the constant sheaf functor into (light) condensed sets is isomorphic to
+the functor of sheaves of locally constant maps described above.
 -/
 
 universe u w u'
@@ -34,9 +38,9 @@ section Index
 
 # Locally constant maps and partitions
 
-A locally constant map out of a compact Hausdorff space corresponds to a finite partition of the
-space whose components are the fibers of the map. Each component is itself a compact Hausdorff
-space.
+A locally constant map out of a compact space corresponds to a finite partition of the
+space whose components are the fibers of the map. If the space is also Hausdorff, then each
+component is itself a compact Hausdorff space.
 
 In this section we define the indexing set for this partition and prove some API lemmas.
 -/
@@ -45,7 +49,7 @@ In this section we define the indexing set for this partition and prove some API
 def α : Type u := Set.range (fun (x : Set.range f) ↦ f ⁻¹' {x.val})
 
 /--
-The map from `α f`. When `f` is locally constant, `S` is the coproduct of `σ f` in `CompHaus`.
+The map from `α f`. When `f` is locally constant, `S` is the coproduct of `σ f` in `CompHausLike P`.
 -/
 def σ : α f → Type u := fun x ↦ x.val
 
@@ -213,7 +217,8 @@ end SigmaComparison
 namespace LocallyConstant
 
 /--
-The functor from the category of sets to presheaves on `CompHaus` given by locally constant maps.
+The functor from the category of sets to presheaves on `CompHausLike P` given by locally constant
+maps.
 -/
 @[simps]
 def functorToPresheaves : Type (max u w) ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w) where
@@ -237,7 +242,7 @@ def locallyConstantIsoContinuousMap (Y X : Type*) [TopologicalSpace Y] :
 section Adjunction
 /-!
 
-# The condensed set of locally constant maps is left adjoint to the forgetful functor
+# The functor of sheaves of locally constant maps is left adjoint to the forgetful functor
 
 The hard part of this adjunction is to define the counit. See `counitAppApp` for an explanation. 
 -/
@@ -250,7 +255,7 @@ open Aux
 
 variable [∀ (S : CompHausLike.{u} P) (p : S → Prop), HasProp P (Subtype p)]
 
-/-- A fiber of a locally constant map as a `CompHausLike`. -/
+/-- A fiber of a locally constant map as a `CompHausLike P`. -/
 def part {Q : CompHausLike.{u} P} {Z : Type max u w} (r : LocallyConstant Q Z) (a : α r) :
     CompHausLike.{u} P :=
   CompHausLike.of P a.val
@@ -265,7 +270,8 @@ def sigmaIncl {Q : CompHausLike.{u} P} {Z : Type max u w} (r : LocallyConstant Q
     part r a ⟶ Q :=
   CompHausLike.Aux.sigmaIncl _ a
 
-/-- The canonical map from the coproduct induced by `f` to `S` as an isomorphism in `CompHaus`. -/
+/-- The canonical map from the coproduct induced by `f` to `S` as an isomorphism in
+`CompHausLike P`. -/
 noncomputable def sigmaIso {Q : CompHausLike.{u} P} {Z : Type max u w} (r : LocallyConstant Q Z) :
     (CompHausLike.finiteCoproduct (part r)) ≅ Q :=
   CompHausLike.isoOfBijective (sigmaIsoHom r) ⟨sigmaIsoHom_inj r, sigmaIsoHom_surj r⟩
@@ -467,10 +473,9 @@ noncomputable def counit :
   naturality X Y g := by
     have := CompHausLike.preregular hs
     apply Sheaf.hom_ext
-    simp only [underlying, functor, id_eq, eq_mpr_eq_cast, Functor.comp_obj, Functor.flip_obj_obj,
+    simp only [functor, id_eq, eq_mpr_eq_cast, Functor.comp_obj, Functor.flip_obj_obj,
       sheafToPresheaf_obj, Functor.id_obj, Functor.comp_map, Functor.flip_obj_map,
-      sheafToPresheaf_map, Functor.id_map]
-    rw [Sheaf.instCategorySheaf_comp_val, Sheaf.instCategorySheaf_comp_val]
+      sheafToPresheaf_map, Sheaf.instCategorySheaf_comp_val, Functor.id_map]
     ext S (f : LocallyConstant _ _)
     simp only [FunctorToTypes.comp, counitApp_app]
     apply locallyConstantCondensed_ext.{u, w} (f.map (g.val.app (op
@@ -492,7 +497,7 @@ theorem locallyConstantAdjunction_left_triangle (X : Type max u w) :
       ((counit P hs).app ((functor P hs).obj X)).val =
     𝟙 (functorToPresheaves.obj X) := by
   ext ⟨S⟩ (f : LocallyConstant _ X)
-  simp only [Functor.id_obj, Functor.comp_obj, underlying_obj, FunctorToTypes.comp, NatTrans.id_app,
+  simp only [Functor.id_obj, Functor.comp_obj, FunctorToTypes.comp, NatTrans.id_app,
     functorToPresheaves_obj_obj, types_id_apply]
   simp only [counit, counitApp_app]
   have := CompHausLike.preregular hs
@@ -524,17 +529,18 @@ noncomputable def adjunction :
     counit := counit P hs
     left_triangle := by
       ext X : 2
-      simp only [id_eq, eq_mpr_eq_cast, Functor.comp_obj, Functor.id_obj, NatTrans.comp_app,
-        underlying_obj, functorToPresheaves_obj_obj, whiskerRight_app, Functor.associator_hom_app,
-        whiskerLeft_app, Category.id_comp, NatTrans.id_app']
+      simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, Functor.flip_obj_obj,
+        sheafToPresheaf_obj, functor_obj_val, functorToPresheaves_obj_obj, coe_of, whiskerRight_app,
+        Functor.associator_hom_app, whiskerLeft_app, Category.id_comp, NatTrans.id_app']
       apply Sheaf.hom_ext
       rw [Sheaf.instCategorySheaf_comp_val, Sheaf.instCategorySheaf_id_val]
       exact locallyConstantAdjunction_left_triangle P hs X
     right_triangle := by
       ext X (x : X.val.obj _)
-      simp only [Functor.comp_obj, Functor.id_obj, underlying_obj, counit, FunctorToTypes.comp,
-        whiskerLeft_app, Functor.associator_inv_app, functor_obj_val, functorToPresheaves_obj_obj,
-        types_id_apply, whiskerRight_app, underlying_map, counitApp_app, NatTrans.id_app']
+      simp only [Functor.comp_obj, Functor.id_obj, Functor.flip_obj_obj, sheafToPresheaf_obj,
+        FunctorToTypes.comp, whiskerLeft_app, unit_app, coe_of, Functor.associator_inv_app,
+        functor_obj_val, functorToPresheaves_obj_obj, types_id_apply, whiskerRight_app,
+        Functor.flip_obj_map, sheafToPresheaf_map, counit_app_val, counitApp_app, NatTrans.id_app']
       have := CompHausLike.preregular hs
       let _ : PreservesFiniteProducts
           ((sheafToPresheaf (coherentTopology (CompHausLike P)) (Type (max u w))).obj X) :=
