@@ -60,7 +60,7 @@ findInRange "${1}" "${yr_mth}-15T00:00:00" "${end_date}"   | sed -z 's=^\[=='
       gsub(/\[Merged by Bors\] - /, "")
       rest=$2; for(i=3; i<=NF; i++){rest=rest" "$i};acc[$1]=acc[$1]"\n"rest }
     END {
-      printf("%s closed PRs between %s and %s\n\n", total, startDate, endDate)
+      printf("%s closed PRs between %s and %s\n", total, startDate, endDate)
       for(i=1; i<=con; i++) {
         tag=order[i]
         gsub(/\[\]/, "Miscellaneous", tag)
@@ -78,9 +78,9 @@ printf $'\n---\nReports\n\n'
 
 if [ -z "${only_gh}" ]
 then
-  printf $'\n* All PRs are accounted for!\n'
+  printf $'* All PRs are accounted for!\n'
 else
-  printf $'\n* PRs not corresponding to a commit\n%s\n' "${only_gh}"
+  printf $'* PRs not corresponding to a commit\n%s\n' "${only_gh}"
 fi
 
 if [ -z "${only_git}" ]
@@ -90,7 +90,7 @@ else
   printf $'\n* PRs not found by `gh`\n%s\n' "${only_git}"
 fi
 
-printf $'\n---\n'
+printf $'---\n'
 
 rm -rf found_by_gh.txt found_by_git.txt
 
