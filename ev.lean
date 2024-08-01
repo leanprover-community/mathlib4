@@ -59,3 +59,34 @@ example (f : V →ₗ[K] V) (μ ν ρ : K) (hμν : μ ≠ ν) (hμρ : μ ≠ �
   have H3 : (μ - ρ) • (ν - ρ) • c • z = 0 := by
     linear_combination (norm := module) habc'' - (μ + ν) • habc' + μ • ν • habc
   simp_all [sub_eq_zero]
+
+/-- ### Symmetry-breaking versions
+
+... not very readable, but short!
+-/
+
+-- binary version
+example (f : V →ₗ[K] V) (μ ν : K) (hμν : μ ≠ ν)
+    (x y : V) (hx₀ : x ≠ 0) (hy₀ : y ≠ 0)
+    (hx : f x = μ • x) (hy : f y = ν • y) :
+    ∀ a b : K, a • x + b • y = 0 → a = 0 ∧ b = 0 := by
+  intro a b hab
+  have hab' := congr(f $hab)
+  simp [hx, hy] at hab'
+  have H : (μ - ν) • a • x = 0 := by linear_combination (norm := module) hab' - ν • hab
+  simp_all [sub_eq_zero]
+
+-- ternary version
+example (f : V →ₗ[K] V) (μ ν ρ : K) (hμν : μ ≠ ν) (hμρ : μ ≠ ρ) (hνρ : ν ≠ ρ)
+    (x y z : V) (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) (hz₀ : z ≠ 0)
+    (hx : f x = μ • x) (hy : f y = ν • y) (hz : f z = ρ • z) :
+    ∀ a b c : K, a • x + b • y + c • z = 0 → a = 0 ∧ b = 0 ∧ c = 0 := by
+  intro a b c habc
+  have habc' := congr(f $habc)
+  have habc'' := congr(f^[2] $habc)
+  simp [hx, hy, hz] at habc' habc''
+  have H1 : (μ - ν) • (μ - ρ) • a • x = 0 := by
+    linear_combination (norm := module) habc'' - (ν + ρ) • habc' + ν • ρ • habc
+  obtain rfl : a = 0 := by simp_all [sub_eq_zero]
+  have H2 : (ν - ρ) • b • y = 0 := by linear_combination (norm := module) habc' - ρ • habc
+  simp_all [sub_eq_zero]
