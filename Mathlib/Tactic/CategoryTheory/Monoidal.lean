@@ -388,7 +388,7 @@ open scoped MonoidalCategory
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
+variable {C : Type u} [Category.{v} C]
 
 variable {f f' g g' h h' i i' j : C}
 
@@ -415,6 +415,24 @@ theorem evalComp_cons {f g h i j : C} (α : f ⟶ g) (η : g ⟶ h) {ηs : h ⟶
     (α ≫ η ≫ ηs) ≫ θ = α ≫ η ≫ ι := by
   simp [pf_ι]
 
+theorem eval_comp
+    {η η' : f ⟶ g} {θ θ' : g ⟶ h} {ι : f ⟶ h}
+    (pf_η : η = η') (pf_θ : θ = θ') (pf_ηθ : η' ≫ θ' = ι) :
+    η ≫ θ = ι := by
+  simp [pf_η, pf_θ, pf_ηθ]
+
+theorem eval_of (η : f ⟶ g) :
+    η = 𝟙 _ ≫ η ≫ 𝟙 _ := by
+  simp
+
+theorem eval_monoidalComp
+    {η η' : f ⟶ g} {α : g ⟶ h} {θ θ' : h ⟶ i} {αθ : g ⟶ i} {ηαθ : f ⟶ i}
+    (pf_η : η = η') (pf_θ : θ = θ') (pf_αθ : α ≫ θ' = αθ) (pf_ηαθ : η' ≫ αθ = ηαθ) :
+    η ≫ α ≫ θ = ηαθ := by
+  simp [pf_η, pf_θ, pf_αθ, pf_ηαθ]
+
+variable [MonoidalCategory C]
+
 @[nolint synTaut]
 theorem evalWhiskerLeft_nil (f : C) (α : g ⟶ h) :
     f ◁ α = f ◁ α := by
@@ -438,12 +456,6 @@ theorem evalWhiskerLeft_id {f g : C} {η : f ⟶ g}
     𝟙_ C ◁ η = η'' := by
   simp [pf_η', pf_η'']
 
-theorem eval_comp
-    {η η' : f ⟶ g} {θ θ' : g ⟶ h} {ι : f ⟶ h}
-    (pf_η : η = η') (pf_θ : θ = θ') (pf_ηθ : η' ≫ θ' = ι) :
-    η ≫ θ = ι := by
-  simp [pf_η, pf_θ, pf_ηθ]
-
 theorem eval_whiskerLeft
     {η η' : g ⟶ h} {θ : f ⊗ g ⟶ f ⊗ h}
     (pf_η : η = η') (pf_θ : f ◁ η' = θ) :
@@ -461,10 +473,6 @@ theorem eval_tensorHom
     (pf_η : η = η') (pf_θ : θ = θ') (pf_ι : η' ⊗ θ' = ι) :
     η ⊗ θ = ι := by
   simp [pf_η, pf_θ, pf_ι]
-
-theorem eval_of (η : f ⟶ g) :
-    η = 𝟙 _ ≫ η ≫ 𝟙 _ := by
-  simp
 
 @[nolint synTaut]
 theorem evalWhiskerRight_nil (α : f ⟶ g) (h : C) :
@@ -504,12 +512,6 @@ theorem evalWhiskerRight_id
     (pf_η₁ : η ≫ (ρ_ _).inv = η₁) (pf_η₂ : (ρ_ _).hom ≫ η₁ = η₂) :
     η ▷ 𝟙_ C = η₂ := by
   simp [pf_η₁, pf_η₂]
-
-theorem eval_monoidalComp
-    {η η' : f ⟶ g} {α : g ⟶ h} {θ θ' : h ⟶ i} {αθ : g ⟶ i} {ηαθ : f ⟶ i}
-    (pf_η : η = η') (pf_θ : θ = θ') (pf_αθ : α ≫ θ' = αθ) (pf_ηαθ : η' ≫ αθ = ηαθ) :
-    η ≫ α ≫ θ = ηαθ := by
-  simp [pf_η, pf_θ, pf_αθ, pf_ηαθ]
 
 theorem evalWhiskerRightExprAux_of (η : g ⟶ h) (f : C) :
     η ▷ f = 𝟙 _ ≫ η ▷ f ≫ 𝟙 _ := by
