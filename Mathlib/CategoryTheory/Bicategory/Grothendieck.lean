@@ -11,8 +11,6 @@ import Mathlib.CategoryTheory.Category.Cat
 /-!
 # The Grothendieck construction
 
-TODO: wrong grothendieck construction?
-
 Given a category `𝒮` and any pseudofunctor `F` from `𝒮ᵒᵖ` to `Cat`, we associate to it a category
 `∫ F`, equipped with a functor `∫ F ⥤ 𝒮`.
 
