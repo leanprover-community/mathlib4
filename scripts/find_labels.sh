@@ -55,8 +55,8 @@ printf $'\n\nBetween %s and %s there were\n' "${start_date/%T*}" "${end_date/%T*
 printf $'* %s commits to `master` and\n' "${commits_in_range}"
 
 (
-findInRange "${1}" "${start_date}" "${yr_mth}-14T23:59:59" | sed -z 's=]\n*$=,\n='
-findInRange "${1}" "${yr_mth}-15T00:00:00" "${end_date}"   | sed -z 's=^\[=='
+findInRange "${1}" "${start_date}" "${yr_mth}-15T23:59:59" | sed -z 's=]\n*$=,\n='
+findInRange "${1}" "${yr_mth}-16T00:00:00" "${end_date}"   | sed -z 's=^\[=='
 ) | jq -S -r '.[] |
   select(.title | startswith("[Merged by Bors]")) |
   "\(.labels | map(.name | select(startswith("t-"))) // "No labels") PR #\(.number) \(.title)"' |
