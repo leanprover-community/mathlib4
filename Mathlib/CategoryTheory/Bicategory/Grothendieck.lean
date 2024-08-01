@@ -12,15 +12,15 @@ import Mathlib.CategoryTheory.Category.Cat
 # The Grothendieck construction
 
 Given a category `𝒮` and any pseudofunctor valued in `Cat` we associate to it a category
-`F.toFibered`, equipped with a functor `F.toFibered ⥤ 𝒮`.
+`∫ F`, equipped with a functor `∫ F ⥤ 𝒮`.
 
-The category `F.toFibered` is defined as follows:
+The category `∫ F` is defined as follows:
 * Objects: pairs `(S, a)` where `S` is an object of the base category and `a` is an object of the
   category `F(S)`
 * Morphisms: morphisms `(R, b) ⟶ (S, a)` are defined as pairs `(f, h)` where `f : R ⟶ S` is a
   morphism in `𝒮` and `h : b ⟶ F(f)(a)`
 
-The projection functor `F.toFibered ⥤ 𝒮` is then given by projecting to the first factors, i.e.
+The projection functor `∫ F ⥤ 𝒮` is then given by projecting to the first factors, i.e.
 * On objects, it sends `(S, a)` to `S`
 * On morphisms, it sends `(f, h)` to `f`
 
@@ -39,13 +39,20 @@ open CategoryTheory Functor Category Opposite Discrete Bicategory
 variable {𝒮 : Type u₁} [Category.{v₁} 𝒮] {F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
 
 /-- The type of objects in the fibered category associated to a presheaf valued in types. -/
-def Pseudofunctor.toFibered (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) :=
-  (S : 𝒮) × (F.obj ⟨op S⟩)
+structure Pseudofunctor.Grothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) where
+  /-- The underlying object in `𝒮` -/
+  base : 𝒮
+  /-- The object in the fiber of the base object. (TODO: fix this commetn) -/
+  fiber : F.obj ⟨op base⟩
 
-namespace Pseudofunctor.toFibered
+-- todo: figure out right number
+/-- Notation for the Grothendieck category associated to a pseudofunctor `F`. -/
+prefix:75 "∫ " => Pseudofunctor.Grothendieck
+
+namespace Pseudofunctor.Grothendieck
 
 @[simps]
-instance CategoryStruct : CategoryStruct F.toFibered where
+instance CategoryStruct : CategoryStruct (∫ F) where
   Hom X Y := (f : X.1 ⟶ Y.1) × (X.2 ⟶ (F.map f.op.toLoc).obj Y.2)
   id X := ⟨𝟙 X.1, (F.mapId ⟨op X.1⟩).inv.app X.2⟩
   comp {_ _ Z} f g := ⟨f.1 ≫ g.1, f.2 ≫ (F.map f.1.op.toLoc).map g.2 ≫
@@ -53,7 +60,7 @@ instance CategoryStruct : CategoryStruct F.toFibered where
 
 section
 
-variable {a b : F.toFibered} (f : a ⟶ b)
+variable {a b : ∫ F} (f : a ⟶ b)
 
 @[ext]
 lemma hom_ext (g : a ⟶ b) (hfg₁ : f.1 = g.1) (hfg₂ : f.2 = g.2 ≫ eqToHom (hfg₁ ▸ rfl)) :
@@ -64,7 +71,7 @@ lemma hom_ext (g : a ⟶ b) (hfg₁ : f.1 = g.1) (hfg₂ : f.2 = g.2 ≫ eqToHom
 
 -- Might not need this lemma in the end
 lemma hom_ext_iff (g : a ⟶ b) : f = g ↔ ∃ (hfg : f.1 = g.1), f.2 = g.2 ≫ eqToHom (hfg ▸ rfl) where
-  mp := fun hfg => ⟨by rw [hfg], by simp [hfg]⟩
+  mp hfg := ⟨by rw [hfg], by simp [hfg]⟩
   mpr := fun ⟨hfg₁, hfg₂⟩ => hom_ext f g hfg₁ hfg₂
 
 protected lemma id_comp : 𝟙 a ≫ f = f := by
@@ -90,7 +97,7 @@ protected lemma comp_id : f ≫ 𝟙 b = f := by
 
 end
 
-protected lemma assoc {a b c d : F.toFibered} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+protected lemma assoc {a b c d : ∫ F} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (f ≫ g) ≫ h = f ≫ g ≫ h := by
   ext
   · simp
@@ -108,21 +115,19 @@ protected lemma assoc {a b c d : F.toFibered} (f : a ⟶ b) (g : b ⟶ c) (h : c
   simp only [Cat.whiskerRight_app, Cat.comp_obj, id_comp]
 
 /-- The category structure on the fibered category associated to a presheaf valued in types. -/
-instance : Category (F.toFibered) where
-  toCategoryStruct := Pseudofunctor.toFibered.CategoryStruct
-  id_comp := Pseudofunctor.toFibered.id_comp
-  comp_id := Pseudofunctor.toFibered.comp_id
-  assoc := Pseudofunctor.toFibered.assoc
+instance : Category (∫ F) where
+  toCategoryStruct := Pseudofunctor.Grothendieck.CategoryStruct
+  id_comp := Pseudofunctor.Grothendieck.id_comp
+  comp_id := Pseudofunctor.Grothendieck.comp_id
+  assoc := Pseudofunctor.Grothendieck.assoc
 
-/-- The projection `F.toFibered ⥤ 𝒮` given by projecting both objects and homs to the first
+/-- The projection `∫ F ⥤ 𝒮` given by projecting both objects and homs to the first
 factor -/
 @[simps]
-def π (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) : F.toFibered ⥤ 𝒮 where
+def forget (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) : ∫ F ⥤ 𝒮 where
   obj := fun X => X.1
   map := fun f => f.1
 
-end toFibered
-
-end Pseudofunctor
+end Pseudofunctor.Grothendieck
 
 end CategoryTheory
