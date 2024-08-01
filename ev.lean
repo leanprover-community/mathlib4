@@ -32,11 +32,11 @@ example (f : V →ₗ[K] V) (μ ν : K) (hμν : μ ≠ ν)
     (hx : f x = μ • x) (hy : f y = ν • y) :
     ∀ a b : K, a • x + b • y = 0 → a = 0 ∧ b = 0 := by
   intro a b hab
-  have H1 :=
+  have :=
     calc (μ - ν) • a • x = (a • μ • x + b • ν • y) - ν • (a • x + b • y) := by module
       _ = f (a • x + b • y) - ν • (a • x + b • y) := by simp [hx, hy]
       _ = 0 := by simp [hab]
-  have H2 :=
+  have :=
     calc (μ - ν) • b • y = μ • (a • x + b • y) - (a • μ • x + b • ν • y) := by module
       _ = μ • (a • x + b • y) - f (a • x + b • y) := by simp [hx, hy]
       _ = 0 := by simp [hab]
@@ -74,6 +74,18 @@ example (f : V →ₗ[K] V) (μ ν : K) (hμν : μ ≠ ν)
   have hab' := congr(f $hab)
   simp [hx, hy] at hab'
   have H : (μ - ν) • a • x = 0 := by linear_combination (norm := module) hab' - ν • hab
+  simp_all [sub_eq_zero]
+
+example (f : V →ₗ[K] V) (μ ν : K) (hμν : μ ≠ ν)
+    (x y : V) (hx₀ : x ≠ 0) (hy₀ : y ≠ 0)
+    (hx : f x = μ • x) (hy : f y = ν • y) :
+    ∀ a b : K, a • x + b • y = 0 → a = 0 ∧ b = 0 := by
+  intro a b hab
+  have :=
+  calc (μ - ν) • a • x
+      = (a • μ • x + b • ν • y) - ν • (a • x + b • y) := by module
+    _ = f (a • x + b • y) - ν • (a • x + b • y) := by simp [hx, hy]
+    _ = 0 := by simp [hab]
   simp_all [sub_eq_zero]
 
 -- ternary version
