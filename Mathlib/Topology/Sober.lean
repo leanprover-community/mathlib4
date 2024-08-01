@@ -19,6 +19,7 @@ stated via `[QuasiSober α] [T0Space α]`.
 
 * `IsGenericPoint` : `x` is the generic point of `S` if `S` is the closure of `x`.
 * `QuasiSober` : A space is quasi-sober if every irreducible closed subset has a generic point.
+* `genericPoints` : The set of generic points of irreducible components.
 
 -/
 
@@ -112,6 +113,11 @@ theorem IsIrreducible.genericPoint_spec [QuasiSober α] {S : Set α} (hS : IsIrr
     IsGenericPoint hS.genericPoint (closure S) :=
   (QuasiSober.sober hS.closure isClosed_closure).choose_spec
 
+theorem IsIrreducible.genericPoint_spec' [QuasiSober α] {S : Set α}
+    (hS : IsIrreducible S) (hS' : IsClosed S) :
+    IsGenericPoint hS.genericPoint S := by
+  convert hS.genericPoint_spec; exact hS'.closure_eq.symm
+
 @[simp]
 theorem IsIrreducible.genericPoint_closure_eq [QuasiSober α] {S : Set α} (hS : IsIrreducible S) :
     closure ({hS.genericPoint} : Set α) = closure S :=
@@ -124,12 +130,12 @@ noncomputable def genericPoint [QuasiSober α] [IrreducibleSpace α] : α :=
   (IrreducibleSpace.isIrreducible_univ α).genericPoint
 
 theorem genericPoint_spec [QuasiSober α] [IrreducibleSpace α] :
-    IsGenericPoint (genericPoint α) ⊤ := by
+    IsGenericPoint (genericPoint α) univ := by
   simpa using (IrreducibleSpace.isIrreducible_univ α).genericPoint_spec
 
 @[simp]
 theorem genericPoint_closure [QuasiSober α] [IrreducibleSpace α] :
-    closure ({genericPoint α} : Set α) = ⊤ :=
+    closure ({genericPoint α} : Set α) = univ :=
   genericPoint_spec α
 
 variable {α}
@@ -222,3 +228,66 @@ instance (priority := 100) T2Space.quasiSober [T2Space α] : QuasiSober α where
     exact ⟨x, closure_singleton⟩
 
 end Sober
+
+section genericPoints
+
+variable (α) in
+/-- The set of generic points of irreducible components. -/
+def genericPoints : Set α := { x | closure {x} ∈ irreducibleComponents α }
+
+namespace genericPoints
+
+/-- The irreducible component of a generic point -/
+def component (x : genericPoints α) : irreducibleComponents α :=
+  ⟨closure {x.1}, x.2⟩
+
+lemma isGenericPoint (x : genericPoints α) : IsGenericPoint x.1 (component x).1 := rfl
+
+lemma component_injective [T0Space α] : Function.Injective (component (α := α)) :=
+  fun x y e ↦ Subtype.ext ((isGenericPoint x).eq (e ▸ isGenericPoint y))
+
+/-- The generic point of an irreducible component. -/
+noncomputable
+def ofComponent [QuasiSober α] (x : irreducibleComponents α) : genericPoints α :=
+  ⟨x.2.1.genericPoint, show _ ∈ irreducibleComponents α from
+    (x.2.1.genericPoint_spec' (isClosed_of_mem_irreducibleComponents x.1 x.2)).symm ▸ x.2⟩
+
+lemma isGenericPoint_ofComponent [QuasiSober α] (x : irreducibleComponents α) :
+  IsGenericPoint (ofComponent x).1 x :=
+    x.2.1.genericPoint_spec' (isClosed_of_mem_irreducibleComponents x.1 x.2)
+
+lemma component_ofComponent [QuasiSober α] (x : irreducibleComponents α) :
+    component (ofComponent x) = x :=
+  Subtype.ext (isGenericPoint_ofComponent x)
+
+lemma ofComponent_component [T0Space α] [QuasiSober α] (x : genericPoints α) :
+    ofComponent (component x) = x :=
+  component_injective (component_ofComponent _)
+
+lemma component_surjective [QuasiSober α] : Function.Surjective (component (α := α)) :=
+  Function.HasRightInverse.surjective ⟨ofComponent, component_ofComponent⟩
+
+lemma finite [T0Space α] (h : (irreducibleComponents α).Finite) : (genericPoints α).Finite :=
+  @Finite.of_injective _ _ h _ component_injective
+
+/-- In a sober space, the generic points corresponds bijectively to irreducible components -/
+@[simps]
+noncomputable
+def equiv [T0Space α] [QuasiSober α] : genericPoints α ≃ irreducibleComponents α :=
+  ⟨component, ofComponent, ofComponent_component, component_ofComponent⟩
+
+lemma closure [QuasiSober α] : closure (genericPoints α) = Set.univ := by
+  refine Set.eq_univ_iff_forall.mpr fun x ↦ Set.subset_def.mp ?_ x mem_irreducibleComponent
+  refine (isGenericPoint_ofComponent
+    ⟨_, irreducibleComponent_mem_irreducibleComponents x⟩).symm.trans_subset (closure_mono ?_)
+  exact Set.singleton_subset_iff.mpr (ofComponent _).2
+
+end genericPoints
+
+lemma genericPoints_eq_singleton [QuasiSober α] [IrreducibleSpace α] [T0Space α] :
+    genericPoints α = {genericPoint α} := by
+  ext x
+  rw [genericPoints, irreducibleComponents_eq_singleton]
+  exact ⟨((genericPoint_spec α).eq · |>.symm), (· ▸ genericPoint_spec α)⟩
+
+end genericPoints
