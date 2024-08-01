@@ -13,7 +13,7 @@ import Mathlib.RingTheory.PowerSeries.Basic
 The `PowerSeries.order` of a formal power series `φ` is the multiplicity of the variable `X` in `φ`.
 
 If the coefficients form an integral domain, then `PowerSeries.order` is an
-additive valuation (`PowerSeries.order_mul`, `PowerSeries.min_order_le_add`).
+additive valuation (`PowerSeries.order_mul`, `PowerSeries.min_order_le_order_add`).
 
 We prove that if the commutative ring `R` of coefficients is an integral domain,
 then the ring `R⟦X⟧` of formal power series in one variable over `R`
@@ -145,7 +145,7 @@ theorem order_eq {φ : R⟦X⟧} {n : PartENat} :
 
 /-- The order of the sum of two formal power series
  is at least the minimum of their orders. -/
-theorem min_order_le_add (φ ψ : R⟦X⟧) : min (order φ) (order ψ) ≤ order (φ + ψ) := by
+theorem min_order_le_order_add (φ ψ : R⟦X⟧) : min (order φ) (order ψ) ≤ order (φ + ψ) := by
   refine le_order _ _ ?_
   simp (config := { contextual := true }) [coeff_of_lt_order]
 
@@ -168,7 +168,7 @@ private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧) (_h : order φ ≠ 
  is the minimum of their orders if their orders differ. -/
 theorem order_add_of_order_eq (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
     order (φ + ψ) = order φ ⊓ order ψ := by
-  refine le_antisymm ?_ (min_order_le_add _ _)
+  refine le_antisymm ?_ (min_order_le_order_add _ _)
   by_cases H₁ : order φ < order ψ
   · apply order_add_of_order_eq.aux _ _ h H₁
   by_cases H₂ : order ψ < order φ
