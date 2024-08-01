@@ -6,8 +6,6 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-git switch master
-
 rm -rf found_by_gh.txt found_by_git.txt
 
 findInRange () {
@@ -100,5 +98,3 @@ fi
 printf -- $'---\n'
 
 rm -rf found_by_gh.txt found_by_git.txt
-
-git checkout -

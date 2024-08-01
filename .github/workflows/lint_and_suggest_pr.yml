@@ -5,20 +5,16 @@ on:
 name: lint and suggest
 
 jobs:
-
   style_lint:
     if: github.repository == 'leanprover-community/mathlib4' && github.event.pull_request.draft == false
     name: Lint style
     runs-on: ubuntu-latest
-
-    env:
-      GH_TOKEN: ${{ github.token }}
-      BRANCH_NAME: ${{ github.head_ref }}
-
     steps:
       - name: cleanup
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
+
+      - uses: actions/checkout@v4
 
       - name: install Python
         uses: actions/setup-python@v4
@@ -31,16 +27,6 @@ jobs:
           curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
-
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: blog report
-        continue-on-error: true
-        run: |
-          printf $'Repository: %s\nBranch: %s\n' "${{ github.repository }}" "${BRANCH_NAME}"
-          ./scripts/find_labels.sh "${{ github.repository }}"
 
       - name: lint
         continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
