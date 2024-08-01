@@ -22,9 +22,9 @@ structures.
 ## References
 For the Flypitch project:
 - [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-[flypitch_cpp]
+  [flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
-the continuum hypothesis*][flypitch_itp]
+  the continuum hypothesis*][flypitch_itp]
 
 -/
 

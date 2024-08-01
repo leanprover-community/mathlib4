@@ -14,8 +14,8 @@ import Mathlib.Order.Filter.Ultrafilter
 
 ## Main Results
 * Łoś's Theorem: `FirstOrder.Language.Ultraproduct.sentence_realize`. An ultraproduct models a
-sentence `φ` if and only if the set of structures in the product that model `φ` is in the
-ultrafilter.
+  sentence `φ` if and only if the set of structures in the product that model `φ` is in the
+  ultrafilter.
 
 ## Tags
 ultraproduct, Los's theorem

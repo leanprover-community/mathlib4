@@ -20,33 +20,33 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
 * A `FirstOrder.Language.Sentence` is a formula with no free variables.
 * A `FirstOrder.Language.Theory` is a set of sentences.
 * The variables of terms and formulas can be relabelled with `FirstOrder.Language.Term.relabel`,
-`FirstOrder.Language.BoundedFormula.relabel`, and `FirstOrder.Language.Formula.relabel`.
+  `FirstOrder.Language.BoundedFormula.relabel`, and `FirstOrder.Language.Formula.relabel`.
 * Given an operation on terms and an operation on relations,
   `FirstOrder.Language.BoundedFormula.mapTermRel` gives an operation on formulas.
 * `FirstOrder.Language.BoundedFormula.castLE` adds more `Fin`-indexed variables.
 * `FirstOrder.Language.BoundedFormula.liftAt` raises the indexes of the `Fin`-indexed variables
-above a particular index.
+  above a particular index.
 * `FirstOrder.Language.Term.subst` and `FirstOrder.Language.BoundedFormula.subst` substitute
-variables with given terms.
+  variables with given terms.
 * Language maps can act on syntactic objects with functions such as
-`FirstOrder.Language.LHom.onFormula`.
+  `FirstOrder.Language.LHom.onFormula`.
 * `FirstOrder.Language.Term.constantsVarsEquiv` and
-`FirstOrder.Language.BoundedFormula.constantsVarsEquiv` switch terms and formulas between having
-constants in the language and having extra variables indexed by the same type.
+  `FirstOrder.Language.BoundedFormula.constantsVarsEquiv` switch terms and formulas between having
+  constants in the language and having extra variables indexed by the same type.
 
 ## Implementation Notes
 * Formulas use a modified version of de Bruijn variables. Specifically, a `L.BoundedFormula α n`
-is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
-indexed by `Fin n`, which can. For any `φ : L.BoundedFormula α (n + 1)`, we define the formula
-`∀' φ : L.BoundedFormula α n` by universally quantifying over the variable indexed by
-`n : Fin (n + 1)`.
+  is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
+  indexed by `Fin n`, which can. For any `φ : L.BoundedFormula α (n + 1)`, we define the formula
+  `∀' φ : L.BoundedFormula α n` by universally quantifying over the variable indexed by
+  `n : Fin (n + 1)`.
 
 ## References
 For the Flypitch project:
 - [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-[flypitch_cpp]
+  [flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
-the continuum hypothesis*][flypitch_itp]
+  the continuum hypothesis*][flypitch_itp]
 
 -/
 

@@ -13,29 +13,29 @@ This file deals with the satisfiability of first-order theories, as well as equi
 
 ## Main Definitions
 * `FirstOrder.Language.Theory.IsSatisfiable`: `T.IsSatisfiable` indicates that `T` has a nonempty
-model.
+  model.
 * `FirstOrder.Language.Theory.IsFinitelySatisfiable`: `T.IsFinitelySatisfiable` indicates that
-every finite subset of `T` is satisfiable.
+  every finite subset of `T` is satisfiable.
 * `FirstOrder.Language.Theory.IsComplete`: `T.IsComplete` indicates that `T` is satisfiable and
-models each sentence or its negation.
+  models each sentence or its negation.
 * `FirstOrder.Language.Theory.SemanticallyEquivalent`: `T.SemanticallyEquivalent φ ψ` indicates
-that `φ` and `ψ` are equivalent formulas or sentences in models of `T`.
+  that `φ` and `ψ` are equivalent formulas or sentences in models of `T`.
 * `Cardinal.Categorical`: A theory is `κ`-categorical if all models of size `κ` are isomorphic.
 
 ## Main Results
 * The Compactness Theorem, `FirstOrder.Language.Theory.isSatisfiable_iff_isFinitelySatisfiable`,
-shows that a theory is satisfiable iff it is finitely satisfiable.
+  shows that a theory is satisfiable iff it is finitely satisfiable.
 * `FirstOrder.Language.completeTheory.isComplete`: The complete theory of a structure is
-complete.
+  complete.
 * `FirstOrder.Language.Theory.exists_large_model_of_infinite_model` shows that any theory with an
-infinite model has arbitrarily large models.
+  infinite model has arbitrarily large models.
 * `FirstOrder.Language.Theory.exists_elementaryEmbedding_card_eq`: The Upward Löwenheim–Skolem
-Theorem: If `κ` is a cardinal greater than the cardinalities of `L` and an infinite `L`-structure
-`M`, then `M` has an elementary extension of cardinality `κ`.
+  Theorem: If `κ` is a cardinal greater than the cardinalities of `L` and an infinite `L`-structure
+  `M`, then `M` has an elementary extension of cardinality `κ`.
 
 ## Implementation Details
 * Satisfiability of an `L.Theory` `T` is defined in the minimal universe containing all the symbols
-of `L`. By Löwenheim-Skolem, this is equivalent to satisfiability in any universe.
+  of `L`. By Löwenheim-Skolem, this is equivalent to satisfiability in any universe.
 
 -/
 

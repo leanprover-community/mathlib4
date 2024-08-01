@@ -19,10 +19,10 @@ etc. on terms in the language.
 
 * `FirstOrder.Language.ring` : the language of rings, with function symbols `+`, `*`, `-`, `0`, `1`
 * `FirstOrder.Ring.CompatibleRing` : A class stating that a type is a `Language.ring.Structure`, and
-that this structure is the same as the structure given by the classes `Add`, `Mul`, etc. already on
-`R`.
+  that this structure is the same as the structure given by the classes `Add`, `Mul`, etc. already
+  on `R`.
 * `FirstOrder.Ring.compatibleRingOfRing` : Given a type `R` with instances for each of the `Ring`
-operations, make a `compatibleRing` instance.
+  operations, make a `compatibleRing` instance.
 
 ## Implementation Notes
 

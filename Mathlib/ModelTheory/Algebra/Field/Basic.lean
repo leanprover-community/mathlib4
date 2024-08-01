@@ -21,8 +21,8 @@ This file defines the first order theory of fields as a theory over the language
 * `FirstOrder.Model.fieldOfModelField` : a model of the theory of fields on a type `K` that
   already has ring operations.
 * `FirstOrder.Model.compatibleRingOfModelField` : shows that the ring operations on `K` given
-by `fieldOfModelField` are compatible with the ring operations on `K` given by the
-`Language.ring.Structure` instance.
+  by `fieldOfModelField` are compatible with the ring operations on `K` given by the
+  `Language.ring.Structure` instance.
 
 -/
 

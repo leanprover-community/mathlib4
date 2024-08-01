@@ -12,11 +12,11 @@ This file defines first-order languages, structures, and theories in graph theor
 
 ## Main Definitions
 * `FirstOrder.Language.graph` is the language consisting of a single relation representing
-adjacency.
+  adjacency.
 * `SimpleGraph.structure` is the first-order structure corresponding to a given simple graph.
 * `FirstOrder.Language.Theory.simpleGraph` is the theory of simple graphs.
 * `FirstOrder.Language.simpleGraphOfStructure` gives the simple graph corresponding to a model
-of the theory of simple graphs.
+  of the theory of simple graphs.
 -/
 
 
