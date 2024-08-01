@@ -103,6 +103,18 @@ lemma monotone {f : α × β → γ} (h₁ : ∀ b, Monotone (fun a => f (a,b)))
 -- theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
 --    IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
 
+lemma d1 {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) : DirectedOn (· ≤ ·) (Prod.fst '' d) := by
+  intro a ⟨p,hp⟩ b ⟨q,hq⟩
+  obtain ⟨r,hr⟩ := hd p hp.1 q hq.1
+  aesop
+
+lemma d2 {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) : DirectedOn (· ≤ ·) (Prod.snd '' d) := by
+  intro a ⟨p,hp⟩ b ⟨q,hq⟩
+  obtain ⟨r,hr⟩ := hd p hp.1 q hq.1
+  aesop
+
+  --obtain z := hd (a,b)
+
 lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
     {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := by
@@ -157,16 +169,17 @@ lemma step1' {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.snd '' d)
   exact h₁ a hd₁ hd₂ e1
 
 
-lemma test {f : α × β → γ} {d : Set (α × β)} (hd₁' : (Prod.fst '' d).Nonempty)
-    (hd₂' : DirectedOn (· ≤ ·) (Prod.fst '' d)) (hd₁ : (Prod.snd '' d).Nonempty)
-    (hd₂ : DirectedOn (· ≤ ·) (Prod.snd '' d)) {p₁ : α} {p₂ : β} (h : IsLUB d (p₁,p₂))
+lemma test {f : α × β → γ} {d : Set (α × β)} (hd₁ : d.Nonempty)
+    (hd₂ : DirectedOn (· ≤ ·) d) {p₁ : α} {p₂ : β} (h : IsLUB d (p₁,p₂))
     (h₁ : ∀ a, ScottContinuous (fun b => f (a,b))) (h₂ : ∀ b, ScottContinuous (fun a => f (a,b))) :
-    IsLUB (f '' ((Prod.fst '' d) ×ˢ (Prod.snd '' d)) ) (f (p₁,p₂)) := by
+    IsLUB (f '' d) (f (p₁,p₂)) := by
   have e1 : IsLUB (Prod.fst '' d) p₁ := ((isLUB_prod (p₁,p₂)).mp h).1
+  rw [Prod.IsLub (monotone (fun a => (h₂ a).monotone) (fun a => (h₁ a).monotone)) hd₂]
   rw [← iUnion_of_singleton_coe (Prod.fst '' d), iUnion_prod_const, image_iUnion]
   apply IsLUB.iUnion
-  apply fun a => step1' hd₁ hd₂ h h₁
-  have e2 : IsLUB ((fun a ↦ f (a, p₂)) '' (Prod.fst '' d)) (f (p₁,p₂)) := h₂ p₂ hd₁' hd₂' e1
+  apply fun a => step1' (Nonempty.image Prod.snd hd₁) (d2 hd₂) h h₁
+  have e2 : IsLUB ((fun a ↦ f (a, p₂)) '' (Prod.fst '' d)) (f (p₁,p₂)) :=
+    h₂ p₂ (Nonempty.image Prod.fst hd₁) (d1 hd₂) e1
   rw [Set.range]
   rw [Set.image] at e2
   aesop
