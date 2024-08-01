@@ -259,20 +259,18 @@ namespace IsAlt
 variable [CommSemiring R] [AddCommGroup M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
   [Module R₁ M₁] {I₁ : R₁ →+* R} {I₂ : R₁ →+* R} {I : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
 
-variable (H : B.IsAlt)
-
-theorem neg (x y : M₁) : -B x y = B y x := by
+theorem neg (H : B.IsAlt) (x y : M₁) : -B x y = B y x := by
   have H1 : B (y + x) (y + x) = 0 := self_eq_zero H (y + x)
   simp? [map_add, self_eq_zero H] at H1 says
     simp only [map_add, add_apply, self_eq_zero H, zero_add, add_zero] at H1
   rw [add_eq_zero_iff_neg_eq] at H1
   exact H1
 
-theorem isRefl : B.IsRefl := by
+theorem isRefl (H : B.IsAlt) : B.IsRefl := by
   intro x y h
   rw [← neg H, h, neg_zero]
 
-theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
+theorem ortho_comm (H : B.IsAlt) {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
   H.isRefl.ortho_comm
 
 end IsAlt

@@ -961,7 +961,8 @@ theorem strictAnti_int_of_succ_lt {f : ℤ → α} (hf : ∀ n, f (n + 1) < f n)
 
 namespace Int
 
-variable (α) [Preorder α] [Nonempty α] [NoMinOrder α] [NoMaxOrder α]
+variable (α)
+variable [Nonempty α] [NoMinOrder α] [NoMaxOrder α]
 
 /-- If `α` is a nonempty preorder with no minimal or maximal elements, then there exists a strictly
 monotone function `f : ℤ → α`. -/

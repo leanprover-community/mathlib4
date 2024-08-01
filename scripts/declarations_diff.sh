@@ -165,6 +165,7 @@ printf $'<details>
 ./scripts/declarations_diff.sh long <optional_commit>
 ```
 </details>
+
 The doc-module for `script/declarations_diff.sh` contains some details about this script.'
 
  : <<ReferenceTest
