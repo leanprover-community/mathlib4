@@ -57,9 +57,7 @@ instance InducedWideCategory.category :
   id X := ⟨𝟙 (F X), P.id_mem (F X)⟩
   comp {X Y Z} f g := ⟨f.1 ≫ g.1, P.comp_mem _ _ f.2 g.2⟩
 
-/-- The forgetful functor from an induced wide category to the original category,
-forgetting the extra data.
--/
+/-- The forgetful functor from an induced wide category to the original category. -/
 @[simps]
 def wideInducedFunctor : InducedWideCategory D F P ⥤ D where
   obj := F
