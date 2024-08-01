@@ -1,6 +1,6 @@
 -- `Mathlib/AlgebraicGeometry/Stalk
 import Mathlib.AlgebraicGeometry.Stalk
-
+set_option linter.longLine false
 open CategoryTheory CategoryTheory.Limits TopologicalSpace LocalRing
 
 namespace AlgebraicGeometry
@@ -105,9 +105,55 @@ def stalkClosedPointIso (R : CommRingCat) [LocalRing R] :
   StructureSheaf.stalkIso _ _ ≪≫ (IsLocalization.atUnits R
       (closedPoint R).asIdeal.primeCompl fun _ ↦ not_not.mp).toRingEquiv.toCommRingCatIso.symm
 
+lemma name_me'' (R : CommRingCat) :
+    (isAffineOpen_top (Spec R)).fromSpec = (Spec R).isoSpec.inv := by
+  rw [IsAffineOpen.fromSpec]
+  let U := (⊤ : (Spec R).Opens)
+  haveI hU : IsAffine U := isAffineOpen_top (Spec R)
+  rw [← Scheme.isoSpec_inv_naturality]
+  have : Scheme.Hom.app U.ι ⊤ ≫ (Spec R).presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op = 𝟙 _ := by
+    ext
+    simp
+    rfl
+  rw [← Spec.map_comp_assoc, this]
+  simp only [Spec.map_id, Category.id_comp]
+
+lemma name_me'''' (R : CommRingCat):
+    (StructureSheaf.toOpen R ⊤) = (ΓSpec.adjunction.counit.app (Opposite.op R)).unop := by
+  change _ = ((NatIso.op Scheme.SpecΓIdentity).inv.app (Opposite.op R)).unop
+  rw [Scheme.SpecΓIdentity]
+  simp only [Functor.op_obj, Functor.id_obj, Functor.comp_obj, Functor.rightOp_obj, Scheme.Spec_obj,
+    Scheme.Γ_obj, NatIso.op_inv, Iso.symm_inv, NatTrans.op_app, NatIso.ofComponents_hom_app,
+    asIso_hom, Quiver.Hom.unop_op]
+
+lemma name_me''' (R : CommRingCat) :
+    Spec.map (StructureSheaf.toOpen R ⊤) = (Spec R).isoSpec.inv := by
+  rw [name_me'''']
+  rw [Scheme.isoSpec]
+  exact Iso.inv_ext' <| ΓSpec.adjunction.right_triangle_components (Opposite.op R)
+
+lemma name_me' (R : CommRingCat) :
+    (isAffineOpen_top (Spec R)).fromSpec = Spec.map (StructureSheaf.toOpen R ⊤) := by
+  rw [name_me'']
+  rw [name_me''']
+
+lemma name_me {R : CommRingCat} (x : Spec R) :
+    (Spec R).fromSpecStalk x = Spec.map (AlgebraicGeometry.StructureSheaf.toStalk R x):= by
+  have hU := isAffineOpen_top (Spec R)
+  rw [← IsAffineOpen.fromSpecStalk_eq_fromSpecStalk hU _]
+  rw [IsAffineOpen.fromSpecStalk]
+  rw [StructureSheaf.toStalk]
+  rw [@Spec.map_comp]
+  rw [name_me']
+  rfl
+
 lemma stalkClosedPointIso_fromSpecStalk (R : CommRingCat) [LocalRing R] :
     Spec.map (stalkClosedPointIso R).inv =
-      (Spec <| CommRingCat.of R).fromSpecStalk (closedPoint R) := sorry
+      (Spec <| CommRingCat.of R).fromSpecStalk (closedPoint R) := by
+  rw [name_me]
+  apply Spec.map_inj.mpr
+  ext _
+  apply AlgebraicGeometry.StructureSheaf.localizationToStalk_of
 
 noncomputable
 def stalkClosedPointIso' {R : CommRingCat} [LocalRing R]
