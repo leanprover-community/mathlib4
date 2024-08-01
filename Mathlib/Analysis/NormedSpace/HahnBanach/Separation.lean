@@ -207,50 +207,13 @@ section RCLike
 
 open RCLike
 
-variable [RCLike 𝕜] [Module 𝕜 E] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
-
-/-- The old extendTo𝕜', but generalizing the normed space assumption on the domain. -/
-noncomputable def extendTo𝕜'' (fr : E →ₗ[ℝ] ℝ) : E →ₗ[𝕜] 𝕜 := by
-  let fc : E → 𝕜 := fun x => (fr x : 𝕜) - (I : 𝕜) * fr ((I : 𝕜) • x)
-  have add : ∀ x y : E, fc (x + y) = fc x + fc y := by
-    intro x y
-    simp only [fc, smul_add, LinearMap.map_add, ofReal_add]
-    rw [mul_add]
-    abel
-  have A : ∀ (c : ℝ) (x : E), (fr ((c : 𝕜) • x) : 𝕜) = (c : 𝕜) * (fr x : 𝕜) := by
-    intro c x
-    rw [← ofReal_mul]
-    congr 1
-    rw [RCLike.ofReal_alg, smul_assoc, fr.map_smul, Algebra.id.smul_eq_mul, one_smul]
-  have smul_ℝ : ∀ (c : ℝ) (x : E), fc ((c : 𝕜) • x) = (c : 𝕜) * fc x := by
-    intro c x
-    dsimp only [fc]
-    rw [A c x, smul_smul, mul_comm I (c : 𝕜), ← smul_smul, A, mul_sub]
-    ring
-  have smul_I : ∀ x : E, fc ((I : 𝕜) • x) = (I : 𝕜) * fc x := by
-    intro x
-    dsimp only [fc]
-    cases' @I_mul_I_ax 𝕜 _ with h h
-    · simp [h]
-    rw [mul_sub, ← mul_assoc, smul_smul, h]
-    simp only [neg_mul, LinearMap.map_neg, one_mul, one_smul, mul_neg, ofReal_neg, neg_smul,
-      sub_neg_eq_add, add_comm]
-  have smul_𝕜 : ∀ (c : 𝕜) (x : E), fc (c • x) = c • fc x := by
-    intro c x
-    rw [← re_add_im c, add_smul, add_smul, add, smul_ℝ, ← smul_smul, smul_ℝ, smul_I, ← mul_assoc]
-    rfl
-  exact
-    { toFun := fc
-      map_add' := add
-      map_smul' := smul_𝕜 }
-
-variable [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
+variable [RCLike 𝕜] [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
   [Module 𝕜 E] [Module ℝ E] [ContinuousSMul 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
 @[simp]
-noncomputable def LinTo𝕜'' : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜] 𝕜) :=
+noncomputable def LinTo𝕜' : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜] 𝕜) :=
   letI to𝕜 (fr : (E →L[ℝ] ℝ)) : (E →L[𝕜] 𝕜) :=
-    { toLinearMap := extendTo𝕜'' fr
+    { toLinearMap := LinearMap.extendTo𝕜' fr
       cont := show Continuous fun x ↦ (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) by fun_prop }
   have h fr x : to𝕜 fr x = ((fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜)) := rfl
   { toFun := to𝕜
@@ -261,20 +224,20 @@ theorem separate_convex_open_set_RCLike [ContinuousSMul ℝ E] {s : Set E}
     (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) {x₀ : E} (hx₀ : x₀ ∉ s) :
     ∃ f : E →L[𝕜] 𝕜, re (f x₀) = 1 ∧ ∀ x ∈ s, re (f x) < 1 := by
   obtain ⟨g, hg⟩ := separate_convex_open_set hs₀ hs₁ hs₂ hx₀
-  use LinTo𝕜'' g
-  simp only [LinTo𝕜'', extendTo𝕜'', ContinuousLinearMap.coe_coe, LinearMap.coe_mk, AddHom.coe_mk,
-    ContinuousLinearMap.coe_mk', map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
-    sub_self, sub_zero]
+  use LinTo𝕜' g
+  simp only [LinTo𝕜', LinearMap.extendTo𝕜', ContinuousLinearMap.coe_coe, LinearMap.coe_mk,
+    AddHom.coe_mk, ContinuousLinearMap.coe_mk', map_sub, ofReal_re, mul_re, I_re, zero_mul,
+    ofReal_im, mul_zero, sub_self, sub_zero]
   exact hg
 
 theorem geometric_hahn_banach_compact_closed_RCLike [LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
 (hs₁ : Convex ℝ s) (hs₂ : IsCompact s) (ht₁ : Convex ℝ t) (ht₂ : IsClosed t) (disj : Disjoint s t) :
     ∃ (f : E →L[𝕜] 𝕜) (u v : ℝ), (∀ a ∈ s, re (f a) < u) ∧ u < v ∧ ∀ b ∈ t, v < re (f b) := by
   obtain ⟨g, u, v, h1⟩ := geometric_hahn_banach_compact_closed hs₁ hs₂ ht₁ ht₂ disj
-  use LinTo𝕜'' g
-  simp only [LinTo𝕜'', extendTo𝕜'', ContinuousLinearMap.coe_coe, LinearMap.coe_mk, AddHom.coe_mk,
-    ContinuousLinearMap.coe_mk', map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
-    sub_self, sub_zero, exists_and_left]
+  use LinTo𝕜' g
+  simp only [LinTo𝕜', LinearMap.extendTo𝕜', ContinuousLinearMap.coe_coe, LinearMap.coe_mk,
+    AddHom.coe_mk, ContinuousLinearMap.coe_mk', map_sub, ofReal_re, mul_re, I_re, zero_mul,
+    ofReal_im, mul_zero, sub_self, sub_zero, exists_and_left]
   use u
   constructor
   exact h1.1
