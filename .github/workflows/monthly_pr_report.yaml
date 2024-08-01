@@ -38,5 +38,5 @@ jobs:
             sed '/ [0-9]* PRs$/{
               s=^=</details><details>\n\n<summary>\n=
               s=$=\n</summary>\n=
-            }; s=^PR ==' | sed -z 's=\n---\nReports\n\n=\n</details>\n&=')"
+            }; s=^PR ==; s= 1 PRs= 1 PR=' | sed -z 's=\n---\nReports\n\n=\n</details>\n&=')"
           ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"
