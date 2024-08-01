@@ -366,20 +366,21 @@ protected theorem continuousAt_mul_const {a b : ℝ≥0∞} (h : a ≠ ∞ ∨ b
     ContinuousAt (fun x => x * a) b :=
   Tendsto.mul_const tendsto_id h.symm
 
+@[fun_prop]
 protected theorem continuous_const_mul {a : ℝ≥0∞} (ha : a ≠ ∞) : Continuous (a * ·) :=
   continuous_iff_continuousAt.2 fun _ => ENNReal.continuousAt_const_mul (Or.inl ha)
 
+@[fun_prop]
 protected theorem continuous_mul_const {a : ℝ≥0∞} (ha : a ≠ ∞) : Continuous fun x => x * a :=
   continuous_iff_continuousAt.2 fun _ => ENNReal.continuousAt_mul_const (Or.inl ha)
 
+@[fun_prop]
 protected theorem continuous_div_const (c : ℝ≥0∞) (c_ne_zero : c ≠ 0) :
-    Continuous fun x : ℝ≥0∞ => x / c := by
-  simp_rw [div_eq_mul_inv, continuous_iff_continuousAt]
-  intro x
-  exact ENNReal.continuousAt_mul_const (Or.intro_left _ (inv_ne_top.mpr c_ne_zero))
+    Continuous fun x : ℝ≥0∞ => x / c :=
+  ENNReal.continuous_mul_const <| ENNReal.inv_ne_top.2 c_ne_zero
 
-@[continuity]
-theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
+@[continuity, fun_prop]
+protected theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
   induction' n with n IH
   · simp [continuous_const]
   simp_rw [pow_add, pow_one, continuous_iff_continuousAt]
@@ -422,7 +423,7 @@ theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ =>
 
 protected theorem Tendsto.pow {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} {n : ℕ}
     (hm : Tendsto m f (𝓝 a)) : Tendsto (fun x => m x ^ n) f (𝓝 (a ^ n)) :=
-  ((continuous_pow n).tendsto a).comp hm
+  ((ENNReal.continuous_pow n).tendsto a).comp hm
 
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0∞} (h : ∀ a < 1, a * x ≤ y) : x ≤ y := by
   have : Tendsto (· * x) (𝓝[<] 1) (𝓝 (1 * x)) :=
@@ -470,6 +471,11 @@ theorem inv_liminf {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
   OrderIso.invENNReal.liminf_apply
 
 instance : ContinuousInv ℝ≥0∞ := ⟨OrderIso.invENNReal.continuous⟩
+
+@[fun_prop]
+protected theorem continuous_zpow : ∀ n : ℤ, Continuous (· ^ n : ℝ≥0∞ → ℝ≥0∞)
+  | (n : ℕ) => mod_cast ENNReal.continuous_pow n
+  | .negSucc n => by simpa using (ENNReal.continuous_pow _).inv
 
 @[simp] -- Porting note (#11215): TODO: generalize to `[InvolutiveInv _] [ContinuousInv _]`
 protected theorem tendsto_inv_iff {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
