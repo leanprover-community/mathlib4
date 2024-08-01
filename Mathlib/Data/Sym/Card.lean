@@ -8,8 +8,6 @@ import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Fintype.Prod
 
-#align_import data.sym.card from "leanprover-community/mathlib"@"0bd2ea37bcba5769e14866170f251c9bc64e35d7"
-
 /-!
 # Stars and bars
 
@@ -71,8 +69,6 @@ protected def e1 {n k : ℕ} : { s : Sym (Fin (n + 1)) (k + 1) // ↑0 ∈ s } �
   invFun s := ⟨cons 0 s, mem_cons_self 0 s⟩
   left_inv s := by simp
   right_inv s := by simp
-set_option linter.uppercaseLean3 false in
-#align sym.E1 Sym.e1
 
 /-- The multisets of size `k` over `Fin n+2` not containing `0`
 are equivalent to those of size `k` over `Fin n+1`,
@@ -90,8 +86,6 @@ protected def e2 {n k : ℕ} : { s : Sym (Fin n.succ.succ) k // ↑0 ∉ s } ≃
     exact Fin.succAbove_predAbove (ne_of_mem_of_not_mem hv s.2)
   right_inv s := by
     simp only [map_map, comp_apply, ← Fin.castSucc_zero, Fin.predAbove_succAbove, map_id']
-set_option linter.uppercaseLean3 false in
-#align sym.E2 Sym.e2
 
 -- Porting note: use eqn compiler instead of `pincerRecursion` to make cases more readable
 theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = multichoose n k
@@ -104,7 +98,6 @@ theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = mult
     refine Fintype.card_congr (Equiv.symm ?_)
     apply (Sym.e1.symm.sumCongr Sym.e2.symm).trans
     apply Equiv.sumCompl
-#align sym.card_sym_fin_eq_multichoose Sym.card_sym_fin_eq_multichoose
 
 /-- For any fintype `α` of cardinality `n`, `card (Sym α k) = multichoose (card α) k`. -/
 theorem card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sym α k)] :
@@ -113,14 +106,12 @@ theorem card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sy
   -- FIXME: Without the `Fintype` namespace, why does it complain about `Finset.card_congr` being
   -- deprecated?
   exact Fintype.card_congr (equivCongr (equivFin α))
-#align sym.card_sym_eq_multichoose Sym.card_sym_eq_multichoose
 
 /-- The *stars and bars* lemma: the cardinality of `Sym α k` is equal to
 `Nat.choose (card α + k - 1) k`. -/
 theorem card_sym_eq_choose {α : Type*} [Fintype α] (k : ℕ) [Fintype (Sym α k)] :
     card (Sym α k) = (card α + k - 1).choose k := by
   rw [card_sym_eq_multichoose, Nat.multichoose_eq]
-#align sym.card_sym_eq_choose Sym.card_sym_eq_choose
 
 end Sym
 

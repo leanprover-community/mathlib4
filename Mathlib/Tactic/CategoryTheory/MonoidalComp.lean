@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Monoidal.Category
 /-!
 # Monoidal composition `⊗≫` (composition up to associators)
 
-We provide `f ⊗≫ g`, the `monoidal_comp` operation,
+We provide `f ⊗≫ g`, the `monoidalComp` operation,
 which automatically inserts associators and unitors as needed
 to make the target of `f` match the source of `g`.
 
@@ -36,7 +36,7 @@ open CategoryTheory MonoidalCategory
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
+variable {C : Type u} [Category.{v} C]
 
 open scoped MonoidalCategory
 
@@ -83,6 +83,8 @@ scoped[CategoryTheory.MonoidalCategory] infixr:80 " ≪⊗≫ " =>
 end
 
 namespace MonoidalCoherence
+
+variable [MonoidalCategory C]
 
 @[simps]
 instance refl (X : C) : MonoidalCoherence X X := ⟨𝟙 _⟩
@@ -142,3 +144,5 @@ end MonoidalCoherence
 @[simp] lemma monoidalComp_refl {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     f ⊗≫ g = f ≫ g := by
   simp [monoidalComp]
+
+end CategoryTheory
