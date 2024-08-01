@@ -13,10 +13,10 @@ A wide subcategory of a category `C` is a subcategory containing all the objects
 
 ## Main declarations
 
-Given a category `D`, a function `F : C → D `from a type `C` to the
-objects of `D`, a morphism property `P` on `D` which contains identities and is stable under
-composition, witnessed by ``, the type class `InducedWideCategory D F P` is a typeclass
-synonym for `C` which comes equipped with a category structure with morphisms `X ⟶ Y` being the
+Given a category `D`, a function `F : C → D` from a type `C` to a type `D`,
+and a morphism property `P` on `D` which contains identities and is stable under
+composition, the type class `InducedWideCategory D F P` is a typeclass
+synonym for `C` which comes equipped with a category structure whose morphisms `X ⟶ Y` are the
 morphisms in `D` which have the property `P`.
 
 The instance `WideSubcategory.category` provides a category structure on `WideSubcategory P`
