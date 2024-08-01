@@ -5,6 +5,10 @@ Authors: Christopher Hoskin
 -/
 import Mathlib.Data.Set.Lattice
 
+/-!
+# Unions and intersections of bounds
+-/
+
 variable {γ : Type*} [Preorder γ]
 
 open Set
