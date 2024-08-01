@@ -502,19 +502,50 @@ lemma measurableSet_countablePartitionSet (n : ℕ) (a : α) :
 
 section CountableOrCountablyGenerated
 
-variable [MeasurableSpace β]
+variable {γ : Type*} [MeasurableSpace β] [MeasurableSpace γ]
 
 /-- A class registering that either `α` is countable or `β` is a countably generated
 measurable space. -/
 class CountableOrCountablyGenerated (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] : Prop :=
-  countableOrCountablyGenerated : Countable α ∨ MeasurableSpace.CountablyGenerated β
+  countableOrCountablyGenerated : Countable α ∨ CountablyGenerated β
 
 instance instCountableOrCountablyGeneratedOfCountable [h1 : Countable α] :
     CountableOrCountablyGenerated α β := ⟨Or.inl h1⟩
 
-instance instCountableOrCountablyGeneratedOfCountablyGenerated
-    [h : MeasurableSpace.CountablyGenerated β] :
+instance instCountableOrCountablyGeneratedOfCountablyGenerated [h : CountablyGenerated β] :
     CountableOrCountablyGenerated α β := ⟨Or.inr h⟩
+
+instance [hα : CountableOrCountablyGenerated α γ] [hβ : CountableOrCountablyGenerated β γ] :
+    CountableOrCountablyGenerated (α × β) γ := by
+  rcases hα with (hα | hα) <;> rcases hβ with (hβ | hβ) <;> infer_instance
+
+lemma countableOrCountablyGenerated_left_of_prod_left_of_nonempty [Nonempty β]
+    [h : CountableOrCountablyGenerated (α × β) γ] :
+    CountableOrCountablyGenerated α γ := by
+  rcases h.countableOrCountablyGenerated with (h | h)
+  · have := countable_left_of_prod_of_nonempty h
+    infer_instance
+  · infer_instance
+
+lemma countableOrCountablyGenerated_right_of_prod_left_of_nonempty [Nonempty α]
+    [h : CountableOrCountablyGenerated (α × β) γ] :
+    CountableOrCountablyGenerated β γ := by
+  rcases h.countableOrCountablyGenerated with (h | h)
+  · have := countable_right_of_prod_of_nonempty h
+    infer_instance
+  · infer_instance
+
+instance [h : CountableOrCountablyGenerated (α × β) γ] :
+    CountableOrCountablyGenerated (β × α) γ := by
+  rcases h with (h | h)
+  · exact ⟨Or.inl inferInstance⟩
+  · exact ⟨Or.inr h⟩
+
+instance [h : CountableOrCountablyGenerated (α × β) γ] :
+    CountableOrCountablyGenerated (β × α) γ := by
+  rcases h with (h | h)
+  · exact ⟨Or.inl inferInstance⟩
+  · exact ⟨Or.inr h⟩
 
 end CountableOrCountablyGenerated
 
