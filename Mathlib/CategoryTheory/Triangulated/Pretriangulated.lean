@@ -233,6 +233,7 @@ lemma contractible_distinguished₂ (X : C) :
 namespace Triangle
 
 variable (T : Triangle C) (hT : T ∈ distTriang C)
+include hT
 
 lemma yoneda_exact₂ {X : C} (f : T.obj₂ ⟶ X) (hf : T.mor₁ ≫ f = 0) :
     ∃ (g : T.obj₃ ⟶ X), f = T.mor₂ ≫ g := by

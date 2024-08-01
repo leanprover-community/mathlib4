@@ -231,6 +231,7 @@ section
 
 variable [L.PreservesZeroMorphisms]
 variable (hL : ∀ (S : ShortComplex A), S.Exact → (S.map L).Exact)
+include hL
 
 open ZeroObject
 

@@ -64,6 +64,7 @@ namespace IsReflection
 
 variable {cs}
 variable {t : W} (ht : cs.IsReflection t)
+include ht
 
 theorem pow_two : t ^ 2 = 1 := by
   rcases ht with ⟨w, i, rfl⟩
@@ -137,6 +138,7 @@ namespace IsReflection
 
 variable {cs}
 variable {t : W} (ht : cs.IsReflection t)
+include ht
 
 theorem isRightInversion_mul_left_iff {w : W} :
     cs.IsRightInversion (w * t) t ↔ ¬cs.IsRightInversion w t := by
