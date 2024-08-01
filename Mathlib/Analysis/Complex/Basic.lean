@@ -244,7 +244,7 @@ theorem continuous_re : Continuous re :=
 lemma UniformlyContinous_re : UniformContinuous re := by
   rw [Metric.uniformContinuous_iff]
   intro ε hε
-  refine ⟨ε, hε, fun hxy =>  ?_⟩
+  refine ⟨ε, hε, fun hxy => ?_⟩
   apply lt_of_le_of_lt (Complex.abs_re_le_abs _) hxy
 
 @[simp]
@@ -266,7 +266,7 @@ theorem continuous_im : Continuous im :=
 lemma UniformlyContinous_im : UniformContinuous im := by
   rw [Metric.uniformContinuous_iff]
   intro ε hε
-  refine ⟨ε, hε, fun hxy =>  ?_⟩
+  refine ⟨ε, hε, fun hxy => ?_⟩
   apply lt_of_le_of_lt (Complex.abs_im_le_abs _) hxy
 
 @[simp]
