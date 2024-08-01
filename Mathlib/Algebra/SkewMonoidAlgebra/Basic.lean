@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Finsupp.Basic
+import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
 
@@ -88,8 +89,7 @@ theorem toFinsupp_add (a b : SkewMonoidAlgebra k G) :
 
 @[simp]
 theorem toFinsupp_smul {S : Type*} [SMulZeroClass S k] (a : S) (b : SkewMonoidAlgebra k G) :
-    (a • b).toFinsupp = a • b.toFinsupp :=
-  by
+    (a • b).toFinsupp = a • b.toFinsupp := by
   cases b
   rw [← ofFinsupp_smul]
 
@@ -273,6 +273,15 @@ theorem smul_single {S} [SMulZeroClass S k] (s : S) (a : G) (b : k) :
 
 theorem single_injective (a : G) : Function.Injective (single a : k → SkewMonoidAlgebra k G) :=
   toFinsuppAddEquiv.symm.injective.comp (Finsupp.single_injective a)
+
+theorem _root_.IsSMulRegular.skewMonoidAlgebra_iff {S : Type*} [Monoid S] [DistribMulAction S k]
+  {a : S} [inst : Nonempty G]:  IsSMulRegular k a ↔ IsSMulRegular (SkewMonoidAlgebra k G) a := by
+  constructor
+  · exact IsSMulRegular.skewMonoidAlgebra
+  · intro ha
+    intro b₁ b₂ inj
+    rw [← (single_injective _).eq_iff, ← smul_single, ← smul_single] at inj
+    exact single_injective (Classical.choice inst) (ha inj)
 
 end Single
 
@@ -741,6 +750,22 @@ instance smulCommClass {S₁ S₂} [AddCommMonoid k] [SMulZeroClass S₁ k] [SMu
 instance isCentralScalar {S} [AddCommMonoid k] [SMulZeroClass S k] [SMulZeroClass Sᵐᵒᵖ k]
     [IsCentralScalar S k] : IsCentralScalar S (SkewMonoidAlgebra k G) :=
   ⟨by rintro _ ⟨⟩; simp_rw [← ofFinsupp_smul, op_smul_eq_smul]⟩
+
+section Module.Free
+
+variable [Semiring S]
+
+def toFinsuppLinearEquiv [AddCommMonoid k] [Module S k]:
+    SkewMonoidAlgebra k G ≃ₗ[S] (G →₀ k) := AddEquiv.toLinearEquiv toFinsuppAddEquiv
+      (by simp only [toFinsuppAddEquiv_apply, toFinsupp_smul, forall_const])
+
+def basisSingleOne [Semiring k] : Basis G k (SkewMonoidAlgebra k G) where
+  repr := toFinsuppLinearEquiv
+
+instance Module.free [Semiring k] : Module.Free k (SkewMonoidAlgebra k G) :=
+  Module.Free.of_basis basisSingleOne
+
+end Module.Free
 
 variable {M α : Type*} [Monoid G] [AddCommMonoid M] [MulAction G α]
 
