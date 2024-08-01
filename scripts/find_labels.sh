@@ -37,30 +37,6 @@ git log --pretty=oneline --since="${startDate}" --until="${endDate}" |
 echo "$prs"
 }
 
-#jq -S -r '.[] |
-#  select(.title | startswith("[Merged by Bors]")) |
-#  "\(.labels | map(.name | select(startswith("t-"))) // "No labels") PR #\(.number) \(.title)"' mwe_outputs/prBlog.txt |
-#  sort |
-#  awk 'BEGIN{ labels=""; con=0 }
-#    { if(!($1 in seen)) { con++; order[con]=$1; seen[$1]=0 }
-#      gsub(/\[Merged by Bors\] - /, "")
-#      rest=$2; for(i=3; i<=NF; i++){rest=rest" "$i};acc[$1]=acc[$1]"\n"rest }
-#    END {
-#      #for(lab in acc) { printf("%s%s\n", lab, acc[lab]) }
-#      for(i=1; i<=con; i++) {
-#        tag=order[i]
-#        gsub(/\[\]/, "Miscellaneous", tag)
-#        gsub(/["\][]/, "", tag)
-#        gsub(/,/, " ", tag)
-#        printf("\n%s: %s%s\n", i, tag, acc[order[i]])
-#      }
-#    }
-#  '
-
-#jq -r '.[] |
-#  select(.title | startswith("[Merged by Bors]")) |
-#  "Labels: \(.labels | map(.name) .[] // "No labels") (#\(.number))"' mwe_outputs/prBlog.txt
-
 # the current year and month
 yr_mth=2024-07 #"$(date +%Y-%m)"
 
@@ -78,12 +54,13 @@ findInRange "${1}" "${yr_mth}-15T00:00:00" "${end_date}"   | sed -z 's=^\[=='
   select(.title | startswith("[Merged by Bors]")) |
   "\(.labels | map(.name | select(startswith("t-"))) // "No labels") PR #\(.number) \(.title)"' |
   sort |
-  awk 'BEGIN{ labels=""; con=0 }
-    { if(!($1 in seen)) { con++; order[con]=$1; seen[$1]=0 }
+  awk -v startDate="${start_date}" -v endDate="${end_date}" 'BEGIN{ labels=""; con=0; total=0 }
+    { total++
+      if(!($1 in seen)) { con++; order[con]=$1; seen[$1]=0 }
       gsub(/\[Merged by Bors\] - /, "")
       rest=$2; for(i=3; i<=NF; i++){rest=rest" "$i};acc[$1]=acc[$1]"\n"rest }
     END {
-      #for(lab in acc) { printf("%s%s\n", lab, acc[lab]) }
+      printf("%s closed PRs between %s and %s\n\n", total, startDate, endDate)
       for(i=1; i<=con; i++) {
         tag=order[i]
         gsub(/\[\]/, "Miscellaneous", tag)
