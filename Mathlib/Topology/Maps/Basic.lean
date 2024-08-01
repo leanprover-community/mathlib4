@@ -50,13 +50,17 @@ variable {X : Type*} {Y : Type*} {Z : Type*} {ι : Type*} {f : X → Y} {g : Y �
 
 section Inducing
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+variable [TopologicalSpace Y]
 
 theorem inducing_induced (f : X → Y) : @Inducing X Y (TopologicalSpace.induced f ‹_›) _ f :=
   @Inducing.mk _ _ (TopologicalSpace.induced f ‹_›) _ _ rfl
 
+variable [TopologicalSpace X]
+
 theorem inducing_id : Inducing (@id X) :=
   ⟨induced_id.symm⟩
+
+variable [TopologicalSpace Z]
 
 protected theorem Inducing.comp (hg : Inducing g) (hf : Inducing f) :
     Inducing (g ∘ f) :=
@@ -466,7 +470,7 @@ end IsClosedMap
 
 section OpenEmbedding
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+variable [TopologicalSpace X] [TopologicalSpace Y]
 
 theorem OpenEmbedding.isOpenMap (hf : OpenEmbedding f) : IsOpenMap f :=
   hf.toEmbedding.toInducing.isOpenMap hf.isOpen_range
@@ -481,15 +485,15 @@ theorem OpenEmbedding.open_iff_image_open (hf : OpenEmbedding f) {s : Set X} :
     convert ← h.preimage hf.toEmbedding.continuous
     apply preimage_image_eq _ hf.inj⟩
 
-theorem OpenEmbedding.tendsto_nhds_iff {f : ι → Y} {l : Filter ι} {y : Y} (hg : OpenEmbedding g) :
-    Tendsto f l (𝓝 y) ↔ Tendsto (g ∘ f) l (𝓝 (g y)) :=
+theorem OpenEmbedding.tendsto_nhds_iff [TopologicalSpace Z] {f : ι → Y} {l : Filter ι} {y : Y}
+    (hg : OpenEmbedding g) : Tendsto f l (𝓝 y) ↔ Tendsto (g ∘ f) l (𝓝 (g y)) :=
   hg.toEmbedding.tendsto_nhds_iff
 
 theorem OpenEmbedding.tendsto_nhds_iff' (hf : OpenEmbedding f) {l : Filter Z} {x : X} :
     Tendsto (g ∘ f) (𝓝 x) l ↔ Tendsto g (𝓝 (f x)) l := by
   rw [Tendsto, ← map_map, hf.map_nhds_eq]; rfl
 
-theorem OpenEmbedding.continuousAt_iff (hf : OpenEmbedding f) {x : X} :
+theorem OpenEmbedding.continuousAt_iff [TopologicalSpace Z] (hf : OpenEmbedding f) {x : X} :
     ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) :=
   hf.tendsto_nhds_iff'
 
@@ -528,6 +532,7 @@ theorem openEmbedding_id : OpenEmbedding (@id X) :=
   ⟨embedding_id, IsOpenMap.id.isOpen_range⟩
 
 namespace OpenEmbedding
+variable [TopologicalSpace Z]
 
 protected theorem comp (hg : OpenEmbedding g)
     (hf : OpenEmbedding f) : OpenEmbedding (g ∘ f) :=

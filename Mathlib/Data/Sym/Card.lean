@@ -176,7 +176,7 @@ theorem card_subtype_not_diag [Fintype α] :
   exact and_iff_right ⟨a, mem_univ _, ha⟩
 
 /-- Type **stars and bars** for the case `n = 2`. -/
-protected theorem card [Fintype α] : card (Sym2 α) = Nat.choose (card α + 1) 2 :=
+protected theorem card {α} [Fintype α] : card (Sym2 α) = Nat.choose (card α + 1) 2 :=
   Finset.card_sym2 _
 
 end Sym2
