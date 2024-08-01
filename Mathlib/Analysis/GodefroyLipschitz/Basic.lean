@@ -1,8 +1,10 @@
 import Mathlib.Analysis.Calculus.Rademacher
+import Mathlib.LinearAlgebra.Dimension.Finrank
 
-open Real NNReal Set Filter
+open Real NNReal Set Filter Topology FiniteDimensional
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 theorem lol (f : E → ℝ) (x y : E) (h : DifferentiableAt ℝ f x) :
     fderiv ℝ f x y = deriv (fun t : ℝ ↦ f (x + t • y)) 0 := by
@@ -59,7 +61,7 @@ theorem not_differentiableAt_norm_zero (E : Type*) [NormedAddCommGroup E] [Norme
     exact this
   exact not_differentiableAt_abs_zero this
 
-theorem norm_fderiv_norm [Nontrivial E] {x : E} (h : DifferentiableAt ℝ (‖·‖) x) :
+theorem norm_fderiv_norm {x : E} (h : DifferentiableAt ℝ (‖·‖) x) :
     ‖fderiv ℝ (‖·‖) x‖ = 1 := by
   have : x ≠ 0 := by
     intro hx
@@ -79,7 +81,7 @@ theorem norm_fderiv_norm [Nontrivial E] {x : E} (h : DifferentiableAt ℝ (‖·
     exact norm_pos_iff.2 this
 
 
-example [FiniteDimensional ℝ E] {x : E} (hx : ‖x‖ = 1) (h : DifferentiableAt ℝ (‖·‖) x)
+theorem unique1 [FiniteDimensional ℝ E] {x : E} (hx : ‖x‖ = 1) (h : DifferentiableAt ℝ (‖·‖) x)
     (φ : E → ℝ) (hφ : LipschitzWith 1 φ) (φ_eq : ∀ t : ℝ, φ (t • x) = t) :
     φ = fderiv ℝ (‖·‖) x := by
   ext y
@@ -119,3 +121,104 @@ example [FiniteDimensional ℝ E] {x : E} (hx : ‖x‖ = 1) (h : Differentiable
   rw [aux, map_sub, map_smul, fderiv_norm h, hx] at this
   simp only [smul_eq_mul, mul_one, neg_sub] at this
   exact sub_eq_zero.1 this.symm
+
+theorem tendsto_differentiable
+    (x : ℕ → E) (hd : ∀ n, DifferentiableAt ℝ (‖·‖) (x n))
+    (z : E) (ht : Tendsto x atTop (𝓝 z)) :
+    Tendsto (fun n ↦ fderiv ℝ (‖·‖) (x n) z) atTop (𝓝 ‖z‖) := by
+  have aux1 : Tendsto (fun n ↦ fderiv ℝ (‖·‖) (x n) (x n)) atTop (𝓝 ‖z‖) := by
+    simp_rw [fun n ↦ fderiv_norm (hd n)]
+    exact (continuous_norm.tendsto z).comp ht
+  apply tendsto_of_tendsto_of_dist aux1
+  simp_rw [dist_eq_norm, ← map_sub]
+  apply squeeze_zero (fun n ↦ norm_nonneg _) (fun n ↦ ContinuousLinearMap.le_opNorm _ _)
+  simp_rw [fun n ↦ norm_fderiv_norm (hd n), one_mul]
+  exact tendsto_iff_norm_sub_tendsto_zero.1 ht
+
+theorem exists_inverse (h : finrank ℝ E = 1) (φ : E → F) (hφ : Isometry φ) :
+    ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ ∀ x : E, f (φ x) = x := by sorry
+
+theorem exists_inverse' [FiniteDimensional ℝ E] (φ : E → F) (hφ : Isometry φ) :
+    ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ f ∘ φ = id := by
+  have main (x : E) (nx : ‖x‖ = 1) (dx : DifferentiableAt ℝ (‖·‖) x) :
+      ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ ∀ t : ℝ, f (φ (t • x)) = t := by
+    apply exists_inverse
+    · exact finrank_self ℝ
+    · apply Isometry.of_dist_eq
+      intro x₁ x₂
+      rw [hφ.dist_eq, dist_eq_norm, ← sub_smul, norm_smul, nx, mul_one, dist_eq_norm]
+  -- have : LipschitzWith 1 (f ∘ φ) := by
+  --   convert f.lipschitz.comp hφ.lipschitz
+  --   rw [← norm_toNNReal, nf, mul_one, toNNReal_one]
+  -- have aux1 := unique1 nx hx (f ∘ φ) this hf
+  have aux2 : Dense {x : E | DifferentiableAt ℝ (‖·‖) x} := by sorry
+  have aux3 (z : E) : z ≠ 0 → ∃ x', DifferentiableAt ℝ (‖·‖) x' ∧ fderiv ℝ (‖·‖) x' z ≠ 0 := by
+    intro hz
+    have : z ∈ closure {x : E | DifferentiableAt ℝ (‖·‖) x} := by
+      rw [dense_iff_closure_eq.1 aux2]; trivial
+    obtain ⟨u, hu, htu⟩ := mem_closure_iff_seq_limit.1 this
+    have := tendsto_differentiable u hu z htu
+    have := this.eventually_ne (norm_ne_zero_iff.2 hz)
+    rw [eventually_atTop] at this
+    rcases this with ⟨N, hN⟩
+    use u N, hu N, hN N (le_refl N)
+  let b : Basis (Fin (finrank ℝ E)) ℝ (E →ₗ[ℝ] ℝ) := sorry
+  have hb : ∀ i, ∃ y : E, ‖y‖ = 1 ∧ DifferentiableAt ℝ (‖·‖) y ∧ b i = fderiv ℝ (‖·‖) y := by sorry
+  choose y ny dy hy using hb
+  let c := (b.dualBasis).map (Module.evalEquiv ℝ E).symm
+  have mdr i j : b i (c j) = if i = j then 1 else 0 := by
+    calc
+      (b i) (c j)
+        = Module.evalEquiv ℝ E (c j) (b i) := rfl
+      _ = Module.evalEquiv ℝ E ((Module.evalEquiv ℝ E).symm (b.dualBasis j)) (b i) := rfl
+      _ = b.dualBasis j (b i) := by
+        rw [(Module.evalEquiv ℝ E).apply_symm_apply]
+      _ = if i = j then 1 else 0 := b.dualBasis_apply_self j i
+  choose f nf hf using fun i ↦ main (y i) (ny i) (dy i)
+  let T : F →L[ℝ] E :=
+    { toFun := fun y ↦ ∑ i, (f i y) • (c i)
+      map_add' := by
+        intro y z
+        simp_rw [map_add, add_smul]
+        rw [Finset.sum_add_distrib]
+      map_smul' := by
+        intro m y
+        simp_rw [map_smul, smul_eq_mul, ← smul_smul]
+        rw [← Finset.smul_sum]
+        rfl }
+  use T
+  constructor
+  · sorry
+  · have best i x : f i (φ x) = b i x := by
+      have : LipschitzWith 1 ((f i) ∘ φ) := by
+        convert (f i).lipschitz.comp hφ.lipschitz
+        rw [← norm_toNNReal, nf i, mul_one, toNNReal_one]
+      have aux1 := unique1 (ny i) (dy i) ((f i) ∘ φ) this (hf i)
+      have := congrFun aux1 x
+      convert this
+      ext x
+      have := LinearMap.congr_fun (hy i) x
+      convert this
+    let g : E →ₗ[ℝ] E :=
+      { toFun := fun y ↦ ∑ i, (b i y) • (c i)
+        map_add' := by
+          intro y z
+          simp_rw [map_add, add_smul]
+          rw [Finset.sum_add_distrib]
+        map_smul' := by
+          intro m y
+          simp_rw [map_smul, smul_eq_mul, ← smul_smul]
+          rw [← Finset.smul_sum]
+          rfl }
+    have : g = LinearMap.id := by
+      apply c.ext
+      intro i
+      simp only [LinearMap.coe_mk, AddHom.coe_mk, LinearMap.id_coe, id_eq, g]
+      simp_rw [mdr, ite_smul, one_smul, zero_smul]
+      rw [Fintype.sum_ite_eq']
+    ext x
+    convert LinearMap.congr_fun this x
+    ext x
+    simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, T,
+      g]
+    simp_rw [best]
