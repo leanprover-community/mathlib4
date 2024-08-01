@@ -1165,7 +1165,7 @@ theorem cycle_zpow_mem_support_iff {g : Perm α}
   by_cases hm0 : m = 0
   · simp only [hm0, pow_zero, Nat.cast_zero]
   · simp only [Nat.cast_eq_zero, hm0, iff_false]
-    exact pow_ne_one_of_lt_orderOf' hm0 div_euc.2
+    exact pow_ne_one_of_lt_orderOf hm0 div_euc.2
 
 end Perm
 
