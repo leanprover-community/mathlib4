@@ -482,8 +482,11 @@ def Measurable [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Prop 
 namespace MeasureTheory
 
 set_option quotPrecheck false in
-/-- Notation for `Measurable` with respect to a non-standanrd σ-algebra in the domain. -/
+/-- Notation for `Measurable` with respect to a non-standard σ-algebra in the domain. -/
 scoped notation "Measurable[" m "]" => @Measurable _ _ m _
+/-- Notation for `Measurable` with respect to a non-standard σ-algebra in the domain and codomain.
+-/
+scoped notation "Measurable[" mα ", " mβ "]" => @Measurable _ _ mα mβ
 
 end MeasureTheory
 
