@@ -57,14 +57,15 @@ namespace LightCondensed
 variable (C : Type w) [Category.{u} C] [HasSheafify (coherentTopology LightProfinite.{u}) C]
 
 /--
-The discrete light condensed object associated to an object of `C` is the constant sheaf at that object.
+The discrete light condensed object associated to an object of `C` is the constant sheaf at that
+object.
 -/
 @[simps!]
 noncomputable def discrete : C ⥤ LightCondensed.{u} C := constantSheaf _ C
 
 /--
-The underlying object of a condensed object in `C` is the light condensed object evaluated at a point.
-This can be viewed as a sort of forgetful functor from `LightCondensed C` to `C`
+The underlying object of a condensed object in `C` is the light condensed object evaluated at a
+point. This can be viewed as a sort of forgetful functor from `LightCondensed C` to `C`
 -/
 @[simps!]
 noncomputable def underlying : LightCondensed.{u} C ⥤ C :=
