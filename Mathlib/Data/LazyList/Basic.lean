@@ -14,6 +14,7 @@ import Mathlib.Lean.Thunk
 This file is entirely deprecated, and contains various definitions and proofs on lazy lists.
 -/
 
+-- The whole file is full of deprecations about LazyList
 set_option linter.deprecated false
 
 universe u

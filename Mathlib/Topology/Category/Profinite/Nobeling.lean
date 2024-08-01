@@ -427,8 +427,8 @@ theorem prop_of_isGood  {l : Products I} (J : I → Prop) [∀ j, Decidable (J j
 end Products
 
 /-- The good products span `LocallyConstant C ℤ` if and only all the products do. -/
-theorem GoodProducts.span_iff_products : ⊤ ≤ span ℤ (Set.range (eval C)) ↔
-    ⊤ ≤ span ℤ (Set.range (Products.eval C)) := by
+theorem GoodProducts.span_iff_products : ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) ↔
+    ⊤ ≤ Submodule.span ℤ (Set.range (Products.eval C)) := by
   refine ⟨fun h ↦ le_trans h (span_mono (fun a ⟨b, hb⟩ ↦ ⟨b.val, hb⟩)), fun h ↦ le_trans h ?_⟩
   rw [span_le]
   rintro f ⟨l, rfl⟩
