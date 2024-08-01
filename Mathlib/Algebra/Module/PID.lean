@@ -53,8 +53,6 @@ assert_not_exists TopologicalSpace
 
 universe u v
 
-open scoped Classical
-
 variable {R : Type u} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
 variable {M : Type v} [AddCommGroup M] [Module R M]
 variable {N : Type max u v} [AddCommGroup N] [Module R N]
@@ -71,9 +69,11 @@ theorem Submodule.isSemisimple_torsionBy_of_irreducible {a : R} (h : Irreducible
   letI := Ideal.Quotient.field (R ∙ a)
   (submodule_torsionBy_orderIso a).complementedLattice
 
+#check isInternal_prime_power_torsion
+
 /-- A finitely generated torsion module over a PID is an internal direct sum of its
 `p i ^ e i`-torsion submodules for some primes `p i` and numbers `e i`. -/
-theorem Submodule.isInternal_prime_power_torsion_of_pid [Module.Finite R M]
+theorem Submodule.isInternal_prime_power_torsion_of_pid [DecidableEq (Ideal R)] [Module.Finite R M]
     (hM : Module.IsTorsion R M) :
     DirectSum.IsInternal fun p : (factors (⊤ : Submodule R M).annihilator).toFinset =>
       torsionBy R M
@@ -84,12 +84,14 @@ theorem Submodule.isInternal_prime_power_torsion_of_pid [Module.Finite R M]
   rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ← Ideal.span_singleton_pow,
     Ideal.span_singleton_generator]
 
+
 /-- A finitely generated torsion module over a PID is an internal direct sum of its
 `p i ^ e i`-torsion submodules for some primes `p i` and numbers `e i`. -/
 theorem Submodule.exists_isInternal_prime_power_torsion_of_pid [Module.Finite R M]
     (hM : Module.IsTorsion R M) :
     ∃ (ι : Type u) (_ : Fintype ι) (_ : DecidableEq ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i)
         (e : ι → ℕ), DirectSum.IsInternal fun i => torsionBy R M <| p i ^ e i := by
+  classical
   refine ⟨_, ?_, _, _, ?_, _, Submodule.isInternal_prime_power_torsion_of_pid hM⟩
   · exact Finset.fintypeCoeSort _
   · rintro ⟨p, hp⟩
