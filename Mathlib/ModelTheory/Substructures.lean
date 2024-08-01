@@ -599,10 +599,9 @@ theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure L s → Prop}
 
 end Substructure
 
-namespace LHom
-
-
 open Substructure
+
+namespace LHom
 
 variable {L' : Language} [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M]
 
@@ -676,8 +675,6 @@ theorem closure_withConstants_eq :
 end Substructure
 
 namespace Hom
-
-open Substructure
 
 /-- The restriction of a first-order hom to a substructure `s ⊆ M` gives a hom `s → N`.-/
 @[simps!]
@@ -766,8 +763,6 @@ theorem eq_of_eqOn_dense (hs : closure L s = ⊤) {f g : M →[L] N} (h : s.EqOn
 end Hom
 
 namespace Embedding
-
-open Substructure
 
 /-- The restriction of a first-order embedding to a substructure `s ⊆ M` gives an embedding `s → N`.
 -/
@@ -887,7 +882,9 @@ theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
   rintro ⟨⟨y, hy⟩, rfl⟩
   exact hy
 
-variable (L) (M) (N)
+end Substructure
+
+variable (L M N)
 
 /-- A partial `L`-equivalence, implemented as an equivalence between substructures.-/
 structure PartialEquiv where
@@ -900,11 +897,11 @@ structure PartialEquiv where
 
 @[inherit_doc]
 scoped[FirstOrder] notation:25 M " ≃ₚ[" L "] " N =>
-  FirstOrder.Language.Substructure.PartialEquiv L M N
+  FirstOrder.Language.PartialEquiv L M N
+
+variable {L M N}
 
 namespace PartialEquiv
-
-variable {L} {M} {N}
 
 noncomputable instance instInhabited_self : Inhabited (M ≃ₚ[L] M) :=
   ⟨⊤, ⊤, Equiv.refl L (⊤ : L.Substructure M)⟩
@@ -1089,6 +1086,40 @@ theorem dom_cod_top_toEquiv_toEmbedding {f : M ≃ₚ[L] N} (h_dom : f.dom = ⊤
   cases h_cod
   rfl
 
+end PartialEquiv
+
+namespace Embedding
+
+/-- Given an embedding, returns the corresponding partial equivalence with `⊤` as domain.-/
+noncomputable def toPartialEquiv (f : M ↪[L] N) : M ≃ₚ[L] N :=
+  ⟨⊤, f.toHom.range, f.equivRange.comp (Substructure.topEquiv)⟩
+
+theorem toPartialEquiv_injective :
+    Function.Injective (fun f : M ↪[L] N ↦ f.toPartialEquiv) := by
+  intro _ _ h
+  ext
+  rw [PartialEquiv.ext_iff] at h
+  rcases h with ⟨_, H⟩
+  exact H _ (Substructure.mem_top _)
+
+@[simp]
+theorem toEmbedding_toPartialEquiv (f : M ↪[L] N) :
+    PartialEquiv.dom_top_toEmbedding (f := f.toPartialEquiv) rfl = f :=
+  rfl
+
+@[simp]
+theorem toPartialEquiv_toEmbedding {f :  M ≃ₚ[L] N} (h : f.dom = ⊤) :
+    (PartialEquiv.dom_top_toEmbedding h).toPartialEquiv = f := by
+  rcases f with ⟨_, _, _⟩
+  cases h
+  apply PartialEquiv.ext
+  intro _ _
+  rfl; rfl
+
+end Embedding
+
+namespace PartialEquiv
+
 /-- Map of a self-partial equivalence through an embedding.-/
 noncomputable def map (f : M ↪[L] N) (g : M ≃ₚ[L] M) : N ≃ₚ[L] N where
   dom := g.dom.map f.toHom
@@ -1141,38 +1172,6 @@ theorem map_monotone (f : M ↪[L] N) : Monotone (fun g : M ≃ₚ[L] M ↦ g.ma
   simp only [Equiv.symm_apply_apply, coeSubtype]
 
 end PartialEquiv
-
-end Substructure
-
-namespace Embedding
-
-/-- Given an embedding, returns the corresponding partial equivalence with `⊤` as domain.-/
-noncomputable def toPartialEquiv (f : M ↪[L] N) : M ≃ₚ[L] N :=
-  ⟨⊤, f.toHom.range, f.equivRange.comp (Substructure.topEquiv)⟩
-
-theorem toPartialEquiv_injective :
-    Function.Injective (fun f : M ↪[L] N ↦ f.toPartialEquiv) := by
-  intro _ _ h
-  ext
-  rw [Substructure.PartialEquiv.ext_iff] at h
-  rcases h with ⟨_, H⟩
-  exact H _ (Substructure.mem_top _)
-
-@[simp]
-theorem toEmbedding_toPartialEquiv (f : M ↪[L] N) :
-    Substructure.PartialEquiv.dom_top_toEmbedding (f := f.toPartialEquiv) rfl = f :=
-  rfl
-
-@[simp]
-theorem toPartialEquiv_toEmbedding {f :  M ≃ₚ[L] N} (h : f.dom = ⊤) :
-    (Substructure.PartialEquiv.dom_top_toEmbedding h).toPartialEquiv = f := by
-  rcases f with ⟨_, _, _⟩
-  cases h
-  apply Substructure.PartialEquiv.ext
-  intro _ _
-  rfl; rfl
-
-end Embedding
 
 end Language
 
