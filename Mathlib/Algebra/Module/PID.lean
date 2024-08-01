@@ -82,7 +82,6 @@ theorem Submodule.isInternal_prime_power_torsion_of_pid [DecidableEq (Ideal R)] 
   rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ← Ideal.span_singleton_pow,
     Ideal.span_singleton_generator]
 
-
 /-- A finitely generated torsion module over a PID is an internal direct sum of its
 `p i ^ e i`-torsion submodules for some primes `p i` and numbers `e i`. -/
 theorem Submodule.exists_isInternal_prime_power_torsion_of_pid [Module.Finite R M]

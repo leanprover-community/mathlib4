@@ -328,10 +328,10 @@ def nullHomotopy (hom : ∀ i j, C.X i ⟶ D.X j) (zero : ∀ i j, ¬c.Rel j i �
       rw [HomologicalComplex.zero_f_apply, add_zero]
       rfl }
 
+open Classical in
 /-- Homotopy to zero for maps constructed with `nullHomotopicMap'` -/
 @[simps!]
 def nullHomotopy' (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) : Homotopy (nullHomotopicMap' h) 0 := by
-  classical
   apply nullHomotopy fun i j => dite (c.Rel j i) (h i j) fun _ => 0
   intro i j hij
   rw [dite_eq_right_iff]
