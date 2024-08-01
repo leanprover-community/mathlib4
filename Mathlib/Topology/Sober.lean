@@ -253,7 +253,7 @@ def ofComponent [QuasiSober α] (x : irreducibleComponents α) : genericPoints �
     (x.2.1.genericPoint_spec' (isClosed_of_mem_irreducibleComponents x.1 x.2)).symm ▸ x.2⟩
 
 lemma isGenericPoint_ofComponent [QuasiSober α] (x : irreducibleComponents α) :
-  IsGenericPoint (ofComponent x).1 x :=
+    IsGenericPoint (ofComponent x).1 x :=
     x.2.1.genericPoint_spec' (isClosed_of_mem_irreducibleComponents x.1 x.2)
 
 lemma component_ofComponent [QuasiSober α] (x : irreducibleComponents α) :
