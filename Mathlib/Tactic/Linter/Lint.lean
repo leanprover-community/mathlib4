@@ -258,7 +258,7 @@ def isBinderTypeChange (current : Name) (withType : Bool) (previousNames : Array
   -- TODO: currently, this treats a variable with a default value as "change"...
   -- is this the correct way?
   else
-    withType
+    true
 
 open Command in
 @[inherit_doc Mathlib.Linter.linter.badVariable]
