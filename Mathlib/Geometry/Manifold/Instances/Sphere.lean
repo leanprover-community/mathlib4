@@ -37,13 +37,13 @@ We prove two lemmas about smooth maps:
 
 As an application we prove `contMdiffNegSphere`, that the antipodal map is smooth.
 
-Finally, we equip the `circle` (defined in `Analysis.Complex.Circle` to be the sphere in `ℂ`
+Finally, we equip the `Circle` (defined in `Analysis.Complex.Circle` to be the sphere in `ℂ`
 centred at `0` of radius `1`) with the following structure:
 * a charted space with model space `EuclideanSpace ℝ (Fin 1)` (inherited from `Metric.Sphere`)
 * a Lie group with model with corners `𝓡 1`
 
-We furthermore show that `expMapCircle` (defined in `Analysis.Complex.Circle` to be the natural
-map `fun t ↦ exp (t * I)` from `ℝ` to `circle`) is smooth.
+We furthermore show that `Circle.exp` (defined in `Analysis.Complex.Circle` to be the natural
+map `fun t ↦ exp (t * I)` from `ℝ` to `Circle`) is smooth.
 
 
 ## Implementation notes
@@ -538,7 +538,7 @@ theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v
 
 end SmoothManifold
 
-section circle
+section Circle
 
 open Complex
 
@@ -550,17 +550,17 @@ attribute [local instance] finrank_real_complex_fact'
 
 /-- The unit circle in `ℂ` is a charted space modelled on `EuclideanSpace ℝ (Fin 1)`.  This
 follows by definition from the corresponding result for `Metric.Sphere`. -/
-instance : ChartedSpace (EuclideanSpace ℝ (Fin 1)) circle :=
+instance : ChartedSpace (EuclideanSpace ℝ (Fin 1)) Circle :=
   EuclideanSpace.instChartedSpaceSphere
 
-instance : SmoothManifoldWithCorners (𝓡 1) circle :=
+instance : SmoothManifoldWithCorners (𝓡 1) Circle :=
   EuclideanSpace.instSmoothManifoldWithCornersSphere (E := ℂ)
 
 /-- The unit circle in `ℂ` is a Lie group. -/
-instance : LieGroup (𝓡 1) circle where
+instance : LieGroup (𝓡 1) Circle where
   smooth_mul := by
     apply ContMDiff.codRestrict_sphere
-    let c : circle → ℂ := (↑)
+    let c : Circle → ℂ := (↑)
     have h₂ : ContMDiff (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) 𝓘(ℝ, ℂ) ∞ fun z : ℂ × ℂ => z.fst * z.snd := by
       rw [contMDiff_iff]
       exact ⟨continuous_mul, fun x y => contDiff_mul.contDiffOn⟩
@@ -571,11 +571,13 @@ instance : LieGroup (𝓡 1) circle where
     exact contMDiff_coe_sphere
   smooth_inv := by
     apply ContMDiff.codRestrict_sphere
-    simp only [← coe_inv_circle, coe_inv_circle_eq_conj]
+    simp only [← Circle.coe_inv, Circle.coe_inv_eq_conj]
     exact Complex.conjCLE.contDiff.contMDiff.comp contMDiff_coe_sphere
 
 /-- The map `fun t ↦ exp (t * I)` from `ℝ` to the unit circle in `ℂ` is smooth. -/
-theorem contMDiff_expMapCircle : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) ∞ expMapCircle :=
+theorem contMDiff_circleExp : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) ∞ Circle.exp :=
   (contDiff_exp.comp (contDiff_id.smul contDiff_const)).contMDiff.codRestrict_sphere _
 
-end circle
+@[deprecated (since := "2024-07-25")] alias contMDiff_expMapCircle := contMDiff_circleExp
+
+end Circle
