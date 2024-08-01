@@ -185,7 +185,7 @@ theorem pluennecke_ruzsa_inequality_pow_div_pow_mul (hA : A.Nonempty) (B : Finse
   obtain ⟨C, hC, hCA⟩ :=
     exists_min_image (A.powerset.erase ∅) (fun C ↦ (C * B).card / C.card : _ → ℚ≥0) ⟨A, hA'⟩
   rw [mem_erase, mem_powerset, ← nonempty_iff_ne_empty] at hC
-  refine (mul_le_mul_right <| cast_pos.2 hC.1.card_pos).1 ?_
+  refine (_root_.mul_le_mul_right <| cast_pos.2 hC.1.card_pos).1 ?_
   norm_cast
   refine (Nat.cast_le.2 <| ruzsa_triangle_inequality_div_mul_mul _ _ _).trans ?_
   push_cast

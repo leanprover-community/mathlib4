@@ -144,7 +144,8 @@ theorem ext {φ ψ} (h : ∀ n : σ →₀ ℕ, coeff R n φ = coeff R n ψ) : �
 
 /-- Two multivariate formal power series are equal
  if and only if all their coefficients are equal. -/
-theorem ext_iff {φ ψ : MvPowerSeries σ R} : φ = ψ ↔ ∀ n : σ →₀ ℕ, coeff R n φ = coeff R n ψ :=
+protected theorem ext_iff {φ ψ : MvPowerSeries σ R} :
+    φ = ψ ↔ ∀ n : σ →₀ ℕ, coeff R n φ = coeff R n ψ :=
   Function.funext_iff
 
 theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
@@ -255,7 +256,8 @@ theorem coeff_add_mul_monomial (a : R) :
 @[simp]
 theorem commute_monomial {a : R} {n} :
     Commute φ (monomial R n a) ↔ ∀ m, Commute (coeff R m φ) a := by
-  refine ext_iff.trans ⟨fun h m => ?_, fun h m => ?_⟩
+  rw [commute_iff_eq, MvPowerSeries.ext_iff]
+  refine ⟨fun h m => ?_, fun h m => ?_⟩
   · have := h (m + n)
     rwa [coeff_add_mul_monomial, add_comm, coeff_add_monomial_mul] at this
   · rw [coeff_mul_monomial, coeff_monomial_mul]

@@ -200,7 +200,7 @@ theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (
   · simp only [rtakeWhile, reverse_append, takeWhile, reverse_eq_nil_iff, getLast_append, ne_eq,
       append_eq_nil, and_false, not_false_eq_true, forall_true_left]
     refine ⟨fun h => ?_ , fun h => ?_⟩
-    · intro pa; simp [pa] at h
+    · split at h <;> simp_all
     · simp [h]
 
 theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by

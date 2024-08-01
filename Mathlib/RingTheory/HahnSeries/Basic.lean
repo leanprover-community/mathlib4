@@ -83,7 +83,7 @@ instance : Inhabited (HahnSeries Γ R) :=
   ⟨0⟩
 
 instance [Subsingleton R] : Subsingleton (HahnSeries Γ R) :=
-  ⟨fun a b => a.ext b (Subsingleton.elim _ _)⟩
+  ⟨fun a b => a.ext b (by subsingleton)⟩
 
 @[simp]
 theorem zero_coeff {a : Γ} : (0 : HahnSeries Γ R).coeff a = 0 :=
