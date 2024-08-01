@@ -63,8 +63,8 @@ The discrete light condensed object associated to an object of `C` is the const
 noncomputable def discrete : C ⥤ LightCondensed.{u} C := constantSheaf _ C
 
 /--
-The underlying object of a condensed object in `C` is the condensed object evaluated at a point.
-This can be viewed as a sort of forgetful functor from `Condensed C` to `C`
+The underlying object of a condensed object in `C` is the light condensed object evaluated at a point.
+This can be viewed as a sort of forgetful functor from `LightCondensed C` to `C`
 -/
 @[simps!]
 noncomputable def underlying : LightCondensed.{u} C ⥤ C :=
