@@ -541,12 +541,6 @@ instance [h : CountableOrCountablyGenerated (α × β) γ] :
   · exact ⟨Or.inl inferInstance⟩
   · exact ⟨Or.inr h⟩
 
-instance [h : CountableOrCountablyGenerated (α × β) γ] :
-    CountableOrCountablyGenerated (β × α) γ := by
-  rcases h with (h | h)
-  · exact ⟨Or.inl inferInstance⟩
-  · exact ⟨Or.inr h⟩
-
 end CountableOrCountablyGenerated
 
 end MeasurableSpace
