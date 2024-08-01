@@ -33,10 +33,12 @@ echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "(#
 # Store to file `found_by_git.txt` the PR numbers, as found by looking at the commits to `master`
 git log --pretty=oneline --since="${startDate}" --until="${endDate}" |
   sed -n 's=.*\((#[0-9]*)\)$=\1=p' | sort >> found_by_git.txt
+
+echo "$prs"
 }
 
 # the current year and month
-yr_mth="$(date +%Y-%m)"  #2024-07
+yr_mth=2024-07 #"$(date +%Y-%m)"
 
 start_date="${yr_mth}-01T00:00:00"
 end_date="$(date -d "${yr_mth}-01 + 1 month - 1 day" +%Y-%m-%d)T23:59:59"
