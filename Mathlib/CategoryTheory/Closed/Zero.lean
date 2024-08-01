@@ -5,7 +5,6 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!

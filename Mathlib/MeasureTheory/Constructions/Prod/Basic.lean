@@ -54,12 +54,7 @@ product measure, Tonelli's theorem, Fubini-Tonelli theorem
 
 noncomputable section
 
-open scoped Classical
-open Topology ENNReal MeasureTheory
-
-open Set Function Real ENNReal
-
-open MeasureTheory MeasurableSpace MeasureTheory.Measure
+open Topology ENNReal MeasureTheory Set Function Real ENNReal MeasurableSpace MeasureTheory.Measure
 
 open TopologicalSpace hiding generateFrom
 
@@ -146,6 +141,7 @@ theorem isPiSystem_prod :
   a measurable function. `measurable_measure_prod_mk_left` is strictly more general. -/
 theorem measurable_measure_prod_mk_left_finite [IsFiniteMeasure ν] {s : Set (α × β)}
     (hs : MeasurableSet s) : Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
+  classical
   refine induction_on_inter (C := fun s => Measurable fun x => ν (Prod.mk x ⁻¹' s))
     generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ hs
   · simp
@@ -326,6 +322,7 @@ theorem prod_apply {s : Set (α × β)} (hs : MeasurableSet s) :
 do not need the sets to be measurable. -/
 @[simp]
 theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by
+  classical
   apply le_antisymm
   · set S := toMeasurable μ s
     set T := toMeasurable ν t
@@ -717,6 +714,7 @@ theorem restrict_prod_eq_prod_univ (s : Set α) :
   rw [this, Measure.prod_restrict, ← this]
 
 theorem prod_dirac (y : β) : μ.prod (dirac y) = map (fun x => (x, y)) μ := by
+  classical
   rw [← sum_sFiniteSeq μ, prod_sum_left, map_sum measurable_prod_mk_right.aemeasurable]
   congr
   ext1 i
@@ -725,6 +723,7 @@ theorem prod_dirac (y : β) : μ.prod (dirac y) = map (fun x => (x, y)) μ := by
     dirac_apply' _ ht, ← indicator_mul_right _ fun _ => sFiniteSeq μ i s, Pi.one_apply, mul_one]
 
 theorem dirac_prod (x : α) : (dirac x).prod ν = map (Prod.mk x) ν := by
+  classical
   rw [← sum_sFiniteSeq ν, prod_sum_right, map_sum measurable_prod_mk_left.aemeasurable]
   congr
   ext1 i
