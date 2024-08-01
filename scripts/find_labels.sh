@@ -99,10 +99,4 @@ printf -- $'---\n'
 
 rm -rf found_by_gh.txt found_by_git.txt
 
-gh pr list
-  --repo "$repository"
-  --state closed
-  --base master
-  --search "closed:${startDate}..${endDate}"
-  --json number,labels,title,author
-  --limit "$((commits_in_range * 2))"
+gh pr list --repo "$repository" --state closed --base master --search "closed:${startDate}..${endDate}" --json number,labels,title,author --limit "$((commits_in_range * 2))"
