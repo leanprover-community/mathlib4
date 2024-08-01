@@ -130,8 +130,8 @@ square is. -/
 def pasteHorizIsPullbackEquiv (H : IsLimit t₂) : IsLimit (t₂.pasteHoriz t₁ hi₂) ≃ IsLimit t₁ :=
   { toFun := fun H' ↦ leftSquareIsPullback t₁ _ H H'
     invFun := fun H' ↦ pasteHorizIsPullback _ H H'
-    left_inv := fun _ ↦Subsingleton.elim _ _
-    right_inv := fun _ ↦Subsingleton.elim _ _ }
+    left_inv := fun _ ↦ Subsingleton.elim _ _
+    right_inv := fun _ ↦ Subsingleton.elim _ _ }
 
 end PastePullbackHoriz
 
