@@ -37,8 +37,8 @@ lemma ScottContinuousOn.mono (hD : D₁ ⊆ D₂) (hf : ScottContinuousOn D₂ f
 
 protected theorem ScottContinuousOn.monotone (D : Set (Set α)) (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (h : ScottContinuousOn D f) : Monotone f := by
-  refine' fun a b hab =>
-    (h (hD a b hab) (insert_nonempty _ _) (directedOn_pair le_refl hab) _).1
+  refine fun a b hab =>
+    (h (hD a b hab) (insert_nonempty _ _) (directedOn_pair le_refl hab) ?_).1
       (mem_image_of_mem _ <| mem_insert _ _)
   rw [IsLUB, upperBounds_insert, upperBounds_singleton,
     inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]
