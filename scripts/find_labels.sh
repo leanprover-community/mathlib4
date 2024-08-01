@@ -90,7 +90,7 @@ else
   printf $'\n* PRs not found by `gh`\n%s\n' "${only_git}"
 fi
 
-printf $'---\n'
+printf -- $'---\n'
 
 rm -rf found_by_gh.txt found_by_git.txt
 
