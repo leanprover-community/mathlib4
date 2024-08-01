@@ -37,7 +37,7 @@ variable (F : C → D) (P : MorphismProperty D) [IsMultiplicative P]
 
 /-- `InducedWideCategory D F P`, where `F : C → D`, is a typeclass synonym for `C`,
 which provides a category structure so that the morphisms `X ⟶ Y` are the morphisms
-in `D` from `F X` to `F Y`.
+in `D` from `F X` to `F Y` which satisfy a property `P : MorphismProperty D` that is multiplicative.
 -/
 -- Porting note(#5171): removed @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
