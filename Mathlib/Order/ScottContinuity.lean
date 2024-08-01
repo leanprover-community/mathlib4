@@ -146,6 +146,17 @@ lemma step1 {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.fst '' d).
   rw [e3]
   exact h₁ b hd₁ hd₂ e1
 
+lemma step1' {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.snd '' d).Nonempty)
+    (hd₂ : DirectedOn (· ≤ ·) (Prod.snd '' d)) {p₁ : α} {p₂ : β} (h : IsLUB d (p₁,p₂))
+    (h₁ : ∀ a, ScottContinuous (fun b => f (a,b))) {a : α} :
+    IsLUB (f '' {a} ×ˢ (Prod.snd '' d)) (f (a,p₂)) := by
+  simp only [singleton_prod]
+  have e1 : IsLUB (Prod.snd '' d) p₂ := ((isLUB_prod (p₁,p₂)).mp h).2
+  have e3 {S : Set β} : f '' ((fun b ↦ (a, b)) '' S) = (fun b ↦ f (a, b)) '' S := by
+    exact image_image f (fun b ↦ (a, b)) S
+  rw [e3]
+  exact h₁ a hd₁ hd₂ e1
+
 
 /-
 -- If `a` is the least upper bound of `s` and `b` is the least upper bound of `t`,
@@ -233,8 +244,7 @@ lemma test2 {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.fst '' d).
     IsLUB (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) (f (p₁,p₂)) := by
   have e1 : IsLUB (Prod.fst '' d) p₁ := ((isLUB_prod (p₁,p₂)).mp h).1
   have e2 : IsLUB (Prod.snd '' d) p₂ := ((isLUB_prod (p₁,p₂)).mp h).2
-  apply testprod' (u := fun a => f (a, p₂)) (v := (f (p₁,p₂))) (S := Prod.fst '' d)
-    (T := Prod.snd '' d) _ _
+  --apply testprod' (u := fun a => f (a, p₂)) (v := (f (p₁,p₂))) (S := Prod.fst '' d) (T := Prod.snd '' d) _ _
 
   --apply testprod'' (u := fun b => f (p₁, b)) (v := (f (p₁,p₂))) (S := Prod.fst '' d)
     T := Prod.snd '' d)
