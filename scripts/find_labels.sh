@@ -103,14 +103,14 @@ if [ -z "${only_gh}" ]
 then
   printf $'\n* All PRs are accounted for!\n'
 else
-  printf $'\n* PRs not corresponding to a commit\n\n%s\n' "${only_gh}"
+  printf $'\n* PRs not corresponding to a commit\n%s\n' "${only_gh}"
 fi
 
 if [ -z "${only_git}" ]
 then
   printf $'\n* All commits are accounted for!\n'
 else
-  printf $'* PRs not found by `gh`\n\n%s\n' "${only_git}"
+  printf $'\n* PRs not found by `gh`\n%s\n' "${only_git}"
 fi
 
 printf $'\n---\n'
