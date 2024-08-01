@@ -45,7 +45,9 @@ end_date="$(date -d "${yr_mth}-01 + 1 month - 1 day" +%Y-%m-%d)T23:59:59"
 
 commits_in_range="$(git log --since="${start_date}" --until="${end_date}" --pretty=oneline | wc -l)"
 
-printf $'\n%s commits between %s and %s\n' "${commits_in_range}" "${start_date}" "${end_date}"
+printf $'\nRange between %s and %s\n' "${start_date}" "${end_date}"
+
+printf $'\n%s commits to `master`\n' "${commits_in_range}" "${start_date}" "${end_date}"
 
 (
 findInRange "${1}" "${start_date}" "${yr_mth}-14T23:59:59" | sed -z 's=]\n*$=,\n='
@@ -54,13 +56,13 @@ findInRange "${1}" "${yr_mth}-15T00:00:00" "${end_date}"   | sed -z 's=^\[=='
   select(.title | startswith("[Merged by Bors]")) |
   "\(.labels | map(.name | select(startswith("t-"))) // "No labels") PR #\(.number) \(.title)"' |
   sort |
-  awk -v startDate="${start_date}" -v endDate="${end_date}" 'BEGIN{ labels=""; con=0; total=0 }
+  awk 'BEGIN{ labels=""; con=0; total=0 }
     { total++
       if(!($1 in seen)) { con++; order[con]=$1; seen[$1]=0 }
       gsub(/\[Merged by Bors\] - /, "")
       rest=$2; for(i=3; i<=NF; i++){rest=rest" "$i};acc[$1]=acc[$1]"\n"rest }
     END {
-      printf("%s closed PRs between %s and %s\n", total, startDate, endDate)
+      printf("%s closed PRs\n", total)
       for(i=1; i<=con; i++) {
         tag=order[i]
         gsub(/\[\]/, "Miscellaneous", tag)
