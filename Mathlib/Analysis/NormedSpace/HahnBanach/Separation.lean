@@ -216,7 +216,7 @@ noncomputable def LinTo𝕜' : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜] 𝕜)
       cont := show Continuous fun x ↦ (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) by fun_prop }
   have h fr x : to𝕜 fr x = ((fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜)) := rfl
   { toFun := to𝕜
-    map_add' := by intros; ext; simp [h] ; ring
+    map_add' := by intros; ext; simp [h]; ring
     map_smul' := by intros; ext; simp [h, real_smul_eq_coe_mul]; ring }
 
 @[simp]
