@@ -35,4 +35,4 @@ jobs:
           message="$(printf '%s\n\n%s\n' "${title}" "$(./scripts/find_labels.sh "${{ github.repository }}")")"
           echo "${message}"
 
-          ./scripts/update_PR_comment.sh "$(echo "${message}" | sed '/ [0-9]* PRs$/{s=^=</details><details>\n\n<summary>\n=; s=$=\n</summary>\n=}' mwe_outputs/prBlog.md)" "${title}" "${PR}"
+          ./scripts/update_PR_comment.sh "$(echo "${message}" | sed '/ [0-9]* PRs$/{s=^=</details><details>\n\n<summary>\n=; s=$=\n</summary>\n=} | sed -z 's=\n---\nReports\n\n=\n</summary>&='' mwe_outputs/prBlog.md)" "${title}" "${PR}"
