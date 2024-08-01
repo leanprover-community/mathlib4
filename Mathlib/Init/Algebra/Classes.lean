@@ -333,21 +333,21 @@ local infixl:50 " ≺ " => r
 def Equiv (a b : α) : Prop :=
   ¬a ≺ b ∧ ¬b ≺ a
 
-variable [IsStrictWeakOrder α r]
-
 local infixl:50 " ≈ " => @Equiv _ r
 
-theorem erefl (a : α) : a ≈ a :=
-  ⟨irrefl a, irrefl a⟩
-
 theorem esymm {a b : α} : a ≈ b → b ≈ a := fun ⟨h₁, h₂⟩ => ⟨h₂, h₁⟩
-
-theorem etrans {a b c : α} : a ≈ b → b ≈ c → a ≈ c :=
-  incomp_trans
 
 theorem not_lt_of_equiv {a b : α} : a ≈ b → ¬a ≺ b := fun h => h.1
 
 theorem not_lt_of_equiv' {a b : α} : a ≈ b → ¬b ≺ a := fun h => h.2
+
+variable [IsStrictWeakOrder α r]
+
+theorem erefl (a : α) : a ≈ a :=
+  ⟨irrefl a, irrefl a⟩
+
+theorem etrans {a b c : α} : a ≈ b → b ≈ c → a ≈ c :=
+  incomp_trans
 
 instance isEquiv : IsEquiv α (@Equiv _ r) where
   refl := erefl
