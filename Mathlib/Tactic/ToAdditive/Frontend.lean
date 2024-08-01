@@ -1121,6 +1121,16 @@ def elabToAdditive : Syntax → CoreM Config
              ref := (tgt.map (·.raw)).getD tk }
   | _ => throwUnsupportedSyntax
 
+/--
+"Pluralize" a string: convert it to "plural form" if `n` is larger than one, else leave it unchanged.
+Usually, we just append an "s", but we change "is" to "are".
+More special cases could be added if needed.
+-/
+def pluralize (name : String) (n : Nat) : String :=
+  match name with
+  | "is" => if n > 1 then "are" else "is"
+  | s => if n > 1 then s!"{s}s" else s
+
 mutual
 /-- Apply attributes to the multiplicative and additive declarations. -/
 partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr src tgt : Name) :
@@ -1132,8 +1142,8 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
     let appliedAttrs ← getAllSimpAttrs src
     if appliedAttrs.size > 0 then
       Linter.logLintIf linter.existingAttributeWarning stx m!"\
-        The source declaration {src} was given the simp-attribute(s) {appliedAttrs} before \
-        calling @[{thisAttr}]. The preferred method is to use \
+        The source declaration {src} was given the {pluralize "simp-attribute" appliedAttrs.size}
+        {appliedAttrs} before calling @[{thisAttr}]. The preferred method is to use \
         `@[{thisAttr} (attr := {appliedAttrs})]` to apply the attribute to both \
         {src} and the target declaration {tgt}."
     warnAttr stx Lean.Elab.Tactic.Ext.extExtension
