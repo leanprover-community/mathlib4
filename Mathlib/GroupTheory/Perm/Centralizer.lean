@@ -532,6 +532,11 @@ theorem ofPerm_apply_mk (τ : range_toPerm g) (x) :
     ConjAct.ofConjAct (ofPerm a τ : ConjAct (Perm α)) x = k a τ.val x :=
   rfl
 
+theorem ofPerm_apply_mk' (τ : Perm (g.cycleFactorsFinset)) (hτ : τ ∈ range_toPerm g) (x) :
+    ConjAct.ofConjAct (ofPerm a ⟨τ, hτ⟩ : ConjAct (Perm α)) x = k a τ x :=
+  rfl
+
+
 theorem ofPerm_support_le (τ : range_toPerm g) :
     (ConjAct.ofConjAct (ofPerm a τ : ConjAct (Perm α))).support ≤
       g.support := by
@@ -715,7 +720,6 @@ theorem θ_apply_of_cycleOf_eq (uv) (x : α) (c : g.cycleFactorsFinset)  (hx : g
   simp only [MonoidHom.coe_mk, OneHom.coe_mk, Equiv.coe_fn_mk]
   exact θAux_apply_of_cycleOf_eq c hx
 
-/-
 theorem θ_apply_single (c : g.cycleFactorsFinset) :
     θ g ⟨1, (Pi.mulSingle c ⟨c, Subgroup.mem_zpowers (c : Perm α)⟩)⟩ = c  := by
   ext x
@@ -743,7 +747,6 @@ theorem θ_apply_single (c : g.cycleFactorsFinset) :
   simp only [ne_eq, cycleOf_eq_one_iff]
   rw [Function.mem_fixedPoints_iff] at hx
   exact hx
--/
 
 theorem θ_injective (g : Perm α) : Function.Injective (θ g) := by
   rw [← MonoidHom.ker_eq_bot_iff, eq_bot_iff]
@@ -886,7 +889,7 @@ theorem θ_range_card (g : Equiv.Perm α) :
     simp only [Finset.mem_val, mem_cycleFactorsFinset_iff] at hx
     exact hx.left
 
-/- lemma θ_apply_fst (k : Perm (Function.fixedPoints g)) :
+lemma θ_apply_fst (k : Perm (Function.fixedPoints g)) :
     θ g ⟨k, 1⟩ = ofSubtype k := by
   ext x
   by_cases hx : g.cycleOf x ∈ g.cycleFactorsFinset
@@ -896,42 +899,46 @@ theorem θ_range_card (g : Equiv.Perm α) :
     simpa [cycleOf_mem_cycleFactorsFinset_iff, Perm.mem_support] using hx
   · rw [cycleOf_mem_cycleFactorsFinset_iff, Perm.not_mem_support] at hx
     rw [θ_apply_of_mem_fixedPoints _ x hx, Equiv.Perm.ofSubtype_apply_of_mem]
--/
-/-
-lemma θ_apply_single' (c : g.cycleFactorsFinset) (vc : Subgroup.zpowers (c : Equiv.Perm α)) :
+
+example (α β : Type*) (a x : α) (b y : β) :
+  (⟨a, b⟩ : α × β) = ⟨x, y⟩ ↔ a = x ∧ b = y := by
+  exact Prod.mk.inj_iff
+
+example (α β : Type*) [Group α] [Group β] (a : α) (b : β) (m : ℤ) :
+  (⟨a, b⟩ : α × β) ^ m = ⟨a ^ m, b ^ m⟩ := by
+  rw [@Prod.pow_mk]
+
+@[to_additive]
+def Pi.mulSingle_pow {I : Type*} {f : I → Type*} [DecidableEq I]
+  [(i : I) → Monoid (f i)]
+  (i : I) (x : f i) (n : ℕ) :
+  Pi.mulSingle i (x ^ n) = (Pi.mulSingle i x) ^ n := by
+  ext s
+  classical
+  rw [Pi.pow_apply]
+  by_cases h : s = i
+  · rw [h, Pi.mulSingle_eq_same, Pi.mulSingle_eq_same]
+  · rw [Pi.mulSingle_eq_of_ne h, Pi.mulSingle_eq_of_ne h, one_pow]
+
+@[to_additive]
+def Pi.mulSingle_zpow {I : Type*} {f : I → Type*} [DecidableEq I] [(i : I) → Group (f i)]
+  (i : I) (x : f i) (n : ℤ) :
+  Pi.mulSingle i (x ^ n) = (Pi.mulSingle i x) ^ n := by
+  ext s
+  classical
+  rw [Pi.pow_apply]
+  by_cases h : s = i
+  · rw [h, Pi.mulSingle_eq_same, Pi.mulSingle_eq_same]
+  · rw [Pi.mulSingle_eq_of_ne h, Pi.mulSingle_eq_of_ne h, one_zpow]
+
+lemma θ_apply_single_zpowers (c : g.cycleFactorsFinset) (vc : Subgroup.zpowers (c : Equiv.Perm α)) :
     θ g ⟨1, Pi.mulSingle c vc⟩ = (vc : Equiv.Perm α) := by
-  ext x
-  by_cases hx : g.cycleOf x ∈ g.cycleFactorsFinset
-  · rw [θ_apply_of_cycleOf_eq _ x ⟨g.cycleOf x, hx⟩ rfl]
-    by_cases hc : g.cycleOf x = c
-    · suffices c = ⟨g.cycleOf x, hx⟩ by
-        rw [← this]
-        simp only [Pi.mulSingle_eq_same]
-      rw [← Subtype.coe_inj, ← hc]
-    · obtain ⟨m, hm⟩ := vc.prop
-      simp only
-      rw [Pi.mulSingle_eq_of_ne]
-      · simp only [OneMemClass.coe_one, Perm.coe_one, id_eq]
-        rw [← eq_comm, ← hm, ← Perm.not_mem_support]
-        intro hx'
-        apply hc
-        apply symm
-        exact cycle_is_cycleOf (support_zpow_le _ _ hx') c.prop
-      rintro ⟨rfl⟩
-      exact hc rfl
-  · rw [cycleOf_mem_cycleFactorsFinset_iff, not_mem_support] at hx
-    rw [θ_apply_of_mem_fixedPoints _ x hx]
-    dsimp only [Equiv.Perm.coe_one, id_eq]
-    obtain ⟨m, hm⟩ := vc.prop
-    dsimp only at hm
-    rw [← hm]
-    apply symm
-    rw [← Equiv.Perm.not_mem_support] at hx ⊢
-    intro hx'
-    apply hx
-    apply Equiv.Perm.mem_cycleFactorsFinset_support_le c.prop
-    apply Equiv.Perm.support_zpow_le _ _ hx'
--/
+  obtain ⟨m, hm⟩ := vc.prop
+  simp only at hm
+  suffices vc = ⟨(c : Perm α), mem_zpowers _⟩ ^ m by
+    rw [this, ← one_zpow m, Pi.mulSingle_zpow, ← Prod.pow_mk, map_zpow,
+      θ_apply_single, SubgroupClass.coe_zpow]
+  rw [← Subtype.coe_inj, ← hm, SubgroupClass.coe_zpow]
 
 end Kernel
 
