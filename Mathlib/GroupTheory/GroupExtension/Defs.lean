@@ -67,10 +67,12 @@ variable (S : GroupExtension N E G)
 instance normal_inl_range : (S.inl.range).Normal :=
   S.range_inl_eq_ker_rightHom ▸ S.rightHom.normal_ker
 
+@[simp]
 theorem rightHom_inl (n : N) : S.rightHom (S.inl n) = 1 := by
   rw [← MonoidHom.mem_ker, ← S.range_inl_eq_ker_rightHom, MonoidHom.mem_range]
   exact exists_apply_eq_apply S.inl n
 
+@[simp]
 theorem rightHom_comp_inl : S.rightHom.comp S.inl = 1 := by
   ext n
   rw [MonoidHom.one_apply, MonoidHom.comp_apply]
