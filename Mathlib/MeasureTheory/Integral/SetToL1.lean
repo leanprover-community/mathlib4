@@ -606,7 +606,7 @@ namespace SimpleFunc
 
 theorem norm_eq_sum_mul (f : α →₁ₛ[μ] G) :
     ‖f‖ = ∑ x ∈ (toSimpleFunc f).range, (μ (toSimpleFunc f ⁻¹' {x})).toReal * ‖x‖ := by
-  rw [norm_toSimpleFunc, snorm_one_eq_lintegral_nnnorm]
+  rw [norm_toSimpleFunc, eLpNorm_one_eq_lintegral_nnnorm]
   have h_eq := SimpleFunc.map_apply (fun x => (‖x‖₊ : ℝ≥0∞)) (toSimpleFunc f)
   simp_rw [← h_eq]
   rw [SimpleFunc.lintegral_eq_lintegral, SimpleFunc.map_lintegral, ENNReal.toReal_sum]
@@ -1354,7 +1354,7 @@ theorem tendsto_setToFun_of_L1 (hT : DominatedFinMeasAdditive μ T C) {ι} (f : 
     let F_lp i := if hFi : Integrable (fs i) μ then hFi.toL1 (fs i) else 0
     have tendsto_L1 : Tendsto F_lp l (𝓝 f_lp) := by
       rw [Lp.tendsto_Lp_iff_tendsto_ℒp']
-      simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply]
+      simp_rw [eLpNorm_one_eq_lintegral_nnnorm, Pi.sub_apply]
       refine (tendsto_congr' ?_).mp hfs
       filter_upwards [hfsi] with i hi
       refine lintegral_congr_ae ?_
@@ -1410,24 +1410,24 @@ theorem continuous_L1_toL1 {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ �
   rw [Lp.dist_def] at hfg ⊢
   let h_int := fun f' : α →₁[μ] G => (L1.integrable_coeFn f').of_measure_le_smul c' hc' hμ'_le
   have :
-    snorm (⇑(Integrable.toL1 g (h_int g)) - ⇑(Integrable.toL1 f (h_int f))) 1 μ' =
-      snorm (⇑g - ⇑f) 1 μ' :=
-    snorm_congr_ae ((Integrable.coeFn_toL1 _).sub (Integrable.coeFn_toL1 _))
+    eLpNorm (⇑(Integrable.toL1 g (h_int g)) - ⇑(Integrable.toL1 f (h_int f))) 1 μ' =
+      eLpNorm (⇑g - ⇑f) 1 μ' :=
+    eLpNorm_congr_ae ((Integrable.coeFn_toL1 _).sub (Integrable.coeFn_toL1 _))
   rw [this]
-  have h_snorm_ne_top : snorm (⇑g - ⇑f) 1 μ ≠ ∞ := by
-    rw [← snorm_congr_ae (Lp.coeFn_sub _ _)]; exact Lp.snorm_ne_top _
-  have h_snorm_ne_top' : snorm (⇑g - ⇑f) 1 μ' ≠ ∞ := by
-    refine ((snorm_mono_measure _ hμ'_le).trans_lt ?_).ne
-    rw [snorm_smul_measure_of_ne_zero hc'0, smul_eq_mul]
-    refine ENNReal.mul_lt_top ?_ h_snorm_ne_top
+  have h_eLpNorm_ne_top : eLpNorm (⇑g - ⇑f) 1 μ ≠ ∞ := by
+    rw [← eLpNorm_congr_ae (Lp.coeFn_sub _ _)]; exact Lp.eLpNorm_ne_top _
+  have h_eLpNorm_ne_top' : eLpNorm (⇑g - ⇑f) 1 μ' ≠ ∞ := by
+    refine ((eLpNorm_mono_measure _ hμ'_le).trans_lt ?_).ne
+    rw [eLpNorm_smul_measure_of_ne_zero hc'0, smul_eq_mul]
+    refine ENNReal.mul_lt_top ?_ h_eLpNorm_ne_top
     simp [hc', hc'0]
   calc
-    (snorm (⇑g - ⇑f) 1 μ').toReal ≤ (c' * snorm (⇑g - ⇑f) 1 μ).toReal := by
-      rw [toReal_le_toReal h_snorm_ne_top' (ENNReal.mul_ne_top hc' h_snorm_ne_top)]
-      refine (snorm_mono_measure (⇑g - ⇑f) hμ'_le).trans ?_
-      rw [snorm_smul_measure_of_ne_zero hc'0, smul_eq_mul]
+    (eLpNorm (⇑g - ⇑f) 1 μ').toReal ≤ (c' * eLpNorm (⇑g - ⇑f) 1 μ).toReal := by
+      rw [toReal_le_toReal h_eLpNorm_ne_top' (ENNReal.mul_ne_top hc' h_eLpNorm_ne_top)]
+      refine (eLpNorm_mono_measure (⇑g - ⇑f) hμ'_le).trans ?_
+      rw [eLpNorm_smul_measure_of_ne_zero hc'0, smul_eq_mul]
       simp
-    _ = c'.toReal * (snorm (⇑g - ⇑f) 1 μ).toReal := toReal_mul
+    _ = c'.toReal * (eLpNorm (⇑g - ⇑f) 1 μ).toReal := toReal_mul
     _ ≤ c'.toReal * (ε / 2 / c'.toReal) :=
       (mul_le_mul le_rfl hfg.le toReal_nonneg toReal_nonneg)
     _ = ε / 2 := by
