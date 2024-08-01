@@ -137,14 +137,14 @@ lemma Prod.IsLub {f : α × β → γ} (hf : Monotone f)
 
 lemma step1 {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.fst '' d).Nonempty)
     (hd₂ : DirectedOn (· ≤ ·) (Prod.fst '' d)) {p₁ : α} {p₂ : β} (h : IsLUB d (p₁,p₂))
-    (h₁ : ∀ b, ScottContinuous (fun a => f (a,b))) :
-    IsLUB (f '' (Prod.fst '' d) ×ˢ {p₂}) (f (p₁,p₂)) := by
+    (h₁ : ∀ b, ScottContinuous (fun a => f (a,b))) {b : β} :
+    IsLUB (f '' (Prod.fst '' d) ×ˢ {b}) (f (p₁,b)) := by
   simp only [prod_singleton]
   have e1 : IsLUB (Prod.fst '' d) p₁ := ((isLUB_prod (p₁,p₂)).mp h).1
-  have e3 {S : Set α} : f '' ((fun a ↦ (a, p₂)) '' S) = (fun a ↦ f (a, p₂)) '' S := by
-    exact image_image f (fun a ↦ (a, p₂)) S
+  have e3 {S : Set α} : f '' ((fun a ↦ (a, b)) '' S) = (fun a ↦ f (a, b)) '' S := by
+    exact image_image f (fun a ↦ (a, b)) S
   rw [e3]
-  exact h₁ p₂ hd₁ hd₂ e1
+  exact h₁ b hd₁ hd₂ e1
 
 
 /-
@@ -213,26 +213,13 @@ theorem IsLUB.iUnion {ι : Sort*} {u : ι → γ}  {s : ι → Set γ} (hs : ∀
     exact e1
 
 
-/-
-  ⟨fun _ h =>
-    h.casesOn (fun h => by
-    --    le_sup_of_le_left <| hs.left h
-      sorry
-    ) fun h => by
-      --le_sup_of_le_right <| ht.left h
-      sorry,
-    fun _ hc => by sorry
-    --sup_le (hs.right fun _ hd => hc <| Or.inl hd) (ht.right fun _ hd => hc <| Or.inr hd)
-    ⟩
--/
 
-/-
 lemma testprod {S : Set α} {T : Set β} {u : S → α × β} (v : α × β)
     (hS : ∀ (s : S), IsLUB ({↑s} ×ˢ T) (u s)) (h : IsLUB {u s | (s : S)} v) :
     IsLUB (S ×ˢ T) v := sorry
 
 lemma testprod' {S : Set α} {T : Set β} {u : S → γ} {f : α × β → γ} (v : γ)
-    (hS : ∀ (s : S), IsLUB (f '' ({↑s} ×ˢ T)) (u s)) (h : IsLUB {u s | (s : S)} v) :
+    (hS : ∀ (s : S), IsLUB (f '' ({↑s} ×ˢ T)) (u s)) (h : IsLUB (Set.range u) v) :
     IsLUB (f '' (S ×ˢ T)) v := sorry
 
 lemma testprod'' {S : Set α} {T : Set β} {u : T → γ} {f : α × β → γ} (v : γ)
@@ -255,7 +242,7 @@ lemma test2 {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.fst '' d).
   apply step1 hd₁ hd₂
   apply (h₂ p₁)
   --apply test hd₁ hd₂ h h₁
--/
+
 
 lemma stepn {f : α × β → γ} {d : Set (α × β)} {p₁ : α} {p₂ : β} (hf : Monotone f)
     (hd : DirectedOn (· ≤ ·) d) (h : IsLUB (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) (f (p₁,p₂))) :
