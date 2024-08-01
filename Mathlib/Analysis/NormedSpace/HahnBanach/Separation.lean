@@ -210,34 +210,55 @@ open RCLike
 variable [RCLike 𝕜] [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
   [Module 𝕜 E] [Module ℝ E] [ContinuousSMul 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
-@[simp]
 noncomputable def LinTo𝕜' : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜] 𝕜) :=
   letI to𝕜 (fr : (E →L[ℝ] ℝ)) : (E →L[𝕜] 𝕜) :=
     { toLinearMap := LinearMap.extendTo𝕜' fr
       cont := show Continuous fun x ↦ (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) by fun_prop }
   have h fr x : to𝕜 fr x = ((fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜)) := rfl
   { toFun := to𝕜
-    map_add' := by intros; ext; simp [h]; ring
+    map_add' := by intros; ext; simp [h] ; ring
     map_smul' := by intros; ext; simp [h, real_smul_eq_coe_mul]; ring }
 
-theorem separate_convex_open_set_RCLike [ContinuousSMul ℝ E] {s : Set E}
+@[simp]
+lemma extendTo𝕜'_apply (fr : E →L[ℝ] ℝ) (x : E) :
+    LinTo𝕜' fr x = ((fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜)) :=
+  rfl
+
+variable [ContinuousSMul ℝ E]
+
+theorem separate_convex_open_set_RCLike  {s : Set E}
     (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) {x₀ : E} (hx₀ : x₀ ∉ s) :
     ∃ f : E →L[𝕜] 𝕜, re (f x₀) = 1 ∧ ∀ x ∈ s, re (f x) < 1 := by
   obtain ⟨g, hg⟩ := separate_convex_open_set hs₀ hs₁ hs₂ hx₀
   use LinTo𝕜' g
-  simp only [LinTo𝕜', LinearMap.extendTo𝕜', ContinuousLinearMap.coe_coe, LinearMap.coe_mk,
-    AddHom.coe_mk, ContinuousLinearMap.coe_mk', map_sub, ofReal_re, mul_re, I_re, zero_mul,
-    ofReal_im, mul_zero, sub_self, sub_zero]
+  simp only [extendTo𝕜'_apply, map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
+    sub_self, sub_zero]
   exact hg
 
-theorem geometric_hahn_banach_compact_closed_RCLike [LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
+theorem geometric_hahn_banach_open_RCLike (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht : Convex ℝ t)
+    (disj : Disjoint s t) : ∃ (f : E →L[𝕜] 𝕜) (u : ℝ), (∀ a ∈ s, re (f a) < u) ∧
+    ∀ b ∈ t, u ≤ re (f b) := by
+  obtain ⟨f, u, h⟩ := geometric_hahn_banach_open hs₁ hs₂ ht disj
+  use LinTo𝕜' f
+  simp only [extendTo𝕜'_apply, map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
+    sub_self, sub_zero]
+  exact Exists.intro u h
+
+theorem geometric_hahn_banach_open_point_RCLike (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (disj : x ∉ s) :
+    ∃ f : E →L[𝕜] 𝕜, ∀ a ∈ s, re (f a) < re (f x) := by
+  obtain ⟨f, h⟩ := geometric_hahn_banach_open_point hs₁ hs₂ disj
+  use LinTo𝕜' f
+  simp only [extendTo𝕜'_apply, map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
+    sub_self, sub_zero]
+  exact fun a a_1 ↦ h a a_1
+
+theorem geometric_hahn_banach_compact_closed_RCLike [LocallyConvexSpace ℝ E]
 (hs₁ : Convex ℝ s) (hs₂ : IsCompact s) (ht₁ : Convex ℝ t) (ht₂ : IsClosed t) (disj : Disjoint s t) :
     ∃ (f : E →L[𝕜] 𝕜) (u v : ℝ), (∀ a ∈ s, re (f a) < u) ∧ u < v ∧ ∀ b ∈ t, v < re (f b) := by
   obtain ⟨g, u, v, h1⟩ := geometric_hahn_banach_compact_closed hs₁ hs₂ ht₁ ht₂ disj
   use LinTo𝕜' g
-  simp only [LinTo𝕜', LinearMap.extendTo𝕜', ContinuousLinearMap.coe_coe, LinearMap.coe_mk,
-    AddHom.coe_mk, ContinuousLinearMap.coe_mk', map_sub, ofReal_re, mul_re, I_re, zero_mul,
-    ofReal_im, mul_zero, sub_self, sub_zero, exists_and_left]
+  simp only [extendTo𝕜'_apply, map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
+    sub_self, sub_zero, exists_and_left]
   use u
   constructor
   exact h1.1
