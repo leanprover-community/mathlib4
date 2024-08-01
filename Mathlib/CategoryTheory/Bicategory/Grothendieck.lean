@@ -51,7 +51,7 @@ prefix:75 "∫ " => Pseudofunctor.Grothendieck
 namespace Pseudofunctor.Grothendieck
 
 @[simps]
-instance CategoryStruct : CategoryStruct (∫ F) where
+instance categoryStruct : CategoryStruct (∫ F) where
   Hom X Y := (f : X.1 ⟶ Y.1) × (X.2 ⟶ (F.map f.op.toLoc).obj Y.2)
   id X := ⟨𝟙 X.1, (F.mapId ⟨op X.1⟩).inv.app X.2⟩
   comp {_ _ Z} f g := ⟨f.1 ≫ g.1, f.2 ≫ (F.map f.1.op.toLoc).map g.2 ≫
@@ -113,7 +113,7 @@ protected lemma assoc {a b c d : ∫ F} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
   simp only [Cat.whiskerRight_app, Cat.comp_obj, id_comp]
 
 /-- The category structure on `∫ F`. -/
-instance : Category (∫ F) where
+instance category : Category (∫ F) where
   toCategoryStruct := Pseudofunctor.Grothendieck.CategoryStruct
   id_comp := Pseudofunctor.Grothendieck.id_comp
   comp_id := Pseudofunctor.Grothendieck.comp_id
