@@ -14,7 +14,8 @@ This file sets up the basic theory of clubs (closed and unbounded sets) and stat
 
 * `Ordinal.IsClosed`: A set of ordinals `S` is closed in `o` if `S ⊆ Iio o`
   and `S` contains every `x < o` such that `x.IsAcc S`.
-* `Ordinal.IsClub`: A set of ordinals `S` is a club in `o` if it is closed in `o` and unbounded in `o`.
+* `Ordinal.IsClub`: A set of ordinals `S` is a club in `o` if
+  it is closed in `o` and unbounded in `o`.
 
 ## Main results
 
