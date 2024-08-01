@@ -89,8 +89,10 @@ structure WideSubcategory (_P : MorphismProperty C) [IsMultiplicative _P] where
 instance WideSubcategory.category : Category.{v₁} (WideSubcategory P) :=
   InducedWideCategory.category WideSubcategory.obj P
 
+@[simp]
 lemma WideSubcategory.id_def (X : WideSubcategory P) : (CategoryStruct.id X).1 = 𝟙 X.obj := rfl
 
+@[simp]
 lemma WideSubcategory.comp_def {X Y Z : WideSubcategory P} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).1 = (f.1 ≫ g.1 : X.obj ⟶ Z.obj) := rfl
 
