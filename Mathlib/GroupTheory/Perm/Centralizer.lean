@@ -87,7 +87,7 @@ section
 variable {G : Type*} [Group G] (g : G)
 
 theorem Subgroup.centralizer_eq :
-  Subgroup.centralizer {g} = Subgroup.comap ConjAct.toConjAct.toMonoidHom
+    Subgroup.centralizer {g} = Subgroup.comap ConjAct.toConjAct.toMonoidHom
       (MulAction.stabilizer (ConjAct G) g) := by
   ext k
   simp only [MulEquiv.toMonoidHom_eq_coe, mem_comap, MonoidHom.coe_coe,
