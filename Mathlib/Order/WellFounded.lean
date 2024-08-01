@@ -89,8 +89,7 @@ protected theorem lt_sup {r : α → α → Prop} (wf : WellFounded r) {s : Set 
 
 section
 
-open scoped Classical
-
+open Classical in
 /-- A successor of an element `x` in a well-founded order is a minimal element `y` such that
 `x < y` if one exists. Otherwise it is `x` itself. -/
 protected noncomputable def succ {r : α → α → Prop} (wf : WellFounded r) (x : α) : α :=

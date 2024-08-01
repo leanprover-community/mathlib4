@@ -68,7 +68,7 @@ theorem nodup_toList [FinEnum α] : List.Nodup (toList α) := by
 
 /-- create a `FinEnum` instance using a surjection -/
 def ofSurjective {β} (f : β → α) [DecidableEq α] [FinEnum β] (h : Surjective f) : FinEnum α :=
-  ofList ((toList β).map f) (by intro; simp; exact h _)
+  ofList ((toList β).map f) (by intro; simpa using h _)
 
 /-- create a `FinEnum` instance using an injection -/
 noncomputable def ofInjective {α β} (f : α → β) [DecidableEq α] [FinEnum β] (h : Injective f) :
@@ -191,7 +191,7 @@ def Pi.enum (β : α → Type*) [∀ a, FinEnum (β a)] : List (∀ a, β a) :=
   (pi (toList α) fun x => toList (β x)).map (fun f x => f x (mem_toList _))
 
 theorem Pi.mem_enum (f : ∀ a, β a) :
-    f ∈ Pi.enum β := by simp [Pi.enum]; refine ⟨fun a _ => f a, mem_pi_toList _ _, rfl⟩
+    f ∈ Pi.enum β := by simpa [Pi.enum] using ⟨fun a _ => f a, mem_pi_toList _ _, rfl⟩
 
 instance Pi.finEnum : FinEnum (∀ a, β a) :=
   ofList (Pi.enum _) fun _ => Pi.mem_enum _
@@ -199,7 +199,7 @@ instance Pi.finEnum : FinEnum (∀ a, β a) :=
 instance pfunFinEnum (p : Prop) [Decidable p] (α : p → Type) [∀ hp, FinEnum (α hp)] :
     FinEnum (∀ hp : p, α hp) :=
   if hp : p then
-    ofList ((toList (α hp)).map fun x _ => x) (by intro x; simp; exact ⟨x hp, rfl⟩)
+    ofList ((toList (α hp)).map fun x _ => x) (by intro x; simpa using ⟨x hp, rfl⟩)
   else ofList [fun hp' => (hp hp').elim] (by intro; simp; ext hp'; cases hp hp')
 
 end List
