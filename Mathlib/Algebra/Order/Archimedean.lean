@@ -186,7 +186,17 @@ theorem exists_nat_pow_near (hx : 1 ≤ x) (hy : 1 < y) : ∃ n : ℕ, y ^ n ≤
 end LinearOrderedSemiring
 
 section LinearOrderedSemifield
-variable [LinearOrderedSemifield α] [Archimedean α] [ExistsAddOfLE α] {x y ε : α}
+variable [LinearOrderedSemifield α] [Archimedean α] {x y ε : α}
+
+lemma exists_nat_one_div_lt (hε : 0 < ε) : ∃ n : ℕ, 1 / (n + 1 : α) < ε := by
+  cases' exists_nat_gt (1 / ε) with n hn
+  use n
+  rw [div_lt_iff, ← div_lt_iff' hε]
+  · apply hn.trans
+    simp [zero_lt_one]
+  · exact n.cast_add_one_pos
+
+variable [ExistsAddOfLE α]
 
 /-- Every positive `x` is between two successive integer powers of
 another `y` greater than one. This is the same as `exists_mem_Ioc_zpow`,
@@ -237,14 +247,6 @@ theorem exists_nat_pow_near_of_lt_one (xpos : 0 < x) (hx : x ≤ 1) (ypos : 0 < 
   refine ⟨n, ?_, ?_⟩
   · rwa [inv_pow, inv_lt_inv xpos (pow_pos ypos _)] at h'n
   · rwa [inv_pow, inv_le_inv (pow_pos ypos _) xpos] at hn
-
-lemma exists_nat_one_div_lt (hε : 0 < ε) : ∃ n : ℕ, 1 / (n + 1 : α) < ε := by
-  cases' exists_nat_gt (1 / ε) with n hn
-  use n
-  rw [div_lt_iff, ← div_lt_iff' hε]
-  · apply hn.trans
-    simp [zero_lt_one]
-  · exact n.cast_add_one_pos
 
 end LinearOrderedSemifield
 
