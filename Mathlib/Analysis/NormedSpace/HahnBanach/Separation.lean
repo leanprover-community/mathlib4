@@ -257,8 +257,8 @@ theorem geometric_hahn_banach_open_open_RCLike (hs₁ : Convex ℝ s) (hs₂ : I
 
 variable [LocallyConvexSpace ℝ E]
 
-theorem geometric_hahn_banach_compact_closed_RCLike
-(hs₁ : Convex ℝ s) (hs₂ : IsCompact s) (ht₁ : Convex ℝ t) (ht₂ : IsClosed t) (disj : Disjoint s t) :
+theorem geometric_hahn_banach_compact_closed_RCLike (hs₁ : Convex ℝ s) (hs₂ : IsCompact s)
+    (ht₁ : Convex ℝ t) (ht₂ : IsClosed t) (disj : Disjoint s t) :
     ∃ (f : E →L[𝕜] 𝕜) (u v : ℝ), (∀ a ∈ s, re (f a) < u) ∧ u < v ∧ ∀ b ∈ t, v < re (f b) := by
   obtain ⟨g, u, v, h1⟩ := geometric_hahn_banach_compact_closed hs₁ hs₂ ht₁ ht₂ disj; use LinTo𝕜' g
   simp only [real_of_real_of_LinTo𝕜', exists_and_left]; use u; constructor; exact h1.1; use v
