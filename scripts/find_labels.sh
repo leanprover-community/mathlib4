@@ -61,7 +61,8 @@ findInRange "${1}" "${yr_mth}-16T00:00:00" "${end_date}"   | sed -z 's=^\[=='
   sort |
   awk 'BEGIN{ labels=""; con=0; total=0 }
     { total++
-      if(!($1 in seen)) { con++; order[con]=$1; seen[$1]=0 }
+      if(!($1 in seen)) { con++; order[con]=$1 }
+      seen[$1]++
       gsub(/\[Merged by Bors\] - /, "")
       rest=$2; for(i=3; i<=NF; i++){rest=rest" "$i};acc[$1]=acc[$1]"\n"rest }
     END {
@@ -71,7 +72,7 @@ findInRange "${1}" "${yr_mth}-16T00:00:00" "${end_date}"   | sed -z 's=^\[=='
         gsub(/\[\]/, "Miscellaneous", tag)
         gsub(/["\][]/, "", tag)
         gsub(/,/, " ", tag)
-        printf("\n%s: %s%s\n", i, tag, acc[order[i]])
+        printf("\n%s: %s%s\n", seen[i], tag, acc[order[i]])
       }
     }
   '
