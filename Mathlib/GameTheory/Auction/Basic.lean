@@ -58,10 +58,8 @@ logic to handle potential non-constructive cases effectively.
 auction, game theory, economics, bidding, valuation
 -/
 
-open Classical
-
 /- `v` is the valuation for participants `I` -/
-variable {I : Type*} [Fintype I] [Nontrivial I] (v : I → ℝ)
+variable {I : Type*} [DecidableEq I] [Fintype I] [Nontrivial I] (v : I → ℝ)
 
 namespace Auction
 
@@ -122,14 +120,15 @@ theorem firstprice_auction_has_no_dominant_strategy (i : I) (bi : ℝ) :
     ¬ Dominant (utility v) i bi := by
   rw [Dominant, not_forall]
   use Function.update (fun _ ↦ (bi - 2)) i (bi - 1)
-  rw [utility, utility, if_pos (eq_winner_of_bid_gt _ i _), if_pos (eq_winner_of_bid_gt _ i _)]
+  rw [utility_winner _ _ _ (eq_winner_of_bid_gt _ i _),
+      utility_winner _ _ _ (eq_winner_of_bid_gt _ i _)]
   <;> intros <;> simp [*]
 
 end Firstprice
 
 /-- `maxBidExcluding i` is the maximal bid of all participants but `i`. -/
-noncomputable def maxBidExcluding (i : I) : ℝ := Finset.sup' (Finset.erase Finset.univ i)
-(Finset.Nontrivial.erase_nonempty (Finset.univ_nontrivial)) b
+noncomputable def maxBidExcluding (i : I) : ℝ :=
+  (Finset.univ.erase i).sup' (Finset.univ_nontrivial.erase_nonempty) b
 
 /--The second highest bid: the highest bid excluding the winner’s bid.-/
 noncomputable def secondPrice : ℝ := maxBidExcluding b (winner b)
@@ -139,7 +138,7 @@ namespace Secondprice
 /-- The bid of the winner is always greater than or equal to the second highest bid. -/
 lemma maxBidExcluding_le_maxBid {i : I} (b : I → ℝ) : maxBidExcluding b i ≤ maxBid b := by
   apply Finset.sup'_mono
-  exact Finset.subset_univ (Finset.erase Finset.univ i)
+  exact Finset.subset_univ _
 
 /-- If `i` is not the winner, then the highest bid excluding `i` is equal to the highest bid. -/
 lemma maxBidExcluding_eq_maxBid_if_loser {i : I} (H : i ≠ winner b) :
@@ -157,19 +156,17 @@ noncomputable def utility (i : I) : ℝ := if i = winner b then v i - secondPric
 variable {i : I}
 
 /-- If `i` is the winner, then their utility is their valuation minus the second highest bid. -/
-lemma utility_winner (H: i = winner b) : utility v b i = v i - secondPrice b:= by
-  rw [utility]; simp only [ite_true, H]
+lemma utility_winner (H : i = winner b) : utility v b i = v i - secondPrice b := if_pos H
 
 /-- If `i` is not the winner, then their utility is 0. -/
-lemma utility_loser (H : i ≠ winner b) : utility v b i = 0 := by
-  rw [utility]; simp only [ite_false, H]
+lemma utility_loser (H : i ≠ winner b) : utility v b i = 0 := if_neg H
 
 /-- utility is non-negative if the bid equals the valuation. -/
-lemma utility_nneg (i : I) (H : b i = v i) : 0 ≤ utility v b i := by
+lemma utility_nonneg (i : I) (H : b i = v i) : 0 ≤ utility v b i := by
   rcases eq_or_ne i (winner b) with rfl | H2
-  · rw [utility, if_pos rfl, ← H, bid_winner_eq_maxBid b, sub_nonneg, secondPrice]
+  · rw [utility_winner _ _ rfl, ← H, bid_winner_eq_maxBid b, sub_nonneg, secondPrice]
     exact maxBidExcluding_le_maxBid b
-  · rw [utility, if_neg H2]
+  · rw [utility_loser _ _ H2]
 
 /-- Proves that the strategy of bidding one's valuation is a dominant strategy for `i`. -/
 theorem valuation_is_dominant (i : I) : Dominant (utility v) i (v i) := by
@@ -184,7 +181,7 @@ theorem valuation_is_dominant (i : I) : Dominant (utility v) i (v i) := by
       conv_lhs => rw [← Function.update_same i (v i) b]
       exact Finset.le_sup' _ (Finset.mem_univ i)
   · rw [utility_loser _ b h1]
-    apply utility_nneg
+    apply utility_nonneg
     apply Function.update_same
 
 end Secondprice
