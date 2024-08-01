@@ -55,6 +55,7 @@ lemma hasSmallLocalizedHom_iff :
   · intro h
     exact ⟨small_map (homEquiv W W.Q L)⟩
 
+include L in
 lemma hasSmallLocalizedHom_of_isLocalization :
     HasSmallLocalizedHom.{v₂} W X Y := by
   rw [hasSmallLocalizedHom_iff W L]
