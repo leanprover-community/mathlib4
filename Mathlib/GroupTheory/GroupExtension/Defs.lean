@@ -77,16 +77,15 @@ theorem rightHom_comp_inl : S.rightHom.comp S.inl = 1 := by
   exact S.rightHom_inl n
 
 /-- `E` acts on `N` by conjugation. -/
-noncomputable def conjAct : E →* MulAut N := {
-  toFun := fun e ↦ (MonoidHom.ofInjective S.inl_injective).trans <|
+noncomputable def conjAct : E →* MulAut N where
+  toFun e := (MonoidHom.ofInjective S.inl_injective).trans <|
     (MulAut.conjNormal e).trans (MonoidHom.ofInjective S.inl_injective).symm
   map_one' := by
     ext _
     simp only [map_one, MulEquiv.trans_apply, MulAut.one_apply, MulEquiv.symm_apply_apply]
-  map_mul' := fun _ _ ↦ by
+  map_mul' _ _ := by
     ext _
     simp only [map_mul, MulEquiv.trans_apply, MulAut.mul_apply, MulEquiv.apply_symm_apply]
-}
 
 /-- The inclusion and a conjugation commute. -/
 theorem inl_conjAct_comm {e : E} {n : N} : S.inl (S.conjAct e n) = e * S.inl n * e⁻¹ := by
