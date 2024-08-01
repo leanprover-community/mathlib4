@@ -27,7 +27,7 @@ namespace Int
 section OrderedAddCommGroupWithOne
 
 variable [AddCommGroupWithOne R] [PartialOrder R] [CovariantClass R R (· + ·) (· ≤ ·)]
-variable [ZeroLEOneClass R] [NeZero (1 : R)]
+variable [ZeroLEOneClass R]
 
 lemma cast_mono : Monotone (Int.cast : ℤ → R) := by
   intro m n h
@@ -36,7 +36,7 @@ lemma cast_mono : Monotone (Int.cast : ℤ → R) := by
   rw [← sub_nonneg, ← cast_sub, ← hk, cast_natCast]
   exact k.cast_nonneg'
 
-variable [Nontrivial R] {m n : ℤ}
+variable [NeZero (1 : R)] {m n : ℤ}
 
 @[simp] lemma cast_nonneg : ∀ {n : ℤ}, (0 : R) ≤ n ↔ 0 ≤ n
   | (n : ℕ) => by simp

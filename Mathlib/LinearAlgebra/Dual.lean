@@ -1697,7 +1697,7 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : B
     Basis.tensorProduct_apply, coeFn_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
     map_tmul, lid_tmul, smul_eq_mul, id_coe, id_eq]
   rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
-  · simp
+  · simpa using mul_comm _ _
   all_goals { intros; simp [*] at * }
 
 -- Porting note: introduced to help with timeout in dualDistribEquivOfBasis
