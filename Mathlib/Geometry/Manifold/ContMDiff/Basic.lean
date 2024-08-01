@@ -354,7 +354,7 @@ end Inclusion
 section
 
 variable (I)
-  [Nonempty M] {e : M → H} (h : OpenEmbedding e)
+variable [Nonempty M] {e : M → H} (h : OpenEmbedding e)
   [Nonempty M'] {e' : M' → H'} (h' : OpenEmbedding e')
   {n : WithTop ℕ}
 
