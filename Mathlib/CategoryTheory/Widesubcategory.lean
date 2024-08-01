@@ -102,7 +102,7 @@ def wideSubcategoryInclusion : WideSubcategory P ⥤ C :=
   wideInducedFunctor WideSubcategory.obj P
 
 @[simp]
-theorem wideSubcategoryInclusion.obj {X} : (wideSubcategoryInclusion P).obj X = X.obj :=
+theorem wideSubcategoryInclusion.obj (X) : (wideSubcategoryInclusion P).obj X = X.obj :=
   rfl
 
 @[simp]
