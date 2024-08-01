@@ -88,7 +88,6 @@ set_option linter.cdot true in
 example : Add Nat where add := (. + ·)
 
 -- Tests for the badVariable linter.
-set_option autoImplicit false
 
 -- HACK. inserting temporary sections to make the linter work.
 -- TODO fix the linter and remove these again!
@@ -117,9 +116,7 @@ variable [DecidableEq a] [Inhabited b] {f : a → b}
 -- That means typeclasses and instance implicits are fine for this purpose?
 -- (I can certainly write a linter ignoring these for now, and see if it yields useful results)
 section
-variable (a)
-theorem foo : True := trivial
-
+variable (a) -- dummy line
 section
 variable {a} [DecidableEq b]
 
@@ -127,9 +124,38 @@ variable {a} [DecidableEq b]
 section
 variable (a) -- dummy line
 section
+/--
+warning: bad variable declaration:
+          the binder types of the variable(s) #[a] are changed,
+          while the new variable(s) #[b] are declared
+please split these into separate 'variable' commands
+note: this linter can be disabled with `set_option linter.badVariable false`
+-/
+#guard_msgs in
 variable {a} (b : Type)
 section
+/--
+warning: bad variable declaration:
+          the binder types of the variable(s) #[a] are changed,
+          while the new variable(s) #[b] are declared
+please split these into separate 'variable' commands
+note: this linter can be disabled with `set_option linter.badVariable false`
+-/
+#guard_msgs in
 variable (a) {b : Type}
+
+section
+variable ⦃x y : Int⦄  ⦃x y⦄
+section
+/--
+warning: bad variable declaration:
+          the binder types of the variable(s) #[x] are changed,
+          while the new variable(s) #[x] are declared
+please split these into separate 'variable' commands
+note: this linter can be disabled with `set_option linter.badVariable false`
+-/
+#guard_msgs in
+variable (x) (c : Type)  -- should fail!
 
 -- I guess this is also bad, changing b and adding a --- i.e., the binder order doesn't matter?!
 section

@@ -301,7 +301,8 @@ def badVariableLinter : Linter where
       -- Determine all binders which are just changing a previous variable's binder.
       let binderTypeChanged := (namesWithTypes.filter (fun nm ↦
         isBinderTypeChange nm.1 nm.2 previousNames)).map fun nameBool ↦ nameBool.1
-
+      if binderTypeChanged.size > 0 then
+        dbg_trace s!"binder type of variable(s) {binderTypeChanged} changed"
       -- We error if this `variable` command contains both a variable whose binder type
       -- is merely changed, and a new binder declared.
       let newVariables := (namesWithTypes.filter (fun nm ↦
