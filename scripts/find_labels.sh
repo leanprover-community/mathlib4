@@ -45,9 +45,9 @@ end_date="$(date -d "${yr_mth}-01 + 1 month - 1 day" +%Y-%m-%d)T23:59:59"
 
 commits_in_range="$(git log --since="${start_date}" --until="${end_date}" --pretty=oneline | wc -l)"
 
-printf $'\nRange between %s and %s\n' "${start_date}" "${end_date}"
+printf $'\nBetween %s and %s there were\n' "${start_date/%T*}" "${end_date/%T*}"
 
-printf $'\n%s commits to `master`\n' "${commits_in_range}" "${start_date}" "${end_date}"
+printf $'%s commits to `master`\n' "${commits_in_range}"
 
 (
 findInRange "${1}" "${start_date}" "${yr_mth}-14T23:59:59" | sed -z 's=]\n*$=,\n='
