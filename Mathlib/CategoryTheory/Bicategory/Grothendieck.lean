@@ -114,7 +114,7 @@ protected lemma assoc {a b c d : ∫ F} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
 
 /-- The category structure on `∫ F`. -/
 instance category : Category (∫ F) where
-  toCategoryStruct := Pseudofunctor.Grothendieck.CategoryStruct
+  toCategoryStruct := Pseudofunctor.Grothendieck.categoryStruct
   id_comp := Pseudofunctor.Grothendieck.id_comp
   comp_id := Pseudofunctor.Grothendieck.comp_id
   assoc := Pseudofunctor.Grothendieck.assoc
