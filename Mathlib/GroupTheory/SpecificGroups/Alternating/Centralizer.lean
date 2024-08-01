@@ -16,7 +16,7 @@ conjugacy classes in `alternatingGroup α`.
 * `AlternatingGroup.of_cycleType_eq m` and `AlternatingGroup.card_of_cycleType m`
   give the analogous result in the subgroup `alternatingGroup α`
 
-* `Equiv.Perm.OnCycleFactors.sign_ψ` computes the signature of the permutation induced given by `ψ`.
+* `Equiv.Perm.OnCycleFactors.sign_θ` computes the signature of the permutation induced given by `Equiv.Perm.Basis.θ`.
 
 * Finally, `Equiv.Perm.OnCycleFactors.kerφ_le_alternating_iff`
   establishes on which iff-condition the centralizer of an even permutation
@@ -53,8 +53,8 @@ theorem sign_θ
 
 variable {g} in
 theorem odd_of_centralizer_le_alternatingGroup
-    (h : Subgroup.comap ConjAct.toConjAct.toMonoidHom
-      (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g) ≤ alternatingGroup α) :
+    (h : (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g).comap
+        ConjAct.toConjAct.toMonoidHom ≤ alternatingGroup α) :
     ∀ i ∈ g.cycleType, Odd i := by
   intro i hi
   rw [Equiv.Perm.cycleType_def g, Multiset.mem_map] at hi
@@ -154,9 +154,8 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     rw [← Finset.card_map, AlternatingGroup.of_cycleType_aux, if_pos hm.2]
     simp only [← mul_assoc, Equiv.Perm.card_of_cycleType_mul_eq α m, if_pos hm.1]
   · -- m does not correspond to a permutation, or corresponds to an odd one,
-    rw [← Finset.card_map, AlternatingGroup.of_cycleType_aux]
-    rw [apply_ite Finset.card]
-    rw [Finset.card_empty]
+    rw [← Finset.card_map, AlternatingGroup.of_cycleType_aux,
+      apply_ite Finset.card, Finset.card_empty]
     rw [not_and_or] at hm
     split_ifs with hm'
     · rw [Equiv.Perm.card_of_cycleType, if_neg, zero_mul]
@@ -253,7 +252,7 @@ theorem count_le_one_of_kerφ_le_alternating
       we could prove that it is the product
       of the transpositions with disjoint supports
       [(g ^ n) (a c), (g ^ n) (a d)], for 0 ≤ n < c.support.card,
-      which are in odd number by `odd_of_mem_kerφ`,
+      which are in odd number by `odd_of_centralizer_le_alternatingGroup`,
       but it will be sufficient to observe that `k ^ 2 = 1`
       (which implies that `k.cycleType` is of the form (2,2,…))
       and to control its support. -/
@@ -420,14 +419,15 @@ theorem count_le_one_of_kerφ_le_alternating
     · rw [hx', Equiv.swap_apply_right]; exact hm
     · rw [Equiv.swap_apply_of_ne_of_ne hx hx']
 
-theorem OnCycleFactors.kerφ_le_alternating_iff :
-    Subgroup.comap ConjAct.toConjAct.toMonoidHom
-      (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g) ≤ alternatingGroup α ↔
-    (∀ i ∈ g.cycleType, Odd i) ∧ Fintype.card α ≤ g.cycleType.sum + 1 ∧
+
+theorem kerφ_le_alternating_iff :
+    (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g).comap
+      ConjAct.toConjAct.toMonoidHom ≤ alternatingGroup α ↔
+    (∀ c ∈ g.cycleType, Odd c) ∧ Fintype.card α ≤ g.cycleType.sum + 1 ∧
       ∀ i, g.cycleType.count i ≤ 1 :=  by
   rw [SetLike.le_def]
   constructor
-  · exact fun h ↦ ⟨odd_of_mem_kerφ h, card_le_of_mem_kerφ g h,
+  · exact fun h ↦ ⟨odd_of_centralizer_le_alternatingGroup h, card_le_of_mem_kerφ g h,
       count_le_one_of_kerφ_le_alternating g h⟩
   · rintro ⟨h_odd, h_fixed, h_count⟩ x hx
     suffices hx' : x ∈ (θ g).range by
