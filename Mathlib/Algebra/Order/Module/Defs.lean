@@ -644,7 +644,7 @@ end LinearOrder
 end SMulWithZero
 
 section MulAction
-variable [Monoid α] [Zero α] [Zero β] [MulAction α β]
+variable [Monoid α] [Zero β] [MulAction α β]
 
 section Preorder
 variable [Preorder α] [Preorder β]
@@ -1051,8 +1051,11 @@ end SMulWithZero
 end Pi
 
 section Lift
-variable {γ : Type*} [Zero α] [Preorder α] [Zero β] [Preorder β] [Zero γ] [Preorder γ]
+variable {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
   [SMul α β] [SMul α γ] (f : β → γ)
+
+section
+variable [Zero α]
 
 lemma PosSMulMono.lift [PosSMulMono α γ]
     (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
@@ -1075,6 +1078,11 @@ lemma PosSMulReflectLT.lift [PosSMulReflectLT α γ]
     (smul : ∀ (a : α) b, f (a • b) = a • f b) : PosSMulReflectLT α β where
   elim a ha b₁ b₂ h := by
     simp only [← lt_iff_lt_of_le_iff_le' hf hf, smul] at *; exact lt_of_smul_lt_smul_left h ha
+
+end
+
+section
+variable [Zero β] [Zero γ]
 
 lemma SMulPosMono.lift [SMulPosMono α γ]
     (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
@@ -1106,6 +1114,8 @@ lemma SMulPosReflectLT.lift [SMulPosReflectLT α γ]
   elim b hb a₁ a₂ h := by
     simp only [← hf, ← lt_iff_lt_of_le_iff_le' hf hf, zero, smul] at *
     exact lt_of_smul_lt_smul_right h hb
+
+end
 
 end Lift
 
