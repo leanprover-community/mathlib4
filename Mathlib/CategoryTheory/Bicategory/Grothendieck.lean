@@ -24,6 +24,10 @@ The projection functor `∫ F ⥤ 𝒮` is then given by projecting to the first
 * On objects, it sends `(S, a)` to `S`
 * On morphisms, it sends `(f, h)` to `f`
 
+## TODO
+1. Implement functoriality for the Grothendieck construction.
+2. Obtain the results in `CategoryTheory.Grothendieck` as a specialization of these results.
+
 ## References
 [Vistoli2008] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
 Angelo Vistoli
