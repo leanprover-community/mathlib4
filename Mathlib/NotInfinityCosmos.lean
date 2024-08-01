@@ -455,6 +455,17 @@ def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : [1] ⟶ [n] :=
       | 0, 1, _ => h
   }
 
+def mkOfLeComp {n} (i j k : Fin (n+1)) (h₁ : i ≤ j) (h₂ : j ≤ k): [2] ⟶ [n] :=
+  SimplexCategory.mkHom {
+    toFun := fun | 0 => i | 1 => j | 2 => k
+    monotone' := fun
+      | 0, 0, _ | 1, 1, _ | 2, 2, _  => le_rfl
+      | 0, 1, _ => h₁
+      | 1, 2, _ => h₂
+      | 0, 2, _ => Fin.le_trans h₁ h₂
+  }
+
+
 /-- The fully faithful inclusion of the truncated simplex category into the usual
 simplex category.
 -/
@@ -536,12 +547,6 @@ set_option quotPrecheck false
 local macro:max (priority := high) "[" n:term "]₂" : term =>
   `((⟨SimplexCategory.mk $n, by decide⟩ : Δ 2))
 
--- -- ER: Tried to use this notation here but it doesn't seem to work.
--- local macro:1000 (priority := high) X:term " _[" n:term "]₂" : term =>
---     `(($X : SSet.Truncated 2).obj (Opposite.op ⟨SimplexCategory.mk $n, by decide⟩))
-
--- #check [0]₂
-
 def nerveIsPointwiseRightKanExtensionAt (C : Cat) (n : ℕ) :
     RightExtension.IsPointwiseRightKanExtensionAt
       (nerveRightExtension C) (op ([n] : SimplexCategory)) := by
@@ -550,27 +555,52 @@ def nerveIsPointwiseRightKanExtensionAt (C : Cat) (n : ℕ) :
   simp only [nerveFunctor_obj, RightExtension.mk_left, nerve_obj, SimplexCategory.len_mk,
     const_obj_obj, op_obj, comp_obj, StructuredArrow.proj_obj, whiskeringLeft_obj_obj,
     RightExtension.mk_hom, NatTrans.id_app, comp_id]
+  let pt i : ([0] : SimplexCategory) ⟶ [n] := SimplexCategory.const _ _ i
+  let pt' i : StructuredArrow (op [n]) (Δ.ι 2).op := .mk (Y := op [0]₂) (.op (pt i))
+  let ar {i j : Fin (n+1)} (k : i ⟶ j) : [1] ⟶ [n] := mkOfLe _ _ k.le
+  let ar' {i j : Fin (n+1)} (k : i ⟶ j) :
+    StructuredArrow (op [n]) (Δ.ι 2).op :=
+      .mk (Y := op [1]₂) (.op (ar k))
+  let tri {i j k : Fin (n+1)} (f : i ⟶ j) (g : j ⟶ k) : [2] ⟶ [n] :=
+    mkOfLeComp _ _ _ f.le g.le
+  let tri' {i j k : Fin (n+1)} (f : i ⟶ j) (g : j ⟶ k) :
+    StructuredArrow (op [n]) (Δ.ι 2).op :=
+      .mk (Y := op [2]₂) (.op (tri f g))
+  let facemap₂ {i j k : Fin (n+1)} (f : i ⟶ j) (g : j ⟶ k) : (tri' f g) ⟶ (ar' f) := by
+    refine StructuredArrow.homMk (.op (SimplexCategory.δ 2)) ?_
+    apply Quiver.Hom.unop_inj
+    ext z; revert z;
+    simp [ar']
+    intro | 0 | 1 => rfl
+  let facemap₀ {i j k : Fin (n+1)} (f : i ⟶ j) (g : j ⟶ k) : (tri' f g) ⟶ (ar' g) := by
+    refine StructuredArrow.homMk (.op (SimplexCategory.δ 0)) ?_
+    apply Quiver.Hom.unop_inj
+    ext z; revert z;
+    simp [ar']
+    intro | 0 | 1 => rfl
+  let facemap₁ {i j k : Fin (n+1)} (f : i ⟶ j) (g : j ⟶ k) : (tri' f g) ⟶ (ar' (f ≫ g)) := by
+    refine StructuredArrow.homMk (.op (SimplexCategory.δ 1)) ?_
+    apply Quiver.Hom.unop_inj
+    ext z; revert z;
+    simp [ar']
+    intro | 0 | 1 => rfl
   exact {
     lift := by
       intro s x
-      let φi i : ([0] : SimplexCategory) ⟶ [n] := SimplexCategory.const _ _ i
-      let fi i : StructuredArrow (op [n]) (Δ.ι 2).op := .mk (Y := op [0]₂) (.op (φi i))
-      let φk {i j : Fin (n+1)} (k : i ⟶ j) : [1] ⟶ [n] := mkOfLe _ _ k.le
-      let hom := homOfLE (show (0:Fin 2) ≤ 1 by decide)
-      let fk {i j : Fin (n+1)} (k : i ⟶ j) : StructuredArrow (op [n]) (Δ.ι 2).op :=
-        .mk (Y := op [1]₂) (.op (φk k))
       show Fin (n+1) ⥤ C
       exact {
-        obj := fun i => s.π.app (fi i) x |>.obj 0
+        obj := fun i => s.π.app (pt' i) x |>.obj 0
         map := fun {i j} k => by
-          have := (s.π.app (fk k) x).map' 0 1
+          have := (s.π.app (ar' k) x).map' 0 1
           dsimp at this ⊢
           have hi := congr_fun (s.π.naturality <|
-            StructuredArrow.homMk (f := fk k) (f' := fi i) (.op (SimplexCategory.const _ _ 0)) <| by
+            StructuredArrow.homMk (f := ar' k) (f' := pt' i)
+              (.op (SimplexCategory.const _ _ 0)) <| by
               apply Quiver.Hom.unop_inj
               ext z; revert z; intro (0 : Fin 1); rfl) x
           have hj := congr_fun (s.π.naturality <|
-            StructuredArrow.homMk (f := fk k) (f' := fi j) (.op (SimplexCategory.const _ _ 1)) <| by
+            StructuredArrow.homMk (f := ar' k) (f' := pt' j)
+              (.op (SimplexCategory.const _ _ 1)) <| by
               apply Quiver.Hom.unop_inj
               ext z; revert z; intro (0 : Fin 1); rfl) x
           simp at hi hj
@@ -578,19 +608,46 @@ def nerveIsPointwiseRightKanExtensionAt (C : Cat) (n : ℕ) :
           exact this
         map_id := fun i => by
           have h'i := congr_fun (s.π.naturality <|
-            StructuredArrow.homMk (f := fi i) (f' := fk (𝟙 i))
+            StructuredArrow.homMk (f := pt' i) (f' := ar' (𝟙 i))
               (.op (SimplexCategory.const _ _ 0)) <| by
                 apply Quiver.Hom.unop_inj
                 ext z; revert z; intro | 0 | 1 => rfl) x
           dsimp at h'i ⊢
           simp [cast_eq_iff_heq]
-          refine (congr_arg_heq (fun x => x.map hom) h'i).trans ?_
+          refine (congr_arg_heq (fun x => x.map' 0 1) h'i).trans ?_
           simp [nerveFunctor₂, truncation]
           conv => lhs; rhs; equals 𝟙 _ => apply Subsingleton.elim
           simp; rfl
-        map_comp := sorry
+        map_comp := fun {i j k} f g => by
+          have h'f := congr_fun (s.π.naturality (facemap₂ f g)) x
+          have h'g := congr_fun (s.π.naturality (facemap₀ f g)) x
+          have h'fg := congr_fun (s.π.naturality (facemap₁ f g)) x
+          dsimp at h'f ⊢
+          dsimp at h'g ⊢
+          dsimp at h'fg ⊢
+          simp [cast_eq_iff_heq]
+          refine (congr_arg_heq (fun x => x.map' 0 1) h'fg).trans ?_
+          simp [nerveFunctor₂, truncation]
+          -- ER: need to use h'f and h'g similarly
+          sorry
       }
-    fac := sorry
+    fac := by
+      intro s j
+      ext x
+      fapply ComposableArrows.ext
+      · intro i
+        simp
+        have := StructuredArrow.homMk (f := j) (f' := pt' i)
+              (.op (SimplexCategory.const _ _ 0)) <| by
+              apply Quiver.Hom.unop_inj
+              simp [pt']
+              simp [pt]
+              have := SimplexCategory.const_comp [0] j.hom.unop i
+              sorry
+              -- ext z; revert z;
+              -- intro | 0 => rfl
+        sorry
+      · sorry
     uniq := sorry
   }
 
@@ -1171,18 +1228,17 @@ theorem toNerve₂.ext {X : SSet.Truncated 2} {C : Cat} (f g : X ⟶ nerve₂ C)
   | 1 => apply eq₁
   | 2 =>
     apply Functor.hext (fun i : Fin 3 => ?_) (fun (i j : Fin 3) k => ?_)
-    · let φi : [0]₂ ⟶ [2]₂ := SimplexCategory.const _ _ i
-      refine congr(($(congr_fun (f.naturality (op φi)) x)).obj 0).symm.trans ?_
-      refine .trans ?_ congr(($(congr_fun (g.naturality (op φi)) x)).obj 0)
+    · let pt : [0]₂ ⟶ [2]₂ := SimplexCategory.const _ _ i
+      refine congr(($(congr_fun (f.naturality (op pt)) x)).obj 0).symm.trans ?_
+      refine .trans ?_ congr(($(congr_fun (g.naturality (op pt)) x)).obj 0)
       exact congr($(eq₀ _).obj 0)
-    · let φk : [1]₂ ⟶ [2]₂ := mkOfLe _ _ k.le
-      let hom := homOfLE (show (0:Fin 2) ≤ 1 by decide)
-      have := congr_fun (f.naturality (op φk)) x
-      have h1 := congr_arg_heq (fun x => x.map hom) this
-      have := congr_fun (g.naturality (op φk)) x
-      have h2 := congr_arg_heq (fun x => x.map hom) this
+    · let ar : [1]₂ ⟶ [2]₂ := mkOfLe _ _ k.le
+      have := congr_fun (f.naturality (op ar)) x
+      have h1 := congr_arg_heq (fun x => x.map' 0 1) this
+      have := congr_fun (g.naturality (op ar)) x
+      have h2 := congr_arg_heq (fun x => x.map' 0 1) this
       refine h1.symm.trans <| .trans ?_ h2
-      exact congr_arg_heq (fun x => x.map hom) (eq₁ _)
+      exact congr_arg_heq (fun x => x.map' 0 1) (eq₁ _)
 
 /-- ER: This is dumb. -/
 theorem toNerve₂.ext' {X : SSet.Truncated 2} {C : Cat} (f g : X ⟶ nerveFunctor₂.obj C)
@@ -1217,7 +1273,8 @@ theorem nerve₂Adj.unit.app_eq (X : SSet.Truncated.{0} 2) :
     SSet.oneTruncation₂.map (nerve₂Adj.unit.app X) =
     ReflQuiv.adj.unit.app (SSet.oneTruncation₂.obj X) ⋙rq
     (SSet.Truncated.hoFunctor₂Obj.quotientFunctor X).toReflPrefunctor ⋙rq
-    nerve₂Adj.natIso.inv.app (SSet.Truncated.hoFunctor₂.obj X) := sorry
+    nerve₂Adj.natIso.inv.app (SSet.Truncated.hoFunctor₂.obj X) := by
+  sorry
 
 theorem nerve₂.two_simplex_property {C : Type*} [Category C] (F G : nerve₂ C _[2]₂)
     (h₀ : (nerve₂ C).map (op ι0₂) F = (nerve₂ C).map (op ι0₂) G)
@@ -1355,7 +1412,7 @@ def nerve₂Adj.counit.app.inv (C : Cat) :
     unfold inv.reflPrefunctor
     apply Quotient.sound
     have fg : (nerveFunctor₂.obj C).obj (op [2]₂) := .mk₂ f g
-    have : (φ01₂ fg).1 = .mk₁ f := sorry
+    have : (φ01₂ fg).1 = .mk₁ f := by sorry
     have := HoRel₂.mk fg -- ER: Maybe need lemmas saying what HoRel₂.mk after .mk₂ is between?
     dsimp
     unfold Quiv.adj
