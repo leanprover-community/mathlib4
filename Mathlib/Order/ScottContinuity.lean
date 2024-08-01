@@ -113,8 +113,6 @@ lemma d2 {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) : DirectedOn (· �
   obtain ⟨r,hr⟩ := hd p hp.1 q hq.1
   aesop
 
-  --obtain z := hd (a,b)
-
 lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
     {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := by
@@ -146,17 +144,6 @@ lemma Prod.IsLub {f : α × β → γ} (hf : Monotone f)
   rw [IsLUB, Prod.upperBounds hf hd, ← IsLUB]
 
 
-lemma step1 {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.fst '' d).Nonempty)
-    (hd₂ : DirectedOn (· ≤ ·) (Prod.fst '' d)) {p₁ : α} {p₂ : β} (h : IsLUB d (p₁,p₂))
-    (h₁ : ∀ b, ScottContinuous (fun a => f (a,b))) {b : β} :
-    IsLUB (f '' (Prod.fst '' d) ×ˢ {b}) (f (p₁,b)) := by
-  simp only [prod_singleton]
-  have e1 : IsLUB (Prod.fst '' d) p₁ := ((isLUB_prod (p₁,p₂)).mp h).1
-  have e3 {S : Set α} : f '' ((fun a ↦ (a, b)) '' S) = (fun a ↦ f (a, b)) '' S := by
-    exact image_image f (fun a ↦ (a, b)) S
-  rw [e3]
-  exact h₁ b hd₁ hd₂ e1
-
 lemma step1' {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.snd '' d).Nonempty)
     (hd₂ : DirectedOn (· ≤ ·) (Prod.snd '' d)) {p₁ : α} {p₂ : β} (h : IsLUB d (p₁,p₂))
     (h₁ : ∀ a, ScottContinuous (fun b => f (a,b))) {a : α} :
@@ -168,82 +155,19 @@ lemma step1' {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.snd '' d)
   rw [e3]
   exact h₁ a hd₁ hd₂ e1
 
-
-lemma test {f : α × β → γ} {d : Set (α × β)} (hd₁ : d.Nonempty)
-    (hd₂ : DirectedOn (· ≤ ·) d) {p₁ : α} {p₂ : β} (h : IsLUB d (p₁,p₂))
-    (h₁ : ∀ a, ScottContinuous (fun b => f (a,b))) (h₂ : ∀ b, ScottContinuous (fun a => f (a,b))) :
-    IsLUB (f '' d) (f (p₁,p₂)) := by
-  have e1 : IsLUB (Prod.fst '' d) p₁ := ((isLUB_prod (p₁,p₂)).mp h).1
-  rw [Prod.IsLub (monotone (fun a => (h₂ a).monotone) (fun a => (h₁ a).monotone)) hd₂]
-  rw [← iUnion_of_singleton_coe (Prod.fst '' d), iUnion_prod_const, image_iUnion]
-  apply IsLUB.iUnion
-  apply fun a => step1' (Nonempty.image Prod.snd hd₁) (d2 hd₂) h h₁
-  have e2 : IsLUB ((fun a ↦ f (a, p₂)) '' (Prod.fst '' d)) (f (p₁,p₂)) :=
-    h₂ p₂ (Nonempty.image Prod.fst hd₁) (d1 hd₂) e1
-  rw [Set.range]
-  rw [Set.image] at e2
-  aesop
-
 lemma ScottContinuous_prod_of_ScottContinuous {f : α × β → γ}
     (h₁ : ∀ a, ScottContinuous (fun b => f (a,b))) (h₂ : ∀ b, ScottContinuous (fun a => f (a,b))) :
     ScottContinuous f := by
   intro d hd₁ hd₂ p hdp
-  apply test hd₁ hd₂ hdp h₁ h₂
-
-/-
-lemma testprod {S : Set α} {T : Set β} {u : S → α × β} (v : α × β)
-    (hS : ∀ (s : S), IsLUB ({↑s} ×ˢ T) (u s)) (h : IsLUB {u s | (s : S)} v) :
-    IsLUB (S ×ˢ T) v := sorry
-
-lemma testprod' {S : Set α} {T : Set β} {u : S → γ} {f : α × β → γ} (v : γ)
-    (hS : ∀ (s : S), IsLUB (f '' ({↑s} ×ˢ T)) (u s)) (h : IsLUB (Set.range u) v) :
-    IsLUB (f '' (S ×ˢ T)) v := sorry
-
-lemma testprod'' {S : Set α} {T : Set β} {u : T → γ} {f : α × β → γ} (v : γ)
-    (hT : ∀ (t : T), IsLUB (f '' (S ×ˢ {↑t})) (u t)) (h : IsLUB (u '' univ) v) :
-    IsLUB (f '' (S ×ˢ T)) v := sorry
-
-
-lemma test2 {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.fst '' d).Nonempty)
-    (hd₂ : DirectedOn (· ≤ ·) (Prod.fst '' d)) {p₁ : α} {p₂ : β} (h : IsLUB d (p₁,p₂))
-    (h₁ : ∀ b, ScottContinuous (fun a => f (a,b))) (h₂ : ∀ a, ScottContinuous (fun b => f (a,b))) :
-    IsLUB (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) (f (p₁,p₂)) := by
-  have e1 : IsLUB (Prod.fst '' d) p₁ := ((isLUB_prod (p₁,p₂)).mp h).1
-  have e2 : IsLUB (Prod.snd '' d) p₂ := ((isLUB_prod (p₁,p₂)).mp h).2
-  --apply testprod' (u := fun a => f (a, p₂)) (v := (f (p₁,p₂))) (S := Prod.fst '' d)
-   (T := Prod.snd '' d) _ _
-
-  --apply testprod'' (u := fun b => f (p₁, b)) (v := (f (p₁,p₂))) (S := Prod.fst '' d)
-    T := Prod.snd '' d)
-  intro a
-  apply step1 hd₁ hd₂
-  apply (h₂ p₁)
-  --apply test hd₁ hd₂ h h₁
--/
-
-lemma stepn {f : α × β → γ} {d : Set (α × β)} {p₁ : α} {p₂ : β} (hf : Monotone f)
-    (hd : DirectedOn (· ≤ ·) d) (h : IsLUB (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) (f (p₁,p₂))) :
-    IsLUB (f '' d) (f (p₁,p₂)) := by
-  exact (Prod.IsLub hf hd (f (p₁, p₂))).mpr h
-
-
-
-
-
-
-
-
-
-/-
-lemma Prod.ScottContinuous {f : α × β → γ} (h₁ : ∀ b, ScottContinuous (fun a => f (a,b)))
-    (h₂ : ∀ a, ScottContinuous (fun b => f (a,b))) : ScottContinuous f := by
-    intro d hd₁ hd₂ p hdp
-    rw [Prod.IsLub (monotone (fun b ↦ ScottContinuous.monotone (h₁ b))
-      (fun a ↦ ScottContinuous.monotone (h₂ a)))]
-    rw [isLUB_prod] at hdp
-
-  --rw [ScottContinuous]
--/
+  rw [Prod.IsLub (monotone (fun a => (h₂ a).monotone) (fun a => (h₁ a).monotone)) hd₂]
+  rw [← iUnion_of_singleton_coe (Prod.fst '' d), iUnion_prod_const, image_iUnion]
+  apply IsLUB.iUnion
+  apply fun a => step1' (Nonempty.image Prod.snd hd₁) (d2 hd₂) hdp h₁
+  have e2 : IsLUB ((fun a ↦ f (a, p.2)) '' (Prod.fst '' d)) (f (p.1,p.2)) :=
+    h₂ p.2 (Nonempty.image Prod.fst hd₁) (d1 hd₂) ((isLUB_prod (p.1,p.2)).mp hdp).1
+  rw [Set.range]
+  rw [Set.image] at e2
+  aesop
 
 end Products
 
