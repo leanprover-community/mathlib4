@@ -50,7 +50,7 @@ next_mth="$(date -d "${yr_mth_day} + 1 month" '+%B')"
 
 commits_in_range="$(git log --since="${start_date}" --until="${end_date}" --pretty=oneline | wc -l)"
 
-printf $'\n\nBetween %s and %s there were\n' "${start_date/%T*}" "${end_date/%T*}"
+printf $'\n\nBetween %s and %s there were\n' "${yr_mth_day}" "${end_date/%T*}"
 
 printf $'* %s commits to `master` and\n' "${commits_in_range}"
 
