@@ -468,11 +468,13 @@ theorem closure_image (f : M →[L] N) : closure L (f '' s) = map f (closure L s
 
 section GaloisCoinsertion
 
-variable {ι : Type*} {f : M →[L] N} (hf : Function.Injective f)
+variable {ι : Type*} {f : M →[L] N}
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
-def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
+def gciMapComap (hf : Function.Injective f) : GaloisCoinsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
+
+variable (hf : Function.Injective f)
 
 theorem comap_map_eq_of_injective (S : L.Substructure M) : (S.map f).comap f = S :=
   (gciMapComap hf).u_l_eq _
@@ -602,10 +604,11 @@ namespace LHom
 
 open Substructure
 
-variable {L' : Language} [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M]
+variable {L' : Language} [L'.Structure M]
 
 /-- Reduces the language of a substructure along a language hom. -/
-def substructureReduct : L'.Substructure M ↪o L.Substructure M where
+def substructureReduct (φ : L →ᴸ L') [φ.IsExpansionOn M] :
+    L'.Substructure M ↪o L.Substructure M where
   toFun S :=
     { carrier := S
       fun_mem := fun {n} f x hx => by
@@ -616,6 +619,8 @@ def substructureReduct : L'.Substructure M ↪o L.Substructure M where
     simp only [SetLike.coe_set_eq, Substructure.mk.injEq] at h
     exact h
   map_rel_iff' {S T} := Iff.rfl
+
+variable (φ : L →ᴸ L') [φ.IsExpansionOn M]
 
 @[simp]
 theorem mem_substructureReduct {x : M} {S : L'.Substructure M} :

@@ -355,7 +355,6 @@ end SMul
 section MapCoeffs
 
 variable {R' : Type*} [Semiring R'] [Module R' M] (f : R ≃+* R')
-  (h : ∀ (c) (x : M), f c • x = c • x)
 
 attribute [local instance] SMul.comp.isScalarTower
 
@@ -365,7 +364,7 @@ then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module.
 See also `Basis.algebraMapCoeffs` for the case where `f` is equal to `algebraMap`.
 -/
 @[simps (config := { simpRhs := true })]
-def mapCoeffs : Basis ι R' M := by
+def mapCoeffs (h : ∀ (c) (x : M), f c • x = c • x) : Basis ι R' M := by
   letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
   haveI : IsScalarTower R' R M :=
     { smul_assoc := fun x y z => by
@@ -375,6 +374,8 @@ def mapCoeffs : Basis ι R' M := by
         rw [mul_smul, ← h, f.apply_symm_apply] }
   exact ofRepr <| (b.repr.restrictScalars R').trans <|
     Finsupp.mapRange.linearEquiv (Module.compHom.toLinearEquiv f.symm).symm
+
+variable (h : ∀ (c) (x : M), f c • x = c • x)
 
 theorem mapCoeffs_apply (i : ι) : b.mapCoeffs f h i = b i :=
   apply_eq_iff.mpr <| by
