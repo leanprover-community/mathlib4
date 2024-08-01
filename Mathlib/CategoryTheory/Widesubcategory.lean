@@ -86,7 +86,6 @@ structure WideSubcategory (_P : MorphismProperty C) [IsMultiplicative _P] where
   /-- The category of which this is a wide subcategory-/
   obj : C
 
-@[simps!]
 instance WideSubcategory.category : Category.{v₁} (WideSubcategory P) :=
   InducedWideCategory.category WideSubcategory.obj P
 
