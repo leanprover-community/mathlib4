@@ -169,29 +169,6 @@ instance IsStarNormal.instNonUnitalContinuousFunctionalCalculus {A : Type*} [Non
     NonUnitalContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop) :=
   RCLike.nonUnitalContinuousFunctionalCalculus Unitization.isStarNormal_inr
 
-instance IsStarNormal.cfcₙ_map {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R]
-    [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [Nontrivial R] [TopologicalSpace A]
-    [NonUnitalRing A] [StarRing A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-    [NonUnitalContinuousFunctionalCalculus R p] (a : A) (f : R → R) :
-    IsStarNormal (cfcₙ f a) where
-  star_comm_self := by
-    refine cfcₙ_cases (fun x ↦ Commute (star x) x) _ _ (Commute.zero_right _) fun _ _ _ ↦ ?_
-    simp only [Commute, SemiconjBy]
-    rw [← cfcₙ_apply f a, ← cfcₙ_star, ← cfcₙ_mul .., ← cfcₙ_mul ..]
-    congr! 2
-    exact mul_comm _ _
-
-instance IsStarNormal.cfc_map {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R]
-    [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A]
-    [StarRing A] [Algebra R A] [ContinuousFunctionalCalculus R p] (a : A) (f : R → R) :
-    IsStarNormal (cfc f a) where
-  star_comm_self := by
-    rw [Commute, SemiconjBy]
-    by_cases h : ContinuousOn f (spectrum R a)
-    · rw [← cfc_star, ← cfc_mul .., ← cfc_mul ..]
-      congr! 2
-      exact mul_comm _ _
-    · simp [cfc_apply_of_not_continuousOn a h]
 end Normal
 
 /-!
