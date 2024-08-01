@@ -462,6 +462,7 @@ protected abbrev commRing [CommRing β] : CommRing α := by
 noncomputable instance [Small.{v} α] [CommRing α] : CommRing (Shrink.{v} α) :=
   (equivShrink α).symm.commRing
 
+include e in
 /-- Transfer `Nontrivial` across an `Equiv` -/
 protected theorem nontrivial [Nontrivial β] : Nontrivial α :=
   e.surjective.nontrivial
