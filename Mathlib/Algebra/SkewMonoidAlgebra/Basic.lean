@@ -275,11 +275,10 @@ theorem single_injective (a : G) : Function.Injective (single a : k → SkewMono
   toFinsuppAddEquiv.symm.injective.comp (Finsupp.single_injective a)
 
 theorem _root_.IsSMulRegular.skewMonoidAlgebra_iff {S : Type*} [Monoid S] [DistribMulAction S k]
-  {a : S} [inst : Nonempty G]:  IsSMulRegular k a ↔ IsSMulRegular (SkewMonoidAlgebra k G) a := by
+    {a : S} [inst : Nonempty G]: IsSMulRegular k a ↔ IsSMulRegular (SkewMonoidAlgebra k G) a := by
   constructor
   · exact IsSMulRegular.skewMonoidAlgebra
-  · intro ha
-    intro b₁ b₂ inj
+  · intro ha b₁ b₂ inj
     rw [← (single_injective _).eq_iff, ← smul_single, ← smul_single] at inj
     exact single_injective (Classical.choice inst) (ha inj)
 
@@ -755,10 +754,14 @@ section Module.Free
 
 variable [Semiring S]
 
-def toFinsuppLinearEquiv [AddCommMonoid k] [Module S k]:
-    SkewMonoidAlgebra k G ≃ₗ[S] (G →₀ k) := AddEquiv.toLinearEquiv toFinsuppAddEquiv
+/-- Linear equivalence between `SkewMonoidAlgebra k G` and `G →₀ k`. This is an
+implementation detail, but it can be useful to transfer results from `Finsupp`
+to `SkewMonoidAlgebra`. -/
+def toFinsuppLinearEquiv [AddCommMonoid k] [Module S k] : SkewMonoidAlgebra k G ≃ₗ[S] (G →₀ k) :=
+  AddEquiv.toLinearEquiv toFinsuppAddEquiv
       (by simp only [toFinsuppAddEquiv_apply, toFinsupp_smul, forall_const])
 
+/-- The basis on `SkewMonoidAlgebra k G` with basis vectors `fun i ↦ single i 1` -/
 def basisSingleOne [Semiring k] : Basis G k (SkewMonoidAlgebra k G) where
   repr := toFinsuppLinearEquiv
 
