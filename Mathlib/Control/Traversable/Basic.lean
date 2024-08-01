@@ -79,8 +79,8 @@ end ApplicativeTransformation
 
 namespace ApplicativeTransformation
 
-variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
-variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
+variable (F : Type u → Type v) [Applicative F]
+variable (G : Type u → Type w) [Applicative G]
 
 instance : CoeFun (ApplicativeTransformation F G) fun _ => ∀ {α}, F α → G α :=
   ⟨fun η ↦ η.app _⟩
@@ -133,6 +133,8 @@ theorem preserves_pure {α} : ∀ x : α, η (pure x) = pure x :=
 theorem preserves_seq {α β : Type u} : ∀ (x : F (α → β)) (y : F α), η (x <*> y) = η x <*> η y :=
   η.preserves_seq'
 
+variable [LawfulApplicative F] [LawfulApplicative G]
+
 @[functor_norm]
 theorem preserves_map {α β} (x : α → β) (y : F α) : η (x <$> y) = x <$> η y := by
   rw [← pure_seq, η.preserves_seq, preserves_pure, pure_seq]
@@ -154,7 +156,7 @@ instance : Inhabited (ApplicativeTransformation F F) :=
 
 universe s t
 
-variable {H : Type u → Type s} [Applicative H] [LawfulApplicative H]
+variable {H : Type u → Type s} [Applicative H]
 
 /-- The composition of applicative transformations. -/
 def comp (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G) :

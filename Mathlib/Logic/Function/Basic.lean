@@ -454,7 +454,7 @@ end SurjInv
 
 section Update
 
-variable {α : Sort u} {β : α → Sort v} {α' : Sort w} [DecidableEq α] [DecidableEq α']
+variable {α : Sort u} {β : α → Sort v} {α' : Sort w} [DecidableEq α]
   {f g : (a : α) → β a} {a : α} {b : β a}
 
 
@@ -522,6 +522,8 @@ theorem update_eq_self (a : α) (f : ∀ a, β a) : update f a (f a) = f :=
 theorem update_comp_eq_of_forall_ne' {α'} (g : ∀ a, β a) {f : α' → α} {i : α} (a : β i)
     (h : ∀ x, f x ≠ i) : (fun j ↦ (update g i a) (f j)) = fun j ↦ g (f j) :=
   funext fun _ ↦ update_noteq (h _) _ _
+
+variable [DecidableEq α']
 
 /-- Non-dependent version of `Function.update_comp_eq_of_forall_ne'` -/
 theorem update_comp_eq_of_forall_ne {α β : Sort*} (g : α' → β) {f : α → α'} {i : α'} (a : β)
