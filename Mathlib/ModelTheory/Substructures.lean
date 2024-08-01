@@ -765,7 +765,7 @@ end Hom
 namespace Embedding
 
 /-- The restriction of a first-order embedding to a substructure `s ⊆ M` gives an embedding `s → N`.
- -/
+-/
 def domRestrict (f : M ↪[L] N) (p : L.Substructure M) : p ↪[L] N :=
   f.comp p.subtype
 
