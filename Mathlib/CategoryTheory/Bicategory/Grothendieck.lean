@@ -9,10 +9,10 @@ import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Category.Cat
 
 /-!
-# The fibered category associated to a pseudofunctor
+# The Grothendieck construction
 
-Given a category `𝒮` and any pseudofunctor valued in `Cat` we associate to it a fibered category
-category `F.toFibered ⥤ 𝒮`.
+Given a category `𝒮` and any pseudofunctor valued in `Cat` we associate to it a category
+`F.toFibered`, equipped with a functor `F.toFibered ⥤ 𝒮`.
 
 The category `F.toFibered` is defined as follows:
 * Objects: pairs `(S, a)` where `S` is an object of the base category and `a` is an object of the
@@ -23,9 +23,6 @@ The category `F.toFibered` is defined as follows:
 The projection functor `F.toFibered ⥤ 𝒮` is then given by projecting to the first factors, i.e.
 * On objects, it sends `(S, a)` to `S`
 * On morphisms, it sends `(f, h)` to `f`
-
-We also provide a `HasFibers` instance `F.toFibered`, such that the fiber over `S` is the category
-`F(S)`.
 
 ## References
 [Vistoli2008] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
@@ -38,16 +35,6 @@ namespace CategoryTheory
 universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 open CategoryTheory Functor Category Opposite Discrete Bicategory
-
-section mathlib_lemmas
-
--- already in mathlib!
-@[simp]
-lemma Quiver.Hom.eqToHom_toLoc {C : Type u₁} [Category.{v₁} C] {a b : C}
-    (h : a = b) : (eqToHom h).toLoc = eqToHom (congrArg LocallyDiscrete.mk h) := by
-  subst h; rfl
-
-end mathlib_lemmas
 
 variable {𝒮 : Type u₁} [Category.{v₁} 𝒮] {F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
 
@@ -86,7 +73,7 @@ protected lemma id_comp : 𝟙 a ≫ f = f := by
   dsimp
   rw [F.mapComp_id_right_inv f.1.op.toLoc]
   rw [← (F.mapId ⟨op a.1⟩).inv.naturality_assoc f.2]
-  slice_lhs 2 3 =>
+  slice_lhs 2 4 =>
     rw [← Cat.whiskerLeft_app, ← NatTrans.comp_app, ← assoc]
     rw [← Bicategory.whiskerLeft_comp, Iso.inv_hom_id]
   simp
@@ -133,3 +120,9 @@ factor -/
 def π (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) : F.toFibered ⥤ 𝒮 where
   obj := fun X => X.1
   map := fun f => f.1
+
+end toFibered
+
+end Pseudofunctor
+
+end CategoryTheory
