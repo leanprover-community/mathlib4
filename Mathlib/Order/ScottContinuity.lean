@@ -3,8 +3,7 @@ Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Data.Set.Lattice
+import Mathlib.Order.Bounds.Lattice
 
 /-!
 # Scott continuity
@@ -157,71 +156,6 @@ lemma step1' {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.snd '' d)
   rw [e3]
   exact h₁ a hd₁ hd₂ e1
 
-
-/-
--- If `a` is the least upper bound of `s` and `b` is the least upper bound of `t`,
--- then `a ⊔ b` is the least upper bound of `s ∪ t`.
-theorem IsLUB.union [SemilatticeSup γ] {a b : γ} {s t : Set γ} (hs : IsLUB s a) (ht : IsLUB t b) :
-    IsLUB (s ∪ t) (a ⊔ b) :=
-  ⟨fun _ h =>
-    h.casesOn (fun h => le_sup_of_le_left <| hs.left h) fun h => le_sup_of_le_right <| ht.left h,
-    fun _ hc =>
-    sup_le (hs.right fun _ hd => hc <| Or.inl hd) (ht.right fun _ hd => hc <| Or.inr hd)⟩
--/
-
-theorem IsLUB.union' {a b : γ} {s t : Set γ} (hs : IsLUB s a) (ht : IsLUB t b) (c : γ)
-    (hc : IsLUB {a,b} c) : IsLUB (s ∪ t) c := by
-  constructor
-  · intro e he
-    simp at he
-    rw [IsLUB, IsLeast] at hc
-    obtain ⟨hc₁,_⟩ := hc
-    simp at hc₁
-    obtain ⟨hac,hbc⟩ := hc₁
-    obtain ⟨hs₁,_⟩ := hs
-    obtain ⟨ht₁,_⟩ := ht
-    cases he with
-    | inl hes =>
-        exact Preorder.le_trans e a c (hs₁ hes) hac
-    | inr het =>
-        exact Preorder.le_trans e b c (ht₁ het) hbc
-  · intro e he
-    rw [upperBounds_union] at he
-    have e1 : a ≤ e := hs.2 (mem_of_mem_inter_left he)
-    have e2 : b ≤ e := ht.2 (mem_of_mem_inter_right he)
-    apply hc.2
-    aesop
-
-@[simp]
-theorem upperBounds_iUnion {ι : Sort*} {s : ι → Set γ} :
-    upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i)  := by
-  apply Subset.antisymm
-  · intro b hb
-    rw [mem_iInter]
-    intro i
-    exact upperBounds_mono_set (subset_iUnion_of_subset i (by rfl)) hb
-  · intro b hb x hx
-    aesop
-
-theorem IsLUB.iUnion {ι : Sort*} {u : ι → γ}  {s : ι → Set γ} (hs : ∀ (i : ι), IsLUB (s i) (u i))
-    (c : γ) (hc : IsLUB (Set.range u ) c) : IsLUB (⋃ i, s i) c := by
-  constructor
-  · intro e he
-    simp at he
-    obtain ⟨i,hi⟩ := he
-    rw [IsLUB, IsLeast] at hc
-    obtain ⟨hc₁,hc₂⟩ := hc
-    rw [upperBounds] at hc₁
-    simp at hc₁
-    obtain ⟨hs₁,_⟩ := hs i
-    exact Preorder.le_trans e (u i) c (hs₁ hi) (hc₁ i)
-  · intro e he
-    rw [upperBounds_iUnion] at he
-    have e1 : ∀ (i : ι), u i ≤ e := fun i => (hs i).2 (he _ (mem_range_self i))
-    apply hc.2
-    rw [upperBounds]
-    simp only [mem_range, forall_exists_index, forall_apply_eq_imp_iff, mem_setOf_eq]
-    exact e1
 
 lemma test {f : α × β → γ} {d : Set (α × β)} (hd₁' : (Prod.fst '' d).Nonempty)
     (hd₂' : DirectedOn (· ≤ ·) (Prod.fst '' d)) (hd₁ : (Prod.snd '' d).Nonempty)
