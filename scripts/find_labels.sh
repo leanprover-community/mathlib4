@@ -86,14 +86,14 @@ if [ -z "${only_gh}" ]
 then
   printf $'* All PRs are accounted for!\n'
 else
-  printf $'* PRs not corresponding to a commit (merged in %s, closed in %s)\n%s\n' "${prev_mth}" "${mth}" "${only_gh}"
+  printf $'* PRs not corresponding to a commit (merged in %s, closed in %s?)\n%s\n' "${prev_mth}" "${mth}" "${only_gh}"
 fi
 
 if [ -z "${only_git}" ]
 then
   printf $'\n* All commits are accounted for!\n'
 else
-  printf $'\n* PRs not found by `gh` (merged in %s, closed in %s)\n%s\n' "${mth}" "${next_mth}" "${only_git}"
+  printf $'\n* PRs not found by `gh` (merged in %s, closed in %s?)\n%s\n' "${mth}" "${next_mth}" "${only_git}"
 fi
 
 printf -- $'---\n'
