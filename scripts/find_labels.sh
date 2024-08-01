@@ -24,8 +24,8 @@ commits_in_range="$(git log --since="${startDate}" --until="${endDate}" --pretty
 # Retrieve merged PRs from the given range
 prs=$(gh pr list --repo "$repository" --state closed --base master --search "closed:${startDate}..${endDate}" --json number,labels,title --limit "$((commits_in_range * 2))")
 
-# Print PR numbers, their labels and their title
-echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "PR #\(.number) - Labels: \((.labels | map(.name) | join(", ")) // "No labels") - Title: \(.title)"'
+## Print PR numbers, their labels and their title
+#echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "PR #\(.number) - Labels: \((.labels | map(.name) | join(", ")) // "No labels") - Title: \(.title)"'
 
 # Store to file `found_by_gh.txt` the PR numbers, as found by `gh`
 echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "(#\(.number))"' | sort >> found_by_gh.txt
@@ -37,6 +37,30 @@ git log --pretty=oneline --since="${startDate}" --until="${endDate}" |
 echo "$prs"
 }
 
+#jq -S -r '.[] |
+#  select(.title | startswith("[Merged by Bors]")) |
+#  "\(.labels | map(.name | select(startswith("t-"))) // "No labels") PR #\(.number) \(.title)"' mwe_outputs/prBlog.txt |
+#  sort |
+#  awk 'BEGIN{ labels=""; con=0 }
+#    { if(!($1 in seen)) { con++; order[con]=$1; seen[$1]=0 }
+#      gsub(/\[Merged by Bors\] - /, "")
+#      rest=$2; for(i=3; i<=NF; i++){rest=rest" "$i};acc[$1]=acc[$1]"\n"rest }
+#    END {
+#      #for(lab in acc) { printf("%s%s\n", lab, acc[lab]) }
+#      for(i=1; i<=con; i++) {
+#        tag=order[i]
+#        gsub(/\[\]/, "Miscellaneous", tag)
+#        gsub(/[\"\][]/, "", tag)
+#        gsub(/,/, " ", tag)
+#        printf("\n%s: %s%s\n", i, tag, acc[order[i]])
+#      }
+#    }
+#  '
+
+#jq -r '.[] |
+#  select(.title | startswith("[Merged by Bors]")) |
+#  "Labels: \(.labels | map(.name) .[] // "No labels") (#\(.number))"' mwe_outputs/prBlog.txt
+
 # the current year and month
 yr_mth=2024-07 #"$(date +%Y-%m)"
 
@@ -47,8 +71,28 @@ commits_in_range="$(git log --since="${start_date}" --until="${end_date}" --pret
 
 printf $'\n%s commits between %s and %s\n' "${commits_in_range}" "${start_date}" "${end_date}"
 
-findInRange "${1}" "${start_date}" "${yr_mth}-14T23:59:59"
-findInRange "${1}" "${yr_mth}-15T00:00:00" "${end_date}"
+(
+findInRange "${1}" "${start_date}" "${yr_mth}-14T23:59:59" | sed -z 's=]\n*$=,\n='
+findInRange "${1}" "${yr_mth}-15T00:00:00" "${end_date}"   | sed -z 's=^\[=='
+) | jq -S -r '.[] |
+  select(.title | startswith("[Merged by Bors]")) |
+  "\(.labels | map(.name | select(startswith("t-"))) // "No labels") PR #\(.number) \(.title)"' |
+  sort |
+  awk 'BEGIN{ labels=""; con=0 }
+    { if(!($1 in seen)) { con++; order[con]=$1; seen[$1]=0 }
+      gsub(/\[Merged by Bors\] - /, "")
+      rest=$2; for(i=3; i<=NF; i++){rest=rest" "$i};acc[$1]=acc[$1]"\n"rest }
+    END {
+      #for(lab in acc) { printf("%s%s\n", lab, acc[lab]) }
+      for(i=1; i<=con; i++) {
+        tag=order[i]
+        gsub(/\[\]/, "Miscellaneous", tag)
+        gsub(/[\"\][]/, "", tag)
+        gsub(/,/, " ", tag)
+        printf("\n%s: %s%s\n", i, tag, acc[order[i]])
+      }
+    }
+  '
 
 only_gh="$( comm -23 <(sort found_by_gh.txt) <(sort found_by_git.txt))"
 only_git="$(comm -13 <(sort found_by_gh.txt) <(sort found_by_git.txt))"
