@@ -141,11 +141,9 @@ protected def copy (f : α →*₀ β) (f' : α → β) (h : f' = f) : α →* �
   { f.toZeroHom.copy f' h, f.toMonoidHom.copy f' h with }
 
 @[simp]
-lemma coe_copy {_ : MulZeroOneClass α} {_ : MulZeroOneClass β} (f : α →*₀ β) (f' : α → β) (h) :
-    (f.copy f' h) = f' := rfl
+lemma coe_copy (f : α →*₀ β) (f' : α → β) (h) : (f.copy f' h) = f' := rfl
 
-lemma copy_eq {_ : MulZeroOneClass α} {_ : MulZeroOneClass β} (f : α →*₀ β) (f' : α → β) (h) :
-    f.copy f' h = f := DFunLike.ext' h
+lemma copy_eq (f : α →*₀ β) (f' : α → β) (h) : f.copy f' h = f := DFunLike.ext' h
 
 protected lemma map_one (f : α →*₀ β) : f 1 = 1 := f.map_one'
 
