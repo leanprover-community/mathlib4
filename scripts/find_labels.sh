@@ -50,7 +50,7 @@ echo "$prs"
 #      for(i=1; i<=con; i++) {
 #        tag=order[i]
 #        gsub(/\[\]/, "Miscellaneous", tag)
-#        gsub(/[\"\][]/, "", tag)
+#        gsub(/["\][]/, "", tag)
 #        gsub(/,/, " ", tag)
 #        printf("\n%s: %s%s\n", i, tag, acc[order[i]])
 #      }
@@ -87,7 +87,7 @@ findInRange "${1}" "${yr_mth}-15T00:00:00" "${end_date}"   | sed -z 's=^\[=='
       for(i=1; i<=con; i++) {
         tag=order[i]
         gsub(/\[\]/, "Miscellaneous", tag)
-        gsub(/[\"\][]/, "", tag)
+        gsub(/["\][]/, "", tag)
         gsub(/,/, " ", tag)
         printf("\n%s: %s%s\n", i, tag, acc[order[i]])
       }
