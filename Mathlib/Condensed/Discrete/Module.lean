@@ -6,6 +6,7 @@ Authors: Dagur Asgeirsson
 import Mathlib.CategoryTheory.Sites.Discrete
 import Mathlib.Condensed.Discrete.LocallyConstant
 import Mathlib.Condensed.Light.Module
+import Mathlib.Condensed.Module
 import Mathlib.Topology.LocallyConstant.Algebra
 /-!
 
