@@ -92,3 +92,27 @@ lemma summable_indicator_mod_iff {m : ℕ} [NeZero m] {f : ℕ → ℝ} (hf : An
   convert summable_sum (s := Finset.univ)
     fun a _ ↦ summable_indicator_mod_iff_summable_indicator_mod hf a H
   simp only [Finset.sum_apply]
+
+open ZMod
+
+/-- Equivalence between `ℕ` and `ZMod N × ℕ`, sending `n` to `(n mod N, n / N)`. -/
+def Nat.residueClassesEquiv (N : ℕ) [NeZero N] : ℕ ≃ ZMod N × ℕ where
+  toFun n := (↑n, n / N)
+  invFun p := p.1.val + N * p.2
+  left_inv n := by simpa only [val_natCast] using Nat.mod_add_div n N
+  right_inv p := by
+    ext1
+    · simp only [add_comm p.1.val, Nat.cast_add, Nat.cast_mul, CharP.cast_eq_zero, zero_mul,
+        natCast_val, cast_id', id_eq, zero_add]
+    · simp only [add_comm p.1.val, Nat.mul_add_div (NeZero.pos _),
+        (Nat.div_eq_zero_iff <| (NeZero.pos _)).2 p.1.val_lt, add_zero]
+
+/-- If `f` is a summable function on `ℕ`, and `0 < N`, then we may compute `∑' n : ℕ, f n` by
+summing each residue class mod `N` separately. -/
+lemma Nat.sumByResidueClasses {R : Type*} [AddCommGroup R] [UniformSpace R]
+  [UniformAddGroup R] [CompleteSpace R] [T0Space R]
+    {f : ℕ → R} (hf : Summable f) (N : ℕ) [NeZero N] :
+    ∑' n, f n = ∑ j : ZMod N, ∑' m, f (j.val + N * m) := by
+  rw [← (residueClassesEquiv N).symm.tsum_eq f, tsum_prod, tsum_fintype, residueClassesEquiv,
+    Equiv.coe_fn_symm_mk]
+  exact hf.comp_injective (residueClassesEquiv N).symm.injective

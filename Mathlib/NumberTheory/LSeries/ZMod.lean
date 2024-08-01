@@ -14,11 +14,11 @@ import Mathlib.Topology.Algebra.Module.Cardinality
 # L-series of functions on `ZMod N`
 
 We show that if `N` is a positive integer and `Φ : ZMod N → ℂ`, then the L-series of `Φ` has
-analytic continuation (away from a pole at `s = 1` if `∑ j, Φ j ≠ 0`). Assuming `Φ` is either
-even or odd, we define completed L-series and show analytic continuation of these too.
+analytic continuation (away from a pole at `s = 1` if `∑ j, Φ j ≠ 0`).
 
-These results are most useful when `Φ` is a Dirichlet character, but the results are valid without
-assuming this much stronger condition.
+The most familiar case is when `Φ` is a Dirichlet character, but the results here are valid
+for general functions; for the specific case of Dirichlet characters see
+`Mathlib.NumberTheory.LSeries.DirichletContinuation`.
 
 ## Main definitions
 
@@ -28,8 +28,8 @@ assuming this much stronger condition.
 
 * `ZMod.LFunction_eq_LSeries`: if `1 < re s` then the `LFunction` coincides with the naive
   `LSeries`.
-* `ZMod.differentiable_LFunction`: if `∑ j, Φ j = 0` then `ZMod.LFunction Φ s` is differentiable
-  everywhere.
+* `ZMod.differentiableAt_LFunction`: `ZMod.LFunction Φ` is differentiable at `s ∈ ℂ` if either
+  `s ≠ 1` or `∑ j, Φ j = 0`.
 * `ZMod.LFunction_one_sub`: the functional equation relating `LFunction Φ (1 - s)` to
   `LFunction (𝓕 Φ) s`, where `𝓕` is the Fourier transform.
 -/
@@ -37,30 +37,6 @@ assuming this much stronger condition.
 open HurwitzZeta Complex ZMod Finset Classical Topology Filter
 
 open scoped Real
-
-section LemmasToBeRehomed
-
-/-- Equivalence between `ℕ` and `ZMod N × ℕ`, sending `n` to `(n mod N, n / N)`. -/
-def Nat.residueClassesEquiv (N : ℕ) [NeZero N] : ℕ ≃ ZMod N × ℕ where
-  toFun n := (↑n, n / N)
-  invFun p := p.1.val + N * p.2
-  left_inv n := by simpa only [val_natCast] using Nat.mod_add_div n N
-  right_inv p := by
-    ext1
-    · simp only [add_comm p.1.val, Nat.cast_add, Nat.cast_mul, CharP.cast_eq_zero, zero_mul,
-        natCast_val, cast_id', id_eq, zero_add]
-    · simp only [add_comm p.1.val, Nat.mul_add_div (NeZero.pos _),
-        (Nat.div_eq_zero_iff <| (NeZero.pos _)).2 p.1.val_lt, add_zero]
-
-/-- If `f` is a summable function on `ℕ`, and `0 < N`, then we may compute `∑' n : ℕ, f n` by
-summing each residue class mod `N` separately. -/
-lemma Nat.sumByResidueClasses {f : ℕ → ℂ} (hf : Summable f) (N : ℕ) [NeZero N] :
-    ∑' n, f n = ∑ j : ZMod N, ∑' m, f (j.val + N * m) := by
-  rw [← (residueClassesEquiv N).symm.tsum_eq f, tsum_prod, tsum_fintype, residueClassesEquiv,
-    Equiv.coe_fn_symm_mk]
-  exact hf.comp_injective (residueClassesEquiv N).symm.injective
-
-end LemmasToBeRehomed
 
 namespace ZMod
 
