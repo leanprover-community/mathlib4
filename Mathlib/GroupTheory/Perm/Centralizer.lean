@@ -582,7 +582,7 @@ theorem ofPerm_rightInverse (τ : range_toPerm' g) :
   rfl
 
 theorem mem_ofPerm_support_iff (τ : range_toPerm' g) {k : Equiv.Perm α}
-  (hk : k = ConjAct.ofConjAct (Equiv.Perm.Basis.ofPerm a τ : ConjAct (Equiv.Perm α))) (x : α) :
+    (hk : k = ConjAct.ofConjAct (Equiv.Perm.Basis.ofPerm a τ : ConjAct (Equiv.Perm α))) (x : α) :
     x ∈ k.support ↔
       ∃ c : g.cycleFactorsFinset,
         g.cycleOf x = c ∧ c ∈ (τ : Perm g.cycleFactorsFinset).support := by
