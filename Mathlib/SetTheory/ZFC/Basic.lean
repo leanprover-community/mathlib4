@@ -695,8 +695,7 @@ theorem nonempty_mk_iff {x : PSet} : (mk x).Nonempty ↔ x.Nonempty := by
   exact ⟨_, h⟩
 
 theorem eq_empty (x : ZFSet.{u}) : x = ∅ ↔ ∀ y : ZFSet.{u}, y ∉ x := by
-  rw [ZFSet.ext_iff]
-  simp
+  simp [ZFSet.ext_iff]
 
 theorem eq_empty_or_nonempty (u : ZFSet) : u = ∅ ∨ u.Nonempty := by
   rw [eq_empty, ← not_exists]
