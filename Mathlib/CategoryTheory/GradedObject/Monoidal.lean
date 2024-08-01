@@ -201,7 +201,7 @@ lemma ιTensorObj₃_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f�
     ← id_tensorHom, ← id_tensorHom, ← MonoidalCategory.tensor_comp_assoc, ι_tensorHom,
     ← MonoidalCategory.tensor_comp_assoc, id_comp, comp_id]
 
-@[ext (iff := false)]
+@[ext]
 lemma tensorObj₃_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
     [H : HasGoodTensorTensor₂₃ X₁ X₂ X₃]
     (h : ∀ (i₁ i₂ i₃ : I) (hi : i₁ + i₂ + i₃ = j),
@@ -244,19 +244,6 @@ lemma ιTensorObj₃'_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f
     ιTensorObj₃'_eq _ _ _ i₁ i₂ i₃ j h _  rfl, assoc, ι_tensorHom,
     ← tensorHom_id, ← tensorHom_id, ← MonoidalCategory.tensor_comp_assoc, id_comp,
     ι_tensorHom, ← MonoidalCategory.tensor_comp_assoc, comp_id]
-
-<<<<<<< Updated upstream
-@[ext]
-lemma tensorObj₃_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
-    [H : HasGoodTensorTensor₂₃ X₁ X₂ X₃]
-    (h : ∀ (i₁ i₂ i₃ : I) (hi : i₁ + i₂ + i₃ = j),
-      ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j hi ≫ f = ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j hi ≫ g) :
-      f = g := by
-  apply mapBifunctorBifunctor₂₃MapObj_ext (H := H)
-  intro i₁ i₂ i₃ hi
-  exact h i₁ i₂ i₃ hi
-=======
->>>>>>> Stashed changes
 
 @[ext]
 lemma tensorObj₃'_ext {j : I} {A : C} (f g : tensorObj (tensorObj X₁ X₂) X₃ j ⟶ A)
