@@ -114,7 +114,7 @@ lemma linearDependent_of_eq_reflection (h : P.reflection i = P.reflection j) (h�
   specialize h' h₂
   apply h₁ h'.left
 
-lemma root_reflection_trans_iterate (hc : P.coxeterWeight i j = 4) (n : ℕ) :
+lemma root_reflection_trans_iterate_coxeterWeight_four (hc : P.coxeterWeight i j = 4) (n : ℕ) :
     ((P.reflection j).trans (P.reflection i))^[n] (P.root i) =
       (2 * n + 1) • P.root i - n • P.pairing i j • P.root j := by
   induction n with
@@ -132,15 +132,36 @@ lemma root_reflection_trans_iterate (hc : P.coxeterWeight i j = 4) (n : ℕ) :
       add_sub_right_comm, add_sub_cancel_right, show 2 * n + 1 = n + 1 + n by omega,
       add_smul (n + 1), ← sub_sub, sub_add_cancel]
 
-/-!
-lemma infinite_of_linearly_independent_parallel [NoZeroSMulDivisors ℤ M]
+lemma root_reflection_perm_trans_iterate (hc : P.coxeterWeight i j = 4) (n : ℕ) :
+    P.root (((P.reflection_perm j).trans (P.reflection_perm i))^[n] i) =
+      (2 * n + 1) • P.root i - n • P.pairing i j • P.root j := by
+  rw [← root_reflection_trans_iterate_coxeterWeight_four P i j hc]
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [iterate_succ', iterate_succ', Equiv.coe_trans, comp.assoc, comp_apply, root_reflection_perm,
+    comp_apply, root_reflection_perm, ← Equiv.coe_trans, ih, comp_apply, LinearEquiv.trans_apply]
+
+lemma infinite_of_linearly_independent_coxeterWeight_four [CharZero R]
     (hl : LinearIndependent R ![P.root i, P.root j]) (hc : P.coxeterWeight i j = 4) :
     Infinite ι := by
   refine Infinite.of_injective
-    (fun n => (((P.reflection_perm i) ∘ (P.reflection_perm j))^[n] i)) fun n m hmn => ?_
+    (fun n => (((P.reflection_perm i) ∘ (P.reflection_perm j))^[n] i)) fun m n hmn => ?_
+  simp only at hmn
+  have h : P.root (((P.reflection_perm j).trans (P.reflection_perm i))^[m] i) =
+      P.root (((P.reflection_perm j).trans (P.reflection_perm i))^[n] i) :=
+    congrArg (⇑P.root) hmn
+  simp only [root_reflection_perm_trans_iterate P i j hc, (Nat.cast_smul_eq_nsmul R _ _).symm,
+    Nat.cast_add, add_smul] at h
+  rw [sub_eq_sub_iff_sub_eq_sub, add_sub_add_right_eq_sub, ← sub_smul, ← sub_smul,
+    ← sub_eq_zero, sub_eq_add_neg, ← neg_smul, smul_smul] at h
+  rw [LinearIndependent.pair_iff] at hl
+  have h2 : Nat.cast (R := R) (2 * m) - Nat.cast (2 * n) = 0 := by apply (hl _ _ h).1
+  rw [sub_eq_zero, Nat.cast_mul, Nat.cast_two, Nat.cast_mul, Nat.cast_two] at h2
+  have h2' : 2 * m = 2 * n := by norm_cast at h2
+  omega
 
-  sorry
-
+/-!
 lemma coxeterWeight_one_order (h: coxeterWeight P i j = 1) :
     orderOf (P.reflection i * P.reflection j) = 3 := by
   sorry

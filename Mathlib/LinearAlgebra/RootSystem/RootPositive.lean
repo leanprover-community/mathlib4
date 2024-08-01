@@ -107,15 +107,34 @@ lemma orthogonal_of_coxeter_weight_zero (h : P.coxeterWeight i j = 0) : P.IsOrth
   · exact ⟨h, pairing_zero_of_pairing_symm_zero B i j h⟩
   · exact ⟨pairing_zero_of_pairing_symm_zero B j i h, h⟩
 
+lemma root_reflection_pos_coeff_left {a b : R} (ha : 0 < a) (hab : -2 * b < a)
+    (hc : 4 < P.coxeterWeight i j) : a < ((a + b) * P.coxeterWeight i j - a) := by
+  have hapb : 2 * a < (a + b) * 4 := by linarith
+  have habz : 0 < a + b := by linarith
+  have hab4 : (a + b) * 4 < (a + b) * P.coxeterWeight i j := (mul_lt_mul_left habz).mpr hc
+  calc
+    a = 2 * a - a := by ring
+    2 * a - a < (a + b) * 4 - a := sub_lt_sub_right hapb a
+    (a + b) * 4 - a < (a + b) * P.coxeterWeight i j - a := sub_lt_sub_right hab4 a
+
+lemma root_reflection_pos_coeff_right {a b : R} (hab : -2 * b < a) : -(a + b) < b := by
+  linarith
+
+-- show coeff of P.root i is monotone!
 /-!
-lemma root_reflection_trans_iterate' (n : ℕ) :
-    ((P.reflection j).trans (P.reflection i))^[n] (P.root i) =
-      (2 * n + 1) • P.root i - n • P.pairing i j • P.root j := by
-  sorry
+lemma infinite_of_four_lt_coxeterWeight (hc : 4 < P.coxeterWeight i j) : Infinite ι := by
+  refine Infinite.of_injective
+    (fun n => (((P.reflection_perm i) ∘ (P.reflection_perm j))^[n] i)) fun m n hmn => ?_
+  simp only at hmn
+  have h : P.root (((P.reflection_perm j).trans (P.reflection_perm i))^[m] i) =
+      P.root (((P.reflection_perm j).trans (P.reflection_perm i))^[n] i) :=
+    congrArg (⇑P.root) hmn
+  simp only [Equiv.coe_trans, EmbeddingLike.apply_eq_iff_eq] at h
 
--- Get infinitely many roots if Coxeter weight is strictly more than 4. (4 should go in Basic)
+  rw [sub_eq_sub_iff_sub_eq_sub, add_sub_add_right_eq_sub, ← sub_smul, ← sub_smul,
+    ← sub_eq_zero, sub_eq_add_neg, ← neg_smul, smul_smul] at h
 
-
+-- use reflection_reflection_smul_root_plus_pairing_smul_root
 
 
 I want something flip-invariant.  One common factor in examples: a distinguished subspace on which
