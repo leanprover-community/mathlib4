@@ -615,7 +615,7 @@ theorem mem_ofPerm_support_iff (τ : range_toPerm' g) {k : Equiv.Perm α}
     contradiction
 
 theorem card_ofPerm_support (τ : range_toPerm' g) {k : Equiv.Perm α}
-  (hk : k = ConjAct.ofConjAct (Equiv.Perm.Basis.ofPerm a τ : ConjAct (Equiv.Perm α))) :
+    (hk : k = ConjAct.ofConjAct (Equiv.Perm.Basis.ofPerm a τ : ConjAct (Equiv.Perm α))) :
     k.support.card =  (τ : Perm g.cycleFactorsFinset).support.sum
         (fun c ↦ (c : Perm α).support.card) := by
   suffices k.support = (τ : Perm g.cycleFactorsFinset).support.biUnion (fun c  ↦ (c : Perm α).support) by
