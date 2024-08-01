@@ -216,11 +216,11 @@ def topSquareIsPullback (H₁ : IsLimit t₁) (H₂ : IsLimit (t₁.pasteVert t�
 
 /-- Given that the bottom square is a pullback, the pasted square is a pullback iff the top
 square is. -/
-def pasteVertIsPullbackEquiv (H : IsLimit t₁) : IsLimit (t₁.pasteVert t₂ hi₂) ≃ IsLimit t₂ :=
-  { toFun := fun H' ↦ topSquareIsPullback t₂ _ H H'
-    invFun := fun H' ↦ pasteVertIsPullback _ H H'
-    left_inv := fun _ ↦Subsingleton.elim _ _
-    right_inv := fun _ ↦Subsingleton.elim _ _ }
+def pasteVertIsPullbackEquiv (H : IsLimit t₁) : IsLimit (t₁.pasteVert t₂ hi₂) ≃ IsLimit t₂ where
+  toFun H' := topSquareIsPullback t₂ _ H H'
+  invFun H' := pasteVertIsPullback _ H H'
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := Subsingleton.elim _ _
 
 end PastePullbackVert
 
