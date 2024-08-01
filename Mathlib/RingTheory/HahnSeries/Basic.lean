@@ -32,7 +32,6 @@ in the file `RingTheory/LaurentSeries`.
 
 
 open Finset Function
-open scoped Classical
 
 noncomputable section
 
@@ -84,7 +83,7 @@ instance : Inhabited (HahnSeries Γ R) :=
   ⟨0⟩
 
 instance [Subsingleton R] : Subsingleton (HahnSeries Γ R) :=
-  ⟨fun a b => a.ext b (Subsingleton.elim _ _)⟩
+  ⟨fun a b => a.ext b (by subsingleton)⟩
 
 @[simp]
 theorem zero_coeff {a : Γ} : (0 : HahnSeries Γ R).coeff a = 0 :=
@@ -149,6 +148,7 @@ def iterateEquiv {Γ' : Type*} [PartialOrder Γ'] :
   left_inv := congrFun rfl
   right_inv := congrFun rfl
 
+open Classical in
 /-- `single a r` is the Hahn series which has coefficient `r` at `a` and zero otherwise. -/
 def single (a : Γ) : ZeroHom R (HahnSeries Γ R) where
   toFun r :=
@@ -159,22 +159,23 @@ def single (a : Γ) : ZeroHom R (HahnSeries Γ R) where
 variable {a b : Γ} {r : R}
 
 @[simp]
-theorem single_coeff_same (a : Γ) (r : R) : (single a r).coeff a = r :=
-  Pi.single_eq_same (f := fun _ => R) a r
+theorem single_coeff_same (a : Γ) (r : R) : (single a r).coeff a = r := by
+  classical exact Pi.single_eq_same (f := fun _ => R) a r
 
 @[simp]
-theorem single_coeff_of_ne (h : b ≠ a) : (single a r).coeff b = 0 :=
-  Pi.single_eq_of_ne (f := fun _ => R) h r
+theorem single_coeff_of_ne (h : b ≠ a) : (single a r).coeff b = 0 := by
+  classical exact Pi.single_eq_of_ne (f := fun _ => R) h r
 
+open Classical in
 theorem single_coeff : (single a r).coeff b = if b = a then r else 0 := by
   split_ifs with h <;> simp [h]
 
 @[simp]
-theorem support_single_of_ne (h : r ≠ 0) : support (single a r) = {a} :=
-  Pi.support_single_of_ne h
+theorem support_single_of_ne (h : r ≠ 0) : support (single a r) = {a} := by
+  classical exact Pi.support_single_of_ne h
 
-theorem support_single_subset : support (single a r) ⊆ {a} :=
-  Pi.support_single_subset
+theorem support_single_subset : support (single a r) ⊆ {a} := by
+  classical exact Pi.support_single_subset
 
 theorem eq_of_mem_support_single {b : Γ} (h : b ∈ support (single a r)) : b = a :=
   support_single_subset h
@@ -202,6 +203,7 @@ instance [Nonempty Γ] [Nontrivial R] : Nontrivial (HahnSeries Γ R) :=
 
 section Order
 
+open Classical in
 /-- The orderTop of a Hahn series `x` is a minimal element of `WithTop Γ` where `x` has a nonzero
 coefficient if `x ≠ 0`, and is `⊤` when `x = 0`. -/
 def orderTop (x : HahnSeries Γ R) : WithTop Γ :=
@@ -270,6 +272,7 @@ theorem coeff_eq_zero_of_lt_orderTop {x : HahnSeries Γ R} {i : Γ} (hi : i < x.
   rw [orderTop_of_ne hx, WithTop.coe_lt_coe]
   exact Set.IsWF.not_lt_min _ _ hi
 
+open Classical in
 /-- A leading coefficient of a Hahn series is the coefficient of a lowest-order nonzero term, or
 zero if the series vanishes. -/
 def leadingCoeff (x : HahnSeries Γ R) : R :=
@@ -297,6 +300,7 @@ theorem leadingCoeff_of_single {a : Γ} {r : R} : leadingCoeff (single a r) = r 
 
 variable [Zero Γ]
 
+open Classical in
 /-- The order of a nonzero Hahn series `x` is a minimal element of `Γ` where `x` has a
   nonzero coefficient, the order of 0 is 0. -/
 def order (x : HahnSeries Γ R) : Γ :=
@@ -362,6 +366,7 @@ section Domain
 
 variable {Γ' : Type*} [PartialOrder Γ']
 
+open Classical in
 /-- Extends the domain of a `HahnSeries` by an `OrderEmbedding`. -/
 def embDomain (f : Γ ↪o Γ') : HahnSeries Γ R → HahnSeries Γ' R := fun x =>
   { coeff := fun b : Γ' => if h : b ∈ f '' x.support then x.coeff (Classical.choose h) else 0

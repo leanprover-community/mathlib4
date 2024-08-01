@@ -104,7 +104,7 @@ section Module
 variable [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
 
 instance [NoZeroSMulDivisors ℤ M] : NoZeroSMulDivisors ℕ M :=
-  ⟨fun {c x} hcx ↦ by rwa [nsmul_eq_smul_cast ℤ c x, smul_eq_zero, Nat.cast_eq_zero] at hcx⟩
+  ⟨fun {c x} hcx ↦ by rwa [← Nat.cast_smul_eq_nsmul ℤ c x, smul_eq_zero, Nat.cast_eq_zero] at hcx⟩
 
 end Module
 
@@ -148,7 +148,7 @@ end Function
 
 namespace Set
 section SMulZeroClass
-variable [Zero R] [Zero M] [SMulZeroClass R M]
+variable [Zero M] [SMulZeroClass R M]
 
 lemma indicator_smul_apply (s : Set α) (r : α → R) (f : α → M) (a : α) :
     indicator s (fun a ↦ r a • f a) a = r a • indicator s f a := by

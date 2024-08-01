@@ -112,7 +112,7 @@ variable (F : OplaxFunctor B C)
 
 @[reassoc]
 lemma mapComp_assoc_right {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
-    F.mapComp f (g ≫ h) ≫ F.map f ◁ F.mapComp g h = (F.map₂ (α_ f g h).inv) ≫
+    F.mapComp f (g ≫ h) ≫ F.map f ◁ F.mapComp g h = F.map₂ (α_ f g h).inv ≫
     F.mapComp (f ≫ g) h ≫ F.mapComp f g ▷ F.map h ≫
     (α_ (F.map f) (F.map g) (F.map h)).hom := by
   rw [← @map₂_associator, ← F.map₂_comp_assoc]
@@ -121,7 +121,7 @@ lemma mapComp_assoc_right {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
 @[reassoc]
 lemma mapComp_assoc_left {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     F.mapComp (f ≫ g) h ≫ F.mapComp f g ▷ F.map h =
-    (F.map₂ (α_ f g h).hom) ≫ F.mapComp f (g ≫ h) ≫ F.map f ◁ F.mapComp g h
+    F.map₂ (α_ f g h).hom ≫ F.mapComp f (g ≫ h) ≫ F.map f ◁ F.mapComp g h
     ≫ (α_ (F.map f) (F.map g) (F.map h)).inv := by
   simp
 
