@@ -210,6 +210,7 @@ open RCLike
 variable [RCLike 𝕜] [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
   [Module 𝕜 E] [Module ℝ E] [ContinuousSMul 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
+/--Real linear extension of continuous extension of `LinearMap.extendTo𝕜'` -/
 noncomputable def LinTo𝕜' : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜] 𝕜) :=
   letI to𝕜 (fr : (E →L[ℝ] ℝ)) : (E →L[𝕜] 𝕜) :=
     { toLinearMap := LinearMap.extendTo𝕜' fr
