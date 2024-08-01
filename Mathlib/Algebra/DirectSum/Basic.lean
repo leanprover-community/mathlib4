@@ -25,7 +25,7 @@ open Function
 
 universe u v w u₁
 
-variable (ι : Type v) [dec_ι : DecidableEq ι] (β : ι → Type w)
+variable (ι : Type v) (β : ι → Type w)
 
 /-- `DirectSum ι β` is the direct sum of a family of additive commutative monoids `β i`.
 
@@ -65,7 +65,8 @@ scoped[DirectSum] notation3 "⨁ "(...)", "r:(scoped f => DirectSum _ f) => r
 --   | `(⨁ ($x:ident) ($y:ident), $p) => `(DirectSum _ (fun $x ↦ fun $y ↦ $p))
 -- end
 
-instance [∀ i, AddCommMonoid (β i)] [∀ i, DecidableEq (β i)] : DecidableEq (DirectSum ι β) :=
+instance [DecidableEq ι] [∀ i, AddCommMonoid (β i)] [∀ i, DecidableEq (β i)] :
+    DecidableEq (DirectSum ι β) :=
   inferInstanceAs <| DecidableEq (Π₀ i, β i)
 
 namespace DirectSum
@@ -97,6 +98,10 @@ variable {β}
 @[simp]
 theorem add_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ + g₂) i = g₁ i + g₂ i :=
   rfl
+
+section DecidableEq
+
+variable [DecidableEq ι]
 
 variable (β)
 
@@ -245,7 +250,7 @@ where `h : S ⊆ T`. -/
 def setToSet (S T : Set ι) (H : S ⊆ T) : (⨁ i : S, β i) →+ ⨁ i : T, β i :=
   toAddMonoid fun i => of (fun i : Subtype T => β i) ⟨↑i, H i.2⟩
 
-variable {β}
+end DecidableEq
 
 instance unique [∀ i, Subsingleton (β i)] : Unique (⨁ i, β i) :=
   DFinsupp.unique
@@ -297,7 +302,7 @@ end Option
 
 section Sigma
 
-variable {α : ι → Type u} {δ : ∀ i, α i → Type w} [∀ i j, AddCommMonoid (δ i j)]
+variable [DecidableEq ι] {α : ι → Type u} {δ : ∀ i, α i → Type w} [∀ i j, AddCommMonoid (δ i j)]
 
 /-- The natural map between `⨁ (i : Σ i, α i), δ i.1 i.2` and `⨁ i (j : α i), δ i j`. -/
 def sigmaCurry : (⨁ i : Σ _i, _, δ i.1 i.2) →+ ⨁ (i) (j), δ i j where
@@ -336,7 +341,8 @@ protected def coeAddMonoidHom {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [
     [AddSubmonoidClass S M] (A : ι → S) : (⨁ i, A i) →+ M :=
   toAddMonoid fun i => AddSubmonoidClass.subtype (A i)
 
-theorem coeAddMonoidHom_eq_dfinsupp_sum {M S : Type*} [DecidableEq M] [AddCommMonoid M]
+theorem coeAddMonoidHom_eq_dfinsupp_sum [DecidableEq ι]
+    {M S : Type*} [DecidableEq M] [AddCommMonoid M]
     [SetLike S M] [AddSubmonoidClass S M] (A : ι → S) (x : DirectSum ι fun i => A i) :
     DirectSum.coeAddMonoidHom A x = DFinsupp.sum x fun i => (fun x : A i => ↑x) := by
   simp only [DirectSum.coeAddMonoidHom, toAddMonoid, DFinsupp.liftAddHom, AddEquiv.coe_mk,
@@ -371,18 +377,17 @@ theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddCom
   rw [AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_top_iff_surjective]
   exact Function.Bijective.surjective h
 
-variable  {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
-    [AddSubmonoidClass S M] (A : ι → S)
+variable {M S : Type*} [AddCommMonoid M] [SetLike S M] [AddSubmonoidClass S M]
 
-theorem support_subset [DecidableEq M] (x : DirectSum ι fun i => A i) :
+theorem support_subset [DecidableEq ι] [DecidableEq M] (A : ι → S) (x : DirectSum ι fun i => A i) :
     (Function.support fun i => (x i : M)) ⊆ ↑(DFinsupp.support x) := by
   intro m
   simp only [Function.mem_support, Finset.mem_coe, DFinsupp.mem_support_toFun, not_imp_not,
     ZeroMemClass.coe_eq_zero, imp_self]
 
-theorem finite_support (x : DirectSum ι fun i => A i) :
+theorem finite_support (A : ι → S) (x : DirectSum ι fun i => A i) :
     (Function.support fun i => (x i : M)).Finite := by
   classical
-  exact Set.Finite.subset (DFinsupp.support x : Set ι).toFinite (DirectSum.support_subset _ x)
+  exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
 
 end DirectSum
