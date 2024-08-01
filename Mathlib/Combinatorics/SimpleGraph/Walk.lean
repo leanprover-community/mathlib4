@@ -1071,7 +1071,7 @@ theorem map_copy (hu : u = u') (hv : v = v') :
 theorem map_id (p : G.Walk u v) : p.map Hom.id = p := by
   induction p with
   | nil => rfl
-  | cons _ p' ih => simp [ih p']
+  | cons _ p' ih => simp [ih]
 
 @[simp]
 theorem map_map : (p.map f).map f' = p.map (f'.comp f) := by
