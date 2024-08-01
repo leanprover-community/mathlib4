@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Order.Antidiag.Pi
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Factorial.BigOperators
+import Mathlib.Data.Nat.Factorial.DoubleFactorial
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Finsupp.Multiset
@@ -304,6 +305,28 @@ theorem sum_pow [CommSemiring R] (x : α → R) (n : ℕ) :
 
 end CommSemiring
 end Finset
+
+namespace Nat
+variable {ι : Type*} {s : Finset ι} {f : ι → ℕ}
+
+lemma multinomial_two_mul_le_mul_multinomial :
+    multinomial s (fun i ↦ 2 * f i) ≤ ((∑ i in s, f i) ^ ∑ i in s, f i) * multinomial s f := by
+  rw [multinomial, multinomial, ← mul_sum,
+    ← Nat.mul_div_assoc _ (prod_factorial_dvd_factorial_sum ..)]
+  refine Nat.div_le_div_of_mul_le_mul (by positivity)
+    ((prod_factorial_dvd_factorial_sum ..).trans (Nat.dvd_mul_left ..)) ?_
+  calc
+    (2 * ∑ i ∈ s, f i)! * ∏ i ∈ s, (f i)!
+      ≤ ((2 * ∑ i ∈ s, f i) ^ (∑ i ∈ s, f i) * (∑ i ∈ s, f i)!) * ∏ i ∈ s, (f i)! := by
+      gcongr; exact Nat.factorial_two_mul_le _
+    _ = ((∑ i ∈ s, f i) ^ ∑ i ∈ s, f i) * (∑ i ∈ s, f i)! * ∏ i ∈ s, 2 ^ f i * (f i)! := by
+      rw [mul_pow, ← prod_pow_eq_pow_sum, prod_mul_distrib]; ring
+    _ ≤ ((∑ i ∈ s, f i) ^ ∑ i ∈ s, f i) * (∑ i ∈ s, f i)! * ∏ i ∈ s, (2 * f i)! := by
+      gcongr
+      rw [← doubleFactorial_two_mul]
+      exact doubleFactorial_le_factorial _
+
+end Nat
 
 namespace Sym
 
