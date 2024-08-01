@@ -146,7 +146,7 @@ the Computation first and then lift the results step-by-step.
 
 
 -- The lifting works for arbitrary linear ordered fields with a floor function.
-variable {v : K} {q : ℚ} (v_eq_q : v = (↑q : K)) (n : ℕ)
+variable {v : K} {q : ℚ}
 
 /-! First, we show the correspondence for the very basic functions in
 `GenContFract.IntFractPair`. -/
@@ -154,10 +154,11 @@ variable {v : K} {q : ℚ} (v_eq_q : v = (↑q : K)) (n : ℕ)
 
 namespace IntFractPair
 
-theorem coe_of_rat_eq : ((IntFractPair.of q).mapFr (↑) : IntFractPair K) = IntFractPair.of v := by
+theorem coe_of_rat_eq (v_eq_q : v = (↑q : K)) :
+    ((IntFractPair.of q).mapFr (↑) : IntFractPair K) = IntFractPair.of v := by
   simp [IntFractPair.of, v_eq_q]
 
-theorem coe_stream_nth_rat_eq :
+theorem coe_stream_nth_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
     ((IntFractPair.stream q n).map (mapFr (↑)) : Option <| IntFractPair K) =
       IntFractPair.stream v n := by
   induction n with
@@ -179,7 +180,7 @@ theorem coe_stream_nth_rat_eq :
         have coe_of_fr := coe_of_rat_eq this
         simpa [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq, fr_ne_zero]
 
-theorem coe_stream'_rat_eq :
+theorem coe_stream'_rat_eq (v_eq_q : v = (↑q : K)) :
     ((IntFractPair.stream q).map (Option.map (mapFr (↑))) : Stream' <| Option <| IntFractPair K) =
       IntFractPair.stream v := by
   funext n; exact IntFractPair.coe_stream_nth_rat_eq v_eq_q n
@@ -189,12 +190,12 @@ end IntFractPair
 /-! Now we lift the coercion results to the continued fraction computation. -/
 
 
-theorem coe_of_h_rat_eq : (↑((of q).h : ℚ) : K) = (of v).h := by
+theorem coe_of_h_rat_eq (v_eq_q : v = (↑q : K)) : (↑((of q).h : ℚ) : K) = (of v).h := by
   unfold of IntFractPair.seq1
   rw [← IntFractPair.coe_of_rat_eq v_eq_q]
   simp
 
-theorem coe_of_s_get?_rat_eq :
+theorem coe_of_s_get?_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
     (((of q).s.get? n).map (Pair.map (↑)) : Option <| Pair K) = (of v).s.get? n := by
   simp only [of, IntFractPair.seq1, Stream'.Seq.map_get?, Stream'.Seq.get?_tail]
   simp only [Stream'.Seq.get?]
@@ -202,11 +203,12 @@ theorem coe_of_s_get?_rat_eq :
   rcases succ_nth_stream_eq : IntFractPair.stream q (n + 1) with (_ | ⟨_, _⟩) <;>
     simp [Stream'.map, Stream'.get, succ_nth_stream_eq]
 
-theorem coe_of_s_rat_eq : ((of q).s.map (Pair.map ((↑))) : Stream'.Seq <| Pair K) = (of v).s := by
+theorem coe_of_s_rat_eq (v_eq_q : v = (↑q : K)) :
+    ((of q).s.map (Pair.map ((↑))) : Stream'.Seq <| Pair K) = (of v).s := by
   ext n; rw [← coe_of_s_get?_rat_eq v_eq_q]; rfl
 
 /-- Given `(v : K), (q : ℚ), and v = q`, we have that `of q = of v` -/
-theorem coe_of_rat_eq :
+theorem coe_of_rat_eq (v_eq_q : v = (↑q : K)) :
     (⟨(of q).h, (of q).s.map (Pair.map (↑))⟩ : GenContFract K) = of v := by
   cases' gcf_v_eq : of v with h s; subst v
   -- Porting note: made coercion target explicit
