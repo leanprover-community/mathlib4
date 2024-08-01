@@ -78,21 +78,22 @@ only_git="$(comm -13 <(sort found_by_gh.txt) <(sort found_by_git.txt))"
 
 printf $'\n---\nReports\n\n'
 
-mth="$(date -d "${yr_mth}-01" '+%b')"
-prev_mth="$(date -d "${yr_mth}-01 - 1 day" '+%b')"
+mth="$(date -d "${yr_mth}-01" '+%B')"
+prev_mth="$(date -d "${yr_mth}-01 - 1 day" '+%B')"
+next_mth="$(date -d "${yr_mth}-01 + 1 month" '+%B')"
 
 if [ -z "${only_gh}" ]
 then
   printf $'* All PRs are accounted for!\n'
 else
-  printf $'* PRs not corresponding to a commit (closed in %s, merged in %s)\n%s\n' "${mth}" "${prev_mth}" "${only_gh}"
+  printf $'* PRs not corresponding to a commit (merged in %s, closed in %s)\n%s\n' "${prev_mth}" "${mth}" "${only_gh}"
 fi
 
 if [ -z "${only_git}" ]
 then
   printf $'\n* All commits are accounted for!\n'
 else
-  printf $'\n* PRs not found by `gh`\n%s\n' "${only_git}"
+  printf $'\n* PRs not found by `gh` (merged in %s, closed in %s)\n%s\n' "${mth}" "${next_mth}" "${only_git}"
 fi
 
 printf -- $'---\n'
