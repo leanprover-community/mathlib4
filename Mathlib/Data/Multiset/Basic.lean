@@ -2249,7 +2249,7 @@ theorem count_map_eq_count' [DecidableEq β] (f : α → β) (s : Multiset α) (
     contradiction
 
 @[simp]
-theorem sub_filter_eq_filter_not [DecidableEq α] (p) [DecidablePred p] (s : Multiset α) :
+theorem sub_filter_eq_filter_not (p) [DecidablePred p] (s : Multiset α) :
     s - s.filter p = s.filter (fun a ↦ ¬ p a) := by
   ext a; by_cases h : p a <;> simp [h]
 
