@@ -1,4 +1,5 @@
 import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.Tactic.LinearCombination
 
 variable {K V : Type} [Field K] [AddCommGroup V] [Module K V]
 
@@ -7,6 +8,9 @@ variable {K V : Type} [Field K] [AddCommGroup V] [Module K V]
 -- variant: definition of eigenvector
 -- structure LinearMap.IsEigenvector (f : V →ₗ[K] V) (μ : K) (v : V) : Prop where
 --   eq_smul : f v = μ • v
+
+macro "module" : tactic =>
+  `(tactic | (try simp only [← mul_smul, smul_add, add_smul, smul_sub, sub_smul, mul_add, add_mul, sub_mul, mul_sub, smul_zero]; ring_nf; abel))
 
 /-- Eigenvectors with distinct eigenvalues are linearly independent -/
 example (f : V →ₗ[K] V) (μ ν : K) (hμν : μ ≠ ν)
@@ -17,12 +21,41 @@ example (f : V →ₗ[K] V) (μ ν : K) (hμν : μ ≠ ν)
   --   LinearIndependent K ![x, y] := by
   -- rw [LinearIndependent.pair_iff]
   intro a b hab
-  have h1 := congr(f $hab - ν • $hab)
-  have h2 := congr(μ • $hab - f $hab)
-  simp [hx, hy, ← mul_smul, mul_comm] at h1 h2
-  have H1 : (μ - ν) • a • x = 0 := by
-    simpa [sub_smul, mul_smul] using h1
-  have H2 : (μ - ν) • b • y = 0 := by
-    simpa [sub_smul, mul_smul] using h2
-  simp_all [hμν, hx₀, hy₀, sub_eq_zero]
+  have hab' := congr(f $hab) -- introduce syntax to make this `apply_fun f at hab with hab'`
+  simp [hx, hy] at hab'
+  have H1 : (μ - ν) • a • x = 0 := by linear_combination (norm := module) hab' - ν • hab
+  have H2 : (μ - ν) • b • y = 0 := by linear_combination (norm := module) μ • hab - hab'
+  simp_all [sub_eq_zero]
 
+example (f : V →ₗ[K] V) (μ ν : K) (hμν : μ ≠ ν)
+    (x y : V) (hx₀ : x ≠ 0) (hy₀ : y ≠ 0)
+    (hx : f x = μ • x) (hy : f y = ν • y) :
+    ∀ a b : K, a • x + b • y = 0 → a = 0 ∧ b = 0 := by
+  intro a b hab
+  have H1 :=
+    calc (μ - ν) • a • x = (a • μ • x + b • ν • y) - ν • (a • x + b • y) := by module
+      _ = f (a • x + b • y) - ν • (a • x + b • y) := by simp [hx, hy]
+      _ = 0 := by simp [hab]
+  have H2 :=
+    calc (μ - ν) • b • y = μ • (a • x + b • y) - (a • μ • x + b • ν • y) := by module
+      _ = μ • (a • x + b • y) - f (a • x + b • y) := by simp [hx, hy]
+      _ = 0 := by simp [hab]
+  simp_all [sub_eq_zero]
+
+/-- ### Ternary version -/
+
+example (f : V →ₗ[K] V) (μ ν ρ : K) (hμν : μ ≠ ν) (hμρ : μ ≠ ρ) (hνρ : ν ≠ ρ)
+    (x y z : V) (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) (hz₀ : z ≠ 0)
+    (hx : f x = μ • x) (hy : f y = ν • y) (hz : f z = ρ • z) :
+    ∀ a b c : K, a • x + b • y + c • z = 0 → a = 0 ∧ b = 0 ∧ c = 0 := by
+  intro a b c habc
+  have habc' := congr(f $habc)
+  have habc'' := congr(f^[2] $habc)
+  simp [hx, hy, hz] at habc' habc''
+  have H1 : (μ - ν) • (μ - ρ) • a • x = 0 := by
+    linear_combination (norm := module) habc'' - (ν + ρ) • habc' + ν • ρ • habc
+  have H2 : (μ - ν) • (ν - ρ) • b • y = 0 := by
+    linear_combination (norm := module) - habc'' + (μ + ρ) • habc' - μ • ρ • habc
+  have H3 : (μ - ρ) • (ν - ρ) • c • z = 0 := by
+    linear_combination (norm := module) habc'' - (μ + ν) • habc' + μ • ν • habc
+  simp_all [sub_eq_zero]

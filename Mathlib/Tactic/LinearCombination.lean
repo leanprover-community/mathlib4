@@ -35,6 +35,7 @@ open Lean hiding Rat
 open Elab Meta Term
 
 variable {α : Type*} {a a' a₁ a₂ b b' b₁ b₂ c : α}
+variable {R : Type*} {r s : R}
 
 theorem pf_add_c [Add α] (p : a = b) (c : α) : a + c = b + c := p ▸ rfl
 theorem c_add_pf [Add α] (p : b = c) (a : α) : a + b = a + c := p ▸ rfl
@@ -50,6 +51,8 @@ theorem inv_pf [Inv α] (p : (a:α) = b) : a⁻¹ = b⁻¹ := p ▸ rfl
 theorem pf_div_c [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
 theorem c_div_pf [Div α] (p : b = c) (a : α) : a / b = a / c := p ▸ rfl
 theorem div_pf [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ / a₂ = b₁ / b₂ := p₁ ▸ p₂ ▸ rfl
+theorem pf_smul_c [HSMul R α α] (p : r = s) (c : α) : r • c = s • c := p ▸ rfl
+theorem c_smul_pf [HSMul R α α] (p : b = c) (r : R) : r • b = r • c := p ▸ rfl
 
 /--
 Performs macro expansion of a linear combination expression,
@@ -89,6 +92,12 @@ partial def expandLinearCombo (stx : Syntax.Term) : TermElabM (Option Syntax.Ter
     | some p₁, none => ``(pf_mul_c $p₁ $e₂)
     | none, some p₂ => ``(c_mul_pf $p₂ $e₁)
     | some p₁, some p₂ => ``(mul_pf $p₁ $p₂)
+  | `($e₁ • $e₂) => do
+    match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
+    | none, none => pure none
+    | some p₁, none => ``(pf_smul_c $p₁ $e₂)
+    | none, some p₂ => ``(c_smul_pf $p₂ $e₁)
+    | some _, some _ => pure none
   | `($e⁻¹) => do
     match ← expandLinearCombo e with
     | none => pure none
