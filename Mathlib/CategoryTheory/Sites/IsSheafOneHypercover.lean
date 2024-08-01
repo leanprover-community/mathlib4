@@ -59,9 +59,7 @@ class IsGenerating : Prop where
   le {X : C} (S : Sieve X) (hS : S ∈ J X) :
     ∃ (E : J.OneHypercover X) (_ : H E), E.sieve₀ ≤ S
 
-variable [H.IsGenerating]
-
-lemma exists_oneHypercover {X : C} (S : Sieve X) (hS : S ∈ J X) :
+lemma exists_oneHypercover [H.IsGenerating] {X : C} (S : Sieve X) (hS : S ∈ J X) :
     ∃ (E : J.OneHypercover X) (_ : H E), E.sieve₀ ≤ S :=
   IsGenerating.le _ hS
 
@@ -71,7 +69,8 @@ namespace IsSheafIff
 
 variable (hP : ∀ ⦃X : C⦄ (E : J.OneHypercover X) (_ : H E), Nonempty (IsLimit (E.multifork P)))
 
-lemma hom_ext {X : C} (S : Sieve X) (hS : S ∈ J X) {T : A}
+include hP in
+lemma hom_ext [H.IsGenerating] {X : C} (S : Sieve X) (hS : S ∈ J X) {T : A}
     {x y : T ⟶ P.obj (Opposite.op X)}
     (h : ∀ ⦃Y : C⦄ (f : Y ⟶ X) (_ : S f), x ≫ P.map f.op = y ≫ P.map f.op) :
     x = y := by
@@ -99,7 +98,7 @@ lemma fac' (i : E.I₀) :
       F.ι ⟨_, E.f i, le _ (Sieve.ofArrows_mk _ _ _)⟩ :=
   Multifork.IsLimit.fac (hP E hE).some _ _ i
 
-lemma fac {Y : C} (f : Y ⟶ X) (hf : S f) :
+lemma fac [H.IsGenerating] {Y : C} (f : Y ⟶ X) (hf : S f) :
     lift hP hE le F ≫ P.map f.op = F.ι ⟨Y, f, hf⟩ := by
   apply hom_ext H P hP _ (J.pullback_stable f E.mem₀)
   intro Z g
@@ -113,7 +112,7 @@ lemma fac {Y : C} (f : Y ⟶ X) (hf : S f) :
 end
 
 /-- Auxiliary definition for `OneHypercoverFamily.isSheaf_iff`. -/
-noncomputable def isLimit :
+noncomputable def isLimit [H.IsGenerating] :
     IsLimit (Cover.multifork ⟨S, J.superset_covering le E.mem₀⟩ P) :=
   Multifork.IsLimit.mk _
     (fun F => lift hP hE le F)
@@ -128,7 +127,7 @@ noncomputable def isLimit :
 
 end IsSheafIff
 
-lemma isSheaf_iff :
+lemma isSheaf_iff [H.IsGenerating] :
     Presheaf.IsSheaf J P ↔ ∀ ⦃X : C⦄ (E : J.OneHypercover X)
       (_ : H E), Nonempty (IsLimit (E.multifork P)) := by
   constructor
