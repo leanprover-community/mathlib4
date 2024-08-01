@@ -29,4 +29,5 @@ jobs:
         continue-on-error: true
         run: |
           printf $'Repository: %s\nBranch: %s\n' "${{ github.repository }}" "${BRANCH_NAME}"
+          ls
           ./scripts/find_labels.sh "${{ github.repository }}"
