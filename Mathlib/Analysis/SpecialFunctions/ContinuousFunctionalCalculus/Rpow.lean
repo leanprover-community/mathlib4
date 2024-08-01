@@ -62,10 +62,10 @@ noncomputable instance (priority := 50) : Pow A ℝ≥0 where
   pow a y := nnrpow a y
 
 @[simp]
-lemma nnrpow_nonneg {a : A} {x : ℝ≥0} : 0 ≤ nnrpow a x := cfcₙ_predicate _ a
+lemma nnrpow_eq_pow {a : A} {y : ℝ≥0} : nnrpow a y = a ^ y := rfl
 
 @[simp]
-lemma nnrpow_eq_pow {a : A} {y : ℝ≥0} : nnrpow a y = a ^ y := rfl
+lemma nnrpow_nonneg {a : A} {x : ℝ≥0} : 0 ≤ a ^ x := cfcₙ_predicate _ a
 
 lemma nnrpow_def {a : A} {y : ℝ≥0} : a ^ y = cfcₙ (fun x : ℝ≥0 => x ^ (y : ℝ)) a := rfl
 
@@ -197,10 +197,10 @@ noncomputable instance (priority := 100) : Pow A ℝ where
   pow a y := rpow a y
 
 @[simp]
-lemma rpow_nonneg {a : A} {y : ℝ} : 0 ≤ a ^ y := cfc_predicate _ a
+lemma rpow_eq_pow {a : A} {y : ℝ} : rpow a y = a ^ y := rfl
 
 @[simp]
-lemma rpow_eq_pow {a : A} {y : ℝ} : rpow a y = a ^ y := rfl
+lemma rpow_nonneg {a : A} {y : ℝ} : 0 ≤ a ^ y := cfc_predicate _ a
 
 lemma rpow_def {a : A} {y : ℝ} : a ^ y = cfc (fun x : ℝ≥0 => x ^ y) a := rfl
 
