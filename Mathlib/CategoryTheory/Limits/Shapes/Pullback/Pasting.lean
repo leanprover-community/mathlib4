@@ -127,11 +127,11 @@ def leftSquareIsPullback (H : IsLimit t₂) (H' : IsLimit (t₂.pasteHoriz t₁ 
 
 /-- Given that the right square is a pullback, the pasted square is a pullback iff the left
 square is. -/
-def pasteHorizIsPullbackEquiv (H : IsLimit t₂) : IsLimit (t₂.pasteHoriz t₁ hi₂) ≃ IsLimit t₁ :=
-  { toFun := fun H' ↦ leftSquareIsPullback t₁ _ H H'
-    invFun := fun H' ↦ pasteHorizIsPullback _ H H'
-    left_inv := fun _ ↦ Subsingleton.elim _ _
-    right_inv := fun _ ↦ Subsingleton.elim _ _ }
+def pasteHorizIsPullbackEquiv (H : IsLimit t₂) : IsLimit (t₂.pasteHoriz t₁ hi₂) ≃ IsLimit t₁ where
+  toFun H' := leftSquareIsPullback t₁ _ H H'
+  invFun H' := pasteHorizIsPullback _ H H'
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := Subsingleton.elim _ _
 
 end PastePullbackHoriz
 
@@ -313,11 +313,12 @@ def rightSquareIsPushout (H : IsColimit t₁) (H' : IsColimit (t₁.pasteHoriz t
 
 /-- Given that the left square is a pushout, the pasted square is a pushout iff the right square is.
 -/
-def pasteHorizIsPushoutEquiv (H : IsColimit t₁) : IsColimit (t₁.pasteHoriz t₂ hi₂) ≃ IsColimit t₂ :=
-  { toFun := fun H' ↦ rightSquareIsPushout t₂ _ H H'
-    invFun := fun H' ↦ pasteHorizIsPushout _ H H'
-    left_inv := fun _ ↦Subsingleton.elim _ _
-    right_inv := fun _ ↦Subsingleton.elim _ _ }
+def pasteHorizIsPushoutEquiv (H : IsColimit t₁) :
+    IsColimit (t₁.pasteHoriz t₂ hi₂) ≃ IsColimit t₂ where
+  toFun H' := rightSquareIsPushout t₂ _ H H'
+  invFun H' := pasteHorizIsPushout _ H H'
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := Subsingleton.elim _ _
 
 end PastePushoutHoriz
 
@@ -402,11 +403,12 @@ def botSquareIsPushout (H₁ : IsColimit t₁) (H₂ : IsColimit (t₁.pasteVert
 
 /-- Given that the top square is a pushout, the pasted square is a pushout iff the bottom square is.
 -/
-def pasteVertIsPushoutEquiv (H : IsColimit t₁) : IsColimit (t₁.pasteVert t₂ hi₂) ≃ IsColimit t₂ :=
-  { toFun := fun H' ↦ botSquareIsPushout t₂ _ H H'
-    invFun := fun H' ↦ pasteVertIsPushout _ H H'
-    left_inv := fun _ ↦Subsingleton.elim _ _
-    right_inv := fun _ ↦Subsingleton.elim _ _ }
+def pasteVertIsPushoutEquiv (H : IsColimit t₁) :
+    IsColimit (t₁.pasteVert t₂ hi₂) ≃ IsColimit t₂ where
+  toFun H' := botSquareIsPushout t₂ _ H H'
+  invFun H' := pasteVertIsPushout _ H H'
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := Subsingleton.elim _ _
 
 end PastePushoutVert
 
