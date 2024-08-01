@@ -5,6 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Discrete.LocallyConstant
+import Mathlib.Topology.Category.LightProfinite.Extend
 import Mathlib.Topology.Category.Profinite.Extend
 /-!
 
@@ -31,7 +32,7 @@ open Profinite.Extend
 
 variable (X : Type (u+1))
 
-abbrev locallyConstantPresheaf : Profiniteᵒᵖ ⥤ Type _ :=
+abbrev locallyConstantPresheaf : Profinite.{u}ᵒᵖ ⥤ Type (u+1) :=
   CompHausLike.LocallyConstant.functorToPresheaves.{u, u+1}.obj X
 
 noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi (c.π.app i)] :
