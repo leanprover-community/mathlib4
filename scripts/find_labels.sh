@@ -57,7 +57,7 @@ findInRange "${1}" "${start_date}" "${yr_mth}-15T23:59:59" | sed -z 's=]\n*$=,\n
 findInRange "${1}" "${yr_mth}-16T00:00:00" "${end_date}"   | sed -z 's=^\[=='
 ) | jq -S -r '.[] |
   select(.title | startswith("[Merged by Bors]")) |
-  "\(.labels | map(.name | select(startswith("t-"))) // "No labels") Author: \(if .author.name == "" then .author.login else .author.name end) PR #\(.number) \(.title)"' |
+  "\(.labels | map(.name | select(startswith("t-"))) ) Author: \(if .author.name == "" then .author.login else .author.name end) PR #\(.number) \(.title)"' |
   sort |
   awk 'BEGIN{ labels=""; con=0; total=0 }
     { total++
