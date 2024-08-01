@@ -338,6 +338,26 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
 
 end Single
 
+section
+variable [∀ i, Mul <| f i]
+
+@[to_additive]
+theorem SemiconjBy.pi {x y z : ∀ i, f i} (h : ∀ i, SemiconjBy (x i) (y i) (z i)) :
+    SemiconjBy x y z :=
+  funext h
+
+@[to_additive]
+theorem Pi.semiconjBy_iff {x y z : ∀ i, f i} :
+    SemiconjBy x y z ↔ ∀ i, SemiconjBy (x i) (y i) (z i) := Function.funext_iff
+
+@[to_additive]
+theorem Commute.pi {x y : ∀ i, f i} (h : ∀ i, Commute (x i) (y i)) : Commute x y := .pi h
+
+@[to_additive]
+theorem Pi.commute_iff {x y : ∀ i, f i} : Commute x y ↔ ∀ i, Commute (x i) (y i) := semiconjBy_iff
+
+end
+
 namespace Function
 
 @[to_additive (attr := simp)]

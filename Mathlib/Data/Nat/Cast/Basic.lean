@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.Nat
 
@@ -204,10 +202,10 @@ instance Nat.uniqueRingHom {R : Type*} [NonAssocSemiring R] : Unique (ℕ →+* 
   uniq := RingHom.eq_natCast'
 
 section Monoid
-variable (α) [Monoid α] [AddMonoid α]
+variable (α) [Monoid α] (β) [AddMonoid β]
 
 /-- Additive homomorphisms from `ℕ` are defined by the image of `1`. -/
-def multiplesHom : α ≃ (ℕ →+ α) where
+def multiplesHom : β ≃ (ℕ →+ β) where
   toFun x :=
   { toFun := fun n ↦ n • x
     map_zero' := zero_nsmul x
@@ -226,13 +224,13 @@ variable {α}
 
 -- TODO: can `to_additive` generate the following lemmas automatically?
 
-lemma multiplesHom_apply (x : α) (n : ℕ) : multiplesHom α x n = n • x := rfl
+lemma multiplesHom_apply (x : β) (n : ℕ) : multiplesHom β x n = n • x := rfl
 
 @[to_additive existing (attr := simp)]
 lemma powersHom_apply (x : α) (n : Multiplicative ℕ) :
     powersHom α x n = x ^ Multiplicative.toAdd n := rfl
 
-lemma multiplesHom_symm_apply (f : ℕ →+ α) : (multiplesHom α).symm f = f 1 := rfl
+lemma multiplesHom_symm_apply (f : ℕ →+ β) : (multiplesHom β).symm f = f 1 := rfl
 
 @[to_additive existing (attr := simp)]
 lemma powersHom_symm_apply (f : Multiplicative ℕ →* α) :
@@ -247,28 +245,28 @@ lemma MonoidHom.ext_mnat ⦃f g : Multiplicative ℕ →* α⦄
     (h : f (Multiplicative.ofAdd 1) = g (Multiplicative.ofAdd 1)) : f = g :=
   MonoidHom.ext fun n ↦ by rw [f.apply_mnat, g.apply_mnat, h]
 
-lemma AddMonoidHom.apply_nat (f : ℕ →+ α) (n : ℕ) : f n = n • f 1 := by
+lemma AddMonoidHom.apply_nat (f : ℕ →+ β) (n : ℕ) : f n = n • f 1 := by
   rw [← multiplesHom_symm_apply, ← multiplesHom_apply, Equiv.apply_symm_apply]
 
 end Monoid
 
 section CommMonoid
-variable (α) [CommMonoid α] [AddCommMonoid α]
+variable (α) [CommMonoid α] (β) [AddCommMonoid β]
 
 /-- If `α` is commutative, `multiplesHom` is an additive equivalence. -/
-def multiplesAddHom : α ≃+ (ℕ →+ α) :=
-  { multiplesHom α with map_add' := fun a b ↦ AddMonoidHom.ext fun n ↦ by simp [nsmul_add] }
+def multiplesAddHom : β ≃+ (ℕ →+ β) :=
+  { multiplesHom β with map_add' := fun a b ↦ AddMonoidHom.ext fun n ↦ by simp [nsmul_add] }
 
 /-- If `α` is commutative, `powersHom` is a multiplicative equivalence. -/
 def powersMulHom : α ≃* (Multiplicative ℕ →* α) :=
   { powersHom α with map_mul' := fun a b ↦ MonoidHom.ext fun n ↦ by simp [mul_pow] }
 
-@[simp] lemma multiplesAddHom_apply (x : α) (n : ℕ) : multiplesAddHom α x n = n • x := rfl
+@[simp] lemma multiplesAddHom_apply (x : β) (n : ℕ) : multiplesAddHom β x n = n • x := rfl
 
 @[simp]
 lemma powersMulHom_apply (x : α) (n : Multiplicative ℕ) : powersMulHom α x n = x ^ toAdd n := rfl
 
-@[simp] lemma multiplesAddHom_symm_apply (f : ℕ →+ α) : (multiplesAddHom α).symm f = f 1 := rfl
+@[simp] lemma multiplesAddHom_symm_apply (f : ℕ →+ β) : (multiplesAddHom β).symm f = f 1 := rfl
 
 @[simp] lemma powersMulHom_symm_apply (f : Multiplicative ℕ →* α) :
     (powersMulHom α).symm f = f (ofAdd 1) := rfl
