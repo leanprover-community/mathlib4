@@ -320,7 +320,7 @@ namespace ContinuousOn
 variable {α E F : Type*} [NormedAddGroup E] [SeminormedAddGroup F] [TopologicalSpace α]
   {s : Set α} {f : α → E} {c : F}
 
-protected theorem _root_.ContinuousOn.isTheta_principal
+protected theorem isTheta_principal
     (hf : ContinuousOn f s) (hs : IsCompact s) (hc : ‖c‖ ≠ 0) (hC : ∀ i ∈ s, f i ≠ 0) :
     f =Θ[𝓟 s] fun _ => c :=
   ⟨hf.isBigO_principal hs hc, hf.isBigO_rev_principal hs hC c⟩
