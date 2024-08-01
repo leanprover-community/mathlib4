@@ -144,18 +144,26 @@ note: this linter can be disabled with `set_option linter.badVariable false`
 #guard_msgs in
 variable (a) {b : Type}
 
+-- If a variable was previously strictly implicitly bound, we still catch this.
 section
 variable ⦃x y : Int⦄  ⦃x y⦄
 section
 /--
 warning: bad variable declaration:
           the binder types of the variable(s) #[x] are changed,
-          while the new variable(s) #[x] are declared
+          while the new variable(s) #[c] are declared
 please split these into separate 'variable' commands
 note: this linter can be disabled with `set_option linter.badVariable false`
 -/
 #guard_msgs in
-variable (x) (c : Type)  -- should fail!
+variable (x) (c : Type)
+
+-- (Binder annotations of local instances cannot be changed.)
+-- section
+-- variable [i : DecidableEq ℕ]
+-- section
+-- error message here
+-- variable (i) (j : Type)
 
 -- I guess this is also bad, changing b and adding a --- i.e., the binder order doesn't matter?!
 section
@@ -164,6 +172,8 @@ variable {b : Type*}
 section
 -- variable {a : Type} (b)
 
+end
+end
 end
 end
 end

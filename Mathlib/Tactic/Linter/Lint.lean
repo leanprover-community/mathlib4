@@ -289,13 +289,8 @@ def badVariableLinter : Linter where
       -- HACK: using the previous scope as a hack.
       let prevScope := (← get).scopes.getD 1 (← getScope)
       let previousVariables := (prevScope.varDecls).map fun var ↦ var.raw
-      -- let previousVariables := ((← getScope).varDecls).map fun var ↦ var.raw
-
-      -- Again, consider only implicit or explicit binders. Really??
-      -- TODO write a test where this fails :-)
-      let filtered := previousVariables.filter fun binder ↦
-        [``Lean.Parser.Term.implicitBinder, ``Lean.Parser.Term.explicitBinder].contains binder.getKind
-      let previousNames := (filtered.map fun binder ↦
+      -- We care about all kinds of previous binders.
+      let previousNames := (previousVariables.map fun binder ↦
         binder[1].getArgs.map fun s ↦ s.getId).flatten
 
       -- Determine all binders which are just changing a previous variable's binder.
