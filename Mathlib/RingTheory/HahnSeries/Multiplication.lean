@@ -104,8 +104,8 @@ def rec {motive : HahnModule Γ R V → Sort*} (h : ∀ x : HahnSeries Γ V, mot
 theorem ext (x y : HahnModule Γ R V) (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
   (of R).symm.injective <| HahnSeries.coeff_inj.1 h
 
-theorem ext_iff (x y : HahnModule Γ R V) :
-    ((of R).symm x).coeff = ((of R).symm y).coeff ↔ x = y := by
+protected theorem ext_iff (x y : HahnModule Γ R V) :
+    x = y ↔ ((of R).symm x).coeff = ((of R).symm y).coeff  := by
   simp_all only [HahnSeries.coeff_inj, EmbeddingLike.apply_eq_iff_eq]
 
 end
@@ -537,7 +537,7 @@ instance instNoZeroSMulDivisors {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Zero
   eq_zero_or_eq_zero_of_smul_eq_zero {x y} hxy := by
     contrapose! hxy
     simp only [ne_eq]
-    rw [← HahnModule.ext_iff, Function.funext_iff, not_forall]
+    rw [HahnModule.ext_iff, Function.funext_iff, not_forall]
     refine ⟨x.order + ((of R).symm y).order, ?_⟩
     rw [smul_coeff_order_add_order x y, of_symm_zero, HahnSeries.zero_coeff, smul_eq_zero, not_or]
     constructor
