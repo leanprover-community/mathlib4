@@ -27,7 +27,7 @@ variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type*}
 
 namespace Finset
 
-variable [DecidableEq α'] [DecidableEq β'] [DecidableEq γ] [DecidableEq γ'] [DecidableEq δ]
+variable [DecidableEq α'] [DecidableEq β'] [DecidableEq γ] [DecidableEq γ']
   [DecidableEq δ'] [DecidableEq ε] [DecidableEq ε'] {f f' : α → β → γ} {g g' : α → β → γ → δ}
   {s s' : Finset α} {t t' : Finset β} {u u' : Finset γ} {a a' : α} {b b' : β} {c : γ}
 
@@ -240,6 +240,9 @@ The proof pattern is `image₂_lemma operation_lemma`. For example, `image₂_co
 `image₂ (*) f g = image₂ (*) g f` in a `CommSemigroup`.
 -/
 
+section
+variable [DecidableEq δ]
+
 theorem image_image₂ (f : α → β → γ) (g : γ → δ) :
     (image₂ f s t).image g = image₂ (fun a b => g (f a b)) s t :=
   coe_injective <| by
@@ -288,7 +291,8 @@ theorem image₂_right [DecidableEq β] (h : s.Nonempty) : image₂ (fun _ y => 
     push_cast
     exact image2_right h
 
-theorem image₂_assoc {γ : Type*} {u : Finset γ} {f : δ → γ → ε} {g : α → β → δ} {f' : α → ε' → ε}
+theorem image₂_assoc {γ : Type*} {u : Finset γ}
+    {f : δ → γ → ε} {g : α → β → δ} {f' : α → ε' → ε}
     {g' : β → γ → ε'} (h_assoc : ∀ a b c, f (g a b) c = f' a (g' b c)) :
     image₂ f (image₂ g s t) u = image₂ f' s (image₂ g' t u) :=
   coe_injective <| by
@@ -459,6 +463,7 @@ theorem subset_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s t) :
     image_subset_iff]
   exact ⟨fun _ h ↦ (hu h).1, fun _ h ↦ (hu h).2, fun x hx ↦ mem_image₂_of_mem hx hx⟩
 
+end
 section UnionInter
 
 variable [DecidableEq α] [DecidableEq β]

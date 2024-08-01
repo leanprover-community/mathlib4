@@ -27,6 +27,7 @@ your own code.
 
 -/
 
+section
 variable (M₀ : Type*) [MonoidWithZero M₀]
 
 /-- The collection of elements of a `MonoidWithZero` that are not left zero divisors form a
@@ -79,6 +80,8 @@ lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
   refine ⟨fun h ↦ ?_, fun hx y hx' ↦ by aesop⟩
   contrapose! h
   exact ⟨1, Or.inl h, one_ne_zero⟩
+
+end
 
 /-- The submonoid of non-zero-divisors of a `MonoidWithZero` `R`. -/
 def nonZeroDivisors (R : Type*) [MonoidWithZero R] : Submonoid R where
