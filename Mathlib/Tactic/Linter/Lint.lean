@@ -51,6 +51,8 @@ end Std.Tactic.Lint
 
 namespace Mathlib.Linter
 
+open Lean
+
 /-!
 #  `dupNamespace` linter
 
@@ -77,7 +79,7 @@ register_option linter.dupNamespace : Bool := {
 
 namespace DupNamespaceLinter
 
-open Lean Parser Elab Command Meta
+open Parser Elab Command Meta
 
 /-- Gets the value of the `linter.dupNamespace` option. -/
 def getLinterDupNamespace (o : Options) : Bool := Linter.getLinterValue linter.dupNamespace o
@@ -117,8 +119,6 @@ The "missing end" linter emits a warning on non-closed `section`s and `namespace
 It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
 -/
 
-open Lean Elab Command
-
 /-- The "missing end" linter emits a warning on non-closed `section`s and `namespace`s.
 It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
 -/
@@ -128,6 +128,8 @@ register_option linter.missingEnd : Bool := {
 }
 
 namespace MissingEnd
+
+open Elab Command
 
 /-- Gets the value of the `linter.missingEnd` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.missingEnd o
@@ -226,8 +228,6 @@ changes how a variable is bound and declares new variables at the same time.
 This is discouraged since it leads to surprising behaviour.
 -/
 
-open Lean Elab
-
 /-- The "badVariable" linter emits a warning when a variable command
 changes how a variable is bound and declares new variables at the same time.
 
@@ -240,11 +240,16 @@ register_option linter.badVariable : Bool := {
 
 namespace BadVariable
 
+open Elab Command
+
 /-- Gets the value of the `linter.badVariable` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.badVariable o
 
-/-- Whether a new variable binder is just updating the binder type of a previous variable.
-TODO: extend this docstring
+/--
+Whether a variable binder just updates the type of a previous variable.
+`current` is the name of the variable,
+`withType` describes whether its binder contains a type or not, and
+`previousNames` are all names of variables which were previously declared.
 -/
 def isBinderTypeChange (current : Name) (withType : Bool) (previousNames : Array Name) : Bool :=
   -- If there was no previous variable of this name, we simply have a new variable.
@@ -255,12 +260,9 @@ def isBinderTypeChange (current : Name) (withType : Bool) (previousNames : Array
   else if withType then
     false
   -- Otherwise, we have a change in binder types.
-  -- TODO: currently, this treats a variable with a default value as "change"...
-  -- is this the correct way?
-  else
-    true
+  -- TODO: currently, this treats a variable with a default value as "change"; is this what we want?
+  else true
 
-open Command in
 @[inherit_doc Mathlib.Linter.linter.badVariable]
 def badVariableLinter : Linter where
   run := withSetOptionIn fun stx => do
