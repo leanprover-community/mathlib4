@@ -104,7 +104,7 @@ theorem Coloring.colorClasses_finite [Finite α] : C.colorClasses.Finite :=
 
 theorem Coloring.card_colorClasses_le [Fintype α] [Fintype C.colorClasses] :
     Fintype.card C.colorClasses ≤ Fintype.card α := by
-  simp [colorClasses]
+  simp only [colorClasses]
   -- Porting note: brute force instance declaration `[Fintype (Setoid.classes (Setoid.ker C))]`
   haveI : Fintype (Setoid.classes (Setoid.ker C)) := by assumption
   convert Setoid.card_classes_ker_le C
