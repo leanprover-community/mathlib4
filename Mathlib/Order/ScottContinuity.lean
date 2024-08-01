@@ -184,7 +184,11 @@ lemma test {f : α × β → γ} {d : Set (α × β)} (hd₁ : d.Nonempty)
   rw [Set.image] at e2
   aesop
 
-
+lemma ScottContinuous_prod_of_ScottContinuous {f : α × β → γ}
+    (h₁ : ∀ a, ScottContinuous (fun b => f (a,b))) (h₂ : ∀ b, ScottContinuous (fun a => f (a,b))) :
+    ScottContinuous f := by
+  intro d hd₁ hd₂ p hdp
+  apply test hd₁ hd₂ hdp h₁ h₂
 
 /-
 lemma testprod {S : Set α} {T : Set β} {u : S → α × β} (v : α × β)
