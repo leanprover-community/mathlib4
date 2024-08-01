@@ -150,7 +150,7 @@ theorem min_orderTop_le_orderTop_add {Γ} [LinearOrder Γ] {x y : HahnSeries Γ 
     WithTop.coe_le_coe]
   exact HahnSeries.min_le_min_add hx hy hxy
 
-theorem min_order_min_order_le_add {Γ} [Zero Γ] [LinearOrder Γ] {x y : HahnSeries Γ R}
+theorem min_order_le_order_add {Γ} [Zero Γ] [LinearOrder Γ] {x y : HahnSeries Γ R}
     (hxy : x + y ≠ 0) : min x.order y.order ≤ (x + y).order := by
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
