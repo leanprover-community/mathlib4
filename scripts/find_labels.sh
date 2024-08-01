@@ -39,9 +39,14 @@ echo "$prs"
 
 # the current year and month
 yr_mth=2024-07 #"$(date +%Y-%m)"
+yr_mth_day=2024-07-01
 
-start_date="${yr_mth}-01T00:00:00"
-end_date="$(date -d "${yr_mth}-01 + 1 month - 1 day" +%Y-%m-%d)T23:59:59"
+start_date="${yr_mth_day}T00:00:00"
+end_date="$(date -d "${yr_mth_day} + 1 month - 1 day" +%Y-%m-%d)T23:59:59"
+
+mth="$(date -d "${yr_mth_day}" '+%B')"
+prev_mth="$(date -d "${yr_mth_day} - 1 day" '+%B')"
+next_mth="$(date -d "${yr_mth_day} + 1 month" '+%B')"
 
 commits_in_range="$(git log --since="${start_date}" --until="${end_date}" --pretty=oneline | wc -l)"
 
@@ -77,10 +82,6 @@ only_gh="$( comm -23 <(sort found_by_gh.txt) <(sort found_by_git.txt) | sed 's=^
 only_git="$(comm -13 <(sort found_by_gh.txt) <(sort found_by_git.txt) | sed 's=^=  =' | tr -d '()')"
 
 printf $'\n---\nReports\n\n'
-
-mth="$(date -d "${yr_mth}-01" '+%B')"
-prev_mth="$(date -d "${yr_mth}-01 - 1 day" '+%B')"
-next_mth="$(date -d "${yr_mth}-01 + 1 month" '+%B')"
 
 if [ -z "${only_gh}" ]
 then
