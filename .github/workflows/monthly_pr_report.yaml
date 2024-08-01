@@ -29,5 +29,5 @@ jobs:
         continue-on-error: true
         run: |
           printf $'Repository: %s\nBranch: %s\n' "${{ github.repository }}" "${BRANCH_NAME}"
-          git checkout adomani/yd_find_label scripts/find_labels.sh
+          git checkout origin/adomani/yd_find_label scripts/find_labels.sh
           ./scripts/find_labels.sh "${{ github.repository }}"
