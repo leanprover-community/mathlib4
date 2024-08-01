@@ -227,14 +227,17 @@ lemma test {f : α × β → γ} {d : Set (α × β)} (hd₁' : (Prod.fst '' d).
     (hd₂' : DirectedOn (· ≤ ·) (Prod.fst '' d)) (hd₁ : (Prod.snd '' d).Nonempty)
     (hd₂ : DirectedOn (· ≤ ·) (Prod.snd '' d)) {p₁ : α} {p₂ : β} (h : IsLUB d (p₁,p₂))
     (h₁ : ∀ a, ScottContinuous (fun b => f (a,b))) (h₂ : ∀ b, ScottContinuous (fun a => f (a,b))) :
-    IsLUB (⋃ (a : (Prod.fst '' d)), f '' ({↑a} ×ˢ (Prod.snd '' d)) ) (f (p₁,p₂)) := by
+    IsLUB (f '' ((Prod.fst '' d) ×ˢ (Prod.snd '' d)) ) (f (p₁,p₂)) := by
   have e1 : IsLUB (Prod.fst '' d) p₁ := ((isLUB_prod (p₁,p₂)).mp h).1
+  rw [← iUnion_of_singleton_coe (Prod.fst '' d), iUnion_prod_const, image_iUnion]
   apply IsLUB.iUnion
   apply fun a => step1' hd₁ hd₂ h h₁
   have e2 : IsLUB ((fun a ↦ f (a, p₂)) '' (Prod.fst '' d)) (f (p₁,p₂)) := h₂ p₂ hd₁' hd₂' e1
   rw [Set.range]
   rw [Set.image] at e2
   aesop
+
+
 
 /-
 lemma testprod {S : Set α} {T : Set β} {u : S → α × β} (v : α × β)
