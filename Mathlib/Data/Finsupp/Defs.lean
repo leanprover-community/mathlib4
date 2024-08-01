@@ -502,8 +502,9 @@ theorem support_update_ne_zero [DecidableEq α] (h : b ≠ 0) :
   simp only [update, h, ite_false, mem_support_iff, ne_eq]
   congr!
 
-theorem support_update_subset [DecidableEq α] [DecidableEq M] :
+theorem support_update_subset [DecidableEq α] :
     support (f.update a b) ⊆ insert a f.support := by
+  classical
   rw [support_update]
   split_ifs
   · exact (erase_subset _ _).trans (subset_insert _ _)
