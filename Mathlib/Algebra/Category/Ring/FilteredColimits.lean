@@ -26,11 +26,7 @@ universe v u
 
 noncomputable section
 
-open scoped Classical
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits
 
 open CategoryTheory.IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
 

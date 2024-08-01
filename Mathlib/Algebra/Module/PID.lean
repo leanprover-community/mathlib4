@@ -69,8 +69,6 @@ theorem Submodule.isSemisimple_torsionBy_of_irreducible {a : R} (h : Irreducible
   letI := Ideal.Quotient.field (R ∙ a)
   (submodule_torsionBy_orderIso a).complementedLattice
 
-#check isInternal_prime_power_torsion
-
 /-- A finitely generated torsion module over a PID is an internal direct sum of its
 `p i ^ e i`-torsion submodules for some primes `p i` and numbers `e i`. -/
 theorem Submodule.isInternal_prime_power_torsion_of_pid [DecidableEq (Ideal R)] [Module.Finite R M]
@@ -110,6 +108,7 @@ open Ideal Submodule.IsPrincipal
 
 theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
     torsionOf R M x = span {p ^ pOrder hM x} := by
+  classical
   dsimp only [pOrder]
   rw [← (torsionOf R M x).span_singleton_generator, Ideal.span_singleton_eq_span_singleton, ←
     Associates.mk_eq_mk_iff_associated, Associates.mk_pow]
