@@ -301,22 +301,22 @@ theorem IsUltrahomogeneous.extend_embedding (M_homog : L.IsUltrahomogeneous M) {
 /-- A countably generated structure is ultrahomogeneous if and only if any equivalence between
 finitely generated substructures can be extended to any element in the domain.-/
 theorem isUltrahomogeneous_iff_extend_finite_equiv (M_CG : CG L M) : L.IsUltrahomogeneous M ↔
-    ∀ f : (M ≃ₚ[L] M), ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] M), f ≤ g ∧ m ∈ g.sub_dom := by
+    ∀ f : (M ≃ₚ[L] M), ∀ _ : f.dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] M), f ≤ g ∧ m ∈ g.dom := by
   constructor
   · intro M_homog f f_FG m
-    let S := closure L (f.sub_dom ∪ {m})
-    have dom_le_S : f.sub_dom ≤ S := by
-      simp only [closure_union, closure_eq, ge_iff_le, le_sup_left]
-    let ⟨f', eq_f'⟩ := M_homog.extend_embedding (f.sub_dom.fg_iff_structure_fg.1 f_FG)
+    let S := closure L (f.dom ∪ {m})
+    have dom_le_S : f.dom ≤ S := by
+      simp only [S, closure_union, closure_eq, ge_iff_le, le_sup_left]
+    let ⟨f', eq_f'⟩ := M_homog.extend_embedding (f.dom.fg_iff_structure_fg.1 f_FG)
       ((subtype _).comp f.equiv.toEmbedding) (inclusion dom_le_S) (h := ⟨subtype _⟩)
     use ⟨S, f'.toHom.range, f'.equivRange⟩
     refine ⟨⟨dom_le_S, ?_⟩, by
-      simp only [union_singleton]
+      simp only [S, union_singleton]
       exact Substructure.subset_closure <| mem_insert_iff.2 <| Or.inl <| refl m⟩
     simp only
     rw [← Embedding.comp_assoc, Embedding.subtype_equivRange f', ← eq_f']
   · intro h S S_FG f
-    let ⟨g, ⟨le_dom, eq⟩⟩ := BackAndForth.equiv_between_cg M_CG M_CG
+    let ⟨g, ⟨dom_le_dom, eq⟩⟩ := BackAndForth.equiv_between_cg M_CG M_CG
       ⟨S, f.toHom.range, f.equivRange⟩ S_FG h (BackAndForth.back_iff_symm_of_forth.2 h)
     use g
     simp only [Embedding.subtype_equivRange] at eq
@@ -366,12 +366,12 @@ variable [Countable (Σ l, L.Functions l)] [Countable M] [Countable N]
 variable (hM : IsFraisseLimit K M) (hN : IsFraisseLimit K N)
 
 theorem extend_finite_SubEquiv :
-    ∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom := by
+    ∀ f : M ≃ₚ[L] N, ∀ _ : f.dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.dom := by
   intro f f_FG m
-  let S := closure L (f.sub_dom ∪ {m})
-  have dom_le_S : f.sub_dom ≤ S := by
-    simp only [closure_union, closure_eq, ge_iff_le, le_sup_left]
-  have S_FG : FG L (closure L (f.sub_dom ∪ {m})) := by
+  let S := closure L (f.dom ∪ {m})
+  have dom_le_S : f.dom ≤ S := by
+    simp only [S, closure_union, closure_eq, ge_iff_le, le_sup_left]
+  have S_FG : FG L (closure L (f.dom ∪ {m})) := by
     rw [← fg_iff_structure_fg, closure_union, closure_eq]
     exact Substructure.FG.sup f_FG (Substructure.fg_closure_singleton _)
   have S_in_age_N : ⟨S, inferInstance⟩ ∈ L.age N := by
@@ -380,30 +380,30 @@ theorem extend_finite_SubEquiv :
   let nonempty_S_N : Nonempty (S ↪[L] N) := by
     let ⟨_, this⟩ := S_in_age_N
     exact this
-  let ⟨g, eq⟩ := hN.ultrahomogeneous.extend_embedding (f.sub_dom.fg_iff_structure_fg.1 f_FG)
-    ((subtype f.sub_cod).comp f.equiv.toEmbedding) (inclusion dom_le_S)
+  let ⟨g, eq⟩ := hN.ultrahomogeneous.extend_embedding (f.dom.fg_iff_structure_fg.1 f_FG)
+    ((subtype f.cod).comp f.equiv.toEmbedding) (inclusion dom_le_S)
   refine ⟨⟨S, g.toHom.range, g.equivRange⟩, ?_, ?_⟩
-  · rw [SubEquivalence.le_def]
+  · rw [PartialEquiv.le_def]
     use dom_le_S
     rw [eq]
     rfl
-  · simp only [union_singleton]
+  · simp only [S, union_singleton]
     exact Substructure.subset_closure <| mem_insert_iff.2 <| Or.inl <| refl m
 
 theorem unique_FraisseLimit : Nonempty (M ≃[L] N) := by
   let S := closure L (∅ : Set M)
   have S_fg : FG L S := by
-    simp [← fg_iff_structure_fg, Substructure.closure_empty]
+    simp only [← fg_iff_structure_fg, closure_empty, S]
     exact Substructure.fg_bot
   obtain ⟨_, ⟨emb_S : S ↪[L] N⟩⟩ : ⟨S, inferInstance⟩ ∈ L.age N := by
     rw [hN.age, ← hM.age]
     exact ⟨S_fg, ⟨subtype _⟩⟩
   let v : M ≃ₚ[L] N := {
-    sub_dom := S
-    sub_cod := emb_S.toHom.range
+    dom := S
+    cod := emb_S.toHom.range
     equiv := emb_S.equivRange
   }
-  exact ⟨Exists.choose (BackAndForth.equiv_between_cg (cg_if_countable) (cg_if_countable) v
+  exact ⟨Exists.choose (BackAndForth.equiv_between_cg cg_of_countable cg_of_countable v
     ((Substructure.fg_iff_structure_fg _).2 S_fg) (extend_finite_SubEquiv hM hN)
       (BackAndForth.back_iff_symm_of_forth.2 (extend_finite_SubEquiv hN hM)))⟩
 
@@ -444,17 +444,17 @@ theorem ess_surj_sequence_is_ess_surj : ∀ V : K, ∃ n,
   convert (congr_arg (Subtype.val) n_prop).symm
   apply Quot.out_eq
 
-theorem can_extend_finiteEquiv_in_class : ∀ S : K, ∀ f : S ≃ₚ[L] S, ∀ _ : f.sub_dom.FG,
+theorem can_extend_finiteEquiv_in_class : ∀ S : K, ∀ f : S ≃ₚ[L] S, ∀ _ : f.dom.FG,
     ∃ T : K, ∃ incl : S ↪[L] T, ∃ g : T ≃ₚ[L] T,
-    f.map incl ≤ g ∧ incl.toHom.range ≤ g.sub_dom := by
+    f.map incl ≤ g ∧ incl.toHom.range ≤ g.dom := by
   rintro ⟨S, S_in_K⟩ f f_fg
-  obtain ⟨R, g₁, g₂, R_in_K, eq⟩ := K_fraisse.amalgamation (Bundled.mk f.sub_dom) S S
+  obtain ⟨R, g₁, g₂, R_in_K, eq⟩ := K_fraisse.amalgamation (Bundled.mk f.dom) S S
     (subtype _) ((subtype _).comp f.equiv.toEmbedding) (K_fraisse.hereditary S S_in_K
       (age.fg_substructure f_fg)) S_in_K S_in_K
   use ⟨R, R_in_K⟩
   use g₂
   use ⟨g₂.toHom.range, g₁.toHom.range, g₁.equivRange.comp g₂.equivRange.symm⟩
-  simp only [le_refl, and_true, SubEquivalence.le_def, SubEquivalence.map_dom]
+  simp only [le_refl, and_true, PartialEquiv.le_def, PartialEquiv.map_dom]
   use Hom.map_le_range
   ext ⟨x, x_prop⟩
   let ⟨y, y_in_dom_f, eq_xy⟩ := Substructure.mem_map.1 x_prop
@@ -462,15 +462,15 @@ theorem can_extend_finiteEquiv_in_class : ∀ S : K, ∀ f : S ≃ₚ[L] S, ∀ 
   simp only [Embedding.comp_apply, coeSubtype, Equiv.coe_toEmbedding] at eq
   cases eq_xy
   change g₁ ((g₂.equivRange.symm (g₂.equivRange y))) = _
-  simp only [Equiv.symm_apply_apply, eq, SubEquivalence.map_cod, Embedding.coe_toHom,
+  simp only [Equiv.symm_apply_apply, eq, PartialEquiv.map_cod, Embedding.coe_toHom,
     Embedding.comp_apply, Equiv.coe_toEmbedding, coeSubtype, map_coe]
-  have := SubEquivalence.map_commutes_apply g₂ f ⟨y, y_in_dom_f⟩
-  simp only [SubEquivalence.map_cod, SubEquivalence.map_dom] at this
+  have := PartialEquiv.map_comp_comm_apply g₂ f ⟨y, y_in_dom_f⟩
+  simp only [PartialEquiv.map_cod, PartialEquiv.map_dom] at this
   rw [this]
 
-noncomputable def extend_finiteEquiv_in_class (S : K) (f : S ≃ₚ[L] S) (f_fg : f.sub_dom.FG) :
+noncomputable def extend_finiteEquiv_in_class (S : K) (f : S ≃ₚ[L] S) (f_fg : f.dom.FG) :
     (T : K) × (incl : S ↪[L] T) × (g : T ≃ₚ[L] T) ×'
-    f.map incl ≤ g ∧ incl.toHom.range ≤ g.sub_dom := by
+    f.map incl ≤ g ∧ incl.toHom.range ≤ g.dom := by
   choose a b c d using can_extend_finiteEquiv_in_class K_fraisse
   exact ⟨a S f f_fg, b .., c .., d ..⟩
 
@@ -488,9 +488,9 @@ noncomputable def init_system : ℕ →
     let ⟨An, Sn⟩ := init_system n
     let ⟨B, B_to_An⟩ := Sn m1
     let ⟨f, f_fg⟩ := (countable_iff_exists_surjective.1
-      (Substructure.countable_self_finiteEquiv_if_countable (L := L) (M := B))).choose m2
+      (Substructure.countable_self_finiteEquiv_of_countable (L := L) (M := B))).choose m2
     let ⟨A, An_to_A, _, _⟩ := extend_finiteEquiv_in_class K_fraisse An (f.map B_to_An)
-      (SubEquivalence.map_dom B_to_An f ▸ FG.map _ f_fg)
+      (PartialEquiv.map_dom B_to_An f ▸ FG.map _ f_fg)
     let ⟨A', A_to_A', _⟩ := join K_fraisse A (ess_surj_sequence K_fraisse (n+1))
     exact ⟨A', fun m ↦
       if m ≤ n then ⟨(Sn m).1, A_to_A'.comp (An_to_A.comp (Sn m).2)⟩
@@ -508,6 +508,7 @@ noncomputable def system : ℕ → K :=
     · cases (Nat.le_or_eq_of_le_succ h).resolve_left h'
       rfl
 
+/-
 theorem init_system_succ (n : ℕ) :
     ((init_system K_fraisse n).2 n).2.comp
       (system_eq K_fraisse (le_refl n) ▸ Embedding.refl L _) =
@@ -525,9 +526,9 @@ theorem init_system_succ (n : ℕ) :
   let ⟨An, Sn⟩ := init_system K_fraisse n
   let ⟨B, B_to_An⟩ := Sn m1
   let ⟨f, f_fg⟩ := (countable_iff_exists_surjective.1
-    (Substructure.countable_self_finiteEquiv_if_countable (L := L) (M := B))).choose m2
+    (Substructure.countable_self_finiteEquiv_of_countable (L := L) (M := B))).choose m2
   let ⟨A, An_to_A, _, _⟩ := extend_finiteEquiv_in_class K_fraisse An (f.map B_to_An)
-    (SubEquivalence.map_dom B_to_An f ▸ FG.map _ f_fg)
+    (PartialEquiv.map_dom B_to_An f ▸ FG.map _ f_fg)
   let ⟨A', A_to_A', _⟩ := join K_fraisse A (ess_surj_sequence K_fraisse (n+1))
   have eq1 : ((init_system K_fraisse (n + 1)).2 (n + 1)) =
     if n + 1 ≤ n then ⟨(Sn (n + 1)).1, A_to_A'.comp (An_to_A.comp (Sn (n + 1)).2)⟩
@@ -578,6 +579,7 @@ theorem exists_fraisse_limit : ∃ M : Bundled.{w} L.Structure, ∃ _ : Countabl
     | n + 1 => by
       have : ℕ ≃ ℕ × ℕ := by exact Denumerable.equiv₂ ℕ (ℕ × ℕ)
 
+-/
 
 
 end IsFraisseLimit
