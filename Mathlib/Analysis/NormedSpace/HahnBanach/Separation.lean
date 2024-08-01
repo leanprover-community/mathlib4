@@ -284,7 +284,6 @@ theorem geometric_hahn_banach_closed_point_RCLike (hs₁ : Convex ℝ s) (hs₂ 
       (disjoint_singleton_right.2 disj)
   ⟨f, s, ha, hst.trans <| hb x <| mem_singleton _⟩
 
-/-- See also `NormedSpace.eq_iff_forall_dual_eq`. -/
 theorem geometric_hahn_banach_point_point_RCLike [T1Space E] (hxy : x ≠ y) :
     ∃ f : E →L[𝕜] 𝕜, re (f x) < re (f y) := by
   obtain ⟨f, s, t, hs, st, ht⟩ :=
@@ -292,7 +291,6 @@ theorem geometric_hahn_banach_point_point_RCLike [T1Space E] (hxy : x ≠ y) :
       (convex_singleton y) isClosed_singleton (disjoint_singleton.2 hxy)
   exact ⟨f, by linarith [hs x rfl, ht y rfl]⟩
 
-/-- A closed convex set is the intersection of the halfspaces containing it. -/
 theorem iInter_halfspaces_eq_RCLike (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
     ⋂ l : E →L[𝕜] 𝕜, { x | ∃ y ∈ s, re (l x) ≤ re (l y) } = s := by
   rw [Set.iInter_setOf]
