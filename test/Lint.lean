@@ -90,30 +90,64 @@ example : Add Nat where add := (. + ·)
 -- Tests for the badVariable linter.
 set_option autoImplicit false
 
+-- HACK. inserting temporary sections to make the linter work.
+-- TODO fix the linter and remove these again!
+
 -- These are all fine.
+section
 variable {a : Type*}
+
+section
 variable {n : ℕ} (m : ℕ := 42) (k : ℕ := by exact 0)
+
+section
 variable {p q} {r s : Prop}
+
+section
 variable ⦃x y : Int⦄  ⦃x y⦄
 
+section
 variable (a : Type*) (b : Prop) [DecidableEq a]
+
+section
 variable [DecidableEq a] [Inhabited b] {f : a → b}
 
 -- `a` is changed, but no new variable is declared (only typeclass instances are added):
 -- this is fine, right?
 -- That means typeclasses and instance implicits are fine for this purpose?
 -- (I can certainly write a linter ignoring these for now, and see if it yields useful results)
+section
 variable (a)
 theorem foo : True := trivial
+
+section
 variable {a} [DecidableEq b]
 
 -- These should error.
-variable (a)
-
--- Assuming autoImplicit is false, `a` must exist already, so this should error.
+section
+variable (a) -- dummy line
+section
 variable {a} (b : Type)
+section
 variable (a) {b : Type}
+
 -- I guess this is also bad, changing b and adding a --- i.e., the binder order doesn't matter?!
+section
 variable {b : Type*}
 -- XXX: this line errors about a "redundant binder update"... which also seems fishy
+section
 -- variable {a : Type} (b)
+
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end

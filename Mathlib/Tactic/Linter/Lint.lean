@@ -286,7 +286,11 @@ def badVariableLinter : Linter where
 
       -- Next, determine which of these variables existed previously:
       -- this information is contained in the current scope.
-      let previousVariables := ((← getScope).varDecls).map fun var ↦ var.raw
+      -- HACK: using the previous scope as a hack.
+      let prevScope := (← get).scopes.getD 1 (← getScope)
+      let previousVariables := (prevScope.varDecls).map fun var ↦ var.raw
+      -- let previousVariables := ((← getScope).varDecls).map fun var ↦ var.raw
+
       -- Again, consider only implicit or explicit binders. Really??
       -- TODO write a test where this fails :-)
       let filtered := previousVariables.filter fun binder ↦
