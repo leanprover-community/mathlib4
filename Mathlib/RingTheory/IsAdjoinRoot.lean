@@ -572,11 +572,13 @@ def aequiv (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) : S ≃ₐ[R] T :=
 
 @[simp]
 theorem aequiv_map (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) (z : R[X]) :
-    h.aequiv h' (h.map z) = h'.map z := by rw [aequiv, AlgEquiv.coe_mk, liftHom_map, aeval_eq]
+    h.aequiv h' (h.map z) = h'.map z := by
+  rw [aequiv, AlgEquiv.coe_mk, Equiv.coe_fn_mk, liftHom_map, aeval_eq]
 
 @[simp]
 theorem aequiv_root (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) :
-    h.aequiv h' h.root = h'.root := by rw [aequiv, AlgEquiv.coe_mk, liftHom_root]
+    h.aequiv h' h.root = h'.root := by
+  rw [aequiv, AlgEquiv.coe_mk, Equiv.coe_fn_mk, liftHom_root]
 
 @[simp]
 theorem aequiv_self (h : IsAdjoinRoot S f) : h.aequiv h = AlgEquiv.refl := by
