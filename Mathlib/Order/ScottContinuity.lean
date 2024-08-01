@@ -223,8 +223,20 @@ theorem IsLUB.iUnion {ι : Sort*} {u : ι → γ}  {s : ι → Set γ} (hs : ∀
     simp only [mem_range, forall_exists_index, forall_apply_eq_imp_iff, mem_setOf_eq]
     exact e1
 
+lemma test {f : α × β → γ} {d : Set (α × β)} (hd₁' : (Prod.fst '' d).Nonempty)
+    (hd₂' : DirectedOn (· ≤ ·) (Prod.fst '' d)) (hd₁ : (Prod.snd '' d).Nonempty)
+    (hd₂ : DirectedOn (· ≤ ·) (Prod.snd '' d)) {p₁ : α} {p₂ : β} (h : IsLUB d (p₁,p₂))
+    (h₁ : ∀ a, ScottContinuous (fun b => f (a,b))) (h₂ : ∀ b, ScottContinuous (fun a => f (a,b))) :
+    IsLUB (⋃ (a : (Prod.fst '' d)), f '' ({↑a} ×ˢ (Prod.snd '' d)) ) (f (p₁,p₂)) := by
+  have e1 : IsLUB (Prod.fst '' d) p₁ := ((isLUB_prod (p₁,p₂)).mp h).1
+  apply IsLUB.iUnion
+  apply fun a => step1' hd₁ hd₂ h h₁
+  have e2 : IsLUB ((fun a ↦ f (a, p₂)) '' (Prod.fst '' d)) (f (p₁,p₂)) := h₂ p₂ hd₁' hd₂' e1
+  rw [Set.range]
+  rw [Set.image] at e2
+  aesop
 
-
+/-
 lemma testprod {S : Set α} {T : Set β} {u : S → α × β} (v : α × β)
     (hS : ∀ (s : S), IsLUB ({↑s} ×ˢ T) (u s)) (h : IsLUB {u s | (s : S)} v) :
     IsLUB (S ×ˢ T) v := sorry
@@ -244,7 +256,8 @@ lemma test2 {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.fst '' d).
     IsLUB (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) (f (p₁,p₂)) := by
   have e1 : IsLUB (Prod.fst '' d) p₁ := ((isLUB_prod (p₁,p₂)).mp h).1
   have e2 : IsLUB (Prod.snd '' d) p₂ := ((isLUB_prod (p₁,p₂)).mp h).2
-  --apply testprod' (u := fun a => f (a, p₂)) (v := (f (p₁,p₂))) (S := Prod.fst '' d) (T := Prod.snd '' d) _ _
+  --apply testprod' (u := fun a => f (a, p₂)) (v := (f (p₁,p₂))) (S := Prod.fst '' d)
+   (T := Prod.snd '' d) _ _
 
   --apply testprod'' (u := fun b => f (p₁, b)) (v := (f (p₁,p₂))) (S := Prod.fst '' d)
     T := Prod.snd '' d)
@@ -252,7 +265,7 @@ lemma test2 {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.fst '' d).
   apply step1 hd₁ hd₂
   apply (h₂ p₁)
   --apply test hd₁ hd₂ h h₁
-
+-/
 
 lemma stepn {f : α × β → γ} {d : Set (α × β)} {p₁ : α} {p₂ : β} (hf : Monotone f)
     (hd : DirectedOn (· ≤ ·) d) (h : IsLUB (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) (f (p₁,p₂))) :
