@@ -373,12 +373,6 @@ lemma ofSubtype_eq_iff {g c : Equiv.Perm α} {s : Finset α}
       rw [← not_mem_support]
       exact fun ha' ↦ ha (hc ha')
 
--- Porting note (#10756): new theorem
-@[simp]
-theorem apply_pow_apply_eq_iff (f : Perm α) (n : ℕ) {x : α} :
-    f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
-  rw [← mul_apply, Commute.self_pow f, mul_apply, apply_eq_iff_eq]
-
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
   simp only [mem_support, ne_eq, apply_pow_apply_eq_iff]
