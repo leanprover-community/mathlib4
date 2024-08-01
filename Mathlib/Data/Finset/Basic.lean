@@ -2221,7 +2221,7 @@ theorem filter_subset_filter {s t : Finset α} (h : s ⊆ t) : s.filter p ⊆ t.
 
 theorem monotone_filter_left : Monotone (filter p) := fun _ _ => filter_subset_filter p
 
--- TODO: `@[gcongr]` doesn't accept this lemma because of the `DecidablePred` arguments
+@[gcongr]
 theorem monotone_filter_right (s : Finset α) ⦃p q : α → Prop⦄ [DecidablePred p] [DecidablePred q]
     (h : p ≤ q) : s.filter p ⊆ s.filter q :=
   Multiset.subset_of_le (Multiset.monotone_filter_right s.val h)
@@ -2292,6 +2292,7 @@ theorem filter_cons {a : α} (s : Finset α) (ha : a ∉ s) :
   · rw [filter_cons_of_pos _ _ _ ha h, singleton_disjUnion]
   · rw [filter_cons_of_neg _ _ _ ha h, empty_disjUnion]
 
+section
 variable [DecidableEq α]
 
 theorem filter_union (s₁ s₂ : Finset α) : (s₁ ∪ s₂).filter p = s₁.filter p ∪ s₂.filter p :=
@@ -2424,6 +2425,8 @@ theorem filter_union_filter_of_codisjoint (s : Finset α) (h : Codisjoint p q) :
 theorem filter_union_filter_neg_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
     (s.filter p ∪ s.filter fun a => ¬p a) = s :=
   filter_union_filter_of_codisjoint _ _ _ <| @codisjoint_hnot_right _ _ p
+
+end
 
 lemma filter_inj : s.filter p = t.filter p ↔ ∀ ⦃a⦄, p a → (a ∈ s ↔ a ∈ t) := by simp [ext_iff]
 
