@@ -51,17 +51,14 @@ section Measurable
 
 variable [MeasurableSpace α]
 
-attribute [coe] toFun
+instance instFunLike : FunLike (α →ₛ β) α β where
+  coe := toFun
+  coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
-instance instCoeFun : CoeFun (α →ₛ β) fun _ => α → β :=
-  ⟨toFun⟩
-
-theorem coe_injective ⦃f g : α →ₛ β⦄ (H : (f : α → β) = g) : f = g := by
-  cases f; cases g; congr
+theorem coe_injective ⦃f g : α →ₛ β⦄ (H : (f : α → β) = g) : f = g := DFunLike.ext' H
 
 @[ext]
-theorem ext {f g : α →ₛ β} (H : ∀ a, f a = g a) : f = g :=
-  coe_injective <| funext H
+theorem ext {f g : α →ₛ β} (H : ∀ a, f a = g a) : f = g := DFunLike.ext _ _ H
 
 theorem finite_range (f : α →ₛ β) : (Set.range f).Finite :=
   f.finite_range'
@@ -69,7 +66,8 @@ theorem finite_range (f : α →ₛ β) : (Set.range f).Finite :=
 theorem measurableSet_fiber (f : α →ₛ β) (x : β) : MeasurableSet (f ⁻¹' {x}) :=
   f.measurableSet_fiber' x
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp] theorem coe_mk (f : α → β) (h h') : ⇑(mk f h h') = f := rfl
+
 theorem apply_mk (f : α → β) (h h') (x : α) : SimpleFunc.mk f h h' x = f x :=
   rfl
 
