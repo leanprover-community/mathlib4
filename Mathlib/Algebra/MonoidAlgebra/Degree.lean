@@ -258,6 +258,7 @@ theorem apply_eq_zero_of_not_le_supDegree {a : A} (hlt : ¬ D a ≤ p.supDegree 
   exact Finset.le_sup (Finsupp.mem_support_iff.2 hlt)
 
 variable (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
+include hadd
 
 theorem supDegree_mul_le [CovariantClass B B (· + ·) (· ≤ ·)]
     [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)] :

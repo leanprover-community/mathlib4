@@ -150,6 +150,7 @@ theorem pow_sub_pow_of_prime {p : R} (hp : Prime p) {x y : R} (hxy : p ∣ x - y
     zero_add]
 
 variable (hp : Prime (p : R)) (hp1 : Odd p) (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x)
+include hp hp1 hxy hx
 
 theorem geom_sum₂_eq_one : multiplicity (↑p) (∑ i ∈ range p, x ^ i * y ^ (p - 1 - i)) = 1 := by
   rw [← Nat.cast_one]
@@ -182,6 +183,7 @@ end IntegralDomain
 section LiftingTheExponent
 
 variable (hp : Nat.Prime p) (hp1 : Odd p)
+include hp hp1
 
 /-- **Lifting the exponent lemma** for odd primes. -/
 theorem Int.pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x) (n : ℕ) :
@@ -367,6 +369,7 @@ theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : 
   · simp only [tsub_pos_iff_lt, pow_lt_pow_left hyx zero_le' hn]
 
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
+include hp hp1
 
 theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ} (hn : n ≠ 0) :
     padicValNat p (x ^ n - y ^ n) = padicValNat p (x - y) + padicValNat p n := by

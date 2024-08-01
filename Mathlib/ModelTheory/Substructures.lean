@@ -469,6 +469,7 @@ theorem closure_image (f : M →[L] N) : closure L (f '' s) = map f (closure L s
 section GaloisCoinsertion
 
 variable {ι : Type*} {f : M →[L] N} (hf : Function.Injective f)
+include hf
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
 def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
@@ -508,6 +509,7 @@ end GaloisCoinsertion
 section GaloisInsertion
 
 variable {ι : Type*} {f : M →[L] N} (hf : Function.Surjective f)
+include hf
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
 def giMapComap : GaloisInsertion (map f) (comap f) :=

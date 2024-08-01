@@ -985,6 +985,7 @@ theorem inverse_domain : (inverse f).domain = LinearMap.range f.toFun := by
   rfl
 
 variable (hf : LinearMap.ker f.toFun = ⊥)
+include hf
 
 /-- The graph of the inverse generates a `LinearPMap`. -/
 theorem mem_inverse_graph_snd_eq_zero (x : F × E)

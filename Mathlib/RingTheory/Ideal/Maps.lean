@@ -25,7 +25,7 @@ variable {R : Type u} {S : Type v}
 section Semiring
 
 variable {F : Type*} [Semiring R] [Semiring S]
-variable [FunLike F R S] [rc : RingHomClass F R S]
+variable [FunLike F R S]
 variable (f : F)
 variable {I J : Ideal R} {K L : Ideal S}
 
@@ -35,7 +35,7 @@ def map (I : Ideal R) : Ideal S :=
   span (f '' I)
 
 /-- `I.comap f` is the preimage of `I` under `f`. -/
-def comap (I : Ideal S) : Ideal R where
+def comap [RingHomClass F R S] (I : Ideal S) : Ideal R where
   carrier := f ⁻¹' I
   add_mem' {x y} hx hy := by
     simp only [Set.mem_preimage, SetLike.mem_coe, map_add f] at hx hy ⊢
@@ -46,7 +46,7 @@ def comap (I : Ideal S) : Ideal R where
     exact mul_mem_left I _ hx
 
 @[simp]
-theorem coe_comap (I : Ideal S) : (comap f I : Set R) = f ⁻¹' I := rfl
+theorem coe_comap [RingHomClass F R S] (I : Ideal S) : (comap f I : Set R) = f ⁻¹' I := rfl
 
 variable {f}
 
@@ -58,6 +58,8 @@ theorem mem_map_of_mem (f : F) {I : Ideal R} {x : R} (h : x ∈ I) : f x ∈ map
 
 theorem apply_coe_mem_map (f : F) (I : Ideal R) (x : I) : f x ∈ I.map f :=
   mem_map_of_mem f x.2
+
+variable [rc : RingHomClass F R S]
 
 theorem map_le_iff_le_comap : map f I ≤ K ↔ I ≤ comap f K :=
   span_le.trans Set.image_subset_iff
@@ -240,7 +242,8 @@ theorem restrictScalars_mul {R S : Type*} [CommSemiring R] [CommSemiring S] [Alg
 
 section Surjective
 
-variable (hf : Function.Surjective f)
+section variable (hf : Function.Surjective f)
+include hf
 
 open Function
 
@@ -287,6 +290,8 @@ theorem mem_map_iff_of_surjective {I : Ideal R} {y} : y ∈ map f I ↔ ∃ x, x
 
 theorem le_map_of_comap_le_of_surjective : comap f K ≤ I → K ≤ map f I := fun h =>
   map_comap_of_surjective f hf K ▸ map_mono h
+
+end
 
 theorem map_eq_submodule_map (f : R →+* S) [h : RingHomSurjective f] (I : Ideal R) :
     I.map f = Submodule.map f.toSemilinearMap I :=
