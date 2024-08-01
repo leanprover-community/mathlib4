@@ -57,7 +57,7 @@ theorem ext : ∀ {z w : ℂ}, z.re = w.re → z.im = w.im → z = w
 
 attribute [local ext] Complex.ext
 
-theorem ext_iff {z w : ℂ} : z = w ↔ z.re = w.re ∧ z.im = w.im :=
+protected theorem ext_iff {z w : ℂ} : z = w ↔ z.re = w.re ∧ z.im = w.im :=
   ⟨fun H => by simp [H], fun h => ext h.1 h.2⟩
 
 theorem re_surjective : Surjective re := fun x => ⟨⟨x, 0⟩, rfl⟩

@@ -53,8 +53,6 @@ open UniqueFactorizationMonoid
 
 section DecEq
 
-open scoped Classical
-
 /-- The ramification index of `P` over `p` is the largest exponent `n` such that
 `p` is contained in `P^n`.
 
@@ -67,9 +65,10 @@ noncomputable def ramificationIdx : ℕ := sSup {n | map f p ≤ P ^ n}
 
 variable {f p P}
 
-theorem ramificationIdx_eq_find (h : ∃ n, ∀ k, map f p ≤ P ^ k → k ≤ n) :
-    ramificationIdx f p P = Nat.find h :=
-  Nat.sSup_def h
+theorem ramificationIdx_eq_find [DecidablePred fun n ↦ ∀ (k : ℕ), map f p ≤ P ^ k → k ≤ n]
+    (h : ∃ n, ∀ k, map f p ≤ P ^ k → k ≤ n) :
+    ramificationIdx f p P = Nat.find h := by
+  convert Nat.sSup_def h
 
 theorem ramificationIdx_eq_zero (h : ∀ n : ℕ, ∃ k, map f p ≤ P ^ k ∧ n < k) :
     ramificationIdx f p P = 0 :=
@@ -77,6 +76,7 @@ theorem ramificationIdx_eq_zero (h : ∀ n : ℕ, ∃ k, map f p ≤ P ^ k ∧ n
 
 theorem ramificationIdx_spec {n : ℕ} (hle : map f p ≤ P ^ n) (hgt : ¬map f p ≤ P ^ (n + 1)) :
     ramificationIdx f p P = n := by
+  classical
   let Q : ℕ → Prop := fun m => ∀ k : ℕ, map f p ≤ P ^ k → k ≤ m
   have : Q n := by
     intro k hk
@@ -88,6 +88,7 @@ theorem ramificationIdx_spec {n : ℕ} (hle : map f p ≤ P ^ n) (hgt : ¬map f 
   exact h.not_le (this' _ hle)
 
 theorem ramificationIdx_lt {n : ℕ} (hgt : ¬map f p ≤ P ^ n) : ramificationIdx f p P < n := by
+  classical
   cases' n with n n
   · simp at hgt
   · rw [Nat.lt_succ_iff]
@@ -127,7 +128,8 @@ namespace IsDedekindDomain
 
 variable [IsDedekindDomain S]
 
-theorem ramificationIdx_eq_normalizedFactors_count (hp0 : map f p ≠ ⊥) (hP : P.IsPrime)
+theorem ramificationIdx_eq_normalizedFactors_count [DecidableEq (Ideal S)]
+    (hp0 : map f p ≠ ⊥) (hP : P.IsPrime)
     (hP0 : P ≠ ⊥) : ramificationIdx f p P = (normalizedFactors (map f p)).count P := by
   have hPirr := (Ideal.prime_of_isPrime hP0 hP).irreducible
   refine ramificationIdx_spec (Ideal.le_of_dvd ?_) (mt Ideal.dvd_iff_le.mpr ?_) <;>
@@ -136,13 +138,15 @@ theorem ramificationIdx_eq_normalizedFactors_count (hp0 : map f p ≠ ⊥) (hP :
       Multiset.nsmul_singleton, ← Multiset.le_count_iff_replicate_le]
   exact (Nat.lt_succ_self _).not_le
 
-theorem ramificationIdx_eq_factors_count (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (hP0 : P ≠ ⊥) :
+theorem ramificationIdx_eq_factors_count [DecidableEq (Ideal S)]
+    (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (hP0 : P ≠ ⊥) :
     ramificationIdx f p P = (factors (map f p)).count P := by
   rw [IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count hp0 hP hP0,
     factors_eq_normalizedFactors]
 
 theorem ramificationIdx_ne_zero (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (le : map f p ≤ P) :
     ramificationIdx f p P ≠ 0 := by
+  classical
   have hP0 : P ≠ ⊥ := by
     rintro rfl
     have := le_bot_iff.mp le
@@ -159,6 +163,7 @@ variable (f p P)
 
 attribute [local instance] Ideal.Quotient.field
 
+open Classical in
 /-- The inertia degree of `P : Ideal S` lying over `p : Ideal R` is the degree of the
 extension `(S / P) : (R / p)`.
 

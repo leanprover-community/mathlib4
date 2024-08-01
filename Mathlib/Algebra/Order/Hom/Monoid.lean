@@ -205,7 +205,7 @@ theorem antitone_iff_map_nonneg : Antitone (f : α → β) ↔ ∀ a ≤ 0, 0 �
 
 variable [CovariantClass β β (· + ·) (· < ·)]
 
-theorem strictMono_iff_map_pos [iamhc : AddMonoidHomClass F α β]  :
+theorem strictMono_iff_map_pos :
     StrictMono (f : α → β) ↔ ∀ a, 0 < a → 0 < f a := by
   refine ⟨fun h a => ?_, fun h a b hl => ?_⟩
   · rw [← map_zero f]
