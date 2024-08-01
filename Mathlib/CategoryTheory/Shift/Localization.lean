@@ -62,6 +62,7 @@ abbrev shiftLocalizerMorphism (a : A) : LocalizerMorphism W W where
 
 end MorphismProperty
 
+section
 variable [W.IsCompatibleWithShift A]
 
 /-- When `L : C ⥤ D` is a localization functor with respect to a morphism property `W`
@@ -110,6 +111,8 @@ noncomputable instance MorphismProperty.commShift_Q' :
   Functor.CommShift.localized W.Q' W A
 
 attribute [irreducible] HasShift.localization' MorphismProperty.commShift_Q'
+
+end
 
 section
 
