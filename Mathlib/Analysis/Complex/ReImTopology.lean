@@ -175,3 +175,31 @@ theorem IsClosed.reProdIm (hs : IsClosed s) (ht : IsClosed t) : IsClosed (s ×�
 
 theorem Bornology.IsBounded.reProdIm (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s ×ℂ t) :=
   antilipschitz_equivRealProd.isBounded_preimage (hs.prod ht)
+
+section continuity
+
+variable {α ι : Type*}
+
+lemma UniformlyContinous_re : UniformContinuous (fun x : ℂ => x.re) := by
+  rw [Metric.uniformContinuous_iff]
+  intro ε hε
+  refine ⟨ε, hε, fun hxy =>  ?_⟩
+  apply lt_of_le_of_lt (Complex.abs_re_le_abs _) hxy
+
+lemma UniformlyContinous_im : UniformContinuous (fun x : ℂ => x.im) := by
+  rw [Metric.uniformContinuous_iff]
+  intro ε hε
+  refine ⟨ε, hε, fun hxy =>  ?_⟩
+  apply lt_of_le_of_lt (Complex.abs_im_le_abs _) hxy
+
+lemma TendstoUniformly_re_part (f : ι → α → ℂ) {p : Filter ι} (g : α → ℂ) (K : Set α)
+    (hf : TendstoUniformlyOn f g p K) : TendstoUniformlyOn (fun n x => (f n x).re)
+      (fun y => (g y).re) p K := by
+  apply UniformContinuous.comp_tendstoUniformlyOn UniformlyContinous_re hf
+
+lemma TendstoUniformly_im_part (f : ι → α → ℂ) {p : Filter ι} (g : α → ℂ) (K : Set α)
+    (hf : TendstoUniformlyOn f g p K) : TendstoUniformlyOn (fun n x => (f n x).im)
+      (fun y => (g y).im) p K := by
+  apply UniformContinuous.comp_tendstoUniformlyOn UniformlyContinous_im hf
+
+end continuity
