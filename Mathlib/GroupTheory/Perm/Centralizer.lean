@@ -129,7 +129,8 @@ theorem CycleType.count_def (n : ℕ) :
   -- rewrite the `Fintype.card` as a `Finset.card`
   rw [Fintype.subtype_card, Finset.univ_eq_attach, Finset.filter_attach',
     Finset.card_map, Finset.card_attach]
-  simp only [Function.comp_apply, Finset.card, Finset.filter_val, Multiset.filter_map, Multiset.card_map]
+  simp only [Function.comp_apply, Finset.card, Finset.filter_val,
+    Multiset.filter_map, Multiset.card_map]
   apply congr_arg
   ext c
   apply congr_arg₂ _ rfl
@@ -618,7 +619,8 @@ theorem card_ofPerm_support (τ : range_toPerm' g) {k : Equiv.Perm α}
     (hk : k = ConjAct.ofConjAct (Equiv.Perm.Basis.ofPerm a τ : ConjAct (Equiv.Perm α))) :
     k.support.card =  (τ : Perm g.cycleFactorsFinset).support.sum
         (fun c ↦ (c : Perm α).support.card) := by
-  suffices k.support = (τ : Perm g.cycleFactorsFinset).support.biUnion (fun c  ↦ (c : Perm α).support) by
+  suffices k.support = (τ : Perm g.cycleFactorsFinset).support.biUnion
+      (fun c  ↦ (c : Perm α).support) by
     rw [this, Finset.card_biUnion]
     intro c _ d _ h
     apply Equiv.Perm.Disjoint.disjoint_support
@@ -636,7 +638,8 @@ theorem card_ofPerm_support (τ : range_toPerm' g) {k : Equiv.Perm α}
   intro _
   constructor
   · intro h
-    simpa only [cycleOf_apply_self, ne_eq, ← h, cycleOf_mem_cycleFactorsFinset_iff, mem_support] using hc
+    simpa only [cycleOf_apply_self, ne_eq, ← h,
+      cycleOf_mem_cycleFactorsFinset_iff, mem_support] using hc
   · exact fun h ↦ (cycle_is_cycleOf h hc).symm
 
 end Basis
@@ -704,7 +707,8 @@ variable (k) (v) in
   exact h) -/
 
 variable (k) (v) (x) in
-/-- An auxiliary function to define the parametrization of the kernel of `g.OnCycleFactors.toPerm` -/
+/-- An auxiliary function to define the parametrization
+of the kernel of `g.OnCycleFactors.toPerm` -/
 def θAux : α :=
   if hx : g.cycleOf x ∈ g.cycleFactorsFinset
   then (v ⟨g.cycleOf x, hx⟩ : Perm α) x
@@ -909,7 +913,8 @@ theorem hφ_ker_eq_θ_range (z : Perm α) :
     · rw [θ_apply_of_mem_fixedPoints _ x]
       simp only [u, subtypePerm_apply]
       simpa only [cycleOf_eq_one_iff] using hx
-    · rw [θ_apply_of_cycleOf_eq _ x ⟨g.cycleOf x, (cycleOf_ne_one_iff_mem_cycleFactorsFinset g).mp hx⟩ rfl]
+    · rw [θ_apply_of_cycleOf_eq _ x ⟨g.cycleOf x,
+        (cycleOf_ne_one_iff_mem_cycleFactorsFinset g).mp hx⟩ rfl]
       rw [ofSubtype_apply_of_mem]
       · rfl
       · simp only [Perm.mem_support, cycleOf_apply_self, ne_eq]
@@ -985,7 +990,8 @@ lemma θ_apply_fst (k : Perm (Function.fixedPoints g)) :
   · rw [cycleOf_mem_cycleFactorsFinset_iff, Perm.not_mem_support] at hx
     rw [θ_apply_of_mem_fixedPoints _ x hx, Equiv.Perm.ofSubtype_apply_of_mem]
 
-lemma θ_apply_single_zpowers (c : g.cycleFactorsFinset) (vc : Subgroup.zpowers (c : Equiv.Perm α)) :
+lemma θ_apply_single_zpowers
+    (c : g.cycleFactorsFinset) (vc : Subgroup.zpowers (c : Equiv.Perm α)) :
     θ g ⟨1, Pi.mulSingle c vc⟩ = (vc : Equiv.Perm α) := by
   obtain ⟨m, hm⟩ := vc.prop
   simp only at hm

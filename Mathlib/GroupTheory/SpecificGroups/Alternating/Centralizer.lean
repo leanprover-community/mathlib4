@@ -14,9 +14,10 @@ The main goal of this file is to compute the cardinality of
 conjugacy classes in `alternatingGroup α`.
 
 * `AlternatingGroup.of_cycleType_eq m` and `AlternatingGroup.card_of_cycleType m`
-  give the analogous result in the subgroup `alternatingGroup α`
+give the analogous result in the subgroup `alternatingGroup α`
 
-* `Equiv.Perm.OnCycleFactors.sign_θ` computes the signature of the permutation induced given by `Equiv.Perm.Basis.θ`.
+* `Equiv.Perm.OnCycleFactors.sign_θ` computes the signature
+of the permutation induced given by `Equiv.Perm.Basis.θ`.
 
 * Finally, `Equiv.Perm.OnCycleFactors.kerφ_le_alternating_iff`
   establishes on which iff-condition the centralizer of an even permutation
@@ -200,7 +201,8 @@ theorem count_le_one_of_centralizer_le_alternating
   let τ : Equiv.Perm g.cycleFactorsFinset := Equiv.swap ⟨c, hc⟩ ⟨d, hd⟩
   obtain ⟨a⟩ := Equiv.Perm.Basis.nonempty g
   suffices hτ : τ ∈ range_toPerm' g by
-    set k : Equiv.Perm α := ConjAct.ofConjAct (Equiv.Perm.Basis.ofPerm a ⟨τ, hτ⟩ : ConjAct (Equiv.Perm α))
+    set k : Equiv.Perm α := ConjAct.ofConjAct
+      (Equiv.Perm.Basis.ofPerm a ⟨τ, hτ⟩ : ConjAct (Equiv.Perm α))
     have hk2 : ∀ c : g.cycleFactorsFinset, ConjAct.toConjAct k • (c : Equiv.Perm α) = τ c := by
       intro c
       rw [ConjAct.smul_def]
@@ -257,7 +259,8 @@ theorem count_le_one_of_centralizer_le_alternating
       rw [this]
       congr
       --
-      have this' : Multiset.sum (Equiv.Perm.cycleType k) = Finset.card (Equiv.Perm.support k) := k.sum_cycleType
+      have this' : Multiset.sum (Equiv.Perm.cycleType k) =
+        Finset.card (Equiv.Perm.support k) := k.sum_cycleType
       rw [this] at this'
       simp only [Multiset.sum_replicate, smul_eq_mul] at this'
       rw [← mul_left_inj']
