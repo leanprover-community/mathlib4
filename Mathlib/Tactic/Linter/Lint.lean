@@ -263,6 +263,15 @@ def isBinderTypeChange (current : Name) (withType : Bool) (previousNames : Array
   -- TODO: currently, this treats a variable with a default value as "change"; is this what we want?
   else true
 
+/--
+"Pluralize" a string: convert it to "plural form" if `n` is larger than one, else leave it unchanged.
+Usually, we just append an "s", but we change "is" to "are". More versions could be added if needed.
+-/
+def pluralize (name : String) (n : Nat) : String :=
+  match name with
+  | "is" => if n > 1 then "are" else "is"
+  | s => if n > 1 then s!"{s}s" else s
+
 @[inherit_doc Mathlib.Linter.linter.badVariable]
 def badVariableLinter : Linter where
   run := withSetOptionIn fun stx => do
@@ -299,18 +308,23 @@ def badVariableLinter : Linter where
       -- Determine all binders which are just changing a previous variable's binder.
       let binderTypeChanged := (namesWithTypes.filter (fun nm ↦
         isBinderTypeChange nm.1 nm.2 previousNames)).map fun nameBool ↦ nameBool.1
-      --if binderTypeChanged.size > 0 then
-      --  dbg_trace s!"binder type of variable(s) {binderTypeChanged} changed"
+      -- if binderTypeChanged.size > 0 then
+      --  dbg_trace s!"binder type of {pluralize "variable" binderTypeChanged.size} \
+      --   {", ".intercalate ((binderTypeChanged.toList).map fun s ↦ s!"'{s}'")} changed"
       -- We error if this `variable` command contains both a variable whose binder type
       -- is merely changed, and a new binder declared.
       let newVariables := (namesWithTypes.filter (fun nm ↦
         !isBinderTypeChange nm.1 nm.2 previousNames)).map fun nb ↦ nb.1
 
       if newVariables.size > 0 && binderTypeChanged.size > 0 then
+        let changed := ", ".intercalate ((binderTypeChanged.toList).map fun s ↦ s!"'{s}'")
+        let C := binderTypeChanged.size
+        let new := ", ".intercalate ((newVariables.toList).map fun s ↦ s!"'{s}'")
+        let N := binderTypeChanged.size
         Linter.logLint linter.badVariable stx -- TODO: underline the actual args!
-          s!"bad variable declaration:
-          the binder types of the variable(s) {binderTypeChanged} are changed,
-          while the new variable(s) {newVariables} are declared\n\
+          s!"bad variable declaration: \n\
+          the binder types of the {pluralize "variable" C} {changed} {pluralize "is" C} changed, \
+          while the new {pluralize "variable" N} {new} {pluralize "is" C} declared\n\
           please split these into separate 'variable' commands"
 
 initialize addLinter badVariableLinter

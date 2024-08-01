@@ -125,9 +125,8 @@ section
 variable (a) -- dummy line
 section
 /--
-warning: bad variable declaration:
-          the binder types of the variable(s) #[a] are changed,
-          while the new variable(s) #[b] are declared
+warning: bad variable declaration: ⏎
+the binder types of the variable 'a' is changed, while the new variable 'b' is declared
 please split these into separate 'variable' commands
 note: this linter can be disabled with `set_option linter.badVariable false`
 -/
@@ -135,9 +134,8 @@ note: this linter can be disabled with `set_option linter.badVariable false`
 variable {a} (b : Type)
 section
 /--
-warning: bad variable declaration:
-          the binder types of the variable(s) #[a] are changed,
-          while the new variable(s) #[b] are declared
+warning: bad variable declaration: ⏎
+the binder types of the variable 'a' is changed, while the new variable 'b' is declared
 please split these into separate 'variable' commands
 note: this linter can be disabled with `set_option linter.badVariable false`
 -/
@@ -149,9 +147,8 @@ section
 variable ⦃x y : Int⦄  ⦃x y⦄
 section
 /--
-warning: bad variable declaration:
-          the binder types of the variable(s) #[x] are changed,
-          while the new variable(s) #[c] are declared
+warning: bad variable declaration: ⏎
+the binder types of the variable 'x' is changed, while the new variable 'c' is declared
 please split these into separate 'variable' commands
 note: this linter can be disabled with `set_option linter.badVariable false`
 -/
