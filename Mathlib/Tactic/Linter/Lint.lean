@@ -278,7 +278,8 @@ def badVariableLinter : Linter where
       let binders := stx[1].getArgs
       -- Restrict to implicit or explicit binders, for now.
       let binders := binders.filter fun binder ↦
-        [``Lean.Parser.Term.implicitBinder, ``Lean.Parser.Term.explicitBinder].contains binder.getKind
+        [``Lean.Parser.Term.implicitBinder, ``Lean.Parser.Term.explicitBinder].contains
+        binder.getKind
       -- Collect a list of identifier names and whether they are declared with a type or not.
       -- Whether these are implicit or explicit does not matter to us.
       let namesWithTypes : Array (Name × Bool) := (binders.map fun binder ↦
