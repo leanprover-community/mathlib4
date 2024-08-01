@@ -123,9 +123,10 @@ end
 section
 
 variable {G₁ : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj₁ : G₁ ⊣ sheafToPresheaf J A)
-  {G₂ : (Cᵒᵖ ⥤ B) ⥤ Sheaf J B} (adj₂ : G₂ ⊣ sheafToPresheaf J B)
+  {G₂ : (Cᵒᵖ ⥤ B) ⥤ Sheaf J B}
 
-lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions :
+lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions
+    (adj₂ : G₂ ⊣ sheafToPresheaf J B) :
     J.PreservesSheafification F ↔ ∀ (P : Cᵒᵖ ⥤ A),
       IsIso (G₂.map (whiskerRight (adj₁.unit.app P) F)) := by
   simp only [← J.W_iff_isIso_map_of_adjunction adj₂]
@@ -147,7 +148,7 @@ lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions :
 
 section HasSheafCompose
 
-variable [J.HasSheafCompose F]
+variable (adj₂ : G₂ ⊣ sheafToPresheaf J B) [J.HasSheafCompose F]
 
 /-- The canonical natural transformation
 `(whiskeringRight Cᵒᵖ A B).obj F ⋙ G₂ ⟶ G₁ ⋙ sheafCompose J F`
