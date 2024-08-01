@@ -11,12 +11,14 @@ import Mathlib.CategoryTheory.Category.Cat
 /-!
 # The Grothendieck construction
 
-Given a category `𝒮` and any pseudofunctor valued in `Cat` we associate to it a category
+TODO: wrong grothendieck construction?
+
+Given a category `𝒮` and any pseudofunctor `F` from `𝒮ᵒᵖ` to `Cat`, we associate to it a category
 `∫ F`, equipped with a functor `∫ F ⥤ 𝒮`.
 
 The category `∫ F` is defined as follows:
 * Objects: pairs `(S, a)` where `S` is an object of the base category and `a` is an object of the
-  category `F(S)`
+  category `F(S)`.
 * Morphisms: morphisms `(R, b) ⟶ (S, a)` are defined as pairs `(f, h)` where `f : R ⟶ S` is a
   morphism in `𝒮` and `h : b ⟶ F(f)(a)`
 
@@ -40,12 +42,11 @@ variable {𝒮 : Type u₁} [Category.{v₁} 𝒮] {F : Pseudofunctor (LocallyDi
 
 /-- The type of objects in the fibered category associated to a presheaf valued in types. -/
 structure Pseudofunctor.Grothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) where
-  /-- The underlying object in `𝒮` -/
+  /-- The underlying object in the base category. -/
   base : 𝒮
-  /-- The object in the fiber of the base object. (TODO: fix this commetn) -/
+  /-- The object in the fiber of the base object. -/
   fiber : F.obj ⟨op base⟩
 
--- todo: figure out right number
 /-- Notation for the Grothendieck category associated to a pseudofunctor `F`. -/
 prefix:75 "∫ " => Pseudofunctor.Grothendieck
 
@@ -69,7 +70,6 @@ lemma hom_ext (g : a ⟶ b) (hfg₁ : f.1 = g.1) (hfg₂ : f.2 = g.2 ≫ eqToHom
   rw [← conj_eqToHom_iff_heq _ _ rfl (hfg₁ ▸ rfl)]
   simp only [hfg₂, eqToHom_refl, id_comp]
 
--- Might not need this lemma in the end
 lemma hom_ext_iff (g : a ⟶ b) : f = g ↔ ∃ (hfg : f.1 = g.1), f.2 = g.2 ≫ eqToHom (hfg ▸ rfl) where
   mp hfg := ⟨by rw [hfg], by simp [hfg]⟩
   mpr := fun ⟨hfg₁, hfg₂⟩ => hom_ext f g hfg₁ hfg₂
