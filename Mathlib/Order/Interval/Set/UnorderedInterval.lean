@@ -143,7 +143,7 @@ lemma eq_of_mem_uIcc_of_mem_uIcc' : b ∈ [[a, c]] → c ∈ [[a, b]] → b = c 
   simpa only [uIcc_comm a] using eq_of_mem_uIcc_of_mem_uIcc
 
 lemma uIcc_injective_right (a : α) : Injective fun b => uIcc b a := fun b c h => by
-  rw [ext_iff] at h
+  rw [Set.ext_iff] at h
   exact eq_of_mem_uIcc_of_mem_uIcc ((h _).1 left_mem_uIcc) ((h _).2 left_mem_uIcc)
 
 lemma uIcc_injective_left (a : α) : Injective (uIcc a) := by
@@ -291,7 +291,7 @@ lemma eq_of_not_mem_uIoc_of_not_mem_uIoc (ha : a ≤ c) (hb : b ≤ c) :
 
 lemma uIoc_injective_right (a : α) : Injective fun b => Ι b a := by
   rintro b c h
-  rw [ext_iff] at h
+  rw [Set.ext_iff] at h
   obtain ha | ha := le_or_lt b a
   · have hb := (h b).not
     simp only [ha, left_mem_uIoc, not_lt, true_iff_iff, not_mem_uIoc, ← not_le,
