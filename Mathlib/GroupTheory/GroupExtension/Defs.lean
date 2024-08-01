@@ -123,7 +123,7 @@ instance : MonoidHomClass (S.Splitting) G E where
 
 /-- A splitting of an extension `S` is `N`-conjugate to another iff there exists `n : N` such that
 the section homomorphism is a conjugate of the other section homomorphism by `S.inl n`. -/
-def IsConj (S : GroupExtension N E G) (s s' : S.Splitting) :=
+def IsConj (S : GroupExtension N E G) (s s' : S.Splitting) : Prop :=
   ∃ n : N, s.sectionHom = fun g ↦ S.inl n * s'.sectionHom g * (S.inl n)⁻¹
 
 end GroupExtension
