@@ -32,7 +32,7 @@ only makes sense for nonnegative exponents, and hence we define it such that the
 ## Notation
 
 + We define a `Pow A ℝ` instance for `CFC.rpow`, i.e `a ^ y` with `A` an operator and `y : ℝ` works
-  as expected.
+  as expected. Likewise, we define a `Pow A ℝ≥0` instance for `CFC.nnrpow`.
 
 ## TODO
 
@@ -229,10 +229,9 @@ lemma rpow_add_of_zero_not_mem_spectrum {a : A} {x y : ℝ} (ha : 0 ∉ spectrum
   simp [NNReal.rpow_add this _ _]
 
 -- TODO: relate to a strict positivity condition
-lemma rpow_rpow_of_spectrum_pos [UniqueContinuousFunctionalCalculus ℝ≥0 A]
-    {a : A} {x y : ℝ} (ha₁ : ∀ z ∈ spectrum ℝ≥0 a, 0 < z) (hx : x ≠ 0) (ha₂ : 0 ≤ a := by cfc_tac) :
+lemma rpow_rpow_of_zero_not_mem_spectrum [UniqueContinuousFunctionalCalculus ℝ≥0 A]
+    {a : A} {x y : ℝ} (ha₁ : 0 ∉ spectrum ℝ≥0 a) (hx : x ≠ 0) (ha₂ : 0 ≤ a := by cfc_tac) :
     (a ^ x) ^ y = a ^ (x * y) := by
-  have ha₁' : 0 ∉ spectrum ℝ≥0 a := fun h => (lt_self_iff_false 0).mp (ha₁ 0 h)
   simp only [rpow_def]
   have h₁ : ContinuousOn (fun z : ℝ≥0 => z ^ (y : ℝ))
       ((fun z : ℝ≥0 => z ^ (x : ℝ)) '' spectrum ℝ≥0 a) := by
@@ -305,18 +304,18 @@ lemma sqrt_algebraMap {r : ℝ≥0} : sqrt (algebraMap ℝ≥0 A r) = algebraMap
 lemma sqrt_one : sqrt (1 : A) = 1 := by simp [sqrt_eq_cfc]
 
 -- TODO: relate to a strict positivity condition
-lemma sqrt_rpow_of_spectrum_pos {a : A} {x : ℝ} (h : ∀ z ∈ spectrum ℝ≥0 a, 0 < z)
+lemma sqrt_rpow_of_zero_not_mem_spectrum {a : A} {x : ℝ} (h : 0 ∉ spectrum ℝ≥0 a)
     (hx : x ≠ 0) : sqrt (a ^ x) = a ^ (x / 2) := by
   by_cases hnonneg : 0 ≤ a
   case pos =>
-    simp only [sqrt_eq_rpow, div_eq_mul_inv, one_mul, rpow_rpow_of_spectrum_pos h hx]
+    simp only [sqrt_eq_rpow, div_eq_mul_inv, one_mul, rpow_rpow_of_zero_not_mem_spectrum h hx]
   case neg =>
     simp [sqrt_eq_cfc, rpow_def, cfc_apply_of_not_predicate a hnonneg]
 
 -- TODO: relate to a strict positivity condition
-lemma rpow_sqrt_of_spectrum_pos {a : A} {x : ℝ} (h : ∀ z ∈ spectrum ℝ≥0 a, 0 < z)
+lemma rpow_sqrt_of_zero_not_mem_spectrum {a : A} {x : ℝ} (h : 0 ∉ spectrum ℝ≥0 a)
     (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ x = a ^ (x / 2) := by
-  rw [sqrt_eq_rpow, div_eq_mul_inv, one_mul, rpow_rpow_of_spectrum_pos h (by norm_num),
+  rw [sqrt_eq_rpow, div_eq_mul_inv, one_mul, rpow_rpow_of_zero_not_mem_spectrum h (by norm_num),
       inv_mul_eq_div]
 
 lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2 : ℝ) := by
