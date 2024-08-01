@@ -118,8 +118,8 @@ instance : FunLike (S.Splitting) G E where
     exact DFunLike.coe_injective h
 
 instance : MonoidHomClass (S.Splitting) G E where
-  map_mul := fun s ↦ s.sectionHom.map_mul'
-  map_one := fun s ↦ s.sectionHom.map_one'
+  map_mul s := s.sectionHom.map_mul'
+  map_one s := s.sectionHom.map_one'
 
 /-- A splitting of an extension `S` is `N`-conjugate to another iff there exists `n : N` such that
 the section homomorphism is a conjugate of the other section homomorphism by `S.inl n`. -/
