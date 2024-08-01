@@ -3,7 +3,7 @@ Copyright (c) 2024 Gabin Kolly. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly
 -/
-import Mathlib.ModelTheory.Substructures
+import Mathlib.ModelTheory.FinitelyGenerated
 
 /-!
 # Partial Isomorphisms
@@ -311,7 +311,35 @@ theorem map_monotone (f : M ↪[L] N) : Monotone (fun g : M ≃ₚ[L] M ↦ g.ma
       (f.substructureEquivMap g'.dom ⟨u, dom_le_dom h u_mem⟩))
   simp only [Equiv.symm_apply_apply, coeSubtype]
 
+theorem Sfg_iff {N : Type*} [L.Structure N] (f : M ≃ₚ[L] N) :
+    f.dom.FG ↔ f.cod.FG := by
+  rw [Substructure.fg_iff_structure_fg, f.equiv.fg_iff, Substructure.fg_iff_structure_fg]
+
 end PartialEquiv
+
+section FGPartialEquiv
+
+theorem Substructure.countable_self_FGPartialEquiv_of_countable [Countable M] :
+    Countable { f : M ≃ₚ[L] M // f.dom.FG } := by
+  let g : { f : M ≃ₚ[L] M // f.dom.FG } →
+      Σ U : { S : L.Substructure M // S.FG }, U.val →[L] M :=
+    fun f ↦ ⟨⟨f.val.dom, f.prop⟩, (subtype _).toHom.comp f.val.equiv.toHom⟩
+  have g_inj : Function.Injective g := by
+    intro f f' h
+    ext
+    let ⟨⟨dom_f, cod_f, equiv_f⟩, f_fin⟩ := f
+    cases congr_arg (·.1) h
+    apply PartialEquiv.ext (by rfl)
+    simp only [g, Sigma.mk.inj_iff, heq_eq_eq, true_and] at h
+    exact fun x hx ↦ congr_fun (congr_arg (↑) h) ⟨x, hx⟩
+  have : ∀ U : { S : L.Substructure M // S.FG }, Structure.FG L U.val :=
+    fun U ↦ (U.val.fg_iff_structure_fg.1 U.prop)
+  exact Function.Embedding.countable ⟨g, g_inj⟩
+
+instance inhabited_self_FGPartialEquiv : Inhabited { f : M ≃ₚ[L] M // f.dom.FG } :=
+  ⟨⟨⟨⊥, ⊥, Equiv.refl L (⊥ : L.Substructure M)⟩, fg_bot⟩⟩
+
+end FGPartialEquiv
 
 end Language
 
