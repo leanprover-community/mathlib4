@@ -285,7 +285,7 @@ instance galgebra [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R] (A 
 @[simp]
 theorem setLike.coe_galgebra_toFun [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] (s : S) :
-    ↑(@DirectSum.GAlgebra.toFun _ S (fun i => A i) _ _ _ _ _ _ _ s) = (algebraMap S R s : R) :=
+    (DirectSum.GAlgebra.toFun (A := fun i => A i) s) = (algebraMap S R s : R) :=
   rfl
 
 /-- A direct sum of powers of a submodule of an algebra has a multiplicative structure. -/

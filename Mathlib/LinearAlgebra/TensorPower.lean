@@ -259,7 +259,7 @@ instance galgebra : DirectSum.GAlgebra R fun i => ⨂[R]^i M where
     exact (algebraMap₀_mul r x.snd).symm)
 
 theorem galgebra_toFun_def (r : R) :
-    @DirectSum.GAlgebra.toFun ℕ R (fun i => ⨂[R]^i M) _ _ _ _ _ _ _ r = algebraMap₀ r :=
+    DirectSum.GAlgebra.toFun (A := fun i ↦ ⨂[R]^i M) r = algebraMap₀ r :=
   rfl
 
 example : Algebra R (⨁ n : ℕ, ⨂[R]^n M) := by infer_instance
