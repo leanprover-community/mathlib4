@@ -171,7 +171,8 @@ open TopologicalSpace Filter Set Bundle Topology
 
 section FiberBundle
 
-variable (F) [TopologicalSpace B] [TopologicalSpace F] (E : B → Type*)
+variable (F)
+variable [TopologicalSpace B] [TopologicalSpace F] (E : B → Type*)
   [TopologicalSpace (TotalSpace F E)] [∀ b, TopologicalSpace (E b)]
 
 /-- A (topological) fiber bundle with fiber `F` over a base `B` is a space projecting on `B`
@@ -207,7 +208,8 @@ end FiberBundle
 export FiberBundle (totalSpaceMk_inducing trivializationAtlas trivializationAt
   mem_baseSet_trivializationAt trivialization_mem_atlas)
 
-variable {F E}
+variable {F}
+variable {E}
 
 /-- Given a type `E` equipped with a fiber bundle structure, this is a `Prop` typeclass
 for trivializations of `E`, expressing that a trivialization is in the designated atlas for the
@@ -297,7 +299,8 @@ theorem continuousAt_totalSpace (f : X → TotalSpace F E) {x₀ : X} :
 
 end FiberBundle
 
-variable (F E)
+variable (F)
+variable (E)
 
 /-- If `E` is a fiber bundle over a conditionally complete linear order,
 then it is trivial over any closed interval. -/
@@ -700,7 +703,8 @@ end FiberBundleCore
 
 /-! ### Prebundle construction for constructing fiber bundles -/
 
-variable (F) (E : B → Type*) [TopologicalSpace B] [TopologicalSpace F]
+variable (F)
+variable (E : B → Type*) [TopologicalSpace B] [TopologicalSpace F]
   [∀ x, TopologicalSpace (E x)]
 
 /-- This structure permits to define a fiber bundle when trivializations are given as local
