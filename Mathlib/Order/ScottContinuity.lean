@@ -183,12 +183,14 @@ theorem IsLUB.union' {a b : γ} {s t : Set γ} (hs : IsLUB s a) (ht : IsLUB t b)
 
 @[simp]
 theorem upperBounds_iUnion {ι : Sort*} {s : ι → Set γ} :
-    upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i)  := sorry
-
-/-
-  Subset.antisymm (fun _ hb => ⟨fun _ hx => hb (Or.inl hx), fun _ hx => hb (Or.inr hx)⟩)
-    fun _ hb _ hx => hx.elim (fun hs => hb.1 hs) fun ht => hb.2 ht
--/
+    upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i)  := by
+  apply Subset.antisymm
+  · intro b hb
+    rw [mem_iInter]
+    intro i
+    exact upperBounds_mono_set (subset_iUnion_of_subset i (by rfl)) hb
+  · intro b hb x hx
+    aesop
 
 theorem IsLUB.iUnion {ι : Sort*} {u : ι → γ}  {s : ι → Set γ} (hs : ∀ (i : ι), IsLUB (s i) (u i))
     (c : γ) (hc : IsLUB (Set.range u ) c) : IsLUB (⋃ i, s i) c := by
@@ -224,8 +226,10 @@ theorem IsLUB.iUnion {ι : Sort*} {u : ι → γ}  {s : ι → Set γ} (hs : ∀
     ⟩
 -/
 
+/-
 lemma testprod {S : Set α} {T : Set β} {u : S → α × β} (v : α × β)
-    (hS : ∀ (s : S), IsLUB ({↑s} ×ˢ T) (u s)) (h : IsLUB {u s | (s : S)} v) : IsLUB (S ×ˢ T) v := sorry
+    (hS : ∀ (s : S), IsLUB ({↑s} ×ˢ T) (u s)) (h : IsLUB {u s | (s : S)} v) :
+    IsLUB (S ×ˢ T) v := sorry
 
 lemma testprod' {S : Set α} {T : Set β} {u : S → γ} {f : α × β → γ} (v : γ)
     (hS : ∀ (s : S), IsLUB (f '' ({↑s} ×ˢ T)) (u s)) (h : IsLUB {u s | (s : S)} v) :
@@ -235,19 +239,23 @@ lemma testprod'' {S : Set α} {T : Set β} {u : T → γ} {f : α × β → γ} 
     (hT : ∀ (t : T), IsLUB (f '' (S ×ˢ {↑t})) (u t)) (h : IsLUB (u '' univ) v) :
     IsLUB (f '' (S ×ˢ T)) v := sorry
 
+
 lemma test2 {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.fst '' d).Nonempty)
     (hd₂ : DirectedOn (· ≤ ·) (Prod.fst '' d)) {p₁ : α} {p₂ : β} (h : IsLUB d (p₁,p₂))
     (h₁ : ∀ b, ScottContinuous (fun a => f (a,b))) (h₂ : ∀ a, ScottContinuous (fun b => f (a,b))) :
     IsLUB (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) (f (p₁,p₂)) := by
   have e1 : IsLUB (Prod.fst '' d) p₁ := ((isLUB_prod (p₁,p₂)).mp h).1
   have e2 : IsLUB (Prod.snd '' d) p₂ := ((isLUB_prod (p₁,p₂)).mp h).2
-  apply testprod' (u := fun a => f (a, p₂)) (v := (f (p₁,p₂))) (S := Prod.fst '' d) (T := Prod.snd '' d) _ _
+  apply testprod' (u := fun a => f (a, p₂)) (v := (f (p₁,p₂))) (S := Prod.fst '' d)
+    (T := Prod.snd '' d) _ _
 
-  --apply testprod'' (u := fun b => f (p₁, b)) (v := (f (p₁,p₂))) (S := Prod.fst '' d) (T := Prod.snd '' d)
+  --apply testprod'' (u := fun b => f (p₁, b)) (v := (f (p₁,p₂))) (S := Prod.fst '' d)
+    T := Prod.snd '' d)
   intro a
   apply step1 hd₁ hd₂
   apply (h₂ p₁)
   --apply test hd₁ hd₂ h h₁
+-/
 
 lemma stepn {f : α × β → γ} {d : Set (α × β)} {p₁ : α} {p₂ : β} (hf : Monotone f)
     (hd : DirectedOn (· ≤ ·) d) (h : IsLUB (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) (f (p₁,p₂))) :
