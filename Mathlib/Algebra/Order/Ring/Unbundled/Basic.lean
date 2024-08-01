@@ -578,7 +578,7 @@ variable [ContravariantClass α α (· + ·) (· < ·)]
 
 /-- Binary strict **rearrangement inequality**. -/
 lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE α] [MulPosStrictMono α]
-    [CovariantClass α α (· + ·) (· < ·)] [ContravariantClass α α (· + ·) (· < ·)]
+    [CovariantClass α α (· + ·) (· < ·)]
     (hab : a < b) (hcd : c < d) : a * d + b * c < a * c + b * d := by
   obtain ⟨b, rfl⟩ := exists_add_of_le hab.le
   obtain ⟨d, rfl⟩ := exists_add_of_le hcd.le
