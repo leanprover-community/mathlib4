@@ -1080,6 +1080,7 @@ import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Unitary
 import Mathlib.Analysis.CstarAlgebra.Exponential
 import Mathlib.Analysis.CstarAlgebra.GelfandDuality
 import Mathlib.Analysis.CstarAlgebra.Matrix
+import Mathlib.Analysis.CstarAlgebra.Module
 import Mathlib.Analysis.CstarAlgebra.Multiplier
 import Mathlib.Analysis.CstarAlgebra.Spectrum
 import Mathlib.Analysis.CstarAlgebra.Unitization
@@ -1252,6 +1253,7 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 import Mathlib.Analysis.SpecialFunctions.Complex.Arctan
 import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
@@ -3543,6 +3545,7 @@ import Mathlib.Order.Irreducible
 import Mathlib.Order.IsWellOrderLimitElement
 import Mathlib.Order.Iterate
 import Mathlib.Order.JordanHolder
+import Mathlib.Order.KonigLemma
 import Mathlib.Order.KrullDimension
 import Mathlib.Order.Lattice
 import Mathlib.Order.LatticeIntervals
