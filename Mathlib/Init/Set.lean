@@ -62,8 +62,8 @@ namespace Set
 protected def Mem (a : α) (s : Set α) : Prop :=
   s a
 
-instance : Membership α (Set α) :=
-  ⟨Set.Mem⟩
+instance : Membership α (Set α) where
+  mem s a := Set.Mem a s
 
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
   funext (fun x ↦ propext (h x))

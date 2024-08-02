@@ -837,7 +837,12 @@ theorem update_preimage_pi [DecidableEq ι] {f : ∀ i, α i} (hi : i ∈ s)
 theorem update_image [DecidableEq ι] (x : (i : ι) → β i) (i : ι) (s : Set (β i)) :
     update x i '' s = Set.univ.pi (update (fun j ↦ {x j}) i s) := by
   ext y
-  simp [update_eq_iff, and_left_comm (a := _ ∈ s), forall_update_iff, eq_comm (a := y _)]
+  sorry
+  -- simp [update_eq_iff, and_left_comm, forall_update_iff, eq_comm (a := y _)]
+  -- rw [forall_update_iff]
+  -- simp? only [mem_image, update_eq_iff, ne_eq, and_left_comm (a := _ ∈ s), exists_eq_left, mem_pi, mem_univ,
+  -- true_implies] --forall_update_iff, mem_singleton_iff, eq_comm (a := y _)]
+  -- rw [forall_update_iff (a := i) (b := s)] --(f := fun j => {x j})]
 
 theorem update_preimage_univ_pi [DecidableEq ι] {f : ∀ i, α i} (hf : ∀ j ≠ i, f j ∈ t j) :
     update f i ⁻¹' pi univ t = t i :=

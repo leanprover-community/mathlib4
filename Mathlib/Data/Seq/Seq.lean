@@ -130,8 +130,8 @@ def tail (s : Seq α) : Seq α :=
 protected def Mem (a : α) (s : Seq α) :=
   some a ∈ s.1
 
-instance : Membership α (Seq α) :=
-  ⟨Seq.Mem⟩
+instance : Membership α (Seq α) where
+  mem s a := Seq.Mem a s
 
 theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.get? m = none → s.get? n = none := by
   cases' s with f al

@@ -84,8 +84,8 @@ theorem eta : ∀ o : Part α, (⟨o.Dom, fun h => o.get h⟩ : Part α) = o
 protected def Mem (a : α) (o : Part α) : Prop :=
   ∃ h, o.get h = a
 
-instance : Membership α (Part α) :=
-  ⟨Part.Mem⟩
+instance : Membership α (Part α) where
+  mem o a := Part.Mem a o
 
 theorem mem_eq (a : α) (o : Part α) : (a ∈ o) = ∃ h, o.get h = a :=
   rfl
