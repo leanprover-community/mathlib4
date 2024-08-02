@@ -292,7 +292,8 @@ theorem mk_mul_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
 
 section
 
-variable [SMul S R] [SMul T R] (s : S)
+-- We temporarily remove the `CommRing R` instance.
+variable {R : Type*} {c₁ c₂ : R} {a : ℍ[R,c₁,c₂]} [SMul S R] [SMul T R] (s : S)
 
 -- Porting note: Lean 4 auto drops the unused `[Ring R]` argument
 instance : SMul S ℍ[R,c₁,c₂] where smul s a := ⟨s • a.1, s • a.2, s • a.3, s • a.4⟩
@@ -311,7 +312,7 @@ instance [SMulCommClass S T R] : SMulCommClass S T ℍ[R,c₁,c₂] where
 
 @[simp] theorem smul_imK : (s • a).imK = s • a.imK := rfl
 
-@[simp] theorem smul_im {S} [SMulZeroClass S R] (s : S) : (s • a).im = s • a.im :=
+@[simp] theorem smul_im {S} [CommRing R] [SMulZeroClass S R] (s : S) : (s • a).im = s • a.im :=
   QuaternionAlgebra.ext _ _ (smul_zero s).symm rfl rfl rfl
 
 @[simp]
