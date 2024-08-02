@@ -203,6 +203,7 @@ protected noncomputable abbrev field (I : Ideal R) [hI : I.IsMaximal] : Field (R
   __ := Quotient.groupWithZero _
   nnqsmul := _
   nnqsmul_def := fun q a => rfl
+
   qsmul := _
   qsmul_def := fun q x => rfl
 
