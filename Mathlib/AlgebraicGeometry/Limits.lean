@@ -384,7 +384,8 @@ variable (R S : Type u) [CommRing R] [CommRing S]
 This is an isomorphism as witnessed by an `IsIso` instance provided below. -/
 noncomputable
 def coprodSpec : Spec (.of R) ⨿ Spec (.of S) ⟶ Spec (.of (R × S)) :=
-  coprod.desc (Spec.map (RingHom.fst _ _)) (Spec.map (RingHom.snd _ _))
+  coprod.desc (Spec.map (CommRingCat.ofHom <| RingHom.fst _ _))
+    (Spec.map (CommRingCat.ofHom <| RingHom.snd _ _))
 
 @[simp, reassoc]
 lemma coprodSpec_inl : coprod.inl ≫ coprodSpec R S =
@@ -403,9 +404,9 @@ lemma coprodSpec_coprodMk (x) :
     simp only [coprodMk_inl, coprodMk_inr, ← Scheme.comp_val_base_apply,
       coprodSpec, coprod.inl_desc, coprod.inr_desc]
   · show Ideal.comap _ _ = x.asIdeal.prod ⊤
-    ext; simp [Ideal.prod]
+    ext; simp [Ideal.prod, CommRingCat.ofHom]
   · show Ideal.comap _ _ = Ideal.prod ⊤ x.asIdeal
-    ext; simp [Ideal.prod]
+    ext; simp [Ideal.prod, CommRingCat.ofHom]
 
 lemma coprodSpec_apply (x) :
     (coprodSpec R S).1.base x = (PrimeSpectrum.primeSpectrumProd R S).symm
@@ -416,23 +417,21 @@ lemma isIso_stalkMap_coprodSpec (x) :
     IsIso ((coprodSpec R S).stalkMap x) := by
   obtain ⟨x | x, rfl⟩ := (coprodMk _ _).surjective x
   · have := Scheme.stalkMap_comp coprod.inl (coprodSpec R S) x
-    rw [← IsIso.comp_inv_eq, Scheme.stalkMap_congr_hom _
-      (Spec.map (CommRingCat.ofHom (RingHom.fst R S))) (by simp)] at this
+    rw [← IsIso.comp_inv_eq, Scheme.stalkMap_congr_hom _ (Spec.map _) (coprodSpec_inl R S)] at this
     rw [coprodMk_inl, ← this]
-    suffices IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.fst R S))) by
-      infer_instance
     letI := (RingHom.fst R S).toAlgebra
     have := IsLocalization.away_fst (R := R) (S := S)
-    exact IsOpenImmersion.of_isLocalization (1, 0)
+    have : IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.fst R S))) :=
+      IsOpenImmersion.of_isLocalization (1, 0)
+    infer_instance
   · have := Scheme.stalkMap_comp coprod.inr (coprodSpec R S) x
-    rw [← IsIso.comp_inv_eq, Scheme.stalkMap_congr_hom _
-      (Spec.map (CommRingCat.ofHom (RingHom.snd R S))) (by simp)] at this
+    rw [← IsIso.comp_inv_eq, Scheme.stalkMap_congr_hom _ (Spec.map _) (coprodSpec_inr R S)] at this
     rw [coprodMk_inr, ← this]
-    suffices IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.snd R S))) by
-      infer_instance
     letI := (RingHom.snd R S).toAlgebra
     have := IsLocalization.away_snd (R := R) (S := S)
-    exact IsOpenImmersion.of_isLocalization (0, 1)
+    have : IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.snd R S))) :=
+      IsOpenImmersion.of_isLocalization (0, 1)
+    infer_instance
 
 instance : IsIso (coprodSpec R S) := by
   rw [isIso_iff_stalk_iso]
@@ -444,21 +443,19 @@ instance : IsIso (coprodSpec R S) := by
 
 instance (R S : CommRingCatᵒᵖ) : IsIso (coprodComparison Scheme.Spec R S) := by
   obtain ⟨R⟩ := R; obtain ⟨S⟩ := S
-  have : coprodComparison Scheme.Spec (.op R) (.op S) = coprodSpec R S ≫ (Spec.map
-    ((opProdIsoCoprod R S).unop.hom ≫
-      (limit.isoLimitCone ⟨_, CommRingCat.prodFanIsLimit R S⟩).hom)) := by
+  have : coprodComparison Scheme.Spec (.op R) (.op S) ≫ (Spec.map
+    ((limit.isoLimitCone ⟨_, CommRingCat.prodFanIsLimit R S⟩).inv ≫
+      (opProdIsoCoprod R S).unop.inv)) = coprodSpec R S := by
     ext1
-    · rw [coprodComparison_inl, coprodSpec, coprod.inl_desc_assoc, ← Spec.map_comp]
-      congr 1
-      apply Quiver.Hom.unop_inj
-      simp [← Iso.inv_comp_eq, - Iso.unop_hom]
+    · rw [coprodComparison_inl_assoc, coprodSpec, coprod.inl_desc, Scheme.Spec_map,
+        ← Spec.map_comp, Category.assoc, Iso.unop_inv, opProdIsoCoprod_inv_inl,
+        limit.isoLimitCone_inv_π]
       rfl
-    · rw [coprodComparison_inr, coprodSpec, coprod.inr_desc_assoc, ← Spec.map_comp]
-      congr 1
-      apply Quiver.Hom.unop_inj
-      simp [← Iso.inv_comp_eq, - Iso.unop_hom]
+    · rw [coprodComparison_inr_assoc, coprodSpec, coprod.inr_desc, Scheme.Spec_map,
+        ← Spec.map_comp, Category.assoc, Iso.unop_inv, opProdIsoCoprod_inv_inr,
+        limit.isoLimitCone_inv_π]
       rfl
-  rw [this]
+  rw [(IsIso.eq_comp_inv _).mpr this]
   infer_instance
 
 noncomputable
