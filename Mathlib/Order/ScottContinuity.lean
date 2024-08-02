@@ -93,8 +93,7 @@ section CompleteLattice
 
 variable [CompleteLattice α] [CompleteLattice β]
 
-lemma scottContinuous_iff_map_sSup {f : α → β} :
-  ScottContinuous f ↔
+lemma scottContinuous_iff_map_sSup {f : α → β} : ScottContinuous f ↔
     ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → f (sSup d) = sSup (f '' d) := by
   constructor
   · intro h d d₁ d₂
