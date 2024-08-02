@@ -11,8 +11,7 @@ jobs:
 
 
   Monthly_PRs:
-    if: contains(github.event.comment.body, 'mimblog') || #|| ((github.event.issue.pull_request != 'null') && (startsWith(github.event.comment.body, 'mimblog') || contains(toJSON(github.event.comment.body), '\r\nmimblog')))
-      github.repository == 'leanprover-community/mathlib4' && github.event.pull_request.draft == false
+    if: contains(github.event.comment.body, 'mimblog') || github.repository == 'leanprover-community/mathlib4' && github.event.pull_request.draft == false #|| ((github.event.issue.pull_request != 'null') && (startsWith(github.event.comment.body, 'mimblog') || contains(toJSON(github.event.comment.body), '\r\nmimblog')))
     name: Blog draft
     runs-on: ubuntu-latest
 
