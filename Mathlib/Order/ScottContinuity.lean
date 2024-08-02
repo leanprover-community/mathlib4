@@ -225,6 +225,14 @@ lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
 #check eq_of_forall_ge_iff
 
 lemma test [CompleteLinearOrder β] (a : β) : ScottContinuous fun b ↦ (a, b).1 ⊓ (a, b).2 := by
+  refine ScottContinuous.of_map_sSup (α := β) (β := β) (f := fun b ↦ (a, b).1 ⊓ (a, b).2)
+    (fun d _ _ ↦ eq_of_forall_ge_iff fun e ↦ ?_)
+  simp only [inf_le_iff, sSup_le_iff, mem_image, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂, ← forall_or_left, ← forall_or_right]
+
+/-
+
+lemma test [CompleteLinearOrder β] (a : β) : ScottContinuous fun b ↦ (a, b).1 ⊓ (a, b).2 := by
   refine ScottContinuous.of_map_sSup (α := β) (β := β) (f := fun b ↦ (a, b).1 ⊓ (a, b).2) ?_
   intro d d₁ d₂
   apply eq_of_forall_ge_iff
@@ -233,7 +241,7 @@ lemma test [CompleteLinearOrder β] (a : β) : ScottContinuous fun b ↦ (a, b).
   · intro h
     aesop
   · intro h
-    simp?
+    simp only [inf_le_iff, sSup_le_iff]
 
   --aesop
   apply fun d d₁ d₂ ↦ eq_of_forall_ge_iff fun a ↦ ?_
@@ -244,6 +252,7 @@ lemma test [CompleteLinearOrder β] (a : β) : ScottContinuous fun b ↦ (a, b).
 
 
   --simp [eq_of_forall_ge_iff]
+-/
 
 /-
   intro d d₁ d₂ b hdb
