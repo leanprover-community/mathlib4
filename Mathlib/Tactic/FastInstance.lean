@@ -16,7 +16,12 @@ open Lean Meta Elab Term
 
 initialize registerTraceClass `Elab.fast_instance
 
-def error {α : Type _} (trace : Array Name) (m : MessageData) : MetaM α :=
+/--
+Throw an error for `makeFastInstance`. The trace is a list of fields.
+Note: with the current implementation, this might not be accurate for multi-structure types,
+since `makeFastInstance` just uses `ClassName.paramName` for the trace.
+-/
+private def error {α : Type _} (trace : Array Name) (m : MessageData) : MetaM α :=
   throwError "\
     {m}\n\n\
     Use `set_option trace.Elab.fast_instance true to analyze error.\n\n\
