@@ -270,11 +270,7 @@ theorem geometric_hahn_banach_compact_closed (hs₁ : Convex ℝ s) (hs₂ : IsC
   obtain ⟨g, u, v, h1⟩ := _root_.geometric_hahn_banach_compact_closed hs₁ hs₂ ht₁ ht₂ disj
   use extendTo𝕜'ₗ g
   simp only [re_extendTo𝕜'ₗ, exists_and_left]
-  use u
-  constructor
-  exact h1.1
-  use v
-  exact h1.2
+  exact ⟨u, h1.1, v, h1.2⟩
 
 theorem geometric_hahn_banach_closed_compact (hs₁ : Convex ℝ s) (hs₂ : IsClosed s)
     (ht₁ : Convex ℝ t) (ht₂ : IsCompact t) (disj : Disjoint s t) :
