@@ -93,6 +93,7 @@ protected theorem to_map_ne_zero_of_mem_nonZeroDivisors [Nontrivial R] {x : R}
 
 variable (A)
 
+include A in
 /-- A `CommRing` `K` which is the localization of an integral domain `R` at `R - {0}` is an
 integral domain. -/
 protected theorem isDomain : IsDomain K :=
