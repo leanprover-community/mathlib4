@@ -456,7 +456,7 @@ end
 
 end
 
-variable (i j k : ι)
+variable (K L : HomologicalComplex C c) (i j k : ι)
 
 section
 
