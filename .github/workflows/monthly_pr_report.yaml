@@ -1,7 +1,8 @@
 name: Blog report
 
 on:
-  issue_comment:  #pull_request
+  pull_request
+  issue_comment:
     types: [created, edited]
   pull_request_review_comment:
     types: [created, edited]
