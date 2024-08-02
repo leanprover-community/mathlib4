@@ -117,8 +117,19 @@ info: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 #guard_msgs in
 #eval List.range 27
 
--- TODO: need to wrangle these...
+/- Tests for the openClassical linter -/
+
+/--
+warning: foo
+note: this linter can be disabled with `set_option linter.openClassical false`
+-/
+#guard_msgs in
 open Classical
+/--
+warning: foo
+note: this linter can be disabled with `set_option linter.openClassical false`
+-/
+#guard_msgs in
 open Nat Classical Nat
 
 /--

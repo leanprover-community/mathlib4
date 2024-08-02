@@ -290,12 +290,11 @@ def openClassicalLinter : Linter where run := withSetOptionIn fun stx ↦ do
     | `(command|open $openDecl) =>
       let inner := openDecl.raw.getArgs
       let names := s!"{inner.get! 0}"
-      -- remove [ and ]. TODO: also remove `... want a better parser!
-      let names := (names.stripPrefix "[").stripSuffix "]"
-      dbg_trace names
-      let names := names.split (· == ' ')
-    -- todo: turn into each part into a `Name, and return these
-      some ((openDecl.raw.getArgs).map (fun s ↦ s.getId))
+      -- remove [ and ], and a leading "`" of each name.
+      -- TODO: find a cleaner parser! was `inner.map (fun s ↦ s.getId)` doesn't quite work...
+      let names := ((names.stripPrefix "[").stripSuffix "]").split (· == ' ')
+      let names := (names.map (·.stripPrefix "`")).map String.toName
+      some names.toArray
     | _ => none
     if let some names := names then
       -- We need to handle `open foo (bar)` commands also: ignore all anonymous names.
