@@ -143,8 +143,8 @@ instance hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) :=
   ⟨AlgEquiv.toRingEquiv⟩
 
 @[simp]
-theorem coe_mk {toFun invFun left_inv right_inv map_mul map_add commutes} :
-    ⇑(⟨⟨toFun, invFun, left_inv, right_inv⟩, map_mul, map_add, commutes⟩ : A₁ ≃ₐ[R] A₂) = toFun :=
+theorem coe_mk {toEquiv map_mul map_add commutes} :
+    ⇑(⟨toEquiv, map_mul, map_add, commutes⟩ : A₁ ≃ₐ[R] A₂) = toEquiv :=
   rfl
 
 @[simp]

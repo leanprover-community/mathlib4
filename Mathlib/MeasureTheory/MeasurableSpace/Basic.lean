@@ -818,7 +818,7 @@ theorem measurable_update'  {a : δ} [DecidableEq δ] :
     exact measurable_snd
   · exact measurable_pi_iff.1 measurable_fst _
 
-theorem measurable_uniqueElim [Unique δ] [∀ i, MeasurableSpace (π i)] :
+theorem measurable_uniqueElim [Unique δ] :
     Measurable (uniqueElim : π (default : δ) → ∀ i, π i) := by
   simp_rw [measurable_pi_iff, Unique.forall_iff, uniqueElim_default]; exact measurable_id
 
