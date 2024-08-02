@@ -260,6 +260,7 @@ theorem Integrable.of_neg (hf : Integrable I l (-f) vol) : Integrable I l f vol 
 theorem integrable_neg : Integrable I l (-f) vol ↔ Integrable I l f vol :=
   ⟨fun h => h.of_neg, fun h => h.neg⟩
 
+open Classical in
 @[simp]
 theorem integral_neg : integral I l (-f) vol = -integral I l f vol := by
   classical
