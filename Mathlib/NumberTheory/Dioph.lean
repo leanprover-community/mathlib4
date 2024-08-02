@@ -521,7 +521,9 @@ theorem const_dioph (n : ℕ) : DiophFn (const (α → ℕ) n) :=
 
 scoped prefix:100 "D." => Dioph.const_dioph
 
+section
 variable {f g : (α → ℕ) → ℕ} (df : DiophFn f) (dg : DiophFn g)
+include df dg
 
 theorem dioph_comp2 {S : ℕ → ℕ → Prop} (d : Dioph fun v : Vector3 ℕ 2 => S (v &0) (v &1)) :
     Dioph fun v => S (f v) (g v) := dioph_comp d [f, g] ⟨df, dg⟩
@@ -627,6 +629,8 @@ theorem div_dioph : DiophFn fun v => f v / g v :=
                   (le_antisymm_iff.trans <| and_congr (Nat.le_div_iff_mul_le ypos) <|
                     Iff.trans ⟨lt_succ_of_le, le_of_lt_succ⟩ (div_lt_iff_lt_mul ypos)).symm
 
+end
+
 scoped infixl:80 " D/ " => Dioph.div_dioph
 
 open Pell
@@ -666,7 +670,8 @@ theorem xn_dioph : DiophPFun fun v : Vector3 ℕ 2 => ⟨1 < v &0, fun h => xn h
     Dioph.ext this fun _ => ⟨fun ⟨_, h, xe, _⟩ => ⟨h, xe⟩, fun ⟨h, xe⟩ => ⟨_, h, xe, rfl⟩⟩
 
 /-- A version of **Matiyasevic's theorem** -/
-theorem pow_dioph : DiophFn fun v => f v ^ g v := by
+theorem pow_dioph {f g : (α → ℕ) → ℕ} (df : DiophFn f) (dg : DiophFn g) :
+    DiophFn fun v => f v ^ g v := by
   have proof :=
     let D_pell := pell_dioph.reindex_dioph (Fin2 9) [&4, &8, &1, &0]
     (D&2 D= D.0 D∧ D&0 D= D.1) D∨ (D.0 D< D&2 D∧

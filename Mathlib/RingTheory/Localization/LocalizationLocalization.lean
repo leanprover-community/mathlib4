@@ -111,6 +111,7 @@ theorem localization_localization_isLocalization [IsLocalization N T] :
     surj' := localization_localization_surj M N T
     exists_of_eq := localization_localization_exists_of_eq M N T _ _ }
 
+include M in
 /-- Given submodules `M ⊆ R` and `N ⊆ S = M⁻¹R`, with `f : R →+* S` the localization map, if
 `N` contains all the units of `S`, then `N ⁻¹ S = T = (f⁻¹ N) ⁻¹ R`. I.e., the localization of a
 localization is a localization.
@@ -125,6 +126,7 @@ theorem localization_localization_isLocalization_of_has_all_units [IsLocalizatio
   rintro _ ⟨x, hx, rfl⟩
   exact H _ (IsLocalization.map_units _ ⟨x, hx⟩)
 
+include M in
 /--
 Given a submodule `M ⊆ R` and a prime ideal `p` of `S = M⁻¹R`, with `f : R →+* S` the localization
 map, then `T = Sₚ` is the localization of `R` at `f⁻¹(p)`.
