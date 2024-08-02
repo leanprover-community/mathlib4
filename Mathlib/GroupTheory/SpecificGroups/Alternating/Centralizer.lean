@@ -45,7 +45,7 @@ theorem sign_θ
   · simp only [θ_apply_fst, sign_ofSubtype]
   · rw [← MonoidHom.inr_apply, ← MonoidHom.comp_apply]
     conv_lhs => rw [← Finset.noncommProd_mul_single v]
-    simp only [Finset.noncommProd_map]
+    simp only [Finset.map_noncommProd]
     rw [Finset.noncommProd_eq_prod]
     apply Finset.prod_congr rfl
     intro c _
