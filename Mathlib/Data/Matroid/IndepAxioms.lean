@@ -120,13 +120,13 @@ namespace IndepMatroid
     exact ⟨B, hB.1⟩
   base_exchange B B' hB hB' e he := by
     have hnotmax : ¬ Maximal M.Indep (B \ {e}) :=
-      fun h ↦ h.not_prop_of_ssubset (diff_singleton_sSubset.2 he.1) hB.prop
+      fun h ↦ h.not_prop_of_ssuperset (diff_singleton_sSubset.2 he.1) hB.prop
     obtain ⟨f, hf, hfB⟩ := M.indep_aug (M.indep_subset hB.prop diff_subset) hnotmax hB'
     replace hf := show f ∈ B' \ B by simpa [show f ≠ e by rintro rfl; exact he.2 hf.1] using hf
     refine ⟨f, hf, by_contra fun hnot ↦ ?_⟩
     obtain ⟨x, hxB, hind⟩ := M.indep_aug hfB hnot hB
     obtain ⟨-, rfl⟩ : _ ∧ x = e := by simpa [hxB.1] using hxB
-    refine hB.not_prop_of_ssubset ?_ hind
+    refine hB.not_prop_of_ssuperset ?_ hind
     rw [insert_comm, insert_diff_singleton, insert_eq_of_mem he.1]
     exact ssubset_insert hf.2
   maximality := M.indep_maximal
@@ -164,7 +164,7 @@ namespace IndepMatroid
     · exact ⟨e, ⟨heB, heI⟩, hins⟩
     by_contra hcon; push_neg at hcon
 
-    have heBdep := hBmax.not_prop_of_ssubset (ssubset_insert heB)
+    have heBdep := hBmax.not_prop_of_ssuperset (ssubset_insert heB)
 
     -- There is a finite subset `B₀` of `B` so that `B₀ + e` is dependent
     obtain ⟨B₀, hB₀B, hB₀fin, hB₀e⟩ := htofin B e hBmax.1 heBdep
@@ -326,7 +326,7 @@ protected def ofBddAugment (E : Set α) (Indep : Set α → Prop)
         obtain ⟨n, hn⟩ := indep_bdd
         exact finite_of_encard_le_coe (hn _ hI)
       obtain ⟨y, -, hyB, hi⟩ := indep_aug hBmax.prop hxI hlt
-      exact hBmax.not_prop_of_ssubset (ssubset_insert hyB) hi)
+      exact hBmax.not_prop_of_ssuperset (ssubset_insert hyB) hi)
     (indep_bdd := indep_bdd) (subset_ground := subset_ground)
 
 @[simp] theorem ofBddAugment_E (E : Set α) Indep indep_empty indep_subset indep_aug
