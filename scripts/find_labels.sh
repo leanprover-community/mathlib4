@@ -72,7 +72,8 @@ findInRange "${1}" "${yr_mth}-16T00:00:00" "${end_date}"   | sed -z 's=^\[=='
         gsub(/\[\]/, "Miscellaneous", tag)
         gsub(/["\][]/, "", tag)
         gsub(/,/, " ", tag)
-        printf("\n%s, %s PR%s%s\n", tag, seen[order[i]], seen[order[i]] == "1" ? "" : "s", acc[order[i]])
+        noPR=seen[order[i]]
+        printf("\n%s, %s PR%s%s\n", tag, noPR, noPR == "1" ? "" : "s", acc[order[i]])
       }
     }
   '
