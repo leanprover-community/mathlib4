@@ -26,7 +26,8 @@ universe u w
 
 open CategoryTheory Topology TopologicalSpace
 
-/-- The type of `u`-compactly generated `w`-small topological spaces. -/
+/-- `CompactlyGenerated.{u, w}` is the type of `u`-compactly generated `w`-small topological spaces.
+This should always be used with explicit universe parameters. -/
 structure CompactlyGenerated where
   /-- The underlying topological space of an object of `CompactlyGenerated`. -/
   toTop : TopCat.{w}
