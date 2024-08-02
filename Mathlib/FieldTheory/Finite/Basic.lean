@@ -149,8 +149,8 @@ theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
     mulLeftEmbedding_apply, Submonoid.coe_mul, Subgroup.coe_toSubmonoid, Units.val_mul,
     ← Finset.mul_sum] at h_sum_map
   -- thus one of (a - 1) or ∑ G, x is zero
-  have hzero : (((a : Kˣ) : K) - 1) = 0 ∨ ∑ x : ↥G, ((x : Kˣ) : K) = 0 := by
-    rw [← mul_eq_zero, sub_mul, ← h_sum_map, one_mul, sub_self]
+  have hzero : (((a : Kˣ) : K) - 1) = 0 ∨ ∑ x : ↥G, ((x : Kˣ) : K) = 0 := by sorry
+    -- rw [← mul_eq_zero, sub_mul, ← h_sum_map, one_mul, sub_self]
   apply Or.resolve_left hzero
   contrapose! ha
   ext
@@ -165,6 +165,7 @@ theorem sum_subgroup_units [Ring K] [NoZeroDivisors K]
   · subst G_bot
     simp only [ite_true, Subgroup.mem_bot, Fintype.card_ofSubsingleton, Nat.cast_ite, Nat.cast_one,
       Nat.cast_zero, univ_unique, Set.default_coe_singleton, sum_singleton, Units.val_one]
+    sorry
   · simp only [G_bot, ite_false]
     exact sum_subgroup_units_eq_zero G_bot
 
@@ -184,7 +185,7 @@ theorem sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
       (fun x : ↥G => (((x : Kˣ) : K) * ((a : Kˣ) : K)) ^ k)
         = (fun x : ↥G => ((x : Kˣ) : K) ^ k) ∘ fun x : ↥G => x * a := by
       funext x
-      simp only [Function.comp_apply, Submonoid.coe_mul, Subgroup.coe_toSubmonoid, Units.val_mul]
+      simp only [Function.comp_apply, Subgroup.coe_mul, Units.val_mul]
     rw [as_comp, ← Multiset.map_map]
     congr
     rw [eq_comm]

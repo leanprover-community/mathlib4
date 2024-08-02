@@ -210,6 +210,10 @@ instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
 
 instance : HasStrongEpiMonoFactorisations NonemptyFinLinOrd.{u} :=
   ⟨fun {X Y} f => by
+    letI : Fintype (⊤ : Set X) := Set.fintypeUniv
+    letI : Fintype (Set.image f ⊤) := (⊤ : Set _).fintypeMap ⇑f
+    letI : Nonempty (⊤ : Set X) := Set.univ.nonempty
+    letI : Nonempty (Set.image f ⊤) := Set.instNonemptyElemImage ⇑f ⊤
     letI : NonemptyFiniteLinearOrder (Set.image f ⊤) := ⟨by infer_instance⟩
     let I := NonemptyFinLinOrd.of (Set.image f ⊤)
     let e : X ⟶ I := ⟨fun x => ⟨f x, ⟨x, by tauto⟩⟩, fun x₁ x₂ h => f.monotone h⟩

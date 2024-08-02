@@ -1555,8 +1555,8 @@ def mem (x : α) (s : Ordset α) : Bool :=
 def find (x : α) (s : Ordset α) : Option α :=
   Ordnode.find x s.val
 
-instance instMembership : Membership α (Ordset α) :=
-  ⟨fun x s => mem x s⟩
+instance instMembership : Membership α (Ordset α) where
+  mem s x := mem x s
 
 instance mem.decidable (x : α) (s : Ordset α) : Decidable (x ∈ s) :=
   instDecidableEqBool _ _

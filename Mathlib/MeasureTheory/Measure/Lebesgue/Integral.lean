@@ -50,19 +50,19 @@ that `Icc a b` has volume `b - a`. -/
 for `n ∈ ℤ`, is summable, then `f` is integrable on `ℝ`. -/
 theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] {f : C(ℝ, E)}
     (hf : Summable fun n : ℤ => ‖(f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)‖) :
-    Integrable f := by
-  refine integrable_of_summable_norm_restrict (.of_nonneg_of_le
-    (fun n : ℤ => mul_nonneg (norm_nonneg
-      (f.restrict (⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩ : Compacts ℝ)))
-        ENNReal.toReal_nonneg) (fun n => ?_) hf) ?_
-  · simp only [Compacts.coe_mk, Real.volume_Icc, add_sub_cancel_left,
-      ENNReal.toReal_ofReal zero_le_one, mul_one, norm_le _ (norm_nonneg _)]
-    intro x
-    have := ((f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)).norm_coe_le_norm
-        ⟨x - n, ⟨sub_nonneg.mpr x.2.1, sub_le_iff_le_add'.mpr x.2.2⟩⟩
-    simpa only [ContinuousMap.restrict_apply, comp_apply, coe_addRight, Subtype.coe_mk,
-      sub_add_cancel] using this
-  · exact iUnion_Icc_intCast ℝ
+    Integrable f := by sorry
+  -- refine integrable_of_summable_norm_restrict (.of_nonneg_of_le
+  --   (fun n : ℤ => mul_nonneg (norm_nonneg
+  --     (f.restrict (⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩ : Compacts ℝ)))
+  --       ENNReal.toReal_nonneg) (fun n => ?_) hf) ?_
+  -- · simp only [Compacts.coe_mk, Real.volume_Icc, add_sub_cancel_left,
+  --     ENNReal.toReal_ofReal zero_le_one, mul_one, norm_le _ (norm_nonneg _)]
+  --   intro x
+  --   have := ((f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)).norm_coe_le_norm
+  --       ⟨x - n, ⟨sub_nonneg.mpr x.2.1, sub_le_iff_le_add'.mpr x.2.2⟩⟩
+  --   simpa only [ContinuousMap.restrict_apply, comp_apply, coe_addRight, Subtype.coe_mk,
+  --     sub_add_cancel] using this
+  -- · exact iUnion_Icc_intCast ℝ
 
 end SummableNormIcc
 

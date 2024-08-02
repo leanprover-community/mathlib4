@@ -59,11 +59,11 @@ def setOf {α : Type u} (p : α → Prop) : Set α :=
 namespace Set
 
 /-- Membership in a set -/
-protected def Mem (a : α) (s : Set α) : Prop :=
+protected def Mem (s : Set α) (a : α) : Prop :=
   s a
 
 instance : Membership α (Set α) where
-  mem s a := Set.Mem a s
+  mem := Set.Mem
 
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
   funext (fun x ↦ propext (h x))

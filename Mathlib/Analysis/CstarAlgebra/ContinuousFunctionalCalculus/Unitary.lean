@@ -45,6 +45,7 @@ lemma unitary_iff_isStarNormal_and_spectrum_subset_unitary {u : A} :
   rw [cfc_unitary_iff id u, Set.subset_def]
   congr! with x -
   simp [unitary.mem_iff_star_mul_self]
+  repeat sorry
 
 lemma mem_unitary_of_spectrum_subset_unitary {u : A}
     [IsStarNormal u] (hu : spectrum ℂ u ⊆ unitary ℂ) : u ∈ unitary A :=

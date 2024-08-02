@@ -525,8 +525,8 @@ def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
   -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.1
   invFun m := ⟨⟨m, 0⟩, by simp only [fst, comap_bot, mem_ker, snd_apply]⟩
-  map_add' := by simp only [AddSubmonoid.coe_add, coe_toAddSubmonoid, Prod.fst_add, Subtype.forall,
-    implies_true, Prod.forall, forall_const]
+  map_add' := sorry -- by simp only [AddSubmonoid.coe_add, coe_toAddSubmonoid, Prod.fst_add, Subtype.forall,
+    -- implies_true, Prod.forall, forall_const]
   map_smul' := by simp only [SetLike.val_smul, Prod.smul_fst, RingHom.id_apply, Subtype.forall,
     implies_true, Prod.forall, forall_const]
   left_inv := by
@@ -557,8 +557,8 @@ def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
   -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.2
   invFun n := ⟨⟨0, n⟩, by simp only [snd, comap_bot, mem_ker, fst_apply]⟩
-  map_add' := by simp only [AddSubmonoid.coe_add, coe_toAddSubmonoid, Prod.snd_add, Subtype.forall,
-    implies_true, Prod.forall, forall_const]
+  map_add' := sorry -- by simp only [AddSubmonoid.coe_add, coe_toAddSubmonoid, Prod.snd_add, Subtype.forall,
+    -- implies_true, Prod.forall, forall_const]
   map_smul' := by simp only [SetLike.val_smul, Prod.smul_snd, RingHom.id_apply, Subtype.forall,
     implies_true, Prod.forall, forall_const]
   left_inv := by

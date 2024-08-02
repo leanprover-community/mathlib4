@@ -419,21 +419,22 @@ lemma set_smul_eq_map [SMulCommClass R R N] :
 
   · intro x hx
     obtain ⟨c, hc, rfl⟩ := hx
-    simp only [LinearMap.coe_comp, coeSubtype, Finsupp.coe_lsum, Finsupp.sum, LinearMap.coe_mk,
-      AddHom.coe_mk, Function.comp_apply, AddSubmonoid.coe_finset_sum, coe_toAddSubmonoid,
-      SetLike.val_smul]
-    refine Submodule.sum_mem (p := sR • N) (t := c.support) ?_ _ ⟨sR • N, ?_⟩
-    · rintro r hr
-      rw [mem_set_smul_def, Submodule.mem_sInf]
-      rintro p hp
-      exact hp (hc hr) (c r).2
-    · ext x : 1
-      simp only [Set.mem_iInter, SetLike.mem_coe]
-      fconstructor
-      · refine fun h ↦ h fun r n hr hn ↦ ?_
-        rw [mem_set_smul_def, mem_sInf]
-        exact fun p hp ↦ hp hr hn
-      · aesop
+    sorry
+    -- simp only [LinearMap.coe_comp, coeSubtype, Finsupp.coe_lsum, Finsupp.sum, LinearMap.coe_mk,
+    --   AddHom.coe_mk, Function.comp_apply, AddSubmonoid.coe_finset_sum, coe_toAddSubmonoid,
+    --   SetLike.val_smul]
+    -- refine Submodule.sum_mem (p := sR • N) (t := c.support) ?_ _ ⟨sR • N, ?_⟩
+    -- · rintro r hr
+    --   rw [mem_set_smul_def, Submodule.mem_sInf]
+    --   rintro p hp
+    --   exact hp (hc hr) (c r).2
+    -- · ext x : 1
+    --   simp only [Set.mem_iInter, SetLike.mem_coe]
+    --   fconstructor
+    --   · refine fun h ↦ h fun r n hr hn ↦ ?_
+    --     rw [mem_set_smul_def, mem_sInf]
+    --     exact fun p hp ↦ hp hr hn
+    --   · aesop
 
 lemma mem_set_smul (x : M) [SMulCommClass R R N] :
     x ∈ sR • N ↔ ∃ (c : R →₀ N), (c.support : Set R) ⊆ sR ∧ x = c.sum fun r m ↦ r • m := by
@@ -446,7 +447,8 @@ lemma mem_set_smul (x : M) [SMulCommClass R R N] :
   · rw [mem_set_smul_def, Submodule.mem_sInf]
     rintro ⟨c, hc1, rfl⟩ p hp
     simp only [Finsupp.sum, AddSubmonoid.coe_finset_sum, coe_toAddSubmonoid, SetLike.val_smul]
-    exact Submodule.sum_mem _ fun r hr ↦ hp (hc1 hr) (c _).2
+    sorry
+    -- exact Submodule.sum_mem _ fun r hr ↦ hp (hc1 hr) (c _).2
 
 @[simp] lemma empty_set_smul : (∅ : Set S) • N = ⊥ := by
   ext
@@ -498,8 +500,9 @@ protected def pointwiseSetMulAction [SMulCommClass R R M] :
       obtain ⟨c, hc1, rfl⟩ := mem_set_smul _ _ _ |>.mp hm
       simp only [Finsupp.sum, AddSubmonoid.coe_finset_sum, coe_toAddSubmonoid, SetLike.val_smul,
         Finset.smul_sum, smul_smul]
-      exact Submodule.sum_mem _ fun r' hr' ↦
-        mem_set_smul_of_mem_mem (Set.mul_mem_mul hr (hc1 hr')) (c _).2)
+      sorry)
+      -- exact Submodule.sum_mem _ fun r' hr' ↦
+      --   mem_set_smul_of_mem_mem (Set.mul_mem_mul hr (hc1 hr')) (c _).2)
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMulAction
 

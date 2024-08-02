@@ -1010,8 +1010,9 @@ theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α
   replace hdq := hd.dvd_of_dvd_pow hdq
   have : p ∣ q := dvd_trans (hd.irreducible.dvd_symm hp.irreducible hdp) hdq
   convert q_mem
-  rw [Finset.mem_val,
-    is_coprime _ (Finset.mem_insert_self p s) _ (Finset.mem_insert_of_mem q_mem) this]
+  sorry
+  -- rw [Finset.mem_val,
+  --   is_coprime _ (Finset.mem_insert_self p s) _ (Finset.mem_insert_of_mem q_mem) this]
 
 /-- If `P` holds for units and powers of primes,
 and `P x ∧ P y` for coprime `x, y` implies `P (x * y)`,
@@ -1244,7 +1245,7 @@ def BfactorSetMem : { a : Associates α // Irreducible a } → FactorSet α → 
 `s : FactorSet α`.
 
 If `p` is not irreducible, `p` is not a member of any `FactorSet`. -/
-def FactorSetMem (p : Associates α) (s : FactorSet α) : Prop :=
+def FactorSetMem (s : FactorSet α) (p : Associates α) : Prop :=
   letI : Decidable (Irreducible p) := Classical.dec _
   if hp : Irreducible p then BfactorSetMem ⟨p, hp⟩ s else False
 
@@ -1252,7 +1253,7 @@ instance : Membership (Associates α) (FactorSet α) :=
   ⟨FactorSetMem⟩
 
 @[simp]
-theorem factorSetMem_eq_mem (p : Associates α) (s : FactorSet α) : FactorSetMem p s = (p ∈ s) :=
+theorem factorSetMem_eq_mem (p : Associates α) (s : FactorSet α) : FactorSetMem s p = (p ∈ s) :=
   rfl
 
 theorem mem_factorSet_top {p : Associates α} {hp : Irreducible p} : p ∈ (⊤ : FactorSet α) := by

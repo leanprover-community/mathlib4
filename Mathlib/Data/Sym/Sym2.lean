@@ -318,7 +318,7 @@ theorem mem_mk_left (x y : α) : x ∈ s(x, y) :=
   ⟨y, rfl⟩
 
 theorem mem_mk_right (x y : α) : y ∈ s(x, y) :=
-  eq_swap.subst <| mem_mk_left y x
+  eq_swap ▸ mem_mk_left y x
 
 @[simp, aesop norm (rule_sets := [Sym2])]
 theorem mem_iff {a b c : α} : a ∈ s(b, c) ↔ a = b ∨ a = c :=

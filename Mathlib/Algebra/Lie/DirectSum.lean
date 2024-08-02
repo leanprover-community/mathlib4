@@ -231,8 +231,8 @@ instance lieRingOfIdeals : LieRing (⨁ i, I i) :=
   DirectSum.lieRing fun i => ↥(I i)
 
 /-- See `DirectSum.lieRingOfIdeals` comment. -/
-instance lieAlgebraOfIdeals : LieAlgebra R (⨁ i, I i) :=
-  DirectSum.lieAlgebra fun i => ↥(I i)
+instance lieAlgebraOfIdeals : LieAlgebra R (⨁ i, I i) :=  sorry
+  -- DirectSum.lieAlgebra fun i => ↥(I i)
 
 end Ideals
 

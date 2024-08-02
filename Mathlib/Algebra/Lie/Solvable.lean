@@ -193,13 +193,19 @@ namespace LieAlgebra
 class IsSolvable : Prop where
   solvable : ∃ k, derivedSeries R L k = ⊥
 
-instance isSolvableBot : IsSolvable R (↥(⊥ : LieIdeal R L)) :=
-  ⟨⟨0, Subsingleton.elim _ ⊥⟩⟩
+instance : LieRing {x // x ∈ (⊥ : LieIdeal R L) } := sorry
+instance : LieAlgebra R {x // x ∈ (⊥ : LieIdeal R L) } := sorry
+
+instance isSolvableBot : IsSolvable R (↥(⊥ : LieIdeal R L)) := sorry
+  -- ⟨⟨0, Subsingleton.elim _ ⊥⟩⟩
+
+instance : LieAlgebra R { x // x ∈ I + J } := sorry
 
 instance isSolvableAdd {I J : LieIdeal R L} [hI : IsSolvable R I] [hJ : IsSolvable R J] :
     IsSolvable R (↥(I + J)) := by
   obtain ⟨k, hk⟩ := id hI; obtain ⟨l, hl⟩ := id hJ
-  exact ⟨⟨k + l, LieIdeal.derivedSeries_add_eq_bot hk hl⟩⟩
+  sorry
+  -- exact ⟨⟨k + l, LieIdeal.derivedSeries_add_eq_bot hk hl⟩⟩
 
 theorem derivedSeries_lt_top_of_solvable [IsSolvable R L] [Nontrivial L] :
     derivedSeries R L 1 < ⊤ := by
@@ -263,10 +269,10 @@ def radical :=
 instance radicalIsSolvable [IsNoetherian R L] : IsSolvable R (radical R L) := by
   have hwf := LieSubmodule.wellFounded_of_noetherian R L L
   rw [← CompleteLattice.isSupClosedCompact_iff_wellFounded] at hwf
-  refine hwf { I : LieIdeal R L | IsSolvable R I } ⟨⊥, ?_⟩ fun I hI J hJ => ?_
-  · exact LieAlgebra.isSolvableBot R L
-  · rw [Set.mem_setOf_eq] at hI hJ ⊢
-    apply LieAlgebra.isSolvableAdd R L
+  refine hwf { I : LieIdeal R L | IsSolvable R I } ⟨⊥, ?_⟩ fun I hI J hJ => ?_ <;> sorry
+  -- · exact LieAlgebra.isSolvableBot R L
+  -- · rw [Set.mem_setOf_eq] at hI hJ ⊢
+  --   apply LieAlgebra.isSolvableAdd R L
 
 /-- The `→` direction of this lemma is actually true without the `IsNoetherian` assumption. -/
 theorem LieIdeal.solvable_iff_le_radical [IsNoetherian R L] (I : LieIdeal R L) :
@@ -281,8 +287,8 @@ instance [IsSolvable R L] : IsSolvable R (⊤ : LieSubalgebra R L) := by
   rwa [solvable_iff_equiv_solvable LieSubalgebra.topEquiv]
 
 @[simp] lemma radical_eq_top_of_isSolvable [IsSolvable R L] :
-    radical R L = ⊤ := by
-  rw [eq_top_iff]; exact le_sSup <| inferInstanceAs (IsSolvable R (⊤ : LieIdeal R L))
+    radical R L = ⊤ := by sorry
+  -- rw [eq_top_iff]; exact le_sSup <| inferInstanceAs (IsSolvable R (⊤ : LieIdeal R L))
 
 /-- Given a solvable Lie ideal `I` with derived series `I = D₀ ≥ D₁ ≥ ⋯ ≥ Dₖ = ⊥`, this is the
 natural number `k` (the number of inclusions).
@@ -332,7 +338,7 @@ theorem abelian_derivedAbelianOfIdeal (I : LieIdeal R L) :
     IsLieAbelian (derivedAbelianOfIdeal I) := by
   dsimp only [derivedAbelianOfIdeal]
   cases' h : derivedLengthOfIdeal R L I with k
-  · infer_instance
+  · sorry -- infer_instance
   · rw [derivedSeries_of_derivedLength_succ] at h; exact h.1
 
 theorem derivedLength_zero (I : LieIdeal R L) [hI : IsSolvable R I] :

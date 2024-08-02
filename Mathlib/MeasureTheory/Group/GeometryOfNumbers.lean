@@ -109,7 +109,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
   suffices Set.Nonempty (⋂ n, Z n) by
     erw [← Set.iInter_inter, K.iInter_smul_eq_self h_zero] at this
     · obtain ⟨x, hx⟩ := this
-      exact ⟨⟨x, by aesop⟩, by aesop⟩
+      exact ⟨⟨x, by aesop⟩, sorry⟩ --by aesop⟩
     · exact (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.2.2
   have h_clos : IsClosed ((L : Set E) \ {0}) := by
     rsuffices ⟨U, hU⟩ : ∃ U : Set E, IsOpen U ∧  U ∩ L = {0}

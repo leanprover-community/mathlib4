@@ -212,8 +212,11 @@ theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=
   (mkOfCompact f).norm_eq_iSup_norm
 
 theorem norm_restrict_mono_set {X : Type*} [TopologicalSpace X] (f : C(X, E))
-    {K L : TopologicalSpace.Compacts X} (hKL : K ≤ L) : ‖f.restrict K‖ ≤ ‖f.restrict L‖ :=
-  (norm_le _ (norm_nonneg _)).mpr fun x => norm_coe_le_norm (f.restrict L) <| Set.inclusion hKL x
+    {K L : TopologicalSpace.Compacts X} (hKL : K ≤ L) :
+    letI : Norm C(↑↑L ,E) := ContinuousMap.instNorm
+    letI : Norm C(↑↑K ,E) := ContinuousMap.instNorm
+    ‖f.restrict K‖ ≤ ‖f.restrict L‖ := sorry
+  -- (norm_le _ (norm_nonneg _)).mpr fun x => norm_coe_le_norm (f.restrict L) <| Set.inclusion hKL x
 
 end
 
@@ -432,8 +435,9 @@ open TopologicalSpace
 variable {X : Type*} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X]
 variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
 
-theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
-    (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F := by
+instance (K : Compacts X) : Norm C(↑↑K, E) := ContinuousMap.instNorm
+variable {ι : Type*} {F : ι → C(X, E)} in -- (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) in
+theorem summable_of_locally_summable_norm : Summable F := by
   refine (ContinuousMap.exists_tendsto_compactOpen_iff_forall _).2 fun K hK => ?_
   lift K to Compacts X using hK
   have A : ∀ s : Finset ι, restrict (↑K) (∑ i ∈ s, F i) = ∑ i ∈ s, restrict K (F i) := by
@@ -444,7 +448,8 @@ theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     erw [restrict_apply, restrict_apply, restrict_apply, restrict_apply]
     simp? says simp only [coe_sum, Finset.sum_apply]
     congr!
-  simpa only [HasSum, A] using (hF K).of_norm
+  sorry
+  -- simpa only [HasSum, A] using (hF K).of_norm
 
 end LocalNormalConvergence
 

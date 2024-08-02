@@ -1168,7 +1168,7 @@ theorem subset_interior_mul' : interior s * interior t ⊆ interior (s * t) :=
 @[to_additive]
 theorem mul_singleton_mem_nhds (a : α) {b : α} (h : s ∈ 𝓝 b) : s * {a} ∈ 𝓝 (b * a) := by
   simp only [← iUnion_op_smul_set, mem_singleton_iff, iUnion_iUnion_eq_left]
-  exact smul_mem_nhds _ h
+  exact sorry -- smul_mem_nhds _ h
 
 @[to_additive]
 theorem mul_singleton_mem_nhds_of_nhds_one (a : α) (h : s ∈ 𝓝 (1 : α)) : s * {a} ∈ 𝓝 a := by

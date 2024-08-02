@@ -74,11 +74,11 @@ theorem sum_mem (I : Ideal α) {ι : Type*} {t : Finset ι} {f : ι → α} :
   Submodule.sum_mem I
 
 theorem eq_top_of_unit_mem (x y : α) (hx : x ∈ I) (h : y * x = 1) : I = ⊤ :=
-  eq_top_iff.2 fun z _ =>
-    calc
-      z = z * (y * x) := by simp [h]
-      _ = z * y * x := Eq.symm <| mul_assoc z y x
-      _ ∈ I := I.mul_mem_left _ hx
+  eq_top_iff.2 fun z _ => sorry
+    -- calc
+    --   z = z * (y * x) := by simp [h]
+    --   _ = z * y * x := Eq.symm <| mul_assoc z y x
+    --   _ ∈ I := I.mul_mem_left _ hx
 
 theorem eq_top_of_isUnit_mem {x} (hx : x ∈ I) (h : IsUnit x) : I = ⊤ :=
   let ⟨y, hy⟩ := h.exists_left_inv

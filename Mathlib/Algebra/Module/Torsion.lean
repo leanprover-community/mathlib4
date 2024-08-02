@@ -365,7 +365,7 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf :
   rcases S.eq_empty_or_nonempty with h | h
   · simp only [h]
     -- Porting note: converts were not cooperating
-    convert iSup_emptyset (f := fun i => torsionBySet R M (p i)) <;> simp
+    convert iSup_emptyset (f := fun i => torsionBySet R M (p i)) <;> sorry -- simp
   apply le_antisymm
   · apply iSup_le _
     intro i

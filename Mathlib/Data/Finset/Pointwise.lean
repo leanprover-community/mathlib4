@@ -768,10 +768,10 @@ scoped[Pointwise] attribute [instance] Finset.monoid Finset.addMonoid
 @[to_additive]
 theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
   | 0 => by
-    rw [pow_zero]
+    simp only [pow_zero]
     exact one_mem_one
   | n + 1 => by
-    rw [pow_succ]
+    simp only [pow_succ]
     exact mul_mem_mul (pow_mem_pow ha n) ha
 
 @[to_additive]
@@ -1905,15 +1905,22 @@ namespace Set
 
 section One
 
-variable [One α]
+-- I can't believe `0 : Set α` and `1 : Set α` exist
+instance [Zero α] : Fintype (0 : Set α) := Set.fintypeSingleton _
 
-@[to_additive (attr := simp)]
-theorem toFinset_one : (1 : Set α).toFinset = 1 :=
+instance [One α] : Fintype (1 : Set α) := Set.fintypeSingleton _
+
+@[simp]
+theorem toFinset_zero [Zero α] : (0 : Set α).toFinset = 0 :=
+  rfl
+
+@[simp]
+theorem toFinset_one [One α] : (1 : Set α).toFinset = 1 :=
   rfl
 
 -- Porting note: should take priority over `Finite.toFinset_singleton`
 @[to_additive (attr := simp high)]
-theorem Finite.toFinset_one (h : (1 : Set α).Finite := finite_one) : h.toFinset = 1 :=
+theorem Finite.toFinset_one [One α] (h : (1 : Set α).Finite := finite_one) : h.toFinset = 1 :=
   Finite.toFinset_singleton _
 
 end One

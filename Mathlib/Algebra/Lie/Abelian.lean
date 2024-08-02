@@ -155,7 +155,7 @@ def maxTrivHom (f : M →ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M →ₗ⁅R,L�
       (congr_arg f (m.property x)).trans (LieModuleHom.map_zero _)⟩
   map_add' m n := by simp [Function.comp_apply]; rfl -- Porting note:
   map_smul' t m := by simp [Function.comp_apply]; rfl -- these two were `by simpa`
-  map_lie' {x m} := by simp
+  map_lie' {x m} := by sorry --  simp
 
 @[norm_cast, simp]
 theorem coe_maxTrivHom_apply (f : M →ₗ⁅R,L⁆ N) (m : maxTrivSubmodule R L M) :

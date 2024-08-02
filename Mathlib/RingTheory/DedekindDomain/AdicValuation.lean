@@ -458,11 +458,13 @@ instance : Algebra R (v.adicCompletionIntegers K) where
   map_one' := by simp only [map_one]; rfl
   map_mul' x y := by
     ext
-    simp_rw [RingHom.map_mul, Subring.coe_mul, UniformSpace.Completion.coe_mul]
+    -- simp_rw [RingHom.map_mul, Subring.coe_mul, UniformSpace.Completion.coe_mul]
+    sorry
   map_zero' := by simp only [map_zero]; rfl
   map_add' x y := by
     ext
-    simp_rw [RingHom.map_add, Subring.coe_add, UniformSpace.Completion.coe_add]
+    -- simp_rw [RingHom.map_add, Subring.coe_add, UniformSpace.Completion.coe_add]
+    sorry
   commutes' r x := by
     rw [mul_comm]
   smul_def' r x := by

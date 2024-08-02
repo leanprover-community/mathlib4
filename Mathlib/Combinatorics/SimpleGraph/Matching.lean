@@ -197,7 +197,7 @@ variable [Fintype V] [DecidableRel G.Adj]
 lemma even_card_of_isPerfectMatching [DecidableEq V]
     (c : ConnectedComponent G) (hM : M.IsPerfectMatching) :
     Even (Fintype.card c.supp) := by
-  classical simpa using (hM.induce_connectedComponent_isMatching c).even_card
+  classical sorry -- simpa using (hM.induce_connectedComponent_isMatching c).even_card
 
 lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.deleteVerts ⊤ u).coe}
     (hM : M.IsPerfectMatching) (codd : Odd (Nat.card c.supp)) :

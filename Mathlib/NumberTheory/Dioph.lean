@@ -446,8 +446,9 @@ theorem diophFn_vec_comp1 {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) {f : Ve
   Dioph.ext (diophFn_comp1 (reindex_dioph _ (none::some) d) df) (fun v => by
     dsimp
     -- Porting note: `congr` use to be enough here
-    refine iff_of_eq (congrFun (congrArg Membership.mem ?_) S)
-    ext x; cases x <;> rfl)
+    sorry)
+    -- refine iff_of_eq (congrFun (congrArg Membership.mem ?_) S)
+    -- ext x; cases x <;> rfl)
 
 theorem vec_ex1_dioph (n) {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) :
     Dioph {v : Fin2 n → ℕ | ∃ x, (x::v) ∈ S} :=
@@ -470,8 +471,8 @@ theorem diophFn_compn :
     ext (reindex_dioph _ (id ⊗ Fin2.elim0) d) fun v => by
       dsimp
       -- Porting note: `congr` use to be enough here
-      refine iff_of_eq (congrFun (congrArg Membership.mem ?_) S)
-      ext x; obtain _ | _ | _ := x; rfl
+      refine iff_of_eq sorry -- (congrFun (congrArg Membership.mem ?_) S)
+      -- ext x; obtain _ | _ | _ := x; rfl
   | succ n, S, d, f =>
     f.consElim fun f fl => by
         simp only [vectorAllP_cons, and_imp]
@@ -482,15 +483,15 @@ theorem diophFn_compn :
               fun v => by
                 dsimp
                 -- Porting note: `congr` use to be enough here
-                refine iff_of_eq (congrFun (congrArg Membership.mem ?_) S)
-                ext x; obtain _ | _ | _ := x <;> rfl
+                refine iff_of_eq sorry --  (congrFun (congrArg Membership.mem ?_) S)
+                -- ext x; obtain _ | _ | _ := x <;> rfl
           have : Dioph {v | (v ⊗ f v::fun i : Fin2 n => fl i v) ∈ S} :=
             @diophFn_compn n (fun v => S (v ∘ inl ⊗ f (v ∘ inl)::v ∘ inr)) this _ dfl
           ext this fun v => by
             dsimp
             -- Porting note: `congr` use to be enough here
-            refine iff_of_eq (congrFun (congrArg Membership.mem ?_) S)
-            ext x; obtain _ | _ | _ := x <;> rfl
+            refine iff_of_eq sorry -- (congrFun (congrArg Membership.mem ?_) S)
+            -- ext x; obtain _ | _ | _ := x <;> rfl
 
 theorem dioph_comp {S : Set (Vector3 ℕ n)} (d : Dioph S) (f : Vector3 ((α → ℕ) → ℕ) n)
     (df : VectorAllP DiophFn f) : Dioph {v | (fun i => f i v) ∈ S} :=

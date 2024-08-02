@@ -107,7 +107,7 @@ def approxChain : Chain ((a : _) → Part <| β a) :=
   ⟨approx f, approx_mono f⟩
 
 theorem le_f_of_mem_approx {x} : x ∈ approxChain f → x ≤ f x := by
-  simp only [(· ∈ ·), forall_exists_index]
+  simp only [Membership.mem, forall_exists_index]
   rintro i rfl
   apply approx_mono'
 

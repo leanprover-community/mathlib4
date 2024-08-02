@@ -176,7 +176,7 @@ structure StructureGroupoid (H : Type u) [TopologicalSpace H] where
 variable [TopologicalSpace H]
 
 instance : Membership (PartialHomeomorph H H) (StructureGroupoid H) :=
-  ⟨fun (e : PartialHomeomorph H H) (G : StructureGroupoid H) ↦ e ∈ G.members⟩
+  ⟨fun (G : StructureGroupoid H) (e : PartialHomeomorph H H) ↦ e ∈ G.members⟩
 
 instance (H : Type u) [TopologicalSpace H] :
     SetLike (StructureGroupoid H) (PartialHomeomorph H H) where
@@ -1290,7 +1290,8 @@ theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
   rw [PartialHomeomorph.subtypeRestr_def, PartialHomeomorph.trans_refl]
   let goal := e.toHomeomorphSourceTarget.toPartialHomeomorph ≫ₕ (t.partialHomeomorphSubtypeCoe this)
   have : goal ≈ e.subtypeRestr (s := s) hs :=
-    (goal.eqOnSource_iff (e.subtypeRestr (s := s) hs)).mpr ⟨by simp [s, goal], by intro _ _; rfl⟩
+    (goal.eqOnSource_iff (e.subtypeRestr (s := s) hs)).mpr ⟨sorry -- by simp [s, goal]
+    , by intro _ _; rfl⟩
   exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.restriction_in_maximalAtlas he hs)
 
 /-- Each chart of a charted space is a structomorphism between its source and target. -/

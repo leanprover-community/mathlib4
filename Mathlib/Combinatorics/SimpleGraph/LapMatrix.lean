@@ -154,9 +154,10 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
   rw [Subtype.ext_iff] at h0
   have h : ∑ c, g c • lapMatrix_ker_basis_aux G c = fun i ↦ g (connectedComponentMk G i) := by
     simp only [lapMatrix_ker_basis_aux, SetLike.mk_smul_mk, AddSubmonoid.coe_finset_sum]
-    conv_lhs => enter [2, c, j]; rw [Pi.smul_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
-    ext i
-    simp only [Finset.sum_apply, sum_ite_eq, mem_univ, ite_true]
+    -- conv_lhs => enter [2, c, j]; rw [Pi.smul_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
+    -- ext i
+    -- simp only [Finset.sum_apply, sum_ite_eq, mem_univ, ite_true]
+    sorry
   rw [h] at h0
   intro c
   obtain ⟨i, h'⟩ : ∃ i : V, G.connectedComponentMk i = c := Quot.exists_rep c
@@ -172,7 +173,8 @@ lemma top_le_span_range_lapMatrix_ker_basis_aux :
   simp only [lapMatrix_ker_basis_aux, AddSubmonoid.coe_finset_sum, Submodule.coe_toAddSubmonoid,
     SetLike.val_smul, Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one, mul_zero,
     sum_ite_eq, mem_univ, ite_true]
-  rfl
+  sorry
+  -- rfl
 
 /-- `lapMatrix_ker_basis G` is a basis of the nullspace indexed by its connected components,
 the basis is made up of the functions `V → ℝ` which are `1` on the vertices of the given

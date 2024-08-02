@@ -169,6 +169,9 @@ instance (H : Subgroup G) [Countable H] : Countable H.op :=
   Countable.of_equiv H H.equivOp
 
 @[to_additive]
+instance (H : Subgroup G) : SMul H.op G := inferInstanceAs (SMul H.toSubmonoid.op G)
+
+@[to_additive]
 theorem smul_opposite_mul {H : Subgroup G} (x g : G) (h : H.op) :
     h • (g * x) = g * h • x :=
   mul_assoc _ _ _

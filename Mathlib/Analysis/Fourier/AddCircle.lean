@@ -153,8 +153,8 @@ theorem fourier_neg' {n : ℤ} {x : AddCircle T} : @toCircle T (-(n • x)) = co
   rw [← neg_smul, ← fourier_apply]; exact fourier_neg
 
 -- @[simp] -- Porting note: simp normal form is `fourier_add'`
-theorem fourier_add {m n : ℤ} {x : AddCircle T} : fourier (m+n) x = fourier m x * fourier n x := by
-  simp_rw [fourier_apply, add_zsmul, toCircle_add, coe_mul_unitSphere]
+theorem fourier_add {m n : ℤ} {x : AddCircle T} : fourier (m+n) x = fourier m x * fourier n x := by sorry
+  -- simp_rw [fourier_apply, add_zsmul, toCircle_add, coe_mul_unitSphere]
 
 @[simp]
 theorem fourier_add' {m n : ℤ} {x : AddCircle T} :

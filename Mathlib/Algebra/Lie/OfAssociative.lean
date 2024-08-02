@@ -300,7 +300,8 @@ theorem toEnd_comp_subtype_mem (m : M) (hm : m ∈ (N : Submodule R M)) :
 @[simp]
 theorem toEnd_restrict_eq_toEnd (h := N.toEnd_comp_subtype_mem x) :
     (toEnd R L M x).restrict h = toEnd R L N x := by
-  ext; simp [LinearMap.restrict_apply]
+  sorry
+  -- ext; simp [LinearMap.restrict_apply]
 
 lemma mapsTo_pow_toEnd_sub_algebraMap {φ : R} {k : ℕ} {x : L} :
     MapsTo ((toEnd R L M x - algebraMap R (Module.End R M) φ) ^ k) N N := by

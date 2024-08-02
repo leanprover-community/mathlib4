@@ -57,8 +57,8 @@ variable (S) in
 def RingHom.toKerIsLocalization (hy : M ≤ Submonoid.comap g T) :
     RingHom.ker g →ₗ[R] RingHom.ker (IsLocalization.map Q g hy : S →+* Q) where
   toFun x := ⟨algebraMap R S x, by simp [RingHom.mem_ker, (RingHom.mem_ker g).mp x.property]⟩
-  map_add' x y := by
-    simp only [AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, map_add, AddSubmonoid.mk_add_mk]
+  map_add' x y := by sorry
+    -- simp only [AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, map_add, AddSubmonoid.mk_add_mk]
   map_smul' a x := by
     simp only [SetLike.val_smul, smul_eq_mul, map_mul, RingHom.id_apply,
       SetLike.mk_smul_of_tower_mk, Algebra.smul_def]

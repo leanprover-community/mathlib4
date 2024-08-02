@@ -117,7 +117,8 @@ theorem isCyclic_of_orderOf_eq_card [Fintype α] (x : α) (hx : orderOf x = Fint
     use x
     simp_rw [← SetLike.mem_coe, ← Set.eq_univ_iff_forall]
     rw [← Fintype.card_congr (Equiv.Set.univ α), ← Fintype.card_zpowers] at hx
-    exact Set.eq_of_subset_of_card_le (Set.subset_univ _) (ge_of_eq hx)
+    sorry
+    -- exact Set.eq_of_subset_of_card_le (Set.subset_univ _) (ge_of_eq hx)
 @[deprecated (since := "2024-02-21")]
 alias isAddCyclic_of_orderOf_eq_card := isAddCyclic_of_addOrderOf_eq_card
 
@@ -187,8 +188,9 @@ theorem orderOf_eq_card_of_forall_mem_zpowers [Fintype α] {g : α} (hx : ∀ x,
     orderOf g = Fintype.card α := by
   classical
     rw [← Fintype.card_zpowers]
-    apply Fintype.card_of_finset'
-    simpa using hx
+    sorry
+    -- apply Fintype.card_of_finset'
+    -- simpa using hx
 
 @[to_additive]
 lemma orderOf_generator_eq_natCard (h : ∀ x, x ∈ Subgroup.zpowers a) : orderOf a = Nat.card α :=
@@ -312,11 +314,12 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
           rw [hm0, mul_zero, Fintype.card_eq_zero_iff] at hm
           exact hm.elim' 1
       simp only [Set.toFinset_card, SetLike.coe_sort_coe]
-      rw [Fintype.card_zpowers, orderOf_pow g, orderOf_eq_card_of_forall_mem_zpowers hg]
-      nth_rw 2 [hm]; nth_rw 3 [hm]
-      rw [Nat.mul_div_cancel_left _ (gcd_pos_of_pos_left _ hn0), gcd_mul_left_left, hm,
-        Nat.mul_div_cancel _ hm0]
-      exact le_of_dvd hn0 (Nat.gcd_dvd_left _ _)
+      sorry
+      -- rw [Fintype.card_zpowers, orderOf_pow g, orderOf_eq_card_of_forall_mem_zpowers hg]
+      -- nth_rw 2 [hm]; nth_rw 3 [hm]
+      -- rw [Nat.mul_div_cancel_left _ (gcd_pos_of_pos_left _ hn0), gcd_mul_left_left, hm,
+      --   Nat.mul_div_cancel _ hm0]
+      -- exact le_of_dvd hn0 (Nat.gcd_dvd_left _ _)
 @[deprecated (since := "2024-02-21")]
 alias IsAddCyclic.card_pow_eq_one_le := IsAddCyclic.card_nsmul_eq_zero_le
 

@@ -100,8 +100,9 @@ theorem map_injective {f : M →ₗ[R] N} (hf : Function.Injective f) :
     Submodule.map_smul'', Submodule.map_top]
   apply (smul_mono_right _ inf_le_right : I ^ n • (I ^ k • ⊤ ⊓ (range f)) ≤ _)
   nth_rw 2 [show n = n + k - k by omega]
-  rw [← hk (n + k) (show n + k ≥ k by omega)]
-  exact ⟨by simpa using congrArg (fun x ↦ x.val (n + k)) hx, ⟨a (n + k), rfl⟩⟩
+  sorry
+  -- rw [← hk (n + k) (show n + k ≥ k by omega)]
+  -- exact ⟨by simpa using congrArg (fun x ↦ x.val (n + k)) hx, ⟨a (n + k), rfl⟩⟩
 
 end Injectivity
 

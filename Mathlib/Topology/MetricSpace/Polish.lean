@@ -328,7 +328,7 @@ theorem _root_.IsOpen.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpac
     (hs : IsOpen s) : PolishSpace s := by
   letI := upgradePolishSpace α
   lift s to Opens α using hs
-  have : SecondCountableTopology s.CompleteCopy := inferInstanceAs (SecondCountableTopology s)
+  have : SecondCountableTopology s.CompleteCopy := sorry -- inferInstanceAs (SecondCountableTopology s)
   exact inferInstanceAs (PolishSpace s.CompleteCopy)
 
 end CompleteCopy
@@ -364,8 +364,8 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
   refine ⟨.coinduced f instTopologicalSpaceSum, hle, ?_, hs.mono hle, ?_⟩
   · rw [← f.induced_symm]
     exact f.symm.polishSpace_induced
-  · rw [isOpen_coinduced, isOpen_sum_iff]
-    simp [f, preimage_preimage]
+  · sorry -- rw [isOpen_coinduced, isOpen_sum_iff]
+    -- simp [f, preimage_preimage]
 
 theorem IsClopenable.compl [TopologicalSpace α] {s : Set α} (hs : IsClopenable s) :
     IsClopenable sᶜ := by

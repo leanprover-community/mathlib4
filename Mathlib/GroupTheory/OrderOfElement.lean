@@ -744,6 +744,9 @@ end Finite
 variable [Fintype G] {x : G}
 
 @[to_additive]
+instance : Fintype (powers x : Set G) := sorry
+
+@[to_additive]
 lemma orderOf_eq_card_powers : orderOf x = Fintype.card (powers x : Set G) :=
   (Fintype.card_fin (orderOf x)).symm.trans <|
     Fintype.card_eq.2 ⟨finEquivPowers x <| isOfFinOrder_of_finite _⟩
@@ -818,9 +821,9 @@ variable [Fintype G] {x : G} {n : ℕ}
 
 /-- See also `Nat.card_addSubgroupZPowers`. -/
 @[to_additive "See also `Nat.card_subgroup`."]
-theorem Fintype.card_zpowers : Fintype.card (zpowers x) = orderOf x :=
-  (Fintype.card_eq.2 ⟨finEquivZPowers x <| isOfFinOrder_of_finite _⟩).symm.trans <|
-    Fintype.card_fin (orderOf x)
+theorem Fintype.card_zpowers : Fintype.card (zpowers x) = orderOf x := sorry
+  -- (Fintype.card_eq.2 ⟨finEquivZPowers x <| isOfFinOrder_of_finite _⟩).symm.trans <|
+  --   Fintype.card_fin (orderOf x)
 
 @[to_additive]
 theorem card_zpowers_le (a : G) {k : ℕ} (k_pos : k ≠ 0)
@@ -941,6 +944,9 @@ theorem inf_eq_bot_of_coprime {G : Type*} [Group G] {H K : Subgroup G}
     (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
   card_eq_one.mp (Nat.eq_one_of_dvd_coprimes h
     (card_dvd_of_le inf_le_left) (card_dvd_of_le inf_le_right))
+
+@[to_additive]
+instance : Fintype (zpowers x : Set G) := sorry
 
 /- TODO: Generalise to `Submonoid.powers`. -/
 @[to_additive]

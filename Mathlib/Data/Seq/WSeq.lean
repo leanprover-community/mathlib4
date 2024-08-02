@@ -109,8 +109,8 @@ def recOn {C : WSeq α → Sort v} (s : WSeq α) (h1 : C nil) (h2 : ∀ x s, C (
 protected def Mem (a : α) (s : WSeq α) :=
   Seq.Mem (some a) s
 
-instance membership : Membership α (WSeq α) :=
-  ⟨WSeq.Mem⟩
+instance membership : Membership α (WSeq α) where
+  mem s a := WSeq.Mem a s
 
 theorem not_mem_nil (a : α) : a ∉ @nil α :=
   Seq.not_mem_nil (some a)
@@ -816,7 +816,7 @@ theorem eq_or_mem_iff_mem {s : WSeq α} {a a' s'} :
   · cases' this with i1 i2
     rw [i1, i2]
     cases' s' with f al
-    dsimp only [cons, (· ∈ ·), WSeq.Mem, Seq.Mem, Seq.cons]
+    dsimp only [cons, Membership.mem, WSeq.Mem, Seq.Mem, Seq.cons]
     have h_a_eq_a' : a = a' ↔ some (some a) = some (some a') := by simp
     rw [h_a_eq_a']
     refine ⟨Stream'.eq_or_mem_of_mem_cons, fun o => ?_⟩

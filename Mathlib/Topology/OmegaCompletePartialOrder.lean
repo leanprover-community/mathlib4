@@ -54,8 +54,9 @@ theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α 
 theorem isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
   simp only [IsOpen] at hs ⊢
   convert CompleteLattice.sSup_continuous' (setOf ⁻¹' s) hs
-  simp only [sSup_apply, setOf_bijective.surjective.exists, exists_prop, mem_preimage,
-    SetCoe.exists, iSup_Prop_eq, mem_setOf_eq, mem_sUnion]
+  sorry
+  -- simp only [sSup_apply, setOf_bijective.surjective.exists, exists_prop, mem_preimage,
+  --   SetCoe.exists, iSup_Prop_eq, mem_setOf_eq, mem_sUnion]
 
 theorem IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.fst
 

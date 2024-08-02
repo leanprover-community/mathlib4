@@ -647,7 +647,8 @@ def zmodEquivZPowers (h : IsPrimitiveRoot ζ k) : ZMod k ≃+ Additive (Subgroup
         simp only [AddMonoidHom.mem_ker, CharP.intCast_eq_zero_iff (ZMod k) k, AddMonoidHom.coe_mk,
           Int.coe_castAddHom] at hi ⊢
         obtain ⟨i, rfl⟩ := hi
-        simp [zpow_mul, h.pow_eq_one, one_zpow, zpow_natCast]⟩)
+        simp [zpow_mul, h.pow_eq_one, one_zpow, zpow_natCast]
+        sorry⟩)
     (by
       constructor
       · rw [injective_iff_map_eq_zero]

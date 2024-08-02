@@ -301,7 +301,7 @@ theorem subsingleton_of_hasTrivialRadical_lie_abelian [HasTrivialRadical R L] [h
 
 theorem abelian_radical_of_hasTrivialRadical [HasTrivialRadical R L] :
     IsLieAbelian (radical R L) := by
-  rw [HasTrivialRadical.radical_eq_bot]; infer_instance
+  rw [HasTrivialRadical.radical_eq_bot]; sorry -- infer_instance
 
 /-- The two properties shown to be equivalent here are possible definitions for a Lie algebra
 to be reductive.

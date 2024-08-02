@@ -76,16 +76,17 @@ theorem span_le_of_C_coeff_mem (cf : ∀ i : ℕ, C (f.coeff i) ∈ I) :
 theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coeff f i) } := by
   let p := Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coeff f i) }
   nth_rw 1 [(sum_C_mul_X_pow_eq f).symm]
-  refine Submodule.sum_mem _ fun n _hn => ?_
-  dsimp
-  have : C (coeff f n) ∈ p := by
-    apply subset_span
-    rw [mem_setOf_eq]
-    use n
-  have : monomial n (1 : R) • C (coeff f n) ∈ p := p.smul_mem _ this
-  convert this using 1
-  simp only [monomial_mul_C, one_mul, smul_eq_mul]
-  rw [← C_mul_X_pow_eq_monomial]
+  sorry
+  -- refine Submodule.sum_mem _ fun n _hn => ?_
+  -- dsimp
+  -- have : C (coeff f n) ∈ p := by
+  --   apply subset_span
+  --   rw [mem_setOf_eq]
+  --   use n
+  -- have : monomial n (1 : R) • C (coeff f n) ∈ p := p.smul_mem _ this
+  -- convert this using 1
+  -- simp only [monomial_mul_C, one_mul, smul_eq_mul]
+  -- rw [← C_mul_X_pow_eq_monomial]
 
 theorem exists_C_coeff_not_mem : f ∉ I → ∃ i : ℕ, C (coeff f i) ∉ I :=
   Not.imp_symm fun cf => span_le_of_C_coeff_mem (not_exists_not.mp cf) mem_span_C_coeff

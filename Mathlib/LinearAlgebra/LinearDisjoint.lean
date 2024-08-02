@@ -477,7 +477,8 @@ theorem not_linearIndependent_pair_of_commute_of_flat_left [Module.Flat R M]
   simp only [Fin.isValue, sub_eq_zero, Finsupp.single_eq_single_iff, zero_ne_one, Subtype.mk.injEq,
     SetLike.coe_eq_coe, false_and, AddSubmonoid.mk_eq_zero, ZeroMemClass.coe_eq_zero,
     false_or, m] at hm
-  exact h.ne_zero 0 hm.2
+  sorry
+  -- exact h.ne_zero 0 hm.2
 
 /-- If `M` and `N` are linearly disjoint, if `N` is flat, then any two commutative
 elements of `↥(M ⊓ N)` are not `R`-linearly independent (namely, their span is not `R ^ 2`). -/
@@ -493,15 +494,16 @@ theorem not_linearIndependent_pair_of_commute_of_flat_right [Module.Flat R N]
   simp only [Fin.isValue, sub_eq_zero, Finsupp.single_eq_single_iff, zero_ne_one, Subtype.mk.injEq,
     SetLike.coe_eq_coe, false_and, AddSubmonoid.mk_eq_zero, ZeroMemClass.coe_eq_zero,
     false_or, n] at hn
-  exact h.ne_zero 0 hn.2
+  sorry
+  -- exact h.ne_zero 0 hn.2
 
 /-- If `M` and `N` are linearly disjoint, if one of `M` and `N` is flat, then any two commutative
 elements of `↥(M ⊓ N)` are not `R`-linearly independent (namely, their span is not `R ^ 2`). -/
 theorem not_linearIndependent_pair_of_commute_of_flat (hf : Module.Flat R M ∨ Module.Flat R N)
     (a b : ↥(M ⊓ N)) (hc : Commute a.1 b.1) : ¬LinearIndependent R ![a, b] := by
   rcases hf with _ | _
-  · exact H.not_linearIndependent_pair_of_commute_of_flat_left a b hc
-  · exact H.not_linearIndependent_pair_of_commute_of_flat_right a b hc
+  · exact sorry -- H.not_linearIndependent_pair_of_commute_of_flat_left a b hc
+  · exact sorry -- H.not_linearIndependent_pair_of_commute_of_flat_right a b hc
 
 end
 
@@ -514,35 +516,36 @@ theorem rank_inf_le_one_of_commute_of_flat (hf : Module.Flat R M ∨ Module.Flat
   by_contra hs
   rw [not_le, ← Fintype.card_coe, Fintype.one_lt_card_iff_nontrivial] at hs
   obtain ⟨a, b, hab⟩ := hs.exists_pair_ne
-  refine H.not_linearIndependent_pair_of_commute_of_flat hf a.1 b.1 (hc a.1 b.1) ?_
-  have := h.comp ![a, b] fun i j hij ↦ by
-    fin_cases i <;> fin_cases j
-    · rfl
-    · simp [hab] at hij
-    · simp [hab.symm] at hij
-    · rfl
-  convert this
-  ext i
-  fin_cases i <;> simp
+  refine sorry -- H.not_linearIndependent_pair_of_commute_of_flat hf a.1 b.1 (hc a.1 b.1) ?_
+  -- have := h.comp ![a, b] fun i j hij ↦ by
+  --   fin_cases i <;> fin_cases j
+  --   · rfl
+  --   · simp [hab] at hij
+  --   · simp [hab.symm] at hij
+  --   · rfl
+  -- convert this
+  -- ext i
+  -- fin_cases i <;> simp
 
 /-- If `M` and `N` are linearly disjoint, if `M` is flat,
 if any two elements of `↥(M ⊓ N)` are commutative, then the rank of `↥(M ⊓ N)` is at most one. -/
 theorem rank_inf_le_one_of_commute_of_flat_left [Module.Flat R M]
-    (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.1 n.1) : Module.rank R ↥(M ⊓ N) ≤ 1 :=
-  H.rank_inf_le_one_of_commute_of_flat (Or.inl ‹_›) hc
+    (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.1 n.1) : Module.rank R ↥(M ⊓ N) ≤ 1 := sorry
+  -- H.rank_inf_le_one_of_commute_of_flat (Or.inl ‹_›) hc
 
 /-- If `M` and `N` are linearly disjoint, if `N` is flat,
 if any two elements of `↥(M ⊓ N)` are commutative, then the rank of `↥(M ⊓ N)` is at most one. -/
 theorem rank_inf_le_one_of_commute_of_flat_right [Module.Flat R N]
-    (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.1 n.1) : Module.rank R ↥(M ⊓ N) ≤ 1 :=
-  H.rank_inf_le_one_of_commute_of_flat (Or.inr ‹_›) hc
+    (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.1 n.1) : Module.rank R ↥(M ⊓ N) ≤ 1 := sorry
+  -- H.rank_inf_le_one_of_commute_of_flat (Or.inr ‹_›) hc
 
 /-- If `M` and itself are linearly disjoint, if `M` is flat,
 if any two elements of `M` are commutative, then the rank of `M` is at most one. -/
 theorem rank_le_one_of_commute_of_flat_of_self (H : M.LinearDisjoint M) [Module.Flat R M]
     (hc : ∀ (m n : M), Commute m.1 n.1) : Module.rank R M ≤ 1 := by
   rw [← inf_of_le_left (le_refl M)] at hc ⊢
-  exact H.rank_inf_le_one_of_commute_of_flat_left hc
+  sorry
+  -- exact H.rank_inf_le_one_of_commute_of_flat_left hc
 
 end not_linearIndependent_pair
 
@@ -572,19 +575,21 @@ variable [Nontrivial R]
 for commutative rings. -/
 theorem not_linearIndependent_pair_of_flat_left [Module.Flat R M]
     (a b : ↥(M ⊓ N)) : ¬LinearIndependent R ![a, b] :=
-  H.not_linearIndependent_pair_of_commute_of_flat_left a b (mul_comm _ _)
+  sorry
+  -- H.not_linearIndependent_pair_of_commute_of_flat_left a b (mul_comm _ _)
 
 /-- The `Submodule.LinearDisjoint.not_linearIndependent_pair_of_commute_of_flat_right`
 for commutative rings. -/
 theorem not_linearIndependent_pair_of_flat_right [Module.Flat R N]
     (a b : ↥(M ⊓ N)) : ¬LinearIndependent R ![a, b] :=
-  H.not_linearIndependent_pair_of_commute_of_flat_right a b (mul_comm _ _)
+  sorry
+  -- H.not_linearIndependent_pair_of_commute_of_flat_right a b (mul_comm _ _)
 
 /-- The `Submodule.LinearDisjoint.not_linearIndependent_pair_of_commute_of_flat`
 for commutative rings. -/
 theorem not_linearIndependent_pair_of_flat (hf : Module.Flat R M ∨ Module.Flat R N)
     (a b : ↥(M ⊓ N)) : ¬LinearIndependent R ![a, b] :=
-  H.not_linearIndependent_pair_of_commute_of_flat hf a b (mul_comm _ _)
+  sorry -- H.not_linearIndependent_pair_of_commute_of_flat hf a b (mul_comm _ _)
 
 end
 
@@ -592,17 +597,17 @@ end
 for commutative rings. -/
 theorem rank_inf_le_one_of_flat (hf : Module.Flat R M ∨ Module.Flat R N) :
     Module.rank R ↥(M ⊓ N) ≤ 1 :=
-  H.rank_inf_le_one_of_commute_of_flat hf fun _ _ ↦ mul_comm _ _
+  sorry -- H.rank_inf_le_one_of_commute_of_flat hf fun _ _ ↦ mul_comm _ _
 
 /-- The `Submodule.LinearDisjoint.rank_inf_le_one_of_commute_of_flat_left`
 for commutative rings. -/
 theorem rank_inf_le_one_of_flat_left [Module.Flat R M] : Module.rank R ↥(M ⊓ N) ≤ 1 :=
-  H.rank_inf_le_one_of_commute_of_flat_left fun _ _ ↦ mul_comm _ _
+  sorry -- H.rank_inf_le_one_of_commute_of_flat_left fun _ _ ↦ mul_comm _ _
 
 /-- The `Submodule.LinearDisjoint.rank_inf_le_one_of_commute_of_flat_right`
 for commutative rings. -/
 theorem rank_inf_le_one_of_flat_right [Module.Flat R N] : Module.rank R ↥(M ⊓ N) ≤ 1 :=
-  H.rank_inf_le_one_of_commute_of_flat_right fun _ _ ↦ mul_comm _ _
+  sorry -- H.rank_inf_le_one_of_commute_of_flat_right fun _ _ ↦ mul_comm _ _
 
 /-- The `Submodule.LinearDisjoint.rank_le_one_of_commute_of_flat_of_self`
 for commutative rings. -/

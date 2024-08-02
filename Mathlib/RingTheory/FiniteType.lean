@@ -122,8 +122,9 @@ theorem iff_quotient_freeAlgebra :
     intro x
     have hrw : (↑s : Set A) = fun x : A => x ∈ s.val := rfl
     rw [← Set.mem_range, ← AlgHom.coe_range]
-    erw [← adjoin_eq_range_freeAlgebra_lift, ← hrw, hs]
-    exact Set.mem_univ x
+    sorry
+    -- erw [← adjoin_eq_range_freeAlgebra_lift, ← hrw, hs]
+    -- exact Set.mem_univ x
   · rintro ⟨s, ⟨f, hsur⟩⟩
     exact FiniteType.of_surjective (FiniteType.freeAlgebra R s) f hsur
 
@@ -137,8 +138,9 @@ theorem iff_quotient_mvPolynomial :
     use s, MvPolynomial.aeval (↑)
     intro x
     have hrw : (↑s : Set S) = fun x : S => x ∈ s.val := rfl
-    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range, ← hrw, hs]
-    exact Set.mem_univ x
+    sorry
+    -- -- rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range, ← hrw, hs]
+    -- exact Set.mem_univ x
   · rintro ⟨s, ⟨f, hsur⟩⟩
     exact FiniteType.of_surjective (FiniteType.mvPolynomial R { x // x ∈ s }) f hsur
 

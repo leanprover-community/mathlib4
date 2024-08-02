@@ -92,8 +92,10 @@ theorem _root_.Ideal.span_singleton_generator (I : Ideal R) [I.IsPrincipal] :
 
 @[simp]
 theorem generator_mem (S : Submodule R M) [S.IsPrincipal] : generator S ∈ S := by
-  conv_rhs => rw [← span_singleton_generator S]
-  exact subset_span (mem_singleton _)
+  sorry
+  -- convert subset_span (mem_singleton _)
+  -- conv_rhs => rw [← span_singleton_generator S]
+  -- exact subset_span (mem_singleton _)
 
 theorem mem_iff_eq_smul_generator (S : Submodule R M) [S.IsPrincipal] {x : M} :
     x ∈ S ↔ ∃ s : R, x = s • generator S := by

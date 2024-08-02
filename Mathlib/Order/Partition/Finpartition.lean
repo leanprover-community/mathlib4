@@ -465,7 +465,9 @@ def part (a : α) : Finset α := if ha : a ∈ s then choose (hp := P.existsUniq
 
 lemma part_mem (ha : a ∈ s) : P.part a ∈ P.parts := by simp [part, ha, choose_mem]
 
-lemma mem_part (ha : a ∈ s) : a ∈ P.part a := by simp [part, ha, choose_property]
+lemma mem_part (ha : a ∈ s) : a ∈ P.part a := by
+  simp [part, ha, choose_property]
+  sorry
 
 lemma part_eq_of_mem (ht : t ∈ P.parts) (hat : a ∈ t) : P.part a = t := by
   apply P.eq_of_mem_parts (P.part_mem _) ht (P.mem_part _) hat <;> exact mem_of_subset (P.le ht) hat

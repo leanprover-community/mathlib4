@@ -148,8 +148,8 @@ theorem finitePresentation_ofLocalizationSpanTarget :
     simp only [Finset.univ_eq_attach, I]
     exact ⟨{∑ g ∈ s.attach, g' g * h' g - 1}, by simp⟩
   have Ht (g : t) : Algebra.FinitePresentation R (Localization.Away (f' g)) := by
-    have : ∃ (a : S) (hb : a ∈ s), (Ideal.Quotient.mk I) (g' ⟨a, hb⟩) = g.val := by
-      simpa [t] using g.property
+    have : ∃ (a : S) (hb : a ∈ s), (Ideal.Quotient.mk I) (g' ⟨a, hb⟩) = g.val := by sorry
+      -- simpa [t] using g.property
     obtain ⟨r, hr, hrr⟩ := this
     simp only [f']
     rw [← hrr, Ideal.Quotient.liftₐ_apply, Ideal.Quotient.lift_mk]

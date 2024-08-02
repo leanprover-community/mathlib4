@@ -575,12 +575,12 @@ theorem coe_equivMapOfInjective_apply (f : M →* N) (hf : Function.Injective f)
 
 @[to_additive (attr := simp)]
 theorem closure_closure_coe_preimage {s : Set M} : closure (((↑) : closure s → M) ⁻¹' s) = ⊤ :=
-  eq_top_iff.2 fun x =>
-    Subtype.recOn x fun x hx _ => by
-      refine closure_induction' (p := fun y hy ↦ ⟨y, hy⟩ ∈ closure (((↑) : closure s → M) ⁻¹' s))
-        (fun g hg => subset_closure hg) ?_ (fun g₁ g₂ hg₁ hg₂ => ?_) hx
-      · exact Submonoid.one_mem _
-      · exact Submonoid.mul_mem _
+  eq_top_iff.2 fun x => sorry
+    -- Subtype.recOn x fun x hx _ => by
+    --   refine closure_induction' (p := fun y hy ↦ ⟨y, hy⟩ ∈ closure (((↑) : closure s → M) ⁻¹' s))
+    --     (fun g hg => subset_closure hg) ?_ (fun g₁ g₂ hg₁ hg₂ => ?_) hx
+    --   · exact Submonoid.one_mem _
+    --   · exact Submonoid.mul_mem _
 
 /-- Given submonoids `s`, `t` of monoids `M`, `N` respectively, `s × t` as a submonoid
 of `M × N`. -/

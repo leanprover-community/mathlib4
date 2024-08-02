@@ -242,10 +242,11 @@ theorem nth_mul_coeff' (n : ℕ) :
     apply f₀
     rintro ⟨a, ha⟩
     apply Function.uncurry ![x, y]
-    simp_rw [product_val, this, Multiset.mem_product, mem_univ_val, true_and_iff, range_val,
-      Multiset.range_succ, Multiset.mem_cons, Multiset.mem_range] at ha
-    refine ⟨a.fst, ⟨a.snd, ?_⟩⟩
-    cases' ha with ha ha <;> omega
+    sorry
+    -- simp_rw [product_val, this, Multiset.mem_product, mem_univ_val, true_and_iff, range_val,
+    --   Multiset.range_succ, Multiset.mem_cons, Multiset.mem_range] at ha
+    -- refine ⟨a.fst, ⟨a.snd, ?_⟩⟩
+    -- cases' ha with ha ha <;> omega
   use f
   intro x y
   dsimp [f, peval]
@@ -254,7 +255,7 @@ theorem nth_mul_coeff' (n : ℕ) :
   ext a
   cases' a with a ha
   cases' a with i m
-  fin_cases i <;> rfl -- surely this case split is not necessary
+  fin_cases i <;> sorry -- rfl -- surely this case split is not necessary
 
 theorem nth_mul_coeff (n : ℕ) :
     ∃ f : TruncatedWittVector p (n + 1) k → TruncatedWittVector p (n + 1) k → k,

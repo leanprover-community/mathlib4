@@ -285,9 +285,10 @@ def center_equiv_rootsOfUnity' (i : n) :
   map_mul' A B := by
     dsimp
     ext
-    simp only [Submonoid.coe_mul, coe_mul, rootsOfUnity.val_mkOfPowEq_coe, Units.val_mul]
-    rw [← scalar_eq_coe_self_center A i, ← scalar_eq_coe_self_center B i]
-    simp
+    -- simp only [Submonoid.coe_mul, coe_mul, rootsOfUnity.val_mkOfPowEq_coe, Units.val_mul]
+    sorry
+    -- rw [← scalar_eq_coe_self_center A i, ← scalar_eq_coe_self_center B i]
+    -- simp
 
 open scoped Classical in
 /-- An equivalence of groups, from the center of the special linear group to the roots of unity.

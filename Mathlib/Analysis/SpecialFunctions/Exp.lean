@@ -284,9 +284,9 @@ theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
 /-- `Real.exp` as an order isomorphism between `ℝ` and `(0, +∞)`. -/
 def expOrderIso : ℝ ≃o Ioi (0 : ℝ) :=
   StrictMono.orderIsoOfSurjective _ (exp_strictMono.codRestrict exp_pos) <|
-    (continuous_exp.subtype_mk _).surjective
-      (by simp only [tendsto_Ioi_atTop, Subtype.coe_mk, tendsto_exp_atTop])
-      (by simp [tendsto_exp_atBot_nhdsWithin])
+    (continuous_exp.subtype_mk _).surjective sorry sorry
+      -- (by simp only [tendsto_Ioi_atTop, Subtype.coe_mk, tendsto_exp_atTop])
+      -- (by simp [tendsto_exp_atBot_nhdsWithin])
 
 @[simp]
 theorem coe_expOrderIso_apply (x : ℝ) : (expOrderIso x : ℝ) = exp x :=

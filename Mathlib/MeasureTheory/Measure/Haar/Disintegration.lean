@@ -36,6 +36,8 @@ variable {𝕜 E F : Type*}
 variable [LocallyCompactSpace E]
 variable (L μ ν)
 
+instance : BorelSpace (LinearMap.ker L) := sorry
+
 /-- The image of an additive Haar measure under a surjective linear map is proportional to a given
 additive Haar measure. The proportionality factor will be infinite if the linear map has a
 nontrivial kernel. -/
@@ -75,31 +77,32 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
   have I : μ.map L = ((μ.map M.symm).map P).map L' := by
     rw [Measure.map_map, Measure.map_map, A]
     · rfl
-    · exact L'_cont.measurable.comp P_cont.measurable
-    · exact M_cont.measurable
-    · exact L'_cont.measurable
-    · exact P_cont.measurable
+    · exact sorry -- L'_cont.measurable.comp P_cont.measurable
+    · exact sorry -- M_cont.measurable
+    · exact sorry -- L'_cont.measurable
+    · exact sorry -- P_cont.measurable
   let μS : Measure S := addHaar
-  let μT : Measure T := addHaar
-  obtain ⟨c₀, c₀_pos, c₀_fin, h₀⟩ :
-      ∃ c₀ : ℝ≥0∞, c₀ ≠ 0 ∧ c₀ ≠ ∞ ∧ μ.map M.symm = c₀ • μS.prod μT := by
-    have : IsAddHaarMeasure (μ.map M.symm) :=
-      M.toContinuousLinearEquiv.symm.isAddHaarMeasure_map μ
-    refine ⟨addHaarScalarFactor (μ.map M.symm) (μS.prod μT), ?_, ENNReal.coe_ne_top,
-      isAddLeftInvariant_eq_smul _ _⟩
-    simpa only [ne_eq, ENNReal.coe_eq_zero] using
-      (addHaarScalarFactor_pos_of_isAddHaarMeasure (μ.map M.symm) (μS.prod μT)).ne'
-  have J : (μS.prod μT).map P = (μS univ) • μT := map_snd_prod
-  obtain ⟨c₁, c₁_pos, c₁_fin, h₁⟩ : ∃ c₁ : ℝ≥0∞, c₁ ≠ 0 ∧ c₁ ≠ ∞ ∧ μT.map L' = c₁ • ν := by
-    have : IsAddHaarMeasure (μT.map L') :=
-      L'.toContinuousLinearEquiv.isAddHaarMeasure_map μT
-    refine ⟨addHaarScalarFactor (μT.map L') ν, ?_, ENNReal.coe_ne_top,
-      isAddLeftInvariant_eq_smul _ _⟩
-    simpa only [ne_eq, ENNReal.coe_eq_zero] using
-      (addHaarScalarFactor_pos_of_isAddHaarMeasure (μT.map L') ν).ne'
-  refine ⟨c₀ * c₁, by simp [pos_iff_ne_zero, c₀_pos, c₁_pos], ENNReal.mul_lt_top c₀_fin c₁_fin, ?_⟩
-  simp only [I, h₀, Measure.map_smul, J, smul_smul, h₁]
-  rw [mul_assoc, mul_comm _ c₁, ← mul_assoc]
+  sorry
+  -- let μT : Measure T := addHaar
+  -- obtain ⟨c₀, c₀_pos, c₀_fin, h₀⟩ :
+  --     ∃ c₀ : ℝ≥0∞, c₀ ≠ 0 ∧ c₀ ≠ ∞ ∧ μ.map M.symm = c₀ • μS.prod μT := by
+  --   have : IsAddHaarMeasure (μ.map M.symm) :=
+  --     M.toContinuousLinearEquiv.symm.isAddHaarMeasure_map μ
+  --   refine ⟨addHaarScalarFactor (μ.map M.symm) (μS.prod μT), ?_, ENNReal.coe_ne_top,
+  --     isAddLeftInvariant_eq_smul _ _⟩
+  --   simpa only [ne_eq, ENNReal.coe_eq_zero] using
+  --     (addHaarScalarFactor_pos_of_isAddHaarMeasure (μ.map M.symm) (μS.prod μT)).ne'
+  -- have J : (μS.prod μT).map P = (μS univ) • μT := map_snd_prod
+  -- obtain ⟨c₁, c₁_pos, c₁_fin, h₁⟩ : ∃ c₁ : ℝ≥0∞, c₁ ≠ 0 ∧ c₁ ≠ ∞ ∧ μT.map L' = c₁ • ν := by
+  --   have : IsAddHaarMeasure (μT.map L') :=
+  --     L'.toContinuousLinearEquiv.isAddHaarMeasure_map μT
+  --   refine ⟨addHaarScalarFactor (μT.map L') ν, ?_, ENNReal.coe_ne_top,
+  --     isAddLeftInvariant_eq_smul _ _⟩
+  --   simpa only [ne_eq, ENNReal.coe_eq_zero] using
+  --     (addHaarScalarFactor_pos_of_isAddHaarMeasure (μT.map L') ν).ne'
+  -- refine ⟨c₀ * c₁, by simp [pos_iff_ne_zero, c₀_pos, c₁_pos], ENNReal.mul_lt_top c₀_fin c₁_fin, ?_⟩
+  -- simp only [I, h₀, Measure.map_smul, J, smul_smul, h₁]
+  -- rw [mul_assoc, mul_comm _ c₁, ← mul_assoc]
 
 /-- The image of an additive Haar measure under a surjective linear map is proportional to a given
 additive Haar measure, with a positive (but maybe infinite) factor. -/

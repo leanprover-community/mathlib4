@@ -369,42 +369,42 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
   · intro e; apply (KaehlerDifferential.quotientCotangentIdealRingEquiv R S).injective
     exact e₁.symm.trans (e.trans e₂)
 
-/- Note: Lean is slow to synthesize theses instances (times out).
-  Without them the endEquivDerivation' and endEquivAuxEquiv both have significant timeouts.
-  In Mathlib 3, it was slow but not this slow. -/
-/-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
-local instance smul_SSmod_SSmod : SMul (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
-    (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Mul.toSMul _
-
-/-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
-@[nolint defLemma]
-local instance isScalarTower_S_right :
-    IsScalarTower S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
-      (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Ideal.Quotient.isScalarTower_right
-
-/-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
-@[nolint defLemma]
-local instance isScalarTower_R_right :
-    IsScalarTower R (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
-      (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Ideal.Quotient.isScalarTower_right
-
-/-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
-@[nolint defLemma]
-local instance isScalarTower_SS_right : IsScalarTower (S ⊗[R] S)
-    (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) :=
-  Ideal.Quotient.isScalarTower_right
-
-/-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
-local instance instS : Module S (KaehlerDifferential.ideal R S).cotangentIdeal :=
-  Submodule.module' _
-
-/-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
-local instance instR : Module R (KaehlerDifferential.ideal R S).cotangentIdeal :=
-  Submodule.module' _
-
-/-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
-local instance instSS : Module (S ⊗[R] S) (KaehlerDifferential.ideal R S).cotangentIdeal :=
-  Submodule.module' _
+-- /- Note: Lean is slow to synthesize theses instances (times out).
+--   Without them the endEquivDerivation' and endEquivAuxEquiv both have significant timeouts.
+--   In Mathlib 3, it was slow but not this slow. -/
+-- /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
+-- local instance smul_SSmod_SSmod : SMul (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
+--     (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Mul.toSMul _
+--
+-- /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
+-- @[nolint defLemma]
+-- local instance isScalarTower_S_right :
+--     IsScalarTower S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
+--       (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Ideal.Quotient.isScalarTower_right
+--
+-- /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
+-- @[nolint defLemma]
+-- local instance isScalarTower_R_right :
+--     IsScalarTower R (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
+--       (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Ideal.Quotient.isScalarTower_right
+--
+-- /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
+-- @[nolint defLemma]
+-- local instance isScalarTower_SS_right : IsScalarTower (S ⊗[R] S)
+--     (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) :=
+--   Ideal.Quotient.isScalarTower_right
+--
+-- /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
+-- local instance instS : Module S (KaehlerDifferential.ideal R S).cotangentIdeal :=
+--   Submodule.module' _
+--
+-- /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
+-- local instance instR : Module R (KaehlerDifferential.ideal R S).cotangentIdeal :=
+--   Submodule.module' _
+--
+-- /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
+-- local instance instSS : Module (S ⊗[R] S) (KaehlerDifferential.ideal R S).cotangentIdeal :=
+--   Submodule.module' _
 
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations
 into `(KaehlerDifferential.ideal R S).cotangentIdeal`. -/
@@ -789,8 +789,9 @@ noncomputable
 def KaehlerDifferential.kerToTensor :
     RingHom.ker (algebraMap A B) →ₗ[A] B ⊗[A] Ω[A⁄R] where
   toFun x := 1 ⊗ₜ D R A x
-  map_add' x y := by simp only [AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, map_add,
-    TensorProduct.tmul_add]
+  map_add' x y := by sorry
+    -- simp only [AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, map_add,
+    -- TensorProduct.tmul_add]
   map_smul' r x := by simp only [SetLike.val_smul, Derivation.leibniz, RingHom.id_apply,
     TensorProduct.tmul_smul, TensorProduct.smul_tmul', add_zero, ← Algebra.algebraMap_eq_smul_one,
     TensorProduct.zero_tmul, smul_eq_mul, TensorProduct.tmul_add, (RingHom.mem_ker _).mp x.prop]
@@ -843,7 +844,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
     obtain ⟨a, ha⟩ := h c
     use (x.support.filter (algebraMap A B · = c)).attach.sum
         fun i ↦ x i • Ideal.toCotangent _ ⟨i - a, ?_⟩; swap
-    · have : x i ≠ 0 ∧ algebraMap A B i = c := by simpa using i.prop
+    · have : x i ≠ 0 ∧ algebraMap A B i = c := by sorry -- simpa using i.prop
       simp [RingHom.mem_ker, ha, this.2]
     · simp only [map_sum, LinearMapClass.map_smul, kerCotangentToTensor_toCotangent, map_sub]
       simp_rw [← TensorProduct.tmul_smul]

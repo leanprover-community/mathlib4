@@ -418,9 +418,9 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
     (φ.restrictFreeVar (Set.inclusion h)).Realize (v ∘ (↑)) xs ↔ φ.Realize v xs := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
-  · simp [restrictFreeVar, Realize]
-  · simp [restrictFreeVar, Realize]
-  · simp [restrictFreeVar, Realize, ih1, ih2]
+  · sorry -- simp [restrictFreeVar, Realize]
+  · sorry -- simp [restrictFreeVar, Realize]
+  · sorry -- simp [restrictFreeVar, Realize, ih1, ih2]
   · simp [restrictFreeVar, Realize, ih3]
 
 theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]

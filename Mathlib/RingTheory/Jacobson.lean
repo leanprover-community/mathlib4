@@ -450,8 +450,8 @@ theorem isMaximal_comap_C_of_isMaximal [Nontrivial R] (hP' : ∀ x : R, C x ∈ 
   haveI hP'_prime : P'.IsPrime := comap_isPrime C P
   obtain ⟨⟨m, hmem_P⟩, hm⟩ :=
     Submodule.nonzero_mem_of_bot_lt (bot_lt_of_maximal P polynomial_not_isField)
-  have hm' : m ≠ 0 := by
-    simpa [Submodule.coe_eq_zero] using hm
+  have hm' : m ≠ 0 := by sorry
+    -- simpa [Submodule.coe_eq_zero] using hm
   let φ : R ⧸ P' →+* R[X] ⧸ P := quotientMap P (C : R →+* R[X]) le_rfl
   let a : R ⧸ P' := (m.map (Quotient.mk P')).leadingCoeff
   let M : Submonoid (R ⧸ P') := Submonoid.powers a

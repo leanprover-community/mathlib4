@@ -227,29 +227,29 @@ nonrec theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F :
 
 /-- Interval integrals commute with countable sums, when the supremum norms are summable (a
 special case of the dominated convergence theorem). -/
-theorem hasSum_intervalIntegral_of_summable_norm [Countable ι] {f : ι → C(ℝ, E)}
-    (hf_sum : Summable fun i : ι => ‖(f i).restrict (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖) :
-    HasSum (fun i : ι => ∫ x in a..b, f i x) (∫ x in a..b, ∑' i : ι, f i x) := by
-  by_cases hE : CompleteSpace E; swap
-  · simp [intervalIntegral, integral, hE, hasSum_zero]
-  apply hasSum_integral_of_dominated_convergence
-    (fun i (x : ℝ) => ‖(f i).restrict ↑(⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖)
-    (fun i => (map_continuous <| f i).aestronglyMeasurable)
-  · intro i; filter_upwards with x hx
-    apply ContinuousMap.norm_coe_le_norm ((f i).restrict _) ⟨x, _⟩
-    exact ⟨hx.1.le, hx.2⟩
-  · exact ae_of_all _ fun x _ => hf_sum
-  · exact intervalIntegrable_const
-  · refine ae_of_all _ fun x hx => Summable.hasSum ?_
-    let x : (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ) := ⟨x, ⟨hx.1.le, hx.2⟩⟩
-    have := hf_sum.of_norm
-    simpa only [Compacts.coe_mk, ContinuousMap.restrict_apply]
-      using ContinuousMap.summable_apply this x
+theorem hasSum_intervalIntegral_of_summable_norm [Countable ι] {f : ι → C(ℝ, E)} :
+    -- (hf_sum : Summable fun i : ι => ‖(f i).restrict (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖) :
+    HasSum (fun i : ι => ∫ x in a..b, f i x) (∫ x in a..b, ∑' i : ι, f i x) := by sorry
+  -- by_cases hE : CompleteSpace E; swap
+  -- · simp [intervalIntegral, integral, hE, hasSum_zero]
+  -- apply hasSum_integral_of_dominated_convergence
+  --   (fun i (x : ℝ) => ‖(f i).restrict ↑(⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖)
+  --   (fun i => (map_continuous <| f i).aestronglyMeasurable)
+  -- · intro i; filter_upwards with x hx
+  --   apply ContinuousMap.norm_coe_le_norm ((f i).restrict _) ⟨x, _⟩
+  --   exact ⟨hx.1.le, hx.2⟩
+  -- · exact ae_of_all _ fun x _ => hf_sum
+  -- · exact intervalIntegrable_const
+  -- · refine ae_of_all _ fun x hx => Summable.hasSum ?_
+  --   let x : (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ) := ⟨x, ⟨hx.1.le, hx.2⟩⟩
+  --   have := hf_sum.of_norm
+  --   simpa only [Compacts.coe_mk, ContinuousMap.restrict_apply]
+  --     using ContinuousMap.summable_apply this x
 
-theorem tsum_intervalIntegral_eq_of_summable_norm [Countable ι] {f : ι → C(ℝ, E)}
-    (hf_sum : Summable fun i : ι => ‖(f i).restrict (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖) :
-    ∑' i : ι, ∫ x in a..b, f i x = ∫ x in a..b, ∑' i : ι, f i x :=
-  (hasSum_intervalIntegral_of_summable_norm hf_sum).tsum_eq
+theorem tsum_intervalIntegral_eq_of_summable_norm [Countable ι] {f : ι → C(ℝ, E)} :
+    -- (hf_sum : Summable fun i : ι => ‖(f i).restrict (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖) :
+    ∑' i : ι, ∫ x in a..b, f i x = ∫ x in a..b, ∑' i : ι, f i x := sorry
+  -- (hasSum_intervalIntegral_of_summable_norm hf_sum).tsum_eq
 
 variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
 

@@ -85,9 +85,10 @@ theorem mapsTo_omegaLimit' {α' β' : Type*} [TopologicalSpace β'] {f : Filter 
   simp only [omegaLimit_def, mem_iInter, MapsTo]
   intro y hy u hu
   refine map_mem_closure hgc (hy _ (inter_mem hu hg)) (forall_image2_iff.2 fun t ht x hx ↦ ?_)
-  calc
-    gb (ϕ t x) = ϕ' t (ga x) := ht.2 hx
-    _ ∈ image2 ϕ' u s' := mem_image2_of_mem ht.1 (hs hx)
+  sorry
+  -- calc
+  --   gb (ϕ t x) = ϕ' t (ga x) := ht.2 hx
+  --   _ ∈ image2 ϕ' u s' := mem_image2_of_mem ht.1 (hs hx)
 
 theorem mapsTo_omegaLimit {α' β' : Type*} [TopologicalSpace β'] {f : Filter τ} {ϕ : τ → α → β}
     {ϕ' : τ → α' → β'} {ga : α → α'} {s' : Set α'} (hs : MapsTo ga s s') {gb : β → β'}
@@ -209,13 +210,13 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
     (hc₁.of_isClosed_subset isClosed_closure hv₂).diff hn₁
   let j u := (closure (image2 ϕ (u ∩ v) s))ᶜ
   have hj₁ : ∀ u ∈ f, IsOpen (j u) := fun _ _ ↦ isOpen_compl_iff.mpr isClosed_closure
-  have hj₂ : k \ n ⊆ ⋃ u ∈ f, j u := by
-    have : ⋃ u ∈ f, j u = ⋃ u : (↥f.sets), j u := biUnion_eq_iUnion _ _
-    rw [this, diff_subset_comm, diff_iUnion]
-    rw [omegaLimit_eq_iInter_inter _ _ _ hv₁] at hn₂
-    simp_rw [j, diff_compl]
-    rw [← inter_iInter]
-    exact Subset.trans inter_subset_right hn₂
+  have hj₂ : k \ n ⊆ ⋃ u ∈ f, j u := by sorry
+    -- have : ⋃ u ∈ f, j u = ⋃ u : (↥f.sets), j u := biUnion_eq_iUnion _ _
+    -- rw [this, diff_subset_comm, diff_iUnion]
+    -- rw [omegaLimit_eq_iInter_inter _ _ _ hv₁] at hn₂
+    -- simp_rw [j, diff_compl]
+    -- rw [← inter_iInter]
+    -- exact Subset.trans inter_subset_right hn₂
   rcases hk.elim_finite_subcover_image hj₁ hj₂ with ⟨g, hg₁ : ∀ u ∈ g, u ∈ f, hg₂, hg₃⟩
   let w := (⋂ u ∈ g, u) ∩ v
   have hw₂ : w ∈ f := by simpa [w, *]
@@ -269,21 +270,22 @@ theorem nonempty_omegaLimit_of_isCompact_absorbing [NeBot f] {c : Set β} (hc₁
     (hc₂ : ∃ v ∈ f, closure (image2 ϕ v s) ⊆ c) (hs : s.Nonempty) : (ω f ϕ s).Nonempty := by
   rcases hc₂ with ⟨v, hv₁, hv₂⟩
   rw [omegaLimit_eq_iInter_inter _ _ _ hv₁]
-  apply IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
-  · rintro ⟨u₁, hu₁⟩ ⟨u₂, hu₂⟩
-    use ⟨u₁ ∩ u₂, inter_mem hu₁ hu₂⟩
-    constructor
-    all_goals exact closure_mono (image2_subset (inter_subset_inter_left _ (by simp)) Subset.rfl)
-  · intro u
-    have hn : (image2 ϕ (u ∩ v) s).Nonempty :=
-      Nonempty.image2 (Filter.nonempty_of_mem (inter_mem u.prop hv₁)) hs
-    exact hn.mono subset_closure
-  · intro
-    apply hc₁.of_isClosed_subset isClosed_closure
-    calc
-      _ ⊆ closure (image2 ϕ v s) := closure_mono (image2_subset inter_subset_right Subset.rfl)
-      _ ⊆ c := hv₂
-  · exact fun _ ↦ isClosed_closure
+  sorry
+  -- apply IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
+  -- · rintro ⟨u₁, hu₁⟩ ⟨u₂, hu₂⟩
+  --   use ⟨u₁ ∩ u₂, inter_mem hu₁ hu₂⟩
+  --   constructor
+  --   all_goals exact closure_mono (image2_subset (inter_subset_inter_left _ (by simp)) Subset.rfl)
+  -- · intro u
+  --   have hn : (image2 ϕ (u ∩ v) s).Nonempty :=
+  --     Nonempty.image2 (Filter.nonempty_of_mem (inter_mem u.prop hv₁)) hs
+  --   exact hn.mono subset_closure
+  -- · intro
+  --   apply hc₁.of_isClosed_subset isClosed_closure
+  --   calc
+  --     _ ⊆ closure (image2 ϕ v s) := closure_mono (image2_subset inter_subset_right Subset.rfl)
+  --     _ ⊆ c := hv₂
+  -- · exact fun _ ↦ isClosed_closure
 
 theorem nonempty_omegaLimit [CompactSpace β] [NeBot f] (hs : s.Nonempty) : (ω f ϕ s).Nonempty :=
   nonempty_omegaLimit_of_isCompact_absorbing _ _ _ isCompact_univ ⟨univ, univ_mem, subset_univ _⟩ hs

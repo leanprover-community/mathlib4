@@ -196,8 +196,8 @@ theorem Subset.congr_right : ∀ {x y z : PSet}, Equiv x y → (z ⊆ x ↔ z �
 protected def Mem (x y : PSet.{u}) : Prop :=
   ∃ b, Equiv x (y.Func b)
 
-instance : Membership PSet PSet :=
-  ⟨PSet.Mem⟩
+instance : Membership PSet PSet where
+  mem y x := PSet.Mem x y
 
 theorem Mem.mk {α : Type u} (A : α → PSet) (a : α) : A a ∈ mk α A :=
   ⟨a, Equiv.refl (A a)⟩
@@ -254,10 +254,10 @@ instance : IsIrrefl PSet (· ∈ ·) :=
   mem_wf.isIrrefl
 
 theorem mem_asymm {x y : PSet} : x ∈ y → y ∉ x :=
-  asymm
+  asymm (r := (· ∈ ·))
 
 theorem mem_irrefl (x : PSet) : x ∉ x :=
-  irrefl x
+  irrefl (r := (· ∈ ·)) x
 
 /-- Convert a pre-set to a `Set` of pre-sets. -/
 def toSet (u : PSet.{u}) : Set PSet.{u} :=
@@ -581,8 +581,8 @@ protected def Mem : ZFSet → ZFSet → Prop :=
   Quotient.lift₂ PSet.Mem fun _ _ _ _ hx hy =>
     propext ((Mem.congr_left hx).trans (Mem.congr_right hy))
 
-instance : Membership ZFSet ZFSet :=
-  ⟨ZFSet.Mem⟩
+instance : Membership ZFSet ZFSet where
+  mem s₂ s₁ := ZFSet.Mem s₁ s₂
 
 @[simp]
 theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
@@ -1002,10 +1002,10 @@ instance : IsIrrefl ZFSet (· ∈ ·) :=
   mem_wf.isIrrefl
 
 theorem mem_asymm {x y : ZFSet} : x ∈ y → y ∉ x :=
-  asymm
+  asymm (r := (· ∈ ·))
 
 theorem mem_irrefl (x : ZFSet) : x ∉ x :=
-  irrefl x
+  irrefl (r := (· ∈ ·)) x
 
 theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ :=
   by_contradiction fun ne =>
@@ -1250,8 +1250,8 @@ def ToSet (B : Class.{u}) (A : Class.{u}) : Prop :=
 protected def Mem (A B : Class.{u}) : Prop :=
   ToSet.{u} B A
 
-instance : Membership Class Class :=
-  ⟨Class.Mem⟩
+instance : Membership Class Class where
+  mem c₂ c₁ := Class.Mem c₁ c₂
 
 theorem mem_def (A B : Class.{u}) : A ∈ B ↔ ∃ x : ZFSet, ↑x = A ∧ B x :=
   Iff.rfl
@@ -1298,10 +1298,10 @@ instance : IsIrrefl Class (· ∈ ·) :=
   mem_wf.isIrrefl
 
 theorem mem_asymm {x y : Class} : x ∈ y → y ∉ x :=
-  asymm
+  asymm (r := (· ∈ ·))
 
 theorem mem_irrefl (x : Class) : x ∉ x :=
-  irrefl x
+  irrefl (r := (· ∈ ·)) x
 
 /-- **There is no universal set.**
 This is stated as `univ ∉ univ`, meaning that `univ` (the class of all sets) is proper (does not
