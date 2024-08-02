@@ -175,7 +175,7 @@ theorem isPartitionSplit (I : Box ι) (i : ι) (x : ℝ) : IsPartition (split I 
 -- Porting note: In the type, changed `Option.elim` to `Option.elim'`
 theorem sum_split_boxes {M : Type*} [AddCommMonoid M] (I : Box ι) (i : ι) (x : ℝ) (f : Box ι → M) :
     (∑ J ∈ (split I i x).boxes, f J) =
-      (I.splitLower i x).elim' 0 f + (I.splitUpper i x).elim' 0 f := by
+      (I.splitLower i x).elim 0 f + (I.splitUpper i x).elim 0 f := by
   rw [split, sum_ofWithBot, Finset.sum_pair (I.splitLower_ne_splitUpper i x)]
 
 /-- If `x ∉ (I.lower i, I.upper i)`, then the hyperplane `{y | y i = x}` does not split `I`. -/

@@ -102,7 +102,7 @@ instance : AddCommMonoid (ι →ᵇᵃ[I₀] M) :=
 
 @[simp]
 theorem map_split_add (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) (i : ι) (x : ℝ) :
-    (I.splitLower i x).elim' 0 f + (I.splitUpper i x).elim' 0 f = f I := by
+    (I.splitLower i x).elim 0 f + (I.splitUpper i x).elim 0 f = f I := by
   rw [← f.sum_partition_boxes hI (isPartitionSplit I i x), sum_split_boxes]
 
 /-- If `f` is box-additive on subboxes of `I₀`, then it is box-additive on subboxes of any

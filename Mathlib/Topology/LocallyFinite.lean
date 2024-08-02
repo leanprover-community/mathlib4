@@ -201,6 +201,12 @@ theorem locallyFinite_option {f : Option ι → Set X} :
   simp only [locallyFinite_of_finite, and_true]
   rfl
 
+theorem LocallyFinite.option_elim (hf : LocallyFinite f) (s : Set X) :
+    LocallyFinite (Option.elim · s f) :=
+  locallyFinite_option.2 hf
+
+set_option linter.deprecated false in
+@[deprecated LocallyFinite.option_elim (since := "2024-08-02")]
 theorem LocallyFinite.option_elim' (hf : LocallyFinite f) (s : Set X) :
     LocallyFinite (Option.elim' s f) :=
   locallyFinite_option.2 hf

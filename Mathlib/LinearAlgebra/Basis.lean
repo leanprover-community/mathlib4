@@ -1442,7 +1442,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     rw [linearIndependent_iff]
     intro l z
     rw [Finsupp.total_option] at z
-    simp only [v', Option.elim'] at z
+    simp only [v', Option.elim] at z
     change _ + Finsupp.total κ M R v l.some = 0 at z
     -- We have some linear combination of `b b'` and the `v i`, which we want to show is trivial.
     -- We'll first show the coefficient of `b b'` is zero,

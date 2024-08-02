@@ -126,11 +126,11 @@ that states existence of Lagrange multipliers `Λ` and `Λ₀` instead of using
 theorem IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt {ι : Type*} [Finite ι] {f : ι → E → ℝ}
     {f' : ι → E →L[ℝ] ℝ} (hextr : IsLocalExtrOn φ {x | ∀ i, f i x = f i x₀} x₀)
     (hf' : ∀ i, HasStrictFDerivAt (f i) (f' i) x₀) (hφ' : HasStrictFDerivAt φ φ' x₀) :
-    ¬LinearIndependent ℝ (Option.elim' φ' f' : Option ι → E →L[ℝ] ℝ) := by
+    ¬LinearIndependent ℝ (fun i : Option ι ↦ i.elim φ' f') := by
   cases nonempty_fintype ι
   rw [Fintype.linearIndependent_iff]; push_neg
   rcases hextr.exists_multipliers_of_hasStrictFDerivAt hf' hφ' with ⟨Λ, Λ₀, hΛ, hΛf⟩
-  refine ⟨Option.elim' Λ₀ Λ, ?_, ?_⟩
+  refine ⟨(Option.elim · Λ₀ Λ), ?_, ?_⟩
   · simpa [add_comm] using hΛf
   · simpa only [Function.funext_iff, not_and_or, or_comm, Option.exists, Prod.mk_eq_zero, Ne,
       not_forall] using hΛ
