@@ -71,7 +71,6 @@ example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (
     _ =O[L] fun x' => f x' - f x - f' (x' - x) := g'.isBigO_comp _ _
     _ =o[L] fun x' => x' - x := hf.isLittleO
 
-@[fun_prop]
 theorem HasFDerivWithinAt.comp {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
     (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivWithinAt f f' s x) (hst : MapsTo f s t) :
     HasFDerivWithinAt (g ∘ f) (g'.comp f') s x :=
@@ -95,7 +94,6 @@ theorem HasFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAt g
     (hf : HasFDerivAt f f' x) : HasFDerivAt (g ∘ f) (g'.comp f') x :=
   HasFDerivAtFilter.comp x hg hf hf.continuousAt
 
-@[fun_prop]
 theorem DifferentiableWithinAt.comp {g : F → G} {t : Set F}
     (hg : DifferentiableWithinAt 𝕜 g t (f x)) (hf : DifferentiableWithinAt 𝕜 f s x)
     (h : MapsTo f s t) : DifferentiableWithinAt 𝕜 (g ∘ f) s x :=
@@ -152,7 +150,6 @@ theorem fderiv.comp_fderivWithin {g : F → G} (hg : DifferentiableAt 𝕜 g (f 
     fderivWithin 𝕜 (g ∘ f) s x = (fderiv 𝕜 g (f x)).comp (fderivWithin 𝕜 f s x) :=
   (hg.hasFDerivAt.comp_hasFDerivWithinAt x hf.hasFDerivWithinAt).fderivWithin hxs
 
-@[fun_prop]
 theorem DifferentiableOn.comp {g : F → G} {t : Set F} (hg : DifferentiableOn 𝕜 g t)
     (hf : DifferentiableOn 𝕜 f s) (st : MapsTo f s t) : DifferentiableOn 𝕜 (g ∘ f) s :=
   fun x hx => DifferentiableWithinAt.comp x (hg (f x) (st hx)) (hf x hx) st
