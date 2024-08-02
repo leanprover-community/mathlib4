@@ -943,6 +943,9 @@ noncomputable instance (n : ℤ) : (hP.truncGE n).IsTriangulated where
         conv_rhs => rw [← assoc, ← this, ex.choose_spec, Iso.refl_hom]; erw [comp_id]
     exact isomorphic_distinguished _ hGT _ e.symm
 
+noncomputable instance (n : ℤ) : (hP.truncGT n).IsTriangulated := by
+  dsimp [truncGT]; infer_instance
+
 end FilteredTriangulated
 
 end Triangulated
