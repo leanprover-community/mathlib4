@@ -26,9 +26,9 @@ universe v u
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits
+open CategoryTheory Limits
 
-open CategoryTheory.IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
+open IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
 
 namespace Grp.FilteredColimits
 
