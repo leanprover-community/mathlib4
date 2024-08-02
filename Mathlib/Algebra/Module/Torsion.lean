@@ -357,10 +357,10 @@ variable {R M}
 section Coprime
 
 variable {ι : Type*} {p : ι → Ideal R} {S : Finset ι}
-variable (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤)
 
 -- Porting note: mem_iSup_finset_iff_exists_sum now requires DecidableEq ι
-theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf :
+theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf
+    (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤) :
     ⨆ i ∈ S, torsionBySet R M (p i) = torsionBySet R M ↑(⨅ i ∈ S, p i) := by
   rcases S.eq_empty_or_nonempty with h | h
   · simp only [h]
@@ -396,7 +396,8 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf :
     · rw [← Finset.sum_smul, hμ, one_smul]
 
 -- Porting note: iSup_torsionBySet_ideal_eq_torsionBySet_iInf now requires DecidableEq ι
-theorem supIndep_torsionBySet_ideal : S.SupIndep fun i => torsionBySet R M <| p i :=
+theorem supIndep_torsionBySet_ideal (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤) :
+    S.SupIndep fun i => torsionBySet R M <| p i :=
   fun T hT i hi hiT => by
   rw [disjoint_iff, Finset.sup_eq_iSup,
     iSup_torsionBySet_ideal_eq_torsionBySet_iInf fun i hi j hj ij => hp (hT hi) (hT hj) ij]
@@ -406,9 +407,9 @@ theorem supIndep_torsionBySet_ideal : S.SupIndep fun i => torsionBySet R M <| p 
   rw [← this, Ideal.sup_iInf_eq_top, top_coe, torsionBySet_univ]
   intro j hj; apply hp hi (hT hj); rintro rfl; exact hiT hj
 
-variable {q : ι → R} (hq : (S : Set ι).Pairwise <| (IsCoprime on q))
+variable {q : ι → R}
 
-theorem iSup_torsionBy_eq_torsionBy_prod :
+theorem iSup_torsionBy_eq_torsionBy_prod (hq : (S : Set ι).Pairwise <| (IsCoprime on q)) :
     ⨆ i ∈ S, torsionBy R M (q i) = torsionBy R M (∏ i ∈ S, q i) := by
   rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ←
     Ideal.finset_inf_span_singleton _ _ hq, Finset.inf_eq_iInf, ←
@@ -420,7 +421,8 @@ theorem iSup_torsionBy_eq_torsionBy_prod :
     exact (torsionBySet_span_singleton_eq _).symm
   exact fun i hi j hj ij => (Ideal.sup_eq_top_iff_isCoprime _ _).mpr (hq hi hj ij)
 
-theorem supIndep_torsionBy : S.SupIndep fun i => torsionBy R M <| q i := by
+theorem supIndep_torsionBy (hq : (S : Set ι).Pairwise <| (IsCoprime on q)) :
+    S.SupIndep fun i => torsionBy R M <| q i := by
   convert supIndep_torsionBySet_ideal (M := M) fun i hi j hj ij =>
       (Ideal.sup_eq_top_iff_isCoprime (q i) _).mpr <| hq hi hj ij
   exact (torsionBySet_span_singleton_eq (R := R) (M := M) _).symm
