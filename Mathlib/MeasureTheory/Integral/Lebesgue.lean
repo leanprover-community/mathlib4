@@ -769,16 +769,20 @@ theorem lintegral_indicator (f : α → ℝ≥0∞) {s : Set α} (hs : Measurabl
   refine ⟨⟨φ.restrict s, fun x => ?_⟩, le_rfl⟩
   simp [hφ x, hs, indicator_le_indicator]
 
-lemma setLintegral_indicator (f : α → ℝ≥0∞) {s t : Set α} (hs : MeasurableSet s)
-    (ht : MeasurableSet t) : ∫⁻ a in t, s.indicator f a ∂μ = ∫⁻ a in s ∩ t, f a ∂μ := by
-  rw [← lintegral_indicator, ← lintegral_indicator, indicator_indicator, inter_comm] <;>
-    measurability
+lemma setLintegral_indicator (f : α → ℝ≥0∞) {s t : Set α} (hs : MeasurableSet s) :
+    ∫⁻ a in t, s.indicator f a ∂μ = ∫⁻ a in s ∩ t, f a ∂μ := by
+  rw [lintegral_indicator _ hs, Measure.restrict_restrict hs]
 
 theorem lintegral_indicator₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMeasurableSet s μ) :
     ∫⁻ a, s.indicator f a ∂μ = ∫⁻ a in s, f a ∂μ := by
   rw [← lintegral_congr_ae (indicator_ae_eq_of_ae_eq_set hs.toMeasurable_ae_eq),
     lintegral_indicator _ (measurableSet_toMeasurable _ _),
     Measure.restrict_congr_set hs.toMeasurable_ae_eq]
+
+lemma setLintegral_indicator₀ (f : α → ℝ≥0∞) {s t : Set α}
+    (hs : NullMeasurableSet s (μ.restrict t)) :
+    ∫⁻ a in t, s.indicator f a ∂μ = ∫⁻ a in s ∩ t, f a ∂μ := by
+  rw [lintegral_indicator₀ _ hs, Measure.restrict_restrict₀ hs]
 
 theorem lintegral_indicator_const_le (s : Set α) (c : ℝ≥0∞) :
     ∫⁻ a, s.indicator (fun _ => c) a ∂μ ≤ c * μ s :=
