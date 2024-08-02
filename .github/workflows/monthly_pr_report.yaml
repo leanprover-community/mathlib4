@@ -21,6 +21,7 @@ jobs:
 
       - uses: actions/checkout@v4
         with:
+          repository: mathlib4
           fetch-depth: 0
           ref: master
 
