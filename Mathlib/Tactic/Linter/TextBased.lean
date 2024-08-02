@@ -129,15 +129,15 @@ inductive ComparisonResult
 
 /-- Determine whether a `new` `ErrorContext` is covered by an `existing` exception,
 and, if it is, if we prefer replacing the new exception or keeping the previous one. -/
-def compare (existing new : ErrorContext) : ComparisonResult := Id.run do
+def compare (existing new : ErrorContext) : ComparisonResult :=
   -- Two comparable error contexts must have the same path.
   if existing.path != new.path then
-    return ComparisonResult.Different
+    ComparisonResult.Different
   -- We entirely ignore their line numbers: not sure if this is best.
 
   -- NB: keep the following in sync with `parse?_errorContext` below.
   -- Generally, comparable errors must have equal `StyleError`s, but there are some exceptions.
-  match (existing.error, new.error) with
+  else match (existing.error, new.error) with
     -- File length errors are the biggest exceptions: generally, we prefer to keep the
     -- existing entry, *except* when a newer entry is much shorter.
   | (StyleError.fileTooLong n nLimit _, StyleError.fileTooLong m _mLimit _) =>
