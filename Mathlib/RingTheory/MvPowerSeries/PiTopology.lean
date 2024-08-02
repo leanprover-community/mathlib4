@@ -176,6 +176,7 @@ variable [TopologicalSpace R]
 open WithPiTopology
 
 theorem continuous_C [Ring R] [TopologicalRing R] : Continuous (C σ R) := by
+  classical
   apply continuous_of_continuousAt_zero
   rw [continuousAt_pi]
   intro d
