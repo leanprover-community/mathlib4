@@ -187,7 +187,7 @@ instance : DecidableRel h.setoid.r :=
 /-- The finpartition derived from `h.setoid`. -/
 def finpartition [DecidableEq V] : Finpartition (univ : Finset V) := Finpartition.ofSetoid h.setoid
 
-lemma not_adj_iff_part_eq [DecidableEq V] :
+lemma not_adj_iff_part_eq :
     ¬G.Adj s t ↔ h.finpartition.part s = h.finpartition.part t := by
   change h.setoid.r s t ↔ _
   rw [← Finpartition.mem_part_ofSetoid_iff_rel]
