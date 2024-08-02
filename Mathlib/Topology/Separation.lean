@@ -1675,6 +1675,12 @@ theorem isClosed_eq [T2Space X] {f g : Y → X} (hf : Continuous f) (hg : Contin
     IsClosed { y : Y | f y = g y } :=
   continuous_iff_isClosed.mp (hf.prod_mk hg) _ isClosed_diagonal
 
+/-- If functions `f` and `g` are continuous on a closed set `s`,
+then the set of points `x ∈ s` such that `f x = g x` is a closed set. -/
+protected theorem IsClosed.isClosed_eq [T2Space Y] {f g : X → Y} {s : Set X} (hs : IsClosed s)
+    (hf : ContinuousOn f s) (hg : ContinuousOn g s) : IsClosed {x ∈ s | f x = g x} :=
+  (hf.prod hg).preimage_isClosed_of_isClosed hs isClosed_diagonal
+
 theorem isOpen_ne_fun [T2Space X] {f g : Y → X} (hf : Continuous f) (hg : Continuous g) :
     IsOpen { y : Y | f y ≠ g y } :=
   isOpen_compl_iff.mpr <| isClosed_eq hf hg
