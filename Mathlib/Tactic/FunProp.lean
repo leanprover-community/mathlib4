@@ -135,7 +135,7 @@ displays:
     function name: HAdd.hAdd
     main arguments: [4, 5]
     applied arguments: 6
-    form: .comp
+    form: compositional form
 ```
 This indicates that the theorem `continuous_add` states the continuity of `HAdd.hAdd` in the 4th and
  5th arguments and the theorem is in compositional form.
@@ -322,21 +322,12 @@ There are four types of theorems that are used a bit differently.
     even though `fun_prop` can already prove `continuous_neg` from `differentiable_continuous` and
     `differentiable_neg`. Doing this will have a considerable impact on `fun_prop` speed.
 
-    Furthermore, one has to be careful when writing these theorems to not introduce loops which are
-    not supported. For example:
-    ```lean
-    theorem clm_is_linear (f : X → Y) (hf : IsContinuousLinearMap 𝕜 f) :
-        IsLinearMap 𝕜 f := ...
-
-    theorem clm_is_continuous (f : X → Y) (hf : IsContinuousLinearMap 𝕜 f) :
-        Continuous 𝕜 f := ...
-
-    theorem lin_cont_is_clm (f : X → Y) (hf : IsLinearMap 𝕜 f) (hf : Continuous 𝕜 f) :
-        IsContinuousLinearMap 𝕜 f := ...
-    ```
-    would introduce a loop. It is preferred to have theorems only from a more specific property
-    to a less specific one, i.e., `clm_is_linear` and `clm_is_continuous` are considered okay, but
-    `lin_cont_is_clm` is not.
+    By default, `fun_prop` will not apply more then one transitions theorems consecutivelly. For
+    example, it won't prove `AEMeasurable f` from `Continuous f` by using transition theorems
+    `Measurable.aemeasurable` and `Continuous.measurable`. You can enable this by running
+    `fun_prop (config:={maxTransitionDepth:=2})`.
+    Ideally `fun_prop` theorems should be transitivelly closed i.e. if `Measurable.aemeasurable` and
+    `Continuous.measurable` are `fun_prop` theorems then `Continuous.aemeasurable` should be too.
 
     Transition theorems do not have to be between two completely different properties. They can be
     between the same property differing by a parameter. Consider this example:
