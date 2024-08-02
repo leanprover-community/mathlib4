@@ -2,9 +2,9 @@ name: Blog report
 
 on:
   issue_comment: #pull_request:
-    types: [created, edited]
+    types: [created, edited, deleted]
   pull_request_review_comment:
-    types: [created, edited]
+    types: [created, edited, deleted]
 
 jobs:
   Monthly_PRs:
