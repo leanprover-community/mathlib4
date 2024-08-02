@@ -141,6 +141,8 @@ def toNormedField : NormedField L :=
 
 section NormedField
 
+/-- When a field is valued, one inherits a `NormedField`. Local instance to avoid
+a typeclass loop or non-defeq topology or norms. -/
 local instance : NormedField L := Valued.toNormedField L Γ₀
 
 protected lemma isNonarchimedean_norm : IsNonarchimedean ((‖·‖): L → ℝ) := Valued.norm_add_le
