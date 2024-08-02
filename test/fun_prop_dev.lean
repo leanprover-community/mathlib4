@@ -322,7 +322,7 @@ example (x) : Con fun (f : α ->> α) => f (f x) := by fun_prop
 example (x) : Con fun (f : α ->> α) => f (f (f x)) := by fun_prop
 
 
-example [Zero α] : Lin (fun x : α => (0:α) + x + (0 : α) + (0 : α) + x) := by fun_prop
+example [Zero α] : Lin (fun x : α => (0 : α) + x + (0 : α) + (0 : α) + x) := by fun_prop
 
 noncomputable
 def foo : α ->> α ->> α := silentSorry
@@ -388,8 +388,6 @@ def diag (f : α → α → α) (x : α) := f x x
 
 theorem diag_Con (f : α → α → α) (hf : Con (myUncurry f)) : Con (fun x => diag f x) := by
   fun_prop [diag,myUncurry]
-
-
 namespace MultipleLambdaTheorems
 
 opaque A : Prop
@@ -397,8 +395,8 @@ opaque B : Prop
 @[local fun_prop] theorem Con_comp' (f : β → γ) (g : α → β) (h : A) : Con (fun x => f (g x)) := silentSorry
 @[local fun_prop] theorem Con_comp'' (f : β → γ) (g : α → β) (b : B) : Con (fun x => f (g x)) := silentSorry
 
-example (f : β → γ) (g : α → β) (h : A) : Con (fun x => f (g x)) := by fun_prop (disch:=assumption)
-example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by fun_prop (disch:=assumption)
+example (f : β → γ) (g : α → β) (h : A) : Con (fun x => f (g x)) := by fun_prop (disch := assumption)
+example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by fun_prop (disch := assumption)
 
 end MultipleLambdaTheorems
 
@@ -408,11 +406,9 @@ end MultipleLambdaTheorems
 -- #check_failure ((by fun_prop) : ?m)
 -- #check_failure (by exact add_Con' (by fun_prop) : Con (fun x : α => (x + x) + (x + x)))
 
-
-example : Con fun ((x,_,_) : α×α×α) => x := by fun_prop
-example : Con fun ((_,x,_) : α×α×α) => x := by fun_prop
-example : Con fun ((_,_,x) : α×α×α) => x := by fun_prop
-
+example : Con fun ((x, _, _) : α × α × α) => x := by fun_prop
+example : Con fun ((_, x, _) : α × α × α) => x := by fun_prop
+example : Con fun ((_, _, x) : α × α × α) => x := by fun_prop
 
 example : let f := (by exact (fun x : α => x+x)); Con f := by
   intro f;

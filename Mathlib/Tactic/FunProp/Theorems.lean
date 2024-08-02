@@ -27,9 +27,9 @@ inductive LambdaTheoremArgs
   | const
   /-- Apply theorem e.g. `Continuous fun (f : (x : X) → Y x => f x)` -/
   | apply
-  /-- Composition theorem e.g.  `Continuous f → Continuous g → Continuous fun x => f (g x)`
+  /-- Composition theorem e.g. `Continuous f → Continuous g → Continuous fun x => f (g x)`
 
-  The numbers `fArgId` and `gArgId` store the arguement index for `f` and `g` in the composition
+  The numbers `fArgId` and `gArgId` store the argument index for `f` and `g` in the composition
   theorem. -/
   | comp (fArgId gArgId : Nat)
   /-- Pi theorem e.g. `∀ y, Continuous (f · y) → Continuous fun x y => f x y` -/
@@ -44,7 +44,7 @@ inductive LambdaTheoremType
   | const
   /-- Apply theorem e.g. `Continuous fun (f : (x : X) → Y x => f x)` -/
   | apply
-  /-- Composition theorem e.g.  `Continuous f → Continuous g → Continuous fun x => f (g x)` -/
+  /-- Composition theorem e.g. `Continuous f → Continuous g → Continuous fun x => f (g x)` -/
   | comp
   /-- Pi theorem e.g. `∀ y, Continuous (f · y) → Continuous fun x y => f x y` -/
   | pi
@@ -59,7 +59,6 @@ def LambdaTheoremArgs.type (t : LambdaTheoremArgs) : LambdaTheoremType :=
   | .apply  => .apply
   | .pi => .pi
 
--- set_option linter.unusedVariables false in
 /-- Decides whether `f` is a function corresponding to one of the lambda theorems. -/
 def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
     MetaM (Option LambdaTheoremArgs) := do

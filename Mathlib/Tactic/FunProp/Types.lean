@@ -67,7 +67,7 @@ def FunctionData.getFnOrigin (fData : FunctionData) : Origin :=
 displayed to the user and secondary mode is for messages that are displayed by setting option
 `Meta.Tactic.fun_prop.errors` to true. -/
 inductive LoggingMode where
-  /-- Main error logging mode, these messages will be diplayed to the user be default. -/
+  /-- Main error logging mode, these messages will be diplayed to the user by default. -/
   | main
   /-- Secondary error logging mode, these messages will be diplayed to the user by setting option
   `Meta.Tactic.fun_prop.errors` to true . -/
@@ -80,11 +80,11 @@ def defaultNamesToUnfold : Array Name :=
 /-- `fun_prop` configuration -/
 structure Config where
   /-- Maximal number of transitions between function properties
-  e.g. inferring differentiability from linearity -/
+  e.g. inferring differentiability from linearity. -/
   maxDepth := 200
   /-- Maximum number of steps `fun_prop` can take. -/
   maxSteps := 100000
-  /-- Use transition theorem. -/
+  /-- Use transition theorems. -/
   useTransThms := true
 deriving Inhabited
 
@@ -109,7 +109,7 @@ structure Context where
 structure State where
   /-- Simp's cache is used as the `fun_prop` tactic is designed to be used inside of simp and
   utilize its cache -/
-  cache        : Simp.Cache := {}
+  cache : Simp.Cache := {}
   /-- Count the number of steps and stop when maxSteps is reached. -/
   numSteps := 0
   /-- Log progress and failures messages that should be displayed to the user at the end. -/
