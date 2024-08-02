@@ -257,9 +257,9 @@ theorem attach_map_val {s : Finset α} : s.attach.map (Embedding.subtype _) = s 
 
 theorem disjoint_range_addLeftEmbedding (a : ℕ) (s : Finset ℕ):
     Disjoint (range a) (map (addLeftEmbedding a) s) := by
-  simp_rw [disjoint_left, mem_map, mem_range]
+  simp_rw [disjoint_left, mem_map, mem_range, addLeftEmbedding_apply]
   rintro _ h ⟨l, -, rfl⟩
-  simp at h
+  omega
 
 theorem disjoint_range_addRightEmbedding (a : ℕ) (s : Finset ℕ) :
     Disjoint (range a) (map (addRightEmbedding a) s) := by
