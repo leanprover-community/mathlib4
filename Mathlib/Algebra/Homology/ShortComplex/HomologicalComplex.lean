@@ -469,7 +469,7 @@ end
 
 end
 
-variable (K L : HomologicalComplex C c) (i j k : ι)
+variable (i j k : ι)
 
 section
 

@@ -141,6 +141,7 @@ theorem mk (F : X → Type*) [∀ x, TopologicalSpace (F x)] [∀ x, DiscreteTop
 
 variable {f}
 variable (hf : IsCoveringMap f)
+include hf
 
 protected theorem continuous : Continuous f :=
   continuous_iff_continuousOn_univ.mpr hf.isCoveringMapOn.continuousOn
@@ -166,21 +167,21 @@ protected theorem isSeparatedMap : IsSeparatedMap f :=
     refine Prod.ext ?_ (h₁.2.symm.trans h₂.2)
     rwa [t.proj_toFun e₁ he₁, t.proj_toFun e₂ he₂]
 
-variable {A} [TopologicalSpace A] {s : Set A} (hs : IsPreconnected s) {g g₁ g₂ : A → E}
+variable {A} [TopologicalSpace A] {s : Set A} {g g₁ g₂ : A → E}
 
 theorem eq_of_comp_eq [PreconnectedSpace A] (h₁ : Continuous g₁) (h₂ : Continuous g₂)
     (he : f ∘ g₁ = f ∘ g₂) (a : A) (ha : g₁ a = g₂ a) : g₁ = g₂ :=
   hf.isSeparatedMap.eq_of_comp_eq hf.isLocalHomeomorph.isLocallyInjective h₁ h₂ he a ha
 
-theorem eqOn_of_comp_eqOn (h₁ : ContinuousOn g₁ s) (h₂ : ContinuousOn g₂ s)
-    (he : s.EqOn (f ∘ g₁) (f ∘ g₂)) {a : A} (has : a ∈ s) (ha : g₁ a = g₂ a) : s.EqOn g₁ g₂ :=
-  hf.isSeparatedMap.eqOn_of_comp_eqOn hf.isLocalHomeomorph.isLocallyInjective hs h₁ h₂ he has ha
-
 theorem const_of_comp [PreconnectedSpace A] (cont : Continuous g)
     (he : ∀ a a', f (g a) = f (g a')) (a a') : g a = g a' :=
   hf.isSeparatedMap.const_of_comp hf.isLocalHomeomorph.isLocallyInjective cont he a a'
 
-theorem constOn_of_comp (cont : ContinuousOn g s)
+theorem eqOn_of_comp_eqOn (hs : IsPreconnected s) (h₁ : ContinuousOn g₁ s) (h₂ : ContinuousOn g₂ s)
+    (he : s.EqOn (f ∘ g₁) (f ∘ g₂)) {a : A} (has : a ∈ s) (ha : g₁ a = g₂ a) : s.EqOn g₁ g₂ :=
+  hf.isSeparatedMap.eqOn_of_comp_eqOn hf.isLocalHomeomorph.isLocallyInjective hs h₁ h₂ he has ha
+
+theorem constOn_of_comp (hs : IsPreconnected s) (cont : ContinuousOn g s)
     (he : ∀ a ∈ s, ∀ a' ∈ s, f (g a) = f (g a'))
     {a a'} (ha : a ∈ s) (ha' : a' ∈ s) : g a = g a' :=
   hf.isSeparatedMap.constOn_of_comp hf.isLocalHomeomorph.isLocallyInjective hs cont he ha ha'
