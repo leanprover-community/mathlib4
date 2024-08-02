@@ -469,8 +469,6 @@ end
 
 end
 
-variable (i j k : ι)
-
 section
 
 variable (hj : c.next i = j) (h : K.d i j = 0) [K.HasHomology i]
