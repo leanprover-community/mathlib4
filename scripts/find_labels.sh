@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Check if required arguments are provided
-if [ "$#" -ne 1 ]; then
-    printf $'Usage: %s <repo_owner/repo_name>\n\nFor instance `%s leanprover-community/mathlib4`\n\n' "${0}" "${0}"
+if [ "$#" -ne 2 ]; then
+    printf $'Usage: %s <repo_owner/repo_name> <YYYY-MM>\n\nFor instance `%s leanprover-community/mathlib4`\n\n' "${0}" "${0}"
     exit 1
 fi
 
@@ -36,8 +36,8 @@ echo "$prs"
 }
 
 # the current year and month
-yr_mth=2024-07 #"$(date +%Y-%m)"
-yr_mth_day=2024-07-01
+yr_mth="${2}" #"$(date +%Y-%m)"
+yr_mth_day=${yr_mth}-01
 
 start_date="${yr_mth_day}T00:00:00"
 end_date="$(date -d "${yr_mth_day} + 1 month - 1 day" +%Y-%m-%d)T23:59:59"
