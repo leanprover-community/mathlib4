@@ -1,11 +1,10 @@
+name: Blog report
+
 on:
-  #pull_request
-  issue_comment:
+  issue_comment:  #pull_request
     types: [created, edited]
   pull_request_review_comment:
     types: [created, edited]
-
-name: Blog report
 
 jobs:
 
