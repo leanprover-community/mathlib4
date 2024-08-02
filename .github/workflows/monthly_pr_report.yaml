@@ -1,12 +1,18 @@
 on:
-  pull_request
+  #pull_request
+  issue_comment:
+    types: [created, edited]
+  pull_request_review_comment:
+    types: [created, edited]
 
 name: Blog report
 
 jobs:
 
+
   Monthly_PRs:
-    if: github.repository == 'leanprover-community/mathlib4' && github.event.pull_request.draft == false
+    if: contains(github.event.comment.body, 'mimblog') || ((github.event.issue.pull_request != 'null') && (startsWith(github.event.comment.body, 'mimblog') || contains(toJSON(github.event.comment.body), '\r\nmimblog')))
+    #if: github.repository == 'leanprover-community/mathlib4' && github.event.pull_request.draft == false
     name: Blog draft
     runs-on: ubuntu-latest
 
@@ -26,6 +32,7 @@ jobs:
 
       - name: blog report
         run: |
+          echo ${{ github.event.comment.body }}
           yrMth=2024-07
           mth="$(date -d "${yrMth}-01" '+%B')"
           PR="${{ github.event.pull_request.number }}"
