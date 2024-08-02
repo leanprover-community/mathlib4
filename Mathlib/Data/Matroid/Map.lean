@@ -133,7 +133,7 @@ def comap (N : Matroid β) (f : α → β) : Matroid α :=
         have hinj : InjOn f (insert e B) := by
           rw [injOn_insert (fun heB ↦ hfe (mem_image_of_mem f heB))]
           exact ⟨hBmax.1.2, hfe⟩
-        refine hBmax.not_prop_of_ssubset (t := insert e B) (ssubset_insert ?_) ⟨hi.1, hinj⟩
+        refine hBmax.not_prop_of_ssuperset (t := insert e B) (ssubset_insert ?_) ⟨hi.1, hinj⟩
         exact fun heB ↦ hfe <| mem_image_of_mem f heB
 
       obtain ⟨_, ⟨⟨e, he, rfl⟩, he'⟩, hei⟩ := Indep.exists_insert_of_not_base (by simpa) h₁ h₂
