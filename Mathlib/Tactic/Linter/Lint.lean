@@ -273,6 +273,25 @@ namespace OpenClassical
 /-- Gets the value of the `linter.openClassical` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.openClassical o
 
+/-- If `stx` is syntax describing an `open` command, `extractOpenNames stx`
+returns syntax for the opened names as well as an array of all names opened
+(discarding renamed or hidden items). -/
+def extractOpenNames : Syntax → Option (Syntax × (Array Name)) := fun stx ↦ do
+  match stx with
+    | `(command|open $name hiding $_) => some (name.raw, #[name.getId])
+    | `(command|open $name renaming $_) => some (name.raw, #[name.getId])
+    -- XXX Is there a nicer way to parse "open Foo (bar)" syntax?
+    -- | `(command|open $names:ident "(" $_ ")") => some names--.raw.getArgs
+    | `(command|open $openDecl) =>
+      let inner := openDecl.raw.getArgs
+      let names := s!"{inner.get! 0}"
+      -- remove [ and ], and a leading "`" of each name.
+      -- TODO: find a cleaner parser! was `inner.map (fun s ↦ s.getId)` doesn't quite work...
+      let names := ((names.stripPrefix "[").stripSuffix "]").split (· == ' ')
+      let names := (names.map (·.stripPrefix "`")).map String.toName
+      some (openDecl.raw, names.toArray)
+    | _ => none
+
 @[inherit_doc Mathlib.Linter.linter.openClassical]
 def openClassicalLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless getLinterHash (← getOptions) do
@@ -283,24 +302,11 @@ def openClassicalLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
       return
     -- If `stx` describes an `open` command, extract the list of opened namespaces.
-    let names : Option (Array Name) := match stx with
-    | `(command|open $name hiding $_) => some #[name.getId]
-    | `(command|open $name renaming $_) => some #[name.getId]
-    --| `(command|open $names:ident "(" $_ ")") => some names--.raw.getArgs
-    | `(command|open $openDecl) =>
-      let inner := openDecl.raw.getArgs
-      let names := s!"{inner.get! 0}"
-      -- remove [ and ], and a leading "`" of each name.
-      -- TODO: find a cleaner parser! was `inner.map (fun s ↦ s.getId)` doesn't quite work...
-      let names := ((names.stripPrefix "[").stripSuffix "]").split (· == ' ')
-      let names := (names.map (·.stripPrefix "`")).map String.toName
-      some names.toArray
-    | _ => none
-    if let some names := names then
+    if let some (stxN, names) := extractOpenNames stx then
       -- We need to handle `open foo (bar)` commands also: ignore all anonymous names.
       let names := names.filter fun n ↦ !(n matches .anonymous)
       if names.contains `Classical then
-        Linter.logLint linter.openClassical stx "\
+        Linter.logLint linter.openClassical stxN "\
         please avoid 'open (scoped) Classical' statements: this can hide theorem statements\n\
         which would be better stated with explicit decidability statements.\n\
         Instead, use `open Classical in` for definitions or instances, the `classical` tactic \
