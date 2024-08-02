@@ -326,7 +326,7 @@ theorem ContinuousAt.fst'' {f : X → Z} {x : X × Y} (hf : ContinuousAt f x.fst
     ContinuousAt (fun x : X × Y => f x.fst) x :=
   hf.comp continuousAt_fst
 
-theorem Filter.Tendsto.fst_nhds {l : Filter X} {f : X → Y × Z} {p : Y × Z}
+theorem Filter.Tendsto.fst_nhds {X} {l : Filter X} {f : X → Y × Z} {p : Y × Z}
     (h : Tendsto f l (𝓝 p)) : Tendsto (fun a ↦ (f a).1) l (𝓝 <| p.1) :=
   continuousAt_fst.tendsto.comp h
 
@@ -362,7 +362,7 @@ theorem ContinuousAt.snd'' {f : Y → Z} {x : X × Y} (hf : ContinuousAt f x.snd
     ContinuousAt (fun x : X × Y => f x.snd) x :=
   hf.comp continuousAt_snd
 
-theorem Filter.Tendsto.snd_nhds {l : Filter X} {f : X → Y × Z} {p : Y × Z}
+theorem Filter.Tendsto.snd_nhds {X} {l : Filter X} {f : X → Y × Z} {p : Y × Z}
     (h : Tendsto f l (𝓝 p)) : Tendsto (fun a ↦ (f a).2) l (𝓝 <| p.2) :=
   continuousAt_snd.tendsto.comp h
 
@@ -646,7 +646,7 @@ theorem isOpen_prod_iff {s : Set (X × Y)} :
   isOpen_iff_mem_nhds.trans <| by simp_rw [Prod.forall, mem_nhds_prod_iff', and_left_comm]
 
 /-- A product of induced topologies is induced by the product map -/
-theorem prod_induced_induced (f : X → Y) (g : Z → W) :
+theorem prod_induced_induced {X Z} (f : X → Y) (g : Z → W) :
     @instTopologicalSpaceProd X Z (induced f ‹_›) (induced g ‹_›) =
       induced (fun p => (f p.1, g p.2)) instTopologicalSpaceProd := by
   delta instTopologicalSpaceProd
