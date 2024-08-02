@@ -20,7 +20,7 @@ noncomputable section
 
 namespace SimplexCategory
 
-open Simplicial NNReal Classical CategoryTheory
+open Simplicial NNReal CategoryTheory
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
@@ -39,6 +39,7 @@ instance (x : SimplexCategory) : CoeFun x.toTopObj fun _ => x → ℝ≥0 :=
 theorem toTopObj.ext {x : SimplexCategory} (f g : x.toTopObj) : (f : x → ℝ≥0) = g → f = g :=
   Subtype.ext
 
+open Classical in
 /-- A morphism in `SimplexCategory` induces a map on the associated topological spaces. -/
 def toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) : y.toTopObj :=
   ⟨fun i => ∑ j ∈ Finset.univ.filter (f · = i), g j, by
@@ -49,6 +50,7 @@ def toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) : y.toTopObj
       simp [Finset.eq_univ_iff_forall]
     · apply Set.pairwiseDisjoint_filter⟩
 
+open Classical in
 @[simp]
 theorem coe_toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) (i : y) :
     toTopMap f g i = ∑ j ∈ Finset.univ.filter (f · = i), g j :=
@@ -70,6 +72,7 @@ def toTop : SimplexCategory ⥤ TopCat where
     ext f
     apply toTopObj.ext
     funext i
+    classical
     change (Finset.univ.filter (· = i)).sum _ = _
     simp [Finset.sum_filter, CategoryTheory.id_apply]
   map_comp := fun f g => by
@@ -78,6 +81,7 @@ def toTop : SimplexCategory ⥤ TopCat where
     funext i
     dsimp
     simp only [comp_apply, TopCat.coe_of_of, ContinuousMap.coe_mk, coe_toTopMap]
+    classical
     rw [← Finset.sum_biUnion]
     · apply Finset.sum_congr
       · exact Finset.ext (fun j => ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩)
