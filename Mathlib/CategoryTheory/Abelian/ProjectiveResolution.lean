@@ -198,7 +198,10 @@ abbrev projectiveResolution (Z : C) [HasZeroObject C]
   (HasProjectiveResolution.out (Z := Z)).some
 
 variable (C)
-variable [Abelian C] [HasProjectiveResolutions C]
+variable [Abelian C]
+
+section
+variable [HasProjectiveResolutions C]
 
 /-- Taking projective resolutions is functorial,
 if considered with target the homotopy category
@@ -244,6 +247,8 @@ lemma ProjectiveResolution.iso_hom_naturality {X Y : C} (f : X ⟶ Y)
   rw [← cancel_epi (P.iso).inv, iso_inv_naturality_assoc f P Q φ comm,
     Iso.inv_hom_id_assoc, Iso.inv_hom_id, comp_id]
 
+end
+
 variable [EnoughProjectives C]
 
 theorem exact_d_f {X Y : C} (f : X ⟶ Y) :
@@ -270,6 +275,7 @@ applied to the previously constructed morphism,
 and the map from the `n`-th object as `Projective.d`.
 -/
 
+variable {C}
 variable (Z : C)
 
 -- The construction of the projective resolution `of` would be very, very slow
