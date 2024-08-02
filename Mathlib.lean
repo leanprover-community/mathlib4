@@ -1959,6 +1959,7 @@ import Mathlib.Computability.Reduce
 import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.Timed.InsertionSort
 import Mathlib.Computability.Timed.Merge
+import Mathlib.Computability.Timed.MergeSort
 import Mathlib.Computability.Timed.Split
 import Mathlib.Computability.TMComputable
 import Mathlib.Computability.TMToPartrec
