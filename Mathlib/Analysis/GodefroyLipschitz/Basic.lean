@@ -241,7 +241,7 @@ theorem exists_inverse (h : finrank ℝ E = 1) (φ : E → F) (hφ : Isometry φ
 
 theorem exists_inverse' [FiniteDimensional ℝ E] (φ : E → F) (hφ : Isometry φ) :
     ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ f ∘ φ = id := by
-  have main (x : E) (nx : ‖x‖ = 1) (dx : DifferentiableAt ℝ (‖·‖) x) :
+  have main (x : E) (nx : ‖x‖ = 1) :
       ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ ∀ t : ℝ, f (φ (t • x)) = t := by
     apply exists_inverse
     · exact finrank_self ℝ
@@ -295,7 +295,7 @@ theorem exists_inverse' [FiniteDimensional ℝ E] (φ : E → F) (hφ : Isometry
       _ = b.dualBasis j (b i) := by
         rw [(Module.evalEquiv ℝ E).apply_symm_apply]
       _ = if i = j then 1 else 0 := b.dualBasis_apply_self j i
-  choose f nf hf using fun i ↦ main (y i) (ny i) (dy i)
+  choose f nf hf using fun i ↦ main (y i) (ny i)
   let T : F →L[ℝ] E :=
     { toFun := fun y ↦ ∑ i, (f i y) • (c i)
       map_add' := by
