@@ -240,12 +240,12 @@ theorem Pi.mulSingle_div [∀ i, Group <| f i] (i : I) (x y : f i) :
   (MonoidHom.mulSingle f i).map_div x y
 
 @[to_additive]
-def Pi.mulSingle_pow [∀ i, Monoid (f i)] (i : I) (x : f i) (n : ℕ) :
+theorem Pi.mulSingle_pow [∀ i, Monoid (f i)] (i : I) (x : f i) (n : ℕ) :
     mulSingle i (x ^ n) = (mulSingle i x) ^ n :=
   (MonoidHom.mulSingle f i).map_pow x n
 
 @[to_additive]
-def Pi.mulSingle_zpow [∀ i, Group (f i)] (i : I) (x : f i) (n : ℤ) :
+theorem Pi.mulSingle_zpow [∀ i, Group (f i)] (i : I) (x : f i) (n : ℤ) :
     Pi.mulSingle i (x ^ n) = (Pi.mulSingle i x) ^ n :=
   (MonoidHom.mulSingle f i).map_zpow x n
 

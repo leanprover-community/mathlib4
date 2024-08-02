@@ -96,7 +96,7 @@ theorem Subgroup.centralizer_eq :
   rw [eq_comm]
   exact Iff.symm mul_inv_eq_iff_eq_mul
 
-theorem Subgroup.centralizer_card_eq [Fintype G] :
+theorem Subgroup.centralizer_card_eq :
     Nat.card (Subgroup.centralizer {g}) =
       Nat.card (MulAction.stabilizer (ConjAct G) g) := by
   simp only [← SetLike.coe_sort_coe, Set.Nat.card_coe_set_eq]
