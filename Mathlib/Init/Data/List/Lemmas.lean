@@ -1,61 +1,89 @@
 /-
-Copyright (c) 2016 Microsoft Corporation. All rights reserved.
+Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Leonardo de Moura
+Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn
 -/
-import Mathlib.Mathport.Rename
-import Std.Data.List.Basic
-import Std.Data.List.Lemmas
-import Mathlib.Init.Data.Nat.Notation
-import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Data.List.Basic
+import Batteries.Data.List.Lemmas
+import Mathlib.Tactic.Cases
+
 /-!
-Lemmas for `List` not (yet) in `Std`
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+# Lemmas for `List` not (yet) in `Batteries`
 -/
 
+universe u v w w₁ w₂
 
-open List Nat
+variable {α : Type u} {β : Type v} {γ : Type w}
 
 namespace List
 
-#align list.length_map₂ List.length_zipWith
+open Nat
 
-#align list.ball_nil List.forall_mem_nil
-#align list.ball_cons List.forall_mem_consₓ -- explicit → implicit arguments
-#align list.mem_cons_iff List.mem_cons
-#align list.sublist.cons2 List.Sublist.cons₂
+/-! append -/
+
+/-! length -/
+
+/-! map -/
+
+/-! bind -/
+
+/-! mem -/
+
+theorem mem_cons_eq (a y : α) (l : List α) : (a ∈ y :: l) = (a = y ∨ a ∈ l) :=
+  propext List.mem_cons
+
+alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
+
+theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
+  fun ⟨_, hx, _⟩ => List.not_mem_nil _ hx
+
+@[deprecated (since := "2024-03-23")] alias not_bex_nil := not_exists_mem_nil
+@[deprecated (since := "2024-03-23")] alias bex_cons := exists_mem_cons
+
+/-! list subset -/
+-- This is relying on an automatically generated instance name from Batteries.
+
+/-! sublists -/
+
+alias length_le_of_sublist := Sublist.length_le
+
+/-! filter -/
+
+/-! map_accumr -/
+
 
 section MapAccumr
 
 variable {φ : Type w₁} {σ : Type w₂}
 
-/-- Runs a function over a list returning the intermediate results and a
-a final result.
--/
+/-- Runs a function over a list returning the intermediate results and a final result. -/
 def mapAccumr (f : α → σ → σ × β) : List α → σ → σ × List β
   | [], c => (c, [])
   | y :: yr, c =>
     let r := mapAccumr f yr c
     let z := f y r.1
     (z.1, z.2 :: r.2)
-#align list.map_accumr List.mapAccumr
 
 /-- Length of the list obtained by `mapAccumr`. -/
 @[simp]
-theorem length_mapAccumr : ∀ (f : α → σ → σ × β) (x : List α) (s : σ),
-    length (mapAccumr f x s).2 = length x
-  | f, _ :: x, s => congrArg succ (length_mapAccumr f x s)
+theorem length_mapAccumr :
+    ∀ (f : α → σ → σ × β) (x : List α) (s : σ), length (mapAccumr f x s).2 = length x
+  | f, _ :: x, s => congr_arg succ (length_mapAccumr f x s)
   | _, [], _ => rfl
-#align list.length_map_accumr List.length_mapAccumr
 
 end MapAccumr
+
 section MapAccumr₂
 
 variable {φ : Type w₁} {σ : Type w₂}
 
-/-- Runs a function over two lists returning the intermediate results and a
- a final result.
--/
+/-- Runs a function over two lists returning the intermediate results and a final result. -/
 def mapAccumr₂ (f : α → β → σ → σ × φ) : List α → List β → σ → σ × List φ
   | [], _, c => (c, [])
   | _, [], c => (c, [])
@@ -63,7 +91,6 @@ def mapAccumr₂ (f : α → β → σ → σ × φ) : List α → List β → �
     let r := mapAccumr₂ f xr yr c
     let q := f x y r.1
     (q.1, q.2 :: r.2)
-#align list.map_accumr₂ List.mapAccumr₂
 
 /-- Length of a list obtained using `mapAccumr₂`. -/
 @[simp]
@@ -72,18 +99,12 @@ theorem length_mapAccumr₂ :
   | f, _ :: x, _ :: y, c =>
     calc
       succ (length (mapAccumr₂ f x y c).2) = succ (min (length x) (length y)) :=
-        congrArg succ (length_mapAccumr₂ f x y c)
-      _ = min (succ (length x)) (succ (length y)) := Eq.symm (min_succ_succ (length x) (length y))
-
+        congr_arg succ (length_mapAccumr₂ f x y c)
+      _ = min (succ (length x)) (succ (length y)) := Eq.symm (succ_min_succ (length x) (length y))
   | _, _ :: _, [], _ => rfl
   | _, [], _ :: _, _ => rfl
   | _, [], [], _ => rfl
-#align list.length_map_accumr₂ List.length_mapAccumr₂
 
 end MapAccumr₂
 
 end List
-
-#align list.length_zip_with List.length_zipWith
-#align list.mem_replicate List.mem_replicate
-#align list.eq_of_mem_replicate List.eq_of_mem_replicate

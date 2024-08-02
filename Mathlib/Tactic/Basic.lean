@@ -1,16 +1,31 @@
 /-
 Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
+Authors: Mario Carneiro, Kyle Miller
 -/
 import Lean
-import Std
-import Mathlib.Tactic.Cases
+import Mathlib.Tactic.PPWithUniv
+import Mathlib.Tactic.ExtendDoc
+import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.TypeStar
+import Mathlib.Tactic.Linter.OldObtain
+
+/-!
+# Basic tactics and utilities for tactic writing
+
+This file defines some basic utilities for tactic writing, and also
+- the `introv` tactic, which allows the user to automatically introduce the variables of a theorem
+and explicitly name the non-dependent hypotheses,
+- an `assumption` macro, calling the `assumption` tactic on all goals
+- the tactics `match_target`, `clear_aux_decl` (clearing all auxiliary declarations from the
+context) and `clear_value` (which clears the bodies of given local definitions,
+changing them into regular hypotheses).
+-/
 
 namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
-syntax (name := «variables») "variables" (bracketedBinder)* : command
+syntax (name := «variables») "variables" (ppSpace bracketedBinder)* : command
 
 @[command_elab «variables»] def elabVariables : CommandElab
   | `(variables%$pos $binders*) => do
@@ -18,40 +33,18 @@ syntax (name := «variables») "variables" (bracketedBinder)* : command
     elabVariable (← `(variable%$pos $binders*))
   | _ => throwUnsupportedSyntax
 
-/-- `lemma` means the same as `theorem`. It is used to denote "less important" theorems -/
-syntax (name := lemma)
-  declModifiers group("lemma" declId declSig declVal Parser.Command.terminationSuffix) : command
+/-- Given two arrays of `FVarId`s, one from an old local context and the other from a new local
+context, pushes `FVarAliasInfo`s into the info tree for corresponding pairs of `FVarId`s.
+Recall that variables linked this way should be considered to be semantically identical.
 
-/-- Implementation of the `lemma` command, by macro expansion to `theorem`. -/
-@[macro «lemma»] def expandLemma : Macro := fun stx =>
-  -- FIXME: this should be a macro match, but terminationSuffix is not easy to bind correctly.
-  -- This implementation ensures that any future changes to `theorem` are reflected in `lemma`
-  let stx := stx.modifyArg 1 fun stx =>
-    let stx := stx.modifyArg 0 (mkAtomFrom · "theorem" (canonical := true))
-    stx.setKind ``Parser.Command.theorem
-  pure <| stx.setKind ``Parser.Command.declaration
-
-/-- `change` is a synonym for `show`,
-and can be used to replace a goal with a definitionally equal one. -/
-macro_rules
-  | `(tactic| change $e:term) => `(tactic| show $e)
-
-/--
-`by_cases p` makes a case distinction on `p`,
-resulting in two subgoals `h : p ⊢` and `h : ¬ p ⊢`.
--/
-macro "by_cases " e:term : tactic =>
-  `(tactic| by_cases $(mkIdent `h) : $e)
-
-syntax "transitivity" (colGt term)? : tactic
-set_option hygiene false in
-macro_rules
-  | `(tactic| transitivity) => `(tactic| apply Nat.le_trans)
-  | `(tactic| transitivity $e) => `(tactic| apply Nat.le_trans (m := $e))
-set_option hygiene false in
-macro_rules
-  | `(tactic| transitivity) => `(tactic| apply Nat.lt_trans)
-  | `(tactic| transitivity $e) => `(tactic| apply Nat.lt_trans (m := $e))
+The effect of this is, for example, the unused variable linter will see that variables
+from the first array are used if corresponding variables in the second array are used. -/
+def pushFVarAliasInfo {m : Type → Type} [Monad m] [MonadInfoTree m]
+    (oldFVars newFVars : Array FVarId) (newLCtx : LocalContext) : m Unit := do
+  for old in oldFVars, new in newFVars do
+    if old != new then
+      let decl := newLCtx.get! new
+      pushInfoLeaf (.ofFVarAliasInfo { id := new, baseId := old, userName := decl.userName })
 
 /--
 The tactic `introv` allows the user to automatically introduce the variables of a theorem and
@@ -85,7 +78,7 @@ h₂ : b = c
 ⊢ a = c
 ```
 -/
-syntax (name := introv) "introv " (colGt binderIdent)* : tactic
+syntax (name := introv) "introv " (ppSpace colGt binderIdent)* : tactic
 @[tactic introv] partial def evalIntrov : Tactic := fun stx ↦ do
   match stx with
   | `(tactic| introv)                     => introsDep
@@ -111,7 +104,7 @@ where
 /-- Try calling `assumption` on all goals; succeeds if it closes at least one goal. -/
 macro "assumption'" : tactic => `(tactic| any_goals assumption)
 
-elab "match_target" t:term : tactic  => do
+elab "match_target " t:term : tactic => do
   withMainContext do
     let (val) ← elabTerm t (← inferType (← getMainTarget))
     if not (← isDefEq val (← getMainTarget)) then
@@ -124,3 +117,38 @@ elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
     if ldec.isAuxDecl then
       g ← g.tryClear ldec.fvarId
   replaceMainGoal [g]
+
+/-- Clears the value of the local definition `fvarId`. Ensures that the resulting goal state
+is still type correct. Throws an error if it is a local hypothesis without a value. -/
+def _root_.Lean.MVarId.clearValue (mvarId : MVarId) (fvarId : FVarId) : MetaM MVarId := do
+  mvarId.checkNotAssigned `clear_value
+  let tag ← mvarId.getTag
+  let (_, mvarId) ← mvarId.withReverted #[fvarId] fun mvarId' fvars => mvarId'.withContext do
+    let tgt ← mvarId'.getType
+    unless tgt.isLet do
+      mvarId.withContext <|
+        throwTacticEx `clear_value mvarId m!"{Expr.fvar fvarId} is not a local definition"
+    let tgt' := Expr.forallE tgt.letName! tgt.letType! tgt.letBody! .default
+    unless ← isTypeCorrect tgt' do
+      mvarId.withContext <|
+        throwTacticEx `clear_value mvarId
+          m!"cannot clear {Expr.fvar fvarId}, the resulting context is not type correct"
+    let mvarId'' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
+    mvarId'.assign <| .app mvarId'' tgt.letValue!
+    return ((), fvars.map .some, mvarId''.mvarId!)
+  return mvarId
+
+/-- `clear_value n₁ n₂ ...` clears the bodies of the local definitions `n₁, n₂ ...`, changing them
+into regular hypotheses. A hypothesis `n : α := t` is changed to `n : α`.
+
+The order of `n₁ n₂ ...` does not matter, and values will be cleared in reverse order of
+where they appear in the context. -/
+elab (name := clearValue) "clear_value" hs:(ppSpace colGt term:max)+ : tactic => do
+  let fvarIds ← getFVarIds hs
+  let fvarIds ← withMainContext <| sortFVarIds fvarIds
+  for fvarId in fvarIds.reverse do
+    withMainContext do
+      let mvarId ← (← getMainGoal).clearValue fvarId
+      replaceMainGoal [mvarId]
+
+attribute [pp_with_univ] ULift PUnit PEmpty

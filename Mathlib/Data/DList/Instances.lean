@@ -2,13 +2,8 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module data.dlist.instances
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.DList.Basic
+import Mathlib.Data.DList.Defs
 import Mathlib.Control.Traversable.Equiv
 import Mathlib.Control.Traversable.Instances
 
@@ -22,26 +17,25 @@ for `DList`.
 
 open Function Equiv
 
-namespace Std
+namespace Batteries
 
-variable (α : Type _)
+variable (α : Type*)
 
 /-- The natural equivalence between lists and difference lists, using
-`DList.of_list` and `DList.to_list`. -/
-def DList.listEquivDList : List α ≃ DList α := by
-  refine'
-      { toFun := DList.ofList
-        invFun := DList.toList.. } <;>
-    simp [Function.RightInverse, Function.LeftInverse, DList.toList_ofList, DList.ofList_toList]
-#align dlist.list_equiv_dlist Std.DList.listEquivDList
+`DList.ofList` and `DList.toList`. -/
+def DList.listEquivDList : List α ≃ DList α where
+  toFun := DList.ofList
+  invFun := DList.toList
+  left_inv _ := DList.toList_ofList _
+  right_inv _ := DList.ofList_toList _
 
 instance : Traversable DList :=
   Equiv.traversable DList.listEquivDList
 
-instance : IsLawfulTraversable DList :=
+instance : LawfulTraversable DList :=
   Equiv.isLawfulTraversable DList.listEquivDList
 
 instance {α} : Inhabited (DList α) :=
   ⟨DList.empty⟩
 
-end Std
+end Batteries

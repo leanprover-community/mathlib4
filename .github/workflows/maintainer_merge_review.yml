@@ -2,12 +2,13 @@ name: Maintainer merge (review)
 
 on:
   pull_request_review:
-    types: [submitted, edited]
+    # triggers on a review, whether or not it is accompanied by a comment
+    types: [submitted]
 
 jobs:
   ping_zulip:
     name: Ping maintainers on Zulip
-    if: (github.event.issue.pull_request != 'null') && (startsWith(github.event.review.body, 'maintainer merge') || contains(toJSON(github.event.review.body), '\r\nmaintainer merge'))
+    if: (startsWith(github.event.review.body, 'maintainer merge') || contains(toJSON(github.event.review.body), '\nmaintainer merge'))
     runs-on: ubuntu-latest
     steps:
       - name: Check whether user is part of mathlib-reviewers team
@@ -22,13 +23,13 @@ jobs:
         uses: zulip/github-actions-zulip/send-message@v1
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
-          email: 'github-bot@leanprover.zulipchat.com'
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
           to: 'mathlib reviewers'
           type: 'stream'
           topic: 'maintainer merge'
           content: |
-            ${{ format('{0} requested a maintainer merge on PR #{1}:', github.event.review.user.login, github.event.pull_request.number) }}
+            ${{ format('{0} requested a maintainer merge from review on PR [#{1}]({2}):', github.event.review.user.login, github.event.pull_request.number, github.event.pull_request.html_url ) }}
 
             > ${{ github.event.pull_request.title }}
 
@@ -38,3 +39,10 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             🚀 Pull request has been placed on the maintainer queue by ${{ github.event.review.user.login }}.
+      - name: Add label to PR
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const { owner, repo, number: issue_number } = context.issue;
+            await github.rest.issues.addLabels({ owner, repo, issue_number, labels: ['maintainer-merge'] });

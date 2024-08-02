@@ -1,7 +1,8 @@
 import Mathlib.Tactic.Cases
 import Mathlib.Init.Logic
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Notation
 
+set_option autoImplicit true
 example (x : α × β × γ) : True := by
   cases' x with a b; cases' b with b c
   guard_hyp a : α
@@ -29,9 +30,9 @@ example (x : ℕ) : True := by
   case soo => guard_hyp h : x = y + 1; trivial
 
 inductive Foo (α β)
-| A (a : α)
-| B (a' : α) (b' : β)
-| C (a'' : α) (b'' : β) (c'' : Foo α β)
+  | A (a : α)
+  | B (a' : α) (b' : β)
+  | C (a'' : α) (b'' : β) (c'' : Foo α β)
 
 example (x : Foo α β) : True := by
   cases' x with a₀ a₁ _ a₂ b₂ c₂
@@ -40,8 +41,8 @@ example (x : Foo α β) : True := by
   · guard_hyp a₂ : α; guard_hyp b₂ : β; guard_hyp c₂ : Foo α β; trivial
 
 inductive Bar : ℕ → Type
-| A (a b : Nat) : Bar 1
-| B (c d : Nat) : Bar (c + 1) → Bar c
+  | A (a b : Nat) : Bar 1
+  | B (c d : Nat) : Bar (c + 1) → Bar c
 
 example (x : Bar 0) : True := by
   cases' x with a b c d h
@@ -49,15 +50,15 @@ example (x : Bar 0) : True := by
 
 example (n : Nat) : n = n := by
   induction' n with n ih
-  · guard_target = Nat.zero = Nat.zero; rfl
+  · guard_target =ₛ 0 = 0; rfl
   · guard_hyp n : Nat; guard_hyp ih : n = n
-    guard_target = Nat.succ n = Nat.succ n; exact congr_arg _ ih
+    guard_target =ₛ n + 1 = n + 1; exact congr_arg (· + 1) ih
 
 example (n : Nat) (h : n < 5) : n = n := by
   induction' n with n ih
-  · guard_target = Nat.zero = Nat.zero; rfl
-  · guard_hyp n : Nat; guard_hyp ih : n < 5 → n = n; guard_hyp h : Nat.succ n < 5
-    guard_target = Nat.succ n = Nat.succ n; rfl
+  · guard_target =ₛ 0 = 0; rfl
+  · guard_hyp n : Nat; guard_hyp ih : n < 5 → n = n; guard_hyp h :ₛ n + 1 < 5
+    guard_target =ₛ n + 1 = n + 1; rfl
 
 example (n : Nat) {m} (h : m < 5) : n = n := by
   induction' n with n ih
@@ -104,3 +105,37 @@ example (p q : Prop) : (p → ¬ q) → ¬ (p ∧ q) := by
   cases' hpq with hp hq
   assumption
   exact hpq.2
+
+-- Ensure that `induction'` removes generalized variables. Here: `a` and `h`
+example (a b : ℕ) (h : a + b = a) : b = 0 := by
+  induction' a with d hd
+  · -- Test the generalized vars have been removed
+    revert h
+    fail_if_success (guard_hyp a : Nat)
+    fail_if_success (guard_hyp h : a + b = a)
+    intro h
+    -- Sample proof
+    rw [Nat.zero_add] at h
+    assumption
+  · -- Test the generalized vars have been removed
+    revert h
+    fail_if_success (guard_hyp a : Nat)
+    fail_if_success (guard_hyp h : a + b = a)
+    intro h
+    -- Sample proof
+    rw [Nat.succ_add, Nat.succ.injEq] at h
+    apply hd
+    assumption
+
+/-- error: unnecessary 'generalizing' argument, variable 'a' is generalized automatically -/
+#guard_msgs in
+example (n : ℕ) (a : Fin n) : True := by
+  induction' n generalizing a
+
+/--
+error: variable cannot be generalized because target depends on it
+  m
+-/
+#guard_msgs in
+example (m : ℕ) : True := by
+  induction' m generalizing m

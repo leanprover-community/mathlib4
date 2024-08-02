@@ -2,11 +2,6 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Scott Morrison
-
-! This file was ported from Lean 3 source module data.finset.functor
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Finset.NAry
@@ -48,7 +43,6 @@ instance lawfulFunctor : LawfulFunctor Finset where
 
 @[simp]
 theorem fmap_def {s : Finset α} (f : α → β) : f <$> s = s.image f := rfl
-#align finset.fmap_def Finset.fmap_def
 
 end Functor
 
@@ -60,7 +54,6 @@ protected instance pure : Pure Finset :=
 
 @[simp]
 theorem pure_def {α} : (pure : α → Finset α) = singleton := rfl
-#align finset.pure_def Finset.pure_def
 
 /-! ### Applicative functor -/
 
@@ -78,50 +71,44 @@ protected instance applicative : Applicative Finset :=
 @[simp]
 theorem seq_def (s : Finset α) (t : Finset (α → β)) : t <*> s = t.sup fun f => s.image f :=
   rfl
-#align finset.seq_def Finset.seq_def
 
 @[simp]
 theorem seqLeft_def (s : Finset α) (t : Finset β) : s <* t = if t = ∅ then ∅ else s :=
   rfl
-#align finset.seq_left_def Finset.seqLeft_def
 
 @[simp]
 theorem seqRight_def (s : Finset α) (t : Finset β) : s *> t = if s = ∅ then ∅ else t :=
   rfl
-#align finset.seq_right_def Finset.seqRight_def
 
 /-- `Finset.image₂` in terms of monadic operations. Note that this can't be taken as the definition
 because of the lack of universe polymorphism. -/
-theorem image₂_def {α β γ : Type _} (f : α → β → γ) (s : Finset α) (t : Finset β) :
+theorem image₂_def {α β γ : Type u} (f : α → β → γ) (s : Finset α) (t : Finset β) :
     image₂ f s t = f <$> s <*> t := by
   ext
   simp [mem_sup]
-#align finset.image₂_def Finset.image₂_def
 
 instance lawfulApplicative : LawfulApplicative Finset :=
   { Finset.lawfulFunctor with
-    seqLeft_eq := fun s t =>
-      by
+    seqLeft_eq := fun s t => by
       rw [seq_def, fmap_def, seqLeft_def]
       obtain rfl | ht := t.eq_empty_or_nonempty
-      · simp_rw [if_pos rfl, image_empty, if_true]
+      · simp_rw [image_empty, if_true]
         exact (sup_bot _).symm
       · ext a
         rw [if_neg ht.ne_empty, mem_sup]
-        refine' ⟨fun ha => ⟨const _ a, mem_image_of_mem _ ha, mem_image_const_self.2 ht⟩, _⟩
+        refine ⟨fun ha => ⟨const _ a, mem_image_of_mem _ ha, mem_image_const_self.2 ht⟩, ?_⟩
         rintro ⟨f, hf, ha⟩
         rw [mem_image] at hf ha
         obtain ⟨b, hb, rfl⟩ := hf
         obtain ⟨_, _, rfl⟩ := ha
         exact hb
-    seqRight_eq := fun s t =>
-      by
+    seqRight_eq := fun s t => by
       rw [seq_def, fmap_def, seqRight_def]
       obtain rfl | hs := s.eq_empty_or_nonempty
       · rw [if_pos rfl, image_empty, sup_empty, bot_eq_empty]
       · ext a
         rw [if_neg hs.ne_empty, mem_sup]
-        refine' ⟨fun ha => ⟨id, mem_image_const_self.2 hs, by rwa [image_id]⟩, _⟩
+        refine ⟨fun ha => ⟨id, mem_image_const_self.2 hs, by rwa [image_id]⟩, ?_⟩
         rintro ⟨f, hf, ha⟩
         rw [mem_image] at hf ha
         obtain ⟨b, hb, rfl⟩ := ha
@@ -143,10 +130,10 @@ instance lawfulApplicative : LawfulApplicative Finset :=
 instance commApplicative : CommApplicative Finset :=
   { Finset.lawfulApplicative with
     commutative_prod := fun s t => by
-      simp_rw [seq_def, fmap_def, sup_image, sup_eq_bunionᵢ]
-      change (s.bunionᵢ fun a => t.image fun b => (a, b))
-        = t.bunionᵢ fun b => s.image fun a => (a, b)
-      trans s.product t <;> [rw [product_eq_bunionᵢ], rw [product_eq_bunionᵢ_right]] }
+      simp_rw [seq_def, fmap_def, sup_image, sup_eq_biUnion]
+      change (s.biUnion fun a => t.image fun b => (a, b))
+        = t.biUnion fun b => s.image fun a => (a, b)
+      trans s ×ˢ t <;> [rw [product_eq_biUnion]; rw [product_eq_biUnion_right]] }
 
 end Applicative
 
@@ -163,14 +150,13 @@ instance : Monad Finset :=
 @[simp]
 theorem bind_def {α β} : (· >>= ·) = sup (α := Finset α) (β := β) :=
   rfl
-#align finset.bind_def Finset.bind_def
 
 instance : LawfulMonad Finset :=
   { Finset.lawfulApplicative with
     bind_pure_comp := fun f s => sup_singleton'' _ _
     bind_map := fun t s => rfl
     pure_bind := fun t s => sup_singleton
-    bind_assoc := fun s f g => by simp only [bind, ←sup_bunionᵢ, sup_eq_bunionᵢ, bunionᵢ_bunionᵢ] }
+    bind_assoc := fun s f g => by simp only [bind, ← sup_biUnion, sup_eq_biUnion, biUnion_biUnion] }
 
 end Monad
 
@@ -199,28 +185,24 @@ variable {α β γ : Type u} {F G : Type u → Type u} [Applicative F] [Applicat
 /-- Traverse function for `Finset`. -/
 def traverse [DecidableEq β] (f : α → F β) (s : Finset α) : F (Finset β) :=
   Multiset.toFinset <$> Multiset.traverse f s.1
-#align finset.traverse Finset.traverse
 
 @[simp]
 theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → Id α) s = s := by
   rw [traverse, Multiset.id_traverse]
   exact s.val_toFinset
-#align finset.id_traverse Finset.id_traverse
 
-open Classical
+open scoped Classical
 
 @[simp]
 theorem map_comp_coe (h : α → β) :
     Functor.map h ∘ Multiset.toFinset = Multiset.toFinset ∘ Functor.map h :=
   funext fun _ => image_toFinset
-#align finset.map_comp_coe Finset.map_comp_coe
 
 theorem map_traverse (g : α → G β) (h : β → γ) (s : Finset α) :
     Functor.map h <$> traverse g s = traverse (Functor.map h ∘ g) s := by
   unfold traverse
   simp only [map_comp_coe, functor_norm]
   rw [LawfulFunctor.comp_map, Multiset.map_traverse]
-#align finset.map_traverse Finset.map_traverse
 
 end Traversable
 

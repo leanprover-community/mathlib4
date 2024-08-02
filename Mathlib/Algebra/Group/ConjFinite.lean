@@ -2,11 +2,6 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module algebra.group.conj_finite
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Conj
 import Mathlib.Data.Finite.Basic
@@ -16,8 +11,10 @@ import Mathlib.Data.Fintype.Units
 # Conjugacy of elements of finite groups
 -/
 
+-- TODO: After #13027,
+-- assert_not_exists MonoidWithZero
 
-variable {α : Type _} [Monoid α]
+variable {α : Type*} [Monoid α]
 
 attribute [local instance] IsConj.setoid
 

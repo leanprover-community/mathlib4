@@ -3,7 +3,8 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Lean.Expr.Basic
+import Lean.Elab.Syntax
+import Lean.DocString
 
 /-!
 
@@ -41,8 +42,10 @@ it will appear as a `(currently: true)` note next to the option.
 
 The form `#help option id` will show only options that begin with `id`.
 -/
-elab "#help" &"option" id:(ident)? : command => do
-  let id := id.map (·.getId.toString false)
+syntax withPosition("#help " colGt &"option" (colGt ppSpace Parser.rawIdent)?) : command
+
+private def elabHelpOption (id : Option Ident) : CommandElabM Unit := do
+  let id := id.map (·.raw.getId.toString false)
   let mut decls : Lean.RBMap _ _ compare := {}
   for (name, decl) in show Lean.RBMap .. from ← getOptionDecls do
     let name := name.toString false
@@ -64,15 +67,17 @@ elab "#help" &"option" id:(ident)? : command => do
     | .ofNat val => s!"Nat := {repr val}"
     | .ofInt val => s!"Int := {repr val}"
     | .ofSyntax val => s!"Syntax := {repr val}"
-    if let some val := opts.find name then
+    if let some val := opts.find (.mkSimple name) then
       msg1 := s!"{msg1}  (currently: {val})"
     msg := msg ++ .nest 2 (f!"option {name} : {msg1}" ++ .line ++ decl.descr) ++ .line ++ .line
   logInfo msg
 
+elab_rules : command | `(#help option $(id)?) => elabHelpOption id
+
 /--
 The command `#help attribute` (or the short form `#help attr`) shows all attributes that have been
 defined in the current environment.
-Each option has a format like:
+Each attribute has a format like:
 ```
 [inline]: mark definition to always be inlined
 ```
@@ -83,10 +88,18 @@ as the docstring will be displayed here.
 
 The form `#help attr id` will show only attributes that begin with `id`.
 -/
-elab "#help" (&"attr" <|> &"attribute") id:(ident)? : command => do
-  let id := id.map (·.getId.toString false)
+syntax withPosition("#help " colGt (&"attr" <|> &"attribute")
+    (colGt ppSpace Parser.rawIdent)?) : command
+
+private def elabHelpAttr (id : Option Ident) : CommandElabM Unit := do
+  let id := id.map (·.raw.getId.toString false)
   let mut decls : Lean.RBMap _ _ compare := {}
-  for (name, decl) in ← attributeMapRef.get do
+  /-
+  #adaptation_note
+  On nightly-2024-06-21, added the `.toList` here:
+  without it the requisite `ForIn` instance can't be found.
+  -/
+  for (name, decl) in (← attributeMapRef.get).toList do
     let name := name.toString false
     if let some id := id then
       if !id.isPrefixOf name then
@@ -105,22 +118,45 @@ elab "#help" (&"attr" <|> &"attribute") id:(ident)? : command => do
     msg := msg ++ .nest 2 msg1 ++ .line ++ .line
   logInfo msg
 
+elab_rules : command
+  | `(#help attr $(id)?) => elabHelpAttr id
+  | `(#help attribute $(id)?) => elabHelpAttr id
+
 /-- Gets the initial string token in a parser description. For example, for a declaration like
 `syntax "bla" "baz" term : tactic`, it returns `some "bla"`. Returns `none` for syntax declarations
 that don't start with a string constant. -/
 partial def getHeadTk (e : Expr) : Option String :=
   match e.getAppFnArgs with
-  | (``ParserDescr.node, #[_, _, p]) => getHeadTk p
-  | (``ParserDescr.unary, #[.app _ (.lit (.strVal "withPosition")), p]) => getHeadTk p
-  | (``ParserDescr.unary, #[.app _ (.lit (.strVal "atomic")), p]) => getHeadTk p
-  | (``ParserDescr.binary, #[.app _ (.lit (.strVal "andthen")), p, _]) => getHeadTk p
-  | (``ParserDescr.nonReservedSymbol, #[.lit (.strVal tk), _]) => some tk
-  | (``ParserDescr.symbol, #[.lit (.strVal tk)]) => some tk
-  | (``Parser.withAntiquot, #[_, p]) => getHeadTk p
-  | (``Parser.leadingNode, #[_, _, p]) => getHeadTk p
-  | (``HAndThen.hAndThen, #[_, _, _, _, p, _]) => getHeadTk p
-  | (``Parser.nonReservedSymbol, #[.lit (.strVal tk), _]) => some tk
-  | (``Parser.symbol, #[.lit (.strVal tk)]) => some tk
+  | (``ParserDescr.node, #[_, _, p])
+  | (``ParserDescr.trailingNode, #[_, _, _, p])
+  | (``ParserDescr.unary, #[.app _ (.lit (.strVal "withPosition")), p])
+  | (``ParserDescr.unary, #[.app _ (.lit (.strVal "atomic")), p])
+  | (``ParserDescr.unary, #[.app _ (.lit (.strVal "ppRealGroup")), p])
+  | (``ParserDescr.unary, #[.app _ (.lit (.strVal "ppRealFill")), p])
+  | (``Parser.ppRealFill, #[p])
+  | (``Parser.withAntiquot, #[_, p])
+  | (``Parser.leadingNode, #[_, _, p])
+  | (``Parser.trailingNode, #[_, _, _, p])
+  | (``Parser.group, #[p])
+  | (``Parser.withCache, #[_, p])
+  | (``Parser.withResetCache, #[p])
+  | (``Parser.withPosition, #[p])
+  | (``Parser.withOpen, #[p])
+  | (``Parser.withPositionAfterLinebreak, #[p])
+  | (``Parser.suppressInsideQuot, #[p])
+  | (``Parser.ppRealGroup, #[p])
+  | (``Parser.ppIndent, #[p])
+  | (``Parser.ppDedent, #[p])
+    => getHeadTk p
+  | (``ParserDescr.binary, #[.app _ (.lit (.strVal "andthen")), p, q])
+  | (``HAndThen.hAndThen, #[_, _, _, _, p, .lam _ _ q _])
+    => getHeadTk p <|> getHeadTk q
+  | (``ParserDescr.nonReservedSymbol, #[.lit (.strVal tk), _])
+  | (``ParserDescr.symbol, #[.lit (.strVal tk)])
+  | (``Parser.nonReservedSymbol, #[.lit (.strVal tk), _])
+  | (``Parser.symbol, #[.lit (.strVal tk)])
+  | (``Parser.unicodeSymbol, #[.lit (.strVal tk), _])
+    => pure tk
   | _ => none
 
 /--
@@ -136,8 +172,10 @@ but you can click to go to the definition.) It also shows the doc string if avai
 
 The form `#help cats id` will show only syntax categories that begin with `id`.
 -/
-elab "#help" &"cats" id:(ident)? : command => do
-  let id := id.map (·.getId.toString false)
+syntax withPosition("#help " colGt &"cats" (colGt ppSpace Parser.rawIdent)?) : command
+
+private def elabHelpCats (id : Option Ident) : CommandElabM Unit := do
+  let id := id.map (·.raw.getId.toString false)
   let mut decls : Lean.RBMap _ _ compare := {}
   for (name, cat) in (Parser.parserExtension.getState (← getEnv)).categories do
     let name := name.toString false
@@ -158,6 +196,8 @@ elab "#help" &"cats" id:(ident)? : command => do
     msg := msg ++ .nest 2 msg1 ++ (.line ++ .line : Format)
   logInfo msg
 
+elab_rules : command | `(#help cats $(id)?) => elabHelpCats id
+
 /--
 The command `#help cat C` shows all syntaxes that have been defined in syntax category `C` in the
 current environment.
@@ -173,10 +213,11 @@ name of the syntax (which you can also click to go to the definition), and the d
 * The form `#help cat+ C` will also show information about any `macro`s and `elab`s
   associated to the listed syntaxes.
 -/
-elab "#help" &"cat" more:"+"? catStx:ident id:(ident <|> str)? : command => do
-  let id := id.map fun id ↦ match id.raw with
-    | .ident _ _ v _ => v.toString false
-    | id => id.isStrLit?.get!
+syntax withPosition("#help " colGt &"cat" "+"? colGt ident
+    (colGt ppSpace (Parser.rawIdent <|> str))?) : command
+
+private def elabHelpCat (more : Option Syntax) (catStx : Ident) (id : Option String) :
+    CommandElabM Unit := do
   let mut decls : Lean.RBMap _ _ compare := {}
   let mut rest : Lean.RBMap _ _ compare := {}
   let catName := catStx.getId.eraseMacroScopes
@@ -230,30 +271,47 @@ elab "#help" &"cat" more:"+"? catStx:ident id:(ident <|> str)? : command => do
     msg ← addMsg k msg m!"syntax ... [{mkConst k}]"
   logInfo msg
 
+elab_rules : command
+  | `(#help cat $[+%$more]? $cat) => elabHelpCat more cat none
+  | `(#help cat $[+%$more]? $cat $id:ident) => elabHelpCat more cat (id.getId.toString false)
+  | `(#help cat $[+%$more]? $cat $id:str) => elabHelpCat more cat id.getString
+
 /--
 The command `#help term` shows all term syntaxes that have been defined in the current environment.
 See `#help cat` for more information.
 -/
-macro "#help" tk:&"term" more:"+"? id:(ident <|> str)? : command =>
-  `(#help cat$[+%$more]? $(mkIdentFrom tk `term) $(id.map (⟨·.raw⟩))?)
+syntax withPosition("#help " colGt &"term" "+"?
+    (colGt ppSpace (Parser.rawIdent <|> str))?) : command
+macro_rules
+  | `(#help term%$tk $[+%$more]? $(id)?) =>
+    `(#help cat$[+%$more]? $(mkIdentFrom tk `term) $(id)?)
 
 /--
 The command `#help tactic` shows all tactics that have been defined in the current environment.
 See `#help cat` for more information.
 -/
-macro "#help" tk:&"tactic" more:"+"? id:(ident <|> str)? : command => do
-  `(#help cat$[+%$more]? $(mkIdentFrom tk `tactic) $(id.map (⟨·.raw⟩))?)
+syntax withPosition("#help " colGt &"tactic" "+"?
+    (colGt ppSpace (Parser.rawIdent <|> str))?) : command
+macro_rules
+  | `(#help tactic%$tk $[+%$more]? $(id)?) =>
+    `(#help cat$[+%$more]? $(mkIdentFrom tk `tactic) $(id)?)
 
 /--
 The command `#help conv` shows all tactics that have been defined in the current environment.
 See `#help cat` for more information.
 -/
-macro "#help" tk:&"conv" more:"+"? id:(ident <|> str)? : command =>
-  `(#help cat$[+%$more]? $(mkIdentFrom tk `conv) $(id.map (⟨·.raw⟩))?)
+syntax withPosition("#help " colGt &"conv" "+"?
+    (colGt ppSpace (Parser.rawIdent <|> str))?) : command
+macro_rules
+  | `(#help conv%$tk $[+%$more]? $(id)?) =>
+    `(#help cat$[+%$more]? $(mkIdentFrom tk `conv) $(id)?)
 
 /--
 The command `#help command` shows all commands that have been defined in the current environment.
 See `#help cat` for more information.
 -/
-macro "#help" tk:&"command" more:"+"? id:(ident <|> str)? : command =>
-  `(#help cat$[+%$more]? $(mkIdentFrom tk `command) $(id.map (⟨·.raw⟩))?)
+syntax withPosition("#help " colGt &"command" "+"?
+    (colGt ppSpace (Parser.rawIdent <|> str))?) : command
+macro_rules
+  | `(#help command%$tk $[+%$more]? $(id)?) =>
+    `(#help cat$[+%$more]? $(mkIdentFrom tk `command) $(id)?)

@@ -2,18 +2,14 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.monoid.type_tags
-! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.TypeTags
-import Mathlib.Algebra.Order.Monoid.Cancel.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-! # Ordered monoid structures on `Multiplicative α` and `Additive α`. -/
 
+variable {α : Type*}
 
 instance : ∀ [LE α], LE (Multiplicative α) :=
   fun {inst} => inst
@@ -98,22 +94,24 @@ instance Multiplicative.existsMulOfLe [Add α] [LE α] [ExistsAddOfLE α] :
 instance Additive.existsAddOfLe [Mul α] [LE α] [ExistsMulOfLE α] : ExistsAddOfLE (Additive α) :=
   ⟨@exists_mul_of_le α _ _ _⟩
 
-instance Multiplicative.canonicallyOrderedMonoid [CanonicallyOrderedAddMonoid α] :
-    CanonicallyOrderedMonoid (Multiplicative α) :=
+instance Multiplicative.canonicallyOrderedCommMonoid [CanonicallyOrderedAddCommMonoid α] :
+    CanonicallyOrderedCommMonoid (Multiplicative α) :=
   { Multiplicative.orderedCommMonoid, Multiplicative.orderBot,
     Multiplicative.existsMulOfLe with le_self_mul := @le_self_add α _ }
 
-instance Additive.canonicallyOrderedAddMonoid [CanonicallyOrderedMonoid α] :
-    CanonicallyOrderedAddMonoid (Additive α) :=
+instance Additive.canonicallyOrderedAddCommMonoid [CanonicallyOrderedCommMonoid α] :
+    CanonicallyOrderedAddCommMonoid (Additive α) :=
   { Additive.orderedAddCommMonoid, Additive.orderBot, Additive.existsAddOfLe with
     le_self_add := @le_self_mul α _ }
 
-instance Multiplicative.canonicallyLinearOrderedMonoid [CanonicallyLinearOrderedAddMonoid α] :
-    CanonicallyLinearOrderedMonoid (Multiplicative α) :=
-  { Multiplicative.canonicallyOrderedMonoid, Multiplicative.linearOrder with }
+instance Multiplicative.canonicallyLinearOrderedCommMonoid
+    [CanonicallyLinearOrderedAddCommMonoid α] :
+    CanonicallyLinearOrderedCommMonoid (Multiplicative α) :=
+  { Multiplicative.canonicallyOrderedCommMonoid, Multiplicative.linearOrder with }
 
-instance [CanonicallyLinearOrderedMonoid α] : CanonicallyLinearOrderedAddMonoid (Additive α) :=
-  { Additive.canonicallyOrderedAddMonoid, Additive.linearOrder with }
+instance [CanonicallyLinearOrderedCommMonoid α] :
+    CanonicallyLinearOrderedAddCommMonoid (Additive α) :=
+  { Additive.canonicallyOrderedAddCommMonoid, Additive.linearOrder with }
 
 namespace Additive
 
@@ -122,22 +120,18 @@ variable [Preorder α]
 @[simp]
 theorem ofMul_le {a b : α} : ofMul a ≤ ofMul b ↔ a ≤ b :=
   Iff.rfl
-#align additive.of_mul_le Additive.ofMul_le
 
 @[simp]
 theorem ofMul_lt {a b : α} : ofMul a < ofMul b ↔ a < b :=
   Iff.rfl
-#align additive.of_mul_lt Additive.ofMul_lt
 
 @[simp]
 theorem toMul_le {a b : Additive α} : toMul a ≤ toMul b ↔ a ≤ b :=
   Iff.rfl
-#align additive.to_mul_le Additive.toMul_le
 
 @[simp]
 theorem toMul_lt {a b : Additive α} : toMul a < toMul b ↔ a < b :=
   Iff.rfl
-#align additive.to_mul_lt Additive.toMul_lt
 
 end Additive
 
@@ -148,21 +142,17 @@ variable [Preorder α]
 @[simp]
 theorem ofAdd_le {a b : α} : ofAdd a ≤ ofAdd b ↔ a ≤ b :=
   Iff.rfl
-#align multiplicative.of_add_le Multiplicative.ofAdd_le
 
 @[simp]
 theorem ofAdd_lt {a b : α} : ofAdd a < ofAdd b ↔ a < b :=
   Iff.rfl
-#align multiplicative.of_add_lt Multiplicative.ofAdd_lt
 
 @[simp]
 theorem toAdd_le {a b : Multiplicative α} : toAdd a ≤ toAdd b ↔ a ≤ b :=
   Iff.rfl
-#align multiplicative.to_add_le Multiplicative.toAdd_le
 
 @[simp]
 theorem toAdd_lt {a b : Multiplicative α} : toAdd a < toAdd b ↔ a < b :=
   Iff.rfl
-#align multiplicative.to_add_lt Multiplicative.toAdd_lt
 
 end Multiplicative

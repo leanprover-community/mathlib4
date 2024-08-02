@@ -4,18 +4,25 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Siddhartha Gadgil, Jannis Limperg
 -/
 import Lean
-import Std.Tactic.RCases
-import Mathlib.Tactic.Cache
+
+/-!
+# The `recover` tactic modifier
+
+This defines the `recover` tactic modifier, which can be used to debug cases where goals
+are not closed correctly. `recover tacs` for a tactic (or tactic sequence) `tacs`
+applies the tactics and then adds goals
+that are not closed, starting from the original goal.
+-/
+
+namespace Mathlib.Tactic
 
 open Lean (HashSet)
 open Lean Meta Elab Tactic
 
-namespace Mathlib.Tactic
-
 /--
 Get all metavariables which `mvarId` depends on. These are the metavariables
 which occur in the target or local context or delayed assignment (if any) of
-`mvarId`, plus the metvariables which occur in these metavariables, etc.
+`mvarId`, plus the metavariables which occur in these metavariables, etc.
 -/
 partial def getUnassignedGoalMVarDependencies (mvarId : MVarId) :
     MetaM (HashSet MVarId) :=
@@ -47,9 +54,9 @@ partial def getUnassignedGoalMVarDependencies (mvarId : MVarId) :
           go pendingMVarId
 
 /-- Modifier `recover` for a tactic (sequence) to debug cases where goals are closed incorrectly.
-The tactic `recover tacs` for a tactic (sequence) tacs applies the tactics and then adds goals
-that are not closed starting from the original -/
-elab "recover" tacs:tacticSeq : tactic => do
+The tactic `recover tacs` for a tactic (sequence) `tacs` applies the tactics and then adds goals
+that are not closed, starting from the original goal. -/
+elab "recover " tacs:tacticSeq : tactic => do
   let originalGoals ← getGoals
   evalTactic tacs
   let mut unassigned : HashSet MVarId := {}

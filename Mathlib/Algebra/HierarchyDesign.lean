@@ -2,13 +2,8 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.hierarchy_design
-! leanprover-community/mathlib commit 41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Std.Util.LibraryNote
+import Batteries.Util.LibraryNote
 
 /-!
 # Documentation of the algebraic hierarchy
@@ -32,7 +27,7 @@ especially once interactions between algebraic and order/topological/etc structu
 
 In mathlib, we try to avoid this by only introducing new algebraic typeclasses either
 1. when there is "real mathematics" to be done with them, or
-2. when there is a meaninful gain in simplicity by factoring out a common substructure.
+2. when there is a meaningful gain in simplicity by factoring out a common substructure.
 
 (As examples, at this point we don't have `Loop`, or `UnitalMagma`,
 but we do have `LieSubmodule` and `TopologicalField`!
@@ -64,54 +59,52 @@ one should attempt to add the following constructions and results,
 when applicable:
 
 * Instances transferred elementwise to products, like `Prod.Monoid`.
-  See `Mathilb.Algebra.Group.Prod` for more examples.
+  See `Mathlib.Algebra.Group.Prod` for more examples.
   ```
   instance Prod.Z [Z M] [Z N] : Z (M × N) := ...
   ```
 * Instances transferred elementwise to pi types, like `Pi.Monoid`.
-  See `Mathilb.Algebra.Group.Pi` for more examples.
+  See `Mathlib.Algebra.Group.Pi` for more examples.
   ```
-  instance Pi.Z [∀ i, Z $ f i] : Z (Π i : I, f i) := ...
+  instance Pi.Z [∀ i, Z <| f i] : Z (Π i : I, f i) := ...
   ```
 * Instances transferred to `MulOpposite M`, like `MulOpposite.Monoid`.
-  See `Mathilb.Algebra.Opposites` for more examples.
+  See `Mathlib.Algebra.Opposites` for more examples.
   ```
   instance MulOpposite.Z [Z M] : Z (MulOpposite M) := ...
   ```
 * Instances transferred to `ULift M`, like `ULift.Monoid`.
-  See `Mathilb.Algebra.Group.ULift` for more examples.
+  See `Mathlib.Algebra.Group.ULift` for more examples.
   ```
   instance ULift.Z [Z M] : Z (ULift M) := ...
   ```
 * Definitions for transferring the proof fields of instances along
   injective or surjective functions that agree on the data fields,
   like `Function.Injective.monoid` and `Function.Surjective.monoid`.
-  We make these definitions `@[reducible]`, see note [reducible non-instances].
-  See `Mathilb.Algebra.Group.InjSurj` for more examples.
+  We make these definitions `abbrev`, see note [reducible non-instances].
+  See `Mathlib.Algebra.Group.InjSurj` for more examples.
   ```
-  @[reducible]
-  def Function.Injective.Z [Z M₂] (f : M₁ → M₂) (hf : f.Injective)
+  abbrev Function.Injective.Z [Z M₂] (f : M₁ → M₂) (hf : f.Injective)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : Z M₁ := ...
 
-  @[reducible]
-  def Function.Surjective.Z [Z M₁] (f : M₁ → M₂) (hf : f.Surjective)
+  abbrev Function.Surjective.Z [Z M₁] (f : M₁ → M₂) (hf : f.Surjective)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : Z M₂ := ...
   ```
 * Instances transferred elementwise to `Finsupp`s, like `Finsupp.semigroup`.
-  See `Mathilb.Data.Finsupp.Pointwise` for more examples.
+  See `Mathlib.Data.Finsupp.Pointwise` for more examples.
   ```
   instance FinSupp.Z [Z β] : Z (α →₀ β) := ...
   ```
 * Instances transferred elementwise to `Set`s, like `Set.monoid`.
-  See `Mathilb.Algebra.Pointwise` for more examples.
+  See `Mathlib.Algebra.Pointwise` for more examples.
   ```
   instance Set.Z [Z α] : Z (Set α) := ...
   ```
 * Definitions for transferring the entire structure across an equivalence, like `Equiv.monoid`.
-  See `Mathilb.Data.Equiv.TransferInstance` for more examples. See also the `transport` tactic.
+  See `Mathlib.Data.Equiv.TransferInstance` for more examples. See also the `transport` tactic.
   ```
   def Equiv.Z (e : α ≃ β) [Z β] : Z α := ...
-  /- When there is a new notion of `Z`-equiv: -/
+  /-- When there is a new notion of `Z`-equiv: -/
   def Equiv.ZEquiv (e : α ≃ β) [Z β] : by { letI := Equiv.Z e, exact α ≃Z β } := ...
   ```
 
@@ -133,7 +126,7 @@ you should provide instances transferring
 Typically this is done using the `Function.Injective.Z` definition mentioned above.
 ```
 instance SubY.toZ [Z α] : Z (SubY α) :=
-coe_injective.Z coe ...
+  coe_injective.Z coe ...
 ```
 
 ## Morphisms and equivalences
@@ -144,7 +137,7 @@ For many algebraic structures, particularly ones used in representation theory, 
 etc., we also define "bundled" versions, which carry `category` instances.
 
 These bundled versions are usually named by appending `Cat`,
-so for example we have `AddCommGroupCat` as a bundled `AddCommGroup`, and `TopCommRingCat`
+so for example we have `AddCommGrp` as a bundled `AddCommGroup`, and `TopCommRingCat`
 (which bundles together `CommRing`, `TopologicalSpace`, and `TopologicalRing`).
 
 These bundled versions have many appealing features:
@@ -152,9 +145,9 @@ These bundled versions have many appealing features:
 * a uniform notation (and definition) for isomorphisms `X ≅ Y`
 * a uniform API for subobjects, via the partial order `Subobject X`
 * interoperability with unbundled structures, via coercions to `Type`
-  (so if `G : AddCommGroupCat`, you can treat `G` as a type,
+  (so if `G : AddCommGrp`, you can treat `G` as a type,
   and it automatically has an `AddCommGroup` instance)
-  and lifting maps `AddCommGroupCat.of G`, when `G` is a type with an `AddCommGroup` instance.
+  and lifting maps `AddCommGrp.of G`, when `G` is a type with an `AddCommGroup` instance.
 
 If, for example you do the work of proving that a typeclass `Z` has a good notion of tensor product,
 you are strongly encouraged to provide the corresponding `MonoidalCategory` instance
@@ -208,4 +201,32 @@ recognize that `Units.Preorder` and `Units.PartialOrder` give rise to the same `
 For example, you might have another class that takes `[LE α]` as an argument, and this argument
 sometimes comes from `Units.Preorder` and sometimes from `Units.PartialOrder`.
 Therefore, `Preorder.lift` and `PartialOrder.lift` are marked `@[reducible]`.
+-/
+
+library_note "implicit instance arguments"/--
+There are places where typeclass arguments are specified with implicit `{}` brackets instead of
+the usual `[]` brackets. This is done when the instances can be inferred because they are implicit
+arguments to the type of one of the other arguments. When they can be inferred from these other
+arguments, it is faster to use this method than to use type class inference.
+
+For example, when writing lemmas about `(f : α →+* β)`, it is faster to specify the fact that `α`
+and `β` are `Semiring`s as `{rα : Semiring α} {rβ : Semiring β}` rather than the usual
+`[Semiring α] [Semiring β]`.
+-/
+
+library_note "lower instance priority"/--
+Certain instances always apply during type-class resolution. For example, the instance
+`AddCommGroup.toAddGroup {α} [AddCommGroup α] : AddGroup α` applies to all type-class
+resolution problems of the form `AddGroup _`, and type-class inference will then do an
+exhaustive search to find a commutative group. These instances take a long time to fail.
+Other instances will only apply if the goal has a certain shape. For example
+`Int.instAddGroupInt : AddGroup ℤ` or
+`Prod.instAddGroup {α β} [AddGroup α] [AddGroup β] : AddGroup (α × β)`. Usually these instances
+will fail quickly, and when they apply, they are almost always the desired instance.
+For this reason, we want the instances of the second type (that only apply in specific cases) to
+always have higher priority than the instances of the first type (that always apply).
+See also [mathlib#1561](https://github.com/leanprover-community/mathlib/issues/1561).
+
+Therefore, if we create an instance that always applies, we set the priority of these instances to
+100 (or something similar, which is below the default value of 1000).
 -/

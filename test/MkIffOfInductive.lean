@@ -1,4 +1,3 @@
-import Std.Data.List.Basic
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Data.List.Perm
 
@@ -8,12 +7,21 @@ example {α : Type _} (R : α → α → Prop) (a : α) (al : List α) :
       al = List.nil ∨ ∃ (b : α) (l : List α), R a b ∧ List.Chain R b l ∧ al = b :: l :=
   test.chain_iff R a al
 
+-- check that the statement prints nicely
+/--
+info: test.chain_iff.{u_1} {α : Type u_1} (R : α → α → Prop) :
+  ∀ (a : α) (a_1 : List α), List.Chain R a a_1 ↔ a_1 = [] ∨ ∃ b l, R a b ∧ List.Chain R b l ∧ a_1 = b :: l
+-/
+#guard_msgs in
+#check test.chain_iff
+
 mk_iff_of_inductive_prop False    test.false_iff
 example : False ↔ False := test.false_iff
 
 mk_iff_of_inductive_prop True     test.true_iff
 example : True ↔ True := test.true_iff
 
+universe u
 mk_iff_of_inductive_prop Nonempty test.non_empty_iff
 example (α : Sort u) : Nonempty α ↔ ∃ (_ : α), True := test.non_empty_iff α
 
@@ -29,7 +37,8 @@ example (α : Sort u) (a b : α) : a = b ↔ b = a := test.eq_iff a b
 mk_iff_of_inductive_prop HEq      test.heq_iff
 example {α : Sort u} (a : α) {β : Sort u} (b : β) : HEq a b ↔ β = α ∧ HEq b a := test.heq_iff a b
 
-mk_iff_of_inductive_prop List.Perm  test.perm_iff
+mk_iff_of_inductive_prop List.Perm test.perm_iff
+open scoped List in
 example {α : Type _} (a b : List α) :
     a ~ b ↔
       a = List.nil ∧ b = List.nil ∨
@@ -37,7 +46,7 @@ example {α : Type _} (a b : List α) :
           (∃ (x y : α) (l : List α), a = y :: x :: l ∧ b = x :: y :: l) ∨
             ∃ (l₂ : List α), a ~ l₂ ∧ l₂ ~ b := test.perm_iff a b
 
-mk_iff_of_inductive_prop List.Pairwise  test.pairwise_iff
+mk_iff_of_inductive_prop List.Pairwise test.pairwise_iff
 example {α : Type} (R : α → α → Prop) (al : List α) :
     List.Pairwise R al ↔
       al = List.nil ∨
@@ -71,4 +80,4 @@ inductive ReflTransGen {α : Type _} (r : α → α → Prop) (a : α) : α → 
 
 example {α : Type} (r: α → α → Prop) (a c : α) :
     ReflTransGen r a c ↔ c = a ∨ ∃ b : α, ReflTransGen r a b ∧ r b c :=
- ReflTransGen_iff r a c
+ reflTransGen_iff r a c

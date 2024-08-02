@@ -2,11 +2,6 @@
 Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module topology.instances.sign
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Sign
 import Mathlib.Topology.Order.Basic
@@ -26,23 +21,21 @@ instance : TopologicalSpace SignType :=
 instance : DiscreteTopology SignType :=
   ⟨rfl⟩
 
-variable {α : Type _} [Zero α] [TopologicalSpace α]
+variable {α : Type*} [Zero α] [TopologicalSpace α]
 
 section PartialOrder
 
 variable [PartialOrder α] [DecidableRel ((· < ·) : α → α → Prop)] [OrderTopology α]
 
 theorem continuousAt_sign_of_pos {a : α} (h : 0 < a) : ContinuousAt SignType.sign a := by
-  refine' (continuousAt_const : ContinuousAt (fun _ => (1 : SignType)) a).congr _
+  refine (continuousAt_const : ContinuousAt (fun _ => (1 : SignType)) a).congr ?_
   rw [Filter.EventuallyEq, eventually_nhds_iff]
   exact ⟨{ x | 0 < x }, fun x hx => (sign_pos hx).symm, isOpen_lt' 0, h⟩
-#align continuous_at_sign_of_pos continuousAt_sign_of_pos
 
 theorem continuousAt_sign_of_neg {a : α} (h : a < 0) : ContinuousAt SignType.sign a := by
-  refine' (continuousAt_const : ContinuousAt (fun x => (-1 : SignType)) a).congr _
+  refine (continuousAt_const : ContinuousAt (fun x => (-1 : SignType)) a).congr ?_
   rw [Filter.EventuallyEq, eventually_nhds_iff]
   exact ⟨{ x | x < 0 }, fun x hx => (sign_neg hx).symm, isOpen_gt' 0, h⟩
-#align continuous_at_sign_of_neg continuousAt_sign_of_neg
 
 end PartialOrder
 
@@ -54,6 +47,5 @@ theorem continuousAt_sign_of_ne_zero {a : α} (h : a ≠ 0) : ContinuousAt SignT
   rcases h.lt_or_lt with (h_neg | h_pos)
   · exact continuousAt_sign_of_neg h_neg
   · exact continuousAt_sign_of_pos h_pos
-#align continuous_at_sign_of_ne_zero continuousAt_sign_of_ne_zero
 
 end LinearOrder

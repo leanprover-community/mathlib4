@@ -1,4 +1,8 @@
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Linarith
+
+
+set_option autoImplicit true
 
 -- We deliberately mock R here so that we don't have to import the deps
 axiom Real : Type
@@ -48,13 +52,13 @@ example (x y : ℤ) (h1 : x + 2 = -3) (h2 : y = 10) : -y + 2 * x + 4 = -16 := by
 example (x y : ℚ) (h1 : 3 * x + 2 * y = 10) (h2 : 2 * x + 5 * y = 3) : -11 * y + 1 = 11 + 1 := by
   linear_combination 2 * h1 - 3 * h2
 
--- example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) : b = 2 / 3 := by
---   linear_combination ha / 6 + hab / 3
+example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) : b = 2 / 3 := by
+  linear_combination ha / 6 + hab / 3
 
 /-! ### Cases with more than 2 equations -/
 
--- example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) (hignore : 3 = a + b) : b = 2 / 3 := by
---   linear_combination 1 / 6 * ha + 1 / 3 * hab + 0 * hignore
+example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) (hignore : 3 = a + b) : b = 2 / 3 := by
+  linear_combination 1 / 6 * ha + 1 / 3 * hab + 0 * hignore
 
 example (x y z : ℝ) (ha : x + 2 * y - z = 4) (hb : 2 * x + y + z = -2) (hc : x + 2 * y + z = 2) :
     -3 * x - 3 * y - 4 * z = 2 := by linear_combination ha - hb - 2 * hc
@@ -67,13 +71,13 @@ example (x y z : ℝ) (ha : x + 2 * y - z = 4) (hb : 2 * x + y + z = -2) (hc : x
     10 = 6 * -x := by
   linear_combination ha + 4 * hb - 3 * hc
 
--- example (w x y z : ℝ) (h1 : x + 2.1 * y + 2 * z = 2) (h2 : x + 8 * z + 5 * w = -6.5)
---     (h3 : x + y + 5 * z + 5 * w = 3) : x + 2.2 * y + 2 * z - 5 * w = -8.5 := by
---   linear_combination 2 * h1 + 1 * h2 - 2 * h3
+example (w x y z : ℝ) (h1 : x + 2.1 * y + 2 * z = 2) (h2 : x + 8 * z + 5 * w = -6.5)
+    (h3 : x + y + 5 * z + 5 * w = 3) : x + 2.2 * y + 2 * z - 5 * w = -8.5 := by
+  linear_combination 2 * h1 + 1 * h2 - 2 * h3
 
--- example (w x y z : ℝ) (h1 : x + 2.1 * y + 2 * z = 2) (h2 : x + 8 * z + 5 * w = -6.5)
---     (h3 : x + y + 5 * z + 5 * w = 3) : x + 2.2 * y + 2 * z - 5 * w = -8.5 := by
---   linear_combination 2 * h1 + h2 - 2 * h3
+example (w x y z : ℝ) (h1 : x + 2.1 * y + 2 * z = 2) (h2 : x + 8 * z + 5 * w = -6.5)
+    (h3 : x + y + 5 * z + 5 * w = 3) : x + 2.2 * y + 2 * z - 5 * w = -8.5 := by
+  linear_combination 2 * h1 + h2 - 2 * h3
 
 example (a b c d : ℚ) (h1 : a = 4) (h2 : 3 = b) (h3 : c * 3 = d) (h4 : -d = a) :
     2 * a - 3 + 9 * c + 3 * d = 8 - b + 3 * d - 3 * a := by
@@ -122,21 +126,21 @@ example (x y : ℚ) (h1 : 3 * x + 2 * y = 10) (h2 : 2 * x + 5 * y = 3) : -11 * y
 example (x y : ℚ) (h1 : 3 * x + 2 * y = 10) (h2 : 2 * x + 5 * y = 3) : -11 * y + 1 = 11 + 1 := by
   linear_combination (norm := ring1) 2 * h1 + -3 * h2
 
--- example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) : b = 2 / 3 := by
---   linear_combination (norm := ring_nf) 1 / 6 * ha + 1 / 3 * hab
+example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) : b = 2 / 3 := by
+  linear_combination (norm := ring_nf) 1 / 6 * ha + 1 / 3 * hab
 
 example (x y : ℤ) (h1 : 3 * x + 2 * y = 10) : 3 * x + 2 * y = 10 := by
   linear_combination (norm := simp) h1
 
 /-! ### Cases that have linear_combination skip normalization -/
 
--- example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) : b = 2 / 3 := by
---   linear_combination (norm := skip) 1 / 6 * ha + 1 / 3 * hab
---   linarith
+example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) : b = 2 / 3 := by
+  linear_combination (norm := skip) 1 / 6 * ha + 1 / 3 * hab
+  linarith
 
 example (x y : ℤ) (h1 : x = -3) (_h2 : y = 10) : 2 * x = -6 := by
   linear_combination (norm := skip) 2 * h1
-  simp
+  simp (config := {decide := true})
 
 /-! ### Cases without any arguments provided -/
 
@@ -193,6 +197,28 @@ example (a b : ℤ) (x y : ℝ) (hab : a = b) (hxy : x = y) : 2 * x = 2 * y := b
   fail_if_success linear_combination 2 * hab
   linear_combination 2 * hxy
 
+/-! ### Cases with exponent -/
+
+example (x y z : ℚ) (h : x = y) (h2 : x * y = 0) : x + y*z = 0 := by
+  linear_combination (exp := 2) (-y * z ^ 2 + x) * h + (z ^ 2 + 2 * z + 1) * h2
+
+example (x y z : ℚ) (h : x = y) (h2 : x * y = 0) : y*z = -x := by
+  linear_combination (norm := skip) (exp := 2) (-y * z ^ 2 + x) * h + (z ^ 2 + 2 * z + 1) * h2
+  ring
+
+example (K : Type)
+    [Field K]
+    [CharZero K]
+    {x y z : K}
+    (h₂ : y ^ 3 + x * (3 * z ^ 2) = 0)
+    (h₁ : x ^ 3 + z * (3 * y ^ 2) = 0)
+    (h₀ : y * (3 * x ^ 2) + z ^ 3 = 0)
+    (h : x ^ 3 * y + y ^ 3 * z + z ^ 3 * x = 0) :
+    x = 0 := by
+  linear_combination (exp := 6) 2 * y * z ^ 2 * h₂ / 7 + (x ^ 3  - y ^ 2 * z / 7) * h₁ -
+    x * y * z * h₀ + y * z * h / 7
+
+
 /-! ### Regression tests -/
 
 def g (a : ℤ) : ℤ := a ^ 2
@@ -200,3 +226,7 @@ def g (a : ℤ) : ℤ := a ^ 2
 example (h : g a = g b) : a ^ 4 = b ^ 4 := by
   dsimp [g] at h
   linear_combination (a ^ 2 + b ^ 2) * h
+
+example {r s a b : ℕ} (h₁ : (r : ℤ) = a + 1) (h₂ : (s : ℤ) = b + 1) :
+    r * s = (a + 1 : ℤ) * (b + 1) := by
+  linear_combination (↑b + 1) * h₁ + ↑r * h₂

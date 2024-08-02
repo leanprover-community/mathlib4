@@ -26,8 +26,9 @@ set -exo pipefail
 # 1. A Python script `scripts/lint-style.py` that lints the contents of a Lean file.
 #    This script is called below on all Lean files in the repository.
 #    Exceptions are maintained in `scripts/style-exceptions.txt`.
+#    (Rewriting these checks in Lean is work in progress.)
 # 2. The remainder of this shell script
-#    contains some lints on the global repository.
+#    contains a lint on the global repository.
 #
 # TODO: This is adapted from the linter for mathlib3. It should be rewritten in Lean.
 
@@ -37,12 +38,14 @@ set -exo pipefail
 
 touch scripts/style-exceptions.txt
 
-# Assuming `archive/` and `counterexamples/` are ported too, they need to be added here.
-find Mathlib -name '*.lean' | xargs ./scripts/lint-style.py
+git ls-files 'Mathlib/*.lean' | xargs ./scripts/lint-style.py "$@"
+git ls-files 'Archive/*.lean' | xargs ./scripts/lint-style.py "$@"
+git ls-files 'Counterexamples/*.lean' | xargs ./scripts/lint-style.py "$@"
+
+# Call the in-progress Lean rewrite of these Python lints.
+lake exe lint_style --github
 
 # 2. Global checks on the mathlib repository
-
-# 2.1 Check for executable bit on Lean files
 
 executable_files="$(find . -name '*.lean' -type f \( -perm -u=x -o -perm -g=x -o -perm -o=x \))"
 

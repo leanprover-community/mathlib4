@@ -3,12 +3,12 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Logic
-import Std.Tactic.RCases
 import Mathlib.Tactic.Constructor
-import Mathlib.Tactic.PermuteGoals
-import Mathlib.Tactic.SolveByElim
+import Batteries.Tactic.PermuteGoals
+import Batteries.Test.Internal.DummyLabelAttr
+
+set_option autoImplicit true
 
 example (h : Nat) : Nat := by solve_by_elim
 example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim
@@ -42,7 +42,7 @@ example {α β γ : Type} (_f : α → β) (g : β → γ) (b : β) : γ := by s
 example {α : Nat → Type} (f : (n : Nat) → α n → α (n+1)) (a : α 0) : α 4 := by
   solve_by_elim only [f, a]
 
-example (h₁ h₂ : False) : True := by
+example (h₁ h₂ : False) : Empty := by
   -- 'It doesn't make sense to remove local hypotheses when using `only` without `*`.'
   fail_if_success solve_by_elim only [-h₁]
   -- 'It does make sense to use `*` without `only`.'
@@ -55,7 +55,7 @@ example (P₁ P₂ : α → Prop) (f : ∀ (a : α), P₁ a → P₂ a → β)
   solve_by_elim
 
 example {X : Type} (x : X) : x = x := by
-  fail_if_success solve_by_elim only -- needs the `rfl` lemma
+  fail_if_success solve_by_elim (config := {constructor := false}) only -- needs the `rfl` lemma
   solve_by_elim
 
 -- Needs to apply `rfl` twice, with different implicit arguments each time.
@@ -63,8 +63,15 @@ example {X : Type} (x : X) : x = x := by
 example {X : Type} (x y : X) (p : Prop) (h : x = x → y = y → p) : p := by solve_by_elim
 
 example : True := by
-  fail_if_success solve_by_elim only -- needs the `trivial` lemma
+  fail_if_success solve_by_elim (config := {constructor := false}) only -- needs the `trivial` lemma
   solve_by_elim
+
+example : True := by
+  -- uses the `trivial` lemma, which should now be removed from the default set:
+  solve_by_elim (config := {constructor := false})
+
+example : True := by
+  solve_by_elim only -- uses the constructor discharger.
 
 -- Requires backtracking.
 example (P₁ P₂ : α → Prop) (f : ∀ (a: α), P₁ a → P₂ a → β)
@@ -73,34 +80,33 @@ example (P₁ P₂ : α → Prop) (f : ∀ (a: α), P₁ a → P₂ a → β)
   fail_if_success solve_by_elim (config := .noBackTracking)
   solve_by_elim
 
-example {α : Type} {a b : α → Prop} (h₀ : b = a) (y : α) : a y = b y :=
-by
+example {α : Type} {a b : α → Prop} (h₀ : b = a) (y : α) : a y = b y := by
   fail_if_success solve_by_elim (config := {symm := false})
   solve_by_elim
 
-example (P : True → False) : 3 = 7 :=  by
+example (P : True → False) : 3 = 7 := by
   fail_if_success solve_by_elim (config := {exfalso := false})
   solve_by_elim
 
 -- Verifying that `solve_by_elim` acts only on the main goal.
-example (n : ℕ) : ℕ × ℕ := by
+example (n : Nat) : Nat × Nat := by
   constructor
   solve_by_elim
   solve_by_elim
 
 -- Verifying that `solve_by_elim*` acts on all remaining goals.
-example (n : ℕ) : ℕ × ℕ := by
+example (n : Nat) : Nat × Nat := by
   constructor
   solve_by_elim*
 
 -- Verifying that `solve_by_elim*` backtracks when given multiple goals.
-example (n m : ℕ) (f : ℕ → ℕ → Prop) (h : f n m) : ∃ p : ℕ × ℕ, f p.1 p.2 := by
+example (n m : Nat) (f : Nat → Nat → Prop) (h : f n m) : ∃ p : Nat × Nat, f p.1 p.2 := by
   fconstructor
   fconstructor
   solve_by_elim*
 
 -- test that metavariables created for implicit arguments don't get stuck
-example (P : ℕ → Type) (f : {n : ℕ} → P n) : P 2 × P 3 := by
+example (P : Nat → Type) (f : {n : Nat} → P n) : P 2 × P 3 := by
   fconstructor
   solve_by_elim* only [f]
 
@@ -110,23 +116,20 @@ example : 6 = 6 ∧ [7] = [7] := by
 
 -- Test that `solve_by_elim*`, which works on multiple goals,
 -- successfully uses the relevant local hypotheses for each goal.
-example (f g : ℕ → Prop) : (∃ k : ℕ, f k) ∨ (∃ k : ℕ, g k) ↔ ∃ k : ℕ, f k ∨ g k := by
-  dsimp at *
+example (f g : Nat → Prop) : (∃ k : Nat, f k) ∨ (∃ k : Nat, g k) ↔ ∃ k : Nat, f k ∨ g k := by
   fconstructor
   rintro (⟨n, fn⟩ | ⟨n, gn⟩)
   pick_goal 3
   rintro ⟨n, hf | hg⟩
   solve_by_elim* (config := {maxDepth := 13}) [Or.inl, Or.inr, Exists.intro]
 
--- Test that `Config.intros` causes `solve_by_elim` to call `intro` on intermediate goals.
+-- Test that we can disable the `intro` discharger.
 example (P : Prop) : P → P := by
-  fail_if_success solve_by_elim
-  solve_by_elim (config := .intros)
+  fail_if_success solve_by_elim (config := {intro := false})
+  solve_by_elim
 
--- This worked in mathlib3 without the `@`, but now goes into a loop.
--- If someone wants to diagnose this, please do!
 example (P Q : Prop) : P ∧ Q → P ∧ Q := by
-  solve_by_elim [And.imp, @id]
+  solve_by_elim
 
 section apply_assumption
 
@@ -143,7 +146,7 @@ example (a b : α) (h : b = a) : a = b := by
   apply_assumption
 
 -- Check that `apply_assumption` uses `exfalso`.
-example {P Q : Prop} (p : P) (q : Q) (h : P → ¬ Q) : ℕ := by
+example {P Q : Prop} (p : P) (q : Q) (h : P → ¬ Q) : Nat := by
   fail_if_success apply_assumption (config := {exfalso := false})
   apply_assumption <;> assumption
 
@@ -151,11 +154,11 @@ end apply_assumption
 
 section «using»
 
-@[dummy_tag_attr] axiom foo : 1 = 2
+@[dummy_label_attr] axiom foo : 1 = 2
 
 example : 1 = 2 := by
   fail_if_success solve_by_elim
-  solve_by_elim using dummy_tag_attr
+  solve_by_elim using dummy_label_attr
 
 end «using»
 
@@ -163,10 +166,10 @@ section issue1581
 
 axiom mySorry {α} : α
 
-@[dummy_tag_attr] theorem le_rfl [LE α] {b c : α} (_h : b = c) : b ≤ c := mySorry
+@[dummy_label_attr] theorem le_rfl [LE α] {b c : α} (_h : b = c) : b ≤ c := mySorry
 
 example : 5 ≤ 7 := by
-  apply_rules using dummy_tag_attr
+  apply_rules using dummy_label_attr
   guard_target = 5 = 7
   exact mySorry
 

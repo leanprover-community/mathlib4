@@ -2,14 +2,8 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.natural_transformation
-! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.CategoryTheory.Functor.Basic
+import Mathlib.Tactic.CategoryTheory.Reassoc
 
 /-!
 # Natural transformations
@@ -37,7 +31,7 @@ Introduces notations
 
 namespace CategoryTheory
 
--- declare the `v`'s first; see note [category_theory universes].
+-- declare the `v`'s first; see note [CategoryTheory universes].
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
@@ -54,32 +48,21 @@ structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
   app : ∀ X : C, F.obj X ⟶ G.obj X
   /-- The naturality square for a given morphism. -/
   naturality : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), F.map f ≫ app Y = app X ≫ G.map f := by aesop_cat
-#align category_theory.nat_trans CategoryTheory.NatTrans
-#align category_theory.nat_trans.naturality CategoryTheory.NatTrans.naturality
-#align category_theory.nat_trans.ext_iff CategoryTheory.NatTrans.ext_iff
-#align category_theory.nat_trans.ext CategoryTheory.NatTrans.ext
-
--- TODO Perhaps we should just turn on `ext` in aesop?
-attribute [aesop safe apply (rule_sets [CategoryTheory])] NatTrans.ext
 
 -- Rather arbitrarily, we say that the 'simpler' form is
--- components of natural transfomations moving earlier.
+-- components of natural transformations moving earlier.
 attribute [reassoc (attr := simp)] NatTrans.naturality
-#align category_theory.nat_trans.naturality_assoc CategoryTheory.NatTrans.naturality_assoc
 
 theorem congr_app {F G : C ⥤ D} {α β : NatTrans F G} (h : α = β) (X : C) : α.app X = β.app X := by
   aesop_cat
-#align category_theory.congr_app CategoryTheory.congr_app
 
 namespace NatTrans
 
 /-- `NatTrans.id F` is the identity natural transformation on a functor `F`. -/
 protected def id (F : C ⥤ D) : NatTrans F F where app X := 𝟙 (F.obj X)
-#align category_theory.nat_trans.id CategoryTheory.NatTrans.id
 
 @[simp]
 theorem id_app' (F : C ⥤ D) (X : C) : (NatTrans.id F).app X = 𝟙 (F.obj X) := rfl
-#align category_theory.nat_trans.id_app' CategoryTheory.NatTrans.id_app'
 
 instance (F : C ⥤ D) : Inhabited (NatTrans F F) := ⟨NatTrans.id F⟩
 
@@ -94,13 +77,11 @@ variable {F G H I : C ⥤ D}
 /-- `vcomp α β` is the vertical compositions of natural transformations. -/
 def vcomp (α : NatTrans F G) (β : NatTrans G H) : NatTrans F H where
   app X := α.app X ≫ β.app X
-#align category_theory.nat_trans.vcomp CategoryTheory.NatTrans.vcomp
 
 -- functor_category will rewrite (vcomp α β) to (α ≫ β), so this is not a
 -- suitable simp lemma.  We will declare the variant vcomp_app' there.
 theorem vcomp_app (α : NatTrans F G) (β : NatTrans G H) (X : C) :
     (vcomp α β).app X = α.app X ≫ β.app X := rfl
-#align category_theory.nat_trans.vcomp_app CategoryTheory.NatTrans.vcomp_app
 
 end
 

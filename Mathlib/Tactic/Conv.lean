@@ -3,9 +3,8 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Mathlib.Tactic.RunCmd
 import Lean.Elab.Tactic.Conv.Basic
-import Std.Lean.Parser
+import Lean.Elab.Command
 
 /-!
 Additional `conv` tactics.
@@ -25,6 +24,22 @@ macro_rules
     `(tactic| conv $[at $id]? $[in $[$occs]? $pat]? => rhs; ($seq:convSeq))
 
 macro "run_conv" e:doSeq : conv => `(conv| tactic' => run_tac $e)
+
+/--
+`conv in pat => cs` runs the `conv` tactic sequence `cs`
+on the first subexpression matching the pattern `pat` in the target.
+The converted expression becomes the new target subgoal, like `conv => cs`.
+
+The arguments `in` are the same as those as the in `pattern`.
+In fact, `conv in pat => cs` is a macro for `conv => pattern pat; cs`.
+
+The syntax also supports the `occs` clause. Example:
+```lean
+conv in (occs := *) x + y => rw [add_comm]
+```
+-/
+macro "conv" " in " occs?:(occs)? p:term " => " code:convSeq : conv =>
+  `(conv| conv => pattern $[$occs?]? $p; ($code:convSeq))
 
 /--
 * `discharge => tac` is a conv tactic which rewrites target `p` to `True` if `tac` is a tactic
@@ -49,6 +64,9 @@ syntax (name := dischargeConv) "discharge" (" => " tacticSeq)? : conv
     else
       setGoals (m.mvarId! :: gs)
   | _ => Elab.throwUnsupportedSyntax
+
+/-- Use `refine` in `conv` mode. -/
+macro "refine " e:term : conv => `(conv| tactic => refine $e)
 
 open Elab Tactic
 /--

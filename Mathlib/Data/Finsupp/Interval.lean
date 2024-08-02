@@ -2,15 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.finsupp.interval
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Finsupp
-import Mathlib.Data.Finset.LocallyFinite
 import Mathlib.Data.Finsupp.Order
+import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Finite intervals of finitely supported functions
@@ -32,9 +27,10 @@ noncomputable section
 
 open Finset Finsupp Function
 
-open BigOperators Classical Pointwise
+open scoped Classical
+open Pointwise
 
-variable {ι α : Type _}
+variable {ι α : Type*}
 
 namespace Finsupp
 
@@ -50,11 +46,9 @@ def rangeSingleton (f : ι →₀ α) : ι →₀ Finset α where
   mem_support_toFun i := by
     rw [← not_iff_not, not_mem_support_iff, not_ne_iff]
     exact singleton_injective.eq_iff.symm
-#align finsupp.range_singleton Finsupp.rangeSingleton
 
 theorem mem_rangeSingleton_apply_iff : a ∈ f.rangeSingleton i ↔ a = f i :=
   mem_singleton
-#align finsupp.mem_range_singleton_apply_iff Finsupp.mem_rangeSingleton_apply_iff
 
 end RangeSingleton
 
@@ -67,24 +61,21 @@ variable [Zero α] [PartialOrder α] [LocallyFiniteOrder α] {f g : ι →₀ α
 def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α where
   toFun i := Icc (f i) (g i)
   support :=
-    -- porting note: Not needed (due to open Classical), in mathlib3 too
+    -- Porting note: Not needed (due to open scoped Classical), in mathlib3 too
     -- haveI := Classical.decEq ι
     f.support ∪ g.support
   mem_support_toFun i := by
     rw [mem_union, ← not_iff_not, not_or, not_mem_support_iff, not_mem_support_iff, not_ne_iff]
     exact Icc_eq_singleton_iff.symm
-#align finsupp.range_Icc Finsupp.rangeIcc
 
--- porting note: Added as alternative to rangeIcc_toFun to be used in proof of card_Icc
+-- Porting note: Added as alternative to rangeIcc_toFun to be used in proof of card_Icc
 lemma coe_rangeIcc (f g : ι →₀ α) : rangeIcc f g i = Icc (f i) (g i) := rfl
 
 @[simp]
 theorem rangeIcc_support (f g : ι →₀ α) :
     (rangeIcc f g).support = f.support ∪ g.support := rfl
-#align finsupp.range_Icc_support Finsupp.rangeIcc_support
 
 theorem mem_rangeIcc_apply_iff : a ∈ f.rangeIcc g i ↔ f i ≤ a ∧ a ≤ g i := mem_Icc
-#align finsupp.mem_range_Icc_apply_iff Finsupp.mem_rangeIcc_apply_iff
 
 end RangeIcc
 
@@ -92,57 +83,58 @@ section PartialOrder
 
 variable [PartialOrder α] [Zero α] [LocallyFiniteOrder α] (f g : ι →₀ α)
 
-instance : LocallyFiniteOrder (ι →₀ α) :=
-  -- porting note: Not needed (due to open Classical), in mathlib3 too
+instance instLocallyFiniteOrder : LocallyFiniteOrder (ι →₀ α) :=
+  -- Porting note: Not needed (due to open scoped Classical), in mathlib3 too
   -- haveI := Classical.decEq ι
   -- haveI := Classical.decEq α
   LocallyFiniteOrder.ofIcc (ι →₀ α) (fun f g => (f.support ∪ g.support).finsupp <| f.rangeIcc g)
     fun f g x => by
-      refine'
-        (mem_finsupp_iff_of_support_subset <| Finset.subset_of_eq <| rangeIcc_support _ _).trans _
+      refine
+        (mem_finsupp_iff_of_support_subset <| Finset.subset_of_eq <| rangeIcc_support _ _).trans ?_
       simp_rw [mem_rangeIcc_apply_iff]
       exact forall_and
 
-theorem icc_eq : Icc f g = (f.support ∪ g.support).finsupp (f.rangeIcc g) := rfl
-#align finsupp.Icc_eq Finsupp.icc_eq
+theorem Icc_eq : Icc f g = (f.support ∪ g.support).finsupp (f.rangeIcc g) := rfl
 
--- porting note: removed [DecidableEq ι]
-theorem card_Icc : (Icc f g).card = ∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card := by
-  simp_rw [icc_eq, card_finsupp, coe_rangeIcc]
+-- Porting note: removed [DecidableEq ι]
+theorem card_Icc : (Icc f g).card = ∏ i ∈ f.support ∪ g.support, (Icc (f i) (g i)).card := by
+  simp_rw [Icc_eq, card_finsupp, coe_rangeIcc]
 
-#align finsupp.card_Icc Finsupp.card_Icc
-
--- porting note: removed [DecidableEq ι]
-theorem card_Ico : (Ico f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
+-- Porting note: removed [DecidableEq ι]
+theorem card_Ico : (Ico f g).card = (∏ i ∈ f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
   rw [card_Ico_eq_card_Icc_sub_one, card_Icc]
-#align finsupp.card_Ico Finsupp.card_Ico
 
--- porting note: removed [DecidableEq ι]
-theorem card_Ioc : (Ioc f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
+-- Porting note: removed [DecidableEq ι]
+theorem card_Ioc : (Ioc f g).card = (∏ i ∈ f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
   rw [card_Ioc_eq_card_Icc_sub_one, card_Icc]
-#align finsupp.card_Ioc Finsupp.card_Ioc
 
--- porting note: removed [DecidableEq ι]
-theorem card_Ioo : (Ioo f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 2 := by
+-- Porting note: removed [DecidableEq ι]
+theorem card_Ioo : (Ioo f g).card = (∏ i ∈ f.support ∪ g.support, (Icc (f i) (g i)).card) - 2 := by
   rw [card_Ioo_eq_card_Icc_sub_two, card_Icc]
-#align finsupp.card_Ioo Finsupp.card_Ioo
 
 end PartialOrder
 
+section Lattice
+variable [Lattice α] [Zero α] [LocallyFiniteOrder α] (f g : ι →₀ α)
+
+-- Porting note: removed [DecidableEq ι]
+theorem card_uIcc :
+    (uIcc f g).card = ∏ i ∈ f.support ∪ g.support, (uIcc (f i) (g i)).card := by
+  rw [← support_inf_union_support_sup]; exact card_Icc (_ : ι →₀ α) _
+
+end Lattice
+
 section CanonicallyOrdered
 
-variable [CanonicallyOrderedAddMonoid α] [LocallyFiniteOrder α]
-
+variable [CanonicallyOrderedAddCommMonoid α] [LocallyFiniteOrder α]
 variable (f : ι →₀ α)
 
-theorem card_Iic : (Iic f).card = ∏ i in f.support, (Iic (f i)).card := by
+theorem card_Iic : (Iic f).card = ∏ i ∈ f.support, (Iic (f i)).card := by
   classical simp_rw [Iic_eq_Icc, card_Icc, Finsupp.bot_eq_zero, support_zero, empty_union,
       zero_apply, bot_eq_zero]
-#align finsupp.card_Iic Finsupp.card_Iic
 
-theorem card_Iio : (Iio f).card = (∏ i in f.support, (Iic (f i)).card) - 1 := by
+theorem card_Iio : (Iio f).card = (∏ i ∈ f.support, (Iic (f i)).card) - 1 := by
   rw [card_Iio_eq_card_Iic_sub_one, card_Iic]
-#align finsupp.card_Iio Finsupp.card_Iio
 
 end CanonicallyOrdered
 

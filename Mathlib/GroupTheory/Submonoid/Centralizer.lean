@@ -2,11 +2,6 @@
 Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.submonoid.centralizer
-! leanprover-community/mathlib commit 44b58b42794e5abe2bf86397c38e26b587e07e59
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subsemigroup.Centralizer
 import Mathlib.GroupTheory.Submonoid.Center
@@ -23,7 +18,7 @@ We provide `Subgroup.centralizer`, `AddSubgroup.centralizer` in other files.
 -/
 
 
-variable {M : Type _} {S T : Set M}
+variable {M : Type*} {S T : Set M}
 
 namespace Submonoid
 
@@ -37,25 +32,19 @@ def centralizer : Submonoid M where
   carrier := S.centralizer
   one_mem' := S.one_mem_centralizer
   mul_mem' := Set.mul_mem_centralizer
-#align submonoid.centralizer Submonoid.centralizer
-#align add_submonoid.centralizer AddSubmonoid.centralizer
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_centralizer : ↑(centralizer S) = S.centralizer :=
   rfl
-#align submonoid.coe_centralizer Submonoid.coe_centralizer
-#align add_submonoid.coe_centralizer AddSubmonoid.coe_centralizer
 
 theorem centralizer_toSubsemigroup : (centralizer S).toSubsemigroup = Subsemigroup.centralizer S :=
   rfl
-#align submonoid.centralizer_to_subsemigroup Submonoid.centralizer_toSubsemigroup
 
 theorem _root_.AddSubmonoid.centralizer_toAddSubsemigroup {M} [AddMonoid M] (S : Set M) :
     (AddSubmonoid.centralizer S).toAddSubsemigroup = AddSubsemigroup.centralizer S :=
   rfl
-#align add_submonoid.centralizer_to_add_subsemigroup AddSubmonoid.centralizer_toAddSubsemigroup
 
-attribute [to_additive AddSubmonoid.centralizer_toAddSubsemigroup]
+attribute [to_additive existing AddSubmonoid.centralizer_toAddSubsemigroup]
   Submonoid.centralizer_toSubsemigroup
 
 variable {S}
@@ -63,34 +52,43 @@ variable {S}
 @[to_additive]
 theorem mem_centralizer_iff {z : M} : z ∈ centralizer S ↔ ∀ g ∈ S, g * z = z * g :=
   Iff.rfl
-#align submonoid.mem_centralizer_iff Submonoid.mem_centralizer_iff
-#align add_submonoid.mem_centralizer_iff AddSubmonoid.mem_centralizer_iff
+
+@[to_additive]
+theorem center_le_centralizer (s) : center M ≤ centralizer s :=
+  s.center_subset_centralizer
 
 @[to_additive]
 instance decidableMemCentralizer (a) [Decidable <| ∀ b ∈ S, b * a = a * b] :
     Decidable (a ∈ centralizer S) :=
   decidable_of_iff' _ mem_centralizer_iff
-#align submonoid.decidable_mem_centralizer Submonoid.decidableMemCentralizer
-#align add_submonoid.decidable_mem_centralizer AddSubmonoid.decidableMemCentralizer
 
 @[to_additive]
 theorem centralizer_le (h : S ⊆ T) : centralizer T ≤ centralizer S :=
   Set.centralizer_subset h
-#align submonoid.centralizer_le Submonoid.centralizer_le
-#align add_submonoid.centralizer_le AddSubmonoid.centralizer_le
+
+@[to_additive (attr := simp)]
+theorem centralizer_eq_top_iff_subset {s : Set M} : centralizer s = ⊤ ↔ s ⊆ center M :=
+  SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
 
 variable (M)
 
 @[to_additive (attr := simp)]
 theorem centralizer_univ : centralizer Set.univ = center M :=
   SetLike.ext' (Set.centralizer_univ M)
-#align submonoid.centralizer_univ Submonoid.centralizer_univ
-#align add_submonoid.centralizer_univ AddSubmonoid.centralizer_univ
+
+@[to_additive]
+lemma le_centralizer_centralizer {s : Submonoid M} : s ≤ centralizer (centralizer (s : Set M)) :=
+  Set.subset_centralizer_centralizer
+
+@[to_additive (attr := simp)]
+lemma centralizer_centralizer_centralizer {s : Set M} :
+    centralizer s.centralizer.centralizer = centralizer s := by
+  apply SetLike.coe_injective
+  simp only [coe_centralizer, Set.centralizer_centralizer_centralizer]
 
 end
 
 end Submonoid
 
--- Porting note: `assert_not_exists` not implemented yet
 -- Guard against import creep
---assert_not_exists finset
+assert_not_exists Finset

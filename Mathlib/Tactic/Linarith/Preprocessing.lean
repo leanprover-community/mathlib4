@@ -2,12 +2,12 @@
 Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Zify
-import Std.Data.RBMap.Basic
-import Mathlib.Data.HashMap
+import Mathlib.Tactic.CancelDenoms.Core
+import Batteries.Data.RBMap.Basic
+import Mathlib.Control.Basic
 
 /-!
 # Linarith preprocessing
@@ -29,40 +29,43 @@ namespace Linarith
 
 /-! ### Preprocessing -/
 
-open Lean Elab Tactic Meta
+open Lean hiding Rat
+open Elab Tactic Meta
 open Qq
+open Mathlib.Tactic (AtomM)
+open Batteries (RBSet)
 
-/-- Processor thaat recursively replaces `P ∧ Q` hypotheses with the pair `P` and `Q`. -/
-partial def splitConjunctions : Preprocessor :=
-{ name := "split conjunctions",
-  transform := aux }
-  where
+/-- Processor that recursively replaces `P ∧ Q` hypotheses with the pair `P` and `Q`. -/
+partial def splitConjunctions : Preprocessor where
+  name := "split conjunctions"
+  transform := aux
+where
   /-- Implementation of the `splitConjunctions` preprocessor. -/
   aux (proof : Expr) : MetaM (List Expr) := do
-  match (← instantiateMVars (← inferType proof)).getAppFnArgs with
-  | (``And, #[_, _]) =>
-    pure ((← aux (← mkAppM ``And.left #[proof])) ++
-      (← aux (← mkAppM ``And.right #[proof])))
-  | _ => pure [proof]
+    match (← instantiateMVars (← inferType proof)).getAppFnArgs with
+    | (``And, #[_, _]) =>
+      pure ((← aux (← mkAppM ``And.left #[proof])) ++
+        (← aux (← mkAppM ``And.right #[proof])))
+    | _ => pure [proof]
 
 /--
 Removes any expressions that are not proofs of inequalities, equalities, or negations thereof.
 -/
-partial def filterComparisons : Preprocessor :=
-  { name := "filter terms that are not proofs of comparisons",
-    transform := fun h => do
-    let tp ← instantiateMVars (← inferType h)
-    if (← isProp tp) && aux tp then return [h]
-    else return [] }
-  where
+partial def filterComparisons : Preprocessor where
+  name := "filter terms that are not proofs of comparisons"
+  transform h := do
+    let tp ← whnfR (← instantiateMVars (← inferType h))
+    if (← isProp tp) && (← aux tp) then pure [h]
+    else pure []
+where
   /-- Implementation of the `filterComparisons` preprocessor. -/
-  aux (e : Expr) : Bool :=
+  aux (e : Expr) : MetaM Bool := do
   match e.getAppFnArgs with
-  | (``Eq, _) | (``LE.le, _) | (``LT.lt, _) | (``GE.ge, _) | (``GT.gt, _) => true
-  | (``Not, #[e]) => match e.getAppFnArgs with
-    | (``LE.le, _) | (``LT.lt, _) | (``GE.ge, _) | (``GT.gt, _) => true
-    | _ => false
-  | _ => false
+  | (``Eq, _) | (``LE.le, _) | (``LT.lt, _) => pure true
+  | (``Not, #[e]) => match (← whnfR e).getAppFnArgs with
+    | (``LE.le, _) | (``LT.lt, _) => pure true
+    | _ => pure false
+  | _ => pure false
 
 section removeNegations
 
@@ -71,28 +74,28 @@ If `prf` is a proof of `¬ e`, where `e` is a comparison,
 `flipNegatedComparison prf e` flips the comparison in `e` and returns a proof.
 For example, if `prf : ¬ a < b`, ``flipNegatedComparison prf q(a < b)`` returns a proof of `a ≥ b`.
 -/
-def flipNegatedComparison (prf : Expr) (e : Expr) : MetaM Expr :=
+def flipNegatedComparison (prf : Expr) (e : Expr) : MetaM (Option Expr) :=
   match e.getAppFnArgs with
-  | (``LE.le, #[_, _, _, _]) => mkAppM ``lt_of_not_ge #[prf]
-  | (``LT.lt, #[_, _, _, _]) => mkAppM ``le_of_not_gt #[prf]
-  | (``GT.gt, #[_, _, _, _]) => mkAppM ``le_of_not_gt #[prf]
-  | (``GE.ge, #[_, _, _, _]) => mkAppM ``lt_of_not_ge #[prf]
-  | _ => throwError m!"Not a comparison (flipNegatedComparison): {e}"
+  | (``LE.le, #[_, _, _, _]) => try? <| mkAppM ``lt_of_not_ge #[prf]
+  | (``LT.lt, #[_, _, _, _]) => try? <| mkAppM ``le_of_not_gt #[prf]
+  | _ => throwError "Not a comparison (flipNegatedComparison): {e}"
 
 /--
 Replaces proofs of negations of comparisons with proofs of the reversed comparisons.
 For example, a proof of `¬ a < b` will become a proof of `a ≥ b`.
 -/
-def removeNegations : Preprocessor :=
-{ name := "replace negations of comparisons",
-  transform := fun h => do
-    let t : Q(Prop) ← inferType h
+def removeNegations : Preprocessor where
+  name := "replace negations of comparisons"
+  transform h := do
+    let t : Q(Prop) ← whnfR (← inferType h)
     match t with
     | ~q(¬ $p) =>
-      trace[linarith] m!"removing negation in {h}"
-      return [← flipNegatedComparison h p]
-    | _        => return [h] }
-
+      match ← flipNegatedComparison h (← whnfR p) with
+      | some h' =>
+        trace[linarith] "removing negation in {h}"
+        return [h']
+      | _ => return [h]
+    | _ => return [h]
 
 end removeNegations
 
@@ -114,33 +117,41 @@ partial def isNatProp (e : Expr) : Bool :=
   | (``Not, #[e]) => isNatProp e
   | _ => false
 
-/-- If `e` is of the form `((n : ℕ) : ℤ)`, `isNatIntCoe e` returns `n : ℕ`. -/
-def isNatIntCoe (e : Expr) : Option Expr :=
+
+/-- If `e` is of the form `((n : ℕ) : C)`, `isNatCoe e` returns `⟨n, C⟩`. -/
+def isNatCoe (e : Expr) : Option (Expr × Expr) :=
   match e.getAppFnArgs with
-  | (``Nat.cast, #[.const ``Int [], _, n]) => some n
+  | (``Nat.cast, #[target, _, n]) => some ⟨n, target⟩
   | _ => none
 
 /--
-`getNatComparisons e` returns a list of all subexpressions of `e` of the form `((t : ℕ) : ℤ)`.
+`getNatComparisons e` returns a list of all subexpressions of `e` of the form `((t : ℕ) : C)`.
 -/
-partial def getNatComparisons (e : Expr) : List Expr :=
-  match isNatIntCoe e with
-  | some n => [n]
+partial def getNatComparisons (e : Expr) : List (Expr × Expr) :=
+  match isNatCoe e with
+  | some x => [x]
   | none => match e.getAppFnArgs with
     | (``HAdd.hAdd, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
     | (``HMul.hMul, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
+    | (``HSub.hSub, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
+    | (``Neg.neg, #[_, _, a]) => getNatComparisons a
     | _ => []
 
-/-- If `e : ℕ`, returns a proof of `0 ≤ (e : ℤ)`. -/
-def mk_coe_nat_nonneg_prf (e : Expr) : MetaM Expr :=
-mkAppM ``Int.coe_nat_nonneg #[e]
+/-- If `e : ℕ`, returns a proof of `0 ≤ (e : C)`. -/
+def mk_natCast_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
+  match p with
+  | ⟨e, target⟩ => try commitIfNoEx (mkAppM ``natCast_nonneg #[target, e])
+    catch e => do
+      trace[linarith] "Got exception when using cast {e.toMessageData}"
+      return none
 
-open Std
 
 /-- Ordering on `Expr`. -/
--- We only define this so we can use `RBSet Expr`. Perhaps `HashSet` would be more appropriate?
-def Expr.compare (a b : Expr) : Ordering :=
-  if Expr.lt a b then .lt else if a.equal b then .eq else .gt
+def Expr.Ord : Ord Expr :=
+⟨fun a b => if Expr.lt a b then .lt else if a.equal b then .eq else .gt⟩
+
+attribute [local instance] Expr.Ord
+
 
 /--
 If `h` is an equality or inequality between natural numbers,
@@ -148,15 +159,15 @@ If `h` is an equality or inequality between natural numbers,
 It also adds the facts that the integers involved are nonnegative.
 To avoid adding the same nonnegativity facts many times, it is a global preprocessor.
  -/
-def natToInt : GlobalBranchingPreprocessor :=
-{ name := "move nats to ints",
-  transform := fun g l => do
-    let l ← l.mapM $ fun h => do
-      let t ← instantiateMVars (← inferType h)
+def natToInt : GlobalBranchingPreprocessor where
+  name := "move nats to ints"
+  transform g l := do
+    let l ← l.mapM fun h => do
+      let t ← whnfR (← instantiateMVars (← inferType h))
       if isNatProp t then
         let (some (h', t'), _) ← Term.TermElabM.run' (run_for g (zifyProof none h t))
           | throwError "zifyProof failed on {h}"
-        if filterComparisons.aux t' then
+        if ← filterComparisons.aux t' then
           pure h'
         else
           -- `zifyProof` turned our comparison into something that wasn't a comparison
@@ -166,63 +177,43 @@ def natToInt : GlobalBranchingPreprocessor :=
           pure h
       else
         pure h
-    let nonnegs ← l.foldlM (fun (es : RBSet Expr Expr.compare) h => do
+    let nonnegs ← l.foldlM (init := ∅) fun (es : RBSet (Expr × Expr) lexOrd.compare) h => do
       try
         let (a, b) ← getRelSides (← inferType h)
-        pure $
-          (es.insertList (getNatComparisons a)).insertList (getNatComparisons b)
-      catch _ => pure es) RBSet.empty
-    pure [(g, ((← nonnegs.toList.mapM mk_coe_nat_nonneg_prf) ++ l : List Expr))] }
+        pure <| (es.insertMany (getNatComparisons a)).insertMany (getNatComparisons b)
+      catch _ => pure es
+    pure [(g, ((← nonnegs.toList.filterMapM mk_natCast_nonneg_prf) ++ l : List Expr))]
 
 end natToInt
 
 section strengthenStrictInt
 
 /--
-`isStrictIntComparison tp` is true iff `tp` is a strict inequality between integers
-or the negation of a weak inequality between integers.
--/
-def isStrictIntComparison (e : Expr) : Bool :=
-  match e.getAppFnArgs with
-  | (``LT.lt, #[.const ``Int [], _, _, _]) => true
-  | (``GT.gt, #[.const ``Int [], _, _, _]) => true
-  | (``Not, #[e]) => match e.getAppFnArgs with
-    | (``LE.le, #[.const ``Int [], _, _, _]) => true
-    | (``GE.ge, #[.const ``Int [], _, _, _]) => true
-    | _ => false
-  | _ => false
-
-/--
 If `pf` is a proof of a strict inequality `(a : ℤ) < b`,
 `mkNonstrictIntProof pf` returns a proof of `a + 1 ≤ b`,
 and similarly if `pf` proves a negated weak inequality.
 -/
-def mkNonstrictIntProof (pf : Expr) : MetaM Expr := do
-  match (← inferType pf).getAppFnArgs with
-  | (``LT.lt, #[_, _, a, b]) =>
+def mkNonstrictIntProof (pf : Expr) : MetaM (Option Expr) := do
+  match (← instantiateMVars (← inferType pf)).getAppFnArgs with
+  | (``LT.lt, #[.const ``Int [], _, a, b]) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
-  | (``GT.gt, #[_, _, a, b]) =>
+  | (``GT.gt, #[.const ``Int [], _, a, b]) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[b, a]]) pf
   | (``Not, #[P]) => match P.getAppFnArgs with
-    | (``LE.le, #[_, _, a, b]) =>
+    | (``LE.le, #[.const ``Int [], _, a, b]) =>
       return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[b, a]])
         (← mkAppM ``lt_of_not_ge #[pf])
-    | (``GE.ge, #[_, _, a, b]) =>
+    | (``GE.ge, #[.const ``Int [], _, a, b]) =>
       return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]])
         (← mkAppM ``lt_of_not_ge #[pf])
-    | _ => throwError "mkNonstrictIntProof failed: proof is not an inequality"
-  | _ => throwError "mkNonstrictIntProof failed: proof is not an inequality"
-
+    | _ => return none
+  | _ => return none
 
 /-- `strengthenStrictInt h` turns a proof `h` of a strict integer inequality `t1 < t2`
 into a proof of `t1 ≤ t2 + 1`. -/
-def strengthenStrictInt : Preprocessor :=
-{ name := "strengthen strict inequalities over int",
-  transform := fun h => do
-    if isStrictIntComparison (← inferType h) then
-      return [← mkNonstrictIntProof h]
-    else
-      return [h] }
+def strengthenStrictInt : Preprocessor where
+  name := "strengthen strict inequalities over int"
+  transform h := return [(← mkNonstrictIntProof h).getD h]
 
 end strengthenStrictInt
 
@@ -232,94 +223,114 @@ section compWithZero
 `rearrangeComparison e` takes a proof `e` of an equality, inequality, or negation thereof,
 and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
  -/
-partial def rearrangeComparison (e : Expr) : MetaM Expr := do
+partial def rearrangeComparison (e : Expr) : MetaM (Option Expr) := do
   aux e (← instantiateMVars (← inferType e))
-  where
+where
   /-- Implementation of `rearrangeComparison`, after type inference. -/
-  aux (proof e : Expr) : MetaM Expr :=
-  match e.getAppFnArgs with
-  | (``LE.le, #[_, _, a, b]) => match a.getAppFnArgs, b.getAppFnArgs with
-    | _, (``OfNat.ofNat, #[_, .lit (.natVal 0), _]) => return proof
-    | (``OfNat.ofNat, #[_, .lit (.natVal 0), _]), _ => mkAppM ``neg_nonpos_of_nonneg #[proof]
-    | _, _                                          => mkAppM ``sub_nonpos_of_le #[proof]
-  | (``LT.lt, #[_, _, a, b]) => match a.getAppFnArgs, b.getAppFnArgs with
-    | _, (``OfNat.ofNat, #[_, .lit (.natVal 0), _]) => return proof
-    | (``OfNat.ofNat, #[_, .lit (.natVal 0), _]), _ => mkAppM ``neg_neg_of_pos #[proof]
-    | _, _                                          => mkAppM ``sub_neg_of_lt #[proof]
-  | (``Eq, #[_, a, b]) => match a.getAppFnArgs, b.getAppFnArgs with
-    | _, (``OfNat.ofNat, #[_, .lit (.natVal 0), _]) => return proof
-    | (``OfNat.ofNat, #[_, .lit (.natVal 0), _]), _ => mkAppM ``Eq.symm #[proof]
-    | _, _                                          => mkAppM ``sub_eq_zero_of_eq #[proof]
-  | (``GT.gt, #[_, _, a, b]) => match a.getAppFnArgs, b.getAppFnArgs with
-    | _, (``OfNat.ofNat, #[_, .lit (.natVal 0), _]) => mkAppM ``neg_neg_of_pos #[proof]
-    | (``OfNat.ofNat, #[_, .lit (.natVal 0), _]), _ => mkAppM ``lt_zero_of_zero_gt #[proof]
-    | _, _                                          => mkAppM ``sub_neg_of_lt #[proof]
-  | (``GE.ge, #[_, _, a, b]) => match a.getAppFnArgs, b.getAppFnArgs with
-    | _, (``OfNat.ofNat, #[_, .lit (.natVal 0), _]) => mkAppM ``neg_nonpos_of_nonneg #[proof]
-    | (``OfNat.ofNat, #[_, .lit (.natVal 0), _]), _ => mkAppM ``le_zero_of_zero_ge #[proof]
-    | _, _                                          => mkAppM ``sub_nonpos_of_le #[proof]
-  | (``Not, #[a]) => do
-    let nproof ← flipNegatedComparison proof a
-    aux nproof (← inferType nproof)
-  | a => throwError m!"couldn't rearrange comparison {a}"
+  aux (proof e : Expr) : MetaM (Option Expr) :=
+    let isZero (e : Expr) := e.getAppFnArgs matches (``OfNat.ofNat, #[_, .lit (.natVal 0), _])
+    match e.getAppFnArgs with
+    | (``LE.le, #[_, _, a, b]) => match isZero a, isZero b with
+      | _, true => return proof
+      | true, _ => try? <| mkAppM ``neg_nonpos_of_nonneg #[proof]
+      | _, _    => try? <| mkAppM ``sub_nonpos_of_le #[proof]
+    | (``LT.lt, #[_, _, a, b]) => match isZero a, isZero b with
+      | _, true => return proof
+      | true, _ => try? <| mkAppM ``neg_neg_of_pos #[proof]
+      | _, _    => try? <| mkAppM ``sub_neg_of_lt #[proof]
+    | (``Eq, #[_, a, b]) => match isZero a, isZero b with
+      | _, true => return proof
+      | true, _ => try? <| mkAppM ``Eq.symm #[proof]
+      | _, _    => try? <| mkAppM ``sub_eq_zero_of_eq #[proof]
+    | (``GT.gt, #[_, _, a, b]) => match isZero a, isZero b with
+      | _, true => try? <| mkAppM ``neg_neg_of_pos #[proof]
+      | true, _ => try? <| mkAppM ``lt_zero_of_zero_gt #[proof]
+      | _, _    => try? <| mkAppM ``sub_neg_of_lt #[proof]
+    | (``GE.ge, #[_, _, a, b]) => match isZero a, isZero b with
+      | _, true => try? <| mkAppM ``neg_nonpos_of_nonneg #[proof]
+      | true, _ => try? <| mkAppM ``le_zero_of_zero_ge #[proof]
+      | _, _    => try? <| mkAppM ``sub_nonpos_of_le #[proof]
+    | (``Not, #[a]) => do
+      let some nproof ← flipNegatedComparison proof a | return none
+      aux nproof (← inferType nproof)
+    | a => throwError "couldn't rearrange comparison {a}"
 
 /--
 `compWithZero h` takes a proof `h` of an equality, inequality, or negation thereof,
 and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
  -/
-def compWithZero : Preprocessor :=
-{ name := "make comparisons with zero",
-  transform := fun e =>
-  return [← rearrangeComparison e] }
+def compWithZero : Preprocessor where
+  name := "make comparisons with zero"
+  transform e := return (← rearrangeComparison e).toList
 
 end compWithZero
 
--- FIXME the `cancelDenoms : Preprocessor` from mathlib3 will need to wait
--- for a port of the `cancel_denoms` tactic.
 section cancelDenoms
--- /--
--- `normalize_denominators_in_lhs h lhs` assumes that `h` is a proof of `lhs R 0`.
--- It creates a proof of `lhs' R 0`, where all numeric division in `lhs` has been cancelled.
--- -/
--- meta def normalize_denominators_in_lhs (h lhs : expr) : tactic expr :=
--- do (v, lhs') ← cancel_factors.derive lhs,
---    if v = 1 then return h else do
---    (ih, h'') ← mk_single_comp_zero_pf v h,
---    (_, nep, _) ← infer_type h'' >>= rewrite_core lhs',
---    mk_eq_mp nep h''
 
--- /--
--- `cancel_denoms pf` assumes `pf` is a proof of `t R 0`. If `t` contains the division symbol `/`,
--- it tries to scale `t` to cancel out division by numerals.
--- -/
--- meta def cancel_denoms : preprocessor :=
--- { name := "cancel denominators",
---   transform := λ pf,
--- (do some (_, lhs) ← parse_into_comp_and_expr <$> infer_type pf,
---    guardb $ lhs.contains_constant (= `has_div.div),
---    singleton <$> normalize_denominators_in_lhs pf lhs)
--- <|> return [pf] }
+theorem without_one_mul {M : Type*} [MulOneClass M] {a b : M} (h : 1 * a = b) : a = b := by
+  rwa [one_mul] at h
+
+/--
+`normalizeDenominatorsLHS h lhs` assumes that `h` is a proof of `lhs R 0`.
+It creates a proof of `lhs' R 0`, where all numeric division in `lhs` has been cancelled.
+-/
+def normalizeDenominatorsLHS (h lhs : Expr) : MetaM Expr := do
+  let mut (v, lhs') ← CancelDenoms.derive lhs
+  if v = 1 then
+    -- `lhs'` has a `1 *` out front, but `mkSingleCompZeroOf` has a special case
+    -- where it does not produce `1 *`. We strip it off here:
+    lhs' ← mkAppM ``without_one_mul #[lhs']
+  let (_, h'') ← mkSingleCompZeroOf v h
+  try
+    h''.rewriteType lhs'
+  catch e =>
+    dbg_trace
+      s!"Error in Linarith.normalizeDenominatorsLHS: {← e.toMessageData.toString}"
+    throw e
+
+/--
+`cancelDenoms pf` assumes `pf` is a proof of `t R 0`. If `t` contains the division symbol `/`,
+it tries to scale `t` to cancel out division by numerals.
+-/
+def cancelDenoms : Preprocessor where
+  name := "cancel denominators"
+  transform := fun pf => (do
+      let (_, lhs) ← parseCompAndExpr (← inferType pf)
+      guard <| lhs.containsConst (fun n => n = ``HDiv.hDiv || n = ``Div.div)
+      pure [← normalizeDenominatorsLHS pf lhs])
+    <|> return [pf]
 end cancelDenoms
 
 section nlinarith
 /--
 `findSquares s e` collects all terms of the form `a ^ 2` and `a * a` that appear in `e`
 and adds them to the set `s`.
-A pair `(a, true)` is added to `s` when `a^2` appears in `e`,
-and `(a, false)` is added to `s` when `a*a` appears in `e`.  -/
-partial def findSquares (s : HashSet (Expr × Bool)) (e : Expr) : MetaM (HashSet (Expr × Bool)) :=
-match e.getAppFnArgs with
-| (``HPow.hPow, #[_, _, _, _, a, b]) => match b.numeral? with
-  | some 2 => do
-    let s ← findSquares s a
-    return (s.insert (a, true))
+A pair `(i, true)` is added to `s` when `atoms[i]^2` appears in `e`,
+and `(i, false)` is added to `s` when `atoms[i]*atoms[i]` appears in `e`.  -/
+partial def findSquares (s : RBSet (Nat × Bool) lexOrd.compare) (e : Expr) :
+    AtomM (RBSet (Nat × Bool) lexOrd.compare) :=
+  -- Completely traversing the expression is non-ideal,
+  -- as we can descend into expressions that could not possibly be seen by `linarith`.
+  -- As a result we visit expressions with bvars, which then cause panics.
+  -- Ideally this preprocessor would be reimplemented so it only visits things that could be atoms.
+  -- In the meantime we just bail out if we ever encounter loose bvars.
+  if e.hasLooseBVars then return s else
+  match e.getAppFnArgs with
+  | (``HPow.hPow, #[_, _, _, _, a, b]) => match b.numeral? with
+    | some 2 => do
+      let s ← findSquares s a
+      let ai ← AtomM.addAtom a
+      return (s.insert (ai, true))
+    | _ => e.foldlM findSquares s
+  | (``HMul.hMul, #[_, _, _, _, a, b]) => do
+    let ai ← AtomM.addAtom a
+    let bi ← AtomM.addAtom b
+    if ai = bi then do
+      let s ← findSquares s a
+      return (s.insert (ai, false))
+    else
+      e.foldlM findSquares s
   | _ => e.foldlM findSquares s
-| (``HMul.hMul, #[_, _, _, _, a, b]) => if a.equal b then do
-    let s ← findSquares s a
-    return (s.insert (a, false))
-  else
-    e.foldlM findSquares s
-| _ => e.foldlM findSquares s
 
 /--
 `nlinarithExtras` is the preprocessor corresponding to the `nlinarith` tactic.
@@ -330,18 +341,19 @@ match e.getAppFnArgs with
 
 This preprocessor is typically run last, after all inputs have been canonized.
 -/
-def nlinarithExtras : GlobalPreprocessor :=
-{ name := "nonlinear arithmetic extras",
-  transform := fun ls => do
-    let s ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
-      HashSet.empty
-    let new_es ← s.foldM (fun new_es (⟨e, is_sq⟩ : Expr × Bool) =>
-      ((do
-        let p ← mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
-        pure $ p::new_es) <|> pure new_es)) ([] : List Expr)
+def nlinarithExtras : GlobalPreprocessor where
+  name := "nonlinear arithmetic extras"
+  transform ls := do
+    -- find the squares in `AtomM` to ensure deterministic behavior
+    let s ← AtomM.run .reducible do
+      let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
+        RBSet.empty
+      si.toList.mapM fun (i, is_sq) => return ((← get).atoms[i]!, is_sq)
+    let new_es ← s.filterMapM fun (e, is_sq) =>
+      observing? <| mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
     let new_es ← compWithZero.globalize.transform new_es
     trace[linarith] "nlinarith preprocessing found squares"
-    trace[linarith] m!"{s.toList}"
+    trace[linarith] "{s}"
     linarithTraceProofs "so we added proofs" new_es
     let with_comps ← (new_es ++ ls).mapM (fun e => do
       let tp ← inferType e
@@ -349,7 +361,7 @@ def nlinarithExtras : GlobalPreprocessor :=
         let ⟨ine, _⟩ ← parseCompAndExpr tp
         pure (ine, e)
       catch _ => pure (Ineq.lt, e))
-    let products ← with_comps.mapDiagM $ fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
+    let products ← with_comps.mapDiagM fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
       try
         (some <$> match posa, posb with
           | Ineq.eq, _ => mkAppM ``zero_mul_eq #[a, b]
@@ -364,37 +376,37 @@ def nlinarithExtras : GlobalPreprocessor :=
           | Ineq.le, Ineq.le => mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b])
       catch _ => pure none
     let products ← compWithZero.globalize.transform products.reduceOption
-    return (new_es ++ ls ++ products) }
+    return (new_es ++ ls ++ products)
 
 end nlinarith
 
--- TODO the `removeNe` preprocesor
 section removeNe
--- /--
--- `remove_ne_aux` case splits on any proof `h : a ≠ b` in the input,
--- turning it into `a < b ∨ a > b`.
--- This produces `2^n` branches when there are `n` such hypotheses in the input.
--- -/
--- meta def remove_ne_aux : list expr → tactic (list branch) :=
--- λ hs,
--- (do e ← hs.mfind (λ e : expr, do e ← infer_type e, guard $ e.is_ne.is_some),
---     [(_, ng1), (_, ng2)] ← to_expr ``(or.elim (lt_or_gt_of_ne %%e)) >>= apply,
---     let do_goal : expr → tactic (list branch) := λ g,
---       do set_goals [g],
---          h ← intro1,
---          ls ← remove_ne_aux $ hs.remove_all [e],
---          return $ ls.map (λ b : branch, (b.1, h::b.2)) in
---     (++) <$> do_goal ng1 <*> do_goal ng2)
--- <|> do g ← get_goal, return [(g, hs)]
+/--
+`removeNe_aux` case splits on any proof `h : a ≠ b` in the input,
+turning it into `a < b ∨ a > b`.
+This produces `2^n` branches when there are `n` such hypotheses in the input.
+-/
+partial def removeNe_aux : MVarId → List Expr → MetaM (List Branch) := fun g hs => do
+  let some (e, α, a, b) ← hs.findSomeM? (fun e : Expr => do
+    let some (α, a, b) := (← instantiateMVars (← inferType e)).ne?' | return none
+    return some (e, α, a, b)) | return [(g, hs)]
+  let [ng1, ng2] ← g.apply (← mkAppOptM ``Or.elim #[none, none, ← g.getType,
+      ← mkAppOptM ``lt_or_gt_of_ne #[α, none, a, b, e]]) | failure
+  let do_goal : MVarId → MetaM (List Branch) := fun g => do
+    let (f, h) ← g.intro1
+    h.withContext do
+      let ls ← removeNe_aux h <| hs.removeAll [e]
+      return ls.map (fun b : Branch => (b.1, (.fvar f)::b.2))
+  return ((← do_goal ng1) ++ (← do_goal ng2))
 
--- /--
--- `remove_ne` case splits on any proof `h : a ≠ b` in the input, turning it into `a < b ∨ a > b`,
--- by calling `linarith.remove_ne_aux`.
--- This produces `2^n` branches when there are `n` such hypotheses in the input.
--- -/
--- meta def remove_ne : global_branching_preprocessor :=
--- { name := "remove_ne",
---   transform := remove_ne_aux }
+/--
+`removeNe` case splits on any proof `h : a ≠ b` in the input, turning it into `a < b ∨ a > b`,
+by calling `linarith.removeNe_aux`.
+This produces `2^n` branches when there are `n` such hypotheses in the input.
+-/
+def removeNe : GlobalBranchingPreprocessor where
+  name := "removeNe"
+  transform := removeNe_aux
 end removeNe
 
 
@@ -402,8 +414,8 @@ end removeNe
 The default list of preprocessors, in the order they should typically run.
 -/
 def defaultPreprocessors : List GlobalBranchingPreprocessor :=
-[filterComparisons, removeNegations, natToInt, strengthenStrictInt,
-  compWithZero/-, cancelDenoms-/]
+  [filterComparisons, removeNegations, natToInt, strengthenStrictInt,
+    compWithZero, cancelDenoms]
 
 /--
 `preprocess pps l` takes a list `l` of proofs of propositions.
@@ -413,7 +425,7 @@ Note that a preprocessor may produce multiple or no expressions from each input 
 so the size of the list may change.
 -/
 def preprocess (pps : List GlobalBranchingPreprocessor) (g : MVarId) (l : List Expr) :
-    MetaM (List Branch) :=
-  pps.foldlM (fun ls pp => do pure (← ls.mapM $ fun b => do pp.process b.1 b.2).join) [(g, l)]
+    MetaM (List Branch) := g.withContext <|
+  pps.foldlM (fun ls pp => return (← ls.mapM fun (g, l) => do pp.process g l).join) [(g, l)]
 
 end Linarith

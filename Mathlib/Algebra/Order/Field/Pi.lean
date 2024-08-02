@@ -1,15 +1,10 @@
 /-
-Copyright (c) 2014 Robert Lewis. All rights reserved.
+Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.order.field.pi
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Fintype.Lattice
+import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Fintype.Card
 
 /-!
 # Lemmas about (finite domain) functions into fields.
@@ -17,18 +12,17 @@ import Mathlib.Data.Fintype.Lattice
 We split this from `Algebra.Order.Field.Basic` to avoid importing the finiteness hierarchy there.
 -/
 
-
-variable {α ι : Type _} [LinearOrderedSemifield α]
+variable {α ι : Type*} [LinearOrderedCancelAddCommMonoid α] [Nontrivial α] [DenselyOrdered α]
 
 theorem Pi.exists_forall_pos_add_lt [ExistsAddOfLE α] [Finite ι] {x y : ι → α}
     (h : ∀ i, x i < y i) : ∃ ε, 0 < ε ∧ ∀ i, x i + ε < y i := by
   cases nonempty_fintype ι
   cases isEmpty_or_nonempty ι
-  · exact ⟨1, zero_lt_one, isEmptyElim⟩
+  · obtain ⟨a, ha⟩ := exists_ne (0 : α)
+    obtain ha | ha := ha.lt_or_lt <;> obtain ⟨b, hb, -⟩ := exists_pos_add_of_lt' ha <;>
+      exact ⟨b, hb, isEmptyElim⟩
   choose ε hε hxε using fun i => exists_pos_add_of_lt' (h i)
   obtain rfl : x + ε = y := funext hxε
   have hε : 0 < Finset.univ.inf' Finset.univ_nonempty ε := (Finset.lt_inf'_iff _).2 fun i _ => hε _
-  exact
-    ⟨_, half_pos hε, fun i =>
-      add_lt_add_left ((half_lt_self hε).trans_le <| Finset.inf'_le _ <| Finset.mem_univ _) _⟩
-#align pi.exists_forall_pos_add_lt Pi.exists_forall_pos_add_lt
+  obtain ⟨δ, hδ, hδε⟩ := exists_between hε
+  exact ⟨δ, hδ, fun i ↦ add_lt_add_left (hδε.trans_le <| Finset.inf'_le _ <| Finset.mem_univ _) _⟩

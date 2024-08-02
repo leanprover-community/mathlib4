@@ -2,11 +2,6 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.char_zero.quotient
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.QuotientGroup
 
@@ -15,7 +10,7 @@ import Mathlib.GroupTheory.QuotientGroup
 -/
 
 
-variable {R : Type _} [DivisionRing R] [CharZero R] {p : R}
+variable {R : Type*} [DivisionRing R] [CharZero R] {p : R}
 
 namespace AddSubgroup
 
@@ -28,56 +23,46 @@ theorem zsmul_mem_zmultiples_iff_exists_sub_div {r : R} {z : ℤ} (hz : z ≠ 0)
   have hz' : (z : R) ≠ 0 := Int.cast_ne_zero.mpr hz
   conv_rhs => simp (config := { singlePass := true }) only [← (mul_right_injective₀ hz').eq_iff]
   simp_rw [← zsmul_eq_mul, smul_add, ← mul_smul_comm, zsmul_eq_mul (z : R)⁻¹, mul_inv_cancel hz',
-    mul_one, ← coe_nat_zsmul, smul_smul, ← add_smul]
+    mul_one, ← natCast_zsmul, smul_smul, ← add_smul]
   constructor
   · rintro ⟨k, h⟩
     simp_rw [← h]
-    refine' ⟨⟨(k % z).toNat, _⟩, k / z, _⟩
+    refine ⟨⟨(k % z).toNat, ?_⟩, k / z, ?_⟩
     · rw [← Int.ofNat_lt, Int.toNat_of_nonneg (Int.emod_nonneg _ hz)]
       exact (Int.emod_lt _ hz).trans_eq (Int.abs_eq_natAbs _)
     rw [Fin.val_mk, Int.toNat_of_nonneg (Int.emod_nonneg _ hz)]
-    nth_rewrite 3 [← Int.div_add_mod k z]
-    rw [Int.mod_def, ← Int.div_def', Int.emod_def]
-    simp only [add_sub_cancel'_right, zsmul_eq_mul, Int.div_def']
+    nth_rewrite 3 [← Int.ediv_add_emod k z]
+    rfl
   · rintro ⟨k, n, h⟩
     exact ⟨_, h⟩
-#align add_subgroup.zsmul_mem_zmultiples_iff_exists_sub_div
-    AddSubgroup.zsmul_mem_zmultiples_iff_exists_sub_div
 
 theorem nsmul_mem_zmultiples_iff_exists_sub_div {r : R} {n : ℕ} (hn : n ≠ 0) :
     n • r ∈ AddSubgroup.zmultiples p ↔
       ∃ k : Fin n, r - (k : ℕ) • (p / n : R) ∈ AddSubgroup.zmultiples p := by
-  rw [← coe_nat_zsmul r, zsmul_mem_zmultiples_iff_exists_sub_div (Int.coe_nat_ne_zero.mpr hn),
-    Int.cast_ofNat]
+  rw [← natCast_zsmul r, zsmul_mem_zmultiples_iff_exists_sub_div (Int.natCast_ne_zero.mpr hn),
+    Int.cast_natCast]
   rfl
-#align add_subgroup.nsmul_mem_zmultiples_iff_exists_sub_div
-    AddSubgroup.nsmul_mem_zmultiples_iff_exists_sub_div
 
 end AddSubgroup
 
-namespace quotientAddGroup
+namespace QuotientAddGroup
 
 theorem zmultiples_zsmul_eq_zsmul_iff {ψ θ : R ⧸ AddSubgroup.zmultiples p} {z : ℤ} (hz : z ≠ 0) :
-    z • ψ = z • θ ↔ ∃ k : Fin z.natAbs, ψ = θ + (k : ℕ) • (p / z : R) := by
+    z • ψ = z • θ ↔ ∃ k : Fin z.natAbs, ψ = θ + ((k : ℕ) • (p / z) : R) := by
   induction ψ using Quotient.inductionOn'
   induction θ using Quotient.inductionOn'
   -- Porting note: Introduced Zp notation to shorten lines
   let Zp := AddSubgroup.zmultiples p
   have : (Quotient.mk'' : R → R ⧸ Zp) = ((↑) : R → R ⧸ Zp) := rfl
   simp only [this]
-  simp_rw [← QuotientAddGroup.mk_zsmul, ← QuotientAddGroup.mk_nsmul, ← QuotientAddGroup.mk_add,
+  simp_rw [← QuotientAddGroup.mk_zsmul, ← QuotientAddGroup.mk_add,
     QuotientAddGroup.eq_iff_sub_mem, ← smul_sub, ← sub_sub]
   exact AddSubgroup.zsmul_mem_zmultiples_iff_exists_sub_div hz
 
-#align quotient_add_group.zmultiples_zsmul_eq_zsmul_iff
-    quotientAddGroup.zmultiples_zsmul_eq_zsmul_iff
-
 theorem zmultiples_nsmul_eq_nsmul_iff {ψ θ : R ⧸ AddSubgroup.zmultiples p} {n : ℕ} (hz : n ≠ 0) :
     n • ψ = n • θ ↔ ∃ k : Fin n, ψ = θ + (k : ℕ) • (p / n : R) := by
-  rw [← coe_nat_zsmul ψ, ← coe_nat_zsmul θ,
-    zmultiples_zsmul_eq_zsmul_iff (Int.coe_nat_ne_zero.mpr hz), Int.cast_ofNat]
+  rw [← natCast_zsmul ψ, ← natCast_zsmul θ,
+    zmultiples_zsmul_eq_zsmul_iff (Int.natCast_ne_zero.mpr hz), Int.cast_natCast]
   rfl
-#align quotient_add_group.zmultiples_nsmul_eq_nsmul_iff
-    quotientAddGroup.zmultiples_nsmul_eq_nsmul_iff
 
-end quotientAddGroup
+end QuotientAddGroup

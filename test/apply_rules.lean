@@ -1,22 +1,22 @@
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Tactic.SolveByElim
 
+set_option autoImplicit true
 open Nat
 
 example {a b c d e : Nat} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 0 ≤ e) :
     a + c * e + a + c + 0 ≤ b + d * e + b + d + e :=
   Nat.add_le_add (Nat.add_le_add (Nat.add_le_add
-    (Nat.add_le_add h1 (Nat.mul_le_mul_of_nonneg_right h2)) h1) h2) h3
+    (Nat.add_le_add h1 (Nat.mul_le_mul_right _ h2)) h1) h2) h3
 
 example {a b c d e : Nat} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 0 ≤ e) :
     a + c * e + a + c + 0 ≤ b + d * e + b + d + e := by
-  apply_rules [Nat.add_le_add, Nat.mul_le_mul_of_nonneg_right]
+  apply_rules [Nat.add_le_add, Nat.mul_le_mul_right]
 
 -- Check that when we supply an iteration bound,
 -- `apply_rules` works up to that bound and returns the remaining goals.
 example {a b c d e : Nat} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 0 ≤ e) :
     a + c * e + a + c + 0 ≤ b + d * e + b + d + e := by
-  apply_rules (config := {maxDepth := 9}) [Nat.add_le_add, Nat.mul_le_mul_of_nonneg_right]
+  apply_rules (config := {maxDepth := 9}) [Nat.add_le_add, Nat.mul_le_mul_right]
   guard_target = 0 ≤ e
   assumption
 
@@ -46,6 +46,7 @@ example (Q : Type) (f : Nat → Q) : Int × Q := by
 -- Test that with transparency set to `.reducible`, the tactic will not unfold `/` to the underlying
 -- `*` to match the form of the lemma `mul_le_mul`
 example [LinearOrderedField α] {a b : α} (hb : 0 ≤ b) (hab : a ≤ b) : a / 2 ≤ b / 2 := by
-  apply_rules (config := { transparency := .reducible }) [mul_le_mul]
+  fail_if_success
+    apply_rules (config := { transparency := .reducible }) [mul_le_mul]
   guard_target = a / 2 ≤ b / 2
   exact div_le_div hb hab zero_lt_two le_rfl

@@ -5,33 +5,22 @@ Authors: Scott Morrison, Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.FinCases
-import Mathlib.Data.Set.Intervals.Basic
 
 /-!
 # Case bash on variables in finite intervals
 
 This file provides the tactic `interval_cases`. `interval_cases n` will:
-1. inspect hypotheses looking for lower and upper bounds of the form `a ≤ n` and `n < b`
-   (in `ℕ`, `ℤ`, `ℕ+`, bounds of the form `a < n` and `n ≤ b` are also allowed),
-   and also makes use of lower and upper bounds found via `le_top` and `bot_le`
-   (so for example if `n : ℕ`, then the bound `0 ≤ n` is automatically found).
-2. call `fin_cases` on the synthesised hypothesis `n ∈ set.Ico a b`,
-   assuming an appropriate `fintype` instance can be found for the type of `n`.
+1. inspect hypotheses looking for lower and upper bounds of the form `a ≤ n` or `a < n` and `n < b`
+   or `n ≤ b`, including the bound `0 ≤ n` for `n : ℕ` automatically.
+2. call `fin_cases` on the synthesised hypothesis `n ∈ Set.Ico a b`,
+   assuming an appropriate `Fintype` instance can be found for the type of `n`.
 
-The variable `n` can belong to any type `α`, with the following restrictions:
-* only bounds on which `expr.to_rat` succeeds will be considered "explicit" (TODO: generalise this?)
-* an instance of `decidable_eq α` is available,
-* an explicit lower bound can be found among the hypotheses, or from `bot_le n`,
-* an explicit upper bound can be found among the hypotheses, or from `le_top n`,
-* if multiple bounds are located, an instance of `linear_order α` is available, and
-* an instance of `fintype set.Ico l u` is available for the relevant bounds.
+Currently, `n` must be of type `ℕ` or `ℤ` (TODO: generalize).
 
 You can also explicitly specify a lower and upper bound to use, as `interval_cases using hl hu`,
 where the hypotheses should be of the form `hl : a ≤ n` and `hu : n < b`. In that case,
-`interval_cases` calls `fin_cases` on the resulting hypothesis `h : n ∈ set.Ico a b`.
+`interval_cases` calls `fin_cases` on the resulting hypothesis `h : n ∈ Set.Ico a b`.
 -/
-
-set_option linter.unusedVariables false
 
 namespace Mathlib.Tactic
 
@@ -129,6 +118,8 @@ structure Methods where
   /-- Construct the canonical numeral for integer `z`, or fail if `z` is out of range. -/
   mkNumeral : Int → MetaM Expr
 
+variable {α : Type*} {a b a' b' : α}
+
 theorem of_not_lt_left [LinearOrder α] (h : ¬(a:α) < b) (eq : a = a') : b ≤ a' := eq ▸ not_lt.1 h
 theorem of_not_lt_right [LinearOrder α] (h : ¬(a:α) < b) (eq : b = b') : b' ≤ a := eq ▸ not_lt.1 h
 theorem of_not_le_left [LE α] (h : ¬(a:α) ≤ b) (eq : a = a') : ¬a' ≤ b := eq ▸ h
@@ -165,7 +156,8 @@ def Methods.getBound (m : Methods) (e : Expr) (pf : Expr) (lb : Bool) :
   let .true ← withNewMCtxDepth <| withReducible <| isDefEq e e' | failure
   pure c
 
-theorem le_of_not_le_of_le [LinearOrder α] (h1 : ¬hi ≤ n) (h2 : hi ≤ lo) : (n:α) ≤ lo :=
+theorem le_of_not_le_of_le {hi n lo : α} [LinearOrder α] (h1 : ¬hi ≤ n) (h2 : hi ≤ lo) :
+    (n:α) ≤ lo :=
   le_trans (le_of_not_le h1) h2
 
 /--
@@ -314,7 +306,7 @@ def intervalCases (g : MVarId) (e e' : Expr) (lbs ubs : Array Expr) (mustUseBoun
         let z := lo+i
         let rhs ← m.mkNumeral z
         let ty ← mkArrow (← mkEq e rhs) tgt
-        let goal ← mkFreshExprMVar ty .syntheticOpaque (appendTag tag (toString z))
+        let goal ← mkFreshExprMVar ty .syntheticOpaque (appendTag tag (.mkSimple (toString z)))
         goals := goals.push { rhs, value := z, goal := goal.mvarId! }
       m.bisect g goals.toSubarray z1 z2 e1 e2 p1 p2 e
       pure goals
@@ -342,7 +334,7 @@ after `interval_cases n`, the goals are `3 = 3 ∨ 3 = 4` and `4 = 3 ∨ 4 = 4`.
 You can also explicitly specify a lower and upper bound to use,
 as `interval_cases using hl, hu`.
 The hypotheses should be in the form `hl : a ≤ n` and `hu : n < b`,
-in which case `interval_cases` calls `fin_cases` on the resulting fact `n ∈ set.Ico a b`.
+in which case `interval_cases` calls `fin_cases` on the resulting fact `n ∈ Set.Ico a b`.
 
 You can specify a name `h` for the new hypothesis,
 as `interval_cases h : n` or `interval_cases h : n using hl, hu`.
@@ -382,12 +374,12 @@ elab_rules : tactic
         let (lo, _) ← parseBound ubTy
         let .true ← isDefEq e lo | failure
       catch _ => throwErrorAt ub "expected a term of the form {e} < _ or {e} ≤ _, got {ubTy}"
-      let (subst, xs, g) ← g.generalizeHyp #[{ expr := e, hName? }] (← getLCtx).getFVarIds
+      let (subst, xs, g) ← g.generalizeHyp #[{ expr := e, hName? }] (← getFVarIdsAt g)
       g.withContext do
       cont xs[0]! xs[1]? subst g e #[subst.apply lb'] #[subst.apply ub'] (mustUseBounds := true)
     | some e, none, none =>
       let e ← Tactic.elabTerm e none
-      let (subst, xs, g) ← g.generalizeHyp #[{ expr := e, hName? }] (← getLCtx).getFVarIds
+      let (subst, xs, g) ← g.generalizeHyp #[{ expr := e, hName? }] (← getFVarIdsAt g)
       let x := xs[0]!
       g.withContext do
       let e := subst.apply e
@@ -404,3 +396,7 @@ elab_rules : tactic
         catch _ => pure ()
       cont x xs[1]? subst g e lbs ubs (mustUseBounds := false)
     | _, _, _ => throwUnsupportedSyntax
+
+end Tactic
+
+end Mathlib
