@@ -209,12 +209,12 @@ lemma uniformEquicontinuous_restrict_iff (F : ι → β → α) {S : Set β} :
 @[simp]
 lemma equicontinuousAt_empty [h : IsEmpty ι] (F : ι → X → α) (x₀ : X) :
     EquicontinuousAt F x₀ :=
-  fun _ _ ↦ eventually_of_forall (fun _ ↦ h.elim)
+  fun _ _ ↦ Eventually.of_forall (fun _ ↦ h.elim)
 
 @[simp]
 lemma equicontinuousWithinAt_empty [h : IsEmpty ι] (F : ι → X → α) (S : Set X) (x₀ : X) :
     EquicontinuousWithinAt F S x₀ :=
-  fun _ _ ↦ eventually_of_forall (fun _ ↦ h.elim)
+  fun _ _ ↦ Eventually.of_forall (fun _ ↦ h.elim)
 
 @[simp]
 lemma equicontinuous_empty [IsEmpty ι] (F : ι → X → α) :
@@ -229,12 +229,12 @@ lemma equicontinuousOn_empty [IsEmpty ι] (F : ι → X → α) (S : Set X) :
 @[simp]
 lemma uniformEquicontinuous_empty [h : IsEmpty ι] (F : ι → β → α) :
     UniformEquicontinuous F :=
-  fun _ _ ↦ eventually_of_forall (fun _ ↦ h.elim)
+  fun _ _ ↦ Eventually.of_forall (fun _ ↦ h.elim)
 
 @[simp]
 lemma uniformEquicontinuousOn_empty [h : IsEmpty ι] (F : ι → β → α) (S : Set β) :
     UniformEquicontinuousOn F S :=
-  fun _ _ ↦ eventually_of_forall (fun _ ↦ h.elim)
+  fun _ _ ↦ Eventually.of_forall (fun _ ↦ h.elim)
 
 /-!
 ### Finite index type
@@ -880,13 +880,13 @@ theorem Filter.Tendsto.continuousAt_of_equicontinuousAt {l : Filter ι} [l.NeBot
     {f : X → α} {x₀ : X} (h₁ : Tendsto F l (𝓝 f)) (h₂ : EquicontinuousAt F x₀) :
     ContinuousAt f x₀ :=
   (equicontinuousAt_iff_range.mp h₂).closure.continuousAt
-    ⟨f, mem_closure_of_tendsto h₁ <| eventually_of_forall mem_range_self⟩
+    ⟨f, mem_closure_of_tendsto h₁ <| Eventually.of_forall mem_range_self⟩
 
 theorem Filter.Tendsto.uniformContinuous_of_uniformEquicontinuous {l : Filter ι} [l.NeBot]
     {F : ι → β → α} {f : β → α} (h₁ : Tendsto F l (𝓝 f)) (h₂ : UniformEquicontinuous F) :
     UniformContinuous f :=
   (uniformEquicontinuous_iff_range.mp h₂).closure.uniformContinuous
-    ⟨f, mem_closure_of_tendsto h₁ <| eventually_of_forall mem_range_self⟩
+    ⟨f, mem_closure_of_tendsto h₁ <| Eventually.of_forall mem_range_self⟩
 ```
 
 Unfortunately, the proofs get painful when dealing with the relative case as one needs to change
@@ -905,7 +905,7 @@ theorem Filter.Tendsto.continuousWithinAt_of_equicontinuousWithinAt {l : Filter 
   rcases mem_uniformity_isClosed hV with ⟨W, hW, hWclosed, hWV⟩
   filter_upwards [h₃ W hW, eventually_mem_nhdsWithin] with x hx hxS using
     hVU <| ball_mono hWV (f x₀) <| hWclosed.mem_of_tendsto (h₂.prod_mk_nhds (h₁ x hxS)) <|
-    eventually_of_forall hx
+    Eventually.of_forall hx
 
 /-- If `𝓕 : ι → X → α` tends to `f : X → α` *pointwise* along some nontrivial filter, and if the
 family `𝓕` is equicontinuous at some `x₀ : X`, then the limit is continuous at `x₀`. -/
@@ -940,7 +940,7 @@ theorem Filter.Tendsto.uniformContinuousOn_of_uniformEquicontinuousOn {l : Filte
   filter_upwards [h₂ V hV, mem_inf_of_right (mem_principal_self _)]
   rintro ⟨x, y⟩ hxy ⟨hxS, hyS⟩
   exact hVU <| hVclosed.mem_of_tendsto ((h₁ x hxS).prod_mk_nhds (h₁ y hyS)) <|
-    eventually_of_forall hxy
+    Eventually.of_forall hxy
 
 /-- If `𝓕 : ι → β → α` tends to `f : β → α` *pointwise* along some nontrivial filter, and if the
 family `𝓕` is uniformly equicontinuous, then the limit is uniformly continuous. -/

@@ -560,8 +560,8 @@ theorem tendsto_lintegral_nn_of_le_const (μ : FiniteMeasure Ω) {fs : ℕ → �
     (fs_lim : ∀ ω, Tendsto (fun n => fs n ω) atTop (𝓝 (f ω))) :
     Tendsto (fun n => ∫⁻ ω, fs n ω ∂(μ : Measure Ω)) atTop (𝓝 (∫⁻ ω, f ω ∂(μ : Measure Ω))) :=
   tendsto_lintegral_nn_filter_of_le_const μ
-    (eventually_of_forall fun n => eventually_of_forall (fs_le_const n))
-    (eventually_of_forall fs_lim)
+    (Eventually.of_forall fun n => Eventually.of_forall (fs_le_const n))
+    (Eventually.of_forall fs_lim)
 
 /-- A bounded convergence theorem for a finite measure:
 If bounded continuous non-negative functions are uniformly bounded by a constant and tend to a
@@ -600,8 +600,8 @@ theorem tendsto_testAgainstNN_of_le_const {μ : FiniteMeasure Ω} {fs : ℕ → 
     (fs_lim : ∀ ω, Tendsto (fun n => fs n ω) atTop (𝓝 (f ω))) :
     Tendsto (fun n => μ.testAgainstNN (fs n)) atTop (𝓝 (μ.testAgainstNN f)) :=
   tendsto_testAgainstNN_filter_of_le_const
-    (eventually_of_forall fun n => eventually_of_forall (fs_le_const n))
-    (eventually_of_forall fs_lim)
+    (Eventually.of_forall fun n => Eventually.of_forall (fs_le_const n))
+    (Eventually.of_forall fs_lim)
 
 end FiniteMeasureBoundedConvergence
 
@@ -635,8 +635,8 @@ theorem tendsto_of_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : �
   have f₀_eq : ⇑f₀ = ((↑) : ℝ≥0 → ℝ) ∘ ⇑f := rfl
   have f₀_nn : 0 ≤ ⇑f₀ := fun _ => by
     simp only [f₀_eq, Pi.zero_apply, Function.comp_apply, NNReal.zero_le_coe]
-  have f₀_ae_nn : 0 ≤ᵐ[(μ : Measure Ω)] ⇑f₀ := eventually_of_forall f₀_nn
-  have f₀_ae_nns : ∀ i, 0 ≤ᵐ[(μs i : Measure Ω)] ⇑f₀ := fun i => eventually_of_forall f₀_nn
+  have f₀_ae_nn : 0 ≤ᵐ[(μ : Measure Ω)] ⇑f₀ := Eventually.of_forall f₀_nn
+  have f₀_ae_nns : ∀ i, 0 ≤ᵐ[(μs i : Measure Ω)] ⇑f₀ := fun i => Eventually.of_forall f₀_nn
   have aux :=
     integral_eq_lintegral_of_nonneg_ae f₀_ae_nn f₀.continuous.measurable.aestronglyMeasurable
   have auxs := fun i =>

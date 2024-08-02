@@ -62,7 +62,7 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
       linarith
     case cos =>
       rw [isBigO_iff]
-      exact ⟨1, eventually_of_forall fun x => by simp [Real.abs_cos_le_one]⟩
+      exact ⟨1, Eventually.of_forall fun x => by simp [Real.abs_cos_le_one]⟩
   case inr.inl => -- b = 0
     refine Tendsto.mono_right ?_ (Iff.mpr pure_le_nhds_iff rfl)
     rw [tendsto_pure]

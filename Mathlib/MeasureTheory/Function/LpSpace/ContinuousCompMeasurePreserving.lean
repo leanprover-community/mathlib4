@@ -123,7 +123,7 @@ theorem compMeasurePreserving_continuous (hp : p ≠ ∞) :
     dsimp only [Lp.simpleFunc.coe_indicatorConst, Lp.indicatorConstLp_compMeasurePreserving]
     refine continuous_indicatorConstLp_set hp fun f ↦ ?_
     apply tendsto_measure_symmDiff_preimage_nhds_zero continuousAt_subtype_val _ f.2 hs hνs.ne
-    exact eventually_of_forall Subtype.property
+    exact Eventually.of_forall Subtype.property
 
 end Lp
 

@@ -647,7 +647,7 @@ protected theorem _root_.WithSeminorms.equicontinuous_TFAE {κ : Type*}
   tfae_have 4 → 1 -- This would work over any `NormedField`
   · intro ⟨p, hp, hfp⟩
     exact Metric.equicontinuousAt_of_continuity_modulus p (map_zero p ▸ hp.tendsto 0) _ <|
-      eventually_of_forall fun x k ↦ by simpa using hfp k x
+      Eventually.of_forall fun x k ↦ by simpa using hfp k x
   tfae_finish
 
 theorem _root_.WithSeminorms.uniformEquicontinuous_iff_exists_continuous_seminorm {κ : Type*}

@@ -79,7 +79,7 @@ theorem lt_def [Preorder β] : ((· < ·) : β* → β* → Prop) = LiftRel (· 
 
 instance isTotal [LE β] [IsTotal β (· ≤ ·)] : IsTotal β* (· ≤ ·) :=
   ⟨fun f g =>
-    inductionOn₂ f g fun _f _g => eventually_or.1 <| eventually_of_forall fun _x => total_of _ _ _⟩
+    inductionOn₂ f g fun _f _g => eventually_or.1 <| Eventually.of_forall fun _x => total_of _ _ _⟩
 
 open Classical in
 /-- If `φ` is an ultrafilter then the ultraproduct is a linear order. -/

@@ -379,7 +379,7 @@ theorem EquicontinuousOn.isClosed_range_pi_of_uniformOnFun'
     mapClusterPt_iff_ultrafilter, range_comp, Subtype.coe_injective.surjective_comp_right.forall,
     ← restrict_eq, ← EquicontinuousOn.tendsto_uniformOnFun_iff_pi' 𝔖_compact F_eqcont]
   exact fun f ⟨u, _, hu⟩ ↦ mem_image_of_mem _ <| H.mem_of_tendsto hu <|
-    eventually_of_forall mem_range_self
+    Eventually.of_forall mem_range_self
 
 /-- Let `X` be a topological space, `𝔖` a covering of `X` by compact subsets, and
 `α` a uniform space. An equicontinuous subset of `X → α` is closed in the topology of uniform

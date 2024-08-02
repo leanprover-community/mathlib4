@@ -79,7 +79,7 @@ theorem ae_lineDifferentiableAt (hf : LipschitzWith C f) (v : E) :
 theorem memℒp_lineDeriv (hf : LipschitzWith C f) (v : E) :
     Memℒp (fun x ↦ lineDeriv ℝ f x v) ∞ μ :=
   memℒp_top_of_bound (aestronglyMeasurable_lineDeriv hf.continuous μ)
-    (C * ‖v‖) (eventually_of_forall (fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf))
+    (C * ‖v‖) (Eventually.of_forall (fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf))
 
 theorem locallyIntegrable_lineDeriv (hf : LipschitzWith C f) (v : E) :
     LocallyIntegrable (fun x ↦ lineDeriv ℝ f x v) μ :=

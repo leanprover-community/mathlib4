@@ -872,7 +872,7 @@ theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, St
         _ ≤ eLpNorm ({ x | C ≤ ‖f (ℐ C) x‖₊ }.indicator (f (ℐ C))) p μ := by
           refine le_eLpNorm_of_bddBelow hp hp' _
             (measurableSet_le measurable_const (hf _).nnnorm.measurable)
-            (eventually_of_forall fun x hx => ?_)
+            (Eventually.of_forall fun x hx => ?_)
           rwa [nnnorm_indicator_eq_indicator_nnnorm, Set.indicator_of_mem hx]
         _ ≤ eLpNorm (f (ℐ C)) p μ := eLpNorm_indicator_le _
     specialize this (2 * max M 1 * δ⁻¹ ^ (1 / p.toReal))

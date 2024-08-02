@@ -294,7 +294,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
       integral_finset_biUnion π.boxes (fun J _ => J.measurableSet_coe) π.pairwiseDisjoint (hfgi _)]
     refine dist_sum_sum_le_of_le _ fun J hJ => ?_
     rw [dist_eq_norm, ← integral_sub (hfi _ J hJ) (hgi J hJ)]
-    refine norm_integral_le_of_norm_le (hfgi _ J hJ) (eventually_of_forall fun x => ?_)
+    refine norm_integral_le_of_norm_le (hfgi _ J hJ) (Eventually.of_forall fun x => ?_)
     exact hfg_mono x (hNx (π.tag J))
 
 /-- If `f : ℝⁿ → E` is continuous on a rectangular box `I`, then it is Box integrable on `I`

@@ -111,9 +111,9 @@ theorem tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
   rw [tendsto_zero_iff_norm_tendsto_zero]
   refine
     tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds ?_
-      (eventually_of_forall fun _ => norm_nonneg _)
+      (Eventually.of_forall fun _ => norm_nonneg _)
       ((eventually_ge_atTop (0 : ℝ)).mp
-        (eventually_of_forall fun T hT => verticalIntegral_norm_le hb c hT))
+        (Eventually.of_forall fun T hT => verticalIntegral_norm_le hb c hT))
   rw [(by ring : 0 = 2 * |c| * 0)]
   refine (tendsto_exp_atBot.comp (tendsto_neg_atTop_atBot.comp ?_)).const_mul _
   apply tendsto_atTop_add_const_right

@@ -732,7 +732,7 @@ theorem HasStrictFDerivAt.isBigO_sub_rev {f' : E ≃L[𝕜] F}
 theorem HasFDerivAtFilter.isBigO_sub_rev (hf : HasFDerivAtFilter f f' x L) {C}
     (hf' : AntilipschitzWith C f') : (fun x' => x' - x) =O[L] fun x' => f x' - f x :=
   have : (fun x' => x' - x) =O[L] fun x' => f' (x' - x) :=
-    isBigO_iff.2 ⟨C, eventually_of_forall fun _ => ZeroHomClass.bound_of_antilipschitz f' hf' _⟩
+    isBigO_iff.2 ⟨C, Eventually.of_forall fun _ => ZeroHomClass.bound_of_antilipschitz f' hf' _⟩
   (this.trans (hf.isLittleO.trans_isBigO this).right_isBigO_add).congr (fun _ => rfl) fun _ =>
     sub_add_cancel _ _
 

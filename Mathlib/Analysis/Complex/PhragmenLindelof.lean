@@ -733,7 +733,7 @@ theorem right_half_plane_of_bounded_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.
   refine right_half_plane_of_tendsto_zero_on_real hd ?_ ?_ (fun y => ?_) hz
   · rcases hexp with ⟨c, hc, B, hO⟩
     refine ⟨c, hc, B, (IsBigO.of_bound 1 ?_).trans hO⟩
-    refine eventually_inf_principal.2 <| eventually_of_forall fun z hz => ?_
+    refine eventually_inf_principal.2 <| Eventually.of_forall fun z hz => ?_
     rw [hgn, one_mul]
     refine mul_le_of_le_one_left (norm_nonneg _) (Real.exp_le_one_iff.2 ?_)
     exact mul_nonpos_of_nonpos_of_nonneg ε₀.le (le_of_lt hz)

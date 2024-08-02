@@ -181,7 +181,7 @@ theorem indep_bot_right (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
     Indep m' ⊥ κ μ := by
   intros s t _ ht
   rw [Set.mem_setOf_eq, MeasurableSpace.measurableSet_bot_iff] at ht
-  refine Filter.eventually_of_forall (fun a ↦ ?_)
+  refine Filter.Eventually.of_forall (fun a ↦ ?_)
   cases' ht with ht ht
   · rw [ht, Set.inter_empty, measure_empty, mul_zero]
   · rw [ht, Set.inter_univ, measure_univ, mul_one]

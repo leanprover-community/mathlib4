@@ -249,7 +249,7 @@ theorem continuousAt_gaussian_integral (b : ℂ) (hb : 0 < re b) :
     gcongr
     exact le_of_lt hc
   exact
-    continuousAt_of_dominated (eventually_of_forall f_meas) f_le_bd (integrable_exp_neg_mul_sq hd)
+    continuousAt_of_dominated (Eventually.of_forall f_meas) f_le_bd (integrable_exp_neg_mul_sq hd)
       (ae_of_all _ f_cts)
 
 theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :

@@ -136,13 +136,13 @@ instance (priority := 100) OrderBot.to_BoundedGENhdsClass [OrderBot α] : Bounde
 instance (priority := 100) OrderTopology.to_BoundedLENhdsClass [IsDirected α (· ≤ ·)]
     [OrderTopology α] : BoundedLENhdsClass α :=
   ⟨fun a ↦
-    ((isTop_or_exists_gt a).elim fun h ↦ ⟨a, eventually_of_forall h⟩) <|
+    ((isTop_or_exists_gt a).elim fun h ↦ ⟨a, Eventually.of_forall h⟩) <|
       Exists.imp fun _b ↦ ge_mem_nhds⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderTopology.to_BoundedGENhdsClass [IsDirected α (· ≥ ·)]
     [OrderTopology α] : BoundedGENhdsClass α :=
-  ⟨fun a ↦ ((isBot_or_exists_lt a).elim fun h ↦ ⟨a, eventually_of_forall h⟩) <|
+  ⟨fun a ↦ ((isBot_or_exists_lt a).elim fun h ↦ ⟨a, Eventually.of_forall h⟩) <|
     Exists.imp fun _b ↦ le_mem_nhds⟩
 
 end Preorder
@@ -245,13 +245,13 @@ variable [FirstCountableTopology α] {f : Filter β} [CountableInterFilter f] {u
 theorem eventually_le_limsup (hf : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
     ∀ᶠ b in f, u b ≤ f.limsup u := by
   obtain ha | ha := isTop_or_exists_gt (f.limsup u)
-  · exact eventually_of_forall fun _ => ha _
+  · exact Eventually.of_forall fun _ => ha _
   by_cases H : IsGLB (Set.Ioi (f.limsup u)) (f.limsup u)
   · obtain ⟨u, -, -, hua, hu⟩ := H.exists_seq_antitone_tendsto ha
     have := fun n => eventually_lt_of_limsup_lt (hu n) hf
     exact
       (eventually_countable_forall.2 this).mono fun b hb =>
-        ge_of_tendsto hua <| eventually_of_forall fun n => (hb _).le
+        ge_of_tendsto hua <| Eventually.of_forall fun n => (hb _).le
   · obtain ⟨x, hx, xa⟩ : ∃ x, (∀ ⦃b⦄, f.limsup u < b → x ≤ b) ∧ f.limsup u < x := by
       simp only [IsGLB, IsGreatest, lowerBounds, upperBounds, Set.mem_Ioi, Set.mem_setOf_eq,
         not_and, not_forall, not_le, exists_prop] at H
@@ -274,7 +274,7 @@ variable [CompleteLinearOrder α] [TopologicalSpace α] [FirstCountableTopology 
 @[simp]
 theorem limsup_eq_bot : f.limsup u = ⊥ ↔ u =ᶠ[f] ⊥ :=
   ⟨fun h =>
-    (EventuallyLE.trans eventually_le_limsup <| eventually_of_forall fun _ => h.le).mono fun x hx =>
+    (EventuallyLE.trans eventually_le_limsup <| Eventually.of_forall fun _ => h.le).mono fun x hx =>
       le_antisymm hx bot_le,
     fun h => by
     rw [limsup_congr h]
@@ -328,7 +328,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
     by_contra! H
     have not_bot : ¬ IsBot F.limsSup := fun maybe_bot ↦
       lt_irrefl (F.liminf f) <| lt_of_le_of_lt
-        (liminf_le_of_frequently_le (frequently_of_forall (fun r ↦ f_decr (maybe_bot r)))
+        (liminf_le_of_frequently_le (Frequently.of_forall (fun r ↦ f_decr (maybe_bot r)))
           (bdd_above.isBoundedUnder f_decr)) H
     obtain ⟨l, l_lt, h'l⟩ :
         ∃ l < F.limsSup, Set.Ioc l F.limsSup ⊆ { x : R | f x < F.liminf f } := by

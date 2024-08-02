@@ -624,7 +624,7 @@ theorem Monotone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Monotone
   simp_rw [Finset.sum_range_by_parts _ _ (Nat.succ _), sub_eq_add_neg, Nat.succ_sub_succ_eq_sub,
     tsub_zero]
   apply (NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded hf0
-    ⟨b, eventually_map.mpr <| eventually_of_forall fun n ↦ hgb <| n + 1⟩).cauchySeq.add
+    ⟨b, eventually_map.mpr <| Eventually.of_forall fun n ↦ hgb <| n + 1⟩).cauchySeq.add
   refine CauchySeq.neg ?_
   refine cauchySeq_range_of_norm_bounded _ ?_
     (fun n ↦ ?_ : ∀ n, ‖(f (n + 1) + -f n) • (Finset.range (n + 1)).sum z‖ ≤ b * |f (n + 1) - f n|)
