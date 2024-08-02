@@ -259,5 +259,5 @@ lemma exists_maximal_isMatchingFree [Fintype V] [DecidableEq V]
     G ≤ Gmax ∧ Gmax.IsMatchingFree ∧ ∀ G', G' > Gmax → ∃ M : Subgraph G', M.IsPerfectMatching := by
   simp_rw [← @not_forall_not _ Subgraph.IsPerfectMatching]
   exact Fintype.exists_maximal h
-  
+
 end SimpleGraph
