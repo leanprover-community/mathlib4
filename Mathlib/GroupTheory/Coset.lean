@@ -178,7 +178,7 @@ theorem orbit_subgroup_one_eq_self : MulAction.orbit s (1 : α) = s :=
 
 @[to_additive eq_addCosets_of_normal]
 theorem eq_cosets_of_normal (N : s.Normal) (g : α) : g • (s : Set α) = op g • s :=
-  Set.ext fun a => by simp [mem_leftCoset_iff, mem_rightCoset_iff]; rw [N.mem_comm_iff]
+  Set.ext fun a => by simp [mem_leftCoset_iff, mem_rightCoset_iff, N.mem_comm_iff]
 
 @[to_additive normal_of_eq_addCosets]
 theorem normal_of_eq_cosets (h : ∀ g : α, g • (s : Set α) = op g • s) : s.Normal :=
@@ -723,5 +723,16 @@ noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α 
         exact a.2.2⟩
   left_inv := fun ⟨a, ha⟩ => Subtype.eq <| show _ * _ = a by simp
   right_inv := fun ⟨⟨a, ha⟩, ⟨x, hx⟩⟩ => by ext <;> simp [ha]
+
+/-- A group is made up of a disjoint union of cosets of a subgroup. -/
+@[to_additive "An additive group is made up of a disjoint union of cosets of an additive
+subgroup. -/"]
+lemma univ_eq_iUnion_image_mul (H : Subgroup α) :
+    (Set.univ (α := α)) = ⋃ x : α ⧸ H, (x.out' * ·) '' H := by
+  ext x
+  simp only [Set.mem_univ, Set.image_add_right, Set.mem_iUnion, Set.mem_preimage, SetLike.mem_coe,
+    true_iff]
+  refine ⟨x, ?_⟩
+  simp [← QuotientGroup.eq]
 
 end QuotientGroup
