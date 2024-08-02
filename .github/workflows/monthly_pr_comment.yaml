@@ -1,18 +1,20 @@
-on:
-  pull_request
-
 name: Blog report
 
-jobs:
+on:
+  issue_comment: #pull_request:
+    types: [created, edited]
+  pull_request_review_comment:
+    types: [created, edited]
 
+jobs:
   Monthly_PRs:
-    if: github.repository == 'leanprover-community/mathlib4' && github.event.pull_request.draft == false
-    name: Blog draft
+    if: contains(github.event.comment.body, 'mimblog')
     runs-on: ubuntu-latest
 
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       BRANCH_NAME: ${{ github.head_ref }}
+      COMMENT: ${{ github.event.comment.body }}
 
     steps:
       - name: cleanup
@@ -26,10 +28,11 @@ jobs:
 
       - name: blog report
         run: |
-          yrMth=2024-07
+          yrMth=${COMMENT/#* }
+          echo "yrMth: ${yrMth}"
           mth="$(date -d "${yrMth}-01" '+%B')"
           PR="${{ github.event.pull_request.number }}"
-          title="### ${mth} in Mathlib summary"
+          title="### ${mth} in Mathlib -- summary"
 
           printf $'Repository: %s\nBranch: %s\n' "${{ github.repository }}" "${BRANCH_NAME}"
           git checkout origin/adomani/yd_find_label scripts/find_labels.sh
