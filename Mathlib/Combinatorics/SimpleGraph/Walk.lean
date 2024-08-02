@@ -1028,7 +1028,7 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
     rw [getVert_of_length_le _ (by simp only [length_copy, length_nil, Nat.zero_le])]
   | .cons hadj q, 0 => simp only [copy_rfl_rfl, getVert_zero]
   | .cons hadj q, (n + 1) => simp only [copy_cons, getVert_cons_succ]; rfl
-  
+
 @[simp] lemma getVert_tail {u v n} (p : G.Walk u v) (hnp: ¬ p.Nil) :
     p.tail.getVert n = p.getVert (n + 1) := by
   match p with
