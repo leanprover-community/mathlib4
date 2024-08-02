@@ -252,11 +252,12 @@ lemma Fintype.exists_maximal {α} [Fintype α] [PartialOrder α] {a : α} {p : �
   use b
   simp only [Set.mem_setOf_eq, id_eq, and_imp] at hb
   exact ⟨hb.1.1, hb.1.2, fun c hc hc' ↦
-    (ne_of_lt hc) <| hb.2 _ (le_trans hb.1.1 (le_of_lt hc)) hc' (le_of_lt hc)⟩
+    hc.ne <| hb.2 _ (le_trans hb.1.1 (le_of_lt hc)) hc' (le_of_lt hc)⟩
 
 lemma exists_maximal_isMatchingFree [Fintype V] [DecidableEq V]
     (h : G.IsMatchingFree) : ∃ Gmax : SimpleGraph V,
     G ≤ Gmax ∧ Gmax.IsMatchingFree ∧ ∀ G', G' > Gmax → ∃ M : Subgraph G', M.IsPerfectMatching := by
   simp_rw [← @not_forall_not _ Subgraph.IsPerfectMatching]
   exact Fintype.exists_maximal h
+  
 end SimpleGraph
