@@ -18,15 +18,15 @@ open Cli
 
 /-- Implementation of the `lint_style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
-  let errorStyle := match (args.hasFlag "github", args.hasFlag "update") with
-    | (true, _) => ErrorFormat.github
-    | (false, true) => ErrorFormat.exceptionsFile
-    | (false, false) => ErrorFormat.humanReadable
+  let mode : OutputSetting := match (args.hasFlag "update", args.hasFlag "github") with
+    | (true, _) => OutputSetting.update
+    | (false, true) => OutputSetting.print ErrorFormat.github
+    | (false, false) => OutputSetting.print ErrorFormat.humanReadable
   -- Read all module names to lint.
   let mut allModules := #[]
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
     allModules := allModules.append ((← IO.FS.lines s).map (·.stripPrefix "import "))
-  let numberErrorFiles ← lintModules allModules errorStyle
+  let numberErrorFiles ← lintModules allModules mode
   -- Make sure to return an exit code of at most 125, so this return value can be used further
   -- in shell scripts.
   return min numberErrorFiles 125
@@ -41,7 +41,11 @@ def lint_style : Cmd := `[Cli|
   FLAGS:
     github;     "Print errors in a format suitable for github problem matchers\n\
                  otherwise, produce human-readable output"
-    update;     "Print errors solely for the style exceptions file"
+    update;     "Also update the style exceptions file.\
+      This adds entries for any new exceptions, removes any entries which are no longer necessary,\
+      and tries to not modify exception entries unless necessary.
+      To fully regenerate the list of style exceptions, delete `style-exceptions.txt`
+      and run this script again with this flag."
 ]
 
 /-- The entry point to the `lake exe lint_style` command. -/
