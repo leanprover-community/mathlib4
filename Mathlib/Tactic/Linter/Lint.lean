@@ -282,7 +282,7 @@ def openClassicalLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
     unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
       return
-    -- If this is an open command, extract the list of opened namespaces.
+    -- If `stx` describes an `open` command, extract the list of opened namespaces.
     let names : Option (Array Name) := match stx with
     | `(command|open $name hiding $_) => some #[name.getId]
     | `(command|open $name renaming $_) => some #[name.getId]
@@ -300,8 +300,11 @@ def openClassicalLinter : Linter where run := withSetOptionIn fun stx ↦ do
       -- We need to handle `open foo (bar)` commands also: ignore all anonymous names.
       let names := names.filter fun n ↦ !(n matches .anonymous)
       if names.contains `Classical then
-        -- TODO: add useful error message!
-        Linter.logLint linter.openClassical stx "foo"
+        Linter.logLint linter.openClassical stx "\
+        please avoid 'open (scoped) Classical' statements: this can hide theorem statements\n\
+        which would be better stated with explicit decidability statements.\n\
+        Instead, use `open Classical in` for definitions or instances, the `classical` tactic \
+        for proofs.\nFor theorem statements, either add missing decidability assumptions or use `open Classical in`."
 
 initialize addLinter openClassicalLinter
 
