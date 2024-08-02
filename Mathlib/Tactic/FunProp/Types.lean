@@ -138,6 +138,9 @@ def withIncreasedTransitionDepth {α} (go : FunPropM (Option α)) : FunPropM (Op
   let maxDepth := (← read).config.maxTransitionDepth
   let newDepth := (← read).transitionDepth + 1
   if newDepth > maxDepth then
+    trace[Meta.Tactic.fun_prop]
+   "maximum transition depth({maxDepth}) reached
+    to increase the maximum depth please run `fun_prop (config:=\{maxTransitionDepth:={newDepth}})`"
     return none
   else
     withReader (fun s => {s with transitionDepth := newDepth}) go
