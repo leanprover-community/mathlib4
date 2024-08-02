@@ -84,8 +84,8 @@ theorem extendTo𝕜'_apply_re (fr : F →ₗ[ℝ] ℝ) (x : F) : re (fr.extendT
   simp only [extendTo𝕜'_apply, map_sub, zero_mul, mul_zero, sub_zero,
     rclike_simps]
 
-theorem norm_extendTo𝕜'_apply_sq
-    (fr : F →ₗ[ℝ] ℝ) (x : F) : ‖(fr.extendTo𝕜' x : 𝕜)‖ ^ 2 = fr (conj (fr.extendTo𝕜' x : 𝕜) • x) :=
+theorem norm_extendTo𝕜'_apply_sq (fr : F →ₗ[ℝ] ℝ) (x : F) :
+    ‖(fr.extendTo𝕜' x : 𝕜)‖ ^ 2 = fr (conj (fr.extendTo𝕜' x : 𝕜) • x) :=
   calc
     ‖(fr.extendTo𝕜' x : 𝕜)‖ ^ 2 = re (conj (fr.extendTo𝕜' x) * fr.extendTo𝕜' x : 𝕜) := by
       rw [RCLike.conj_mul, ← ofReal_pow, ofReal_re]
