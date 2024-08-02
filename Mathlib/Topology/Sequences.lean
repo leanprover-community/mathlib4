@@ -189,19 +189,19 @@ theorem continuous_iff_seqContinuous [SequentialSpace X] {f : X → Y} :
     Continuous f ↔ SeqContinuous f :=
   ⟨Continuous.seqContinuous, SeqContinuous.continuous⟩
 
-theorem SequentialSpace.coinduced [SequentialSpace X] (f : X → Y) :
+theorem SequentialSpace.coinduced [SequentialSpace X] {Y} (f : X → Y) :
     @SequentialSpace Y (.coinduced f ‹_›) :=
   letI : TopologicalSpace Y := .coinduced f ‹_›
   ⟨fun s hs ↦ isClosed_coinduced.2 (hs.preimage continuous_coinduced_rng.seqContinuous).isClosed⟩
 
-protected theorem SequentialSpace.iSup {ι : Sort*} {t : ι → TopologicalSpace X}
+protected theorem SequentialSpace.iSup {X} {ι : Sort*} {t : ι → TopologicalSpace X}
     (h : ∀ i, @SequentialSpace X (t i)) : @SequentialSpace X (⨆ i, t i) := by
   letI : TopologicalSpace X := ⨆ i, t i
   refine ⟨fun s hs ↦ isClosed_iSup_iff.2 fun i ↦ ?_⟩
   letI := t i
   exact IsSeqClosed.isClosed fun u x hus hux ↦ hs hus <| hux.mono_right <| nhds_mono <| le_iSup _ _
 
-protected theorem SequentialSpace.sup {t₁ t₂ : TopologicalSpace X}
+protected theorem SequentialSpace.sup {X} {t₁ t₂ : TopologicalSpace X}
     (h₁ : @SequentialSpace X t₁) (h₂ : @SequentialSpace X t₂) :
     @SequentialSpace X (t₁ ⊔ t₂) := by
   rw [sup_eq_iSup]

@@ -56,10 +56,10 @@ namespace IsWeaklyEisensteinAt
 
 section CommSemiring
 
-variable [CommSemiring R] {𝓟 : Ideal R} {f : R[X]} (hf : f.IsWeaklyEisensteinAt 𝓟)
+variable [CommSemiring R] {𝓟 : Ideal R} {f : R[X]}
 
-
-theorem map {A : Type v} [CommRing A] (φ : R →+* A) : (f.map φ).IsWeaklyEisensteinAt (𝓟.map φ) := by
+theorem map (hf : f.IsWeaklyEisensteinAt 𝓟) {A : Type v} [CommRing A] (φ : R →+* A) :
+    (f.map φ).IsWeaklyEisensteinAt (𝓟.map φ) := by
   refine (isWeaklyEisensteinAt_iff _ _).2 fun hn => ?_
   rw [coeff_map]
   exact mem_map_of_mem _ (hf.mem (lt_of_lt_of_le hn (natDegree_map_le _ _)))
@@ -68,7 +68,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R] {𝓟 : Ideal R} {f : R[X]} (hf : f.IsWeaklyEisensteinAt 𝓟)
+variable [CommRing R] {𝓟 : Ideal R} {f : R[X]}
 variable {S : Type v} [CommRing S] [Algebra R S]
 
 section Principal
@@ -118,7 +118,8 @@ end Principal
 
 -- Porting note: `Ideal.neg_mem_iff` was `neg_mem_iff` on line 142 but Lean was not able to find
 -- NegMemClass
-theorem pow_natDegree_le_of_root_of_monic_mem {x : R} (hroot : IsRoot f x) (hmo : f.Monic) :
+theorem pow_natDegree_le_of_root_of_monic_mem (hf : f.IsWeaklyEisensteinAt 𝓟)
+    {x : R} (hroot : IsRoot f x) (hmo : f.Monic) :
     ∀ i, f.natDegree ≤ i → x ^ i ∈ 𝓟 := by
   intro i hi
   obtain ⟨k, hk⟩ := exists_add_of_le hi
@@ -130,8 +131,8 @@ theorem pow_natDegree_le_of_root_of_monic_mem {x : R} (hroot : IsRoot f x) (hmo 
   rw [eq_neg_of_add_eq_zero_left hroot, Ideal.neg_mem_iff]
   exact Submodule.sum_mem _ fun i _ => mul_mem_right _ _ (hf.mem (Fin.is_lt i))
 
-theorem pow_natDegree_le_of_aeval_zero_of_monic_mem_map {x : S} (hx : aeval x f = 0)
-    (hmo : f.Monic) :
+theorem pow_natDegree_le_of_aeval_zero_of_monic_mem_map (hf : f.IsWeaklyEisensteinAt 𝓟)
+    {x : S} (hx : aeval x f = 0) (hmo : f.Monic) :
     ∀ i, (f.map (algebraMap R S)).natDegree ≤ i → x ^ i ∈ 𝓟.map (algebraMap R S) := by
   suffices x ^ (f.map (algebraMap R S)).natDegree ∈ 𝓟.map (algebraMap R S) by
     intro i hi
@@ -180,7 +181,7 @@ namespace IsEisensteinAt
 
 section CommSemiring
 
-variable [CommSemiring R] {𝓟 : Ideal R} {f : R[X]} (hf : f.IsEisensteinAt 𝓟)
+variable [CommSemiring R] {𝓟 : Ideal R} {f : R[X]}
 
 theorem _root_.Polynomial.Monic.leadingCoeff_not_mem (hf : f.Monic) (h : 𝓟 ≠ ⊤) :
     ¬f.leadingCoeff ∈ 𝓟 := hf.leadingCoeff.symm ▸ (Ideal.ne_top_iff_one _).1 h
@@ -192,10 +193,10 @@ theorem _root_.Polynomial.Monic.isEisensteinAt_of_mem_of_not_mem (hf : f.Monic) 
     mem := fun hn => hmem hn
     not_mem := hnot_mem }
 
-theorem isWeaklyEisensteinAt : IsWeaklyEisensteinAt f 𝓟 :=
+theorem isWeaklyEisensteinAt (hf : f.IsEisensteinAt 𝓟) : IsWeaklyEisensteinAt f 𝓟 :=
   ⟨fun h => hf.mem h⟩
 
-theorem coeff_mem {n : ℕ} (hn : n ≠ f.natDegree) : f.coeff n ∈ 𝓟 := by
+theorem coeff_mem (hf : f.IsEisensteinAt 𝓟) {n : ℕ} (hn : n ≠ f.natDegree) : f.coeff n ∈ 𝓟 := by
   cases' ne_iff_lt_or_gt.1 hn with h₁ h₂
   · exact hf.mem h₁
   · rw [coeff_eq_zero_of_natDegree_lt h₂]
@@ -205,12 +206,12 @@ end CommSemiring
 
 section IsDomain
 
-variable [CommRing R] [IsDomain R] {𝓟 : Ideal R} {f : R[X]} (hf : f.IsEisensteinAt 𝓟)
+variable [CommRing R] [IsDomain R] {𝓟 : Ideal R} {f : R[X]}
 
 /-- If a primitive `f` satisfies `f.IsEisensteinAt 𝓟`, where `𝓟.IsPrime`,
 then `f` is irreducible. -/
-theorem irreducible (hprime : 𝓟.IsPrime) (hu : f.IsPrimitive) (hfd0 : 0 < f.natDegree) :
-    Irreducible f :=
+theorem irreducible (hf : f.IsEisensteinAt 𝓟) (hprime : 𝓟.IsPrime) (hu : f.IsPrimitive)
+    (hfd0 : 0 < f.natDegree) : Irreducible f :=
   irreducible_of_eisenstein_criterion hprime hf.leading (fun _ hn => hf.mem (coe_lt_degree.1 hn))
     (natDegree_pos_iff_degree_pos.1 hfd0) hf.not_mem hu
 
