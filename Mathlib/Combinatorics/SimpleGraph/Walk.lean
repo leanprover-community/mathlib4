@@ -1062,7 +1062,6 @@ theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
         rw [@nil_iff_length_eq]
         have : 1 ≤ p.length := by omega
         exact Nat.not_eq_zero_of_lt this
-
       rw [← support_tail_of_not_nil _ hnp]
       rw [mem_support_iff_exists_getVert]
       use n - 1
