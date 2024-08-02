@@ -36,7 +36,7 @@ jobs:
           echo "${message}"
           message="$(echo "${message}" |
             sed '/ [0-9]* PRs$/{
-              s=^=</details><details>\n\n<summary>\n=
+              s=^=</details><details><summary>\n=
               s=$=\n</summary>\n=
             }; s=^PR \(#[0-9]* [^:]*\): .*=* \1 =; s= 1 PRs= 1 PR=' | sed -z 's=\n---\nReports\n\n=\n</details>\n&=')"
           ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"
