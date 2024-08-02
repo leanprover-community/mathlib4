@@ -880,7 +880,7 @@ theorem ciSup_subtype [Nonempty ι] {p : ι → Prop} [Nonempty (Subtype p)] {f 
       forall_exists_index]
     intro b hb
     split_ifs at hb
-    · refine Or.inr ⟨_, _, hb⟩
+    · exact Or.inr ⟨_, _, hb⟩
     · simp_all
   · refine ciSup_le fun i ↦ ?_
     simp_rw [ciSup_eq_ite]
@@ -943,9 +943,8 @@ lemma ciSup_image {α ι ι' : Type*} [ConditionallyCompleteLattice α] [Nonempt
       exact ⟨⟨f i, this⟩, by simp [this]⟩
     rw [← ht]
     refine le_ciSup_set ?_ t.prop
-    · simpa [bddAbove_def] using hf
-  rw [← csSup_image (by simpa using hs) hg hf', ← csSup_image hs hf hg', ← Set.image_comp]
-  rfl
+    simpa [bddAbove_def] using hf
+  rw [← csSup_image (by simpa using hs) hg hf', ← csSup_image hs hf hg', ← Set.image_comp, comp_def]
 
 lemma ciInf_image {α ι ι' : Type*} [ConditionallyCompleteLattice α] [Nonempty ι] [Nonempty ι']
     {s : Set ι} (hs : s.Nonempty) {f : ι → ι'} {g : ι' → α}
