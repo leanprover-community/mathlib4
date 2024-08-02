@@ -67,11 +67,19 @@ instance : BoundedOrder I := Set.Icc.boundedOrder zero_le_one
 
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
+@[norm_cast]
 theorem coe_ne_zero {x : I} : (x : ℝ) ≠ 0 ↔ x ≠ 0 :=
   not_iff_not.mpr coe_eq_zero
 
+@[norm_cast]
 theorem coe_ne_one {x : I} : (x : ℝ) ≠ 1 ↔ x ≠ 1 :=
   not_iff_not.mpr coe_eq_one
+
+@[norm_cast]
+lemma coe_pos {x : I} : (0 : ℝ) < x ↔ 0 < x := Iff.rfl
+
+@[norm_cast]
+lemma coe_lt_one {x : I} : (x : ℝ) < 1 ↔ x < 1 := Iff.rfl
 
 instance : Nonempty I :=
   ⟨0⟩
@@ -133,6 +141,62 @@ theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := 
 theorem half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 2 := by
   rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le, sub_half]
 
+@[simp]
+lemma eq_zero_iff_sym_eq_one (i : I) : σ i = 1 ↔ i = 0 := by
+  apply Iff.intro
+  · intro h
+    rw [← unitInterval.symm_zero] at h
+    exact symm_bijective.injective h
+  · intro h
+    rw [h, symm_zero]
+
+@[simp]
+lemma eq_one_iff_sym_eq_zero (i : I) : σ i = 0 ↔ i = 1 := by
+  apply Iff.intro
+  · intro h
+    rw [← unitInterval.symm_one] at h
+    exact symm_bijective.injective h
+  · intro h
+    rw [h, symm_one]
+
+theorem le_symm_if_le_symm (i j : I) : i ≤ σ j → j ≤ σ i := by
+  intro h
+  rw [Subtype.mk_le_mk, coe_symm_eq] at h ⊢
+  apply le_sub_left_of_add_le
+  rw [add_comm]
+  exact add_le_of_le_sub_left h
+
+theorem le_symm_iff_le_symm (i j : I) : i ≤ σ j ↔ j ≤ σ i :=
+  ⟨le_symm_if_le_symm i j, le_symm_if_le_symm j i⟩
+
+theorem symm_le_if_symm_le (i j : I) : σ i ≤ j → σ j ≤ i := by
+  intro h
+  rw [Subtype.mk_le_mk, coe_symm_eq] at h ⊢
+  rw [sub_le_iff_le_add, add_comm, ← sub_le_iff_le_add]
+  exact h
+
+theorem symm_le_iff_symm_le (i j : I) : σ i ≤ j ↔ σ j ≤ i :=
+  ⟨symm_le_if_symm_le i j, symm_le_if_symm_le j i⟩
+
+theorem lt_symm_if_lt_symm (i j : I) : i < σ j → j < σ i := by
+  intro h
+  rw [Subtype.mk_lt_mk, coe_symm_eq] at h ⊢
+  apply lt_sub_left_of_add_lt
+  rw [add_comm]
+  exact add_lt_of_lt_sub_left h
+
+theorem lt_symm_iff_lt_symm (i j : I) : i < σ j ↔ j < σ i :=
+  ⟨lt_symm_if_lt_symm i j, lt_symm_if_lt_symm j i⟩
+
+theorem symm_lt_if_symm_lt (i j : I) : σ i < j → σ j < i := by
+  intro h
+  rw [Subtype.mk_lt_mk, coe_symm_eq] at h ⊢
+  rw [sub_lt_iff_lt_add, add_comm, ← sub_lt_iff_lt_add]
+  exact h
+
+theorem symm_lt_iff_symm_lt (i j : I) : σ i < j ↔ σ j < i :=
+  ⟨symm_lt_if_symm_lt i j, symm_lt_if_symm_lt j i⟩
+
 instance : ConnectedSpace I :=
   Subtype.connectedSpace ⟨nonempty_Icc.mpr zero_le_one, isPreconnected_Icc⟩
 
@@ -160,6 +224,19 @@ theorem nonneg' {t : I} : 0 ≤ t :=
 theorem le_one' {t : I} : t ≤ 1 :=
   t.2.2
 
+@[simp]
+lemma ne_zero_iff_pos {x : I} : x ≠ 0 ↔ 0 < x := by
+  rw [← coe_ne_zero, ← coe_pos, lt_iff_le_and_ne, and_iff_right (nonneg x), ne_comm]
+
+@[simp]
+lemma ne_one_iff_lt {x : I} : x ≠ 1 ↔ x < 1 := by
+  rw [← coe_lt_one, ← coe_ne_one, lt_iff_le_and_ne, and_iff_right (le_one x)]
+
+lemma eq_one_of_le_mul {i j : I} (h_i : i ≠ 0) (h : i ≤ j * i) : j = 1 := by
+  contrapose! h
+  simp only [ne_eq, ne_one_iff_lt, ← coe_lt_one, ne_zero_iff_pos, ← coe_pos] at h h_i
+  exact Subtype.coe_lt_coe.mp <| by simpa using mul_lt_mul_of_pos_right h h_i
+
 instance : Nontrivial I := ⟨⟨1, 0, (one_ne_zero <| congrArg Subtype.val ·)⟩⟩
 
 theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc (0 : ℝ) (1 / a) := by
@@ -171,6 +248,25 @@ theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc
 
 theorem two_mul_sub_one_mem_iff {t : ℝ} : 2 * t - 1 ∈ I ↔ t ∈ Set.Icc (1 / 2 : ℝ) 1 := by
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
+
+instance : LinearOrderedCommMonoidWithZero I where
+  zero_mul i := zero_mul i
+  mul_zero i := mul_zero i
+  zero_le_one := nonneg'
+  mul_le_mul_left i j h_ij k := by
+    simp only [← Subtype.coe_le_coe, coe_mul]
+    apply mul_le_mul (by rfl) ?_ (nonneg i) (nonneg k)
+    simp [h_ij]
+  le_total := LinearOrder.le_total
+  decidableLE := LinearOrder.decidableLE
+  min_def := LinearOrder.min_def
+  max_def := LinearOrder.max_def
+  compare_eq_compareOfLessAndEq i j := by
+    simp [compare, compareOfLessAndEq]
+    split_ifs
+    all_goals try rfl
+    case pos h_ne h_eq => exact h_ne <| Subtype.coe_inj.mpr h_eq
+    case neg h_eq h_ne => exact h_ne <| Subtype.coe_inj.mp h_eq
 
 end unitInterval
 
