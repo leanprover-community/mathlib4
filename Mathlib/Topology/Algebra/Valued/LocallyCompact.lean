@@ -177,19 +177,19 @@ lemma totallyBounded_iff_finite_residueField [DiscreteValuationRing 𝒪[K]] :
     rw [dist_comm] at hy'
     simpa [dist_eq_norm] using hy'.le
   · intro H
-    refine Metric.totallyBounded_of_finite_discretization fun ε εpos ↦ ?_
+    rw [Metric.totallyBounded_iff]
+    intro ε εpos
     obtain ⟨p, hp⟩ := DiscreteValuationRing.exists_irreducible 𝒪[K]
     have hp' := norm_irreducible_lt_one hp
     obtain ⟨n, hn⟩ : ∃ n : ℕ, ‖p‖ ^ n < ε := exists_pow_lt_of_lt_one εpos hp'
-    refine ⟨𝒪[K] ⧸ (𝓂[K] ^ n), ?_, ?_, ?_⟩
-    · have := finite_quotient_maximalIdeal_pow_of_finite_residueField H n
-      exact Fintype.ofFinite _
-    · intro x
-      exact Ideal.Quotient.mk _ (x.val : 𝒪[K])
-    · intro ⟨x, hx⟩ ⟨y, hy⟩ h
-      refine hn.trans_le' ?_
-      simpa [Ideal.Quotient.eq, ← SetLike.mem_coe, hp.maximalIdeal_pow_eq_closedBall_pow,
-        dist_eq_norm] using h
+    have hF := finite_quotient_maximalIdeal_pow_of_finite_residueField H n
+    refine ⟨Quotient.out' '' (Set.univ (α := 𝒪[K] ⧸ (𝓂[K] ^ n))), Set.toFinite _, ?_⟩
+    simp only [Ideal.univ_eq_iUnion_image_add (𝓂[K] ^ n), hp.maximalIdeal_pow_eq_closedBall_pow,
+      AddSubgroupClass.coe_norm, Set.image_add_left, preimage_add_closedBall, sub_neg_eq_add,
+      zero_add, Set.image_univ, Set.mem_range, Set.iUnion_exists, Set.iUnion_iUnion_eq',
+      Set.iUnion_subset_iff]
+    intro
+    exact (Metric.closedBall_subset_ball hn).trans (Set.subset_iUnion_of_subset _ le_rfl)
 
 end FiniteResidueField
 
