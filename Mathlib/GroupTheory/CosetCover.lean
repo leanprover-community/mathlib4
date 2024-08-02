@@ -77,6 +77,7 @@ theorem leftCoset_cover_const_iff_surjOn :
     QuotientGroup.forall_mk, QuotientGroup.eq]
 
 variable (hcovers : ⋃ i ∈ s, g i • (H : Set G) = Set.univ)
+include hcovers
 
 /-- If `H` is a subgroup of `G` and `G` is the union of a finite family of left cosets of `H`
 then `H` has finite index. -/
@@ -119,6 +120,7 @@ section
 
 variable {ι : Type*} {H : ι → Subgroup G} {g : ι → G} {s : Finset ι}
     (hcovers : ⋃ i ∈ s, (g i) • (H i : Set G) = Set.univ)
+include hcovers
 
 -- Inductive inner part of `Subgroup.exists_finiteIndex_of_leftCoset_cover`
 @[to_additive]
@@ -353,9 +355,8 @@ section Submodule
 
 variable {R M ι : Type*} [Ring R] [AddCommGroup M] [Module R M]
     {p : ι → Submodule R M} {s : Finset ι}
-    (hcovers : ⋃ i ∈ s, (p i : Set M) = Set.univ)
 
-theorem Submodule.exists_finiteIndex_of_cover :
+theorem Submodule.exists_finiteIndex_of_cover (hcovers : ⋃ i ∈ s, (p i : Set M) = Set.univ) :
     ∃ k ∈ s, (p k).toAddSubgroup.FiniteIndex :=
   have hcovers' : ⋃ i ∈ s, (0 : M) +ᵥ ((p i).toAddSubgroup : Set M) = Set.univ := by
     simpa only [zero_vadd] using hcovers

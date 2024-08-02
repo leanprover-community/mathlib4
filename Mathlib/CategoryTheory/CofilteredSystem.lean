@@ -328,6 +328,7 @@ section FiniteCofilteredSystem
 
 variable [∀ j : J, Nonempty (F.obj j)] [∀ j : J, Finite (F.obj j)]
   (Fsur : ∀ ⦃i j : J⦄ (f : i ⟶ j), (F.map f).Surjective)
+include Fsur
 
 theorem eval_section_surjective_of_surjective (i : J) :
     (fun s : F.sections => s.val i).Surjective := fun x => by
