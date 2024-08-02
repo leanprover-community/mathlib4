@@ -88,6 +88,7 @@ def OrderEmbedding.mulRight {α : Type*} [Mul α] [LinearOrder α]
 
 namespace OrderedCommMonoid
 
+-- TODO accessing the lemmas of PosMulMono without requiring Zero would be nice
 /-- OrderedCommMonoids have always monotone mul, so especially nonnegative for some zero -/
 instance OrderedCommMonoid.toPosMulMono (M : Type*) [OrderedCommMonoid M] [Zero M] :
     PosMulMono M where
