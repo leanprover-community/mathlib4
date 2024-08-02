@@ -30,11 +30,11 @@ theorem mul_prod_eq_prod_insertNone (f : α → M) (x : M) (s : Finset α) :
 
 @[to_additive]
 theorem prod_eraseNone (f : α → M) (s : Finset (Option α)) :
-    ∏ x ∈ eraseNone s, f x = ∏ x ∈ s, Option.elim' 1 f x := by
+    ∏ x ∈ eraseNone s, f x = ∏ x ∈ s, x.elim 1 f := by
   classical calc
-      ∏ x ∈ eraseNone s, f x = ∏ x ∈ (eraseNone s).map Embedding.some, Option.elim' 1 f x :=
-        (prod_map (eraseNone s) Embedding.some <| Option.elim' 1 f).symm
-      _ = ∏ x ∈ s.erase none, Option.elim' 1 f x := by rw [map_some_eraseNone]
-      _ = ∏ x ∈ s, Option.elim' 1 f x := prod_erase _ rfl
+      ∏ x ∈ eraseNone s, f x = ∏ x ∈ (eraseNone s).map Embedding.some, x.elim 1 f :=
+        (prod_map (eraseNone s) Embedding.some (Option.elim · 1 f)).symm
+      _ = ∏ x ∈ s.erase none, x.elim 1 f := by rw [map_some_eraseNone]
+      _ = ∏ x ∈ s, x.elim 1 f := prod_erase _ rfl
 
 end Finset

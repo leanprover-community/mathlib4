@@ -29,21 +29,23 @@ variable {α : Type*} {β : Type*}
 -- attribute [inline] Option.isSome Option.isNone
 
 /-- An elimination principle for `Option`. It is a nondependent version of `Option.rec`. -/
-protected def elim' (b : β) (f : α → β) : Option α → β
-  | some a => f a
-  | none => b
+@[deprecated Option.elim (since := "2024-08-02")]
+protected def elim' (b : β) (f : α → β) (o : Option α) : β :=
+  o.elim b f
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated Option.elim_none (since := "2024-08-02")]
 theorem elim'_none (b : β) (f : α → β) : Option.elim' b f none = b := rfl
-@[simp]
+
+set_option linter.deprecated false in
+@[deprecated Option.elim_some (since := "2024-08-02")]
 theorem elim'_some {a : α} (b : β) (f : α → β) : Option.elim' b f (some a) = f a := rfl
 
--- Porting note: this lemma was introduced because it is necessary
--- in `CategoryTheory.Category.PartialFun`
+set_option linter.deprecated false in
+@[deprecated (since := "2024-08-02")]
 lemma elim'_eq_elim {α β : Type*} (b : β) (f : α → β) (a : Option α) :
     Option.elim' b f a = Option.elim a b f := by
   cases a <;> rfl
-
 
 theorem mem_some_iff {α : Type*} {a b : α} : a ∈ some b ↔ b = a := by simp
 

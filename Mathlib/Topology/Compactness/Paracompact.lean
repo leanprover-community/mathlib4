@@ -96,12 +96,11 @@ theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s
     (uo : ∀ i, IsOpen (u i)) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, (∀ i, IsOpen (v i)) ∧ (s ⊆ ⋃ i, v i) ∧ LocallyFinite v ∧ ∀ i, v i ⊆ u i := by
   -- Porting note (#10888): added proof of uc
-  have uc : (iUnion fun i => Option.elim' sᶜ u i) = univ := by
+  have uc : (⋃ i, Option.elim i sᶜ u) = univ := by
     apply Subset.antisymm (subset_univ _)
-    · simp_rw [← compl_union_self s, Option.elim', iUnion_option]
-      apply union_subset_union_right sᶜ us
-  rcases precise_refinement (Option.elim' sᶜ u) (Option.forall.2 ⟨isOpen_compl_iff.2 hs, uo⟩)
-      uc with
+    simp_rw [← compl_union_self s, Option.elim, iUnion_option]
+    apply union_subset_union_right sᶜ us
+  rcases precise_refinement (Option.elim · sᶜ u) (Option.forall.2 ⟨hs.isOpen_compl, uo⟩) uc with
     ⟨v, vo, vc, vf, vu⟩
   refine ⟨v ∘ some, fun i ↦ vo _, ?_, vf.comp_injective (Option.some_injective _), fun i ↦ vu _⟩
   · simp only [iUnion_option, ← compl_subset_iff_union] at vc

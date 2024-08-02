@@ -1198,7 +1198,7 @@ def splitAtPred {α} (p : α → Bool) : List α → List α × Option α × Lis
 theorem splitAtPred_eq {α} (p : α → Bool) :
     ∀ L l₁ o l₂,
       (∀ x ∈ l₁, p x = false) →
-        Option.elim' (L = l₁ ∧ l₂ = []) (fun a => p a = true ∧ L = l₁ ++ a::l₂) o →
+        Option.elim o (L = l₁ ∧ l₂ = []) (fun a => p a = true ∧ L = l₁ ++ a::l₂) →
           splitAtPred p L = (l₁, o, l₂)
   | [], _, none, _, _, ⟨rfl, rfl⟩ => rfl
   | [], l₁, some o, l₂, _, ⟨_, h₃⟩ => by simp at h₃
