@@ -243,7 +243,10 @@ theorem tendsto_differentiable
 theorem exists_inverse (h : finrank ℝ E = 1) (φ : E → F) (hφ : Isometry φ) :
     ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ ∀ x : E, f (φ x) = x := by sorry
 
-theorem exists_inverse' [FiniteDimensional ℝ E] (φ : E → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
+set_option maxHeartbeats 400000
+
+theorem exists_inverse' [FiniteDimensional ℝ E] (φ : E → F) (hφ : Isometry φ) (φz : φ 0 = 0)
+    (hlol : Dense (X := F) (Submodule.span ℝ (range φ))) :
     ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ f ∘ φ = id := by
   have main (x : E) (nx : ‖x‖ = 1) :
       ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ ∀ t : ℝ, f (φ (t • x)) = t := by
@@ -346,11 +349,72 @@ theorem exists_inverse' [FiniteDimensional ℝ E] (φ : E → F) (hφ : Isometry
     simp_rw [best]
   constructor
   · apply le_antisymm
-    · sorry
+    · choose! g ng hg using main
+      have prim : ∀ x : E, ‖x‖ = 1 → DifferentiableAt ℝ (‖·‖) x → g x = (fderiv ℝ (‖·‖) x) ∘ T := by
+        intro x nx dx
+        apply Continuous.ext_on hlol
+        · exact (g x).continuous
+        · exact (ContinuousLinearMap.continuous _).comp T.continuous
+        · intro y hy
+          change g x y = ((fderiv ℝ (‖·‖) x).comp T) y
+          apply LinearMap.eqOn_span (R := ℝ) _ hy
+          rintro - ⟨z, rfl⟩
+          have : LipschitzWith 1 ((g x) ∘ φ) := by
+            convert (g x).lipschitz.comp hφ.lipschitz
+            rw [← norm_toNNReal, ng x nx, mul_one, toNNReal_one]
+          have aux1 := unique1 nx dx ((g x) ∘ φ) this (hg x nx)
+          simp only [ContinuousLinearMap.coe_comp', Function.comp_apply]
+          rw [Tφ]
+          convert congrFun aux1 z
+      apply ContinuousLinearMap.opNorm_le_bound' _ (by norm_num)
+      intro y ny
+      have : T y ∈ closure {x : E | DifferentiableAt ℝ (‖·‖) x} := by
+        rw [dense_iff_closure_eq.1 aux2]; trivial
+      obtain ⟨u, hu, htu⟩ := mem_closure_iff_seq_limit.1 this
+      have := tendsto_differentiable u hu _ htu
+      have obv n : 1 / ‖u n‖ > 0 := by
+        apply one_div_pos.2
+        apply norm_pos_iff.2
+        intro hun
+        have := hu n
+        rw [hun] at this
+        exact not_differentiableAt_norm_zero E this
+      have mdr n : fderiv ℝ (‖·‖) (u n) = fderiv ℝ (‖·‖) ((1 / ‖u n‖) • (u n)) := (fderiv_norm_smul_pos (obv n)).symm
+      simp_rw [mdr] at this
+      apply le_of_tendsto this
+      apply eventually_of_forall
+      intro n
+      have : fderiv ℝ (‖·‖) ((1 / ‖u n‖) • (u n)) (T y) = g ((1 / ‖u n‖) • (u n)) y := by
+        have lol : ‖(1 / ‖u n‖) • (u n)‖ = 1 := by
+          rw [norm_smul, norm_div, norm_one, norm_norm, one_div_mul_cancel]
+          intro hun
+          rw [norm_eq_zero] at hun
+          have := hu n
+          rw [hun] at this
+          exact not_differentiableAt_norm_zero E this
+        have putain : DifferentiableAt ℝ (‖·‖) ((1 / ‖u n‖) • (u n)) := by
+          rw [← differentiableAt_norm_smul]
+          exact hu n
+          exact (obv n).ne.symm
+        convert congrFun (prim _ lol putain).symm y
+      rw [this]
+      have lol : ‖(1 / ‖u n‖) • (u n)‖ = 1 := by
+        rw [norm_smul, norm_div, norm_one, norm_norm, one_div_mul_cancel]
+        intro hun
+        rw [norm_eq_zero] at hun
+        have := hu n
+        rw [hun] at this
+        exact not_differentiableAt_norm_zero E this
+      calc
+        g ((1 / ‖u n‖) • (u n)) y ≤ |g ((1 / ‖u n‖) • (u n)) y| := le_abs_self _
+        _ = ‖g ((1 / ‖u n‖) • (u n)) y‖ := by rw [norm_eq_abs]
+        _ ≤ ‖g ((1 / ‖u n‖) • (u n))‖ * ‖y‖ := ContinuousLinearMap.le_opNorm _ y
+        _ = 1 * ‖y‖ := by rw [ng _ lol]
     · have nφ := hφ.norm_map_of_map_zero φz
       rcases NormedSpace.exists_lt_norm ℝ E 0 with ⟨x, hx⟩
       apply le_of_mul_le_mul_right _ hx
       nth_rw 1 [← Tφ x]
       rw [← nφ x, one_mul]
       exact T.le_opNorm _
-  · sorry
+  · ext x
+    exact Tφ x
