@@ -43,10 +43,19 @@ only makes sense for nonnegative exponents, and hence we define it such that the
 
 open scoped NNReal
 
+namespace NNReal
+
+/-- Taking a nonnegative power of a nonnegative number. This is defined as a standalone definition
+in order to speed up automation such as `cfc_cont_tac`. -/
+noncomputable abbrev nnrpow (a : ℝ≥0) (b : ℝ≥0) : ℝ≥0 := a ^ (b : ℝ)
+
+@[simp] lemma nnrpow_def (a b : ℝ≥0) : nnrpow a b = a ^ (b : ℝ) := rfl
+
 @[fun_prop]
-lemma continuousOn_rpow_nnreal {y : ℝ≥0} {s : Set ℝ≥0} :
-    ContinuousOn (fun x : ℝ≥0 => x ^ (y : ℝ)) s :=
-  Continuous.continuousOn <| NNReal.continuous_rpow_const NNReal.zero_le_coe
+lemma continuous_nnrpow_const (y : ℝ≥0) : Continuous (nnrpow · y) :=
+  continuous_rpow_const zero_le_coe
+
+end NNReal
 
 namespace CFC
 
@@ -59,7 +68,7 @@ variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A] [Star
 /- ## `nnrpow` -/
 
 /-- Real powers of operators, based on the non-unital continuous functional calculus. -/
-noncomputable def nnrpow (a : A) (y : ℝ≥0) : A := cfcₙ (fun x : ℝ≥0 => x ^ (y : ℝ)) a
+noncomputable def nnrpow (a : A) (y : ℝ≥0) : A := cfcₙ (NNReal.nnrpow · y) a
 
 /-- Enable `a ^ y` notation for `CFC.nnrpow`. This is a low-priority instance to make sure it does
 not take priority over other instances when they are available. -/
@@ -72,7 +81,7 @@ lemma nnrpow_eq_pow {a : A} {y : ℝ≥0} : nnrpow a y = a ^ y := rfl
 @[simp]
 lemma nnrpow_nonneg {a : A} {x : ℝ≥0} : 0 ≤ a ^ x := cfcₙ_predicate _ a
 
-lemma nnrpow_def {a : A} {y : ℝ≥0} : a ^ y = cfcₙ (fun x : ℝ≥0 => x ^ (y : ℝ)) a := rfl
+lemma nnrpow_def {a : A} {y : ℝ≥0} : a ^ y = cfcₙ (NNReal.nnrpow · y) a := rfl
 
 lemma nnrpow_add {a : A} {x y : ℝ≥0} (hx : 0 < x) (hy : 0 < y) :
     a ^ (x + y) = a ^ x * a ^ y := by
@@ -86,17 +95,17 @@ lemma nnrpow_zero {a : A} : a ^ (0 : ℝ≥0) = 0 := by
   simp [nnrpow_def, cfcₙ_apply_of_not_map_zero]
 
 lemma nnrpow_one {a : A} (ha : 0 ≤ a := by cfc_tac) : a ^ (1 : ℝ≥0) = a := by
-  simp only [nnrpow_def, NNReal.coe_one, NNReal.rpow_one]
+  simp only [nnrpow_def, NNReal.nnrpow_def, NNReal.coe_one, NNReal.rpow_one]
   change cfcₙ (id : ℝ≥0 → ℝ≥0) a = a
   rw [cfcₙ_id ℝ≥0 a]
 
 lemma nnrpow_two {a : A} (ha : 0 ≤ a := by cfc_tac) : a ^ (2 : ℝ≥0) = a * a := by
-  simp only [nnrpow_def, NNReal.coe_ofNat, NNReal.rpow_ofNat, pow_two]
+  simp only [nnrpow_def, NNReal.nnrpow_def, NNReal.coe_ofNat, NNReal.rpow_ofNat, pow_two]
   change cfcₙ (fun z : ℝ≥0 => id z * id z) a = a * a
   rw [cfcₙ_mul id id a, cfcₙ_id ℝ≥0 a]
 
 lemma nnrpow_three {a : A} (ha : 0 ≤ a := by cfc_tac) : a ^ (3 : ℝ≥0) = a * a * a := by
-  simp only [nnrpow_def, NNReal.coe_ofNat, NNReal.rpow_ofNat, pow_three]
+  simp only [nnrpow_def, NNReal.nnrpow_def, NNReal.coe_ofNat, NNReal.rpow_ofNat, pow_three]
   change cfcₙ (fun z : ℝ≥0 => id z * (id z * id z)) a = a * a * a
   rw [cfcₙ_mul id _ a, cfcₙ_mul id _ a, ← mul_assoc, cfcₙ_id ℝ≥0 a]
 
@@ -256,24 +265,22 @@ lemma zero_rpow {x : ℝ} (hx : x ≠ 0) : rpow (0 : A) x = 0 := by simp [rpow, 
 
 section unital_vs_nonunital
 
-variable [NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
-  [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
-
 lemma nnrpow_eq_rpow {a : A} {x : ℝ≥0} (hx : 0 < x) : a ^ x = a ^ (x : ℝ) := by
-  rw [nnrpow_def, rpow_def, cfcₙ_eq_cfc]
+  rw [nnrpow_def (A := A), rpow_def, cfcₙ_eq_cfc]
 
 lemma sqrt_eq_rpow {a : A} : sqrt a = a ^ (1 / 2 : ℝ) := by
   have : a ^ (1 / 2 : ℝ) = a ^ ((1 / 2 : ℝ≥0) : ℝ) := rfl
-  rw [this, ← nnrpow_eq_rpow (by norm_num), sqrt_eq_nnrpow]
+  rw [this, ← nnrpow_eq_rpow (by norm_num), sqrt_eq_nnrpow (A := A)]
 
 lemma sqrt_eq_cfc {a : A} : sqrt a = cfc NNReal.sqrt a := by
-  rw [sqrt, cfcₙ_eq_cfc]
+  unfold sqrt
+  rw [cfcₙ_eq_cfc]
 
 lemma sqrt_sq {a : A} (ha : 0 ≤ a := by cfc_tac) : sqrt (a ^ 2) = a := by
-  rw [pow_two, sqrt_mul_self]
+  rw [pow_two, sqrt_mul_self (A := A)]
 
 lemma sq_sqrt {a : A} (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ 2 = a := by
-  rw [pow_two, sqrt_mul_sqrt_self]
+  rw [pow_two, sqrt_mul_sqrt_self (A := A)]
 
 @[simp]
 lemma sqrt_algebraMap {r : ℝ≥0} : sqrt (algebraMap ℝ≥0 A r) = algebraMap ℝ≥0 A (NNReal.sqrt r) := by
@@ -307,7 +314,7 @@ lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2
       have h₁ : 0 < x := lt_of_le_of_ne (by aesop) (Ne.symm hx)
       have h₂ : (x : ℝ) / 2 = NNReal.toReal (x / 2) := rfl
       have h₃ : 0 < x / 2 := by positivity
-      rw [← nnrpow_eq_rpow h₁, h₂, ← nnrpow_eq_rpow h₃, sqrt_nnrpow]
+      rw [← nnrpow_eq_rpow h₁, h₂, ← nnrpow_eq_rpow h₃, sqrt_nnrpow (A := A)]
 
 lemma rpow_sqrt_nnreal {a : A} {x : ℝ≥0} (ha : 0 ≤ a := by cfc_tac) :
     (sqrt a) ^ (x : ℝ) = a ^ (x / 2 : ℝ) := by
