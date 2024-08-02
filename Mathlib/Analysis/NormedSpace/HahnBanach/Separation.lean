@@ -269,8 +269,7 @@ theorem geometric_hahn_banach_compact_closed (hs₁ : Convex ℝ s) (hs₂ : IsC
     ∃ (f : E →L[𝕜] 𝕜) (u v : ℝ), (∀ a ∈ s, re (f a) < u) ∧ u < v ∧ ∀ b ∈ t, v < re (f b) := by
   obtain ⟨g, u, v, h1⟩ := _root_.geometric_hahn_banach_compact_closed hs₁ hs₂ ht₁ ht₂ disj
   use extendTo𝕜'ₗ g
-  simp only [extendTo𝕜'ₗ_apply_toFun, map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im,
-    mul_zero, sub_self, sub_zero, exists_and_left]
+  simp only [re_extendTo𝕜'ₗ, exists_and_left]
   use u
   constructor
   exact h1.1
