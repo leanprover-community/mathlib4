@@ -3,6 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Order.Hom.Basic
@@ -84,3 +85,16 @@ See also `OrderIso.mulRight` when working in an ordered group. -/
 def OrderEmbedding.mulRight {α : Type*} [Mul α] [LinearOrder α]
     [CovariantClass α α (swap (· * ·)) (· < ·)] (m : α) : α ↪o α :=
   OrderEmbedding.ofStrictMono (fun n => n * m) fun _ _ w => mul_lt_mul_right' w m
+
+namespace OrderedCommMonoid
+
+/-- OrderedCommMonoids have always monotone mul -/
+instance OrderedCommMonoid.toPosMulMono (M : Type*) [OrderedCommMonoid M] [Zero M] :
+    PosMulMono M where
+  elim a _ _ h := mul_le_mul_left' h ↑a
+
+instance OrderedCommMonoid.toMulPosMono [OrderedCommMonoid α] [Zero α] :
+    MulPosMono α := by
+  rw [← posMulMono_iff_mulPosMono]; infer_instance
+
+end OrderedCommMonoid
