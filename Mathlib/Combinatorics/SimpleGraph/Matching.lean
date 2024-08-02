@@ -229,11 +229,11 @@ end ConnectedComponent
 
 /--
   A graph is matching free if it has no perfect matching. It does not make much sense to
-  consider a graph being free of just matchtings, because any non-trivial graph has those.
+  consider a graph being free of just matchings, because any non-trivial graph has those.
 -/
-def IsMatchingFree (G : SimpleGraph V) := ∀ (M : Subgraph G), ¬Subgraph.IsPerfectMatching M
+def IsMatchingFree (G : SimpleGraph V) := ∀ M : Subgraph G, ¬ M.IsPerfectMatching
 
-lemma IsMatchingFree_mono {G G' : SimpleGraph V} (h : G ≤ G') (hmf : G'.IsMatchingFree) :
+lemma IsMatchingFree.mono {G G' : SimpleGraph V} (h : G ≤ G') (hmf : G'.IsMatchingFree) :
     G.IsMatchingFree := by
   intro x
   by_contra! hc
@@ -243,7 +243,7 @@ lemma IsMatchingFree_mono {G G' : SimpleGraph V} (h : G ≤ G') (hmf : G'.IsMatc
   simp only [Subgraph.map_verts, Hom.coe_ofLE, id_eq, Set.image_id']
   exact hc.2 v
 
-lemma exists_maximal_IsMatchingFree [Fintype V] [DecidableEq V]
+lemma exists_maximal_isMatchingFree [Fintype V] [DecidableEq V]
     (h : G.IsMatchingFree) : ∃ Gmax : SimpleGraph V,
     G ≤ Gmax ∧ Gmax.IsMatchingFree ∧ ∀ G', G' > Gmax → ¬ G'.IsMatchingFree := by
   have freeGraphsFinite : {G'' : SimpleGraph V | G ≤ G'' ∧ G''.IsMatchingFree}.Finite := by
