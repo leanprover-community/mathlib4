@@ -31,8 +31,6 @@ back and forth, dense, countable, order
 
 noncomputable section
 
-open scoped Classical
-
 namespace Order
 
 /-- Suppose `α` is a nonempty dense linear order without endpoints, and

@@ -6,7 +6,7 @@ Authors: Patrick Massot
 import Mathlib.Order.Filter.Germ.Basic
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Normed.Module.Basic
 
 /-! # Germs of functions between topological spaces
 

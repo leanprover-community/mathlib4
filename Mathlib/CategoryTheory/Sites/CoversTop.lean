@@ -107,22 +107,20 @@ noncomputable def familyOfElements (X : C) :
 namespace IsCompatible
 
 variable {x}
-variable (hx : x.IsCompatible)
 
-lemma familyOfElements_apply {X Z : C} (f : Z ⟶ X) (i : I) (φ : Z ⟶ Y i) :
+lemma familyOfElements_apply (hx : x.IsCompatible) {X Z : C} (f : Z ⟶ X) (i : I) (φ : Z ⟶ Y i) :
     familyOfElements x X f ⟨i, ⟨φ⟩⟩ = F.map φ.op (x i) := by
   apply hx
 
-lemma familyOfElements_isCompatible (X : C) :
+lemma familyOfElements_isCompatible (hx : x.IsCompatible) (X : C) :
     (familyOfElements x X).Compatible := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ ⟨i₁, ⟨φ₁⟩⟩ ⟨i₂, ⟨φ₂⟩⟩ _
   simpa [hx.familyOfElements_apply f₁ i₁ φ₁,
     hx.familyOfElements_apply f₂ i₂ φ₂] using hx Z i₁ i₂ (g₁ ≫ φ₁) (g₂ ≫ φ₂)
 
 variable {J}
-variable (hY : J.CoversTop Y) (hF : IsSheaf J F)
 
-lemma exists_unique_section :
+lemma exists_unique_section (hx : x.IsCompatible) (hY : J.CoversTop Y) (hF : IsSheaf J F) :
     ∃! (s : F.sections), ∀ (i : I), s.1 (Opposite.op (Y i)) = x i := by
   have H := (isSheaf_iff_isSheaf_of_type _ _).1 hF
   apply exists_unique_of_exists_of_unique
@@ -147,6 +145,8 @@ lemma exists_unique_section :
     rfl
   · intro y₁ y₂ hy₁ hy₂
     exact hY.sections_ext ⟨F, hF⟩ (fun i => by rw [hy₁, hy₂])
+
+variable (hx : x.IsCompatible) (hY : J.CoversTop Y) (hF : IsSheaf J F)
 
 /-- The section of a sheaf of types which lifts a compatible family of elements indexed
 by objects which cover the terminal object. -/
