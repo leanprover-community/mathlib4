@@ -1,15 +1,53 @@
 /-
 Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Frédéric Dupuis
+Authors: Frédéric Dupuis, Yaël Dillies
 -/
+import Mathlib.Algebra.Group.AddChar
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Analysis.RCLike.Basic
 
 /-! # Further lemmas about `RCLike` -/
 
+open Function
+open scoped ComplexConjugate
 
-variable {K E : Type*} [RCLike K]
+variable {G K E : Type*}
+
+namespace AddChar
+section AddGroup
+variable [AddGroup G]
+
+section NormedField
+variable [Finite G] [NormedField K]
+
+@[simp] lemma norm_apply (ψ : AddChar G K) (x : G) : ‖ψ x‖ = 1 :=
+  (ψ.toMonoidHom.isOfFinOrder $ isOfFinOrder_of_finite _).norm_eq_one
+
+@[simp] lemma coe_ne_zero (ψ : AddChar G K) : (ψ : G → K) ≠ 0 :=
+  ne_iff.2 ⟨0, fun h ↦ by simpa only [h, Pi.zero_apply, zero_ne_one] using map_zero_eq_one ψ⟩
+
+end NormedField
+
+section RCLike
+variable [RCLike K]
+
+lemma inv_apply_eq_conj [Finite G] (ψ : AddChar G K) (x : G) : (ψ x)⁻¹ = conj (ψ x) :=
+  RCLike.inv_eq_conj $ norm_apply _ _
+
+end RCLike
+end AddGroup
+
+section AddCommGroup
+variable [AddCommGroup G] [RCLike K] {ψ₁ ψ₂ : AddChar G K}
+
+lemma map_neg_eq_conj [Finite G] (ψ : AddChar G K) (x : G) : ψ (-x) = conj (ψ x) := by
+  rw [map_neg_eq_inv, RCLike.inv_eq_conj $ norm_apply _ _]
+
+end AddCommGroup
+end AddChar
+
+variable [RCLike K]
 
 namespace Polynomial
 
