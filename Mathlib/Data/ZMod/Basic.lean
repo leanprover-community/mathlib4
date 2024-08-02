@@ -510,6 +510,13 @@ end UniversalProperty
 
 variable {m n : ℕ}
 
+@[simp]
+theorem val_eq_zero : ∀ {n : ℕ} (a : ZMod n), a.val = 0 ↔ a = 0
+  | 0, a => Int.natAbs_eq_zero
+  | n + 1, a => by
+    rw [Fin.ext_iff]
+    exact Iff.rfl
+
 theorem intCast_eq_intCast_iff (a b : ℤ) (c : ℕ) : (a : ZMod c) = (b : ZMod c) ↔ a ≡ b [ZMOD c] :=
   CharP.intCast_eq_intCast (ZMod c) c
 
@@ -534,8 +541,22 @@ theorem natCast_eq_natCast_iff' (a b c : ℕ) : (a : ZMod c) = (b : ZMod c) ↔ 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_eq_nat_cast_iff' := natCast_eq_natCast_iff'
 
-theorem intCast_zmod_eq_zero_iff_dvd (a : ℤ) (b : ℕ) : (a : ZMod b) = 0 ↔ (b : ℤ) ∣ a := by
-  rw [← Int.cast_zero, ZMod.intCast_eq_intCast_iff, Int.modEq_zero_iff_dvd]
+theorem val_intCast {n : ℕ} (a : ℤ) [NeZero n] : ↑(a : ZMod n).val = a % n := by
+  have hle : (0 : ℤ) ≤ ↑(a : ZMod n).val := Int.natCast_nonneg _
+  have hlt : ↑(a : ZMod n).val < (n : ℤ) := Int.ofNat_lt.mpr (ZMod.val_lt a)
+  refine (Int.emod_eq_of_lt hle hlt).symm.trans ?_
+  rw [← ZMod.intCast_eq_intCast_iff', Int.cast_natCast, ZMod.natCast_val, ZMod.cast_id]
+
+@[deprecated (since := "2024-04-17")]
+alias val_int_cast := val_intCast
+
+theorem intCast_zmod_eq_zero_iff_dvd (a : ℤ) (b : ℕ) :
+    (a : ZMod b) = 0 ↔ (b : ℤ) ∣ a := by
+  rcases eq_or_ne b 0 with _ | h
+  · exact CharP.intCast_eq_zero_iff (ZMod b) b a
+  · haveI : NeZero b := { out := h }
+    rw [← val_eq_zero]; zify
+    rw [val_intCast, Int.dvd_iff_emod_eq_zero]
 
 @[deprecated (since := "2024-04-17")]
 alias int_cast_zmod_eq_zero_iff_dvd := intCast_zmod_eq_zero_iff_dvd
@@ -547,19 +568,10 @@ theorem intCast_eq_intCast_iff_dvd_sub (a b : ℤ) (c : ℕ) : (a : ZMod c) = �
 alias int_cast_eq_int_cast_iff_dvd_sub := intCast_eq_intCast_iff_dvd_sub
 
 theorem natCast_zmod_eq_zero_iff_dvd (a b : ℕ) : (a : ZMod b) = 0 ↔ b ∣ a := by
-  rw [← Nat.cast_zero, ZMod.natCast_eq_natCast_iff, Nat.modEq_zero_iff_dvd]
+  rw [← val_eq_zero, val_natCast, ← Nat.dvd_iff_mod_eq_zero b a]
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_zmod_eq_zero_iff_dvd := natCast_zmod_eq_zero_iff_dvd
-
-theorem val_intCast {n : ℕ} (a : ℤ) [NeZero n] : ↑(a : ZMod n).val = a % n := by
-  have hle : (0 : ℤ) ≤ ↑(a : ZMod n).val := Int.natCast_nonneg _
-  have hlt : ↑(a : ZMod n).val < (n : ℤ) := Int.ofNat_lt.mpr (ZMod.val_lt a)
-  refine (Int.emod_eq_of_lt hle hlt).symm.trans ?_
-  rw [← ZMod.intCast_eq_intCast_iff', Int.cast_natCast, ZMod.natCast_val, ZMod.cast_id]
-
-@[deprecated (since := "2024-04-17")]
-alias val_int_cast := val_intCast
 
 theorem coe_intCast (a : ℤ) : cast (a : ZMod n) = a % n := by
   cases n
@@ -970,13 +982,6 @@ theorem natAbs_mod_two (a : ℤ) : (a.natAbs : ZMod 2) = a := by
   cases a
   · simp only [Int.natAbs_ofNat, Int.cast_natCast, Int.ofNat_eq_coe]
   · simp only [neg_eq_self_mod_two, Nat.cast_succ, Int.natAbs, Int.cast_negSucc]
-
-@[simp]
-theorem val_eq_zero : ∀ {n : ℕ} (a : ZMod n), a.val = 0 ↔ a = 0
-  | 0, a => Int.natAbs_eq_zero
-  | n + 1, a => by
-    rw [Fin.ext_iff]
-    exact Iff.rfl
 
 theorem val_ne_zero {n : ℕ} (a : ZMod n) : a.val ≠ 0 ↔ a ≠ 0 :=
   (val_eq_zero a).not
