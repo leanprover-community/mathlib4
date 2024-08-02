@@ -10,13 +10,6 @@ import Mathlib.Tactic.TypeStar
 import Batteries.Classes.Order
 
 /-!
-# Note about `Mathlib/Init/`
-The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
-(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
-
-We intend to move all the content of these files out into the main `Mathlib` directory structure.
-Contributions assisting with this are appreciated.
-
 # Orders
 
 Defines classes for preorders, partial orders, and linear orders
@@ -353,7 +346,7 @@ def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (
   if h : x < y then h₁ h
   else if h' : y < x then h₃ h' else h₂ (le_antisymm (le_of_not_gt h') (le_of_not_gt h))
 
-theorem le_imp_le_of_lt_imp_lt {β} [Preorder α] [LinearOrder β] {a b : α} {c d : β}
+theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α} {c d : β}
     (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
   le_of_not_lt fun h' => not_le_of_gt (H h') h
 

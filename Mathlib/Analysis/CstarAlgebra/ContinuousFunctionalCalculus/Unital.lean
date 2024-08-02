@@ -621,6 +621,15 @@ lemma cfc_algebraMap (r : R) (f : R → R) : cfc f (algebraMap R A r) = algebraM
 @[simp] lemma cfc_apply_one {f : R → R} : cfc f (1 : A) = algebraMap R A (f 1) := by
   simpa using cfc_algebraMap (A := A) 1 f
 
+instance IsStarNormal.cfc_map (f : R → R) (a : A) : IsStarNormal (cfc f a) where
+  star_comm_self := by
+    rw [Commute, SemiconjBy]
+    by_cases h : ContinuousOn f (spectrum R a)
+    · rw [← cfc_star, ← cfc_mul .., ← cfc_mul ..]
+      congr! 2
+      exact mul_comm _ _
+    · simp [cfc_apply_of_not_continuousOn a h]
+
 end CFC
 
 end Basic
