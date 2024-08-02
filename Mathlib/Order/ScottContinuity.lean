@@ -89,11 +89,33 @@ protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f 
 
 end ScottContinuous
 
+section CompleteLattice
+
+variable [CompleteLattice α] [CompleteLattice β]
+
+lemma scottContinuous_iff_map_Sup {f : α → β} :
+  ScottContinuous f ↔
+    ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → f (sSup d) = sSup (f '' d) := by
+  constructor
+  · intro h d d₁ d₂
+    symm
+    rw [← isLUB_iff_sSup_eq]
+    apply h d₁ d₂
+    rw [isLUB_iff_sSup_eq]
+  · intro h d d₁ d₂ a hda
+    rw [isLUB_iff_sSup_eq] at hda
+    rw [isLUB_iff_sSup_eq, ← (h d₁ d₂), hda]
+
+end CompleteLattice
+
+
 section Products
 
 variable {γ : Type*}
 
 variable [Preorder α] [Preorder β] [Preorder γ]
+
+-- c.f Monotone.inf
 
 lemma monotone {f : α × β → γ} (h₁ : ∀ b, Monotone (fun a => f (a,b)))
     (h₂ : ∀ a, Monotone (fun b => f (a,b))) : Monotone f := fun _ _ hab =>
@@ -173,9 +195,9 @@ end Products
 
 section SemilatticeSup
 
-variable [Preorder α] [SemilatticeSup β]
+variable [Preorder α]
 
-lemma ScottContinuousOn.sup₂ {D : Set (Set (β × β))} :
+lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
     ScottContinuousOn D fun (a, b) => (a ⊔ b : β) := by
   simp only
   intro d _ _ _ ⟨p₁, p₂⟩ hdp
