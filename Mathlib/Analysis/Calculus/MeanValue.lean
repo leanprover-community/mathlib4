@@ -768,15 +768,9 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
     rw [← ContinuousWithinAt.diff_iff this] at hcont_at_a
     simp at hcont_at_a
   case pos =>
-    push_neg at hcont_at_a
     intro hdiff
     replace hdiff := hdiff.hasDerivWithinAt
-    rw [hasDerivWithinAt_iff_tendsto_slope] at hdiff
-    replace hdiff : Tendsto (slope f a) (𝓝[>] a) (𝓝 (derivWithin f (Ioi a) a)) :=
-      hdiff.mono_left <| by
-        apply le_of_eq
-        congr
-        exact (Set.diff_singleton_eq_self not_mem_Ioi_self).symm
+    rw [hasDerivWithinAt_iff_tendsto_slope, Set.diff_singleton_eq_self not_mem_Ioi_self] at hdiff
     have h₀ : ∀ᶠ b in 𝓝[>] a,
         ∀ x ∈ Ioc a b, max (derivWithin f (Ioi a) a + 1) 0 < derivWithin f (Ioi a) x := by
       rw [(nhdsWithin_Ioi_basis a).eventually_iff]
