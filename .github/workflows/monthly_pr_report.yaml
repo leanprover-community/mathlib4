@@ -19,6 +19,7 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       BRANCH_NAME: ${{ github.head_ref }}
+      COMMENT: ${{ github.event.comment.body }}
 
     steps:
       - name: cleanup
@@ -32,7 +33,7 @@ jobs:
 
       - name: blog report
         run: |
-          echo ${{ github.event.comment.body }}
+          echo ${COMMENT}
           yrMth=2024-07
           mth="$(date -d "${yrMth}-01" '+%B')"
           PR="${{ github.event.pull_request.number }}"
