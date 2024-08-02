@@ -93,7 +93,7 @@ section CompleteLattice
 
 variable [CompleteLattice α] [CompleteLattice β]
 
-lemma scottContinuous_iff_map_Sup {f : α → β} :
+lemma scottContinuous_iff_map_sSup {f : α → β} :
   ScottContinuous f ↔
     ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → f (sSup d) = sSup (f '' d) := by
   constructor
@@ -105,6 +105,9 @@ lemma scottContinuous_iff_map_Sup {f : α → β} :
   · intro h d d₁ d₂ a hda
     rw [isLUB_iff_sSup_eq] at hda
     rw [isLUB_iff_sSup_eq, ← (h d₁ d₂), hda]
+
+alias ⟨ScottContinuous.map_sSup, ScottContinuous.of_map_sSup⟩ :=
+  scottContinuous_iff_map_sSup
 
 end CompleteLattice
 
@@ -218,5 +221,53 @@ lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
     apply e1
     intro b₁ b₂ hb'
     exact sup_le_iff.mp (hb b₁ b₂ hb' rfl)
+
+#check eq_of_forall_ge_iff
+
+lemma test [CompleteLinearOrder β] (a : β) : ScottContinuous fun b ↦ (a, b).1 ⊓ (a, b).2 := by
+  refine ScottContinuous.of_map_sSup (α := β) (β := β) (f := fun b ↦ (a, b).1 ⊓ (a, b).2) ?_
+  intro d d₁ d₂
+  apply eq_of_forall_ge_iff
+  intro e
+  constructor
+  · intro h
+    aesop
+  · intro h
+    simp?
+
+  --aesop
+  apply fun d d₁ d₂ ↦ eq_of_forall_ge_iff fun a ↦ ?_
+  simp only [inf_le_iff, sSup_le_iff, mem_image, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂]
+  constructor
+  · intro h
+
+
+  --simp [eq_of_forall_ge_iff]
+
+/-
+  intro d d₁ d₂ b hdb
+  simp only
+  rw [IsLUB, IsLeast]
+  constructor
+  · rw [upperBounds]
+    simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq,
+      le_inf_iff, inf_le_left, true_and]
+    intro c hc
+    exact inf_le_of_right_le (hdb.1 hc)
+  · rw [lowerBounds]
+    simp only [mem_setOf_eq]
+    intro c hc
+    rw [upperBounds] at hc
+    simp at hc
+    sorry
+-/
+
+/-
+lemma ScottContinuousOn.inf₂ [SemilatticeInf β] :
+    ScottContinuous fun (a, b) => (a ⊓ b : β) := by
+  simp only
+  apply ScottContinuous_prod_of_ScottContinuous -- (f := fun p => p.1 ⊓ p.2) _
+-/
 
 end SemilatticeSup
