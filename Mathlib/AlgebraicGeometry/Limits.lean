@@ -179,11 +179,9 @@ def toLocallyRingedSpaceCoproductCofanIsColimit :
       exact LocallyRingedSpace.emptyIsInitial
   · exact fun _ _ ↦ Multicoequalizer.π_desc _ _ _ _ _
   · intro i m h
-    apply Multicoequalizer.hom_ext
-    simp only [GlueData.diagram_r, disjointGlueData_J, GlueData.diagram_right, disjointGlueData_U,
-      colimit.ι_desc, GlueData.diagram_l, GlueData.diagram_left, disjointGlueData_V, id_eq,
-      eq_mpr_eq_cast, cast_eq, Multicofork.ofπ_pt, Multicofork.ofπ_ι_app]
-    exact h
+    apply Multicoequalizer.hom_ext _ _ _ fun j ↦ ?_
+    rw [Multicoequalizer.π_desc]
+    exact h j
 
 noncomputable
 instance : CreatesColimit (Discrete.functor f) Scheme.forgetToLocallyRingedSpace :=
@@ -424,15 +422,8 @@ lemma isIso_stalkMap_coprodSpec (x) :
     suffices IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.fst R S))) by
       infer_instance
     letI := (RingHom.fst R S).toAlgebra
-    have := IsLocalization.away_of_isIdempotentElem
-      (show IsIdempotentElem (M := R × S) (1, 0) by ext <;> simp) ?_ Prod.fst_surjective
-    apply IsOpenImmersion.of_isLocalization (1, 0)
-    · ext x
-      simp only [RingHom.algebraMap_toAlgebra, RingHom.mem_ker, RingHom.coe_fst,
-        Ideal.mem_span_singleton, Prod.one_eq_mk, Prod.mk_sub_mk, sub_self, sub_zero]
-      constructor
-      · intro e; use x; ext <;> simp [e]
-      · rintro ⟨⟨i, j⟩, rfl⟩; simp
+    have := IsLocalization.away_fst (R := R) (S := S)
+    exact IsOpenImmersion.of_isLocalization (1, 0)
   · have := Scheme.stalkMap_comp coprod.inr (coprodSpec R S) x
     rw [← IsIso.comp_inv_eq, Scheme.stalkMap_congr_hom _
       (Spec.map (CommRingCat.ofHom (RingHom.snd R S))) (by simp)] at this
@@ -440,15 +431,8 @@ lemma isIso_stalkMap_coprodSpec (x) :
     suffices IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.snd R S))) by
       infer_instance
     letI := (RingHom.snd R S).toAlgebra
-    have := IsLocalization.away_of_isIdempotentElem
-      (show IsIdempotentElem (M := R × S) (0, 1) by ext <;> simp) ?_ Prod.snd_surjective
-    apply IsOpenImmersion.of_isLocalization (0, 1)
-    · ext x
-      simp only [RingHom.algebraMap_toAlgebra, RingHom.mem_ker, RingHom.coe_snd,
-        Ideal.mem_span_singleton, Prod.one_eq_mk, Prod.mk_sub_mk, sub_self, sub_zero]
-      constructor
-      · intro e; use x; ext <;> simp [e]
-      · rintro ⟨⟨i, j⟩, rfl⟩; simp
+    have := IsLocalization.away_snd (R := R) (S := S)
+    exact IsOpenImmersion.of_isLocalization (0, 1)
 
 instance : IsIso (coprodSpec R S) := by
   rw [isIso_iff_stalk_iso]
@@ -461,33 +445,18 @@ instance : IsIso (coprodSpec R S) := by
 instance (R S : CommRingCatᵒᵖ) : IsIso (coprodComparison Scheme.Spec R S) := by
   obtain ⟨R⟩ := R; obtain ⟨S⟩ := S
   have : coprodComparison Scheme.Spec (.op R) (.op S) = coprodSpec R S ≫ (Spec.map
-    ((opProductIsoCoproduct _).hom.unop ≫
-      ((Pi.mapIso (fun b ↦ b.rec (by exact Iso.refl _) (by exact Iso.refl _))).hom ≫
-        (limit.isoLimitCone ⟨_, CommRingCat.prodFanIsLimit R S⟩).hom))) := by
+    ((opProdIsoCoprod R S).unop.hom ≫
+      (limit.isoLimitCone ⟨_, CommRingCat.prodFanIsLimit R S⟩).hom)) := by
     ext1
     · rw [coprodComparison_inl, coprodSpec, coprod.inl_desc_assoc, ← Spec.map_comp]
       congr 1
       apply Quiver.Hom.unop_inj
-      simp only [Opposite.op_unop, CommRingCat.coe_of, CommRingCat.prodFan_pt, Functor.mapIso_hom,
-        lim_map, Functor.comp_obj, op_comp, Category.assoc, unop_comp, Quiver.Hom.unop_op,
-        Quiver.Hom.unop_op']
-      erw [limit.isoLimitCone_hom_π ⟨_, CommRingCat.prodFanIsLimit R S⟩ ⟨.left⟩, limMap_π]
-      apply Quiver.Hom.op_inj
-      simp only [Opposite.op_unop, Quiver.Hom.op_unop, Discrete.functor_obj,
-        Discrete.natIso_hom_app, Iso.refl_hom, Category.comp_id, op_comp,
-        π_comp_opProductIsoCoproduct_hom]
+      simp [← Iso.inv_comp_eq, - Iso.unop_hom]
       rfl
     · rw [coprodComparison_inr, coprodSpec, coprod.inr_desc_assoc, ← Spec.map_comp]
       congr 1
       apply Quiver.Hom.unop_inj
-      simp only [Opposite.op_unop, CommRingCat.coe_of, CommRingCat.prodFan_pt, Functor.mapIso_hom,
-        lim_map, Functor.comp_obj, op_comp, Category.assoc, unop_comp, Quiver.Hom.unop_op,
-        Quiver.Hom.unop_op']
-      erw [limit.isoLimitCone_hom_π ⟨_, CommRingCat.prodFanIsLimit R S⟩ ⟨.right⟩, limMap_π]
-      apply Quiver.Hom.op_inj
-      simp only [Opposite.op_unop, Quiver.Hom.op_unop, Discrete.functor_obj,
-        Discrete.natIso_hom_app, Iso.refl_hom, Category.comp_id, op_comp,
-        π_comp_opProductIsoCoproduct_hom]
+      simp [← Iso.inv_comp_eq, - Iso.unop_hom]
       rfl
   rw [this]
   infer_instance
