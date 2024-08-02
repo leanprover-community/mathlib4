@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
-#align_import category_theory.monoidal.internal.limits from "leanprover-community/mathlib"@"12921e9eaa574d0087ae4856860e6dda8690a438"
-
 /-!
 # Limits of monoid objects.
 
@@ -39,8 +37,6 @@ and hence sends monoid objects to monoid objects.
 @[simps!]
 def limit (F : J ⥤ Mon_ C) : Mon_ C :=
   limLax.mapMon.obj ((monFunctorCategoryEquivalence J C).inverse.obj F)
-set_option linter.uppercaseLean3 false in
-#align Mon_.limit Mon_.limit
 
 /-- Implementation of `Mon_.hasLimits`: a limiting cone over a functor `F : J ⥤ Mon_ C`.
 -/
@@ -50,8 +46,6 @@ def limitCone (F : J ⥤ Mon_ C) : Cone F where
   π :=
     { app := fun j => { hom := limit.π (F ⋙ Mon_.forget C) j }
       naturality := fun j j' f => by ext; exact (limit.cone (F ⋙ Mon_.forget C)).π.naturality f }
-set_option linter.uppercaseLean3 false in
-#align Mon_.limit_cone Mon_.limitCone
 
 /-- The image of the proposed limit cone for `F : J ⥤ Mon_ C` under the forgetful functor
 `forget C : Mon_ C ⥤ C` is isomorphic to the limit cone of `F ⋙ forget C`.
@@ -59,8 +53,6 @@ set_option linter.uppercaseLean3 false in
 def forgetMapConeLimitConeIso (F : J ⥤ Mon_ C) :
     (forget C).mapCone (limitCone F) ≅ limit.cone (F ⋙ forget C) :=
   Cones.ext (Iso.refl _) (by aesop_cat)
-set_option linter.uppercaseLean3 false in
-#align Mon_.forget_map_cone_limit_cone_iso Mon_.forgetMapConeLimitConeIso
 
 /-- Implementation of `Mon_.hasLimits`:
 the proposed cone over a functor `F : J ⥤ Mon_ C` is a limit cone.
@@ -83,21 +75,15 @@ def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
     refine limit.hom_ext (fun j => ?_)
     dsimp; simp only [Mon_.forget_map, limit.lift_π, Functor.mapCone_π_app]
     exact congr_arg Mon_.Hom.hom (w j)
-set_option linter.uppercaseLean3 false in
-#align Mon_.limit_cone_is_limit Mon_.limitConeIsLimit
 
 instance hasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfShape J (Mon_ C) where
   has_limit := fun F => HasLimit.mk
     { cone := limitCone F
       isLimit := limitConeIsLimit F }
-set_option linter.uppercaseLean3 false in
-#align Mon_.has_limits Mon_.hasLimitsOfShape
 
 instance forgetPreservesLimitsOfShape : PreservesLimitsOfShape J (Mon_.forget C) where
   preservesLimit := fun {F} =>
     preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
       (IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Mon_.forget C)) (forgetMapConeLimitConeIso F).symm)
-set_option linter.uppercaseLean3 false in
-#align Mon_.forget_preserves_limits Mon_.forgetPreservesLimitsOfShape
 
 end Mon_

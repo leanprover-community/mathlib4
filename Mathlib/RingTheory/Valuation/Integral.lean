@@ -6,8 +6,6 @@ Authors: Kenny Lau
 import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 import Mathlib.RingTheory.Valuation.Integers
 
-#align_import ring_theory.valuation.integral from "leanprover-community/mathlib"@"9b2660e1b25419042c8da10bf411aa3c67f14383"
-
 /-!
 # Integral elements over the ring of integers of a valuation
 
@@ -40,13 +38,11 @@ theorem mem_of_integral {x : R} (hx : IsIntegral O x) : x ∈ v.integer :=
     cases' (hv.2 <| p.coeff i).lt_or_eq with hvpi hvpi
     · exact mul_lt_mul₀ hvpi (pow_lt_pow_right₀ hvx <| Finset.mem_range.1 hi)
     · erw [hvpi]; rw [one_mul, one_mul]; exact pow_lt_pow_right₀ hvx (Finset.mem_range.1 hi)
-#align valuation.integers.mem_of_integral Valuation.Integers.mem_of_integral
 
 protected theorem integralClosure : integralClosure O R = ⊥ :=
   bot_unique fun _ hr =>
     let ⟨x, hx⟩ := hv.3 (hv.mem_of_integral hr)
     Algebra.mem_bot.2 ⟨x, hx⟩
-#align valuation.integers.integral_closure Valuation.Integers.integralClosure
 
 end CommRing
 
@@ -59,7 +55,6 @@ variable (hv : Integers v O)
 
 theorem integrallyClosed : IsIntegrallyClosed O :=
   (IsIntegrallyClosed.integralClosure_eq_bot_iff K).mp (Valuation.Integers.integralClosure hv)
-#align valuation.integers.integrally_closed Valuation.Integers.integrallyClosed
 
 end FractionField
 

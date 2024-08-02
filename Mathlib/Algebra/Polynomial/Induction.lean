@@ -6,8 +6,6 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.Basic
 
-#align_import data.polynomial.induction from "leanprover-community/mathlib"@"63417e01fbc711beaf25fa73b6edb395c0cfddd0"
-
 /-!
 # Induction on polynomials
 
@@ -53,7 +51,6 @@ protected theorem induction_on {M : R[X] → Prop} (p : R[X]) (h_C : ∀ a, M (C
       exact h_add _ _ A ih
   rw [← sum_C_mul_X_pow_eq p, Polynomial.sum]
   exact B (support p)
-#align polynomial.induction_on Polynomial.induction_on
 
 /-- To prove something about polynomials,
 it suffices to show the condition is closed under taking sums,
@@ -64,7 +61,6 @@ protected theorem induction_on' {M : R[X] → Prop} (p : R[X]) (h_add : ∀ p q,
     (h_monomial : ∀ (n : ℕ) (a : R), M (monomial n a)) : M p :=
   Polynomial.induction_on p (h_monomial 0) h_add fun n a _h =>
     by rw [C_mul_X_pow_eq_monomial]; exact h_monomial _ _
-#align polynomial.induction_on' Polynomial.induction_on'
 
 open Submodule Polynomial Set
 
@@ -76,8 +72,6 @@ theorem span_le_of_C_coeff_mem (cf : ∀ i : ℕ, C (f.coeff i) ∈ I) :
     Ideal.span { g | ∃ i, g = C (f.coeff i) } ≤ I := by
   simp only [@eq_comm _ _ (C _)]
   exact (Ideal.span_le.trans range_subset_iff).mpr cf
-set_option linter.uppercaseLean3 false in
-#align polynomial.span_le_of_C_coeff_mem Polynomial.span_le_of_C_coeff_mem
 
 theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coeff f i) } := by
   let p := Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coeff f i) }
@@ -92,13 +86,9 @@ theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coe
   convert this using 1
   simp only [monomial_mul_C, one_mul, smul_eq_mul]
   rw [← C_mul_X_pow_eq_monomial]
-set_option linter.uppercaseLean3 false in
-#align polynomial.mem_span_C_coeff Polynomial.mem_span_C_coeff
 
 theorem exists_C_coeff_not_mem : f ∉ I → ∃ i : ℕ, C (coeff f i) ∉ I :=
   Not.imp_symm fun cf => span_le_of_C_coeff_mem (not_exists_not.mp cf) mem_span_C_coeff
-set_option linter.uppercaseLean3 false in
-#align polynomial.exists_C_coeff_not_mem Polynomial.exists_C_coeff_not_mem
 
 end Semiring
 
