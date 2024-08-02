@@ -5,7 +5,7 @@ if [ "$#" -ne 2 ]; then
     printf $'Usage: %s <repo_owner/repo_name> <YYYY-MM>\n\nFor instance `%s leanprover-community/mathlib4`\n\n' "${0}" "${0}"
     exit 1
 fi
-echo "Date: ${2}"
+
 rm -rf found_by_gh.txt found_by_git.txt
 
 findInRange () {
