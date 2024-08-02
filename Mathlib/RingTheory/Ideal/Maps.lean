@@ -77,7 +77,7 @@ theorem comap_ne_top [RingHomClass F R S] (hK : K ≠ ⊤) : comap f K ≠ ⊤ :
 variable {G : Type*} [FunLike G S R]
 
 theorem map_le_comap_of_inv_on [RingHomClass G S R] (g : G) (I : Ideal R)
-   (hf : Set.LeftInvOn g f I) :
+    (hf : Set.LeftInvOn g f I) :
     I.map f ≤ I.comap g := by
   refine Ideal.span_le.2 ?_
   rintro x ⟨x, hx, rfl⟩
