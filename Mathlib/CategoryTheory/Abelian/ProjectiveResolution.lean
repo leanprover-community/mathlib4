@@ -251,6 +251,7 @@ end
 
 variable [EnoughProjectives C]
 
+variable {C} in
 theorem exact_d_f {X Y : C} (f : X ⟶ Y) :
     (ShortComplex.mk (d f) f (by simp)).Exact := by
   let α : ShortComplex.mk (d f) f (by simp) ⟶ ShortComplex.mk (kernel.ι f) f (by simp) :=
@@ -298,12 +299,8 @@ lemma ofComplex_exactAt_succ (n : ℕ) :
   simp only [ChainComplex.of_d]
   -- TODO: this should just be apply exact_d_f so something is missing
   match n with
-  | 0 =>
-    apply exact_d_f ((ChainComplex.mkAux _ _ _ (d (Projective.π Z)) (d (d (Projective.π Z))) _ _
-      0).g)
-  | n+1 =>
-    apply exact_d_f ((ChainComplex.mkAux _ _ _ (d (Projective.π Z)) (d (d (Projective.π Z))) _ _
-      (n+1)).g)
+  | 0 => apply exact_d_f
+  | n + 1 => apply exact_d_f
 
 instance (n : ℕ) : Projective ((ofComplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Projective.projective_over
